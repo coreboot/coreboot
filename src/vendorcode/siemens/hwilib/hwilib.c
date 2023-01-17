@@ -43,7 +43,7 @@ enum {
 struct param_pos {
 	uint8_t blk_type;	/* Valid for a specific block type */
 	uint32_t offset;	/* Offset in given block */
-	uint32_t len;		/* Length for the field in this block */
+	size_t len;		/* Length for the field in this block */
 };
 
 /* This structure holds all the needed information for a given field type
@@ -53,8 +53,7 @@ struct param_info {
 	struct param_pos pos[MAX_BLOCK_NUM];
 	uint64_t mask;
 	uint8_t mask_offset;
-	uint32_t (*get_field)(const struct param_info *param, uint8_t *dst,
-				uint32_t maxlen);
+	uint32_t (*get_field)(const struct param_info *param, uint8_t *dst, size_t dstsize);
 };
 
 /* Storage for pointers to the different blocks. The contents will be filled
@@ -70,9 +69,7 @@ static uint16_t all_blk_size[MAX_BLOCK_NUM];
 /* Storage for the cbfs file name of the currently open hwi file. */
 static char current_hwi[HWI_MAX_NAME_LEN];
 
-
-static uint32_t hwilib_read_bytes(const struct param_info *param, uint8_t *dst,
-					uint32_t maxlen);
+static uint32_t hwilib_read_bytes(const struct param_info *param, uint8_t *dst, size_t dstsize);
 
 /* Add all supported fields to this variable. It is important to use the
  * field type of a given field as the array index so that all the information
@@ -385,10 +382,10 @@ static const struct param_info params[] = {
  *         block
  * @param  *param	Parameter to read from hwinfo
  * @param  *dst		Pointer to memory where the data will be stored in
- * @return		number of copied bytes on success, 0 on error
+ * @param  dstsize	Size of the memory passed in via the *dst pointer
+ * @return		Number of copied bytes on success, 0 on error
  */
-static uint32_t hwilib_read_bytes(const struct param_info *param, uint8_t *dst,
-					uint32_t maxlen)
+static uint32_t hwilib_read_bytes(const struct param_info *param, uint8_t *dst, size_t dstsize)
 {
 	uint8_t i = 0, *blk = NULL;
 
@@ -405,9 +402,9 @@ static uint32_t hwilib_read_bytes(const struct param_info *param, uint8_t *dst,
 	} while (i < MAX_BLOCK_NUM);
 
 	/* Ensure there is a valid block available for this parameter and
-	 * the length of the parameter do not exceed maxlen or block len.
+	 * the length of the parameter do not exceed dstsize or block len.
 	 */
-	if ((!blk) || (param->pos[i].len > maxlen) ||
+	if ((!blk) || (param->pos[i].len > dstsize) ||
 	    (param->pos[i].len + param->pos[i].offset >
 	     all_blk_size[param->pos[i].blk_type]))
 		return 0;
@@ -541,13 +538,14 @@ enum cb_err hwilib_find_blocks(const char *hwi_filename)
  *         hwinfo block.
  * @param  field	Field type to read from hwinfo
  * @param  *dst		Pointer to memory where the data will be stored in
- * @return		number of copied bytes on success, 0 on error
+ * @param  dstsize	Size of the memory passed in via the *dst pointer
+ * @return		Number of copied bytes on success, 0 on error
  */
-uint32_t hwilib_get_field(hwinfo_field_t field, uint8_t *dst, uint32_t maxlen)
+uint32_t hwilib_get_field(hwinfo_field_t field, uint8_t *dst, size_t dstsize)
 {
 	/* Check the boundaries of params-variable */
 	if ((uint32_t)field < ARRAY_SIZE(params))
-		return params[field].get_field(&params[field], dst, maxlen);
+		return params[field].get_field(&params[field], dst, dstsize);
 	else
 		return 0;
 }

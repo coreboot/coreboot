@@ -123,6 +123,6 @@ enum cb_err hwilib_find_blocks(const char *hwi_filename);
 /* Use this function to get fields out of supported info blocks
  * This function returns the number of copied bytes or 0 on error.
  */
-uint32_t hwilib_get_field(hwinfo_field_t field, uint8_t *data, uint32_t maxlen);
+uint32_t hwilib_get_field(hwinfo_field_t field, uint8_t *dst, size_t dstsize);
 
 #endif /* SIEMENS_HWI_LIB_H_ */

@@ -5,15 +5,14 @@
 
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <drivers/intel/gma/gma.h>
+#include <gpio.h>
 #include <intelblocks/cfg.h>
-#include <intelblocks/gpio.h>
 #include <intelblocks/gspi.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcie_rp.h>
 #include <intelblocks/power_limit.h>
 #include <intelblocks/tcss.h>
 #include <soc/gpe.h>
-#include <soc/gpio.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <soc/pmc.h>

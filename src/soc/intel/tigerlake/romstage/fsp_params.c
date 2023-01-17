@@ -6,9 +6,9 @@
 #include <cpu/x86/msr.h>
 #include <device/device.h>
 #include <fsp/util.h>
+#include <gpio.h>
 #include <intelblocks/cpulib.h>
 #include <option.h>
-#include <soc/gpio.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>

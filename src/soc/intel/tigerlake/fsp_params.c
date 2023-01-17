@@ -2,15 +2,15 @@
 
 #include <assert.h>
 #include <console/console.h>
-#include <device/device.h>
 #include <cpu/intel/cpu_ids.h>
+#include <device/device.h>
 #include <device/pci_ops.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <fsp/api.h>
 #include <fsp/ppi/mp_service_ppi.h>
 #include <fsp/util.h>
-#include <option.h>
+#include <gpio.h>
 #include <intelblocks/cse.h>
 #include <intelblocks/irq.h>
 #include <intelblocks/lpss.h>
@@ -18,8 +18,8 @@
 #include <intelblocks/tcss.h>
 #include <intelblocks/xdci.h>
 #include <intelpch/lockdown.h>
+#include <option.h>
 #include <security/vboot/vboot_common.h>
-#include <soc/gpio.h>
 #include <soc/intel/common/vbt.h>
 #include <soc/lpm.h>
 #include <soc/pci_devs.h>

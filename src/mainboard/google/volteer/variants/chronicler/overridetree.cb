@@ -271,6 +271,12 @@ chip soc/intel/tigerlake
 				register "sdmode_delay" = "5"
 				device generic 0 on end
 			end
+			chip drivers/sof
+				register "spkr_tplg" = "max98357a"
+				register "jack_tplg" = "rt5682"
+				register "mic_tplg" = "_2ch_pdm0"
+				device generic 0 on end
+			end
 		end
 		device ref pcie_rp5 on end
 		device ref pmc hidden

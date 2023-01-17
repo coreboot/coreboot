@@ -521,5 +521,13 @@ chip soc/intel/tigerlake
 				device pnp 0c09.0 on end
 			end
 		end
+		device ref hda on
+			chip drivers/sof
+				register "spkr_tplg" = "max98373"
+				register "jack_tplg" = "rt5682"
+				register "mic_tplg" = "_2ch_pdm0"
+				device generic 0 on end
+			end
+		end
 	end
 end

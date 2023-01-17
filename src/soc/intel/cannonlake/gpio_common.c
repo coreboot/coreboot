@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <intelblocks/gpio.h>
+#include <gpio.h>
 #include <soc/soc_chip.h>
 
 /*

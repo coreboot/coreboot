@@ -3,10 +3,10 @@
 #ifndef _SOC_CHIP_H_
 #define _SOC_CHIP_H_
 
-#include <intelblocks/cfg.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <drivers/intel/gma/gma.h>
-#include <intelblocks/gpio.h>
+#include <gpio.h>
+#include <intelblocks/cfg.h>
 #include <intelblocks/gspi.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/power_limit.h>

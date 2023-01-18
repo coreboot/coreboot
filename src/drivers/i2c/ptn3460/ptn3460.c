@@ -108,7 +108,7 @@ static void ptn3460_init(struct device *dev)
 	}
 	/* Mainboard can modify the configuration data.
 	   Write back configuration data to PTN3460 if modified by mainboard */
-	if (mb_adjust_cfg(&cfg) == PTN_CFG_MODIFIED) {
+	if (mb_adjust_cfg(&cfg) == CB_SUCCESS) {
 		ptr = (uint8_t *)&cfg;
 		for (i = 0; i < sizeof(struct ptn_3460_config); i++) {
 			val = i2c_dev_writeb_at(dev, PTN_CONFIG_OFF + i, *ptr++);
@@ -131,9 +131,9 @@ __weak uint8_t mb_select_edid_table(void)
 {
 	return 0;
 }
-__weak int mb_adjust_cfg(struct ptn_3460_config *cfg_ptr)
+__weak enum cb_err mb_adjust_cfg(struct ptn_3460_config *cfg_ptr)
 {
-	return 0;
+	return CB_ERR;
 }
 
 static struct device_operations ptn3460_ops = {

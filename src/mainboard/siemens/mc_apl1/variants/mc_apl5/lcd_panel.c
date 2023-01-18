@@ -64,9 +64,9 @@ uint8_t mb_select_edid_table(void)
 /** \brief Function to enable mainboard to adjust the config data of PTN3460. For reference,
  * see NXP document AN11128 - PTN3460 Programming guide.
  * @param   *cfg_ptr  Pointer to the PTN config structure to modify
- * @return  -1 on error; PTN_CFG_MODIFIED if data was modified and needs to be updated.
+ * @return  CB_SUCCESS if data was modified and needs to be updated; CB_ERR on error
  */
-int mb_adjust_cfg(struct ptn_3460_config *cfg)
+enum cb_err mb_adjust_cfg(struct ptn_3460_config *cfg)
 {
 	const char *hwi_block = "hwinfo.hex";
 	uint8_t disp_con = 0, color_depth = 0;
@@ -74,16 +74,16 @@ int mb_adjust_cfg(struct ptn_3460_config *cfg)
 	/* Get display-specific configuration from hwinfo. */
 	if (hwilib_find_blocks(hwi_block) != CB_SUCCESS) {
 		printk(BIOS_ERR, "LCD: Info block \"%s\" not found!\n", hwi_block);
-		return -1;
+		return CB_ERR;
 	}
 	if (hwilib_get_field(PF_DisplCon, &disp_con, sizeof(disp_con)) != sizeof(disp_con)) {
 		printk(BIOS_ERR, "LCD: Missing panel features from %s\n", hwi_block);
-		return -1;
+		return CB_ERR;
 	}
 	if (hwilib_get_field(PF_Color_Depth, &color_depth,
 			     sizeof(color_depth)) != sizeof(color_depth)) {
 		printk(BIOS_ERR, "LCD: Missing panel features from %s\n", hwi_block);
-		return -1;
+		return CB_ERR;
 	}
 
 	/* Set up PTN3460 registers based on hwinfo and fixed board-specific parameters: */
@@ -116,5 +116,5 @@ int mb_adjust_cfg(struct ptn_3460_config *cfg)
 	/* Enable backlight control. */
 	cfg->backlight_ctrl = 0x00;
 
-	return PTN_CFG_MODIFIED;
+	return CB_SUCCESS;
 }

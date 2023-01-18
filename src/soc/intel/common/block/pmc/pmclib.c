@@ -425,7 +425,13 @@ static int pmc_prev_sleep_state(const struct chipset_power_state *ps)
 		/* Clear SLP_TYP. */
 		pmc_write_pm1_control(ps->pm1_cnt & ~(SLP_TYP));
 	}
-	return soc_prev_sleep_state(ps, prev_sleep_state);
+
+	prev_sleep_state = soc_prev_sleep_state(ps, prev_sleep_state);
+
+	/* Clear PMC PMCON_x register power failure status bits. */
+	pmc_clear_pmcon_pwr_failure_sts();
+
+	return prev_sleep_state;
 }
 
 void pmc_fill_pm_reg_info(struct chipset_power_state *ps)

@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Check if this is still correct */
-
 #include <arch/io.h>
 #include <cf9_reset.h>
 #include <reset.h>

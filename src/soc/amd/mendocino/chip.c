@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Check if this is still correct */
-
 #include <amdblocks/data_fabric.h>
 #include <console/console.h>
 #include <device/device.h>

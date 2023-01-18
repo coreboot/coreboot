@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Check if this is still correct */
-
 #ifndef MENDOCINO_CHIP_H
 #define MENDOCINO_CHIP_H
 

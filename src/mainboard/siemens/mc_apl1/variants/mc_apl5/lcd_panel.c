@@ -29,9 +29,10 @@ static void igd_disable(void)
 	pci_write_config8(root_dev, 0x54, deven);
 }
 
-/** \brief This function provides EDID data to the driver for DP2LVDS Bridge (PTN3460)
- * @param  edid_data	pointer to EDID data in driver
-*/
+/** \brief This function provides EDID data to the driver for DP2LVDS Bridge (PTN3460).
+ * @param  edid_data  pointer to EDID data in driver
+ * @return CB_SUCCESS on successful EDID data retrieval, CB_ERR otherwise
+ */
 enum cb_err mb_get_edid(uint8_t edid_data[0x80])
 {
 	const char *hwi_block = "hwinfo.hex";
@@ -53,26 +54,28 @@ enum cb_err mb_get_edid(uint8_t edid_data[0x80])
 
 /** \brief This function provides EDID block [0..6] to the driver for DP2LVDS Bridge (PTN3460)
  * which has to be used.
-*/
+ * @return Index of the EDID slot selected for EDID emulation
+ */
 uint8_t mb_select_edid_table(void)
 {
 	return 6; /* With this mainboard we use EDID block 6 for emulation in PTN3460. */
 }
 
-/** \brief Function to enable mainboard to adjust the config data of PTN3460.
- * @param   *cfg_ptr  Pointer to the PTN config structure to modify.
+/** \brief Function to enable mainboard to adjust the config data of PTN3460. For reference,
+ * see NXP document AN11128 - PTN3460 Programming guide.
+ * @param   *cfg_ptr  Pointer to the PTN config structure to modify
  * @return  -1 on error; PTN_CFG_MODIFIED if data was modified and needs to be updated.
-*/
+ */
 int mb_adjust_cfg(struct ptn_3460_config *cfg)
 {
 	const char *hwi_block = "hwinfo.hex";
 	uint8_t disp_con = 0, color_depth = 0;
 
+	/* Get display-specific configuration from hwinfo. */
 	if (hwilib_find_blocks(hwi_block) != CB_SUCCESS) {
 		printk(BIOS_ERR, "LCD: Info block \"%s\" not found!\n", hwi_block);
 		return -1;
 	}
-
 	if (hwilib_get_field(PF_DisplCon, &disp_con, sizeof(disp_con)) != sizeof(disp_con)) {
 		printk(BIOS_ERR, "LCD: Missing panel features from %s\n", hwi_block);
 		return -1;
@@ -82,9 +85,11 @@ int mb_adjust_cfg(struct ptn_3460_config *cfg)
 		printk(BIOS_ERR, "LCD: Missing panel features from %s\n", hwi_block);
 		return -1;
 	}
-	/* Set up configuration data according to the hwinfo block we got. */
+
+	/* Set up PTN3460 registers based on hwinfo and fixed board-specific parameters: */
+	/* Use 2 lanes for eDP, no P/N swapping, no ASSR, allow both HBR and RBR modes. */
 	cfg->dp_interface_ctrl = 0x00;
-	/* Drive LVDS clock for single mode on odd bus per default. */
+	/* Use odd bus for LVDS clock distribution only. */
 	cfg->lvds_interface_ctrl1 = 0x01;
 	if (disp_con == PF_DISPLCON_LVDS_DUAL) {
 		/* Turn on dual LVDS lane and clock. */
@@ -94,22 +99,22 @@ int mb_adjust_cfg(struct ptn_3460_config *cfg)
 		/* Use 18 bits per pixel. */
 		cfg->lvds_interface_ctrl1 |= 0x20;
 	}
-	/* 1 % clock spreading, 300 mV LVDS swing. */
+	/* 1% clock spreading, 300 mV LVDS swing */
 	cfg->lvds_interface_ctrl2 = 0x13;
-	/* No LVDS lane swap. */
+	/* No LVDS lane/channel swapping */
 	cfg->lvds_interface_ctrl3 = 0x00;
-	/* Delay T2 (VDD to LVDS active) by 16 ms. */
-	cfg->t2_delay = 1;
-	/* 500 ms from LVDS to backlight active. */
-	cfg->t3_timing = 10;
-	/* 1 second re-power delay. */
-	cfg->t12_timing = 20;
-	/* 150 ms backlight off to LVDS inactive. */
-	cfg->t4_timing = 3;
-	/* Delay T5 (LVDS to VDD inactive) by 16 ms. */
-	cfg->t5_delay = 1;
+	/* Enable VDD to LVDS active delay. */
+	cfg->t2_delay = 0x01;
+	/* LVDS to backlight active delay: 500 ms */
+	cfg->t3_timing = 0x0a;
+	/* Minimum re-power delay: 1 s */
+	cfg->t12_timing = 0x14;
+	/* Backlight off to LVDS inactive delay: 150 ms */
+	cfg->t4_timing = 0x03;
+	/* Enable LVDS to VDD inactive delay. */
+	cfg->t5_delay = 0x01;
 	/* Enable backlight control. */
-	cfg->backlight_ctrl = 0;
+	cfg->backlight_ctrl = 0x00;
 
 	return PTN_CFG_MODIFIED;
 }

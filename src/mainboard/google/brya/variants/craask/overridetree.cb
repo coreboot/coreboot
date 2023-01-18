@@ -502,9 +502,12 @@ chip soc/intel/alderlake
 			probe SD_CARD SD_GL9750S
 		end
 		device ref pcie_rp9 on
-			# Enable NVMe SSD PCIe 9-12 using clk 2
+			# Enable NVMe SSD PCIe 9-12 using clk_src1 and clk_req2 mapping to hardware
+			# design.Due to inconsistency between PMC firmware and FSP, we need to set
+			# clk_src to clk_req number, not same as hardware mapping in coreboot.Then
+			# swap correct setting to clk_src=1,clk_req=2 in mFIT.
 			register "pch_pcie_rp[PCH_RP(9)]" = "{
-				.clk_src = 1,
+				.clk_src = 2,
 				.clk_req = 2,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"

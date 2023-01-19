@@ -102,7 +102,7 @@ is
       success : boolean;
    begin
       HW.GFX.GMA.Initialize (Clean_State => True,
-      			     Success => success);
+			     Success => success);
       if success then
          stop_ok := 1;
       else

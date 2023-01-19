@@ -22,7 +22,8 @@ chip soc/amd/mendocino
 		.speed_config[0] = {
 			.speed = I2C_SPEED_FAST,
 			.scl_hcnt = 120,
-			.scl_lcnt = 215,
+			.scl_lcnt = 220,
+			.sda_hold = 90,
 		}
 	}"
 

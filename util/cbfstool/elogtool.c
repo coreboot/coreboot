@@ -196,7 +196,11 @@ static int cmd_list(const struct buffer *buf)
 	event = buffer_get(buf) + sizeof(struct elog_header);
 
 	while ((const void *)(event) < buffer_end(buf)) {
-		if (event->type == ELOG_TYPE_EOL || event->length == 0)
+		if (((const void *)event + sizeof(*event)) >= buffer_end(buf)
+			|| event->length <= sizeof(*event)
+			|| event->length > ELOG_MAX_EVENT_SIZE
+			|| ((const void *)event + event->length) >= buffer_end(buf)
+			|| event->type == ELOG_TYPE_EOL)
 			break;
 
 		eventlog_print_event(event, count);

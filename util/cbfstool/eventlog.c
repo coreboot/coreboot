@@ -460,6 +460,32 @@ static int eventlog_print_data(const struct event_header *event)
 		{0, NULL},
 	};
 
+	size_t elog_type_to_min_size[] = {
+		[ELOG_TYPE_LOG_CLEAR]		= sizeof(uint16_t),
+		[ELOG_TYPE_BOOT]		= sizeof(uint32_t),
+		[ELOG_TYPE_LAST_POST_CODE]	= sizeof(uint16_t),
+		[ELOG_TYPE_POST_EXTRA]		= sizeof(uint32_t),
+		[ELOG_TYPE_OS_EVENT]		= sizeof(uint32_t),
+		[ELOG_TYPE_ACPI_ENTER]		= sizeof(uint8_t),
+		[ELOG_TYPE_ACPI_WAKE]		= sizeof(uint8_t),
+		[ELOG_TYPE_ACPI_DEEP_WAKE]	= sizeof(uint8_t),
+		[ELOG_TYPE_WAKE_SOURCE]		= sizeof(struct elog_event_data_wake),
+		[ELOG_TYPE_EC_EVENT]		= sizeof(uint8_t),
+		[ELOG_TYPE_EC_DEVICE_EVENT]	= sizeof(uint8_t),
+		[ELOG_DEPRECATED_TYPE_CROS_RECOVERY_MODE] = sizeof(uint8_t),
+		[ELOG_TYPE_MANAGEMENT_ENGINE]	= sizeof(uint8_t),
+		[ELOG_TYPE_MEM_CACHE_UPDATE]	= sizeof(struct elog_event_mem_cache_update),
+		[ELOG_TYPE_EXTENDED_EVENT]	= sizeof(struct elog_event_extended_event),
+		[ELOG_TYPE_CROS_DIAGNOSTICS]	= sizeof(uint8_t),
+		[ELOG_TYPE_FW_VBOOT_INFO]	= sizeof(uint16_t),
+		[0xff]				= 0,
+	};
+
+	if (event->length <= sizeof(*event) + elog_type_to_min_size[event->type]) {
+		eventlog_printf("INVALID DATA (length = %u)", event->length - sizeof(*event));
+		return 0;
+	}
+
 	switch (event->type) {
 	case ELOG_TYPE_LOG_CLEAR: {
 		const uint16_t *bytes = event_get_data(event);
@@ -587,10 +613,15 @@ static int eventlog_print_data(const struct event_header *event)
 		eventlog_printf("boot_mode=%s", vb2_boot_mode_string(info->boot_mode));
 
 		if (info->boot_mode == VB2_BOOT_MODE_BROKEN_SCREEN ||
-		    info->boot_mode == VB2_BOOT_MODE_MANUAL_RECOVERY)
-			eventlog_printf("recovery_reason=%#x/%#x (%s)",
+		    info->boot_mode == VB2_BOOT_MODE_MANUAL_RECOVERY) {
+			if (event->length <= sizeof(*event) + sizeof(*info))
+				eventlog_printf("INVALID DATA (length = %u)",
+				  event->length - sizeof(*event));
+			else
+				eventlog_printf("recovery_reason=%#x/%#x (%s)",
 				  info->recovery_reason, info->recovery_subcode,
 				  vb2_get_recovery_reason_string(info->recovery_reason));
+		}
 
 		eventlog_printf("fw_tried=%s", vb2_slot_string(info->slot));
 		eventlog_printf("fw_try_count=%d", info->tries);

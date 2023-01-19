@@ -3,7 +3,6 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_P2SBLIB_H
 #define SOC_INTEL_COMMON_BLOCK_P2SBLIB_H
 
-#include <stddef.h>
 #include <stdint.h>
 
 /* P2SB generic configuration register */

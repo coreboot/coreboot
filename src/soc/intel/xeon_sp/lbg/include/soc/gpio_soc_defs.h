@@ -3,10 +3,6 @@
 #ifndef LEWISBURG_GPIO_DEFS_H
 #define LEWISBURG_GPIO_DEFS_H
 
-#ifndef __ACPI__
-#include <stddef.h>
-#endif
-
 /* GPIO Community 0 */
 #define COMM_0			0
 #define  GPP_A			0x0

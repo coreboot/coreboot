@@ -3,9 +3,6 @@
 #ifndef _SOC_CANNONLAKE_GPIO_DEFS_CNP_H_H_
 #define _SOC_CANNONLAKE_GPIO_DEFS_CNP_H_H_
 
-#ifndef __ACPI__
-#include <stddef.h>
-#endif
 #include <soc/gpio_soc_defs_cnp_h.h>
 
 #define GPIO_NUM_PAD_CFG_REGS   4 /* DW0, DW1, DW2, DW3 */

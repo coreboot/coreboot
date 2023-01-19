@@ -4,7 +4,6 @@
 #define _SOC_ROMSTAGE_H_
 
 #include <fsp/api.h>
-#include <stddef.h>
 
 void mainboard_memory_init_params(FSPM_UPD *memupd);
 void systemagent_early_init(void);

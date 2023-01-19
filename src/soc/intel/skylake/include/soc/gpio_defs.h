@@ -2,9 +2,7 @@
 
 #ifndef _SOC_GPIO_DEFS_H_
 #define _SOC_GPIO_DEFS_H_
-#ifndef __ACPI__
-#include <stddef.h>
-#endif
+
 #if CONFIG(SKYLAKE_SOC_PCH_H)
 # include <soc/gpio_pch_h_defs.h>
 #else

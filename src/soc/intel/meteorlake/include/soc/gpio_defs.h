@@ -3,9 +3,6 @@
 #ifndef _SOC_METEORLAKE_GPIO_DEFS_H_
 #define _SOC_METEORLAKE_GPIO_DEFS_H_
 
-#ifndef __ACPI__
-#include <stddef.h>
-#endif
 #include <soc/gpio_soc_defs.h>
 
 #define GPIO_NUM_PAD_CFG_REGS	4 /* DW0, DW1, DW2, DW3 */

@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Check if this is still correct */
-
 /* PCI IRQ mapping registers, C00h-C01h. */
 OperationRegion(PRQM, SystemIO, 0x00000c00, 0x00000002)
 	Field(PRQM, ByteAcc, NoLock, Preserve) {

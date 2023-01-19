@@ -37,7 +37,7 @@ static const struct pad_config gpio_table[] = {
 	/* C23 : UART2_CTS# ==> NC */
 	PAD_NC(GPP_C23, NONE),
 	/* D15 : TOUCHSCREEN_RST_L */
-	PAD_CFG_GPO(GPP_C12, 1, DEEP),
+	PAD_CFG_GPO(GPP_D15, 1, DEEP),
 	/* D16 : TOUCHSCREEN_INT_L */
 	PAD_CFG_GPI_APIC(GPP_D16, NONE, PLTRST, LEVEL, INVERT),
 	/* E23 : GPP_E23 ==> NC */

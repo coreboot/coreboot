@@ -303,6 +303,7 @@ chip soc/intel/skylake
 		device pci 15.2 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""ACPI0C50""
+				register "generic.sub" = ""1AE0006B""
 				register "generic.desc" = ""Touchpad""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_B3_IRQ)"
 				register "hid_desc_reg_offset" = "0x1"

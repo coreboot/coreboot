@@ -33,8 +33,6 @@ Scope(\_SB) {
 #include <soc/amd/common/acpi/dptc.asl>
 #endif
 
-#include "rtc_workaround.asl"
-
 /* Enable DPTC interface with AMD ALIB */
 External(\_SB.DPTC, MethodObj)
 

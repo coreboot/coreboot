@@ -83,6 +83,8 @@ void i2c_generic_fill_ssdt(const struct device *dev,
 	acpigen_write_name_string("_HID", config->hid);
 	if (config->cid)
 		acpigen_write_name_string("_CID", config->cid);
+	if (config->sub)
+		acpigen_write_name_string("_SUB", config->sub);
 	acpigen_write_name_integer("_UID", config->uid);
 	if (config->desc)
 		acpigen_write_name_string("_DDN", config->desc);

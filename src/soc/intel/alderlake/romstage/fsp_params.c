@@ -11,10 +11,8 @@
 #include <gpio.h>
 #include <intelbasecode/debug_feature.h>
 #include <intelblocks/cpulib.h>
-#include <intelblocks/early_graphics.h>
 #include <intelblocks/pcie_rp.h>
 #include <option.h>
-#include <pc80/vga.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
@@ -22,6 +20,8 @@
 #include <soc/romstage.h>
 #include <soc/soc_chip.h>
 #include <string.h>
+
+#include "ux.h"
 
 #define FSP_CLK_NOTUSED			0xFF
 #define FSP_CLK_LAN			0x70
@@ -363,17 +363,6 @@ static void fill_fspm_ibecc_params(FSP_M_CONFIG *m_cfg,
 	}
 }
 
-static void inform_user_of_memory_training(void)
-{
-	if (!CONFIG(MAINBOARD_HAS_EARLY_LIBGFXINIT) ||
-	    !early_graphics_init())
-		return;
-
-	printk(BIOS_INFO, "Informing user on-display of memory training.\n");
-	vga_write_text(VGA_TEXT_CENTER, VGA_TEXT_HORIZONTAL_MIDDLE,
-		       "Your device is finishing an update. This may take 1-2 minutes.\nPlease do not turn off your device.");
-}
-
 static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
@@ -435,7 +424,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	 * user with an on-screen text message.
 	 */
 	if (!arch_upd->NvsBufferPtr)
-		inform_user_of_memory_training();
+		ux_inform_user_of_update_operation("memory training");
 
 	config = config_of_soc();
 

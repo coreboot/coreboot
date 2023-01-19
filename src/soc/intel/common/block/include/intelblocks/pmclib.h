@@ -183,6 +183,9 @@ int pmc_fill_power_state(struct chipset_power_state *ps);
  */
 void pmc_gpe_init(void);
 
+/* Clear PMC GEN_PMCON_X register power failure status bits */
+void pmc_clear_pmcon_pwr_failure_sts(void);
+
 /* Clear PMC GEN_PMCON_A register status bits */
 void pmc_clear_pmcon_sts(void);
 

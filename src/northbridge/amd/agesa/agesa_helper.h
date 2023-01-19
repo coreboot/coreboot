@@ -3,7 +3,6 @@
 #ifndef _AGESA_HELPER_H_
 #define _AGESA_HELPER_H_
 
-#include <stddef.h>
 #include <arch/romstage.h>
 
 enum {

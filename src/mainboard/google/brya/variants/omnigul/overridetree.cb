@@ -1,3 +1,11 @@
+fw_config
+	field STORAGE 2 3
+		option STORAGE_UNKNOWN			0
+		option STORAGE_UFS			1
+		option STORAGE_NVME			2
+	end
+end
+
 chip soc/intel/alderlake
 
 	register "sagv" = "SaGv_Enabled"
@@ -109,14 +117,27 @@ chip soc/intel/alderlake
 			end
 		end #I2C5
 		device ref pcie_rp8 off end
-		device ref pcie_rp9 off end
+		device ref pcie_rp11 on
+			register "pch_pcie_rp[PCH_RP(11)]" = "{
+				.clk_src = 1,
+				.clk_req = 1,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			probe STORAGE STORAGE_UNKNOWN
+			probe STORAGE STORAGE_NVME
+		end
 		device ref ish on
 			chip drivers/intel/ish
 				register "add_acpi_dma_property" = "true"
 				device generic 0 on end
 			end
+			probe STORAGE STORAGE_UNKNOWN
+			probe STORAGE STORAGE_UFS
 		end
-		device ref ufs on end
+		device ref ufs on
+			probe STORAGE STORAGE_UNKNOWN
+			probe STORAGE STORAGE_UFS
+		end
 		device ref tbt_pcie_rp0 off end
 		device ref tbt_pcie_rp1 off end
 		device ref tbt_pcie_rp2 off end

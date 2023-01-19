@@ -18,6 +18,8 @@ enum core_type {
 	CPUID_UNKNOWN = 0xff,
 };
 
+unsigned long acpi_create_madt_lapics_with_nmis_hybrid(unsigned long current);
+
 /* Generates ACPI code to define _CPC control method */
 void acpigen_write_CPPC_hybrid_method(int core_id);
 

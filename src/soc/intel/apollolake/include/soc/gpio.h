@@ -8,8 +8,8 @@
 #else
 #include <soc/gpio_apl.h>
 #endif
-#include <intelblocks/gpio.h>/* intelblocks/gpio.h depends on definitions in
-				soc/gpio_glk.h and soc/gpio_apl.h */
+/* intelblocks/gpio.h depends on definitions in soc/gpio_glk.h and soc/gpio_apl.h */
+#include <intelblocks/gpio.h> /* IWYU pragma: export */
 
 /*
  * APL/GLK doesn't support dynamic GPIO PM hence GPIO community

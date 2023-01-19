@@ -4,7 +4,7 @@
 #define _SOC_JASPERLAKE_GPIO_H_
 
 #include <soc/gpio_defs.h>
-#include <intelblocks/gpio.h>
+#include <intelblocks/gpio.h> /* IWYU pragma: export */
 
 #define CROS_GPIO_NAME		"INT34C8"
 #define CROS_GPIO_COMM0_NAME    "INT34C8:00"

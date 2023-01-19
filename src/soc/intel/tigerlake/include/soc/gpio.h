@@ -9,7 +9,7 @@
 #include <soc/gpio_defs.h>
 #define CROS_GPIO_DEVICE_NAME	"INT34C5:00"
 #endif
-#include <intelblocks/gpio.h>
+#include <intelblocks/gpio.h> /* IWYU pragma: export */
 
 /* Enable GPIO community power management configuration */
 #define MISCCFG_GPIO_PM_CONFIG_BITS (MISCCFG_GPVNNREQEN | \

@@ -4,8 +4,8 @@
 #define _SOC_GPIO_H_
 
 #include <soc/gpio_defs.h>
-#include <intelblocks/gpio.h> /* intelblocks/gpio.h depends on definitions in
-				soc/gpio_defs.h */
+/* intelblocks/gpio.h depends on definitions in soc/gpio_defs.h */
+#include <intelblocks/gpio.h> /* IWYU pragma: export */
 
 #define CROS_GPIO_DEVICE_NAME	"INT344B:00"
 

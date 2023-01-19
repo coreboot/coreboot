@@ -4,7 +4,7 @@
 #define _SOC_GPIO_H_
 
 #include <soc/gpio_soc_defs.h>
-#include <intelblocks/gpio.h>
+#include <intelblocks/gpio.h> /* IWYU pragma: export */
 
 /*
  * XEON SP series doesn't support dynamic GPIO PM hence GPIO community

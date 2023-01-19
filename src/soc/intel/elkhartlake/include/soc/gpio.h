@@ -4,7 +4,7 @@
 #define _SOC_ELKHARTLAKE_GPIO_H_
 
 #include <soc/gpio_defs.h>
-#include <intelblocks/gpio.h>
+#include <intelblocks/gpio.h> /* IWYU pragma: export */
 
 #define CROS_GPIO_NAME		"INTC1020"
 #define CROS_GPIO_DEVICE_NAME	"INTC1020:00"

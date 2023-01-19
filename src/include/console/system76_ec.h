@@ -3,7 +3,6 @@
 #ifndef CONSOLE_SYSTEM76_EC_H
 #define CONSOLE_SYSTEM76_EC_H 1
 
-#include <stddef.h>
 #include <stdint.h>
 
 void system76_ec_init(void);

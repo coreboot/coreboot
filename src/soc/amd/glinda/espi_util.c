@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Update for Glinda */
-
 #include <amdblocks/spi.h>
 #include <soc/espi.h>
 #include <types.h>
@@ -10,7 +8,6 @@
 #define  LOCK_SPIX10_BIT2	BIT(3)
 #define  ESPI_MUX_SPI1		BIT(2)
 #define  ROM_ADDR_WR_PROT	BIT(1)
-#define  DIS_ESPI_MASCTL_REG_WR	BIT(0)
 
 void espi_switch_to_spi1_pads(void)
 {

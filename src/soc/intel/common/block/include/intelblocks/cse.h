@@ -500,6 +500,9 @@ void cse_fw_sync(void);
 /* Perform a board-specific reset sequence for CSE RO<->RW jump */
 void cse_board_reset(void);
 
+/* Perform a misc operation before CSE firmware update. */
+void cse_fw_update_misc_oper(void);
+
 /* Trigger vboot recovery mode on a CSE error */
 void cse_trigger_vboot_recovery(enum csme_failure_reason reason);
 

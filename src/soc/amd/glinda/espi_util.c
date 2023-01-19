@@ -4,7 +4,7 @@
 #include <soc/espi.h>
 #include <types.h>
 
-#define ESPI_CNTRL_REGISTER	0x10
+#define ESPI_CNTRL_REGISTER	0x10 /* SPI register, not eSPI register! */
 #define  LOCK_SPIX10_BIT2	BIT(3)
 #define  ESPI_MUX_SPI1		BIT(2)
 #define  ROM_ADDR_WR_PROT	BIT(1)

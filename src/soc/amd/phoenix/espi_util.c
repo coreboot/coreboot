@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Update for Phoenix */
-
 #include <amdblocks/spi.h>
 #include <soc/espi.h>
 #include <types.h>

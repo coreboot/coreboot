@@ -71,7 +71,7 @@ config AMDFW_CONFIG_FILE
 config PSP_LOAD_MP2_FW
 	prompt "Load MP2 Firmware"
 	depends on CHROMEOS
-	default n
+	default y
 
 config HAVE_SPL_FILE
 	bool

@@ -165,21 +165,21 @@
 				 WARM_RESET_STS | GLOBAL_RESET_STS | \
 				 SRS | MS4V)
 #define GEN_PMCON2		0x1024
-#	define LPC_LPB_CLK_CTRL		((1 << 11) | (1 << 12) | (1 << 13))
-#	define BIOS_PCI_EXP_EN		(1 << 10)
-#	define PWRBTN_LVL		(1 <<  9)
-#	define SMI_LOCK			(1 <<  4)
-#	define PER_SMI_SEL		(1 <<  0)
+#define  LPC_LPB_CLK_CTRL	((1 << 11) | (1 << 12) | (1 << 13))
+#define  BIOS_PCI_EXP_EN	(1 << 10)
+#define  PWRBTN_LVL		(1 <<  9)
+#define  SMI_LOCK		(1 <<  4)
+#define  PER_SMI_SEL		(1 <<  0)
 #define GEN_PMCON3		0x1028
-#       define SLP_S3_ASSERT_WIDTH_SHIFT	10
-#       define SLP_S3_ASSERT_MASK	(0x3 << SLP_S3_ASSERT_WIDTH_SHIFT)
-#       define SLP_S3_ASSERT_60_USEC	0x0
-#       define SLP_S3_ASSERT_1_MSEC	0x1
-#       define SLP_S3_ASSERT_50_MSEC	0x2
-#       define SLP_S3_ASSERT_2_SEC	0x3
+#define  SLP_S3_ASSERT_WIDTH_SHIFT	10
+#define  SLP_S3_ASSERT_MASK	(0x3 << SLP_S3_ASSERT_WIDTH_SHIFT)
+#define  SLP_S3_ASSERT_60_USEC	0x0
+#define  SLP_S3_ASSERT_1_MSEC	0x1
+#define  SLP_S3_ASSERT_50_MSEC	0x2
+#define  SLP_S3_ASSERT_2_SEC	0x3
 #define ETR			0x1048
-#       define CF9_LOCK         (1 << 31)
-#       define CF9_GLB_RST      (1 << 20)
+#define CF9_LOCK		(1 << 31)
+#define  CF9_GLB_RST		(1 << 20)
 #define GPIO_GPE_CFG		0x1050
 #define  GPE0_DWX_MASK		0xf
 #define GPE0_DW_SHIFT(x)	(4 + 4*(x))

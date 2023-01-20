@@ -135,15 +135,6 @@ config X86_TOP4G_BOOTMEDIA_MAP
 	depends on !X86_CUSTOM_BOOTMEDIA
 	default y
 
-# This is something you almost certainly don't want to mess with.
-# How many SIPIs do we send when starting up APs and cores?
-# The answer in 2000 or so was '2'. Nowadays, on many systems,
-# it is 1. Set a safe default here, and you can override it
-# on reasonable platforms.
-config NUM_IPI_STARTS
-	int
-	default 2
-
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
 	default 0xc00

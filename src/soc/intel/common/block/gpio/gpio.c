@@ -523,6 +523,18 @@ int gpio_get(gpio_t gpio_num)
 	return !!(reg & PAD_CFG0_RX_STATE);
 }
 
+int gpio_tx_get(gpio_t gpio_num)
+{
+	const struct pad_community *comm = gpio_get_community(gpio_num);
+	uint16_t config_offset;
+	uint32_t reg;
+
+	config_offset = pad_config_offset(comm, gpio_num);
+	reg = pcr_read32(comm->port, config_offset);
+
+	return !!(reg & PAD_CFG0_TX_STATE);
+}
+
 static void
 gpio_pad_config_lock_using_sbi(const struct gpio_lock_config *pad_info,
 	uint8_t pid, uint16_t offset, const uint32_t bit_mask)

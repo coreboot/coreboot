@@ -14,6 +14,7 @@ _Static_assert(sizeof(gpio_t) <= sizeof(u32), "gpio_t doesn't fit in lb_gpio");
 
 /* The following functions must be implemented by SoC/board code. */
 int gpio_get(gpio_t gpio);
+int gpio_tx_get(gpio_t gpio);
 void gpio_set(gpio_t gpio, int value);
 void gpio_input_pulldown(gpio_t gpio);
 void gpio_input_pullup(gpio_t gpio);

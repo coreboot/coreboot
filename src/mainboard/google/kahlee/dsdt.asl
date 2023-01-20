@@ -16,6 +16,8 @@ DefinitionBlock (
 	#include <acpi/dsdt_top.asl>
 	#include <globalnvs.asl>
 
+	Name(LIDS, 0)
+
 	/* Globals for the platform */
 	#include <variant/acpi/mainboard.asl>
 

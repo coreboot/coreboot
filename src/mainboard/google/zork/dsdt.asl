@@ -17,6 +17,8 @@ DefinitionBlock (
 	#include <acpi/dsdt_top.asl>
 	#include <globalnvs.asl>
 
+	Name(LIDS, 0)
+
 	/* Power state notification to ALIB */
 	#include <pnot.asl>
 

@@ -9,11 +9,10 @@
 Field (GNVS, ByteAcc, NoLock, Preserve)
 {
 	/* Miscellaneous */
-	LIDS,	8,	// 0x00 - LID State
-	CBMC,	32,	// 0x01 - 0x04 - coreboot Memory Console
-	PM1I,	64,	// 0x05 - 0x0c - System Wake Source - PM1 Index
-	GPEI,	64,	// 0x0d - 0x14 - GPE Wake Source
-	TMPS,	8,	// 0x15 - Temperature Sensor ID
-	TCRT,	8,	// 0x16 - Critical Threshold
-	TPSV,	8,	// 0x17 - Passive Threshold
+	CBMC,	32,	// 0x00 - 0x03 - coreboot Memory Console
+	PM1I,	64,	// 0x04 - 0x0b - System Wake Source - PM1 Index
+	GPEI,	64,	// 0x0c - 0x13 - GPE Wake Source
+	TMPS,	8,	// 0x14 - Temperature Sensor ID
+	TCRT,	8,	// 0x15 - Critical Threshold
+	TPSV,	8,	// 0x16 - Passive Threshold
 }

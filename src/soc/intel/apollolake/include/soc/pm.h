@@ -156,15 +156,18 @@
 #define  COLD_BOOT_STS		(1 << 27)
 #define  COLD_RESET_STS		(1 << 26)
 #define  WARM_RESET_STS		(1 << 25)
-#define  GLOBAL_RESET_STS	(1 << 24)
+#define  GBL_RST_STS		(1 << 24)
 #define  SRS			(1 << 20)
 #define  MS4V			(1 << 18)
+#define  SUS_PWR_FLR		(1 << 16)
+#define  PWR_FLR		(1 << 14)
 #define  RPS			(1 << 2)
 #define  SLEEP_AFTER_POWER_FAIL	(1 << 0)
 #define GEN_PMCON1_CLR1_BITS	(COLD_BOOT_STS | COLD_RESET_STS | \
-				 WARM_RESET_STS | GLOBAL_RESET_STS | \
+				 WARM_RESET_STS | GBL_RST_STS | \
 				 SRS | MS4V)
 #define GEN_PMCON2		0x1024
+#define GEN_PMCON_B		GEN_PMCON2
 #define  LPC_LPB_CLK_CTRL	((1 << 11) | (1 << 12) | (1 << 13))
 #define  BIOS_PCI_EXP_EN	(1 << 10)
 #define  PWRBTN_LVL		(1 <<  9)

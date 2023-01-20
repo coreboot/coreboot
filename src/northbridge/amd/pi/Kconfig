@@ -19,10 +19,6 @@ config BOTTOMIO_POSITION
 	  option is useful when PCI peripherals requesting large address
 	  ranges are present.
 
-config CONSOLE_VGA_MULTI
-	bool
-	default n
-
 config S3_VGA_ROM_RUN
 	bool
 	default n

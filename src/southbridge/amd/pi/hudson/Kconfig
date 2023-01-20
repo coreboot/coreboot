@@ -130,15 +130,6 @@ config AHCI_ROM_ID
 	string  "AHCI device PCI IDs"
 	default "1022,7801" if HUDSON_SATA_MODE = 2
 	default "1022,7804" if HUDSON_SATA_MODE = 5
-
-config HUDSON_AHCI_ROM
-	bool "Add a AHCI ROM"
-
-config AHCI_ROM_FILE
-	string "AHCI ROM path and filename"
-	depends on HUDSON_AHCI_ROM
-	default "src/southbridge/amd/pi/hudson/ahci.bin"
-
 endif
 
 if HUDSON_SATA_MODE = 1

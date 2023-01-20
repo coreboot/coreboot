@@ -128,7 +128,7 @@ Device (EC0)
 		Name (_PRW, Package () { EC_ENABLE_WAKE_PIN, 0x5 })
 #endif
 	}
-#endif
+#endif /* EC_ENABLE_LID_SWITCH */
 
 	Method (TINS, 1, Serialized)
 	{

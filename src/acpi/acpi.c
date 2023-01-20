@@ -531,6 +531,19 @@ int acpi_create_srat_lapic(acpi_srat_lapic_t *lapic, u8 node, u8 apic)
 	return lapic->length;
 }
 
+int acpi_create_srat_x2apic(acpi_srat_x2apic_t *x2apic, u32 node, u32 apic)
+{
+	memset((void *)x2apic, 0, sizeof(acpi_srat_x2apic_t));
+
+	x2apic->type = 2; /* Processor x2APIC structure */
+	x2apic->length = sizeof(acpi_srat_x2apic_t);
+	x2apic->flags = (1 << 0); /* Enabled (the use of this structure). */
+	x2apic->proximity_domain = node;
+	x2apic->x2apic_id = apic;
+
+	return x2apic->length;
+}
+
 int acpi_create_srat_mem(acpi_srat_mem_t *mem, u8 node, u32 basek, u32 sizek,
 				u32 flags)
 {

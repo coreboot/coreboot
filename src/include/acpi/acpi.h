@@ -353,6 +353,18 @@ typedef struct acpi_srat {
 #define ACPI_SRAT_STRUCTURE_MEM   1
 #define ACPI_SRAT_STRUCTURE_GIA   5
 
+/* SRAT: Processor x2APIC Structure */
+typedef struct acpi_srat_x2apic {
+	u8 type;			/* Type (0) */
+	u8 length;			/* Length in bytes (16) */
+	u16 reserved;			/* Reserved - Must be zero */
+	u32 proximity_domain;		/* Proximity domain */
+	u32 x2apic_id;			/* x2APIC ID */
+	u32 flags;			/* Enable bit 0 = 1, other bits reserved to 0 */
+	u32 clock_domain;		/* _CDM Clock Domain */
+	u32 reserved1;			/* Reserved */
+} __packed acpi_srat_x2apic_t;
+
 /* SRAT: Processor Local APIC/SAPIC Affinity Structure */
 typedef struct acpi_srat_lapic {
 	u8 type;			/* Type (0) */
@@ -1337,6 +1349,7 @@ int acpi_create_madt_lx2apic(acpi_madt_lx2apic_t *lapic, u32 cpu, u32 apic);
 int acpi_create_madt_lx2apic_nmi(acpi_madt_lx2apic_nmi_t *lapic_nmi, u32 cpu,
 				 u16 flags, u8 lint);
 int acpi_create_srat_lapic(acpi_srat_lapic_t *lapic, u8 node, u8 apic);
+int acpi_create_srat_x2apic(acpi_srat_x2apic_t *x2apic, u32 node, u32 apic);
 int acpi_create_srat_mem(acpi_srat_mem_t *mem, u8 node, u32 basek, u32 sizek,
 			 u32 flags);
 /*

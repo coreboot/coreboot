@@ -122,8 +122,8 @@ static void fill_fspm_igd_params(FSP_M_CONFIG *m_cfg,
 static void fill_fspm_mrc_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_meteorlake_config *config)
 {
-	m_cfg->SaGv = config->SaGv;
-	m_cfg->RMT = config->RMT;
+	m_cfg->SaGv = config->sagv;
+	m_cfg->RMT = config->rmt;
 }
 
 static void fill_fspm_cpu_params(FSP_M_CONFIG *m_cfg,

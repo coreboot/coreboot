@@ -122,19 +122,15 @@ struct soc_intel_meteorlake_config {
 
 	/* System Agent dynamic frequency support. Only effects ULX/ULT CPUs.
 	 * When enabled memory will be training at two different frequencies.
-	 * 0:Disabled, 1:FixedPoint0, 2:FixedPoint1, 3:FixedPoint2,
-	 * 4:FixedPoint3, 5:Enabled */
+	 * 0:Disabled, 1:Enabled
+	 */
 	enum {
-		SaGv_Disabled,
-		SaGv_FixedPoint0,
-		SaGv_FixedPoint1,
-		SaGv_FixedPoint2,
-		SaGv_FixedPoint3,
-		SaGv_Enabled,
-	} SaGv;
+		SAGV_DISABLED,
+		SAGV_ENABLED,
+	} sagv;
 
 	/* Rank Margin Tool. 1:Enable, 0:Disable */
-	uint8_t RMT;
+	uint8_t rmt;
 
 	/* USB related */
 	struct usb2_port_config usb2_ports[CONFIG_SOC_INTEL_USB2_DEV_MAX];

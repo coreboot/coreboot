@@ -485,10 +485,18 @@ void acpigen_write_or(uint8_t arg1, uint8_t arg2, uint8_t res);
 void acpigen_write_xor(uint8_t arg1, uint8_t arg2, uint8_t res);
 void acpigen_write_and(uint8_t arg1, uint8_t arg2, uint8_t res);
 void acpigen_write_not(uint8_t arg, uint8_t res);
+void acpigen_concatenate_string_string(const char *str1, const char *str2, uint8_t res);
+void acpigen_concatenate_string_int(const char *str, uint64_t val, uint8_t res);
+void acpigen_concatenate_string_op(const char *str, uint8_t src_res, uint8_t dest_res);
 void acpigen_write_debug_string(const char *str);
 void acpigen_write_debug_namestr(const char *str);
 void acpigen_write_debug_integer(uint64_t val);
 void acpigen_write_debug_op(uint8_t op);
+void acpigen_write_debug_concatenate_string_string(const char *str1, const char *str2,
+						   uint8_t tmp_res);
+void acpigen_write_debug_concatenate_string_int(const char *str1, uint64_t val,
+						uint8_t tmp_res);
+void acpigen_write_debug_concatenate_string_op(const char *str1, uint8_t res, uint8_t tmp_res);
 void acpigen_write_if(void);
 void acpigen_write_if_and(uint8_t arg1, uint8_t arg2);
 void acpigen_write_if_lequal_op_op(uint8_t op, uint8_t val);

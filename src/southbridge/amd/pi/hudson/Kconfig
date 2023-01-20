@@ -164,15 +164,6 @@ config HUDSON_LEGACY_FREE
 	  Select y if there is no keyboard controller in the system.
 	  This sets variables in AGESA and ACPI.
 
-config AZ_PIN
-	hex
-	default 0xaa
-	help
-	  bit 1,0 - pin 0
-	  bit 3,2 - pin 1
-	  bit 5,4 - pin 2
-	  bit 7,6 - pin 3
-
 config AMDFW_OUTSIDE_CBFS
 	def_bool n
 	help

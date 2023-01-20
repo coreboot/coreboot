@@ -13,10 +13,9 @@
 
 struct __packed global_nvs {
 	/* Miscellaneous */
-	uint8_t		lids; /* 0x00 - LID State */
-	uint32_t	cbmc; /* 0x01 - 0x04 - coreboot Memory Console */
-	uint64_t	pm1i; /* 0x05 - 0x0c - System Wake Source - PM1 Index */
-	uint64_t	gpei; /* 0x0d - 0x14 - GPE Wake Source */
+	uint32_t	cbmc; /* 0x00 - 0x03 - coreboot Memory Console */
+	uint64_t	pm1i; /* 0x04 - 0x0b - System Wake Source - PM1 Index */
+	uint64_t	gpei; /* 0x0c - 0x13 - GPE Wake Source */
 };
 
 #endif /* AMD_GLINDA_NVS_H */

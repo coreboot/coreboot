@@ -13,6 +13,9 @@ DefinitionBlock (
 	)
 {
 	#include <acpi/dsdt_top.asl>
+
+	Name(LIDS, 0)
+
 	#include <soc.asl>
 #if CONFIG(FEATURE_DYNAMIC_DPTC)
 	#include <variant/acpi/dtts.asl>

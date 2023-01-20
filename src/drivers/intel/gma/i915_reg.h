@@ -3753,6 +3753,8 @@
 #define PIPEB_PP_DIVISOR        0x61310
 
 #define PCH_PP_STATUS		0xc7200
+#define  PANEL_POWER_CYCLE_ACTIVE	(1 << 27)
+
 #define PCH_PP_CONTROL		0xc7204
 #define  PANEL_UNLOCK_REGS	(0xabcd << 16)
 #define  PANEL_UNLOCK_MASK	(0xffff << 16)

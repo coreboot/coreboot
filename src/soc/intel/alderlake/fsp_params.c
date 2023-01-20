@@ -3,9 +3,12 @@
 #include <assert.h>
 #include <console/console.h>
 #include <cpu/intel/microcode.h>
+#include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <device/pci_ops.h>
+#include <drivers/intel/gma/i915_reg.h>
 #include <fsp/api.h>
 #include <fsp/fsp_debug_event.h>
 #include <fsp/ppi/mp_service_ppi.h>
@@ -1205,6 +1208,46 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 		fill_fsps_params[i](s_cfg, config);
 }
 
+/*
+ * The Alder Lake PEIM graphics driver executed as part of the FSP does not wait
+ * for the panel power cycle to complete before it initializes communication
+ * with the display. It can result in AUX channel communication time out and
+ * PEIM graphics driver failing to bring up graphics.
+ *
+ * If we have performed some graphics operations in romstage, it is possible
+ * that a panel power cycle is still in progress. To prevent any issue with the
+ * PEIM graphics driver it is preferable to ensure that panel power cycle is
+ * complete.
+ *
+ * BUG:b:264526798
+ */
+static void wait_for_panel_power_cycle_done(const struct soc_intel_alderlake_config *config)
+{
+	const struct i915_gpu_panel_config *panel_cfg;
+	uint32_t bar0;
+	void *mmio;
+
+	if (!CONFIG(RUN_FSP_GOP))
+		return;
+
+	bar0 = pci_s_read_config32(SA_DEV_IGD, PCI_BASE_ADDRESS_0);
+	mmio = (void *)(bar0 & ~PCI_BASE_ADDRESS_MEM_ATTR_MASK);
+	if (!mmio)
+		return;
+
+	panel_cfg = &config->panel_cfg;
+	for (size_t i = 0;; i++) {
+		uint32_t status = read32(mmio + PCH_PP_STATUS);
+		if (!(status & PANEL_POWER_CYCLE_ACTIVE))
+			break;
+		if (i == panel_cfg->cycle_delay_ms) {
+			printk(BIOS_ERR, "Panel power cycle is still active.\n");
+			break;
+		}
+		mdelay(1);
+	}
+}
+
 /* UPD parameters to be initialized before SiliconInit */
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
@@ -1214,6 +1257,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	config = config_of_soc();
 	soc_silicon_init_params(s_cfg, config);
 	mainboard_silicon_init_params(s_cfg);
+
+	wait_for_panel_power_cycle_done(config);
 }
 
 /*

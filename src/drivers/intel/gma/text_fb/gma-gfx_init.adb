@@ -12,11 +12,11 @@ with GMA.Mainboard;
 
 package body GMA.GFX_Init
 is
+   configs : Pipe_Configs;
 
    procedure gfxinit (lightup_ok : out Interfaces.C.int)
    is
       ports : Port_List;
-      configs : Pipe_Configs;
 
       success : boolean;
 
@@ -56,16 +56,14 @@ is
       end if;
    end gfxinit;
 
-   procedure gfxstop (stop_ok : out Interfaces.C.int)
+   procedure gfxstop
    is
-      success : boolean;
    begin
-      HW.GFX.GMA.Initialize (Clean_State => True,
-			     Success => success);
-      if success then
-         stop_ok := 1;
-      else
-         stop_ok := 0;
+      if configs (Primary).Port /= Disabled then
+         for i in Pipe_Index loop
+            configs (i).Port := Disabled;
+         end loop;
+         HW.GFX.GMA.Update_Outputs (configs);
       end if;
    end gfxstop;
 

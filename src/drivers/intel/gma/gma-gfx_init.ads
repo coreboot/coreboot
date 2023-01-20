@@ -11,7 +11,7 @@ is
    procedure gfxinit (lightup_ok : out Interfaces.C.int);
    pragma Export (C, gfxinit, "gma_gfxinit");
 
-   procedure gfxstop (stop_ok : out Interfaces.C.int);
+   procedure gfxstop;
    pragma Export (C, gfxstop, "gma_gfxstop");
 
    ----------------------------------------------------------------------------

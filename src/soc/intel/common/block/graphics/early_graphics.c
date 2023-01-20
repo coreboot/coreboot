@@ -6,8 +6,6 @@
 #include <intelblocks/early_graphics.h>
 #include <soc/pci_devs.h>
 
-static bool initialized;
-
 static void device_init(void)
 {
 	/* Disable response in IO and MMIO space. */
@@ -37,19 +35,15 @@ bool early_graphics_init(void)
 	early_graphics_soc_panel_init();
 
 	gma_gfxinit(&ret);
-	initialized = !!ret;
-
-	return initialized;
+	return !!ret;
 }
 
 void early_graphics_stop(void)
 {
-	int ret;
-
-	if (!initialized)
+	if (!CONFIG(MAINBOARD_USE_EARLY_LIBGFXINIT))
 		return;
 
-	gma_gfxstop(&ret);
+	gma_gfxstop();
 
 	/*
 	 * Temporary workaround

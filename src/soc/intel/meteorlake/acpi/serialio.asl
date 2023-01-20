@@ -38,6 +38,12 @@ Device (I2C5)
 	Name (_DDN, "Serial IO I2C Controller 5")
 }
 
+Device (FSPI)
+{
+	Name (_ADR, 0x001f0005)
+	Name (_DDN, "Fast SPI")
+}
+
 Device (SPI0)
 {
 	Name (_ADR, 0x001e0002)

@@ -35,9 +35,13 @@
 #define   MASK_PMC_PWRM_BASE    0xfffff000 /* 4K alignment */
 #define GEN_PMCON_A               0xA0
 #define   MS4V                    (1 << 18)
+#define   GBL_RST_STS             (1 << 16)
 #define GEN_PMCON_B               0xA4
+#define   GEN_PMCON_B_SUS_PWR_FLR   0x4000
+#define   SUS_PWR_FLR               GEN_PMCON_B_SUS_PWR_FLR
 #define   GEN_PMCON_B_RTC_PWR_STS   0x04
 #define   GEN_PMCON_B_PWR_FLR       0x02
+#define   PWR_FLR                   GEN_PMCON_B_PWR_FLR
 #define   GEN_PMCON_B_AFTERG3_EN    0x00
 #define ETR3                      0xAC
 #define   ETR3_CF9LOCK              BIT31 ///< CF9h Lockdown

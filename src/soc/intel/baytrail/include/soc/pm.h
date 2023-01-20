@@ -9,113 +9,113 @@
 
 /* Memory mapped IO registers behind PMC_BASE_ADDRESS */
 #define PRSTS		0x00
-#	define PMC_WDT_STS	(1 << 15)
-#	define SEC_GBLRST_STS	(1 <<  7)
-#	define SEC_WDT_STS	(1 <<  6)
-#	define WOL_OVR_WK_STS	(1 <<  5)
-#	define PMC_WAKE_STS	(1 <<  4)
+#define  PMC_WDT_STS	(1 << 15)
+#define  SEC_GBLRST_STS	(1 <<  7)
+#define  SEC_WDT_STS	(1 <<  6)
+#define  WOL_OVR_WK_STS	(1 <<  5)
+#define  PMC_WAKE_STS	(1 <<  4)
 #define PMC_CFG		0x08
-#	define SPS		(1 <<  5)
-#	define NO_REBOOT	(1 <<  4)
-#	define SX_ENT_TO_EN	(1 <<  3)
-#	define TIMING_T581_SHIFT (0)
-#	define TIMING_T581_MASK	(3 <<  TIMING_T581_SHIFT)
-#	define TIMING_T581_10uS  (0 << TIMING_T581_SHIFT)
-#	define TIMING_T581_100uS (1 << TIMING_T581_SHIFT)
-#	define TIMING_T581_1mS   (2 << TIMING_T581_SHIFT)
-#	define TIMING_T581_10mS  (3 << TIMING_T581_SHIFT)
+#define  SPS		(1 <<  5)
+#define  NO_REBOOT	(1 <<  4)
+#define  SX_ENT_TO_EN	(1 <<  3)
+#define  TIMING_T581_SHIFT (0)
+#define  TIMING_T581_MASK	(3 <<  TIMING_T581_SHIFT)
+#define  TIMING_T581_10uS  (0 << TIMING_T581_SHIFT)
+#define  TIMING_T581_100uS (1 << TIMING_T581_SHIFT)
+#define  TIMING_T581_1mS   (2 << TIMING_T581_SHIFT)
+#define  TIMING_T581_10mS  (3 << TIMING_T581_SHIFT)
 #define VLV_PM_STS	0x0c
-#	define PMC_MSG_FULL_STS		(1 << 24)
-#	define PMC_MSG_4_FULL_STS	(1 << 23)
-#	define PMC_MSG_3_FULL_STS	(1 << 22)
-#	define PMC_MSG_2_FULL_STS	(1 << 21)
-#	define PMC_MSG_1_FULL_STS	(1 << 20)
-#	define CODE_REQ			(1 <<  8)
-#	define HPR_ENT_TO		(1 <<  2)
-#	define SX_ENT_TO		(1 <<  1)
+#define  PMC_MSG_FULL_STS		(1 << 24)
+#define  PMC_MSG_4_FULL_STS	(1 << 23)
+#define  PMC_MSG_3_FULL_STS	(1 << 22)
+#define  PMC_MSG_2_FULL_STS	(1 << 21)
+#define  PMC_MSG_1_FULL_STS	(1 << 20)
+#define  CODE_REQ			(1 <<  8)
+#define  HPR_ENT_TO		(1 <<  2)
+#define  SX_ENT_TO		(1 <<  1)
 #define GEN_PMCON1	0x20
-#	define UART_EN		(1 << 24)
-#	define DISB		(1 << 23)
-#	define MEM_SR		(1 << 21)
-#	define SRS		(1 << 20)
-#	define CTS		(1 << 19)
-#	define MS4V		(1 << 18)
-#	define PWR_FLR		(1 << 16)
-#	define PME_B0_S5_DIS	(1 << 15)
-#	define SUS_PWR_FLR	(1 << 14)
-#	define WOL_EN_OVRD	(1 << 13)
-#	define DIS_SLP_X_STRCH_SUS_UP (1 << 12)
-#	define GEN_RST_STS	(1 <<  9)
-#	define RPS		(1 <<  2)
-#	define AFTERG3_EN	(1 <<  0)
+#define  UART_EN		(1 << 24)
+#define  DISB		(1 << 23)
+#define  MEM_SR		(1 << 21)
+#define  SRS		(1 << 20)
+#define  CTS		(1 << 19)
+#define  MS4V		(1 << 18)
+#define  PWR_FLR		(1 << 16)
+#define  PME_B0_S5_DIS	(1 << 15)
+#define  SUS_PWR_FLR	(1 << 14)
+#define  WOL_EN_OVRD	(1 << 13)
+#define  DIS_SLP_X_STRCH_SUS_UP (1 << 12)
+#define  GEN_RST_STS	(1 <<  9)
+#define  RPS		(1 <<  2)
+#define  AFTERG3_EN	(1 <<  0)
 #define GEN_PMCON2	0x24
-#	define SLPSX_STR_POL_LOCK	(1 << 18)
-#	define BIOS_PCI_EXP_EN		(1 << 10)
-#	define PWRBTN_LVL		(1 <<  9)
-#	define SMI_LOCK			(1 <<  4)
+#define  SLPSX_STR_POL_LOCK	(1 << 18)
+#define  BIOS_PCI_EXP_EN		(1 << 10)
+#define  PWRBTN_LVL		(1 <<  9)
+#define  SMI_LOCK			(1 <<  4)
 #define ETR			0x48
-#	define CF9LOCK		(1 << 31)
-#	define LTR_DEF		(1 << 22)
-#	define IGNORE_HPET	(1 << 21)
-#	define CF9GR		(1 << 20)
-#	define CWORWRE		(1 << 18)
+#define  CF9LOCK		(1 << 31)
+#define  LTR_DEF		(1 << 22)
+#define  IGNORE_HPET	(1 << 21)
+#define  CF9GR		(1 << 20)
+#define  CWORWRE		(1 << 18)
 #define FUNC_DIS	0x34
-#	define SIO_DMA2_DIS	(1 <<  0)
-#	define PWM1_DIS		(1 <<  1)
-#	define PWM2_DIS		(1 <<  2)
-#	define HSUART1_DIS	(1 <<  3)
-#	define HSUART2_DIS	(1 <<  4)
-#	define SPI_DIS		(1 <<  5)
-#	define MMC_DIS		(1 <<  8)
-#	define SDIO_DIS		(1 <<  9)
-#	define SD_DIS		(1 << 10)
-#	define MMC45_DIS	(1 << 11)
-#	define HDA_DIS		(1 << 12)
-#	define LPE_DIS		(1 << 13)
-#	define OTG_DIS		(1 << 14)
-#	define XHCI_DIS		(1 << 15)
-#	define SATA_DIS		(1 << 17)
-#	define EHCI_DIS		(1 << 18)
-#	define TXE_DIS		(1 << 19)
-#	define PCIE_PORT1_DIS	(1 << 20)
-#	define PCIE_PORT2_DIS	(1 << 21)
-#	define PCIE_PORT3_DIS	(1 << 22)
-#	define PCIE_PORT4_DIS	(1 << 23)
-#	define SIO_DMA1_DIS	(1 << 24)
-#	define I2C1_DIS		(1 << 25)
-#	define I2C2_DIS		(1 << 26)
-#	define I2C3_DIS		(1 << 27)
-#	define I2C4_DIS		(1 << 28)
-#	define I2C5_DIS		(1 << 29)
-#	define I2C6_DIS		(1 << 30)
-#	define I2C7_DIS		(1 << 31)
+#define  SIO_DMA2_DIS	(1 <<  0)
+#define  PWM1_DIS		(1 <<  1)
+#define  PWM2_DIS		(1 <<  2)
+#define  HSUART1_DIS	(1 <<  3)
+#define  HSUART2_DIS	(1 <<  4)
+#define  SPI_DIS		(1 <<  5)
+#define  MMC_DIS		(1 <<  8)
+#define  SDIO_DIS		(1 <<  9)
+#define  SD_DIS		(1 << 10)
+#define  MMC45_DIS	(1 << 11)
+#define  HDA_DIS		(1 << 12)
+#define  LPE_DIS		(1 << 13)
+#define  OTG_DIS		(1 << 14)
+#define  XHCI_DIS		(1 << 15)
+#define  SATA_DIS		(1 << 17)
+#define  EHCI_DIS		(1 << 18)
+#define  TXE_DIS		(1 << 19)
+#define  PCIE_PORT1_DIS	(1 << 20)
+#define  PCIE_PORT2_DIS	(1 << 21)
+#define  PCIE_PORT3_DIS	(1 << 22)
+#define  PCIE_PORT4_DIS	(1 << 23)
+#define  SIO_DMA1_DIS	(1 << 24)
+#define  I2C1_DIS		(1 << 25)
+#define  I2C2_DIS		(1 << 26)
+#define  I2C3_DIS		(1 << 27)
+#define  I2C4_DIS		(1 << 28)
+#define  I2C5_DIS		(1 << 29)
+#define  I2C6_DIS		(1 << 30)
+#define  I2C7_DIS		(1 << 31)
 #define FUNC_DIS2	0x38
-#	define USH_SS_PHY_DIS	(1 << 2)
-#	define OTG_SS_PHY_DIS	(1 << 1)
-#	define SMBUS_DIS	(1 << 0)
+#define  USH_SS_PHY_DIS	(1 << 2)
+#define  OTG_SS_PHY_DIS	(1 << 1)
+#define  SMBUS_DIS	(1 << 0)
 #define GPIO_ROUT	0x58
-#	define ROUTE_MASK	3
-#	define ROUTE_NONE	0
-#	define ROUTE_SMI	1
-#	define ROUTE_SCI	2
+#define  ROUTE_MASK	3
+#define  ROUTE_NONE	0
+#define  ROUTE_SMI	1
+#define  ROUTE_SCI	2
 #define PLT_CLK_CTL_0	0x60
 #define PLT_CLK_CTL_1	0x64
 #define PLT_CLK_CTL_2	0x68
 #define PLT_CLK_CTL_3	0x6c
 #define PLT_CLK_CTL_4	0x70
 #define PLT_CLK_CTL_5	0x74
-#	define CLK_FREQ_25MHZ	(0x0 << 2)
-#	define CLK_FREQ_19P2MHZ	(0x1 << 2)
-#	define CLK_CTL_D3_LPE	(0x0 << 0)
-#	define CLK_CTL_ON	(0x1 << 0)
-#	define CLK_CTL_OFF	(0x2 << 0)
+#define  CLK_FREQ_25MHZ	(0x0 << 2)
+#define  CLK_FREQ_19P2MHZ	(0x1 << 2)
+#define  CLK_CTL_D3_LPE	(0x0 << 0)
+#define  CLK_CTL_ON	(0x1 << 0)
+#define  CLK_CTL_OFF	(0x2 << 0)
 #define PME_STS		0xc0
 #define GPE_LEVEL_EDGE  0xc4
-#	define GPE_EDGE		0
-#	define GPE_LEVEL	1
+#define  GPE_EDGE		0
+#define  GPE_LEVEL	1
 #define GPE_POLARITY	0xc8
-#	define GPE_ACTIVE_HIGH	1
-#	define GPE_ACTIVE_LOW	0
+#define  GPE_ACTIVE_HIGH	1
+#define  GPE_ACTIVE_LOW	0
 #define LOCK		0xcc
 
 /* IO Mapped registers behind ACPI_BASE_ADDRESS */
@@ -226,19 +226,19 @@
 #if CONFIG(TCO_SPACE_NOT_YET_SPLIT)
 #define TCO_RLD			0x60
 #define TCO_STS			0x64
-#	define TCO1_32_STS_SECOND_TO_STS	(1 << 17)
-#	define TCO_TIMEOUT	(1 << 3)
+#define  TCO1_32_STS_SECOND_TO_STS	(1 << 17)
+#define  TCO_TIMEOUT	(1 << 3)
 #define TCO1_CNT		0x68
-#	define TCO_LOCK		(1 << 12)
-#	define TCO_TMR_HALT	(1 << 11)
+#define  TCO_LOCK		(1 << 12)
+#define  TCO_TMR_HALT	(1 << 11)
 #define TCO_TMR			0x70
 #endif
 
 /* I/O ports */
 #define RST_CNT			0xcf9
-#	define FULL_RST		(1 << 3)
-#	define RST_CPU		(1 << 2)
-#	define SYS_RST		(1 << 1)
+#define  FULL_RST		(1 << 3)
+#define  RST_CPU		(1 << 2)
+#define  SYS_RST		(1 << 1)
 
 #if !defined(__ASSEMBLER__) && !defined(__ACPI__)
 

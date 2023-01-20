@@ -4,6 +4,7 @@
 #include <arch/hpet.h>
 #include <assert.h>
 #include <cbmem.h>
+#include <cpu/x86/lapic.h>
 #include <device/mmio.h>
 #include <device/pci.h>
 #include <soc/acpi.h>
@@ -26,10 +27,20 @@ unsigned long acpi_create_srat_lapics(unsigned long current)
 	for (cpu = all_devices; cpu; cpu = cpu->next) {
 		if (!is_enabled_cpu(cpu))
 			continue;
-		printk(BIOS_DEBUG, "SRAT: lapic cpu_index=%02x, node_id=%02x, apic_id=%02x\n",
-			cpu_index, cpu->path.apic.node_id, cpu->path.apic.apic_id);
-		current += acpi_create_srat_lapic((acpi_srat_lapic_t *)current,
-			cpu->path.apic.node_id, cpu->path.apic.apic_id);
+
+		if (is_x2apic_mode()) {
+			printk(BIOS_DEBUG, "SRAT: x2apic cpu_index=%08x, node_id=%02x, apic_id=%08x\n",
+			       cpu_index, cpu->path.apic.node_id, cpu->path.apic.apic_id);
+
+			current += acpi_create_srat_x2apic((acpi_srat_x2apic_t *)current,
+				cpu->path.apic.node_id, cpu->path.apic.apic_id);
+		} else {
+			printk(BIOS_DEBUG, "SRAT: lapic cpu_index=%02x, node_id=%02x, apic_id=%02x\n",
+			       cpu_index, cpu->path.apic.node_id, cpu->path.apic.apic_id);
+
+			current += acpi_create_srat_lapic((acpi_srat_lapic_t *)current,
+				cpu->path.apic.node_id, cpu->path.apic.apic_id);
+		}
 		cpu_index++;
 	}
 	return current;

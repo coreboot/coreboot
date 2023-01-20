@@ -49,6 +49,7 @@ RUN \
 		libftdi1-dev \
 		libglib2.0-dev \
 		libgmp-dev \
+		libgpiod-dev \
 		libjaylink-dev \
 		liblzma-dev \
 		libncurses5-dev \

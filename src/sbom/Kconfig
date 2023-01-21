@@ -21,6 +21,16 @@ config SBOM_COMPILER
 	  Note: if the system toolchain is used to build coreboot
 	  one should check the final SBOM file for the expected results
 
+config SBOM_COMPILER_PATH
+	string "Path to SBOM file for the compiler"
+	depends on SBOM_COMPILER
+	default "build/sbom/compiler-gcc.json" if COMPILER_GCC
+	default "build/sbom/compiler-clang.json" if COMPILER_LLVM_CLANG
+	default "build/sbom/compiler-generic.json" if ANY_TOOLCHAIN
+	help
+	  The path of the SBOM file describing the Software included in the build
+	  File can be a .json, .xml, .cbor, .uswid, or .pc
+
 config SBOM_PAYLOAD
 	bool "Include payload metadata in SBOM"
 	default n
@@ -42,11 +52,11 @@ config SBOM_PAYLOAD_GENERATE
 	  straight up wrong.
 
 config SBOM_PAYLOAD_PATH
-	string "SBOM file path"
+	string "Path to SBOM file for the payload"
 	depends on SBOM_PAYLOAD && !SBOM_PAYLOAD_GENERATE
 	help
-	  The path of the .ini file describing the payload
-	  Software included in the build
+	  The path of the SBOM file describing the Software included in the build
+	  File can be a .json, .xml, .cbor, .uswid, or .pc
 
 config SBOM_ME
 	bool "Include ME metadata in SBOM"
@@ -74,8 +84,8 @@ config SBOM_ME_PATH
 	string "Path to sbom.json for the ME firmware"
 	depends on SBOM_ME && !SBOM_ME_GENERATE
 	help
-	  The path of the SBOM file (sbom.json file)
-	  The path of the .json file describing the Software included in the build
+	  The path of the SBOM file describing the Software included in the build
+	  File can be a .json, .xml, .cbor, .uswid, or .pc
 
 config SBOM_EC
 	bool "Include EC metadata in SBOM"

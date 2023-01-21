@@ -5,19 +5,30 @@ src ?= src
 build-dir = $(obj)/sbom
 src-dir = $(src)/sbom
 
+# Strip quotes from binary paths and SBOM file paths. Each binary path should have a
+# corresponding SBOM file path, but not every SBOM file path needs a binary path. That
+# is because binary files are only needed if they are used to extract information from
+# them which in turn can be included in the SBOM files (like version or config stuff).
+# But for some Software there are only SBOM files, which basically tell the most generic
+# information about that piece of Software. Ideally one would not need the binary files
+# at all, because extacting information out of mostly unknown binary blobs is a pain.
 CONFIG_ME_BIN_PATH         := $(call strip_quotes, $(CONFIG_ME_BIN_PATH))
+CONFIG_SBOM_ME_PATH        := $(call strip_quotes, $(CONFIG_SBOM_ME_PATH))
 CONFIG_FSP_S_FILE          := $(call strip_quotes, $(CONFIG_FSP_S_FILE))
 CONFIG_FSP_M_FILE          := $(call strip_quotes, $(CONFIG_FSP_M_FILE))
 CONFIG_FSP_T_FILE          := $(call strip_quotes, $(CONFIG_FSP_T_FILE))
-CONFIG_PAYLOAD_FILE        := $(call strip_quotes, $(CONFIG_PAYLOAD_FILE))
-CONFIG_EC_PATH             := $(call strip_quotes, $(CONFIG_EC_PATH))
-CONFIG_BIOS_ACM_PATH       := $(call strip_quotes, $(CONFIG_BIOS_ACM_PATH))
-CONFIG_SINIT_ACM_PATH      := $(call strip_quotes, $(CONFIG_SINIT_ACM_PATH))
 CONFIG_SBOM_FSP_PATH       := $(call strip_quotes, $(CONFIG_SBOM_FSP_PATH))
-CONFIG_SBOM_EC_PATH        := $(call strip_quotes, $(CONFIG_SBOM_EC_PATH))
-CONFIG_SBOM_ME_PATH        := $(call strip_quotes, $(CONFIG_SBOM_ME_PATH))
+CONFIG_PAYLOAD_FILE        := $(call strip_quotes, $(CONFIG_PAYLOAD_FILE))
 CONFIG_SBOM_PAYLOAD_PATH   := $(call strip_quotes, $(CONFIG_SBOM_PAYLOAD_PATH))
+CONFIG_EC_PATH             := $(call strip_quotes, $(CONFIG_EC_PATH))
+CONFIG_SBOM_EC_PATH        := $(call strip_quotes, $(CONFIG_SBOM_EC_PATH))
+CONFIG_SBOM_BIOS_ACM_PATH  := $(call strip_quotes, $(CONFIG_SBOM_BIOS_ACM_PATH))
+CONFIG_SBOM_SINIT_ACM_PATH := $(call strip_quotes, $(CONFIG_SBOM_SINIT_ACM_PATH))
+CONFIG_SBOM_COMPILER_PATH  := $(call strip_quotes, $(CONFIG_SBOM_COMPILER_PATH))
 
+# Select the correct payload directory for the used payload. Ideally we could just make this
+# a one-liner, but since the payload is generated externally (with an extra make command), we
+# have to hard code the paths here.
 ifeq ($(CONFIG_SBOM_PAYLOAD_GENERATE), y)
 payload-git-dir-$(CONFIG_PAYLOAD_BOOTBOOT)    = payloads/external/BOOTBOOT/bootboot
 payload-git-dir-$(CONFIG_PAYLOAD_DEPTHCHARGE) = payloads/external/depthcharge/depthcharge
@@ -37,6 +48,11 @@ payload-swid-template = $(patsubst $(build-dir)/%.json,$(src-dir)/%.json,$(paylo
 endif
 endif
 
+# Add all SBOM files into the swid-files-y target. This target contains all
+# .json, .ini, .uswid, .xml, .pc SBOM files that are later merged into one uSWID SBOM file.
+# Some of these have an option that this Makefile generates/extracts some information from
+# binary files in order to give more complete/detailed information inside the SBOM file.
+# These files are either in src/sbom/ or build/sbom (if they are generated).
 swid-files-$(CONFIG_SBOM_ME) += $(if $(CONFIG_SBOM_ME_GENERATE), $(build-dir)/intel-me.json, $(CONFIG_SBOM_ME_PATH))
 swid-files-$(CONFIG_SBOM_PAYLOAD) += $(if $(CONFIG_SBOM_PAYLOAD_GENERATE), $(payload-swid), $(CONFIG_SBOM_PAYLOAD_PATH))
 # TODO think about just using one CoSWID tag for all intel-microcode instead of one for each. maybe put each microcode into files entity of CoSWID tag?
@@ -52,16 +68,12 @@ swid-files-$(CONFIG_SBOM_VBOOT) += $(vboot-pkgconfig-files)
 $(vboot-pkgconfig-files): $(VBOOT_LIB_bootblock) $(VBOOT_LIB_romstage) $(VBOOT_LIB_ramstage) $(VBOOT_LIB_postcar) # src/security/vboot/Makefile.inc
 
 ifeq ($(CONFIG_SBOM_COMPILER),y)
-ifeq ($(CONFIG_ANY_TOOLCHAIN),y)
-swid-files-compiler = $(build-dir)/compiler-generic.json
-else ifeq ($(CONFIG_COMPILER_GCC),y)
-swid-files-compiler = $(build-dir)/compiler-gcc.json
-else ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-swid-files-compiler = $(build-dir)/compiler-clang.json
-endif
 compiler-toolchain = $(CC_bootblock) $(CC_romstage) $(CC_ramstage) $(CC_postcar) $(CC_verstage) $(LD_bootblock) $(LD_romstage) $(LD_ramstage) $(LD_postcar) $(LD_verstage) $(AS_bootblock) $(AS_romstage) $(AS_ramstage) $(AS_postcar) $(AS_verstage)
+swid-files-compiler = $(CONFIG_SBOM_COMPILER_PATH)
 endif
 
+# include all licenses used in coreboot. Ideally we would only include the licenses,
+# which are used in this build
 coreboot-licenses = $(foreach license, $(patsubst %.txt, %, $(filter-out retained-copyrights.txt, $(patsubst LICENSES/%, %, $(wildcard LICENSES/*)))), https://spdx.org/licenses/$(license).html)
 
 # only include CBFS SBOM section if there is any data for it

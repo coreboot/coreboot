@@ -126,10 +126,6 @@ comment "IDE to AHCI7804"
 
 if HUDSON_SATA_MODE = 1
 
-config RAID_MISC_ROM_FILE
-	string "RAID Misc ROM path and filename"
-	default "src/southbridge/amd/pi/hudson/misc.bin"
-
 config RAID_MISC_ROM_POSITION
 	hex "RAID Misc ROM Position"
 	default 0xFFF00000

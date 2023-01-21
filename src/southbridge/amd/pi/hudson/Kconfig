@@ -126,12 +126,6 @@ comment "IDE to AHCI7804"
 
 if HUDSON_SATA_MODE = 1
 
-config RAID_ROM_ID
-	string "RAID device PCI IDs"
-	default "1022,7802"
-	help
-	  1022,7802 for SATA NON-RAID5 module, 1022,7803 for SATA RAID5 mode
-
 config RAID_ROM_FILE
 	string "RAID ROM path and filename"
 	default "src/southbridge/amd/pi/hudson/raid.bin"

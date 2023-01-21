@@ -124,18 +124,6 @@ comment "AHCI7804"
 comment "IDE to AHCI7804"
 	depends on HUDSON_SATA_MODE = 6
 
-if HUDSON_SATA_MODE = 1
-
-config RAID_MISC_ROM_POSITION
-	hex "RAID Misc ROM Position"
-	default 0xFFF00000
-	help
-	  The RAID ROM requires that the MISC ROM is located between the range
-	  0xFFF0_0000 to 0xFFF0_FFFF. Also, it must 1K bytes aligned.
-	  The CONFIG_ROM_SIZE must be larger than 0x100000.
-
-endif
-
 config HUDSON_LEGACY_FREE
 	bool "System is legacy free"
 	help

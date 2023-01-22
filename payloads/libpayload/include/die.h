@@ -35,7 +35,7 @@ void die_work(const char *file, const char *func, const int line,
 	__attribute__((noreturn));
 
 #define die(fmt, args...) \
-	do { die_work(__FILE__, __FUNCTION__, __LINE__, fmt, ##args); } \
+	do { die_work(__FILE__, __func__, __LINE__, fmt, ##args); } \
 	while (0)
 
 #define die_if(condition, fmt, args...) \

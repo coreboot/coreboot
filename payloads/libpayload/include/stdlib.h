@@ -148,7 +148,7 @@ static inline void *xmalloc_work(size_t size, const char *file,
 	}
 	return ret;
 }
-#define xmalloc(size) xmalloc_work((size), __FILE__, __FUNCTION__, __LINE__)
+#define xmalloc(size) xmalloc_work((size), __FILE__, __func__, __LINE__)
 
 static inline void *xzalloc_work(size_t size, const char *file,
 				 const char *func, int line)
@@ -157,7 +157,7 @@ static inline void *xzalloc_work(size_t size, const char *file,
 	memset(ret, 0, size);
 	return ret;
 }
-#define xzalloc(size) xzalloc_work((size), __FILE__, __FUNCTION__, __LINE__)
+#define xzalloc(size) xzalloc_work((size), __FILE__, __func__, __LINE__)
 
 static inline void *xmemalign_work(size_t align, size_t size, const char *file,
 				  const char *func, int line)

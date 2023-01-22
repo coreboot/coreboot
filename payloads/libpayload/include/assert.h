@@ -50,7 +50,7 @@ void mock_assert(const int result, const char *const expression, const char *con
 	if ((statement) == 0) {					\
 		fprintf(stderr, "assertion failed in file %s, "	\
 			"function %s(), line %d\n",		\
-			 __FILE__, __FUNCTION__, __LINE__);	\
+			 __FILE__, __func__, __LINE__);	\
 		abort();					\
 	}
 #endif

@@ -7,7 +7,7 @@
 
 void lumpy_ec_init(void)
 {
-	printk(BIOS_DEBUG, "lumpy_ec_init\n");
+	printk(BIOS_DEBUG, "%s\n", __func__);
 
 	if (acpi_is_wakeup_s3())
 		return;

@@ -38,16 +38,16 @@ void *memalign(size_t boundary, size_t size)
 	free_last_alloc_ptr = p;
 
 	if (free_mem_ptr >= free_mem_end_ptr) {
-		printk(BIOS_ERR, "memalign(boundary=%zu, size=%zu): failed: ",
-				boundary, size);
+		printk(BIOS_ERR, "%s(boundary=%zu, size=%zu): failed: ",
+				__func__, boundary, size);
 		printk(BIOS_ERR, "Tried to round up free_mem_ptr %p to %p\n",
 				p, free_mem_ptr);
 		printk(BIOS_ERR, "but free_mem_end_ptr is %p\n",
 				free_mem_end_ptr);
-		die("Error! memalign: Out of memory (free_mem_ptr >= free_mem_end_ptr)");
+		die("Error! %s: Out of memory (free_mem_ptr >= free_mem_end_ptr)", __func__);
 	}
 
-	MALLOCDBG("memalign %p\n", p);
+	MALLOCDBG("%s %p\n", __func__, p);
 
 	return p;
 }

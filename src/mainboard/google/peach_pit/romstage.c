@@ -173,13 +173,13 @@ static void simple_spi_test(void)
 	}
 
 	if (rdev_readat(boot_dev, data, 0, amt) < amt) {
-		printk(BIOS_SPEW, "simple_spi_test fails\n");
+		printk(BIOS_SPEW, "%s fails\n", __func__);
 		return;
 	}
 
 	for (i = 0; i < amt; i += 4){
 		if (rdev_readat(boot_dev, &in, i, 4) < 4) {
-			printk(BIOS_SPEW, "simple_spi_test fails at %d\n", i);
+			printk(BIOS_SPEW, "%s fails at %d\n", __func__, i);
 			return;
 		}
 		if (data[i/4] != in){
@@ -188,7 +188,7 @@ static void simple_spi_test(void)
 			       i, &data[i/4], (unsigned long)data[i/4], (unsigned long)in);
 			/* reread it to see which is wrong. */
 			if (rdev_readat(boot_dev, &in, i, 4) < 4) {
-				printk(BIOS_SPEW, "simple_spi_test fails at %d\n", i);
+				printk(BIOS_SPEW, "%s fails at %d\n", __func__, i);
 				return;
 			}
 			printk(BIOS_SPEW, "RTRY at %d(%p):\nRAM %08lx\nSPI %08lx\n",

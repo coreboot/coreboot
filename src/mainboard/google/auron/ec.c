@@ -16,7 +16,7 @@ void mainboard_ec_init(void)
 
 	int s3_wakeup = acpi_is_wakeup_s3();
 
-	printk(BIOS_DEBUG, "mainboard_ec_init\n");
+	printk(BIOS_DEBUG, "%s\n", __func__);
 	post_code(0xf0);
 
 	google_chromeec_events_init(&info, s3_wakeup);

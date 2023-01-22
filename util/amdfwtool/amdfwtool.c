@@ -111,6 +111,7 @@ enum signature_id {
 #define HASH_FILE_SUFFIX ".hash"
 #define EFS_FILE_SUFFIX ".efs"
 #define TMP_FILE_SUFFIX ".tmp"
+#define BODY_FILE_SUFFIX ".body"
 
 /*
  * Beginning with Family 15h Models 70h-7F, a.k.a Stoney Ridge, the PSP
@@ -2043,53 +2044,53 @@ static int set_efs_table(uint8_t soc_id, amd_cb_config *cb_config,
 	return 0;
 }
 
-static ssize_t write_efs(char *output, embedded_firmware *amd_romsig, context *ctx)
+static ssize_t write_body(char *output, void *body_offset, ssize_t body_size, context *ctx)
 {
-	char efs_name[PATH_MAX], efs_tmp_name[PATH_MAX];
+	char body_name[PATH_MAX], body_tmp_name[PATH_MAX];
 	int ret;
 	int fd;
 	ssize_t bytes = -1;
 
 	/* Create a tmp file and rename it at the end so that make does not get confused
 	   if amdfwtool is killed for some unexpected reasons. */
-	ret = snprintf(efs_tmp_name, sizeof(efs_tmp_name), "%s%s%s",
-			output, EFS_FILE_SUFFIX, TMP_FILE_SUFFIX);
+	ret = snprintf(body_tmp_name, sizeof(body_tmp_name), "%s%s%s",
+			output, BODY_FILE_SUFFIX, TMP_FILE_SUFFIX);
 	if (ret < 0) {
-		fprintf(stderr, "Error %s forming EFS tmp file name: %d\n",
+		fprintf(stderr, "Error %s forming BODY tmp file name: %d\n",
 							strerror(errno), ret);
 		amdfwtool_cleanup(ctx);
 		exit(1);
-	} else if ((unsigned int)ret >= sizeof(efs_tmp_name)) {
-		fprintf(stderr, "EFS File name %d  > %zu\n", ret, sizeof(efs_tmp_name));
+	} else if ((unsigned int)ret >= sizeof(body_tmp_name)) {
+		fprintf(stderr, "BODY File name %d  > %zu\n", ret, sizeof(body_tmp_name));
 		amdfwtool_cleanup(ctx);
 		exit(1);
 	}
 
-	fd = open(efs_tmp_name, O_RDWR | O_CREAT | O_TRUNC, 0666);
+	fd = open(body_tmp_name, O_RDWR | O_CREAT | O_TRUNC, 0666);
 	if (fd < 0) {
-		fprintf(stderr, "Error: Opening %s file: %s\n", efs_tmp_name, strerror(errno));
+		fprintf(stderr, "Error: Opening %s file: %s\n", body_tmp_name, strerror(errno));
 		amdfwtool_cleanup(ctx);
 		exit(1);
 	}
 
-	bytes = write_from_buf_to_file(fd, amd_romsig, sizeof(*amd_romsig));
-	if (bytes != sizeof(*amd_romsig)) {
-		fprintf(stderr, "Error: Writing to file %s failed\n", efs_tmp_name);
+	bytes = write_from_buf_to_file(fd, body_offset, body_size);
+	if (bytes != body_size) {
+		fprintf(stderr, "Error: Writing to file %s failed\n", body_tmp_name);
 		amdfwtool_cleanup(ctx);
 		exit(1);
 	}
 	close(fd);
 
 	/* Rename the tmp file */
-	ret = snprintf(efs_name, sizeof(efs_name), "%s%s", output, EFS_FILE_SUFFIX);
+	ret = snprintf(body_name, sizeof(body_name), "%s%s", output, BODY_FILE_SUFFIX);
 	if (ret < 0) {
-		fprintf(stderr, "Error %s forming EFS file name: %d\n", strerror(errno), ret);
+		fprintf(stderr, "Error %s forming BODY file name: %d\n", strerror(errno), ret);
 		amdfwtool_cleanup(ctx);
 		exit(1);
 	}
 
-	if (rename(efs_tmp_name, efs_name)) {
-		fprintf(stderr, "Error: renaming file %s to %s\n", efs_tmp_name, efs_name);
+	if (rename(body_tmp_name, body_name)) {
+		fprintf(stderr, "Error: renaming file %s to %s\n", body_tmp_name, body_name);
 		amdfwtool_cleanup(ctx);
 		exit(1);
 	}
@@ -2666,11 +2667,13 @@ int main(int argc, char **argv)
 
 	targetfd = open(output, O_RDWR | O_CREAT | O_TRUNC, 0666);
 	if (targetfd >= 0) {
-		ssize_t bytes;
-		uint32_t offset = body_location ? body_location : AMD_ROMSIG_OFFSET;
+		uint32_t offset = efs_location;
+		uint32_t bytes = efs_location == body_location ?
+				ctx.current - offset : sizeof(*amd_romsig);
+		uint32_t ret_bytes;
 
-		bytes = write(targetfd, BUFF_OFFSET(ctx, offset), ctx.current - offset);
-		if (bytes != ctx.current - offset) {
+		ret_bytes = write(targetfd, BUFF_OFFSET(ctx, offset), bytes);
+		if (bytes != ret_bytes) {
 			fprintf(stderr, "Error: Writing to file %s failed\n", output);
 			retval = 1;
 		}
@@ -2683,9 +2686,10 @@ int main(int argc, char **argv)
 	if (efs_location != body_location) {
 		ssize_t bytes;
 
-		bytes = write_efs(output, amd_romsig, &ctx);
-		if (bytes != sizeof(*amd_romsig)) {
-			fprintf(stderr, "Error: Writing EFS\n");
+		bytes = write_body(output, BUFF_OFFSET(ctx, body_location),
+			ctx.current - body_location, &ctx);
+		if (bytes != ctx.current - body_location) {
+			fprintf(stderr, "Error: Writing body\n");
 			retval = 1;
 		}
 	}

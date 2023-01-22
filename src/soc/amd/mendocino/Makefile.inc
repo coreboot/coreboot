@@ -171,8 +171,8 @@ SIGNED_AMDFW_A_POSITION=$(call int-subtract, \
 SIGNED_AMDFW_B_POSITION=$(call int-subtract, \
 	$(shell awk '$$2 == "FMAP_SECTION_SIGNED_AMDFW_B_START" {print $$3}' $(obj)/fmap_config.h) \
 	$(shell awk '$$2 == "FMAP_SECTION_FLASH_START" {print $$3}' $(obj)/fmap_config.h))
-SIGNED_AMDFW_A_FILE=$(obj)/amdfw_a.rom.signed
-SIGNED_AMDFW_B_FILE=$(obj)/amdfw_b.rom.signed
+SIGNED_AMDFW_A_FILE=$(obj)/amdfw_a.rom.body.signed
+SIGNED_AMDFW_B_FILE=$(obj)/amdfw_b.rom.body.signed
 endif # CONFIG_SEPARATE_SIGNED_PSPFW
 
 # Helper function to return a value with given bit set
@@ -306,41 +306,41 @@ $(obj)/amdfw_b.rom: $(obj)/amdfw.rom
 		--anywhere \
 		--output $@
 
-$(obj)/amdfw_a.rom.efs: $(obj)/amdfw_a.rom
-$(obj)/amdfw_b.rom.efs: $(obj)/amdfw_b.rom
+$(obj)/amdfw_a.rom.body: $(obj)/amdfw_a.rom
+$(obj)/amdfw_b.rom.body: $(obj)/amdfw_b.rom
 
 ifeq ($(CONFIG_VBOOT_SLOTS_RW_A)$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),yy)
 cbfs-files-y += apu/amdfw_a
-apu/amdfw_a-file := $(obj)/amdfw_a.rom.efs
+apu/amdfw_a-file := $(obj)/amdfw_a.rom
 apu/amdfw_a-position := $(AMD_FW_AB_POSITION)
 apu/amdfw_a-type := raw
 
 cbfs-files-y += apu/amdfw_a_body
-apu/amdfw_a_body-file := $(obj)/amdfw_a.rom
+apu/amdfw_a_body-file := $(obj)/amdfw_a.rom.body
 apu/amdfw_a_body-position := $(call int-add, $(AMD_FW_AB_POSITION) $(MENDOCINO_FW_BODY_OFFSET))
 apu/amdfw_a_body-type := raw
 endif
 
 ifeq ($(CONFIG_VBOOT_SLOTS_RW_AB)$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),yy)
 cbfs-files-y += apu/amdfw_b
-apu/amdfw_b-file := $(obj)/amdfw_b.rom.efs
+apu/amdfw_b-file := $(obj)/amdfw_b.rom
 apu/amdfw_b-position := $(AMD_FW_AB_POSITION)
 apu/amdfw_b-type := raw
 
 cbfs-files-y += apu/amdfw_b_body
-apu/amdfw_b_body-file := $(obj)/amdfw_b.rom
+apu/amdfw_b_body-file := $(obj)/amdfw_b.rom.body
 apu/amdfw_b_body-position := $(call int-add, $(AMD_FW_AB_POSITION) $(MENDOCINO_FW_BODY_OFFSET))
 apu/amdfw_b_body-type := raw
 endif
 
 ifeq ($(CONFIG_SEPARATE_SIGNED_PSPFW)$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),yy)
-build_complete:: $(obj)/amdfw_a.rom $(obj)/amdfw_b.rom
+build_complete:: $(obj)/amdfw_a.rom.body $(obj)/amdfw_b.rom.body
 	@printf "    Adding Signed ROM and HASH\n"
-	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r SIGNED_AMDFW_A -i 0 -f $(obj)/amdfw_a.rom.signed
-	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r SIGNED_AMDFW_B -i 0 -f $(obj)/amdfw_b.rom.signed
-	$(CBFSTOOL) $(obj)/coreboot.rom add -r FW_MAIN_A -f $(obj)/amdfw_a.rom.signed.hash \
+	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r SIGNED_AMDFW_A -i 0 -f $(obj)/amdfw_a.rom.body.signed
+	$(CBFSTOOL) $(obj)/coreboot.rom write -u -r SIGNED_AMDFW_B -i 0 -f $(obj)/amdfw_b.rom.body.signed
+	$(CBFSTOOL) $(obj)/coreboot.rom add -r FW_MAIN_A -f $(obj)/amdfw_a.rom.body.signed.hash \
 		-n apu/amdfw_a_hash -t raw
-	$(CBFSTOOL) $(obj)/coreboot.rom add -r FW_MAIN_B -f $(obj)/amdfw_b.rom.signed.hash \
+	$(CBFSTOOL) $(obj)/coreboot.rom add -r FW_MAIN_B -f $(obj)/amdfw_b.rom.body.signed.hash \
 		-n apu/amdfw_b_hash -t raw
 endif
 

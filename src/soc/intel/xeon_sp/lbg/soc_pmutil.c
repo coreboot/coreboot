@@ -17,12 +17,12 @@
 
 uint8_t *pmc_mmio_regs(void)
 {
-	return (void *)(uintptr_t) pci_read_config32(PCH_DEV_PMC, PWRMBASE);
+	return (void *)(uintptr_t)pci_read_config32(PCH_DEV_PMC, PWRMBASE);
 }
 
 uintptr_t soc_read_pmc_base(void)
 {
-	return (uintptr_t) (pmc_mmio_regs());
+	return (uintptr_t)(pmc_mmio_regs());
 }
 
 uint32_t *soc_pmc_etr_addr(void)
@@ -57,11 +57,10 @@ void soc_fill_power_state(struct chipset_power_state *ps)
 	ps->gblrst_cause[0] = read32(pmc + GBLRST_CAUSE0);
 	ps->gblrst_cause[1] = read32(pmc + GBLRST_CAUSE1);
 
-	printk(BIOS_DEBUG, "GEN_PMCON: %08x %08x\n",
-	       ps->gen_pmcon_a, ps->gen_pmcon_b);
+	printk(BIOS_DEBUG, "GEN_PMCON: %08x %08x\n", ps->gen_pmcon_a, ps->gen_pmcon_b);
 
 	printk(BIOS_DEBUG, "GBLRST_CAUSE: %08x %08x\n",
-	       ps->gblrst_cause[0], ps->gblrst_cause[1]);
+		ps->gblrst_cause[0], ps->gblrst_cause[1]);
 }
 
 /*
@@ -78,4 +77,22 @@ void pmc_soc_set_afterg3_en(const bool on)
 	else
 		reg8 |= SLEEP_AFTER_POWER_FAIL;
 	pci_write_config8(PCH_DEV_PMC, GEN_PMCON_B, reg8);
+}
+
+void pmc_lock_smi(void)
+{
+	printk(BIOS_DEBUG, "Locking SMM enable.\n");
+	pci_or_config32(PCH_DEV_PMC, GEN_PMCON_A, SMI_LOCK);
+}
+
+void pmc_lockdown_config(void)
+{
+	/* PMSYNC */
+	pmc_or_mmio32(PMSYNC_TPR_CFG, PMSYNC_LOCK);
+
+	/* Make sure payload/OS can't trigger global reset */
+	pmc_global_reset_disable_and_lock();
+
+	/* Lock PMC stretch policy */
+	pci_or_config32(PCH_DEV_PMC, GEN_PMCON_B, SLP_STR_POL_LOCK);
 }

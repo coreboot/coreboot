@@ -121,4 +121,5 @@ uint16_t get_pmbase(void);
 
 void pmc_lock_smi(void);
 
+void pmc_lockdown_config(void);
 #endif

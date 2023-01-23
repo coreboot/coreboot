@@ -28,8 +28,7 @@ int pmc_soc_get_resources(struct pmc_resource_config *cfg)
 static const struct reg_script pch_pmc_misc_init_script[] = {
 	/* Enable SCI and clear SLP requests. */
 	REG_IO_RMW32(ACPI_BASE_ADDRESS + PM1_CNT, ~SLP_TYP, SCI_EN),
-	REG_SCRIPT_END
-};
+	REG_SCRIPT_END};
 
 static const struct reg_script pmc_write1_to_clear_script[] = {
 	REG_PCI_OR32(GEN_PMCON_A, 0),
@@ -37,8 +36,7 @@ static const struct reg_script pmc_write1_to_clear_script[] = {
 	REG_PCI_OR32(GEN_PMCON_B, 0),
 	REG_RES_OR32(PWRMBASE, GBLRST_CAUSE0, 0),
 	REG_RES_OR32(PWRMBASE, GBLRST_CAUSE1, 0),
-	REG_SCRIPT_END
-};
+	REG_SCRIPT_END};
 
 void pmc_soc_init(struct device *dev)
 {
@@ -52,10 +50,4 @@ void pmc_soc_init(struct device *dev)
 
 	/* Clear registers that contain write-1-to-clear bits. */
 	reg_script_run_on_dev(dev, pmc_write1_to_clear_script);
-}
-
-void pmc_lock_smi(void)
-{
-	printk(BIOS_DEBUG, "Locking SMM enable.\n");
-	pci_or_config32(PCH_DEV_PMC, GEN_PMCON_A, SMI_LOCK);
 }

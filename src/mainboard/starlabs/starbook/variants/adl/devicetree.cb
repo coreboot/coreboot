@@ -54,7 +54,7 @@ chip soc/intel/alderlake
 		device ref crashlog	off end
 		device ref xhci		on
 			# Motherboard USB Type C
-			register "usb2_ports[0]"		= "USB2_PORT_TYPE_C(OC3)"
+			register "usb2_ports[0]"		= "USB2_PORT_MID(OC3)"
 			register "usb3_ports[2]"		= "USB3_PORT_DEFAULT(OC3)"
 
 			# Motherboard USB 3.0

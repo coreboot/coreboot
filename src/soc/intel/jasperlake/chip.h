@@ -5,6 +5,7 @@
 
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <gpio.h>
+#include <drivers/intel/gma/gma.h>
 #include <intelblocks/cfg.h>
 #include <intelblocks/gspi.h>
 #include <intelblocks/pcie_rp.h>
@@ -431,6 +432,9 @@ struct soc_intel_jasperlake_config {
 	 * false: Disabled (more wakes, higher power)
 	 */
 	bool cnvi_reduce_s0ix_pwr_usage;
+
+	/* i915 struct for GMA backlight control */
+	struct i915_gpu_controller_info gfx;
 };
 
 typedef struct soc_intel_jasperlake_config config_t;

@@ -45,4 +45,9 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	};
 
 	memcfg_init(memupd, mem_config, &dimm_module_spd_info, half_populated);
+
+	/* Enable Audio */
+	memupd->FspmConfig.PchHdaAudioLinkHdaEnable = 1;
+	memupd->FspmConfig.PchHdaSdiEnable[0] = 1;
+	memupd->FspmConfig.PchHdaSdiEnable[1] = 1;
 }

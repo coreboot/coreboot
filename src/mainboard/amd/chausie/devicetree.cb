@@ -200,6 +200,7 @@ chip soc/amd/mendocino
 				end
 			end
 			device ref acp on end # Audio Processor (ACP)
+			device ref mp2 on end # Sensor Fusion Hub (MP2)
 		end
 		device ref gpp_bridge_c on  # Internal GPP Bridge 2 to Bus C
 			device ref xhci_2 on

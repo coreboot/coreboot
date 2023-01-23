@@ -17,7 +17,7 @@ if BOARD_PRODRIVE_ATLAS_BASEBOARD
 
 config ATLAS_ENABLE_SAGV
 	bool "Enable SaGv"
-	default y
+	default n
 
 config ATLAS_ENABLE_IBECC
 	bool "Enable IBECC"

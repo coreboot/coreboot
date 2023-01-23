@@ -8,6 +8,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select RX6110SA_DISABLE_ACPI
 	select DRIVER_SIEMENS_NC_FPGA
 	select NC_FPGA_NOTIFY_CB_READY
+	select NC_FPGA_POST_CODE
 	select SOC_INTEL_DISABLE_POWER_LIMITS
 	select MAINBOARD_HAS_TPM2
 	select MEMORY_MAPPED_TPM
@@ -29,5 +30,20 @@ config VBOOT
 
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/mc_apl_vboot.fmd"
+
+config EARLY_PCI_BRIDGE_DEVICE
+	hex
+	depends on NC_FPGA_POST_CODE
+	default 0x13
+
+config EARLY_PCI_BRIDGE_FUNCTION
+	hex
+	depends on NC_FPGA_POST_CODE
+	default 0x3
+
+config EARLY_PCI_MMIO_BASE
+	hex
+	depends on NC_FPGA_POST_CODE
+	default 0xfe800000
 
 endif # BOARD_SIEMENS_MC_APL5

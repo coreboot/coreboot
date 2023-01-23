@@ -10,6 +10,5 @@ void mainboard_memory_init_params(FSPM_UPD * mupd);
 void mainboard_rtc_failed(void);
 void save_dimm_info(void);
 void mainboard_ewl_check(void);
-void fsp_check_for_error(void);
 
 #endif /* _SOC_ROMSTAGE_H_ */

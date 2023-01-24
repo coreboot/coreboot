@@ -383,6 +383,10 @@ config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
 	default 0x2000
 
+config CONSOLE_CBMEM_BUFFER_SIZE
+	hex
+	default 0x40000
+
 config FSP_TYPE_IOT
 	bool
 	default n

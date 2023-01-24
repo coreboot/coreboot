@@ -48,7 +48,7 @@ is
             configs (Primary).Framebuffer.Offset   :=
                VGA_PLANE_FRAMEBUFFER_OFFSET;
 
-            HW.GFX.GMA.Dump_Configs (configs);
+            pragma Debug (HW.GFX.GMA.Dump_Configs (configs));
             HW.GFX.GMA.Update_Outputs (configs);
 
             lightup_ok := 1;

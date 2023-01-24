@@ -70,7 +70,7 @@ is
                configs (i).Framebuffer := fb;
             end loop;
 
-            HW.GFX.GMA.Dump_Configs (configs);
+            pragma Debug (HW.GFX.GMA.Dump_Configs (configs));
 
             HW.GFX.GMA.Setup_Default_FB
               (FB       => fb,

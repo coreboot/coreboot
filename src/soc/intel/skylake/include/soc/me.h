@@ -108,72 +108,83 @@
 #define  ME_HFS2_PMEVENT_CM3_CM3PG 0xe
 #define  ME_HFS2_PMEVENT_CM0PG_CM0 0xf
 
+/* FPF State */
+#define  ME_HFS6_FPF_NOT_COMMITTED 0x0
+#define  ME_HFS6_FPF_ERROR 0x2
+
 /* ME Host Firmware Status register 1 */
 union me_hfsts1 {
-	u32 data;
+	uint32_t data;
 	struct {
-		u32 working_state: 4;
-		u32 mfg_mode: 1;
-		u32 fpt_bad: 1;
-		u32 operation_state: 3;
-		u32 fw_init_complete: 1;
-		u32 ft_bup_ld_flr: 1;
-		u32 update_in_progress: 1;
-		u32 error_code: 4;
-		u32 operation_mode: 4;
-		u32 reset_count: 4;
-		u32 boot_options_present: 1;
-		u32 reserved1: 1;
-		u32 bist_test_state: 1;
-		u32 bist_reset_request: 1;
-		u32 current_power_source: 2;
-		u32 d3_support_valid: 1;
-		u32 d0i3_support_valid: 1;
+		uint32_t working_state		: 4;
+		uint32_t mfg_mode		: 1;
+		uint32_t fpt_bad		: 1;
+		uint32_t operation_state	: 3;
+		uint32_t fw_init_complete	: 1;
+		uint32_t ft_bup_ld_flr		: 1;
+		uint32_t update_in_progress	: 1;
+		uint32_t error_code		: 4;
+		uint32_t operation_mode		: 4;
+		uint32_t reserved_0		: 4;
+		uint32_t boot_options_present	: 1;
+		uint32_t reserved_1		: 5;
+		uint32_t d3_support_valid	: 1;
+		uint32_t d0i3_support_valid	: 1;
 	} __packed fields;
 };
 
+/* ME Host Firmware Status register 2 */
 union me_hfsts2 {
-	u32 data;
+	uint32_t data;
 	struct {
-	u32 reserved1: 3;
-	u32 invoke_mebx: 1;
-	u32 cpu_replaced_sts: 1;
-	u32 reserved2: 1;
-	u32 mfs_failure: 1;
-	u32 warm_reset_request: 1;
-	u32 cpu_replaced_valid: 1;
-	u32 low_power_state: 1;
-	u32 power_gating_ind: 1;
-	u32 reserved3: 1;
-	u32 fw_upd_forced_sb: 1;
-	u32 reserved4: 3;
-	u32 current_state: 8;
-	u32 current_pmevent: 4;
-	u32 progress_code: 4;
+		uint32_t reserved_0		: 4;
+		uint32_t cpu_replaced_sts	: 1;
+		uint32_t reserved_1		: 3;
+		uint32_t cpu_replaced_valid	: 1;
+		uint32_t low_power_state	: 1;
+		uint32_t reserved_2		: 6;
+		uint32_t current_state		: 8;
+		uint32_t current_pmevent	: 4;
+		uint32_t progress_code		: 4;
 	} __packed fields;
 };
 
+/* ME Host Firmware Status register 3 */
 union me_hfsts3 {
-	u32 data;
+	uint32_t data;
 	struct {
-	u32 reserved1: 4;
-	u32 fw_sku: 3;
-	u32 encrypt_key_check: 1;
-	u32 pch_config_change: 1;
-	u32 reserved2: 21;
-	u32 encrypt_key_override: 1;
-	u32 power_down_mitigation: 1;
+		uint32_t reserved_0		: 4;
+		uint32_t fw_sku			: 3;
+		uint32_t encrypt_key_check	: 1;
+		uint32_t pch_config_change	: 1;
+		uint32_t reserved_1		: 21;
+		uint32_t encrypt_key_override	: 1;
+		uint32_t power_down_mitigation	: 1;
 	} __packed fields;
 };
 
-#define ME_HFS6_FPF_NOT_COMMITTED	0x0
-#define ME_HFS6_FPF_ERROR		0x2
-
-union me_hfsts6 {
-	u32 data;
+/* ME Host Firmware Status register 4 */
+union me_hfsts4 {
+	uint32_t data;
 	struct {
-		u32 reserved1: 30;
-		u32 fpf_nvars: 2;
+		uint32_t reserved_0;
+	} __packed fields;
+};
+
+/* ME Host Firmware Status register 5 */
+union me_hfsts5 {
+	uint32_t data;
+	struct {
+		uint32_t reserved_0;
+	} __packed fields;
+};
+
+/* ME Host Firmware Status register 6 */
+union me_hfsts6 {
+	uint32_t data;
+	struct {
+		uint32_t reserved1		: 30;
+		uint32_t fpf_nvars		: 2;
 	} __packed fields;
 };
 

@@ -382,7 +382,7 @@ config CBFS_SIZE
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
 	default 0x16000 if CONSOLE_SERIAL
-	default 0x2000
+	default 0x4000
 
 config CONSOLE_CBMEM_BUFFER_SIZE
 	hex

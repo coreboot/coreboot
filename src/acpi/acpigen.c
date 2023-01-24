@@ -388,19 +388,22 @@ void acpigen_set_package_element_namestr(const char *package, unsigned int eleme
 	acpigen_emit_byte(ZERO_OP); /* Ignore Index() Destination */
 }
 
+void acpigen_write_processor_namestring(unsigned int cpu_index)
+{
+	char buffer[16];
+	snprintf(buffer, sizeof(buffer), CONFIG_ACPI_CPU_STRING, cpu_index);
+	acpigen_emit_namestring(buffer);
+}
+
 void acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
 {
 /*
 	Processor (\_SB.CPcpuindex, cpuindex, pblock_addr, pblock_len)
 	{
 */
-	char pscope[16];
 	acpigen_emit_ext_op(PROCESSOR_OP);
 	acpigen_write_len_f();
-
-	snprintf(pscope, sizeof(pscope),
-		 CONFIG_ACPI_CPU_STRING, (unsigned int)cpuindex);
-	acpigen_emit_namestring(pscope);
+	acpigen_write_processor_namestring(cpuindex);
 	acpigen_emit_byte(cpuindex);
 	acpigen_emit_dword(pblock_addr);
 	acpigen_emit_byte(pblock_len);
@@ -410,14 +413,13 @@ void acpigen_write_processor_package(const char *const name, const unsigned int 
 				     const unsigned int core_count)
 {
 	unsigned int i;
-	char pscope[16];
 
 	acpigen_write_name(name);
 	acpigen_write_package(core_count);
-	for (i = first_core; i < first_core + core_count; ++i) {
-		snprintf(pscope, sizeof(pscope), CONFIG_ACPI_CPU_STRING, i);
-		acpigen_emit_namestring(pscope);
-	}
+
+	for (i = first_core; i < first_core + core_count; ++i)
+		acpigen_write_processor_namestring(i);
+
 	acpigen_pop_len();
 }
 
@@ -428,10 +430,8 @@ void acpigen_write_processor_cnot(const unsigned int number_of_cores)
 
 	acpigen_write_method("\\_SB.CNOT", 1);
 	for (core_id = 0; core_id < number_of_cores; core_id++) {
-		char buffer[DEVICE_PATH_MAX];
-		snprintf(buffer, sizeof(buffer), CONFIG_ACPI_CPU_STRING, core_id);
 		acpigen_emit_byte(NOTIFY_OP);
-		acpigen_emit_namestring(buffer);
+		acpigen_write_processor_namestring(core_id);
 		acpigen_emit_byte(ARG0_OP);
 	}
 	acpigen_pop_len();

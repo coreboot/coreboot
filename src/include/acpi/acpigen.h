@@ -449,6 +449,7 @@ void acpigen_write_pct_package(const acpi_addr_t *perf_ctrl, const acpi_addr_t *
 void acpigen_write_xpss_package(const struct acpi_xpss_sw_pstate *pstate_value);
 void acpigen_write_xpss_object(const struct acpi_xpss_sw_pstate *pstate_values,
 			       size_t nentries);
+void acpigen_write_processor_namestring(unsigned int cpu_index);
 void acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len);
 __always_inline void acpigen_write_processor_end(void)
 {

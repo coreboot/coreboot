@@ -127,6 +127,8 @@ postcar-y += common.c
 romstage-$(CONFIG_MRC_SAVE_HASH_IN_TPM) += mrc_cache_hash_tpm.c
 ramstage-$(CONFIG_MRC_SAVE_HASH_IN_TPM) += mrc_cache_hash_tpm.c
 
+ramstage-$(CONFIG_SOC_AMD_GFX_CACHE_VBIOS_IN_FMAP) += vbios_cache_hash_tpm.c
+
 ifeq ($(CONFIG_VBOOT_SEPARATE_VERSTAGE),y)
 
 $(eval $(call vboot-for-stage,verstage))

@@ -69,3 +69,13 @@ vb2_error_t antirollback_write_space_mrc_hash(uint32_t index, const uint8_t *dat
 {
 	return VB2_SUCCESS;
 }
+
+vb2_error_t antirollback_read_space_vbios_hash(uint8_t *data, uint32_t size)
+{
+	return VB2_SUCCESS;
+}
+
+vb2_error_t antirollback_write_space_vbios_hash(const uint8_t *data, uint32_t size)
+{
+	return VB2_SUCCESS;
+}

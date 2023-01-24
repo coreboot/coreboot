@@ -481,6 +481,52 @@ uint32_t antirollback_lock_space_mrc_hash(uint32_t index)
 	return tlcl_lock_nv_write(index);
 }
 
+static uint32_t read_space_vbios_hash(uint8_t *data)
+{
+	RETURN_ON_FAILURE(tlcl_read(VBIOS_CACHE_NV_INDEX, data, HASH_NV_SIZE));
+	return TPM_SUCCESS;
+}
+
+uint32_t antirollback_read_space_vbios_hash(uint8_t *data, uint32_t size)
+{
+	if (size != HASH_NV_SIZE) {
+		VBDEBUG("TPM: Incorrect buffer size for hash idx 0x%x. "
+			"(Expected=0x%x Actual=0x%x).\n", VBIOS_CACHE_NV_INDEX, HASH_NV_SIZE,
+			size);
+		return TPM_E_READ_FAILURE;
+	}
+	return read_space_vbios_hash(data);
+}
+
+uint32_t antirollback_write_space_vbios_hash(const uint8_t *data, uint32_t size)
+{
+	uint8_t spc_data[HASH_NV_SIZE];
+	uint32_t rv;
+
+	if (size != HASH_NV_SIZE) {
+		VBDEBUG("TPM: Incorrect buffer size for hash idx 0x%x. "
+			"(Expected=0x%x Actual=0x%x).\n", VBIOS_CACHE_NV_INDEX, HASH_NV_SIZE,
+			size);
+		return TPM_E_WRITE_FAILURE;
+	}
+
+	rv = read_space_vbios_hash(spc_data);
+	if (rv == TPM_E_BADINDEX) {
+		/*
+		 * If space is not defined already for hash, define
+		 * new space.
+		 */
+		VBDEBUG("TPM: Initializing hash space.\n");
+		return setup_space("VBIOS Cache Hash", VBIOS_CACHE_NV_INDEX, data, HASH_NV_SIZE,
+				   rw_space_attributes, NULL, 0);
+	}
+
+	if (rv != TPM_SUCCESS)
+		return rv;
+
+	return safe_write(VBIOS_CACHE_NV_INDEX, data, size);
+}
+
 #else
 
 /**

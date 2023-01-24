@@ -29,6 +29,7 @@ enum vb2_pcr_digest;
 #define MRC_RW_HASH_NV_INDEX            0x100d
 #define HASH_NV_SIZE                    VB2_SHA256_DIGEST_SIZE
 #define ENT_ROLLBACK_SPACE_INDEX        0x100e
+#define VBIOS_CACHE_NV_INDEX            0x100f
 /* Widevine Secure Counter space */
 #define WIDEVINE_COUNTER_NV_INDEX(n)	(0x3000 + (n))
 #define NUM_WIDEVINE_COUNTERS		4
@@ -98,5 +99,18 @@ uint32_t antirollback_write_space_mrc_hash(uint32_t index, const uint8_t *data,
  *              booting in recovery or normal mode.
 */
 uint32_t antirollback_lock_space_mrc_hash(uint32_t index);
+
+/*
+ * Read VBIOS hash data from TPM.
+ * @param data  pointer to buffer where hash from TPM read into
+ * @param size  size of buffer
+ */
+uint32_t antirollback_read_space_vbios_hash(uint8_t *data, uint32_t size);
+/*
+ * Write new hash data to VBIOS space in TPM.
+ * @param data  pointer to buffer of hash value to be written
+ * @param size  size of buffer
+*/
+uint32_t antirollback_write_space_vbios_hash(const uint8_t *data, uint32_t size);
 
 #endif  /* ANTIROLLBACK_H_ */

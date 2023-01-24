@@ -9,6 +9,7 @@
 #include <device/pci.h>
 #include <fmap.h>
 #include <fsp/graphics.h>
+#include <security/vboot/vbios_cache_hash_tpm.h>
 #include <security/vboot/vboot_common.h>
 #include <soc/intel/common/vbt.h>
 #include <timestamp.h>
@@ -234,6 +235,9 @@ static void write_vbios_cache_to_fmap(void *unused)
 						VBIOS_CACHE_FMAP_SIZE) != VBIOS_CACHE_FMAP_SIZE)
 		printk(BIOS_ERR, "Failed to save vbios data to flash; rdev_writeat() failed.\n");
 
+	/* save data hash to TPM NVRAM for validation on subsequent boots */
+	vbios_cache_update_hash(vbios_data, VBIOS_CACHE_FMAP_SIZE);
+
 	printk(BIOS_SPEW, "VBIOS cache successfully written to FMAP.\n");
 }
 
@@ -254,14 +258,11 @@ void vbios_load_from_cache(void)
 /*
  * Return true if VBIOS cache data is valid
  *
- * For now, just compare first 2 bytes of data
- * TODO: replace with TPM hash verification once implemented
+ * Compare hash of data with hash stored in TPM NVRAM
  */
 bool vbios_cache_is_valid(void)
 {
-	bool is_valid = vbios_data[0] == 0x55 && vbios_data[1] == 0xaa;
-	printk(BIOS_SPEW, "VBIOS cache is %s\n", is_valid ? "valid" : "invalid");
-	return is_valid;
+	return vbios_cache_verify_hash(vbios_data, VBIOS_CACHE_FMAP_SIZE) == CB_SUCCESS;
 }
 
 BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_EXIT, read_vbios_cache_from_fmap, NULL);

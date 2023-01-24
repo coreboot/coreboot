@@ -13,7 +13,7 @@ config SOC_AMD_COMMON_BLOCK_GRAPHICS_ATIF
 
 config SOC_AMD_GFX_CACHE_VBIOS_IN_FMAP
 	bool "Support for caching modified VBIOS tables in flash"
-	depends on SOC_AMD_COMMON_BLOCK_GRAPHICS && CHROMEOS && RUN_FSP_GOP
+	depends on SOC_AMD_COMMON_BLOCK_GRAPHICS && CHROMEOS && RUN_FSP_GOP && TPM2
 	default n
 	help
 	  Enable support for flash based VBIOS cache.

@@ -6,12 +6,27 @@
 #include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <intelblocks/cfg.h>
 #include <intelblocks/cpulib.h>
+#include <intelpch/lockdown.h>
 #include <soc/pci_devs.h>
 #include <soc/msr.h>
 #include <soc/soc_util.h>
 #include <soc/util.h>
 #include <timer.h>
+
+void lock_pam0123(void)
+{
+	if (get_lockdown_config() != CHIPSET_LOCKDOWN_COREBOOT)
+		return;
+
+	/* section 16.3.19 of Intel doc. #612246 */
+	uint32_t pam0123_lock = 0x33333331;
+	uint32_t bus1 = get_socket_ubox_busno(0);
+
+	pci_s_write_config32(PCI_DEV(bus1, SAD_ALL_DEV, SAD_ALL_FUNC),
+		SAD_ALL_PAM0123_CSR, pam0123_lock);
+}
 
 void unlock_pam_regions(void)
 {

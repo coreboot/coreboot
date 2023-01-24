@@ -16,17 +16,6 @@
 
 #include "chip.h"
 
-static void lock_pam0123(void)
-{
-	const struct device *dev;
-
-	if (get_lockdown_config() != CHIPSET_LOCKDOWN_COREBOOT)
-		return;
-
-	dev = pcidev_path_on_bus(get_stack_busno(1), PCI_DEVFN(SAD_ALL_DEV, SAD_ALL_FUNC));
-	pci_or_config32(dev, SAD_ALL_PAM0123_CSR, PAM_LOCK);
-}
-
 DECLARE_SPIN_LOCK(msr_ppin_lock);
 
 static void lock_msr_ppin_ctl(void *unused)

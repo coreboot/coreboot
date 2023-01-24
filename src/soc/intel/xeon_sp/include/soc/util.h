@@ -6,7 +6,9 @@
 #include <cpu/x86/msr.h>
 #include <hob_iiouds.h>
 
+void lock_pam0123(void);
 void unlock_pam_regions(void);
+
 msr_t read_msr_ppin(void);
 int get_platform_thread_count(void);
 const IIO_UDS *get_iio_uds(void);

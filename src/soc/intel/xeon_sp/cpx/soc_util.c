@@ -29,6 +29,17 @@ bool is_iio_stack_res(const STACK_RES *res)
 	return res->Personality == TYPE_UBOX_IIO;
 }
 
+uint8_t get_stack_busno(const uint8_t stack)
+{
+	if (stack >= MAX_IIO_STACK) {
+		printk(BIOS_ERR, "%s: Stack %u does not exist!\n", __func__, stack);
+		return 0;
+	}
+	const pci_devfn_t dev = PCI_DEV(UBOX_DECS_BUS, UBOX_DECS_DEV, UBOX_DECS_FUNC);
+	const uint16_t offset = stack / 4 ? UBOX_DECS_CPUBUSNO1_CSR : UBOX_DECS_CPUBUSNO_CSR;
+	return pci_io_read_config32(dev, offset) >> (8 * (stack % 4)) & 0xff;
+}
+
 uint32_t get_socket_stack_busno(uint32_t socket, uint32_t stack)
 {
 	const IIO_UDS *hob = get_iio_uds();
@@ -36,6 +47,14 @@ uint32_t get_socket_stack_busno(uint32_t socket, uint32_t stack)
 	assert(socket < hob->SystemStatus.numCpus && stack < MAX_LOGIC_IIO_STACK);
 
 	return hob->PlatformData.IIO_resource[socket].StackRes[stack].BusBase;
+}
+
+uint32_t get_socket_ubox_busno(uint32_t socket)
+{
+	if (socket == 0)
+		return get_stack_busno(PCU_IIO_STACK);
+
+	return get_socket_stack_busno(socket, PCU_IIO_STACK);
 }
 
 /*

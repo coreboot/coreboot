@@ -13,22 +13,11 @@
 #include <soc/util.h>
 #include <timer.h>
 
-uint8_t get_stack_busno(const uint8_t stack)
-{
-	if (stack >= MAX_IIO_STACK) {
-		printk(BIOS_ERR, "%s: Stack %u does not exist!\n", __func__, stack);
-		return 0;
-	}
-	const pci_devfn_t dev = PCI_DEV(UBOX_DECS_BUS, UBOX_DECS_DEV, UBOX_DECS_FUNC);
-	const uint16_t offset = stack / 4 ? UBOX_DECS_CPUBUSNO1_CSR : UBOX_DECS_CPUBUSNO_CSR;
-	return pci_io_read_config32(dev, offset) >> (8 * (stack % 4)) & 0xff;
-}
-
 void unlock_pam_regions(void)
 {
 	uint32_t pam0123_unlock_dram = 0x33333330;
 	uint32_t pam456_unlock_dram = 0x00333333;
-	uint32_t bus1 = get_stack_busno(1);
+	uint32_t bus1 = get_socket_ubox_busno(0);
 
 	pci_io_write_config32(PCI_DEV(bus1, SAD_ALL_DEV, SAD_ALL_FUNC),
 		SAD_ALL_PAM0123_CSR, pam0123_unlock_dram);
@@ -270,7 +259,7 @@ static bool write_bios_mailbox_cmd(pci_devfn_t dev, uint32_t command, uint32_t d
 static bool set_bios_reset_cpl_for_package(uint32_t socket, uint32_t rst_cpl_mask,
 	uint32_t pcode_init_mask, uint32_t val)
 {
-	const uint32_t bus = get_socket_stack_busno(socket, PCU_IIO_STACK);
+	const uint32_t bus = get_socket_ubox_busno(socket);
 	const pci_devfn_t dev = PCI_DEV(bus, PCU_DEV, PCU_CR1_FUN);
 
 	uint32_t reg = pci_s_read_config32(dev, PCU_CR1_BIOS_RESET_CPL_REG);
@@ -289,7 +278,7 @@ static void set_bios_init_completion_for_package(uint32_t socket)
 {
 	uint32_t data;
 	bool timedout;
-	const uint32_t bus = get_socket_stack_busno(socket, PCU_IIO_STACK);
+	const uint32_t bus = get_socket_ubox_busno(socket);
 	const pci_devfn_t dev = PCI_DEV(bus, PCU_DEV, PCU_CR1_FUN);
 
 	/* read PCU config */

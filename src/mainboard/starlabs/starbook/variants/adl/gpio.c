@@ -75,7 +75,7 @@ const struct pad_config gpio_table[] = {
 	/* A18:		DDI B DP HPD					*/
 	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),
 	/* A19:		TCP0 HPD					*/
-	PAD_NC(GPP_A19, NONE),
+	PAD_CFG_NF(GPP_A19, NONE, PLTRST, NF1),
 	/* A20:		Test Point 44					*/
 	PAD_NC(GPP_A20, NONE),
 	/* A21:		Fingerprint Reader Interrupt			*/

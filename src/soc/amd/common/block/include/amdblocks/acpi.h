@@ -15,7 +15,6 @@
 	  /* sleep types defined in include/acpi/acpi.h */
 #define   ACPI_PM1_CNT_SCIEN		BIT(0)
 #define MMIO_ACPI_PM_TMR_BLK		0x08
-#define MMIO_ACPI_CPU_CONTROL		0x0c
 #define MMIO_ACPI_GPE0_BLK		0x14
 #define  MMIO_ACPI_GPE0_STS		0x14
 #define  MMIO_ACPI_GPE0_EN		0x18

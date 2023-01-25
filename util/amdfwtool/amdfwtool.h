@@ -9,6 +9,20 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+enum platform {
+	PLATFORM_UNKNOWN,
+	PLATFORM_CARRIZO,
+	PLATFORM_STONEYRIDGE,
+	PLATFORM_RAVEN,
+	PLATFORM_PICASSO,
+	PLATFORM_RENOIR,
+	PLATFORM_CEZANNE,
+	PLATFORM_MENDOCINO,
+	PLATFORM_LUCIENNE,
+	PLATFORM_PHOENIX,
+	PLATFORM_GLINDA
+};
+
 typedef enum _amd_fw_type {
 	AMD_FW_PSP_PUBKEY = 0x00,
 	AMD_FW_PSP_BOOTLOADER = 0x01,
@@ -390,6 +404,7 @@ typedef struct _amd_cb_config {
 	bool recovery_ab_single_copy;
 	bool need_ish;
 	bool use_combo;
+	enum platform soc_id;
 } amd_cb_config;
 
 void register_fw_fuse(char *str);

@@ -493,45 +493,63 @@ void xeonsp_pci_domain_set_resources(struct device *dev)
 /* Attach IIO stack bus numbers with dummy device to PCI DOMAIN 0000 device */
 void attach_iio_stacks(struct device *dev)
 {
-	struct bus *iiostack_bus;
 	struct device dummy;
 	struct iiostack_resource stack_info = {0};
 
 	DEV_FUNC_ENTER(dev);
 
 	get_iiostack_info(&stack_info);
+
 	for (int s = 0; s < stack_info.no_of_stacks; ++s) {
+		STACK_RES *sr = &stack_info.res[s];
 		/* only non zero bus no. needs to be enumerated */
-		if (stack_info.res[s].BusBase == 0)
+		if (sr->BusBase == 0) {
+			/* Update BUS 0 BusLimit */
+			dev->link_list->max_subordinate = sr->BusLimit;
 			continue;
+		}
 
-		iiostack_bus = malloc(sizeof(struct bus));
-		if (!iiostack_bus)
-			die("%s: out of memory.\n", __func__);
-		memset(iiostack_bus, 0, sizeof(*iiostack_bus));
-		memcpy(iiostack_bus, dev->bus, sizeof(*iiostack_bus));
-		iiostack_bus->secondary = stack_info.res[s].BusBase;
-		iiostack_bus->subordinate = stack_info.res[s].BusBase;
-		iiostack_bus->dev = NULL;
-		iiostack_bus->children = NULL;
-		iiostack_bus->next = NULL;
-		iiostack_bus->link_num = 1;
+		for (int b = sr->BusBase; b <= sr->BusLimit; ++b) {
+			struct bus tmp_bus;
+			memset(&tmp_bus, 0, sizeof(tmp_bus));
+			memcpy(&tmp_bus, dev->bus, sizeof(tmp_bus));
+			tmp_bus.secondary = b;
+			tmp_bus.subordinate = b;
+			tmp_bus.max_subordinate = sr->BusLimit;
+			tmp_bus.dev = NULL;
+			tmp_bus.children = NULL;
+			tmp_bus.next = NULL;
+			tmp_bus.link_num = 1;
 
-		dummy.bus = iiostack_bus;
-		dummy.path.type = DEVICE_PATH_PCI;
-		dummy.path.pci.devfn = 0;
-		uint32_t id = pci_read_config32(&dummy, PCI_VENDOR_ID);
-		if (id == 0xffffffff)
-			printk(BIOS_WARNING, "IIO Stack device %s not visible\n",
+			dummy.bus = &tmp_bus;
+			dummy.path.type = DEVICE_PATH_PCI;
+			dummy.path.pci.devfn = 0;
+			uint32_t id = pci_read_config32(&dummy, PCI_VENDOR_ID);
+			if (id == 0xffffffff) {
+				printk(BIOS_DEBUG, "IIO Stack device %s not visible\n",
+					dev_path(&dummy));
+				continue;
+			}
+
+			printk(BIOS_DEBUG, "%s Attaching IIO Bus %s\n", __func__,
 				dev_path(&dummy));
+			printk(BIOS_DEBUG, "    %s attach secondary: 0x%x, subordinate: 0x%x, dev: %s\n",
+				__func__, tmp_bus.secondary,
+				tmp_bus.subordinate, dev_path(&dummy));
 
-		if (!dev->link_list) {
-			dev->link_list = iiostack_bus;
-		} else {
-			struct bus *nlink = dev->link_list;
-			while (nlink->next)
-				nlink = nlink->next;
-			nlink->next = iiostack_bus;
+			struct bus *iiostack_bus = malloc(sizeof(struct bus));
+			if (iiostack_bus == NULL)
+				die("%s: out of memory.\n", __func__);
+			memcpy(iiostack_bus, &tmp_bus, sizeof(*iiostack_bus));
+
+			if (dev->link_list == NULL) {
+				dev->link_list = iiostack_bus;
+			} else {
+				struct bus *nlink = dev->link_list;
+				while (nlink->next != NULL)
+					nlink = nlink->next;
+				nlink->next = iiostack_bus;
+			}
 		}
 	}
 

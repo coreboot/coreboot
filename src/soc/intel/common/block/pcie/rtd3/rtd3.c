@@ -260,25 +260,40 @@ pcie_rtd3_acpi_method_status(const struct soc_intel_common_block_pcie_rtd3_confi
 	const struct acpi_gpio *gpio;
 
 	acpigen_write_method("_STA", 0);
+	/*
+	 * Depending on the board configuration we use either the "enable" or
+	 * the "reset" pin to detect the status of the device. The logic for
+	 * each pin is detailed below.
+	 *
+	 * 1. For the "enable" pin:
+	 * | polarity    | tx value | get_tx_gpio() | State |
+	 * |-------------+----------+---------------+-------|
+	 * | active high |     0    |     0         |   0   |
+	 * | active high |     1    |     1(active) |   1   |
+	 * | active low  |     0    |     1(active) |   1   |
+	 * | active low  |     1    |     0         |   0   |
+	 *
+	 * 2. For the "reset" pin:
+	 * | polarity    | tx value | get_tx_gpio() | State |
+	 * |-------------+----------+---------------+-------|
+	 * | active high |     0    |     0         |   1   |
+	 * | active high |     1    |     1(active) |   0   |
+	 * | active low  |     0    |     1(active) |   0   |
+	 * | active low  |     1    |     0         |   1   |
+	 */
 
 	/* Use enable GPIO for status if provided, otherwise use reset GPIO. */
-	if (config->enable_gpio.pin_count)
+	if (config->enable_gpio.pin_count) {
 		gpio = &config->enable_gpio;
-	else
+		/* Read current GPIO state into Local0. */
+		acpigen_get_tx_gpio(gpio);
+	} else {
 		gpio = &config->reset_gpio;
-
-	/* Read current GPIO value into Local0. */
-	acpigen_get_tx_gpio(gpio);
-
-	/* Ensure check works for both active low and active high GPIOs. */
-	acpigen_write_store_int_to_op(gpio->active_low, LOCAL1_OP);
-
-	acpigen_write_if_lequal_op_op(LOCAL0_OP, LOCAL1_OP);
-	acpigen_write_return_op(ZERO_OP);
-	acpigen_write_else();
-	acpigen_write_return_op(ONE_OP);
-	acpigen_pop_len(); /* Else */
-
+		/* Read current GPIO state into Local0. */
+		acpigen_get_tx_gpio(gpio);
+		acpigen_write_not(LOCAL0_OP, LOCAL0_OP);
+	}
+	acpigen_write_return_op(LOCAL0_OP);
 	acpigen_pop_len(); /* Method */
 }
 

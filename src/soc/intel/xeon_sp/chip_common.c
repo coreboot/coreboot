@@ -403,9 +403,16 @@ static void assign_stack_resources(struct iiostack_resource *stack_list,
 
 static uint8_t is_pci64bit_alloc(void)
 {
+/*
+ * For SPR-SP FSP which supports SOC_INTEL_PCIE_64BITS_ALLOC,
+ * Pci64BitResourceAllocation field does not exist in IIO_UDS HOB.
+ */
+#if CONFIG(SOC_INTEL_PCIE_64BIT_ALLOC)
+	return 1;
+#else
 	const IIO_UDS *hob = get_iio_uds();
-
 	return hob->PlatformData.Pci64BitResourceAllocation;
+#endif
 }
 
 static void xeonsp_pci_domain_read_resources(struct device *dev)

@@ -128,23 +128,48 @@ chip soc/intel/alderlake
 				## Active Policy
 				register "policies.active" = "{
 					[0] = {
-						.target = DPTF_CPU,
+						.target = DPTF_TEMP_SENSOR_0,
 						.thresholds = {
-								TEMP_PCT(85, 90),
-								TEMP_PCT(80, 80),
-								TEMP_PCT(75, 70),
-								TEMP_PCT(70, 50),
-								TEMP_PCT(65, 30),
+								TEMP_PCT(75, 97),
+								TEMP_PCT(70, 93),
+								TEMP_PCT(60, 86),
+								TEMP_PCT(52, 80),
+								TEMP_PCT(47, 64),
+								TEMP_PCT(43, 52),
+								TEMP_PCT(40, 40),
 						}
 					},
 					[1] = {
 						.target = DPTF_TEMP_SENSOR_1,
 						.thresholds = {
-								TEMP_PCT(50, 90),
-								TEMP_PCT(48, 70),
-								TEMP_PCT(46, 60),
-								TEMP_PCT(43, 40),
-								TEMP_PCT(40, 30),
+								TEMP_PCT(75, 97),
+								TEMP_PCT(70, 93),
+								TEMP_PCT(60, 86),
+								TEMP_PCT(52, 80),
+								TEMP_PCT(47, 64),
+								TEMP_PCT(43, 52),
+								TEMP_PCT(40, 40),
+						}
+					},
+					[2] = {
+						.target = DPTF_TEMP_SENSOR_2,
+						.thresholds = {
+								TEMP_PCT(82, 97),
+								TEMP_PCT(78, 93),
+								TEMP_PCT(72, 86),
+								TEMP_PCT(60, 80),
+						}
+					},
+					[3] = {
+						.target = DPTF_TEMP_SENSOR_3,
+						.thresholds = {
+								TEMP_PCT(75, 97),
+								TEMP_PCT(70, 93),
+								TEMP_PCT(60, 86),
+								TEMP_PCT(52, 80),
+								TEMP_PCT(47, 64),
+								TEMP_PCT(43, 52),
+								TEMP_PCT(40, 40),
 						}
 					}
 				}"
@@ -152,10 +177,10 @@ chip soc/intel/alderlake
 				## Passive Policy
 				register "policies.passive" = "{
 					[0] = DPTF_PASSIVE(CPU,         CPU,           95, 5000),
-					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 75, 5000),
-					[2] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_1, 75, 5000),
+					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 80, 5000),
+					[2] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_1, 80, 5000),
 					[3] = DPTF_PASSIVE(CHARGER,	TEMP_SENSOR_2, 75, 5000),
-					[4] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_3, 75, 5000),
+					[4] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_3, 80, 5000),
 				}"
 
 				## Critical Policy

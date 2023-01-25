@@ -228,10 +228,6 @@ static void usage(void)
 	printf("--sharedmem                    Location of PSP/FW shared memory\n");
 	printf("--sharedmem-size               Maximum size of the PSP/FW shared memory\n");
 	printf("                               area\n");
-	printf("--soc-name <socname>           Specify SOC name. Supported names are\n");
-	printf("                               Carrizo, Stoneyridge, Raven, Picasso, Renoir,\n");
-	printf("                               Cezanne, Mendocino, Phoenix, Glinda, or\n");
-	printf("                               Lucienne\n");
 	printf("\nEmbedded Firmware Structure options used by the PSP:\n");
 	printf("--spi-speed <HEX_VAL>          SPI fast speed to place in EFS Table\n");
 	printf("                               0x0 66.66Mhz\n");
@@ -1764,7 +1760,6 @@ enum {
 	AMDFW_OPT_ANYWHERE,
 	AMDFW_OPT_SHAREDMEM,
 	AMDFW_OPT_SHAREDMEM_SIZE,
-	AMDFW_OPT_SOC_NAME,
 	AMDFW_OPT_SIGNED_OUTPUT,
 	AMDFW_OPT_SIGNED_ADDR,
 	AMDFW_OPT_BODY_LOCATION,
@@ -1827,7 +1822,6 @@ static struct option long_options[] = {
 	{"anywhere",         no_argument,       0, AMDFW_OPT_ANYWHERE },
 	{"sharedmem",        required_argument, 0, AMDFW_OPT_SHAREDMEM },
 	{"sharedmem-size",   required_argument, 0, AMDFW_OPT_SHAREDMEM_SIZE },
-	{"soc-name",         required_argument, 0, AMDFW_OPT_SOC_NAME },
 
 	{"signed-output",           required_argument, 0, AMDFW_OPT_SIGNED_OUTPUT },
 	{"signed-addr",           required_argument, 0, AMDFW_OPT_SIGNED_ADDR },
@@ -2224,8 +2218,6 @@ int main(int argc, char **argv)
 		case AMDFW_OPT_VERSTAGE_SIG:
 			register_fw_filename(AMD_FW_VERSTAGE_SIG, sub, optarg);
 			sub = instance = 0;
-			break;
-		case AMDFW_OPT_SOC_NAME:
 			break;
 		case AMDFW_OPT_SIGNED_OUTPUT:
 			signed_output_file = optarg;

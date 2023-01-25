@@ -1,8 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-Name (RD, 0)
-Name (WR, 1)
-
 /*
  * EC RAM READ
  */

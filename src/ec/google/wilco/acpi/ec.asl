@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+Name (RD, 0)
+Name (WR, 1)
+
 Device (EC0)
 {
 	Name (_HID, EisaId ("PNP0C09"))
@@ -124,6 +127,8 @@ Device (EC0)
 	 */
 	Method (R, 1, Serialized, 2)
 	{
+		/* Set read operation */
+		Arg0[2] = RD
 		Return (ECRW (Arg0, 0))
 	}
 
@@ -134,6 +139,8 @@ Device (EC0)
 	 */
 	Method (W, 2, Serialized, 2)
 	{
+		/* Set write operation */
+		Arg0[2] = WR
 		Return (ECRW (Arg0, Arg1))
 	}
 

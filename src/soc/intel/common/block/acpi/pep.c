@@ -93,7 +93,6 @@ static void read_pmc_lpm_requirements(const struct soc_pmc_lpm *lpm,
  */
 static void acpi_gen_default_lpi_constraints(void)
 {
-	char path[16];
 	printk(BIOS_INFO, "Returning default LPI constraint package\n");
 
 	/*
@@ -107,8 +106,7 @@ static void acpi_gen_default_lpi_constraints(void)
 	{
 		acpigen_write_package(3);
 		{
-			snprintf(path, sizeof(path), CONFIG_ACPI_CPU_STRING, 0);
-			acpigen_emit_namestring(path);
+			acpigen_write_processor_namestring(0);
 			acpigen_write_integer(0); /* device disabled */
 			acpigen_write_package(2);
 			{
@@ -188,7 +186,6 @@ static void acpi_lpi_get_constraints(void *unused)
 
 			acpigen_write_package(3);
 			{
-				char path[32] = { 0 };
 				/* Emit the device path */
 				switch (dev->path.type) {
 				case DEVICE_PATH_PCI:
@@ -196,9 +193,7 @@ static void acpi_lpi_get_constraints(void *unused)
 					break;
 
 				case DEVICE_PATH_APIC:
-					snprintf(path, sizeof(path), CONFIG_ACPI_CPU_STRING,
-						cpu_index++);
-					acpigen_emit_namestring(path);
+					acpigen_write_processor_namestring(cpu_index++);
 					break;
 
 				default:

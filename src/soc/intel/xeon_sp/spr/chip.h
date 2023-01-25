@@ -29,37 +29,6 @@ struct soc_intel_xeon_sp_spr_config {
 	struct pch_pcie_port pch_pci_port[MAX_PCH_PCIE_PORT];
 
 	/**
-	 * Interrupt Routing configuration
-	 * If bit7 is 1, the interrupt is disabled.
-	 */
-	uint8_t pirqa_routing;
-	uint8_t pirqb_routing;
-	uint8_t pirqc_routing;
-	uint8_t pirqd_routing;
-	uint8_t pirqe_routing;
-	uint8_t pirqf_routing;
-	uint8_t pirqg_routing;
-	uint8_t pirqh_routing;
-
-	/**
-	 * Device Interrupt Routing configuration
-	 * Interrupt Pin x Route.
-	 * 0h = PIRQA#
-	 * 1h = PIRQB#
-	 * 2h = PIRQC#
-	 * 3h = PIRQD#
-	 * 4h = PIRQE#
-	 * 5h = PIRQF#
-	 * 6h = PIRQG#
-	 * 7h = PIRQH#
-	 */
-	uint16_t ir00_routing;
-	uint16_t ir01_routing;
-	uint16_t ir02_routing;
-	uint16_t ir03_routing;
-	uint16_t ir04_routing;
-
-	/**
 	 * Device Interrupt Polarity Control
 	 * ipc0 - IRQ-00-31 - 1: Active low to IOAPIC, 0: Active high to IOAPIC
 	 * ipc1 - IRQ-32-63 - 1: Active low to IOAPIC, 0: Active high to IOAPIC

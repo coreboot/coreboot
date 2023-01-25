@@ -169,7 +169,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	m_cfg->VtdSupport = config->vtd_support;
 
-	m_cfg->SerialIoUartDebugIoBase = 0x3F8;
+	m_cfg->SerialIoUartDebugIoBase = CONFIG_TTYS0_BASE;
 
 	mupd->FspmConfig.AttemptFastBoot = 1;
 	mupd->FspmConfig.AttemptFastBootCold = 1;

@@ -11,4 +11,7 @@ struct drivers_net_phy_m88e1512_config {
 	/* 1x, 2x,...8x is the number of times the PHY attempts to establish Gigabit link
 	   before the PHY downshifts to the next highest speed. */
 	unsigned char downshift_cnt;
+	bool force_mos;			/* Force PMOS/NMOS manually */
+	unsigned char pmos_val;		/* Set PMOS calibration value */
+	unsigned char nmos_val;		/* Set NMOS calibration value */
 };

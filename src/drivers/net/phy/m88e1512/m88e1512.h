@@ -13,6 +13,12 @@
 #define DOWNSHIFT_CNT_MAX	8
 #define  DOWNSHIFT_CNT(cnt)	((cnt - 1) << 12)
 #define  DOWNSHIFT_EN		(1 << 11)
+/* Page 2 registers */
+#define OUT_IMP_CAL_OVERRIDE_REG	0x18
+#define MOS_VALUE_MASK			0x0F4F
+#define  PMOS_VALUE(pmos)		(pmos << 8)
+#define  FORCE_MOS			(1 << 6)
+#define  NMOS_VALUE(nmos)		(nmos << 0)
 /* Page 3 registers */
 #define LED_FUNC_CTRL_REG	0x10
 #define LED_FUNC_CTRL_MASK	0x0FFF

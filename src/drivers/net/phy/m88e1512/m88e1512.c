@@ -67,6 +67,25 @@ static void m88e1512_init(struct device *dev)
 		mdio_write(dev, LED_TIMER_CTRL_REG, reg);
 	}
 
+	/* Set RGMII output impedance manually. */
+	if (config->force_mos) {
+		printk(BIOS_DEBUG, "%s: Set RGMII driver strength manually for %s.\n",
+				dev_path(dev->bus->dev), dev->chip_ops->name);
+
+		/* Select page 2 to access RGMII output impedance calibration override
+		   register. */
+		switch_page(dev, 2);
+
+		reg = mdio_read(dev, OUT_IMP_CAL_OVERRIDE_REG);
+		/* Set first only NMOS/PMOS values. */
+		clrsetbits16(&reg, MOS_VALUE_MASK, PMOS_VALUE(config->pmos_val) |
+				NMOS_VALUE(config->nmos_val));
+		mdio_write(dev, OUT_IMP_CAL_OVERRIDE_REG, reg);
+		/* Activate the new setting. */
+		setbits16(&reg, FORCE_MOS);
+		mdio_write(dev, OUT_IMP_CAL_OVERRIDE_REG, reg);
+	}
+
 	/* Switch back to page 0. */
 	switch_page(dev, 0);
 }

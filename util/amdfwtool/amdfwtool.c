@@ -2059,63 +2059,6 @@ static ssize_t write_efs(char *output, embedded_firmware *amd_romsig)
 	return bytes;
 }
 
-static int identify_platform(char *soc_name)
-{
-	if (!strcasecmp(soc_name, "Stoneyridge"))
-		return PLATFORM_STONEYRIDGE;
-	else if (!strcasecmp(soc_name, "Carrizo"))
-		return PLATFORM_CARRIZO;
-	else if (!strcasecmp(soc_name, "Raven"))
-		return PLATFORM_RAVEN;
-	else if (!strcasecmp(soc_name, "Picasso"))
-		return PLATFORM_PICASSO;
-	else if (!strcasecmp(soc_name, "Cezanne"))
-		return PLATFORM_CEZANNE;
-	else if (!strcasecmp(soc_name, "Mendocino"))
-		return PLATFORM_MENDOCINO;
-	else if (!strcasecmp(soc_name, "Renoir"))
-		return PLATFORM_RENOIR;
-	else if (!strcasecmp(soc_name, "Lucienne"))
-		return PLATFORM_LUCIENNE;
-	else if (!strcasecmp(soc_name, "Phoenix"))
-		return PLATFORM_PHOENIX;
-	else if (!strcasecmp(soc_name, "Glinda"))
-		return PLATFORM_GLINDA;
-	else
-		return PLATFORM_UNKNOWN;
-
-}
-
-static bool needs_ish(enum platform platform_type)
-{
-	if (platform_type == PLATFORM_MENDOCINO || platform_type == PLATFORM_PHOENIX || platform_type == PLATFORM_GLINDA)
-		return true;
-	else
-		return false;
-}
-
-static bool is_second_gen(enum platform platform_type)
-{
-	switch (platform_type) {
-	case PLATFORM_CARRIZO:
-	case PLATFORM_STONEYRIDGE:
-	case PLATFORM_RAVEN:
-	case PLATFORM_PICASSO:
-		return false;
-	case PLATFORM_RENOIR:
-	case PLATFORM_LUCIENNE:
-	case PLATFORM_CEZANNE:
-	case PLATFORM_MENDOCINO:
-	case PLATFORM_PHOENIX:
-	case PLATFORM_GLINDA:
-		return true;
-	case PLATFORM_UNKNOWN:
-	default:
-		fprintf(stderr, "Error: Invalid SOC name.\n\n");
-		return false;
-	}
-}
-
 int main(int argc, char **argv)
 {
 	int c;
@@ -2283,12 +2226,6 @@ int main(int argc, char **argv)
 			sub = instance = 0;
 			break;
 		case AMDFW_OPT_SOC_NAME:
-			cb_config.soc_id = identify_platform(optarg);
-			if (cb_config.soc_id == PLATFORM_UNKNOWN) {
-				fprintf(stderr, "Error: Invalid SOC name specified\n\n");
-				retval = 1;
-			}
-			sub = instance = 0;
 			break;
 		case AMDFW_OPT_SIGNED_OUTPUT:
 			signed_output_file = optarg;
@@ -2379,17 +2316,6 @@ int main(int argc, char **argv)
 			break;
 		}
 	}
-
-	cb_config.second_gen = is_second_gen(cb_config.soc_id);
-
-	if (needs_ish(cb_config.soc_id))
-		cb_config.need_ish = true;
-
-	if (cb_config.need_ish)
-		cb_config.recovery_ab = true;
-
-	if (cb_config.recovery_ab)
-		cb_config.multi_level = true;
 
 	if (config) {
 		config_handle = fopen(config, "r");

@@ -78,6 +78,32 @@ void compile_reg_expr(int cflags, const char *expr, regex_t *reg)
 	}
 }
 
+static enum platform identify_platform(char *soc_name)
+{
+	if (!strcasecmp(soc_name, "Stoneyridge"))
+		return PLATFORM_STONEYRIDGE;
+	else if (!strcasecmp(soc_name, "Carrizo"))
+		return PLATFORM_CARRIZO;
+	else if (!strcasecmp(soc_name, "Raven"))
+		return PLATFORM_RAVEN;
+	else if (!strcasecmp(soc_name, "Picasso"))
+		return PLATFORM_PICASSO;
+	else if (!strcasecmp(soc_name, "Cezanne"))
+		return PLATFORM_CEZANNE;
+	else if (!strcasecmp(soc_name, "Mendocino"))
+		return PLATFORM_MENDOCINO;
+	else if (!strcasecmp(soc_name, "Renoir"))
+		return PLATFORM_RENOIR;
+	else if (!strcasecmp(soc_name, "Lucienne"))
+		return PLATFORM_LUCIENNE;
+	else if (!strcasecmp(soc_name, "Phoenix"))
+		return PLATFORM_PHOENIX;
+	else if (!strcasecmp(soc_name, "Glinda"))
+		return PLATFORM_GLINDA;
+	else
+		return PLATFORM_UNKNOWN;
+}
+
 #define SET_LEVEL(tableptr, l, TABLE, ab)     \
 	do {                                             \
 		switch ((l)) {                           \
@@ -646,6 +672,36 @@ static uint8_t process_one_line(char *oneline, regmatch_t *match, char *dir,
 	return 1;
 }
 
+static bool needs_ish(enum platform platform_type)
+{
+	if (platform_type == PLATFORM_MENDOCINO || platform_type == PLATFORM_PHOENIX || platform_type == PLATFORM_GLINDA)
+		return true;
+	else
+		return false;
+}
+
+static bool is_second_gen(enum platform platform_type)
+{
+	switch (platform_type) {
+	case PLATFORM_CARRIZO:
+	case PLATFORM_STONEYRIDGE:
+	case PLATFORM_RAVEN:
+	case PLATFORM_PICASSO:
+		return false;
+	case PLATFORM_RENOIR:
+	case PLATFORM_LUCIENNE:
+	case PLATFORM_CEZANNE:
+	case PLATFORM_MENDOCINO:
+	case PLATFORM_PHOENIX:
+	case PLATFORM_GLINDA:
+		return true;
+	case PLATFORM_UNKNOWN:
+	default:
+		fprintf(stderr, "Error: Invalid SOC name.\n\n");
+		return false;
+	}
+}
+
 /*
   return value:
 	0: The config file can not be parsed correctly.
@@ -683,10 +739,23 @@ uint8_t process_config(FILE *config, amd_cb_config *cb_config, uint8_t print_dep
 				assert(dir_len < MAX_LINE_SIZE);
 				snprintf(dir, MAX_LINE_SIZE, "%.*s", dir_len,
 					&(oneline[match[2].rm_so]));
-				break;
+			} else if (strcmp(&(oneline[match[1].rm_so]), "SOC_NAME") == 0) {
+				cb_config->soc_id =
+					identify_platform(&(oneline[match[2].rm_so]));
 			}
 		}
 	}
+
+	cb_config->second_gen = is_second_gen(cb_config->soc_id);
+
+	if (needs_ish(cb_config->soc_id))
+		cb_config->need_ish = true;
+
+	if (cb_config->need_ish)
+		cb_config->recovery_ab = true;
+
+	if (cb_config->recovery_ab)
+		cb_config->multi_level = true;
 
 	if (dir[0] == '\0') {
 		fprintf(stderr, "No line with FIRMWARE_LOCATION\n");

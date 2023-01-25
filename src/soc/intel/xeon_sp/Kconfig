@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-source "src/soc/intel/xeon_sp/skx/Kconfig"
-source "src/soc/intel/xeon_sp/cpx/Kconfig"
-source "src/soc/intel/xeon_sp/ras/Kconfig"
+source "src/soc/intel/xeon_sp/*/Kconfig"
 
 config XEON_SP_COMMON_BASE
 	bool

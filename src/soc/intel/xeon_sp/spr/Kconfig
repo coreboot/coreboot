@@ -1,0 +1,173 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if SOC_INTEL_SAPPHIRERAPIDS_SP
+
+config SOC_SPECIFIC_OPTIONS
+	def_bool y
+	select MICROCODE_BLOB_NOT_HOOKED_UP
+	select SAVE_MRC_AFTER_FSPS
+	select SOC_INTEL_MEM_MAPPED_PM_CONFIGURATION
+
+config FSP_HEADER_PATH
+	string "Location of FSP headers"
+	depends on MAINBOARD_USES_FSP2_0
+	default "src/vendorcode/intel/fsp/fsp2_0/sapphirerapids_sp"
+
+config MAX_CPUS
+	int
+	default 255
+
+config MAX_SOCKET_UPD
+	int
+	default 2
+	help
+	  This is used for configuring common SPR UPD tables which their sizes
+	  depend on the socket number. Since it's the maximal socket number for
+	  the common UPD tables, mainboard should not overwrite it.
+
+config SIPI_FINAL_TIMEOUT
+	int
+	default 400000
+
+config PCR_BASE_ADDRESS
+	hex
+	default 0xfd000000
+	help
+	  This option allows you to select MMIO Base Address of sideband bus.
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xfe800000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x1fff00
+	help
+	  The size of the cache-as-ram region required during bootblock
+	  and/or romstage. FSP-T reserves the upper 0x100 for
+	  FspReservedBuffer.
+
+config DCACHE_BSP_STACK_SIZE
+	hex
+	default 0x40000
+	help
+	  The amount of anticipated stack usage in CAR by bootblock and
+	  other stages. It needs to include FSP-M stack requirement and
+	  CB romstage stack requirement. The integration documentation
+	  says this needs to be 256KiB.
+
+config FSP_M_RC_HEAP_SIZE
+	hex
+	default 0x150000
+	help
+	  On xeon_sp/spr FSP-M has two separate heap managers, one regular
+	  whose size and base are controllable via the StackBase and
+	  StackSize UPDs and a 'rc' heap manager that is statically
+	  allocated at 0xfe800000 (the CAR base) and consumes about 0x150000
+	  bytes of memory.
+
+config CPU_MICROCODE_CBFS_LOC
+	hex
+	default 0xffe0fdc0
+
+config CPU_MICROCODE_CBFS_LEN
+	hex
+	default 0x8c00
+
+config HEAP_SIZE
+	hex
+	default 0x80000
+
+config STACK_SIZE
+	hex
+	default 0x4000
+
+config FSP_TEMP_RAM_SIZE
+	hex
+	depends on FSP_USES_CB_STACK
+	default 0x60000
+	help
+	  The amount of anticipated heap usage in CAR by FSP.
+	  Refer to Platform FSP integration guide document to know
+	  the exact FSP requirement for Heap setup.  The FSP integration
+	  documentation says this needs to be at least 128KiB, but practice
+	  show this needs to be 256KiB or more.
+
+config IED_REGION_SIZE
+	hex
+	default 0x400000
+
+config IFD_CHIPSET
+	string
+	default "lbg"
+
+config SOC_INTEL_COMMON_BLOCK_P2SB
+	def_bool y
+
+config SOC_INTEL_HAS_BIOS_DONE_MSR
+	def_bool y
+
+config SOC_INTEL_HAS_NCMEM
+	def_bool y
+
+config SOC_INTEL_HAS_CXL
+	def_bool y
+
+config SOC_INTEL_PCIE_64BIT_ALLOC
+	def_bool y
+
+config SOC_INTEL_MMAPVTD_ONLY_FOR_DPR
+	def_bool y
+
+config CPU_BCLK_MHZ
+	int
+	default 100
+
+# SPR-SP has 4 IMCs, 2 channels per IMC, 2 DIMMs per channel
+# Default value is set to two sockets, full config.
+config MAX_IMC
+	int
+	default 4
+
+config MAX_MC_CHN
+	int
+	default 2
+
+config DIMM_MAX
+	int
+	default 32
+
+# DDR4
+config DIMM_SPD_SIZE
+	int
+	default 1024
+
+config MAX_ACPI_TABLE_SIZE_KB
+	int
+	default 224
+
+config FIXED_SMBUS_IO_BASE
+	default 0x780
+
+config DISPLAY_UPD_IIO_DATA
+	def_bool n
+	depends on DISPLAY_UPD_DATA
+
+if INTEL_TXT
+
+config INTEL_TXT_SINIT_SIZE
+	hex
+	default 0x50000
+	help
+	  According to document number 572782 this needs to be 256KiB
+	  for the SINIT module and 64KiB for SINIT data.
+
+config INTEL_TXT_HEAP_SIZE
+	hex
+	default 0xf0000
+	help
+	  This must be 960KiB according to 572782.
+
+endif # INTEL_TXT
+
+endif

@@ -10,6 +10,10 @@
 
 void xeon_sp_init_cpus(struct device *dev);
 void mainboard_silicon_init_params(FSPS_UPD *params);
+void mainboard_override_fsp_gpio(void);
+/* lock or unlock community B and D pads after FSP-S */
+void lock_gpio(bool lock);
+void mainboard_override_usb_oc(void);
 
 extern struct pci_operations soc_pci_ops;
 

@@ -22,7 +22,8 @@
 	 | EC_HOST_EVENT_MASK(EC_HOST_EVENT_THROTTLE_STOP)                                     \
 	 | EC_HOST_EVENT_MASK(EC_HOST_EVENT_PD_MCU)                                            \
 	 | EC_HOST_EVENT_MASK(EC_HOST_EVENT_MODE_CHANGE)                                       \
-	 | EC_HOST_EVENT_MASK(EC_HOST_EVENT_USB_MUX))
+	 | EC_HOST_EVENT_MASK(EC_HOST_EVENT_USB_MUX)                                           \
+	 | EC_HOST_EVENT_MASK(EC_HOST_EVENT_PANIC))
 
 #define MAINBOARD_EC_SMI_EVENTS (EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_CLOSED))
 

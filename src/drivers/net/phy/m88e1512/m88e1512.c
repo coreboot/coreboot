@@ -52,9 +52,6 @@ static void m88e1512_init(struct device *dev)
 		clrsetbits16(&reg, LED_FUNC_CTRL_MASK, config->led_0_ctrl |
 				(config->led_1_ctrl << 4) | (config->led_2_ctrl << 8));
 		mdio_write(dev, LED_FUNC_CTRL_REG, reg);
-
-		/* Switch back to page 0. */
-		switch_page(dev, 0);
 	}
 
 	/* INTn can be routed to LED[2] pin. */
@@ -68,10 +65,10 @@ static void m88e1512_init(struct device *dev)
 		reg = mdio_read(dev, LED_TIMER_CTRL_REG);
 		setbits16(&reg, LED_IRQ_ENABLE);
 		mdio_write(dev, LED_TIMER_CTRL_REG, reg);
-
-		/* Switch back to page 0. */
-		switch_page(dev, 0);
 	}
+
+	/* Switch back to page 0. */
+	switch_page(dev, 0);
 }
 
 struct device_operations m88e1512_ops = {

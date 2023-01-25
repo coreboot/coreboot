@@ -697,7 +697,8 @@ uint8_t process_config(FILE *config, amd_cb_config *cb_config, uint8_t print_dep
 		if (skip_comment_blank_line(oneline))
 			continue;
 		if (is_valid_entry(oneline, match)) {
-			if (strcmp(&(oneline[match[1].rm_so]), "FIRMWARE_LOCATION") == 0) {
+			if (strcmp(&(oneline[match[1].rm_so]), "FIRMWARE_LOCATION") == 0 ||
+				strcmp(&(oneline[match[1].rm_so]), "SOC_NAME") == 0) {
 				continue;
 			} else {
 				if (process_one_line(oneline, match, dir, print_deps,

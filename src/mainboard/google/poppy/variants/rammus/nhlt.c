@@ -17,7 +17,7 @@ void variant_nhlt_init(struct nhlt *nhlt)
 
 	/* Maxim MAX98927 Smart Amps for left and right channel */
 	/* Render time_slot is 0 and feedback time_slot is 2 */
-	if (nhlt_soc_add_max98373(nhlt, AUDIO_LINK_SSP0, 0, 2))
+	if (nhlt_soc_add_max98927(nhlt, AUDIO_LINK_SSP0, 0, 2))
 		printk(BIOS_ERR, "Couldn't add Maxim MAX98927\n");
 
 }

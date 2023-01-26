@@ -91,7 +91,7 @@ amount of spare time. If this is not the case, then you should not apply.
       process and common issues.
 
     * Get signed up for Gerrit and push at least one patch to Gerrit for review.
-      Check the [easy project list][Project ideas] or ask for simple tasks on
+      Check the [small project list][Project ideas] or ask for simple tasks on
       the [mailing list] or on our other [community forums] if you need ideas.
 
 

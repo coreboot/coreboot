@@ -20,12 +20,12 @@ doubt if you can bring yourself up to speed in a required time frame
 with the projects. We can then try together to figure out if you're a
 good match for a project, even when requirements might not all be met.
 
-## Easy projects
+## Small projects
 
 This is a collection of tasks which don't require deep knowledge on
 coreboot itself. If you are a beginner and want to get familiar with the
 the project and the code base, or if you just want to get your hands
-dirty with some easy tasks, then these are for you.
+dirty with some small tasks, then these are for you.
 
   * Resolve static analysis issues reported by [scan-build] and
     [Coverity scan]. More details on the page for

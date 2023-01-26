@@ -36,7 +36,7 @@ dirty with some easy tasks, then these are for you.
 [scan-build]: https://coreboot.org/scan-build/
 [Coverity scan]: https://scan.coverity.com/projects/coreboot
 [Coverity scan integration]: ../infrastructure/coverity.md
-[Linter issues]: https://qa.coreboot.org/job/untested-coreboot-files/lastSuccessfulBuild/artifact/lint.txt
+[Linter issues]: https://qa.coreboot.org/job/coreboot-untested-files/lastSuccessfulBuild/artifact/lint.txt
 
 ## Provide toolchain binaries
 Our crossgcc subproject provides a uniform compiler environment for

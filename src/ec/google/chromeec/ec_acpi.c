@@ -239,7 +239,7 @@ static void fill_ssdt_ps2_keyboard(const struct device *dev)
 	if (google_chromeec_get_keybd_config(&keybd) ||
 	    !keybd.num_top_row_keys ||
 	    keybd.num_top_row_keys > MAX_TOP_ROW_KEYS) {
-		printk(BIOS_ERR, "PS2K: Bad resp from EC. Vivaldi disabled!\n");
+		printk(BIOS_INFO, "PS2K: Unsupported or bad resp from EC. Vivaldi disabled!\n");
 		return;
 	}
 

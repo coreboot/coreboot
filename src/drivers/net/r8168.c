@@ -109,7 +109,7 @@ static enum cb_err fetch_mac_vpd_key(u8 *macstrbuf, const char *vpd_key)
 			search_length);
 
 	if (offset == search_length) {
-		printk(BIOS_ERR, "Could not locate '%s' in VPD\n", vpd_key);
+		printk(BIOS_WARNING, "Could not locate '%s' in VPD\n", vpd_key);
 		rdev_munmap(&rdev, search_address);
 		return CB_ERR;
 	}

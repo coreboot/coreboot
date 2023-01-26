@@ -50,7 +50,7 @@ static void init_vpd_rdev(const char *fmap_name, struct region_device *rdev)
 	int32_t size;
 
 	if (fmap_locate_area_as_rdev(fmap_name, rdev)) {
-		printk(BIOS_ERR, "%s: No %s FMAP section.\n", __func__,
+		printk(BIOS_WARNING, "%s: No %s FMAP section.\n", __func__,
 			fmap_name);
 		goto fail;
 	}

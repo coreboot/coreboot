@@ -107,8 +107,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C3, NONE, DEEP, NF1),		/* PSE_GBE0_MDC */
 	PAD_CFG_NF(GPP_C4, NONE, DEEP, NF1),		/* PSE_GBE0_MDIO */
 	PAD_NC(GPP_C5, NONE),				/* Not connected */
-	PAD_CFG_NF(GPP_C6, NONE, DEEP, NF1),		/* PSE_GBE0_AUXTS */
-	PAD_CFG_NF(GPP_C7, NONE, DEEP, NF1),		/* PSE_GBE0_PPS */
+	PAD_CFG_NF(GPP_C6, NONE, DEEP, NF1),		/* PSE_GBE1_MDC */
+	PAD_CFG_NF(GPP_C7, NONE, DEEP, NF1),		/* PSE_GBE1_MDIO */
 	PAD_NC(GPP_C8, NONE),				/* Not connected */
 	PAD_CFG_NF(GPP_C12, NONE, DEEP, NF4),		/* SIO_UART1_RXD */
 	PAD_CFG_NF(GPP_C13, NONE, DEEP, NF4),		/* SIO_UART1_TXD */

@@ -1,7 +1,7 @@
-Upcoming release - coreboot 4.19
+coreboot 4.19 release
 ========================================================================
 
-The 4.19 release is planned for the 16th of January 2023.
+The 4.19 release was completed on the 16th of January 2023.
 
 Since the last release, the coreboot project has merged over 1600
 commits from over 150 authors. Of those authors, around 25 were

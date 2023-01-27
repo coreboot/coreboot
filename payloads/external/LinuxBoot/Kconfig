@@ -189,6 +189,18 @@ config LINUXBOOT_UROOT_MAIN
 	help
 	  Latest u-root version
 
+config LINUXBOOT_UROOT_V7_0_0
+	bool "v7.0.0"
+
+config LINUXBOOT_UROOT_V6_0_0
+	bool "v6.0.0"
+
+config LINUXBOOT_UROOT_V5_0_0
+	bool "v5.0.0"
+
+config LINUXBOOT_UROOT_V4_0_0
+	bool "v4.0.0"
+
 config LINUXBOOT_UROOT_V3_0_0
 	bool "v3.0.0"
 
@@ -208,6 +220,10 @@ config LINUXBOOT_UROOT_VERSION
 	string
 	default LINUXBOOT_UROOT_CHECKOUT if LINUXBOOT_UROOT_CUSTOM
 	default "main" if LINUXBOOT_UROOT_MAIN
+	default "v7.0.0" if LINUXBOOT_UROOT_V7_0_0
+	default "v6.0.0" if LINUXBOOT_UROOT_V6_0_0
+	default "v5.0.0" if LINUXBOOT_UROOT_V5_0_0
+	default "v4.0.0" if LINUXBOOT_UROOT_V4_0_0
 	default "v3.0.0" if LINUXBOOT_UROOT_V3_0_0
 	default "v2.0.0" if LINUXBOOT_UROOT_V2_0_0
 	default "v1.0.0" if LINUXBOOT_UROOT_V1_0_0

@@ -35,8 +35,8 @@ static uint64_t get_block_attr(unsigned long tag)
 {
 	uint64_t attr;
 
-	attr = (tag & MA_NS)? BLOCK_NS : 0;
-	attr |= (tag & MA_RO)? BLOCK_AP_RO : BLOCK_AP_RW;
+	attr = (tag & MA_NS) ? BLOCK_NS : 0;
+	attr |= (tag & MA_RO) ? BLOCK_AP_RO : BLOCK_AP_RW;
 	attr |= BLOCK_ACCESS;
 
 	if (tag & MA_MEM) {

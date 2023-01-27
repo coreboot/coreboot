@@ -28,7 +28,8 @@ const (
 	LewisburgType uint8  = 1
 	ApolloType    uint8  = 2
 	CannonType    uint8  = 3
-	AlderType    uint8  = 4
+	AlderType     uint8  = 4
+	JasperType    uint8  = 5
 )
 
 var key uint8 = SunriseType
@@ -38,7 +39,9 @@ var platform = map[string]uint8{
 	"lbg": LewisburgType,
 	"apl": ApolloType,
 	"cnl": CannonType,
-	"adl": AlderType}
+	"adl": AlderType,
+	"jsl": JasperType,
+}
 func PlatformSet(name string) int {
 	if platformType, valid := platform[name]; valid {
 		key = platformType

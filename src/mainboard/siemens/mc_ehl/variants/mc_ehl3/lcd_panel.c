@@ -10,7 +10,7 @@
  * @param  edid_data  pointer to EDID data in driver
  * @return CB_SUCCESS on successful EDID data retrieval, CB_ERR otherwise
  */
-enum cb_err mb_get_edid(uint8_t edid_data[0x80])
+enum cb_err mb_get_edid(uint8_t edid_data[PTN_EDID_LEN])
 {
 	const char *hwi_block = "hwinfo.hex";
 

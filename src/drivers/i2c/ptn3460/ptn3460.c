@@ -123,7 +123,7 @@ static void ptn3460_init(struct device *dev)
 	init_done = true;
 }
 
-__weak enum cb_err mb_get_edid(uint8_t edid_data[0x80])
+__weak enum cb_err mb_get_edid(uint8_t edid_data[PTN_EDID_LEN])
 {
 	return CB_ERR;
 }

@@ -1,6 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-TAG-$(CONFIG_UBOOT_MASTER)=origin/master
+TAG-$(CONFIG_UBOOT_MASTER)=master
 TAG-$(CONFIG_UBOOT_STABLE)=$(STABLE_COMMIT_ID)
 
 project_name=U-Boot

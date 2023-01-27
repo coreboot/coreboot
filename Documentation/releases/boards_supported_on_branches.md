@@ -12,9 +12,9 @@ desired.
 
 Currently, [jenkins](https://qa.coreboot.org), our continuous
 integration system is configured to build the 4.11, 4.12, 4.14, 4.15,
-4.16, and 4.18 branches.  Builders for other branches can be created on
-request.  Likewise, some releases are only marked with tags, and
-branches would need to be created to push new code to.  These branches
+4.16, 4.18, and 4.19 branches.  Builders for other branches can be
+added upon request.  Likewise, some releases are only marked with tags,
+and branches would need to be created to push new code.  These branches
 can also be created on request.
 
 Patches can be backported from the master branch to any of these other
@@ -22,6 +22,17 @@ branches as needed. The coreboot project may take care of backporting
 critical security fixes, but other patches will need to handled by
 anyone using that release.
 
+
+## [4.19 Release](coreboot-4.19-relnotes.md)
+Branch created, builder configured
+
+```eval_rst
++-------------------------------+------------------------+------------+-----------+
+| Vendor/Board                  | Processor              | Date added | Brd type  |
++===============================+========================+============+===========+
+| intel/icelake_rvp             | INTEL_ICELAKE          | 2018-10-26 | eval      |
++-------------------------------+------------------------+------------+-----------+
+```
 
 ## [4.18 Release](coreboot-4.18-relnotes.md)
 Branch created, builder configured

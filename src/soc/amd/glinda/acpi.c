@@ -232,10 +232,10 @@ static size_t get_pstate_info(struct acpi_sw_pstate *pstate_values,
 void generate_cpu_entries(const struct device *device)
 {
 	int logical_cores;
-	size_t pstate_count, cpu, proc_blk_len;
+	size_t pstate_count, cpu;
 	struct acpi_sw_pstate pstate_values[MAX_PSTATES] = { {0} };
 	struct acpi_xpss_sw_pstate pstate_xpss_values[MAX_PSTATES] = { {0} };
-	uint32_t threads_per_core, proc_blk_addr;
+	uint32_t threads_per_core;
 	uint32_t cstate_base_address =
 		rdmsr(MSR_CSTATE_ADDRESS).lo & MSR_CSTATE_ADDRESS_MASK;
 
@@ -296,18 +296,7 @@ void generate_cpu_entries(const struct device *device)
 	logical_cores = get_cpu_count();
 
 	for (cpu = 0; cpu < logical_cores; cpu++) {
-
-		if (cpu == 0) {
-			/* BSP values for \_SB.Pxxx */
-			proc_blk_len = 6;
-			proc_blk_addr = ACPI_GPE0_BLK;
-		} else {
-			/* AP values for \_SB.Pxxx */
-			proc_blk_addr = 0;
-			proc_blk_len = 0;
-		}
-
-		acpigen_write_processor(cpu, proc_blk_addr, proc_blk_len);
+		acpigen_write_processor_device(cpu);
 
 		acpigen_write_pct_package(&perf_ctrl, &perf_sts);
 
@@ -330,7 +319,7 @@ void generate_cpu_entries(const struct device *device)
 
 		generate_cppc_entries(cpu);
 
-		acpigen_pop_len();
+		acpigen_write_processor_device_end();
 	}
 
 	acpigen_write_processor_package("PPKG", 0, logical_cores);

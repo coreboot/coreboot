@@ -215,9 +215,9 @@ void generate_cpu_entries(const struct device *device)
 
 	for (cpuID = 1; cpuID <= numcpus; cpuID++) {
 		for (coreID = 1; coreID <= cores_per_package; coreID++) {
-			/* Generate processor \_SB.CPUx */
-			acpigen_write_processor(
-				(cpuID-1)*cores_per_package+coreID-1, 0, 0);
+			/* Generate Scope(\_SB) { Device(CPUx */
+			acpigen_write_processor_device(
+				(cpuID-1)*cores_per_package+coreID-1);
 
 			/* Generate P-state tables */
 			generate_P_state_entries(
@@ -230,7 +230,7 @@ void generate_cpu_entries(const struct device *device)
 			generate_T_state_entries(
 				cpuID-1, cores_per_package);
 
-			acpigen_pop_len();
+			acpigen_write_processor_device_end();
 		}
 	}
 

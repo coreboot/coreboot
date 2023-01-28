@@ -282,8 +282,8 @@ void generate_cpu_entries(const struct device *device)
 	const struct pattrs *pattrs = pattrs_get();
 
 	for (core = 0; core < pattrs->num_cpus; core++) {
-		/* Generate processor \_SB.CPUx */
-		acpigen_write_processor(core, 0, 0);
+		/* Generate Scope(\_SB) { Device(CPUx */
+		acpigen_write_processor_device(core);
 
 		/* Generate  P-state tables */
 		generate_p_state_entries(core, pattrs->num_cpus);
@@ -294,7 +294,7 @@ void generate_cpu_entries(const struct device *device)
 		/* Generate T-state tables */
 		generate_t_state_entries(core, pattrs->num_cpus);
 
-		acpigen_pop_len();
+		acpigen_write_processor_device_end();
 	}
 
 	/* PPKG is usually used for thermal management

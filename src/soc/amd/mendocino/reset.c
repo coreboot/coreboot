@@ -17,8 +17,8 @@ void do_cold_reset(void)
 
 void do_warm_reset(void)
 {
-	/* Assert reset signals only. */
-	outb(RST_CPU | SYS_RST, RST_CNT);
+	/* Warm resets are not supported and must be executed as cold */
+	do_cold_reset();
 }
 
 void do_board_reset(void)

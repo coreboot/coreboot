@@ -107,14 +107,10 @@ void generate_cpu_entries(const struct device *device)
 
 	printk(BIOS_DEBUG, "ACPI \\_SB report %d core(s)\n", cores);
 
-	/* Generate BSP \_SB.P000 */
-	acpigen_write_processor(0, ACPI_GPE0_BLK, 6);
-	acpigen_pop_len();
-
-	/* Generate AP \_SB.Pxxx */
-	for (cpu = 1; cpu < cores; cpu++) {
-		acpigen_write_processor(cpu, 0, 0);
-		acpigen_pop_len();
+	/* Generate \_SB.Pxxx */
+	for (cpu = 0; cpu < cores; cpu++) {
+		acpigen_write_processor_device(cpu);
+		acpigen_write_processor_device_end();
 	}
 
 	acpigen_write_processor_package("PPKG", 0, cores);

@@ -898,7 +898,7 @@ build_CMAKE() {
 }
 
 build_NASM() {
-	CC="$(hostcc host)" CXX="$(hostcxx host)" CFLAGS="$HOSTCFLAGS"
+	CC="$(hostcc host)" CXX="$(hostcxx host)" CFLAGS="$HOSTCFLAGS" \
 	../${NASM_DIR}/configure \
 		--prefix="$TARGETDIR" || touch .failed
 	# shellcheck disable=SC2086

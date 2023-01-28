@@ -409,6 +409,15 @@ void acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
 	acpigen_emit_byte(pblock_len);
 }
 
+void acpigen_write_processor_device(unsigned int cpu_index)
+{
+	acpigen_emit_ext_op(DEVICE_OP);
+	acpigen_write_len_f();
+	acpigen_write_processor_namestring(cpu_index);
+	acpigen_write_name_string("_HID", "ACPI0007");
+	acpigen_write_name_integer("_UID", cpu_index);
+}
+
 void acpigen_write_processor_package(const char *const name, const unsigned int first_core,
 				     const unsigned int core_count)
 {

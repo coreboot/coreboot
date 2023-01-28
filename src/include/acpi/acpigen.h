@@ -455,6 +455,11 @@ __always_inline void acpigen_write_processor_end(void)
 {
 	acpigen_pop_len();
 }
+void acpigen_write_processor_device(unsigned int cpu_index);
+__always_inline void acpigen_write_processor_device_end(void)
+{
+	acpigen_pop_len();
+}
 void acpigen_write_processor_package(const char *name,
 				     unsigned int first_core,
 				     unsigned int core_count);

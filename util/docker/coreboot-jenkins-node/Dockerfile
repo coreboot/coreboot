@@ -20,9 +20,9 @@ RUN apt-get -y update && \
 	apt-get -y install \
 		default-jre-headless \
 		libcmocka-dev \
-		liblua5.3-dev \
+		liblua5.4-dev \
 		linkchecker \
-		lua5.3 \
+		lua5.4 \
 		meson \
 		ninja-build \
 		openssh-server \

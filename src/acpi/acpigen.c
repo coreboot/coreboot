@@ -395,6 +395,7 @@ void acpigen_write_processor_namestring(unsigned int cpu_index)
 	acpigen_emit_namestring(buffer);
 }
 
+/* Processor() operator is deprecated as of ACPI 6.0, use Device() instead. */
 void acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
 {
 /*

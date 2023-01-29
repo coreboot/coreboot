@@ -4,6 +4,7 @@
 #include <console/console.h>
 #include <commonlib/helpers.h>
 #include <acpi/acpi.h>
+#include <arch/ioapic.h>
 #include <device/device.h>
 #include <device/pci_ops.h>
 #include "haswell.h"
@@ -38,8 +39,9 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 
 		const unsigned long tmp = current;
 		current += acpi_create_dmar_drhd(current, DRHD_INCLUDE_PCI_ALL, 0, vtvc0bar);
-		current += acpi_create_dmar_ds_ioapic(current, 2, PCH_IOAPIC_PCI_BUS,
-						      PCH_IOAPIC_PCI_SLOT, 0);
+		current += acpi_create_dmar_ds_ioapic_from_hw(current, IO_APIC_ADDR,
+							      PCH_IOAPIC_PCI_BUS,
+							      PCH_IOAPIC_PCI_SLOT, 0);
 
 		size_t i;
 		for (i = 0; i < 8; ++i)

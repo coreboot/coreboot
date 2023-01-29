@@ -1,5 +1,16 @@
 # Google Summer of Code
 
+## Organization admins
+
+The *organization admins* are managing the GSoC program for the coreboot
+organization.
+
+The organization admins are:
+
+  * Felix Singer (primary)
+  * Martin Roth
+  * David Hendricks
+
 
 ## Contacts
 
@@ -7,9 +18,6 @@ If you are interested in participating in GSoC as a contributor or mentor,
 please have a look at our [community forums] and reach out to us. Working closely
 with the community is highly encouraged, as we've seen that our most successful
 contributors are generally very involved.
-
-Felix Singer, David Hendricks and Martin Roth are the coreboot GSoC admins for
-2022. Please feel free to reach out to them directly if you have any questions.
 
 
 ## Why work on coreboot for GSoC?
@@ -50,6 +58,8 @@ Felix Singer, David Hendricks and Martin Roth are the coreboot GSoC admins for
   * [Rules][GSoC Rules]
 
   * [Glossary][GSoC Glossary]
+
+  * [Organization Admin Tips][GSoC Organization Admin Tips]
 
 
 ## Contributor requirements & commitments
@@ -273,3 +283,4 @@ questions.
 [GSoC FAQ]: https://developers.google.com/open-source/gsoc/faq
 [GSoC Rules]: https://summerofcode.withgoogle.com/rules
 [GSoC Glossary]: https://developers.google.com/open-source/gsoc/resources/glossary
+[GSoC Organization Admin Tips]: https://developers.google.com/open-source/gsoc/help/oa-tips

@@ -307,6 +307,7 @@ static const struct pci_driver mmapvtd_driver __pci_driver = {
 	.devices  = mmapvtd_ids
 };
 
+#if !CONFIG(SOC_INTEL_MMAPVTD_ONLY_FOR_DPR)
 static void vtd_read_resources(struct device *dev)
 {
 	pci_dev_read_resources(dev);
@@ -327,6 +328,7 @@ static const struct pci_driver vtd_driver __pci_driver = {
 	.vendor   = PCI_VID_INTEL,
 	.device   = MMAP_VTD_STACK_CFG_REG_DEVID,
 };
+#endif
 
 static void dmi3_init(struct device *dev)
 {

@@ -5,6 +5,7 @@
 #include <cpu/x86/lapic_def.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <drivers/ocp/include/vpd.h>
 #include <soc/acpi.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
@@ -13,7 +14,14 @@
 #include <fsp/util.h>
 #include <security/intel/txt/txt_platform.h>
 #include <security/intel/txt/txt.h>
+#include <soc/numa.h>
+#include <soc/soc_util.h>
 #include <stdint.h>
+
+struct proximity_domains pds = {
+	.num_pds = 0,
+	.pds = NULL,
+};
 
 struct map_entry {
 	uint32_t    reg;
@@ -238,9 +246,42 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 				   mc_values[TOLM_REG]);
 	LOG_RESOURCE("mmio_tolm", dev, res);
 
-	/* 4GiB -> TOHM */
-	res = upper_ram_end(dev, index++, mc_values[TOHM_REG] + 1);
-	LOG_RESOURCE("high_ram", dev, res);
+	if (CONFIG(SOC_INTEL_HAS_CXL)) {
+		/* 4GiB -> CXL Memory */
+		uint32_t gi_mem_size;
+		gi_mem_size = get_generic_initiator_mem_size();
+
+		res = reserved_ram_from_to(dev, index++, 0x100000000,
+				   mc_values[TOHM_REG] - (uint64_t)gi_mem_size + 1);
+		LOG_RESOURCE("high_ram", dev, res);
+
+		/* CXL Memory */
+		uint8_t i;
+		for (i = 0; i < pds.num_pds; i++) {
+			if (pds.pds[i].pd_type == PD_TYPE_PROCESSOR)
+				continue;
+
+			if (CONFIG(OCP_VPD)) {
+				unsigned long flags = IORESOURCE_CACHEABLE;
+				int cxl_mode = get_cxl_mode_from_vpd();
+				if (cxl_mode == CXL_SPM)
+					flags |= IORESOURCE_SOFT_RESERVE;
+				else
+					flags |= IORESOURCE_STORED;
+
+				res = fixed_mem_range_flags(dev, index++, (uint64_t)pds.pds[i].base,
+					(uint64_t)pds.pds[i].size, flags);
+				if (cxl_mode == CXL_SPM)
+					LOG_RESOURCE("specific_purpose_memory", dev, res);
+				else
+					LOG_RESOURCE("CXL_memory", dev, res);
+			}
+		}
+	} else {
+		/* 4GiB -> TOHM */
+		res = upper_ram_end(dev, index++, mc_values[TOHM_REG] + 1);
+		LOG_RESOURCE("high_ram", dev, res);
+	}
 
 	/* add MMIO CFG resource */
 	res = mmio_from_to(dev, index++, mc_values[MMCFG_BASE_REG],
@@ -270,6 +311,14 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 static void mmapvtd_read_resources(struct device *dev)
 {
 	int index = 0;
+
+	if (CONFIG(SOC_INTEL_HAS_CXL)) {
+		/* Construct NUMA data structure. This is needed for CXL. */
+		if (fill_pds() != CB_SUCCESS)
+			pds.num_pds = 0;
+
+		dump_pds();
+	}
 
 	/* Read standard PCI resources. */
 	pci_dev_read_resources(dev);

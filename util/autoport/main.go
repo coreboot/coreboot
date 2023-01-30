@@ -238,6 +238,7 @@ func RestoreRCBA32(f *os.File, inteltool InteltoolData, addr uint16) {
 
 type PCISlot struct {
 	PCIAddr
+	alias             string
 	additionalComment string
 	writeEmpty        bool
 }
@@ -361,14 +362,18 @@ func writeOn(dt *os.File, dev DevTreeNode) {
 	}
 }
 
-func WriteDev(dt *os.File, offset int, dev DevTreeNode) {
+func WriteDev(dt *os.File, offset int, alias string, dev DevTreeNode) {
 	Offset(dt, offset)
 	switch dev.Chip {
 	case "cpu_cluster", "lapic", "domain", "ioapic":
 		fmt.Fprintf(dt, "device %s 0x%x ", dev.Chip, dev.Dev)
 		writeOn(dt, dev)
 	case "pci", "pnp":
-		fmt.Fprintf(dt, "device %s %02x.%x ", dev.Chip, dev.Dev, dev.Func)
+		if alias != "" {
+			fmt.Fprintf(dt, "device ref %s ", alias)
+		} else {
+			fmt.Fprintf(dt, "device %s %02x.%x ", dev.Chip, dev.Dev, dev.Func)
+		}
 		writeOn(dt, dev)
 	case "i2c":
 		fmt.Fprintf(dt, "device %s %02x ", dev.Chip, dev.Dev)
@@ -422,7 +427,14 @@ func WriteDev(dt *os.File, offset int, dev DevTreeNode) {
 	}
 
 	for _, child := range dev.Children {
-		WriteDev(dt, offset+1, child)
+		alias = ""
+		for _, slot := range dev.PCISlots {
+			if slot.PCIAddr.Bus == child.Bus &&
+				slot.PCIAddr.Dev == child.Dev && slot.PCIAddr.Func == child.Func {
+				alias = slot.alias
+			}
+		}
+		WriteDev(dt, offset+1, alias, child)
 	}
 
 	Offset(dt, offset)
@@ -739,7 +751,7 @@ func main() {
 	defer devtree.Close()
 
 	MatchDev(&DevTree)
-	WriteDev(devtree, 0, DevTree)
+	WriteDev(devtree, 0, "", DevTree)
 
 	if MainboardInit != "" || MainboardEnable != "" || MainboardIncludes != nil {
 		mainboard := Create(ctx, "mainboard.c")

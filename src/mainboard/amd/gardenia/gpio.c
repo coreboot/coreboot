@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <gpio.h>
 #include <soc/southbridge.h>
-#include <soc/gpio.h>
 
 #include "gpio.h"
 

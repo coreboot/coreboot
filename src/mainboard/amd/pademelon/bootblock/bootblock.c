@@ -4,7 +4,7 @@
 #include <soc/southbridge.h>
 #include <amdblocks/lpc.h>
 #include <device/pci_ops.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 #include <soc/pci_devs.h>
 #include <drivers/uart/uart8250reg.h>
 #include <arch/io.h>

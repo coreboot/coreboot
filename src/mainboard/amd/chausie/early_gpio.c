@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <soc/gpio.h>
+#include <gpio.h>
 #include "gpio.h"
 
 /* GPIO pins used by coreboot should be initialized in bootblock */

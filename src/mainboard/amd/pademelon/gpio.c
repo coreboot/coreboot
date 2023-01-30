@@ -2,7 +2,7 @@
 
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/BiosCallOuts.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 #include <soc/southbridge.h>
 #include "gpio.h"
 

@@ -2,7 +2,7 @@
 
 #include <console/console.h>
 #include <device/i2c_simple.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 #include <soc/platform_descriptors.h>
 #include <types.h>
 

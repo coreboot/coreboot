@@ -88,6 +88,13 @@
 #define IOM_BASE_SIZE		0x1600
 
 /*
+ * If MAINBOARD_HAS_EARLY_LIBGFXINIT is set, the following memory space is used
+ * at least temporarily in romstage and ramstage as the Intel Graphics Device
+ * Base Address Range 0. */
+#define IGD_BASE_ADDRESS	CONFIG_GFX_GMA_DEFAULT_MMIO
+#define IGD_BASE_SIZE		0x1000000
+
+/*
  * I/O port address space
  */
 #define SMBUS_BASE_ADDRESS	0x0efa0

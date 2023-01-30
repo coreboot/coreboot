@@ -411,9 +411,12 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 	} else if (strcmp(fw_name, "PSP_MPIOFW_FILE") == 0) {
 		fw_type = AMD_FW_MPIO;
 		subprog = 0;
-	} else if (strcmp(fw_name, "PSP_RIB_FILE") == 0) {
+	} else if (strcmp(fw_name, "PSP_RIB_FILE_SUB0") == 0) {
 		fw_type = AMD_RIB;
 		subprog = 0;
+	} else if (strcmp(fw_name, "PSP_RIB_FILE_SUB1") == 0) {
+		fw_type = AMD_RIB;
+		subprog = 1;
 	} else if (strcmp(fw_name, "FEATURE_TABLE_FILE") == 0) {
 		fw_type = AMD_FW_FCFG_TABLE;
 		subprog = 0;

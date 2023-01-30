@@ -228,7 +228,7 @@ static const struct mp_ops mp_ops = {
 	.post_mp_init = post_mp_init,
 };
 
-void xeon_sp_init_cpus(struct device *dev)
+void mp_init_cpus(struct bus *bus)
 {
 	FUNC_ENTER();
 
@@ -237,13 +237,13 @@ void xeon_sp_init_cpus(struct device *dev)
 	 * rest of the CPU devices do not have
 	 * chip_info updated. Global chip_config is used as workaround
 	 */
-	chip_config = dev->chip_info;
+	chip_config = bus->dev->chip_info;
 
 	config_reset_cpl3_csrs();
 
 	/* calls src/cpu/x86/mp_init.c */
 	/* TODO: Handle mp_init_with_smm failure? */
-	mp_init_with_smm(dev->link_list, &mp_ops);
+	mp_init_with_smm(bus, &mp_ops);
 
 	/* update numa domain for all cpu devices */
 	xeonsp_init_cpu_config();

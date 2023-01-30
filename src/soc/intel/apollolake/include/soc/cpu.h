@@ -8,7 +8,6 @@
 #include <soc/msr.h>
 
 struct device;
-void apollolake_init_cpus(struct device *dev);
 void mainboard_devtree_update(struct device *dev);
 
 /* Flush L1D to L2 */

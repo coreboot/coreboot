@@ -211,7 +211,7 @@ static const struct mp_ops mp_ops = {
 	.post_mp_init = post_mp_init,
 };
 
-void cpx_init_cpus(struct device *dev)
+void mp_init_cpus(struct bus *bus)
 {
 	microcode_patch = intel_microcode_find();
 
@@ -221,13 +221,13 @@ void cpx_init_cpus(struct device *dev)
 	intel_microcode_load_unlocked(microcode_patch);
 
 	/* TODO: Handle mp_init_with_smm failure? */
-	mp_init_with_smm(dev->link_list, &mp_ops);
+	mp_init_with_smm(bus, &mp_ops);
 
 	/*
 	 * chip_config is used in cpu device callback. Other than cpu 0,
 	 * rest of the CPU devices do not have chip_info updated.
 	 */
-	chip_config = dev->chip_info;
+	chip_config = bus->dev->chip_info;
 
 	/* update numa domain for all cpu devices */
 	xeonsp_init_cpu_config();

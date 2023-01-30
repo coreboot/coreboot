@@ -262,18 +262,11 @@ static const struct mp_ops mp_ops = {
 	.post_mp_init = post_mp_init,
 };
 
-void soc_init_cpus(struct bus *cpu_bus)
+void mp_init_cpus(struct bus *cpu_bus)
 {
 	/* Clear for take-off */
 	/* TODO: Handle mp_init_with_smm failure? */
 	mp_init_with_smm(cpu_bus, &mp_ops);
-}
-
-void apollolake_init_cpus(struct device *dev)
-{
-	if (!dev->link_list)
-		add_more_links(dev, 1);
-	soc_init_cpus(dev->link_list);
 
 	/* Temporarily cache the memory-mapped boot media. */
 	if (CONFIG(BOOT_DEVICE_MEMORY_MAPPED) &&

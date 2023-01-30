@@ -278,9 +278,6 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 	} else if (strcmp(fw_name, "PSP_C20MP_FILE") == 0) {
 		fw_type = AMD_FW_C20_MP;
 		subprog = 0;
-	} else if (strcmp(fw_name, "RIB_FILE") == 0) {
-		fw_type = AMD_RIB;
-		subprog = 0;
 	} else if (strcmp(fw_name, "AMF_SRAM_FILE") == 0) {
 		fw_type = AMD_FW_AMF_SRAM;
 		subprog = 0;

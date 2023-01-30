@@ -170,7 +170,6 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 static struct min_sleep_state min_pci_sleep_states[] = {
 	{ SA_DEVFN_ROOT,	ACPI_DEVICE_SLEEP_D3 },
 	{ SA_DEVFN_IGD,		ACPI_DEVICE_SLEEP_D3 },
-	{ PCI_DEVFN_DPTF,	ACPI_DEVICE_SLEEP_D3 },
 	{ PCI_DEVFN_IPU,	ACPI_DEVICE_SLEEP_D3 },
 	{ PCI_DEVFN_TBT0,	ACPI_DEVICE_SLEEP_D3 },
 	{ PCI_DEVFN_TBT1,	ACPI_DEVICE_SLEEP_D3 },

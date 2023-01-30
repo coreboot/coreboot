@@ -12,20 +12,22 @@
 /* Initialize an SDHCI port */
 int sdhci_controller_init(struct sdhci_ctrlr *sdhci_ctrlr, void *ioaddr)
 {
-	memset(sdhci_ctrlr, 0, sizeof(*sdhci_ctrlr));
 	sdhci_ctrlr->ioaddr = ioaddr;
 	return add_sdhci(sdhci_ctrlr);
 }
 
-struct sd_mmc_ctrlr *new_mem_sdhci_controller(void *ioaddr)
+struct sd_mmc_ctrlr *new_mem_sdhci_controller(void *ioaddr,
+					      int (*pre_init_func)(struct sdhci_ctrlr *host))
 {
 	static bool sdhci_init_done;
-	static struct sdhci_ctrlr sdhci_ctrlr;
+	static struct sdhci_ctrlr sdhci_ctrlr = {0};
 
 	if (sdhci_init_done == true) {
 		sdhc_error("Error: SDHCI is already initialized.\n");
 		return NULL;
 	}
+
+	sdhci_ctrlr.attach = pre_init_func;
 
 	if (sdhci_controller_init(&sdhci_ctrlr, ioaddr)) {
 		sdhc_error("Error: SDHCI initialization failed.\n");
@@ -48,5 +50,5 @@ struct sd_mmc_ctrlr *new_pci_sdhci_controller(pci_devfn_t dev)
 	}
 
 	addr &= ~0xf;
-	return new_mem_sdhci_controller((void *)addr);
+	return new_mem_sdhci_controller((void *)addr, NULL);
 }

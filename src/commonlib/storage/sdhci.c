@@ -585,6 +585,16 @@ static int sdhci_pre_init(struct sdhci_ctrlr *sdhci_ctrlr)
 	struct sd_mmc_ctrlr *ctrlr = &sdhci_ctrlr->sd_mmc_ctrlr;
 	unsigned int caps, caps_1;
 
+	/*
+	 * If the device needs to do anything non-standard before
+	 * sdhci initialization, run it here.
+	 */
+	if (sdhci_ctrlr->attach) {
+		int rv = sdhci_ctrlr->attach(sdhci_ctrlr);
+		if (rv)
+			return rv;
+	}
+
 	/* Get controller version and capabilities */
 	ctrlr->version = sdhci_readw(sdhci_ctrlr, SDHCI_HOST_VERSION) & 0xff;
 	caps = sdhci_readl(sdhci_ctrlr, SDHCI_CAPABILITIES);

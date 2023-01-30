@@ -5,7 +5,6 @@
 #include <device/pci.h>
 #include <hob_cxlnode.h>
 #include <intelblocks/cpulib.h>
-#include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/numa.h>
 #include <soc/pci_devs.h>
@@ -13,6 +12,7 @@
 #include <soc/util.h>
 #include <stdlib.h>
 #include <string.h>
+#include <pc80/mc146818rtc.h>
 
 const EWL_PRIVATE_DATA *get_ewl_hob(void)
 {
@@ -160,4 +160,14 @@ void bios_done_msr(void *unused)
 		msr.lo |= XEON_SP_ENABLE_IA_UNTRUSTED;
 		wrmsr(MSR_BIOS_DONE, msr);
 	}
+}
+
+void set_cmos_mrc_cold_boot_flag(bool cold_boot_required)
+{
+	uint8_t mrc_status = cmos_read(CMOS_OFFSET_MRC_STATUS);
+	uint8_t new_mrc_status = (mrc_status & 0xfe) | cold_boot_required;
+	printk(BIOS_SPEW, "MRC status: 0x%02x want 0x%02x\n", mrc_status, new_mrc_status);
+	if (new_mrc_status != mrc_status)
+		cmos_write(new_mrc_status, CMOS_OFFSET_MRC_STATUS);
+
 }

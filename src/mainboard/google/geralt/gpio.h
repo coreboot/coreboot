@@ -22,6 +22,8 @@
 
 #define GPIO_SD_CD_ODL			GPIO(I2SIN_MCK)
 
+#define GPIO_USB3_HUB_RST_L		GPIO(MSDC2_DAT0)
+
 void setup_chromeos_gpios(void);
 
 #endif

@@ -46,6 +46,29 @@ chip soc/intel/meteorlake
 		[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
 	}"
 
+	register "serial_io_i2c_mode" = "{
+		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C3]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C4]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled,
+	}"
+
+	# Intel Common SoC Config
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[3] = {
+			.speed = I2C_SPEED_FAST,
+		},
+	}"
+
 	device domain 0 on
 		device ref igpu on end
 		device ref heci1 on end

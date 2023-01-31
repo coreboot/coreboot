@@ -23,6 +23,22 @@
 #define PCH_PRESERVED_BASE_ADDRESS	0xfc800000
 #define PCH_PRESERVED_BASE_SIZE		0x02000000
 
+/* North (Intel) TraceHub Software. */
+#define NTH_SW_BASE_ADDRESS	0xfc000000
+#define NTH_SW_BASE_SIZE	0x800000
+
+/* North (Intel) TraceHub Firmware. */
+#define NTH_FW_BASE_ADDRESS	0xfae00000
+#define NTH_FW_BASE_SIZE	0x200000
+
+/* North (Intel) TraceHub Memory storage controller Trace Buffer. */
+#define NTH_MTB_BASE_ADDRESS	0xfad00000
+#define NTH_MTB_BASE_SIZE	0x100000
+
+/* North (Intel) TraceHub Real Time Instruction Trace. */
+#define NTH_RTIT_BASE_ADDRESS	0xfacfc000
+#define NTH_RTIT_BASE_SIZE	0x4000
+
 #define UART_BASE_SIZE		0x1000
 
 #define UART_BASE_0_ADDRESS	0xfe03e000

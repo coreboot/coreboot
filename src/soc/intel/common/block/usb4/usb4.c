@@ -4,7 +4,6 @@
 #include <acpi/acpi_device.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <intelblocks/tcss.h>
 #include <soc/pci_devs.h>

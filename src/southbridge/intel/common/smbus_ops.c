@@ -4,7 +4,6 @@
 #include <device/path.h>
 #include <device/smbus.h>
 #include <device/pci.h>
-#include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/smbus_host.h>
 #include <southbridge/intel/common/smbus_ops.h>

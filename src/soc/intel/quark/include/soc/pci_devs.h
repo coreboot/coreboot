@@ -4,7 +4,6 @@
 #define _QUARK_PCI_DEVS_H_
 
 #include <device/pci.h>
-#include <device/pci_def.h>
 
 /* DEVICE 0 (Memory Controller Hub) */
 #define MC_BDF			PCI_DEV(PCI_BUS_NUMBER_QNC, MC_DEV, MC_FUN)

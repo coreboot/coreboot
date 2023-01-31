@@ -3,7 +3,6 @@
 #include <assert.h>
 #include <console/console.h>
 #include <device/pci.h>
-#include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/irq.h>

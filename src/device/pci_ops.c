@@ -3,9 +3,7 @@
 #include <stdint.h>
 #include <console/console.h>
 #include <device/pci.h>
-#include <device/pci_def.h>
 #include <device/pci_ops.h>
-#include <device/pci_type.h>
 
 u8 *const pci_mmconf = (void *)(uintptr_t)CONFIG_ECAM_MMCONF_BASE_ADDRESS;
 

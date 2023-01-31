@@ -6,7 +6,6 @@
 #include <device/pci_ops.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_def.h>
 #include <intelblocks/gpmr.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/pmclib.h>

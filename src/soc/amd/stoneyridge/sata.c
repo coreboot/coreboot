@@ -3,7 +3,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
-#include <device/pci_def.h>
 #include <amdblocks/sata.h>
 #include <soc/southbridge.h>
 

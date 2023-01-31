@@ -3,7 +3,6 @@
 #include <cbmem.h>
 #include <cf9_reset.h>
 #include <console/console.h>
-#include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <device/pci.h>
 #include <option.h>

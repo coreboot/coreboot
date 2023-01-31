@@ -6,7 +6,6 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_def.h>
 #include <string.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>

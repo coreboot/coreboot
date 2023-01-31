@@ -4,7 +4,6 @@
 #include <device/pci_ops.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_def.h>
 #include "pch.h"
 
 /* Set bit in function disable register to hide this device */

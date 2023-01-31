@@ -5,7 +5,6 @@
 #include <device/device.h>
 #include <device/i2c_simple.h>
 #include <device/pci.h>
-#include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <intelblocks/cfg.h>

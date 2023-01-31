@@ -5,7 +5,6 @@
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <device/pci.h>
-#include <device/pci_def.h>
 #include <string.h>
 
 #include "ehci_debug.h"

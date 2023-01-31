@@ -5,7 +5,6 @@
 #include <device/pci_ops.h>
 #include <console/uart.h>
 #include <device/pci.h>
-#include <device/pci_def.h>
 
 static unsigned int oxpcie_present;
 static DEVTREE_CONST u32 uart0_base = CONFIG_EARLY_PCI_MMIO_BASE + 0x1000;

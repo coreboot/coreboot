@@ -1,9 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/pci.h>
-#include <device/pci_def.h>
 #include <device/pci_ops.h>
-#include <device/pci_type.h>
 #include <delay.h>
 
 void pci_s_assert_secondary_reset(pci_devfn_t p2p_bridge)

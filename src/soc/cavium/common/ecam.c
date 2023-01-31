@@ -7,7 +7,6 @@
 #define __SIMPLE_DEVICE__
 
 #include <device/pci_ops.h>
-#include <device/pci_def.h>
 #include <device/pci.h>
 #include <soc/addressmap.h>
 #include <soc/ecam.h>

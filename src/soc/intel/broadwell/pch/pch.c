@@ -4,7 +4,6 @@
 #include <device/pci_ops.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_def.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
 #include <soc/rcba.h>

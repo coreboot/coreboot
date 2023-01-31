@@ -3,7 +3,6 @@
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <device/pci.h>
-#include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <soc/cpu.h>
 #include <soc/pci_devs.h>

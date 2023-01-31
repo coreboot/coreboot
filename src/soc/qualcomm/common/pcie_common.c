@@ -6,7 +6,6 @@
 #include <device/device.h>
 #include <device/mmio.h>
 #include <device/pci.h>
-#include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <gpio.h>
 #include <soc/clock.h>

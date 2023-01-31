@@ -8,7 +8,6 @@
 #include <device/mmio.h>
 #include <assert.h>
 #include <device/pci.h>
-#include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <console/console.h>

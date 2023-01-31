@@ -13,7 +13,6 @@
 #include <device/pci_ops.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_def.h>
 #include <gpio.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/lpc_lib.h>

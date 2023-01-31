@@ -14,7 +14,4 @@
 void mtk_usb_prepare(void)
 {
 	mt_pll_set_usb_clock();
-
-	/* usb drvvbus for 5v power */
-	gpio_output(GPIO(USB1_DRV_VBUS), 1);
 }

@@ -33,7 +33,7 @@ static void igd_disable(void)
  * @param  edid_data  pointer to EDID data in driver
  * @return CB_SUCCESS on successful EDID data retrieval, CB_ERR otherwise
  */
-enum cb_err mb_get_edid(uint8_t edid_data[PTN_EDID_LEN])
+enum cb_err mainboard_ptn3460_get_edid(uint8_t edid_data[PTN_EDID_LEN])
 {
 	const char *hwi_block = "hwinfo.hex";
 
@@ -56,7 +56,7 @@ enum cb_err mb_get_edid(uint8_t edid_data[PTN_EDID_LEN])
  * which has to be used.
  * @return Index of the EDID slot selected for EDID emulation
  */
-uint8_t mb_select_edid_table(void)
+uint8_t mainboard_ptn3460_select_edid_table(void)
 {
 	return 6; /* With this mainboard we use EDID block 6 for emulation in PTN3460. */
 }
@@ -66,7 +66,7 @@ uint8_t mb_select_edid_table(void)
  * @param   *cfg_ptr  Pointer to the PTN config structure to modify
  * @return  CB_SUCCESS if data was modified and needs to be updated; CB_ERR on error
  */
-enum cb_err mb_adjust_cfg(struct ptn_3460_config *cfg)
+enum cb_err mainboard_ptn3460_config(struct ptn_3460_config *cfg)
 {
 	const char *hwi_block = "hwinfo.hex";
 	uint8_t disp_con = 0, color_depth = 0;

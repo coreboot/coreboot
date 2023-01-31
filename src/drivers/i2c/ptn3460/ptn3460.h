@@ -52,8 +52,8 @@ struct ptn_3460_flash {
 
 /* We need functions which we can call to get mainboard specific data */
 /* These functions can be implemented somewhere else but must exist. */
-extern enum cb_err mb_get_edid(uint8_t edid_data[PTN_EDID_LEN]);
-extern uint8_t mb_select_edid_table(void);
-extern enum cb_err mb_adjust_cfg(struct ptn_3460_config *cfg_ptr);
+extern enum cb_err mainboard_ptn3460_get_edid(uint8_t edid_data[PTN_EDID_LEN]);
+extern uint8_t mainboard_ptn3460_select_edid_table(void);
+extern enum cb_err mainboard_ptn3460_config(struct ptn_3460_config *cfg_ptr);
 
 #endif /* _I2C_PTN3460_H_ */

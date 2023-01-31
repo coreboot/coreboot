@@ -76,13 +76,13 @@ static void ptn3460_init(struct device *dev)
 	}
 
 	/* Mainboard provides EDID data. */
-	if (mb_get_edid(edid_data) != CB_SUCCESS) {
+	if (mainboard_ptn3460_get_edid(edid_data) != CB_SUCCESS) {
 		printk(BIOS_ERR, "PTN3460 error: Unable to get EDID data from mainboard.\n");
 		return;
 	}
 
 	/* Mainboard decides which EDID table has to be used. */
-	edid_tab = mb_select_edid_table();
+	edid_tab = mainboard_ptn3460_select_edid_table();
 	if (edid_tab > PTN_MAX_EDID_NUM) {
 		printk(BIOS_ERR, "PTN3460 error: invalid EDID table (%d) selected.\n",
 		       edid_tab);
@@ -108,7 +108,7 @@ static void ptn3460_init(struct device *dev)
 	}
 	/* Mainboard can modify the configuration data.
 	   Write back configuration data to PTN3460 if modified by mainboard */
-	if (mb_adjust_cfg(&cfg) == CB_SUCCESS) {
+	if (mainboard_ptn3460_config(&cfg) == CB_SUCCESS) {
 		ptr = (uint8_t *)&cfg;
 		for (i = 0; i < sizeof(struct ptn_3460_config); i++) {
 			val = i2c_dev_writeb_at(dev, PTN_CONFIG_OFF + i, *ptr++);
@@ -123,15 +123,15 @@ static void ptn3460_init(struct device *dev)
 	init_done = true;
 }
 
-__weak enum cb_err mb_get_edid(uint8_t edid_data[PTN_EDID_LEN])
+__weak enum cb_err mainboard_ptn3460_get_edid(uint8_t edid_data[PTN_EDID_LEN])
 {
 	return CB_ERR;
 }
-__weak uint8_t mb_select_edid_table(void)
+__weak uint8_t mainboard_ptn3460_select_edid_table(void)
 {
 	return 0;
 }
-__weak enum cb_err mb_adjust_cfg(struct ptn_3460_config *cfg_ptr)
+__weak enum cb_err mainboard_ptn3460_config(struct ptn_3460_config *cfg_ptr)
 {
 	return CB_ERR;
 }

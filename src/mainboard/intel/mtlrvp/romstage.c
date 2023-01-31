@@ -12,7 +12,7 @@ static size_t get_spd_index(void)
 	uint8_t board_id = get_rvp_board_id();
 	size_t spd_index;
 
-	printk(BIOS_INFO, "board id is 0x%x\n", board_id);
+	printk(BIOS_INFO, "Board id is 0x%x\n", board_id);
 
 	spd_index = board_id & SPD_ID_MASK;
 

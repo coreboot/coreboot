@@ -37,6 +37,7 @@ $(VBOOT_FW_LIB): $(obj)/libpayload-config.h
 		$(MAKE) -C "$(VBOOT_SOURCE)" \
 		TPM2_MODE=$(call kconfig-to-binary, $(CONFIG_LP_VBOOT_TPM2_MODE)) \
 		X86_SHA_EXT=$(call kconfig-to-binary, $(CONFIG_LP_VBOOT_X86_SHA_EXT)) \
+		ARMV8_CRYPTO_EXT=$(call kconfig-to-binary, $(CONFIG_LP_VBOOT_SHA_ARMV8_CE)) \
 		UNROLL_LOOPS=1 \
 		BUILD="$(VBOOT_BUILD_DIR)" \
 		V=$(V) \

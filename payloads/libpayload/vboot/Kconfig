@@ -24,4 +24,12 @@ config VBOOT_X86_SHA_EXT
 	  This option enables SHA256 implementation using x86 SHA processor extension
 	  instructions: sha256msg1, sha256msg2, sha256rnds2.
 
+config VBOOT_SHA_ARMV8_CE
+	bool "SHA256 implementation using ARMv8 Crypto Extension"
+	default y if CHROMEOS
+	default n
+	depends on ARCH_ARM64
+	help
+	  This option enables SHA256 implementation using ARMv8 Crypto Extension.
+
 endif

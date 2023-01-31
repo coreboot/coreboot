@@ -6,6 +6,7 @@
 #include <cpu/intel/cpu_ids.h>
 #include <device/device.h>
 #include <drivers/wifi/generic/wifi.h>
+#include <elog.h>
 #include <fsp/fsp_debug_event.h>
 #include <fsp/util.h>
 #include <gpio.h>
@@ -423,9 +424,10 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	 * training. Memory training can take a while so let's inform the end
 	 * user with an on-screen text message.
 	 */
-	if (!arch_upd->NvsBufferPtr)
-		ux_inform_user_of_update_operation("memory training");
-
+	if (!arch_upd->NvsBufferPtr) {
+		if (ux_inform_user_of_update_operation("memory training"))
+			elog_add_event_byte(ELOG_TYPE_FW_EARLY_SOL, ELOG_FW_EARLY_SOL_MRC);
+	}
 	config = config_of_soc();
 
 	soc_memory_init_params(m_cfg, config);

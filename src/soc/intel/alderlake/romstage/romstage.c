@@ -4,6 +4,7 @@
 #include <cbmem.h>
 #include <cf9_reset.h>
 #include <console/console.h>
+#include <elog.h>
 #include <fsp/util.h>
 #include <intelblocks/cfg.h>
 #include <intelblocks/cse.h>
@@ -149,7 +150,8 @@ static void save_dimm_info(void)
 
 void cse_fw_update_misc_oper(void)
 {
-	ux_inform_user_of_update_operation("CSE update");
+	if (ux_inform_user_of_update_operation("CSE update"))
+		elog_add_event_byte(ELOG_TYPE_FW_EARLY_SOL, ELOG_FW_EARLY_SOL_CSE_SYNC);
 }
 
 void cse_board_reset(void)

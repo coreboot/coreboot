@@ -1,8 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 /* Note: Only need HID on Primary Bus */
-External (TOM1)
-External (TOM2)
 Name(_HID, EISAID("PNP0A08"))	/* PCI Express Root Bridge */
 Name(_CID, EISAID("PNP0A03"))	/* PCI Root Bridge */
 

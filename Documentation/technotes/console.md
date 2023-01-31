@@ -27,7 +27,7 @@ This feature has been tested on the following platforms:
 | Tested platforms                   |
 +====================================+
 | GA-H61M-S2PV + Intel Ivy Bridge    |
-+---------------------+---------------
++------------------------------------+
 ```
 
 A minimal DDR3 DIMM breakout board PCB design with only the

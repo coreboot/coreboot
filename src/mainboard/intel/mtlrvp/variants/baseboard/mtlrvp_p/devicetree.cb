@@ -39,6 +39,13 @@ chip soc/intel/meteorlake
 	# Enable CNVi BT
 	register "cnvi_bt_core" = "true"
 
+	# Enable EDP in PortA
+	register "ddi_port_A_config" = "1"
+	# Enable HDMI in Port B
+	register "ddi_ports_config" = "{
+		[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+	}"
+
 	device domain 0 on
 		device ref igpu on end
 		device ref heci1 on end

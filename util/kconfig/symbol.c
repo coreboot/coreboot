@@ -757,7 +757,7 @@ const char *sym_get_string_default(struct symbol *sym)
 		}
 	case S_INT:
 	case S_HEX:
-		return "0";
+		return str;
 	case S_STRING:
 		return str;
 	case S_UNKNOWN:

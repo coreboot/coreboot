@@ -30,6 +30,7 @@ $$(VBOOT_LIB_$(1)): $(obj)/config.h
 	EC_EFS="$(CONFIG_VBOOT_EC_EFS)" \
 	X86_SHA_EXT="$(if $(CONFIG_ARCH_$(call toupper,$(1))_X86_32)$(CONFIG_ARCH_$(call toupper,$(1))_X86_64),$\
 			$(CONFIG_VBOOT_X86_SHA256_ACCELERATION))" \
+	ARMV8_CRYPTO_EXT="$(if $(CONFIG_ARCH_$(call toupper,$(1))_ARMV8_64),$$(CONFIG_VBOOT_ARMV8_CE_SHA256_ACCELERATION))" \
 	$(MAKE) -C $(VBOOT_SOURCE) \
 		BUILD=$$(abspath $$(dir $$(VBOOT_LIB_$(1)))) \
 		V=$(V) \

@@ -360,7 +360,14 @@ struct elog_event_extended_event {
  * Firmware boot related information retrieved from vboot and store as
  * per `union vb2_fw_boot_info` data structure.
  */
-#define ELOG_TYPE_FW_VBOOT_INFO        0xb7
+#define ELOG_TYPE_FW_VBOOT_INFO           0xb7
+
+/*
+ * Events related to early Sign Of Life
+ */
+#define ELOG_TYPE_FW_EARLY_SOL            0xb8
+#define  ELOG_FW_EARLY_SOL_CSE_SYNC        0x0
+#define  ELOG_FW_EARLY_SOL_MRC             0x1
 
 /* Only the 7-LSB are used for size */
 #define ELOG_MAX_EVENT_SIZE                    0x7F

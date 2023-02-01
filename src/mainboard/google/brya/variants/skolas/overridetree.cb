@@ -130,6 +130,132 @@ chip soc/intel/alderlake
 					[0] = {
 						.target = DPTF_TEMP_SENSOR_0,
 						.thresholds = {
+								TEMP_PCT(75, 95),
+								TEMP_PCT(70, 90),
+								TEMP_PCT(65, 80),
+								TEMP_PCT(60, 70),
+								TEMP_PCT(55, 60),
+								TEMP_PCT(50, 50),
+								TEMP_PCT(45, 40),
+								TEMP_PCT(40, 30),
+						}
+					},
+					[1] = {
+						.target = DPTF_TEMP_SENSOR_1,
+						.thresholds = {
+								TEMP_PCT(75, 95),
+								TEMP_PCT(70, 90),
+								TEMP_PCT(65, 80),
+								TEMP_PCT(60, 70),
+								TEMP_PCT(55, 60),
+								TEMP_PCT(50, 50),
+								TEMP_PCT(45, 40),
+								TEMP_PCT(40, 30),
+						}
+					},
+					[2] = {
+						.target = DPTF_TEMP_SENSOR_2,
+						.thresholds = {
+								TEMP_PCT(82, 97),
+								TEMP_PCT(78, 93),
+								TEMP_PCT(72, 86),
+								TEMP_PCT(66, 60),
+								TEMP_PCT(60, 40),
+						}
+					},
+					[3] = {
+						.target = DPTF_TEMP_SENSOR_3,
+						.thresholds = {
+								TEMP_PCT(75, 95),
+								TEMP_PCT(70, 90),
+								TEMP_PCT(65, 80),
+								TEMP_PCT(60, 70),
+								TEMP_PCT(55, 60),
+								TEMP_PCT(50, 50),
+								TEMP_PCT(45, 40),
+								TEMP_PCT(40, 30),
+						}
+					}
+				}"
+
+				## Passive Policy
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU,         CPU,           97, 5000),
+					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 85, 5000),
+					[2] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_1, 85, 5000),
+					[3] = DPTF_PASSIVE(CHARGER,	TEMP_SENSOR_2, 80, 5000),
+					[4] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_3, 85, 5000),
+				}"
+
+				## Critical Policy
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,               115, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,      90, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,      90, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,      90, SHUTDOWN),
+					[4] = DPTF_CRITICAL(TEMP_SENSOR_3,      90, SHUTDOWN),
+				}"
+
+				register "controls.power_limits" = "{
+					.pl1 = {
+							.min_power = 28000,
+							.max_power = 28000,
+							.time_window_min = 28 * MSECS_PER_SEC,
+							.time_window_max = 32 * MSECS_PER_SEC,
+							.granularity = 200,
+						},
+					.pl2 = {
+							.min_power = 64000,
+							.max_power = 64000,
+							.time_window_min = 28 * MSECS_PER_SEC,
+							.time_window_max = 32 * MSECS_PER_SEC,
+							.granularity = 1000,
+						}
+				}"
+
+				## Charger Performance Control (Control, mA)
+				register "controls.charger_perf" = "{
+					[0] = { 255, 1700 },
+					[1] = {  24, 1500 },
+					[2] = {  16, 1000 },
+					[3] = {   8,  500 }
+				}"
+
+				## Fan Performance Control (Percent, Speed, Noise, Power)
+				register "controls.fan_perf" = "{
+					[0] = {  90, 6700, 220, 2200, },
+					[1] = {  80, 5800, 180, 1800, },
+					[2] = {  70, 5000, 145, 1450, },
+					[3] = {  60, 4900, 115, 1150, },
+					[4] = {  50, 3838,  90,  900, },
+					[5] = {  40, 2904,  55,  550, },
+					[6] = {  30, 2337,  30,  300, },
+					[7] = {  20, 1608,  15,  150, },
+					[8] = {  10,  800,  10,  100, },
+					[9] = {   0,    0,   0,   50, }
+				}"
+
+				## Fan options
+				register "options.fan.fine_grained_control" = "1"
+				register "options.fan.step_size" = "2"
+
+				device generic 0 on
+					probe THERMAL THERMAL_28W
+				end
+			end
+			chip drivers/intel/dptf
+				## sensor information
+				register "options.tsr[0].desc" = ""DRAM_SOC""
+				register "options.tsr[1].desc" = ""Ambient""
+				register "options.tsr[2].desc" = ""Charger""
+				register "options.tsr[3].desc" = ""WWAN""
+
+				# TODO: below values are initial reference values only
+				## Active Policy
+				register "policies.active" = "{
+					[0] = {
+						.target = DPTF_TEMP_SENSOR_0,
+						.thresholds = {
 								TEMP_PCT(75, 97),
 								TEMP_PCT(70, 93),
 								TEMP_PCT(60, 86),
@@ -235,7 +361,9 @@ chip soc/intel/alderlake
 				register "options.fan.fine_grained_control" = "1"
 				register "options.fan.step_size" = "2"
 
-				device generic 0 alias dptf_policy on end
+				device generic 1 on
+					probe THERMAL THERMAL_15W
+				end
 			end
 		end
 		device ref ipu on

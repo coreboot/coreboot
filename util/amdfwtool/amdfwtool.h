@@ -68,8 +68,8 @@ typedef enum _amd_fw_type {
 	AMD_FW_MSMU = 0x5a,
 	AMD_FW_SPIROM_CFG = 0x5c,
 	AMD_FW_MPIO = 0x5d,
-	AMD_FW_TPMLITE = 0x5f,
-	AMD_FW_PSP_SMUSCS = 0x5f,
+	AMD_FW_TPMLITE = 0x5f, /* family 17h & 19h */
+	AMD_FW_PSP_SMUSCS = 0x5f, /* family 15h & 16h */
 	AMD_FW_DMCUB = 0x71,
 	AMD_FW_PSP_BOOTLOADER_AB = 0x73,
 	AMD_RIB = 0x76,

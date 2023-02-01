@@ -407,9 +407,11 @@ typedef struct {
 **/
   UINT8                       PchHdaAudioLinkDmicClockSelect[2];
 
-/** Offset 0x019A - Reserved
+/** Offset 0x019A - Disable Tccold Handshake
+  Disable Tccold Handshake. <b>0: Do Nothing;</b> 1: Disable
+  $EN_DIS
 **/
-  UINT8                       Reserved1;
+  UINT8                       DisableDynamicTccoldHandshake;
 
 /** Offset 0x019B - Reserved
 **/

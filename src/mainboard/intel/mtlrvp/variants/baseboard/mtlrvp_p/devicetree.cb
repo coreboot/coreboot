@@ -69,6 +69,21 @@ chip soc/intel/meteorlake
 		},
 	}"
 
+	register "serial_io_gspi_mode" = "{
+		[PchSerialIoIndexGSPI0] = PchSerialIoDisabled,
+		[PchSerialIoIndexGSPI1] = PchSerialIoPci,
+	}"
+
+	register "serial_io_gspi_cs_mode" = "{
+		[PchSerialIoIndexGSPI0] = 0,
+		[PchSerialIoIndexGSPI1] = 0,
+	}"
+
+	register "serial_io_gspi_cs_state" = "{
+		[PchSerialIoIndexGSPI0] = 0,
+		[PchSerialIoIndexGSPI1] = 0,
+	}"
+
 	device domain 0 on
 		device ref igpu on end
 		device ref heci1 on end
@@ -129,6 +144,7 @@ chip soc/intel/meteorlake
 		device ref i2c5 on end
 		device ref shared_sram on end
 		device ref uart0 on end
+		device ref gspi1 on end
 		device ref smbus on end
 	end
 end

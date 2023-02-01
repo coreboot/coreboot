@@ -142,6 +142,10 @@ PSP_BIOSBIN_DEST=$(shell $(READELF_bootblock) -Wl $(PSP_ELF_FILE) | grep LOAD | 
 APOB_NV_SIZE=$(shell awk '$$2 == "FMAP_SECTION_RW_MRC_CACHE_SIZE" {print $$3}' $(obj)/fmap_config.h)
 APOB_NV_BASE=$(shell awk '$$2 == "FMAP_SECTION_RW_MRC_CACHE_START" {print $$3}' $(obj)/fmap_config.h)
 
+ifeq ($(CONFIG_AMDFW_SPLIT),y)
+FMAP_AMDFW_BODY_LOCATION=$(shell awk '$$2 == "FMAP_SECTION_AMDFWBODY_START" {print $$3}' $(obj)/fmap_config.h)
+endif
+
 ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
 # type = 0x6B - PSP Shared memory location
 ifneq ($(CONFIG_PSP_SHAREDMEM_SIZE),0x0)
@@ -212,6 +216,8 @@ OPT_SPL_RW_AB_TABLE_FILE=$(call add_opt_prefix, $(SPL_RW_AB_TABLE_FILE), --spl-t
 # If vboot uses 2 RW slots, then 2 copies of PSP binaries are redundant
 OPT_RECOVERY_AB_SINGLE_COPY=$(if $(CONFIG_VBOOT_SLOTS_RW_AB), --recovery-ab-single-copy)
 
+OPT_AMDFW_BODY_LOCATION=$(call add_opt_prefix, $(FMAP_AMDFW_BODY_LOCATION), --body-location)
+
 AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 		$(OPT_APOB_ADDR) \
 		$(OPT_PSP_BIOSBIN_FILE) \
@@ -230,7 +236,8 @@ AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 		$(OPT_EFS_SPI_MICRON_FLAG) \
 		--config $(CONFIG_AMDFW_CONFIG_FILE) \
 		--flashsize $(CONFIG_ROM_SIZE) \
-		$(OPT_RECOVERY_AB_SINGLE_COPY)
+		$(OPT_RECOVERY_AB_SINGLE_COPY) \
+		$(OPT_AMDFW_BODY_LOCATION)
 
 $(obj)/amdfw.rom:	$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 			$(PSP_VERSTAGE_FILE) \
@@ -251,6 +258,12 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 		$(OPT_SPL_TABLE_FILE) \
 		--location $(shell printf "%#x" $(PHOENIX_FWM_POSITION)) \
 		--output $@
+
+ifeq ($(CONFIG_AMDFW_SPLIT),y)
+$(obj)/amdfw.rom.body: $(obj)/amdfw.rom
+$(call add_intermediate, add_amdfwbody, $(obj)/amdfw.rom.body)
+	$(CBFSTOOL) $(obj)/coreboot.pre write -r AMDFWBODY -f $(obj)/amdfw.rom.body --fill-upward
+endif
 
 $(PSP_BIOSBIN_FILE): $(PSP_ELF_FILE) $(AMDCOMPRESS)
 	rm -f $@

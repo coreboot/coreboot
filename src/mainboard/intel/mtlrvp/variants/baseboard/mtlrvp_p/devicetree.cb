@@ -36,6 +36,9 @@ chip soc/intel/meteorlake
 	register "tcss_ports[2]" = "TCSS_PORT_DEFAULT(OC0)"
 	register "tcss_ports[3]" = "TCSS_PORT_DEFAULT(OC0)"
 
+	# Enable CNVi BT
+	register "cnvi_bt_core" = "true"
+
 	device domain 0 on
 		device ref igpu on end
 		device ref heci1 on end
@@ -63,6 +66,15 @@ chip soc/intel/meteorlake
 			}"
 		end # PCIE11 SSD Gen4
 		device ref xhci on end
+
+		device ref cnvi_wifi on
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				register "enable_cnvi_ddr_rfim" = "true"
+				device generic 0 on end
+			end
+		end
+
 		device ref i2c0 on end
 		device ref i2c1 on end
 		device ref i2c2 on end

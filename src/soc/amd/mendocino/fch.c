@@ -5,6 +5,7 @@
 #include <amdblocks/amd_pci_util.h>
 #include <amdblocks/gpio.h>
 #include <amdblocks/pci_clk_req.h>
+#include <amdblocks/reset.h>
 #include <amdblocks/smi.h>
 #include <assert.h>
 #include <bootstate.h>
@@ -126,11 +127,6 @@ static void fch_init_acpi_ports(void)
 				PM_ACPI_TIMER_EN_EN);
 }
 
-static void fch_init_resets(void)
-{
-	pm_write16(PWR_RESET_CFG, pm_read16(PWR_RESET_CFG) | TOGGLE_ALL_PWR_GOOD);
-}
-
 /* configure the general purpose PCIe clock outputs according to the devicetree settings */
 static void gpp_clk_setup(void)
 {
@@ -202,7 +198,7 @@ static void cgpll_clock_gate_init(void)
 
 void fch_init(void *chip_info)
 {
-	fch_init_resets();
+	set_resets_to_cold();
 	i2c_soc_init();
 	fch_init_acpi_ports();
 

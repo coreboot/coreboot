@@ -81,7 +81,7 @@ get_args() {
 			;;
 		-K | --kconfig)
 			shift
-			mblist=$(grep -r "$1" src/mainboard | sed 's|src/mainboard/||;s|/Kconfig.*||')
+			mblist=$(grep -r "$1" src/mainboard | grep Kconfig | sed 's|src/mainboard/||;s|/Kconfig.*||')
 			printf "Adding mainboard for %s\n%s\n" "$1" "${mblist}"
 			echo
 			mapfile -t mainboards <<<"$mblist"

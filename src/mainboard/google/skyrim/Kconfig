@@ -157,6 +157,7 @@ config OVERRIDE_EFS_SPI_SPEED
 config OVERRIDE_EFS_SPI_SPEED_MIN_BOARD
 	hex
 	default 0x5 if BOARD_GOOGLE_SKYRIM
+	default 0x1 if BOARD_GOOGLE_FROSTFLOW
 	default 0xffffffff
 	help
 	  Minimum board version starting which the Override EFS SPI Speed

@@ -1,7 +1,5 @@
 chip soc/intel/apollolake
 
-	device cpu_cluster 0 on end
-
 	register "pcie_rp_clkreq_pin[0]" = "CLKREQ_DISABLED"
 	# Disable unused clkreq of PCIe root ports
 	register "pcie_rp_clkreq_pin[1]" = "3" # wifi/bt

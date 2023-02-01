@@ -5,7 +5,6 @@ chip soc/intel/apollolake
 	register "enable_vtd" = "1"
 	register "dptf_enable" = "1"
 
-	device cpu_cluster 0 on end
 	device domain 0 on
 		device pci 00.0 on  end # Host Bridge
 		device pci 00.1 on  end # DPTF

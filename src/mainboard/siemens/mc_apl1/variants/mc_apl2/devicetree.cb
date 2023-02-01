@@ -1,7 +1,5 @@
 chip soc/intel/apollolake
 
-	device cpu_cluster 0 on end
-
 	register "sci_irq" = "SCIS_IRQ10"
 
 	# EMMC TX DATA Delay 1

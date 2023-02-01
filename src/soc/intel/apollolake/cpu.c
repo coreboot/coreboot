@@ -271,8 +271,6 @@ void soc_init_cpus(struct bus *cpu_bus)
 
 void apollolake_init_cpus(struct device *dev)
 {
-	if (CONFIG(SOC_INTEL_COMMON_BLOCK_CPU_MPINIT))
-		return;
 	if (!dev->link_list)
 		add_more_links(dev, 1);
 	soc_init_cpus(dev->link_list);

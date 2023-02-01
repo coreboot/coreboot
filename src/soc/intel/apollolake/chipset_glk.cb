@@ -1,5 +1,5 @@
 chip soc/intel/apollolake
-	device cpu_cluster 0 on end
+	device cpu_cluster 0 on ops glk_cpu_bus_ops end
 	device domain 0 on
 		device pci 00.0 alias system_agent	on	end # Host Bridge
 		device pci 00.1 alias dptf		on	end # DPTF

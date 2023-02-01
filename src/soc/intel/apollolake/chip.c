@@ -206,10 +206,16 @@ static struct device_operations pci_domain_ops = {
 	.acpi_fill_ssdt = ssdt_set_above_4g_pci,
 };
 
-static struct device_operations cpu_bus_ops = {
+struct device_operations apl_cpu_bus_ops = {
 	.read_resources = noop_read_resources,
 	.set_resources = noop_set_resources,
 	.init = apollolake_init_cpus,
+	.acpi_fill_ssdt = generate_cpu_entries,
+};
+
+struct device_operations glk_cpu_bus_ops = {
+	.read_resources = noop_read_resources,
+	.set_resources = noop_set_resources,
 	.acpi_fill_ssdt = generate_cpu_entries,
 };
 
@@ -218,8 +224,6 @@ static void enable_dev(struct device *dev)
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
 		dev->ops = &pci_domain_ops;
-	else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER)
-		dev->ops = &cpu_bus_ops;
 	else if (dev->path.type == DEVICE_PATH_GPIO)
 		block_gpio_enable(dev);
 }

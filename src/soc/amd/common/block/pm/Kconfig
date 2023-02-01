@@ -15,3 +15,14 @@ config SOC_AMD_COMMON_BLOCK_PM_CHIPSET_STATE_SAVE
 	  platforms that use FSP for hardware initialization.
 
 endif # SOC_AMD_COMMON_BLOCK_PM
+
+config SOC_AMD_COMMON_BLOCK_RESET
+	bool
+	help
+	  Select this option to use AMD common reset driver support.
+
+config SOC_AMD_SUPPORTS_WARM_RESET
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_RESET
+	help
+	  Select this option if the chip supports warm reset.

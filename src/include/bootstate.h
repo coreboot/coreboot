@@ -188,7 +188,11 @@ struct boot_state_init_entry {
 	};								\
 	static struct boot_state_init_entry *				\
 		bsie_ ## func_ ##_## state_ ##_## when_ BOOT_STATE_INIT_ATTR = \
-		&func_ ##_## state_ ##_## when_;
+		&func_ ##_## state_ ##_## when_;			\
+	_Static_assert(!(state_ == BS_PAYLOAD_BOOT && when_ == BS_ON_EXIT), \
+		       "Invalid bootstate hook");			\
+	_Static_assert(!(state_ == BS_OS_RESUME && when_ == BS_ON_EXIT), \
+		       "Invalid bootstate hook");
 
 /* Hook per arch when coreboot is exiting to payload or ACPI OS resume. It's
  * the very last thing done before the transition. */

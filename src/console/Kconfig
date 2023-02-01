@@ -367,6 +367,14 @@ config CONSOLE_SYSTEM76_EC
 	help
 	  Send coreboot debug output to a System76 embedded controller.
 
+config CONSOLE_AMD_SIMNOW
+	bool "AMD SimNow console output"
+	default n
+	depends on SOC_AMD_COMMON && !POST_IO
+	select CONSOLE_POST
+	help
+	  Send coreboot debug output to IO ports for SimNow
+
 config CONSOLE_OVERRIDE_LOGLEVEL
 	bool
 	help

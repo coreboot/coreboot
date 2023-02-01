@@ -5,6 +5,7 @@
 #include <console/i2c_smbus.h>
 #include <console/ne2k.h>
 #include <console/qemu_debugcon.h>
+#include <console/simnow.h>
 #include <console/spi.h>
 #include <console/spkmodem.h>
 #include <console/streams.h>
@@ -28,6 +29,7 @@ void console_hw_init(void)
 	__flashconsole_init();
 	__system76_ec_init();
 	__i2c_smbus_console_init();
+	__simnow_console_init();
 }
 
 void console_interactive_tx_byte(unsigned char byte, void *data_unused)
@@ -47,6 +49,7 @@ void console_interactive_tx_byte(unsigned char byte, void *data_unused)
 	__spiconsole_tx_byte(byte);
 	__system76_ec_tx_byte(byte);
 	__i2c_smbus_console_tx_byte(byte);
+	__simnow_console_tx_byte(byte);
 }
 
 void console_stored_tx_byte(unsigned char byte, void *data_unused)

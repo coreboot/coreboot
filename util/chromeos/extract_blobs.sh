@@ -8,9 +8,14 @@ if [ ! -f "$1" ]; then
 fi
 
 IMAGE=$1
-# create new dir '$IMAGE-blobs' (less file extension)
-DIR=$(basename $IMAGE)
-DIR="${DIR%.*}-blobs"
+
+if [[ "$2" = "" ]]; then
+	# create new dir '$IMAGE-blobs' (less file extension)
+	DIR=$(basename $IMAGE)
+	DIR="${DIR%.*}-blobs"
+else
+	DIR=$2
+fi
 mkdir -p $DIR
 
 if [ -f ./cbfstool ]; then

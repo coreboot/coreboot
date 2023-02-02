@@ -11,7 +11,7 @@ Scope (\_SB) {
 
 Device (\_SB.PCI0.LPCB.EC0)
 {
-	Name (_HID, EisaId ("PNP0C09") /* Embedded Controller Device */)  // _HID: Hardware ID
+	Name (_HID, EisaId ("PNP0C09") /* Embedded Controller Device */)
 	Name (_GPE, EC_GPE_SCI)  // _GPE: General Purpose Events
 	Name (_CRS, ResourceTemplate ()  // _CRS: Current Resource Settings
 	{

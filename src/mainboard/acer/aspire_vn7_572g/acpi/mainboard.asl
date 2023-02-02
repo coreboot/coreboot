@@ -48,7 +48,7 @@ Scope (_SB)
 
 	Device (LID0)
 	{
-		Name (_HID, EisaId ("PNP0C0D") /* Lid Device */)  // _HID: Hardware ID
+		Name (_HID, EisaId ("PNP0C0D") /* Lid Device */)
 		Method (_LID, 0, NotSerialized)  // _LID: Lid Status
 		{
 #if CONFIG(EC_USE_LGMR)
@@ -68,7 +68,7 @@ Scope (_SB)
 
 	Device (SLPB)
 	{
-		Name (_HID, EisaId ("PNP0C0E") /* Sleep Button Device */)  // _HID: Hardware ID
+		Name (_HID, EisaId ("PNP0C0E") /* Sleep Button Device */)
 		Name (_PRW, Package () { 0x0A, 3 })  // _PRW: Power Resources for Wake
 	}
 }

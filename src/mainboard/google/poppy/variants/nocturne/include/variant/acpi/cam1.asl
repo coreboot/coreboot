@@ -39,7 +39,7 @@ Scope (\_SB.PCI0.I2C5)
 
 	Device (CAM1)
 	{
-		Name (_HID, "SONY355A")  /* _HID: Hardware ID */
+		Name (_HID, "SONY355A")
 		Name (_UID, 0)  /* _UID: Unique ID */
 		Name (_DDN, "SONY IMX355A Camera") /* _DDN: DOS Device Name */
 
@@ -105,7 +105,7 @@ Scope (\_SB.PCI0.I2C5)
 
 	Device (VCM1)
 	{
-		Name (_HID, "PRP0001")  /* _HID: Hardware ID */
+		Name (_HID, "PRP0001")
 		Name (_UID, 3)  /* _UID: Unique ID */
 		Name (_DDN, "AKM AF DAC") /* _DDN: DOS Device Name */
 
@@ -137,7 +137,7 @@ Scope (\_SB.PCI0.I2C5)
 
 	Device (NVM1)
         {
-		Name (_HID, "INT3499") /* _HID: Hardware ID */
+		Name (_HID, "INT3499")
 		Name (_UID, 1)  /* _UID: Unique ID */
 		Name (_DDN, "M24C64S")  /* _DDN: DOS Device Name */
 

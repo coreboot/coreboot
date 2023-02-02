@@ -4,7 +4,7 @@
 
 Device (LID)
 {
-	Name (_HID, EisaId ("PNP0C0D"))  // _HID: Hardware ID
+	Name (_HID, EisaId ("PNP0C0D"))
 	Method (_LID, 0, NotSerialized)  // _LID: Lid Status
 	{
 		Printf ("-----> LID0: _LID")

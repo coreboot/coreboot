@@ -46,7 +46,7 @@ Scope (\_SB.PCI0.I2C3)
 
 	Device (CAM0)
 	{
-		Name (_HID, "INT3478") /* _HID: Hardware ID */
+		Name (_HID, "INT3478")
 		Name (_UID, 0)  /* _UID: Unique ID */
 		Name (_DDN, "SONY IMX208 Camera")  /* _DDN: DOS Device Name */
 
@@ -108,7 +108,7 @@ Scope (\_SB.PCI0.I2C3)
 
 	Device (NVM0)
 	{
-		Name (_HID, "INT3499") /* _HID: Hardware ID */
+		Name (_HID, "INT3499")
 		Name (_UID, 0)  /* _UID: Unique ID */
 		Name (_DDN, "GT24C16S")  /* _DDN: DOS Device Name */
 

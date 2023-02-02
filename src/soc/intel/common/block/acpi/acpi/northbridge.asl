@@ -3,7 +3,7 @@
 #include <arch/hpet.h>
 #include <soc/iomap.h>
 
-Name (_HID, EisaId ("PNP0A08") /* PCI Express Bus */)  // _HID: Hardware ID
+Name (_HID, EisaId ("PNP0A08") /* PCI Express Bus */)
 Name (_CID, EisaId ("PNP0A03") /* PCI Bus */)  // _CID: Compatible ID
 Name (_SEG, 0)  // _SEG: PCI Segment
 Name (_UID, 0)  // _UID: Unique ID

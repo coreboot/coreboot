@@ -4,8 +4,8 @@ Scope (\_SB.PCI0.I2C2)
 {
 	Device (PMIC)
 	{
-		Name (_HID, "INT3472") /* _HID: Hardware ID */
-		Name (_UID, 0)  // _UID: Unique ID */
+		Name (_HID, "INT3472")
+		Name (_UID, 0)  // _UID: Unique ID
 		Name (_DDN, "TPS68470 PMIC")  /* _DDN: DOS Device Name */
 		Name (CAMD, 0x64)
 
@@ -369,7 +369,7 @@ Scope (\_SB.PCI0.I2C2)
 
 	Device (CAM0)
 	{
-		Name (_HID, "OVTID858")  /* _HID: Hardware ID */
+		Name (_HID, "OVTID858")
 		Name (_UID, 0)  /* _UID: Unique ID */
 		Name (_DDN, "OV 13858 Camera") /* _DDN: DOS Device Name */
 		Name (CAMD, 0x02)
@@ -474,7 +474,7 @@ Scope (\_SB.PCI0.I2C2)
 
 	Device (VCM0)
 	{
-		Name (_HID, "DWDWD000")  /* _HID: Hardware ID */
+		Name (_HID, "DWDWD000")
 		Name (_UID, 0)  /* _UID: Unique ID */
 		Name (_DDN, "Dongwoon AF DAC") /* _DDN: DOS Device Name */
 		Name (CAMD, 0x03)
@@ -502,7 +502,7 @@ Scope (\_SB.PCI0.I2C3)
 {
 	Device (PMIC)
 	{
-		Name (_HID, "INT3473") /* _HID: Hardware ID */
+		Name (_HID, "INT3473")
 		Name (_UID, 0)  /* _UID: Unique ID */
 		Name (_DDN, "TPS68470 PMIC 2") /* _DDN: DOS Device Name */
 		Name (CAMD, 0x64)
@@ -805,7 +805,7 @@ Scope (\_SB.PCI0.I2C3)
 
 	Device (CAM1)
 	{
-		Name (_HID, "INT3479") /* _HID: Hardware ID */
+		Name (_HID, "INT3479")
 		Name (_UID, 0)  /* _UID: Unique ID */
 		Name (_DDN, "OV 5670 Camera")  /* _DDN: DOS Device Name */
 		Name (CAMD, 0x02)

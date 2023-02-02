@@ -27,7 +27,7 @@
 
 Device (EC0)
 {
-	Name (_HID, EisaId ("PNP0C09") /* Embedded Controller Device */)  // _HID: Hardware ID
+	Name (_HID, EisaId ("PNP0C09") /* Embedded Controller Device */)
 	Name (_GPE, 0x50)  // _GPE: General Purpose Events
 	Name (\ECOK, 0)
 #if CONFIG(EC_USE_LGMR)

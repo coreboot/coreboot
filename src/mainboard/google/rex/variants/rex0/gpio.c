@@ -107,20 +107,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_C05 : [] ==> WWAN_PERST_L_STRAP */
 	PAD_CFG_GPO(GPP_C05, 1, PLTRST),
 	/* GPP_C06 : [] ==> SOC_TCHSCR_RPT_EN */
-	/*
-	 * FIXME: Remove this code after resolving b/247029304.
-	 *
-	 * ELAN6918 Power Sequencing seems not perfectly matching
-	 * with the previous platforms and setting GPP_C06 to high prior
-	 * to the power sequencing is actually makes it work.
-	 *
-	 * Ideally Power Sequencing should be as below for ELAN6918 (in ACPI)
-	 * `POWER enabled -> RESET deasserted -> Report EN enabled`
-	 *
-	 * But below sequence is only working currently:
-	 * `Report EN enabled (ramstage) -> POWER enabled (ACPI) -> RESET deasserted (ACPI)`
-	 */
-	PAD_CFG_GPO(GPP_C06, 1, DEEP),
+	PAD_CFG_GPO(GPP_C06, 0, DEEP),
 	/* GPP_C07 : [] ==> SOC_TCHSCR_INT */
 	PAD_CFG_GPI_APIC(GPP_C07, NONE, PLTRST, LEVEL, NONE),
 	/* GPP_C08 : [] ==> SOCHOT_ODL */

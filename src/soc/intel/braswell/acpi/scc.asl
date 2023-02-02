@@ -65,7 +65,7 @@ Device (EMMC)
 
 Device (PEMC)
 {
-	Name (_ADR, 0x00100000)  // _ADR: Address
+	Name (_ADR, 0x00100000)
 
 	OperationRegion (SDIO, PCI_Config, 0x84, 0x04)
 	Field (SDIO, WordAcc, NoLock, Preserve)

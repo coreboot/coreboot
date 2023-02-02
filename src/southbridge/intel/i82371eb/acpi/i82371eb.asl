@@ -120,7 +120,7 @@ Device (PX40)
 }
 Device (PX43)
 {
-	Name (_ADR, 0x00040003)  // _ADR: Address
+	Name (_ADR, 0x00040003)
 
 	Method (_CRS, 0, NotSerialized)
 	{

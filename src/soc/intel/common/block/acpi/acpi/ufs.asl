@@ -10,7 +10,6 @@ Scope (\_SB.PCI0)
 {
 	Device (UFS)
 	{
-		/* _ADR: Address */
 		Name (_ADR, UFS_ACPI_DEVICE)
 		/* _DDN: DOS Device Name */
 		Name (_DDN, "UFS Controller")

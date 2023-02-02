@@ -35,7 +35,7 @@ DefinitionBlock(
 	{
 		Device (RP03)
 		{
-			Name (_ADR, 0x001C0002)  // _ADR: Address
+			Name (_ADR, 0x001C0002)
 			OperationRegion(RPXX, PCI_Config, 0x00, 0x10)
 
 			/* Wifi Device */

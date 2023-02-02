@@ -4,7 +4,7 @@
 
 Device (PCIB)
 {
-	Name (_ADR, 0x001e0000)  // _ADR: Address
+	Name (_ADR, 0x001e0000)
 	Name (_PRW, Package() { 13, 4 }) // Power Resources for Wake
 
 	Method (_PRT)  // _PRT: PCI Interrupt Routing Table

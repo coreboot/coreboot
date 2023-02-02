@@ -374,7 +374,6 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 		fw_type = AMD_FW_MPIO;
 		subprog = 0;
 	} else if (strcmp(fw_name, "TPMLITE_FILE") == 0) {
-		printf("TPMLITE\n");
 		fw_type = AMD_FW_TPMLITE;
 		subprog = 0;
 	} else if (strcmp(fw_name, "PSP_KVM_ENGINE_DUMMY_FILE") == 0) {

@@ -85,7 +85,7 @@ endif
 
 ## Build final SBOM (Software Bill of Materials) file in uswid format
 
-$(build-dir)/sbom.uswid: $(build-dir)/coreboot.json $(swid-files-y) $(swid-files-compiler) | $(build-dir)/goswid $(build-dir)
+$(build-dir)/sbom.uswid: $(build-dir)/coreboot.json $$(swid-files-y) $(swid-files-compiler) | $(build-dir)/goswid $(build-dir)
 	echo "    SBOM      " $^
 	$(build-dir)/goswid convert -o $@ \
 		--parent $(build-dir)/coreboot.json \

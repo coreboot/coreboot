@@ -33,6 +33,7 @@ $$(VBOOT_LIB_$(1)): $(obj)/config.h
 	$(MAKE) -C $(VBOOT_SOURCE) \
 		BUILD=$$(abspath $$(dir $$(VBOOT_LIB_$(1)))) \
 		V=$(V) \
+		USE_FLASHROM=0 \
 		fwlib \
 		$(if $(CONFIG_SBOM_VBOOT),$$(abspath $$(dir $$(VBOOT_LIB_$(1))))/vboot_host.pc)
 

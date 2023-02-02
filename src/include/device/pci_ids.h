@@ -4496,6 +4496,9 @@
 #define PCI_DID_INTEL_MTL_CRASHLOG_SRAM			0x7d0d
 #define PCI_DID_INTEL_RPL_CPU_CRASHLOG_SRAM		0xa77d
 
+/* Intel Trace Hub */
+#define PCI_DID_INTEL_MTL_TRACEHUB			0x7e24
+
 /* Intel Ethernet Controller device Ids */
 #define PCI_DID_INTEL_EHL_GBE_HOST		0x4B32
 #define PCI_DID_INTEL_EHL_GBE_PSE_0		0x4BA0

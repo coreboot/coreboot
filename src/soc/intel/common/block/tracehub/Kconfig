@@ -1,0 +1,9 @@
+config SOC_INTEL_COMMON_BLOCK_TRACEHUB
+	bool
+	default n
+	help
+	 Enable Intel Trace Hub (TH) driver. Intel FSP reserves some portion of
+	 memory for TH to store traces. This memory region information is
+	 passed via FSP HOB to coreboot. This driver locates the HOB and marks
+	 that memory region as reserved so that Operating System does not use
+	 this memory.

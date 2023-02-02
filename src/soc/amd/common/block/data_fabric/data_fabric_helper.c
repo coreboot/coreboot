@@ -47,16 +47,23 @@ void data_fabric_write32(uint8_t function, uint16_t reg, uint8_t instance_id, ui
 
 void data_fabric_print_mmio_conf(void)
 {
+	uint32_t control;
+	uint64_t base, limit;
 	printk(BIOS_SPEW,
 		"=== Data Fabric MMIO configuration registers ===\n"
-		"Addresses are shifted to the right by 16 bits.\n"
-		"idx  control     base    limit\n");
+		"idx  control             base            limit\n");
 	for (unsigned int i = 0; i < NUM_NB_MMIO_REGS; i++) {
-		printk(BIOS_SPEW, " %2u %8x %8x %8x\n",
-			i,
-			data_fabric_broadcast_read32(0, NB_MMIO_CONTROL(i)),
-			data_fabric_broadcast_read32(0, NB_MMIO_BASE(i)),
-			data_fabric_broadcast_read32(0, NB_MMIO_LIMIT(i)));
+		control = data_fabric_broadcast_read32(0, NB_MMIO_CONTROL(i));
+		/* Base and limit address registers don't contain the lower address bits, but
+		   are shifted by D18F0_MMIO_SHIFT bits */
+		base = (uint64_t)data_fabric_broadcast_read32(0, NB_MMIO_BASE(i))
+			<< D18F0_MMIO_SHIFT;
+		limit = (uint64_t)data_fabric_broadcast_read32(0, NB_MMIO_LIMIT(i))
+			<< D18F0_MMIO_SHIFT;
+		/* Lower D18F0_MMIO_SHIFT address limit bits are all 1 */
+		limit += (1 << D18F0_MMIO_SHIFT) - 1;
+		printk(BIOS_SPEW, " %2u %8x %16llx %16llx\n",
+			i, control, base, limit);
 	}
 }
 

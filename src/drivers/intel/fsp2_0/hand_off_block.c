@@ -250,6 +250,20 @@ const void *fsp_find_extension_hob_by_guid(const uint8_t *guid, size_t *size)
 	return NULL;
 }
 
+const void *fsp_find_resource_hob_by_guid(const uint8_t *guid)
+{
+	const struct hob_header *hob_iterator;
+	const struct hob_resource *res_hob;
+
+	if (fsp_hob_iterator_init(&hob_iterator) != CB_SUCCESS)
+		return NULL;
+
+	if (fsp_hob_iterator_get_next_guid_resource(&hob_iterator, guid, &res_hob) == CB_SUCCESS)
+		return res_hob;
+
+	return NULL;
+}
+
 static void display_fsp_version_info_hob(const void *hob)
 {
 #if CONFIG(DISPLAY_FSP_VERSION_INFO) || CONFIG(DISPLAY_FSP_VERSION_INFO_2)

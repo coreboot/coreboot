@@ -145,6 +145,11 @@ void fsp_verify_upd_header_signature(uint64_t upd_signature, uint64_t expected_s
 void lb_string_platform_blob_version(struct lb_header *header);
 void report_fspt_output(void);
 void soc_validate_fspm_header(const struct fsp_header *hdr);
+/*
+ * This function finds the FSP resource HOB for the given GUID.
+ * Returns the pointer to the HOB if found, otherwise NULL
+ */
+const void *fsp_find_resource_hob_by_guid(const uint8_t *guid);
 
 /* Fill in header and validate a loaded FSP component. */
 enum cb_err fsp_validate_component(struct fsp_header *hdr, void *fsp_blob, size_t size);

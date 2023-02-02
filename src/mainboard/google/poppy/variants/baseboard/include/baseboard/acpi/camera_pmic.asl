@@ -5,7 +5,7 @@ Scope (\_SB.PCI0.I2C2)
 	Device (PMIC)
 	{
 		Name (_HID, "INT3472")
-		Name (_UID, 0)  /* _UID: Unique ID */
+		Name (_UID, 0)
 		Name (_DDN, "TPS68470 PMIC")  /* _DDN: DOS Device Name */
 		Name (CAMD, 0x64)
 

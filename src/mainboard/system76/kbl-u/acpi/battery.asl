@@ -3,7 +3,7 @@
 Device (BAT0)
 {
 	Name (_HID, EisaId ("PNP0C0A") /* Control Method Battery */)
-	Name (_UID, 0)  // _UID: Unique ID
+	Name (_UID, 0)
 	Name (_PCL, Package (0x01)  // _PCL: Power Consumer List
 	{
 		_SB

@@ -6,7 +6,7 @@
 Name (_HID, EisaId ("PNP0A08") /* PCI Express Bus */)
 Name (_CID, EisaId ("PNP0A03") /* PCI Bus */)
 Name (_SEG, 0)  // _SEG: PCI Segment
-Name (_UID, 0)  // _UID: Unique ID
+Name (_UID, 0)
 
 Device (MCHC)
 {

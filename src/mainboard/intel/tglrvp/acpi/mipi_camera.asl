@@ -199,7 +199,7 @@ Scope (\_SB.PCI0.I2C3)
 	Device (CAM0)
 	{
 		Name (_HID, "OVTI8856")
-		Name (_UID, 0)  /* _UID: Unique ID */
+		Name (_UID, 0)
 		Name (_DDN, "Ov 8856 Camera")  /* _DDN: DOS Device Name */
 		Method (_STA, 0, NotSerialized)  /* _STA: Status */
 		{
@@ -322,7 +322,7 @@ Scope (\_SB.PCI0.I2C3)
 	Device (VCM0)
 	{
 		Name (_HID, "PRP0001")
-		Name (_UID, 0x03)  /* _UID: Unique ID */
+		Name (_UID, 0x03)
 		Name (_DDN, "DW9714 VCM")  /* _DDN: DOS Device Name */
 		Method (_STA, 0, NotSerialized)  /* _STA: Status */
 		{
@@ -422,7 +422,7 @@ Scope (\_SB.PCI0.I2C5)
 	Device (CAM1)
 	{
 		Name (_HID, "OVTI8856")
-		Name (_UID, 0)  /* _UID: Unique ID */
+		Name (_UID, 0)
 		Name (_DDN, "Ov 8856 Camera")  /* _DDN: DOS Device Name */
 		Method (_STA, 0, NotSerialized)  /* _STA: Status */
 		{

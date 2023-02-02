@@ -6,7 +6,7 @@ Scope (\_SB.PCI0.I2C7)
 	{
 		Name (_HID, "STAR0001")
 		Name (_CID, "PNP0C50" /* HID Protocol Device (I2C bus) */)
-		Name (_UID, 0x01)						// _UID: Unique ID
+		Name (_UID, 0x01)
 		Name (_DDN, "Touchpad")						// _DDN: DOS Device Name
 		Name (_DEP, Package (0x02)					// _DEP: Dependencies
 		{

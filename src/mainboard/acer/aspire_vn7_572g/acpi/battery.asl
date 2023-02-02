@@ -338,7 +338,7 @@ Method (GBST, 4, NotSerialized)	// All on one page
 Device (BAT0)
 {
 	Name (_HID, EisaId ("PNP0C0A") /* Control Method Battery */)
-	Name (_UID, 0)  // _UID: Unique ID
+	Name (_UID, 0)
 	Name (_PCL, Package () { \_SB })  // _PCL: Power Consumer List
 
 	Name (B0IP, Package (0x0D)

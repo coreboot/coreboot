@@ -158,9 +158,9 @@ chip soc/amd/phoenix
 
 	device domain 0 on
 		device ref iommu on end
-		device ref gpp_bridge_0 on end # GBE
-		device ref gpp_bridge_1 on end # WIFI
-		device ref gpp_bridge_2 on end # NVMe SSD
+		device ref gpp_bridge_2_1 on end # GBE
+		device ref gpp_bridge_2_2 on end # WIFI
+		device ref gpp_bridge_2_3 on end # NVMe SSD
 		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
 			device ref gfx on end # Internal GPU (GFX)
 			device ref gfx_hda on end # Display HD Audio Controller (GFXAZ)

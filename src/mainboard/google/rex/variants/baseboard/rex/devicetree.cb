@@ -20,8 +20,6 @@ chip soc/intel/meteorlake
 	# Enable CNVi BT
 	register "cnvi_bt_core" = "true"
 
-	register "sagv" = "SAGV_ENABLED"
-
 	register "serial_io_uart_mode" = "{
 		[PchSerialIoIndexUART0] = PchSerialIoPci,
 		[PchSerialIoIndexUART1] = PchSerialIoDisabled,

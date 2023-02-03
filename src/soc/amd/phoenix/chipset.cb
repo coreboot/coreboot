@@ -45,10 +45,22 @@ chip soc/amd/phoenix
 							device usb 3.0 alias usb3_port0 off end
 						end
 						chip drivers/usb/acpi
+							device usb 3.1 alias usb3_port1 off end
+						end
+						chip drivers/usb/acpi
 							device usb 2.0 alias usb2_port0 off end
 						end
 						chip drivers/usb/acpi
 							device usb 2.1 alias usb2_port1 off end
+						end
+						chip drivers/usb/acpi
+							device usb 2.2 alias usb2_port2 off end
+						end
+						chip drivers/usb/acpi
+							device usb 2.3 alias usb2_port3 off end
+						end
+						chip drivers/usb/acpi
+							device usb 2.4 alias usb2_port4 off end
 						end
 					end
 				end
@@ -58,19 +70,10 @@ chip soc/amd/phoenix
 					register "type" = "UPC_TYPE_HUB"
 					device usb 0.0 alias xhci_1_root_hub off
 						chip drivers/usb/acpi
-							device usb 3.0 alias usb3_port2 off end
+							device usb 3.0 alias usb3_port5 off end
 						end
 						chip drivers/usb/acpi
-							device usb 3.1 alias usb3_port3 off end
-						end
-						chip drivers/usb/acpi
-							device usb 2.0 alias usb2_port2 off end
-						end
-						chip drivers/usb/acpi
-							device usb 2.1 alias usb2_port3 off end
-						end
-						chip drivers/usb/acpi
-							device usb 2.2 alias usb2_port4 off end
+							device usb 2.0 alias usb2_port5 off end
 						end
 					end
 				end
@@ -89,8 +92,32 @@ chip soc/amd/phoenix
 			ops amd_internal_pcie_gpp_ops
 			device pci 0.0 on end # dummy, do not disable
 			device pci 0.2 alias i2s_ac97 off end
-			device pci 0.3 alias usb4_xhci_0 off end
-			device pci 0.4 alias usb4_xhci_1 off end
+			device pci 0.3 alias usb4_xhci_0 off
+				chip drivers/usb/acpi
+					register "type" = "UPC_TYPE_HUB"
+					device usb 0.0 alias usb4_xhci_0_root_hub off
+						chip drivers/usb/acpi
+							device usb 3.0 alias usb3_port6 off end
+						end
+						chip drivers/usb/acpi
+							device usb 2.0 alias usb2_port6 off end
+						end
+					end
+				end
+			end
+			device pci 0.4 alias usb4_xhci_1 off
+				chip drivers/usb/acpi
+					register "type" = "UPC_TYPE_HUB"
+					device usb 0.0 alias usb4_xhci_1_root_hub off
+						chip drivers/usb/acpi
+							device usb 3.0 alias usb3_port7 off end
+						end
+						chip drivers/usb/acpi
+							device usb 2.0 alias usb2_port7 off end
+						end
+					end
+				end
+			end
 			device pci 0.5 alias usb4_router_0 off end
 			device pci 0.6 alias usb4_router_1 off end
 		end

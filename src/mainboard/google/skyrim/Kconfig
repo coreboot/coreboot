@@ -199,4 +199,21 @@ config ENABLE_STB_SPILL_TO_DRAM
 config CARDBUS_PLUGIN_SUPPORT
 	default n
 
+# Exclude support for SPI ROM types that won't be used on Skyrim platforms
+config SPI_FLASH_DONT_INCLUDE_ALL_DRIVERS
+	default y
+
+# Gigadevice is used on Whiterun as an alternative to Winbond
+config SPI_FLASH_GIGADEVICE
+	default y
+
+# XMC chips used on Markarth as an alternative to Winbond
+# These chips identify as ST Micro (Manufacturer ID: 0x20)
+config SPI_FLASH_STMICRO
+	default y
+
+# Winbond chips are used by all Skyrim devices as the primary flash chip
+config SPI_FLASH_WINBOND
+	default y
+
 endif # BOARD_GOOGLE_BASEBOARD_SKYRIM

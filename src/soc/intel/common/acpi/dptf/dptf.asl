@@ -67,7 +67,6 @@ Device (DPTF)
 	}
 
 #ifdef DPTF_ENABLE_FAN_CONTROL
-	/* _ART : Active Cooling Relationship Table */
 	Method (_ART)
 	{
 		Return (\_SB.DART)

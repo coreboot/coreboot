@@ -8,9 +8,9 @@ chip soc/amd/cezanne
 		device pci 00.2 alias iommu off ops amd_iommu_ops end
 
 		device pci 01.0 on end # Dummy Host Bridge, do not disable
-		device pci 01.1 alias gpp_gfx_bridge_0 off end
-		device pci 01.2 alias gpp_gfx_bridge_1 off end
-		device pci 01.3 alias gpp_gfx_bridge_2 off end
+		device pci 01.1 alias gpp_gfx_bridge_0 off ops amd_external_pcie_gpp_ops end
+		device pci 01.2 alias gpp_gfx_bridge_1 off ops amd_external_pcie_gpp_ops end
+		device pci 01.3 alias gpp_gfx_bridge_2 off ops amd_external_pcie_gpp_ops end
 
 		device pci 02.0 on end # Dummy Host Bridge, do not disable
 		device pci 02.1 alias gpp_bridge_0 off ops amd_external_pcie_gpp_ops end

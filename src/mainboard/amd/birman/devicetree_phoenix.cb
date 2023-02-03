@@ -204,16 +204,6 @@ chip soc/amd/phoenix
 			device ref acp on end # Audio Processor (ACP)
 		end
 		device ref gpp_bridge_c on  # Internal GPP Bridge 2 to Bus C
-			device ref xhci_2 on
-				chip drivers/usb/acpi
-					register "type" = "UPC_TYPE_HUB"
-					device usb 0.0 alias xhci_2_root_hub on
-						chip drivers/usb/acpi
-							device usb 2.0 alias usb2_port5 on end
-						end
-					end
-				end
-			end
 		end
 	end
 

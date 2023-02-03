@@ -11,6 +11,9 @@ UNSORTED=()
 CPUS=$(nproc || echo "4")
 NO_CROS=0
 
+# Extra arguments to pass to abuild
+ABUILD_ARGS=""
+
 # Text STYLE variables
 BOLD="\033[1m"
 RED='\033[38;5;9m'
@@ -26,6 +29,7 @@ runs abuild on the mainboards it finds.
   Usage: ${PROGNAME} [options]
 
 Options:
+ -a | --abuild "<text>"  Specify options to pass to abuild
  -C | --cpus <num>       Specify number of CPUs to use (currently ${CPUS})
  -K | --kconfig <CONFIG> Search for Kconfig option
  -n | --no_cros	         Don't run chromeos builds
@@ -66,7 +70,7 @@ get_args() {
 	local mblist
 	local mainboards=()
 
-	if ! args="$(getopt -l version,help,debug,nocolor,kconfig:,cpus:,no_cros -o C:K:nDhV -- "$@")"; then
+	if ! args="$(getopt -l version,help,debug,nocolor,kconfig:,cpus:,no_cros,abuild: -o a:C:K:nDhV -- "$@")"; then
 		usage
 		exit 1
 	fi
@@ -75,6 +79,10 @@ get_args() {
 
 	while true; do
 		case "$1" in
+		-a | --abuild)
+			shift
+			ABUILD_ARGS=$1
+			;;
 		-C | --cpus)
 			shift
 			CPUS=$1
@@ -155,7 +163,7 @@ main() {
 		rm -rf "./${OUTPUT}"
 
 		# Non-CrOS build
-		if ! "${ABUILD}" --exitcode --cpus ${CPUS} --target "${board}"; then
+		if ! "${ABUILD}" --exitcode --cpus ${CPUS} --target "${board}" ${ABUILD_ARGS}; then
 			_echo_error "Error: Non-cros build of ${board} failed."
 			exit 1
 		fi
@@ -163,7 +171,7 @@ main() {
 		# CrOS build
 		if [[ ${NO_CROS} -eq 0 ]]; then
 			rm -rf "./${OUTPUT}"
-			if ! "${ABUILD}" --exitcode --cpus ${CPUS} --target "${board}" --chromeos; then
+			if ! "${ABUILD}" --exitcode --cpus ${CPUS} --target "${board}" --chromeos ${ABUILD_ARGS}; then
 				_echo_error "Error: CrOS build of ${board} failed."
 				exit 1
 			fi

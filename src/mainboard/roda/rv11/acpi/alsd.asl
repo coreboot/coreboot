@@ -17,7 +17,7 @@ Device (ALSD)
 		Return (Local0)
 	}
 
-	Name (_ALR, Package (0x05)  // _ALR: Ambient Light Response
+	Name (_ALR, Package (0x05)
 	{
 		Package (0x02)
 		{

@@ -8,7 +8,7 @@ Device (ALSD)
 		Return (0x0f)
 	}
 
-	Method (_ALI, 0, NotSerialized)  // _ALI: Ambient Light Illuminance
+	Method (_ALI, 0, NotSerialized)
 	{
 		Local0 = \_SB.PCI0.LPCB.EC0.LUXH
 		Local0 = (Local0 << 8) | \_SB.PCI0.LPCB.EC0.LUXL

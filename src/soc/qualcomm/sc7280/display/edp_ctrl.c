@@ -493,6 +493,9 @@ static void edp_config_ctrl(struct edp_ctrl *ctrl, uint8_t *dpcd)
 		depth = EDP_12BIT;
 	else if (ctrl->color_depth == 16)
 		depth = EDP_16BIT;
+	else
+		depth = EDP_6BIT;
+
 	config |= depth << EDP_CONFIGURATION_CTRL_BPC_SHIFT;
 
 	/* Num of Lanes */
@@ -895,7 +898,7 @@ static int edp_do_link_train(struct edp_ctrl *ctrl, uint8_t *dpcd)
 static void edp_ctrl_config_misc(struct edp_ctrl *ctrl)
 {
 	uint32_t misc_val;
-	enum edp_color_depth depth = EDP_8BIT;
+	enum edp_color_depth depth = EDP_6BIT;
 
 	misc_val = read32(&edp_lclk->misc1_misc0);
 	if (ctrl->color_depth == 8)

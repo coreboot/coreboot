@@ -28,13 +28,15 @@ void mdss_intf_tg_setup(struct edid *edid)
 
 	hsync_period = edid->mode.ha + edid->mode.hbl;
 	vsync_period = edid->mode.va + edid->mode.vbl;
-	display_vstart = edid->mode.vbl * hsync_period + edid->mode.hbl;
-	display_vend = (vsync_period * hsync_period) - 1;
+	display_vstart = (edid->mode.vbl - edid->mode.vso) * hsync_period +
+			  edid->mode.hbl - edid->mode.hso;
+	display_vend = ((vsync_period - edid->mode.vso) * hsync_period) - edid->mode.hso - 1;
 	hsync_ctl = (hsync_period << 16) | edid->mode.hspw;
-	display_hctl = edid->mode.hbl | (hsync_period - 1) << 16;
-	active_vstart = edid->mode.vbl * hsync_period;
-	active_vend = display_vend;
-	active_hctl = display_hctl;
+	active_vstart = display_vstart;
+	active_vend = active_vstart + (edid->mode.va * hsync_period) - 1;
+	active_hctl = ((edid->mode.hbl - edid->mode.hso + edid->mode.ha - 1) << 16) |
+		       (edid->mode.hbl - edid->mode.hso);
+	display_hctl = active_hctl;
 
 	write32(&mdp_intf->intf_active_v_start_f0, active_vstart);
 	write32(&mdp_intf->intf_active_v_end_f0, active_vend);

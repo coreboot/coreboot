@@ -19,6 +19,8 @@ static int get_mt6359p_regulator_id(enum mtk_regulator regulator)
 		return MT6359P_PA;
 	case MTK_REGULATOR_VMC:
 		return MT6359P_SIM1;
+	case MTK_REGULATOR_VDD18:
+		return MT6359P_VM18;
 	default:
 		return MTK_REGULATOR_INVALID;
 	}
@@ -70,6 +72,8 @@ int mainboard_enable_regulator(enum mtk_regulator regulator, bool enable)
 		mt6359p_enable_vsim1(enable);
 	else if (id == MT6359P_PA)
 		mt6359p_enable_vpa(enable);
+	else if (id == MT6359P_VM18)
+		mt6359p_enable_vm18(enable);
 	else
 		printk(BIOS_INFO, "No need to enable regulator ID: %d\n", regulator);
 

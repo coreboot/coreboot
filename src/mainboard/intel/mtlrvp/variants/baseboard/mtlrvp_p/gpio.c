@@ -19,8 +19,8 @@ static const struct pad_config mtl_p_rvp_gpio_table[] = {
 	/* GPP_A06 : GPP_A06 ==> ESPI_SOC_RESET_L configured on reset, do not touch */
 	/* GPP_A11: PEG_SLOT_DGPU_SEL_N */
 	PAD_CFG_GPO(GPP_A11, 1, DEEP),
-	/* GPP_A12: WIFI_WAKE_N */
-	PAD_CFG_GPI_SCI(GPP_A12, NONE, DEEP, LEVEL, INVERT),
+	/* GPP_A12: NC */
+	PAD_NC(GPP_A12, NONE),
 	/* GPP_A13: M2_SSD2_RST_N */
 	PAD_CFG_GPO(GPP_A13, 1, DEEP),
 	/* GPP_A14: M2_CPU_SSD4_RESET_N */

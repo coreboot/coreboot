@@ -15,19 +15,16 @@ bootblock-y	+= early_fch.c
 bootblock-y	+= espi_util.c
 bootblock-y	+= gpio.c
 bootblock-y	+= i2c.c
-bootblock-y	+= reset.c
 bootblock-y	+= uart.c
 
 verstage-y	+= i2c.c
 verstage-y	+= espi_util.c
 verstage_x86-y	+= gpio.c
-verstage_x86-y	+= reset.c
 verstage_x86-y	+= uart.c
 
 romstage-y	+= fsp_m_params.c
 romstage-y	+= gpio.c
 romstage-y	+= i2c.c
-romstage-y	+= reset.c
 romstage-y	+= romstage.c
 romstage-y	+= uart.c
 
@@ -40,7 +37,6 @@ ramstage-y	+= fsp_s_params.c
 ramstage-y	+= gpio.c
 ramstage-y	+= i2c.c
 ramstage-y	+= mca.c
-ramstage-y	+= reset.c
 ramstage-y	+= root_complex.c
 ramstage-y	+= uart.c
 ramstage-y	+= xhci.c

@@ -5,6 +5,7 @@
 #include <amdblocks/amd_pci_util.h>
 #include <amdblocks/gpio.h>
 #include <amdblocks/pci_clk_req.h>
+#include <amdblocks/reset.h>
 #include <amdblocks/smi.h>
 #include <assert.h>
 #include <bootstate.h>
@@ -192,6 +193,7 @@ static void cgpll_clock_gate_init(void)
 
 void fch_init(void *chip_info)
 {
+	set_resets_to_cold();
 	i2c_soc_init();
 	fch_init_acpi_ports();
 

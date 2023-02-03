@@ -124,6 +124,8 @@ static void fill_fspm_mrc_params(FSP_M_CONFIG *m_cfg,
 {
 	m_cfg->SaGv = config->sagv;
 	m_cfg->RMT = config->rmt;
+	/* Enable MRC Fast Boot */
+	m_cfg->MrcFastBoot = 1;
 }
 
 static void fill_fspm_cpu_params(FSP_M_CONFIG *m_cfg,

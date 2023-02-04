@@ -342,7 +342,7 @@ int __attribute__((weak))mb_measure(int wake_from_s3)
  *
  * mb_measure_log_start
  *
- * performs the measurements defined by the the board routines.
+ * performs the measurements defined by the board routines.
  *
  * The logging is defined by the mb_log_list structure
  *

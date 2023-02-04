@@ -40,7 +40,7 @@ chip northbridge/intel/sandybridge
 			device ref ehci2 on # USB2 EHCI #2 Unsupported PCI device 8086:1c2c
 				subsystemid 0x8086 0x7270
 			end
-			device ref hda on # High Definition Audio Audio controller
+			device ref hda on # High Definition Audio controller
 				subsystemid 0x8086 0x7270
 			end
 			device ref pcie_rp1 on # PCIe Port #1

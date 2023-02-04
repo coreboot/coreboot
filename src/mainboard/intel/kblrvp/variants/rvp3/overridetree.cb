@@ -41,21 +41,21 @@ chip soc/intel/skylake
 	register "PcieRpEnable[0]" = "1"
 	register "PcieRpClkReqSupport[0]" = "1"
 	register "PcieRpClkReqNumber[0]" = "2"
-	# RP1, uses uses CLK SRC 2
+	# RP1, uses CLK SRC 2
 	register "PcieRpClkSrcNumber[0]" = "2"
 
 	# PCIE Port 5 x1 -> SLOT2/LAN
 	register "PcieRpEnable[4]" = "1"
 	register "PcieRpClkReqSupport[4]" = "1"
 	register "PcieRpClkReqNumber[4]" = "3"
-	# RP5, uses uses CLK SRC 3
+	# RP5, uses CLK SRC 3
 	register "PcieRpClkSrcNumber[4]" = "3"
 
 	# PCIE Port 6 x1 -> SLOT3
 	register "PcieRpEnable[5]" = "1"
 	register "PcieRpClkReqSupport[5]" = "1"
 	register "PcieRpClkReqNumber[5]" = "1"
-	# RP6, uses uses CLK SRC 1
+	# RP6, uses CLK SRC 1
 	register "PcieRpClkSrcNumber[5]" = "1"
 
 	# PCIE Port 7 Disabled
@@ -64,14 +64,14 @@ chip soc/intel/skylake
 	register "PcieRpEnable[8]" = "1"
 	register "PcieRpClkReqSupport[8]" = "1"
 	register "PcieRpClkReqNumber[8]" = "5"
-	# RP9, uses uses CLK SRC 5
+	# RP9, uses CLK SRC 5
 	register "PcieRpClkSrcNumber[8]" = "5"
 
 	# PCIE Port 10 x1 -> WiGig
 	register "PcieRpEnable[9]" = "1"
 	register "PcieRpClkReqSupport[9]" = "1"
 	register "PcieRpClkReqNumber[9]" = "4"
-	# RP10, uses uses CLK SRC 4
+	# RP10, uses CLK SRC 4
 	register "PcieRpClkSrcNumber[9]" = "4"
 
 	# USB 2.0 Enable all ports

@@ -80,7 +80,7 @@ static void mainboard_config_cbi_wp(void)
 	}
 
 	/*
-	 * Note that we are assuming that the Status Register protect bits are
+	 * Note that we are assuming that the Status Register protect bits
 	 * are located at this index and that 1 means hardware protected.  This
 	 * should be the case for these boards.
 	 */

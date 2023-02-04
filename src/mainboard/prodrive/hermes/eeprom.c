@@ -16,7 +16,7 @@
 
 /*
  * Check Signature in EEPROM (M24C32-FMN6TP)
- * If signature is there we assume that that the content is valid
+ * If signature is there we assume that the content is valid
  */
 int check_signature(const size_t offset, const uint64_t signature)
 {

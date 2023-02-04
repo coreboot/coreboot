@@ -1111,7 +1111,7 @@ void cse_fw_sync(void)
 
 	/*
 	 * If system is in recovery mode, CSE Lite update has to be skipped but CSE
-	 * sub-partitions like NPHY and IOM have to to be updated. If CSE sub-parition update
+	 * sub-partitions like NPHY and IOM have to be updated. If CSE sub-parition update
 	 * fails during recovery, just continue to boot.
 	 */
 	if (CONFIG(SOC_INTEL_CSE_SUB_PART_UPDATE) && vboot_recovery_mode_enabled()) {

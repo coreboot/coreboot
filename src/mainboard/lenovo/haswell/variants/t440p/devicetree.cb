@@ -41,7 +41,7 @@ chip northbridge/intel/haswell
 			device pci 16.3 off end	# Management Engine KT
 			device pci 19.0 on  end	# Intel Gigabit Ethernet
 			device pci 1a.0 on  end	# USB2 EHCI #2
-			device pci 1b.0 on  end	# High Definition Audio Audio controller
+			device pci 1b.0 on  end	# High Definition Audio controller
 			device pci 1c.0 on  end	# PCIe Port #1, Realtek Card Reader
 			device pci 1c.1 on	# PCIe Port #2, WLAN
 				smbios_slot_desc "0x14" "1" "M.2 2230" "8"

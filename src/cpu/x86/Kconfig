@@ -179,7 +179,7 @@ config X86_INIT_NEED_1_SIPI
 	bool
 	default n
 	help
-	  This option limits the number of SIPI signals sent during during the
+	  This option limits the number of SIPI signals sent during the
 	  common AP setup.  Intel documentation specifies an INIT SIPI SIPI
 	  sequence, however this doesn't work on some AMD and Intel platforms.
 	  These newer AMD and Intel platforms don't need the 10ms wait between
@@ -197,7 +197,7 @@ config RESERVE_MTRRS_FOR_OS
 	default n
 	help
 	  This option allows a platform to reserve 2 MTRRs for the OS usage.
-	  The Intel SDM documents that the the first 6 MTRRs are intended for
+	  The Intel SDM documents that the first 6 MTRRs are intended for
 	  the system BIOS and the last 2 are to be reserved for OS usage.
 	  However, modern OSes use PAT to control cacheability instead of
 	  using MTRRs.

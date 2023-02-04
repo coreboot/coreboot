@@ -5,7 +5,7 @@ chip northbridge/intel/sandybridge
 		subsystemid 0x1043 0x844d inherit
 		chip southbridge/intel/bd82x6x
 			register "gen1_dec" = "0x000c0291"
-			device pci 1b.0 on      # High Definition Audio Audio controller
+			device pci 1b.0 on      # High Definition Audio controller
 				subsystemid 0x1043 0x8445
 			end
 			device pci 1c.0 off end # PCIe Port #1

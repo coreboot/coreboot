@@ -101,15 +101,15 @@ chip soc/intel/skylake
 	register "PcieRpClkReqNumber[5]" = "4"
 	register "PcieRpClkReqNumber[8]" = "1"
 
-	# RP 3 uses uses CLK SRC 5#
+	# RP 3 uses CLK SRC 5#
 	register "PcieRpClkSrcNumber[2]" = "5"
-	# RP 4 uses uses CLK SRC 2#
+	# RP 4 uses CLK SRC 2#
 	register "PcieRpClkSrcNumber[3]" = "2"
-	# RP 5 uses uses CLK SRC 3#
+	# RP 5 uses CLK SRC 3#
 	register "PcieRpClkSrcNumber[4]" = "3"
-	# RP 6 uses uses CLK SRC 4#
+	# RP 6 uses CLK SRC 4#
 	register "PcieRpClkSrcNumber[5]" = "4"
-	# RP 9 uses uses CLK SRC 1#
+	# RP 9 uses CLK SRC 1#
 	register "PcieRpClkSrcNumber[8]" = "1"
 
 	# USB 2.0 Enable all ports

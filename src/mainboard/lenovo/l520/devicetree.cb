@@ -41,7 +41,7 @@ chip northbridge/intel/sandybridge
 			device ref me_kt off end # Management Engine KT
 			device ref gbe off end # Intel Gigabit Ethernet
 			device ref ehci2 on end # USB2 EHCI #2
-			device ref hda on end # High Definition Audio Audio controller
+			device ref hda on end # High Definition Audio controller
 			device ref pcie_rp1 on end # PCIe Port #1
 			device ref pcie_rp2 on end # PCIe Port #2
 			device ref pcie_rp3 on end # PCIe Port #3

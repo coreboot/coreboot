@@ -47,8 +47,8 @@ static void lpc_init(struct device *dev)
 	/* Disable LPC MSI Capability */
 	byte = pci_read_config8(dev, 0x78);
 	byte &= ~(1 << 1);
-	byte &= ~(1 << 0);	/* Keep the old way. i.e., when bus master/DMA cycle is going
-				   on on LPC, it holds PCI grant, so no LPC slave cycle can
+	byte &= ~(1 << 0);	/* Keep the old way. i.e., when bus master/DMA cycle is running
+				   on LPC, it holds PCI grant, so no LPC slave cycle can
 				   interrupt and visit LPC. */
 	pci_write_config8(dev, 0x78, byte);
 

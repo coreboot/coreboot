@@ -133,7 +133,7 @@ chip soc/intel/skylake
 	register "PcieRpClkReqSupport[0]" = "1"
 	# RP 1 uses SRCCLKREQ1#
 	register "PcieRpClkReqNumber[0]" = "1"
-	# RP 1 uses uses CLK SRC 1
+	# RP 1 uses CLK SRC 1
 	register "PcieRpClkSrcNumber[0]" = "1"
 	# RP 1, Enable Advanced Error Reporting
 	register "PcieRpAdvancedErrorReporting[0]" = "1"

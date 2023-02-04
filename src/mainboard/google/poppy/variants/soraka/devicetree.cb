@@ -130,7 +130,7 @@ chip soc/intel/skylake
 	register "PcieRpAdvancedErrorReporting[0]" = "1"
 	# RP 1, Enable Latency Tolerance Reporting Mechanism
 	register "PcieRpLtrEnable[0]" = "1"
-	# RP 1 uses uses CLK SRC 1
+	# RP 1 uses CLK SRC 1
 	register "PcieRpClkSrcNumber[0]" = "1"
 
 	register "usb2_ports[0]" = "USB2_PORT_LONG(OC0)"	# Type-C Port 1

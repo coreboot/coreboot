@@ -109,7 +109,7 @@ static void test_mktime(void **state)
 	tm.mon = 2;
 	tm.mday = 29;
 	assert_int_equal(1078062333, rtc_mktime(&tm));
-	/* Ensure that February 29 and March 1 have different different and correct values
+	/* Ensure that February 29 and March 1 have different and correct values
 	   in leap year */
 	tm = (struct rtc_time){
 		.year = 2004, .mon = 3, .mday = 1, .hour = 7, .min = 7, .sec = 17,

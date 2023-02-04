@@ -192,7 +192,7 @@ static inline uint32_t read_clidr(void)
 	return val;
 }
 
-/* read cache size ID register register (CCSIDR) */
+/* read cache size ID register (CCSIDR) */
 static inline uint32_t read_ccsidr(void)
 {
 	uint32_t val = 0;

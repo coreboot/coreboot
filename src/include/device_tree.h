@@ -91,10 +91,10 @@ struct device_tree
  * which were consumed reading the requested value.
  */
 
-/* Read the property, if any, at offset offset. */
+/* Read the property at offset, if any exists. */
 int fdt_next_property(const void *blob, uint32_t offset,
 		      struct fdt_property *prop);
-/* Read the name of the node, if any, at offset offset. */
+/* Read the name of the node at offset, if any exists. */
 int fdt_node_name(const void *blob, uint32_t offset, const char **name);
 
 void fdt_print_node(const void *blob, uint32_t offset);

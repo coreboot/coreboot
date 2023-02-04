@@ -10,7 +10,7 @@ chip soc/intel/skylake
 	register "PcieRpAdvancedErrorReporting[6]" = "1"
 	# RP 7, Enable Latency Tolerance Reporting Mechanism
 	register "PcieRpLtrEnable[6]" = "1"
-	# RP 7 uses uses CLK SRC 4
+	# RP 7 uses CLK SRC 4
 	register "PcieRpClkSrcNumber[6]" = "4"
 
 	# Enable Root port 8(x1) for TPU0
@@ -23,7 +23,7 @@ chip soc/intel/skylake
 	register "PcieRpAdvancedErrorReporting[7]" = "1"
 	# RP 8, Enable Latency Tolerance Reporting Mechanism
 	register "PcieRpLtrEnable[7]" = "1"
-	# RP 8 uses uses CLK SRC 2
+	# RP 8 uses CLK SRC 2
 	register "PcieRpClkSrcNumber[7]" = "2"
 
 	# Enable Root port 9(x4) for i350 LAN
@@ -34,7 +34,7 @@ chip soc/intel/skylake
 	register "PcieRpAdvancedErrorReporting[8]" = "1"
 	# RP 9, Enable Latency Tolerance Reporting Mechanism
 	register "PcieRpLtrEnable[8]" = "1"
-	# RP 9 uses uses CLK SRC 2
+	# RP 9 uses CLK SRC 2
 	register "PcieRpClkSrcNumber[8]" = "2"
 
 	# These are part of Root port 9(x4)

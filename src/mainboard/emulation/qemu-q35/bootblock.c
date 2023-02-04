@@ -11,7 +11,7 @@ static void bootblock_northbridge_init(void)
 {
 	/*
 	 * The "io" variant of the config access is explicitly used to
-	 * setup the PCIEXBAR because CONFIG(ECAM_MMCONF_SUPPORT) is set to
+	 * setup the PCIEXBAR because CONFIG(ECAM_MMCONF_SUPPORT) is set
 	 * to true. That way all subsequent non-explicit config accesses use
 	 * MCFG. This code also assumes that bootblock_northbridge_init() is
 	 * the first thing called in the non-asm boot block code. The final

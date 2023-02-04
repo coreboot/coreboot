@@ -96,7 +96,7 @@ chip soc/intel/alderlake
 	}"
 	register "pcie_clk_config_flag[0]" = "PCIE_CLK_FREE_RUNNING"
 
-	# Enable CPU PCIE RP 1, 2, 3 using using free running CLK (0x80)
+	# Enable CPU PCIE RP 1, 2, 3 using free running CLK (0x80)
 	# Clock source is shared hence marked as free running.
 	register "cpu_pcie_rp[CPU_RP(1)]" = "{
 		.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_SRC_UNUSED,

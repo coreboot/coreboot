@@ -562,7 +562,7 @@ config CBFS_SIZE
 	# Default value set at the end of the file
 	help
 	  This is the part of the ROM actually managed by CBFS, located at the
-	  end of the ROM (passed through cbfstool -o) on x86 and at at the start
+	  end of the ROM (passed through cbfstool -o) on x86 and at the start
 	  of the ROM (passed through cbfstool -s) everywhere else. It defaults
 	  to span the whole ROM on all but Intel systems that use an Intel Firmware
 	  Descriptor.  It can be overridden to make coreboot live alongside other

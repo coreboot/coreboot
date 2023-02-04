@@ -57,7 +57,7 @@ chip northbridge/intel/sandybridge
 			device ref ehci2 on # USB2 EHCI #2
 				subsystemid 0x1849 0x1e2d
 			end
-			device ref hda on # High Definition Audio Audio controller
+			device ref hda on # High Definition Audio controller
 				subsystemid 0x1849 0x8892
 			end
 			device ref pcie_rp1 on # PCIe Port #1

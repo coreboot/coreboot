@@ -10,37 +10,37 @@ chip soc/intel/skylake
 	register "PcieRpEnable[5]" = "1"
 	register "PcieRpClkReqSupport[5]" = "1"
 	register "PcieRpClkReqNumber[5]" = "1" #uses SRCCLKREQ1
-	# RP6, uses uses CLK SRC 1
+	# RP6, uses CLK SRC 1
 	register "PcieRpClkSrcNumber[5]" = "1"
 
 	register "PcieRpEnable[6]" = "1"
 	register "PcieRpClkReqSupport[6]" = "1"
 	register "PcieRpClkReqNumber[6]" = "2" #uses SRCCLKREQ2
-	# RP7, uses uses CLK SRC 2
+	# RP7, uses CLK SRC 2
 	register "PcieRpClkSrcNumber[6]" = "2"
 
 	register "PcieRpEnable[7]" = "1"
 	register "PcieRpClkReqSupport[7]" = "1"
 	register "PcieRpClkReqNumber[7]" = "3" #uses SRCCLKREQ3
-	# RP8, uses uses CLK SRC 3
+	# RP8, uses CLK SRC 3
 	register "PcieRpClkSrcNumber[7]" = "3"
 
 	register "PcieRpEnable[8]" = "1"
 	register "PcieRpClkReqSupport[8]" = "1"
 	register "PcieRpClkReqNumber[8]" = "4" #uses SRCCLKREQ4
-	# RP9, uses uses CLK SRC 4
+	# RP9, uses CLK SRC 4
 	register "PcieRpClkSrcNumber[8]" = "4"
 
 	register "PcieRpEnable[13]" = "1"
 	register "PcieRpClkReqSupport[13]" = "1"
 	register "PcieRpClkReqNumber[13]" = "5" #uses SRCCLKREQ5
-	# RP14, uses uses CLK SRC 5
+	# RP14, uses CLK SRC 5
 	register "PcieRpClkSrcNumber[13]" = "5"
 
 	register "PcieRpEnable[16]" = "1"
 	register "PcieRpClkReqSupport[16]" = "1"
 	register "PcieRpClkReqNumber[16]" = "7" #uses SRCCLKREQ7
-	# RP17, uses uses CLK SRC 7
+	# RP17, uses CLK SRC 7
 	register "PcieRpClkSrcNumber[16]" = "7"
 
 	# USB related

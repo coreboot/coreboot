@@ -317,7 +317,7 @@ static struct chip *get_chip(char *path)
 	sprintf(chip_h, "src/%s", path);
 	if ((stat(chip_h, &st) == -1) && (errno == ENOENT)) {
 		/* root_complex gets away without a separate directory, but
-		 * exists on on pretty much all AMD chipsets.
+		 * exists on pretty much all AMD chipsets.
 		 */
 		if (!strstr(path, "/root_complex")) {
 			fprintf(stderr, "ERROR: Chip component %s does not exist.\n",

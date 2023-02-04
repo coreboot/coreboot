@@ -79,6 +79,14 @@ chip soc/intel/meteorlake
 		device ref tcss_xhci on end
 		device ref tcss_dma0 on end
 		device ref tcss_dma1 on end
+		device ref pcie_rp7  on
+			# Enable PCH PCIE RP 7 using CLK 1
+			register "pcie_rp[PCIE_RP(7)]" = "{
+				.clk_src = 1,
+				.clk_req = 1,
+				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR,
+			}"
+		end # WWAN
 		device ref pcie_rp10 on
 			# Enable SSD Gen4 PCIE 10 using CLK 8
 			register "pcie_rp[PCIE_RP(10)]" = "{

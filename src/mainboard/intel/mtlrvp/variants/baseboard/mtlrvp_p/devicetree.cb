@@ -87,6 +87,14 @@ chip soc/intel/meteorlake
 				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR,
 			}"
 		end # WWAN
+		device ref pcie_rp8  on
+			# Enable PCH PCIE RP 8 using CLK 5
+			register "pcie_rp[PCIE_RP(8)]" = "{
+				.clk_src = 5,
+				.clk_req = 5,
+				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR,
+			}"
+		end # WLAN
 		device ref pcie_rp10 on
 			# Enable SSD Gen4 PCIE 10 using CLK 8
 			register "pcie_rp[PCIE_RP(10)]" = "{

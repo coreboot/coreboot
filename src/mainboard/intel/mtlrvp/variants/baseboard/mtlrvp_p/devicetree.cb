@@ -101,6 +101,23 @@ chip soc/intel/meteorlake
 				.clk_req = 1,
 				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR,
 			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C05)"
+				register "reset_off_delay_ms" = "20"
+				register "srcclk_pin" = "1"
+				register "ext_pm_support" = "ACPI_PCIE_RP_EMIT_ALL"
+				register "skip_on_off_support" = "true"
+				device generic 0 alias rp7_rtd3 on end
+			end
+			chip drivers/wwan/fm
+				register "fcpo_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E07)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A15)"
+				register "perst_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C05)"
+				register "wake_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F10)"
+				register "add_acpi_dma_property" = "true"
+				use rp7_rtd3 as rtd3dev
+				device generic 0 on end
+			end
 		end # WWAN
 		device ref pcie_rp8  on
 			# Enable PCH PCIE RP 8 using CLK 5

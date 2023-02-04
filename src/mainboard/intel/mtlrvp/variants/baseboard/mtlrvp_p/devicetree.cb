@@ -194,7 +194,84 @@ chip soc/intel/meteorlake
 				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR,
 			}"
 		end # PCIE11 SSD Gen4
-		device ref xhci on end
+		device ref xhci on
+			chip drivers/usb/acpi
+				device ref xhci_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port 1""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(1, 1)"
+						device ref usb2_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port 2""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(2, 1)"
+						device ref usb2_port2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port 3""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(3, 1)"
+						device ref usb2_port3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port 4""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(4, 1)"
+						device ref usb2_port4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port 5""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(5, 1)"
+						device ref usb2_port5 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port 6""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(6, 1)"
+						device ref usb2_port6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port 7""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(7, 1)"
+						device ref usb2_port7 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port 8""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(8, 1)"
+						device ref usb2_port8 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port 9""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(9, 1)"
+						device ref usb2_port9 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port 10""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(10, 1)"
+						device ref usb2_port10 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port 1""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(1, 2)"
+						device ref usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port 2""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(2, 2)"
+						device ref usb3_port2 on end
+					end
+				end
+			end
+		end
 		device ref cnvi_wifi on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_PME_B0"

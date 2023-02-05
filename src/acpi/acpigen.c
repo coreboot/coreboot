@@ -1369,6 +1369,14 @@ void acpigen_write_store_int_to_namestr(uint64_t src, const char *dst)
 	acpigen_emit_namestring(dst);
 }
 
+/* Store ("namestr", dst) */
+void acpigen_write_store_namestr_to_op(const char *src, uint8_t dst)
+{
+	acpigen_write_store();
+	acpigen_emit_namestring(src);
+	acpigen_emit_byte(dst);
+}
+
 /* Store (src, dst) */
 void acpigen_write_store_int_to_op(uint64_t src, uint8_t dst)
 {
@@ -1528,6 +1536,20 @@ void acpigen_write_if_lequal_op_op(uint8_t op1, uint8_t op2)
 }
 
 /*
+ * Generates ACPI code for checking if operand1 is greater than operand2.
+ * Both operand1 and operand2 are ACPI ops.
+ *
+ * If (Lgreater (op1 op2))
+ */
+void acpigen_write_if_lgreater_op_op(uint8_t op1, uint8_t op2)
+{
+	acpigen_write_if();
+	acpigen_emit_byte(LGREATER_OP);
+	acpigen_emit_byte(op1);
+	acpigen_emit_byte(op2);
+}
+
+/*
  * Generates ACPI code for checking if operand1 and operand2 are equal, where,
  * operand1 is ACPI op and operand2 is an integer.
  *
@@ -1542,6 +1564,20 @@ void acpigen_write_if_lequal_op_int(uint8_t op, uint64_t val)
 }
 
 /*
+ * Generates ACPI code for checking if operand is greater than the value, where,
+ * operand is ACPI op and val is an integer.
+ *
+ * If (Lgreater (op, val))
+ */
+void acpigen_write_if_lgreater_op_int(uint8_t op, uint64_t val)
+{
+	acpigen_write_if();
+	acpigen_emit_byte(LGREATER_OP);
+	acpigen_emit_byte(op);
+	acpigen_write_integer(val);
+}
+
+/*
  * Generates ACPI code for checking if operand1 and operand2 are equal, where,
  * operand1 is namestring and operand2 is an integer.
  *
@@ -1551,6 +1587,20 @@ void acpigen_write_if_lequal_namestr_int(const char *namestr, uint64_t val)
 {
 	acpigen_write_if();
 	acpigen_emit_byte(LEQUAL_OP);
+	acpigen_emit_namestring(namestr);
+	acpigen_write_integer(val);
+}
+
+/*
+ * Generates ACPI code for checking if operand1 and operand2 are equal, where,
+ * operand1 is namestring and operand2 is an integer.
+ *
+ * If (Lgreater ("namestr", val))
+ */
+void acpigen_write_if_lgreater_namestr_int(const char *namestr, uint64_t val)
+{
+	acpigen_write_if();
+	acpigen_emit_byte(LGREATER_OP);
 	acpigen_emit_namestring(namestr);
 	acpigen_write_integer(val);
 }

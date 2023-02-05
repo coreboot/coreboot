@@ -131,6 +131,13 @@ pcie_rtd3_acpi_method_on(unsigned int pcie_rp,
 
 	acpigen_write_method_serialized("_ON", 0);
 
+	/* When this feature is enabled, ONSK indicates if the previous _OFF was
+	 * skipped. If so, since the device was not in Off state, and the current
+	 * _ON can be skipped as well.
+	 */
+	if (config->skip_on_off_support)
+		acpigen_write_if_lequal_namestr_int("ONSK", 0);
+
 	/* The _STA returns current power status of device, so we can skip _ON
 	 * if _STA returns 1
 	 * Example:
@@ -146,14 +153,6 @@ pcie_rtd3_acpi_method_on(unsigned int pcie_rp,
 	acpigen_write_if_lequal_op_int(LOCAL0_OP, ONE_OP);
 	acpigen_write_return_op(ONE_OP);
 	acpigen_write_if_end();
-
-
-	/* When this feature is enabled, ONSK indicates if the previous _OFF was
-	 * skipped. If so, since the device was not in Off state, and the current
-	 * _ON can be skipped as well.
-	 */
-	if (config->skip_on_off_support)
-		acpigen_write_if_lequal_namestr_int("ONSK", 0);
 
 	/* Disable modPHY power gating for PCH RPs. */
 	if (rp_type == PCIE_RP_PCH)

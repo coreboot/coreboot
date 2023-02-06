@@ -227,6 +227,7 @@ config MAINBOARD_PART_NUMBER
 	default "Marasov" if BOARD_GOOGLE_MARASOV
 	default "Omnigul" if BOARD_GOOGLE_OMNIGUL
 	default "Constitution" if BOARD_GOOGLE_CONSTITUTION
+	default "Aurash" if BOARD_GOOGLE_AURASH
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -270,6 +271,7 @@ config VARIANT_DIR
 	default "marasov" if BOARD_GOOGLE_MARASOV
 	default "omnigul" if BOARD_GOOGLE_OMNIGUL
 	default "constitution" if BOARD_GOOGLE_CONSTITUTION
+	default "aurash" if BOARD_GOOGLE_AURASH
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC if !BOARD_GOOGLE_BASEBOARD_NISSA

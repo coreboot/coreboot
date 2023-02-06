@@ -42,12 +42,6 @@
 
 Scope (\_SB)
 {
-#if !CONFIG(SOC_INTEL_ALDERLAKE_S3)
-	Name (S0IX, 0)
-#else
-	Name (S0IX, 1)
-#endif
-
 	/* Device base address */
 	Method (BASE, 1)
 	{

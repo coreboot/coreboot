@@ -93,32 +93,29 @@ static bool is_mystery_silicon(void)
 
 static bool is_fam17_1x(void)
 {
-	/* mask lower model number nibble and stepping */
-	return cpuid_eax(1) >> 8 == PICASSO_B0_CPUID >> 8;
+	return cpuid_match(cpuid_eax(1), PICASSO_B0_CPUID,
+			   CPUID_ALL_STEPPINGS_AND_BASE_MODELS_MASK);
 }
 
 static bool is_fam17_11(void)
 {
-	/* only mask stepping */
-	return cpuid_eax(1) >> 4 == RAVEN1_B0_CPUID >> 4;
+	return cpuid_match(cpuid_eax(1), RAVEN1_B0_CPUID, CPUID_ALL_STEPPINGS_MASK);
 }
 
 static bool is_fam17_18(void)
 {
-	/* only mask stepping */
-	return cpuid_eax(1) >> 4 == PICASSO_B0_CPUID >> 4;
+	return cpuid_match(cpuid_eax(1), PICASSO_B0_CPUID, CPUID_ALL_STEPPINGS_MASK);
 }
 
 static bool is_fam17_2x(void)
 {
-	/* mask lower model number nibble and stepping */
-	return cpuid_eax(1) >> 8 == RAVEN2_A0_CPUID >> 8;
+	return cpuid_match(cpuid_eax(1), RAVEN2_A0_CPUID,
+			   CPUID_ALL_STEPPINGS_AND_BASE_MODELS_MASK);
 }
 
 static bool is_fam17_20(void)
 {
-	/* only mask stepping */
-	return cpuid_eax(1) >> 4 == RAVEN2_A0_CPUID >> 4;
+	return cpuid_match(cpuid_eax(1), RAVEN2_A0_CPUID, CPUID_ALL_STEPPINGS_MASK);
 }
 
 enum silicon_type get_silicon_type(void)

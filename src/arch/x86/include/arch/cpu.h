@@ -121,8 +121,9 @@ struct device;
 	((model) & 0xf) << 4 | \
 	((stepping) & 0xf) << 0)
 
-#define CPUID_EXACT_MATCH_MASK		0xffffffff
-#define CPUID_ALL_STEPPINGS_MASK	0xfffffff0
+#define CPUID_EXACT_MATCH_MASK				0xffffffff
+#define CPUID_ALL_STEPPINGS_MASK			0xfffffff0
+#define CPUID_ALL_STEPPINGS_AND_BASE_MODELS_MASK	0xffffff00
 
 static inline bool cpuid_match(uint32_t a, uint32_t b, uint32_t mask)
 {

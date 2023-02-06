@@ -427,16 +427,8 @@ static struct device_operations cpu_dev_ops = {
 };
 
 static const struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_INTEL, 0x206a0, CPUID_EXACT_MATCH_MASK }, /* Intel Sandybridge */
-	{ X86_VENDOR_INTEL, 0x206a6, CPUID_EXACT_MATCH_MASK }, /* Intel Sandybridge D1 */
-	{ X86_VENDOR_INTEL, 0x206a7, CPUID_EXACT_MATCH_MASK }, /* Intel Sandybridge D2/J1 */
-	{ X86_VENDOR_INTEL, 0x306a0, CPUID_EXACT_MATCH_MASK }, /* Intel IvyBridge */
-	{ X86_VENDOR_INTEL, 0x306a2, CPUID_EXACT_MATCH_MASK }, /* Intel IvyBridge */
-	{ X86_VENDOR_INTEL, 0x306a4, CPUID_EXACT_MATCH_MASK }, /* Intel IvyBridge */
-	{ X86_VENDOR_INTEL, 0x306a5, CPUID_EXACT_MATCH_MASK }, /* Intel IvyBridge */
-	{ X86_VENDOR_INTEL, 0x306a6, CPUID_EXACT_MATCH_MASK }, /* Intel IvyBridge */
-	{ X86_VENDOR_INTEL, 0x306a8, CPUID_EXACT_MATCH_MASK }, /* Intel IvyBridge */
-	{ X86_VENDOR_INTEL, 0x306a9, CPUID_EXACT_MATCH_MASK }, /* Intel IvyBridge */
+	{ X86_VENDOR_INTEL, 0x206a0, CPUID_ALL_STEPPINGS_MASK }, /* Intel Sandybridge */
+	{ X86_VENDOR_INTEL, 0x306a0, CPUID_ALL_STEPPINGS_MASK }, /* Intel IvyBridge */
 	{ 0, 0, 0 },
 };
 

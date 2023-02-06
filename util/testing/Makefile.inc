@@ -115,7 +115,9 @@ test-lint:
 	util/lint/lint lint-extended $(JUNIT)
 
 test-abuild:
+ifneq ($(JENKINS_SKIP_SCANBUILD_TEST),y)
 	NAME=scanbuild; SCANBUILD_ARGS='-k -plist-html -maxloop 10' util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/$${NAME} $(ABUILD_OPTIONS) -scan-build --target EMULATION_QEMU_X86_Q35 --exitcode --name $${NAME}
+endif
 ifneq ($(JENKINS_SKIP_GCC_TESTS),y)
 	NAME=gcc-chromeos; util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/$${NAME} $(ABUILD_OPTIONS) -x --name $${NAME} --clean
 	NAME=gcc; util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/$${NAME} $(ABUILD_OPTIONS) --name $${NAME} --clean-somewhat

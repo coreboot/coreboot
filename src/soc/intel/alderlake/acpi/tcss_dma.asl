@@ -28,16 +28,16 @@ Name (STAT, 0x1)  /* Variable to save power state 1 - D0, 0 - D3C */
 
 Method (_S0W, 0x0)
 {
-#if !CONFIG(SOC_INTEL_ALDERLAKE_S3)
+#if CONFIG(D3COLD_SUPPORT)
 	Return (0x04)
 #else
 	Return (0x03)
-#endif	// SOC_INTEL_ALDERLAKE_S3
+#endif	// D3COLD_SUPPORT
 }
 
 Method (_PR0)
 {
-#if !CONFIG(SOC_INTEL_ALDERLAKE_S3)
+#if CONFIG(D3COLD_SUPPORT)
 	If (DUID == 0) {
 		Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT0 })
 	} Else {
@@ -49,12 +49,12 @@ Method (_PR0)
 	} Else {
 		Return (Package() { \_SB.PCI0.TBT1 })
 	}
-#endif // SOC_INTEL_ALDERLAKE_S3
+#endif // D3COLD_SUPPORT
 }
 
 Method (_PR3)
 {
-#if !CONFIG(SOC_INTEL_ALDERLAKE_S3)
+#if CONFIG(D3COLD_SUPPORT)
 	If (DUID == 0) {
 		Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT0 })
 	} Else {
@@ -66,7 +66,7 @@ Method (_PR3)
 	} Else {
 		Return (Package() { \_SB.PCI0.TBT1 })
 	}
-#endif	// SOC_INTEL_ALDERLAKE_S3
+#endif	// D3COLD_SUPPORT
 }
 
 /*

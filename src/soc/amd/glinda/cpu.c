@@ -50,8 +50,8 @@ static struct device_operations cpu_dev_ops = {
 };
 
 static struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_AMD, GLINDA_A0_CPUID}, /* TODO: Update for Glinda */
-	{ 0, 0 },
+	{ X86_VENDOR_AMD, GLINDA_A0_CPUID, CPUID_EXACT_MATCH_MASK }, /* TODO: Update for Glinda */
+	{ 0, 0, 0 },
 };
 
 static const struct cpu_driver zen_2_3 __cpu_driver = {

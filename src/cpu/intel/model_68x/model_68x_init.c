@@ -45,13 +45,17 @@ static struct device_operations cpu_dev_ops = {
  * http://download.intel.com/design/intarch/specupdt/24530663.pdf
  */
 static const struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_INTEL, 0x0680 },
-	{ X86_VENDOR_INTEL, 0x0681 }, /* PIII, cA2/cA2c/A2/BA2/PA2/MA2 */
-	{ X86_VENDOR_INTEL, 0x0683 }, /* PIII/Celeron, cB0/cB0c/B0/BB0/PB0/MB0*/
-	{ X86_VENDOR_INTEL, 0x0686 }, /* PIII/Celeron, cC0/C0/BC0/PC0/MC0 */
-	{ X86_VENDOR_INTEL, 0x068a }, /* PIII/Celeron, cD0/D0/BD0/PD0 */
+	{ X86_VENDOR_INTEL, 0x0680, CPUID_EXACT_MATCH_MASK },
+	/* PIII, cA2/cA2c/A2/BA2/PA2/MA2 */
+	{ X86_VENDOR_INTEL, 0x0681, CPUID_EXACT_MATCH_MASK },
+	/* PIII/Celeron, cB0/cB0c/B0/BB0/PB0/MB0*/
+	{ X86_VENDOR_INTEL, 0x0683, CPUID_EXACT_MATCH_MASK },
+	/* PIII/Celeron, cC0/C0/BC0/PC0/MC0 */
+	{ X86_VENDOR_INTEL, 0x0686, CPUID_EXACT_MATCH_MASK },
+	/* PIII/Celeron, cD0/D0/BD0/PD0 */
+	{ X86_VENDOR_INTEL, 0x068a, CPUID_EXACT_MATCH_MASK },
 
-	{ 0, 0 },
+	{ 0, 0, 0 },
 };
 
 static const struct cpu_driver driver __cpu_driver = {

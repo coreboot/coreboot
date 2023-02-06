@@ -188,6 +188,11 @@ static void identify_cpu(struct device *cpu)
 	}
 }
 
+static bool cpuid_match(uint32_t a, uint32_t b, uint32_t mask)
+{
+	return (a & mask) == (b & mask);
+}
+
 struct cpu_driver *find_cpu_driver(struct device *cpu)
 {
 	struct cpu_driver *driver;
@@ -196,7 +201,7 @@ struct cpu_driver *find_cpu_driver(struct device *cpu)
 		for (id = driver->id_table;
 		     id->vendor != X86_VENDOR_INVALID; id++) {
 			if ((cpu->vendor == id->vendor) &&
-				(cpu->device == id->device))
+			    cpuid_match(cpu->device, id->device, id->device_match_mask))
 				return driver;
 			if (id->vendor == X86_VENDOR_ANY)
 				return driver;

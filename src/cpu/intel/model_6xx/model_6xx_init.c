@@ -47,29 +47,33 @@ static struct device_operations cpu_dev_ops = {
  * http://download.intel.com/design/intarch/specupdt/24530663.pdf
  */
 static const struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_INTEL, 0x0611 }, /* Pentium Pro, B0 */
-	{ X86_VENDOR_INTEL, 0x0612 }, /* Pentium Pro, C0 */
-	{ X86_VENDOR_INTEL, 0x0616 }, /* Pentium Pro, sA0 */
-	{ X86_VENDOR_INTEL, 0x0617 }, /* Pentium Pro, sA1 */
-	{ X86_VENDOR_INTEL, 0x0619 }, /* Pentium Pro, sB1 */
+	{ X86_VENDOR_INTEL, 0x0611, CPUID_EXACT_MATCH_MASK }, /* Pentium Pro, B0 */
+	{ X86_VENDOR_INTEL, 0x0612, CPUID_EXACT_MATCH_MASK }, /* Pentium Pro, C0 */
+	{ X86_VENDOR_INTEL, 0x0616, CPUID_EXACT_MATCH_MASK }, /* Pentium Pro, sA0 */
+	{ X86_VENDOR_INTEL, 0x0617, CPUID_EXACT_MATCH_MASK }, /* Pentium Pro, sA1 */
+	{ X86_VENDOR_INTEL, 0x0619, CPUID_EXACT_MATCH_MASK }, /* Pentium Pro, sB1 */
 
-	{ X86_VENDOR_INTEL, 0x0633 }, /* PII, C0 */
-	{ X86_VENDOR_INTEL, 0x0634 }, /* PII, C1 */
+	{ X86_VENDOR_INTEL, 0x0633, CPUID_EXACT_MATCH_MASK }, /* PII, C0 */
+	{ X86_VENDOR_INTEL, 0x0634, CPUID_EXACT_MATCH_MASK }, /* PII, C1 */
 
-	{ X86_VENDOR_INTEL, 0x0660 }, /* Celeron, A0 */
-	{ X86_VENDOR_INTEL, 0x0665 }, /* Celeron, B0 */
-	{ X86_VENDOR_INTEL, 0x066a }, /* PII, mdxA0/dmmA0 + others */
+	{ X86_VENDOR_INTEL, 0x0660, CPUID_EXACT_MATCH_MASK }, /* Celeron, A0 */
+	{ X86_VENDOR_INTEL, 0x0665, CPUID_EXACT_MATCH_MASK }, /* Celeron, B0 */
+	{ X86_VENDOR_INTEL, 0x066a, CPUID_EXACT_MATCH_MASK }, /* PII, mdxA0/dmmA0 + others */
 
-	{ X86_VENDOR_INTEL, 0x0680 },
-	{ X86_VENDOR_INTEL, 0x0681 }, /* PIII, cA2/cA2c/A2/BA2/PA2/MA2 */
-	{ X86_VENDOR_INTEL, 0x0683 }, /* PIII/Celeron, cB0/cB0c/B0/BB0/PB0/MB0*/
-	{ X86_VENDOR_INTEL, 0x0686 }, /* PIII/Celeron, cC0/C0/BC0/PC0/MC0 */
-	{ X86_VENDOR_INTEL, 0x068a }, /* PIII/Celeron, cD0/D0/BD0/PD0 */
+	{ X86_VENDOR_INTEL, 0x0680, CPUID_EXACT_MATCH_MASK },
+	/* PIII, cA2/cA2c/A2/BA2/PA2/MA2 */
+	{ X86_VENDOR_INTEL, 0x0681, CPUID_EXACT_MATCH_MASK },
+	/* PIII/Celeron, cB0/cB0c/B0/BB0/PB0/MB0*/
+	{ X86_VENDOR_INTEL, 0x0683, CPUID_EXACT_MATCH_MASK },
+	/* PIII/Celeron, cC0/C0/BC0/PC0/MC0 */
+	{ X86_VENDOR_INTEL, 0x0686, CPUID_EXACT_MATCH_MASK },
+	/* PIII/Celeron, cD0/D0/BD0/PD0 */
+	{ X86_VENDOR_INTEL, 0x068a, CPUID_EXACT_MATCH_MASK },
 
-	{ X86_VENDOR_INTEL, 0x06a0 }, /* PIII, A0 */
-	{ X86_VENDOR_INTEL, 0x06a1 }, /* PIII, A1 */
-	{ X86_VENDOR_INTEL, 0x06a4 }, /* PIII, B0 */
-	{ 0, 0 },
+	{ X86_VENDOR_INTEL, 0x06a0, CPUID_EXACT_MATCH_MASK }, /* PIII, A0 */
+	{ X86_VENDOR_INTEL, 0x06a1, CPUID_EXACT_MATCH_MASK }, /* PIII, A1 */
+	{ X86_VENDOR_INTEL, 0x06a4, CPUID_EXACT_MATCH_MASK }, /* PIII, B0 */
+	{ 0, 0, 0 },
 };
 
 static const struct cpu_driver driver __cpu_driver = {

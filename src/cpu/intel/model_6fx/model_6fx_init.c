@@ -133,15 +133,16 @@ static struct device_operations cpu_dev_ops = {
 };
 
 static const struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_INTEL, 0x06f0 }, /* Intel Core 2 Solo/Core Duo */
-	{ X86_VENDOR_INTEL, 0x06f2 }, /* Intel Core 2 Solo/Core Duo */
-	{ X86_VENDOR_INTEL, 0x06f6 }, /* Intel Core 2 Solo/Core Duo */
-	{ X86_VENDOR_INTEL, 0x06f7 }, /* Intel Core 2 Solo/Core Duo */
-	{ X86_VENDOR_INTEL, 0x06fa }, /* Intel Core 2 Solo/Core Duo */
-	{ X86_VENDOR_INTEL, 0x06fb }, /* Intel Core 2 Solo/Core Duo */
-	{ X86_VENDOR_INTEL, 0x06fd }, /* Intel Core 2 Solo/Core Duo */
-	{ X86_VENDOR_INTEL, 0x10661 }, /* Intel Core 2 Celeron Conroe-L */
-	{ 0, 0 },
+	{ X86_VENDOR_INTEL, 0x06f0, CPUID_EXACT_MATCH_MASK }, /* Intel Core 2 Solo/Core Duo */
+	{ X86_VENDOR_INTEL, 0x06f2, CPUID_EXACT_MATCH_MASK }, /* Intel Core 2 Solo/Core Duo */
+	{ X86_VENDOR_INTEL, 0x06f6, CPUID_EXACT_MATCH_MASK }, /* Intel Core 2 Solo/Core Duo */
+	{ X86_VENDOR_INTEL, 0x06f7, CPUID_EXACT_MATCH_MASK }, /* Intel Core 2 Solo/Core Duo */
+	{ X86_VENDOR_INTEL, 0x06fa, CPUID_EXACT_MATCH_MASK }, /* Intel Core 2 Solo/Core Duo */
+	{ X86_VENDOR_INTEL, 0x06fb, CPUID_EXACT_MATCH_MASK }, /* Intel Core 2 Solo/Core Duo */
+	{ X86_VENDOR_INTEL, 0x06fd, CPUID_EXACT_MATCH_MASK }, /* Intel Core 2 Solo/Core Duo */
+	/* Intel Core 2 Celeron Conroe-L */
+	{ X86_VENDOR_INTEL, 0x10661, CPUID_EXACT_MATCH_MASK },
+	{ 0, 0, 0 },
 };
 
 static const struct cpu_driver driver __cpu_driver = {

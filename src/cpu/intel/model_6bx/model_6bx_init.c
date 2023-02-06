@@ -39,9 +39,10 @@ static struct device_operations cpu_dev_ops = {
  * http://download.intel.com/design/intarch/specupdt/24445358.pdf
  */
 static const struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_INTEL, 0x06b1 }, /* Pentium III/Celeron, tA1/A1/FPA1 */
-	{ X86_VENDOR_INTEL, 0x06b4 }, /* Pentium III, tB1/FPB1 */
-	{ 0, 0 },
+	/* Pentium III/Celeron, tA1/A1/FPA1 */
+	{ X86_VENDOR_INTEL, 0x06b1, CPUID_EXACT_MATCH_MASK },
+	{ X86_VENDOR_INTEL, 0x06b4, CPUID_EXACT_MATCH_MASK }, /* Pentium III, tB1/FPB1 */
+	{ 0, 0, 0 },
 };
 
 static const struct cpu_driver driver __cpu_driver = {

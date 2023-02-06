@@ -175,12 +175,12 @@ static struct device_operations cpu_dev_ops = {
 
 /* Arrandale / Clarkdale CPU IDs */
 static const struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_INTEL, 0x20650 },
-	{ X86_VENDOR_INTEL, 0x20651 },
-	{ X86_VENDOR_INTEL, 0x20652 },
-	{ X86_VENDOR_INTEL, 0x20654 },
-	{ X86_VENDOR_INTEL, 0x20655 },
-	{ 0, 0 },
+	{ X86_VENDOR_INTEL, 0x20650, CPUID_EXACT_MATCH_MASK },
+	{ X86_VENDOR_INTEL, 0x20651, CPUID_EXACT_MATCH_MASK },
+	{ X86_VENDOR_INTEL, 0x20652, CPUID_EXACT_MATCH_MASK },
+	{ X86_VENDOR_INTEL, 0x20654, CPUID_EXACT_MATCH_MASK },
+	{ X86_VENDOR_INTEL, 0x20655, CPUID_EXACT_MATCH_MASK },
+	{ 0, 0, 0 },
 };
 
 static const struct cpu_driver driver __cpu_driver = {

@@ -111,9 +111,13 @@ static inline bool cpu_is_intel(void)
 
 struct device;
 
+#define CPUID_EXACT_MATCH_MASK		0xffffffff
+#define CPUID_ALL_STEPPINGS_MASK	0xfffffff0
+
 struct cpu_device_id {
 	unsigned int vendor;
 	uint32_t device;
+	uint32_t device_match_mask;
 };
 
 struct cpu_driver {

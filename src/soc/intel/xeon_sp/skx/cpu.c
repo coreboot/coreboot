@@ -148,12 +148,12 @@ static struct device_operations cpu_dev_ops = {
 
 static const struct cpu_device_id cpu_table[] = {
 	/* Skylake-SP A0/A1 CPUID 0x506f0*/
-	{X86_VENDOR_INTEL, CPUID_SKYLAKE_SP_A0_A1},
+	{X86_VENDOR_INTEL, CPUID_SKYLAKE_SP_A0_A1, CPUID_EXACT_MATCH_MASK },
 	/* Skylake-SP B0 CPUID 0x506f1*/
-	{X86_VENDOR_INTEL, CPUID_SKYLAKE_SP_B0},
+	{X86_VENDOR_INTEL, CPUID_SKYLAKE_SP_B0, CPUID_EXACT_MATCH_MASK },
 	/* Skylake-SP 4 CPUID 0x50654*/
-	{X86_VENDOR_INTEL, CPUID_SKYLAKE_SP_4},
-	{0, 0},
+	{X86_VENDOR_INTEL, CPUID_SKYLAKE_SP_4, CPUID_EXACT_MATCH_MASK },
+	{0, 0, 0 },
 };
 
 static const struct cpu_driver driver __cpu_driver = {

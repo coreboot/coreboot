@@ -35,11 +35,12 @@ static struct device_operations cpu_dev_ops = {
  * http://download.intel.com/support/processors/pentiumii/xeon/24377632.pdf
  */
 static const struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_INTEL, 0x0650 }, /* PII/Celeron, dA0/mdA0/A0 */
-	{ X86_VENDOR_INTEL, 0x0651 }, /* PII/Celeron, dA1/A1 */
-	{ X86_VENDOR_INTEL, 0x0652 }, /* PII/Celeron/Xeon, dB0/mdB0/B0 */
-	{ X86_VENDOR_INTEL, 0x0653 }, /* PII/Xeon, dB1/B1 */
-	{ 0, 0 },
+	{ X86_VENDOR_INTEL, 0x0650, CPUID_EXACT_MATCH_MASK }, /* PII/Celeron, dA0/mdA0/A0 */
+	{ X86_VENDOR_INTEL, 0x0651, CPUID_EXACT_MATCH_MASK }, /* PII/Celeron, dA1/A1 */
+	/* PII/Celeron/Xeon, dB0/mdB0/B0 */
+	{ X86_VENDOR_INTEL, 0x0652, CPUID_EXACT_MATCH_MASK },
+	{ X86_VENDOR_INTEL, 0x0653, CPUID_EXACT_MATCH_MASK }, /* PII/Xeon, dB1/B1 */
+	{ 0, 0, 0 },
 };
 
 static const struct cpu_driver driver __cpu_driver = {

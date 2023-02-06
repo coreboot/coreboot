@@ -111,6 +111,16 @@ static inline bool cpu_is_intel(void)
 
 struct device;
 
+#define CPUID_FROM_FMS(family, model, stepping) ( \
+	/* bits 31..28: reserved, set to 0 */ \
+	((family) > 0xf ? ((family) - 0xf) & 0xff : 0) << 20 | \
+	((model) >> 4 & 0xf) << 16 | \
+	/* bits 15..14: reserved, set to 0 */ \
+	/* bits 13..12: processor type, set to 0 */ \
+	((family) > 0xf ? 0xf : (family) & 0xf) << 8 | \
+	((model) & 0xf) << 4 | \
+	((stepping) & 0xf) << 0)
+
 #define CPUID_EXACT_MATCH_MASK		0xffffffff
 #define CPUID_ALL_STEPPINGS_MASK	0xfffffff0
 

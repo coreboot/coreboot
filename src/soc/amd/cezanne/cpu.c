@@ -47,7 +47,7 @@ static struct device_operations cpu_dev_ops = {
 };
 
 static struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_AMD, CEZANNE_A0_CPUID, CPUID_EXACT_MATCH_MASK },
+	{ X86_VENDOR_AMD, CEZANNE_A0_CPUID, CPUID_ALL_STEPPINGS_MASK },
 	{ 0, 0, 0 },
 };
 

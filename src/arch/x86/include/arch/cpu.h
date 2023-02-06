@@ -113,7 +113,7 @@ struct device;
 
 struct cpu_device_id {
 	unsigned int vendor;
-	unsigned int device;
+	uint32_t device;
 };
 
 struct cpu_driver {

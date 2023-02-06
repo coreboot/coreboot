@@ -50,7 +50,8 @@ static struct device_operations cpu_dev_ops = {
 };
 
 static struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_AMD, PHOENIX_A0_CPUID}, /* TODO: Update for Phoenix */
+	/* TODO: Add Phoenix CPUID */
+	{ X86_VENDOR_AMD, PHOENIX2_A0_CPUID},
 	{ 0, 0 },
 };
 

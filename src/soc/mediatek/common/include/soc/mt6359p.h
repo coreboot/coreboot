@@ -87,6 +87,7 @@ u32 mt6359p_get_vsim1_voltage(void);
 void mt6359p_enable_vpa(bool enable);
 void mt6359p_enable_vsim1(bool enable);
 void mt6359p_enable_vm18(bool enable);
+void mt6359p_init_pmif_arb(void);
 void mt6359p_write_field(u32 reg, u32 val, u32 mask, u32 shift);
 void pmic_init_setting(void);
 void pmic_lp_setting(void);

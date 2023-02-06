@@ -329,7 +329,7 @@ void mt6359p_enable_vm18(bool enable)
 	mt6359p_write_field(PMIC_VM18_CON0, enable, 0x1, 0);
 }
 
-static void init_pmif_arb(void)
+void mt6359p_init_pmif_arb(void)
 {
 	if (!pmif_arb) {
 		pmif_arb = get_pmif_controller(PMIF_SPI, 0);
@@ -343,7 +343,7 @@ static void init_pmif_arb(void)
 
 void mt6359p_init(void)
 {
-	init_pmif_arb();
+	mt6359p_init_pmif_arb();
 	pmic_set_power_hold();
 	pmic_wdt_set();
 	pmic_protect_key_setting(false);

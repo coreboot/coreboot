@@ -4,6 +4,7 @@
 #include <device/device.h>
 #include <soc/bl31.h>
 #include <soc/msdc.h>
+#include <soc/mt6359p.h>
 #include <soc/usb.h>
 
 #include "display.h"
@@ -11,6 +12,8 @@
 
 static void mainboard_init(struct device *dev)
 {
+	mt6359p_init_pmif_arb();
+
 	if (display_init_required()) {
 		if (configure_display() < 0)
 			printk(BIOS_ERR, "%s: Failed to init display\n", __func__);

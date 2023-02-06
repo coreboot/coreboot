@@ -10,7 +10,6 @@
 #include <soc/addressmap.h>
 #include <soc/regulator.h>
 #include <soc/msdc.h>
-#include <soc/mt6359p.h>
 
 DEFINE_BITFIELD(MSDC0_DRV_0, 29, 18)
 DEFINE_BITFIELD(MSDC0_DRV_1, 17, 0)
@@ -107,7 +106,6 @@ void mtk_msdc_configure_sdcard(void)
 			MSDC1_GPIO_MODE1_0, MSDC1_GPIO_MODE1_VALUE);
 
 	/* enable SD card power */
-	mt6359p_init();
 	mainboard_enable_regulator(MTK_REGULATOR_VMCH, true);
 	mainboard_enable_regulator(MTK_REGULATOR_VMC, true);
 	mainboard_set_regulator_voltage(MTK_REGULATOR_VMCH, 3000000);

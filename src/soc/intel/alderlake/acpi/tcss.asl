@@ -654,7 +654,7 @@ Scope (\_SB.PCI0)
 			STAT = 0
 		}
 	}
-#endif
+#endif	// SOC_INTEL_ALDERLAKE_S3
 
 	/*
 	 * TCSS xHCI device

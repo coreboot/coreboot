@@ -247,45 +247,45 @@ Method (_PS3, 0, Serialized)
 
 Method (_S0W, 0x0, NotSerialized)
 {
-	If (S0IX == 1) {
-		Return (0x4)
-	} Else {
-		Return (0x3)
-	}
+#if !CONFIG(SOC_INTEL_TIGERLAKE_S3)
+	Return (0x4)
+#else
+	Return (0x3)
+#endif	// SOC_INTEL_ALDERLAKE_S3
 }
 
 Method (_PR0)
 {
-	If (S0IX == 1) {
-		If ((TUID == 0) || (TUID == 1)) {
-			Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT0 })
-		} Else {
-			Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT1 })
-		}
+#if !CONFIG(SOC_INTEL_TIGERLAKE_S3)
+	If ((TUID == 0) || (TUID == 1)) {
+		Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT0 })
 	} Else {
-		If ((TUID == 0) || (TUID == 1)) {
-			Return (Package() { \_SB.PCI0.TBT0 })
-		} Else {
-			Return (Package() { \_SB.PCI0.TBT1 })
-		}
+		Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT1 })
 	}
+#else
+	If ((TUID == 0) || (TUID == 1)) {
+		Return (Package() { \_SB.PCI0.TBT0 })
+	} Else {
+		Return (Package() { \_SB.PCI0.TBT1 })
+	}
+#endif	// SOC_INTEL_TIGERLAKE_S3
 }
 
 Method (_PR3)
 {
-	If (S0IX == 1) {
-		If ((TUID == 0) || (TUID == 1)) {
-			Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT0 })
-		} Else {
-			Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT1 })
-		}
+#if !CONFIG(SOC_INTEL_TIGERLAKE_S3)
+	If ((TUID == 0) || (TUID == 1)) {
+		Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT0 })
 	} Else {
-		If ((TUID == 0) || (TUID == 1)) {
-			Return (Package() { \_SB.PCI0.TBT0 })
-		} Else {
-			Return (Package() { \_SB.PCI0.TBT1 })
-		}
+		Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT1 })
 	}
+#else
+	If ((TUID == 0) || (TUID == 1)) {
+		Return (Package() { \_SB.PCI0.TBT0 })
+	} Else {
+		Return (Package() { \_SB.PCI0.TBT1 })
+	}
+#endif	// SOC_INTEL_TIGERLAKE_S3
 }
 
 /*

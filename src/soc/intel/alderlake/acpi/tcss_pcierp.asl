@@ -251,7 +251,7 @@ Method (_S0W, 0x0, NotSerialized)
 	Return (0x4)
 #else
 	Return (0x3)
-#endif
+#endif	// SOC_INTEL_ALDERLAKE_S3
 }
 
 Method (_PR0)
@@ -268,7 +268,7 @@ Method (_PR0)
 	} Else {
 		Return (Package() { \_SB.PCI0.TBT1 })
 	}
-#endif
+#endif	// SOC_INTEL_ALDERLAKE_S3
 }
 
 Method (_PR3)
@@ -285,7 +285,7 @@ Method (_PR3)
 	} Else {
 		Return (Package() { \_SB.PCI0.TBT1 })
 	}
-#endif
+#endif	// SOC_INTEL_ALDERLAKE_S3
 }
 
 /*

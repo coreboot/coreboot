@@ -27,11 +27,11 @@ Name (STAT, 0x1)  /* Variable to save power state 1 - D0, 0 - D3C */
 
 Method (_S0W, 0x0)
 {
-	If (S0IX == 1) {
-		Return (0x04)
-	} Else {
-		Return (0x03)
-	}
+#if !CONFIG(SOC_INTEL_TIGERLAKE_S3)
+	Return (0x04)
+#else
+	Return (0x03)
+#endif	// SOC_INTEL_TIGERLAKE_S3
 }
 
 /*
@@ -40,36 +40,36 @@ Method (_S0W, 0x0)
  */
 Method (_PR0)
 {
-	If (S0IX == 1) {
-		If (DUID == 0) {
-			Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT0 })
-		} Else {
-			Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT1 })
-		}
+#if !CONFIG(SOC_INTEL_TIGERLAKE_S3)
+	If (DUID == 0) {
+		Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT0 })
 	} Else {
-		If (DUID == 0) {
-			Return (Package() { \_SB.PCI0.TBT0 })
-		} Else {
-			Return (Package() { \_SB.PCI0.TBT1 })
-		}
+		Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT1 })
 	}
+#else
+	If (DUID == 0) {
+		Return (Package() { \_SB.PCI0.TBT0 })
+	} Else {
+		Return (Package() { \_SB.PCI0.TBT1 })
+	}
+#endif	// SOC_INTEL_TIGERLAKE_S3
 }
 
 Method (_PR3)
 {
-	If (S0IX == 1) {
-		If (DUID == 0) {
-			Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT0 })
-		} Else {
-			Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT1 })
-		}
+#if !CONFIG(SOC_INTEL_TIGERLAKE_S3)
+	If (DUID == 0) {
+		Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT0 })
 	} Else {
-		If (DUID == 0) {
-			Return (Package() { \_SB.PCI0.TBT0 })
-		} Else {
-			Return (Package() { \_SB.PCI0.TBT1 })
-		}
+		Return (Package() { \_SB.PCI0.D3C, \_SB.PCI0.TBT1 })
 	}
+#else
+	If (DUID == 0) {
+		Return (Package() { \_SB.PCI0.TBT0 })
+	} Else {
+		Return (Package() { \_SB.PCI0.TBT1 })
+	}
+#endif	// SOC_INTEL_TIGERLAKE_S3
 }
 
 /*

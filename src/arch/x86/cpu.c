@@ -188,11 +188,6 @@ static void identify_cpu(struct device *cpu)
 	}
 }
 
-static bool cpuid_match(uint32_t a, uint32_t b, uint32_t mask)
-{
-	return (a & mask) == (b & mask);
-}
-
 struct cpu_driver *find_cpu_driver(struct device *cpu)
 {
 	struct cpu_driver *driver;

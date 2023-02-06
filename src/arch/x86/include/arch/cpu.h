@@ -124,6 +124,11 @@ struct device;
 #define CPUID_EXACT_MATCH_MASK		0xffffffff
 #define CPUID_ALL_STEPPINGS_MASK	0xfffffff0
 
+static inline bool cpuid_match(uint32_t a, uint32_t b, uint32_t mask)
+{
+	return (a & mask) == (b & mask);
+}
+
 struct cpu_device_id {
 	unsigned int vendor;
 	uint32_t device;

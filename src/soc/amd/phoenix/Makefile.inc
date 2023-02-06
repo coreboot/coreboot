@@ -26,6 +26,7 @@ romstage-y	+= fsp_m_params.c
 romstage-y	+= gpio.c
 romstage-y	+= i2c.c
 romstage-y	+= romstage.c
+romstage-y	+= soc_util.c
 romstage-y	+= uart.c
 
 ramstage-y	+= acpi.c
@@ -38,6 +39,7 @@ ramstage-y	+= gpio.c
 ramstage-y	+= i2c.c
 ramstage-y	+= mca.c
 ramstage-y	+= root_complex.c
+ramstage-y	+= soc_util.c
 ramstage-y	+= uart.c
 ramstage-y	+= xhci.c
 

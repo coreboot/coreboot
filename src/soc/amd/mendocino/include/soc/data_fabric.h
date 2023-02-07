@@ -11,6 +11,7 @@
 #define   D18F0_MMIO_SHIFT		16
 #define D18F0_MMIO_CTRL0		0x208
 
+#define DF_MMIO_REG_SET_SIZE		4
 #define DF_MMIO_REG_SET_COUNT		8
 
 #define DF_FICAA_BIOS			0x5C

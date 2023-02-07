@@ -11,10 +11,12 @@
 
 #define BROADCAST_FABRIC_ID		0xff
 
+#define DF_MMIO_REG_OFFSET(instance) ((instance) * DF_MMIO_REG_SET_SIZE * sizeof(uint32_t))
+
 /* The number of data fabric MMIO registers is SoC-specific */
-#define DF_MMIO_BASE(reg)		((reg) * 4 * sizeof(uint32_t) + D18F0_MMIO_BASE0)
-#define DF_MMIO_LIMIT(reg)		((reg) * 4 * sizeof(uint32_t) + D18F0_MMIO_LIMIT0)
-#define DF_MMIO_CONTROL(reg)		((reg) * 4 * sizeof(uint32_t) + D18F0_MMIO_CTRL0)
+#define DF_MMIO_BASE(reg)	(D18F0_MMIO_BASE0 + DF_MMIO_REG_OFFSET(reg))
+#define DF_MMIO_LIMIT(reg)	(D18F0_MMIO_LIMIT0 + DF_MMIO_REG_OFFSET(reg))
+#define DF_MMIO_CONTROL(reg)	(D18F0_MMIO_CTRL0 + DF_MMIO_REG_OFFSET(reg))
 
 uint32_t data_fabric_read32(uint8_t function, uint16_t reg, uint8_t instance_id);
 void data_fabric_write32(uint8_t function, uint16_t reg, uint8_t instance_id, uint32_t data);

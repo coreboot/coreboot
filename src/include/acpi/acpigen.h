@@ -46,7 +46,7 @@ enum {
 	MULTI_NAME_PREFIX	= 0x2F,
 	EXT_OP_PREFIX		= 0x5B,
 	 MUTEX_OP		= 0x01,
-	 EVENT_OP		= 0x01,
+	 EVENT_OP		= 0x02,
 	 SF_RIGHT_OP		= 0x10,
 	 SF_LEFT_OP		= 0x11,
 	 COND_REFOF_OP		= 0x12,

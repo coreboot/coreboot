@@ -16,6 +16,9 @@ static const struct pad_config gpio_table[] = {
 	/* A18 : USB_OC0_N */
 	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),
 
+	/* B9 : LAN_CLKREQ_ODL */
+	PAD_CFG_NF(GPP_B9, NONE, DEEP, NF1),
+
 	/* D2  : PWM_PP3300_BUZZER */
 	PAD_CFG_GPO(GPP_D2, 1, DEEP),
 	/* D4  : LAN_PE_ISOLATE_ODL_R */

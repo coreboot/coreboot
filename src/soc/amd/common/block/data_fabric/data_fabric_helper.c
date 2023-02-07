@@ -53,12 +53,12 @@ void data_fabric_print_mmio_conf(void)
 		"=== Data Fabric MMIO configuration registers ===\n"
 		"idx  control             base            limit\n");
 	for (unsigned int i = 0; i < DF_MMIO_REG_SET_COUNT; i++) {
-		control = data_fabric_broadcast_read32(0, NB_MMIO_CONTROL(i));
+		control = data_fabric_broadcast_read32(0, DF_MMIO_CONTROL(i));
 		/* Base and limit address registers don't contain the lower address bits, but
 		   are shifted by D18F0_MMIO_SHIFT bits */
-		base = (uint64_t)data_fabric_broadcast_read32(0, NB_MMIO_BASE(i))
+		base = (uint64_t)data_fabric_broadcast_read32(0, DF_MMIO_BASE(i))
 			<< D18F0_MMIO_SHIFT;
-		limit = (uint64_t)data_fabric_broadcast_read32(0, NB_MMIO_LIMIT(i))
+		limit = (uint64_t)data_fabric_broadcast_read32(0, DF_MMIO_LIMIT(i))
 			<< D18F0_MMIO_SHIFT;
 		/* Lower D18F0_MMIO_SHIFT address limit bits are all 1 */
 		limit += (1 << D18F0_MMIO_SHIFT) - 1;
@@ -70,15 +70,15 @@ void data_fabric_print_mmio_conf(void)
 void data_fabric_disable_mmio_reg(unsigned int reg)
 {
 	union df_mmio_control ctrl = { .fabric_id = IOMS0_FABRIC_ID };
-	data_fabric_broadcast_write32(0, NB_MMIO_CONTROL(reg), ctrl.raw);
-	data_fabric_broadcast_write32(0, NB_MMIO_BASE(reg), 0);
-	data_fabric_broadcast_write32(0, NB_MMIO_LIMIT(reg), 0);
+	data_fabric_broadcast_write32(0, DF_MMIO_CONTROL(reg), ctrl.raw);
+	data_fabric_broadcast_write32(0, DF_MMIO_BASE(reg), 0);
+	data_fabric_broadcast_write32(0, DF_MMIO_LIMIT(reg), 0);
 }
 
 static bool is_mmio_reg_disabled(unsigned int reg)
 {
 	union df_mmio_control ctrl;
-	ctrl.raw = data_fabric_broadcast_read32(0, NB_MMIO_CONTROL(reg));
+	ctrl.raw = data_fabric_broadcast_read32(0, DF_MMIO_CONTROL(reg));
 	return !(ctrl.we || ctrl.re);
 }
 
@@ -124,12 +124,12 @@ void data_fabric_set_mmio_np(void)
 
 	for (i = 0; i < DF_MMIO_REG_SET_COUNT; i++) {
 		/* Adjust all registers that overlap */
-		ctrl.raw = data_fabric_broadcast_read32(0, NB_MMIO_CONTROL(i));
+		ctrl.raw = data_fabric_broadcast_read32(0, DF_MMIO_CONTROL(i));
 		if (!(ctrl.we || ctrl.re))
 			continue; /* not enabled */
 
-		base = data_fabric_broadcast_read32(0, NB_MMIO_BASE(i));
-		limit = data_fabric_broadcast_read32(0, NB_MMIO_LIMIT(i));
+		base = data_fabric_broadcast_read32(0, DF_MMIO_BASE(i));
+		limit = data_fabric_broadcast_read32(0, DF_MMIO_LIMIT(i));
 
 		if (base > np_top || limit < np_bot)
 			continue; /* no overlap at all */
@@ -141,7 +141,7 @@ void data_fabric_set_mmio_np(void)
 
 		if (base < np_bot && limit > np_top) {
 			/* Split the configured region */
-			data_fabric_broadcast_write32(0, NB_MMIO_LIMIT(i), np_bot - 1);
+			data_fabric_broadcast_write32(0, DF_MMIO_LIMIT(i), np_bot - 1);
 			reg = data_fabric_find_unused_mmio_reg();
 			if (reg < 0) {
 				/* Although a pair could be freed later, this condition is
@@ -150,17 +150,17 @@ void data_fabric_set_mmio_np(void)
 				printk(BIOS_ERR, "Not enough NB MMIO routing registers\n");
 				continue;
 			}
-			data_fabric_broadcast_write32(0, NB_MMIO_BASE(reg), np_top + 1);
-			data_fabric_broadcast_write32(0, NB_MMIO_LIMIT(reg), limit);
-			data_fabric_broadcast_write32(0, NB_MMIO_CONTROL(reg), ctrl.raw);
+			data_fabric_broadcast_write32(0, DF_MMIO_BASE(reg), np_top + 1);
+			data_fabric_broadcast_write32(0, DF_MMIO_LIMIT(reg), limit);
+			data_fabric_broadcast_write32(0, DF_MMIO_CONTROL(reg), ctrl.raw);
 			continue;
 		}
 
 		/* If still here, adjust only the base or limit */
 		if (base <= np_bot)
-			data_fabric_broadcast_write32(0, NB_MMIO_LIMIT(i), np_bot - 1);
+			data_fabric_broadcast_write32(0, DF_MMIO_LIMIT(i), np_bot - 1);
 		else
-			data_fabric_broadcast_write32(0, NB_MMIO_BASE(i), np_top + 1);
+			data_fabric_broadcast_write32(0, DF_MMIO_BASE(i), np_top + 1);
 	}
 
 	reg = data_fabric_find_unused_mmio_reg();
@@ -171,9 +171,9 @@ void data_fabric_set_mmio_np(void)
 
 	union df_mmio_control np_ctrl = { .fabric_id = IOMS0_FABRIC_ID,
 					  .np = 1, .we = 1, .re = 1 };
-	data_fabric_broadcast_write32(0, NB_MMIO_BASE(reg), np_bot);
-	data_fabric_broadcast_write32(0, NB_MMIO_LIMIT(reg), np_top);
-	data_fabric_broadcast_write32(0, NB_MMIO_CONTROL(reg), np_ctrl.raw);
+	data_fabric_broadcast_write32(0, DF_MMIO_BASE(reg), np_bot);
+	data_fabric_broadcast_write32(0, DF_MMIO_LIMIT(reg), np_top);
+	data_fabric_broadcast_write32(0, DF_MMIO_CONTROL(reg), np_ctrl.raw);
 
 	data_fabric_print_mmio_conf();
 }

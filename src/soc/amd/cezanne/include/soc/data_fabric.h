@@ -11,13 +11,13 @@
 #define   D18F0_MMIO_SHIFT		16
 #define D18F0_MMIO_CTRL0		0x208
 
+#define DF_MMIO_REG_SET_COUNT		8
+
 #define DF_FICAA_BIOS			0x5C
 #define DF_FICAD_LO			0x98
 #define DF_FICAD_HI			0x9C
 
 #define IOMS0_FABRIC_ID			10
-
-#define NUM_NB_MMIO_REGS		8
 
 union df_mmio_control {
 	struct {

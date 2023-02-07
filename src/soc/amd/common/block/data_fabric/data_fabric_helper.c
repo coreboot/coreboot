@@ -52,7 +52,7 @@ void data_fabric_print_mmio_conf(void)
 	printk(BIOS_SPEW,
 		"=== Data Fabric MMIO configuration registers ===\n"
 		"idx  control             base            limit\n");
-	for (unsigned int i = 0; i < NUM_NB_MMIO_REGS; i++) {
+	for (unsigned int i = 0; i < DF_MMIO_REG_SET_COUNT; i++) {
 		control = data_fabric_broadcast_read32(0, NB_MMIO_CONTROL(i));
 		/* Base and limit address registers don't contain the lower address bits, but
 		   are shifted by D18F0_MMIO_SHIFT bits */
@@ -84,7 +84,7 @@ static bool is_mmio_reg_disabled(unsigned int reg)
 
 int data_fabric_find_unused_mmio_reg(void)
 {
-	for (unsigned int i = 0; i < NUM_NB_MMIO_REGS; i++) {
+	for (unsigned int i = 0; i < DF_MMIO_REG_SET_COUNT; i++) {
 		if (is_mmio_reg_disabled(i))
 			return i;
 	}
@@ -122,7 +122,7 @@ void data_fabric_set_mmio_np(void)
 
 	data_fabric_print_mmio_conf();
 
-	for (i = 0; i < NUM_NB_MMIO_REGS; i++) {
+	for (i = 0; i < DF_MMIO_REG_SET_COUNT; i++) {
 		/* Adjust all registers that overlap */
 		ctrl.raw = data_fabric_broadcast_read32(0, NB_MMIO_CONTROL(i));
 		if (!(ctrl.we || ctrl.re))

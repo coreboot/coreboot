@@ -87,6 +87,7 @@ typedef enum _amd_fw_type {
 	AMD_FW_FCFG_TABLE = 0x98,
 	AMD_FW_MINIMSMU = 0x9a,
 	AMD_FW_SRAM_FW_EXT = 0x9d,
+	AMD_FW_UMSMU = 0xa2,
 	AMD_FW_IMC = 0x200,	/* Large enough to be larger than the top BHD entry type. */
 	AMD_FW_GEC,
 	AMD_FW_XHCI,

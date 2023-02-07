@@ -392,6 +392,9 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 	} else if (strcmp(fw_name, "TA_IKEK_FILE") == 0) {
 		fw_type = AMD_TA_IKEK;
 		subprog = 0;
+	} else if (strcmp(fw_name, "UMSMU_FILE") == 0) {
+		fw_type = AMD_FW_UMSMU;
+		subprog = 0;
 	} else if (strcmp(fw_name, "PSP_OEM_ABL_KEY_FILE") == 0) {
 		fw_type = AMD_FW_ABL_PUBKEY;
 		subprog = 0;

@@ -21,3 +21,9 @@ void variant_generate_s0ix_hook(enum s0ix_entry entry)
 			acpigen_soc_set_tx_gpio(GPP_B09);
 	}
 }
+
+void variant_update_soc_chip_config(struct soc_intel_meteorlake_config *config)
+{
+	config->cnvi_bt_audio_offload = fw_config_probe(FW_CONFIG(AUDIO,
+							MAX98360_ALC5682I_I2S));
+}

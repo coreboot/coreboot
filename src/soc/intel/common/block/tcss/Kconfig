@@ -9,3 +9,11 @@ config ENABLE_TCSS_DISPLAY_DETECTION
 	depends on SOC_INTEL_COMMON_BLOCK_TCSS && RUN_FSP_GOP
 	help
 	  Enable displays to be detected over Type-C ports during boot.
+
+config ENABLE_TCSS_USB_DETECTION
+	bool "Enable detection of USB boot devices attached to USB Type-C ports with TCSS"
+	depends on SOC_INTEL_COMMON_BLOCK_TCSS
+	help
+	  Enable USB-C attached storage devices to be detected at boot.
+	  This option is required for some payloads (eg, edk2), without which devices attached
+	  to USB-C ports will not be detected and available to boot from.

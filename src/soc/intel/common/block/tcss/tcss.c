@@ -340,6 +340,32 @@ static void tcss_configure_dp_mode(const struct tcss_port_map *port_map, size_t 
 	}
 }
 
+static void tcss_configure_usb_mode(const struct tcss_port_map *port_map, size_t num_ports)
+{
+	int ret;
+	size_t i;
+	const struct usbc_ops *ops;
+	struct usbc_mux_info mux_info;
+	const struct tcss_port_map *port_info;
+
+	ops = usbc_get_ops();
+	if (ops == NULL)
+		return;
+
+	for (i = 0; i < num_ports; i++) {
+		ret = ops->mux_ops.get_mux_info(i, &mux_info);
+		if ((ret < 0) || !mux_info.usb || (mux_info.dp && mux_info.hpd_lvl))
+			continue;
+
+		port_info = &port_map[i];
+		ret = send_pmc_connect_request(i, &mux_info, port_info);
+		if (ret) {
+			printk(BIOS_ERR, "Port %zu connect request failed\n", i);
+			continue;
+		}
+	}
+}
+
 static uint32_t calc_bias_ctrl_reg_value(gpio_t pad)
 {
 	unsigned int vw_index, vw_bit;
@@ -429,6 +455,9 @@ void tcss_configure(const struct typec_aux_bias_pads aux_bias_pads[MAX_TYPE_C_PO
 
 		if (CONFIG(ENABLE_TCSS_DISPLAY_DETECTION))
 			tcss_configure_dp_mode(port_map, num_ports);
+
+		if (CONFIG(ENABLE_TCSS_USB_DETECTION))
+			tcss_configure_usb_mode(port_map, num_ports);
 	}
 }
 

@@ -82,7 +82,7 @@ static void peg_enable(struct device *dev)
 	uint32_t slotcap = pci_read_config32(dev, PEG_SLOTCAP);
 
 	/* Physical slot number (zero for ports connected to onboard devices) */
-	slotcap &= ~(0x1fff << 19);
+	slotcap &= ~(0x1fffU << 19);
 	if (slot_implemented) {
 		uint16_t slot_number = peg_cfg->phys_slot_number & 0x1fff;
 		if (slot_number == 0) {
@@ -124,7 +124,7 @@ static void peg_enable(struct device *dev)
 	/* Select -3.5 dB de-emphasis */
 	pci_or_config32(dev, PEG_LCTL2, 1 << 6);
 
-	pci_or_config32(dev, PEG_L0SLAT, 1 << 31);
+	pci_or_config32(dev, PEG_L0SLAT, 1U << 31);
 
 	pci_update_config32(dev, 0x250, ~(7 << 20), 2 << 20);
 

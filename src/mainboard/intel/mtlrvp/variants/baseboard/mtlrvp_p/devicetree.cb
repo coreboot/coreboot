@@ -150,7 +150,7 @@ chip soc/intel/meteorlake
 			register "pcie_rp[PCIE_RP(7)]" = "{
 				.clk_src = 1,
 				.clk_req = 1,
-				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR,
+				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 			chip soc/intel/common/block/pcie/rtd3
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C05)"
@@ -175,7 +175,7 @@ chip soc/intel/meteorlake
 			register "pcie_rp[PCIE_RP(8)]" = "{
 				.clk_src = 5,
 				.clk_req = 5,
-				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR,
+				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 		end # WLAN
 		device ref pcie_rp10 on
@@ -183,7 +183,7 @@ chip soc/intel/meteorlake
 			register "pcie_rp[PCIE_RP(10)]" = "{
 				.clk_src = 8,
 				.clk_req = 8,
-				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR,
+				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 		end # PCIE10 SSD Gen4
 		device ref pcie_rp11 on
@@ -191,7 +191,7 @@ chip soc/intel/meteorlake
 			register "pcie_rp[PCIE_RP(11)]" = "{
 				.clk_src = 7,
 				.clk_req = 7,
-				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR,
+				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 		end # PCIE11 SSD Gen4
 		device ref xhci on

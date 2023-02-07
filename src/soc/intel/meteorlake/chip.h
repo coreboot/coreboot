@@ -300,11 +300,6 @@ struct soc_intel_meteorlake_config {
 	/* Enable(1)/Disable(0) HPD/DDC */
 	uint8_t ddi_ports_config[DDI_PORT_COUNT];
 
-	/* Hybrid storage mode enable (1) / disable (0)
-	 * This mode makes FSP detect Optane and NVME and set PCIe lane mode
-	 * accordingly */
-	uint8_t hybrid_storage_mode;
-
 	/*
 	 * Override CPU flex ratio value:
 	 * CPU ratio value controls the maximum processor non-turbo ratio.

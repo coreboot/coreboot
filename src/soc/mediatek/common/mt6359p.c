@@ -316,12 +316,12 @@ u32 mt6359p_get_vsim1_voltage(void)
 
 void mt6359p_enable_vpa(bool enable)
 {
-	mt6359p_write_field(PMIC_VPA_CON0, !!enable, 0x1, 0);
+	mt6359p_write_field(PMIC_VPA_CON0, enable, 0x1, 0);
 }
 
 void mt6359p_enable_vsim1(bool enable)
 {
-	mt6359p_write_field(PMIC_VSIM1_CON0, !!enable, 0x1, 0);
+	mt6359p_write_field(PMIC_VSIM1_CON0, enable, 0x1, 0);
 }
 
 static void init_pmif_arb(void)

@@ -14,8 +14,14 @@ ifneq ($(wildcard $(MAINBOARD_BLOBS_DIR)/APCB_Updatable.bin),)
 APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_Updatable.bin
 APCB_SOURCES_RECOVERY = $(MAINBOARD_BLOBS_DIR)/APCB_DefaultRecovery.bin
 else
-$(info APCB sources not found. Skipping APCB. The resulting image won't boot.)
+files_added:: warn_no_apcb
 endif
+
+PHONY+=warn_no_apcb
+warn_no_apcb:
+	printf "\n\t** WARNING **\n"
+	printf "coreboot has been built without an APCB.\n"
+	printf "This image will not boot.\n\n"
 
 ifeq ($(CONFIG_BIRMAN_HAVE_MCHP_FW),y)
 $(call add_intermediate, add_mchp_fw)

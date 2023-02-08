@@ -153,7 +153,6 @@ enum soc_type get_soc_type(void)
 	case SOCKET_FT5:
 		/* add is_fam17_20() CPUID sanity check here? */
 		return SOC_POLLOCK;
-		break;
 	case SOCKET_AM4:
 		/* AM4 SoC type detection logic not implemented */
 		break;

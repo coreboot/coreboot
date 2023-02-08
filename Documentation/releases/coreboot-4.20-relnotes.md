@@ -40,6 +40,20 @@ noting, but not needing a full description.
 Plans to move platform support to a branch
 ------------------------------------------
 
+### Mainboard Scaleway Tagada
+
+According to the author of the mainboard scaleway/tagada, the mainboard
+is not used anymore. Since the mainboard is not publicly available for
+purchase and not used anywhere else, the usual deprecation process of 6
+months is not needed.
+
+Thus, to reduce the maintenance overhead for the community, support for
+the following components will be removed from the master branch and will
+be maintained on the release 4.19 branch.
+
+  * Mainboard Scaleway Tagada
+
+
 ### Intel Quark SoC & Galileo mainboard
 
 The SoC Intel Quark is unmaintained and different efforts to revive it

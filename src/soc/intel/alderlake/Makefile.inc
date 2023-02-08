@@ -76,6 +76,8 @@ ifeq ($(CONFIG_SOC_INTEL_ALDERLAKE_PCH_S),y)
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-97-02
 # ADL-S H0
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-97-05
+# RPL-S/HX B0
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-b7-01
 else
 ifneq ($(CONFIG_SOC_INTEL_ALDERLAKE_PCH_N),y)
 # 06-9a-00, 06-9a-01 are ADL-P/ADL-M Engineering Samples

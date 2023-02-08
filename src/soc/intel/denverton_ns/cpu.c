@@ -126,7 +126,7 @@ static const struct cpu_device_id cpu_table[] = {
 	{X86_VENDOR_INTEL, CPUID_DENVERTON_A0_A1, CPUID_EXACT_MATCH_MASK },
 	/* Denverton-NS B0 CPUID */
 	{X86_VENDOR_INTEL, CPUID_DENVERTON_B0, CPUID_EXACT_MATCH_MASK },
-	{0, 0, 0 },
+	CPU_TABLE_END
 };
 
 static const struct cpu_driver driver __cpu_driver = {

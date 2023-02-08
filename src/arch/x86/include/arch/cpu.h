@@ -130,6 +130,8 @@ static inline bool cpuid_match(uint32_t a, uint32_t b, uint32_t mask)
 	return (a & mask) == (b & mask);
 }
 
+#define CPU_TABLE_END	{ X86_VENDOR_INVALID, 0, 0 }
+
 struct cpu_device_id {
 	unsigned int vendor;
 	uint32_t device;

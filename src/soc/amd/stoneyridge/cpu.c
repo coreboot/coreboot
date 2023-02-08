@@ -62,7 +62,7 @@ static struct device_operations cpu_dev_ops = {
 static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_AMD, CPUID_FROM_FMS(0x15, 0x60, 0), CPUID_ALL_STEPPINGS_MASK },
 	{ X86_VENDOR_AMD, CPUID_FROM_FMS(0x15, 0x70, 0), CPUID_ALL_STEPPINGS_MASK },
-	{ 0, 0, 0 },
+	CPU_TABLE_END
 };
 
 static const struct cpu_driver model_15 __cpu_driver = {

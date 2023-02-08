@@ -42,7 +42,7 @@ static const struct cpu_device_id cpu_table[] = {
 	/* Pentium III/Celeron, tA1/A1/FPA1 */
 	{ X86_VENDOR_INTEL, 0x06b1, CPUID_EXACT_MATCH_MASK },
 	{ X86_VENDOR_INTEL, 0x06b4, CPUID_EXACT_MATCH_MASK }, /* Pentium III, tB1/FPB1 */
-	{ 0, 0, 0 },
+	CPU_TABLE_END
 };
 
 static const struct cpu_driver driver __cpu_driver = {

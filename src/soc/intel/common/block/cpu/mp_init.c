@@ -81,7 +81,7 @@ static const struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, CPUID_ALDERLAKE_N_A0, CPUID_EXACT_MATCH_MASK },
 	{ X86_VENDOR_INTEL, CPUID_RAPTORLAKE_P_J0, CPUID_EXACT_MATCH_MASK },
 	{ X86_VENDOR_INTEL, CPUID_RAPTORLAKE_P_Q0, CPUID_EXACT_MATCH_MASK },
-	{ 0, 0, 0 },
+	CPU_TABLE_END
 };
 
 static const struct cpu_driver driver __cpu_driver = {

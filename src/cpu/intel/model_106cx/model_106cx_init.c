@@ -82,7 +82,7 @@ static struct device_operations cpu_dev_ops = {
 static const struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x106c0, CPUID_EXACT_MATCH_MASK }, /* Intel Atom 230 */
 	{ X86_VENDOR_INTEL, 0x106ca, CPUID_EXACT_MATCH_MASK }, /* Intel Atom D5xx */
-	{ 0, 0, 0 },
+	CPU_TABLE_END
 };
 
 static const struct cpu_driver driver __cpu_driver = {

@@ -22,7 +22,7 @@ static const struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x0f48, CPUID_EXACT_MATCH_MASK }, /* Not tested */
 	{ X86_VENDOR_INTEL, 0x0f49, CPUID_EXACT_MATCH_MASK }, /* Not tested */
 	{ X86_VENDOR_INTEL, 0x0f4a, CPUID_EXACT_MATCH_MASK }, /* Not tested */
-	{ 0, 0, 0 },
+	CPU_TABLE_END
 };
 
 static const struct cpu_driver model_f4x __cpu_driver = {

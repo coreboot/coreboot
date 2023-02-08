@@ -153,7 +153,7 @@ static const struct cpu_device_id cpu_table[] = {
 	{X86_VENDOR_INTEL, CPUID_SKYLAKE_SP_B0, CPUID_EXACT_MATCH_MASK },
 	/* Skylake-SP 4 CPUID 0x50654*/
 	{X86_VENDOR_INTEL, CPUID_SKYLAKE_SP_4, CPUID_EXACT_MATCH_MASK },
-	{0, 0, 0 },
+	CPU_TABLE_END
 };
 
 static const struct cpu_driver driver __cpu_driver = {

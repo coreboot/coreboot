@@ -51,7 +51,7 @@ static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_AMD, RAVEN1_B0_CPUID, CPUID_ALL_STEPPINGS_MASK },
 	{ X86_VENDOR_AMD, PICASSO_B0_CPUID, CPUID_ALL_STEPPINGS_MASK },
 	{ X86_VENDOR_AMD, RAVEN2_A0_CPUID, CPUID_ALL_STEPPINGS_MASK },
-	{ 0, 0, 0 },
+	CPU_TABLE_END
 };
 
 static const struct cpu_driver model_17 __cpu_driver = {

@@ -123,7 +123,7 @@ static const struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x06e0, CPUID_EXACT_MATCH_MASK }, /* Intel Core Solo/Core Duo */
 	{ X86_VENDOR_INTEL, 0x06e8, CPUID_EXACT_MATCH_MASK }, /* Intel Core Solo/Core Duo */
 	{ X86_VENDOR_INTEL, 0x06ec, CPUID_EXACT_MATCH_MASK }, /* Intel Core Solo/Core Duo */
-	{ 0, 0, 0 },
+	CPU_TABLE_END
 };
 
 static const struct cpu_driver driver __cpu_driver = {

@@ -16,8 +16,10 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOC_AMD_COMMON_BLOCK_ESPI_RETAIN_PORT80_EN
 
 config FMDFILE
-	default "src/mainboard/amd/birman/chromeos.fmd" if CHROMEOS
-	default "src/mainboard/amd/birman/board.fmd"
+	default "src/mainboard/amd/birman/chromeos_glinda.fmd" if CHROMEOS && BOARD_AMD_BIRMAN_GLINDA
+	default "src/mainboard/amd/birman/chromeos_phoenix.fmd" if CHROMEOS && BOARD_AMD_BIRMAN_PHOENIX
+	default "src/mainboard/amd/birman/board_glinda.fmd" if BOARD_AMD_BIRMAN_GLINDA
+	default "src/mainboard/amd/birman/board_phoenix.fmd"
 
 config MAINBOARD_DIR
 	default "amd/birman"
@@ -54,7 +56,7 @@ config BIRMAN_MCHP_FW_FILE
 config BIRMAN_MCHP_FW_OFFSET
 	hex
 	depends on BIRMAN_HAVE_MCHP_FW
-	default 0xB80000
+	default 0xF00000
 	help
 	  The EC firmware blob defaults to the 4MByte offset of the firmware
 	  image. If this offset needs to change, a new signature block must be

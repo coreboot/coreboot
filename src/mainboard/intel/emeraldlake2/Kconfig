@@ -14,9 +14,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_ME_BIN
 	#select MAINBOARD_HAS_CHROMEOS
 
-config VBOOT
-	#select VBOOT_VBNV_CMOS
-
 config MAINBOARD_DIR
 	default "intel/emeraldlake2"
 

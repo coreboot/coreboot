@@ -86,6 +86,11 @@ config SPL_RW_AB_TABLE_FILE
 	depends on HAVE_SPL_RW_AB_FILE
 	default "3rdparty/blobs/mainboard/google/skyrim/TypeId0x55_SplTableBl_MDN_CHROME.sbin"
 
+config SOC_AMD_COMMON_BLOCK_PSP_FUSE_SPL
+	default y if BOARD_GOOGLE_WHITERUN
+	default y if BOARD_GOOGLE_WINTERHOLD
+	default n
+
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd"
 

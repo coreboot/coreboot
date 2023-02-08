@@ -22,6 +22,10 @@ config MAX_CPUS
 	int
 	default 255
 
+config ACPI_CPU_STRING
+	string
+	default "\\_SB.C%03X"
+
 config MAX_SOCKET_UPD
 	int
 	default 2

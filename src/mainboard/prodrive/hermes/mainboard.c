@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi.h>
 #include <acpi/acpigen.h>
 #include <bootstate.h>
 #include <cbmem.h>
@@ -217,6 +218,18 @@ static void mainboard_acpi_fill_ssdt(const struct device *dev)
 				acpigen_write_soc_gpio_op(usb_power_gpios[i]);
 		}
 		acpigen_pop_len();
+
+		if (!board_cfg->wake_on_usb) {
+			acpigen_write_if();
+			acpigen_emit_byte(LNOT_OP);
+			acpigen_emit_byte(LLESS_OP);
+			acpigen_emit_byte(ARG0_OP);
+			acpigen_write_integer(ACPI_S3);
+			{
+				acpigen_write_store_int_to_namestr(0, "\\_SB.PCI0.XHCI.PMEE");
+			}
+			acpigen_pop_len();
+		}
 	}
 	acpigen_pop_len();
 }

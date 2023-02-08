@@ -87,6 +87,12 @@ Device (XHCI)
 		Offset (0x10),
 		, 16,
 		XMEM, 16,	/* MEM_BASE */
+		Offset (0x74),
+		D0D3, 2,	/* POWERSTATE */
+		, 6,
+		PMEE, 1,	/* PME_EN */
+		, 6,
+		PMES, 1,	/* PME_STS */
 	}
 
 	Method (_PS0, 0, Serialized)

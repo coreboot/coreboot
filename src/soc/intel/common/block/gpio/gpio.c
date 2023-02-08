@@ -187,8 +187,8 @@ static void gpi_enable_gpe(const struct pad_config *cfg,
 	pcr_or32(comm->port, en_reg, en_value);
 
 	if (CONFIG(DEBUG_GPIO)) {
-		printk(BIOS_DEBUG, "GPE_EN[0x%02x, %02zd]: Reg: 0x%x, Value = 0x%x \n",\
-			comm->port, relative_pad_in_comm(comm, cfg->pad), en_reg,\
+		printk(BIOS_DEBUG, "GPE_EN[0x%02x, %02zd]: Reg: 0x%x, Value = 0x%x\n",
+			comm->port, relative_pad_in_comm(comm, cfg->pad), en_reg,
 			pcr_read32(comm->port, en_reg));
 	}
 }

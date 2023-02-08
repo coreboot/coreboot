@@ -4,7 +4,7 @@
 #include <cpu/x86/cr.h>
 #include <cpu/x86/cache.h>
 
-/* Place the stack in the bss section. It's not necessary to define it in the
+/* Place the stack in the bss section. It's not necessary to define it in
  * the linker script. */
 	.section .bss, "aw", @nobits
 .global _stack

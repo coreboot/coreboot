@@ -328,7 +328,7 @@ __intXX_instr = RELOCATED(.)
 
 /* This is the 16-bit interrupt entry point called by the IDT stub code.
  *
- * Before this code code is called, %eax is pushed to the stack, and the
+ * Before this code is called, %eax is pushed to the stack, and the
  * interrupt number is loaded into %al. On return this function cleans up
  * for its caller.
  */

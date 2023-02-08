@@ -110,7 +110,7 @@ trap_entry:
 .Lsmp_hang:
   bnez sp, .Lsmp_hang
 
-  # Use a different stack than in the main context, to to avoid overwriting
+  # Use a different stack than in the main context, to avoid overwriting
   # stack data.
   # TODO: Maybe use the old stack pointer (plus an offset) instead. But only if
   # the previous mode was M, because it would be a very bad idea to use a stack

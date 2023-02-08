@@ -389,7 +389,7 @@ car_cqos:
 	mov	%eax, %ecx	/* save to ecx */
 	mov	$1, %ebx
 	shl	%cl, %ebx
-	sub	$1, %ebx	/* resulting mask is is in ebx */
+	sub	$1, %ebx	/* resulting mask is in ebx */
 
 	/* Set this mask for initial cache fill */
 	mov	$MSR_L2_QOS_MASK(0), %ecx

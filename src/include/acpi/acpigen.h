@@ -488,6 +488,7 @@ void acpigen_write_store_int_to_op(uint64_t src, uint8_t dst);
 void acpigen_write_store_ops(uint8_t src, uint8_t dst);
 void acpigen_write_store_op_to_namestr(uint8_t src, const char *dst);
 void acpigen_write_store_namestr_to_op(const char *src, uint8_t dst);
+void acpigen_write_store_namestr_to_namestr(const char *src, const char *dst);
 void acpigen_write_or(uint8_t arg1, uint8_t arg2, uint8_t res);
 void acpigen_write_xor(uint8_t arg1, uint8_t arg2, uint8_t res);
 void acpigen_write_and(uint8_t arg1, uint8_t arg2, uint8_t res);

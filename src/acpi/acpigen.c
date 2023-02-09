@@ -1385,6 +1385,14 @@ void acpigen_write_store_int_to_op(uint64_t src, uint8_t dst)
 	acpigen_emit_byte(dst);
 }
 
+/* Store ("namestr", "namestr") */
+void acpigen_write_store_namestr_to_namestr(const char *src, const char *dst)
+{
+	acpigen_write_store();
+	acpigen_emit_namestring(src);
+	acpigen_emit_namestring(dst);
+}
+
 /* Or (arg1, arg2, res) */
 void acpigen_write_or(uint8_t arg1, uint8_t arg2, uint8_t res)
 {

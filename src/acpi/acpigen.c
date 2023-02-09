@@ -2015,10 +2015,7 @@ void acpigen_write_rom(void *bios, const size_t length)
 
 	/* ACPI SPEC requires to return at maximum 4KiB */
 	/* If (LGreater (Local1, 0x1000)) */
-	acpigen_write_if();
-	acpigen_emit_byte(LGREATER_OP);
-	acpigen_emit_byte(LOCAL1_OP);
-	acpigen_write_integer(0x1000);
+	acpigen_write_if_lgreater_op_int(LOCAL1_OP, 0x1000);
 
 	/* Store (0x1000, Local1) */
 	acpigen_write_store();
@@ -2034,10 +2031,7 @@ void acpigen_write_rom(void *bios, const size_t length)
 	acpigen_emit_byte(LOCAL3_OP);
 
 	/* If (LGreater (Local0, length)) */
-	acpigen_write_if();
-	acpigen_emit_byte(LGREATER_OP);
-	acpigen_emit_byte(LOCAL0_OP);
-	acpigen_write_integer(length);
+	acpigen_write_if_lgreater_op_int(LOCAL0_OP, length);
 
 	/* Return(Buffer(Local1){0}) */
 	acpigen_emit_byte(RETURN_OP);
@@ -2051,10 +2045,7 @@ void acpigen_write_rom(void *bios, const size_t length)
 	acpigen_pop_len();
 
 	/* If (LGreater (Local0, length - 4096)) */
-	acpigen_write_if();
-	acpigen_emit_byte(LGREATER_OP);
-	acpigen_emit_byte(LOCAL0_OP);
-	acpigen_write_integer(length - 4096);
+	acpigen_write_if_lgreater_op_int(LOCAL0_OP, length - 4096);
 
 	/* Subtract (length, Local0, Local2) */
 	acpigen_emit_byte(SUBTRACT_OP);
@@ -2063,10 +2054,7 @@ void acpigen_write_rom(void *bios, const size_t length)
 	acpigen_emit_byte(LOCAL2_OP);
 
 	/* If (LGreater (Local1, Local2)) */
-	acpigen_write_if();
-	acpigen_emit_byte(LGREATER_OP);
-	acpigen_emit_byte(LOCAL1_OP);
-	acpigen_emit_byte(LOCAL2_OP);
+	acpigen_write_if_lgreater_op_op(LOCAL1_OP, LOCAL2_OP);
 
 	/* Store (Local2, Local1) */
 	acpigen_write_store();

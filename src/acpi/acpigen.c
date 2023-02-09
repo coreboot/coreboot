@@ -2012,31 +2012,23 @@ void acpigen_write_rom(void *bios, const size_t length)
 	acpigen_write_field(opreg.name, l, 2, FIELD_ANYACC | FIELD_NOLOCK | FIELD_PRESERVE);
 
 	/* Store (Arg0, Local0) */
-	acpigen_write_store();
-	acpigen_emit_byte(ARG0_OP);
-	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_write_store_ops(ARG0_OP, LOCAL0_OP);
 
 	/* Store (Arg1, Local1) */
-	acpigen_write_store();
-	acpigen_emit_byte(ARG1_OP);
-	acpigen_emit_byte(LOCAL1_OP);
+	acpigen_write_store_ops(ARG1_OP, LOCAL1_OP);
 
 	/* ACPI SPEC requires to return at maximum 4KiB */
 	/* If (LGreater (Local1, 0x1000)) */
 	acpigen_write_if_lgreater_op_int(LOCAL1_OP, 0x1000);
 
 	/* Store (0x1000, Local1) */
-	acpigen_write_store();
-	acpigen_write_integer(0x1000);
-	acpigen_emit_byte(LOCAL1_OP);
+	acpigen_write_store_int_to_op(0x1000, LOCAL1_OP);
 
 	/* Pop if */
 	acpigen_pop_len();
 
 	/* Store (Local1, Local3) */
-	acpigen_write_store();
-	acpigen_emit_byte(LOCAL1_OP);
-	acpigen_emit_byte(LOCAL3_OP);
+	acpigen_write_store_ops(LOCAL1_OP, LOCAL3_OP);
 
 	/* If (LGreater (Local0, length)) */
 	acpigen_write_if_lgreater_op_int(LOCAL0_OP, length);
@@ -2065,9 +2057,7 @@ void acpigen_write_rom(void *bios, const size_t length)
 	acpigen_write_if_lgreater_op_op(LOCAL1_OP, LOCAL2_OP);
 
 	/* Store (Local2, Local1) */
-	acpigen_write_store();
-	acpigen_emit_byte(LOCAL2_OP);
-	acpigen_emit_byte(LOCAL1_OP);
+	acpigen_write_store_ops(LOCAL2_OP, LOCAL1_OP);
 
 	/* Pop if */
 	acpigen_pop_len();
@@ -2103,9 +2093,7 @@ void acpigen_write_rom(void *bios, const size_t length)
 	acpigen_emit_namestring("TMPB");
 
 	/* Store (TMPB, ROM1) */
-	acpigen_write_store();
-	acpigen_emit_namestring("TMPB");
-	acpigen_emit_namestring("ROM1");
+	acpigen_write_store_namestr_to_namestr("TMPB", "ROM1");
 
 	/* Return (ROM1) */
 	acpigen_emit_byte(RETURN_OP);

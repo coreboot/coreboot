@@ -96,9 +96,14 @@ uint32_t sku_id(void)
 	if (cached_sku_code == BOARD_ID_INIT) {
 		cached_sku_code = google_chromeec_get_board_sku();
 
-		if (cached_sku_code == CROS_SKU_UNKNOWN) {
-			printk(BIOS_WARNING, "Failed to get SKU code from EC\n");
-			cached_sku_code = get_adc_index(SKU_ID_CHANNEL);
+		if (cached_sku_code == CROS_SKU_UNKNOWN ||
+		    cached_sku_code == CROS_SKU_UNPROVISIONED) {
+			printk(BIOS_WARNING, "SKU code from EC: %s\n",
+			       (cached_sku_code == CROS_SKU_UNKNOWN) ?
+			       "CROS_SKU_UNKNOWN" : "CROS_SKU_UNPROVISIONED");
+			/* Reserve last 8 bits to report SKU_ID and PANEL_ID */
+			cached_sku_code = 0x7FFFFF00UL | get_adc_index(SKU_ID_CHANNEL) << 4 |
+					  panel_id();
 		}
 		printk(BIOS_DEBUG, "SKU Code: %#02x\n", cached_sku_code);
 	}

@@ -1001,6 +1001,7 @@ F:	util/crossgcc/
 
 DOCKER
 M:	Martin Roth <gaumless@gmail.com>
+M:	Felix Singer <felixsinger@posteo.net>
 S:	Supported
 F:	util/docker/
 

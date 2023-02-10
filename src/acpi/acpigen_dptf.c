@@ -400,6 +400,8 @@ void dptf_write_power_limits(const struct dptf_power_limits *limits)
 	dptf_write_scope(DPTF_CPU);
 	acpigen_write_method("PPCC", 0);
 
+	acpigen_emit_byte(RETURN_OP);
+
 	pkg_count = acpigen_write_package(1); /* 1 for the Revision */
 	acpigen_write_integer(PPCC_REVISION); /* revision */
 

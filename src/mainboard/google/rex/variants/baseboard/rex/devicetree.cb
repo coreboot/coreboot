@@ -20,6 +20,9 @@ chip soc/intel/meteorlake
 	# Enable CNVi BT
 	register "cnvi_bt_core" = "true"
 
+	# Set on-board graphics as primary display
+	register "skip_ext_gfx_scan" = "1"
+
 	register "serial_io_uart_mode" = "{
 		[PchSerialIoIndexUART0] = PchSerialIoPci,
 		[PchSerialIoIndexUART1] = PchSerialIoDisabled,

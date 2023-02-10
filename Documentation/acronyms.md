@@ -90,6 +90,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * ASPM - PCI: [**Active State Power
   Management**](https://en.wikipedia.org/wiki/Active_State_Power_Management)
 * ATA - [**Advanced Technology Attachment**](https://en.wikipedia.org/wiki/Parallel_ATA)
+* ATS - PCIe: Address Translation Services
 * ATAPI - [**ATA Packet Interface**](https://en.wikipedia.org/wiki/Parallel_ATA#ATAPI)
 * ATX - [**Advanced Technology eXtended**](https://en.wikipedia.org/wiki/ATX)
 * AVX -  [**Advanced Vector Extensions**](https://en.wikipedia.org/wiki/Advanced_Vector_Extensions)
@@ -234,6 +235,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * DDI -  Intel: Digital Display Interface
 * DDR - [**Double Data Rate**](https://en.wikipedia.org/wiki/Double_data_rate)
 * DEVAPC - Mediatek: Device Access Permission Control
+* DF - Data Fabric
 * DFP - USB: Downstream Facing port
 * DHCP - [**Dynamic Host Configuration Protocol**](https://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol)
 * DID - Device Identifier
@@ -282,6 +284,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * dTPM - Discrete TPM (Trusted Platform Module) - A separate TPM chip,
   vs Integrated TPMs or fTPMs (Firmware TPMs).
 * DTS - U-Boot: Device Tree Source
+* DUT - Device Under Test
 * DVFS - ARM: Dynamic Voltage and Frequency Scaling
 * DVI - [**Digital Video Interface**](https://en.wikipedia.org/wiki/Digital_Visual_Interface)
 * DVT - Production Timeline: Design Validation Test
@@ -295,6 +298,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 ## E
 
 * EBDA - Extended BIOS Data Area
+* EBG - Intel: Emmitsburg PCH
 * ECC - [**Error Correction Code**](https://en.wikipedia.org/wiki/Error_correction_code) - Typically used to refer to a type of
   memory that can detect and correct memory errors.
 * EDID - [**Extended Display Identification Data**](https://en.wikipedia.org/wiki/Extended_Display_Identification_Data)
@@ -308,6 +312,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * EEPROM - [**Electrically Erasable Programmable ROM**](https://en.wikipedia.org/wiki/EEPROM) (common mistake:
   electrical erasable programmable ROM).
 * EFI - [**Extensible Firmware Interface**](https://en.wikipedia.org/wiki/Unified_Extensible_Firmware_Interface)
+* EFS - AMD: Embedded Firmware Structure: The data structure that AMD processors look for first in the boot ROM to start the boot process.
 * EHCI - [**Enhanced Host Controller Interface**](https://en.wikipedia.org/wiki/Host_controller_interface_%28USB%2C_Firewire%29#EHCI) - USB 2.0
 * EHL - Intel: [**Elkhart Lake**](https://en.wikichip.org/wiki/intel/cores/elkhart_lake)
 * EIDE - Enhanced Integrated Drive Electronics
@@ -359,6 +364,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * FPU - [**Floating-Point Unit**](https://en.wikipedia.org/wiki/Floating-point_unit)
 * FSB - [**Front-Side Bus**](https://en.wikipedia.org/wiki/Front-side_bus)
 * FSP - Intel: Firmware Support Package
+* FSR - Intel: Firmware Status Register
 * FTP - Network Protocol: [**File Transfer Protocol**](https://en.wikipedia.org/wiki/File_Transfer_Protocol)
 * fTPM - Firmware TPM (Trusted Platform Module).  This is a TPM that is
   based in firmware instead of actual hardware.  It typically runs in
@@ -385,6 +391,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * GNB - Graphics NorthBridge
 * GNVS - Global Non-Volatile Storage
 * GPD - PCH GPIO in Deep Sleep well (D5 power)
+* GPE - ACPI: General Purpose Event
 * GPI - GPIOs: GPIO Input
 * GPIO - [**General Purpose Input/Output**](https://en.wikipedia.org/wiki/General-purpose_Input/Output) (Pin)
 * GPMR - Intel: General Purpose Memory Range
@@ -396,6 +403,8 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * GPU - [**Graphics Processing Unit**](https://en.wikipedia.org/wiki/Graphics_processing_unit)
 * GSoC - [**Google Summer of Code**](https://en.wikipedia.org/wiki/Google_Summer_of_Code)
 * GSC - Google Security Chip - Typically Cr50/Ti50, though could also refer to the titan chips
+* GSPI - Generic SPI - These are SPI controllers available for general
+  use, not dedicated to flash, for example.
 * GUID - UEFI: [**Globally Unique IDentifier**](https://en.wikipedia.org/wiki/Universally_unique_identifier)
 
 
@@ -410,7 +419,9 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * HID - [**Human Interface
   Device**](https://en.wikipedia.org/wiki/Human_interface_device)
 * HOB - UEFI: Hand-Off Block
+* HPD - Hot-Plug Detect
 * HPET - [**High Precision Event Timer**](https://en.wikipedia.org/wiki/High_Precision_Event_Timer)
+* HSP - AMD: Hardware Security Processor
 * HSTI - Hardware Security Test Interface
 * HSW - Intel: Haswell
 * Hybrid S3 - System Power State:  This is where the operating system
@@ -456,6 +467,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * IF - AMD: [**Infinity
   Fabric**](https://en.wikipedia.org/wiki/HyperTransport#Infinity_Fabric)
   is a superset of AMD's earlier Hypertransport interconnect.
+* IFD - Intel: Intel Flash Descriptor
 * IMC - AMD: Integrated micro-controller - An 8051 microcontroller built
   into some AMD FCHs (Fusion Controller Hubs) and Southbridge chips.
   This never worked well for anything beyond fan control and caused
@@ -489,6 +501,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * IVHD - ACPI: I/O Virtualization Hardware Definition
 * IVMD - ACPI: I/O Virtualization Memory Definition
 * IVRS - I/O Virtualization Reporting Structure
+* IWYU - Include What you Use - A tool to help with include file use
 
 
 ## J
@@ -529,7 +542,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * LAPIC - Local APIC
 * LBA - Logical Block Address
 * LCD - Liquid Crystal Display
-* LCAP - PCIe:Link Capabilities
+* LCAP - PCIe: Link Capabilities
 * LED - Light Emitting Diode
 * LF - Line Feed - The standard Unix EOL (End-of-Line) marker.
 * LGTM - Looks Good To Me
@@ -542,6 +555,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   count**](http://www.intel.com/design/chipsets/industry/lpc.htm) bus
   was a replacement for the ISA bus, created by serializing a number of
   parallel signals to get rid of those connections.
+* LPM - USB: Link Power Management
 * LPT - Line Print Terminal, Local Print Terminal, or Line Printer. -
   The Parallel Port
 * LRU - Least Recently Used - a rule used in operating systems that
@@ -558,6 +572,10 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 
 * M.2 - An interface specification for small peripheral cards.
 * MAC Address - Media Access Control Address
+* MAFS - (eSPI) Master Attached Flash Sharing: Flash components are
+  attached to the controller device and may be accessed by by the
+  peripheral devices through the eSPI flash access channel.
+* MBP - Intel UEFI: ME-to-BIOS Payload
 * MBR - Master Boot Record
 * MCA - [**Machine Check Architecture**](https://en.wikipedia.org/wiki/Machine_Check_Architecture)
 * MCR - Machine Check Registers
@@ -625,6 +643,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 ## N
 
 * Nack - Negative Acknowledgement
+* NB - North Bridge
 * NBCI - Nvidia: NoteBook Common Interface
 * NC - GPIOs: No Connect
 * NDA - Non-Disclosure Agreement.
@@ -703,7 +722,9 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * PCMCIA: Personal Computer Memory Card International Association
 * PCO - AMD: [**Picasso**](https://en.wikichip.org/wiki/amd/cores/picasso)
 * PCR: TPM: Platform Configuration Register
-* PD - GPIOs: Pull-Down - Setting the pin high drives it to the reference voltage.  Setting it low drives it to ground through a resistor.
+* PD - GPIOs: Pull-Down - Drives the pin to ground through a resistor.
+  The resistor allows the pin to be set to the reference voltage as
+  needed.
 * PD - Power Delivery - This is a specification for communicating power
   needs and availability between two devices, typically over USB type C.
 * PEG - PCIe Graphics - A (typically) x16 PCIe slot connected to the CPU
@@ -711,6 +732,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * PEI - UEFI: Pre-EFI Initialization
 * PEIM - UEFI: PEI Module
 * PEP - Intel: Power Engine Plug-in
+* PHX - AMD: Phoenix SoC
 * PHY - [**PHYsical layer**](http://en.wikipedia.org/wiki/PHY) - The
   hardware that implements the send/receive functionality of a
   communication protocol.
@@ -752,15 +774,19 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * POTS - [**Plain Old Telephone
   Service**](https://en.wikipedia.org/wiki/Plain_old_telephone_service)
 * PPI - UEFI: PEIM-to-PEIM Interface
-* PPR: Processor Programming Reference
+* PPR - Processor Programming Reference
 * PPT - AMD: Package Power Tracking
-* PROM: Programmable Read Only Memory
+* PROM - Programmable Read Only Memory
 * Proto - Production Timeline: The first initial production to test key
   concepts.
 * PSE - Page Size Extention
+* PSF - Intel: Primary Sideband Fabric
 * PSP - AMD: Platform Security Processor
 * PSPP - AMD: PCIE Speed Power Policy
-* PU - GPIOs: Pull-Up - Setting the pin low drives it to ground.  Setting it high drives it to the reference voltage through a resistor.
+* PTT - Intel: Platform Trust Technology - Intel's firmware based TPM.
+* PU - GPIOs: Pull-Up - Drives the pin to reference voltage through a
+  resistor. The resistor allows the signal to still be set to ground
+  when needed.
 * PVT - Production Timeline: (Production Validation Test
 * PWM - Pulse Width Modulation
 * PXE - Pre-boot Execution Environment
@@ -806,6 +832,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * RRG - AMD (ATI): Register Reference Guide
 * RSDP - Root System Description Pointer
 * RTC - Real Time Clock
+* RTD3 - Power State: Runtime D3
 * RTFM - Read the Fucking Manual
 * RTOS - Real-Time Operating System
 * RVP - Intel: Reference Validation Platform
@@ -841,6 +868,11 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   contents of memory.  Any critical processor state is restored.
 * S5 - ACPI System Power State: System is “completely powered off”, but
   still has power going to the board.
+* SAFS - (eSPI) Slave Attached Flash Sharing: Flash is attached to the
+  peripheral device.  Only valid for server platforms.
+* SAGV - Intel: System Agent Geyserville. The original internal name
+  for the feature eventually released as Speedstep which controls the
+  processor voltage and frequencies.
 * SAR - The [**Specific Absorption
   Rate**](https://en.wikipedia.org/wiki/Specific_absorption_rate) is the
   measurement for the amount of Radio Frequency (RF) energy absorbed by
@@ -864,6 +896,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   SAS (Serial Attached SCSI).  The initial version is now often referred
   to as Parallel SCSI.
 * SD - [**Secure Digital**](https://en.wikipedia.org/wiki/SD_card) card
+* SDHCI - SD Host Controller Interface
 * SDRAM - Synchronous DRAM
 * SDLE: AMD: Stardust Dynamic Load Emulator
 * SEEP - Serial EEPROM (Electrically Erasable Programmable Read-Only
@@ -908,6 +941,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * SPL - AMD: Security Patch Level
 * SPM - Mediatek: System Power Manager
 * SPMI - MIPI: System Power Management Interface
+* SPR - Sapphire Rapids
 * SRAM - Static Random Access Memory
 * SSD - Solid State Drive
 * SSDT - Secondary System Descriptor Table - ACPI table
@@ -961,7 +995,8 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * TOLUM - Top of Low Usable Memory
 * ToM - Top of Memory
 * TPM - Trusted Platform Module
-* TS - TimeStamp -
+* TS - TimeStamp
+* TSN - Time-Sensitive Networking
 * TSC - [**Time Stamp
   Counter**](https://en.wikipedia.org/wiki/Time_Stamp_Counter)
 * TSEG - TOM (Top of Memory) Segment
@@ -979,6 +1014,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * UDK - UEFI: UEFI Development Kit
 * UDP - User Datagram Protocol
 * UEFI - Unified Extensible Firmware Interface
+* UFC - User Facing Camera
 * UFP - USB: Upstream Facing Port
 * UFS - Universal Flash storage
 * UHCI - USB: [**Universal Host Controller
@@ -1028,6 +1064,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   devices that open 360 degrees, or on the outside of the cover.  For
   tablets, it's on the the side away from the screen.
 * WDT - [**WatchDog Timer**](https://en.wikipedia.org/wiki/Watchdog_timer)
+* WFC - World Facing Camera
 * WLAN - Wireless LAN (Local Area Network)
 * WWAN - Telecommunication: Wireless WAN (Wide Area Network)
 * WP - Cache policy: [**Write-Protected**](https://en.wikipedia.org/wiki/Cache_%28computing%29)

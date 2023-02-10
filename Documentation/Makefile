@@ -10,9 +10,9 @@ FIGS=codeflow.pdf hypertransport.pdf
 
 all: corebootPortingGuide.pdf
 
-SVG2PDF=$(shell which svg2pdf)
-INKSCAPE=$(shell which inkscape)
-CONVERT=$(shell which convert)
+SVG2PDF=$(shell command -v svg2pdf)
+INKSCAPE=$(shell command -v inkscape)
+CONVERT=$(shell command -v convert)
 
 codeflow.pdf: codeflow.svg
 ifneq ($(strip $(SVG2PDF)),)

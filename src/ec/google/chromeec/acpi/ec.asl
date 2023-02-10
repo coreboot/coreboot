@@ -462,6 +462,17 @@ Device (EC0)
 #endif
 	}
 
+	// Body Detect Change Event
+	Method (_Q21, 0, NotSerialized)
+	{
+		Printf ("EC: Body Detect Change Event")
+#if CONFIG(SOC_AMD_COMMON_BLOCK_ACPI_DPTC)
+		If (CondRefOf (\_SB.DPTC)) {
+			\_SB.DPTC()
+		}
+#endif
+	}
+
 	/*
 	 * Dynamic Platform Thermal Framework support
 	 */

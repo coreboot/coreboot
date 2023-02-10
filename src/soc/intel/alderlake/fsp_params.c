@@ -937,6 +937,7 @@ static void fill_fsps_cpu_pcie_params(FSP_S_CONFIG *s_cfg,
 static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
+	u32 cpu_id = cpu_get_cpuid();
 	/* Skip setting D0I3 bit for all HECI devices */
 	s_cfg->DisableD0I3SettingForHeci = 1;
 	/*
@@ -1005,7 +1006,11 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 
 	s_cfg->VrPowerDeliveryDesign = config->vr_power_delivery_design;
 
-	s_cfg->PkgCStateDemotion = !config->disable_package_c_state_demotion;
+	/* FIXME: Disable package C state demotion on Raptorlake as a W/A for S0ix issues */
+	if ((cpu_id == CPUID_RAPTORLAKE_P_J0) || (cpu_id == CPUID_RAPTORLAKE_P_Q0))
+		s_cfg->PkgCStateDemotion = 0;
+	else
+		s_cfg->PkgCStateDemotion = !config->disable_package_c_state_demotion;
 }
 
 static void fill_fsps_irq_params(FSP_S_CONFIG *s_cfg,

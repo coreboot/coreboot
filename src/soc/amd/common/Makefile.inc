@@ -28,10 +28,13 @@ add_bootblock = \
 endif # ifeq ($(CONFIG_RESET_VECTOR_IN_RAM),y)
 
 ifeq ($(CONFIG_VBOOT_GSCVD),y)
-build_complete:: $(AMDFWREAD)
+build_complete:: $(obj)/ro-amdfw-list
 
-amdfwread-offset-size-cmd = $(AMDFWREAD) --ro-list $(obj)/coreboot.rom | \
-				awk --non-decimal-data '/$(1)/ {printf "%x:%x", $$3, $$4}'
+$(obj)/ro-amdfw-list: $(AMDFWREAD)
+	$(AMDFWREAD) --ro-list $(obj)/coreboot.rom > $@
+
+amdfwread-offset-size-cmd = grep '$(1)' $(obj)/ro-amdfw-list | \
+				sed 's/^.* 0x0*\(.*\) 0x0*\(.*\)$$/\1:\2/'
 
 amdfwread-range-cmd = $(shell ( \
 	range=$$($(call amdfwread-offset-size-cmd,$(1))) ;\

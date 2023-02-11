@@ -41,13 +41,19 @@ DEP_FILES = $(patsubst %,$(FIRMWARE_LOCATION)/%, $(AMDFW_CFG_IN_FW_LOC)) \
 amd_microcode_bins += $(wildcard ${FIRMWARE_LOCATION}/*UcodePatch_*.bin)
 
 ifeq ($(CONFIG_RESET_VECTOR_IN_RAM),y)
-$(objcbfs)/bootblock.bin: $(obj)/amdfw.rom
+$(objcbfs)/bootblock.bin: $(obj)/amdfw.rom $(obj)/fmap_config.h
 	cp $< $@
+
+amdfw_region_start=$(subst $(spc),,FMAP_SECTION_$(call regions-for-file,apu/amdfw)_START)
+amdfw_offset=$(call int-subtract, \
+	$(CONFIG_AMD_FWM_POSITION) \
+	$(call int-subtract, \
+	$(call get_fmap_value,$(amdfw_region_start)) \
+	$(call get_fmap_value,FMAP_SECTION_FLASH_START)))
 
 add_bootblock = \
 	$(CBFSTOOL) $(1) add -f $(2) -n apu/amdfw -t amdfw \
-	-b $(call int-add, \
-	$(call int-subtract, 0xffffffff $(CONFIG_ROM_SIZE)) 1 $(CONFIG_AMD_FWM_POSITION))
+        -b $(amdfw_offset) -r $(call regions-for-file,apu/amdfw)
 
 endif # ifeq ($(CONFIG_RESET_VECTOR_IN_RAM),y)
 

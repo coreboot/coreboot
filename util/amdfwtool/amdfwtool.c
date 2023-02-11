@@ -88,6 +88,8 @@
 
 #define AMD_ROMSIG_OFFSET	0x20000
 #define MIN_ROM_KB		256
+#define MAX_MAPPED_WINDOW	(16 * MiB)
+#define MAX_MAPPED_WINDOW_MASK	(MAX_MAPPED_WINDOW - 1)
 
 #define _MAX(A, B) (((A) > (B)) ? (A) : (B))
 
@@ -1932,7 +1934,6 @@ int main(int argc, char **argv)
 	uint32_t efs_location = 0;
 	bool any_location = 0;
 	uint32_t romsig_offset;
-	uint32_t rom_base_address;
 	uint8_t efs_spi_readmode = 0xff;
 	uint8_t efs_spi_speed = 0xff;
 	uint8_t efs_spi_micron_flag = 0xff;
@@ -2234,13 +2235,18 @@ int main(int argc, char **argv)
 
 	printf("    AMDFWTOOL  Using ROM size of %dKB\n", ctx.rom_size / 1024);
 
-	rom_base_address = 0xFFFFFFFF - ctx.rom_size + 1;
+	if (ctx.rom_size <= MAX_MAPPED_WINDOW) {
+		uint32_t rom_base_address;
 
-	if (efs_location & 0xFF000000)
-		efs_location = efs_location - rom_base_address;
-	if (body_location & 0xFF000000)
-		body_location = body_location - rom_base_address;
+		rom_base_address = 0xFFFFFFFF - ctx.rom_size + 1;
+		if (efs_location & ~MAX_MAPPED_WINDOW_MASK)
+			efs_location = efs_location - rom_base_address;
+		if (body_location & ~MAX_MAPPED_WINDOW_MASK)
+			body_location = body_location - rom_base_address;
+	}
 
+	/* If the flash size is larger than 16M, we assume the given
+	   addresses are already relative ones. Otherwise we print error.*/
 	if (efs_location && efs_location > ctx.rom_size) {
 		fprintf(stderr, "Error: EFS/Directory location outside of ROM.\n\n");
 		return 1;

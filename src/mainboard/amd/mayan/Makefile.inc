@@ -21,14 +21,9 @@ ifeq ($(CONFIG_MAYAN_HAVE_MCHP_FW),y)
 $(call add_intermediate, add_mchp_fw)
 	$(CBFSTOOL) $(obj)/coreboot.pre write -r EC -f $(CONFIG_MAYAN_MCHP_SIG_FILE) --fill-upward
 
-# calculate the absolute position from the config offset
-MAYAN_EC_POSITION=$(call int-add, \
-	$(call int-subtract, 0xffffffff \
-	$(CONFIG_ROM_SIZE)) $(CONFIG_MAYAN_MCHP_FW_OFFSET) 1)
-
 cbfs-files-y += ec/ecfw
 ec/ecfw-file := $(CONFIG_MAYAN_MCHP_FW_FILE)
-ec/ecfw-position := $(MAYAN_EC_POSITION)
+ec/ecfw-position := $(CONFIG_MAYAN_MCHP_FW_OFFSET)
 ec/ecfw-type := raw
 
 else

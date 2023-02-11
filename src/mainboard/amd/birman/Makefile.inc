@@ -21,14 +21,9 @@ ifeq ($(CONFIG_BIRMAN_HAVE_MCHP_FW),y)
 $(call add_intermediate, add_mchp_fw)
 	$(CBFSTOOL) $(obj)/coreboot.pre write -r EC -f $(CONFIG_BIRMAN_MCHP_SIG_FILE) --fill-upward
 
-# calculate the absolute position from the config offset
-BIRMAN_EC_POSITION=$(call int-add, \
-	$(call int-subtract, 0xffffffff \
-	$(CONFIG_ROM_SIZE)) $(CONFIG_BIRMAN_MCHP_FW_OFFSET) 1)
-
 cbfs-files-y += apu/ecfw
 apu/ecfw-file := $(CONFIG_BIRMAN_MCHP_FW_FILE)
-apu/ecfw-position := $(BIRMAN_EC_POSITION)
+apu/ecfw-position := $(CONFIG_BIRMAN_MCHP_FW_OFFSET)
 apu/ecfw-type := raw
 
 else

@@ -688,6 +688,58 @@ static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie, co
 
 }
 
+static void fill_psp_directory_to_efs(embedded_firmware *amd_romsig, void *pspdir,
+	context *ctx, amd_cb_config *cb_config)
+{
+	switch (cb_config->soc_id) {
+	case PLATFORM_UNKNOWN:
+		amd_romsig->psp_directory =
+			BUFF_TO_RUN_MODE(*ctx, pspdir, AMD_ADDR_REL_BIOS);
+		break;
+	case PLATFORM_CEZANNE:
+	case PLATFORM_MENDOCINO:
+	case PLATFORM_PHOENIX:
+	case PLATFORM_GLINDA:
+	case PLATFORM_CARRIZO:
+	case PLATFORM_STONEYRIDGE:
+	case PLATFORM_RAVEN:
+	case PLATFORM_PICASSO:
+	case PLATFORM_LUCIENNE:
+	case PLATFORM_RENOIR:
+	default:
+		/* for combo, it is also combo_psp_directory */
+		amd_romsig->new_psp_directory =
+			BUFF_TO_RUN_MODE(*ctx, pspdir, AMD_ADDR_REL_BIOS);
+		break;
+	}
+}
+
+static void fill_bios_directory_to_efs(embedded_firmware *amd_romsig, void *biosdir,
+	context *ctx, amd_cb_config *cb_config)
+{
+	switch (cb_config->soc_id) {
+	case PLATFORM_RENOIR:
+	case PLATFORM_LUCIENNE:
+	case PLATFORM_CEZANNE:
+		if (!cb_config->recovery_ab)
+			amd_romsig->bios3_entry =
+				BUFF_TO_RUN_MODE(*ctx, biosdir, AMD_ADDR_REL_BIOS);
+		break;
+	case PLATFORM_MENDOCINO:
+	case PLATFORM_PHOENIX:
+	case PLATFORM_GLINDA:
+		break;
+	case PLATFORM_CARRIZO:
+	case PLATFORM_STONEYRIDGE:
+	case PLATFORM_RAVEN:
+	case PLATFORM_PICASSO:
+	default:
+		amd_romsig->bios1_entry =
+			BUFF_TO_RUN_MODE(*ctx, biosdir, AMD_ADDR_REL_BIOS);
+		break;
+	}
+}
+
 static ssize_t copy_blob(void *dest, const char *src_file, size_t room)
 {
 	int fd;
@@ -2564,31 +2616,11 @@ int main(int argc, char **argv)
 					amd_psp_fw_table, PSP_COOKIE, &cb_config);
 	}
 
-	switch (cb_config.soc_id) {
-	case PLATFORM_UNKNOWN:
-		amd_romsig->psp_directory =
-			BUFF_TO_RUN_MODE(ctx, pspdir, AMD_ADDR_REL_BIOS);
-		break;
-	case PLATFORM_CEZANNE:
-	case PLATFORM_MENDOCINO:
-	case PLATFORM_PHOENIX:
-	case PLATFORM_GLINDA:
-	case PLATFORM_CARRIZO:
-	case PLATFORM_STONEYRIDGE:
-	case PLATFORM_RAVEN:
-	case PLATFORM_PICASSO:
-	case PLATFORM_LUCIENNE:
-	case PLATFORM_RENOIR:
-	default:
-		amd_romsig->new_psp_directory =
-			BUFF_TO_RUN_MODE(ctx, pspdir, AMD_ADDR_REL_BIOS);
-		break;
-	}
+	fill_psp_directory_to_efs(amd_romsig, pspdir, &ctx, &cb_config);
 
 	if (cb_config.use_combo) {
 		psp_combo_directory *combo_dir = new_combo_dir(&ctx);
-		amd_romsig->combo_psp_directory =
-			BUFF_TO_RUN_MODE(ctx, combo_dir, AMD_ADDR_REL_BIOS);
+		fill_psp_directory_to_efs(amd_romsig, combo_dir, &ctx, &cb_config);
 		/* 0 -Compare PSP ID, 1 -Compare chip family ID */
 		combo_dir->entries[0].id_sel = 0;
 		combo_dir->entries[0].id = get_psp_id(cb_config.soc_id);
@@ -2631,27 +2663,7 @@ int main(int argc, char **argv)
 			integrate_bios_firmwares(&ctx, biosdir, NULL,
 						amd_bios_table, BHD_COOKIE, &cb_config);
 		}
-		switch (cb_config.soc_id) {
-		case PLATFORM_RENOIR:
-		case PLATFORM_LUCIENNE:
-		case PLATFORM_CEZANNE:
-			if (!cb_config.recovery_ab)
-				amd_romsig->bios3_entry =
-					BUFF_TO_RUN_MODE(ctx, biosdir, AMD_ADDR_REL_BIOS);
-			break;
-		case PLATFORM_MENDOCINO:
-		case PLATFORM_PHOENIX:
-		case PLATFORM_GLINDA:
-			break;
-		case PLATFORM_CARRIZO:
-		case PLATFORM_STONEYRIDGE:
-		case PLATFORM_RAVEN:
-		case PLATFORM_PICASSO:
-		default:
-			amd_romsig->bios1_entry =
-				BUFF_TO_RUN_MODE(ctx, biosdir, AMD_ADDR_REL_BIOS);
-			break;
-		}
+		fill_bios_directory_to_efs(amd_romsig, biosdir, &ctx, &cb_config);
 	}
 
 	targetfd = open(output, O_RDWR | O_CREAT | O_TRUNC, 0666);

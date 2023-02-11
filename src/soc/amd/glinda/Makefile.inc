@@ -218,7 +218,6 @@ AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 		$(OPT_PSP_LOAD_MP2_FW) \
 		--use-pspsecureos \
 		--load-s0i3 \
-		--combo-capable \
 		$(OPT_TOKEN_UNLOCK) \
 		$(OPT_WHITELIST_FILE) \
 		$(OPT_PSP_SHAREDMEM_BASE) \

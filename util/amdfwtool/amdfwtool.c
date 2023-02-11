@@ -1726,7 +1726,6 @@ enum {
 	AMDFW_OPT_XHCI = 128,
 	AMDFW_OPT_IMC,
 	AMDFW_OPT_GEC,
-	AMDFW_OPT_COMBO,
 	AMDFW_OPT_RECOVERY_AB,
 	AMDFW_OPT_RECOVERY_AB_SINGLE_COPY,
 	AMDFW_OPT_USE_COMBO,
@@ -1781,7 +1780,6 @@ static struct option long_options[] = {
 	{"imc",              required_argument, 0, AMDFW_OPT_IMC },
 	{"gec",              required_argument, 0, AMDFW_OPT_GEC },
 	/* PSP Directory Table items */
-	{"combo-capable",          no_argument, 0, AMDFW_OPT_COMBO },
 	{"recovery-ab",            no_argument, 0, AMDFW_OPT_RECOVERY_AB },
 	{"recovery-ab-single-copy", no_argument, 0, AMDFW_OPT_RECOVERY_AB_SINGLE_COPY },
 	{"use-combo",              no_argument, 0, AMDFW_OPT_USE_COMBO },
@@ -2063,7 +2061,6 @@ int main(int argc, char **argv)
 	psp_directory_table *pspdir = NULL;
 	psp_directory_table *pspdir2 = NULL;
 	psp_directory_table *pspdir2_b = NULL;
-	bool comboable = false;
 	int fuse_defined = 0;
 	int targetfd;
 	char *output = NULL, *config = NULL;
@@ -2106,9 +2103,6 @@ int main(int argc, char **argv)
 		case AMDFW_OPT_GEC:
 			register_fw_filename(AMD_FW_GEC, sub, optarg);
 			sub = instance = 0;
-			break;
-		case AMDFW_OPT_COMBO:
-			comboable = true;
 			break;
 		case AMDFW_OPT_RECOVERY_AB:
 			cb_config.recovery_ab = true;
@@ -2532,10 +2526,24 @@ int main(int argc, char **argv)
 					amd_psp_fw_table, PSP_COOKIE, &cb_config);
 	}
 
-	if (comboable)
-		amd_romsig->new_psp_directory = BUFF_TO_RUN(ctx, pspdir);
-	else
+	switch (cb_config.soc_id) {
+	case PLATFORM_UNKNOWN:
 		amd_romsig->psp_directory = BUFF_TO_RUN(ctx, pspdir);
+		break;
+	case PLATFORM_CEZANNE:
+	case PLATFORM_MENDOCINO:
+	case PLATFORM_PHOENIX:
+	case PLATFORM_GLINDA:
+	case PLATFORM_CARRIZO:
+	case PLATFORM_STONEYRIDGE:
+	case PLATFORM_RAVEN:
+	case PLATFORM_PICASSO:
+	case PLATFORM_LUCIENNE:
+	case PLATFORM_RENOIR:
+	default:
+		amd_romsig->new_psp_directory = BUFF_TO_RUN(ctx, pspdir);
+		break;
+	}
 
 	if (cb_config.use_combo) {
 		psp_combo_directory *combo_dir = new_combo_dir(&ctx);

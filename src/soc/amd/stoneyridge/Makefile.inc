@@ -122,14 +122,6 @@ SMUFWM_FN_FILE=
 SMUFIRMWARE2_FN_FILE=
 endif
 
-ifeq ($(FIRMWARE_TYPE),ST)
-OPT_COMBOCAPABLE=--combo-capable
-endif
-
-ifeq ($(FIRMWARE_TYPE),CZ)
-OPT_COMBOCAPABLE=--combo-capable
-endif
-
 ifeq ($(CONFIG_USE_PSPSECUREOS),y)
 PSP_USE_PSPSECUREOS="--use-pspsecureos"
 endif
@@ -148,7 +140,6 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_STONEYRIDGE_XHCI_FWM_FILE)) \
 	$(AMDFWTOOL) \
 		$(OPT_STONEYRIDGE_XHCI_FWM_FILE) \
 		$(OPT_STONEYRIDGE_GEC_FWM_FILE) \
-		$(OPT_COMBOCAPABLE)\
 		$(OPT_PSP_USE_PSPSECUREOS) \
 		$(OPT_EFS_SPI_READ_MODE) \
 		$(OPT_EFS_SPI_SPEED) \

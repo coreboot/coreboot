@@ -141,6 +141,7 @@ $(foreach supported_arch,$(ARCH_SUPPORTED), \
 # toupper:        returns the value in all uppercase
 # ws_to_under:    returns the value with any whitespace changed to underscores
 _toint=$(shell printf "%d" $1)
+_tohex=$(shell printf 0x"%x" $1)
 _int-add2=$(shell expr $(call _toint,$1) + $(call _toint,$2))
 int-add=$(if $(filter 1,$(words $1)),$(strip $1),$(call int-add,$(call _int-add2,$(word 1,$1),$(word 2,$1)) $(wordlist 3,$(words $1),$1)))
 int-subtract=$(if $(filter 1,$(words $1)),$(strip $1),$(shell expr $(call _toint,$(word 1,$1)) - $(call _toint,$(word 2,$1))))

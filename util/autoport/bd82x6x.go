@@ -241,7 +241,7 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 			PCISlot{PCIAddr: PCIAddr{Dev: 0x16, Func: 2}, writeEmpty: true, alias: "me_ide_r", additionalComment: "Management Engine IDE-R"},
 			PCISlot{PCIAddr: PCIAddr{Dev: 0x16, Func: 3}, writeEmpty: true, alias: "me_kt", additionalComment: "Management Engine KT"},
 			PCISlot{PCIAddr: PCIAddr{Dev: 0x19, Func: 0}, writeEmpty: true, alias: "gbe", additionalComment: "Intel Gigabit Ethernet"},
-			PCISlot{PCIAddr: PCIAddr{Dev: 0x1a, Func: 0}, writeEmpty: true, alias: "echi2", additionalComment: "USB2 EHCI #2"},
+			PCISlot{PCIAddr: PCIAddr{Dev: 0x1a, Func: 0}, writeEmpty: true, alias: "ehci2", additionalComment: "USB2 EHCI #2"},
 			PCISlot{PCIAddr: PCIAddr{Dev: 0x1b, Func: 0}, writeEmpty: true, alias: "hda", additionalComment: "High Definition Audio"},
 			PCISlot{PCIAddr: PCIAddr{Dev: 0x1c, Func: 0}, writeEmpty: true, alias: "pcie_rp1", additionalComment: "PCIe Port #1"},
 			PCISlot{PCIAddr: PCIAddr{Dev: 0x1c, Func: 1}, writeEmpty: true, alias: "pcie_rp2", additionalComment: "PCIe Port #2"},

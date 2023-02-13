@@ -14,7 +14,7 @@ ifneq ($(wildcard $(MAINBOARD_BLOBS_DIR)/APCB_Updatable.bin),)
 APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_Updatable.bin
 APCB_SOURCES_RECOVERY = $(MAINBOARD_BLOBS_DIR)/APCB_DefaultRecovery.bin
 else
-$(info APCB sources not found. Skipping APCB. The resulting image won't boot.)
+files_added:: warn_no_apcb
 endif
 
 ifeq ($(CONFIG_MAYAN_HAVE_MCHP_FW),y)

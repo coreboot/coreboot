@@ -237,7 +237,6 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 			$(AMDFWTOOL) \
 			$(obj)/fmap_config.h \
 			$(objcbfs)/bootblock.elf # this target also creates the .map file
-	$(if $(PSP_APCB_FILES), ,$(error APCB_SOURCES is not set))
 	rm -f $@
 	@printf "    AMDFWTOOL  $(subst $(obj)/,,$(@))\n"
 	$(AMDFWTOOL) \

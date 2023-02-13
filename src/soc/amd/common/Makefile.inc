@@ -55,4 +55,8 @@ warn_no_apcb:
 	printf "coreboot has been built without an APCB.\n"
 	printf "This image will not boot.\n\n"
 
+PHONY+=die_no_apcb
+die_no_apcb: warn_no_apcb
+	$(error This board requires the APCB to build correctly)
+
 endif # ifeq ($(CONFIG_SOC_AMD_COMMON),y)

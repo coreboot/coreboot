@@ -39,7 +39,9 @@ $(obj)/$(APCB_NAME).gen: $(SPD_SOURCES) \
 			     --mem_type 'lp5'
 else
 $(info SPD sources not found.  Skipping APCB.)
+files_added:: die_no_apcb
 endif
 else
 $(info APCB sources not found.  Skipping APCB.)
+files_added:: die_no_apcb
 endif

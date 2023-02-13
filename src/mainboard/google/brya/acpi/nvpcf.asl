@@ -41,7 +41,7 @@ Method (NPCF, 2, Serialized)
 				0x00, 0x00, 0x00, 0x00,
 
 				/* Twos-complement checksum */
-				0xad
+				0xaf
 			})
 		}
 		Case (NVPCF_FUNC_UPDATE_DYNAMIC_PARAMS)

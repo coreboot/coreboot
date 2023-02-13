@@ -17,12 +17,6 @@ else
 files_added:: warn_no_apcb
 endif
 
-PHONY+=warn_no_apcb
-warn_no_apcb:
-	printf "\n\t** WARNING **\n"
-	printf "coreboot has been built without an APCB.\n"
-	printf "This image will not boot.\n\n"
-
 ifeq ($(CONFIG_BIRMAN_HAVE_MCHP_FW),y)
 $(call add_intermediate, add_mchp_fw)
 	$(CBFSTOOL) $(obj)/coreboot.pre write -r EC -f $(CONFIG_BIRMAN_MCHP_SIG_FILE) --fill-upward

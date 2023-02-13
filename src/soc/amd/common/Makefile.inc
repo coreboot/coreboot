@@ -49,4 +49,10 @@ endif # ifneq ($(CONFIG_AMDFW_CONFIG_FILE), )
 
 MAINBOARD_BLOBS_DIR := $(call strip_quotes, $(CONFIG_APCB_BLOBS_DIR))
 
+PHONY+=warn_no_apcb
+warn_no_apcb:
+	printf "\n\t** WARNING **\n"
+	printf "coreboot has been built without an APCB.\n"
+	printf "This image will not boot.\n\n"
+
 endif # ifeq ($(CONFIG_SOC_AMD_COMMON),y)

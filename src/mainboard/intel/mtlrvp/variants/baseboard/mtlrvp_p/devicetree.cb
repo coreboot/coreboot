@@ -1,3 +1,13 @@
+fw_config
+	field AUDIO 8 10
+		option NONE 				0
+		option MTL_ALC1019_ALC5682I_I2S		1
+		option MTL_MAX98373_ALC5682_SNDW	2
+		option MTL_ALC711_SNDW			3
+		option MTL_ALC5682I_MAX9857A_I2S	4
+	end
+end
+
 chip soc/intel/meteorlake
 
 	# GPE configuration
@@ -86,6 +96,12 @@ chip soc/intel/meteorlake
 		[PchSerialIoIndexGSPI0] = 0,
 		[PchSerialIoIndexGSPI1] = 0,
 	}"
+
+	# HD Audio
+	register "pch_hda_dsp_enable" = "1"
+	register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
+	register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
+	register "pch_hda_idisp_codec_enable" = "1"
 
 	# DPTF enable
 	register "dptf_enable" = "1"
@@ -374,12 +390,113 @@ chip soc/intel/meteorlake
 		device ref i2c0 on end
 		device ref i2c1 on end
 		device ref i2c2 on end
-		device ref i2c3 on end
+		device ref i2c3 on
+			chip drivers/i2c/generic
+				register "hid" = ""10EC5682""
+				register "name" = ""RT58""
+				register "desc" = ""Headset Codec""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_S05)"
+				register "probed" = "1"
+				# jd_src RT5668_JD1 = 1, RT5682_JD_NULL = 0
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on
+					probe AUDIO MTL_ALC1019_ALC5682I_I2S
+					probe AUDIO MTL_ALC5682I_MAX9857A_I2S
+				end
+			end
+			# Ref config #5 for Chrome, transducer card config 5A
+			#+-------------------+-------------------+
+			#| Speaker Amp       | Assignment        |
+			#+-------------------+-------------------+
+			#| SPK 0             | left              |
+			#| SPK 1             | right             |
+			#| SPK 2             | top left          |
+			#| SPK 3             | top right         |
+			#+-------------------+-------------------+
+			chip drivers/i2c/generic
+				register "hid" = ""10EC1019""
+				register "desc" = ""Realtek SPK AMP L""
+				register "uid" = "0"
+				device i2c 28 on
+					probe AUDIO MTL_ALC1019_ALC5682I_I2S
+				end
+			end
+			chip drivers/i2c/generic
+				register "hid" = ""10EC1019""
+				register "desc" = ""Realtek SPK AMP R""
+				register "uid" = "1"
+				device i2c 29 on
+					probe AUDIO MTL_ALC1019_ALC5682I_I2S
+				end
+			end
+			chip drivers/i2c/generic
+				register "hid" = ""10EC1019""
+				register "desc" = ""Realtek SPK AMP TL""
+				register "uid" = "2"
+				device i2c 2a on
+					probe AUDIO MTL_ALC1019_ALC5682I_I2S
+				end
+			end
+			chip drivers/i2c/generic
+				register "hid" = ""10EC1019""
+				register "desc" = ""Realtek SPK AMP TR""
+				register "uid" = "3"
+				device i2c 2b on
+					probe AUDIO MTL_ALC1019_ALC5682I_I2S
+				end
+			end
+		end # I2C3
 		device ref i2c4 on end
 		device ref i2c5 on end
 		device ref shared_sram on end
 		device ref uart0 on end
 		device ref gspi1 on end
 		device ref smbus on end
+		device ref hda on
+			chip drivers/intel/soundwire
+				device generic 0 on
+					chip drivers/soundwire/alc711
+						# SoundWire Link 0 ID 1
+						register "desc" = ""Headset Codec""
+						device generic 0.1 on
+							probe AUDIO MTL_ALC711_SNDW
+						end
+					end
+					chip drivers/soundwire/alc5682
+						# SoundWire Link 2 ID 1
+						register "desc" = ""Headset Codec""
+						device generic 2.1 on
+							probe AUDIO MTL_MAX98373_ALC5682_SNDW
+						end
+					end
+					chip drivers/soundwire/max98373
+						# SoundWire Link 0 ID 3
+						register "desc" = ""Left Speaker Amp""
+						device generic 0.3 on
+							probe AUDIO MTL_MAX98373_ALC5682_SNDW
+						end
+					end
+					chip drivers/soundwire/max98373
+						# SoundWire Link 0 ID 7
+						register "desc" = ""Right Speaker Amp""
+						device generic 0.7 on
+							probe AUDIO MTL_MAX98373_ALC5682_SNDW
+						end
+					end
+					chip drivers/generic/max98357a
+						register "hid" = ""MX98357A""
+						register "sdmode_gpio" =
+								"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_S04)"
+						register "sdmode_delay" = "5"
+						device generic 0 on
+							probe AUDIO MTL_ALC5682I_MAX9857A_I2S
+						end
+					end
+				end
+			end
+		end
 	end
 end

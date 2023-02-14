@@ -27,6 +27,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{GPIO_EC_AP_INT_ODL.id, ACTIVE_LOW, -1, "EC interrupt"},
 		{GPIO_GSC_AP_INT_ODL.id, ACTIVE_HIGH, -1, "TPM interrupt"},
 		{GPIO_EN_SPKR.id, ACTIVE_HIGH, -1, "speaker enable"},
+		{GPIO_XHCI_INIT_DONE.id, ACTIVE_HIGH, -1, "XHCI init done"},
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
 

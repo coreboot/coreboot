@@ -2404,8 +2404,18 @@ int main(int argc, char **argv)
 	printf("    AMDFWTOOL  Using ROM size of %dKB\n", ctx.rom_size / 1024);
 
 	rom_base_address = 0xFFFFFFFF - ctx.rom_size + 1;
-	if (efs_location && (efs_location < rom_base_address)) {
+
+	if (efs_location & 0xFF000000)
+		efs_location = efs_location - rom_base_address;
+	if (body_location & 0xFF000000)
+		body_location = body_location - rom_base_address;
+
+	if (efs_location && efs_location > ctx.rom_size) {
 		fprintf(stderr, "Error: EFS/Directory location outside of ROM.\n\n");
+		return 1;
+	}
+	if (body_location && body_location > ctx.rom_size) {
+		fprintf(stderr, "Error: Body location outside of ROM.\n\n");
 		return 1;
 	}
 
@@ -2431,10 +2441,6 @@ int main(int argc, char **argv)
 		fprintf(stderr, "  Require safe spacing of 256 bytes\n");
 		return 1;
 	}
-	if (efs_location & 0xFF000000)
-		efs_location = efs_location - rom_base_address;
-	if (body_location & 0xFF000000)
-		body_location = body_location - rom_base_address;
 
 	if (any_location) {
 		if ((body_location & 0x3f) || (efs_location & 0x3f)) {

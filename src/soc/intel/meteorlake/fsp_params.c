@@ -644,6 +644,9 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->PmcLpmS0ixSubStateEnableMask = get_supported_lpm_mask();
 	s_cfg->PkgCStateDemotion = !config->disable_package_c_state_demotion;
 	s_cfg->PmcV1p05PhyExtFetControlEn = 1;
+
+	/* Enable PCH to CPU energy report feature. */
+	s_cfg->PchPmDisableEnergyReport = !config->pch_pm_energy_report_enable;
 }
 
 

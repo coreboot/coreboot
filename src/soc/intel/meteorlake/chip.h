@@ -343,6 +343,9 @@ struct soc_intel_meteorlake_config {
 	 * Set this to 1 in order to disable Package C-state demotion.
 	 */
 	bool disable_package_c_state_demotion;
+
+	/* Enable PCH to CPU energy report feature. */
+	bool pch_pm_energy_report_enable;
 };
 
 typedef struct soc_intel_meteorlake_config config_t;

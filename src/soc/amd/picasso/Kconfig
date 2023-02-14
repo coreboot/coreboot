@@ -227,7 +227,7 @@ config VGA_BIOS_ID
 	default "1002,15d8,c1"
 	help
 	  The default VGA BIOS PCI vendor/device ID should be set to the
-	  result of the map_oprom_vendev_rev() function in northbridge.c.
+	  result of the map_oprom_vendev_rev() function in graphics.c.
 
 config VGA_BIOS_FILE
 	string

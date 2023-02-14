@@ -257,6 +257,16 @@ config MAX_CPUS
 	help
 	  Maximum number of threads the platform can have.
 
+config VGA_BIOS_ID
+	string
+	default "1002,1506" if SOC_AMD_MENDOCINO
+	help
+	  The default VGA BIOS PCI vendor/device ID of the GPU and VBIOS.
+
+config VGA_BIOS_FILE
+	string
+	default "3rdparty/amd_blobs/mendocino/MdnGenericVbios.bin" if SOC_AMD_MENDOCINO
+
 config CONSOLE_UART_BASE_ADDRESS
 	depends on CONSOLE_SERIAL && AMD_SOC_CONSOLE_UART
 	hex

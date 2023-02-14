@@ -132,13 +132,9 @@ config VGA_BIOS_ID
 
 config USBDEBUG_HCD_INDEX
 	int
-	default 1 if BOARD_HP_2560P
-	default 2 if BOARD_HP_2570P
-	default 1 if BOARD_HP_2760P
-	default 1 if BOARD_HP_8460P
-	default 2 if BOARD_HP_8470P
-	default 2 if BOARD_HP_8770W
 	default 0 if BOARD_HP_FOLIO_9470M
+	default 1 if BOARD_HP_2560P || BOARD_HP_2760P || BOARD_HP_8460P
+	default 2 if BOARD_HP_2570P || BOARD_HP_8470P || BOARD_HP_8770W
 	default 1 if BOARD_HP_PROBOOK_6360B # FIXME: check this
 	default 2 if BOARD_HP_REVOLVE_810_G1 # FIXME: check this
 

@@ -251,6 +251,17 @@ config MAX_CPUS
 	help
 	  Maximum number of threads the platform can have.
 
+config VGA_BIOS_ID
+	string
+	default "1002,1638"
+	help
+	  The default VGA BIOS PCI vendor/device ID should be set to the
+	  result of the map_oprom_vendev() function in grapthics.c.
+
+config VGA_BIOS_FILE
+	string
+	default "3rdparty/amd_blobs/cezanne/CezanneGenericVbios.bin"
+
 config CONSOLE_UART_BASE_ADDRESS
 	depends on CONSOLE_SERIAL && AMD_SOC_CONSOLE_UART
 	hex

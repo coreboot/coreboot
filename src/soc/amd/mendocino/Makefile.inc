@@ -43,20 +43,11 @@ CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/mendocino
 CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/common
 
 # ROMSIG Normally At ROMBASE + 0x20000
-# Overridden by CONFIG_AMD_FWM_POSITION_INDEX
 # +-----------+---------------+----------------+------------+
 # |0x55AA55AA |               |                |            |
 # +-----------+---------------+----------------+------------+
 # |           |  PSPDIR ADDR  |  BIOSDIR ADDR  |
 # +-----------+---------------+----------------+
-
-$(if $(CONFIG_AMD_FWM_POSITION_INDEX), ,\
-     $(error Invalid AMD firmware position index. Check if the board sets a valid ROM size))
-
-MENDOCINO_FWM_POSITION=$(call int-add, \
-	$(call int-subtract, 0xffffffff \
-	$(call int-shift-left, \
-	0x80000 $(CONFIG_AMD_FWM_POSITION_INDEX))) 0x20000 1)
 
 # 0x80 accounts for the cbfs_file struct + filename + metadata structs, aligned to 64 bytes
 # Building the cbfs image will fail if the offset isn't large enough
@@ -265,7 +256,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 		$(OPT_VERSTAGE_SIG_FILE) \
 		$(OPT_SPL_TABLE_FILE) \
 		$(OPT_MANIFEST) \
-		--location $(call _tohex,$(MENDOCINO_FWM_POSITION)) \
+		--location $(CONFIG_AMD_FWM_POSITION) \
 		--output $@
 
 ifeq ($(CONFIG_CBFS_VERIFICATION)$(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK),yy)

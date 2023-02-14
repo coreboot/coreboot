@@ -151,7 +151,7 @@ static void set_sb_gnvs(struct global_nvs *gnvs)
 	uintptr_t fwaddr;
 	size_t fwsize;
 
-	amdfw_rom = 0x20000 - (0x80000 << CONFIG_AMD_FWM_POSITION_INDEX);
+	amdfw_rom = 4ull * GiB - CONFIG_ROM_SIZE + CONFIG_AMD_FWM_POSITION;
 	xhci_fw = read32p(amdfw_rom + XHCI_FW_SIG_OFFSET);
 
 	fwaddr = 2 + read16p(xhci_fw + XHCI_FW_ADDR_OFFSET + XHCI_FW_BOOTRAM_SIZE);

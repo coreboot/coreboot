@@ -49,6 +49,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOC_AMD_COMMON_BLOCK_PSP_FUSE_SPL
 	select SYSTEM_TYPE_LAPTOP
 	select TPM_GOOGLE_CR50
+	select AMD_FWM_POSITION_C20000_DEFAULT
 
 config VBOOT
 	select EC_GOOGLE_CHROMEEC_SWITCHES
@@ -80,12 +81,6 @@ config MAINBOARD_PART_NUMBER
 	default "Guybrush" if BOARD_GOOGLE_GUYBRUSH
 	default "Nipperkin" if BOARD_GOOGLE_NIPPERKIN
 	default "Dewatt" if BOARD_GOOGLE_DEWATT
-
-config AMD_FWM_POSITION_INDEX
-	int
-	default 3
-	help
-	  TODO: might need to be adapted for better placement of files in cbfs
 
 config DRIVER_TPM_I2C_BUS
 	hex

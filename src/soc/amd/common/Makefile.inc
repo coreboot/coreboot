@@ -47,9 +47,8 @@ $(objcbfs)/bootblock.bin: $(obj)/amdfw.rom
 add_bootblock = \
 	$(CBFSTOOL) $(1) add -f $(2) -n apu/amdfw -t amdfw \
 	-b $(call int-add, \
-	$(call int-subtract, 0xffffffff \
-	$(call int-shift-left, \
-	0x80000 $(CONFIG_AMD_FWM_POSITION_INDEX))) 0x20000 1)
+	$(call int-subtract, 0xffffffff $(CONFIG_ROM_SIZE)) 1 $(CONFIG_AMD_FWM_POSITION))
+
 endif # ifeq ($(CONFIG_RESET_VECTOR_IN_RAM),y)
 
 ifeq ($(CONFIG_VBOOT_GSCVD),y)

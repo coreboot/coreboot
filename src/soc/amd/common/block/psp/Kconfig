@@ -55,3 +55,71 @@ config PSP_INCLUDES_HSP
 	default n
 	help
 	  Select this config to indicate SoC includes Hardware Security Processor(HSP).
+
+config AMD_FWM_POSITION_20000_DEFAULT
+	bool "0x20000"
+
+config AMD_FWM_POSITION_420000_DEFAULT
+	bool "0x420000"
+
+config AMD_FWM_POSITION_820000_DEFAULT
+	bool "0x820000"
+
+config AMD_FWM_POSITION_C20000_DEFAULT
+	bool "0xC20000"
+
+config AMD_FWM_POSITION_E20000_DEFAULT
+	bool "0xE20000"
+
+config AMD_FWM_POSITION_F20000_DEFAULT
+	bool "0xF20000"
+
+config AMD_FWM_POSITION_FA0000_DEFAULT
+	bool "0xFA0000"
+
+choice AMD_FWM_POSITION_CHOICE
+	prompt "AMD FW position"
+	default AMD_FWM_POSITION_420000 if AMD_FWM_POSITION_420000_DEFAULT
+	default AMD_FWM_POSITION_820000 if AMD_FWM_POSITION_820000_DEFAULT
+	default AMD_FWM_POSITION_C20000 if AMD_FWM_POSITION_C20000_DEFAULT
+	default AMD_FWM_POSITION_E20000 if AMD_FWM_POSITION_E20000_DEFAULT
+	default AMD_FWM_POSITION_F20000 if AMD_FWM_POSITION_F20000_DEFAULT
+	default AMD_FWM_POSITION_FA0000 if AMD_FWM_POSITION_FA0000_DEFAULT
+	default AMD_FWM_POSITION_20000
+	help
+	  Set the position on flash offset where the AMD FW needs to be.
+	  This position is relative to a 16MB flash window. If the flash
+	  size is smaller than 16MB it gets mapped at the top of that window.
+
+config AMD_FWM_POSITION_20000
+	bool "0x20000"
+
+config AMD_FWM_POSITION_420000
+	bool "0x420000"
+
+config AMD_FWM_POSITION_820000
+	bool "0x820000"
+
+config AMD_FWM_POSITION_C20000
+	bool "0xC20000"
+
+config AMD_FWM_POSITION_E20000
+	bool "0xE20000"
+
+config AMD_FWM_POSITION_F20000
+	bool "0xF20000"
+
+config AMD_FWM_POSITION_FA0000
+	bool "0xFA0000"
+
+endchoice
+
+config AMD_FWM_POSITION
+	hex
+	default 0x20000 if AMD_FWM_POSITION_20000
+	default 0x420000 if AMD_FWM_POSITION_420000
+	default 0x820000 if AMD_FWM_POSITION_820000
+	default 0xc20000 if AMD_FWM_POSITION_C20000
+	default 0xe20000 if AMD_FWM_POSITION_E20000
+	default 0xf20000 if AMD_FWM_POSITION_F20000
+	default 0xfa0000 if AMD_FWM_POSITION_FA0000

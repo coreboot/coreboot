@@ -64,7 +64,6 @@ CPPFLAGS_common += -I$(src)/soc/amd/stoneyridge/include
 CPPFLAGS_common += -I$(src)/soc/amd/stoneyridge/acpi
 
 # ROMSIG Normally At ROMBASE + 0x20000
-# Overridden by CONFIG_AMD_FWM_POSITION_INDEX
 # +-----------+---------------+----------------+------------+
 # |0x55AA55AA |EC ROM Address |GEC ROM Address |USB3 ROM    |
 # +-----------+---------------+----------------+------------+
@@ -72,11 +71,6 @@ CPPFLAGS_common += -I$(src)/soc/amd/stoneyridge/acpi
 # +-----------+
 #
 # EC ROM should be 64K aligned.
-STONEYRIDGE_FWM_POSITION=$(call int-add, \
-	$(call int-subtract, 0xffffffff \
-	$(call int-shift-left, \
-	0x80000 $(CONFIG_AMD_FWM_POSITION_INDEX))) 0x20000 1)
-
 ### 0
 
 FIRMWARE_LOCATION=$(shell grep -e FIRMWARE_LOCATION $(CONFIG_AMDFW_CONFIG_FILE) | awk '{print $$2}')
@@ -138,26 +132,24 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_STONEYRIDGE_XHCI_FWM_FILE)) \
 		$(OPT_DEBUG_AMDFWTOOL) \
 		--config $(CONFIG_AMDFW_CONFIG_FILE) \
 		--flashsize $(CONFIG_ROM_SIZE) \
-		--location $(call _tohex,$(STONEYRIDGE_FWM_POSITION)) \
+		--location $(CONFIG_AMD_FWM_POSITION) \
 		--output	$@
 
 ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)
 
-# Calculate firmware position inside the ROM
-STONEYRIDGE_FWM_ROM_POSITION=$(call int-add, \
-	$(call int-subtract, $(CONFIG_ROM_SIZE) \
-	$(call int-shift-left, \
-	0x80000 $(CONFIG_AMD_FWM_POSITION_INDEX))) 0x20000)
-
 $(call add_intermediate, add_amdfw, $(obj)/amdfw.rom)
 	printf "    DD         Adding AMD Firmware at ROM offset 0x%x\n" \
-		"$(STONEYRIDGE_FWM_ROM_POSITION)"
+		"$(CONFIG_AMD_FWM_POSITION)"
 	dd if=$(obj)/amdfw.rom \
 		of=$< conv=notrunc bs=1 \
-		seek=$(STONEYRIDGE_FWM_ROM_POSITION) >/dev/null 2>&1
+		seek=$(CONFIG_AMD_FWM_POSITION) >/dev/null 2>&1
 
 else # ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)
 
+STONEYRIDGE_FWM_POSITION=$(call int-add, \
+	$(call int-subtract, 0xffffffff $(CONFIG_ROM_SIZE)) \
+	1 \
+	$(CONFIG_AMD_FWM_POSITION))
 cbfs-files-y += apu/amdfw
 apu/amdfw-file := $(obj)/amdfw.rom
 apu/amdfw-position := $(STONEYRIDGE_FWM_POSITION)

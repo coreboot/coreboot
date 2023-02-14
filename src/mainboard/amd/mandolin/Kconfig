@@ -12,6 +12,8 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_ACPI_RESUME
 	select DRIVERS_UART_ACPI
 	select AMD_SOC_CONSOLE_UART if !AMD_LPC_DEBUG_CARD
+	select AMD_FWM_POSITION_420000_DEFAULT if BOARD_AMD_MANDOLIN
+	select AMD_FWM_POSITION_820000_DEFAULT if BOARD_AMD_CEREME
 
 config FMDFILE
 	default "src/mainboard/amd/mandolin/variants/\$(CONFIG_VARIANT_DIR)/board.fmd"
@@ -66,13 +68,6 @@ config DEVICETREE
 config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y
-
-config AMD_FWM_POSITION_INDEX
-	int
-	default 3 if BOARD_AMD_MANDOLIN
-	default 4 if BOARD_AMD_CEREME
-	help
-	  TODO: might need to be adapted for better placement of files in cbfs
 
 config MANDOLIN_HAVE_MCHP_FW
 	bool "Have Microchip EC firmware?"

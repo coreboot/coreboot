@@ -312,23 +312,6 @@ config DISABLE_KEYBOARD_RESET_PIN
 
 menu "PSP Configuration Options"
 
-config AMD_FWM_POSITION_INDEX
-	int
-	default 5
-
-comment "AMD Firmware Directory Table set to location for 512KB ROM"
-	depends on AMD_FWM_POSITION_INDEX = 0
-comment "AMD Firmware Directory Table set to location for 1MB ROM"
-	depends on AMD_FWM_POSITION_INDEX = 1
-comment "AMD Firmware Directory Table set to location for 2MB ROM"
-	depends on AMD_FWM_POSITION_INDEX = 2
-comment "AMD Firmware Directory Table set to location for 4MB ROM"
-	depends on AMD_FWM_POSITION_INDEX = 3
-comment "AMD Firmware Directory Table set to location for 8MB ROM"
-	depends on AMD_FWM_POSITION_INDEX = 4
-comment "AMD Firmware Directory Table set to location for 16MB ROM"
-	depends on AMD_FWM_POSITION_INDEX = 5
-
 config AMDFW_CONFIG_FILE
 	string "AMD PSP Firmware config file"
 	default "src/soc/amd/phoenix/fw.cfg"

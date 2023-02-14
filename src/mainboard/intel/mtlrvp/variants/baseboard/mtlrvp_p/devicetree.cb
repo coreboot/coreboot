@@ -267,6 +267,23 @@ chip soc/intel/meteorlake
 				device generic 0 on end
 			end
 		end
+		device ref pcie_rp6 on
+			# Enable PCH PCIE x1 slot using CLK 3
+			register "pcie_rp[PCIE_RP(6)]" = "{
+				.clk_src = 3,
+				.clk_req = 3,
+				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A18)"
+				register "enable_delay_ms" = "100"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A19)"
+				register "reset_delay_ms" = "20"
+				register "srcclk_pin" = "3"
+				device generic 0 on
+				end
+			end
+		end # PCIE x1 slot
 		device ref pcie_rp7  on
 			# Enable PCH PCIE RP 7 using CLK 1
 			register "pcie_rp[PCIE_RP(7)]" = "{

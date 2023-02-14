@@ -57,7 +57,7 @@ static void gma_init(struct device *const dev)
 	 * In case of non-FSP solution, SoC need to select another
 	 * Kconfig to perform GFX initialization.
 	 */
-	if (CONFIG(RUN_FSP_GOP)) {
+	if (CONFIG(RUN_FSP_GOP) && display_init_required()) {
 		const struct soc_intel_common_config *config = chip_get_common_soc_structure();
 		fsp_report_framebuffer_info(graphics_get_framebuffer_address(),
 					    config->panel_orientation);

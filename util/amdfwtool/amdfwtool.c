@@ -2423,17 +2423,6 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	/*
-	 * On boards using vboot, there can be more than one instance of EFS + AMDFW Body.
-	 * For the instance in the RO section, there is no need to split EFS + AMDFW body
-	 * currently. This condition is to ensure that it is not accidentally split. Revisit
-	 * this condition if such a need arises in the future.
-	 */
-	if (!any_location && body_location != efs_location) {
-		fprintf(stderr, "Error: EFS cannot be separate from AMDFW Body.\n");
-		return 1;
-	}
-
 	if (body_location != efs_location &&
 	    body_location < ALIGN(efs_location + sizeof(embedded_firmware), BLOB_ALIGNMENT)) {
 		fprintf(stderr, "Error: Insufficient space between EFS and Blobs.\n");

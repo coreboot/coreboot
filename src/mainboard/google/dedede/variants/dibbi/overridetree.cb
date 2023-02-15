@@ -185,7 +185,7 @@ chip soc/intel/jasperlake
 		device pci 15.3 off end # I2C 3
 		device pci 19.0 on
 			chip drivers/i2c/generic
-				register "hid" = ""10EC5682""
+				register "hid" = ""RTL5682""
 				register "name" = ""RT58""
 				register "desc" = ""Realtek RT5682""
 				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_D16)"
@@ -212,5 +212,6 @@ chip soc/intel/jasperlake
 			end
 		end # PCI Express Root Port 7 - WLAN
 		device pci 1c.7 off end # PCI Express Root Port 8
+		device pci 1f.3 on end # Intel HDA
 	end
 end

@@ -43,7 +43,7 @@ config RISCV_WORKING_HARTID
 
 config OPENSBI_PLATFORM
 	string
-	default "sifive/fu540"
+	default "generic"
 
 config OPENSBI_TEXT_START
 	hex

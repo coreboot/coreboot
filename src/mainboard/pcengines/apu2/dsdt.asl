@@ -22,9 +22,6 @@ DefinitionBlock (
 	/* PCI IRQ mapping for the Southbridge */
 	#include <southbridge/amd/pi/hudson/acpi/pcie.asl>
 
-	/* Describe the processor tree (\_SB) */
-	#include <cpu/amd/pi/00730F01/acpi/cpu.asl>
-
 	/* Contains the supported sleep states for this chipset */
 	#include <southbridge/amd/common/acpi/sleepstates.asl>
 

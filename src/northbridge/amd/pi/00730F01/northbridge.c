@@ -869,10 +869,25 @@ void mp_init_cpus(struct bus *cpu_bus)
 			    MTRR_TYPE_WRPROT);
 }
 
+void generate_cpu_entries(const struct device *device)
+{
+	int cpu;
+	const int cores = get_cpu_count();
+
+	printk(BIOS_DEBUG, "ACPI \\_SB report %d core(s)\n", cores);
+
+	/* Generate \_SB.Pxxx */
+	for (cpu = 0; cpu < cores; cpu++) {
+		acpigen_write_processor_device(cpu);
+		acpigen_write_processor_device_end();
+	}
+}
+
 static struct device_operations cpu_bus_ops = {
-	.read_resources	  = noop_read_resources,
-	.set_resources	  = noop_set_resources,
-	.init		  = mp_cpu_bus_init,
+	.read_resources	= noop_read_resources,
+	.set_resources	= noop_set_resources,
+	.init		= mp_cpu_bus_init,
+	.acpi_fill_ssdt	= generate_cpu_entries,
 };
 
 static void root_complex_enable_dev(struct device *dev)

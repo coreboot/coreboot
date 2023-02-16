@@ -16,6 +16,7 @@
 #include <gpio.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/acpi.h>
+#include <amdblocks/cpu.h>
 #include <amdblocks/ioapic.h>
 #include <soc/acpi.h>
 #include <soc/pci_devs.h>
@@ -94,11 +95,8 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 
 void generate_cpu_entries(const struct device *device)
 {
-	int cores, cpu;
-
-	/* Stoney Ridge is single node, just report # of cores */
-	cores = pci_read_config32(SOC_NB_DEV, NB_CAPABILITIES2) & CMP_CAP_MASK;
-	cores++; /* number of cores is CmpCap+1 */
+	int cpu;
+	const int cores = get_cpu_count();
 
 	printk(BIOS_DEBUG, "ACPI \\_SB report %d core(s)\n", cores);
 

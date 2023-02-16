@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <commonlib/bsd/helpers.h>
 #include <console/console.h>
+#include <device/pci_def.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/pmc_ipc.h>
 #include <stdlib.h>
@@ -148,7 +149,8 @@ static enum acpi_device_sleep_states get_min_sleep_state(
 		for (size_t i = 0; i < size; i++)
 			if (states_arr[i].pci_dev == dev->path.pci.devfn)
 				return states_arr[i].min_sleep_state;
-		printk(BIOS_WARNING, "Unknown min d_state for %x\n", dev->path.pci.devfn);
+		printk(BIOS_WARNING, "Unknown min d_state for PCI: 00:%02x.%01x\n",
+				PCI_SLOT(dev->path.pci.devfn), PCI_FUNC(dev->path.pci.devfn));
 		return ACPI_DEVICE_SLEEP_NONE;
 
 	default:

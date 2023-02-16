@@ -35,7 +35,7 @@ struct embedded_firmware {
 	uint32_t gec_entry;
 	uint32_t xhci_entry;
 	uint32_t psp_directory;
-	uint32_t combo_psp_directory;
+	uint32_t new_psp_directory;
 	uint32_t bios0_entry;
 	uint32_t bios1_entry;
 	uint32_t bios2_entry;

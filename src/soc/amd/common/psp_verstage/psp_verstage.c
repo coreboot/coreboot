@@ -101,7 +101,7 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 		return POSTCODE_ROMSIG_MISMATCH_ERROR;
 	}
 
-	psp_dir_addr = ef_table->combo_psp_directory;
+	psp_dir_addr = ef_table->new_psp_directory;
 	bios_dir_addr = get_bios_dir_addr(ef_table);
 	psp_dir_in_spi = (uint32_t *)((psp_dir_addr & SPI_ADDR_MASK) +
 			(uint32_t)boot_dev_base);

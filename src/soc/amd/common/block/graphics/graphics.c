@@ -4,13 +4,13 @@
 #include <acpi/acpigen.h>
 #include <amdblocks/vbios_cache.h>
 #include <boot/coreboot_tables.h>
+#include <bootmode.h>
 #include <bootstate.h>
 #include <console/console.h>
 #include <device/pci.h>
 #include <fmap.h>
 #include <fsp/graphics.h>
 #include <security/vboot/vbios_cache_hash_tpm.h>
-#include <security/vboot/vboot_common.h>
 #include <soc/intel/common/vbt.h>
 #include <timestamp.h>
 
@@ -150,12 +150,11 @@ static void graphics_set_resources(struct device *const dev)
 		return;
 
 	timestamp_add_now(TS_OPROM_INITIALIZE);
-	if (CONFIG(USE_SELECTIVE_GOP_INIT) && vbios_cache_is_valid()) {
-		if (!vboot_recovery_mode_enabled() && !vboot_developer_mode_enabled()) {
-			vbios_load_from_cache();
-			timestamp_add_now(TS_OPROM_COPY_END);
-			return;
-		}
+	if (CONFIG(USE_SELECTIVE_GOP_INIT) && vbios_cache_is_valid() &&
+			!display_init_required()) {
+		vbios_load_from_cache();
+		timestamp_add_now(TS_OPROM_COPY_END);
+		return;
 	}
 	rom = pci_rom_probe(dev);
 	if (rom == NULL)

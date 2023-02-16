@@ -58,7 +58,7 @@ static struct device_operations cpu_dev_ops = {
 };
 
 static const struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_AMD, 0x730F00, CPUID_ALL_STEPPINGS_MASK },
+	{ X86_VENDOR_AMD, CPUID_FROM_FMS(0x16, 0x30, 0), CPUID_ALL_STEPPINGS_MASK },
 	CPU_TABLE_END
 };
 

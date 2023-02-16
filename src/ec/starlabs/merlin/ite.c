@@ -6,6 +6,7 @@
 #include <ec/acpi/ec.h>
 #include <option.h>
 #include <pc80/keyboard.h>
+#include <halt.h>
 
 #include "ec.h"
 #include "ecdefs.h"
@@ -24,6 +25,66 @@ static uint8_t get_ec_value_from_option(const char *name,
 	if (index >= lut_size)
 		index = fallback;
 	return lut[index];
+}
+
+static void ec_mirror_with_count(void)
+{
+	unsigned int cmos_mirror_flag_counter = get_uint_option("mirror_flag_counter", UINT_MAX);
+
+	if (cmos_mirror_flag_counter != UINT_MAX) {
+		printk(BIOS_DEBUG, "ITE: mirror_flag_counter = %u\n", cmos_mirror_flag_counter);
+
+		/* Avoid boot loops by only trying a state change once */
+		if (cmos_mirror_flag_counter < MIRROR_ATTEMPTS) {
+			cmos_mirror_flag_counter++;
+			set_uint_option("mirror_flag_counter", cmos_mirror_flag_counter);
+			printk(BIOS_DEBUG, "ITE: Mirror attempt %u/%u.\n", cmos_mirror_flag_counter,
+				MIRROR_ATTEMPTS);
+
+			/* Write the EC mirror flag */
+			ec_write(ECRAM_MIRROR_FLAG, MIRROR_ENABLED);
+
+			/* Check what has been written */
+			if (ec_read(ECRAM_MIRROR_FLAG) == MIRROR_ENABLED)
+				poweroff();
+		} else {
+			/*
+			 * If the mirror flags fails after 1 attempt, it will
+			 * likely need a cold boot, or recovering.
+			 */
+			printk(BIOS_ERR, "ITE: Failed to mirror the EC in %u attempts!\n",
+				MIRROR_ATTEMPTS);
+		}
+	} else {
+		printk(BIOS_DEBUG, "ITE: Powering Off");
+		/* Write the EC mirror flag */
+		ec_write(ECRAM_MIRROR_FLAG, MIRROR_ENABLED);
+
+		/* Check what has been written */
+		if (ec_read(ECRAM_MIRROR_FLAG) == MIRROR_ENABLED)
+			poweroff();
+	}
+}
+
+
+void ec_mirror_flag(void)
+{
+	/*
+	 * For the mirror flag to work, the status of the EC pin must be known
+	 * at all times, which means external power. This can be either a DC
+	 * charger, or PD with CCG6. PD with an ANX7447 requires configuration
+	 * from the EC, so the update will interrupt this.
+	 *
+	 * This means we can unconditionally apply the mirror flag to devices
+	 * that have CCG6, present on devices with TBT, but have a manual
+	 * flag for devices without it.
+	 */
+	if (CONFIG(EC_STARLABS_MIRROR_SUPPORT) &&
+		(CONFIG(SOC_INTEL_COMMON_BLOCK_TCSS) || get_uint_option("mirror_flag", 0)) &&
+		(ec_get_version() != CONFIG_EC_STARLABS_MIRROR_VERSION))	{
+		printk(BIOS_ERR, "ITE: System and EC ROM version mismatch.\n");
+		ec_mirror_with_count();
+	}
 }
 
 static uint16_t ec_get_chip_id(unsigned int port)
@@ -56,6 +117,8 @@ static void merlin_init(struct device *dev)
 			ITE_CHIPID_VAL, chip_id);
 		return;
 	}
+
+	ec_mirror_flag();
 
 	pc_keyboard_init(NO_AUX_DEVICE);
 

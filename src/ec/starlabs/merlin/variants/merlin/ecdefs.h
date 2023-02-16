@@ -20,5 +20,6 @@
 #define ECRAM_FAN_MODE		0x50
 #define ECRAM_MAX_CHARGE	0x51
 #define ECRAM_FAST_CHARGE       0x52
+#define ECRAM_MIRROR_FLAG	0x05
 
 #endif

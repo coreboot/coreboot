@@ -8,6 +8,10 @@ config SOC_SPECIFIC_OPTIONS
 	select SAVE_MRC_AFTER_FSPS
 	select SOC_INTEL_MEM_MAPPED_PM_CONFIGURATION
 
+config CHIPSET_DEVICETREE
+	string
+	default "soc/intel/xeon_sp/spr/chipset.cb"
+
 config FSP_HEADER_PATH
 	string "Location of FSP headers"
 	depends on MAINBOARD_USES_FSP2_0

@@ -24,7 +24,7 @@ Significant or interesting changes
 
 ### Add changes that need a full description here
 
-
+* Remove Yabits payload, Yabits project is deprecated and archived.
 
 Additional coreboot changes
 ---------------------------

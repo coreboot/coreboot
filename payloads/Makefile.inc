@@ -27,7 +27,6 @@ payloads/external/tint \
 payloads/external/edk2 \
 payloads/external/GRUB2 \
 payloads/external/LinuxBoot \
-payloads/external/Yabits \
 payloads/external/skiboot \
 payloads/external/coreDOOM \
 

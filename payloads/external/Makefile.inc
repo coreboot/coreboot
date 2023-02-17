@@ -399,17 +399,6 @@ payloads/external/LinuxBoot/linuxboot/bzImage: linuxboot
 payloads/external/LinuxBoot/linuxboot/uImage: linuxboot
 payloads/external/LinuxBoot/linuxboot/initramfs_u-root.cpio: linuxboot
 
-# Yabits
-
-payloads/external/Yabits/uefi/build/uefi.elf yabits:
-	$(MAKE) -C payloads/external/Yabits all \
-		XGCCPATH="$(XGCCPATH)" \
-		CONFIG_YABITS_REVISION=$(CONFIG_YABITS_REVISION) \
-		CONFIG_YABITS_REVISION_ID=$(CONFIG_YABITS_REVISION_ID) \
-		CONFIG_YABITS_MASTER=$(CONFIG_YABITS_MASTER) \
-		CONFIG_YABITS_STABLE=$(CONFIG_YABITS_STABLE) \
-		MFLAGS= MAKEFLAGS=
-
 # BOOTBOOT
 
 payloads/external/BOOTBOOT/bootboot/dist/bootbootcb.elf:

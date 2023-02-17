@@ -46,7 +46,7 @@ Scope(\_SB.PCI0.I2C7) {
     {
     }
 
-    Method (_STA, 0, NotSerialized)  // _STA: Status
+    Method (_STA, 0, NotSerialized)
     {
         Return (0x0F)
     }

@@ -8,7 +8,7 @@ Scope (\_SB.PCI0.I2C2)
 		Name (_UID, 0)
 		Name (_DDN, "SONY IMX258 Camera") /* _DDN: DOS Device Name */
 
-		Method (_STA, 0, NotSerialized)  /* _STA: Status */
+		Method (_STA, 0, NotSerialized)
 		{
 			Return (0x0F)
 		}
@@ -76,7 +76,7 @@ Scope (\_SB.PCI0.I2C2)
 		Name (_UID, 0)
 		Name (_DDN, "Dongwoon AF DAC") /* _DDN: DOS Device Name */
 
-		Method (_STA, 0, NotSerialized)  /* _STA: Status */
+		Method (_STA, 0, NotSerialized)
 		{
 			Return (0x0F)
 		}
@@ -107,7 +107,7 @@ Scope (\_SB.PCI0.I2C2)
 		Name (_UID, 0)
 		Name (_DDN, "Dongwoon NVM")  /* _DDN: DOS Device Name */
 
-		Method (_STA, 0, NotSerialized)  /* _STA: Status */
+		Method (_STA, 0, NotSerialized)
 		{
 			Return (0x0F)
 		}

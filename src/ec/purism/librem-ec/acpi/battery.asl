@@ -11,7 +11,7 @@ Device (BAT0)
 		_SB
 	})
 	Name (BFCC, 0)
-	Method (_STA, 0, NotSerialized)  // _STA: Status
+	Method (_STA, 0, NotSerialized)
 	{
 		If (^^PCI0.LPCB.EC0.ECOK)
 		{

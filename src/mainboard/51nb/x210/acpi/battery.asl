@@ -6,7 +6,7 @@ Device (BAT)
 	Name (_UID, 1)
 	Name (_PCL, Package () { \_SB })
 
-	Method (_STA, 0, NotSerialized)  // _STA: Status
+	Method (_STA, 0, NotSerialized)
 	{
 		If (B1SS)
 		{

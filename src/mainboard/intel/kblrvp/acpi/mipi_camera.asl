@@ -9,7 +9,7 @@ Scope (\_SB.PCI0.I2C2)
 		Name (_DDN, "TPS68470 PMIC")  /* _DDN: DOS Device Name */
 		Name (CAMD, 0x64)
 
-		Method (_STA, 0, NotSerialized)  /* _STA: Status */
+		Method (_STA, 0, NotSerialized)
 		{
 			Return (0x0F)
 		}
@@ -374,7 +374,7 @@ Scope (\_SB.PCI0.I2C2)
 		Name (_DDN, "OV 13858 Camera") /* _DDN: DOS Device Name */
 		Name (CAMD, 0x02)
 
-		Method (_STA, 0, NotSerialized)  /* _STA: Status */
+		Method (_STA, 0, NotSerialized)
 		{
 			Return (0x0F)
 		}
@@ -479,7 +479,7 @@ Scope (\_SB.PCI0.I2C2)
 		Name (_DDN, "Dongwoon AF DAC") /* _DDN: DOS Device Name */
 		Name (CAMD, 0x03)
 
-		Method (_STA, 0, NotSerialized)  /* _STA: Status */
+		Method (_STA, 0, NotSerialized)
 		{
 			Return (0x0F)
 		}
@@ -507,7 +507,7 @@ Scope (\_SB.PCI0.I2C3)
 		Name (_DDN, "TPS68470 PMIC 2") /* _DDN: DOS Device Name */
 		Name (CAMD, 0x64)
 
-		Method (_STA, 0, NotSerialized)  /* _STA: Status */
+		Method (_STA, 0, NotSerialized)
 		{
 			Return (0x0F)
 		}
@@ -810,7 +810,7 @@ Scope (\_SB.PCI0.I2C3)
 		Name (_DDN, "OV 5670 Camera")  /* _DDN: DOS Device Name */
 		Name (CAMD, 0x02)
 
-		Method (_STA, 0, NotSerialized)  /* _STA: Status */
+		Method (_STA, 0, NotSerialized)
 		{
 			Return (0x0F)
 		}

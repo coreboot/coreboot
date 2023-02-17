@@ -35,7 +35,7 @@ Device (EC0)
 		BRIG, 8,		// Brightness
 	} // End of ERAM
 
-	Method (_STA, 0, NotSerialized)  // _STA: Status
+	Method (_STA, 0, NotSerialized)
 	{
 		Return (0x0f)
 	}

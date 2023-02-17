@@ -3,7 +3,7 @@
 Device (ALSD)
 {
 	Name (_HID, "ACPI0008")
-	Method (_STA, 0, NotSerialized)  // _STA: Status
+	Method (_STA, 0, NotSerialized)
 	{
 		Return (0x0f)
 	}

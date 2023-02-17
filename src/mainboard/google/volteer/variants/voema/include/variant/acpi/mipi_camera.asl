@@ -149,7 +149,7 @@ Scope (\_SB.PCI0.I2C2)
 				STA = 0
 			}
 		}
-		Method (_STA, 0, NotSerialized)  /* _STA: Status */
+		Method (_STA, 0, NotSerialized)
 		{
 			Return (STA)
 		}
@@ -160,7 +160,7 @@ Scope (\_SB.PCI0.I2C2)
 		Name (_HID, "INT3474")
 		Name (_UID, 0)
 		Name (_DDN, "Ov 2740 Camera")  /* _DDN: DOS Device Name */
-		Method (_STA, 0, NotSerialized)  /* _STA: Status */
+		Method (_STA, 0, NotSerialized)
 		{
 			Return (0x0F)
 		}
@@ -276,7 +276,7 @@ Scope (\_SB.PCI0.I2C2)
 		Name (_HID, "PRP0001")
 		Name (_UID, 0x01)
 		Name (_DDN, "AT24 EEPROM")  // _DDN: DOS Device Name
-		Method (_STA, 0, NotSerialized)  // _STA: Status
+		Method (_STA, 0, NotSerialized)
 		{
 			Return (0x0F)
 		}

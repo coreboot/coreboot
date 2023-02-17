@@ -90,7 +90,7 @@ Method (_PSC) {
 Device (FDC0)
 {
 	Name (_HID, EisaId ("PNP0700"))
-	Method (_STA, 0, NotSerialized) // _STA: Status
+	Method (_STA, 0, NotSerialized)
 	{
 		PNP_GENERIC_STA(W83977TF_FDC)
 	}

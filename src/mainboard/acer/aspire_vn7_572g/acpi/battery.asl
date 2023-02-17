@@ -364,7 +364,7 @@ Device (BAT0)
 		0xFFFFFFFF,	/* 0x02: Battery Remaining Capacity */
 		0xFFFFFFFF	/* 0x03: Battery Present Voltage */
 	})
-	Method (_STA, 0, NotSerialized)  // _STA: Status
+	Method (_STA, 0, NotSerialized)
 	{
 		/* Bitwise AND by vendor is lossy? */
 		Local1 = EB0A

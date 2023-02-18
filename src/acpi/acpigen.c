@@ -1448,24 +1448,6 @@ void acpigen_write_not(uint8_t arg, uint8_t res)
 	acpigen_emit_byte(res);
 }
 
-/* Concatenate (str1, str2, res) */
-void acpigen_concatenate_string_string(const char *str1, const char *str2, uint8_t res)
-{
-	acpigen_emit_byte(CONCATENATE_OP);
-	acpigen_write_string(str1);
-	acpigen_write_string(str2);
-	acpigen_emit_byte(res);
-}
-
-/* Concatenate (str, val, tmp_res) */
-void acpigen_concatenate_string_int(const char *str, uint64_t val, uint8_t res)
-{
-	acpigen_emit_byte(CONCATENATE_OP);
-	acpigen_write_string(str);
-	acpigen_write_integer(val);
-	acpigen_emit_byte(res);
-}
-
 /* Concatenate (str, src_res, dest_res) */
 void acpigen_concatenate_string_op(const char *str, uint8_t src_res, uint8_t dest_res)
 {
@@ -1507,24 +1489,6 @@ void acpigen_write_debug_namestr(const char *str)
 	acpigen_emit_ext_op(DEBUG_OP);
 }
 
-/* Concatenate (str1, str2, tmp_res)
-   Store(tmp_res, DEBUG) */
-void acpigen_write_debug_concatenate_string_string(const char *str1, const char *str2,
-	uint8_t tmp_res)
-{
-	acpigen_concatenate_string_string(str1, str2, tmp_res);
-	acpigen_write_debug_op(tmp_res);
-}
-
-/* Concatenate (str1, val, tmp_res)
-   Store(tmp_res, DEBUG) */
-void acpigen_write_debug_concatenate_string_int(const char *str, uint64_t val,
-	uint8_t tmp_res)
-{
-	acpigen_concatenate_string_int(str, val, tmp_res);
-	acpigen_write_debug_op(tmp_res);
-}
-
 /* Concatenate (str1, res, tmp_res)
    Store(tmp_res, DEBUG) */
 void acpigen_write_debug_concatenate_string_op(const char *str, uint8_t res,
@@ -1532,6 +1496,27 @@ void acpigen_write_debug_concatenate_string_op(const char *str, uint8_t res,
 {
 	acpigen_concatenate_string_op(str, res, tmp_res);
 	acpigen_write_debug_op(tmp_res);
+}
+
+static void acpigen_tx_byte(unsigned char byte, void *data)
+{
+	acpigen_emit_byte(byte);
+}
+
+/* Store("formatted string", DEBUG) */
+void acpigen_write_debug_sprintf(const char *fmt, ...)
+{
+	va_list args;
+
+	acpigen_write_store();
+
+	acpigen_emit_byte(STRING_PREFIX);
+	va_start(args, fmt);
+	vtxprintf(acpigen_tx_byte, fmt, args, NULL);
+	va_end(args);
+	acpigen_emit_byte('\0');
+
+	acpigen_emit_ext_op(DEBUG_OP);
 }
 
 void acpigen_write_if(void)

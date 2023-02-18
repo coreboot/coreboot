@@ -1,0 +1,2 @@
+config BOARD_ASROCK_B75M_ITX
+	bool "B75M-ITX"

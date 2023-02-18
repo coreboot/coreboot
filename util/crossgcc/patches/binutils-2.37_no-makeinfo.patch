@@ -1,22 +1,7 @@
-It fails to compile when using "MAKEINFO = @MAKEINFO@":
-binutils-gdb/missing: 81: makeinfo: not found
-WARNING: 'makeinfo' is missing on your system.
-         You should only need it if you modified a '.texi' file, or
-         any other file indirectly affecting the aspect of the manual.
-         You might want to install the Texinfo package:
-         <http://www.gnu.org/software/texinfo/>
-         The spurious makeinfo call might also be the consequence of
-         using a buggy 'make' (AIX, DU, IRIX), in which case you might
-         want to install GNU make:
-         <http://www.gnu.org/software/make/>
-make[4]: *** [Makefile:507: as.info] Error 127
-
-Current patch will change that to "MAKEINFO = true"
-
-diff --git binutils-2.34/Makefile.in binutils-2.34/Makefile.in
-index af38671cbe..978d445825 100644
---- binutils-2.34/Makefile.in
-+++ binutils-2.34/Makefile.in
+diff --git a/Makefile.in b/Makefile.in
+index 9b3a5d75..b8347953 100644
+--- a/Makefile.in
++++ b/Makefile.in
 @@ -370,7 +370,7 @@ YACC = @YACC@
  FLEX = @FLEX@
  LEX = @LEX@
@@ -25,11 +10,11 @@ index af38671cbe..978d445825 100644
 +MAKEINFO = true
  EXPECT = @EXPECT@
  RUNTEST = @RUNTEST@
-
-diff --git binutils-2.34/Makefile.tpl binutils-2.34/Makefile.tpl
-index 5b118a8ba4..2b41fa28ce 100644
---- binutils-2.34/Makefile.tpl
-+++ binutils-2.34/Makefile.tpl
+ 
+diff --git a/Makefile.tpl b/Makefile.tpl
+index 84fee3dd..79a3ea7a 100644
+--- a/Makefile.tpl
++++ b/Makefile.tpl
 @@ -373,7 +373,7 @@ YACC = @YACC@
  FLEX = @FLEX@
  LEX = @LEX@
@@ -38,12 +23,12 @@ index 5b118a8ba4..2b41fa28ce 100644
 +MAKEINFO = true
  EXPECT = @EXPECT@
  RUNTEST = @RUNTEST@
-
-diff --git binutils-2.34/bfd/Makefile.in binutils-2.34/bfd/Makefile.in
-index 7d3b9c1c5a..c062314063 100644
---- binutils-2.34/bfd/Makefile.in
-+++ binutils-2.34/bfd/Makefile.in
-@@ -342,7 +342,7 @@ LIPO = @LIPO@
+ 
+diff --git a/bfd/Makefile.in b/bfd/Makefile.in
+index 12807d99..c42976cb 100644
+--- a/bfd/Makefile.in
++++ b/bfd/Makefile.in
+@@ -343,7 +343,7 @@ LIPO = @LIPO@
  LN_S = @LN_S@
  LTLIBOBJS = @LTLIBOBJS@
  MAINT = @MAINT@
@@ -52,11 +37,11 @@ index 7d3b9c1c5a..c062314063 100644
  MKDIR_P = @MKDIR_P@
  MKINSTALLDIRS = @MKINSTALLDIRS@
  MSGFMT = @MSGFMT@
-diff --git binutils-2.34/bfd/Makefile.in.orig binutils-2.34/bfd/Makefile.in.orig
-index 78555ccbbc..861fc3570d 100644
---- binutils-2.34/bfd/Makefile.in.orig
-+++ binutils-2.34/bfd/Makefile.in.orig
-@@ -342,7 +342,7 @@ LIPO = @LIPO@
+diff --git a/bfd/doc/Makefile.in b/bfd/doc/Makefile.in
+index 0724b778..ff6cf159 100644
+--- a/bfd/doc/Makefile.in
++++ b/bfd/doc/Makefile.in
+@@ -285,7 +285,7 @@ LIPO = @LIPO@
  LN_S = @LN_S@
  LTLIBOBJS = @LTLIBOBJS@
  MAINT = @MAINT@
@@ -65,24 +50,11 @@ index 78555ccbbc..861fc3570d 100644
  MKDIR_P = @MKDIR_P@
  MKINSTALLDIRS = @MKINSTALLDIRS@
  MSGFMT = @MSGFMT@
-diff --git binutils-2.34/bfd/doc/Makefile.in binutils-2.34/bfd/doc/Makefile.in
-index 2c1ddd45b8..b3972192e7 100644
---- binutils-2.34/bfd/doc/Makefile.in
-+++ binutils-2.34/bfd/doc/Makefile.in
-@@ -284,7 +284,7 @@ LIPO = @LIPO@
- LN_S = @LN_S@
- LTLIBOBJS = @LTLIBOBJS@
- MAINT = @MAINT@
--MAKEINFO = @MAKEINFO@
-+MAKEINFO = true
- MKDIR_P = @MKDIR_P@
- MKINSTALLDIRS = @MKINSTALLDIRS@
- MSGFMT = @MSGFMT@
-diff --git binutils-2.34/binutils/Makefile.in binutils-2.34/binutils/Makefile.in
-index 39f08563f9..91d2287c75 100644
---- binutils-2.34/binutils/Makefile.in
-+++ binutils-2.34/binutils/Makefile.in
-@@ -463,7 +463,7 @@ LN_S = @LN_S@
+diff --git a/binutils/Makefile.in b/binutils/Makefile.in
+index bed8fef6..4066d24f 100644
+--- a/binutils/Makefile.in
++++ b/binutils/Makefile.in
+@@ -469,7 +469,7 @@ LN_S = @LN_S@
  LTLIBICONV = @LTLIBICONV@
  LTLIBOBJS = @LTLIBOBJS@
  MAINT = @MAINT@
@@ -91,11 +63,11 @@ index 39f08563f9..91d2287c75 100644
  MKDIR_P = @MKDIR_P@
  MKINSTALLDIRS = @MKINSTALLDIRS@
  MSGFMT = @MSGFMT@
-diff --git binutils-2.34/binutils/doc/Makefile.in binutils-2.34/binutils/doc/Makefile.in
-index b0e7b7b6c8..dbb21dd47a 100644
---- binutils-2.34/binutils/doc/Makefile.in
-+++ binutils-2.34/binutils/doc/Makefile.in
-@@ -298,7 +298,7 @@ LN_S = @LN_S@
+diff --git a/binutils/doc/Makefile.in b/binutils/doc/Makefile.in
+index 024a642e..c66d21de 100644
+--- a/binutils/doc/Makefile.in
++++ b/binutils/doc/Makefile.in
+@@ -302,7 +302,7 @@ LN_S = @LN_S@
  LTLIBICONV = @LTLIBICONV@
  LTLIBOBJS = @LTLIBOBJS@
  MAINT = @MAINT@
@@ -104,11 +76,11 @@ index b0e7b7b6c8..dbb21dd47a 100644
  MKDIR_P = @MKDIR_P@
  MKINSTALLDIRS = @MKINSTALLDIRS@
  MSGFMT = @MSGFMT@
-diff --git binutils-2.34/gas/Makefile.in binutils-2.34/gas/Makefile.in
-index 85c7b04daa..882db6dd81 100644
---- binutils-2.34/gas/Makefile.in
-+++ binutils-2.34/gas/Makefile.in
-@@ -318,7 +318,7 @@ LIPO = @LIPO@
+diff --git a/gas/Makefile.in b/gas/Makefile.in
+index f3d66b8e..5a53a9cb 100644
+--- a/gas/Makefile.in
++++ b/gas/Makefile.in
+@@ -319,7 +319,7 @@ LIPO = @LIPO@
  LN_S = @LN_S@
  LTLIBOBJS = @LTLIBOBJS@
  MAINT = @MAINT@
@@ -117,11 +89,11 @@ index 85c7b04daa..882db6dd81 100644
  MKDIR_P = @MKDIR_P@
  MKINSTALLDIRS = @MKINSTALLDIRS@
  MSGFMT = @MSGFMT@
-diff --git binutils-2.34/gas/doc/Makefile.in binutils-2.34/gas/doc/Makefile.in
-index f2336ec8c9..d4c36366a1 100644
---- binutils-2.34/gas/doc/Makefile.in
-+++ binutils-2.34/gas/doc/Makefile.in
-@@ -280,7 +280,7 @@ LIPO = @LIPO@
+diff --git a/gas/doc/Makefile.in b/gas/doc/Makefile.in
+index 89d2ca06..d98a8883 100644
+--- a/gas/doc/Makefile.in
++++ b/gas/doc/Makefile.in
+@@ -281,7 +281,7 @@ LIPO = @LIPO@
  LN_S = @LN_S@
  LTLIBOBJS = @LTLIBOBJS@
  MAINT = @MAINT@
@@ -130,10 +102,10 @@ index f2336ec8c9..d4c36366a1 100644
  MKDIR_P = @MKDIR_P@
  MKINSTALLDIRS = @MKINSTALLDIRS@
  MSGFMT = @MSGFMT@
-diff --git binutils-2.34/gold/Makefile.in binutils-2.34/gold/Makefile.in
-index f2906ede8b..ac4fad5d55 100644
---- binutils-2.34/gold/Makefile.in
-+++ binutils-2.34/gold/Makefile.in
+diff --git a/gold/Makefile.in b/gold/Makefile.in
+index 9fd21214..52e5f365 100644
+--- a/gold/Makefile.in
++++ b/gold/Makefile.in
 @@ -558,7 +558,7 @@ LIBS = @LIBS@
  LN_S = @LN_S@
  LTLIBOBJS = @LTLIBOBJS@
@@ -143,11 +115,11 @@ index f2906ede8b..ac4fad5d55 100644
  MERGE_CONSTANTS_FLAG = @MERGE_CONSTANTS_FLAG@
  MKDIR_P = @MKDIR_P@
  MKINSTALLDIRS = @MKINSTALLDIRS@
-diff --git binutils-2.34/gold/testsuite/Makefile.in binutils-2.34/gold/testsuite/Makefile.in
-index 9f29dc638c..6907fe1f9a 100644
---- binutils-2.34/gold/testsuite/Makefile.in
-+++ binutils-2.34/gold/testsuite/Makefile.in
-@@ -2625,7 +2625,7 @@ LIBS = @LIBS@
+diff --git a/gold/testsuite/Makefile.in b/gold/testsuite/Makefile.in
+index 7b4b7832..090a555f 100644
+--- a/gold/testsuite/Makefile.in
++++ b/gold/testsuite/Makefile.in
+@@ -2644,7 +2644,7 @@ LIBS = @LIBS@
  LN_S = @LN_S@
  LTLIBOBJS = @LTLIBOBJS@
  MAINT = @MAINT@
@@ -156,11 +128,11 @@ index 9f29dc638c..6907fe1f9a 100644
  MERGE_CONSTANTS_FLAG = @MERGE_CONSTANTS_FLAG@
  MKDIR_P = @MKDIR_P@
  MKINSTALLDIRS = @MKINSTALLDIRS@
-diff --git binutils-2.34/gprof/Makefile.in binutils-2.34/gprof/Makefile.in
-index efc2b80eb8..012f186281 100644
---- binutils-2.34/gprof/Makefile.in
-+++ binutils-2.34/gprof/Makefile.in
-@@ -349,7 +349,7 @@ LIPO = @LIPO@
+diff --git a/gprof/Makefile.in b/gprof/Makefile.in
+index 0f766a36..b8c07e2b 100644
+--- a/gprof/Makefile.in
++++ b/gprof/Makefile.in
+@@ -351,7 +351,7 @@ LIPO = @LIPO@
  LN_S = @LN_S@
  LTLIBOBJS = @LTLIBOBJS@
  MAINT = @MAINT@
@@ -169,11 +141,11 @@ index efc2b80eb8..012f186281 100644
  MKDIR_P = @MKDIR_P@
  MKINSTALLDIRS = @MKINSTALLDIRS@
  MSGFMT = @MSGFMT@
-diff --git binutils-2.34/ld/Makefile.in binutils-2.34/ld/Makefile.in
-index 46d9b14077..2f2b0ae3ce 100644
---- binutils-2.34/ld/Makefile.in
-+++ binutils-2.34/ld/Makefile.in
-@@ -429,7 +429,7 @@ LIPO = @LIPO@
+diff --git a/ld/Makefile.in b/ld/Makefile.in
+index ef2e99e0..9775d3d2 100644
+--- a/ld/Makefile.in
++++ b/ld/Makefile.in
+@@ -428,7 +428,7 @@ LIPO = @LIPO@
  LN_S = @LN_S@
  LTLIBOBJS = @LTLIBOBJS@
  MAINT = @MAINT@
@@ -182,11 +154,11 @@ index 46d9b14077..2f2b0ae3ce 100644
  MKDIR_P = @MKDIR_P@
  MKINSTALLDIRS = @MKINSTALLDIRS@
  MSGFMT = @MSGFMT@
-diff --git binutils-2.34/libctf/Makefile.in binutils-2.34/libctf/Makefile.in
-index 3e8a0172f7..32dc1f08f7 100644
---- binutils-2.34/libctf/Makefile.in
-+++ binutils-2.34/libctf/Makefile.in
-@@ -328,7 +328,7 @@ LIPO = @LIPO@
+diff --git a/libctf/Makefile.in b/libctf/Makefile.in
+index 5cfa100f..8b3bf7ab 100644
+--- a/libctf/Makefile.in
++++ b/libctf/Makefile.in
+@@ -360,7 +360,7 @@ LIPO = @LIPO@
  LN_S = @LN_S@
  LTLIBOBJS = @LTLIBOBJS@
  MAINT = @MAINT@
@@ -195,10 +167,10 @@ index 3e8a0172f7..32dc1f08f7 100644
  MKDIR_P = @MKDIR_P@
  NM = @NM@
  NMEDIT = @NMEDIT@
-diff --git binutils-2.34/libiberty/Makefile.in binutils-2.34/libiberty/Makefile.in
-index fe738d0db4..6d902c5b7b 100644
---- binutils-2.34/libiberty/Makefile.in
-+++ binutils-2.34/libiberty/Makefile.in
+diff --git a/libiberty/Makefile.in b/libiberty/Makefile.in
+index d19e14a2..6b1dd3d7 100644
+--- a/libiberty/Makefile.in
++++ b/libiberty/Makefile.in
 @@ -56,7 +56,7 @@ CC = @CC@
  CFLAGS = @CFLAGS@
  CPPFLAGS = @CPPFLAGS@
@@ -206,13 +178,13 @@ index fe738d0db4..6d902c5b7b 100644
 -MAKEINFO = @MAKEINFO@
 +MAKEINFO = true
  PERL = @PERL@
-
+ 
  PICFLAG = @PICFLAG@
-diff --git binutils-2.34/opcodes/Makefile.in binutils-2.34/opcodes/Makefile.in
-index 8564803fc7..fa790026ac 100644
---- binutils-2.34/opcodes/Makefile.in
-+++ binutils-2.34/opcodes/Makefile.in
-@@ -322,7 +322,7 @@ LIPO = @LIPO@
+diff --git a/opcodes/Makefile.in b/opcodes/Makefile.in
+index 42c15f00..82b8dc9a 100644
+--- a/opcodes/Makefile.in
++++ b/opcodes/Makefile.in
+@@ -323,7 +323,7 @@ LIPO = @LIPO@
  LN_S = @LN_S@
  LTLIBOBJS = @LTLIBOBJS@
  MAINT = @MAINT@
@@ -221,10 +193,10 @@ index 8564803fc7..fa790026ac 100644
  MKDIR_P = @MKDIR_P@
  MKINSTALLDIRS = @MKINSTALLDIRS@
  MSGFMT = @MSGFMT@
-diff --git binutils-2.34/zlib/Makefile.in binutils-2.34/zlib/Makefile.in
-index 062dc04e80..4abb5ceeaa 100644
---- binutils-2.34/zlib/Makefile.in
-+++ binutils-2.34/zlib/Makefile.in
+diff --git a/zlib/Makefile.in b/zlib/Makefile.in
+index 062dc04e..4abb5cee 100644
+--- a/zlib/Makefile.in
++++ b/zlib/Makefile.in
 @@ -304,7 +304,7 @@ LIPO = @LIPO@
  LN_S = @LN_S@
  LTLIBOBJS = @LTLIBOBJS@

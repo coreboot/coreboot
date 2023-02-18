@@ -718,6 +718,8 @@ build_BINUTILS() {
 		--enable-lto \
 		--enable-gold \
 		--enable-multilib \
+		--disable-docs \
+		--disable-texinfo \
 		${BINUTILS_OPTIONS} \
 		CFLAGS="$HOSTCFLAGS" \
 		CXXFLAGS="$HOSTCFLAGS" || touch .failed

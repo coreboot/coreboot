@@ -26,6 +26,15 @@ Significant or interesting changes
 
 * Remove Yabits payload, Yabits project is deprecated and archived.
 
+### Toolchain updates
+
+* Upgrade MPC from version 1.2.1 to 1.3.1
+* Upgrade MPFR from version 4.1.1 to 4.2.0
+* Upgrade CMake from version 3.25.0 to 3.26.2
+* Upgrade LLVM from version 15.0.6 to 15.0.7
+* Upgrade GCC from version 11.2.0 to 11.3.0
+* Upgrade binutils from version 2.37 to 2.40
+
 Additional coreboot changes
 ---------------------------
 

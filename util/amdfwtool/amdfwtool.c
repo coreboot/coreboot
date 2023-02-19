@@ -2577,7 +2577,8 @@ int main(int argc, char **argv)
 
 	switch (cb_config.soc_id) {
 	case PLATFORM_UNKNOWN:
-		amd_romsig->psp_directory = BUFF_TO_RUN(ctx, pspdir);
+		amd_romsig->psp_directory =
+			BUFF_TO_RUN_MODE(ctx, pspdir, AMD_ADDR_REL_BIOS);
 		break;
 	case PLATFORM_CEZANNE:
 	case PLATFORM_MENDOCINO:
@@ -2590,17 +2591,20 @@ int main(int argc, char **argv)
 	case PLATFORM_LUCIENNE:
 	case PLATFORM_RENOIR:
 	default:
-		amd_romsig->new_psp_directory = BUFF_TO_RUN(ctx, pspdir);
+		amd_romsig->new_psp_directory =
+			BUFF_TO_RUN_MODE(ctx, pspdir, AMD_ADDR_REL_BIOS);
 		break;
 	}
 
 	if (cb_config.use_combo) {
 		psp_combo_directory *combo_dir = new_combo_dir(&ctx);
-		amd_romsig->combo_psp_directory = BUFF_TO_RUN(ctx, combo_dir);
+		amd_romsig->combo_psp_directory =
+			BUFF_TO_RUN_MODE(ctx, combo_dir, AMD_ADDR_REL_BIOS);
 		/* 0 -Compare PSP ID, 1 -Compare chip family ID */
 		combo_dir->entries[0].id_sel = 0;
 		combo_dir->entries[0].id = get_psp_id(cb_config.soc_id);
-		combo_dir->entries[0].lvl2_addr = BUFF_TO_RUN(ctx, pspdir);
+		combo_dir->entries[0].lvl2_addr =
+			BUFF_TO_RUN_MODE(ctx, pspdir, AMD_ADDR_REL_BIOS);
 
 		combo_dir->header.lookup = 1;
 		fill_dir_header(combo_dir, 1, PSP2_COOKIE, &ctx);
@@ -2644,7 +2648,8 @@ int main(int argc, char **argv)
 		case PLATFORM_LUCIENNE:
 		case PLATFORM_CEZANNE:
 			if (!cb_config.recovery_ab)
-				amd_romsig->bios3_entry = BUFF_TO_RUN(ctx, biosdir);
+				amd_romsig->bios3_entry =
+					BUFF_TO_RUN_MODE(ctx, biosdir, AMD_ADDR_REL_BIOS);
 			break;
 		case PLATFORM_MENDOCINO:
 		case PLATFORM_PHOENIX:
@@ -2655,7 +2660,8 @@ int main(int argc, char **argv)
 		case PLATFORM_RAVEN:
 		case PLATFORM_PICASSO:
 		default:
-			amd_romsig->bios1_entry = BUFF_TO_RUN(ctx, biosdir);
+			amd_romsig->bios1_entry =
+				BUFF_TO_RUN_MODE(ctx, biosdir, AMD_ADDR_REL_BIOS);
 			break;
 		}
 	}

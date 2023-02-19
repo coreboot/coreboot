@@ -491,12 +491,55 @@ typedef struct _context {
 #define SET_ADDR_MODE_BY_TABLE(table) \
 		SET_ADDR_MODE((table), (table)->header.additional_info_fields.address_mode)
 
+
+static void free_psp_firmware_filenames(amd_fw_entry *fw_table)
+{
+	amd_fw_entry *index;
+
+	for (index = fw_table; index->type != AMD_FW_INVALID; index++) {
+		if (index->filename &&
+				index->type != AMD_FW_VERSTAGE_SIG &&
+				index->type != AMD_FW_PSP_VERSTAGE &&
+				index->type != AMD_FW_SPL &&
+				index->type != AMD_FW_PSP_WHITELIST) {
+			free(index->filename);
+			index->filename = NULL;
+		}
+	}
+}
+
+static void free_bdt_firmware_filenames(amd_bios_entry *fw_table)
+{
+	amd_bios_entry *index;
+
+	for (index = fw_table; index->type != AMD_BIOS_INVALID; index++) {
+		if (index->filename &&
+				index->type != AMD_BIOS_APCB &&
+				index->type != AMD_BIOS_BIN &&
+				index->type != AMD_BIOS_APCB_BK &&
+				index->type != AMD_BIOS_UCODE) {
+			free(index->filename);
+			index->filename = NULL;
+		}
+	}
+}
+
+static void amdfwtool_cleanup(context *ctx)
+{
+	free(ctx->rom);
+	ctx->rom = NULL;
+
+	/* Free the filename. */
+	free_psp_firmware_filenames(amd_psp_fw_table);
+	free_bdt_firmware_filenames(amd_bios_table);
+}
+
 void assert_fw_entry(uint32_t count, uint32_t max, context *ctx)
 {
 	if (count >= max) {
 		fprintf(stderr, "Error: BIOS entries (%d) exceeds max allowed items "
 			"(%d)\n", count, max);
-		free(ctx->rom);
+		amdfwtool_cleanup(ctx);
 		exit(1);
 	}
 }
@@ -506,7 +549,7 @@ static void set_current_pointer(context *ctx, uint32_t value)
 	if (ctx->current_pointer_saved != 0xFFFFFFFF &&
 			ctx->current_pointer_saved != ctx->current) {
 		fprintf(stderr, "Error: The pointer is changed elsewhere\n");
-		free(ctx->rom);
+		amdfwtool_cleanup(ctx);
 		exit(1);
 	}
 
@@ -514,7 +557,7 @@ static void set_current_pointer(context *ctx, uint32_t value)
 
 	if (ctx->current > ctx->rom_size) {
 		fprintf(stderr, "Error: Packing data causes overflow\n");
-		free(ctx->rom);
+		amdfwtool_cleanup(ctx);
 		exit(1);
 	}
 
@@ -609,6 +652,7 @@ static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie, co
 		table_size = ctx->current - ctx->current_table;
 		if ((table_size % TABLE_ALIGNMENT) != 0) {
 			fprintf(stderr, "The PSP table size should be 4K aligned\n");
+			amdfwtool_cleanup(ctx);
 			exit(1);
 		}
 		dir->header.cookie = cookie;
@@ -627,6 +671,7 @@ static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie, co
 		table_size = ctx->current - ctx->current_table;
 		if ((table_size % TABLE_ALIGNMENT) != 0) {
 			fprintf(stderr, "The BIOS table size should be 4K aligned\n");
+			amdfwtool_cleanup(ctx);
 			exit(1);
 		}
 		bdir->header.cookie = cookie;
@@ -897,7 +942,7 @@ static void integrate_firmwares(context *ctx,
 			bytes = copy_blob(BUFF_CURRENT(*ctx),
 					fw_table[i].filename, BUFF_ROOM(*ctx));
 			if (bytes < 0) {
-				free(ctx->rom);
+				amdfwtool_cleanup(ctx);
 				exit(1);
 			}
 
@@ -926,35 +971,6 @@ static void dump_bdt_firmwares(amd_bios_entry *fw_table)
 	for (index = fw_table; index->type != AMD_BIOS_INVALID; index++) {
 		if (index->filename)
 			printf("  %2x: %s\n", index->type, index->filename);
-	}
-}
-
-static void free_psp_firmware_filenames(amd_fw_entry *fw_table)
-{
-	amd_fw_entry *index;
-
-	for (index = fw_table; index->type != AMD_FW_INVALID; index++) {
-		if (index->filename &&
-				index->type != AMD_FW_VERSTAGE_SIG &&
-				index->type != AMD_FW_PSP_VERSTAGE &&
-				index->type != AMD_FW_SPL &&
-				index->type != AMD_FW_PSP_WHITELIST) {
-			free(index->filename);
-		}
-	}
-}
-
-static void free_bdt_firmware_filenames(amd_bios_entry *fw_table)
-{
-	amd_bios_entry *index;
-
-	for (index = fw_table; index->type != AMD_BIOS_INVALID; index++) {
-		if (index->filename &&
-				index->type != AMD_BIOS_APCB &&
-				index->type != AMD_BIOS_BIN &&
-				index->type != AMD_BIOS_APCB_BK &&
-				index->type != AMD_BIOS_UCODE)
-			free(index->filename);
 	}
 }
 
@@ -1321,6 +1337,7 @@ static void integrate_psp_firmwares(context *ctx,
 				if (addr != ALIGN_UP(addr, ERASE_ALIGNMENT)) {
 					fprintf(stderr,
 						"Error: PSP NVRAM section not aligned with erase block size.\n\n");
+					amdfwtool_cleanup(ctx);
 					exit(1);
 				}
 			} else {
@@ -1328,7 +1345,7 @@ static void integrate_psp_firmwares(context *ctx,
 				bytes = copy_blob(BUFF_CURRENT(*ctx),
 						fw_table[i].filename, BUFF_ROOM(*ctx));
 				if (bytes <= 0) {
-					free(ctx->rom);
+					amdfwtool_cleanup(ctx);
 					exit(1);
 				}
 
@@ -1358,7 +1375,7 @@ static void integrate_psp_firmwares(context *ctx,
 				bytes = copy_blob(BUFF_CURRENT(*ctx),
 						fw_table[i].filename, BUFF_ROOM(*ctx));
 				if (bytes < 0) {
-					free(ctx->rom);
+					amdfwtool_cleanup(ctx);
 					exit(1);
 				}
 				pspdir->entries[count].addr = RUN_CURRENT(*ctx);
@@ -1572,7 +1589,7 @@ static void integrate_bios_firmwares(context *ctx,
 				continue; /* APOB_NV not used */
 			if (fw_table[i].src && !fw_table[i].size) {
 				fprintf(stderr, "Error: APOB NV address provided, but no size\n");
-				free(ctx->rom);
+				amdfwtool_cleanup(ctx);
 				exit(1);
 			}
 			/* If the APOB isn't used, APOB_NV isn't used either */
@@ -1584,7 +1601,7 @@ static void integrate_bios_firmwares(context *ctx,
 		/* APOB_DATA needs destination */
 		if (fw_table[i].type == AMD_BIOS_APOB && !fw_table[i].dest) {
 			fprintf(stderr, "Error: APOB destination not provided\n");
-			free(ctx->rom);
+			amdfwtool_cleanup(ctx);
 			exit(1);
 		}
 
@@ -1594,12 +1611,12 @@ static void integrate_bios_firmwares(context *ctx,
 		if (fw_table[i].type == AMD_BIOS_BIN) {
 			if (!fw_table[i].dest || !fw_table[i].size) {
 				fprintf(stderr, "Error: BIOS binary destination and uncompressed size are required\n");
-				free(ctx->rom);
+				amdfwtool_cleanup(ctx);
 				exit(1);
 			}
 			if (!fw_table[i].filename && !fw_table[i].src) {
 				fprintf(stderr, "Error: BIOS binary assumed outside amdfw.rom but no source address given\n");
-				free(ctx->rom);
+				amdfwtool_cleanup(ctx);
 				exit(1);
 			}
 		}
@@ -1680,7 +1697,7 @@ static void integrate_bios_firmwares(context *ctx,
 			bytes = copy_blob(BUFF_CURRENT(*ctx),
 					fw_table[i].filename, BUFF_ROOM(*ctx));
 			if (bytes <= 0) {
-				free(ctx->rom);
+				amdfwtool_cleanup(ctx);
 				exit(1);
 			}
 
@@ -1703,7 +1720,7 @@ static void integrate_bios_firmwares(context *ctx,
 			bytes = copy_blob(BUFF_CURRENT(*ctx),
 					fw_table[i].filename, BUFF_ROOM(*ctx));
 			if (bytes <= 0) {
-				free(ctx->rom);
+				amdfwtool_cleanup(ctx);
 				exit(1);
 			}
 
@@ -2028,7 +2045,7 @@ static int set_efs_table(uint8_t soc_id, amd_cb_config *cb_config,
 	return 0;
 }
 
-static ssize_t write_efs(char *output, embedded_firmware *amd_romsig)
+static ssize_t write_efs(char *output, embedded_firmware *amd_romsig, context *ctx)
 {
 	char efs_name[PATH_MAX], efs_tmp_name[PATH_MAX];
 	int ret;
@@ -2042,21 +2059,25 @@ static ssize_t write_efs(char *output, embedded_firmware *amd_romsig)
 	if (ret < 0) {
 		fprintf(stderr, "Error %s forming EFS tmp file name: %d\n",
 							strerror(errno), ret);
+		amdfwtool_cleanup(ctx);
 		exit(1);
 	} else if ((unsigned int)ret >= sizeof(efs_tmp_name)) {
 		fprintf(stderr, "EFS File name %d  > %zu\n", ret, sizeof(efs_tmp_name));
+		amdfwtool_cleanup(ctx);
 		exit(1);
 	}
 
 	fd = open(efs_tmp_name, O_RDWR | O_CREAT | O_TRUNC, 0666);
 	if (fd < 0) {
 		fprintf(stderr, "Error: Opening %s file: %s\n", efs_tmp_name, strerror(errno));
+		amdfwtool_cleanup(ctx);
 		exit(1);
 	}
 
 	bytes = write_from_buf_to_file(fd, amd_romsig, sizeof(*amd_romsig));
 	if (bytes != sizeof(*amd_romsig)) {
 		fprintf(stderr, "Error: Writing to file %s failed\n", efs_tmp_name);
+		amdfwtool_cleanup(ctx);
 		exit(1);
 	}
 	close(fd);
@@ -2065,11 +2086,13 @@ static ssize_t write_efs(char *output, embedded_firmware *amd_romsig)
 	ret = snprintf(efs_name, sizeof(efs_name), "%s%s", output, EFS_FILE_SUFFIX);
 	if (ret < 0) {
 		fprintf(stderr, "Error %s forming EFS file name: %d\n", strerror(errno), ret);
+		amdfwtool_cleanup(ctx);
 		exit(1);
 	}
 
 	if (rename(efs_tmp_name, efs_name)) {
 		fprintf(stderr, "Error: renaming file %s to %s\n", efs_tmp_name, efs_name);
+		amdfwtool_cleanup(ctx);
 		exit(1);
 	}
 
@@ -2637,10 +2660,6 @@ int main(int argc, char **argv)
 		}
 	}
 
-	/* Free the filename. */
-	free_psp_firmware_filenames(amd_psp_fw_table);
-	free_bdt_firmware_filenames(amd_bios_table);
-
 	targetfd = open(output, O_RDWR | O_CREAT | O_TRUNC, 0666);
 	if (targetfd >= 0) {
 		ssize_t bytes;
@@ -2660,13 +2679,13 @@ int main(int argc, char **argv)
 	if (efs_location != body_location) {
 		ssize_t bytes;
 
-		bytes = write_efs(output, amd_romsig);
+		bytes = write_efs(output, amd_romsig, &ctx);
 		if (bytes != sizeof(*amd_romsig)) {
 			fprintf(stderr, "Error: Writing EFS\n");
 			retval = 1;
 		}
 	}
 
-	free(ctx.rom);
+	amdfwtool_cleanup(&ctx);
 	return retval;
 }

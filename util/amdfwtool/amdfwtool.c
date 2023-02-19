@@ -2056,7 +2056,6 @@ int main(int argc, char **argv)
 	int c;
 	int retval = 0;
 	char *tmp;
-	char *rom = NULL;
 	embedded_firmware *amd_romsig;
 	psp_directory_table *pspdir = NULL;
 	psp_directory_table *pspdir2 = NULL;
@@ -2641,6 +2640,6 @@ int main(int argc, char **argv)
 		}
 	}
 
-	free(rom);
+	free(ctx.rom);
 	return retval;
 }

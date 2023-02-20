@@ -11,6 +11,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <intelblocks/cse.h>
+#include <intelblocks/me.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/post_codes.h>
 #include <option.h>
@@ -19,7 +20,6 @@
 #include <soc/intel/common/reset.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
-#include <soc/me.h>
 #include <string.h>
 #include <timer.h>
 #include <types.h>

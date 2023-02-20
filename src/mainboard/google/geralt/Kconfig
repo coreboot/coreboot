@@ -60,4 +60,14 @@ config DRIVER_TPM_I2C_ADDR
 config SDCARD_INIT
 	bool
 	default y
+
+choice
+	prompt "Speaker AMP for Geralt"
+	default USE_MAX98390 if BOARD_GOOGLE_GERALT
+
+config USE_MAX98390
+	bool "MAX98390"
+
+endchoice
+
 endif

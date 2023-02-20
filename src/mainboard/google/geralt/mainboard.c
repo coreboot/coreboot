@@ -3,12 +3,41 @@
 #include <bootmode.h>
 #include <device/device.h>
 #include <soc/bl31.h>
+#include <soc/i2c.h>
 #include <soc/msdc.h>
 #include <soc/mt6359p.h>
+#include <soc/mtcmos.h>
 #include <soc/usb.h>
 
 #include "display.h"
 #include "gpio.h"
+
+#define AFE_SE_SECURE_CON	(AUDIO_BASE + 0x17a8)
+
+static void configure_i2s(void)
+{
+	/* Audio PWR */
+	mtcmos_audio_power_on();
+	mtcmos_protect_audio_bus();
+
+	/* Switch to normal mode */
+	write32p(AFE_SE_SECURE_CON, 0x0);
+
+	/* SoC I2S */
+	gpio_set_mode(GPIO_I2SI1_LRCK, PAD_I2SO2_D2_FUNC_TDMIN_LRCK);
+	gpio_set_mode(GPIO_I2SI1_BCK, PAD_I2SIN_D3_FUNC_TDMIN_BCK);
+	gpio_set_mode(GPIO_I2SO1_D0, PAD_GPIO11_FUNC_I2SO1_D0);
+}
+
+static void configure_audio(void)
+{
+	if (CONFIG(USE_MAX98390)) {
+		printk(BIOS_DEBUG, "Configure MAX98390 audio\n");
+
+		mtk_i2c_bus_init(I2C0, I2C_SPEED_FAST);
+		configure_i2s();
+	}
+}
 
 static void mainboard_init(struct device *dev)
 {
@@ -22,6 +51,8 @@ static void mainboard_init(struct device *dev)
 	}
 
 	mtk_msdc_configure_emmc(true);
+
+	configure_audio();
 
 	if (CONFIG(SDCARD_INIT))
 		mtk_msdc_configure_sdcard();

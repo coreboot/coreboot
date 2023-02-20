@@ -18,6 +18,7 @@ void setup_chromeos_gpios(void)
 	/* Set up GPOs */
 	gpio_output(GPIO_AP_EC_WARM_RST_REQ, 0);
 	gpio_output(GPIO_EN_SPKR, 0);
+	gpio_output(GPIO_RST_SPKR_L, 0);
 	gpio_output(GPIO_XHCI_INIT_DONE, 0);
 }
 
@@ -38,6 +39,13 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 			{GPIO_SD_CD_ODL.id, ACTIVE_LOW, -1, "SD card detect"},
 		};
 		lb_add_gpios(gpios, sd_card_gpios, ARRAY_SIZE(sd_card_gpios));
+	}
+
+	if (CONFIG(USE_MAX98390)) {
+		struct lb_gpio max98390_gpios[] = {
+			{GPIO_RST_SPKR_L.id, ACTIVE_LOW, -1, "speaker reset"},
+		};
+		lb_add_gpios(gpios, max98390_gpios, ARRAY_SIZE(max98390_gpios));
 	}
 }
 

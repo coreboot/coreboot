@@ -73,13 +73,11 @@ struct soc_amd_mendocino_config {
 	uint32_t vrm_soc_current_limit_throttle_mA;
 
 	/* tablet mode.*/
-	uint32_t sustained_power_limit_mW_tablet;
 
 	/* Thermal profile B*/
 	uint32_t fast_ppt_limit_mW_B;
 	uint32_t slow_ppt_limit_mW_B;
 	uint32_t slow_ppt_time_constant_s_B;
-	uint32_t sustained_power_limit_mW_B;
 	uint16_t stt_min_limit_B;
 	uint16_t stt_m1_B;
 	uint16_t stt_m2_B;
@@ -90,7 +88,6 @@ struct soc_amd_mendocino_config {
 	uint32_t fast_ppt_limit_mW_C;
 	uint32_t slow_ppt_limit_mW_C;
 	uint32_t slow_ppt_time_constant_s_C;
-	uint32_t sustained_power_limit_mW_C;
 	uint16_t stt_min_limit_C;
 	uint16_t stt_m1_C;
 	uint16_t stt_m2_C;
@@ -101,7 +98,6 @@ struct soc_amd_mendocino_config {
 	uint32_t fast_ppt_limit_mW_D;
 	uint32_t slow_ppt_limit_mW_D;
 	uint32_t slow_ppt_time_constant_s_D;
-	uint32_t sustained_power_limit_mW_D;
 	uint16_t stt_min_limit_D;
 	uint16_t stt_m1_D;
 	uint16_t stt_m2_D;
@@ -112,7 +108,6 @@ struct soc_amd_mendocino_config {
 	uint32_t fast_ppt_limit_mW_E;
 	uint32_t slow_ppt_limit_mW_E;
 	uint32_t slow_ppt_time_constant_s_E;
-	uint32_t sustained_power_limit_mW_E;
 	uint16_t stt_min_limit_E;
 	uint16_t stt_m1_E;
 	uint16_t stt_m2_E;
@@ -124,7 +119,6 @@ struct soc_amd_mendocino_config {
 	uint32_t fast_ppt_limit_mW_F;
 	uint32_t slow_ppt_limit_mW_F;
 	uint32_t slow_ppt_time_constant_s_F;
-	uint32_t sustained_power_limit_mW_F;
 	uint16_t stt_min_limit_F;
 	uint16_t stt_m1_F;
 	uint16_t stt_m2_F;

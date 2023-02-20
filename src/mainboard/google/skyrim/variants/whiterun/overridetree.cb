@@ -35,7 +35,6 @@ chip soc/amd/mendocino
 	register "fast_ppt_limit_mW" = "30000"
 	register "slow_ppt_limit_mW" = "18000"
 	register "slow_ppt_time_constant_s" = "7"
-	register "sustained_power_limit_mW" = "15000"
 
 	register "stt_min_limit" = "7000"
 	register "stt_m1" = "0x148"
@@ -47,7 +46,6 @@ chip soc/amd/mendocino
 	register "fast_ppt_limit_mW_B" = "20000"
 	register "slow_ppt_limit_mW_B" = "13000"
 	register "slow_ppt_time_constant_s_B" = "5"
-	register "sustained_power_limit_mW_B" = "10000"
 
 	register "stt_min_limit_B" = "5000"
 	register "stt_m1_B" = "0x11F"
@@ -59,7 +57,6 @@ chip soc/amd/mendocino
 	register "fast_ppt_limit_mW_C" = "30000"
 	register "slow_ppt_limit_mW_C" = "22000"
 	register "slow_ppt_time_constant_s_C" = "10"
-	register "sustained_power_limit_mW_C" = "15000"
 
 	register "stt_min_limit_C" = "10000"
 	register "stt_m1_C" = "0x1A4"
@@ -71,7 +68,6 @@ chip soc/amd/mendocino
 	register "fast_ppt_limit_mW_D" = "25000"
 	register "slow_ppt_limit_mW_D" = "15000"
 	register "slow_ppt_time_constant_s_D" = "8"
-	register "sustained_power_limit_mW_D" = "10000"
 
 	register "stt_min_limit_D" = "8000"
 	register "stt_m1_D" = "0x1C3"
@@ -83,7 +79,6 @@ chip soc/amd/mendocino
 	register "fast_ppt_limit_mW_E" = "22000"
 	register "slow_ppt_limit_mW_E" = "15000"
 	register "slow_ppt_time_constant_s_E" = "4"
-	register "sustained_power_limit_mW_E" = "12000"
 
 	register "stt_min_limit_E" = "7000"
 	register "stt_m1_E" = "0x114"
@@ -96,7 +91,6 @@ chip soc/amd/mendocino
 	register "fast_ppt_limit_mW_F" = "18000"
 	register "slow_ppt_limit_mW_F" = "12000"
 	register "slow_ppt_time_constant_s_F" = "2"
-	register "sustained_power_limit_mW_F" = "9000"
 
 	register "stt_min_limit_F" = "5000"
 	register "stt_m1_F" = "0x15C"

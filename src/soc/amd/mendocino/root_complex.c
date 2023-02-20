@@ -17,7 +17,7 @@
 #include <stdint.h>
 #include "chip.h"
 
-#define DPTC_TOTAL_UPDATE_PARAMS	14
+#define DPTC_TOTAL_UPDATE_PARAMS	13
 
 struct dptc_input {
 	uint16_t size;
@@ -25,8 +25,8 @@ struct dptc_input {
 } __packed;
 
 
-#define DPTC_INPUTS(_thermctllmit, _sustained, _spptTimeConst, _fast, _slow,	\
-	_vrmCurrentLimit, _vrmMaxCurrentLimit, _vrmSocCurrentLimit,		\
+#define DPTC_INPUTS(_thermctllmit, _spptTimeConst, _fast, _slow,	\
+	_vrmCurrentLimit, _vrmMaxCurrentLimit, _vrmSocCurrentLimit,	\
 	_sttMinLimit, _sttM1, _sttM2, _sttCApu, _sttAlphaApu, _sttSkinTempLimitApu)	\
 	{									\
 		.size = sizeof(struct dptc_input),				\
@@ -34,10 +34,6 @@ struct dptc_input {
 			{							\
 				.id = ALIB_DPTC_THERMAL_CONTROL_LIMIT_ID,	\
 				.value = _thermctllmit,				\
-			},							\
-			{							\
-				.id = ALIB_DPTC_SUSTAINED_POWER_LIMIT_ID,	\
-				.value = _sustained,				\
 			},							\
 			{							\
 				.id = ALIB_DPTC_SLOW_PPT_TIME_CONSTANT_ID,	\
@@ -226,7 +222,6 @@ static void acipgen_dptci(void)
 	/* Normal mode DPTC values. */
 	struct dptc_input default_input = DPTC_INPUTS(
 		config->thermctl_limit_degreeC,
-		config->sustained_power_limit_mW,
 		config->slow_ppt_time_constant_s,
 		config->fast_ppt_limit_mW,
 		config->slow_ppt_limit_mW,
@@ -244,7 +239,6 @@ static void acipgen_dptci(void)
 	/* Low/No Battery */
 	struct dptc_input no_battery_input = DPTC_INPUTS(
 		config->thermctl_limit_degreeC,
-		config->sustained_power_limit_mW,
 		config->slow_ppt_time_constant_s,
 		config->fast_ppt_limit_mW,
 		config->slow_ppt_limit_mW,
@@ -263,7 +257,6 @@ static void acipgen_dptci(void)
 #if (CONFIG(FEATURE_TABLET_MODE_DPTC))
 	struct dptc_input tablet_input = DPTC_INPUTS(
 		config->thermctl_limit_degreeC,
-		config->sustained_power_limit_mW_tablet,
 		config->slow_ppt_time_constant_s,
 		config->fast_ppt_limit_mW,
 		config->slow_ppt_limit_mW,
@@ -283,7 +276,6 @@ static void acipgen_dptci(void)
 	/* Profile B */
 	struct dptc_input thermal_B_input = DPTC_INPUTS(
 		config->thermctl_limit_degreeC,
-		config->sustained_power_limit_mW_B,
 		config->slow_ppt_time_constant_s_B,
 		config->fast_ppt_limit_mW_B,
 		config->slow_ppt_limit_mW_B,
@@ -302,7 +294,6 @@ static void acipgen_dptci(void)
 	/* Profile C */
 	struct dptc_input thermal_C_input = DPTC_INPUTS(
 		config->thermctl_limit_degreeC,
-		config->sustained_power_limit_mW_C,
 		config->slow_ppt_time_constant_s_C,
 		config->fast_ppt_limit_mW_C,
 		config->slow_ppt_limit_mW_C,
@@ -321,7 +312,6 @@ static void acipgen_dptci(void)
 	/* Profile D */
 	struct dptc_input thermal_D_input = DPTC_INPUTS(
 		config->thermctl_limit_degreeC,
-		config->sustained_power_limit_mW_D,
 		config->slow_ppt_time_constant_s_D,
 		config->fast_ppt_limit_mW_D,
 		config->slow_ppt_limit_mW_D,
@@ -340,7 +330,6 @@ static void acipgen_dptci(void)
 	/* Profile E */
 	struct dptc_input thermal_E_input = DPTC_INPUTS(
 		config->thermctl_limit_degreeC,
-		config->sustained_power_limit_mW_E,
 		config->slow_ppt_time_constant_s_E,
 		config->fast_ppt_limit_mW_E,
 		config->slow_ppt_limit_mW_E,
@@ -359,7 +348,6 @@ static void acipgen_dptci(void)
 	/* Profile F */
 	struct dptc_input thermal_F_input = DPTC_INPUTS(
 		config->thermctl_limit_degreeC,
-		config->sustained_power_limit_mW_F,
 		config->slow_ppt_time_constant_s_F,
 		config->fast_ppt_limit_mW_F,
 		config->slow_ppt_limit_mW_F,

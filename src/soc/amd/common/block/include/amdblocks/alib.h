@@ -21,6 +21,7 @@ enum alib_dptc_parameter_ids {
 	/* Picasso: SetVrmSocCurrentLimit (0xe) is not implemented in alib. */
 	ALIB_DPTC_VRM_SOC_CURRENT_LIMIT_ID = 0xe,
 
+	ALIB_DPTC_STT_ALPHA_APU = 0x20,
 	ALIB_DPTC_STT_SKIN_TEMPERATURE_LIMIT_APU_ID = 0x22,
 	ALIB_DPTC_STT_M1_ID = 0x26,
 	ALIB_DPTC_STT_M2_ID = 0x27,

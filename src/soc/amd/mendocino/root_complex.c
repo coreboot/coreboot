@@ -17,7 +17,7 @@
 #include <stdint.h>
 #include "chip.h"
 
-#define DPTC_TOTAL_UPDATE_PARAMS	13
+#define DPTC_TOTAL_UPDATE_PARAMS	14
 
 struct dptc_input {
 	uint16_t size;
@@ -27,7 +27,7 @@ struct dptc_input {
 
 #define DPTC_INPUTS(_thermctllmit, _sustained, _spptTimeConst, _fast, _slow,	\
 	_vrmCurrentLimit, _vrmMaxCurrentLimit, _vrmSocCurrentLimit,		\
-	_sttMinLimit, _sttM1, _sttM2, _sttCApu, _sttSkinTempLimitApu)		\
+	_sttMinLimit, _sttM1, _sttM2, _sttCApu, _sttAlphaApu, _sttSkinTempLimitApu)	\
 	{									\
 		.size = sizeof(struct dptc_input),				\
 		.params = {							\
@@ -78,6 +78,10 @@ struct dptc_input {
 			{							\
 				.id = ALIB_DPTC_STT_C_APU_ID,			\
 				.value = _sttCApu,				\
+			},							\
+			{							\
+				.id = ALIB_DPTC_STT_ALPHA_APU,			\
+				.value = _sttAlphaApu,				\
 			},							\
 			{							\
 				.id = ALIB_DPTC_STT_SKIN_TEMPERATURE_LIMIT_APU_ID,	\
@@ -233,6 +237,7 @@ static void acipgen_dptci(void)
 		config->stt_m1,
 		config->stt_m2,
 		config->stt_c_apu,
+		config->stt_alpha_apu,
 		config->stt_skin_temp_apu);
 	acpigen_write_alib_dptc_default((uint8_t *)&default_input, sizeof(default_input));
 
@@ -250,6 +255,7 @@ static void acipgen_dptci(void)
 		config->stt_m1,
 		config->stt_m2,
 		config->stt_c_apu,
+		config->stt_alpha_apu,
 		config->stt_skin_temp_apu);
 	acpigen_write_alib_dptc_no_battery((uint8_t *)&no_battery_input,
 		sizeof(no_battery_input));
@@ -268,6 +274,7 @@ static void acipgen_dptci(void)
 		config->stt_m1,
 		config->stt_m2,
 		config->stt_c_apu,
+		config->stt_alpha_apu,
 		config->stt_skin_temp_apu);
 	acpigen_write_alib_dptc_tablet((uint8_t *)&tablet_input, sizeof(tablet_input));
 #endif
@@ -287,6 +294,7 @@ static void acipgen_dptci(void)
 		config->stt_m1_B,
 		config->stt_m2_B,
 		config->stt_c_apu_B,
+		config->stt_alpha_apu,
 		config->stt_skin_temp_apu_B);
 	acpigen_write_alib_dptc_thermal_B((uint8_t *)&thermal_B_input,
 		sizeof(thermal_B_input));
@@ -305,6 +313,7 @@ static void acipgen_dptci(void)
 		config->stt_m1_C,
 		config->stt_m2_C,
 		config->stt_c_apu_C,
+		config->stt_alpha_apu,
 		config->stt_skin_temp_apu_C);
 	acpigen_write_alib_dptc_thermal_C((uint8_t *)&thermal_C_input,
 		sizeof(thermal_C_input));
@@ -323,6 +332,7 @@ static void acipgen_dptci(void)
 		config->stt_m1_D,
 		config->stt_m2_D,
 		config->stt_c_apu_D,
+		config->stt_alpha_apu,
 		config->stt_skin_temp_apu_D);
 	acpigen_write_alib_dptc_thermal_D((uint8_t *)&thermal_D_input,
 		sizeof(thermal_D_input));
@@ -341,6 +351,7 @@ static void acipgen_dptci(void)
 		config->stt_m1_E,
 		config->stt_m2_E,
 		config->stt_c_apu_E,
+		config->stt_alpha_apu,
 		config->stt_skin_temp_apu_E);
 	acpigen_write_alib_dptc_thermal_E((uint8_t *)&thermal_E_input,
 		sizeof(thermal_E_input));
@@ -359,6 +370,7 @@ static void acipgen_dptci(void)
 		config->stt_m1_F,
 		config->stt_m2_F,
 		config->stt_c_apu_F,
+		config->stt_alpha_apu,
 		config->stt_skin_temp_apu_F);
 	acpigen_write_alib_dptc_thermal_F((uint8_t *)&thermal_F_input,
 		sizeof(thermal_F_input));

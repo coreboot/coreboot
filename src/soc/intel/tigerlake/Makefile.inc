@@ -32,7 +32,6 @@ ramstage-y += fsp_params.c
 ramstage-y += graphics.c
 ramstage-y += lockdown.c
 ramstage-y += lpm.c
-ramstage-y += me.c
 ramstage-y += p2sb.c
 ramstage-y += pcie_rp.c
 ramstage-y += pmc.c

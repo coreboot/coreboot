@@ -14,6 +14,9 @@ bool ux_inform_user_of_update_operation(const char *name)
 
 	printk(BIOS_INFO, "Informing user on-display of %s.\n", name);
 	vga_write_text(VGA_TEXT_CENTER, VGA_TEXT_HORIZONTAL_MIDDLE,
-		       "Your device is finishing an update. This may take 1-2 minutes.\nPlease do not turn off your device.");
+		       (const unsigned char *)
+		       "Your device is finishing an update. "
+		       "This may take 1-2 minutes.\n"
+		       "Please do not turn off your device.");
 	return true;
 }

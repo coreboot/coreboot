@@ -283,8 +283,10 @@ vga_line_write(unsigned int line, const char *string)
 }
 
 void
-vga_write_text(enum VGA_TEXT_ALIGNMENT alignment, unsigned int line, const char *string)
+vga_write_text(enum VGA_TEXT_ALIGNMENT alignment, unsigned int line,
+	       const unsigned char *ustring)
 {
+	const char *string = (const char *)ustring;
 	char str[VGA_COLUMNS * VGA_LINES] = {0};
 	memcpy(str, string, strnlen(string, sizeof(str) - 1));
 

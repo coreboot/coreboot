@@ -33,6 +33,7 @@ void vga_line_write(unsigned int line, const char *string);
  * vga_write_text() writes a line of text aligned left/center/right
  * horizontally on the screen (i.e. enum VGA_TEXT_ALIGNMENT)
  */
-void vga_write_text(enum VGA_TEXT_ALIGNMENT alignment, unsigned int line, const char *string);
+void vga_write_text(enum VGA_TEXT_ALIGNMENT alignment, unsigned int line,
+		    const unsigned char *ustring);
 
 #endif /* VGA_H */

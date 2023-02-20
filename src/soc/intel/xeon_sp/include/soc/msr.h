@@ -13,7 +13,7 @@
 #define IA32_MCG_CAP_CTL_P_BIT          8
 #define IA32_MCG_CAP_CTL_P_MASK         (1 << IA32_MCG_CAP_CTL_P_BIT)
 
-#define IA32_MCG_CTL                    0x17b
+#define IA32_MCG_CTL                    0x17b /* IA32_MCG_CAP[MCG_CTL_P] == 1 */
 
 /* IA32_MISC_ENABLE bits */
 #define FAST_STRINGS_ENABLE_BIT         (1 << 0)
@@ -27,7 +27,6 @@
 #define PKG_CSTATE_LIMIT_SHIFT           0 /* 0:3 */
 /* No package C-state limit. All C-States supported by the processor are available. */
 #define PKG_CSTATE_LIMIT_MASK            (0xf << PKG_CSTATE_LIMIT_SHIFT)
-#define PKG_CSTATE_NO_LIMIT              (0x7 << PKG_CSTATE_LIMIT_SHIFT)
 #define CFG_LOCK_SHIFT                   15
 #define CFG_LOCK_ENABLE                  (1 << CFG_LOCK_SHIFT)
 
@@ -35,6 +34,8 @@
 #define MSR_POWER_CTL                            0x1fc
 #define BIDIR_PROCHOT_ENABLE_SHIFT               0
 #define BIDIR_PROCHOT_ENABLE                     (1 << BIDIR_PROCHOT_ENABLE_SHIFT)
+#define C1E_ENABLE_SHIFT	     1
+#define C1E_ENABLE		     (1 << C1E_ENABLE_SHIFT)
 
 /* MSR_IA32_PERF_CTRL (0x199) bits */
 #define MSR_IA32_PERF_CTRL          0x199
@@ -64,10 +65,15 @@
 #define CURRENT_LIMIT_LOCK_SHIFT     31
 #define CURRENT_LIMIT_LOCK           (0x1 << CURRENT_LIMIT_LOCK_SHIFT)
 
+#define MSR_VR_MISC_CONFIG 0x603
+
 /* MSR_TURBO_ACTIVATION_RATIO bits */
 #define MSR_TURBO_ACTIVATION_RATIO   0x64c
 #define MAX_NON_TURBO_RATIO_SHIFT    0
 #define MAX_NON_TURBO_RATIO          (0xff << MAX_NON_TURBO_RATIO_SHIFT)
+
+#define IA32_PM_ENABLE 0x770
+#define IA32_HWP_CAPABILITIES 0x771
 
 /* MSR_ENERGY_PERF_BIAS_CONFIG bits */
 #define MSR_ENERGY_PERF_BIAS_CONFIG  0xa01

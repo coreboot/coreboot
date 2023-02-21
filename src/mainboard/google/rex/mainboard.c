@@ -8,16 +8,28 @@
 #include <drivers/wwan/fm/chip.h>
 #include <ec/ec.h>
 #include <fw_config.h>
+#include <stdlib.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 WEAK_DEV_PTR(rp6_wwan);
 
+void __weak fw_config_gpio_padbased_override(struct pad_config *padbased_table)
+{
+	/* default implementation does nothing */
+}
+
 static void mainboard_init(void *chip_info)
 {
-	const struct pad_config *pads;
-	size_t num;
-	pads = variant_gpio_table(&num);
-	gpio_configure_pads(pads, num);
+	struct pad_config *padbased_table;
+	const struct pad_config *base_pads;
+	size_t base_num;
+
+	padbased_table = new_padbased_table();
+	base_pads = variant_gpio_table(&base_num);
+	gpio_padbased_override(padbased_table, base_pads, base_num);
+	fw_config_gpio_padbased_override(padbased_table);
+	gpio_configure_pads_with_padbased(padbased_table);
+	free(padbased_table);
 }
 
 void __weak variant_generate_s0ix_hook(enum s0ix_entry entry)

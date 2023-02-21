@@ -2496,18 +2496,8 @@ int main(int argc, char **argv)
 	}
 	memset(ctx.rom, 0xFF, ctx.rom_size);
 
-	if (efs_location) {
-		if (efs_location != body_location) {
-			romsig_offset = efs_location;
-			set_current_pointer(&ctx, body_location);
-		} else {
-			romsig_offset = efs_location;
-			set_current_pointer(&ctx, romsig_offset + sizeof(embedded_firmware));
-		}
-	} else {
-		romsig_offset = AMD_ROMSIG_OFFSET;
-		set_current_pointer(&ctx, romsig_offset + sizeof(embedded_firmware));
-	}
+	romsig_offset = efs_location ? efs_location : AMD_ROMSIG_OFFSET;
+	set_current_pointer(&ctx, romsig_offset);
 
 	amd_romsig = BUFF_OFFSET(ctx, romsig_offset);
 	amd_romsig->signature = EMBEDDED_FW_SIGNATURE;
@@ -2538,6 +2528,11 @@ int main(int argc, char **argv)
 		printf(" with a split body at: 0x%08x\n", body_location);
 	else
 		printf("\n");
+
+	if (efs_location != body_location)
+		set_current_pointer(&ctx, body_location);
+	else
+		set_current_pointer(&ctx, romsig_offset + sizeof(embedded_firmware));
 
 	integrate_firmwares(&ctx, amd_romsig, amd_fw_table);
 

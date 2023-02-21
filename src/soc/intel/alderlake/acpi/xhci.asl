@@ -2,6 +2,65 @@
 
 #include <soc/gpe.h>
 
+#define PORTSCN_OFFSET 0x480
+#define PORTSCXUSB3_OFFSET 0x540
+
+#define WAKE_ON_CONNECT_DISCONNECT_ENABLE 0x6000000
+/*
+ * And port status/control reg with RO and RWS bits
+ * RO bits: 0, 2:3, 10:13, 24, 28:30
+ * RWS bits: 5:9, 14:16, 25:27
+ */
+#define RO_BITS_OFF_MASK ~0x80FE0012
+
+/*
+ * USB Port Wake Enable (UPWE) on usb attach/detach
+ * Arg0 - Port Number
+ * Arg1 - Port 1 Status and control offset
+ * Arg2 - xHCI Memory-mapped address
+ */
+Method (UPWE, 3, Serialized)
+{
+	Local0 = Arg1 + ((Arg0 - 1) * 0x10)
+
+	/* Map ((XMEM << 16) + Local0 in PSCR */
+	OperationRegion (PSCR, SystemMemory, (Arg2 << 16) + Local0, 0x10)
+	Field (PSCR, DWordAcc, NoLock, Preserve)
+	{
+		PSCT, 32,
+	}
+	Local0 = PSCT
+
+	Local0 &= RO_BITS_OFF_MASK
+	/* Set WCE and WDE bits */
+	Local0 |= WAKE_ON_CONNECT_DISCONNECT_ENABLE
+	PSCT = Local0
+}
+
+/*
+ * USB Wake Enable Setup (UWES)
+ * Arg0 - Port enable bitmap
+ * Arg1 - Port 1 Status and control offset
+ * Arg2 - xHCI Memory-mapped address
+ */
+Method (UWES, 3, Serialized)
+{
+	Local0 = Arg0
+
+	While (1) {
+		FindSetRightBit (Local0, Local1)
+		If (Local1 == 0) {
+			Break
+		}
+		UPWE (Local1, Arg1, Arg2)
+		/*
+		 * Clear the lowest set bit in Local0 since it was
+		 * processed.
+		 */
+		Local0 &= (Local0 - 1)
+	}
+}
+
 /* XHCI Controller 0:14.0 */
 
 Device (XHCI)
@@ -9,6 +68,20 @@ Device (XHCI)
 	Name (_ADR, 0x00140000)
 
 	Name (_PRW, Package () { GPE0_PME_B0, 3 })
+
+	OperationRegion (XPRT, PCI_Config, 0x00, 0x100)
+	Field (XPRT, AnyAcc, NoLock, Preserve)
+	{
+		Offset (0x10),
+		, 16,
+		XMEM, 16,	/* MEM_BASE */
+	}
+
+	Method (_DSW, 3)
+	{
+		UWES ((\U2WE & 0xFFF), PORTSCN_OFFSET, XMEM)
+		UWES ((\U3WE & 0x3F ), PORTSCXUSB3_OFFSET, XMEM)
+	}
 
 	Name (_S3D, 3)	/* D3 supported in S3 */
 	Name (_S0W, 3)	/* D3 can wake device in S0 */

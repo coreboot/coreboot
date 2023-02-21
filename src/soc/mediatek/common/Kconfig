@@ -23,7 +23,7 @@ config MEDIATEK_DRAM_DVFS_LIMIT_FREQ_CNT
 	  This options limit DRAM frequency calibration count from total 7 to 3,
 	  other frequency will directly use the low frequency shu result.
 
-config MEDIATEK_BLOB_FAST_INIT
+config MEDIATEK_DRAM_BLOB_FAST_INIT
 	bool "Enable running fast calibration by blob"
 	default n
 	help

@@ -79,6 +79,8 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 
 	fill_fadt_extended_pm_regs(fadt);
 
+	/* p_lvl2_lat and p_lvl3_lat match what the AGESA code does, but those values are
+	   overridden by the _CST packages in the processor devices. */
 	fadt->p_lvl2_lat = ACPI_FADT_C2_NOT_SUPPORTED;
 	fadt->p_lvl3_lat = ACPI_FADT_C3_NOT_SUPPORTED;
 	fadt->duty_offset = 0;	/* Not supported */

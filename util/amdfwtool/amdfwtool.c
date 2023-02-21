@@ -469,7 +469,7 @@ typedef struct _context {
 #define RUN_OFFSET_MODE(ctx, offset, mode) \
 		((mode) == AMD_ADDR_PHYSICAL ? RUN_BASE(ctx) + (offset) :	\
 		((mode) == AMD_ADDR_REL_BIOS ? (offset) :	\
-		((mode) == AMD_ADDR_REL_TAB ? (offset) - ctx.current_table : (offset))))
+		((mode) == AMD_ADDR_REL_TAB ? (offset) - (ctx).current_table : (offset))))
 #define RUN_OFFSET(ctx, offset) RUN_OFFSET_MODE((ctx), (offset), (ctx).address_mode)
 #define RUN_TO_OFFSET(ctx, run) ((ctx).address_mode == AMD_ADDR_PHYSICAL ?	\
 				(run) - RUN_BASE(ctx) : (run)) /* TODO: */

@@ -62,8 +62,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 				ACPI_FADT_S4_RTC_VALID |
 				ACPI_FADT_REMOTE_POWER_ON;
 
-	fadt->ARM_boot_arch = 0;	/* Must be zero if ACPI Revision <= 5.0 */
-
 	fadt->x_firmware_ctl_l = 0;	/* set to 0 if firmware_ctrl is used */
 	fadt->x_firmware_ctl_h = 0;
 

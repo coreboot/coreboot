@@ -30,6 +30,13 @@ config MEDIATEK_DRAM_BLOB_FAST_INIT
 	  This option allows performing fast calibration through different
 	  open-source policy.
 
+config MEDIATEK_DRAM_SCRAMBLE
+	bool
+	default y
+	help
+	  This option enables DRAM data scramble, which can prevent DRAM data from
+	  being hacked.
+
 config MEMORY_TEST
 	bool
 	default y

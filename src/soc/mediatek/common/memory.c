@@ -244,6 +244,8 @@ static void mem_init_set_default_config(struct dramc_param *dparam,
 
 	if (CONFIG(MEDIATEK_DRAM_DVFS))
 		dparam->dramc_datas.ddr_info.config_dvfs = DRAMC_ENABLE_DVFS;
+	if (CONFIG(MEDIATEK_DRAM_SCRAMBLE))
+		dparam->header.config |= DRAMC_CONFIG_SCRAMBLE;
 
 	dparam->dramc_datas.ddr_info.sdram.ddr_geometry = geometry;
 

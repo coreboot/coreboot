@@ -31,6 +31,8 @@ enum DRAMC_PARAM_CONFIG {
 	DRAMC_CONFIG_EMCP		= 0x0001,
 	DRAMC_CONFIG_DVFS		= 0x0002,
 	DRAMC_CONFIG_FAST_K		= 0x0004,
+	/* Security configs */
+	DRAMC_CONFIG_SCRAMBLE		= 0x0100,
 };
 
 struct dramc_param_header {

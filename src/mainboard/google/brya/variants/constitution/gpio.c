@@ -53,9 +53,9 @@ static const struct pad_config override_gpio_table[] = {
 	/* E2  : THC0_SPI1_IO3 ==> LAN_I350_WAKE# */
 	PAD_CFG_GPI_IRQ_WAKE(GPP_E2, NONE, DEEP, LEVEL, INVERT),
 	/* E12 : THC0_SPI1_IO1 ==> TPU_RST_PIN40 */
-	PAD_CFG_GPO(GPP_E12, 0, DEEP),
+	PAD_CFG_GPO(GPP_E12, 1, DEEP),
 	/* E13 : THC0_SPI1_IO2 ==> TPU_RST_PIN42 */
-	PAD_CFG_GPO(GPP_E13, 0, DEEP),
+	PAD_CFG_GPO(GPP_E13, 1, DEEP),
 	/* E14 : DDSP_HPDA ==> HDMIA_HPD */
 	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),
 	/* E20 : DDP2_CTRLCLK ==> HDMIA_CTRLCLK */
@@ -83,7 +83,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* H13 : I2C7_SCL ==> PCH_I2C_U3A1_SCL */
 	PAD_CFG_NF(GPP_H13, NONE, DEEP, NF1),
 	/* H19 : SRCCLKREQ4# ==> M2_TPU1_CLKREQ_ODL */
-	PAD_CFG_GPI_IRQ_WAKE(GPP_H19, NONE, DEEP, LEVEL, INVERT),
+	PAD_CFG_NF(GPP_H19, NONE, DEEP, NF1),
 
 	/* R0 : HDA_BCLK ==> NC */
 	PAD_NC_LOCK(GPP_R0, NONE, LOCK_CONFIG),
@@ -111,6 +111,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPP_B4, 0, DEEP),
 	/* E15 : RSVD_TP ==> PCH_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E15, NONE, DEEP),
+	/* F11 : THC0_SPI1_CLK ==> MEM_CH_SEL */
+	PAD_CFG_GPI(GPP_F11, NONE, DEEP),
 	/* F14 : GSXDIN ==> EN_PP3300_SSD */
 	PAD_CFG_GPO(GPP_F14, 1, DEEP),
 	/* F18 : THC1_SPI2_INT# ==> EC_IN_RW_OD */

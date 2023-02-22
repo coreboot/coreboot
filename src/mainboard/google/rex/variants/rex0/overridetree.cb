@@ -283,6 +283,7 @@ chip soc/intel/meteorlake
 				register "num_freq_entries" = "1"
 				register "link_freq[0]" = "560 * MHz" # 560 MHz
 				register "remote_name" = ""IPU0""
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
 
 				register "has_power_resource" = "1"
 				#Controls
@@ -318,8 +319,22 @@ chip soc/intel/meteorlake
 				register "chip_name" = ""DW9714 VCM""
 				register "device_type" = "INTEL_ACPI_CAMERA_VCM"
 
-				register "pr0" = ""\\_SB.PCI0.I2C0.CAM0.PRIC""
 				register "vcm_compat" = ""dongwoon,dw9714""
+
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D0"
+
+				register "has_power_resource" = "1"
+
+				#Controls
+				register "gpio_panel.gpio[0].gpio_num" = "GPP_C04" #EN_WCAM_PWR
+
+				#_ON
+				register "on_seq.ops_cnt" = "1"
+				register "on_seq.ops[0]" = "SEQ_OPS_GPIO_ENABLE(0, 0)"
+
+				#_OFF
+				register "off_seq.ops_cnt" = "1"
+				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
 				device i2c 0C on
 					probe WFC WFC_MIPI
@@ -331,13 +346,27 @@ chip soc/intel/meteorlake
 				register "chip_name" = ""ST M24C64X""
 				register "device_type" = "INTEL_ACPI_CAMERA_NVM"
 
-				register "pr0" = ""\\_SB.PCI0.I2C0.CAM0.PRIC""
 				register "nvm_compat" = ""atmel,24c64""
 
 				register "nvm_size" = "0x10000"
 				register "nvm_pagesize" = "0x01"
 				register "nvm_readonly" = "0x01"
 				register "nvm_width" = "0x0E"
+
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D0"
+
+				register "has_power_resource" = "1"
+
+				#Controls
+				register "gpio_panel.gpio[0].gpio_num" = "GPP_C04" #EN_WCAM_PWR
+
+				#_ON
+				register "on_seq.ops_cnt" = "1"
+				register "on_seq.ops[0]" = "SEQ_OPS_GPIO_ENABLE(0, 0)"
+
+				#_OFF
+				register "off_seq.ops_cnt" = "1"
+				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
 				device i2c 50 on
 					probe WFC WFC_MIPI
@@ -424,13 +453,27 @@ chip soc/intel/meteorlake
 				register "acpi_name" = ""NVM1""
 				register "chip_name" = ""ST M24C64X""
 				register "device_type" = "INTEL_ACPI_CAMERA_NVM"
-				register "pr0" = ""\\_SB.PCI0.I2C5.CAM1.PRIC""
 
 				register "nvm_size" = "0x10000"
 				register "nvm_pagesize" = "1"
 				register "nvm_readonly" = "1"
 				register "nvm_width" = "0x10"
 				register "nvm_compat" = ""atmel,24c64""
+
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D0"
+
+				register "has_power_resource" = "1"
+
+				#Controls
+				register "gpio_panel.gpio[0].gpio_num" = "GPP_B09" #EN_FCAM_PWR
+
+				#_ON
+				register "on_seq.ops_cnt" = "1"
+				register "on_seq.ops[0]" = "SEQ_OPS_GPIO_ENABLE(0, 0)"
+
+				#_OFF
+				register "off_seq.ops_cnt" = "1"
+				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
 				device i2c 50 on
 					probe UFC UFC_MIPI

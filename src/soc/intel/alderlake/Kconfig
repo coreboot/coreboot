@@ -75,6 +75,7 @@ config CPU_SPECIFIC_OPTIONS
 	select INTEL_GMA_ADD_VBT if RUN_FSP_GOP
 	select INTEL_GMA_OPREGION_2_1
 	select INTEL_TXT_LIB
+	select MP_SERVICES_PPI_V2
 	select MRC_SETTINGS_PROTECT
 	select PARALLEL_MP_AP_WORK
 	select PLATFORM_USES_FSP2_2
@@ -475,31 +476,6 @@ config USE_UNIFIED_AP_FIRMWARE_FOR_UFS_AND_NON_UFS
 	  config to allow disabling UFS while booting on the non-UFS SKU.
 	  Note: selection of this config would introduce an additional warm reset in
 	  cold-reset scenarios due to function disabling of the UFS controller.
-
-choice
-	prompt "Multiprocessor (MP) Initialization configuration to use"
-	default USE_FSP_MP_INIT
-
-config USE_FSP_MP_INIT
-	bool "Use FSP MP init"
-	select MP_SERVICES_PPI_V2
-	help
-	  Upon selection, coreboot brings APs from reset and the FSP runs feature programming.
-
-config USE_COREBOOT_MP_INIT
-	bool "Use coreboot MP init"
-	# FSP assumes ownership of the APs (Application Processors)
-	# upon passing `NULL` pointer to the CpuMpPpi FSP-S UPD.
-	# Hence, select `MP_SERVICES_PPI_V2_NOOP` config to pass a valid
-	# pointer to the CpuMpPpi UPD with FSP_UNSUPPORTED type APIs.
-	# This will protect APs from getting hijacked by FSP while coreboot
-	# decides to set SkipMpInit UPD.
-	select MP_SERVICES_PPI_V2_NOOP
-	select RELOAD_MICROCODE_PATCH
-	help
-	  Upon selection, coreboot performs MP Init.
-
-endchoice
 
 if STITCH_ME_BIN
 

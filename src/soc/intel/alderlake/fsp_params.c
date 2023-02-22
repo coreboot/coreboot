@@ -597,7 +597,7 @@ static void fill_fsps_cpu_params(FSP_S_CONFIG *s_cfg,
 	 */
 	s_cfg->CpuMpPpi = (uintptr_t)mp_fill_ppi_services_data();
 
-	if (CONFIG(USE_FSP_MP_INIT))
+	if (CONFIG(USE_FSP_FEATURE_PROGRAM_ON_APS))
 		/*
 		 * Fill `2nd microcode loading FSP UPD` if FSP is running CPU feature
 		 * programming.

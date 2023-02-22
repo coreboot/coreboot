@@ -39,6 +39,7 @@ config CPU_SPECIFIC_OPTIONS
 	select INTEL_GMA_OPREGION_2_1
 	select IOAPIC
 	select MICROCODE_BLOB_UNDISCLOSED
+	select MP_SERVICES_PPI_V2
 	select MRC_SETTINGS_PROTECT
 	select PARALLEL_MP_AP_WORK
 	select PLATFORM_USES_FSP2_3
@@ -344,31 +345,6 @@ config MRC_CHANNEL_WIDTH
 config SOC_INTEL_GFX_FRAMEBUFFER_OFFSET
 	hex
 	default 0x800000
-
-choice
-	prompt "Multiprocessor (MP) Initialization configuration to use"
-	default MTL_USE_FSP_MP_INIT
-
-config MTL_USE_FSP_MP_INIT
-	bool "Use FSP MP init"
-	select MP_SERVICES_PPI_V2
-	help
-	  Upon selection, coreboot brings APs from reset and the FSP runs feature programming.
-
-config MTL_USE_COREBOOT_MP_INIT
-	bool "Use coreboot MP init"
-	# FSP assumes ownership of the APs (Application Processors)
-	# upon passing `NULL` pointer to the CpuMpPpi FSP-S UPD.
-	# Hence, select `MP_SERVICES_PPI_V2_NOOP` config to pass a valid
-	# pointer to the CpuMpPpi UPD with FSP_UNSUPPORTED type APIs.
-	# This will protect APs from getting hijacked by FSP while coreboot
-	# decides to set SkipMpInit UPD.
-	select MP_SERVICES_PPI_V2_NOOP
-	select RELOAD_MICROCODE_PATCH
-	help
-	  Upon selection, coreboot performs MP Initialization that includes feature programming.
-
-endchoice
 
 config FSP_PUBLISH_MBP_HOB
 	bool

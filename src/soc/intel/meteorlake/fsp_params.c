@@ -389,7 +389,7 @@ static void fill_fsps_cpu_params(FSP_S_CONFIG *s_cfg,
 	 * Fill `2nd microcode loading FSP UPD` if FSP is running CPU feature
 	 * programming.
 	 */
-	if (CONFIG(MTL_USE_FSP_MP_INIT))
+	if (CONFIG(USE_FSP_FEATURE_PROGRAM_ON_APS))
 		fill_fsps_microcode_params(s_cfg, config);
 }
 

@@ -9,7 +9,7 @@ This page describes how to run coreboot on the [Protectli FW2B] and
 To build a minimal working coreboot image some blobs are required (assuming
 only the BIOS region is being modified).
 
-```eval_rst
+```{eval-rst}
 +-----------------+---------------------------------+---------------------+
 | Binary file     | Apply                           | Required / Optional |
 +=================+=================================+=====================+
@@ -91,7 +91,7 @@ connected via [FE1.1 USB 2.0 hub].
 
 - FW2B:
 
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | CPU              | Intel Celeron J3060                              |
 +------------------+--------------------------------------------------+
@@ -107,7 +107,7 @@ connected via [FE1.1 USB 2.0 hub].
 
 - FW4B:
 
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | CPU              | Intel Celeron J3160                              |
 +------------------+--------------------------------------------------+

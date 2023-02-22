@@ -2,7 +2,7 @@
 
 ## Reference code
 
-```eval_rst
+```{eval-rst}
 The Cavium reference code is called `BDK`_ (board development kit) and is part
 of the `Octeon-TX-SDK`_. Parts of the `BDK`_ have been integrated into coreoboot.
 ```
@@ -30,7 +30,7 @@ Cavium SoC do **not** have embedded SRAM. The **BOOTROM** setups the
 L2 cache and loads 192KiB of firmware starting from 0x20000 to a fixed
 location. It then jumps to the firmware.
 
-```eval_rst
+```{eval-rst}
 For more details have a look at `Cavium CN8XXX Bootflow`_.
 ```
 
@@ -46,7 +46,7 @@ aarch64 `bootblock.S` code.
 
 ## DRAM setup
 
-```eval_rst
+```{eval-rst}
 The DRAM setup is done by the `BDK`_.
 ```
 
@@ -112,7 +112,7 @@ memory reads as 0xffffffff.)
 Read the BDK_RNM_CTL_STATUS register at least once after writing it.
 
 
-```eval_rst
+```{eval-rst}
 .. _Octeon-TX-SDK: https://github.com/Cavium-Open-Source-Distributions/OCTEON-TX-SDK
 .. _Cavium CN8XXX Bootflow: ../bootflow.html
 .. _BDK: ../../../vendorcode/cavium/bdk.html

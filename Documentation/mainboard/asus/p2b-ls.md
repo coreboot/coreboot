@@ -10,7 +10,7 @@ This page describes how to run coreboot on the ASUS P2B-LS mainboard.
 
 ## Flashing coreboot
 
-```eval_rst
+```{eval-rst}
 +---------------------+---------------------------+
 | Type                | Value                     |
 +=====================+===========================+
@@ -90,7 +90,7 @@ for only CPU models that the board will actually be run with.
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | Northbridge      | Intel I440BX                                     |
 +------------------+--------------------------------------------------+

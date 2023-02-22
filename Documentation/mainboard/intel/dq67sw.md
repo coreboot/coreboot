@@ -4,7 +4,7 @@ The Intel DQ67SW is a microATX-sized desktop board for Intel Sandy Bridge CPUs.
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | Northbridge      | :doc:`../../northbridge/intel/sandybridge/index` |
 +------------------+--------------------------------------------------+
@@ -67,7 +67,7 @@ The Intel DQ67SW is a microATX-sized desktop board for Intel Sandy Bridge CPUs.
 
 ## Flashing coreboot
 
-```eval_rst
+```{eval-rst}
 +---------------------+------------+
 | Type                | Value      |
 +=====================+============+
@@ -104,7 +104,7 @@ the PCI configuration space of the LPC Interface Bridge, is set.
 It is possible to program the chip is to attach an external programmer
 with an SOIC-8 clip.
 
-```eval_rst
+```{eval-rst}
 Another way is to boot the vendor firmware in UEFI mode and exploit the
 unpatched S3 Boot Script vulnerability. See this page for a similar procedure:
 :doc:`../lenovo/ivb_internal_flashing`.
@@ -126,7 +126,7 @@ The boot script contains an entry that writes 0x02 to memory at address
 Interface Bridge [0][1]. The value 0x02 sets the BLE bit, and the modification
 prevents this by making it write a 0 instead.
 
-```eval_rst
+```{eval-rst}
 After suspending and resuming the board, the BIOS region can be flashed with
 a coreboot image, e.g. using flashrom. Note that the ME region is not readable,
 so the `--noverify-all` flag is necessary. Please refer to the

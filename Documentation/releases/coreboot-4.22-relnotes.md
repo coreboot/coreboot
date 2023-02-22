@@ -267,7 +267,7 @@ Issues from the coreboot bugtracker: https://ticket.coreboot.org/
 
 ### Payload-specific issues
 
-```eval_rst
+```{eval-rst}
 +-----+-----------------------------------------------------------------+
 | #   | Subject                                                         |
 +=====+=================================================================+
@@ -284,7 +284,7 @@ Issues from the coreboot bugtracker: https://ticket.coreboot.org/
 
 ### Platform-specific issues
 
-```eval_rst
+```{eval-rst}
 +-----+-----------------------------------------------------------------+
 | #   | Subject                                                         |
 +=====+=================================================================+

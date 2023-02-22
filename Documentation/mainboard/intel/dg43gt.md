@@ -4,7 +4,7 @@ This page describes how to run coreboot on the [Intel DG43GT] desktop.
 
 ## Flashing coreboot
 
-```eval_rst
+```{eval-rst}
 +---------------------+------------+
 | Type                | Value      |
 +=====================+============+
@@ -79,7 +79,7 @@ The layout of the header is:
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +------------------+---------------------------------------------------+
 | Northbridge      | Intel G43 (called x4x in coreboot code)           |
 +------------------+---------------------------------------------------+

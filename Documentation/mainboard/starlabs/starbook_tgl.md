@@ -44,7 +44,7 @@ Please follow the [Star Labs build instructions](common/building.md) to build co
 
 ## Flashing coreboot
 
-```eval_rst
+```{eval-rst}
 +---------------------+------------+
 | Type                | Value      |
 +=====================+============+

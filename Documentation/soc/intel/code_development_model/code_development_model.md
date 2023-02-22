@@ -58,7 +58,7 @@ the footprint of code as well as have a more unified code flow for all Intel
 SoCs.
 
 Here's a table which summarizes common code phase and status:
-```eval_rst
+```{eval-rst}
 +----------------+---------------------------------------------+--------------+
 |   Common code  |           summary                           |   status     |
 |     phase      |                                             |              |

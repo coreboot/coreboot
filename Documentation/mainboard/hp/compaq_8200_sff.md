@@ -13,7 +13,7 @@ The following things are still missing from this coreboot port:
 
 ## Flashing coreboot
 
-```eval_rst
+```{eval-rst}
 +---------------------+-------------------------+
 | Type                | Value                   |
 +=====================+=========================+
@@ -128,7 +128,7 @@ as otherwise there's not enough space near the flash.
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | Northbridge      | :doc:`../../northbridge/intel/sandybridge/index` |
 +------------------+--------------------------------------------------+

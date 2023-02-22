@@ -200,7 +200,7 @@ and [u-root] as initramfs.
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +------------------------+---------------------------------------------+
 | Processor (1 socket)   | Intel Cooper Lake Scalable Processor        |
 +------------------------+---------------------------------------------+

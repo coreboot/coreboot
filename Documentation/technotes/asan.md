@@ -207,7 +207,7 @@ Voilà! We just caught the memory bug using ASan.
 
 ## Supported platforms
 Presently, the following architectures support ASan in ramstage:
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------+
 | Architecture     | Notes                          |
 +==================+================================+
@@ -216,7 +216,7 @@ Presently, the following architectures support ASan in ramstage:
 ```
 
 And in romstage ASan is available on the following platforms:
-```eval_rst
+```{eval-rst}
 +---------------------+-----------------------------+
 | Platform            | Notes                       |
 +=====================+=============================+

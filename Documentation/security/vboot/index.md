@@ -12,7 +12,11 @@ Google's verified boot support consists of:
 
 Google's vboot verifies the firmware and places measurements within the TPM.
 
-- [List of supported Devices](list_vboot.md)
+```{toctree}
+:maxdepth: 1
+
+List of supported Devices <list_vboot.md>
+```
 
 ***
 

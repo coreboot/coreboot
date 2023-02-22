@@ -5,4 +5,8 @@ vendorcode.
 
 ## Sections
 
-- [BDK](bdk.md)
+```{toctree}
+:maxdepth: 1
+
+BDK <bdk.md>
+```

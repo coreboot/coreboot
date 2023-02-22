@@ -6,7 +6,7 @@ This motherboard [also works with Libreboot](https://libreboot.org/docs/install/
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | Type             | Value                                            |
 +==================+==================================================+
@@ -30,7 +30,7 @@ This motherboard [also works with Libreboot](https://libreboot.org/docs/install/
 
 ## Preparation
 
-```eval_rst
+```{eval-rst}
 For more datails how to get sources and build the toolchain, see :doc:`../../tutorial/part1`.
 ```
 
@@ -140,7 +140,7 @@ Built gigabyte/ga-g41m-es2l (GA-G41M-ES2L)
 
 ## Flashing coreboot
 
-```eval_rst
+```{eval-rst}
 In addition to the information here, please see the
 :doc:`../../tutorial/flashing_firmware/index`.
 ```

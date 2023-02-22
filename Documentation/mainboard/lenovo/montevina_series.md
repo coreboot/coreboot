@@ -20,7 +20,7 @@ touch any other regions:
 
 ## Installing without ME firmware
 
-```eval_rst
+```{eval-rst}
 .. Note::
    **ThinkPad R500** has slightly different flash layout (it doesn't have
    ``gbe`` region), so the process would be a little different for that model.
@@ -51,7 +51,7 @@ your backup with **ifdtool**](#modifying-flash-descriptor-using-ifdtool), or
 Pick the layout according to your chip size from the table below and save it to
 the `new_layout.txt` file:
 
-```eval_rst
+```{eval-rst}
 +---------------------------+---------------------------+---------------------------+
 | 4 MiB chip                | 8 MiB chip                | 16 MiB chip               |
 +===========================+===========================+===========================+
@@ -102,7 +102,7 @@ $ make
 If your flash is not 8 MiB, you need to change values of `flcomp_density1` and
 `flreg1_limit` in the `ifd-x200.set` file according to following table:
 
-```eval_rst
+```{eval-rst}
 +-----------------+-------+-------+--------+
 |                 | 4 MiB | 8 MiB | 16 MiB |
 +=================+=======+=======+========+
@@ -144,7 +144,7 @@ Then build coreboot and flash whole `build/coreboot.rom` to the chip.
 
 The flash layouts of the OEM firmware are as follows:
 
-```eval_rst
+```{eval-rst}
 +---------------------------------+---------------------------------+
 | 4 MiB chip                      | 8 MiB chip                      |
 +=================================+=================================+

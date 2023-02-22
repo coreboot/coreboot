@@ -6,7 +6,7 @@ This page describes how to run coreboot on Dell OptiPlex 9010 SFF.
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +------------+---------------------------------------------------------------+
 | CPU        | Intel Core 2nd Gen (Sandybridge) or 3rd Gen (Ivybridge)       |
 +------------+---------------------------------------------------------------+
@@ -28,7 +28,7 @@ More specifications on [Dell OptiPlex 9010 specifications].
 
 ## Required proprietary blobs
 
-```eval_rst
+```{eval-rst}
 +------------------+---------------------------------+---------------------+
 | Binary file      | Apply                           | Required / Optional |
 +==================+=================================+=====================+
@@ -50,7 +50,7 @@ signature `SMSCUBIM`. The easiest way to do this is to use [UEFITool] and
 
 ## Flashing coreboot
 
-```eval_rst
+```{eval-rst}
 +---------------------+--------------------------+
 | Type                | Value                    |
 +=====================+==========================+

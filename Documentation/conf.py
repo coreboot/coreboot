@@ -1,46 +1,34 @@
-# -*- coding: utf-8 -*-
-import subprocess
-from recommonmark.parser import CommonMarkParser
-import sphinx
-
-# Get Sphinx version
-major = 0
-minor = 0
-patchlevel = 0
-version = sphinx.__version__.split(".")
-if len(version) > 1:
-	major = int(version[0])
-	minor = int(version[1])
-	if len(version) > 2:
-		patchlevel = int(version[2])
-
-# Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
-
-# The suffix(es) of source filenames.
-source_suffix = ['.md']
-
-# The master toctree document.
-master_doc = 'index'
-
-# General information about the project.
-project = u'coreboot'
-copyright = u'CC-by 4.0 the coreboot project'
-author = u'the coreboot project'
-
-# The version info for the project you're documenting, acts as replacement for
-# |version| and |release|, also used in various other places throughout the
-# built documents.
+# Configuration file for the Sphinx documentation builder.
 #
-# The full version, including alpha/beta/rc tags.
+# For the full list of built-in configuration values, see the documentation:
+# https://www.sphinx-doc.org/en/master/usage/configuration.html
+
+# -- Project information -----------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+
+import subprocess
+
+project = 'coreboot'
+copyright = 'CC-by 4.0 the coreboot project'
+author = 'the coreboot project'
+
 release = subprocess.check_output(('git', 'describe')).decode("utf-8")
 # The short X.Y version.
 version = release.split("-")[0]
 
-extensions = []
-# Load recommonmark, supported since 1.8+
-if major >= 2 or (major == 1 and minor >= 8):
-    extensions += ['recommonmark']
+
+# -- General configuration ---------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
+
+extensions = ["myst_parser"]
+
+myst_heading_anchors = 5
+
+templates_path = ['_templates']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+
+# The name of the Pygments (syntax highlighting) style to use.
+pygments_style = 'sphinx'
 
 # Try to load DITAA
 try:
@@ -57,62 +45,11 @@ else:
 # Usually you set "language" from the command line for these cases.
 language = 'en'
 
-# List of patterns, relative to source directory, that match files and
-# directories to ignore when looking for source files.
-# This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+# -- Options for HTML output -------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-# The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
-
-# A list of ignored prefixes for module index sorting.
-# modindex_common_prefix = []
-
-# If true, keep warnings as "system message" paragraphs in the built documents.
-# keep_warnings = False
-
-# If true, `todo` and `todoList` produce output, else they produce nothing.
-todo_include_todos = False
-
-
-# -- Options for HTML output ----------------------------------------------
-
-# The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes.
-#
 html_theme = 'sphinx_rtd_theme'
-
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
-
 html_css_files = [
     'theme_overrides.css',  # override wide tables in RTD theme
 ]
-
-# Output file base name for HTML help builder.
-htmlhelp_basename = 'corebootdoc'
-
-enable_auto_toc_tree = True
-
-class MyCommonMarkParser(CommonMarkParser):
-    # remove this hack once upstream RecommonMark supports inline code
-    def visit_code(self, mdnode):
-        from docutils import nodes
-        n = nodes.literal(mdnode.literal, mdnode.literal)
-        self.current_node.append(n)
-
-def setup(app):
-    from recommonmark.transform import AutoStructify
-    # Load recommonmark on old Sphinx
-    if major == 1 and minor < 8:
-        app.add_source_parser('.md', MyCommonMarkParser)
-
-    app.add_config_value('recommonmark_config', {
-        'enable_auto_toc_tree': True,
-        'enable_auto_doc_ref': False, # broken in Sphinx 1.6+
-        'enable_eval_rst': True,
-        'url_resolver': lambda url: '/' + url
-    }, True)
-    app.add_transform(AutoStructify)

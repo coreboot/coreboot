@@ -5,7 +5,7 @@ Bridge and Ivy Bridge CPUs.
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | Northbridge      | :doc:`../../northbridge/intel/sandybridge/index` |
 +------------------+--------------------------------------------------+
@@ -71,7 +71,7 @@ extlinux
 
 ## Flashing coreboot
 
-```eval_rst
+```{eval-rst}
 +---------------------+------------+
 | Type                | Value      |
 +=====================+============+
@@ -115,7 +115,7 @@ $ sudo flashrom --noverify-all --ifd -i bios -p internal -w coreboot.rom
 The use of `--noverify-all` is required since the Management Engine
 region is not readable even by the host.
 
-```eval_rst
+```{eval-rst}
 In addition to the information here, please see the
 :doc:`../../tutorial/flashing_firmware/index`.
 ```

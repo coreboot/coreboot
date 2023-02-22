@@ -167,7 +167,7 @@ could cause catastrophic failures, up to and including your mainboard!
 As per Intel Platform Controller Hub (PCH) EDS since Skylake, a GPIO PAD register
 supports four different types of GPIO reset as:
 
-```eval_rst
+```{eval-rst}
 +------------------------+----------------+-------------+-------------+
 |                        |                |         PAD Reset ?       |
 + PAD Reset Config       + Platform Reset +-------------+-------------+

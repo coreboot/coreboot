@@ -14,7 +14,7 @@ Intel company provides [Firmware Support Package (2.0)](../../soc/intel/fsp/inde
 
 FSP Information:
 
-```eval_rst
+```{eval-rst}
 +-----------------------------+-------------------+-------------------+
 | FSP Project Name            | Directory         | Specification     |
 +-----------------------------+-------------------+-------------------+
@@ -116,7 +116,7 @@ output.
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | SoC              | Intel Kaby Lake U                                |
 +------------------+--------------------------------------------------+

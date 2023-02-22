@@ -8,7 +8,7 @@ through a proprietary 16-1 pin connector.
 I managed to grope the most pinout of the proprietary connector.
 See [Mini PCIe pinout] for more info.
 
-```eval_rst
+```{eval-rst}
 +------------+----------+-----------+------------+----------+-----------+
 | WIFIGO Pin | Usage    | mPCIe pin | WIFIGO Pin | Usage    | mPCIe pin |
 +============+==========+===========+============+==========+===========+

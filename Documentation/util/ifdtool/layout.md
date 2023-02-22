@@ -14,7 +14,7 @@ The names of the IFD regions in the FMAP should follow the convention of
 starting with the prefix `SI_` which stands for `silicon initialization` as a
 way to categorize anything required by the SoC but not provided by coreboot.
 
-```eval_rst
+```{eval-rst}
 +------------+------------------+-----------+-------------------------------------------+
 | IFD Region | IFD Region name  | FMAP Name | Notes                                     |
 | index      |                  |           |                                           |

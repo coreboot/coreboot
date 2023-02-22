@@ -2,7 +2,7 @@
 
 This page describes how to run coreboot on the [Purism Librem 14].
 
-```eval_rst
+```{eval-rst}
 +------------------+------------------------------------------------------+
 | CPU              | Intel Core i7-10710U                                 |
 +------------------+------------------------------------------------------+
@@ -23,7 +23,7 @@ This page describes how to run coreboot on the [Purism Librem 14].
 To build a minimal working coreboot image some blobs are required (assuming
 only the BIOS region is being modified).
 
-```eval_rst
+```{eval-rst}
 +-----------------+---------------------------------+---------------------+
 | Binary file     | Apply                           | Required / Optional |
 +=================+=================================+=====================+

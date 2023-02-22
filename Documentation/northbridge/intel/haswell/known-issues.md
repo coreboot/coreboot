@@ -5,7 +5,7 @@ mainboard, there might be additional issues to those listed here.
 
 ## PCIe graphics
 
-```eval_rst
+```{eval-rst}
 Using a PCIe graphics card for display output is not currently
 supported. This is because :doc:`./mrc.bin` requires workarounds to
 have such a feature working correctly.

@@ -5,7 +5,7 @@ from [HP].
 
 ## Flashing coreboot
 
-```eval_rst
+```{eval-rst}
 +---------------------+-------------+
 | Type                | Value       |
 +=====================+=============+
@@ -42,7 +42,7 @@ Wake on LAN is active works great.
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | Northbridge      | :doc:`../../northbridge/intel/sandybridge/index` |
 +------------------+--------------------------------------------------+

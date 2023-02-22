@@ -26,7 +26,7 @@ anyone using that release.
 ## [4.19 Release](coreboot-4.19-relnotes.md)
 Branch created, builder configured
 
-```eval_rst
+```{eval-rst}
 +-------------------------------+------------------------+------------+-----------+
 | Vendor/Board                  | Processor              | Date added | Brd type  |
 +===============================+========================+============+===========+
@@ -37,7 +37,7 @@ Branch created, builder configured
 ## [4.18 Release](coreboot-4.18-relnotes.md)
 Branch created, builder configured
 
-```eval_rst
+```{eval-rst}
 +-------------------------------+------------------------+------------+-----------+
 | Vendor/Board                  | Processor              | Date added | Brd type  |
 +===============================+========================+============+===========+
@@ -120,7 +120,7 @@ Branch created, builder configured
 
 ## [4.13 Release](coreboot-4.13-relnotes.md)
 Tag only
-```eval_rst
+```{eval-rst}
 +-----------------------------+------------------------+------------+----------+
 | Vendor/Board                | Processor              | Date added | Brd type |
 +=============================+========================+============+==========+
@@ -132,7 +132,7 @@ Tag only
 
 Branch created, builder configured
 
-```eval_rst
+```{eval-rst}
 +-----------------------------+------------------------+------------+----------+
 | Vendor/Board                | Processor              | Date added | Brd type |
 +=============================+========================+============+==========+
@@ -148,7 +148,7 @@ Branch created, builder configured
 
 Branch created, builder configured
 
-```eval_rst
+```{eval-rst}
 +-----------------------------+------------------------+------------+----------+
 | Vendor/Board                | Processor              | Date added | Brd type |
 +=============================+========================+============+==========+
@@ -251,7 +251,7 @@ Branch created, builder configured
 
 ## [4.10 Release](coreboot-4.10-relnotes.md)
 Branch created
-```eval_rst
+```{eval-rst}
 +-----------------------------+------------------------+------------+----------+
 | Vendor/Board                | Processor              | Date added | Brd type |
 +=============================+========================+============+==========+
@@ -263,7 +263,7 @@ Branch created
 ## [4.9 Release](coreboot-4.9-relnotes.md)
 Tag only
 
-```eval_rst
+```{eval-rst}
 +-----------------------------+------------------------+------------+----------+
 | Vendor/Board                | Processor              | Date added | Brd type |
 +=============================+========================+============+==========+
@@ -281,7 +281,7 @@ Tag only
 ## [4.8.1 Release](coreboot-4.8.1-relnotes.md)
 Branch created
 
-```eval_rst
+```{eval-rst}
 +-----------------------------+------------------------+------------+----------+
 | Vendor/Board                | Processor              | Date added | Brd type |
 +=============================+========================+============+==========+
@@ -417,7 +417,7 @@ Branch created
 ## [4.7 Release](coreboot-4.7-relnotes.md)
 Tag only
 
-```eval_rst
+```{eval-rst}
 +-----------------------------+------------------------+------------+----------+
 | Vendor/Board                | Processor              | Date added | Brd type |
 +=============================+========================+============+==========+
@@ -504,7 +504,7 @@ Tag only
 ## [4.6](coreboot-4.6-relnotes.md)
 Tag only
 
-```eval_rst
+```{eval-rst}
 +-----------------------------+------------------------+------------+----------+
 | Vendor/Board                | Processor              | Date added | Brd type |
 +=============================+========================+============+==========+
@@ -520,7 +520,7 @@ Tag only
 ## [4.5](coreboot-4.5-relnotes.md)
 Tag only
 
-```eval_rst
+```{eval-rst}
 +-----------------------------+------------------------+------------+----------+
 | Vendor/Board                | Processor              | Date added | Brd type |
 +=============================+========================+============+==========+
@@ -548,7 +548,7 @@ Tag only
 ## [4.4](coreboot-4.4-relnotes.md)
 Branch created
 
-```eval_rst
+```{eval-rst}
 +-----------------------------+------------------------+------------+----------+
 | Vendor/Board                | Processor              | Date added | Brd type |
 +=============================+========================+============+==========+
@@ -574,7 +574,7 @@ Branch created
 ## [4.2](coreboot-4.2-relnotes.md)
 Branch created
 
-```eval_rst
+```{eval-rst}
 +-----------------------------+------------------------+------------+----------+
 | Vendor/Board                | Processor              | Date added | Brd type |
 +=============================+========================+============+==========+

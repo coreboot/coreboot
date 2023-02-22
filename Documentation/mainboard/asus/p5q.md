@@ -32,7 +32,7 @@ This page describes how to run coreboot on the [ASUS P5Q] desktop board.
 
 ## Flashing coreboot
 
-```eval_rst
+```{eval-rst}
 +-------------------+----------------+
 | Type              | Value          |
 +===================+================+
@@ -56,7 +56,7 @@ You can flash coreboot into your motherboard using [this guide].
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +------------------+---------------------------------------------------+
 | Northbridge      | Intel P45 (called x4x in coreboot code)           |
 +------------------+---------------------------------------------------+

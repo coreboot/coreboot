@@ -5,7 +5,15 @@ architectures.
 
 ## RISC-V
 
-- [RISC-V documentation](riscv/index.md)
+```{toctree}
+:maxdepth: 1
+
+RISC-V documentation <riscv/index.md>
+```
 
 ## x86
-- [x86 documentation](x86/index.md)
+```{toctree}
+:maxdepth: 1
+
+x86 documentation <x86/index.md>
+```

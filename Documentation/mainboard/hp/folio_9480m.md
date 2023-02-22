@@ -138,7 +138,7 @@ The board can be debugged with EHCI debug. The EHCI debug port is the USB port o
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +------------------+-----------------------------+
 | CPU              | Intel Haswell-ULT           |
 +------------------+-----------------------------+

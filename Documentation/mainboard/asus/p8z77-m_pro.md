@@ -4,7 +4,7 @@ This page describes how to run coreboot on the [ASUS P8Z77-M PRO]
 
 ## Flashing coreboot
 
-```eval_rst
+```{eval-rst}
 +---------------------+----------------+
 | Type                | Value          |
 +=====================+================+
@@ -143,7 +143,7 @@ easy to remove and reflash.
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | Northbridge      | :doc:`../../northbridge/intel/sandybridge/index` |
 +------------------+--------------------------------------------------+

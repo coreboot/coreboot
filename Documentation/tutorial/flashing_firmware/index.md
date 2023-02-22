@@ -7,10 +7,14 @@ flash IC.
 
 ## Contents
 
-* [Flashing internally](int_flashrom.md)
-* [Flashing firmware standalone](ext_standalone.md)
-* [Flashing firmware externally supplying direct power](ext_power.md)
-* [Flashing firmware externally without supplying direct power](no_ext_power.md)
+```{toctree}
+:maxdepth: 1
+
+Flashing internally <int_flashrom.md>
+Flashing firmware standalone <ext_standalone.md>
+Flashing firmware externally supplying direct power <ext_power.md>
+Flashing firmware externally without supplying direct power <no_ext_power.md>
+```
 
 ## General advice
 
@@ -43,7 +47,11 @@ There are multiple ways to update the firmware:
 * A UEFI firmware update capsule
 
 More details on flashrom's
-* [internal programmer](int_flashrom.md)
+```{toctree}
+:maxdepth: 1
+
+internal programmer <int_flashrom.md>
+```
 
 ## External method
 
@@ -56,9 +64,13 @@ Please also have a look at the mainboard-specific documentation for details.
 After exposing the firmware flash IC, read the schematics and use one of the
 possible methods:
 
-* [Flashing firmware standalone](ext_standalone.md)
-* [Flashing firmware externally supplying direct power](ext_power.md)
-* [Flashing firmware externally without supplying direct power](no_ext_power.md)
+```{toctree}
+:maxdepth: 1
+
+Flashing firmware standalone <ext_standalone.md>
+Flashing firmware externally supplying direct power <ext_power.md>
+Flashing firmware externally without supplying direct power <no_ext_power.md>
+```
 
 **WARNING:** Using the wrong method or accidentally using the wrong pinout might
   permanently damage your hardware!

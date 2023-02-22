@@ -31,7 +31,7 @@ Flashing was performed through the BMC web interface, when a valid license was e
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | CPU              | Intel Kaby Lake                                  |
 +------------------+--------------------------------------------------+

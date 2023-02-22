@@ -28,7 +28,7 @@ First of all, it is necessary to precisely establish what we want to
 test in a particular module. Usually this will be an externally exposed
 API, which can be used by other modules.
 
-```eval_rst
+```{eval-rst}
 .. admonition:: i2c-test example
 
    In case of our UUT, API consist of two methods:
@@ -49,7 +49,7 @@ Once the API is defined, the next question is __what__ this API is doing
 we are expecting from particular functions, when providing particular
 input parameters.
 
-```eval_rst
+```{eval-rst}
 .. admonition:: i2c-test example
 
    .. code-block:: c
@@ -71,7 +71,7 @@ thus should be simply linked into the test binaries, all hardware
 dependencies need to be mocked out, since in the user-space host
 environment, target hardware is not available.
 
-```eval_rst
+```{eval-rst}
 .. admonition:: i2c-test example
 
    `i2c_read_field` is calling `i2c_readb`, which eventually invokes
@@ -88,7 +88,7 @@ In order to keep the tree clean, the `tests/` directory should mimic the
 corresponding to UUT. Furthermore, the naming convention is to add the
 suffix `-test` to the UUT name when creating a new test harness file.
 
-```eval_rst
+```{eval-rst}
 .. admonition:: i2c-test example
 
    Considering that UUT is `src/device/i2c.c`, test file should be named
@@ -100,7 +100,7 @@ Every directory under `tests/` should contain a Makefile.mk, similar to
 what can be seen under the `src/`. Register a new test in Makefile.mk,
 by __appending__ test name to the `tests-y` variable.
 
-```eval_rst
+```{eval-rst}
 .. admonition:: i2c-test example
 
    .. code-block:: c
@@ -114,7 +114,7 @@ in order to create test binary. Usually a tests requires only two files
 test environment.  Source files are registered in `<test_name>-srcs`
 variable.
 
-```eval_rst
+```{eval-rst}
 .. admonition:: i2c-test example
 
    .. code-block:: c
@@ -128,7 +128,7 @@ build and run test binary either by invoking `make
 tests/<test_dir>/<test_name>` or by running all unit tests (whole suite)
 for coreboot `make unit-tests`.
 
-```eval_rst
+```{eval-rst}
 .. admonition:: i2c-test example
 
    .. code-block:: c
@@ -164,7 +164,7 @@ macros](https://api.cmocka.org/group__cmocka__asserts.html) to compare a
 value with an expected value. If the two values do not match, the test
 fails with an error message.
 
-```eval_rst
+```{eval-rst}
 .. admonition:: i2c-test example
 
    In our example, the simplest test is to call UUT for reading our fake
@@ -215,7 +215,7 @@ being mocked. Such a mock may, for example, register a set of driver
 methods. Behind this API, there is usually a simulation of real
 hardware.
 
-```eval_rst
+```{eval-rst}
 .. admonition:: i2c-test example
 
    For purpose of our i2c test, we may introduce two i2c devices with
@@ -289,7 +289,7 @@ mocked into <test_name>-mocks variable in Makefile.mk. The result is
 that the test's implementation of that function is called instead of
 coreboot's.
 
-```eval_rst
+```{eval-rst}
 .. admonition:: i2c-test example
 
    .. code-block:: c
@@ -320,7 +320,7 @@ the corresponding test function, `expect*()` macro, with description
 which parameter in which mock should have particular value, or be inside
 a described range.
 
-```eval_rst
+```{eval-rst}
 .. admonition:: i2c-test example
 
    In our example, we may want to check that `platform_i2c_transfer` is
@@ -366,7 +366,7 @@ return to the UUT. This can be done by using the `will_return*()` and
 section](https://api.cmocka.org/group__cmocka__mock.html) of the Cmocka
 API documentation.
 
-```eval_rst
+```{eval-rst}
 .. admonition:: Example
 
    There is an non-coreboot example for using Cmocka available
@@ -379,7 +379,7 @@ All tests should be registered there and the cmocka test runner invoked.
 All methods for invoking Cmocka test are described
 [here](https://api.cmocka.org/group__cmocka__exec.html).
 
-```eval_rst
+```{eval-rst}
 .. admonition:: i2c-test example
 
    We don't need any extra setup and teardown functions for i2c-test, so

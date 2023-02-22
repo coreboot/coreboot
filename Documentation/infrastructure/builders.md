@@ -93,11 +93,19 @@ You can see all the builds in the main jenkins interface:
 Most of the time on the builders is taken up by the coreboot main and
 coreboot gerrit builds.
 
-* [coreboot gerrit build](https://qa.coreboot.org/job/coreboot-gerrit/)
+```{toctree}
+:maxdepth: 1
+
+coreboot gerrit build <https://qa.coreboot.org/job/coreboot-gerrit/>
+```
 ([Time trend](https://qa.coreboot.org/job/coreboot-gerrit/buildTimeTrend))
 
 
-* [coreboot main build](https://qa.coreboot.org/job/coreboot/)
+```{toctree}
+:maxdepth: 1
+
+coreboot main build <https://qa.coreboot.org/job/coreboot/>
+```
  ([Time trend](https://qa.coreboot.org/job/coreboot/buildTimeTrend))
 
 

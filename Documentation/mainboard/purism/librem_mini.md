@@ -2,7 +2,7 @@
 
 This page describes how to run coreboot on the [Purism Librem Mini].
 
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | CPU              | Intel Core i7-8565U/8665U (v1)                   |
 |                  | Intel Core i7-10510U      (v2)                   |
@@ -25,7 +25,7 @@ This page describes how to run coreboot on the [Purism Librem Mini].
 To build a minimal working coreboot image some blobs are required (assuming
 only the BIOS region is being modified).
 
-```eval_rst
+```{eval-rst}
 +-----------------+---------------------------------+---------------------+
 | Binary file     | Apply                           | Required / Optional |
 +=================+=================================+=====================+

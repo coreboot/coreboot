@@ -8,4 +8,8 @@ selected mainboard.
 
 ## FIT
 
-- [uImage.FIT support](fit.md)
+```{toctree}
+:maxdepth: 1
+
+uImage.FIT support <fit.md>
+```

@@ -23,7 +23,7 @@ actual delay of every lane can be measured.
 The values programmed in read training effect DRAM-to-MC transfers only !
 
 ## Definitions
-```eval_rst
+```{eval-rst}
 +---------+-------------------------------------------------------------------+------------+--------------+
 | Symbol  | Description                                                       | Units      | Valid region |
 +=========+===================================================================+============+==============+

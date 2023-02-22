@@ -4,7 +4,7 @@ This page describes how to run coreboot on the [ASUS P8H77-V].
 
 ## Flashing coreboot
 
-```eval_rst
+```{eval-rst}
 +---------------------+----------------+
 | Type                | Value          |
 +=====================+================+
@@ -69,7 +69,7 @@ flash externally.
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | Northbridge      | :doc:`../../northbridge/intel/sandybridge/index` |
 +------------------+--------------------------------------------------+

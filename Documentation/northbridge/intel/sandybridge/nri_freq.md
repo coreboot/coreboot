@@ -5,7 +5,7 @@ This chapter explains the frequency selection done on Sandy Bridge and Ivy
 Bridge memory initialization.
 
 ## Definitions
-```eval_rst
+```{eval-rst}
 +---------+-------------------------------------------------------------------+------------+--------------+
 | Symbol  | Description                                                       | Units      | Valid region |
 +=========+===================================================================+============+==============+
@@ -94,7 +94,7 @@ multiplier to select the DRAM frequency (SCK) by the following formula:
 > **Note:** Since coreboot 4.6 Ivy Bridge supports 100MHz REFCK.
 
 ## Sandy Bridge's supported frequencies
-```eval_rst
+```{eval-rst}
 +------------+-----------+------------------+-------------------------+---------------+
 | SCK [Mhz]  | DDR [Mhz] | Mutiplier (MULT) | Reference clock (REFCK) | Comment       |
 +============+===========+==================+=========================+===============+
@@ -113,7 +113,7 @@ multiplier to select the DRAM frequency (SCK) by the following formula:
 ```
 
 ## Ivy Bridge's supported frequencies
-```eval_rst
+```{eval-rst}
 +------------+-----------+------------------+-------------------------+---------------+
 | SCK [Mhz]  | DDR [Mhz] | Mutiplier (MULT) | Reference clock (REFCK) | Comment       |
 +============+===========+==================+=========================+===============+

@@ -11,7 +11,7 @@ Intel company provides [Firmware Support Package (2.0)](../../soc/intel/fsp/inde
 
 FSP Information:
 
-```eval_rst
+```{eval-rst}
 +-----------------------------+-------------------+-------------------+
 | FSP Project Name            | Directory         | Specification     |
 +-----------------------------+-------------------+-------------------+
@@ -114,7 +114,7 @@ facing towards the bottom of the board.
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | CPU              | Intel Skylake/Kaby Lake (LGA1151)                |
 +------------------+--------------------------------------------------+

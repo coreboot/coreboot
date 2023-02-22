@@ -33,7 +33,7 @@ Three items are marked in this picture
 
 ## Flashing coreboot
 
-```eval_rst
+```{eval-rst}
 +---------------------+--------------------+
 | Type                | Value              |
 +=====================+====================+
@@ -53,7 +53,7 @@ Three items are marked in this picture
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +---------------+------------------------------+
 | Fan control   | Using fintek F81803A         |
 +---------------+------------------------------+
@@ -63,7 +63,7 @@ Three items are marked in this picture
 
 ## Description of pictures within this document
 
-```eval_rst
+```{eval-rst}
 +----------------------------+----------------------------------------+
 |pademelon.jpg               | Motherboard with components identified |
 +----------------------------+----------------------------------------+

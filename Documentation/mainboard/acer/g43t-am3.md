@@ -5,7 +5,7 @@ Acer models Aspire M3800, Aspire M5800 and possibly more.
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | Northbridge      | Intel G43 (called x4x in coreboot code)          |
 +------------------+--------------------------------------------------+
@@ -69,7 +69,7 @@ Tests were done with SeaBIOS 1.14.0 and slackware64-live from 2019-07-12
 
 ## Flashing coreboot
 
-```eval_rst
+```{eval-rst}
 +-------------------+---------------------+
 | Type              | Value               |
 +===================+=====================+
@@ -122,7 +122,7 @@ $ sudo flashrom \
   -w coreboot.rom
 ```
 
-```eval_rst
+```{eval-rst}
 In addition to the information here, please see the
 :doc:`../../tutorial/flashing_firmware/index`.
 ```

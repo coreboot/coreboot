@@ -5,4 +5,8 @@ vendorcode.
 
 ## Sections
 
-- [Security](security.md)
+```{toctree}
+:maxdepth: 1
+
+Security <security.md>
+```

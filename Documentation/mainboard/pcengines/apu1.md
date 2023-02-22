@@ -4,7 +4,7 @@ This page describes how to run coreboot on PC Engines APU1 platform.
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +------------+--------------------------------------------------------+
 | CPU        | AMD G series T40E APU                                  |
 +------------+--------------------------------------------------------+
@@ -23,7 +23,7 @@ This page describes how to run coreboot on PC Engines APU1 platform.
 
 ## Flashing coreboot
 
-```eval_rst
+```{eval-rst}
 +---------------------+--------------------------+
 | Type                | Value                    |
 +=====================+==========================+

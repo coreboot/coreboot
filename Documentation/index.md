@@ -170,34 +170,38 @@ for example OpenBSD, is probably the closest cousin of our approach.
 
 Contents:
 
-* [Getting Started](getting_started/index.md)
-* [Tutorial](tutorial/index.md)
-* [Contributing](contributing/index.md)
-* [Community](community/index.md)
-* [Payloads](payloads.md)
-* [Distributions](distributions.md)
-* [Technotes](technotes/index.md)
-* [ACPI](acpi/index.md)
-* [Native Graphics Initialization with libgfxinit](gfx/libgfxinit.md)
-* [Display panel](gfx/display-panel.md)
-* [CPU Architecture](arch/index.md)
-* [Platform independent drivers](drivers/index.md)
-* [Northbridge](northbridge/index.md)
-* [System on Chip](soc/index.md)
-* [Mainboard](mainboard/index.md)
-* [Payloads](lib/payloads/index.md)
-* [Libraries](lib/index.md)
-* [Options](lib/option.md)
-* [Security](security/index.md)
-* [SuperIO](superio/index.md)
-* [Vendorcode](vendorcode/index.md)
-* [Utilities](util.md)
-* [Software Bill of Materials](sbom/sbom.md)
-* [Project infrastructure & services](infrastructure/index.md)
-* [Boards supported in each release directory](releases/boards_supported_on_branches.md)
-* [Release notes](releases/index.md)
-* [Acronyms & Definitions](acronyms.md)
-* [External Resources](external_docs.md)
-* [Documentation License](documentation_license.md)
+```{toctree}
+:maxdepth: 1
+
+Getting Started <getting_started/index.md>
+Tutorial <tutorial/index.md>
+Contributing <contributing/index.md>
+Community <community/index.md>
+Payloads <payloads.md>
+Distributions <distributions.md>
+Technotes <technotes/index.md>
+ACPI <acpi/index.md>
+Native Graphics Initialization with libgfxinit <gfx/libgfxinit.md>
+Display panel <gfx/display-panel.md>
+CPU Architecture <arch/index.md>
+Platform independent drivers <drivers/index.md>
+Northbridge <northbridge/index.md>
+System on Chip <soc/index.md>
+Mainboard <mainboard/index.md>
+Payloads <lib/payloads/index.md>
+Libraries <lib/index.md>
+Options <lib/option.md>
+Security <security/index.md>
+SuperIO <superio/index.md>
+Vendorcode <vendorcode/index.md>
+Utilities <util.md>
+Software Bill of Materials <sbom/sbom.md>
+Project infrastructure & services <infrastructure/index.md>
+Boards supported in each release directory <releases/boards_supported_on_branches.md>
+Release notes <releases/index.md>
+Acronyms & Definitions <acronyms.md>
+External Resources <external_docs.md>
+Documentation License <documentation_license.md>
+```
 
 [Documentation]: https://review.coreboot.org/plugins/gitiles/coreboot/+/refs/heads/main/Documentation/

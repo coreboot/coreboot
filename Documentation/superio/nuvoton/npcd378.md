@@ -8,7 +8,7 @@ might be inaccurate or wrong.
 
 ## LDNs
 
-```eval_rst
+```{eval-rst}
 +-------+---------------------------+
 | LDN # | Function                  |
 +=======+===========================+
@@ -86,7 +86,7 @@ See [HWM](#HWM) for more details.
 
 The registers are accessible via IO space and are located at LDN8's IOBASE.
 
-```eval_rst
+```{eval-rst}
 +---------------+-----------------------+
 | IOBASE offset | Register              |
 +---------------+-----------------------+
@@ -108,7 +108,7 @@ The SuperIO exposes 16 different pages. Nearly all registers are unknown.
 
 **Page 1**
 
-```eval_rst
+```{eval-rst}
 +---------------+-----------------------+
 | IOBASE offset | Register              |
 +---------------+-----------------------+

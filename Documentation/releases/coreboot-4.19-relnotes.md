@@ -221,7 +221,7 @@ Significant Known and Open Issues
 ---------------------------------
 
 Issues from the coreboot bugtracker: https://ticket.coreboot.org/
-```eval_rst
+```{eval-rst}
 +-----+-----------------------------------------------------------------+
 | #   | Subject                                                         |
 +=====+=================================================================+

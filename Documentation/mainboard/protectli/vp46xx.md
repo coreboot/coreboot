@@ -10,7 +10,7 @@ This page describes how to run coreboot on the [Protectli VP46xx].
 To build a minimal working coreboot image some blobs are required (assuming
 only the BIOS region is being modified).
 
-```eval_rst
+```{eval-rst}
 +-----------------+---------------------------------+---------------------+
 | Binary file     | Apply                           | Required / Optional |
 +=================+=================================+=====================+
@@ -84,7 +84,7 @@ ITE IT8786E or IT8784E, but the configuration is the same on this platform.
 
 - VP4630:
 
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | CPU              | Intel Core i3-10110U                             |
 +------------------+--------------------------------------------------+
@@ -98,7 +98,7 @@ ITE IT8786E or IT8784E, but the configuration is the same on this platform.
 
 - VP4650:
 
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | CPU              | Intel Core i5-10210U                             |
 +------------------+--------------------------------------------------+
@@ -112,7 +112,7 @@ ITE IT8786E or IT8784E, but the configuration is the same on this platform.
 
 - VP4670:
 
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | CPU              | Intel Core i7-10810U                             |
 +------------------+--------------------------------------------------+
@@ -126,9 +126,13 @@ ITE IT8786E or IT8784E, but the configuration is the same on this platform.
 
 ## Useful links
 
-- [VP4600 Hardware Overview](https://protectli.com/kb/vp4600-hardware-overview/)
-- [VP4630 Product Page](https://protectli.com/product/vp4630/)
-- [Protectli TPM module](https://protectli.com/product/tpm-module/)
+```{toctree}
+:maxdepth: 1
+
+VP4600 Hardware Overview <https://protectli.com/kb/vp4600-hardware-overview/>
+VP4630 Product Page <https://protectli.com/product/vp4630/>
+Protectli TPM module <https://protectli.com/product/tpm-module/>
+```
 
 [Protectli VP46xx]: https://protectli.com/vault-6-port/
 [MX25L12835F]: https://www.mxic.com.tw/Lists/Datasheet/Attachments/8653/MX25L12835F,%203V,%20128Mb,%20v1.6.pdf

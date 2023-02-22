@@ -22,7 +22,7 @@ the power sequence timing parameters, which are usually named T[N] and also
 referenced in Intel's respective registers listing. You need the values for
 `PP_ON_DELAYS`, `PP_OFF_DELAYS` and `PP_DIVISOR` for your `devicetree.cb`:
 
-```eval_rst
+```{eval-rst}
 +-----------------------------+---------------------------------------+-----+
 | Intel docs                  | devicetree.cb                         | eDP |
 +-----------------------------+---------------------------------------+-----+

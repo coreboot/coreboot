@@ -46,7 +46,7 @@ To disable the proprietary LAN firmware, the undocumented jumper J6 can be set t
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | CPU              | Intel Kaby Lake                                  |
 +------------------+--------------------------------------------------+

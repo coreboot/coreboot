@@ -8,10 +8,14 @@ For details on how to connect device drivers to a mainboard, see [Driver Devicet
 
 Some of the drivers currently available include:
 
-* [Intel DPTF](dptf.md)
-* [IPMI KCS](ipmi_kcs.md)
-* [SMMSTORE](smmstore.md)
-* [SMMSTOREv2](smmstorev2.md)
-* [SoundWire](soundwire.md)
-* [USB4 Retimer](retimer.md)
-* [CBFS SMBIOS hooks](cbfs_smbios.md)
+```{toctree}
+:maxdepth: 1
+
+Intel DPTF <dptf.md>
+IPMI KCS <ipmi_kcs.md>
+SMMSTORE <smmstore.md>
+SMMSTOREv2 <smmstorev2.md>
+SoundWire <soundwire.md>
+USB4 Retimer <retimer.md>
+CBFS SMBIOS hooks <cbfs_smbios.md>
+```

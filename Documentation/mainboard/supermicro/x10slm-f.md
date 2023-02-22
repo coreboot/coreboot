@@ -4,13 +4,13 @@ This section details how to run coreboot on the [Supermicro X10SLM+-F].
 
 ## Required proprietary blobs
 
-```eval_rst
+```{eval-rst}
 Please see :doc:`../../northbridge/intel/haswell/mrc.bin`.
 ```
 
 ## Building coreboot
 
-```eval_rst
+```{eval-rst}
 If you haven't already, build the coreboot toolchain as described in
 :doc:`../../tutorial/part1`.
 ```
@@ -40,7 +40,7 @@ Now, run `make` to build the coreboot image.
 
 ## Flashing coreboot
 
-```eval_rst
+```{eval-rst}
 In addition to the information here, please see the
 :doc:`../../tutorial/flashing_firmware/index`.
 ```
@@ -119,7 +119,7 @@ eventually start. There is no such delay when running coreboot.
 
 ## ECC DRAM
 
-```eval_rst
+```{eval-rst}
 ECC DRAM seems to work, but please see
 :doc:`../../northbridge/intel/haswell/mrc.bin`
 for caveats.
@@ -139,7 +139,7 @@ for caveats.
   in coreboot. The `coretemp` driver can still be used for accurate CPU
   temperature readings from an OS, and hence the OS can do fan control.
 
-```eval_rst
+```{eval-rst}
 Please also see :doc:`../../northbridge/intel/haswell/known-issues`.
 ```
 
@@ -176,7 +176,7 @@ Please also see :doc:`../../northbridge/intel/haswell/known-issues`.
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | CPU              | :doc:`../../northbridge/intel/haswell/index`     |
 +------------------+--------------------------------------------------+

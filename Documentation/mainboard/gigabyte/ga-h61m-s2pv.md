@@ -5,7 +5,7 @@ from [Gigabyte].
 
 ## Flashing coreboot
 
-```eval_rst
+```{eval-rst}
 +---------------------+------------+
 | Type                | Value      |
 +=====================+============+
@@ -59,7 +59,7 @@ However, this makes DualBIOS unable to recover from a bad flash for some reason.
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | Northbridge      | :doc:`../../northbridge/intel/sandybridge/index` |
 +------------------+--------------------------------------------------+

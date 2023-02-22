@@ -14,7 +14,7 @@ and their GPU is [Sea Islands] (GCN2-based).
 
 A10 Richland is recommended for the best performance and working IOMMU.
 
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | A88XM-E          |                                                  |
 +------------------+--------------------------------------------------+
@@ -36,7 +36,7 @@ A10 Richland is recommended for the best performance and working IOMMU.
 
 ## Flashing coreboot
 
-```eval_rst
+```{eval-rst}
 +---------------------+------------+
 | Type                | Value      |
 +=====================+============+

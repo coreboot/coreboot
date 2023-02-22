@@ -11,7 +11,7 @@ Please handle with care!
 
 *Desc:*  Lane training result Register,  Channel 0,  lane 0
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -26,7 +26,7 @@ Please handle with care!
 
 *Desc:*  Read delay settings, Rank 0 Register,  Channel 0,  lane 0
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -46,7 +46,7 @@ Please handle with care!
 
 *Desc:* Read delay settings, Rank 1 Register,  Channel 0,  lane 0
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -66,7 +66,7 @@ Please handle with care!
 
 *Desc:* Read delay settings, Rank 2 Register,  Channel 0,  lane 0
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -86,7 +86,7 @@ Please handle with care!
 
 *Desc:*  Read delay settings, Rank 3 Register,  Channel 0,  lane 0
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -106,7 +106,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 0 Register,  Channel 0,  lane 0
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -126,7 +126,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 1 Register,  Channel 0,  lane 0
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -146,7 +146,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 2 Register,  Channel 0,  lane 0
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -166,7 +166,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 3 Register,  Channel 0,  lane 0
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -186,7 +186,7 @@ Please handle with care!
 
 *Desc:*  Lane training result Register,  Channel 0,  lane 1
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -201,7 +201,7 @@ Please handle with care!
 
 *Desc:*  Read delay settings, Rank 0 Register,  Channel 0,  lane 1
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -221,7 +221,7 @@ Please handle with care!
 
 *Desc:* Read delay settings, Rank 1 Register,  Channel 0,  lane 1
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -241,7 +241,7 @@ Please handle with care!
 
 *Desc:* Read delay settings, Rank 2 Register,  Channel 0,  lane 1
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -261,7 +261,7 @@ Please handle with care!
 
 *Desc:*  Read delay settings, Rank 3 Register,  Channel 0,  lane 1
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -281,7 +281,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 0 Register,  Channel 0,  lane 1
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -301,7 +301,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 1 Register,  Channel 0,  lane 1
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -321,7 +321,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 2 Register,  Channel 0,  lane 1
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -341,7 +341,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 3 Register,  Channel 0,  lane 1
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -361,7 +361,7 @@ Please handle with care!
 
 *Desc:*  Lane training result Register,  Channel 0,  lane 2
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -376,7 +376,7 @@ Please handle with care!
 
 *Desc:*  Read delay settings, Rank 0 Register,  Channel 0,  lane 2
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -396,7 +396,7 @@ Please handle with care!
 
 *Desc:* Read delay settings, Rank 1 Register,  Channel 0,  lane 2
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -416,7 +416,7 @@ Please handle with care!
 
 *Desc:* Read delay settings, Rank 2 Register,  Channel 0,  lane 2
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -436,7 +436,7 @@ Please handle with care!
 
 *Desc:*  Read delay settings, Rank 3 Register,  Channel 0,  lane 2
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -456,7 +456,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 0 Register,  Channel 0,  lane 2
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -476,7 +476,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 1 Register,  Channel 0,  lane 2
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -496,7 +496,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 2 Register,  Channel 0,  lane 2
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -516,7 +516,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 3 Register,  Channel 0,  lane 2
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -536,7 +536,7 @@ Please handle with care!
 
 *Desc:*  Lane training result Register,  Channel 0,  lane 3
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -551,7 +551,7 @@ Please handle with care!
 
 *Desc:*  Read delay settings, Rank 0 Register,  Channel 0,  lane 3
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -571,7 +571,7 @@ Please handle with care!
 
 *Desc:* Read delay settings, Rank 1 Register,  Channel 0,  lane 3
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -591,7 +591,7 @@ Please handle with care!
 
 *Desc:* Read delay settings, Rank 2 Register,  Channel 0,  lane 3
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -611,7 +611,7 @@ Please handle with care!
 
 *Desc:*  Read delay settings, Rank 3 Register,  Channel 0,  lane 3
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -631,7 +631,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 0 Register,  Channel 0,  lane 3
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -651,7 +651,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 1 Register,  Channel 0,  lane 3
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -671,7 +671,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 2 Register,  Channel 0,  lane 3
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -691,7 +691,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 3 Register,  Channel 0,  lane 3
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -711,7 +711,7 @@ Please handle with care!
 
 *Desc:*  Lane training result Register,  Channel 0,  lane 4
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -726,7 +726,7 @@ Please handle with care!
 
 *Desc:*  Read delay settings, Rank 0 Register,  Channel 0,  lane 4
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -746,7 +746,7 @@ Please handle with care!
 
 *Desc:* Read delay settings, Rank 1 Register,  Channel 0,  lane 4
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -766,7 +766,7 @@ Please handle with care!
 
 *Desc:* Read delay settings, Rank 2 Register,  Channel 0,  lane 4
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -786,7 +786,7 @@ Please handle with care!
 
 *Desc:*  Read delay settings, Rank 3 Register,  Channel 0,  lane 4
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -806,7 +806,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 0 Register,  Channel 0,  lane 4
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -826,7 +826,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 1 Register,  Channel 0,  lane 4
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -846,7 +846,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 2 Register,  Channel 0,  lane 4
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -866,7 +866,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 3 Register,  Channel 0,  lane 4
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -886,7 +886,7 @@ Please handle with care!
 
 *Desc:*  Lane training result Register,  Channel 0,  lane 5
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -901,7 +901,7 @@ Please handle with care!
 
 *Desc:*  Read delay settings, Rank 0 Register,  Channel 0,  lane 5
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -921,7 +921,7 @@ Please handle with care!
 
 *Desc:* Read delay settings, Rank 1 Register,  Channel 0,  lane 5
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -941,7 +941,7 @@ Please handle with care!
 
 *Desc:* Read delay settings, Rank 2 Register,  Channel 0,  lane 5
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -961,7 +961,7 @@ Please handle with care!
 
 *Desc:*  Read delay settings, Rank 3 Register,  Channel 0,  lane 5
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -981,7 +981,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 0 Register,  Channel 0,  lane 5
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1001,7 +1001,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 1 Register,  Channel 0,  lane 5
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1021,7 +1021,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 2 Register,  Channel 0,  lane 5
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1041,7 +1041,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 3 Register,  Channel 0,  lane 5
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1061,7 +1061,7 @@ Please handle with care!
 
 *Desc:*  Lane training result Register,  Channel 0,  lane 6
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1076,7 +1076,7 @@ Please handle with care!
 
 *Desc:*  Read delay settings, Rank 0 Register,  Channel 0,  lane 6
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1096,7 +1096,7 @@ Please handle with care!
 
 *Desc:* Read delay settings, Rank 1 Register,  Channel 0,  lane 6
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1126,7 +1126,7 @@ Please handle with care!
 
 *Desc:* Read delay settings, Rank 2 Register,  Channel 0,  lane 6
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1154,7 +1154,7 @@ Please handle with care!
 
 *Desc:*  Read delay settings, Rank 3 Register,  Channel 0,  lane 6
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1174,7 +1174,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 0 Register,  Channel 0,  lane 6
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1194,7 +1194,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 1 Register,  Channel 0,  lane 6
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1214,7 +1214,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 2 Register,  Channel 0,  lane 6
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1234,7 +1234,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 3 Register,  Channel 0,  lane 6
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1254,7 +1254,7 @@ Please handle with care!
 
 *Desc:*  Lane training result Register,  Channel 0,  lane 7
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1269,7 +1269,7 @@ Please handle with care!
 
 *Desc:*  Read delay settings, Rank 0 Register,  Channel 0,  lane 7
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1289,7 +1289,7 @@ Please handle with care!
 
 *Desc:* Read delay settings, Rank 1 Register,  Channel 0,  lane 7
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1309,7 +1309,7 @@ Please handle with care!
 
 *Desc:* Read delay settings, Rank 2 Register,  Channel 0,  lane 7
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1329,7 +1329,7 @@ Please handle with care!
 
 *Desc:*  Read delay settings, Rank 3 Register,  Channel 0,  lane 7
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1349,7 +1349,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 0 Register,  Channel 0,  lane 7
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1369,7 +1369,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 1 Register,  Channel 0,  lane 7
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1389,7 +1389,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 2 Register,  Channel 0,  lane 7
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1409,7 +1409,7 @@ Please handle with care!
 
 *Desc:*  Write delay settings, Rank 3 Register,  Channel 0,  lane 7
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1429,7 +1429,7 @@ Please handle with care!
 
 *Desc:*  COMP1 Register,  Channel 0
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1447,7 +1447,7 @@ Please handle with care!
 
 *Desc:*  Command crossover enable Register,  Channel 0
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1469,7 +1469,7 @@ Please handle with care!
 
 *Desc:*  COMP2 Register
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1483,7 +1483,7 @@ Please handle with care!
 
 *Desc:*  TC_DBP - Timing of DDR - Bin Parameter Register,  Channel 0
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1505,7 +1505,7 @@ Please handle with care!
 
 *Desc:*  TC_RAP - Timing of DDR - Regular Access Parameters Register,  Channel 0
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1545,7 +1545,7 @@ Please handle with care!
 
 *Desc:*  OTHP ODT control Register,  Channel 0
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1565,7 +1565,7 @@ Please handle with care!
 
 *Desc:*  OTHP Workaround (Sandy Bridge only) Register,  Channel 0
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1581,7 +1581,7 @@ Please handle with care!
 
 *Desc:*  Rounttrip time Register,  Channel 0
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1601,7 +1601,7 @@ Please handle with care!
 
 *Desc:*  SC_IO_LATENCY Register,  Channel 0
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1623,7 +1623,7 @@ Please handle with care!
 
 *Desc:*  RAM training queue, address Register,  Channel 0,  queue idx 0
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1641,7 +1641,7 @@ Please handle with care!
 
 *Desc:*  RAM training queue, address Register,  Channel 0,  queue idx 1
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1659,7 +1659,7 @@ Please handle with care!
 
 *Desc:*  RAM training queue, address Register,  Channel 0,  queue idx 2
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1677,7 +1677,7 @@ Please handle with care!
 
 *Desc:*  RAM training queue, address Register,  Channel 0,  queue idx 3
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1695,7 +1695,7 @@ Please handle with care!
 
 *Desc:*  RAM training queue, command IO Register,  Channel 0,  queue idx 0
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1713,7 +1713,7 @@ Please handle with care!
 
 *Desc:*  RAM training queue, command IO Register,  Channel 0,  queue idx 1
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1731,7 +1731,7 @@ Please handle with care!
 
 *Desc:*  RAM training queue, command IO Register,  Channel 0,  queue idx 2
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1749,7 +1749,7 @@ Please handle with care!
 
 *Desc:*  RAM training queue, command IO Register,  Channel 0,  queue idx 3
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1767,7 +1767,7 @@ Please handle with care!
 
 *Desc:*  RAM training queue, cooldown Register,  Channel 0,  queue idx 0
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1781,7 +1781,7 @@ Please handle with care!
 
 *Desc:*  RAM training queue, cooldown Register,  Channel 0,  queue idx 1
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1795,7 +1795,7 @@ Please handle with care!
 
 *Desc:*  RAM training queue, cooldown Register,  Channel 0,  queue idx 2
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1809,7 +1809,7 @@ Please handle with care!
 
 *Desc:*  RAM training queue, cooldown Register,  Channel 0,  queue idx 3
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1823,7 +1823,7 @@ Please handle with care!
 
 *Desc:*  RAM training queue, cooldown Register,  Channel 0
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1839,7 +1839,7 @@ Please handle with care!
 
 *Desc:*  TC - Refresh parameters Register,  Channel 0
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1859,7 +1859,7 @@ Please handle with care!
 
 *Desc:*  SRFTP Register,  Channel 0
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1879,7 +1879,7 @@ Please handle with care!
 
 *Desc:*  Scheduler parameters Register
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1893,7 +1893,7 @@ Please handle with care!
 
 *Desc:*  PM - Power-down configuration, Broadcast Register
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1929,7 +1929,7 @@ Please handle with care!
 
 *Desc:*  Power mode preset Register
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1943,7 +1943,7 @@ Please handle with care!
 
 *Desc:*  TC - Refresh parameters Register
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1964,7 +1964,7 @@ Please handle with care!
 
 *Desc:*  TC - Refresh parameters Register
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -1984,7 +1984,7 @@ Please handle with care!
 
 *Desc:*  Global channel size control Register
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -2023,7 +2023,7 @@ Please handle with care!
 
 *Desc:*  Address Decode Register,  Channel 0
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -2072,7 +2072,7 @@ Please handle with care!
 
 *Desc:*  Global DDR3 control Register
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -2090,7 +2090,7 @@ Please handle with care!
 
 *Desc:*  Version Register
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -2104,7 +2104,7 @@ Please handle with care!
 
 *Desc:*  PM - Self refresh config Register
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -2123,7 +2123,7 @@ Please handle with care!
 
 *Desc:*  RCOMP status Register
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -2137,7 +2137,7 @@ Please handle with care!
 
 *Desc:*  ECC - Address compare for ECC error injection Register
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -2151,7 +2151,7 @@ Please handle with care!
 
 *Desc:*  ECC - Address mask for ECC error injection Register
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -2168,7 +2168,7 @@ Please handle with care!
 
 *Desc:*  MC_BIOS_REQ Register
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -2189,7 +2189,7 @@ Please handle with care!
 
 *Desc:*  MC_BIOS_DATA Register
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+
@@ -2208,7 +2208,7 @@ Please handle with care!
 
 *Desc:*  RCOMP control Register
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | Bit       | Description                                                      |
 +===========+==================================================================+

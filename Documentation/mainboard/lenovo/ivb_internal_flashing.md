@@ -19,7 +19,11 @@ that was discovered and fixed later.
 
 - USB drive (in case you need to downgrade BIOS)
 - Linux install that (can be) loaded in UEFI mode
-- [CHIPSEC](https://github.com/chipsec/chipsec)
+```{toctree}
+:maxdepth: 1
+
+CHIPSEC <https://github.com/chipsec/chipsec>
+```
 
 ## BIOS versions
 
@@ -27,7 +31,7 @@ Below is a table of BIOS versions that are vulnerable enough for our
 goals, per model. The version number means that you need to downgrade to
 that or earlier version.
 
-```eval_rst
+```{eval-rst}
 +------------+--------------+
 | Model      | BIOS version |
 +============+==============+

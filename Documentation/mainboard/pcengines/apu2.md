@@ -4,7 +4,7 @@ This page describes how to run coreboot on PC Engines APU2 platform.
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +------------+---------------------------------------------------------------+
 | CPU        | AMD G series GX-412TC                                         |
 +------------+---------------------------------------------------------------+
@@ -25,7 +25,7 @@ This page describes how to run coreboot on PC Engines APU2 platform.
 
 To build working coreboot image some blobs are needed.
 
-```eval_rst
+```{eval-rst}
 +-----------------+---------------------------------+---------------------+
 | Binary file     | Apply                           | Required / Optional |
 +=================+=================================+=====================+
@@ -41,7 +41,7 @@ blobs are listed and available is: *3rdparty/southbridge/amd/avalon/PSP*
 
 ## Flashing coreboot
 
-```eval_rst
+```{eval-rst}
 +---------------------+--------------------------+
 | Type                | Value                    |
 +=====================+==========================+

@@ -5,8 +5,16 @@ coreboot.
 
 ## Proprietary blobs
 
-- [mrc.bin](mrc.bin.md)
+```{toctree}
+:maxdepth: 1
+
+mrc.bin <mrc.bin.md>
+```
 
 ## Issues
 
-- [Known issues](known-issues.md)
+```{toctree}
+:maxdepth: 1
+
+Known issues <known-issues.md>
+```

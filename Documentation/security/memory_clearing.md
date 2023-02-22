@@ -45,4 +45,8 @@ skipped.
 
 ## Architecture specific implementations
 
-* [x86 PAE](../arch/x86/pae.md)
+```{toctree}
+:maxdepth: 1
+
+x86 PAE <../arch/x86/pae.md>
+```

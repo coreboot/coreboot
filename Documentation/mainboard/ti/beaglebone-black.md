@@ -56,7 +56,7 @@ Wireless. The serial runs at 3.3V and 115200 8n1.
 
 The pin mapping is shown below for J1.
 
-    ```eval_rst
+    ```{eval-rst}
     +----------------------------+------------+
     | Pin number                 | Function   |
     +============================+============+

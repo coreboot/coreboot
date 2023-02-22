@@ -37,7 +37,7 @@ any of the eligible locations.  Below are typical definitions within the
 structure (for all families combined).  Individual features supported vary by
 family and model.
 
-```eval_rst
+```{eval-rst}
 +--------------+---------------+------------------+----------------------------+
 |  Field Name  |  Offset (Hex) |  Size (In Bytes) |    Description/Purpose     |
 +==============+===============+==================+============================+
@@ -85,7 +85,7 @@ allowing secondary tables to be referenced by device ID.  No coreboot
 implementations currently use combo tables.
 
 ### PSP Directory Table Header
-```eval_rst
+```{eval-rst}
 +--------------+---------------+------------------+----------------------------+
 |  Field Name  |  Offset (Hex) |  Size (In Bytes) |    Description/Purpose     |
 +==============+===============+==================+============================+
@@ -105,7 +105,7 @@ implementations currently use combo tables.
 ```
 
 ### PSP Directory Table Entries
-```eval_rst
+```{eval-rst}
 +--------------+---------------+------------------+----------------------------+
 |  Field Name  |  Offset (Hex) |  Size (In Bits)  |    Description/Purpose     |
 +==============+===============+==================+============================+
@@ -260,7 +260,7 @@ The BIOS Directory table structure is slightly different from the PSP Directory:
 
 ### BIOS Directory Table Header
 
-```eval_rst
+```{eval-rst}
 +--------------+---------------+------------------+----------------------------+
 |  Field Name  |  Offset (Hex) |  Size (In Bytes) |    Description/Purpose     |
 +==============+===============+==================+============================+
@@ -281,7 +281,7 @@ The BIOS Directory table structure is slightly different from the PSP Directory:
 
 ### BIOS Directory Table Entries
 
-```eval_rst
+```{eval-rst}
 +--------------+---------------+------------------+----------------------------+
 |  Field Name  |  Offset (Hex) |  Size (In Bits)  |    Description/Purpose     |
 +==============+===============+==================+============================+

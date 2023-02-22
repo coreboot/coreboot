@@ -39,7 +39,7 @@ The gaze17 comes in 2 variants: gaze17-3050 and gaze17-3060-b.
 
 ## Flashing coreboot
 
-```eval_rst
+```{eval-rst}
 +---------------------+---------------------+
 | Type                | Value               |
 +=====================+=====================+

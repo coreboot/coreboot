@@ -4,7 +4,7 @@ This page describes how to run coreboot on the Supermicro [X9SAE] and [X9SAE-V]
 
 ## Flashing coreboot
 
-```eval_rst
+```{eval-rst}
 +---------------------+----------------+
 | Type                | Value          |
 +=====================+================+
@@ -81,7 +81,7 @@ seems that it shall not appear on X9SAE even if it is defined.
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | Northbridge      | :doc:`../../northbridge/intel/sandybridge/index` |
 +------------------+--------------------------------------------------+

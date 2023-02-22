@@ -1,7 +1,7 @@
 # Lenovo Sandy Bridge series
 
 ## Flashing coreboot
-```eval_rst
+```{eval-rst}
 +---------------------+--------------------+
 | Type                | Value              |
 +=====================+====================+

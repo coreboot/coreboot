@@ -6,10 +6,14 @@ Controller etc.
 
 ## Supported boards
 
-- [X11SSH-TF](x11ssh-tf/x11ssh-tf.md)
-- [X11SSH-F/LN4F](x11ssh-f/x11ssh-f.md)
-- [X11SSM-F](x11ssm-f/x11ssm-f.md)
-- [X11SSW-F](x11ssw-f/x11ssw-f.md)
+```{toctree}
+:maxdepth: 1
+
+X11SSH-TF <x11ssh-tf/x11ssh-tf.md>
+X11SSH-F/LN4F <x11ssh-f/x11ssh-f.md>
+X11SSM-F <x11ssm-f/x11ssm-f.md>
+X11SSW-F <x11ssw-f/x11ssw-f.md>
+```
 
 ## Required proprietary blobs
 
@@ -42,7 +46,7 @@ These issues apply to all boards. Have a look at the board-specific issues, too.
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | CPU              | Intel Kaby Lake                                  |
 +------------------+--------------------------------------------------+

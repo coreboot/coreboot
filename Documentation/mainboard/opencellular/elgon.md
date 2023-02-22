@@ -9,7 +9,7 @@ from [OpenCellular].
 
 ## Flashing coreboot
 
-```eval_rst
+```{eval-rst}
 +---------------------+------------+
 | Type                | Value      |
 +=====================+============+
@@ -69,7 +69,7 @@ Dediprog compatible pinout.
 
 ## Technology
 
-```eval_rst
+```{eval-rst}
 +---------------+----------------------------------------+
 | SoC           | :doc:`../../soc/cavium/cn81xx/index`   |
 +---------------+----------------------------------------+

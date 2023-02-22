@@ -2,7 +2,11 @@
 
 This section contains documentation about coreboot on x86 architecture.
 
-* [x86 PAE support](pae.md)
+```{toctree}
+:maxdepth: 1
+
+x86 PAE support <pae.md>
+```
 
 ## State of x86_64 support
 At the moment there's only experimental x86_64 support.
@@ -43,8 +47,12 @@ Basic support for x86_64 has been implemented for QEMU mainboard target.
 
 ## Reference implementation
 The reference implementation is
-* [QEMU i440fx](../../mainboard/emulation/qemu-i440fx.md)
-* [QEMU Q35](../../mainboard/emulation/qemu-q35.md)
+```{toctree}
+:maxdepth: 1
+
+QEMU i440fx <../../mainboard/emulation/qemu-i440fx.md>
+QEMU Q35 <../../mainboard/emulation/qemu-q35.md>
+```
 
 ## TODO
 * Identity map memory above 4GiB in ramstage

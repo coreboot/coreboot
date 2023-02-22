@@ -18,7 +18,7 @@ The memory initialization code has to take care of lots of duties:
 * Error handling
 
 ## Definitions
-```eval_rst
+```{eval-rst}
 +---------+-------------------------------------------------------------------+------------+--------------+
 | Symbol  | Description                                                       | Units      | Valid region |
 +=========+===================================================================+============+==============+
@@ -41,13 +41,25 @@ The memory initialization code has to take care of lots of duties:
 ```
 
 ## (Unofficial) register documentation
-- [Sandy Bridge - Register documentation](nri_registers.md)
+```{toctree}
+:maxdepth: 1
+
+Sandy Bridge - Register documentation <nri_registers.md>
+```
 
 ## Frequency selection
-- [Sandy Bridge - Frequency selection](nri_freq.md)
+```{toctree}
+:maxdepth: 1
+
+Sandy Bridge - Frequency selection <nri_freq.md>
+```
 
 ## Read training
-- [Sandy Bridge - Read training](nri_read.md)
+```{toctree}
+:maxdepth: 1
+
+Sandy Bridge - Read training <nri_read.md>
+```
 
 ### SMBIOS type 17
 The SMBIOS specification allows to report the memory configuration in use.

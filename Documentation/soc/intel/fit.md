@@ -17,7 +17,7 @@ The first is called *FIT header* the other are called *FIT entry*.
 Each entry has a *type* that give the other bits in the entry a different
 meaning. The following types are known:
 
-```eval_rst
+```{eval-rst}
 +-----------+------------------------------------------------------------------+
 | no.       | Description                                                      |
 +===========+==================================================================+
@@ -56,5 +56,9 @@ execution of the IA32 reset vector happens.
 
 ## References
 
-* [Intel TXT LAB handout](https://downloadmirror.intel.com/18931/eng/Intel%20TXT%20LAB%20Handout.pdf)
-* [FIT BIOS specification](https://www.intel.com/content/dam/www/public/us/en/documents/guides/fit-bios-specification.pdf)
+```{toctree}
+:maxdepth: 1
+
+Intel TXT LAB handout <https://downloadmirror.intel.com/18931/eng/Intel%20TXT%20LAB%20Handout.pdf>
+FIT BIOS specification <https://www.intel.com/content/dam/www/public/us/en/documents/guides/fit-bios-specification.pdf>
+```

@@ -5,4 +5,8 @@ processors.
 
 ## Topics
 
-- [Community preview guide](community_preview_guide.md)
+```{toctree}
+:maxdepth: 1
+
+Community preview guide <community_preview_guide.md>
+```

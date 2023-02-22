@@ -52,5 +52,9 @@ Typically all platforms supported by FSP 2.1 specification will have
 external PPI service feature implemented.
 
 ## References
-- [PPI](../fsp/ppi/ppi.md)
-- [MP Service PPI](../fsp/ppi/mp_service_ppi.md)
+```{toctree}
+:maxdepth: 1
+
+PPI <../fsp/ppi/ppi.md>
+MP Service PPI <../fsp/ppi/mp_service_ppi.md>
+```

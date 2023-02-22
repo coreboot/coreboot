@@ -75,7 +75,7 @@ $(call add_intermediate, add_mrc_data)
 
 Note that the second line must start with a tab, not spaces.
 
-```eval_rst
+```{eval-rst}
 See also :doc:`../tutorial/managing_local_additions`.
 ```
 

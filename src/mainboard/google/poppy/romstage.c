@@ -140,6 +140,8 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 
 	pads = variant_romstage_gpio_table(&num);
 	gpio_configure_pads(pads, num);
+	pads = variant_romstage_sku_gpio_table(&num);
+	gpio_configure_pads(pads, num);
 
 	memset(&p, 0, sizeof(p));
 	variant_memory_params(&p);

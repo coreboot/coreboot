@@ -75,12 +75,12 @@ RUN echo "export PATH=$PATH:/opt/xgcc/bin" >> /home/coreboot/.bashrc && \
 	pip3 install --upgrade --no-cache-dir pip \
 	&& pip3 install --no-cache-dir \
 		setuptools==58.2.0 \
-		jinja2==3.0.3 \
-		recommonmark===0.5.0 \
-		sphinx===1.8.3 \
-		sphinxcontrib-ditaa===0.6 \
-		sphinx_autobuild===0.7.1 \
-		sphinx_rtd_theme===0.4.2 \
+		jinja2==3.1.2 \
+		recommonmark===0.7.1 \
+		sphinx===6.2.1 \
+		sphinxcontrib-ditaa===1.0.2 \
+		sphinx_autobuild===2021.3.14 \
+		sphinx_rtd_theme===1.2.2 \
 	&& mkdir -p /home/coreboot/.ssh && \
 	echo "{{SSH_KEY}}" > /home/coreboot/.ssh/authorized_keys && \
 	chmod 0700 /home/coreboot/.ssh && \

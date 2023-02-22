@@ -15,8 +15,6 @@
 #include <soc/ramstage.h>
 #include <string.h>
 #include <variant/sku.h>
-#include <gpio.h>
-#include <delay.h>
 
 #define PL2_I7_SKU	44
 #define PL2_DEFAULT	29
@@ -299,38 +297,5 @@ void variant_devtree_update(void)
 				sku_overwrite_mapping[oem_index].ac_loadline[i];
 		cfg->domain_vr_config[i].dc_loadline =
 				sku_overwrite_mapping[oem_index].dc_loadline[i];
-	}
-}
-
-void variant_final(void)
-{
-	uint32_t sku_id = variant_board_sku();
-
-	switch (sku_id) {
-	case SKU_0_BARD:
-	case SKU_1_BARD:
-	case SKU_2_BARD:
-	case SKU_3_BARD:
-	case SKU_4_BARD:
-	case SKU_5_BARD:
-	case SKU_6_BARD:
-	case SKU_7_BARD:
-	case SKU_0_EKKO:
-	case SKU_1_EKKO:
-	case SKU_2_EKKO:
-	case SKU_3_EKKO:
-	case SKU_4_EKKO:
-	case SKU_5_EKKO:
-	case SKU_6_EKKO:
-	case SKU_7_EKKO:
-		/* Enable FPMCU late in the boot process to achieve
-		 * ~150ms of power off time in total.
-		 */
-		gpio_output(GPP_B11, 1);	/* PCH_FP_PWR_EN */
-		mdelay(3);
-		gpio_output(GPP_C9, 1);		/* FP_RST_ODL */
-		break;
-	default:
-		break;
 	}
 }

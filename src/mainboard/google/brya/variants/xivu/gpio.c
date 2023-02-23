@@ -25,6 +25,10 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_F4, NONE),
 	/* F5  : CRF_XTAL_CLKREQ ==> NC */
 	PAD_NC(GPP_F5, NONE),
+	/* R6 : DMIC_CLK_A_1A ==> NC */
+	PAD_NC(GPP_R6, NONE),
+	/* R7 : DMIC_DATA_1A ==> NC */
+	PAD_NC(GPP_R7, NONE),
 };
 
 /* Early pad configuration in bootblock */

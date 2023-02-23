@@ -28,6 +28,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_D17, NONE, DEEP, NF1),
 	/* UART1 TX */
 	PAD_CFG_NF(GPP_D18, NONE, DEEP, NF1),
+
+	PAD_CFG_GPO(GPP_E8, 1, PLTRST),     /* PERST_CB_RESET_N */
 };
 
 void configure_early_gpio_pads(void)

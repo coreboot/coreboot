@@ -50,6 +50,27 @@ config UART_FOR_CONSOLE
 config CBFS_SIZE
 	default 0x800000
 
+config PCIEXP_ASPM
+	bool
+	default n
+	help
+	  FSP is already taking care of ASPM, which is configured through the devicetree in coreboot
+	  on Alderlake Platforms. Disable it to save some boot time.
+
+config PCIEXP_L1_SUB_STATE
+	bool
+	default n
+	help
+	  Enabling PCIe L1 sub states is already done in FSP.
+	  Disable it to save some boot time.
+
+config PCIEXP_CLK_PM
+	bool
+	default n
+	help
+	  Enabling PCIe clock power management is already done in FSP.
+	  Disable it to save some boot time
+
 # This platform has limited means to display POST codes
 config NO_POST
 	default y

@@ -50,4 +50,14 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	memupd->FspmConfig.PchHdaAudioLinkHdaEnable = 1;
 	memupd->FspmConfig.PchHdaSdiEnable[0] = 1;
 	memupd->FspmConfig.PchHdaSdiEnable[1] = 1;
+
+	// CPU rootports do not have a ClockReq connected on Atlas. If this is not done,
+	// the following will happens:
+	//    - FSP will enable power management for cpu rootport.
+	//    - coreboot enables ASPM on CPU root port on pci enemuration
+	//    - machine exception is thrown, when trying to access pci configuration space after
+	//      enabling ASPM src/device/pciexp_device.c:pciexp_tune_dev().
+	memupd->FspmConfig.CpuPcieRpClockReqMsgEnable[0] = 0;
+	memupd->FspmConfig.CpuPcieRpClockReqMsgEnable[1] = 0;
+	memupd->FspmConfig.CpuPcieRpClockReqMsgEnable[2] = 0;
 }

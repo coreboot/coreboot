@@ -71,62 +71,74 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
 	}"
 
-	# Enable PCH PCIE RP 5, 6, 7, 8, 9 using free running CLK (0x80)
-	# Clock source is shared hence marked as free running.
-	register "pch_pcie_rp[PCH_RP(5)]" = "{
-		.flags = PCIE_RP_CLK_SRC_UNUSED,
-	}"
-	register "pch_pcie_rp[PCH_RP(6)]" = "{
-		.flags = PCIE_RP_CLK_SRC_UNUSED,
-	}"
-	register "pch_pcie_rp[PCH_RP(7)]" = "{
-		.flags = PCIE_RP_CLK_SRC_UNUSED,
-	}"
-	register "pch_pcie_rp[PCH_RP(8)]" = "{
-		.flags = PCIE_RP_CLK_SRC_UNUSED,
-	}"
-	register "pch_pcie_rp[PCH_RP(9)]" = "{
-		.flags = PCIE_RP_CLK_SRC_UNUSED,
-	}"
+	# Clock source 0 is shared between PCH RP 5, 6, 7, 8, 9 and CPU RP 1, 2, 3
+	# Clock source 0 is therefore marked as FREE_RUNNING
+	# Set PCIE_RP_CLK_SRC_UNUSED on the root ports using clock source 0 so that
+	# we don't get a warning at boot about a missing clock definition.
+	register "pcie_clk_config_flag[0]" = "PCIE_CLK_FREE_RUNNING"
+
+	register "pch_pcie_rp[PCH_RP(5)].flags" = "PCIE_RP_CLK_SRC_UNUSED | PCIE_RP_CLK_REQ_UNUSED | PCIE_RP_LTR | PCIE_RP_AER"
+	register "pch_pcie_rp[PCH_RP(6)].flags" = "PCIE_RP_CLK_SRC_UNUSED | PCIE_RP_CLK_REQ_UNUSED | PCIE_RP_LTR | PCIE_RP_AER"
+	register "pch_pcie_rp[PCH_RP(7)].flags" = "PCIE_RP_CLK_SRC_UNUSED | PCIE_RP_CLK_REQ_UNUSED | PCIE_RP_LTR | PCIE_RP_AER"
+	register "pch_pcie_rp[PCH_RP(8)].flags" = "PCIE_RP_CLK_SRC_UNUSED | PCIE_RP_CLK_REQ_UNUSED | PCIE_RP_LTR | PCIE_RP_AER"
+	register "pch_pcie_rp[PCH_RP(9)].flags" = "PCIE_RP_CLK_SRC_UNUSED | PCIE_RP_CLK_REQ_UNUSED | PCIE_RP_LTR | PCIE_RP_AER" # UFS or general purpose RP
+
+	register "pch_pcie_rp[PCH_RP(5)].pcie_rp_aspm" = "ASPM_DISABLE"
+	register "pch_pcie_rp[PCH_RP(6)].pcie_rp_aspm" = "ASPM_DISABLE"
+	register "pch_pcie_rp[PCH_RP(7)].pcie_rp_aspm" = "ASPM_DISABLE"
+	register "pch_pcie_rp[PCH_RP(8)].pcie_rp_aspm" = "ASPM_DISABLE"
+	register "pch_pcie_rp[PCH_RP(9)].pcie_rp_aspm" = "ASPM_DISABLE"
+
+	register "pch_pcie_rp[PCH_RP(5)].PcieRpL1Substates" = "L1_SS_DISABLED"
+	register "pch_pcie_rp[PCH_RP(6)].PcieRpL1Substates" = "L1_SS_DISABLED"
+	register "pch_pcie_rp[PCH_RP(7)].PcieRpL1Substates" = "L1_SS_DISABLED"
+	register "pch_pcie_rp[PCH_RP(8)].PcieRpL1Substates" = "L1_SS_DISABLED"
+	register "pch_pcie_rp[PCH_RP(9)].PcieRpL1Substates" = "L1_SS_DISABLED"
+
 	# Enable PCIe-to-i225 bridge using clk 1
+	#TODO set clk_req, once it's connected on atlas. clk_req now defaults to 0,
+	#     because using 0xFF (unused) would trigger a bug.
 	register "pch_pcie_rp[PCH_RP(10)]" = "{
 		.clk_src = 1,
 		.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_BUILT_IN,
-		.pcie_rp_aspm = ASPM_DISABLE,
-	}"
-	register "pcie_clk_config_flag[0]" = "PCIE_CLK_FREE_RUNNING"
-
-	# Enable CPU PCIE RP 1, 2, 3 using free running CLK (0x80)
-	# Clock source is shared hence marked as free running.
-	register "cpu_pcie_rp[CPU_RP(1)]" = "{
-		.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_SRC_UNUSED,
-	}"
-	register "cpu_pcie_rp[CPU_RP(2)]" = "{
-		.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_SRC_UNUSED,
-	}"
-	register "cpu_pcie_rp[CPU_RP(3)]" = "{
-		.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_SRC_UNUSED,
+		.pcie_rp_aspm = ASPM_AUTO,
 	}"
 
 	device domain 0 on
-		device ref pcie5_0 on end
+		device ref pcie5_0 on
+			register "cpu_pcie_rp[CPU_RP(2)].flags" = "PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_SRC_UNUSED"
+			register "cpu_pcie_rp[CPU_RP(2)].pcie_rp_aspm" = "ASPM_AUTO"
+			register "cpu_pcie_rp[CPU_RP(2)].PcieRpL1Substates" = "L1_SS_DISABLED"
+		end
 		device ref igpu on end
+		# without DDT enabled, edk2 doesn't even finish (TODO)
 		device ref dtt on end
-		device ref pcie4_0 on end
-		device ref pcie4_1 on end
-		device ref crashlog off end
+		device ref pcie4_0 on
+			register "cpu_pcie_rp[CPU_RP(1)].flags" = "PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_SRC_UNUSED"
+			register "cpu_pcie_rp[CPU_RP(1)].pcie_rp_aspm" = "ASPM_DISABLE"
+			register "cpu_pcie_rp[CPU_RP(1)].PcieRpL1Substates" = "L1_SS_DISABLED"
+		end
+		device ref pcie4_1 on
+			register "cpu_pcie_rp[CPU_RP(3)].flags" = "PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_SRC_UNUSED"
+			register "cpu_pcie_rp[CPU_RP(3)].pcie_rp_aspm" = "ASPM_DISABLE"
+			register "cpu_pcie_rp[CPU_RP(3)].PcieRpL1Substates" = "L1_SS_DISABLED"
+		end
+		# TODO try enabling crashlog
+		device ref crashlog on end
 		device ref ish on end
-		device ref ufs on end
+		device ref ufs off end
 		device ref tcss_xhci on end
 		device ref xhci on end
 		device ref heci1 on end
 		device ref sata on end
+		# pcie_rp[1-4] is used for USB
 		device ref pcie_rp5 on end
 		device ref pcie_rp6 on end
 		device ref pcie_rp7 on end
 		device ref pcie_rp8 on end
 		device ref pcie_rp9 on end
 		device ref pcie_rp10 on end
+		# pcie_rp[11-12] is used for SATA
 		device ref uart0 on end
 		device ref uart1 on end
 		device ref pch_espi on

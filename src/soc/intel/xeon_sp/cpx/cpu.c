@@ -15,7 +15,6 @@
 #include <intelblocks/cpulib.h>
 #include <intelblocks/mp_init.h>
 #include <intelpch/lockdown.h>
-#include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>

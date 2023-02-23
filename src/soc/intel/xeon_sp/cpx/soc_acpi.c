@@ -9,7 +9,6 @@
 #include <intelblocks/acpi.h>
 #include <intelblocks/cpulib.h>
 #include <soc/acpi.h>
-#include <soc/cpu.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>

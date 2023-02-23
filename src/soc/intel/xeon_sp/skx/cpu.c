@@ -4,11 +4,11 @@
 #include <console/debug.h>
 #include <intelblocks/cpulib.h>
 #include <cpu/cpu.h>
+#include <cpu/intel/cpu_ids.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/mp.h>
 #include <cpu/intel/turbo.h>
 #include <soc/msr.h>
-#include <soc/cpu.h>
 #include <soc/soc_util.h>
 #include <soc/smmrelocate.h>
 #include <soc/util.h>
@@ -160,6 +160,8 @@ static const struct cpu_driver driver __cpu_driver = {
 	.ops = &cpu_dev_ops,
 	.id_table = cpu_table,
 };
+
+#define CPU_BCLK 100
 
 static void set_max_turbo_freq(void)
 {

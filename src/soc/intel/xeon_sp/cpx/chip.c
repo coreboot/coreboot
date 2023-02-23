@@ -12,7 +12,6 @@
 #include <intelblocks/p2sb.h>
 #include <soc/acpi.h>
 #include <soc/chip_common.h>
-#include <soc/cpu.h>
 #include <soc/pch.h>
 #include <soc/soc_pch.h>
 #include <soc/ramstage.h>

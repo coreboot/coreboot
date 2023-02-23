@@ -7,7 +7,6 @@
 #include <intelblocks/cpulib.h>
 #include <intelblocks/pcr.h>
 #include <soc/iomap.h>
-#include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>

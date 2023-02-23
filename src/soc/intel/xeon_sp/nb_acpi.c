@@ -7,7 +7,6 @@
 #include <device/mmio.h>
 #include <device/pci.h>
 #include <soc/acpi.h>
-#include <soc/cpu.h>
 #include <soc/hest.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>

@@ -49,10 +49,46 @@ chip soc/intel/jasperlake
 	register "DdiPortADdc" = "1"
 
 	# USB Port Configuration
-	register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A0
-	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A1
-	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A2
-	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A3
+	register "usb2_ports[0]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_11P25MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-C Port 0
+	register "usb2_ports[1]" = "{
+		.enable = 1,
+		.ocpin = OC1,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_11P25MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-A Port A0
+	register "usb2_ports[2]" = "{
+		.enable = 1,
+		.ocpin = OC2,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_11P25MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-A Port A1
+	register "usb2_ports[3]" = "{
+		.enable = 1,
+		.ocpin = OC3,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_11P25MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-A Port A2
+	register "usb2_ports[4]" = "{
+		.enable = 1,
+		.ocpin = OC0,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_11P25MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-A Port A3
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# PL2303
 
 	register "usb3_ports[1]" = "USB3_PORT_EMPTY"	#  No USB3/2 Type-C Port C1

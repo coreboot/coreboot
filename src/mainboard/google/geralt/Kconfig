@@ -68,6 +68,9 @@ choice
 config USE_MAX98390
 	bool "MAX98390"
 
+config USE_NAU8318
+	bool "NAU8318"
+
 endchoice
 
 endif

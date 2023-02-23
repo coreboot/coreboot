@@ -20,6 +20,7 @@ void setup_chromeos_gpios(void)
 	gpio_output(GPIO_EN_SPKR, 0);
 	gpio_output(GPIO_RST_SPKR_L, 0);
 	gpio_output(GPIO_XHCI_INIT_DONE, 0);
+	gpio_output(GPIO_BEEP_ON_OD, 0);
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)
@@ -27,7 +28,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	struct lb_gpio chromeos_gpios[] = {
 		{GPIO_EC_AP_INT_ODL.id, ACTIVE_LOW, -1, "EC interrupt"},
 		{GPIO_GSC_AP_INT_ODL.id, ACTIVE_HIGH, -1, "TPM interrupt"},
-		{GPIO_EN_SPKR.id, ACTIVE_HIGH, -1, "speaker enable"},
 		{GPIO_XHCI_INIT_DONE.id, ACTIVE_HIGH, -1, "XHCI init done"},
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
@@ -46,6 +46,12 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 			{GPIO_RST_SPKR_L.id, ACTIVE_LOW, -1, "speaker reset"},
 		};
 		lb_add_gpios(gpios, max98390_gpios, ARRAY_SIZE(max98390_gpios));
+	} else if (CONFIG(USE_NAU8318)) {
+		struct lb_gpio nau8318_gpios[] = {
+			{GPIO_EN_SPKR.id, ACTIVE_HIGH, -1, "speaker enable"},
+			{GPIO_BEEP_ON_OD.id, ACTIVE_HIGH, -1, "beep enable"},
+		};
+		lb_add_gpios(gpios, nau8318_gpios, ARRAY_SIZE(nau8318_gpios));
 	}
 }
 

@@ -8,7 +8,13 @@
 struct event_header;
 struct buffer;
 
-void eventlog_print_event(const struct event_header *event, int count);
+enum eventlog_timezone {
+	EVENTLOG_TIMEZONE_LOCALTIME = 0,
+	EVENTLOG_TIMEZONE_UTC,
+};
+
+void eventlog_print_event(const struct event_header *event, int count,
+			  enum eventlog_timezone tz);
 int eventlog_init_event(const struct buffer *buf, uint8_t type,
 			const void *data, int data_size);
 

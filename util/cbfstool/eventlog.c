@@ -49,10 +49,12 @@ static void eventlog_printf(const char *format, ...)
  *
  * Forms the key-value description pair for the event timestamp.
  */
-static void eventlog_print_timestamp(const struct event_header *event)
+static void eventlog_print_timestamp(const struct event_header *event,
+				     enum eventlog_timezone tz)
 {
 	const char *tm_format = "%y-%m-%d%t%H:%M:%S";
 	char tm_string[40];
+	struct tm *tmptr;
 	struct tm tm;
 	time_t time;
 
@@ -78,7 +80,11 @@ static void eventlog_print_timestamp(const struct event_header *event)
 	time = mktime(&tm);
 	time += tm.tm_gmtoff; /* force adjust for timezone */
 
-	strftime(tm_string, sizeof(tm_string), "%Y-%m-%d %H:%M:%S", localtime(&time));
+	if (tz == EVENTLOG_TIMEZONE_UTC)
+		tmptr = gmtime(&time);
+	else
+		tmptr = localtime(&time);
+	strftime(tm_string, sizeof(tm_string), "%Y-%m-%d %H:%M:%S%z", tmptr);
 
 	eventlog_printf("%s", tm_string);
 }
@@ -648,13 +654,14 @@ static int eventlog_print_data(const struct event_header *event)
 	return 0;
 }
 
-void eventlog_print_event(const struct event_header *event, int count)
+void eventlog_print_event(const struct event_header *event, int count,
+			  enum eventlog_timezone tz)
 {
 	/* Ignore the printf separator at the beginning and end of each line */
 	eventlog_printf_ignore_separator_once = 1;
 
 	eventlog_printf("%d", count);
-	eventlog_print_timestamp(event);
+	eventlog_print_timestamp(event, tz);
 	eventlog_print_type(event);
 	eventlog_print_data(event);
 

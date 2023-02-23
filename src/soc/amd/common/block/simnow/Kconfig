@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_AMD_COMMON_BLOCK_SIMNOW_SUPPORTED
+	bool
+	help
+	  Select this for mainboards that are supported by SimNow
+
+config SOC_AMD_COMMON_BLOCK_SIMNOW_BUILD
+	bool "Build for SimNow"
+	default n
+	depends on SOC_AMD_COMMON_BLOCK_SIMNOW_SUPPORTED
+	select CONSOLE_AMD_SIMNOW
+	help
+	  Select this option when building for SimNow
+
+if SOC_AMD_COMMON_BLOCK_SIMNOW_BUILD
+
+config POST_IO
+	default n
+
+config CONSOLE_SERIAL
+	default n
+
+endif

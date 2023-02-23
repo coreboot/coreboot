@@ -264,10 +264,10 @@ static void acipgen_dptci(void)
 		config->vrm_maximum_current_limit_mA,
 		config->vrm_soc_current_limit_mA,
 		config->stt_min_limit,
-		config->stt_m1,
-		config->stt_m2,
-		config->stt_c_apu,
-		config->stt_alpha_apu,
+		config->stt_m1_tablet,
+		config->stt_m2_tablet,
+		config->stt_c_apu_tablet,
+		config->stt_alpha_apu_tablet,
 		config->stt_skin_temp_apu);
 	acpigen_write_alib_dptc_tablet((uint8_t *)&tablet_input, sizeof(tablet_input));
 #endif

@@ -14,5 +14,6 @@ void bootblock_mainboard_early_init(void)
 
 void bootblock_mainboard_init(void)
 {
-	birman_ec_init();
+	if (!CONFIG(SOC_AMD_COMMON_BLOCK_SIMNOW_BUILD))
+		birman_ec_init();
 }

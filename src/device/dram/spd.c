@@ -38,6 +38,8 @@ const char *spd_manufacturer_name(const uint16_t mod_id)
 	case 0x2c80:
 	case 0x2c00:
 		return "Micron";
+	case 0x0b03:
+		return "Nanya";
 	default:
 		return NULL;
 	}

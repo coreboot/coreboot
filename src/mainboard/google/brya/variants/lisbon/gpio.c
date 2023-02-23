@@ -25,7 +25,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* B2  : VRALERT# ==> M2_SSD_PLA_L */
 	PAD_NC(GPP_B2, NONE),
 	/* B3  : PROC_GP2 ==> EMMC_PERST_L */
-	PAD_CFG_GPO_LOCK(GPP_B3, 1, LOCK_CONFIG),
+	PAD_CFG_GPO(GPP_B3, 1, DEEP),
 	/* B7  : ISH_12C1_SDA ==> PCH_I2C_MISCB_SDA */
 	PAD_CFG_NF_LOCK(GPP_B7, NONE, NF2, LOCK_CONFIG),
 	/* B8  : ISH_I2C1_SCL ==> PCH_I2C_MISCB_SCL */
@@ -91,6 +91,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
 	/* A21 : DDPC_CTRCLK ==> EN_PP3300_EMMC */
 	PAD_CFG_GPO(GPP_A21, 1, DEEP),
+	/* B3  : PROC_GP2 ==> EMMC_PERST_L */
+	PAD_CFG_GPO(GPP_B3, 0, DEEP),
 	/* B4  : PROC_GP3 ==> SSD_PERST_L */
 	PAD_CFG_GPO(GPP_B4, 0, DEEP),
 	/* E15 : RSVD_TP ==> PCH_WP_OD */
@@ -134,6 +136,8 @@ static const struct pad_config early_gpio_table[] = {
 };
 
 static const struct pad_config romstage_gpio_table[] = {
+	/* B3  : PROC_GP2 ==> EMMC_PERST_L */
+	PAD_CFG_GPO(GPP_B3, 1, DEEP),
 	/* B4  : PROC_GP3 ==> SSD_PERST_L */
 	PAD_CFG_GPO(GPP_B4, 1, DEEP),
 };

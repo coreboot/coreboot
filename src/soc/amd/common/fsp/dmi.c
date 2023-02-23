@@ -234,6 +234,22 @@ static void prepare_dmi_16_17(void *unused)
 				   null terminated */
 				strncpy((char *)dimm_info->module_part_number, cbi_part_number,
 					sizeof(dimm_info->module_part_number) - 1);
+
+				/* These ID values match what's used in device/dram/spd.c */
+				switch (dimm_info->module_part_number[0]) {
+				case 'H':
+					dimm_info->mod_id = 0xad00;	// Hynix
+					break;
+				case 'K':
+					dimm_info->mod_id = 0x9801;	// Kingston
+					break;
+				case 'M':
+					dimm_info->mod_id = 0x2c00;	// Micron
+					break;
+				case 'N':
+					dimm_info->mod_id = 0x0b83;	// Nanya
+					break;
+				}
 			}
 			print_dimm_info(dimm_info);
 			dimm_cnt++;

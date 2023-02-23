@@ -172,7 +172,7 @@ static void print_dmi_info(const TYPE17_DMI_INFO *dmi17)
 /**
  * Marshalls dimm info from AMD_FSP_DMI_HOB into CBMEM_ID_MEMINFO
  */
-static void prepare_dmi_17(void *unused)
+static void prepare_dmi_16_17(void *unused)
 {
 	const DMI_INFO *dmi_table;
 	const TYPE17_DMI_INFO *type17_dmi_info;
@@ -240,7 +240,9 @@ static void prepare_dmi_17(void *unused)
 		}
 	}
 	mem_info->dimm_cnt = dimm_cnt;
+
+	mem_info->ecc_type = dmi_table->T16.MemoryErrorCorrection;
 }
 
 /* AMD_FSP_DMI_HOB is initialized very late, so check it just in time for writing tables. */
-BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY, prepare_dmi_17, NULL);
+BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY, prepare_dmi_16_17, NULL);

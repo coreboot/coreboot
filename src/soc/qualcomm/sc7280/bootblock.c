@@ -8,11 +8,6 @@
 void bootblock_soc_init(void)
 {
 	clock_init();
-	/*
-	 * Through experimentation, we have determined
-	 * that a delay of 1/8 cycle is best for herobrine.
-	 * See b/190231148
-	 */
-	quadspi_init(75000 * KHz, 1);
+	quadspi_init(50000 * KHz);
 	qupv3_fw_init();
 }

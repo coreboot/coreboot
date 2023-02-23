@@ -35,8 +35,8 @@ Signed-off-by: Patrick Georgi <pgeorgi@google.com>
 
 diff --git a/gcc/asan.c b/gcc/asan.c
 index 235e21947..713bf994d 100644
---- a/gcc/asan.c
-+++ b/gcc/asan.c
+--- a/gcc/asan.cc
++++ b/gcc/asan.cc
 @@ -1389,13 +1389,28 @@ asan_emit_stack_protection (rtx base, rtx pbase, unsigned int alignb,
    TREE_ASM_WRITTEN (decl) = 1;
    TREE_ASM_WRITTEN (id) = 1;

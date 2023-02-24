@@ -39,7 +39,7 @@ static const struct pad_config gpio_table[] = {
 /* CORE_VID1 */
 /* VRALERT# */		PAD_NC(GPP_B2, NONE),
 /* CPU_GP2 */		PAD_CFG_GPI_APIC(GPP_B3, NONE, PLTRST,
-				 EDGE_SINGLE, INVERT), /* TOUCHPAD_INTR# */
+				 LEVEL, INVERT), /* TOUCHPAD_INTR# */
 /* CPU_GP3 */		PAD_CFG_GPI(GPP_B4, NONE, DEEP), /* TOUCH_SCREEN_DET# */
 			 /* LAN_CLKREQ_CPU_N */
 /* SRCCLKREQ0# */	PAD_CFG_NF(GPP_B5, NONE, DEEP, NF1),

@@ -10,6 +10,7 @@
 #include <console/console.h>
 #include <fmap.h>
 #include <fmap_config.h>
+#include <security/vboot/vboot_common.h>
 #include <spi_flash.h>
 #include <stdint.h>
 #include <string.h>
@@ -19,6 +20,14 @@
 
 #define DEFAULT_MRC_CACHE	"RW_MRC_CACHE"
 #define DEFAULT_MRC_CACHE_SIZE	FMAP_SECTION_RW_MRC_CACHE_SIZE
+
+#if CONFIG(HAS_RECOVERY_MRC_CACHE)
+#define RECOVERY_MRC_CACHE	"RECOVERY_MRC_CACHE"
+#define RECOVERY_MRC_CACHE_SIZE	FMAP_SECTION_RECOVERY_MRC_CACHE_SIZE
+#else
+#define RECOVERY_MRC_CACHE	DEFAULT_MRC_CACHE
+#define RECOVERY_MRC_CACHE_SIZE	DEFAULT_MRC_CACHE_SIZE
+#endif
 
 #if CONFIG(SOC_AMD_COMMON_BLOCK_APOB_HASH)
 #define MRC_HASH_SIZE		((uint32_t)sizeof(uint64_t))
@@ -34,6 +43,9 @@
 
 _Static_assert(CONFIG_PSP_APOB_DRAM_SIZE == DEFAULT_MRC_CACHE_SIZE,
 	"APOB DRAM reserved space != to MRC CACHE size - check your config");
+
+_Static_assert(CONFIG_PSP_APOB_DRAM_SIZE == RECOVERY_MRC_CACHE_SIZE,
+	"APOB DRAM reserved space != to RECOVERY MRC CACHE size - check your config");
 
 #define APOB_SIGNATURE 0x424F5041	/* 'APOB' */
 
@@ -80,7 +92,19 @@ static void *get_apob_dram_address(void)
 
 static int get_nv_rdev(struct region_device *r)
 {
-	if  (fmap_locate_area_as_rdev(DEFAULT_MRC_CACHE, r) < 0) {
+	if  (fmap_locate_area_as_rdev(vboot_recovery_mode_enabled() ?
+				      RECOVERY_MRC_CACHE : DEFAULT_MRC_CACHE, r) < 0) {
+		printk(BIOS_ERR, "No APOB NV region is found in flash\n");
+		return -1;
+	}
+
+	return 0;
+}
+
+static int get_nv_rdev_rw(struct region_device *r)
+{
+	if  (fmap_locate_area_as_rdev_rw(vboot_recovery_mode_enabled() ?
+					 RECOVERY_MRC_CACHE : DEFAULT_MRC_CACHE, r) < 0) {
 		printk(BIOS_ERR, "No APOB NV region is found in flash\n");
 		return -1;
 	}
@@ -227,10 +251,8 @@ static void soc_update_apob_cache(void *unused)
 		apob_src_ram, apob_src_ram->size,
 		region_device_offset(&read_rdev), region_device_sz(&read_rdev));
 
-	if  (fmap_locate_area_as_rdev_rw(DEFAULT_MRC_CACHE, &write_rdev) < 0) {
-		printk(BIOS_ERR, "No RW APOB NV region is found in flash\n");
+	if (get_nv_rdev_rw(&write_rdev) != 0)
 		return;
-	}
 
 	timestamp_add_now(TS_AMD_APOB_ERASE_START);
 

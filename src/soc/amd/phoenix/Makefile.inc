@@ -135,6 +135,16 @@ PSP_BIOSBIN_DEST=$(shell $(READELF_bootblock) -Wl $(PSP_ELF_FILE) | grep LOAD | 
 APOB_NV_SIZE=$(shell awk '$$2 == "FMAP_SECTION_RW_MRC_CACHE_SIZE" {print $$3}' $(obj)/fmap_config.h)
 APOB_NV_BASE=$(shell awk '$$2 == "FMAP_SECTION_RW_MRC_CACHE_START" {print $$3}' $(obj)/fmap_config.h)
 
+ifeq ($(CONFIG_HAS_RECOVERY_MRC_CACHE),y)
+# On boards with recovery MRC cache, point type 0x63 entry to RECOVERY_MRC_CACHE.
+# Else use RW_MRC_CACHE. This entry will be added in the RO section.
+APOB_NV_RO_SIZE=$(shell awk '$$2 == "FMAP_SECTION_RECOVERY_MRC_CACHE_SIZE" {print $$3}' $(obj)/fmap_config.h)
+APOB_NV_RO_BASE=$(shell awk '$$2 == "FMAP_SECTION_RECOVERY_MRC_CACHE_START" {print $$3}' $(obj)/fmap_config.h)
+else
+APOB_NV_RO_SIZE=$(APOB_NV_SIZE)
+APOB_NV_RO_BASE=$(APOB_NV_BASE)
+endif
+
 ifeq ($(CONFIG_AMDFW_SPLIT),y)
 FMAP_AMDFW_BODY_LOCATION=$(shell awk '$$2 == "FMAP_SECTION_AMDFWBODY_START" {print $$3}' $(obj)/fmap_config.h)
 endif
@@ -191,6 +201,8 @@ OPT_PSP_SHAREDMEM_BASE=$(call add_opt_prefix, $(PSP_SHAREDMEM_BASE), --sharedmem
 OPT_PSP_SHAREDMEM_SIZE=$(call add_opt_prefix, $(PSP_SHAREDMEM_SIZE), --sharedmem-size)
 OPT_APOB_NV_SIZE=$(call add_opt_prefix, $(APOB_NV_SIZE), --apob-nv-size)
 OPT_APOB_NV_BASE=$(call add_opt_prefix, $(APOB_NV_BASE),--apob-nv-base)
+OPT_APOB_NV_RO_SIZE=$(call add_opt_prefix, $(APOB_NV_RO_SIZE), --apob-nv-size)
+OPT_APOB_NV_RO_BASE=$(call add_opt_prefix, $(APOB_NV_RO_BASE),--apob-nv-base)
 OPT_EFS_SPI_READ_MODE=$(call add_opt_prefix, $(CONFIG_EFS_SPI_READ_MODE), --spi-read-mode)
 OPT_EFS_SPI_SPEED=$(call add_opt_prefix, $(CONFIG_EFS_SPI_SPEED), --spi-speed)
 OPT_EFS_SPI_MICRON_FLAG=$(call add_opt_prefix, $(CONFIG_EFS_SPI_MICRON_FLAG), --spi-micron-flag)
@@ -245,8 +257,8 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 	@printf "    AMDFWTOOL  $(subst $(obj)/,,$(@))\n"
 	$(AMDFWTOOL) \
 		$(AMDFW_COMMON_ARGS) \
-		$(OPT_APOB_NV_SIZE) \
-		$(OPT_APOB_NV_BASE) \
+		$(OPT_APOB_NV_RO_SIZE) \
+		$(OPT_APOB_NV_RO_BASE) \
 		$(OPT_VERSTAGE_FILE) \
 		$(OPT_VERSTAGE_SIG_FILE) \
 		$(OPT_SPL_TABLE_FILE) \

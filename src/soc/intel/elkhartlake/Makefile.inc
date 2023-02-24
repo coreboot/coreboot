@@ -38,7 +38,6 @@ ramstage-y += reset.c
 ramstage-y += systemagent.c
 ramstage-y += sd.c
 ramstage-$(CONFIG_EHL_TSN_DRIVER) += tsn_gbe.c
-ramstage-y += me.c
 
 smm-y += gpio.c
 smm-y += p2sb.c

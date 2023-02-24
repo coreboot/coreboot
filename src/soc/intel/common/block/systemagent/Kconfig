@@ -1,5 +1,6 @@
 config SOC_INTEL_COMMON_BLOCK_SA
 	bool
+	select SOC_INTEL_COMMON_BASECODE
 	help
 	  Intel Processor common System Agent support
 

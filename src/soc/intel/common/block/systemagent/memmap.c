@@ -6,6 +6,7 @@
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
+#include <intelbasecode/tom.h>
 #include <intelblocks/fast_spi.h>
 #include <intelblocks/systemagent.h>
 #include <types.h>
@@ -68,6 +69,13 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 	 * a safe bet to cover ramstage.
 	 */
 	printk(BIOS_DEBUG, "top_of_ram = 0x%lx\n", top_of_ram);
+
+	/*
+	 * Store the top_of_ram (TOM) into the CMOS if SOC_INTEL_COMMON_BASECODE_TOM
+	 * config is enabled.
+	 */
+	if (ENV_ROMSTAGE && CONFIG(SOC_INTEL_COMMON_BASECODE_TOM))
+		update_tom(top_of_ram);
 
 	postcar_frame_add_mtrr(pcf, top_of_ram - 16 * MiB, 16 * MiB, MTRR_TYPE_WRBACK);
 

@@ -242,6 +242,12 @@ static const struct pad_config early_gpio_table[] = {
 /* M2_SKT2_CFG0 */	PAD_CFG_GPO(GPP_H12, 1, DEEP), /* D3 cold RST */
 };
 
+static const struct pad_config romstage_gpio_table[] = {
+	/* Enable touchscreen, hold in reset */
+	PAD_CFG_GPO(GPP_B21, 1, DEEP), /* PCH_3.3V_TS_EN */
+	PAD_CFG_GPO(GPP_E7, 0, DEEP), /* TOUCH_SCREEN_PD# */
+};
+
 const struct pad_config *variant_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(gpio_table);
@@ -256,8 +262,8 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 
 const struct pad_config *variant_romstage_gpio_table(size_t *num)
 {
-	*num = 0;
-	return NULL;
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
 }
 
 static const struct cros_gpio cros_gpios[] = {

@@ -3,7 +3,7 @@
 #include <console/console.h>
 #include <device/mmio.h>
 #include <soc/addressmap.h>
-#include <soc/lastbus.h>
+#include <soc/lastbus_v1.h>
 
 static unsigned long preisys_dump_offset[] = {
 	0x500, /* PERIBUS_DBG0 */

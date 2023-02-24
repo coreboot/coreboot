@@ -3,7 +3,7 @@
 #include <bootblock_common.h>
 #include <soc/eint_event.h>
 #include <soc/gic.h>
-#include <soc/lastbus.h>
+#include <soc/lastbus_v1.h>
 #include <soc/mmu_operations.h>
 #include <soc/pll.h>
 #include <soc/tracker_common.h>

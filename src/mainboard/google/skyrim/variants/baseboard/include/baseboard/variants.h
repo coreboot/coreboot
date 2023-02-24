@@ -44,4 +44,7 @@ void baseboard_romstage_gpio_table(const struct soc_amd_gpio **gpio, size_t *siz
 /* This function allows variant to override any GPIO init in romstage. */
 void variant_romstage_override_gpio_table(const struct soc_amd_gpio **gpio, size_t *size);
 
+/* Allow variants to override the DXIO Descriptors */
+void variant_get_dxio_descriptor(const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num);
+
 #endif /* __BASEBOARD_VARIANTS_H__ */

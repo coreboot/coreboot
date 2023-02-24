@@ -1,4 +1,8 @@
 chip soc/intel/alderlake
+	register "domain_vr_config[VR_DOMAIN_IA]" = "{
+		.enable_fast_vmode = 1,
+	}"
+
 	register "sagv" = "SaGv_Enabled"
 
 	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# HDMI-IN

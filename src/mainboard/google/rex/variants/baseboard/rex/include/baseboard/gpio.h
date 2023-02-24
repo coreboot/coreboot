@@ -6,7 +6,6 @@
 #include <soc/gpe.h>
 #include <soc/gpio.h>
 
-/* Fixme: Update proper GPIO number based on schematics */
 /* WP signal to PCH */
 #define GPIO_PCH_WP	GPP_H10
 /* GPIO IRQ for tight timestamps / wake support */

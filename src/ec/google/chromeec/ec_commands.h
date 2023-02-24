@@ -249,7 +249,9 @@ extern "C" {
 /* Report 0 for fan stalled so userspace applications can take
  * an appropriate action based on this value to control the fan.
  */
-#define EC_FAN_SPEED_STALLED 0x0 /* Fan stalled */
+#define EC_FAN_SPEED_STALLED 0x0
+/* This should be used only for ectool to support old ECs. */
+#define EC_FAN_SPEED_STALLED_DEPRECATED 0xfffe
 
 /* Battery bit flags at EC_MEMMAP_BATT_FLAG. */
 #define EC_BATT_FLAG_AC_PRESENT 0x01
@@ -774,7 +776,16 @@ enum host_event_code {
 	 * not initialized on the EC, or improperly configured on the host.
 	 */
 	EC_HOST_EVENT_INVALID = 32,
+
+	/* Body detect (lap/desk) change event */
+	EC_HOST_EVENT_BODY_DETECT_CHANGE = 33,
+
+	/*
+	 * Only 64 host events are supported. This enum uses 1-based counting so
+	 * it can skip 0 (NONE), so the last legal host event number is 64.
+	 */
 };
+
 /* Host event mask */
 #define EC_HOST_EVENT_MASK(event_code) BIT_ULL((event_code)-1)
 
@@ -815,6 +826,7 @@ enum host_event_code {
 			"KEYBOARD_RECOVERY_HW_REINIT",                         \
 		[EC_HOST_EVENT_WOV] = "WOV",                                   \
 		[EC_HOST_EVENT_INVALID] = "INVALID",                           \
+		[EC_HOST_EVENT_BODY_DETECT_CHANGE] = "BODY_DETECT_CHANGE",     \
 	}
 /* clang-format on */
 
@@ -4769,9 +4781,18 @@ struct ec_response_charge_state {
  * Set maximum battery charging current.
  */
 #define EC_CMD_CHARGE_CURRENT_LIMIT 0x00A1
+#define EC_VER_CHARGE_CURRENT_LIMIT 1
 
 struct ec_params_current_limit {
 	uint32_t limit; /* in mA */
+
+	/* Added in v1 */
+	/*
+	 * Battery state of charge is the minimum charge percentage at which
+	 * the battery charge current limit will apply.
+	 * When not set, the limit will apply regardless of state of charge.
+	 */
+	uint8_t battery_soc; /* battery state of charge, 0-100 */
 } __ec_align4;
 
 /*

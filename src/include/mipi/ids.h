@@ -25,5 +25,6 @@
 
 #define MIPI_MFG_ID_MAXIM			0x019f
 #define MIPI_DEV_ID_MAXIM_MAX98373		0x8373
+#define MIPI_DEV_ID_MAXIM_MAX98363		0x8363
 
 #endif /* __MIPI_IDS_H__ */

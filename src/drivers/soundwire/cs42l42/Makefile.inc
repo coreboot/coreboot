@@ -1,0 +1,1 @@
+ramstage-$(CONFIG_DRIVERS_SOUNDWIRE_CS42L42) += cs42l42.c

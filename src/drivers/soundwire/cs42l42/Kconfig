@@ -1,0 +1,6 @@
+config DRIVERS_SOUNDWIRE_CS42L42
+	bool
+	depends on HAVE_ACPI_TABLES
+	default n
+	help
+	  SoundWire CS42L42 audio codec SSDT generator.

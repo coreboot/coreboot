@@ -767,6 +767,39 @@ chip soc/intel/meteorlake
 					probe AUDIO MAX98360_ALC5682I_I2S
 				end
 			end
+			chip drivers/intel/soundwire
+				device generic 0 on
+					probe AUDIO MAX98363_CS42L42_SNDW
+					chip drivers/soundwire/cs42l42
+						# SoundWire Link 0 ID 0
+						register "desc" = ""Headset Codec""
+						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B07)"
+						register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_B06)"
+						register "ts_inv" = "true"
+						register "ts_dbnc_rise" = "RISE_DEB_1000_MS"
+						register "ts_dbnc_fall" = "FALL_DEB_0_MS"
+						register "btn_det_init_dbnce" = "100"
+						register "btn_det_event_dbnce" = "10"
+						register "bias_lvls[0]" = "15"
+						register "bias_lvls[1]" = "8"
+						register "bias_lvls[2]" = "4"
+						register "bias_lvls[3]" = "1"
+						register "hs_bias_ramp_rate" = "HSBIAS_RAMP_SLOW"
+						register "hs_bias_sense_disable" = "true"
+						device generic 0.0 on end
+					end
+					chip drivers/soundwire/max98363
+						# SoundWire Link 2 ID 0
+						register "desc" = ""Left Speaker Amp""
+						device generic 2.0 on end
+					end
+					chip drivers/soundwire/max98363
+						# SoundWire Link 2 ID 1
+						register "desc" = ""Right Speaker Amp""
+						device generic 2.1 on end
+					end
+				end
+			end
 		end
 	end
 end

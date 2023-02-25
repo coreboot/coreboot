@@ -8,7 +8,7 @@
 #include <soc/pci_devs.h>
 #include <soc/reg_access.h>
 
-extern void asmlinkage light_sd_led(void);
+extern asmlinkage void light_sd_led(void);
 
 static const struct reg_script legacy_gpio_init[] = {
 	/* Temporarily enable the legacy GPIO controller */

@@ -700,7 +700,7 @@ static void smm_enable(void)
  * means that ENV_SMM is 0, but we are actually executing in the environment
  * setup by the smm_stub.
  */
-static void asmlinkage smm_do_relocation(void *arg)
+static asmlinkage void smm_do_relocation(void *arg)
 {
 	const struct smm_module_params *p;
 	int cpu;

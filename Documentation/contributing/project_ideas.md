@@ -63,7 +63,6 @@ non-Linux builds or Docker for different Linux distributions.
 * hardware requirements: Nothing special
 
 ### Mentors
-* Patrick Georgi <patrick@georgi.software>
 
 ## Support Power9/Power8 in coreboot
 There are some basic PPC64 stubs in coreboot, and there's open hardware
@@ -130,7 +129,6 @@ their bug reports.
   going on from the resulting logs.
 
 ### Mentors
-* Patrick Georgi <patrick@georgi.software>
 
 ## Extend Ghidra to support analysis of firmware images
 [Ghidra](https://ghidra-sre.org) is a recently released cross-platform

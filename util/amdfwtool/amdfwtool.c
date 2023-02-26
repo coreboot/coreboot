@@ -122,7 +122,7 @@ enum signature_id {
  *
  * Modern generations supporting the combo directories require the
  * pointer to be at offset 0x14 of the Embedded Firmware Structure,
- * regardless of the type of directory used.  The --combo-capable
+ * regardless of the type of directory used.  The --use-combo
  * argument enforces this placement.
  *
  * TODO: Future work may require fully implementing the PSP_COMBO feature.
@@ -189,9 +189,6 @@ static void usage(void)
 	printf("--gec <FILE>                   Add GEC blob\n");
 
 	printf("\nPSP options:\n");
-	printf("--combo-capable                Place PSP directory pointer at Embedded\n");
-	printf("                               Firmware\n");
-	printf("                               offset able to support combo directory\n");
 	printf("--use-combo                    Use the COMBO layout\n");
 	printf("--multilevel                   Generate primary and secondary tables\n");
 	printf("--nvram <FILE>                 Add nvram binary\n");

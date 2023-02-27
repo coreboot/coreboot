@@ -40,10 +40,7 @@
 	/* P-state Status Register */
 #define PS_STS_REG			0xC0010063
 #define PSTATE_0_MSR			0xC0010064
-#define PSTATE_1_MSR			0xC0010065
-#define PSTATE_2_MSR			0xC0010066
-#define PSTATE_3_MSR			0xC0010067
-#define PSTATE_4_MSR			0xC0010068
+#define PSTATE_MSR(pstate)		(PSTATE_0_MSR + (pstate))
 #define MSR_PATCH_LOADER		0xC0010020
 
 #define MSR_COFVID_STS			0xC0010071

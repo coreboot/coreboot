@@ -23,7 +23,7 @@ unsigned long tsc_freq_mhz(void)
 	boost_states = (pci_read_config32(SOC_PM_DEV, CORE_PERF_BOOST_CTRL)
 			>> 2) & 0x7;
 
-	msr = rdmsr(PSTATE_0_MSR + boost_states);
+	msr = rdmsr(PSTATE_MSR(boost_states));
 	if (!(msr.hi & 0x80000000))
 		die("Unknown error: cannot determine P-state 0\n");
 

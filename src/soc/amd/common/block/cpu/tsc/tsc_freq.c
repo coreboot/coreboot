@@ -22,7 +22,7 @@ unsigned long tsc_freq_mhz(void)
 		return mhz;
 
 	high_state = rdmsr(PS_LIM_REG).lo & 0x7;
-	msr = rdmsr(PSTATE_0_MSR + high_state);
+	msr = rdmsr(PSTATE_MSR(high_state));
 	if (!(msr.hi & 0x80000000))
 		die("Unknown error: cannot determine P-state 0\n");
 

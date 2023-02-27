@@ -133,8 +133,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_E8, NONE, DEEP, NF2),		/* M.2_SSD_SATA_DEVSLP_1 */
 	PAD_NC(GPP_E15, NONE),				/* Not connected */
 	PAD_NC(GPP_E16, NONE),				/* Not connected */
-	PAD_NC(GPP_E18, NONE),				/* Not connected */
-	PAD_NC(GPP_E19, NONE),				/* Not connected */
 	PAD_NC(GPP_E23, NONE),				/* Not connected */
 
 	/* Community 5 - GpioGroup GPP_R */

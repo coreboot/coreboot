@@ -106,6 +106,9 @@ chip soc/intel/elkhartlake
 	register "pse_tsn_phy_irq_edge[0]" = "RISING_EDGE"
 	register "pse_tsn_phy_irq_edge[1]" = "RISING_EDGE"
 
+	register "DdiPortAHpd" = "1"
+	register "DdiPortADdc" = "1"
+
 	register "common_soc_config" = "{
 		.i2c[1] = {
 			.speed = I2C_SPEED_STANDARD,
@@ -158,11 +161,15 @@ chip soc/intel/elkhartlake
 			end
 		end
 		device pci 15.2 on	    # I2C2
-		# Add dummy I2C device to limit BUS speed to 100 kHz in OS
+			# Add dummy I2C device to limit BUS speed to 100 kHz in OS
 			chip drivers/i2c/generic
 				register "hid" = ""PRP0001""
 				register "speed" = "I2C_SPEED_STANDARD"
 				device i2c 0x7f on end
+			end
+			# Enable external display bridge (eDP to LVDS)
+			chip drivers/i2c/ptn3460
+				device i2c 0x20 on end  # PTN3460 DP2LVDS Bridge
 			end
 		end
 		device pci 15.3 on	end # I2C3

@@ -12,10 +12,10 @@
 #include <fmap_config.h>
 #include <security/vboot/vboot_common.h>
 #include <spi_flash.h>
-#include <stdint.h>
 #include <string.h>
 #include <thread.h>
 #include <timestamp.h>
+#include <types.h>
 #include <xxhash.h>
 
 #define DEFAULT_MRC_CACHE	"RW_MRC_CACHE"

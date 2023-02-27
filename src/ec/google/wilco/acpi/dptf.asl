@@ -5,7 +5,7 @@
  */
 
 /* Mutex for EC PAT interface */
-Mutex (PATM, 1)
+Mutex (PATM, 0)
 
 /* Read requested temperature sensor */
 Method (TSRD, 1, Serialized)

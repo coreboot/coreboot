@@ -44,7 +44,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 			MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT);
 	/* SCI IRQ type override */
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)current,
-			MP_BUS_ISA, 9, 9,
+			MP_BUS_ISA, ACPI_SCI_IRQ, ACPI_SCI_IRQ,
 			MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW);
 
 	current = acpi_fill_madt_irqoverride(current);
@@ -62,7 +62,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 
 	printk(BIOS_DEBUG, "pm_base: 0x%04x\n", ACPI_IO_BASE);
 
-	fadt->sci_int = 9;		/* IRQ 09 - ACPI SCI */
+	fadt->sci_int = ACPI_SCI_IRQ;
 
 	if (permanent_smi_handler()) {
 		fadt->smi_cmd = APM_CNT;

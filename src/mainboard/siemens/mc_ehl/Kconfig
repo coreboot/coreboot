@@ -21,12 +21,14 @@ config VARIANT_DIR
 	default "mc_ehl2" if BOARD_SIEMENS_MC_EHL2
 	default "mc_ehl3" if BOARD_SIEMENS_MC_EHL3
 	default "mc_ehl4" if BOARD_SIEMENS_MC_EHL4
+	default "mc_ehl5" if BOARD_SIEMENS_MC_EHL5
 
 config MAINBOARD_PART_NUMBER
 	default "MC EHL1" if BOARD_SIEMENS_MC_EHL1
 	default "MC EHL2" if BOARD_SIEMENS_MC_EHL2
 	default "MC EHL3" if BOARD_SIEMENS_MC_EHL3
 	default "MC EHL4" if BOARD_SIEMENS_MC_EHL4
+	default "MC EHL5" if BOARD_SIEMENS_MC_EHL5
 
 config DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"

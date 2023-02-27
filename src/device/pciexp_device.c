@@ -188,6 +188,20 @@ static int pciexp_retrain_link(struct device *dev, unsigned int cap)
 	return -1;
 }
 
+static bool pciexp_is_ccc_active(struct device *root, unsigned int root_cap,
+				 struct device *endp, unsigned int endp_cap)
+{
+	u16 root_ccc, endp_ccc;
+
+	root_ccc = pci_read_config16(root, root_cap + PCI_EXP_LNKCTL) & PCI_EXP_LNKCTL_CCC;
+	endp_ccc = pci_read_config16(endp, endp_cap + PCI_EXP_LNKCTL) & PCI_EXP_LNKCTL_CCC;
+	if (root_ccc && endp_ccc) {
+		printk(BIOS_INFO, "PCIe: Common Clock Configuration already enabled\n");
+		return true;
+	}
+	return false;
+}
+
 /*
  * Check the Slot Clock Configuration for root port and endpoint
  * and enable Common Clock Configuration if possible.  If CCC is
@@ -197,6 +211,10 @@ static void pciexp_enable_common_clock(struct device *root, unsigned int root_ca
 				       struct device *endp, unsigned int endp_cap)
 {
 	u16 root_scc, endp_scc, lnkctl;
+
+	/* No need to enable common clock if it is already active. */
+	if (pciexp_is_ccc_active(root, root_cap, endp, endp_cap))
+		return;
 
 	/* Get Slot Clock Configuration for root port */
 	root_scc = pci_read_config16(root, root_cap + PCI_EXP_LNKSTA);

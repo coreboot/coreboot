@@ -11,7 +11,7 @@ Device (WLCO)
 
 	Method (_STA)
 	{
-		Return (0xb)
+		Return (0xf)
 	}
 
 	Name (_CRS, ResourceTemplate ()

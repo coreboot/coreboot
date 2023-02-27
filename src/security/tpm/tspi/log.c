@@ -98,7 +98,7 @@ void tpm_cb_preram_log_clear(void)
 {
 	printk(BIOS_INFO, "TPM LOG: clearing preram log\n");
 	struct tpm_cb_log_table *tclt = (struct tpm_cb_log_table *)_tpm_log;
-	tclt->max_entries = MAX_TPM_LOG_ENTRIES;
+	tclt->max_entries = MAX_PRERAM_TPM_LOG_ENTRIES;
 	tclt->num_entries = 0;
 }
 

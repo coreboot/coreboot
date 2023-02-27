@@ -4,6 +4,7 @@
 #include <amdblocks/agesawrapper.h>
 #include <amdblocks/amd_pci_util.h>
 #include <gpio.h>
+#include <soc/acpi.h>
 #include <soc/southbridge.h>
 
 #include "gpio.h"
@@ -19,7 +20,7 @@ static const struct fch_irq_routing fch_irq_map[] = {
 	{ PIRQ_F,	10,		21 },
 	{ PIRQ_G,	PIRQ_NC,	22 },
 	{ PIRQ_H,	PIRQ_NC,	23 },
-	{ PIRQ_SCI,	PIRQ_NC,	 9 },
+	{ PIRQ_SCI,	ACPI_SCI_IRQ,	ACPI_SCI_IRQ },
 	{ PIRQ_SMBUS,	PIRQ_NC,	PIRQ_NC },
 	{ PIRQ_HDA,	 3,		16 },
 	{ PIRQ_SD,	PIRQ_NC,	16 },

@@ -90,26 +90,26 @@ static void *get_apob_dram_address(void)
 	return apob_src_ram;
 }
 
-static int get_nv_rdev(struct region_device *r)
+static enum cb_err get_nv_rdev(struct region_device *r)
 {
 	if  (fmap_locate_area_as_rdev(vboot_recovery_mode_enabled() ?
 				      RECOVERY_MRC_CACHE : DEFAULT_MRC_CACHE, r) < 0) {
 		printk(BIOS_ERR, "No APOB NV region is found in flash\n");
-		return -1;
+		return CB_ERR;
 	}
 
-	return 0;
+	return CB_SUCCESS;
 }
 
-static int get_nv_rdev_rw(struct region_device *r)
+static enum cb_err get_nv_rdev_rw(struct region_device *r)
 {
 	if  (fmap_locate_area_as_rdev_rw(vboot_recovery_mode_enabled() ?
 					 RECOVERY_MRC_CACHE : DEFAULT_MRC_CACHE, r) < 0) {
 		printk(BIOS_ERR, "No APOB NV region is found in flash\n");
-		return -1;
+		return CB_ERR;
 	}
 
-	return 0;
+	return CB_SUCCESS;
 }
 
 static struct apob_thread_context {
@@ -146,7 +146,7 @@ void start_apob_cache_read(void)
 	if (acpi_is_wakeup_s3())
 		return;
 
-	if (get_nv_rdev(&thread->apob_rdev) != 0)
+	if (get_nv_rdev(&thread->apob_rdev) != CB_SUCCESS)
 		return;
 
 	assert(ARRAY_SIZE(thread->buffer) == region_device_sz(&thread->apob_rdev));
@@ -210,7 +210,7 @@ static void soc_update_apob_cache(void *unused)
 	if (apob_src_ram == NULL)
 		return;
 
-	if (get_nv_rdev(&read_rdev) != 0)
+	if (get_nv_rdev(&read_rdev) != CB_SUCCESS)
 		return;
 
 	timestamp_add_now(TS_AMD_APOB_READ_START);
@@ -251,7 +251,7 @@ static void soc_update_apob_cache(void *unused)
 		apob_src_ram, apob_src_ram->size,
 		region_device_offset(&read_rdev), region_device_sz(&read_rdev));
 
-	if (get_nv_rdev_rw(&write_rdev) != 0)
+	if (get_nv_rdev_rw(&write_rdev) != CB_SUCCESS)
 		return;
 
 	timestamp_add_now(TS_AMD_APOB_ERASE_START);
@@ -281,7 +281,7 @@ static void *get_apob_nv_address(void)
 {
 	struct region_device rdev;
 
-	if (get_nv_rdev(&rdev) != 0)
+	if (get_nv_rdev(&rdev) != CB_SUCCESS)
 		return NULL;
 
 	return get_apob_from_nv_rdev(&rdev);

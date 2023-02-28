@@ -58,7 +58,4 @@
 #define PCH_IOAPIC_DEV_NUM	0x1F
 #define PCH_IOAPIC_FUNC_NUM	0x00
 
-// ========== IOAPIC Definitions for DMAR/ACPI ========
-#define PCH_IOAPIC_ID		0x08
-
 #endif

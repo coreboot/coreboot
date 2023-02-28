@@ -2,6 +2,7 @@
 
 #include <acpi/acpigen.h>
 #include <arch/hpet.h>
+#include <arch/ioapic.h>
 #include <assert.h>
 #include <cbmem.h>
 #include <cpu/x86/lapic.h>
@@ -223,10 +224,10 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket,
 	if (socket == 0 && stack == CSTACK) {
 		union p2sb_bdf ioapic_bdf = p2sb_get_ioapic_bdf();
 		printk(BIOS_DEBUG, "    [IOAPIC Device] Enumeration ID: 0x%x, PCI Bus Number: 0x%x, "
-			"PCI Path: 0x%x, 0x%x\n",
-		       PCH_IOAPIC_ID, ioapic_bdf.bus, ioapic_bdf.dev, ioapic_bdf.fn);
-		current += acpi_create_dmar_ds_ioapic(current, PCH_IOAPIC_ID,
-						      ioapic_bdf.bus, ioapic_bdf.dev, ioapic_bdf.fn);
+		       "PCI Path: 0x%x, 0x%x\n", get_ioapic_id(VIO_APIC_VADDR), ioapic_bdf.bus,
+		       ioapic_bdf.dev, ioapic_bdf.fn);
+		current += acpi_create_dmar_ds_ioapic_from_hw(current,
+				IO_APIC_ADDR, ioapic_bdf.bus, ioapic_bdf.dev, ioapic_bdf.fn);
 	}
 
 	// Add IOAPIC entry

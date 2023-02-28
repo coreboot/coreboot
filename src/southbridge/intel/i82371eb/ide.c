@@ -32,14 +32,14 @@ static void ide_init_enable(struct device *dev)
 	reg16 = pci_read_config16(dev, IDETIM_PRI);
 	reg16 = ONOFF(conf->ide0_enable, reg16, IDE_DECODE_ENABLE);
 	pci_write_config16(dev, IDETIM_PRI, reg16);
-	printk(BIOS_DEBUG, "IDE: %s IDE interface: %s\n", "Primary",
+	printk(BIOS_DEBUG, "IDE: %s: %s\n", "Primary interface",
 		     conf->ide0_enable ? "on" : "off");
 
 	/* Enable/disable the secondary IDE interface. */
 	reg16 = pci_read_config16(dev, IDETIM_SEC);
 	reg16 = ONOFF(conf->ide1_enable, reg16, IDE_DECODE_ENABLE);
 	pci_write_config16(dev, IDETIM_SEC, reg16);
-	printk(BIOS_DEBUG, "IDE: %s IDE interface: %s\n", "Secondary",
+	printk(BIOS_DEBUG, "IDE: %s: %s\n", "Secondary interface",
 		     conf->ide1_enable ? "on" : "off");
 
 	/* Enable access to the legacy IDE ports (both primary and secondary),
@@ -81,10 +81,10 @@ static void ide_init_udma33(struct device *dev)
 		pci_write_config8(dev, UDMACTL, reg8);
 
 		printk(BIOS_DEBUG, "IDE: %s, drive %d: UDMA/33: %s\n",
-			     "Primary IDE interface", 0,
+			     "Primary interface", 0,
 			     conf->ide0_drive0_udma33_enable ? "on" : "off");
 		printk(BIOS_DEBUG, "IDE: %s, drive %d: UDMA/33: %s\n",
-			     "Primary IDE interface", 1,
+			     "Primary interface", 1,
 			     conf->ide0_drive1_udma33_enable ? "on" : "off");
 	}
 
@@ -96,10 +96,10 @@ static void ide_init_udma33(struct device *dev)
 		pci_write_config8(dev, UDMACTL, reg8);
 
 		printk(BIOS_DEBUG, "IDE: %s, drive %d: UDMA/33: %s\n",
-			     "Secondary IDE interface", 0,
+			     "Secondary interface", 0,
 			     conf->ide1_drive0_udma33_enable ? "on" : "off");
 		printk(BIOS_DEBUG, "IDE: %s, drive %d: UDMA/33: %s\n",
-			     "Secondary IDE interface", 1,
+			     "Secondary interface", 1,
 			     conf->ide1_drive1_udma33_enable ? "on" : "off");
 	}
 }

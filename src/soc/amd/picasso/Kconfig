@@ -243,13 +243,11 @@ config VGA_BIOS_SECOND_ID
 	string
 	default "1002,15dd,c4"
 	help
-	  Because Dali and Picasso need different video BIOSes, but have the
-	  same vendor/device IDs, we need an alternate method to determine the
-	  correct video BIOS. In map_oprom_vendev_rev(), we look at the cpuid
-	  and decide which rom to load.
-
-	  Even though the hardware has the same vendor/device IDs, the vBIOS
-	  contains a *different* device ID, confusing the situation even more.
+	  Some Dali and all Pollock APUs need a different VBIOS than some other
+	  Dali and all Picasso APUs, but don't always have a different PCI
+	  vendor/device IDs, so we need an alternate method to determine the
+	  correct video BIOS. In map_oprom_vendev_rev(), we look at the return
+	  value of soc_is_raven2() and decide which rom to load.
 
 config VGA_BIOS_SECOND_FILE
 	string

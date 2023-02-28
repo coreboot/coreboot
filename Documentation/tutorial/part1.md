@@ -103,8 +103,8 @@ select < Exit >
 
 ```Text
 select 'Payload' menu
-select 'Add a Payload'
-choose 'An Elf executable payload'
+select 'Payload to add (SeaBIOS) --->'
+choose 'An ELF executable payload'
 select 'Payload path and filename'
 enter 'payloads/coreinfo/build/coreinfo.elf'
 select < Exit >

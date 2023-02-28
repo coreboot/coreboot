@@ -400,7 +400,7 @@ void generate_cpu_entries(const struct device *device)
 	for (cpu_id = 0; cpu_id < numcpus; cpu_id++) {
 		for (core_id = 0; core_id < num_virt; core_id++) {
 			/* Generate processor \_SB.CPUx */
-			acpigen_write_processor((cpu_id) * num_virt + core_id, 0, 0);
+			acpigen_write_processor_device(cpu_id * num_virt + core_id);
 
 			/* Generate C-state tables */
 			generate_c_state_entries();

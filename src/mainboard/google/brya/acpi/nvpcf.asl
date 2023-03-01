@@ -34,7 +34,7 @@ Method (NPCF, 2, Serialized)
 							      2=CTGP-only.
 							   [7:4] Reserved. Set to 0. */
 				/* Controller #1 Params */
-				0x00,			/* Class = Dynamic Boost
+							/* Class = Dynamic Boost
 							   [0:0] DC support
 							      0=Not supported, 1=Supported
 							   [31:1] Reserved. Set to 0. */

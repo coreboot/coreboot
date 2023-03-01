@@ -35,22 +35,6 @@
 #define MSR_POWER_CTL                            0x1fc
 #define BIDIR_PROCHOT_ENABLE_SHIFT               0
 #define BIDIR_PROCHOT_ENABLE                     (1 << BIDIR_PROCHOT_ENABLE_SHIFT)
-#define FAST_BRK_SNP_ENABLE_SHIFT                3
-#define FAST_BRK_SNP_ENABLE                      (1 << FAST_BRK_SNP_ENABLE_SHIFT)
-#define FAST_BRK_INT_ENABLE_SHIFT                4
-#define FAST_BRK_INT_ENABLE                      (1 << FAST_BRK_INT_ENABLE_SHIFT)
-#define PHOLD_CST_PREVENTION_INIT_SHIFT          6
-#define PHOLD_CST_PREVENTION_INIT_VALUE          (1 << PHOLD_CST_PREVENTION_INIT_SHIFT)
-#define ENERGY_PERF_BIAS_ACCESS_ENABLE_SHIFT     18
-#define ENERGY_PERF_BIAS_ACCESS_ENABLE           (1 << ENERGY_PERF_BIAS_ACCESS_ENABLE_SHIFT)
-#define PROCHOT_OUTPUT_DISABLE_SHIFT             21
-#define PROCHOT_OUTPUT_DISABLE                   (1 << PROCHOT_OUTPUT_DISABLE_SHIFT)
-#define PWR_PERF_TUNING_DYN_SWITCHING_SHIFT      24
-#define PWR_PERF_TUNING_DYN_SWITCHING_ENABLE     (1 << PWR_PERF_TUNING_DYN_SWITCHING_SHIFT)
-#define PROCHOT_LOCK_SHIFT                       27
-#define PROCHOT_LOCK_ENABLE                      (1 << PROCHOT_LOCK_SHIFT)
-#define LTR_IIO_DISABLE_SHIFT                    29
-#define LTR_IIO_DISABLE                          (1 << LTR_IIO_DISABLE_SHIFT)
 
 /* MSR_IA32_PERF_CTRL (0x199) bits */
 #define MSR_IA32_PERF_CTRL          0x199
@@ -98,5 +82,8 @@
 #define MSR_PPIN		     0x04f
 #define MSR_PPIN_CAP_SHIFT	     23
 #define MSR_PPIN_CAP		     (0x1 << MSR_PPIN_CAP_SHIFT)
+
+/* SOC-specific #defines may use the above definitions */
+#include <soc/soc_msr.h>
 
 #endif /* _SOC_MSR_H_ */

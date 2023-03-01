@@ -2391,6 +2391,13 @@ void acpigen_write_delay_until_namestr_int(uint32_t wait_ms, const char *name, u
 	acpigen_emit_byte(DECREMENT_OP);
 	acpigen_emit_byte(LOCAL7_OP);
 	acpigen_pop_len(); /* While */
+
+	if (name) {
+		acpigen_write_if_lequal_op_op(LOCAL7_OP, ZERO_OP);
+		acpigen_write_debug_sprintf("WARN: Wait loop timeout for variable %s",
+					    name);
+		acpigen_pop_len(); /* If */
+	}
 }
 
 void acpigen_ssdt_override_sleep_states(bool enable_s1, bool enable_s2, bool enable_s3,

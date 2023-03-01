@@ -14,6 +14,32 @@
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 
+#if (CONFIG(PLATFORM_USES_FSP2_4))
+const FSPT_UPD temp_ram_init_params = {
+	.FspUpdHeader = {
+		.Signature = FSPT_UPD_SIGNATURE,
+		.Revision = 2,
+		.Reserved = {0},
+	},
+	.FsptArchUpd = {
+		.Revision = 2,
+		.Length = 32,
+		.FspDebugHandler = 0,
+		.Reserved1 = {0},
+	},
+	.FsptCoreUpd = {
+		.MicrocodeRegionBase = 0,
+		.MicrocodeRegionLength = 0,
+		.CodeRegionBase = (UINT64)CACHE_ROM_BASE,
+		.CodeRegionLength = (UINT64)CACHE_ROM_SIZE,
+	},
+	.FsptConfig = {
+		.FsptPort80RouteDisable = 0,
+		.ReservedTempRamInitUpd = {0},
+	},
+	.UpdTerminator = 0x55AA,
+};
+#else
 const FSPT_UPD temp_ram_init_params = {
 	.FspUpdHeader = {
 		.Signature = FSPT_UPD_SIGNATURE,
@@ -34,6 +60,7 @@ const FSPT_UPD temp_ram_init_params = {
 	.UnusedUpdSpace0 = {0},
 	.UpdTerminator = 0x55AA,
 };
+#endif //(!CONFIG(PLATFORM_USES_FSP2_4))
 
 static uint64_t assembly_timestamp;
 static uint64_t bootblock_timestamp;

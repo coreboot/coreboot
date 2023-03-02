@@ -8,3 +8,5 @@ romstage-y += variants/$(VARIANT_DIR)/romstage.c
 ramstage-y += ramstage.c
 ramstage-y += variants/$(VARIANT_DIR)/hda_verb.c
 ramstage-y += variants/$(VARIANT_DIR)/gpio.c
+
+SPD_SOURCES = samsung-P4AAF165WA-BCWDE

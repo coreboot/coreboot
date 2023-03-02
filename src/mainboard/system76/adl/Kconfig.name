@@ -9,3 +9,6 @@ config BOARD_SYSTEM76_LEMP11
 
 config BOARD_SYSTEM76_ORYP9
 	bool "oryp9"
+
+config BOARD_SYSTEM76_ORYP10
+	bool "oryp10"

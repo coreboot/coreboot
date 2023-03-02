@@ -217,6 +217,7 @@ The boards in this section are not real mainboards, but emulators.
 - [Oryx Pro 7](system76/oryp7.md)
 - [Oryx Pro 8](system76/oryp8.md)
 - [Oryx Pro 9](system76/oryp9.md)
+- [Oryx Pro 10](system76/oryp10.md)
 
 ## Texas Instruments
 

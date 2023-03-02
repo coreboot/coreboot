@@ -27,6 +27,7 @@ int configure_display(void)
 	printk(BIOS_INFO, "%s: Starting display initialization\n", __func__);
 
 	mtcmos_display_power_on();
+	mtcmos_protect_display_bus();
 
 	panel->configure_panel_backlight();
 	panel->power_on();

@@ -6,14 +6,11 @@
 
 u32 map_oprom_vendev(u32 vendev)
 {
-	u32 new_vendev = vendev;
-
 	switch (vendev) {
 	case CEZANNE_VBIOS_VID_DID:
 	case BARCELO_VBIOS_VID_DID:
-		new_vendev = CEZANNE_VBIOS_VID_DID;
-		break;
+		return CEZANNE_VBIOS_VID_DID;
 	}
 
-	return new_vendev;
+	return vendev;
 }

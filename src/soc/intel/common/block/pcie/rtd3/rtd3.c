@@ -154,6 +154,10 @@ pcie_rtd3_acpi_method_on(unsigned int pcie_rp,
 	acpigen_write_return_op(ONE_OP);
 	acpigen_write_if_end();
 
+	if (config->use_rp_mutex)
+		acpigen_write_acquire(acpi_device_path_join(parent, RP_MUTEX_NAME),
+			ACPI_MUTEX_NO_TIMEOUT);
+
 	/* Disable modPHY power gating for PCH RPs. */
 	if (rp_type == PCIE_RP_PCH)
 		pcie_rtd3_enable_modphy_pg(pcie_rp, PG_DISABLE);
@@ -180,6 +184,9 @@ pcie_rtd3_acpi_method_on(unsigned int pcie_rp,
 	if (!config->disable_l23)
 		pcie_rtd3_acpi_l23_exit();
 
+	if (config->use_rp_mutex)
+		acpigen_write_release(acpi_device_path_join(parent, RP_MUTEX_NAME));
+
 	if (config->skip_on_off_support) {
 		/* If current _ON is skipped, ONSK is decremented so that _ON will be
 		 * executed normally until _OFF is skipped again.
@@ -196,8 +203,12 @@ pcie_rtd3_acpi_method_on(unsigned int pcie_rp,
 static void
 pcie_rtd3_acpi_method_off(int pcie_rp,
 			  const struct soc_intel_common_block_pcie_rtd3_config *config,
-			  enum pcie_rp_type rp_type)
+			  enum pcie_rp_type rp_type,
+			  const struct device *dev)
+
 {
+	const struct device *parent = dev->bus->dev;
+
 	acpigen_write_method_serialized("_OFF", 0);
 
 	/* When this feature is enabled, ONSK is checked to see if the device
@@ -207,6 +218,10 @@ pcie_rtd3_acpi_method_off(int pcie_rp,
 	 */
 	if (config->skip_on_off_support)
 		acpigen_write_if_lequal_namestr_int("OFSK", 0);
+
+	if (config->use_rp_mutex)
+		acpigen_write_acquire(acpi_device_path_join(parent, RP_MUTEX_NAME),
+			ACPI_MUTEX_NO_TIMEOUT);
 
 	/* Trigger L23 ready entry flow unless disabled by config. */
 	if (!config->disable_l23)
@@ -233,6 +248,9 @@ pcie_rtd3_acpi_method_off(int pcie_rp,
 		if (config->enable_off_delay_ms)
 			acpigen_write_sleep(config->enable_off_delay_ms);
 	}
+
+	if (config->use_rp_mutex)
+		acpigen_write_release(acpi_device_path_join(parent, RP_MUTEX_NAME));
 
 	if (config->skip_on_off_support) {
 		/* If current _OFF is skipped, ONSK is incremented so that the
@@ -422,6 +440,9 @@ static void pcie_rtd3_acpi_fill_ssdt(const struct device *dev)
 	/* The RTD3 power resource is added to the root port, not the device. */
 	acpigen_write_scope(scope);
 
+	if (config->use_rp_mutex)
+		acpigen_write_mutex(RP_MUTEX_NAME, 0);
+
 	if (config->desc)
 		acpigen_write_name_string("_DDN", config->desc);
 
@@ -464,7 +485,7 @@ static void pcie_rtd3_acpi_fill_ssdt(const struct device *dev)
 
 	pcie_rtd3_acpi_method_status(config);
 	pcie_rtd3_acpi_method_on(pcie_rp, config, rp_type, dev);
-	pcie_rtd3_acpi_method_off(pcie_rp, config, rp_type);
+	pcie_rtd3_acpi_method_off(pcie_rp, config, rp_type, dev);
 	acpigen_pop_len(); /* PowerResource */
 
 	/* Indicate to the OS that device supports hotplug in D3. */

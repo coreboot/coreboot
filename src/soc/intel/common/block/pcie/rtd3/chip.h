@@ -5,6 +5,8 @@
 
 #include <acpi/acpi_device.h>
 
+#define RP_MUTEX_NAME "RPMX"
+
 enum acpi_pcie_rp_pm_emit {
 	ACPI_PCIE_RP_EMIT_NONE      = 0x00,   /* None            */
 	ACPI_PCIE_RP_EMIT_L23       = 0x01,   /* L23             */
@@ -86,6 +88,13 @@ struct soc_intel_common_block_pcie_rtd3_config {
 	 * the device driver.
 	 */
 	bool skip_on_off_support;
+
+	/*
+	 * Indicates the root port mutex is used for _ON and _OFF, the companion device driver
+	 * such as WWAN driver should also acquire this mutex in methods that access the same HW
+	 * resource, such as PERST# GPIO pin.
+	 */
+	bool use_rp_mutex;
 };
 
 #endif /* __SOC_INTEL_COMMON_BLOCK_PCIE_RTD3_CHIP_H__ */

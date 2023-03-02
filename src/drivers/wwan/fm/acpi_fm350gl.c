@@ -3,6 +3,7 @@
 #include <acpi/acpigen.h>
 #include <acpi/acpi_device.h>
 #include "chip.h"
+#include "soc/intel/common/block/include/intelblocks/acpi.h"
 #include "soc/intel/common/block/pcie/rtd3/chip.h"
 
 /* FCPO# to RESET# delay time during WWAN ON */
@@ -56,6 +57,17 @@ static void wwan_fm350gl_acpi_method_fhrf(const struct device *parent_dev,
 {
 	acpigen_write_method_serialized("FHRF", 1);
 	{
+		char mutex_path[128];
+		const struct soc_intel_common_block_pcie_rtd3_config *rtd3_config;
+
+		rtd3_config = config_of(config->rtd3dev);
+		if (rtd3_config->use_rp_mutex) {
+			snprintf(mutex_path, sizeof(mutex_path), acpi_device_path_join(parent_dev,
+				RP_MUTEX_NAME));
+			/* Acquire root port mutex in case FHRF is called directly and not called from _RST */
+			acpigen_write_acquire(mutex_path, ACPI_MUTEX_NO_TIMEOUT);
+		}
+
 		/* LOCAL0 = PERST# */
 		acpigen_get_tx_gpio(&config->perst_gpio);
 		acpigen_write_if_lequal_op_int(LOCAL0_OP, 0);
@@ -97,6 +109,9 @@ static void wwan_fm350gl_acpi_method_fhrf(const struct device *parent_dev,
 			acpigen_write_if_end(); /* If */
 		}
 		acpigen_pop_len(); /* Else */
+
+		if (rtd3_config->use_rp_mutex)
+			acpigen_write_release(mutex_path);
 	}
 	acpigen_write_method_end(); /* Method */
 }
@@ -109,6 +124,17 @@ static void wwan_fm350gl_acpi_method_shrf(const struct device *parent_dev,
 {
 	acpigen_write_method_serialized("SHRF", 0);
 	{
+		char mutex_path[128];
+		const struct soc_intel_common_block_pcie_rtd3_config *rtd3_config;
+
+		rtd3_config = config_of(config->rtd3dev);
+		if (rtd3_config->use_rp_mutex) {
+			snprintf(mutex_path, sizeof(mutex_path), acpi_device_path_join(parent_dev,
+				RP_MUTEX_NAME));
+			/* Acquire root port mutex */
+			acpigen_write_acquire(mutex_path, ACPI_MUTEX_NO_TIMEOUT);
+		}
+
 		/* call rtd3 method to Disable ModPHY Power Gating. */
 		if (wwan_fm350gl_get_rtd3_method_support(config) &
 			ACPI_PCIE_RP_EMIT_PSD0) {
@@ -137,6 +163,9 @@ static void wwan_fm350gl_acpi_method_shrf(const struct device *parent_dev,
 				"L23D"));
 		}
 		acpigen_write_sleep(FM350GL_TIME_HW_INIT);
+
+		if (rtd3_config->use_rp_mutex)
+			acpigen_write_release(mutex_path);
 	}
 	acpigen_write_method_end(); /* Method */
 }
@@ -150,6 +179,17 @@ static void wwan_fm350gl_acpi_method_rst(const struct device *parent_dev,
 {
 	acpigen_write_method_serialized("_RST", 0);
 	{
+		char mutex_path[128];
+		const struct soc_intel_common_block_pcie_rtd3_config *rtd3_config;
+
+		rtd3_config = config_of(config->rtd3dev);
+		if (rtd3_config->use_rp_mutex) {
+			snprintf(mutex_path, sizeof(mutex_path), acpi_device_path_join(parent_dev,
+				RP_MUTEX_NAME));
+			/* Acquire root port mutex */
+			acpigen_write_acquire(mutex_path, ACPI_MUTEX_NO_TIMEOUT);
+		}
+
 		/* Perform 1st Half of FLDR Flow for soft reset: FHRF(0) */
 		acpigen_emit_namestring("FHRF");
 		acpigen_emit_byte(RESET_TYPE_WARM);
@@ -158,6 +198,9 @@ static void wwan_fm350gl_acpi_method_rst(const struct device *parent_dev,
 		/* Indicates that the following _Off will be skipped. */
 		acpigen_emit_byte(INCREMENT_OP);
 		acpigen_emit_namestring(acpi_device_path_join(parent_dev, "RTD3.OFSK"));
+
+		if (rtd3_config->use_rp_mutex)
+			acpigen_write_release(mutex_path);
 	}
 	acpigen_write_method_end(); /* Method */
 }
@@ -171,6 +214,17 @@ static void wwan_fm350gl_acpi_method_mrst_rst(const struct device *parent_dev,
 {
 	acpigen_write_method_serialized("_RST", 0);
 	{
+		char mutex_path[128];
+		const struct soc_intel_common_block_pcie_rtd3_config *rtd3_config;
+
+		rtd3_config = config_of(config->rtd3dev);
+		if (rtd3_config->use_rp_mutex) {
+			snprintf(mutex_path, sizeof(mutex_path), acpi_device_path_join(parent_dev,
+				RP_MUTEX_NAME));
+			/* Acquire root port mutex */
+			acpigen_write_acquire(mutex_path, ACPI_MUTEX_NO_TIMEOUT);
+		}
+
 		/* Perform 1st Half of FLDR Flow for cold reset: FHRF (1) */
 		acpigen_emit_namestring("FHRF");
 		acpigen_emit_byte(RESET_TYPE_COLD);
@@ -180,6 +234,9 @@ static void wwan_fm350gl_acpi_method_mrst_rst(const struct device *parent_dev,
 		   driver removal */
 		acpigen_emit_byte(INCREMENT_OP);
 		acpigen_emit_namestring(acpi_device_path_join(parent_dev, "RTD3.OFSK"));
+
+		if (rtd3_config->use_rp_mutex)
+			acpigen_write_release(mutex_path);
 	}
 	acpigen_write_method_end(); /* Method */
 }
@@ -211,6 +268,7 @@ static void wwan_fm350gl_acpi_fill_ssdt(const struct device *dev)
 	const struct drivers_wwan_fm_config *config = config_of(dev);
 	const struct device *parent = dev->bus->dev;
 	const char *scope = acpi_device_path(parent);
+	const struct soc_intel_common_block_pcie_rtd3_config *rtd3_config;
 
 	if (!is_dev_enabled(parent)) {
 		printk(BIOS_ERR, "%s: root port not enabled\n", __func__);
@@ -226,6 +284,12 @@ static void wwan_fm350gl_acpi_fill_ssdt(const struct device *dev)
 			 __func__, scope);
 		return;
 	}
+
+	rtd3_config = config_of(config->rtd3dev);
+	if (!rtd3_config->use_rp_mutex)
+		printk(BIOS_WARNING, "%s: RTD3 must use root port mutex.\n",
+			__func__);
+
 	printk(BIOS_INFO, "%s: Enable WWAN for %s (%s)\n", scope, dev_path(parent),
 		config->desc ?: dev->chip_ops->name);
 	acpigen_write_scope(scope);

@@ -44,6 +44,10 @@ fw_config
 	end
 end
 chip soc/intel/alderlake
+	register "domain_vr_config[VR_DOMAIN_IA]" = "{
+		.enable_fast_vmode = 1,
+	}"
+
 	# As per Intel Advisory doc#723158, the change is required to prevent possible
 	# display flickering issue.
 	register "usb2_phy_sus_pg_disable" = "1"

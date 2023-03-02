@@ -6,3 +6,6 @@ config BOARD_SYSTEM76_GALP6
 
 config BOARD_SYSTEM76_LEMP11
 	bool "lemp11"
+
+config BOARD_SYSTEM76_ORYP9
+	bool "oryp9"

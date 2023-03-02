@@ -266,6 +266,9 @@ static AGESA_STATUS amd_init_late(AMD_LATE_PARAMS *LateParams)
 		LateParams->GnbLateConfiguration.FchIoapicId = FCH_IOAPIC_ID;
 	}
 
+	/* Make binaryPI use \_SB_ as processor object scope in PSTATE SSDT */
+	LateParams->PlatformConfig.ProcessorScopeInSb = true;
+
 	timestamp_add_now(TS_AGESA_INIT_LATE_START);
 	Status = amd_dispatch(LateParams);
 	timestamp_add_now(TS_AGESA_INIT_LATE_END);

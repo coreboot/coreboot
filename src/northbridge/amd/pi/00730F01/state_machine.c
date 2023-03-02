@@ -69,6 +69,9 @@ void platform_BeforeInitLate(struct sysinfo *cb, AMD_LATE_PARAMS *Late)
 		Late->GnbLateConfiguration.FchIoapicId = FCH_IOAPIC_ID;
 	}
 
+	/* Make binaryPI use \_SB_ as processor object scope in PSTATE SSDT */
+	Late->PlatformConfig.ProcessorScopeInSb = true;
+
 	/* Code for creating CDIT requires hop count table. If it is not
 	 * present AGESA_ERROR is returned, which confuses users. CDIT is not
 	 * written to the ACPI tables anyway. */

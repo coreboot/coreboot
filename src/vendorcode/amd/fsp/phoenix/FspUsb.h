@@ -1,16 +1,14 @@
 #ifndef __FSPUSB_H__
 #define __FSPUSB_H__
 
-/* TODO: Update for Phoenix */
-
 #include <FspUpd.h>
 
-#define FSP_USB_STRUCT_MAJOR_VERSION	0xd
-#define FSP_USB_STRUCT_MINOR_VERSION	0xe
+#define FSP_USB_STRUCT_MAJOR_VERSION	0xf
+#define FSP_USB_STRUCT_MINOR_VERSION	0x1
 
-#define USB2_PORT_COUNT 6
+#define USB2_PORT_COUNT 8
 #define USB3_PORT_COUNT 3
-#define USBC_COMBO_PHY_COUNT 2
+#define USBC_COMBO_PHY_COUNT 3
 
 struct fch_usb2_phy {
 	uint8_t compdistune;		///< COMPDISTUNE
@@ -58,7 +56,7 @@ struct usb_phy_config {
 	uint8_t			BatteryChargerEnable;              ///< bit[1:0]-Usb0 Port[1:0], bit[3:2]-Usb1 Port[1:0]
 	uint8_t			PhyP3CpmP4Support;                 ///< bit[1:0]-Usb0 Port[1:0], bit[3:2]-Usb1 Port[1:0]
 	uint8_t			ComboPhyStaticConfig[USBC_COMBO_PHY_COUNT]; ///< 0-Type C, 1- USB only mode, 2- DP only mode, 3- USB + DP
-	uint8_t			Reserved2[4];
+	uint8_t			Reserved2[3];
 } __packed;
 
 #endif

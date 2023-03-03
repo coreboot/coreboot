@@ -81,8 +81,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	   overridden by the _CST packages in the processor devices. */
 	fadt->p_lvl2_lat = ACPI_FADT_C2_NOT_SUPPORTED;
 	fadt->p_lvl3_lat = ACPI_FADT_C3_NOT_SUPPORTED;
-	fadt->duty_offset = 0;	/* Not supported */
-	fadt->duty_width = 0;	/* Not supported */
 	fadt->day_alrm = RTC_DATE_ALARM;
 	fadt->century = RTC_ALT_CENTURY;
 	fadt->iapc_boot_arch = cfg->common_config.fadt_boot_arch; /* legacy free default */

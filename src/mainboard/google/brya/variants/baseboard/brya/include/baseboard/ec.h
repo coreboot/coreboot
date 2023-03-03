@@ -7,6 +7,13 @@
 #include <ec/google/chromeec/ec_commands.h>
 #include <baseboard/gpio.h>
 
+#if CONFIG(INCLUDE_NVIDIA_GPU_ASL)
+	#define VARIANT_EC_SCI_EVENTS \
+		EC_HOST_EVENT_MASK(EC_HOST_EVENT_GPU)
+#else
+	#define VARIANT_EC_SCI_EVENTS 0
+#endif
+
 #define MAINBOARD_EC_SCI_EVENTS \
 	(EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_CLOSED)        |\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_OPEN)          |\
@@ -22,7 +29,8 @@
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_MKBP)              |\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_PD_MCU)            |\
 	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_MODE_CHANGE)       |\
-	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_USB_MUX))
+	 EC_HOST_EVENT_MASK(EC_HOST_EVENT_USB_MUX)           |\
+	 VARIANT_EC_SCI_EVENTS)
 #define MAINBOARD_EC_SMI_EVENTS \
 	(EC_HOST_EVENT_MASK(EC_HOST_EVENT_LID_CLOSED))
 /* EC can wake from S5 with lid or power button */

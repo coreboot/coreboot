@@ -22,6 +22,7 @@
 #include <program_loading.h>
 #include <romstage_common.h>
 #include <romstage_handoff.h>
+#include <soc/iomap.h>
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
@@ -190,6 +191,10 @@ void soc_customize_init_early(AMD_EARLY_PARAMS *InitEarly)
 		platform->PkgPwrLimitAC = cfg->stapm_power_mw;
 		platform->PlatStapmConfig.CfgStapmBoost = StapmBoostEnabled;
 	}
+
+	/* Make binaryPi use ACPI_CSTATE_CONTROL as C state control IO range. It gets written
+	   into MSR_CSTATE_ADDRESS and used in the _CST packages in the PSTATE SSDT. */
+	platform->CStateIoBaseAddress = ACPI_CSTATE_CONTROL;
 }
 
 static void migrate_power_state(int is_recovery)

@@ -30,6 +30,7 @@
 #define  ACPI_GPE0_STS			(ACPI_GPE0_BLK + 0x00)		/* 4 bytes */
 #define  ACPI_GPE0_EN			(ACPI_GPE0_BLK + 0x04)		/* 4 bytes */
 #define  ACPI_PM_TMR_BLK		(ACPI_IO_BASE + 0x18)		/* 4 bytes */
+#define  ACPI_CSTATE_CONTROL		(ACPI_IO_BASE + 0x20)		/* 8 bytes */
 #define SMB_BASE_ADDR			0xb00
 #define PM2_INDEX			0xcd0
 #define PM2_DATA			0xcd1

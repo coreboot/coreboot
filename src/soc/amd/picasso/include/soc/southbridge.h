@@ -47,7 +47,6 @@
 #define   TIMER_STS			BIT(0)
 #define PM1_CNT_BLK			0x62
 #define PM_TMR_BLK			0x64
-#define PM_CPU_CTRL			0x66
 #define PM_GPE0_BLK			0x68
 #define PM_ACPI_SMI_CMD			0x6a
 #define PM_ACPI_CONF			0x74

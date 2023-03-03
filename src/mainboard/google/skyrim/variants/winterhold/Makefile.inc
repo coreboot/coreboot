@@ -2,4 +2,7 @@
 
 subdirs-y += ./memory
 
+romstage-y += port_descriptors.c
+
 ramstage-y += gpio.c
+ramstage-y += port_descriptors.c

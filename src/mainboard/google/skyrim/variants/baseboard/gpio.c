@@ -201,6 +201,8 @@ static const struct soc_amd_gpio romstage_gpio_table[] = {
 	PAD_NFO(GPIO_27, PCIE_RST1_L, HIGH),
 	/* SSD_AUX_RESET_L */
 	PAD_GPO(GPIO_6, HIGH),
+	/* CLK_REQ0_L / SSD */
+	PAD_NF(GPIO_92, CLK_REQ0_L, PULL_NONE),
 	/* Enable touchscreen, hold in reset */
 	/* EN_PP3300_TCHSCR */
 	PAD_GPO(GPIO_131, HIGH),

@@ -86,6 +86,8 @@ ifneq ($(CONFIG_SOC_INTEL_ALDERLAKE_PCH_N),y)
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-9a-03
 # ADL-P R0 and ADL-M R0
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-9a-04
+# RPL-P/H J0, RPL-U Q0
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-ba-02
 endif
 endif
 

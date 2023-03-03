@@ -85,7 +85,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->duty_offset = 0;	/* Not supported */
 	fadt->duty_width = 0;	/* Not supported */
 	fadt->day_alrm = RTC_DATE_ALARM;
-	fadt->mon_alrm = 0;
 	fadt->century = RTC_ALT_CENTURY;
 	fadt->iapc_boot_arch = cfg->common_config.fadt_boot_arch; /* legacy free default */
 	fadt->flags |=	ACPI_FADT_WBINVD | /* See table 5-34 ACPI 6.3 spec */

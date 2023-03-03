@@ -24,6 +24,6 @@ void set_cstate_io_addr(void)
 	msr_t cst_addr;
 
 	cst_addr.hi = 0;
-	cst_addr.lo = ACPI_CPU_CONTROL;
+	cst_addr.lo = ACPI_CSTATE_CONTROL;
 	wrmsr(MSR_CSTATE_ADDRESS, cst_addr);
 }

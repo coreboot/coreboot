@@ -21,6 +21,11 @@ fw_config
 end
 
 chip soc/amd/mendocino
+
+	# Set Package Power Parameters
+	# Remove the sustained_power_limit_mW when STT is enabled
+	register "sustained_power_limit_mW"              = "15000"
+
 	device domain 0 on
 		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
 			device ref xhci_1 on # XHCI1 controller

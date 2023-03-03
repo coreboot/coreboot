@@ -260,8 +260,6 @@ chip soc/amd/mendocino
 	register "fast_ppt_limit_mW"                     = "30000"
 	register "slow_ppt_time_constant_s"              = "5"
 	register "stapm_time_constant_s"                 = "275"
-	# Remove the sustained_power_limit_mW when STT is enabled
-	register "sustained_power_limit_mW"              = "15000"
 	register "thermctl_limit_degreeC"                = "100"
 	register "vrm_current_limit_mA"                  = "28000"
 	register "vrm_maximum_current_limit_mA"          = "50000"

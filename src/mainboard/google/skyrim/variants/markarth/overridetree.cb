@@ -2,6 +2,10 @@
 
 chip soc/amd/mendocino
 
+	# Set Package Power Parameters
+	# Remove the sustained_power_limit_mW when STT is enabled
+	register "sustained_power_limit_mW"              = "15000"
+
 	device domain 0 on
 
 		register "dxio_tx_vboost_enable" = "1"

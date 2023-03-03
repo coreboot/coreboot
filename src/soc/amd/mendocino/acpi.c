@@ -64,8 +64,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 		fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
 	}
 
-	fadt->pstate_cnt = 0;
-
 	fadt->pm1a_evt_blk = ACPI_PM_EVT_BLK;
 	fadt->pm1a_cnt_blk = ACPI_PM1_CNT_BLK;
 	fadt->pm_tmr_blk = ACPI_PM_TMR_BLK;

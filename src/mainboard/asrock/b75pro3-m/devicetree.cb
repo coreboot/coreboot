@@ -117,11 +117,15 @@ chip northbridge/intel/sandybridge
 					device pnp 2e.a on		# ACPI
 						irq 0xe0 = 0x01
 						irq 0xe3 = 0x14
+						irq 0xe4 = 0x10		# + enable 3VSBSW#
 						irq 0xe6 = 0x4c
 						irq 0xe9 = 0x02
-						irq 0xf0 = 0x20
+						irq 0xf0 = 0x20		# + pin 70 = 3VSBSW
 					end
-					device pnp 2e.b off	end		# HWM, front panel LED
+					device pnp 2e.b on		# HWM, front panel LED
+						irq 0x30 = 0xe1		# + Fan RPM sense pins
+						io  0x60 = 0x0290	# + HWM base address
+					end
 					device pnp 2e.d on end		# VID
 					device pnp 2e.e off end		# CIR WAKE-UP
 					device pnp 2e.f on end		# GPIO Push-Pull or Open-drain

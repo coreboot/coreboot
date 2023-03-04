@@ -227,15 +227,33 @@ static size_t get_pstate_info(struct acpi_sw_pstate *pstate_values,
 	return pstate_count;
 }
 
+const acpi_cstate_t cstate_cfg_table[] = {
+	[0] = {
+		.ctype = 1,
+		.latency = 1,
+		.power = 0,
+	},
+	[1] = {
+		.ctype = 2,
+		.latency = 400,
+		.power = 0,
+	},
+};
+
+const acpi_cstate_t *get_cstate_config_data(size_t *size)
+{
+	*size = ARRAY_SIZE(cstate_cfg_table);
+	return cstate_cfg_table;
+}
+
 void generate_cpu_entries(const struct device *device)
 {
 	int logical_cores;
-	size_t pstate_count, cpu;
+	size_t cstate_count, pstate_count, cpu;
+	acpi_cstate_t cstate_values[MAX_CSTATE_COUNT] = { {0} };
 	struct acpi_sw_pstate pstate_values[MAX_PSTATES] = { {0} };
 	struct acpi_xpss_sw_pstate pstate_xpss_values[MAX_PSTATES] = { {0} };
 	uint32_t threads_per_core;
-	uint32_t cstate_base_address =
-		rdmsr(MSR_CSTATE_ADDRESS).lo & MSR_CSTATE_ADDRESS_MASK;
 
 	const acpi_addr_t perf_ctrl = {
 		.space_id = ACPI_ADDRESS_SPACE_FIXED,
@@ -248,35 +266,8 @@ void generate_cpu_entries(const struct device *device)
 		.addrl = PS_STS_REG,
 	};
 
-	const acpi_cstate_t cstate_info[] = {
-		[0] = {
-			.ctype = 1,
-			.latency = 1,
-			.power = 0,
-			.resource = {
-				.space_id = ACPI_ADDRESS_SPACE_FIXED,
-				.bit_width = 2,
-				.bit_offset = 2,
-				.addrl = 0,
-				.addrh = 0,
-			},
-		},
-		[1] = {
-			.ctype = 2,
-			.latency = 400,
-			.power = 0,
-			.resource = {
-				.space_id = ACPI_ADDRESS_SPACE_IO,
-				.bit_width = 8,
-				.bit_offset = 0,
-				.addrl = cstate_base_address + 1,
-				.addrh = 0,
-				.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS,
-			},
-		},
-	};
-
 	threads_per_core = get_threads_per_core();
+	cstate_count = get_cstate_info(cstate_values);
 	pstate_count = get_pstate_info(pstate_values, pstate_xpss_values);
 	logical_cores = get_cpu_count();
 
@@ -297,7 +288,7 @@ void generate_cpu_entries(const struct device *device)
 
 		acpigen_write_PPC(0);
 
-		acpigen_write_CST_package(cstate_info, ARRAY_SIZE(cstate_info));
+		acpigen_write_CST_package(cstate_values, cstate_count);
 
 		acpigen_write_CSD_package(cpu / threads_per_core, threads_per_core,
 					  CSD_HW_ALL, 0);

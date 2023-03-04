@@ -296,10 +296,6 @@ config SMM_MODULE_STACK_SIZE
 	hex
 	default 0x800
 
-config ACPI_CPU_STRING
-	string
-	default "\\_SB.C%03d"
-
 config ACPI_BERT
 	bool "Build ACPI BERT Table"
 	default y

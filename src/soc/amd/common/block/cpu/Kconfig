@@ -33,6 +33,10 @@ config CBFS_CACHE_SIZE
 	help
 	  The size of the cbfs_cache region.
 
+config ACPI_CPU_STRING
+	string
+	default "\\_SB.C%03d"
+
 endif # SOC_AMD_COMMON_BLOCK_NONCAR
 
 config SOC_AMD_COMMON_BLOCK_MCA_COMMON

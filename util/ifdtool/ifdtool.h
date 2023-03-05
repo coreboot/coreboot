@@ -107,13 +107,13 @@ enum component_density {
 };
 
 // flash descriptor
-typedef struct {
+struct __packed fdbar {
 	uint32_t flvalsig;
 	uint32_t flmap0;
 	uint32_t flmap1;
 	uint32_t flmap2;
 	uint32_t flmap3; // Exist for 500 series onwards
-} __attribute__((packed)) fdbar_t;
+};
 
 // regions
 #define MAX_REGIONS 16
@@ -135,23 +135,23 @@ enum flash_regions {
 	REGION_PTT = 15,
 };
 
-typedef struct {
+struct __packed frba {
 	uint32_t flreg[MAX_REGIONS];
-} __attribute__((packed)) frba_t;
+};
 
 // component section
-typedef struct {
+struct __packed fcba {
 	uint32_t flcomp;
 	uint32_t flill;
 	uint32_t flpb;
-} __attribute__((packed)) fcba_t;
+};
 
 // pch strap
 #define MAX_PCHSTRP 1024
 
-typedef struct {
+struct __packed fpsba {
 	uint32_t pchstrp[MAX_PCHSTRP];
-} __attribute__((packed)) fpsba_t;
+};
 
 /*
  * WR / RD bits start at different locations within the flmstr regs, but
@@ -163,36 +163,36 @@ typedef struct {
 #define FLMSTR_RD_SHIFT_V2 8
 
 // master
-typedef struct {
+struct __packed fmba {
 	uint32_t flmstr1;
 	uint32_t flmstr2;
 	uint32_t flmstr3;
 	uint32_t flmstr4;
 	uint32_t flmstr5;
 	uint32_t flmstr6;
-} __attribute__((packed)) fmba_t;
+};
 
 // processor strap
-typedef struct {
+struct __packed fmsba {
 	uint32_t data[8];
-} __attribute__((packed)) fmsba_t;
+};
 
 // ME VSCC
-typedef struct {
+struct vscc {
 	uint32_t jid;
 	uint32_t vscc;
-} vscc_t;
+};
 
-typedef struct {
+struct vtba {
 	// Actual number of entries specified in vtl
 	/* FIXME: Rationale for the limit of 8.
 	 *        AFAICT it's 127, cf. flashrom's ich_descriptors_tool). */
-	vscc_t entry[8];
-} vtba_t;
+	struct vscc entry[8];
+};
 
-typedef struct {
+struct region {
 	int base, limit, size;
-} region_t;
+};
 
 struct region_name {
 	const char *pretty;

@@ -44,7 +44,7 @@
 #define PLATFORM_HAS_10GBE_0_REGION (platform == PLATFORM_DNV)
 #define PLATFORM_HAS_10GBE_1_REGION (platform == PLATFORM_DNV)
 
-static int max_regions_from_fdbar(const fdbar_t *fdb);
+static int max_regions_from_fdbar(const struct fdbar *fdb);
 
 static int ifd_version;
 static int chipset;
@@ -100,7 +100,7 @@ static const char *const ich_chipset_names[] = {
 	NULL
 };
 
-static fdbar_t *find_fd(char *image, int size)
+static struct fdbar *find_fd(char *image, int size)
 {
 	int i, found = 0;
 
@@ -117,7 +117,7 @@ static fdbar_t *find_fd(char *image, int size)
 		return NULL;
 	}
 
-	fdbar_t *fdb = (fdbar_t *) (image + i);
+	struct fdbar *fdb = (struct fdbar *) (image + i);
 	return PTR_IN_RANGE(fdb, image, size) ? fdb : NULL;
 }
 
@@ -131,47 +131,47 @@ static char *find_flumap(char *image, int size)
 	 * official documentation still maintains the offset relative to FDBAR
 	 * this is wrong and a simple fixed offset from the start of the image
 	 * works.
-	*/
+	 */
 	char *flumap = image + 4096 - 256 - 4;
 	return PTR_IN_RANGE(flumap, image, size) ? flumap : NULL;
 }
 
-static fcba_t *find_fcba(char *image, int size)
+static struct fcba *find_fcba(char *image, int size)
 {
-	fdbar_t *fdb = find_fd(image, size);
+	struct fdbar *fdb = find_fd(image, size);
 	if (!fdb)
 		return NULL;
-	fcba_t *fcba = (fcba_t *) (image + ((fdb->flmap0 & 0xff) << 4));
+	struct fcba *fcba = (struct fcba *) (image + ((fdb->flmap0 & 0xff) << 4));
 	return PTR_IN_RANGE(fcba, image, size) ? fcba : NULL;
 
 }
 
-static fmba_t *find_fmba(char *image, int size)
+static struct fmba *find_fmba(char *image, int size)
 {
-	fdbar_t *fdb = find_fd(image, size);
+	struct fdbar *fdb = find_fd(image, size);
 	if (!fdb)
 		return NULL;
-	fmba_t *fmba = (fmba_t *) (image + ((fdb->flmap1 & 0xff) << 4));
+	struct fmba *fmba = (struct fmba *) (image + ((fdb->flmap1 & 0xff) << 4));
 	return PTR_IN_RANGE(fmba, image, size) ? fmba : NULL;
 }
 
-static frba_t *find_frba(char *image, int size)
+static struct frba *find_frba(char *image, int size)
 {
-	fdbar_t *fdb = find_fd(image, size);
+	struct fdbar *fdb = find_fd(image, size);
 	if (!fdb)
 		return NULL;
-	frba_t *frba =
-		(frba_t *) (image + (((fdb->flmap0 >> 16) & 0xff) << 4));
+	struct frba *frba =
+		(struct frba *) (image + (((fdb->flmap0 >> 16) & 0xff) << 4));
 	return PTR_IN_RANGE(frba, image, size) ? frba : NULL;
 }
 
-static fpsba_t *find_fpsba(char *image, int size)
+static struct fpsba *find_fpsba(char *image, int size)
 {
-	fdbar_t *fdb = find_fd(image, size);
+	struct fdbar *fdb = find_fd(image, size);
 	if (!fdb)
 		return NULL;
-	fpsba_t *fpsba =
-		(fpsba_t *) (image + (((fdb->flmap1 >> 16) & 0xff) << 4));
+	struct fpsba *fpsba =
+		(struct fpsba *) (image + (((fdb->flmap1 >> 16) & 0xff) << 4));
 
 	int SSL = ((fdb->flmap1 >> 24) & 0xff) * sizeof(uint32_t);
 	if ((((char *)fpsba) + SSL) >= (image + size))
@@ -179,19 +179,19 @@ static fpsba_t *find_fpsba(char *image, int size)
 	return fpsba;
 }
 
-static fmsba_t *find_fmsba(char *image, int size)
+static struct fmsba *find_fmsba(char *image, int size)
 {
-	fdbar_t *fdb = find_fd(image, size);
+	struct fdbar *fdb = find_fd(image, size);
 	if (!fdb)
 		return NULL;
-	fmsba_t *fmsba = (fmsba_t *) (image + ((fdb->flmap2 & 0xff) << 4));
+	struct fmsba *fmsba = (struct fmsba *) (image + ((fdb->flmap2 & 0xff) << 4));
 	return PTR_IN_RANGE(fmsba, image, size) ? fmsba : NULL;
 }
 
 /* port from flashrom */
 static enum ich_chipset ifd1_guess_chipset(char *image, int size)
 {
-	const fdbar_t *fdb = find_fd(image, size);
+	const struct fdbar *fdb = find_fd(image, size);
 	if (!fdb)
 		exit(EXIT_FAILURE);
 	uint32_t iccriba = (fdb->flmap2 >> 16) & 0xff;
@@ -292,7 +292,7 @@ static int is_platform_ifd_2(void)
 
 static void check_ifd_version(char *image, int size)
 {
-	const fdbar_t *fdb = find_fd(image, size);
+	const struct fdbar *fdb = find_fd(image, size);
 
 	if (is_platform_ifd_2()) {
 		chipset = ifd2_platform_to_chipset(platform);
@@ -308,12 +308,12 @@ static void check_ifd_version(char *image, int size)
 	}
 }
 
-static region_t get_region(const frba_t *frba, unsigned int region_type)
+static struct region get_region(const struct frba *frba, unsigned int region_type)
 {
 	int base_mask;
 	int limit_mask;
 	uint32_t flreg;
-	region_t region;
+	struct region region;
 
 	if (ifd_version >= IFD_VERSION_2)
 		base_mask = 0x7fff;
@@ -338,8 +338,8 @@ static region_t get_region(const frba_t *frba, unsigned int region_type)
 	return region;
 }
 
-static void set_region(frba_t *frba, unsigned int region_type,
-		       const region_t *region)
+static void set_region(struct frba *frba, unsigned int region_type,
+		       const struct region *region)
 {
 	if (region_type >= max_regions) {
 		fprintf(stderr, "Invalid region type %u.\n", region_type);
@@ -361,26 +361,6 @@ static const char *region_name(unsigned int region_type)
 	return region_names[region_type].pretty;
 }
 
-static const char *region_name_fmap(unsigned int region_type)
-{
-	if (region_type >= max_regions) {
-		fprintf(stderr, "Invalid region type.\n");
-		exit(EXIT_FAILURE);
-	}
-
-	return region_names[region_type].fmapname;
-}
-
-static const char *region_name_short(unsigned int region_type)
-{
-	if (region_type >= max_regions) {
-		fprintf(stderr, "Invalid region type.\n");
-		exit (EXIT_FAILURE);
-	}
-
-	return region_names[region_type].terse;
-}
-
 static int region_num(const char *name)
 {
 	unsigned int i;
@@ -395,30 +375,12 @@ static int region_num(const char *name)
 	return -1;
 }
 
-static const char *region_filename(unsigned int region_type)
+static void dump_region(unsigned int num, const struct frba *frba)
 {
-	if (region_type >= max_regions) {
-		fprintf(stderr, "Invalid region type %d.\n", region_type);
-		exit (EXIT_FAILURE);
-	}
-
-	return region_names[region_type].filename;
-}
-
-static void dump_region(unsigned int num, const frba_t *frba)
-{
-	region_t region = get_region(frba, num);
+	struct region region = get_region(frba, num);
 	printf("  Flash Region %d (%s): %08x - %08x %s\n",
-		       num, region_name(num), region.base, region.limit,
-		       region.size < 1 ? "(unused)" : "");
-}
-
-static void dump_region_layout(char *buf, size_t bufsize, unsigned int num,
-			       const frba_t *frba)
-{
-	region_t region = get_region(frba, num);
-	snprintf(buf, bufsize, "%08x:%08x %s\n",
-		region.base, region.limit, region_name_short(num));
+		num, region_name(num), region.base, region.limit,
+		region.size < 1 ? "(unused)" : "");
 }
 
 static int sort_compare(const void *a, const void *b)
@@ -440,7 +402,7 @@ static int sort_compare(const void *a, const void *b)
  * operating on an IFDv1.5 detect how much space is actually present
  * in the IFD.
  */
-static int max_regions_from_fdbar(const fdbar_t *fdb)
+static int max_regions_from_fdbar(const struct fdbar *fdb)
 {
 	const size_t fcba = (fdb->flmap0 & 0xff) << 4;
 	const size_t fmba = (fdb->flmap1 & 0xff) << 4;
@@ -464,10 +426,10 @@ static int max_regions_from_fdbar(const fdbar_t *fdb)
 	return 0;
 }
 
-static void dump_frba(const frba_t *frba)
+static void dump_frba(const struct frba *frba)
 {
 	unsigned int i;
-	region_t region;
+	struct region region;
 	printf("Found Region Section\n");
 	for (i = 0; i < max_regions; i++) {
 		region = get_region(frba, i);
@@ -480,26 +442,26 @@ static void dump_frba(const frba_t *frba)
 	}
 }
 
-static void dump_frba_layout(const frba_t *frba, const char *layout_fname)
+static void dump_flashrom_layout(char *image, int size, const char *layout_fname)
 {
-	char buf[LAYOUT_LINELEN];
-	size_t bufsize = LAYOUT_LINELEN;
-	unsigned int i;
+	const struct frba *frba = find_frba(image, size);
+	if (!frba)
+		exit(EXIT_FAILURE);
 
-	int layout_fd = open(layout_fname, O_WRONLY | O_CREAT | O_TRUNC,
-			S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+	int layout_fd = open(layout_fname, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (layout_fd == -1) {
 		perror("Could not open file");
 		exit(EXIT_FAILURE);
 	}
 
-	for (i = 0; i < max_regions; i++) {
-		region_t region = get_region(frba, i);
+	for (unsigned int i = 0; i < max_regions; i++) {
+		struct region region = get_region(frba, i);
 		/* is region invalid? */
 		if (region.size < 1)
 			continue;
 
-		dump_region_layout(buf, bufsize, i, frba);
+		char buf[LAYOUT_LINELEN];
+		snprintf(buf, LAYOUT_LINELEN, "%08x:%08x %s\n", region.base, region.limit, region_names[i].terse);
 		if (write(layout_fd, buf, strlen(buf)) < 0) {
 			perror("Could not write to file");
 			exit(EXIT_FAILURE);
@@ -681,7 +643,7 @@ static int is_platform_with_100x_series_pch(void)
 	return 0;
 }
 
-static void dump_fcba(const fcba_t *fcba, const fpsba_t *fpsba)
+static void dump_fcba(const struct fcba *fcba, const struct fpsba *fpsba)
 {
 	unsigned int freq;
 
@@ -753,7 +715,7 @@ static void dump_fcba(const fcba_t *fcba, const fpsba_t *fpsba)
 	}
 }
 
-static void dump_fpsba(const fdbar_t *fdb, const fpsba_t *fpsba)
+static void dump_fpsba(const struct fdbar *fdb, const struct fpsba *fpsba)
 {
 	unsigned int i;
 	/* SoC Straps, aka PSL, aka ISL */
@@ -766,8 +728,7 @@ static void dump_fpsba(const fdbar_t *fdb, const fpsba_t *fpsba)
 	if (ifd_version >= IFD_VERSION_2) {
 		printf("HAP bit is %sset\n",
 		       fpsba->pchstrp[0] & (1 << 16) ? "" : "not ");
-	} else if (chipset >= CHIPSET_ICH8
-		   && chipset <= CHIPSET_ICH10) {
+	} else if (chipset >= CHIPSET_ICH8 && chipset <= CHIPSET_ICH10) {
 		printf("ICH_MeDisable bit is %sset\n",
 		       fpsba->pchstrp[0] & 1 ? "" : "not ");
 	} else {
@@ -792,10 +753,10 @@ static void decode_flmstr(uint32_t flmstr)
 	/* EC region access only available on v2+ */
 	if (PLATFORM_HAS_EC_REGION)
 		printf("  EC Region Write Access:            %s\n",
-		       (flmstr & (1 << (wr_shift + 8))) ?
-		       "enabled" : "disabled");
+			(flmstr & (1 << (wr_shift + 8))) ?
+			"enabled" : "disabled");
 	printf("  Platform Data Region Write Access: %s\n",
-		(flmstr & (1 << (wr_shift + 4))) ? "enabled" : "disabled");
+			(flmstr & (1 << (wr_shift + 4))) ? "enabled" : "disabled");
 	if (PLATFORM_HAS_GBE_REGION) {
 		printf("  GbE Region Write Access:           %s\n",
 			(flmstr & (1 << (wr_shift + 3))) ? "enabled" : "disabled");
@@ -817,8 +778,8 @@ static void decode_flmstr(uint32_t flmstr)
 
 	if (PLATFORM_HAS_EC_REGION)
 		printf("  EC Region Read Access:             %s\n",
-		       (flmstr & (1 << (rd_shift + 8))) ?
-		       "enabled" : "disabled");
+			(flmstr & (1 << (rd_shift + 8))) ?
+			"enabled" : "disabled");
 	printf("  Platform Data Region Read Access:  %s\n",
 		(flmstr & (1 << (rd_shift + 4))) ? "enabled" : "disabled");
 	if (PLATFORM_HAS_GBE_REGION) {
@@ -846,7 +807,7 @@ static void decode_flmstr(uint32_t flmstr)
 			flmstr & 0xffff);
 }
 
-static void dump_fmba(const fmba_t *fmba)
+static void dump_fmba(const struct fmba *fmba)
 {
 	printf("Found Master Section\n");
 	printf("FLMSTR1:   0x%08x (Host CPU/BIOS)\n", fmba->flmstr1);
@@ -866,7 +827,7 @@ static void dump_fmba(const fmba_t *fmba)
 	}
 }
 
-static void dump_fmsba(const fmsba_t *fmsba)
+static void dump_fmsba(const struct fmsba *fmsba)
 {
 	unsigned int i;
 	printf("Found Processor Strap Section\n");
@@ -875,9 +836,9 @@ static void dump_fmsba(const fmsba_t *fmsba)
 
 	if (chipset >= CHIPSET_ICH8 && chipset <= CHIPSET_ICH10) {
 		printf("MCH_MeDisable bit is %sset\n",
-		       fmsba->data[0] & 1 ? "" : "not ");
+			fmsba->data[0] & 1 ? "" : "not ");
 		printf("MCH_AltMeDisable bit is %sset\n",
-		       fmsba->data[0] & (1 << 7) ? "" : "not ");
+			fmsba->data[0] & (1 << 7) ? "" : "not ");
 	}
 }
 
@@ -942,10 +903,10 @@ static void dump_vscc(uint32_t vscc)
 	}
 }
 
-static void dump_vtba(const vtba_t *vtba, int vtl)
+static void dump_vtba(const struct vtba *vtba, int vtl)
 {
 	int i;
-	int max_len = sizeof(vtba_t)/sizeof(vscc_t);
+	int max_len = sizeof(struct vtba)/sizeof(struct vscc);
 	int num = (vtl >> 1) < max_len ? (vtl >> 1) : max_len;
 
 	printf("ME VSCC table:\n");
@@ -973,7 +934,7 @@ static void dump_oem(const uint8_t *oem)
 
 static void dump_fd(char *image, int size)
 {
-	const fdbar_t *fdb = find_fd(image, size);
+	const struct fdbar *fdb = find_fd(image, size);
 	if (!fdb)
 		exit(EXIT_FAILURE);
 
@@ -1012,16 +973,16 @@ static void dump_fd(char *image, int size)
 		(flumap1 >> 8) & 0xff);
 	printf("  Intel ME VSCC Table Base Address (VTBA): 0x%06x\n\n",
 		(flumap1 & 0xff) << 4);
-	dump_vtba((vtba_t *)
+	dump_vtba((struct vtba *)
 			(image + ((flumap1 & 0xff) << 4)),
 			(flumap1 >> 8) & 0xff);
 	dump_oem((const uint8_t *)image + 0xf00);
 
-	const frba_t *frba = find_frba(image, size);
-	const fcba_t *fcba = find_fcba(image, size);
-	const fpsba_t *fpsba = find_fpsba(image, size);
-	const fmba_t *fmba = find_fmba(image, size);
-	const fmsba_t *fmsba = find_fmsba(image, size);
+	const struct frba *frba = find_frba(image, size);
+	const struct fcba *fcba = find_fcba(image, size);
+	const struct fpsba *fpsba = find_fpsba(image, size);
+	const struct fmba *fmba = find_fmba(image, size);
+	const struct fmsba *fmsba = find_fmsba(image, size);
 
 	if (frba && fcba && fpsba && fmba && fmsba) {
 		dump_frba(frba);
@@ -1034,29 +995,20 @@ static void dump_fd(char *image, int size)
 	}
 }
 
-static void dump_layout(char *image, int size, const char *layout_fname)
-{
-	const frba_t *frba = find_frba(image, size);
-	if (!frba)
-		exit(EXIT_FAILURE);
-
-	dump_frba_layout(frba, layout_fname);
-}
-
 static void write_regions(char *image, int size)
 {
 	unsigned int i;
-	const frba_t *frba = find_frba(image, size);
+	const struct frba *frba = find_frba(image, size);
 
 	if (!frba)
 		exit(EXIT_FAILURE);
 
 	for (i = 0; i < max_regions; i++) {
-		region_t region = get_region(frba, i);
+		struct region region = get_region(frba, i);
 		dump_region(i, frba);
 		if (region.size > 0) {
 			int region_fd;
-			region_fd = open(region_filename(i),
+			region_fd = open(region_names[i].filename,
 					 O_WRONLY | O_CREAT | O_TRUNC | O_BINARY,
 					 S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 			if (region_fd < 0) {
@@ -1075,32 +1027,30 @@ static void validate_layout(char *image, int size)
 	uint i, errors = 0;
 	struct fmap *fmap;
 	long int fmap_loc = fmap_find((uint8_t *)image, size);
-	const frba_t *frba = find_frba(image, size);
+	const struct frba *frba = find_frba(image, size);
 
-	if (fmap_loc < 0 || !frba)
+	if (fmap_loc < 0 || !frba) {
+		printf("Could not find FMAP (%p) or Intel Flash Descriptor (%p)\n",
+			(void *)fmap_loc, frba);
 		exit(EXIT_FAILURE);
+	}
 
 	fmap = (struct fmap *)(image + fmap_loc);
 
+	int matches = 0;
 	for (i = 0; i < max_regions; i++) {
-		if (region_name_fmap(i) == NULL)
-			continue;
-
-		region_t region = get_region(frba, i);
-
+		struct region region = get_region(frba, i);
 		if (region.size == 0)
 			continue;
 
-		const struct fmap_area *area =
-			fmap_find_area(fmap, region_name_fmap(i));
-
+		const struct fmap_area *area = fmap_find_area(fmap, region_names[i].fmapname);
 		if (!area)
 			continue;
 
-		if ((uint)region.base != area->offset ||
-			(uint)region.size != area->size) {
-			printf("Region mismatch between %s and %s\n",
-				region_names[i].terse, area->name);
+		matches++; // found a match between FMAP and IFD region
+
+		if ((uint)region.base != area->offset || (uint)region.size != area->size) {
+			printf("Region mismatch between %s and %s\n", region_names[i].terse, area->name);
 			printf(" Descriptor region %s:\n", region_names[i].terse);
 			printf("  offset: 0x%08x\n", region.base);
 			printf("  length: 0x%08x\n", region.size);
@@ -1109,6 +1059,11 @@ static void validate_layout(char *image, int size)
 			printf("  length: 0x%08x\n", area->size);
 			errors++;
 		}
+	}
+
+	if (!matches) {
+		// At least a BIOS region should be present in both IFD and FMAP
+		fprintf(stderr, "Warning: Not a single IFD region found in FMAP\n");
 	}
 
 	if (errors > 0)
@@ -1121,9 +1076,7 @@ static void write_image(const char *filename, char *image, int size)
 	printf("Writing new image to %s\n", filename);
 
 	// Now write out new image
-	new_fd = open(filename,
-			 O_WRONLY | O_CREAT | O_TRUNC | O_BINARY,
-			 S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+	new_fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0644);
 	if (new_fd < 0) {
 		perror("Error while trying to open file");
 		exit(EXIT_FAILURE);
@@ -1136,7 +1089,7 @@ static void write_image(const char *filename, char *image, int size)
 static void set_spi_frequency(const char *filename, char *image, int size,
 			      enum spi_frequency freq)
 {
-	fcba_t *fcba = find_fcba(image, size);
+	struct fcba *fcba = find_fcba(image, size);
 	if (!fcba)
 		exit(EXIT_FAILURE);
 
@@ -1154,7 +1107,7 @@ static void set_spi_frequency(const char *filename, char *image, int size,
 
 static void set_em100_mode(const char *filename, char *image, int size)
 {
-	fcba_t *fcba = find_fcba(image, size);
+	struct fcba *fcba = find_fcba(image, size);
 	if (!fcba)
 		exit(EXIT_FAILURE);
 
@@ -1178,9 +1131,9 @@ static void set_em100_mode(const char *filename, char *image, int size)
 }
 
 static void set_chipdensity(const char *filename, char *image, int size,
-                            unsigned int density)
+			    unsigned int density)
 {
-	fcba_t *fcba = find_fcba(image, size);
+	struct fcba *fcba = find_fcba(image, size);
 	uint8_t mask, chip2_offset;
 	if (!fcba)
 		exit(EXIT_FAILURE);
@@ -1234,9 +1187,9 @@ static void set_chipdensity(const char *filename, char *image, int size,
 	write_image(filename, image, size);
 }
 
-static int check_region(const frba_t *frba, unsigned int region_type)
+static int check_region(const struct frba *frba, unsigned int region_type)
 {
-	region_t region;
+	struct region region;
 
 	if (!frba)
 		return 0;
@@ -1248,8 +1201,8 @@ static int check_region(const frba_t *frba, unsigned int region_type)
 static void lock_descriptor(const char *filename, char *image, int size)
 {
 	int wr_shift, rd_shift;
-	fmba_t *fmba = find_fmba(image, size);
-	const frba_t *frba = find_frba(image, size);
+	struct fmba *fmba = find_fmba(image, size);
+	const struct frba *frba = find_frba(image, size);
 	if (!fmba)
 		exit(EXIT_FAILURE);
 
@@ -1375,7 +1328,7 @@ static void lock_descriptor(const char *filename, char *image, int size)
 static void enable_cpu_read_me(const char *filename, char *image, int size)
 {
 	int rd_shift;
-	fmba_t *fmba = find_fmba(image, size);
+	struct fmba *fmba = find_fmba(image, size);
 
 	if (!fmba)
 		exit(EXIT_FAILURE);
@@ -1393,7 +1346,7 @@ static void enable_cpu_read_me(const char *filename, char *image, int size)
 
 static void unlock_descriptor(const char *filename, char *image, int size)
 {
-	fmba_t *fmba = find_fmba(image, size);
+	struct fmba *fmba = find_fmba(image, size);
 	if (!fmba)
 		exit(EXIT_FAILURE);
 
@@ -1413,8 +1366,8 @@ static void unlock_descriptor(const char *filename, char *image, int size)
 	write_image(filename, image, size);
 }
 
-static void set_pchstrap(fpsba_t *fpsba, const fdbar_t *fdb, const int strap,
-			 const unsigned int value)
+static void set_pchstrap(struct fpsba *fpsba, const struct fdbar *fdb, const int strap,
+			const unsigned int value)
 {
 	if (!fpsba || !fdb) {
 		fprintf(stderr, "Internal error\n");
@@ -1431,12 +1384,12 @@ static void set_pchstrap(fpsba_t *fpsba, const fdbar_t *fdb, const int strap,
 }
 
 /* Set the AltMeDisable (or HAP for >= IFD_VERSION_2) */
-static void fpsba_set_altmedisable(fpsba_t *fpsba, fmsba_t *fmsba, bool altmedisable)
+static void fpsba_set_altmedisable(struct fpsba *fpsba, struct fmsba *fmsba, bool altmedisable)
 {
 	if (ifd_version >= IFD_VERSION_2) {
 		printf("%sting the HAP bit to %s Intel ME...\n",
-		      altmedisable?"Set":"Unset",
-		      altmedisable?"disable":"enable");
+			altmedisable?"Set":"Unset",
+			altmedisable?"disable":"enable");
 		if (altmedisable)
 			fpsba->pchstrp[0] |= (1 << 16);
 		else
@@ -1461,8 +1414,8 @@ static void fpsba_set_altmedisable(fpsba_t *fpsba, fmsba_t *fmsba, bool altmedis
 			}
 		} else {
 			printf("%sting the AltMeDisable to %s Intel ME...\n",
-			       altmedisable?"Set":"Unset",
-			       altmedisable?"disable":"enable");
+				altmedisable?"Set":"Unset",
+				altmedisable?"disable":"enable");
 			if (altmedisable)
 				fpsba->pchstrp[10] |= (1 << 7);
 			else
@@ -1472,13 +1425,13 @@ static void fpsba_set_altmedisable(fpsba_t *fpsba, fmsba_t *fmsba, bool altmedis
 }
 
 static void inject_region(const char *filename, char *image, int size,
-		   unsigned int region_type, const char *region_fname)
+			  unsigned int region_type, const char *region_fname)
 {
-	frba_t *frba = find_frba(image, size);
+	struct frba *frba = find_frba(image, size);
 	if (!frba)
 		exit(EXIT_FAILURE);
 
-	region_t region = get_region(frba, region_type);
+	struct region region = get_region(frba, region_type);
 	if (region.size <= 0xfff) {
 		fprintf(stderr, "Region %s is disabled in target. Not injecting.\n",
 				region_name(region_type));
@@ -1499,8 +1452,7 @@ static void inject_region(const char *filename, char *image, int size,
 
 	printf("File %s is %d bytes\n", region_fname, region_size);
 
-	if ( (region_size > region.size) || ((region_type != 1) &&
-		(region_size > region.size))) {
+	if (region_size > region.size) {
 		fprintf(stderr, "Region %s is %d(0x%x) bytes. File is %d(0x%x)"
 				" bytes. Not injecting.\n",
 				region_name(region_type), region.size,
@@ -1524,8 +1476,7 @@ static void inject_region(const char *filename, char *image, int size,
 		exit(EXIT_FAILURE);
 	}
 
-	if (read(region_fd, image + region.base + offset, region_size)
-							!= region_size) {
+	if (read(region_fd, image + region.base + offset, region_size) != region_size) {
 		perror("Could not read file");
 		exit(EXIT_FAILURE);
 	}
@@ -1555,7 +1506,7 @@ static unsigned int next_pow2(unsigned int x)
  * @return 0 if the two regions are separate
  * @return 1 if the two regions overlap
  */
-static int regions_collide(const region_t *r1, const region_t *r2)
+static int regions_collide(const struct region *r1, const struct region *r2)
 {
 	if ((r1->size == 0) || (r2->size == 0))
 		return 0;
@@ -1572,13 +1523,13 @@ static void new_layout(const char *filename, char *image, int size,
 	char layout_region_name[256];
 	unsigned int i, j;
 	int region_number;
-	region_t current_regions[MAX_REGIONS];
-	region_t new_regions[MAX_REGIONS];
+	struct region current_regions[MAX_REGIONS];
+	struct region new_regions[MAX_REGIONS];
 	int new_extent = 0;
 	char *new_image;
 
 	/* load current descriptor map and regions */
-	frba_t *frba = find_frba(image, size);
+	struct frba *frba = find_frba(image, size);
 	if (!frba)
 		exit(EXIT_FAILURE);
 
@@ -1669,8 +1620,8 @@ static void new_layout(const char *filename, char *image, int size,
 	for (i = 0; i < max_regions; i++) {
 		int copy_size = new_regions[i].size;
 		int offset_current = 0, offset_new = 0;
-		const region_t *current = &current_regions[i];
-		const region_t *new = &new_regions[i];
+		const struct region *current = &current_regions[i];
+		const struct region *new = &new_regions[i];
 
 		if (new->size == 0)
 			continue;
@@ -1819,7 +1770,7 @@ int main(int argc, char *argv[])
 	};
 
 	while ((opt = getopt_long(argc, argv, "S:V:df:D:C:M:xi:n:O:s:p:elruvth?",
-				  long_options, &option_index)) != EOF) {
+					long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'd':
 			mode_dump = 1;
@@ -1836,7 +1787,7 @@ int main(int argc, char *argv[])
 			layout_fname = strdup(optarg);
 			if (!layout_fname) {
 				fprintf(stderr, "No layout file specified\n");
-				print_usage(argv[0]);
+				fprintf(stderr, "run '%s -h' for usage\n", argv[0]);
 				exit(EXIT_FAILURE);
 			}
 			break;
@@ -1848,7 +1799,7 @@ int main(int argc, char *argv[])
 			region_type_string = strdup(optarg);
 			region_fname = strchr(region_type_string, ':');
 			if (!region_fname) {
-				print_usage(argv[0]);
+				fprintf(stderr, "run '%s -h' for usage\n", argv[0]);
 				exit(EXIT_FAILURE);
 			}
 			region_fname[0] = '\0';
@@ -1886,7 +1837,7 @@ int main(int argc, char *argv[])
 			if (region_type == -1) {
 				fprintf(stderr, "No such region type: '%s'\n\n",
 					region_type_string);
-				print_usage(argv[0]);
+				fprintf(stderr, "run '%s -h' for usage\n", argv[0]);
 				exit(EXIT_FAILURE);
 			}
 			mode_inject = 1;
@@ -1896,7 +1847,7 @@ int main(int argc, char *argv[])
 			layout_fname = strdup(optarg);
 			if (!layout_fname) {
 				fprintf(stderr, "No layout file specified\n");
-				print_usage(argv[0]);
+				fprintf(stderr, "run '%s -h' for usage\n", argv[0]);
 				exit(EXIT_FAILURE);
 			}
 			break;
@@ -1904,7 +1855,7 @@ int main(int argc, char *argv[])
 			new_filename = strdup(optarg);
 			if (!new_filename) {
 				fprintf(stderr, "No output filename specified\n");
-				print_usage(argv[0]);
+				fprintf(stderr, "run '%s -h' for usage\n", argv[0]);
 				exit(EXIT_FAILURE);
 			}
 			break;
@@ -1941,7 +1892,7 @@ int main(int argc, char *argv[])
 				break;
 			default:
 				printf("error: Unknown density\n");
-				print_usage(argv[0]);
+				fprintf(stderr, "run '%s -h' for usage\n", argv[0]);
 				exit(EXIT_FAILURE);
 			}
 			break;
@@ -1949,7 +1900,7 @@ int main(int argc, char *argv[])
 			selected_chip = strtol(optarg, NULL, 0);
 			if (selected_chip > 2) {
 				fprintf(stderr, "error: Invalid chip selection\n");
-				print_usage(argv[0]);
+				fprintf(stderr, "run '%s -h' for usage\n", argv[0]);
 				exit(EXIT_FAILURE);
 			}
 			break;
@@ -1958,7 +1909,7 @@ int main(int argc, char *argv[])
 			altmedisable = strtol(optarg, NULL, 0);
 			if (altmedisable > 1) {
 				fprintf(stderr, "error: Illegal value\n");
-				print_usage(argv[0]);
+				fprintf(stderr, "run '%s -h' for usage\n", argv[0]);
 				exit(EXIT_FAILURE);
 			}
 			break;
@@ -1987,7 +1938,7 @@ int main(int argc, char *argv[])
 			default:
 				fprintf(stderr, "Invalid SPI Frequency: %d\n",
 					inputfreq);
-				print_usage(argv[0]);
+				fprintf(stderr, "run '%s -h' for usage\n", argv[0]);
 				exit(EXIT_FAILURE);
 			}
 			mode_spifreq = 1;
@@ -2045,7 +1996,6 @@ int main(int argc, char *argv[])
 				fprintf(stderr, "Unknown platform: %s\n", optarg);
 				exit(EXIT_FAILURE);
 			}
-			fprintf(stderr, "Platform is: %s\n", optarg);
 			break;
 		case 't':
 			mode_validate = 1;
@@ -2063,27 +2013,30 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	if ((mode_dump + mode_layout + mode_extract + mode_inject + mode_setstrap +
-		mode_newlayout + (mode_spifreq | mode_em100 | mode_unlocked |
-		 mode_locked) + mode_altmedisable + mode_validate) > 1) {
+	if ((mode_dump + mode_layout + mode_extract + mode_inject +
+			mode_setstrap + mode_newlayout + (mode_spifreq | mode_em100 |
+			mode_unlocked | mode_locked) + mode_altmedisable + mode_validate) > 1) {
 		fprintf(stderr, "You may not specify more than one mode.\n\n");
-		print_usage(argv[0]);
+		fprintf(stderr, "run '%s -h' for usage\n", argv[0]);
 		exit(EXIT_FAILURE);
 	}
 
-	if ((mode_dump + mode_layout + mode_extract + mode_inject + mode_setstrap +
-	     mode_newlayout + mode_spifreq + mode_em100 + mode_locked +
-	     mode_unlocked + mode_density + mode_altmedisable + mode_validate) == 0) {
+	if ((mode_dump + mode_layout + mode_extract + mode_inject +
+			mode_setstrap + mode_newlayout + mode_spifreq + mode_em100 +
+			mode_locked + mode_unlocked + mode_density + mode_altmedisable + mode_validate) == 0) {
 		fprintf(stderr, "You need to specify a mode.\n\n");
-		print_usage(argv[0]);
+		fprintf(stderr, "run '%s -h' for usage\n", argv[0]);
 		exit(EXIT_FAILURE);
 	}
 
 	if (optind + 1 != argc) {
 		fprintf(stderr, "You need to specify a file.\n\n");
-		print_usage(argv[0]);
+		fprintf(stderr, "run '%s -h' for usage\n", argv[0]);
 		exit(EXIT_FAILURE);
 	}
+
+	if (platform == -1)
+		fprintf(stderr, "Warning: No platform specified. Output may be incomplete\n");
 
 	char *filename = argv[optind];
 	int bios_fd = open(filename, O_RDONLY | O_BINARY);
@@ -2131,7 +2084,7 @@ int main(int argc, char *argv[])
 		dump_fd(image, size);
 
 	if (mode_layout)
-		dump_layout(image, size, layout_fname);
+		dump_flashrom_layout(image, size, layout_fname);
 
 	if (mode_extract)
 		write_regions(image, size);
@@ -2165,15 +2118,15 @@ int main(int argc, char *argv[])
 		unlock_descriptor(new_filename, image, size);
 
 	if (mode_setstrap) {
-		fpsba_t *fpsba = find_fpsba(image, size);
-		const fdbar_t *fdb = find_fd(image, size);
+		struct fpsba *fpsba = find_fpsba(image, size);
+		const struct fdbar *fdb = find_fd(image, size);
 		set_pchstrap(fpsba, fdb, pchstrap, value);
 		write_image(new_filename, image, size);
 	}
 
 	if (mode_altmedisable) {
-		fpsba_t *fpsba = find_fpsba(image, size);
-		fmsba_t *fmsba = find_fmsba(image, size);
+		struct fpsba *fpsba = find_fpsba(image, size);
+		struct fmsba *fmsba = find_fmsba(image, size);
 		fpsba_set_altmedisable(fpsba, fmsba, altmedisable);
 		write_image(new_filename, image, size);
 	}

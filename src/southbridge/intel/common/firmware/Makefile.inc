@@ -49,6 +49,7 @@ add_intel_firmware: $(obj)/coreboot.pre $(IFDTOOL)
 	dd if=$(IFD_BIN_PATH) \
 		of=$(obj)/coreboot.pre conv=notrunc >/dev/null 2>&1
 ifeq ($(CONFIG_VALIDATE_INTEL_DESCRIPTOR),y)
+	printf "    IFDTOOL    validate IFD against FMAP\n"
 	$(objutil)/ifdtool/ifdtool \
 		$(IFDTOOL_USE_CHIPSET) \
 		-t $(obj)/coreboot.pre

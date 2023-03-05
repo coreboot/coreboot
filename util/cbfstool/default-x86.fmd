@@ -8,7 +8,7 @@
 # +-------------+ <-- 4GB / end of flash
 
 FLASH@##ROM_BASE## ##ROM_SIZE## {
-	BIOS@##BIOS_BASE## ##BIOS_SIZE## {
+	SI_BIOS@##BIOS_BASE## ##BIOS_SIZE## {
 		##CONSOLE_ENTRY##
 		##MRC_CACHE_ENTRY##
 		##SMMSTORE_ENTRY##

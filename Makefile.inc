@@ -934,11 +934,22 @@ prebuild-files = $(foreach region,$(all-regions), \
 		$(call sort-files,$(call placed-files-in-region,$(region))), \
 		$(call cbfs-add-cmd,$(file),$(region),$(CONFIG_UPDATE_IMAGE))))
 
+# If no FMD file (Flashmap) is supplied by mainboard, fall back to a default
 ifeq ($(CONFIG_FMDFILE),)
-# For a description of the flash layout described by these variables, check
-# the $(DEFAULT_FLASHMAP) .fmd files.
+
 ifeq ($(CONFIG_ARCH_X86),y)
+
 DEFAULT_FLASHMAP:=$(top)/util/cbfstool/default-x86.fmd
+# check if IFD_CHIPSET is set and if yes generate a FMAP template from IFD descriptor
+ifneq ($(CONFIG_IFD_CHIPSET),)
+ifeq ($(CONFIG_HAVE_IFD_BIN),y)
+DEFAULT_FLASHMAP:=$(obj)/fmap-template.fmd
+$(DEFAULT_FLASHMAP): $(call strip_quotes,$(CONFIG_IFD_BIN_PATH)) $(IFDTOOL)
+	echo "    IFDTOOL    -p $(CONFIG_IFD_CHIPSET) -F $@ $<"
+	$(IFDTOOL) -p $(CONFIG_IFD_CHIPSET) -F $@ $<
+endif # ifeq($(CONFIG_HAVE_IFD_BIN),y)
+endif # ifneq($(CONFIG_IFD_CHIPSET),)
+
 # entire flash
 FMAP_ROM_ADDR := $(call int-subtract, 0x100000000 $(CONFIG_ROM_SIZE))
 FMAP_ROM_SIZE := $(CONFIG_ROM_SIZE)

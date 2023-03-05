@@ -191,7 +191,7 @@ struct vtba {
 };
 
 struct region {
-	int base, limit, size;
+	int base, limit, size, type;
 };
 
 struct region_name {

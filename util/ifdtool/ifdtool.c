@@ -331,6 +331,7 @@ static struct region get_region(const struct frba *frba, unsigned int region_typ
 	region.base = (flreg & base_mask) << 12;
 	region.limit = ((flreg & limit_mask) >> 4) | 0xfff;
 	region.size = region.limit - region.base + 1;
+	region.type = region_type;
 
 	if (region.size < 0)
 		region.size = 0;
@@ -993,6 +994,91 @@ static void dump_fd(char *image, int size)
 	} else {
 		printf("FD is corrupted!\n");
 	}
+}
+
+/* Takes an image containing an IFD and creates a Flashmap .fmd file template.
+ * This flashmap will contain all IFD regions except the BIOS region.
+ * The BIOS region is created by coreboot itself and 'should' match the IFD region
+ * anyway (CONFIG_VALIDATE_INTEL_DESCRIPTOR should make sure). coreboot built system will use
+ * this template to generate the final Flashmap file.
+ */
+static void create_fmap_template(char *image, int size, const char *layout_fname)
+{
+	const struct frba *frba = find_frba(image, size);
+	if (!frba)
+		exit(EXIT_FAILURE);
+
+	int layout_fd = open(layout_fname, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (layout_fd == -1) {
+		perror("Could not open file");
+		exit(EXIT_FAILURE);
+	}
+
+	char *bbuf = "FLASH@##ROM_BASE## ##ROM_SIZE## {\n";
+	if (write(layout_fd, bbuf, strlen(bbuf)) < 0) {
+		perror("Could not write to file");
+		exit(EXIT_FAILURE);
+	}
+
+	/* fmaptool requires regions in .fmd to be sorted.
+	 * => We need to sort the regions by base address before writing them in .fmd File
+	 */
+	int count_regions = 0;
+	struct region sorted_regions[MAX_REGIONS] = { 0 };
+	for (unsigned int i = 0; i < max_regions; i++) {
+		struct region region = get_region(frba, i);
+		/* is region invalid? */
+		if (region.size < 1)
+			continue;
+
+		/* Here we decide to use the coreboot generated FMAP BIOS region, instead of
+		 * the one specified in the IFD. The case when IFD and FMAP BIOS region do not
+		 * match cannot be caught here, therefore one should still validate IFD and
+		 * FMAP via CONFIG_VALIDATE_INTEL_DESCRIPTOR
+		 */
+		if (i == REGION_BIOS)
+			continue;
+
+		sorted_regions[count_regions] = region;
+		// basically insertion sort
+		for (int i = count_regions-1; i >= 0 ; i--) {
+			if (sorted_regions[i].base > sorted_regions[i+1].base) {
+				struct region tmp = sorted_regions[i];
+				sorted_regions[i] = sorted_regions[i+1];
+				sorted_regions[i+1] = tmp;
+			}
+		}
+		count_regions++;
+	}
+
+	// Now write regions sorted by base address in the fmap file
+	for (int i = 0; i < count_regions; i++) {
+		struct region region = sorted_regions[i];
+		char buf[LAYOUT_LINELEN];
+		snprintf(buf, LAYOUT_LINELEN, "\t%s@0x%X 0x%X\n", region_names[region.type].fmapname, region.base, region.size);
+		if (write(layout_fd, buf, strlen(buf)) < 0) {
+			perror("Could not write to file");
+			exit(EXIT_FAILURE);
+		}
+	}
+
+	char *ebuf = "\tSI_BIOS@##BIOS_BASE## ##BIOS_SIZE## {\n"
+		     "\t\t##CONSOLE_ENTRY##\n"
+		     "\t\t##MRC_CACHE_ENTRY##\n"
+		     "\t\t##SMMSTORE_ENTRY##\n"
+		     "\t\t##SPD_CACHE_ENTRY##\n"
+		     "\t\t##VPD_ENTRY##\n"
+		     "\t\tFMAP@##FMAP_BASE## ##FMAP_SIZE##\n"
+		     "\t\tCOREBOOT(CBFS)@##CBFS_BASE## ##CBFS_SIZE##\n"
+		     "\t}\n"
+		     "}\n";
+	if (write(layout_fd, ebuf, strlen(ebuf)) < 0) {
+		perror("Could not write to file");
+		exit(EXIT_FAILURE);
+	}
+
+	close(layout_fd);
+	printf("Wrote layout to %s\n", layout_fname);
 }
 
 static void write_regions(char *image, int size)
@@ -1689,6 +1775,7 @@ static void print_usage(const char *name)
 	printf("\n"
 	       "   -d | --dump:                          dump intel firmware descriptor\n"
 	       "   -f | --layout <filename>              dump regions into a flashrom layout file\n"
+	       "   -F | --fmap-layout <filename>         dump IFD regions into a fmap layout template (.fmd) file\n"
 	       "   -t | --validate                       Validate that the firmware descriptor layout matches the fmap layout\n"
 	       "   -x | --extract:                       extract intel fd modules\n"
 	       "   -i | --inject <region>:<module>       inject file <module> into region <region>\n"
@@ -1735,7 +1822,7 @@ int main(int argc, char *argv[])
 	int mode_dump = 0, mode_extract = 0, mode_inject = 0, mode_spifreq = 0;
 	int mode_em100 = 0, mode_locked = 0, mode_unlocked = 0, mode_validate = 0;
 	int mode_layout = 0, mode_newlayout = 0, mode_density = 0, mode_setstrap = 0;
-	int mode_read = 0, mode_altmedisable = 0, altmedisable = 0;
+	int mode_read = 0, mode_altmedisable = 0, altmedisable = 0, mode_fmap_template = 0;
 	char *region_type_string = NULL, *region_fname = NULL;
 	const char *layout_fname = NULL;
 	char *new_filename = NULL;
@@ -1748,6 +1835,7 @@ int main(int argc, char *argv[])
 	static const struct option long_options[] = {
 		{"dump", 0, NULL, 'd'},
 		{"layout", 1, NULL, 'f'},
+		{"fmap-template", 1, NULL, 'F'},
 		{"extract", 0, NULL, 'x'},
 		{"inject", 1, NULL, 'i'},
 		{"newlayout", 1, NULL, 'n'},
@@ -1769,7 +1857,7 @@ int main(int argc, char *argv[])
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "S:V:df:D:C:M:xi:n:O:s:p:elruvth?",
+	while ((opt = getopt_long(argc, argv, "S:V:df:F:D:C:M:xi:n:O:s:p:elruvth?",
 					long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'd':
@@ -1784,6 +1872,15 @@ int main(int argc, char *argv[])
 			break;
 		case 'f':
 			mode_layout = 1;
+			layout_fname = strdup(optarg);
+			if (!layout_fname) {
+				fprintf(stderr, "No layout file specified\n");
+				fprintf(stderr, "run '%s -h' for usage\n", argv[0]);
+				exit(EXIT_FAILURE);
+			}
+			break;
+		case 'F':
+			mode_fmap_template = 1;
 			layout_fname = strdup(optarg);
 			if (!layout_fname) {
 				fprintf(stderr, "No layout file specified\n");
@@ -2013,7 +2110,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	if ((mode_dump + mode_layout + mode_extract + mode_inject +
+	if ((mode_dump + mode_layout + mode_fmap_template + mode_extract + mode_inject +
 			mode_setstrap + mode_newlayout + (mode_spifreq | mode_em100 |
 			mode_unlocked | mode_locked) + mode_altmedisable + mode_validate) > 1) {
 		fprintf(stderr, "You may not specify more than one mode.\n\n");
@@ -2021,7 +2118,7 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	if ((mode_dump + mode_layout + mode_extract + mode_inject +
+	if ((mode_dump + mode_layout + mode_fmap_template + mode_extract + mode_inject +
 			mode_setstrap + mode_newlayout + mode_spifreq + mode_em100 +
 			mode_locked + mode_unlocked + mode_density + mode_altmedisable + mode_validate) == 0) {
 		fprintf(stderr, "You need to specify a mode.\n\n");
@@ -2085,6 +2182,9 @@ int main(int argc, char *argv[])
 
 	if (mode_layout)
 		dump_flashrom_layout(image, size, layout_fname);
+
+	if (mode_fmap_template)
+		create_fmap_template(image, size, layout_fname);
 
 	if (mode_extract)
 		write_regions(image, size);

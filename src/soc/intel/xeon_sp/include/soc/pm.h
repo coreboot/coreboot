@@ -7,6 +7,7 @@
 #include <soc/gpe.h>
 #include <soc/iomap.h>
 #include <soc/pmc.h>
+#include <soc/soc_pm.h>
 
 /* ACPI_BASE_ADDRESS / PMBASE */
 #define PM1_STS			0x00
@@ -66,8 +67,6 @@
 #define PM2_CNT			0x50
 #define GPE0_REG_MAX		4
 #define GPE0_REG_SIZE		32
-#define GPE0_STS(x)		(0x80 + ((x) * 4))
-#define GPE0_EN(x)		(0x90 + ((x) * 4))
 #define  GPE_STD		3	/* 0x8c/0x9c = Standard GPE */
 #define GPE_STS_RSVD            GPE_STD
 #define   GPIO_T2_STS		(1 << 15)
@@ -76,7 +75,6 @@
 #define   PCI_EXP_STS		(1 << 9)
 #define   SMB_WAK_STS		(1 << 7)
 #define   TCOSCI_STS		(1 << 6)
-#define GPE0_EN(x)		(0x90 + ((x) * 4))
 #define   GPIO_T2_EN		(1 << 15)
 #define   ESPI_EN		(1 << 14)
 #define   PME_B0_EN		(1 << 13)
@@ -93,12 +91,8 @@
 #define PSS_LATENCY_TRANSITION		10
 #define PSS_LATENCY_BUSMASTER		10
 
-/* This is defined as ETR3 in EDS. We named it as ETR here for consistency */
-#define ETR		0xac
 #define  CF9_LOCK	(1 << 31)
 #define  CF9_GLB_RST	(1 << 20)
-
-#define PRSTS		0x10
 
 struct chipset_power_state {
 	uint16_t pm1_sts;

@@ -94,7 +94,7 @@ config INTEL_DESCRIPTOR_MODE_REQUIRED
 config VALIDATE_INTEL_DESCRIPTOR
 	depends on INTEL_DESCRIPTOR_MODE_CAPABLE
 	bool "Validate Intel firmware descriptor"
-	default n
+	default y if HAVE_IFD_BIN
 	help
 	  This config enables validating the Intel firmware descriptor against the
 	  fmap layout. If the firmware descriptor layout does not match the fmap

@@ -1948,7 +1948,7 @@ static void usage(char *name)
 	     "  -F               Force action\n"
 	     "  -g               Generate position and alignment arguments\n"
 	     "  -U               Unprocessed; don't decompress or make ELF\n"
-	     "  -v               Provide verbose output\n"
+	     "  -v               Provide verbose output (-v=INFO -vv=DEBUG output)\n"
 	     "  -h               Display this help message\n\n"
 	     "  --ext-win-base   Base of extended decode window in host address\n"
 	     "                   space(x86 only)\n"

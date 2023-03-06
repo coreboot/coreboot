@@ -50,7 +50,7 @@ static void usage(const char *name)
 		"\tOPTIONAL ARGUMENTS:\n"
 		"\t\t-h|--help             :   Display this text\n"
 		"\t\t-H|--header-offset    :   Do not search for header, use this offset\n"
-		"\t\t-v|--verbose          :   Be verbose\n"
+		"\t\t-v|--verbose          :   Be verbose (-v=INFO -vv=DEBUG output)\n"
 		"\t\t-D|--dump             :   Dump FIT table (at end of operation)\n"
 		"\t\t-c|--clear-table      :   Remove all existing entries (do not update)\n"
 		"\t\t-j|--topswap-size     :   Use second FIT table if non zero\n"

@@ -86,7 +86,7 @@ static void fsp_fill_mrc_cache(FSPM_ARCH_UPD *arch_upd, uint32_t fsp_version)
 	/* MRC cache found */
 	arch_upd->NvsBufferPtr = (uintptr_t)data;
 
-	printk(BIOS_SPEW, "MRC cache found, size %zx\n", mrc_size);
+	printk(BIOS_SPEW, "MRC cache found, size %zu bytes\n", mrc_size);
 }
 
 static enum cb_err check_region_overlap(const struct memranges *ranges,

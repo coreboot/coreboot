@@ -349,6 +349,7 @@ chip soc/intel/meteorlake
 				device generic 0 on end
 			end
 		end
+		device ref ioe_shared_sram on end
 		device ref xhci on
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
@@ -412,6 +413,7 @@ chip soc/intel/meteorlake
 				end
 			end
 		end
+		device ref pmc_shared_sram on end
 		device ref cnvi_wifi on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_PME_B0"

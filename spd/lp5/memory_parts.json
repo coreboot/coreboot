@@ -50,7 +50,7 @@
                 "speedMbps": 6400
             }
         },
-	{
+        {
             "name": "MT62F2G32D8DR-031 WT:B",
             "attribs": {
                 "densityPerDieGb": 8,
@@ -187,7 +187,7 @@
                 "lp5x": true
             }
         },
-	{
+        {
             "name": "H9JCNNNFA5MLYR-N6E",
             "attribs": {
                 "densityPerDieGb": 8,
@@ -197,7 +197,7 @@
                 "speedMbps": 6400
             }
         },
-	{
+        {
             "name": "H58G66BK8BX067",
             "attribs": {
                 "densityPerDieGb": 16,
@@ -208,13 +208,35 @@
                 "lp5x": true
             }
         },
-	{
+        {
             "name": "H58G56BK8BX068",
             "attribs": {
                 "densityPerDieGb": 16,
                 "diesPerPackage": 2,
                 "bitWidthPerChannel": 16,
                 "ranksPerChannel": 1,
+                "speedMbps": 8533,
+                "lp5x": true
+            }
+        },
+        {
+            "name": "MT62F1G32D2DS-023 WT:B",
+            "attribs": {
+                "densityPerDieGb": 16,
+                "diesPerPackage": 2,
+                "bitWidthPerChannel": 16,
+                "ranksPerChannel": 1,
+                "speedMbps": 8533,
+                "lp5x": true
+            }
+        },
+        {
+            "name": "MT62F2G32D4DS-023 WT:B",
+            "attribs": {
+                "densityPerDieGb": 16,
+                "diesPerPackage": 4,
+                "bitWidthPerChannel": 16,
+                "ranksPerChannel": 2,
                 "speedMbps": 8533,
                 "lp5x": true
             }

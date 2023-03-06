@@ -5631,8 +5631,9 @@ sub process {
 						$sum_allowed += $_;
 					}
 					if ($sum_allowed == 0) {
-						WARN("BRACES",
-						     "braces {} are not necessary for any arm of this statement\n" . $herectx);
+						# coreboot has decided to allow braces around single line statement blocks
+						#WARN("BRACES",
+						#     "braces {} are not necessary for any arm of this statement\n" . $herectx);
 					} elsif ($sum_allowed != $allow &&
 						 $seen != $allow) {
 						CHK("BRACES",
@@ -5683,13 +5684,14 @@ sub process {
 					$allowed = 1;
 				}
 			}
-			if ($level == 0 && $block =~ /^\s*\{/ && !$allowed) {
-				my $cnt = statement_rawlines($block);
-				my $herectx = get_stat_here($linenr, $cnt, $here);
-
-				WARN("BRACES",
-				     "braces {} are not necessary for single statement blocks\n" . $herectx);
-			}
+			# coreboot has decided to allow braces around single line statement blocks
+			#if ($level == 0 && $block =~ /^\s*\{/ && !$allowed) {
+			#	my $cnt = statement_rawlines($block);
+			#	my $herectx = get_stat_here($linenr, $cnt, $here);
+			#
+			#	WARN("BRACES",
+			#	     "braces {} are not necessary for single statement blocks\n" . $herectx);
+			#}
 		}
 
 # check for single line unbalanced braces

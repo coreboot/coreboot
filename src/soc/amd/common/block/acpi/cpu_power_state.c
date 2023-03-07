@@ -7,7 +7,50 @@
 #include <console/console.h>
 #include <cpu/amd/msr.h>
 #include <cpu/x86/msr.h>
+#include <soc/msr.h>
 #include <types.h>
+
+/*
+ * Populate structure describing enabled p-states and return count of enabled p-states.
+ */
+static size_t get_pstate_info(struct acpi_sw_pstate *pstate_values,
+			      struct acpi_xpss_sw_pstate *pstate_xpss_values)
+{
+	msr_t pstate_def;
+	size_t pstate_count, pstate;
+	uint32_t pstate_enable, max_pstate;
+
+	pstate_count = 0;
+	max_pstate = (rdmsr(PS_LIM_REG).lo & PS_LIM_MAX_VAL_MASK) >> PS_MAX_VAL_SHFT;
+
+	for (pstate = 0; pstate <= max_pstate; pstate++) {
+		pstate_def = rdmsr(PSTATE_MSR(pstate));
+
+		pstate_enable = (pstate_def.hi & PSTATE_DEF_HI_ENABLE_MASK)
+				>> PSTATE_DEF_HI_ENABLE_SHIFT;
+		if (!pstate_enable)
+			continue;
+
+		pstate_values[pstate_count].core_freq = get_pstate_core_freq(pstate_def);
+		pstate_values[pstate_count].power = get_pstate_core_power(pstate_def);
+		pstate_values[pstate_count].transition_latency = 0;
+		pstate_values[pstate_count].bus_master_latency = 0;
+		pstate_values[pstate_count].control_value = pstate;
+		pstate_values[pstate_count].status_value = pstate;
+
+		pstate_xpss_values[pstate_count].core_freq =
+			(uint64_t)pstate_values[pstate_count].core_freq;
+		pstate_xpss_values[pstate_count].power =
+			(uint64_t)pstate_values[pstate_count].power;
+		pstate_xpss_values[pstate_count].transition_latency = 0;
+		pstate_xpss_values[pstate_count].bus_master_latency = 0;
+		pstate_xpss_values[pstate_count].control_value = (uint64_t)pstate;
+		pstate_xpss_values[pstate_count].status_value = (uint64_t)pstate;
+		pstate_count++;
+	}
+
+	return pstate_count;
+}
 
 static void write_cstate_entry(acpi_cstate_t *entry, const acpi_cstate_t *data,
 			       uint32_t cstate_io_base_address)

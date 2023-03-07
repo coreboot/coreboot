@@ -93,6 +93,25 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 				ACPI_FADT_REMOTE_POWER_ON;
 }
 
+const acpi_cstate_t cstate_cfg_table[] = {
+	[0] = {
+		.ctype = 1,
+		.latency = 1,
+		.power = 0,
+	},
+	[1] = {
+		.ctype = 2,
+		.latency = 400,
+		.power = 0,
+	},
+};
+
+const acpi_cstate_t *get_cstate_config_data(size_t *size)
+{
+	*size = ARRAY_SIZE(cstate_cfg_table);
+	return cstate_cfg_table;
+}
+
 void generate_cpu_entries(const struct device *device)
 {
 	int cpu;

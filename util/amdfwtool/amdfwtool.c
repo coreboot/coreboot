@@ -2155,6 +2155,33 @@ static ssize_t write_body(char *output, void *body_offset, ssize_t body_size, co
 	return bytes;
 }
 
+void open_process_config(char *config, amd_cb_config *cb_config, int list_deps, int debug)
+{
+	FILE *config_handle;
+
+	if (config) {
+		config_handle = fopen(config, "r");
+		if (config_handle == NULL) {
+			fprintf(stderr, "Can not open file %s for reading: %s\n",
+				config, strerror(errno));
+			exit(1);
+		}
+		if (process_config(config_handle, cb_config, list_deps) == 0) {
+			fprintf(stderr, "Configuration file %s parsing error\n",
+					config);
+			fclose(config_handle);
+			exit(1);
+		}
+		fclose(config_handle);
+	}
+
+	/* For debug. */
+	if (debug) {
+		dump_psp_firmwares(amd_psp_fw_table);
+		dump_bdt_firmwares(amd_bios_table);
+	}
+}
+
 int main(int argc, char **argv)
 {
 	int c;
@@ -2168,7 +2195,6 @@ int main(int argc, char **argv)
 	int fuse_defined = 0;
 	int targetfd;
 	char *output = NULL, *config = NULL;
-	FILE *config_handle;
 	context ctx = { 0 };
 	/* Values cleared after each firmware or parameter, regardless if N/A */
 	uint8_t sub = 0, instance = 0;
@@ -2415,25 +2441,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	if (config) {
-		config_handle = fopen(config, "r");
-		if (config_handle == NULL) {
-			fprintf(stderr, "Can not open file %s for reading: %s\n",
-				config, strerror(errno));
-			exit(1);
-		}
-		if (process_config(config_handle, &cb_config, list_deps) == 0) {
-			fprintf(stderr, "Configuration file %s parsing error\n", config);
-			fclose(config_handle);
-			exit(1);
-		}
-		fclose(config_handle);
-	}
-	/* For debug. */
-	if (debug) {
-		dump_psp_firmwares(amd_psp_fw_table);
-		dump_bdt_firmwares(amd_bios_table);
-	}
+	open_process_config(config, &cb_config, list_deps, debug);
 
 	if (!fuse_defined)
 		register_fw_fuse(DEFAULT_SOFT_FUSE_CHAIN);

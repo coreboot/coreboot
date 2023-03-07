@@ -161,8 +161,9 @@ chip soc/intel/alderlake
 			end
 		end #I2C5
 		device ref pcie_rp8 off end
-		device ref pcie_rp11 on
-			register "pch_pcie_rp[PCH_RP(11)]" = "{
+		device ref pcie_rp9 on
+			# Enable NVMe PCIE 9 using clk 1
+			register "pch_pcie_rp[PCH_RP(9)]" = "{
 				.clk_src = 1,
 				.clk_req = 1,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,

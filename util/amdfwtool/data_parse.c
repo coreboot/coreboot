@@ -179,9 +179,12 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 	} else if (strcmp(fw_name, "PSP_SMUFW1_SUB0_FILE") == 0) {
 		fw_type = AMD_FW_PSP_SMU_FIRMWARE;
 		subprog = 0;
-	} else if (strcmp(fw_name, "PSP_HW_IPCFG_FILE") == 0) {
+	} else if (strcmp(fw_name, "PSP_HW_IPCFG_FILE_SUB0") == 0) {
 		fw_type = AMD_HW_IPCFG;
 		subprog = 0;
+	} else if (strcmp(fw_name, "PSP_HW_IPCFG_FILE_SUB1") == 0) {
+		fw_type = AMD_HW_IPCFG;
+		subprog = 1;
 	} else if (strcmp(fw_name, "PSP_SMUFW1_SUB1_FILE") == 0) {
 		fw_type = AMD_FW_PSP_SMU_FIRMWARE;
 		subprog = 1;

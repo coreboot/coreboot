@@ -187,8 +187,8 @@ static uint32_t get_pstate_core_power(msr_t pstate_def)
 /*
  * Populate structure describing enabled p-states and return count of enabled p-states.
  */
-static size_t get_pstate_info(struct acpi_sw_pstate *pstate_values,
-			      struct acpi_xpss_sw_pstate *pstate_xpss_values)
+size_t get_pstate_info(struct acpi_sw_pstate *pstate_values,
+		       struct acpi_xpss_sw_pstate *pstate_xpss_values)
 {
 	msr_t pstate_def;
 	size_t pstate_count, pstate;
@@ -248,59 +248,4 @@ const acpi_cstate_t *get_cstate_config_data(size_t *size)
 {
 	*size = ARRAY_SIZE(cstate_cfg_table);
 	return cstate_cfg_table;
-}
-
-void generate_cpu_entries(const struct device *device)
-{
-	int logical_cores;
-	size_t cstate_count, pstate_count, cpu;
-	acpi_cstate_t cstate_values[MAX_CSTATE_COUNT] = { {0} };
-	struct acpi_sw_pstate pstate_values[MAX_PSTATES] = { {0} };
-	struct acpi_xpss_sw_pstate pstate_xpss_values[MAX_PSTATES] = { {0} };
-	uint32_t threads_per_core;
-
-	const acpi_addr_t perf_ctrl = {
-		.space_id = ACPI_ADDRESS_SPACE_FIXED,
-		.bit_width = 64,
-		.addrl = PS_CTL_REG,
-	};
-	const acpi_addr_t perf_sts = {
-		.space_id = ACPI_ADDRESS_SPACE_FIXED,
-		.bit_width = 64,
-		.addrl = PS_STS_REG,
-	};
-
-	threads_per_core = get_threads_per_core();
-	cstate_count = get_cstate_info(cstate_values);
-	pstate_count = get_pstate_info(pstate_values, pstate_xpss_values);
-	logical_cores = get_cpu_count();
-
-	for (cpu = 0; cpu < logical_cores; cpu++) {
-		acpigen_write_processor_device(cpu);
-
-		acpigen_write_pct_package(&perf_ctrl, &perf_sts);
-
-		acpigen_write_pss_object(pstate_values, pstate_count);
-
-		acpigen_write_xpss_object(pstate_xpss_values, pstate_count);
-
-		if (CONFIG(ACPI_SSDT_PSD_INDEPENDENT))
-			acpigen_write_PSD_package(cpu / threads_per_core, threads_per_core,
-						  HW_ALL);
-		else
-			acpigen_write_PSD_package(0, logical_cores, SW_ALL);
-
-		acpigen_write_PPC(0);
-
-		acpigen_write_CST_package(cstate_values, cstate_count);
-
-		acpigen_write_CSD_package(cpu / threads_per_core, threads_per_core,
-					  CSD_HW_ALL, 0);
-
-		generate_cppc_entries(cpu);
-
-		acpigen_write_processor_device_end();
-	}
-
-	acpigen_write_processor_package("PPKG", 0, logical_cores);
 }

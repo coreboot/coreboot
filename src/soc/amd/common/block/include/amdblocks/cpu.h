@@ -14,7 +14,8 @@ unsigned int get_threads_per_core(void);
 void set_cstate_io_addr(void);
 void write_resume_eip(void);
 
-size_t get_cstate_info(acpi_cstate_t *cstate_values);
+size_t get_pstate_info(struct acpi_sw_pstate *pstate_values,
+		       struct acpi_xpss_sw_pstate *pstate_xpss_values);
 const acpi_cstate_t *get_cstate_config_data(size_t *size);
 
 #endif /* AMD_BLOCK_CPU_H */

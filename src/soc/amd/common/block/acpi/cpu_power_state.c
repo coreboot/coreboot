@@ -51,8 +51,19 @@ static size_t get_pstate_info(struct acpi_sw_pstate *pstate_values,
 	return pstate_count;
 }
 
-static void write_cstate_entry(acpi_cstate_t *entry, const acpi_cstate_t *data,
-			       uint32_t cstate_io_base_address)
+static uint16_t get_cstate_io_base_address(void)
+{
+	static uint16_t cstate_io_base;
+
+	if (cstate_io_base)
+		return cstate_io_base;
+
+	cstate_io_base = rdmsr(MSR_CSTATE_ADDRESS).lo & MSR_CSTATE_ADDRESS_MASK;
+
+	return cstate_io_base;
+}
+
+static void write_cstate_entry(acpi_cstate_t *entry, const acpi_cstate_t *data)
 {
 	if (!data->ctype) {
 		printk(BIOS_WARNING, "Invalid C-state data; skipping entry.\n");
@@ -76,9 +87,9 @@ static void write_cstate_entry(acpi_cstate_t *entry, const acpi_cstate_t *data,
 			.space_id = ACPI_ADDRESS_SPACE_IO,
 			.bit_width = 8,
 			.bit_offset = 0,
-			/* ctype is 1-indexed while the offset into cstate_io_base_address is
-			   0-indexed */
-			.addrl = cstate_io_base_address + data->ctype - 1,
+			/* ctype is 1-indexed while the offset into the IO address returned by
+			   get_cstate_io_base_address() is 0-indexed */
+			.addrl = get_cstate_io_base_address() + data->ctype - 1,
 			.addrh = 0,
 			.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS,
 		};
@@ -89,8 +100,6 @@ static size_t get_cstate_info(acpi_cstate_t *cstate_values)
 {
 	size_t i;
 	size_t cstate_count;
-	uint32_t cstate_io_base_address =
-		rdmsr(MSR_CSTATE_ADDRESS).lo & MSR_CSTATE_ADDRESS_MASK;
 	const acpi_cstate_t *cstate_config = get_cstate_config_data(&cstate_count);
 
 	if (cstate_count > MAX_CSTATE_COUNT) {
@@ -101,7 +110,7 @@ static size_t get_cstate_info(acpi_cstate_t *cstate_values)
 	}
 
 	for (i = 0; i < cstate_count; i++) {
-		write_cstate_entry(&cstate_values[i], &cstate_config[i], cstate_io_base_address);
+		write_cstate_entry(&cstate_values[i], &cstate_config[i]);
 	}
 
 	return i;

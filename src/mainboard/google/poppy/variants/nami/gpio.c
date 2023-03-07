@@ -153,7 +153,7 @@ static const struct pad_config gpio_table[] = {
 	/* D2  : SPI1_MISO ==> PEN_PDCT# */
 	PAD_CFG_GPI_APIC_HIGH(GPP_D2, NONE, PLTRST),
 	/* D3  : SPI1_MOSI ==> PEN_RST# */
-	PAD_CFG_GPO(GPP_D3, 0, DEEP),
+	PAD_CFG_GPO(GPP_D3, 1, DEEP),
 	/* D4  : FASHTRIG ==> NC */
 	PAD_NC(GPP_D4, NONE),
 	/* D5  : ISH_I2C0_SDA ==> NC */
@@ -486,6 +486,9 @@ static const struct pad_config romstage_gpio_table[] = {
 	PAD_CFG_GPO(GPP_B4, 1, DEEP),
 	/* B3  : CPU_GP2 ==> TOUCHSCREEN_RST# */
 	PAD_CFG_GPO(GPP_B3, 0, DEEP),
+	/* D3  : SPI1_MOSI ==> PEN_RST# */
+	PAD_CFG_GPO(GPP_D3, 0, DEEP),
+
 };
 
 const struct pad_config *variant_romstage_gpio_table(size_t *num)

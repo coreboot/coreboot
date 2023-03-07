@@ -1439,6 +1439,7 @@ static void integrate_psp_firmwares(context *ctx,
 			pspdir->entries[count].type = fw_table[i].type;
 			pspdir->entries[count].subprog = fw_table[i].subprog;
 			pspdir->entries[count].rsvd = 0;
+			pspdir->entries[count].inst = fw_table[i].inst;
 			pspdir->entries[count].size = (uint32_t)bytes;
 
 			count++;

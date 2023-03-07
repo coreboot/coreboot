@@ -253,7 +253,7 @@ chip soc/intel/alderlake
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
 				register "probed" = "1"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
-				register "reset_delay_ms" = "300"
+				register "reset_delay_ms" = "150"
 				register "reset_off_delay_ms" = "1"
 				register "enable_gpio" =
 							"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"

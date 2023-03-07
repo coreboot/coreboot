@@ -24,7 +24,7 @@ static void write_cstate_entry(acpi_cstate_t *entry, const acpi_cstate_t *data,
 		entry->resource = (acpi_addr_t){
 			.space_id = ACPI_ADDRESS_SPACE_FIXED,
 			.bit_width = 2,
-			.bit_offset = 2,
+			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
 			.addrl = 0,
 			.addrh = 0,
 		};

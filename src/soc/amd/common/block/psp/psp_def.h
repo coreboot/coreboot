@@ -108,5 +108,6 @@ void psp_print_cmd_status(int cmd_status, struct mbox_buffer_header *header);
 int send_psp_command(u32 command, void *buffer);
 
 uint32_t soc_read_c2p38(void);
+void psp_set_spl_fuse(void *unused);
 
 #endif /* __AMD_PSP_DEF_H__ */

@@ -320,7 +320,7 @@ amd_fw_entry amd_psp_fw_table[] = {
 	{ .type = AMD_FW_DMCU_ISR, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_MSMU, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_SPIROM_CFG, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_MPIO, .level = PSP_LVL2 | PSP_BOTH_AB },
+	{ .type = AMD_FW_MPIO, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_SMUSCS, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_FW_DMCUB, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_BOOTLOADER_AB, .level = PSP_LVL2 | PSP_LVL2_AB },

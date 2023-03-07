@@ -1825,6 +1825,7 @@ enum {
 	AMDFW_OPT_RECOVERY_AB,
 	AMDFW_OPT_RECOVERY_AB_SINGLE_COPY,
 	AMDFW_OPT_USE_COMBO,
+	AMDFW_OPT_COMBO1_CONFIG,
 	AMDFW_OPT_MULTILEVEL,
 	AMDFW_OPT_NVRAM,
 
@@ -1880,6 +1881,7 @@ static struct option long_options[] = {
 	{"recovery-ab",            no_argument, 0, AMDFW_OPT_RECOVERY_AB },
 	{"recovery-ab-single-copy", no_argument, 0, AMDFW_OPT_RECOVERY_AB_SINGLE_COPY },
 	{"use-combo",              no_argument, 0, AMDFW_OPT_USE_COMBO },
+	{"combo-config1",    required_argument, 0, AMDFW_OPT_COMBO1_CONFIG },
 	{"multilevel",             no_argument, 0, AMDFW_OPT_MULTILEVEL },
 	{"nvram",            required_argument, 0, AMDFW_OPT_NVRAM },
 	{"nvram-base",       required_argument, 0, LONGOPT_NVRAM_BASE },
@@ -2192,6 +2194,8 @@ int main(int argc, char **argv)
 	psp_directory_table *pspdir2 = NULL;
 	psp_directory_table *pspdir2_b = NULL;
 	psp_combo_directory *psp_combo_dir = NULL, *bhd_combo_dir = NULL;
+	char *combo_config[MAX_COMBO_ENTRIES] = { 0 };
+	int combo_index = 0;
 	int fuse_defined = 0;
 	int targetfd;
 	char *output = NULL, *config = NULL;
@@ -2246,6 +2250,10 @@ int main(int argc, char **argv)
 			break;
 		case AMDFW_OPT_USE_COMBO:
 			cb_config.use_combo = true;
+			break;
+		case AMDFW_OPT_COMBO1_CONFIG:
+			cb_config.use_combo = true;
+			combo_config[1] = optarg;
 			break;
 		case AMDFW_OPT_MULTILEVEL:
 			cb_config.multi_level = true;
@@ -2615,6 +2623,27 @@ int main(int argc, char **argv)
 		bhd_combo_dir = new_combo_dir(&ctx);
 	}
 
+	combo_index = 0;
+	if (config)
+		combo_config[0] = config;
+
+	/* TODO: For now the combo_index is always 0.  The combo entries will be processed
+	 * in the loop which has not been added yet. */
+	/* for non-combo image, combo_config[0] == config, and it already is processed.
+	 * Actually "combo_index > 0" is enough. Put both of them here to make sure and make
+	 * it clear this will not affect non-combo case. */
+	if (cb_config.use_combo && combo_index > 0) {
+		open_process_config(combo_config[combo_index], &cb_config, list_deps, debug);
+
+		/* In most cases, the address modes are same. */
+		if (cb_config.need_ish)
+			ctx.address_mode = AMD_ADDR_REL_TAB;
+		else if (cb_config.second_gen)
+			ctx.address_mode = AMD_ADDR_REL_BIOS;
+		else
+			ctx.address_mode = AMD_ADDR_PHYSICAL;
+	}
+
 	if (cb_config.multi_level) {
 		/* Do 2nd PSP directory followed by 1st */
 		pspdir2 = new_psp_dir(&ctx, cb_config.multi_level);
@@ -2649,12 +2678,13 @@ int main(int argc, char **argv)
 	} else {
 		fill_psp_directory_to_efs(amd_romsig, psp_combo_dir, &ctx, &cb_config);
 		/* 0 -Compare PSP ID, 1 -Compare chip family ID */
-		psp_combo_dir->entries[0].id_sel = 0;
-		psp_combo_dir->entries[0].id = get_psp_id(cb_config.soc_id);
-		psp_combo_dir->entries[0].lvl2_addr =
+		assert_fw_entry(combo_index, MAX_COMBO_ENTRIES, &ctx);
+		psp_combo_dir->entries[combo_index].id_sel = 0;
+		psp_combo_dir->entries[combo_index].id = get_psp_id(cb_config.soc_id);
+		psp_combo_dir->entries[combo_index].lvl2_addr =
 			BUFF_TO_RUN_MODE(ctx, pspdir, AMD_ADDR_REL_BIOS);
 
-		fill_dir_header(psp_combo_dir, 1, PSP2_COOKIE, &ctx);
+		fill_dir_header(psp_combo_dir, combo_index + 1, PSP2_COOKIE, &ctx);
 	}
 
 	if (have_bios_tables(amd_bios_table)) {
@@ -2694,12 +2724,13 @@ int main(int argc, char **argv)
 			fill_bios_directory_to_efs(amd_romsig, biosdir, &ctx, &cb_config);
 		} else {
 			fill_bios_directory_to_efs(amd_romsig, bhd_combo_dir, &ctx, &cb_config);
-			bhd_combo_dir->entries[0].id_sel = 0;
-			bhd_combo_dir->entries[0].id = get_psp_id(cb_config.soc_id);
-			bhd_combo_dir->entries[0].lvl2_addr =
+			assert_fw_entry(combo_index, MAX_COMBO_ENTRIES, &ctx);
+			bhd_combo_dir->entries[combo_index].id_sel = 0;
+			bhd_combo_dir->entries[combo_index].id = get_psp_id(cb_config.soc_id);
+			bhd_combo_dir->entries[combo_index].lvl2_addr =
 				BUFF_TO_RUN_MODE(ctx, biosdir, AMD_ADDR_REL_BIOS);
 
-			fill_dir_header(bhd_combo_dir, 1, BHD2_COOKIE, &ctx);
+			fill_dir_header(bhd_combo_dir, combo_index + 1, BHD2_COOKIE, &ctx);
 		}
 	}
 

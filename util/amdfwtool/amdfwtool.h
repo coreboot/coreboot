@@ -237,7 +237,7 @@ typedef struct _psp_combo_directory {
 	psp_combo_entry entries[];
 } __attribute__((packed, aligned(16))) psp_combo_directory;
 
-#define MAX_COMBO_ENTRIES 1
+#define MAX_COMBO_ENTRIES 2
 
 typedef struct _bios_directory_hdr {
 	uint32_t cookie;

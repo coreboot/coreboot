@@ -3,6 +3,7 @@
 #include <bootstate.h>
 #include <console/console.h>
 #include <timer.h>
+#include <types.h>
 #include <amdblocks/psp.h>
 #include <amdblocks/smn.h>
 #include "psp_def.h"
@@ -12,7 +13,10 @@
 #define PSP_MAILBOX_BUFFER_H_OFFSET	0x10578 /* 4 bytes */
 
 #define CORE_2_PSP_MSG_38_OFFSET	0x10998 /* 4 byte */
-#define   CORE_2_PSP_MSG_38_FUSE_SPL	BIT(12)
+#define   CORE_2_PSP_MSG_38_FUSE_SPL		BIT(12)
+#define   CORE_2_PSP_MSG_38_SPL_FUSE_ERROR	BIT(13)
+#define   CORE_2_PSP_MSG_38_SPL_ENTRY_ERROR	BIT(14)
+#define   CORE_2_PSP_MSG_38_SPL_ENTRY_MISSING	BIT(15)
 
 union pspv2_mbox_command {
 	u32 val;
@@ -128,6 +132,22 @@ void psp_set_spl_fuse(void *unused)
 		printk(BIOS_DEBUG, "PSP: SPL Fusing may be updated.\n");
 	} else {
 		printk(BIOS_DEBUG, "PSP: SPL Fusing not currently required.\n");
+		return;
+	}
+
+	if (c2p38 & CORE_2_PSP_MSG_38_SPL_FUSE_ERROR) {
+		printk(BIOS_ERR, "PSP: SPL Table does not meet fuse requirements.\n");
+		return;
+	}
+
+	if (c2p38 & CORE_2_PSP_MSG_38_SPL_ENTRY_ERROR) {
+		printk(BIOS_ERR, "PSP: Critical SPL entry missing or current firmware does"
+				   " not meet requirements.\n");
+		return;
+	}
+
+	if (c2p38 & CORE_2_PSP_MSG_38_SPL_ENTRY_MISSING) {
+		printk(BIOS_ERR, "PSP: Table of critical SPL values is missing.\n");
 		return;
 	}
 

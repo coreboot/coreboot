@@ -60,24 +60,14 @@ struct rom_header *pci_rom_probe(const struct device *dev)
 
 	/* If the ROM is in flash, then don't check the PCI device for it. */
 	if (CONFIG(CHECK_REV_IN_OPROM_NAME)) {
-		rom_header = cbfs_boot_map_optionrom_revision(dev->vendor, dev->device, rev);
 		map_oprom_vendev_rev(&mapped_vendev, &mapped_rev);
+		rom_header = cbfs_boot_map_optionrom_revision(mapped_vendev >> 16,
+							      mapped_vendev & 0xffff,
+							      mapped_rev);
 	} else {
-		rom_header = cbfs_boot_map_optionrom(dev->vendor, dev->device);
 		mapped_vendev = map_oprom_vendev(vendev);
-	}
-
-	if (!rom_header) {
-		if (CONFIG(CHECK_REV_IN_OPROM_NAME) &&
-				(vendev != mapped_vendev || rev != mapped_rev)) {
-			rom_header = cbfs_boot_map_optionrom_revision(
-					mapped_vendev >> 16,
-					mapped_vendev & 0xffff, mapped_rev);
-		} else if (vendev != mapped_vendev) {
-			rom_header = cbfs_boot_map_optionrom(
-					mapped_vendev >> 16,
-					mapped_vendev & 0xffff);
-		}
+		rom_header = cbfs_boot_map_optionrom(mapped_vendev >> 16,
+						     mapped_vendev & 0xffff);
 	}
 
 	if (rom_header) {

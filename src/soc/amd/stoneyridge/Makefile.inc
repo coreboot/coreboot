@@ -143,6 +143,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_STONEYRIDGE_XHCI_FWM_FILE)) \
 		$(OPT_PSP_USE_PSPSECUREOS) \
 		$(OPT_EFS_SPI_READ_MODE) \
 		$(OPT_EFS_SPI_SPEED) \
+		$(OPT_DEBUG_AMDFWTOOL) \
 		--config $(CONFIG_AMDFW_CONFIG_FILE) \
 		--flashsize $(CONFIG_ROM_SIZE) \
 		--location $(shell printf "0x%x" $(STONEYRIDGE_FWM_POSITION)) \

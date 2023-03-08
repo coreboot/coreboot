@@ -655,8 +655,12 @@ static uint8_t process_one_line(char *oneline, regmatch_t *match, char *dir,
 	ch_lvl = get_level_from_config(oneline, ch_lvl_index, cb_config);
 
 	path_filename = malloc(MAX_LINE_SIZE * 2 + 2);
-	snprintf(path_filename, MAX_LINE_SIZE * 2 + 2, "%.*s/%.*s",
-		MAX_LINE_SIZE, dir, MAX_LINE_SIZE, fn);
+	if (strchr(fn, '/'))
+		snprintf(path_filename, MAX_LINE_SIZE * 2 + 2, "%.*s",
+				MAX_LINE_SIZE, fn);
+	else
+		snprintf(path_filename, MAX_LINE_SIZE * 2 + 2, "%.*s/%.*s",
+				MAX_LINE_SIZE, dir, MAX_LINE_SIZE, fn);
 
 	if (find_register_fw_filename_psp_dir(
 			fw_type_str, path_filename, ch_lvl, cb_config) == 0) {

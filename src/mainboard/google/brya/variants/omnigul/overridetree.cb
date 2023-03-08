@@ -88,7 +88,7 @@ chip soc/intel/alderlake
 				register "hid" = ""RTL5682""
 				register "name" = ""RT58""
 				register "desc" = ""Realtek RT5682""
-				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_H0)"
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_A23)"
 				register "property_count" = "1"
 				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
 				register "property_list[0].name" = ""realtek,jd-src""

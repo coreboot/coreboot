@@ -18,7 +18,7 @@
 #define DF_FICAD_LO			0xB8
 #define DF_FICAD_HI			0xBC
 
-#define IOMS0_FABRIC_ID			14
+#define IOMS0_FABRIC_ID			0x13
 
 union df_mmio_control {
 	struct {

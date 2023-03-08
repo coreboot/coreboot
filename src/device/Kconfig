@@ -867,6 +867,10 @@ config VGA_BIOS_ID
 	  the "0x" prefix) and 3230 specifies the PCI device ID of the
 	  video card (also in hex, without "0x" prefix). a3 specifies the revision.
 
+	  This ID needs to match the PCI VID and DID in the VGA BIOS file's
+	  header and also needs to match the value returned by map_oprom_vendev
+	  or map_oprom_vendev_rev if the remapping feature is used.
+
 	  Under GNU/Linux you can run `lspci -nn` to list the IDs of your PCI devices.
 
 config VGA_BIOS_SECOND

@@ -240,7 +240,10 @@ static const struct reg_script broadwell_late_init_script[] = {
 
 u32 map_oprom_vendev(u32 vendev)
 {
-	return SA_IGD_OPROM_VENDEV;
+	if (vendev >> 16 == PCI_VID_INTEL)
+		return SA_IGD_OPROM_VENDEV;
+	else
+		return vendev;
 }
 
 static struct resource *gtt_res = NULL;

@@ -2181,6 +2181,18 @@ void open_process_config(char *config, amd_cb_config *cb_config, int debug)
 	}
 }
 
+static bool is_initial_alignment_required(enum platform soc_id)
+{
+	switch (soc_id) {
+	case PLATFORM_MENDOCINO:
+	case PLATFORM_PHOENIX:
+	case PLATFORM_GLINDA:
+		return false;
+	default:
+		return true;
+	}
+}
+
 int main(int argc, char **argv)
 {
 	int c;
@@ -2593,7 +2605,10 @@ int main(int argc, char **argv)
 
 	integrate_firmwares(&ctx, amd_romsig, amd_fw_table);
 
-	adjust_current_pointer(&ctx, 0, 0x10000U); /* TODO: is it necessary? */
+	if (is_initial_alignment_required(cb_config.soc_id)) {
+		/* TODO: Check for older platforms. */
+		adjust_current_pointer(&ctx, 0, 0x10000U);
+	}
 	ctx.current_table = 0;
 
 	/* If the tool is invoked with command-line options to keep the signed PSP

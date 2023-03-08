@@ -66,6 +66,11 @@ config AMDFW_CONFIG_FILE
 	help
 	  Custom firmware list excluding the fwTPM binary.
 
+config PSP_LOAD_MP2_FW
+	prompt "Load MP2 Firmware"
+	depends on CHROMEOS
+	default n
+
 config HAVE_SPL_FILE
 	bool
 	default y

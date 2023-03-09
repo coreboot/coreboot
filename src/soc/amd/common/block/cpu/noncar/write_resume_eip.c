@@ -12,8 +12,7 @@ asmlinkage void bootblock_resume_entry(void);
 void write_resume_eip(void)
 {
 	msr_t s3_resume_entry = {
-		.hi = (uint64_t)(uintptr_t)bootblock_resume_entry >> 32,
-		.lo = (uintptr_t)bootblock_resume_entry & 0xffffffff,
+		.raw = (uintptr_t)bootblock_resume_entry,
 	};
 
 	/*

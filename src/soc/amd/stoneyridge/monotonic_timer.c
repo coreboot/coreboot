@@ -14,12 +14,9 @@ void timer_monotonic_get(struct mono_time *mt)
 
 uint64_t timestamp_get(void)
 {
-	unsigned long long val;
 	msr_t msr;
 
 	msr = rdmsr(CU_PTSC_MSR);
 
-	val = ((unsigned long long)msr.hi << 32) | msr.lo;
-
-	return val / PTSC_FREQ_MHZ;
+	return msr.raw / PTSC_FREQ_MHZ;
 }

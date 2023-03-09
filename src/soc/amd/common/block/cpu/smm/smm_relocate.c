@@ -65,8 +65,7 @@ static void smm_relocation_handler(void)
 	smm_region(&tseg_base, &tseg_size);
 
 	msr_t msr;
-	msr.lo = tseg_base;
-	msr.hi = 0;
+	msr.raw = tseg_base;
 	wrmsr(SMM_ADDR_MSR, msr);
 
 	msr.lo = ~(tseg_size - 1);
@@ -76,8 +75,7 @@ static void smm_relocation_handler(void)
 
 	uintptr_t smbase = smm_get_cpu_smbase(cpu_index());
 	msr_t smm_base = {
-		.hi = 0,
-		.lo = smbase
+		.raw = smbase
 	};
 	wrmsr(SMM_BASE_MSR, smm_base);
 

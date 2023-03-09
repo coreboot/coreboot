@@ -51,10 +51,10 @@ int psp_notify_smm(void)
 	};
 
 	msr = rdmsr(SMM_ADDR_MSR);
-	buffer.req.smm_base = ((uint64_t)msr.hi << 32) | msr.lo;
+	buffer.req.smm_base = msr.raw;
 	msr = rdmsr(SMM_MASK_MSR);
 	msr.lo &= 0xffff0000; /* mask SMM_TSEG_VALID and reserved bits */
-	buffer.req.smm_mask = ((uint64_t)msr.hi << 32) | msr.lo;
+	buffer.req.smm_mask = msr.raw;
 
 	soc_fill_smm_trig_info(&buffer.req.smm_trig_info);
 #if (CONFIG(SOC_AMD_COMMON_BLOCK_PSP_GEN2))

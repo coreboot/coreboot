@@ -446,6 +446,8 @@ typedef struct _context {
 	uint32_t current;	/* pointer within flash & proxy buffer */
 	uint32_t current_pointer_saved;
 	uint32_t current_table;
+	void *amd_psp_fw_table_clean;
+	void *amd_bios_table_clean;
 } context;
 
 #define RUN_BASE(ctx) (0xFFFFFFFF - (ctx).rom_size + 1)
@@ -515,6 +517,11 @@ static void amdfwtool_cleanup(context *ctx)
 	/* Free the filename. */
 	free_psp_firmware_filenames(amd_psp_fw_table);
 	free_bdt_firmware_filenames(amd_bios_table);
+
+	free(ctx->amd_psp_fw_table_clean);
+	ctx->amd_psp_fw_table_clean = NULL;
+	free(ctx->amd_bios_table_clean);
+	ctx->amd_bios_table_clean = NULL;
 }
 
 void assert_fw_entry(uint32_t count, uint32_t max, context *ctx)
@@ -2083,6 +2090,13 @@ int main(int argc, char **argv)
 		}
 	}
 
+	if (cb_config.use_combo) {
+		ctx.amd_psp_fw_table_clean = malloc(sizeof(amd_psp_fw_table));
+		ctx.amd_bios_table_clean = malloc(sizeof(amd_bios_table));
+		memcpy(ctx.amd_psp_fw_table_clean, amd_psp_fw_table, sizeof(amd_psp_fw_table));
+		memcpy(ctx.amd_bios_table_clean, amd_bios_table, sizeof(amd_bios_table));
+	}
+
 	open_process_config(config, &cb_config, debug);
 
 	if (!fuse_defined)
@@ -2271,6 +2285,11 @@ int main(int argc, char **argv)
 		 *  case.
 		 */
 		if (cb_config.use_combo && combo_index > 0) {
+			/* Restore the table as clean data. */
+			memcpy(amd_psp_fw_table, ctx.amd_psp_fw_table_clean,
+				sizeof(amd_psp_fw_table));
+			memcpy(amd_bios_table, ctx.amd_bios_table_clean,
+				sizeof(amd_bios_table));
 			assert_fw_entry(combo_index, MAX_COMBO_ENTRIES, &ctx);
 			open_process_config(combo_config[combo_index], &cb_config,
 				debug);

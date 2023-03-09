@@ -409,7 +409,7 @@ typedef struct _amd_cb_config {
 } amd_cb_config;
 
 void register_fw_fuse(char *str);
-uint8_t process_config(FILE *config, amd_cb_config *cb_config, uint8_t print_deps);
+uint8_t process_config(FILE *config, amd_cb_config *cb_config);
 
 #define OK 0
 

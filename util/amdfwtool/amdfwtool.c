@@ -251,7 +251,6 @@ static void usage(void)
 	printf("\nGeneral options:\n");
 	printf("-c|--config <config file>      Config file\n");
 	printf("-d|--debug                     Print debug message\n");
-	printf("-l|--list                      List out the firmware files\n");
 	printf("-h|--help                      Show this help\n");
 }
 
@@ -1817,7 +1816,6 @@ enum {
 	AMDFW_OPT_CONFIG =	'c',
 	AMDFW_OPT_DEBUG =	'd',
 	AMDFW_OPT_HELP =	'h',
-	AMDFW_OPT_LIST_DEPEND =	'l',
 
 	AMDFW_OPT_XHCI = 128,
 	AMDFW_OPT_IMC,
@@ -1870,7 +1868,7 @@ enum {
 };
 
 static char const optstring[] = {AMDFW_OPT_CONFIG, ':',
-	AMDFW_OPT_DEBUG, AMDFW_OPT_HELP, AMDFW_OPT_LIST_DEPEND
+	AMDFW_OPT_DEBUG, AMDFW_OPT_HELP
 };
 
 static struct option long_options[] = {
@@ -1927,7 +1925,6 @@ static struct option long_options[] = {
 	{"config",           required_argument, 0, AMDFW_OPT_CONFIG },
 	{"debug",            no_argument,       0, AMDFW_OPT_DEBUG },
 	{"help",             no_argument,       0, AMDFW_OPT_HELP },
-	{"list",             no_argument,       0, AMDFW_OPT_LIST_DEPEND },
 	{NULL,               0,                 0,  0  }
 };
 
@@ -2157,7 +2154,7 @@ static ssize_t write_body(char *output, void *body_offset, ssize_t body_size, co
 	return bytes;
 }
 
-void open_process_config(char *config, amd_cb_config *cb_config, int list_deps, int debug)
+void open_process_config(char *config, amd_cb_config *cb_config, int debug)
 {
 	FILE *config_handle;
 
@@ -2168,7 +2165,7 @@ void open_process_config(char *config, amd_cb_config *cb_config, int list_deps, 
 				config, strerror(errno));
 			exit(1);
 		}
-		if (process_config(config_handle, cb_config, list_deps) == 0) {
+		if (process_config(config_handle, cb_config) == 0) {
 			fprintf(stderr, "Configuration file %s parsing error\n",
 					config);
 			fclose(config_handle);
@@ -2215,7 +2212,6 @@ int main(int argc, char **argv)
 
 	amd_cb_config cb_config = { 0 };
 	int debug = 0;
-	int list_deps = 0;
 
 	ctx.current_pointer_saved = 0xFFFFFFFF;
 
@@ -2432,9 +2428,6 @@ int main(int argc, char **argv)
 		case AMDFW_OPT_HELP:
 			usage();
 			return 0;
-		case AMDFW_OPT_LIST_DEPEND:
-			list_deps = 1;
-			break;
 		case AMDFW_OPT_BODY_LOCATION:
 			body_location = (uint32_t)strtoul(optarg, &tmp, 16);
 			if (*tmp != '\0') {
@@ -2449,23 +2442,23 @@ int main(int argc, char **argv)
 		}
 	}
 
-	open_process_config(config, &cb_config, list_deps, debug);
+	open_process_config(config, &cb_config, debug);
 
 	if (!fuse_defined)
 		register_fw_fuse(DEFAULT_SOFT_FUSE_CHAIN);
 
-	if (!output && !list_deps) {
+	if (!output) {
 		fprintf(stderr, "Error: Output value is not specified.\n\n");
 		retval = 1;
 	}
 
-	if ((ctx.rom_size % 1024 != 0)  && !list_deps) {
+	if ((ctx.rom_size % 1024 != 0)) {
 		fprintf(stderr, "Error: ROM Size (%d bytes) should be a multiple of"
 			" 1024 bytes.\n\n", ctx.rom_size);
 		retval = 1;
 	}
 
-	if ((ctx.rom_size < MIN_ROM_KB * 1024)  && !list_deps) {
+	if ((ctx.rom_size < MIN_ROM_KB * 1024)) {
 		fprintf(stderr, "Error: ROM Size (%dKB) must be at least %dKB.\n\n",
 			ctx.rom_size / 1024, MIN_ROM_KB);
 		retval = 1;
@@ -2473,10 +2466,6 @@ int main(int argc, char **argv)
 
 	if (retval) {
 		usage();
-		return retval;
-	}
-
-	if (list_deps) {
 		return retval;
 	}
 
@@ -2636,7 +2625,7 @@ int main(int argc, char **argv)
 		 */
 		if (cb_config.use_combo && combo_index > 0) {
 			open_process_config(combo_config[combo_index], &cb_config,
-				list_deps, debug);
+				debug);
 
 			/* In most cases, the address modes are same. */
 			if (cb_config.need_ish)

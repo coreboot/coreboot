@@ -643,7 +643,7 @@ char get_level_from_config(char *line, regoff_t level_index, amd_cb_config *cb_c
 }
 
 static uint8_t process_one_line(char *oneline, regmatch_t *match, char *dir,
-	uint8_t print_deps, amd_cb_config *cb_config)
+	amd_cb_config *cb_config)
 {
 	char *path_filename, *fn = &(oneline[match[2].rm_so]);
 	char *fw_type_str = &(oneline[match[1].rm_so]);
@@ -664,13 +664,7 @@ static uint8_t process_one_line(char *oneline, regmatch_t *match, char *dir,
 				fw_type_str, path_filename, ch_lvl, cb_config) == 0) {
 			fprintf(stderr, "Module's name \"%s\" is not valid\n", fw_type_str);
 			return 0; /* Stop parsing. */
-		} else {
-			if (print_deps)
-				printf(" %s ", path_filename);
 		}
-	} else {
-		if (print_deps)
-			printf(" %s ", path_filename);
 	}
 	return 1;
 }
@@ -710,7 +704,7 @@ static bool is_second_gen(enum platform platform_type)
 	0: The config file can not be parsed correctly.
 	1: The config file can be parsed correctly.
  */
-uint8_t process_config(FILE *config, amd_cb_config *cb_config, uint8_t print_deps)
+uint8_t process_config(FILE *config, amd_cb_config *cb_config)
 {
 	char oneline[MAX_LINE_SIZE];
 	regmatch_t match[N_MATCHES];
@@ -776,7 +770,7 @@ uint8_t process_config(FILE *config, amd_cb_config *cb_config, uint8_t print_dep
 				strcmp(&(oneline[match[1].rm_so]), "SOC_NAME") == 0) {
 				continue;
 			} else {
-				if (process_one_line(oneline, match, dir, print_deps,
+				if (process_one_line(oneline, match, dir,
 						cb_config) == 0)
 					return 0;
 			}

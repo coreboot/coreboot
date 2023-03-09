@@ -2627,112 +2627,126 @@ int main(int argc, char **argv)
 	if (config)
 		combo_config[0] = config;
 
-	/* TODO: For now the combo_index is always 0.  The combo entries will be processed
-	 * in the loop which has not been added yet. */
-	/* for non-combo image, combo_config[0] == config, and it already is processed.
-	 * Actually "combo_index > 0" is enough. Put both of them here to make sure and make
-	 * it clear this will not affect non-combo case. */
-	if (cb_config.use_combo && combo_index > 0) {
-		open_process_config(combo_config[combo_index], &cb_config, list_deps, debug);
+	do {
+		/* for non-combo image, combo_config[0] == config, and
+		 *  it already is processed.  Actually "combo_index >
+		 *  0" is enough. Put both of them here to make sure
+		 *  and make it clear this will not affect non-combo
+		 *  case.
+		 */
+		if (cb_config.use_combo && combo_index > 0) {
+			open_process_config(combo_config[combo_index], &cb_config,
+				list_deps, debug);
 
-		/* In most cases, the address modes are same. */
-		if (cb_config.need_ish)
-			ctx.address_mode = AMD_ADDR_REL_TAB;
-		else if (cb_config.second_gen)
-			ctx.address_mode = AMD_ADDR_REL_BIOS;
-		else
-			ctx.address_mode = AMD_ADDR_PHYSICAL;
-	}
-
-	if (cb_config.multi_level) {
-		/* Do 2nd PSP directory followed by 1st */
-		pspdir2 = new_psp_dir(&ctx, cb_config.multi_level);
-		integrate_psp_firmwares(&ctx, pspdir2, NULL, NULL,
-					amd_psp_fw_table, PSPL2_COOKIE, &cb_config);
-		if (cb_config.recovery_ab && !cb_config.recovery_ab_single_copy) {
-			/* Create a copy of PSP Directory 2 in the backup slot B.
-			   Related biosdir2_b copy will be created later. */
-			pspdir2_b = new_psp_dir(&ctx, cb_config.multi_level);
-			integrate_psp_firmwares(&ctx, pspdir2_b, NULL, NULL,
-					amd_psp_fw_table, PSPL2_COOKIE, &cb_config);
-		} else {
-			/*
-			 * Either the platform is using only one slot or B is same as above
-			 * directories for A. Skip creating pspdir2_b here to save flash space.
-			 * Related biosdir2_b will be skipped automatically.
-			 */
-			pspdir2_b = NULL; /* More explicitly */
+			/* In most cases, the address modes are same. */
+			if (cb_config.need_ish)
+				ctx.address_mode = AMD_ADDR_REL_TAB;
+			else if (cb_config.second_gen)
+				ctx.address_mode = AMD_ADDR_REL_BIOS;
+			else
+				ctx.address_mode = AMD_ADDR_PHYSICAL;
 		}
-		pspdir = new_psp_dir(&ctx, cb_config.multi_level);
-		integrate_psp_firmwares(&ctx, pspdir, pspdir2, pspdir2_b,
-					amd_psp_fw_table, PSP_COOKIE, &cb_config);
-	} else {
-		/* flat: PSP 1 cookie and no pointer to 2nd table */
-		pspdir = new_psp_dir(&ctx, cb_config.multi_level);
-		integrate_psp_firmwares(&ctx, pspdir, NULL, NULL,
-					amd_psp_fw_table, PSP_COOKIE, &cb_config);
-	}
 
-	if (!cb_config.use_combo) {
-		fill_psp_directory_to_efs(amd_romsig, pspdir, &ctx, &cb_config);
-	} else {
-		fill_psp_directory_to_efs(amd_romsig, psp_combo_dir, &ctx, &cb_config);
-		/* 0 -Compare PSP ID, 1 -Compare chip family ID */
-		assert_fw_entry(combo_index, MAX_COMBO_ENTRIES, &ctx);
-		psp_combo_dir->entries[combo_index].id_sel = 0;
-		psp_combo_dir->entries[combo_index].id = get_psp_id(cb_config.soc_id);
-		psp_combo_dir->entries[combo_index].lvl2_addr =
-			BUFF_TO_RUN_MODE(ctx, pspdir, AMD_ADDR_REL_BIOS);
-
-		fill_dir_header(psp_combo_dir, combo_index + 1, PSP2_COOKIE, &ctx);
-	}
-
-	if (have_bios_tables(amd_bios_table)) {
-		bios_directory_table *biosdir = NULL;
 		if (cb_config.multi_level) {
-			/* Do 2nd level BIOS directory followed by 1st */
-			bios_directory_table *biosdir2 = NULL;
-			bios_directory_table *biosdir2_b = NULL;
-
-			biosdir2 = new_bios_dir(&ctx, cb_config.multi_level);
-
-			integrate_bios_firmwares(&ctx, biosdir2, NULL,
-						amd_bios_table, BHDL2_COOKIE, &cb_config);
-			if (cb_config.recovery_ab) {
-				if (pspdir2_b != NULL) {
-					biosdir2_b = new_bios_dir(&ctx, cb_config.multi_level);
-					integrate_bios_firmwares(&ctx, biosdir2_b, NULL,
-						amd_bios_table, BHDL2_COOKIE, &cb_config);
-				}
-				add_psp_firmware_entry(&ctx, pspdir2, biosdir2,
-					AMD_FW_BIOS_TABLE, TABLE_ALIGNMENT);
-				if (pspdir2_b != NULL)
-					add_psp_firmware_entry(&ctx, pspdir2_b, biosdir2_b,
-						AMD_FW_BIOS_TABLE, TABLE_ALIGNMENT);
+			/* Do 2nd PSP directory followed by 1st */
+			pspdir2 = new_psp_dir(&ctx, cb_config.multi_level);
+			integrate_psp_firmwares(&ctx, pspdir2, NULL, NULL,
+						amd_psp_fw_table, PSPL2_COOKIE, &cb_config);
+			if (cb_config.recovery_ab && !cb_config.recovery_ab_single_copy) {
+				/* Create a copy of PSP Directory 2 in the backup slot B.
+				   Related biosdir2_b copy will be created later. */
+				pspdir2_b = new_psp_dir(&ctx, cb_config.multi_level);
+				integrate_psp_firmwares(&ctx, pspdir2_b, NULL, NULL,
+						amd_psp_fw_table, PSPL2_COOKIE, &cb_config);
 			} else {
-				biosdir = new_bios_dir(&ctx, cb_config.multi_level);
-				integrate_bios_firmwares(&ctx, biosdir, biosdir2,
-						amd_bios_table, BHD_COOKIE, &cb_config);
+				/*
+				 * Either the platform is using only
+				 * one slot or B is same as above
+				 * directories for A. Skip creating
+				 * pspdir2_b here to save flash space.
+				 * Related biosdir2_b will be skipped
+				 * automatically.
+				 */
+				pspdir2_b = NULL; /* More explicitly */
 			}
+			pspdir = new_psp_dir(&ctx, cb_config.multi_level);
+			integrate_psp_firmwares(&ctx, pspdir, pspdir2, pspdir2_b,
+					amd_psp_fw_table, PSP_COOKIE, &cb_config);
 		} else {
-			/* flat: BHD1 cookie and no pointer to 2nd table */
-			biosdir = new_bios_dir(&ctx, cb_config.multi_level);
-			integrate_bios_firmwares(&ctx, biosdir, NULL,
-						amd_bios_table, BHD_COOKIE, &cb_config);
+			/* flat: PSP 1 cookie and no pointer to 2nd table */
+			pspdir = new_psp_dir(&ctx, cb_config.multi_level);
+			integrate_psp_firmwares(&ctx, pspdir, NULL, NULL,
+					amd_psp_fw_table, PSP_COOKIE, &cb_config);
 		}
-		if (!cb_config.use_combo) {
-			fill_bios_directory_to_efs(amd_romsig, biosdir, &ctx, &cb_config);
-		} else {
-			fill_bios_directory_to_efs(amd_romsig, bhd_combo_dir, &ctx, &cb_config);
-			assert_fw_entry(combo_index, MAX_COMBO_ENTRIES, &ctx);
-			bhd_combo_dir->entries[combo_index].id_sel = 0;
-			bhd_combo_dir->entries[combo_index].id = get_psp_id(cb_config.soc_id);
-			bhd_combo_dir->entries[combo_index].lvl2_addr =
-				BUFF_TO_RUN_MODE(ctx, biosdir, AMD_ADDR_REL_BIOS);
 
-			fill_dir_header(bhd_combo_dir, combo_index + 1, BHD2_COOKIE, &ctx);
+		if (!cb_config.use_combo) {
+			fill_psp_directory_to_efs(amd_romsig, pspdir, &ctx, &cb_config);
+		} else {
+			fill_psp_directory_to_efs(amd_romsig, psp_combo_dir, &ctx, &cb_config);
+			/* 0 -Compare PSP ID, 1 -Compare chip family ID */
+			assert_fw_entry(combo_index, MAX_COMBO_ENTRIES, &ctx);
+			psp_combo_dir->entries[combo_index].id_sel = 0;
+			psp_combo_dir->entries[combo_index].id = get_psp_id(cb_config.soc_id);
+			psp_combo_dir->entries[combo_index].lvl2_addr =
+				BUFF_TO_RUN_MODE(ctx, pspdir, AMD_ADDR_REL_BIOS);
+
+			fill_dir_header(psp_combo_dir, combo_index + 1, PSP2_COOKIE, &ctx);
 		}
-	}
+
+		if (have_bios_tables(amd_bios_table)) {
+			bios_directory_table *biosdir = NULL;
+			if (cb_config.multi_level) {
+				/* Do 2nd level BIOS directory followed by 1st */
+				bios_directory_table *biosdir2 = NULL;
+				bios_directory_table *biosdir2_b = NULL;
+
+				biosdir2 = new_bios_dir(&ctx, cb_config.multi_level);
+
+				integrate_bios_firmwares(&ctx, biosdir2, NULL,
+						amd_bios_table, BHDL2_COOKIE, &cb_config);
+				if (cb_config.recovery_ab) {
+					if (pspdir2_b != NULL) {
+						biosdir2_b = new_bios_dir(&ctx,
+							cb_config.multi_level);
+						integrate_bios_firmwares(&ctx, biosdir2_b, NULL,
+								amd_bios_table, BHDL2_COOKIE,
+								&cb_config);
+					}
+					add_psp_firmware_entry(&ctx, pspdir2, biosdir2,
+						AMD_FW_BIOS_TABLE, TABLE_ALIGNMENT);
+					if (pspdir2_b != NULL)
+						add_psp_firmware_entry(&ctx, pspdir2_b,
+								biosdir2_b, AMD_FW_BIOS_TABLE,
+								TABLE_ALIGNMENT);
+				} else {
+					biosdir = new_bios_dir(&ctx, cb_config.multi_level);
+					integrate_bios_firmwares(&ctx, biosdir, biosdir2,
+							amd_bios_table, BHD_COOKIE, &cb_config);
+				}
+			} else {
+				/* flat: BHD1 cookie and no pointer to 2nd table */
+				biosdir = new_bios_dir(&ctx, cb_config.multi_level);
+				integrate_bios_firmwares(&ctx, biosdir, NULL,
+							amd_bios_table, BHD_COOKIE, &cb_config);
+			}
+			if (!cb_config.use_combo) {
+				fill_bios_directory_to_efs(amd_romsig, biosdir,
+					&ctx, &cb_config);
+			} else {
+				fill_bios_directory_to_efs(amd_romsig, bhd_combo_dir,
+					&ctx, &cb_config);
+				assert_fw_entry(combo_index, MAX_COMBO_ENTRIES, &ctx);
+				bhd_combo_dir->entries[combo_index].id_sel = 0;
+				bhd_combo_dir->entries[combo_index].id =
+					get_psp_id(cb_config.soc_id);
+				bhd_combo_dir->entries[combo_index].lvl2_addr =
+					BUFF_TO_RUN_MODE(ctx, biosdir, AMD_ADDR_REL_BIOS);
+
+				fill_dir_header(bhd_combo_dir, combo_index + 1,
+					BHD2_COOKIE, &ctx);
+			}
+		}
+	} while (cb_config.use_combo && combo_config[++combo_index] != NULL);
 
 	targetfd = open(output, O_RDWR | O_CREAT | O_TRUNC, 0666);
 	if (targetfd >= 0) {

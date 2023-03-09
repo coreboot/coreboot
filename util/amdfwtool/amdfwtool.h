@@ -219,7 +219,7 @@ typedef struct _psp_directory_table {
 	psp_directory_entry entries[];
 } __attribute__((packed, aligned(16))) psp_directory_table;
 
-#define MAX_PSP_ENTRIES 0x2f
+#define MAX_PSP_ENTRIES 0xff
 
 typedef struct _psp_combo_header {
 	uint32_t cookie;

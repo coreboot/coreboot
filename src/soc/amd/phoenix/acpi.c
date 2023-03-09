@@ -102,13 +102,15 @@ uint32_t get_pstate_core_freq(msr_t pstate_def)
 {
 	uint32_t core_freq, core_freq_mul, core_freq_div;
 	bool valid_freq_divisor;
+	union pstate_msr pstate_reg;
+
+	pstate_reg.raw = pstate_def.raw;
 
 	/* Core frequency multiplier */
-	core_freq_mul = pstate_def.lo & PSTATE_DEF_LO_FREQ_MUL_MASK;
+	core_freq_mul = pstate_reg.cpu_fid_0_7;
 
 	/* Core frequency divisor ID */
-	core_freq_div =
-		(pstate_def.lo & PSTATE_DEF_LO_FREQ_DIV_MASK) >> PSTATE_DEF_LO_FREQ_DIV_SHIFT;
+	core_freq_div = pstate_reg.cpu_dfs_id;
 
 	if (core_freq_div == 0) {
 		return 0;
@@ -139,18 +141,18 @@ uint32_t get_pstate_core_freq(msr_t pstate_def)
 uint32_t get_pstate_core_power(msr_t pstate_def)
 {
 	uint32_t voltage_in_uvolts, core_vid, current_value_amps, current_divisor, power_in_mw;
+	union pstate_msr pstate_reg;
+
+	pstate_reg.raw = pstate_def.raw;
 
 	/* Core voltage ID */
-	core_vid =
-		(pstate_def.lo & PSTATE_DEF_LO_CORE_VID_MASK) >> PSTATE_DEF_LO_CORE_VID_SHIFT;
+	core_vid = pstate_reg.cpu_vid_0_7 | pstate_reg.cpu_vid_8 << 8;
 
 	/* Current value in amps */
-	current_value_amps =
-		(pstate_def.lo & PSTATE_DEF_LO_CUR_VAL_MASK) >> PSTATE_DEF_LO_CUR_VAL_SHIFT;
+	current_value_amps = pstate_reg.idd_value;
 
 	/* Current divisor */
-	current_divisor =
-		(pstate_def.lo & PSTATE_DEF_LO_CUR_DIV_MASK) >> PSTATE_DEF_LO_CUR_DIV_SHIFT;
+	current_divisor = pstate_reg.idd_div;
 
 	/* Voltage */
 	if (core_vid == 0x00) {

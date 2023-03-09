@@ -8,19 +8,22 @@
 #define AMD_PICASSO_MSR_H
 
 /* MSRC001_00[6B:64] P-state [7:0] bit definitions */
-#define PSTATE_DEF_LO_CUR_DIV_SHIFT	30
-#define PSTATE_DEF_LO_CUR_DIV_MASK	(0x3 << PSTATE_DEF_LO_CUR_DIV_SHIFT)
-#define PSTATE_DEF_LO_CUR_VAL_SHIFT	22
-#define PSTATE_DEF_LO_CUR_VAL_MASK	(0xFF << PSTATE_DEF_LO_CUR_VAL_SHIFT)
-#define PSTATE_DEF_LO_CORE_VID_SHIFT	14
-#define PSTATE_DEF_LO_CORE_VID_MASK	(0xFF << PSTATE_DEF_LO_CORE_VID_SHIFT)
-#define PSTATE_DEF_LO_FREQ_DIV_SHIFT	8
-#define PSTATE_DEF_LO_FREQ_DIV_MASK	(0x3F << PSTATE_DEF_LO_FREQ_DIV_SHIFT)
+union pstate_msr {
+	struct {
+		uint64_t cpu_fid_0_7	:  8; /* [ 0.. 7] */
+		uint64_t cpu_dfs_id	:  6; /* [ 8..13] */
+		uint64_t cpu_vid_0_7	:  8; /* [14..21] */
+		uint64_t idd_value	:  8; /* [22..29] */
+		uint64_t idd_div	:  2; /* [30..31] */
+		uint64_t		: 31; /* [32..62] */
+		uint64_t pstate_en	:  1; /* [63..63] */
+	};
+	uint64_t raw;
+};
+
 #define PSTATE_DEF_LO_FREQ_DIV_MIN	0x8
 #define PSTATE_DEF_LO_EIGHTH_STEP_MAX	0x1A
 #define PSTATE_DEF_LO_FREQ_DIV_MAX	0x3E
-#define PSTATE_DEF_LO_FREQ_MUL_SHIFT	0
-#define PSTATE_DEF_LO_FREQ_MUL_MASK	(0xFF << PSTATE_DEF_LO_FREQ_MUL_SHIFT)
 #define PSTATE_DEF_LO_CORE_FREQ_BASE	25
 
 /* Value defined in Serial VID Interface 2.0 spec (#48022, NDA only) */

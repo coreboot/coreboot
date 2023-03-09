@@ -1,7 +1,5 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
-# TODO: Check if this is still correct
-
 ifeq ($(CONFIG_SOC_AMD_MENDOCINO),y)
 
 subdirs-$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK) += psp_verstage
@@ -231,7 +229,6 @@ AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 		$(OPT_PSP_BIOSBIN_DEST) \
 		$(OPT_PSP_BIOSBIN_SIZE) \
 		$(OPT_PSP_SOFTFUSE) \
-		$(OPT_PSP_LOAD_MP2_FW) \
 		--use-pspsecureos \
 		--load-s0i3 \
 		$(OPT_TOKEN_UNLOCK) \
@@ -244,6 +241,12 @@ AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 		--config $(CONFIG_AMDFW_CONFIG_FILE) \
 		--flashsize $(CONFIG_ROM_SIZE) \
 		$(OPT_RECOVERY_AB_SINGLE_COPY)
+
+# If vBOOT is not enabled, we want the MP2 firmware in the common AMDFW
+ifeq ($(CONFIG_VBOOT),)
+AMDFW_COMMON_ARGS += $(OPT_PSP_LOAD_MP2_FW)
+OPT_PSP_LOAD_MP2_FW =
+endif
 
 $(obj)/amdfw.rom:	$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 			$(PSP_VERSTAGE_FILE) \
@@ -287,6 +290,7 @@ $(obj)/amdfw_a.rom: $(obj)/amdfw.rom
 		$(OPT_SPL_RW_AB_TABLE_FILE) \
 		$(OPT_SIGNED_AMDFW_A_POSITION) \
 		$(OPT_SIGNED_AMDFW_A_FILE) \
+		$(OPT_PSP_LOAD_MP2_FW) \
 		--location $(shell printf "%#x" $(MENDOCINO_FW_A_POSITION)) \
 		--body-location $(shell printf "%#x" $$(($(MENDOCINO_FW_A_POSITION) + $(MENDOCINO_FW_BODY_OFFSET)))) \
 		--anywhere \
@@ -302,6 +306,7 @@ $(obj)/amdfw_b.rom: $(obj)/amdfw.rom
 		$(OPT_SPL_RW_AB_TABLE_FILE) \
 		$(OPT_SIGNED_AMDFW_B_POSITION) \
 		$(OPT_SIGNED_AMDFW_B_FILE) \
+		$(OPT_PSP_LOAD_MP2_FW) \
 		--location $(shell printf "%#x" $(MENDOCINO_FW_B_POSITION)) \
 		--body-location $(shell printf "%#x" $$(($(MENDOCINO_FW_B_POSITION) + $(MENDOCINO_FW_BODY_OFFSET)))) \
 		--anywhere \

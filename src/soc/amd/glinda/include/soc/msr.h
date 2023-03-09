@@ -6,20 +6,21 @@
 #define AMD_GLINDA_MSR_H
 
 /* MSRC001_00[6B:64] P-state [7:0] bit definitions */
-#define PSTATE_DEF_LO_CUR_DIV_SHIFT	30
-#define PSTATE_DEF_LO_CUR_DIV_MASK	(0x3 << PSTATE_DEF_LO_CUR_DIV_SHIFT)
-#define PSTATE_DEF_LO_CUR_VAL_SHIFT	22
-#define PSTATE_DEF_LO_CUR_VAL_MASK	(0xFF << PSTATE_DEF_LO_CUR_VAL_SHIFT)
-#define PSTATE_DEF_LO_CORE_VID_SHIFT	14
-#define PSTATE_DEF_LO_CORE_VID_MASK	(0xFF << PSTATE_DEF_LO_CORE_VID_SHIFT)
-#define PSTATE_DEF_LO_FREQ_DIV_SHIFT	8
-#define PSTATE_DEF_LO_FREQ_DIV_MASK	(0x3F << PSTATE_DEF_LO_FREQ_DIV_SHIFT)
-#define PSTATE_DEF_LO_FREQ_DIV_MIN	0x8
-#define PSTATE_DEF_LO_EIGHTH_STEP_MAX	0x1A
-#define PSTATE_DEF_LO_FREQ_DIV_MAX	0x3E
-#define PSTATE_DEF_LO_FREQ_MUL_SHIFT	0
-#define PSTATE_DEF_LO_FREQ_MUL_MASK	(0xFF << PSTATE_DEF_LO_FREQ_MUL_SHIFT)
-#define PSTATE_DEF_LO_CORE_FREQ_BASE	25
+union pstate_msr {
+	struct {
+		uint64_t cpu_fid_0_11	: 12; /* [ 0..11] */
+		uint64_t		:  2; /* [12..13] */
+		uint64_t cpu_vid_0_7	:  8; /* [14..21] */
+		uint64_t idd_value	:  8; /* [22..29] */
+		uint64_t idd_div	:  2; /* [30..31] */
+		uint64_t cpu_vid_8	:  1; /* [32..32] */
+		uint64_t		: 30; /* [33..62] */
+		uint64_t pstate_en	:  1; /* [63..63] */
+	};
+	uint64_t raw;
+};
+
+#define PSTATE_DEF_LO_CORE_FREQ_BASE	5
 
 /* Value defined in Serial VID Interface 3.0 spec (#56413, NDA only) */
 #define  SERIAL_VID_DECODE_MICROVOLTS	5000

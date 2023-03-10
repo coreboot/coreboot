@@ -298,6 +298,7 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_RPL_P		0x519d
 
 #define PCI_DEVICE_ID_INTEL_EHL			0x4b00
+#define PCI_DEVICE_ID_INTEL_JSL			0x4d87
 
 /* untested, but almost identical to D-series */
 #define PCI_DEVICE_ID_INTEL_ATOM_NXXX	0xa010

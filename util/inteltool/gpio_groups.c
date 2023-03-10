@@ -23,6 +23,7 @@
 #include "gpio_names/alderlake_h.h"
 #include "gpio_names/alderlake_p.h"
 #include "gpio_names/elkhartlake.h"
+#include "gpio_names/jasperlake.h"
 
 #define SBBAR_SIZE	(16 * MiB)
 #define PCR_PORT_SIZE	(64 * KiB)
@@ -232,6 +233,10 @@ const struct gpio_community *const *get_gpio_communities(struct pci_dev *const s
 		*community_count = ARRAY_SIZE(alderlake_pch_p_communities);
 		*pad_stepping = 16;
 		return alderlake_pch_p_communities;
+	case PCI_DEVICE_ID_INTEL_JSL:
+		*community_count = ARRAY_SIZE(jasperlake_pch_communities);
+		*pad_stepping = 16;
+ 		return jasperlake_pch_communities;
 	case PCI_DEVICE_ID_INTEL_EHL:
 		*community_count = ARRAY_SIZE(elkhartlake_pch_communities);
 		*pad_stepping = 16;

@@ -9,7 +9,7 @@
 
 #include <stdint.h>
 
-#if defined(__GLIBC__)
+#if defined(__linux__)
 #include <sys/io.h>
 #endif
 #if (defined(__MACH__) && defined(__APPLE__))

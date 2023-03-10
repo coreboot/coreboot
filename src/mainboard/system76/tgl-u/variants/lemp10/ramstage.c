@@ -12,4 +12,7 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 	// IOM config
 	params->PchUsbOverCurrentEnable = 0;
 	params->PortResetMessageEnable[2] = 1; // J_TYPEC1
+
+	// Enable reporting CPU C10 state over eSPI
+	params->PchEspiHostC10ReportEnable = 1;
 }

@@ -1586,6 +1586,35 @@ static int find_bios_entry(amd_bios_type type)
 	return -1;
 }
 
+static void add_bios_apcb_bk_entry(bios_directory_table *biosdir, unsigned int idx,
+						int inst, uint32_t size, uint64_t source)
+{
+	int i;
+
+	for (i = 0; amd_bios_table[i].type != AMD_BIOS_INVALID; i++) {
+		if (amd_bios_table[i].type == AMD_BIOS_APCB_BK &&
+					amd_bios_table[i].inst == inst)
+			break;
+	}
+
+	if (amd_bios_table[i].type != AMD_BIOS_APCB_BK)
+		return;
+
+	biosdir->entries[idx].type = amd_bios_table[i].type;
+	biosdir->entries[idx].region_type = amd_bios_table[i].region_type;
+	biosdir->entries[idx].dest = amd_bios_table[i].dest ?
+					amd_bios_table[i].dest : (uint64_t)-1;
+	biosdir->entries[idx].reset = amd_bios_table[i].reset;
+	biosdir->entries[idx].copy = amd_bios_table[i].copy;
+	biosdir->entries[idx].ro = amd_bios_table[i].ro;
+	biosdir->entries[idx].compressed = amd_bios_table[i].zlib;
+	biosdir->entries[idx].inst = amd_bios_table[i].inst;
+	biosdir->entries[idx].subprog = amd_bios_table[i].subpr;
+	biosdir->entries[idx].size = size;
+	biosdir->entries[idx].source = source;
+	biosdir->entries[idx].address_mode = SET_ADDR_MODE_BY_TABLE(biosdir);
+}
+
 static void integrate_bios_firmwares(context *ctx,
 					bios_directory_table *biosdir,
 					bios_directory_table *biosdir2,
@@ -1782,6 +1811,12 @@ static void integrate_bios_firmwares(context *ctx,
 			biosdir->entries[count].address_mode = SET_ADDR_MODE_BY_TABLE(biosdir);
 
 			adjust_current_pointer(ctx, bytes, 0x100U);
+			if (fw_table[i].type == AMD_BIOS_APCB && !cb_config->have_apcb_bk) {
+				size = biosdir->entries[count].size;
+				source = biosdir->entries[count].source;
+				count++;
+				add_bios_apcb_bk_entry(biosdir, count, fw_table[i].inst, size, source);
+			}
 			break;
 		}
 
@@ -2290,11 +2325,13 @@ int main(int argc, char **argv)
 			sub = 0;
 			break;
 		case AMDFW_OPT_APCB:
-			if ((instance & 0xF0) == 0)
+			if ((instance & 0xF0) == 0) {
 				register_bdt_data(AMD_BIOS_APCB, sub, instance & 0xF, optarg);
-			else
+			} else {
 				register_bdt_data(AMD_BIOS_APCB_BK, sub,
 							instance & 0xF, optarg);
+				cb_config.have_apcb_bk = 1;
+			}
 			sub = instance = 0;
 			break;
 		case AMDFW_OPT_APOBBASE:

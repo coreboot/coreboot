@@ -405,6 +405,7 @@ typedef struct _amd_cb_config {
 	bool recovery_ab_single_copy;
 	bool need_ish;
 	bool use_combo;
+	bool have_apcb_bk;
 	enum platform soc_id;
 } amd_cb_config;
 

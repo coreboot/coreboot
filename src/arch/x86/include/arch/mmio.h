@@ -5,6 +5,10 @@
 
 #include <stdint.h>
 
+#ifndef __always_inline
+#define __always_inline inline
+#endif
+
 static __always_inline uint8_t read8(const volatile void *addr)
 {
 	return *((volatile uint8_t *)(addr));

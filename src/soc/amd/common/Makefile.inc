@@ -18,15 +18,13 @@ endif
 
 # Steps below to generate the dependency list
 # 1a: Delete any line that starts with #, FIRMWARE_LOCATION, or SOC_NAME
-# 1b: Delete any line containing a *
-# 1c: Filter out lines containing MP2 or not, decided above.
-# 1d: Use awk to return only field 2, the filename
+# 1b: Filter out lines containing MP2 or not, decided above.
+# 1c: Use awk to return only field 2, the filename
 # 2: Gather filenames with no path to add the firmware location later
 # 3: Gather filenames with a path
 # 4a: Add the firmware location to any files without a path to the dependencies
 # 4b: add the lines containing a path to the dependencies
 AMDFW_CFG_FILES = $(shell sed "/^$(POUND_SIGN)\|^FIRMWARE_LOCATION\|^SOC_NAME/d; \
-	/*/d; \
 	$(REMOVE_MP2)" $(CONFIG_AMDFW_CONFIG_FILE) | \
 	awk '{print $$2}')
 AMDFW_CFG_IN_FW_LOC = $(shell echo "$(AMDFW_CFG_FILES)" | tr ' ' '\n' | grep -v "/")

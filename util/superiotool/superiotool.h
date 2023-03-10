@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <getopt.h>
-#if defined(__GLIBC__)
+#if defined(__linux__)
 #include <sys/io.h>
 #endif
 #if (defined(__MACH__) && defined(__APPLE__))
@@ -23,6 +23,9 @@
 #include <pci/pci.h>
 # endif
 #endif
+
+#include <sys/types.h>
+#include <stdint.h>
 
 #if defined(__FreeBSD__)
 #include <sys/types.h>

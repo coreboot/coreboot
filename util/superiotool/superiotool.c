@@ -323,9 +323,12 @@ int main(int argc, char *argv[])
 #if defined(__FreeBSD__)
 	if ((io_fd = open("/dev/io", O_RDWR)) < 0) {
 		perror("/dev/io");
-#else
+#elif defined(__NetBSD__)
 	if (iopl(3) < 0) {
 		perror("iopl");
+#else
+	if (ioperm(0, 6000, 1) < 0) {
+		perror("ioperm");
 #endif
 		printf("Superiotool must be run as root.\n");
 		exit(1);

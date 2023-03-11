@@ -2789,7 +2789,8 @@ int main(int argc, char **argv)
 					BHD2_COOKIE, &ctx);
 			}
 		}
-	} while (cb_config.use_combo && combo_config[++combo_index] != NULL);
+	} while (cb_config.use_combo && ++combo_index < MAX_COMBO_ENTRIES &&
+					combo_config[combo_index] != NULL);
 
 	targetfd = open(output, O_RDWR | O_CREAT | O_TRUNC, 0666);
 	if (targetfd >= 0) {

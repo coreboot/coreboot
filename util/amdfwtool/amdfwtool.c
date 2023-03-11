@@ -2502,13 +2502,13 @@ int main(int argc, char **argv)
 		retval = 1;
 	}
 
-	if ((ctx.rom_size % 1024 != 0)) {
+	if (ctx.rom_size % 1024 != 0) {
 		fprintf(stderr, "Error: ROM Size (%d bytes) should be a multiple of"
 			" 1024 bytes.\n\n", ctx.rom_size);
 		retval = 1;
 	}
 
-	if ((ctx.rom_size < MIN_ROM_KB * 1024)) {
+	if (ctx.rom_size < MIN_ROM_KB * 1024) {
 		fprintf(stderr, "Error: ROM Size (%dKB) must be at least %dKB.\n\n",
 			ctx.rom_size / 1024, MIN_ROM_KB);
 		retval = 1;

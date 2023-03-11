@@ -177,6 +177,11 @@ F:	src/mainboard/apple/
 
 
 
+ASROCK B75M-ITX MAINBOARD
+M:	Kevin Keijzer <kevin@quietlife.nl>
+S:	Maintained
+F:	src/mainboard/asrock/b75m-itx/
+
 ASROCK B85M PRO4 MAINBOARD
 M:	Angel Pons <th3fanbus@gmail.com>
 S:	Maintained

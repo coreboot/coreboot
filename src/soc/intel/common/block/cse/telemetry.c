@@ -6,11 +6,11 @@
 
 #define MSEC_TO_USEC(x) (x * 1000)
 
-static void cbmem_inject_telemetry_data(void)
+static void process_cse_telemetry_data(void)
 {
 	struct cse_boot_perf_rsp cse_perf_data;
 	s64 ts[NUM_CSE_BOOT_PERF_DATA] = {0};
-	s64 current_time, start_stamp;
+	s64 current_time;
 	int zero_point_idx = 0;
 
 	/*
@@ -60,17 +60,7 @@ static void cbmem_inject_telemetry_data(void)
 	}
 
 	/* Inject CSME timestamps into the coreboot timestamp table */
-	start_stamp = current_time - ts[PERF_DATA_CSME_GET_PERF_RESPONSE];
-
-	timestamp_add(TS_ME_ROM_START, start_stamp);
-	timestamp_add(TS_ME_BOOT_STALL_END,
-		start_stamp + ts[PERF_DATA_CSME_RBE_BOOT_STALL_DONE_TO_PMC]);
-	timestamp_add(TS_ME_ICC_CONFIG_START,
-		start_stamp + ts[PERF_DATA_CSME_POLL_FOR_PMC_PPS_START]);
-	timestamp_add(TS_ME_HOST_BOOT_PREP_END,
-		start_stamp + ts[PERF_DATA_CSME_HOST_BOOT_PREP_DONE]);
-	timestamp_add(TS_ME_RECEIVED_CRDA_FROM_PMC,
-		start_stamp + ts[PERF_DATA_PMC_SENT_CRDA]);
+	soc_cbmem_inject_telemetry_data(ts, current_time);
 }
 
 void cse_get_telemetry_data(void)
@@ -81,5 +71,5 @@ void cse_get_telemetry_data(void)
 		return;
 	}
 
-	cbmem_inject_telemetry_data();
+	process_cse_telemetry_data();
 }

@@ -56,7 +56,6 @@ chip soc/intel/meteorlake
 	device domain 0 on
 		device ref igpu on end
 		device ref dtt on end
-		device ref vpu on end
 		device ref xhci on end
 		device ref shared_sram on end
 		device ref heci1 on end

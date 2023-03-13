@@ -1407,7 +1407,8 @@ static void cse_final_end_of_firmware(void)
  */
 void cse_late_finalize(void)
 {
-	if (!CONFIG(SOC_INTEL_CSE_SEND_EOP_LATE))
+	if (!CONFIG(SOC_INTEL_CSE_SEND_EOP_LATE) &&
+	    !CONFIG(SOC_INTEL_CSE_SEND_EOP_ASYNC))
 		return;
 
 	if (!CONFIG(USE_FSP_NOTIFY_PHASE_READY_TO_BOOT))
@@ -1430,6 +1431,14 @@ static void cse_final(struct device *dev)
 	/* 1. Send EOP to CSE if not done.*/
 	if (CONFIG(SOC_INTEL_CSE_SET_EOP))
 		cse_send_end_of_post();
+
+	/*
+	 * In asynchronous mode, the EOP command has most likely not been
+	 * completed yet. Finalization steps will be run once the EOP command
+	 * has successfully been completed.
+	 */
+	if (CONFIG(SOC_INTEL_CSE_SEND_EOP_ASYNC))
+		return;
 
 	if (!CONFIG(USE_FSP_NOTIFY_PHASE_READY_TO_BOOT))
 		cse_final_ready_to_boot();

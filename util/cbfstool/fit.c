@@ -719,12 +719,12 @@ int fit_add_entry(struct fit_table *fit,
 	struct fit_entry *entry;
 
 	if (!fit) {
-		ERROR("Internal error.");
+		ERROR("Internal error.\n");
 		return 1;
 	}
 
 	if (fit_free_space(fit, max_fit_entries) < 1) {
-		ERROR("No space left in FIT.");
+		ERROR("No space left in FIT.\n");
 		return 1;
 	}
 
@@ -781,12 +781,12 @@ int fit_delete_entry(struct fit_table *fit,
 		     const size_t idx)
 {
 	if (!fit) {
-		ERROR("Internal error.");
+		ERROR("Internal error.\n");
 		return 1;
 	}
 
 	if (idx >= fit_table_entries(fit)) {
-		ERROR("Index out of range.");
+		ERROR("Index out of range.\n");
 		return 1;
 	}
 

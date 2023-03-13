@@ -257,13 +257,13 @@ int cbfs_legacy_image_create(struct cbfs_image *image,
 	void *header_loc;
 	size_t size = image->buffer.size;
 
-	DEBUG("cbfs_image_create: bootblock=0x%x+0x%zx, "
-	      "header=0x%x+0x%zx, entries_offset=0x%x\n",
+	DEBUG("%s: bootblock=0x%x+0x%zx, "
+	      "header=0x%x+0x%zx, entries_offset=0x%x\n", __func__,
 	      bootblock_offset, bootblock->size, header_offset,
 	      sizeof(image->header), entries_offset);
 
-	DEBUG("cbfs_create_image: (real offset) bootblock=0x%x, "
-	      "header=0x%x, entries_offset=0x%x\n",
+	DEBUG("%s: (real offset) bootblock=0x%x, "
+	      "header=0x%x, entries_offset=0x%x\n", __func__,
 	      bootblock_offset, header_offset, entries_offset);
 
 	// Prepare bootblock
@@ -636,7 +636,7 @@ static int cbfs_add_entry_at(struct cbfs_image *image,
 	if (header_offset % align)
 		header_offset -= header_offset % align;
 	if (header_offset < addr) {
-		ERROR("No space to hold cbfs_file header.");
+		ERROR("No space to hold cbfs_file header.\n");
 		return -1;
 	}
 
@@ -771,7 +771,7 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 		entry_size = addr_next - addr;
 		max_null_entry_size = MAX(max_null_entry_size, entry_size);
 
-		DEBUG("cbfs_add_entry: space at 0x%x+0x%x(%d) bytes\n",
+		DEBUG("%s: space at 0x%x+0x%x(%d) bytes\n", __func__,
 		      addr, entry_size, entry_size);
 
 		/* Will the file fit? Don't yet worry if we have space for a new
@@ -783,10 +783,10 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 		// Test for complicated cases
 		if (content_offset > 0) {
 			if (addr_next < content_offset) {
-				DEBUG("Not for specified offset yet");
+				DEBUG("Not for specified offset yet.\n");
 				continue;
 			} else if (addr > content_offset) {
-				DEBUG("Exceed specified content_offset.");
+				DEBUG("Exceed specified content_offset.\n");
 				break;
 			} else if (addr + header_size > content_offset) {
 				ERROR("Not enough space for header.\n");
@@ -830,7 +830,7 @@ struct cbfs_file *cbfs_get_entry(struct cbfs_image *image, const char *name)
 	     entry && cbfs_is_valid_entry(image, entry);
 	     entry = cbfs_find_next_entry(image, entry)) {
 		if (strcasecmp(entry->filename, name) == 0) {
-			DEBUG("cbfs_get_entry: found %s\n", name);
+			DEBUG("%s: found %s\n", __func__, name);
 			return entry;
 		}
 	}
@@ -1323,7 +1323,7 @@ int cbfs_remove_entry(struct cbfs_image *image, const char *name)
 		ERROR("CBFS file %s not found.\n", name);
 		return -1;
 	}
-	DEBUG("cbfs_remove_entry: Removed %s @ 0x%x\n",
+	DEBUG("%s: Removed %s @ 0x%x\n", __func__,
 	      entry->filename, cbfs_get_entry_addr(image, entry));
 	entry->type = htobe32(CBFS_TYPE_DELETED);
 	cbfs_legacy_walk(image, cbfs_merge_empty_entry, NULL);
@@ -1879,7 +1879,7 @@ struct cbfs_file_attribute *cbfs_add_file_attr(struct cbfs_file *header,
 	} while (next != NULL);
 	uint32_t header_size = be32toh(header->offset) + size;
 	if (header_size > CBFS_METADATA_MAX_SIZE) {
-		DEBUG("exceeding allocated space for cbfs_file headers");
+		DEBUG("exceeding allocated space for cbfs_file headers.\n");
 		return NULL;
 	}
 	/* attr points to the last valid attribute now.
@@ -2024,14 +2024,14 @@ int32_t cbfs_locate_entry(struct cbfs_image *image, size_t size,
 		offset = absolute_align(image, addr + metadata_size, align);
 		if (is_in_same_page(offset, size, page_size) &&
 		    is_in_range(addr, addr_next, metadata_size, offset, size)) {
-			DEBUG("cbfs_locate_entry: FIT (PAGE1).");
+			DEBUG("%s: FIT (PAGE1).\n", __func__);
 			return offset;
 		}
 
 		addr2 = align_up(addr, page_size);
 		offset = absolute_align(image, addr2, align);
 		if (is_in_range(addr, addr_next, metadata_size, offset, size)) {
-			DEBUG("cbfs_locate_entry: OVERLAP (PAGE2).");
+			DEBUG("%s: OVERLAP (PAGE2).\n", __func__);
 			return offset;
 		}
 
@@ -2041,7 +2041,7 @@ int32_t cbfs_locate_entry(struct cbfs_image *image, size_t size,
 		addr3 = addr2 + page_size;
 		offset = absolute_align(image, addr3, align);
 		if (is_in_range(addr, addr_next, metadata_size, offset, size)) {
-			DEBUG("cbfs_locate_entry: OVERLAP+ (PAGE3).");
+			DEBUG("%s: OVERLAP+ (PAGE3).\n", __func__);
 			return offset;
 		}
 	}

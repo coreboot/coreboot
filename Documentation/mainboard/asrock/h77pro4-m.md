@@ -45,7 +45,9 @@ Tests were done with SeaBIOS 1.14.0 and slackware64-live from 2019-07-12
 - Rear eSATA connector (multiplexed with one ASM1061 port)
 - Gigabit Ethernet
 - Console output on the serial port
-- SeaBIOS 1.14.0 and 1.15.0 to boot Windows 10 (needs VGA BIOS) and Linux via
+- EDK II (MrChromebox's fork, at origin/uefipayload_202207) to boot
+Windows 10 (22H2) and Linux (5.19.17) via GRUB 2
+- SeaBIOS 1.16.1 to boot Windows 10 (needs VGA BIOS) and Linux via
 extlinux
 - Internal flashing with flashrom-1.2, see
 [Internal Programming](#internal-programming)

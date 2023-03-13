@@ -231,6 +231,7 @@ config MAINBOARD_PART_NUMBER
 	default "Constitution" if BOARD_GOOGLE_CONSTITUTION
 	default "Aurash" if BOARD_GOOGLE_AURASH
 	default "Hades" if BOARD_GOOGLE_HADES
+	default "Uldren" if BOARD_GOOGLE_ULDREN
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -276,6 +277,7 @@ config VARIANT_DIR
 	default "constitution" if BOARD_GOOGLE_CONSTITUTION
 	default "aurash" if BOARD_GOOGLE_AURASH
 	default "hades" if BOARD_GOOGLE_HADES
+	default "uldren" if BOARD_GOOGLE_ULDREN
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC if !BOARD_GOOGLE_BASEBOARD_NISSA

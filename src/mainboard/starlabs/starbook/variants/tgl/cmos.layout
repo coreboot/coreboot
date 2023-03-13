@@ -35,6 +35,8 @@ entries
 608	1	e	1	fn_ctrl_swap
 616	2	e	8	max_charge
 624	2	e	9	fan_mode
+632	1	e	1	mirror_flag
+640	4	h	0	mirror_flag_counter
 
 # coreboot config options: southbridge
 800	2	e	6	power_on_after_fail

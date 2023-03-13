@@ -13,6 +13,7 @@ legacy_8254_timer=Disable
 kbl_timeout=30 seconds
 fn_ctrl_swap=Disable
 fast_charge=Normal
+mirror_flag=Disable
 # southbridge
 power_on_after_fail=Disable
 # Functions

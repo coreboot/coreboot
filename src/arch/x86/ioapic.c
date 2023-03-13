@@ -129,9 +129,9 @@ static void set_ioapic_id(void *ioapic_base, u8 ioapic_id)
 
 	printk(BIOS_DEBUG, "IOAPIC: Initializing IOAPIC at %p\n",
 	       ioapic_base);
+	printk(BIOS_DEBUG, "IOAPIC: ID = 0x%02x\n", ioapic_id);
 
 	if (ioapic_id) {
-		printk(BIOS_DEBUG, "IOAPIC: ID = 0x%02x\n", ioapic_id);
 		/* Set IOAPIC ID if it has been specified. */
 		io_apic_write(ioapic_base, 0x00,
 			(io_apic_read(ioapic_base, 0x00) & 0xf0ffffff) |

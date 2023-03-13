@@ -8,6 +8,7 @@
 #include <device/pci_def.h>
 #include <device/smbus_host.h>
 #include <console/console.h>
+#include <commonlib/console/post_codes.h>
 #include <timestamp.h>
 #include "i440bx.h"
 #include "raminit.h"
@@ -763,8 +764,8 @@ static void set_dram_row_attributes(void)
 			PRINT_DEBUG("Found DIMM in slot %d\n", i);
 
 			if (edo && sd) {
-				printk(BIOS_ERR, "Mixing EDO/SDRAM unsupported!\n");
-				die("HALT\n");
+				die_with_post_code(POST_RAM_FAILURE,
+					"Mixing EDO/SDRAM unsupported!\n");
 			}
 
 			/* "DRA" is our RPS for the two rows on this DIMM. */
@@ -868,12 +869,12 @@ static void set_dram_row_attributes(void)
 				if (col == 4)
 					bpr |= 0xc0;
 			} else {
-				printk(BIOS_ERR, "# of banks of DIMM unsupported!\n");
-				die("HALT\n");
+				die_with_post_code(POST_RAM_FAILURE,
+					"# of banks of DIMM unsupported!\n");
 			}
 			if (dra == -1) {
-				printk(BIOS_ERR, "Page size not supported\n");
-				die("HALT\n");
+				die_with_post_code(POST_RAM_FAILURE,
+					"Page size not supported!\n");
 			}
 
 			/*
@@ -883,9 +884,9 @@ static void set_dram_row_attributes(void)
 			 */
 			struct dimm_size sz = spd_get_dimm_size(device);
 			if ((sz.side1 < 8)) {
-				printk(BIOS_ERR, "DIMMs smaller than 8MB per side\n"
-					  "are not supported on this NB.\n");
-				die("HALT\n");
+				die_with_post_code(POST_RAM_FAILURE,
+					"DIMMs smaller than 8MB per side "
+					"are not supported!\n");
 			}
 
 			/* Divide size by 8 to set up the DRB registers. */

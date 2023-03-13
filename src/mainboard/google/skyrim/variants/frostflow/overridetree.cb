@@ -153,16 +153,16 @@ chip soc/amd/mendocino
 	# STT settings
 	register "stt_control" = "1"
 	register "stt_pcb_sensor_count" = "2"
-	register "stt_error_coeff" = "0x21"
-	register "stt_error_rate_coefficient" = "0x2666"
-	register "stt_min_limit" = "15000"
-	register "stt_skin_temp_apu" = "0x3000"
+	register "stt_error_coeff" = "0x38"
+	register "stt_error_rate_coefficient" = "0xbfb"
+	register "stt_min_limit" = "15500"
+	register "stt_skin_temp_apu" = "0x2b33"
 
 	# STT default mode
-	register "stt_m1" = "0xfed2"
-	register "stt_m2" = "0x5f9"
-	register "stt_c_apu" = "0xfbf8"
-	register "stt_alpha_apu" = "0x4ccd"
+	register "stt_m1" = "0x20c"
+	register "stt_m2" = "0x302"
+	register "stt_c_apu" = "0xf7e9"
+	register "stt_alpha_apu" = "0x199a"
 
 	# STT tablet mode
 	register "stt_m1_tablet" = "0x208"

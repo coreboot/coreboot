@@ -21,11 +21,12 @@ fw_config
 		option SD_ABSENT		0
 		option SD_GL9755S		1
 	end
-	field DB_USB 12 13
+	field DB_USB 12 14
 		option USB_UNKNOWN		0
 		option USB3_PS8815		1
 		option USB4_KB8010		2
 		option USB4_ANX7452		3
+		option USB4_HAYDEN_BRIDGE	4
 	end
 end
 

@@ -355,3 +355,7 @@ config BOARD_GOOGLE_HADES
 config BOARD_GOOGLE_ULDREN
 	bool "->  Uldren"
 	select BOARD_GOOGLE_BASEBOARD_NISSA
+
+config BOARD_GOOGLE_YAVILLA
+	bool "->  Yavilla"
+	select BOARD_GOOGLE_BASEBOARD_NISSA

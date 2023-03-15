@@ -2670,6 +2670,9 @@ int main(int argc, char **argv)
 		combo_config[0] = config;
 
 	do {
+		if (cb_config.use_combo && debug)
+			printf("Processing %dth combo entry\n", combo_index);
+
 		/* for non-combo image, combo_config[0] == config, and
 		 *  it already is processed.  Actually "combo_index >
 		 *  0" is enough. Put both of them here to make sure

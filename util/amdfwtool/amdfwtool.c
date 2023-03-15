@@ -2296,6 +2296,7 @@ int main(int argc, char **argv)
 			break;
 		case AMDFW_OPT_COMBO1_CONFIG:
 			cb_config.use_combo = true;
+			assert_fw_entry(1, MAX_COMBO_ENTRIES, &ctx);
 			combo_config[1] = optarg;
 			break;
 		case AMDFW_OPT_MULTILEVEL:
@@ -2676,6 +2677,7 @@ int main(int argc, char **argv)
 		 *  case.
 		 */
 		if (cb_config.use_combo && combo_index > 0) {
+			assert_fw_entry(combo_index, MAX_COMBO_ENTRIES, &ctx);
 			open_process_config(combo_config[combo_index], &cb_config,
 				debug);
 

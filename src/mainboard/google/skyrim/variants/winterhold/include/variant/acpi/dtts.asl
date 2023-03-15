@@ -30,15 +30,15 @@ Scope (\_SB)
                 // Table A/B
                 If ((\_SB.PRTN == 0) || (\_SB.PRTN == 1)) {
                     // AMB sensor trigger point
-                    // 44C will store 117(0x75) in mapped memory
-                    // 44C=317K, 317-200(offset)=117(0x75)
-                    If (\_SB.PCI0.LPCB.EC0.TIN4 >= 117) {
+                    // 43C will store 116(0x74) in mapped memory
+                    // 43C=316K, 316-200(offset)=116(0x74)
+                    If (\_SB.PCI0.LPCB.EC0.TIN4 >= 116) {
                         \_SB.DTTB()
                         \_SB.PRTN = 1
                         Return (0)
                     }
                     // AMB sensor release point
-                    If ((\_SB.PCI0.LPCB.EC0.TIN4 <= 113)) {
+                    If ((\_SB.PCI0.LPCB.EC0.TIN4 <= 112)) {
                         \_SB.DDEF()
                         \_SB.PRTN = 0
                         Return (0)

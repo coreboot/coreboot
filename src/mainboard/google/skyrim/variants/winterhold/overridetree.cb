@@ -37,10 +37,10 @@ chip soc/amd/mendocino
 	register "slow_ppt_time_constant_s" = "5"
 
 	register "stt_min_limit" = "15000"
-	register "stt_m1" = "0x18F"
-	register "stt_m2" = "0x48F"
-	register "stt_c_apu" = "0xECC5"
-	register "stt_skin_temp_apu" = "0x3200"
+	register "stt_m1" = "0xAE"
+	register "stt_m2" = "0xB8F"
+	register "stt_c_apu" = "0xC13B"
+	register "stt_skin_temp_apu" = "0x3000"
 
 	# Set Dynamic DPTC thermal profile confiuration. Table B
 	register "fast_ppt_limit_mW_B" = "15000"
@@ -48,10 +48,10 @@ chip soc/amd/mendocino
 	register "slow_ppt_time_constant_s_B" = "5"
 
 	register "stt_min_limit_B" = "10500"
-	register "stt_m1_B" = "0x18F"
-	register "stt_m2_B" = "0x48F"
-	register "stt_c_apu_B" = "0xECC5"
-	register "stt_skin_temp_apu_B" = "0x3300"
+	register "stt_m1_B" = "0xAE"
+	register "stt_m2_B" = "0xB8F"
+	register "stt_c_apu_B" = "0xC13B"
+	register "stt_skin_temp_apu_B" = "0x3000"
 
 	# Set Dynamic DPTC thermal profile confiuration. Table C
 	register "fast_ppt_limit_mW_C" = "30000"
@@ -59,10 +59,10 @@ chip soc/amd/mendocino
 	register "slow_ppt_time_constant_s_C" = "5"
 
 	register "stt_min_limit_C" = "15000"
-	register "stt_m1_C" = "0x152"
-	register "stt_m2_C" = "0x4AE"
-	register "stt_c_apu_C" = "0xEE94"
-	register "stt_skin_temp_apu_C" = "0x3200"
+	register "stt_m1_C" = "0x129"
+	register "stt_m2_C" = "0xAF6"
+	register "stt_c_apu_C" = "0xC3D2"
+	register "stt_skin_temp_apu_C" = "0x3000"
 
 	# Set Dynamic DPTC thermal profile confiuration. Table D
 	register "fast_ppt_limit_mW_D" = "15000"
@@ -70,10 +70,10 @@ chip soc/amd/mendocino
 	register "slow_ppt_time_constant_s_D" = "5"
 
 	register "stt_min_limit_D" = "10500"
-	register "stt_m1_D" = "0x152"
-	register "stt_m2_D" = "0x4AE"
-	register "stt_c_apu_D" = "0xEE94"
-	register "stt_skin_temp_apu_D" = "0x3300"
+	register "stt_m1_D" = "0x129"
+	register "stt_m2_D" = "0xAF6"
+	register "stt_c_apu_D" = "0xC3D2"
+	register "stt_skin_temp_apu_D" = "0x3000"
 
 	# Set Dynamic DPTC thermal profile confiuration. Table E
 	register "fast_ppt_limit_mW_E" = "24000"
@@ -81,9 +81,9 @@ chip soc/amd/mendocino
 	register "slow_ppt_time_constant_s_E" = "5"
 
 	register "stt_min_limit_E" = "12000"
-	register "stt_m1_E" = "0x18F"
-	register "stt_m2_E" = "0x48F"
-	register "stt_c_apu_E" = "0xECC5"
+	register "stt_m1_E" = "0xAE"
+	register "stt_m2_E" = "0xB8F"
+	register "stt_c_apu_E" = "0xC13B"
 	register "stt_skin_temp_apu_E" = "0x2F00"
 
 
@@ -93,10 +93,10 @@ chip soc/amd/mendocino
 	register "slow_ppt_time_constant_s_F" = "5"
 
 	register "stt_min_limit_F" = "8000"
-	register "stt_m1_F" = "0x18F"
-	register "stt_m2_F" = "0x48F"
-	register "stt_c_apu_F" = "0xECC5"
-	register "stt_skin_temp_apu_F" = "0x3000"
+	register "stt_m1_F" = "0xAE"
+	register "stt_m2_F" = "0xB8F"
+	register "stt_c_apu_F" = "0xC13B"
+	register "stt_skin_temp_apu_F" = "0x2F00"
 
 	register "i2c[0]" = "{
 		.speed = I2C_SPEED_FAST,

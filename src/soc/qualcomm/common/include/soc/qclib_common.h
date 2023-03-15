@@ -45,6 +45,7 @@ struct qclib_cb_if_table_entry {
 /* GA_BMASK_VALUES (global_attributes bit mask values) */
 #define QCLIB_GA_ENABLE_UART_LOGGING   0x00000001
 #define QCLIB_GA_FORCE_COLD_REBOOT BIT(3)
+#define QCLIB_GA_DDR_FMAX_LIMIT_HYNIX8GB BIT(5)
 
 #define QCLIB_INTERFACE_VERSION 0x00000001
 #define QCLIB_MAX_NUMBER_OF_ENTRIES 16
@@ -67,7 +68,7 @@ extern struct qclib_cb_if_table qclib_cb_if_table;
 void qclib_add_if_table_entry(const char *name, void *base,
 			      uint32_t size, uint32_t attrs);
 void qclib_load_and_run(void);
-int  qclib_soc_blob_load(void);
+int  qclib_soc_override(struct qclib_cb_if_table *table);
 
 const char *qclib_file_default(enum qclib_cbfs_file file);
 const char *qclib_file(enum qclib_cbfs_file file);

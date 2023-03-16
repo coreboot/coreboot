@@ -192,6 +192,7 @@ typedef struct {
   UINT16 tWTR_L;    ///< Number of tCK cycles for the channel DIMM's minimum internal write to read command delay time for same bank groups.
   UINT16 tWTR_S;    ///< Number of tCK cycles for the channel DIMM's minimum internal write to read command delay time for different bank groups.
   UINT16 tCCD_L;  ///< Number of tCK cycles for the channel DIMM's minimum CAS-to-CAS delay for same bank group.
+  UINT16 tCCD_L_WR; ///< Number of tCK cycles for the channel DIMM's minimum Write-to-Write delay for same bank group.
 } MRC_CH_TIMING;
 
 typedef struct {

@@ -112,6 +112,9 @@ chip soc/amd/mendocino
 
 		register "dxio_tx_vboost_enable" = "1"
 
+		# The unit is set to one per 4ms
+		register "pwr_on_vary_bl_to_blon" = "0x1c"
+
 		device ref gpp_bridge_1 on
 			# Required so the NVMe gets placed into D3 when entering S0i3.
 			chip drivers/pcie/rtd3/device

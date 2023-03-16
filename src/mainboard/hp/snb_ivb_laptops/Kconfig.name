@@ -1,5 +1,8 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
+config BOARD_HP_2170P
+	bool "EliteBook 2170p"
+
 config BOARD_HP_2560P
 	bool "EliteBook 2560p"
 

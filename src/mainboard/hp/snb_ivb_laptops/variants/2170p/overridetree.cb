@@ -1,0 +1,59 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+chip northbridge/intel/sandybridge
+	register "gpu_cpu_backlight" = "0x0000040e"
+	register "gpu_panel_power_backlight_off_delay" = "2000"
+	register "gpu_pch_backlight" = "0x0d9c0d9c"
+	device domain 0 on
+		subsystemid 0x103c 0x1815 inherit
+
+		device pci 01.0 off end	# PCIe Bridge for discrete graphics
+		device pci 02.0 on  end	# Internal graphics
+
+		chip southbridge/intel/bd82x6x	# Intel Series 7 Panther Point PCH
+			# mailbox at 0x200/0x201 and PM1 at 0x220
+			register "gen1_dec" = "0x007c0201"
+			register "gen2_dec" = "0x000c0101"
+			register "gen3_dec" = "0x00fcfe01"
+			register "gen4_dec" = "0x000402e9"
+			register "gpi6_routing" = "2"
+			register "pcie_hotplug_map" = "{ 0, 0, 1, 0, 0, 0, 0, 0 }"
+			# HDD(0), ODD(1), mSATA(2), eSATA(4)
+			register "sata_port_map" = "0x3f"
+			register "superspeed_capable_ports" = "0x0000000f"
+			register "xhci_overcurrent_mapping" = "0x00000c03"
+			register "xhci_switchable_ports"    = "0x0000000f"
+
+			device pci 14.0 on  end	# USB 3.0 Controller
+			device pci 16.0 on  end	# Management Engine KT
+			device pci 1c.0 on  end	# PCIe Port #1
+			device pci 1c.1 off end	# PCIe Port #2
+			device pci 1c.2 on  end	# PCIe Port #3, SD/MMC
+			device pci 1c.3 on  end	# PCIe Port #4, WLAN
+			device pci 1c.4 off end	# PCIe Port #5
+			device pci 1c.5 off end	# PCIe Port #6
+			device pci 1c.6 off end	# PCIe Port #7
+			device pci 1c.7 off end	# PCIe Port #8
+			device pci 1f.0 on	# LPC bridge
+				chip ec/hp/kbc1126
+					register "ec_data_port" = "0x62"
+					register "ec_cmd_port"  = "0x66"
+					register "ec_ctrl_reg"  = "0x81"
+					register "ec_fan_ctrl_value" = "0x70"
+					device pnp ff.1 off end
+				end
+				chip superio/smsc/lpc47n217
+					device pnp 4e.3 on	# Parallel
+						io  0x60 = 0x378
+						irq 0x70 = 7
+					end
+					device pnp 4e.4 on	# COM1
+						io  0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 4e.5 off end	# COM2
+				end
+			end
+		end
+	end
+end

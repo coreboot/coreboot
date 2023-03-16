@@ -114,7 +114,10 @@ static void save_dimm_info(void)
 		}
 	}
 	mem_info->dimm_cnt = index;
-	printk(BIOS_DEBUG, "%d DIMMs found\n", mem_info->dimm_cnt);
+	if (mem_info->dimm_cnt == 0)
+		printk(BIOS_ERR, "No DIMMs found\n");
+	else
+		printk(BIOS_DEBUG, "%d DIMMs found\n", mem_info->dimm_cnt);
 }
 
 void mainboard_romstage_entry(void)

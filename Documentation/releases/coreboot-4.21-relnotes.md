@@ -24,6 +24,7 @@ Significant or interesting changes
 
 * Upgrade IASL from 20221020 to 20230331
 * Upgrade LLVM from 15.0.7 to 16.0.4
+* Upgrade nasm from 2.15.05 to 2.16.01
 
 Additional coreboot changes
 ---------------------------

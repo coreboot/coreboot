@@ -21,7 +21,7 @@
 #define wmb()		asm volatile("dsb st" : : : "memory")
 
 #if CONFIG(SMP)
-#define barrier() __asm__ __volatile__("": : :"memory")
+#define barrier() __asm__ __volatile__("" : : : "memory")
 #endif
 
 #define nop()		asm volatile("nop");

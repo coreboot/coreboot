@@ -29,8 +29,6 @@ cache_as_ram:
 	xorl	%eax, %eax
 	rep	stosl
 
-	post_code(0x21)
-
 #if defined(__x86_64__)
 	/*
 	 * Copy page tables to final location in DRAM. This prevents some strange

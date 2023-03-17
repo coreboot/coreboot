@@ -2,3 +2,4 @@ comment "Rex"
 
 config BOARD_GOOGLE_REX0
 	bool "-> Rex 0"
+	select DRIVERS_GENESYSLOGIC_GL9755

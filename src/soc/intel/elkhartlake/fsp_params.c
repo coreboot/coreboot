@@ -381,6 +381,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 			!config->PcieRpAdvancedErrorReportingDisable[i];
 		params->PcieRpHotPlug[i] = config->PcieRpHotPlug[i];
 		params->PciePtm[i] = config->PciePtm[i];
+		params->PcieRpPcieSpeed[i] = config->PcieRpPcieSpeed[i];
 		params->PcieRpLtrMaxNoSnoopLatency[i] = 0x1003;
 		params->PcieRpLtrMaxSnoopLatency[i] = 0x1003;
 		/* Virtual Channel 1 to Traffic Class mapping */

@@ -41,7 +41,7 @@ GCC_VERSION=11.3.0
 BINUTILS_VERSION=2.40
 IASL_VERSION="R10_20_22"
 # CLANG version number
-CLANG_VERSION=15.0.7
+CLANG_VERSION=16.0.4
 CMAKE_VERSION=3.26.3
 NASM_VERSION=2.15.05
 
@@ -881,13 +881,6 @@ build_LLVM() {
 
 	cp -a ../$CLANG_DIR/tools/scan-build/* "$DESTDIR$TARGETDIR/bin"
 	cp -a ../$CLANG_DIR/tools/scan-view/* "$DESTDIR$TARGETDIR/bin"
-
-	# create symlinks to work around broken --print-librt-file-name
-	# when used with -target.
-	cd "$DESTDIR$TARGETDIR/lib/clang/${CLANG_VERSION}/lib" || exit 1
-	for i in */libclang_rt.builtins*.a; do
-		ln -s "$i" .
-	done
 }
 
 build_CMAKE() {

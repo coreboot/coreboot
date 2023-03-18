@@ -4,17 +4,18 @@
 #define SOUTHBRIDGE_INTEL_I82371EB_CHIP_H
 
 #include <device/device.h>
+#include <types.h>
 
 struct southbridge_intel_i82371eb_config {
-	int ide0_enable:1;
-	int ide0_drive0_udma33_enable:1;
-	int ide0_drive1_udma33_enable:1;
-	int ide1_enable:1;
-	int ide1_drive0_udma33_enable:1;
-	int ide1_drive1_udma33_enable:1;
-	int ide_legacy_enable:1;
-	int usb_enable:1;
-	int gpo22_enable:1; /* GPO22/GPO23 (1) vs. XDIR#/XOE# (0) */
+	bool ide0_enable;
+	bool ide0_drive0_udma33_enable;
+	bool ide0_drive1_udma33_enable;
+	bool ide1_enable;
+	bool ide1_drive0_udma33_enable;
+	bool ide1_drive1_udma33_enable;
+	bool ide_legacy_enable;
+	bool usb_enable;
+	bool gpo22_enable; /* GPO22/GPO23 (1) vs. XDIR#/XOE# (0) */
 	int gpo22:1;
 	int gpo23:1;
 	/* acpi */

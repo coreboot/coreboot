@@ -38,15 +38,13 @@ void dump_spd_registers(void)
 void dump_pci_device(unsigned int dev)
 {
 	int i;
-	printk(BIOS_DEBUG, "PCI: %02x:%02x.%02x\n", (dev >> 20) & 0xff, (dev >> 15) & 0x1f, (dev >> 12) & 7);
+	printk(BIOS_DEBUG, "PCI: %02x:%02x.%02x", (dev >> 20) & 0xff, (dev >> 15) & 0x1f,
+		(dev >> 12) & 7);
 
 	for (i = 0; i <= 255; i++) {
-		unsigned char val;
-		val = pci_read_config8(dev, i);
 		if ((i & 0x0f) == 0)
-			printk(BIOS_DEBUG, "%02x:", i);
-		printk(BIOS_DEBUG, " %02x", val);
-		if ((i & 0x0f) == 0x0f)
-			printk(BIOS_DEBUG, "\n");
+			printk(BIOS_DEBUG, "\n%02x:", i);
+		printk(BIOS_DEBUG, " %02x", pci_read_config8(dev, i));
 	}
+	printk(BIOS_DEBUG, "\n");
 }

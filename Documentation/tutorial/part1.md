@@ -6,6 +6,19 @@ coreboot toolchain. In same cases you will find specific instructions
 for Debian (apt-get), Fedora (dnf) and Arch Linux (pacman) based package
 management systems. Use the instructions according to your system.
 
+To test the toolchain and make sure it works, we will build coreboot for
+an emulated system provided by QEMU. This allows you to get familiar
+with the general process of configuring and building coreboot without
+needing to flash any hardware.
+
+**IMPORTANT:**
+**Do not attempt to flash the coreboot ROM built here to a real board**
+
+coreboot is board specific, so a ROM built for one board model (such as
+the QEMU emulation boards) cannot be expected to work on a different
+board. You must reconfigure coreboot for your board and rebuild the ROM
+before flashing it to a physical system.
+
 **Note: Summaries of each of the steps are at the end of the document.**
 
 
@@ -56,7 +69,7 @@ make crossgcc-riscv CPUS=$(nproc)      # build RISC-V toolchain
 ```
 
 Note that the i386 toolchain is currently used for all x86 platforms,
-including x86_64.
+including x86_64. For this tutorial we only need the i386 toolchain.
 
 Also note that you can possibly use your system toolchain, but the
 results are not reproducible, and may have issues, so this is not
@@ -119,15 +132,26 @@ make savedefconfig
 cat defconfig
 ```
 
-There should only be two lines (or 3 if you're using the system
+There should only be 9 lines (or 10 if you're using the system
 toolchain):
 
 ```Text
+CONFIG_CBFS_SIZE=0x00400000
+CONFIG_CONSOLE_CBMEM_BUFFER_SIZE=0x20000
+CONFIG_SUBSYSTEM_VENDOR_ID=0x0000
+CONFIG_SUBSYSTEM_DEVICE_ID=0x0000
+CONFIG_I2C_TRANSFER_TIMEOUT_US=500000
+CONFIG_CONSOLE_QEMU_DEBUGCON_PORT=0x402
+CONFIG_POST_IO_PORT=0x80
 CONFIG_PAYLOAD_ELF=y
 CONFIG_PAYLOAD_FILE="payloads/coreinfo/build/coreinfo.elf"
 ```
 
-### Step 6 - build coreboot
+Note that this may differ depending on the revision of the coreboot
+source you are building from and should not be taken as the required
+contents of defconfig. 
+
+### Step 6 - Build coreboot
 
 ```Bash
 make
@@ -135,10 +159,10 @@ make
 
 At the end of the build, you should see:
 
-`Build emulation/qemu-i440fx (QEMU x86 i440fx/piix4)``
+`Built emulation/qemu-i440fx (QEMU x86 i440fx/piix4)`
 
 This means your build was successful. The output from the build is in
-the build directory. build/coreboot.rom is the full rom file.
+the `build` directory. `build/coreboot.rom` is the full rom file.
 
 
 Test the image using QEMU
@@ -221,6 +245,19 @@ are typically used to boot the operating system. Instead, we used
 coreinfo, a small demonstration payload that allows the user to look at
 various things such as memory and the contents of the coreboot file
 system (CBFS) - the pieces that make up the coreboot rom.
+
+Usually, the coreboot build system automatically builds the payload
+selected in the "Payload to add" menu and sets it as the default payload
+(also known as the "primary payload"). Such payloads are able to boot an
+operating system and may be able to load another payload. Although
+coreinfo can be found in the "Secondary Payloads" menu, in which case it
+would be handled automatically, it is not available as a primary payload
+since it cannot load an OS or another payload. Secondary payloads must
+be loaded from other primary or secondary payloads and will not be run
+when coreboot hands off execution after initializing hardware. Thus, to
+get coreinfo to run as if it were a primary payload, it must be manually
+built and explicitly set as the primary payload using the "ELF
+executable payload" option.
 
 
 ### Step 5 summary - Configure the build

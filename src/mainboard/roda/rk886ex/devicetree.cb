@@ -38,7 +38,7 @@ chip northbridge/intel/i945
 
 			register "c3_latency" = "0x23"
 			register "docking_supported" = "1"
-			register "p_cnt_throttling_supported" = "1"
+			register "p_cnt_throttling_supported" = "true"
 
 			register "sata_mode" = "SATA_MODE_IDE_LEGACY_COMBINED"
 			register "ide_enable_primary" = "true"

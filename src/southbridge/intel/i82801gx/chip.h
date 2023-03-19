@@ -63,9 +63,9 @@ struct southbridge_intel_i82801gx_config {
 	/* Enable linear PCIe Root Port function numbers starting at zero */
 	bool pcie_port_coalesce;
 
-	int c4onc3_enable:1;
-	int docking_supported:1;
-	int p_cnt_throttling_supported:1;
+	bool c4onc3_enable;
+	bool docking_supported;
+	bool p_cnt_throttling_supported;
 	int c3_latency;
 
 	/* Additional LPC IO decode ranges */

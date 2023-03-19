@@ -43,7 +43,7 @@ chip northbridge/intel/i945
 
 			register "c3_latency" = "85"
 			register "docking_supported" = "1"
-			register "p_cnt_throttling_supported" = "1"
+			register "p_cnt_throttling_supported" = "true"
 
 			register "gen1_dec" = "0x001c02e1"
 			register "gen2_dec" = "0x00fc0601"

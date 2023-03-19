@@ -33,7 +33,7 @@ chip northbridge/intel/i945
 			register "ide_enable_secondary" = "false"
 
 			register "c3_latency" = "85"
-			register "p_cnt_throttling_supported" = "0"
+			register "p_cnt_throttling_supported" = "false"
 
 			register "gen1_dec" = "0x00fc0291"
 			register "gen4_dec" = "0x00000301"

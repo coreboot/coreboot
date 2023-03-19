@@ -103,6 +103,8 @@ chip northbridge/intel/sandybridge
 					device pnp 2e.b on		# HWM, front panel LED
 						irq 0x30 = 0xe1		# + Fan RPM sense pins
 						io  0x60 = 0x0290	# + HWM base address
+						io  0x62 = 0x0000
+						irq 0x70 = 0
 					end
 					device pnp 2e.d on end		# VID
 					device pnp 2e.e off end		# CIR WAKE-UP
@@ -110,6 +112,9 @@ chip northbridge/intel/sandybridge
 					device pnp 2e.14 on end		# SVID
 					device pnp 2e.16 on end		# Deep Sleep
 					device pnp 2e.17 on end		# GPIOA
+					device pnp 2e.308 on		# GPIO base
+						io 0x60 = 0x0
+					end
 				end
 			end
 			device pci 1f.2 on  # SATA Controller 1

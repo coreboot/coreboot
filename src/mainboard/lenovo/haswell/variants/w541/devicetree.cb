@@ -54,8 +54,8 @@ chip northbridge/intel/haswell
 			device pci 1d.0 on  end # USB2 EHCI #1
 			device pci 1f.0 on # LPC bridge
 				chip ec/lenovo/pmh7
-					register "backlight_enable" = "0x01"
-					register "dock_event_enable" = "0x01"
+					register "backlight_enable" = "true"
+					register "dock_event_enable" = "true"
 					device pnp ff.1 on end # dummy
 				end
 				chip ec/lenovo/h8 # FIXME: has_power_management_beeps, has_uwb

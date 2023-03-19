@@ -54,8 +54,8 @@ chip northbridge/intel/sandybridge
 			device ref pci_bridge off end # PCI bridge
 			device ref lpc on # LPC bridge PCI-LPC bridge
 				chip ec/lenovo/pmh7
-					register "backlight_enable" = "0x01"
-					register "dock_event_enable" = "0x01"
+					register "backlight_enable" = "true"
+					register "dock_event_enable" = "true"
 					device pnp ff.1 on end # dummy
 				end
 				chip ec/lenovo/h8

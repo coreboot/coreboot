@@ -155,8 +155,8 @@ void mainboard_smi_sleep(u8 slp_typ)
 	pmh := DevTreeNode{
 		Chip: "ec/lenovo/pmh7",
 		Registers: map[string]string{
-			"backlight_enable":  "0x01",
-			"dock_event_enable": "0x01",
+			"backlight_enable":  "true",
+			"dock_event_enable": "true",
 		},
 		Children: []DevTreeNode{
 			DevTreeNode{

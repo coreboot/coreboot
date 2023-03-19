@@ -109,8 +109,8 @@ chip northbridge/intel/i945
 				subsystemid 0x17aa 0x2009
 				chip ec/lenovo/pmh7
 					device pnp ff.1 on end # dummy
-					register "backlight_enable" = "0x01"
-					register "dock_event_enable" = "0x01"
+					register "backlight_enable" = "true"
+					register "dock_event_enable" = "true"
 				end
 				chip ec/lenovo/h8
 					device pnp ff.2 on # dummy

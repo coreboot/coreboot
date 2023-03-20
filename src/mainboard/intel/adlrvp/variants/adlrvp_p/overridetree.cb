@@ -1,4 +1,8 @@
 chip soc/intel/alderlake
 
-	device domain 0 on end
+	register "pcie_clk_config_flag[6]" = "PCIE_CLK_LAN"
+
+	device domain 0 on
+		device ref gbe on end # i219
+	end
 end

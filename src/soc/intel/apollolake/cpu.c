@@ -268,6 +268,10 @@ void mp_init_cpus(struct bus *cpu_bus)
 	/* TODO: Handle mp_init_with_smm failure? */
 	mp_init_with_smm(cpu_bus, &mp_ops);
 
+	/* MTRR setup happens later, so we're done here. */
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_CPU_MPINIT))
+		return;
+
 	/* Temporarily cache the memory-mapped boot media. */
 	if (CONFIG(BOOT_DEVICE_MEMORY_MAPPED) &&
 		CONFIG(BOOT_DEVICE_SPI_FLASH))

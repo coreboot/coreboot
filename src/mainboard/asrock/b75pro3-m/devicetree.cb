@@ -49,9 +49,7 @@ chip northbridge/intel/sandybridge
 			end
 			device ref me_ide_r off # Management Engine IDE-R
 			end
-			device ref me_kt on # Management Engine KT
-				subsystemid 0x1849 0x1e3d
-			end
+			device ref me_kt off end # Management Engine KT
 			device ref gbe off # Intel Gigabit Ethernet
 			end
 			device ref ehci2 on # USB2 EHCI #2

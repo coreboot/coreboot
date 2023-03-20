@@ -79,7 +79,8 @@ chip soc/amd/mendocino
 	register "gpp_clk_config[2]" = "GPP_CLK_REQ"
 	register "gpp_clk_config[3]" = "GPP_CLK_OFF"
 
-	register "pspp_policy" = "DXIO_PSPP_DISABLED" # TODO: reenable when PSPP works
+	# PSPP doesn't save any power on this platform
+	register "pspp_policy" = "DXIO_PSPP_DISABLED"
 
 	register "s0ix_enable" = "true"
 

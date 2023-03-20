@@ -63,7 +63,6 @@ chip soc/amd/mendocino
 			device pci 0.6 alias hda off end # Audio Processor HD Audio Controller (main AZ)
 			device pci 0.7 alias mp2 off end # Sensor Fusion Hub (MP2)
 		end
-		device pci 08.2 alias gpp_bridge_b off ops amd_internal_pcie_gpp_ops end # Internal GPP Bridge 1 to Bus B
 		device pci 08.3 alias gpp_bridge_c off # Internal GPP Bridge 2 to Bus C
 			ops amd_internal_pcie_gpp_ops
 			device pci 0.0 alias xhci_2 off end # Might also be a dummy device with different PCI DID

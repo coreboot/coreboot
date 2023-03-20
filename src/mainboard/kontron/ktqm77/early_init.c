@@ -136,8 +136,3 @@ void mainboard_early_init(int s3resume)
 			   pci_read_config32(PCI_DEV(0, 0, 0), DEVEN) |
 			   DEVEN_PEG10);
 }
-
-int mainboard_should_reset_usb(int s3resume)
-{
-	return !s3resume;
-}

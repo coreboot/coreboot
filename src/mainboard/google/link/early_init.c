@@ -166,8 +166,3 @@ void mainboard_early_init(int s3resume)
 		google_chromeec_kbbacklight(100);
 	}
 }
-
-int mainboard_should_reset_usb(int s3resume)
-{
-	return !s3resume;
-}

@@ -116,8 +116,3 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 	};
 	*pei_data = pei_data_template;
 }
-
-int mainboard_should_reset_usb(int s3resume)
-{
-	return !s3resume;
-}

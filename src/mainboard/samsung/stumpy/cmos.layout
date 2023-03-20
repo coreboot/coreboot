@@ -15,9 +15,6 @@ entries
 # coreboot config options: console
 395	4	e	6	debug_level
 
-# Stumpy USB reset workaround disable
-400	8	r	0	stumpy_usb_reset_disable
-
 # coreboot config options: southbridge
 408	1	e	1	nmi
 409	2	e	7	power_on_after_fail

@@ -15,15 +15,6 @@
 #include <southbridge/intel/common/gpio.h>
 #include <superio/smsc/lpc47n207/lpc47n207.h>
 
-/* Stumpy USB Reset Disable defined in cmos.layout */
-#if CONFIG(USE_OPTION_TABLE)
-#include "option_table.h"
-#define CMOS_USB_RESET_DISABLE  (CMOS_VSTART_stumpy_usb_reset_disable >> 3)
-#else
-#define CMOS_USB_RESET_DISABLE  (400 >> 3)
-#endif
-#define USB_RESET_DISABLE_MAGIC (0xdd) /* Disable if set to this */
-
 #define SUPERIO_DEV PNP_DEV(0x2e, 0)
 #define SERIAL_DEV PNP_DEV(0x2e, IT8772F_SP1)
 #define GPIO_DEV PNP_DEV(0x2e, IT8772F_GPIO)
@@ -163,31 +154,6 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 0, 6 }, /* P12: Back port  (OC6) */
 	{ 1, 0, 5 }, /* P13: Back port  (OC5) */
 };
-
-int mainboard_should_reset_usb(int s3resume)
-{
-	if (s3resume) {
-		/*
-		 * For Stumpy the back USB ports are reset on resume
-		 * so default to resetting the controller to make the
-		 * kernel happy.  There is a CMOS flag to disable the
-		 * controller reset in case the kernel can tolerate
-		 * the device power loss better in the future.
-		 */
-		u8 magic = cmos_read(CMOS_USB_RESET_DISABLE);
-		if (magic == USB_RESET_DISABLE_MAGIC) {
-			printk(BIOS_DEBUG, "USB Controller Reset Disabled\n");
-			return 0;
-		} else {
-			printk(BIOS_DEBUG, "USB Controller Reset Enabled\n");
-			return 1;
-		}
-	} else {
-		/* Ensure USB reset on resume is enabled at boot */
-		cmos_write(0, CMOS_USB_RESET_DISABLE);
-		return 1;
-	}
-}
 
 void bootblock_mainboard_early_init(void)
 {

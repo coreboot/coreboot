@@ -50,11 +50,6 @@ void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 	read_spd(&spd[3], 0x53, id_only);
 }
 
-int mainboard_should_reset_usb(int s3resume)
-{
-	return !s3resume;
-}
-
 void mainboard_fill_pei_data(struct pei_data *pei)
 {
 	uint8_t spdaddr[] = {0xa0, 0xa2, 0xa4, 0xa6}; /* SMBus mul 2 */

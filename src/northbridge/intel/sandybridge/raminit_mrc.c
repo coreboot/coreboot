@@ -328,7 +328,7 @@ void perform_raminit(int s3resume)
 	struct mrc_var_data *mrc_var;
 
 	/* Prepare USB controller early in S3 resume */
-	if (!mainboard_should_reset_usb(s3resume))
+	if (s3resume)
 		enable_usb_bar();
 
 	memset(&pei_data, 0, sizeof(pei_data));

@@ -181,8 +181,3 @@ void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 	/* read removable dimm spd */
 	read_spd(&spd[0], 0x50, id_only);
 }
-
-int mainboard_should_reset_usb(int s3resume)
-{
-	return !s3resume;
-}

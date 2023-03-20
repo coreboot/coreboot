@@ -144,11 +144,6 @@ void mainboard_early_init(int s3resume)
 	}
 }
 
-int mainboard_should_reset_usb(int s3resume)
-{
-	return !s3resume;
-}
-
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	/* enabled   USB oc pin    length */
 	{1, 0, 0},  /* P0: USB 3.0 1  (OC0) */

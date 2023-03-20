@@ -29,6 +29,9 @@ config MAX_CPUS
 config CBFS_SIZE
 	default 0x900000
 
+config DIMM_MAX
+	default 1
+
 config VBOOT
 	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
 	select GBB_FLAG_DISABLE_FWMP

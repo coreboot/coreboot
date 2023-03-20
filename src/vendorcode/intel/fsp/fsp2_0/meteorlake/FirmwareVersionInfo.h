@@ -24,6 +24,7 @@
 #include <IndustryStandard/SmBios.h>
 
 #define INTEL_FIRMWARE_VERSION_INFO_GROUP_NAME    "Firmware Version Info"
+#define INTEL_FVI_SMBIOS_TYPE                     0xDD
 
 #pragma pack(1)
 

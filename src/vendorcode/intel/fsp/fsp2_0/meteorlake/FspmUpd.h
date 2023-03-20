@@ -1383,22 +1383,16 @@ typedef struct {
 **/
   UINT8                       Reserved30[68];
 
-/** Offset 0x0571 - BCLK Frequency Source
-  Clock source of BCLK OC frequency, <b>0:CPU BCLK</b>, 1:PCH BCLK, 2:External CLK
-  0:CPU BCLK, 1:PCH BCLK, 2:External CLK
-**/
-  UINT8                       BclkSource;
-
-/** Offset 0x0572 - GPIO Override
+/** Offset 0x0571 - GPIO Override
   Gpio Override Level - FSP will not configure any GPIOs and rely on GPIO setings
   before moved to FSP. Available configurations 0: Disable; 1: Level 1 - Skips GPIO
   configuration in PEI/FSPM/FSPT phase;2: Level 2 - Reserved for use
 **/
   UINT8                       GpioOverride;
 
-/** Offset 0x0573 - Reserved
+/** Offset 0x0572 - Reserved
 **/
-  UINT8                       Reserved31[9];
+  UINT8                       Reserved31[10];
 
 /** Offset 0x057C - CPU BCLK OC Frequency
   CPU BCLK OC Frequency in KHz units. 98000000Hz = 98MHz <b>0 - Auto</b>. Range is
@@ -2886,110 +2880,118 @@ typedef struct {
 **/
   UINT8                       WdtDisableAndLock;
 
-/** Offset 0x0C82 - SMBUS SPD Write Disable
+/** Offset 0x0C82 - Reserved
+**/
+  UINT8                       Reserved75[2];
+
+/** Offset 0x0C84 - SMBUS SPD Write Disable
   Set/Clear Smbus SPD Write Disable. 0: leave SPD Write Disable bit; 1: set SPD Write
   Disable bit. For security recommendations, SPD write disable bit must be set.
   $EN_DIS
 **/
   UINT8                       SmbusSpdWriteDisable;
 
-/** Offset 0x0C83 - Reserved
+/** Offset 0x0C85 - Reserved
 **/
-  UINT8                       Reserved75[34];
+  UINT8                       Reserved76[34];
 
-/** Offset 0x0CA5 - HECI Timeouts
+/** Offset 0x0CA7 - HECI Timeouts
   0: Disable, 1: Enable (Default) timeout check for HECI
   $EN_DIS
 **/
   UINT8                       HeciTimeouts;
 
-/** Offset 0x0CA6 - Force ME DID Init Status
+/** Offset 0x0CA8 - Force ME DID Init Status
   Test, 0: disable, 1: Success, 2: No Memory in Channels, 3: Memory Init Error, Set
   ME DID init stat value
   $EN_DIS
 **/
   UINT8                       DidInitStat;
 
-/** Offset 0x0CA7 - CPU Replaced Polling Disable
+/** Offset 0x0CA9 - CPU Replaced Polling Disable
   Test, 0: disable, 1: enable, Setting this option disables CPU replacement polling loop
   $EN_DIS
 **/
   UINT8                       DisableCpuReplacedPolling;
 
-/** Offset 0x0CA8 - Check HECI message before send
+/** Offset 0x0CAA - Check HECI message before send
   Test, 0: disable, 1: enable, Enable/Disable message check.
   $EN_DIS
 **/
   UINT8                       DisableMessageCheck;
 
-/** Offset 0x0CA9 - Skip MBP HOB
+/** Offset 0x0CAB - Skip MBP HOB
   Test, 0: disable, 1: enable, Enable/Disable MOB HOB.
   $EN_DIS
 **/
   UINT8                       SkipMbpHob;
 
-/** Offset 0x0CAA - HECI2 Interface Communication
+/** Offset 0x0CAC - HECI2 Interface Communication
   Test, 0: disable, 1: enable, Adds or Removes HECI2 Device from PCI space.
   $EN_DIS
 **/
   UINT8                       HeciCommunication2;
 
-/** Offset 0x0CAB - Enable KT device
-  Test, 0: disable, 1: enable, Enable or Disable KT device.
+/** Offset 0x0CAD - Enable KT device
+  Test, 0: POR, 1: enable, 2: disable, Enable or Disable KT device.
   $EN_DIS
 **/
   UINT8                       KtDeviceEnable;
 
-/** Offset 0x0CAC - Skip CPU replacement check
+/** Offset 0x0CAE - Skip CPU replacement check
   Test, 0: disable, 1: enable, Setting this option to skip CPU replacement check
   $EN_DIS
 **/
   UINT8                       SkipCpuReplacementCheck;
 
-/** Offset 0x0CAD - Avx2 Voltage Guardband Scaling Factor
+/** Offset 0x0CAF - Avx2 Voltage Guardband Scaling Factor
   AVX2 Voltage Guardband Scale factor applied to AVX2 workloads. Range is 0-200 in
   1/100 units, where a value of 125 would apply a 1.25 scale factor.
 **/
   UINT8                       Avx2VoltageScaleFactor;
 
-/** Offset 0x0CAE - Avx512 Voltage Guardband Scaling Factor
+/** Offset 0x0CB0 - Avx512 Voltage Guardband Scaling Factor
   AVX512 Voltage Guardband Scale factor applied to AVX512 workloads. Range is 0-200
   in 1/100 units, where a value of 125 would apply a 1.25 scale factor.
 **/
   UINT8                       Avx512VoltageScaleFactor;
 
-/** Offset 0x0CAF - Serial Io Uart Debug Mode
+/** Offset 0x0CB1 - Serial Io Uart Debug Mode
   Select SerialIo Uart Controller mode
   0:SerialIoUartDisabled, 1:SerialIoUartPci, 2:SerialIoUartHidden, 3:SerialIoUartCom,
   4:SerialIoUartSkipInit
 **/
   UINT8                       SerialIoUartDebugMode;
 
-/** Offset 0x0CB0 - SerialIoUartDebugRxPinMux - FSPM
+/** Offset 0x0CB2 - Reserved
+**/
+  UINT8                      Reserved77[2];
+
+/** Offset 0x0CB4 - SerialIoUartDebugRxPinMux - FSPM
   Select RX pin muxing for SerialIo UART used for debug
 **/
   UINT32                      SerialIoUartDebugRxPinMux;
 
-/** Offset 0x0CB4 - SerialIoUartDebugTxPinMux - FSPM
+/** Offset 0x0CB8 - SerialIoUartDebugTxPinMux - FSPM
   Select TX pin muxing for SerialIo UART used for debug
 **/
   UINT32                      SerialIoUartDebugTxPinMux;
 
-/** Offset 0x0CB8 - SerialIoUartDebugRtsPinMux - FSPM
+/** Offset 0x0CBC - SerialIoUartDebugRtsPinMux - FSPM
   Select SerialIo Uart used for debug Rts pin muxing. Refer to GPIO_*_MUXING_SERIALIO_UARTx_RTS*
   for possible values.
 **/
   UINT32                      SerialIoUartDebugRtsPinMux;
 
-/** Offset 0x0CBC - SerialIoUartDebugCtsPinMux - FSPM
+/** Offset 0x0CC0 - SerialIoUartDebugCtsPinMux - FSPM
   Select SerialIo Uart used for debug Cts pin muxing. Refer to GPIO_*_MUXING_SERIALIO_UARTx_CTS*
   for possible values.
 **/
   UINT32                      SerialIoUartDebugCtsPinMux;
 
-/** Offset 0x0CC0 - Reserved
+/** Offset 0x0CC4 - Reserved
 **/
-  UINT8                      Reserved76[104];
+  UINT8                      Reserved78[172];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration
@@ -3008,11 +3010,11 @@ typedef struct {
 **/
   FSP_M_CONFIG                FspmConfig;
 
-/** Offset 0x0D28
+/** Offset 0x0D70
 **/
   UINT8                       Rsvd500[6];
 
-/** Offset 0x0D2E
+/** Offset 0x0D76
 **/
   UINT16                      UpdTerminator;
 } FSPM_UPD;

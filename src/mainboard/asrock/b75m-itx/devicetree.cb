@@ -35,9 +35,7 @@ chip northbridge/intel/sandybridge
 			end
 			device pci 16.1 off end # Management Engine Interface 2
 			device pci 16.2 off end # Management Engine IDE-R
-			device pci 16.3 on  # Management Engine KT
-				subsystemid 0x1849 0x1e3d
-			end
+			device pci 16.3 off end # Management Engine KT
 			device pci 19.0 off end # Intel Gigabit Ethernet
 			device pci 1a.0 on  # USB2 EHCI #2
 				subsystemid 0x1849 0x1e2d

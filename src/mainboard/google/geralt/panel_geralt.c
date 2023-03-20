@@ -72,10 +72,13 @@ static struct panel_description panels[] = {
 
 struct panel_description *get_panel_description(uint32_t panel_id)
 {
-	if (panel_id >= ARRAY_SIZE(panels))
+	/* Only PANEL_ID_LOW_CHANNEL value is valid for the reference board. */
+	uint32_t id = panel_id & 0xF;
+
+	if (id >= ARRAY_SIZE(panels))
 		return NULL;
 
-	return &panels[panel_id];
+	return &panels[id];
 }
 
 void fill_lp_backlight_gpios(struct lb_gpios *gpios)

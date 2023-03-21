@@ -33,13 +33,10 @@ const char *smbios_system_sku(void)
 
 const char *get_wifi_sar_cbfs_filename(void)
 {
-	uint32_t sku_id;
+	const uint32_t sku_id = variant_board_sku();
 
-	sku_id = variant_board_sku();
 	if (sku_id & 0x200)
 		return "wifi_sar-shyvana.hex";
 	else
 		return "wifi_sar-leona.hex";
-
-	return WIFI_SAR_CBFS_DEFAULT_FILENAME;
 }

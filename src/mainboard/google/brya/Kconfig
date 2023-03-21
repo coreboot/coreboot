@@ -160,6 +160,7 @@ config DRIVER_TPM_I2C_BUS
 	default 0x1 if BOARD_GOOGLE_AURASH
 	default 0x1 if BOARD_GOOGLE_HADES
 	default 0x0 if BOARD_GOOGLE_YAVILLA
+	default 0x0 if BOARD_GOOGLE_ULDREN
 
 config DRIVER_TPM_I2C_ADDR
 	hex

@@ -39,7 +39,7 @@ __weak const struct smm_save_state_ops *get_smm_save_state_ops(void)
 /* Specific SOC SMI handler during ramstage finalize phase */
 __weak void smihandler_soc_at_finalize(void)
 {
-	return;
+	/* no-op */
 }
 
 __weak int smihandler_soc_disable_busmaster(pci_devfn_t dev)
@@ -52,12 +52,12 @@ __weak int smihandler_soc_disable_busmaster(pci_devfn_t dev)
 __weak void mainboard_smi_gpi_handler(
 	const struct gpi_status *sts)
 {
-	return;
+	/* no-op */
 }
 
 __weak void mainboard_smi_espi_handler(void)
 {
-	return;
+	/* no-op */
 }
 
 /* Common Functions */

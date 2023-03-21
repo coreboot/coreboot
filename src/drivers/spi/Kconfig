@@ -173,6 +173,14 @@ config SPI_FLASH_EXIT_4_BYTE_ADDR_MODE
 	  On flashes that don't support 4-byte addressing mode or where it is already
 	  disabled, this command should be a no-op.
 
+config SPI_FLASH_FORCE_4_BYTE_ADDR_MODE
+	bool
+	default n
+	help
+	  This will force coreboot to send addresses as 4-bytes instead of 3-bytes.
+	  On some platforms with SPI flashes larger than 16MB, the SPI flash may need
+	  to remain in 4-byte addressing mode.
+
 endif # SPI_FLASH
 
 config HAVE_EM100PRO_SPI_CONSOLE_SUPPORT

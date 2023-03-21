@@ -32,6 +32,7 @@ static const fsp_dxio_descriptor skyrim_mdn_dxio_descriptors[] = {
 		.function_number = PCI_FUNC(SD_DEVFN),
 		.link_speed_capability = GEN3,
 		.turn_off_unused_lanes = true,
+		.link_hotplug = 3,
 		.link_aspm = ASPM_L1,
 		.link_aspm_L1_1 = true,
 		.link_aspm_L1_2 = true,

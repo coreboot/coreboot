@@ -19,7 +19,7 @@
 			uint16_t h##A##x; \
 		} __packed; \
 		uint32_t e##A##x; \
-	} __packed;
+	} __packed
 
 #define LONG_DOWNTO16(A) \
 	union { \
@@ -28,17 +28,17 @@
 			uint16_t h##A; \
 		} __packed; \
 		uint32_t e##A; \
-	} __packed;
+	} __packed
 
 #define QUAD_DOWNTO8(A) \
 	union { \
-		LONG_DOWNTO8(A) \
+		LONG_DOWNTO8(A); \
 		uint64_t r##A##x; \
 	} __packed
 
 #define QUAD_DOWNTO16(A) \
 	union {\
-		LONG_DOWNTO16(A) \
+		LONG_DOWNTO16(A); \
 		uint64_t r##A; \
 	} __packed
 

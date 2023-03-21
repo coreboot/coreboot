@@ -13,6 +13,8 @@ chip soc/intel/alderlake
 	register "gen2_dec" = "0x000c0201"
 	# EC memory map range is 0x900-0x9ff
 	register "gen3_dec" = "0x00fc0901"
+	# EC EMI 0 range is 0xc00 - 0xc0f
+	register "gen4_dec" = "0x000c0c01"
 
 	# SaGv Configuration
 	register "sagv" = "CONFIG(ATLAS_ENABLE_SAGV) ? SaGv_Enabled : SaGv_Disabled"

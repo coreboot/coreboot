@@ -1,5 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
+all-y += ec.c
+
 bootblock-y += bootblock.c
 bootblock-y += early_gpio.c
 

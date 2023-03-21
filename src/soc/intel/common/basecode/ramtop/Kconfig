@@ -1,15 +1,15 @@
-config SOC_INTEL_COMMON_BASECODE_TOM
+config SOC_INTEL_COMMON_BASECODE_RAMTOP
 	bool
 	default n
 	help
-	  Driver code to store the top_of_ram (TOM) address into
+	  Driver code to store the top_of_ram (RAMTOP) address into
 	  non-volatile space (CMOS) during the first boot and use
 	  it across all consecutive boot.
 
-	  Purpose of this driver code is to cache the TOM (with a
+	  Purpose of this driver code is to cache the RAMTOP (with a
 	  fixed size) for all consecutive boots even before calling
 	  into the FSP. Otherwise, this range remains un-cached until postcar
 	  boot stage updates the MTRR programming. FSP-M and late romstage
-	  uses this uncached TOM range for various purposes and having the
+	  uses this uncached RAMTOP range for various purposes and having the
 	  ability to cache this range beforehand would help to optimize the boot
 	  time (more than 50ms).

@@ -118,13 +118,13 @@ uint32_t get_pstate_core_freq(msr_t pstate_def)
 	} else if ((core_freq_div >= PSTATE_DEF_LO_FREQ_DIV_MIN)
 		   && (core_freq_div <= PSTATE_DEF_LO_EIGHTH_STEP_MAX)) {
 		/* Allow 1/8 integer steps for this range */
-		valid_freq_divisor = 1;
+		valid_freq_divisor = true;
 	} else if ((core_freq_div > PSTATE_DEF_LO_EIGHTH_STEP_MAX)
 		   && (core_freq_div <= PSTATE_DEF_LO_FREQ_DIV_MAX) && !(core_freq_div & 0x1)) {
 		/* Only allow 1/4 integer steps for this range */
-		valid_freq_divisor = 1;
+		valid_freq_divisor = true;
 	} else {
-		valid_freq_divisor = 0;
+		valid_freq_divisor = false;
 	}
 
 	if (valid_freq_divisor) {

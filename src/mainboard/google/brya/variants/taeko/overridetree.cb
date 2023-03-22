@@ -532,7 +532,7 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref pcie_rp9 on
-			# Enable NVMe PCIE 9 using clk 0
+			# Enable PCIE 9 using clk 0 for eMMC
 			register "pch_pcie_rp[PCH_RP(9)]" = "{
 				.clk_src = 0,
 				.clk_req = 0,

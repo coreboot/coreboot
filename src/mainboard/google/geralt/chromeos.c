@@ -12,8 +12,19 @@ void setup_chromeos_gpios(void)
 {
 	/* Set up open-drain pins */
 	gpio_input(GPIO_EC_AP_INT_ODL);
+	gpio_input(GPIO_EC_AP_HID_INT_ODL);
+	gpio_input(GPIO_EC_AP_RSVD0_ODL);
 	gpio_input(GPIO_GSC_AP_INT_ODL);
 	gpio_input(GPIO_AP_WP_ODL);
+	gpio_input(GPIO_EDP_HPD_1V8);
+	gpio_input(GPIO_EC_AP_HPD_OD);
+	gpio_input(GPIO_PCIE_WAKE_1V8_ODL);
+	gpio_input(GPIO_PCIE_CLKREQ_1V8_ODL);
+	gpio_input(GPIO_SAR_INT_ODL);
+	gpio_input(GPIO_SD_CD_ODL);
+	gpio_input(GPIO_HP_INT_ODL);
+	gpio_input(GPIO_SPKR_INT_ODL);
+	gpio_input(GPIO_TCHSCR_INT_1V8_L);
 
 	/* Set up GPOs */
 	gpio_output(GPIO_AP_EC_WARM_RST_REQ, 0);
@@ -21,6 +32,7 @@ void setup_chromeos_gpios(void)
 	gpio_output(GPIO_RST_SPKR_L, 0);
 	gpio_output(GPIO_XHCI_INIT_DONE, 0);
 	gpio_output(GPIO_BEEP_ON_OD, 0);
+	gpio_output(GPIO_MT7921_PMU_EN_1V8, 0);
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)

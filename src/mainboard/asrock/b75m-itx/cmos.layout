@@ -24,9 +24,6 @@ entries
 # coreboot config options: northbridge
 416	5	e	6	gfx_uma_size
 
-# coreboot config options: mainboard-specific
-421	2	e	7	cpu_fan_tach_src
-
 # coreboot config options: check sums
 984	16	h	0	check_sum
 
@@ -82,13 +79,6 @@ enumerations
 6	14	480M
 6	15	512M
 6	16	1024M
-
-# cpu_fan_tach_src (select which header provides the tachometer
-# signal to the Super I/O on its CPUFANIN input)
-7	0	None
-7	1	CPU_FAN1
-7	2	CPU_FAN2
-7	3	Both
 
 # -----------------------------------------------------------------
 checksums

@@ -4,4 +4,3 @@ nmi=Disable
 power_on_after_fail=Disable
 sata_mode=AHCI
 gfx_uma_size=64M
-cpu_fan_tach_src=CPU_FAN1

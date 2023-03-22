@@ -95,13 +95,10 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->flags |= cfg->common_config.fadt_flags; /* additional board-specific flags */
 }
 
-uint32_t get_pstate_core_freq(msr_t pstate_def)
+uint32_t get_pstate_core_freq(union pstate_msr pstate_reg)
 {
 	uint32_t core_freq, core_freq_mul, core_freq_div;
 	bool valid_freq_divisor;
-	union pstate_msr pstate_reg;
-
-	pstate_reg.raw = pstate_def.raw;
 
 	/* Core frequency multiplier */
 	core_freq_mul = pstate_reg.cpu_fid_0_7;
@@ -135,12 +132,9 @@ uint32_t get_pstate_core_freq(msr_t pstate_def)
 	return core_freq;
 }
 
-uint32_t get_pstate_core_power(msr_t pstate_def)
+uint32_t get_pstate_core_power(union pstate_msr pstate_reg)
 {
 	uint32_t voltage_in_uvolts, core_vid, current_value_amps, current_divisor, power_in_mw;
-	union pstate_msr pstate_reg;
-
-	pstate_reg.raw = pstate_def.raw;
 
 	/* Core voltage ID */
 	core_vid = pstate_reg.cpu_vid_0_7;

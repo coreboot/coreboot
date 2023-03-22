@@ -4,7 +4,6 @@
 #define AMD_BLOCK_CPU_H
 
 #include <acpi/acpi.h>
-#include <cpu/x86/msr.h>
 #include <types.h>
 
 #define MAX_CSTATE_COUNT	8
@@ -15,8 +14,10 @@ unsigned int get_threads_per_core(void);
 void set_cstate_io_addr(void);
 void write_resume_eip(void);
 
-uint32_t get_pstate_core_freq(msr_t pstate_def);
-uint32_t get_pstate_core_power(msr_t pstate_def);
+union pstate_msr; /* proper definition is in soc/msr.h */
+
+uint32_t get_pstate_core_freq(union pstate_msr pstate_reg);
+uint32_t get_pstate_core_power(union pstate_msr pstate_reg);
 const acpi_cstate_t *get_cstate_config_data(size_t *size);
 
 #endif /* AMD_BLOCK_CPU_H */

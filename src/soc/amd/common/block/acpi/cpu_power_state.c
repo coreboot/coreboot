@@ -16,7 +16,6 @@
 static size_t get_pstate_info(struct acpi_sw_pstate *pstate_values,
 			      struct acpi_xpss_sw_pstate *pstate_xpss_values)
 {
-	msr_t pstate_def;
 	union pstate_msr pstate_reg;
 	size_t pstate_count, pstate;
 	uint32_t max_pstate;
@@ -25,15 +24,13 @@ static size_t get_pstate_info(struct acpi_sw_pstate *pstate_values,
 	max_pstate = (rdmsr(PS_LIM_REG).lo & PS_LIM_MAX_VAL_MASK) >> PS_MAX_VAL_SHFT;
 
 	for (pstate = 0; pstate <= max_pstate; pstate++) {
-		pstate_def = rdmsr(PSTATE_MSR(pstate));
-
-		pstate_reg.raw = pstate_def.raw;
+		pstate_reg.raw = rdmsr(PSTATE_MSR(pstate)).raw;
 
 		if (!pstate_reg.pstate_en)
 			continue;
 
-		pstate_values[pstate_count].core_freq = get_pstate_core_freq(pstate_def);
-		pstate_values[pstate_count].power = get_pstate_core_power(pstate_def);
+		pstate_values[pstate_count].core_freq = get_pstate_core_freq(pstate_reg);
+		pstate_values[pstate_count].power = get_pstate_core_power(pstate_reg);
 		pstate_values[pstate_count].transition_latency = 0;
 		pstate_values[pstate_count].bus_master_latency = 0;
 		pstate_values[pstate_count].control_value = pstate;

@@ -7,6 +7,7 @@
 #include <console/console.h>
 #include <cpu/amd/msr.h>
 #include <cpu/x86/msr.h>
+#include <soc/msr.h>
 #include <types.h>
 
 /*
@@ -16,8 +17,9 @@ static size_t get_pstate_info(struct acpi_sw_pstate *pstate_values,
 			      struct acpi_xpss_sw_pstate *pstate_xpss_values)
 {
 	msr_t pstate_def;
+	union pstate_msr pstate_reg;
 	size_t pstate_count, pstate;
-	uint32_t pstate_enable, max_pstate;
+	uint32_t max_pstate;
 
 	pstate_count = 0;
 	max_pstate = (rdmsr(PS_LIM_REG).lo & PS_LIM_MAX_VAL_MASK) >> PS_MAX_VAL_SHFT;
@@ -25,9 +27,9 @@ static size_t get_pstate_info(struct acpi_sw_pstate *pstate_values,
 	for (pstate = 0; pstate <= max_pstate; pstate++) {
 		pstate_def = rdmsr(PSTATE_MSR(pstate));
 
-		pstate_enable = (pstate_def.hi & PSTATE_DEF_HI_ENABLE_MASK)
-				>> PSTATE_DEF_HI_ENABLE_SHIFT;
-		if (!pstate_enable)
+		pstate_reg.raw = pstate_def.raw;
+
+		if (!pstate_reg.pstate_en)
 			continue;
 
 		pstate_values[pstate_count].core_freq = get_pstate_core_freq(pstate_def);

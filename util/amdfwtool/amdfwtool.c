@@ -2392,7 +2392,7 @@ int main(int argc, char **argv)
 				ctx.current - offset : sizeof(*amd_romsig);
 		uint32_t ret_bytes;
 
-		ret_bytes = write(targetfd, BUFF_OFFSET(ctx, offset), bytes);
+		ret_bytes = write_from_buf_to_file(targetfd, BUFF_OFFSET(ctx, offset), bytes);
 		if (bytes != ret_bytes) {
 			fprintf(stderr, "Error: Writing to file %s failed\n", output);
 			retval = 1;

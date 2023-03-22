@@ -13,6 +13,16 @@
 #include <types.h>
 #include <vendorcode/amd/fsp/mendocino/FspUsb.h>
 
+/* force USB3 port to gen1, bit0 - controller0 Port0, bit1 - Port1, etc */
+union __packed usb3_force_gen1 {
+		struct {
+			uint8_t xhci0_port0:1;
+			uint8_t xhci1_port0:1;
+			uint8_t xhci1_port1:1;
+		} ports;
+		uint8_t usb3_port_force_gen1_en;
+};
+
 struct soc_amd_mendocino_config {
 	struct soc_amd_common_config common_config;
 	u8 i2c_scl_reset;
@@ -163,6 +173,10 @@ struct soc_amd_mendocino_config {
 	/* Set for PCIe optimization w/a and a double confirming on the result of PCIe Signal
 	   Integrity is highly recommended. */
 	uint8_t dxio_tx_vboost_enable;
+
+	/* Force USB3 port to gen1, bit0 - controller0 Port0, bit1 - Port1 */
+	union usb3_force_gen1 usb3_port_force_gen1;
+
 };
 
 #endif /* MENDOCINO_CHIP_H */

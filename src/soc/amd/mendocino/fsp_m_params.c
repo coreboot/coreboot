@@ -174,4 +174,6 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	fsp_fill_pcie_ddi_descriptors(mcfg);
 	fsp_assign_ioapic_upds(mcfg);
 	mb_pre_fspm(mcfg);
+
+	mcfg->fch_usb_3_port_force_gen1 = config->usb3_port_force_gen1.usb3_port_force_gen1_en;
 }

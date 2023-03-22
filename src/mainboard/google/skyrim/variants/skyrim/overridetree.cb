@@ -32,6 +32,13 @@ chip soc/amd/mendocino
 	# Remove the sustained_power_limit_mW when STT is enabled
 	register "sustained_power_limit_mW"              = "15000"
 
+	# set usb3 port force to gen1
+	register "usb3_port_force_gen1" = "{
+		.ports.xhci0_port0 = 0,
+		.ports.xhci1_port0 = 0,
+		.ports.xhci1_port1 = 0,
+	}"
+
 	device domain 0 on
 		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
 			device ref xhci_1 on # XHCI1 controller

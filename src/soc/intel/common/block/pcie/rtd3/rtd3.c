@@ -419,9 +419,10 @@ static void pcie_rtd3_acpi_fill_ssdt(const struct device *dev)
 			return;
 		}
 	}
-	if (config->srcclk_pin == 0) {
+	if (config->srcclk_pin == -1) {
 		if (config->ext_pm_support & ACPI_PCIE_RP_EMIT_SRCK) {
-			printk(BIOS_ERR, "%s: Can not export SRCK method\n", __func__);
+			printk(BIOS_ERR, "%s: Can not export SRCK method since clock source gating is not enabled\n",
+				__func__);
 			return;
 		}
 	}

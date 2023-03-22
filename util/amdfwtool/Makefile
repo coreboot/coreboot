@@ -9,7 +9,7 @@ endif
 
 READ_SRC = amdfwread.c
 READ_OBJ = $(READ_SRC:%.c=%.o)
-TOOL_SRC = amdfwtool.c data_parse.c
+TOOL_SRC = amdfwtool.c data_parse.c signed_psp.c handle_file.c
 TOOL_OBJ = $(TOOL_SRC:%.c=%.o)
 HEADER=amdfwtool.h
 TARGETS = amdfwread amdfwtool

@@ -9,6 +9,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define ERASE_ALIGNMENT 0x1000U
+#define TABLE_ALIGNMENT 0x1000U
+#define BLOB_ALIGNMENT 0x100U
+#define TABLE_ERASE_ALIGNMENT _MAX(TABLE_ALIGNMENT, ERASE_ALIGNMENT)
+#define BLOB_ERASE_ALIGNMENT _MAX(BLOB_ALIGNMENT, ERASE_ALIGNMENT)
+
 enum platform {
 	PLATFORM_UNKNOWN,
 	PLATFORM_CARRIZO,
@@ -408,7 +414,13 @@ typedef struct _amd_cb_config {
 
 void register_fw_fuse(char *str);
 uint8_t process_config(FILE *config, amd_cb_config *cb_config);
-
+void process_signed_psp_firmwares(const char *signed_rom,
+		amd_fw_entry *fw_table,
+		uint64_t signed_start_addr,
+		enum platform soc_id);
+void write_or_fail(int fd, void *ptr, size_t size);
+ssize_t read_from_file_to_buf(int fd, void *buf, size_t buf_size);
+ssize_t write_from_buf_to_file(int fd, const void *buf, size_t buf_size);
 #define OK 0
 
 #define LINE_EOF (1)

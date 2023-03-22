@@ -272,4 +272,8 @@ config SOC_INTEL_ELKHARTLAKE_TCO_NO_REBOOT_EN
 	  for the second time. Since this feature is not exposed to the OS in the
 	  standard TCO interface, this setting can be enabled on firmware level.
 	  This might be useful depending on the TCO policy.
+
+config DIMM_SPD_SIZE
+	default 512
+
 endif

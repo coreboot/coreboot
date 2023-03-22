@@ -1,14 +1,14 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <device/device.h>
 #include <console/console.h>
-#include <stdint.h>
+#include <device/device.h>
 #include <gpio.h>
-#include <arch/io.h>
-#include <string.h>
 #include <smbios.h>
+#include <string.h>
+#include <types.h>
 
 #include "gpio.h"
+#include "vpd.h"
 
 void smbios_fill_dimm_locator(const struct dimm_info *dimm, struct smbios_type17 *t)
 {
@@ -53,6 +53,25 @@ static void mainboard_init(void *chip_info)
 	printk(BIOS_INFO, "HSID: 0x%x\n", get_hsid());
 }
 
+static const char *get_formatted_pn(void)
+{
+	static char buffer[32 + ATLAS_SN_PN_LENGTH] = {0};
+	const char *prefix = "P/N: ";
+	snprintf(buffer, sizeof(buffer), "%s%s", prefix, get_emi_eeprom_vpd()->part_number);
+	return buffer;
+}
+
+static void mainboard_smbios_strings(struct device *dev, struct smbios_type11 *t)
+{
+	t->count = smbios_add_string(t->eos, get_formatted_pn());
+}
+
+static void mainboard_enable(struct device *dev)
+{
+	dev->ops->get_smbios_strings = mainboard_smbios_strings;
+}
+
 struct chip_operations mainboard_ops = {
-	.init = mainboard_init,
+	.init       = mainboard_init,
+	.enable_dev = mainboard_enable,
 };

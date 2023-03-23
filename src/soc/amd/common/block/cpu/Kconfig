@@ -66,6 +66,18 @@ config SOC_AMD_COMMON_BLOCK_SMM
 	  Add common SMM relocation, finalization and handler functionality to
 	  the build.
 
+config SOC_AMD_COMMON_BLOCK_SVI2
+	bool
+	help
+	  Select this option is the SoC uses the serial VID 2 standard for
+	  encoding the voltage it requests from the VRM.
+
+config SOC_AMD_COMMON_BLOCK_SVI3
+	bool
+	help
+	  Select this option is the SoC uses the serial VID 3 standard for
+	  encoding the voltage it requests from the VRM.
+
 config SOC_AMD_COMMON_BLOCK_TSC_FAM17H_19H
 	bool
 	select COLLECT_TIMESTAMPS_NO_TSC # selected use SoC-specific timestamp function

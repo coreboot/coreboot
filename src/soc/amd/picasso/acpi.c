@@ -150,13 +150,7 @@ uint32_t get_pstate_core_power(union pstate_msr pstate_reg)
 	current_divisor = pstate_reg.idd_div;
 
 	/* Voltage */
-	if ((core_vid >= 0xF8) && (core_vid <= 0xFF)) {
-		/* Voltage off for VID codes 0xF8 to 0xFF */
-		voltage_in_uvolts = 0;
-	} else {
-		voltage_in_uvolts = SERIAL_VID_2_MAX_MICROVOLTS -
-					(SERIAL_VID_2_DECODE_MICROVOLTS * core_vid);
-	}
+	voltage_in_uvolts = get_uvolts_from_vid(core_vid);
 
 	/* Power in mW */
 	power_in_mw = (voltage_in_uvolts) / 10 * current_value_amps;

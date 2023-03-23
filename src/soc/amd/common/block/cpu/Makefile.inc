@@ -4,6 +4,9 @@ ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_UCODE) += update_microcode.c
 romstage-y += cpu.c
 ramstage-y += cpu.c
 
+ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_SVI2) += svi2.c
+ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_SVI3) += svi3.c
+
 ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_UCODE),y)
 define add-ucode-as-cbfs
 cbfs-files-y += cpu_microcode_$(2).bin

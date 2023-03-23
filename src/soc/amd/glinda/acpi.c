@@ -111,19 +111,16 @@ uint32_t get_pstate_core_freq(union pstate_msr pstate_reg)
 
 uint32_t get_pstate_core_power(union pstate_msr pstate_reg)
 {
-	uint32_t voltage_in_uvolts, core_vid, current_value_amps, current_divisor, power_in_mw;
+	uint32_t voltage_in_uvolts, current_value_amps, current_divisor, power_in_mw;
 
-	/* Core voltage ID */
-	core_vid = pstate_reg.cpu_vid_0_7 | pstate_reg.cpu_vid_8 << 8;
+	/* Get Voltage from core voltage ID */
+	voltage_in_uvolts = get_pstate_core_uvolts(pstate_reg);
 
 	/* Current value in amps */
 	current_value_amps = pstate_reg.idd_value;
 
 	/* Current divisor */
 	current_divisor = pstate_reg.idd_div;
-
-	/* Voltage */
-	voltage_in_uvolts = get_uvolts_from_vid(core_vid);
 
 	/* Power in mW */
 	power_in_mw = (voltage_in_uvolts) / 10 * current_value_amps;

@@ -18,6 +18,7 @@ union pstate_msr; /* proper definition is in soc/msr.h */
 
 uint32_t get_uvolts_from_vid(uint16_t core_vid);
 uint32_t get_pstate_core_freq(union pstate_msr pstate_reg);
+uint32_t get_pstate_core_uvolts(union pstate_msr pstate_reg);
 uint32_t get_pstate_core_power(union pstate_msr pstate_reg);
 const acpi_cstate_t *get_cstate_config_data(size_t *size);
 

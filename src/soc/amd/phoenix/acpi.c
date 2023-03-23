@@ -135,42 +135,6 @@ uint32_t get_pstate_core_freq(union pstate_msr pstate_reg)
 	return core_freq;
 }
 
-uint32_t get_pstate_core_power(union pstate_msr pstate_reg)
-{
-	uint32_t voltage_in_uvolts, current_value_amps, current_divisor, power_in_mw;
-
-	/* Get Voltage from core voltage ID */
-	voltage_in_uvolts = get_pstate_core_uvolts(pstate_reg);
-
-	/* Current value in amps */
-	current_value_amps = pstate_reg.idd_value;
-
-	/* Current divisor */
-	current_divisor = pstate_reg.idd_div;
-
-	/* Power in mW */
-	power_in_mw = (voltage_in_uvolts) / 10 * current_value_amps;
-
-	switch (current_divisor) {
-	case 0:
-		power_in_mw = power_in_mw / 100L;
-		break;
-	case 1:
-		power_in_mw = power_in_mw / 1000L;
-		break;
-	case 2:
-		power_in_mw = power_in_mw / 10000L;
-		break;
-	case 3:
-		/* current_divisor is set to an undefined value.*/
-		printk(BIOS_WARNING, "Undefined current_divisor set for enabled P-state .\n");
-		power_in_mw = 0;
-		break;
-	}
-
-	return power_in_mw;
-}
-
 const acpi_cstate_t cstate_cfg_table[] = {
 	[0] = {
 		.ctype = 1,

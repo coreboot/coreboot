@@ -112,12 +112,12 @@ uint32_t get_pstate_core_freq(union pstate_msr pstate_reg)
 
 	if (core_freq_div == 0) {
 		return 0;
-	} else if ((core_freq_div >= PSTATE_DEF_LO_FREQ_DIV_MIN)
-		   && (core_freq_div <= PSTATE_DEF_LO_EIGHTH_STEP_MAX)) {
+	} else if ((core_freq_div >= PSTATE_DEF_FREQ_DIV_MIN)
+		   && (core_freq_div <= PSTATE_DEF_EIGHTH_STEP_MAX)) {
 		/* Allow 1/8 integer steps for this range */
 		valid_freq_divisor = true;
-	} else if ((core_freq_div > PSTATE_DEF_LO_EIGHTH_STEP_MAX)
-		   && (core_freq_div <= PSTATE_DEF_LO_FREQ_DIV_MAX) && !(core_freq_div & 0x1)) {
+	} else if ((core_freq_div > PSTATE_DEF_EIGHTH_STEP_MAX)
+		   && (core_freq_div <= PSTATE_DEF_FREQ_DIV_MAX) && !(core_freq_div & 0x1)) {
 		/* Only allow 1/4 integer steps for this range */
 		valid_freq_divisor = true;
 	} else {
@@ -127,11 +127,11 @@ uint32_t get_pstate_core_freq(union pstate_msr pstate_reg)
 	if (valid_freq_divisor) {
 		/* 25 * core_freq_mul / (core_freq_div / 8) */
 		core_freq =
-			((PSTATE_DEF_LO_CORE_FREQ_BASE * core_freq_mul * 8) / (core_freq_div));
+			((PSTATE_DEF_CORE_FREQ_BASE * core_freq_mul * 8) / (core_freq_div));
 	} else {
 		printk(BIOS_WARNING, "Undefined core_freq_div %x used. Force to 1.\n",
 		       core_freq_div);
-		core_freq = (PSTATE_DEF_LO_CORE_FREQ_BASE * core_freq_mul);
+		core_freq = (PSTATE_DEF_CORE_FREQ_BASE * core_freq_mul);
 	}
 	return core_freq;
 }

@@ -17,10 +17,10 @@ union pstate_msr {
 	uint64_t raw;
 };
 
-#define PSTATE_DEF_LO_FREQ_DIV_MIN	0x8
-#define PSTATE_DEF_LO_EIGHTH_STEP_MAX	0x1A
-#define PSTATE_DEF_LO_FREQ_DIV_MAX	0x3E
-#define PSTATE_DEF_LO_CORE_FREQ_BASE	25
+#define PSTATE_DEF_FREQ_DIV_MIN		0x8
+#define PSTATE_DEF_EIGHTH_STEP_MAX	0x1A
+#define PSTATE_DEF_FREQ_DIV_MAX		0x3E
+#define PSTATE_DEF_CORE_FREQ_BASE	25
 
 /* Value defined in Serial VID Interface 3.0 spec (#56413, NDA only) */
 #define  SERIAL_VID_DECODE_MICROVOLTS	5000

@@ -106,7 +106,7 @@ uint32_t get_pstate_core_freq(union pstate_msr pstate_reg)
 	core_freq_mul = pstate_reg.cpu_fid_0_11;
 
 	/* CPU frequency is 5 * core_freq_mul */
-	return PSTATE_DEF_LO_CORE_FREQ_BASE * core_freq_mul;
+	return PSTATE_DEF_CORE_FREQ_BASE * core_freq_mul;
 }
 
 uint32_t get_pstate_core_power(union pstate_msr pstate_reg)

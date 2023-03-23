@@ -20,7 +20,7 @@ union pstate_msr {
 	uint64_t raw;
 };
 
-#define PSTATE_DEF_LO_CORE_FREQ_BASE	5
+#define PSTATE_DEF_CORE_FREQ_BASE	5
 
 /* Value defined in Serial VID Interface 3.0 spec (#56413, NDA only) */
 #define  SERIAL_VID_DECODE_MICROVOLTS	5000

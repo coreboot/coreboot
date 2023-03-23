@@ -946,15 +946,6 @@ static void set_dram_row_attributes(void)
 	PRINT_DEBUG("%s has been set to 0x%02x\n", "DRAMC", value);
 }
 
-static void sdram_set_spd_registers(void)
-{
-	/* Setup DRAM row boundary registers and other attributes. */
-	set_dram_row_attributes();
-
-	/* Setup DRAM buffer strength. */
-	set_dram_buffer_strength();
-}
-
 static void sdram_enable(void)
 {
 	int i;
@@ -1009,7 +1000,10 @@ void sdram_initialize(int s3resume)
 
 	dump_spd_registers();
 	sdram_set_registers();
-	sdram_set_spd_registers();
+	/* Set up DRAM row boundary registers and other attributes. */
+	set_dram_row_attributes();
+	/* Set up DRAM buffer strength. */
+	set_dram_buffer_strength();
 	sdram_enable();
 
 	/* Clear any errors reported during raminit. */

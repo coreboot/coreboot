@@ -262,14 +262,15 @@ int spi_flash_cmd_erase(const struct spi_flash *flash, u32 offset, size_t len)
 		spi_flash_addr(offset, cmd);
 		offset += erase_size;
 
-#if CONFIG(DEBUG_SPI_FLASH)
-		if (ADDR_MOD)
-			printk(BIOS_SPEW, "SF: erase %2x %2x %2x %2x %2x (%x)\n",
-				cmd[0], cmd[1], cmd[2], cmd[3], cmd[4], offset);
-		else
-			printk(BIOS_SPEW, "SF: erase %2x %2x %2x %2x (%x)\n",
-				cmd[0], cmd[1], cmd[2], cmd[3], offset);
-#endif
+		if (CONFIG(DEBUG_SPI_FLASH)) {
+			if (ADDR_MOD)
+				printk(BIOS_SPEW, "SF: erase %2x %2x %2x %2x %2x (%x)\n",
+					cmd[0], cmd[1], cmd[2], cmd[3], cmd[4], offset);
+			else
+				printk(BIOS_SPEW, "SF: erase %2x %2x %2x %2x (%x)\n",
+					cmd[0], cmd[1], cmd[2], cmd[3], offset);
+		}
+
 		ret = spi_flash_cmd(&flash->spi, CMD_WRITE_ENABLE, NULL, 0);
 		if (ret)
 			goto out;

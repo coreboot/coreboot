@@ -3,6 +3,8 @@ bootblock-y += gpio.c
 
 ramstage-y += gpio.c
 
+ramstage-y += variant.c
+
 romstage-y += gpio.c
 
 romstage-y += memory.c

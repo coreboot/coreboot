@@ -3,6 +3,20 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_XHCI_H
 #define SOC_INTEL_COMMON_BLOCK_XHCI_H
 
+#define PORTSCN_OFFSET 0x480
+#define  PORTSCN_WAKE_ON_DISCONNECT_ENABLE 0x4000000
+#define  PORTSCN_WAKE_ON_CONNECT_ENABLE 0x2000000
+/* Set WDE and WCE bits */
+#define  PORTSCN_WAKE_ON_BOTH_CONNECT_DISCONNECT_ENABLE 0x6000000
+/*
+ * And port status/control reg with RO and RWS bits
+ * RO bits: 0, 2:3, 10:13, 24, 28:30
+ * RWS bits: 5:9, 14:16, 25:27
+ */
+#define  PORTSCN_BITS_OFF_MASK ~0x80FE0012
+#define PORTSCXUSB3_OFFSET 0x540
+
+#if !defined(__ACPI__)
 #include <device/device.h>
 #include <device/xhci.h>
 #include <elog.h>
@@ -63,5 +77,5 @@ const struct xhci_usb_info *soc_get_xhci_usb_info(pci_devfn_t xhci_dev);
  */
 void usb_xhci_disable_unused(bool (*ext_usb_xhci_en_cb)(unsigned int port_type,
 							unsigned int port_id));
-
+#endif /* if !defined(__ACPI__) */
 #endif	/* SOC_INTEL_COMMON_BLOCK_XHCI_H */

@@ -1,10 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#define PORTSCN_OFFSET 0x480
-#define PORTSCXUSB3_OFFSET 0x540
-
-#define WAKE_ON_CONNECT_DISCONNECT_ENABLE 0x6000000
-#define RO_BITS_OFF_MASK ~0x80FE0012
+#include <intelblocks/xhci.h>
 
 /*
  * USB Port Wake Enable (UPWE) on usb attach/detach
@@ -23,14 +19,8 @@ Method (UPWE, 3, Serialized)
 		PSCT, 32,
 	}
 	Local0 = PSCT
-	/*
-	 * And port status/control reg with RO and RWS bits
-	 * RO bits: 0, 2:3, 10:13, 24, 28:30
-	 * RWS bits: 5:9, 14:16, 25:27
-	 */
-	Local0 = Local0 & RO_BITS_OFF_MASK
-	/* Set WCE and WDE bits */
-	Local0 = Local0 | WAKE_ON_CONNECT_DISCONNECT_ENABLE
+	Local0 = Local0 & PORTSCN_BITS_OFF_MASK
+	Local0 = Local0 | PORTSCN_WAKE_ON_BOTH_CONNECT_DISCONNECT_ENABLE
 	PSCT = Local0
 }
 

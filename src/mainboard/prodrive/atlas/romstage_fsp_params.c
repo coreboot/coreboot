@@ -5,6 +5,8 @@
 #include <soc/romstage.h>
 #include <soc/meminit.h>
 
+#include "vpd.h"
+
 static const struct mb_cfg ddr5_mem_config = {
 	.type = MEM_TYPE_DDR5,
 
@@ -45,6 +47,16 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	};
 
 	memcfg_init(memupd, mem_config, &dimm_module_spd_info, half_populated);
+
+	/* Apply profile-specific settings */
+	switch (get_emi_eeprom_vpd()->profile) {
+	case ATLAS_PROF_REALTIME_PERFORMANCE:
+		memupd->FspmConfig.HyperThreading = 0;
+		memupd->FspmConfig.DisPgCloseIdleTimeout = 1;
+		memupd->FspmConfig.PowerDownMode = 0;
+		memupd->FspmConfig.DisableStarv2medPrioOnNewReq = 1;
+		break;
+	}
 
 	/* Enable Audio */
 	memupd->FspmConfig.PchHdaAudioLinkHdaEnable = 1;

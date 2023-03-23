@@ -10,4 +10,5 @@ romstage-y += romstage_fsp_params.c
 
 ramstage-y += gpio.c
 ramstage-y += mainboard.c
+ramstage-y += ramstage_fsp_params.c
 ramstage-y += smbios.c

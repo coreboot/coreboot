@@ -10,8 +10,8 @@
 
 uint32_t get_uvolts_from_vid(uint16_t core_vid)
 {
-	if ((core_vid >= 0xF8) && (core_vid <= 0xFF)) {
-		/* Voltage off for VID codes 0xF8 to 0xFF */
+	if (core_vid >= 0xF8) {
+		/* Voltage off for VID codes >= 0xF8 */
 		return 0;
 	} else {
 		return SERIAL_VID_2_MAX_MICROVOLTS -

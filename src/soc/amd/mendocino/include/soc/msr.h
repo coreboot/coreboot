@@ -11,7 +11,8 @@ union pstate_msr {
 		uint64_t cpu_vid_0_7	:  8; /* [14..21] */
 		uint64_t idd_value	:  8; /* [22..29] */
 		uint64_t idd_div	:  2; /* [30..31] */
-		uint64_t		: 31; /* [32..62] */
+		uint64_t cpu_vid_8	:  1; /* [32..32] */
+		uint64_t		: 30; /* [33..62] */
 		uint64_t pstate_en	:  1; /* [63..63] */
 	};
 	uint64_t raw;

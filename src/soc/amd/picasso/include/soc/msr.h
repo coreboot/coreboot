@@ -27,7 +27,7 @@ union pstate_msr {
 #define PSTATE_DEF_CORE_FREQ_BASE	25
 
 /* Value defined in Serial VID Interface 2.0 spec (#48022, NDA only) */
-#define  SERIAL_VID_DECODE_MICROVOLTS	6250
-#define  SERIAL_VID_MAX_MICROVOLTS	1550000L
+#define  SERIAL_VID_2_DECODE_MICROVOLTS	6250
+#define  SERIAL_VID_2_MAX_MICROVOLTS	1550000L
 
 #endif /* AMD_PICASSO_MSR_H */

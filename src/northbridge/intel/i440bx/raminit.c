@@ -1001,7 +1001,6 @@ static void sdram_enable(void)
 
 /* Implemented under mainboard. */
 void __weak enable_spd(void) { }
-void __weak disable_spd(void) { }
 
 void sdram_initialize(int s3resume)
 {
@@ -1013,6 +1012,5 @@ void sdram_initialize(int s3resume)
 	sdram_set_spd_registers();
 	sdram_enable();
 
-	disable_spd();
 	timestamp_add_now(TS_INITRAM_END);
 }

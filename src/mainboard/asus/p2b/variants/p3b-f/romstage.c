@@ -25,12 +25,3 @@ void enable_spd(void)
 {
 	outb(0x6f, PM_IO_BASE + 0x37);
 }
-
-/*
- * Disable SPD access after RAM init to allow access to SMBus/I2C offsets
- * 0x48/0x49/0x2d, which is required e.g. by lm-sensors.
- */
-void disable_spd(void)
-{
-	outb(0x67, PM_IO_BASE + 0x37);
-}

@@ -13,7 +13,6 @@
 #define DIMM3		0x53
 
 void enable_spd(void);
-void disable_spd(void);
 void sdram_initialize(int s3resume);
 
 /* Debug */

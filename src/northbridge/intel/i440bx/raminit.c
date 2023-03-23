@@ -1012,5 +1012,10 @@ void sdram_initialize(int s3resume)
 	sdram_set_spd_registers();
 	sdram_enable();
 
+	/* Clear any errors reported during raminit. */
+	pci_write_config32(NB, EAP, 0x3);
+	pci_write_config8(NB, ERRSTS, 0x11);
+	pci_write_config8(NB, ERRSTS + 1, 0x1f);
+
 	timestamp_add_now(TS_INITRAM_END);
 }

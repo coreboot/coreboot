@@ -74,7 +74,7 @@ int configure_display(void)
 	mtk_ddp_mode_set(&edid, panel->disp_path);
 	info = fb_new_framebuffer_info_from_edid(&edid, (uintptr_t)0);
 	if (info)
-		fb_set_orientation(info, LB_FB_ORIENTATION_NORMAL);
+		fb_set_orientation(info, LB_FB_ORIENTATION_BOTTOM_UP);
 
 	return 0;
 }

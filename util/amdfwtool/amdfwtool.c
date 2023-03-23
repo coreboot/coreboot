@@ -175,6 +175,7 @@ static void usage(void)
 
 	printf("\nPSP options:\n");
 	printf("--use-combo                    Use the COMBO layout\n");
+	printf("--combo-config1 <config file>  Config for 1st combo entry\n");
 	printf("--multilevel                   Generate primary and secondary tables\n");
 	printf("--nvram <FILE>                 Add nvram binary\n");
 	printf("--soft-fuse                    Set soft fuse\n");

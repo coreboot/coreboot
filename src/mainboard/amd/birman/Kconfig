@@ -76,6 +76,51 @@ config CHROMEOS
 	# We don't have recovery buttons, so we can't manually enable devmode.
 	select GBB_FLAG_FORCE_DEV_SWITCH_ON
 
+config ENABLE_EVAL_CARD
+	bool "Enable Eval Card"
+	help
+	  Enable the Eval Card PCIe slot
+
+config ENABLE_EVAL_19V
+	bool "Enable 19V rail for Eval Card"
+	depends on ENABLE_EVAL_CARD
+	help
+	  Enable the 19V rail for Eval Card PCIe slot
+
+choice
+	prompt "DT SLOT/M.2 SSD1 ENABLE"
+	default ENABLE_DT_SLOT
+	help
+	  Either DT slot or M.2 SSD1 can be used, as they are sharing PCIe lanes.
+
+config ENABLE_DT_SLOT
+	bool "Enable DT slot"
+
+config ENABLE_M2_SSD1
+	bool "Enable M.2 SSD1"
+
+config DISABLE_DT_M2
+	bool "Disable both DT and M.2 slot"
+
+endchoice
+
+choice
+	prompt "WLAN/WWAN Selection"
+	default WLAN0_WWAN0
+	help
+	  WLAN and WWAN lane configuration
+
+config WLAN0_WWAN0
+	bool "Both WLAN and WWAN Enabled (1 lane each)"
+
+config WLAN01
+	bool "Only WLAN Enabled (2 lanes WLAN, 0 lanes WWAN)"
+
+config WWAN01
+	bool "Only WWAN Enabled (2 lanes WWAN, 0 lanes WLAN)"
+
+endchoice
+
 if !EM100	# EM100 defaults in soc/amd/common/blocks/spi/Kconfig
 config EFS_SPI_READ_MODE
 	default 3	# Quad IO (1-1-4)

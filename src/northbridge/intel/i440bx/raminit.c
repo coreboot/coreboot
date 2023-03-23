@@ -645,7 +645,7 @@ static void sdram_set_registers(void)
 {
 	int i, max;
 
-	PRINT_DEBUG("Northbridge prior to SDRAM init:\n");
+	PRINT_DEBUG("Northbridge %s SDRAM init:\n", "prior to");
 	DUMPNORTH();
 
 	max = ARRAY_SIZE(register_values);
@@ -713,13 +713,13 @@ static struct dimm_size spd_get_dimm_size(unsigned int device)
 	 * modules by setting them to a supported size.
 	 */
 	if (sz.side1 > 128) {
-		PRINT_DEBUG("Side1 was %dMB but only 128MB will be used.\n",
-			sz.side1);
+		PRINT_DEBUG("Side%d was %dMB but only 128MB will be used.\n",
+			1, sz.side1);
 		sz.side1 = 128;
 
 		if (sz.side2 > 128) {
-			PRINT_DEBUG("Side2 was %dMB but only 128MB will be used.\n",
-				sz.side2);
+			PRINT_DEBUG("Side%d was %dMB but only 128MB will be used.\n",
+				2, sz.side2);
 			sz.side2 = 128;
 		}
 	}
@@ -919,7 +919,7 @@ static void set_dram_row_attributes(void)
 
 	/* Set paging policy register. */
 	pci_write_config8(NB, PGPOL + 1, bpr);
-	PRINT_DEBUG("PGPOL[BPR] has been set to 0x%02x\n", bpr);
+	PRINT_DEBUG("%s has been set to 0x%02x\n", "PGPOL[BPR]", bpr);
 
 	/* Set DRAM row page size register. */
 	pci_write_config16(NB, RPS, rps);
@@ -927,7 +927,7 @@ static void set_dram_row_attributes(void)
 
 	/* ### ECC */
 	pci_write_config8(NB, NBXCFG + 3, nbxecc);
-	PRINT_DEBUG("NBXECC[31:24] has been set to 0x%02x\n", nbxecc);
+	PRINT_DEBUG("%s has been set to 0x%02x\n", "NBXCFG[31:24]", nbxecc);
 
 	/* Set DRAMC[4:3] to proper memory type (EDO/SDRAM/Registered SDRAM). */
 
@@ -943,7 +943,7 @@ static void set_dram_row_attributes(void)
 	value = pci_read_config8(NB, DRAMC) & 0xe7;
 	value |= i;
 	pci_write_config8(NB, DRAMC, value);
-	PRINT_DEBUG("DRAMC has been set to 0x%02x\n", value);
+	PRINT_DEBUG("%s has been set to 0x%02x\n", "DRAMC", value);
 }
 
 static void sdram_set_spd_registers(void)
@@ -963,39 +963,39 @@ static void sdram_enable(void)
 	udelay(200);
 
 	/* 1. Apply NOP. Wait 200 clock cycles (200us should do). */
-	PRINT_DEBUG("RAM Enable 1: Apply NOP\n");
+	PRINT_DEBUG("RAM Enable %d: %s\n", 1, "Apply NOP");
 	do_ram_command(RAM_COMMAND_NOP);
 	udelay(200);
 
 	/* 2. Precharge all. Wait tRP. */
-	PRINT_DEBUG("RAM Enable 2: Precharge all\n");
+	PRINT_DEBUG("RAM Enable %d: %s\n", 2, "Precharge all");
 	do_ram_command(RAM_COMMAND_PRECHARGE);
 	udelay(1);
 
 	/* 3. Perform 8 refresh cycles. Wait tRC each time. */
-	PRINT_DEBUG("RAM Enable 3: CBR\n");
+	PRINT_DEBUG("RAM Enable %d: %s\n", 3, "CBR");
 	for (i = 0; i < 8; i++) {
 		do_ram_command(RAM_COMMAND_CBR);
 		udelay(1);
 	}
 
 	/* 4. Mode register set. Wait two memory cycles. */
-	PRINT_DEBUG("RAM Enable 4: Mode register set\n");
+	PRINT_DEBUG("RAM Enable %d: %s\n", 4, "Mode register set");
 	do_ram_command(RAM_COMMAND_MRS);
 	udelay(2);
 
 	/* 5. Normal operation. */
-	PRINT_DEBUG("RAM Enable 5: Normal operation\n");
+	PRINT_DEBUG("RAM Enable %d: %s\n", 5, "Normal operation");
 	do_ram_command(RAM_COMMAND_NORMAL);
 	udelay(1);
 
 	/* 6. Finally enable refresh. */
-	PRINT_DEBUG("RAM Enable 6: Enable refresh\n");
+	PRINT_DEBUG("RAM Enable %d: %s\n", 6, "Enable refresh");
 	pci_write_config8(NB, PMCR, 0x10);
 	spd_enable_refresh();
 	udelay(1);
 
-	PRINT_DEBUG("Northbridge following SDRAM init:\n");
+	PRINT_DEBUG("Northbridge %s SDRAM init:\n", "following");
 	DUMPNORTH();
 }
 

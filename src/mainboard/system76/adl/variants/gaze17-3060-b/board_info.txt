@@ -1,0 +1,2 @@
+Board name: gaze17-3060-b
+Release year: 2022

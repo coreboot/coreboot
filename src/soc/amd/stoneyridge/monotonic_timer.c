@@ -12,6 +12,8 @@ void timer_monotonic_get(struct mono_time *mt)
 	mono_time_set_usecs(mt, timestamp_get());
 }
 
+/* The TSC has a non-constant rate before the microcode update is applied, so it can't be used
+   in timestamp_get before that. Instead, the Performance Time Stamp Counter is used. */
 uint64_t timestamp_get(void)
 {
 	msr_t msr;

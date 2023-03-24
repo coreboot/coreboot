@@ -111,19 +111,3 @@ const acpi_cstate_t *get_cstate_config_data(size_t *size)
 	*size = ARRAY_SIZE(cstate_cfg_table);
 	return cstate_cfg_table;
 }
-
-void generate_cpu_entries(const struct device *device)
-{
-	int cpu;
-	const int cores = get_cpu_count();
-
-	printk(BIOS_DEBUG, "ACPI \\_SB report %d core(s)\n", cores);
-
-	/* Generate \_SB.Pxxx */
-	for (cpu = 0; cpu < cores; cpu++) {
-		acpigen_write_processor_device(cpu);
-		acpigen_write_processor_device_end();
-	}
-
-	acpigen_write_processor_package("PPKG", 0, cores);
-}

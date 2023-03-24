@@ -213,7 +213,6 @@ static unsigned long agesa_write_acpi_tables(const struct device *device,
 {
 	acpi_srat_t *srat;
 	acpi_slit_t *slit;
-	acpi_header_t *ssdt;
 	acpi_header_t *alib;
 	acpi_header_t *ivrs;
 	acpi_hest_t *hest;
@@ -276,18 +275,6 @@ static unsigned long agesa_write_acpi_tables(const struct device *device,
 		printk(BIOS_DEBUG, "	AGESA ALIB SSDT table NULL."
 							" Skipping.\n");
 	}
-
-	current = acpi_align_current(current);
-	printk(BIOS_DEBUG, "ACPI:    * SSDT at %lx\n", current);
-	ssdt = (acpi_header_t *)agesawrapper_getlateinitptr(PICK_PSTATE);
-	if (ssdt != NULL) {
-		memcpy((void *)current, ssdt, ssdt->length);
-		ssdt = (acpi_header_t *)current;
-		current += ssdt->length;
-	} else {
-		printk(BIOS_DEBUG, "  AGESA PState table NULL. Skipping.\n");
-	}
-	acpi_add_table(rsdp, ssdt);
 
 	printk(BIOS_DEBUG, "ACPI:    * SSDT for PState at %lx\n", current);
 	return current;

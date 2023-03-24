@@ -39,6 +39,12 @@ config ACPI_CPU_STRING
 
 endif # SOC_AMD_COMMON_BLOCK_NONCAR
 
+config SOC_AMD_COMMON_BLOCK_CPUFREQ_FAM15H_16H
+	bool
+	help
+	  Select this option to include code to calculate the CPU frequency
+	  from the P state MSR values on AMD CPU families 15h and 16h.
+
 config SOC_AMD_COMMON_BLOCK_CPUFREQ_FAM17H_19H
 	bool
 	help

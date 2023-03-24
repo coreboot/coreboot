@@ -96,15 +96,15 @@ config SOC_AMD_COMMON_BLOCK_SVI3
 	  Select this option is the SoC uses the serial VID 3 standard for
 	  encoding the voltage it requests from the VRM.
 
-config SOC_AMD_COMMON_BLOCK_TSC_FAM17H_19H
+config SOC_AMD_COMMON_BLOCK_TSC
 	bool
 	select COLLECT_TIMESTAMPS_NO_TSC # selected use SoC-specific timestamp function
 	select TSC_SYNC_LFENCE
 	select UDELAY_TSC
 	help
 	  Select this option to add the common functions for getting the TSC
-	  frequency of AMD family 17h and 19h CPUs/APUs and to provide TSC-
-	  based monotonic timer functionality to the build.
+	  frequency of AMD family 17h, 19h and 1Ah CPUs/APUs and to provide
+	  TSC-based monotonic timer functionality to the build.
 
 config SOC_AMD_COMMON_BLOCK_UCODE
 	bool

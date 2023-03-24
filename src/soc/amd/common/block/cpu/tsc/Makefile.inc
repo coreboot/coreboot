@@ -20,7 +20,7 @@ smm-$(CONFIG_SOC_AMD_COMMON_BLOCK_CPUFREQ_FAM15H_16H) += cpufreq_15_16.c
 smm-$(CONFIG_SOC_AMD_COMMON_BLOCK_CPUFREQ_FAM17H_19H) += cpufreq_17_19.c
 smm-$(CONFIG_SOC_AMD_COMMON_BLOCK_CPUFREQ_FAM1AH) += cpufreq_1a.c
 
-ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_TSC_FAM17H_19H),y)
+ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_TSC),y)
 
 bootblock-y += tsc_freq.c
 bootblock-y += monotonic_timer.c
@@ -37,4 +37,4 @@ ramstage-y += monotonic_timer.c
 smm-y += tsc_freq.c
 smm-y += monotonic_timer.c
 
-endif # CONFIG_SOC_AMD_COMMON_BLOCK_TSC_FAM17H_19H
+endif # CONFIG_SOC_AMD_COMMON_BLOCK_TSC

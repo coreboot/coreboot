@@ -16,12 +16,6 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 	write_resume_eip();
 	enable_pci_mmconf();
 
-	/*
-	 * base_timestamp is raw tsc value. We need to divide by tsc_freq_mhz
-	 * to get micro-seconds granularity.
-	 */
-	base_timestamp /= tsc_freq_mhz();
-
 	if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK))
 		boot_with_psp_timestamp(base_timestamp);
 

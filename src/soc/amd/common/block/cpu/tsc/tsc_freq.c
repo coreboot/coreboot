@@ -1,9 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <amdblocks/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/msr.h>
 #include <cpu/x86/tsc.h>
 #include <console/console.h>
+#include <soc/msr.h>
 
 static unsigned long mhz;
 
@@ -13,31 +15,22 @@ static unsigned long mhz;
 
 unsigned long tsc_freq_mhz(void)
 {
-	msr_t msr;
-	uint8_t cpufid;
-	uint8_t cpudid;
+	union pstate_msr pstate_reg;
 	uint8_t high_state;
 
 	if (mhz)
 		return mhz;
 
 	high_state = rdmsr(PS_LIM_REG).lo & 0x7;
-	msr = rdmsr(PSTATE_MSR(high_state));
-	if (!(msr.hi & 0x80000000))
+	pstate_reg.raw = rdmsr(PSTATE_MSR(high_state)).raw;
+	if (!pstate_reg.pstate_en)
 		die("Unknown error: cannot determine P-state 0\n");
 
-	cpufid = (msr.lo & 0xff);
-	cpudid = (msr.lo & 0x3f00) >> 8;
+	mhz = get_pstate_core_freq(pstate_reg);
 
-	/* normally core frequency is calculated as (fid * 25) / (did / 8) */
-	if (!cpudid) {
+	if (!mhz) {
 		mhz = TSC_DEFAULT_FREQ_MHZ;
 		printk(BIOS_ERR, "Invalid divisor, set TSC frequency to %ldMHz\n", mhz);
-	} else if ((cpudid >= 8) && (cpudid <= 0x30)) {
-		mhz = (200 * cpufid) / cpudid;
-	} else {
-		mhz = 25 * cpufid;
-		printk(BIOS_ERR, "Invalid frequency divisor 0x%x, assume 1\n", cpudid);
 	}
 
 	return mhz;

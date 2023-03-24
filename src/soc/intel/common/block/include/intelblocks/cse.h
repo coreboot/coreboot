@@ -49,6 +49,7 @@
 #define MKHI_BUP_COMMON_GET_BOOT_PARTITION_INFO	0x1c
 #define MKHI_BUP_COMMON_SET_BOOT_PARTITION_INFO	0x1d
 #define MKHI_BUP_COMMON_DATA_CLEAR		0x20
+#define GEN_GET_IMAGE_FW_VERSION	0x1c
 
 /* Get boot performance command id */
 #define MKHI_BUP_COMMON_GET_BOOT_PERF_DATA	0x8
@@ -85,6 +86,12 @@ enum {
 	PCI_ME_HFSTS6 = 0x6C,
 };
 
+/* CSE partition list */
+enum fpt_partition_id {
+	FPT_PARTITION_NAME_UNDEFINED = 0x0,
+	FPT_PARTITION_NAME_ISHC = 0x43485349,
+};
+
 /* MKHI Message Header */
 struct mkhi_hdr {
 	uint8_t group_id;
@@ -117,6 +124,25 @@ struct me_fw_ver_resp {
 	struct me_version rec;
 	struct me_version fitc;
 } __packed;
+
+/* Module data from manifest */
+struct flash_partition_data {
+	enum fpt_partition_id partition_id;
+	uint8_t reserved1[8];
+	struct fw_version version;
+	uint32_t vendor_id;
+	uint32_t tcb_svn;
+	uint32_t arb_svn;
+	uint32_t vcn;
+	uint32_t reserved2[13];
+};
+
+/* Response header for partition information request */
+struct fw_version_resp {
+	struct mkhi_hdr hdr;
+	uint32_t module_count;
+	struct flash_partition_data manifest_data;
+};
 
 /* CSE RX and TX error status */
 enum cse_tx_rx_status {
@@ -502,4 +528,10 @@ void cse_enable_ptt(bool state);
  */
 enum cb_err cse_get_fw_feature_state(uint32_t *feature_state);
 
+/*
+ * The function sends a HECI command to get the partition information of the shared ID.
+ * The retrieved partition is stored in the memory pointed to by the resp pointer.
+ * The function returns 0 on success and < 0 on failure.
+ */
+enum cb_err cse_get_fpt_partition_info(enum fpt_partition_id id, struct fw_version_resp *resp);
 #endif // SOC_INTEL_COMMON_CSE_H

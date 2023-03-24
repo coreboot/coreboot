@@ -7,8 +7,6 @@
 #include <console/console.h>
 #include <soc/msr.h>
 
-static unsigned long mhz;
-
 /* Use this default TSC frequency when it can not be correctly calculated.
    Higher numbers are safer as it will result in longer delays using TSC */
 #define TSC_DEFAULT_FREQ_MHZ	4000
@@ -17,6 +15,7 @@ unsigned long tsc_freq_mhz(void)
 {
 	union pstate_msr pstate_reg;
 	uint8_t high_state;
+	static unsigned long mhz;
 
 	if (mhz)
 		return mhz;

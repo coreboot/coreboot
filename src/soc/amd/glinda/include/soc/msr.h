@@ -20,8 +20,6 @@ union pstate_msr {
 	uint64_t raw;
 };
 
-#define PSTATE_DEF_CORE_FREQ_BASE	5
-
 #define MSR_CPPC_CAPABILITY_1				0xc00102b0
 #define SHIFT_CPPC_CAPABILITY_1_HIGHEST_PERF		24
 #define SHIFT_CPPC_CAPABILITY_1_NOMINAL_PERF		16

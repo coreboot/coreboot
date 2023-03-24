@@ -1,4 +1,20 @@
 ## SPDX-License-Identifier: GPL-2.0-only
+
+bootblock-$(CONFIG_SOC_AMD_COMMON_BLOCK_CPUFREQ_FAM17H_19H) += cpufreq_17_19.c
+bootblock-$(CONFIG_SOC_AMD_COMMON_BLOCK_CPUFREQ_FAM1AH) += cpufreq_1a.c
+
+verstage_x86-$(CONFIG_SOC_AMD_COMMON_BLOCK_CPUFREQ_FAM17H_19H) += cpufreq_17_19.c
+verstage_x86-$(CONFIG_SOC_AMD_COMMON_BLOCK_CPUFREQ_FAM1AH) += cpufreq_1a.c
+
+romstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_CPUFREQ_FAM17H_19H) += cpufreq_17_19.c
+romstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_CPUFREQ_FAM1AH) += cpufreq_1a.c
+
+ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_CPUFREQ_FAM17H_19H) += cpufreq_17_19.c
+ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_CPUFREQ_FAM1AH) += cpufreq_1a.c
+
+smm-$(CONFIG_SOC_AMD_COMMON_BLOCK_CPUFREQ_FAM17H_19H) += cpufreq_17_19.c
+smm-$(CONFIG_SOC_AMD_COMMON_BLOCK_CPUFREQ_FAM1AH) += cpufreq_1a.c
+
 ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_TSC_FAM17H_19H),y)
 
 bootblock-y += tsc_freq.c

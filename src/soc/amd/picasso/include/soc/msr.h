@@ -21,9 +21,4 @@ union pstate_msr {
 	uint64_t raw;
 };
 
-#define PSTATE_DEF_FREQ_DIV_MIN		0x8
-#define PSTATE_DEF_EIGHTH_STEP_MAX	0x1A
-#define PSTATE_DEF_FREQ_DIV_MAX		0x3E
-#define PSTATE_DEF_CORE_FREQ_BASE	25
-
 #endif /* AMD_PICASSO_MSR_H */

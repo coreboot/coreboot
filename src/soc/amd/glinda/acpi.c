@@ -16,11 +16,9 @@
 #include <arch/smp/mpspec.h>
 #include <console/console.h>
 #include <cpu/amd/cpuid.h>
-#include <cpu/amd/msr.h>
 #include <cpu/x86/smm.h>
 #include <soc/acpi.h>
 #include <soc/iomap.h>
-#include <soc/msr.h>
 #include <types.h>
 #include "chip.h"
 
@@ -96,17 +94,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 		fadt->flags |= ACPI_FADT_LOW_PWR_IDLE_S0;
 
 	fadt->flags |= cfg->common_config.fadt_flags; /* additional board-specific flags */
-}
-
-uint32_t get_pstate_core_freq(union pstate_msr pstate_reg)
-{
-	uint32_t core_freq_mul;
-
-	/* Core frequency multiplier */
-	core_freq_mul = pstate_reg.cpu_fid_0_11;
-
-	/* CPU frequency is 5 * core_freq_mul */
-	return PSTATE_DEF_CORE_FREQ_BASE * core_freq_mul;
 }
 
 const acpi_cstate_t cstate_cfg_table[] = {

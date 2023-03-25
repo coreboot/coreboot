@@ -46,6 +46,11 @@ static uint32_t get_pstate_core_power(union pstate_msr pstate_reg)
 	return power_in_mw;
 }
 
+static uint32_t get_visible_pstate_count(void)
+{
+	return (rdmsr(PS_LIM_REG).lo & PS_LIM_MAX_VAL_MASK) >> PS_MAX_VAL_SHFT;
+}
+
 /*
  * Populate structure describing enabled p-states and return count of enabled p-states.
  */
@@ -57,7 +62,7 @@ static size_t get_pstate_info(struct acpi_sw_pstate *pstate_values,
 	uint32_t max_pstate;
 
 	pstate_count = 0;
-	max_pstate = (rdmsr(PS_LIM_REG).lo & PS_LIM_MAX_VAL_MASK) >> PS_MAX_VAL_SHFT;
+	max_pstate = get_visible_pstate_count();
 
 	for (pstate = 0; pstate <= max_pstate; pstate++) {
 		pstate_reg.raw = rdmsr(PSTATE_MSR(pstate)).raw;

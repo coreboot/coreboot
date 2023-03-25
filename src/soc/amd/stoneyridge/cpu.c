@@ -15,6 +15,7 @@
 #include <soc/cpu.h>
 #include <soc/iomap.h>
 #include <console/console.h>
+#include <types.h>
 
 /*
  * MP and SMM loading initialization.
@@ -69,3 +70,8 @@ static const struct cpu_driver model_15 __cpu_driver = {
 	.ops      = &cpu_dev_ops,
 	.id_table = cpu_table,
 };
+
+uint32_t get_pstate_0_reg(void)
+{
+	return (pci_read_config32(SOC_PM_DEV, CORE_PERF_BOOST_CTRL) >> 2) & 0x7;
+}

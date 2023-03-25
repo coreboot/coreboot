@@ -12,7 +12,6 @@
 unsigned long tsc_freq_mhz(void)
 {
 	union pstate_msr pstate_reg;
-	uint8_t boost_states;
 
 	/*
 	 * See the Family 15h Models 70h-7Fh BKDG (PID 55072) definition for
@@ -20,10 +19,7 @@ unsigned long tsc_freq_mhz(void)
 	 * to the "Software P-state Numbering" section, P0 is the highest
 	 * non-boosted state.  freq = 100MHz * (CpuFid + 10h) / (2^(CpuDid)).
 	 */
-	boost_states = (pci_read_config32(SOC_PM_DEV, CORE_PERF_BOOST_CTRL)
-			>> 2) & 0x7;
-
-	pstate_reg.raw = rdmsr(PSTATE_MSR(boost_states)).raw;
+	pstate_reg.raw = rdmsr(PSTATE_MSR(get_pstate_0_reg())).raw;
 	if (!pstate_reg.pstate_en)
 		die("Unknown error: cannot determine P-state 0\n");
 

@@ -7,6 +7,11 @@
 #include <smbios.h>
 #include <soc/iomap.h>
 
+uint32_t get_pstate_0_reg(void)
+{
+	return 0;
+}
+
 unsigned int smbios_processor_family(struct cpuid_result res)
 {
 	return 0x6b; /* Zen */

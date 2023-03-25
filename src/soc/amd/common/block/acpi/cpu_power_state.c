@@ -59,13 +59,14 @@ static size_t get_pstate_info(struct acpi_sw_pstate *pstate_values,
 {
 	union pstate_msr pstate_reg;
 	size_t pstate_count, pstate;
-	uint32_t max_pstate;
+	uint32_t pstate_0_reg, max_pstate;
 
 	pstate_count = 0;
+	pstate_0_reg = get_pstate_0_reg();
 	max_pstate = get_visible_pstate_count();
 
 	for (pstate = 0; pstate <= max_pstate; pstate++) {
-		pstate_reg.raw = rdmsr(PSTATE_MSR(pstate)).raw;
+		pstate_reg.raw = rdmsr(PSTATE_MSR(pstate_0_reg + pstate)).raw;
 
 		if (!pstate_reg.pstate_en)
 			continue;

@@ -59,11 +59,12 @@ static size_t get_pstate_info(struct acpi_sw_pstate *pstate_values,
 {
 	union pstate_msr pstate_reg;
 	size_t pstate_count, pstate;
-	uint32_t pstate_0_reg, max_pstate;
+	uint32_t pstate_0_reg, max_pstate, latency;
 
 	pstate_count = 0;
 	pstate_0_reg = get_pstate_0_reg();
 	max_pstate = get_visible_pstate_count();
+	latency = get_pstate_latency();
 
 	for (pstate = 0; pstate <= max_pstate; pstate++) {
 		pstate_reg.raw = rdmsr(PSTATE_MSR(pstate_0_reg + pstate)).raw;
@@ -73,8 +74,8 @@ static size_t get_pstate_info(struct acpi_sw_pstate *pstate_values,
 
 		pstate_values[pstate_count].core_freq = get_pstate_core_freq(pstate_reg);
 		pstate_values[pstate_count].power = get_pstate_core_power(pstate_reg);
-		pstate_values[pstate_count].transition_latency = 0;
-		pstate_values[pstate_count].bus_master_latency = 0;
+		pstate_values[pstate_count].transition_latency = latency;
+		pstate_values[pstate_count].bus_master_latency = latency;
 		pstate_values[pstate_count].control_value = pstate;
 		pstate_values[pstate_count].status_value = pstate;
 
@@ -82,8 +83,8 @@ static size_t get_pstate_info(struct acpi_sw_pstate *pstate_values,
 			(uint64_t)pstate_values[pstate_count].core_freq;
 		pstate_xpss_values[pstate_count].power =
 			(uint64_t)pstate_values[pstate_count].power;
-		pstate_xpss_values[pstate_count].transition_latency = 0;
-		pstate_xpss_values[pstate_count].bus_master_latency = 0;
+		pstate_xpss_values[pstate_count].transition_latency = latency;
+		pstate_xpss_values[pstate_count].bus_master_latency = latency;
 		pstate_xpss_values[pstate_count].control_value = (uint64_t)pstate;
 		pstate_xpss_values[pstate_count].status_value = (uint64_t)pstate;
 		pstate_count++;

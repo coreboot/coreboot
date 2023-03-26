@@ -141,6 +141,9 @@ Method (_Q79, 0, Serialized)
 {
 	If (ISSX == 0) {
 		Printf ("EC _Q79 UCSI Event")
+
+		\_SB.UCSI.RMSG()
+
 		Notify (\_SB.UCSI, 0x80)
 		^UCEP = 0
 	} Else {

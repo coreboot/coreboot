@@ -125,31 +125,36 @@ Scope (\_SB)
 				Case (2)
 				{
 					/* Read Message In */
-					^MGI0 = R (^^UMI0)
-					^MGI1 = R (^^UMI1)
-					^MGI2 = R (^^UMI2)
-					^MGI3 = R (^^UMI3)
-					^MGI4 = R (^^UMI4)
-					^MGI5 = R (^^UMI5)
-					^MGI6 = R (^^UMI6)
-					^MGI7 = R (^^UMI7)
-					^MGI8 = R (^^UMI8)
-					^MGI9 = R (^^UMI9)
-					^MGIA = R (^^UMIA)
-					^MGIB = R (^^UMIB)
-					^MGIC = R (^^UMIC)
-					^MGID = R (^^UMID)
-					^MGIE = R (^^UMIE)
-					^MGIF = R (^^UMIF)
-
-					/* Read Status */
-					^CCI0 = R (^^UCI0)
-					^CCI1 = R (^^UCI1)
-					^CCI2 = R (^^UCI2)
-					^CCI3 = R (^^UCI3)
+					RMSG()
 				}
 			}
 			Return (Buffer (1) { 0 })
+		}
+
+		Method (RMSG, 0, Serialized){
+			/* Read Message In */
+			^MGI0 = R (^^UMI0)
+			^MGI1 = R (^^UMI1)
+			^MGI2 = R (^^UMI2)
+			^MGI3 = R (^^UMI3)
+			^MGI4 = R (^^UMI4)
+			^MGI5 = R (^^UMI5)
+			^MGI6 = R (^^UMI6)
+			^MGI7 = R (^^UMI7)
+			^MGI8 = R (^^UMI8)
+			^MGI9 = R (^^UMI9)
+			^MGIA = R (^^UMIA)
+			^MGIB = R (^^UMIB)
+			^MGIC = R (^^UMIC)
+			^MGID = R (^^UMID)
+			^MGIE = R (^^UMIE)
+			^MGIF = R (^^UMIF)
+
+			/* Read Status */
+			^CCI0 = R (^^UCI0)
+			^CCI1 = R (^^UCI1)
+			^CCI2 = R (^^UCI2)
+			^CCI3 = R (^^UCI3)
 		}
 	}
 }

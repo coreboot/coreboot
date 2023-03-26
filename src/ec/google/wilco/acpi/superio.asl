@@ -33,8 +33,8 @@ Scope (\_SB.PCI0)
 {
 	Device (PS2K)
 	{
-		Name (_HID, EisaId ("PNP0303"))
-		Name (_CID, EisaId ("PNP030B"))
+		Name (_HID, "GOOG000A")
+		Name (_CID, Package() { EISAID("PNP0303"), EISAID("PNP030B") })
 		Name (_UID, 0)
 
 		Method (_STA, 0, NotSerialized)

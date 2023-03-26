@@ -29,6 +29,10 @@ Device (EC0)
 	OperationRegion (ERAM, EmbeddedControl, 0, 0xff)
 	Method (_REG, 2)
 	{
+		If (Arg1 != 1) {
+			Return ()
+		}
+
 		/* Indicate region is registered */
 		EREG = Arg1
 

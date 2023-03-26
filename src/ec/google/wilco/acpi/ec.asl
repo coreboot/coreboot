@@ -50,7 +50,7 @@ Device (EC0)
 		}
 
 		/* Initialize UCSI */
-		^UCSI.INIT ()
+		\_SB.UCSI.INIT ()
 
 		// Initialize LID switch state
 		\LIDS = R (P1LC)

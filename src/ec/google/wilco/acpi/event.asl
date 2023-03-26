@@ -141,7 +141,7 @@ Method (_Q79, 0, Serialized)
 {
 	If (ISSX == 0) {
 		Printf ("EC _Q79 UCSI Event")
-		Notify (^UCSI, 0x80)
+		Notify (\_SB.UCSI, 0x80)
 		^UCEP = 0
 	} Else {
 		Printf ("EC _Q79 UCSI Event Masked in S0ix")

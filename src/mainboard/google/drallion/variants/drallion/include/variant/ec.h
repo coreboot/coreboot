@@ -21,4 +21,7 @@
 /* Enable privacy screen functionality */
 #define EC_ENABLE_PRIVACY
 
+/* Drallion has 2 type-C ports */
+#define EC_BOARD_HAS_2ND_TYPEC_PORT
+
 #endif

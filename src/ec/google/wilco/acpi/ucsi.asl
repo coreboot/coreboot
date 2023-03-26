@@ -156,5 +156,77 @@ Scope (\_SB)
 			^CCI2 = R (^^UCI2)
 			^CCI3 = R (^^UCI3)
 		}
+
+		// GPLD: Generate Port Location Data (PLD)
+		Method (GPLD, 2, Serialized)
+		{
+			Name (PCKG, Package (0x01)
+			{
+				Buffer (0x10){}
+			})
+
+			// REV: Revision 0x02 for ACPI 5.0
+			CreateField (DerefOf (PCKG[0]), 0, 0x07, REV)
+			REV = 0x02
+
+			// VISI: Port visibility to user per port
+			CreateField (DerefOf (PCKG[0]), 0x40, 1, VISI)
+			VISI = Arg0
+
+			CreateField (DerefOf (PCKG[0]), 0x57, 0x08, GPOS)
+			GPOS = Arg1
+
+			CreateField (DerefOf (PCKG[0]), 0x4A, 0x04, SHAP)
+			SHAP = 0x01
+
+			CreateField (DerefOf (PCKG[0]), 0x20, 0x10, WID)
+			WID = 0x08
+
+			CreateField (DerefOf (PCKG[0]), 0x30, 0x10, HGT)
+			HGT = 0x03
+			Return (PCKG)
+		}
+
+		Method (GUPC, 1, Serialized)
+		{
+			Name (PCKG, Package (0x04)
+			{
+				One,
+				Zero,
+				Zero,
+				Zero
+			})
+			PCKG[1] = Arg0
+			Return (PCKG)
+		}
+
+		Device (TC01)
+		{
+			Name (_ADR, 0)  // _ADR: Address
+			Method (_UPC, 0, NotSerialized)  // _UPC: USB Port Capabilities
+			{
+				Return (GUPC (0x09))
+			}
+
+			Method (_PLD, 0, NotSerialized)  // _PLD: Physical Location of Device
+			{
+				Return (GPLD (1, 1))
+			}
+		}
+#ifdef EC_BOARD_HAS_2ND_TYPEC_PORT
+		Device (TC02)
+		{
+			Name (_ADR, 1)  // _ADR: Address
+			Method (_UPC, 0, NotSerialized)  // _UPC: USB Port Capabilities
+			{
+				Return (GUPC (0x09))
+			}
+
+			Method (_PLD, 0, NotSerialized)  // _PLD: Physical Location of Device
+			{
+				Return (GPLD (1, 2))
+			}
+		}
+#endif
 	}
 }

@@ -36,24 +36,14 @@ enum atlas_profile {
 
 #define ATLAS_SN_PN_LENGTH	20
 
-#define EMI_EEPROM_LAYOUT_LENGTH (			\
-		sizeof(struct emi_eeprom_vpd_header) +	\
-		ATLAS_SN_PN_LENGTH +			\
-		ATLAS_SN_PN_LENGTH +			\
-		sizeof(uint16_t)			\
-	)
-
-union emi_eeprom_vpd {
-	struct __packed {
-		struct emi_eeprom_vpd_header header;
-		char serial_number[ATLAS_SN_PN_LENGTH];	/* xx-xx-xxx-xxx */
-		char part_number[ATLAS_SN_PN_LENGTH];	/* xxx-xxxx-xxxx.Rxx */
-		uint16_t profile;
-	};
-	uint8_t raw[EMI_EEPROM_LAYOUT_LENGTH];
+struct __packed emi_eeprom_vpd {
+	struct emi_eeprom_vpd_header header;
+	char serial_number[ATLAS_SN_PN_LENGTH];	/* xx-xx-xxx-xxx */
+	char part_number[ATLAS_SN_PN_LENGTH];	/* xxx-xxxx-xxxx.Rxx */
+	uint16_t profile;
 };
 
 /* Always returns a non-NULL pointer to valid data */
-const union emi_eeprom_vpd *get_emi_eeprom_vpd(void);
+const struct emi_eeprom_vpd *get_emi_eeprom_vpd(void);
 
 #endif /* ATLAS_VPD_H */

@@ -8,22 +8,26 @@
 #include "mainboard.h"
 #include "vpd.h"
 
-const union emi_eeprom_vpd *get_emi_eeprom_vpd(void)
+const struct emi_eeprom_vpd *get_emi_eeprom_vpd(void)
 {
-	static union emi_eeprom_vpd vpd = {0};
+	static union {
+		struct emi_eeprom_vpd layout;
+		uint8_t raw[sizeof(struct emi_eeprom_vpd)];
+	} vpd = {0};
 
 	/* Check if cached VPD is valid */
-	if (vpd.header.revision == VPD_LATEST_REVISION)
-		return &vpd;
+	if (vpd.layout.header.revision == VPD_LATEST_REVISION)
+		return &vpd.layout;
 
 	ec_emi_read(vpd.raw, EMI_0_IO_BASE_ADDR, 0, 0, sizeof(vpd.raw));
 
 	/* If the magic value doesn't match, consider EEPROM VPD unreliable */
-	if (vpd.header.magic != VPD_MAGIC) {
+	if (vpd.layout.header.magic != VPD_MAGIC) {
 		printk(BIOS_WARNING, "Atlas VPD: Bad magic value, using fallback defaults\n");
-		vpd.header.revision = 0;
+		vpd.layout.header.revision = 0;
 	} else {
-		printk(BIOS_DEBUG, "Atlas VPD: Got revision %u from EC\n", vpd.header.revision);
+		printk(BIOS_DEBUG, "Atlas VPD: Got revision %u from EC\n",
+				vpd.layout.header.revision);
 	}
 
 	/*
@@ -40,21 +44,21 @@ const union emi_eeprom_vpd *get_emi_eeprom_vpd(void)
 	 * of the VPD structure with a reasonable fallback value. Note the
 	 * intentional falling through.
 	 */
-	switch (vpd.header.revision) {
+	switch (vpd.layout.header.revision) {
 	case 0:
 		memset(vpd.raw, 0, sizeof(vpd.raw));
-		vpd.header.magic = VPD_MAGIC;
-		vpd.serial_number[0] = '\0';
-		vpd.part_number[0] = '\0';
-		vpd.profile = ATLAS_PROF_UNPROGRAMMED;
+		vpd.layout.header.magic = VPD_MAGIC;
+		vpd.layout.serial_number[0] = '\0';
+		vpd.layout.part_number[0] = '\0';
+		vpd.layout.profile = ATLAS_PROF_UNPROGRAMMED;
 		__fallthrough;
 	default:
 		/* Ensure serial numbers are NULL-terminated, update revision last */
-		vpd.serial_number[ATLAS_SN_PN_LENGTH - 1] = '\0';
-		vpd.part_number[ATLAS_SN_PN_LENGTH - 1] = '\0';
-		vpd.header.revision = VPD_LATEST_REVISION;
+		vpd.layout.serial_number[ATLAS_SN_PN_LENGTH - 1] = '\0';
+		vpd.layout.part_number[ATLAS_SN_PN_LENGTH - 1] = '\0';
+		vpd.layout.header.revision = VPD_LATEST_REVISION;
 		break;
 	}
 
-	return &vpd;
+	return &vpd.layout;
 }

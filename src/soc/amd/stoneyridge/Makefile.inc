@@ -50,6 +50,7 @@ ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += fch.c
 ramstage-y += fch_agesa.c
 ramstage-y += gpio.c
+ramstage-y += graphics.c
 ramstage-y += monotonic_timer.c
 ramstage-y += northbridge.c
 ramstage-y += sata.c

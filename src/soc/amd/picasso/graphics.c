@@ -18,5 +18,8 @@ void map_oprom_vendev_rev(u32 *vendev, u8 *rev)
 			printk(BIOS_NOTICE, "Using RV1/PCO VBIOS.\n");
 			*rev = PICASSO_VBIOS_REV;
 		}
+	} else if (*vendev == RAVEN2_VBIOS_VID_DID) {
+		printk(BIOS_NOTICE, "Using RV2 VBIOS.\n");
+		*rev = RAVEN2_VBIOS_REV;
 	}
 }

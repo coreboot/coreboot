@@ -45,7 +45,7 @@ int smbios_add_string(u8 *start, const char *str)
 	 * Return 0 as required for empty strings.
 	 * See Section 6.1.3 "Text Strings" of the SMBIOS specification.
 	 */
-	if (*str == '\0')
+	if (str == NULL || *str == '\0')
 		return 0;
 
 	for (;;) {

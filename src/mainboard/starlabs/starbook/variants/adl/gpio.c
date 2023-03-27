@@ -69,7 +69,7 @@ const struct pad_config gpio_table[] = {
 	/* A15:		Test Point 52					*/
 	PAD_NC(GPP_A15, NONE),
 	/* A16:		USB OverCurrent 3				*/
-	PAD_NC(GPP_A16, NONE),
+	PAD_CFG_NF(GPP_A16, NONE, DEEP, NF1),
 	/* A17:		Not Connected					*/
 	PAD_NC(GPP_A17, NONE),
 	/* A18:		DDI B DP HPD					*/

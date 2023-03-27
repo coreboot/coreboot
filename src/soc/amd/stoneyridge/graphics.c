@@ -4,15 +4,22 @@
 #include <device/pci_rom.h>
 #include <stdint.h>
 
+#define ST_GPU_FIRST_VID_DID	0x100298e0
+#define ST_GPU_LAST_VID_DID	0x100298ef
+#define ST_VBIOS_VID_DID	0x100298e0
+#define CZ_GPU_FIRST_VID_DID	0x10029870
+#define CZ_GPU_LAST_VID_DID	0x1002987f
+#define CZ_VBIOS_VID_DID	0x10029870
+
 /* Change the vendor / device IDs to match the generic VBIOS header. */
 u32 map_oprom_vendev(u32 vendev)
 {
 	u32 new_vendev;
 
-	if ((vendev >= 0x100298e0) && (vendev <= 0x100298ef))
-		new_vendev = 0x100298e0;
-	else if ((vendev >= 0x10029870) && (vendev <= 0x1002987f))
-		new_vendev = 0x10029870;
+	if ((vendev >= ST_GPU_FIRST_VID_DID) && (vendev <= ST_GPU_LAST_VID_DID))
+		new_vendev = ST_VBIOS_VID_DID;
+	else if ((vendev >= CZ_GPU_FIRST_VID_DID) && (vendev <= CZ_GPU_LAST_VID_DID))
+		new_vendev = CZ_VBIOS_VID_DID;
 	else
 		new_vendev = vendev;
 

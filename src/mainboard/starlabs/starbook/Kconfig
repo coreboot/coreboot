@@ -145,8 +145,29 @@ config EDK2_BOOTSPLASH_FILE
 	string
 	default "3rdparty/blobs/mainboard/starlabs/Logo.bmp"
 
+config PCIEXP_ASPM
+	bool
+	default n
+	help
+	  FSP is already taking care of ASPM, which is configured through the devicetree in coreboot
+	  on Alderlake Platforms. Disable it to save some boot time.
+
 config PCIEXP_DEFAULT_MAX_RESIZABLE_BAR_BITS
 	default 32
+
+config PCIEXP_L1_SUB_STATE
+	bool
+	default n
+	help
+	  Enabling PCIe L1 sub states is already done in FSP.
+	  Disable it to save some boot time.
+
+config PCIEXP_CLK_PM
+	bool
+	default n
+	help
+	  Enabling PCIe clock power management is already done in FSP.
+	  Disable it to save some boot time
 
 config SOC_INTEL_CSE_SEND_EOP_EARLY
 	default n if BOARD_STARLABS_STARBOOK_ADL

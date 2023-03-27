@@ -52,22 +52,22 @@ chip soc/intel/alderlake
 		device ref crashlog	off end
 		device ref xhci		on
 			# Motherboard USB Type C
-			register "usb2_ports[0]"		= "USB2_PORT_MID(OC3)"
+			register "usb2_ports[0]"		= "USB2_PORT_MID(OC5)"
 			register "usb3_ports[2]"		= "USB3_PORT_DEFAULT(OC3)"
 
 			# Motherboard USB 3.0
-			register "usb2_ports[2]"		= "USB2_PORT_MID(OC0)"
-			register "usb3_ports[0]"		= "USB3_PORT_DEFAULT(OC0)"
+			register "usb2_ports[2]"		= "USB2_PORT_MID(OC_SKIP)"
+			register "usb3_ports[0]"		= "USB3_PORT_DEFAULT(OC5)"
 
 			# Daughterboard USB 3.0
-			register "usb2_ports[6]"		= "USB2_PORT_MID(OC_SKIP)"
+			register "usb2_ports[6]"		= "USB2_PORT_MID(OC0)"
 			register "usb3_ports[1]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 
 			# Internal Webcam
 			register "usb2_ports[CONFIG_CCD_PORT]"	= "USB2_PORT_MID(OC_SKIP)"
 
 			# Fingerprint Reader
-			register "usb2_ports[5]"		= "USB2_PORT_MID(OC_SKIP)"
+			register "usb2_ports[5]"		= "USB2_PORT_MID(OC0)"
 
 			# Daughterboard SD Card
 			register "usb2_ports[3]"		= "USB2_PORT_MID(OC_SKIP)"

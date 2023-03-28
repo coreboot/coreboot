@@ -28,6 +28,31 @@ u32 __weak cl_get_cpu_mb_int_addr(void)
 	return CRASHLOG_MAILBOX_INTF_ADDRESS;
 }
 
+/* Get the SRAM BAR. */
+static uintptr_t sram_get_bar(void)
+{
+	uintptr_t sram_bar;
+	const struct device *dev;
+	struct resource *res;
+
+	dev = pcidev_path_on_root(PCH_DEVFN_SRAM);
+	if (!dev) {
+		printk(BIOS_ERR, "PCH_DEVFN_SRAM device not found!\n");
+		return 0;
+	}
+
+	res = probe_resource(dev, PCI_BASE_ADDRESS_0);
+	if (!res) {
+		printk(BIOS_ERR, "PCH SRAM device not found!\n");
+		return 0;
+	}
+
+	/* Get the base address of the resource */
+	sram_bar = res->base;
+
+	return sram_bar;
+}
+
 bool pmc_cl_discovery(void)
 {
 	u32 tmp_bar_addr = 0, desc_table_addr = 0;
@@ -58,10 +83,11 @@ bool pmc_cl_discovery(void)
 	}
 	m_pmc_crashLog_support = true;
 
-	/* Program BAR 0 and enable command register memory space decoding */
-	tmp_bar_addr = SPI_BASE_ADDRESS;
-	pci_write_config32(PCH_DEV_SRAM, PCI_BASE_ADDRESS_0, tmp_bar_addr);
-	pci_or_config16(PCH_DEV_SRAM, PCI_COMMAND, PCI_COMMAND_MEMORY);
+	tmp_bar_addr = sram_get_bar();
+	if (tmp_bar_addr == 0) {
+		printk(BIOS_ERR, "PCH SRAM not available, crashlog feature can't be enabled.\n");
+		return false;
+	}
 
 	if (discovery_buf.bits.discov_mechanism == 1) {
 		/* discovery mode */
@@ -113,7 +139,7 @@ u32 cl_get_cpu_bar_addr(void)
 
 u32 cl_get_cpu_tmp_bar(void)
 {
-	return SPI_BASE_ADDRESS;
+	return sram_get_bar();
 }
 
 bool  cl_pmc_sram_has_mmio_access(void)

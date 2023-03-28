@@ -301,7 +301,7 @@ void cl_get_pmc_sram_data(void)
 	u32 tmp_bar_addr = cl_get_cpu_tmp_bar();
 	u32 pmc_crashLog_size = cl_get_pmc_record_size();
 
-	if (!cl_pmc_sram_has_mmio_access())
+	if (!cl_pmc_sram_has_mmio_access() || !tmp_bar_addr)
 		return;
 
 	pmc_ipc_discovery_buf_t discovery_buf = cl_get_pmc_discovery_buf();

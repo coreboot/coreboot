@@ -19,5 +19,9 @@ ramstage-y += boardid.c
 ramstage-y += chromeos.c
 ramstage-y += display.c
 ramstage-y += mainboard.c
+ramstage-y += panel_anx7625.c
+ramstage-y += panel_ps8640.c
 ramstage-y += regulator.c
 ramstage-y += reset.c
+
+ramstage-$(CONFIG_BOARD_GOOGLE_STARMIE) += panel_starmie.c

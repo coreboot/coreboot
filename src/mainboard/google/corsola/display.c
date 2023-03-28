@@ -2,109 +2,21 @@
 
 #include <assert.h>
 #include <boardid.h>
+#include <cbfs.h>
 #include <console/console.h>
 #include <delay.h>
-#include <drivers/analogix/anx7625/anx7625.h>
-#include <drivers/parade/ps8640/ps8640.h>
+#include <device/i2c_simple.h>
+#include <edid.h>
 #include <gpio.h>
 #include <soc/ddp.h>
 #include <soc/dsi.h>
 #include <soc/gpio_common.h>
-#include <soc/regulator.h>
 #include <soc/i2c.h>
 #include <soc/mtcmos.h>
 
 #include "display.h"
 #include "gpio.h"
 
-/* Bridge functions */
-static void bridge_ps8640_power_on(void)
-{
-	/*
-	 * PS8640 power-on sequence is described in chapter 14, PS8640_DS_V1.4_20200210.docx
-	 * - set VDD12 to be 1.2V
-	 * - delay 100us
-	 * - set VDD33 to be 3.3V
-	 * - pull hign PD#
-	 * - pull down RST#
-	 * - delay 2ms
-	 * - pull high RST#
-	 * - delay more than 50ms (55ms for margin)
-	 * - pull down RST#
-	 * - delay more than 50ms (55ms for margin)
-	 * - pull high RST#
-	 */
-
-	/* Set VRF12 to 1.2V and VCN33 to 3.3V */
-	mainboard_set_regulator_voltage(MTK_REGULATOR_VRF12, 1200000);
-	udelay(100);
-	mainboard_set_regulator_voltage(MTK_REGULATOR_VCN33, 3300000);
-	udelay(200);
-
-	/* Turn on bridge */
-	gpio_output(GPIO_EDPBRDG_PWREN, 1);
-	gpio_output(GPIO_EDPBRDG_RST_L, 0);
-	mdelay(2);
-	gpio_output(GPIO_EDPBRDG_RST_L, 1);
-	mdelay(55);
-	gpio_output(GPIO_EDPBRDG_RST_L, 0);
-	mdelay(55);
-	gpio_output(GPIO_EDPBRDG_RST_L, 1);
-}
-
-static int bridge_ps8640_get_edid(u8 i2c_bus, struct edid *edid)
-{
-	const u8 chip = 0x8;
-
-	if (ps8640_init(i2c_bus, chip) < 0) {
-		printk(BIOS_ERR, "%s: Can't init PS8640 bridge\n", __func__);
-		return -1;
-	}
-	if (ps8640_get_edid(i2c_bus, chip, edid) < 0) {
-		printk(BIOS_ERR, "%s: Can't get panel's edid\n", __func__);
-		return -1;
-	}
-	return 0;
-}
-
-static int bridge_ps8640_post_power_on(u8 i2c_bus, struct edid *edid)
-{
-	/* Do nothing */
-	return 0;
-}
-
-static void bridge_anx7625_power_on(void)
-{
-	/* Turn on bridge */
-	gpio_output(GPIO_EDPBRDG_RST_L, 0);
-	gpio_output(GPIO_EN_PP1000_EDPBRDG, 1);
-	gpio_output(GPIO_EN_PP1800_EDPBRDG, 1);
-	gpio_output(GPIO_EN_PP3300_EDPBRDG, 1);
-	mdelay(14);
-	gpio_output(GPIO_EDPBRDG_PWREN, 1);
-	mdelay(80);
-	gpio_output(GPIO_EDPBRDG_RST_L, 1);
-}
-
-static int bridge_anx7625_get_edid(u8 i2c_bus, struct edid *edid)
-{
-	if (anx7625_init(i2c_bus) < 0) {
-		printk(BIOS_ERR, "%s: Can't init ANX7625 bridge\n", __func__);
-		return -1;
-	}
-	if (anx7625_dp_get_edid(i2c_bus, edid) < 0) {
-		printk(BIOS_ERR, "%s: Can't get panel's edid\n", __func__);
-		return -1;
-	}
-	return 0;
-}
-
-static int bridge_anx7625_post_power_on(u8 i2c_bus, struct edid *edid)
-{
-	return anx7625_dp_start(i2c_bus, edid);
-}
-
-/* Display function */
 static void backlight_control(void)
 {
 	/* Disable backlight before turning on bridge */
@@ -113,52 +25,118 @@ static void backlight_control(void)
 	gpio_output(GPIO_EN_PP3300_DISP_X, 1);
 }
 
-static const struct edp_bridge anx7625_bridge = {
-	.power_on = bridge_anx7625_power_on,
-	.get_edid = bridge_anx7625_get_edid,
-	.post_power_on = bridge_anx7625_post_power_on,
-};
+int panel_pmic_reg_mask(unsigned int bus, uint8_t chip, uint8_t addr,
+			uint8_t val, uint8_t mask)
+{
+	uint8_t msg = 0;
 
-static const struct edp_bridge ps8640_bridge = {
-	.power_on = bridge_ps8640_power_on,
-	.get_edid = bridge_ps8640_get_edid,
-	.post_power_on = bridge_ps8640_post_power_on,
-};
+	if (i2c_read_field(bus, chip, addr, &msg, 0xFF, 0) < 0) {
+		printk(BIOS_ERR, "%s: Failed to read i2c(%u): addr(%u)\n",
+			__func__, bus, addr);
+		return -1;
+	}
+
+	msg &= ~mask;
+	msg |= val;
+
+	return i2c_write_field(bus, chip, addr, msg, 0xFF, 0);
+}
+
+void tps65132s_program_eeprom(void)
+{
+	u8 value = 0;
+	u8 value1 = 0;
+
+	/* Initialize I2C6 for PMIC TPS65132 */
+	mtk_i2c_bus_init(PMIC_TPS65132_I2C, I2C_SPEED_FAST);
+	mdelay(10);
+
+	/* EN_PP6000_MIPI_DISP */
+	gpio_output(GPIO_EN_PP3300_DISP_X, 1);
+	/* EN_PP6000_MIPI_DISP_150MA */
+	gpio_output(GPIO_EN_PP3300_SDBRDG_X, 1);
+	mdelay(10);
+
+	i2c_read_field(PMIC_TPS65132_I2C, PMIC_TPS65132_SLAVE, 0x00, &value, 0xFF, 0);
+	i2c_read_field(PMIC_TPS65132_I2C, PMIC_TPS65132_SLAVE, 0x01, &value1, 0xFF, 0);
+
+	if (value != 0x14 || value1 != 0x14) {
+		printk(BIOS_INFO, "Set AVDD AVEE 6.0V to EEPROM Data in first time\n");
+
+		/* Set AVDD = 6.0V */
+		if (panel_pmic_reg_mask(PMIC_TPS65132_I2C, PMIC_TPS65132_SLAVE, 0x00, 0x14,
+					0x1F) < 0)
+			return;
+
+		/* Set AVEE = -6.0V */
+		if (panel_pmic_reg_mask(PMIC_TPS65132_I2C, PMIC_TPS65132_SLAVE, 0x01, 0x14,
+					0x1F) < 0)
+			return;
+
+		/* Set EEPROM Data */
+		if (panel_pmic_reg_mask(PMIC_TPS65132_I2C, PMIC_TPS65132_SLAVE, 0xFF, 0x80,
+					0xFC) < 0)
+			return;
+		mdelay(50);
+	}
+	/* EN_PP6000_MIPI_DISP */
+	gpio_output(GPIO_EN_PP3300_DISP_X, 0);
+	/* EN_PP6000_MIPI_DISP_150MA */
+	gpio_output(GPIO_EN_PP3300_SDBRDG_X, 0);
+	mdelay(5);
+}
+
+struct panel_description *get_panel_from_cbfs(struct panel_description *desc)
+{
+	char cbfs_name[64];
+	static union {
+		u8 raw[4 * 1024];
+		struct panel_serializable_data s;
+	} buffer;
+
+	if (!desc->name)
+		return NULL;
+
+	snprintf(cbfs_name, sizeof(cbfs_name), "panel-%s", desc->name);
+	if (cbfs_load(cbfs_name, buffer.raw, sizeof(buffer)))
+		desc->s = &buffer.s;
+	else
+		printk(BIOS_ERR, "Missing %s in CBFS.\n", cbfs_name);
+
+	return desc->s ? desc : NULL;
+}
+
+static struct panel_description *get_active_panel(void)
+{
+	if (CONFIG(BOARD_GOOGLE_KINGLER_COMMON))
+		if (CONFIG(BOARD_GOOGLE_STEELIX) && board_id() < 2)
+			return get_ps8640_description();
+		else
+			return get_anx7625_description();
+	else if (CONFIG(BOARD_GOOGLE_KRABBY_COMMON))
+		return get_ps8640_description();
+	else if (CONFIG(BOARD_GOOGLE_STARYU_COMMON))
+		return get_panel_description();
+	else
+		return NULL;
+}
 
 int configure_display(void)
 {
-	struct edid edid;
-	const u8 i2c_bus = I2C0;
-	const struct edp_bridge *bridge = NULL;
-	uint32_t board_version = board_id();
+	const struct panel_description *panel = get_active_panel();
 
-	if (CONFIG(BOARD_GOOGLE_KINGLER_COMMON))
-		if (CONFIG(BOARD_GOOGLE_STEELIX) && board_version < 2)
-			bridge = &ps8640_bridge;
-		else
-			bridge = &anx7625_bridge;
-	else if (CONFIG(BOARD_GOOGLE_KRABBY_COMMON))
-		bridge = &ps8640_bridge;
-
-	if (!bridge)
+	if (!panel)
 		return -1;
 
 	printk(BIOS_INFO, "%s: Starting display init\n", __func__);
 
-	mtk_i2c_bus_init(i2c_bus, I2C_SPEED_FAST);
-
 	/* Set up backlight control pins as output pin and power-off by default */
 	backlight_control();
 
-	assert(bridge->power_on);
-	bridge->power_on();
+	if (panel->power_on)
+		panel->power_on();
 
-	assert(bridge->get_edid);
-	if (bridge->get_edid(i2c_bus, &edid) < 0) {
-		printk(BIOS_ERR, "%s: Failed to get edid\n", __func__);
-		return -1;
-	}
-
+	struct edid edid = panel->s->edid;
 	const char *name = edid.ascii_string;
 	if (name[0] == '\0')
 		name = "unknown name";
@@ -176,19 +154,22 @@ int configure_display(void)
 			      MIPI_DSI_MODE_LPM |
 			      MIPI_DSI_MODE_EOT_PACKET);
 
-	if (mtk_dsi_init(mipi_dsi_flags, MIPI_DSI_FMT_RGB888, 4, &edid, NULL) < 0) {
+	if (mtk_dsi_init(mipi_dsi_flags, MIPI_DSI_FMT_RGB888, 4, &edid,
+			 panel->s->init) < 0) {
 		printk(BIOS_ERR, "%s: Failed in DSI init\n", __func__);
 		return -1;
 	}
 
-	assert(bridge->post_power_on);
-	if (bridge->post_power_on(i2c_bus, &edid) < 0) {
+	if (panel->post_power_on && panel->post_power_on(BRIDGE_I2C, &edid) < 0) {
 		printk(BIOS_ERR, "%s: Failed to post power on bridge\n", __func__);
 		return -1;
 	}
 
 	mtk_ddp_mode_set(&edid);
-	fb_new_framebuffer_info_from_edid(&edid, (uintptr_t)0);
+	struct fb_info *info = fb_new_framebuffer_info_from_edid(&edid,
+								 (uintptr_t)0);
+	if (info)
+		fb_set_orientation(info, panel->orientation);
 
 	return 0;
 }

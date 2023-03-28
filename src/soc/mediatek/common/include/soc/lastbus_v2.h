@@ -3,8 +3,6 @@
 #ifndef SOC_MEDIATEK_COMMON_LASTBUS_V2_H
 #define SOC_MEDIATEK_COMMON_LASTBUS_V2_H
 
-#define NR_MAX_LASTBUS_IDLE_MASK	8
-#define NR_MAX_LASTBUS_MONITOR		16
 #define TIMEOUT_THRES_SHIFT		16
 #define TIMEOUT_TYPE_SHIFT		1
 #define LASTBUS_TIMEOUT_CLR		0x0200
@@ -23,7 +21,7 @@ struct lastbus_monitor {
 	size_t num_ports;
 	u16 bus_freq_mhz;
 	size_t num_idle_mask;
-	struct lastbus_idle_mask idle_masks[NR_MAX_LASTBUS_IDLE_MASK];
+	const struct lastbus_idle_mask *idle_masks;
 };
 
 struct lastbus_config {
@@ -31,7 +29,7 @@ struct lastbus_config {
 	unsigned int timeout_ms;
 	unsigned int timeout_type;
 	unsigned int num_used_monitors;
-	struct lastbus_monitor monitors[NR_MAX_LASTBUS_MONITOR];
+	const struct lastbus_monitor *monitors;
 };
 
 void lastbus_init(void);

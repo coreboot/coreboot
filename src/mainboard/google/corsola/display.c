@@ -125,14 +125,11 @@ static const struct edp_bridge ps8640_bridge = {
 	.post_power_on = bridge_ps8640_post_power_on,
 };
 
-_Static_assert(CONFIG(BOARD_GOOGLE_KINGLER_COMMON) + CONFIG(BOARD_GOOGLE_KRABBY_COMMON) == 1,
-	       "Exactly one of KINGLER and KRABBY must be set");
-
 int configure_display(void)
 {
 	struct edid edid;
 	const u8 i2c_bus = I2C0;
-	const struct edp_bridge *bridge;
+	const struct edp_bridge *bridge = NULL;
 	uint32_t board_version = board_id();
 
 	if (CONFIG(BOARD_GOOGLE_KINGLER_COMMON))
@@ -140,8 +137,11 @@ int configure_display(void)
 			bridge = &ps8640_bridge;
 		else
 			bridge = &anx7625_bridge;
-	else /* BOARD_GOOGLE_KRABBY_COMMON */
+	else if (CONFIG(BOARD_GOOGLE_KRABBY_COMMON))
 		bridge = &ps8640_bridge;
+
+	if (!bridge)
+		return -1;
 
 	printk(BIOS_INFO, "%s: Starting display init\n", __func__);
 
@@ -181,6 +181,7 @@ int configure_display(void)
 		return -1;
 	}
 
+	assert(bridge->post_power_on);
 	if (bridge->post_power_on(i2c_bus, &edid) < 0) {
 		printk(BIOS_ERR, "%s: Failed to post power on bridge\n", __func__);
 		return -1;

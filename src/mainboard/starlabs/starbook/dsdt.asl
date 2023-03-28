@@ -39,6 +39,8 @@ DefinitionBlock(
 		#include <drivers/pc80/pc/ps2_controller.asl>
 	}
 
+	#include <southbridge/intel/common/acpi/sleepstates.asl>
+
 	/* Star Labs EC */
 	#include <ec/starlabs/merlin/acpi/ec.asl>
 

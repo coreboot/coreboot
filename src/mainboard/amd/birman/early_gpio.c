@@ -36,6 +36,10 @@ static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 	PAD_NFO(GPIO_26, PCIE_RST0_L, HIGH),
 	/* PCIE_RST1_L */
 	PAD_NFO(GPIO_27, PCIE_RST1_L, HIGH),
+	/* M2_SSD0_RST_L */
+	PAD_GPO(GPIO_78, HIGH),
+	/* M2_SSD1_RST_L */
+	PAD_GPO(GPIO_79, HIGH),
 
 	/* Enable UART 2 */
 	/* UART2_RXD */

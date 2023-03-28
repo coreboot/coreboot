@@ -31,6 +31,8 @@ enum gpio_drv {
 	GPIO_DRV_16_MA = 7,
 };
 
+#define GPIO_ID(name) PAD_##name##_ID
+
 #define PIN(id, name, flag, bit, base, offset, \
 	    func1, func2, func3, func4, func5, func6, func7) \
 	PAD_##name##_ID = id, \

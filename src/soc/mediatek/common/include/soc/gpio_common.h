@@ -34,7 +34,7 @@ enum gpio_drv_adv {
 };
 
 struct gpio_drv_info {
-	uint32_t offset;
+	uint8_t offset;
 	uint8_t shift;
 	uint8_t width;
 };

@@ -3,6 +3,12 @@ chip soc/amd/phoenix
 	device domain 0 on
 		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
 			device ref gfx on end # Internal GPU (GFX)
+			device ref xhci_0 on end
+			device ref xhci_1 on end
+		end
+		device ref gpp_bridge_c on  # Internal GPP Bridge 2 to Bus C
+			device ref usb4_xhci_0 on end
+			device ref usb4_xhci_1 on end
 		end
 		device ref iommu on end
 		device ref lpc_bridge on

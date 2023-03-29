@@ -80,6 +80,24 @@ config CHROMEOS
 	# We don't have recovery buttons, so we can't manually enable devmode.
 	select GBB_FLAG_FORCE_DEV_SWITCH_ON
 
+choice
+	prompt "DT SLOT/M.2 SSD1 ENABLE"
+	default ENABLE_DT_SLOT_MAYAN
+	help
+	  Either DT slot or M.2 SSD1 can be used to boot on Mayan,
+	  as they are sharing IO lanes.
+
+config ENABLE_DT_SLOT_MAYAN
+	bool "Enable DT slot"
+
+config ENABLE_M2_SSD1_MAYAN
+	bool "Enable M.2 SSD1"
+
+config DISABLE_DT_M2_MAYAN
+	bool "Disable both DT and M.2 slot"
+
+endchoice
+
 if !EM100	# EM100 defaults in soc/amd/common/blocks/spi/Kconfig
 config EFS_SPI_READ_MODE
 	default 3	# Quad IO (1-1-4)

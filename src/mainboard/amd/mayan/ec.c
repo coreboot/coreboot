@@ -17,6 +17,7 @@
 #define EC_GPIO_3_ADDR		0xA3
 #define EC_GPIO_EVAL_RST_AUX	BIT(0)
 #define EC_GPIO_LOM_RESET_AUX	BIT(1)
+#define EC_GPIO_DT_RESET_AUX	BIT(2)
 
 #define EC_GPIO_7_ADDR		0xA7
 #define EC_GPIO_DT_PWREN	BIT(2)
@@ -24,6 +25,9 @@
 
 #define EC_GPIO_8_ADDR		0xA8
 #define EC_GPIO_SMBUS0_EN	BIT(0)
+
+#define EC_GPIO_9_ADDR		0xA9
+#define EC_GPIO_M2SSD1_PWREN	BIT(5)
 
 #define EC_GPIO_A_ADDR		0xAA
 #define EC_GPIO_WWAN_PWREN	BIT(3)
@@ -34,6 +38,7 @@
 #define EC_GPIO_DT_N_WLAN_SW	BIT(1)
 #define EC_GPIO_MP2_SEL		BIT(2)
 #define EC_GPIO_WWAN_N_LOM_SW	BIT(3)
+#define EC_GPIO_M2SSD1_HDD_SW	BIT(6)
 
 #define EC_SW02_ADDR		0xB7
 #define EC_SW02_MS		BIT(7)
@@ -42,8 +47,7 @@ static void configure_ec_gpio(void)
 {
 	uint8_t tmp;
 
-	/* Enable MXM slot: set EC_GPIO_EVAL_PWREN, EC_GPIO_EVAL_SLOT_PWR
-	and EC_GPIO_EVAL_RST_AUX */
+	/* Enable MXM slot */
 	tmp = ec_read(EC_GPIO_1_ADDR);
 	tmp |= EC_GPIO_EVAL_PWREN;
 	ec_write(EC_GPIO_1_ADDR, tmp);
@@ -54,15 +58,36 @@ static void configure_ec_gpio(void)
 
 	tmp = ec_read(EC_GPIO_3_ADDR);
 	tmp |= EC_GPIO_LOM_RESET_AUX | EC_GPIO_EVAL_RST_AUX;
+	tmp |= EC_GPIO_LOM_RESET_AUX;
+	/* Enable DT slot */
+	if (CONFIG(ENABLE_DT_SLOT_MAYAN))
+		tmp |= EC_GPIO_DT_RESET_AUX;
+	else
+		tmp &= (~EC_GPIO_DT_RESET_AUX);
+
 	ec_write(EC_GPIO_3_ADDR, tmp);
 
 	tmp = ec_read(EC_GPIO_7_ADDR);
-	tmp |= EC_GPIO_WWAN_MODULE_RST | EC_GPIO_DT_PWREN;
+	tmp |= EC_GPIO_WWAN_MODULE_RST;
+	if (CONFIG(ENABLE_DT_SLOT_MAYAN))
+		tmp |= EC_GPIO_DT_PWREN;
+	else
+		tmp &= (~EC_GPIO_DT_PWREN);
+
 	ec_write(EC_GPIO_7_ADDR, tmp);
 
 	tmp = ec_read(EC_GPIO_8_ADDR);
 	tmp |= EC_GPIO_SMBUS0_EN;
 	ec_write(EC_GPIO_8_ADDR, tmp);
+
+	tmp = ec_read(EC_GPIO_9_ADDR);
+	/* Enable M2 SSD1 slot */
+	if (CONFIG(ENABLE_M2_SSD1_MAYAN))
+		tmp |= EC_GPIO_M2SSD1_PWREN;
+	else
+		tmp &= (~EC_GPIO_M2SSD1_PWREN);
+
+	ec_write(EC_GPIO_9_ADDR, tmp);
 
 	tmp = ec_read(EC_GPIO_A_ADDR);
 	tmp |= EC_GPIO_M2_SSD0_PWREN | EC_GPIO_LOM_PWREN | EC_GPIO_WWAN_PWREN;
@@ -70,6 +95,14 @@ static void configure_ec_gpio(void)
 
 	tmp = ec_read(EC_GPIO_C_ADDR);
 	tmp |= EC_GPIO_WWAN_N_LOM_SW | EC_GPIO_MP2_SEL | EC_GPIO_DT_N_WLAN_SW;
+	if (CONFIG(ENABLE_DT_SLOT_MAYAN)) {
+		tmp |= EC_GPIO_M2SSD1_HDD_SW;
+		tmp &= (~EC_GPIO_DT_N_WLAN_SW);
+	}
+	if (CONFIG(ENABLE_M2_SSD1_MAYAN)) {
+		tmp |= EC_GPIO_DT_N_WLAN_SW;
+		tmp &= (~EC_GPIO_M2SSD1_HDD_SW);
+	}
 	ec_write(EC_GPIO_C_ADDR, tmp);
 
 	tmp = ec_read(EC_SW02_ADDR);

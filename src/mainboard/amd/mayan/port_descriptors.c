@@ -71,7 +71,7 @@ static const fsp_dxio_descriptor mayan_dxio_descriptors[] = {
 	{
 		// DT
 		.engine_type = PCIE_ENGINE,
-		.port_present = true,
+		.port_present = !CONFIG(DISABLE_DT_M2_MAYAN),
 		.start_lane = 8,
 		.end_lane = 9,
 		.device_number = 1,
@@ -157,7 +157,6 @@ void mainboard_get_dxio_ddi_descriptors(
 		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
 	mayan_ddi_descriptors[1].connector_type = get_ddi1_type();
-
 	*dxio_descs = mayan_dxio_descriptors;
 	*dxio_num = ARRAY_SIZE(mayan_dxio_descriptors);
 	*ddi_descs = mayan_ddi_descriptors;

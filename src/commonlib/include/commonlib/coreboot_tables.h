@@ -537,7 +537,7 @@ struct lb_smmstorev2 {
 	uint8_t unused[3];		/* Set to zero */
 };
 
-enum lb_tmp_ppi_tpm_version {
+enum lb_tpm_ppi_tpm_version {
 	LB_TPM_VERSION_UNSPEC = 0,
 	LB_TPM_VERSION_TPM_VERSION_1_2,
 	LB_TPM_VERSION_TPM_VERSION_2,

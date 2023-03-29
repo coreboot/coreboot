@@ -2,6 +2,7 @@
 
 #include <amdblocks/amd_pci_util.h>
 #include <baseboard/variants.h>
+#include <console/console.h>
 #include <device/device.h>
 
 static const struct fch_irq_routing fch_irq_map[] = {
@@ -33,7 +34,7 @@ static void mainboard_init(void *chip_info)
 
 static void mainboard_enable(struct device *dev)
 {
-	/* TODO(b/270618107): Enable mainboard */
+	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 }
 
 struct chip_operations mainboard_ops = {

@@ -16,7 +16,7 @@ void devtree_update(void)
 	common_config = chip_get_common_soc_structure();
 
 	struct soc_power_limits_config *soc_conf_10core =
-		&cfg->power_limits_config[ADL_P_282_482_28W_CORE];
+		&cfg->power_limits_config[ADL_P_282_442_482_28W_CORE];
 
 	struct soc_power_limits_config *soc_conf_12core =
 		&cfg->power_limits_config[ADL_P_682_28W_CORE];

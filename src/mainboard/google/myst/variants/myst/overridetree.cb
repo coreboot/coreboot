@@ -1,4 +1,33 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
+fw_config
+	field FORM_FACTOR 0
+		option FORM_FACTOR_CLAMSHELL 0
+		option FORM_FACTOR_CONVERTIBLE 1
+	end
+	field FP 1 2
+		option DISABLED 0
+		option UART 1
+		option SPI 2
+	end
+	field WLAN 3 4
+		option WLAN_MT7922 0
+		option WLAN_MT7925 1
+	end
+	field WWAN 5 6
+		option WWAN_DIASABLED 0
+		option WWAN_FM101GL 1
+	end
+	field DAUGHTERBOARD 7 9
+		option DISABLED 0
+		option DB_A 1
+		option DB_B 2
+	end
+	field KB_BL 10
+		option DISABLED 0
+		option ENABLED 1
+	end
+end
+
 chip soc/amd/phoenix
 	device domain 0 on end # domain
 end	# chip soc/amd/phoenix

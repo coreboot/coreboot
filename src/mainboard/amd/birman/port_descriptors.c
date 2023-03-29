@@ -98,18 +98,18 @@ static uint8_t get_ddi1_type(void)
 	connector_type = eeprom_connector_type_data[1] | eeprom_connector_type_data[0] << 8;
 
 	switch (connector_type) {
-	case 0xc:
+	case 0x0c:
 		printk(BIOS_DEBUG, "Configuring DDI1 as HDMI.\n");
 		return DDI_HDMI;
-		break;
 	case 0x13:
 		printk(BIOS_DEBUG, "Configuring DDI1 as DP.\n");
 		return DDI_DP;
-		break;
 	case 0x14:
 		printk(BIOS_DEBUG, "Configuring DDI1 as eDP.\n");
 		return DDI_EDP;
-		break;
+	case 0x17:
+		printk(BIOS_DEBUG, "Configuring DDI1 as USB-C.\n");
+		return DDI_DP_W_TYPEC;
 	default:
 		printk(BIOS_WARNING, "Unexpected display connector type %x. Disabling DDI1.\n",
 		       connector_type);

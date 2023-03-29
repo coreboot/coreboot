@@ -454,7 +454,7 @@ config CONSOLE_USE_LOGLEVEL_PREFIX
 
 config CONSOLE_USE_ANSI_ESCAPES
 	bool "Use ANSI escape sequences for console highlighting"
-	default y
+	default y if !CONSOLE_AMD_SIMNOW
 	help
 	  If enabled, certain consoles (e.g. UART) that are meant to be read on
 	  a terminal will use ANSI escape sequences (like `ESC [1m`) to

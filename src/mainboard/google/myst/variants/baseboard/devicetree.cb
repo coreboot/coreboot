@@ -1,6 +1,9 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 chip soc/amd/phoenix
 	device domain 0 on
+		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
+			device ref gfx on end # Internal GPU (GFX)
+		end
 		device ref iommu on end
 		device ref lpc_bridge on
 			chip ec/google/chromeec

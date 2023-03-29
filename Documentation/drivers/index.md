@@ -18,6 +18,8 @@ Some of the drivers currently available include:
 ```{toctree}
 :maxdepth: 1
 
+CFR <cfr.md>
+CFR use within coreboot <cfr_internal.md>
 Intel DPTF <dptf.md>
 IPMI KCS <ipmi_kcs.md>
 SMMSTORE <smmstore.md>

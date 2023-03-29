@@ -89,6 +89,7 @@ enum {
 	LB_TAG_PCIE			= 0x0044,
 	LB_TAG_EFI_FW_INFO		= 0x0045,
 	LB_TAG_CAPSULE			= 0x0046,
+	LB_TAG_CFR_ROOT			= 0x0047,
 	/* The following options are CMOS-related */
 	LB_TAG_CMOS_OPTION_TABLE	= 0x00c8,
 	LB_TAG_OPTION			= 0x00c9,
@@ -598,5 +599,11 @@ struct lb_efi_fw_info {
 	uint32_t lowest_supported_version;	/* Lowest allowed version for downgrades */
 	uint32_t fw_size;			/* Size of firmware in bytes */
 } __packed;
+struct lb_cfr {
+	uint32_t tag;
+	uint32_t size;
+	uint32_t checksum;	/* Checksum of the variable payload. */
+	/* struct lb_cfr_option_form		forms[] */
+};
 
 #endif

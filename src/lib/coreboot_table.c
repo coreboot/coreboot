@@ -13,6 +13,7 @@
 #include <boardid.h>
 #include <device/device.h>
 #include <drivers/tpm/tpm_ppi.h>
+#include <drivers/option/cfr_frontend.h>
 #include <fmap.h>
 #include <fw_config.h>
 #include <cbfs.h>
@@ -346,6 +347,19 @@ static struct lb_board_config *lb_board_config(struct lb_header *header)
 	return config;
 }
 
+void __weak mb_cfr_setup_menu(struct lb_cfr *cfr_root)
+{
+	cfr_write_setup_menu(cfr_root, NULL);
+}
+
+static void lb_cfr_setup_menu(struct lb_header *header)
+{
+	char *current = (char *)lb_new_record(header);
+	struct lb_cfr *cfr_root = (struct lb_cfr *)current;
+
+	mb_cfr_setup_menu(cfr_root);
+}
+
 #if CONFIG(USE_OPTION_TABLE)
 static struct cmos_checksum *lb_cmos_checksum(struct lb_header *header)
 {
@@ -490,6 +504,10 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 		}
 	}
 #endif
+
+	/* Generate CFR entry for setup menus */
+	if (CONFIG(DRIVERS_OPTION_CFR))
+		lb_cfr_setup_menu(head);
 
 	/* Serialize resource map into mem table types (LB_MEM_*) */
 	bootmem_write_memory_table(lb_memory(head));

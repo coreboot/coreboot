@@ -57,6 +57,11 @@
 	KEEP(*(.rodata.cpu_driver));
 	_ecpu_drivers = .;
 	RECORD_SIZE(cpu_drivers)
+	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
+	_cfr_forms = .;
+	KEEP(*(.rodata.cfr_forms));
+	_ecfr_forms = .;
+	RECORD_SIZE(cfr_forms)
 #endif
 
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);

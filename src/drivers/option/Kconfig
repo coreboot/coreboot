@@ -1,0 +1,6 @@
+config DRIVERS_OPTION_CFR_ENABLED
+	def_bool n
+
+config DRIVERS_OPTION_CFR
+	bool "Support generating a CFR list of options"
+	default y if DRIVERS_OPTION_CFR_ENABLED

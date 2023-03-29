@@ -5,10 +5,23 @@
 External (\_SB.PCI0.PMC.IPCS, MethodObj)
 
 /* Voltage rail control signals */
+
+#if CONFIG(BOARD_GOOGLE_AGAH)
 #define GPIO_1V8_PWR_EN		GPP_F12
-#define GPIO_1V8_PG		GPP_E20
+
 #define GPIO_NV33_PWR_EN	GPP_A21
 #define GPIO_NV33_PG		GPP_A22
+#else
+#define GPIO_1V8_PWR_EN		GPP_E11
+
+#define GPIO_NV33_PWR_EN	GPP_E2
+#define GPIO_NV33_PG		GPP_E1
+#endif
+
+#define GPIO_1V8_PG		GPP_E20
+#define GPIO_NV12_PWR_EN	GPP_D0
+#define GPIO_NV12_PG		GPP_D1
+
 #define GPIO_NVVDD_PWR_EN	GPP_E0
 #define GPIO_PEXVDD_PWR_EN	GPP_E10
 #define GPIO_PEXVDD_PG		GPP_E17
@@ -197,6 +210,10 @@ Method (PGON, 0, Serialized)
 	/* Assert PERST# */
 	CTXS (GPIO_GPU_PERST_L)
 
+	/* Ramp up 1.2V rail on boards with support */
+	STXS (GPIO_NV12_PWR_EN)
+	GPPL (GPIO_NV12_PG, 1, 5)
+
 	/* Ramp up 1.8V rail */
 	STXS (GPEN)
 	GPPL (GPIO_1V8_PG, 1, 20)
@@ -213,8 +230,13 @@ Method (PGON, 0, Serialized)
 	STXS (GPIO_PEXVDD_PWR_EN)
 	GPPL (GPIO_PEXVDD_PG, 1, 5)
 
-	/* Ramp up FBVDD rail (active low) */
+	/* Ramp up FBVDD rail */
+#if CONFIG(BOARD_GOOGLE_AGAH)
 	CTXS (GPIO_FBVDD_PWR_EN)
+#else
+	STXS (GPIO_FBVDD_PWR_EN)
+#endif
+
 	GPPL (GPIO_FBVDD_PG, 1, 5)
 
 	/* All rails are good */
@@ -239,8 +261,12 @@ Method (PGOF, 0, Serialized)
 	CTXS (GPIO_GPU_ALLRAILS_PG)
 	Sleep (1)
 
-	/* Ramp down FBVDD (active-low) and let rail discharge to <10% */
+	/* Ramp down FBVDD and let rail discharge to <10% */
+#if CONFIG(BOARD_GOOGLE_AGAH)
 	STXS (GPIO_FBVDD_PWR_EN)
+#else
+	CTXS (GPIO_FBVDD_PWR_EN)
+#endif
 	GPPL (GPIO_FBVDD_PG, 0, 20)
 
 	/* Ramp down PEXVDD and let rail discharge to <10% */
@@ -261,6 +287,10 @@ Method (PGOF, 0, Serialized)
 	/* Ramp down 1.8V */
 	CTXS (GPEN)
 	GPPL (GPIO_1V8_PG, 0, 20)
+
+	/* Ramp down 1.2V rail on boards with support */
+	STXS (GPIO_NV12_PWR_EN)
+	GPPL (GPIO_NV12_PG, 0, 5)
 
 	GCOT = Timer
 

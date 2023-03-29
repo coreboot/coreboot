@@ -19,16 +19,6 @@ enum {
 	MAX_GPIO_MODE_PER_REG = 8,
 	GPIO_MODE_BITS = 4,
 };
-enum gpio_drv {
-	GPIO_DRV_2_MA = 0,
-	GPIO_DRV_4_MA = 1,
-	GPIO_DRV_6_MA = 2,
-	GPIO_DRV_8_MA = 3,
-	GPIO_DRV_10_MA = 4,
-	GPIO_DRV_12_MA = 5,
-	GPIO_DRV_14_MA = 6,
-	GPIO_DRV_16_MA = 7,
-};
 
 #define PIN(id, name, flag, bit, base, offset, \
 		func1, func2, func3, func4, func5, func6, func7) \

@@ -33,6 +33,17 @@ enum gpio_drv_adv {
 	GPIO_DRV_ADV_1_MA = 3,
 };
 
+enum gpio_drv {
+	GPIO_DRV_2_MA = 0,
+	GPIO_DRV_4_MA = 1,
+	GPIO_DRV_6_MA = 2,
+	GPIO_DRV_8_MA = 3,
+	GPIO_DRV_10_MA = 4,
+	GPIO_DRV_12_MA = 5,
+	GPIO_DRV_14_MA = 6,
+	GPIO_DRV_16_MA = 7,
+};
+
 struct gpio_drv_info {
 	uint8_t offset;
 	uint8_t shift;
@@ -43,6 +54,9 @@ void gpio_set_pull(gpio_t gpio, enum pull_enable enable,
 		   enum pull_select select);
 void gpio_set_mode(gpio_t gpio, int mode);
 void *gpio_find_reg_addr(gpio_t gpio);
+
+const struct gpio_drv_info *get_gpio_driving_info(uint32_t raw_id);
+const struct gpio_drv_info *get_gpio_driving_adv_info(uint32_t raw_id);
 
 /* Normal driving function */
 int gpio_set_driving(gpio_t gpio, uint8_t drv);

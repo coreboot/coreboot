@@ -173,3 +173,110 @@ void gpio_eint_configure(gpio_t gpio, enum gpio_irq_type type)
 
 	write32(&mtk_eint->mask_clr.regs[pos], mask);
 }
+
+static inline bool is_valid_drv(uint8_t drv)
+{
+	return drv <= GPIO_DRV_16_MA;
+}
+
+static inline bool is_valid_drv_adv(enum gpio_drv_adv drv)
+{
+	return drv <= GPIO_DRV_ADV_1_MA && drv >= GPIO_DRV_ADV_125_UA;
+}
+
+int gpio_set_driving(gpio_t gpio, uint8_t drv)
+{
+	uint32_t mask;
+	const struct gpio_drv_info *info = get_gpio_driving_info(gpio.id);
+	const struct gpio_drv_info *adv_info = get_gpio_driving_adv_info(gpio.id);
+	void *reg, *reg_adv, *reg_addr;
+
+	if (!info)
+		return -1;
+
+	if (!is_valid_drv(drv))
+		return -1;
+
+	if (info->width == 0)
+		return -1;
+
+	mask = BIT(info->width) - 1;
+	/* Check setting value is not beyond width */
+	if ((uint32_t)drv > mask)
+		return -1;
+
+	reg_addr = gpio_find_reg_addr(gpio);
+	reg = reg_addr + info->offset;
+	clrsetbits32(reg, mask << info->shift, drv << info->shift);
+
+	/* Disable EH if supported */
+	if (adv_info && adv_info->width != 0) {
+		reg_adv = reg_addr + adv_info->offset;
+		clrbits32(reg_adv, BIT(adv_info->shift));
+	}
+
+	return 0;
+}
+
+int gpio_get_driving(gpio_t gpio)
+{
+	const struct gpio_drv_info *info = get_gpio_driving_info(gpio.id);
+	void *reg;
+
+	if (!info)
+		return -1;
+
+	if (info->width == 0)
+		return -1;
+
+	reg = gpio_find_reg_addr(gpio) + info->offset;
+	return (read32(reg) >> info->shift) & (BIT(info->width) - 1);
+}
+
+int gpio_set_driving_adv(gpio_t gpio, enum gpio_drv_adv drv)
+{
+	uint32_t mask;
+	const struct gpio_drv_info *adv_info = get_gpio_driving_adv_info(gpio.id);
+	void *reg_adv;
+
+	if (!adv_info)
+		return -1;
+
+	if (!is_valid_drv_adv(drv))
+		return -1;
+
+	if (adv_info->width == 0)
+		return -1;
+
+	/* Not include EH bit (the lowest bit) */
+	if ((uint32_t)drv > (BIT(adv_info->width - 1) - 1))
+		return -1;
+
+	reg_adv = gpio_find_reg_addr(gpio) + adv_info->offset;
+	mask = BIT(adv_info->width) - 1;
+	/* EH enable */
+	drv = (drv << 1) | BIT(0);
+
+	clrsetbits32(reg_adv, mask << adv_info->shift, drv << adv_info->shift);
+
+	return 0;
+}
+
+int gpio_get_driving_adv(gpio_t gpio)
+{
+	const struct gpio_drv_info *adv_info = get_gpio_driving_adv_info(gpio.id);
+	void *reg_adv;
+	uint32_t drv;
+
+	if (!adv_info)
+		return -1;
+
+	if (adv_info->width == 0)
+		return -1;
+
+	reg_adv = gpio_find_reg_addr(gpio) + adv_info->offset;
+	drv = (read32(reg_adv) >> adv_info->shift) & (BIT(adv_info->width) - 1);
+
+	/* Drop EH bit */
+	return drv >> 1;
+}

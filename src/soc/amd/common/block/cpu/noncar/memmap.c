@@ -46,7 +46,7 @@ void smm_region(uintptr_t *start, size_t *size)
 
 	struct range_entry tseg;
 
-	if (fsp_find_range_hob(&tseg, AMD_FSP_TSEG_HOB_GUID.b) < 0) {
+	if (fsp_find_range_hob(&tseg, AMD_FSP_TSEG_HOB_GUID.b) != CB_SUCCESS) {
 		printk(BIOS_ERR, "unable to find TSEG HOB\n");
 		return;
 	}

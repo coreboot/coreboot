@@ -210,29 +210,29 @@ void fsp_print_guid(int level, const void *base)
 	       id[8], id[9], id[10], id[11], id[12], id[13], id[14], id[15]);
 }
 
-int fsp_find_range_hob(struct range_entry *re, const uint8_t guid[16])
+enum cb_err fsp_find_range_hob(struct range_entry *re, const uint8_t guid[16])
 {
 	const struct hob_header *hob_iterator;
 	const struct hob_resource *fsp_mem;
 
 	if (fsp_hob_iterator_init(&hob_iterator) != CB_SUCCESS)
-		return -1;
+		return CB_ERR;
 
 	range_entry_init(re, 0, 0, 0);
 
 	if (fsp_hob_iterator_get_next_guid_resource(&hob_iterator, guid, &fsp_mem) != CB_SUCCESS) {
 		fsp_print_guid(BIOS_SPEW, guid);
 		printk(BIOS_SPEW, " not found!\n");
-		return -1;
+		return CB_ERR;
 	}
 
 	range_entry_init(re, fsp_mem->addr, fsp_mem->addr + fsp_mem->length, 0);
-	return 0;
+	return CB_SUCCESS;
 }
 
 void fsp_find_reserved_memory(struct range_entry *re)
 {
-	if (fsp_find_range_hob(re, fsp_reserved_memory_guid))
+	if (fsp_find_range_hob(re, fsp_reserved_memory_guid) != CB_SUCCESS)
 		die("9.1: FSP_RESERVED_MEMORY_RESOURCE_HOB missing!\n");
 }
 
@@ -372,7 +372,7 @@ const void *fsp_find_nv_storage_data(size_t *size)
 
 void fsp_find_bootloader_tolum(struct range_entry *re)
 {
-	if (fsp_find_range_hob(re, fsp_bootloader_tolum_guid))
+	if (fsp_find_range_hob(re, fsp_bootloader_tolum_guid) != CB_SUCCESS)
 		die("9.3: FSP_BOOTLOADER_TOLUM_HOB missing!\n");
 }
 

@@ -129,7 +129,7 @@ const void *fsp_get_hob_list(void);
 void *fsp_get_hob_list_ptr(void);
 const void *fsp_find_extension_hob_by_guid(const uint8_t *guid, size_t *size);
 const void *fsp_find_nv_storage_data(size_t *size);
-int fsp_find_range_hob(struct range_entry *re, const uint8_t guid[16]);
+enum cb_err fsp_find_range_hob(struct range_entry *re, const uint8_t guid[16]);
 void fsp_display_fvi_version_hob(void);
 void fsp_find_reserved_memory(struct range_entry *re);
 const struct hob_resource *fsp_hob_header_to_resource(

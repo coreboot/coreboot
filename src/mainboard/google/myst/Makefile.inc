@@ -6,6 +6,7 @@ romstage-y += port_descriptors.c
 
 ramstage-y += mainboard.c
 ramstage-y += port_descriptors.c
+ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 
 subdirs-y += variants/baseboard
 

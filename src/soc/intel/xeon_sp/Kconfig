@@ -106,4 +106,7 @@ config SOC_INTEL_XEON_RAS
 config HAVE_IOAT_DOMAINS
 	bool
 
+config SOC_INTEL_HAS_CXL
+	bool
+
 endif ## SOC_INTEL_XEON_SP

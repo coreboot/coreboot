@@ -15,6 +15,7 @@ config SOC_INTEL_SAPPHIRERAPIDS_SP
 	select HAVE_IOAT_DOMAINS
 	select FSP_SPEC_VIOLATION_XEON_SP_HEAP_WORKAROUND
 	select UDK_202005_BINDING
+	select SOC_INTEL_HAS_CXL
 	help
 	  Intel Sapphire Rapids-SP support
 
@@ -112,9 +113,6 @@ config SOC_INTEL_HAS_BIOS_DONE_MSR
 	def_bool y
 
 config SOC_INTEL_HAS_NCMEM
-	def_bool y
-
-config SOC_INTEL_HAS_CXL
 	def_bool y
 
 config SOC_INTEL_PCIE_64BIT_ALLOC

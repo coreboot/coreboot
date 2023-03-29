@@ -38,17 +38,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	mainboard_silicon_init_params(silupd);
 }
 
-
-static struct device_operations pci_domain_ops = {
-	.read_resources = iio_pci_domain_read_resources,
-	.set_resources = pci_domain_set_resources,
-	.scan_bus = iio_pci_domain_scan_bus,
-#if CONFIG(HAVE_ACPI_TABLES)
-	.write_acpi_tables = &northbridge_write_acpi_tables,
-	.acpi_name         = soc_acpi_name,
-#endif
-};
-
 static struct device_operations cpu_bus_ops = {
 	.read_resources = noop_read_resources,
 	.set_resources = noop_set_resources,
@@ -64,8 +53,7 @@ static void chip_enable_dev(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {
-		dev->ops = &pci_domain_ops;
-		attach_iio_stacks(dev);
+		/* domain ops are assigned at their creation */
 	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
 		dev->ops = &cpu_bus_ops;
 	} else if (dev->path.type == DEVICE_PATH_GPIO) {
@@ -138,6 +126,9 @@ static void chip_init(void *data)
 {
 	printk(BIOS_DEBUG, "coreboot: calling fsp_silicon_init\n");
 	fsp_silicon_init();
+
+	attach_iio_stacks();
+
 	override_hpet_ioapic_bdf();
 	pch_enable_ioapic();
 	pch_lock_dmictl();

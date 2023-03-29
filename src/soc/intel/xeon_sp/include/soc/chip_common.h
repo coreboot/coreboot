@@ -30,8 +30,7 @@ union xeon_domain_path {
 #define DOMAIN_TYPE_UBX1       "UD"
 
 void iio_pci_domain_read_resources(struct device *dev);
-void iio_pci_domain_scan_bus(struct device *dev);
-void attach_iio_stacks(struct device *dev);
+void attach_iio_stacks(void);
 
 void soc_create_ioat_domains(union xeon_domain_path path, struct bus *bus, const STACK_RES *sr);
 struct device *dev_find_device_on_socket(uint8_t socket, u16 vendor, u16 device);

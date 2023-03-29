@@ -567,6 +567,10 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 unsigned long northbridge_write_acpi_tables(const struct device *device, unsigned long current,
 					    struct acpi_rsdp *rsdp)
 {
+	/* Only write uncore ACPI tables for domain0 */
+	if (device->path.domain.domain != 0)
+		return current;
+
 	acpi_srat_t *srat;
 	acpi_slit_t *slit;
 	acpi_dmar_t *dmar;

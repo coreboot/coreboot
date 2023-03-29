@@ -25,6 +25,7 @@ static struct device_operations ioat_domain_ops = {
 	.scan_bus = pci_host_bridge_scan_bus,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name        = soc_acpi_name,
+	.write_acpi_tables = northbridge_write_acpi_tables,
 #endif
 };
 
@@ -45,7 +46,7 @@ static void create_ioat_domain(const union xeon_domain_path dp, struct bus *cons
 			.domain = new_path.domain_path,
 		},
 	};
-	struct device *const domain = alloc_dev(upstream, &path);
+	struct device *const domain = alloc_find_dev(upstream, &path);
 	if (!domain)
 		die("%s: out of memory.\n", __func__);
 

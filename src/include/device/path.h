@@ -78,6 +78,7 @@ struct apic_path {
 	unsigned int node_id;
 	unsigned int core_id;
 	unsigned int thread_id;
+	unsigned char core_type;
 };
 
 struct ioapic_path {

@@ -24,6 +24,18 @@ static bool is_perf_core(void)
 	return get_soc_cpu_type() == CPUID_CORE_TYPE_INTEL_CORE;
 }
 
+static enum cpu_perf_eff_type get_core_type(void)
+{
+	return (get_soc_cpu_type() == CPUID_CORE_TYPE_INTEL_CORE) ?
+		CPU_TYPE_PERF : CPU_TYPE_EFF;
+}
+
+void set_dev_core_type(void)
+{
+	struct cpu_info *info = cpu_info();
+	info->cpu->path.apic.core_type = get_core_type();
+}
+
 static struct device *get_cpu_bus_first_child(void)
 {
 	struct device *dev = dev_find_path(NULL, DEVICE_PATH_CPU_CLUSTER);

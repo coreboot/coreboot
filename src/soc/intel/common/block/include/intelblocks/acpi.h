@@ -131,6 +131,9 @@ struct min_sleep_state {
 	enum acpi_device_sleep_states min_sleep_state;
 };
 
+/* Updates core type into 'struct cpu_info' */
+void set_dev_core_type(void);
+
 /*
  * This SOC callback returns an array that maps devices to their min sleep state.
  * Example:

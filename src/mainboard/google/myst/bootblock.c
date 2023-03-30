@@ -18,7 +18,11 @@ void mb_set_up_early_espi(void)
 
 void bootblock_mainboard_early_init(void)
 {
-	/* TODO(b/275959717): Perform mainboard initialization */
+	size_t num_gpios;
+	const struct soc_amd_gpio *gpios;
+
+	variant_tpm_gpio_table(&gpios, &num_gpios);
+	gpio_configure_pads(gpios, num_gpios);
 }
 
 void bootblock_mainboard_init(void)

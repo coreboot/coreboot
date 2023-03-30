@@ -21,4 +21,7 @@ void variant_espi_gpio_table(const struct soc_amd_gpio **gpio, size_t *size);
  */
 void variant_override_gpio_table(const struct soc_amd_gpio **gpio, size_t *size);
 
+/* This function provides GPIO settings for TPM i2c bus. */
+void variant_tpm_gpio_table(const struct soc_amd_gpio **gpio, size_t *size);
+
 #endif /* __BASEBOARD_VARIANTS_H__ */

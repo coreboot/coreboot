@@ -5,6 +5,7 @@
 #include <baseboard/variants.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <drivers/i2c/tpm/chip.h>
 #include <soc/acpi.h>
 #include <variant/ec.h>
 

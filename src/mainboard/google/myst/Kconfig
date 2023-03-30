@@ -18,12 +18,23 @@ config BOARD_SPECIFIC_OPTIONS
 	select ELOG_GSMI
 	select FW_CONFIG
 	select FW_CONFIG_SOURCE_CHROMEEC_CBI
+	select I2C_TPM
 	select MAINBOARD_HAS_CHROMEOS
+	select MAINBOARD_HAS_TPM2
 	select SOC_AMD_COMMON_BLOCK_USE_ESPI
 	select SOC_AMD_PHOENIX
+	select TPM_GOOGLE_TI50
 
 config DEVICETREE
 	default "variants/baseboard/devicetree.cb"
+
+config DRIVER_TPM_I2C_BUS
+	hex
+	default 0x02
+
+config DRIVER_TPM_I2C_ADDR
+	hex
+	default 0x50
 
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd"
@@ -51,5 +62,10 @@ config VBOOT
 	select VBOOT_LID_SWITCH
 	select VBOOT_SEPARATE_VERSTAGE
 	select VBOOT_STARTS_IN_BOOTBLOCK
+
+# TODO(b/277087492): Enable GSC CBFS verification
+config VBOOT_GSCVD
+	bool
+	default n
 
 endif # BOARD_GOOGLE_BASEBOARD_MYST

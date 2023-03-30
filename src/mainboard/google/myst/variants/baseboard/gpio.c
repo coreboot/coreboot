@@ -168,6 +168,15 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_GPO(GPIO_157, HIGH),
 };
 
+static const struct soc_amd_gpio tpm_gpio_table[] = {
+	/* I2C2_SCL */
+	PAD_NF(GPIO_113, I2C2_SCL, PULL_NONE),
+	/* I2C2_SDA */
+	PAD_NF(GPIO_114, I2C2_SDA, PULL_NONE),
+	/* GSC_SOC_INT_L */
+	PAD_INT(GPIO_84, PULL_NONE, EDGE_LOW, STATUS_DELIVERY),
+};
+
 /* GPIO configuration in bootblock */
 static const struct soc_amd_gpio bootblock_gpio_table[] = {
 	/* TODO(b/275965982): Fill bootblock gpio configuration */
@@ -206,6 +215,12 @@ void variant_espi_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
 {
 	*size = ARRAY_SIZE(espi_gpio_table);
 	*gpio = espi_gpio_table;
+}
+
+__weak void variant_tpm_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
+{
+	*size = ARRAY_SIZE(tpm_gpio_table);
+	*gpio = tpm_gpio_table;
 }
 
 __weak void variant_override_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)

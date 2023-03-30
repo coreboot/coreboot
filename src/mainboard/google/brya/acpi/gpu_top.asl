@@ -85,7 +85,7 @@ Scope (\_SB.PCI0.PEG0)
 			}
 			ElseIf (Arg0 == ToUUID (UUID_GPS))
 			{
-				If (ToInteger (Arg1) != REVISION_MIN_GPS)
+				If (ToInteger (Arg1) >= REVISION_MIN_GPS)
 				{
 					Return (GPS (Arg2, Arg3))
 				}

@@ -126,6 +126,7 @@ config VARIANT_DIR
 config USE_VARIANT_DXIO_DESCRIPTOR
 	bool
 	default y if BOARD_GOOGLE_WINTERHOLD
+	default y if BOARD_GOOGLE_MARKARTH
 	default n
 	help
 	  Enable this to allow a variant to override the dxio descriptor values

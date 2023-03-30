@@ -12,5 +12,6 @@ struct edp_bridge {
 };
 
 int configure_display(void);
+uint32_t panel_id(void);
 
 #endif

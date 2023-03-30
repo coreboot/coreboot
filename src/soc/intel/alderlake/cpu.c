@@ -123,6 +123,9 @@ void soc_core_init(struct device *cpu)
 	/* Enable Direct Cache Access */
 	configure_dca_cap();
 
+	/* Set core type in struct cpu_info */
+	set_dev_core_type();
+
 	/* Set energy policy.  The "normal" EPB (6) is not suitable for Alder
 	 * Lake or Raptor Lake CPUs, as this results in higher uncore power. */
 	set_energy_perf_bias(7);

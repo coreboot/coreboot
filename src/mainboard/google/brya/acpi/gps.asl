@@ -27,7 +27,7 @@ Method (GPS, 2, Serialized)
 	{
 		Case (GPS_FUNC_SUPPORT)
 		{
-			Return (ITOB(
+			Return (LTOB(
 				(1 << GPS_FUNC_SUPPORT) |
 				(1 << GPS_FUNC_GETCALLBACKS) |
 				(1 << GPS_FUNC_PSHARESTATUS) |

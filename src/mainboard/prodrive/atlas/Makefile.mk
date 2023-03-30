@@ -8,6 +8,7 @@ bootblock-y += early_gpio.c
 
 romstage-y += romstage_fsp_params.c
 
+ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
 ramstage-y += gpio.c
 ramstage-y += mainboard.c
 ramstage-y += ramstage_fsp_params.c

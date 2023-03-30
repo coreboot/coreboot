@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <option.h>
 #include <soc/ramstage.h>
 
 #include "vpd.h"
@@ -36,6 +37,18 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 		params->PmcLpmS0ixSubStateEnableMask = 0;
 		params->PmcV1p05PhyExtFetControlEn = 0;
 		params->PmcV1p05IsExtFetControlEn = 0;
+		break;
+	default:
+		if (get_uint_option("c_states", 1) == 0) {
+			params->Cx = 0;
+			params->C1e = 0;
+			params->C1StateUnDemotion = 0;
+			params->C1StateAutoDemotion = 0;
+		}
+		params->PkgCStateLimit = get_uint_option("pkg_c_state_limit", 255);
+		params->PchPmPciePllSsc = get_uint_option("pch_pcie_pll_ssc", 255);
+		params->EnergyEfficientTurbo = get_uint_option("energy_eff_turbo", 0);
+		params->TurboMode = get_uint_option("turbo_mode", 1);
 		break;
 	}
 }

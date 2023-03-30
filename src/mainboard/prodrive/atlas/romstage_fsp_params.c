@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <fsp/api.h>
+#include <option.h>
 #include <soc/romstage.h>
 #include <soc/meminit.h>
 
@@ -47,6 +48,13 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	};
 
 	memcfg_init(memupd, mem_config, &dimm_module_spd_info, half_populated);
+
+	const unsigned int def_prim_display = CONFIG(ONBOARD_VGA_IS_PRIMARY) ? 0 : 3;
+	mcfg->PrimaryDisplay = get_uint_option("primary_display", def_prim_display);
+	mcfg->VmxEnable = get_uint_option("vmx", mcfg->VmxEnable);
+	mcfg->VtdDisable = !get_uint_option("vtd", !mcfg->VtdDisable);
+	mcfg->Ibecc = get_uint_option("ibecc", false);
+	mcfg->IbeccOperationMode = mcfg->Ibecc ? 2 : 0;
 
 	/* Apply profile-specific settings */
 	switch (get_emi_eeprom_vpd()->profile) {

@@ -12,6 +12,9 @@ void baseboard_gpio_table(const struct soc_amd_gpio **gpio, size_t *size);
 /* This function provides GPIO init in bootblock. */
 void variant_bootblock_gpio_table(const struct soc_amd_gpio **gpio, size_t *size);
 
+/* This function provides GPIO settings for eSPI bus. */
+void variant_espi_gpio_table(const struct soc_amd_gpio **gpio, size_t *size);
+
 /*
  * This function allows variant to override any GPIOs that are different than the base GPIO
  * configuration provided by baseboard_gpio_table().

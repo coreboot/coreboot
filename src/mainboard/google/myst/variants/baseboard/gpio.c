@@ -173,6 +173,23 @@ static const struct soc_amd_gpio bootblock_gpio_table[] = {
 	/* TODO(b/275965982): Fill bootblock gpio configuration */
 };
 
+static const struct soc_amd_gpio espi_gpio_table[] = {
+	/* ESPI_CS_L */
+	PAD_NF(GPIO_30, ESPI_CS_L, PULL_NONE),
+	/* ESPI_CLK */
+	PAD_NF(GPIO_77, SPI1_CLK, PULL_NONE),
+	/* ESPI1_DATA0 */
+	PAD_NF(GPIO_81, SPI1_DAT0, PULL_NONE),
+	/* ESPI1_DATA1 */
+	PAD_NF(GPIO_80, SPI1_DAT1, PULL_NONE),
+	/* ESPI1_DATA2 */
+	PAD_NF(GPIO_68, SPI1_DAT2, PULL_NONE),
+	/* ESPI1_DATA3 */
+	PAD_NF(GPIO_69, SPI1_DAT3, PULL_NONE),
+	/* ESPI_ALERT_L */
+	PAD_NF(GPIO_22, ESPI_ALERT_D1, PULL_NONE),
+};
+
 void baseboard_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
 {
 	*size = ARRAY_SIZE(base_gpio_table);
@@ -183,6 +200,12 @@ __weak void variant_bootblock_gpio_table(const struct soc_amd_gpio **gpio, size_
 {
 	*size = ARRAY_SIZE(bootblock_gpio_table);
 	*gpio = bootblock_gpio_table;
+}
+
+void variant_espi_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
+{
+	*size = ARRAY_SIZE(espi_gpio_table);
+	*gpio = espi_gpio_table;
 }
 
 __weak void variant_override_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)

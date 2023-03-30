@@ -1,5 +1,43 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 chip soc/amd/phoenix
+
+	# eSPI Configuration
+	# TODO(b/276913952) bump clock back up to 33MHz once things seem to be working well.
+	register "common_config.espi_config" = "{
+		.std_io_decode_bitmap = ESPI_DECODE_IO_0x80_EN | ESPI_DECODE_IO_0X60_0X64_EN,
+		.generic_io_range[0] = {
+			.base = 0x62,
+			.size = 1,
+		},
+		.generic_io_range[1] = {
+			.base = 0x66,
+			.size = 1,
+		},
+		.generic_io_range[2] = {
+			.base = 0x800,   /* EC_HOST_CMD_REGION0 */
+			.size = 256,     /* EC_HOST_CMD_REGION_SIZE * 2 */
+		},
+		.generic_io_range[3] = {
+			.base = 0x900,   /* EC_LPC_ADDR_MEMMAP */
+			.size = 255,     /* EC_MEMMAP_SIZE */
+		},
+		.generic_io_range[4] = {
+			.base = 0x200,   /* EC_LPC_ADDR_HOST_DATA */
+			.size = 8,       /* 0x200 - 0x207 */
+		},
+
+		.io_mode = ESPI_IO_MODE_QUAD,
+		.op_freq_mhz = ESPI_OP_FREQ_16_MHZ,
+		.crc_check_enable = 1,
+		.alert_pin = ESPI_ALERT_PIN_OPEN_DRAIN,
+		.periph_ch_en = 1,
+		.vw_ch_en = 1,
+		.oob_ch_en = 0,
+		.flash_ch_en = 0,
+
+		.vw_irq_polarity = ESPI_VW_IRQ_LEVEL_HIGH(1),
+	}"
+
 	register "i2c_scl_reset" = "GPIO_I2C0_SCL | GPIO_I2C1_SCL |
 					GPIO_I2C2_SCL | GPIO_I2C3_SCL"
 

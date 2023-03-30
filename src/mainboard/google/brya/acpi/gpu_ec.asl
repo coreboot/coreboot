@@ -8,6 +8,6 @@ Scope (\_SB.PCI0.LPCB.EC0)
 	Method (_Q0C, 0, Serialized)
 	{
 		Local0 = ToInteger(GPUD) & EC_D_NOTIFY_MASK
-		\_SB.PCI0.PEG0.PEGP.DNOT (Local0)
+		\_SB.PCI0.PEG0.PEGP.DNOT (Local0, 0)
 	}
 }

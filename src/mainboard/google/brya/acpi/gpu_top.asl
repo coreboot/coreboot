@@ -40,12 +40,15 @@ Scope (\_SB.PCI0.PEG0)
 			}
 		}
 
-		/* Current D Notify Value, defaults to D1 */
+		/* Current D Notify Value, defaults to D1
+		* Arg0 == Shared value
+		* Arg1 == force notification if no change (0 or 1)
+		*/
 		Name (CDNV, D1_EC)
-		Method (DNOT, 1, Serialized)
+		Method (DNOT, 2, Serialized)
 		{
 			Printf ("EC: GPU D-Notify, %o", Arg0)
-			If (Arg0 != CDNV)
+			If ((Arg0 != CDNV) || (Arg1 == 1))
 			{
 				CDNV = Arg0
 				Local0 = CNVD (Arg0)

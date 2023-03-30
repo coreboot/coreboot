@@ -179,7 +179,27 @@ static const struct soc_amd_gpio tpm_gpio_table[] = {
 
 /* GPIO configuration in bootblock */
 static const struct soc_amd_gpio bootblock_gpio_table[] = {
-	/* TODO(b/275965982): Fill bootblock gpio configuration */
+	/* Enable WLAN */
+	/* WLAN_DISABLE */
+	PAD_GPO(GPIO_156, LOW),
+};
+
+/* Early GPIO configuration */
+static const struct soc_amd_gpio early_gpio_table[] = {
+	/* WLAN_AUX_RST_L (ACTIVE LOW) */
+	PAD_GPO(GPIO_38, LOW),
+	/* Power on WLAN */
+	/* EN_PP3300_WLAN */
+	PAD_GPO(GPIO_9, HIGH),
+};
+
+/* PCIE_RST needs to be brought high before FSP-M runs */
+static const struct soc_amd_gpio romstage_gpio_table[] = {
+	/* Deassert all AUX_RESET lines & PCIE_RST */
+	/* WLAN_AUX_RST_L (ACTIVE LOW) */
+	PAD_GPO(GPIO_38, HIGH),
+	/* PCIE_RST0_L */
+	PAD_NFO(GPIO_26, PCIE_RST0_L, HIGH),
 };
 
 static const struct soc_amd_gpio espi_gpio_table[] = {
@@ -205,10 +225,22 @@ void baseboard_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
 	*gpio = base_gpio_table;
 }
 
+__weak void baseboard_romstage_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
+{
+	*size = ARRAY_SIZE(romstage_gpio_table);
+	*gpio = romstage_gpio_table;
+}
+
 __weak void variant_bootblock_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
 {
 	*size = ARRAY_SIZE(bootblock_gpio_table);
 	*gpio = bootblock_gpio_table;
+}
+
+__weak void variant_early_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
+{
+	*size = ARRAY_SIZE(early_gpio_table);
+	*gpio = early_gpio_table;
 }
 
 void variant_espi_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)

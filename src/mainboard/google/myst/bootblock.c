@@ -23,6 +23,9 @@ void bootblock_mainboard_early_init(void)
 
 	variant_tpm_gpio_table(&gpios, &num_gpios);
 	gpio_configure_pads(gpios, num_gpios);
+
+	variant_early_gpio_table(&gpios, &num_gpios);
+	gpio_configure_pads(gpios, num_gpios);
 }
 
 void bootblock_mainboard_init(void)

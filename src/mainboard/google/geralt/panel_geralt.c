@@ -22,9 +22,9 @@ static void configure_mipi_pwm_backlight(void)
 	gpio_output(GPIO_MIPI_BL_PWM_1V8, 0);
 }
 
-static void configure_edp_aux_backlight(void)
+static void configure_edp_backlight(void)
 {
-	/* TODO: Add edp aux backlight for MUTTO_B152731E1 when we get MUTTO_B152731E1 */
+	gpio_output(GPIO_AP_DISP_BKLTEN, 0);
 }
 
 static void power_on_mipi_boe_tv110c9m_ll0(void)
@@ -48,9 +48,11 @@ static void power_on_mipi_boe_tv110c9m_ll0(void)
 	mdelay(6);
 }
 
-static void power_on_edp_mutto_b152731e1(void)
+static void power_on_edp_samsung_atana33xc20(void)
 {
-	/* TODO: Add the poweron for MUTTO_B152731E1 when we get MUTTO_B152731E1 */
+	gpio_output(GPIO_EN_PP3300_EDP_DISP_X, 1);
+	gpio_set_pull(GPIO_EDP_HPD_1V8, GPIO_PULL_ENABLE, GPIO_PULL_UP);
+	gpio_set_mode(GPIO_EDP_HPD_1V8, 4);
 }
 
 static struct panel_description panels[] = {
@@ -62,9 +64,9 @@ static struct panel_description panels[] = {
 		.pwm_ctrl_gpio = true,
 	},
 	[11] = {
-		.name = "MUTTO_B152731E1",
-		.power_on = power_on_edp_mutto_b152731e1,
-		.configure_panel_backlight = configure_edp_aux_backlight,
+		.name = "SAMSUNG_ATANA33XC20",
+		.power_on = power_on_edp_samsung_atana33xc20,
+		.configure_panel_backlight = configure_edp_backlight,
 		.disp_path = DISP_PATH_EDP,
 		.pwm_ctrl_gpio = false,
 	},

@@ -73,7 +73,22 @@ chip soc/amd/phoenix
 		.speed = I2C_SPEED_FAST,
 	}"
 
+	# general purpose PCIe clock output configuration
+	register "gpp_clk_config[0]" = "GPP_CLK_REQ" # WLAN
+	register "gpp_clk_config[1]" = "GPP_CLK_REQ" # SD
+	register "gpp_clk_config[2]" = "GPP_CLK_REQ" # WWAN
+	register "gpp_clk_config[3]" = "GPP_CLK_REQ" # SSD
+	register "gpp_clk_config[4]" = "GPP_CLK_OFF" # SOC_FP_BOOT0 GPIO
+	register "gpp_clk_config[5]" = "GPP_CLK_OFF" # WLAN_AUX_RST_L GPIO
+	register "gpp_clk_config[6]" = "GPP_CLK_OFF" # WWAN_AUX_RST_L GPIO
+
+	register "pspp_policy" = "DXIO_PSPP_DISABLED" # TODO(b/277214353): reenable when PSPP works
+
 	device domain 0 on
+		device ref gpp_bridge_2_1 on end # WWAN
+		device ref gpp_bridge_2_2 on end # WLAN
+		device ref gpp_bridge_2_3 on end # SD
+		device ref gpp_bridge_2_4 on end # NVMe
 		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
 			device ref gfx on end # Internal GPU (GFX)
 			device ref gfx_hda on end # Display HD Audio Controller (GFXAZ)

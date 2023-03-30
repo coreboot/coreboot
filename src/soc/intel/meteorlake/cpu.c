@@ -127,6 +127,9 @@ void soc_core_init(struct device *cpu)
 	/* Enable Turbo */
 	enable_turbo();
 
+	/* Set core type in struct cpu_info */
+	set_dev_core_type();
+
 	if (CONFIG(INTEL_TME) && is_tme_supported())
 		set_tme_core_activate();
 }

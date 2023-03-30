@@ -17,6 +17,18 @@ config PCIEXP_CLK_PM
 config PCIEXP_L1_SUB_STATE
 	default y
 
+config PCIE_LTR_MAX_SNOOP_LATENCY
+	hex
+	default 0x1003
+	help
+	  Latency tolerance reporting, max snoop latency value defaults to 3.14 ms.
+
+config PCIE_LTR_MAX_NO_SNOOP_LATENCY
+	hex
+	default 0x1003
+	help
+	  Latency tolerance reporting, max non-snoop latency value defaults to 3.14 ms.
+
 endif # SOC_INTEL_COMMON_BLOCK_PCIE
 
 config PCIE_DEBUG_INFO

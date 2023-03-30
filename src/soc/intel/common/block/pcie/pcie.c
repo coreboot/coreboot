@@ -48,8 +48,8 @@ static void pch_pcie_init(struct device *dev)
 
 static void pcie_get_ltr_max_latencies(u16 *max_snoop, u16 *max_nosnoop)
 {
-	*max_snoop = PCIE_LTR_MAX_SNOOP_LATENCY_3146US;
-	*max_nosnoop = PCIE_LTR_MAX_NO_SNOOP_LATENCY_3146US;
+	*max_snoop = CONFIG_PCIE_LTR_MAX_SNOOP_LATENCY;
+	*max_nosnoop = CONFIG_PCIE_LTR_MAX_NO_SNOOP_LATENCY;
 }
 
 static struct pci_operations pcie_ops = {

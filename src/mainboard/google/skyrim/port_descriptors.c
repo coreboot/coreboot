@@ -35,7 +35,6 @@ static const fsp_dxio_descriptor skyrim_mdn_dxio_descriptors[] = {
 		.link_hotplug = 3,
 		.link_aspm = ASPM_L1,
 		.link_aspm_L1_1 = true,
-		.link_aspm_L1_2 = true,
 		.gpio_group_id = GPIO_27,
 		.clk_req = CLK_REQ1,
 	},

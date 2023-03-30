@@ -1,5 +1,40 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 chip soc/amd/phoenix
+	register "i2c_scl_reset" = "GPIO_I2C0_SCL | GPIO_I2C1_SCL |
+					GPIO_I2C2_SCL | GPIO_I2C3_SCL"
+
+	# I2C Pad Control RX Select Configuration
+	register "i2c_pad[0].rx_level" = "I2C_PAD_RX_1_8V" # Trackpad
+	register "i2c_pad[1].rx_level" = "I2C_PAD_RX_1_8V" # Touchscreen
+	register "i2c_pad[2].rx_level" = "I2C_PAD_RX_1_8V" # GSC
+	register "i2c_pad[3].rx_level" = "I2C_PAD_RX_1_8V" # Speaker, Codec, P-SAR, USB
+
+	# I2C Config
+	#+-------------------+----------------------------+
+	#| Field             |  Value                     |
+	#+-------------------+----------------------------+
+	#| I2C0              | Trackpad                   |
+	#| I2C1              | Touchscreen                |
+	#| I2C2              | GSC TPM                    |
+	#| I2C3              | Speaker, Codec, P-SAR, USB |
+	#+-------------------+----------------------------+
+	register "i2c[0]" = "{
+		.speed = I2C_SPEED_FAST,
+	}"
+
+	register "i2c[1]" = "{
+		.speed = I2C_SPEED_FAST,
+	}"
+
+	register "i2c[2]" = "{
+		.speed = I2C_SPEED_FAST,
+		.early_init = true,
+	}"
+
+	register "i2c[3]" = "{
+		.speed = I2C_SPEED_FAST,
+	}"
+
 	device domain 0 on
 		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
 			device ref gfx on end # Internal GPU (GFX)
@@ -111,4 +146,8 @@ chip soc/amd/phoenix
 		end
 	end # domain
 	device ref uart_0 on end # UART0
+	device ref i2c_0 on end
+	device ref i2c_1 on end
+	device ref i2c_2 on end
+	device ref i2c_3 on end
 end	# chip soc/amd/phoenix

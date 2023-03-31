@@ -487,7 +487,6 @@ static void fill_fsps_xhci_params(FSP_S_CONFIG *s_cfg,
 
 	max_port = get_max_tcss_port();
 	for (i = 0; i < max_port; i++) {
-		s_cfg->PortUsb30Enable[i] = config->tcss_ports[i].enable;
 		if (config->tcss_ports[i].enable)
 			s_cfg->CpuUsb3OverCurrentPin[i] = config->tcss_ports[i].ocpin;
 	}

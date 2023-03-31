@@ -42,6 +42,7 @@ var supportedPlatforms = [...]string{
 	"CZN",
 	"MDN",
 	"MTL",
+	"PHX",
 }
 
 var supportedMemTechs = [...]string{

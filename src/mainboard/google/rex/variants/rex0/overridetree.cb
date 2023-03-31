@@ -28,6 +28,19 @@ fw_config
 		option USB4_ANX7452		3
 		option USB4_HAYDEN_BRIDGE	4
 	end
+	field FP 15
+		option FP_PRESENT		0
+		option FP_ABSENT		1
+	end
+	field UWB 16 17
+		option UWB_ABSENT		0
+		option UWB_BITBANG		1
+		option UWB_GSPI1		2
+	end
+	field WIFI 18
+		option WIFI_CNVI		0
+		option WIFI_PCIE		1
+	end
 end
 
 chip soc/intel/meteorlake

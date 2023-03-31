@@ -107,6 +107,9 @@ classes-y := ramstage romstage bootblock decompressor postcar smm smmstub cpu_mi
 $(call add-special-class,all)
 all-handler = $(foreach class,bootblock verstage romstage postcar ramstage,$(eval $(class)-y += $(2)))
 
+$(call add-special-class,all_x86)
+all_x86-handler = $(foreach class,bootblock verstage_x86 romstage postcar ramstage,$(eval $(class)-y += $(2)))
+
 $(call add-special-class,verstage_x86)
 ifeq ($(CONFIG_ARCH_VERSTAGE_X86_32)$(CONFIG_ARCH_VERSTAGE_X86_64),y)
 verstage_x86-handler = $(eval verstage-y += $(2))

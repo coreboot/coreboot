@@ -9,18 +9,15 @@ all-y		+= aoac.c
 all-y		+= config.c
 all-y		+= i2c.c
 
+# all_x86-y adds the compilation unit to all stages that run on the x86 cores
+all_x86-y	+= gpio.c
+all_x86-y	+= uart.c
+
 bootblock-y	+= early_fch.c
 bootblock-y	+= espi_util.c
-bootblock-y	+= gpio.c
-bootblock-y	+= uart.c
-
-verstage_x86-y	+= gpio.c
-verstage_x86-y	+= uart.c
 
 romstage-y	+= fsp_m_params.c
-romstage-y	+= gpio.c
 romstage-y	+= romstage.c
-romstage-y	+= uart.c
 
 ramstage-y	+= acpi.c
 ramstage-y	+= agesa_acpi.c
@@ -28,11 +25,9 @@ ramstage-y	+= chip.c
 ramstage-y	+= cpu.c
 ramstage-y	+= fch.c
 ramstage-y	+= fsp_s_params.c
-ramstage-y	+= gpio.c
 ramstage-y	+= graphics.c
 ramstage-y	+= mca.c
 ramstage-y	+= root_complex.c
-ramstage-y	+= uart.c
 ramstage-y	+= xhci.c
 
 smm-y		+= gpio.c

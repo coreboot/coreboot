@@ -22,6 +22,19 @@ chip soc/intel/alderlake
 	register "usb2_ports[5]" = "USB2_PORT_EMPTY"	# Disable USB2 Port 5
 	register "usb2_ports[6]" = "USB2_PORT_EMPTY"	# Disable USB2 Port 6
 
+	register "usb3_ports[0]" = "{
+		.enable           = 1,
+		.ocpin            = OC_SKIP,
+		.tx_de_emp        = 0x2B,
+		.tx_downscale_amp = 0x00,
+	}" # Type-A port A0
+	register "usb3_ports[1]" = "{
+		.enable           = 1,
+		.ocpin            = OC_SKIP,
+		.tx_de_emp        = 0x2B,
+		.tx_downscale_amp = 0x00,
+	}" # Type-A port A1
+
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # HDMI-IN
 	register "usb3_ports[3]" = "USB3_PORT_EMPTY"	# Disable Type-A port A3
 

@@ -46,10 +46,12 @@ ramstage-y += usb.c
 ramstage-y += psp.c
 
 all-y += monotonic_timer.c
+all-y += pstate_util.c
 all-y += reset.c
 all-y += tsc_freq.c
 all-y += uart.c
 
+smm-y += pstate_util.c
 smm-y += monotonic_timer.c
 smm-y += smihandler.c
 smm-y += tsc_freq.c

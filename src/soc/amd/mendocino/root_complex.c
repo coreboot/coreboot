@@ -12,11 +12,13 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <fsp/amd_misc_data.h>
 #include <fsp/util.h>
 #include <soc/iomap.h>
 #include <stdint.h>
 #include "chip.h"
 
+#define TDP_15W	15
 #define DPTC_TOTAL_UPDATE_PARAMS	13
 
 struct dptc_input {
@@ -367,7 +369,18 @@ static void acipgen_dptci(void)
 
 static void root_complex_fill_ssdt(const struct device *device)
 {
+	uint32_t tdp = 0;
+
 	acpi_fill_root_complex_tom(device);
+
+	if (get_amd_smu_reported_tdp(&tdp) != CB_SUCCESS) {
+		/* Unknown TDP, so return rather than setting invalid values. */
+		return;
+	}
+	/* TODO(b/249359574): Add support for 6W DPTC values. */
+	if (tdp != TDP_15W)
+		return;
+
 	if (CONFIG(SOC_AMD_COMMON_BLOCK_ACPI_DPTC))
 		acipgen_dptci();
 }

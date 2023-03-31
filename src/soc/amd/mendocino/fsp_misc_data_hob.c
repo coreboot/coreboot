@@ -43,7 +43,14 @@ enum cb_err get_amd_smu_reported_tdp(uint32_t *tdp)
 	if (get_amd_misc_data_hob(&fsp_misc_data, AMD_MISC_DATA_VERSION) != CB_SUCCESS)
 		return CB_ERR;
 
-	*tdp = fsp_misc_data->smu_power_and_thm_limit;
+	/*
+	 * The FSP will return the TDP in the format 0xX0000, where 'X' is the value
+	 * we're interested in. For example: 0xF0000 (15W), 0x60000 (6W). Re-interpret
+	 * the value so the caller just sees the TDP.
+	 */
+	printk(BIOS_INFO, "fsp_misc_data->smu_power_and_thm_limit = 0x%08X\n",
+		fsp_misc_data->smu_power_and_thm_limit);
+	*tdp = fsp_misc_data->smu_power_and_thm_limit >> 16;
 
 	return CB_SUCCESS;
 }

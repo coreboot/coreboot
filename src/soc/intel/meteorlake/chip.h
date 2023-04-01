@@ -346,6 +346,10 @@ struct soc_intel_meteorlake_config {
 
 	/* Enable PCH to CPU energy report feature. */
 	bool pch_pm_energy_report_enable;
+
+	/* Energy-Performance Preference (HWP feature) */
+	bool enable_energy_perf_pref;
+	uint8_t energy_perf_pref_value;
 };
 
 typedef struct soc_intel_meteorlake_config config_t;

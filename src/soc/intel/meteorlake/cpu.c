@@ -139,6 +139,11 @@ void soc_core_init(struct device *cpu)
 
 	if (CONFIG(INTEL_TME) && is_tme_supported())
 		set_tme_core_activate();
+
+	if (CONFIG(DROP_CPU_FEATURE_PROGRAM_IN_FSP)) {
+		/* Disable 3-strike error */
+		disable_three_strike_error();
+	}
 }
 
 static void per_cpu_smm_trigger(void)

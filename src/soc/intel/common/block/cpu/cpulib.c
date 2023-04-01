@@ -569,3 +569,12 @@ unsigned int smbios_cpu_get_max_speed_mhz(void)
 {
 	return cpu_get_max_turbo_ratio() * CONFIG_CPU_BCLK_MHZ;
 }
+
+void disable_three_strike_error(void)
+{
+	msr_t msr;
+
+	msr = rdmsr(MSR_PREFETCH_CTL);
+	msr.lo = msr.lo | DISABLE_CPU_ERROR;
+	wrmsr(MSR_PREFETCH_CTL, msr);
+}

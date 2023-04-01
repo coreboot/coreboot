@@ -222,4 +222,11 @@ bool is_sgx_supported(void);
  * Returns true if Key Locker feature is supported otherwise false.
  */
 bool is_keylocker_supported(void);
+
+/*
+ * This function prevents the Three Strike Counter from incrementing.
+ * It helps to collect more useful CPU traces for debugging.
+ */
+void disable_three_strike_error(void);
+
 #endif	/* SOC_INTEL_COMMON_BLOCK_CPULIB_H */

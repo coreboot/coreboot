@@ -35,6 +35,7 @@
 #define MSR_PREFETCH_CTL	0x1a4
 #define  PREFETCH_L1_DISABLE	(1 << 0)
 #define  PREFETCH_L2_DISABLE	(1 << 2)
+#define   DISABLE_CPU_ERROR		(1 << 11)
 #define MSR_MISC_PWR_MGMT	0x1aa
 #define  MISC_PWR_MGMT_EIST_HW_DIS	(1 << 0)
 #define  MISC_PWR_MGMT_ISST_EN		(1 << 6)

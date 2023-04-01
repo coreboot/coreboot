@@ -148,6 +148,9 @@ void soc_core_init(struct device *cpu)
 
 		/* Enable VMX */
 		set_feature_ctrl_vmx_arg(CONFIG(ENABLE_VMX) && !conf->disable_vmx);
+
+		/* Feature control lock configure */
+		set_feature_ctrl_lock();
 	}
 }
 

@@ -145,6 +145,9 @@ void soc_core_init(struct device *cpu)
 		disable_three_strike_error();
 
 		set_aesni_lock();
+
+		/* Enable VMX */
+		set_feature_ctrl_vmx_arg(CONFIG(ENABLE_VMX) && !conf->disable_vmx);
 	}
 }
 

@@ -350,6 +350,8 @@ struct soc_intel_meteorlake_config {
 	/* Energy-Performance Preference (HWP feature) */
 	bool enable_energy_perf_pref;
 	uint8_t energy_perf_pref_value;
+
+	bool disable_vmx;
 };
 
 typedef struct soc_intel_meteorlake_config config_t;

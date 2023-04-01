@@ -72,10 +72,11 @@ static void configure_misc(void)
 	msr.hi = 0;
 	wrmsr(IA32_PACKAGE_THERM_INTERRUPT, msr);
 
-	/* Enable PROCHOT */
+	/* Enable PROCHOT and Power Performance Platform Override */
 	msr = rdmsr(MSR_POWER_CTL);
 	msr.lo |= (1 << 0);	/* Enable Bi-directional PROCHOT as an input*/
 	msr.lo |= (1 << 23);	/* Lock it */
+	msr.lo |= (1 << 18);	/* Power Performance Platform Override */
 	wrmsr(MSR_POWER_CTL, msr);
 }
 

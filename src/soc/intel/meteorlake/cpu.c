@@ -143,6 +143,8 @@ void soc_core_init(struct device *cpu)
 	if (CONFIG(DROP_CPU_FEATURE_PROGRAM_IN_FSP)) {
 		/* Disable 3-strike error */
 		disable_three_strike_error();
+
+		set_aesni_lock();
 	}
 }
 

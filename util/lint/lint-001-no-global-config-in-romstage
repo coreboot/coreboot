@@ -10,7 +10,7 @@ LC_ALL=C export LC_ALL
 find src -name .svn -type d -prune -o -name mainboard -type d -prune -o -name examples -type d -prune -o -type f -exec sed -nf `dirname $0`/remccoms3.sed {} + > $SCANBUCKET
 
 for define in $DEFINES; do
-	if [ `egrep -c "([^_A-Za-z0-9]$define[^_A-Za-z0-9]|^$define[^_A-Za-z0-9]|[^_A-Za-z0-9]$define\$)" $SCANBUCKET` -gt 0 ]; then
+	if [ `grep -E -c "([^_A-Za-z0-9]$define[^_A-Za-z0-9]|^$define[^_A-Za-z0-9]|[^_A-Za-z0-9]$define\$)" $SCANBUCKET` -gt 0 ]; then
 		echo "$define is defined in mainboard(s) and used elsewhere"
 	fi
 done

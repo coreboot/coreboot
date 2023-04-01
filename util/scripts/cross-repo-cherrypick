@@ -36,7 +36,7 @@ esac
 # lines must be backwards due to tac(1)
 SPLICE_CMD=""
 if test "$1" = "--cros"; then
-	if test -z "$( commit_message |egrep '^(BUG|TEST)=')"; then
+	if test -z "$(commit_message | grep -E '^(BUG|TEST)=')"; then
 		SPLICE_CMD='print "\nTEST=none\nBRANCH=none\nBUG=none\n"'
 	fi
 fi

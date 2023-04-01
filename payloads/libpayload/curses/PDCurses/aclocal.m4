@@ -463,7 +463,7 @@ EOF
 			DYN_COMP=""
 		else
 			slash="\\"
-			mh_dyncomp="`egrep -c $slash$a conftest.tmp`"
+			mh_dyncomp="`grep -E -c $slash$a conftest.tmp`"
 			if test "$mh_dyncomp" = "0"; then
 				DYN_COMP="$a -DDYNAMIC"
 				AC_MSG_RESULT($a)

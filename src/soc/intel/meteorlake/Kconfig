@@ -364,4 +364,25 @@ config BUILDING_WITH_DEBUG_FSP
 	help
 	  Set this option if debug build of FSP is used.
 
+config DROP_CPU_FEATURE_PROGRAM_IN_FSP
+	bool
+	default y if MP_SERVICES_PPI_V2_NOOP
+	default n
+	help
+	  This is to avoid FSP running basic CPU feature programming on BSP
+	  and on APs using the "CpuFeaturesPei.efi" module. The feature programming
+	  includes enabling x2APIC, MCA, MCE and Turbo etc.
+
+	  Most of these feature programming are getting performed today in scope
+	  of coreboot doing MP Init. Running these redundant programming in scope
+	  of FSP (when `USE_FSP_FEATURE_PROGRAM_ON_APS` config is enabled) would
+	  results in CPU exception.
+
+	  SoC users to select this config after dropping "CpuFeaturesPei.ffs" module
+	  from FSP-S Firmware Volume (FV). Upon selection, coreboot runs those additional
+	  feature programming on BSP and APs.
+
+	  This feature is default enabled, in case of "coreboot running MP init"
+	  aka MP_SERVICES_PPI_V2_NOOP config is selected.
+
 endif

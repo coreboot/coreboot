@@ -3,18 +3,18 @@
 #include <bootblock_common.h>
 #include <soc/gpio.h>
 #include <superio/ite/common/ite.h>
-#include <superio/ite/it8786e/it8786e.h>
+#include <superio/ite/it8784e/it8784e.h>
 #include "gpio.h"
 
-#define UART_DEV PNP_DEV(0x2e, IT8786E_SP1)
-#define GPIO_DEV PNP_DEV(0x2e, IT8786E_GPIO)
+#define UART_DEV PNP_DEV(0x2e, IT8784E_SP1)
+#define GPIO_DEV PNP_DEV(0x2e, IT8784E_GPIO)
 
 void bootblock_mainboard_early_init(void)
 {
 	/* CLKIN freq 24MHz, Ext CLKIN for Watchdog, Internal VCC_OK */
 	ite_reg_write(GPIO_DEV, 0x23, 0x49);
 	/* Set pin native functions */
-	ite_reg_write(GPIO_DEV, 0x26, 0x00);
+	ite_reg_write(GPIO_DEV, 0x26, 0xf3);
 	/* Set GPIOS exposed on pin header as GPIO functions  */
 	ite_reg_write(GPIO_DEV, 0x29, 0xc0);
 	/* External CLKIN PCICLK */

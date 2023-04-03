@@ -192,17 +192,17 @@ chip soc/intel/cannonlake
 		device pci 1e.2 off end # GSPI #0
 		device pci 1e.3 off end # GSPI #1
 		device pci 1f.0 on
-			chip superio/ite/it8786e
-				register "TMPIN1.mode"    = "THERMAL_PECI"
-				register "TMPIN1.offset"  = "0x63"
+			chip superio/ite/it8784e
+				register "TMPIN1.mode"    = "THERMAL_RESISTOR"
 				register "TMPIN2.mode"    = "THERMAL_MODE_DISABLED"
-				register "TMPIN3.mode"    = "THERMAL_MODE_DISABLED"
+				register "TMPIN3.mode"    = "THERMAL_PECI"
+				register "TMPIN3.offset"  = "0x63"
 				register "ec.vin_mask"    = "VIN_ALL"
 				register "ec.smbus_24mhz" = "1"
 				register "ec.smbus_en"    = "1"
 				# FAN1 is CPU fan (connector on board)
 				register "FAN1.mode" = "FAN_SMART_AUTOMATIC"
-				register "FAN1.smart.tmpin"     = " 1"
+				register "FAN1.smart.tmpin"     = " 3"
 				register "FAN1.smart.tmp_off"   = "40"
 				register "FAN1.smart.tmp_start" = "60"
 				register "FAN1.smart.tmp_full"  = "85"
@@ -215,24 +215,18 @@ chip soc/intel/cannonlake
 					io 0x60 = 0x3f8
 					irq 0x70 = 4
 				end
-				device pnp 2e.2 on	# COM 2
-					io 0x60 = 0x2f8
-					irq 0x70 = 3
-				end
+				device pnp 2e.2 on end # COM 2
 				device pnp 2e.3 off end # Printer Port
 				device pnp 2e.4 on	# Environment Controller
 					io 0x60 = 0xa40
 					io 0x62 = 0xa30
 					irq 0x70 = 9
+					irq 0xf0 = 0x80 # clear 3VSB status
 				end
 				device pnp 2e.5 off end	# Keyboard
 				device pnp 2e.6 off end	# Mouse
 				device pnp 2e.7 off end	# GPIO
-				device pnp 2e.8 off end # COM 3
-				device pnp 2e.9 off end # COM 4
 				device pnp 2e.a off end	# CIR
-				device pnp 2e.b off end	# COM 5
-				device pnp 2e.c off end	# COM 6
 			end
 			chip drivers/pc80/tpm
 				device pnp 0c31.0 on end

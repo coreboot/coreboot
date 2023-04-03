@@ -1,8 +1,4 @@
-bootblock-y += mode_switch.S
-verstage_x86-y += mode_switch.S
-romstage-y += mode_switch.S
-postcar-y += mode_switch.S
-ramstage-y += mode_switch.S
+all_x86-y += mode_switch.S
 
 # Add --defsym=_start=0 to suppress a linker warning.
 $(objcbfs)/pt: $(dir)/pt.S $(obj)/config.h

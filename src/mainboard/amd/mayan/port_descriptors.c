@@ -6,48 +6,86 @@
 #include <soc/platform_descriptors.h>
 #include <types.h>
 
-/* TODO: Update for mayan */
+
 
 static const fsp_dxio_descriptor mayan_dxio_descriptors[] = {
 	{
+		// MXM
 		.engine_type = PCIE_ENGINE,
 		.port_present = true,
 		.start_logical_lane = 0,
-		.end_logical_lane = 0,
-		.device_number = 2,
-		.function_number = 1,
-		.link_speed_capability = GEN3,
-		.turn_off_unused_lanes = true,
-		.link_aspm = 2,
-		.link_hotplug = 3,
-		.clk_req = CLK_REQ3,
-	},
-	{
-		.engine_type = PCIE_ENGINE,
-		.port_present = true,
-		.start_logical_lane = 1,
-		.end_logical_lane = 1,
-		.device_number = 2,
-		.function_number = 2,
-		.link_speed_capability = GEN3,
-		.turn_off_unused_lanes = true,
-		.link_aspm = 2,
-		.link_hotplug = 3,
-		.clk_req = CLK_REQ1,
-	},
-	{
-		.engine_type = PCIE_ENGINE,
-		.port_present = true,
-		.start_logical_lane = 2,
 		.end_logical_lane = 3,
-		.device_number = 2,
-		.function_number = 3,
-		.link_speed_capability = GEN3,
+		.device_number = 1,
+		.function_number = 1,
+		.link_speed_capability = GEN_MAX,
 		.turn_off_unused_lanes = true,
-		.link_aspm = 2,
-		.link_hotplug = 3,
-		.gpio_group_id = GPIO_27,
+		.link_aspm = ASPM_L1,
+		.link_aspm_L1_1 = true,
+		.link_aspm_L1_2 = true,
+		.link_hotplug = false,
+		.gpio_group_id = 4,
+		.clk_pm_support = true,
 		.clk_req = CLK_REQ0,
+		.eq_preset = 3,
+		.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}
+	},
+	{
+		// M2 SSD0-NVME
+		.engine_type = PCIE_ENGINE,
+		.port_present = true,
+		.start_logical_lane = 16,
+		.end_logical_lane = 19,
+		.device_number = 2,
+		.function_number = 4,
+		.link_speed_capability = GEN_MAX,
+		.turn_off_unused_lanes = true,
+		.link_aspm = ASPM_L1,
+		.link_aspm_L1_1 = true,
+		.link_aspm_L1_2 = true,
+		.link_hotplug = false,
+		.gpio_group_id = 27,
+		.clk_pm_support = true,
+		.clk_req = CLK_REQ4,
+		.eq_preset = 3,
+		.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}
+	},
+	{
+		// X1
+		.engine_type = PCIE_ENGINE,
+		.port_present = true,
+		.start_logical_lane = 12,
+		.end_logical_lane = 12,
+		.device_number = 1,
+		.function_number = 3,
+		.link_speed_capability = GEN_MAX,
+		.turn_off_unused_lanes = true,
+		.link_aspm = ASPM_L1,
+		.link_aspm_L1_1 = true,
+		.link_aspm_L1_2 = true,
+		.link_hotplug = false,
+		.clk_pm_support = true,
+		.clk_req = CLK_REQ2,
+		.eq_preset = 3,
+		.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}
+	},
+	{
+		// DT
+		.engine_type = PCIE_ENGINE,
+		.port_present = true,
+		.start_logical_lane = 8,
+		.end_logical_lane = 9,
+		.device_number = 1,
+		.function_number = 2,
+		.link_speed_capability = GEN_MAX,
+		.turn_off_unused_lanes = true,
+		.link_aspm = ASPM_L1,
+		.link_aspm_L1_1 = true,
+		.link_aspm_L1_2 = true,
+		.link_hotplug = false,
+		.clk_pm_support = true,
+		.clk_req = CLK_REQ1,
+		.eq_preset = 3,
+		.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}
 	},
 };
 

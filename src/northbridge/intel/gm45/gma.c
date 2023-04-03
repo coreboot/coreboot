@@ -143,16 +143,46 @@ static void gma_pm_init_post_vbios(struct device *const dev,
 								reg8));
 }
 
-static void gma_func0_init(struct device *dev)
+const char *gm45_get_lvds_edid_str(struct device *dev)
 {
 	u8 *mmio;
 	u8 edid_data_lvds[128];
 	struct edid edid_lvds;
+	static char edid_str[EDID_ASCII_STRING_LENGTH + 1];
+
+	if (edid_str[0])
+		return edid_str;
+	if (!gtt_res)
+		gtt_res = probe_resource(dev, PCI_BASE_ADDRESS_0);
+	if (!gtt_res)
+		return NULL;
+	mmio = res2mmio(gtt_res, 0, 0);
+
+	printk(BIOS_DEBUG, "LVDS EDID\n");
+	intel_gmbus_read_edid(mmio + GMBUS0, GMBUS_PORT_PANEL, 0x50,
+			edid_data_lvds, sizeof(edid_data_lvds));
+	intel_gmbus_stop(mmio + GMBUS0);
+
+	if (decode_edid(edid_data_lvds, sizeof(edid_data_lvds), &edid_lvds)
+	    != EDID_CONFORMANT)
+		return NULL;
+	memcpy(edid_str, edid_lvds.ascii_string, sizeof(edid_str));
+	return edid_str;
+}
+
+static void gma_func0_init(struct device *dev)
+{
+	u8 *mmio;
 	const struct northbridge_intel_gm45_config *const conf = dev->chip_info;
+	const char *edid_str;
 
 	intel_gma_init_igd_opregion();
 
-	gtt_res = probe_resource(dev, PCI_BASE_ADDRESS_0);
+	edid_str = gm45_get_lvds_edid_str(dev);
+	if (!edid_str)
+		printk(BIOS_ERR, "Failed to obtain LVDS EDID string!\n");
+
+	/* gtt_res should have been inited in gm45_get_lvds_edid_str() */
 	if (!gtt_res)
 		return;
 	mmio = res2mmio(gtt_res, 0, 0);
@@ -173,14 +203,8 @@ static void gma_func0_init(struct device *dev)
 		pci_dev_init(dev);
 	}
 
-	printk(BIOS_DEBUG, "LVDS EDID\n");
-	intel_gmbus_read_edid(mmio + GMBUS0, GMBUS_PORT_PANEL, 0x50,
-			edid_data_lvds, sizeof(edid_data_lvds));
-	intel_gmbus_stop(mmio + GMBUS0);
-	decode_edid(edid_data_lvds, sizeof(edid_data_lvds), &edid_lvds);
-
 	/* Post VBIOS init */
-	gma_pm_init_post_vbios(dev, edid_lvds.ascii_string);
+	gma_pm_init_post_vbios(dev, edid_str);
 
 	if (CONFIG(MAINBOARD_USE_LIBGFXINIT) && !acpi_is_wakeup_s3()) {
 		int vga_disable = (pci_read_config16(dev, D0F0_GGC) & 2) >> 1;

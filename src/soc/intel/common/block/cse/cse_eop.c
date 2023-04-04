@@ -67,54 +67,13 @@ static enum cse_cmd_result cse_disable_mei_bus(void)
 	return CSE_CMD_RESULT_SUCCESS;
 }
 
-static enum cse_cmd_result cse_receive_eop(void)
+static enum cse_cmd_result cse_send_eop(void)
 {
+	enum cse_tx_rx_status ret;
 	enum {
 		EOP_REQUESTED_ACTION_CONTINUE = 0,
 		EOP_REQUESTED_ACTION_GLOBAL_RESET = 1,
 	};
-	enum cse_tx_rx_status ret;
-	struct end_of_post_resp {
-		struct mkhi_hdr hdr;
-		uint32_t requested_actions;
-	} __packed resp = {};
-	size_t resp_size = sizeof(resp);
-
-	ret = heci_receive(&resp, &resp_size);
-	if (ret)
-		return decode_heci_send_receive_error(ret);
-
-	if (resp.hdr.group_id != MKHI_GROUP_ID_GEN ||
-	    resp.hdr.command != MKHI_END_OF_POST) {
-		printk(BIOS_ERR, "HECI: EOP Unexpected response group or command.\n");
-		if (CONFIG(SOC_INTEL_CSE_SEND_EOP_ASYNC))
-			printk(BIOS_ERR, "HECI: It could be a HECI command conflict.\n");
-		return CSE_CMD_RESULT_ERROR;
-	}
-
-	if (resp.hdr.result) {
-		printk(BIOS_ERR, "HECI: EOP Resp Failed: %u\n", resp.hdr.result);
-		return CSE_CMD_RESULT_ERROR;
-	}
-
-	printk(BIOS_INFO, "CSE: EOP requested action: ");
-
-	switch (resp.requested_actions) {
-	case EOP_REQUESTED_ACTION_GLOBAL_RESET:
-		printk(BIOS_INFO, "global reset\n");
-		return CSE_CMD_RESULT_GLOBAL_RESET_REQUESTED;
-	case EOP_REQUESTED_ACTION_CONTINUE:
-		printk(BIOS_INFO, "continue boot\n");
-		return CSE_CMD_RESULT_SUCCESS;
-	default:
-		printk(BIOS_INFO, "unknown %u\n", resp.requested_actions);
-		return CSE_CMD_RESULT_ERROR;
-	}
-}
-
-static enum cse_cmd_result cse_send_eop(void)
-{
-	enum cse_tx_rx_status ret;
 	struct end_of_post_msg {
 		struct mkhi_hdr hdr;
 	} __packed msg = {
@@ -123,6 +82,11 @@ static enum cse_cmd_result cse_send_eop(void)
 			.command = MKHI_END_OF_POST,
 		},
 	};
+	struct end_of_post_resp {
+		struct mkhi_hdr hdr;
+		uint32_t requested_actions;
+	} __packed resp = {};
+	size_t resp_size = sizeof(resp);
 
 	/* For a CSE-Lite SKU, if the CSE is running RO FW and the board is
 	   running vboot in recovery mode, the CSE is expected to be in SOFT
@@ -155,22 +119,28 @@ static enum cse_cmd_result cse_send_eop(void)
 
 	printk(BIOS_INFO, "HECI: Sending End-of-Post\n");
 
-	ret = heci_send(&msg, sizeof(msg), BIOS_HOST_ADDR, HECI_MKHI_ADDR);
+	ret = heci_send_receive(&msg, sizeof(msg), &resp, &resp_size, HECI_MKHI_ADDR);
 	if (ret)
 		return decode_heci_send_receive_error(ret);
 
-	return CSE_CMD_RESULT_SUCCESS;
-}
+	if (resp.hdr.result) {
+		printk(BIOS_ERR, "HECI: EOP Resp Failed: %u\n", resp.hdr.result);
+		return CSE_CMD_RESULT_ERROR;
+	}
 
-static enum cse_cmd_result cse_send_and_receive_eop(void)
-{
-	enum cse_cmd_result ret;
+	printk(BIOS_INFO, "CSE: EOP requested action: ");
 
-	ret = cse_send_eop();
-	if (ret != CSE_CMD_RESULT_SUCCESS)
-		return ret;
-
-	return cse_receive_eop();
+	switch (resp.requested_actions) {
+	case EOP_REQUESTED_ACTION_GLOBAL_RESET:
+		printk(BIOS_INFO, "global reset\n");
+		return CSE_CMD_RESULT_GLOBAL_RESET_REQUESTED;
+	case EOP_REQUESTED_ACTION_CONTINUE:
+		printk(BIOS_INFO, "continue boot\n");
+		return CSE_CMD_RESULT_SUCCESS;
+	default:
+		printk(BIOS_INFO, "unknown %u\n", resp.requested_actions);
+		return CSE_CMD_RESULT_ERROR;
+	}
 }
 
 static enum cse_cmd_result cse_send_cmd_retries(enum cse_cmd_result (*cse_send_command)(void))
@@ -229,12 +199,11 @@ static void handle_cse_eop_result(enum cse_cmd_result result)
 	}
 }
 
-static void do_send_end_of_post(bool wait_for_completion)
+static void do_send_end_of_post(void)
 {
-	static bool eop_sent = false, eop_complete = false;
-	enum cse_cmd_result ret;
+	static bool eop_sent = false;
 
-	if (eop_complete) {
+	if (eop_sent) {
 		printk(BIOS_WARNING, "EOP already sent\n");
 		return;
 	}
@@ -253,40 +222,26 @@ static void do_send_end_of_post(bool wait_for_completion)
 		return;
 	}
 
-	if (!eop_sent) {
-		set_cse_device_state(PCH_DEVFN_CSE, DEV_ACTIVE);
-		timestamp_add_now(TS_ME_END_OF_POST_START);
-		ret = cse_send_cmd_retries(cse_send_eop);
-		if (ret == CSE_CMD_RESULT_SUCCESS)
-			eop_sent = true;
-	}
-
-	if (!wait_for_completion)
-		return;
-
 	set_cse_device_state(PCH_DEVFN_CSE, DEV_ACTIVE);
-	ret = cse_receive_eop();
-	if (ret != CSE_CMD_RESULT_SUCCESS) {
-		ret = cse_send_cmd_retries(cse_send_and_receive_eop);
-		handle_cse_eop_result(ret);
-	}
+
+	timestamp_add_now(TS_ME_END_OF_POST_START);
+	handle_cse_eop_result(cse_send_cmd_retries(cse_send_eop));
 	timestamp_add_now(TS_ME_END_OF_POST_END);
 
 	set_cse_device_state(PCH_DEVFN_CSE, DEV_IDLE);
 
-	eop_complete = true;
+	eop_sent = true;
 }
 
 void cse_send_end_of_post(void)
 {
-	return do_send_end_of_post(!CONFIG(SOC_INTEL_CSE_SEND_EOP_ASYNC));
+	return do_send_end_of_post();
 }
 
 static void send_cse_eop_with_late_finalize(void *unused)
 {
-	do_send_end_of_post(true);
-	if (CONFIG(SOC_INTEL_CSE_SEND_EOP_LATE) ||
-	    CONFIG(SOC_INTEL_CSE_SEND_EOP_ASYNC))
+	do_send_end_of_post();
+	if (CONFIG(SOC_INTEL_CSE_SEND_EOP_LATE))
 		cse_late_finalize();
 }
 

@@ -67,25 +67,6 @@ config SOC_INTEL_CSE_SEND_EOP_LATE
 	  Starting with Jasper Lake, coreboot sends EOP before loading payload hence, this
 	  config is applicable for those platforms.
 
-config SOC_INTEL_CSE_SEND_EOP_ASYNC
-	bool
-	depends on SOC_INTEL_COMMON_BLOCK_CSE
-	depends on !SOC_INTEL_CSE_SEND_EOP_LATE
-	depends on !SOC_INTEL_CSE_SEND_EOP_EARLY
-	help
-	  Use this config to handle End Of Post (EOP) completion
-	  asynchronously. The EOP command is sent first and the result
-	  is checked later leaving time to CSE to complete the
-	  operation while coreboot perform other activities.
-	  Performing EOP asynchronously reduces the time spent
-	  actively waiting for command completion which can have a
-	  significant impact on boot time.
-
-	  Using this asynchronous approach comes with the limitation
-	  that no HECI command should be sent between the time the EOP
-	  request is posted (at CSE .final device operation) and the
-	  time coreboot check for its completion (BS_PAYLOAD_LOAD).
-
 config SOC_INTEL_CSE_LITE_SKU
 	bool
 	default n

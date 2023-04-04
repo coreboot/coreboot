@@ -270,6 +270,8 @@ static unsigned long soc_fill_dmar(unsigned long current)
 	current += acpi_create_dmar_satc(current, ATC_REQUIRED, 0);
 	current += acpi_create_dmar_ds_pci(current, 0, PCI_DEV_SLOT_IGD, 0);
 	current += acpi_create_dmar_ds_pci(current, 0, PCI_DEV_SLOT_IPU, 0);
+	if (is_devfn_enabled(PCI_DEVFN_VPU))
+		current += acpi_create_dmar_ds_pci(current, 0, PCI_DEV_SLOT_VPU, 0);
 	acpi_dmar_satc_fixup(tmp, current);
 
 	return current;

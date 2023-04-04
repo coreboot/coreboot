@@ -86,7 +86,8 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe1_blk.addrh = 0x0;
 }
 
-static void create_dsdt_iou_pci_resource(uint8_t socket, uint8_t stack, const STACK_RES *ri)
+static void create_dsdt_iou_pci_resource(uint8_t socket, uint8_t stack, const STACK_RES *ri,
+					 bool stack_enabled)
 {
 	/*
 	   Stacks 0 (TYPE_UBOX_IIO)
@@ -104,16 +105,6 @@ static void create_dsdt_iou_pci_resource(uint8_t socket, uint8_t stack, const ST
 	       socket, stack);
 
 	acpigen_write_resourcetemplate_header();
-
-	/*
-	 * ACPI spec requires that each bus device (stack) has a valid
-	 * resource template. Disabled devices still need a valid _CRS
-	 * although the values are ignored. The FWTS sanity check does
-	 * not pass when using the HOB stack resources to generate the
-	 * _CRS resource template for disabled stacks, so we provide a
-	 * zeroed resource template to satisfy both the spec and FWTS.
-	 */
-	const bool stack_enabled = ri->Personality < TYPE_RESERVED;
 
 	/* Bus Resource */
 	if (stack_enabled) {
@@ -178,7 +169,7 @@ static void create_dsdt_iou_pci_resource(uint8_t socket, uint8_t stack, const ST
 	acpigen_write_resourcetemplate_footer();
 }
 
-static void create_dsdt_iou_cxl_resource(uint8_t socket, uint8_t stack, const STACK_RES *ri)
+static void create_dsdt_iou_cxl_resource(uint8_t socket, uint8_t stack, const STACK_RES *ri, bool stack_enabled)
 {
 	/*
 	   Stacks 1 .. 5 (TYPE_UBOX_IIO)
@@ -194,7 +185,7 @@ static void create_dsdt_iou_cxl_resource(uint8_t socket, uint8_t stack, const ST
 
 	acpigen_write_resourcetemplate_header();
 
-	if (ri->Personality < TYPE_RESERVED) {
+	if (stack_enabled) {
 		/* bus resource, from (BusBase + 1) to BusLimit */
 		acpigen_resource_word(2, 0xc, 0, 0, ri->BusBase + 1, ri->BusLimit, 0x0,
 				      (ri->BusLimit - ri->BusBase));
@@ -229,7 +220,7 @@ static void create_dsdt_iou_cxl_resource(uint8_t socket, uint8_t stack, const ST
 	acpigen_write_resourcetemplate_footer();
 }
 
-static void create_dsdt_dino_resource(uint8_t socket, uint8_t stack, const STACK_RES *ri)
+static void create_dsdt_dino_resource(uint8_t socket, uint8_t stack, const STACK_RES *ri, bool stack_enabled)
 {
 	/*
 	   Stacks 8 .. B (TYPE_DINO)
@@ -298,7 +289,7 @@ static void create_dsdt_dino_resource(uint8_t socket, uint8_t stack, const STACK
 		acpigen_write_name(tres);
 		acpigen_write_resourcetemplate_header();
 
-		if (ri->Personality < TYPE_RESERVED) {
+		if (stack_enabled) {
 			acpigen_resource_word(2, 0xc, 0, 0, bus_base, bus_limit, 0x0,
 					      (bus_limit - bus_base + 1));
 
@@ -327,7 +318,7 @@ static void create_dsdt_dino_resource(uint8_t socket, uint8_t stack, const STACK
 	}
 }
 
-static void create_dsdt_ubox_resource(uint8_t socket, uint8_t stack, const STACK_RES *ri)
+static void create_dsdt_ubox_resource(uint8_t socket, uint8_t stack, const STACK_RES *ri, bool stack_enabled)
 {
 	/*
 	   Stacks D .. E (TYPE_UBOX)
@@ -348,7 +339,7 @@ static void create_dsdt_ubox_resource(uint8_t socket, uint8_t stack, const STACK
 		acpigen_write_name(tres);
 		acpigen_write_resourcetemplate_header();
 
-		if (ri->Personality >= TYPE_RESERVED)
+		if (!stack_enabled)
 			acpigen_resource_word(2, 0, 0, 0, 0, 0, 0, 0);
 		else if (i == 0)
 			acpigen_resource_word(2, 0xc, 0, 0, ri->BusBase, ri->BusBase, 0x0, 1);
@@ -365,12 +356,12 @@ static void create_dsdt_ubox_resource(uint8_t socket, uint8_t stack, const STACK
  * Add a DSDT ACPI Name field for STACK enable setting.
  *  This is retrieved by the device _STA defined in iiostack.asl
  */
-static void create_dsdt_stack_sta(uint8_t socket, uint8_t stack, const STACK_RES *ri)
+static void create_dsdt_stack_sta(uint8_t socket, uint8_t stack, const STACK_RES *ri, bool stack_enabled)
 {
 	char stack_sta[16];
 	snprintf(stack_sta, sizeof(stack_sta), "ST%d%X", socket, stack);
 
-	if (ri->Personality >= TYPE_RESERVED)
+	if (!stack_enabled)
 		acpigen_write_name_integer(stack_sta, ACPI_STATUS_DEVICE_ALL_OFF);
 	else
 		acpigen_write_name_integer(stack_sta, ACPI_STATUS_DEVICE_ALL_ON);
@@ -378,6 +369,8 @@ static void create_dsdt_stack_sta(uint8_t socket, uint8_t stack, const STACK_RES
 
 void uncore_inject_dsdt(const struct device *device)
 {
+	bool stack_enabled;
+
 	/* Only add RTxx entries once. */
 	if (device->bus->secondary != 0)
 		return;
@@ -402,27 +395,28 @@ void uncore_inject_dsdt(const struct device *device)
 
 	/* The _CSR generation must match SPR iiostack.asl. */
 	const IIO_UDS *hob = get_iio_uds();
-	/* TODO: DSDT uses CONFIG_MAX_SOCKET while PlatformData.numofIIO is the actual number
-	   of CPUs plugged in, although it doesn't cause serious errors when not all CPUs are
-	   plugged in, they should be in sync. */
-	for (uint8_t socket = 0; socket < hob->PlatformData.numofIIO; ++socket) {
+	/* Iterate over CONFIG_MAX_SOCKET to keep ASL templates and DSDT injection in sync */
+	for (uint8_t socket = 0; socket < CONFIG_MAX_SOCKET; ++socket) {
 		for (int stack = 0; stack < MAX_LOGIC_IIO_STACK; ++stack) {
 			const STACK_RES *ri =
 				&hob->PlatformData.IIO_resource[socket].StackRes[stack];
+
+			stack_enabled = hob->PlatformData.IIO_resource[socket].Valid &&
+					ri->Personality < TYPE_RESERVED;
 
 			printk(BIOS_DEBUG, "%s processing socket: %d, stack: %d, type: %d\n",
 			       __func__, socket, stack, ri->Personality);
 
 			if (stack <= IioStack5) { // TYPE_UBOX_IIO
-				create_dsdt_iou_pci_resource(socket, stack, ri);
-				create_dsdt_iou_cxl_resource(socket, stack, ri);
-				create_dsdt_stack_sta(socket, stack, ri);
+				create_dsdt_iou_pci_resource(socket, stack, ri, stack_enabled);
+				create_dsdt_iou_cxl_resource(socket, stack, ri, stack_enabled);
+				create_dsdt_stack_sta(socket, stack, ri, stack_enabled);
 			} else if (stack >= IioStack8 && stack <= IioStack11) { // TYPE_DINO
-				create_dsdt_dino_resource(socket, stack, ri);
-				create_dsdt_stack_sta(socket, stack, ri);
+				create_dsdt_dino_resource(socket, stack, ri, stack_enabled);
+				create_dsdt_stack_sta(socket, stack, ri, stack_enabled);
 			} else if (stack == IioStack13) { // TYPE_UBOX
-				create_dsdt_ubox_resource(socket, stack, ri);
-				create_dsdt_stack_sta(socket, stack, ri);
+				create_dsdt_ubox_resource(socket, stack, ri, stack_enabled);
+				create_dsdt_stack_sta(socket, stack, ri, stack_enabled);
 			}
 		}
 	}

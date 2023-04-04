@@ -67,7 +67,8 @@ u16 get_blc_pwm_freq_value(const char *edid_ascii_string)
 	int i;
 	int blc_array_len;
 
-	if (blc_pwm_freq > 0)
+	/* Prevent null-deref on strcmp() below */
+	if (blc_pwm_freq > 0 || !edid_ascii_string)
 		return blc_pwm_freq;
 
 	blc_array_len = get_blc_values(&blc_pwm);

@@ -18,6 +18,7 @@ static const struct blc_pwm_t blc_entries[] = {
 	{"B121EW09 V3 ", 400},
 	{"HV121WX4-120", 110}, /* Aftermarket AFFS lcd, works well at low pwm */
 	{"LTN121AT03001", 110},
+	{"LTN121AT07L02", 750}, /* Its part name is LTN121AT07-L02 */
 	{"LTN121AP03001", 750},
 	/* TODO: untested panels found on thinkwiki */
 	/* Generally CCFL runs best at lower PWM */

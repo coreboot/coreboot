@@ -4,6 +4,7 @@
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <northbridge/intel/gm45/gm45.h>
+#include <device/pci.h>
 #include <drivers/intel/gma/opregion.h>
 
 static const struct blc_pwm_t blc_entries[] = {
@@ -36,9 +37,8 @@ int get_blc_values(const struct blc_pwm_t **entries)
 
 const char *mainboard_vbt_filename(void)
 {
-	u16 pwm_freq;
-
-	pwm_freq = get_blc_pwm_freq_value(NULL);
+	struct device *gma = pcidev_path_on_root(PCI_DEVFN(0x2, 0));
+	u16 pwm_freq = gma ? get_blc_pwm_freq_value(gm45_get_lvds_edid_str(gma)) : 0;
 
 	if (pwm_freq == 0) {
 		printk(BIOS_DEBUG,

@@ -148,7 +148,20 @@ chip soc/intel/elkhartlake
 		device pci 14.0 on	end # USB3.1 xHCI
 
 		device pci 15.0 off	end # I2C0
-		device pci 15.1 on	end # I2C1
+		device pci 15.1 on	    # I2C1
+			# Enable external RTC chip
+			chip drivers/i2c/rv3028c7
+				register "bus_speed" = "I2C_SPEED_STANDARD"
+				register "set_user_date" = "1"
+				register "user_year" = "04"
+				register "user_month" = "07"
+				register "user_day" = "01"
+				register "user_weekday" = "4"
+				register "bckup_sw_mode" = "BACKUP_SW_LEVEL"
+				register "cap_charge" = "CHARGE_OFF"
+				device i2c 0x52 on end  # RTC RV3028-C7
+			end
+		end
 
 		device pci 16.0 hidden	end # Management Engine Interface 1
 
@@ -168,25 +181,9 @@ chip soc/intel/elkhartlake
 		device pci 1e.0 on	end # UART0
 		device pci 1e.1 on	end # UART1
 
-
 		device pci 1f.0 on	end # eSPI Interface
 		device pci 1f.2 hidden	end # Power Management Controller
-		device pci 1f.4	on	    # SMBus
-			# Enable external RTC chip
-			chip drivers/i2c/rx6110sa
-				register "bus_speed" = "I2C_SPEED_STANDARD"
-				register "pmon_sampling" = "PMON_SAMPL_256_MS"
-				register "bks_on" = "0"
-				register "bks_off" = "1"
-				register "iocut_en" = "1"
-				register "set_user_date" = "1"
-				register "user_year" = "04"
-				register "user_month" = "07"
-				register "user_day" = "01"
-				register "user_weekday" = "4"
-				device i2c 0x32 on end  # RTC RX6110 SA
-			end
-		end
+		device pci 1f.4	on	end # SMBus
 		device pci 1f.5 on	end # PCH SPI (flash & TPM)
 	end
 end

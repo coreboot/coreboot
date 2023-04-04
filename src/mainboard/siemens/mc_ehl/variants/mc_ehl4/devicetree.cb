@@ -89,6 +89,8 @@ chip soc/intel/elkhartlake
 	register "ScsEmmcHs400Enabled" = "0"
 	register "ScsEmmcDdr50Enabled" = "1"
 	register "SdCardPowerEnableActiveHigh" = "1"
+	# GPIO for SD card detect
+	register "sdcard_cd_gpio" = "GPP_G5"
 
 	# LPSS Serial IO (I2C/UART/GSPI) related UPDs
 	register "SerialIoI2cMode" = "{
@@ -171,6 +173,7 @@ chip soc/intel/elkhartlake
 		device pci 19.2 on	end # UART2
 
 		device pci 1a.0 on	end # eMMC
+		device pci 1a.1 on	end # SD
 
 		device pci 1c.0 on	end # RP1 (pcie0 single VC)
 		device pci 1c.1 on	end # RP2 (pcie0 single VC)

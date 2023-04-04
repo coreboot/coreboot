@@ -159,11 +159,12 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	m_cfg->BoardTypeBitmask = 0x11111133;
 
-	m_cfg->X2apic = config->x2apic;
-
-	printk(BIOS_INFO, "m_cfg->X2apic = 0x%x  config->x2apic = 0x%x\n", m_cfg->X2apic,
-	       config->x2apic);
-
+	/*
+	 * Let coreboot configure LAPIC based on Kconfig.
+	 * coreboot currently can only switch from XAPIC to X2APIC,
+	 * so always select XAPIC mode here.
+	 */
+	m_cfg->X2apic = 0;
 
 	m_cfg->serialDebugMsgLvl = 0x3;
 

@@ -358,6 +358,7 @@ typedef struct _amd_fw_entry {
 	bool skip_hashing;
 	uint32_t num_hash_entries;
 	amd_fw_entry_hash *hash_entries;
+	bool generate_manifest;
 } amd_fw_entry;
 
 /* Most PSP binaries, if not all, have the following header format. */
@@ -375,7 +376,9 @@ struct amd_fw_header {
 	uint32_t comp_size;
 	/* Starting MDN fw_id is populated instead of fw_type. */
 	uint16_t fw_id;
-	uint8_t reserved_5a[18];
+	uint8_t reserved_5a[6];
+	uint8_t version[4];
+	uint8_t reserved_64[8];
 	uint32_t size_total;
 	uint8_t reserved_70[12];
 	/* Starting MDN fw_id is populated instead of fw_type. fw_type will still be around

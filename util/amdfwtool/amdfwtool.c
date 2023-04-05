@@ -97,6 +97,8 @@
 #define TMP_FILE_SUFFIX ".tmp"
 #define BODY_FILE_SUFFIX ".body"
 
+static void output_manifest(int manifest_fd, amd_fw_entry *fw_entry);
+
 /*
  * Beginning with Family 15h Models 70h-7F, a.k.a Stoney Ridge, the PSP
  * can support an optional "combo" implementation.  If the PSP sees the
@@ -211,6 +213,7 @@ static void usage(void)
 	printf("--sharedmem                    Location of PSP/FW shared memory\n");
 	printf("--sharedmem-size               Maximum size of the PSP/FW shared memory\n");
 	printf("                               area\n");
+	printf("--output-manifest <FILE>       Writes a manifest with the blobs versions\n");
 	printf("\nEmbedded Firmware Structure options used by the PSP:\n");
 	printf("--spi-speed <HEX_VAL>          SPI fast speed to place in EFS Table\n");
 	printf("                               0x0 66.66Mhz\n");
@@ -241,12 +244,14 @@ static void usage(void)
 
 amd_fw_entry amd_psp_fw_table[] = {
 	{ .type = AMD_FW_PSP_PUBKEY, .level = PSP_BOTH | PSP_LVL2_AB, .skip_hashing = true },
-	{ .type = AMD_FW_PSP_BOOTLOADER, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_BOOTLOADER, .level = PSP_BOTH | PSP_LVL2_AB,
+		.generate_manifest = true },
 	{ .type = AMD_FW_PSP_SECURED_OS, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_RECOVERY, .level = PSP_LVL1 },
 	{ .type = AMD_FW_PSP_NVRAM, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_RTM_PUBKEY, .level = PSP_BOTH },
-	{ .type = AMD_FW_PSP_SMU_FIRMWARE, .subprog = 0, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_SMU_FIRMWARE, .subprog = 0, .level = PSP_BOTH | PSP_LVL2_AB,
+		.generate_manifest = true },
 	{ .type = AMD_FW_PSP_SMU_FIRMWARE, .subprog = 1, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_SMU_FIRMWARE, .subprog = 2, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_SECURED_DEBUG, .level = PSP_LVL2 | PSP_LVL2_AB,
@@ -279,7 +284,8 @@ amd_fw_entry amd_psp_fw_table[] = {
 	{ .type = AMD_FW_MP5, .subprog = 1, .level = PSP_BOTH | PSP_BOTH_AB },
 	{ .type = AMD_FW_MP5, .subprog = 2, .level = PSP_BOTH | PSP_BOTH_AB },
 	{ .type = AMD_S0I3_DRIVER, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_ABL0, .level = PSP_BOTH | PSP_LVL2_AB },
+	{ .type = AMD_ABL0, .level = PSP_BOTH | PSP_LVL2_AB,
+		.generate_manifest = true },
 	{ .type = AMD_ABL1, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_ABL2, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_ABL3, .level = PSP_BOTH | PSP_LVL2_AB },
@@ -308,7 +314,8 @@ amd_fw_entry amd_psp_fw_table[] = {
 	{ .type = AMD_FW_MPIO, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_PSP_SMUSCS, .level = PSP_BOTH | PSP_LVL2_AB },
 	{ .type = AMD_FW_DMCUB, .level = PSP_LVL2 | PSP_LVL2_AB },
-	{ .type = AMD_FW_PSP_BOOTLOADER_AB, .level = PSP_LVL2 | PSP_LVL2_AB },
+	{ .type = AMD_FW_PSP_BOOTLOADER_AB, .level = PSP_LVL2 | PSP_LVL2_AB,
+		.generate_manifest = true },
 	{ .type = AMD_RIB, .subprog = 0, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_RIB, .subprog = 1, .level = PSP_LVL2 | PSP_LVL2_AB },
 	{ .type = AMD_FW_MPDMA_TF, .level = PSP_BOTH | PSP_BOTH_AB },
@@ -840,6 +847,57 @@ static void integrate_firmwares(context *ctx,
 			adjust_current_pointer(ctx, bytes, BLOB_ALIGNMENT);
 		}
 	}
+}
+
+static void output_manifest(int manifest_fd, amd_fw_entry *fw_entry)
+{
+	struct amd_fw_header hdr;
+	int blob_fd;
+	ssize_t bytes;
+
+	blob_fd = open(fw_entry->filename, O_RDONLY);
+	if (blob_fd < 0) {
+		fprintf(stderr, "Error opening file: %s: %s\n",
+		       fw_entry->filename, strerror(errno));
+		return;
+	}
+
+	bytes = read(blob_fd, &hdr, sizeof(hdr));
+	if (bytes != sizeof(hdr)) {
+		close(blob_fd);
+		fprintf(stderr, "Error while reading %s\n", fw_entry->filename);
+		return;
+	}
+
+	dprintf(manifest_fd, "type: 0x%02x ver:%02x.%02x.%02x.%02x\n",
+	    fw_entry->type, hdr.version[3], hdr.version[2],
+	    hdr.version[1], hdr.version[0]);
+
+	close(blob_fd);
+
+}
+
+static void dump_blob_version(char *manifest_file, amd_fw_entry *fw_table)
+{
+	amd_fw_entry *index;
+	int manifest_fd;
+
+	manifest_fd = open(manifest_file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	if (manifest_fd < 0) {
+		fprintf(stderr, "Error opening file: %s: %s\n",
+		       manifest_file, strerror(errno));
+		return;
+	}
+
+	for (index = fw_table; index->type != AMD_FW_INVALID; index++) {
+		if (!(index->filename))
+			continue;
+
+		if (index->generate_manifest == true)
+			output_manifest(manifest_fd, index);
+	}
+
+	close(manifest_fd);
 }
 
 /* For debugging */
@@ -1470,6 +1528,7 @@ enum {
 	AMDFW_OPT_SPL_TABLE,
 	AMDFW_OPT_VERSTAGE,
 	AMDFW_OPT_VERSTAGE_SIG,
+	AMDFW_OPT_OUTPUT_MANIFEST,
 
 	AMDFW_OPT_INSTANCE,
 	AMDFW_OPT_APCB,
@@ -1527,6 +1586,7 @@ static struct option long_options[] = {
 	{"spl-table",        required_argument, 0, AMDFW_OPT_SPL_TABLE },
 	{"verstage",         required_argument, 0, AMDFW_OPT_VERSTAGE },
 	{"verstage_sig",     required_argument, 0, AMDFW_OPT_VERSTAGE_SIG },
+	{"output-manifest",  required_argument, 0, AMDFW_OPT_OUTPUT_MANIFEST },
 	/* BIOS Directory Table items */
 	{"instance",         required_argument, 0, AMDFW_OPT_INSTANCE },
 	{"apcb",             required_argument, 0, AMDFW_OPT_APCB },
@@ -1858,6 +1918,7 @@ int main(int argc, char **argv)
 
 	amd_cb_config cb_config = { 0 };
 	int debug = 0;
+	char *manifest_file = NULL;
 
 	ctx.current_pointer_saved = 0xFFFFFFFF;
 
@@ -2003,6 +2064,9 @@ int main(int argc, char **argv)
 		case AMDFW_OPT_VERSTAGE_SIG:
 			register_fw_filename(AMD_FW_VERSTAGE_SIG, sub, optarg);
 			sub = instance = 0;
+			break;
+		case AMDFW_OPT_OUTPUT_MANIFEST:
+			manifest_file = optarg;
 			break;
 		case AMDFW_OPT_SIGNED_OUTPUT:
 			signed_output_file = optarg;
@@ -2433,6 +2497,10 @@ int main(int argc, char **argv)
 			fprintf(stderr, "Error: Writing body\n");
 			retval = 1;
 		}
+	}
+
+	if (manifest_file) {
+		dump_blob_version(manifest_file, amd_psp_fw_table);
 	}
 
 	amdfwtool_cleanup(&ctx);

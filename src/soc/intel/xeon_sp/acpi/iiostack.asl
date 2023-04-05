@@ -27,17 +27,18 @@
 			CreateDWordField (Arg3, 0x00, CDW1)		\
 			If ((Arg0 == ToUUID ("33db4d5b-1ff7-401c-9657-7441c03dd766") /* PCI Host Bridge Device */))  \
 			{							\
-				CreateDWordField (Arg3, 0x04, CDW2)		\
-				If ((Arg2 > 0x02))				\
+				If (Arg2 < 0x03)				\
 				{						\
-					CreateDWordField (Arg3, 0x08, CDW3)	\
+					CDW1 |= 0x02 /* Unknown failure */	\
+					Return (Arg3)				\
 				}						\
+				CreateDWordField (Arg3, 0x04, CDW2)		\
+				CreateDWordField (Arg3, 0x08, CDW3)		\
 				SUPP = CDW2					\
 				CTRL = CDW3					\
 				If ((AHPE || ((SUPP & 0x16) != 0x16)))		\
 				{						\
 					CTRL &= 0x1E				\
-					Sleep (0x03E8)				\
 				}						\
 				/* Never allow SHPC (no SHPC controller in system) */ \
 				CTRL &= 0x1D					\

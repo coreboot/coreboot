@@ -7,7 +7,7 @@ const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x10ec0269, /* Codec Vendor / Device ID: Realtek ALC269 */
 	0x1e507007, /* Subsystem ID */
-	36,	    /* Number of jacks (NID entries) */
+	17,	    /* Number of jacks (NID entries) */
 
 	/* Reset Codec First */
 	AZALIA_RESET(0x1),
@@ -54,7 +54,7 @@ const u32 cim_verb_data[] = {
 
 	0x80862815, /* Codec Vendor / Device ID: Intel */
 	0x80860101, /* Subsystem ID */
-	9,	    /* Number of 4 dword sets */
+	10,	    /* Number of 4 dword sets */
 
 	AZALIA_SUBVENDOR(2, 0x80860101),
 

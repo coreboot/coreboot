@@ -165,16 +165,7 @@ typedef struct __packed {
 
 /*
  * Phoenix DXIO Descriptor: Used for assigning lanes to PCIe engines, configure
- * bifurcation and other settings. Beware that the lane numbers in here are the
- * logical and not the physical lane numbers!
- *
- * Phoenix DXIO logical lane to physical PCIe lane mapping:
- *
- *   logical | physical
- * ----------|------------
- * PA[00:03] | GPP[03:00]
- * PA[04:05] | GPP[08:09]
- * PB[00:07] | GPP[12:19]
+ * bifurcation and other settings.
  *
  * Different ports mustn't overlap or be assigned to the same lane(s). Within
  * ports with the same width the one with a higher start logical lane number
@@ -183,8 +174,8 @@ typedef struct __packed {
  */
 typedef struct __packed {
 	uint8_t		engine_type;			// See dxio_engine_type
-	uint8_t		start_logical_lane;		// Start lane of the pci device
-	uint8_t		end_logical_lane;		// End lane of the pci device
+	uint8_t		start_lane;			// Start lane of the pci device
+	uint8_t		end_lane;			// End lane of the pci device
 	uint8_t		gpio_group_id;			// GPIO number used as reset
 	uint32_t	port_present		:1;	// Should be TRUE if train link
 	uint32_t				:7;

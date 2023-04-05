@@ -13,8 +13,8 @@ static const fsp_dxio_descriptor mayan_dxio_descriptors[] = {
 		// MXM
 		.engine_type = PCIE_ENGINE,
 		.port_present = true,
-		.start_logical_lane = 0,
-		.end_logical_lane = 3,
+		.start_lane = 0,
+		.end_lane = 3,
 		.device_number = 1,
 		.function_number = 1,
 		.link_speed_capability = GEN_MAX,
@@ -33,8 +33,8 @@ static const fsp_dxio_descriptor mayan_dxio_descriptors[] = {
 		// M2 SSD0-NVME
 		.engine_type = PCIE_ENGINE,
 		.port_present = true,
-		.start_logical_lane = 16,
-		.end_logical_lane = 19,
+		.start_lane = 16,
+		.end_lane = 19,
 		.device_number = 2,
 		.function_number = 4,
 		.link_speed_capability = GEN_MAX,
@@ -53,8 +53,8 @@ static const fsp_dxio_descriptor mayan_dxio_descriptors[] = {
 		// X1
 		.engine_type = PCIE_ENGINE,
 		.port_present = true,
-		.start_logical_lane = 12,
-		.end_logical_lane = 12,
+		.start_lane = 12,
+		.end_lane = 12,
 		.device_number = 1,
 		.function_number = 3,
 		.link_speed_capability = GEN_MAX,
@@ -72,8 +72,8 @@ static const fsp_dxio_descriptor mayan_dxio_descriptors[] = {
 		// DT
 		.engine_type = PCIE_ENGINE,
 		.port_present = true,
-		.start_logical_lane = 8,
-		.end_logical_lane = 9,
+		.start_lane = 8,
+		.end_lane = 9,
 		.device_number = 1,
 		.function_number = 2,
 		.link_speed_capability = GEN_MAX,

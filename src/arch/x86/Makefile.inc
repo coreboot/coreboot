@@ -112,8 +112,10 @@ add_bootblock = \
 	$(cbfs-autogen-attributes) $(TS_OPTIONS) $(CBFSTOOL_ADD_CMD_OPTIONS)
 endif
 
+ifneq ($(CONFIG_CBFS_VERIFICATION),y)
 $(call src-to-obj,bootblock,$(dir)/walkcbfs.S): $(obj)/fmap_config.h
 bootblock-y += walkcbfs.S
+endif
 
 endif # CONFIG_ARCH_BOOTBLOCK_X86_32 / CONFIG_ARCH_BOOTBLOCK_X86_64
 

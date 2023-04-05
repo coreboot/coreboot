@@ -2,6 +2,10 @@
 
 #include <fmap_config.h>
 
+#if CONFIG(CBFS_VERIFICATION)
+#error "walkcbfs_asm is not safe to use with CBFS verification!"
+#endif
+
 /* we use this instead of CBFS_HEADER_ALIGN because the latter is retired. */
 #define CBFS_ALIGNMENT 64
 

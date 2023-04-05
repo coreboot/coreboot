@@ -31,6 +31,7 @@ ramstage-y	+= fsp_s_params.c
 ramstage-y	+= mca.c
 ramstage-y	+= root_complex.c
 ramstage-y	+= xhci.c
+ramstage-y	+= manifest.c
 
 smm-y		+= gpio.c
 smm-y		+= smihandler.c

@@ -12,7 +12,7 @@ LINTDIR="$(
 # shellcheck source=helper_functions.sh
 . "${LINTDIR}/helper_functions.sh"
 
-SYMBOLS='CONFIG_ARCH_\|CONFIG_MAINBOARD_HAS_'
+SYMBOLS='CONFIG_MAINBOARD_DIR\|CONFIG_MAINBOARD_HAS_'
 
 #look for a couple of things that should only be set by select keywords
 for file in \

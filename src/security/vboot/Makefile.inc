@@ -199,6 +199,7 @@ regions-for-file = $(subst $(spc),$(comma),$(sort \
 		intel_fit \
 		intel_fit_ts \
 		fspt.bin \
+		pagetables \
 		$(call strip_quotes,$(CONFIG_RO_REGION_ONLY)) \
 		,$(1)),COREBOOT,\
 		$(if $(filter \

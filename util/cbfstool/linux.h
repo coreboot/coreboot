@@ -27,7 +27,7 @@ struct e820entry {
 #define E820_RESERVED	2
 #define E820_ACPI	3	/* usable as RAM once ACPI tables have been read */
 #define E820_NVS	4
-};
+} __packed;
 
 /* The header of Linux/i386 kernel */
 struct linux_header {

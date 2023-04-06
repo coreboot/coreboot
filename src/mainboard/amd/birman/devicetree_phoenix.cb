@@ -162,12 +162,24 @@ chip soc/amd/phoenix
 	device domain 0 on
 		device ref iommu on end
 		device ref gpp_bridge_1_1 on end # MXM
-		device ref gpp_bridge_1_2 on end # NVMe SSD1
+		device ref gpp_bridge_1_2 on
+			# Required so the NVMe gets placed into D3 when entering S0i3.
+			chip drivers/pcie/rtd3/device
+				register "name" = ""NVME""
+				device pci 00.0 on end
+			end
+		end # NVMe SSD1
 		device ref gpp_bridge_1_3 on end # GBE
 		device ref gpp_bridge_2_1 on end # SD
 		device ref gpp_bridge_2_2 on end # WWAN
 		device ref gpp_bridge_2_3 on end # WIFI
-		device ref gpp_bridge_2_4 on end # NVMe SSD0
+		device ref gpp_bridge_2_4 on
+			# Required so the NVMe gets placed into D3 when entering S0i3.
+			chip drivers/pcie/rtd3/device
+				register "name" = ""NVME""
+				device pci 00.0 on end
+			end
+		end # NVMe SSD0
 		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
 			device ref gfx on end # Internal GPU (GFX)
 			device ref gfx_hda on end # Display HD Audio Controller (GFXAZ)

@@ -48,7 +48,7 @@ enum cb_err get_amd_smu_reported_tdp(uint32_t *tdp)
 	 * we're interested in. For example: 0xF0000 (15W), 0x60000 (6W). Re-interpret
 	 * the value so the caller just sees the TDP.
 	 */
-	printk(BIOS_INFO, "fsp_misc_data->smu_power_and_thm_limit = 0x%08X\n",
+	printk(BIOS_DEBUG, "fsp_misc_data->smu_power_and_thm_limit = 0x%08X\n",
 		fsp_misc_data->smu_power_and_thm_limit);
 	*tdp = fsp_misc_data->smu_power_and_thm_limit >> 16;
 

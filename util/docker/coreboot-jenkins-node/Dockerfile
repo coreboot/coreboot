@@ -35,7 +35,25 @@ RUN apt-get -y update && \
 		parallel \
 		ruby-full \
 		sdcc \
-	&& apt-get clean
+		python3-pip \
+		pykwalify \
+		python3-yaml \
+		python3-pyelftools \
+		python3-jsonschema \
+		python3-colorama \
+		python3-pyrsistent \
+		swig \
+	&& apt-get clean \
+	&& pip3 install --upgrade --no-cache-dir pip \
+	&& pip3 install --no-cache-dir  \
+		setuptools==58.2.0 \
+		jinja2==3.0.3 \
+		recommonmark===0.5.0 \
+		sphinx===1.8.3 \
+		sphinxcontrib-ditaa===0.6 \
+		sphinx_autobuild===0.7.1 \
+		sphinx_rtd_theme===0.4.2 \
+	&& gem install mdl
 
 # Because of the way that the variables are being replaced, docker's 'COPY'
 # command does not work
@@ -66,28 +84,6 @@ RUN gcc -o /usr/sbin/encapsulate /tmp/encapsulate.c && \
 	chmod +s /usr/sbin/encapsulate
 
 COPY --from=zephyr-sdk /opt/zephyr-sdk /opt/zephyr-sdk
-
-RUN apt-get update && \
-	apt-get install -y \
-		python3-pip \
-		pykwalify \
-		python3-yaml \
-		python3-pyelftools \
-		python3-jsonschema \
-		python3-colorama \
-		python3-pyrsistent \
-		swig \
-	&& apt-get clean \
-	&& pip3 install --upgrade --no-cache-dir pip \
-	&& pip3 install --no-cache-dir  \
-		setuptools==58.2.0 \
-		jinja2==3.0.3 \
-		recommonmark===0.5.0 \
-		sphinx===1.8.3 \
-		sphinxcontrib-ditaa===0.6 \
-		sphinx_autobuild===0.7.1 \
-		sphinx_rtd_theme===0.4.2 \
-	&& gem install mdl
 
 # Build U-boot tools needed by zephyr
 RUN mkdir /tmp/b && cd /tmp/b && \

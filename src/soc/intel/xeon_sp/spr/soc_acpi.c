@@ -540,8 +540,7 @@ unsigned long xeonsp_acpi_create_madt_lapics(unsigned long current)
 		}
 		if (!cpu->enabled)
 			continue;
-		current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, num_cpus,
-						  cpu->path.apic.apic_id);
+		current = acpi_create_madt_one_lapic(current, num_cpus, cpu->path.apic.apic_id);
 		num_cpus++;
 	}
 

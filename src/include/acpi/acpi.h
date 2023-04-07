@@ -682,6 +682,8 @@ typedef struct acpi_madt_lapic {
 	u32 flags;			/* Local APIC flags */
 } __packed acpi_madt_lapic_t;
 
+#define ACPI_MADT_MAX_LAPIC_ID		0xfe
+
 /* MADT: Local APIC NMI Structure */
 typedef struct acpi_madt_lapic_nmi {
 	u8 type;			/* Type (4) */
@@ -1334,7 +1336,6 @@ int acpi_create_cedt_chbs(acpi_cedt_chbs_t *chbs, u32 uid, u32 cxl_ver, u64 base
 int acpi_create_cedt_cfmws(acpi_cedt_cfmws_t *cfmws, u64 base_hpa, u64 window_size,
 	u8 eniw, u32 hbig, u16 restriction, u16 qtg_id, const u32 *interleave_target);
 
-int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic);
 int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr,
 			    u32 gsi_base);
 int acpi_create_madt_ioapic_from_hw(acpi_madt_ioapic_t *ioapic, u32 addr);
@@ -1343,11 +1344,10 @@ int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride,
 
 void acpi_create_madt(acpi_madt_t *madt);
 
+unsigned long acpi_create_madt_one_lapic(unsigned long current, u32 cpu, u32 apic);
 unsigned long acpi_create_madt_lapics_with_nmis(unsigned long current);
 
 unsigned long acpi_create_madt_lapic_nmis(unsigned long current);
-
-int acpi_create_madt_lx2apic(acpi_madt_lx2apic_t *lapic, u32 cpu, u32 apic);
 
 int acpi_create_srat_lapic(acpi_srat_lapic_t *lapic, u8 node, u8 apic);
 int acpi_create_srat_x2apic(acpi_srat_x2apic_t *x2apic, u32 node, u32 apic);

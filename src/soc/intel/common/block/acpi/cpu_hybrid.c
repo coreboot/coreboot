@@ -81,14 +81,9 @@ static unsigned long acpi_create_madt_lapics_hybrid(unsigned long current)
 {
 	size_t index;
 
-	for (index = 0; index < cpu_apic_info.total_cpu_cnt; index++) {
-		if (cpu_apic_info.apic_ids[index] < 0xff)
-			current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current,
-					index, cpu_apic_info.apic_ids[index]);
-		else
-			current += acpi_create_madt_lx2apic((acpi_madt_lx2apic_t *)current,
-					index, cpu_apic_info.apic_ids[index]);
-	}
+	for (index = 0; index < cpu_apic_info.total_cpu_cnt; index++)
+		current = acpi_create_madt_one_lapic(current, index,
+						     cpu_apic_info.apic_ids[index]);
 
 	return current;
 }

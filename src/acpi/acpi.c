@@ -122,7 +122,7 @@ int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u32 base,
 	return sizeof(acpi_mcfg_mmconfig_t);
 }
 
-int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic)
+static int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic)
 {
 	lapic->type = LOCAL_APIC; /* Local APIC structure */
 	lapic->length = sizeof(acpi_madt_lapic_t);
@@ -133,7 +133,7 @@ int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic)
 	return lapic->length;
 }
 
-int acpi_create_madt_lx2apic(acpi_madt_lx2apic_t *lapic, u32 cpu, u32 apic)
+static int acpi_create_madt_lx2apic(acpi_madt_lx2apic_t *lapic, u32 cpu, u32 apic)
 {
 	lapic->type = LOCAL_X2APIC; /* Local APIC structure */
 	lapic->reserved = 0;
@@ -143,6 +143,18 @@ int acpi_create_madt_lx2apic(acpi_madt_lx2apic_t *lapic, u32 cpu, u32 apic)
 	lapic->x2apic_id = apic;
 
 	return lapic->length;
+}
+
+unsigned long acpi_create_madt_one_lapic(unsigned long current, u32 index, u32 lapic_id)
+{
+	if (lapic_id <= ACPI_MADT_MAX_LAPIC_ID)
+		current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, index,
+						  lapic_id);
+	else
+		current += acpi_create_madt_lx2apic((acpi_madt_lx2apic_t *)current, index,
+						    lapic_id);
+
+	return current;
 }
 
 static unsigned long acpi_create_madt_lapics(unsigned long current)
@@ -159,14 +171,8 @@ static unsigned long acpi_create_madt_lapics(unsigned long current)
 	}
 	if (num_cpus > 1)
 		bubblesort(apic_ids, num_cpus, NUM_ASCENDING);
-	for (index = 0; index < num_cpus; index++) {
-		if (apic_ids[index] < 0xff)
-			current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current,
-					index, apic_ids[index]);
-		else
-			current += acpi_create_madt_lx2apic((acpi_madt_lx2apic_t *)current,
-					index, apic_ids[index]);
-	}
+	for (index = 0; index < num_cpus; index++)
+		current = acpi_create_madt_one_lapic(current, index, apic_ids[index]);
 
 	return current;
 }

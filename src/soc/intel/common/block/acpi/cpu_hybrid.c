@@ -95,19 +95,8 @@ static unsigned long acpi_create_madt_lapics_hybrid(unsigned long current)
 
 unsigned long acpi_create_madt_lapics_with_nmis_hybrid(unsigned long current)
 {
-	const u16 flags = MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH;
-
 	current = acpi_create_madt_lapics_hybrid(current);
-
-	/* 1: LINT1 connect to NMI */
-	/* create all subtables for processors */
-	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)current,
-			ACPI_MADT_LAPIC_NMI_ALL_PROCESSORS, flags, 1);
-
-	if (!CONFIG(XAPIC_ONLY))
-		current += acpi_create_madt_lx2apic_nmi((acpi_madt_lx2apic_nmi_t *)current,
-				ACPI_MADT_LX2APIC_NMI_ALL_PROCESSORS, flags, 1);
-
+	current = acpi_create_madt_lapic_nmis(current);
 	return current;
 }
 

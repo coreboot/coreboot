@@ -213,7 +213,7 @@ int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride,
 	return irqoverride->length;
 }
 
-int acpi_create_madt_lapic_nmi(acpi_madt_lapic_nmi_t *lapic_nmi, u8 cpu,
+static int acpi_create_madt_lapic_nmi(acpi_madt_lapic_nmi_t *lapic_nmi, u8 cpu,
 				u16 flags, u8 lint)
 {
 	lapic_nmi->type = LOCAL_APIC_NMI; /* Local APIC NMI structure */
@@ -225,7 +225,7 @@ int acpi_create_madt_lapic_nmi(acpi_madt_lapic_nmi_t *lapic_nmi, u8 cpu,
 	return lapic_nmi->length;
 }
 
-int acpi_create_madt_lx2apic_nmi(acpi_madt_lx2apic_nmi_t *lapic_nmi, u32 cpu,
+static int acpi_create_madt_lx2apic_nmi(acpi_madt_lx2apic_nmi_t *lapic_nmi, u32 cpu,
 				 u16 flags, u8 lint)
 {
 	lapic_nmi->type = LOCAL_X2APIC_NMI; /* Local APIC NMI structure */
@@ -240,11 +240,9 @@ int acpi_create_madt_lx2apic_nmi(acpi_madt_lx2apic_nmi_t *lapic_nmi, u32 cpu,
 	return lapic_nmi->length;
 }
 
-unsigned long acpi_create_madt_lapics_with_nmis(unsigned long current)
+unsigned long acpi_create_madt_lapic_nmis(unsigned long current)
 {
 	const u16 flags = MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH;
-
-	current = acpi_create_madt_lapics(current);
 
 	/* 1: LINT1 connect to NMI */
 	/* create all subtables for processors */
@@ -255,6 +253,13 @@ unsigned long acpi_create_madt_lapics_with_nmis(unsigned long current)
 		current += acpi_create_madt_lx2apic_nmi((acpi_madt_lx2apic_nmi_t *)current,
 			ACPI_MADT_LX2APIC_NMI_ALL_PROCESSORS, flags, 1);
 
+	return current;
+}
+
+unsigned long acpi_create_madt_lapics_with_nmis(unsigned long current)
+{
+	current = acpi_create_madt_lapics(current);
+	current = acpi_create_madt_lapic_nmis(current);
 	return current;
 }
 

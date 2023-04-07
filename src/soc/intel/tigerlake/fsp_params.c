@@ -323,12 +323,11 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* D3Hot and D3Cold for TCSS */
 	params->D3HotEnable = !config->TcssD3HotDisable;
-
 	cpu_id = cpu_get_cpuid();
 	if (cpu_id == CPUID_TIGERLAKE_A0)
 		params->D3ColdEnable = 0;
 	else
-		params->D3ColdEnable = CONFIG(D3COLD_SUPPORT);
+		params->D3ColdEnable = !config->TcssD3ColdDisable;
 
 	params->UsbTcPortEn = config->UsbTcPortEn;
 	params->TcssAuxOri = config->TcssAuxOri;

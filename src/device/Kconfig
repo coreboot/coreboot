@@ -998,19 +998,6 @@ config XHCI_UTILS
 	help
 	  Provides xHCI utility functions.
 
-config NO_S0IX_SUPPORT
-	bool "Don't support S0IX suspend"
-	default n
-	help
-	  Select if the board only supports S3 and/or S4 and not S0IX
-
-config D3COLD_SUPPORT
-	bool "Don't support D3Cold"
-	default n if NO_S0IX_SUPPORT
-	default y
-	help
-	  Select if any devices don't support D3Cold state
-
 source "src/device/dram/Kconfig"
 
 endmenu

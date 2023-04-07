@@ -27,8 +27,6 @@ unsigned long acpi_fill_madt(unsigned long current)
 	current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current,
 						   GNB_IO_APIC_ADDR);
 
-	current = acpi_fill_madt_irqoverride(current);
-
 	return current;
 }
 

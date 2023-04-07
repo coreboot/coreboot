@@ -27,17 +27,6 @@ struct soc_amd_common_config {
 	uint16_t fadt_boot_arch;
 	uint32_t fadt_flags;
 
-	/**
-	 * IRQ 0 - 15 have a default trigger of edge and default polarity of high.
-	 * If you have a device that requires a different configuration you can override the
-	 * settings here.
-	 */
-	struct {
-		uint8_t irq;
-		/* See MP_IRQ_* from acpi.h */
-		uint8_t flags;
-	} irq_override[16];
-
 	/* Audio Co-processor (ACP) configuration */
 	struct acp_config acp_config;
 };

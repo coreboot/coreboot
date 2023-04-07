@@ -16,27 +16,6 @@ unsigned long southbridge_write_acpi_tables(const struct device *device,
 	return acpi_write_hpet(device, current, rsdp);
 }
 
-unsigned long acpi_fill_madt_irqoverride(unsigned long current)
-{
-	const struct soc_amd_common_config *cfg = soc_get_common_config();
-	unsigned int i;
-	uint8_t irq;
-	uint8_t flags;
-
-	for (i = 0; i < ARRAY_SIZE(cfg->irq_override); ++i) {
-		irq = cfg->irq_override[i].irq;
-		flags = cfg->irq_override[i].flags;
-
-		if (!flags)
-			continue;
-
-		current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)current, 0,
-							irq, irq, flags);
-	}
-
-	return current;
-}
-
 /* Used by \_SB.PCI0._CRS */
 void acpi_fill_root_complex_tom(const struct device *device)
 {

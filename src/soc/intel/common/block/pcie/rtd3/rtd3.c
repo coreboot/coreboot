@@ -511,10 +511,7 @@ static void pcie_rtd3_acpi_fill_ssdt(const struct device *dev)
 		acpigen_write_device(acpi_device_name(dev));
 		acpigen_write_ADR(0);
 		acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
-		if (CONFIG(D3COLD_SUPPORT))
-			acpigen_write_name_integer("_S0W", ACPI_DEVICE_SLEEP_D3_COLD);
-		else
-			acpigen_write_name_integer("_S0W", ACPI_DEVICE_SLEEP_D3_HOT);
+		acpigen_write_name_integer("_S0W", ACPI_DEVICE_SLEEP_D3_COLD);
 
 		acpi_device_add_storage_d3_enable(NULL);
 

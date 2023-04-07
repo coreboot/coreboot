@@ -4,6 +4,7 @@
 #include <device/pnp.h>
 #include <acpi/acpigen.h>
 #include <console/console.h>
+#include "chip.h"
 
 static void generic_set_resources(struct device *dev)
 {
@@ -292,6 +293,11 @@ static void generic_ssdt(const struct device *dev)
 
 static const char *generic_acpi_name(const struct device *dev)
 {
+	const struct superio_common_config *cfg = dev->chip_info;
+	if (cfg && cfg->acpi_name[sizeof(cfg->acpi_name)-1] == '\0' &&
+		strlen(cfg->acpi_name) == 4) {
+		return cfg->acpi_name;
+	}
 	return "SIO0";
 }
 #endif

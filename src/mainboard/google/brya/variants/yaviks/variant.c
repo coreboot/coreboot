@@ -2,7 +2,9 @@
 
 #include <baseboard/variants.h>
 #include <boardid.h>
+#include <console/console.h>
 #include <device/device.h>
+#include <drivers/intel/gma/opregion.h>
 #include <fw_config.h>
 #include <sar.h>
 
@@ -12,6 +14,16 @@ const char *get_wifi_sar_cbfs_filename(void)
 		return "wifi_sar_0.hex";
 
 	return NULL;
+}
+
+const char *mainboard_vbt_filename(void)
+{
+	if (fw_config_probe(FW_CONFIG(MB_HDMI, HDMI_PRESENT))) {
+		printk(BIOS_INFO, "Use vbt-yavilla.bin\n");
+		return "vbt-yavilla.bin";
+	}
+	printk(BIOS_INFO, "Use vbt.bin\n");
+	return "vbt.bin";
 }
 
 void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config)

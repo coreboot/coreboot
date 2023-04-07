@@ -1,0 +1,8 @@
+Vendor name: Purism
+Board name: Librem L1UM v2
+Category: server
+Release year: 2023
+ROM package: SOIC-16
+ROM protocol: SPI
+ROM socketed: y
+Flashrom support: y

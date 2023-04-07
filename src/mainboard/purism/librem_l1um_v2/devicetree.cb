@@ -1,0 +1,394 @@
+chip soc/intel/cannonlake
+
+	register "SaGv" = "SaGv_FixedHigh"
+
+	register "PcieClkSrcClkReq[0]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[1]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[2]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[3]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[4]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[5]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[6]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[7]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[8]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[9]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[10]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[11]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[12]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[13]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[14]" = "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[15]" = "PCIE_CLK_NOTUSED"
+
+	register "s0ix_enable" = "0"
+
+	register "eist_enable" = "1"
+
+	register "SerialIoDevMode" = "{
+		[PchSerialIoIndexI2C0]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C1]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled,
+		[PchSerialIoIndexSPI0]  = PchSerialIoDisabled,
+		[PchSerialIoIndexSPI1]  = PchSerialIoDisabled,
+		[PchSerialIoIndexUART0] = PchSerialIoDisabled,
+		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
+		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
+	}"
+
+	register "DisableHeciRetry" = "1"
+
+	device cpu_cluster 0 on end
+
+	device domain 0 on
+		device pci 00.0 on  end # Host Bridge
+		device pci 01.0 on      # PCIE6 - x16 or x8
+			register "PcieClkSrcUsage[3]" = "0x40"
+			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthOther" "PCIE6" "SlotDataBusWidth16X"
+		end
+		device pci 01.1 on      # PCIE4 - x8
+			register "PcieClkSrcUsage[4]" = "0x41"
+			smbios_slot_desc "SlotTypePciExpressGen3X8" "SlotLengthOther" "PCIE4" "SlotDataBusWidth8X"
+		end
+		device pci 02.0 on  end # Integrated Graphics Device
+		device pci 04.0 off end # SA Thermal Device
+		device pci 08.0 on  end # Gaussian Mixture
+		device pci 12.0 on  end # Thermal Subsystem
+		device pci 14.0 on      # USB xHCI
+			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"	# USB 3.1 front left
+			register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"	# USB 3.1 front right
+			register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# USB_1_2 header port A
+			register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# USB_1_2 header port B
+			register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# USB 3.1 rear top-right
+			register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"	# USB 3.1 rear bottom-right
+			register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# BMC port A
+			register "usb2_ports[8]" = "USB2_PORT_MID(OC_SKIP)"	# USB 3.1 rear bottom-left
+			register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# BMC port B (seems to be unused)
+			register "usb2_ports[10]" = "USB2_PORT_MID(OC_SKIP)"	# USB 3.1 rear top-left
+
+			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB 3.1 rear bottom-right
+			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB 3.1 rear top-right
+			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB 3.1 rear bottom-left
+			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB 3.1 rear top-left
+			register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB 3.1 front left
+			register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB 3.1 front right
+
+			chip drivers/usb/acpi
+				device usb 0.0 on
+					chip drivers/usb/acpi
+						register "desc" = ""USB 2.0 Type-A Front Left""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(0, 0)"
+						device usb 2.0 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB 2.0 Type-A Front Right""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(0, 1)"
+						device usb 2.1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB 2.0 USB_1_2 Header Port A""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "group" = "ACPI_PLD_GROUP(1, 0)"
+						device usb 2.2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB 2.0 USB_1_2 Header Port B""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "group" = "ACPI_PLD_GROUP(1, 1)"
+						device usb 2.3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB 2.0 Type-A Rear Right Upper""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(2, 0)"
+						device usb 2.4 on end
+					end
+					chip drivers/usb/acpi
+						device usb 2.5 off end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB 2.0 Type-A Rear Right Lower""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(2, 1)"
+						device usb 2.6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB 2.0 BMC Port A""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "group" = "ACPI_PLD_GROUP(3, 0)"
+						device usb 2.7 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB 2.0 Type-A Rear Left Lower""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(2, 2)"
+						device usb 2.8 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB 2.0 BMC Port B""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "group" = "ACPI_PLD_GROUP(3, 1)"
+						device usb 2.9 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB 2.0 Type-A Rear Left Upper""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(2, 3)"
+						device usb 2.10 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB 3.1 Type-A Rear Right Lower""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(2, 1)"
+						device usb 3.0 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB 3.1 Type-A Rear Right Upper""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(2, 0)"
+						device usb 3.1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB 3.1 Type-A Rear Left Lower""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(2, 2)"
+						device usb 3.2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB 3.1 Type-A Rear Left Upper""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(2, 3)"
+						device usb 3.3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB 3.1 Type-A Front Left""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(0, 0)"
+						device usb 3.4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB 3.1 Type-A Front Right""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(0, 1)"
+						device usb 3.5 on end
+					end
+				end
+			end
+		end
+		device pci 14.1 off end # USB xDCI (OTG)
+		device pci 14.2 on  end # RAM controller
+		device pci 14.3 off end
+		device pci 14.5 off end # SDCard
+		device pci 15.0 off  end # I2C #0
+		device pci 15.1 off end # I2C #1
+		device pci 15.2 off end # I2C #2
+		device pci 15.3 off end # I2C #3
+		device pci 16.0 off end # Management Engine Interface 1
+		device pci 16.1 off end # Management Engine Interface 2
+		device pci 16.2 off end # Management Engine IDE Redirection
+		device pci 16.3 off end # Management Engine KT Redirection
+		device pci 16.4 off end # Management Engine Interface 3
+		device pci 17.0 on
+			register "satapwroptimize" = "1"
+
+			register "SataPortsEnable[0]" = "1"
+			register "SataPortsEnable[1]" = "1"
+			register "SataPortsEnable[2]" = "1"
+			register "SataPortsEnable[3]" = "1"
+			register "SataPortsEnable[4]" = "1"
+			register "SataPortsEnable[5]" = "1"
+			register "SataPortsEnable[6]" = "1"
+			register "SataPortsEnable[7]" = "1"
+
+			register "SataPortsHotPlug[0]" = "1"
+			register "SataPortsHotPlug[1]" = "1"
+			register "SataPortsHotPlug[2]" = "1"
+			register "SataPortsHotPlug[3]" = "1"
+			register "SataPortsHotPlug[4]" = "1"
+			register "SataPortsHotPlug[5]" = "1"
+			register "SataPortsHotPlug[6]" = "1"
+			register "SataPortsHotPlug[7]" = "1"
+		end # SATA
+		device pci 1b.4 on	# PCI Express Port 21 - PCIE5
+			register "PcieRpSlotImplemented[20]" = "1"
+			register "PcieRpEnable[20]" = "1"
+			register "PcieRpLtrEnable[20]" = "1"
+			register "PcieClkSrcUsage[10]" = "20"
+			smbios_slot_desc "SlotTypePciExpressGen3X4" "SlotLengthOther" "PCIE5" "SlotDataBusWidth4X"
+		end
+		device pci 1c.0 on	# PCI Express Port 1 - M2_1
+			register "PcieRpSlotImplemented[0]" = "1"
+			register "PcieRpEnable[0]" = "1"
+			register "PcieRpLtrEnable[0]" = "1"
+			register "PcieClkSrcUsage[1]" = "0x80"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M2_1" "SlotDataBusWidth4X"
+		end
+		device pci 1d.0 on	# PCI Express Port 9 - GbE #1
+			register "PcieRpEnable[8]" = "1"
+			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieClkSrcUsage[14]" = "8"
+			# Type indexes are needed for systemd to use "onboard" names by default
+			# (eno0, eno1).  Otherwise it uses "slot" names that can change if any
+			# of the preceding PCIe slots are populated/unpopulated.  Numbering 1/2
+			# (rather than 0/1) is consistent with the mainboard manual and vendor
+			# firmware.
+			device pci 00.0 on
+				smbios_dev_info 1
+			end
+		end
+		device pci 1d.1 on	# PCI Express Port 10 - BMC video
+			register "PcieRpEnable[9]" = "1"
+			register "PcieRpLtrEnable[9]" = "1"
+			register "PcieClkSrcUsage[8]" = "9"
+		end
+		device pci 1d.2 on	# PCI Express Port 11 - GbE #2
+			register "PcieRpEnable[10]" = "1"
+			register "PcieRpLtrEnable[10]" = "1"
+			register "PcieClkSrcUsage[11]" = "10"
+			device pci 00.0 on
+				smbios_dev_info 2
+			end
+		end
+		device pci 1e.0 off end # UART #0
+		device pci 1e.1 off end # UART #1
+		device pci 1e.2 off end # GSPI #0
+		device pci 1e.3 off end # GSPI #1
+		device pci 1f.0 on      # LPC Interface
+			# This board has a lot of SuperIO LDNs with I/O BARs, the LPC generic
+			# I/O ranges must be configured manually.
+			register "gen1_dec" = "0x000c0ca1"	# IPMI: ca0-caf
+			register "gen2_dec" = "0x007c0a01"	# ASpeed SuperIO SWC and mailbox: a00-a7f
+			register "gen3_dec" = "0x00040291"	# Nuvoton SuperIO HW monitor: 290-297
+
+			# AST2500 Super IO UART1 requires continuous mode
+			register "serirq_mode" = "SERIRQ_CONTINUOUS"
+
+			chip drivers/ipmi # BMC KCS
+				device pnp ca2.0 on end
+				register "bmc_i2c_address" = "0x10"
+			end
+			# Nuvoton SuperIO
+			chip superio/common
+				# This board has two SuperIOs.  The BMC's SuperIO is SIO0
+				# since it is used for most normal SuperIO functionality.
+				register "acpi_name" = ""SIO1""
+				device pnp 2e.0 on
+					chip superio/nuvoton/nct6791d
+						device pnp 2e.1 off end	# Parallel port
+						device pnp 2e.2 off end	# UART A
+						device pnp 2e.3 off end	# UART B, IR
+						device pnp 2e.5 off end	# Keyboard Controller
+						device pnp 2e.6 off end	# Consumer IR
+						device pnp 2e.7 off end	# GPIO 6
+						device pnp 2e.107 off end	# GPIO 7
+						device pnp 2e.207 off end	# GPIO 8
+						device pnp 2e.8 off end # WDT
+						device pnp 2e.108 off end # GPIO0
+						device pnp 2e.308 off end # GPIO base address mode
+						device pnp 2e.408 off end # WDT_MEM
+						device pnp 2e.708 alias nvt_superio_gpio1 on	# GPIO1
+							# Global Control Registers
+							# IRQ Polarity
+							irq 0x13 = 0xff
+							irq 0x14 = 0xff
+							# Multi Function Selection
+							irq 0x1a = 0x44
+							irq 0x1b = 0x66
+							irq 0x1c = 0x10
+							irq 0x1d = 0x00
+							irq 0x2a = 0xe0
+							irq 0x2b = 0x00
+							irq 0x2c = 0x00
+							irq 0x2d = 0x00
+
+							# GPIO1
+							irq 0xf0 = 0x08
+							irq 0xf4 = 0xf7
+						end
+						device pnp 2e.9 on	# GPIO2
+							irq 0xe0 = 0xbf
+							irq 0xe9 = 0xbf
+						end
+						device pnp 2e.109 on	# GPIO3
+							irq 0xe4 = 0x11
+							irq 0xe5 = 0x01
+							irq 0xe6 = 0x00
+							irq 0xea = 0x6e
+							irq 0xfe = 0x00
+						end
+						device pnp 2e.209 on	# GPIO4
+							irq 0xf0 = 0x44
+							irq 0xee = 0xbb
+						end
+						device pnp 2e.309 off end	# GPIO5
+						device pnp 2e.a on	# ACPI
+							# Bit 4 is "power-loss last state flag", in RTC well.
+							# 1=off (default), 0=on.
+							# This might be automatic power on for this board
+							irq 0xe6 = 0x0a
+							irq 0xed = 0x01
+						end
+						device pnp 2e.b on	# Hardware Monitor, Front Panel LED
+							io 0x60 = 0x0290	# HM IO base
+							io 0x62 = 0x0000	# SB-TSI IO base
+							irq 0x70 = 0x00		# HM IRQ
+						end
+						device pnp 2e.d off end	# BCLK, WDT2, WDT_MEM
+						device pnp 2e.e off end	# CIR Wake-up
+						device pnp 2e.f on end	# GPIO push-pull / open-drain
+						device pnp 2e.14 on end	# SVID, Port 80 UART
+						device pnp 2e.16 off end	# DS5
+						device pnp 2e.116 off end	# DS3
+						device pnp 2e.316 off end	# PCHDSW
+						device pnp 2e.416 off end	# DSWWOPT
+						device pnp 2e.516 on end	# DS3OPT
+						device pnp 2e.616 off end	# DSDSS
+						device pnp 2e.716 off end	# DSPU
+					end
+				end
+			end
+			# AST2500 SuperIO
+			chip superio/common
+				device pnp 4e.0 on
+					chip superio/aspeed/ast2400
+						device pnp 4e.2 on	# SUART1
+							io 0x60 = 0x3f8
+							irq 0x70 = 0x04
+							drq 0xf0 = 0x00
+						end
+						device pnp 4e.3 off end # SUART2
+						device pnp 4e.4 off	 # SWC
+							io 0x60 = 0xa00
+							io 0x62 = 0xa10
+							io 0x64 = 0xa20
+							io 0x66 = 0xa30
+							irq 0x70 = 0x09
+						end
+						device pnp 4e.5 off end	# KBC
+						device pnp 4e.7 off end	# GPIO
+						device pnp 4e.b off end	# SUART3
+						device pnp 4e.c off end	# SUART4
+						device pnp 4e.d on	# iLPC2AHB
+							irq 0x70 = 0x00
+						end
+						device pnp 4e.e on	# Mailbox
+							io 0x60 = 0xa40
+							irq 0x70 = 0x00
+						end
+					end
+				end
+			end
+			chip drivers/pc80/tpm
+				# The TPM header has SERIRQ#, but it is not
+				# connected on the TPM module - no TPM IRQ.
+				device pnp 0c31.0 on end
+			end
+		end
+		device pci 1f.1 off end # P2SB
+		device pci 1f.2 hidden end # PMC
+		device pci 1f.3 off end # Intel HDA
+		device pci 1f.4 on  end # SMBus
+		device pci 1f.5 on  end # SPI
+	end
+end

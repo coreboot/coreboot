@@ -312,6 +312,9 @@ void acpi_create_madt(acpi_madt_t *madt)
 	if (CONFIG(ACPI_HAVE_PCAT_8259))
 		madt->flags |= 1;
 
+	if (CONFIG(ACPI_COMMON_MADT_LAPIC))
+		current = acpi_create_madt_lapics_with_nmis(current);
+
 	if (!CONFIG(ACPI_NO_MADT))
 		current = acpi_fill_madt(current);
 

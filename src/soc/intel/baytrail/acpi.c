@@ -87,9 +87,6 @@ int acpi_sci_irq(void)
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
-	/* Local APICs */
-	current = acpi_create_madt_lapics_with_nmis(current);
-
 	/* IOAPIC */
 	current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current, IO_APIC_ADDR);
 

@@ -1,6 +1,7 @@
 config SOC_INTEL_COMMON_BLOCK_ACPI
 	depends on SOC_INTEL_COMMON_BLOCK_CPU
 	depends on SOC_INTEL_COMMON_BLOCK_PMC
+	select ACPI_COMMON_MADT_LAPIC if !SOC_INTEL_COMMON_BLOCK_ACPI_CPU_HYBRID
 	bool
 	help
 	  Intel Processor common code for ACPI

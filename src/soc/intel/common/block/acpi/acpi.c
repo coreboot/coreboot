@@ -87,11 +87,8 @@ unsigned long acpi_fill_madt(unsigned long current)
 	size_t ioapic_entries;
 
 	/* Local APICs */
-
-	if (CONFIG(SOC_INTEL_COMMON_BLOCK_ACPI_CPU_HYBRID))
+	if (!CONFIG(ACPI_COMMON_MADT_LAPIC))
 		current = acpi_create_madt_lapics_with_nmis_hybrid(current);
-	else
-		current = acpi_create_madt_lapics_with_nmis(current);
 
 	/* IOAPIC */
 	ioapic_entries = soc_get_ioapic_info(&ioapic_table);

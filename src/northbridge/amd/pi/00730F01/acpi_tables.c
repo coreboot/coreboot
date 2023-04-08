@@ -6,9 +6,6 @@
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
-	/* create all subtables for processors */
-	current = acpi_create_madt_lapics_with_nmis(current);
-
 	/* Write SB800 IOAPIC, only one */
 	current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current, IO_APIC_ADDR);
 

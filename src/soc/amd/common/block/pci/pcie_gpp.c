@@ -47,6 +47,20 @@ static void acpi_device_write_gpp_pci_dev(const struct device *dev)
 	acpigen_pop_len(); /* Scope */
 }
 
+/* Latency tolerance reporting, max snoop/non-snoop latency value 1.049ms */
+#define PCIE_LTR_MAX_LATENCY_1049US 0x1001
+
+static void pcie_get_ltr_max_latencies(u16 *max_snoop, u16 *max_nosnoop)
+{
+	*max_snoop = PCIE_LTR_MAX_LATENCY_1049US;
+	*max_nosnoop = PCIE_LTR_MAX_LATENCY_1049US;
+}
+
+static struct pci_operations pcie_ops = {
+	.get_ltr_max_latencies	= pcie_get_ltr_max_latencies,
+	.set_subsystem		= pci_dev_set_subsystem,
+};
+
 struct device_operations amd_internal_pcie_gpp_ops = {
 	.read_resources		= pci_bus_read_resources,
 	.set_resources		= pci_dev_set_resources,
@@ -65,4 +79,5 @@ struct device_operations amd_external_pcie_gpp_ops = {
 	.reset_bus		= pci_bus_reset,
 	.acpi_name		= pcie_gpp_acpi_name,
 	.acpi_fill_ssdt		= acpi_device_write_gpp_pci_dev,
+	.ops_pci		= &pcie_ops,
 };

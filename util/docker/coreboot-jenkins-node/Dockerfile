@@ -44,8 +44,8 @@ RUN apt-get -y update && \
 		python3-pyrsistent \
 		swig \
 	&& apt-get clean \
-	&& pip3 install --upgrade --no-cache-dir pip \
-	&& pip3 install --no-cache-dir  \
+	&& pip3 install --upgrade --no-cache-dir --break-system-packages pip \
+	&& pip3 install --no-cache-dir --break-system-packages \
 		setuptools==58.2.0 \
 		jinja2==3.0.3 \
 		recommonmark===0.5.0 \

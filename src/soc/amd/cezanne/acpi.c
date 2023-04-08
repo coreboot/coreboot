@@ -21,19 +21,10 @@
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
-	current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current, IO_APIC_ADDR);
 
 	current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current,
 						   GNB_IO_APIC_ADDR);
 
-	/* PIT is connected to legacy IRQ 0, but IOAPIC GSI 2 */
-	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)current,
-		MP_BUS_ISA, 0, 2,
-		MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT);
-	/* SCI IRQ type override */
-	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)current,
-		MP_BUS_ISA, ACPI_SCI_IRQ, ACPI_SCI_IRQ,
-		MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW);
 	current = acpi_fill_madt_irqoverride(current);
 
 	return current;

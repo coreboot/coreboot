@@ -8,9 +8,6 @@ unsigned long acpi_fill_madt(unsigned long current)
 	struct device *bdev, *dev = NULL;
 	struct resource *res = NULL;
 
-	/* Southbridge IOAPIC */
-	current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current, 0xfec00000);
-
 	bdev = pcidev_on_root(2, 0);
 	/* P64H2 Bus B IOAPIC */
 	if (bdev)
@@ -27,12 +24,6 @@ unsigned long acpi_fill_madt(unsigned long current)
 		res = find_resource(dev, PCI_BASE_ADDRESS_0);
 		current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current, res->base);
 	}
-
-	/* Map ISA IRQ 0 to IRQ 2 */
-	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)current, 1, 0, 2, 0);
-
-	/* IRQ9 differs from ISA standard - ours is active high, level-triggered */
-	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)current, 0, 9, 9, 0xD);
 
 	return current;
 }

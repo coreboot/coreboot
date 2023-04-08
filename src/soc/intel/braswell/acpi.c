@@ -318,18 +318,6 @@ void generate_cpu_entries(const struct device *device)
 	acpigen_write_processor_cnot(pattrs->num_cpus);
 }
 
-unsigned long acpi_fill_madt(unsigned long current)
-{
-	/* IOAPIC */
-	current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current, IO_APIC_ADDR);
-
-	/* INT_SRC_OVR */
-	current += acpi_create_madt_irqoverride((void *)current, 0, 0, 2, 0);
-	current += acpi_create_madt_sci_override((void *)current);
-
-	return current;
-}
-
 unsigned long southcluster_write_acpi_tables(const struct device *device, unsigned long current,
 					     struct acpi_rsdp *rsdp)
 {

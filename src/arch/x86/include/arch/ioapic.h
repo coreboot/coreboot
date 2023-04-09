@@ -5,7 +5,6 @@
 
 #define IO_APIC_ADDR	0xfec00000
 #define VIO_APIC_VADDR	((u8 *)IO_APIC_ADDR)
-#define IO_APIC_INTERRUPTS 24
 
 #ifndef __ACPI__
 

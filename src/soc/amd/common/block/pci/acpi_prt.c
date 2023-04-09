@@ -7,20 +7,22 @@
 #include <arch/ioapic.h>
 #include <device/device.h>
 
+/* GNB IO-APIC is located after the FCH IO-APIC */
+#define FCH_IOAPIC_INTERRUPTS	24
+#define GNB_GSI_BASE		FCH_IOAPIC_INTERRUPTS
+
 static void acpigen_write_PRT_GSI(const struct pci_routing_info *routing_info)
 {
 	unsigned int irq;
 
 	acpigen_write_package(4); /* Package - APIC Routing */
 	for (unsigned int i = 0; i < 4; ++i) {
-		/* GNB IO-APIC is located after the FCH IO-APIC */
-		irq = IO_APIC_INTERRUPTS;
-		irq += pci_calculate_irq(routing_info, i);
+		irq = pci_calculate_irq(routing_info, i);
 
 		acpigen_write_PRT_GSI_entry(
 			0, /* There is only one device attached to the bridge */
 			i, /* pin */
-			irq);
+			GNB_GSI_BASE + irq);
 	}
 	acpigen_pop_len(); /* Package - APIC Routing */
 }

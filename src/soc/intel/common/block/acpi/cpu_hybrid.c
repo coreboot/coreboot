@@ -28,14 +28,14 @@ struct cpu_apic_info_type {
 	int32_t apic_ids[CONFIG_MAX_CPUS];
 
 	/* Total CPU count */
-	uint8_t total_cpu_cnt;
+	uint16_t total_cpu_cnt;
 
 	/*
 	 * Total Performance core count. This will be used
 	 * to identify the start of Efficient Cores's
 	 * APIC ID list
 	 */
-	uint8_t perf_cpu_cnt;
+	uint16_t perf_cpu_cnt;
 };
 
 static struct cpu_apic_info_type cpu_apic_info;

@@ -203,7 +203,8 @@ void soc_init_pre_device(void *chip_info)
 	 * current boot sequence) to reduce message response time from CSE hence moving
 	 * sending EOP to earlier stage.
 	 */
-	if (CONFIG(SOC_INTEL_CSE_SEND_EOP_EARLY)) {
+	if (CONFIG(SOC_INTEL_CSE_SEND_EOP_EARLY) ||
+	    CONFIG(SOC_INTEL_CSE_SEND_EOP_ASYNC)) {
 		printk(BIOS_INFO, "Sending EOP early from SoC\n");
 		cse_send_end_of_post();
 	}

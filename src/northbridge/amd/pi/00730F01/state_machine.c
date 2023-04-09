@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/biosram.h>
+#include <amdblocks/ioapic.h>
 
 #include "Porting.h"
 #include "AGESA.h"
@@ -9,7 +10,6 @@
 #include <northbridge/amd/agesa/state_machine.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 #include <northbridge/amd/nb_common.h>
-#include <southbridge/amd/pi/hudson/ioapic.h>
 
 void platform_BeforeInitReset(struct sysinfo *cb, AMD_RESET_PARAMS *Reset)
 {

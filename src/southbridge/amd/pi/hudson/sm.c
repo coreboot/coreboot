@@ -5,7 +5,6 @@
 #include <device/pci_ids.h>
 #include <device/smbus.h>
 #include <arch/ioapic.h>
-#include <southbridge/amd/pi/hudson/ioapic.h>
 
 #include "hudson.h"
 #include "smbus.c"
@@ -22,7 +21,7 @@
 
 static void sm_init(struct device *dev)
 {
-	setup_ioapic(VIO_APIC_VADDR, FCH_IOAPIC_ID);
+	register_new_ioapic_gsi0(VIO_APIC_VADDR);
 }
 
 static int lsmbus_recv_byte(struct device *dev)

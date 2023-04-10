@@ -276,6 +276,18 @@ int acpi_create_madt_sci_override(acpi_madt_irqoverride_t *irqoverride)
 	return irqoverride->length;
 }
 
+static unsigned long acpi_create_madt_ioapic_gsi0_default(unsigned long current)
+{
+	current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current, IO_APIC_ADDR);
+
+	current += acpi_create_madt_irqoverride((void *)current, MP_BUS_ISA, 0, 2,
+						MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH);
+
+	current += acpi_create_madt_sci_override((void *)current);
+
+	return current;
+}
+
 static int acpi_create_madt_lapic_nmi(acpi_madt_lapic_nmi_t *lapic_nmi, u8 cpu,
 				u16 flags, u8 lint)
 {
@@ -353,7 +365,10 @@ static void acpi_create_madt(acpi_madt_t *madt)
 	if (CONFIG(ACPI_COMMON_MADT_LAPIC))
 		current = acpi_create_madt_lapics_with_nmis(current);
 
-	if (!CONFIG(ACPI_NO_MADT))
+	if (CONFIG(ACPI_COMMON_MADT_IOAPIC))
+		current = acpi_create_madt_ioapic_gsi0_default(current);
+
+	if (CONFIG(ACPI_CUSTOM_MADT))
 		current = acpi_fill_madt(current);
 
 	/* (Re)calculate length and checksum. */

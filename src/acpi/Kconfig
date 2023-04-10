@@ -31,13 +31,22 @@ config ACPI_SOC_NVS
 	  Set to indicate <soc/nvs.h> exists for the platform with a definition
 	  for global_nvs.
 
+config ACPI_CUSTOM_MADT
+	bool
+	default n if ACPI_NO_CUSTOM_MADT
+	default y
+	help
+	  Selected by platforms that need to expose custom MADT entries.
+
+config ACPI_NO_CUSTOM_MADT
+	bool
+	default y if ACPI_COMMON_MADT_LAPIC && ACPI_COMMON_MADT_IOAPIC
+
 config ACPI_COMMON_MADT_LAPIC
 	bool
 
-config ACPI_NO_MADT
+config ACPI_COMMON_MADT_IOAPIC
 	bool
-	help
-	  Selected by platforms that don't expose a useful MADT.
 
 config ACPI_NO_PCAT_8259
 	bool

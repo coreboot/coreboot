@@ -4,6 +4,7 @@
 #include <amdblocks/spi.h>
 #include <assert.h>
 #include <boot_device.h>
+#include <cbfs.h>
 #include <commonlib/bsd/helpers.h>
 #include <commonlib/region.h>
 #include <console/console.h>
@@ -25,22 +26,6 @@ struct spi_dma_transaction {
 	size_t transfer_size;
 	size_t remaining;
 };
-
-static void *spi_dma_mmap(const struct region_device *rd, size_t offset,
-			  size_t size __always_unused)
-{
-	const struct mem_region_device *mdev;
-
-	mdev = container_of(rd, __typeof__(*mdev), rdev);
-
-	return &mdev->base[offset];
-}
-
-static int spi_dma_munmap(const struct region_device *rd __always_unused,
-			  void *mapping __always_unused)
-{
-	return 0;
-}
 
 static ssize_t spi_dma_readat_mmap(const struct region_device *rd, void *b, size_t offset,
 				   size_t size)
@@ -221,6 +206,41 @@ static ssize_t spi_dma_readat(const struct region_device *rd, void *b, size_t of
 		return spi_dma_readat_dma(rd, b, offset, size);
 	else
 		return spi_dma_readat_mmap(rd, b, offset, size);
+}
+
+static void *spi_dma_mmap(const struct region_device *rd, size_t offset, size_t size)
+{
+	const struct mem_region_device *mdev;
+	void *mapping;
+
+	mdev = container_of(rd, __typeof__(*mdev), rdev);
+
+	if (!CONFIG_CBFS_CACHE_SIZE)
+		return &mdev->base[offset];
+
+	mapping = mem_pool_alloc(&cbfs_cache, size);
+	if (!mapping) {
+		printk(BIOS_INFO, "%s: Could not allocate %zu bytes from memory pool\n",
+		       __func__, size);
+		/* Fall-back to memory map */
+		return &mdev->base[offset];
+	}
+
+	if (spi_dma_readat(rd, mapping, offset, size) != size) {
+		printk(BIOS_ERR, "%s: Error reading into mmap buffer\n", __func__);
+		mem_pool_free(&cbfs_cache, mapping);
+		/* Fall-back to memory mapped read - not expected to fail atleast for now */
+		spi_dma_readat_mmap(rd, mapping, offset, size);
+	}
+
+	return mapping;
+}
+
+static int spi_dma_munmap(const struct region_device *rd __always_unused, void *mapping)
+{
+	if (CONFIG_CBFS_CACHE_SIZE)
+		mem_pool_free(&cbfs_cache, mapping);
+	return 0;
 }
 
 const struct region_device_ops spi_dma_rdev_ro_ops = {

@@ -20,7 +20,6 @@ ramstage-y += ../common/pciehp.c
 ramstage-y += ../bd82x6x/me_status.c
 
 ramstage-$(CONFIG_ELOG) += ../bd82x6x/elog.c
-ramstage-y += madt.c
 
 smm-y += smihandler.c
 

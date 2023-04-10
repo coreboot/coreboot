@@ -379,20 +379,6 @@ static void lpc_init(struct device *dev)
 	i82801jx_set_acpi_mode(dev);
 }
 
-unsigned long acpi_fill_madt(unsigned long current)
-{
-	/* IOAPIC */
-	current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current, IO_APIC_ADDR);
-
-	/* INT_SRC_OVR */
-	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
-		 current, 0, 0, 2, MP_IRQ_POLARITY_HIGH | MP_IRQ_TRIGGER_EDGE);
-	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
-		 current, 0, 9, 9, MP_IRQ_POLARITY_HIGH | MP_IRQ_TRIGGER_LEVEL);
-
-	return current;
-}
-
 static void i82801jx_lpc_read_resources(struct device *dev)
 {
 	int i, io_index = 0;

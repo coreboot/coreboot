@@ -22,10 +22,6 @@ ramstage-y += ../common/pciehp.c
 
 smm-y += smihandler.c
 
-ifneq ($(CONFIG_BOARD_EMULATION_QEMU_X86_Q35),y)
-ramstage-y += madt.c
-endif
-
 CPPFLAGS_common += -I$(src)/southbridge/intel/i82801ix/include
 
 endif

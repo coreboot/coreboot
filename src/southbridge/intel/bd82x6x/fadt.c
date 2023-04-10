@@ -12,8 +12,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	struct southbridge_intel_bd82x6x_config *chip = dev->chip_info;
 	u16 pmbase = pci_read_config16(dev, 0x40) & 0xfffe;
 
-	fadt->sci_int = 0x9;
-
 	if (permanent_smi_handler()) {
 		fadt->smi_cmd = APM_CNT;
 		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;

@@ -16,6 +16,7 @@
 #include <amdblocks/ioapic.h>
 #include <amdblocks/iomap.h>
 #include <amdblocks/lpc.h>
+#include <soc/acpi.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
 #include <soc/southbridge.h>
@@ -32,6 +33,13 @@ static void setup_serirq(void)
 		byte |= PM_SERIRQ_MODE;
 
 	pm_write8(PM_SERIRQ_CONF, byte);
+}
+
+void ioapic_get_sci_pin(u8 *gsi, u8 *irq, u8 *flags)
+{
+	*gsi = ACPI_SCI_IRQ;
+	*irq = ACPI_SCI_IRQ;
+	*flags = MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW;
 }
 
 static void fch_ioapic_init(void)

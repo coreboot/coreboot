@@ -226,7 +226,7 @@ int acpi_create_madt_ioapic_from_hw(acpi_madt_ioapic_t *ioapic, u32 addr)
 }
 #endif
 
-u16 acpi_sci_int(void)
+static u16 acpi_sci_int(void)
 {
 #if ENV_X86
 	u8 gsi, irq, flags;
@@ -1735,6 +1735,8 @@ static void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 
 	if (CONFIG(USE_PC_CMOS_ALTCENTURY))
 		fadt->century = RTC_CLK_ALTCENTURY;
+
+	fadt->sci_int = acpi_sci_int();
 
 	arch_fill_fadt(fadt);
 

@@ -12,8 +12,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	struct southbridge_intel_lynxpoint_config *cfg = dev->chip_info;
 	u16 pmbase = get_pmbase();
 
-	fadt->sci_int = 0x9;
-
 	if (permanent_smi_handler()) {
 		fadt->smi_cmd = APM_CNT;
 		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;

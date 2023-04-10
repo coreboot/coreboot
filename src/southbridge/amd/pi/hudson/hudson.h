@@ -42,6 +42,8 @@
 #define ACPI_GPE0_BLK		(HUDSON_ACPI_IO_BASE + 0x10) /* 8 bytes */
 #define ACPI_CPU_CONTROL	(HUDSON_ACPI_IO_BASE + 0x08) /* 6 bytes */
 
+#define ACPI_SCI_IRQ			9
+
 #define ACPI_SMI_CTL_PORT		0xb2
 #define ACPI_SMI_CMD_CST_CONTROL	0xde
 #define ACPI_SMI_CMD_PST_CONTROL	0xad

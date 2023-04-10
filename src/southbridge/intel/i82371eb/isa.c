@@ -67,6 +67,15 @@ static void isa_init(struct device *dev)
 	}
 }
 
+#define ACPI_SCI_IRQ	9
+
+void ioapic_get_sci_pin(u8 *gsi, u8 *irq, u8 *flags)
+{
+	*gsi = ACPI_SCI_IRQ;
+	*irq = ACPI_SCI_IRQ;
+	*flags = MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_HIGH;
+}
+
 static void sb_read_resources(struct device *dev)
 {
 	struct resource *res;

@@ -16,8 +16,6 @@
  */
 void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
-	fadt->sci_int = 9;
-
 	if (permanent_smi_handler()) {
 		/* TODO: SMI handler is not implemented. */
 		fadt->smi_cmd = 0x00;

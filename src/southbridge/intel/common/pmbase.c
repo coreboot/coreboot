@@ -2,6 +2,7 @@
 
 #include <acpi/acpi.h>
 #include <arch/io.h>
+#include <arch/ioapic.h>
 #include <assert.h>
 #include <bootmode.h>
 #include <device/pci_ops.h>
@@ -91,4 +92,13 @@ int platform_is_resuming(void)
 		return 0;
 
 	return acpi_get_sleep_type() == ACPI_S3;
+}
+
+#define ACPI_SCI_IRQ	9
+
+void ioapic_get_sci_pin(u8 *gsi, u8 *irq, u8 *flags)
+{
+	*gsi = ACPI_SCI_IRQ;
+	*irq = ACPI_SCI_IRQ;
+	*flags = MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_HIGH;
 }

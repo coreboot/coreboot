@@ -52,8 +52,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 
 	printk(BIOS_DEBUG, "pm_base: 0x%04x\n", ACPI_IO_BASE);
 
-	fadt->sci_int = ACPI_SCI_IRQ;
-
 	if (permanent_smi_handler()) {
 		fadt->smi_cmd = APM_CNT;
 		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;

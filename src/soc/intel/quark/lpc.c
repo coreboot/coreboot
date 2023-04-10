@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/ioapic.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <soc/iomap.h>
@@ -32,6 +33,13 @@ static void pmc_read_resources(struct device *dev)
 	res->base = LEGACY_GPIO_BASE_ADDRESS;
 	res->size = LEGACY_GPIO_SIZE;
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+}
+
+/* Implemented just to fill FADT SCI_INT as 0. */
+void ioapic_get_sci_pin(u8 *gsi, u8 *irq, u8 *flags)
+{
+	*irq = 0;
+	*gsi = 0;
 }
 
 static struct device_operations device_ops = {

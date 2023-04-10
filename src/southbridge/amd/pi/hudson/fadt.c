@@ -25,8 +25,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
 	printk(BIOS_DEBUG, "pm_base: 0x%04x\n", HUDSON_ACPI_IO_BASE);
 
-	fadt->sci_int = 9;		/* HUDSON - IRQ 09 - ACPI SCI */
-
 	if (permanent_smi_handler()) {
 		fadt->smi_cmd = ACPI_SMI_CTL_PORT;
 		fadt->acpi_enable = ACPI_SMI_CMD_ENABLE;

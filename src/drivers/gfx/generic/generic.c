@@ -128,6 +128,10 @@ static void gfx_fill_ssdt_generator(const struct device *dev)
 
 		acpigen_write_name_integer("_STA", 0xF);
 		gfx_fill_privacy_screen_dsm(&config->device[i].privacy);
+
+		if (config->device[i].use_pld)
+			acpigen_write_pld(&config->device[i].pld);
+
 		acpigen_pop_len(); /* Device */
 	}
 	acpigen_pop_len(); /* Scope */

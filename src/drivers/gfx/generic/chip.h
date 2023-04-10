@@ -4,6 +4,7 @@
 #define __DRIVERS_GFX_GENERIC_CHIP_H__
 
 #include <acpi/acpi_device.h>
+#include <acpi/acpi_pld.h>
 
 /* Config for electronic privacy screen */
 struct drivers_gfx_generic_privacy_screen_config {
@@ -35,6 +36,9 @@ struct drivers_gfx_generic_device_config {
 	unsigned int addr;
 	/* Electronic privacy screen specific config */
 	struct drivers_gfx_generic_privacy_screen_config privacy;
+	/* Physical location of connection point */
+	bool use_pld;
+	struct acpi_pld pld;
 };
 
 /* Config for an ACPI video device defined in Appendix A of the ACPI spec */
@@ -47,7 +51,8 @@ struct drivers_gfx_generic_config {
 	/* The number of output devices defined */
 	int device_count;
 	/* Config for output devices */
-	struct drivers_gfx_generic_device_config device[5];
+	/* 1 DDIA + 1 DDIB + max 4 TCP = up to 6 GFX devices */
+	struct drivers_gfx_generic_device_config device[6];
 };
 
 #endif /* __DRIVERS_GFX_GENERIC_CHIP_H__ */

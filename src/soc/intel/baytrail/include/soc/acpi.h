@@ -5,6 +5,4 @@
 
 #include <acpi/acpi.h>
 
-int acpi_sci_irq(void);
-
 #endif /* _BAYTRAIL_ACPI_H_ */

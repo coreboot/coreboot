@@ -5,7 +5,6 @@
 
 #include <acpi/acpi.h>
 
-int acpi_sci_irq(void);
 void acpi_create_serialio_ssdt(acpi_header_t *ssdt);
 unsigned long southcluster_write_acpi_tables(const struct device *device,
 	unsigned long current, struct acpi_rsdp *rsdp);

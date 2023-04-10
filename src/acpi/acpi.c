@@ -17,6 +17,7 @@
 #include <acpi/acpi_ivrs.h>
 #include <acpi/acpigen.h>
 #include <arch/hpet.h>
+#include <arch/smp/mpspec.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <commonlib/helpers.h>
@@ -225,6 +226,24 @@ int acpi_create_madt_ioapic_from_hw(acpi_madt_ioapic_t *ioapic, u32 addr)
 }
 #endif
 
+u16 acpi_sci_int(void)
+{
+#if ENV_X86
+	u8 gsi, irq, flags;
+
+	ioapic_get_sci_pin(&gsi, &irq, &flags);
+
+	/* ACPI Release 6.5, 5.2.9 and 5.2.15.5. */
+	if (!CONFIG(ACPI_HAVE_PCAT_8259))
+		return gsi;
+
+	assert(irq < 16);
+	return irq;
+#else
+	return 0;
+#endif
+}
+
 int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride,
 		u8 bus, u8 source, u32 gsirq, u16 flags)
 {
@@ -233,6 +252,25 @@ int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride,
 	irqoverride->bus = bus;
 	irqoverride->source = source;
 	irqoverride->gsirq = gsirq;
+	irqoverride->flags = flags;
+
+	return irqoverride->length;
+}
+
+int acpi_create_madt_sci_override(acpi_madt_irqoverride_t *irqoverride)
+{
+	u8 gsi, irq, flags;
+
+	ioapic_get_sci_pin(&gsi, &irq, &flags);
+
+	if (!CONFIG(ACPI_HAVE_PCAT_8259))
+		irq = gsi;
+
+	irqoverride->type = IRQ_SOURCE_OVERRIDE; /* Interrupt source override */
+	irqoverride->length = sizeof(acpi_madt_irqoverride_t);
+	irqoverride->bus = MP_BUS_ISA;
+	irqoverride->source = irq;
+	irqoverride->gsirq = gsi;
 	irqoverride->flags = flags;
 
 	return irqoverride->length;

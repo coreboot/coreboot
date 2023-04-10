@@ -24,9 +24,11 @@
 
 #define  CPUID_6_EAX_ISST	(1 << 7)
 
-static int acpi_sci_irq(void)
+#define ACPI_SCI_IRQ 9
+
+void ioapic_get_sci_pin(u8 *gsi, u8 *irq, u8 *flags)
 {
-	int sci_irq = 9;
+	int sci_irq = ACPI_SCI_IRQ;
 	uint32_t scis;
 
 	scis = soc_read_sci_irq_select();
@@ -47,31 +49,17 @@ static int acpi_sci_irq(void)
 		sci_irq = scis - SCIS_IRQ20 + 20;
 		break;
 	default:
-		printk(BIOS_DEBUG, "Invalid SCI route! Defaulting to IRQ9.\n");
-		sci_irq = 9;
+		printk(BIOS_DEBUG, "Invalid SCI route! Defaulting to IRQ%d.\n", sci_irq);
 		break;
 	}
 
-	printk(BIOS_DEBUG, "SCI is IRQ%d\n", sci_irq);
-	return sci_irq;
+	*gsi = sci_irq;
+	*irq = (sci_irq < 16) ? sci_irq : ACPI_SCI_IRQ;
+	*flags = MP_IRQ_TRIGGER_LEVEL | soc_madt_sci_irq_polarity(sci_irq);
+
+	printk(BIOS_DEBUG, "SCI is IRQ %d, GSI %d\n", *irq, *gsi);
 }
 
-static unsigned long acpi_madt_irq_overrides(unsigned long current)
-{
-	int sci = acpi_sci_irq();
-	uint16_t flags = MP_IRQ_TRIGGER_LEVEL;
-
-	/* INT_SRC_OVR */
-	current += acpi_create_madt_irqoverride((void *)current, 0, 0, 2, 0);
-
-	flags |= soc_madt_sci_irq_polarity(sci);
-
-	/* SCI */
-	current +=
-	    acpi_create_madt_irqoverride((void *)current, 0, sci, sci, flags);
-
-	return current;
-}
 
 static const uintptr_t default_ioapic_bases[] = { IO_APIC_ADDR };
 
@@ -95,14 +83,18 @@ unsigned long acpi_fill_madt(unsigned long current)
 	for (int i = 0; i < ioapic_entries; i++)
 		current += acpi_create_madt_ioapic_from_hw((void *)current, ioapic_table[i]);
 
-	return acpi_madt_irq_overrides(current);
+	/* INT_SRC_OVR */
+	current += acpi_create_madt_irqoverride((void *)current, 0, 0, 2, 0);
+	current += acpi_create_madt_sci_override((void *)current);
+
+	return current;
 }
 
 void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
 	const uint16_t pmbase = ACPI_BASE_ADDRESS;
 
-	fadt->sci_int = acpi_sci_irq();
+	fadt->sci_int = acpi_sci_int();
 
 	if (permanent_smi_handler()) {
 		fadt->smi_cmd = APM_CNT;

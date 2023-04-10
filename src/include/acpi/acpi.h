@@ -1338,11 +1338,14 @@ int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr,
 int acpi_create_madt_ioapic_from_hw(acpi_madt_ioapic_t *ioapic, u32 addr);
 int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride,
 				 u8 bus, u8 source, u32 gsirq, u16 flags);
+int acpi_create_madt_sci_override(acpi_madt_irqoverride_t *irqoverride);
 
 unsigned long acpi_create_madt_one_lapic(unsigned long current, u32 cpu, u32 apic);
 unsigned long acpi_create_madt_lapics_with_nmis(unsigned long current);
 
 unsigned long acpi_create_madt_lapic_nmis(unsigned long current);
+
+u16 acpi_sci_int(void);
 
 int acpi_create_srat_lapic(acpi_srat_lapic_t *lapic, u8 node, u8 apic);
 int acpi_create_srat_x2apic(acpi_srat_x2apic_t *x2apic, u32 node, u32 apic);

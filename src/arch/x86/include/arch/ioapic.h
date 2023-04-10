@@ -22,6 +22,8 @@ void register_new_ioapic(void *ioapic_base);
 void register_new_ioapic_gsi0(void *ioapic_base);
 
 void ioapic_set_boot_config(void *ioapic_base, bool irq_on_fsb);
+
+void ioapic_get_sci_pin(u8 *gsi, u8 *irq, u8 *flags);
 #endif
 
 #endif

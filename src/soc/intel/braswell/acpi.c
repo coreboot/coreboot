@@ -81,14 +81,21 @@ void soc_fill_gnvs(struct global_nvs *gnvs)
 		gnvs->cid1 = WRDD_DEFAULT_REGULATORY_DOMAIN;
 }
 
-int acpi_sci_irq(void)
+static u8 soc_madt_sci_irq_polarity(u8 sci_irq)
+{
+	if (sci_irq >= 20)
+		return MP_IRQ_POLARITY_LOW;
+	else
+		return MP_IRQ_POLARITY_HIGH;
+}
+
+#define ACPI_SCI_IRQ 9
+
+void ioapic_get_sci_pin(u8 *gsi, u8 *irq, u8 *flags)
 {
 	u32 *actl = (u32 *)(ILB_BASE_ADDRESS + ACTL);
+	int sci_irq = ACPI_SCI_IRQ;
 	int scis;
-	static int sci_irq;
-
-	if (sci_irq)
-		return sci_irq;
 
 	/* Determine how SCI is routed. */
 	scis = read32(actl) & SCIS_MASK;
@@ -105,13 +112,15 @@ int acpi_sci_irq(void)
 		sci_irq = scis - SCIS_IRQ20 + 20;
 		break;
 	default:
-		printk(BIOS_DEBUG, "Invalid SCI route! Defaulting to IRQ9.\n");
-		sci_irq = 9;
+		printk(BIOS_DEBUG, "Invalid SCI route! Defaulting to IRQ%d.\n", sci_irq);
 		break;
 	}
 
-	printk(BIOS_DEBUG, "SCI is IRQ%d\n", sci_irq);
-	return sci_irq;
+	*gsi = sci_irq;
+	*irq = (sci_irq < 16) ? sci_irq : ACPI_SCI_IRQ;
+	*flags = MP_IRQ_TRIGGER_LEVEL | soc_madt_sci_irq_polarity(sci_irq);
+
+	printk(BIOS_DEBUG, "SCI is IRQ %d, GSI %d\n", *irq, *gsi);
 }
 
 static acpi_tstate_t soc_tss_table[] = {
@@ -309,33 +318,14 @@ void generate_cpu_entries(const struct device *device)
 	acpigen_write_processor_cnot(pattrs->num_cpus);
 }
 
-static unsigned long acpi_madt_irq_overrides(unsigned long current)
-{
-	int sci_irq = acpi_sci_irq();
-	acpi_madt_irqoverride_t *irqovr;
-	uint16_t sci_flags = MP_IRQ_TRIGGER_LEVEL;
-
-	/* INT_SRC_OVR */
-	irqovr = (void *)current;
-	current += acpi_create_madt_irqoverride(irqovr, 0, 0, 2, 0);
-
-	if (sci_irq >= 20)
-		sci_flags |= MP_IRQ_POLARITY_LOW;
-	else
-		sci_flags |= MP_IRQ_POLARITY_HIGH;
-
-	irqovr = (void *)current;
-	current += acpi_create_madt_irqoverride(irqovr, 0, sci_irq, sci_irq, sci_flags);
-
-	return current;
-}
-
 unsigned long acpi_fill_madt(unsigned long current)
 {
 	/* IOAPIC */
 	current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current, IO_APIC_ADDR);
 
-	current = acpi_madt_irq_overrides(current);
+	/* INT_SRC_OVR */
+	current += acpi_create_madt_irqoverride((void *)current, 0, 0, 2, 0);
+	current += acpi_create_madt_sci_override((void *)current);
 
 	return current;
 }

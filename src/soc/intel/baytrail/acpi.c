@@ -85,16 +85,6 @@ int acpi_sci_irq(void)
 	return sci_irq;
 }
 
-unsigned long acpi_fill_madt(unsigned long current)
-{
-	/* IOAPIC */
-	current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current, IO_APIC_ADDR);
-
-	current = acpi_madt_irq_overrides(current);
-
-	return current;
-}
-
 static acpi_tstate_t soc_tss_table[] = {
 	{ 100, 1000, 0, 0x00, 0 },
 	{  88,  875, 0, 0x1e, 0 },
@@ -286,7 +276,7 @@ void generate_cpu_entries(const struct device *device)
 	acpigen_write_processor_cnot(pattrs->num_cpus);
 }
 
-unsigned long acpi_madt_irq_overrides(unsigned long current)
+static unsigned long acpi_madt_irq_overrides(unsigned long current)
 {
 	int sci_irq = acpi_sci_irq();
 	acpi_madt_irqoverride_t *irqovr;
@@ -303,6 +293,16 @@ unsigned long acpi_madt_irq_overrides(unsigned long current)
 
 	irqovr = (void *)current;
 	current += acpi_create_madt_irqoverride(irqovr, 0, sci_irq, sci_irq, sci_flags);
+
+	return current;
+}
+
+unsigned long acpi_fill_madt(unsigned long current)
+{
+	/* IOAPIC */
+	current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current, IO_APIC_ADDR);
+
+	current = acpi_madt_irq_overrides(current);
 
 	return current;
 }

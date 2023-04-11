@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <assert.h>
+#include <amdblocks/acpi.h>
 #include <amdblocks/biosram.h>
 #include <amdblocks/hda.h>
 #include <device/pci_ops.h>
@@ -186,27 +187,6 @@ static unsigned long acpi_fill_hest(acpi_hest_t *hest)
 	return (unsigned long)current;
 }
 
-static void northbridge_fill_ssdt_generator(const struct device *device)
-{
-	msr_t msr;
-	char pscope[] = "\\_SB.PCI0";
-
-	acpigen_write_scope(pscope);
-	msr = rdmsr(TOP_MEM);
-	acpigen_write_name_dword("TOM1", msr.lo);
-	msr = rdmsr(TOP_MEM2);
-	/*
-	 * Since XP only implements parts of ACPI 2.0, we can't use a qword
-	 * here.
-	 * See http://www.acpi.info/presentations/S01USMOBS169_OS%2520new.ppt
-	 * slide 22ff.
-	 * Shift value right by 20 bit to make it fit into 32bit,
-	 * giving us 1MB granularity and a limit of almost 4Exabyte of memory.
-	 */
-	acpigen_write_name_dword("TOM2", (msr.hi << 12) | msr.lo >> 20);
-	acpigen_pop_len();
-}
-
 static unsigned long agesa_write_acpi_tables(const struct device *device,
 					     unsigned long current,
 					     acpi_rsdp_t *rsdp)
@@ -285,7 +265,7 @@ struct device_operations stoneyridge_northbridge_operations = {
 	.set_resources	  = set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init		  = northbridge_init,
-	.acpi_fill_ssdt   = northbridge_fill_ssdt_generator,
+	.acpi_fill_ssdt   = acpi_fill_root_complex_tom,
 	.write_acpi_tables = agesa_write_acpi_tables,
 };
 

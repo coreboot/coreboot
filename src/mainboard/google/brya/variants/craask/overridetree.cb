@@ -31,6 +31,10 @@ fw_config
 		option CODEC_ALC5682I_VS	0
 		option CODEC_NAU8825		1
 	end
+	field TS_SOURCE 38 41
+		option TS_UNPROVISIONED 	0
+		option TS_GTCH7503		1
+	end
 end
 
 chip soc/intel/alderlake
@@ -322,7 +326,25 @@ chip soc/intel/alderlake
 				register "generic.enable_delay_ms" = "12"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x01"
-				device i2c 0x40 on end
+				device i2c 0x40 on
+					probe TS_SOURCE TS_UNPROVISIONED
+				end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""GTCH7503""
+				register "generic.desc" = ""G2 Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
+				register "generic.reset_delay_ms" = "120"
+				register "generic.reset_off_delay_ms" = "3"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
+				register "generic.enable_delay_ms" = "12"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 0x40 on
+					probe TS_SOURCE TS_GTCH7503
+				end
 			end
 			chip drivers/generic/gpio_keys
 				register "name" = ""PENH""
@@ -353,7 +375,9 @@ chip soc/intel/alderlake
 				register "generic.enable_delay_ms" = "1"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x01"
-				device i2c 10 on end
+				device i2c 10 on
+					probe TS_SOURCE TS_UNPROVISIONED
+				end
 			end
 		end
 		device ref i2c2 on

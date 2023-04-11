@@ -14,12 +14,11 @@
 #include <limits.h>
 #include <assert.h>
 #include <commonlib/bsd/sysincludes.h>
+#include <commonlib/bsd/helpers.h>
 
 #include "fmap.h"
 #include "kv_pair.h"
 #include "valstr.h"
-
-#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 
 const struct valstr flag_lut[] = {
 	{ FMAP_AREA_STATIC, "static" },

@@ -1,8 +1,9 @@
 ## SPDX-License-Identifier: GPL-2.0-only
+TOP            = $(abspath ../../..)
 DOIMAGE_FOLDER = marvell/doimage_mv
 DOIMAGE_BINARY = doimage
 
-CFLAGS  = -g -O1 -I./../inc -DMV_CPU_LE
+CFLAGS  = -g -O1 -I./../inc -DMV_CPU_LE -I $(TOP)/src/commonlib/bsd/include
 
 $(objutil)/$(DOIMAGE_FOLDER):
 	mkdir -p $@

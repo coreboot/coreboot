@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <getopt.h>
+#include <commonlib/bsd/helpers.h>
 #if defined(__linux__)
 #include <sys/io.h>
 #endif
@@ -108,8 +109,6 @@ Per default (no options) superiotool will just probe for a Super I/O\n\
 and print its vendor, name, ID, revision, and config port.\n"
 
 #define NOTFOUND "  Failed. Returned data: "
-
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
 #define EOT		-1		/* End Of Table */
 #define NOLDN		-2		/* NO LDN needed */

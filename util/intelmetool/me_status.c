@@ -1,9 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <stdio.h>
+#include <commonlib/bsd/helpers.h>
 #include "me.h"
-
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 
 /* HFS1[3:0] Current Working State Values */
 static const char *me_cws_values[] = {

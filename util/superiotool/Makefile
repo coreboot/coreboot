@@ -2,6 +2,7 @@
 
 PROGRAM = superiotool
 
+TOP     ?= $(abspath ../..)
 CC      ?= gcc
 INSTALL ?= /usr/bin/env install
 PREFIX  ?= /usr/local
@@ -11,7 +12,8 @@ PREFIX  ?= /usr/local
 VERSION := -D'SUPERIOTOOL_VERSION="$(shell git describe 2>/dev/null)"'
 
 CFLAGS += -O2 -Wall -Wstrict-prototypes -Wundef -Wstrict-aliasing \
-         -Werror-implicit-function-declaration -ansi -pedantic $(VERSION)
+         -Werror-implicit-function-declaration -ansi -pedantic $(VERSION) \
+         -Wno-variadic-macros -I $(TOP)/src/commonlib/bsd/include
 LDFLAGS += -lz
 
 OBJS = superiotool.o serverengines.o ali.o exar.o fintek.o ite.o nsc.o \

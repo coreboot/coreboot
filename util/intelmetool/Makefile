@@ -2,10 +2,12 @@
 
 PROGRAM = intelmetool
 
+TOP     ?= $(abspath ../..)
 CC      ?= gcc
 INSTALL ?= /usr/bin/env install
 PREFIX  ?= /usr/local
-CFLAGS  ?= -O0 -g -Wall -Wextra -Wno-unused-parameter -Wno-sign-compare -Wno-unused-function
+CFLAGS  ?= -O0 -g -Wall -Wextra -Wno-unused-parameter -Wno-sign-compare -Wno-unused-function \
+           -I $(TOP)/src/commonlib/bsd/include
 LDFLAGS += -lpci -lz
 
 OBJS = intelmetool.o me.o me_status.o mmap.o rcba.o msr.o

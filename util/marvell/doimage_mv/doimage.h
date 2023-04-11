@@ -19,6 +19,7 @@ disclaimer.
 #define _INC_DOIMAGE_H
 
 #include <sys/types.h>
+#include <commonlib/bsd/helpers.h>
 
 /* use the same version as in "bootrom.inc" file */
 #define VERSION_NUMBER "2.20"
@@ -56,8 +57,6 @@ disclaimer.
 #ifndef O_BINARY /* should be defined on __WIN32__ */
 #define O_BINARY 0
 #endif
-
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 
 typedef enum {
 	IMG_SATA,

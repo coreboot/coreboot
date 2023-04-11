@@ -33,8 +33,6 @@
 #include <x86intrin.h>
 #endif
 
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
-
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;

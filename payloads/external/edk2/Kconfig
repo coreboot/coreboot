@@ -111,16 +111,6 @@ config EDK2_VERBOSE_BUILD
 	  build log extremely verbose. This can be used to troubleshoot failed builds
 	  which are usually down to missing tools or toolchain.
 
-config EDK2_ABOVE_4G_MEMORY
-	bool "Enable above 4G memory"
-	default n
-	help
-	  Select this option to enable Above 4G Decode. This will allow the
-	  payload to use all of the memory, rather than an maximum of 4G.
-
-	  Disabling memory above 4G is useful for bootloaders that are not
-	  fully 64-bit aware such as Qubes R4.0.4 bootloader.
-
 config EDK2_BOOTSPLASH_FILE
 	string "edk2 Bootsplash path and filename"
 	default "Documentation/coreboot_logo.bmp"

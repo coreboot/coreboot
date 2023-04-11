@@ -114,6 +114,7 @@ config MAINBOARD_PART_NUMBER
 	default "Gooey" if BOARD_GOOGLE_GOOEY
 	default "Beadrix" if BOARD_GOOGLE_BEADRIX
 	default "Shotzo" if BOARD_GOOGLE_SHOTZO
+	default "Taranza" if BOARD_GOOGLE_TARANZA
 
 config MAX_CPUS
 	int
@@ -154,6 +155,7 @@ config VARIANT_DIR
 	default "gooey" if BOARD_GOOGLE_GOOEY
 	default "beadrix" if BOARD_GOOGLE_BEADRIX
 	default "shotzo" if BOARD_GOOGLE_SHOTZO
+	default "taranza" if BOARD_GOOGLE_TARANZA
 
 endif #BOARD_GOOGLE_BASEBOARD_DEDEDE
 

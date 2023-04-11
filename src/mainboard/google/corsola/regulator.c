@@ -28,6 +28,8 @@ static int get_mt6366_regulator_id(enum mtk_regulator regulator)
 		return MT6366_VRF12;
 	case MTK_REGULATOR_VCN33:
 		return MT6366_VCN33;
+	case MTK_REGULATOR_VIO18:
+		return MT6366_VIO18;
 	default:
 		return MTK_REGULATOR_INVALID;
 	}

@@ -249,10 +249,16 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 	if (CONFIG(SOC_INTEL_HAS_CXL)) {
 		/* 4GiB -> CXL Memory */
 		uint32_t gi_mem_size;
-		gi_mem_size = get_generic_initiator_mem_size();
-
-		res = reserved_ram_from_to(dev, index++, 0x100000000,
-				   mc_values[TOHM_REG] - (uint64_t)gi_mem_size + 1);
+		gi_mem_size = get_generic_initiator_mem_size(); /* unit: 64MB */
+		/*
+		 * Memory layout when there is CXL HDM (Host-managed Device Memory):
+		 * --------------  <- TOHM
+		 * CXL memory regions (pds global variable records the base/size of them)
+		 * Processor attached high memory
+		 * --------------  <- 0x100000000 (4GB)
+		 */
+		res = upper_ram_end(dev, index++,
+			mc_values[TOHM_REG] - ((uint64_t)gi_mem_size << 26) + 1);
 		LOG_RESOURCE("high_ram", dev, res);
 
 		/* CXL Memory */
@@ -269,8 +275,9 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 				else
 					flags |= IORESOURCE_STORED;
 
-				res = fixed_mem_range_flags(dev, index++, (uint64_t)pds.pds[i].base,
-					(uint64_t)pds.pds[i].size, flags);
+				res = fixed_mem_range_flags(dev, index++,
+					(uint64_t)pds.pds[i].base << 26,
+					(uint64_t)pds.pds[i].size << 26, flags);
 				if (cxl_mode == CXL_SPM)
 					LOG_RESOURCE("specific_purpose_memory", dev, res);
 				else

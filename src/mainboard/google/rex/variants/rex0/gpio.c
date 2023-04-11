@@ -440,4 +440,4 @@ static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_WP_AH(GPIO_PCH_WP, CROS_GPIO_DEVICE_NAME),
 };
 
-DECLARE_WEAK_CROS_GPIOS(cros_gpios);
+DECLARE_CROS_GPIOS(cros_gpios);

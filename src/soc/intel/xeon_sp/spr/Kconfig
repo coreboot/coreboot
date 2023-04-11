@@ -27,14 +27,6 @@ config ACPI_CPU_STRING
 	string
 	default "\\_SB.C%03X"
 
-config MAX_SOCKET_UPD
-	int
-	default 2
-	help
-	  This is used for configuring common SPR UPD tables which their sizes
-	  depend on the socket number. Since it's the maximal socket number for
-	  the common UPD tables, mainboard should not overwrite it.
-
 config SIPI_FINAL_TIMEOUT
 	int
 	default 400000

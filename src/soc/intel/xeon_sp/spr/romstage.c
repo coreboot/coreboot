@@ -23,8 +23,8 @@
 #include "chip.h"
 
 /* Initialize to all zero first */
-static UPD_IIO_PCIE_PORT_CONFIG spr_iio_bifur_table[CONFIG_MAX_SOCKET_UPD];
-static UINT8 deemphasis_list[CONFIG_MAX_SOCKET_UPD * MAX_IIO_PORTS_PER_SOCKET];
+static UPD_IIO_PCIE_PORT_CONFIG spr_iio_bifur_table[MAX_SOCKET];
+static UINT8 deemphasis_list[MAX_SOCKET * MAX_IIO_PORTS_PER_SOCKET];
 
 void __weak mainboard_memory_init_params(FSPM_UPD *mupd)
 {
@@ -119,12 +119,12 @@ static void initialize_iio_upd(FSPM_UPD *mupd)
 	unsigned int port, socket;
 
 	mupd->FspmConfig.IioPcieConfigTablePtr = (UINT32)spr_iio_bifur_table;
-	mupd->FspmConfig.IioPcieConfigTableNumber = CONFIG_MAX_SOCKET_UPD;
+	mupd->FspmConfig.IioPcieConfigTableNumber = MAX_SOCKET;
 	UPD_IIO_PCIE_PORT_CONFIG *PciePortConfig =
 		(UPD_IIO_PCIE_PORT_CONFIG *)spr_iio_bifur_table;
 
 	/* Initialize non-zero default UPD values */
-	for (socket = 0; socket < CONFIG_MAX_SOCKET_UPD; socket++) {
+	for (socket = 0; socket < MAX_SOCKET; socket++) {
 		for (port = 0; port < MAX_IIO_PORTS_PER_SOCKET; port++) {
 			PciePortConfig[socket].PcieMaxPayload[port] = 0x7;     /* Auto */
 			PciePortConfig[socket].DfxDnTxPresetGen3[port] = 0xff; /* Auto */
@@ -134,10 +134,10 @@ static void initialize_iio_upd(FSPM_UPD *mupd)
 	}
 
 	mupd->FspmConfig.DeEmphasisPtr = (UINT32)deemphasis_list;
-	mupd->FspmConfig.DeEmphasisNumber = CONFIG_MAX_SOCKET_UPD * MAX_IIO_PORTS_PER_SOCKET;
+	mupd->FspmConfig.DeEmphasisNumber = MAX_SOCKET * MAX_IIO_PORTS_PER_SOCKET;
 	UINT8 *DeEmphasisConfig = (UINT8 *)deemphasis_list;
 
-	for (port = 0; port < CONFIG_MAX_SOCKET_UPD * MAX_IIO_PORTS_PER_SOCKET; port++)
+	for (port = 0; port < MAX_SOCKET * MAX_IIO_PORTS_PER_SOCKET; port++)
 		DeEmphasisConfig[port] = 0x1;
 }
 

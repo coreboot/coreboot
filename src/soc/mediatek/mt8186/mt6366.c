@@ -787,6 +787,19 @@ static void pmic_set_vcn33_vol(u32 vcn33_uv)
 	pwrap_write_field(PMIC_LDO_VCN33_CON0_0, 1, 0x1, 0);
 }
 
+#define VIO18_VOLTAGE_UV 1800000
+
+static u32 pmic_get_vio18_vol(void)
+{
+	return pwrap_read_field(PMIC_LDO_VIO18_CON0, 0x1, 0) ? VIO18_VOLTAGE_UV : 0;
+}
+
+static void pmic_set_vio18_vol(u32 vio18_uv)
+{
+	assert(vio18_uv == VIO18_VOLTAGE_UV);
+	pwrap_write_field(PMIC_LDO_VIO18_CON0, 1, 0x1, 0);
+}
+
 static void pmic_wdt_set(void)
 {
 	/* [5]=1, RG_WDTRSTB_DEB */
@@ -914,6 +927,9 @@ void mt6366_set_voltage(enum mt6366_regulator_id id, u32 voltage_uv)
 	case MT6366_VCN33:
 		pmic_set_vcn33_vol(voltage_uv);
 		break;
+	case MT6366_VIO18:
+		pmic_set_vio18_vol(voltage_uv);
+		break;
 	default:
 		printk(BIOS_ERR, "%s: PMIC %d is not supported\n", __func__, id);
 		break;
@@ -941,6 +957,8 @@ u32 mt6366_get_voltage(enum mt6366_regulator_id id)
 		return pmic_get_vrf12_vol();
 	case MT6366_VCN33:
 		return pmic_get_vcn33_vol();
+	case MT6366_VIO18:
+		return pmic_get_vio18_vol();
 	default:
 		printk(BIOS_ERR, "%s: PMIC %d is not supported\n", __func__, id);
 		break;

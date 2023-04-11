@@ -256,6 +256,15 @@ config CBFS_MCACHE_RW_PERCENTAGE
 	  will automatically be 0 (meaning the whole MCACHE is used for RO).
 	  Do NOT change this value for vboot RW updates!
 
+config VBOOT_CLEAR_RECOVERY_IN_RAMSTAGE
+	bool "Clear the recovery request at the end of ramstage"
+	default n
+	help
+	  If this option is enabled, the recovery request will be cleared and
+	  saved to VBNV storage at the end of ramstage. This is useful for
+	  platforms without vboot-integrated payloads, to avoid being stuck in
+	  the recovery mode.
+
 config VBOOT_ENABLE_CBFS_FALLBACK
 	bool
 	default n

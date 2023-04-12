@@ -414,7 +414,7 @@ void generate_cpu_entries(const struct device *device)
 			/* Soc specific power states generation */
 			soc_power_states_generation(core_id, num_virt);
 
-			acpigen_pop_len();
+			acpigen_write_processor_device_end();
 		}
 	}
 	/* PPKG is usually used for thermal management

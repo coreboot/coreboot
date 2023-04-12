@@ -60,6 +60,16 @@ static void gen_pstate_entries(const sst_table_t *const pstates,
 	acpigen_write_PPC(0);
 }
 
+static uint8_t get_p_state_coordination(void)
+{
+	/* For Penryn use HW_ALL. */
+	if (((cpuid_eax(1) >> 4) & 0xffff) == 0x1067)
+		return HW_ALL;
+
+	/* Use SW_ANY as that was the default. */
+	return SW_ANY;
+}
+
 /**
  * @brief Generate ACPI entries for Speedstep for each cpu
  */
@@ -71,22 +81,17 @@ void generate_cpu_entries(const struct device *device)
 	int numcpus = totalcores/cores_per_package; /* This assumes that all
 						       CPUs share the same
 						       layout. */
+
 	int num_cstates;
 	const acpi_cstate_t *cstates;
 	sst_table_t pstates;
-	uint8_t coordination;
+	uint8_t coordination = get_p_state_coordination();
 
 	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n",
 	       numcpus, cores_per_package);
 
 	num_cstates = get_cst_entries(&cstates);
 	speedstep_gen_pstates(&pstates);
-	if (((cpuid_eax(1) >> 4) & 0xffff) == 0x1067)
-		/* For Penryn use HW_ALL. */
-		coordination = HW_ALL;
-	else
-		/* Use SW_ANY as that was the default. */
-		coordination = SW_ANY;
 
 	for (cpuID = 0; cpuID < numcpus; ++cpuID) {
 		for (coreID = 1; coreID <= cores_per_package; coreID++) {

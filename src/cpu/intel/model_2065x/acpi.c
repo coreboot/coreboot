@@ -205,30 +205,26 @@ static void generate_P_state_entries(int core, int cores_per_package)
 
 void generate_cpu_entries(const struct device *device)
 {
-	int coreID, cpuID;
 	int totalcores = dev_count_cpu();
 	int cores_per_package = get_cores_per_package();
-	int numcpus = totalcores/cores_per_package;
+	int numcpus = totalcores / cores_per_package;
 
 	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n",
 	       numcpus, cores_per_package);
 
-	for (cpuID = 1; cpuID <= numcpus; cpuID++) {
-		for (coreID = 1; coreID <= cores_per_package; coreID++) {
+	for (int cpu_id = 0; cpu_id < numcpus; cpu_id++) {
+		for (int core_id = 0; core_id < cores_per_package; core_id++) {
 			/* Generate Scope(\_SB) { Device(CPUx */
-			acpigen_write_processor_device(
-				(cpuID-1)*cores_per_package+coreID-1);
+			acpigen_write_processor_device(cpu_id * cores_per_package + core_id);
 
 			/* Generate P-state tables */
-			generate_P_state_entries(
-				cpuID-1, cores_per_package);
+			generate_P_state_entries(cpu_id, cores_per_package);
 
 			/* Generate C-state tables */
 			generate_C_state_entries();
 
 			/* Generate T-state tables */
-			generate_T_state_entries(
-				cpuID-1, cores_per_package);
+			generate_T_state_entries(cpu_id, cores_per_package);
 
 			acpigen_write_processor_device_end();
 		}

@@ -366,7 +366,7 @@ payloads/external/iPXE/ipxe/ipxe.rom ipxe: $(DOTCONFIG) $(PXE_CONFIG_SCRIPT)
 	MFLAGS= MAKEFLAGS=
 
 # LinuxBoot
-
+.PHONY: linuxboot
 linuxboot:
 	$(MAKE) -C payloads/external/LinuxBoot \
 		CPUS=$(CPUS) \

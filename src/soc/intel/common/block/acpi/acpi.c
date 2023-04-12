@@ -80,12 +80,12 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 	/* IOAPIC */
 	ioapic_entries = soc_get_ioapic_info(&ioapic_table);
-	for (int i = 0; i < ioapic_entries; i++)
-		current += acpi_create_madt_ioapic_from_hw((void *)current, ioapic_table[i]);
 
-	/* INT_SRC_OVR */
-	current += acpi_create_madt_irqoverride((void *)current, 0, 0, 2, 0);
-	current += acpi_create_madt_sci_override((void *)current);
+	/* Default SOC IOAPIC entry */
+	ASSERT(ioapic_table[0] == IO_APIC_ADDR);
+
+	for (int i = 1; i < ioapic_entries; i++)
+		current += acpi_create_madt_ioapic_from_hw((void *)current, ioapic_table[i]);
 
 	return current;
 }

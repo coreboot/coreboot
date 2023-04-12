@@ -730,6 +730,12 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 
 	const char *name = header->filename;
 
+	/* This is so special rows in cbfstool print -k -v output stay unambiguous. */
+	if (name[0] == '[') {
+		ERROR("CBFS file name `%s` must not start with `[`\n", name);
+		return -1;
+	}
+
 	uint32_t entry_type;
 	uint32_t addr, addr_next;
 	struct cbfs_file *entry, *next;
@@ -1497,6 +1503,32 @@ int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
 	return 0;
 }
 
+/*
+ * The format of this output has been stable for many years. Since it is meant
+ * to be parsed by scripts, we should probably not lightly make changes to it as
+ * that could break older scripts expecting a different format.
+ *
+ * Until CB:41119, the `-v` flag made no difference when `-k` was selected, so
+ * presumably no scripts were using that combination. That's why that patch left
+ * the output for `-k` by itself alone to avoid breaking legacy scripts, and
+ * expanded `-k -v` to allow an arbitrary number of `<key>:<value>` tokens at
+ * the end of each row behind the legacy column output. So the new output format
+ * stability rules should be that `-k` will stay as it is, and `-k -v` may be
+ * expanded to add more `<key>:<value>` tokens to the end of a row. Scripts that
+ * want to parse `-k -v` output should be written to gracefully ignore any extra
+ * such tokens where they don't recognize the key.
+ *
+ * The `-k -v` output may also include extra rows that start with a `[`. These
+ * do not represent a CBFS file and can instead be used to display data that is
+ * associated with the CBFS as a whole and not any single file. Currently
+ * defined are `[FMAP REGION]\t<region name>` and
+ * `[METADATA HASH]\t<hash>:<algo>`. More may be defined in the future and
+ * scripts parsing `-k -v` output should be written to gracefully ignore any
+ * rows starting with `[` that they don't recognize.
+ *
+ * The format for existing `<key:value>` tokens or `[` rows should never be
+ * changed once they are added.
+ */
 static int cbfs_print_parseable_entry_info(struct cbfs_image *image,
 					struct cbfs_file *entry, void *arg)
 {

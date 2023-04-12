@@ -9,18 +9,6 @@
 #include <device/device.h>
 #include <types.h>
 
-static int determine_total_number_of_cores(void)
-{
-	struct device *cpu;
-	int count = 0;
-	for (cpu = all_devices; cpu; cpu = cpu->next) {
-		if (!is_enabled_cpu(cpu))
-			continue;
-		count++;
-	}
-	return count;
-}
-
 static void gen_pstate_entries(const sst_table_t *const pstates,
 			      const int cpuID, const int cores_per_package,
 			      const uint8_t coordination)
@@ -78,7 +66,7 @@ static void gen_pstate_entries(const sst_table_t *const pstates,
 void generate_cpu_entries(const struct device *device)
 {
 	int coreID, cpuID, pcontrol_blk = PMB0_BASE, plen = 6;
-	int totalcores = determine_total_number_of_cores();
+	int totalcores = dev_count_cpu();
 	int cores_per_package = (cpuid_ebx(1)>>16) & 0xff;
 	int numcpus = totalcores/cores_per_package; /* This assumes that all
 						       CPUs share the same

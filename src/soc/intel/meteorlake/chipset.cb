@@ -18,6 +18,9 @@ chip soc/intel/meteorlake
 	# putting it under register "common_soc_config" in overridetree.cb file.
 	register "common_soc_config.pch_thermal_trip" = "130"
 
+	# Enable CNVi WiFi
+	register "cnvi_wifi_core" = "true"
+
 	device domain 0 on
 		device pci 00.0 alias system_agent on end
 		device pci 01.0 alias pcie_rp12 off end

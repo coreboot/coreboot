@@ -562,8 +562,11 @@ static void fill_fsps_cnvi_params(FSP_S_CONFIG *s_cfg,
 {
 	/* CNVi */
 	s_cfg->CnviMode = is_devfn_enabled(PCI_DEVFN_CNVI_WIFI);
+	s_cfg->CnviWifiCore = config->cnvi_wifi_core;
 	s_cfg->CnviBtCore = config->cnvi_bt_core;
 	s_cfg->CnviBtAudioOffload = config->cnvi_bt_audio_offload;
+	/* Assert if CNVi WiFi is enabled without CNVi being enabled. */
+	assert(s_cfg->CnviMode || !s_cfg->CnviWifiCore);
 	/* Assert if CNVi BT is enabled without CNVi being enabled. */
 	assert(s_cfg->CnviMode || !s_cfg->CnviBtCore);
 	/* Assert if CNVi BT offload is enabled without CNVi BT being enabled. */

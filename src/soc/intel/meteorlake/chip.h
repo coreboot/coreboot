@@ -242,6 +242,9 @@ struct soc_intel_meteorlake_config {
 	 */
 	uint8_t serial_io_gspi_cs_state[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
 
+	/* CNVi WiFi Core Enable/Disable */
+	bool cnvi_wifi_core;
+
 	/* CNVi BT Core Enable/Disable */
 	bool cnvi_bt_core;
 

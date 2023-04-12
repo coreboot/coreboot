@@ -384,6 +384,18 @@ F:	src/mainboard/google/zork/
 F:	src/mainboard/google/guybrush/
 F:	src/mainboard/google/skyrim/
 
+GOOGLE MEDIATEK-BASED MAINBOARDS
+M:	Hung-Te Lin <hungte@chromium.org>
+M:	Yu-Ping Wu <yupingso@google.com>
+M:	Yidi Lin <yidilin@google.com>
+S:	Supported
+F:	src/mainboard/google/asurada/
+F:	src/mainboard/google/cherry/
+F:	src/mainboard/google/corsola/
+F:	src/mainboard/google/geralt/
+F:	src/mainboard/google/kukui/
+F:	src/mainboard/google/oak/
+
 
 
 HP 280 G2 MAINBOARD
@@ -904,6 +916,8 @@ F:	src/vendorcode/intel/fsp/fsp2_0/copperlake_sp/
 
 MEDIATEK SOCS
 M:	Hung-Te Lin <hungte@chromium.org>
+M:	Yu-Ping Wu <yupingso@google.com>
+M:	Yidi Lin <yidilin@google.com>
 S:	Supported
 F:	src/soc/mediatek/
 

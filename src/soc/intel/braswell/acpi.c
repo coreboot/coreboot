@@ -161,7 +161,7 @@ static int calculate_power(int tdp, int p1_ratio, int ratio)
 	return (int)power;
 }
 
-static void generate_p_state_entries(int core, int cores_per_package)
+static void generate_p_state_entries(int core)
 {
 	int ratio_min, ratio_max, ratio_turbo, ratio_step, ratio_range_2;
 	int coord_type, power_max, power_unit, num_entries;
@@ -276,26 +276,30 @@ static void generate_p_state_entries(int core, int cores_per_package)
 	acpigen_pop_len();
 }
 
+static void generate_cpu_entry(int core, int cores_per_package)
+{
+	/* Generate Scope(\_SB) { Device(CPUx */
+	acpigen_write_processor_device(core);
+
+	/* Generate  P-state tables */
+	generate_p_state_entries(core);
+
+	/* Generate C-state tables */
+	acpigen_write_CST_package(cstate_map, ARRAY_SIZE(cstate_map));
+
+	/* Generate T-state tables */
+	generate_t_state_entries(core, cores_per_package);
+
+	acpigen_write_processor_device_end();
+}
+
 void generate_cpu_entries(const struct device *device)
 {
 	int core;
 	const struct pattrs *pattrs = pattrs_get();
 
-	for (core = 0; core < pattrs->num_cpus; core++) {
-		/* Generate Scope(\_SB) { Device(CPUx */
-		acpigen_write_processor_device(core);
-
-		/* Generate  P-state tables */
-		generate_p_state_entries(core, pattrs->num_cpus);
-
-		/* Generate C-state tables */
-		acpigen_write_CST_package(cstate_map, ARRAY_SIZE(cstate_map));
-
-		/* Generate T-state tables */
-		generate_t_state_entries(core, pattrs->num_cpus);
-
-		acpigen_write_processor_device_end();
-	}
+	for (core = 0; core < pattrs->num_cpus; core++)
+		generate_cpu_entry(core, pattrs->num_cpus);
 
 	/* PPKG is usually used for thermal management
 	   of the first and only package. */

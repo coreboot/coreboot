@@ -384,6 +384,22 @@ __weak void soc_power_states_generation(int core_id,
 {
 }
 
+static void generate_cpu_entry(int cpu, int core, int cores_per_package)
+{
+	/* Generate processor \_SB.CPUx */
+	acpigen_write_processor_device(cpu * cores_per_package + core);
+
+	/* Generate C-state tables */
+	generate_c_state_entries();
+
+	generate_cppc_entries(core);
+
+	/* Soc specific power states generation */
+	soc_power_states_generation(core, cores_per_package);
+
+	acpigen_write_processor_device_end();
+}
+
 void generate_cpu_entries(const struct device *device)
 {
 	int core_id, cpu_id;
@@ -398,22 +414,10 @@ void generate_cpu_entries(const struct device *device)
 	printk(BIOS_DEBUG, "Found %d CPU(s) with %d/%d physical/logical core(s) each.\n",
 	       numcpus, num_phys, num_virt);
 
-	for (cpu_id = 0; cpu_id < numcpus; cpu_id++) {
-		for (core_id = 0; core_id < num_virt; core_id++) {
-			/* Generate processor \_SB.CPUx */
-			acpigen_write_processor_device(cpu_id * num_virt + core_id);
+	for (cpu_id = 0; cpu_id < numcpus; cpu_id++)
+		for (core_id = 0; core_id < num_virt; core_id++)
+			generate_cpu_entry(cpu_id, core_id, num_virt);
 
-			/* Generate C-state tables */
-			generate_c_state_entries();
-
-			generate_cppc_entries(core_id);
-
-			/* Soc specific power states generation */
-			soc_power_states_generation(core_id, num_virt);
-
-			acpigen_write_processor_device_end();
-		}
-	}
 	/* PPKG is usually used for thermal management
 	   of the first and only package. */
 	acpigen_write_processor_package("PPKG", 0, num_virt);

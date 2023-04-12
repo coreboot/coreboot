@@ -325,6 +325,23 @@ static void generate_P_state_entries(int core, int cores_per_package)
 	acpigen_pop_len();
 }
 
+static void generate_cpu_entry(const struct device *device, int cpu, int core, int cores_per_package)
+{
+	/* Generate Scope(\_SB) { Device(CPUx */
+	acpigen_write_processor_device(cpu * cores_per_package + core);
+
+	/* Generate P-state tables */
+	generate_P_state_entries(core, cores_per_package);
+
+	/* Generate C-state tables */
+	generate_C_state_entries(device);
+
+	/* Generate T-state tables */
+	generate_T_state_entries(cpu, cores_per_package);
+
+	acpigen_write_processor_device_end();
+}
+
 void generate_cpu_entries(const struct device *device)
 {
 	int totalcores = dev_count_cpu();
@@ -334,23 +351,9 @@ void generate_cpu_entries(const struct device *device)
 	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n",
 	       numcpus, cores_per_package);
 
-	for (int cpu_id = 0; cpu_id < numcpus; cpu_id++) {
-		for (int core_id = 0; core_id < cores_per_package; core_id++) {
-			/* Generate Scope(\_SB) { Device(CPUx */
-			acpigen_write_processor_device(cpu_id * cores_per_package + core_id);
-
-			/* Generate P-state tables */
-			generate_P_state_entries(core_id, cores_per_package);
-
-			/* Generate C-state tables */
-			generate_C_state_entries(device);
-
-			/* Generate T-state tables */
-			generate_T_state_entries(cpu_id, cores_per_package);
-
-			acpigen_write_processor_device_end();
-		}
-	}
+	for (int cpu_id = 0; cpu_id < numcpus; cpu_id++)
+		for (int core_id = 0; core_id < cores_per_package; core_id++)
+			generate_cpu_entry(device, cpu_id, core_id, cores_per_package);
 
 	/* PPKG is usually used for thermal management
 	   of the first and only package. */

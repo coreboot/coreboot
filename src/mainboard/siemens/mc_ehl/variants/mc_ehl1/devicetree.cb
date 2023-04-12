@@ -188,6 +188,15 @@ chip soc/intel/elkhartlake
 				register "user_weekday" = "4"
 				device i2c 0x32 on end  # RTC RX6110 SA
 			end
+			# PI7C9X2G608GP PCIe switch configuration
+			chip drivers/i2c/pi608gp
+				register "gen2_3p5_enable" = "true"
+				register "gen2_3p5_amp" = "AMP_LVL_MV(425)"
+				register "gen2_3p5_deemph" = "DEEMPH_LVL_MV(6, 0)"
+				device i2c 0x6f on
+					ops pi608gp_ops
+				end
+			end
 		end
 		device pci 1f.5 on	end # PCH SPI (flash & TPM)
 	end

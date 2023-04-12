@@ -8,7 +8,14 @@
 #define MAYAN_EC_CMD		0x666
 #define MAYAN_EC_DATA		0x662
 
+#define EC_GPIO_1_ADDR		0xA1
+#define EC_GPIO_EVAL_PWREN	BIT(1)
+
+#define EC_GPIO_2_ADDR		0xA2
+#define EC_GPIO_EVAL_SLOT_PWR	BIT(5)
+
 #define EC_GPIO_3_ADDR		0xA3
+#define EC_GPIO_EVAL_RST_AUX	BIT(0)
 #define EC_GPIO_LOM_RESET_AUX	BIT(1)
 
 #define EC_GPIO_7_ADDR		0xA7
@@ -35,8 +42,18 @@ static void configure_ec_gpio(void)
 {
 	uint8_t tmp;
 
+	/* Enable MXM slot: set EC_GPIO_EVAL_PWREN, EC_GPIO_EVAL_SLOT_PWR
+	and EC_GPIO_EVAL_RST_AUX */
+	tmp = ec_read(EC_GPIO_1_ADDR);
+	tmp |= EC_GPIO_EVAL_PWREN;
+	ec_write(EC_GPIO_1_ADDR, tmp);
+
+	tmp = ec_read(EC_GPIO_2_ADDR);
+	tmp |= EC_GPIO_EVAL_SLOT_PWR;
+	ec_write(EC_GPIO_2_ADDR, tmp);
+
 	tmp = ec_read(EC_GPIO_3_ADDR);
-	tmp |= EC_GPIO_LOM_RESET_AUX;
+	tmp |= EC_GPIO_LOM_RESET_AUX | EC_GPIO_EVAL_RST_AUX;
 	ec_write(EC_GPIO_3_ADDR, tmp);
 
 	tmp = ec_read(EC_GPIO_7_ADDR);

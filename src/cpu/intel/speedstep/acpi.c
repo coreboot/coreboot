@@ -70,53 +70,61 @@ static uint8_t get_p_state_coordination(void)
 	return SW_ANY;
 }
 
+static void generate_cpu_entry(int cpu, int core, int cores_per_package)
+{
+	int pcontrol_blk = PMB0_BASE, plen = 6;
+
+	static struct {
+		int once;
+		uint8_t coordination;
+		int num_cstates;
+		const acpi_cstate_t *cstates;
+		sst_table_t pstates;
+	} s;
+
+	if (!s.once) {
+		s.once = 1;
+		s.coordination = get_p_state_coordination();
+		s.num_cstates = get_cst_entries(&s.cstates);
+		speedstep_gen_pstates(&s.pstates);
+	}
+
+	if (core > 0) {
+		pcontrol_blk = 0;
+		plen = 0;
+	}
+
+	/* Generate processor \_SB.CPUx. */
+	acpigen_write_processor(cpu * cores_per_package + core, pcontrol_blk, plen);
+
+	/* Generate p-state entries. */
+	gen_pstate_entries(&s.pstates, cpu, cores_per_package, s.coordination);
+
+	/* Generate c-state entries. */
+	if (s.num_cstates > 0)
+		acpigen_write_CST_package(s.cstates, s.num_cstates);
+
+	acpigen_pop_len();
+}
+
 /**
  * @brief Generate ACPI entries for Speedstep for each cpu
  */
 void generate_cpu_entries(const struct device *device)
 {
-	int coreID, cpuID, pcontrol_blk = PMB0_BASE, plen = 6;
 	int totalcores = dev_count_cpu();
-	int cores_per_package = (cpuid_ebx(1)>>16) & 0xff;
-	int numcpus = totalcores/cores_per_package; /* This assumes that all
-						       CPUs share the same
-						       layout. */
+	int cores_per_package = (cpuid_ebx(1) >> 16) & 0xff;
 
-	int num_cstates;
-	const acpi_cstate_t *cstates;
-	sst_table_t pstates;
-	uint8_t coordination = get_p_state_coordination();
+	/* This assumes that all CPUs share the same layout. */
+	int numcpus = totalcores / cores_per_package;
 
 	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n",
 	       numcpus, cores_per_package);
 
-	num_cstates = get_cst_entries(&cstates);
-	speedstep_gen_pstates(&pstates);
+	for (int cpu_id = 0; cpu_id < numcpus; ++cpu_id)
+		for (int core_id = 0; core_id < cores_per_package; core_id++)
+			generate_cpu_entry(cpu_id, core_id, cores_per_package);
 
-	for (cpuID = 0; cpuID < numcpus; ++cpuID) {
-		for (coreID = 1; coreID <= cores_per_package; coreID++) {
-			if (coreID > 1) {
-				pcontrol_blk = 0;
-				plen = 0;
-			}
-
-			/* Generate processor \_SB.CPUx. */
-			acpigen_write_processor(
-					cpuID * cores_per_package + coreID - 1,
-					pcontrol_blk, plen);
-
-			/* Generate p-state entries. */
-			gen_pstate_entries(&pstates, cpuID,
-					cores_per_package, coordination);
-
-			/* Generate c-state entries. */
-			if (num_cstates > 0)
-				acpigen_write_CST_package(
-							cstates, num_cstates);
-
-			acpigen_pop_len();
-		}
-	}
 	/* PPKG is usually used for thermal management
 	   of the first and only package. */
 	acpigen_write_processor_package("PPKG", 0, cores_per_package);

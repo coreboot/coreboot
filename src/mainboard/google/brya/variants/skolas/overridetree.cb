@@ -116,6 +116,30 @@ chip soc/intel/alderlake
 	}"
 
 	device domain 0 on
+		device ref igpu on
+			chip drivers/gfx/generic
+				register "device_count" = "6"
+				# DDIA for eDP
+				register "device[0].name" = ""LCD""
+				# DDIB for HDMI
+				register "device[1].name" = ""DD01""
+				# TCP0 (DP-1) for port C0
+				register "device[2].name" = ""DD02""
+				register "device[2].use_pld" = "true"
+				register "device[2].pld" = "ACPI_PLD_TYPE_C(LEFT, RIGHT, ACPI_PLD_GROUP(1, 1))"
+				# TCP1 (DP-2) for port C1
+				register "device[3].name" = ""DD03""
+				register "device[3].use_pld" = "true"
+                                register "device[3].pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(2, 1))"
+				# TCP2 (DP-3) for port C2
+				register "device[4].name" = ""DD04""
+				register "device[4].use_pld" = "true"
+				register "device[4].pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(3, 1))"
+				# TCP3 (DP-4) unused
+				register "device[5].name" = ""DD05""
+				device generic 0 on end
+			end
+		end # Integrated Graphics Device
 		device ref dtt on
 			chip drivers/intel/dptf
 				## sensor information

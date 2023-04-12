@@ -1,0 +1,5 @@
+config DRIVERS_I2C_PI608GP
+	bool
+	default n
+	help
+	  Enable support for configuring the Pericom PI7C9X2G608GP Gen2 PCIe switch over SMBus.

@@ -150,5 +150,29 @@ chip soc/intel/cannonlake
 			register "PcieClkSrcClkReq[1]" = "1"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280" "SlotDataBusWidth4X"
 		end
+		device pci 1f.0 on	# LPC Bridge
+			chip superio/ite/it8528e
+				device pnp 2e.1 on      # UART1
+					io 0x60 = 0x3F8
+					irq 0x70 = 0x04
+				end
+				device pnp 2e.2 off end # UART2
+				device pnp 2e.4 off end # System Wake-Up Control (SWUC)
+				device pnp 2e.5 off end # KBC/Mouse
+				device pnp 2e.6 off end # KBC/Keyboard
+				device pnp 2e.a off end # Consumer IR
+				device pnp 2e.f off end # Shared Memory/Flash Interface (SMFI)
+				device pnp 2e.10 on # RTC-like Timer
+					io 0x62 = 0x360	# BRAM1 I/O base address
+				end
+				device pnp 2e.11 off end # Power Management I/F Channel 1 (PMC1)
+				device pnp 2e.12 off end # Power Management I/F Channel 2 (PMC2)
+				device pnp 2e.13 off end # Serial Peripheral Interface (SSPI)
+				device pnp 2e.14 off end # Platform Environment Control Interface (PECI)
+				device pnp 2e.17 off end # Power Management I/F Channel 3 (PMC3)
+				device pnp 2e.18 off end # Power Management I/F Channel 4 (PMC4)
+				device pnp 2e.19 off end # Power Management I/F Channel 5 (PMC5)
+			end
+		end
 	end
 end

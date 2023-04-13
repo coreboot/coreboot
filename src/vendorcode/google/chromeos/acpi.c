@@ -14,7 +14,7 @@ void chromeos_acpi_gpio_generate(void)
 
 	num = variant_cros_gpio.count;
 	gpios = variant_cros_gpio.gpios;
-	if (!gpios)
+	if (num && !gpios)
 		return;
 
 	acpigen_write_scope("\\");

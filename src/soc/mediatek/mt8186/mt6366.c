@@ -725,14 +725,17 @@ static void pmic_set_vmc_vol(u32 vmc_uv)
 	pwrap_write_field(PMIC_LDO_VMC_CON0, 1, 0xFF, 0);
 }
 
+#define VRF12_VOLTAGE_UV 1200000
+
 static u32 pmic_get_vrf12_vol(void)
 {
 	return (pwrap_read_field(PMIC_LDO_VRF12_CON0, 0x3, 0) &
-		pwrap_read_field(PMIC_LDO_VRF12_OP_EN, 0x3, 0)) ? 1200000 : 0;
+		pwrap_read_field(PMIC_LDO_VRF12_OP_EN, 0x3, 0)) ? VRF12_VOLTAGE_UV : 0;
 }
 
-static void pmic_enable_vrf12(void)
+static void pmic_set_vrf12_vol(u32 vrf12_uv)
 {
+	assert(vrf12_uv == VRF12_VOLTAGE_UV);
 	pwrap_write_field(PMIC_LDO_VRF12_CON0, 1, 0x3, 0);
 	pwrap_write_field(PMIC_LDO_VRF12_OP_EN, 1, 0x3, 0);
 }
@@ -921,8 +924,7 @@ void mt6366_set_voltage(enum mt6366_regulator_id id, u32 voltage_uv)
 		pmic_set_vsram_proc12_vol(voltage_uv);
 		break;
 	case MT6366_VRF12:
-		/* VRF12 only provides 1.2V, so we just need to enable it */
-		pmic_enable_vrf12();
+		pmic_set_vrf12_vol(voltage_uv);
 		break;
 	case MT6366_VCN33:
 		pmic_set_vcn33_vol(voltage_uv);

@@ -45,6 +45,27 @@ config SOC_INTEL_COMMON_BLOCK_HECI1_DISABLE_USING_PCR
 	  Use this config for SoC platform prior to CNL PCH (with postboot_sai implemented)
 	  to make `HECI1` device disable using private configuration register (PCR) write.
 
+config SOC_INTEL_STORE_CSE_FPT_PARTITION_VERSION
+	bool
+	default n
+	depends on DRIVERS_INTEL_ISH
+	help
+	  This configuration option stores CSE FPT partitions' version in CBMEM memory.
+	  This information can be used to identify the currently running firmware partition
+	  version.
+
+	  The cost of sending HECI command to read the CSE FPT is significant (~200ms)
+	  hence, the idea is to read the CSE RW version on every cold reset (to cover
+	  the CSE update scenarios) and store into CBMEM to avoid the cost of resending
+	  the HECI command in all consecutive warm boots.
+
+	  Later boot stages can just read the CBMEM ID to retrieve the ISH version if
+	  required.
+
+	  Additionally, ensure this feature is platform specific hence, only enabled
+	  for the platform that would like to store the ISH version into the CBMEM and
+	  parse to perform some additional work.
+
 config SOC_INTEL_CSE_SEND_EOP_EARLY
 	bool "CSE send EOP early"
 	depends on SOC_INTEL_COMMON_BLOCK_CSE

@@ -1159,6 +1159,26 @@ void cse_fw_sync(void)
 	timestamp_add_now(TS_CSE_FW_SYNC_END);
 }
 
+/*
+ * Helper function that stores current CSE firmware version to CBMEM memory,
+ * except during recovery mode.
+ */
+static void store_cse_rw_fw_version(void)
+{
+	if (vboot_recovery_mode_enabled())
+		return;
+
+	struct get_bp_info_rsp cse_bp_info;
+	if (!cse_get_bp_info(&cse_bp_info)) {
+		printk(BIOS_ERR, "cse_lite: Failed to get CSE boot partition info\n");
+		return;
+	}
+	const struct cse_bp_entry *cse_bp = cse_get_bp_entry(RW, &cse_bp_info.bp_info);
+	struct cse_fw_partition_info *version;
+	version = cbmem_add(CBMEM_ID_CSE_PARTITION_VERSION, sizeof(*version));
+	memcpy(&(version->cur_cse_fw_version), &(cse_bp->fw_ver), sizeof(struct fw_version));
+}
+
 static enum cb_err send_get_fpt_partition_info_cmd(enum fpt_partition_id id,
 	struct fw_version_resp *resp)
 {
@@ -1216,13 +1236,21 @@ enum cb_err cse_get_fpt_partition_info(enum fpt_partition_id id, struct fw_versi
 	return send_get_fpt_partition_info_cmd(id, resp);
 }
 
-static void ramstage_cse_fw_sync(void *unused)
+static void ramstage_cse_misc_ops(void *unused)
 {
 	if (acpi_get_sleep_type() == ACPI_S3)
 		return;
 
 	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_RAMSTAGE))
 		cse_fw_sync();
+
+	/*
+	 * Store the CSE RW Firmware Version into CBMEM if ISH partition
+	 * is available
+	 */
+	if (CONFIG(SOC_INTEL_STORE_CSE_FPT_PARTITION_VERSION) &&
+			 soc_is_ish_partition_enabled())
+		store_cse_rw_fw_version();
 }
 
-BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_EXIT, ramstage_cse_fw_sync, NULL);
+BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_EXIT, ramstage_cse_misc_ops, NULL);

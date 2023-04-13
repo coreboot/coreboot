@@ -144,6 +144,18 @@ struct fw_version_resp {
 	struct flash_partition_data manifest_data;
 };
 
+/* ISHC version */
+struct cse_fw_ish_version_info {
+	struct fw_version prev_cse_fw_version;
+	struct fw_version cur_ish_fw_version;
+};
+
+/* CSE and ISHC version */
+struct cse_fw_partition_info {
+	struct fw_version cur_cse_fw_version;
+	struct cse_fw_ish_version_info ish_partition_info;
+};
+
 /* CSE RX and TX error status */
 enum cse_tx_rx_status {
 	/*
@@ -500,6 +512,27 @@ void cse_late_finalize(void);
  * different across SoC generation.
  */
 void soc_disable_heci1_using_pcr(void);
+
+/*
+ * SoC override API to identify if ISH Firmware existed inside CSE FPT.
+ *
+ * This override is required to avoid making default call into non-ISH
+ * supported SKU to attempt to retrieve ISH version which would results into
+ * increased boot time by 100ms+.
+ *
+ * Ideally SoC with UFS enabled would like to keep ISH enabled as well, hence
+ * identifying the UFS enabled device is enough to conclude if ISH partition is
+ * available.
+ */
+#if CONFIG(SOC_INTEL_STORE_CSE_FPT_PARTITION_VERSION)
+bool soc_is_ish_partition_enabled(void);
+#else
+static inline bool soc_is_ish_partition_enabled(void)
+{
+	/* Default implementation, ISH not enabled. */
+	return false;
+}
+#endif
 
 /*
  * Injects CSE timestamps into cbmem timestamp table. SoC code needs to

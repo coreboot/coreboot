@@ -2,15 +2,10 @@ chip soc/intel/meteorlake
 
 	device cpu_cluster 0 on end
 
-	#FIXME: update values for MTL and enable override in systemagent.c
-	register "power_limits_config[MTL_P_POWER_LIMITS_2]" = "{
+	register "power_limits_config[MTL_P_282_CORE]" = "{
 		.tdp_pl1_override = 15,
-		.tdp_pl2_override = 55,
-	}"
-
-	register "power_limits_config[MTL_P_POWER_LIMITS_1]" = "{
-		.tdp_pl1_override = 45,
-		.tdp_pl2_override = 115,
+		.tdp_pl2_override = 57,
+		.tdp_pl4 = 114,
 	}"
 
 	# NOTE: if any variant wants to override this value, use the same format

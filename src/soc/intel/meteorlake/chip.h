@@ -4,6 +4,7 @@
 #define _SOC_CHIP_H_
 
 #include <drivers/i2c/designware/dw_i2c.h>
+#include <device/pci_ids.h>
 #include <gpio.h>
 #include <intelblocks/cfg.h>
 #include <intelblocks/gspi.h>
@@ -19,11 +20,22 @@
 
 /* Types of different SKUs */
 enum soc_intel_meteorlake_power_limits {
-	MTL_P_POWER_LIMITS_1,
-	MTL_P_POWER_LIMITS_2,
-	MTL_P_POWER_LIMITS_3,
-	MTL_P_POWER_LIMITS_4,
+	MTL_P_282_CORE,
 	MTL_POWER_LIMITS_COUNT
+};
+
+/* TDP values for different SKUs */
+enum soc_intel_meteorlake_cpu_tdps {
+	TDP_15W = 15
+};
+
+/* Mapping of different SKUs based on CPU ID and TDP values */
+static const struct {
+	unsigned int cpu_id;
+	enum soc_intel_meteorlake_power_limits limits;
+	enum soc_intel_meteorlake_cpu_tdps cpu_tdp;
+} cpuid_to_mtl[] = {
+	{ PCI_DID_INTEL_MTL_P_ID_2, MTL_P_282_CORE, TDP_15W },
 };
 
 /* Types of display ports */

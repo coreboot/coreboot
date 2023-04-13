@@ -5,7 +5,6 @@
 #include <cpu/x86/msr.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <delay.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/msr.h>
@@ -145,20 +144,15 @@ void soc_add_configurable_mmio_resources(struct device *dev, int *resource_cnt)
 	sa_add_fixed_mmio_resources(dev, resource_cnt, cfg_rsrc, count);
 }
 
-/*
- * SoC implementation
- *
- * Perform System Agent Initialization during Ramstage phase.
- */
-void soc_systemagent_init(struct device *dev)
+static void configure_tdp(struct device *dev)
 {
 	struct soc_power_limits_config *soc_config;
 	struct device *sa;
 	uint16_t sa_pci_id;
+	u8 tdp;
+	size_t i;
+	bool config_tdp = false;
 	config_t *config;
-
-	/* Enable Power Aware Interrupt Routing */
-	enable_power_aware_intr();
 
 	config = config_of_soc();
 
@@ -166,31 +160,48 @@ void soc_systemagent_init(struct device *dev)
 	sa = pcidev_path_on_root(PCI_DEVFN_ROOT);
 	sa_pci_id = sa ? pci_read_config16(sa, PCI_DEVICE_ID) : 0xFFFF;
 
-	/* Choose a power limits configuration based on the SoC SKU type,
-	 * differentiated here based on SA PCI ID. */
-	switch (sa_pci_id) {
-	case PCI_DID_INTEL_MTL_P_ID_1:
-		soc_config = &config->power_limits_config[MTL_P_POWER_LIMITS_1];
-		break;
-	case PCI_DID_INTEL_MTL_P_ID_2:
-		soc_config = &config->power_limits_config[MTL_P_POWER_LIMITS_2];
-		break;
-	case PCI_DID_INTEL_MTL_P_ID_3:
-		soc_config = &config->power_limits_config[MTL_P_POWER_LIMITS_3];
-		break;
-	case PCI_DID_INTEL_MTL_P_ID_4:
-		soc_config = &config->power_limits_config[MTL_P_POWER_LIMITS_4];
-		break;
-	default:
-		printk(BIOS_ERR, "unknown SA ID: 0x%4x, skipping power limits configuration\n",
-			sa_pci_id);
+	if (sa_pci_id == 0xFFFF) {
+		printk(BIOS_WARNING, "Unknown SA PCI Device!\n");
 		return;
 	}
 
-	/* Remove once commented line below is enabled */
-	(void)soc_config;
-	/* UPDATEME: Need to enable later */
-	//set_power_limits(MOBILE_SKU_PL1_TIME_SEC, soc_config);
+	tdp = get_cpu_tdp();
+
+	/*
+	 * Choose power limits configuration based on the CPU SA PCI ID and
+	 * CPU TDP value.
+	 */
+	for (i = 0; i < ARRAY_SIZE(cpuid_to_mtl); i++) {
+		if (sa_pci_id == cpuid_to_mtl[i].cpu_id &&
+				tdp == cpuid_to_mtl[i].cpu_tdp) {
+			soc_config = &config->power_limits_config[cpuid_to_mtl[i].limits];
+			set_power_limits(MOBILE_SKU_PL1_TIME_SEC, soc_config);
+			config_tdp = true;
+			printk(BIOS_DEBUG, "Configured power limits for SA PCI ID: 0x%4x\n",
+				sa_pci_id);
+			break;
+		}
+	}
+
+	if (!config_tdp) {
+		printk(BIOS_WARNING, "Skipped power limits configuration for SA PCI ID: 0x%4x\n",
+			sa_pci_id);
+		return;
+	}
+}
+
+/*
+ * SoC implementation
+ *
+ * Perform System Agent Initialization during ramstage phase.
+ */
+void soc_systemagent_init(struct device *dev)
+{
+	/* Enable Power Aware Interrupt Routing */
+	enable_power_aware_intr();
+
+	/* Configure TDP */
+	configure_tdp(dev);
 }
 
 uint32_t soc_systemagent_max_chan_capacity_mib(u8 capid0_a_ddrsz)

@@ -998,6 +998,20 @@ config XHCI_UTILS
 	help
 	  Provides xHCI utility functions.
 
+config D3COLD_SUPPORT
+	bool
+	default y
+	help
+	  Enable this option if all devices on your system support the
+	  D3Cold power management state. The D3Cold state is a low-power
+	  state where the device has been powered down and is no longer
+	  able to maintain its context. This state can help reduce
+	  overall system power consumption, which can be beneficial for
+	  energy savings and thermal management.
+
+	  Please note that enabling D3Cold support may break system
+	  suspend-to-RAM (S3) functionality.
+
 source "src/device/dram/Kconfig"
 
 endmenu

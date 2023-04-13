@@ -62,7 +62,6 @@ config BOARD_STARLABS_STARBOOK_ADL
 	select MEMORY_MAPPED_TPM
 	select SOC_INTEL_ALDERLAKE
 	select SOC_INTEL_ALDERLAKE_PCH_P
-	select SOC_INTEL_ALDERLAKE_S3
 	select SPI_FLASH_WINBOND
 	select TPM_MEASURED_BOOT
 	select PCIEXP_SUPPORT_RESIZABLE_BARS
@@ -83,6 +82,9 @@ config CMOS_LAYOUT_FILE
 
 config CONSOLE_SERIAL
 	default n if !EDK2_DEBUG
+
+config D3COLD_SUPPORT
+	default n
 
 config DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"

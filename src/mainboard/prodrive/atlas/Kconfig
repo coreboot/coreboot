@@ -11,7 +11,6 @@ config BOARD_PRODRIVE_ATLAS_BASEBOARD
 	select MEMORY_MAPPED_TPM
 	select PCIEXP_SUPPORT_RESIZABLE_BARS
 	select SOC_INTEL_ALDERLAKE_PCH_P
-	select SOC_INTEL_ALDERLAKE_S3
 
 if BOARD_PRODRIVE_ATLAS_BASEBOARD
 
@@ -24,6 +23,9 @@ config ATLAS_ENABLE_IBECC
 	help
 	  Enables In Band Error Correction Code. It's only needed for endurance testing
 	  and therefore not always required.
+	default n
+
+config D3COLD_SUPPORT
 	default n
 
 config MAINBOARD_FAMILY

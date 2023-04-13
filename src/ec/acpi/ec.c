@@ -88,7 +88,7 @@ int recv_ec_data_timeout(int timeout_us)
 	}
 
 	data = inb(ec_data_reg);
-	printk(BIOS_SPEW, "%s: 0x%02x\n", __func__, data);
+	printk(BIOS_SPEW, "Data from EC: 0x%02x\n", data);
 
 	return data;
 }

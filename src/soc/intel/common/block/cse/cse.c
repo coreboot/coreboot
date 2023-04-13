@@ -1213,63 +1213,6 @@ void cse_enable_ptt(bool state)
 	}
 }
 
-static enum cb_err send_get_fpt_partition_info_cmd(enum fpt_partition_id id,
-	struct fw_version_resp *resp)
-{
-	enum cse_tx_rx_status ret;
-	struct fw_version_msg {
-		struct mkhi_hdr hdr;
-		enum fpt_partition_id partition_id;
-	} __packed msg = {
-		.hdr = {
-			.group_id = MKHI_GROUP_ID_GEN,
-			.command = GEN_GET_IMAGE_FW_VERSION,
-		},
-		.partition_id = id,
-	};
-
-	/*
-	 * Prerequisites:
-	 * 1) HFSTS1 CWS is Normal
-	 * 2) HFSTS1 COM is Normal
-	 * 3) Only sent after DID (accomplished by compiling this into ramstage)
-	 */
-
-	if (cse_is_hfs1_com_soft_temp_disable() || !cse_is_hfs1_cws_normal() ||
-		!cse_is_hfs1_com_normal()) {
-		printk(BIOS_ERR,
-			"HECI: Prerequisites not met for Get Image Firmware Version command\n");
-		return CB_ERR;
-	}
-
-	size_t resp_size = sizeof(struct fw_version_resp);
-	ret = heci_send_receive(&msg, sizeof(msg), resp, &resp_size, HECI_MKHI_ADDR);
-
-	if (ret || resp->hdr.result) {
-		printk(BIOS_ERR, "CSE: Failed to get partition information for %d: 0x%x\n",
-			id, resp->hdr.result);
-		return CB_ERR;
-	}
-
-	return CB_SUCCESS;
-}
-
-enum cb_err cse_get_fpt_partition_info(enum fpt_partition_id id, struct fw_version_resp *resp)
-{
-	if (vboot_recovery_mode_enabled()) {
-		printk(BIOS_WARNING,
-			"CSE: Skip sending Get Image Info command during recovery mode!\n");
-		return CB_ERR;
-	}
-
-	if (id == FPT_PARTITION_NAME_ISHC && !CONFIG(DRIVERS_INTEL_ISH)) {
-		printk(BIOS_WARNING, "CSE: Info request denied, no ISH partition\n");
-		return CB_ERR;
-	}
-
-	return send_get_fpt_partition_info_cmd(id, resp);
-}
-
 #if ENV_RAMSTAGE
 
 /*

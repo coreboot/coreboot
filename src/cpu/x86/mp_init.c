@@ -554,6 +554,7 @@ static enum cb_err init_bsp(struct bus *cpu_bus)
 		return CB_ERR;
 	}
 	bsp->path.apic.initial_lapicid = initial_lapicid();
+	set_cpu_topology_from_leaf_b(bsp);
 
 	/* Find the device structure for the boot CPU. */
 	set_cpu_info(0, bsp);

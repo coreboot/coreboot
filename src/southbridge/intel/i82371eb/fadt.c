@@ -29,9 +29,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->pm_tmr_len = 4;
 	fadt->gpe0_blk_len = 4;
 
-	fadt->duty_offset = 1; /* bit 1:3 in PCNTRL reg (pmbase+0x10) */
-	fadt->duty_width = 3; /* this width is in bits */
-
 	/*
 	 * bit  meaning
 	 * 0    1: We have user-visible legacy devices

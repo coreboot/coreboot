@@ -8,10 +8,12 @@
 
 static void generate_cpu_entry(int cpu)
 {
-	int pcontrol_blk = DEFAULT_PMBASE + PCNTRL, plen = 6;
+	acpigen_write_processor_device(cpu);
 
-	acpigen_write_processor(cpu, pcontrol_blk, plen);
-	acpigen_pop_len();
+	/* bit 1:3 in PCNTRL reg (pmbase+0x10) */
+	acpigen_write_PTC(3, 1, DEFAULT_PMBASE + PCNTRL);
+
+	acpigen_write_processor_device_end();
 }
 
 void generate_cpu_entries(const struct device *device)

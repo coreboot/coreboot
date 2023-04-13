@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpigen.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <gpio.h>
@@ -66,9 +67,19 @@ static void mainboard_smbios_strings(struct device *dev, struct smbios_type11 *t
 	t->count = smbios_add_string(t->eos, get_formatted_pn());
 }
 
+static void mainboard_fill_ssdt(const struct device *dev)
+{
+	const struct emi_eeprom_vpd *eeprom = get_emi_eeprom_vpd();
+	const bool sleep_enable = eeprom->profile != ATLAS_PROF_REALTIME_PERFORMANCE ? 1 : 0;
+	acpigen_ssdt_override_sleep_states(false, false,
+					   CONFIG(HAVE_ACPI_RESUME) && sleep_enable,
+					   sleep_enable);
+}
+
 static void mainboard_enable(struct device *dev)
 {
 	dev->ops->get_smbios_strings = mainboard_smbios_strings;
+	dev->ops->acpi_fill_ssdt = mainboard_fill_ssdt;
 }
 
 struct chip_operations mainboard_ops = {

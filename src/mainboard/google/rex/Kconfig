@@ -80,10 +80,12 @@ config MAINBOARD_FAMILY
 
 config MAINBOARD_PART_NUMBER
 	default "Rex" if BOARD_GOOGLE_REX0
+	default "Screebo" if BOARD_GOOGLE_SCREEBO
 
 config VARIANT_DIR
 	string
 	default "rex0" if BOARD_GOOGLE_REX0
+	default "screebo" if BOARD_GOOGLE_SCREEBO
 
 config DIMM_SPD_SIZE
 	default 512

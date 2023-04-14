@@ -78,8 +78,9 @@ static void each_cpu_init(struct device *cpu)
 {
 	msr_t msr;
 
-	printk(BIOS_SPEW, "%s dev: %s, cpu: %lu, apic_id: 0x%x\n", __func__, dev_path(cpu),
-	       cpu_index(), cpu->path.apic.apic_id);
+	printk(BIOS_SPEW, "%s dev: %s, cpu: %lu, apic_id: 0x%x, package_id: 0x%x\n",
+	       __func__, dev_path(cpu), cpu_index(), cpu->path.apic.apic_id,
+	       cpu->path.apic.package_id);
 
 	/*
 	 * Enable PWR_PERF_PLTFRM_OVR and PROCHOT_LOCK.
@@ -275,7 +276,4 @@ void mp_init_cpus(struct bus *bus)
 
 	if (mp_init_with_smm(bus, &mp_ops) < 0)
 		printk(BIOS_ERR, "MP initialization failure.\n");
-
-	/* update numa domain for all cpu devices */
-	xeonsp_init_cpu_config();
 }

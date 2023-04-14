@@ -1,0 +1,131 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_STARLABS_STARFIGHTER_SERIES
+	def_bool n
+	select BOARD_ROMSIZE_KB_32768
+	select DRIVERS_INTEL_PMC
+	select DRIVERS_INTEL_USB4_RETIMER
+	select DRIVERS_I2C_HID
+	select EC_STARLABS_FAN
+	select EC_STARLABS_ITE
+	select EC_STARLABS_KBL_LEVELS
+	select EC_STARLABS_MAX_CHARGE
+	select EC_STARLABS_MERLIN
+	select EC_STARLABS_NEED_ITE_BIN
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_CMOS_DEFAULT
+	select HAVE_OPTION_TABLE
+	select HAVE_SPD_IN_CBFS
+	select INTEL_GMA_HAVE_VBT
+	select INTEL_LPSS_UART_FOR_CONSOLE
+	select MAINBOARD_HAS_TPM2
+	select MEMORY_MAPPED_TPM
+	select NO_UART_ON_SUPERIO
+	select SOC_INTEL_ALDERLAKE
+	select SOC_INTEL_ALDERLAKE_PCH_P
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select SOC_INTEL_COMMON_BLOCK_TCSS
+	select SOC_INTEL_CRASHLOG
+	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
+	select SOC_INTEL_RAPTORLAKE
+	select SPI_FLASH_WINBOND
+	select SYSTEM_TYPE_LAPTOP
+	select TPM_MEASURED_BOOT
+	select VALIDATE_INTEL_DESCRIPTOR
+
+config BOARD_STARLABS_STARFIGHTER_RPL
+	select BOARD_STARLABS_STARFIGHTER_SERIES
+
+if BOARD_STARLABS_STARFIGHTER_SERIES
+
+config CCD_PORT
+	int
+	default 3 # TODO
+
+config CONSOLE_SERIAL
+	default n if !EDK2_DEBUG
+
+config D3COLD_SUPPORT
+	default n
+
+config DEVICETREE
+	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
+config DIMM_SPD_SIZE
+	default 512
+
+config DRIVER_TPM_SPI_CHIP
+	default 2
+
+config EC_GPE_SCI
+	default 0x6e
+
+config EC_STARLABS_ADD_ITE_BIN
+	default n
+
+config EC_STARLABS_BATTERY_MODEL
+	default "AEC617573-4S1P"
+
+config EC_STARLABS_BATTERY_TYPE
+	default "LION"
+
+config EC_STARLABS_BATTERY_OEM
+	default "Apower Electronics"
+
+config EC_STARLABS_ITE_BIN_PATH
+	string
+	depends on EC_STARLABS_NEED_ITE_BIN
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/ec.bin"
+
+config EC_VARIANT_DIR
+	default "merlin"
+
+config EDK2_BOOTSPLASH_FILE
+	string
+	default "3rdparty/blobs/mainboard/starlabs/Logo.bmp"
+
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/\$(CONFIG_VARIANT_DIR)/vboot.fmd" if VBOOT
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/\$(CONFIG_VARIANT_DIR)/board.fmd"
+
+config IFD_BIN_PATH
+	string
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/flashdescriptor.bin"
+
+config MAINBOARD_DIR
+	default "starlabs/starfighter"
+
+config MAINBOARD_FAMILY
+	string
+	default "F1"
+
+config MAINBOARD_PART_NUMBER
+	default "StarFighter Mk I"
+
+config MAINBOARD_SMBIOS_PRODUCT_NAME
+	default "StarFighter"
+
+config ME_BIN_PATH
+	# string
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/intel_me.bin"
+
+config POWER_STATE_DEFAULT_ON_AFTER_FAILURE
+	default n
+
+config SOC_INTEL_CSE_SEND_EOP_EARLY
+	default n
+
+config UART_FOR_CONSOLE
+	default 0
+
+config USE_PM_ACPI_TIMER
+	default n
+
+config VBOOT
+	select VBOOT_VBNV_FLASH
+
+config VARIANT_DIR
+	default "rpl"
+
+endif

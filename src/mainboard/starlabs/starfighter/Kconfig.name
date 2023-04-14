@@ -1,0 +1,6 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+comment "Star Labs StarFighter Series"
+
+config BOARD_STARLABS_STARFIGHTER_RPL
+	bool "Star Labs StarFighter Mk I (i3-1315U, i7-13700H and i9-13900H)"

@@ -48,8 +48,6 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 	fadt->pm2_cnt_blk = pmbase + PM2_CNT;
 	fadt->pm2_cnt_len = 1;
 	fadt->gpe0_blk = pmbase + 0x60;
-	fadt->p_lvl2_lat = ACPI_FADT_C2_NOT_SUPPORTED;
-	fadt->p_lvl3_lat = ACPI_FADT_C3_NOT_SUPPORTED;
 	fadt->duty_offset = 1;
 
 	fadt->x_pm1b_evt_blk.space_id = ACPI_ADDRESS_SPACE_IO;

@@ -44,9 +44,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	else
 		fadt->gpe0_blk_len = 2 * 8;
 
-	/* P_LVLx not used */
-	fadt->p_lvl2_lat = ACPI_FADT_C2_NOT_SUPPORTED;
-	fadt->p_lvl3_lat = ACPI_FADT_C3_NOT_SUPPORTED;
 	fadt->duty_offset = 0;
 	fadt->duty_width = 0;
 	fadt->day_alrm = 0xd;

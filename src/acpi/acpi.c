@@ -1685,6 +1685,10 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	/* should be 0 ACPI 3.0 */
 	fadt->reserved = 0;
 
+	/* P_LVLx latencies are not used as CPU _CST will override them. */
+	fadt->p_lvl2_lat = ACPI_FADT_C2_NOT_SUPPORTED;
+	fadt->p_lvl3_lat = ACPI_FADT_C3_NOT_SUPPORTED;
+
 	fadt->preferred_pm_profile = acpi_get_preferred_pm_profile();
 
 	if (CONFIG(USE_PC_CMOS_ALTCENTURY))

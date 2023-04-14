@@ -44,8 +44,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->pm_tmr_len = 4;	/* 32 bits */
 	fadt->gpe0_blk_len = 8;	/* 64 bits */
 
-	fadt->p_lvl2_lat = ACPI_FADT_C2_NOT_SUPPORTED;
-	fadt->p_lvl3_lat = ACPI_FADT_C3_NOT_SUPPORTED;
 	fadt->duty_offset = 1;	/* CLK_VAL bits 3:1 */
 	fadt->duty_width = 3;	/* CLK_VAL bits 3:1 */
 	fadt->day_alrm = 0;	/* 0x7d these have to be */

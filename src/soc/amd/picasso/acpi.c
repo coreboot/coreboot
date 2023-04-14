@@ -77,10 +77,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 
 	fill_fadt_extended_pm_regs(fadt);
 
-	/* p_lvl2_lat and p_lvl3_lat match what the AGESA code does, but those values are
-	   overridden by the _CST packages in the processor devices. */
-	fadt->p_lvl2_lat = ACPI_FADT_C2_NOT_SUPPORTED;
-	fadt->p_lvl3_lat = ACPI_FADT_C3_NOT_SUPPORTED;
 	fadt->day_alrm = RTC_DATE_ALARM;
 	fadt->iapc_boot_arch = cfg->fadt_boot_arch; /* legacy free default */
 	fadt->flags |=	ACPI_FADT_WBINVD | /* See table 5-34 ACPI 6.3 spec */

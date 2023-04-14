@@ -31,9 +31,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->pm2_cnt_len = 1;
 	fadt->pm_tmr_len = 4;
 	fadt->gpe0_blk_len = 16;
-	/* P_CNT not supported */
-	fadt->duty_offset = 0;
-	fadt->duty_width = 0;
+
 	fadt->day_alrm = 0xd;
 	fadt->mon_alrm = 0x00;
 	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042;

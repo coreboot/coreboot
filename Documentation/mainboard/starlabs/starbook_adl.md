@@ -5,6 +5,8 @@
 - CPU (full processor specs available at https://ark.intel.com)
     - Intel i7-1260P (Alder Lake)
     - Intel i3-1220P (Alder Lake)
+    - Intel i3-1315U (Raptor Lake)
+    - Intel i7-1360P (Raptor Lake)
 - EC
     - ITE IT5570E
     - Backlit keyboard, with standard PS/2 keycodes and SCI hotkeys
@@ -33,7 +35,8 @@
     - RTS5129 MicroSD card reader
 - USB
     - 1920x1080 CCD camera
-    - USB 3.1 Gen 2 (left)
+    - USB 3.1 Gen 2 (left) (Alder Lake)
+    - Thunderbolt 4.0 (left) (Raptor Lake)
     - USB 3.1 Gen 2 Type-A (left)
     - USB 3.1 Gen 1 Type-A (right)
     - USB 2.0 Type-A (right)
@@ -58,9 +61,18 @@ These files exist in the correct location in the StarLabsLtd/blobs repo on GitHu
 
 The following commands will build a working image:
 
+
+Alder Lake:
 ```bash
 make distclean
 make defconfig KBUILD_DEFCONFIG=configs/config.starlabs_starbook_adl
+make
+```
+
+Raptor Lake:
+```bash
+make distclean
+make defconfig KBUILD_DEFCONFIG=configs/config.starlabs_starbook_rpl
 make
 ```
 

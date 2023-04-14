@@ -30,9 +30,12 @@ DefinitionBlock(
 		#include <soc/intel/common/block/acpi/acpi/northbridge.asl>
 		#include <soc/intel/tigerlake/acpi/southbridge.asl>
 		#include <soc/intel/tigerlake/acpi/tcss.asl>
-#elif CONFIG(SOC_INTEL_ALDERLAKE)
+#elif CONFIG(SOC_INTEL_ALDERLAKE) || CONFIG(SOC_INTEL_RAPTORLAKE)
 		#include <soc/intel/common/block/acpi/acpi/northbridge.asl>
 		#include <soc/intel/alderlake/acpi/southbridge.asl>
+#if CONFIG(DRIVERS_INTEL_USB4_RETIMER)
+		#include <soc/intel/alderlake/acpi/tcss.asl>
+#endif
 #endif
 
 		/* PS/2 Keyboard */

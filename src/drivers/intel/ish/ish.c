@@ -2,9 +2,11 @@
 
 #include <acpi/acpi_device.h>
 #include <acpi/acpigen.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <intelblocks/cse.h>
 #include "chip.h"
 
 static void ish_fill_ssdt_generator(const struct device *dev)
@@ -46,6 +48,25 @@ static void intel_ish_enable(struct device *dev)
 	dev->ops = &intel_ish_ops;
 }
 
+static void intel_ish_get_version(void)
+{
+	struct cse_fw_partition_info *version = cbmem_find(CBMEM_ID_CSE_PARTITION_VERSION);
+	if (version == NULL)
+		return;
+
+	printk(BIOS_DEBUG, "ISH version: %d.%d.%d.%d\n",
+		version->ish_partition_info.cur_ish_fw_version.major,
+		version->ish_partition_info.cur_ish_fw_version.minor,
+		version->ish_partition_info.cur_ish_fw_version.hotfix,
+		version->ish_partition_info.cur_ish_fw_version.build);
+}
+
+static void intel_ish_final(struct device *dev)
+{
+	if (CONFIG(SOC_INTEL_STORE_CSE_FPT_PARTITION_VERSION))
+		intel_ish_get_version();
+}
+
 /* Copy of default_pci_ops_dev with scan_bus addition */
 static const struct device_operations pci_ish_device_ops = {
 	.read_resources   = pci_dev_read_resources,
@@ -54,6 +75,7 @@ static const struct device_operations pci_ish_device_ops = {
 	.init             = pci_dev_init,
 	.scan_bus         = &scan_generic_bus, /* Non-default */
 	.ops_pci          = &pci_dev_ops_pci,
+	.final            = intel_ish_final,
 };
 
 static const unsigned short pci_device_ids[] = {

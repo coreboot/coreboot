@@ -32,8 +32,8 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->pm_tmr_len = 4;
 	fadt->gpe0_blk_len = 16;
 	/* P_LVLx not used */
-	fadt->p_lvl2_lat = 101;
-	fadt->p_lvl3_lat = 1001;
+	fadt->p_lvl2_lat = ACPI_FADT_C2_NOT_SUPPORTED;
+	fadt->p_lvl3_lat = ACPI_FADT_C3_NOT_SUPPORTED;
 	/* P_CNT not supported */
 	fadt->duty_offset = 0;
 	fadt->duty_width = 0;

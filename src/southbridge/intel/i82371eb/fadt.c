@@ -36,8 +36,8 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->pm_tmr_len = 4;
 	fadt->gpe0_blk_len = 4;
 
-	fadt->p_lvl2_lat = 101; /* >100 means c2 not supported */
-	fadt->p_lvl3_lat = 1001; /* >1000 means c3 not supported */
+	fadt->p_lvl2_lat = ACPI_FADT_C2_NOT_SUPPORTED;
+	fadt->p_lvl3_lat = ACPI_FADT_C3_NOT_SUPPORTED;
 	fadt->duty_offset = 1; /* bit 1:3 in PCNTRL reg (pmbase+0x10) */
 	fadt->duty_width = 3; /* this width is in bits */
 	fadt->day_alrm = 0x0d; /* rtc CMOS RAM offset */

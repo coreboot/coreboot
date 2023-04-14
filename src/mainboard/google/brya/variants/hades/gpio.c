@@ -28,8 +28,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_A11, 1, DEEP),
 	/* GPP_A12 : [] ==> EN_PP3300_LAN_X */
 	PAD_CFG_GPO(GPP_A12, 1, DEEP),
-	/* GPP_A13 : [] ==> GSC_PCH_INT_ODL */
-	PAD_CFG_GPI_APIC_LOCK(GPP_A13, NONE, LEVEL, INVERT, LOCK_CONFIG),
+	/* GPP_A13 : [] ==> BT_DISABLE_L */
+	PAD_CFG_GPO(GPP_A13, 1, DEEP),
 	/* GPP_A14 : [] ==> EC_USB_PCH_C0_OC_ODL */
 	PAD_CFG_NF(GPP_A14, NONE, DEEP, NF1),
 	/* GPP_A15 : [] ==> EC_USB_PCH_C1_OC_ODL */
@@ -42,8 +42,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),
 	/* GPP_A19 : [] ==> EN_PCH_PPVAR_GPU_FBVDDQ_X */
 	PAD_CFG_GPO(GPP_A19, 0, PLTRST),
-	/* GPP_A20 : [] ==> NC */
-	PAD_NC(GPP_A20, NONE),
+	/* GPP_A20 : [] ==> GSC_PCH_INT_ODL */
+	PAD_CFG_GPI_APIC_LOCK(GPP_A20, NONE, LEVEL, INVERT, LOCK_CONFIG),
 	/* GPP_A21 : [] ==> NC */
 	PAD_NC(GPP_A21, NONE),
 	/* GPP_A22 : [] ==> NC */
@@ -125,8 +125,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_D2, 1, DEEP),
 	/* GPP_D3 : [] ==> PS_NVVDD_TALERT_ODL */
 	PAD_CFG_GPI(GPP_D3, NONE, PLTRST),
-	/* GPP_D4  : [] ==> BT_DISABLE_L */
-	PAD_CFG_GPO(GPP_D4, 1, DEEP),
+	/* GPP_D4  : [] ==> NC */
+	PAD_NC(GPP_D4, NONE),
 	/* GPP_D5  : [] ==> GPU_CLKREQ_ODL */
 	PAD_CFG_NF(GPP_D5, NONE, PLTRST, NF1),
 	/* GPP_D6  : [] ==> PCIE_SSD_CLKREQ_ODL */
@@ -164,8 +164,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_E1, 0, PLTRST),
 	/* GPP_E2  : [] ==> PG_PP3300_GPU_X_OD */
 	PAD_CFG_GPI_LOCK(GPP_E2, NONE, LOCK_CONFIG),
-	/* GPP_E3  : [] ==> PG_PPVAR_GPU_NVVDD_X_OD (board rev 3 and later) */
-	PAD_CFG_GPI(GPP_E3, NONE, DEEP),
+	/* GPP_E3  : [] ==> WIFI_DISABLE_L */
+	PAD_CFG_GPO(GPP_E3, 1, DEEP),
 	/* GPP_E4  : [] ==> PG_PPVAR_GPU_FBVDDQ_X_OD */
 	PAD_CFG_GPI(GPP_E4, NONE, DEEP),
 	/* GPP_E5  : [] ==> PG_GPU_ALLRAILS */
@@ -174,8 +174,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC_LOCK(GPP_E6, NONE, LOCK_CONFIG),
 	/* GPP_E7  : [] ==> NC */
 	PAD_NC(GPP_E7, NONE),
-	/* GPP_E8  : [] ==> WIFI_DISABLE_L */
-	PAD_CFG_GPO(GPP_E8, 1, DEEP),
+	/* GPP_E8  : [] ==> PG_PPVAR_GPU_NVVDD_X_OD */
+	PAD_CFG_GPI(GPP_E8, NONE, DEEP),
 	/* GPP_E9  : [] ==> USB_A1_OC_ODL */
 	PAD_CFG_NF_LOCK(GPP_E9, NONE, NF1, LOCK_CONFIG),
 	/* GPP_E10 : [] ==> EN_PPVAR_PEXVDD_GPU_X */

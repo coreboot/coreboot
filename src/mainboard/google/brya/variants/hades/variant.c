@@ -17,7 +17,7 @@
 #define GPU_3V3_PWR_EN		GPP_E1
 #define GPU_3V3_PG		GPP_E2
 #define NVVDD_PWR_EN		GPP_E0
-#define NVVDD_PG		GPP_E3
+#define NVVDD_PG		GPP_E8
 #define PEXVDD_PWR_EN		GPP_E10
 #define PEXVDD_PG		GPP_E17
 #define FBVDD_PWR_EN		GPP_A19

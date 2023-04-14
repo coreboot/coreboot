@@ -80,6 +80,9 @@ void soc_core_init(struct device *cpu)
 
 	set_aesni_lock();
 
+	/* Set virtualization based on Kconfig option */
+	set_vmx_and_lock();
+
 	/*
 	 * Enable ACPI PM timer emulation, which also lets microcode know
 	 * location of ACPI_BASE_ADDRESS. This also enables other features

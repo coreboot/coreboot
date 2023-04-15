@@ -5,7 +5,7 @@
 #include <console/console.h>
 #include <drivers/ipmi/ipmi_if.h>
 #include <string.h>
-#include <build.h>
+#include <version.h>
 #include "ipmi_supermicro_oem.h"
 
 #define IPMI_NETFN_OEM 0x30
@@ -20,7 +20,6 @@ struct ipmi_oem_set_bios_str {
 
 static void set_coreboot_ver(const uint16_t kcs_port)
 {
-	const char *coreboot_ver = COREBOOT_VERSION;
 	struct ipmi_oem_set_bios_str bios_ver;
 	struct ipmi_rsp rsp;
 	int ret;
@@ -28,9 +27,9 @@ static void set_coreboot_ver(const uint16_t kcs_port)
 
 	/* Only 8 characters are visible in UI. Cut of on first dash */
 	for (i = 0; i < 15; i++) {
-		if (coreboot_ver[i] == '-')
+		if (coreboot_version[i] == '-')
 			break;
-		bios_ver.str[i] = coreboot_ver[i];
+		bios_ver.str[i] = coreboot_version[i];
 	}
 	bios_ver.str[i] = 0;
 	bios_ver.ver = IPMI_LUN0_AC_SET_BIOS_VER;
@@ -50,7 +49,7 @@ static void set_coreboot_date(const uint16_t kcs_port)
 	struct ipmi_rsp rsp;
 	int ret;
 
-	strncpy(bios_ver.str, COREBOOT_DMI_DATE, 15);
+	strncpy(bios_ver.str, coreboot_dmi_date, 15);
 	bios_ver.str[15] = 0;
 	bios_ver.ver = IPMI_LUN0_AC_SET_BIOS_DATE;
 

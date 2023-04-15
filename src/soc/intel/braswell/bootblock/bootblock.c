@@ -2,7 +2,6 @@
 
 #include <arch/io.h>
 #include <bootblock_common.h>
-#include <build.h>
 #include <console/console.h>
 #include <device/pci_ops.h>
 #include <fsp/util.h>
@@ -14,6 +13,7 @@
 #include <soc/msr.h>
 #include <soc/pm.h>
 #include <soc/spi.h>
+#include <version.h>
 
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {
@@ -79,11 +79,10 @@ static void soc_rtc_init(void)
 {
 	int rtc_failed = rtc_failure();
 
-	if (rtc_failed) {
+	if (rtc_failed)
 		printk(BIOS_ERR, "RTC Failure detected. Resetting date to %x/%x/%x%x\n",
-			COREBOOT_BUILD_MONTH_BCD, COREBOOT_BUILD_DAY_BCD, 0x20,
-			COREBOOT_BUILD_YEAR_BCD);
-	}
+			coreboot_build_date.month, coreboot_build_date.day,
+			coreboot_build_date.century, coreboot_build_date.year);
 
 	cmos_init(rtc_failed);
 }

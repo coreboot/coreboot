@@ -657,6 +657,7 @@ Scope (\_SB.PCI0)
 		}
 	}
 
+#if CONFIG(D3COLD_SUPPORT)
 	Method (TCON, 0)
 	{
 		/* Reset IOM D3 cold bit if it is in D3 cold now. */
@@ -763,6 +764,7 @@ Scope (\_SB.PCI0)
 			STAT = 0
 		}
 	}
+#endif	// D3COLD_SUPPORT
 
 	/*
 	 * TCSS xHCI device

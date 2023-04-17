@@ -30,7 +30,11 @@ Method (_PS3, 0, Serialized)
 
 Method (_S0W, 0x0, NotSerialized)
 {
+#if CONFIG(D3COLD_SUPPORT)
 	Return (0x4)
+#else
+	Return (0x3)
+#endif	// D3COLD_SUPPORT
 }
 
 /*
@@ -39,6 +43,7 @@ Method (_S0W, 0x0, NotSerialized)
  */
 Name (SD3C, 0)
 
+#if CONFIG(D3COLD_SUPPORT)
 Method (_PR0)
 {
 	Return (Package () { \_SB.PCI0.D3C })
@@ -48,6 +53,7 @@ Method (_PR3)
 {
 	Return (Package () { \_SB.PCI0.D3C })
 }
+#endif	// D3COLD_SUPPORT
 
 /*
  * XHCI controller _DSM method

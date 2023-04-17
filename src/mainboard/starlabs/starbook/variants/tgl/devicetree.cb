@@ -19,7 +19,6 @@ chip soc/intel/tigerlake
 	register "CnviBtAudioOffload"		= "1"
 	register "enable_c6dram"		= "1"
 	register "SaGv"				= "SaGv_Enabled"
-	register "TcssD3ColdDisable"		= "1"
 
 	# FSP Silicon
 	# Serial I/O

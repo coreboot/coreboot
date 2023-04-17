@@ -148,8 +148,6 @@ struct soc_intel_tigerlake_config {
 
 	/* Support for TCSS xhci, xdci, TBT PCIe root ports and DMA controllers */
 	uint8_t TcssD3HotDisable;
-	/* Support for TBT PCIe root ports and DMA controllers with D3Hot->D3Cold */
-	uint8_t TcssD3ColdDisable;
 
 	/* Enable DPTF support */
 	int dptf_enable;

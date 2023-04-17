@@ -60,7 +60,6 @@ void devtree_update(void)
 	if (get_uint_option("thunderbolt", 1) == 0) {
 		cfg->UsbTcPortEn = 0;
 		cfg->TcssXhciEn = 0;
-		cfg->TcssD3ColdDisable = 0;
 		tbt_pci_dev->enabled = 0;
 		tbt_dma_dev->enabled = 0;
 	}

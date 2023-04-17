@@ -33,8 +33,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 		fadt->duty_width = 3;
 	else
 		fadt->duty_width = 0;
-	fadt->day_alrm = 0xd;
-	fadt->mon_alrm = 0x00;
+
 	fadt->iapc_boot_arch = ACPI_FADT_8042 | ACPI_FADT_LEGACY_DEVICES;
 	fadt->flags |= (ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED
 		       | ACPI_FADT_SLEEP_BUTTON | ACPI_FADT_S4_RTC_WAKE

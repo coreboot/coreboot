@@ -14,9 +14,6 @@
 	#define FADT_BOOT_ARCH (ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042)
 #endif
 
-/* RTC Registers */
-#define RTC_DATE_ALARM		0x0d
-
 const char *soc_acpi_name(const struct device *dev);
 
 #endif /* AMD_STONEYRIDGE_ACPI_H */

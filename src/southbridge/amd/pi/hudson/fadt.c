@@ -38,8 +38,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 
 	fadt->duty_offset = 1;	/* CLK_VAL bits 3:1 */
 	fadt->duty_width = 3;	/* CLK_VAL bits 3:1 */
-	fadt->day_alrm = 0;	/* 0x7d these have to be */
-	fadt->mon_alrm = 0;	/* 0x7e added to cmos.layout */
 	fadt->iapc_boot_arch = FADT_BOOT_ARCH;	/* See table 5-10 */
 	fadt->res2 = 0;		/* reserved, MUST be 0 ACPI 3.0 */
 	fadt->flags |= ACPI_FADT_WBINVD | /* See table 5-10 ACPI 3.0a spec */

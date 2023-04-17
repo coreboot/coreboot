@@ -56,7 +56,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 
 	fill_fadt_extended_pm_regs(fadt);
 
-	fadt->day_alrm = RTC_DATE_ALARM;
 	fadt->iapc_boot_arch = cfg->fadt_boot_arch; /* legacy free default */
 	fadt->flags |=	ACPI_FADT_WBINVD | /* See table 5-34 ACPI 6.3 spec */
 			ACPI_FADT_C1_SUPPORTED |

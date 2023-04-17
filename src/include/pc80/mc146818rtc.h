@@ -93,6 +93,9 @@
 #define RTC_CLK_YEAR		9
 #define RTC_CLK_ALTCENTURY	0x32
 
+#define RTC_DATE_ALARM		RTC_REG_D
+#define RTC_MONTH_ALARM		0
+
 /* On PCs, the checksum is built only over bytes 16..45 */
 #define PC_CKS_RANGE_START	16
 #define PC_CKS_RANGE_END	45

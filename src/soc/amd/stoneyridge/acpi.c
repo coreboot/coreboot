@@ -54,7 +54,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 
 	fadt->duty_offset = 1;	/* CLK_VAL bits 3:1 */
 	fadt->duty_width = 3;	/* CLK_VAL bits 3:1 */
-	fadt->day_alrm = RTC_DATE_ALARM;
 	fadt->iapc_boot_arch = FADT_BOOT_ARCH;	/* See table 5-10 */
 	fadt->flags |= ACPI_FADT_WBINVD | /* See table 5-10 ACPI 3.0a spec */
 				ACPI_FADT_C1_SUPPORTED |

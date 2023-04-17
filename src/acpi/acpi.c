@@ -1748,9 +1748,6 @@ static void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 
 	fadt->preferred_pm_profile = acpi_get_preferred_pm_profile();
 
-	if (CONFIG(USE_PC_CMOS_ALTCENTURY))
-		fadt->century = RTC_CLK_ALTCENTURY;
-
 	fadt->sci_int = acpi_sci_int();
 
 	arch_fill_fadt(fadt);

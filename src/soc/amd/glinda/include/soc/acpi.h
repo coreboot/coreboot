@@ -12,11 +12,6 @@
 
 #define ACPI_SCI_IRQ 9
 
-/* RTC Registers */
-#define RTC_DATE_ALARM		0x0d
-#define RTC_ALT_CENTURY		0x32
-#define RTC_CENTURY		0x48
-
 uintptr_t agesa_write_acpi_tables(const struct device *device, uintptr_t current,
 				  acpi_rsdp_t *rsdp);
 

@@ -711,7 +711,7 @@ void acpigen_write_empty_PCT(void)
 	acpigen_emit_stream(stream, ARRAY_SIZE(stream));
 }
 
-void acpigen_write_empty_PTC(void)
+void acpigen_write_PTC(uint8_t duty_width, uint8_t duty_offset, uint16_t p_cnt)
 {
 /*
 	Name (_PTC, Package (0x02)
@@ -719,30 +719,34 @@ void acpigen_write_empty_PTC(void)
 		ResourceTemplate ()
 		{
 			Register (FFixedHW,
-				0x00,               // Bit Width
-				0x00,               // Bit Offset
-				0x0000000000000000, // Address
+				0x00,               // Duty Width
+				0x00,               // Duty Offset
+				0x0000000000000000, // P_CNT IO Address
 				,)
 		},
 
 		ResourceTemplate ()
 		{
 			Register (FFixedHW,
-				0x00,               // Bit Width
-				0x00,               // Bit Offset
-				0x0000000000000000, // Address
+				0x00,               // Duty Width
+				0x00,               // Duty Offset
+				0x0000000000000000, // P_CNT IO Address
 				,)
 		}
 	})
 */
 	acpi_addr_t addr = {
-		.space_id    = ACPI_ADDRESS_SPACE_FIXED,
-		.bit_width   = 0,
-		.bit_offset  = 0,
+		.bit_width   = duty_width,
+		.bit_offset  = duty_offset,
 		.access_size = ACPI_ACCESS_SIZE_UNDEFINED,
-		.addrl       = 0,
+		.addrl       = p_cnt,
 		.addrh       = 0,
 	};
+
+	if (addr.addrl != 0)
+		addr.space_id = ACPI_ADDRESS_SPACE_IO;
+	else
+		addr.space_id = ACPI_ADDRESS_SPACE_FIXED;
 
 	acpigen_write_name("_PTC");
 	acpigen_write_package(2);
@@ -754,6 +758,11 @@ void acpigen_write_empty_PTC(void)
 	acpigen_write_register_resource(&addr);
 
 	acpigen_pop_len();
+}
+
+void acpigen_write_empty_PTC(void)
+{
+	acpigen_write_PTC(0, 0, 0);
 }
 
 static void __acpigen_write_method(const char *name, uint8_t flags)

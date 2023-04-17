@@ -431,6 +431,7 @@ void acpigen_write_PPC(u8 nr);
 void acpigen_write_PPC_NVS(void);
 void acpigen_write_empty_PCT(void);
 void acpigen_write_empty_PTC(void);
+void acpigen_write_PTC(uint8_t duty_width, uint8_t duty_offset, uint16_t p_cnt);
 void acpigen_write_PRW(u32 wake, u32 level);
 void acpigen_write_STA(uint8_t status);
 void acpigen_write_STA_ext(const char *namestring);

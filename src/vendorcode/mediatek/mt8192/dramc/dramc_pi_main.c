@@ -987,7 +987,7 @@ static void vCalibration_Flow_LP4(DRAMC_CTX_T *p)
 		DramcTxWindowPerbitCal(p, TX_DQ_DQS_MOVE_DQ_ONLY, FALSE, AUTOK_OFF);
 
 #if TX_K_DQM_WITH_WDBI
-		if ((p->DBI_W_onoff[p->dram_fsp]==DBI_ON))
+		if (p->DBI_W_onoff[p->dram_fsp]==DBI_ON)
 		{
 			// K DQM with DBI_ON, and check DQM window spec.
 			//msg("[TX_K_DQM_WITH_WDBI] Step1: K DQM with DBI_ON, and check DQM window spec.\n\n");

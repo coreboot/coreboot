@@ -585,9 +585,6 @@ void get_rank_size_by_emi(unsigned long long dram_rank_size[DRAMC_MAX_RK])
 	unsigned long long ch0_rank0_size, ch0_rank1_size;
 	unsigned long long ch1_rank0_size, ch1_rank1_size;
 	unsigned int cen_emi_conh = mt_emi_sync_read(EMI_CONH);
-	unsigned long long dq_width;
-
-	dq_width = 2;
 
 	dram_rank_size[0] = 0;
 	dram_rank_size[1] = 0;

@@ -1260,11 +1260,9 @@ void DVS_DMY_RD_EXIT(DRAMC_CTX_T *p)
 
 void DPMEnableTracking(DRAMC_CTX_T *p, U32 u4Reg, U32 u4Field, U8 u1ShuIdx, U8 u1Enable)
 {
-	U32 val, fld;
+	U32 fld;
 
 	fld = Fld(1, (Fld_shft(u4Field) + u1ShuIdx));
-
-	val = (u1Enable) ? 1 : 0;
 
 	vIO32WriteFldAlign_All(u4Reg, u1Enable, fld);
 }
@@ -2218,4 +2216,3 @@ void ShuffleDfsToFSP1(DRAMC_CTX_T *p)
 		cbt_switch_freq(p, CBT_HIGH_FREQ);
 	}
 }
-

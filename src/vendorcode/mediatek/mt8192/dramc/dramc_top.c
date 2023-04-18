@@ -413,10 +413,8 @@ void switch_dramc_voltage_to_auto_mode(void)
 #ifdef COMBO_MCP
 static int mt_get_mdl_number(void)
 {
-	static int found = 0;
 	static int mdl_number = -1;
 
-	found = 1;
 	mdl_number = get_ddr_geometry();
 
 	return mdl_number;
@@ -1195,4 +1193,3 @@ unsigned int get_mr8_by_mrr(U8 channel, U8 rank)
 	return (mr8_value & 0xff);
 }
 #endif
-

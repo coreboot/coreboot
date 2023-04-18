@@ -296,19 +296,9 @@ static void SetDramInfoToConf(DRAMC_CTX_T *p)
 void UpdateDFSTbltoDDR3200(DRAMC_CTX_T *p)
 {
 #if(FOR_DV_SIMULATION_USED==0 && SW_CHANGE_FOR_SIMULATION==0)
-	EMI_SETTINGS *emi_set;
 	U16 u2HighestFreq = u2DFSGetHighestFreq(p);
 	DRAM_PLL_FREQ_SEL_T highestfreqsel = 0;
 	U8 u1ShuffleIdx = 0;
-
-#if (!__ETT__)//preloader
-	if(emi_setting_index == -1)
-		emi_set = &default_emi_setting;
-	else
-		emi_set = &emi_settings[emi_setting_index];
-#else//ett
-	emi_set = &default_emi_setting;
-#endif
 
 	// lookup table to find highest freq
 	highestfreqsel = GetSelByFreq(p, u2HighestFreq);

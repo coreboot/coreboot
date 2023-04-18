@@ -55,7 +55,7 @@
 
 #if CALIBRATION_LOG
 #define msg(_x_...)	{ print(_x_); }
-#define msg2(_x_...)	// { print(_x_); }
+#define msg2(_x_...)	{ if (0) { print(_x_); } }
 #define err(_x_...) 	{ print(_x_); }
 #else
 #define msg(_x_...)
@@ -65,10 +65,10 @@
 
 #define info(_x_...) msg(_x_)
 
-#define msg3(_x_...) // { print(_x_); }
+#define msg3(_x_...) { if (0) { print(_x_); } }
 #define msg4(_x_...)
 #define msg5(_x_...)
-#define jv_msg(_x_...)
+#define jv_msg(_x_...) { if (0) { print(_x_); } }
 #if EYESCAN_LOG
 #define eye_msg(_x_...) { print(_x_); }
 #else

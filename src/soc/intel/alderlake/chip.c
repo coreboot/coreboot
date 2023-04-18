@@ -162,6 +162,26 @@ const char *soc_acpi_name(const struct device *dev)
 }
 #endif
 
+#if CONFIG(SOC_INTEL_STORE_CSE_FPT_PARTITION_VERSION)
+/*
+ * SoC override API to identify if ISH Firmware existed inside CSE FPT.
+ *
+ * SoC with UFS enabled would like to keep ISH enabled as well, hence
+ * identifying the UFS enabled device is enough to conclude that the ISH
+ * partition also is available.
+ */
+bool soc_is_ish_partition_enabled(void)
+{
+	struct device *ufs = pcidev_path_on_root(PCH_DEVFN_UFS);
+	uint16_t ufs_pci_id = ufs ? pci_read_config16(ufs, PCI_DEVICE_ID) : 0xFFFF;
+
+	if (ufs_pci_id == 0xFFFF)
+		return false;
+
+	return true;
+}
+#endif
+
 /* SoC routine to fill GPIO PM mask and value for GPIO_MISCCFG register */
 static void soc_fill_gpio_pm_configuration(void)
 {

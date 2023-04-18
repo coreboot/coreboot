@@ -586,7 +586,7 @@ auto_set_dll_offset(bdk_node_t node, int dll_offset_mode,
     int start_offset, end_offset, incr_offset;
 
     int speed_bin = get_speed_bin(node, 0); // FIXME: just get from LMC0?
-    int low_risk_count = 0, needs_review_count = 0;
+    int needs_review_count = 0;
 
     if (dram_tune_use_gran != DEFAULT_SAMPLE_GRAN) {
         ddr_print2("N%d: Changing sample granularity from %d to %d\n",
@@ -762,8 +762,6 @@ auto_set_dll_offset(bdk_node_t node, int dll_offset_mode,
 
                 if (will_need_review)
                     needs_review_count++;
-                else
-                    low_risk_count++;
             } else { // if just tuning, make the printout less lengthy
                 ddr_print("%5d ", byte_offset);
             }
@@ -1241,7 +1239,7 @@ hw_assist_test_dll_offset(bdk_node_t node, int dll_offset_mode,
     int rank_delay_count[4][9];
     int rank_delay_best_start[4][9];
     int rank_delay_best_count[4][9];
-    int errors[4], off_errors, tot_errors;
+    int errors[4];
     int num_lmcs = __bdk_dram_get_num_lmc(node);
     int rank_mask, rankx, active_ranks;
     int pattern;
@@ -1291,8 +1289,6 @@ hw_assist_test_dll_offset(bdk_node_t node, int dll_offset_mode,
 
 #define BYTE_OFFSET_INCR 3 // FIXME: make this tunable?
 
-        tot_errors = 0;
-
         memset(rank_delay_count, 0, sizeof(rank_delay_count));
         memset(rank_delay_start, 0, sizeof(rank_delay_start));
         memset(rank_delay_best_count, 0, sizeof(rank_delay_best_count));
@@ -1310,8 +1306,6 @@ hw_assist_test_dll_offset(bdk_node_t node, int dll_offset_mode,
 
             // run the test on each rank
             // only 1 call per rank should be enough, let the bursts, loops, etc, control the load...
-
-            off_errors = 0; // errors for this byte_offset, all ranks
 
             active_ranks = 0;
 
@@ -1333,7 +1327,6 @@ hw_assist_test_dll_offset(bdk_node_t node, int dll_offset_mode,
 
                     // check errors
                     if (errors[rankx] & (1 << byte)) { // yes, an error in the byte lane in this rank
-                        off_errors |= (1 << byte);
 
                         ddr_print5("N%d.LMC%d.R%d: Bytelane %d DLL %s Offset Test %3d: Address 0x%012llx errors 0x%x\n",
                                    node, lmc, rankx, bytelane, mode_str,
@@ -1364,8 +1357,6 @@ hw_assist_test_dll_offset(bdk_node_t node, int dll_offset_mode,
                     }
                 } /* for (byte = byte_lo; byte <= byte_hi; byte++) */
             } /* for (rankx = 0; rankx < 4; rankx++) */
-
-            tot_errors |= off_errors;
 
         } /* for (byte_offset = -63; byte_offset < 64; byte_offset += BYTE_OFFSET_INCR) */
 

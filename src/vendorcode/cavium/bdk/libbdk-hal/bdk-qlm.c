@@ -372,7 +372,6 @@ int bdk_qlm_eye_display(bdk_node_t node, int qlm, int qlm_lane, int format, cons
     }
 
     /* Calculate the max eye width */
-    int eye_area = 0;
     int eye_width = 0;
     for (int y = 0; y < eye->height; y++)
     {
@@ -382,7 +381,6 @@ int bdk_qlm_eye_display(bdk_node_t node, int qlm, int qlm_lane, int format, cons
             if (eye->data[y][x] == 0)
             {
                 width++;
-                eye_area++;
             }
         }
         if (width > eye_width)
@@ -399,7 +397,6 @@ int bdk_qlm_eye_display(bdk_node_t node, int qlm, int qlm_lane, int format, cons
             if (eye->data[y][x] == 0)
             {
                 height++;
-                eye_area++;
             }
         }
         if (height > eye_height)

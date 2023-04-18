@@ -2949,7 +2949,6 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok)
 {
 	U8 u1FinalVref, u1FinalRange=0;
 	S8 iFinalCACLK;
-	U32 uiCAWinSumMax;
 	U8 operating_fsp;
 	U16 operation_frequency;
 #if CA_PER_BIT_DELAY_CELL
@@ -2962,12 +2961,11 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok)
 
 	S16 pi_step;
 	S16 pi_start, pi_end;
-	u32 ca_ui, ca_ui_default;
+	u32 ca_ui;
 	u32 ca_mck;
 	u32 ca_cmd0;
 	u8 ca_pin_num;
 	u16 p2u;
-	u8 step_respi = AUTOK_RESPI_1;
 
 	U32 u4RegBackupAddress[] =
 	{
@@ -3016,12 +3014,6 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok)
 		break;
 
 	default:
-		/* LPDDR4 */
-		if (u1IsPhaseMode(p) == TRUE)
-		{
-			step_respi = AUTOK_RESPI_8;
-		}
-
 		#if CBT_MOVE_CA_INSTEAD_OF_CLK
 			pi_start = -16;
 			pi_end = p2u * 3 - 1;
@@ -3113,9 +3105,10 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok)
 #endif
 
 	/* read ca ui and mck */
-	ca_ui_default = ca_ui = get_ca_ui(p);
+	ca_ui = get_ca_ui(p);
 	ca_mck = get_ca_mck(p);
 	ca_cmd0 = u4IO32Read4B(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_CA_CMD0));
+	(void)ca_cmd0;
 
 	vAutoRefreshSwitch(p, DISABLE); //When doing CA training, should make sure that auto refresh is disable
 
@@ -3138,9 +3131,6 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok)
 	/* TXRANKFIX should be write after TXRANK or the rank will be fix at rank 1 */
 	vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_SET0),
 		1, TX_SET0_TXRANKFIX);
-
-	//SW variable initialization
-	uiCAWinSumMax = 0;
 
 	iFinalCACLK = 0;
 	operating_fsp = p->dram_fsp;
@@ -3632,7 +3622,7 @@ DRAM_STATUS_T DramcWriteLeveling(DRAMC_CTX_T *p, u8 isAutoK, WLEV_DELAY_BASED_T 
 // Note that below procedure is based on "ODT off"
 	DRAM_STATUS_T KResult = DRAM_FAIL;
 
-	U8 byte_i, rank_i, ucDoneFlg;
+	U8 byte_i, rank_i, ucDoneFlg = 0;
 	DRAM_RANK_T backup_rank;
 
 	S32 wrlevel_dqs_delay[DQS_NUMBER]; // 3 is channel number
@@ -6514,6 +6504,7 @@ U32 DramcRxWinRDDQCEnd(DRAMC_CTX_T *p)
 	REG_TRANSFER_T TriggerReg = {DRAMC_REG_SWCMD_EN, SWCMD_EN_RDDQCEN};
 	REG_TRANSFER_T RepondsReg = {DRAMC_REG_SPCMDRESP, SPCMDRESP_RDDQC_RESPONSE};
 	u4Response = DramcTriggerAndWait(p, TriggerReg, RepondsReg);
+	(void)u4Response;
 
 	// Read RDDQC compare result
 	u4TmpResult = u4IO32Read4B(DRAMC_REG_ADDR(DRAMC_REG_RDQC_CMP));
@@ -6538,14 +6529,12 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
 											  u8 isAutoK)
 {
 	U8 u1BitIdx, u1ByteIdx;
-	U16 u16DelayStep = 1;
 	PASS_WIN_DATA_T FinalWinPerBit[DQ_DATA_WIDTH + RDDQC_ADD_DMI_NUM];
 	S32 iDQSDlyPerbyte[DQS_NUMBER], iDQMDlyPerbyte[DQS_NUMBER];//, iFinalDQSDly[DQS_NUMBER];
 	U8 u1VrefScanEnable = FALSE;
 	U16 u2FinalVref [DQS_NUMBER]= {0xe, 0xe};
 	U16 u2VrefBegin, u2VrefEnd, u2VrefStep;
-	U8	u1RXEyeScanEnable=0,u1PrintCalibrationProc;
-	U8 u1CalDQMNum = 0;
+	U8	u1RXEyeScanEnable=0;
 
 #if ENABLE_EYESCAN_GRAPH
 	U8 EyeScan_index[DQ_DATA_WIDTH_LP4 + RDDQC_ADD_DMI_NUM] = {0};
@@ -6580,14 +6569,12 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
 #if (FEATURE_RDDQC_K_DMI == TRUE)
 	if (u1UseTestEngine == PATTERN_RDDQC)
 	{
-		u1CalDQMNum = 2;
 		iDQMDlyPerbyte[0] = -0xFFFFFF;
 		iDQMDlyPerbyte[1] = -0xFFFFFF;
 	}
 	else
 #endif
 	{
-		u1CalDQMNum = 0;
 		iDQMDlyPerbyte[0] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B0_RXDLY4), SHU_R0_B0_RXDLY4_RX_ARDQM0_R_DLY_B0);
 		iDQMDlyPerbyte[1] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B1_RXDLY4), SHU_R0_B1_RXDLY4_RX_ARDQM0_R_DLY_B1);
 
@@ -6650,7 +6637,7 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
 	u2VrefEnd = 0;
 	u2VrefStep = 1;
 
-	if ((u1UseTestEngine == PATTERN_TEST_ENGINE))
+	if (u1UseTestEngine == PATTERN_TEST_ENGINE)
 	{
 	#if (FOR_DV_SIMULATION_USED==0 && SW_CHANGE_FOR_SIMULATION==0)
 		if ((p->rank==RANK_0) || (p->frequency >= RX_VREF_DUAL_RANK_K_FREQ) || (u1RXEyeScanEnable==1))
@@ -6659,8 +6646,6 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
 			u1VrefScanEnable =0;
 	#endif
 	}
-
-	u1PrintCalibrationProc = ((u1VrefScanEnable == 0) || (u1RXEyeScanEnable == 1) || (u1AssignedVref != NULL));
 
 #if SUPPORT_SAVE_TIME_FOR_CALIBRATION
 	if (p->femmc_Ready == 1 && ((p->Bypass_RDDQC && u1UseTestEngine == PATTERN_RDDQC) || (p->Bypass_RXWINDOW && u1UseTestEngine == PATTERN_TEST_ENGINE)))
@@ -6753,10 +6738,8 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
 		u2VrefEnd = 0;
 		u2VrefStep = 1;
 	}
+	(void)u2VrefStep;
 
-	//if RDDQD, roughly calibration
-	if (u1UseTestEngine == PATTERN_RDDQC)
-		u16DelayStep <<= 1;
 
 #if SUPPORT_SAVE_TIME_FOR_CALIBRATION
 	if (p->femmc_Ready == 1 && ((p->Bypass_RDDQC && u1UseTestEngine == PATTERN_RDDQC) || (p->Bypass_RXWINDOW && u1UseTestEngine == PATTERN_TEST_ENGINE)))
@@ -7270,9 +7253,7 @@ static void dle_factor_handler(DRAMC_CTX_T *p, U8 curr_val)
 static U8 aru1RxDatlatResult[RANK_MAX];
 DRAM_STATUS_T DramcRxdatlatCal(DRAMC_CTX_T *p)
 {
-	U32 u4prv_register_080;
-	U8 ucfirst, ucbegin, ucsum, ucbest_step;
-	U16 u2DatlatBegin;
+	U8  ucbest_step;
 
 	// error handling
 	if (!p)
@@ -7286,7 +7267,8 @@ DRAM_STATUS_T DramcRxdatlatCal(DRAMC_CTX_T *p)
 
 	// pre-save
 	// 0x07c[6:4]	DATLAT bit2-bit0
-	u4prv_register_080 = u4IO32Read4B(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_RDAT));
+	u4IO32Read4B(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_RDAT));
+
 
 	//default set FAIL
 	vSetCalibrationResult(p, DRAM_CALIBRATION_DATLAT, DRAM_FAIL);
@@ -7302,12 +7284,8 @@ DRAM_STATUS_T DramcRxdatlatCal(DRAMC_CTX_T *p)
 	// 4.set DATLAT 2nd value for optimal
 
 	// Initialize
-	ucfirst = 0xff;
-	ucbegin = 0;
-	ucsum = 0;
 
 	DramcEngine2Init(p, p->test2_1, p->test2_2, p->test_pattern | 0x80, 0, TE_UI_SHIFT);//UI_SHIFT + LEN1
-	u2DatlatBegin = 0;
 
 #if (SUPPORT_SAVE_TIME_FOR_CALIBRATION && BYPASS_DATLAT)
 	if (p->femmc_Ready == 1)
@@ -9352,9 +9330,6 @@ void DramcTxOECalibration(DRAMC_CTX_T *p)
 	//U8 ucbegin=0xff, , ucfirst, ucsum, ucbest_step;
 	U8 ucdq_oen_ui_large[2] = {0}, ucdq_oen_ui_small[2] = {0};
 	//U8 ucdq_ui_large_reg_value=0xff, ucdq_ui_small_reg_value=0xff;
-	U8 u1TxDQOEShift = 0;
-
-	u1TxDQOEShift = TX_DQ_OE_SHIFT_LP4;
 
 	#if TX_OE_PATTERN_USE_TA2
 	msg("\n[DramC_TX_OE_Calibration] TA2\n");

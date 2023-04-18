@@ -995,6 +995,10 @@ static enum cb_err cse_prep_for_rw_update(enum cse_update_status status)
 		return CB_ERR;
 
 	if ((status == CSE_UPDATE_DOWNGRADE) || (status == CSE_UPDATE_CORRUPTED)) {
+		/* Reset the PSR backup command status in CMOS */
+		if (CONFIG(SOC_INTEL_CSE_LITE_PSR))
+			update_psr_backup_status(PSR_BACKUP_PENDING);
+
 		if (cse_data_clear_request() != CB_SUCCESS) {
 			printk(BIOS_ERR, "cse_lite: CSE data clear failed!\n");
 			return CB_ERR;
@@ -1055,6 +1059,78 @@ error_exit:
 	return rv;
 }
 
+static bool is_psr_data_backed_up(void)
+{
+	/* Track PSR backup status in CMOS */
+	return (get_psr_backup_status() == PSR_BACKUP_DONE);
+}
+
+/*
+ * PSR data needs to be backed up prior to downgrade. So switch the CSE boot mode to RW, send
+ * PSR back-up command to CSE and update the PSR back-up state in CMOS.
+ */
+static void backup_psr_data(void)
+{
+	printk(BIOS_DEBUG, "cse_lite: Initiate PSR data backup flow\n");
+	/* Switch CSE to RW to send PSR_HECI_FW_DOWNGRADE_BACKUP command */
+	if (cse_boot_to_rw() != CB_SUCCESS)
+		goto update_and_exit;
+
+	/*
+	 * Prerequisites:
+	 * 1) HFSTS1 Current Working State is Normal
+	 * 2) HFSTS1 Current Operation Mode is Normal
+	 */
+	if (!cse_is_hfs1_cws_normal() || !cse_is_hfs1_com_normal()) {
+		printk(BIOS_DEBUG, "cse_lite: PSR_HECI_FW_DOWNGRADE_BACKUP command "
+		       "prerequisites not met!\n");
+		goto update_and_exit;
+	}
+
+	/* Send PSR_HECI_FW_DOWNGRADE_BACKUP command */
+	struct psr_heci_fw_downgrade_backup_req {
+		struct psr_heci_header header;
+	} __packed;
+
+	struct psr_heci_fw_downgrade_backup_req req = {
+		.header.command = PSR_HECI_FW_DOWNGRADE_BACKUP,
+	};
+
+	struct psr_heci_fw_downgrade_backup_res {
+		struct psr_heci_header header;
+		uint32_t status;
+	} __packed;
+
+	struct psr_heci_fw_downgrade_backup_res backup_psr_resp;
+	size_t resp_size = sizeof(backup_psr_resp);
+
+	printk(BIOS_DEBUG, "cse_lite: Send PSR_HECI_FW_DOWNGRADE_BACKUP command\n");
+	if (heci_send_receive(&req, sizeof(req),
+		&backup_psr_resp, &resp_size, HECI_PSR_ADDR))
+		printk(BIOS_ERR, "cse_lite: could not backup PSR data\n");
+	else
+		if (backup_psr_resp.status != PSR_STATUS_SUCCESS)
+			printk(BIOS_ERR, "cse_lite: PSR_HECI_FW_DOWNGRADE_BACKUP command "
+			       "returned %u\n", backup_psr_resp.status);
+
+update_and_exit:
+	/*
+	 * An attempt to send PSR back-up command has been made. Update this info in CMOS and
+	 * send success once backup_psr_data() has been called. We do not want to put the system
+	 * into recovery for PSR data backup command pre-requisites not being met.
+	 */
+	update_psr_backup_status(PSR_BACKUP_DONE);
+	return;
+}
+
+static void initiate_psr_data_backup(void)
+{
+	if (is_psr_data_backed_up())
+		return;
+
+	backup_psr_data();
+}
+
 static uint8_t cse_fw_update(void)
 {
 	struct region_device target_rdev;
@@ -1070,6 +1146,8 @@ static uint8_t cse_fw_update(void)
 		return CSE_NO_ERROR;
 	if (status == CSE_UPDATE_METADATA_ERROR)
 		return CSE_LITE_SKU_RW_METADATA_NOT_FOUND;
+	if (CONFIG(SOC_INTEL_CSE_LITE_PSR) && status == CSE_UPDATE_DOWNGRADE)
+		initiate_psr_data_backup();
 
 	printk(BIOS_DEBUG, "cse_lite: CSE RW update is initiated\n");
 	return cse_trigger_fw_update(status, &target_rdev);

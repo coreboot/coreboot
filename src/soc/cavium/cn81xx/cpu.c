@@ -35,7 +35,7 @@ void secondary_cpu_init(size_t core_id)
 
 size_t cpu_self_get_core_id(void)
 {
-	u32 mpidr_el1;
+	u64 mpidr_el1;
 	asm("mrs %0, MPIDR_EL1\n\t" : "=r" (mpidr_el1) :: "memory");
 
 	/* Core is 4 bits from AFF0 and rest from AFF1 */

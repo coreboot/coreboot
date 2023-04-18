@@ -58,7 +58,7 @@ BDK_REQUIRE_DEFINE(QLM);
  */
 const char *bdk_qlm_mode_to_cfg_str(bdk_qlm_modes_t mode)
 {
-#define MODE_CASE(m) case m: return #m+13
+#define MODE_CASE(m) case (m): return (#m)+13
     switch (mode)
     {
         MODE_CASE(BDK_QLM_MODE_DISABLED);

@@ -153,6 +153,7 @@ void vSetVcoreByFreq(DRAMC_CTX_T *p)
 	unsigned int vio18, vcore, vdram, vddq, vmddr;
 
 	vio18 = vcore = vdram = vddq = vmddr = 0;
+	(void)vio18;
 
 #if __ETT__
 	hqa_set_voltage_by_freq(p, &vio18, &vcore, &vdram, &vddq, &vmddr);
@@ -1502,11 +1503,11 @@ int Init_DRAM(DRAM_DRAM_TYPE_T dram_type, DRAM_CBT_MODE_EXTERN_T dram_cbt_mode_e
 	#endif
 
 #if ((!defined(FIRST_BRING_UP)) || (ENABLE_DRAM_SINGLE_FREQ_SELECT != 0xFF)) && (!__FLASH_TOOL_DA__)
-	DramcSaveToShuffleSRAM(p, DRAM_DFS_SHUFFLE_1, p->pDFSTable->shuffleIdx);
+	DramcSaveToShuffleSRAM(p, DRAM_DFS_SHUFFLE_1, (DRAM_DFS_SHUFFLE_TYPE_T)p->pDFSTable->shuffleIdx);
 	#if SUPPORT_SAVE_TIME_FOR_CALIBRATION
 	DramcSave_Time_For_Cal_End(p);
 	#endif
-	LoadShuffleSRAMtoDramc(p, p->pDFSTable->shuffleIdx, DRAM_DFS_SHUFFLE_2); //Darren: DDR1600 for MRW (DramcModeRegInit_LP4 and CBT)
+	LoadShuffleSRAMtoDramc(p, (DRAM_DFS_SHUFFLE_TYPE_T)p->pDFSTable->shuffleIdx, DRAM_DFS_SHUFFLE_2); //Darren: DDR1600 for MRW (DramcModeRegInit_LP4 and CBT)
 	#if ENABLE_SRAM_DMA_WA
 	DPHYSRAMShuWAToSHU1(p); //Darren: DDR1600 for MRW (DramcModeRegInit_LP4 and CBT)
 	#endif
@@ -1534,7 +1535,7 @@ int Init_DRAM(DRAM_DRAM_TYPE_T dram_type, DRAM_CBT_MODE_EXTERN_T dram_cbt_mode_e
 			// ignore the calibration for shuffle which is not in allCaliShuIdx, just copy first cali shuffle data
 			if (!(allCaliShuIdx & BIT(u1ShuIdx))) {
 				// copy first calibration shuffle to this shuffle (if DVFS, need double confirm)
-				DramcSaveToShuffleSRAM(p, DRAM_DFS_SHUFFLE_1, gFreqTbl[u1ShuIdx].shuffleIdx);
+				DramcSaveToShuffleSRAM(p, DRAM_DFS_SHUFFLE_1, (DRAM_DFS_SHUFFLE_TYPE_T)gFreqTbl[u1ShuIdx].shuffleIdx);
 				continue;
 			}
 
@@ -1554,10 +1555,10 @@ int Init_DRAM(DRAM_DRAM_TYPE_T dram_type, DRAM_CBT_MODE_EXTERN_T dram_cbt_mode_e
 				RunTime_Shmoo_update_parameters(p);
 			}
 #endif
-			DramcSaveToShuffleSRAM(p, DRAM_DFS_SHUFFLE_1, gFreqTbl[u1ShuIdx].shuffleIdx);
+			DramcSaveToShuffleSRAM(p, DRAM_DFS_SHUFFLE_1, (DRAM_DFS_SHUFFLE_TYPE_T)gFreqTbl[u1ShuIdx].shuffleIdx);
 			#if (fcFOR_CHIP_ID == fcMargaux) && (ENABLE_DRAM_SINGLE_FREQ_SELECT == 0xFF) // @Darren, new chip need double confirm
 			if ((p->DRAMPinmux == PINMUX_DSC) && (gFreqTbl[u1ShuIdx].shuffleIdx == SRAM_SHU1))
-				DramcSaveToShuffleSRAM(p, DRAM_DFS_SHUFFLE_1, gFreqTbl[u1ShuIdx + 1].shuffleIdx); // Copy SRAM_SHU1 to SRAM_SHU0
+				DramcSaveToShuffleSRAM(p, DRAM_DFS_SHUFFLE_1, (DRAM_DFS_SHUFFLE_TYPE_T)gFreqTbl[u1ShuIdx + 1].shuffleIdx); // Copy SRAM_SHU1 to SRAM_SHU0
 			#endif
 
 			#if SUPPORT_SAVE_TIME_FOR_CALIBRATION
@@ -2699,4 +2700,3 @@ void main(void)
 #endif //SW_CHANGE_FOR_SIMULATION
 #endif // __A60868_TO_BE_PORTING__
 ///TODO: wait for porting ---
-

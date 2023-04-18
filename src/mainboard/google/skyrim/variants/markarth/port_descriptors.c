@@ -35,7 +35,7 @@ static const fsp_dxio_descriptor emmc_dxio_descriptors[] = {
 		.link_aspm = ASPM_L1,
 		.link_aspm_L1_1 = true,
 		.link_aspm_L1_2 = true,
-		.gpio_group_id = GPIO_27,
+		.gpio_group_id = GPIO_6,
 		.clk_req = CLK_REQ1,
 	},
 };

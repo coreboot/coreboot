@@ -4,7 +4,11 @@
 #include <arch/asm.h>
 #include <soc/addressmap.h>
 
+	.arch		armv8-a+fp
+
+
 ENTRY(_start)
+
     .org 0
      /**
      * According to the reference manual the first instruction is fetched from

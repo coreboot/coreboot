@@ -5,7 +5,9 @@ ifeq ($(CONFIG_SOC_CAVIUM_COMMON),y)
 subdirs-y += pci
 
 # -Wstack-usage doesn't recognize hexadecimal numbers.
+ifeq ($(CONFIG_COMPILER_GCC),y)
 CFLAGS_arm64   += -Wstack-usage=$(shell printf "%d" $(CONFIG_STACK_SIZE))
+endif
 
 bootblock-$(CONFIG_BOOTBLOCK_CUSTOM) += bootblock.c
 

@@ -1211,10 +1211,10 @@ enum cb_err cse_get_fpt_partition_info(enum fpt_partition_id id, struct fw_versi
 
 static void ramstage_cse_fw_sync(void *unused)
 {
-	bool s3wake;
-	s3wake = acpi_get_sleep_type() == ACPI_S3;
+	if (acpi_get_sleep_type() == ACPI_S3)
+		return;
 
-	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_RAMSTAGE) && !s3wake) {
+	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_RAMSTAGE)) {
 		timestamp_add_now(TS_CSE_FW_SYNC_START);
 		cse_fw_sync();
 		timestamp_add_now(TS_CSE_FW_SYNC_END);

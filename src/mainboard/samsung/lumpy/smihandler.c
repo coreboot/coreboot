@@ -47,12 +47,12 @@ int mainboard_smi_apmc(u8 apmc)
 	ec_set_ports(EC_MAILBOX_PORT, EC_MAILBOX_PORT+1);
 
 	switch (apmc) {
-	case 0xe1: /* ACPI ENABLE */
+	case APM_CNT_ACPI_ENABLE:
 		send_ec_command(EC_SMI_DISABLE);
 		send_ec_command(EC_ACPI_ENABLE);
 		break;
 
-	case 0x1e: /* ACPI DISABLE */
+	case APM_CNT_ACPI_DISABLE:
 		send_ec_command(EC_SMI_ENABLE);
 		send_ec_command(EC_ACPI_DISABLE);
 		break;

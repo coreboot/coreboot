@@ -116,7 +116,7 @@ static void lp4_dram_init_single_rank(DRAMC_CTX_T *p,LP4_DRAM_CONFIG_T *tr,U8 ra
     LP4_MRS(p,  1, MR1 , rank);
     LP4_MRS(p,  2, MR2 , rank);
 
-    MR3 = ((!tr->DBI_WR  & 1)<<7) | ((!tr->DBI_RD  & 1)<<6) | ((   PDDS     & 7)<<3) | ((PPRP       & 1)<<2) | ((tr->WR_PST & 1)<<1) | ((PU_CAL & 1)<<0);
+    MR3 = (((!tr->DBI_WR)  & 1)<<7) | (((!tr->DBI_RD)  & 1)<<6) | ((   PDDS     & 7)<<3) | ((PPRP       & 1)<<2) | ((tr->WR_PST & 1)<<1) | ((PU_CAL & 1)<<0);
     LP4_MRS(p,  3, MR3 , rank);
     LP4_MRS(p,  11, MR11 , rank);
     LP4_MRS(p,  12, MR12 , rank);

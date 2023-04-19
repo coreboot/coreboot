@@ -46,7 +46,7 @@ extern void vIO32Write4BMsk_All2(DRAMC_CTX_T *p, U32 reg32, U32 val32, U32 msk32
 extern void vIO32Write4B_All2(DRAMC_CTX_T *p, U32 reg32, U32 val32);
 
 // =========================
-// public Macro for general use. 
+// public Macro for general use.
 //==========================
 #define u4IO32Read4B(reg32) u4Dram_Register_Read(p, reg32)
 #define vIO32Write4B(reg32, val32) ucDram_Register_Write(p, reg32, val32)
@@ -65,6 +65,7 @@ extern void vIO32Write4B_All2(DRAMC_CTX_T *p, U32 reg32, U32 val32);
 	UINT16 upk = 1; \
 	INT32 msk = (INT32)(list); \
 	{ upk = 0; \
+	(void)upk; \
     ((U32)msk == 0xffffffff)? (vIO32Write4B(reg32, (list))): (((U32)msk)? vIO32Write4BMsk(reg32, (list), ((U32)msk)):(U32)0); \
 	} \
 }/*lint -restore */
@@ -80,6 +81,7 @@ extern void vIO32Write4B_All2(DRAMC_CTX_T *p, U32 reg32, U32 val32);
 	UINT16 upk = 1; \
 	INT32 msk = (INT32)(list); \
 	{ upk = 0; \
+	(void)upk; \
     ((U32)msk == 0xffffffff)? (vIO32Write4B_All(reg32, (list))): (((U32)msk)? vIO32Write4BMsk_All(reg32, (list), ((U32)msk)): (void)0); \
 	} \
 }/*lint -restore */

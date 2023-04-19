@@ -73,6 +73,7 @@
 /* mcSHOW_DBG_MSG3: Medium Low                */
 /* mcSHOW_DBG_MSG4: Low                       */
 /**********************************************/
+
 #if __FLASH_TOOL_DA__
   #define printf DBG_MSG
   #define print DBG_MSG
@@ -246,10 +247,10 @@
     #define mcSHOW_TIME_MSG(_x_)
     #define mcSHOW_ERR_MSG(_x_)   {print _x_;}
     #else
-    #define mcSHOW_DBG_MSG(_x_)
-    #define mcSHOW_DBG_MSG2(_x_)
+    #define mcSHOW_DBG_MSG(_x_) { if (0) { print _x_; } }
+    #define mcSHOW_DBG_MSG2(_x_) { if (0) { print _x_; } }
     #define mcSHOW_DBG_MSG3(_x_)
-    #define mcSHOW_DBG_MSG4(_x_)
+    #define mcSHOW_DBG_MSG4(_x_) { if (0) { print _x_; } }
     #define mcSHOW_DBG_MSG5(_x_)
     #define mcSHOW_DBG_MSG6(_x_)
     #define mcSHOW_JV_LOG_MSG(_x_)

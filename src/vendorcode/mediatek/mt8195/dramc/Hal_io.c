@@ -501,7 +501,6 @@ void vIO32Write4B_All2(DRAMC_CTX_T *p, U32 reg32, U32 val32)
 {
     U8 ii, u1AllCount;
     U32 u4RegType = (reg32 & (0x1f << POS_BANK_NUM));
-    U8 u1BCSupport = TRUE;
 
     reg32 &= 0xffff;
 
@@ -512,7 +511,6 @@ void vIO32Write4B_All2(DRAMC_CTX_T *p, U32 reg32, U32 val32)
         reg32 += Channel_A_DDRPHY_DPM_BASE_VIRTUAL;
         if (u1AllCount > 1)
             u1AllCount >>= 1;
-        u1BCSupport = FALSE;
     }
     else if (u4RegType >= Channel_A_DDRPHY_AO_BASE_VIRTUAL)
     {
@@ -551,7 +549,6 @@ void vIO32Write4BMsk_All2(DRAMC_CTX_T *p, U32 reg32, U32 val32, U32 msk32)
     U32 u4Val, u4RegTmp;
     U8 ii, u1AllCount;
     U32 u4RegType = (reg32 & (0x1f << POS_BANK_NUM));
-    U8 u1BCSupport = TRUE;
 
     reg32 &= 0xffff;
 
@@ -562,7 +559,6 @@ void vIO32Write4BMsk_All2(DRAMC_CTX_T *p, U32 reg32, U32 val32, U32 msk32)
         reg32 += Channel_A_DDRPHY_DPM_BASE_VIRTUAL;
         if (u1AllCount > 1)
             u1AllCount >>= 1;
-        u1BCSupport = FALSE;
     }
     else if (u4RegType >= Channel_A_DDRPHY_AO_BASE_VIRTUAL)
     {

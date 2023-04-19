@@ -151,6 +151,7 @@ void vSetVcoreByFreq(DRAMC_CTX_T *p)
     //int ret;
 
     vio18 = vcore = vdram = vddq = vmddr = 0;
+    (void)vio18;
 
 #if __ETT__
     hqa_set_voltage_by_freq(p, &vio18, &vcore, &vdram, &vddq, &vmddr);

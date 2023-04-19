@@ -2443,7 +2443,7 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok, U8 K_Type)
     //U32 uiCA, uiFinishCount, uiTemp;
     //S16 iDelay, pi_dly;
     //S32 iFirstPass_tmp[CATRAINING_NUM], iLastPass_tmp[CATRAINING_NUM];
-    U32 uiCAWinSumMax; //uiCAWinSum,
+    //uiCAWinSum,
     U8 operating_fsp;
     U16 operation_frequency;
     //S32 iCA_PerBit_DelayLine[CATRAINING_NUM] = {0}, iCK_MIN = 1000
@@ -2466,9 +2466,8 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok, U8 K_Type)
 
     S16 pi_step; //, pi_step_bk;
     S16 pi_start, pi_end;
-    u32 ca_ui, ca_ui_default; //, ca_ui_tmp
+    u32 ca_ui; //, ca_ui_tmp
     u32 ca_mck; //Vca_mck_tmp, a_mck_default
-    u32 ca_cmd0;
     u8 ca_pin_num;
     u8 step_respi = AUTOK_RESPI_1;
     //u32 capi_max;
@@ -2573,9 +2572,9 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok, U8 K_Type)
 #endif
 
 
-    ca_ui_default = ca_ui = get_ca_ui(p);
+    ca_ui = get_ca_ui(p);
     ca_mck = get_ca_mck(p);
-    ca_cmd0 = u4IO32Read4B(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_CA_CMD0));
+    u4IO32Read4B(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_CA_CMD0));
 
     vAutoRefreshSwitch(p, DISABLE);
 
@@ -2590,9 +2589,6 @@ DRAM_STATUS_T CmdBusTrainingLP45(DRAMC_CTX_T *p, int autok, U8 K_Type)
 
     vIO32WriteFldAlign(DRAMC_REG_ADDR(DRAMC_REG_TX_SET0),
         1, TX_SET0_TXRANKFIX);
-
-
-    uiCAWinSumMax = 0;
 
     operating_fsp = p->dram_fsp;
     operation_frequency = p->frequency;
@@ -5628,6 +5624,7 @@ static DRAM_STATUS_T dramc_rx_dqs_gating_sw_cal(DRAMC_CTX_T *p,
                 u1GatingErrorFlag=1;
             mcSHOW_ERR_MSG(("error, no all pass taps in DQS!,pass_byte_count=%d\n", pass_byte_count));
         }
+	(void)u1GatingErrorFlag;
 
 
 #if (ENABLE_GATING_AUTOK_WA)
@@ -6355,7 +6352,7 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
     //U32 u1vrefidx;
     //U8 ucbit_first, ucbit_last;
     //S16 iDelay = 0, S16DelayBegin = 0, u4DelayStep=1;
-    U16 u16DelayStep = 1; //u16DelayEnd = 0
+    //u16DelayEnd = 0
     //U32 uiFinishCount;
     //U32 u4err_value, u4fail_bit, u4value;
     PASS_WIN_DATA_T FinalWinPerBit[DQ_DATA_WIDTH + RDDQC_ADD_DMI_NUM]; //WinPerBit[DQ_DATA_WIDTH + RDDQC_ADD_DMI_NUM]
@@ -6365,10 +6362,9 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
     U16 u2FinalVref [DQS_BYTE_NUMBER]= {0xe, 0xe}; //u2VrefLevel
     U16 u2VrefBegin, u2VrefEnd, u2VrefStep;
     //U32 u4fail_bit_R, u4fail_bit_F;
-    U8  u1RXEyeScanEnable=(K_Type==NORMAL_K ? DISABLE : ENABLE),u1PrintCalibrationProc;
+    U8  u1RXEyeScanEnable=(K_Type==NORMAL_K ? DISABLE : ENABLE);
     //U16 u1min_bit_by_vref[DQS_BYTE_NUMBER], u1min_winsize_by_vref[DQS_BYTE_NUMBER];
     //U16 u1min_bit[DQS_BYTE_NUMBER], u1min_winsize[DQS_BYTE_NUMBER]={0};
-    U8 u1CalDQMNum = 0;
     //U32 u4PassFlags = 0xFFFF;
 
     U16 backup_RX_FinalVref_Value[DQS_BYTE_NUMBER]={0};
@@ -6411,14 +6407,12 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
 #if (FEATURE_RDDQC_K_DMI == TRUE)
     if (u1UseTestEngine == PATTERN_RDDQC)
     {
-        u1CalDQMNum = 2;
         iDQMDlyPerbyte[0] = -0xFFFFFF;
         iDQMDlyPerbyte[1] = -0xFFFFFF;
     }
     else
 #endif
     {
-        u1CalDQMNum = 0;
         iDQMDlyPerbyte[0] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B0_RXDLY4), SHU_R0_B0_RXDLY4_RX_ARDQM0_R_DLY_B0);
         iDQMDlyPerbyte[1] = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_SHU_R0_B1_RXDLY4), SHU_R0_B1_RXDLY4_RX_ARDQM0_R_DLY_B1);
 
@@ -6528,8 +6522,6 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
     #endif
     }
 
-    u1PrintCalibrationProc = ((u1VrefScanEnable == 0) || (u1RXEyeScanEnable == 1) || (u1AssignedVref != NULL));
-
 #if SUPPORT_SAVE_TIME_FOR_CALIBRATION
     if (p->femmc_Ready == 1 && ((p->Bypass_RDDQC && u1UseTestEngine == PATTERN_RDDQC) || (p->Bypass_RXWINDOW && u1UseTestEngine == PATTERN_TEST_ENGINE)))
     {
@@ -6599,7 +6591,9 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
             else
             {
                 u2VrefBegin = 0;
+		(void)u2VrefBegin;
                 u2VrefEnd = EYESCAN_RX_VREF_RANGE_END-1;
+		(void)u2VrefEnd;
                 //mcSHOW_DBG_MSG(("\nSet Eyescan Vref Range= %d -> %d\n",u2VrefBegin,u2VrefEnd));
             }
         #endif
@@ -6626,10 +6620,8 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
         u2VrefEnd = 0;
         u2VrefStep = 1;
     }
+    (void)u2VrefStep;
 
-
-    if (u1UseTestEngine == PATTERN_RDDQC)
-        u16DelayStep <<= 1;
 
 #if SUPPORT_SAVE_TIME_FOR_CALIBRATION
     if (p->femmc_Ready == 1 && ((p->Bypass_RDDQC && u1UseTestEngine == PATTERN_RDDQC) || (p->Bypass_RXWINDOW && u1UseTestEngine == PATTERN_TEST_ENGINE)))
@@ -7083,10 +7075,8 @@ static U8 aru1RxDatlatResult[RANK_MAX];
 DRAM_STATUS_T DramcRxdatlatCal(DRAMC_CTX_T *p)
 {
     //U8 ii, ucStartCalVal = 0;
-    U32 u4prv_register_080;
     //U32 u4err_value = 0xffffffff;
-    U8 ucfirst, ucbegin, ucsum, ucbest_step; //ucpipe_num = 0;
-    U16 u2DatlatBegin;
+    U8 ucbest_step; //ucpipe_num = 0;
 
 
     if (!p)
@@ -7104,7 +7094,7 @@ DRAM_STATUS_T DramcRxdatlatCal(DRAMC_CTX_T *p)
     mcSHOW_DBG_MSG(("[RxdatlatCal]\n"));
 
 
-    u4prv_register_080 = u4IO32Read4B(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_RDAT));
+    u4IO32Read4B(DRAMC_REG_ADDR(DDRPHY_REG_MISC_SHU_RDAT));
 
 
     vSetCalibrationResult(p, DRAM_CALIBRATION_DATLAT, DRAM_FAIL);
@@ -7115,12 +7105,7 @@ DRAM_STATUS_T DramcRxdatlatCal(DRAMC_CTX_T *p)
     //mcDUMP_REG_MSG(("DATLAT Default: 0x%x\n", ucbest_step));
 
 
-    ucfirst = 0xff;
-    ucbegin = 0;
-    ucsum = 0;
-
     DramcEngine2Init(p, p->test2_1, p->test2_2, p->test_pattern | 0x80, 0, TE_UI_SHIFT);
-    u2DatlatBegin = 0;
 
 #if (SUPPORT_SAVE_TIME_FOR_CALIBRATION && BYPASS_DATLAT)
     if (p->femmc_Ready == 1)
@@ -9202,9 +9187,6 @@ void DramcTxOECalibration(DRAMC_CTX_T *p)
     //U8 ucdq_ui_large_reg_value=0xff, ucdq_ui_small_reg_value=0xff;
     //U8 ucdq_final_dqm_oen_ui_large[DQS_BYTE_NUMBER] = {0}, ucdq_final_dqm_oen_ui_small[DQS_BYTE_NUMBER] = {0};
     //DRAM_STATUS_T KResult;
-    U8 u1TxDQOEShift = 0;
-
-    u1TxDQOEShift = TX_DQ_OE_SHIFT_LP4;
 
     //mcDUMP_REG_MSG(("\n[dumpRG] DramcTXOECalibration\n"));
 #if VENDER_JV_LOG
@@ -9670,6 +9652,7 @@ static void DramcJmeterCalib(DRAMC_CTX_T *p, JMETER_T *pJmtrInfo, U16 u2JmDlySte
     U8 check;
 
     check = u4IO32ReadFldAlign(DRAMC_REG_ADDR(DDRPHY_REG_MISC_DUTYSCAN1), MISC_DUTYSCAN1_EYESCAN_DQS_OPT);
+    (void)check;
 
     for (ucdqs_dly = u2Jm_dly_start; ucdqs_dly < u2Jm_dly_end; ucdqs_dly += u2Jm_dly_step)
     {

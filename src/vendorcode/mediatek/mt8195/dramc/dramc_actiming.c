@@ -131,7 +131,7 @@ static void DramcCalculate_Datlat_val(DRAMC_CTX_T *p)
     U32 u4TxPipeline = 0, u4RxPipeline = 0;
     U32 u4Datlat_dsel = 0, u4Datlat_margin = 1, u4RDSEL_Offset = 2;
     U32 u4DQ_P2S_Ratio = A_D->DQ_P2S_RATIO, u4CA_p2s_ratio = 0, u4CKR = A_D->CKR;
-    U32 u4CAdefault_delay = 1, u4CS2RL_start = 0, u4tRPRE_toggle = 0;
+    U32 u4CAdefault_delay = 1, u4CS2RL_start = 0;
     U32 u4DQSIEN_ser_latency = 0, u4CA_ser_latency = 0;
     U32 u4DQ_ui_unit = 0, u4CA_ui_unit = 0, u4Dram_ui_ratio = 2, u4MCK_unit = 0;
     U32 u4RL[2] = {0}, u4RLMax = 0, u4DQ_2_1stDVI4CK = 0, u4CA_MCKIO_ui_unit = 0;
@@ -144,7 +144,6 @@ static void DramcCalculate_Datlat_val(DRAMC_CTX_T *p)
     if (u1IsLP4Family(p->dram_type))
     {
         u4CS2RL_start = 7;
-        u4tRPRE_toggle = 0;
         u4tDQSCK_Max = 3500;
         u4RL[0] = Get_RL_by_MR_LP4(p->dram_cbt_mode[RANK_0], 0, LP4_DRAM_INIT_RLWL_MRfield_config(p->frequency * 2));
         u4RL[1] = Get_RL_by_MR_LP4(p->dram_cbt_mode[RANK_1], 0, LP4_DRAM_INIT_RLWL_MRfield_config(p->frequency * 2));
@@ -181,6 +180,7 @@ static void DramcCalculate_Datlat_val(DRAMC_CTX_T *p)
     u4MCK_unit = u4DQ_ui_unit * u4DQ_P2S_Ratio;
     u4CA_p2s_ratio = u4DQ_P2S_Ratio / u4CKR;
     u4DQSIEN_ser_latency = u1GetDQSIEN_p2s_latency(u4DQ_P2S_Ratio);
+    (void)u4DQSIEN_ser_latency;
     u4CA_ser_latency = u1GetDQ_CA_p2s_latency(u4CA_p2s_ratio, A_D->CA_FULL_RATE);
     u4CA_MCKIO_ui_unit = u4DQ_ui_unit * u4CKR / (A_D->CA_FULL_RATE + 1);
     u4RX_rdcmdout2rdcmdbus_by_ps = 3 * u4MCK_unit + u4CAdefault_delay * u4CA_ui_unit + u4CA_ser_latency * u4CA_MCKIO_ui_unit /*+ RX_C->ca_default_PI * RX_C->ca_MCKIO_ps / RX_C->ca_ui_pi_ratio*/ ;

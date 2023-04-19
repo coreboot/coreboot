@@ -6512,7 +6512,7 @@ DRAM_STATUS_T DramcRxWindowPerbitCal(DRAMC_CTX_T *p,
     u2VrefEnd = 0;
     u2VrefStep = 1;
 
-    if ((u1UseTestEngine == PATTERN_TEST_ENGINE))
+    if (u1UseTestEngine == PATTERN_TEST_ENGINE)
     {
     #if (FOR_DV_SIMULATION_USED==0 && SW_CHANGE_FOR_SIMULATION==0)
         if ((p->rank==RANK_0) || (p->frequency >= RX_VREF_DUAL_RANK_K_FREQ) || (u1RXEyeScanEnable==1))

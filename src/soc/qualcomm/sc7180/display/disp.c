@@ -7,9 +7,7 @@ void mdss_intf_tg_setup(struct edid *edid)
 {
 	uint32_t hsync_period, vsync_period, hsync_start_x, hsync_end_x;
 	uint32_t display_hctl, hsync_ctl, display_vstart, display_vend;
-	uint32_t mdss_version;
 
-	mdss_version = read32(&mdss_hw->hw_version);
 	hsync_period = edid->mode.ha + edid->mode.hbl;
 	vsync_period = edid->mode.va + edid->mode.vbl;
 	hsync_start_x = edid->mode.hbl - edid->mode.hso;

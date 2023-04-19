@@ -536,8 +536,6 @@ static uint32_t dsi_phy_dsiclk_divider(struct dsi_phy_configtype *phy_cfg)
 static unsigned long dsi_phy_calc_clk_divider(struct dsi_phy_configtype *phy_cfg)
 {
 	bool div_found = false;
-	uint32_t m_val = 1;
-	uint32_t n_val = 1;
 	uint32_t div_ctrl = 0;
 	uint32_t reg_val = 0;
 	uint32_t pll_post_div = 0;
@@ -555,9 +553,6 @@ static unsigned long dsi_phy_calc_clk_divider(struct dsi_phy_configtype *phy_cfg
 	min_vco_freq_hz = (HAL_DSI_PLL_VCO_MIN_MHZ_2_2_0 * 1000000);
 
 	dsi_phy_mnd_divider(phy_cfg);
-
-	m_val = phy_cfg->pclk_divnumerator;
-	n_val = phy_cfg->pclk_divdenominator;
 
 	/* Desired clock in MHz */
 	desired_bitclk_hz = (uint64_t)phy_cfg->desired_bitclk_freq;

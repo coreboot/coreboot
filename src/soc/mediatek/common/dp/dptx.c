@@ -445,7 +445,7 @@ static void dptx_set_tu(struct mtk_dp *mtk_dp)
 {
 	u8 bpp;
 	u16 sram_read_start = DPTX_TBC_BUF_READSTARTADRTHRD;
-	int tu_size, n_value, f_value, pixclk_mhz;
+	int tu_size, f_value, pixclk_mhz;
 
 	bpp = dptx_hal_get_colorbpp(mtk_dp);
 	pixclk_mhz = mtk_dp->edid->mode.pixel_clock / 1000;
@@ -453,7 +453,6 @@ static void dptx_set_tu(struct mtk_dp *mtk_dp)
 		  (mtk_dp->train_info.linkrate * 27 *
 		   mtk_dp->train_info.linklane_count * 8);
 
-	n_value = tu_size / 10;
 	f_value = tu_size % 10;
 	printk(BIOS_DEBUG, "TU_size %d, FValue %d\n", tu_size, f_value);
 
@@ -950,7 +949,6 @@ static void dptx_training_changemode(struct mtk_dp *mtk_dp)
 
 static int dptx_set_trainingstart(struct mtk_dp *mtk_dp)
 {
-	int ret = DPTX_PASS;
 	u8 lanecount;
 	u8 linkrate;
 	u8 buffer;
@@ -1006,7 +1004,7 @@ static int dptx_set_trainingstart(struct mtk_dp *mtk_dp)
 		mtk_dp->train_info.eq_done = false;
 
 		dptx_training_changemode(mtk_dp);
-		ret = dptx_trainingflow(mtk_dp, linkrate, lanecount);
+		dptx_trainingflow(mtk_dp, linkrate, lanecount);
 
 		if (!mtk_dp->train_info.cr_done) {
 			/* CR fail and reduce link capability. */

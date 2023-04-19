@@ -150,7 +150,7 @@ void trap_handler(trapframe *tf)
 /* This function used to redirect trap to s-mode. */
 void redirect_trap(void)
 {
-	write_csr(sbadaddr, read_csr(mbadaddr));
+	write_csr(stval, read_csr(mtval));
 	write_csr(sepc, read_csr(mepc));
 	write_csr(scause, read_csr(mcause));
 	write_csr(mepc, read_csr(stvec));

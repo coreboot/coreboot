@@ -80,7 +80,7 @@
   csrrw  t0,mscratch,x0
   csrr   s0,mstatus
   csrr   t1,mepc
-  csrr   t2,mbadaddr
+  csrr   t2,mtval
   csrr   t3,mcause
   STORE  t0,2*REGBYTES(x2)
   STORE  s0,32*REGBYTES(x2)

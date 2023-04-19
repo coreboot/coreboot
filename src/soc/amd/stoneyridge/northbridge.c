@@ -50,9 +50,9 @@ static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index,
 
 	/* io range allocation.  Limit */
 	tempreg = (nodeid & 0xf) | (linkn << 4) | (mmio_max & 0xffffff00);
-		pci_write_config32(SOC_ADDR_DEV, reg + 4, tempreg);
+	pci_write_config32(SOC_ADDR_DEV, reg + 4, tempreg);
 	tempreg = 3 | (nodeid & 0x30) | (mmio_min & 0xffffff00);
-		pci_write_config32(SOC_ADDR_DEV, reg, tempreg);
+	pci_write_config32(SOC_ADDR_DEV, reg, tempreg);
 }
 
 static void read_resources(struct device *dev)

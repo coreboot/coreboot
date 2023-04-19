@@ -151,7 +151,7 @@ static int set_slave_noc_dapc(u32 slave, enum domain_id domain_id, enum devapc_p
 	u32 apc_set_index;
 	u32 *base;
 
-	if (perm >= PERM_NUM || perm < 0) {
+	if (perm >= PERM_NUM || perm < NO_PROTECTION) {
 		printk(BIOS_ERR, "[NOC_DAPC] permission type:%#x is not supported!\n", perm);
 		return APUSYS_APC_ERR_PERMISSION_NOT_SUPPORTED;
 	}
@@ -192,7 +192,7 @@ static int set_slave_apc(u32 slave, enum domain_id domain_id, enum devapc_perm_t
 	u32 apc_set_index;
 	u32 *base;
 
-	if (perm >= PERM_NUM || perm < 0) {
+	if (perm >= PERM_NUM || perm < NO_PROTECTION) {
 		printk(BIOS_ERR, "[APUAPC] perm type:%#x is not supported!\n", perm);
 		return APUSYS_APC_ERR_PERMISSION_NOT_SUPPORTED;
 	}

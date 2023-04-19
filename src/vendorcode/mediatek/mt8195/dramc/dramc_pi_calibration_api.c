@@ -3066,7 +3066,7 @@ DRAM_STATUS_T DramcWriteLeveling(DRAMC_CTX_T *p, u8 isAutoK, WLEV_DELAY_BASED_T 
 
     //U8 *uiLPDDR_O1_Mapping = NULL;
     //U32 u4value = 0, u4dq_o1 = 0 u4value1 = 0,  u4dq_o1_tmp[DQS_BYTE_NUMBER];
-    U8 byte_i, rank_i, ucDoneFlg;
+    U8 byte_i, rank_i, ucDoneFlg = 0;
     //S32 iDelay, ClockDelayMax;
     //U8 ucStatus[DQS_BYTE_NUMBER], ucdq_o1[DQS_BYTE_NUMBER], ucdq_o1_shift[DQS_BYTE_NUMBER]
     //U8 ucHW_cmp_raw_data, uccmp_result[DQS_BYTE_NUMBER];

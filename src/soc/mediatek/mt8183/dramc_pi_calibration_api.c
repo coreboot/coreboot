@@ -2170,7 +2170,7 @@ static u8 dramc_window_perbit_cal(u8 chn, u8 rank, u8 freq_group,
 	u8 vref = 0, vref_begin = 0, vref_end = 1, vref_step = 1, vref_use = 0;
 	u8 vref_scan_enable = 0, small_reg_value = 0xff;
 	s16 dly_begin = 0, dly_end = 0, dly_step = 1;
-	u32 dummy_rd_bak_engine2 = 0, finish_bit, win_min_max = 0;
+	u32 dummy_rd_bak_engine2 = 0, win_min_max = 0;
 	static u16 dq_precal_result[DQS_NUMBER];
 	struct vref_perbit_dly vref_dly;
 	struct win_perbit_dly win_perbit[DQ_DATA_WIDTH];
@@ -2240,7 +2240,6 @@ static u8 dramc_window_perbit_cal(u8 chn, u8 rank, u8 freq_group,
 	vref_dly.max_win_sum = 0;
 	for (vref = vref_begin; vref < vref_end; vref += vref_step) {
 		small_reg_value = 0xff;
-		finish_bit = 0;
 		if (type == TX_WIN_DQ_ONLY)
 			vref_use = vref | (vref_range << 6);
 		else

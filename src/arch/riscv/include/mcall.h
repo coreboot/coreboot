@@ -54,10 +54,10 @@ _Static_assert(
 	sizeof(hls_t) == HLS_SIZE,
 	"HLS_SIZE must equal to sizeof(hls_t)");
 
+register uintptr_t current_stack_pointer asm("sp");
+
 #define MACHINE_STACK_TOP() ({ \
-	/* coverity[uninit_use] : FALSE */ \
-	register uintptr_t sp asm ("sp"); \
-	(void*)((sp + RISCV_PGSIZE) & -RISCV_PGSIZE); })
+	(void *)((current_stack_pointer + RISCV_PGSIZE) & -RISCV_PGSIZE); })
 
 // hart-local storage, at top of stack
 #define HLS() ((hls_t*)(MACHINE_STACK_TOP() - HLS_SIZE))

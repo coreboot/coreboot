@@ -14,16 +14,16 @@
 #define RAMTOP_CMOS_OFFSET 0x64
 
 /*
- * Address of the ramtop_cmos_offset byte in CMOS. Should be reserved
+ * Address of the ramtop byte in CMOS. Should be reserved
  * in mainboards' cmos.layout and not covered by checksum.
  */
 
 #if CONFIG(USE_OPTION_TABLE)
 #include "option_table.h"
-#if CMOS_VSTART_ramtop_cmos_offset != RAMTOP_CMOS_OFFSET * 8
+#if CMOS_VSTART_ramtop != RAMTOP_CMOS_OFFSET * 8
 #error "CMOS start for RAMTOP_CMOS is not correct, check your cmos.layout"
 #endif
-#if CMOS_VLEN_ramtop_cmos_offset != 12
+#if CMOS_VLEN_ramtop != 12
 #error "CMOS length for RAMTOP_CMOS bytes are not correct, check your cmos.layout"
 #endif
 #endif

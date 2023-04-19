@@ -91,7 +91,6 @@ chip soc/amd/phoenix
 		device pci 08.3 alias gpp_bridge_c off # Internal GPP Bridge 2 to Bus C
 			ops amd_internal_pcie_gpp_ops
 			device pci 0.0 on end # dummy, do not disable
-			device pci 0.2 alias i2s_ac97 off end
 			device pci 0.3 alias usb4_xhci_0 off
 				chip drivers/usb/acpi
 					register "type" = "UPC_TYPE_HUB"

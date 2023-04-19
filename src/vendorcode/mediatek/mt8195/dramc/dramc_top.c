@@ -1497,8 +1497,8 @@ void dram_auto_detection(void)
 	if (!u1IsLP4Family(dram_type) ||
 		read_offline_dram_mdl_data(&dram_info) < 0) {
 #endif
-		dram_mode = (u1IsLP4Family(dram_type))?
-			CBT_BYTE_MODE1 : CBT_NORMAL_MODE;
+		dram_mode = (DRAM_CBT_MODE_EXTERN_T)((u1IsLP4Family(dram_type))?
+						     CBT_BYTE_MODE1 : CBT_NORMAL_MODE);
 #if defined(SLT)
 		SLT_Test_Main_Flow(dram_type, dram_mode, &dram_info, SLT_USED);
 #endif
@@ -2280,4 +2280,3 @@ static unsigned int get_ch_num_by_auxadc(void)
 
 }
 #endif
-

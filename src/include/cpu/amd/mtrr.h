@@ -30,13 +30,8 @@
 #define IORRBase_MSR(reg) (0xC0010016 + 2 * (reg))
 #define IORRMask_MSR(reg) (0xC0010016 + 2 * (reg) + 1)
 
-#if defined(__ASSEMBLER__)
-#define TOP_MEM		0xC001001A
-#define TOP_MEM2	0xC001001D
-#else
-#define TOP_MEM		0xC001001Aul
-#define TOP_MEM2	0xC001001Dul
-#endif
+#define TOP_MEM_MSR	0xC001001A
+#define TOP_MEM2_MSR	0xC001001D
 
 #if !defined(__ASSEMBLER__)
 
@@ -68,12 +63,12 @@ static __always_inline void wrmsr_amd(unsigned int index, msr_t msr)
 
 static inline uint32_t get_top_of_mem_below_4gb(void)
 {
-	return rdmsr(TOP_MEM).lo;
+	return rdmsr(TOP_MEM_MSR).lo;
 }
 
 static inline uint64_t get_top_of_mem_above_4gb(void)
 {
-	msr_t msr = rdmsr(TOP_MEM2);
+	msr_t msr = rdmsr(TOP_MEM2_MSR);
 	return (uint64_t)msr.hi << 32 | msr.lo;
 }
 #endif

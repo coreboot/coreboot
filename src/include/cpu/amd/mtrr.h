@@ -65,7 +65,7 @@ static __always_inline void wrmsr_amd(unsigned int index, msr_t msr)
 		);
 }
 
-static inline uint64_t get_top_of_mem_below_4gb(void)
+static inline uint32_t get_top_of_mem_below_4gb(void)
 {
 	return rdmsr(TOP_MEM).lo;
 }

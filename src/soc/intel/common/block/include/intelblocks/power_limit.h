@@ -42,4 +42,18 @@ void set_power_limits(u8 power_limit_1_time,
 
 u8 get_cpu_tdp(void);
 
+struct cpu_tdp_power_limits {
+	uint16_t mch_id;
+	uint8_t cpu_tdp;
+	unsigned int pl1_min_power;
+	unsigned int pl1_max_power;
+	unsigned int pl2_min_power;
+	unsigned int pl2_max_power;
+	unsigned int pl4_power;
+};
+
+/* Modify Power Limit devictree settings during ramstage */
+void variant_update_cpu_power_limits(const struct cpu_tdp_power_limits *limits,
+		size_t num_entries);
+
 #endif /* _SOC_INTEL_COMMON_BLOCK_POWER_LIMIT_H_ */

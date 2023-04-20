@@ -2,9 +2,13 @@
 
 #include <console/console.h>
 #include <cpu/x86/msr.h>
+#include <device/pci_ops.h>
+#include <drivers/intel/dptf/chip.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/power_limit.h>
 #include <soc/msr.h>
+#include <soc/pci_devs.h>
+#include <soc/soc_chip.h>
 #include <soc/systemagent.h>
 
 /* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */
@@ -227,3 +231,55 @@ u8 get_cpu_tdp(void)
 
 	return cpu_tdp / power_unit;
 }
+
+WEAK_DEV_PTR(dptf_policy);
+
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_VARIANT_POWER_LIMIT)
+void variant_update_cpu_power_limits(const struct cpu_tdp_power_limits *limits,
+		size_t num_entries)
+{
+	if (!num_entries) {
+		printk(BIOS_INFO, "CPU Power limits entry not available\n");
+		return;
+	}
+
+	const struct device *policy_dev = DEV_PTR(dptf_policy);
+	if (!policy_dev)
+		return;
+
+	struct drivers_intel_dptf_config *config = policy_dev->chip_info;
+	if (!config) {
+		printk(BIOS_INFO, "DPTF is not enabled\n");
+		return;
+	}
+
+	uint16_t mch_id = pci_s_read_config16(PCI_DEV(0, 0, 0), PCI_DEVICE_ID);
+	if (mch_id == 0xffff) {
+		printk(BIOS_INFO, "No matching PCI DID present\n");
+		return;
+	}
+
+	uint8_t tdp = get_cpu_tdp();
+
+	for (size_t index = 0; index < num_entries; index++) {
+		if (mch_id != limits[index].mch_id || tdp != limits[index].cpu_tdp) {
+			continue;
+		} else {
+			struct dptf_power_limits *settings = &config->controls.power_limits;
+			config_t *conf = config_of_soc();
+			struct soc_power_limits_config *soc_config = conf->power_limits_config;
+			settings->pl1.min_power = limits[index].pl1_min_power;
+			settings->pl1.max_power = limits[index].pl1_max_power;
+			settings->pl2.min_power = limits[index].pl2_min_power;
+			settings->pl2.max_power = limits[index].pl2_max_power;
+			soc_config->tdp_pl4 = DIV_ROUND_UP(limits[index].pl4_power, MILLIWATTS_TO_WATTS);
+			printk(BIOS_INFO, "Overriding power limits PL1 (mW) (%u, %u) PL2 (mW) (%u, %u) PL4 (W) (%u)\n",
+				settings->pl1.min_power,
+				settings->pl1.max_power,
+				settings->pl2.min_power,
+				settings->pl2.max_power,
+				soc_config->tdp_pl4);
+		}
+	}
+}
+#endif

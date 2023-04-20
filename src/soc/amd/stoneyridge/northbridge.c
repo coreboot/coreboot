@@ -327,8 +327,8 @@ void domain_read_resources(struct device *dev)
 	uint64_t uma_base = get_uma_base();
 	uint32_t uma_size = get_uma_size();
 	uint32_t mem_useable = (uintptr_t)cbmem_top();
-	msr_t tom = rdmsr(TOP_MEM);
-	msr_t high_tom = rdmsr(TOP_MEM2);
+	uint32_t tom = get_top_of_mem_below_4gb();
+	uint64_t high_tom = get_top_of_mem_above_4g();
 	uint64_t high_mem_useable;
 	int idx = 0x10;
 
@@ -352,16 +352,15 @@ void domain_read_resources(struct device *dev)
 
 	/* Low top usable RAM -> Low top RAM (bottom pci mmio hole) */
 	reserved_ram_resource_kb(dev, idx++, mem_useable / KiB,
-					(tom.lo - mem_useable) / KiB);
+					(tom - mem_useable) / KiB);
 
 	/* If there is memory above 4GiB */
-	if (high_tom.hi) {
+	if (high_tom >> 32) {
 		/* 4GiB -> high top usable */
 		if (uma_base >= (4ull * GiB))
 			high_mem_useable = uma_base;
 		else
-			high_mem_useable = ((uint64_t)high_tom.lo |
-						((uint64_t)high_tom.hi << 32));
+			high_mem_useable = high_tom;
 
 		ram_resource_kb(dev, idx++, (4ull * GiB) / KiB,
 				((high_mem_useable - (4ull * GiB)) / KiB));

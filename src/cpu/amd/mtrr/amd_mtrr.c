@@ -7,7 +7,7 @@
 
 void add_uma_resource_below_tolm(struct device *nb, int idx)
 {
-	uint32_t topmem = amd_topmem();
+	uint32_t topmem = get_top_of_mem_below_4gb();
 	uint32_t top_of_cacheable = restore_top_of_low_cacheable();
 
 	if (top_of_cacheable == topmem)

@@ -276,7 +276,7 @@ struct device_operations stoneyridge_northbridge_operations = {
  */
 void amd_initcpuio(void)
 {
-	uintptr_t topmem = amd_topmem();
+	uintptr_t topmem = get_top_of_mem_below_4gb();
 	uintptr_t base, limit;
 
 	/* Enable legacy video routing: D18F1xF4 VGA Enable */

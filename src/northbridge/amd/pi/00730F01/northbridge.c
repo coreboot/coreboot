@@ -781,7 +781,7 @@ static void domain_read_resources(struct device *dev)
 	pci_domain_read_resources(dev);
 
 	/* TOP_MEM MSR is our boundary between DRAM and MMIO under 4G */
-	mmio_basek = amd_topmem() >> 10;
+	mmio_basek = get_top_of_mem_below_4gb() >> 10;
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	/* if the hw mem hole is already set in raminit stage, here we will compare
@@ -837,7 +837,7 @@ static void domain_read_resources(struct device *dev)
 				sizek = 0;
 			}
 			else {
-				uint64_t topmem2 = amd_topmem2();
+				uint64_t topmem2 = get_top_of_mem_above_4g();
 				basek = 4 * 1024 * 1024;
 				sizek = topmem2 / 1024 - basek;
 			}

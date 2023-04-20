@@ -74,7 +74,7 @@ static const fsp_dxio_descriptor nvme_dxio_descriptors[] = {
 	},
 };
 
-#define NVME_CLKREQ_GPIO 92
+#define EMMC_CLKREQ_GPIO 115
 void variant_get_dxio_descriptor(const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num)
 {
 	/*
@@ -85,13 +85,13 @@ void variant_get_dxio_descriptor(const fsp_dxio_descriptor **dxio_descs, size_t 
 	 * This allows checking the state of the NVMe device clkreq signal and enabling
 	 * either eMMC or NVMe based on that.
 	 */
-	if (gpio_get(NVME_CLKREQ_GPIO)) {
-		printk(BIOS_DEBUG, "Enabling eMMC.\n");
-		*dxio_num = ARRAY_SIZE(emmc_dxio_descriptors);
-		*dxio_descs = emmc_dxio_descriptors;
-	} else {
+	if (gpio_get(EMMC_CLKREQ_GPIO)) {
 		printk(BIOS_DEBUG, "Enabling NVMe.\n");
 		*dxio_num = ARRAY_SIZE(nvme_dxio_descriptors);
 		*dxio_descs = nvme_dxio_descriptors;
+	} else {
+		printk(BIOS_DEBUG, "Enabling eMMC.\n");
+		*dxio_num = ARRAY_SIZE(emmc_dxio_descriptors);
+		*dxio_descs = emmc_dxio_descriptors;
 	}
 }

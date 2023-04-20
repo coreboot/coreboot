@@ -13,9 +13,7 @@
 
 uintptr_t cbmem_top_chipset(void)
 {
-	msr_t tom = rdmsr(TOP_MEM);
-
-	if (!tom.lo)
+	if (!get_top_of_mem_below_4gb())
 		return 0;
 
 	/* 8MB alignment to keep MTRR usage low */

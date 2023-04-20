@@ -5,8 +5,9 @@
 #include <device/pci_ops.h>
 #include <console/uart.h>
 #include <device/pci.h>
+#include "uart8250reg.h"
 
-static unsigned int oxpcie_present;
+static int oxpcie_present;
 static DEVTREE_CONST u32 uart0_base = CONFIG_EARLY_PCI_MMIO_BASE + 0x1000;
 
 int pci_early_device_probe(u8 bus, u8 dev, u32 mmio_base)
@@ -49,9 +50,42 @@ int pci_early_device_probe(u8 bus, u8 dev, u32 mmio_base)
 	return 0;
 }
 
-static int oxpcie_uart_active(void)
+/*
+ * Stages that do not call pci_early_device_probe() identify an
+ * enabled UART with a test read. Since PCI bus enumeration
+ * has not happened PCI configuration register access is not
+ * possible here.
+ */
+static int uart_presence(uintptr_t base)
 {
-	return oxpcie_present;
+	/* LCR has no side-effects on reads. */
+	const u8 reg = UART8250_LCR;
+	u8 val;
+
+	if (CONFIG(DRIVERS_UART_8250MEM_32))
+		val = read32p(base + 4 * reg) & 0xff;
+	else
+		val = read8p(base + reg);
+
+	if (val == 0xff)
+		return -1;
+
+	/* Something decoded MMIO read, assume it was the UART. */
+	return 1;
+}
+
+static bool oxpcie_uart_active(void)
+{
+	if (oxpcie_present == 0)
+		oxpcie_present = uart_presence(uart0_base);
+
+	if (oxpcie_present > 0)
+		return true;
+	if (oxpcie_present < 0)
+		return false;
+
+	/* not reached */
+	return false;
 }
 
 uintptr_t uart_platform_base(unsigned int idx)

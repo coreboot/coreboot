@@ -20,7 +20,6 @@
  */
 void early_cache_setup(void)
 {
-	msr_t top_mem;
 	msr_t sys_cfg;
 	msr_t mtrr_def_type;
 	msr_t fixed_mtrr_ram;
@@ -34,7 +33,6 @@ void early_cache_setup(void)
 
 	var_mtrr_context_init(&mtrr_ctx.ctx);
 	mtrr_ctx.ctx.max_var_mtrrs = MIN(MAX_VAR_MTRR_USE, mtrr_ctx.ctx.max_var_mtrrs);
-	top_mem = rdmsr(TOP_MEM);
 	/* Enable RdDram and WrDram attributes in fixed MTRRs. */
 	sys_cfg = rdmsr(SYSCFG_MSR);
 	sys_cfg.lo |= SYSCFG_MSR_MtrrFixDramModEn;
@@ -61,7 +59,8 @@ void early_cache_setup(void)
 
 	wrmsr(SYSCFG_MSR, sys_cfg);
 
-	var_mtrr_set(&mtrr_ctx.ctx, 0, ALIGN_DOWN(top_mem.lo, 8 * MiB), MTRR_TYPE_WRBACK);
+	var_mtrr_set(&mtrr_ctx.ctx, 0, ALIGN_DOWN(get_top_of_mem_below_4gb(), 8 * MiB),
+		     MTRR_TYPE_WRBACK);
 	/* Always mark the 16 MByte right below the 4 GB boundary as WRPROT */
 	var_mtrr_set(&mtrr_ctx.ctx, FLASH_BELOW_4GB_MAPPING_REGION_BASE,
 		     FLASH_BELOW_4GB_MAPPING_REGION_SIZE, MTRR_TYPE_WRPROT);

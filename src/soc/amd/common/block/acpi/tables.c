@@ -40,7 +40,6 @@ unsigned long acpi_fill_madt_irqoverride(unsigned long current)
 /* Used by \_SB.PCI0._CRS */
 void acpi_fill_root_complex_tom(const struct device *device)
 {
-	msr_t msr;
 	const char *scope;
 
 	assert(device);
@@ -49,9 +48,8 @@ void acpi_fill_root_complex_tom(const struct device *device)
 	assert(scope);
 	acpigen_write_scope(scope);
 
-	msr = rdmsr(TOP_MEM);
-	acpigen_write_name_dword("TOM1", msr.lo);
-	msr = rdmsr(TOP_MEM2);
+	acpigen_write_name_dword("TOM1", get_top_of_mem_below_4gb());
+
 	/*
 	 * Since XP only implements parts of ACPI 2.0, we can't use a qword
 	 * here.
@@ -60,6 +58,6 @@ void acpi_fill_root_complex_tom(const struct device *device)
 	 * Shift value right by 20 bit to make it fit into 32bit,
 	 * giving us 1MB granularity and a limit of almost 4Exabyte of memory.
 	 */
-	acpigen_write_name_dword("TOM2", (msr.hi << 12) | msr.lo >> 20);
+	acpigen_write_name_dword("TOM2", get_top_of_mem_above_4g() >> 20);
 	acpigen_pop_len();
 }

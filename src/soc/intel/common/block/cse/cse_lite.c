@@ -1077,7 +1077,7 @@ static enum csme_failure_reason cse_sub_part_fw_update(const struct cse_bp_info 
 	return handle_cse_sub_part_fw_update_rv(rv);
 }
 
-void cse_fw_sync(void)
+static void do_cse_fw_sync(void)
 {
 	static struct get_bp_info_rsp cse_bp_info;
 
@@ -1152,6 +1152,13 @@ void cse_fw_sync(void)
 	}
 }
 
+void cse_fw_sync(void)
+{
+	timestamp_add_now(TS_CSE_FW_SYNC_START);
+	do_cse_fw_sync();
+	timestamp_add_now(TS_CSE_FW_SYNC_END);
+}
+
 static enum cb_err send_get_fpt_partition_info_cmd(enum fpt_partition_id id,
 	struct fw_version_resp *resp)
 {
@@ -1214,11 +1221,8 @@ static void ramstage_cse_fw_sync(void *unused)
 	if (acpi_get_sleep_type() == ACPI_S3)
 		return;
 
-	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_RAMSTAGE)) {
-		timestamp_add_now(TS_CSE_FW_SYNC_START);
+	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_RAMSTAGE))
 		cse_fw_sync();
-		timestamp_add_now(TS_CSE_FW_SYNC_END);
-	}
 }
 
 BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_EXIT, ramstage_cse_fw_sync, NULL);

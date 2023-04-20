@@ -538,13 +538,11 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 
 static void northbridge_fill_ssdt_generator(const struct device *device)
 {
-	msr_t msr;
 	char pscope[] = "\\_SB.PCI0";
 
 	acpigen_write_scope(pscope);
-	msr = rdmsr(TOP_MEM);
-	acpigen_write_name_dword("TOM1", msr.lo);
-	msr = rdmsr(TOP_MEM2);
+	acpigen_write_name_dword("TOM1", get_top_of_mem_below_4gb());
+
 	/*
 	 * Since XP only implements parts of ACPI 2.0, we can't use a qword
 	 * here.
@@ -553,7 +551,7 @@ static void northbridge_fill_ssdt_generator(const struct device *device)
 	 * Shift value right by 20 bit to make it fit into 32bit,
 	 * giving us 1MB granularity and a limit of almost 4Exabyte of memory.
 	 */
-	acpigen_write_name_dword("TOM2", (msr.hi << 12) | msr.lo >> 20);
+	acpigen_write_name_dword("TOM2", get_top_of_mem_above_4g() >> 20);
 	acpigen_pop_len();
 }
 

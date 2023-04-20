@@ -15,7 +15,6 @@
 #include <lib.h>
 #include <cpu/x86/mp.h>
 #include <Porting.h>
-#include <AGESA.h>
 #include <Topology.h>
 #include <cpu/amd/msr.h>
 #include <cpu/amd/mtrr.h>

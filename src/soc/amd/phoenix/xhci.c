@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Update for Phoenix */
-
 #include <amdblocks/gpio.h>
 #include <amdblocks/smi.h>
 #include <amdblocks/xhci.h>
@@ -24,6 +22,18 @@ static const struct sci_source xhci_sci_sources[] = {
 		.gpe = XHCI_GEVENT,
 		.direction = SMI_SCI_LVL_HIGH,
 		.level = SMI_SCI_EDG
+	},
+	{
+		.scimap = SMITYPE_XHC3_PME,
+		.gpe = XHCI_GEVENT,
+		.direction = SMI_SCI_LVL_HIGH,
+		.level = SMI_SCI_EDG
+	},
+	{
+		.scimap = SMITYPE_XHC4_PME,
+		.gpe = XHCI_GEVENT,
+		.direction = SMI_SCI_LVL_HIGH,
+		.level = SMI_SCI_EDG
 	}
 };
 
@@ -41,6 +51,16 @@ enum cb_err pci_xhci_get_wake_gpe(const struct device *dev, int *gpe)
 			return CB_SUCCESS;
 		} else if (dev->path.pci.devfn == XHCI1_DEVFN) {
 			*gpe = xhci_sci_sources[1].gpe;
+			return CB_SUCCESS;
+		}
+	}
+
+	if (dev->bus->dev->path.pci.devfn == PCIE_ABC_C_DEVFN) {
+		if (dev->path.pci.devfn == USB4_XHCI0_DEVFN) {
+			*gpe = xhci_sci_sources[2].gpe;
+			return CB_SUCCESS;
+		} else if (dev->path.pci.devfn == USB4_XHCI1_DEVFN) {
+			*gpe = xhci_sci_sources[3].gpe;
 			return CB_SUCCESS;
 		}
 	}

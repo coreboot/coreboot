@@ -1,3 +1,35 @@
+fw_config
+	field DB_USB 0 1
+		option DB_NONE			0
+		option DB_1C_1A			1
+		option DB_1C			2
+		option DB_1C_LTE		3
+	end
+	field WIFI_SAR_ID 2 3
+		option SAR_ID_0			0
+	end
+	field STYLUS 9
+		option STYLUS_ABSENT		0
+		option STYLUS_PRESENT		1
+	end
+	field SD_CARD 10
+		option SD_PRESENT		0
+		option SD_ABSENT		1
+	end
+	field WFC 11
+		option WFC_ABSENT		0
+		option WFC_MIPI_OVTI8856	1
+	end
+	field MB_HDMI 12
+		option HDMI_ABSENT		0
+		option HDMI_PRESENT		1
+	end
+	field MB_USB 15
+		option MB_1C			0
+		option MB_1C_2A			1
+	end
+end
+
 chip soc/intel/alderlake
 	register "sagv" = "SaGv_Enabled"
 
@@ -8,7 +40,7 @@ chip soc/intel/alderlake
 
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E22, .pad_auxn_dc = GPP_E23}"
 
-	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"	# USB2 WWAN
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# USB2 WWAN
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for PCIe WLAN
 	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for CNVi WLAN
 
@@ -110,11 +142,12 @@ chip soc/intel/alderlake
 				register "device_type" = "INTEL_ACPI_CAMERA_CIO2"
 
 				register "cio2_num_ports" = "1"
-				register "cio2_lanes_used" = "{2}" # 2 CSI Camera lanes are used
+				register "cio2_lanes_used" = "{4}" # 4 CSI Camera lanes are used
 				register "cio2_lane_endpoint[0]" = ""^I2C2.CAM0""
 				register "cio2_prt[0]" = "1"
 				device generic 0 on end
 			end
+			probe WFC WFC_MIPI_OVTI8856
 		end
 		device ref cnvi_wifi on
 			chip drivers/wifi/generic
@@ -150,7 +183,9 @@ chip soc/intel/alderlake
 				register "key.linux_code" = "SW_PEN_INSERTED"
 				register "key.linux_input_type" = "EV_SW"
 				register "key.label" = ""pen_eject""
-				device generic 0 on end
+				device generic 0 on
+					probe STYLUS STYLUS_PRESENT
+				end
 			end
 		end
 		device ref i2c2 on
@@ -162,13 +197,13 @@ chip soc/intel/alderlake
 				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
 				register "has_power_resource" = "1"
 
-				register "ssdb.lanes_used" = "2"
+				register "ssdb.lanes_used" = "4"
 				register "ssdb.link_used" = "1"
 				register "ssdb.vcm_type" = "0x0C"
 				register "vcm_name" = ""VCM0""
 				register "num_freq_entries" = "2"
-				register "link_freq[0]" = "720000000"
-				register "link_freq[1]" = "360000000"
+				register "link_freq[0]" = "360000000"
+				register "link_freq[1]" = "180000000"
 				register "remote_name" = ""IPU0""
 
 				#Controls
@@ -194,7 +229,9 @@ chip soc/intel/alderlake
 				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
 				register "off_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
-				device i2c 10 on end
+				device i2c 36 on
+					probe WFC WFC_MIPI_OVTI8856
+				end
 			end
 			chip drivers/intel/mipi_camera
 				register "acpi_uid" = "3"
@@ -205,7 +242,9 @@ chip soc/intel/alderlake
 				register "pr0" = ""\\_SB.PCI0.I2C2.CAM0.PRIC""
 				register "vcm_compat" = ""dongwoon,dw9714""
 
-				device i2c 0C on end
+				device i2c 0C on
+					probe WFC WFC_MIPI_OVTI8856
+				end
 			end
 			chip drivers/intel/mipi_camera
 				register "acpi_hid" = "ACPI_DT_NAMESPACE_HID"
@@ -222,7 +261,9 @@ chip soc/intel/alderlake
 				register "nvm_width" = "0x10"
 				register "nvm_compat" = ""atmel,24c08""
 
-				device i2c 50 on end
+				device i2c 50 on
+					probe WFC WFC_MIPI_OVTI8856
+				end
 			end
 		end
 		device ref i2c3 on
@@ -353,20 +394,22 @@ chip soc/intel/alderlake
 						register "desc" = ""USB2 Type-A Port A0 (MLB)""
 						register "type" = "UPC_TYPE_A"
 						register "use_custom_pld" = "true"
-						register "custom_pld" = "ACPI_PLD_TYPE_A(LEFT, RIGHT, ACPI_PLD_GROUP(3, 1))"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, RIGHT, ACPI_PLD_GROUP(3, 1))"
 						device ref usb2_port3 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB2 Type-A Port A1 (DB)""
+						register "desc" = ""USB2 Type-A Port A1 (MLB)""
 						register "type" = "UPC_TYPE_A"
 						register "use_custom_pld" = "true"
-						register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, RIGHT, ACPI_PLD_GROUP(4, 1))"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, LEFT, ACPI_PLD_GROUP(4, 1))"
 						device ref usb2_port4 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 WWAN""
 						register "type" = "UPC_TYPE_INTERNAL"
-						device ref usb2_port5 on end
+						device ref usb2_port5 on
+							probe DB_USB DB_1C_LTE
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 UFC""
@@ -391,20 +434,22 @@ chip soc/intel/alderlake
 						register "desc" = ""USB3 Type-A Port A0 (MLB)""
 						register "type" = "UPC_TYPE_USB3_A"
                                                 register "use_custom_pld" = "true"
-                                                register "custom_pld" = "ACPI_PLD_TYPE_A(LEFT, RIGHT, ACPI_PLD_GROUP(3, 1))"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, RIGHT, ACPI_PLD_GROUP(3, 1))"
 						device ref usb3_port1 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB3 Type-A Port A1 (DB)""
 						register "type" = "UPC_TYPE_USB3_A"
                                                 register "use_custom_pld" = "true"
-                                                register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, RIGHT, ACPI_PLD_GROUP(4, 1))"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, LEFT, ACPI_PLD_GROUP(4, 1))"
 						device ref usb3_port2 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB3 WWAN""
 						register "type" = "UPC_TYPE_INTERNAL"
-						device ref usb3_port3 on end
+						device ref usb3_port3 on
+							probe DB_USB DB_1C_LTE
+						end
 					end
 				end
 			end

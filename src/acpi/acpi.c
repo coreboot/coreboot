@@ -1905,6 +1905,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	    || dsdt_file->length < sizeof(acpi_header_t)
 	    || memcmp(dsdt_file->signature, "DSDT", 4) != 0) {
 		printk(BIOS_ERR, "Invalid DSDT file, skipping ACPI tables\n");
+		cbfs_unmap(dsdt_file);
 		return current;
 	}
 
@@ -1914,6 +1915,7 @@ unsigned long write_acpi_tables(unsigned long start)
 		|| slic_file->length < sizeof(acpi_header_t)
 		|| (memcmp(slic_file->signature, "SLIC", 4) != 0
 		    && memcmp(slic_file->signature, "MSDM", 4) != 0))) {
+		cbfs_unmap(slic_file);
 		slic_file = 0;
 	}
 
@@ -1998,7 +2000,16 @@ unsigned long write_acpi_tables(unsigned long start)
 		current += slic_file->length;
 		current = acpi_align_current(current);
 		acpi_add_table(rsdp, slic);
+		cbfs_unmap(slic_file);
 	}
+
+	/*
+	 * cbfs_unmap() uses mem_pool_free() which works correctly only
+	 * if freeing is done in reverse order than memory allocation.
+	 * This is why unmapping of dsdt_file must be done after
+	 * unmapping slic file.
+	 */
+	cbfs_unmap(dsdt_file);
 
 	printk(BIOS_DEBUG, "ACPI:     * SSDT\n");
 	ssdt = (acpi_header_t *)current;

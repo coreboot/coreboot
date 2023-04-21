@@ -26,8 +26,8 @@ config BOARD_GOOGLE_MAGIKARP
 	bool "->  Magikarp"
 	select BOARD_GOOGLE_KRABBY_COMMON
 
-comment "Starmie"
+comment "Staryu"
 
 config BOARD_GOOGLE_STARMIE
 	bool "->  Starmie"
-	select BOARD_GOOGLE_STARMIE_COMMON
+	select BOARD_GOOGLE_STARYU_COMMON

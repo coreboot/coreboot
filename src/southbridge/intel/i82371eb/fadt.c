@@ -16,10 +16,6 @@
  */
 void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
-	if (permanent_smi_handler()) {
-		/* TODO: SMI handler is not implemented. */
-		fadt->smi_cmd = 0x00;
-	}
 
 	fadt->pm1a_evt_blk = DEFAULT_PMBASE;
 	fadt->pm1a_cnt_blk = DEFAULT_PMBASE + PMCNTRL;

@@ -2,6 +2,7 @@
 
 #include <acpi/acpi.h>
 #include <cf9_reset.h>
+#include <cpu/x86/smm.h>
 
 void arch_fill_fadt(acpi_fadt_t *fadt)
 {
@@ -16,5 +17,11 @@ void arch_fill_fadt(acpi_fadt_t *fadt)
 		fadt->reset_value = RST_CPU | SYS_RST;
 
 		fadt->flags |= ACPI_FADT_RESET_REGISTER;
+	}
+
+	if (permanent_smi_handler()) {
+		fadt->smi_cmd = APM_CNT;
+		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
+		fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
 	}
 }

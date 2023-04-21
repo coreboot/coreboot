@@ -12,11 +12,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	struct southbridge_intel_ibexpeak_config *chip = dev->chip_info;
 	u16 pmbase = pci_read_config16(dev, 0x40) & 0xfffe;
 
-	if (permanent_smi_handler()) {
-		fadt->smi_cmd = APM_CNT;
-		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
-		fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
-	}
 
 	fadt->pm1a_evt_blk = pmbase;
 	fadt->pm1a_cnt_blk = pmbase + PM1_CNT;

@@ -25,11 +25,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
 	printk(BIOS_DEBUG, "pm_base: 0x%04x\n", HUDSON_ACPI_IO_BASE);
 
-	if (permanent_smi_handler()) {
-		fadt->smi_cmd = ACPI_SMI_CTL_PORT;
-		fadt->acpi_enable = ACPI_SMI_CMD_ENABLE;
-		fadt->acpi_disable = ACPI_SMI_CMD_DISABLE;
-	}
 
 	fadt->pm1a_evt_blk = ACPI_PM_EVT_BLK;
 	fadt->pm1a_cnt_blk = ACPI_PM1_CNT_BLK;

@@ -10,6 +10,7 @@
 #include <commonlib/region.h>
 #include <console/console.h>
 #include <fmap.h>
+#include <fmap_config.h>
 #include <pc80/mc146818rtc.h>
 #include <soc/iomap.h>
 #include <soc/psp_transfer.h>
@@ -74,7 +75,8 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 	const char *fname;
 	const char *hash_fname;
 	void *amdfw_location;
-	void *boot_dev_base = rdev_mmap_full(boot_device_ro());
+	void *map_base = NULL;
+	size_t map_offset;
 
 	/* Continue booting from RO */
 	if (ctx->flags & VB2_CONTEXT_RECOVERY_MODE) {
@@ -85,36 +87,53 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 	if (vboot_is_firmware_slot_a(ctx)) {
 		fname = "apu/amdfw_a";
 		hash_fname = "apu/amdfw_a_hash";
+		map_offset = FMAP_SECTION_FW_MAIN_A_START - FMAP_SECTION_FLASH_START;
+		map_base = rdev_mmap(boot_device_ro(), map_offset, FMAP_SECTION_FW_MAIN_A_SIZE);
 	} else {
 		fname = "apu/amdfw_b";
 		hash_fname = "apu/amdfw_b_hash";
+		map_offset = FMAP_SECTION_FW_MAIN_B_START - FMAP_SECTION_FLASH_START;
+		map_base = rdev_mmap(boot_device_ro(), map_offset, FMAP_SECTION_FW_MAIN_B_SIZE);
+	}
+
+	if (!map_base) {
+		printk(BIOS_ERR, "Failed to map RW FW_MAIN section.\n");
+		return POSTCODE_MAP_SPI_ROM_FAILED;
 	}
 
 	amdfw_location = cbfs_map(fname, NULL);
 	if (!amdfw_location) {
 		printk(BIOS_ERR, "AMD Firmware table not found.\n");
+		rdev_munmap(boot_device_ro(), map_base);
 		return POSTCODE_AMD_FW_MISSING;
 	}
+
 	ef_table = (struct embedded_firmware *)amdfw_location;
 	if (ef_table->signature != EMBEDDED_FW_SIGNATURE) {
 		printk(BIOS_ERR, "ROMSIG address is not correct.\n");
+		cbfs_unmap(amdfw_location);
+		rdev_munmap(boot_device_ro(), map_base);
 		return POSTCODE_ROMSIG_MISMATCH_ERROR;
 	}
 
 	psp_dir_addr = ef_table->new_psp_directory;
 	bios_dir_addr = get_bios_dir_addr(ef_table);
 	psp_dir_in_spi = (uint32_t *)((psp_dir_addr & SPI_ADDR_MASK) +
-			(uint32_t)boot_dev_base);
+			(uint32_t)map_base - map_offset);
 	if (*psp_dir_in_spi != PSP_COOKIE) {
 		printk(BIOS_ERR, "PSP Directory address is not correct.\n");
+		cbfs_unmap(amdfw_location);
+		rdev_munmap(boot_device_ro(), map_base);
 		return POSTCODE_PSP_COOKIE_MISMATCH_ERROR;
 	}
 
 	if (bios_dir_addr) {
 		bios_dir_in_spi = (uint32_t *)((bios_dir_addr & SPI_ADDR_MASK) +
-				(uint32_t)boot_dev_base);
+				(uint32_t)map_base - map_offset);
 		if (*bios_dir_in_spi != BHD_COOKIE) {
 			printk(BIOS_ERR, "BIOS Directory address is not correct.\n");
+			cbfs_unmap(amdfw_location);
+			rdev_munmap(boot_device_ro(), map_base);
 			return POSTCODE_BHD_COOKIE_MISMATCH_ERROR;
 		}
 	}
@@ -128,12 +147,16 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 
 	if (update_psp_bios_dir(&psp_dir_addr, &bios_dir_addr)) {
 		printk(BIOS_ERR, "Updated BIOS Directory could not be set.\n");
+		cbfs_unmap(amdfw_location);
+		rdev_munmap(boot_device_ro(), map_base);
 		return POSTCODE_UPDATE_PSP_BIOS_DIR_ERROR;
 	}
 
 	if (CONFIG(SEPARATE_SIGNED_PSPFW))
 		update_psp_fw_hash_table(hash_fname);
 
+	cbfs_unmap(amdfw_location);
+	rdev_munmap(boot_device_ro(), map_base);
 	return 0;
 }
 
@@ -208,7 +231,6 @@ void Main(void)
 {
 	uint32_t retval;
 	struct vb2_context *ctx = NULL;
-	void *boot_dev_base;
 	uint32_t bootmode;
 
 	/*
@@ -324,14 +346,7 @@ void Main(void)
 	if (retval)
 		reboot_into_recovery(ctx, retval);
 
-
-	post_code(POSTCODE_UNMAP_SPI_ROM);
-	boot_dev_base = rdev_mmap_full(boot_device_ro());
-	if (boot_dev_base) {
-		if (svc_unmap_spi_rom((void *)boot_dev_base))
-			printk(BIOS_ERR, "Error unmapping SPI rom\n");
-	}
-
+	assert(!boot_dev_get_active_map_count());
 	post_code(POSTCODE_UNMAP_FCH_DEVICES);
 	unmap_fch_devices();
 

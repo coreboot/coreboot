@@ -90,19 +90,14 @@ static struct {
 	{"AOAC", {FCH_IO_DEVICE_AOAC}, aoac_set_bar},
 };
 
-uintptr_t *map_spi_rom(void)
+void *map_spi_rom(void)
 {
-	uintptr_t *addr = NULL;
 	struct spirom_info spi = {0};
 
 	if (svc_get_spi_rom_info(&spi))
 		printk(BIOS_DEBUG, "Error getting SPI ROM info.\n");
 
-	if (spi.SpiBiosSmnBase != 0)
-		if (svc_map_spi_rom(spi.SpiBiosSmnBase, CONFIG_ROM_SIZE, (void **)&addr))
-			printk(BIOS_DEBUG, "Error mapping SPI ROM to address.\n");
-
-	return addr;
+	return spi.SpiBiosSmnBase;
 }
 
 static uint32_t map_fch_devices(void)

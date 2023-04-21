@@ -38,7 +38,7 @@
 #define POSTCODE_CMOS_RECOVERY			0xCA
 #define POSTCODE_EARLY_INIT_ERROR		0xCB
 #define POSTCODE_INIT_TPM_FAILED		0xCC
-
+#define POSTCODE_MAP_SPI_ROM_FAILED		0xCD
 
 #define POSTCODE_UNMAP_SPI_ROM			0xF0
 #define POSTCODE_UNMAP_FCH_DEVICES		0xF1
@@ -57,7 +57,7 @@ void verstage_soc_aoac_init(void);
 void verstage_soc_espi_init(void);
 void verstage_soc_i2c_init(void);
 void verstage_soc_spi_init(void);
-uintptr_t *map_spi_rom(void);
+void *map_spi_rom(void);
 
 uint32_t update_psp_bios_dir(uint32_t *psp_dir_offset, uint32_t *bios_dir_offset);
 uint32_t save_uapp_data(void *address, uint32_t size);
@@ -71,5 +71,7 @@ void update_psp_fw_hash_table(const char *fname);
 void report_prev_boot_status_to_vboot(void);
 
 void report_hsp_secure_state(void);
+
+uint32_t boot_dev_get_active_map_count(void);
 
 #endif /* PSP_VERSTAGE_H */

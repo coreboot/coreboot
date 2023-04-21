@@ -102,7 +102,10 @@
 #define SMITYPE_XHC0_PME		56
 #define SMITYPE_XHC1_PME		57
 #define SMITYPE_ACDC_TIMER		58
-/* 59-63 Reserved */
+/* 59-60 Reserved */
+#define SMITYPE_XHC3_PME		61
+#define SMITYPE_XHC4_PME		62
+#define SMITYPE_CUR_TEMP_STATUS_5	63
 #define SMITYPE_KB_RESET		64
 #define SMITYPE_SLP_TYP			65
 #define SMITYPE_AL2H_ACPI		66

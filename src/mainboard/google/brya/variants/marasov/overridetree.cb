@@ -85,6 +85,11 @@ chip soc/intel/alderlake
 		.v1p05_icc_max_ma = 500,
 		.vnn_sx_voltage_mv = 1250,
 	}"
+
+	# As per Intel Advisory doc#723158, the change is required to prevent possible
+	# display flickering issue.
+	register "usb2_phy_sus_pg_disable" = "1"
+
 	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,
 		[PchSerialIoIndexI2C1] = PchSerialIoPci,

@@ -18,6 +18,5 @@
 #define FCH_AOAC_DEV_UART4		20
 #define FCH_AOAC_DEV_UART3		26
 #define FCH_AOAC_DEV_ESPI		27
-#define FCH_AOAC_DEV_EMMC		28
 
 #endif /* AMD_MENDOCINO_AOAC_DEFS_H */

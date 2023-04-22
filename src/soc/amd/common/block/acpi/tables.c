@@ -58,6 +58,6 @@ void acpi_fill_root_complex_tom(const struct device *device)
 	 * Shift value right by 20 bit to make it fit into 32bit,
 	 * giving us 1MB granularity and a limit of almost 4Exabyte of memory.
 	 */
-	acpigen_write_name_dword("TOM2", get_top_of_mem_above_4g() >> 20);
+	acpigen_write_name_dword("TOM2", get_top_of_mem_above_4gb() >> 20);
 	acpigen_pop_len();
 }

@@ -70,7 +70,7 @@ static inline uint32_t get_top_of_mem_below_4gb(void)
 	return rdmsr(TOP_MEM).lo;
 }
 
-static inline uint64_t get_top_of_mem_above_4g(void)
+static inline uint64_t get_top_of_mem_above_4gb(void)
 {
 	msr_t msr = rdmsr(TOP_MEM2);
 	return (uint64_t)msr.hi << 32 | msr.lo;

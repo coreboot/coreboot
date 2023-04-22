@@ -550,7 +550,7 @@ static void northbridge_fill_ssdt_generator(const struct device *device)
 	 * Shift value right by 20 bit to make it fit into 32bit,
 	 * giving us 1MB granularity and a limit of almost 4Exabyte of memory.
 	 */
-	acpigen_write_name_dword("TOM2", get_top_of_mem_above_4g() >> 20);
+	acpigen_write_name_dword("TOM2", get_top_of_mem_above_4gb() >> 20);
 	acpigen_pop_len();
 }
 
@@ -834,7 +834,7 @@ static void domain_read_resources(struct device *dev)
 				sizek = 0;
 			}
 			else {
-				uint64_t topmem2 = get_top_of_mem_above_4g();
+				uint64_t topmem2 = get_top_of_mem_above_4gb();
 				basek = 4 * 1024 * 1024;
 				sizek = topmem2 / 1024 - basek;
 			}

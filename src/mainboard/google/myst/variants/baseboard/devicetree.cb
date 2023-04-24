@@ -83,6 +83,7 @@ chip soc/amd/phoenix
 	register "gpp_clk_config[6]" = "GPP_CLK_OFF" # WWAN_AUX_RST_L GPIO
 
 	register "pspp_policy" = "DXIO_PSPP_DISABLED" # TODO(b/277214353): reenable when PSPP works
+	register "s0ix_enable" = "true"
 
 	device domain 0 on
 		device ref gpp_bridge_2_1 on end # WWAN

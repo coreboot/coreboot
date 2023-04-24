@@ -158,6 +158,9 @@ static void fill_fspm_mrc_params(FSP_M_CONFIG *m_cfg,
 		m_cfg->DdrFreqLimit = config->max_dram_speed_mts;
 		m_cfg->DdrSpeedControl = 1;
 	}
+#if CONFIG(SOC_INTEL_RAPTORLAKE)
+	m_cfg->LowerBasicMemTestSize = config->lower_basic_mem_test_size;
+#endif
 }
 
 static void fill_fspm_cpu_params(FSP_M_CONFIG *m_cfg,

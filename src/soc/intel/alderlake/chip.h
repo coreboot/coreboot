@@ -730,6 +730,13 @@ struct soc_intel_alderlake_config {
 	 * Set this to 1 in order to disable Tccold Handshake
 	 */
 	bool disable_dynamic_tccold_handshake;
+
+	/*
+	 * Enable or Disable Reduced BasicMemoryTest size.
+	 * Default is set to 0.
+	 * Set this to 1 in order to reduce BasicMemoryTest size
+	 */
+	bool lower_basic_mem_test_size;
 };
 
 typedef struct soc_intel_alderlake_config config_t;

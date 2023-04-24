@@ -457,8 +457,11 @@ static void dump_flashrom_layout(char *image, int size, const char *layout_fname
 
 	for (unsigned int i = 0; i < max_regions; i++) {
 		struct region region = get_region(frba, i);
-		/* is region invalid? */
-		if (region.size < 1)
+
+		/* A region limit of 0 is an indicator of an unused region
+		 * A region base of 7FFFh is an indicator of a reserved region
+		 */
+		if (region.limit == 0 || region.base == 0x07FFF000)
 			continue;
 
 		char buf[LAYOUT_LINELEN];
@@ -1027,8 +1030,11 @@ static void create_fmap_template(char *image, int size, const char *layout_fname
 	struct region sorted_regions[MAX_REGIONS] = { 0 };
 	for (unsigned int i = 0; i < max_regions; i++) {
 		struct region region = get_region(frba, i);
-		/* is region invalid? */
-		if (region.size < 1)
+
+		/* A region limit of 0 is an indicator of an unused region
+		 * A region base of 7FFFh is an indicator of a reserved region
+		 */
+		if (region.limit == 0 || region.base == 0x07FFF000)
 			continue;
 
 		/* Here we decide to use the coreboot generated FMAP BIOS region, instead of

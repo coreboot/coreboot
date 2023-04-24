@@ -1001,7 +1001,7 @@ static void dump_console(enum console_print_type type, int max_loglevel, int pri
 		for (size_t i = 0; !cursor && i < ARRAY_SIZE(regex); i++) {
 			regex_t re;
 			regmatch_t match;
-			int res = regcomp(&re, regex[i], REG_EXTENDED);
+			int res = regcomp(&re, regex[i], REG_EXTENDED | REG_NEWLINE);
 			assert(res == 0);
 
 			/* Keep looking for matches so we find the last one. */

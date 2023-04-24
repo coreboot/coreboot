@@ -1,0 +1,160 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+#include <amdblocks/cpu.h>
+#include <amdblocks/data_fabric.h>
+#include <arch/ioapic.h>
+#include <console/console.h>
+#include <cpu/amd/mtrr.h>
+#include <device/device.h>
+#include <device/pci_ops.h>
+#include <types.h>
+
+void amd_pci_domain_scan_bus(struct device *domain)
+{
+	uint8_t bus, limit;
+
+	/* TODO: Systems with more than one PCI root need to read the data fabric registers to
+	   see which PCI bus numbers get decoded to which PCI root. */
+	bus = 0;
+	limit = CONFIG_ECAM_MMCONF_BUS_NUMBER - 1;
+
+	/* Set bus first number of PCI root */
+	domain->link_list->secondary = bus;
+	/* subordinate needs to be the same as secondary before pci_domain_scan_bus call. */
+	domain->link_list->subordinate = bus;
+
+	pci_domain_scan_bus(domain);
+
+	/* pci_domain_scan_bus will modify subordinate, so change it back to the maximum
+	   bus number decoded to this PCI root for the acpigen_resource_producer_bus_number
+	   call to write the correct ACPI code. */
+	domain->link_list->subordinate = limit;
+}
+
+/* Read the registers and return normalized values */
+static void data_fabric_get_mmio_base_size(unsigned int reg,
+					   resource_t *mmio_base, resource_t *mmio_limit)
+{
+	const uint32_t base_reg = data_fabric_broadcast_read32(0, DF_MMIO_BASE(reg));
+	const uint32_t limit_reg = data_fabric_broadcast_read32(0, DF_MMIO_LIMIT(reg));
+	/* The raw register values are bits 47..16  of the actual address */
+	*mmio_base = (resource_t)base_reg << D18F0_MMIO_SHIFT;
+	*mmio_limit = (((resource_t)limit_reg + 1) << D18F0_MMIO_SHIFT) - 1;
+}
+
+static void print_df_mmio_outside_of_cpu_mmio_error(unsigned int reg)
+{
+	printk(BIOS_WARNING, "DF MMIO register %u outside of CPU MMIO region.\n", reg);
+}
+
+static bool is_mmio_region_valid(unsigned int reg, resource_t mmio_base, resource_t mmio_limit)
+{
+	if (mmio_base > mmio_limit) {
+		printk(BIOS_WARNING, "DF MMIO register %u's base is above its limit.\n", reg);
+		return false;
+	}
+	if (mmio_base >= 4ULL * GiB) {
+		/* MMIO region above 4GB needs to be above TOP_MEM2 MSR value */
+		if (mmio_base < get_top_of_mem_above_4gb()) {
+			print_df_mmio_outside_of_cpu_mmio_error(reg);
+			return false;
+		}
+	} else {
+		/* MMIO region below 4GB needs to be above TOP_MEM MSR value */
+		if (mmio_base < get_top_of_mem_below_4gb()) {
+			print_df_mmio_outside_of_cpu_mmio_error(reg);
+			return false;
+		}
+		/* MMIO region below 4GB mustn't cross the 4GB boundary. */
+		if (mmio_limit >= 4ULL * GiB) {
+			printk(BIOS_WARNING, "DF MMIO register %u crosses 4GB boundary.\n",
+			       reg);
+			return false;
+		}
+	}
+
+	return true;
+}
+
+static void report_data_fabric_mmio(struct device *domain, unsigned int idx,
+				    resource_t mmio_base, resource_t mmio_limit)
+{
+	struct resource *res;
+	res = new_resource(domain, idx);
+	res->base = mmio_base;
+	res->limit = mmio_limit;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED;
+}
+
+/* Tell the resource allocator about the usable MMIO ranges configured in the data fabric */
+static void add_data_fabric_mmio_regions(struct device *domain, unsigned int *idx)
+{
+	union df_mmio_control ctrl;
+	resource_t mmio_base;
+	resource_t mmio_limit;
+
+	/* The last 12GB of the usable address space are reserved and can't be used for MMIO */
+	const resource_t reserved_upper_mmio_base =
+		(1ULL << get_usable_physical_address_bits()) - DF_RESERVED_TOP_12GB_MMIO_SIZE;
+
+	for (unsigned int i = 0; i < DF_MMIO_REG_SET_COUNT; i++) {
+		ctrl.raw = data_fabric_broadcast_read32(0, DF_MMIO_CONTROL(i));
+
+		/* Relevant MMIO regions need to have both reads and writes enabled */
+		if (!ctrl.we || !ctrl.re)
+			continue;
+
+		/* Non-posted region contains fixed FCH MMIO devices */
+		if (ctrl.np)
+			continue;
+
+		/* TODO: Systems with more than one PCI root need to check to which PCI root
+		   the MMIO range gets decoded to. */
+
+		data_fabric_get_mmio_base_size(i, &mmio_base, &mmio_limit);
+
+		if (!is_mmio_region_valid(i, mmio_base, mmio_limit))
+			continue;
+
+		/* Make sure to not report a region overlapping with the fixed MMIO resources
+		   below 4GB or the reserved MMIO range in the last 12GB of the addressable
+		   address range. The code assumes that the fixed MMIO resources below 4GB
+		   are between IO_APIC_ADDR and the 4GB boundary. */
+		if (mmio_base < 4ULL * GiB) {
+			if (mmio_base >= IO_APIC_ADDR)
+				continue;
+			if (mmio_limit >= IO_APIC_ADDR)
+				mmio_limit = IO_APIC_ADDR - 1;
+		} else {
+			if (mmio_base >= reserved_upper_mmio_base)
+				continue;
+			if (mmio_limit >= reserved_upper_mmio_base)
+				mmio_limit = reserved_upper_mmio_base - 1;
+		}
+
+		report_data_fabric_mmio(domain, (*idx)++, mmio_base, mmio_limit);
+	}
+}
+
+/* Tell the resource allocator about the usable I/O space */
+static void add_io_regions(struct device *domain, unsigned int *idx)
+{
+	struct resource *res;
+
+	/* TODO: Systems with more than one PCI root need to read the data fabric registers to
+	   see which IO ranges get decoded to which PCI root. */
+
+	res = new_resource(domain, (*idx)++);
+	res->base = 0;
+	res->limit = 0xffff;
+	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED;
+}
+
+void amd_pci_domain_read_resources(struct device *domain)
+{
+	unsigned int idx = 0;
+
+	add_io_regions(domain, &idx);
+
+	add_data_fabric_mmio_regions(domain, &idx);
+}

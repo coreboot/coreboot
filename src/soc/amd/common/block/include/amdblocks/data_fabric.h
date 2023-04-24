@@ -18,6 +18,9 @@
 #define DF_MMIO_LIMIT(reg)	(D18F0_MMIO_LIMIT0 + DF_MMIO_REG_OFFSET(reg))
 #define DF_MMIO_CONTROL(reg)	(D18F0_MMIO_CTRL0 + DF_MMIO_REG_OFFSET(reg))
 
+/* Last 12GB of the usable address space are reserved */
+#define DF_RESERVED_TOP_12GB_MMIO_SIZE		(12ULL * GiB)
+
 uint32_t data_fabric_read32(uint8_t function, uint16_t reg, uint8_t instance_id);
 void data_fabric_write32(uint8_t function, uint16_t reg, uint8_t instance_id, uint32_t data);
 
@@ -39,5 +42,9 @@ void data_fabric_print_mmio_conf(void);
 void data_fabric_disable_mmio_reg(unsigned int reg);
 int data_fabric_find_unused_mmio_reg(void);
 void data_fabric_set_mmio_np(void);
+
+/* Inform the resource allocator about the usable IO and MMIO regions and PCI bus numbers */
+void amd_pci_domain_read_resources(struct device *domain);
+void amd_pci_domain_scan_bus(struct device *domain);
 
 #endif /* AMD_BLOCK_DATA_FABRIC_H */

@@ -92,6 +92,7 @@ config SPL_RW_AB_TABLE_FILE
 config SOC_AMD_COMMON_BLOCK_PSP_FUSE_SPL
 	default y if BOARD_GOOGLE_WINTERHOLD
 	default y if BOARD_GOOGLE_FROSTFLOW
+	default y if BOARD_GOOGLE_MARKARTH
 	default n
 
 config FMDFILE

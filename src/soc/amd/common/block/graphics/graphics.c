@@ -157,11 +157,21 @@ static void graphics_set_resources(struct device *const dev)
 		return;
 	}
 	rom = pci_rom_probe(dev);
-	if (rom == NULL)
+	if (rom == NULL) {
+		printk(BIOS_ERR, "%s: Unable to find ROM for %s\n",
+		       __func__, dev_path(dev));
+		timestamp_add_now(TS_OPROM_COPY_END);
 		return;
+	}
+
 	ram = pci_rom_load(dev, rom);
-	if (ram == NULL)
-		return;
+	if (ram == NULL) {
+		printk(BIOS_ERR, "%s: Unable to load ROM for %s\n",
+		       __func__, dev_path(dev));
+	}
+
+	pci_rom_free(rom);
+
 	timestamp_add_now(TS_OPROM_COPY_END);
 }
 

@@ -737,6 +737,13 @@ struct soc_intel_alderlake_config {
 	 * Set this to 1 in order to reduce BasicMemoryTest size
 	 */
 	bool lower_basic_mem_test_size;
+
+	/*
+	 * Enable or Disable SaGV reordering operation.
+	 * Default is set to 0, SaGV reordering enabled.
+	 * Set this to 1 in order to disable SaGV reordering.
+	 */
+	bool disable_sagv_reorder;
 };
 
 typedef struct soc_intel_alderlake_config config_t;

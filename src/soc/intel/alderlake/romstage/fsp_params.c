@@ -160,6 +160,7 @@ static void fill_fspm_mrc_params(FSP_M_CONFIG *m_cfg,
 	}
 #if CONFIG(SOC_INTEL_RAPTORLAKE)
 	m_cfg->LowerBasicMemTestSize = config->lower_basic_mem_test_size;
+	m_cfg->DisableSagvReorder = config->disable_sagv_reorder;
 #endif
 }
 

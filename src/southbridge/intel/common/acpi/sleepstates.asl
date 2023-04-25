@@ -1,14 +1,31 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-Name(\_S0, Package(){0x0,0x0,0x0,0x0})
-#if !CONFIG(HAVE_ACPI_RESUME)
-#if !CONFIG(ACPI_S1_NOT_SUPPORTED)
-Name(\_S1, Package(){0x1,0x0,0x0,0x0})
-#endif
+/* S1 support: bit 0, S2 Support: bit 1, etc. S0 & S5 assumed */
+#if CONFIG(HAVE_ACPI_RESUME)
+Name (SSFG, 0x0D)
 #else
-Name(\_S3, Package(){0x5,0x0,0x0,0x0})
+Name (SSFG, 0x09)
 #endif
-#if !CONFIG(DISABLE_ACPI_HIBERNATE)
-Name(\_S4, Package(){0x6,0x0,0x0,0x0})
-#endif
-Name(\_S5, Package(){0x7,0x0,0x0,0x0})
+
+If (CONFIG(ACPI_S1_NOT_SUPPORTED)) {
+	SSFG &= 0xfe
+}
+
+If (CONFIG(DISABLE_ACPI_HIBERNATE)) {
+	SSFG &= 0xf7
+}
+
+/* Supported sleep states: */
+Name(\_S0, Package () {0x00, 0x00, 0x00, 0x00} )	/* (S0) - working state */
+
+If (SSFG & 0x01) {
+	Name(\_S1, Package () {0x01, 0x00, 0x00, 0x00} )	/* (S1) - sleeping w/CPU context */
+}
+If (SSFG & 0x04) {
+	Name(\_S3, Package () {0x05, 0x00, 0x00, 0x00} )	/* (S3) - Suspend to RAM */
+}
+If (SSFG & 0x08) {
+	Name(\_S4, Package () {0x06, 0x04, 0x00, 0x00} )	/* (S4) - Suspend to Disk */
+}
+
+Name(\_S5, Package () {0x07, 0x00, 0x00, 0x00} )	/* (S5) - Soft Off */

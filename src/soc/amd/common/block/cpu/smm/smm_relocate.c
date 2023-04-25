@@ -6,6 +6,7 @@
 #include <amdblocks/smm.h>
 #include <console/console.h>
 #include <cpu/amd/amd64_save_state.h>
+#include <cpu/amd/microcode.h>
 #include <cpu/amd/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/cpu.h>
@@ -22,6 +23,8 @@ static void pre_mp_init(void)
 	else
 		x86_setup_mtrrs_with_detect();
 	x86_mtrr_check();
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_UCODE))
+		amd_load_microcode_from_cbfs();
 }
 
 static void get_smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
@@ -83,10 +86,17 @@ static void smm_relocation_handler(void)
 	lock_smm();
 }
 
+static void post_mp_init(void)
+{
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_UCODE))
+		amd_free_microcode();
+	global_smi_enable();
+}
+
 const struct mp_ops amd_mp_ops_with_smm = {
 	.pre_mp_init = pre_mp_init,
 	.get_cpu_count = get_cpu_count,
 	.get_smm_info = get_smm_info,
 	.per_cpu_smm_trigger = smm_relocation_handler,
-	.post_mp_init = global_smi_enable,
+	.post_mp_init = post_mp_init,
 };

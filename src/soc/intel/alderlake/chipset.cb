@@ -96,6 +96,9 @@ chip soc/intel/alderlake
 	# Disable SaGV reordering operation to start with SaGV point 4 and reduce boot time.
 	register "disable_sagv_reorder" = "true"
 
+	# Disable hwp scalability tracking.
+	register "enable_hwp_scalability_tracking" = "false"
+
 	# NOTE: if any variant wants to override this value, use the same format
 	# as register "common_soc_config.pch_thermal_trip" = "value", instead of
 	# putting it under register "common_soc_config" in overridetree.cb file.

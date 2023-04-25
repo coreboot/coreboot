@@ -1011,6 +1011,11 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 		s_cfg->PkgCStateDemotion = 0;
 	else
 		s_cfg->PkgCStateDemotion = !config->disable_package_c_state_demotion;
+
+	if (cpu_id == CPUID_RAPTORLAKE_P_J0 || cpu_id == CPUID_RAPTORLAKE_P_Q0)
+		s_cfg->C1e = 0;
+	else
+		s_cfg->C1e = 1;
 }
 
 static void fill_fsps_irq_params(FSP_S_CONFIG *s_cfg,

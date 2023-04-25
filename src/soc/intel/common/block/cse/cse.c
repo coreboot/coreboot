@@ -1441,15 +1441,17 @@ static void cse_final(struct device *dev)
 	if (CONFIG(SOC_INTEL_STORE_CSE_FW_VERSION))
 		intel_cse_get_rw_version();
 	/*
-	 * SoC user can have two options for sending EOP:
+	 * SoC user can have three options for sending EOP:
 	 * 1. Choose to send EOP late
 	 * 2. Choose to send EOP cmd asynchronously
+	 * 3. Choose to send EOP cmd from payload i.e. skip here
 	 *
 	 * In case of sending EOP in asynchronous mode, the EOP command
 	 * has most likely not been completed yet. The finalization steps
 	 * will be run once the EOP command has successfully been completed.
 	 */
 	if (CONFIG(SOC_INTEL_CSE_SEND_EOP_LATE) ||
+	    CONFIG(SOC_INTEL_CSE_SEND_EOP_BY_PAYLOAD) ||
 	    CONFIG(SOC_INTEL_CSE_SEND_EOP_ASYNC))
 		return;
 

@@ -309,6 +309,11 @@ void cse_send_end_of_post(void)
 
 static void send_cse_eop_with_late_finalize(void *unused)
 {
+	if (CONFIG(SOC_INTEL_CSE_SEND_EOP_BY_PAYLOAD)) {
+		printk(BIOS_INFO, "Deferring CSE EOP to payload\n");
+		return;
+	}
+
 	if (is_cse_eop_supported())
 		do_send_end_of_post(true);
 

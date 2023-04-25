@@ -134,6 +134,20 @@ config SOC_INTEL_CSE_SEND_EOP_ASYNC
 	  request is posted (at CSE .final device operation) and the
 	  time coreboot check for its completion (BS_PAYLOAD_LOAD).
 
+config SOC_INTEL_CSE_SEND_EOP_BY_PAYLOAD
+	bool
+	depends on SOC_INTEL_COMMON_BLOCK_CSE
+	depends on !SOC_INTEL_CSE_SEND_EOP_LATE
+	depends on !SOC_INTEL_CSE_SEND_EOP_EARLY
+	depends on !SOC_INTEL_CSE_SEND_EOP_ASYNC
+	depends on !DISABLE_HECI1_AT_PRE_BOOT
+	help
+	  Use this config to specify that the payload will send the End Of Post (EOP) instead
+	  of coreboot.
+
+	  In this case, the HECI interface needs to stay visible and the payload must support
+	  sending commands to CSE.
+
 config SOC_INTEL_CSE_LITE_SKU
 	bool
 	default n

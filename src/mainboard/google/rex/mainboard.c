@@ -41,6 +41,12 @@ static void mainboard_init(void *chip_info)
 	fw_config_gpio_padbased_override(padbased_table);
 	gpio_configure_pads_with_padbased(padbased_table);
 	free(padbased_table);
+	variant_devtree_update();
+}
+
+void __weak variant_devtree_update(void)
+{
+	/* Override dev tree settings per board */
 }
 
 void __weak variant_generate_s0ix_hook(enum s0ix_entry entry)

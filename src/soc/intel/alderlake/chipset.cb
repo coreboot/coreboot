@@ -93,6 +93,9 @@ chip soc/intel/alderlake
 	# Reduce the size of BasicMemoryTests to speed up the boot time.
 	register "lower_basic_mem_test_size" = "true"
 
+	# Disable SaGV reordering operation to start with SaGV point 4 and reduce boot time.
+	register "disable_sagv_reorder" = "true"
+
 	# NOTE: if any variant wants to override this value, use the same format
 	# as register "common_soc_config.pch_thermal_trip" = "value", instead of
 	# putting it under register "common_soc_config" in overridetree.cb file.

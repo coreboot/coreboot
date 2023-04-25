@@ -630,39 +630,51 @@ static bool read_ver_field(const char *start, char **curr, size_t size, uint16_t
 	return true;
 }
 
+static enum cb_err get_cse_ver_from_cbfs(struct fw_version *cbfs_rw_version)
+{
+	char *version_str, *cbfs_ptr;
+	size_t size;
+
+	if (cbfs_rw_version == NULL)
+		return CB_ERR;
+
+	cbfs_ptr = cbfs_map(CONFIG_SOC_INTEL_CSE_RW_VERSION_CBFS_NAME, &size);
+	version_str = cbfs_ptr;
+	if (!version_str) {
+		printk(BIOS_ERR, "cse_lite: Failed to get %s\n",
+			  CONFIG_SOC_INTEL_CSE_RW_VERSION_CBFS_NAME);
+		return CB_ERR;
+	}
+
+	if (!read_ver_field(version_str, &cbfs_ptr, size, &cbfs_rw_version->major) ||
+	    !read_ver_field(version_str, &cbfs_ptr, size, &cbfs_rw_version->minor) ||
+		!read_ver_field(version_str, &cbfs_ptr, size, &cbfs_rw_version->hotfix) ||
+		!read_ver_field(version_str, &cbfs_ptr, size, &cbfs_rw_version->build)) {
+		cbfs_unmap(version_str);
+		return CB_ERR;
+	}
+
+	cbfs_unmap(version_str);
+	return CB_SUCCESS;
+}
+
 static enum cse_update_status cse_check_update_status(const struct cse_bp_info *cse_bp_info,
-						      struct region_device *target_rdev)
+							struct region_device *target_rdev)
 {
 	int ret;
 	struct fw_version cbfs_rw_version;
-	char *version_str, *ptr;
-	size_t size;
 
 	if (!cse_is_rw_bp_sign_valid(target_rdev))
 		return CSE_UPDATE_CORRUPTED;
 
-	ptr = version_str = cbfs_map(CONFIG_SOC_INTEL_CSE_RW_VERSION_CBFS_NAME, &size);
-	if (!version_str) {
-		printk(BIOS_ERR, "cse_lite: Failed to get %s\n",
-		       CONFIG_SOC_INTEL_CSE_RW_VERSION_CBFS_NAME);
+	if (get_cse_ver_from_cbfs(&cbfs_rw_version) == CB_ERR)
 		return CSE_UPDATE_METADATA_ERROR;
-	}
-
-	if (!read_ver_field(version_str, &ptr, size, &cbfs_rw_version.major) ||
-	    !read_ver_field(version_str, &ptr, size, &cbfs_rw_version.minor) ||
-	    !read_ver_field(version_str, &ptr, size, &cbfs_rw_version.hotfix) ||
-	    !read_ver_field(version_str, &ptr, size, &cbfs_rw_version.build)) {
-		cbfs_unmap(version_str);
-		return CSE_UPDATE_METADATA_ERROR;
-	}
 
 	printk(BIOS_DEBUG, "cse_lite: CSE CBFS RW version : %d.%d.%d.%d\n",
 			cbfs_rw_version.major,
 			cbfs_rw_version.minor,
 			cbfs_rw_version.hotfix,
 			cbfs_rw_version.build);
-
-	cbfs_unmap(version_str);
 
 	ret = cse_compare_sub_part_version(&cbfs_rw_version, cse_get_rw_version(cse_bp_info));
 	if (ret == 0)

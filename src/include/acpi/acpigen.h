@@ -695,4 +695,8 @@ void acpigen_resource_qword(u16 res_type, u16 gen_flags, u16 type_flags,
 /* Emits Notify(namestr, value) */
 void acpigen_notify(const char *namestr, int value);
 
+/* Create a namespace \OSFG to override the enabled sleep states */
+void acpigen_ssdt_override_sleep_states(bool enable_s1, bool enable_s2, bool enable_s3,
+					bool enable_s4);
+
 #endif /* __ACPI_ACPIGEN_H__ */

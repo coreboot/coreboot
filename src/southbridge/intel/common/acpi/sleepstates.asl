@@ -15,6 +15,11 @@ If (CONFIG(DISABLE_ACPI_HIBERNATE)) {
 	SSFG &= 0xf7
 }
 
+External (\OSFG, IntObj)
+If (CondRefOf(\OSFG)) {
+	SSFG = \OSFG
+}
+
 /* Supported sleep states: */
 Name(\_S0, Package () {0x00, 0x00, 0x00, 0x00} )	/* (S0) - working state */
 

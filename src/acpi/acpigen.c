@@ -2364,3 +2364,17 @@ void acpigen_write_delay_until_namestr_int(uint32_t wait_ms, const char *name, u
 	acpigen_emit_byte(LOCAL7_OP);
 	acpigen_pop_len(); /* While */
 }
+
+void acpigen_ssdt_override_sleep_states(bool enable_s1, bool enable_s2, bool enable_s3,
+					bool enable_s4)
+{
+	assert(!(enable_s1 && CONFIG(ACPI_S1_NOT_SUPPORTED)));
+	assert(!(enable_s3 && !CONFIG(HAVE_ACPI_RESUME)));
+	assert(!(enable_s4 && CONFIG(DISABLE_ACPI_HIBERNATE)));
+
+	acpigen_write_scope("\\");
+	uint32_t sleep_enable = (enable_s1 << 0) | (enable_s2 << 1)
+		| (enable_s3 << 2) | (enable_s4 << 3);
+	acpigen_write_name_dword("OSFG", sleep_enable);
+	acpigen_pop_len();
+}

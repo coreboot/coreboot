@@ -744,6 +744,13 @@ struct soc_intel_alderlake_config {
 	 * Set this to 1 in order to disable SaGV reordering.
 	 */
 	bool disable_sagv_reorder;
+
+	/*
+	 * Enable or Disable hwp scalability tracking.
+	 * Default is set to 1.
+	 * Set this to 0 in order to disable hwp scalability tracking.
+	 */
+	bool enable_hwp_scalability_tracking;
 };
 
 typedef struct soc_intel_alderlake_config config_t;

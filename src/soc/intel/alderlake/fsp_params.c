@@ -1024,6 +1024,10 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 		s_cfg->C1e = 0;
 	else
 		s_cfg->C1e = 1;
+
+#if CONFIG(SOC_INTEL_RAPTORLAKE)
+	s_cfg->EnableHwpScalabilityTracking = config->enable_hwp_scalability_tracking;
+#endif
 }
 
 static void fill_fsps_irq_params(FSP_S_CONFIG *s_cfg,

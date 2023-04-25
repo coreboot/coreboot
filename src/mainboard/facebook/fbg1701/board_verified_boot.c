@@ -60,6 +60,10 @@ const verify_item_t postcar_verify_list[] = {
  * romstage verify list
  */
 static const verify_item_t ram_stage_additional_list[] = {
+#if CONFIG(INCLUDE_CONFIG_FILE)
+	{ VERIFY_FILE, "config", { { NULL, CBFS_TYPE_RAW } },
+		HASH_IDX_CONFIG, MBOOT_PCR_INDEX_0 },
+#endif
 	{ VERIFY_FILE, OP_ROM_VBT, { { NULL, CBFS_TYPE_RAW } },
 		HASH_IDX_OPROM, MBOOT_PCR_INDEX_2 },
 #if CONFIG(BMP_LOGO)

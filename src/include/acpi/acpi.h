@@ -1308,9 +1308,6 @@ void preload_acpi_dsdt(void);
 unsigned long write_acpi_tables(unsigned long addr);
 unsigned long acpi_fill_madt(unsigned long current);
 unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long current);
-void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id);
-void acpi_write_bert(acpi_bert_t *bert, uintptr_t region, size_t length);
-void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt);
 
 void acpi_fill_fadt(acpi_fadt_t *fadt);
 void arch_fill_fadt(acpi_fadt_t *fadt);
@@ -1341,8 +1338,6 @@ int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr,
 int acpi_create_madt_ioapic_from_hw(acpi_madt_ioapic_t *ioapic, u32 addr);
 int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride,
 				 u8 bus, u8 source, u32 gsirq, u16 flags);
-
-void acpi_create_madt(acpi_madt_t *madt);
 
 unsigned long acpi_create_madt_one_lapic(unsigned long current, u32 cpu, u32 apic);
 unsigned long acpi_create_madt_lapics_with_nmis(unsigned long current);
@@ -1401,21 +1396,11 @@ void acpi_create_crat(struct acpi_crat_header *crat,
 		      unsigned long (*acpi_fill_crat)(struct acpi_crat_header *crat_struct,
 		      unsigned long current));
 
-void acpi_create_hpet(acpi_hpet_t *hpet);
 unsigned long acpi_write_hpet(const struct device *device, unsigned long start,
 			      acpi_rsdp_t *rsdp);
 
 /* cpu/intel/speedstep/acpi.c */
 void generate_cpu_entries(const struct device *device);
-
-void acpi_create_mcfg(acpi_mcfg_t *mcfg);
-
-void acpi_create_facs(acpi_facs_t *facs);
-
-void acpi_create_dbg2(acpi_dbg2_header_t *dbg2_header,
-		      int port_type, int port_subtype,
-		      acpi_addr_t *address, uint32_t address_size,
-		      const char *device_path);
 
 unsigned long acpi_write_dbg2_pci_uart(acpi_rsdp_t *rsdp, unsigned long current,
 				const struct device *dev, uint8_t access_size);
@@ -1455,7 +1440,6 @@ void acpi_write_hest(acpi_hest_t *hest,
 unsigned long acpi_create_hest_error_source(acpi_hest_t *hest,
 	acpi_hest_esd_t *esd, u16 type, void *data, u16 len);
 
-void acpi_create_lpit(acpi_lpit_t *lpit);
 unsigned long acpi_create_lpi_desc_ncst(acpi_lpi_desc_ncst_t *lpi_desc, uint16_t uid);
 
 /* chipsets that select ACPI_BERT must implement this function */

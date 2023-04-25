@@ -288,7 +288,7 @@ unsigned long acpi_create_madt_lapics_with_nmis(unsigned long current)
 	return current;
 }
 
-void acpi_create_madt(acpi_madt_t *madt)
+static void acpi_create_madt(acpi_madt_t *madt)
 {
 	acpi_header_t *header = &(madt->header);
 	unsigned long current = (unsigned long)madt + sizeof(acpi_madt_t);
@@ -333,7 +333,7 @@ static unsigned long acpi_fill_mcfg(unsigned long current)
 }
 
 /* MCFG is defined in the PCI Firmware Specification 3.0. */
-void acpi_create_mcfg(acpi_mcfg_t *mcfg)
+static void acpi_create_mcfg(acpi_mcfg_t *mcfg)
 {
 	acpi_header_t *header = &(mcfg->header);
 	unsigned long current = (unsigned long)mcfg + sizeof(acpi_mcfg_t);
@@ -517,7 +517,7 @@ static void acpi_ssdt_write_cbtable(void)
 	acpigen_pop_len();
 }
 
-void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id)
+static void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id)
 {
 	unsigned long current = (unsigned long)ssdt + sizeof(acpi_header_t);
 
@@ -989,7 +989,7 @@ void acpi_create_slit(acpi_slit_t *slit,
 }
 
 /* http://www.intel.com/hardwaredesign/hpetspec_1.pdf */
-void acpi_create_hpet(acpi_hpet_t *hpet)
+static void acpi_create_hpet(acpi_hpet_t *hpet)
 {
 	acpi_header_t *header = &(hpet->header);
 	acpi_addr_t *addr = &(hpet->addr);
@@ -1330,7 +1330,7 @@ unsigned long acpi_write_hpet(const struct device *device, unsigned long current
 	return current;
 }
 
-void acpi_create_dbg2(acpi_dbg2_header_t *dbg2,
+static void acpi_create_dbg2(acpi_dbg2_header_t *dbg2,
 		      int port_type, int port_subtype,
 		      acpi_addr_t *address, uint32_t address_size,
 		      const char *device_path)
@@ -1451,7 +1451,7 @@ unsigned long acpi_write_dbg2_pci_uart(acpi_rsdp_t *rsdp, unsigned long current,
 	return current;
 }
 
-void acpi_create_facs(acpi_facs_t *facs)
+static void acpi_create_facs(acpi_facs_t *facs)
 {
 	memset((void *)facs, 0, sizeof(acpi_facs_t));
 
@@ -1628,7 +1628,7 @@ void acpi_write_hest(acpi_hest_t *hest,
 }
 
 /* ACPI 3.0b */
-void acpi_write_bert(acpi_bert_t *bert, uintptr_t region, size_t length)
+static void acpi_write_bert(acpi_bert_t *bert, uintptr_t region, size_t length)
 {
 	acpi_header_t *header = &(bert->header);
 
@@ -1656,7 +1656,7 @@ __weak void arch_fill_fadt(acpi_fadt_t *fadt) { }
 __weak void soc_fill_fadt(acpi_fadt_t *fadt) { }
 __weak void mainboard_fill_fadt(acpi_fadt_t *fadt) { }
 
-void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
+static void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 {
 	acpi_header_t *header = &(fadt->header);
 
@@ -1709,7 +1709,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	    acpi_checksum((void *)fadt, header->length);
 }
 
-void acpi_create_lpit(acpi_lpit_t *lpit)
+static void acpi_create_lpit(acpi_lpit_t *lpit)
 {
 	acpi_header_t *header = &(lpit->header);
 	unsigned long current = (unsigned long)lpit + sizeof(acpi_lpit_t);

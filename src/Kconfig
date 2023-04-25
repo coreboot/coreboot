@@ -711,6 +711,12 @@ config MAX_CPUS
 
 source "src/console/Kconfig"
 
+config ACPI_S1_NOT_SUPPORTED
+	bool
+	default n
+	help
+	  Set this to 'y' on platforms that do not support ACPI S1 state.
+
 config HAVE_ACPI_RESUME
 	bool
 	default n

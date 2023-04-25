@@ -4,6 +4,7 @@ config SOC_INTEL_COMMON_BLOCK_PMC
 	bool
 	select HAVE_POWER_STATE_AFTER_FAILURE
 	select HAVE_POWER_STATE_PREVIOUS_AFTER_FAILURE
+	select ACPI_S1_NOT_SUPPORTED
 	help
 	  Intel Processor common code for Power Management controller(PMC)
 	  subsystem

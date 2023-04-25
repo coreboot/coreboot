@@ -10,6 +10,10 @@ chip soc/intel/alderlake
 
 	register "sagv" = "SaGv_Enabled"
 
+	# As per Intel Advisory doc#723158, the change is required to prevent possible
+	# display flickering issue.
+	register "disable_dynamic_tccold_handshake" = "true"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

@@ -11,5 +11,5 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *supd)
 	 * third-party drives are detected.
 	 */
 	if (get_uint_option("pci_hot_plug", 0) == 1)
-		supd->PcieRpHotPlug[4] = 1;
+		supd->PcieRpHotPlug[8] = 1;
 }

@@ -14,8 +14,8 @@ External (\_SB.PCI0.PMC.IPCS, MethodObj)
 #else
 #define GPIO_1V8_PWR_EN		GPP_E11
 
-#define GPIO_NV33_PWR_EN	GPP_E2
-#define GPIO_NV33_PG		GPP_E1
+#define GPIO_NV33_PWR_EN	GPP_E1
+#define GPIO_NV33_PG		GPP_E2
 #endif
 
 #define GPIO_1V8_PG		GPP_E20

@@ -111,6 +111,11 @@ Method(_CRS, 0) {
 	Local0 -= TOM1
 	MM1L = Local0
 
+	CreateWordField(CRES, ^PSB0._MAX, BMAX)
+	CreateWordField(CRES, ^PSB0._LEN, BLEN)
+	BMAX = CONFIG_ECAM_MMCONF_BUS_NUMBER - 1
+	BLEN = CONFIG_ECAM_MMCONF_BUS_NUMBER
+
 	Return (CRES) /* note to change the Name buffer */
 } /* end of Method(_SB.PCI0._CRS) */
 

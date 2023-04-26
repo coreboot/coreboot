@@ -102,7 +102,8 @@ typedef struct __packed {
 	/** Offset 0x04E5**/	uint32_t                    vrm_soc_current_limit_mA;
 	/** Offset 0x04E9**/	uint8_t                     fch_usb_3_port_force_gen1;
 	/** Offset 0x04EA**/	uint8_t                     edp_panel_t8_ms;
-	/** Offset 0x04EB**/	uint8_t                     UnusedUpdSpace2[277];
+	/** Offset 0x04EB**/	uint8_t                     edp_panel_t9_ms;
+	/** Offset 0x04EC**/	uint8_t                     UnusedUpdSpace2[276];
 	/** Offset 0x0600**/	uint16_t                    UpdTerminator;
 } FSP_M_CONFIG;
 

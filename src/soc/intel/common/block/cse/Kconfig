@@ -256,9 +256,8 @@ config SOC_INTEL_CSE_LITE_SYNC_IN_ROMSTAGE
 config SOC_INTEL_CSE_LITE_SYNC_IN_RAMSTAGE
 	bool
 	default n
-	depends on SOC_INTEL_CSE_LITE_COMPRESS_ME_RW
 	help
-	 Use this option for CSE FW Update when compressed blobs are used.
+	 Use this option if CSE RW update needs to be triggered during RAMSTAGE.
 
 config SOC_INTEL_CSE_HAVE_SPEC_SUPPORT
 	bool

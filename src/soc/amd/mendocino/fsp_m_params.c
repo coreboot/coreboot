@@ -170,7 +170,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	}
 
 	mcfg->dxio_tx_vboost_enable = config->dxio_tx_vboost_enable;
-	mcfg->pwr_on_vary_bl_to_blon = config->pwr_on_vary_bl_to_blon;
+	mcfg->edp_panel_t8_ms = config->edp_panel_t8_ms;
 
 	fsp_fill_pcie_ddi_descriptors(mcfg);
 	fsp_assign_ioapic_upds(mcfg);

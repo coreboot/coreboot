@@ -177,9 +177,8 @@ struct soc_amd_mendocino_config {
 	/* Force USB3 port to gen1, bit0 - controller0 Port0, bit1 - Port1 */
 	union usb3_force_gen1 usb3_port_force_gen1;
 
-	/* Set for eDP power sequence adjustment timing from varybl to blon. The unit is set to
-	   one per 4ms*/
-	uint8_t pwr_on_vary_bl_to_blon;
+	/* Set for eDP power sequence adjustment timing T8 (from varybl to blon). */
+	uint8_t edp_panel_t8_ms;
 
 };
 

@@ -205,7 +205,7 @@ void fsp_print_guid(int level, const void *base)
 	mid[0] = read16(id + 4);
 	mid[1] = read16(id + 6);
 
-	printk(level, "%08x-%04x-%04x-%02x%02x%02x%02x%02x%02x%02x%02x",
+	printk(level, "%08x-%04x-%04x-%02x%02x%02x%02x%02x%02x%02x%02x\n",
 	       big, mid[0], mid[1],
 	       id[8], id[9], id[10], id[11], id[12], id[13], id[14], id[15]);
 }

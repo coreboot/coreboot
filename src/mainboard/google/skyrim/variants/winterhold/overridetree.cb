@@ -114,6 +114,7 @@ chip soc/amd/mendocino
 
 		# The unit is set to one per ms
 		register "edp_panel_t8_ms" = "112"
+		register "edp_panel_t9_ms" = "8"
 
 		device ref gpp_bridge_1 on
 			# Required so the NVMe gets placed into D3 when entering S0i3.

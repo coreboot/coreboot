@@ -10,6 +10,7 @@
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <program_loading.h>
+#include <soc/intel/common/reset.h>
 #include <soc/intel/common/vbt.h>
 #include <stage_cache.h>
 #include <string.h>
@@ -194,6 +195,8 @@ static void do_silicon_init(struct fsp_header *hdr)
 		multi_phase_params.phase_index = i;
 		multi_phase_params.multi_phase_param_ptr = NULL;
 		status = multi_phase_si_init(&multi_phase_params);
+		if (CONFIG(FSP_MULTIPHASE_SI_INIT_RETURN_BROKEN))
+			status = fsp_get_pch_reset_status();
 		fsps_return_value_handler(FSP_MULTI_PHASE_SI_INIT_EXECUTE_PHASE_API, status);
 	}
 	timestamp_add_now(TS_FSP_MULTI_PHASE_SI_INIT_END);

@@ -238,6 +238,7 @@ config MAINBOARD_PART_NUMBER
 	default "Hades" if BOARD_GOOGLE_HADES
 	default "Uldren" if BOARD_GOOGLE_ULDREN
 	default "Yavilla" if BOARD_GOOGLE_YAVILLA
+	default "Gothrax" if BOARD_GOOGLE_GOTHRAX
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -285,6 +286,7 @@ config VARIANT_DIR
 	default "hades" if BOARD_GOOGLE_HADES
 	default "uldren" if BOARD_GOOGLE_ULDREN
 	default "yavilla" if BOARD_GOOGLE_YAVILLA
+	default "gothrax" if BOARD_GOOGLE_GOTHRAX
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC if !BOARD_GOOGLE_BASEBOARD_NISSA

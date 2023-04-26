@@ -27,6 +27,7 @@ fw_config
 		option USB4_KB8010		2
 		option USB4_ANX7452		3
 		option USB4_HAYDEN_BRIDGE	4
+		option USB4_ANX7452_V2		5
 	end
 	field FP 15
 		option FP_PRESENT		0

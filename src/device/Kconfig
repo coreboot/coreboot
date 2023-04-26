@@ -703,12 +703,10 @@ if PCIEXP_HOTPLUG
 
 config PCIEXP_HOTPLUG_BUSES
 	int "PCI Express Hotplug Buses"
-	default  8 if ECAM_MMCONF_SUPPORT && ECAM_MMCONF_BUS_NUMBER <=  64
-	default 16 if ECAM_MMCONF_SUPPORT && ECAM_MMCONF_BUS_NUMBER <= 128
-	default 32
+	default 8
 	help
 	  This is the number of buses allocated for hotplug PCI express
-	  bridges, for use by hotplugged child devices. The default is 32
+	  bridges, for use by hotplugged child devices. The default is 8
 	  buses.
 
 config PCIEXP_HOTPLUG_MEM
@@ -745,11 +743,11 @@ config PCIEXP_HOTPLUG_PREFETCH_MEM_BELOW_4G
 
 config PCIEXP_HOTPLUG_IO
 	hex "PCI Express Hotplug I/O Space"
-	default 0x2000
+	default 0x800
 	help
 	  This is the amount of I/O space to allocate to hot-plug PCI
 	  express bridges, for use by hotplugged child devices. The default
-	  is 8 KiB.
+	  is 2 KiB.
 
 endif # PCIEXP_HOTPLUG
 

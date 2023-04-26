@@ -7,6 +7,9 @@
 #include <arch/io.h>
 #include <device/pci_type.h>
 
+#define PCI_IO_CONFIG_INDEX	0xcf8
+#define PCI_IO_CONFIG_DATA	0xcfc
+
 static __always_inline
 uint32_t pci_io_encode_addr(pci_devfn_t dev, uint16_t reg)
 {
@@ -25,48 +28,48 @@ static __always_inline
 uint8_t pci_io_read_config8(pci_devfn_t dev, uint16_t reg)
 {
 	uint32_t addr = pci_io_encode_addr(dev, reg);
-	outl(addr, 0xCF8);
-	return inb(0xCFC + (reg & 3));
+	outl(addr, PCI_IO_CONFIG_INDEX);
+	return inb(PCI_IO_CONFIG_DATA + (reg & 3));
 }
 
 static __always_inline
 uint16_t pci_io_read_config16(pci_devfn_t dev, uint16_t reg)
 {
 	uint32_t addr = pci_io_encode_addr(dev, reg);
-	outl(addr, 0xCF8);
-	return inw(0xCFC + (reg & 2));
+	outl(addr, PCI_IO_CONFIG_INDEX);
+	return inw(PCI_IO_CONFIG_DATA + (reg & 2));
 }
 
 static __always_inline
 uint32_t pci_io_read_config32(pci_devfn_t dev, uint16_t reg)
 {
 	uint32_t addr = pci_io_encode_addr(dev, reg);
-	outl(addr, 0xCF8);
-	return inl(0xCFC);
+	outl(addr, PCI_IO_CONFIG_INDEX);
+	return inl(PCI_IO_CONFIG_DATA);
 }
 
 static __always_inline
 void pci_io_write_config8(pci_devfn_t dev, uint16_t reg, uint8_t value)
 {
 	uint32_t addr = pci_io_encode_addr(dev, reg);
-	outl(addr, 0xCF8);
-	outb(value, 0xCFC + (reg & 3));
+	outl(addr, PCI_IO_CONFIG_INDEX);
+	outb(value, PCI_IO_CONFIG_DATA + (reg & 3));
 }
 
 static __always_inline
 void pci_io_write_config16(pci_devfn_t dev, uint16_t reg, uint16_t value)
 {
 	uint32_t addr = pci_io_encode_addr(dev, reg);
-	outl(addr, 0xCF8);
-	outw(value, 0xCFC + (reg & 2));
+	outl(addr, PCI_IO_CONFIG_INDEX);
+	outw(value, PCI_IO_CONFIG_DATA + (reg & 2));
 }
 
 static __always_inline
 void pci_io_write_config32(pci_devfn_t dev, uint16_t reg, uint32_t value)
 {
 	uint32_t addr = pci_io_encode_addr(dev, reg);
-	outl(addr, 0xCF8);
-	outl(value, 0xCFC);
+	outl(addr, PCI_IO_CONFIG_INDEX);
+	outl(value, PCI_IO_CONFIG_DATA);
 }
 
 #if !CONFIG(ECAM_MMCONF_SUPPORT)

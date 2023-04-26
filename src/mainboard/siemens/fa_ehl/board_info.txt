@@ -1,0 +1,5 @@
+Vendor name: Siemens
+Board name: FA EHL
+Category: misc
+ROM protocol: SPI
+ROM socketed: n

@@ -179,6 +179,8 @@ struct soc_amd_mendocino_config {
 
 	/* Set for eDP power sequence adjustment timing T8 (from varybl to blon). */
 	uint8_t edp_panel_t8_ms;
+	/* Set for eDP power sequence adjustment timing T9 (from bloff to varybloff). */
+	uint8_t edp_panel_t9_ms;
 
 };
 

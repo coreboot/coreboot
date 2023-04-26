@@ -98,16 +98,9 @@ Method(_CRS, 0) {
 	CreateDWordField(CRES, ^MMIO._BAS, MM1B)
 	CreateDWordField(CRES, ^MMIO._LEN, MM1L)
 
-	/*
-	 * Declare memory between TOM1 and 4GB as available
-	 * for PCI MMIO.
-	 * Use ShiftLeft to avoid 64bit constant (for XP).
-	 * This will work even if the OS does 32bit arithmetic, as
-	 * 32bit (0x00000000 - TOM1) will wrap and give the same
-	 * result as 64bit (0x100000000 - TOM1).
-	 */
+	/* Declare memory between TOM1 and MMCONF as available for PCI MMIO. */
 	MM1B = TOM1
-	Local0 = 0x10000000 << 4
+	Local0 = CONFIG_ECAM_MMCONF_BASE_ADDRESS
 	Local0 -= TOM1
 	MM1L = Local0
 

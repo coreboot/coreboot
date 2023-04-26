@@ -389,4 +389,17 @@ config SAVE_MRC_AFTER_FSPS
 	  Save MRC training data after FSP-S. Select this on platforms that generate MRC
 	  cache HOB data as part of FSP-S rather than FSP-M.
 
+config FSP_MULTIPHASE_SI_INIT_RETURN_BROKEN
+	bool
+	default n
+	depends on PLATFORM_USES_FSP2_2
+	help
+	  Select this config for Intel SoC platform where FSP MultiPhaseSiInit API is unable
+	  to return ERROR status properly.
+
+	  The config option will be selected based on the target SoC platform and if the
+	  problem existed inside the FSP MultiPhaseSiInit. At present the problem has only
+	  reported with Alder Lake and Raptor Lake FSP where MultiPhaseSiInit API is unable
+	  to return any ERROR status.
+
 endif

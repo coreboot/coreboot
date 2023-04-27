@@ -198,7 +198,7 @@ chip soc/intel/alderlake
 				register "generic.hid" = ""LM230001""
 				register "generic.desc" = ""LM238 Touchscreen""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
-				register "generic.probed" = "1"
+				register "generic.detect" = "1"
 				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C6)"
 				register "generic.enable_delay_ms" = "6"
 				register "generic.has_power_resource" = "1"

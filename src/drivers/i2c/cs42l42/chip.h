@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#ifndef __DRIVERS_I2C_CS42L42_CHIP_H__
+#define __DRIVERS_I2C_CS42L42_CHIP_H__
+
 #include <acpi/acpi_device.h>
 
 enum cs42l42_ts_dbnc_rise {
@@ -117,3 +120,5 @@ struct drivers_i2c_cs42l42_config {
 	 */
 	bool hs_bias_sense_disable;
 };
+
+#endif /* __DRIVERS_I2C_CS42L42_CHIP_H__ */

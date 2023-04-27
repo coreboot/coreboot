@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#ifndef __DRIVERS_GENERIC_NAU8315_CHIP_H__
+#define __DRIVERS_GENERIC_NAU8315_CHIP_H__
+
 #include <acpi/acpi_device.h>
 
 struct drivers_generic_nau8315_config {
@@ -12,3 +15,5 @@ struct drivers_generic_nau8315_config {
 	/* ENABLE GPIO */
 	struct acpi_gpio enable_gpio;
 };
+
+#endif /* __DRIVERS_GENERIC_NAU8315_CHIP_H__ */

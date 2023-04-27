@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#ifndef __DRIVERS_I2C_RTD2132_CHIP_H__
+#define __DRIVERS_I2C_RTD2132_CHIP_H__
+
 struct drivers_i2c_rtd2132_config {
 	/* Panel Power Sequencing. All units in ms. */
 	u16 t1; /* Delay from panel Vcc enable to LVDS output enable. */
@@ -32,3 +35,5 @@ struct drivers_i2c_rtd2132_config {
 	 */
 	u8 sscg_percent;
 };
+
+#endif /* __DRIVERS_I2C_RTD2132_CHIP_H__ */

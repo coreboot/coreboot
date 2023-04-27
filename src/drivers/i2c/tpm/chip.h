@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#ifndef __DRIVERS_I2C_TPM_CHIP_H__
+#define __DRIVERS_I2C_TPM_CHIP_H__
+
 #include <acpi/acpi_device.h>
 #include <device/i2c_simple.h>
 
@@ -18,3 +21,5 @@ struct drivers_i2c_tpm_config {
 	struct acpi_gpio irq_gpio;	/* GPIO interrupt */
 	enum tpm_power_managed_mode power_managed_mode;	/* TPM power managed mode */
 };
+
+#endif /* __DRIVERS_I2C_TPM_CHIP_H__ */

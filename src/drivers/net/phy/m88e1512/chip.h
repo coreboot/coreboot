@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#ifndef __DRIVERS_NET_PHY_M88E1512_CHIP_H__
+#define __DRIVERS_NET_PHY_M88E1512_CHIP_H__
+
 #include "m88e1512.h"
 
 struct drivers_net_phy_m88e1512_config {
@@ -15,3 +18,5 @@ struct drivers_net_phy_m88e1512_config {
 	unsigned char pmos_val;		/* Set PMOS calibration value */
 	unsigned char nmos_val;		/* Set NMOS calibration value */
 };
+
+#endif /* __DRIVERS_NET_PHY_M88E1512_CHIP_H__ */

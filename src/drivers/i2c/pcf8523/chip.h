@@ -2,6 +2,9 @@
 
 #include "pcf8523.h"
 
+#ifndef __DRIVERS_I2C_PCF8523_CHIP_H__
+#define __DRIVERS_I2C_PCF8523_CHIP_H__
+
 struct drivers_i2c_pcf8523_config {
 	unsigned char cap_sel;		/* Internal capacitor selection */
 	unsigned char second_int_en;	/* Enable IRQ for seconds */
@@ -29,3 +32,5 @@ struct drivers_i2c_pcf8523_config {
 	unsigned char user_day;		/* User day to set */
 	unsigned char user_weekday;	/* User weekday to set */
 };
+
+#endif /* __DRIVERS_I2C_PCF8523_CHIP_H__ */

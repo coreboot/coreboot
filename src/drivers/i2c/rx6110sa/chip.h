@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#ifndef __DRIVERS_I2C_RX6110SA_CHIP_H__
+#define __DRIVERS_I2C_RX6110SA_CHIP_H__
+
 #include "rx6110sa.h"
 
 struct drivers_i2c_rx6110sa_config {
@@ -25,3 +28,5 @@ struct drivers_i2c_rx6110sa_config {
 	unsigned char bks_off;
 	unsigned char iocut_en;		/* Disable backup of I/O circuit. */
 };
+
+#endif /* __DRIVERS_I2C_RX6110SA_CHIP_H__ */

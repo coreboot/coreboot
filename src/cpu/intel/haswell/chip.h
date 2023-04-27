@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#ifndef __CPU_INTEL_HASWELL_CHIP_H__
+#define __CPU_INTEL_HASWELL_CHIP_H__
+
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -35,3 +38,5 @@ struct cpu_intel_haswell_config {
 	/* Enable S0iX support */
 	bool s0ix_enable;
 };
+
+#endif /* __CPU_INTEL_HASWELL_CHIP_H__ */

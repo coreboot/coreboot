@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#ifndef __DRIVERS_I2C_NAU8825_CHIP_H__
+#define __DRIVERS_I2C_NAU8825_CHIP_H__
+
 #include <acpi/acpi_device.h>
 
 #define NAU8825_MAX_BUTTONS 8
@@ -102,3 +105,5 @@ struct drivers_i2c_nau8825_config {
 	 */
 	bool adcout_ds;
 };
+
+#endif /* __DRIVERS_I2C_NAU8825_CHIP_H__ */

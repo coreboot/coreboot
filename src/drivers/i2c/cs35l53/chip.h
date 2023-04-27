@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#ifndef __DRIVERS_I2C_CS35L53_CHIP_H__
+#define __DRIVERS_I2C_CS35L53_CHIP_H__
+
 #include <acpi/acpi_device.h>
 
 #define CS35L53_MAX_GPIOS 2
@@ -153,3 +156,5 @@ struct drivers_i2c_cs35l53_config {
 	 */
 	enum cs35l53_gpio2_src gpio2_src_select;
 };
+
+#endif /* __DRIVERS_I2C_CS35L53_CHIP_H__ */

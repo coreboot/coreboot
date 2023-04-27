@@ -197,6 +197,12 @@ static const struct pad_config romstage_gpio_table[] = {
 	/* A20 : EXT_PWR_GATE2# ==> WWAN_RST_L (set here for correct power sequencing) */
 	PAD_CFG_GPO(GPP_A20, 0, DEEP),
 
+	/* Enable touchscreen, hold in reset */
+	/* C0  : SMBCLK ==> EN_PP3300_TCHSCR */
+	PAD_CFG_GPO(GPP_C0, 1, DEEP),
+	/* C1  : SMBDATA ==> USI_RST_L */
+	PAD_CFG_GPO(GPP_C1, 0, DEEP),
+
 	/* D1  : ISH_GP1 ==> FP_RST_ODL */
 	PAD_CFG_GPO(GPP_D1, 0, DEEP),
 	/* D2  : ISH_GP2 ==> EN_FP_PWR */

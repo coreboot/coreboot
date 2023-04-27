@@ -211,6 +211,12 @@ static const struct pad_config early_gpio_table[] = {
 static const struct pad_config romstage_gpio_table[] = {
 	/* B4  : PROC_GP3 ==> SSD_PERST_L */
 	PAD_CFG_GPO(GPP_B4, 1, DEEP),
+
+	/* Enable touchscreen, hold in reset */
+	/* C0  : SMBCLK ==> EN_PP3300_TCHSCR */
+	PAD_CFG_GPO(GPP_C0, 1, DEEP),
+	/* C1  : SMBDATA ==> USI_RST_L */
+	PAD_CFG_GPO(GPP_C1, 0, DEEP),
 };
 
 const struct pad_config *variant_gpio_override_table(size_t *num)

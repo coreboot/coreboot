@@ -103,7 +103,7 @@ static const struct pad_config gpio_table[] = {
 	/* C0  : SMBCLK ==> EN_PP3300_TCHSCR */
 	PAD_CFG_GPO(GPP_C0, 1, DEEP),
 	/* C1  : SMBDATA ==> USI_RST_L */
-	PAD_CFG_GPO(GPP_C1, 0, DEEP),
+	PAD_CFG_GPO(GPP_C1, 1, DEEP),
 	/* C2  : SMBALERT# ==> GPP_C2_STRAP */
 	PAD_NC(GPP_C2, NONE),
 	/* C3 : SML0CLK ==> EN_UCAM_PWR */

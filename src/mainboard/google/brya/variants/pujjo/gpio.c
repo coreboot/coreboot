@@ -153,6 +153,12 @@ static const struct pad_config early_5g_gpio_table[] = {
 
 /* Pad configuration in romstage for Pujjo */
 static const struct pad_config romstage_gpio_table[] = {
+	/* Enable touchscreen, hold in reset */
+	/* C0  : SMBCLK ==> EN_PP3300_TCHSCR */
+	PAD_CFG_GPO(GPP_C0, 1, DEEP),
+	/* C1  : SMBDATA ==> USI_RST_L */
+	PAD_CFG_GPO(GPP_C1, 0, DEEP),
+
 	/* H12 : UART0_RTS# ==> SD_PERST_L */
 	PAD_CFG_GPO(GPP_H12, 1, DEEP),
 };

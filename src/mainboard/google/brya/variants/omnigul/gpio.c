@@ -316,6 +316,12 @@ static const struct pad_config romstage_gpio_table[] = {
 	 * B4 is programmed here so that it is sequenced after EN_PP3300_SSD.
 	 */
 	PAD_CFG_GPO(GPP_B4, 1, DEEP),
+
+	/* Enable touchscreen, hold in reset */
+	/* C0  : SMBCLK ==> EN_PP3300_TCHSCR */
+	PAD_CFG_GPO(GPP_C0, 1, DEEP),
+	/* C1  : SMBDATA ==> USI_RST_L */
+	PAD_CFG_GPO(GPP_C1, 0, DEEP),
 };
 
 const struct pad_config *variant_gpio_override_table(size_t *num)

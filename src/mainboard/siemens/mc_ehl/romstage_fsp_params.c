@@ -17,8 +17,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	static uint8_t spd_data[CONFIG_DIMM_SPD_SIZE];
 	const char *cbfs_hwi_name = "hwinfo.hex";
 
-	/* Initialize SPD information for LPDDR4x from HW-Info primarily with a fallback to
-	   spd.bin in the case where the SPD data in HW-Info is not available or invalid. */
+	/* Initialize SPD information for LPDDR4x from HW-Info. */
 	memset(spd_data, 0, sizeof(spd_data));
 	if ((hwilib_find_blocks(cbfs_hwi_name) == CB_SUCCESS) &&
 	    (hwilib_get_field(SPD, spd_data, 0x80) == 0x80) &&

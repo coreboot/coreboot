@@ -2,7 +2,6 @@
 
 #include <device/pci_ops.h>
 #include <acpi/acpi.h>
-#include <cpu/x86/smm.h>
 #include <southbridge/intel/common/pmutil.h>
 #include "chip.h"
 

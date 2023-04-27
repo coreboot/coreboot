@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
-#include <cpu/x86/smm.h>
 #include <device/pci_ops.h>
 
 void acpi_fill_fadt(acpi_fadt_t *fadt)

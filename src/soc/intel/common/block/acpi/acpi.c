@@ -11,7 +11,6 @@
 #include <cpu/intel/msr.h>
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/lapic.h>
-#include <cpu/x86/smm.h>
 #include <intelblocks/acpi_wake_source.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/lpc_lib.h>

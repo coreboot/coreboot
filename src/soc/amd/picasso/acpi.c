@@ -11,7 +11,6 @@
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
 #include <cpu/amd/cpuid.h>
-#include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <gpio.h>

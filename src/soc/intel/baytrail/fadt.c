@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
-#include <cpu/x86/smm.h>
 #include <soc/iomap.h>
 #include <soc/pm.h>
 #include "chip.h"

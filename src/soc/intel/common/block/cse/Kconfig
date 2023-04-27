@@ -248,7 +248,7 @@ config SOC_INTEL_CSE_PRE_CPU_RESET_TELEMETRY_V2
 
 config SOC_INTEL_CSE_LITE_SYNC_IN_ROMSTAGE
 	bool
-	default y
+	default !SOC_INTEL_CSE_LITE_SYNC_IN_RAMSTAGE
 	depends on SOC_INTEL_CSE_LITE_SKU && !SOC_INTEL_CSE_LITE_COMPRESS_ME_RW
 	help
 	 Use default flow of CSE FW Update in romstage when uncompressed ME_RW blobs are used.

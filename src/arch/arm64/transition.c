@@ -17,15 +17,15 @@ void exc_entry(struct exc_state *exc_state, uint64_t id)
 	struct regs *regs = &exc_state->regs;
 	uint8_t elx_mode;
 
-	elx->spsr = raw_read_spsr_el3();
+	elx->spsr = raw_read_spsr();
+	elx->elr  = raw_read_elr();
+
 	elx_mode = get_mode_from_spsr(elx->spsr);
 
 	if (elx_mode == SPSR_USE_H)
 		regs->sp = (uint64_t)&exc_state[1];
 	else
 		regs->sp = raw_read_sp_el0();
-
-	elx->elr = raw_read_elr_el3();
 
 	exc_dispatch(exc_state, id);
 }

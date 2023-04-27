@@ -13,12 +13,13 @@ static enum {
 
 static int abort_checker(struct exc_state *state, uint64_t vector_id)
 {
-	if (raw_read_esr_el3() >> 26 != 0x25)
+	if (raw_read_esr() >> 26 != 0x25)
 		return EXC_RET_IGNORED; /* Not a data abort. */
 
 	abort_state = ABORT_CHECKER_TRIGGERED;
 	state->elx.elr += sizeof(uint32_t); /* Jump over faulting instruction. */
-	raw_write_elr_el3(state->elx.elr);
+	raw_write_elr(state->elx.elr);
+
 	return EXC_RET_HANDLED;
 }
 

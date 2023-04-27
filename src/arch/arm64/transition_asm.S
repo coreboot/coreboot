@@ -142,19 +142,16 @@ ENTRY(exc_exit)
 ENDPROC(exc_exit)
 
 /*
- * exception_init_asm: Initialize VBAR and point SP_EL3 to exception stack.
+ * exception_init_asm: Initialize VBAR and point SP_ELx to exception stack.
  * Also unmask aborts now that we can report them. x0 = end of exception stack
  */
 ENTRY(exception_init_asm)
 	msr	SPSel, #SPSR_USE_H
 	mov	sp, x0
 	msr	SPSel, #SPSR_USE_L
-
 	adr	x0, exc_vectors
-	msr	vbar_el3, x0
-
+	msr	CURRENT_EL(vbar), x0
 	msr	DAIFClr, #0xf
-
 	dsb	sy
 	isb
 	ret

@@ -113,10 +113,49 @@
 				     : : "r" (value) : "memory"); \
 	}
 
+/*
+ * In order to allow easy access to current EL's registers,
+ * we export following two functions for each EL register, that
+ * was passed to the MAKE_REGISTER_ACCESSORS_CURRENT_EL macro. Doing
+ * that, eliminates, or at least hides, repetitive branching on the
+ * current EL across the arm64 codebase.
+ *
+ * MAKE_REGISTER_ACCESSORS_CURRENT_EL was hooked into MAKE_REGISTER_ACCESSORS_EL123,
+ * in order to automatically generate current_el accessors only for registers which
+ * exist on EL1, EL2 and EL3.
+ *
+ * Note, that we don't handle EL0 here, as most of the defined registers do not
+ * have an EL0 variant (see MAKE_REGISTER_ACCESSORS_EL123).
+ *
+ * Important:
+ *  - target register should be specified without the '_elx' suffix
+ *  - only registers which exist in EL1, EL2 and EL3 should be passed
+ *    to the MAKE_REGISTER_ACCESSORS_CURRENT_EL macro
+ */
+#define MAKE_REGISTER_ACCESSORS_CURRENT_EL(reg) \
+	static inline uint64_t raw_read_##reg(void) \
+	{ \
+		if (CONFIG_ARM64_CURRENT_EL == EL1) \
+			return raw_read_##reg##_el1(); \
+		else if (CONFIG_ARM64_CURRENT_EL == EL2) \
+			return raw_read_##reg##_el2(); \
+		return raw_read_##reg##_el3(); \
+	} \
+	static inline void raw_write_##reg(uint64_t value) \
+	{ \
+		if (CONFIG_ARM64_CURRENT_EL == EL1) \
+			raw_write_##reg##_el1(value); \
+		else if (CONFIG_ARM64_CURRENT_EL == EL2) \
+			raw_write_##reg##_el2(value); \
+		else \
+			raw_write_##reg##_el3(value); \
+	}
+
 #define MAKE_REGISTER_ACCESSORS_EL123(reg) \
 	MAKE_REGISTER_ACCESSORS(reg##_el1) \
 	MAKE_REGISTER_ACCESSORS(reg##_el2) \
-	MAKE_REGISTER_ACCESSORS(reg##_el3)
+	MAKE_REGISTER_ACCESSORS(reg##_el3) \
+	MAKE_REGISTER_ACCESSORS_CURRENT_EL(reg)
 
 /* Architectural register accessors */
 MAKE_REGISTER_ACCESSORS_EL123(actlr)
@@ -316,6 +355,16 @@ static inline void tlbiall_el2(void)
 static inline void tlbiall_el3(void)
 {
 	__asm__ __volatile__("tlbi alle3\n\t" : : : "memory");
+}
+
+static inline void tlbiall(void)
+{
+	if (CONFIG_ARM64_CURRENT_EL == EL1)
+		tlbiall_el1();
+	else if (CONFIG_ARM64_CURRENT_EL == EL2)
+		tlbiall_el2();
+	else
+		tlbiall_el3();
 }
 
 static inline void tlbiallis_el1(void)

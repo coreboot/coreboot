@@ -55,7 +55,8 @@ unsigned int dcache_line_bytes(void);
 static inline void tlb_invalidate_all(void)
 {
 	/* TLBIALL includes dTLB and iTLB on systems that have them. */
-	tlbiall_el3();
+
+	tlbiall();
 	dsb();
 	isb();
 }

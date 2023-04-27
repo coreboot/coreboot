@@ -18,8 +18,10 @@ static void run_payload(struct prog *prog)
 
 	if (CONFIG(ARM64_USE_ARM_TRUSTED_FIRMWARE))
 		run_bl31((u64)doit, (u64)arg, payload_spsr);
-	else
+	else if (CONFIG_ARM64_CURRENT_EL == EL3)
 		transition_to_el2(doit, arg, payload_spsr);
+	else
+		doit(arg);
 }
 
 void arch_prog_run(struct prog *prog)

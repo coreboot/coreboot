@@ -28,4 +28,14 @@
 	ENTRY(name)		\
 	.weak name		\
 
+#if CONFIG_ARM64_CURRENT_EL == 1
+#define CURRENT_EL(reg) reg##_el1
+#elif CONFIG_ARM64_CURRENT_EL == 2
+#define CURRENT_EL(reg) reg##_el2
+#elif CONFIG_ARM64_CURRENT_EL == 3
+#define CURRENT_EL(reg) reg##_el3
+#else
+#error "Invalid setting for CONFIG_ARM64_CURRENT_EL!"
+#endif
+
 #endif	/* __ARM_ARM64_ASM_H */

@@ -77,10 +77,10 @@ ENDPROC(dcache_clean_invalidate_all)
    memory (e.g. the stack) in between disabling and flushing the cache. */
 ENTRY(mmu_disable)
 	str	x30, [sp, #-0x8]
-	mrs	x0, sctlr_el3
+	mrs	x0, CURRENT_EL(sctlr)
 	mov	x1, #~(SCTLR_C | SCTLR_M)
 	and	x0, x0, x1
-	msr	sctlr_el3, x0
+	msr	CURRENT_EL(sctlr), x0
 	isb
 	bl	dcache_clean_invalidate_all
 	ldr	x30, [sp, #-0x8]
@@ -102,12 +102,11 @@ ENTRY(arm64_init_cpu)
 
 	/* x22: SCTLR, return address: x23 (callee-saved by subroutine) */
 	mov	x23, x30
-	/* TODO: Assert that we always start running at EL3 */
-	mrs	x22, sctlr_el3
+	mrs	x22, CURRENT_EL(sctlr)
 
 	/* Activate ICache already for speed during cache flush below. */
 	orr	x22, x22, #SCTLR_I
-	msr	sctlr_el3, x22
+	msr	CURRENT_EL(sctlr), x22
 	isb
 
 	/* Invalidate dcache */
@@ -116,13 +115,15 @@ ENTRY(arm64_init_cpu)
 	/* Reinitialize SCTLR from scratch to known-good state.
 	   This may disable MMU or DCache. */
 	ldr	w22, =(SCTLR_RES1 | SCTLR_I | SCTLR_SA)
-	msr	sctlr_el3, x22
+	msr	CURRENT_EL(sctlr), x22
 
+#if CONFIG_ARM64_CURRENT_EL == EL3
 	/* Initialize SCR to unmask all interrupts (so that if we get a spurious
 	   IRQ/SError we'll see it when it happens, not hang in BL31). This will
 	   only have an effect after we DAIFClr in exception_init(). */
 	mov	x22, #SCR_RES1 | SCR_IRQ | SCR_FIQ | SCR_EA
 	msr	scr_el3, x22
+#endif
 
 	/* Invalidate icache and TLB for good measure */
 	ic	iallu

@@ -97,21 +97,8 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 
 	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042;
 
-	/* PM2 Control Registers */
-	fadt->x_pm2_cnt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_pm2_cnt_blk.bit_width = fadt->pm2_cnt_len * 8;
-	fadt->x_pm2_cnt_blk.bit_offset = 0;
-	fadt->x_pm2_cnt_blk.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS;
-	fadt->x_pm2_cnt_blk.addrl = fadt->pm2_cnt_blk;
-	fadt->x_pm2_cnt_blk.addrh = 0x0;
-
-	/* PM1 Timer Register */
-	fadt->x_pm_tmr_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_pm_tmr_blk.bit_width = fadt->pm_tmr_len * 8;
-	fadt->x_pm_tmr_blk.bit_offset = 0;
-	fadt->x_pm_tmr_blk.access_size = ACPI_ACCESS_SIZE_DWORD_ACCESS;
-	fadt->x_pm_tmr_blk.addrl = fadt->pm_tmr_blk;
-	fadt->x_pm_tmr_blk.addrh = 0x0;
+	/* PM Extended Registers */
+	fill_fadt_extended_pm_io(fadt);
 }
 
 static acpi_tstate_t denverton_tss_table[] = {

@@ -105,6 +105,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	/* GPE0 STS/EN pairs each 32 bits wide. */
 	fadt->gpe0_blk_len = 2 * GPE0_REG_MAX * sizeof(uint32_t);
 
+	fill_fadt_extended_pm_io(fadt);
 
 	fadt->flags |= ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED |
 			ACPI_FADT_SLEEP_BUTTON |
@@ -112,33 +113,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 
 	if (CONFIG(USE_PM_ACPI_TIMER))
 		fadt->flags |= ACPI_FADT_PLATFORM_CLOCK;
-
-	fadt->x_pm1a_evt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_pm1a_evt_blk.bit_width = fadt->pm1_evt_len * 8;
-	fadt->x_pm1a_evt_blk.bit_offset = 0;
-	fadt->x_pm1a_evt_blk.addrh = 0x0;
-	fadt->x_pm1a_evt_blk.addrl = fadt->pm1a_evt_blk;
-	fadt->x_pm1a_evt_blk.access_size = ACPI_ACCESS_SIZE_WORD_ACCESS;
-
-	fadt->x_pm1a_cnt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_pm1a_cnt_blk.bit_width = fadt->pm1_cnt_len * 8;
-	fadt->x_pm1a_cnt_blk.bit_offset = 0;
-	fadt->x_pm1a_cnt_blk.addrh = 0x0;
-	fadt->x_pm1a_cnt_blk.addrl = fadt->pm1a_cnt_blk;
-	fadt->x_pm1a_cnt_blk.access_size = ACPI_ACCESS_SIZE_WORD_ACCESS;
-
-	/*
-	 * Windows 10 requires x_gpe0_blk to be set starting with FADT revision 5.
-	 * The bit_width field intentionally overflows here.
-	 * The OSPM can instead use the values in `fadt->gpe0_blk{,_len}`, which
-	 * seems to work fine on Linux 5.0 and Windows 10.
-	 */
-	fadt->x_gpe0_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_gpe0_blk.bit_width = fadt->gpe0_blk_len * 8;
-	fadt->x_gpe0_blk.bit_offset = 0;
-	fadt->x_gpe0_blk.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS;
-	fadt->x_gpe0_blk.addrl = fadt->gpe0_blk;
-	fadt->x_gpe0_blk.addrh = 0x0;
 }
 
 unsigned long southbridge_write_acpi_tables(const struct device *device,

@@ -153,12 +153,8 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 
 	fadt->pm_tmr_blk = pmbase + PM1_TMR;
 	fadt->pm_tmr_len = 4;
-	fadt->x_pm_tmr_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_pm_tmr_blk.bit_width = fadt->pm_tmr_len * 8;
-	fadt->x_pm_tmr_blk.bit_offset = 0;
-	fadt->x_pm_tmr_blk.access_size = ACPI_ACCESS_SIZE_DWORD_ACCESS;
-	fadt->x_pm_tmr_blk.addrl = fadt->pm_tmr_blk;
-	fadt->x_pm_tmr_blk.addrh = 0x0;
+
+	fill_fadt_extended_pm_io(fadt);
 
 	if (config->s0ix_enable)
 		fadt->flags |= ACPI_FADT_LOW_PWR_IDLE_S0;

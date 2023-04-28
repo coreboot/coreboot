@@ -10,8 +10,6 @@ void i82801dx_enable(struct device *dev);
 void i82801dx_early_init(void);
 void i82801dx_lpc_setup(void);
 
-#define DEBUG_PERIODIC_SMIS 0
-
 #define MAINBOARD_POWER_OFF	0
 #define MAINBOARD_POWER_ON	1
 #define MAINBOARD_POWER_KEEP	2

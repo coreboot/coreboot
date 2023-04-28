@@ -1,10 +1,10 @@
 comment "Volteer"
 
 config BOARD_GOOGLE_CHRONICLER
-	bool "->  Chronicler"
+	bool "->  Chronicler (FMV Chromebook 14F)"
 
 config BOARD_GOOGLE_COLLIS
-	bool "->  Collis"
+	bool "->  Collis (Asus Chromebook Flip CX3)"
 
 config BOARD_GOOGLE_COPANO
 	bool "->  Copano (ASUS Chromebook Flip CX5400)"
@@ -16,7 +16,7 @@ config BOARD_GOOGLE_DROBIT
 	bool "->  Drobit (ASUS Chromebook CX9400)"
 
 config BOARD_GOOGLE_ELDRID
-	bool "->  Eldrid"
+	bool "->  Eldrid (HP Chromebook x360 14c)"
 
 config BOARD_GOOGLE_ELEMI
 	bool "->  Elemi (HP Pro c640 G2 Chromebook)"
@@ -25,7 +25,7 @@ config BOARD_GOOGLE_HALVOR
 	bool "->  Halvor"
 
 config BOARD_GOOGLE_LINDAR
-	bool "->  Lindar"
+	bool "->  Lindar (Lenovo 5i-14/Slim 5 Chromebook)"
 
 config BOARD_GOOGLE_MALEFOR
 	bool "->  Malefor"
@@ -40,10 +40,10 @@ config BOARD_GOOGLE_TRONDO
 	bool "->  Trondo"
 
 config BOARD_GOOGLE_VOEMA
-	bool "->  Voema"
+	bool "->  Voema (Acer Chromebook Spin 514)"
 
 config BOARD_GOOGLE_VOLET
-	bool "->  Volet"
+	bool "->  Volet (Acer Chromebook 515)"
 
 config BOARD_GOOGLE_VOLTEER
 	bool "->  Volteer"

@@ -103,7 +103,7 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_pm2_cnt_blk.bit_offset = 0;
 	fadt->x_pm2_cnt_blk.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS;
 	fadt->x_pm2_cnt_blk.addrl = fadt->pm2_cnt_blk;
-	fadt->x_pm2_cnt_blk.addrh = 0x00;
+	fadt->x_pm2_cnt_blk.addrh = 0x0;
 
 	/* PM1 Timer Register */
 	fadt->x_pm_tmr_blk.space_id = ACPI_ADDRESS_SPACE_IO;
@@ -111,7 +111,7 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 	fadt->x_pm_tmr_blk.bit_offset = 0;
 	fadt->x_pm_tmr_blk.access_size = ACPI_ACCESS_SIZE_DWORD_ACCESS;
 	fadt->x_pm_tmr_blk.addrl = fadt->pm_tmr_blk;
-	fadt->x_pm_tmr_blk.addrh = 0x00;
+	fadt->x_pm_tmr_blk.addrh = 0x0;
 }
 
 static acpi_tstate_t denverton_tss_table[] = {

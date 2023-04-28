@@ -17,6 +17,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_B6, NONE),
 	/* B15 : HP_RST_ODL */
 	PAD_CFG_GPO(GPP_B15, 1, DEEP),
+	/* C1  : SMBDA==> TCHSCR_RST_L */
+	PAD_CFG_GPO(GPP_C1, 1, DEEP),
 	/* D6  : SRCCLKREQ1# ==> WWAN_EN */
 	PAD_CFG_GPO(GPP_D6, 1, DEEP),
 	/* D8  : SRCCLKREQ3# ==> NC */
@@ -76,6 +78,11 @@ static const struct pad_config early_gpio_table[] = {
 };
 
 static const struct pad_config romstage_gpio_table[] = {
+	/* Enable touchscreen, hold in reset */
+	/* C0  : SMBCLK ==> EN_PP3300_TCHSCR_X */
+	PAD_CFG_GPO(GPP_C0, 1, DEEP),
+	/* C1  : SMBDATA ==> TCHSCR_RST_L */
+	PAD_CFG_GPO(GPP_C1, 0, DEEP),
 };
 
 const struct pad_config *variant_gpio_override_table(size_t *num)

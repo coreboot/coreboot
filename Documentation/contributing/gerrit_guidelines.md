@@ -41,7 +41,7 @@ project you're submitting the changes to. If you’re submitting code that
 you wrote that might be owned by your employer, make sure that your
 employer is aware and you are authorized to submit the code. For
 clarification, see the Developer's Certificate of Origin in the coreboot
-[Signed-off-by policy](https://www.coreboot.org/Development_Guidelines#Sign-off_Procedure).
+[Signed-off-by policy](#sign-off-procedure).
 
 * In general, patches should remain open for review for at least 24 hours
 since the last significant modification to the change. The purpose is to
@@ -126,6 +126,52 @@ affects code that is used by other platforms, it should be compatible with
 those platforms. While it would be nice to update any other platforms, you
 must at least provide a path that will allow other platforms to continue
 working.
+
+Sign-off Procedure
+------------------
+The coreboot project employs a sign-off procedure similar to what is
+used by the Linux kernel. Each gerrit commit requires a sign-off line
+saying that the contributed code abides by the Developer's certificate
+of origin, below.
+```text
+Signed-off-by: Random J Developer <random@developer.example.org>
+```
+
+Using '-s' with 'git commit' will automatically add a Signed-off-by line
+to your commit message.  Patches without a Signed-off-by should not be
+pushed to gerrit, and will be rejected by coreboot's CI system.
+
+You must use your real name in the Signed-off-by line. Patches without
+an associated real name cannot be committed! Refer to [this LKML thread]
+and the [SCO-Linux disputes] for the rationale behind the DCO.
+
+Developer's Certificate of Origin 1.1
+
+> By making a contribution to this project, I certify that:
+>
+> (a) The contribution was created in whole or in part by me and I have
+> the right to submit it under the open source license indicated in the
+> file; or
+>
+> (b) The contribution is based upon previous work that, to the best of
+> my knowledge, is covered under an appropriate open source license and
+> I have the right under that license to submit that work with
+> modifications, whether created in whole or in part by me, under the
+> same open source license (unless I am permitted to submit under a
+> different license), as indicated in the file; or
+>
+> (c) The contribution was provided directly to me by some other person
+> who certified (a), (b) or (c) and I have not modified it; and
+>
+> (d) In the case of each of (a), (b), or (c), I understand and agree
+> that this project and the contribution are public and that a record of
+> the contribution (including all personal information I submit with it,
+> including my sign-off) is maintained indefinitely and may be
+> redistributed consistent with this project or the open source license
+> indicated in the file.
+
+Note: The [Developer's Certificate of Origin 1.1] is licensed under the
+terms of the [Creative Commons Attribution-ShareAlike 2.5 License].
 
 
 Recommendations for gerrit activity
@@ -386,3 +432,7 @@ Requests for clarification and suggestions for updates to these guidelines
 should be sent to the coreboot mailing list at <coreboot@coreboot.org>.
 
 [ready changes]: https://review.coreboot.org/q/age:1d+project:coreboot+status:open+is:mergeable+label:All-Comments-Resolved%253Dok+label:Code-Review%253D2+-label:Code-Review%253C0+label:Verified%253D1+-label:Verified-1
+[Developer's Certificate of Origin 1.1]: https://developercertificate.org/
+[Creative Commons Attribution-ShareAlike 2.5 License]: https://creativecommons.org/licenses/by-sa/2.5/
+[this LKML thread]: https://lkml.org/lkml/2004/5/23/10
+[SCO-Linux disputes]: https://en.wikipedia.org/wiki/SCO%E2%80%93Linux_disputes

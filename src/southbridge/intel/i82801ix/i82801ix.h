@@ -144,7 +144,6 @@
 #define FD_SAD1		(1 <<  2) /* SATA #1 */
 
 #ifndef __ACPI__
-#ifndef __ASSEMBLER__
 
 #include <device/pci_ops.h>
 
@@ -161,7 +160,6 @@ void i82801ix_lpc_setup(void);
 void i82801ix_dmi_setup(void);
 void i82801ix_dmi_poll_vc1(void);
 
-#endif
 #endif
 
 #endif

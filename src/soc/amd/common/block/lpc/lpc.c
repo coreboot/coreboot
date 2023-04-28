@@ -121,7 +121,7 @@ static void lpc_read_resources(struct device *dev)
 		   FLASH_BELOW_4GB_MAPPING_REGION_SIZE);
 
 	/* Add a memory resource for the SPI BAR. */
-	mmio_range(dev, 2, SPI_BASE_ADDRESS, 1 * KiB);
+	mmio_range(dev, 2, SPI_BASE_ADDRESS, 4 * KiB);
 
 	res = new_resource(dev, 3); /* IOAPIC */
 	res->base = IO_APIC_ADDR;

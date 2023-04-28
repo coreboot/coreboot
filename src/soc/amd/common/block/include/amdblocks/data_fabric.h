@@ -47,4 +47,6 @@ void data_fabric_set_mmio_np(void);
 void amd_pci_domain_read_resources(struct device *domain);
 void amd_pci_domain_scan_bus(struct device *domain);
 
+void amd_pci_domain_fill_ssdt(const struct device *domain);
+
 #endif /* AMD_BLOCK_DATA_FABRIC_H */

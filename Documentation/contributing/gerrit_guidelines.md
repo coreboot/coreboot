@@ -141,9 +141,11 @@ Using '-s' with 'git commit' will automatically add a Signed-off-by line
 to your commit message.  Patches without a Signed-off-by should not be
 pushed to gerrit, and will be rejected by coreboot's CI system.
 
-You must use your real name in the Signed-off-by line. Patches without
-an associated real name cannot be committed! Refer to [this LKML thread]
-and the [SCO-Linux disputes] for the rationale behind the DCO.
+You must use a known identity in the Signed-off-by line. Anonymous
+contributions cannot be committed! This can be anything sufficient to
+identify and contact the source of a contribution, such as your name or
+an established alias/nickname. Refer to [this LKML thread] and the
+[SCO-Linux disputes] for the rationale behind the DCO.
 
 Developer's Certificate of Origin 1.1
 

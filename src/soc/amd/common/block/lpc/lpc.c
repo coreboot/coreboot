@@ -136,21 +136,6 @@ static void lpc_read_resources(struct device *dev)
 	compact_resources(dev);
 }
 
-static void lpc_set_resources(struct device *dev)
-{
-	struct resource *res;
-	u32 spi_enable_bits;
-
-	/* Special case. The SpiRomEnable and other enables should STAY set. */
-	res = find_resource(dev, 2);
-	spi_enable_bits = pci_read_config32(dev, SPI_BASE_ADDRESS_REGISTER);
-	spi_enable_bits &= SPI_BASE_ALIGNMENT - 1;
-	pci_write_config32(dev, SPI_BASE_ADDRESS_REGISTER,
-			res->base | spi_enable_bits);
-
-	pci_dev_set_resources(dev);
-}
-
 static void configure_child_lpc_windows(struct device *dev, struct device *child)
 {
 	struct resource *res;
@@ -329,7 +314,7 @@ static const char *lpc_acpi_name(const struct device *dev)
 
 struct device_operations amd_lpc_ops = {
 	.read_resources = lpc_read_resources,
-	.set_resources = lpc_set_resources,
+	.set_resources = pci_dev_set_resources,
 	.enable_resources = lpc_enable_resources,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name = lpc_acpi_name,

@@ -4,7 +4,6 @@
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <soc/pm.h>
-#include <ec/google/chromeec/ec.h>
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
 #include <soc/iomap.h>
 #include "onboard.h"
@@ -30,15 +29,4 @@ void mainboard_smi_sleep(u8 slp_typ)
 		set_power_led(LED_OFF);
 		break;
 	}
-}
-
-int mainboard_smi_apmc(u8 apmc)
-{
-	switch (apmc) {
-	case APM_CNT_ACPI_ENABLE:
-		break;
-	case APM_CNT_ACPI_DISABLE:
-		break;
-	}
-	return 0;
 }

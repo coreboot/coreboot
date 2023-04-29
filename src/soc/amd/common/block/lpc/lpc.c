@@ -126,10 +126,8 @@ static void lpc_read_resources(struct device *dev)
 	/* Add a memory resource for the eSPI MMIO */
 	mmio_range(dev, 3, SPI_BASE_ADDRESS + ESPI_OFFSET_FROM_BAR, 4 * KiB);
 
-	res = new_resource(dev, 4); /* IOAPIC */
-	res->base = IO_APIC_ADDR;
-	res->size = 0x00001000;
-	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	/* FCH IOAPIC */
+	mmio_range(dev, 4, IO_APIC_ADDR, 4 * KiB);
 
 	compact_resources(dev);
 }

@@ -1,15 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <acpi/acpi_gnvs.h>
-#include <soc/acpi.h>
-#include <soc/nvs.h>
-
-void mainboard_fill_gnvs(struct global_nvs *gnvs)
-{
-	/* Enable USB ports in S3 */
-	gnvs->s3u0 = 1;
-	gnvs->s3u1 = 1;
-}
+#include <acpi/acpi.h>
 
 void mainboard_fill_fadt(acpi_fadt_t *fadt)
 {

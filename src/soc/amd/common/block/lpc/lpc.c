@@ -106,6 +106,7 @@ static void lpc_init(struct device *dev)
 static void lpc_read_resources(struct device *dev)
 {
 	struct resource *res;
+	unsigned long idx = 0;
 
 	/* Get the normal pci resources of this device */
 	pci_dev_read_resources(dev);
@@ -118,20 +119,20 @@ static void lpc_read_resources(struct device *dev)
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	/* Only up to 16 MByte of the SPI flash can be mapped right below 4 GB */
-	mmio_range(dev, 1, FLASH_BELOW_4GB_MAPPING_REGION_BASE,
+	mmio_range(dev, idx++, FLASH_BELOW_4GB_MAPPING_REGION_BASE,
 		   FLASH_BELOW_4GB_MAPPING_REGION_SIZE);
 
 	/* Add a memory resource for the SPI BAR. */
-	mmio_range(dev, 2, SPI_BASE_ADDRESS, 4 * KiB);
+	mmio_range(dev, idx++, SPI_BASE_ADDRESS, 4 * KiB);
 
 	/* Add a memory resource for the eSPI MMIO */
-	mmio_range(dev, 3, SPI_BASE_ADDRESS + ESPI_OFFSET_FROM_BAR, 4 * KiB);
+	mmio_range(dev, idx++, SPI_BASE_ADDRESS + ESPI_OFFSET_FROM_BAR, 4 * KiB);
 
 	/* FCH IOAPIC */
-	mmio_range(dev, 4, IO_APIC_ADDR, 4 * KiB);
+	mmio_range(dev, idx++, IO_APIC_ADDR, 4 * KiB);
 
 	/* HPET */
-	mmio_range(dev, 5, HPET_BASE_ADDRESS, 4 * KiB);
+	mmio_range(dev, idx++, HPET_BASE_ADDRESS, 4 * KiB);
 
 	compact_resources(dev);
 }

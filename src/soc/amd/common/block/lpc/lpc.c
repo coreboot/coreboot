@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/hpet.h>
 #include <arch/ioapic.h>
 #include <console/console.h>
 #include <device/device.h>
@@ -128,6 +129,9 @@ static void lpc_read_resources(struct device *dev)
 
 	/* FCH IOAPIC */
 	mmio_range(dev, 4, IO_APIC_ADDR, 4 * KiB);
+
+	/* HPET */
+	mmio_range(dev, 5, HPET_BASE_ADDRESS, 4 * KiB);
 
 	compact_resources(dev);
 }

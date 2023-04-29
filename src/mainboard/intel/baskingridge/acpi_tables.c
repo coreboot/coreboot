@@ -9,17 +9,6 @@
 
 void mainboard_fill_gnvs(struct global_nvs *gnvs)
 {
-	/* Enable USB ports in S3 */
-	gnvs->s3u0 = 1;
-	gnvs->s3u1 = 1;
-
-	/*
-	 * Enable Front USB ports in S5 by default
-	 * to be consistent with back port behavior
-	 */
-	gnvs->s5u0 = 1;
-	gnvs->s5u1 = 1;
-
 	/* TPM Present */
 	gnvs->tpmp = 1;
 

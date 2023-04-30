@@ -111,6 +111,10 @@ endif
 ifneq ($(CONFIG_EDK2_SD_MMC_TIMEOUT),)
 BUILD_STR += -D SD_MMC_TIMEOUT=$(shell echo $$(( $(CONFIG_EDK2_SD_MMC_TIMEOUT) * 1000)) )
 endif
+# EDK2_SECURE_BOOT_SUPPORT      = FALSE
+ifeq ($(CONFIG_EDK2_SECURE_BOOT_SUPPORT), y)
+BUILD_STR += -D SECURE_BOOT_ENABLE=TRUE
+endif
 
 #
 # EDKII has the below PCDs that are relevant to coreboot:

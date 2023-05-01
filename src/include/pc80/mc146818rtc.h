@@ -6,9 +6,10 @@
 #include <arch/io.h>
 #include <types.h>
 
-#define RTC_BASE_PORT 0x70
+#define RTC_BASE_PORT_BANK0 (CONFIG_PC_CMOS_BASE_PORT_BANK0)
+#define RTC_BASE_PORT_BANK1 (CONFIG_PC_CMOS_BASE_PORT_BANK1)
 
-#define RTC_PORT(x)	(RTC_BASE_PORT + (x))
+#define RTC_PORT_BANK0(x)	(RTC_BASE_PORT_BANK0 + (x))
 
 /* control registers - Moto names
  */
@@ -107,24 +108,24 @@
 
 static inline unsigned char cmos_read(unsigned char addr)
 {
-	int offs = 0;
+	int port = RTC_BASE_PORT_BANK0;
 	if (addr >= 128) {
-		offs = 2;
+		port = RTC_BASE_PORT_BANK1;
 		addr -= 128;
 	}
-	outb(addr, RTC_BASE_PORT + offs + 0);
-	return inb(RTC_BASE_PORT + offs + 1);
+	outb(addr, port + 0);
+	return inb(port + 1);
 }
 
 static inline void cmos_write_inner(unsigned char val, unsigned char addr)
 {
-	int offs = 0;
+	int port = RTC_BASE_PORT_BANK0;
 	if (addr >= 128) {
-		offs = 2;
+		port = RTC_BASE_PORT_BANK1;
 		addr -= 128;
 	}
-	outb(addr, RTC_BASE_PORT + offs + 0);
-	outb(val, RTC_BASE_PORT + offs + 1);
+	outb(addr, port + 0);
+	outb(val, port + 1);
 }
 
 static inline u8 cmos_disable_rtc(void)

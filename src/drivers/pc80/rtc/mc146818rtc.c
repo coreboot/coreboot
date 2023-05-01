@@ -249,11 +249,11 @@ void set_boot_successful(void)
 {
 	uint8_t index, byte;
 
-	index = inb(RTC_PORT(0)) & 0x80;
+	index = inb(RTC_PORT_BANK0(0)) & 0x80;
 	index |= RTC_BOOT_BYTE;
-	outb(index, RTC_PORT(0));
+	outb(index, RTC_PORT_BANK0(0));
 
-	byte = inb(RTC_PORT(1));
+	byte = inb(RTC_PORT_BANK0(1));
 
 	if (CONFIG(SKIP_MAX_REBOOT_CNT_CLEAR)) {
 		/*
@@ -269,5 +269,5 @@ void set_boot_successful(void)
 			byte &= 0x0f;
 	}
 
-	outb(byte, RTC_PORT(1));
+	outb(byte, RTC_PORT_BANK0(1));
 }

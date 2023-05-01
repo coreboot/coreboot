@@ -1,0 +1,6 @@
+Category: mini
+ROM protocol: SPI
+ROM socketed: n
+ROM package: SOIC-16
+Flashrom support: y
+Release year: 2012

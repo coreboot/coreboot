@@ -1,0 +1,2 @@
+config BOARD_HP_COMPAQ_ELITE_8300_USDT
+	bool "Compaq Elite 8300 USDT"

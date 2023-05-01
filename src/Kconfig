@@ -1093,10 +1093,11 @@ config X86EMU_DEBUG
 
 	  If unsure, say N.
 
+if X86EMU_DEBUG
+
 config X86EMU_DEBUG_JMP
 	bool "Trace JMP/RETF"
 	default n
-	depends on X86EMU_DEBUG
 	help
 	  Print information about JMP and RETF opcodes from x86emu.
 
@@ -1107,7 +1108,6 @@ config X86EMU_DEBUG_JMP
 config X86EMU_DEBUG_TRACE
 	bool "Trace all opcodes"
 	default n
-	depends on X86EMU_DEBUG
 	help
 	  Print _all_ opcodes that are executed by x86emu.
 
@@ -1120,7 +1120,6 @@ config X86EMU_DEBUG_TRACE
 config X86EMU_DEBUG_PNP
 	bool "Log Plug&Play accesses"
 	default n
-	depends on X86EMU_DEBUG
 	help
 	  Print Plug And Play accesses made by option ROMs.
 
@@ -1131,7 +1130,6 @@ config X86EMU_DEBUG_PNP
 config X86EMU_DEBUG_DISK
 	bool "Log Disk I/O"
 	default n
-	depends on X86EMU_DEBUG
 	help
 	  Print Disk I/O related messages.
 
@@ -1142,7 +1140,6 @@ config X86EMU_DEBUG_DISK
 config X86EMU_DEBUG_PMM
 	bool "Log PMM"
 	default n
-	depends on X86EMU_DEBUG
 	help
 	  Print messages related to POST Memory Manager (PMM).
 
@@ -1154,7 +1151,6 @@ config X86EMU_DEBUG_PMM
 config X86EMU_DEBUG_VBE
 	bool "Debug VESA BIOS Extensions"
 	default n
-	depends on X86EMU_DEBUG
 	help
 	  Print messages related to VESA BIOS Extension (VBE) functions.
 
@@ -1165,7 +1161,6 @@ config X86EMU_DEBUG_VBE
 config X86EMU_DEBUG_INT10
 	bool "Redirect INT10 output to console"
 	default n
-	depends on X86EMU_DEBUG
 	help
 	  Let INT10 (i.e. character output) calls print messages to debug output.
 
@@ -1176,7 +1171,6 @@ config X86EMU_DEBUG_INT10
 config X86EMU_DEBUG_INTERRUPTS
 	bool "Log intXX calls"
 	default n
-	depends on X86EMU_DEBUG
 	help
 	  Print messages related to interrupt handling.
 
@@ -1187,7 +1181,6 @@ config X86EMU_DEBUG_INTERRUPTS
 config X86EMU_DEBUG_CHECK_VMEM_ACCESS
 	bool "Log special memory accesses"
 	default n
-	depends on X86EMU_DEBUG
 	help
 	  Print messages related to accesses to certain areas of the virtual
 	  memory (e.g. BDA (BIOS Data Area) or interrupt vectors)
@@ -1199,7 +1192,6 @@ config X86EMU_DEBUG_CHECK_VMEM_ACCESS
 config X86EMU_DEBUG_MEM
 	bool "Log all memory accesses"
 	default n
-	depends on X86EMU_DEBUG
 	help
 	  Print memory accesses made by option ROM.
 	  Note: This also includes accesses to fetch instructions.
@@ -1211,7 +1203,6 @@ config X86EMU_DEBUG_MEM
 config X86EMU_DEBUG_IO
 	bool "Log IO accesses"
 	default n
-	depends on X86EMU_DEBUG
 	help
 	  Print I/O accesses made by option ROM.
 
@@ -1222,11 +1213,13 @@ config X86EMU_DEBUG_IO
 config X86EMU_DEBUG_TIMINGS
 	bool "Output timing information"
 	default n
-	depends on X86EMU_DEBUG && HAVE_MONOTONIC_TIMER
+	depends on HAVE_MONOTONIC_TIMER
 	help
 	  Print timing information needed by i915tool.
 
 	  If unsure, say N.
+
+endif
 
 config DEBUG_SPI_FLASH
 	bool "Output verbose SPI flash debug messages"

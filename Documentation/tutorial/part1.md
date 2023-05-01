@@ -147,7 +147,7 @@ Test the image using QEMU
 
 ### Step 7 - Install QEMU
 
-* Debian: `sudo apt-get install -y qemu`
+* Debian: `sudo apt-get install -y qemu-system`
 * Arch: `sudo pacman -S qemu`
 * Redhat: `sudo dnf install qemu`
 

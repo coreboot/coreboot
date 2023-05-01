@@ -1065,6 +1065,28 @@ static bool is_psr_data_backed_up(void)
 	return (get_psr_backup_status() == PSR_BACKUP_DONE);
 }
 
+static bool is_psr_supported(void)
+{
+	uint32_t feature_status;
+
+	/*
+	 * Check if SoC has support for PSR feature typically PSR feature
+	 * is only supported by vpro SKU
+	 *
+	 */
+	if (cse_get_fw_feature_state(&feature_status) != CB_SUCCESS) {
+		printk(BIOS_ERR, "cse_get_fw_feature_state command failed !\n");
+		return false;
+	}
+
+	if (!(feature_status & ME_FW_FEATURE_PSR)) {
+		printk(BIOS_DEBUG, "PSR is not supported in this SKU !\n");
+		return false;
+	}
+
+	return true;
+}
+
 /*
  * PSR data needs to be backed up prior to downgrade. So switch the CSE boot mode to RW, send
  * PSR back-up command to CSE and update the PSR back-up state in CMOS.
@@ -1074,6 +1096,16 @@ static void backup_psr_data(void)
 	printk(BIOS_DEBUG, "cse_lite: Initiate PSR data backup flow\n");
 	/* Switch CSE to RW to send PSR_HECI_FW_DOWNGRADE_BACKUP command */
 	if (cse_boot_to_rw() != CB_SUCCESS)
+		goto update_and_exit;
+
+	/*
+	 * The function to check for PSR feature support can only be called after
+	 * switching to RW partition. The command MKHI_FWCAPS_GET_FW_FEATURE_STATE
+	 * that gives feature state is supported by a process that is loaded only
+	 * when CSE boots from RW.
+	 *
+	 */
+	if (!is_psr_supported())
 		goto update_and_exit;
 
 	/*

@@ -40,7 +40,7 @@ enum mkhi_group_id {
 /* Get Firmware Feature State Command Id */
 #define MKHI_FWCAPS_GET_FW_FEATURE_STATE	0x02
 #define   ME_FEATURE_STATE_RULE_ID		0x20
-
+#define   ME_FW_FEATURE_PSR			BIT(5)
 /* MEI bus disable command. Must be sent to MEI client endpoint, not MKHI */
 #define MEI_BUS_DISABLE_COMMAND	0xc
 

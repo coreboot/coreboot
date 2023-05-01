@@ -211,7 +211,8 @@ void sanitize_cmos(void)
 			return;
 
 		u8 control_state = cmos_disable_rtc();
-		for (i = 14; i < MIN(128, length); i++)
+		/* Max length of 256 spans bank 0 and bank 1 */
+		for (i = 14; i < MIN(256, length); i++)
 			cmos_write_inner(cmos_default[i], i);
 		cmos_restore_rtc(control_state);
 	}

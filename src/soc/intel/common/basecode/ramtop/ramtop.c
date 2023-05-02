@@ -23,9 +23,9 @@
 #error "The `ramtop` CMOS entry needs to be byte aligned, check your cmos.layout."
 #endif	// CMOS_VSTART_ramtop % 8 != 0
 
-#if CMOS_VLEN_ramtop != 12
-#error "CMOS length for RAMTOP_CMOS bytes are not correct, check your cmos.layout"
-#endif
+#if CMOS_VLEN_ramtop != (10 * 8)
+#error "The `ramtop` CMOS entry needs to be 10 bytes long, check your cmos.layout."
+#endif	// CMOS_VLEN_ramtop != (10 * 8)
 
 #else
 #define CMOS_VSTART_ramtop 800

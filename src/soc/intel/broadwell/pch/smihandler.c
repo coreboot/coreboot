@@ -3,25 +3,25 @@
 #include <delay.h>
 #include <types.h>
 #include <arch/io.h>
-#include <device/mmio.h>
-#include <device/pci_ops.h>
 #include <console/console.h>
-#include <cpu/x86/cache.h>
-#include <device/pci_def.h>
-#include <cpu/x86/smm.h>
 #include <cpu/intel/em64t101_save_state.h>
+#include <cpu/x86/cache.h>
+#include <cpu/x86/smm.h>
+#include <device/mmio.h>
+#include <device/pci_def.h>
+#include <device/pci_ops.h>
+#include <drivers/intel/gma/i915_reg.h>
 #include <spi-generic.h>
 #include <elog.h>
 #include <halt.h>
 #include <option.h>
+#include <smmstore.h>
 #include <soc/lpc.h>
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/rcba.h>
 #include <soc/xhci.h>
-#include <drivers/intel/gma/i915_reg.h>
-#include <smmstore.h>
 
 /**
  * @brief Set the EOS bit

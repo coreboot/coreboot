@@ -11,12 +11,12 @@
 #include <device/pci_def.h>
 #include <elog.h>
 #include <gpio.h>
+#include <smmstore.h>
 #include <soc/nvs.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <spi-generic.h>
 #include <stdint.h>
-#include <smmstore.h>
 
 void southbridge_smi_set_eos(void)
 {

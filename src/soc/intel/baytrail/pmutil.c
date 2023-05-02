@@ -7,18 +7,18 @@
 #include <acpi/acpi_pm.h>
 #include <arch/io.h>
 #include <bootmode.h>
+#include <console/console.h>
 #include <device/device.h>
 #include <device/mmio.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
-#include <console/console.h>
 #include <halt.h>
 
+#include <security/vboot/vbnv.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
-#include <security/vboot/vbnv.h>
 
 uint16_t get_pmbase(void)
 {

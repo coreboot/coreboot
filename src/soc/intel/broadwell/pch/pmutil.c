@@ -8,16 +8,16 @@
 #include <acpi/acpi.h>
 #include <arch/io.h>
 #include <bootmode.h>
-#include <device/pci_ops.h>
+#include <console/console.h>
 #include <device/device.h>
+#include <device/pci_ops.h>
 #include <device/pci.h>
 #include <halt.h>
-#include <console/console.h>
+#include <security/vboot/vbnv.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
-#include <security/vboot/vbnv.h>
 #include <stdint.h>
 
 #define GPIO_ALT_GPI_SMI_STS	0x50

@@ -37,4 +37,11 @@ DefinitionBlock(
 		/* ACPI code for EC functions */
 		#include <ec/google/chromeec/acpi/ec.asl>
 	}
+	/* Mainboard specific */
+#if CONFIG(BOARD_GOOGLE_REX0)
+	Scope (\_SB.PCI0.SPI0)
+	{
+		#include <variant/acpi/hid_spi_elan.asl>
+	}
+#endif
 }

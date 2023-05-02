@@ -110,7 +110,7 @@ static void merlin_init(struct device *dev)
 
 	ec_write(ECRAM_FN_CTRL_REVERSE,
 		get_ec_value_from_option("fn_ctrl_swap",
-					 1,
+					 0,
 					 fn_ctrl_swap,
 					 ARRAY_SIZE(fn_ctrl_swap)));
 

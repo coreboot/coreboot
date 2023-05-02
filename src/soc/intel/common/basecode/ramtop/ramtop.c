@@ -19,6 +19,10 @@
 #if CONFIG(USE_OPTION_TABLE)
 #include "option_table.h"
 
+#ifndef CMOS_VSTART_ramtop
+#error "The `ramtop` CMOS entry is missing, please add it to your cmos.layout."
+#endif
+
 #if CMOS_VSTART_ramtop % 8 != 0
 #error "The `ramtop` CMOS entry needs to be byte aligned, check your cmos.layout."
 #endif	// CMOS_VSTART_ramtop % 8 != 0

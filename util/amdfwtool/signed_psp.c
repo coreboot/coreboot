@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <limits.h>
@@ -21,7 +22,14 @@ enum signature_id {
 	SIG_ID_RSA2048,
 	SIG_ID_RSA4096 = 2,
 };
+
 #define HASH_FILE_SUFFIX ".hash"
+struct psp_fw_hash_file_info {
+	int fd;
+	bool present;
+	struct psp_fw_hash_table hash_header;
+};
+static struct psp_fw_hash_file_info hash_files[MAX_NUM_HASH_TABLES];
 
 static uint16_t get_psp_fw_type(enum platform soc_id, struct amd_fw_header *header)
 {
@@ -126,26 +134,78 @@ static void write_one_psp_firmware_hash_entry(int fd, amd_fw_entry_hash *entry)
 	write_or_fail(fd, entry->sha, entry->sha_len);
 }
 
-static void write_psp_firmware_hash(const char *filename,
-		amd_fw_entry *fw_table)
+static void open_psp_fw_hash_files(const char *file_prefix)
 {
-	struct psp_fw_hash_table hash_header = {0};
-	int fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, 0666);
+	size_t hash_file_strlen;
+	char *hash_file_name;
 
-	if (fd < 0) {
-		fprintf(stderr, "Error opening file: %s: %s\n",
-				filename, strerror(errno));
+	/* Hash Table ID is part of the file name. For now only single digit ID is
+	   supported and is sufficient. Hence assert MAX_NUM_HASH_TABLES < 10 before
+	   constructing file name. Revisit later when > 10 hash tables are required. */
+	assert(MAX_NUM_HASH_TABLES < 10);
+	/* file_prefix + ".[1-9]" + ".hash" + '\0' */
+	hash_file_strlen = strlen(file_prefix) + 2 + strlen(HASH_FILE_SUFFIX) + 1;
+	hash_file_name = malloc(hash_file_strlen);
+	if (!hash_file_name)  {
+		fprintf(stderr, "malloc(%lu) failed\n", hash_file_strlen);
 		exit(-1);
 	}
 
-	hash_header.version = HASH_HDR_V1;
+	for (unsigned int i = 0; i < MAX_NUM_HASH_TABLES; i++) {
+		/* Hash table IDs are expected to be contiguous and hence holes are not
+		   expected. */
+		if (!hash_files[i].present)
+			break;
+
+		if (i)
+			snprintf(hash_file_name, hash_file_strlen, "%s.%d%s",
+				 file_prefix, i, HASH_FILE_SUFFIX);
+		else
+			/* Default file name without number for backwards compatibility. */
+			snprintf(hash_file_name, hash_file_strlen, "%s%s",
+				 file_prefix, HASH_FILE_SUFFIX);
+
+		hash_files[i].fd = open(hash_file_name, O_RDWR | O_CREAT | O_TRUNC, 0666);
+		if (hash_files[i].fd < 0) {
+			fprintf(stderr, "Error opening file: %s: %s\n",
+					hash_file_name, strerror(errno));
+			free(hash_file_name);
+			exit(-1);
+		}
+	}
+	free(hash_file_name);
+}
+
+static void close_psp_fw_hash_files(void)
+{
+	for (unsigned int i = 0; i < MAX_NUM_HASH_TABLES; i++) {
+		if (!hash_files[i].present)
+			break;
+
+		close(hash_files[i].fd);
+	}
+}
+
+static void write_psp_firmware_hash(amd_fw_entry *fw_table)
+{
+	uint8_t hash_tbl_id;
+
+	for (unsigned int i = 0; i < MAX_NUM_HASH_TABLES; i++) {
+		if (!hash_files[i].present)
+			continue;
+		hash_files[i].hash_header.version = HASH_HDR_V1;
+	}
+
 	for (unsigned int i = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
+		hash_tbl_id = fw_table[i].hash_tbl_id;
+		assert(hash_files[hash_tbl_id].present);
+
 		for (unsigned int j = 0; j < fw_table[i].num_hash_entries; j++) {
 			if (fw_table[i].hash_entries[j].sha_len == SHA256_DIGEST_LENGTH) {
-				hash_header.no_of_entries_256++;
+				hash_files[hash_tbl_id].hash_header.no_of_entries_256++;
 			} else if (fw_table[i].hash_entries[j].sha_len ==
 								SHA384_DIGEST_LENGTH) {
-				hash_header.no_of_entries_384++;
+				hash_files[hash_tbl_id].hash_header.no_of_entries_384++;
 			} else if (fw_table[i].hash_entries[j].sha_len) {
 				fprintf(stderr, "%s: Error invalid sha_len %d\n",
 						__func__, fw_table[i].hash_entries[j].sha_len);
@@ -154,28 +214,34 @@ static void write_psp_firmware_hash(const char *filename,
 		}
 	}
 
-	write_or_fail(fd, &hash_header, sizeof(hash_header));
+	for (unsigned int i = 0; i < MAX_NUM_HASH_TABLES; i++) {
+		if (!hash_files[i].present)
+			continue;
+		write_or_fail(hash_files[i].fd, &hash_files[i].hash_header,
+						sizeof(hash_files[i].hash_header));
+	}
 
 	/* Add all the SHA256 hash entries first followed by SHA384 entries. PSP verstage
 	   processes the table in that order. Mixing and matching SHA256 and SHA384 entries
 	   will cause the hash verification failure at run-time. */
 	for (unsigned int i = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
+		hash_tbl_id = fw_table[i].hash_tbl_id;
 		for (unsigned int j = 0; j < fw_table[i].num_hash_entries; j++) {
 			if (fw_table[i].hash_entries[j].sha_len == SHA256_DIGEST_LENGTH)
-				write_one_psp_firmware_hash_entry(fd,
-						&fw_table[i].hash_entries[j]);
+				write_one_psp_firmware_hash_entry(hash_files[hash_tbl_id].fd,
+								&fw_table[i].hash_entries[j]);
 		}
 	}
 
 	for (unsigned int i = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
+		hash_tbl_id = fw_table[i].hash_tbl_id;
 		for (unsigned int j = 0; j < fw_table[i].num_hash_entries; j++) {
 			if (fw_table[i].hash_entries[j].sha_len == SHA384_DIGEST_LENGTH)
-				write_one_psp_firmware_hash_entry(fd,
-						&fw_table[i].hash_entries[j]);
+				write_one_psp_firmware_hash_entry(hash_files[hash_tbl_id].fd,
+								&fw_table[i].hash_entries[j]);
 		}
 	}
 
-	close(fd);
 	for (unsigned int i = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
 		if (!fw_table[i].num_hash_entries || !fw_table[i].hash_entries)
 			continue;
@@ -204,8 +270,6 @@ void process_signed_psp_firmwares(const char *signed_rom,
 	int signed_rom_fd;
 	ssize_t bytes, align_bytes;
 	uint8_t *buf;
-	char *signed_rom_hash;
-	size_t signed_rom_hash_strlen;
 	struct amd_fw_header header;
 	struct stat fd_stat;
 	/* Every blob in amdfw*.rom has to start at address aligned to 0x100. Prepare an
@@ -323,6 +387,7 @@ void process_signed_psp_firmwares(const char *signed_rom,
 		fw_table[i].fw_id = get_psp_fw_type(soc_id, &header);
 		fw_table[i].addr_signed = signed_start_addr;
 		fw_table[i].file_size = (uint32_t)fd_stat.st_size;
+		hash_files[fw_table[i].hash_tbl_id].present = true;
 
 		signed_start_addr += fd_stat.st_size + align_bytes;
 
@@ -332,15 +397,7 @@ void process_signed_psp_firmwares(const char *signed_rom,
 
 	close(signed_rom_fd);
 
-	/* signed_rom file name + ".hash" + '\0' */
-	signed_rom_hash_strlen = strlen(signed_rom) + strlen(HASH_FILE_SUFFIX) + 1;
-	signed_rom_hash = malloc(signed_rom_hash_strlen);
-	if (!signed_rom_hash) {
-		fprintf(stderr, "malloc(%lu) failed\n", signed_rom_hash_strlen);
-		exit(-1);
-	}
-	strcpy(signed_rom_hash, signed_rom);
-	strcat(signed_rom_hash, HASH_FILE_SUFFIX);
-	write_psp_firmware_hash(signed_rom_hash, fw_table);
-	free(signed_rom_hash);
+	open_psp_fw_hash_files(signed_rom);
+	write_psp_firmware_hash(fw_table);
+	close_psp_fw_hash_files();
 }

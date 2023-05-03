@@ -356,6 +356,7 @@ typedef struct _amd_fw_entry {
 	/* Some files that don't have amd_fw_header have to be skipped from hashing. These files
 	   include but not limited to: *iKek*, *.tkn, *.stkn */
 	bool skip_hashing;
+	uint8_t hash_tbl_id;
 	uint32_t num_hash_entries;
 	amd_fw_entry_hash *hash_entries;
 	bool generate_manifest;
@@ -390,6 +391,9 @@ struct amd_fw_header {
 	uint8_t reserved_80[128];
 } __packed;
 
+/* Based on the available PSP resources and increasing number of signed PSP binaries,
+   AMD recommends to split the hash table into 3 parts for now. */
+#define MAX_NUM_HASH_TABLES 3
 struct psp_fw_hash_table {
 	uint16_t version;
 	uint16_t no_of_entries_256;

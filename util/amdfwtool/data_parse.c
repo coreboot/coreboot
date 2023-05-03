@@ -46,6 +46,19 @@ static const char entries_line_regex[] =
 	      Lx1: Use default value for normal mode, level 1 for A/B mode
 	 */
 	"([[:space:]]+([Ll][12bxBX]{1,2}))?"
+	/* followed by an optional whitespace + chunk of nonwhitespace for hash table field
+	   1st char H: Indicator of field "Hash Table ID"
+	   2nd char:
+	      Table ID to be dropped in.
+	      0: Table 0 / Default Unified Table
+	      1: Table 1
+	      ...
+	      9: Table 9
+
+	   Examples:
+	      H2: Put the hash for the concerned entry in Hash Table 2
+	 */
+	"([[:space:]]+([Hh][0-9]+))?"
 	/* followed by optional whitespace */
 	"[[:space:]]*$";
 static regex_t entries_line_expr;
@@ -55,6 +68,8 @@ enum match_id {
 	FW_FILE,
 	OPT_SPACE1,
 	OPT_LEVEL,
+	OPT_SPACE2,
+	OPT_HASH_TABLE_ID,
 	N_MATCHES,
 };
 
@@ -120,7 +135,7 @@ extern amd_fw_entry amd_psp_fw_table[];
 extern amd_bios_entry amd_bios_table[];
 
 static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
-		char level_to_set, amd_cb_config *cb_config)
+		char level_to_set, uint8_t hash_tbl_id, amd_cb_config *cb_config)
 {
 	amd_fw_type fw_type = AMD_FW_INVALID;
 	amd_fw_entry *psp_tableptr;
@@ -477,6 +492,7 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 				psp_tableptr->filename = filename;
 				SET_LEVEL(psp_tableptr, level_to_set, PSP,
 					cb_config->recovery_ab);
+				psp_tableptr->hash_tbl_id = hash_tbl_id;
 				break;
 			}
 			psp_tableptr++;
@@ -584,10 +600,12 @@ static int is_valid_entry(char *oneline, regmatch_t match[N_MATCHES])
 		/* match[1]: FW type
 		   match[2]: FW filename
 		   match[4]: Optional directory level to be dropped
+		   match[6]: Optional hash table ID to put the hash for the entry
 		 */
 		oneline[match[FW_TYPE].rm_eo] = '\0';
 		oneline[match[FW_FILE].rm_eo] = '\0';
 		oneline[match[OPT_LEVEL].rm_eo] = '\0';
+		oneline[match[OPT_HASH_TABLE_ID].rm_eo] = '\0';
 		retval = 1;
 	} else {
 		retval = 0;
@@ -611,11 +629,10 @@ static int skip_comment_blank_line(char *oneline)
 	return retval;
 }
 
-char get_level_from_config(char *line, regoff_t level_index, amd_cb_config *cb_config)
+static char get_level_from_config(char *line, regoff_t level_index, amd_cb_config *cb_config)
 {
 	char lvl = 'x';
-	/* If the optional level field is present,
-	   extract the level char. */
+	/* If the optional level field is present, extract the level char. */
 	if (level_index != -1) {
 		if (cb_config->recovery_ab == 0)
 			lvl = line[level_index + 1];
@@ -630,18 +647,29 @@ char get_level_from_config(char *line, regoff_t level_index, amd_cb_config *cb_c
 	return lvl;
 }
 
+static uint8_t get_hash_tbl_id(char *line, regoff_t hash_tbl_index)
+{
+	uint8_t tbl = 0;
+	/* If the optional hash table field is present, extract the table id char. */
+	if (hash_tbl_index != -1)
+		tbl = (uint8_t)atoi(&line[hash_tbl_index + 1]);
+
+	assert(tbl < MAX_NUM_HASH_TABLES);
+	return tbl;
+}
+
 static uint8_t process_one_line(char *oneline, regmatch_t *match, char *dir,
 	amd_cb_config *cb_config)
 {
 	char *path_filename, *fn = &(oneline[match[FW_FILE].rm_so]);
 	char *fw_type_str = &(oneline[match[FW_TYPE].rm_so]);
-	char ch_lvl = 'x';
 	regoff_t ch_lvl_index = match[OPT_LEVEL].rm_so == match[OPT_LEVEL].rm_eo ?
 								-1 : match[OPT_LEVEL].rm_so;
-
-	/* If the optional level field is present,
-	   extract the level char. */
-	ch_lvl = get_level_from_config(oneline, ch_lvl_index, cb_config);
+	regoff_t ch_hash_tbl_index =
+		match[OPT_HASH_TABLE_ID].rm_so == match[OPT_HASH_TABLE_ID].rm_eo ?
+							-1 : match[OPT_HASH_TABLE_ID].rm_so;
+	char ch_lvl = get_level_from_config(oneline, ch_lvl_index, cb_config);
+	uint8_t ch_hash_tbl = get_hash_tbl_id(oneline, ch_hash_tbl_index);
 
 	path_filename = malloc(MAX_LINE_SIZE * 2 + 2);
 	if (strchr(fn, '/'))
@@ -652,7 +680,7 @@ static uint8_t process_one_line(char *oneline, regmatch_t *match, char *dir,
 				MAX_LINE_SIZE, dir, MAX_LINE_SIZE, fn);
 
 	if (find_register_fw_filename_psp_dir(
-			fw_type_str, path_filename, ch_lvl, cb_config) == 0) {
+			fw_type_str, path_filename, ch_lvl, ch_hash_tbl, cb_config) == 0) {
 		if (find_register_fw_filename_bios_dir(
 				fw_type_str, path_filename, ch_lvl, cb_config) == 0) {
 			fprintf(stderr, "Module's name \"%s\" is not valid\n", fw_type_str);

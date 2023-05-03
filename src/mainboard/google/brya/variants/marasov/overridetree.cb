@@ -88,7 +88,7 @@ chip soc/intel/alderlake
 
 	# As per Intel Advisory doc#723158, the change is required to prevent possible
 	# display flickering issue.
-	register "usb2_phy_sus_pg_disable" = "1"
+	register "disable_dynamic_tccold_handshake" = "true"
 
 	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,

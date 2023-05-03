@@ -961,6 +961,14 @@ M:	Marcello Sylvester Bauer <info@marcellobauer.com>
 S:	Supported
 F:	payloads/external/LinuxBoot/
 
+EDK2 PAYLOAD INTEGRATION
+M:	Benjamin Doron <benjamin.doron00@gmail.com>
+M:	Matt DeVillier <matt.devillier@gmail.com>
+M:	Sean Rhodes <sean@starlabs.systems>
+M:	Lean Sheng Tan <sheng.tan@9elements.com>
+S:	Supported
+F:	payloads/external/edk2/
+
 ################################################################################
 # Utilities
 ################################################################################

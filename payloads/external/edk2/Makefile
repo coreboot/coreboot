@@ -115,6 +115,10 @@ endif
 ifeq ($(CONFIG_EDK2_SECURE_BOOT_SUPPORT), y)
 BUILD_STR += -D SECURE_BOOT_ENABLE=TRUE
 endif
+# PCIEXP_SUPPORT_RESIZABLE_BARS = FALSE
+ifeq ($(CONFIG_PCIEXP_SUPPORT_RESIZABLE_BARS), y)
+BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdPcieResizableBarSupport=TRUE
+endif
 
 #
 # EDKII has the below PCDs that are relevant to coreboot:

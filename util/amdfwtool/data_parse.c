@@ -29,22 +29,7 @@ static const char entries_line_regex[] =
 	"[[:space:]]+"
 	/* followed by a chunk of nonwhitespace for filename field */
 	"([^[:space:]]+)"
-	/* followed by optional whitespace */
-	"[[:space:]]*$";
-static regex_t entries_line_expr;
-
-static const char entries_lvl_line_regex[] =
-	/* optional whitespace */
-	"^[[:space:]]*"
-	/* followed by a chunk of nonwhitespace for macro field */
-	"([^[:space:]]+)"
-	/* followed by one or more whitespace characters */
-	"[[:space:]]+"
-	/* followed by a chunk of nonwhitespace for filename field */
-	"([^[:space:]]+)"
-	/* followed by one or more whitespace characters */
-	"[[:space:]]+"
-	/* followed by a chunk of nonwhitespace for level field
+	/* followed by an optional whitespace + chunk of nonwhitespace for level field
 	   1st char L: Indicator of field "level"
 	   2nd char:
 	      Directory level to be dropped in.
@@ -60,10 +45,18 @@ static const char entries_lvl_line_regex[] =
 	      L12: Level 1 for normal mode, level 2 for A/B mode
 	      Lx1: Use default value for normal mode, level 1 for A/B mode
 	 */
-	"([Ll][12bxBX]{1,2})"
+	"([[:space:]]+([Ll][12bxBX]{1,2}))?"
 	/* followed by optional whitespace */
 	"[[:space:]]*$";
-static regex_t entries_lvl_line_expr;
+static regex_t entries_line_expr;
+
+enum match_id {
+	FW_TYPE = 1,
+	FW_FILE,
+	OPT_SPACE1,
+	OPT_LEVEL,
+	N_MATCHES,
+};
 
 void compile_reg_expr(int cflags, const char *expr, regex_t *reg)
 {
@@ -579,7 +572,6 @@ int get_input_file_line(FILE *f, char line[], int line_buf_size)
 	return OK;
 }
 
-#define N_MATCHES 4
 static int is_valid_entry(char *oneline, regmatch_t match[N_MATCHES])
 {
 	int retval, index;
@@ -588,18 +580,14 @@ static int is_valid_entry(char *oneline, regmatch_t match[N_MATCHES])
 		match[index].rm_so = -1;
 		match[index].rm_eo = -1;
 	}
-	if (regexec(&entries_line_expr, oneline, 3, match, 0) == 0) {
-		oneline[match[1].rm_eo] = '\0';
-		oneline[match[2].rm_eo] = '\0';
-		retval = 1;
-	} else if (regexec(&entries_lvl_line_expr, oneline, 4, match, 0) == 0) {
+	if (regexec(&entries_line_expr, oneline, N_MATCHES, match, 0) == 0) {
 		/* match[1]: FW type
 		   match[2]: FW filename
-		   match[3]: Directory level to be dropped
+		   match[4]: Optional directory level to be dropped
 		 */
-		oneline[match[1].rm_eo] = '\0';
-		oneline[match[2].rm_eo] = '\0';
-		oneline[match[3].rm_eo] = '\0';
+		oneline[match[FW_TYPE].rm_eo] = '\0';
+		oneline[match[FW_FILE].rm_eo] = '\0';
+		oneline[match[OPT_LEVEL].rm_eo] = '\0';
 		retval = 1;
 	} else {
 		retval = 0;
@@ -645,10 +633,11 @@ char get_level_from_config(char *line, regoff_t level_index, amd_cb_config *cb_c
 static uint8_t process_one_line(char *oneline, regmatch_t *match, char *dir,
 	amd_cb_config *cb_config)
 {
-	char *path_filename, *fn = &(oneline[match[2].rm_so]);
-	char *fw_type_str = &(oneline[match[1].rm_so]);
+	char *path_filename, *fn = &(oneline[match[FW_FILE].rm_so]);
+	char *fw_type_str = &(oneline[match[FW_TYPE].rm_so]);
 	char ch_lvl = 'x';
-	regoff_t ch_lvl_index = match[3].rm_so;
+	regoff_t ch_lvl_index = match[OPT_LEVEL].rm_so == match[OPT_LEVEL].rm_eo ?
+								-1 : match[OPT_LEVEL].rm_so;
 
 	/* If the optional level field is present,
 	   extract the level char. */
@@ -703,6 +692,8 @@ static bool is_second_gen(enum platform platform_type)
 	}
 }
 
+#define FW_LOCATION "FIRMWARE_LOCATION"
+#define SOC_NAME "SOC_NAME"
 /*
   return value:
 	0: The config file can not be parsed correctly.
@@ -725,8 +716,6 @@ uint8_t process_config(FILE *config, amd_cb_config *cb_config)
 		blank_or_comment_regex, &blank_or_comment_expr);
 	compile_reg_expr(REG_EXTENDED | REG_NEWLINE,
 		entries_line_regex, &entries_line_expr);
-	compile_reg_expr(REG_EXTENDED | REG_NEWLINE,
-		entries_lvl_line_regex, &entries_lvl_line_expr);
 
 	/* Get a line */
 	/* Get FIRMWARE_LOCATION in the first loop */
@@ -735,14 +724,14 @@ uint8_t process_config(FILE *config, amd_cb_config *cb_config)
 		if (skip_comment_blank_line(oneline))
 			continue;
 		if (is_valid_entry(oneline, match)) {
-			if (strcmp(&(oneline[match[1].rm_so]), "FIRMWARE_LOCATION") == 0) {
-				dir_len = match[2].rm_eo - match[2].rm_so;
+			if (strcmp(&(oneline[match[FW_TYPE].rm_so]), FW_LOCATION) == 0) {
+				dir_len = match[FW_FILE].rm_eo - match[FW_FILE].rm_so;
 				assert(dir_len < MAX_LINE_SIZE);
 				snprintf(dir, MAX_LINE_SIZE, "%.*s", dir_len,
-					&(oneline[match[2].rm_so]));
-			} else if (strcmp(&(oneline[match[1].rm_so]), "SOC_NAME") == 0) {
-				cb_config->soc_id =
-					identify_platform(&(oneline[match[2].rm_so]));
+					&(oneline[match[FW_FILE].rm_so]));
+			} else if (strcmp(&(oneline[match[FW_TYPE].rm_so]), SOC_NAME) == 0) {
+				cb_config->soc_id = identify_platform(
+							&(oneline[match[FW_FILE].rm_so]));
 			}
 		}
 	}
@@ -770,8 +759,8 @@ uint8_t process_config(FILE *config, amd_cb_config *cb_config)
 		if (skip_comment_blank_line(oneline))
 			continue;
 		if (is_valid_entry(oneline, match)) {
-			if (strcmp(&(oneline[match[1].rm_so]), "FIRMWARE_LOCATION") == 0 ||
-				strcmp(&(oneline[match[1].rm_so]), "SOC_NAME") == 0) {
+			if (strcmp(&(oneline[match[FW_TYPE].rm_so]), FW_LOCATION) == 0 ||
+				strcmp(&(oneline[match[FW_TYPE].rm_so]), SOC_NAME) == 0) {
 				continue;
 			} else {
 				if (process_one_line(oneline, match, dir,

@@ -423,40 +423,6 @@ static const struct pad_config fpmcu_gpio_table[] = {
 	PAD_NC(GPP_D17, NONE),
 };
 
-const struct pad_config *variant_romstage_sku_gpio_table(size_t *num)
-{
-	uint32_t sku_id = variant_board_sku();
-	const struct pad_config *board_gpio_tables;
-
-	switch (sku_id) {
-	case SKU_0_EKKO:
-	case SKU_1_EKKO:
-	case SKU_2_EKKO:
-	case SKU_3_EKKO:
-	case SKU_4_EKKO:
-	case SKU_5_EKKO:
-	case SKU_6_EKKO:
-	case SKU_7_EKKO:
-	case SKU_0_BARD:
-	case SKU_1_BARD:
-	case SKU_2_BARD:
-	case SKU_3_BARD:
-	case SKU_4_BARD:
-	case SKU_5_BARD:
-	case SKU_6_BARD:
-	case SKU_7_BARD:
-		*num = ARRAY_SIZE(fpmcu_gpio_table);
-		board_gpio_tables = fpmcu_gpio_table;
-		break;
-	default:
-		/* Initialized in variant_sku_gpio_table */
-		*num = 0;
-		board_gpio_tables = NULL;
-		break;
-	}
-	return board_gpio_tables;
-}
-
 const struct pad_config *variant_sku_gpio_table(size_t *num)
 {
 	uint32_t sku_id = variant_board_sku();
@@ -502,8 +468,8 @@ const struct pad_config *variant_sku_gpio_table(size_t *num)
 	case SKU_5_BARD:
 	case SKU_6_BARD:
 	case SKU_7_BARD:
-		*num = 0;
-		board_gpio_tables = NULL;
+		*num = ARRAY_SIZE(fpmcu_gpio_table);
+		board_gpio_tables = fpmcu_gpio_table;
 		break;
 	default:
 		*num = ARRAY_SIZE(nami_default_sku_gpio_table);

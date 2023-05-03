@@ -18,10 +18,10 @@
 #if CONFIG(USE_OPTION_TABLE)
 #include "option_table.h"
 #if CMOS_VSTART_mrc_status != CMOS_OFFSET_MRC_STATUS * 8
-#error "CMOS start for CPX-SP MRC status byte is not correct, check your cmos.layout"
+#error "CMOS start for SPR-SP MRC status byte is not correct, check your cmos.layout"
 #endif
 #if CMOS_VLEN_mrc_status != 8
-#error "CMOS length for CPX-SP MRC status byte is not correct, check your cmos.layout"
+#error "CMOS length for SPR-SP MRC status byte is not correct, check your cmos.layout"
 #endif
 #endif
 

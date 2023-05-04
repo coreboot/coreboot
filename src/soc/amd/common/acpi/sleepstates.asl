@@ -1,17 +1,18 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 /* S1 support: bit 0, S2 Support: bit 1, etc. S0 & S5 assumed */
-Name(SSFG, 0x09)
-If (CONFIG(HAVE_ACPI_RESUME)) {
-	SSFG = 0x0D
-}
+#if CONFIG(HAVE_ACPI_RESUME)
+Name (SSFG, 0x0D)
+#else
+Name (SSFG, 0x09)
+#endif
 
 If (CONFIG(ACPI_S1_NOT_SUPPORTED)) {
 	SSFG &= 0xfe
 }
 
 If (CONFIG(DISABLE_ACPI_HIBERNATE)) {
-	SSFG &= 0xF7
+	SSFG &= 0xf7
 }
 
 External (\OSFG, IntObj)

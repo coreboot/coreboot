@@ -25,4 +25,7 @@ bool early_graphics_init(void);
 /* Clear graphics configuration, turn off the displays. */
 void early_graphics_stop(void);
 
+/* Allow early configuration of any display related GPIOs as needed */
+const struct pad_config *variant_early_graphics_gpio_table(size_t *num);
+
 #endif	/* SOC_INTEL_COMMON_BLOCK_GRAPHICS_EARLY_H */

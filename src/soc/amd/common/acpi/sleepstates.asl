@@ -5,8 +5,18 @@ Name(SSFG, 0x09)
 If (CONFIG(HAVE_ACPI_RESUME)) {
 	SSFG = 0x0D
 }
+
+If (CONFIG(ACPI_S1_NOT_SUPPORTED)) {
+	SSFG &= 0xfe
+}
+
 If (CONFIG(DISABLE_ACPI_HIBERNATE)) {
 	SSFG &= 0xF7
+}
+
+External (\OSFG, IntObj)
+If (CondRefOf(\OSFG)) {
+	SSFG = \OSFG
 }
 
 /* Supported sleep states: */

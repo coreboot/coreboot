@@ -435,6 +435,7 @@ void acpigen_write_PTC(uint8_t duty_width, uint8_t duty_offset, uint16_t p_cnt);
 void acpigen_write_PRW(u32 wake, u32 level);
 void acpigen_write_STA(uint8_t status);
 void acpigen_write_STA_ext(const char *namestring);
+void acpigen_write_BBN(uint8_t base_bus_number);
 void acpigen_write_TPC(const char *gnvs_tpc_limit);
 void acpigen_write_PSS_package(u32 coreFreq, u32 power, u32 transLat,
 			u32 busmLat, u32 control, u32 status);

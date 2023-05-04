@@ -821,6 +821,17 @@ void acpigen_write_STA_ext(const char *namestring)
 	acpigen_pop_len();
 }
 
+void acpigen_write_BBN(uint8_t base_bus_number)
+{
+	/*
+	 * Method (_BBN, 0, NotSerialized) { Return (status) }
+	 */
+	acpigen_write_method("_BBN", 0);
+	acpigen_emit_byte(RETURN_OP);
+	acpigen_write_byte(base_bus_number);
+	acpigen_pop_len();
+}
+
 void acpigen_write_LPI_package(u64 level, const struct acpi_lpi_state *states, u16 nentries)
 {
 	/*

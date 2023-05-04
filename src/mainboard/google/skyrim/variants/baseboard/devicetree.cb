@@ -1,6 +1,13 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 chip soc/amd/mendocino
 
+	register "common_config.acp_config" = "{
+		.acp_pin_cfg = ACP_PINS_HDA_3SDI_PDM6_I2S,
+		.acp_i2s_wake_enable = 0,
+		.acp_pme_enable = 0,
+		.dmic_present = 1,
+	}"
+
 	# eSPI Configuration
 	register "common_config.espi_config" = "{
 		.std_io_decode_bitmap = ESPI_DECODE_IO_0x80_EN | ESPI_DECODE_IO_0X60_0X64_EN,

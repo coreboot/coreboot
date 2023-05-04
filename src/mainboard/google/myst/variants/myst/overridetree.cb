@@ -26,6 +26,10 @@ fw_config
 		option DISABLED 0
 		option ENABLED 1
 	end
+	field STORAGE 11
+		option EMMC 0
+		option NVME 1
+	end
 end
 
 chip soc/amd/phoenix

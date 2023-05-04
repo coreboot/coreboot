@@ -12,6 +12,12 @@
 #define SD_DEVFN	PCIE_GPP_2_3_DEVFN
 #define NVME_DEVFN	PCIE_GPP_2_4_DEVFN
 
+enum dxio_port_id {
+	DXIO_WWAN,
+	DXIO_WLAN,
+	DXIO_SD,
+	DXIO_STORAGE
+};
 
 /* This function provides base GPIO configuration table. */
 void baseboard_gpio_table(const struct soc_amd_gpio **gpio, size_t *size);

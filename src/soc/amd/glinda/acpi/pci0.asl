@@ -12,7 +12,7 @@ Device(PCI0) {
 	}
 
 	Method(_STA, 0, NotSerialized) {
-		Return(0x0B)	/* Status is visible */
+		Return(0x0f)	/* Status is visible */
 	}
 
 	/* Operating System Capabilities Method */

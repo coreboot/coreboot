@@ -76,12 +76,12 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_NF(GPIO_68, SPI1_DAT2, PULL_NONE),
 	/* ESPI1_DATA3 */
 	PAD_NF(GPIO_69, SPI1_DAT3, PULL_NONE),
-	/* SOC_CLK_FPMCU_R TODO(276939271): Selectively init */
-	PAD_NF(GPIO_70, SPI2_CLK, PULL_NONE),
+	/* SOC_CLK_FPMCU_R if SPI FP populated */
+	PAD_NC(GPIO_70),
 	/* EN_TCHSCR_REPORT */
 	PAD_GPO(GPIO_74, LOW),
-	/* SOC_CLK_FPMCU_R_L TODO(276939271): Selectively init */
-	PAD_NF(GPIO_75, SPI2_CS1_L, PULL_NONE),
+	/* SOC_CLK_FPMCU_R_L if SPI FP populated */
+	PAD_NC(GPIO_75),
 	/* Unused */
 	PAD_NC(GPIO_76),
 	/* ESPI_SOC_CLK_EC_R */
@@ -106,10 +106,10 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_GPI(GPIO_91, PULL_NONE),
 	/* CLK_REQ0_L / WLAN */
 	PAD_NF(GPIO_92, CLK_REQ0_L, PULL_NONE),
-	/* SPI_SOC_DO_FPMCU_DI_R TODO(276939271): Selectively init */
-	PAD_NF(GPIO_104, SPI2_DAT0, PULL_NONE),
-	/* SPI_SOC_DI_FPMCU_DO_R TODO(276939271): Selectively init */
-	PAD_NF(GPIO_105, SPI2_DAT1, PULL_NONE),
+	/* SPI_SOC_DO_FPMCU_DI_R if SPI FP populated */
+	PAD_NC(GPIO_104),
+	/* SPI_SOC_DI_FPMCU_DO_R if SPI FP populated */
+	PAD_NC(GPIO_105),
 	/* RAM_ID_2 */
 	PAD_GPI(GPIO_106, PULL_NONE),
 	/* RAM_ID_3 */
@@ -138,12 +138,12 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	PAD_NC(GPIO_138),
 	/* SOC_BIOS_WP_OD */
 	PAD_GPI(GPIO_139, PULL_NONE),
-	/* UART1_TXD / FPMCU TODO(276939271): Selectively init */
-	PAD_NF(GPIO_140, UART1_TXD, PULL_NONE),
+	/* UART1_TXD if UART FP populated */
+	PAD_NC(GPIO_140),
 	/* UART0_RXD / DBG */
 	PAD_NF(GPIO_141, UART0_RXD, PULL_NONE),
-	/* UART1_RXD  / FPMCU TODO(276939271): Selectively init */
-	PAD_NF(GPIO_142, UART1_RXD, PULL_NONE),
+	/* UART1_RXD if UART FP populated */
+	PAD_NC(GPIO_142),
 	/* UART0_TXD / DBG */
 	PAD_NF(GPIO_143, UART0_TXD, PULL_NONE),
 	/* EN_PP3300_TCHSCR */

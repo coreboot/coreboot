@@ -22,5 +22,7 @@
 #define GPIO_MEM_CONFIG_2	GPP_E01
 #define GPIO_MEM_CONFIG_3	GPP_E12
 #define GPIO_MEM_CH_SEL		GPP_E13
+/* Touchscreen IRQ */
+#define TOUCH_SCR_IRQ		GPP_C07_IRQ
 
 #endif /* __BASEBOARD_GPIO_H__ */

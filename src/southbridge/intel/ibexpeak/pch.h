@@ -66,10 +66,6 @@ void pch_enable(struct device *dev);
 #define MAINBOARD_POWER_ON	1
 #define MAINBOARD_POWER_KEEP	2
 
-/* PM I/O Space */
-#define UPRWC			0x3c
-#define  UPRWC_WR_EN		(1 << 1) /* USB Per-Port Registers Write Enable */
-
 /* PCI Configuration Space (D30:F0): PCI2PCI */
 #define PSTS	0x06
 #define SMLT	0x1b
@@ -440,6 +436,11 @@ void pch_enable(struct device *dev);
 #define SMI_STS		0x34
 #define ALT_GP_SMI_EN	0x38
 #define ALT_GP_SMI_STS	0x3a
+
+/* PM I/O Space */
+#define UPRWC			0x3c
+#define  UPRWC_WR_EN		(1 << 1) /* USB Per-Port Registers Write Enable */
+
 #define GPE_CNTL	0x42
 #define DEVACT_STS	0x44
 #define PM2_CNT		0x50 // mobile only

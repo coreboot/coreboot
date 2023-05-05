@@ -8,11 +8,13 @@
 #include <vb2_api.h>
 
 /* MKHI Command groups */
-#define MKHI_GROUP_ID_CBM	0x0
-#define MKHI_GROUP_ID_HMRFPO	0x5
-#define MKHI_GROUP_ID_GEN	0xff
-#define MKHI_GROUP_ID_BUP_COMMON	0xf0
-#define MKHI_GROUP_ID_FWCAPS	0x3
+enum mkhi_group_id {
+	MKHI_GROUP_ID_CBM	 = 0x0,
+	MKHI_GROUP_ID_HMRFPO	 = 0x5,
+	MKHI_GROUP_ID_GEN	 = 0xff,
+	MKHI_GROUP_ID_BUP_COMMON = 0xf0,
+	MKHI_GROUP_ID_FWCAPS	 = 0x3,
+};
 
 /* Global Reset Command ID */
 #define MKHI_CBM_GLOBAL_RESET_REQ	0xb
@@ -69,9 +71,11 @@
 #define ME_DISABLE_ATTEMPTS	3
 
 /* ME Firmware SKU Types */
-#define ME_HFS3_FW_SKU_CONSUMER	0x2
-#define ME_HFS3_FW_SKU_CORPORATE	0x3
-#define ME_HFS3_FW_SKU_LITE	0x5
+enum me_fw_sku {
+	ME_HFS3_FW_SKU_CONSUMER	 = 0x2,
+	ME_HFS3_FW_SKU_CORPORATE = 0x3,
+	ME_HFS3_FW_SKU_LITE	 = 0x5,
+};
 
 /* Number of cse boot performance data */
 #define NUM_CSE_BOOT_PERF_DATA	64

@@ -15,7 +15,7 @@ Method(_BBN, 0, NotSerialized)	/* Bus number = 0 */
 
 Method(_STA, 0, NotSerialized)
 {
-	Return(0x0B)	/* Status is visible */
+	Return(0x0f)	/* Status is visible */
 }
 
 Method(_PRT,0, NotSerialized)

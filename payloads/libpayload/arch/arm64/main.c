@@ -30,11 +30,6 @@
 #include <libpayload.h>
 #include <arch/mmu.h>
 
-int main_argc;    /**< The argc value to pass to main() */
-
-/** The argv value to pass to main() */
-char *main_argv[MAX_ARGC_COUNT];
-
 /*
  * Func: pre_sysinfo_scan_mmu_setup
  * Desc: We need to setup and enable MMU before we can go to scan coreboot
@@ -125,7 +120,7 @@ void start_main(void)
 	 * In the future we may care about the return value.
 	 */
 
-	(void) main(main_argc, (main_argc != 0) ? main_argv : NULL);
+	(void) main(0, NULL);
 
 	/*
 	 * Returning here will go to the _leave function to return

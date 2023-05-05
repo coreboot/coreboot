@@ -55,11 +55,6 @@ mb_header:
 	.long _end
 	.long _init
 
-#define CB_MAGIC_VALUE	0x12345678
-#define CB_MAGIC	0x04
-#define CB_ARGV		0x08
-#define CB_ARGC		0x10
-
 /*
  * This function saves off the previous stack and switches us to our
  * own execution environment.
@@ -72,18 +67,10 @@ _init:
 	movl %eax, loader_eax
 	movl %ebx, loader_ebx
 
-	/* Copy argv[] and argc as demanded by the Payload API,
-	 * see https://www.coreboot.org/Payload_API and exec.S.
-	 */
-	cmpl $CB_MAGIC_VALUE, CB_MAGIC(%esp)
-	jne 1f
+	/* save pointer to coreboot tables */
+	movl 4(%esp), %eax
+	movl %eax, cb_header_ptr
 
-	movl CB_ARGV(%esp), %eax
-	movl %eax, main_argv
-
-	movl CB_ARGC(%esp), %eax
-	movl %eax, main_argc
-1:
 	/* Store current stack pointer and set up new stack. */
 	movl %esp, %eax
 	movl $_stack, %esp

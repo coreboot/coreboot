@@ -59,6 +59,9 @@ int cb_parse_arch_specific(struct cb_record *rec, struct sysinfo_t *info)
 	return 1;
 }
 
+/* This pointer gets set in head.S and is passed in from coreboot. */
+void *cb_header_ptr;
+
 int get_coreboot_info(struct sysinfo_t *info)
 {
 	int ret;
@@ -67,7 +70,10 @@ int get_coreboot_info(struct sysinfo_t *info)
 	 * an invalid value. */
 	info->x86_rom_var_mtrr_index = -1;
 
-	ret = cb_parse_header(phys_to_virt(0x00000000), 0x1000, info);
+	ret = cb_parse_header(cb_header_ptr, 1, info);
+
+	if (ret)
+		ret = cb_parse_header(phys_to_virt(0x00000000), 0x1000, info);
 
 	if (ret)
 		ret = cb_parse_header(phys_to_virt(0x000f0000), 0x1000, info);

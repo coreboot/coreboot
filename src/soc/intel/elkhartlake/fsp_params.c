@@ -401,6 +401,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		for (i = 0; i < CONFIG_MAX_SATA_PORTS; i++) {
 			params->SataPortsEnable[i] = config->SataPortsEnable[i];
 			params->SataPortsDevSlp[i] = config->SataPortsDevSlp[i];
+			params->SataPortsSolidStateDrive[i] = config->SataPortsSSD[i];
 			if (config->SataPortsEnableDitoConfig[i]) {
 				params->SataPortsDmVal[i] =
 					config->SataPortsDmVal[i] ? : DEF_DMVAL;

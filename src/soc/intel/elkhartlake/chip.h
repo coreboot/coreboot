@@ -186,6 +186,7 @@ struct soc_intel_elkhartlake_config {
 	uint8_t SataSalpSupport;
 	uint8_t SataPortsEnable[CONFIG_MAX_SATA_PORTS];
 	uint8_t SataPortsDevSlp[CONFIG_MAX_SATA_PORTS];
+	uint8_t SataPortsSSD[CONFIG_MAX_SATA_PORTS];
 	enum sata_speed_limit SataSpeed;
 	/*
 	 * Enable(0)/Disable(1) SATA Power Optimizer on PCH side.

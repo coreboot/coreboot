@@ -243,6 +243,9 @@ void amd_pci_domain_fill_ssdt(const struct device *domain)
 	}
 
 	acpigen_write_resourcetemplate_footer();
+
+	acpigen_write_BBN(domain->link_list->secondary);
+
 	/* Scope */
 	acpigen_pop_len();
 }

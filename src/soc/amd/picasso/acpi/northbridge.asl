@@ -6,11 +6,6 @@ Name(_CID, EISAID("PNP0A03"))	/* PCI Root Bridge */
 
 /* Describe the Northbridge devices */
 
-Method(_BBN, 0, NotSerialized)	/* Bus number = 0 */
-{
-	Return(0)
-}
-
 Method(_STA, 0, NotSerialized)
 {
 	Return(0x0f)	/* Status is visible */

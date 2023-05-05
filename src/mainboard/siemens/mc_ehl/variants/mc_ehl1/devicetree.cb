@@ -80,6 +80,8 @@ chip soc/intel/elkhartlake
 	register "SataPortsEnable[1]" = "1"
 	register "SataPortsDevSlp[0]" = "0"
 	register "SataPortsDevSlp[1]" = "0"
+	register "SataPortsSSD[0]" = "1"
+	register "SataPortsSSD[1]" = "1"
 	register "SataSpeed" = "SATA_GEN2"
 
 	register "ScsEmmcHs400Enabled" = "0"

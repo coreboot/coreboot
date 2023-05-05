@@ -982,6 +982,7 @@ static void integrate_psp_firmwares(context *ctx,
 	uint32_t current_table_save;
 	bool recovery_ab = cb_config->recovery_ab;
 	ish_directory_table *ish_a_dir = NULL, *ish_b_dir = NULL;
+	bool use_only_a = (cb_config->soc_id == PLATFORM_PHOENIX); /* TODO: b:285390041 */
 
 	/* This function can create a primary table, a secondary table, or a
 	 * flattened table which contains all applicable types.  These if-else
@@ -1116,10 +1117,12 @@ static void integrate_psp_firmwares(context *ctx,
 			AMD_FW_RECOVERYAB_A, cb_config->soc_id);
 		if (pspdir2_b != NULL)
 			integrate_psp_ab(ctx, pspdir, pspdir2_b, ish_b_dir,
-				AMD_FW_RECOVERYAB_B, cb_config->soc_id);
+				use_only_a ? AMD_FW_RECOVERYAB_A : AMD_FW_RECOVERYAB_B,
+				cb_config->soc_id);
 		else
 			integrate_psp_ab(ctx, pspdir, pspdir2, ish_a_dir,
-				AMD_FW_RECOVERYAB_B, cb_config->soc_id);
+				use_only_a ? AMD_FW_RECOVERYAB_A : AMD_FW_RECOVERYAB_B,
+				cb_config->soc_id);
 
 		count = pspdir->header.num_entries;
 	} else if (pspdir2 != NULL) {

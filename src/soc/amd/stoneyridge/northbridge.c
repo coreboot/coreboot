@@ -167,6 +167,31 @@ static void northbridge_init(struct device *dev)
 	register_new_ioapic((u8 *)IO_APIC2_ADDR);
 }
 
+/* Used by \_SB.PCI0._CRS */
+static void acpi_fill_root_complex_tom(const struct device *device)
+{
+	const char *scope;
+
+	assert(device);
+
+	scope = acpi_device_scope(device);
+	assert(scope);
+	acpigen_write_scope(scope);
+
+	acpigen_write_name_dword("TOM1", get_top_of_mem_below_4gb());
+
+	/*
+	 * Since XP only implements parts of ACPI 2.0, we can't use a qword
+	 * here.
+	 * See http://www.acpi.info/presentations/S01USMOBS169_OS%2520new.ppt
+	 * slide 22ff.
+	 * Shift value right by 20 bit to make it fit into 32bit,
+	 * giving us 1MB granularity and a limit of almost 4Exabyte of memory.
+	 */
+	acpigen_write_name_dword("TOM2", get_top_of_mem_above_4gb() >> 20);
+	acpigen_pop_len();
+}
+
 static unsigned long acpi_fill_hest(acpi_hest_t *hest)
 {
 	void *addr, *current;

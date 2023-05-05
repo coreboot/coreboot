@@ -54,8 +54,6 @@ struct chipset_power_state {
 unsigned long southbridge_write_acpi_tables(const struct device *device, unsigned long current,
 					    struct acpi_rsdp *rsdp);
 
-void acpi_fill_root_complex_tom(const struct device *device);
-
 uintptr_t add_agesa_fsp_acpi_table(guid_t guid, const char *name, acpi_rsdp_t *rsdp,
 				   uintptr_t current);
 

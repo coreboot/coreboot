@@ -74,7 +74,7 @@
 	.function_number = 3,				\
 	.link_speed_capability = GEN3,			\
 	.turn_off_unused_lanes = true,			\
-	.link_aspm = ASPM_L1,				\
+	.link_aspm = ASPM_DISABLED,			\
 	.link_hotplug = HOTPLUG_DISABLED,		\
 	.clk_req = CLK_REQ6,				\
 }
@@ -88,7 +88,7 @@
 	.function_number = 1,				\
 	.link_speed_capability = GEN3,			\
 	.turn_off_unused_lanes = true,			\
-	.link_aspm = ASPM_L1,				\
+	.link_aspm = ASPM_DISABLED,			\
 	.link_hotplug = HOTPLUG_DISABLED,		\
 	.clk_req = CLK_REQ5,				\
 }
@@ -102,7 +102,7 @@
 	.function_number = 2,				\
 	.link_speed_capability = GEN3,			\
 	.turn_off_unused_lanes = true,			\
-	.link_aspm = ASPM_L1,				\
+	.link_aspm = ASPM_DISABLED,			\
 	.link_hotplug = HOTPLUG_DISABLED,		\
 	.clk_req = CLK_REQ4,				\
 }
@@ -116,7 +116,7 @@
 	.function_number = 3,				\
 	.link_speed_capability = GEN3,			\
 	.turn_off_unused_lanes = true,			\
-	.link_aspm = ASPM_L1,				\
+	.link_aspm = ASPM_DISABLED,			\
 	.link_hotplug = HOTPLUG_DISABLED,		\
 	.clk_req = CLK_REQ3,				\
 }
@@ -130,7 +130,7 @@
 	.function_number = 4,				\
 	.link_speed_capability = GEN3,			\
 	.turn_off_unused_lanes = true,			\
-	.link_aspm = ASPM_L1,				\
+	.link_aspm = ASPM_DISABLED,			\
 	.link_hotplug = HOTPLUG_DISABLED,		\
 	.clk_req = CLK_REQ2,				\
 }

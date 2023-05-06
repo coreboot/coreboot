@@ -666,12 +666,10 @@ void mainboard_config_rcba(void);
 #define   TCOSCI_STS	(1 << 6)
 #define   SWGPE_STS	(1 << 2)
 #define   HOT_PLUG_STS	(1 << 1)
-#define GPE0_STS_2	0x24
 #define GPE0_EN		0x28
 #define   PME_B0_EN	(1 << 13)
 #define   PME_EN	(1 << 11)
 #define   TCOSCI_EN	(1 << 6)
-#define GPE0_EN_2	0x2c
 #define SMI_EN		0x30
 #define   INTEL_USB2_EN	 (1 << 18) // Intel-Specific USB2 SMI logic
 #define   LEGACY_USB2_EN (1 << 17) // Legacy USB2 SMI logic

@@ -60,8 +60,8 @@ static void pch_log_gpe(void)
 	pch_log_standard_gpe(GPE0_EN, GPE0_STS);
 
 	/* GPIO 0-15 */
-	gpe0_en = inw(pmbase + GPE0_EN + 2);
-	gpe0_sts = inw(pmbase + GPE0_STS + 2) & gpe0_en;
+	gpe0_en = inw(pmbase + GPE0_EN + sizeof(uint16_t));
+	gpe0_sts = inw(pmbase + GPE0_STS + sizeof(uint16_t)) & gpe0_en;
 	for (i = 0; i <= 15; i++) {
 		if (gpe0_sts & (1 << i))
 			elog_add_event_wake(ELOG_WAKE_SOURCE_GPE, i);
@@ -71,8 +71,8 @@ static void pch_log_gpe(void)
 	 * Now check and log upper status bits
 	 */
 
-	gpe0_en = inl(pmbase + GPE0_EN_2);
-	gpe0_sts = inl(pmbase + GPE0_STS_2) & gpe0_en;
+	gpe0_en = inl(pmbase + GPE0_EN + sizeof(uint32_t));
+	gpe0_sts = inl(pmbase + GPE0_STS + sizeof(uint32_t)) & gpe0_en;
 
 	for (i = 0; i <= 31; i++) {
 		if (!gpe0_high_gpios[i])

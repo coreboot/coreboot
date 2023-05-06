@@ -447,7 +447,7 @@ static u32 clear_lpt_gpe_status(void)
 	};
 
 	/* High bits */
-	print_gpe_status(reset_gpe_status(GPE0_STS_2, GPE0_EN_2),
+	print_gpe_status(reset_gpe_status(GPE0_STS + sizeof(uint32_t), GPE0_EN + sizeof(uint32_t)),
 			 gpe0_sts_bits_high);
 
 	/* Standard GPE and GPIO 0-31 */
@@ -507,7 +507,7 @@ void enable_all_gpe(u32 set1, u32 set2, u32 set3, u32 set4)
 		outl(set4, pmbase + LP_GPE0_EN_4);
 	} else {
 		outl(set1, pmbase + GPE0_EN);
-		outl(set2, pmbase + GPE0_EN_2);
+		outl(set2, pmbase + GPE0_EN + sizeof(u32));
 	}
 }
 

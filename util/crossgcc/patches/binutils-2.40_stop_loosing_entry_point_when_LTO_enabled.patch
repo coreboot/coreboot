@@ -1,0 +1,42 @@
+From 3539414584be0094b0a4fe56dfd64ea79d802edc Mon Sep 17 00:00:00 2001
+From: Nick Clifton <nickc@redhat.com>
+Date: Thu, 4 May 2023 14:24:16 +0100
+Subject: [PATCH] Stop the linker from loosing the entry point for COFF/PE code
+ when compiling with LTO enabled.
+
+  PR 30300
+  * emultempl/pep.em (set_entry_point): Add an undefined reference to the entry point if it has been constructed heuristically.
+  * emultempl/pe.em (set_entry_point): Likewise.
+---
+ 
+diff --git a/ld/emultempl/pe.em b/ld/emultempl/pe.em
+index 55412d6ef9e..1f2a5f310be 100644
+--- a/ld/emultempl/pe.em
++++ b/ld/emultempl/pe.em
+@@ -659,6 +659,9 @@ set_entry_point (void)
+     }
+ 
+   lang_default_entry (entry);
++
++  if (bfd_link_executable (&link_info) && ! entry_from_cmdline)
++    ldlang_add_undef (entry, false);  
+ }
+ 
+ static void
+diff --git a/ld/emultempl/pep.em b/ld/emultempl/pep.em
+index 2a3fd0e6ea8..ca4acaea148 100644
+--- a/ld/emultempl/pep.em
++++ b/ld/emultempl/pep.em
+@@ -631,6 +631,9 @@ set_entry_point (void)
+     }
+ 
+   lang_default_entry (entry);
++
++  if (bfd_link_executable (&link_info) && ! entry_from_cmdline)
++    ldlang_add_undef (entry, false);  
+ }
+ 
+ static void
+-- 
+2.31.1
+

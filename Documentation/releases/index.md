@@ -15,6 +15,7 @@ important is taken care of.
 
 ## Previous releases
 
+* [4.20 - May 2023](coreboot-4.20-relnotes.md)
 * [4.19 - January 2023](coreboot-4.19-relnotes.md)
 * [4.18 - October 2022](coreboot-4.18-relnotes.md)
 * [4.17 - May 2022](coreboot-4.17-relnotes.md)

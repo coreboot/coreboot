@@ -62,6 +62,15 @@ config SOC_INTEL_STORE_CSE_FW_VERSION
 	  ensure this feature is platform specific and only enabled for the platform
 	  that would like to store the CSE version into the CBMEM.
 
+config SOC_INTEL_CSE_FW_PARTITION_CMOS_OFFSET
+	int
+	default 68
+	depends on SOC_INTEL_CSE_LITE_SKU
+	help
+	  This configuration option stores the starting offset of cse fw partition versions in
+	  CMOS memory. The offset should be byte aligned and must leave enough memory to store
+	  required firmware partition versions.
+
 config SOC_INTEL_STORE_ISH_FW_VERSION
 	bool
 	default n

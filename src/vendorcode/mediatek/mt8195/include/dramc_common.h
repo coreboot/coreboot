@@ -249,7 +249,7 @@
     #else
     #define mcSHOW_DBG_MSG(_x_) { if (0) { print _x_; } }
     #define mcSHOW_DBG_MSG2(_x_) { if (0) { print _x_; } }
-    #define mcSHOW_DBG_MSG3(_x_)
+    #define mcSHOW_DBG_MSG3(_x_) { if (0) { print _x_; } }
     #define mcSHOW_DBG_MSG4(_x_) { if (0) { print _x_; } }
     #define mcSHOW_DBG_MSG5(_x_)
     #define mcSHOW_DBG_MSG6(_x_)

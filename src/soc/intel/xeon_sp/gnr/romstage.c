@@ -66,6 +66,11 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 				"FSP_BOOT_WITH_FULL_CONFIGURATION.\n");
 	}
 
+	if (CONFIG(ENABLE_VMX))
+		m_cfg->VmxEnable = 1;
+	else
+		m_cfg->VmxEnable = 0;
+
 	/* Board level settings */
 	mainboard_memory_init_params(mupd);
 }

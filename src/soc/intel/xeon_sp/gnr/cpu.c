@@ -34,8 +34,9 @@ static void each_cpu_init(struct device *cpu)
 	printk(BIOS_SPEW, "%s dev: %s, cpu: %lu, apic_id: 0x%x\n",
 		__func__, dev_path(cpu), cpu_index(), cpu->path.apic.apic_id);
 
-	/* Enable VMX */
-	set_vmx_and_lock();
+	/* Only lock and let vmx enabled by FSP to avoid FSP always triggering power good reset
+	   due to vmx configuration conflict */
+	set_feature_ctrl_lock();
 }
 
 static struct device_operations cpu_dev_ops = {

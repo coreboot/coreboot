@@ -158,7 +158,6 @@ static uint32_t dump_status(int index, int reg_addr)
 static void dump_cse_state(void)
 {
 	union cse_fwsts1 fwsts1;
-	union cse_fwsts2 fwsts2;
 	union cse_fwsts3 fwsts3;
 	union cse_fwsts4 fwsts4;
 	union cse_fwsts5 fwsts5;
@@ -168,7 +167,7 @@ static void dump_cse_state(void)
 		return;
 
 	fwsts1.data = dump_status(1, PCI_ME_HFSTS1);
-	fwsts2.data = dump_status(2, PCI_ME_HFSTS2);
+	dump_status(2, PCI_ME_HFSTS2);
 	fwsts3.data = dump_status(3, PCI_ME_HFSTS3);
 	fwsts4.data = dump_status(4, PCI_ME_HFSTS4);
 	fwsts5.data = dump_status(5, PCI_ME_HFSTS5);

@@ -2,4 +2,3 @@ comment "Mayan"
 
 config BOARD_AMD_MAYAN_PHOENIX
 	bool "->  Mayan for Phoenix SoC"
-	select SOC_AMD_PHOENIX

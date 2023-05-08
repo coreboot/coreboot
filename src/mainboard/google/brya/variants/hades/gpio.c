@@ -49,7 +49,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_A22 : [] ==> NC */
 	PAD_NC(GPP_A22, NONE),
 	/* GPP_A23 : [] ==> HP_INT_L */
-	PAD_CFG_GPI_INT(GPP_A23, NONE, PLTRST, EDGE_BOTH),
+	PAD_CFG_GPI_INT(GPP_A23, UP_20K, PLTRST, EDGE_BOTH),
 
 	/* GPP_B0  : [] ==> SOC_VID0 */
 	PAD_CFG_NF(GPP_B0, NONE, DEEP, NF1),

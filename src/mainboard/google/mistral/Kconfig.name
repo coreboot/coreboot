@@ -2,4 +2,3 @@ comment "Mistral"
 
 config BOARD_GOOGLE_MISTRAL
 	bool "->  Mistral"
-	select BOARD_GOOGLE_MISTRAL_COMMON

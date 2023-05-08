@@ -2,6 +2,9 @@
 config BOARD_GOOGLE_MISTRAL_COMMON  # Umbrella option to be selected by variants
 	def_bool n
 
+config BOARD_GOOGLE_MISTRAL
+	select BOARD_GOOGLE_MISTRAL_COMMON
+
 if BOARD_GOOGLE_MISTRAL_COMMON
 
 config BOARD_SPECIFIC_OPTIONS

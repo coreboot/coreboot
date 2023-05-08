@@ -1181,7 +1181,7 @@ static void store_cse_rw_fw_version(void)
 		return;
 
 	struct get_bp_info_rsp cse_bp_info;
-	if (!cse_get_bp_info(&cse_bp_info)) {
+	if (cse_get_bp_info(&cse_bp_info) != CB_SUCCESS) {
 		printk(BIOS_ERR, "cse_lite: Failed to get CSE boot partition info\n");
 		return;
 	}

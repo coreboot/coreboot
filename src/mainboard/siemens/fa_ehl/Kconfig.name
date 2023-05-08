@@ -2,4 +2,3 @@ comment "FA EHL"
 
 config BOARD_SIEMENS_FA_EHL
 	bool "-> FA EHL"
-	select BOARD_SIEMENS_BASEBOARD_FA_EHL

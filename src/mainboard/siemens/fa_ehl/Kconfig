@@ -7,6 +7,9 @@ config BOARD_SIEMENS_BASEBOARD_FA_EHL
 	select USE_SIEMENS_HWILIB
 	select SOC_INTEL_DISABLE_POWER_LIMITS
 
+config BOARD_SIEMENS_FA_EHL
+	select BOARD_SIEMENS_BASEBOARD_FA_EHL
+
 source "src/mainboard/siemens/fa_ehl/variants/*/Kconfig"
 
 if BOARD_SIEMENS_BASEBOARD_FA_EHL

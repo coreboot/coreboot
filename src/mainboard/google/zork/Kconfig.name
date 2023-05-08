@@ -2,42 +2,30 @@ comment "Zork"
 
 config BOARD_GOOGLE_DALBOZ
 	bool "->  Dalboz"
-	select BOARD_GOOGLE_BASEBOARD_DALBOZ
 
 config BOARD_GOOGLE_VILBOZ
 	bool "->  Vilboz (Lenovo 100e/300e Gen3 AMD)"
-	select BOARD_GOOGLE_BASEBOARD_DALBOZ
-	select DRIVERS_I2C_SX9324
-	select DRIVERS_I2C_SX9324_SUPPORT_LEGACY_LINUX_DRIVER
 
 config BOARD_GOOGLE_EZKINIL
 	bool "->  Ezkinil (Acer Chromebook Spin 514)"
-	select BOARD_GOOGLE_BASEBOARD_TREMBYLE
 
 config BOARD_GOOGLE_MORPHIUS
 	bool "->  Morphius (Lenovo ThinkPad C13 Yoga Chromebook)"
-	select BOARD_GOOGLE_BASEBOARD_TREMBYLE
 
 config BOARD_GOOGLE_TREMBYLE
 	bool "->  Trembyle"
-	select BOARD_GOOGLE_BASEBOARD_TREMBYLE
 
 config BOARD_GOOGLE_BERKNIP
 	bool "->  Berknip (HP Pro c645 Chromebook Enterprise)"
-	select BOARD_GOOGLE_BASEBOARD_TREMBYLE
 
 config BOARD_GOOGLE_WOOMAX
 	bool "->  Woomax (ASUS Chromebook Flip CM5)"
-	select BOARD_GOOGLE_BASEBOARD_TREMBYLE
 
 config BOARD_GOOGLE_DIRINBOZ
 	bool "->  Dirinboz (HP Chromebook 14a-nd0097nr)"
-	select BOARD_GOOGLE_BASEBOARD_DALBOZ
 
 config BOARD_GOOGLE_SHUBOZ
 	bool "->  Shuboz"
-	select BOARD_GOOGLE_BASEBOARD_DALBOZ
 
 config BOARD_GOOGLE_GUMBOZ
 	bool "->  Gumboz (HP Chromebook x360 14a)"
-	select BOARD_GOOGLE_BASEBOARD_DALBOZ

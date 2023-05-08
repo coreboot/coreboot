@@ -1,3 +1,2 @@
 config BOARD_PRODRIVE_ATLAS
 	bool "Atlas"
-	select BOARD_PRODRIVE_ATLAS_BASEBOARD

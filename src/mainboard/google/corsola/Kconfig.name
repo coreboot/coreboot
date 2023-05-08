@@ -2,15 +2,12 @@ comment "Kingler"
 
 config BOARD_GOOGLE_KINGLER
 	bool "->  Kingler"
-	select BOARD_GOOGLE_KINGLER_COMMON
 
 config BOARD_GOOGLE_STEELIX
 	bool "->  Steelix"
-	select BOARD_GOOGLE_KINGLER_COMMON
 
 config BOARD_GOOGLE_VOLTORB
 	bool "->  Voltorb"
-	select BOARD_GOOGLE_KINGLER_COMMON
 
 config BOARD_GOOGLE_PONYTA
 	bool "->  Ponyta"
@@ -20,18 +17,14 @@ comment "Krabby"
 
 config BOARD_GOOGLE_KRABBY
 	bool "->  Krabby"
-	select BOARD_GOOGLE_KRABBY_COMMON
 
 config BOARD_GOOGLE_TENTACRUEL
 	bool "->  Tentacruel"
-	select BOARD_GOOGLE_KRABBY_COMMON
 
 config BOARD_GOOGLE_MAGIKARP
 	bool "->  Magikarp"
-	select BOARD_GOOGLE_KRABBY_COMMON
 
 comment "Staryu"
 
 config BOARD_GOOGLE_STARMIE
 	bool "->  Starmie"
-	select BOARD_GOOGLE_STARYU_COMMON

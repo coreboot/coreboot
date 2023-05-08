@@ -3,6 +3,24 @@
 config BOARD_GOOGLE_GRU_COMMON  # Umbrella option to be selected by variant boards.
 	def_bool n
 
+config BOARD_GOOGLE_KEVIN
+	select BOARD_GOOGLE_GRU_COMMON
+
+config BOARD_GOOGLE_GRU
+	select BOARD_GOOGLE_GRU_COMMON
+
+config BOARD_GOOGLE_BOB
+	select BOARD_GOOGLE_GRU_COMMON
+
+config BOARD_GOOGLE_SCARLET
+	select BOARD_GOOGLE_GRU_COMMON
+
+config BOARD_GOOGLE_NEFARIO
+	select BOARD_GOOGLE_GRU_COMMON
+
+config BOARD_GOOGLE_RAINIER
+	select BOARD_GOOGLE_GRU_COMMON
+
 if BOARD_GOOGLE_GRU_COMMON
 
 # Most Grus have TPM2 but later Kevins don't... decide this in one place for

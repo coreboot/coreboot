@@ -2,4 +2,3 @@ comment "Myst"
 
 config BOARD_GOOGLE_MYST
 	bool "->  Myst"
-	select BOARD_GOOGLE_BASEBOARD_MYST

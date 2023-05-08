@@ -262,6 +262,9 @@ CLANG_CFLAGS_${TARCH}+=-Wno-shift-overflow -Wno-address-of-packed-member -Wno-in
 CLANG_CFLAGS_${TARCH}+=-fbracket-depth=2048 -mllvm -asm-macro-max-nesting-depth=1000
 CLANG_COMPILER_RT_${TARCH}:=${CC_RT_CLANG}
 CLANG_COMPILER_RT_FLAGS_${TARCH}:=${CC_RT_EXTRA_CLANG}
+# Leak the target arch into the preprocessor flags with clang.
+# This is needed to preprocess linker scripts
+CLANG_CPPFLAGS_${TARCH}:=${CPPFLAGS_CLANG}
 
 # GCC/Clang Common
 ifeq (\$(CONFIG_COMPILER_GCC)\$(CONFIG_LP_COMPILER_GCC),y)
@@ -272,6 +275,7 @@ ifeq (\$(CONFIG_COMPILER_GCC)\$(CONFIG_LP_COMPILER_GCC),y)
 else
 	CC_${TARCH}:=\$(CLANG_CC_${TARCH})
 	CFLAGS_${TARCH}:=\$(CLANG_CFLAGS_${TARCH})
+	CPPFLAGS_${TARCH}:=\$(CLANG_CPPFLAGS_${TARCH})
 	COMPILER_RT_${TARCH}:=\$(CLANG_COMPILER_RT_${TARCH})
 	COMPILER_RT_FLAGS_${TARCH}:=\$(CLANG_COMPILER_RT_FLAGS_${TARCH})
 endif
@@ -471,7 +475,9 @@ test_architecture() {
 		# but that's more of a clang limitation. Let's be optimistic
 		# that this will change in the future.
 		CLANG="${clang_prefix}clang"
-		CFLAGS_CLANG="-target ${clang_arch}-${TABI} $CFLAGS_CLANG"
+		CLANG_TARGET="-target ${clang_arch}-${TABI}"
+		CFLAGS_CLANG="$CLANG_TARGET $CFLAGS_CLANG"
+		CPPFLAGS_CLANG="$CLANG_TARGET $CPPFLAGS_CLANG"
 	fi
 }
 

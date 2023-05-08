@@ -10,11 +10,6 @@ ifeq ($(CONFIG_COMPILER_GCC),y)
 armv7_asm_flags += -Wa,-mno-warn-deprecated
 else # CLANG
 armv7_flags += -mfpu=none
-bootblock-ld-ccopts += -target arm-eabi
-verstage-ld-ccopts += -target arm-eabi
-romstage-ld-ccopts += -target arm-eabi
-ramstage-ld-ccopts += -target arm-eabi
-rmodule_arm-ld-ccopts += -target arm-eabi
 endif
 armv7-r_asm_flags = $(armv7-r_flags) $(armv7_asm_flags)
 

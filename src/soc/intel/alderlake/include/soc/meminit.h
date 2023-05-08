@@ -107,6 +107,10 @@ struct mb_cfg {
 
 	/* Enable/Disable TxDqDqs Retraining for Lp4/Lp5/DDR */
 	uint8_t LpDdrDqDqsReTraining;
+
+	/* Enable/Disable Cs Pi Start with High value in Ect */
+	uint8_t cs_pi_start_high_in_ect;
+
 };
 
 void memcfg_init(FSPM_UPD *memupd, const struct mb_cfg *mb_cfg,

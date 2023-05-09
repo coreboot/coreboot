@@ -3,11 +3,9 @@
 #include <commonlib/helpers.h>
 #include <baseboard/variants.h>
 
-/*
- * Pad configuration in ramstage. The order largely follows the 'GPIO Muxing'
- * table found in EDS vol 1, but some pins aren't grouped functionally in
- * the table so those were moved for more logical grouping.
- */
+/* Pad configuration in ramstage. The order largely follows the 'GPIO Muxing' table found in
+   EDS vol 1, but some pins aren't grouped functionally in the table so those were moved for
+   more logical grouping. */
 static const struct pad_config gpio_table[] = {
 
 	/* Southwest Community */
@@ -159,22 +157,18 @@ static const struct pad_config gpio_table[] = {
 
 	/* Northwest Community */
 
-	/* DDI0_DDC_DATA_1V8 - I2C Data for HDMI - Connected to a MUX SEL IC to
-	 * choose between DDI0_AUXP (Port 0: Display Port Auxiliary Channel for
-	 * DP/HDMI) controlled by resistor stuffing options.
-	 */
+	/* DDI0_DDC_DATA_1V8 - I2C Data for HDMI - Connected to a MUX SEL IC to choose between
+	   DDI0_AUXP (Port 0: Display Port Auxiliary Channel for DP/HDMI) controlled by
+	   resistor stuffing options. */
 	PAD_CFG_NF(GPIO_187, UP_20K, DEEP, NF1),
-	/* DDI0_DDC_CLK_1V8  - I2C Clock for HDMI - Connected to a MUX SEL IC
-	 * to choose between DDI0_AUXN controlled by resistor stuffing options.
-	 */
+	/* DDI0_DDC_CLK_1V8  - I2C Clock for HDMI - Connected to a MUX SEL IC to choose between
+	   DDI0_AUXN controlled by resistor stuffing options. */
 	PAD_CFG_NF(GPIO_188, UP_20K, DEEP, NF1),
-	/* DDI1_DDC_DATA_1V8 - I2C Data for HDMI - Connected to a MUX SEL IC to
-	 * choose between DDI1_AUXN.
-	 */
+	/* DDI1_DDC_DATA_1V8 - I2C Data for HDMI - Connected to a MUX SEL IC to choose between
+	   DDI1_AUXN. */
 	PAD_CFG_NF(GPIO_189, UP_20K, DEEP, NF1),
-	/* DDI1_DDC_CLK_1V8  - I2C Clock for HDMI - Connected to a MUX SEL IC
-	 * to choose between DDI1_AUXP.
-	 */
+	/* DDI1_DDC_CLK_1V8  - I2C Clock for HDMI - Connected to a MUX SEL IC to choose between
+	   DDI1_AUXP. */
 	PAD_CFG_NF(GPIO_190, UP_20K, DEEP, NF1),
 
 	/* Not connected */
@@ -184,39 +178,27 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_194, DN_20K, DEEP, NF1, Tx0RxDCRx0, SAME),
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_195, DN_20K, DEEP, NF1, Tx0RxDCRx0, SAME),
 
-	/* EDP_VDD_EN_1V8  (DNI) - Alternative stuffing option for
-	 * PTN3460 LVDS_VDD_EN.
-	 */
+	/* EDP_VDD_EN_1V8  (DNI) - Alternative stuffing option for PTN3460 LVDS_VDD_EN. */
 	PAD_CFG_TERM_GPO(GPIO_196, 1, UP_20K, DEEP),
-	/* EDP_BKLT_EN_1V8 (DNI) - Alternative stuffing option for
-	 * PTN3460 LVDS_BKLT_EN
-	 */
+	/* EDP_BKLT_EN_1V8 (DNI) - Alternative stuffing option for PTN3460 LVDS_BKLT_EN */
 	PAD_CFG_TERM_GPO(GPIO_197, 1, UP_20K, DEEP),
-	/* EDP_BKLT_CTRL_1V8 - Alternative stuffing option for
-	 * PTN3460 LVDS_BKLT_CTRL
-	 */
+	/* EDP_BKLT_CTRL_1V8 - Alternative stuffing option for PTN3460 LVDS_BKLT_CTRL */
 	PAD_CFG_TERM_GPO(GPIO_198, 1, UP_20K, DEEP),
 
-	/* DDI1_HPD# - Connect to DP1_HPD Hot plug detection signal of SMARC
-	 * Connector.
-	 */
+	/* DDI1_HPD# - Connect to DP1_HPD Hot plug detection signal of SMARC Connector. */
 	PAD_CFG_NF(GPIO_199, UP_20K, DEEP, NF2),
-	/* DDI0_HPD# - Connect to DP0_HPD Hot plug detection signal of SMARC
-	 * Connector.
-	 */
+	/* DDI0_HPD# - Connect to DP0_HPD Hot plug detection signal of SMARC Connector. */
 	PAD_CFG_NF(GPIO_200, UP_20K, DEEP, NF2),
 
 	/* Not connected */
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_201, DN_20K, DEEP, NF1, Tx0RxDCRx0, SAME),
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_202, DN_20K, DEEP, NF1, Tx0RxDCRx0, SAME),
 
-	/* USB2_OC0_1V8# - Connected to (USB0_OC#:MUX_SEL[USB2_OTG_0/USB2_6]),
-	 * (USB1_OC#:USB1), (USB2_OC#:USB2)
-	 */
+	/* USB2_OC0_1V8# - Connected to (USB0_OC#:MUX_SEL[USB2_OTG_0/USB2_6]), (USB1_OC#:USB1),
+	   (USB2_OC#:USB2) */
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_203, UP_20K, DEEP, NF1, MASK, SAME),
-	/* USB2_OC1_1V8# - Connected to (USB3_OC#:USB3), (USB4_OC#:USB4),
-	 * (USB5_OC#:USB5). NOTE: USB2_7_WIBU do not have OC.
-	 */
+	/* USB2_OC1_1V8# - Connected to (USB3_OC#:USB3), (USB4_OC#:USB4), (USB5_OC#:USB5).
+	   NOTE: USB2_7_WIBU do not have OC. */
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_204, UP_20K, DEEP, NF1, MASK, SAME),
 
 	/* Not connected */
@@ -245,23 +227,17 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_INT(PMIC_I2C_SCL, DN_20K, DEEP, OFF),
 	PAD_CFG_GPI_INT(PMIC_I2C_SDA, DN_20K, DEEP, OFF),
 
-	/* I2S_MCLK - Connected to SMARC Connector I2S0_CLK  - Digital audio
-	 * clock
-	 */
+	/* I2S_MCLK - Connected to SMARC Connector I2S0_CLK  - Digital audio clock */
 	PAD_CFG_NF(GPIO_74, DN_20K, DEEP, NF1),
-	/* I2S_BCLK - Connected to SMARC Connector I2S0_LRCK - Left & Right
-	 * audio synchronization clock
-	 */
+	/* I2S_BCLK - Connected to SMARC Connector I2S0_LRCK - Left & Right audio
+	   synchronization clock */
 	PAD_CFG_NF(GPIO_75, DN_20K, DEEP, NF1),
 	/* Not connected */
 	PAD_CFG_GPI_INT(GPIO_76, DN_20K, DEEP, OFF),
-	/* I2S_SDI - Connected to SMARC Connector I2S0_SDI - Digital audio
-	 * Input
-	 */
+	/* I2S_SDI - Connected to SMARC Connector I2S0_SDI - Digital audio Input */
 	PAD_CFG_NF(GPIO_77, DN_20K, DEEP, NF1),
-	/* I2S_SD0 & STRAP_GPIO_78 (int. PU)  - Connected to SMARC Connector
-	 * I2S0_SDO - Digital audio Output
-	 */
+	/* I2S_SD0 & STRAP_GPIO_78 (int. PU)  - Connected to SMARC Connector I2S0_SDO - Digital
+	   audio Output */
 	PAD_CFG_NF(GPIO_78, DN_20K, DEEP, NF1),
 
 	/* Not connected */
@@ -273,9 +249,8 @@ static const struct pad_config gpio_table[] = {
 	/* Not connected */
 	PAD_CFG_GPI_INT(GPIO_83, DN_20K, DEEP, OFF),
 
-	/* HDA_RST_1V8# - MUX SEL with CPLD pin and then goto GPIO4/HDA_RST#
-	 * pin of SMARC connector
-	 */
+	/* HDA_RST_1V8# - MUX SEL with CPLD pin and then goto GPIO4/HDA_RST# pin of SMARC
+	   connector */
 	PAD_CFG_NF(GPIO_84, UP_20K, DEEP, NF2),
 	/* Not connected */
 	PAD_CFG_GPI_INT(GPIO_85, DN_20K, DEEP, OFF),
@@ -291,14 +266,12 @@ static const struct pad_config gpio_table[] = {
 	/* STRAP_GPIO_92 (int. PD) */
 	PAD_CFG_GPI_INT(GPIO_92, DN_20K, DEEP, OFF),
 
-	/* CS0 for BIOS SPI. Connected to CPLD. CPLD then MUX SEL to either SPI
-	 * FLASH CHIP on module (SPI_CS_MODULE_1V8#) or to the carrier board
-	 * SPI FLASH Chip (SPI_CS_EXT_1V8#).
-	 */
+	/* CS0 for BIOS SPI. Connected to CPLD. CPLD then MUX SEL to either SPI FLASH CHIP on
+	   module (SPI_CS_MODULE_1V8#) or to the carrier board SPI FLASH Chip
+	   (SPI_CS_EXT_1V8#). */
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_97, NATIVE, DEEP, NF1, MASK, SAME),
-	/* CS1 for BIOS SPI. Connected to CPLD. Not used, because we use 1x16MB
-	 * Flash and not 2x8MB Flash.
-	 */
+	/* CS1 for BIOS SPI. Connected to CPLD. Not used, because we use 1x16MB Flash and not
+	   2x8MB Flash. */
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_98, NATIVE, DEEP, NF1, MASK, SAME),
 	/* FST_SPI_MISO_1V8 */
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_99, NATIVE, DEEP, NF1, MASK, SAME),
@@ -355,30 +328,23 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_7, DN_20K, DEEP, NF1, HIZCRx0, SAME),
 	PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_8, DN_20K, DEEP, NF1, HIZCRx0, SAME),
 
-	/* OTG_SEL_1V8 - Connected to a USB MUX to select between USB2_DP0 (OTG)
-	 * and USB2_DP6. 1:OTG, 0:USB
-	 */
+	/* OTG_SEL_1V8 - Connected to a USB MUX to select between USB2_DP0 (OTG) and USB2_DP6.
+	   1:OTG, 0:USB */
 	PAD_CFG_TERM_GPO(GPIO_9, 1, UP_20K, DEEP),
-	/* EN_I2CPM_EXT_1V8 - Connected to OE pin of I2C Re-driver.
-	 * Allow/Disallow I2C signal to pass through to SMARC Connector.
-	 */
+	/* EN_I2CPM_EXT_1V8 - Connected to OE pin of I2C Re-driver. Allow/Disallow I2C signal
+	   to pass through to SMARC Connector. */
 	PAD_CFG_TERM_GPO(GPIO_10, 1, UP_20K, DEEP),
-	/* EN_SMB_EXT_1V8 - Connected to OE pin of I2C Re-driver.
-	 * Allow/Disallow SMBUS signal to pass through to SMARC Connector.
-	 */
+	/* EN_SMB_EXT_1V8 - Connected to OE pin of I2C Re-driver. Allow/Disallow SMBUS signal
+	   to pass through to SMARC Connector. */
 	PAD_CFG_TERM_GPO(GPIO_11, 0, UP_20K, DEEP),
-	/* BOOT_SEL2_1V8# - Three Module pins allow the Carrier board user to
-	 * select from eight possible boot devices.
-	 */
+	/* BOOT_SEL2_1V8# - Three Module pins allow the Carrier board user to select from eight
+	   possible boot devices. */
 	PAD_CFG_GPI_INT(GPIO_12, UP_20K, DEEP, OFF),
-	/* BOOT_SEL1_1V8# - BOOT_SEL pins shall be weakly pulled up on the
-	 * Module and the pin states decoded by Module logic.
-	 */
+	/* BOOT_SEL1_1V8# - BOOT_SEL pins shall be weakly pulled up on the Module and the pin
+	   states decoded by Module logic. */
 	PAD_CFG_GPI_INT(GPIO_13, UP_20K, DEEP, OFF),
-	/* BOOT_SEL0_1V8# - For details refer to
-	 * SMARC_Hardware_Specification_V200.pdf page 38 chapter 4.17 Boot
-	 * Select
-	 */
+	/* BOOT_SEL0_1V8# - For details refer to SMARC_Hardware_Specification_V200.pdf page 38
+	   chapter 4.17 Boot Select */
 	PAD_CFG_GPI_INT(GPIO_14, UP_20K, DEEP, OFF),
 	/* GPIO_CPLD_TCK_1V8 */
 	PAD_CFG_TERM_GPO(GPIO_15, 0, DN_20K, DEEP),
@@ -388,43 +354,38 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_INT(GPIO_17, DN_20K, DEEP, OFF),
 	/* GPIO_CPLD_TDO_1V8 */
 	PAD_CFG_TERM_GPO(GPIO_18, 0, DN_20K, DEEP),
-	/* PM_TEST_1V8# connect to the SMARC Connector TEST# pin.
-	 * Held low by Carrier to invoke Module vendor specific test function.
-	 * Pulled up on Module. Driven by OD part on Carrier.
-	 */
+	/* PM_TEST_1V8# connect to the SMARC Connector TEST# pin. Held low by Carrier to invoke
+	   Module vendor specific test function. Pulled up on Module. Driven by OD part on
+	   Carrier. */
 	PAD_CFG_GPI_INT(GPIO_19, UP_20K, DEEP, OFF),
 	/* MCERR_1V8 - ICT Test Point */
 	PAD_CFG_GPI_INT(GPIO_20, DN_20K, DEEP, OFF),
 	/* IERR_1V8 - ICT Test Point */
 	PAD_CFG_GPI_INT(GPIO_21, DN_20K, DEEP, OFF),
-	/* SLEEP_CPU_1V8# - Connect to the SMARC Connector SLEEP# pin.
-	 * Sleep indicator from Carrier board. May be sourced from user Sleep
-	 * button or Carrier logic. Carrier to float the line in in-active
-	 * state. Active low, level sensitive. Should be de-bounced on the
-	 * Module. Pulled up on Module. Driven by Open Drain (OD) part on
-	 * Carrier.
+	/*
+	 * SLEEP_CPU_1V8# - Connect to the SMARC Connector SLEEP# pin.
+	 * Sleep indicator from Carrier board. May be sourced from user Sleep button or Carrier
+	 * logic. Carrier to float the line in in-active state. Active low, level sensitive.
+	 * Should be de-bounced on the Module. Pulled up on Module. Driven by Open Drain (OD)
+	 * part on Carrier.
 	 */
 	PAD_CFG_GPI_SCI_IOS(GPIO_22, UP_20K, DEEP, EDGE_SINGLE, INVERT, TxDRxE, SAME),
-	/* LID_CPU_1V8# - Connect to the SMARC Connector LID# pin.
-	 * Lid open/close indication to Module. Low indicates lid closure
-	 * (which system may use to initiate a sleep state). Carrier to float
-	 * the line in in-active state. Active low, level sensitive. Should be
-	 * de-bounced on the Module Pulled up on Module. Driven by OD part on
-	 * Carrier.
+	/*
+	 * LID_CPU_1V8# - Connect to the SMARC Connector LID# pin.
+	 * Lid open/close indication to Module. Low indicates lid closure (which system may use
+	 * to initiate a sleep state). Carrier to float the line in in-active state. Active
+	 * low, level sensitive. Should be de-bounced on the Module Pulled up on Module. Driven
+	 * by OD part on Carrier.
 	 */
 	PAD_CFG_GPI_SCI_IOS(GPIO_23, UP_20K, DEEP, EDGE_BOTH, INVERT, TxDRxE, SAME),
-	/* WDT_IRQ1_1V8# (NMI) - Trigger by CPLD Watchdog module when enabled
-	 * and timeout.
-	 */
+	/* WDT_IRQ1_1V8# (NMI) - Trigger by CPLD Watchdog module when enabled and timeout. */
 	PAD_CFG_GPI_NMI(GPIO_24, UP_20K, DEEP, LEVEL, INVERT),
-	/* WDT_IRQ0_1V8# (SCI) - Refer to Kontron_CPLD.pdf Chapter 6 Watchdog
-	 * Module Description, for how to use it.
-	 */
+	/* WDT_IRQ0_1V8# (SCI) - Refer to Kontron_CPLD.pdf Chapter 6 Watchdog Module
+	   Description, for how to use it. */
 	PAD_CFG_GPI_SCI(GPIO_25, UP_20K, DEEP, LEVEL, INVERT),
 	/* SATA_LED# - Connect to the SMARC Connector SATA_ACT# pin.
-	 * Active low SATA activity indicator. If implemented, shall be able to
-	 * sink 24mA or more Carrier LED current.
-	 */
+	   Active low SATA activity indicator. If implemented, shall be able to sink 24mA or
+	   more Carrier LED current. */
 	PAD_CFG_NF(GPIO_26, DN_20K, DEEP, NF5),
 
 	/* SMB_ALERT_GPIO# */
@@ -452,9 +413,8 @@ static const struct pad_config gpio_table[] = {
 	/* Not connected */
 	PAD_CFG_TERM_GPO(GPIO_37, 0, DN_20K, DEEP),
 
-	/* GPIO_VALID (CPLD=gpio_valid/pi_gpio_en)- This pin Enable the CPLD
-	 * GPIO to the SMARC Connector.
-	 */
+	/* GPIO_VALID (CPLD=gpio_valid/pi_gpio_en)- This pin Enable the CPLD GPIO to the SMARC
+	   Connector. */
 	PAD_CFG_TERM_GPO(GPIO_62, 1, UP_20K, DEEP),
 	/* LVDS_ENABLE_1V8# connect to PTN3460 DP to LVDS converter chip. */
 	PAD_CFG_TERM_GPO(GPIO_63, 0, DN_20K, DEEP),
@@ -462,8 +422,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPIO_DRIVER_HI_Z(GPIO_64, DN_20K, DEEP, HIZCRx0, SAME),
 	/* Not connected */
 	PAD_CFG_GPIO_DRIVER_HI_Z(GPIO_65, DN_20K, DEEP, HIZCRx0, SAME),
-	/* CAM_CS0_CS1_SEL - Serial Cameras interfaces Select - to select
-	 * between the two MIPI CSI camera interfaces on the SMARC connector. */
+	/* CAM_CS0_CS1_SEL - Serial Cameras interfaces Select - to select between the two MIPI
+	   CSI camera interfaces on the SMARC connector. */
 	PAD_CFG_TERM_GPO(GPIO_66, 0, DN_20K, DEEP),
 	/* MCSI0_RST_1V8# - Reset the MIPI CSI camera interfaces 0 */
 	PAD_CFG_GPO_IOSSTATE_IOSTERM(GPIO_67, 0, DEEP, DN_20K, HIZCRx0, SAME),
@@ -502,10 +462,8 @@ static const struct pad_config gpio_table[] = {
 	/* Not connected */
 	PAD_CFG_GPIO_DRIVER_HI_Z(CNV_BRI_DT, DN_20K, DEEP, MASK, SAME),
 	/* PM_FORCE_RECOV_1V8# from SMARC Connector FORCE_RECOV#.
-	 * A low on the Module FORCE_RECOV# pin may invoke the SOC native Force
-	 * Recovery mode.
-	 * For x86 systems this signal may be used to load BIOS defaults.
-	 */
+	   A low on the Module FORCE_RECOV# pin may invoke the SOC native Force Recovery mode.
+	   For x86 systems this signal may be used to load BIOS defaults. */
 	PAD_CFG_GPIO_DRIVER_HI_Z(CNV_BRI_RSP, UP_20K, DEEP, MASK, SAME),
 	/* Not connected */
 	PAD_CFG_GPIO_DRIVER_HI_Z(CNV_RGI_DT, DN_20K, DEEP, MASK, SAME),

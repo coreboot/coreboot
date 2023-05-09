@@ -3,11 +3,9 @@
 #include <commonlib/helpers.h>
 #include <baseboard/variants.h>
 
-/*
- * Pad configuration in ramstage. The order largely follows the 'GPIO Muxing'
- * table found in EDS vol 1, but some pins aren't grouped functionally in
- * the table so those were moved for more logical grouping.
- */
+/* Pad configuration in ramstage. The order largely follows the 'GPIO Muxing' table found in
+   EDS vol 1, but some pins aren't grouped functionally in the table so those were moved for
+   more logical grouping. */
 static const struct pad_config gpio_table[] = {
 
 	/* Southwest Community */

@@ -3,11 +3,9 @@
 #include <commonlib/helpers.h>
 #include <baseboard/variants.h>
 
-/*
- * Pad configuration in ramstage. The order largely follows the 'GPIO Muxing'
- * table found in EDS vol 1, but some pins aren't grouped functionally in
- * the table so those were moved for more logical grouping.
- */
+/* Pad configuration in ramstage. The order largely follows the 'GPIO Muxing' table found in
+   EDS vol 1, but some pins aren't grouped functionally in the table so those were moved for
+   more logical grouping. */
 static const struct pad_config gpio_table[] = {
 	/* Southwest Community */
 
@@ -46,11 +44,9 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPIO_176, UP_20K, DEEP, NF1),	/* SDCARD_D3 */
 	PAD_CFG_NF(GPIO_177, UP_20K, DEEP, NF1),	/* SDCARD_CD_N */
 	PAD_CFG_NF(GPIO_178, UP_20K, DEEP, NF1),	/* SDCARD_CMD */
-	/*
-	 * SDCARD_CLK_FB - APL EDS Vol1 remarks:
-	 * This is not a physical GPIO that can be used. This Signal is not Ball
-	 * out on the SoC, only the buffer exists.
-	*/
+	/* SDCARD_CLK_FB - APL EDS Vol1 remarks:
+	   This is not a physical GPIO that can be used. This Signal is not Ball out on the
+	   SoC, only the buffer exists.	*/
 	PAD_CFG_NF(GPIO_179, DN_20K, DEEP, NF1),
 	PAD_CFG_NF(GPIO_186, UP_20K, DEEP, NF1),	/* SDCARD_WP_1V8 */
 	PAD_CFG_TERM_GPO(GPIO_183, 1, UP_20K, DEEP),	/* SD_PWR_EN_1V8 */
@@ -71,11 +67,9 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPIO_132, NONE, DEEP, NF1),	/* provided LPSS_I2C4_SDA */
 	PAD_CFG_NF(GPIO_133, NONE, DEEP, NF1),	/* provided LPSS_I2C4_SCL */
 
-	/*
-	 * Hint for USB enable power: some GPIOs are open drain outputs,
-	 * to drive high -> Bit GPIO_TX_DIS has to be set in combination with PU
-	 * PAD_CFG_GPO macro does not work. Refer to APL EDS Vol 4.
-	 */
+	/* Hint for USB enable power: some GPIOs are open drain outputs, to drive high -> Bit
+	   GPIO_TX_DIS has to be set in combination with PU PAD_CFG_GPO macro does not work.
+	   Refer to APL EDS Vol 4. */
 	PAD_CFG_GPI(GPIO_134, UP_20K, DEEP),		/* enable USB0 power */
 	PAD_CFG_GPI(GPIO_135, UP_20K, DEEP),		/* unused */
 	PAD_CFG_GPI(GPIO_136, UP_20K, DEEP),		/* enable USB7 power */
@@ -210,8 +204,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPIO_101, NATIVE, DEEP, NF1),/* FST_IO2 - MEM_CONFIG0 */
 	PAD_CFG_NF(GPIO_102, NATIVE, DEEP, NF1),/* FST_IO3 - MEM_CONFIG1 */
 	PAD_CFG_NF(GPIO_103, NATIVE, DEEP, NF1),/* FST_SPI_CLK */
-	/* FST_SPI_CLK_FB - Pad not bonded, default register value is the same
-	 * as here. Refer to Intel Doc APL EDS Vol 1 */
+	/* FST_SPI_CLK_FB - Pad not bonded, default register value is the same as here. Refer
+	   to Intel Doc APL EDS Vol 1 */
 	PAD_CFG_NF(FST_SPI_CLK_FB, NONE, DEEP, NF1),
 
 	/* SIO_SPI_0 for F-module on mainboard */

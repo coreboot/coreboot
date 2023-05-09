@@ -16,8 +16,8 @@ static void igd_disable(void)
 
 	/* GMCH Graphics Control Register */
 	ggc = pci_read_config16(root_dev, 0x50);
-	/* Set size of Graphics Translation Table Memory (GGMS) [7:6]
-	 * to 0 and select 0 MB for Graphics Memory (GMS) [15:8]. */
+	/* Set size of Graphics Translation Table Memory (GGMS) [7:6] to 0 and select 0 MB for
+	   Graphics Memory (GMS) [15:8]. */
 	ggc &= ~(0xffc0);
 	/* Disable IGD VGA (IVD). */
 	ggc |= 0x2;
@@ -86,8 +86,8 @@ enum cb_err mainboard_ptn3460_config(struct ptn_3460_config *cfg)
 		return CB_ERR;
 	}
 
-	/* Set up PTN3460 registers based on hwinfo and fixed board-specific parameters: */
-	/* Use 2 lanes for eDP, no P/N swapping, no ASSR, allow both HBR and RBR modes. */
+	/* Set up PTN3460 registers based on hwinfo and fixed board-specific parameters:
+	   Use 2 lanes for eDP, no P/N swapping, no ASSR, allow both HBR and RBR modes. */
 	cfg->dp_interface_ctrl = 0x00;
 	/* Use odd bus for LVDS clock distribution only. */
 	cfg->lvds_interface_ctrl1 = 0x01;

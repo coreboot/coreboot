@@ -2254,6 +2254,42 @@ void acpigen_resource_io(u16 io_base, u16 io_limit)
 			      io_limit - io_base + 1); /* length */
 }
 
+static void acpigen_resource_mmio32(u32 mmio_base, u32 mmio_limit, u16 type_flags)
+{
+	acpigen_resource_dword(RSRC_TYPE_MEM, /* res_type */
+			      ADDR_SPACE_GENERAL_FLAG_MAX_FIXED
+			      | ADDR_SPACE_GENERAL_FLAG_MIN_FIXED
+			      | ADDR_SPACE_GENERAL_FLAG_DEC_POS, /* gen_flags */
+			      type_flags, /* type_flags */
+			      0, /* gran */
+			      mmio_base, /* range_min */
+			      mmio_limit, /* range_max */
+			      0x0, /* translation */
+			      mmio_limit - mmio_base + 1); /* length */
+}
+
+static void acpigen_resource_mmio64(u64 mmio_base, u64 mmio_limit, u16 type_flags)
+{
+	acpigen_resource_qword(RSRC_TYPE_MEM, /* res_type */
+			      ADDR_SPACE_GENERAL_FLAG_MAX_FIXED
+			      | ADDR_SPACE_GENERAL_FLAG_MIN_FIXED
+			      | ADDR_SPACE_GENERAL_FLAG_DEC_POS, /* gen_flags */
+			      type_flags, /* type_flags */
+			      0, /* gran */
+			      mmio_base, /* range_min */
+			      mmio_limit, /* range_max */
+			      0x0, /* translation */
+			      mmio_limit - mmio_base + 1); /* length */
+}
+
+void acpigen_resource_mmio(u64 mmio_base, u64 mmio_limit, u16 type_flags)
+{
+	if (mmio_base < 4ULL * GiB && mmio_limit < 4ULL * GiB)
+		acpigen_resource_mmio32(mmio_base, mmio_limit, type_flags);
+	else
+		acpigen_resource_mmio64(mmio_base, mmio_limit, type_flags);
+}
+
 void acpigen_write_ADR(uint64_t adr)
 {
 	acpigen_write_name_qword("_ADR", adr);

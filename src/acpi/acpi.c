@@ -1857,6 +1857,7 @@ unsigned long write_acpi_tables(unsigned long start)
 		for (void *p = (void *)current; p < (void *)fw; p += 16) {
 			if (valid_rsdp((acpi_rsdp_t *)p)) {
 				rsdp = p;
+				coreboot_rsdp = (uintptr_t)rsdp;
 				break;
 			}
 		}

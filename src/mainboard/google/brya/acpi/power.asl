@@ -131,7 +131,11 @@ Method (GC6I, 0, Serialized)
 	/* Ramp down PEXVDD */
 	CTXS (GPIO_PEXVDD_PWR_EN)
 	GPPL (GPIO_PEXVDD_PG, 0, 20)
+#if CONFIG(BOARD_GOOGLE_AGAH)
 	Sleep (10)
+#else
+	Sleep (3)
+#endif
 
 	/* Deassert EN_PPVAR_GPU_NVVDD */
 	CTXS (GPIO_NVVDD_PWR_EN)
@@ -272,7 +276,11 @@ Method (PGOF, 0, Serialized)
 	/* Ramp down PEXVDD and let rail discharge to <10% */
 	CTXS (GPIO_PEXVDD_PWR_EN)
 	GPPL (GPIO_PEXVDD_PG, 0, 20)
+#if CONFIG(BOARD_GOOGLE_AGAH)
 	Sleep (10)
+#else
+	Sleep (3)
+#endif
 
 	/* Ramp down NVVDD and let rail discharge to <10% */
 	CTXS (GPIO_NVVDD_PWR_EN)

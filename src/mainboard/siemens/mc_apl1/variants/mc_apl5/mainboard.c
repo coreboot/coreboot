@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootstate.h>
+#include <cf9_reset.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
@@ -59,6 +60,11 @@ void variant_mainboard_final(void)
 		if (parent && parent->device == PCI_DID_TI_XIO2001)
 			pci_write_config8(parent, 0xd8, 0x3e);
 	}
+
+	/* Set Full Reset Bit in Reset Control Register (I/O port CF9h). When Bit 3 is set to 1
+	   and then a warm reset is triggered the PCH will drive SLP_S3 active (low). SLP_S3 is
+	   then used on the mainboard to generate the right reset timing. */
+	outb(FULL_RST, RST_CNT);
 }
 
 static void finalize_boot(void *unused)

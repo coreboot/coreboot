@@ -68,8 +68,8 @@ config DEVICETREE
 	default "variants/baseboard/\$(CONFIG_BASEBOARD_DIR)/devicetree.cb"
 
 config FMDFILE
-	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos_ec_ish-debug-fsp.fmd" if CHROMEOS && DRIVERS_INTEL_ISH && BUILDING_WITH_DEBUG_FSP
-	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos_ec_ish.fmd" if CHROMEOS && DRIVERS_INTEL_ISH
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos_ec_ish-debug-fsp.fmd" if CHROMEOS && BOARD_GOOGLE_REX_EC_ISH && BUILDING_WITH_DEBUG_FSP
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos_ec_ish.fmd" if CHROMEOS && BOARD_GOOGLE_REX_EC_ISH
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-debug-fsp.fmd" if CHROMEOS && BUILDING_WITH_DEBUG_FSP
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if CHROMEOS
 

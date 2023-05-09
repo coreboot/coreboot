@@ -50,6 +50,10 @@ fw_config
 		option VPU_DIS			0
 		option VPU_EN			1
 	end
+	field ISH 21
+		option ISH_DISABLE		0
+		option ISH_ENABLE		1
+	end
 end
 
 chip soc/intel/meteorlake
@@ -277,6 +281,13 @@ chip soc/intel/meteorlake
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 		end	#PCIE9 SSD card
+		device ref ish on
+			probe ISH ISH_ENABLE
+			chip drivers/intel/ish
+				register "firmware_name" = ""rex_ish.bin""
+			device generic 0 on end
+			end
+		end
 		device ref tbt_pcie_rp0 on end
 		device ref tbt_pcie_rp2 on end
 		device ref vpu on

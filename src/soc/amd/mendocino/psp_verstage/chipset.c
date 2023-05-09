@@ -44,6 +44,7 @@ void update_psp_fw_hash_table(const char *fname)
 		printk(BIOS_ERR, "Too many entries in AMD Firmware hash table"
 				 " (SHA256:%d, SHA384:%d)\n",
 				 hash_table.no_of_entries_256, hash_table.no_of_entries_384);
+		cbfs_unmap(spi_ptr);
 		return;
 	}
 
@@ -52,6 +53,7 @@ void update_psp_fw_hash_table(const char *fname)
 		printk(BIOS_ERR, "No entries in AMD Firmware hash table"
 				 " (SHA256:%d, SHA384:%d)\n",
 				 hash_table.no_of_entries_256, hash_table.no_of_entries_384);
+		cbfs_unmap(spi_ptr);
 		return;
 	}
 
@@ -67,6 +69,7 @@ void update_psp_fw_hash_table(const char *fname)
 	memcpy(hash_384, spi_ptr, len);
 
 	svc_set_fw_hash_table(&hash_table);
+	cbfs_unmap(spi_ptr);
 }
 
 uint32_t update_psp_bios_dir(uint32_t *psp_dir_offset, uint32_t *bios_dir_offset)

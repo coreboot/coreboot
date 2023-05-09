@@ -2251,6 +2251,20 @@ void acpigen_resource_bus_number(u16 bus_base, u16 bus_limit)
 			      bus_limit - bus_base + 1); /* length */
 }
 
+void acpigen_resource_io(u16 io_base, u16 io_limit)
+{
+	acpigen_resource_word(RSRC_TYPE_IO, /* res_type */
+			      ADDR_SPACE_GENERAL_FLAG_MAX_FIXED
+			      | ADDR_SPACE_GENERAL_FLAG_MIN_FIXED
+			      | ADDR_SPACE_GENERAL_FLAG_DEC_POS, /* gen_flags */
+			      IO_RSRC_FLAG_ENTIRE_RANGE, /* type_flags */
+			      0, /* gran */
+			      io_base, /* range_min */
+			      io_limit, /* range_max */
+			      0x0, /* translation */
+			      io_limit - io_base + 1); /* length */
+}
+
 void acpigen_write_ADR(uint64_t adr)
 {
 	acpigen_write_name_qword("_ADR", adr);

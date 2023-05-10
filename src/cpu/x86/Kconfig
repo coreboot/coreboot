@@ -28,19 +28,19 @@ config X86_SMM_SKIP_RELOCATION_HANDLER
 config DEFAULT_X2APIC
 	def_bool n
 	help
-	  Allow SoC code to set LAPIC_ACCESS_MODE to X2APIC.
+	  Allow SoC code to set LAPIC access mode to X2APIC.
 
 config DEFAULT_X2APIC_RUNTIME
 	def_bool n
 	help
-	  Allow SoC code to set LAPIC_ACCESS_MODE to X2APIC_RUNTIME.
+	  Allow SoC code to set LAPIC access mode to X2APIC_RUNTIME.
 
 config DEFAULT_X2APIC_LATE_WORKAROUND
 	def_bool n
 	help
-	  Allow SoC code to set LAPIC_ACCESS_MODE to X2APIC_LATE_WORKAROUND.
+	  Allow SoC code to set LAPIC access mode to X2APIC_LATE_WORKAROUND.
 
-choice LAPIC_ACCESS_MODE
+choice
 	prompt "APIC operation mode"
 	default X2APIC_ONLY if DEFAULT_X2APIC
 	default X2APIC_RUNTIME if DEFAULT_X2APIC_RUNTIME

@@ -75,6 +75,9 @@ chip northbridge/intel/sandybridge
 					device pnp 2e.609 off end	# GPIO 6
 					device pnp 2e.709 off end	# GPIO 7
 				end
+				chip drivers/pc80/tpm
+					device pnp 4e.0 on end	# TPM
+				end
 			end
 		end
 	end

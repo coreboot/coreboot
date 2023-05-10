@@ -531,6 +531,15 @@ config PCI
 
 if PCI
 
+config DOMAIN_RESOURCE_32BIT_LIMIT
+	hex
+	default 0xfe000000
+	help
+	  When the default pci_domain_read_resources() is used,
+	  keep 32-bit memory resources below this limit. This is
+	  used as a workaround for missing/wrong reservations of
+	  chipset resources that usually reside above this limit.
+
 config NO_ECAM_MMCONF_SUPPORT
 	bool
 	default n

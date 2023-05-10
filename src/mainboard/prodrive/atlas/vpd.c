@@ -8,6 +8,11 @@
 #include "mainboard.h"
 #include "vpd.h"
 
+static void write_invalid_str(char *dest, size_t length)
+{
+	snprintf(dest, length, "%s", "INVALID");
+}
+
 const struct emi_eeprom_vpd *get_emi_eeprom_vpd(void)
 {
 	static union {
@@ -48,8 +53,8 @@ const struct emi_eeprom_vpd *get_emi_eeprom_vpd(void)
 	case 0:
 		memset(vpd.raw, 0, sizeof(vpd.raw));
 		vpd.layout.header.magic = VPD_MAGIC;
-		vpd.layout.serial_number[0] = '\0';
-		vpd.layout.part_number[0] = '\0';
+		write_invalid_str(vpd.layout.serial_number, sizeof(vpd.layout.serial_number));
+		write_invalid_str(vpd.layout.part_number, sizeof(vpd.layout.part_number));
 		vpd.layout.profile = ATLAS_PROF_UNPROGRAMMED;
 		__fallthrough;
 	default:

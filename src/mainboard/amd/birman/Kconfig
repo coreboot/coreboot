@@ -7,7 +7,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select BOARD_ROMSIZE_KB_16384	# Birman actually has a 32MiB ROM
 	select EC_ACPI
 	select SOC_AMD_COMMON_BLOCK_USE_ESPI if !SOC_AMD_COMMON_BLOCK_SIMNOW_BUILD
-	select AMD_SOC_CONSOLE_UART if !SOC_AMD_COMMON_BLOCK_SIMNOW_BUILD
 	select DRIVERS_PCIE_RTD3_DEVICE
 	select MAINBOARD_HAS_CHROMEOS
 	select PCIEXP_ASPM
@@ -47,6 +46,9 @@ config BIRMAN_MCHP_SIG_FILE
 	  The EC sig blob is the first 4kBytes of the firmware image.
 	  The first 4 bytes form a pointer (with CRC) to where the EC firmware
 	  is located
+
+config AMD_SOC_CONSOLE_UART
+	default y if !SOC_AMD_COMMON_BLOCK_SIMNOW_BUILD
 
 config BIRMAN_MCHP_FW_FILE
 	string "Microchip EC firmware file"

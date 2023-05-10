@@ -118,7 +118,8 @@ static const struct soc_mem_cfg soc_mem_cfg[] = {
 	},
 };
 
-static void mem_init_spd_upds(FSP_M_CONFIG *mem_cfg, const struct mem_channel_data *data)
+static void mem_init_spd_upds(FSP_M_CONFIG *mem_cfg, const struct mem_channel_data *data,
+				bool expand_channels)
 {
 	uint32_t *spd_upds[MRC_CHANNELS][CONFIG_DIMMS_PER_CHANNEL] = {
 		[0] = { &mem_cfg->MemorySpdPtr000, &mem_cfg->MemorySpdPtr001, },
@@ -151,7 +152,19 @@ static void mem_init_spd_upds(FSP_M_CONFIG *mem_cfg, const struct mem_channel_da
 		for (dimm = 0; dimm < CONFIG_DIMMS_PER_CHANNEL; dimm++) {
 			uint32_t *spd_ptr = spd_upds[ch][dimm];
 
-			*spd_ptr = data->spd[ch][dimm];
+			/*
+			 * In DDR5 systems, since each DIMM has 2 channels,
+			 * we need to copy the SPD data such that:
+			 * Channel 0 data is used by channel 0 and 1
+			 * Channel 2 data is used by channel 2 and 3
+			 * Channel 4 data is used by channel 4 and 5
+			 * Channel 6 data is used by channel 6 and 7
+			 */
+			if (expand_channels)
+				*spd_ptr = data->spd[ch & ~1][dimm];
+			else
+				*spd_ptr = data->spd[ch][dimm];
+
 			if (*spd_ptr)
 				enable_channel = 1;
 		}
@@ -217,60 +230,12 @@ static void mem_init_dqs_upds(FSP_M_CONFIG *mem_cfg, const struct mem_channel_da
 	mem_init_dq_dqs_upds(dqs_upds, mb_cfg->dqs_map, upd_size, data, auto_detect);
 }
 
-#define DDR5_CH_DIMM_OFFSET(ch, dimm)        ((ch) * CONFIG_DIMMS_PER_CHANNEL + (dimm))
-
-static void ddr5_fill_dimm_module_info(FSP_M_CONFIG *mem_cfg, const struct mb_cfg *mb_cfg,
-						 const struct mem_spd *spd_info)
-{
-	for (size_t ch = 0; ch < soc_mem_cfg[MEM_TYPE_DDR5].num_phys_channels; ch++) {
-		for (size_t dimm = 0; dimm < CONFIG_DIMMS_PER_CHANNEL; dimm++) {
-			size_t mrc_ch = soc_mem_cfg[MEM_TYPE_DDR5].phys_to_mrc_map[ch];
-			mem_cfg->SpdAddressTable[DDR5_CH_DIMM_OFFSET(mrc_ch, dimm)] =
-				spd_info->smbus[ch].addr_dimm[dimm] << 1;
-		}
-	}
-	mem_init_dq_upds(mem_cfg, NULL, mb_cfg, true);
-	mem_init_dqs_upds(mem_cfg, NULL, mb_cfg, true);
-}
-
-/*
- * A memory channel will be disabled if corresponding bit in
- * ch_disable_mask is set.
- */
-static void mem_init_override_channel_mask(FSP_M_CONFIG *mem_cfg)
-{
-	uint8_t *disable_channel_upds[MRC_CHANNELS] = {
-		&mem_cfg->DisableMc0Ch0,
-		&mem_cfg->DisableMc0Ch1,
-		&mem_cfg->DisableMc0Ch2,
-		&mem_cfg->DisableMc0Ch3,
-		&mem_cfg->DisableMc1Ch0,
-		&mem_cfg->DisableMc1Ch1,
-		&mem_cfg->DisableMc1Ch2,
-		&mem_cfg->DisableMc1Ch3,
-	};
-
-	uint8_t ch_disable_mask = mb_get_channel_disable_mask();
-	if (ch_disable_mask == 0)
-		return;
-
-	/* Mc0Ch0 cannot be disabled */
-	if (ch_disable_mask & BIT(0)) {
-		printk(BIOS_ERR, "Cannot disable the first memory channel (Mc0Ch0).\n");
-		return;
-	}
-
-	for (size_t ch = 0; ch < MRC_CHANNELS; ch++) {
-		if (ch_disable_mask & BIT(ch))
-			*disable_channel_upds[ch] = 1;
-	}
-}
-
 void memcfg_init(FSPM_UPD *memupd, const struct mb_cfg *mb_cfg,
 		 const struct mem_spd *spd_info, bool half_populated)
 {
 	struct mem_channel_data data;
 	bool dq_dqs_auto_detect = false;
+	bool expand_channels = false;
 	FSP_M_CONFIG *mem_cfg = &memupd->FspmConfig;
 
 #if CONFIG(SOC_INTEL_RAPTORLAKE) && !CONFIG(FSP_USE_REPO)
@@ -294,14 +259,7 @@ void memcfg_init(FSPM_UPD *memupd, const struct mb_cfg *mb_cfg,
 	case MEM_TYPE_DDR5:
 		meminit_ddr(mem_cfg, &mb_cfg->ddr_config);
 		dq_dqs_auto_detect = true;
-		/*
-		* TODO: Drop this workaround once SMBus driver in coreboot is updated to
-		* support DDR5 EEPROM reading.
-		*/
-		if (spd_info->topo == MEM_TOPO_DIMM_MODULE) {
-			ddr5_fill_dimm_module_info(mem_cfg, mb_cfg, spd_info);
-			return;
-		}
+		expand_channels = true;
 		break;
 	case MEM_TYPE_LP4X:
 		meminit_lp4x(mem_cfg);
@@ -315,8 +273,7 @@ void memcfg_init(FSPM_UPD *memupd, const struct mb_cfg *mb_cfg,
 
 	mem_populate_channel_data(memupd, &soc_mem_cfg[mb_cfg->type], spd_info, half_populated,
 			&data);
-	mem_init_spd_upds(mem_cfg, &data);
-	mem_init_override_channel_mask(mem_cfg);
+	mem_init_spd_upds(mem_cfg, &data, expand_channels);
 	mem_init_dq_upds(mem_cfg, &data, mb_cfg, dq_dqs_auto_detect);
 	mem_init_dqs_upds(mem_cfg, &data, mb_cfg, dq_dqs_auto_detect);
 }

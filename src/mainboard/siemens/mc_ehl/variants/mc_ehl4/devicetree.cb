@@ -78,6 +78,9 @@ chip soc/intel/elkhartlake
 	register "PcieRpPcieSpeed[3]" = "1"
 	register "PcieRpPcieSpeed[4]" = "1"
 
+	register "PcieRpMaxPayload[1]" = "RpMaxPayload_256"
+	register "PcieRpMaxPayload[2]" = "RpMaxPayload_256"
+
 	# Storage (SATA/SDCARD/EMMC) related UPDs
 	register "SataSalpSupport" = "0"
 	register "SataPortsEnable[0]" = "1"

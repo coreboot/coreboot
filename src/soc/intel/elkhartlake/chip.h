@@ -240,6 +240,12 @@ struct soc_intel_elkhartlake_config {
 	/* PCIe RP L1 substate */
 	enum L1_substates_control PcieRpL1Substates[CONFIG_MAX_ROOT_PORTS];
 
+	/* PCIe root port maximum payload size, default is set to 128 bytes. */
+	enum {
+		RpMaxPayload_128,
+		RpMaxPayload_256,
+	} PcieRpMaxPayload[CONFIG_MAX_ROOT_PORTS];
+
 	/* PCIe root port speed. 0: Auto (Default); 1: Gen1; 2: Gen2; 3: Gen3 */
 	uint8_t PcieRpPcieSpeed[CONFIG_MAX_ROOT_PORTS];
 

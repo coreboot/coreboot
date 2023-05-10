@@ -388,6 +388,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->PcieRpVc1TcMap[i] = 0x60;
 		if (config->realtime_tuning_enable)
 			params->PcieRpEnableCpm[i] = 0;
+		params->PcieRpMaxPayload[i] = config->PcieRpMaxPayload[i];
 	}
 
 	/* SATA config */

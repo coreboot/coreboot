@@ -42,6 +42,8 @@ static void pcie_generic_fill_ssdt(const struct device *dev)
 
 	if (config->wake_gpe)
 		acpigen_write_PRW(config->wake_gpe, config->wake_deepest);
+	if (config->add_acpi_dma_property)
+		acpi_device_add_dma_property(NULL);
 
 	acpigen_write_device_end();
 	acpigen_write_scope_end();

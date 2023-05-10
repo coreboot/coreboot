@@ -327,6 +327,19 @@ define cbfs-files-processor-config
 endef
 
 #######################################################################
+# Add a file to CBFS with just type and compression values
+# arg1: name in CBFS
+# arg2: filename and path
+# arg3: type in CBFS
+# arg4: compression type
+define add-cbfs-file-simple
+	$(eval cbfs-files-y += $(1))
+	$(eval $(1)-file := $(2))
+	$(eval $(1)-type := $(3))
+	$(eval $(1)-compression := $(4))
+endef
+
+#######################################################################
 # Compile a C file with a bare struct definition into binary
 # arg1: C source file
 # arg2: binary file

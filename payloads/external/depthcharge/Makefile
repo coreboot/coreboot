@@ -1,5 +1,5 @@
-# Wed Apr 25, 2018
-STABLE_COMMIT_ID=902681db13c170fc2d028f7391a9e9a5f69082a3
+# 2023-05-10
+STABLE_COMMIT_ID=c48613a71c1ee29295b184c51fe5dadf71b543c4
 
 project_name=depthcharge
 project_dir=$(CURDIR)/depthcharge

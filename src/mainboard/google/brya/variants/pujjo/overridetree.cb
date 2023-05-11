@@ -35,6 +35,10 @@ fw_config
 		option WIFI_SAR_TABLE_1		1
 		option WIFI_SAR_TABLE_2		2
 	end
+	field WWAN_5G 19
+		option WWAN_5G_ABSENT		0
+		option WWAN_5G_PRESENT		1
+	end
 
 end
 
@@ -525,6 +529,36 @@ chip soc/intel/alderlake
 					probe AUDIO MAX98357_ALC5682IVS
 				end
 			end
+		end
+		device ref pcie_rp3 on
+			# WWAN PCIE 3 using clk 0
+			register "pch_pcie_rp[PCH_RP(3)]" = "{
+				.clk_src = 0,
+				.clk_req = 0,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H21)"
+				register "reset_off_delay_ms" = "20"
+				register "srcclk_pin" = "0"
+				register "ext_pm_support" = "ACPI_PCIE_RP_EMIT_ALL"
+				register "skip_on_off_support" = "true"
+				device generic 0 alias rp3_rtd3 on
+				    probe WWAN_5G WWAN_5G_PRESENT
+				end
+			end
+			chip drivers/wwan/fm
+				register "fcpo_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D6)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F12)"
+				register "perst_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H21)"
+				register "wake_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A12)"
+				register "add_acpi_dma_property" = "true"
+				use rp3_rtd3 as rtd3dev
+				device generic 0 on
+				    probe WWAN_5G WWAN_5G_PRESENT
+				end
+			end
+			probe WWAN_5G WWAN_5G_PRESENT
 		end
 		device ref pcie_rp4 on
 			# PCIe 4 WLAN

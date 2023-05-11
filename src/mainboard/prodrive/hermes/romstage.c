@@ -1,7 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <cf9_reset.h>
+#include <console/console.h>
+#include <cpu/cpu.h>
+#include <cpu/x86/msr.h>
 #include <soc/cnl_memcfg_init.h>
 #include <soc/romstage.h>
+#include <types.h>
 
 #include "eeprom.h"
 
@@ -40,14 +45,44 @@ static const struct cnl_mb_cfg baseboard_mem_cfg = {
 	.ect = 0,
 };
 
+static bool vmx_needs_full_reset(const bool enable_vmx)
+{
+	const uint32_t feature_flag = cpu_get_feature_flags_ecx();
+
+	if (!(feature_flag & (CPUID_VMX | CPUID_SMX))) {
+		/* CPU does not support VMX, no reset needed */
+		return false;
+	}
+
+	const msr_t msr = rdmsr(IA32_FEATURE_CONTROL);
+
+	const bool msr_locked  = msr.lo & (1 << 0);
+	const bool vmx_enabled = msr.lo & (1 << 2);
+
+	/* Reset if the MSR is locked and VMX state does not match requested state */
+	return msr_locked && (vmx_enabled != enable_vmx);
+}
+
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
+	const struct eeprom_board_settings *board_cfg = get_board_settings();
+
+	/*
+	 * IA32_FEATURE_CONTROL is only unlocked by a full reset.
+	 * Check early to avoid wasting time if we need to reset.
+	 */
+	const bool enable_vmx = !board_cfg->vtx_disabled;
+	if (vmx_needs_full_reset(enable_vmx)) {
+		printk(BIOS_INFO, "IA32_FEATURE_CONTROL locked; full reset needed to %s VMX\n",
+			enable_vmx ? "enable" : "disable");
+		full_reset();
+	}
+
 	memupd->FspmConfig.UserBd = BOARD_TYPE_SERVER;
 	memupd->FspmTestConfig.SmbusSpdWriteDisable = 0;
 	cannonlake_memcfg_init(&memupd->FspmConfig, &baseboard_mem_cfg);
 
 	/* Tell FSP-M about the desired primary video adapter so that GGC is set up properly */
-	const struct eeprom_board_settings *board_cfg = get_board_settings();
 	if (board_cfg && board_cfg->primary_video == PRIMARY_VIDEO_INTEL)
 		memupd->FspmConfig.PrimaryDisplay = 0; /* iGPU is primary */
 

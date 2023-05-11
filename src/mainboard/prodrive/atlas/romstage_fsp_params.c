@@ -31,6 +31,7 @@ static const struct mb_cfg ddr5_mem_config = {
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
+	FSP_M_CONFIG *mcfg = &memupd->FspmConfig;
 	const struct mb_cfg *mem_config = &ddr5_mem_config;
 	const bool half_populated = false;
 
@@ -51,17 +52,17 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	/* Apply profile-specific settings */
 	switch (get_emi_eeprom_vpd()->profile) {
 	case ATLAS_PROF_REALTIME_PERFORMANCE:
-		memupd->FspmConfig.HyperThreading = 0;
-		memupd->FspmConfig.DisPgCloseIdleTimeout = 1;
-		memupd->FspmConfig.PowerDownMode = 0;
-		memupd->FspmConfig.DisableStarv2medPrioOnNewReq = 1;
+		mcfg->HyperThreading = 0;
+		mcfg->DisPgCloseIdleTimeout = 1;
+		mcfg->PowerDownMode = 0;
+		mcfg->DisableStarv2medPrioOnNewReq = 1;
 		break;
 	}
 
 	/* Enable Audio */
-	memupd->FspmConfig.PchHdaAudioLinkHdaEnable = 1;
-	memupd->FspmConfig.PchHdaSdiEnable[0] = 1;
-	memupd->FspmConfig.PchHdaSdiEnable[1] = 1;
+	mcfg->PchHdaAudioLinkHdaEnable = 1;
+	mcfg->PchHdaSdiEnable[0] = 1;
+	mcfg->PchHdaSdiEnable[1] = 1;
 
 	// CPU rootports do not have a ClockReq connected on Atlas. If this is not done,
 	// the following will happens:
@@ -69,16 +70,16 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	//    - coreboot enables ASPM on CPU root port on pci enemuration
 	//    - machine exception is thrown, when trying to access pci configuration space after
 	//      enabling ASPM src/device/pciexp_device.c:pciexp_tune_dev().
-	memupd->FspmConfig.CpuPcieRpClockReqMsgEnable[0] = 0;
-	memupd->FspmConfig.CpuPcieRpClockReqMsgEnable[1] = 0;
-	memupd->FspmConfig.CpuPcieRpClockReqMsgEnable[2] = 0;
+	mcfg->CpuPcieRpClockReqMsgEnable[0] = 0;
+	mcfg->CpuPcieRpClockReqMsgEnable[1] = 0;
+	mcfg->CpuPcieRpClockReqMsgEnable[2] = 0;
 
 	// shared clock
-	memupd->FspmConfig.PcieClkSrcUsage[0] = 0x80;
-	memupd->FspmConfig.PcieClkSrcClkReq[0] = 0xFF;
+	mcfg->PcieClkSrcUsage[0] = 0x80;
+	mcfg->PcieClkSrcClkReq[0] = 0xFF;
 	// i225
-	memupd->FspmConfig.PcieClkSrcUsage[1] = 9; // RP 10
-	memupd->FspmConfig.PcieClkSrcClkReq[1] = 1;
+	mcfg->PcieClkSrcUsage[1] = 9; // RP 10
+	mcfg->PcieClkSrcClkReq[1] = 1;
 
 	// FIX Apparently Rootports don't like the idea of not having a clksrc and clkreq
 	// attached to it. For example if we set PcieClkSrcClkReq[1] above to 0xFF (unused)
@@ -88,14 +89,14 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	// Therefore we put each rootport (that does not have a clkreq, clksrc)
 	// to a not connected (not routed out) clksrc and clkreq. That seems to be a current FSP Bug.
 	// workaround and will be removed as soon as FSP is fixed.
-	memupd->FspmConfig.PcieClkSrcUsage[2] = 4; // Rootport 5
-	memupd->FspmConfig.PcieClkSrcClkReq[2] = 0;
-	memupd->FspmConfig.PcieClkSrcUsage[3] = 5; // Rootport 6
-	memupd->FspmConfig.PcieClkSrcClkReq[3] = 0;
-	memupd->FspmConfig.PcieClkSrcUsage[4] = 8; // Rootport 9
-	memupd->FspmConfig.PcieClkSrcClkReq[4] = 0;
-	memupd->FspmConfig.PcieClkSrcUsage[5] = 6; // Rootport 7
-	memupd->FspmConfig.PcieClkSrcClkReq[5] = 0;
-	memupd->FspmConfig.PcieClkSrcUsage[6] = 7; // Rootport 8
-	memupd->FspmConfig.PcieClkSrcClkReq[6] = 0;
+	mcfg->PcieClkSrcUsage[2] = 4; // Rootport 5
+	mcfg->PcieClkSrcClkReq[2] = 0;
+	mcfg->PcieClkSrcUsage[3] = 5; // Rootport 6
+	mcfg->PcieClkSrcClkReq[3] = 0;
+	mcfg->PcieClkSrcUsage[4] = 8; // Rootport 9
+	mcfg->PcieClkSrcClkReq[4] = 0;
+	mcfg->PcieClkSrcUsage[5] = 6; // Rootport 7
+	mcfg->PcieClkSrcClkReq[5] = 0;
+	mcfg->PcieClkSrcUsage[6] = 7; // Rootport 8
+	mcfg->PcieClkSrcClkReq[6] = 0;
 }

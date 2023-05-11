@@ -58,6 +58,7 @@ chip northbridge/intel/sandybridge
 						io 0x62 = 0		# SB-TSI address (not used)
 						drq 0xe4 = 0xf9		# GP50, GP52, PWROK#
 						drq 0xf0 = 0x3e		# Enable all fan input debouncers
+						irq 0x70 = 0
 					end
 					device pnp 2e.e off end		# CIR wake-up
 					device pnp 2e.f on		# GPIO PP/OD select

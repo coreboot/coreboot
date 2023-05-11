@@ -20,23 +20,30 @@ APCB_NAME=APCB_PHX_D5
 ifneq ($(wildcard $(MAINBOARD_BLOBS_DIR)/$(APCB_NAME).bin),)
 $(info APCB sources present.)
 
-ifneq ($(wildcard $(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/memory/Makefile.inc),)
+APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/$(APCB_NAME).bin
 
-LIB_SPD_DEPS = $(SPD_SOURCES)
+# The SPD is currently built directly into the APCB.
+# Add the below section back in after the apcbtool is updated to handle the
+# Phoenix APCB SPD configuration.
 
-APCB_SOURCES = $(obj)/$(APCB_NAME).gen
+#ifneq ($(wildcard $(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/memory/Makefile.inc),)
+#
+#LIB_SPD_DEPS = $(SPD_SOURCES)
+#
+#APCB_SOURCES = $(obj)/$(APCB_NAME).gen
+#
+#$(obj)/$(APCB_NAME).gen: $(SPD_SOURCES) \
+#			$(APCB_V3_EDIT_TOOL) \
+#			$(MAINBOARD_BLOBS_DIR)/$(APCB_NAME).bin
+#	$(APCB_V3_EDIT_TOOL) $(MAINBOARD_BLOBS_DIR)/$(APCB_NAME).bin \
+#			     $(obj)/$(APCB_NAME).gen  \
+#			     --spd_sources $(SPD_SOURCES) \
+#			     --mem_type 'lp5'
+#else
+#$(info SPD sources not found.  Skipping APCB.)
+#files_added:: die_no_apcb
+#endif
 
-$(obj)/$(APCB_NAME).gen: $(SPD_SOURCES) \
-			$(APCB_V3_EDIT_TOOL) \
-			$(MAINBOARD_BLOBS_DIR)/$(APCB_NAME).bin
-	$(APCB_V3_EDIT_TOOL) $(MAINBOARD_BLOBS_DIR)/$(APCB_NAME).bin \
-			     $(obj)/$(APCB_NAME).gen  \
-			     --spd_sources $(SPD_SOURCES) \
-			     --mem_type 'lp5'
-else
-$(info SPD sources not found.  Skipping APCB.)
-files_added:: die_no_apcb
-endif
 else
 $(info APCB sources not found.  Skipping APCB.)
 files_added:: warn_no_apcb

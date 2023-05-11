@@ -2,11 +2,17 @@
 
 #include <console/console.h>
 #include <drivers/vpd/vpd.h>
+#include <drivers/ocp/ewl/ocp_ewl.h>
 #include <drivers/ocp/include/vpd.h>
 #include <soc/romstage.h>
 #include <defs_cxl.h>
 #include <defs_iio.h>
 #include <sprsp_ac_iio.h>
+
+void mainboard_ewl_check(void)
+{
+	get_ewl();
+}
 
 static void mainboard_config_iio(FSPM_UPD *mupd)
 {

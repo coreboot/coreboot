@@ -29,7 +29,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_A13 : [] ==> SD_PE_LS_PRSNT_L */
 	PAD_CFG_GPI_LOCK(GPP_A13, NONE, LOCK_CONFIG),
 	/* GPP_A14 : [] ==> WWAN_RF_DISABLE_ODL */
-	PAD_CFG_GPO(GPP_A14, 1, DEEP),
+	PAD_NC_LOCK(GPP_A14, NONE, LOCK_CONFIG),
 	/* GPP_A15 : [] ==> WWAN_RST_L */
 	PAD_CFG_GPO(GPP_A15, 1, DEEP),
 	/* GPP_A16 : GPP_A16 ==> ESPI_SOC_ALERT_L configured on reset, do not touch */

@@ -2167,6 +2167,7 @@ void acpigen_get_tx_gpio(const struct acpi_gpio *gpio)
 void acpigen_resource_word(u16 res_type, u16 gen_flags, u16 type_flags, u16 gran, u16 range_min,
 			   u16 range_max, u16 translation, u16 length)
 {
+	/* Byte 0: Type 1, Large Item Value 0x8: Word Address Space Descriptor */
 	acpigen_emit_byte(0x88);
 	/* Byte 1+2: length (0x000d) */
 	acpigen_emit_byte(0x0d);
@@ -2190,6 +2191,7 @@ void acpigen_resource_word(u16 res_type, u16 gen_flags, u16 type_flags, u16 gran
 void acpigen_resource_dword(u16 res_type, u16 gen_flags, u16 type_flags, u32 gran,
 			    u32 range_min, u32 range_max, u32 translation, u32 length)
 {
+	/* Byte 0: Type 1, Large Item Value 0x7: DWord Address Space Descriptor */
 	acpigen_emit_byte(0x87);
 	/* Byte 1+2: length (0023) */
 	acpigen_emit_byte(23);
@@ -2219,6 +2221,7 @@ static void acpigen_emit_qword(u64 data)
 void acpigen_resource_qword(u16 res_type, u16 gen_flags, u16 type_flags, u64 gran,
 			    u64 range_min, u64 range_max, u64 translation, u64 length)
 {
+	/* Byte 0: Type 1, Large Item Value 0xa: QWord Address Space Descriptor */
 	acpigen_emit_byte(0x8a);
 	/* Byte 1+2: length (0x002b) */
 	acpigen_emit_byte(0x2b);

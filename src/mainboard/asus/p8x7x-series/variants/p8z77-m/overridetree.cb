@@ -81,6 +81,7 @@ chip northbridge/intel/sandybridge
 					device pnp 2e.609 off end	# GPIO 6
 					device pnp 2e.709 off end	# GPIO 7
 					device pnp 2e.14 on end		# Port 80 UART
+					device pnp 2e.16 off end	# Deep sleep
 				end
 				chip drivers/pc80/tpm
 					device pnp 4e.0 on end	# TPM

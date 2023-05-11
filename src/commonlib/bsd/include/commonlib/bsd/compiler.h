@@ -58,6 +58,10 @@
 #define __fallthrough __attribute__((__fallthrough__))
 #endif
 
+#ifndef __printf
+#define __printf(a, b) __attribute__((format(printf, a, b)))
+#endif
+
 /*
  * This evaluates to the type of the first expression, unless that is constant
  * in which case it evaluates to the type of the second. This is useful when

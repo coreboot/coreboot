@@ -897,9 +897,10 @@ static void integrate_psp_ab(context *ctx, psp_directory_table *pspdir,
 				BUFF_TO_RUN_MODE(*ctx, pspdir2, AMD_ADDR_REL_BIOS);
 		pspdir->entries[count].address_mode =
 				SET_ADDR_MODE(pspdir, AMD_ADDR_REL_BIOS);
-		pspdir->entries[count].size = pspdir2->header.num_entries *
+		pspdir->entries[count].size = _MAX(TABLE_ALIGNMENT,
+				pspdir2->header.num_entries *
 				sizeof(psp_directory_entry) +
-				sizeof(psp_directory_header);
+				sizeof(psp_directory_header));
 	}
 
 	count++;

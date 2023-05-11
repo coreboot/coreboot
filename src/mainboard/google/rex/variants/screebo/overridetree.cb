@@ -330,6 +330,19 @@ chip soc/intel/meteorlake
 				device generic 0 on end
 			end
 		end
+		device ref ipu on
+			chip drivers/intel/mipi_camera
+				register "acpi_uid" = "0x50000"
+				register "acpi_name" = ""IPU0""
+				register "device_type" = "INTEL_ACPI_CAMERA_CIO2"
+
+				register "cio2_num_ports" = "1"
+				register "cio2_lanes_used" = "{4}"
+				register "cio2_lane_endpoint[0]" = ""^I2C5.CAM0""
+				register "cio2_prt[0]" = "4"
+				device generic 0 on end
+			end
+		end
 		device ref i2c3 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
@@ -362,6 +375,70 @@ chip soc/intel/meteorlake
 				device spi 0 on end
 			end # FPMCU
 		end
+		device ref i2c5 on
+			chip drivers/intel/mipi_camera
+				register "acpi_hid" = ""OVTI08F4""
+				register "acpi_uid" = "0"
+				register "acpi_name" = ""CAM0""
+				register "chip_name" = ""Ov 08X40 Camera""
+				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
+				register "ssdb.lanes_used" = "4"
+				register "ssdb.link_used" = "1"
+				register "num_freq_entries" = "1"
+				register "link_freq[0]" = "400 * MHz"
+				register "remote_name" = ""IPU0""
+
+				register "has_power_resource" = "1"
+				#Controls
+				register "clk_panel.clks[0].clknum" = "IMGCLKOUT_2"
+				register "clk_panel.clks[0].freq" = "FREQ_19_2_MHZ"
+				register "gpio_panel.gpio[1].gpio_num" = "GPP_A12" #EN_UCAM_PWR
+				register "gpio_panel.gpio[0].gpio_num" = "GPP_A11" #EN_UCAM_SENR_PWR
+				register "gpio_panel.gpio[2].gpio_num" = "GPP_V23" #UCAM_RST_L
+
+				#_ON
+				register "on_seq.ops_cnt" = "5"
+				register "on_seq.ops[0]" = "SEQ_OPS_CLK_ENABLE(0, 0)"
+				register "on_seq.ops[1]" = "SEQ_OPS_GPIO_ENABLE(0, 5)"
+				register "on_seq.ops[2]" = "SEQ_OPS_GPIO_ENABLE(1, 5)"
+				register "on_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(2, 5)"
+				register "on_seq.ops[4]" = "SEQ_OPS_GPIO_ENABLE(2, 5)"
+
+				#_OFF
+				register "off_seq.ops_cnt" = "4"
+				register "off_seq.ops[0]" = "SEQ_OPS_CLK_DISABLE(0, 0)"
+				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(2, 0)"
+				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
+				register "off_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
+				device i2c 36 on end
+			end
+			chip drivers/intel/mipi_camera
+				register "acpi_uid" = "1"
+				register "acpi_name" = ""NVM0""
+				register "chip_name" = ""M24C64X""
+				register "device_type" = "INTEL_ACPI_CAMERA_NVM"
+
+				register "has_power_resource" = "1"
+				#Controls
+				register "gpio_panel.gpio[0].gpio_num" = "GPP_A12" #EN_UCAM_PWR
+
+				#_ON
+				register "on_seq.ops_cnt" = "1"
+				register "on_seq.ops[0]" = "SEQ_OPS_GPIO_ENABLE(0, 0)"
+
+				#_OFF
+				register "off_seq.ops_cnt" = "1"
+				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
+
+				register "nvm_size" = "0x2000"
+				register "nvm_pagesize" = "1"
+				register "nvm_readonly" = "1"
+				register "nvm_width" = "0x10"
+				register "nvm_compat" = ""atmel,24c64""
+
+				device i2c 50 on end
+			end
+		end #I2C5
 		device ref soc_espi on
 			chip ec/google/chromeec
 				use conn0 as mux_conn[0]

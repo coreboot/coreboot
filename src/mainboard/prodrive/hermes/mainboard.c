@@ -146,13 +146,8 @@ static void update_board_layout(void)
 
 static void mainboard_init(void *chip_info)
 {
-	const struct eeprom_board_settings *const board_cfg = get_board_settings();
-
-	if (!board_cfg)
-		return;
-
 	/* Enable internal speaker amplifier */
-	if (board_cfg->front_panel_audio == 2)
+	if (get_board_settings()->front_panel_audio == 2)
 		mb_hda_amp_enable(1);
 	else
 		mb_hda_amp_enable(0);
@@ -162,13 +157,8 @@ static void mainboard_final(struct device *dev)
 {
 	update_board_layout();
 
-	const struct eeprom_board_settings *const board_cfg = get_board_settings();
-
-	if (!board_cfg)
-		return;
-
 	/* Encoding: 0 -> S0, 1 -> S5 */
-	const bool on = !board_cfg->power_state_after_g3;
+	const bool on = !get_board_settings()->power_state_after_g3;
 
 	pmc_soc_set_afterg3_en(on);
 }
@@ -196,9 +186,6 @@ static void mainboard_smbios_strings(struct device *dev, struct smbios_type11 *t
 static void mainboard_acpi_fill_ssdt(const struct device *dev)
 {
 	const struct eeprom_board_settings *const board_cfg = get_board_settings();
-
-	if (!board_cfg)
-		return;
 
 	const unsigned int usb_power_gpios[] = { GPP_G0, GPP_G1, GPP_G2, GPP_G3, GPP_G4 };
 
@@ -292,13 +279,11 @@ static void mainboard_early(void *unused)
 	const struct eeprom_board_settings *const board_cfg = get_board_settings();
 	config_t *config = config_of_soc();
 
-	if (board_cfg) {
-		/* Set Deep Sx */
-		config->deep_s5_enable_ac = board_cfg->deep_sx_enabled;
-		config->deep_s5_enable_dc = board_cfg->deep_sx_enabled;
+	/* Set Deep Sx */
+	config->deep_s5_enable_ac = board_cfg->deep_sx_enabled;
+	config->deep_s5_enable_dc = board_cfg->deep_sx_enabled;
 
-		config->disable_vmx = board_cfg->vtx_disabled;
-	}
+	config->disable_vmx = board_cfg->vtx_disabled;
 
 	if (check_signature(offsetof(struct eeprom_layout, supd), FSPS_UPD_SIGNATURE)) {
 		struct {
@@ -325,11 +310,8 @@ BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_EXIT, mainboard_early, NULL);
 static void mainboard_configure_internal_gfx(void *unused)
 {
 	struct device *dev;
-	const struct eeprom_board_settings *board_cfg = get_board_settings();
-	if (!board_cfg)
-		return;
 
-	if (board_cfg->primary_video == PRIMARY_VIDEO_INTEL) {
+	if (get_board_settings()->primary_video == PRIMARY_VIDEO_INTEL) {
 		dev = dev_find_device(PCI_VID_ASPEED, PCI_DID_ASPEED_AST2050_VGA, NULL);
 		dev->on_mainboard = false;
 		dev->enabled = false;

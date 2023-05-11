@@ -132,9 +132,6 @@ static void mainboard_r0x_configure_alc888(u8 *base, u32 viddid)
 
 	const struct eeprom_board_settings *const board_cfg = get_board_settings();
 
-	if (!board_cfg)
-		return;
-
 	const u32 front_panel_cfg = get_front_panel_cfg(board_cfg->front_panel_audio);
 
 	const u32 front_mic_cfg = get_front_mic_cfg(board_cfg->front_panel_audio);

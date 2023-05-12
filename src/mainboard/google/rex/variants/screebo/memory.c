@@ -61,7 +61,7 @@ static const struct mb_cfg baseboard_memcfg = {
 	},
 
 	.lp5x_config = {
-		.ccc_config = 0x55,
+		.ccc_config = 0xaa,
 	},
 
 	.ect = 1, /* Early Command Training */

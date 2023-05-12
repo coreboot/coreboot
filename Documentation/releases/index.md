@@ -3,7 +3,7 @@
 ## Upcoming release
 
 Please add to the release notes as changes are added:
-* [4.20 - April 2023](coreboot-4.20-relnotes.md)
+* [4.21 - August 2023](coreboot-4.21-relnotes.md)
 
 The [checklist] contains instructions to ensure that a release covers all
 important things and provides a reliable format for tarballs, branch

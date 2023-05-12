@@ -48,9 +48,6 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 	fadt->pm2_cnt_blk = pmbase + PM2_CNT;
 	fadt->pm2_cnt_len = 1;
 
-	fadt->x_pm1b_evt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-	fadt->x_pm1b_cnt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
-
 	/* PM2 Control Registers */
 	fadt->x_pm2_cnt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
 	fadt->x_pm2_cnt_blk.bit_width = fadt->pm2_cnt_len * 8;

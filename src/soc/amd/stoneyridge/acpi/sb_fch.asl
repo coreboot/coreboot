@@ -12,7 +12,10 @@ Device (AAHB)
 	{
 		Memory32Fixed (ReadWrite, ALINK_AHB_ADDRESS, 0x2000)
 	})
-	Name (_STA, 0xb)
+	Method (_STA, 0x0, NotSerialized)
+	{
+		Return (0x0b)
+	}
 }
 
 Device (GPIO)

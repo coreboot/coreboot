@@ -391,7 +391,7 @@ void acpigen_set_package_element_namestr(const char *package, unsigned int eleme
 void acpigen_write_processor_namestring(unsigned int cpu_index)
 {
 	char buffer[16];
-	snprintf(buffer, sizeof(buffer), CONFIG_ACPI_CPU_STRING, cpu_index);
+	snprintf(buffer, sizeof(buffer), "\\_SB." CONFIG_ACPI_CPU_STRING, cpu_index);
 	acpigen_emit_namestring(buffer);
 }
 
@@ -1939,7 +1939,8 @@ void acpigen_write_CPPC_package(const struct cppc_config *config)
 void acpigen_write_CPPC_method(void)
 {
 	char pscope[16];
-	snprintf(pscope, sizeof(pscope), CONFIG_ACPI_CPU_STRING "." CPPC_PACKAGE_NAME, 0);
+	snprintf(pscope, sizeof(pscope),
+		 "\\_SB." CONFIG_ACPI_CPU_STRING "." CPPC_PACKAGE_NAME, 0);
 
 	acpigen_write_method("_CPC", 0);
 	acpigen_emit_byte(RETURN_OP);

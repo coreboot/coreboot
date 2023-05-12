@@ -25,7 +25,7 @@ config MAX_CPUS
 
 config ACPI_CPU_STRING
 	string
-	default "\\_SB.C%03X"
+	default "C%03X"
 
 config SIPI_FINAL_TIMEOUT
 	int

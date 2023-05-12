@@ -8,13 +8,11 @@ config ACPI_AMD_HARDWARE_SLEEP_VALUES
 
 config ACPI_CPU_STRING
 	string
-	default "\\_SB.CP%02X"
+	default "CP%02X"
 	depends on HAVE_ACPI_TABLES
 	help
 	  Specifies the ACPI name format string used by the acpigen
-	  function to generate the processor scope. Default is \_SB.CPxx.
-	  Note that you need to escape the '\' character in the string.
-	  The resulting string will be truncated to at most 15 chars.
+	  function to generate the processor scope. Default is CPxx.
 
 config ACPI_HAVE_PCAT_8259
 	def_bool y if !ACPI_NO_PCAT_8259

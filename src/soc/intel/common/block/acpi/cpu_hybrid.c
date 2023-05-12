@@ -158,7 +158,7 @@ void acpigen_write_CPPC_hybrid_method(s32 core_id)
 		snprintf(pkg_path, sizeof(pkg_path), CPPC_PACKAGE_NAME, 0);
 	else
 		snprintf(pkg_path, sizeof(pkg_path),
-			 CONFIG_ACPI_CPU_STRING "." CPPC_PACKAGE_NAME, 0);
+			 "\\_SB." CONFIG_ACPI_CPU_STRING "." CPPC_PACKAGE_NAME, 0);
 
 	acpigen_write_method("_CPC", 0);
 

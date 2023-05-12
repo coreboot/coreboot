@@ -268,7 +268,7 @@ config SMM_MODULE_STACK_SIZE
 
 config ACPI_CPU_STRING
 	string
-	default "\\_SB.P%03d"
+	default "P%03d"
 
 config ACPI_SSDT_PSD_INDEPENDENT
 	default n

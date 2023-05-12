@@ -405,11 +405,8 @@ struct resource *find_resource(const struct device *dev, unsigned int index)
 
 	/* See if there is a resource with the appropriate index. */
 	resource = probe_resource(dev, index);
-	if (!resource) {
-		printk(BIOS_EMERG, "%s missing resource: %02x\n",
-		       dev_path(dev), index);
-		die("");
-	}
+	if (!resource)
+		die("%s missing resource: %02x\n", dev_path(dev), index);
 	return resource;
 }
 

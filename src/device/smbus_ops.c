@@ -8,11 +8,8 @@
 struct bus *get_pbus_smbus(struct device *dev)
 {
 	struct bus *const pbus = i2c_link(dev);
-	if (!pbus->dev->ops->ops_smbus_bus) {
-		printk(BIOS_ALERT, "%s Cannot find SMBus bus operations",
-		       dev_path(dev));
-		die("");
-	}
+	if (!pbus->dev->ops->ops_smbus_bus)
+		die("%s Cannot find SMBus bus operations", dev_path(dev));
 	return pbus;
 }
 

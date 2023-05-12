@@ -18,7 +18,7 @@ void mainboard_post(u8 value);
 void arch_post_code(u8 value);
 void soc_post_code(uint8_t value);
 
-void __noreturn die(const char *fmt, ...);
+void __noreturn __printf(1, 2) die(const char *fmt, ...);
 #define die_with_post_code(value, fmt, ...) \
 	do { post_code(value); die(fmt, ##__VA_ARGS__); } while (0)
 

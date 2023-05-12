@@ -40,8 +40,7 @@ static RES_TYPE get_res_type(uint64_t flags)
 		/* both 64-bit and 32-bit use below 4GB address space */
 		return RES_TYPE_NONPREF_MEM;
 	}
-	printk(BIOS_ERR, "Invalid resource type 0x%llx\n", flags);
-	die("");
+	die("Invalid resource type 0x%llx\n", flags);
 }
 
 static bool need_assignment(uint64_t flags)

@@ -222,7 +222,7 @@ static unsigned char get_alignment_by_resource_type(const struct resource *res)
 	else if (res->flags & IORESOURCE_IO)
 		return 0;   /* No special alignment required --> log2(1) */
 
-	die("Unexpected resource type: flags(%d)!\n", res->flags);
+	die("Unexpected resource type: flags(%lu)!\n", res->flags);
 }
 
 /*

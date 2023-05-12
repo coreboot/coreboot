@@ -67,7 +67,7 @@ static void bochs_vga_write(struct resource *res, int index, uint8_t val)
 	if (res->flags & IORESOURCE_IO)
 		outb(val, index + 0x3c0);
 	else
-		write8(res2mmio(res, (0x400 - 0x3c0) + index, 0), val);
+		write8(res2mmio(res, 0x400 + index, 0), val);
 }
 
 static struct resource res_legacy = {

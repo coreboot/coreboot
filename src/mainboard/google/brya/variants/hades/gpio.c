@@ -383,7 +383,7 @@ static const struct pad_config early_gpio_table[] = {
 	/* GPP_A12 : [] ==> EN_PPVAR_WWAN */
 	PAD_CFG_GPO(GPP_A12, 1, DEEP),
 	/* GPP_A13 : [] ==> GSC_PCH_INT_ODL */
-	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
+	PAD_CFG_GPI_APIC(GPP_A20, NONE, PLTRST, LEVEL, INVERT),
 	/* GPP_B4  : [] ==> SSD_PERST_L */
 	PAD_CFG_GPO(GPP_B4, 0, DEEP),
 	/* GPP_B7  : [] ==> PCH_I2C_TPM_SDA */

@@ -323,7 +323,7 @@ chip soc/intel/alderlake
 				end
 			end
 			chip drivers/sof
-				register "spkr_tplg" = "max98357a"
+				register "spkr_tplg" = "max98357a_tdm"
 				register "jack_tplg" = "rt5682"
 				register "mic_tplg" = "_2ch_pdm0"
 				device generic 0 on end

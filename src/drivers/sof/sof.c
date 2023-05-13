@@ -14,9 +14,10 @@ static const char *get_spkr_tplg_str(unsigned int index)
 		case 1: return "max98373";
 		case 2: return "max98360a";
 		case 3: return "max98357a";
-		case 4: return "max98390";
-		case 5: return "rt1011";
-		case 6: return "rt1015";
+		case 4: return "max98357a-tdm";
+		case 5: return "max98390";
+		case 6: return "rt1011";
+		case 7: return "rt1015";
 		default: return "default";
 	}
 }

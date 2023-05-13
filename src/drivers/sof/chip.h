@@ -11,6 +11,7 @@ enum _spkr_tplg {
 	max98373 = 1,
 	max98360a,
 	max98357a,
+	max98357a_tdm,
 	max98390,
 	rt1011,
 	rt1015,

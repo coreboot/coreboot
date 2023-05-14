@@ -73,6 +73,11 @@
 - Gladios
 - Marasov
 - Omnigul
+- Constitution
+- Aurash
+- Hades
+- Uldren
+- Yavilla
 - Butterfly (HP Pavilion Chromebook 14)
 - Cherry
 - Dojo
@@ -83,6 +88,7 @@
 - Krabby
 - Tentacruel
 - Magikarp
+- Starmie
 - Banon (Acer Chromebook 15 (CB3-532))
 - Celes (Samsung Chromebook 3)
 - Cyan (Acer Chromebook R11 (C738T))
@@ -170,6 +176,7 @@
 - Pico
 - Link (Google Chromebook Pixel (2013))
 - Mistral
+- Myst
 - Nyan
 - Nyan Big (Acer Chromebook 13 (CB5-311))
 - Nyan Blaze (HP Chromebook 14 G3)
@@ -203,6 +210,7 @@
 - Snappy (HP Chromebook x360 11 G1 EE)
 - Coral
 - Rex 0
+- Screebo
 - Arcada (Latitude 5300 2-in-1 Chromebook Enterprise)
 - Sarien (Dell Latitude 5400 Chromebook Enterprise)
 - Skyrim
@@ -237,25 +245,25 @@
 - Veyron_Speedy (ASUS C201 Chromebook)
 - Veyron_Mickey (Asus Chromebit CS10)
 - Veyron_Rialto
+- Chronicler
+- Collis
+- Copano (ASUS Chromebook Flip CX5400)
 - Delbin (ASUS Chromebook Flip CX5)
+- Drobit (ASUS Chromebook CX9400)
 - Eldrid
+- Elemi (HP Pro c640 G2 Chromebook)
 - Halvor
 - Lindar
 - Malefor
 - Terrador
 - Todor
 - Trondo
+- Voema
+- Volet
 - Volteer
 - Volteer2
 - Volteer2_Ti50
 - Voxel (Acer Chromebook Spin 713 (CP713-3W))
-- Elemi (HP Pro c640 G2 Chromebook)
-- Voema
-- Drobit (ASUS Chromebook CX9400)
-- Copano (ASUS Chromebook Flip CX5400)
-- Collis
-- Volet
-- Chronicler
 - Dalboz
 - Vilboz (Lenovo 100e/300e Gen3 AMD)
 - Ezkinil (Acer Chromebook Spin 514)
@@ -287,7 +295,6 @@
 - Coffeelake S U-DIMM DDR4 RVP8
 - Cometlake U DDR4 RVP
 - Elkhartlake LPDDR4x CRB
-- Emerald Lake 2 CRB
 - Galileo
 - Glkrvp
 - Jasperlake DDR4/LPDDR4 RVP
@@ -299,6 +306,7 @@
 - Kunimitsu
 - Meteorlake-P RVP
 - Meteorlake-P RVP with Chrome EC
+- Meteorlake-P RVP with Microchip EC
 - shadowmountain
 - Strago
 - Tigerlake UP3 RVP
@@ -342,6 +350,11 @@
 
 ## OpenCellular
 - Elgon (GBCv2)
+
+## Protectli
+- VP4630/VP4650
+- VP4670
+- VP2420
 
 ## SAMSUNG
 - Lumpy

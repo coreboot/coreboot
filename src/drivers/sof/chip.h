@@ -8,7 +8,8 @@
 
 /* Speaker topology */
 enum _spkr_tplg {
-	max98373 = 1,
+	max98373 = 1,	/* port SSP1 */
+	max98373_ssp2,
 	max98360a,
 	max98357a,
 	max98357a_tdm,

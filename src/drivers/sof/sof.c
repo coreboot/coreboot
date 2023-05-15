@@ -12,6 +12,7 @@ static const char *get_spkr_tplg_str(enum _spkr_tplg tplg)
 {
 	switch (tplg) {
 	case max98373: return "max98373";
+	case max98373_ssp2: return "max98373-ssp2";
 	case max98360a: return "max98360a";
 	case max98357a: return "max98357a";
 	case max98357a_tdm: return "max98357a-tdm";

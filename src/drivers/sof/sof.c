@@ -8,39 +8,39 @@
 
 #include "chip.h"
 
-static const char *get_spkr_tplg_str(unsigned int index)
+static const char *get_spkr_tplg_str(enum _spkr_tplg tplg)
 {
-	switch (index) {
-		case 1: return "max98373";
-		case 2: return "max98360a";
-		case 3: return "max98357a";
-		case 4: return "max98357a-tdm";
-		case 5: return "max98390";
-		case 6: return "rt1011";
-		case 7: return "rt1015";
-		default: return "default";
+	switch (tplg) {
+	case max98373: return "max98373";
+	case max98360a: return "max98360a";
+	case max98357a: return "max98357a";
+	case max98357a_tdm: return "max98357a-tdm";
+	case max98390: return "max98390";
+	case rt1011: return "rt1011";
+	case rt1015: return "rt1015";
+	default: return "default";
 	}
 }
 
-static const char *get_jack_tplg_str(unsigned int index)
+static const char *get_jack_tplg_str(enum _jack_tplg tplg)
 {
-	switch (index) {
-		case 1: return "cs42l42";
-		case 2: return "da7219";
-		case 3: return "nau8825";
-		case 4: return "rt5682";
-		default: return "default";
+	switch (tplg) {
+	case cs42l42: return "cs42l42";
+	case da7219: return "da7219";
+	case nau8825: return "nau8825";
+	case rt5682: return "rt5682";
+	default: return "default";
 	}
 }
 
-static const char *get_mic_tplg_str(unsigned int index)
+static const char *get_mic_tplg_str(enum _mic_tplg tplg)
 {
-	switch (index) {
-		case 1: return "1ch";
-		case 2: return "2ch-pdm0";
-		case 3: return "2ch-pdm1";
-		case 4: return "4ch";
-		default: return "default";
+	switch (tplg) {
+	case _1ch: return "1ch";
+	case _2ch_pdm0: return "2ch-pdm0";
+	case _2ch_pdm1: return "2ch-pdm1";
+	case _4ch: return "4ch";
+	default: return "default";
 	}
 }
 

@@ -123,7 +123,10 @@ static void fill_fspm_igd_params(FSP_M_CONFIG *m_cfg,
 static void fill_fspm_mrc_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_meteorlake_config *config)
 {
+	unsigned int i;
+
 	m_cfg->SaGv = config->sagv;
+
 	if (m_cfg->SaGv) {
 		/*
 		 * Set SaGv work points after reviewing the power and performance impact
@@ -134,6 +137,11 @@ static void fill_fspm_mrc_params(FSP_M_CONFIG *m_cfg,
 			m_cfg->SaGvWpMask = config->sagv_wp_bitmap;
 		else
 			m_cfg->SaGvWpMask = SAGV_POINTS_0_1_2_3;
+
+		for  (i = 0; i < HOB_MAX_SAGV_POINTS; i++) {
+			m_cfg->SaGvFreq[i] = config->sagv_freq_mhz[i];
+			m_cfg->SaGvGear[i] = config->sagv_gear[i];
+		}
 	}
 
 	m_cfg->RMT = config->rmt;

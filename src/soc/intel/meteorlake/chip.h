@@ -18,6 +18,8 @@
 #include <soc/usb.h>
 #include <stdint.h>
 
+#define MAX_SAGV_POINTS 4
+
 /* Types of different SKUs */
 enum soc_intel_meteorlake_power_limits {
 	MTL_P_282_CORE,
@@ -375,6 +377,15 @@ struct soc_intel_meteorlake_config {
 	uint8_t energy_perf_pref_value;
 
 	bool disable_vmx;
+
+	/*
+	 * SAGV Frequency per point in Mhz. 0 is Auto, otherwise holds the
+	 * frequency value expressed as an integer. For example: 1867
+	 */
+	uint16_t sagv_freq_mhz[MAX_SAGV_POINTS];
+
+	/* Gear Selection for SAGV points. 0: Auto, 1: Gear 1, 2: Gear 2, 4: Gear 4 */
+	uint8_t sagv_gear[MAX_SAGV_POINTS];
 };
 
 typedef struct soc_intel_meteorlake_config config_t;

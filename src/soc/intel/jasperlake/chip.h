@@ -419,6 +419,9 @@ struct soc_intel_jasperlake_config {
 		CD_CLOCK_556_8_MHZ = 7,
 	} cd_clock;
 
+	/* Platform Power Pmax */
+	uint16_t PsysPmax;
+
 	/*
 	 * This is a workaround to mitigate higher SoC power consumption in S0ix
 	 * when the CNVI has background activity.

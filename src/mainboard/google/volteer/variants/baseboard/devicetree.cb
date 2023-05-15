@@ -526,7 +526,34 @@ chip soc/intel/tigerlake
 				register "spkr_tplg" = "max98373"
 				register "jack_tplg" = "rt5682"
 				register "mic_tplg" = "_2ch_pdm0"
-				device generic 0 on end
+				device generic 0 on
+					probe AUDIO MAX98373_ALC5682I_I2S
+					probe AUDIO MAX98373_ALC5682_SNDW
+				end
+			end
+			chip drivers/sof
+				register "spkr_tplg" = "max98373_ssp2"
+				register "jack_tplg" = "rt5682"
+				register "mic_tplg" = "_2ch_pdm0"
+				device generic 0 on
+					probe AUDIO MAX98373_ALC5682I_I2S_UP4
+				end
+			end
+			chip drivers/sof
+				register "spkr_tplg" = "max98360a"
+				register "jack_tplg" = "rt5682"
+				register "mic_tplg" = "_2ch_pdm0"
+				device generic 0 on
+					probe AUDIO MAX98360_ALC5682I_I2S
+				end
+			end
+			chip drivers/sof
+				register "spkr_tplg" = "rt1011"
+				register "jack_tplg" = "rt5682"
+				register "mic_tplg" = "_2ch_pdm0"
+				device generic 0 on
+					probe AUDIO RT1011_ALC5682I_I2S
+				end
 			end
 		end
 	end

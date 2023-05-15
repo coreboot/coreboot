@@ -35,7 +35,7 @@ config CBFS_CACHE_SIZE
 
 config ACPI_CPU_STRING
 	string
-	default "C%03d"
+	default "C%03X"
 
 endif # SOC_AMD_COMMON_BLOCK_NONCAR
 

@@ -44,7 +44,7 @@ enum cb_err fill_pds(void)
 	pds.num_pds = num_cxlnodes + num_sockets;
 	pds.pds = xmalloc(sizeof(struct proximity_domain) * pds.num_pds);
 	if (!pds.pds)
-		die("%s %s out of memory.", __FILE__, __LINE__);
+		die("%s %d out of memory.", __FILE__, __LINE__);
 
 	memset(pds.pds, 0, sizeof(struct proximity_domain) * pds.num_pds);
 
@@ -56,7 +56,7 @@ enum cb_err fill_pds(void)
 		pds.pds[i].socket_bitmap = 1 << i;
 		pds.pds[i].distances = malloc(sizeof(uint8_t) * pds.num_pds);
 		if (!pds.pds[i].distances)
-			die("%s %s out of memory.", __FILE__, __LINE__);
+			die("%s %d out of memory.", __FILE__, __LINE__);
 		/* hard code the distances for now, till we know how to calculate them. */
 		for (j = 0; j < pds.num_pds; j++) {
 			if (j == i)
@@ -84,7 +84,7 @@ enum cb_err fill_pds(void)
 			pds.pds[i].device_handle = PCI_BDF(dev);
 			pds.pds[i].distances = malloc(sizeof(uint8_t) * pds.num_pds);
 			if (!pds.pds[i].distances)
-				die("%s %s out of memory.", __FILE__, __LINE__);
+				die("%s %d out of memory.", __FILE__, __LINE__);
 			/* hard code the distances until we know how to calculate them */
 			for (j = 0; j < pds.num_pds; j++) {
 				if (j == i)

@@ -10,6 +10,6 @@ if CPU_AMD_PI_00730F01
 
 config ACPI_CPU_STRING
 	string
-	default "P%03d"
+	default "P%03X"
 
 endif # CPU_AMD_PI_00730F01

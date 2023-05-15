@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <assert.h>
+#include <bootsplash.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <cpu/intel/cpu_ids.h>
@@ -786,4 +787,10 @@ void platform_fsp_multi_phase_init_cb(uint32_t phase_index)
 __weak void mainboard_silicon_init_params(FSP_S_CONFIG *s_cfg)
 {
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
+}
+
+/* Handle FSP logo params */
+void soc_load_logo(FSPS_UPD *supd)
+{
+	bmp_load_logo(&supd->FspsConfig.LogoPtr, &supd->FspsConfig.LogoSize);
 }

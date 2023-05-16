@@ -128,6 +128,9 @@ Method (GC6I, 0, Serialized)
 	/* Deassert PG_GPU_ALLRAILS */
 	CTXS (GPIO_GPU_ALLRAILS_PG)
 
+	/* Deassert FBVDDQ Enable */
+	CTXS (GPIO_FBVDD_PWR_EN)
+
 	/* Ramp down PEXVDD */
 	CTXS (GPIO_PEXVDD_PWR_EN)
 	GPPL (GPIO_PEXVDD_PG, 0, 20)
@@ -172,6 +175,9 @@ Method (GC6O, 0, Serialized)
 	/* Ramp up PEXVDD */
 	STXS (GPIO_PEXVDD_PWR_EN)
 	GPPL (GPIO_PEXVDD_PG, 1, 4)
+
+	/* Assert FBVDDQ Enable */
+        STXS (GPIO_FBVDD_PWR_EN)
 
 	/* Assert PG_GPU_ALLRAILS */
 	STXS (GPIO_GPU_ALLRAILS_PG)

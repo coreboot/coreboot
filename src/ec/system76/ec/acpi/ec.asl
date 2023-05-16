@@ -90,9 +90,6 @@ Device (\_SB.PCI0.LPCB.EC0)
 			// Notify of changes
 			Notify(^^^^AC, 0)
 			Notify(^^^^BAT0, 0)
-
-			// Reset System76 Device
-			^^^^S76D.RSET()
 		}
 	}
 

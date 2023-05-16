@@ -46,6 +46,10 @@ fw_config
 		option TOUCHSCREEN_I2C		0
 		option TOUCHSCREEN_I2C_SPI	1
 	end
+	field VPU 20
+		option VPU_DIS			0
+		option VPU_EN			1
+	end
 end
 
 chip soc/intel/meteorlake
@@ -275,6 +279,9 @@ chip soc/intel/meteorlake
 		end	#PCIE9 SSD card
 		device ref tbt_pcie_rp0 on end
 		device ref tbt_pcie_rp2 on end
+		device ref vpu on
+			probe VPU VPU_EN
+		end
 		device ref tcss_xhci on
 			chip drivers/usb/acpi
 				device ref tcss_root_hub on

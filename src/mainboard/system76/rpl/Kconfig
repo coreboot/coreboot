@@ -50,6 +50,12 @@ config BOARD_SYSTEM76_GAZE18
 	select EC_SYSTEM76_EC_DGPU
 	select SOC_INTEL_ALDERLAKE_PCH_P
 
+config BOARD_SYSTEM76_LEMP12
+	select BOARD_SYSTEM76_RPL_COMMON
+	select HAVE_SPD_IN_CBFS
+	select SOC_INTEL_ALDERLAKE_PCH_P
+	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
+
 config BOARD_SYSTEM76_ORYP11
 	select BOARD_SYSTEM76_RPL_COMMON
 	select EC_SYSTEM76_EC_DGPU
@@ -73,6 +79,7 @@ config VARIANT_DIR
 	default "darp9" if BOARD_SYSTEM76_DARP9
 	default "galp7" if BOARD_SYSTEM76_GALP7
 	default "gaze18" if BOARD_SYSTEM76_GAZE18
+	default "lemp12" if BOARD_SYSTEM76_LEMP12
 	default "oryp11" if BOARD_SYSTEM76_ORYP11
 	default "serw13" if BOARD_SYSTEM76_SERW13
 
@@ -85,6 +92,7 @@ config MAINBOARD_PART_NUMBER
 	default "darp9" if BOARD_SYSTEM76_DARP9
 	default "galp7" if BOARD_SYSTEM76_GALP7
 	default "gaze18" if BOARD_SYSTEM76_GAZE18
+	default "lemp12" if BOARD_SYSTEM76_LEMP12
 	default "oryp11" if BOARD_SYSTEM76_ORYP11
 	default "serw13" if BOARD_SYSTEM76_SERW13
 
@@ -94,6 +102,7 @@ config MAINBOARD_SMBIOS_PRODUCT_NAME
 	default "Darter Pro" if BOARD_SYSTEM76_DARP9
 	default "Galago Pro" if BOARD_SYSTEM76_GALP7
 	default "Gazelle" if BOARD_SYSTEM76_GAZE18
+	default "Lemur Pro" if BOARD_SYSTEM76_LEMP12
 	default "Oryx Pro" if BOARD_SYSTEM76_ORYP11
 	default "Serval WS" if BOARD_SYSTEM76_SERW13
 
@@ -103,6 +112,7 @@ config MAINBOARD_VERSION
 	default "darp9" if BOARD_SYSTEM76_DARP9
 	default "galp7" if BOARD_SYSTEM76_GALP7
 	default "gaze18" if BOARD_SYSTEM76_GAZE18
+	default "lemp12" if BOARD_SYSTEM76_LEMP12
 	default "oryp11" if BOARD_SYSTEM76_ORYP11
 	default "serw13" if BOARD_SYSTEM76_SERW13
 

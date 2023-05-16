@@ -223,6 +223,7 @@ The boards in this section are not real mainboards, but emulators.
 - [Lemur Pro 9](system76/lemp9.md)
 - [Lemur Pro 10](system76/lemp10.md)
 - [Lemur Pro 11](system76/lemp11.md)
+- [Lemur Pro 12](system76/lemp12.md)
 - [Oryx Pro 5](system76/oryp5.md)
 - [Oryx Pro 6](system76/oryp6.md)
 - [Oryx Pro 7](system76/oryp7.md)

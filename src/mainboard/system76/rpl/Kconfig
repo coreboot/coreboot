@@ -1,0 +1,80 @@
+config BOARD_SYSTEM76_RPL_COMMON
+	def_bool n
+	select BOARD_ROMSIZE_KB_32768
+	select DRIVERS_I2C_HID
+	select EC_SYSTEM76_EC
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_CMOS_DEFAULT
+	select HAVE_OPTION_TABLE
+	select INTEL_GMA_HAVE_VBT
+	select INTEL_LPSS_UART_FOR_CONSOLE
+	select MAINBOARD_HAS_TPM2
+	select MEMORY_MAPPED_TPM
+	select NO_UART_ON_SUPERIO
+	select PCIEXP_SUPPORT_RESIZABLE_BARS
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select SOC_INTEL_CRASHLOG
+	select SOC_INTEL_RAPTORLAKE
+	select SPD_READ_BY_WORD
+	select SYSTEM_TYPE_LAPTOP
+	select TPM_RDRESP_NEED_DELAY
+
+config BOARD_SYSTEM76_GAZE18
+	select BOARD_SYSTEM76_RPL_COMMON
+	select EC_SYSTEM76_EC_COLOR_KEYBOARD
+	select EC_SYSTEM76_EC_DGPU
+	select SOC_INTEL_ALDERLAKE_PCH_P
+
+if BOARD_SYSTEM76_RPL_COMMON
+
+config MAINBOARD_DIR
+	default "system76/rpl"
+
+config VARIANT_DIR
+	default "gaze18" if BOARD_SYSTEM76_GAZE18
+
+config OVERRIDE_DEVICETREE
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
+
+config MAINBOARD_PART_NUMBER
+	default "gaze18" if BOARD_SYSTEM76_GAZE18
+
+config MAINBOARD_SMBIOS_PRODUCT_NAME
+	default "Gazelle" if BOARD_SYSTEM76_GAZE18
+
+config MAINBOARD_VERSION
+	default "gaze18" if BOARD_SYSTEM76_GAZE18
+
+config CONSOLE_POST
+	default y
+
+config D3COLD_SUPPORT
+	default n
+
+config DIMM_SPD_SIZE
+	default 512
+
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/\$(CONFIG_VARIANT_DIR)/board.fmd"
+
+config ONBOARD_VGA_IS_PRIMARY
+	default y
+
+config PCIEXP_DEFAULT_MAX_RESIZABLE_BAR_BITS
+	default 36
+
+config POST_DEVICE
+	default n
+
+config TPM_MEASURED_BOOT
+	default y
+
+config UART_FOR_CONSOLE
+	default 0
+
+# PM Timer Disabled, saves power
+config USE_PM_ACPI_TIMER
+	default n
+
+endif

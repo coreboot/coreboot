@@ -398,7 +398,7 @@ static const struct pad_config romstage_gpio_table[] = {
 	PAD_CFG_GPO(GPP_B08, 0, DEEP),
 	/* A20 : [] ==> SSD_PERST_L */
 	PAD_CFG_GPO(GPP_A20, 0, DEEP),
-	/* GPP_C23 : [] ==> FP_RST_ODL */
+	/* GPP_C21 : [] ==> FP_RST_ODL */
 	PAD_CFG_GPO(GPP_C21, 0, DEEP),
 	/* GPP_D02 : [] ==> SD_PERST_L */
 	PAD_CFG_GPO(GPP_D02, 1, DEEP),

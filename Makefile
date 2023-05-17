@@ -190,10 +190,6 @@ endif
 # are reproducible
 export LANG LC_ALL TZ SOURCE_DATE_EPOCH
 
-ifneq ($(CONFIG_MMX),y)
-CFLAGS_x86_32 += -mno-mmx
-endif
-
 ifneq ($(UNIT_TEST),1)
 include toolchain.inc
 endif

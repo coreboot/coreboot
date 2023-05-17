@@ -27,12 +27,6 @@ config SMP
 	  This option is used to enable certain functions to make coreboot
 	  work correctly on symmetric multi processor (SMP) systems.
 
-config	MMX
-	bool
-	help
-	  Select MMX in your socket or model Kconfig if your CPU has MMX
-	  streaming SIMD instructions.
-
 config SSE
 	bool
 	help

@@ -301,6 +301,10 @@ target-objcopy=-O elf64-x86-64 -B i386:x86-64
 LD_MACHINE =-m elf_x86_64
 endif
 
+# Make sure generated code does not use XMMx and MMx registers
+CFLAGS_x86_32 += -mno-mmx -mno-sse
+CFLAGS_x86_64 += -mno-mmx -mno-sse
+
 ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard.c)
 ifeq ($(CONFIG_GENERATE_MP_TABLE),y)
 ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/mptable.c),)

@@ -22,10 +22,6 @@ stack_top:
 .long 0
 c_handler:
 .long 0
-fxsave_area:
-.long 0
-fxsave_area_size:
-.long 0
 /* apic_to_cpu_num is a table mapping the default APIC id to CPU num. If the
  * APIC id is found at the given index, the contiguous CPU number is index
  * into the table. */
@@ -171,9 +167,7 @@ apicid_end:
 	 * not be assigned. Use the fallback stack and check this condition in
 	 * C handler. */
 	movl	$(fallback_stack_top), %esp
-	/* Clear fxsave location as there will be no saving/restoring. */
-	xor	%edi, %edi
-	jmp	2f
+	jmp	align_stack
 1:
 	movl	stack_size, %eax
 	mul	%ecx /* %eax(stack_size) * %ecx(cpu) = %eax(offset) */
@@ -193,32 +187,10 @@ apicid_end:
 	pushl	$0x0
 	mov	%esp, %ebp
 
-	/* Allocate locals (fxsave, efer_backup) */
-	subl	$0xc, %esp
+	/* Allocate locals (efer_backup) */
+	subl	$0x8, %esp
 
-	/* calculate fxsave location */
-	mov	fxsave_area, %edi
-	test	%edi, %edi
-	jz	2f
-	movl	fxsave_area_size, %eax
-	mul	%ecx
-	add	%eax, %edi
-
-2:
-	/* Save location of fxsave area. */
-	mov	%edi, -4(%ebp)
-	test	%edi, %edi
-	jz	1f
-
-	/* Enable sse instructions. */
-	mov	%cr4, %eax
-	orl	$(CR4_OSFXSR | CR4_OSXMMEXCPT), %eax
-	mov	%eax, %cr4
-
-	/* Save FP state. */
-	fxsave	(%edi)
-
-1:
+align_stack:
 	/* Align stack to 16 bytes. Another 32 bytes are pushed below. */
 	andl	$0xfffffff0, %esp
 
@@ -227,8 +199,8 @@ apicid_end:
 	/* Backup IA32_EFER. Preserves ebx. */
 	movl	$(IA32_EFER), %ecx
 	rdmsr
-	movl	%eax, -0x8(%ebp)
-	movl	%edx, -0xc(%ebp)
+	movl	%eax, -0x4(%ebp)
+	movl	%edx, -0x8(%ebp)
 
 	/* entry64.inc preserves ebx, esi, edi, ebp */
 #include <cpu/x86/64bit/entry64.inc>
@@ -262,8 +234,8 @@ apicid_end:
 	/* Restore IA32_EFER as RSM doesn't restore MSRs. */
 	movl	$(IA32_EFER), %ecx
 	rdmsr
-	movl	-0x8(%ebp), %eax
-	movl	-0xc(%ebp), %edx
+	movl	-0x4(%ebp), %eax
+	movl	-0x8(%ebp), %edx
 
 	wrmsr
 
@@ -275,13 +247,6 @@ apicid_end:
 	mov	c_handler, %eax
 	call	*%eax
 #endif
-	/* Retrieve fxsave location. */
-	mov	-4(%ebp), %edi
-	test	%edi, %edi
-	jz	1f
-
-	/* Restore FP state. */
-	fxrstor	(%edi)
 
 1:
 	/* Exit from SM mode. */

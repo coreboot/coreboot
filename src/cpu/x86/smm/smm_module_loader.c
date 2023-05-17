@@ -13,13 +13,7 @@
 #include <string.h>
 #include <types.h>
 
-#define FXSAVE_SIZE 512
 #define SMM_CODE_SEGMENT_SIZE 0x10000
-/* FXSAVE area during relocation. While it may not be strictly needed the
-   SMM stub code relies on the FXSAVE area being non-zero to enable SSE
-   instructions within SMM mode. */
-static uint8_t fxsave_area_relocation[CONFIG_MAX_CPUS][FXSAVE_SIZE]
-__attribute__((aligned(16)));
 
 /*
  * Components that make up the SMRAM:
@@ -56,7 +50,7 @@ struct cpu_smm_info cpus[CONFIG_MAX_CPUS] = { 0 };
  * developer's manuals (volume 3, chapter 34). SMRAM is divided up into the
  * following regions:
  * +-----------------+ Top of SMRAM
- * |                 | <- MSEG, FXSAVE
+ * |      MSEG       |
  * +-----------------+
  * |    common       |
  * |  smi handler    | 64K
@@ -240,8 +234,7 @@ static void smm_stub_place_staggered_entry_points(const struct smm_loader_params
  * by the permanent handler can be used during relocation.
  */
 static int smm_module_setup_stub(const uintptr_t smbase, const size_t smm_size,
-				 struct smm_loader_params *params,
-				 void *const fxsave_area)
+				 struct smm_loader_params *params)
 {
 	struct rmodule smm_stub;
 	if (rmodule_parse(&_binary_smmstub_start, &smm_stub)) {
@@ -266,8 +259,6 @@ static int smm_module_setup_stub(const uintptr_t smbase, const size_t smm_size,
 	stub_params->stack_top = stack_top;
 	stub_params->stack_size = g_stack_size;
 	stub_params->c_handler = (uintptr_t)params->handler;
-	stub_params->fxsave_area = (uintptr_t)fxsave_area;
-	stub_params->fxsave_area_size = FXSAVE_SIZE;
 
 	/* This runs on the BSP. All the APs are its siblings */
 	struct cpu_info *info = cpu_info();
@@ -322,8 +313,7 @@ int smm_setup_relocation_handler(struct smm_loader_params *params)
 		params->num_cpus = CONFIG_MAX_CPUS;
 
 	printk(BIOS_SPEW, "%s: exit\n", __func__);
-	return smm_module_setup_stub(smram, SMM_DEFAULT_SIZE,
-				     params, fxsave_area_relocation);
+	return smm_module_setup_stub(smram, SMM_DEFAULT_SIZE, params);
 }
 
 static void setup_smihandler_params(struct smm_runtime *mod_params,
@@ -363,8 +353,8 @@ static void print_region(const char *name, const struct region region)
 	       region_end(&region));
 }
 
-/* STM + FX_SAVE + Handler + (Stub + Save state) * CONFIG_MAX_CPUS + stacks */
-#define SMM_REGIONS_ARRAY_SIZE (1 + 1 + 1 + CONFIG_MAX_CPUS * 2 + 1)
+/* STM + Handler + (Stub + Save state) * CONFIG_MAX_CPUS + stacks */
+#define SMM_REGIONS_ARRAY_SIZE (1  + 1 + CONFIG_MAX_CPUS * 2 + 1)
 
 static int append_and_check_region(const struct region smram,
 				   const struct region region,
@@ -405,8 +395,6 @@ static int append_and_check_region(const struct region smram,
  * +-----------------+ <- smram + size
  * | BIOS resource   |
  * | list (STM)      |
- * +-----------------+
- * |  fxsave area    |
  * +-----------------+
  * |  smi handler    |
  * |      ...        |
@@ -453,19 +441,10 @@ int smm_load_module(const uintptr_t smram_base, const size_t smram_size,
 		printk(BIOS_DEBUG, "BIOS res list 0x%x\n", CONFIG_BIOS_RESOURCE_LIST_SIZE);
 	}
 
-	const size_t fx_save_area_size = CONFIG(SSE) ? FXSAVE_SIZE * params->num_cpus : 0;
-	struct region fx_save = {};
-	if (CONFIG(SSE)) {
-		fx_save.offset = smram_top - stm_size - fx_save_area_size;
-		fx_save.size = fx_save_area_size;
-		if (append_and_check_region(smram, fx_save, region_list, "FX_SAVE"))
-			return -1;
-	}
-
 	const size_t handler_size = rmodule_memory_size(&smi_handler);
 	const size_t handler_alignment = rmodule_load_alignment(&smi_handler);
 	const uintptr_t handler_base =
-		ALIGN_DOWN(smram_top - stm_size - fx_save_area_size - handler_size,
+		ALIGN_DOWN(smram_top - stm_size - handler_size,
 			   handler_alignment);
 	struct region handler = {
 		.offset = handler_base,
@@ -506,6 +485,5 @@ int smm_load_module(const uintptr_t smram_base, const size_t smram_size,
 	params->handler = rmodule_entry(&smi_handler);
 	setup_smihandler_params(smihandler_params, smram_base, smram_size, params);
 
-	return smm_module_setup_stub(stub_segment_base, smram_size, params,
-				     (void *)region_offset(&fx_save));
+	return smm_module_setup_stub(stub_segment_base, smram_size, params);
 }

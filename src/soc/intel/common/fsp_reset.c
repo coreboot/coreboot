@@ -70,8 +70,6 @@ static uint32_t fsp_reset_type_to_status(EFI_RESET_TYPE reset_type)
  */
 uint32_t fsp_get_pch_reset_status(void)
 {
-	assert(CONFIG(FSP_MULTIPHASE_SI_INIT_RETURN_BROKEN));
-
 	size_t size;
 	const struct fsp_reset_hob *hob = fsp_find_extension_hob_by_guid(fsp_reset_guid, &size);
 	if (!hob)

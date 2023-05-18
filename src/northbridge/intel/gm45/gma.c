@@ -143,7 +143,7 @@ static void gma_pm_init_post_vbios(struct device *const dev,
 								reg8));
 }
 
-const char *gm45_get_lvds_edid_str(struct device *dev)
+const char *gm45_get_lvds_edid_str(void)
 {
 	u8 *mmio;
 	u8 edid_data_lvds[128];
@@ -152,10 +152,10 @@ const char *gm45_get_lvds_edid_str(struct device *dev)
 
 	if (edid_str[0])
 		return edid_str;
-	if (!gtt_res)
-		gtt_res = probe_resource(dev, PCI_BASE_ADDRESS_0);
-	if (!gtt_res)
+	if (!gtt_res) {
+		printk(BIOS_ERR, "Never call %s() outside dev.init() context.\n", __func__);
 		return NULL;
+	}
 	mmio = res2mmio(gtt_res, 0, 0);
 
 	printk(BIOS_DEBUG, "LVDS EDID\n");
@@ -176,15 +176,18 @@ static void gma_func0_init(struct device *dev)
 	const struct northbridge_intel_gm45_config *const conf = dev->chip_info;
 	const char *edid_str;
 
+	/* Probe MMIO resource first. It's needed even for
+	   intel_gma_init_igd_opregion() which may call back. */
+	gtt_res = probe_resource(dev, PCI_BASE_ADDRESS_0);
+	if (!gtt_res)
+		return;
+
 	intel_gma_init_igd_opregion();
 
-	edid_str = gm45_get_lvds_edid_str(dev);
+	edid_str = gm45_get_lvds_edid_str();
 	if (!edid_str)
 		printk(BIOS_ERR, "Failed to obtain LVDS EDID string!\n");
 
-	/* gtt_res should have been inited in gm45_get_lvds_edid_str() */
-	if (!gtt_res)
-		return;
 	mmio = res2mmio(gtt_res, 0, 0);
 
 	/*

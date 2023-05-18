@@ -449,7 +449,7 @@ u16 get_blc_pwm_freq_value(const char *edid_ascii_string);
 #include <device/device.h>
 #include <edid.h>
 
-const char *gm45_get_lvds_edid_str(struct device *dev);
+const char *gm45_get_lvds_edid_str(void);
 
 struct acpi_rsdp;
 unsigned long northbridge_write_acpi_tables(const struct device *device, unsigned long start,

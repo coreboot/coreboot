@@ -45,6 +45,8 @@
 
 #include <AGESA.h>
 #include <cpuRegisters.h>
+#include <cpu/x86/mp.h>
+#include <cpu/x86/cache.h>
 #include <Filecode.h>
 #include <Ids.h>
 #include <Porting.h>
@@ -488,8 +490,8 @@ LibAmdCLFlush (
   address32 = 0;
   hwcrSave = SetFsBase (Address);
   for (Index = 0; Index < Count; Index++){
-    _mm_mfence ();
-    _mm_clflush_fs (&address32 [Index * 64]);
+    mfence();
+    clflush(&address32 [Index * 64]);
   }
   RestoreHwcr (hwcrSave);
 }

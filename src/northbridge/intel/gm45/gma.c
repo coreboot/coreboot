@@ -115,12 +115,11 @@ u16 get_blc_pwm_freq_value(void)
 	}
 
 	if (i == blc_array_len)
-		printk(BIOS_NOTICE, "Your panels EDID `%s` wasn't found in the"
-		       "lookup table.\n You may have issues with your panels"
-		       "backlight.\n If you want to help improving coreboot"
-		       "please report: this EDID string\n and the result"
-		       "of `intel_read read BLC_PWM_CTL`"
-		       "(from intel-gpu-tools)\n while running vendor BIOS\n",
+		printk(BIOS_NOTICE, "Your panel's EDID `%s` wasn't found in the lookup table.\n"
+		       "You may have issues with your panel's backlight.\n"
+		       "If you want to help improving coreboot please report: this EDID string\n"
+		       "and the result of `intel_reg read BLC_PWM_CTL` (from intel-gpu-tools)\n"
+		       "while running vendor BIOS\n",
 		       edid_ascii_string);
 
 	return blc_pwm_freq;

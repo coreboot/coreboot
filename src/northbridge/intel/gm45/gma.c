@@ -172,7 +172,6 @@ const char *gm45_get_lvds_edid_str(void)
 
 static void gma_func0_init(struct device *dev)
 {
-	u8 *mmio;
 	const struct northbridge_intel_gm45_config *const conf = dev->chip_info;
 	const char *edid_str;
 
@@ -188,14 +187,12 @@ static void gma_func0_init(struct device *dev)
 	if (!edid_str)
 		printk(BIOS_ERR, "Failed to obtain LVDS EDID string!\n");
 
-	mmio = res2mmio(gtt_res, 0, 0);
-
 	/*
 	 * GTT base is at a 2M offset and is 2M big. If GTT is smaller than 2M
 	 * cycles are simply not decoded which is fine.
 	 */
 	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
-	memset(mmio + 2 * MiB, 0, 2 * MiB);
+	memset(res2mmio(gtt_res, 2*MiB, 0), 0, 2*MiB);
 
 	if (CONFIG(NO_GFX_INIT))
 		pci_and_config16(dev, PCI_COMMAND, ~PCI_COMMAND_MASTER);

@@ -1,3 +1,15 @@
+fw_config
+	field TOUCHSCREEN 10 12
+		option TOUCHSCREEN_UNKNOWN	0
+		option TOUCHSCREEN_NONE	1
+		option TOUCHSCREEN_EKTH7D18	2
+		option TOUCHSCREEN_GT7996F	3
+		option TOUCHSCREEN_EKTH5012	4
+		option TOUCHSCREEN_WDT8752A	5
+		option TOUCHSCREEN_GTCH7502	6
+	end
+end
+
 chip soc/intel/alderlake
 	register "sagv" = "SaGv_Enabled"
 
@@ -159,7 +171,10 @@ chip soc/intel/alderlake
 				register "generic.enable_delay_ms" = "1"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x20"
-				device i2c 2c on end
+				device i2c 2c on
+					probe TOUCHSCREEN TOUCHSCREEN_UNKNOWN
+					probe TOUCHSCREEN TOUCHSCREEN_WDT8752A
+				end
 			end
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0001""
@@ -175,7 +190,10 @@ chip soc/intel/alderlake
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
 				register "enable_delay_ms" = "1"
 				register "has_power_resource" = "1"
-				device i2c 10 on end
+				device i2c 10 on
+					probe TOUCHSCREEN TOUCHSCREEN_UNKNOWN
+					probe TOUCHSCREEN TOUCHSCREEN_EKTH5012
+				end
 			end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""ELAN900C""
@@ -191,7 +209,10 @@ chip soc/intel/alderlake
 				register "generic.enable_delay_ms" = "6"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x01"
-				device i2c 16 on end
+				device i2c 16 on
+					probe TOUCHSCREEN TOUCHSCREEN_UNKNOWN
+					probe TOUCHSCREEN TOUCHSCREEN_EKTH7D18
+				end
 			end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GXTP7996""
@@ -206,7 +227,10 @@ chip soc/intel/alderlake
 				register "generic.enable_delay_ms" = "10"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x01"
-				device i2c 5d on end
+				device i2c 5d on
+					probe TOUCHSCREEN TOUCHSCREEN_UNKNOWN
+					probe TOUCHSCREEN TOUCHSCREEN_GT7996F
+				end
 			end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GTCH7502""
@@ -221,7 +245,10 @@ chip soc/intel/alderlake
 				register "generic.enable_delay_ms" = "30"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x01"
-				device i2c 40 on end
+				device i2c 40 on
+					probe TOUCHSCREEN TOUCHSCREEN_UNKNOWN
+					probe TOUCHSCREEN TOUCHSCREEN_GTCH7502
+				end
 			end
 		end
 		device ref i2c3 on

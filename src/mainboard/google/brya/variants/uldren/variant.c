@@ -16,6 +16,15 @@ static const struct pad_config touchscreen_disable_pads[] = {
 	PAD_NC(GPP_H7, NONE),
 };
 
+static const struct pad_config lte_disable_pads[] = {
+	/* A8  : WWAN_RF_DISABLE_ODL */
+	PAD_NC(GPP_A8, NONE),
+	/* D6  : SRCCLKREQ1# ==> WWAN_EN */
+	PAD_NC(GPP_D6, NONE),
+	/* F12 : WWAN_RST_L */
+	PAD_NC_LOCK(GPP_F12, NONE, LOCK_CONFIG),
+};
+
 const char *get_wifi_sar_cbfs_filename(void)
 {
 	return "wifi_sar_0.hex";
@@ -27,5 +36,10 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		printk(BIOS_INFO, "Disable touchscreen GPIO pins.\n");
 		gpio_padbased_override(padbased_table, touchscreen_disable_pads,
 						ARRAY_SIZE(touchscreen_disable_pads));
+	}
+	if (fw_config_probe(FW_CONFIG(DB_LTE, LTE_ABSENT))) {
+		printk(BIOS_INFO, "Disable LTE GPIO pins.\n");
+		gpio_padbased_override(padbased_table, lte_disable_pads,
+						ARRAY_SIZE(lte_disable_pads));
 	}
 }

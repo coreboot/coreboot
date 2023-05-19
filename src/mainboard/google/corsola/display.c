@@ -123,15 +123,15 @@ static struct panel_description *get_active_panel(void)
 
 int configure_display(void)
 {
+	/* Set up backlight control pins as output pin and power-off by default */
+	backlight_control();
+
 	const struct panel_description *panel = get_active_panel();
 
 	if (!panel)
 		return -1;
 
 	printk(BIOS_INFO, "%s: Starting display init\n", __func__);
-
-	/* Set up backlight control pins as output pin and power-off by default */
-	backlight_control();
 
 	if (panel->power_on)
 		panel->power_on();

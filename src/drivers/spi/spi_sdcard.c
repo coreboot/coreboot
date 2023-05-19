@@ -7,15 +7,10 @@
 #include <commonlib/helpers.h>
 #include <console/console.h>
 
-//#define SPI_SDCARD_DEBUG
+#define SPI_SDCARD_DEBUG 0
 
-#ifdef SPI_SDCARD_DEBUG
 #define dprintk(fmt, args...) \
-	printk(BIOS_DEBUG, fmt, ##args)
-#else
-#define dprintk(fmt, args...) \
-	do {} while (0)
-#endif
+	do { if (SPI_SDCARD_DEBUG) { printk(BIOS_DEBUG, fmt, ##args); }} while (0)
 
 #define SDCARD_TYPE_SDSC	1
 #define SDCARD_TYPE_SDHC	2

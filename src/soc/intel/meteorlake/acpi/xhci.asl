@@ -16,12 +16,14 @@ Device (XHCI)
 
 	Method (_PS0, 0, Serialized)
 	{
-
+		/* Disable Clock Gating */
+		^^PCRA (PID_XHCI, 0x0,  ~(1 << 3))
 	}
 
 	Method (_PS3, 0, Serialized)
 	{
-
+		/* Enable Clock Gating */
+		^^PCRO (PID_XHCI, 0x0, 1 << 3)
 	}
 
 	/* Root Hub for Meteorlake */

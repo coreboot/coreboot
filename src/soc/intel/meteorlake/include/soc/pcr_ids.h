@@ -28,5 +28,6 @@
 #define PID_ISCLK	0x64
 #define PID_DMI		0x88
 #define PID_IOM		0xAA
+#define PID_XHCI	0x3A
 
 #endif

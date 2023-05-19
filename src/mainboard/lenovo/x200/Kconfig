@@ -16,6 +16,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_OPTION_TABLE
 	select HAVE_CMOS_DEFAULT
 	select HAVE_ACPI_RESUME
+	select INTEL_GMA_HAVE_VBT
 	select INTEL_INT15
 	select SUPERIO_NSC_PC87382
 	select DRIVERS_LENOVO_WACOM
@@ -61,5 +62,8 @@ config PS2K_EISAID
 
 config PS2M_EISAID
 	default "IBM3780" if BOARD_LENOVO_X200
+
+config INTEL_GMA_VBT_FILE
+	default ""	# We add specific files in the Makefile
 
 endif # BOARD_LENOVO_X200 || BOARD_LENOVO_X301

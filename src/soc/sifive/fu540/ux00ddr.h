@@ -148,9 +148,9 @@ static inline uint64_t ux00ddr_phy_fixup(size_t ahbregaddr) {
 
   size_t ddrphyreg = ahbregaddr + 0x2000;
 
-  uint64_t fails=0;
+  // uint64_t fails=0;
   uint32_t slicebase = 0;
-  uint32_t dq = 0;
+  // uint32_t dq = 0;
 
   // check errata condition
   for (uint32_t slice = 0; slice < 8; slice++) {
@@ -175,7 +175,7 @@ static inline uint64_t ux00ddr_phy_fixup(size_t ahbregaddr) {
         // print error message on failure
         if (failc0 || failc1) {
           //if (fails==0) uart_puts((void*) UART0_CTRL_ADDR, "DDR error in fixing up \n");
-          fails |= (1<<dq);
+          //fails |= (1<<dq);
           /* char slicelsc = '0'; */
           /* char slicemsc = '0'; */
           /* slicelsc += (dq % 10); */
@@ -187,7 +187,7 @@ static inline uint64_t ux00ddr_phy_fixup(size_t ahbregaddr) {
           //else uart_puts((void*) UART0_CTRL_ADDR, "D");
           //uart_puts((void*) UART0_CTRL_ADDR, "\n");
         }
-        dq++;
+        //dq++;
       }
     }
     slicebase+=128;

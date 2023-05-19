@@ -2,7 +2,21 @@
 
 #include <fw_config.h>
 #include <baseboard/variants.h>
+#include <baseboard/gpio.h>
 #include <sar.h>
+#include <delay.h>
+
+#define FM350_RST_DEALY_MS 20
+#define FM350_PERST_DEALY_MS 30
+
+static const struct pad_config fm350_rst_pad[] = {
+	/* F12 : WWAN_RST_L */
+	PAD_CFG_GPO_LOCK(GPP_F12, 1, LOCK_CONFIG),
+};
+static const struct pad_config fm350_perst_pad[] = {
+	/* H21 : WWAN_PERST */
+	PAD_CFG_GPO(GPP_H21, 1, DEEP),
+};
 
 void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config)
 {
@@ -36,4 +50,21 @@ void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config)
 const char *get_wifi_sar_cbfs_filename(void)
 {
 	return get_wifi_sar_fw_config_filename(FW_CONFIG_FIELD(WIFI_SAR_ID));
+}
+
+void variant_init(void)
+{
+	if (fw_config_probe(FW_CONFIG(WWAN_5G, WWAN_5G_PRESENT))) {
+		/*
+		 * FM350 power on seuqence:
+		 * De-assert WWAN_EN -> 20ms -> de-assert WWAN_RST -> 30ms ->
+		 * de-assert WWAN_PERST
+		 * WWAN_EN is de-asserted in ramstage gpio configuration, de-assert
+		 * WWAN_RST and WWAN_PERST here.
+		 */
+		mdelay(FM350_RST_DEALY_MS);
+		gpio_configure_pads(fm350_rst_pad, ARRAY_SIZE(fm350_rst_pad));
+		mdelay(FM350_PERST_DEALY_MS);
+		gpio_configure_pads(fm350_perst_pad, ARRAY_SIZE(fm350_perst_pad));
+	}
 }

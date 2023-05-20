@@ -4,6 +4,9 @@
  *
  * Adapted from:
  * https://gitlab.com/sortix/sortix/raw/master/libc/ubsan/ubsan.c
+ *
+ * Copyright (c) 2014, 2015 Jonas 'Sortie' Termansen.
+ *
  */
 
 #include <stdint.h>

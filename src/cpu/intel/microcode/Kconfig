@@ -16,3 +16,80 @@ config RELOAD_MICROCODE_PATCH
 	  This feature is mostly required with Intel latest generation
 	  processors starting with Alder Lake (with modified MCHECK init
 	  flow).
+
+config CPU_INTEL_MICROCODE_CBFS_SPLIT_BINS
+	bool "For Intel CPU, include microcode per CPUID into CBFS"
+	depends on CBFS_VERIFICATION && !MICROCODE_UPDATE_PRE_RAM
+	default n
+	help
+	  This option controls whether to include external microcode binaries per
+	  CPUID in CBFS.
+
+	  The current approach of loading microcode blobs post CPU reset is to search
+	  the unified blob in the CBFS and then perform the CBFS verification. The bigger
+	  the unified microcode blob in size the longer it takes to perform the verification.
+
+	  Select this option to store the split microcode blobs per CPUID in the CBFS.
+	  As the microcode blobs will be divided into smaller chunks per CPUID, which will
+	  reduce the overall search, verify and load time.
+
+	  The microcode file may be removed from the ROM image at a later
+	  time with cbfstool, if desired.
+
+	  If unsure, and applicable, select "Generate from tree"
+
+config CPU_INTEL_UCODE_SPLIT_BINARIES
+	string "Specify the split microcode blob directory path"
+	depends on CPU_INTEL_MICROCODE_CBFS_SPLIT_BINS
+	default ""
+	help
+	  Provide the split microcode blob directory path if
+	  CPU_INTEL_MICROCODE_CBFS_SPLIT_BINS config is enabled.
+
+	  CPU_INTEL_MICROCODE_CBFS_SPLIT_BINS config is allowed to pack the individual microcode
+	  patch file per CPUID inside the CBFS.
+
+	  Intel distributes CPU microcode updates based on CPUID as part of the github repository
+	  in INC format and expects it also getting used in binary form.
+
+	  For example: Intel CPU microcode `m506e3.inc` is getting converted into F-MO-S
+	  (06-5e-03) binary file for Linux kernel.
+
+	  `MicrocodeConverter` is an Intel-provided tool for converting binary form MCU into
+	  several other common formats for integration.
+
+	  Implementation logic behind CPU_INTEL_MICROCODE_CBFS_SPLIT_BINS config relies on
+	  converting Intel CPU microcode INC file into the binary file as per format specified
+	  here `cpu_microcode_$(CPUID).bin`. For example: Intel CPU microcode `m506e3.inc` to
+	  convert into `cpu_microcode_506e3.bin` binary file for coreboot to integrate if
+	  CPU_INTEL_MICROCODE_CBFS_SPLIT_BINS config is enabled.
+
+	  This config provides the directory name (including path) that holds the split microcode
+	  binary files per CPUID as mentioned above for each coreboot variants. For example: if
+	  google/kunimitsu had built with Intel SkyLake processor with CPUID `506e3` and `506e4`
+	  then CPU_INTEL_UCODE_SPLIT_BINARIES refers to the directory path that holds the split
+	  microcode binary files aka `cpu_microcode_506e3.bin` and `cpu_microcode_506e4.bin`.
+
+	  CONFIG_CPU_UCODE_SPLIT_BINARIES="3rdparty/blobs/mainboard/google/kunimitsu/microcode_inputs/kunimitsu"
+	  Refer to the file representation below:
+	  |---3rdparty
+	  |   |--- blobs
+	  |   |    |--- mainboard
+	  |   |    |   |--- google
+	  |   |    |   |    |--- kunimitsu
+	  |   |    |   |    |    |--- microcode_inputs
+	  |   |    |   |    |    |    |--- kunimitsu
+	  |   |    |   |    |    |    |    |--- cpu_microcode_506e3.bin
+	  |   |    |   |    |    |    |    |--- cpu_microcode_506e4.bin
+
+	  Users of this config option requires to manually place the microcode binary files per
+	  CPUIDs as per the given format (`cpu_microcode_$(CPUID).bin`) in a directory.
+	  Finally specify the microcode binary directory path using CPU_UCODE_SPLIT_BINARIES
+	  config.
+
+	  At runtime (either from romstage/ramstage), coreboot read the CPUID and search for the
+	  `cpu_microcode_$(CPUID).bin` file (in this example: cpu_microcode_506e3.bin) inside RW
+	  CBFS. Eventually able to locate the appropriate `cpu_microcode_$(CPUID).bin` file and
+	  perform the verification prior loading into the CPUs (BSP and APs).
+
+	  If unsure, leave this blank.

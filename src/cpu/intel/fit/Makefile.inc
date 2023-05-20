@@ -19,7 +19,7 @@ FIT_ENTRY=$(call strip_quotes, $(CONFIG_INTEL_TOP_SWAP_FIT_ENTRY_FMAP_REG))
 
 ifneq ($(CONFIG_UPDATE_IMAGE),y) # never update the bootblock
 
-ifneq ($(CONFIG_CPU_MICROCODE_CBFS_NONE),y)
+ifneq ($(CONFIG_CPU_MICROCODE_CBFS_NONE)$(CONFIG_CPU_INTEL_MICROCODE_CBFS_SPLIT_BINS),y)
 
 $(call add_intermediate, add_mcu_fit, set_fit_ptr $(IFITTOOL))
 	@printf "    UPDATE-FIT Microcode\n"

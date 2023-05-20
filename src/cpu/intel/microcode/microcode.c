@@ -8,6 +8,7 @@
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/msr.h>
 #include <smp/spinlock.h>
+#include <stdio.h>
 #include <types.h>
 
 DECLARE_SPIN_LOCK(microcode_lock)
@@ -170,10 +171,6 @@ static const void *find_cbfs_microcode(void)
 	msr_t msr;
 	struct cpuinfo_x86 c;
 
-	ucode_updates = cbfs_map(MICROCODE_CBFS_FILE, &microcode_len);
-	if (ucode_updates == NULL)
-		return NULL;
-
 	rev = read_microcode_rev();
 	eax = cpuid_eax(1);
 	get_fms(&c, eax);
@@ -187,6 +184,16 @@ static const void *find_cbfs_microcode(void)
 
 	printk(BIOS_DEBUG, "microcode: sig=0x%x pf=0x%x revision=0x%x\n",
 			sig, pf, rev);
+
+	if (CONFIG(CPU_INTEL_MICROCODE_CBFS_SPLIT_BINS)) {
+		char cbfs_filename[25];
+		snprintf(cbfs_filename, sizeof(cbfs_filename), "cpu_microcode_%x.bin", sig);
+		ucode_updates = cbfs_map(cbfs_filename, &microcode_len);
+	} else {
+		ucode_updates = cbfs_map(MICROCODE_CBFS_FILE, &microcode_len);
+	}
+	if (ucode_updates == NULL)
+		return NULL;
 
 	while (microcode_len >= sizeof(*ucode_updates)) {
 		/* Newer microcode updates include a size field, whereas older

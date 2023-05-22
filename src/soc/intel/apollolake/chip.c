@@ -739,6 +739,8 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 		silconfig->SpeedLimit = cfg->sata_speed;
 		memcpy(silconfig->SataPortsEnable, cfg->SataPortsEnable,
 			sizeof(silconfig->SataPortsEnable));
+		memcpy(silconfig->SataPortsSolidStateDrive, cfg->sata_ports_ssd,
+			sizeof(silconfig->SataPortsSolidStateDrive));
 	}
 
 	/* Sata Power Optimisation */

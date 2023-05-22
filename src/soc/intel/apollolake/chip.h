@@ -109,6 +109,9 @@ struct soc_intel_apollolake_config {
 	/* Sata Ports Enable */
 	uint8_t SataPortsEnable[2];
 
+	/* Sata Ports Solid State Drive */
+	uint8_t sata_ports_ssd[2];
+
 	/* Specifies on which IRQ the SCI will internally appear. */
 	uint8_t sci_irq;
 

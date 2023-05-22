@@ -736,6 +736,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	/* SATA config */
 	if (is_devfn_enabled(PCH_DEVFN_SATA)) {
 		silconfig->SataSalpSupport = !(cfg->DisableSataSalpSupport);
+		silconfig->SpeedLimit = cfg->sata_speed;
 		memcpy(silconfig->SataPortsEnable, cfg->SataPortsEnable,
 			sizeof(silconfig->SataPortsEnable));
 	}

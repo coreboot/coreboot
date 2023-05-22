@@ -25,6 +25,13 @@ enum pnp_settings {
 	PNP_PERF_POWER,
 };
 
+enum sata_speed_limit {
+	SATA_DEFAULT = 0,
+	SATA_GEN1,
+	SATA_GEN2,
+	SATA_GEN3
+};
+
 struct soc_intel_apollolake_config {
 
 	/* Common structure containing soc config data required by common code*/
@@ -215,6 +222,9 @@ struct soc_intel_apollolake_config {
 
 	/* Sata Power Optimisation */
 	uint8_t SataPwrOptimizeDisable;
+
+	/* SATA speed limit */
+	enum sata_speed_limit sata_speed;
 };
 
 typedef struct soc_intel_apollolake_config config_t;

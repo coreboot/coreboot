@@ -1,3 +1,11 @@
+fw_config
+	field MB_CONFIG 5 7
+		option MB_UNKNOWN		0
+		option MB_TYPEC			1
+		option MB_TBT			2
+	end
+end
+
 chip soc/intel/meteorlake
 
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC1)"	# USB2_C1

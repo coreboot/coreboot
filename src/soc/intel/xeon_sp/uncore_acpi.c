@@ -149,6 +149,7 @@ static unsigned long acpi_fill_srat(unsigned long current)
 	/* create all subtables for processors */
 	current = acpi_create_srat_lapics(current);
 
+	memset(srat_mem, 0, sizeof(srat_mem));
 	mem_count = get_srat_memory_entries(srat_mem);
 	for (int i = 0; i < mem_count; ++i) {
 		printk(BIOS_DEBUG, "adding srat memory %d entry length: %d, addr: 0x%x%x, "

@@ -124,6 +124,18 @@ static void fill_fspm_mrc_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_meteorlake_config *config)
 {
 	m_cfg->SaGv = config->sagv;
+	if (m_cfg->SaGv) {
+		/*
+		 * Set SaGv work points after reviewing the power and performance impact
+		 * with SaGv set to 1 (Enabled) and various work points between 0-3 being
+		 * enabled.
+		 */
+		if (config->sagv_wp_bitmap)
+			m_cfg->SaGvWpMask = config->sagv_wp_bitmap;
+		else
+			m_cfg->SaGvWpMask = SAGV_POINTS_0_1_2_3;
+	}
+
 	m_cfg->RMT = config->rmt;
 	/* Enable MRC Fast Boot */
 	m_cfg->MrcFastBoot = 1;

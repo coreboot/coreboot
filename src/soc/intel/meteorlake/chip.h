@@ -139,6 +139,16 @@ struct soc_intel_meteorlake_config {
 		SAGV_ENABLED,
 	} sagv;
 
+	/* System Agent dynamic frequency work points that memory will be training
+	 * at the enabled frequencies. Possible work points are:
+	 * 0x3:Points0_1, 0x7:Points0_1_2, 0xF:AllPoints0_1_2_3
+	 */
+	enum {
+		SAGV_POINTS_0_1 = 0x03,
+		SAGV_POINTS_0_1_2 = 0x07,
+		SAGV_POINTS_0_1_2_3 = 0x0f,
+	} sagv_wp_bitmap;
+
 	/* Rank Margin Tool. 1:Enable, 0:Disable */
 	uint8_t rmt;
 

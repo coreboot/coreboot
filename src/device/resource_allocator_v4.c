@@ -61,7 +61,7 @@ static void update_bridge_resource(const struct device *bridge, struct resource 
 	 */
 	base = 0;
 
-	res_printk(print_depth, "%s %s: size: %llx align: %d gran: %d limit: %llx\n",
+	res_printk(print_depth, "%s %s: size: %llx align: %u gran: %u limit: %llx\n",
 	       dev_path(bridge), resource2str(bridge_res), bridge_res->size,
 	       bridge_res->align, bridge_res->gran, bridge_res->limit);
 
@@ -136,7 +136,7 @@ static void update_bridge_resource(const struct device *bridge, struct resource 
 	 */
 	bridge_res->size = ALIGN_UP(base, POWER_OF_2(bridge_res->gran));
 
-	res_printk(print_depth, "%s %s: size: %llx align: %d gran: %d limit: %llx done\n",
+	res_printk(print_depth, "%s %s: size: %llx align: %u gran: %u limit: %llx done\n",
 	       dev_path(bridge), resource2str(bridge_res), bridge_res->size,
 	       bridge_res->align, bridge_res->gran, bridge_res->limit);
 }
@@ -319,7 +319,7 @@ static void initialize_domain_memranges(const struct device *dev, struct memrang
 		if ((res->flags & IORESOURCE_TYPE_MASK) != memrange_type)
 			continue;
 
-		printk(BIOS_DEBUG, "%s %s: base: %llx size: %llx align: %d gran: %d limit: %llx\n",
+		printk(BIOS_DEBUG, "%s %s: base: %llx size: %llx align: %u gran: %u limit: %llx\n",
 		       dev_path(dev), resource2str(res), res->base, res->size, res->align,
 		       res->gran, res->limit);
 
@@ -518,7 +518,7 @@ static void setup_resource_ranges(const struct device *dev, unsigned long type,
 
 static void print_resource_done(const struct device *dev, const struct resource *res)
 {
-	printk(BIOS_DEBUG, "%s %s: base: %llx size: %llx align: %d gran: %d limit: %llx done\n",
+	printk(BIOS_DEBUG, "%s %s: base: %llx size: %llx align: %u gran: %u limit: %llx done\n",
 	       dev_path(dev), resource2str(res), res->base, res->size, res->align,
 	       res->gran, res->limit);
 }

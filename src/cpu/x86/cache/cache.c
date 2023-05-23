@@ -12,15 +12,10 @@ bool clflush_supported(void)
 	return (cpuid_edx(1) >> CPUID_FEATURE_CLFLUSH_BIT) & 1;
 }
 
-static void clflush_region(const uintptr_t start, const size_t size)
+void clflush_region(const uintptr_t start, const size_t size)
 {
 	uintptr_t addr;
 	const size_t cl_size = ((cpuid_ebx(1) >> 8) & 0xff) * 8;
-
-	if (!clflush_supported()) {
-		printk(BIOS_DEBUG, "Not flushing cache to RAM, CLFLUSH not supported\n");
-		return;
-	}
 
 	printk(BIOS_SPEW, "CLFLUSH [0x%lx, 0x%lx]\n", start, start + size);
 
@@ -54,5 +49,8 @@ void arch_segment_loaded(uintptr_t start, size_t size, int flags)
 	if (!cbmem_online())
 		return;
 
-	clflush_region(start, size);
+	if (clflush_supported())
+		clflush_region(start, size);
+	else
+		printk(BIOS_DEBUG, "Not flushing cache to RAM, CLFLUSH not supported\n");
 }

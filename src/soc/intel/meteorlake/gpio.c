@@ -75,6 +75,7 @@ static const struct vw_entries mtl_community5_vw[] = {
 static const struct pad_community mtl_communities[] = {
 	[COMM_0] = { /* GPP CPU, V, C */
 		.port = PID_GPIOCOM0,
+		.cpu_port = PID_GPIOCOM0,
 		.first_pad = GPIO_COM0_START,
 		.last_pad = GPIO_COM0_END,
 		.num_gpi_regs = NUM_GPIO_COM0_GPI_REGS,
@@ -102,6 +103,7 @@ static const struct pad_community mtl_communities[] = {
 	},
 	[COMM_1] = { /* GPP A, E */
 		.port = PID_GPIOCOM1,
+		.cpu_port = PID_GPIOCOM1,
 		.first_pad = GPIO_COM1_START,
 		.last_pad = GPIO_COM1_END,
 		.num_gpi_regs = NUM_GPIO_COM1_GPI_REGS,
@@ -129,6 +131,7 @@ static const struct pad_community mtl_communities[] = {
 	},
 	[COMM_3] = { /* GPP H, F, SPI0, VGPIO3 */
 		.port = PID_GPIOCOM3,
+		.cpu_port = PID_GPIOCOM3,
 		.first_pad = GPIO_COM3_START,
 		.last_pad = GPIO_COM3_END,
 		.num_gpi_regs = NUM_GPIO_COM3_GPI_REGS,
@@ -152,6 +155,7 @@ static const struct pad_community mtl_communities[] = {
 	},
 	[COMM_4] = { /* GPP S, JTAG */
 		.port = PID_GPIOCOM4,
+		.cpu_port = PID_GPIOCOM4,
 		.first_pad = GPIO_COM4_START,
 		.last_pad = GPIO_COM4_END,
 		.num_gpi_regs = NUM_GPIO_COM4_GPI_REGS,
@@ -172,6 +176,7 @@ static const struct pad_community mtl_communities[] = {
 	},
 	[COMM_5] = { /* GPP B, D, VGPIO */
 		.port = PID_GPIOCOM5,
+		.cpu_port = PID_GPIOCOM5,
 		.first_pad = GPIO_COM5_START,
 		.last_pad = GPIO_COM5_END,
 		.num_gpi_regs = NUM_GPIO_COM5_GPI_REGS,

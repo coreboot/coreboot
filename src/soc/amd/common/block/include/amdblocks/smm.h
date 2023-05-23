@@ -15,4 +15,16 @@ void lock_smm(void);
 /* See SMITYPE_* for list possible of events. GEVENTS are handled with mainboard_smi_gpi. */
 void mainboard_handle_smi(int event);
 
+#if CONFIG_SMM_TSEG_SIZE != 0
+#if (CONFIG_SMM_TSEG_SIZE <= CONFIG_SMM_RESERVED_SIZE)
+# error "CONFIG_SMM_TSEG_SIZE <= CONFIG_SMM_RESERVED_SIZE"
+#endif
+#if (CONFIG_SMM_TSEG_SIZE < 0x20000)
+# error "CONFIG_SMM_TSEG_SIZE must at least be 128KiB"
+#endif
+#if ((CONFIG_SMM_TSEG_SIZE & (CONFIG_SMM_TSEG_SIZE - 1)) != 0)
+# error "CONFIG_SMM_TSEG_SIZE is not a power of 2"
+#endif
+#endif
+
 #endif

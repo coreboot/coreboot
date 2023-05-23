@@ -178,12 +178,14 @@ OPENSBI_BUILD  := $(abspath $(obj)/3rdparty/opensbi)
 OPENSBI_TARGET := $(OPENSBI_BUILD)/platform/$(CONFIG_OPENSBI_PLATFORM)/firmware/fw_dynamic.elf
 OPENSBI := $(obj)/opensbi.elf
 
+# TODO: Building with clang has troubles finding the proper linker.
+# Always use GCC for now.
 $(OPENSBI_TARGET): $(obj)/config.h | $(OPENSBI_SOURCE)
 	printf "    MAKE       $(subst $(obj)/,,$(@))\n"
 	mkdir -p $(OPENSBI_BUILD)
 	$(MAKE) \
 		-C "$(OPENSBI_SOURCE)" \
-		CC="$(CC_ramstage) -fno-builtin" \
+		CC="$(GCC_ramstage) -fno-builtin" \
 		LD="$(LD_ramstage)" \
 		OBJCOPY="$(OBJCOPY_ramstage)" \
 		AR="$(AR_ramstage)" \

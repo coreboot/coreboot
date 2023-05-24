@@ -182,4 +182,10 @@ config ENABLE_IO_MARGINING
 	  ASPM. This option is intended for debugging and validation and
 	  should normally be disabled.
 
+config ENABLE_RMT
+	bool "Enable RMT"
+	default n
+	help
+	  Enable Rank Margining Tool. This option is intended for debugging and
+	  validation and should normally be disabled.
 endif

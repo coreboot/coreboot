@@ -217,6 +217,13 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 		mupd->FspmConfig.KtiLinkL1En = 0;
 		mupd->FspmConfig.KtiLinkL0pEn = 0;
 	}
+
+	if (CONFIG(ENABLE_RMT)) {
+		printk(BIOS_INFO, "RMT Enabled.\n");
+		mupd->FspmConfig.EnableRMT = 0x1;
+		/* Set FSP debug message to Max for RMT logs */
+		mupd->FspmConfig.serialDebugMsgLvl = 0x3;
+	}
 }
 
 static uint8_t get_error_correction_type(const uint8_t RasModesEnabled)

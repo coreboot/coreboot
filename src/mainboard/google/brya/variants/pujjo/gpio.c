@@ -26,8 +26,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_GPI_APIC(GPP_H19, NONE, PLTRST, LEVEL, NONE),
 	/* H22  : WCAM_MCLK_R ==> NC */
 	PAD_NC(GPP_H22, NONE),
-	/* H23 : WWAN_SAR_DETECT_ODL */
-	PAD_CFG_GPO(GPP_H23, 1, DEEP),
+	/* H23 : WWAN_SAR_DETECT_ODL ==> NC */
+	PAD_NC_LOCK(GPP_H23, NONE, LOCK_CONFIG),
 };
 
 /* Pad configuration in ramstage for Pujjoteen5 */
@@ -42,8 +42,8 @@ static const struct pad_config override_5g_gpio_table[] = {
 	PAD_CFG_NF(GPP_D5, NONE, DEEP, NF1),
 	/* D6  : SRCCLKREQ1# ==> WWAN_EN */
 	PAD_CFG_GPO_LOCK(GPP_D6, 1, LOCK_CONFIG),
-	/* D15  : EN_PP2800_WCAM_X ==> WWAN_SAR_DETECT_2_ODL */
-	PAD_CFG_GPO(GPP_D15, 1, DEEP),
+	/* D15  : EN_PP2800_WCAM_X ==> NC */
+	PAD_NC_LOCK(GPP_D15, NONE, LOCK_CONFIG),
 	/* D16  : EN_PP1800_PP1200_WCAM_X ==> NC */
 	PAD_NC_LOCK(GPP_D16, NONE, LOCK_CONFIG),
 	/* D17 : NC ==> SD_WAKE_N */
@@ -56,8 +56,8 @@ static const struct pad_config override_5g_gpio_table[] = {
 	PAD_CFG_GPO(GPP_H21, 0, DEEP),
 	/* H22  : WCAM_MCLK_R ==> NC */
 	PAD_NC(GPP_H22, NONE),
-	/* H23 : WWAN_SAR_DETECT_ODL */
-	PAD_CFG_GPO(GPP_H23, 1, DEEP),
+	/* H23 : WWAN_SAR_DETECT_ODL ==> NC */
+	PAD_NC_LOCK(GPP_H23, NONE, LOCK_CONFIG),
 };
 
 /* Early pad configuration in bootblock */

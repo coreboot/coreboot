@@ -38,6 +38,7 @@ enum ich_chipset {
 	CHIPSET_400_SERIES_ICE_POINT, /* 10th gen Core i/o (LP) variants */
 	CHIPSET_500_600_SERIES_TIGER_ALDER_POINT, /* 11th-12th gen Core i/o (LP)
 						   * variants onwards */
+	CHIPSET_800_SERIES_METEOR_LAKE, /* 14th gen Core i/o (LP) variants onwards */
 	CHIPSET_C620_SERIES_LEWISBURG,
 	CHIPSET_DENVERTON,
 };
@@ -92,6 +93,13 @@ enum espi_frequency_500_series {
 	ESPI_FREQUENCY_500SERIES_25MHZ = 2,
 	ESPI_FREQUENCY_500SERIES_48MHZ = 3,
 	ESPI_FREQUENCY_500SERIES_60MHZ = 4,
+};
+
+enum espi_frequency_800_series {
+	ESPI_FREQUENCY_800SERIES_20MHZ = 0,
+	ESPI_FREQUENCY_800SERIES_25MHZ = 1,
+	ESPI_FREQUENCY_800SERIES_33MHZ = 2,
+	ESPI_FREQUENCY_800SERIES_50MHZ = 4,
 };
 
 enum component_density {

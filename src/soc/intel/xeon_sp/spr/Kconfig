@@ -173,4 +173,13 @@ config INTEL_TXT_HEAP_SIZE
 
 endif # INTEL_TXT
 
+config ENABLE_IO_MARGINING
+	bool "Enable IO Margining"
+	default n
+	depends on !PCIEXP_ASPM
+	help
+	  Enable support for I/O margining. This is mutually exclusive with
+	  ASPM. This option is intended for debugging and validation and
+	  should normally be disabled.
+
 endif

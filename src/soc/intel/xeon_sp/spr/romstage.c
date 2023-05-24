@@ -200,6 +200,23 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 		config_upd_from_vpd(mupd);
 	initialize_iio_upd(mupd);
 	mainboard_memory_init_params(mupd);
+
+	if (CONFIG(ENABLE_IO_MARGINING)) {
+		printk(BIOS_INFO, "IO Margining Enabled.\n");
+		/* Needed for IO Margining */
+		mupd->FspmConfig.DFXEnable = 1;
+
+		UPD_IIO_PCIE_PORT_CONFIG *iio_pcie_cfg;
+		int socket;
+
+		iio_pcie_cfg = (UPD_IIO_PCIE_PORT_CONFIG *)mupd->FspmConfig.IioPcieConfigTablePtr;
+
+		for (socket = 0; socket < MAX_SOCKET; socket++)
+			iio_pcie_cfg[socket].PcieGlobalAspm = 0;
+
+		mupd->FspmConfig.KtiLinkL1En = 0;
+		mupd->FspmConfig.KtiLinkL0pEn = 0;
+	}
 }
 
 static uint8_t get_error_correction_type(const uint8_t RasModesEnabled)

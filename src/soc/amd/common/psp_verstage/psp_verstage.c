@@ -75,8 +75,8 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 	const char *fname;
 	const char *hash_fname;
 	void *amdfw_location;
+	struct region fw_slot;
 	void *map_base = NULL;
-	size_t map_offset;
 
 	/* Continue booting from RO */
 	if (ctx->flags & VB2_CONTEXT_RECOVERY_MODE) {
@@ -87,13 +87,14 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 	if (vboot_is_firmware_slot_a(ctx)) {
 		fname = "apu/amdfw_a";
 		hash_fname = "apu/amdfw_a_hash";
-		map_offset = FMAP_SECTION_FW_MAIN_A_START - FMAP_SECTION_FLASH_START;
-		map_base = rdev_mmap(boot_device_ro(), map_offset, FMAP_SECTION_FW_MAIN_A_SIZE);
+		if (!fmap_locate_area("FW_MAIN_A", &fw_slot))
+			map_base = rdev_mmap(boot_device_ro(), fw_slot.offset, fw_slot.size);
+
 	} else {
 		fname = "apu/amdfw_b";
 		hash_fname = "apu/amdfw_b_hash";
-		map_offset = FMAP_SECTION_FW_MAIN_B_START - FMAP_SECTION_FLASH_START;
-		map_base = rdev_mmap(boot_device_ro(), map_offset, FMAP_SECTION_FW_MAIN_B_SIZE);
+		if (!fmap_locate_area("FW_MAIN_B", &fw_slot))
+			map_base = rdev_mmap(boot_device_ro(), fw_slot.offset, fw_slot.size);
 	}
 
 	if (!map_base) {
@@ -119,7 +120,7 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 	psp_dir_addr = ef_table->new_psp_directory;
 	bios_dir_addr = get_bios_dir_addr(ef_table);
 	psp_dir_in_spi = (uint32_t *)((psp_dir_addr & SPI_ADDR_MASK) +
-			(uint32_t)map_base - map_offset);
+			(uint32_t)map_base - fw_slot.offset);
 	if (*psp_dir_in_spi != PSP_COOKIE) {
 		printk(BIOS_ERR, "PSP Directory address is not correct.\n");
 		cbfs_unmap(amdfw_location);
@@ -129,7 +130,7 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 
 	if (bios_dir_addr) {
 		bios_dir_in_spi = (uint32_t *)((bios_dir_addr & SPI_ADDR_MASK) +
-				(uint32_t)map_base - map_offset);
+				(uint32_t)map_base - fw_slot.offset);
 		if (*bios_dir_in_spi != BHD_COOKIE) {
 			printk(BIOS_ERR, "BIOS Directory address is not correct.\n");
 			cbfs_unmap(amdfw_location);

@@ -8,6 +8,9 @@ entries
 0	120	r	0	reserved_memory
 
 # -----------------------------------------------------------------
+# coreboot config options: ramtop
+304	80	h	0	ramtop
+
 # RTC_BOOT_BYTE (coreboot hardcoded)
 384	1	e	2	boot_option
 388	4	h	0	reboot_counter
@@ -43,9 +46,6 @@ entries
 
 # coreboot config options: check sums
 984	16	h	0	check_sum
-
-# coreboot config options: ramtop
-1000	10	h	0	ramtop
 
 # Bank: 2
 # embedded controller settings (outside the checksummed area)

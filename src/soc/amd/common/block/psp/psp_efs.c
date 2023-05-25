@@ -7,31 +7,25 @@
 #include <device/mmio.h>
 #include <types.h>
 
-static struct embedded_firmware *efs;
-
-bool efs_is_valid(void)
-{
-	if (!efs)
-		efs = rdev_mmap(boot_device_ro(), EFS_OFFSET, sizeof(*efs));
-
-	if (!efs || efs->signature != EMBEDDED_FW_SIGNATURE)
-		return false;
-
-	return true;
-}
-
 bool read_efs_spi_settings(uint8_t *mode, uint8_t *speed)
 {
-	if (!efs_is_valid())
+	bool ret = false;
+	struct embedded_firmware *efs;
+
+	efs = rdev_mmap(boot_device_ro(), EFS_OFFSET, sizeof(*efs));
+	if (!efs)
 		return false;
 
+	if (efs->signature == EMBEDDED_FW_SIGNATURE) {
 #ifndef SPI_MODE_FIELD
-	printk(BIOS_ERR, "Unknown cpu in psp_efs.h\n");
-	printk(BIOS_ERR, "SPI speed/mode not set.\n");
-	return false;
+		printk(BIOS_ERR, "Unknown cpu in psp_efs.h\n");
+		printk(BIOS_ERR, "SPI speed/mode not set.\n");
 #else
-	*mode = efs->SPI_MODE_FIELD;
-	*speed = efs->SPI_SPEED_FIELD;
-	return true;
+		*mode = efs->SPI_MODE_FIELD;
+		*speed = efs->SPI_SPEED_FIELD;
+		ret = true;
 #endif
+	}
+	rdev_munmap(boot_device_ro(), efs);
+	return ret;
 }

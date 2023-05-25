@@ -17,8 +17,6 @@ thunderbolt=Disable
 kbl_timeout=30 seconds
 fn_ctrl_swap=Disable
 mirror_flag=Disable
-# southbridge
-power_on_after_fail=Disable
 # Functions
 fn_lock_state=0x1
 trackpad_state=0x1

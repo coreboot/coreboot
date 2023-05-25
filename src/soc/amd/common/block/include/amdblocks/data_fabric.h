@@ -11,6 +11,9 @@
 
 #define BROADCAST_FABRIC_ID		0xff
 
+/* Index of IOAPI resource associated with IOMMU */
+#define IOMMU_IOAPIC_IDX                0x20000120
+
 #define DF_MMIO_REG_OFFSET(instance) ((instance) * DF_MMIO_REG_SET_SIZE * sizeof(uint32_t))
 
 /* The number of data fabric MMIO registers is SoC-specific */

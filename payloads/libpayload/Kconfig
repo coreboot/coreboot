@@ -167,14 +167,6 @@ config BASE_ADDRESS
 
 endmenu
 
-config USE_MARCH_586
-	bool "Use march=586 qualifier to build"
-	default n
-	depends on ARCH_X86
-	help
-	  Allow a platform or processor to select to be compiled using
-	  the '-march=i586' option instead of the typical '-march=i686'
-
 menu "Standard Libraries"
 
 config LIBC

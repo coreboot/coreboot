@@ -20,6 +20,11 @@ Significant or interesting changes
 * This section should have full descriptions and can or should have
   a link to the referenced commits.
 
+### Toolchain updates
+
+* Upgrade IASL from 20221020 to 20230331
+* Upgrade LLVM from 15.0.7 to 16.0.4
+
 Additional coreboot changes
 ---------------------------
 

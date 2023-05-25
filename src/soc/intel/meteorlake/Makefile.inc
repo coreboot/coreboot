@@ -31,6 +31,7 @@ romstage-y += soc_info.c
 ramstage-y += acpi.c
 ramstage-y += chip.c
 ramstage-y += cpu.c
+ramstage-$(CONFIG_SOC_INTEL_CRASHLOG) += crashlog.c
 ramstage-y += elog.c
 ramstage-y += espi.c
 ramstage-y += finalize.c

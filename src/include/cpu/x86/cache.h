@@ -57,7 +57,6 @@ static __always_inline void disable_cache(void)
 	CRx_TYPE cr0;
 	cr0 = read_cr0();
 	cr0 |= CR0_CD;
-	wbinvd();
 	write_cr0(cr0);
 	wbinvd();
 }

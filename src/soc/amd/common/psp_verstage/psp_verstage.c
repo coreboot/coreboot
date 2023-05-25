@@ -113,6 +113,7 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 	if (ef_table->signature != EMBEDDED_FW_SIGNATURE) {
 		printk(BIOS_ERR, "ROMSIG address is not correct.\n");
 		cbfs_unmap(amdfw_location);
+		rdev_munmap(boot_device_ro(), amdfw_location);
 		rdev_munmap(boot_device_ro(), map_base);
 		return POSTCODE_ROMSIG_MISMATCH_ERROR;
 	}
@@ -124,6 +125,7 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 	if (*psp_dir_in_spi != PSP_COOKIE) {
 		printk(BIOS_ERR, "PSP Directory address is not correct.\n");
 		cbfs_unmap(amdfw_location);
+		rdev_munmap(boot_device_ro(), amdfw_location);
 		rdev_munmap(boot_device_ro(), map_base);
 		return POSTCODE_PSP_COOKIE_MISMATCH_ERROR;
 	}
@@ -134,6 +136,7 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 		if (*bios_dir_in_spi != BHD_COOKIE) {
 			printk(BIOS_ERR, "BIOS Directory address is not correct.\n");
 			cbfs_unmap(amdfw_location);
+			rdev_munmap(boot_device_ro(), amdfw_location);
 			rdev_munmap(boot_device_ro(), map_base);
 			return POSTCODE_BHD_COOKIE_MISMATCH_ERROR;
 		}
@@ -149,6 +152,7 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 	if (update_psp_bios_dir(&psp_dir_addr, &bios_dir_addr)) {
 		printk(BIOS_ERR, "Updated BIOS Directory could not be set.\n");
 		cbfs_unmap(amdfw_location);
+		rdev_munmap(boot_device_ro(), amdfw_location);
 		rdev_munmap(boot_device_ro(), map_base);
 		return POSTCODE_UPDATE_PSP_BIOS_DIR_ERROR;
 	}
@@ -157,6 +161,7 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 		update_psp_fw_hash_table(hash_fname);
 
 	cbfs_unmap(amdfw_location);
+	rdev_munmap(boot_device_ro(), amdfw_location);
 	rdev_munmap(boot_device_ro(), map_base);
 	return 0;
 }

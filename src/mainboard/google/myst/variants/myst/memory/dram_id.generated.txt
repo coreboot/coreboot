@@ -4,5 +4,5 @@
 # util/spd_tools/bin/part_id_gen PHX lp5 src/mainboard/google/myst/variants/myst/memory src/mainboard/google/myst/variants/myst/memory/mem_parts_used.txt
 
 DRAM Part Name                 ID to assign
-MT62F1G32D4DR-031 WT:B         0 (0000)
 H9JCNNNCP3MLYR-N6E             0 (0000)
+MT62F512M32D2DR-031 WT:B       1 (0001)

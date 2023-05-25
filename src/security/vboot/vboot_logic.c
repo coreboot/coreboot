@@ -259,6 +259,9 @@ void verstage_main(void)
 		platform_is_resuming())
 		ctx->flags |= VB2_CONTEXT_S3_RESUME;
 
+	if (!CONFIG(VBOOT_SLOTS_RW_AB))
+		ctx->flags |= VB2_CONTEXT_SLOT_A_ONLY;
+
 	/* Read secdata from TPM. Initialize TPM if secdata not found. We don't
 	 * check the return value here because vb2api_fw_phase1 will catch
 	 * invalid secdata and tell us what to do (=reboot). */

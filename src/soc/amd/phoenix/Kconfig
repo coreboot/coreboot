@@ -249,7 +249,7 @@ config MAX_CPUS
 
 config VGA_BIOS_ID
 	string
-	default "1002,15BF"
+	default "1002,15bf"
 	help
 	  The default VGA BIOS PCI vendor/device ID should be set to the
 	  result of the map_oprom_vendev() function in graphics.c.

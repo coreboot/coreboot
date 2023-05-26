@@ -208,6 +208,13 @@ static size_t cbfs_load_and_decompress(const struct region_device *rdev, void *b
 	DEBUG("Decompressing %zu bytes from '%s' to %p with algo %d\n",
 	      in_size, mdata->h.filename, buffer, compression);
 
+	if (CONFIG(CBFS_VERIFICATION) && !CONFIG(CBFS_ALLOW_UNVERIFIED_DECOMPRESSION) &&
+	    skip_verification && compression != CBFS_COMPRESS_NONE) {
+		ERROR("Refusing to decompress unverified file '%s' with algo %d\n",
+		      mdata->h.filename, compression);
+		return 0;
+	}
+
 	switch (compression) {
 	case CBFS_COMPRESS_NONE:
 		if (buffer_size < in_size)

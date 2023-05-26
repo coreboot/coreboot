@@ -37,6 +37,20 @@ config TOCTOU_SAFETY
 	  bootblock is also safe against these vulnerabilities (i.e. there's no
 	  point in enabling this when you just rely on flash write-protection).
 
+config CBFS_ALLOW_UNVERIFIED_DECOMPRESSION
+	bool "Run decompression algorithms on potentially untrusted code"
+	default n
+	help
+	  This controls whether cbfs_unverified_area_...() access functions may
+	  decompress files. This exposes the attack surface of all supported
+	  decompression algorithms. Even if you don't compress the files you are
+	  planning to load with these functions, since file metadata is also
+	  unverified, an attacker can potentially replace them with compressed
+	  files to access a vulnerability in the decompression code.
+
+	  If you don't need to load compressed files from unverified areas, say
+	  no here for tighter security.
+
 config CBFS_HASH_ALGO
 	int
 	default 1 if CBFS_HASH_SHA1

@@ -163,6 +163,7 @@ chip soc/intel/alderlake
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_PME_B0"
 				register "enable_cnvi_ddr_rfim" = "true"
+				register "add_acpi_dma_property" = "true"
 				device generic 0 on end
 			end
 		end

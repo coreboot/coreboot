@@ -32,7 +32,7 @@ chip soc/intel/alderlake
 	# Refer to EDS-Vol2-42.3.8.
 	# [14:8] steps of delay for HS400, each 125ps, range: 0 - 78.
 	# [6:0] steps of delay for SDR104/HS200, each 125ps, range: 0 - 79.
-	register "common_soc_config.emmc_dll.emmc_tx_data_cntl1" = "0x00000a12"
+	register "common_soc_config.emmc_dll.emmc_tx_data_cntl1" = "0x00000909"
 
 	# EMMC TX DATA Delay 2
 	# Refer to EDS-Vol2-42.3.9.
@@ -40,7 +40,7 @@ chip soc/intel/alderlake
 	# [22:16] steps of delay for DDR50, each 125ps, range: 0 - 78.
 	# [14:8] steps of delay for SDR25/HS50, each 125ps, range: 0 -79.
 	# [6:0] steps of delay for SDR12, each 125ps. Range: 0 - 79.
-	register "common_soc_config.emmc_dll.emmc_tx_data_cntl2" = "0x1c292828"
+	register "common_soc_config.emmc_dll.emmc_tx_data_cntl2" = "0x1c272828"
 
 	# EMMC RX CMD/DATA Delay 1
 	# Refer to EDS-Vol2-42.3.10.
@@ -48,7 +48,7 @@ chip soc/intel/alderlake
 	# [22:16] steps of delay for DDR50, each 125ps, range: 0 - 78.
 	# [14:8] steps of delay for SDR25/HS50, each 125ps, range: 0 - 119.
 	# [6:0] steps of delay for SDR12, each 125ps, range: 0 - 119.
-	register "common_soc_config.emmc_dll.emmc_rx_cmd_data_cntl1" = "0x1c175a3b"
+	register "common_soc_config.emmc_dll.emmc_rx_cmd_data_cntl1" = "0x1c171835"
 
 	# EMMC RX CMD/DATA Delay 2
 	# Refer to EDS-Vol2-42.3.12.
@@ -59,13 +59,13 @@ chip soc/intel/alderlake
 	#         11: Reserved
 	# [14:8] steps of delay for Auto Tuning Mode, each 125ps, range: 0 - 39.
 	# [6:0] steps of delay for HS200, each 125ps, range: 0 - 79.
-	register "common_soc_config.emmc_dll.emmc_rx_cmd_data_cntl2" = "0x00010023"
+	register "common_soc_config.emmc_dll.emmc_rx_cmd_data_cntl2" = "0x00010025"
 
 	# EMMC Rx Strobe Delay
 	# Refer to EDS-Vol2-42.3.11.
 	# [14:8] Rx Strobe Delay DLL 1(HS400 Mode), each 125ps, range: 0 - 39.
 	# [6:0] Rx Strobe Delay DLL 2(HS400 Mode), each 125ps, range: 0 - 39.
-	register "common_soc_config.emmc_dll.emmc_rx_strobe_cntl" = "0x00011111"
+	register "common_soc_config.emmc_dll.emmc_rx_strobe_cntl" = "0x00001111"
 
 	# SOC Aux orientation override:
 	# This is a bitfield that corresponds to up to 4 TCSS ports.

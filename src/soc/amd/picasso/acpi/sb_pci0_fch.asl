@@ -59,23 +59,33 @@ Name(CRES, ResourceTemplate() {
 		0xf300		/* length */
 	)
 
-	Memory32Fixed(READONLY, 0x000a0000, 0x00020000, VGAM)	/* VGA memory space */
-	Memory32Fixed(READONLY, 0x000c0000, 0x00020000, EMM1)	/* Assume C0000-E0000 empty */
+	/* VGA memory (0xa0000-0xbffff) */
+	DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
+			Cacheable, ReadWrite,
+			0x00000000, 0x000a0000, 0x000bffff, 0x00000000,
+			0x00020000)
+	DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
+			Cacheable, ReadOnly,
+			0x00000000, 0x000c0000, 0x000dffff, 0x00000000,
+			0x00020000)
 
 	/* memory space for PCI BARs below 4GB */
-	Memory32Fixed(ReadOnly, 0x00000000, 0x00000000, MMIO)
+	DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
+			NonCacheable, ReadWrite,
+			0x00000000, 0x00000000, 0x00000000, 0x00000000,
+			0x00000000,,, PM01)
 }) /* End Name(_SB.PCI0.CRES) */
 
 Method(_CRS, 0) {
-	/* DBGO("\\_SB\\PCI0\\_CRS\n") */
-	CreateDWordField(CRES, ^MMIO._BAS, MM1B)
-	CreateDWordField(CRES, ^MMIO._LEN, MM1L)
+	/* Find PCI resource area in CRES */
+	CreateDwordField (CRES, ^PM01._MIN, P1MN)
+	CreateDwordField (CRES, ^PM01._MAX, P1MX)
+	CreateDwordField (CRES, ^PM01._LEN, P1LN)
 
 	/* Declare memory between TOM1 and MMCONF as available for PCI MMIO. */
-	MM1B = TOM1
-	Local0 = CONFIG_ECAM_MMCONF_BASE_ADDRESS
-	Local0 -= TOM1
-	MM1L = Local0
+	P1MN = TOM1
+	P1MX = CONFIG_ECAM_MMCONF_BASE_ADDRESS - 1
+	P1LN = P1MX - P1MN + 1
 
 	CreateWordField(CRES, ^PSB0._MAX, BMAX)
 	CreateWordField(CRES, ^PSB0._LEN, BLEN)

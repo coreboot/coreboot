@@ -255,9 +255,7 @@ config VGA_BIOS_ID
 	  The default VGA BIOS PCI vendor/device ID should be set to the
 	  result of the map_oprom_vendev() function in graphics.c.
 
-config VGA_BIOS_FILE
-	string
-	default "3rdparty/amd_blobs/phoenix/Vbios.bin"
+# TODO: add VGA_BIOS_FILE default once the correct VBIOS binaries are available in amd_blobs
 
 config CONSOLE_UART_BASE_ADDRESS
 	depends on CONSOLE_SERIAL && AMD_SOC_CONSOLE_UART

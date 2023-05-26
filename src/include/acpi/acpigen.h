@@ -688,9 +688,9 @@ void acpigen_resource_dword(u16 res_type, u16 gen_flags, u16 type_flags,
 void acpigen_resource_qword(u16 res_type, u16 gen_flags, u16 type_flags,
 	u64 gran, u64 range_min, u64 range_max, u64 translation, u64 length);
 
-void acpigen_resource_bus_number(u16 bus_base, u16 bus_limit);
-void acpigen_resource_io(u16 io_base, u16 io_limit);
-void acpigen_resource_mmio(u64 mmio_base, u64 mmio_limit, u16 type_flags);
+void acpigen_resource_producer_bus_number(u16 bus_base, u16 bus_limit);
+void acpigen_resource_producer_io(u16 io_base, u16 io_limit);
+void acpigen_resource_producer_mmio(u64 mmio_base, u64 mmio_limit, u16 type_flags);
 
 /* Emits Notify(namestr, value) */
 void acpigen_notify(const char *namestr, int value);

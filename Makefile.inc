@@ -435,7 +435,7 @@ ifeq ($(CONFIG_COMPILER_GCC),y)
 ifeq ($(CCC_ANALYZER_OUTPUT_FORMAT),)
 CFLAGS_common += -Wno-packed-not-aligned
 CFLAGS_common += -fconserve-stack
-CFLAGS_common += -Wnull-dereference -Wreturn-type
+CFLAGS_common += -Wnull-dereference
 CFLAGS_common += -Wlogical-op -Wduplicated-cond -Wno-array-compare
 endif
 endif

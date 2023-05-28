@@ -48,6 +48,11 @@ coreboot-sdk: test-docker
 		sed "s/{{CROSSGCC_PARAM}}/$(COREBOOT_CROSSGCC_PARAM)/g" | \
 		$(DOCKER) build -t coreboot/coreboot-sdk:$(COREBOOT_IMAGE_TAG) -
 
+coreboot-sdk-test: coreboot-sdk test-docker
+	@echo "Testing coreboot SDK $(crossgcc_version), built from commit $(DOCKER_COMMIT)"
+	cat coreboot-sdk-test/Dockerfile | \
+		$(DOCKER) build -t coreboot/coreboot-sdk-test:$(COREBOOT_IMAGE_TAG) -
+
 upload-coreboot-sdk: test-docker-login
 	$(DOCKER) push coreboot/coreboot-sdk:$(COREBOOT_IMAGE_TAG)
 

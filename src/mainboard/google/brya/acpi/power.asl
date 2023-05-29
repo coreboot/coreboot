@@ -128,8 +128,12 @@ Method (GC6I, 0, Serialized)
 	/* Deassert PG_GPU_ALLRAILS */
 	CTXS (GPIO_GPU_ALLRAILS_PG)
 
-	/* Deassert FBVDDQ Enable */
+	/* Ramp down FBVDD - TODO: Remove Agah when board is dropped */
+#if CONFIG(BOARD_GOOGLE_AGAH)
+	STXS (GPIO_FBVDD_PWR_EN)
+#else
 	CTXS (GPIO_FBVDD_PWR_EN)
+#endif
 
 	/* Ramp down PEXVDD */
 	CTXS (GPIO_PEXVDD_PWR_EN)
@@ -176,8 +180,13 @@ Method (GC6O, 0, Serialized)
 	STXS (GPIO_PEXVDD_PWR_EN)
 	GPPL (GPIO_PEXVDD_PG, 1, 4)
 
-	/* Assert FBVDDQ Enable */
-        STXS (GPIO_FBVDD_PWR_EN)
+	/* Ramp up FBVDD - TODO: Remove Agah when board is dropped */
+#if CONFIG(BOARD_GOOGLE_AGAH)
+	CTXS (GPIO_FBVDD_PWR_EN)
+#else
+	STXS (GPIO_FBVDD_PWR_EN)
+#endif
+
 
 	/* Assert PG_GPU_ALLRAILS */
 	STXS (GPIO_GPU_ALLRAILS_PG)

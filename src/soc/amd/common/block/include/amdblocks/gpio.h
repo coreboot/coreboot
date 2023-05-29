@@ -92,4 +92,7 @@ void soc_get_gpio_event_table(const struct soc_amd_event **table, size_t *items)
 void gpio_save_pin_registers(gpio_t gpio, struct soc_amd_gpio_register_save *save);
 void gpio_restore_pin_registers(gpio_t gpio, struct soc_amd_gpio_register_save *save);
 
+/* Overrides Kconfig GPIO number */
+gpio_t cr50_override_gpio(gpio_t irq);
+
 #endif /* AMD_BLOCK_GPIO_BANKS_H */

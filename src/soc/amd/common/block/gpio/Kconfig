@@ -18,3 +18,9 @@ config SOC_AMD_COMMON_BLOCK_BANKED_GPIOS_NON_SOC_CODEBASE
 	  code.
 
 endif # SOC_AMD_COMMON_BLOCK_BANKED_GPIOS
+
+config GSC_IRQ_GPIO
+	int
+	help
+	  gpio_interrupt_status() is used to provide interrupt status to TPM layer.
+	  This option specifies the GPIO number.

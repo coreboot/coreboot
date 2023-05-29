@@ -3,16 +3,12 @@
 bootblock-y += gpio.c
 bootblock-y += OemCustomize.c
 
-verstage-y += tpm_tis.c
-
 romstage-y += OemCustomize.c
 romstage-y += gpio.c
 romstage-y += memory.c
-romstage-y += tpm_tis.c
 
 ramstage-y += gpio.c
 ramstage-y += mainboard.c
-ramstage-y += tpm_tis.c
 
 # Add OEM ID table
 ifeq ($(CONFIG_USE_OEM_BIN),y)

@@ -138,6 +138,10 @@ config DRIVER_TPM_I2C_ADDR
 	hex
 	default 0x50
 
+config GSC_IRQ_GPIO
+	int
+	default 3
+
 config VARIANT_SUPPORTS_PRE_V3_SCHEMATICS
 	bool
 	default y if BOARD_GOOGLE_TREMBYLE

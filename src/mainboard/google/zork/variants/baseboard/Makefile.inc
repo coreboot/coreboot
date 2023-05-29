@@ -2,9 +2,6 @@
 
 all-y += helpers.c
 
-verstage-y += tpm_tis.c
-romstage-y += tpm_tis.c
-ramstage-y += tpm_tis.c
 ramstage-y += ramstage_common.c
 
 # Add OEM ID table

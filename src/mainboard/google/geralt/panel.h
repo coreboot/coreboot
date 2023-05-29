@@ -17,7 +17,6 @@ struct panel_description {
 };
 
 void fill_lp_backlight_gpios(struct lb_gpios *gpios);
-int panel_pmic_reg_mask(u32 bus, u8 chip, u8 addr, u8 val, u8 mask);
 uint32_t panel_id(void);
 struct panel_description *get_panel_description(uint32_t panel_id);
 struct panel_description *get_active_panel(void);

@@ -3,7 +3,6 @@
 #include <boardid.h>
 #include <cbfs.h>
 #include <console/console.h>
-#include <device/i2c_simple.h>
 #include <edid.h>
 #include <gpio.h>
 #include <soc/gpio_common.h>
@@ -11,21 +10,6 @@
 
 #include "gpio.h"
 #include "panel.h"
-
-int panel_pmic_reg_mask(u32 bus, u8 chip, u8 addr, u8 val, u8 mask)
-{
-	u8 msg = 0;
-
-	if (i2c_read_field(bus, chip, addr, &msg, 0xFF, 0) < 0) {
-		printk(BIOS_ERR, "Failed to read i2c: addr(%u)\n", addr);
-		return -1;
-	}
-
-	msg &= ~mask;
-	msg |= val;
-
-	return i2c_write_field(bus, chip, addr, msg, 0xFF, 0);
-}
 
 static void get_mipi_cmd_from_cbfs(struct panel_description *desc)
 {

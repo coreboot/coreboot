@@ -1,9 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <assert.h>
 #include <console/console.h>
 #include <delay.h>
-#include <device/i2c_simple.h>
 #include <edid.h>
 #include <framebuffer_info.h>
 #include <gpio.h>
@@ -11,15 +9,11 @@
 #include <soc/dptx.h>
 #include <soc/dsi.h>
 #include <soc/gpio_common.h>
-#include <soc/i2c.h>
 #include <soc/mtcmos.h>
 
 #include "display.h"
 #include "gpio.h"
 #include "panel.h"
-
-#define PMIC_TPS65132_I2C	I2C3
-#define PMIC_TPS65132_SLAVE	0x3E
 
 int configure_display(void)
 {
@@ -77,45 +71,4 @@ int configure_display(void)
 		fb_set_orientation(info, LB_FB_ORIENTATION_BOTTOM_UP);
 
 	return 0;
-}
-
-void tps65132s_program_eeprom(void)
-{
-	u8 value = 0;
-	u8 value1 = 0;
-
-	/* Initialize I2C3 for PMIC TPS65132 */
-	mtk_i2c_bus_init(PMIC_TPS65132_I2C, I2C_SPEED_FAST);
-	mdelay(10);
-
-	gpio_output(GPIO_EN_PPVAR_MIPI_DISP, 1);
-	gpio_output(GPIO_EN_PPVAR_MIPI_DISP_150MA, 1);
-	mdelay(10);
-
-	i2c_read_field(PMIC_TPS65132_I2C, PMIC_TPS65132_SLAVE, 0x00, &value, 0xFF, 0);
-	i2c_read_field(PMIC_TPS65132_I2C, PMIC_TPS65132_SLAVE, 0x01, &value1, 0xFF, 0);
-
-	if (value != 0x11 || value1 != 0x11) {
-		printk(BIOS_INFO, "Just set AVDD AVEE 5.7V to EEPROM Data in first time.\n");
-
-		/* Set AVDD = 5.7V */
-		if (panel_pmic_reg_mask(PMIC_TPS65132_I2C, PMIC_TPS65132_SLAVE, 0x00, 0x11,
-					0x1F) < 0)
-			return;
-
-		/* Set AVEE = -5.7V */
-		if (panel_pmic_reg_mask(PMIC_TPS65132_I2C, PMIC_TPS65132_SLAVE, 0x01, 0x11,
-					0x1F) < 0)
-			return;
-
-		/* Set EEPROM Data */
-		if (panel_pmic_reg_mask(PMIC_TPS65132_I2C, PMIC_TPS65132_SLAVE, 0xFF, 0x80,
-					0xFC) < 0)
-			return;
-		mdelay(50);
-	}
-
-	gpio_output(GPIO_EN_PPVAR_MIPI_DISP, 0);
-	gpio_output(GPIO_EN_PPVAR_MIPI_DISP_150MA, 0);
-	mdelay(5);
 }

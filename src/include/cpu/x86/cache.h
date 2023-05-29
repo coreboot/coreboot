@@ -9,9 +9,11 @@
 #define CR0_NoWriteThrough	(CR0_NW)
 
 #define CPUID_FEATURE_CLFLUSH_BIT 19
+#define CPUID_FEATURE_SELF_SNOOP_BIT 27
 
 #if !defined(__ASSEMBLER__)
 
+#include <arch/cpuid.h>
 #include <stdbool.h>
 #include <stddef.h>
 
@@ -51,6 +53,16 @@ static __always_inline void enable_cache(void)
 	write_cr0(cr0);
 }
 
+/*
+ * Cache flushing is the most time-consuming step when programming the MTRRs.
+ * However, if the processor supports cache self-snooping (ss), we can skip
+ * this step and save time.
+ */
+static __always_inline bool self_snooping_supported(void)
+{
+	return (cpuid_edx(1) >> CPUID_FEATURE_SELF_SNOOP_BIT) & 1;
+}
+
 static __always_inline void disable_cache(void)
 {
 	/* Disable and write back the cache */
@@ -58,7 +70,8 @@ static __always_inline void disable_cache(void)
 	cr0 = read_cr0();
 	cr0 |= CR0_CD;
 	write_cr0(cr0);
-	wbinvd();
+	if (!self_snooping_supported())
+		wbinvd();
 }
 
 #endif /* !__ASSEMBLER__ */

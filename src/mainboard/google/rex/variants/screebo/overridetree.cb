@@ -50,6 +50,9 @@ chip soc/intel/meteorlake
 		[PchSerialIoIndexI2C5] = PchSerialIoPci,
 	}"
 
+	# Temporary setting TCC of 90C = Tj max - Tcc
+	register "tcc_offset" = "20"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

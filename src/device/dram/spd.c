@@ -57,7 +57,7 @@ static void convert_ddr2_module_type_to_spd_info(enum spd_dimm_type_ddr2 module_
 	switch (module_type) {
 	case SPD_DDR2_DIMM_TYPE_RDIMM:
 	case SPD_DDR2_DIMM_TYPE_MINI_RDIMM:
-		info->form_factor = MEMORY_FORMFACTOR_RIMM;
+		info->form_factor = MEMORY_FORMFACTOR_DIMM;
 		info->type_detail = MEMORY_TYPE_DETAIL_REGISTERED;
 		break;
 	case SPD_DDR2_DIMM_TYPE_UDIMM:
@@ -85,7 +85,7 @@ static void convert_ddr3_module_type_to_spd_info(enum spd_dimm_type_ddr3 module_
 	switch (module_type) {
 	case SPD_DDR3_DIMM_TYPE_RDIMM:
 	case SPD_DDR3_DIMM_TYPE_MINI_RDIMM:
-		info->form_factor = MEMORY_FORMFACTOR_RIMM;
+		info->form_factor = MEMORY_FORMFACTOR_DIMM;
 		info->type_detail = MEMORY_TYPE_DETAIL_REGISTERED;
 		break;
 	case SPD_DDR3_DIMM_TYPE_UDIMM:
@@ -114,7 +114,7 @@ static void convert_ddr4_module_type_to_spd_info(enum ddr4_module_type module_ty
 	switch (module_type) {
 	case DDR4_SPD_RDIMM:
 	case DDR4_SPD_MINI_RDIMM:
-		info->form_factor = MEMORY_FORMFACTOR_RIMM;
+		info->form_factor = MEMORY_FORMFACTOR_DIMM;
 		info->type_detail = MEMORY_TYPE_DETAIL_REGISTERED;
 		break;
 	case DDR4_SPD_UDIMM:
@@ -139,7 +139,7 @@ static void convert_ddr5_module_type_to_spd_info(enum ddr5_module_type module_ty
 	switch (module_type) {
 	case DDR5_SPD_RDIMM:
 	case DDR5_SPD_MINI_RDIMM:
-		info->form_factor = MEMORY_FORMFACTOR_RIMM;
+		info->form_factor = MEMORY_FORMFACTOR_DIMM;
 		info->type_detail = MEMORY_TYPE_DETAIL_REGISTERED;
 		break;
 	case DDR5_SPD_UDIMM:

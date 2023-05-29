@@ -77,6 +77,9 @@ enum cxl_memory_mode {
 /* Socket 1 core disable bitmask */
 #define CORE_DIS_BITMSK1 "core_disable_bitmask1"
 
+/* Linux payload kernel log level */
+#define KERNEL_LOG_LEVEL "kernel_log_level"
+
 /* Get VPD key with provided fallback value and min/max ranges */
 int get_int_from_vpd_range(const char *const key, const int fallback, const int min,
 	const int max);

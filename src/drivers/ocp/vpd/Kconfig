@@ -4,3 +4,12 @@ config OCP_VPD
 	depends on VPD
 	help
 	  It implements functions that get common VPD variables for OCP projects.
+
+config LINUXPAYLOAD_CMDLINE_VPD_OVERWRITE
+	bool
+	default n
+	depends on VPD
+	help
+	  Overwrite Linux payload's kernel command line by using VPD. Currently only
+	  overwrite the value of kernel command line 'loglevel'. The Linux kernel command
+	  line data is detected in the last segment loaded in memory and overwritten.

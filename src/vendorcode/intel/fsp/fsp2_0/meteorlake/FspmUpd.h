@@ -1740,7 +1740,13 @@ typedef struct {
 
 /** Offset 0x0AB9 - Reserved
 **/
-  UINT8                       Reserved39[59];
+  UINT8                       Reserved39[55];
+
+/** Offset 0x0AF0 - Enable PCH PCIE RP Mask
+  Enable/disable PCH PCIE Root Ports. 0: disable, 1: enable. One bit for each port,
+  bit0 for port1, bit1 for port2, and so on.
+**/
+  UINT32                      PchPcieRpEnableMask;
 
 /** Offset 0x0AF4 - Enable SOC/IOE PCIE RP Mask
   Enable/disable SOC/IOE PCIE Root Ports. 0: disable, 1: enable. One bit for each
@@ -2998,7 +3004,7 @@ typedef struct {
 
 /** Offset 0x0DEC - Reserved
 **/
-  UINT8                      Reserved78[172];
+  UINT8                      Reserved78[188];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration
@@ -3017,11 +3023,11 @@ typedef struct {
 **/
   FSP_M_CONFIG                FspmConfig;
 
-/** Offset 0x0E98
+/** Offset 0x0EA8
 **/
   UINT8                       Rsvd500[6];
 
-/** Offset 0x0E9E
+/** Offset 0x0EAE
 **/
   UINT16                      UpdTerminator;
 } FSPM_UPD;

@@ -23,6 +23,11 @@ u32 __weak cl_get_cpu_bar_addr(void)
 	return 0;
 }
 
+int __weak cl_get_ioe_record_size(void)
+{
+	return 0;
+}
+
 u32 __weak cl_get_cpu_tmp_bar(void)
 {
 	return 0;
@@ -39,6 +44,11 @@ int __weak cl_get_total_data_size(void)
 }
 
 bool __weak cl_pmc_sram_has_mmio_access(void)
+{
+	return false;
+}
+
+bool __weak cl_ioe_sram_has_mmio_access(void)
 {
 	return false;
 }
@@ -63,11 +73,18 @@ bool __weak cl_pmc_data_present(void)
 	return false;
 }
 
+bool __weak cl_ioe_data_present(void)
+{
+	return false;
+}
+
 __weak void reset_discovery_buffers(void) {}
 
 __weak void update_new_pmc_crashlog_size(u32 *pmc_crash_size) {}
 
 __weak void update_new_cpu_crashlog_size(u32 *cpu_crash_size) {}
+
+__weak void update_new_ioe_crashlog_size(u32 *ioe_crash_size) {}
 
 pmc_ipc_discovery_buf_t __weak cl_get_pmc_discovery_buf(void)
 {
@@ -303,7 +320,7 @@ bool cl_copy_data_from_sram(u32 src_bar,
 	return true;
 }
 
-void cl_get_pmc_sram_data(void)
+void __weak cl_get_pmc_sram_data(void)
 {
 	u32 *dest = NULL;
 	u32 tmp_bar_addr = cl_get_cpu_tmp_bar();
@@ -515,6 +532,28 @@ bool cl_fill_pmc_records(void *cl_record)
 		return false;
 	}
 	memcpy(cl_record, cl_src_addr, m_pmc_crashLog_size);
+
+	return true;
+}
+
+bool cl_fill_ioe_records(void *cl_record)
+{
+	void *cl_src_addr = NULL;
+
+	u32 m_ioe_crashLog_size = cl_get_ioe_record_size();
+
+	if (!cl_ioe_data_present() || m_ioe_crashLog_size == 0) {
+		printk(BIOS_DEBUG, "IOE crashLog not present, skipping.\n");
+		return false;
+	}
+
+	printk(BIOS_DEBUG, "IOE PMC crash data collection.\n");
+	cl_src_addr = cbmem_find(CBMEM_ID_IOE_CRASHLOG);
+	if (!cl_src_addr) {
+		printk(BIOS_DEBUG, "IOE crash data, CBMEM not found\n");
+		return false;
+	}
+	memcpy(cl_record, cl_src_addr, m_ioe_crashLog_size);
 
 	return true;
 }

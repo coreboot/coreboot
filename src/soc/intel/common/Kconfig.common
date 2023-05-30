@@ -149,4 +149,9 @@ config SOC_INTEL_CRASHLOG_ON_RESET
 	  This will result in a BERT table being populated containing a PMC
 	  crashlog record on every boot.
 
+config SOC_INTEL_IOE_DIE_SUPPORT
+	def_bool n
+	help
+	  Enable this config if the SOC support IOE DIE.
+
 endif # SOC_INTEL_COMMON

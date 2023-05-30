@@ -87,6 +87,29 @@ static enum cb_err record_crashlog_into_bert(void **region, size_t *length)
 		cl_fill_pmc_records(cl_data);
 	}
 
+	if (CONFIG(SOC_INTEL_IOE_DIE_SUPPORT)) {
+		size_t ioe_record_size = cl_get_ioe_record_size();
+		if (ioe_record_size) {
+			/*  Allocate new FW ERR structure in case IOE crashlog is present */
+			if (ioe_record_size && !bert_append_fw_err(status)) {
+				printk(BIOS_ERR, "Crashlog IOE entry would "
+						"exceed available region\n");
+				return CB_ERR;
+			}
+
+			cl_data = new_cper_fw_error_crashlog(status, ioe_record_size);
+			if (!cl_data) {
+				printk(BIOS_ERR, "Crashlog IOE entry(size %zu) "
+						"would exceed available region\n",
+						ioe_record_size);
+				return CB_ERR;
+			}
+			printk(BIOS_DEBUG, "cl_data %p, ioe_record_size %zu\n",
+					cl_data, ioe_record_size);
+			cl_fill_ioe_records(cl_data);
+		}
+	}
+
 	*length = status->data_length + gesb_header_size;
 	*region = (void *)status;
 

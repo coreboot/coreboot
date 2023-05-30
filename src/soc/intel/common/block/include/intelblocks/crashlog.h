@@ -25,11 +25,16 @@
 
 #define INVALID_CRASHLOG_RECORD			0xdeadbeef
 
+/* Tag field definitions */
+#define CRASHLOG_DESCRIPTOR_TABLE_TAG_SOC	0x0
+#define CRASHLOG_DESCRIPTOR_TABLE_TAG_IOE	0x1
+
 /* PMC crashlog discovery structs */
 typedef union {
 	struct {
-		u16 offset;
-		u16 size;
+		u16 offset	:16;
+		u16 size	:13;
+		u16 assign_tag	:3;
 	} bits;
 	u32 data;
 } __packed pmc_crashlog_discov_region_t;
@@ -46,12 +51,34 @@ typedef union {
 		u32 discov_mechanism	:2;
 		u32 size		:12;
 		u32 base_offset		:16; /* Start offset of CrashLog in PMC SSRAM */
-		u32 rsv			:16;
-		u32 desc_tabl_offset	:16; /* start offset of descriptor table */
+		u32 rsvd		:16;
+		u32 desc_tabl_offset	:16; /* Start offset of descriptor table */
 	} bits;
-	u64  val_64_bits;
-} __packed pmc_ipc_discovery_buf_t;
+	u64 val_64_bits;
 
+	/* Converged Capability and Status - PMC */
+	struct {
+		/* Capability */
+		u32 supported		:1; /* CrashLog feature availability bit */
+		u32 dis			:1; /* CrashLog Disable bit */
+		u32 discov_mechanism	:2; /* CrashLog discovery mechanism */
+		u32 manu_trig_cmd	:1; /* Manuel trigger command */
+		u32 clear		:1; /* Clear Command */
+		u32 all_reset		:1; /* Trigger on all reset command */
+		u32 re_arm		:1; /* Re-arm command */
+		u32 glb_rst_trig_mask_sup:1; /* Global reset trigger mask supported */
+		u32 rsvd		:18; /* Pch Specific reserved */
+		/* Status */
+		u32 glb_rst_trig_mask_sts	:1; /* Global reset trigger mask status */
+		u32 crashLog_req		:1; /* CrashLog requestor flow */
+		u32 trig_armed_sts		:1; /* Trigger armed status */
+		u32 trig_all_rst		:1; /* Trigger on all resets status */
+		u32 crash_dis_sts		:1; /* Crash log disabled status */
+		u32 pch_rsvd			:16; /* Pch Specific reserved */
+		u32 desc_tabl_offset		:16; /* Descriptor Table offset */
+	} conv_bits64;
+	u64 conv_val_64_bits;
+} __packed pmc_ipc_discovery_buf_t;
 
 /* CPU/TELEMETRY crashlog discovery structs */
 
@@ -117,8 +144,7 @@ typedef union {
 typedef union {
 	struct {
 		u32 offset	:32;
-		u32 size	:16;
-		u32 reserved	:16;
+		u32 size	:32;
 	} fields;
 	u64 data;
 } __packed cpu_crashlog_buffer_info_t;
@@ -132,20 +158,24 @@ typedef struct {
 
 int cl_get_cpu_record_size(void);
 int cl_get_pmc_record_size(void);
+int cl_get_ioe_record_size(void);
 u32 cl_get_cpu_bar_addr(void);
 u32 cl_get_cpu_tmp_bar(void);
 u32 cl_get_cpu_mb_int_addr(void);
 int cl_get_total_data_size(void);
 bool cl_pmc_sram_has_mmio_access(void);
+bool cl_ioe_sram_has_mmio_access(void);
 bool cpu_crashlog_support(void);
 bool pmc_crashlog_support(void);
 bool cl_cpu_data_present(void);
 bool cl_pmc_data_present(void);
+bool cl_ioe_data_present(void);
 void cl_get_cpu_sram_data(void);
 void cl_get_pmc_sram_data(void);
 void reset_discovery_buffers(void);
 void update_new_pmc_crashlog_size(u32 *pmc_crash_size);
 void update_new_cpu_crashlog_size(u32 *cpu_crash_size);
+void update_new_ioe_crashlog_size(u32 *pmc_crash_size);
 pmc_ipc_discovery_buf_t cl_get_pmc_discovery_buf(void);
 pmc_crashlog_desc_table_t cl_get_pmc_descriptor_table(void);
 cpu_crashlog_discovery_table_t cl_get_cpu_discovery_table(void);
@@ -170,6 +200,7 @@ bool cl_copy_data_from_sram(u32 src_bar,
 void collect_pmc_and_cpu_crashlog_from_srams(void);
 bool cl_fill_cpu_records(void *cl_record);
 bool cl_fill_pmc_records(void *cl_record);
+bool cl_fill_ioe_records(void *cl_record);
 
 static const EFI_GUID FW_ERR_SECTION_GUID = {
 	0x81212a96, 0x09ed, 0x4996,

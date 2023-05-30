@@ -68,8 +68,8 @@ static enum cb_err record_crashlog_into_bert(void **region, size_t *length)
 
 	pmc_record_size = cl_get_pmc_record_size();
 	if (pmc_record_size) {
-		/*  Allocate new FW ERR structure in case CPU crashlog is present */
-		if (cpu_record_size && !bert_append_fw_err(status)) {
+		/* Allocate new FW ERR structure in case PMC crashlog is present */
+		if (pmc_record_size && !bert_append_fw_err(status)) {
 			printk(BIOS_ERR, "Crashlog PMC entry would "
 				"exceed available region\n");
 			return CB_ERR;

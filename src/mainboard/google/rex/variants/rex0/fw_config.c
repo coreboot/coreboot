@@ -72,6 +72,23 @@ static const struct pad_config bt_i2s_disable_pads[] = {
 	PAD_NC(GPP_VGPIO37, NONE),
 };
 
+static const struct pad_config ish_enable_pads[] = {
+	/* GPP_B02 : ISH I2C0_SDA */
+	PAD_CFG_NF(GPP_B02, NONE, DEEP, NF3),
+	/* GPP_B03 : ISH_I2C0_SCL */
+	PAD_CFG_NF(GPP_B03, NONE, DEEP, NF3),
+	/* GPP_D05 : ISH_UART_TX */
+	PAD_CFG_NF(GPP_D05, NONE, DEEP, NF2),
+	/* GPP_D06 : ISH_UART_RX */
+	PAD_CFG_NF(GPP_D06, NONE, DEEP, NF2),
+	/* GPP_B08 : ISH_GP3, SOC_ISH_ACCEL_INT_L */
+	PAD_CFG_NF(GPP_B08, NONE, DEEP, NF4),
+	/* GPP_E15 : ISH_GP5A, SOC_ISH_IMU_INT_L */
+	PAD_CFG_NF(GPP_E15, NONE, DEEP, NF8),
+	/* GPP_F22 : ISH_GP8A, SOC_ISH_ALS_INT_L */
+	PAD_CFG_NF(GPP_F22, NONE, DEEP, NF8),
+};
+
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 {
 	if (!fw_config_is_provisioned()) {
@@ -97,5 +114,10 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		GPIO_PADBASED_OVERRIDE(padbased_table, sndw_disable_pads);
 		printk(BIOS_INFO, "Configure GPIOs for BT offload mode.\n");
 		GPIO_PADBASED_OVERRIDE(padbased_table, bt_i2s_enable_pads);
+	}
+
+	if (fw_config_probe(FW_CONFIG(ISH, ISH_ENABLE))) {
+		printk(BIOS_INFO, "Configure GPIOs for ISH.\n");
+		GPIO_PADBASED_OVERRIDE(padbased_table, ish_enable_pads);
 	}
 }

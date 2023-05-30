@@ -3,6 +3,8 @@
 #ifndef _I2C_PI608GP_H_
 #define _I2C_PI608GP_H_
 
+#include <stdint.h>
+
 /* Struct to store fixed-point millivolt values */
 struct deemph_lvl { uint32_t lvl, lvl_10; };
 

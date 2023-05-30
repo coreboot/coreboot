@@ -30,12 +30,12 @@ static uint8_t pi608gp_encode_amp_lvl(uint32_t level_mv)
 	/* Allowed drive amplitude levels are in units of mV in range 0 to 475 mV with 25 mV
 	   steps, based on Table 6-6 from the PI7C9X2G608GP datasheet. */
 	if (level_mv > 475) {
-		printk(BIOS_ERR, "PI608GP: Drive level %d mV out of range 0 to 475 mV!",
+		printk(BIOS_ERR, "PI608GP: Drive level %u mV out of range 0 to 475 mV!",
 		       level_mv);
 		return PI608GP_ENCODE_ERR;
 	}
 	if (level_mv % 25 != 0) {
-		printk(BIOS_ERR, "PI608GP: Drive level %d mV not a multiple of 25!\n",
+		printk(BIOS_ERR, "PI608GP: Drive level %u mV not a multiple of 25!\n",
 		       level_mv);
 		return PI608GP_ENCODE_ERR;
 	}
@@ -48,7 +48,7 @@ static uint8_t pi608gp_encode_deemph_lvl(struct deemph_lvl level_mv)
 {
 	/* Table of allowed fixed-point millivolt values, based on Table 6-8 from the
 	   PI7C9X2G608GP datasheet. */
-	struct deemph_lvl allowed[] = {
+	const struct deemph_lvl allowed[] = {
 		{  0, 0}, {  6, 0}, { 12, 5}, { 19, 0}, { 25, 0}, { 31, 0}, { 37, 5}, { 44, 0},
 		{ 50, 0}, { 56, 0}, { 62, 5}, { 69, 0}, { 75, 0}, { 81, 0}, { 87, 0}, { 94, 0},
 		{100, 0}, {106, 0}, {112, 5}, {119, 0}, {125, 0}, {131, 0}, {137, 5}, {144, 0},
@@ -59,10 +59,10 @@ static uint8_t pi608gp_encode_deemph_lvl(struct deemph_lvl level_mv)
 		if (allowed[i].lvl == level_mv.lvl && allowed[i].lvl_10 == level_mv.lvl_10)
 			/* When found, the encoded value is a 5-bit number that corresponds to
 			   the index in the table of allowed values above. */
-			return (uint8_t) (i & 0x1f);
+			return i & 0x1f;
 	}
 
-	printk(BIOS_ERR, "PI608GP: Requested unsupported de-emphasis level value: %d.%d mV!\n",
+	printk(BIOS_ERR, "PI608GP: Requested unsupported de-emphasis level value: %u.%u mV!\n",
 			level_mv.lvl, level_mv.lvl_10);
 	return PI608GP_ENCODE_ERR;
 }

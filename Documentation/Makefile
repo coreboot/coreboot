@@ -54,3 +54,17 @@ distclean: clean
 
 livesphinx:
 	$(MAKE) -f Makefile.sphinx livehtml SPHINXOPTS="$(SPHINXOPTS)"
+
+help:
+	@echo "all            - Builds coreboot porting guide PDF (outdated)"
+	@echo "sphinx         - Builds html documentation in _build directory"
+	@echo "clean          - Cleans intermediate files"
+	@echo "clean-sphinx   - Removes sphinx output files"
+	@echo "distclean      - Removes PDF files as well"
+	@echo
+	@echo "  Makefile.sphinx builds - run with $(MAKE) -f Makefile-sphinx [target]"
+	@echo
+	@$(MAKE) -s -f Makefile.sphinx help 2>/dev/null
+
+.phony: help livesphinx sphinx test
+.phony: distclean clean clean-sphinx

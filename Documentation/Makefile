@@ -8,7 +8,7 @@ PDFLATEX=pdflatex -t a4
 
 FIGS=codeflow.pdf hypertransport.pdf
 
-all: corebootPortingGuide.pdf
+all: sphinx corebootPortingGuide.pdf
 
 SVG2PDF=$(shell command -v svg2pdf)
 INKSCAPE=$(shell command -v inkscape)

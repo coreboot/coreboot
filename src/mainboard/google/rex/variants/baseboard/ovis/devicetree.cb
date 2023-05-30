@@ -1,0 +1,69 @@
+chip soc/intel/meteorlake
+
+	# GPE configuration
+	register "pmc_gpe0_dw0" = "GPP_B"
+	register "pmc_gpe0_dw1" = "GPP_E"
+	register "pmc_gpe0_dw2" = "GPP_F"
+
+	# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
+	register "gen1_dec" = "0x00fc0801"
+	register "gen2_dec" = "0x000c0201"
+	# EC memory map range is 0x900-0x9ff
+	register "gen3_dec" = "0x00fc0901"
+
+	register "usb2_ports[0]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 0
+	register "usb2_ports[1]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 1
+	register "usb2_ports[2]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 2
+	register "usb2_ports[3]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 3
+	register "usb2_ports[4]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 4
+	register "usb2_ports[5]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 5
+	register "usb2_ports[6]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 6
+	register "usb2_ports[7]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 7
+	register "usb2_ports[8]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 8
+	register "usb2_ports[9]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 9
+
+	register "usb3_ports[0]" = "USB3_PORT_EMPTY"	# Disable USB3.0 Port 0
+	register "usb3_ports[1]" = "USB3_PORT_EMPTY"	# Disable USB3.0 Port 1
+
+	register "tcss_ports[0]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 0
+	register "tcss_ports[1]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 1
+	register "tcss_ports[2]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 2
+	register "tcss_ports[3]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 3
+
+	# S0ix enable
+	register "s0ix_enable" = "1"
+
+	# DPTF enable
+	register "dptf_enable" = "1"
+
+	# Enable CNVi BT
+	register "cnvi_bt_core" = "true"
+
+	# Set on-board graphics as primary display
+	register "skip_ext_gfx_scan" = "1"
+
+	register "serial_io_uart_mode" = "{
+		[PchSerialIoIndexUART0] = PchSerialIoPci,
+		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
+		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
+	}"
+
+	register "pch_hda_dsp_enable" = "1"
+	register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
+	register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
+	register "pch_hda_idisp_codec_enable" = "1"
+
+	device domain 0 on
+		device ref igpu on end
+		device ref dtt on end
+		device ref xhci on end
+		device ref shared_sram on end
+		device ref heci1 on end
+		device ref uart0 on end
+		device ref soc_espi on
+			chip ec/google/chromeec
+				device pnp 0c09.0 on end
+			end
+		end
+	end
+end

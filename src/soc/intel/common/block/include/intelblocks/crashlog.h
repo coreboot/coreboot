@@ -23,6 +23,8 @@
 
 #define CRASHLOG_SIZE_DEBUG_PURPOSE		0x640
 
+#define INVALID_CRASHLOG_RECORD			0xdeadbeef
+
 /* PMC crashlog discovery structs */
 typedef union {
 	struct {

@@ -271,6 +271,14 @@ bool cl_copy_data_from_sram(u32 src_bar,
 	u32 src_addr = src_bar + offset;
 
 	u32 data =  read32((u32 *)src_addr);
+
+	/* First 32bits of the record must not be 0xdeadbeef */
+	if (data == INVALID_CRASHLOG_RECORD) {
+		printk(BIOS_DEBUG, "Invalid data 0x%x at offset 0x%x from addr 0x%x\n",
+				data, offset, src_bar);
+		return false;
+	}
+
 	/* PMC: copy if 1st DWORD in buffer is not zero and its 31st bit is not set */
 	if (pmc_sram && !(data && !(data & BIT(31)))) {
 		printk(BIOS_DEBUG, "Invalid data 0x%x at offset 0x%x from addr 0x%x"

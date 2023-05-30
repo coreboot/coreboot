@@ -55,12 +55,18 @@ distclean: clean
 livesphinx:
 	$(MAKE) -f Makefile.sphinx livehtml SPHINXOPTS="$(SPHINXOPTS)"
 
+test:
+	@echo "Test for logging purposes - Failing tests will not fail the build"
+	-$(MAKE) -f Makefile.sphinx clean && $(MAKE) -K -f Makefile.sphinx html
+	-$(MAKE) -f Makefile.sphinx clean && $(MAKE) -K -f Makefile.sphinx doctest
+
 help:
 	@echo "all            - Builds coreboot porting guide PDF (outdated)"
 	@echo "sphinx         - Builds html documentation in _build directory"
 	@echo "clean          - Cleans intermediate files"
 	@echo "clean-sphinx   - Removes sphinx output files"
 	@echo "distclean      - Removes PDF files as well"
+	@echo "test           - Runs documentation tests"
 	@echo
 	@echo "  Makefile.sphinx builds - run with $(MAKE) -f Makefile-sphinx [target]"
 	@echo

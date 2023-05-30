@@ -488,6 +488,10 @@ bool cl_fill_cpu_records(void *cl_record)
 
 	printk(BIOS_DEBUG, "CPU crash data collection.\n");
 	cl_src_addr = cbmem_find(CBMEM_ID_CPU_CRASHLOG);
+	if (!cl_src_addr) {
+		printk(BIOS_DEBUG, "CPU crash data, CBMEM not found\n");
+		return false;
+	}
 	memcpy(cl_record, cl_src_addr, m_cpu_crashLog_size);
 
 	return true;
@@ -506,6 +510,10 @@ bool cl_fill_pmc_records(void *cl_record)
 
 	printk(BIOS_DEBUG, "PMC crash data collection.\n");
 	cl_src_addr = cbmem_find(CBMEM_ID_PMC_CRASHLOG);
+	if (!cl_src_addr) {
+		printk(BIOS_DEBUG, "PMC crash data, CBMEM not found\n");
+		return false;
+	}
 	memcpy(cl_record, cl_src_addr, m_pmc_crashLog_size);
 
 	return true;

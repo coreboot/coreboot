@@ -47,10 +47,7 @@ void clflush_region(const uintptr_t start, const size_t size);
  */
 static __always_inline void enable_cache(void)
 {
-	CRx_TYPE cr0;
-	cr0 = read_cr0();
-	cr0 &= ~(CR0_CD | CR0_NW);
-	write_cr0(cr0);
+	write_cr0(read_cr0() & ~(CR0_CD | CR0_NW));
 }
 
 /*
@@ -66,10 +63,7 @@ static __always_inline bool self_snooping_supported(void)
 static __always_inline void disable_cache(void)
 {
 	/* Disable and write back the cache */
-	CRx_TYPE cr0;
-	cr0 = read_cr0();
-	cr0 |= CR0_CD;
-	write_cr0(cr0);
+	write_cr0(read_cr0() | CR0_CD);
 	if (!self_snooping_supported())
 		wbinvd();
 }

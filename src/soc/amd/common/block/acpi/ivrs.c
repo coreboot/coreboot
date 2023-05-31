@@ -310,6 +310,11 @@ unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 	struct device *nb_dev;
 	struct device *dev = NULL;
 
+	if (ivrs == NULL) {
+		printk(BIOS_WARNING, "%s: ivrs is NULL\n", __func__);
+		return current;
+	}
+
 	ivhd = &ivrs->ivhd;
 
 	while ((dev = dev_find_path(dev, DEVICE_PATH_DOMAIN)) != NULL) {

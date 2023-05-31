@@ -95,6 +95,17 @@ If you feel you have been falsely or unfairly accused of violating this
 Code of Conduct, you should notify the arbitration team with a concise
 description of your grievance.
 
+## Legal action
+
+Threatening or starting legal action against the project, sibling
+projects hosted on coreboot.org infrastructure, project or infrastructure
+maintainers leads to an immediate ban from coreboot.org and related
+systems.
+
+The ban can be reconsidered, but it's the default action because the
+people who pour lots of time and money into the projects aren't interested
+in seeing their resources used against them.
+
 ## Scope
 
 We expect all community participants (contributors, paid or otherwise;

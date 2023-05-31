@@ -83,11 +83,13 @@ config MAINBOARD_FAMILY
 config MAINBOARD_PART_NUMBER
 	default "Rex" if BOARD_GOOGLE_REX0 || BOARD_GOOGLE_REX_EC_ISH
 	default "Screebo" if BOARD_GOOGLE_SCREEBO
+	default "Karis" if BOARD_GOOGLE_KARIS
 
 config VARIANT_DIR
 	string
 	default "rex0" if BOARD_GOOGLE_REX0 || BOARD_GOOGLE_REX_EC_ISH
 	default "screebo" if BOARD_GOOGLE_SCREEBO
+	default "karis" if BOARD_GOOGLE_KARIS
 
 config DIMM_SPD_SIZE
 	default 512

@@ -13,6 +13,10 @@ config BOARD_GOOGLE_SCREEBO
 	bool "->  Screebo"
 	select BOARD_GOOGLE_BASEBOARD_REX
 
+config BOARD_GOOGLE_KARIS
+	bool "->  Karis"
+	select BOARD_GOOGLE_BASEBOARD_REX
+
 config BOARD_GOOGLE_REX_EC_ISH
 	bool "-> Rex EC ISH"
 	select BOARD_GOOGLE_BASEBOARD_REX

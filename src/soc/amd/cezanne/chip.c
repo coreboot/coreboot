@@ -26,10 +26,11 @@ static const char *soc_acpi_name(const struct device *dev)
 };
 
 struct device_operations cezanne_pci_domain_ops = {
-	.read_resources	= pci_domain_read_resources,
+	.read_resources	= amd_pci_domain_read_resources,
 	.set_resources	= pci_domain_set_resources,
-	.scan_bus	= pci_domain_scan_bus,
+	.scan_bus	= amd_pci_domain_scan_bus,
 	.acpi_name	= soc_acpi_name,
+	.acpi_fill_ssdt	= amd_pci_domain_fill_ssdt,
 };
 
 static void soc_init(void *chip_info)

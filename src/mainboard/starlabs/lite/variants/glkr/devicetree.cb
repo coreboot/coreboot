@@ -71,7 +71,7 @@ chip soc/intel/apollolake
 		device ref heci2	on  end
 		device ref heci3	on  end
 		device ref sata		on
-			register "SataPortsEnable[0]"	= "1"
+			register "sata_ports_enable[0]"	= "1"
 		end
 		device ref xhci		on
 			# Motherboard USB Type C

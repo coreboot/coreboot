@@ -107,7 +107,7 @@ struct soc_intel_apollolake_config {
 	uint8_t SataPortsHotPlug[2];
 
 	/* Sata Ports Enable */
-	uint8_t SataPortsEnable[2];
+	uint8_t sata_ports_enable[2];
 
 	/* Sata Ports Solid State Drive */
 	uint8_t sata_ports_ssd[2];

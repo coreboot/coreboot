@@ -15,13 +15,20 @@
 
 /* Pad configuration in ramstage */
 static const struct pad_config gpio_table[] = {
-	/* GPP_A00 : GPP_A00 ==> ESPI_SOC_IO0_R configured on reset, do not touch */
-	/* GPP_A01 : GPP_A01 ==> ESPI_SOC_IO1_R configured on reset, do not touch */
-	/* GPP_A02 : GPP_A02 ==> ESPI_SOC_IO2_R configured on reset, do not touch */
-	/* GPP_A03 : GPP_A03 ==> ESPI_SOC_IO3_R configured on reset, do not touch */
-	/* GPP_A04 : GPP_A04 ==> ESPI_SOC_CS0_L configured on reset, do not touch */
-	/* GPP_A05 : GPP_A05 ==> ESPI_SOC_CLK_R configured on reset, do not touch */
-	/* GPP_A06 : GPP_A06 ==> ESPI_SOC_RESET_L configured on reset, do not touch */
+	/* GPP_A00 : GPP_A00 ==> ESPI_SOC_IO0_R */
+	PAD_CFG_NF_IOSSTATE(GPP_A00, UP_20K, DEEP, NF1, IGNORE),
+	/* GPP_A01 : GPP_A01 ==> ESPI_SOC_IO1_R */
+	PAD_CFG_NF_IOSSTATE(GPP_A01, UP_20K, DEEP, NF1, IGNORE),
+	/* GPP_A02 : GPP_A02 ==> ESPI_SOC_IO2_R */
+	PAD_CFG_NF_IOSSTATE(GPP_A02, UP_20K, DEEP, NF1, IGNORE),
+	/* GPP_A03 : GPP_A03 ==> ESPI_SOC_IO3_R */
+	PAD_CFG_NF_IOSSTATE(GPP_A03, UP_20K, DEEP, NF1, IGNORE),
+	/* GPP_A04 : GPP_A04 ==> ESPI_SOC_CS0_L */
+	PAD_CFG_NF_IOSSTATE(GPP_A04, UP_20K, DEEP, NF1, IGNORE),
+	/* GPP_A05 : GPP_A05 ==> ESPI_SOC_CLK_R */
+	PAD_CFG_NF_IOSSTATE(GPP_A05, UP_20K, DEEP, NF1, IGNORE),
+	/* GPP_A06 : GPP_A06 ==> ESPI_SOC_RESET_L */
+	PAD_CFG_NF_IOSSTATE(GPP_A06, UP_20K, DEEP, NF1, IGNORE),
 	/* GPP_A11 : [] ==> EN_UCAM_SENR_PWR */
 	PAD_CFG_GPO(GPP_A11, 0, DEEP),
 	/* GPP_A12 : [] ==> EN_UCAM_PWR */
@@ -32,7 +39,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC_LOCK(GPP_A14, NONE, LOCK_CONFIG),
 	/* GPP_A15 : [] ==> WWAN_RST_L */
 	PAD_CFG_GPO(GPP_A15, 1, DEEP),
-	/* GPP_A16 : GPP_A16 ==> ESPI_SOC_ALERT_L configured on reset, do not touch */
+	/* GPP_A16 : GPP_A16 ==> ESPI_SOC_ALERT_L */
+	PAD_CFG_NF_IOSSTATE(GPP_A16, UP_20K, DEEP, NF1, IGNORE),
 	/* GPP_A17 : [] ==> EC_SOC_INT_ODL */
 	PAD_CFG_GPI_APIC_LOCK(GPP_A17, NONE, LEVEL, INVERT, LOCK_CONFIG),
 

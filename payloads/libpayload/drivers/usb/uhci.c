@@ -310,7 +310,7 @@ min(int a, int b)
 }
 
 static int
-uhci_control(usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen,
+uhci_control(usbdev_t *dev, direction_t dir, int drlen, void *devreq, const int dalen,
 	      unsigned char *data)
 {
 	int endp = 0;		/* this is control: always 0 */
@@ -339,6 +339,7 @@ uhci_control(usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen,
 		TD_STATUS_ACTIVE;
 
 	int toggle = 1;
+	int len_left = dalen;
 	for (i = 1; i < count; i++) {
 		switch (dir) {
 			case SETUP: tds[i].token = UHCI_SETUP; break;
@@ -347,14 +348,14 @@ uhci_control(usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen,
 		}
 		tds[i].token |= dev->address << TD_DEVADDR_SHIFT |
 			endp << TD_EP_SHIFT |
-			maxlen(min(mlen, dalen)) << TD_MAXLEN_SHIFT |
+			maxlen(min(mlen, len_left)) << TD_MAXLEN_SHIFT |
 			toggle << TD_TOGGLE_SHIFT;
 		tds[i].bufptr = virt_to_phys(data);
 		tds[i].ctrlsts = (3 << TD_COUNTER_SHIFT) |
 			(dev->speed?TD_LOWSPEED:0) |
 			TD_STATUS_ACTIVE;
 		toggle ^= 1;
-		dalen -= mlen;
+		len_left -= mlen;
 		data += mlen;
 	}
 
@@ -374,7 +375,7 @@ uhci_control(usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen,
 					  qh_data);
 	int result;
 	if (td == 0) {
-		result = 0;
+		result = dalen; /* TODO: We should return the actually transferred length. */
 	} else {
 		usb_debug("control packet, req %x\n", req);
 		td_dump(td);
@@ -438,25 +439,26 @@ run_schedule(usbdev_t *dev, td_t *td)
 
 /* finalize == 1: if data is of packet aligned size, add a zero length packet */
 static int
-uhci_bulk(endpoint_t *ep, int size, u8 *data, int finalize)
+uhci_bulk(endpoint_t *ep, const int dalen, u8 *data, int finalize)
 {
 	int maxpsize = ep->maxpacketsize;
 	if (maxpsize == 0)
 		fatal("MaxPacketSize == 0!!!");
-	int numpackets = (size + maxpsize - 1) / maxpsize;
-	if (finalize && ((size % maxpsize) == 0)) {
+	int numpackets = (dalen + maxpsize - 1) / maxpsize;
+	if (finalize && ((dalen % maxpsize) == 0)) {
 		numpackets++;
 	}
 	if (numpackets == 0)
 		return 0;
 	td_t *tds = create_schedule(numpackets);
 	int i = 0, toggle = ep->toggle;
-	while ((size > 0) || ((size == 0) && (finalize != 0))) {
-		fill_schedule(&tds[i], ep, min(size, maxpsize), data,
+	int len_left = dalen;
+	while ((len_left > 0) || ((len_left == 0) && (finalize != 0))) {
+		fill_schedule(&tds[i], ep, min(len_left, maxpsize), data,
 			       &toggle);
 		i++;
 		data += maxpsize;
-		size -= maxpsize;
+		len_left -= maxpsize;
 	}
 	if (run_schedule(ep->dev, tds) == 1) {
 		free(tds);
@@ -464,7 +466,7 @@ uhci_bulk(endpoint_t *ep, int size, u8 *data, int finalize)
 	}
 	ep->toggle = toggle;
 	free(tds);
-	return 0;
+	return dalen; /* TODO: We should return the actually transferred length. */
 }
 
 typedef struct {

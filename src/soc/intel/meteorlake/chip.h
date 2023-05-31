@@ -19,6 +19,7 @@
 #include <stdint.h>
 
 #define MAX_SAGV_POINTS 4
+#define MAX_HD_AUDIO_SDI_LINKS 2
 
 /* Types of different SKUs */
 enum soc_intel_meteorlake_power_limits {
@@ -191,6 +192,8 @@ struct soc_intel_meteorlake_config {
 
 	/* Audio related */
 	uint8_t pch_hda_dsp_enable;
+
+	bool pch_hda_sdi_enable[MAX_HD_AUDIO_SDI_LINKS];
 
 	/* iDisp-Link T-Mode 0: 2T, 2: 4T, 3: 8T, 4: 16T */
 	enum {

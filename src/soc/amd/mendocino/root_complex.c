@@ -373,8 +373,6 @@ static void root_complex_fill_ssdt(const struct device *device)
 {
 	uint32_t tdp = 0;
 
-	acpi_fill_root_complex_tom(device);
-
 	if (get_amd_smu_reported_tdp(&tdp) != CB_SUCCESS) {
 		/* Unknown TDP, so return rather than setting invalid values. */
 		return;

@@ -1,4 +1,13 @@
 fw_config
+	field AUDIO 0 1
+		option AUDIO_UNKNOWN		0
+		option ALC1019_ALC5682I_I2S	1
+	end
+	field DB_CONFIG 2 4
+		option DB_UNKNOWN		0
+		option DB_TYPEC			1
+		option DB_TBT			2
+	end
 	field MB_CONFIG 5 7
 		option MB_UNKNOWN		0
 		option MB_TYPEC			1

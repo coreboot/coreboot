@@ -224,6 +224,20 @@ static void fill_fspm_smbus_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->SmbusEnable = is_devfn_enabled(PCI_DEVFN_SMBUS);
 }
 
+static void fill_fspm_vr_config_params(FSP_M_CONFIG *m_cfg,
+		const struct soc_intel_meteorlake_config *config)
+{
+	/* FastVmode Settings for VR domains */
+	for (size_t domain = 0; domain < NUM_VR_DOMAINS; domain++) {
+		m_cfg->CepEnable[domain] = config->cep_enable[domain];
+		if (m_cfg->CepEnable[domain]) {
+			m_cfg->EnableFastVmode[domain] = config->enable_fast_vmode[domain];
+			if (m_cfg->EnableFastVmode[domain])
+				m_cfg->IccLimit[domain] = config->fast_vmode_i_trip[domain];
+		}
+	}
+}
+
 static void fill_fspm_misc_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_meteorlake_config *config)
 {
@@ -360,6 +374,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		fill_fspm_usb4_params,
 		fill_fspm_vtd_params,
 		fill_fspm_trace_params,
+		fill_fspm_vr_config_params,
 	};
 
 	for (size_t i = 0; i < ARRAY_SIZE(fill_fspm_params); i++)

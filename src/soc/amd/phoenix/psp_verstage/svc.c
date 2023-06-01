@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Update for Phoenix */
-
 #include "svc.h"
 
 #include <assert.h>
@@ -215,5 +213,34 @@ uint32_t svc_set_fw_hash_table(struct psp_fw_hash_table *hash_table)
 		.ptr_psp_fw_hash_table = hash_table,
 	};
 	SVC_CALL2(SVC_VERSTAGE_CMD, CMD_SET_FW_HASH_TABLE, (void *)&param, retval);
+	return retval;
+}
+
+uint32_t svc_get_prev_boot_status(uint32_t *boot_status)
+{
+	uint32_t retval = 0;
+	struct cmd_param_get_prev_boot_status param = {
+		.ptr_boot_status = boot_status,
+	};
+	SVC_CALL2(SVC_VERSTAGE_CMD, CMD_GET_PREV_BOOT_STATUS, (void *)&param, retval);
+	return retval;
+}
+
+uint32_t svc_get_hsp_secure_state(uint32_t *hsp_secure_state)
+{
+	uint32_t retval = 0;
+	struct cmd_param_get_hsp_secure_state param;
+	SVC_CALL2(SVC_VERSTAGE_CMD, CMD_GET_HSP_SECURE_STATE, (void *)&param, retval);
+	*hsp_secure_state = param.hsp_secure_state;
+	return retval;
+}
+
+uint32_t svc_write_postcode(uint32_t postcode)
+{
+	uint32_t retval = 0;
+	struct cmd_param_postcode param = {
+		.postcode = postcode,
+	};
+	SVC_CALL2(SVC_VERSTAGE_CMD, CMD_WRITE_POSTCODE, (void *)&param, retval);
 	return retval;
 }

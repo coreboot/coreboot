@@ -57,6 +57,9 @@ enum verstage_cmd_id {
 	CMD_CCP_DMA,
 	CMD_SET_PLATFORM_BOOT_MODE,
 	CMD_SET_FW_HASH_TABLE,
+	CMD_GET_PREV_BOOT_STATUS,
+	CMD_GET_HSP_SECURE_STATE,
+	CMD_WRITE_POSTCODE,
 };
 
 struct mod_exp_params {
@@ -94,6 +97,7 @@ enum fch_io_device {
 	FCH_IO_DEVICE_MISC,
 	FCH_IO_DEVICE_AOAC,
 	FCH_IO_DEVICE_IOPORT,
+	FCH_IO_DEVICE_UART,
 	FCH_IO_DEVICE_END,
 };
 
@@ -103,6 +107,12 @@ enum fch_i2c_controller_id {
 	FCH_I2C_CONTROLLER_ID_2 = 2,
 	FCH_I2C_CONTROLLER_ID_3 = 3,
 	FCH_I2C_CONTROLLER_ID_MAX,
+};
+
+enum fch_uart_id {
+	FCH_UART_ID_0 = 0,
+	FCH_UART_ID_1 = 1,
+	FCH_UART_ID_MAX,
 };
 
 struct spirom_info {
@@ -370,6 +380,24 @@ uint32_t svc_set_platform_boot_mode(enum chrome_platform_boot_mode boot_mode);
  * Return value: BL_OK or error code
  */
 uint32_t svc_set_fw_hash_table(struct psp_fw_hash_table *hash_table);
+
+/* Get the previous boot status.
+ *
+ * Parameters:
+ * 	- boot_status - Address where the boot status is read into
+ *
+ * Return value: BL_OK or error code
+ */
+uint32_t svc_get_prev_boot_status(uint32_t *boot_status);
+
+/* Get HSP Secure state
+ *
+ * Parameters:
+ *      - hsp_secure_state - Address where the state info is read into
+ *
+ * Return value: BL_OK or error code
+ */
+uint32_t svc_get_hsp_secure_state(uint32_t *hsp_secure_state);
 
 /* C entry point for the Bootloader Userspace Application */
 void Main(void);

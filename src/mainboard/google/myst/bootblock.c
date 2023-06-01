@@ -3,7 +3,9 @@
 #include <amdblocks/espi.h>
 #include <bootblock_common.h>
 #include <baseboard/variants.h>
+#include <console/console.h>
 #include <soc/espi.h>
+#include <spi_flash.h>
 
 void mb_set_up_early_espi(void)
 {
@@ -35,4 +37,8 @@ void bootblock_mainboard_init(void)
 
 	variant_bootblock_gpio_table(&gpios, &num_gpios);
 	gpio_configure_pads(gpios, num_gpios);
+
+	// TODO: b:285110121 - temp workaround is to add a dummy flash call
+	const struct spi_flash *spi = boot_device_spi_flash();
+	printk(BIOS_DEBUG, "Initialized spi flash %p\n", spi);
 }

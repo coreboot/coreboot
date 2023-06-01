@@ -28,6 +28,14 @@ chip soc/intel/meteorlake
 	}"
 
 	device domain 0 on
+		device ref pcie_rp11 on
+			# Enable SSD Card PCIE 11 using clk 7
+			register "pcie_rp[PCH_RP(11)]" = "{
+				.clk_src = 7,
+				.clk_req = 7,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end	# PCIE11 SSD card
 		device ref i2c4 on
 			chip drivers/i2c/tpm
 				register "hid" = ""GOOG0005""

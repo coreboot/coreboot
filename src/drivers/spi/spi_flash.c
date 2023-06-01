@@ -467,6 +467,7 @@ static int find_match(const struct spi_slave *spi, struct spi_flash *flash,
 		return fill_spi_flash(spi, flash, vi, part);
 	}
 
+	printk(BIOS_WARNING, "SF: no match for ID %04x %04x\n", id[0], id[1]);
 	return -1;
 }
 

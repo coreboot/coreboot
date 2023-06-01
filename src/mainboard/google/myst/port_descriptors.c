@@ -54,6 +54,8 @@ static const fsp_dxio_descriptor emmc_descriptor = {
 	.function_number = PCI_FUNC(NVME_DEVFN),
 	.link_speed_capability = GEN_MAX,
 	.turn_off_unused_lanes = true,
+	/* TODO(b/284213391): Fix PCIe shutdown */
+	.link_hotplug = 3,
 	.clk_req = CLK_REQ3,
 };
 
@@ -66,6 +68,8 @@ static const fsp_dxio_descriptor nvme_descriptor = {
 	.function_number = PCI_FUNC(NVME_DEVFN),
 	.link_speed_capability = GEN_MAX,
 	.turn_off_unused_lanes = true,
+	/* TODO(b/284213391): Fix PCIe shutdown */
+	.link_hotplug = 3,
 	.clk_req = CLK_REQ3,
 };
 

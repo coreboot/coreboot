@@ -9,7 +9,8 @@ Scope(PCI0) {
 	#include "northbridge.asl"
 
 	/* Describe the AMD Fusion Controller Hub */
-	#include "sb_pci0_fch.asl"
+	#include <soc/amd/common/acpi/lpc.asl>
+	#include <soc/amd/common/acpi/platform.asl>
 }
 
 /* PCI IRQ mapping for the Southbridge */

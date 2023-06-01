@@ -1,9 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* Note: Only need HID on Primary Bus */
-Name(_HID, EISAID("PNP0A08"))	/* PCI Express Root Bridge */
-Name(_CID, EISAID("PNP0A03"))	/* PCI Root Bridge */
-
 /* Describe the Northbridge devices */
 
 Method(_STA, 0, NotSerialized)

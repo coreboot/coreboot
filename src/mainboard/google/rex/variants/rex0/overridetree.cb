@@ -553,7 +553,9 @@ chip soc/intel/meteorlake
 				register "generic.stop_off_delay_ms" = "2"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x01"
-				device i2c 10 on end
+				device i2c 10 on
+					probe TOUCHSCREEN TOUCHSCREEN_I2C
+				end
 			end
 			chip drivers/generic/gpio_keys
 				register "name" = ""PENH""

@@ -2,6 +2,7 @@
 
 /* TODO: Update for Phoenix */
 
+#include <soc/amd/common/acpi/pci_root.asl>
 #include "globalnvs.asl"
 
 Scope(\_SB) {
@@ -18,7 +19,11 @@ Scope(\_SB) {
 
 	#include "mmio.asl"
 
-	#include "pci0.asl"
+	ROOT_BRIDGE(PCI0)
+
+	Scope(PCI0) {
+		#include <soc/amd/common/acpi/lpc.asl>
+	} /* End PCI0 scope */
 } /* End \_SB scope */
 
 #include <soc/amd/common/acpi/alib.asl>

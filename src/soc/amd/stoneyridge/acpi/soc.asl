@@ -1,6 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-Device(PCI0) {
+#include <soc/amd/common/acpi/pci_root.asl>
+
+ROOT_BRIDGE(PCI0)
+
+Scope(PCI0) {
 	/* Describe the AMD Northbridge */
 	#include "northbridge.asl"
 

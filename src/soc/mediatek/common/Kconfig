@@ -32,7 +32,7 @@ config MEDIATEK_DRAM_BLOB_FAST_INIT
 
 config MEDIATEK_DRAM_SCRAMBLE
 	bool
-	default y
+	default n
 	help
 	  This option enables DRAM data scramble, which can prevent DRAM data from
 	  being hacked.

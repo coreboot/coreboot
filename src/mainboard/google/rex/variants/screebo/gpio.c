@@ -102,9 +102,9 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_C02 : SOC_TCHSCR_SPI_INT_STRAP ==> Component NC */
 	PAD_NC(GPP_C02, NONE),
 	/* GPP_C03 : [] ==> SOC_TCP_SMBUS_CLK*/
-	PAD_CFG_NF_LOCK(GPP_C03, NONE, NF1, LOCK_CONFIG),
+	PAD_NC(GPP_C03, NONE),
 	/* GPP_C04 : [] ==> SOC_TCP_SMBUS_SDA*/
-	PAD_CFG_NF_LOCK(GPP_C04, NONE, NF1, LOCK_CONFIG),
+	PAD_NC(GPP_C04, NONE),
 	/* GPP_C05 : [] ==> WWAN_PERST_L_STRAP */
 	PAD_NC(GPP_C05, NONE),
 	/* GPP_C06 : [] ==> SOC_TCHSCR_RPT_EN */

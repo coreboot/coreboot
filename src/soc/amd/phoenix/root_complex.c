@@ -7,6 +7,7 @@
 #include <amdblocks/alib.h>
 #include <amdblocks/data_fabric.h>
 #include <amdblocks/ioapic.h>
+#include <amdblocks/iomap.h>
 #include <amdblocks/memmap.h>
 #include <arch/ioapic.h>
 #include <arch/vga.h>
@@ -165,6 +166,9 @@ static void read_resources(struct device *dev)
 	gnb_apic->base = GNB_IO_APIC_ADDR;
 	gnb_apic->size = 0x00001000;
 	gnb_apic->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
+	/* Reserve fixed IOMMU MMIO region */
+	mmio_range(dev, idx++, IOMMU_RESERVED_MMIO_BASE, IOMMU_RESERVED_MMIO_SIZE);
 
 	if (fsp_hob_iterator_init(&hob_iterator) != CB_SUCCESS) {
 		printk(BIOS_ERR, "%s incomplete because no HOB list was found\n",

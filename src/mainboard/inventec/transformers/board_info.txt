@@ -1,0 +1,6 @@
+Vendor name: Inventec
+Board name: Transformers
+Category: eval
+ROM protocol: SPI
+ROM socketed: y
+Flashrom support: y

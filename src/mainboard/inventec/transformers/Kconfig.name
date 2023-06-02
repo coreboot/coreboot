@@ -1,0 +1,2 @@
+config BOARD_INVENTEC_TRANSFORMERS
+	bool "Transformers"

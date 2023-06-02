@@ -1,0 +1,16 @@
+# Inventec Transformers coreboot is modified from Intel ArcherCity CRB
+# Inventec Transformers is a dual socket CRB based on Intel.
+# Sapphire Rapids Scalable Processor (SPR-SP) chipset.
+#
+# Type this in coreboot root directory to get a working .config:
+#   make defconfig KBUILD_DEFCONFIG=configs/builder/config.intel.crb.ac
+
+CONFIG_VENDOR_INVENTEC=y
+CONFIG_BOARD_INVENTEC_TRANSFORMERS=y
+CONFIG_HAVE_IFD_BIN=y
+CONFIG_LINUX_COMMAND_LINE="loglevel=7 earlyprintk=serial,ttyS0,115200 console=ttyS0,115200"
+CONFIG_PAYLOAD_LINUX=y
+CONFIG_PAYLOAD_FILE="site-local/transformers/linuxboot_bzImage"
+CONFIG_USE_CPU_MICROCODE_CBFS_BINS=y
+CONFIG_CPU_MICROCODE_CBFS_EXTERNAL_BINS=y
+CONFIG_CPU_UCODE_BINARIES="3rdparty/intel-microcode/intel-ucode/06-55-04"

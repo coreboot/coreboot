@@ -1,0 +1,38 @@
+if BOARD_INVENTEC_TRANSFORMERS
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_65536
+	select CONSOLE_OVERRIDE_LOGLEVEL
+	select IPMI_OCP
+	select IPMI_KCS
+	select IPMI_KCS_ROMSTAGE
+	select MEMORY_MAPPED_TPM
+	select MAINBOARD_HAS_TPM2
+	select MAINBOARD_USES_FSP2_0
+	select SOC_INTEL_SAPPHIRERAPIDS_SP
+	select SUPERIO_ASPEED_AST2400
+	select HAVE_ACPI_TABLES
+	select MAINBOARD_USES_IFD_GBE_REGION
+	select VPD
+	select OCP_VPD
+	select OCP_EWL
+	select SOC_INTEL_XEON_RAS
+	select RUNTIME_CONFIGURABLE_SMM_LOGLEVEL
+
+config MAINBOARD_DIR
+	default "inventec/transformers"
+
+config MAINBOARD_PART_NUMBER
+	default "Transformers"
+
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"
+
+config MAX_SOCKET
+	default 2
+
+config DEBUG_SMI
+	default y
+
+endif

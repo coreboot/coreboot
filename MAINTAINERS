@@ -418,7 +418,10 @@ M:	Vanessa Eusebio <vanessa.f.eusebio@intel.com>
 S:	Maintained
 F:	src/mainboard/intel/harcuvar/
 
-
+INVENTEC MAINBOARDS
+M:	Annie Chen <Chen.AnnieET@inventec.com>
+S:	Maintained
+F:	src/mainboard/inventec/
 
 JETWAY MAINBOARDS
 S:	Orphan

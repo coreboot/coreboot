@@ -1,0 +1,15 @@
+if VENDOR_INVENTEC
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/inventec/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/inventec/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	default "Inventec"
+
+endif # VENDOR_INVENTEC

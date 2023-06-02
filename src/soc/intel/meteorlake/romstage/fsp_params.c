@@ -73,9 +73,18 @@ static void fill_fspm_pcie_rp_params(FSP_M_CONFIG *m_cfg,
 	}
 
 	/* PCIE ports */
-	m_cfg->PcieRpEnableMask = pcie_rp_enable_mask(get_pcie_rp_table());
-	pcie_rp_init(m_cfg, m_cfg->PcieRpEnableMask, config->pcie_rp,
-			get_max_pcie_port());
+	if (CONFIG(SOC_INTEL_METEORLAKE_U_P)) {
+		m_cfg->PcieRpEnableMask = pcie_rp_enable_mask(get_pcie_rp_table());
+		m_cfg->PchPcieRpEnableMask = 0; /* Don't care about PCH PCIE RP Mask */
+		pcie_rp_init(m_cfg, m_cfg->PcieRpEnableMask, config->pcie_rp,
+				get_max_pcie_port());
+	} else {
+		/*
+		 * FIXME: Implement PCIe RP mask for `PchPcieRpEnableMask` and
+		 *        perform pcie_rp_init().
+		 */
+		m_cfg->PcieRpEnableMask = 0; /* Don't care about SOC/IOE PCIE RP Mask */
+	}
 }
 
 static void fill_fspm_igd_params(FSP_M_CONFIG *m_cfg,

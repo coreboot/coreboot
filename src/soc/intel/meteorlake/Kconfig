@@ -1,7 +1,23 @@
 config SOC_INTEL_METEORLAKE
 	bool
 	help
-	  Intel Meteorlake support
+	  Intel Meteorlake support. Mainboards should specify the SoC
+	  type using the `SOC_INTEL_METEORLAKE_*` options instead
+	  of selecting this option directly.
+
+config SOC_INTEL_METEORLAKE_U_P
+	bool
+	select SOC_INTEL_METEORLAKE
+	help
+	  Choose this option if your mainboard has a MTL-U (15W) or MTL-P (28W) SoC.
+	  Note, MTL-U/P SoC combines Compute, GFX, SoC and IOE die.
+
+config SOC_INTEL_METEORLAKE_S
+	bool
+	select SOC_INTEL_METEORLAKE
+	help
+	  Choose this option if your mainboard has a MTL-S (45W) SoC.
+	  Note, MTL-S SoC combines Compute, GFX, SoC, IOE and PCH die.
 
 if SOC_INTEL_METEORLAKE
 

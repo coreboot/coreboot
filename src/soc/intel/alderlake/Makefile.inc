@@ -78,15 +78,15 @@ cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-97-05
 # RPL-S/HX B0
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-b7-01
 # 06-b7-00, 06-b7-02, 06-b7-05 RPL-S/HX A0, C0 and H0 missing
+else ifeq ($(CONFIG_SOC_INTEL_ALDERLAKE_PCH_N),y)
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-be-00
 else
-ifneq ($(CONFIG_SOC_INTEL_ALDERLAKE_PCH_N),y)
 # 06-9a-00, 06-9a-01 are ADL-P/ADL-M Engineering Samples
 # Missing 06-9a-02 ADL-P K0
 # ADL-P L0, ADL-P R0 and ADL-M R0
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-9a-04
 # RPL-P/H J0, RPL-U Q0
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-ba-02
-endif
 endif
 
 ifeq ($(CONFIG_STITCH_ME_BIN),y)

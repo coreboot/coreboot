@@ -111,7 +111,6 @@ config SOC_INTEL_ALDERLAKE_PCH_M
 config SOC_INTEL_ALDERLAKE_PCH_N
 	bool
 	select SOC_INTEL_ALDERLAKE
-	select MICROCODE_BLOB_UNDISCLOSED
 	help
 	  Choose this option if your mainboard has a PCH-N chipset.
 

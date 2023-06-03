@@ -1,10 +1,16 @@
-Upcoming release - coreboot 4.20
+coreboot 4.20 release
 ========================================================================
 
-The 4.20 release is being done on May 15, 2023.
+The 4.20 release was done on May 15, 2023. Unfortunately, a licensing
+issues was found immediately after the release was completed, and it
+was decided to hold the release until that was fixed.
+
+Please do not use the 4.20 tag, and use the 4.20.1 git tag instead. The
+4.20_branch will contain all code for 4.20, 4.20.1, and any further
+changes required for this release.
 
 The coreboot community has done a tremendous amount of work on the
-codebase over the last three and a half month. We've had over 1600
+codebase over the last three and a half months. We've had over 1600
 commits in that time period, doing ongoing cleanup and improvement.
 
 It can be hard to remember at times how much the codebase really has
@@ -19,10 +25,12 @@ or push even a single patch to fix a bug that they've noticed.
 
 Many thanks to everyone involved!
 
-We plan to get the 4.21 release done in mid August, 2023,
+We plan to get the 4.21 release done in mid August, 2023.
+
 
 Significant or interesting changes
 ----------------------------------
+
 
 ### cpu/mp_init.c: Only enable CPUs once they execute code
 
@@ -30,9 +38,10 @@ On some systems the BSP cannot know how many CPUs are present in the
 system. A typical use case is a multi socket system. Setting the enable
 flag only on CPUs that actually exist makes it more flexible.
 
+
 ### cpu/x86/smm: Add PCI resource store functionality
 
-In certain cases data within protected memmory areas like SMRAM could
+In certain cases data within protected memory areas like SMRAM could
 be leaked or modified if an attacker remaps PCI BARs to point within
 that area. Add support to the existing SMM runtime to allow storing
 PCI resources in SMRAM and then later retrieving them.
@@ -40,10 +49,12 @@ PCI resources in SMRAM and then later retrieving them.
 This helps prevent moving BARs around to get SMM to access memory in
 areas that shouldn't be accessed.
 
+
 ### acpi: Add SRAT x2APIC table support
 
 For platforms using X2APIC mode add SRAT x2APIC table
-generation. This allows to setup proper SRAT tables.
+generation. This allows the setup of proper SRAT tables.
+
 
 ### drivers/usb/acpi: Add USB _DSM method to enable/disable USB LPM per port
 
@@ -57,10 +68,11 @@ The ACPI and USB driver of linux kernel need corresponding functions
 to support this feature. Please see
 https://git.kernel.org/pub/scm/linux/kernel/git/mnyman/xhci.git/log/?h=port_check_acpi_dsm
 
+
 ### drivers/efi: Add EFI variable store option support
 
 Add a driver to read and write EFI variables stored in a region device.
-This is particularly useful for EDK2 as payload and allows to reuse
+This is particularly useful for EDK2 as payload and allows it to reuse
 existing EFI tools to set/get options used by the firmware.
 
 The write implementation is fault tolerant and doesn't corrupt the
@@ -89,11 +101,11 @@ variable, first a new is written to the end of the store and then the
 previous is marked invalid. This only works on PNOR flash that allow to
 clear set bits, but keep cleared bits state.
 This mechanisms allows a fault tolerant write, but it also requires to
-"clean" the variable store for time to time. This cleaning would remove
+"clean" the variable store from time to time. This cleaning would remove
 variables that have been marked "deleted".
 Such cleaning mechanism in turn must be fault tolerant and thus must use
 a second partition in the SPI flash as backup/working region.
-For now to cleaning is done in coreboot.
+For now, cleaning is done in coreboot.
 
 Fault checking:
 The driver should check if a previous write was successful and if not
@@ -105,6 +117,7 @@ mark variables as deleted on the next operation.
 Add EWL (Enhanced Warning Log) driver which handles Intel EWL HOB
 and prints EWL type 3 primarily associated with MRC training failures.
 
+
 ### Toolchain updates
 
 * Upgrade MPC from version 1.2.1 to 1.3.1
@@ -113,6 +126,7 @@ and prints EWL type 3 primarily associated with MRC training failures.
 * Upgrade LLVM from version 15.0.6 to 15.0.7
 * Upgrade GCC from version 11.2.0 to 11.3.0
 * Upgrade binutils from version 2.37 to 2.40
+
 
 Additional coreboot changes
 ---------------------------
@@ -135,8 +149,10 @@ Additional coreboot changes
 * Do initial work on Xeon SPR
 * CMOS defaults greater than 128 bytes long now extend to bank 1.
 
+
 New Mainboards
 --------------
+
 * Asrock: B75M-ITX
 * Dell: Latitude E6400
 * Google: Aurash
@@ -162,15 +178,20 @@ New Mainboards
 * System76: oryp10
 * System76: oryp9
 
+
 Removed Mainboards
 ------------------
+
 * Intel Icelake U DDR4/LPDDR4 RVP
 * Intel Icelake Y LPDDR4 RVP
 * Scaleway TAGADA
 
+
 Updated SoCs
 ------------
+
 * Removed soc/intel/icelake
+
 
 Plans to move platform support to a branch
 ------------------------------------------
@@ -188,20 +209,22 @@ be maintained on the release 4.20 branch.
   * Intel Quark SoC
   * Intel Galileo mainboard
 
+
 Statistics from the 4.19 to the 4.20 release
 --------------------------------------------
 
-Total Commits: ~1625
-Average Commits per day: ~13.71
-Total lines added: ~101911
-Average lines added per commit: ~62.71
-Number of patches adding more than 100 lines: ~126
-Average lines added per small commit: ~37.98
-Total lines removed: ~34756
-Average lines removed per commit: ~21.39
-Total difference between added and removed: ~67155
+Total Commits: 1630
+Average Commits per day: 13.72
+Total lines added: 102592
+Average lines added per commit: 62.94
+Number of patches adding more than 100 lines: 128
+Average lines added per small commit: 37.99
+Total lines removed: 34824
+Average lines removed per commit: 21.36
+Total difference between added and removed: 67768
 Total authors: ~170
 New authors: ~35
+
 
 Significant Known and Open Issues
 ---------------------------------

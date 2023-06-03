@@ -186,14 +186,11 @@ static vb2_error_t ec_hash_image(enum vb2_firmware_selection select,
 /*
  * Asks the EC to protect or unprotect the specified flash region.
  */
-static vb2_error_t ec_protect_flash(enum vb2_firmware_selection select, int enable)
+static vb2_error_t ec_protect_flash(int enable)
 {
 	struct ec_response_flash_protect resp;
 	uint32_t protected_region = EC_FLASH_PROTECT_ALL_NOW;
 	const uint32_t mask = EC_FLASH_PROTECT_ALL_NOW | EC_FLASH_PROTECT_ALL_AT_BOOT;
-
-	if (select == VB_SELECT_FIRMWARE_READONLY)
-		protected_region = EC_FLASH_PROTECT_RO_NOW;
 
 	if (google_chromeec_flash_protect(mask, enable ? mask : 0, &resp) != 0)
 		return VB2_ERROR_UNKNOWN;
@@ -331,7 +328,7 @@ static vb2_error_t ec_update_image(enum vb2_firmware_selection select)
 	size_t image_size;
 
 	/* Un-protect the flash region */
-	rv = ec_protect_flash(select, 0);
+	rv = ec_protect_flash(0);
 	if (rv != VB2_SUCCESS)
 		return rv;
 
@@ -490,9 +487,9 @@ vb2_error_t vb2ex_ec_hash_image(enum vb2_firmware_selection select,
 /*
  * Vboot callback for EC flash protection.
  */
-vb2_error_t vb2ex_ec_protect(enum vb2_firmware_selection select)
+vb2_error_t vb2ex_ec_protect(void)
 {
-	return ec_protect_flash(select, 1);
+	return ec_protect_flash(1);
 }
 
 /*

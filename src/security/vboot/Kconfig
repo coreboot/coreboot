@@ -336,6 +336,8 @@ config VBOOT_GSC_BOARD_ID
 	help
 	  GSC board ID to be embedded in the GSCVD. Usually each specific mainboard variant
 	  has its own. Google engineers can find these in the go/cros-dlm database ("Products").
+	  The specific board IDs are filled in as part of the production signing process, so
+	  this value is just a default and doesn't need to be set per-variant in coreboot.
 	  (Note: This is a completely separate thing from coreboot's `board_id()` function.)
 
 menu "GBB configuration"

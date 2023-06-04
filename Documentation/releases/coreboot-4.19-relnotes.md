@@ -15,6 +15,10 @@ It takes constant effort to just stay afloat, let alone improve the
 codebase. Thank you very much to everyone who has contributed, both in
 this release and in previous times.
 
+Note that the first set of tarballs posted for the 4.19 release had
+bad timestamps. This has been fixed. Hashes for all tarballs are at
+the bottom of this document.
+
 The 4.20 release is planned for the 20th of April, 2023.
 
 
@@ -244,3 +248,20 @@ Issues from the coreboot bugtracker: https://ticket.coreboot.org/
 | 327 | OperationRegion (OPRG, SystemMemory, ASLS, 0x2000) causes BSOD  |
 +-----+-----------------------------------------------------------------+
 ```
+
+Hashes for tarballs & signatures
+--------------------------------
+
+Old tarballs:
+
+- a1f9ec1252a3cc19f0b4ba1a2b9d66ea9327499cbeecebd85377db7d5c68555d  coreboot-4.19.tar.xz
+- 6ceaa39429a2094d75e4c8a94615ae60664ddad7b4115570b65b9bb516cbd96d  coreboot-4.19.tar.xz.sig
+- 881a3477221d1b77e161759344df14eccda115086af3ef54e66485ae0eb2e5d9  coreboot-blobs-4.19.tar.xz
+- 16f4f1f7acc6203ce915ffea64edce8512bd9eb9e94e65db22a0cb5282a6e157  coreboot-blobs-4.19.tar.xz.sig
+
+New tarballs:
+
+- 65ccb2f46535b996e0066a1b76f81c8cf1ff3e27df84b3f97d8ad7b3e7cf0a43  coreboot-4.19.tar.xz
+- d3c52a209b8ccb49049960318f04f158dd47db52ebe6019d6a3dffe3196d9cbe  coreboot-4.19.tar.xz.sig
+- 30214caed07b25f11e47bec022ff6234841376e36689eb674de2330a3e980cbc  coreboot-blobs-4.19.tar.xz
+- 023d511d074703beab98c237c3e964dc7c598af86d5a0e2091195c68980b6c5d  coreboot-blobs-4.19.tar.xz.sig

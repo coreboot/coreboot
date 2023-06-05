@@ -12,6 +12,7 @@ void early_cache_setup(void);
 int get_cpu_count(void);
 unsigned int get_threads_per_core(void);
 void set_cstate_io_addr(void);
+uint32_t get_usable_physical_address_bits(void);
 void write_resume_eip(void);
 
 union pstate_msr; /* proper definition is in soc/msr.h */

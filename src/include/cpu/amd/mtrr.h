@@ -12,6 +12,7 @@
 #define MTRR_WRITE_MEM			(1 << 3)
 
 #define SYSCFG_MSR			0xC0010010
+#define SYSCFG_MSR_SMEE			(1 << 23)
 #define SYSCFG_MSR_TOM2WB		(1 << 22)
 #define SYSCFG_MSR_TOM2En		(1 << 21)
 #define SYSCFG_MSR_MtrrVarDramEn	(1 << 20)

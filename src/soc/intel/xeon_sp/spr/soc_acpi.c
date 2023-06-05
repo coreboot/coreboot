@@ -2,6 +2,7 @@
 
 #include <acpi/acpigen.h>
 #include <arch/smp/mpspec.h>
+#include <arch/vga.h>
 #include <assert.h>
 #include <cbmem.h>
 #include <cpu/intel/turbo.h>
@@ -131,9 +132,8 @@ static void create_dsdt_iou_pci_resource(uint8_t socket, uint8_t stack, const ST
 
 		/* Additional Mem32 resources on socket 0 bus 0 */
 		if (socket == 0 && stack == 0) {
-			acpigen_resource_dword(0, 0xc, 3, 0, VGA_BASE_ADDRESS,
-					       (VGA_BASE_ADDRESS + VGA_BASE_SIZE - 1), 0x0,
-					       VGA_BASE_SIZE);
+			acpigen_resource_dword(0, 0xc, 3, 0, VGA_MMIO_BASE,
+					       VGA_MMIO_LIMIT, 0x0, VGA_MMIO_SIZE);
 			acpigen_resource_dword(0, 0xc, 1, 0, SPI_BASE_ADDRESS,
 					       (SPI_BASE_ADDRESS + SPI_BASE_SIZE - 1), 0x0,
 					       SPI_BASE_SIZE);

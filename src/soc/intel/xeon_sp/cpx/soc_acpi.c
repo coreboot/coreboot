@@ -2,6 +2,7 @@
 
 #include <acpi/acpigen.h>
 #include <arch/smp/mpspec.h>
+#include <arch/vga.h>
 #include <assert.h>
 #include <cpu/intel/turbo.h>
 #include <device/mmio.h>
@@ -87,9 +88,8 @@ void uncore_inject_dsdt(const struct device *device)
 
 		/* additional mem32 resources on socket 0 bus 0 */
 		if (stack == 0) {
-			acpigen_resource_dword(0, 0xc, 3, 0, VGA_BASE_ADDRESS,
-				(VGA_BASE_ADDRESS + VGA_BASE_SIZE - 1), 0x0,
-				VGA_BASE_SIZE);
+			acpigen_resource_dword(0, 0xc, 3, 0, VGA_MMIO_BASE,
+				VGA_MMIO_LIMIT, 0x0, VGA_MMIO_SIZE);
 			acpigen_resource_dword(0, 0xc, 1, 0, SPI_BASE_ADDRESS,
 				(SPI_BASE_ADDRESS + SPI_BASE_SIZE - 1), 0x0,
 				SPI_BASE_SIZE);

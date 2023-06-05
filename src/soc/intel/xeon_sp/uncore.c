@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <arch/vga.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <cpu/x86/lapic_def.h>
@@ -306,7 +307,7 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 	 * 0xa0000 - 0xbffff: legacy VGA
 	 * 0xc0000 - 0xfffff: RAM
 	 */
-	res = mmio_range(dev, index++, VGA_BASE_ADDRESS, VGA_BASE_SIZE);
+	res = mmio_range(dev, index++, VGA_MMIO_BASE, VGA_MMIO_SIZE);
 	LOG_RESOURCE("legacy_mmio", dev, res);
 
 	res = reserved_ram_from_to(dev, index++, 0xc0000, 1 * MiB);

@@ -334,6 +334,8 @@ void domain_read_resources(struct device *dev)
 
 	pci_domain_read_resources(dev);
 
+	fixed_io_range_reserved(dev, idx++, PCI_IO_CONFIG_INDEX, PCI_IO_CONFIG_PORT_COUNT);
+
 	/* 0x0 -> 0x9ffff */
 	ram_resource_kb(dev, idx++, 0, 0xa0000 / KiB);
 

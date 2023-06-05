@@ -6,6 +6,7 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_ivrs.h>
 #include <arch/ioapic.h>
+#include <arch/vga.h>
 #include <types.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -139,7 +140,7 @@ static void add_fixed_resources(struct device *dev, int index)
 	 * 0xa0000 - 0xbffff: legacy VGA
 	 * 0xc0000 - 0xfffff: option ROMs and SeaBIOS (if used)
 	 */
-	mmio_resource_kb(dev, index++, 0xa0000 >> 10, (0xc0000 - 0xa0000) >> 10);
+	mmio_resource_kb(dev, index++, VGA_MMIO_BASE >> 10, VGA_MMIO_SIZE >> 10);
 	reserved_ram_resource_kb(dev, index++, 0xc0000 >> 10, (0x100000 - 0xc0000) >> 10);
 
 	if (fx_devs == 0)

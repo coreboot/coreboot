@@ -6,6 +6,7 @@
 #include <amdblocks/memmap.h>
 #include <amdblocks/ioapic.h>
 #include <arch/ioapic.h>
+#include <arch/vga.h>
 #include <assert.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -121,7 +122,7 @@ static void read_resources(struct device *dev)
 	ram_resource_kb(dev, idx++, 0, 0xa0000 / KiB);
 
 	/* 0xa0000 - 0xbffff: legacy VGA */
-	mmio_resource_kb(dev, idx++, 0xa0000 / KiB, 0x20000 / KiB);
+	mmio_resource_kb(dev, idx++, VGA_MMIO_BASE / KiB, VGA_MMIO_SIZE / KiB);
 
 	/* 0xc0000 - 0xfffff: Option ROM */
 	reserved_ram_resource_kb(dev, idx++, 0xc0000 / KiB, 0x40000 / KiB);

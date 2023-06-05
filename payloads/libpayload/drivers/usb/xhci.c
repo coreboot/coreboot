@@ -155,6 +155,9 @@ xhci_init(unsigned long physical_bar)
 {
 	int i;
 
+	if (!physical_bar)
+		goto _exit_xhci;
+
 	/* First, allocate and initialize static controller structures */
 
 	hci_t *const controller = new_controller();
@@ -301,6 +304,7 @@ _free_xhci:
 /* _free_controller: */
 	detach_controller(controller);
 	free(controller);
+_exit_xhci:
 	return NULL;
 }
 

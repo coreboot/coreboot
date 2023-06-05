@@ -6,6 +6,7 @@
 #include <cpu/amd/msr.h>
 #include <smbios.h>
 #include <soc/iomap.h>
+#include <types.h>
 
 uint32_t get_pstate_0_reg(void)
 {

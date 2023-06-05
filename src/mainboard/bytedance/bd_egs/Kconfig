@@ -1,0 +1,31 @@
+if BOARD_BYTEDANCE_BD_EGS
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_65536
+	select MAINBOARD_USES_FSP2_0
+	select SOC_INTEL_SAPPHIRERAPIDS_SP
+	select SUPERIO_ASPEED_AST2400
+	select HAVE_ACPI_TABLES
+	select MAINBOARD_USES_IFD_GBE_REGION
+	select IPMI_KCS
+	select MEMORY_MAPPED_TPM
+	select MAINBOARD_HAS_TPM2
+	select INTEL_DESCRIPTOR_MODE_CAPABLE
+
+config MAINBOARD_DIR
+	default "bytedance/bd_egs"
+
+config MAINBOARD_PART_NUMBER
+	default "ByteDance bd_egs"
+
+config MAINBOARD_FAMILY
+	default "Intel Eagle Stream Server"
+
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"
+
+config MAX_SOCKET
+	default 2
+
+endif

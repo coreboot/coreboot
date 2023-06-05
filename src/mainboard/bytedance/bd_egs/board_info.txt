@@ -1,0 +1,6 @@
+Vendor name: ByteDance
+Board name: bd_egs
+Category: eval
+ROM protocol: SPI
+ROM socketed: y
+Flashrom support: y

@@ -1,0 +1,15 @@
+if VENDOR_BYTEDANCE
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/bytedance/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/bytedance/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	default "ByteDance"
+
+endif # VENDOR_BYTEDANCE

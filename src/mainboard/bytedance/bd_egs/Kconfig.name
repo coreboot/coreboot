@@ -1,0 +1,2 @@
+config BOARD_BYTEDANCE_BD_EGS
+	bool "ByteDance bd_egs"

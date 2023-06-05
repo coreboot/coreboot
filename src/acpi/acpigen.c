@@ -2243,7 +2243,7 @@ void acpigen_resource_producer_bus_number(u16 bus_base, u16 bus_limit)
 
 void acpigen_resource_producer_io(u16 io_base, u16 io_limit)
 {
-	acpigen_resource_word(RSRC_TYPE_IO, /* res_type */
+	acpigen_resource_dword(RSRC_TYPE_IO, /* res_type */
 			      ADDR_SPACE_GENERAL_FLAG_MAX_FIXED
 			      | ADDR_SPACE_GENERAL_FLAG_MIN_FIXED
 			      | ADDR_SPACE_GENERAL_FLAG_DEC_POS

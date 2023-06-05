@@ -353,6 +353,7 @@ chip soc/intel/alderlake
 				end
 			end
 		end
+		device ref pcie_rp7 off end
 		device ref hda on
 			chip drivers/generic/max98357a
 				register "hid" = ""MX98360A""

@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <arch/vga.h>
+
 /* System Bus */
 /*  _SB.PCI0 */
 
@@ -87,7 +89,7 @@ Name(CRES, ResourceTemplate() {
 		0xF300		/* length */
 	)
 
-	Memory32Fixed(READONLY, 0x000A0000, 0x00020000, VGAM)	/* VGA memory space */
+	Memory32Fixed(READONLY, VGA_MMIO_BASE, VGA_MMIO_SIZE, VGAM)	/* VGA memory space */
 	Memory32Fixed(READONLY, 0x000C0000, 0x00020000, EMM1)	/* Assume C0000-E0000 empty */
 
 	/* memory space for PCI BARs below 4GB */

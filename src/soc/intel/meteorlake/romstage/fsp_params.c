@@ -8,6 +8,7 @@
 #include <drivers/wifi/generic/wifi.h>
 #include <fsp/fsp_debug_event.h>
 #include <fsp/util.h>
+#include <intelbasecode/ramtop.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/pcie_rp.h>
 #include <option.h>
@@ -173,12 +174,30 @@ static void fill_fspm_cpu_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->HyperThreading = get_uint_option("hyper_threading", CONFIG(FSP_HYPERTHREADING));
 }
 
+static void fill_tme_params(FSP_M_CONFIG *m_cfg)
+{
+	m_cfg->TmeEnable = CONFIG(INTEL_TME) && is_tme_supported();
+	if (!m_cfg->TmeEnable)
+		return;
+	m_cfg->GenerateNewTmeKey = CONFIG(TME_KEY_REGENERATION_ON_WARM_BOOT);
+	if (m_cfg->GenerateNewTmeKey) {
+		uint32_t ram_top = get_ramtop_addr();
+		if (!ram_top) {
+			printk(BIOS_WARNING, "Invalid exclusion range start address. "
+						"Full memory encryption is enabled.\n");
+			return;
+		}
+		m_cfg->TmeExcludeBase = (ram_top - 16*MiB);
+		m_cfg->TmeExcludeSize = 16*MiB;
+	}
+}
+
 static void fill_fspm_security_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_meteorlake_config *config)
 {
 	/* Disable BIOS Guard */
 	m_cfg->BiosGuard = 0;
-	m_cfg->TmeEnable = CONFIG(INTEL_TME) && is_tme_supported();
+	fill_tme_params(m_cfg);
 }
 
 static void fill_fspm_uart_params(FSP_M_CONFIG *m_cfg,

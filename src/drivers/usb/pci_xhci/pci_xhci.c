@@ -12,7 +12,7 @@
 #define PCI_XHCI_CLASSCODE	0x0c0330 /* USB3.0 xHCI controller */
 
 static unsigned int controller_count;
-static const struct device_operations xhci_pci_ops;
+const struct device_operations xhci_pci_ops;
 
 struct port_counts {
 	unsigned int high_speed;
@@ -240,7 +240,7 @@ static void xhci_enable(struct device *dev)
 	dev->name = name;
 }
 
-static const struct device_operations xhci_pci_ops = {
+const struct device_operations xhci_pci_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,

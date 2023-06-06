@@ -38,6 +38,7 @@ chip soc/amd/phoenix
 			device pci 0.1 alias gfx_hda off end # Display HD Audio Controller (GFXAZ)
 			device pci 0.2 alias crypto off end # Crypto Coprocessor
 			device pci 0.3 alias xhci_0 off
+				ops xhci_pci_ops
 				chip drivers/usb/acpi
 					register "type" = "UPC_TYPE_HUB"
 					device usb 0.0 alias xhci_0_root_hub off
@@ -66,6 +67,7 @@ chip soc/amd/phoenix
 				end
 			end
 			device pci 0.4 alias xhci_1 off
+				ops xhci_pci_ops
 				chip drivers/usb/acpi
 					register "type" = "UPC_TYPE_HUB"
 					device usb 0.0 alias xhci_1_root_hub off
@@ -92,6 +94,7 @@ chip soc/amd/phoenix
 			ops amd_internal_pcie_gpp_ops
 			device pci 0.0 on end # dummy, do not disable
 			device pci 0.3 alias usb4_xhci_0 off
+				ops xhci_pci_ops
 				chip drivers/usb/acpi
 					register "type" = "UPC_TYPE_HUB"
 					device usb 0.0 alias usb4_xhci_0_root_hub off
@@ -105,6 +108,7 @@ chip soc/amd/phoenix
 				end
 			end
 			device pci 0.4 alias usb4_xhci_1 off
+				ops xhci_pci_ops
 				chip drivers/usb/acpi
 					register "type" = "UPC_TYPE_HUB"
 					device usb 0.0 alias usb4_xhci_1_root_hub off

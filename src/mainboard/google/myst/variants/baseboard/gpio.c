@@ -68,7 +68,7 @@ static const struct soc_amd_gpio base_gpio_table[] = {
 	/* WWAN_AUX_RST_L */
 	PAD_GPO(GPIO_39, HIGH),
 	/* SOC_FP_RST_L */
-	PAD_GPO(GPIO_40, HIGH),
+	PAD_GPO(GPIO_40, LOW),
 	/* GPIO_41 - GPIO_66: Not available */
 	/* GPIO_67 (Unused) */
 	PAD_NC(GPIO_67),

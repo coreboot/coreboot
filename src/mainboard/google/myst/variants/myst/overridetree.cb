@@ -93,4 +93,22 @@ chip soc/amd/phoenix
 			device i2c 2a on end
 		end
 	end # I2C3
+	device ref uart_1 on
+		chip drivers/uart/acpi
+			register "name" = ""CRFP""
+			register "desc" = ""Fingerprint Reader""
+			register "hid" = "ACPI_DT_NAMESPACE_HID"
+			register "compat_string" = ""google,cros-ec-uart""
+			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_18)"
+			register "wake" = "GEVENT_14"
+			register "uart" = "ACPI_UART_RAW_DEVICE(3000000, 64)"
+			register "has_power_resource" = "1"
+			register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPIO_40)"
+			register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_4)"
+			register "enable_delay_ms" = "3"
+			device generic 0 alias fpmcu on
+				probe FP UART
+			end
+		end
+	end
 end	# chip soc/amd/phoenix

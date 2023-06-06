@@ -104,7 +104,7 @@ void update_ramtop(uint32_t addr)
 	printk(BIOS_DEBUG, "Updated the RAMTOP address into CMOS 0x%x\n", ramtop.addr);
 }
 
-static uint32_t get_ramtop_addr(void)
+uint32_t get_ramtop_addr(void)
 {
 	struct ramtop_table ramtop;
 

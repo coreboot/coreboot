@@ -79,7 +79,7 @@ with no properties as a direct child of the SoC.
 ## Device drivers
 
 Platform independent device drivers are hooked up via entries in a devicetree.
-See [Driver Devicetree Entries](drivers/dt_entries.md) for more info.
+See [Driver Devicetree Entries](../drivers/dt_entries.md) for more info.
 
 ## Notes
 

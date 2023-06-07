@@ -1799,6 +1799,75 @@ unsigned long acpi_create_lpi_desc_ncst(acpi_lpi_desc_ncst_t *lpi_desc, uint16_t
 	return lpi_desc->header.length;
 }
 
+static uint8_t acpi_spcr_type(void)
+{
+	/* 16550-compatible with parameters defined in Generic Address Structure */
+	if (CONFIG(DRIVERS_UART_8250IO) || CONFIG(DRIVERS_UART_8250MEM))
+		return 0x12;
+	if (CONFIG(DRIVERS_UART_PL011))
+		return 0x3;
+
+	printk(BIOS_ERR, "%s: unknown serial type\n", __func__);
+	return 0xff;
+}
+
+static void acpi_create_spcr(acpi_spcr_t *spcr)
+{
+	acpi_header_t *header = &(spcr->header);
+	struct lb_serial serial;
+
+	/* The caller checks the header size, so call this first */
+	memset((void *)spcr, 0, sizeof(acpi_spcr_t));
+
+	if (!CONFIG(CONSOLE_SERIAL))
+		return;
+
+	if (fill_lb_serial(&serial) != CB_SUCCESS)
+		return;
+
+	memcpy(header->signature, "SPCR", 4);
+	header->length = sizeof(acpi_spcr_t);
+	header->revision = get_acpi_table_revision(SPCR);
+	memcpy(header->oem_id, OEM_ID, 6);
+	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
+	memcpy(header->asl_compiler_id, ASLC, 4);
+	header->asl_compiler_revision = asl_revision;
+
+	spcr->interface_type = acpi_spcr_type();
+	assert(serial.type == LB_SERIAL_TYPE_IO_MAPPED
+	       || serial.type == LB_SERIAL_TYPE_MEMORY_MAPPED);
+	spcr->base_address.space_id = serial.type == LB_SERIAL_TYPE_IO_MAPPED ?
+		ACPI_ADDRESS_SPACE_IO : ACPI_ADDRESS_SPACE_MEMORY;
+	spcr->base_address.bit_width = serial.regwidth * 8;
+	spcr->base_address.bit_offset = 0;
+	switch (serial.regwidth) {
+	case 1:
+		spcr->base_address.access_size = ACPI_ACCESS_SIZE_BYTE_ACCESS;
+		break;
+	case 2:
+		spcr->base_address.access_size = ACPI_ACCESS_SIZE_WORD_ACCESS;
+		break;
+	case 4:
+		spcr->base_address.access_size = ACPI_ACCESS_SIZE_DWORD_ACCESS;
+		break;
+	default:
+		printk(BIOS_ERR, "%s, Invalid serial regwidth\n", __func__);
+	}
+
+	spcr->base_address.addrl = serial.baseaddr;
+	spcr->base_address.addrh = 0;
+	spcr->interrupt_type = 0;
+	spcr->irq = 0;
+	spcr->configured_baudrate = 0; /* Have the OS use whatever is currently set */
+	spcr->parity = 0;
+	spcr->stop_bits = 1;
+	spcr->flow_control = 0;
+	spcr->terminal_type = 2; /* 2 = VT-UTF8 */
+	spcr->language = 0;
+	spcr->pci_did = 0xffff;
+	spcr->pci_vid = 0xffff;
+}
+
 unsigned long __weak fw_cfg_acpi_tables(unsigned long start)
 {
 	return 0;
@@ -2122,6 +2191,15 @@ unsigned long write_acpi_tables(const unsigned long start)
 		}
 	}
 
+	printk(BIOS_DEBUG, "ACPI:    * SPCR\n");
+	acpi_spcr_t * const spcr = (acpi_spcr_t *)current;
+	acpi_create_spcr(spcr);
+	if (spcr->header.length >= sizeof(acpi_spcr_t)) {
+		current += spcr->header.length;
+		acpi_add_table(rsdp, spcr);
+	}
+	current = acpi_align_current(current);
+
 	printk(BIOS_DEBUG, "current = %lx\n", current);
 
 	for (dev = all_devices; dev; dev = dev->next) {
@@ -2292,6 +2370,8 @@ int get_acpi_table_revision(enum acpi_tables table)
 		return 1;
 	case LPIT: /* ACPI 5.1 up to 6.3: 0 */
 		return 0;
+	case SPCR:
+		return 4;
 	default:
 		return -1;
 	}

@@ -75,6 +75,7 @@ enum acpi_tables {
 	/* Tables defined by ACPI and used by coreboot */
 	BERT, CEDT, DBG2, DMAR, DSDT, EINJ, FACS, FADT, HEST, HMAT, HPET, IVRS,
 	MADT, MCFG, RSDP, RSDT, SLIT, SRAT, SSDT, TCPA, TPM2, XSDT, ECDT, LPIT,
+	SPCR,
 	/* Additional proprietary tables used by coreboot */
 	VFCT, NHLT, SPMI, CRAT
 };
@@ -1327,6 +1328,12 @@ typedef struct acpi_spcr {
 	char namespacestring[];
 } __packed acpi_spcr_t;
 _Static_assert(sizeof(acpi_spcr_t) == 88, "acpi_spcr_t must have an 88 byte size\n");
+
+#define PC_AT_COMPATIBLE_INTERRUPT (1 << 0)
+#define IO_APIC_COMPATIBLE_INTERRUPT (1 << 1)
+#define IO_SAPIC_COMPATIBLE_INTERRUPT (1 << 2)
+#define ARMH_GIC_COMPATIBLE_INTERRUPT (1 << 3)
+#define RISCV_PLIC_COMPATIBLE_INTERRUPT (1 << 4)
 
 uintptr_t get_coreboot_rsdp(void);
 void acpi_create_einj(acpi_einj_t *einj, uintptr_t addr, u8 actions);

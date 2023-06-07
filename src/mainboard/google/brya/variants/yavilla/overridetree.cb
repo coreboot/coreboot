@@ -28,6 +28,15 @@ fw_config
 		option MB_1C			0
 		option MB_1C_2A			1
 	end
+	field WIFI_SAR_ID2 16 19
+		option INTEL_YAVILLA_LTE	0
+		option INTEL_YAVILLA_WIFI	1
+		option INTEL_YAVILLY_LTE	2
+		option INTEL_YAVILLY_WIFI	3
+		option INTEL_YAVIJO_LTE		4
+		option INTEL_YAVIJO_WIFI	5
+		option UNUSED			15
+	end
 end
 
 chip soc/intel/alderlake

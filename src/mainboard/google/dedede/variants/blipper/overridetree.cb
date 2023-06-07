@@ -59,11 +59,6 @@ chip soc/intel/jasperlake
 		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled,
 	}"
 
-	register "power_limits_config" = "{
-			.tdp_pl1_override = 6,
-			.tdp_pl2_override = 20,
-	}"
-
 	register "tcc_offset" = "10"    # TCC of 95C
 
 	# Enable Acoustic noise mitigation and set slew rate to 1/8

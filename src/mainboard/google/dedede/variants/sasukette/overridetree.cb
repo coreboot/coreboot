@@ -87,11 +87,6 @@ chip soc/intel/jasperlake
 		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
 	}" # Camera
 
-	register "power_limits_config" = "{
-			.tdp_pl1_override = 6,
-			.tdp_pl2_override = 20,
-	}"
-
 	register "tcc_offset" = "10"    # TCC of 95C
 
 	register "xhci_lfps_sampling_offtime_ms" = "0"

@@ -3,6 +3,7 @@
 #ifndef _SOC_CHIP_H_
 #define _SOC_CHIP_H_
 
+#include <device/pci_ids.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <gpio.h>
 #include <drivers/intel/gma/gma.h>
@@ -23,13 +24,44 @@
 #define MAX_HD_AUDIO_SNDW_LINKS 4
 #define MAX_HD_AUDIO_SSP_LINKS  6
 
+/* Types of different SKUs */
+enum soc_intel_jasperlake_power_limits {
+	JSL_N4500_6W_CORE,
+	JSL_N6000_6W_CORE,
+	JSL_N5100_6W_CORE,
+	JSL_N4505_10W_CORE,
+	JSL_N5105_10W_CORE,
+	JSL_N6005_10W_CORE,
+	JSL_POWER_LIMITS_COUNT
+};
+
+/* TDP values for different SKUs */
+enum soc_intel_jasperlake_cpu_tdps {
+	TDP_6W  = 6,
+	TDP_10W = 10
+};
+
+/* Mapping of different SKUs based on CPU ID and TDP values */
+static const struct {
+	unsigned int pci_did;
+	enum soc_intel_jasperlake_power_limits limits;
+	enum soc_intel_jasperlake_cpu_tdps cpu_tdp;
+} cpuid_to_jsl[] = {
+	{ PCI_DID_INTEL_JSL_ID_1, JSL_N4500_6W_CORE, TDP_6W },
+	{ PCI_DID_INTEL_JSL_ID_2, JSL_N6000_6W_CORE, TDP_6W },
+	{ PCI_DID_INTEL_JSL_ID_3, JSL_N5100_6W_CORE, TDP_6W },
+	{ PCI_DID_INTEL_JSL_ID_4, JSL_N4505_10W_CORE, TDP_10W },
+	{ PCI_DID_INTEL_JSL_ID_5, JSL_N5105_10W_CORE, TDP_10W },
+	{ PCI_DID_INTEL_JSL_ID_6, JSL_N6005_10W_CORE, TDP_10W },
+};
+
 struct soc_intel_jasperlake_config {
 
 	/* Common struct containing soc config data required by common code */
 	struct soc_intel_common_config common_soc_config;
 
 	/* Common struct containing power limits configuration information */
-	struct soc_power_limits_config power_limits_config;
+	struct soc_power_limits_config power_limits_config[JSL_POWER_LIMITS_COUNT];
 
 	/* Gpio group routed to each dword of the GPE0 block. Values are
 	 * of the form PMC_GPP_[A:U] or GPD. */

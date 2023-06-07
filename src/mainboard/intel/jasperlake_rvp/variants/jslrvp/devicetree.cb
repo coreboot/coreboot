@@ -124,9 +124,34 @@ chip soc/intel/jasperlake
 	register "dptf_enable" = "1"
 
 	# Add PL1 and PL2 values
-	register "power_limits_config" = "{
+	register "power_limits_config[JSL_N4500_6W_CORE]" = "{
 		.tdp_pl1_override = 6,
 		.tdp_pl2_override = 20,
+	}"
+
+	register "power_limits_config[JSL_N6000_6W_CORE]" = "{
+		.tdp_pl1_override = 6,
+		.tdp_pl2_override = 20,
+	}"
+
+	register "power_limits_config[JSL_N5100_6W_CORE]" = "{
+		.tdp_pl1_override = 6,
+		.tdp_pl2_override = 20,
+	}"
+
+	register "power_limits_config[JSL_N4505_10W_CORE]" = "{
+		.tdp_pl1_override = 10,
+		.tdp_pl2_override = 25,
+	}"
+
+	register "power_limits_config[JSL_N5105_10W_CORE]" = "{
+		.tdp_pl1_override = 10,
+		.tdp_pl2_override = 25,
+	}"
+
+	register "power_limits_config[JSL_N6005_10W_CORE]" = "{
+		.tdp_pl1_override = 10,
+		.tdp_pl2_override = 25,
 	}"
 
 	# Enable S0ix

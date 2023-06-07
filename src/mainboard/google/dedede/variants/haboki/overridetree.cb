@@ -35,11 +35,6 @@ chip soc/intel/jasperlake
 		},
 	}"
 
-	register "power_limits_config" = "{
-		.tdp_pl1_override = 6,
-		.tdp_pl2_override = 20,
-	}"
-
 	register "tcc_offset" = "20"	# TCC of 85C
 
 	register "SerialIoGSpiMode[PchSerialIoIndexGSPI0]" = "PchSerialIoDisabled" # Disable GSPI0

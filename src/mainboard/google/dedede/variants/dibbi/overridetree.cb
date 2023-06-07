@@ -25,6 +25,19 @@ chip soc/intel/jasperlake
 		},
 	}"
 
+	# Power limit config
+	register "power_limits_config[JSL_N4500_6W_CORE]" = "{
+		.tdp_pl1_override = 6,
+		.tdp_pl2_override = 20,
+		.tdp_pl4 = 60,
+	}"
+
+	register "power_limits_config[JSL_N5100_6W_CORE]" = "{
+		.tdp_pl1_override = 6,
+		.tdp_pl2_override = 20,
+		.tdp_pl4 = 60,
+	}"
+
 	# Enable Root Port 3 (index 2) for LAN
 	# External PCIe port 7 is mapped to PCIe Root Port 3
 	register "PcieRpEnable[2]" = "1"

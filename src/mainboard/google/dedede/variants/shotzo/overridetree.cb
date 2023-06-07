@@ -40,7 +40,18 @@ chip soc/intel/jasperlake
 
 	register "disable_external_bypass_vr" = "1"    # Does not support external vnn power rail
 
-	register "power_limits_config" = "{
+	# Power limit config
+	register "power_limits_config[JSL_N4500_6W_CORE]" = "{
+		.tdp_pl1_override = 7,
+		.tdp_pl2_override = 25,
+	}"
+
+	register "power_limits_config[JSL_N6000_6W_CORE]" = "{
+		.tdp_pl1_override = 7,
+		.tdp_pl2_override = 25,
+	}"
+
+	register "power_limits_config[JSL_N5100_6W_CORE]" = "{
 		.tdp_pl1_override = 7,
 		.tdp_pl2_override = 25,
 	}"

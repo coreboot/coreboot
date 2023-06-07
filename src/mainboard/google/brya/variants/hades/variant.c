@@ -83,7 +83,7 @@ static bool sequence_rail(const struct power_rail_sequence *seq, enum rail_state
 		pwr_en_state = !pwr_en_state;
 
 	gpio_output(seq->pwr_en_gpio, pwr_en_state);
-	result = wait_us(DEFAULT_PG_TIMEOUT_US, gpio_get(seq->pg_gpio) == state) >= 0;
+	result = wait_us(DEFAULT_PG_TIMEOUT_US, gpio_get(seq->pg_gpio) == state) > 0;
 	if (seq->delay_ms)
 		mdelay(seq->delay_ms);
 

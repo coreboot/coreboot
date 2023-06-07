@@ -20,7 +20,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* C1  : SMBDA==> TCHSCR_RST_L */
 	PAD_CFG_GPO(GPP_C1, 1, DEEP),
 	/* D6  : SRCCLKREQ1# ==> WWAN_EN */
-	PAD_CFG_GPO(GPP_D6, 1, DEEP),
+	PAD_CFG_GPO(GPP_D6, 1, PWROK),
 	/* D7  : SRCCLKREQ2# ==> NC */
 	PAD_NC(GPP_D7, NONE),
 	/* D8  : SRCCLKREQ3# ==> NC */
@@ -61,8 +61,6 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
 	/* B15 : HP_RST_ODL */
 	PAD_CFG_GPO(GPP_B15, 0, DEEP),
-	/* D6  : SRCCLKREQ1# ==> WWAN_EN */
-	PAD_CFG_GPO(GPP_D6, 1, DEEP),
 	/* E12 : THC0_SPI1_IO1 ==> SOC_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E12, NONE, DEEP),
 	/* F12 : GSXDOUT ==> WWAN_RST_L */

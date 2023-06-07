@@ -2,11 +2,6 @@
 
 /* Describe the Northbridge devices */
 
-Method(_STA, 0, NotSerialized)
-{
-	Return(0x0f)	/* Status is visible */
-}
-
 /* PCI Routing Table */
 Name(PR0, Package(){
 	/* Bus 0, Dev 0x00 - F2: IOMMU */

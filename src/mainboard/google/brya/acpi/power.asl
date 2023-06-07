@@ -312,7 +312,7 @@ Method (PGOF, 0, Serialized)
 	GPPL (GPIO_1V8_PG, 0, 20)
 
 	/* Ramp down 1.2V rail on boards with support */
-	STXS (GPIO_NV12_PWR_EN)
+	CTXS (GPIO_NV12_PWR_EN)
 	GPPL (GPIO_NV12_PG, 0, 5)
 
 	GCOT = Timer

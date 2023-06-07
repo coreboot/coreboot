@@ -242,7 +242,7 @@ static unsigned long acpi_fill_hest(acpi_hest_t *hest)
 	return (unsigned long)current;
 }
 
-unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long current)
+static unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long current)
 {
 	/* 8-byte IVHD structures must be aligned to the 8-byte boundary. */
 	current = ALIGN_UP(current, 8);

@@ -17,7 +17,7 @@
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 
-static unsigned long _acpi_fill_ivrs_ioapic(unsigned long current, void *ioapic_base,
+static unsigned long acpi_fill_ivrs_ioapic(unsigned long current, void *ioapic_base,
 					    uint16_t src_devid, uint8_t dte_setting)
 {
 	ivrs_ivhd_special_t *ivhd_ioapic = (ivrs_ivhd_special_t *)current;
@@ -31,18 +31,6 @@ static unsigned long _acpi_fill_ivrs_ioapic(unsigned long current, void *ioapic_
 	current += sizeof(ivrs_ivhd_special_t);
 
 	return current;
-}
-
-unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long current)
-{
-	uint32_t dte_setting = IVHD_DTE_LINT_1_PASS | IVHD_DTE_LINT_0_PASS |
-			       IVHD_DTE_SYS_MGT_NO_TRANS | IVHD_DTE_NMI_PASS |
-			       IVHD_DTE_EXT_INT_PASS | IVHD_DTE_INIT_PASS;
-
-	current = _acpi_fill_ivrs_ioapic(current, VIO_APIC_VADDR,
-				      SMBUS_DEVFN, dte_setting);
-	return _acpi_fill_ivrs_ioapic(current, (u8 *)GNB_IO_APIC_ADDR,
-					PCI_DEVFN(0, 1), 0);
 }
 
 static unsigned long ivhd_describe_hpet(unsigned long current, uint8_t hndl, uint16_t src_devid)
@@ -204,7 +192,7 @@ static unsigned long acpi_ivhd_misc(unsigned long current, struct device *dev)
 	res = probe_resource(dev, IOMMU_IOAPIC_IDX);
 	if (res) {
 		/* Describe IOAPIC associated with the IOMMU */
-		current = _acpi_fill_ivrs_ioapic(current, (u8 *)(uintptr_t)res->base,
+		current = acpi_fill_ivrs_ioapic(current, (u8 *)(uintptr_t)res->base,
 				      PCI_DEVFN(0, 1) | (dev->link_list->secondary << 8), 0);
 	}
 
@@ -213,7 +201,7 @@ static unsigned long acpi_ivhd_misc(unsigned long current, struct device *dev)
 		/* Describe HPET */
 		current = ivhd_describe_hpet(current, 0x00, SMBUS_DEVFN);
 		/* Describe FCH IOAPICs */
-		current = _acpi_fill_ivrs_ioapic(current, VIO_APIC_VADDR,
+		current = acpi_fill_ivrs_ioapic(current, VIO_APIC_VADDR,
 				      SMBUS_DEVFN, dte_setting);
 	}
 

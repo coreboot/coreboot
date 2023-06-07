@@ -1298,6 +1298,36 @@ typedef struct acpi_einj {
 	acpi_einj_action_table_t action_table[ACTION_COUNT];
 } __packed acpi_einj_t;
 
+/* SPCR (Serial Port Console Redirection Table) */
+typedef struct acpi_spcr {
+	acpi_header_t header;
+	uint8_t interface_type;
+	uint8_t reserved[3];
+	acpi_addr_t base_address;
+	uint8_t interrupt_type;
+	uint8_t irq;
+	uint32_t global_system_interrupt;
+	uint8_t configured_baudrate;
+	uint8_t parity;
+	uint8_t stop_bits;
+	uint8_t flow_control;
+	uint8_t terminal_type;
+	uint8_t language;
+	uint16_t pci_did;
+	uint16_t pci_vid;
+	uint8_t pci_bus;
+	uint8_t pci_dev;
+	uint8_t pci_fun;
+	uint32_t pci_flags;
+	uint8_t pci_segment;
+	uint32_t uart_clock;
+	uint32_t precise_baud_rate;
+	uint16_t namespace_string_length;
+	uint16_t namespace_string_offset;
+	char namespacestring[];
+} __packed acpi_spcr_t;
+_Static_assert(sizeof(acpi_spcr_t) == 88, "acpi_spcr_t must have an 88 byte size\n");
+
 uintptr_t get_coreboot_rsdp(void);
 void acpi_create_einj(acpi_einj_t *einj, uintptr_t addr, u8 actions);
 

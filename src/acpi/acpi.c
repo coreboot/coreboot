@@ -1822,23 +1822,55 @@ uintptr_t get_coreboot_rsdp(void)
 	return coreboot_rsdp;
 }
 
+static void acpixtract_compatible_hexdump(const void *memory, size_t length)
+{
+	size_t i, j;
+	uint8_t *line;
+	size_t num_bytes;
+
+	for (i = 0; i < length; i += 16) {
+		num_bytes = MIN(length - i, 16);
+		line = ((uint8_t *)memory) + i;
+
+		printk(BIOS_SPEW, "    %04zX:", i);
+		for (j = 0; j < num_bytes; j++)
+			printk(BIOS_SPEW, " %02x", line[j]);
+		for (; j < 16; j++)
+			printk(BIOS_SPEW, "   ");
+		printk(BIOS_SPEW, "  ");
+		for (j = 0; j < num_bytes; j++)
+			printk(BIOS_SPEW, "%c",
+			       isprint(line[j]) ? line[j] : '.');
+		printk(BIOS_SPEW, "\n");
+	}
+}
+
+static void acpidump_print(void *table_ptr)
+{
+	const acpi_header_t *header = (acpi_header_t *)table_ptr;
+	const size_t table_size = header->length;
+	printk(BIOS_SPEW, "%.4s @ 0x0000000000000000\n", header->signature);
+	acpixtract_compatible_hexdump(table_ptr, table_size);
+	printk(BIOS_SPEW, "\n");
+}
+
 unsigned long write_acpi_tables(unsigned long start)
 {
 	unsigned long current;
 	acpi_rsdp_t *rsdp;
-	acpi_rsdt_t *rsdt;
-	acpi_xsdt_t *xsdt;
-	acpi_fadt_t *fadt;
-	acpi_facs_t *facs;
-	acpi_header_t *slic_file, *slic;
-	acpi_header_t *ssdt;
-	acpi_header_t *dsdt_file, *dsdt;
-	acpi_mcfg_t *mcfg;
-	acpi_tcpa_t *tcpa;
-	acpi_tpm2_t *tpm2;
-	acpi_madt_t *madt;
-	acpi_lpit_t *lpit;
-	acpi_bert_t *bert;
+	acpi_rsdt_t *rsdt = NULL;
+	acpi_xsdt_t *xsdt = NULL;
+	acpi_fadt_t *fadt = NULL;
+	acpi_facs_t *facs = NULL;
+	acpi_header_t *slic_file, *slic = NULL;
+	acpi_header_t *ssdt = NULL;
+	acpi_header_t *dsdt_file, *dsdt = NULL;
+	acpi_mcfg_t *mcfg = NULL;
+	acpi_tcpa_t *tcpa = NULL;
+	acpi_tpm2_t *tpm2 = NULL;
+	acpi_madt_t *madt = NULL;
+	acpi_lpit_t *lpit = NULL;
+	acpi_bert_t *bert = NULL;
 	struct device *dev;
 	unsigned long fw;
 	size_t slic_size, dsdt_size;
@@ -2101,6 +2133,19 @@ unsigned long write_acpi_tables(unsigned long start)
 	}
 
 	printk(BIOS_INFO, "ACPI: done.\n");
+
+	if (CONFIG(DEBUG_ACPICA_COMPATIBLE)) {
+		printk(BIOS_DEBUG, "Printing ACPI tables in ACPICA compatible format\n");
+		void *acpi_tables[] = {	rsdt, xsdt, fadt, facs, slic, ssdt, dsdt,
+					mcfg, tcpa, tpm2, madt, lpit, bert };
+		for (size_t i = 0; i < ARRAY_SIZE(acpi_tables); i++) {
+			if (acpi_tables[i] == NULL)
+				continue;
+			acpidump_print(acpi_tables[i]);
+		}
+		printk(BIOS_DEBUG, "Done printing ACPI tables in ACPICA compatible format\n");
+	}
+
 	return current;
 }
 

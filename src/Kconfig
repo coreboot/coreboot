@@ -1294,6 +1294,19 @@ config EM100
 	  mainboard code supports this. On supported Intel platforms this works
 	  by changing the settings in the descriptor.bin file.
 
+config DEBUG_ACPICA_COMPATIBLE
+	bool "Print out ACPI tables in ACPICA compatible format"
+	depends on HAVE_ACPI_TABLES
+	help
+	  Select this to print out ACPI tables in an ACPICA compatible
+	  format. Set the console loglevel to verbosity 'SPEW'.
+	  To analyze ACPI tables capture the coreboot log between
+	  "Printing ACPI in ACPICA compatible table" and "Done printing
+	  ACPI in ACPICA compatible table".
+	  Remove the prefix "[SPEW ]  " and then issue 'acpixtract -a dump'
+	  to extract all the tables. Then use 'iasl -d' on the .dat files
+	  to decompile the tables.
+
 endmenu
 
 ###############################################################################

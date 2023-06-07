@@ -3,6 +3,7 @@
 #include <acpi/acpigen.h>
 #include <amdblocks/acpi.h>
 #include <amdblocks/alib.h>
+#include <amdblocks/data_fabric.h>
 #include <amdblocks/memmap.h>
 #include <amdblocks/ioapic.h>
 #include <arch/ioapic.h>
@@ -143,7 +144,7 @@ static void read_resources(struct device *dev)
 	mmconf_resource(dev, idx++);
 
 	/* GNB IOAPIC resource */
-	gnb_apic = new_resource(dev, idx++);
+	gnb_apic = new_resource(dev, IOMMU_IOAPIC_IDX);
 	gnb_apic->base = GNB_IO_APIC_ADDR;
 	gnb_apic->size = 0x00001000;
 	gnb_apic->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;

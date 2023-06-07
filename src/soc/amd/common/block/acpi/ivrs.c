@@ -206,9 +206,6 @@ static unsigned long acpi_ivhd_misc(unsigned long current, struct device *dev)
 		/* Describe IOAPIC associated with the IOMMU */
 		current = _acpi_fill_ivrs_ioapic(current, (u8 *)(uintptr_t)res->base,
 				      PCI_DEVFN(0, 1) | (dev->link_list->secondary << 8), 0);
-	} else if (dev->link_list->secondary == 0) {
-		current = _acpi_fill_ivrs_ioapic(current, (u8 *)GNB_IO_APIC_ADDR,
-					PCI_DEVFN(0, 1), 0);
 	}
 
 	/* If the domain has secondary bus as zero then associate HPET & FCH IOAPIC */

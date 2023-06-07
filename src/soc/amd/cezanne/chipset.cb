@@ -28,6 +28,7 @@ chip soc/amd/cezanne
 			device pci 0.1 alias gfx_hda off end # Display HD Audio Controller (GFXAZ)
 			device pci 0.2 alias crypto off end # Crypto Coprocessor
 			device pci 0.3 alias xhci_0 off
+				ops xhci_pci_ops
 				chip drivers/usb/acpi
 					register "type" = "UPC_TYPE_HUB"
 					device usb 0.0 alias xhci_0_root_hub off
@@ -53,6 +54,7 @@ chip soc/amd/cezanne
 				end
 			end
 			device pci 0.4 alias xhci_1 off
+				ops xhci_pci_ops
 				chip drivers/usb/acpi
 					register "type" = "UPC_TYPE_HUB"
 					device usb 0.0 alias xhci_1_root_hub off

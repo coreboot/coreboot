@@ -251,20 +251,3 @@ const struct device_operations xhci_pci_ops = {
 	.acpi_fill_ssdt		= xhci_fill_ssdt,
 	.acpi_name		= xhci_acpi_name,
 };
-
-static const unsigned short amd_pci_device_ids[] = {
-	PCI_DID_AMD_FAM17H_MODEL18H_XHCI0,
-	PCI_DID_AMD_FAM17H_MODEL18H_XHCI1,
-	PCI_DID_AMD_FAM17H_MODEL20H_XHCI0,
-	PCI_DID_AMD_FAM17H_MODEL60H_XHCI,
-	PCI_DID_AMD_FAM17H_MODELA0H_XHCI0,
-	PCI_DID_AMD_FAM17H_MODELA0H_XHCI1,
-	PCI_DID_AMD_FAM17H_MODELA0H_XHCI2,
-	0
-};
-
-static const struct pci_driver xhci_pci_driver __pci_driver = {
-	.ops = &xhci_pci_ops,
-	.vendor = PCI_VID_AMD,
-	.devices = amd_pci_device_ids,
-};

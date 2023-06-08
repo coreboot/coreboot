@@ -178,7 +178,6 @@ Device (PDRC)
 		Memory32Fixed (ReadWrite, CONFIG_FIXED_MCHBAR_MMIO_BASE, MCH_BASE_SIZE)
 		Memory32Fixed (ReadWrite, CONFIG_FIXED_DMIBAR_MMIO_BASE, DMI_BASE_SIZE)
 		Memory32Fixed (ReadWrite, CONFIG_FIXED_EPBAR_MMIO_BASE, EP_BASE_SIZE)
-		Memory32Fixed (ReadWrite, CONFIG_ECAM_MMCONF_BASE_ADDRESS, CONFIG_ECAM_MMCONF_LENGTH)
 		Memory32Fixed (ReadWrite, 0xfed20000, 0x00020000) // TXT
 		Memory32Fixed (ReadWrite, 0xfed40000, 0x00005000) // TPM
 		Memory32Fixed (ReadWrite, 0xfed45000, 0x0004b000) // Misc ICH

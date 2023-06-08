@@ -15,7 +15,6 @@ Device (PDRC)
 		Memory32Fixed(ReadWrite, 0, 0x00008000, MCHB)
 		Memory32Fixed(ReadWrite, 0, 0x00001000, DMIB)
 		Memory32Fixed(ReadWrite, 0, 0x00001000, EGPB)
-		Memory32Fixed(ReadWrite, 0, 0x04000000, PCIX)
 		Memory32Fixed(ReadWrite, 0xfed20000, 0x00020000) // Misc ICH
 		Memory32Fixed(ReadWrite, 0xfed40000, 0x00005000) // TPM TIS
 		Memory32Fixed(ReadWrite, 0xfed45000, 0x0004b000) // Misc ICH
@@ -36,12 +35,6 @@ Device (PDRC)
 
 		CreateDwordField (PDRS, ^EGPB._BAS, EBR0)
 		EBR0 = \_SB.PCI0.MCHC.EPBR << 12
-
-		CreateDwordField (PDRS, ^PCIX._BAS, XBR0)
-		XBR0 = \_SB.PCI0.MCHC.PXBR << 26
-
-		CreateDwordField (PDRS, ^PCIX._LEN, XSZ0)
-		XSZ0 = 0x10000000 >> \_SB.PCI0.MCHC.PXSZ
 
 		Return(PDRS)
 	}

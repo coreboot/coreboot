@@ -121,8 +121,6 @@ Device (PDRC)
 	Name (_UID, 1)
 
 	Name (PDRS, ResourceTemplate() {
-		// PCIEXBAR memory range
-		Memory32Fixed(ReadOnly, CONFIG_ECAM_MMCONF_BASE_ADDRESS, CONFIG_ECAM_MMCONF_LENGTH)
 		// TSEG
 		Memory32Fixed(ReadOnly, 0x00000000, 0x00000000, TSMB)
 	})

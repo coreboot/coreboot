@@ -116,11 +116,6 @@ Device (PDRC)	/* PCI Device Resource Consumption */
 	{
 		Name (BUF0, ResourceTemplate ()
 		{
-			/* PCI Express BAR */
-			Memory32Fixed (ReadWrite,
-					CONFIG_ECAM_MMCONF_BASE_ADDRESS,
-					CONFIG_ECAM_MMCONF_LENGTH, PCIX)
-
 			/* Local APIC range (0xfee0_0000 to 0xfeef_ffff) */
 			Memory32Fixed (ReadOnly, 0x0fee00000, 0x00010000, LIOH)
 		})

@@ -35,6 +35,13 @@ static void mainboard_init(void *chip_info)
 
 	if (CONFIG(EC_GOOGLE_CHROMEEC))
 		mainboard_ec_init();
+
+	variant_devtree_update();
+}
+
+void __weak variant_devtree_update(void)
+{
+    /* Override dev tree settings per board */
 }
 
 static void mainboard_enable(struct device *dev)

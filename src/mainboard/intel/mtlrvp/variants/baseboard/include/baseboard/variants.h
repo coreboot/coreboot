@@ -20,4 +20,7 @@ void configure_gpio_pads(void);
 /* Function to initialize memory params based on variant */
 const struct mb_cfg *variant_memory_params(void);
 
+/* Modify devictree settings during ramstage */
+void variant_devtree_update(void);
+
 #endif /*__BASEBOARD_VARIANTS_H__ */

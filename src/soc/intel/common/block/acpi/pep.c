@@ -249,9 +249,11 @@ static void lpi_s0ix_entry(void *unused)
 	acpigen_write_if_end();
 
 	/* Handle Thunderbolt displays */
-	acpigen_write_if_cond_ref_of(THUNDERBOLT_DEVICE);
-	acpigen_write_store_int_to_namestr(1, THUNDERBOLT_IOM_DPOF);
-	acpigen_write_if_end();
+	if (CONFIG(FIRMWARE_CONNECTION_MANAGER)) {
+		acpigen_write_if_cond_ref_of(THUNDERBOLT_DEVICE);
+		acpigen_write_store_int_to_namestr(1, THUNDERBOLT_IOM_DPOF);
+		acpigen_write_if_end();
+	}
 }
 
 static void lpi_s0ix_exit(void *unused)
@@ -274,9 +276,11 @@ static void lpi_s0ix_exit(void *unused)
 	acpigen_write_if_end();
 
 	/* Handle Thunderbolt displays */
-	acpigen_write_if_cond_ref_of(THUNDERBOLT_DEVICE);
-	acpigen_write_store_int_to_namestr(0, THUNDERBOLT_IOM_DPOF);
-	acpigen_write_if_end();
+	if (CONFIG(FIRMWARE_CONNECTION_MANAGER)) {
+		acpigen_write_if_cond_ref_of(THUNDERBOLT_DEVICE);
+		acpigen_write_store_int_to_namestr(0, THUNDERBOLT_IOM_DPOF);
+		acpigen_write_if_end();
+	}
 }
 
 static void lpi_display_on(void *unused)

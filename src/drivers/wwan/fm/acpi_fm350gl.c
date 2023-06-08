@@ -62,8 +62,8 @@ static void wwan_fm350gl_acpi_method_fhrf(const struct device *parent_dev,
 
 		rtd3_config = config_of(config->rtd3dev);
 		if (rtd3_config->use_rp_mutex) {
-			snprintf(mutex_path, sizeof(mutex_path), acpi_device_path_join(parent_dev,
-				RP_MUTEX_NAME));
+			snprintf(mutex_path, sizeof(mutex_path), "%s",
+				acpi_device_path_join(parent_dev, RP_MUTEX_NAME));
 			/* Acquire root port mutex in case FHRF is called directly and not called from _RST */
 			acpigen_write_acquire(mutex_path, ACPI_MUTEX_NO_TIMEOUT);
 		}
@@ -129,8 +129,8 @@ static void wwan_fm350gl_acpi_method_shrf(const struct device *parent_dev,
 
 		rtd3_config = config_of(config->rtd3dev);
 		if (rtd3_config->use_rp_mutex) {
-			snprintf(mutex_path, sizeof(mutex_path), acpi_device_path_join(parent_dev,
-				RP_MUTEX_NAME));
+			snprintf(mutex_path, sizeof(mutex_path), "%s",
+				acpi_device_path_join(parent_dev, RP_MUTEX_NAME));
 			/* Acquire root port mutex */
 			acpigen_write_acquire(mutex_path, ACPI_MUTEX_NO_TIMEOUT);
 		}
@@ -184,8 +184,8 @@ static void wwan_fm350gl_acpi_method_rst(const struct device *parent_dev,
 
 		rtd3_config = config_of(config->rtd3dev);
 		if (rtd3_config->use_rp_mutex) {
-			snprintf(mutex_path, sizeof(mutex_path), acpi_device_path_join(parent_dev,
-				RP_MUTEX_NAME));
+			snprintf(mutex_path, sizeof(mutex_path), "%s",
+				acpi_device_path_join(parent_dev, RP_MUTEX_NAME));
 			/* Acquire root port mutex */
 			acpigen_write_acquire(mutex_path, ACPI_MUTEX_NO_TIMEOUT);
 		}
@@ -219,8 +219,8 @@ static void wwan_fm350gl_acpi_method_mrst_rst(const struct device *parent_dev,
 
 		rtd3_config = config_of(config->rtd3dev);
 		if (rtd3_config->use_rp_mutex) {
-			snprintf(mutex_path, sizeof(mutex_path), acpi_device_path_join(parent_dev,
-				RP_MUTEX_NAME));
+			snprintf(mutex_path, sizeof(mutex_path), "%s",
+				acpi_device_path_join(parent_dev, RP_MUTEX_NAME));
 			/* Acquire root port mutex */
 			acpigen_write_acquire(mutex_path, ACPI_MUTEX_NO_TIMEOUT);
 		}

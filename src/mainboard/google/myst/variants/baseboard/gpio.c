@@ -196,8 +196,22 @@ static const struct soc_amd_gpio early_gpio_table[] = {
 /* PCIE_RST needs to be brought high before FSP-M runs */
 static const struct soc_amd_gpio romstage_gpio_table[] = {
 	/* Deassert all AUX_RESET lines & PCIE_RST */
+	/* SD_AUX_RST */
+	PAD_GPO(GPIO_29, LOW),
+	/* SSD_AUX_RESET */
+	PAD_GPO(GPIO_31, LOW),
 	/* WLAN_AUX_RST_L (ACTIVE LOW) */
 	PAD_GPO(GPIO_38, HIGH),
+	/* WWAN_AUX_RST_L (ACTIVE LOW) */
+	PAD_GPO(GPIO_39, HIGH),
+	/* CLK_REQ0_L / WLAN */
+	PAD_NF(GPIO_92, CLK_REQ0_L, PULL_NONE),
+	/* CLK_REQ1_L / SD */
+	PAD_NF(GPIO_115, CLK_REQ1_L, PULL_NONE),
+	/* CLK_REQ2_L / WWAN */
+	PAD_NF(GPIO_116, CLK_REQ2_L, PULL_NONE),
+	/* CLK_REQ3_L / SSD */
+	PAD_NF(GPIO_131, CLK_REQ3_L, PULL_NONE),
 	/* PCIE_RST0_L */
 	PAD_NFO(GPIO_26, PCIE_RST0_L, HIGH),
 };

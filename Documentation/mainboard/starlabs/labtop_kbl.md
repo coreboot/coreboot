@@ -38,7 +38,7 @@
 
 ## Building coreboot
 
-Please follow the [Star Labs build instructions](../common/building.md) to build coreboot, using `config.starlabs_labtop_kbl` as config file.
+Please follow the [Star Labs build instructions](common/building.md) to build coreboot, using `config.starlabs_labtop_kbl` as config file.
 
 ## Flashing coreboot
 
@@ -62,4 +62,4 @@ Please follow the [Star Labs build instructions](../common/building.md) to build
 +---------------------+------------+
 ```
 
-Please see [here](../common/flashing.md) for instructions on how to flash with fwupd.
+Please see [here](common/flashing.md) for instructions on how to flash with fwupd.

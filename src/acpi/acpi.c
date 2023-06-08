@@ -110,7 +110,7 @@ void acpi_add_table(acpi_rsdp_t *rsdp, void *table)
 		i + 1, entries_num, rsdt->header.length);
 }
 
-int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u32 base,
+static int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u32 base,
 				u16 seg_nr, u8 start, u8 end)
 {
 	memset(mmconfig, 0, sizeof(*mmconfig));
@@ -197,7 +197,7 @@ static unsigned long acpi_create_madt_lapics(unsigned long current)
 	return current;
 }
 
-int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr,
+static int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr,
 				u32 gsi_base)
 {
 	ioapic->type = IO_APIC; /* I/O APIC structure */
@@ -244,7 +244,7 @@ static u16 acpi_sci_int(void)
 #endif
 }
 
-int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride,
+static int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride,
 		u8 bus, u8 source, u32 gsirq, u16 flags)
 {
 	irqoverride->type = IRQ_SOURCE_OVERRIDE; /* Interrupt source override */
@@ -257,7 +257,7 @@ int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride,
 	return irqoverride->length;
 }
 
-int acpi_create_madt_sci_override(acpi_madt_irqoverride_t *irqoverride)
+static int acpi_create_madt_sci_override(acpi_madt_irqoverride_t *irqoverride)
 {
 	u8 gsi, irq, flags;
 
@@ -331,7 +331,7 @@ unsigned long acpi_create_madt_lapic_nmis(unsigned long current)
 	return current;
 }
 
-unsigned long acpi_create_madt_lapics_with_nmis(unsigned long current)
+static unsigned long acpi_create_madt_lapics_with_nmis(unsigned long current)
 {
 	current = acpi_create_madt_lapics(current);
 	current = acpi_create_madt_lapic_nmis(current);

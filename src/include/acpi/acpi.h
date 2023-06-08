@@ -1363,15 +1363,9 @@ int acpi_create_cedt_chbs(acpi_cedt_chbs_t *chbs, u32 uid, u32 cxl_ver, u64 base
 int acpi_create_cedt_cfmws(acpi_cedt_cfmws_t *cfmws, u64 base_hpa, u64 window_size,
 	u8 eniw, u32 hbig, u16 restriction, u16 qtg_id, const u32 *interleave_target);
 
-int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr,
-			    u32 gsi_base);
 int acpi_create_madt_ioapic_from_hw(acpi_madt_ioapic_t *ioapic, u32 addr);
-int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride,
-				 u8 bus, u8 source, u32 gsirq, u16 flags);
-int acpi_create_madt_sci_override(acpi_madt_irqoverride_t *irqoverride);
 
 unsigned long acpi_create_madt_one_lapic(unsigned long current, u32 cpu, u32 apic);
-unsigned long acpi_create_madt_lapics_with_nmis(unsigned long current);
 
 unsigned long acpi_create_madt_lapic_nmis(unsigned long current);
 
@@ -1385,8 +1379,6 @@ int acpi_create_srat_mem(acpi_srat_mem_t *mem, u8 node, u32 basek, u32 sizek,
  */
 int acpi_create_srat_gia_pci(acpi_srat_gia_t *gia, u32 proximity_domain,
 		u16 seg, u8 bus, u8 dev, u8 func, u32 flags);
-int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u32 base,
-			      u16 seg_nr, u8 start, u8 end);
 unsigned long acpi_create_srat_lapics(unsigned long current);
 void acpi_create_srat(acpi_srat_t *srat,
 		      unsigned long (*acpi_fill_srat)(unsigned long current));

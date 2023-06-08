@@ -45,7 +45,7 @@ corebootPortingGuide.pdf: $(FIGS) corebootBuildingGuide.tex corebootPortingGuide
 	$(PDFLATEX) corebootBuildingGuide.tex
 
 sphinx: $(SPHINXDIR)
-	$(MAKE) -f Makefile.sphinx html BUILDDIR="$(SPHINXDIR)""
+	$(MAKE) -f Makefile.sphinx html BUILDDIR="$(SPHINXDIR)"
 
 clean-sphinx:
 	$(MAKE) -f Makefile.sphinx clean BUILDDIR="$(SPHINXDIR)"

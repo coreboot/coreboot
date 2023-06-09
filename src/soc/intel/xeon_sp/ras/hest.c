@@ -65,7 +65,7 @@ static unsigned long acpi_fill_hest(acpi_hest_t *hest)
 	next = hest + 1;
 	next += acpi_hest_add_ghes(next);
 	hest->error_source_count += 1;
-	header->length += next - current;
+	header->length = next - current;
 	return header->length;
 }
 

@@ -123,7 +123,7 @@ tagged_revision() {
 upstream_revision() {
 	local r=
 
-	r=$(git log remotes/origin/master -1 --format=format:%h)
+	r=$(git log remotes/origin/main -1 --format=format:%h)
 
 	if [ -z "$r" ]; then
 		r="unknown" # default to unknown

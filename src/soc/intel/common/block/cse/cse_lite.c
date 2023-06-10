@@ -17,6 +17,8 @@
 #include <soc/intel/common/reset.h>
 #include <timestamp.h>
 
+#include "cse_lite_cmos.h"
+
 #define BPDT_HEADER_SZ		sizeof(struct bpdt_header)
 #define BPDT_ENTRY_SZ		sizeof(struct bpdt_entry)
 #define SUBPART_HEADER_SZ	sizeof(struct subpart_hdr)
@@ -133,6 +135,17 @@ struct get_bp_info_rsp {
 	struct cse_bp_info bp_info;
 } __packed;
 
+enum cse_fw_state {
+	/* The CMOS and CBMEM have the current fw version. */
+	CSE_FW_WARM_BOOT,
+
+	/* The CMOS has the current fw version, and the CBMEM is wiped out. */
+	CSE_FW_COLD_BOOT,
+
+	/* The CMOS and CBMEM are not initialized or not same as running firmware version.*/
+	CSE_FW_INVALID,
+};
+
 static const char * const cse_regions[] = {"RO", "RW"};
 
 static struct cse_specific_info cse_info;
@@ -201,7 +214,7 @@ static const struct cse_bp_entry *cse_get_bp_entry(enum boot_partition_id bp,
 	return &cse_bp_info->bp_entries[bp];
 }
 
-static bool is_cbmem_cse_info_valid(const struct cse_specific_info *info)
+static bool is_cse_fpt_info_valid(const struct cse_specific_info *info)
 {
 	uint32_t crc = ~CRC(info, offsetof(struct cse_specific_info, crc), crc32_byte);
 
@@ -222,9 +235,36 @@ static bool is_cbmem_cse_info_valid(const struct cse_specific_info *info)
 	return true;
 }
 
-static void cbmem_store_cse_info_crc(struct cse_specific_info *info)
+static void store_cse_info_crc(struct cse_specific_info *info)
 {
 	info->crc = ~CRC(info, offsetof(struct cse_specific_info, crc), crc32_byte);
+}
+
+static enum cse_fw_state get_cse_state(const struct fw_version *cur_cse_fw_ver,
+	struct fw_version *cmos_cse_fw_ver, const struct fw_version *cbmem_cse_fw_ver)
+{
+	enum cse_fw_state state = CSE_FW_WARM_BOOT;
+	size_t size = sizeof(struct fw_version);
+	/*
+	 * Compare if stored CSE version (from the previous boot) is same as current
+	 * running CSE version.
+	 */
+	if (memcmp(cmos_cse_fw_ver, cur_cse_fw_ver, size)) {
+		/*
+		 * CMOS CSE versioin is invalid, possibly two scenarios
+		 * 1.  CSE FW update
+		 * 2.  First boot
+		 */
+		state = CSE_FW_INVALID;
+	} else {
+		/*
+		 * Check if current running CSE version is same as previous stored CSE
+		 * version aka CBMEM region is still valid.
+		 */
+		if (memcmp(cbmem_cse_fw_ver, cur_cse_fw_ver, size))
+			state = CSE_FW_COLD_BOOT;
+	}
+	return state;
 }
 
 /*
@@ -237,26 +277,44 @@ static void cse_store_rw_fw_version(const struct cse_bp_entry *cse_bp)
 		return;
 
 	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_ROMSTAGE)) {
-		memcpy(&(cse_info.cse_fwp_version.cur_cse_fw_version), &(cse_bp->fw_ver),
-			 sizeof(struct fw_version));
+		/* update current CSE version and return */
+		memcpy(&(cse_info.cse_fwp_version.cur_cse_fw_version),
+		 &(cse_bp->fw_ver), sizeof(struct fw_version));
 		return;
 	}
 
-	struct cse_specific_info *info = cbmem_add(CBMEM_ID_CSE_INFO, sizeof(*info));
-	if (!info)
+	struct cse_specific_info *cse_info_in_cbmem = cbmem_add(CBMEM_ID_CSE_INFO,
+		 sizeof(*cse_info_in_cbmem));
+	if (!cse_info_in_cbmem)
 		return;
 
 	/* Avoid CBMEM update if CBMEM already has persistent data */
-	if (is_cbmem_cse_info_valid(info))
+	if (is_cse_fpt_info_valid(cse_info_in_cbmem))
 		return;
 
-	memset(info, 0, sizeof(*info));
+	struct cse_specific_info cse_info_in_cmos;
+	cmos_read_fw_partition_info(&cse_info_in_cmos);
 
-	memcpy(&(info->cse_fwp_version.cur_cse_fw_version), &(cse_bp->fw_ver),
-		 sizeof(struct fw_version));
+	/* Get current cse firmware state */
+	enum cse_fw_state fw_state = get_cse_state(&(cse_bp->fw_ver),
+		 &(cse_info_in_cmos.cse_fwp_version.cur_cse_fw_version),
+		 &(cse_info_in_cbmem->cse_fwp_version.cur_cse_fw_version));
+
+	/* Reset CBMEM data and update current CSE version */
+	memset(cse_info_in_cbmem, 0, sizeof(*cse_info_in_cbmem));
+	memcpy(&(cse_info_in_cbmem->cse_fwp_version.cur_cse_fw_version),
+		 &(cse_bp->fw_ver), sizeof(struct fw_version));
 
 	/* Update the CRC */
-	cbmem_store_cse_info_crc(info);
+	store_cse_info_crc(cse_info_in_cbmem);
+
+	if (fw_state == CSE_FW_INVALID) {
+		/*
+		 * Current CMOS data is outdated, which could be due to CSE update or
+		 * rollback, hence, need to update CMOS with current CSE FPT versions.
+		 */
+		cmos_write_fw_partition_info(cse_info_in_cbmem);
+	}
 }
 
 #if CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_ROMSTAGE)
@@ -266,18 +324,35 @@ static void preram_cse_info_sync_to_cbmem(int is_recovery)
 	if (vboot_recovery_mode_enabled() || !CONFIG(SOC_INTEL_STORE_CSE_FW_VERSION))
 		return;
 
-	struct cse_specific_info *info = cbmem_add(CBMEM_ID_CSE_INFO, sizeof(*info));
-	if (!info)
+	struct cse_specific_info *cse_info_in_cbmem = cbmem_add(CBMEM_ID_CSE_INFO,
+		 sizeof(*cse_info_in_cbmem));
+	if (!cse_info_in_cbmem)
 		return;
 
-	/* Avoid sync into CBMEM if CBMEM already has persistent data */
-	if (is_cbmem_cse_info_valid(info))
+	/* Warm Reboot: Avoid sync into CBMEM if CBMEM already has persistent data */
+	if (is_cse_fpt_info_valid(cse_info_in_cbmem))
 		return;
 
-	memcpy(info, &cse_info, sizeof(struct cse_specific_info));
+	/* Update CBMEM with PRERAM CSE specific info and update the CRC */
+	memcpy(cse_info_in_cbmem, &cse_info, sizeof(struct cse_specific_info));
+	store_cse_info_crc(cse_info_in_cbmem);
 
-	/* Update the CRC */
-	cbmem_store_cse_info_crc(info);
+	struct cse_specific_info cse_info_in_cmos;
+	cmos_read_fw_partition_info(&cse_info_in_cmos);
+
+	if (!memcmp(&(cse_info_in_cmos.cse_fwp_version.cur_cse_fw_version),
+		 &(cse_info_in_cbmem->cse_fwp_version.cur_cse_fw_version),
+		 sizeof(struct fw_version))) {
+		/* Cold Reboot: Avoid sync into CMOS if CMOS already has persistent data */
+		if (is_cse_fpt_info_valid(&cse_info_in_cmos))
+			return;
+	}
+
+	/*
+	 * Current CMOS data is outdated, which could be due to CSE update or
+	 * rollback, hence, need to update CMOS with current CSE FPT versions.
+	 */
+	cmos_write_fw_partition_info(cse_info_in_cbmem);
 }
 
 CBMEM_CREATION_HOOK(preram_cse_info_sync_to_cbmem);
@@ -1230,7 +1305,7 @@ static void do_cse_fw_sync(void)
 		cse_trigger_vboot_recovery(CSE_LITE_SKU_DATA_WIPE_ERROR);
 
 	/*
-	 * cse firmware update is skipped if SOC_INTEL_CSE_RW_UPDATE is not defined and
+	 * CSE firmware update is skipped if SOC_INTEL_CSE_RW_UPDATE is not defined and
 	 * runtime debug control flag is not enabled. The driver triggers recovery if CSE CBFS
 	 * RW metadata or CSE CBFS RW blob is not available.
 	 */
@@ -1318,6 +1393,14 @@ static enum cb_err cse_get_fpt_partition_info(enum fpt_partition_id id,
 	return send_get_fpt_partition_info_cmd(id, resp);
 }
 
+static bool is_ish_version_valid(struct cse_fw_ish_version_info *version)
+{
+	const struct fw_version invalid_fw = {0, 0, 0, 0};
+	if (!memcmp(&version->cur_ish_fw_version, &invalid_fw, sizeof(struct fw_version)))
+		return false;
+	return true;
+}
+
 /*
  * Helper function to read ISH version from CSE FPT using HECI command.
  *
@@ -1333,37 +1416,55 @@ static void store_ish_version(void)
 	if (vboot_recovery_mode_enabled())
 		return;
 
-	struct cse_specific_info *info = cbmem_find(CBMEM_ID_CSE_INFO);
-	if (info == NULL)
+	struct cse_specific_info *cse_info_in_cbmem = cbmem_find(CBMEM_ID_CSE_INFO);
+	if (cse_info_in_cbmem == NULL)
 		return;
 
-	struct cse_fw_partition_info *version = &(info->cse_fwp_version);
-	size_t size = sizeof(struct fw_version);
+	struct cse_specific_info cse_info_in_cmos;
+	cmos_read_fw_partition_info(&cse_info_in_cmos);
 
-	/*
-	 * Compare if stored cse version (from the previous boot) is same as current
-	 * running cse version.
-	 */
-	if (memcmp(&version->ish_partition_info.prev_cse_fw_version,
-		&version->cur_cse_fw_version, sizeof(struct fw_version))) {
-		/*
-		 * Current running CSE version is different than previous stored CSE version
-		 * which could be due to CSE update or rollback, hence, need to send ISHC
-		 * partition info cmd to know the currently running ISH version.
-		 */
+	struct cse_fw_partition_info *cbmem_version = &(cse_info_in_cbmem->cse_fwp_version);
+	struct cse_fw_partition_info *cmos_version = &(cse_info_in_cmos.cse_fwp_version);
 
-		struct fw_version_resp resp;
-		if (cse_get_fpt_partition_info(FPT_PARTITION_NAME_ISHC, &resp) == CB_SUCCESS) {
-			/* Update stored cse version with current version */
-			memcpy(&(version->ish_partition_info.prev_cse_fw_version),
-				&(version->cur_cse_fw_version), size);
+	/* Get current cse firmware state */
+	enum cse_fw_state fw_state = get_cse_state(
+		 &(cbmem_version->cur_cse_fw_version),
+		 &(cmos_version->ish_partition_info.prev_cse_fw_version),
+		 &(cbmem_version->ish_partition_info.prev_cse_fw_version));
 
-			/* Since cse version has been updated, ish version needs to be updated. */
-			memcpy(&(version->ish_partition_info.cur_ish_fw_version),
-				&(resp.manifest_data.version), size);
+	if (fw_state == CSE_FW_WARM_BOOT) {
+		return;
+	} else {
+		if (fw_state == CSE_FW_COLD_BOOT &&
+			 is_ish_version_valid(&(cmos_version->ish_partition_info))) {
+			/* CMOS data is persistent across cold boots */
+			memcpy(&(cse_info_in_cbmem->cse_fwp_version.ish_partition_info),
+				&(cse_info_in_cmos.cse_fwp_version.ish_partition_info),
+				sizeof(struct cse_fw_ish_version_info));
+			store_cse_info_crc(cse_info_in_cbmem);
+		} else {
+			/*
+			 * Current running CSE version is different than previous stored CSE version
+			 * which could be due to CSE update or rollback, hence, need to send ISHC
+			 * partition info cmd to know the currently running ISH version.
+			 */
+			struct fw_version_resp resp;
+			if (cse_get_fpt_partition_info(FPT_PARTITION_NAME_ISHC,
+				 &resp) == CB_SUCCESS) {
+				/* Update stored CSE version with current cse version */
+				memcpy(&(cbmem_version->ish_partition_info.prev_cse_fw_version),
+				 &(cbmem_version->cur_cse_fw_version),  sizeof(struct fw_version));
 
-			/* Update the CRC */
-			cbmem_store_cse_info_crc(info);
+				/* Retrieve and update current ish version */
+				memcpy(&(cbmem_version->ish_partition_info.cur_ish_fw_version),
+				 &(resp.manifest_data.version), sizeof(struct fw_version));
+
+				/* Update the CRC */
+				store_cse_info_crc(cse_info_in_cbmem);
+
+				/* Update CMOS with current CSE FPT versions.*/
+				cmos_write_fw_partition_info(cse_info_in_cbmem);
+			}
 		}
 	}
 }

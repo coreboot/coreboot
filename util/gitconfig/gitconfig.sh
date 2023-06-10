@@ -39,11 +39,11 @@ done
 for d in 3rdparty/{blobs,libhwbase,libgfxinit}; do
 	if [ -d $d ]; then
 		(cd $d || exit 1
-		 git config remote.origin.push HEAD:refs/for/master)
+		 git config remote.origin.push HEAD:refs/for/main)
 	fi
 done
 
-git config remote.origin.push HEAD:refs/for/master
+git config remote.origin.push HEAD:refs/for/main
 git config alias.sup "!git submodule update --remote --rebase && \
 git submodule update --init --checkout"
 

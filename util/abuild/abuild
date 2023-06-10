@@ -420,9 +420,15 @@ function compile_target
 
 	cd "${build_dir}" || return $?
 
+	timestamps="abuild.timestamps"
+	printf "Build started %s\n" "${ts_basetime_str}" > "${timestamps}"
+	printf "BASETIME_SECONDS %d\n" $ts_exec_shell >> "${timestamps}"
+	printf "TS_0 %d\n" $ts_0 >> "${timestamps}"
+	printf "TS_1 %d\n" $ts_1 >> "${timestamps}"
+	printf "TS_2 %d\n" $ts_2 >> "${timestamps}"
+
 	duration=$(ts_delta_seconds $ts_0 $ts_2)
 	duration_str=$(ts_delta_string $ts_0 $ts_2)
-
 	junit " <testcase classname='${TESTRUN}${testclass/#/.}' name='$BUILD_NAME' time='$duration' >"
 
 	if [ $MAKE_FAILED -eq 0 ]; then
@@ -452,6 +458,13 @@ function compile_target
 		sort "${build_dir}/config.h" | grep CONFIG_ > "${build_dir}/config.h.sorted"
 		sha256sum "${build_dir}/config.h.sorted" >> "${checksum_file}_config"
 	fi
+
+	stats_files="${build_dir}/${timestamps}"
+	if [ -f ${build_dir}/ccache.stats ]; then
+		stats_files="${stats_files} ${build_dir}/ccache.stats"
+	fi
+	flock -F -w 0.1 $TARGET/.statslock tar -rf ${stats_archive} ${stats_files} 2> /dev/null
+
 	if [ "$clean_work" = "true" ]; then
 		rm -rf "${build_dir}"
 	fi
@@ -914,6 +927,8 @@ fi
 FAILED_BOARDS="$(realpath ${TARGET}/failed_boards)"
 PASSED_BOARDS="$(realpath ${TARGET}/passing_boards)"
 
+stats_archive="$TARGET/statistics.tar"
+
 # Generate a single xcompile for all boards
 export xcompile="${TARGET}/xcompile"
 
@@ -921,6 +936,9 @@ if [ "$recursive" = "false" ]; then
 	rm -f "${xcompile}"
 	$MAKE -C"${ROOT}" obj="$TARGET/temp" objutil="$TARGET/sharedutils" UPDATED_SUBMODULES=1 "${xcompile}" || exit 1
 	rm -f "$FAILED_BOARDS" "$PASSED_BOARDS"
+
+	# Initialize empty statistics archive
+	tar -cf "${stats_archive}" "${xcompile}" 2> /dev/null
 fi
 
 USE_XARGS=0

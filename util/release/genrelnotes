@@ -28,7 +28,7 @@ fi
 
 # Try to verify that the repo is clean before losing state.
 if ! git diff-index --quiet --cached HEAD 2>/dev/null || \
-	[ "$(git diff origin/master --shortstat 2>/dev/null | tail -n1)" != "" ]; then
+	[ "$(git diff origin/main --shortstat 2>/dev/null | tail -n1)" != "" ]; then
 	echo "ERROR: repo is not clean.  Exiting." >&2
 	exit 1
 fi
@@ -38,7 +38,7 @@ if [ "$1" == "--help" ] || [ -z "$1" ] || [ -z "$2" ]; then
 	echo
 	echo "Usage: $0 <old_version> <new_version> [release notes file]"
 	echo "Old version should be a tag (4.1), a branch (origin/4.1), or a commit id"
-	echo "New version can be a branch (origin/master) a tag (4.2), or a commit id"
+	echo "New version can be a branch (origin/main) a tag (4.2), or a commit id"
 	echo "Logfile can be a new file or an existing file to update"
 	echo "Example: \"$0 origin/4.1 4.2 rnotes.txt\""
 	echo
@@ -187,7 +187,7 @@ version_ctrl_c() {
 	printf "\n Cleaning up and exiting.\n" >&2
 	find 'src' -name 'gnumakefile' \
 		-exec rename 's/gnumakefile/Makefile\.inc/' {} \;
-	git checkout origin/master > /dev/null 2>&1
+	git checkout origin/main > /dev/null 2>&1
 	git submodule update --init --checkout  > /dev/null 2>&1
 	rm "$LOGFILE"
 	exit 1;
@@ -298,7 +298,7 @@ southbridge_list_new=$(find_areas "src/southbridge" "Kconfig" "")
 printf "Calculating new SLOC\n"
 NEW_SLOC=$(get_sloc)
 
-git checkout origin/master  > /dev/null 2>&1
+git checkout origin/main  > /dev/null 2>&1
 git submodule update --init --checkout  > /dev/null 2>&1
 trap "" SIGINT
 

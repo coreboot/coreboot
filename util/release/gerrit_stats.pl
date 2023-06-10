@@ -715,7 +715,7 @@ sub check_arguments {
 sub usage {
     print "gerrit_stats <options> [Old version] [New version]\n";
     print "Old version should be a tag (4.1), a branch (origin/4.1), or a commit id\n";
-    print "New version can be 'HEAD' a branch (origin/master) a tag (4.2), or a commit id\n";
+    print "New version can be 'HEAD' a branch (origin/main) a tag (4.2), or a commit id\n";
     print " Options:\n";
     print "    u | url [url]           url with username.\n";
     print "Example: \"$0 -u Gaumless\@review.coreboot.org:29418 origin/4.1 4.2\"\n";

@@ -94,6 +94,10 @@ skipconfig_set=""
 # Skip builds with this Kconfig value notset
 skipconfig_unset=""
 
+# EPOCHTIME
+ts_exec_shell=$(printf "%(%s)T" -2)
+ts_basetime_str=$(date -u --date=@${ts_exec_shell})
+
 trap interrupt INT
 
 function interrupt
@@ -364,6 +368,42 @@ function check_config
 	return 0
 }
 
+# Counting microseconds since start of shell
+function add_timestamp
+{
+	local now=${EPOCHREALTIME}
+	local seconds=$(echo $now | cut -f 1 -d '.')
+	local usecs=$(echo $now | cut -f 2 -d '.')
+	seconds=$(( seconds - ts_exec_shell ))
+	usecs=$(( seconds * 1000 * 1000 + 10#$usecs ))
+	printf "%s" $usecs
+}
+
+function ts_delta_seconds
+{
+	local delta=$(( ($2 - $1) / (1000 * 1000) ))
+	printf "%s" $delta
+}
+
+function ts_delta_string
+{
+	local ts_minutes
+	local ts_seconds
+	local delta
+
+	delta=$(( ($2 - $1) / 1000 ))
+	ts_minutes=$(( delta / (60 * 1000) ))
+	delta=$(( delta % (60 * 1000) ))
+	ts_seconds=$(( delta / 1000))
+	delta=$(( delta % 1000 ))
+
+	if [ $ts_minutes -ne 0 ] ; then
+		printf "%d min %d sec" $ts_minutes $ts_seconds
+	else
+		printf "%d.%03d seconds" $ts_seconds $delta
+	fi
+}
+
 function compile_target
 {
 	local BUILD_NAME=$1
@@ -371,14 +411,18 @@ function compile_target
 	if [ "$quiet" == "false" ]; then echo "  Compiling $MAINBOARD image$cpuconfig..."; fi
 
 	CURR=$( pwd )
-	#stime=`perl -e 'print time();' 2>/dev/null || date +%s`
+
+	ts_1=$(add_timestamp)
 	eval "$BUILDPREFIX" "$MAKE" "$verboseopt" DOTCONFIG="${build_dir}/config.build" obj="${build_dir}" objutil="$TARGET/sharedutils" BUILD_TIMELESS=$TIMELESS \
 		&> "${build_dir}/make.log" ; \
 		MAKE_FAILED=$?
+	ts_2=$(add_timestamp)
+
 	cd "${build_dir}" || return $?
 
-	etime=$(perl -e 'print time();' 2>/dev/null || date +%s)
-	duration=$(( etime - stime ))
+	duration=$(ts_delta_seconds $ts_0 $ts_2)
+	duration_str=$(ts_delta_string $ts_0 $ts_2)
+
 	junit " <testcase classname='${TESTRUN}${testclass/#/.}' name='$BUILD_NAME' time='$duration' >"
 
 	if [ $MAKE_FAILED -eq 0 ]; then
@@ -386,14 +430,14 @@ function compile_target
 		junitfile make.log
 		junit "</system-out>"
 		printf "ok\n" > compile.status
-		printf "%s built successfully. (took %ss)\n" "$BUILD_NAME" "${duration}"
+		printf "%s built successfully. (took %s)\n" "$BUILD_NAME" "${duration_str}"
 		echo "$BUILD_NAME" >> "$PASSED_BOARDS"
 	else
 		junit "<failure type='BuildFailed'>"
 		junitfile make.log
 		junit "</failure>"
 		printf "failed\n" > compile.status
-		printf "%s build FAILED after %ss!\nLog excerpt:\n" "$BUILD_NAME" "${duration}"
+		printf "%s build FAILED after %s!\nLog excerpt:\n" "$BUILD_NAME" "${duration_str}"
 		tail -n $CONTEXT make.log 2> /dev/null || tail -$CONTEXT make.log
 		if [ "$clean_work" = "true" ]; then
 			echo "$BUILD_NAME" >> "$FAILED_BOARDS"
@@ -448,7 +492,8 @@ function build_config
 	XMLFILE="$ABSPATH/${BUILD_NAME}.xml"
 	rm -f "${XMLFILE}"
 
-	stime=$(perl -e 'print time();' 2>/dev/null || date +%s)
+	ts_0=$(add_timestamp)
+
 	create_buildenv "$BUILD_NAME" "$build_dir" "$config_file"
 	local BUILDENV_CREATED=$?
 
@@ -925,11 +970,11 @@ build_targets()
 	ABSPATH="$(cd "$TARGET/abuild" && pwd)"
 	local XMLFILE="$ABSPATH/__util.xml"
 	rm -f "${XMLFILE}"
-	stime=$(perl -e 'print time();' 2>/dev/null || date +%s)
+	stime=$(add_timestamp)
 	$BUILDPREFIX "$MAKE" -j "$cpus" DOTCONFIG="$TMPCFG" obj="$TARGET/temp" objutil="$TARGET/sharedutils" tools > "$TARGET/sharedutils/make.log" 2>&1
 	local ret=$?
-	etime=$(perl -e 'print time();' 2>/dev/null || date +%s)
-	local duration=$(( etime - stime ))
+	etime=$(add_timestamp)
+	local duration=$(ts_delta_seconds $stime $etime)
 
 	junit " <testcase classname='util' name='all' time='$duration' >"
 	if [ $ret -eq 0 ]; then

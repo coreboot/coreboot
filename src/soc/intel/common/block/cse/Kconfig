@@ -45,22 +45,23 @@ config SOC_INTEL_COMMON_BLOCK_HECI1_DISABLE_USING_PCR
 	  Use this config for SoC platform prior to CNL PCH (with postboot_sai implemented)
 	  to make `HECI1` device disable using private configuration register (PCR) write.
 
-config SOC_INTEL_STORE_CSE_FPT_PARTITION_VERSION
+config SOC_INTEL_STORE_ISH_FW_VERSION
 	bool
 	default n
 	depends on DRIVERS_INTEL_ISH
 	help
-	  This configuration option stores CSE FPT partitions' version in CBMEM memory.
-	  This information can be used to identify the currently running firmware partition
+	  This configuration option stores ISH version in CBMEM area.
+	  This information can be used to identify the currently running ISH firmware
 	  version.
 
-	  The cost of sending HECI command to read the CSE FPT is significant (~200ms)
-	  hence, the idea is to read the CSE RW version on every cold reset (to cover
-	  the CSE update scenarios) and store into CBMEM to avoid the cost of resending
-	  the HECI command in all consecutive warm boots.
+	  ISH BUP is sitting inside the CSE firmware partition. The way to retrieve the
+	  ISH version is by sending the HECI command to read the CSE FPT. The cost of sending
+	  HECI command to read the CSE FPT is significant (~200ms) hence, the idea is to
+	  read the CSE RW version on every cold reset (to cover the CSE update scenarios)
+	  and store into CBMEM to avoid the cost of resending the HECI command in all
+	  consecutive warm boots.
 
-	  Later boot stages can just read the CBMEM ID to retrieve the ISH version if
-	  required.
+	  Later boot stages can just read the CBMEM ID to retrieve the ISH version.
 
 	  Additionally, ensure this feature is platform specific hence, only enabled
 	  for the platform that would like to store the ISH version into the CBMEM and

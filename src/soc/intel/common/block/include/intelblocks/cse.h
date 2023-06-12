@@ -528,7 +528,7 @@ void soc_disable_heci1_using_pcr(void);
  * identifying the UFS enabled device is enough to conclude if ISH partition is
  * available.
  */
-#if CONFIG(SOC_INTEL_STORE_CSE_FPT_PARTITION_VERSION)
+#if CONFIG(SOC_INTEL_STORE_ISH_FW_VERSION)
 bool soc_is_ish_partition_enabled(void);
 #else
 static inline bool soc_is_ish_partition_enabled(void)

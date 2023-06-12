@@ -162,7 +162,7 @@ const char *soc_acpi_name(const struct device *dev)
 }
 #endif
 
-#if CONFIG(SOC_INTEL_STORE_CSE_FPT_PARTITION_VERSION)
+#if CONFIG(SOC_INTEL_STORE_ISH_FW_VERSION)
 /*
  * SoC override API to identify if ISH Firmware existed inside CSE FPT.
  *

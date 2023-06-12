@@ -114,6 +114,7 @@ static const struct device_name infineon_devices[] = {
 #if CONFIG(TPM2)
 	{0x001a, "SLB9665 TT 2.0"},
 	{0x001b, "SLB9670 TT 2.0"},
+	{0x001d, "SLB9672 TT 2.0"},
 #else
 	{0x001a, "SLB9660 TT 1.2"},
 	{0x001b, "SLB9670 TT 1.2"},

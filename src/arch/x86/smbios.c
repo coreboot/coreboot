@@ -219,6 +219,65 @@ static void smbios_fill_dimm_serial_number(const struct dimm_info *dimm,
 	t->serial_number = smbios_add_string(t->eos, serial);
 }
 
+static const char *memory_device_type(u8 code)
+{
+	/* SMBIOS spec 3.6 7.18.2 */
+	static const char * const type[] = {
+		"Other",
+		"Unknown",
+		"DRAM",
+		"EDRAM",
+		"VRAM",
+		"SRAM",
+		"RAM",
+		"ROM",
+		"Flash",
+		"EEPROM",
+		"FEPROM",
+		"EPROM",
+		"CDRAM",
+		"3DRAM",
+		"SDRAM",
+		"SGRAM",
+		"RDRAM",
+		"DDR",
+		"DDR2",
+		"DDR2 FB-DIMM",
+		"Reserved",
+		"Reserved",
+		"Reserved",
+		"DDR3",
+		"FBD2",
+		"DDR4", /* 0x1A */
+		"LPDDR",
+		"LPDDR2",
+		"LPDDR3",
+		"LPDDR4",
+		"Logical non-volatile device",
+		"HBM",
+		"HBM2",
+		"DDR5",
+		"LPDDR5",
+		"HBM3", /* 0x24 */
+	};
+
+	if (code >= MEMORY_TYPE_OTHER && code <= MEMORY_TYPE_HBM3)
+		return type[code - 1];
+	return "Unsupproted";
+}
+
+static void dump_smbios_type17(struct dimm_info *dimm)
+{
+	printk(BIOS_INFO, "memory at Channel-%d-DIMM-%d", dimm->channel_num, dimm->dimm_num);
+	printk(BIOS_INFO, " type is %s\n", memory_device_type(dimm->ddr_type));
+	printk(BIOS_INFO, "memory part number is %s\n", dimm->module_part_number);
+	if (dimm->max_speed_mts != 0)
+		printk(BIOS_INFO, "memory max speed is %d MT/s\n", dimm->max_speed_mts);
+	printk(BIOS_INFO, "memory speed is %d MT/s\n",
+					dimm->configured_speed_mts ? : dimm->ddr_frequency);
+	printk(BIOS_INFO, "memory size is %d MiB\n", dimm->dimm_size);
+}
+
 static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 					 unsigned long *current, int *handle,
 					 int type16_handle)
@@ -273,6 +332,9 @@ static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
 	t->phys_memory_array_handle = type16_handle;
 
 	*handle += 1;
+	if (CONFIG(DUMP_SMBIOS_TYPE17))
+		dump_smbios_type17(dimm);
+
 	return smbios_full_table_len(&t->header, t->eos);
 }
 

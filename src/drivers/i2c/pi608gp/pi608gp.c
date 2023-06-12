@@ -102,7 +102,7 @@ pi608gp_reg_read(struct device *dev, uint8_t port, uint32_t reg_addr, uint32_t *
 	}
 
 	/* Retrieve back the value from the received SMBus packet in big endian order. */
-	*val = read_be32((void *) buf);
+	*val = read_be32((void *)buf);
 
 	return CB_SUCCESS;
 }
@@ -122,7 +122,7 @@ pi608gp_reg_write(struct device *dev, uint8_t port, uint32_t reg_addr, uint32_t 
 	};
 
 	/* Insert register value to write in BE order after the header. */
-	write_be32((void *) &buf[4], val);
+	write_be32((void *)&buf[4], val);
 
 	/* Perform the register write */
 	ret = smbus_block_write(dev, PI608GP_CMD_BLK_WR, sizeof(buf), buf);
@@ -134,8 +134,9 @@ pi608gp_reg_write(struct device *dev, uint8_t port, uint32_t reg_addr, uint32_t 
 	return CB_SUCCESS;
 }
 
-static enum cb_err pi608gp_reg_update(struct device *dev, uint8_t port, uint32_t reg_addr,
-		uint32_t and_mask, uint32_t or_mask)
+static enum cb_err
+pi608gp_reg_update(struct device *dev, uint8_t port, uint32_t reg_addr, uint32_t and_mask,
+		   uint32_t or_mask)
 {
 	uint32_t val;
 
@@ -153,7 +154,7 @@ static enum cb_err pi608gp_reg_update(struct device *dev, uint8_t port, uint32_t
 
 static void pi608gp_init(struct device *dev)
 {
-	const uint8_t port = 0; /* Only port 0 is being configured */
+	const uint8_t port = 0; /* Only the upstream port is being configured */
 	struct drivers_i2c_pi608gp_config *config = dev->chip_info;
 	uint8_t amp_lvl, deemph_lvl;
 

@@ -1,10 +1,7 @@
 chip soc/intel/alderlake
-	# HACK: Limit PL4 to PL2 to prevent power-off when system is booted on
-	# battery power. This seems to only happen with the i7 units.
 	register "power_limits_config[ADL_P_282_442_482_28W_CORE]" = "{
 		.tdp_pl1_override = 20,
 		.tdp_pl2_override = 56,
-		.tdp_pl4 = 56, // FIXME: Set to 65
 	}"
 
 	# GPE configuration

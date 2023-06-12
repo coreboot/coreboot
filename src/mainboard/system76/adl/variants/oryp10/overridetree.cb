@@ -1,10 +1,8 @@
 chip soc/intel/alderlake
-	# HACK: Limit PL4 to prevent power off on battery power.
 	register "power_limits_config[ADL_P_642_682_45W_CORE]" = "{
 		.tdp_pl1_override = 45,
 		.tdp_pl2_override = 115,
 		.tdp_psyspl2 = 135,
-		.tdp_pl4 = 72,
 	}"
 
 	# Thermal

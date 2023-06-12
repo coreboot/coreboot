@@ -84,5 +84,6 @@ make
 +---------------------+------------+
 | External flashing   | yes        |
 +---------------------+------------+
+```
 
 Please see [here](../common/flashing.md) for instructions on how to flash with fwupd.

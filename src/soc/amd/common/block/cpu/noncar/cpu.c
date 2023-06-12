@@ -35,7 +35,7 @@ void set_cstate_io_addr(void)
 	wrmsr(MSR_CSTATE_ADDRESS, cst_addr);
 }
 
-static uint32_t get_smee_reserved_address_bits(void)
+static uint32_t get_sme_reserved_address_bits(void)
 {
 	if (rdmsr(SYSCFG_MSR).raw & SYSCFG_MSR_SMEE)
 		return (cpuid_ebx(CPUID_EBX_MEM_ENCRYPT) &
@@ -47,5 +47,5 @@ static uint32_t get_smee_reserved_address_bits(void)
 
 uint32_t get_usable_physical_address_bits(void)
 {
-	return cpu_phys_address_size() - get_smee_reserved_address_bits();
+	return cpu_phys_address_size() - get_sme_reserved_address_bits();
 }

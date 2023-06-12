@@ -7,6 +7,7 @@
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <crc_byte.h>
+#include <elog.h>
 #include <fmap.h>
 #include <intelbasecode/debug_feature.h>
 #include <intelblocks/cse.h>
@@ -986,6 +987,8 @@ static enum csme_failure_reason cse_update_rw(const void *cse_cbfs_rw, const siz
 
 static enum cb_err cse_prep_for_rw_update(enum cse_update_status status)
 {
+	if (status == CSE_UPDATE_CORRUPTED)
+		elog_add_event(ELOG_TYPE_PSR_DATA_LOST);
 	/*
 	 * To set CSE's operation mode to HMRFPO mode:
 	 * 1. Ensure CSE to boot from RO(BP1)
@@ -1095,9 +1098,10 @@ static void backup_psr_data(void)
 {
 	printk(BIOS_DEBUG, "cse_lite: Initiate PSR data backup flow\n");
 	/* Switch CSE to RW to send PSR_HECI_FW_DOWNGRADE_BACKUP command */
-	if (cse_boot_to_rw() != CB_SUCCESS)
+	if (cse_boot_to_rw() != CB_SUCCESS) {
+		elog_add_event(ELOG_TYPE_PSR_DATA_LOST);
 		goto update_and_exit;
-
+	}
 	/*
 	 * The function to check for PSR feature support can only be called after
 	 * switching to RW partition. The command MKHI_FWCAPS_GET_FW_FEATURE_STATE
@@ -1116,6 +1120,7 @@ static void backup_psr_data(void)
 	if (!cse_is_hfs1_cws_normal() || !cse_is_hfs1_com_normal()) {
 		printk(BIOS_DEBUG, "cse_lite: PSR_HECI_FW_DOWNGRADE_BACKUP command "
 		       "prerequisites not met!\n");
+		elog_add_event(ELOG_TYPE_PSR_DATA_LOST);
 		goto update_and_exit;
 	}
 
@@ -1138,18 +1143,27 @@ static void backup_psr_data(void)
 
 	printk(BIOS_DEBUG, "cse_lite: Send PSR_HECI_FW_DOWNGRADE_BACKUP command\n");
 	if (heci_send_receive(&req, sizeof(req),
-		&backup_psr_resp, &resp_size, HECI_PSR_ADDR))
+		&backup_psr_resp, &resp_size, HECI_PSR_ADDR)) {
 		printk(BIOS_ERR, "cse_lite: could not backup PSR data\n");
-	else
-		if (backup_psr_resp.status != PSR_STATUS_SUCCESS)
+		elog_add_event_byte(ELOG_TYPE_PSR_DATA_BACKUP, ELOG_PSR_DATA_BACKUP_FAILED);
+	} else {
+		if (backup_psr_resp.status != PSR_STATUS_SUCCESS) {
 			printk(BIOS_ERR, "cse_lite: PSR_HECI_FW_DOWNGRADE_BACKUP command "
 			       "returned %u\n", backup_psr_resp.status);
+			elog_add_event_byte(ELOG_TYPE_PSR_DATA_BACKUP,
+						ELOG_PSR_DATA_BACKUP_FAILED);
+		} else {
+			elog_add_event_byte(ELOG_TYPE_PSR_DATA_BACKUP,
+						ELOG_PSR_DATA_BACKUP_SUCCESS);
+		}
+	}
 
 update_and_exit:
 	/*
 	 * An attempt to send PSR back-up command has been made. Update this info in CMOS and
 	 * send success once backup_psr_data() has been called. We do not want to put the system
 	 * into recovery for PSR data backup command pre-requisites not being met.
+	 * We cannot do much if CSE fails to backup the PSR data, except create an event log.
 	 */
 	update_psr_backup_status(PSR_BACKUP_DONE);
 	return;

@@ -73,6 +73,17 @@ chip soc/intel/meteorlake
 	register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
 	register "pch_hda_idisp_codec_enable" = "1"
 
+	# As per doc 640982, Intel MTL-U 15W CPU supports FVM on IA and SA
+	# The ICC Limit is represented in 1/4 A increments, i.e., a value of 400 = 100A
+	# For IA VR configuration
+	register "enable_fast_vmode[VR_DOMAIN_IA]" = "1"
+	register "cep_enable[VR_DOMAIN_IA]" = "1"
+	register "fast_vmode_i_trip[VR_DOMAIN_IA]" = "264" # 66A
+	# For SA VR configuration
+	register "enable_fast_vmode[VR_DOMAIN_SA]" = "1"
+	register "cep_enable[VR_DOMAIN_SA]" = "1"
+	register "fast_vmode_i_trip[VR_DOMAIN_SA]" = "84" # 21A
+
 	device domain 0 on
 		device ref igpu on end
 		device ref dtt on end

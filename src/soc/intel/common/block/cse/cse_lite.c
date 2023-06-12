@@ -1175,7 +1175,7 @@ void cse_fw_sync(void)
  * Helper function that stores current CSE firmware version to CBMEM memory,
  * except during recovery mode.
  */
-static void store_cse_rw_fw_version(void)
+static void cse_store_rw_fw_version(void)
 {
 	if (vboot_recovery_mode_enabled())
 		return;
@@ -1303,15 +1303,15 @@ static void ramstage_cse_misc_ops(void *unused)
 	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_RAMSTAGE))
 		cse_fw_sync();
 
+	/* Store the CSE RW Firmware Version into CBMEM */
+	cse_store_rw_fw_version();
 	/*
-	 * Store the CSE/ISH RW Firmware Version into CBMEM if ISH partition
+	 * Store the ISH RW Firmware Version into CBMEM if ISH partition
 	 * is available
 	 */
 	if (CONFIG(SOC_INTEL_STORE_ISH_FW_VERSION) &&
-			 soc_is_ish_partition_enabled()) {
-		store_cse_rw_fw_version();
+			 soc_is_ish_partition_enabled())
 		store_ish_version();
-	}
 }
 
 BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_EXIT, ramstage_cse_misc_ops, NULL);

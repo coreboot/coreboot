@@ -304,9 +304,7 @@ void save_dimm_info(void)
 					   the board. */
 					continue;
 				}
-				dest_dimm->max_speed_mts =
-					get_max_memory_speed(src_dimm.commonTck);
-				dest_dimm->configured_speed_mts = hob->memFreq;
+
 				dest_dimm->soc_num = soc;
 
 				if (hob->DramType == SPD_TYPE_DDR5) {
@@ -328,7 +326,8 @@ void save_dimm_info(void)
 					sizeof(src_dimm.PartNumber),
 					(const uint8_t *)&src_dimm.serialNumber[0], data_width,
 					vdd_voltage, true, /* hard-coded as ECC supported */
-					src_dimm.VendorID, src_dimm.actKeyByte2, 0);
+					src_dimm.VendorID, src_dimm.actKeyByte2, 0,
+					get_max_memory_speed(src_dimm.commonTck));
 				dimm_num++;
 			}
 		}

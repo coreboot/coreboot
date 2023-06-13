@@ -81,9 +81,6 @@ void save_dimm_info(void)
 					return;
 				}
 				dest_dimm = &mem_info->dimm[index];
-				dest_dimm->max_speed_mts =
-					get_max_memory_speed(src_dimm.commonTck);
-				dest_dimm->configured_speed_mts = hob->memFreq;
 				dimm_info_fill(dest_dimm,
 					src_dimm.DimmSize << 6,
 					0x1a, /* hard-coded memory device type as DDR4 */
@@ -99,7 +96,8 @@ void save_dimm_info(void)
 					true, /* hard-coded as ECC supported */
 					src_dimm.VendorID,
 					src_dimm.actKeyByte2,
-					0);
+					0,
+					get_max_memory_speed(src_dimm.commonTck));
 				index++;
 				num_dimms++;
 			} else if (mainboard_dimm_slot_exists(0, ch, dimm)) {

@@ -112,7 +112,8 @@ static void save_dimm_info(void)
 				memory_info_hob->EccSupport,
 				src_dimm->MfgId,
 				src_dimm->SpdModuleType,
-				0);
+				0,
+				memory_info_hob->MaximumMemoryClockSpeed);
 			index++;
 		}
 	}

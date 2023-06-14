@@ -46,6 +46,7 @@ smm-y += elog.c
 smm-y += xhci.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
+ramstage-y += ahci.c
 ramstage-y += cpu.c
 ramstage-y += chip.c
 ramstage-y += cse.c

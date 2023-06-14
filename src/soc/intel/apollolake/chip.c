@@ -24,6 +24,7 @@
 #include <intelblocks/pmclib.h>
 #include <intelblocks/systemagent.h>
 #include <option.h>
+#include <soc/ahci.h>
 #include <soc/cpu.h>
 #include <soc/heci.h>
 #include <soc/intel/common/vbt.h>
@@ -736,7 +737,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	/* SATA config */
 	if (is_devfn_enabled(PCH_DEVFN_SATA)) {
 		silconfig->SataSalpSupport = !(cfg->DisableSataSalpSupport);
-		silconfig->SpeedLimit = cfg->sata_speed;
+		ahci_set_speed(cfg->sata_speed);
 		memcpy(silconfig->SataPortsEnable, cfg->sata_ports_enable,
 			sizeof(silconfig->SataPortsEnable));
 		memcpy(silconfig->SataPortsSolidStateDrive, cfg->sata_ports_ssd,

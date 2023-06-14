@@ -4,7 +4,7 @@
 #include <fsp/util.h>
 #include <lib.h>
 
-#define TIMESTAMP_MS(x) ((x) / 1000ull)
+#define TIMESTAMP_TO_MICRO(x) ((x) / 1000ull)
 
 static const uint8_t fpdt_guid[16] = {
 	0xfd, 0x7b, 0x38, 0x3b, 0xbc, 0x7a, 0xf2, 0x4c,
@@ -44,7 +44,7 @@ struct fpdt_pei_ext_perf_header {
 
 static void print_guid_record(const struct generic_event_record *rec)
 {
-	printk(BIOS_INFO, "%5x\t%16llu\t\t", rec->progress_id, TIMESTAMP_MS(rec->timestamp));
+	printk(BIOS_INFO, "%5x\t%16llu\t\t", rec->progress_id, TIMESTAMP_TO_MICRO(rec->timestamp));
 	fsp_print_guid(BIOS_INFO, rec->guid);
 	printk(BIOS_INFO, "\n");
 }
@@ -53,7 +53,7 @@ static void print_string_record(const struct generic_event_record *rec)
 {
 	size_t str_len = rec->header.length - offsetof(struct generic_event_record, string);
 	printk(BIOS_INFO, "%5x\t%16llu\t\t%*s/",
-	       rec->progress_id, TIMESTAMP_MS(rec->timestamp), (int)str_len, rec->string);
+	       rec->progress_id, TIMESTAMP_TO_MICRO(rec->timestamp), (int)str_len, rec->string);
 	fsp_print_guid(BIOS_INFO, rec->guid);
 	printk(BIOS_INFO, "\n");
 }
@@ -78,7 +78,7 @@ static void print_fsp_timestamp_header(void)
 	printk(BIOS_INFO, "+---------------------------------------------------+\n");
 	printk(BIOS_INFO, "|------ FSP Performance Timestamp Table Dump -------|\n");
 	printk(BIOS_INFO, "+---------------------------------------------------+\n");
-	printk(BIOS_INFO, "| Perf-ID\tTimestamp(ms)\t\tString/GUID |\n");
+	printk(BIOS_INFO, "| Perf-ID\tTimestamp(us)\t\tString/GUID |\n");
 	printk(BIOS_INFO, "+---------------------------------------------------+\n");
 }
 

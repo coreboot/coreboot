@@ -3,7 +3,7 @@
 #include <boot/coreboot_tables.h>
 #include <bootmode.h>
 #include "board.h"
-#include <security/tpm/tis.h>
+#include <drivers/tpm/cr50.h>
 
 void setup_chromeos_gpios(void)
 {
@@ -55,7 +55,7 @@ int get_ec_is_trusted(void)
 		return 1;
 }
 
-int tis_plat_irq_status(void)
+int cr50_plat_irq_status(void)
 {
 	return gpio_irq_status(GPIO_H1_AP_INT);
 }

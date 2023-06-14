@@ -2,8 +2,8 @@
 
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
+#include <drivers/tpm/cr50.h>
 #include <gpio.h>
-#include <security/tpm/tis.h>
 
 #include "gpio.h"
 #include "panel.h"
@@ -67,7 +67,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	}
 }
 
-int tis_plat_irq_status(void)
+int cr50_plat_irq_status(void)
 {
 	return gpio_eint_poll(GPIO_GSC_AP_INT_ODL);
 }

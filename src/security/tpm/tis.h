@@ -64,17 +64,6 @@ int tis_open(void);
 int tis_sendrecv(const u8 *sendbuf, size_t send_size, u8 *recvbuf,
 			size_t *recv_len);
 
-/* TODO: This is supposed to be used only for Google TPM.
-   Consider moving this to drivers/tpm/cr50.h. */
-/*
- * tis_plat_irq_status()
- *
- * Check tpm irq and clear it.
- *
- * Returns 1 when irq pending or 0 when not.
- */
-int tis_plat_irq_status(void);
-
 /*
  * tis_vendor_write()
  *

@@ -61,23 +61,6 @@ void tpm2_get_info(struct tpm2_info *info)
 	*info = tpm_info;
 }
 
-__weak int tis_plat_irq_status(void)
-{
-	static int warning_displayed;
-
-	if (!CONFIG(TPM_GOOGLE))
-		dead_code();
-
-	if (!warning_displayed) {
-		printk(BIOS_WARNING, "%s() not implemented, wasting 10ms to wait on"
-		       " Cr50!\n", __func__);
-		warning_displayed = 1;
-	}
-	mdelay(10);
-
-	return 1;
-}
-
 /*
  * Each TPM2 SPI transaction starts the same: CS is asserted, the 4 byte
  * header is sent to the TPM, the master waits til TPM is ready to continue.
@@ -421,7 +404,7 @@ int tpm2_init(struct spi_slave *spi_if)
 
 	/* Clear any pending IRQs. */
 	if (CONFIG(TPM_GOOGLE))
-		tis_plat_irq_status();
+		cr50_plat_irq_status();
 
 	/*
 	 * 150 ms should be enough to synchronize with the TPM even under the

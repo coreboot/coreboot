@@ -2,8 +2,8 @@
 
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
+#include <drivers/tpm/cr50.h>
 #include <gpio.h>
-#include <security/tpm/tis.h>
 
 #include "board.h"
 
@@ -44,7 +44,7 @@ void setup_chromeos_gpios(void)
 }
 
 #if CONFIG(GRU_HAS_TPM2)
-int tis_plat_irq_status(void)
+int cr50_plat_irq_status(void)
 {
 	return gpio_irq_status(GPIO_TPM_IRQ);
 }

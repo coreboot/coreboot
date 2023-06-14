@@ -33,7 +33,6 @@
 #define CR50_TIMEOUT_INIT_MS	30000	/* Very long timeout for TPM init */
 #define CR50_TIMEOUT_LONG_MS	2000	/* Long timeout while waiting for TPM */
 #define CR50_TIMEOUT_SHORT_MS	2	/* Short timeout during transactions */
-#define CR50_TIMEOUT_NOIRQ_MS	20	/* Timeout for TPM ready without IRQ */
 #define CR50_DID_VID		0x00281ae0L
 #define TI50_DID_VID		0x504a6666L
 
@@ -45,20 +44,6 @@ struct tpm_inf_dev {
 };
 
 static struct tpm_inf_dev tpm_dev;
-
-__weak int tis_plat_irq_status(void)
-{
-	static int warning_displayed;
-
-	if (!warning_displayed) {
-		printk(BIOS_WARNING, "%s() not implemented, wasting 20ms to wait on"
-		       " Cr50!\n", __func__);
-		warning_displayed = 1;
-	}
-	mdelay(CR50_TIMEOUT_NOIRQ_MS);
-
-	return 1;
-}
 
 /*
  * cr50_i2c_read() - read from TPM register
@@ -79,7 +64,7 @@ static int cr50_i2c_read(uint8_t addr, uint8_t *buffer, size_t len)
 		return -1;
 
 	/* Clear interrupt before starting transaction */
-	tis_plat_irq_status();
+	cr50_plat_irq_status();
 
 	/* Send the register address byte to the TPM */
 	if (i2c_write_raw(tpm_dev.bus, tpm_dev.addr, &addr, 1)) {
@@ -125,7 +110,7 @@ static int cr50_i2c_write(uint8_t addr, const uint8_t *buffer, size_t len)
 	memcpy(tpm_dev.buf + 1, buffer, len);
 
 	/* Clear interrupt before starting transaction */
-	tis_plat_irq_status();
+	cr50_plat_irq_status();
 
 	/* Send write request buffer with address */
 	if (i2c_write_raw(tpm_dev.bus, tpm_dev.addr, tpm_dev.buf, len + 1)) {

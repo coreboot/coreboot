@@ -2,9 +2,9 @@
 
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
+#include <drivers/tpm/cr50.h>
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
-#include <security/tpm/tis.h>
 #include <stdbool.h>
 
 #include "gpio.h"
@@ -68,7 +68,7 @@ int get_ec_is_trusted(void)
 	return !!gpio_get(GPIO_EC_IN_RW_ODL);
 }
 
-int tis_plat_irq_status(void)
+int cr50_plat_irq_status(void)
 {
 	return gpio_eint_poll(GPIO_GSC_AP_INT_ODL);
 }

@@ -2,8 +2,8 @@
 
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
+#include <drivers/tpm/cr50.h>
 #include <gpio.h>
-#include <security/tpm/tis.h>
 
 #include "gpio.h"
 
@@ -36,7 +36,7 @@ int get_write_protect_state(void)
 	return !gpio_get(GPIO_WP);
 }
 
-int tis_plat_irq_status(void)
+int cr50_plat_irq_status(void)
 {
 	return gpio_eint_poll(GPIO_H1_AP_INT);
 }

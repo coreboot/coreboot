@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <boardid.h>
+#include <drivers/tpm/cr50.h>
 #include <gpio.h>
-#include <security/tpm/tis.h>
 
-int tis_plat_irq_status(void)
+int cr50_plat_irq_status(void)
 {
 	gpio_t irq_gpio = GPIO_85;
 	uint32_t board_ver = board_id();

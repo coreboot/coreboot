@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 
+#include <delay.h>
 #include <drivers/spi/tpm/tpm.h>
 #include <security/tpm/tis.h>
 #include <string.h>
@@ -16,6 +17,8 @@
 #define CR50_BOARD_CFG_VALUE \
 		(CONFIG(CR50_USE_LONG_INTERRUPT_PULSES) \
 		 ? CR50_BOARD_CFG_100US_READY_PULSE : 0)
+
+#define CR50_TIMEOUT_NOIRQ_MS	20	/* Timeout for TPM ready without IRQ */
 
 enum cr50_register {
 	CR50_FW_VER_REG,
@@ -93,6 +96,20 @@ static uint32_t cr50_get_board_cfg(void)
 	}
 
 	return value & CR50_BOARD_CFG_FEATUREBITS_MASK;
+}
+
+__weak int cr50_plat_irq_status(void)
+{
+	static int warning_displayed;
+
+	if (!warning_displayed) {
+		printk(BIOS_WARNING, "%s() not implemented, wasting 20ms to wait on Cr50!\n",
+		       __func__);
+		warning_displayed = 1;
+	}
+	mdelay(CR50_TIMEOUT_NOIRQ_MS);
+
+	return 1;
 }
 
 /**
@@ -235,7 +252,7 @@ enum cb_err cr50_wait_tpm_ready(void)
 
 	stopwatch_init_msecs_expire(&sw, CONFIG_GOOGLE_TPM_IRQ_TIMEOUT_MS);
 
-	while (!tis_plat_irq_status())
+	while (!cr50_plat_irq_status())
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_ERR, "Cr50 TPM IRQ timeout!\n");
 			return CB_ERR;

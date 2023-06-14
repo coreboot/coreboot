@@ -13,6 +13,27 @@
 #include <stddef.h>
 #include <arch/barrier.h>
 
+enum cache_level {
+	CACHE_L1 = 1,
+	CACHE_L2 = 2,
+	CACHE_L3 = 3,
+	CACHE_L4 = 4,
+	CACHE_L5 = 5,
+	CACHE_L6 = 6,
+	CACHE_L7 = 7,
+};
+
+enum cache_type {
+	NO_CACHE = 0,
+	CACHE_INSTRUCTION = 1,
+	CACHE_DATA = 2,
+	CACHE_SEPARATE = 3,
+	CACHE_UNIFIED = 4,
+};
+
+enum cache_type cpu_get_cache_type(enum cache_level level);
+void cpu_get_cache_info(enum cache_level level, enum cache_type, size_t *cache_size, size_t *assoc);
+
 /* dcache clean by virtual address to PoC */
 void dcache_clean_by_mva(void const *addr, size_t len);
 

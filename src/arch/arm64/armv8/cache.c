@@ -11,6 +11,64 @@
 #include <arch/lib_helpers.h>
 #include <program_loading.h>
 
+enum cache_type cpu_get_cache_type(enum cache_level level)
+{
+	uint32_t ctype_bitshift = (level - 1) * 3;
+
+	if (level < CACHE_L1 || level > CACHE_L7)
+		return NO_CACHE;
+
+	/* 3-bits per cache-level */
+	return (raw_read_clidr_el1() >> ctype_bitshift) & 0x7;
+}
+
+static uint64_t get_ccsidr_el1_assoc(uint64_t ccsidr_el1)
+{
+	/* [23:20] - CCIDX support enables 64-bit CCSIDR_EL1 */
+	if ((raw_read_id_aa64mmfr2_el1() & 0xF00000) == 0x100000) {
+		/* [23:3] */
+		return (ccsidr_el1 & 0xFFFFF8) >> 3;
+	} else {
+		/* [12:3] */
+		return (ccsidr_el1 & 0x1FF8) >> 3;
+	}
+}
+
+static uint64_t get_ccsidr_el1_numsets(uint64_t ccsidr_el1)
+{
+	/* [23:20] - CCIDX support enables 64-bit CCSIDR_EL1 */
+	if ((raw_read_id_aa64mmfr2_el1() & 0xF00000) == 0x100000) {
+		/* [55:32] */
+		return (ccsidr_el1 & 0xFFFFFF00000000) >> 32;
+	} else {
+		/* [27:13] */
+		return (ccsidr_el1 & 0xFFFE000) >> 13;
+	}
+}
+
+void cpu_get_cache_info(enum cache_level level, enum cache_type type, size_t *cache_size, size_t *assoc)
+{
+	uint64_t ccsidr_el1;
+
+	if (cache_size == NULL || assoc == NULL)
+		return;
+
+	if (level < CACHE_L1 || level > CACHE_L7)
+		return;
+
+	/* [0] - Indicates instruction cache; [3:1] - Indicates cache level */
+	raw_write_csselr_el1(((level - 1) << 1) | (type == CACHE_INSTRUCTION));
+	ccsidr_el1 = raw_read_ccsidr_el1();
+
+	/* [2:0] - Indicates (Log2(Number of bytes in cache line) - 4) */
+	uint8_t line_length = 1 << ((ccsidr_el1 & 0x7) + 4);
+	/* (Number of sets in cache) - 1 */
+	uint64_t num_sets = get_ccsidr_el1_numsets(ccsidr_el1) + 1;
+	/* (Associativity of cache) - 1 */
+	*assoc = get_ccsidr_el1_assoc(ccsidr_el1) + 1;
+	*cache_size = line_length * *assoc * num_sets;
+}
+
 unsigned int dcache_line_bytes(void)
 {
 	uint32_t ctr_el0;

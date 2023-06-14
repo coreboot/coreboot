@@ -918,8 +918,9 @@ config GENERATE_PIRQ_TABLE
 	  If unsure, say Y.
 
 config GENERATE_SMBIOS_TABLES
-	depends on ARCH_X86
+	depends on ARCH_X86 || ARCH_ARM64
 	bool "Generate SMBIOS tables"
+	default n if ARCH_ARM64
 	default y
 	help
 	  Generate SMBIOS tables for this board.

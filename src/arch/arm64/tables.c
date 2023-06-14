@@ -6,6 +6,9 @@
 #include <boot/tables.h>
 #include <bootmem.h>
 #include <cbmem.h>
+#include <console/console.h>
+#include <smbios.h>
+#include <string.h>
 #include <symbols.h>
 
 static void write_acpi_table(void)
@@ -18,10 +21,40 @@ static void write_acpi_table(void)
 	printk(BIOS_DEBUG, "ACPI tables: %ld bytes.\n", acpi_end - acpi_start);
 }
 
+static void write_smbios_table(void)
+{
+	unsigned long smbios_begin, smbios_end;
+
+#define MAX_SMBIOS_SIZE (32 * KiB)
+
+	smbios_begin = (unsigned long)cbmem_add(CBMEM_ID_SMBIOS, MAX_SMBIOS_SIZE);
+	if (!smbios_begin) {
+		printk(BIOS_ERR, "Out of memory for SMBIOS tables\n");
+		return;
+	}
+
+	/*
+	 * Clear the entire region to ensure the unused space doesn't
+	 * contain garbage from a previous boot, like stale table
+	 * signatures that could be found by the OS.
+	 */
+	memset((void *)smbios_begin, 0, MAX_SMBIOS_SIZE);
+
+	smbios_end = smbios_write_tables(smbios_begin);
+
+	if (smbios_end > (smbios_begin + MAX_SMBIOS_SIZE))
+		printk(BIOS_ERR, "Increase SMBIOS size\n");
+
+	printk(BIOS_DEBUG, "SMBIOS tables: %ld bytes.\n", smbios_end - smbios_begin);
+}
+
 void arch_write_tables(uintptr_t coreboot_table)
 {
 	if (CONFIG(HAVE_ACPI_TABLES))
 		write_acpi_table();
+
+	if (CONFIG(GENERATE_SMBIOS_TABLES))
+		write_smbios_table();
 }
 
 void bootmem_arch_add_ranges(void)

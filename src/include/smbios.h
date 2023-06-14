@@ -70,6 +70,7 @@ const char *smbios_system_version(void);
 void smbios_system_set_uuid(u8 *uuid);
 const char *smbios_system_sku(void);
 
+void smbios_cpu_get_core_counts(u16 *core_count, u16 *thread_count);
 unsigned int smbios_cpu_get_max_speed_mhz(void);
 unsigned int smbios_cpu_get_current_speed_mhz(void);
 unsigned int smbios_cpu_get_voltage(void);

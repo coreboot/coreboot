@@ -615,6 +615,8 @@ APCB_EDIT_TOOL:=$(top)/util/apcb/apcb_edit.py
 
 APCB_V3_EDIT_TOOL:=$(top)/util/apcb/apcb_v3_edit.py
 
+APCB_V3A_EDIT_TOOL:=$(top)/util/apcb/apcb_v3a_edit.py
+
 CBOOTIMAGE:=$(objutil)/cbootimage/cbootimage
 
 FUTILITY?=$(objutil)/futility/futility

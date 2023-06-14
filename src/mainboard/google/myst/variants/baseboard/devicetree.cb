@@ -254,7 +254,21 @@ chip soc/amd/phoenix
 							register "use_custom_pld" = "true"
 							register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(1, 2))"
 							register "group" = "ACPI_PLD_GROUP(1, 2)"
-							device ref usb3_port3 on end
+							device ref usb3_port3 on
+								probe DAUGHTERBOARD DB_B
+							end
+						end
+						chip drivers/usb/acpi
+							register "desc" = ""USB3 WWAN""
+							register "type" = "UPC_TYPE_INTERNAL"
+							register "has_power_resource" = "1"
+							register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_6)"
+							register "enable_delay_ms" = "20"
+							register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_11)"
+							register "reset_off_delay_ms" = "20"
+							device ref usb3_port3 on
+								probe WWAN WWAN_FM101GL
+							end
 						end
 						chip drivers/usb/acpi
 							register "desc" = ""USB2 Type-A Port A0 (MLB)""
@@ -289,25 +303,6 @@ chip soc/amd/phoenix
 							register "enable_off_delay_ms" = "200"
 							register "use_gpio_for_status" = "true"
 							device ref usb2_port6 on end
-						end
-					end
-				end
-			end
-			device ref xhci_1 on
-				chip drivers/usb/acpi
-					register "type" = "UPC_TYPE_HUB"
-					device ref xhci_1_root_hub on
-						chip drivers/usb/acpi
-							register "desc" = ""USB3 WWAN""
-							register "type" = "UPC_TYPE_INTERNAL"
-							register "has_power_resource" = "1"
-							register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_6)"
-							register "enable_delay_ms" = "20"
-							register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_11)"
-							register "reset_off_delay_ms" = "20"
-							device ref usb3_port7 on
-								probe WWAN WWAN_FM101GL
-							end
 						end
 					end
 				end

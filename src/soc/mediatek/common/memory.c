@@ -202,6 +202,8 @@ static int dram_run_fast_calibration(struct dramc_param *dparam)
 
 	printk(BIOS_INFO, "DRAM-K: DRAM calibration data valid pass\n");
 
+	if (CONFIG(MEDIATEK_DRAM_SCRAMBLE))
+		dparam->header.config |= DRAMC_CONFIG_SCRAMBLE;
 	if (CONFIG(MEDIATEK_DRAM_BLOB_FAST_INIT)) {
 		printk(BIOS_INFO, "DRAM-K: Run fast calibration run in blob mode\n");
 

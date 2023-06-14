@@ -134,6 +134,11 @@ uint8_t *pmc_mmio_regs(void)
 	return (void *)(uintptr_t)PCH_PWRM_BASE_ADDRESS;
 }
 
+uint8_t *ioe_pmc_mmio_regs(void)
+{
+	return (void *)(uintptr_t)IOE_PWRM_BASE_ADDRESS;
+}
+
 uintptr_t soc_read_pmc_base(void)
 {
 	return (uintptr_t)pmc_mmio_regs();

@@ -150,6 +150,9 @@ struct chipset_power_state {
 /* Get base address PMC memory mapped registers. */
 uint8_t *pmc_mmio_regs(void);
 
+/* Get base address IOE.PMC memory mapped registers. */
+uint8_t *ioe_pmc_mmio_regs(void);
+
 /* Get base address of TCO I/O registers. */
 uint16_t smbus_tco_regs(void);
 

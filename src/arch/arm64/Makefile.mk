@@ -30,6 +30,9 @@ bootblock-y += eabi_compat.c
 decompressor-$(CONFIG_ARM64_USE_ARCH_TIMER) += arch_timer.c
 bootblock-$(CONFIG_ARM64_USE_ARCH_TIMER) += arch_timer.c
 bootblock-y += transition.c transition_asm.S
+ifneq ($(CONFIG_ARM64_CURRENT_EL),3)
+bootblock-y += smc.c smc_asm.S
+endif
 
 decompressor-y += memset.S
 bootblock-y += memset.S
@@ -69,6 +72,9 @@ verstage-y += memcpy.S
 verstage-y += memmove.S
 
 verstage-y += transition.c transition_asm.S
+ifneq ($(CONFIG_ARM64_CURRENT_EL),3)
+verstage-y += smc.c smc_asm.S
+endif
 
 endif # CONFIG_ARCH_VERSTAGE_ARM64
 
@@ -88,6 +94,9 @@ romstage-y += memmove.S
 romstage-y += ramdetect.c
 romstage-y += romstage.c
 romstage-y += transition.c transition_asm.S
+ifneq ($(CONFIG_ARM64_CURRENT_EL),3)
+romstage-y += smc.c smc_asm.S
+endif
 
 rmodules_arm64-y += memset.S
 rmodules_arm64-y += memcpy.S
@@ -109,6 +118,7 @@ ifeq ($(CONFIG_ARCH_RAMSTAGE_ARM64),y)
 ramstage-y += div0.c
 ramstage-y += eabi_compat.c
 ramstage-y += boot.c
+ramstage-$(CONFIG_GENERATE_SMBIOS_TABLES) += smbios.c
 ramstage-y += tables.c
 ramstage-y += ramdetect.c
 ramstage-$(CONFIG_ARM64_USE_ARCH_TIMER) += arch_timer.c
@@ -117,6 +127,9 @@ ramstage-y += memcpy.S
 ramstage-y += memmove.S
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += bl31.c
 ramstage-y += transition.c transition_asm.S
+ifneq ($(CONFIG_ARM64_CURRENT_EL),3)
+ramstage-y += smc.c smc_asm.S
+endif
 ramstage-$(CONFIG_PAYLOAD_FIT_SUPPORT) += fit_payload.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += dma.c

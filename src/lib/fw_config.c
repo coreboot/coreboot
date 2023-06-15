@@ -95,11 +95,6 @@ bool fw_config_probe(const struct fw_config *match)
 	return false;
 }
 
-bool fw_config_is_provisioned(void)
-{
-	return fw_config_get() != UNDEFINED_FW_CONFIG;
-}
-
 bool fw_config_probe_dev(const struct device *dev, const struct fw_config **matching_probe)
 {
 	const struct fw_config *probe;

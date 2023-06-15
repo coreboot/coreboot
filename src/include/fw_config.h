@@ -49,6 +49,16 @@ struct fw_config_field {
  */
 uint64_t fw_config_get(void);
 
+/**
+ * fw_config_is_provisioned() - Determine if FW_CONFIG has been provisioned.
+ * Return %true if FW_CONFIG has been provisioned, %false otherwise.
+ */
+static inline bool fw_config_is_provisioned(void)
+{
+	return fw_config_get() != UNDEFINED_FW_CONFIG;
+}
+
+
 #if CONFIG(FW_CONFIG)
 
 /**
@@ -75,12 +85,6 @@ bool fw_config_probe(const struct fw_config *match);
  * @arg: A context argument that is passed to the callback
  */
 void fw_config_for_each_found(void (*cb)(const struct fw_config *config, void *arg), void *arg);
-
-/**
- * fw_config_is_provisioned() - Determine if FW_CONFIG has been provisioned.
- * Return %true if FW_CONFIG has been provisioned, %false otherwise.
- */
-bool fw_config_is_provisioned(void);
 
 /**
  * fw_config_get_found() - Return a pointer to the fw_config struct for a given field.

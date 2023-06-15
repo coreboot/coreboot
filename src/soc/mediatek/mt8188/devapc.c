@@ -1628,6 +1628,15 @@ static void dump_infra2_ao(uintptr_t base)
 	       base, read32(getreg(base, DOM_REMAP_0_0)));
 }
 
+static void dump_scp_master(uintptr_t base)
+{
+	printk(BIOS_DEBUG, "[DEVAPC] SCP_DOM0:%#x SCP_DOM1:%#x SCP_DOM2:%#x Lock:%#x\n",
+	       read32(getreg(base, SCP_DOM0)),
+	       read32(getreg(base, SCP_DOM1)),
+	       read32(getreg(base, SCP_DOM2)),
+	       read32(getreg(base, ONETIME_LOCK)));
+}
+
 static void infra_init(uintptr_t base)
 {
 	void *reg;
@@ -1745,6 +1754,27 @@ static void infra2_master_init(uintptr_t base)
 			FOUR_BIT_DOM_REMAP_7, DOMAIN_15);
 }
 
+static void scp_master_init(uintptr_t base)
+{
+	SET32_BITFIELDS(getreg(base, SCP_DOM0),
+			FOUR_BIT_DOM_REMAP_0, DOMAIN_8,
+			FOUR_BIT_DOM_REMAP_2, DOMAIN_8,
+			FOUR_BIT_DOM_REMAP_4, DOMAIN_8,
+			FOUR_BIT_DOM_REMAP_6, DOMAIN_8);
+
+	SET32_BITFIELDS(getreg(base, SCP_DOM1),
+			FOUR_BIT_DOM_REMAP_0, DOMAIN_8,
+			FOUR_BIT_DOM_REMAP_2, DOMAIN_8,
+			FOUR_BIT_DOM_REMAP_4, DOMAIN_8,
+			FOUR_BIT_DOM_REMAP_6, DOMAIN_8);
+
+	SET32_BITFIELDS(getreg(base, SCP_DOM2),
+			FOUR_BIT_DOM_REMAP_0, DOMAIN_8);
+
+	/* Let SCP_DOM registers be read-only for security */
+	write32(getreg(base, ONETIME_LOCK), 0x5);
+}
+
 const struct devapc_init_ops devapc_init[] = {
 	{ DEVAPC_INFRA_AO_BASE, infra_init, dump_infra_ao_apc },
 	{ DEVAPC_PERI_AO_BASE, peri_init, dump_peri_ao_apc },
@@ -1752,6 +1782,7 @@ const struct devapc_init_ops devapc_init[] = {
 	{ DEVAPC_PERI_PAR_AO_BASE, peri_par_init, dump_peri_par_ao_apc },
 	{ DEVAPC_FMEM_AO_BASE, fmem_master_init, dump_fmem_ao },
 	{ DEVAPC_INFRA2_AO_BASE, infra2_master_init, dump_infra2_ao },
+	{ SCP_CFG_BASE, scp_master_init, dump_scp_master },
 };
 
 const size_t devapc_init_cnt = ARRAY_SIZE(devapc_init);

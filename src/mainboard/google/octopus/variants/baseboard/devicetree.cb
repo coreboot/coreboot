@@ -290,5 +290,5 @@ chip soc/intel/apollolake
 
 	# FSP UPD to modify the Integrated Filter (IF) value
 	# Set it to default value: 0x12
-	register "ModPhyIfValue" = "0x12"
+	register "mod_phy_if_value" = "0x12"
 end

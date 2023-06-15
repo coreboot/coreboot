@@ -612,7 +612,7 @@ static void glk_fsp_silicon_init_params_cb(
 	/*
 	 * Options to change USB3 ModPhy setting for Integrated Filter value.
 	 */
-	silconfig->ModPhyIfValue = cfg->ModPhyIfValue;
+	silconfig->ModPhyIfValue = cfg->mod_phy_if_value;
 
 	/*
 	 * Options to bump USB3 LDO voltage with 40mv.

@@ -190,7 +190,7 @@ struct soc_intel_apollolake_config {
 	 * value. Default is 0 to not changing default IF value (0x12). Set
 	 * value with the range from 0x01 to 0xff to change IF value.
 	 */
-	uint8_t ModPhyIfValue;
+	uint8_t mod_phy_if_value;
 
 	/* Options to bump USB3 LDO voltage. Default is FALSE to not increasing
 	 * LDO voltage. Set TRUE to increase LDO voltage with 40mV.

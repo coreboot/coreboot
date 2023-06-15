@@ -26,7 +26,7 @@ chip soc/intel/apollolake
 
 	register "pnp_settings"			= "PNP_PERF_POWER"
 
-	register "ModPhyIfValue"		= "0x12"
+	register "mod_phy_if_value"		= "0x12"
 
 	register "prt0_gpio"			= "GPIO_PRT0_UDEF"
 

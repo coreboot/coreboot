@@ -116,5 +116,5 @@ chip soc/intel/apollolake
 
 	# Disable compliance mode
 
-	register "DisableComplianceMode" = "1"
+	register "disable_compliance_mode" = "1"
 end

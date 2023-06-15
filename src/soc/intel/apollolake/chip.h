@@ -184,7 +184,7 @@ struct soc_intel_apollolake_config {
 	 * disable Compliance Mode. Set TRUE to disable Compliance Mode.
 	 * 0:FALSE(Default), 1:True.
 	 */
-	uint8_t DisableComplianceMode;
+	uint8_t disable_compliance_mode;
 
 	/* Options to change USB3 ModPhy setting for the Integrated Filter (IF)
 	 * value. Default is 0 to not changing default IF value (0x12). Set

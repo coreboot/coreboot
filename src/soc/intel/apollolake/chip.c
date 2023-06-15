@@ -607,7 +607,7 @@ static void glk_fsp_silicon_init_params_cb(
 	/*
 	 * Options to disable XHCI Link Compliance Mode.
 	 */
-	silconfig->DisableComplianceMode = cfg->DisableComplianceMode;
+	silconfig->DisableComplianceMode = cfg->disable_compliance_mode;
 
 	/*
 	 * Options to change USB3 ModPhy setting for Integrated Filter value.

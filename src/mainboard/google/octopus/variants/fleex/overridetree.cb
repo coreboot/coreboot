@@ -85,7 +85,7 @@ chip soc/intel/apollolake
 	}"
 
 	# Disable compliance mode
-	register "DisableComplianceMode" = "1"
+	register "disable_compliance_mode" = "1"
 	register "disable_xhci_lfps_pm" = "0"
 
 	device domain 0 on

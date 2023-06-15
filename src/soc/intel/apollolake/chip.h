@@ -196,7 +196,7 @@ struct soc_intel_apollolake_config {
 	 * LDO voltage. Set TRUE to increase LDO voltage with 40mV.
 	 * 0:FALSE (default), 1:True.
 	 */
-	uint8_t ModPhyVoltageBump;
+	uint8_t mod_phy_voltage_bump;
 
 	/* Options to adjust PMIC Vdd2 voltage. Default is 0 to not adjusting
 	 * the PMIC Vdd2 default voltage 1.20v. Upd for changing Vdd2 Voltage

@@ -617,7 +617,7 @@ static void glk_fsp_silicon_init_params_cb(
 	/*
 	 * Options to bump USB3 LDO voltage with 40mv.
 	 */
-	silconfig->ModPhyVoltageBump = cfg->ModPhyVoltageBump;
+	silconfig->ModPhyVoltageBump = cfg->mod_phy_voltage_bump;
 
 	/*
 	 * Options to adjust PMIC Vdd2 voltage.

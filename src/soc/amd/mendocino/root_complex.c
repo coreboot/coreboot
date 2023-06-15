@@ -150,7 +150,6 @@ static void read_resources(struct device *dev)
 	unsigned int idx = 0;
 	const struct hob_header *hob_iterator;
 	const struct hob_resource *res;
-	struct resource *gnb_apic;
 
 	uintptr_t early_reserved_dram_start, early_reserved_dram_end;
 	const struct memmap_early_dram *e = memmap_get_early_dram_usage();
@@ -190,10 +189,7 @@ static void read_resources(struct device *dev)
 	mmconf_resource(dev, idx++);
 
 	/* GNB IOAPIC resource */
-	gnb_apic = new_resource(dev, IOMMU_IOAPIC_IDX);
-	gnb_apic->base = GNB_IO_APIC_ADDR;
-	gnb_apic->size = 0x00001000;
-	gnb_apic->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	mmio_range(dev, IOMMU_IOAPIC_IDX, GNB_IO_APIC_ADDR, 0x1000);
 
 	/* Reserve fixed IOMMU MMIO region */
 	mmio_range(dev, idx++, IOMMU_RESERVED_MMIO_BASE, IOMMU_RESERVED_MMIO_SIZE);

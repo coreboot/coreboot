@@ -267,20 +267,18 @@ $(objutil)/cbfstool/%: $(top)/util/cbfstool/%_shipped
 
 ifeq ($(CONFIG_FMD_GENPARSER),y)
 TOOLLEX := lex
-TOOLYACC := yacc
+TOOLYACC := bison
 
 # the .c rule also creates .h
 $(top)/util/cbfstool/fmd_scanner.h_shipped: $(top)/util/cbfstool/fmd_scanner.c_shipped
 $(top)/util/cbfstool/fmd_scanner.c_shipped: $(top)/util/cbfstool/fmd_scanner.l
 	echo "    LEX        util/cbfstool/fmd_scanner.[ch]"
-	$(TOOLLEX) -t --header-file=$(top)/util/cbfstool/fmd_scanner.h_shipped $< >$(top)/util/cbfstool/fmd_scanner.c_shipped
+	$(TOOLLEX) -L -o $@ --header-file=$(patsubst %.c_shipped,%.h_shipped,$@) $<
 
 # the .c rule also creates .h
 $(top)/util/cbfstool/fmd_parser.h_shipped: $(top)/util/cbfstool/fmd_parser.c_shipped
 $(top)/util/cbfstool/fmd_parser.c_shipped: $(top)/util/cbfstool/fmd_parser.y
 	echo "    YACC       util/cbfstool/fmd_parser.[ch]"
-	$(TOOLYACC) -d $<
-	mv -f y.tab.c $(top)/util/cbfstool/fmd_parser.c_shipped
-	mv -f y.tab.h $(top)/util/cbfstool/fmd_parser.h_shipped
+	$(TOOLYACC) -l -o $@ --defines=$(patsubst %.c_shipped,%.h_shipped,$@) $<
 
 endif # CONFIG_FMD_GENPARSER

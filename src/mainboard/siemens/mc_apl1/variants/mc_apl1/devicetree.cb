@@ -71,7 +71,7 @@ chip soc/intel/apollolake
 		device pci 12.0 on	# - SATA
 			register "sata_ports_enable[0]" = "1"
 			register "sata_ports_enable[1]" = "1"
-			register "DisableSataSalpSupport" = "1"
+			register "disable_sata_salp_support" = "1"
 		end
 		device pci 13.0 on	# - RP 2 - PCIe A 0 - MACPHY
 			register "pcie_rp_clkreq_pin[2]" = "0"

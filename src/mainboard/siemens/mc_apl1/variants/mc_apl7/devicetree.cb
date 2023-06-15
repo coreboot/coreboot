@@ -58,7 +58,7 @@ chip soc/intel/apollolake
 		device pci 0f.0 on  end	# - CSE
 		device pci 11.0 on  end	# - ISH
 		device pci 12.0 on	# - SATA
-			register "DisableSataSalpSupport" = "1"
+			register "disable_sata_salp_support" = "1"
 		end
 		device pci 13.0 on	# - RP 2 - PCIe A 0
 			register "pcie_rp_clkreq_pin[2]" = "CLKREQ_DISABLED"

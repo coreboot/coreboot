@@ -71,7 +71,7 @@ chip soc/intel/apollolake
 			register "sata_ports_enable[1]" = "1"
 			register "sata_ports_ssd[0]" = "1"
 			register "sata_ports_ssd[1]" = "1"
-			register "DisableSataSalpSupport" = "1"
+			register "disable_sata_salp_support" = "1"
 			register "sata_speed" = "SATA_GEN2"
 		end
 		device pci 13.0 on	# - RP 2 - PCIe A 0

@@ -221,7 +221,7 @@ struct soc_intel_apollolake_config {
 	uint8_t disable_xhci_lfps_pm;
 
 	/* SATA Aggressive Link Power Management */
-	uint8_t DisableSataSalpSupport;
+	uint8_t disable_sata_salp_support;
 
 	/* Sata Power Optimisation */
 	uint8_t SataPwrOptimizeDisable;

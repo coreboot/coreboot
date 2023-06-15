@@ -745,7 +745,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	}
 
 	/* Sata Power Optimisation */
-	silconfig->SataPwrOptEnable = !(cfg->SataPwrOptimizeDisable);
+	silconfig->SataPwrOptEnable = !(cfg->sata_pwr_optimize_disable);
 
 	/* 8254 Timer */
 	bool use_8254 = get_uint_option("legacy_8254_timer", CONFIG(USE_LEGACY_8254_TIMER));

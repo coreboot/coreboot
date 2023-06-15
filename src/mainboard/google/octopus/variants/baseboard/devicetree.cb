@@ -275,18 +275,18 @@ chip soc/intel/apollolake
 	# RegOrValue (15:8): 0x2 and RegAndValue (7:0) 0xF8.
 	# The register is defined as: D[7:3] RSVD, D[2:0] PWROKDELAY.
 	# uint8 RegOrValue, RegAndValue, PmicReadReg
-	# RegOrValue = (UINT8)((PmicPmcIpcCtrl >> 8) & 0xff);
-	# RegAndValue = (UINT8)(PmicPmcIpcCtrl & 0xff);
+	# RegOrValue = (UINT8)((pmic_pmc_ipc_ctrl >> 8) & 0xff);
+	# RegAndValue = (UINT8)(pmic_pmc_ipc_ctrl & 0xff);
 	# PmicReadReg &= RegAndValue;
 	# PmicReadReg |= RegOrValue;
 	# PmicReadReg value will be programmed into PMIC D[2:0] PWROKDELAY field
 	# and D[7:3] RSVD will not be impacted.
 
-	# Configure PmicPmcIpcCtrl for PMC to program PMIC PCH_PWROK delay
+	# Configure pmic_pmc_ipc_ctrl for PMC to program PMIC PCH_PWROK delay
 	# from 100ms to 10ms.
 	# PWROKDELAY[2:0]: 000=2.5ms, 001=5.0ms, 010=10ms, 011=15ms, 100=20ms,
 	#                  101=50ms, 110=75ms, 111=100ms (default)
-	register "PmicPmcIpcCtrl" = "0x5e4302f8"
+	register "pmic_pmc_ipc_ctrl" = "0x5e4302f8"
 
 	# FSP UPD to modify the Integrated Filter (IF) value
 	# Set it to default value: 0x12

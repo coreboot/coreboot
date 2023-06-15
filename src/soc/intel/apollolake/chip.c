@@ -602,7 +602,7 @@ static void glk_fsp_silicon_init_params_cb(
 	 * improve boot performance, configure PmicPmcIpcCtrl for PMC to program
 	 * PMIC PCH_PWROK delay.
 	 */
-	silconfig->PmicPmcIpcCtrl = cfg->PmicPmcIpcCtrl;
+	silconfig->PmicPmcIpcCtrl = cfg->pmic_pmc_ipc_ctrl;
 
 	/*
 	 * Options to disable XHCI Link Compliance Mode.

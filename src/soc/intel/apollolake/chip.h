@@ -104,7 +104,7 @@ struct soc_intel_apollolake_config {
 	uint8_t emmc_host_max_speed;
 
 	/* Sata Ports Hot Plug */
-	uint8_t SataPortsHotPlug[2];
+	uint8_t sata_ports_hot_plug[2];
 
 	/* Sata Ports Enable */
 	uint8_t sata_ports_enable[2];

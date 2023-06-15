@@ -622,7 +622,7 @@ static void glk_fsp_silicon_init_params_cb(
 	/*
 	 * Options to adjust PMIC Vdd2 voltage.
 	 */
-	silconfig->PmicVdd2Voltage = cfg->PmicVdd2Voltage;
+	silconfig->PmicVdd2Voltage = cfg->pmic_vdd2_voltage;
 
 	/* FSP should let coreboot set subsystem IDs, which are read/write-once */
 	silconfig->SiSVID = 0;

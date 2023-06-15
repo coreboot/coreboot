@@ -204,7 +204,7 @@ struct soc_intel_apollolake_config {
 	 * + OR Value (15:8) + AND Value (7:0) through BUCK5_VID[3:2]:
 	 * 00=1.10v, 01=1.15v, 10=1.24v, 11=1.20v (default).
 	 */
-	uint32_t PmicVdd2Voltage;
+	uint32_t pmic_vdd2_voltage;
 
 	/* Option to enable VTD feature. Default is 0 which disables VTD
 	 * capability in FSP. Setting this option to 1 in devicetree will enable

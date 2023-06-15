@@ -2136,12 +2136,8 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	if (CONFIG(DEBUG_ACPICA_COMPATIBLE)) {
 		printk(BIOS_DEBUG, "Printing ACPI tables in ACPICA compatible format\n");
-		void *acpi_tables[] = {	rsdt, xsdt, fadt, facs, slic, ssdt, dsdt,
-					mcfg, tcpa, tpm2, madt, lpit, bert };
-		for (size_t i = 0; i < ARRAY_SIZE(acpi_tables); i++) {
-			if (acpi_tables[i] == NULL)
-				continue;
-			acpidump_print(acpi_tables[i]);
+		for (size_t i = 0; xsdt->entry[i] != 0; i++) {
+			acpidump_print((void *)(uintptr_t)xsdt->entry[i]);
 		}
 		printk(BIOS_DEBUG, "Done printing ACPI tables in ACPICA compatible format\n");
 	}

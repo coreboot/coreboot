@@ -6,7 +6,7 @@ chip soc/intel/skylake
 	register "deep_s5_enable_ac" = "1"
 	register "deep_s5_enable_dc" = "1"
 	register "deep_sx_config" = "DSX_EN_WAKE_PIN | DSX_DIS_AC_PRESENT_PD"
-	register "s0ix_enable" = "1"
+	register "s0ix_enable" = true
 
 	register "gpe0_dw0" = "GPP_B"
 	register "gpe0_dw1" = "GPP_D"

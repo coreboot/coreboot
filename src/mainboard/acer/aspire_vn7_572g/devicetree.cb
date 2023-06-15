@@ -311,7 +311,7 @@ chip soc/intel/skylake
 			register "gpe0_dw2" = "GPP_E"	# 11:8 in pwrmbase+0120h
 
 			# Enable S0ix
-			register "s0ix_enable" = "1"
+			register "s0ix_enable" = true
 
 			register "PmConfigSlpS3MinAssert" = "SLP_S3_MIN_ASSERT_50MS"	# 11:10 in A4h-A7h
 			register "PmConfigSlpS4MinAssert" = "SLP_S4_MIN_ASSERT_4S"	# 5:4 in A4h-A7h

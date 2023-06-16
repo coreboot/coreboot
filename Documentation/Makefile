@@ -5,7 +5,7 @@
 #
 
 PDFLATEX  = pdflatex -t a4
-SPHINXDIR = _build
+BUILDDIR ?= _build
 
 FIGS=codeflow.pdf hypertransport.pdf
 
@@ -33,8 +33,8 @@ else ifneq ($(strip $(CONVERT)),)
 	convert $< $@
 endif
 
-$(SPHINXDIR):
-	mkdir -p $(SPHINXDIR)
+$(BUILDDIR):
+	mkdir -p $(BUILDDIR)
 
 corebootPortingGuide.toc: $(FIGS) corebootBuildingGuide.tex
 	# 2 times to make sure we have a current toc.
@@ -44,11 +44,11 @@ corebootPortingGuide.toc: $(FIGS) corebootBuildingGuide.tex
 corebootPortingGuide.pdf: $(FIGS) corebootBuildingGuide.tex corebootPortingGuide.toc
 	$(PDFLATEX) corebootBuildingGuide.tex
 
-sphinx: $(SPHINXDIR)
-	$(MAKE) -f Makefile.sphinx html BUILDDIR="$(SPHINXDIR)"
+sphinx: $(BUILDDIR)
+	$(MAKE) -f Makefile.sphinx html BUILDDIR="$(BUILDDIR)"
 
 clean-sphinx:
-	$(MAKE) -f Makefile.sphinx clean BUILDDIR="$(SPHINXDIR)"
+	$(MAKE) -f Makefile.sphinx clean BUILDDIR="$(BUILDDIR)"
 
 clean: clean-sphinx
 	rm -f *.aux *.idx *.log *.toc *.out $(FIGS)
@@ -56,8 +56,8 @@ clean: clean-sphinx
 distclean: clean
 	rm -f corebootPortingGuide.pdf
 
-livesphinx: $(SPHINXDIR)
-	$(MAKE) -f Makefile.sphinx livehtml SPHINXOPTS="$(SPHINXOPTS)" BUILDDIR="$(SPHINXDIR)"
+livesphinx: $(BUILDDIR)
+	$(MAKE) -f Makefile.sphinx livehtml SPHINXOPTS="$(SPHINXOPTS)" BUILDDIR="$(BUILDDIR)"
 
 test:
 	@echo "Test for logging purposes - Failing tests will not fail the build"

@@ -36,10 +36,17 @@ config SOC_INTEL_ALDERLAKE_PCH_P
 config SOC_INTEL_ALDERLAKE_PCH_S
 	bool
 	select SOC_INTEL_ALDERLAKE
-	select HAVE_INTEL_FSP_REPO
+	select HAVE_INTEL_FSP_REPO if !SOC_INTEL_RAPTORLAKE_PCH_S || (SOC_INTEL_RAPTORLAKE_PCH_S && FSP_TYPE_IOT)
 	select PLATFORM_USES_FSP2_3
 	help
 	  Choose this option if your mainboard has a PCH-S chipset.
+
+config SOC_INTEL_RAPTORLAKE_PCH_S
+	bool
+	select SOC_INTEL_ALDERLAKE_PCH_S
+	select SOC_INTEL_RAPTORLAKE
+	help
+	  Choose this option if your mainboard has a Raptor Lake PCH-S chipset.
 
 if SOC_INTEL_ALDERLAKE
 
@@ -138,8 +145,8 @@ config CPU_SPECIFIC_OPTIONS
 
 config SOC_INTEL_ALDERLAKE_TCSS_USB4_SUPPORT
 	bool
-	default y if !SOC_INTEL_ALDERLAKE_PCH_S
 	default n if SOC_INTEL_ALDERLAKE_PCH_S
+	default y
 	select SOC_INTEL_COMMON_BLOCK_TCSS
 	select SOC_INTEL_COMMON_BLOCK_USB4
 	select SOC_INTEL_COMMON_BLOCK_USB4_PCIE
@@ -399,6 +406,7 @@ config FSP_HEADER_PATH
 	string "Location of FSP headers"
 	default "src/vendorcode/intel/fsp/fsp2_0/alderlake_n/" if SOC_INTEL_ALDERLAKE_PCH_N && !FSP_USE_REPO
 	default "src/vendorcode/intel/fsp/fsp2_0/raptorlake/" if SOC_INTEL_RAPTORLAKE && !FSP_USE_REPO
+	default "3rdparty/fsp/RaptorLakeFspBinPkg/IoT/RaptorLakeS/Include/" if SOC_INTEL_RAPTORLAKE_PCH_S && FSP_TYPE_IOT
 	default "3rdparty/fsp/AlderLakeFspBinPkg/IoT/AlderLakeP/Include/" if SOC_INTEL_ALDERLAKE_PCH_P && FSP_TYPE_IOT
 	default "3rdparty/fsp/AlderLakeFspBinPkg/IoT/AlderLakeS/Include/" if SOC_INTEL_ALDERLAKE_PCH_S && FSP_TYPE_IOT
 	default "3rdparty/fsp/AlderLakeFspBinPkg/Client/AlderLakeP/Include/" if SOC_INTEL_ALDERLAKE_PCH_P
@@ -408,6 +416,7 @@ config FSP_HEADER_PATH
 config FSP_FD_PATH
 	string
 	depends on FSP_USE_REPO
+	default "3rdparty/fsp/RaptorLakeFspBinPkg/IoT/RaptorLakeS/FSP.fd" if SOC_INTEL_RAPTORLAKE_PCH_S && FSP_TYPE_IOT
 	default "3rdparty/fsp/AlderLakeFspBinPkg/IoT/AlderLakeP/Fsp.fd" if SOC_INTEL_ALDERLAKE_PCH_P && FSP_TYPE_IOT
 	default "3rdparty/fsp/AlderLakeFspBinPkg/IoT/AlderLakeS/Fsp.fd" if SOC_INTEL_ALDERLAKE_PCH_S && FSP_TYPE_IOT
 	default "3rdparty/fsp/AlderLakeFspBinPkg/Client/AlderLakeP/Fsp.fd" if SOC_INTEL_ALDERLAKE_PCH_P

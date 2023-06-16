@@ -222,11 +222,16 @@ const struct gpio_community *const *get_gpio_communities(struct pci_dev *const s
 	case PCI_DEVICE_ID_INTEL_Q670:
 	case PCI_DEVICE_ID_INTEL_Z690:
 	case PCI_DEVICE_ID_INTEL_W680:
-	case PCI_DEVICE_ID_INTEL_W685:
 	case PCI_DEVICE_ID_INTEL_WM690:
 	case PCI_DEVICE_ID_INTEL_HM670:
-	case PCI_DEVICE_ID_INTEL_WM790:
+	case PCI_DEVICE_ID_INTEL_W790:
+	case PCI_DEVICE_ID_INTEL_Z790:
+	case PCI_DEVICE_ID_INTEL_H770:
+	case PCI_DEVICE_ID_INTEL_B760:
 	case PCI_DEVICE_ID_INTEL_HM770:
+	case PCI_DEVICE_ID_INTEL_WM790:
+	case PCI_DEVICE_ID_INTEL_C262:
+	case PCI_DEVICE_ID_INTEL_C266:
 		*community_count = ARRAY_SIZE(alderlake_pch_h_communities);
 		*pad_stepping = 16;
 		return alderlake_pch_h_communities;

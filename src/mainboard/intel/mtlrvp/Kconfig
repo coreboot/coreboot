@@ -122,4 +122,7 @@ config UART_FOR_CONSOLE
 	int
 	default 0
 
+config USE_PM_ACPI_TIMER
+	default n
+
 endif # BOARD_INTEL_MTLRVP_COMMON

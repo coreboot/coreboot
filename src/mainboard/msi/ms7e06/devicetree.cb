@@ -1,0 +1,247 @@
+chip soc/intel/alderlake
+	# FSP configuration
+
+	register "eist_enable" = "1"
+
+	# Sagv Configuration
+	register "sagv" = "SaGv_Enabled"
+	register "RMT" = "0"
+	register "enable_c6dram" = "1"
+
+	register "pmc_gpe0_dw0" = "GPP_J"
+	register "pmc_gpe0_dw1" = "GPP_VPGIO"
+	register "pmc_gpe0_dw2" = "GPD"
+
+	register "hybrid_storage_mode" = "1"
+	register "dmi_power_optimize_disable" = "1"
+
+	# FIVR configuration
+	register "fivr_rfi_frequency" = "1394"
+	register "fivr_spread_spectrum" = "FIVR_SS_1_5"
+	register "ext_fivr_settings" = "{
+		.configure_ext_fivr = 1,
+	}"
+
+	device domain 0 on
+		subsystemid 0x1462 0x7e06 inherit
+		device ref pcie5_0 on
+			register "cpu_pcie_rp[CPU_RP(2)]" = "{
+				.clk_src = 0,
+				.clk_req = 0,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc "SlotTypePciExpressGen5x16" "SlotLengthLong"
+					 "PCI_E1" "SlotDataBusWidth16X"
+		end
+		device ref igpu on
+			# HDMI on port B
+			register "ddi_portB_config" = "1"
+			register "ddi_ports_config" = "{
+				[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_C] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_1] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_2] = DDI_ENABLE_HPD,
+				[DDI_PORT_3] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_4] = DDI_ENABLE_HPD,
+			}"
+		end
+		device ref pcie4_0 on
+			register "cpu_pcie_rp[CPU_RP(1)]" = "{
+				.clk_src = 9,
+				.clk_req = 9,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther"
+					 "M2_1" "SlotDataBusWidth4X"
+		end
+		device ref xhci on
+			register "usb2_ports[0]" = "USB2_PORT_SHORT(OC2)" # USB-C LAN_USB1
+			register "usb2_ports[1]" = "USB2_PORT_SHORT(OC1)" # MSI MYSTIC LIGHT
+			register "usb2_ports[2]" = "USB2_PORT_SHORT(OC0)" # USB-A LAN_USB1
+			register "usb2_ports[3]" = "USB2_PORT_LONG(OC0)" # JUSB5
+			register "usb2_ports[4]" = "USB2_PORT_SHORT(OC3)" # HUB to rear USB 2.0
+			register "usb2_ports[5]" = "USB2_PORT_LONG(OC3)" # empty?
+			register "usb2_ports[6]" = "USB2_PORT_LONG(OC7)" # JUSB4
+			register "usb2_ports[7]" = "USB2_PORT_LONG(OC0)" # JUSB4
+			register "usb2_ports[8]" = "USB2_PORT_LONG(OC2)" # JUSB3
+			register "usb2_ports[9]" = "USB2_PORT_LONG(OC7)" # JUSB3
+			register "usb2_ports[10]" = "USB2_PORT_SHORT(OC0)" # PS2_USB1
+			register "usb2_ports[11]" = "USB2_PORT_SHORT(OC0)" # PS2_USB1
+			register "usb2_ports[12]" = "USB2_PORT_SHORT(OC0)" # HUB to USB 2.0 headers
+			register "usb2_ports[13]" = "USB2_PORT_SHORT(OC6)" # CNVi BT
+			register "usb2_ports[14]" = "USB2_PORT_EMPTY" # USB Redirection port 1
+			register "usb2_ports[15]" = "USB2_PORT_EMPTY" # USB Redirection port 2
+
+			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC2)" # USB-C LAN_USB1
+			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC2)" # USB-A LAN_USB1
+			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC3)" # JUSB5
+			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC0)" # USB-A USB2
+			register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC7)" # USB-A USB2
+			register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC7)" # JUSB4
+			register "usb3_ports[6]" = "USB3_PORT_DEFAULT(OC2)" # JUSB4
+			register "usb3_ports[7]" = "USB3_PORT_DEFAULT(OC2)" # JUSB3
+			register "usb3_ports[8]" = "USB3_PORT_DEFAULT(OC0)" # JUSB3
+			register "usb3_ports[9]" = "USB3_PORT_EMPTY"
+		end
+		device ref cnvi_wifi on
+			# Enable CNVi BT
+			register "cnvi_bt_core" = "true"
+			register "cnvi_bt_audio_offload" = "false"
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				register "enable_cnvi_ddr_rfim" = "true"
+				device generic 0 on end
+			end
+		end
+		device ref heci1 on end
+		device ref sata on
+			register "sata_salp_support" = "1"
+
+			register "sata_ports_enable" = "{
+				[0] = 1,
+				[1] = 1,
+				[2] = 1,
+				[3] = 1,
+				[4] = 1,
+				[5] = 1,
+				[6] = 1,
+				[7] = 1,
+			}"
+
+			register "sata_ports_dev_slp" = "{
+				[0] = 0,
+				[1] = 0,
+				[2] = 0,
+				[3] = 0,
+				[4] = 0,
+				[5] = 0,
+				[6] = 1,
+				[7] = 1,
+			}"
+		end
+		device ref pcie_rp1 on
+			register "pch_pcie_rp[PCH_RP(1)]" = "{
+				.clk_src = 10,
+				.clk_req = 10,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc "SlotTypePciExpressGen3X1" "SlotLengthShort"
+					 "PCI_E2" "SlotDataBusWidth1X"
+		end
+		device ref pcie_rp2 on
+			register "pch_pcie_rp[PCH_RP(2)]" = "{
+				.clk_src = 17,
+				.clk_req = 17,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthLong"
+					 "PCI_E4" "SlotDataBusWidth1X"
+		end
+		device ref pcie_rp3 on
+			# i225 Ethernet, Clock PM unsupported, onboard device
+			register "pch_pcie_rp[PCH_RP(3)]" = "{
+				.clk_src = 12,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_UNUSED | PCIE_RP_BUILT_IN,
+			}"
+		end
+
+		device ref pcie_rp5 on
+			register "pch_pcie_rp[PCH_RP(5)]" = "{
+				.clk_src = 15,
+				.clk_req = 15,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc "SlotTypePciExpressGen4x16" "SlotLengthLong"
+					 "PCI_E3" "SlotDataBusWidth4X"
+		end
+
+		device ref pcie_rp9 on
+			register "pch_pcie_rp[PCH_RP(9)]" = "{
+				.clk_src = 13,
+				.clk_req = 13,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther"
+					 "M2_3" "SlotDataBusWidth4X"
+		end
+
+		# These are not enabled. The Flex I/O mode is SATA to cover all 8 SATA ports.
+		# There is an ASMedia switch on-board to mux the SATA ports 7, 8 and PCIe
+		# 9-12, 21-24 to M2_3 and M2_4 slots
+		device ref pcie_rp13 off end
+		device ref pcie_rp14 off end
+		device ref pcie_rp15 off end
+		device ref pcie_rp16 off end
+		device ref pcie_rp17 off end
+		device ref pcie_rp18 off end
+		device ref pcie_rp19 off end
+		device ref pcie_rp20 off end
+
+		device ref pcie_rp21 on
+			register "pch_pcie_rp[PCH_RP(21)]" = "{
+				.clk_src = 14,
+				.clk_req = 14,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther"
+					 "M2_4" "SlotDataBusWidth4X"
+		end
+
+		device ref pcie_rp25 on
+			register "pch_pcie_rp[PCH_RP(25)]" = "{
+				.clk_src = 8,
+				.clk_req = 8,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther"
+					 "M2_2" "SlotDataBusWidth4X"
+		end
+		device ref pch_espi on
+			register "gen1_dec" = "0x00fc0201"
+			register "gen2_dec" = "0x003c0a01"
+			register "gen3_dec" = "0x000c03f1"
+			register "gen4_dec" = "0x000c0081"
+
+			chip superio/nuvoton/nct6687d
+				device pnp 4e.1 off end		# Parallel port
+				device pnp 4e.2 on		# COM1
+					io 0x60 = 0x3f8
+					irq 0x70 = 4
+				end
+				device pnp 4e.3 off end		# COM2, IR
+				device pnp 4e.5 on		# Keyboard
+					io 0x60 = 0x60
+					io 0x62 = 0x64
+					irq 0x70 = 1
+					irq 0x72 = 12
+				end
+				device pnp 4e.6 off end		# CIR
+				device pnp 4e.7 off end		# GPIO0-7
+				device pnp 4e.8 off end		# P80 UART
+				device pnp 4e.9 off end		# GPIO8-9, GPIO1-8 AF
+				device pnp 4e.a on		# ACPI
+					# Vendor firmware did not assign I/O and IRQ
+				end
+				device pnp 4e.b on		# EC
+					io 0x60 = 0xa20
+					# Vendor firmware did not assign IRQ
+				end
+				device pnp 4e.c off end		# RTC
+				device pnp 4e.d off end		# Deep Sleep
+				device pnp 4e.e off end		# TACH/PWM assignment
+				device pnp 4e.f off end		# Function register
+			end
+		end
+		device ref hda on
+			subsystemid 0x1462 0x9e06
+			register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
+			register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
+			register "pch_hda_idisp_codec_enable" = "true"
+		end
+		device ref smbus on end
+
+		chip drivers/crb
+			device mmio 0xfed40000 on end
+		end
+	end
+end

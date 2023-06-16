@@ -413,10 +413,10 @@ static void fill_fsps_tcss_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_meteorlake_config *config)
 {
 	const struct device *tcss_port_arr[] = {
+		DEV_PTR(tcss_usb3_port0),
 		DEV_PTR(tcss_usb3_port1),
 		DEV_PTR(tcss_usb3_port2),
 		DEV_PTR(tcss_usb3_port3),
-		DEV_PTR(tcss_usb3_port4),
 	};
 
 	s_cfg->TcssAuxOri = config->tcss_aux_ori;

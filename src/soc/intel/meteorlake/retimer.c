@@ -10,10 +10,10 @@ int retimer_get_index_for_typec(uint8_t typec_port)
 	int ec_port = 0;
 
 	const struct device *tcss_port_arr[] = {
+		DEV_PTR(tcss_usb3_port0),
 		DEV_PTR(tcss_usb3_port1),
 		DEV_PTR(tcss_usb3_port2),
 		DEV_PTR(tcss_usb3_port3),
-		DEV_PTR(tcss_usb3_port4),
 	};
 
 	for (uint8_t i = 0; i < MAX_TYPE_C_PORTS; i++) {

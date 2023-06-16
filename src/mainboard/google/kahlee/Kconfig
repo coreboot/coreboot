@@ -145,8 +145,10 @@ config TPM_SPI_SPEED
 
 endif
 
-# Don't use AMD's Secure OS
+# Don't use AMD's Secure OS if ChromeOS build.
 config USE_PSPSECUREOS
-	def_bool n
+	bool
+	default n if CHROMEOS
+	default y
 
 endif # BOARD_GOOGLE_BASEBOARD_KAHLEE

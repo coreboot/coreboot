@@ -67,6 +67,7 @@ RUN \
 		pbzip2 \
 		pkg-config \
 		python3 \
+		python-is-python3 \
 		qemu-system-arm \
 		qemu-system-misc \
 		qemu-system-ppc \
@@ -80,7 +81,6 @@ RUN \
 		xz-utils \
 		zlib1g-dev \
 	&& apt-get clean \
-	&& update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
 	&& ln -s /usr/bin/automake /usr/bin/automake-1.15 \
 	&& ln -s /usr/bin/aclocal /usr/bin/aclocal-1.15
 

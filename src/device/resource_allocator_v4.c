@@ -405,7 +405,7 @@ static void allocate_child_resources(struct bus *bus, struct memranges *ranges,
 
 		if (memranges_steal(ranges, resource->limit, resource->size, resource->align,
 				    type_match, &resource->base, allocate_top_down) == false) {
-			printk(BIOS_ERR, "  ERROR: Resource didn't fit!!! ");
+			printk(BIOS_ERR, "Resource didn't fit!!! ");
 			printk(BIOS_DEBUG, "  %s %02lx *  size: 0x%llx limit: %llx %s\n",
 			       dev_path(dev), resource->index,
 			       resource->size, resource->limit, resource2str(resource));

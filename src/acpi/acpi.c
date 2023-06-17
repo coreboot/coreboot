@@ -1931,7 +1931,7 @@ unsigned long write_acpi_tables(const unsigned long start)
 	dsdt_file = cbfs_map(CONFIG_CBFS_PREFIX "/dsdt.aml", &dsdt_size);
 	if (!dsdt_file) {
 		printk(BIOS_ERR, "No DSDT file, skipping ACPI tables\n");
-		return current;
+		return start;
 	}
 
 	if (dsdt_file->length > dsdt_size
@@ -1939,7 +1939,7 @@ unsigned long write_acpi_tables(const unsigned long start)
 	    || memcmp(dsdt_file->signature, "DSDT", 4) != 0) {
 		printk(BIOS_ERR, "Invalid DSDT file, skipping ACPI tables\n");
 		cbfs_unmap(dsdt_file);
-		return current;
+		return start;
 	}
 
 	slic_file = cbfs_map(CONFIG_CBFS_PREFIX "/slic", &slic_size);

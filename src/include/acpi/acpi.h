@@ -1335,7 +1335,7 @@ unsigned long fw_cfg_acpi_tables(unsigned long start);
 
 /* These are implemented by the target port or north/southbridge. */
 void preload_acpi_dsdt(void);
-unsigned long write_acpi_tables(unsigned long addr);
+unsigned long write_acpi_tables(const unsigned long addr);
 unsigned long acpi_fill_madt(unsigned long current);
 
 void acpi_fill_fadt(acpi_fadt_t *fadt);

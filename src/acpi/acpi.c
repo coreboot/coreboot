@@ -1854,7 +1854,7 @@ static void acpidump_print(void *table_ptr)
 	printk(BIOS_SPEW, "\n");
 }
 
-unsigned long write_acpi_tables(unsigned long start)
+unsigned long write_acpi_tables(const unsigned long start)
 {
 	unsigned long current;
 	acpi_rsdp_t *rsdp;

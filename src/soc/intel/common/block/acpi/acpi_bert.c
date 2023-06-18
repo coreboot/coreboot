@@ -56,12 +56,12 @@ static enum cb_err record_crashlog_into_bert(void **region, size_t *length)
 	if (cpu_record_size) {
 		cl_data = new_cper_fw_error_crashlog(status, cpu_record_size);
 		if (!cl_data) {
-			printk(BIOS_ERR, "Crashlog CPU entry(size %zu) "
+			printk(BIOS_ERR, "Crashlog CPU entry(size 0x%zx) "
 				"would exceed available region\n",
 				cpu_record_size);
 			return CB_ERR;
 		}
-		printk(BIOS_DEBUG, "cl_data %p, cpu_record_size %zu\n",
+		printk(BIOS_DEBUG, "cl_data %p, cpu_record_size 0x%zx\n",
 			cl_data, cpu_record_size);
 		cl_fill_cpu_records(cl_data);
 	}
@@ -77,12 +77,12 @@ static enum cb_err record_crashlog_into_bert(void **region, size_t *length)
 
 		cl_data = new_cper_fw_error_crashlog(status, pmc_record_size);
 		if (!cl_data) {
-			printk(BIOS_ERR, "Crashlog PMC entry(size %zu) "
+			printk(BIOS_ERR, "Crashlog PMC entry(size 0x%zx) "
 				"would exceed available region\n",
 				pmc_record_size);
 			return CB_ERR;
 		}
-		printk(BIOS_DEBUG, "cl_data %p, pmc_record_size %zu\n",
+		printk(BIOS_DEBUG, "cl_data %p, pmc_record_size 0x%zx\n",
 			cl_data, pmc_record_size);
 		cl_fill_pmc_records(cl_data);
 	}
@@ -99,12 +99,12 @@ static enum cb_err record_crashlog_into_bert(void **region, size_t *length)
 
 			cl_data = new_cper_fw_error_crashlog(status, ioe_record_size);
 			if (!cl_data) {
-				printk(BIOS_ERR, "Crashlog IOE entry(size %zu) "
+				printk(BIOS_ERR, "Crashlog IOE entry(size 0x%zx) "
 						"would exceed available region\n",
 						ioe_record_size);
 				return CB_ERR;
 			}
-			printk(BIOS_DEBUG, "cl_data %p, ioe_record_size %zu\n",
+			printk(BIOS_DEBUG, "cl_data %p, ioe_record_size 0x%zx\n",
 					cl_data, ioe_record_size);
 			cl_fill_ioe_records(cl_data);
 		}

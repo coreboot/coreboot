@@ -3,6 +3,7 @@ fw_config
 		option AUDIO_CODEC_UNPROVISIONED 0
 		option AUDIO_CODEC_ALC5682 1
 		option AUDIO_CODEC_ALC5682I_VS 2
+		option AUDIO_CODEC_ALC5650 3
 	end
 end
 chip soc/intel/jasperlake
@@ -181,6 +182,19 @@ chip soc/intel/jasperlake
 				register "property_list[0].integer" = "1"
 				device i2c 1a on
 					probe AUDIO_CODEC_SOURCE AUDIO_CODEC_ALC5682I_VS
+				end
+			end
+			chip drivers/i2c/generic
+				register "hid" = ""10EC5650""
+				register "name" = ""RT58""
+				register "desc" = ""Realtek RT5650""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_D16)"
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-mode""
+				register "property_list[0].integer" = "2"
+				device i2c 1a on
+					probe AUDIO_CODEC_SOURCE AUDIO_CODEC_ALC5650
 				end
 			end
 			chip drivers/i2c/generic

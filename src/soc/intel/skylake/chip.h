@@ -60,13 +60,13 @@ struct soc_intel_skylake_config {
 	bool s0ix_enable;
 
 	/* Enable DPTF support */
-	int dptf_enable;
+	bool dptf_enable;
 
 	/* Deep SX enables */
-	int deep_s3_enable_ac;
-	int deep_s3_enable_dc;
-	int deep_s5_enable_ac;
-	int deep_s5_enable_dc;
+	bool deep_s3_enable_ac;
+	bool deep_s3_enable_dc;
+	bool deep_s5_enable_ac;
+	bool deep_s5_enable_dc;
 
 	/*
 	 * Deep Sx Configuration
@@ -95,15 +95,15 @@ struct soc_intel_skylake_config {
 	} SaGv;
 
 	/* Enable/disable Rank Margin Tool */
-	u8 RMT;
+	bool RMT;
 
 	/* Disable Command TriState */
-	u8 CmdTriStateDis;
+	bool CmdTriStateDis;
 
 	/* Lan */
-	u8 EnableLanLtr;
-	u8 EnableLanK1Off;
-	u8 LanClkReqSupported;
+	bool EnableLanLtr;
+	bool EnableLanK1Off;
+	bool LanClkReqSupported;
 	u8 LanClkReqNumber;
 
 	/* SATA related */
@@ -111,15 +111,15 @@ struct soc_intel_skylake_config {
 		SATA_AHCI    = 0,
 		SATA_RAID    = 1,
 	} SataMode;
-	u8 SataSalpSupport;
-	u8 SataPortsEnable[8];
-	u8 SataPortsDevSlp[8];
-	u8 SataPortsSpinUp[8];
-	u8 SataPortsHotPlug[8];
+	bool SataSalpSupport;
+	bool SataPortsEnable[8];
+	bool SataPortsDevSlp[8];
+	bool SataPortsSpinUp[8];
+	bool SataPortsHotPlug[8];
 	u8 SataSpeedLimit;
 
 	/* Audio related */
-	u8 DspEnable;
+	bool DspEnable;
 
 	/* HDA Virtual Channel Type Select */
 	enum {
@@ -140,7 +140,7 @@ struct soc_intel_skylake_config {
 	u32 TraceHubMemReg1Size;
 
 	/* DCI Enable/Disable */
-	u8 PchDciEn;
+	bool PchDciEn;
 
 	/*
 	 * PCIe Root Port configuration:
@@ -175,14 +175,14 @@ struct soc_intel_skylake_config {
 	 * 0: Disable Root Port
 	 * 1: Enable Root Port
 	 */
-	u8 PcieRpEnable[CONFIG_MAX_ROOT_PORTS];
+	bool PcieRpEnable[CONFIG_MAX_ROOT_PORTS];
 
 	/*
 	 * Enable/Disable Clk-req support for Root Port
 	 * 0: Disable Clk-Req
 	 * 1: Enable Clk-req
 	 */
-	u8 PcieRpClkReqSupport[CONFIG_MAX_ROOT_PORTS];
+	bool PcieRpClkReqSupport[CONFIG_MAX_ROOT_PORTS];
 
 	/*
 	 * Clk-req source for Root Port
@@ -199,17 +199,17 @@ struct soc_intel_skylake_config {
 	 * 0: Disable AER
 	 * 1: Enable AER
 	 */
-	u8 PcieRpAdvancedErrorReporting[CONFIG_MAX_ROOT_PORTS];
+	bool PcieRpAdvancedErrorReporting[CONFIG_MAX_ROOT_PORTS];
 
 	/*
 	 * Enable/Disable Latency Tolerance Reporting for Root Port
 	 * 0: Disable LTR
 	 * 1: Enable LTR
 	 */
-	u8 PcieRpLtrEnable[CONFIG_MAX_ROOT_PORTS];
+	bool PcieRpLtrEnable[CONFIG_MAX_ROOT_PORTS];
 
 	/* Enable/Disable HotPlug support for Root Port */
-	u8 PcieRpHotPlug[CONFIG_MAX_ROOT_PORTS];
+	bool PcieRpHotPlug[CONFIG_MAX_ROOT_PORTS];
 
 	/* PCIE RP Max Payload, Max Payload Size supported */
 	enum {
@@ -238,7 +238,7 @@ struct soc_intel_skylake_config {
 	/* USB related */
 	struct usb2_port_config usb2_ports[16];
 	struct usb3_port_config usb3_ports[10];
-	u8 SsicPortEnable;
+	bool SsicPortEnable;
 
 	/*
 	 * SerialIO device mode selection:
@@ -271,8 +271,8 @@ struct soc_intel_skylake_config {
 	enum skylake_i2c_voltage i2c_voltage[CONFIG_SOC_INTEL_I2C_DEV_MAX];
 
 	/* eMMC and SD */
-	u8 ScsEmmcHs400Enabled;
-	u8 EmmcHs400DllNeed;
+	bool ScsEmmcHs400Enabled;
+	bool EmmcHs400DllNeed;
 	u8 ScsEmmcHs400RxStrobeDll1;
 	u8 ScsEmmcHs400TxDataDll;
 
@@ -283,7 +283,7 @@ struct soc_intel_skylake_config {
 		Display_Auto,
 		Display_Switchable,
 	} PrimaryDisplay;
-	u8 SkipExtGfxScan;
+	bool SkipExtGfxScan;
 
 	/* GPIO IRQ Route  The valid values is 14 or 15*/
 	u8 GpioIrqSelect;
@@ -291,34 +291,34 @@ struct soc_intel_skylake_config {
 	u8 SciIrqSelect;
 	/* TCO IRQ Select  The valid values is 9, 10, 11, 20 21, 22, 23*/
 	u8 TcoIrqSelect;
-	u8 TcoIrqEnable;
+	bool TcoIrqEnable;
 	/* Enable SMI_LOCK bit to prevent writes to the Global SMI Enable bit.*/
-	u8 LockDownConfigGlobalSmi;
+	bool LockDownConfigGlobalSmi;
 	/*
 	 * Enable RTC lower and upper 128 byte Lock bits to lock Bytes 38h-3Fh
 	 * in the upper and lower 128-byte bank of RTC RAM.
 	 */
-	u8 LockDownConfigRtcLock;
+	bool LockDownConfigRtcLock;
 
 	/*
 	 * Determine if WLAN wake from Sx, corresponds to the
 	 * HOST_WLAN_PP_EN bit in the PWRM_CFG3 register.
 	 */
-	u8 PchPmWoWlanEnable;
+	bool PchPmWoWlanEnable;
 
 	/*
 	 * Determine if WLAN wake from DeepSx, corresponds to
 	 * the DSX_WLAN_PP_EN bit in the PWRM_CFG3 register.
 	 */
-	u8 PchPmWoWlanDeepSxEnable;
+	bool PchPmWoWlanDeepSxEnable;
 
 	/*
 	 * Corresponds to the "WOL Enable Override" bit in the General PM
 	 * Configuration B (GEN_PMCON_B) register
 	 */
-	u8 WakeConfigWolEnableOverride;
+	bool WakeConfigWolEnableOverride;
 	/* Determine if enable PCIe to wake from deep Sx*/
-	u8 WakeConfigPcieWakeFromDeepSx;
+	bool WakeConfigPcieWakeFromDeepSx;
 	/* Deep Sx Policy. Values 0: PchDeepSxPolDisable,
 	 * 1: PchDpS5BatteryEn, 2: PchDpS5AlwaysEn, 3: PchDpS4S5BatteryEn,
 	 * 4: PchDpS4S5AlwaysEn, 5: PchDpS3S4S5BatteryEn, 6: PchDpS3S4S5AlwaysEn
@@ -360,7 +360,7 @@ struct soc_intel_skylake_config {
 	 * SLP_X Stretching After SUS Well Power Up. Values 0: Disabled,
 	 * 1: Enabled
 	 */
-	u8 PmConfigSlpStrchSusUp;
+	bool PmConfigSlpStrchSusUp;
 	/*
 	 * PCH power button override period.
 	 * Values: 0x0 - 4s, 0x1 - 6s, 0x2 - 8s, 0x3 - 10s, 0x4 - 12s, 0x5 - 14s
@@ -372,7 +372,7 @@ struct soc_intel_skylake_config {
 	 * Indicates platform supports VCCPrim_Core Voltage Margining
 	 * in SLP_S0# asserted state.
 	 */
-	u8 PchPmSlpS0VmEnable;
+	bool PchPmSlpS0VmEnable;
 
 	enum {
 		RESET_POWER_CYCLE_DEFAULT = 0,
@@ -407,7 +407,7 @@ struct soc_intel_skylake_config {
 	u8 SendVrMbxCmd;
 
 	/* Enable/Disable host reads to PMC XRAM registers */
-	u8 PchPmPmcReadDisable;
+	bool PchPmPmcReadDisable;
 
 	/*
 	 * Use SD card detect GPIO with default config:
@@ -434,7 +434,7 @@ struct soc_intel_skylake_config {
 	 * 0b - Disable
 	 * 1b - Enable noise mitigation
 	 */
-	u8 AcousticNoiseMitigation;
+	bool AcousticNoiseMitigation;
 
 	/*
 	 * Disable Fast Package C-state ramping
@@ -442,9 +442,9 @@ struct soc_intel_skylake_config {
 	 * 0b - Enabled
 	 * 1b - Disabled
 	 */
-	u8 FastPkgCRampDisableIa;
-	u8 FastPkgCRampDisableGt;
-	u8 FastPkgCRampDisableSa;
+	bool FastPkgCRampDisableIa;
+	bool FastPkgCRampDisableGt;
+	bool FastPkgCRampDisableSa;
 
 	/*
 	 * Adjust the VR slew rates
@@ -462,7 +462,7 @@ struct soc_intel_skylake_config {
 	 * 1b - Enabled
 	 * 0b - Disabled
 	 */
-	u8 eist_enable;
+	bool eist_enable;
 
 	/*
 	 * Activates VR mailbox command for Intersil VR C-state issues.

@@ -11,14 +11,17 @@ static void save_mrc_data(void *unused)
 {
 	size_t mrc_data_size;
 	const void *mrc_data;
+	uint32_t cbmem_id = CONFIG(MRC_CACHE_USING_MRC_VERSION) ? CBMEM_ID_MRC_VERSION :
+					 CBMEM_ID_FSPM_VERSION;
 	uint32_t *version;
 
 	if (acpi_is_wakeup_s3())
 		return;
 
-	version = cbmem_find(CBMEM_ID_FSPM_VERSION);
+	version = cbmem_find(cbmem_id);
 	if (!version) {
-		printk(BIOS_ERR, "Failed to read FSP-M version from cbmem.\n");
+		printk(BIOS_ERR, "Failed to read %s version from cbmem.\n",
+				CONFIG(MRC_CACHE_USING_MRC_VERSION) ? "MRC" : "FSP-M");
 		return;
 	}
 

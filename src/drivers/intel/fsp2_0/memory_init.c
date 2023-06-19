@@ -30,10 +30,28 @@
 
 static uint8_t temp_ram[CONFIG_FSP_TEMP_RAM_SIZE] __aligned(sizeof(uint64_t));
 
+/*
+ * Helper function to store the MRC cache version into CBMEM
+ *
+ * ramstage uses either the MRC version or FSP-M version (depending on the config)
+ * when updating the MRC cache
+ */
+static void do_cbmem_version_entry(uint32_t cbmem_id, uint32_t version)
+{
+	uint32_t *cbmem_version_entry = cbmem_add(cbmem_id, sizeof(version));
+	if (!cbmem_version_entry) {
+		printk(BIOS_ERR, "Failed to add %s version to cbmem.\n",
+				CONFIG(MRC_CACHE_USING_MRC_VERSION) ? "MRC" : "FSP-M");
+		return;
+	}
+	*cbmem_version_entry = version;
+}
+
 static void do_fsp_post_memory_init(bool s3wake, uint32_t version)
 {
 	struct range_entry fsp_mem;
-	uint32_t *fsp_version_cbmem;
+	uint32_t cbmem_id = CONFIG(MRC_CACHE_USING_MRC_VERSION) ? CBMEM_ID_MRC_VERSION :
+					 CBMEM_ID_FSPM_VERSION;
 
 	fsp_find_reserved_memory(&fsp_mem);
 
@@ -56,14 +74,8 @@ static void do_fsp_post_memory_init(bool s3wake, uint32_t version)
 		(uintptr_t)cbmem_find(CBMEM_ID_FSP_RESERVED_MEMORY))
 		die("Failed to accommodate FSP reserved memory request!\n");
 
-	/* ramstage uses the FSP-M version when updating the MRC cache */
-	if (CONFIG(CACHE_MRC_SETTINGS) && !s3wake) {
-		fsp_version_cbmem = cbmem_add(CBMEM_ID_FSPM_VERSION,
-					      sizeof(version));
-		if (!fsp_version_cbmem)
-			printk(BIOS_ERR, "Failed to add FSP-M version to cbmem.\n");
-		*fsp_version_cbmem = version;
-	}
+	if (CONFIG(CACHE_MRC_SETTINGS) && !s3wake)
+		do_cbmem_version_entry(cbmem_id, version);
 
 	/* Create romstage handof information */
 	romstage_handoff_init(s3wake);

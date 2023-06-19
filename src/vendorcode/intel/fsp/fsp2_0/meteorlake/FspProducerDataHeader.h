@@ -14,6 +14,7 @@
 
 #include <Guid/FspHeaderFile.h>
 
+#define BUILD_TIME_STAMP_SIZE 12
 //
 // FSP Header Data structure from FspHeader driver.
 //

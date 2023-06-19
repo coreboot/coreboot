@@ -2197,9 +2197,11 @@ typedef struct {
 **/
   UINT8                       RMC;
 
-/** Offset 0x0B82 - Reserved
+/** Offset 0x0B82 - Row Hammering Prevention
+  Enables/Disable Row Hammering Prevention
+  $EN_DIS
 **/
-  UINT8                       Reserved55;
+  UINT8                       ROWHAMMER;
 
 /** Offset 0x0B83 - Dimm ODT Training
   Enables/Disable Dimm ODT Training
@@ -2233,7 +2235,7 @@ typedef struct {
 
 /** Offset 0x0B88 - Reserved
 **/
-  UINT8                       Reserved56[2];
+  UINT8                       Reserved55[2];
 
 /** Offset 0x0B8A - DIMM CA ODT Training
   Enable/Disable DIMM CA ODT Training
@@ -2243,7 +2245,7 @@ typedef struct {
 
 /** Offset 0x0B8B - Reserved
 **/
-  UINT8                       Reserved57[3];
+  UINT8                       Reserved56[3];
 
 /** Offset 0x0B8E - Read Vref Decap Training
   Enable/Disable Read Vref Decap Training
@@ -2265,7 +2267,7 @@ typedef struct {
 
 /** Offset 0x0B91 - Reserved
 **/
-  UINT8                       Reserved58[4];
+  UINT8                       Reserved57[4];
 
 /** Offset 0x0B95 - Duty Cycle Correction Training
   Enable/Disable Duty Cycle Correction Training
@@ -2275,7 +2277,7 @@ typedef struct {
 
 /** Offset 0x0B96 - Reserved
 **/
-  UINT8                       Reserved59[17];
+  UINT8                       Reserved58[17];
 
 /** Offset 0x0BA7 - ECC Support
   Enables/Disable ECC Support
@@ -2309,7 +2311,7 @@ typedef struct {
 
 /** Offset 0x0BB3 - Reserved
 **/
-  UINT8                       Reserved60;
+  UINT8                       Reserved59;
 
 /** Offset 0x0BB4 - IbeccProtectedRegionBases
   IBECC Protected Region Bases per IBECC instance
@@ -2387,9 +2389,11 @@ typedef struct {
 **/
   UINT8                       ThrtCkeMinDefeat;
 
-/** Offset 0x0BEE - Reserved
+/** Offset 0x0BEE - Row Hammer Select
+  Row Hammer Select
+  0:Disable, 1:RFM, 2:pTRR
 **/
-  UINT8                       Reserved61;
+  UINT8                       RhSelect;
 
 /** Offset 0x0BEF - Exit On Failure (MRC)
   Enables/Disable Exit On Failure (MRC)
@@ -2399,7 +2403,7 @@ typedef struct {
 
 /** Offset 0x0BF0 - Reserved
 **/
-  UINT8                       Reserved62[4];
+  UINT8                       Reserved60[4];
 
 /** Offset 0x0BF4 - Select if ZQ pin is shared between Rank0 and Rank1 in DDR4 DDP
   ESelect if ZQ pin is shared between Rank0 and Rank1 in DDR4 DDP
@@ -2658,7 +2662,7 @@ typedef struct {
 
 /** Offset 0x0C2B - Reserved
 **/
-  UINT8                       Reserved63[2];
+  UINT8                       Reserved61[2];
 
 /** Offset 0x0C2D - Rapl Power Floor Ch0
   Power budget ,range[255;0],(0= 5.3W Def)
@@ -2676,9 +2680,11 @@ typedef struct {
 **/
   UINT8                       EnCmdRate;
 
-/** Offset 0x0C30 - Reserved
+/** Offset 0x0C30 - MC_REFRESH_RATE
+  Type of Refresh Rate used to prevent Row Hammer. Default is NORMAL Refresh
+  0:NORMAL Refresh, 1:1x Refresh, 2:2x Refresh, 3:4x Refresh
 **/
-  UINT8                       Reserved64;
+  UINT8                       McRefreshRate;
 
 /** Offset 0x0C31 - Energy Performance Gain
   Enable/disable Energy Performance Gain. <b>0: Disable</b>; 1: Enable
@@ -2686,9 +2692,10 @@ typedef struct {
 **/
   UINT8                       EpgEnable;
 
-/** Offset 0x0C32 - Reserved
+/** Offset 0x0C32 - RH pTRR LFSR0 Mask
+  Row Hammer pTRR LFSR0 Mask, 1/2^(value)
 **/
-  UINT8                       Reserved65;
+  UINT8                       Lfsr0Mask;
 
 /** Offset 0x0C33 - User Manual Threshold
   Disabled: Predefined threshold will be used.\n
@@ -2706,7 +2713,7 @@ typedef struct {
 
 /** Offset 0x0C35 - Reserved
 **/
-  UINT8                       Reserved66;
+  UINT8                       Reserved62;
 
 /** Offset 0x0C36 - Power Down Mode
   This option controls command bus tristating during idle periods
@@ -2743,7 +2750,7 @@ typedef struct {
 
 /** Offset 0x0C3B - Reserved
 **/
-  UINT8                       Reserved67[8];
+  UINT8                       Reserved63[8];
 
 /** Offset 0x0C43 - Ask MRC to clear memory content
   Ask MRC to clear memory content <b>0: Do not Clear Memory;</b> 1: Clear Memory.
@@ -2758,7 +2765,7 @@ typedef struct {
 
 /** Offset 0x0C45 - Reserved
 **/
-  UINT8                       Reserved68;
+  UINT8                       Reserved64;
 
 /** Offset 0x0C46 - Post Code Output Port
   This option configures Post Code Output Port
@@ -2778,7 +2785,7 @@ typedef struct {
 
 /** Offset 0x0C4A - Reserved
 **/
-  UINT8                       Reserved69[2];
+  UINT8                       Reserved65[2];
 
 /** Offset 0x0C4C - BCLK RFI Frequency
   Bclk RFI Frequency for each SAGV point in Hz units. 98000000Hz = 98MHz <b>0 - No
@@ -2821,7 +2828,16 @@ typedef struct {
 
 /** Offset 0x0C62 - Reserved
 **/
-  UINT8                       Reserved70[13];
+  UINT8                       Reserved66[11];
+
+/** Offset 0x0C6D - RH pTRR LFSR1 Mask
+  Row Hammer pTRR LFSR1 Mask, 1/2^(value)
+**/
+  UINT8                       Lfsr1Mask;
+
+/** Offset 0x0C6E - Reserved
+**/
+  UINT8                       Reserved67;
 
 /** Offset 0x0C6F - Command Pins Mapping
   BitMask where bits [3:0] are Controller 0 Channel [3:0] and bits [7:4] are Controller
@@ -2837,7 +2853,7 @@ typedef struct {
 
 /** Offset 0x0C71 - Reserved
 **/
-  UINT8                       Reserved71[24];
+  UINT8                       Reserved68[24];
 
 /** Offset 0x0C89 - Skip external display device scanning
   Enable: Do not scan for external display device, Disable (Default): Scan external
@@ -2873,7 +2889,7 @@ typedef struct {
 
 /** Offset 0x0C8E - Reserved
 **/
-  UINT8                       Reserved72[2];
+  UINT8                       Reserved69[2];
 
 /** Offset 0x0C90 - PMR Size
   Size of PMR memory buffer. 0x400000 for normal boot and 0x200000 for S3 boot
@@ -2887,7 +2903,7 @@ typedef struct {
 
 /** Offset 0x0C95 - Reserved
 **/
-  UINT8                       Reserved73[143];
+  UINT8                       Reserved70[143];
 
 /** Offset 0x0D24 - TotalFlashSize
   Enable/Disable. 0: Disable, define default value of TotalFlashSize , 1: enable
@@ -2903,7 +2919,7 @@ typedef struct {
 
 /** Offset 0x0D28 - Reserved
 **/
-  UINT8                       Reserved74[28];
+  UINT8                       Reserved71[28];
 
 /** Offset 0x0D44 - Smbus dynamic power gating
   Disable or Enable Smbus dynamic power gating.
@@ -2919,7 +2935,7 @@ typedef struct {
 
 /** Offset 0x0D46 - Reserved
 **/
-  UINT8                       Reserved75[2];
+  UINT8                       Reserved72[2];
 
 /** Offset 0x0D48 - SMBUS SPD Write Disable
   Set/Clear Smbus SPD Write Disable. 0: leave SPD Write Disable bit; 1: set SPD Write
@@ -2930,7 +2946,7 @@ typedef struct {
 
 /** Offset 0x0D49 - Reserved
 **/
-  UINT8                       Reserved76[34];
+  UINT8                       Reserved73[34];
 
 /** Offset 0x0D6B - HECI Timeouts
   0: Disable, 1: Enable (Default) timeout check for HECI
@@ -2983,7 +2999,7 @@ typedef struct {
 
 /** Offset 0x0D73 - Reserved
 **/
-  UINT8                       Reserved77[100];
+  UINT8                       Reserved74[100];
 
 /** Offset 0x0DD7 - Avx2 Voltage Guardband Scaling Factor
   AVX2 Voltage Guardband Scale factor applied to AVX2 workloads. Range is 0-200 in
@@ -3006,7 +3022,7 @@ typedef struct {
 
 /** Offset 0x0DDA - Reserved
 **/
-  UINT8                      Reserved78[2];
+  UINT8                      Reserved75[2];
 
 /** Offset 0x0DDC - SerialIoUartDebugRxPinMux - FSPM
   Select RX pin muxing for SerialIo UART used for debug
@@ -3032,7 +3048,27 @@ typedef struct {
 
 /** Offset 0x0DEC - Reserved
 **/
-  UINT8                      Reserved79[188];
+  UINT8                      Reserved76[164];
+
+/** Offset 0x0E90 - TME Exclude Base Address
+  TME Exclude Base Address.
+**/
+  UINT64                      TmeExcludeBase;
+
+/** Offset 0x0E98 - TME Exclude Size Value
+  TME Exclude Size Value.
+**/
+  UINT64                      TmeExcludeSize;
+
+/** Offset 0x0EA0 - Generate New TME Key
+  Enable: Generate New TME Key, Disable(Default): TME key determine by type of reset
+  $EN_DIS
+**/
+  UINT8                       GenerateNewTmeKey;
+
+/** Offset 0x0EA1 - Reserved
+**/
+  UINT8                       Reserved77[7];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration

@@ -4,6 +4,9 @@
 #include <device/pci.h>
 #include <lib.h>
 
+#define IOMMU_CAP_BASE_LO 0x44
+#define IOMMU_CAP_BASE_HI 0x48
+
 static void iommu_read_resources(struct device *dev)
 {
 	struct resource *res;
@@ -12,7 +15,7 @@ static void iommu_read_resources(struct device *dev)
 	pci_dev_read_resources(dev);
 
 	/* IOMMU MMIO registers */
-	res = new_resource(dev, 0x44);
+	res = new_resource(dev, IOMMU_CAP_BASE_LO);
 	res->size = 512 * KiB;
 	res->align = log2(res->size);
 	res->gran = log2(res->size);

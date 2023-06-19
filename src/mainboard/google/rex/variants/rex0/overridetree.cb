@@ -386,7 +386,7 @@ chip soc/intel/meteorlake
 						register "desc" = ""USB2 Type-A Port A0 (DB)""
 						register "type" = "UPC_TYPE_A"
 						register "use_custom_pld" = "true"
-						register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, RIGHT, ACPI_PLD_GROUP(1, 2))"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, RIGHT, ACPI_PLD_GROUP(3, 1))"
 						device ref usb2_port9 on end
 					end
 					chip drivers/usb/acpi
@@ -399,7 +399,7 @@ chip soc/intel/meteorlake
 						register "desc" = ""USB3 Type-A Port A0 (DB)""
 						register "type" = "UPC_TYPE_USB3_A"
 						register "use_custom_pld" = "true"
-						register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, RIGHT, ACPI_PLD_GROUP(1, 2))"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, RIGHT, ACPI_PLD_GROUP(3, 1))"
 						device ref usb3_port1 on end
 					end
 					chip drivers/usb/acpi

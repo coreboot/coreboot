@@ -27,6 +27,10 @@
 #include <Base.h>
 #include <FspmUpd.h>
 #include <FspsUpd.h>
+#if CONFIG(MRC_CACHE_USING_MRC_VERSION)
+#define BUILD_TIME_STAMP_SIZE 12
+#include <FspProducerDataHeader.h>
+#endif
 #if CONFIG(DISPLAY_FSP_VERSION_INFO)
 #include <FirmwareVersionInfoHob.h>
 #elif CONFIG(DISPLAY_FSP_VERSION_INFO_2)

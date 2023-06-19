@@ -30,7 +30,7 @@
 
 static uint8_t temp_ram[CONFIG_FSP_TEMP_RAM_SIZE] __aligned(sizeof(uint64_t));
 
-static void do_fsp_post_memory_init(bool s3wake, uint32_t fsp_version)
+static void do_fsp_post_memory_init(bool s3wake, uint32_t version)
 {
 	struct range_entry fsp_mem;
 	uint32_t *fsp_version_cbmem;
@@ -59,17 +59,17 @@ static void do_fsp_post_memory_init(bool s3wake, uint32_t fsp_version)
 	/* ramstage uses the FSP-M version when updating the MRC cache */
 	if (CONFIG(CACHE_MRC_SETTINGS) && !s3wake) {
 		fsp_version_cbmem = cbmem_add(CBMEM_ID_FSPM_VERSION,
-					      sizeof(fsp_version));
+					      sizeof(version));
 		if (!fsp_version_cbmem)
 			printk(BIOS_ERR, "Failed to add FSP-M version to cbmem.\n");
-		*fsp_version_cbmem = fsp_version;
+		*fsp_version_cbmem = version;
 	}
 
 	/* Create romstage handof information */
 	romstage_handoff_init(s3wake);
 }
 
-static void fsp_fill_mrc_cache(FSPM_ARCH_UPD *arch_upd, uint32_t fsp_version)
+static void fsp_fill_mrc_cache(FSPM_ARCH_UPD *arch_upd, uint32_t version)
 {
 	void *data;
 	size_t mrc_size;
@@ -82,7 +82,7 @@ static void fsp_fill_mrc_cache(FSPM_ARCH_UPD *arch_upd, uint32_t fsp_version)
 	/* Assume boot device is memory mapped. */
 	assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
 
-	data = mrc_cache_current_mmap_leak(MRC_TRAINING_DATA, fsp_version,
+	data = mrc_cache_current_mmap_leak(MRC_TRAINING_DATA, version,
 					   &mrc_size);
 	if (data == NULL)
 		return;
@@ -134,7 +134,7 @@ static enum cb_err setup_fsp_stack_frame(FSPM_ARCH_UPD *arch_upd,
 }
 
 static enum cb_err fsp_fill_common_arch_params(FSPM_ARCH_UPD *arch_upd,
-					bool s3wake, uint32_t fsp_version,
+					bool s3wake, uint32_t version,
 					const struct memranges *memmap)
 {
 	/*
@@ -152,7 +152,7 @@ static enum cb_err fsp_fill_common_arch_params(FSPM_ARCH_UPD *arch_upd,
 		return CB_ERR;
 	}
 
-	fsp_fill_mrc_cache(arch_upd, fsp_version);
+	fsp_fill_mrc_cache(arch_upd, version);
 
 	/* Configure bootmode */
 	if (s3wake) {
@@ -210,19 +210,50 @@ struct fspm_context {
 	struct memranges memmap;
 };
 
+/*
+ * Helper function to read MRC version
+ *
+ * There are multiple ways to read the MRC version using
+ * Intel FSP. Currently the only supported method to get the
+ * MRC version is by reading the FSP_PRODUCDER_DATA_TABLES
+ * from the FSP-M binary (by parsing the FSP header).
+ */
+static uint32_t fsp_mrc_version(void)
+{
+	uint32_t ver = 0;
+#if CONFIG(MRC_CACHE_USING_MRC_VERSION)
+	size_t fspm_blob_size;
+	void *fspm_blob_file = cbfs_map(CONFIG_FSP_M_CBFS, &fspm_blob_size);
+	if (!fspm_blob_file)
+		return 0;
+
+	FSP_PRODUCER_DATA_TABLES *ft = fspm_blob_file + FSP_HDR_OFFSET;
+	FSP_PRODUCER_DATA_TYPE2 *table2 = &ft->FspProduceDataType2;
+	size_t mrc_version_size = sizeof(table2->MrcVersion);
+	for (size_t i = 0; i < mrc_version_size; i++) {
+		ver |= (table2->MrcVersion[i] << ((mrc_version_size - 1) - i) * 8);
+	}
+	cbfs_unmap(fspm_blob_file);
+#endif
+	return ver;
+}
+
 static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 {
 	uint32_t status;
 	fsp_memory_init_fn fsp_raminit;
 	FSPM_UPD fspm_upd, *upd;
 	FSPM_ARCH_UPD *arch_upd;
-	uint32_t fsp_version;
+	uint32_t version;
 	const struct fsp_header *hdr = &context->header;
 	const struct memranges *memmap = &context->memmap;
 
 	post_code(POST_MEM_PREINIT_PREP_START);
 
-	fsp_version = fsp_memory_settings_version(hdr);
+	if (CONFIG(MRC_CACHE_USING_MRC_VERSION))
+		version = fsp_mrc_version();
+	else
+		version = fsp_memory_settings_version(hdr);
 
 	upd = (FSPM_UPD *)(uintptr_t)(hdr->cfg_region_offset + hdr->image_base);
 
@@ -254,7 +285,7 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 	arch_upd->BootLoaderTolumSize = cbmem_overhead_size();
 
 	/* Fill common settings on behalf of chipset. */
-	if (fsp_fill_common_arch_params(arch_upd, s3wake, fsp_version,
+	if (fsp_fill_common_arch_params(arch_upd, s3wake, version,
 					memmap) != CB_SUCCESS)
 		die_with_post_code(POST_INVALID_VENDOR_BINARY,
 			"FSPM_ARCH_UPD not found!\n");
@@ -266,7 +297,7 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 #endif
 
 	/* Give SoC and mainboard a chance to update the UPD */
-	platform_fsp_memory_init_params_cb(&fspm_upd, fsp_version);
+	platform_fsp_memory_init_params_cb(&fspm_upd, version);
 
 	/*
 	 * For S3 resume case, if valid mrc cache data is not found or
@@ -309,7 +340,7 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 			"FspMemoryInit returned with error 0x%08x!\n", status);
 	}
 
-	do_fsp_post_memory_init(s3wake, fsp_version);
+	do_fsp_post_memory_init(s3wake, version);
 
 	/*
 	 * fsp_debug_after_memory_init() checks whether the end of the tolum

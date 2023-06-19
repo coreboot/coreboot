@@ -52,4 +52,16 @@ config MRC_SAVE_HASH_IN_TPM
 	  Store a hash of the MRC_CACHE training data in a TPM NVRAM
 	  space to ensure that it cannot be tampered with.
 
+config MRC_CACHE_USING_MRC_VERSION
+	bool
+	default y if UDK_VERSION >= UDK_202302_VERSION
+	default n
+	help
+	  Use the MRC version info from FSP extended header to store the MRC cache data.
+	  This method relies on the FSP_PRODUCER_DATA_TABLES belongs to the
+	  `FspProducerDataHeader.h`file to get the MRC version.
+
+	  Intel FSP built with EDK2 version 202302 onwards has support to retrieve the
+	  MRC version by directly parsing the binary.
+
 endif # CACHE_MRC_SETTINGS

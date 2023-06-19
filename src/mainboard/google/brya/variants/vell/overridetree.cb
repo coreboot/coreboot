@@ -1,24 +1,19 @@
 fw_config
-	field DB_SD 0 1
-		option SD_ABSENT		0
-		option SD_GL9750		1
+	field DB_CELLULAR 0 0
+		option DB_CELLULAR_ABSENT	0
+		option DB_CELLULAR_PCIE		1
 	end
-	field KB_BL 2 2
-		option KB_BL_ABSENT		0
-		option KB_BL_PRESENT		1
+	field KB_COLOR 1 1
+		option KB_COLOR_WHITE		0
+		option KB_COLOR_BLUE		1
 	end
-	field AUDIO 3 5
-		option AUDIO_UNKNOWN		0
-		option MAX98360_ALC5682I_I2S	1
-		option MAX98360_ALC5682IVS_I2S	2
+	field NAND 2 2
+		option NAND_MICRON		0
+		option NAND_KIOXIA		1
 	end
-	field DB_LTE 6 7
-		option LTE_ABSENT		0
-		option LTE_USB			1
-	end
-	field EPS 10 10
-		option PRIVACY_SCREEN_ABSENT	0
-		option PRIVACY_SCREEN		1
+	field WIFI_SAR_ID 30 31
+		option WIFI_SAR_ID_0		0
+		option WIFI_SAR_ID_1		1
 	end
 end
 chip soc/intel/alderlake
@@ -97,18 +92,11 @@ chip soc/intel/alderlake
 		device ref igpu on
 			chip drivers/gfx/generic
 				register "device_count" = "1"
+				# DDIA for eDP
 				register "device[0].name" = ""LCD""
-				# Use ChromeOS privacy screen _HID
-				register "device[0].hid" = ""GOOG0010""
-				# Internal panel on the first port of the graphics chip
-				register "device[0].addr" = "0x80010400"
-				register "device[0].privacy.enabled" = "1"
-				register "device[0].privacy.gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H21)"
-				device generic 0 on
-					probe EPS PRIVACY_SCREEN
-				end
-			 end
-                end # Integrated Graphics Device
+				device generic 0 on end
+			end
+		end # Integrated Graphics Device
 		device ref dtt on
 			chip drivers/intel/dptf
 				## sensor information

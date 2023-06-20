@@ -342,6 +342,7 @@ GOOGLE REX MAINBOARDS
 M:	Subrata Banik <subratabanik@google.com>
 M:	Tarun Tuli <taruntuli@google.com>
 M:	Kapil Porwal <kapilporwal@google.com>
+M:	Jakub Czapiga <jacz@semihalf.com>
 S:	Maintained
 F:	src/mainboard/google/rex/
 
@@ -863,6 +864,7 @@ INTEL METEORLAKE SOC
 M:	Subrata Banik <subratabanik@google.com>
 M:	Tarun Tuli <taruntuli@google.com>
 M:	Kapil Porwal <kapilporwal@google.com>
+M:	Jakub Czapiga <jacz@semihalf.com>
 S:	Maintained
 F:	src/soc/intel/meteorlake/
 

@@ -28,3 +28,20 @@
 #define VIRT_MMIO_BASE 0x0a000000
 #define VIRT_PLATFORM_BUS_BASE 0x0c000000
 #define VIRT_SECRAM_BASE 0xe000000
+#define VIRT_PCIE_LOW_MMIO_BASE 0x10000000
+#define VIRT_PCIE_LOW_MMIO_LIMIT 0x3efeffff
+/*
+ * From hw/arm/virt.c:
+ * Highmem IO Regions: This memory map is floating, located after the RAM.
+ * Each MemMapEntry base (GPA) will be dynamically computed, depending on the
+ * top of the RAM, so that its base get the same alignment as the size,
+ * ie. a 512GiB entry will be aligned on a 512GiB boundary. If there is
+ * less than 256GiB of RAM, the floating area starts at the 256GiB mark.
+ * Note the extended_memmap is sized so that it eventually also includes the
+ * base_memmap entries (VIRT_HIGH_GIC_REDIST2 index is greater than the last
+ * index of base_memmap).
+ */
+#define VIRT_PCIE_ECAM_BASE 0x4010000000 /* The one in lower memory does not seem to work */
+#define VIRT_PCIE_ECAM_SIZE (256 * MiB)
+#define VIRT_PCIE_HIGH_MMIO_BASE 0x8000000000ULL
+#define VIRT_PCIE_HIGH_MMIO_LIMIT 0xffffffffffULL

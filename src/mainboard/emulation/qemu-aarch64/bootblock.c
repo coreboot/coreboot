@@ -20,5 +20,8 @@ void bootblock_mainboard_init(void)
 
 	mmu_config_range(_bl31, REGION_SIZE(bl31), MA_MEM | MA_S | MA_RW);
 
+	mmu_config_range((void *)CONFIG_ECAM_MMCONF_BASE_ADDRESS, CONFIG_ECAM_MMCONF_LENGTH,
+			 MA_DEV | MA_RW);
+
 	mmu_enable();
 }

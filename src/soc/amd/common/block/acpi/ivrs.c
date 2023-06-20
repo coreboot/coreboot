@@ -245,10 +245,15 @@ static unsigned long acpi_fill_ivrs40(unsigned long current, acpi_ivrs_ivhd_t *i
 
 	if (nb_dev->bus->secondary == 0) {
 		/* Describe EMMC */
-		current = ivhd_describe_f0_device(current, PCI_DEVFN(0x13, 1),
-					IVHD_DTE_LINT_1_PASS | IVHD_DTE_LINT_0_PASS |
-					IVHD_DTE_SYS_MGT_TRANS   | IVHD_DTE_NMI_PASS |
-					IVHD_DTE_EXT_INT_PASS | IVHD_DTE_INIT_PASS);
+		if (CONFIG(SOC_AMD_COMMON_BLOCK_EMMC)) {
+			/* PCI_DEVFN(0x13, 1) doesn't exist in the hardware, but it's what the
+			 * reference code uses. Maybe to have a unique PCI device to put into
+			 * the field that doesn't collide with any existing device? */
+			current = ivhd_describe_f0_device(current, PCI_DEVFN(0x13, 1),
+						IVHD_DTE_LINT_1_PASS | IVHD_DTE_LINT_0_PASS |
+						IVHD_DTE_SYS_MGT_TRANS   | IVHD_DTE_NMI_PASS |
+						IVHD_DTE_EXT_INT_PASS | IVHD_DTE_INIT_PASS);
+		}
 	}
 	ivhd_40->length += (current - current_backup);
 

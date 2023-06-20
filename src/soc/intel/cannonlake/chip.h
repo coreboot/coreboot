@@ -10,6 +10,7 @@
 #include <intelblocks/gspi.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/power_limit.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <soc/pch.h>
 #include <soc/pci_devs.h>
@@ -57,12 +58,12 @@ struct soc_intel_cannonlake_config {
 	/* S0ix configuration */
 
 	/* Enable S0iX support */
-	int s0ix_enable;
+	bool s0ix_enable;
 	/* Enable Audio DSP oscillator qualification for S0ix */
-	uint8_t cppmvric2_adsposcdis;
+	bool cppmvric2_adsposcdis;
 
 	/* Enable DPTF support */
-	int dptf_enable;
+	bool dptf_enable;
 
 	enum {
 		MAX_PC_DEFAULT	= 0,
@@ -78,10 +79,10 @@ struct soc_intel_cannonlake_config {
 	} max_package_c_state;
 
 	/* Deep SX enable for both AC and DC */
-	int deep_s3_enable_ac;
-	int deep_s3_enable_dc;
-	int deep_s5_enable_ac;
-	int deep_s5_enable_dc;
+	bool deep_s3_enable_ac;
+	bool deep_s3_enable_dc;
+	bool deep_s5_enable_ac;
+	bool deep_s5_enable_dc;
 
 	/* Deep Sx Configuration
 	 *  DSX_EN_WAKE_PIN       - Enable WAKE# pin
@@ -107,7 +108,7 @@ struct soc_intel_cannonlake_config {
 	} SaGv;
 
 	/* Rank Margin Tool. 1:Enable, 0:Disable */
-	uint8_t RMT;
+	bool RMT;
 
 	/* USB related */
 	struct usb2_port_config usb2_ports[16];
@@ -117,7 +118,7 @@ struct soc_intel_cannonlake_config {
 	/* Wake Enable Bitmap for USB3 ports */
 	uint16_t usb3_wake_enable_bitmap;
 	/* USB2 PHY power gating */
-	uint8_t PchUsb2PhySusPgDisable;
+	bool PchUsb2PhySusPgDisable;
 
 	/* SATA related */
 	enum {
@@ -133,39 +134,39 @@ struct soc_intel_cannonlake_config {
 		SataDevSlpDswReset = 7
 	} SataDevSlpRstConfig;
 
-	uint8_t SataSalpSupport;
-	uint8_t SataPortsEnable[8];
-	uint8_t SataPortsDevSlp[8];
+	bool SataSalpSupport;
+	bool SataPortsEnable[8];
+	bool SataPortsDevSlp[8];
 	uint8_t SataPortsDevSlpResetConfig[8];
-	uint8_t SataPortsHotPlug[8];
+	bool SataPortsHotPlug[8];
 
 	/* Enable/Disable SLP_S0 with GBE Support. 0: disable, 1: enable */
-	uint8_t SlpS0WithGbeSupport;
+	bool SlpS0WithGbeSupport;
 	/* SLP_S0 Voltage Margining Policy. 0: disable, 1: enable */
-	uint8_t PchPmSlpS0VmRuntimeControl;
+	bool PchPmSlpS0VmRuntimeControl;
 	/* SLP_S0 Voltage Margining  0.70V Policy. 0: disable, 1: enable */
-	uint8_t PchPmSlpS0Vm070VSupport;
+	bool PchPmSlpS0Vm070VSupport;
 	/* SLP_S0 Voltage Margining  0.75V Policy. 0: disable, 1: enable */
-	uint8_t PchPmSlpS0Vm075VSupport;
+	bool PchPmSlpS0Vm075VSupport;
 
 	/* Audio related */
-	uint8_t PchHdaDspEnable;
+	bool PchHdaDspEnable;
 
 	/* Enable/Disable HD Audio Link. Muxed with SSP0/SSP1/SNDW1 */
-	uint8_t PchHdaAudioLinkHda;
-	uint8_t PchHdaIDispCodecDisconnect;
-	uint8_t PchHdaAudioLinkDmic0;
-	uint8_t PchHdaAudioLinkDmic1;
-	uint8_t PchHdaAudioLinkSsp0;
-	uint8_t PchHdaAudioLinkSsp1;
-	uint8_t PchHdaAudioLinkSsp2;
-	uint8_t PchHdaAudioLinkSndw1;
-	uint8_t PchHdaAudioLinkSndw2;
-	uint8_t PchHdaAudioLinkSndw3;
-	uint8_t PchHdaAudioLinkSndw4;
+	bool PchHdaAudioLinkHda;
+	bool PchHdaIDispCodecDisconnect;
+	bool PchHdaAudioLinkDmic0;
+	bool PchHdaAudioLinkDmic1;
+	bool PchHdaAudioLinkSsp0;
+	bool PchHdaAudioLinkSsp1;
+	bool PchHdaAudioLinkSsp2;
+	bool PchHdaAudioLinkSndw1;
+	bool PchHdaAudioLinkSndw2;
+	bool PchHdaAudioLinkSndw3;
+	bool PchHdaAudioLinkSndw4;
 
 	/* PCIe Root Ports */
-	uint8_t PcieRpEnable[CONFIG_MAX_ROOT_PORTS];
+	bool PcieRpEnable[CONFIG_MAX_ROOT_PORTS];
 	/* PCIe output clocks type to PCIe devices.
 	 * 0-23: PCH rootport, 0x70: LAN, 0x80: unspecified but in use,
 	 * 0xFF: not used */
@@ -174,18 +175,18 @@ struct soc_intel_cannonlake_config {
 	 * clksrc. */
 	uint8_t PcieClkSrcClkReq[CONFIG_MAX_PCIE_CLOCK_SRC];
 	/* PCIe LTR(Latency Tolerance Reporting) mechanism */
-	uint8_t PcieRpLtrEnable[CONFIG_MAX_ROOT_PORTS];
+	bool PcieRpLtrEnable[CONFIG_MAX_ROOT_PORTS];
 	/* Implemented as slot or built-in? */
-	uint8_t PcieRpSlotImplemented[CONFIG_MAX_ROOT_PORTS];
+	bool PcieRpSlotImplemented[CONFIG_MAX_ROOT_PORTS];
 	/* Enable/Disable HotPlug support for Root Port */
-	uint8_t PcieRpHotPlug[CONFIG_MAX_ROOT_PORTS];
+	bool PcieRpHotPlug[CONFIG_MAX_ROOT_PORTS];
 
 	/*
 	 * Enable/Disable AER (Advanced Error Reporting) for Root Port
 	 * 0: Disable AER
 	 * 1: Enable AER
 	 */
-	uint8_t PcieRpAdvancedErrorReporting[CONFIG_MAX_ROOT_PORTS];
+	bool PcieRpAdvancedErrorReporting[CONFIG_MAX_ROOT_PORTS];
 
 	/* PCIE RP ASPM, ASPM support for the root port */
 	enum {
@@ -204,23 +205,23 @@ struct soc_intel_cannonlake_config {
 	} PcieRpMaxPayload[CONFIG_MAX_ROOT_PORTS];
 
 	/* eMMC and SD */
-	uint8_t ScsEmmcHs400Enabled;
+	bool ScsEmmcHs400Enabled;
 	/* Need to update DLL setting to get Emmc running at HS400 speed */
-	uint8_t EmmcHs400DllNeed;
+	bool EmmcHs400DllNeed;
 	/* 0-39: number of active delay for RX strobe, unit is 125 psec */
 	uint8_t EmmcHs400RxStrobeDll1;
 	/* 0-78: number of active delay for TX data, unit is 125 psec */
 	uint8_t EmmcHs400TxDataDll;
 	/* Enable/disable SD card write protect pin configuration on CML */
-	uint8_t ScsSdCardWpPinEnabled;
+	bool ScsSdCardWpPinEnabled;
 
 	/* Heci related */
-	uint8_t DisableHeciRetry;
+	bool DisableHeciRetry;
 
 	/* Gfx related */
-	uint8_t SkipExtGfxScan;
+	bool SkipExtGfxScan;
 
-	uint8_t Device4Enable;
+	bool Device4Enable;
 
 	/* CPU PL2/4 Config
 	 * Performance: Maximum PLs for maximum performance.
@@ -234,13 +235,13 @@ struct soc_intel_cannonlake_config {
 	struct vr_config domain_vr_config[NUM_VR_DOMAINS];
 
 	/* Enables support for Teton Glacier hybrid storage device */
-	uint8_t TetonGlacierMode;
+	bool TetonGlacierMode;
 
 	/* Enable/Disable EIST. 1b:Enabled, 0b:Disabled */
-	uint8_t eist_enable;
+	bool eist_enable;
 
 	/* Enable C6 DRAM */
-	uint8_t enable_c6dram;
+	bool enable_c6dram;
 
 	/*
 	 * SLP_S3 Minimum Assertion Width Policy
@@ -346,14 +347,14 @@ struct soc_intel_cannonlake_config {
 	unsigned int sdcard_cd_gpio;
 
 	/* Enable Pch iSCLK */
-	uint8_t pch_isclk;
+	bool pch_isclk;
 
 	/*
 	 * Acoustic Noise Mitigation
 	 * 0b - Disable
 	 * 1b - Enable noise mitigation
 	 */
-	uint8_t AcousticNoiseMitigation;
+	bool AcousticNoiseMitigation;
 
 	/*
 	 * Disable Fast Package C-state ramping
@@ -361,10 +362,10 @@ struct soc_intel_cannonlake_config {
 	 * 0b - Enabled
 	 * 1b - Disabled
 	 */
-	uint8_t FastPkgCRampDisableIa;
-	uint8_t FastPkgCRampDisableGt;
-	uint8_t FastPkgCRampDisableSa;
-	uint8_t FastPkgCRampDisableFivr;
+	bool FastPkgCRampDisableIa;
+	bool FastPkgCRampDisableGt;
+	bool FastPkgCRampDisableSa;
+	bool FastPkgCRampDisableFivr;
 
 	/*
 	 * Adjust the VR slew rates
@@ -380,32 +381,32 @@ struct soc_intel_cannonlake_config {
 	uint8_t SlowSlewRateForFivr;
 
 	/* SATA Power Optimizer */
-	uint8_t satapwroptimize;
+	bool satapwroptimize;
 
 	/* SATA Gen3 Strength */
 	struct sata_port_config sata_port[SOC_INTEL_CML_SATA_DEV_MAX];
 
 	/* Enable or disable eDP device */
-	uint8_t DdiPortEdp;
+	bool DdiPortEdp;
 
 	/* Enable or disable HPD of DDI port B/C/D/F */
-	uint8_t DdiPortBHpd;
-	uint8_t DdiPortCHpd;
-	uint8_t DdiPortDHpd;
-	uint8_t DdiPortFHpd;
+	bool DdiPortBHpd;
+	bool DdiPortCHpd;
+	bool DdiPortDHpd;
+	bool DdiPortFHpd;
 
 	/* Enable or disable DDC of DDI port B/C/D/F  */
-	uint8_t DdiPortBDdc;
-	uint8_t DdiPortCDdc;
-	uint8_t DdiPortDDdc;
-	uint8_t DdiPortFDdc;
+	bool DdiPortBDdc;
+	bool DdiPortCDdc;
+	bool DdiPortDDdc;
+	bool DdiPortFDdc;
 
 	/* Unlock all GPIO Pads */
-	uint8_t PchUnlockGpioPads;
+	bool PchUnlockGpioPads;
 
 	/* Enable GBE wakeup */
-	uint8_t LanWakeFromDeepSx;
-	uint8_t WolEnableOverride;
+	bool LanWakeFromDeepSx;
+	bool WolEnableOverride;
 
 #if !CONFIG(SOC_INTEL_COMETLAKE)
 	uint32_t VrPowerDeliveryDesign;
@@ -416,7 +417,7 @@ struct soc_intel_cannonlake_config {
 	 * 0: Use FSP default GPIO PM program,
 	 * 1: coreboot to override GPIO PM program
 	 */
-	uint8_t gpio_override_pm;
+	bool gpio_override_pm;
 	/*
 	 * GPIO PM configuration: 0 to disable, 1 to enable power gating
 	 * Bit 6-7: Reserved

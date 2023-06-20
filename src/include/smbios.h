@@ -6,6 +6,14 @@
 #include <types.h>
 #include <memory_info.h>
 
+#define update_max(len, max_len, stmt)		\
+	do {					\
+		int tmp = stmt;			\
+						\
+		max_len = MAX(max_len, tmp);	\
+		len += tmp;			\
+	} while (0)
+
 unsigned long smbios_write_tables(unsigned long start);
 int smbios_add_string(u8 *start, const char *str);
 int smbios_string_table_len(u8 *start);
@@ -1209,6 +1217,24 @@ struct smbios_type127 {
 	struct smbios_header header;
 	u8 eos[2];
 } __packed;
+
+/* Provided to help architecture code */
+int smbios_write_type7(unsigned long *current,
+		       const int handle,
+		       const u8 level,
+		       const u8 sram_type,
+		       const enum smbios_cache_associativity associativity,
+		       const enum smbios_cache_type type,
+		       const size_t max_cache_size,
+		       const size_t cache_size);
+enum smbios_cache_associativity smbios_cache_associativity(const u8 num);
+
+/* Must be defined by architecture code */
+int smbios_write_type4(unsigned long *current, int handle);
+int smbios_write_type7_cache_parameters(unsigned long *current,
+					int *handle,
+					int *max_struct_size,
+					struct smbios_type4 *type4);
 
 void smbios_fill_dimm_manufacturer_from_id(uint16_t mod_id,
 	struct smbios_type17 *t);

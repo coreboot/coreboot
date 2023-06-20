@@ -276,7 +276,6 @@ ramstage-$(CONFIG_DEBUG_NULL_DEREF_BREAKPOINTS) += null_breakpoint.c
 ramstage-$(CONFIG_GENERATE_PIRQ_TABLE) += pirq_routing.c
 ramstage-y += rdrand.c
 ramstage-$(CONFIG_GENERATE_SMBIOS_TABLES) += smbios.c
-ramstage-$(CONFIG_GENERATE_SMBIOS_TABLES) += smbios_defaults.c
 ramstage-y += tables.c
 ramstage-$(CONFIG_COOP_MULTITASKING) += thread.c
 ramstage-$(CONFIG_COOP_MULTITASKING) += thread_switch.S

@@ -5,18 +5,22 @@ config SOC_INTEL_METEORLAKE
 	  type using the `SOC_INTEL_METEORLAKE_*` options instead
 	  of selecting this option directly.
 
-config SOC_INTEL_METEORLAKE_U_P
+config SOC_INTEL_METEORLAKE_U_H
 	bool
 	select SOC_INTEL_METEORLAKE
 	help
-	  Choose this option if your mainboard has a MTL-U (15W) or MTL-P (28W) SoC.
-	  Note, MTL-U/P SoC combines Compute, GFX, SoC and IOE die.
+	  Choose this option if your mainboard has a MTL-U (9W or 15W)
+	  or MTL-H (28W or 45W) SoC.
+
+	  Note, the MTL-U/H-Processor Line offered in a 1-Chip Platform
+	  that includes the Compute, SOC, GT, and IOE tile on the same
+	  package.
 
 config SOC_INTEL_METEORLAKE_S
 	bool
 	select SOC_INTEL_METEORLAKE
 	help
-	  Choose this option if your mainboard has a MTL-S (45W) SoC.
+	  Choose this option if your mainboard has a MTL-S (35W or 65W) SoC.
 	  Note, MTL-S SoC combines Compute, GFX, SoC, IOE and PCH die.
 
 if SOC_INTEL_METEORLAKE

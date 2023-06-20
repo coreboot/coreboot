@@ -73,7 +73,7 @@ static void fill_fspm_pcie_rp_params(FSP_M_CONFIG *m_cfg,
 	}
 
 	/* PCIE ports */
-	if (CONFIG(SOC_INTEL_METEORLAKE_U_P)) {
+	if (CONFIG(SOC_INTEL_METEORLAKE_U_H)) {
 		m_cfg->PcieRpEnableMask = pcie_rp_enable_mask(get_pcie_rp_table());
 		m_cfg->PchPcieRpEnableMask = 0; /* Don't care about PCH PCIE RP Mask */
 		pcie_rp_init(m_cfg, m_cfg->PcieRpEnableMask, config->pcie_rp,

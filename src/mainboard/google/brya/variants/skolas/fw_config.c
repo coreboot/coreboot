@@ -39,6 +39,10 @@ static const struct pad_config max98360_enable_pads[] = {
 	PAD_NC(GPP_R7, NONE),
 };
 
+static const struct pad_config nau8318_enable_pads[] = {
+	PAD_CFG_GPO(GPP_R7, 0, DEEP),           /* SPK_BEEP_EN */
+};
+
 static const struct pad_config sndw_disable_pads[] = {
 	PAD_NC(GPP_S0, NONE),
 	PAD_NC(GPP_S1, NONE),
@@ -140,12 +144,16 @@ static void fw_config_handle(void *unused)
 		enable_i2s();
 	}
 
-	if (fw_config_probe(FW_CONFIG(AUDIO, MAX98360_ALC5682I_I2S))) {
+	if (fw_config_probe(FW_CONFIG(AUDIO, MAX98360_ALC5682I_I2S)) ||
+			fw_config_probe(FW_CONFIG(AUDIO, NAU8318_NAU88L25B_I2S))) {
 		printk(BIOS_INFO, "Configure audio over I2S with MAX98360 ALC5682I.\n");
 		gpio_configure_pads(max98360_enable_pads, ARRAY_SIZE(max98360_enable_pads));
 		printk(BIOS_INFO, "BT offload enabled\n");
 		gpio_configure_pads(i2s0_enable_pads, ARRAY_SIZE(i2s0_enable_pads));
 		gpio_configure_pads(bt_i2s_enable_pads, ARRAY_SIZE(bt_i2s_enable_pads));
+
+		if (fw_config_probe(FW_CONFIG(AUDIO, NAU8318_NAU88L25B_I2S)))
+			gpio_configure_pads(nau8318_enable_pads, ARRAY_SIZE(nau8318_enable_pads));
 	}
 }
 BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, fw_config_handle, NULL);

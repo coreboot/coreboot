@@ -1337,6 +1337,103 @@ _Static_assert(sizeof(acpi_spcr_t) == 88, "acpi_spcr_t must have an 88 byte size
 #define ARMH_GIC_COMPATIBLE_INTERRUPT (1 << 3)
 #define RISCV_PLIC_COMPATIBLE_INTERRUPT (1 << 4)
 
+/* GTDT - Generic Timer Description Table (ACPI 5.1) Version 2 */
+typedef struct acpi_table_gtdt {
+	acpi_header_t header;	/* Common ACPI table header */
+	u64 counter_block_addresss;
+	u32 reserved;
+	u32 secure_el1_interrupt;
+	u32 secure_el1_flags;
+	u32 non_secure_el1_interrupt;
+	u32 non_secure_el1_flags;
+	u32 virtual_timer_interrupt;
+	u32 virtual_timer_flags;
+	u32 non_secure_el2_interrupt;
+	u32 non_secure_el2_flags;
+	u64 counter_read_block_address;
+	u32 platform_timer_count;
+	u32 platform_timer_offset;
+} __packed acpi_gtdt_t;
+
+/* Flag Definitions: Timer Block Physical Timers and Virtual timers */
+
+#define ACPI_GTDT_INTERRUPT_MODE        (1)
+#define ACPI_GTDT_INTERRUPT_POLARITY    (1<<1)
+#define ACPI_GTDT_ALWAYS_ON             (1<<2)
+
+struct acpi_gtdt_el2 {
+	u32 virtual_el2_timer_gsiv;
+	u32 virtual_el2_timer_flags;
+};
+
+/* Common GTDT subtable header */
+
+struct acpi_gtdt_header {
+	u8 type;
+	u16 length;
+} __packed;
+
+/* Values for GTDT subtable type above */
+
+enum acpi_gtdt_type {
+	ACPI_GTDT_TYPE_TIMER_BLOCK = 0,
+	ACPI_GTDT_TYPE_WATCHDOG = 1,
+	ACPI_GTDT_TYPE_RESERVED = 2	/* 2 and greater are reserved */
+};
+
+/* GTDT Subtables, correspond to Type in struct acpi_gtdt_header */
+
+/* 0: Generic Timer Block */
+
+struct acpi_gtdt_timer_block {
+	struct acpi_gtdt_header header;
+	u8 reserved;
+	u64 block_address;
+	u32 timer_count;
+	u32 timer_offset;
+} __packed;
+
+/* Timer Sub-Structure, one per timer */
+
+struct acpi_gtdt_timer_entry {
+	u8 frame_number;
+	u8 reserved[3];
+	u64 base_address;
+	u64 el0_base_address;
+	u32 timer_interrupt;
+	u32 timer_flags;
+	u32 virtual_timer_interrupt;
+	u32 virtual_timer_flags;
+	u32 common_flags;
+} __packed;
+
+/* Flag Definitions: timer_flags and virtual_timer_flags above */
+
+#define ACPI_GTDT_GT_IRQ_MODE               (1)
+#define ACPI_GTDT_GT_IRQ_POLARITY           (1<<1)
+
+/* Flag Definitions: common_flags above */
+
+#define ACPI_GTDT_GT_IS_SECURE_TIMER        (1)
+#define ACPI_GTDT_GT_ALWAYS_ON              (1<<1)
+
+/* 1: SBSA Generic Watchdog Structure */
+
+struct acpi_gtdt_watchdog {
+	struct acpi_gtdt_header header;
+	u8 reserved;
+	u64 refresh_frame_address;
+	u64 control_frame_address;
+	u32 timer_interrupt;
+	u32 timer_flags;
+} __packed;
+
+/* Flag Definitions: timer_flags above */
+
+#define ACPI_GTDT_WATCHDOG_IRQ_MODE         (1)
+#define ACPI_GTDT_WATCHDOG_IRQ_POLARITY     (1<<1)
+#define ACPI_GTDT_WATCHDOG_SECURE           (1<<2)
+
 uintptr_t get_coreboot_rsdp(void);
 void acpi_create_einj(acpi_einj_t *einj, uintptr_t addr, u8 actions);
 

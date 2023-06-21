@@ -26,6 +26,9 @@
 #   $ # Force QEMU's built-in config
 #   $ make qemu QEMU_CFG_ARGS=
 
+QEMU-$(CONFIG_BOARD_EMULATION_QEMU_AARCH64)	?= qemu-system-aarch64 \
+	-M virt,secure=on,virtualization=on -cpu cortex-a53 -m 1G
+
 QEMU-$(CONFIG_BOARD_EMULATION_QEMU_X86_I440FX)	?= qemu-system-x86_64 -M pc
 
 QEMU-$(CONFIG_BOARD_EMULATION_QEMU_X86_Q35)	?= qemu-system-x86_64 -M q35

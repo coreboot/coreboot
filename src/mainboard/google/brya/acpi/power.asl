@@ -140,7 +140,7 @@ Method (GC6I, 0, Serialized)
 #if CONFIG(BOARD_GOOGLE_AGAH)
 	Sleep (10)
 #else
-	Sleep (3)
+	Sleep (2)
 #endif
 
 	/* Deassert EN_PPVAR_GPU_NVVDD */
@@ -290,7 +290,7 @@ Method (PGOF, 0, Serialized)
 #if CONFIG(BOARD_GOOGLE_AGAH)
 	Sleep (10)
 #else
-	Sleep (3)
+	Sleep (2)
 #endif
 
 	/* Ramp down NVVDD */

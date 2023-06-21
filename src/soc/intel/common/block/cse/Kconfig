@@ -45,6 +45,23 @@ config SOC_INTEL_COMMON_BLOCK_HECI1_DISABLE_USING_PCR
 	  Use this config for SoC platform prior to CNL PCH (with postboot_sai implemented)
 	  to make `HECI1` device disable using private configuration register (PCR) write.
 
+config SOC_INTEL_STORE_CSE_FW_VERSION
+	bool
+	default n
+	depends on SOC_INTEL_CSE_LITE_SKU
+	help
+	  This configuration option stores CSE RW FW version in CBMEM area.
+	  This information can be used to identify if the CSE firmware update is successful
+	  by comparing the currently running CSE RW firmware version against CSE version
+	  belongs to the CONFIG_SOC_INTEL_CSE_RW_VERSION (decided statically while
+	  building the AP FW image).
+
+	  The way to retrieve the CSE firmware version is by sending the HECI command to
+	  read the CSE Boot Partition (BP) info. The cost of sending HECI command to read
+	  the CSE FW version is between 7ms-20ms (depending on the SoC architecture) hence,
+	  ensure this feature is platform specific and only enabled for the platform
+	  that would like to store the CSE version into the CBMEM.
+
 config SOC_INTEL_STORE_ISH_FW_VERSION
 	bool
 	default n

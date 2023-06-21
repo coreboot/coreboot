@@ -1304,7 +1304,8 @@ static void ramstage_cse_misc_ops(void *unused)
 		cse_fw_sync();
 
 	/* Store the CSE RW Firmware Version into CBMEM */
-	cse_store_rw_fw_version();
+	if (CONFIG(SOC_INTEL_STORE_CSE_FW_VERSION))
+		cse_store_rw_fw_version();
 	/*
 	 * Store the ISH RW Firmware Version into CBMEM if ISH partition
 	 * is available

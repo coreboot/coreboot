@@ -1438,7 +1438,7 @@ static void intel_cse_get_rw_version(void)
  */
 static void cse_final(struct device *dev)
 {
-	if (CONFIG(SOC_INTEL_CSE_LITE_SKU))
+	if (CONFIG(SOC_INTEL_STORE_CSE_FW_VERSION))
 		intel_cse_get_rw_version();
 	/*
 	 * SoC user can have two options for sending EOP:

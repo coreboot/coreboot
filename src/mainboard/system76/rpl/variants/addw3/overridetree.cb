@@ -1,0 +1,114 @@
+chip soc/intel/alderlake
+	# Support 5200 MT/s memory
+	register "max_dram_speed_mts" = "5200"
+
+	device domain 0 on
+		subsystemid 0x1558 0xa671 inherit
+
+		#TODO: DDIB and DDID are both connected to TBT
+
+		device ref xhci on
+			# USB2
+			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)" # Type-A 3.2 Gen 1 (Left)
+			register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)" # Type-A 2.0 (Left)
+			# Port reset messaging cannot be used, so do not use USB2_PORT_TYPE_C for these
+			register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)" # Type-C 3.2 Gen 2 (Rear)
+			register "usb2_ports[8]" = "USB2_PORT_MID(OC_SKIP)" # Type-C Thunderbolt (Right)
+			register "usb2_ports[10]" = "USB2_PORT_MID(OC_SKIP)" # Camera
+			register "usb2_ports[11]" = "USB2_PORT_MID(OC_SKIP)" # Secure Pad
+			register "usb2_ports[13]" = "USB2_PORT_MID(OC_SKIP)" # Bluetooth
+			# USB3
+			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A 3.2 Gen 1 (Left)
+			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-C 3.2 Gen 2 (Rear)
+		end
+
+		device ref i2c0 on
+			# Touchpad I2C bus
+			register "serial_io_i2c_mode[PchSerialIoIndexI2C0]" = "PchSerialIoPci"
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN0412""
+				register "generic.desc" = ""ELAN Touchpad""
+				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_E7)"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 15 on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""FTCS1000""
+				register "generic.desc" = ""FocalTech Touchpad""
+				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_E7)"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 38 on end
+			end
+		end
+
+		device ref pcie5_0 on
+			# CPU PCIe RP#2 x8, Clock 14 (DGPU)
+			register "cpu_pcie_rp[CPU_RP(2)]" = "{
+				.clk_src = 14,
+				.clk_req = 14,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+
+		device ref pcie_rp3 on
+			# PCH RP#3 x1, Clock 13 (GLAN)
+			# Clock source is shared with LAN and hence marked as free running.
+			register "pch_pcie_rp[PCH_RP(3)]" = "{
+				.clk_src = 13,
+				.clk_req = 13,
+				.flags = PCIE_RP_LTR | PCIE_RP_CLK_SRC_UNUSED,
+			}"
+			register "pcie_clk_config_flag[13]" = "PCIE_CLK_FREE_RUNNING"
+			device pci 00.0 on end
+		end
+
+		device ref pcie_rp5 on
+			# PCH RP#5 x1, Clock 12 (CARD)
+			register "pch_pcie_rp[PCH_RP(5)]" = "{
+				.clk_src = 12,
+				.clk_req = 12,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+
+		device ref pcie_rp8 on
+			# PCH RP#8 x1, Clock 11 (WLAN)
+			register "pch_pcie_rp[PCH_RP(8)]" = "{
+				.clk_src = 11,
+				.clk_req = 11,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+
+		device ref pcie_rp13 on
+			# PCH RP#13 x4, Clock 10 (SSD1)
+			register "pch_pcie_rp[PCH_RP(13)]" = "{
+				.clk_src = 10,
+				.clk_req = 10,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+
+		device ref pcie_rp21 on
+			# PCH RP#21 x4, Clock 15 (TBT)
+			register "pch_pcie_rp[PCH_RP(21)]" = "{
+				.clk_src = 15,
+				.clk_req = 15,
+				.flags = PCIE_RP_HOTPLUG | PCIE_RP_LTR,
+			}"
+		end
+
+		device ref pcie_rp25 on
+			# PCH RP#25 x4, Clock 8 (SSD2)
+			register "pch_pcie_rp[PCH_RP(25)]" = "{
+				.clk_src = 8,
+				.clk_req = 8,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+
+		device ref gbe on end
+	end
+end

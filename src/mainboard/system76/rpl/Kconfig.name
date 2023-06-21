@@ -1,3 +1,6 @@
+config BOARD_SYSTEM76_ADDW3
+	bool "addw3"
+
 config BOARD_SYSTEM76_GAZE18
 	bool "gaze18"
 

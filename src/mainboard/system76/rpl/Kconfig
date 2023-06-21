@@ -22,6 +22,14 @@ config BOARD_SYSTEM76_RPL_COMMON
 	select SYSTEM_TYPE_LAPTOP
 	select TPM_RDRESP_NEED_DELAY
 
+config BOARD_SYSTEM76_ADDW3
+	select BOARD_SYSTEM76_RPL_COMMON
+	select EC_SYSTEM76_EC_COLOR_KEYBOARD
+	select EC_SYSTEM76_EC_DGPU
+	select MAINBOARD_USES_IFD_GBE_REGION
+	select PCIEXP_HOTPLUG
+	select SOC_INTEL_ALDERLAKE_PCH_S
+
 config BOARD_SYSTEM76_GAZE18
 	select BOARD_SYSTEM76_RPL_COMMON
 	select EC_SYSTEM76_EC_COLOR_KEYBOARD
@@ -41,6 +49,7 @@ config MAINBOARD_DIR
 	default "system76/rpl"
 
 config VARIANT_DIR
+	default "addw3" if BOARD_SYSTEM76_ADDW3
 	default "gaze18" if BOARD_SYSTEM76_GAZE18
 	default "oryp11" if BOARD_SYSTEM76_ORYP11
 
@@ -48,14 +57,17 @@ config OVERRIDE_DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 config MAINBOARD_PART_NUMBER
+	default "addw3" if BOARD_SYSTEM76_ADDW3
 	default "gaze18" if BOARD_SYSTEM76_GAZE18
 	default "oryp11" if BOARD_SYSTEM76_ORYP11
 
 config MAINBOARD_SMBIOS_PRODUCT_NAME
+	default "Adder WS" if BOARD_SYSTEM76_ADDW3
 	default "Gazelle" if BOARD_SYSTEM76_GAZE18
 	default "Oryx Pro" if BOARD_SYSTEM76_ORYP11
 
 config MAINBOARD_VERSION
+	default "addw3" if BOARD_SYSTEM76_ADDW3
 	default "gaze18" if BOARD_SYSTEM76_GAZE18
 	default "oryp11" if BOARD_SYSTEM76_ORYP11
 
@@ -84,7 +96,8 @@ config TPM_MEASURED_BOOT
 	default y
 
 config UART_FOR_CONSOLE
-	default 0
+	default 0 if SOC_INTEL_ALDERLAKE_PCH_P
+	default 2 if SOC_INTEL_ALDERLAKE_PCH_S
 
 # PM Timer Disabled, saves power
 config USE_PM_ACPI_TIMER

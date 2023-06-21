@@ -78,7 +78,7 @@ static void soc_finalize(void *unused)
 	apm_control(APM_CNT_FINALIZE);
 
 	/* Indicate finalize step with post code */
-	post_code(POST_OS_BOOT);
+	post_code(POSTCODE_OS_BOOT);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, soc_finalize, NULL);

@@ -39,7 +39,7 @@ void run_romstage(void)
 
 fail:
 	if (CONFIG(BOOTBLOCK_CONSOLE))
-		die_with_post_code(POST_INVALID_ROM,
+		die_with_post_code(POSTCODE_INVALID_ROM,
 				   "Couldn't load romstage.\n");
 	halt();
 }
@@ -123,7 +123,7 @@ void __noreturn run_ramstage(void)
 	prog_run(&ramstage);
 
 fail:
-	die_with_post_code(POST_INVALID_ROM, "Ramstage was not loaded!\n");
+	die_with_post_code(POSTCODE_INVALID_ROM, "Ramstage was not loaded!\n");
 }
 
 #if ENV_PAYLOAD_LOADER // gc-sections should take care of this
@@ -166,7 +166,7 @@ void payload_load(void)
 		}
 		__fallthrough;
 	default:
-		die_with_post_code(POST_INVALID_ROM,
+		die_with_post_code(POSTCODE_INVALID_ROM,
 				   "Unsupported payload type %d.\n", payload->cbfs_type);
 		break;
 	}
@@ -174,7 +174,7 @@ void payload_load(void)
 	cbfs_unmap(mapping);
 out:
 	if (prog_entry(payload) == NULL)
-		die_with_post_code(POST_INVALID_ROM, "Payload not loaded.\n");
+		die_with_post_code(POSTCODE_INVALID_ROM, "Payload not loaded.\n");
 }
 
 void payload_run(void)
@@ -187,7 +187,7 @@ void payload_run(void)
 	printk(BIOS_DEBUG, "Jumping to boot code at %p(%p)\n",
 		prog_entry(payload), prog_entry_arg(payload));
 
-	post_code(POST_ENTER_ELF_BOOT);
+	post_code(POSTCODE_ENTER_ELF_BOOT);
 
 	timestamp_add_now(TS_SELFBOOT_JUMP);
 

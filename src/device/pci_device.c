@@ -1438,7 +1438,7 @@ void pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 		max_devfn=0xff;
 	}
 
-	post_code(POST_ENTER_PCI_SCAN_BUS);
+	post_code(POSTCODE_ENTER_PCI_SCAN_BUS);
 
 	if (pci_bus_only_one_child(bus))
 		max_devfn = MIN(max_devfn, 0x07);
@@ -1529,7 +1529,7 @@ void pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 	 * side of any bridges that may be on this bus plus any devices.
 	 * Return how far we've got finding sub-buses.
 	 */
-	post_code(POST_EXIT_PCI_SCAN_BUS);
+	post_code(POSTCODE_EXIT_PCI_SCAN_BUS);
 }
 
 typedef enum {

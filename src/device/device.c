@@ -540,7 +540,7 @@ static void init_link(struct bus *link)
 	struct bus *c_link;
 
 	for (dev = link->children; dev; dev = dev->sibling) {
-		post_code(POST_BS_DEV_INIT);
+		post_code(POSTCODE_BS_DEV_INIT);
 		post_log_path(dev);
 		init_dev(dev);
 	}

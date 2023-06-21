@@ -27,7 +27,7 @@ void __noreturn acpi_resume(void *wake_vec)
 
 	timestamp_add_now(TS_ACPI_WAKE_JUMP);
 
-	post_code(POST_OS_RESUME);
+	post_code(POSTCODE_OS_RESUME);
 	acpi_do_wakeup((uintptr_t)wake_vec);
 
 	die("Failed the jump to wakeup vector\n");

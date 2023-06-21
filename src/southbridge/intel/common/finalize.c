@@ -50,5 +50,5 @@ void intel_pch_finalize_smm(void)
 
 	write_pmbase16(TCO1_CNT, read_pmbase16(TCO1_CNT) | TCO_LOCK);
 
-	post_code(POST_OS_BOOT);
+	post_code(POSTCODE_OS_BOOT);
 }

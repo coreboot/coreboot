@@ -84,7 +84,7 @@ static void soc_config_acpibase(void)
 
 	pmc_base_reg = get_pmc_reg_base();
 	if (!pmc_base_reg)
-		die_with_post_code(POST_HW_INIT_FAILURE,
+		die_with_post_code(POSTCODE_HW_INIT_FAILURE,
 				   "Invalid PMC base address\n");
 
 	pmc_reg_value = pcr_read32(PID_PSF3, pmc_base_reg +

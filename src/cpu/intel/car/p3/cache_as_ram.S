@@ -14,7 +14,7 @@ _cache_as_ram_setup:
 bootblock_pre_c_entry:
 
 cache_as_ram:
-	post_code(POST_BOOTBLOCK_CAR)
+	post_code(POSTCODE_BOOTBLOCK_CAR)
 
 	/* Clear/disable fixed MTRRs */
 	mov	$fixed_mtrr_list_size, %ebx
@@ -160,7 +160,7 @@ before_c_entry:
 	call	bootblock_c_entry_bist
 
 	/* Should never see this postcode */
-	post_code(POST_DEAD_CODE)
+	post_code(POSTCODE_DEAD_CODE)
 
 .Lhlt:
 	hlt

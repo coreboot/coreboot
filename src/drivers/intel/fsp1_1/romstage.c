@@ -56,7 +56,7 @@ static void raminit_common(struct romstage_params *params)
 			printk(BIOS_DEBUG,
 			       "No MRC cache "
 			       "found in S3 resume path.\n");
-			post_code(POST_RESUME_FAILURE);
+			post_code(POSTCODE_RESUME_FAILURE);
 			/* FIXME: A "system" reset is likely enough: */
 			full_reset();
 		} else {

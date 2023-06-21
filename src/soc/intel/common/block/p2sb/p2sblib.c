@@ -50,7 +50,7 @@ void p2sb_dev_unhide(pci_devfn_t dev)
 	p2sb_dev_set_hide_bit(dev, 0);
 
 	if (p2sb_dev_is_hidden(dev))
-		die_with_post_code(POST_HW_INIT_FAILURE,
+		die_with_post_code(POSTCODE_HW_INIT_FAILURE,
 				"Unable to unhide the P2SB device!\n");
 }
 
@@ -59,7 +59,7 @@ void p2sb_dev_hide(pci_devfn_t dev)
 	p2sb_dev_set_hide_bit(dev, 1);
 
 	if (!p2sb_dev_is_hidden(dev))
-		die_with_post_code(POST_HW_INIT_FAILURE,
+		die_with_post_code(POSTCODE_HW_INIT_FAILURE,
 				"Unable to hide the P2SB device!\n");
 }
 

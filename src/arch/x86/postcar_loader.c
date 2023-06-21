@@ -102,12 +102,12 @@ static void load_postcar_cbfs(struct prog *prog, struct postcar_frame *pcf)
 	vboot_run_logic();
 
 	if (rmodule_stage_load(&rsl))
-		die_with_post_code(POST_INVALID_ROM,
+		die_with_post_code(POSTCODE_INVALID_ROM,
 				   "Failed to load after CAR program.\n");
 
 	/* Set the stack pointer within parameters of the program loaded. */
 	if (rsl.params == NULL)
-		die_with_post_code(POST_INVALID_ROM,
+		die_with_post_code(POSTCODE_INVALID_ROM,
 				   "No parameters found in after CAR program.\n");
 
 	finalize_load(rsl.params, (uintptr_t)pcf->mtrr);

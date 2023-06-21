@@ -93,7 +93,7 @@ static void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header)
 	timestamp_add_now(TS_FSP_SILICON_INIT_START);
 	printk(BIOS_DEBUG, "Calling FspSiliconInit(%p) at %p\n",
 		&silicon_init_params, fsp_silicon_init);
-	post_code(POST_FSP_SILICON_INIT);
+	post_code(POSTCODE_FSP_SILICON_INIT);
 	status = fsp_silicon_init(&silicon_init_params);
 	timestamp_add_now(TS_FSP_SILICON_INIT_END);
 	printk(BIOS_DEBUG, "FspSiliconInit returned 0x%08x\n", status);

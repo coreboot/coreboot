@@ -60,7 +60,7 @@ struct boot_state {
 	{							\
 		.name = #state_,				\
 		.id = state_,					\
-		.post_code = POST_ ## state_,			\
+		.post_code = POSTCODE_ ## state_,			\
 		.phases = { { NULL, 0 }, { NULL, 0 } },		\
 		.run_state = run_func_,				\
 		.arg = NULL,					\
@@ -444,7 +444,7 @@ void main(void)
 	/* console_init() MUST PRECEDE ALL printk()! Additionally, ensure
 	 * it is the very first thing done in ramstage.*/
 	console_init();
-	post_code(POST_CONSOLE_READY);
+	post_code(POSTCODE_CONSOLE_READY);
 
 	exception_init();
 
@@ -455,7 +455,7 @@ void main(void)
 	cbmem_initialize();
 
 	timestamp_add_now(TS_RAMSTAGE_START);
-	post_code(POST_ENTRY_HARDWAREMAIN);
+	post_code(POSTCODE_ENTRY_HARDWAREMAIN);
 
 	/* Handoff sleep type from romstage. */
 	acpi_is_wakeup_s3();

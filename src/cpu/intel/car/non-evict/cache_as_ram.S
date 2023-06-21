@@ -21,7 +21,7 @@ bootblock_pre_c_entry:
 	jmp	check_mtrr /* Check if CPU properly reset */
 
 cache_as_ram:
-	post_code(POST_BOOTBLOCK_CAR)
+	post_code(POSTCODE_BOOTBLOCK_CAR)
 
 	/* Send INIT IPI to all excluding ourself. */
 	movl	$0x000C4500, %eax
@@ -238,7 +238,7 @@ before_c_entry:
 	call	bootblock_c_entry_bist
 
 	/* Should never see this postcode */
-	post_code(POST_DEAD_CODE)
+	post_code(POSTCODE_DEAD_CODE)
 
 
 .Lhlt:

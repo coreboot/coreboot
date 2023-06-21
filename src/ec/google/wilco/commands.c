@@ -179,8 +179,8 @@ struct err_code_entry {
  */
 static const enum ec_err_code default_ec_err = DLED_ROM;
 static const struct err_code_entry post_code_err_map[] = {
-	{ .post_code = POST_RAM_FAILURE, .ec_err = DLED_MEMORY, },
-	{ .post_code = POST_VIDEO_FAILURE, .ec_err = DLED_PANEL, },
+	{ .post_code = POSTCODE_RAM_FAILURE, .ec_err = DLED_MEMORY, },
+	{ .post_code = POSTCODE_VIDEO_FAILURE, .ec_err = DLED_PANEL, },
 };
 
 /* Records the most recent post code during boot */

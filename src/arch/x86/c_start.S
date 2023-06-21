@@ -44,7 +44,7 @@ _start:
 	call	SetCodeSelector
 #endif
 
-	post_code(POST_ENTRY_C_START)		/* post 13 */
+	post_code(POSTCODE_ENTRY_C_START)		/* post 13 */
 
 	cld
 
@@ -80,7 +80,7 @@ _start:
 	 *	bss is cleared.   Now we call the main routine and
 	 *	let it do the rest.
 	 */
-	post_code(POST_PRE_HARDWAREMAIN)	/* post 6e */
+	post_code(POSTCODE_PRE_HARDWAREMAIN)	/* post 6e */
 
 	andl	$0xFFFFFFF0, %esp
 
@@ -95,7 +95,7 @@ _start:
 	call	main
 	/* NOTREACHED */
 .Lhlt:
-	post_code(POST_DEAD_CODE)	/* post ee */
+	post_code(POSTCODE_DEAD_CODE)	/* post ee */
 	hlt
 	jmp	.Lhlt
 

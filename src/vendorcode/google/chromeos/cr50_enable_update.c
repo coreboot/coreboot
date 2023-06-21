@@ -147,7 +147,7 @@ static void enable_update(void *unused)
 	mainboard_prepare_cr50_reset();
 
 	/* clear current post code avoid chatty eventlog on subsequent boot*/
-	post_code(POST_CODE_CLEAR);
+	post_code(POSTCODE_CODE_CLEAR);
 
 	/*
 	 * Older Cr50 firmware doesn't support the timeout parameter for the

@@ -81,7 +81,7 @@ static uint32_t tpm_setup_s3_helper(void)
 static uint32_t tpm_setup_epilogue(uint32_t result)
 {
 	if (result != TPM_SUCCESS)
-		post_code(POST_TPM_FAILURE);
+		post_code(POSTCODE_TPM_FAILURE);
 	else
 		printk(BIOS_INFO, "TPM: setup succeeded\n");
 

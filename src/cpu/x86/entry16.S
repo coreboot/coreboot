@@ -43,7 +43,7 @@ _start16bit:
 	cli
 	/* Save the BIST result */
 	movl	%eax, %ebp
-	post_code(POST_RESET_VECTOR_CORRECT)
+	post_code(POSTCODE_RESET_VECTOR_CORRECT)
 
 	/* IMMEDIATELY invalidate the translation lookaside buffer (TLB) before
 	 * executing any further code. Even though paging is disabled we

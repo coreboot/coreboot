@@ -58,7 +58,7 @@ static void broadwell_finalize(void *unused)
 	broadwell_pch_finalize();
 
 	/* Indicate finalize step with post code */
-	post_code(POST_OS_BOOT);
+	post_code(POSTCODE_OS_BOOT);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, broadwell_finalize, NULL);

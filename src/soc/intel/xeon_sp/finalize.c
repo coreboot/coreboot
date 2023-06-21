@@ -70,7 +70,7 @@ static void soc_finalize(void *unused)
 		lock_msr_ppin_ctl(NULL);
 	}
 
-	post_code(POST_OS_BOOT);
+	post_code(POSTCODE_OS_BOOT);
 }
 
 static void bios_done_finalize(void *unused)

@@ -238,7 +238,7 @@ static void soc_init_final_device(void *chip_info)
 	fsp_handle_reset(reset_status);
 
 	/* Control shouldn't return here */
-	die_with_post_code(POST_HW_INIT_FAILURE,
+	die_with_post_code(POSTCODE_HW_INIT_FAILURE,
 		 "Failed to handle the FSP reset request with error 0x%08x\n", reset_status);
 }
 

@@ -64,7 +64,7 @@ bootblock_pre_c_entry:
 	/* Never reached. */
 
 stop:
-	post_code(POST_DEAD_CODE)
+	post_code(POSTCODE_DEAD_CODE)
 	hlt
 	jmp	stop
 

@@ -52,9 +52,9 @@ static void fsps_return_value_handler(enum fsp_silicon_init_phases phases, uint3
 	/* Handle all other errors returned by FSP-S APIs */
 	/* Assume video failure if attempted to initialize graphics */
 	if (CONFIG(RUN_FSP_GOP) && vbt_get())
-		postcode = POST_VIDEO_FAILURE;
+		postcode = POSTCODE_VIDEO_FAILURE;
 	else
-		postcode = POST_HW_INIT_FAILURE; /* else generic */
+		postcode = POSTCODE_HW_INIT_FAILURE; /* else generic */
 
 	switch (phases) {
 	case FSP_SILICON_INIT_API:
@@ -108,7 +108,7 @@ static void do_silicon_init(struct fsp_header *hdr)
 	 * don't leave it like this as FSP default settings can be bad choices for coreboot.
 	 */
 	if (!hdr->cfg_region_size || hdr->cfg_region_size < sizeof(FSPS_UPD))
-		die_with_post_code(POST_INVALID_VENDOR_BINARY,
+		die_with_post_code(POSTCODE_INVALID_VENDOR_BINARY,
 			"Invalid FSPS UPD region\n");
 	else if (hdr->cfg_region_size > sizeof(FSPS_UPD))
 		printk(BIOS_ERR, "FSP and coreboot are out of sync! FSPS UPD size > coreboot\n");
@@ -133,7 +133,7 @@ static void do_silicon_init(struct fsp_header *hdr)
 	fsp_debug_before_silicon_init(silicon_init, supd, upd);
 
 	timestamp_add_now(TS_FSP_SILICON_INIT_START);
-	post_code(POST_FSP_SILICON_INIT);
+	post_code(POSTCODE_FSP_SILICON_INIT);
 
 	/* FSP disables the interrupt handler so remove debug exceptions temporarily  */
 	null_breakpoint_disable();
@@ -146,7 +146,7 @@ static void do_silicon_init(struct fsp_header *hdr)
 	printk(BIOS_INFO, "FSPS returned %x\n", status);
 
 	timestamp_add_now(TS_FSP_SILICON_INIT_END);
-	post_code(POST_FSP_SILICON_EXIT);
+	post_code(POSTCODE_FSP_SILICON_EXIT);
 
 	if (CONFIG(BMP_LOGO))
 		bmp_release_logo();
@@ -173,7 +173,7 @@ static void do_silicon_init(struct fsp_header *hdr)
 	if (multi_phase_si_init == NULL)
 		return;
 
-	post_code(POST_FSP_MULTI_PHASE_SI_INIT_ENTRY);
+	post_code(POSTCODE_FSP_MULTI_PHASE_SI_INIT_ENTRY);
 	timestamp_add_now(TS_FSP_MULTI_PHASE_SI_INIT_START);
 	/* Get NumberOfPhases Value */
 	multi_phase_params.multi_phase_action = GET_NUMBER_OF_PHASES;
@@ -200,7 +200,7 @@ static void do_silicon_init(struct fsp_header *hdr)
 		fsps_return_value_handler(FSP_MULTI_PHASE_SI_INIT_EXECUTE_PHASE_API, status);
 	}
 	timestamp_add_now(TS_FSP_MULTI_PHASE_SI_INIT_END);
-	post_code(POST_FSP_MULTI_PHASE_SI_INIT_EXIT);
+	post_code(POSTCODE_FSP_MULTI_PHASE_SI_INIT_EXIT);
 }
 
 static void *fsps_allocator(void *arg_unused, size_t size, const union cbfs_mdata *mdata_unused)

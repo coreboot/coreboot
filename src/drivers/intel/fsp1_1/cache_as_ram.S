@@ -34,7 +34,7 @@ bootblock_pre_c_entry:
 	movd	%eax, %mm1
 
 cache_as_ram:
-	post_code(POST_BOOTBLOCK_CAR)
+	post_code(POSTCODE_BOOTBLOCK_CAR)
 
 	/* Cache the rom and update the microcode */
 cache_rom:
@@ -95,7 +95,7 @@ find_fsp_ret:
 	cmp	$CONFIG_FSP_LOC, %eax
 	jbe	halt1
 
-	post_code(POST_FSP_TEMP_RAM_INIT)
+	post_code(POSTCODE_FSP_TEMP_RAM_INIT)
 
 	/* Calculate entry into FSP */
 	mov	0x30(%ebp), %eax	/* Load TempRamInitEntry */
@@ -222,7 +222,7 @@ halt2:
 #if CONFIG(POST_IO)
 	outb	%al, $CONFIG_POST_IO_PORT
 #else
-	post_code(POST_DEAD_CODE)
+	post_code(POSTCODE_DEAD_CODE)
 #endif
 	movl	$LHLT_DELAY, %ecx
 .Lhlt_Delay:

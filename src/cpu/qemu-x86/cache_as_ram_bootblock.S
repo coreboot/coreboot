@@ -15,7 +15,7 @@
 bootblock_pre_c_entry:
 
 cache_as_ram:
-	post_code(POST_BOOTBLOCK_CAR)
+	post_code(POSTCODE_BOOTBLOCK_CAR)
 	/*
 	 * Nothing to do here on qemu, RAM works just fine without any
 	 * initialization.
@@ -104,7 +104,7 @@ before_c_entry:
 	call	bootblock_c_entry_bist
 	/* Never returns */
 .Lhlt:
-	post_code(POST_DEAD_CODE)
+	post_code(POSTCODE_DEAD_CODE)
 	hlt
 	jmp	.Lhlt
 

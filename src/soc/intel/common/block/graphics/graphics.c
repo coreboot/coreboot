@@ -117,7 +117,7 @@ uintptr_t graphics_get_framebuffer_address(void)
 
 	memory_base = graphics_get_bar(dev, PCI_BASE_ADDRESS_2);
 	if (!memory_base)
-		die_with_post_code(POST_HW_INIT_FAILURE,
+		die_with_post_code(POSTCODE_HW_INIT_FAILURE,
 				   "Graphic memory bar2 is not programmed!");
 
 	memory_base += CONFIG_SOC_INTEL_GFX_FRAMEBUFFER_OFFSET;
@@ -140,7 +140,7 @@ static uintptr_t graphics_get_gtt_base(void)
 	if (!gtt_base) {
 		gtt_base = graphics_get_bar(dev, PCI_BASE_ADDRESS_0);
 		if (!gtt_base)
-			die_with_post_code(POST_HW_INIT_FAILURE,
+			die_with_post_code(POSTCODE_HW_INIT_FAILURE,
 					   "GTTMMADR is not programmed!");
 	}
 	return gtt_base;

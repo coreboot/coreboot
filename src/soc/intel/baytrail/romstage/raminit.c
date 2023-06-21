@@ -146,7 +146,7 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 	} else if (s3resume) {
 		/* If waking from S3 and no cache then. */
 		printk(BIOS_DEBUG, "No MRC cache found in S3 resume path.\n");
-		post_code(POST_RESUME_FAILURE);
+		post_code(POSTCODE_RESUME_FAILURE);
 		system_reset();
 	} else {
 		printk(BIOS_DEBUG, "No MRC cache found.\n");

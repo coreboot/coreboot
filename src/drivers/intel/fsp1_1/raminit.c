@@ -50,7 +50,7 @@ void raminit(struct romstage_params *params)
 	 * set to NULL.  This indicates that the FSP code will use the UPD
 	 * region in the FSP binary.
 	 */
-	post_code(POST_MEM_PREINIT_PREP_START);
+	post_code(POSTCODE_MEM_PREINIT_PREP_START);
 	fsp_header = params->chipset_context;
 	vpd_ptr = (VPD_DATA_REGION *)(fsp_header->CfgRegionOffset +
 					fsp_header->ImageBase);
@@ -88,7 +88,7 @@ void raminit(struct romstage_params *params)
 	if (CONFIG(MMA))
 		setup_mma(&memory_init_params);
 
-	post_code(POST_MEM_PREINIT_PREP_END);
+	post_code(POSTCODE_MEM_PREINIT_PREP_END);
 
 	/* Display the UPD data */
 	if (CONFIG(DISPLAY_UPD_DATA))
@@ -107,7 +107,7 @@ void raminit(struct romstage_params *params)
 		fsp_memory_init_params.HobListPtr);
 
 	timestamp_add_now(TS_FSP_MEMORY_INIT_START);
-	post_code(POST_FSP_MEMORY_INIT);
+	post_code(POSTCODE_FSP_MEMORY_INIT);
 	status = fsp_memory_init(&fsp_memory_init_params);
 	mainboard_after_memory_init();
 	post_code(0x37);
@@ -115,7 +115,7 @@ void raminit(struct romstage_params *params)
 
 	printk(BIOS_DEBUG, "FspMemoryInit returned 0x%08x\n", status);
 	if (status != EFI_SUCCESS)
-		die_with_post_code(POST_RAM_FAILURE,
+		die_with_post_code(POSTCODE_RAM_FAILURE,
 			"ERROR - FspMemoryInit failed to initialize memory!\n");
 
 	/* Locate the FSP reserved memory area */
@@ -172,7 +172,7 @@ void raminit(struct romstage_params *params)
 	}
 
 	if (hob_list_ptr == NULL)
-		die_with_post_code(POST_RAM_FAILURE,
+		die_with_post_code(POSTCODE_RAM_FAILURE,
 			"ERROR - HOB pointer is NULL!\n");
 
 	/*
@@ -225,14 +225,14 @@ void raminit(struct romstage_params *params)
 			printk(BIOS_ERR,
 				"0x%08x: Chipset reserved bytes reported by FSP\n",
 				(unsigned int)delta_bytes);
-			die_with_post_code(POST_INVALID_VENDOR_BINARY,
+			die_with_post_code(POSTCODE_INVALID_VENDOR_BINARY,
 				"Please verify the chipset reserved size\n");
 		}
 	}
 
 	/* Verify the FSP 1.1 HOB interface */
 	if (fsp_verification_failure)
-		die_with_post_code(POST_INVALID_VENDOR_BINARY,
+		die_with_post_code(POSTCODE_INVALID_VENDOR_BINARY,
 				   "ERROR - coreboot's requirements not met by FSP binary!\n");
 
 	/* Locate the memory configuration data to speed up the next reboot */

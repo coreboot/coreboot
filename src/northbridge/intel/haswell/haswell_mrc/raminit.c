@@ -125,7 +125,7 @@ static void sdram_initialize(struct pei_data *pei_data)
 
 	/* If MRC data is not found, we cannot continue S3 resume */
 	if (pei_data->boot_mode == 2 && !pei_data->mrc_input) {
-		post_code(POST_RESUME_FAILURE);
+		post_code(POSTCODE_RESUME_FAILURE);
 		printk(BIOS_DEBUG, "Giving up in %s: No MRC data\n", __func__);
 		system_reset();
 	}
@@ -157,7 +157,7 @@ static void sdram_initialize(struct pei_data *pei_data)
 			default:
 				printk(BIOS_ERR, "MRC returned %x.\n", rv);
 			}
-			die_with_post_code(POST_INVALID_VENDOR_BINARY,
+			die_with_post_code(POSTCODE_INVALID_VENDOR_BINARY,
 					   "Nonzero MRC return value.\n");
 		}
 	} else {

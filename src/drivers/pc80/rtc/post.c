@@ -60,9 +60,9 @@ int cmos_post_previous_boot(u8 *code, u32 *extra)
 
 	/* Check last post code in previous boot against normal list */
 	switch (*code) {
-	case POST_OS_BOOT:
-	case POST_OS_RESUME:
-	case POST_ENTER_ELF_BOOT:
+	case POSTCODE_OS_BOOT:
+	case POSTCODE_OS_RESUME:
+	case POSTCODE_ENTER_ELF_BOOT:
 	case 0:
 		break;
 	default:

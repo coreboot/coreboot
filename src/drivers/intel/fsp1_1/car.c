@@ -29,7 +29,7 @@ void mainboard_romstage_entry(void)
 	void *fsp = cbfs_map("fsp.bin", NULL);
 
 	if (!fsp)
-		die_with_post_code(POST_INVALID_CBFS, "Unable to locate fsp.bin");
+		die_with_post_code(POSTCODE_INVALID_CBFS, "Unable to locate fsp.bin");
 
 	/* This leaks a mapping which this code assumes is benign as
 	 * the flash is memory mapped CPU's address space. */

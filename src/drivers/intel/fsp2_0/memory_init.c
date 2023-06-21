@@ -260,7 +260,7 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 	const struct fsp_header *hdr = &context->header;
 	const struct memranges *memmap = &context->memmap;
 
-	post_code(POST_MEM_PREINIT_PREP_START);
+	post_code(POSTCODE_MEM_PREINIT_PREP_START);
 
 	if (CONFIG(MRC_CACHE_USING_MRC_VERSION))
 		version = fsp_mrc_version();
@@ -299,7 +299,7 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 	/* Fill common settings on behalf of chipset. */
 	if (fsp_fill_common_arch_params(arch_upd, s3wake, version,
 					memmap) != CB_SUCCESS)
-		die_with_post_code(POST_INVALID_VENDOR_BINARY,
+		die_with_post_code(POSTCODE_INVALID_VENDOR_BINARY,
 			"FSPM_ARCH_UPD not found!\n");
 
 	/* Early caching of RAMTOP region if valid mrc cache data is found */
@@ -324,7 +324,7 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 	if (CONFIG(MMA))
 		setup_mma(&fspm_upd.FspmConfig);
 
-	post_code(POST_MEM_PREINIT_PREP_END);
+	post_code(POSTCODE_MEM_PREINIT_PREP_END);
 
 	/* Call FspMemoryInit */
 	fsp_raminit = (void *)(uintptr_t)(hdr->image_base + hdr->fsp_memory_init_entry_offset);
@@ -332,7 +332,7 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 
 	/* FSP disables the interrupt handler so remove debug exceptions temporarily  */
 	null_breakpoint_disable();
-	post_code(POST_FSP_MEMORY_INIT);
+	post_code(POSTCODE_FSP_MEMORY_INIT);
 	timestamp_add_now(TS_FSP_MEMORY_INIT_START);
 	if (ENV_X86_64 && CONFIG(PLATFORM_USES_FSP2_X86_32))
 		status = protected_mode_call_2arg(fsp_raminit,
@@ -342,13 +342,13 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 		status = fsp_raminit(&fspm_upd, fsp_get_hob_list_ptr());
 	null_breakpoint_init();
 
-	post_code(POST_FSP_MEMORY_EXIT);
+	post_code(POSTCODE_FSP_MEMORY_EXIT);
 	timestamp_add_now(TS_FSP_MEMORY_INIT_END);
 
 	/* Handle any errors returned by FspMemoryInit */
 	fsp_handle_reset(status);
 	if (status != FSP_SUCCESS) {
-		die_with_post_code(POST_RAM_FAILURE,
+		die_with_post_code(POSTCODE_RAM_FAILURE,
 			"FspMemoryInit returned with error 0x%08x!\n", status);
 	}
 

@@ -24,7 +24,7 @@ void mp_init_cpus(struct bus *cpu_bus)
 {
 	extern const struct mp_ops amd_mp_ops_with_smm;
 	if (mp_init_with_smm(cpu_bus, &amd_mp_ops_with_smm) != CB_SUCCESS)
-		die_with_post_code(POST_HW_INIT_FAILURE,
+		die_with_post_code(POSTCODE_HW_INIT_FAILURE,
 				"mp_init_with_smm failed. Halting.\n");
 
 	/* The flash is now no longer cacheable. Reset to WP for performance. */

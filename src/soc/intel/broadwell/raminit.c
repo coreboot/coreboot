@@ -102,7 +102,7 @@ static void sdram_initialize(struct pei_data *pei_data)
 		/* Waking from S3 and no cache. */
 		printk(BIOS_DEBUG,
 		       "No MRC cache found in S3 resume path.\n");
-		post_code(POST_RESUME_FAILURE);
+		post_code(POSTCODE_RESUME_FAILURE);
 		system_reset();
 	} else {
 		printk(BIOS_DEBUG, "No MRC cache found.\n");

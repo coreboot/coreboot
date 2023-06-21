@@ -20,7 +20,7 @@ bootblock_pre_c_entry:
 
 .global	cache_as_ram
 cache_as_ram:
-	post_code(POST_BOOTBLOCK_CAR)
+	post_code(POSTCODE_BOOTBLOCK_CAR)
 
 	movl	$(CONFIG_FSP_T_LOCATION), %ebx
 	add	$0x94, %ebx
@@ -99,7 +99,7 @@ CAR_init_done:
 	/* Never reached */
 
 .halt_forever:
-	post_code(POST_DEAD_CODE)
+	post_code(POSTCODE_DEAD_CODE)
 	hlt
 	jmp	.halt_forever
 

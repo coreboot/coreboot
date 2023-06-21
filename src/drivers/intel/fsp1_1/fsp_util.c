@@ -135,10 +135,10 @@ void fsp_notify(u32 phase)
 
 	if (phase == EnumInitPhaseReadyToBoot) {
 		timestamp_add_now(TS_FSP_FINALIZE_START);
-		post_code(POST_FSP_NOTIFY_BEFORE_FINALIZE);
+		post_code(POSTCODE_FSP_NOTIFY_BEFORE_FINALIZE);
 	} else {
 		timestamp_add_now(TS_FSP_ENUMERATE_START);
-		post_code(POST_FSP_NOTIFY_BEFORE_ENUMERATE);
+		post_code(POSTCODE_FSP_NOTIFY_BEFORE_ENUMERATE);
 	}
 
 	status = notify_phase_proc(&notify_phase_params);

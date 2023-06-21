@@ -31,7 +31,7 @@ bootblock_protected_mode_entry:
 	/* Save the BIST value */
 	movl	%eax, %ebp
 
-	post_code(POST_ENTER_PROTECTED_MODE)
+	post_code(POSTCODE_ENTER_PROTECTED_MODE)
 
 	movw	$ROM_DATA_SEG, %ax
 	movw	%ax, %ds

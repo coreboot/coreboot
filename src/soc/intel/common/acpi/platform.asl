@@ -18,7 +18,7 @@ External(\_SB.PCI0.LPCB.EC0.WAK, MethodObj)
 
 Method (_PTS, 1)
 {
-	DBG0 = POST_OS_ENTER_PTS
+	DBG0 = POSTCODE_OS_ENTER_PTS
 
 	If (CondRefOf (\_SB.PCI0.LPCB.EC0.PTS))
 	{
@@ -42,7 +42,7 @@ Method (_PTS, 1)
 
 Method (_WAK, 1)
 {
-	DBG0 = POST_OS_ENTER_WAKE
+	DBG0 = POSTCODE_OS_ENTER_WAKE
 
 	If (CondRefOf (\_SB.PCI0.LPCB.EC0.WAK))
 	{

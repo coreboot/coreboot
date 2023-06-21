@@ -764,7 +764,7 @@ static void set_dram_row_attributes(void)
 			PRINT_DEBUG("Found DIMM in slot %d\n", i);
 
 			if (edo && sd) {
-				die_with_post_code(POST_RAM_FAILURE,
+				die_with_post_code(POSTCODE_RAM_FAILURE,
 					"Mixing EDO/SDRAM unsupported!\n");
 			}
 
@@ -869,11 +869,11 @@ static void set_dram_row_attributes(void)
 				if (col == 4)
 					bpr |= 0xc0;
 			} else {
-				die_with_post_code(POST_RAM_FAILURE,
+				die_with_post_code(POSTCODE_RAM_FAILURE,
 					"# of banks of DIMM unsupported!\n");
 			}
 			if (dra == -1) {
-				die_with_post_code(POST_RAM_FAILURE,
+				die_with_post_code(POSTCODE_RAM_FAILURE,
 					"Page size not supported!\n");
 			}
 
@@ -884,7 +884,7 @@ static void set_dram_row_attributes(void)
 			 */
 			struct dimm_size sz = spd_get_dimm_size(device);
 			if ((sz.side1 < 8)) {
-				die_with_post_code(POST_RAM_FAILURE,
+				die_with_post_code(POSTCODE_RAM_FAILURE,
 					"DIMMs smaller than 8MB per side "
 					"are not supported!\n");
 			}

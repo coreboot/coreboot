@@ -168,7 +168,7 @@ static void sdram_initialize(struct pei_data *pei_data)
 			default:
 				printk(BIOS_ERR, "MRC returned %x.\n", rv);
 			}
-			die_with_post_code(POST_INVALID_VENDOR_BINARY,
+			die_with_post_code(POSTCODE_INVALID_VENDOR_BINARY,
 					   "Nonzero MRC return value.\n");
 		}
 	} else {

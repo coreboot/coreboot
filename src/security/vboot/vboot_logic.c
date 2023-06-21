@@ -345,7 +345,7 @@ void verstage_main(void)
 		struct region_device fw_body;
 		rv = vboot_locate_firmware(ctx, &fw_body);
 		if (rv)
-			die_with_post_code(POST_INVALID_ROM,
+			die_with_post_code(POSTCODE_INVALID_ROM,
 					   "Failed to read FMAP to locate firmware");
 
 		rv = hash_body(ctx, &fw_body);

@@ -35,7 +35,7 @@ Method (DL23, 0, Serialized)
 			Break
 		}
 
-		Sleep (16)
+		Sleep (2)
 		Local0--
 	}
 	NCB7 = 1
@@ -58,7 +58,7 @@ Method (LD23, 0, Serialized)
 			Break
 		}
 
-		Sleep (16)
+		Sleep (2)
 		Local0--
 	}
 
@@ -71,7 +71,7 @@ Method (LD23, 0, Serialized)
 			Break
 		}
 
-		Sleep (16)
+		Sleep (2)
 		Local0--
 	}
 }

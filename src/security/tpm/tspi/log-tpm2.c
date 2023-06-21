@@ -213,6 +213,11 @@ void tpm2_log_copy_entries(const void *from, void *to)
 	int i;
 
 	for (i = 0; i < le16toh(from_log->vendor.num_entries); i++) {
+		if (le16toh(to_log->vendor.num_entries) >= le16toh(to_log->vendor.max_entries)) {
+			printk(BIOS_WARNING, "TPM LOG: log table is full\n");
+			return;
+		}
+
 		struct tpm_2_log_entry *tce =
 			&to_log->entries[le16toh(to_log->vendor.num_entries)];
 		to_log->vendor.num_entries = htole16(le16toh(to_log->vendor.num_entries) + 1);

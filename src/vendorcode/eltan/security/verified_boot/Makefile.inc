@@ -10,11 +10,6 @@ postcar-y += vboot_check.c
 romstage-y += vboot_check.c
 ramstage-y += vboot_check.c
 
-$(call src-to-obj,bootblock,$(dir)/vboot_check.c) : $(obj)/fmap_config.h
-$(call src-to-obj,postcar,$(dir)/vboot_check.c) : $(obj)/fmap_config.h
-$(call src-to-obj,romstage,$(dir)/vboot_check.c) : $(obj)/fmap_config.h
-$(call src-to-obj,ramstage,$(dir)/vboot_check.c) : $(obj)/fmap_config.h
-
 ifeq ($(CONFIG_VENDORCODE_ELTAN_VBOOT),y)
 cbfs-files-y += oemmanifest.bin
 oemmanifest.bin-file     := $(obj)/oemmanifest.bin

@@ -241,13 +241,6 @@ $(call src-to-obj,smm,$(dir)/version.c) : $(obj)/build.h
 $(call src-to-obj,verstage,$(dir)/version.c) : $(obj)/build.h
 $(call src-to-obj,postcar,$(dir)/version.c) : $(obj)/build.h
 
-$(call src-to-obj,bootblock,$(dir)/fmap.c) : $(obj)/fmap_config.h
-$(call src-to-obj,romstage,$(dir)/fmap.c) : $(obj)/fmap_config.h
-$(call src-to-obj,ramstage,$(dir)/fmap.c) : $(obj)/fmap_config.h
-$(call src-to-obj,smm,$(dir)/fmap.c) : $(obj)/fmap_config.h
-$(call src-to-obj,verstage,$(dir)/fmap.c) : $(obj)/fmap_config.h
-$(call src-to-obj,postcar,$(dir)/fmap.c) : $(obj)/fmap_config.h
-
 bootblock-y += bootmode.c
 romstage-y += bootmode.c
 ramstage-y += bootmode.c
@@ -412,10 +405,7 @@ cbfs_master_header-file := cbfs_master_header.c:struct
 cbfs_master_header-type := "cbfs header"
 cbfs_master_header-position := 0
 
-ifeq ($(CONFIG_ARCH_X86),y)
-$(call src-to-obj,bootblock,$(dir)/master_header_pointer.c): $(obj)/fmap_config.h
-bootblock-y += master_header_pointer.c
-endif
+bootblock-$(CONFIG_ARCH_X86) += master_header_pointer.c
 
 NEED_CBFS_POINTER=
 

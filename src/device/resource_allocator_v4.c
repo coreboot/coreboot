@@ -401,8 +401,8 @@ static void allocate_toplevel_resources(const struct device *const domain,
 		if (!res->size)
 			continue;
 
-		if (!memranges_steal(&ranges, res->limit, res->size, res->align, type, &base,
-				     CONFIG(RESOURCE_ALLOCATION_TOP_DOWN))) {
+		if (!memranges_steal(&ranges, effective_limit(res), res->size, res->align,
+				     type, &base, CONFIG(RESOURCE_ALLOCATION_TOP_DOWN))) {
 			printk(BIOS_ERR, "Resource didn't fit!!!\n");
 			print_failed_res(dev, res);
 			continue;

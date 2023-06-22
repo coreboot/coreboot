@@ -1530,6 +1530,7 @@ unsigned long fw_cfg_acpi_tables(unsigned long start);
 void preload_acpi_dsdt(void);
 unsigned long write_acpi_tables(const unsigned long addr);
 unsigned long acpi_fill_madt(unsigned long current);
+unsigned long acpi_arch_fill_madt(acpi_madt_t *madt, unsigned long current);
 
 void acpi_fill_fadt(acpi_fadt_t *fadt);
 void arch_fill_fadt(acpi_fadt_t *fadt);
@@ -1556,12 +1557,10 @@ int acpi_create_cedt_cfmws(acpi_cedt_cfmws_t *cfmws, u64 base_hpa, u64 window_si
 	u8 eniw, u32 hbig, u16 restriction, u16 qtg_id, const u32 *interleave_target);
 
 
-unsigned long acpi_create_madt_ioapic_gsi0_default(unsigned long current);
 int acpi_create_madt_ioapic_from_hw(acpi_madt_ioapic_t *ioapic, u32 addr);
 
 unsigned long acpi_create_madt_one_lapic(unsigned long current, u32 cpu, u32 apic);
 
-unsigned long acpi_create_madt_lapics_with_nmis(unsigned long current);
 unsigned long acpi_create_madt_lapic_nmis(unsigned long current);
 
 int acpi_create_srat_lapic(acpi_srat_lapic_t *lapic, u8 node, u8 apic);

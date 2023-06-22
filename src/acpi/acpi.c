@@ -165,15 +165,7 @@ static void acpi_create_madt(acpi_header_t *header, void *unused)
 	if (acpi_fill_header(header, "APIC", MADT, sizeof(acpi_madt_t)) != CB_SUCCESS)
 		return;
 
-	madt->lapic_addr = cpu_get_lapic_addr();
-	if (CONFIG(ACPI_HAVE_PCAT_8259))
-		madt->flags |= 1;
-
-	if (CONFIG(ACPI_COMMON_MADT_LAPIC))
-		current = acpi_create_madt_lapics_with_nmis(current);
-
-	if (CONFIG(ACPI_COMMON_MADT_IOAPIC))
-		current = acpi_create_madt_ioapic_gsi0_default(current);
+	current = acpi_arch_fill_madt(madt, current);
 
 	if (CONFIG(ACPI_CUSTOM_MADT))
 		current = acpi_fill_madt(current);

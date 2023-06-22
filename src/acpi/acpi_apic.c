@@ -139,7 +139,7 @@ static int acpi_create_madt_sci_override(acpi_madt_irqoverride_t *irqoverride)
 	return irqoverride->length;
 }
 
-unsigned long acpi_create_madt_ioapic_gsi0_default(unsigned long current)
+static unsigned long acpi_create_madt_ioapic_gsi0_default(unsigned long current)
 {
 	current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current, IO_APIC_ADDR);
 
@@ -194,7 +194,7 @@ unsigned long acpi_create_madt_lapic_nmis(unsigned long current)
 	return current;
 }
 
-unsigned long acpi_create_madt_lapics_with_nmis(unsigned long current)
+static unsigned long acpi_create_madt_lapics_with_nmis(unsigned long current)
 {
 	current = acpi_create_madt_lapics(current);
 	current = acpi_create_madt_lapic_nmis(current);
@@ -226,4 +226,20 @@ int acpi_create_srat_x2apic(acpi_srat_x2apic_t *x2apic, u32 node, u32 apic)
 	x2apic->x2apic_id = apic;
 
 	return x2apic->length;
+}
+
+unsigned long acpi_arch_fill_madt(acpi_madt_t *madt, unsigned long current)
+{
+	madt->lapic_addr = cpu_get_lapic_addr();
+
+	if (CONFIG(ACPI_HAVE_PCAT_8259))
+		madt->flags |= 1;
+
+	if (CONFIG(ACPI_COMMON_MADT_LAPIC))
+		current = acpi_create_madt_lapics_with_nmis(current);
+
+	if (CONFIG(ACPI_COMMON_MADT_IOAPIC))
+		current = acpi_create_madt_ioapic_gsi0_default(current);
+
+	return current;
 }

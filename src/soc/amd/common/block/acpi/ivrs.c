@@ -52,6 +52,7 @@ static unsigned long ivhd_describe_f0_device(unsigned long current,
 						uint16_t dev_id, uint8_t datasetting)
 {
 	ivrs_ivhd_f0_entry_t *ivhd_f0 = (ivrs_ivhd_f0_entry_t *)current;
+	memset(ivhd_f0, 0, sizeof(*ivhd_f0));
 
 	ivhd_f0->type = IVHD_DEV_VARIABLE;
 	ivhd_f0->dev_id = dev_id;
@@ -64,11 +65,6 @@ static unsigned long ivhd_describe_f0_device(unsigned long current,
 	ivhd_f0->hardware_id[5] = '0';
 	ivhd_f0->hardware_id[6] = '4';
 	ivhd_f0->hardware_id[7] = '0';
-
-	memset(ivhd_f0->compatible_id, 0, sizeof(ivhd_f0->compatible_id));
-
-	ivhd_f0->uuid_format = 0;
-	ivhd_f0->uuid_length = 0;
 
 	current += sizeof(ivrs_ivhd_f0_entry_t);
 	return current;

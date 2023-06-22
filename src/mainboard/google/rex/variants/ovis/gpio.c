@@ -69,7 +69,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_B07 : [] ==> RST_HP_L */
 	PAD_CFG_GPO(GPP_B07, 1, DEEP),
 	/* GPP_B08 : [] ==> PWM_BUZZER */
-	PAD_CFG_NF(GPP_B08, NONE, DEEP, NF2),
+	PAD_CFG_GPO(GPP_B08, 0, DEEP),
 	/* GPP_B09 : [] ==> GPP_B09 */
 	PAD_NC(GPP_B09, NONE),
 	/* GPP_B10 : [] ==> WIFI_DISABLE_L */

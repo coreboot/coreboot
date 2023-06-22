@@ -85,9 +85,9 @@
 #define POSTCODE_ENTER_PCI_SCAN_BUS			0x24
 
 /**
- * \brief Entry into pci_scan_bus
+ * \brief Exit out of pci_scan_bus
  *
- * Entered pci_scan_bus()
+ * Exited pci_scan_bus()
  */
 #define POSTCODE_EXIT_PCI_SCAN_BUS			0x25
 

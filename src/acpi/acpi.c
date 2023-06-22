@@ -49,18 +49,15 @@ void acpi_add_table(acpi_rsdp_t *rsdp, void *table)
 	acpi_rsdt_t *rsdt;
 	acpi_xsdt_t *xsdt = NULL;
 
-	/* The RSDT is mandatory... */
+	/* The 32bit RSDT may not be valid if tables live above 4GiB */
 	rsdt = (acpi_rsdt_t *)(uintptr_t)rsdp->rsdt_address;
-
-	/* ...while the XSDT is not. */
-	if (rsdp->xsdt_address)
-		xsdt = (acpi_xsdt_t *)((uintptr_t)rsdp->xsdt_address);
+	xsdt = (acpi_xsdt_t *)(uintptr_t)rsdp->xsdt_address;
 
 	/* This should always be MAX_ACPI_TABLES. */
-	entries_num = ARRAY_SIZE(rsdt->entry);
+	entries_num = ARRAY_SIZE(xsdt->entry);
 
 	for (i = 0; i < entries_num; i++) {
-		if (rsdt->entry[i] == 0)
+		if (xsdt->entry[i] == 0)
 			break;
 	}
 
@@ -70,36 +67,34 @@ void acpi_add_table(acpi_rsdp_t *rsdp, void *table)
 		return;
 	}
 
-	/* Add table to the RSDT. */
-	rsdt->entry[i] = (uintptr_t)table;
+	/* Add table to the XSDT. */
+	xsdt->entry[i] = (u64)(uintptr_t)table;
 
-	/* Fix RSDT length or the kernel will assume invalid entries. */
-	rsdt->header.length = sizeof(acpi_header_t) + (sizeof(u32) * (i + 1));
+	/* Fix XSDT length or the kernel will assume invalid entries. */
+	xsdt->header.length = sizeof(acpi_header_t) + (sizeof(u64) * (i + 1));
 
 	/* Re-calculate checksum. */
-	rsdt->header.checksum = 0; /* Hope this won't get optimized away */
-	rsdt->header.checksum = acpi_checksum((u8 *)rsdt, rsdt->header.length);
+	xsdt->header.checksum = 0; /* Hope this won't get optimized away */
+	xsdt->header.checksum = acpi_checksum((u8 *)xsdt, xsdt->header.length);
 
 	/*
-	 * And now the same thing for the XSDT. We use the same index as for
+	 * And now the same thing for the RSDT. We use the same index as for
 	 * now we want the XSDT and RSDT to always be in sync in coreboot.
 	 */
-	if (xsdt) {
-		/* Add table to the XSDT. */
-		xsdt->entry[i] = (u64)(uintptr_t)table;
+	if (rsdt && (uintptr_t)table < UINT32_MAX) {
+		/* Add table to the RSDT. */
+		rsdt->entry[i] = (u32)(uintptr_t)table;
 
-		/* Fix XSDT length. */
-		xsdt->header.length = sizeof(acpi_header_t) +
-					(sizeof(u64) * (i + 1));
+		/* Fix RSDT length. */
+		rsdt->header.length = sizeof(acpi_header_t) + (sizeof(u32) * (i + 1));
 
 		/* Re-calculate checksum. */
-		xsdt->header.checksum = 0;
-		xsdt->header.checksum = acpi_checksum((u8 *)xsdt,
-							xsdt->header.length);
+		rsdt->header.checksum = 0;
+		rsdt->header.checksum = acpi_checksum((u8 *)rsdt, rsdt->header.length);
 	}
 
 	printk(BIOS_DEBUG, "ACPI: added table %d/%d, length now %d\n",
-		i + 1, entries_num, rsdt->header.length);
+		i + 1, entries_num, xsdt->header.length);
 }
 
 static enum cb_err acpi_fill_header(acpi_header_t *header, const char name[4],
@@ -1451,14 +1446,19 @@ unsigned long write_acpi_tables(const unsigned long start)
 
 	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx.\n", start);
 
-	/* We need at least an RSDP and an RSDT Table */
+	/* We need at least an RSDP, RSDT for ACPI 1.0 compat, otherwise XSDT */
 	rsdp = (acpi_rsdp_t *)current;
 	coreboot_rsdp = (uintptr_t)rsdp;
 	current += sizeof(acpi_rsdp_t);
 	current = acpi_align_current(current);
-	rsdt = (acpi_rsdt_t *)current;
-	current += sizeof(acpi_rsdt_t);
-	current = acpi_align_current(current);
+	if (current + sizeof(acpi_rsdt_t) - 1 <= UINT32_MAX) {
+		rsdt = (acpi_rsdt_t *)current;
+		current += sizeof(acpi_rsdt_t);
+		current = acpi_align_current(current);
+	} else {
+		printk(BIOS_INFO, "Not adding RSDT because tables reside above 4G.");
+	}
+
 	xsdt = (acpi_xsdt_t *)current;
 	current += sizeof(acpi_xsdt_t);
 	current = acpi_align_current(current);
@@ -1554,7 +1554,7 @@ static acpi_rsdp_t *valid_rsdp(acpi_rsdp_t *rsdp)
 void *acpi_find_wakeup_vector(void)
 {
 	char *p, *end;
-	acpi_rsdt_t *rsdt;
+	acpi_xsdt_t *xsdt;
 	acpi_facs_t *facs;
 	acpi_fadt_t *fadt = NULL;
 	acpi_rsdp_t *rsdp = NULL;
@@ -1580,13 +1580,13 @@ void *acpi_find_wakeup_vector(void)
 	}
 
 	printk(BIOS_DEBUG, "RSDP found at %p\n", rsdp);
-	rsdt = (acpi_rsdt_t *)(uintptr_t)rsdp->rsdt_address;
+	xsdt = (acpi_xsdt_t *)(uintptr_t)rsdp->xsdt_address;
 
-	end = (char *)rsdt + rsdt->header.length;
-	printk(BIOS_DEBUG, "RSDT found at %p ends at %p\n", rsdt, end);
+	end = (char *)xsdt + xsdt->header.length;
+	printk(BIOS_DEBUG, "XSDT found at %p ends at %p\n", xsdt, end);
 
-	for (i = 0; ((char *)&rsdt->entry[i]) < end; i++) {
-		fadt = (acpi_fadt_t *)(uintptr_t)rsdt->entry[i];
+	for (i = 0; ((char *)&xsdt->entry[i]) < end; i++) {
+		fadt = (acpi_fadt_t *)(uintptr_t)xsdt->entry[i];
 		if (strncmp((char *)fadt, "FACP", 4) == 0)
 			break;
 		fadt = NULL;

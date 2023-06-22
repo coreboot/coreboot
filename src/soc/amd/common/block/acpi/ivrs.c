@@ -36,10 +36,9 @@ static unsigned long acpi_fill_ivrs_ioapic(unsigned long current, void *ioapic_b
 static unsigned long ivhd_describe_hpet(unsigned long current, uint8_t hndl, uint16_t src_devid)
 {
 	ivrs_ivhd_special_t *ivhd_hpet = (ivrs_ivhd_special_t *)current;
+	memset(ivhd_hpet, 0, sizeof(*ivhd_hpet));
 
 	ivhd_hpet->type = IVHD_DEV_8_BYTE_EXT_SPECIAL_DEV;
-	ivhd_hpet->reserved = 0x0000;
-	ivhd_hpet->dte_setting = 0x00;
 	ivhd_hpet->handle = hndl;
 	ivhd_hpet->source_dev_id = src_devid; /* function 0 of FCH PCI device */
 	ivhd_hpet->variety = IVHD_SPECIAL_DEV_HPET;

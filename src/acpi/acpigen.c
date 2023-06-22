@@ -1764,6 +1764,10 @@ void acpigen_write_dsm(const char *uuid, void (**callbacks)(void *), size_t coun
  * bit 0:    other functions than 0 are supported
  * bits 1-x: function x supported
  */
+/* On GCC aarch64 the compiler is worried about alloca() having unbounded stack usage. */
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic ignored "-Wstack-usage="
+#endif
 static void acpigen_dsm_uuid_enum_functions(const struct dsm_uuid *id)
 {
 	const size_t bytes = DIV_ROUND_UP(id->count, BITS_PER_BYTE);

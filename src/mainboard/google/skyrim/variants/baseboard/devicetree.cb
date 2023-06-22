@@ -262,8 +262,10 @@ chip soc/amd/mendocino
 	end
 
 	# DPTC: Refer the spec "FT6 Infrastructure Roadmap"#57316
-	# Set system_configuration to 4 for 15W
-	register "system_configuration" = "4"
+	# Set system_configuration to 3 for 15W. Spec lists 4 for 15W,
+	# however, setting to 3 will avoid an additional communication
+	# with the SMU and save boot time.
+	register "system_configuration" = "3"
 	# Normal
 	register "slow_ppt_limit_mW"                     = "25000"
 	register "fast_ppt_limit_mW"                     = "30000"

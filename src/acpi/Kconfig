@@ -81,3 +81,9 @@ config ACPI_GTDT
 	depends on HAVE_ACPI_TABLES
 	help
 	  Selected by platforms that implement ARM generic timers
+
+config MAX_ACPI_TABLE_SIZE_KB
+	int
+	default 144
+	help
+	  Set the maximum size of all ACPI tables in KiB.

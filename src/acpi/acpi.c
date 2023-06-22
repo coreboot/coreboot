@@ -16,23 +16,20 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_ivrs.h>
 #include <acpi/acpigen.h>
-#include <arch/hpet.h>
-#include <arch/smp/mpspec.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <commonlib/helpers.h>
-#include <commonlib/sort.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <device/mmio.h>
 #include <device/pci.h>
-#include <pc80/mc146818rtc.h>
 #include <string.h>
 #include <types.h>
 #include <version.h>
 
 #if ENV_X86
 #include <arch/ioapic.h>
+#include <arch/smp/mpspec.h>
 #endif
 
 static acpi_rsdp_t *valid_rsdp(acpi_rsdp_t *rsdp);
@@ -142,109 +139,6 @@ static int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u32 base,
 	return sizeof(acpi_mcfg_mmconfig_t);
 }
 
-static int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic)
-{
-	lapic->type = LOCAL_APIC; /* Local APIC structure */
-	lapic->length = sizeof(acpi_madt_lapic_t);
-	lapic->flags = (1 << 0); /* Processor/LAPIC enabled */
-	lapic->processor_id = cpu;
-	lapic->apic_id = apic;
-
-	return lapic->length;
-}
-
-static int acpi_create_madt_lx2apic(acpi_madt_lx2apic_t *lapic, u32 cpu, u32 apic)
-{
-	lapic->type = LOCAL_X2APIC; /* Local APIC structure */
-	lapic->reserved = 0;
-	lapic->length = sizeof(acpi_madt_lx2apic_t);
-	lapic->flags = (1 << 0); /* Processor/LAPIC enabled */
-	lapic->processor_id = cpu;
-	lapic->x2apic_id = apic;
-
-	return lapic->length;
-}
-
-unsigned long acpi_create_madt_one_lapic(unsigned long current, u32 index, u32 lapic_id)
-{
-	if (lapic_id <= ACPI_MADT_MAX_LAPIC_ID)
-		current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, index,
-						  lapic_id);
-	else
-		current += acpi_create_madt_lx2apic((acpi_madt_lx2apic_t *)current, index,
-						    lapic_id);
-
-	return current;
-}
-
-/* Increase if necessary. Currently all x86 CPUs only have 2 SMP threads */
-#define MAX_THREAD_ID 1
-/*
- * From ACPI 6.4 spec:
- * "The advent of multi-threaded processors yielded multiple logical processors
- * executing on common processor hardware. ACPI defines logical processors in
- * an identical manner as physical processors. To ensure that non
- * multi-threading aware OSPM implementations realize optimal performance on
- * platforms containing multi-threaded processors, two guidelines should be
- * followed. The first is the same as above, that is, OSPM should initialize
- * processors in the order that they appear in the MADT. The second is that
- * platform firmware should list the first logical processor of each of the
- * individual multi-threaded processors in the MADT before listing any of the
- * second logical processors. This approach should be used for all successive
- * logical processors."
- */
-static unsigned long acpi_create_madt_lapics(unsigned long current)
-{
-	struct device *cpu;
-	int index, apic_ids[CONFIG_MAX_CPUS] = {0}, num_cpus = 0, sort_start = 0;
-	for (unsigned int thread_id = 0; thread_id <= MAX_THREAD_ID; thread_id++) {
-		for (cpu = all_devices; cpu; cpu = cpu->next) {
-			if (!is_enabled_cpu(cpu))
-				continue;
-			if (num_cpus >= ARRAY_SIZE(apic_ids))
-				break;
-			if (cpu->path.apic.thread_id != thread_id)
-				continue;
-			apic_ids[num_cpus++] = cpu->path.apic.apic_id;
-		}
-		bubblesort(&apic_ids[sort_start], num_cpus - sort_start, NUM_ASCENDING);
-		sort_start = num_cpus;
-	}
-	for (index = 0; index < num_cpus; index++)
-		current = acpi_create_madt_one_lapic(current, index, apic_ids[index]);
-
-	return current;
-}
-
-static int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr,
-				u32 gsi_base)
-{
-	ioapic->type = IO_APIC; /* I/O APIC structure */
-	ioapic->length = sizeof(acpi_madt_ioapic_t);
-	ioapic->reserved = 0x00;
-	ioapic->gsi_base = gsi_base;
-	ioapic->ioapic_id = id;
-	ioapic->ioapic_addr = addr;
-
-	return ioapic->length;
-}
-
-#if ENV_X86
-/* For a system with multiple I/O APICs it's required that the one potentially
-   routing i8259 via ExtNMI delivery calls this first to get GSI #0. */
-int acpi_create_madt_ioapic_from_hw(acpi_madt_ioapic_t *ioapic, u32 addr)
-{
-	static u32 gsi_base;
-	u32 my_base;
-	u8 id = get_ioapic_id((void *)(uintptr_t)addr);
-	u8 count = ioapic_get_max_vectors((void *)(uintptr_t)addr);
-
-	my_base = gsi_base;
-	gsi_base += count;
-	return acpi_create_madt_ioapic(ioapic, id, addr, my_base);
-}
-#endif
-
 static u16 acpi_sci_int(void)
 {
 #if ENV_X86
@@ -261,100 +155,6 @@ static u16 acpi_sci_int(void)
 #else
 	return 0;
 #endif
-}
-
-static int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride,
-		u8 bus, u8 source, u32 gsirq, u16 flags)
-{
-	irqoverride->type = IRQ_SOURCE_OVERRIDE; /* Interrupt source override */
-	irqoverride->length = sizeof(acpi_madt_irqoverride_t);
-	irqoverride->bus = bus;
-	irqoverride->source = source;
-	irqoverride->gsirq = gsirq;
-	irqoverride->flags = flags;
-
-	return irqoverride->length;
-}
-
-static int acpi_create_madt_sci_override(acpi_madt_irqoverride_t *irqoverride)
-{
-	u8 gsi, irq, flags;
-
-	ioapic_get_sci_pin(&gsi, &irq, &flags);
-
-	if (!CONFIG(ACPI_HAVE_PCAT_8259))
-		irq = gsi;
-
-	irqoverride->type = IRQ_SOURCE_OVERRIDE; /* Interrupt source override */
-	irqoverride->length = sizeof(acpi_madt_irqoverride_t);
-	irqoverride->bus = MP_BUS_ISA;
-	irqoverride->source = irq;
-	irqoverride->gsirq = gsi;
-	irqoverride->flags = flags;
-
-	return irqoverride->length;
-}
-
-static unsigned long acpi_create_madt_ioapic_gsi0_default(unsigned long current)
-{
-	current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current, IO_APIC_ADDR);
-
-	current += acpi_create_madt_irqoverride((void *)current, MP_BUS_ISA, 0, 2,
-						MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH);
-
-	current += acpi_create_madt_sci_override((void *)current);
-
-	return current;
-}
-
-static int acpi_create_madt_lapic_nmi(acpi_madt_lapic_nmi_t *lapic_nmi, u8 cpu,
-				u16 flags, u8 lint)
-{
-	lapic_nmi->type = LOCAL_APIC_NMI; /* Local APIC NMI structure */
-	lapic_nmi->length = sizeof(acpi_madt_lapic_nmi_t);
-	lapic_nmi->flags = flags;
-	lapic_nmi->processor_id = cpu;
-	lapic_nmi->lint = lint;
-
-	return lapic_nmi->length;
-}
-
-static int acpi_create_madt_lx2apic_nmi(acpi_madt_lx2apic_nmi_t *lapic_nmi, u32 cpu,
-				 u16 flags, u8 lint)
-{
-	lapic_nmi->type = LOCAL_X2APIC_NMI; /* Local APIC NMI structure */
-	lapic_nmi->length = sizeof(acpi_madt_lx2apic_nmi_t);
-	lapic_nmi->flags = flags;
-	lapic_nmi->processor_id = cpu;
-	lapic_nmi->lint = lint;
-	lapic_nmi->reserved[0] = 0;
-	lapic_nmi->reserved[1] = 0;
-	lapic_nmi->reserved[2] = 0;
-
-	return lapic_nmi->length;
-}
-
-unsigned long acpi_create_madt_lapic_nmis(unsigned long current)
-{
-	const u16 flags = MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH;
-
-	/* 1: LINT1 connect to NMI */
-	/* create all subtables for processors */
-	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)current,
-			ACPI_MADT_LAPIC_NMI_ALL_PROCESSORS, flags, 1);
-
-	if (!CONFIG(XAPIC_ONLY))
-		current += acpi_create_madt_lx2apic_nmi((acpi_madt_lx2apic_nmi_t *)current,
-			ACPI_MADT_LX2APIC_NMI_ALL_PROCESSORS, flags, 1);
-
-	return current;
-}
-
-static unsigned long acpi_create_madt_lapics_with_nmis(unsigned long current)
-{
-	current = acpi_create_madt_lapics(current);
-	current = acpi_create_madt_lapic_nmis(current);
-	return current;
 }
 
 static void acpi_create_madt(acpi_header_t *header, void *unused)
@@ -563,33 +363,6 @@ static void acpi_create_ssdt_generator(acpi_header_t *ssdt, void *unused)
 	ssdt->length = current - (unsigned long)ssdt;
 }
 
-int acpi_create_srat_lapic(acpi_srat_lapic_t *lapic, u8 node, u8 apic)
-{
-	memset((void *)lapic, 0, sizeof(acpi_srat_lapic_t));
-
-	lapic->type = 0; /* Processor local APIC/SAPIC affinity structure */
-	lapic->length = sizeof(acpi_srat_lapic_t);
-	lapic->flags = (1 << 0); /* Enabled (the use of this structure). */
-	lapic->proximity_domain_7_0 = node;
-	/* TODO: proximity_domain_31_8, local SAPIC EID, clock domain. */
-	lapic->apic_id = apic;
-
-	return lapic->length;
-}
-
-int acpi_create_srat_x2apic(acpi_srat_x2apic_t *x2apic, u32 node, u32 apic)
-{
-	memset((void *)x2apic, 0, sizeof(acpi_srat_x2apic_t));
-
-	x2apic->type = 2; /* Processor x2APIC structure */
-	x2apic->length = sizeof(acpi_srat_x2apic_t);
-	x2apic->flags = (1 << 0); /* Enabled (the use of this structure). */
-	x2apic->proximity_domain = node;
-	x2apic->x2apic_id = apic;
-
-	return x2apic->length;
-}
-
 int acpi_create_srat_mem(acpi_srat_mem_t *mem, u8 node, u32 basek, u32 sizek,
 				u32 flags)
 {
@@ -752,186 +525,6 @@ void acpi_create_hmat(acpi_hmat_t *hmat,
 	header->checksum = acpi_checksum((void *)hmat, header->length);
 }
 
-void acpi_create_dmar(acpi_dmar_t *dmar, enum dmar_flags flags,
-		      unsigned long (*acpi_fill_dmar)(unsigned long))
-{
-	acpi_header_t *header = &(dmar->header);
-	unsigned long current = (unsigned long)dmar + sizeof(acpi_dmar_t);
-
-	memset((void *)dmar, 0, sizeof(acpi_dmar_t));
-
-	if (acpi_fill_header(header, "DMAR", DMAR, sizeof(acpi_dmar_t)) != CB_SUCCESS)
-		return;
-
-	dmar->host_address_width = cpu_phys_address_size() - 1;
-	dmar->flags = flags;
-
-	current = acpi_fill_dmar(current);
-
-	/* (Re)calculate length and checksum. */
-	header->length = current - (unsigned long)dmar;
-	header->checksum = acpi_checksum((void *)dmar, header->length);
-}
-
-unsigned long acpi_create_dmar_drhd(unsigned long current, u8 flags,
-	u16 segment, u64 bar)
-{
-	dmar_entry_t *drhd = (dmar_entry_t *)current;
-	memset(drhd, 0, sizeof(*drhd));
-	drhd->type = DMAR_DRHD;
-	drhd->length = sizeof(*drhd); /* will be fixed up later */
-	drhd->flags = flags;
-	drhd->segment = segment;
-	drhd->bar = bar;
-
-	return drhd->length;
-}
-
-unsigned long acpi_create_dmar_rmrr(unsigned long current, u16 segment,
-				    u64 bar, u64 limit)
-{
-	dmar_rmrr_entry_t *rmrr = (dmar_rmrr_entry_t *)current;
-	memset(rmrr, 0, sizeof(*rmrr));
-	rmrr->type = DMAR_RMRR;
-	rmrr->length = sizeof(*rmrr); /* will be fixed up later */
-	rmrr->segment = segment;
-	rmrr->bar = bar;
-	rmrr->limit = limit;
-
-	return rmrr->length;
-}
-
-unsigned long acpi_create_dmar_atsr(unsigned long current, u8 flags,
-	u16 segment)
-{
-	dmar_atsr_entry_t *atsr = (dmar_atsr_entry_t *)current;
-	memset(atsr, 0, sizeof(*atsr));
-	atsr->type = DMAR_ATSR;
-	atsr->length = sizeof(*atsr); /* will be fixed up later */
-	atsr->flags = flags;
-	atsr->segment = segment;
-
-	return atsr->length;
-}
-
-unsigned long acpi_create_dmar_rhsa(unsigned long current, u64 base_addr,
-	u32 proximity_domain)
-{
-	dmar_rhsa_entry_t *rhsa = (dmar_rhsa_entry_t *)current;
-	memset(rhsa, 0, sizeof(*rhsa));
-	rhsa->type = DMAR_RHSA;
-	rhsa->length = sizeof(*rhsa);
-	rhsa->base_address = base_addr;
-	rhsa->proximity_domain = proximity_domain;
-
-	return rhsa->length;
-}
-
-unsigned long acpi_create_dmar_andd(unsigned long current, u8 device_number,
-	const char *device_name)
-{
-	dmar_andd_entry_t *andd = (dmar_andd_entry_t *)current;
-	int andd_len = sizeof(dmar_andd_entry_t) + strlen(device_name) + 1;
-	memset(andd, 0, andd_len);
-	andd->type = DMAR_ANDD;
-	andd->length = andd_len;
-	andd->device_number = device_number;
-	memcpy(&andd->device_name, device_name, strlen(device_name));
-
-	return andd->length;
-}
-
-unsigned long acpi_create_dmar_satc(unsigned long current, u8 flags, u16 segment)
-{
-	dmar_satc_entry_t *satc = (dmar_satc_entry_t *)current;
-	int satc_len = sizeof(dmar_satc_entry_t);
-	memset(satc, 0, satc_len);
-	satc->type = DMAR_SATC;
-	satc->length = satc_len;
-	satc->flags = flags;
-	satc->segment_number = segment;
-
-	return satc->length;
-}
-
-void acpi_dmar_drhd_fixup(unsigned long base, unsigned long current)
-{
-	dmar_entry_t *drhd = (dmar_entry_t *)base;
-	drhd->length = current - base;
-}
-
-void acpi_dmar_rmrr_fixup(unsigned long base, unsigned long current)
-{
-	dmar_rmrr_entry_t *rmrr = (dmar_rmrr_entry_t *)base;
-	rmrr->length = current - base;
-}
-
-void acpi_dmar_atsr_fixup(unsigned long base, unsigned long current)
-{
-	dmar_atsr_entry_t *atsr = (dmar_atsr_entry_t *)base;
-	atsr->length = current - base;
-}
-
-void acpi_dmar_satc_fixup(unsigned long base, unsigned long current)
-{
-	dmar_satc_entry_t *satc = (dmar_satc_entry_t *)base;
-	satc->length = current - base;
-}
-
-static unsigned long acpi_create_dmar_ds(unsigned long current,
-	enum dev_scope_type type, u8 enumeration_id, u8 bus, u8 dev, u8 fn)
-{
-	/* we don't support longer paths yet */
-	const size_t dev_scope_length = sizeof(dev_scope_t) + 2;
-
-	dev_scope_t *ds = (dev_scope_t *)current;
-	memset(ds, 0, dev_scope_length);
-	ds->type	= type;
-	ds->length	= dev_scope_length;
-	ds->enumeration	= enumeration_id;
-	ds->start_bus	= bus;
-	ds->path[0].dev	= dev;
-	ds->path[0].fn	= fn;
-
-	return ds->length;
-}
-
-unsigned long acpi_create_dmar_ds_pci_br(unsigned long current, u8 bus,
-	u8 dev, u8 fn)
-{
-	return acpi_create_dmar_ds(current,
-			SCOPE_PCI_SUB, 0, bus, dev, fn);
-}
-
-unsigned long acpi_create_dmar_ds_pci(unsigned long current, u8 bus,
-	u8 dev, u8 fn)
-{
-	return acpi_create_dmar_ds(current,
-			SCOPE_PCI_ENDPOINT, 0, bus, dev, fn);
-}
-
-unsigned long acpi_create_dmar_ds_ioapic(unsigned long current,
-	u8 enumeration_id, u8 bus, u8 dev, u8 fn)
-{
-	return acpi_create_dmar_ds(current,
-			SCOPE_IOAPIC, enumeration_id, bus, dev, fn);
-}
-
-unsigned long acpi_create_dmar_ds_ioapic_from_hw(unsigned long current,
-						 u32 addr, u8 bus, u8 dev, u8 fn)
-{
-	u8 enumeration_id = get_ioapic_id((void *)(uintptr_t)addr);
-	return acpi_create_dmar_ds(current,
-			SCOPE_IOAPIC, enumeration_id, bus, dev, fn);
-}
-
-unsigned long acpi_create_dmar_ds_msi_hpet(unsigned long current,
-	u8 enumeration_id, u8 bus, u8 dev, u8 fn)
-{
-	return acpi_create_dmar_ds(current,
-			SCOPE_MSI_HPET, enumeration_id, bus, dev, fn);
-}
-
 /* http://h21007.www2.hp.com/portal/download/files/unprot/Itanium/slit.pdf */
 void acpi_create_slit(acpi_slit_t *slit,
 		      unsigned long (*acpi_fill_slit)(unsigned long current))
@@ -949,31 +542,6 @@ void acpi_create_slit(acpi_slit_t *slit,
 	/* (Re)calculate length and checksum. */
 	header->length = current - (unsigned long)slit;
 	header->checksum = acpi_checksum((void *)slit, header->length);
-}
-
-/* http://www.intel.com/hardwaredesign/hpetspec_1.pdf */
-static void acpi_create_hpet(acpi_hpet_t *hpet)
-{
-	acpi_header_t *header = &(hpet->header);
-	acpi_addr_t *addr = &(hpet->addr);
-
-	memset((void *)hpet, 0, sizeof(acpi_hpet_t));
-
-	if (acpi_fill_header(header, "HPET", HPET, sizeof(acpi_hpet_t)) != CB_SUCCESS)
-		return;
-
-	/* Fill out HPET address. */
-	addr->space_id = ACPI_ADDRESS_SPACE_MEMORY;
-	addr->bit_width = 64;
-	addr->bit_offset = 0;
-	addr->addrl = HPET_BASE_ADDRESS & 0xffffffff;
-	addr->addrh = ((unsigned long long)HPET_BASE_ADDRESS) >> 32;
-
-	hpet->id = read32p(HPET_BASE_ADDRESS);
-	hpet->number = 0;
-	hpet->min_tick = CONFIG_HPET_MIN_TICKS;
-
-	header->checksum = acpi_checksum((void *)hpet, sizeof(acpi_hpet_t));
 }
 
 /*
@@ -1220,25 +788,6 @@ void acpi_create_crat(struct acpi_crat_header *crat,
 	/* (Re)calculate length and checksum. */
 	header->length = current - (unsigned long)crat;
 	header->checksum = acpi_checksum((void *)crat, header->length);
-}
-
-unsigned long acpi_write_hpet(const struct device *device, unsigned long current,
-	acpi_rsdp_t *rsdp)
-{
-	acpi_hpet_t *hpet;
-
-	/*
-	 * We explicitly add these tables later on:
-	 */
-	printk(BIOS_DEBUG, "ACPI:    * HPET\n");
-
-	hpet = (acpi_hpet_t *)current;
-	current += sizeof(acpi_hpet_t);
-	current = ALIGN_UP(current, 16);
-	acpi_create_hpet(hpet);
-	acpi_add_table(rsdp, hpet);
-
-	return current;
 }
 
 static void acpi_create_dbg2(acpi_dbg2_header_t *dbg2,

@@ -83,7 +83,7 @@ chip soc/intel/meteorlake
 		device pci 13.0 alias ioe_p2sb hidden end
 		device pci 13.1 alias ieh2 off end
 		device pci 13.2 alias pmc2 hidden end
-		device pci 13.3 alias shared_sram2 off end
+		device pci 13.3 alias ioe_shared_sram off end
 		device pci 14.0 alias xhci off
 			chip drivers/usb/acpi
 				register "type" = "UPC_TYPE_HUB"
@@ -128,7 +128,7 @@ chip soc/intel/meteorlake
 			end
 		end
 		device pci 14.1 alias usb_otg off end
-		device pci 14.2 alias shared_sram off end
+		device pci 14.2 alias pmc_shared_sram off end
 		device pci 14.3 alias cnvi_wifi off end
 		device pci 14.5 alias ieh off end
 		device pci 15.0 alias i2c0 off end

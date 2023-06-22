@@ -48,8 +48,8 @@ static unsigned long ivhd_describe_hpet(unsigned long current, uint8_t hndl, uin
 	return current;
 }
 
-static unsigned long ivhd_describe_f0_device(unsigned long current,
-						uint16_t dev_id, uint8_t datasetting)
+static unsigned long ivhd_describe_f0_device(unsigned long current, uint16_t dev_id,
+					     const char acpi_hid[8], uint8_t datasetting)
 {
 	ivrs_ivhd_f0_entry_t *ivhd_f0 = (ivrs_ivhd_f0_entry_t *)current;
 	memset(ivhd_f0, 0, sizeof(*ivhd_f0));
@@ -57,14 +57,8 @@ static unsigned long ivhd_describe_f0_device(unsigned long current,
 	ivhd_f0->type = IVHD_DEV_VARIABLE;
 	ivhd_f0->dev_id = dev_id;
 	ivhd_f0->dte_setting = datasetting;
-	ivhd_f0->hardware_id[0] = 'A';
-	ivhd_f0->hardware_id[1] = 'M';
-	ivhd_f0->hardware_id[2] = 'D';
-	ivhd_f0->hardware_id[3] = 'I';
-	ivhd_f0->hardware_id[4] = '0';
-	ivhd_f0->hardware_id[5] = '0';
-	ivhd_f0->hardware_id[6] = '4';
-	ivhd_f0->hardware_id[7] = '0';
+
+	memcpy(ivhd_f0->hardware_id, acpi_hid, sizeof(ivhd_f0->hardware_id));
 
 	current += sizeof(ivrs_ivhd_f0_entry_t);
 	return current;
@@ -246,6 +240,7 @@ static unsigned long acpi_fill_ivrs40(unsigned long current, acpi_ivrs_ivhd_t *i
 			 * reference code uses. Maybe to have a unique PCI device to put into
 			 * the field that doesn't collide with any existing device? */
 			current = ivhd_describe_f0_device(current, PCI_DEVFN(0x13, 1),
+						"AMDI0040",
 						IVHD_DTE_LINT_1_PASS | IVHD_DTE_LINT_0_PASS |
 						IVHD_DTE_SYS_MGT_TRANS   | IVHD_DTE_NMI_PASS |
 						IVHD_DTE_EXT_INT_PASS | IVHD_DTE_INIT_PASS);

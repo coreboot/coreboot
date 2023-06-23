@@ -41,7 +41,7 @@ chip soc/intel/meteorlake
 
 	register "sagv" = "SAGV_ENABLED"
 
-	register "sagv_freq_mhz[0]" = "2133"
+	register "sagv_freq_mhz[0]" = "3200"
 	register "sagv_gear[0]" = "4"
 
 	register "sagv_freq_mhz[1]" = "6000"

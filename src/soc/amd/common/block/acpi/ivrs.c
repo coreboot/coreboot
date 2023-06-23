@@ -200,11 +200,10 @@ static unsigned long acpi_ivhd_misc(unsigned long current, struct device *dev)
 static unsigned long acpi_fill_ivrs40(unsigned long current, acpi_ivrs_ivhd_t *ivhd,
 				       struct device *nb_dev, struct device *iommu_dev)
 {
-	acpi_ivrs_ivhd40_t *ivhd_40;
+	acpi_ivrs_ivhd40_t *ivhd_40 = (acpi_ivrs_ivhd40_t *)current;
 	unsigned long current_backup;
 
-	memset((void *)current, 0, sizeof(acpi_ivrs_ivhd40_t));
-	ivhd_40 = (acpi_ivrs_ivhd40_t *)current;
+	memset(ivhd_40, 0, sizeof(acpi_ivrs_ivhd40_t));
 
 	/* Enable EFR */
 	ivhd_40->type = IVHD_BLOCK_TYPE_FULL__ACPI_HID;
@@ -253,7 +252,7 @@ static unsigned long acpi_fill_ivrs40(unsigned long current, acpi_ivrs_ivhd_t *i
 static unsigned long acpi_fill_ivrs11(unsigned long current, acpi_ivrs_ivhd_t *ivhd,
 				       struct device *nb_dev, struct device *iommu_dev)
 {
-	acpi_ivrs_ivhd11_t *ivhd_11;
+	acpi_ivrs_ivhd11_t *ivhd_11 = (acpi_ivrs_ivhd11_t *)current;
 	ivhd11_iommu_attr_t *ivhd11_attr_ptr;
 	unsigned long current_backup;
 
@@ -261,8 +260,7 @@ static unsigned long acpi_fill_ivrs11(unsigned long current, acpi_ivrs_ivhd_t *i
 	 * In order to utilize all features, firmware should expose type 11h
 	 * IVHD which supersedes the type 10h.
 	 */
-	memset((void *)current, 0, sizeof(acpi_ivrs_ivhd11_t));
-	ivhd_11 = (acpi_ivrs_ivhd11_t *)current;
+	memset(ivhd_11, 0, sizeof(acpi_ivrs_ivhd11_t));
 
 	/* Enable EFR */
 	ivhd_11->type = IVHD_BLOCK_TYPE_FULL__FIXED;

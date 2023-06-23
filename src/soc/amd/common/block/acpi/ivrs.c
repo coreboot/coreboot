@@ -203,7 +203,7 @@ static unsigned long acpi_fill_ivrs40(unsigned long current, acpi_ivrs_ivhd_t *i
 	acpi_ivrs_ivhd40_t *ivhd_40 = (acpi_ivrs_ivhd40_t *)current;
 	unsigned long current_backup;
 
-	memset(ivhd_40, 0, sizeof(acpi_ivrs_ivhd40_t));
+	memset(ivhd_40, 0, sizeof(*ivhd_40));
 
 	/* Enable EFR */
 	ivhd_40->type = IVHD_BLOCK_TYPE_FULL__ACPI_HID;
@@ -260,7 +260,7 @@ static unsigned long acpi_fill_ivrs11(unsigned long current, acpi_ivrs_ivhd_t *i
 	 * In order to utilize all features, firmware should expose type 11h
 	 * IVHD which supersedes the type 10h.
 	 */
-	memset(ivhd_11, 0, sizeof(acpi_ivrs_ivhd11_t));
+	memset(ivhd_11, 0, sizeof(*ivhd_11));
 
 	/* Enable EFR */
 	ivhd_11->type = IVHD_BLOCK_TYPE_FULL__FIXED;

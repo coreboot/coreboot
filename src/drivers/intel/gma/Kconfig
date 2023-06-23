@@ -63,6 +63,39 @@ config VBT_DATA_SIZE_KB
 	int
 	default 8
 
+config VBT_CBFS_COMPRESSION_DEFAULT_LZ4
+	def_bool n
+	help
+	  Set LZ4 VBT compression.
+
+config VBT_CBFS_COMPRESSION_DEFAULT_NONE
+	def_bool n
+	help
+	  Disable VBT compression.
+
+choice
+	prompt "VBT Compression algorithm"
+	default VBT_CBFS_COMPRESSION_LZ4 if VBT_CBFS_COMPRESSION_DEFAULT_LZ4
+	default VBT_CBFS_COMPRESSION_NONE if VBT_CBFS_COMPRESSION_DEFAULT_NONE
+	default VBT_CBFS_COMPRESSION_LZMA
+
+config VBT_CBFS_COMPRESSION_LZMA
+	bool "Compress VBT with LZMA algorithm"
+
+config VBT_CBFS_COMPRESSION_LZ4
+	bool "Compress VBT with LZ4 algorithm"
+
+config VBT_CBFS_COMPRESSION_NONE
+	bool "Do not compress VBT"
+
+endchoice
+
+config VBT_CBFS_COMPRESSION_ALGORITHM
+	string
+	default "lzma" if VBT_CBFS_COMPRESSION_LZMA
+	default "lz4" if VBT_CBFS_COMPRESSION_LZ4
+	default "none" if VBT_CBFS_COMPRESSION_NONE
+
 config GFX_GMA_ANALOG_I2C_HDMI_B
 	bool
 

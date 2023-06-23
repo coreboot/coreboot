@@ -15,7 +15,7 @@ add_vbt_to_cbfs= \
 	$(eval cbfs-files-y += $1) \
 	$(eval $1-file := $2) \
 	$(eval $1-type := raw) \
-	$(eval $1-compression := lzma)
+	$(eval $1-compression := $(call strip_quotes,$(CONFIG_VBT_CBFS_COMPRESSION_ALGORITHM)))
 endif
 
 $(call add_vbt_to_cbfs, vbt.bin, $(call strip_quotes,$(CONFIG_INTEL_GMA_VBT_FILE)))

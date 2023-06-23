@@ -69,6 +69,7 @@ static unsigned long ivhd_dev_range(unsigned long current, uint16_t start_devid,
 	/* 4-byte IVHD structures must be aligned to the 4-byte boundary. */
 	current = ALIGN_UP(current, 4);
 	ivrs_ivhd_generic_t *ivhd_range = (ivrs_ivhd_generic_t *)current;
+	memset(ivhd_range, 0, sizeof(*ivhd_range));
 
 	/* Create the start range IVHD entry */
 	ivhd_range->type = IVHD_DEV_4_BYTE_START_RANGE;
@@ -93,6 +94,7 @@ static unsigned long add_ivhd_dev_entry(struct device *parent, struct device *de
 		/* 4-byte IVHD structures must be aligned to the 4-byte boundary. */
 		*current = ALIGN_UP(*current, 4);
 		ivrs_ivhd_generic_t *ivhd_entry = (ivrs_ivhd_generic_t *)*current;
+		memset(ivhd_entry, 0, sizeof(*ivhd_entry));
 
 		ivhd_entry->type = type;
 		ivhd_entry->dev_id = dev->path.pci.devfn | (dev->bus->secondary << 8);
@@ -100,6 +102,7 @@ static unsigned long add_ivhd_dev_entry(struct device *parent, struct device *de
 		*current += sizeof(ivrs_ivhd_generic_t);
 	} else if (type == IVHD_DEV_8_BYTE_ALIAS_SELECT) {
 		ivrs_ivhd_alias_t *ivhd_entry = (ivrs_ivhd_alias_t *)*current;
+		memset(ivhd_entry, 0, sizeof(*ivhd_entry));
 
 		ivhd_entry->type = type;
 		ivhd_entry->dev_id = dev->path.pci.devfn | (dev->bus->secondary << 8);

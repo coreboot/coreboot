@@ -31,7 +31,8 @@ void variant_update_soc_chip_config(struct soc_intel_meteorlake_config *config)
 	config->cnvi_bt_audio_offload = fw_config_probe(FW_CONFIG(AUDIO,
 							MAX98360_ALC5682I_I2S));
 
-	if (fw_config_probe(FW_CONFIG(DB_USB, USB4_ANX7452)) ||
+	if (fw_config_probe(FW_CONFIG(DB_USB, USB4_KB8010)) ||
+	    fw_config_probe(FW_CONFIG(DB_USB, USB4_ANX7452)) ||
 	    fw_config_probe(FW_CONFIG(DB_USB, USB4_ANX7452_V2))) {
 		/*
 		 * Configure TCP2 for

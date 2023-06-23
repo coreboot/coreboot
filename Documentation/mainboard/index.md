@@ -214,6 +214,7 @@ The boards in this section are not real mainboards, but emulators.
 - [Galago Pro 4](system76/galp4.md)
 - [Galago Pro 5](system76/galp5.md)
 - [Galago Pro 6](system76/galp6.md)
+- [Galago Pro 7](system76/galp7.md)
 - [Gazelle 15](system76/gaze15.md)
 - [Gazelle 16](system76/gaze16.md)
 - [Gazelle 17](system76/gaze17.md)

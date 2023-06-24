@@ -17,11 +17,12 @@ FROM debian:sid AS coreboot-sdk
 RUN \
 	useradd -p locked -m coreboot && \
 	apt-get -qq update && \
-	apt-get -qqy install \
+	apt-get -qqy install --no-install-recommends \
 		bc \
 		bison \
 		bsdextrautils \
 		bzip2 \
+		ca-certificates \
 		ccache \
 		cmake \
 		cscope \
@@ -40,6 +41,7 @@ RUN \
 		graphicsmagick-imagemagick-compat \
 		graphviz \
 		lcov \
+		less \
 		libcrypto++-dev \
 		libcurl4 \
 		libcurl4-openssl-dev \
@@ -62,6 +64,8 @@ RUN \
 		make \
 		msitools \
 		nasm \
+		neovim \
+		openssh-client \
 		openssl \
 		parted \
 		patch \

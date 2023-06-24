@@ -95,19 +95,10 @@ struct sysinfo {
 	u16 mediumphase;
 	u16 readptrdelay;
 
-	int		txt_enabled;
-	int		cores;
 	int		boot_path;
-	int		max_ddr2_mhz;
-	int		max_ddr3_mt;
-	int		max_fsb_mhz;
-	int		max_render_mhz;
-	int		enable_igd;
-	int		enable_peg;
 	u16		ggc;
 
 	int		dimm_config[2];
-	int		dimms_per_ch;
 	int		spd_type;
 	int		channel_capacity[2];
 	struct timings	selected_timings;
@@ -117,7 +108,6 @@ struct sysinfo {
 	u8 nodll;
 	u8 async;
 	u8 dt0mode;
-	u8 mvco4x;		/* 0 (8x) or 1 (4x) */
 };
 
 void sdram_initialize(int boot_path, const u8 *sdram_addresses);

@@ -35,7 +35,7 @@ RUN \
 		gawk \
 		gcc \
 		git \
-		gnat-12 \
+		gnat \
 		golang \
 		graphicsmagick-imagemagick-compat \
 		graphviz \

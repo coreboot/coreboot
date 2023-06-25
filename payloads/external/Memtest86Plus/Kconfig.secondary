@@ -11,8 +11,8 @@ config MEMTEST_STABLE
 	  Stable Memtest86+ version.
 
 	  For reproducible builds, this option must be selected.
-config MEMTEST_MASTER
-	bool "Master"
+config MEMTEST_MAIN
+	bool "Main"
 	help
 	  Newest Memtest86+ version.
 
@@ -35,7 +35,7 @@ endchoice
 config MEMTEST_REVISION_ID
 	string "Insert a commit's SHA-1 or a branch name"
 	depends on MEMTEST_REVISION
-	default "origin/master"
+	default "origin/main"
 	help
 	   The commit's SHA-1 or branch name of the revision to use.
 

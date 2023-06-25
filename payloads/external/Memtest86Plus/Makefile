@@ -1,7 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-TAG-$(CONFIG_MEMTEST_MASTER)=origin/master
-NAME-$(CONFIG_MEMTEST_MASTER)=Master
+TAG-$(CONFIG_MEMTEST_MAIN)=origin/main
+NAME-$(CONFIG_MEMTEST_MAIN)=Main
 TAG-$(CONFIG_MEMTEST_STABLE)=0bd34c22604660e4283316331f3e7bf8a3863753
 NAME-$(CONFIG_MEMTEST_STABLE)=Stable
 TAG-$(CONFIG_MEMTEST_REVISION)=$(CONFIG_MEMTEST_REVISION_ID)
@@ -26,14 +26,14 @@ endif
 	false
 endif
 	-cd $(project_dir); git show $(TAG-y) >/dev/null 2>&1 ; \
-		if [ $$? -ne 0 ] || [ "$(TAG-y)" = "origin/master" ]; then \
+		if [ $$? -ne 0 ] || [ "$(TAG-y)" = "origin/main" ]; then \
 		echo "    Fetching new commits from the $(project_name) git repo"; \
 		git fetch; fi
 
 checkout: fetch
 	echo "    Checking out $(project_name) revision $(NAME-y) ($(TAG-y))"
 	cd $(project_dir); \
-		git checkout master; \
+		git checkout main; \
 		git branch -D coreboot 2>/dev/null; \
 		git checkout -b coreboot $(TAG-y)
 

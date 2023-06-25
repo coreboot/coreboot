@@ -57,7 +57,6 @@ RUN \
 		libreadline-dev \
 		libssl-dev \
 		libusb-1.0-0-dev \
-		libusb-dev \
 		libxml2-dev \
 		libyaml-dev \
 		m4 \

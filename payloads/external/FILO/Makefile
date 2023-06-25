@@ -1,5 +1,5 @@
-TAG-$(CONFIG_FILO_MASTER)=origin/master
-NAME-$(CONFIG_FILO_MASTER)=MASTER
+TAG-$(CONFIG_FILO_HEAD)=origin/main
+NAME-$(CONFIG_FILO_HEAD)=MAIN
 TAG-$(CONFIG_FILO_STABLE)=c2fa1ea6125c63e84cdf7779c37d76da8c5bc412
 NAME-$(CONFIG_FILO_STABLE)=STABLE
 
@@ -20,7 +20,7 @@ checkout:
 	test -d filo || \
 		git clone $(project_git_repo) $(project_dir)
 	cd filo && \
-		git checkout master && \
+		git checkout main && \
 		git remote update && \
 		test -n $(TAG-y) && \
 			git branch -f $(NAME-y) $(TAG-y) && \

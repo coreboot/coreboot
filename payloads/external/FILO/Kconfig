@@ -9,7 +9,7 @@ config FILO_STABLE
 	help
 	  Tested FILO version
 
-config FILO_MASTER
+config FILO_HEAD
 	bool "HEAD"
 	help
 	  Newest FILO version

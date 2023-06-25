@@ -360,7 +360,7 @@ config ECFW_PTR_SIZE
 	   Size of reserved space for EC firmware pointer
 
 config DUMP_SMBIOS_TYPE17
-	bool "Dump part of SMBIOS type17 dimm information."
+	bool "Dump part of SMBIOS type17 dimm information"
 	depends on GENERATE_SMBIOS_TABLES
 
 endif

@@ -75,7 +75,6 @@ RUN \
 		qemu-system-x86 \
 		rsync \
 		shellcheck \
-		subversion \
 		unifont \
 		uuid-dev \
 		vim-common \

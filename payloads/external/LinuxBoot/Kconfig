@@ -19,6 +19,13 @@ config LINUXBOOT_X86
 	help
 	  X86 kernel and initramfs
 
+config LINUXBOOT_ARM
+	bool "arm64"
+	depends on ARCH_ARM
+	select PAYLOAD_FIT_SUPPORT
+	help
+	  arm kernel and initramfs
+
 config LINUXBOOT_ARM64
 	bool "arm64"
 	depends on ARCH_ARM64
@@ -26,9 +33,16 @@ config LINUXBOOT_ARM64
 	help
 	  AARCH64 kernel and initramfs
 
-config LINUXBOOT_RISCV
+config LINUXBOOT_RISCV_RV32
 	bool "RISC-V"
-	depends on ARCH_RISCV
+	depends on ARCH_RISCV_RV32
+	select PAYLOAD_FIT_SUPPORT
+	help
+	  RISC-V kernel and initramfs
+
+config LINUXBOOT_RISCV_RV64
+	bool "RISC-V"
+	depends on ARCH_RISCV_RV64
 	select PAYLOAD_FIT_SUPPORT
 	help
 	  RISC-V kernel and initramfs
@@ -41,76 +55,38 @@ config LINUXBOOT_COMPILE_KERNEL
 	bool "Compile kernel"
 	default n
 
-if LINUXBOOT_COMPILE_KERNEL
-comment "parse linux crosscompiler with: LINUXBOOT_CROSS_COMPILE"
-endif
-
 config LINUXBOOT_KERNEL_PATH
 	string "Path to kernel"
-	default "Image"
-	depends on !LINUXBOOT_COMPILE_KERNEL
+	default "build/uImage" if LINUXBOOT_KERNEL_UIMAGE
+	default "build/bzImage" if LINUXBOOT_KERNEL_BZIMAGE
+	help
+	  The kernel path is either and absolute path or relative to the
+	  LinuxBoot directory
 
 if LINUXBOOT_COMPILE_KERNEL
 
-choice
-	prompt "Kernel release"
-	default LINUXBOOT_KERNEL_STABLE
+config LINUXBOOT_CROSS_COMPILE
+	string "cross compiler"
+	default "" # e.g. "aarch64-linux-gnu-"
 	help
-	  Choose the kernel release.
+	  Choose a custom cross compiler toolchain to use.
+	  It can be useful if you don't want to use the coreboot toolchain
+	  or experience problems using it.
 
-	  Select 'custom' if your want to define the kernel version.
-	  For more information about the current 'mainline', 'stable' or 'longterm'
-	  version, visit: https://www.kernel.org/
-
-config LINUXBOOT_KERNEL_MAINLINE
-	bool "mainline"
-	help
-	  Mainline kernel version
-
-config LINUXBOOT_KERNEL_STABLE
-	bool "stable"
-	help
-	  Stable kernel version
-
-config LINUXBOOT_KERNEL_LONGTERM
-	bool "longterm"
-	help
-	  Longterm (LTS) kernel version
-
-config LINUXBOOT_KERNEL_CUSTOM
-	bool "custom"
-	help
-	  Custom kernel version
-
-endchoice
-
-config LINUXBOOT_KERNEL_CUSTOM_VERSION
+config LINUXBOOT_KERNEL_VERSION
 	string "kernel version"
-	default ""
-	depends on LINUXBOOT_KERNEL_CUSTOM
+	default "6.3"
 	help
 	  Choose the Linux kernel version number. (x.x.x)
 	  Release candidate kernels (rc) are currently are not supported.
 
-choice
-	prompt "Kernel configuration"
-	default LINUXBOOT_KERNEL_ARCH_DEFAULT_CONFIG
-
-config LINUXBOOT_KERNEL_ARCH_DEFAULT_CONFIG
-	bool "Default architecture configuration"
-	help
-	  This option will use the default configuration for the
-	  selected architecture.
-
-config LINUXBOOT_KERNEL_CUSTOM_CONFIG
-	bool "Custom (def)config file"
-
-endchoice
-
 config LINUXBOOT_KERNEL_CONFIGFILE
 	string "Config file path"
-	default "defconfig"
-	depends on LINUXBOOT_KERNEL_CUSTOM_CONFIG
+	default "i386/defconfig"     if LINUXBOOT_X86
+	default "x86_64/defconfig"   if LINUXBOOT_X86_64
+	default "arm64/defconfig"    if LINUXBOOT_ARM64
+	default "riscv/defconfig-32" if LINUXBOOT_RISCV_RV32
+	default "riscv/defconfig-64" if LINUXBOOT_RISCV_RV64
 	help
 	  Path to the kernel configuration file.
 
@@ -119,7 +95,7 @@ config LINUXBOOT_KERNEL_CONFIGFILE
 choice
 	prompt "Kernel binary format"
 	default LINUXBOOT_KERNEL_BZIMAGE if LINUXBOOT_X86 || LINUXBOOT_X86_64
-	default LINUXBOOT_KERNEL_UIMAGE if LINUXBOOT_ARM64 || LINUXBOOT_RISCV
+	default LINUXBOOT_KERNEL_UIMAGE if LINUXBOOT_ARM64 || LINUXBOOT_RISCV_RV32 || LINUXBOOT_RISCV_RV64
 
 config LINUXBOOT_KERNEL_BZIMAGE
 	bool "bzImage"
@@ -127,14 +103,14 @@ config LINUXBOOT_KERNEL_BZIMAGE
 
 config LINUXBOOT_KERNEL_UIMAGE
 	bool "uImage"
-	depends on LINUXBOOT_ARM64 || LINUXBOOT_RISCV
+	depends on LINUXBOOT_ARM64 || LINUXBOOT_RISCV_RV32 || LINUXBOOT_RISCV_RV64
 
 endchoice
 
-config LINUXBOOT_DTB_FILE
+config LINUXBOOT_DTS_FILE
 	string "Compiled devicetree file"
-	depends on LINUXBOOT_ARM64 || LINUXBOOT_RISCV
-	default ""
+	depends on LINUXBOOT_ARM64 || LINUXBOOT_RISCV_RV32 || LINUXBOOT_RISCV_RV64
+	default "empty.dts"
 
 endif #LINUXBOOT_COMPILE_KERNEL
 
@@ -145,9 +121,7 @@ config LINUX_COMMAND_LINE
 	  Add your own kernel command-line arguments.
 
 config PAYLOAD_FILE
-	default "payloads/external/LinuxBoot/linuxboot/bzImage" if LINUXBOOT_COMPILE_KERNEL && ( LINUXBOOT_X86 || LINUXBOOT_X86_64 )
-	default "payloads/external/LinuxBoot/linuxboot/uImage" if LINUXBOOT_COMPILE_KERNEL && (LINUXBOOT_ARM64 || LINUXBOOT_RISCV)
-	default LINUXBOOT_KERNEL_PATH if !LINUXBOOT_COMPILE_KERNEL
+	default "payloads/external/LinuxBoot/build/Image"
 
 comment "Linux initramfs"
 
@@ -157,16 +131,17 @@ config LINUXBOOT_BUILD_INITRAMFS
 
 config LINUXBOOT_INITRAMFS_PATH
 	string "Path to initramfs"
-	depends on !LINUXBOOT_BUILD_INITRAMFS
+	default "build/initramfs_u-root.cpio" if LINUXBOOT_UROOT
 
 if LINUXBOOT_BUILD_INITRAMFS
 
 choice
-	prompt "Payload Mode"
+	prompt "Initramfs"
 	default LINUXBOOT_UROOT
 
 config LINUXBOOT_UROOT
 	bool "u-root"
+	depends on !LINUXBOOT_RISCV_RV32 # not supported by u-root
 	help
 	  Enable u-root linuxboot mode.
 	  See http://u-root.tk/ for more information.
@@ -344,11 +319,6 @@ config LINUXBOOT_INITRAMFS_COMPRESSION_XZ
 	bool "xz compression"
 
 endchoice
-
-config LINUX_INITRD
-	string
-	default "payloads/external/LinuxBoot/linuxboot/initramfs_u-root.cpio" if LINUXBOOT_UROOT
-	default LINUXBOOT_INITRAMFS_PATH if !LINUXBOOT_BUILD_INITRAMFS
 
 config LINUXBOOT_INITRAMFS_SUFFIX
 	string

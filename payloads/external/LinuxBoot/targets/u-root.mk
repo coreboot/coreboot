@@ -1,29 +1,26 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-project_dir=$(shell pwd)/linuxboot
-go_path_dir=$(project_dir)/go
-uroot_bin=$(project_dir)/u-root
-uroot_package=github.com/u-root/u-root
+uroot_package = github.com/u-root/u-root
+uroot_build = build/go/src/$(uroot_package)
 
-ARCH-$(CONFIG_LIBUXBOOT_X86_64)=amd64
-ARCH-$(CONFIG_LINUXBOOT_X86)=i386
-ARCH-$(CONFIG_LINUXBOOT_ARM64)=arm64
+UROOT_ARCH-$(CONFIG_LIBUXBOOT_X86_64)      = amd64
+UROOT_ARCH-$(CONFIG_LINUXBOOT_X86)         = 386
+UROOT_ARCH-$(CONFIG_LINUXBOOT_ARM64)       = arm64
+UROOT_ARCH-$(CONFIG_LINUXBOOT_RISCV_RV64)  = riscv64
 
-go_version=$(shell go version | sed -nr 's/.*go([0-9]+\.[0-9]+.?[0-9]?).*/\1/p' )
-go_version_major=$(shell echo $(go_version) |  sed -nr 's/^([0-9]+)\.([0-9]+)\.?([0-9]*)$$/\1/p')
-go_version_minor=$(shell echo $(go_version) |  sed -nr 's/^([0-9]+)\.([0-9]+)\.?([0-9]*)$$/\2/p')
+go_version = $(shell go version | sed -nr 's/.*go([0-9]+\.[0-9]+.?[0-9]?).*/\1/p' )
+go_version_major = $(shell echo $(go_version) |  sed -nr 's/^([0-9]+)\.([0-9]+)\.?([0-9]*)$$/\1/p')
+go_version_minor = $(shell echo $(go_version) |  sed -nr 's/^([0-9]+)\.([0-9]+)\.?([0-9]*)$$/\2/p')
 
-uroot_args+=-build=$(CONFIG_LINUXBOOT_UROOT_FORMAT)
-uroot_args+=-initcmd $(CONFIG_LINUXBOOT_UROOT_INITCMD)
-uroot_args+=-uinitcmd=$(CONFIG_LINUXBOOT_UROOT_UINITCMD)
-uroot_args+=-defaultsh $(CONFIG_LINUXBOOT_UROOT_SHELL)
+uroot_args += -build=$(CONFIG_LINUXBOOT_UROOT_FORMAT)
+uroot_args += -initcmd $(CONFIG_LINUXBOOT_UROOT_INITCMD)
+uroot_args += -uinitcmd=$(CONFIG_LINUXBOOT_UROOT_UINITCMD)
+uroot_args += -defaultsh $(CONFIG_LINUXBOOT_UROOT_SHELL)
 ifneq (CONFIG_LINUXBOOT_UROOT_FILES,)
-uroot_args+=$(foreach file,$(CONFIG_LINUXBOOT_UROOT_FILES),-files $(PWD)/$(file))
+uroot_args += $(foreach file,$(CONFIG_LINUXBOOT_UROOT_FILES),-files $(PWD)/$(file))
 endif
 
-uroot_cmds=$(CONFIG_LINUXBOOT_UROOT_COMMANDS)
-
-all: u-root
+uroot_cmds = $(CONFIG_LINUXBOOT_UROOT_COMMANDS)
 
 version:
 ifeq ("$(go_version)","")
@@ -38,27 +35,16 @@ ifeq ($(shell if [ $(go_version_minor) -lt 9 ]; then echo y; fi),y)
 endif
 endif
 
-get: version
-	if [ -d "$(go_path_dir)/src/$(uroot_package)" ]; then \
-	git -C $(go_path_dir)/src/$(uroot_package) checkout --quiet main; \
-	git -C $(go_path_dir)/src/$(uroot_package) pull || \
-	echo -e "\n<<Pulling u-root package from GitHub failed>>\n"; \
-	else \
-	git clone https://${uroot_package} ${go_path_dir}/src/${uroot_package} || \
-	(echo -e "\n<<Failed to clone u-root package. Please check your internet access>>\n" && \
-	exit 1); \
-	fi
+$(uroot_build):
+	git clone https://$(uroot_package) $(uroot_build)
+	git -C $(uroot_build) checkout --quiet $(CONFIG_LINUXBOOT_UROOT_VERSION)
 
-checkout: get
-	git -C $(go_path_dir)/src/$(uroot_package) checkout --quiet $(CONFIG_LINUXBOOT_UROOT_VERSION)
+$(uroot_build)/u-root: $(uroot_build)
+	cd $(uroot_build); \
+	go build -o u-root .
 
-build: checkout
-	cd ${go_path_dir}/src/${uroot_package}; \
-	go build -o ${uroot_bin} .
-
-u-root: build
-	GOARCH=$(ARCH-y) $(uroot_bin) \
-	-uroot-source ${go_path_dir}/src/${uroot_package} \
-	$(uroot_args) -o $(project_dir)/initramfs_u-root.cpio $(uroot_cmds)
-
-.PHONY: all u-root build checkout get version
+#$(CONFIG_LINUXBOOT_INITRAMFS_PATH)
+build/initramfs_u-root.cpio: $(uroot_build)/u-root
+	GOARCH=$(UROOT_ARCH-y) $(uroot_build)/u-root \
+	-uroot-source $(uroot_build) \
+	$(uroot_args) -o build/initramfs_u-root.cpio $(uroot_cmds)

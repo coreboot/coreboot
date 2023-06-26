@@ -1,62 +1,51 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-project_dir=linuxboot
-
 unexport $(COREBOOT_EXPORTS)
 
-all: linuxboot
+DTC ?= dtc
 
-u-root:
-	$(MAKE) -f targets/u-root.mk
+LINUX_ARCH-$(CONFIG_LINUXBOOT_X86_64)     = x86_64
+LINUX_ARCH-$(CONFIG_LINUXBOOT_X86)        = i386
+LINUX_ARCH-$(CONFIG_LINUXBOOT_ARM64)      = arm64
+LINUX_ARCH-$(CONFIG_LINUXBOOT_RISCV_RV32) = riscv
+LINUX_ARCH-$(CONFIG_LINUXBOOT_RISCV_RV64) = riscv
 
-ifeq ($(CONFIG_LINUXBOOT_BUILD_INITRAMFS),y)
-ifeq ($(CONFIG_LINUXBOOT_UROOT),y)
-initramfs: u-root
-endif
-else
-ifneq ($(CONFIG_LINUXBOOT_INITRAMFS),)
-initramfs:
-	if [[ ! -f "$(top)/$(CONFIG_LINUXBOOT_INITRAMFS)" ]]; then \
-	echo "<< Linux initramfs '$(CONFIG_LINUXBOOT_INITRAMFS)' is missing. >>"; \
-	exit 1; \
-	fi
-endif
-endif
+build/Image: $(CONFIG_LINUXBOOT_KERNEL_PATH)
+	ln -s -r $< $@
 
-initramfs_compressed: initramfs
+include targets/linux.mk targets/u-root.mk
+
+build/initramfs: $(CONFIG_LINUXBOOT_INITRAMFS_PATH)
 ifeq ($(CONFIG_LINUXBOOT_INITRAMFS_COMPRESSION_XZ),y)
-	xz --keep --force --check=crc32 --lzma2=dict=1MiB $(top)/$(CONFIG_LINUXBOOT_INITRAMFS)
+	xz --keep --force --check=crc32 --lzma2=dict=1MiB $(CONFIG_LINUXBOOT_INITRAMFS_PATH)
 endif
+	cp $(CONFIG_LINUXBOOT_INITRAMFS_PATH)$(CONFIG_LINUXBOOT_INITRAMFS_SUFFIX) $@
 
-ifeq ($(CONFIG_LINUXBOOT_COMPILE_KERNEL),y)
-ifeq ($(CONFIG_LINUXBOOT_ARCH),arm64)
-kernel: initramfs
-	if [[ ! -f "$(top)/$(CONFIG_LINUXBOOT_DTB_FILE)" ]]; then \
-	echo "<< Linux kernel devicetree is missing. >>"; \
-	exit 1; \
-	fi
-	$(MAKE) -f targets/linux.mk
-else
-kernel:
-	$(MAKE) -f targets/linux.mk
-endif
-else
-kernel:
-	if [[ ! -f "$(top)/$(CONFIG_LINUXBOOT_KERNEL)" ]]; then \
-	echo "<< Linux kernel '$(CONFIG_LINUXBOOT_KERNEL)' is missing. >>"; \
-	exit 1; \
-	fi
-endif
+ifeq ($(CONFIG_LINUXBOOT_KERNEL_BZIMAGE),y)
 
-linuxboot: kernel initramfs_compressed
+build/bzImage: $(kernel_dir)/arch/x86/boot/bzImage | build
+	cp $< $@
+
+else ifeq ($(CONFIG_LINUXBOOT_KERNEL_UIMAGE),y)
+
+build/target.dtb: $(CONFIG_LINUXBOOT_DTS_FILE)
+	$(DTC) -o $@ $<
+
+build/uImage: build/vmlinux.bin.lzma build/initramfs build/target.dtb $(LINUX_ARCH-y)/kernel_fdt_lzma.its | build
+	mkimage -f $(LINUX_ARCH-y)/kernel_fdt_lzma.its $@
+
+endif # CONFIG_LINUXBOOT_KERNEL_BZIMAGE
+
+build:
+	mkdir build
 
 clean:
-	rm -rf $(project_dir)/kernel*
-	rm -f $(project_dir)/u-root
-	rm -f $(project_dir)/initramfs*
-	rm -f $(project_dir)/bzImage
+	rm -rf build/kernel*
+	rm -f  build/u-root
+	rm -f  build/initramfs*
+	rm -f  build/bzImage
 
 distclean:
-	rm -rf $(project_dir)
+	rm -rf build
 
-.PHONY: linuxboot kernel initramfs_compressed initramfs u-root clean distclean
+.PHONY: linuxboot clean distclean

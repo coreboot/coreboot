@@ -13,7 +13,7 @@
 			description = "Vanilla Linux kernel";
 			data = /incbin/("../build/vmlinux.bin.lzma");
 			type = "kernel";
-			arch = "arm64";
+			arch = "riscv64";
 			os = "linux";
 			compression = "lzma";
 			load = <0x80000>;
@@ -32,7 +32,7 @@
 			description = "Flattened Device Tree blob";
 			data = /incbin/("../build/target.dtb");
 			type = "flat_dt";
-			arch = "arm64";
+			arch = "riscv64";
 			compression = "none";
 			hash-1 {
 				algo = "crc32";
@@ -48,7 +48,7 @@
 			description = "Compressed Initramfs";
 			data = /incbin/("../build/initramfs");
 			type = "ramdisk";
-			arch = "arm64";
+			arch = "riscv64";
 			os = "linux";
 			compression = "none";
 			load = <00000000>;
@@ -65,7 +65,6 @@
 	configurations {
 		default = "conf-1";
 		conf-1 {
-			compatible = "linuxboot";
 			description = "Boot Linux kernel with FDT blob";
 			kernel = "kernel";
 			fdt = "fdt-1";

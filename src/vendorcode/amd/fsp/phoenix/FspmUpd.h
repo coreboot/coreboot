@@ -78,12 +78,7 @@ typedef struct __packed {
 	/** Offset 0x041F**/	uint8_t                     audio_io_ctl;
 	/** Offset 0x0420**/	uint8_t                     pdm_mic_selection;
 	/** Offset 0x0421**/	uint8_t                     hda_enable;
-	/** Offset 0x0422**/	uint8_t                     nbio_reserved[31];
-	/** Offset 0x0441**/	uint32_t                    emmc0_mode;
-	/** Offset 0x0445**/	uint16_t                    emmc0_init_khz_preset;
-	/** Offset 0x0447**/	uint8_t                     emmc0_sdr104_hs400_driver_strength;
-	/** Offset 0x0448**/	uint8_t                     emmc0_ddr50_driver_strength;
-	/** Offset 0x0449**/	uint8_t                     emmc0_sdr50_driver_strength;
+	/** Offset 0x0422**/	uint8_t                     nbio_reserved[40];
 	/** Offset 0x044A**/	uint8_t                     UnusedUpdSpace0[85];
 	/** Offset 0x049F**/	uint32_t                    gnb_ioapic_base;
 	/** Offset 0x04A3**/	uint8_t                     gnb_ioapic_id;
@@ -112,7 +107,7 @@ typedef struct __packed {
 
 #define IMAGE_REVISION_MAJOR_VERSION 0x01
 #define IMAGE_REVISION_MINOR_VERSION 0x00
-#define IMAGE_REVISION_REVISION 0x05
+#define IMAGE_REVISION_REVISION 0x06
 #define IMAGE_REVISION_BUILD_NUMBER 0x00
 
 #endif

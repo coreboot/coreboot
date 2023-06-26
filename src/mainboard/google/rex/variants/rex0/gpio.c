@@ -116,8 +116,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_C05, 1, PLTRST),
 	/* GPP_C06 : [] ==> SOC_TCHSCR_RPT_EN */
 	PAD_CFG_GPO(GPP_C06, 0, DEEP),
-	/* GPP_C07 : [] ==> SOC_TCHSCR_INT */
-	PAD_CFG_GPI_APIC(GPP_C07, NONE, PLTRST, LEVEL, NONE),
 	/* GPP_C08 : [] ==> SOCHOT_ODL */
 	PAD_CFG_NF(GPP_C08, NONE, DEEP, NF2),
 	/* GPP_C09 : net NC is not present in the given design */

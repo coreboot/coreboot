@@ -89,6 +89,16 @@ static const struct pad_config ish_enable_pads[] = {
 	PAD_CFG_NF(GPP_F22, NONE, DEEP, NF8),
 };
 
+static const struct pad_config touchscreen_i2c_int_pads[] = {
+	/* GPP_C07 : [] ==> SOC_TCHSCR_INT */
+	PAD_CFG_GPI_APIC(GPP_C07, NONE, PLTRST, LEVEL, NONE),
+};
+
+static const struct pad_config touchscreen_spi_int_pads[] = {
+	/* GPP_C07 : [] ==> SOC_TCHSCR_INT */
+	PAD_CFG_GPI_APIC(GPP_C07, NONE, PLTRST, EDGE_SINGLE, INVERT),
+};
+
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 {
 	if (!fw_config_is_provisioned()) {
@@ -120,5 +130,13 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	if (fw_config_probe(FW_CONFIG(ISH, ISH_ENABLE))) {
 		printk(BIOS_INFO, "Configure GPIOs for ISH.\n");
 		GPIO_PADBASED_OVERRIDE(padbased_table, ish_enable_pads);
+	}
+
+	if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_I2C))) {
+		printk(BIOS_INFO, "Configure Touchscreen Interrupt for I2C.\n");
+		GPIO_PADBASED_OVERRIDE(padbased_table, touchscreen_i2c_int_pads);
+	} else { /* SPI */
+		printk(BIOS_INFO, "Configure Touchscreen Interrupt for SPI.\n");
+		GPIO_PADBASED_OVERRIDE(padbased_table, touchscreen_spi_int_pads);
 	}
 }

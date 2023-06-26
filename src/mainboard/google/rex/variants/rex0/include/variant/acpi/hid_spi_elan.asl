@@ -39,7 +39,7 @@ Device(TCSC) {
 			0,			/* ResourceSourceIndex */
 			ResourceConsumer,	/* ResourceUsage */
 		)
-		Interrupt(ResourceConsumer, Level, ActiveLow, Shared)
+		Interrupt(ResourceConsumer, Edge, ActiveLow, Shared)
 		{
 			TOUCH_SCR_IRQ
 		}

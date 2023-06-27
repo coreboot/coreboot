@@ -14,8 +14,6 @@
 #include <baseboard/variants.h>
 #include <types.h>
 
-#define TX_DWORD3	0xa8c
-
 void variant_mainboard_final(void)
 {
 	struct device *dev = NULL;

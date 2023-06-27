@@ -23,6 +23,7 @@ enum device_path_type {
 	DEVICE_PATH_MMIO,
 	DEVICE_PATH_GPIO,
 	DEVICE_PATH_MDIO,
+	DEVICE_PATH_GICC_V3,
 
 	/*
 	 * When adding path types to this table, please also update the
@@ -48,6 +49,7 @@ enum device_path_type {
 		"DEVICE_PATH_MMIO",		\
 		"DEVICE_PATH_GPIO",		\
 		"DEVICE_PATH_MDIO",		\
+		"DEVICE_PATH_GICC_V3",		\
 }
 
 struct domain_path {
@@ -120,6 +122,12 @@ struct mdio_path {
 	unsigned int addr;
 };
 
+struct gicc_v3_path {
+	unsigned long long mpidr;
+	unsigned int vgic_mi;
+	unsigned int pi_gsiv;
+};
+
 struct device_path {
 	enum device_path_type type;
 	union {
@@ -138,6 +146,7 @@ struct device_path {
 		struct mmio_path	mmio;
 		struct gpio_path	gpio;
 		struct mdio_path	mdio;
+		struct gicc_v3_path	gicc_v3;
 	};
 };
 

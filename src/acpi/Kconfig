@@ -53,6 +53,10 @@ config ACPI_COMMON_MADT_LAPIC
 config ACPI_COMMON_MADT_IOAPIC
 	bool
 
+config ACPI_COMMON_MADT_GICC_V3
+	bool
+	depends on ARCH_ARM64
+
 config ACPI_NO_PCAT_8259
 	bool
 	help

@@ -1566,6 +1566,9 @@ unsigned long acpi_create_madt_one_lapic(unsigned long current, u32 cpu, u32 api
 
 unsigned long acpi_create_madt_lapic_nmis(unsigned long current);
 
+uintptr_t platform_get_gicd_base(void);
+uintptr_t platform_get_gicr_base(void);
+
 int acpi_create_srat_lapic(acpi_srat_lapic_t *lapic, u8 node, u8 apic);
 int acpi_create_srat_x2apic(acpi_srat_x2apic_t *x2apic, u32 node, u32 apic);
 int acpi_create_srat_mem(acpi_srat_mem_t *mem, u8 node, u32 basek, u32 sizek,

@@ -20,6 +20,7 @@ ramstage-y += pld.c
 ramstage-y += sata.c
 ramstage-y += soundwire.c
 ramstage-y += fadt_filler.c
+ramstage-$(CONFIG_ACPI_COMMON_MADT_GICC_V3) += acpi_gic.c
 
 all-y += acpi_pm.c
 smm-y += acpi_pm.c

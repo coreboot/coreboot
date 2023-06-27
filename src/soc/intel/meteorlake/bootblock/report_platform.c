@@ -20,6 +20,7 @@ static struct {
 	{ CPUID_METEORLAKE_A0_1, "MeteorLake A0" },
 	{ CPUID_METEORLAKE_A0_2, "MeteorLake A0" },
 	{ CPUID_METEORLAKE_B0,   "MeteorLake B0" },
+	{ CPUID_METEORLAKE_C0,   "MeteorLake C0" },
 };
 
 static struct {

@@ -53,6 +53,9 @@ chip soc/intel/jasperlake
 	register "DdiPortAHpd" = "1"
 	register "DdiPortADdc" = "1"
 
+	# Does not support external vnn power rail
+	register "disable_external_bypass_vr" = "1"
+
 	# USB Port Configuration
 	register "usb2_ports[0]" = "{
 		.enable = 1,

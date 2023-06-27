@@ -55,11 +55,11 @@ config MAINBOARD_VERSION
 	default "galp5" if BOARD_SYSTEM76_GALP5
 	default "lemp10" if BOARD_SYSTEM76_LEMP10
 
-config CBFS_SIZE
-	default 0xA00000
-
 config CONSOLE_POST
 	default y
+
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"
 
 config POST_DEVICE
 	default n

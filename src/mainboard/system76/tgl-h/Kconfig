@@ -57,11 +57,12 @@ config VARIANT_DIR
 config OVERRIDE_DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
-config CBFS_SIZE
-	default 0xA00000
-
 config CONSOLE_POST
 	default y
+
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd" if !MAINBOARD_USES_IFD_GBE_REGION
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board-gbe.fmd" if MAINBOARD_USES_IFD_GBE_REGION
 
 config ONBOARD_VGA_IS_PRIMARY
 	default y

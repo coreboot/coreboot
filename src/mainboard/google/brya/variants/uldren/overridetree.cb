@@ -106,6 +106,8 @@ chip soc/intel/alderlake
 		.vnn_icc_max_ma = 500,
 	}"
 
+	register "tcc_offset" = "3"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
@@ -175,10 +177,10 @@ chip soc/intel/alderlake
 				}"
 				## Critical Policy
 				register "policies.critical" = "{
-					[0] = DPTF_CRITICAL(CPU,               105, SHUTDOWN),
-					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,      98, SHUTDOWN),
-					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,      98, SHUTDOWN),
-					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,      98, SHUTDOWN),
+					[0] = DPTF_CRITICAL(CPU,               130, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,     105, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,     105, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,     105, SHUTDOWN),
 				}"
 
 				register "controls.power_limits" = "{
@@ -187,7 +189,7 @@ chip soc/intel/alderlake
 						.max_power = 6000,
 						.time_window_min = 28 * MSECS_PER_SEC,
 						.time_window_max = 28 * MSECS_PER_SEC,
-						.granularity = 250
+						.granularity = 125
 					},
 					.pl2 = {
 						.min_power = 25000,

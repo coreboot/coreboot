@@ -14,6 +14,7 @@ entries
 412	4	e	6	debug_level
 416	1	e	2	me_state
 417	3	h	0	me_state_counter
+904	80	h	0	ramtop
 984	16	h	0	check_sum
 
 enumerations

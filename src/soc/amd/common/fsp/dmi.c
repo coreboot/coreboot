@@ -226,7 +226,7 @@ static void prepare_dmi_16_17(void *unused)
 			print_dmi_info(type17_dmi_info);
 			dimm_info = &mem_info->dimm[dimm_cnt];
 			dimm_info->channel_num = channel;
-			dimm_info->dimm_num = channel;
+			dimm_info->dimm_num = dimm;
 			transfer_memory_info(type17_dmi_info, dimm_info);
 			if (use_cbi_part_number) {
 				/* mem_info is memset to 0 above, so it's

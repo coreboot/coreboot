@@ -748,6 +748,93 @@ typedef struct acpi_madt_lx2apic_nmi {
 	u8 reserved[3];
 } __packed acpi_madt_lx2apic_nmi_t;
 
+/* MADT: GIC CPU Interface (GICC) Structure 6.5 */
+struct gicc_flags {
+	uint32_t enabled : 1;
+	/* 0 - Level-triggered | 1 - Edge-Triggered */
+	uint32_t performance_interrupt_mode : 1;
+	uint32_t vgic_maintenance_interrupt_mode : 1;
+	uint32_t online_capable : 1;
+	uint32_t reserved : 28;
+};
+_Static_assert(sizeof(struct gicc_flags) == sizeof(uint32_t), "Wrong gicc_flags size\n");
+
+typedef struct acpi_gicc {
+	uint8_t type;
+	uint8_t length;
+	uint16_t reserved;
+	uint32_t cpu_interface_number;
+	uint32_t acpi_processor_uid;
+	struct gicc_flags flags;
+	uint32_t parking_protocol_version;
+	uint32_t performance_interrupt_gsiv;
+	uint64_t parked_address;
+	uint64_t physical_base_address; /* GIC v1/v2 or GIC v3/v4 in v2 compat mode */
+	uint64_t gicv;
+	uint64_t gich;
+	uint32_t vgic_maintenance_interrupt;
+	uint64_t gicr_base_address; /* Only GIC v3 and above */
+	uint64_t mpidr;
+	uint8_t processor_power_efficiency_class;
+	uint8_t reserved1;
+	uint16_t spe_overflow_interrupt;
+	uint16_t trbe_interrupt;
+} __packed acpi_madt_gicc_t;
+_Static_assert(sizeof(acpi_madt_gicc_t) == 82, "Wrong acpi_madt_gicc_t size\n");
+
+/* MADT: GIC Distributor (GICD) Structure */
+typedef struct acpi_gicd {
+	uint8_t type;
+	uint8_t length;
+	uint16_t reserved1;
+	uint32_t gic_id;
+	uint64_t physical_base_address;
+	uint32_t system_vector_base;
+	uint8_t gic_version;
+	uint8_t reserved2[3];
+} __packed acpi_madt_gicd_t;
+_Static_assert(sizeof(acpi_madt_gicd_t) == 24, "Wrong acpi_madt_gicd_t size\n");
+
+/* MADT: GIC MSI Frame Structure */
+struct gic_msi_flags {
+	uint32_t spi_count_select : 1;
+	uint32_t reserved : 31;
+};
+_Static_assert(sizeof(struct gic_msi_flags) == sizeof(uint32_t), "Wrong gic_msi_flags size\n");
+
+typedef struct acpi_gic_msi {
+	uint8_t type;
+	uint8_t length;
+	uint16_t reserved;
+	uint32_t gic_msi_frame_id;
+	uint64_t physical_base_address;
+	struct gic_msi_flags flags;
+	uint16_t spi_count;
+	uint16_t spi_base;
+} __packed acpi_gic_msi_t;
+_Static_assert(sizeof(acpi_gic_msi_t) == 24, "Wrong acpi_gic_msi_t size\n");
+
+/* MADT: GIC Redistributor (GICR) Structure */
+typedef struct acpi_girr {
+	uint8_t type;
+	uint8_t length;
+	uint16_t reserved;
+	uint64_t discovery_range_base_address;
+	uint32_t discovery_range_length;
+} __packed acpi_madt_gicr_t;
+_Static_assert(sizeof(acpi_madt_gicr_t) == 16, "Wrong acpi_madt_gicr_t size\n");
+
+/* MADT: GIC Interrupt Translation Service (ITS) Structure */
+typedef struct acpi_gic_its {
+	uint8_t type;
+	uint8_t length;
+	uint16_t reserved;
+	uint32_t gic_its_id;
+	uint64_t physical_base_address;
+	uint32_t reserved2;
+} __packed acpi_madt_gic_its_t;
+_Static_assert(sizeof(acpi_madt_gic_its_t) == 20, "Wrong MADT acpi_madt_gic_its_t size\n");
+
 #define ACPI_DBG2_PORT_SERIAL			0x8000
 #define  ACPI_DBG2_PORT_SERIAL_16550		0x0000
 #define  ACPI_DBG2_PORT_SERIAL_16550_DBGP	0x0001

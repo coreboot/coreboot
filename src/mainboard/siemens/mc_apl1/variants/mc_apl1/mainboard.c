@@ -11,7 +11,7 @@
 #include <baseboard/variants.h>
 #include <types.h>
 
-#define TX_DWORD3	0xa8c
+#define TX_DWORD3_P1	0xa8c
 
 void variant_mainboard_final(void)
 {
@@ -41,11 +41,11 @@ void variant_mainboard_final(void)
 
 	/*
 	 * Correct the SATA transmit signal via the High Speed I/O Transmit
-	 * Control Register 3.
+	 * Control Register 3 on SATA port 1.
 	 * Bit [23:16] set the output voltage swing for TX line.
 	 * The value 0x4a sets the swing level to 0.58 V.
 	 */
-	pcr_rmw32(PID_MODPHY, TX_DWORD3, (0x00 << 16), (0x4a << 16));
+	pcr_rmw32(PID_MODPHY, TX_DWORD3_P1, (0x00 << 16), (0x4a << 16));
 }
 
 static void finalize_boot(void *unused)

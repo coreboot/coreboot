@@ -391,100 +391,6 @@ Scope (\_SB.PCI0)
 		Return (0)
 	}
 
-	/*
-	 * Method to send pCode MailBox command TCSS_DEVEN_MAILBOX_SUBCMD_GET_STATUS
-	 *
-	 * Result will be updated in DATA[1:0]
-	 * DATA[0:0] TCSS_DEVEN_CURRENT_STATE:
-	 *	0 - TCSS Deven in normal state.
-	 *	1 - TCSS Deven is cleared by BIOS Mailbox request.
-	 * DATA[1:1] TCSS_DEVEN_REQUEST_STATUS:
-	 *	0 - IDLE. TCSS DEVEN has reached its final requested state.
-	 *	1 - In Progress. TCSS DEVEN is currently in progress of switching state
-	 *	    according to given request (bit 0 reflects source state).
-	 *
-	 * Return 0x00 - TCSS Deven in normal state
-	 *	  0x01 - TCSS Deven is cleared by BIOS Mailbox request
-	 *	  0x1x - TCSS Deven is in progress of switching state according to given request
-	 *	  0xFE - Command timeout
-	 *	  0xFF - Command corrupt
-	 */
-	Method (DSGS, 0)
-	{
-		If ((PMBY () == 0)) {
-			PMBC = MAILBOX_BIOS_CMD_TCSS_DEVEN_INTERFACE
-			PSCM = TCSS_DEVEN_MAILBOX_SUBCMD_GET_STATUS
-			PMBR = 1
-			If (PMBY () == 0) {
-				Local0 = PMBD
-				Local1 = PMBC
-				Stall (10)
-				If ((Local0 != PMBD) || (Local1 != PMBC)) {
-					Printf("pCode MailBox is corrupt.")
-					Return (0xFF)
-				}
-				Return (Local0)
-			} Else {
-				Printf("pCode MailBox is not ready.")
-				Return (0xFE)
-			}
-		} Else {
-			Printf("pCode MailBox is not ready.")
-			Return (0xFE)
-		}
-	}
-
-	/*
-	 * Method to send pCode MailBox command TCSS_DEVEN_MAILBOX_SUBCMD_TCSS_CHANGE_REQ
-	 *
-	 * Arg0 : 0 - Restore to previously saved value of TCSS DEVEN
-	 *	  1 - Save current TCSS DEVEN value and clear it
-	 *
-	 * Return 0x00 - MAILBOX_BIOS_CMD_CLEAR_TCSS_DEVEN command completed
-	 *	  0xFD - Input argument is invalid
-	 *	  0xFE - Command timeout
-	 *	  0xFF - Command corrupt
-	 */
-	Method (DSCR, 1)
-	{
-		If (Arg0 > 1) {
-			Printf("pCode MailBox is corrupt.")
-			Return (0xFD)
-		}
-		If ((PMBY () == 0)) {
-			PMBC = MAILBOX_BIOS_CMD_TCSS_DEVEN_INTERFACE
-			PSCM = TCSS_DEVEN_MAILBOX_SUBCMD_TCSS_CHANGE_REQ
-			PMBD = Arg0
-			PMBR = 1
-			If ((PMBY () == 0)) {
-				Local0 = PMBD
-				Local1 = PMBC
-				Stall (10)
-				If ((Local0 != PMBD) || (Local1 != PMBC)) {
-					Printf("pCode MailBox is corrupt.")
-					Return (0xFF)
-				}
-				/* Poll TCSS_DEVEN_REQUEST_STATUS, timeout value is 10ms. */
-				Local0 = 0
-				While ((DSGS () & 0x10) && (Local0 < 100)) {
-					Stall (100)
-					Local0++
-				}
-				If (Local0 == 100) {
-					Printf("pCode MailBox is not ready.")
-					Return (0xFE)
-				} Else {
-					Return (0x00)
-				}
-			} Else {
-				Printf("pCode MailBox is not ready.")
-				Return (0xFE)
-			}
-		} Else {
-			Printf("pCode MailBox is not ready.")
-			Return (0xFE)
-		}
-	}
 
 	/* From RegBar Base, IOM_TypeC_SW_configuration_1 is at offset 0x40 */
 	OperationRegion (IOMR, SystemMemory, IOM_BASE_ADDR, 0x100)
@@ -681,21 +587,7 @@ Scope (\_SB.PCI0)
 			}
 			Else
 			{
-				/*
-				 * If the TCSS Deven is cleared by BIOS Mailbox request, then
-				 * restore to previously saved value of TCSS DEVNE.
-				 */
-				Local0 = 0
-				While (\_SB.PCI0.TXHC.VDID == 0xFFFFFFFF) {
-					If (DSGS () == 1) {
-						DSCR (0)
-					}
-					Local0++
-					If (Local0 == 5) {
-						Printf("pCode mailbox command failed.")
-						Break
-					}
-				}
+				Printf("TCSS D3 exit.");
 			}
 		}
 		Else {
@@ -712,21 +604,6 @@ Scope (\_SB.PCI0)
 			Return
 		}
 
-		/*
-		 * If the TCSS Deven in normal state, then Save current TCSS DEVEN value and
-		 * clear it.
-		 */
-		Local0 = 0
-		While (\_SB.PCI0.TXHC.VDID != 0xFFFFFFFF) {
-			If (DSGS () == 0) {
-				DSCR (1)
-			}
-			Local0++
-			If (Local0 == 5) {
-				Printf("pCode mailbox command failed.")
-				Break
-			}
-		}
 
 		/* Request IOM for D3 cold entry sequence. */
 		/*

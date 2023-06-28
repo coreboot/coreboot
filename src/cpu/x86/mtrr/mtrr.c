@@ -806,6 +806,8 @@ static void _x86_setup_mtrrs(unsigned int above4gb)
 {
 	int address_size;
 
+	enable_lapic();
+
 	x86_setup_fixed_mtrrs();
 	address_size = cpu_phys_address_size();
 	printk(BIOS_DEBUG, "apic_id 0x%x setup mtrr for CPU physical address size: %d bits\n",

@@ -9,7 +9,7 @@
 
 const char *get_wifi_sar_cbfs_filename(void)
 {
-	return "wifi_sar_0.hex";
+	return get_wifi_sar_fw_config_filename(FW_CONFIG_FIELD(WIFI_SAR_ID));
 }
 
 void variant_devtree_update(void)

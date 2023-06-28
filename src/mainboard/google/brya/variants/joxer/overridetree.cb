@@ -1,3 +1,10 @@
+fw_config
+	field WIFI_SAR_ID 6 6
+		option WIFI_GFP2_SAR_ID_0	0
+		option WIFI_GFP2_SAR_ID_1	1
+		end
+end
+
 chip soc/intel/alderlake
 	register "sagv" = "SaGv_Enabled"
 

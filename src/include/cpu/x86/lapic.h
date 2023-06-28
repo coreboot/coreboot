@@ -184,4 +184,16 @@ void enable_lapic_mode(bool try_set_x2apic);
 void disable_lapic(void);
 void setup_lapic_interrupts(void);
 
+static inline unsigned int early_lapicid(void)
+{
+	if (!CONFIG(SMP))
+		return 0;
+
+	if (!ENV_RAMSTAGE)
+		return 0;
+
+	enable_lapic();
+	return lapicid();
+}
+
 #endif /* CPU_X86_LAPIC_H */

@@ -95,9 +95,7 @@ void enable_fixed_mtrr(void);
 void fixed_mtrrs_expose_amd_rwdram(void);
 /* Hide Rd/WrDram bits and allow modification for AMD. */
 void fixed_mtrrs_hide_amd_rwdram(void);
-void x86_setup_fixed_mtrrs(void);
-/* Set up fixed MTRRs but do not enable them. */
-void x86_setup_fixed_mtrrs_no_enable(void);
+
 void x86_mtrr_check(void);
 
 /* Insert a temporary MTRR range for the duration of coreboot's runtime.

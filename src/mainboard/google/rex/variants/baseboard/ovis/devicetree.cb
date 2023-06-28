@@ -39,6 +39,22 @@ chip soc/intel/meteorlake
 	# Enable CNVi BT
 	register "cnvi_bt_core" = "true"
 
+	register "sagv" = "SAGV_ENABLED"
+
+	register "sagv_freq_mhz" = "{
+		[0] = 3200,
+		[1] = 6000,
+		[2] = 6400,
+		[3] = 5600,
+	}"
+
+	register "sagv_gear" = "{
+		[0] = 4,
+		[1] = 4,
+		[2] = 4,
+		[3] = 2,
+	}"
+
 	# Set on-board graphics as primary display
 	register "skip_ext_gfx_scan" = "1"
 

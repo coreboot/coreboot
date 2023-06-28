@@ -3354,7 +3354,11 @@ typedef struct {
 
 /** Offset 0x08F1 - Reserved
 **/
-  UINT8                       Reserved111[3];
+  UINT8                       Reserved111;
+
+/** Offset 0x08F2 - Reserved
+**/
+  UINT8                       Reserved112[2];
 
 /** Offset 0x08F4 - PMR Size
   Size of PMR memory buffer. 0x400000 for normal boot and 0x200000 for S3 boot
@@ -3368,31 +3372,31 @@ typedef struct {
 
 /** Offset 0x08F9 - Reserved
 **/
-  UINT8                       Reserved112;
+  UINT8                       Reserved113;
 
 /** Offset 0x08FA - Reserved
 **/
-  UINT16                      Reserved113;
+  UINT16                      Reserved114;
 
 /** Offset 0x08FC - Reserved
 **/
-  UINT8                       Reserved114;
+  UINT8                       Reserved115;
 
 /** Offset 0x08FD - Reserved
 **/
-  UINT8                       Reserved115;
+  UINT8                       Reserved116;
 
 /** Offset 0x08FE - Reserved
 **/
-  UINT8                       Reserved116;
+  UINT8                       Reserved117;
 
 /** Offset 0x08FF - Reserved
 **/
-  UINT8                       Reserved117[88];
+  UINT8                       Reserved118[88];
 
 /** Offset 0x0957 - Reserved
 **/
-  UINT8                       Reserved118;
+  UINT8                       Reserved119;
 
 /** Offset 0x0958 - TotalFlashSize
   Enable/Disable. 0: Disable, define default value of TotalFlashSize , 1: enable
@@ -3408,7 +3412,7 @@ typedef struct {
 
 /** Offset 0x095C - Reserved
 **/
-  UINT8                       Reserved119[12];
+  UINT8                       Reserved120[12];
 
 /** Offset 0x0968 - Smbus dynamic power gating
   Disable or Enable Smbus dynamic power gating.
@@ -3474,7 +3478,7 @@ typedef struct {
 
 /** Offset 0x0972 - Reserved
 **/
-  UINT8                       Reserved120[2];
+  UINT8                       Reserved121[2];
 
 /** Offset 0x0974 - Hybrid Graphics GPIO information for PEG 1
   Hybrid Graphics GPIO information for PEG 1, for Reset, power and wake GPIOs
@@ -3511,7 +3515,7 @@ typedef struct {
 
 /** Offset 0x0A97 - Reserved
 **/
-  UINT8                       Reserved121;
+  UINT8                       Reserved122;
 
 /** Offset 0x0A98 - SerialIoUartDebugRxPinMux - FSPT
   Select RX pin muxing for SerialIo UART used for debug
@@ -3537,183 +3541,187 @@ typedef struct {
 
 /** Offset 0x0AA8 - Reserved
 **/
-  UINT8                       Reserved122;
+  UINT8                       Reserved123;
 
 /** Offset 0x0AA9 - Reserved
 **/
-  UINT8                       Reserved123;
+  UINT8                       Reserved124;
 
 /** Offset 0x0AAA - Reserved
 **/
-  UINT16                      Reserved124;
+  UINT16                      Reserved125;
 
 /** Offset 0x0AAC - Reserved
 **/
-  UINT8                       Reserved125[4];
+  UINT8                       Reserved126[4];
 
 /** Offset 0x0AB0 - Reserved
 **/
-  UINT8                       Reserved126;
+  UINT8                       Reserved127;
 
 /** Offset 0x0AB1 - Reserved
 **/
-  UINT8                       Reserved127;
+  UINT8                       Reserved128;
 
 /** Offset 0x0AB2 - Reserved
 **/
-  UINT8                       Reserved128[6];
+  UINT8                       Reserved129[4];
+
+/** Offset 0x0AB6 - Reserved
+**/
+  UINT8                       Reserved130[2];
 
 /** Offset 0x0AB8 - Reserved
 **/
-  UINT64                      Reserved129;
+  UINT64                      Reserved131;
 
 /** Offset 0x0AC0 - Reserved
 **/
-  UINT64                      Reserved130;
+  UINT64                      Reserved132;
 
 /** Offset 0x0AC8 - Reserved
 **/
-  UINT32                      Reserved131;
+  UINT32                      Reserved133;
 
 /** Offset 0x0ACC - Reserved
 **/
-  UINT8                       Reserved132[8];
+  UINT8                       Reserved134[8];
 
 /** Offset 0x0AD4 - Reserved
 **/
-  UINT8                       Reserved133;
+  UINT8                       Reserved135;
 
 /** Offset 0x0AD5 - Reserved
 **/
-  UINT8                       Reserved134[3];
+  UINT8                       Reserved136[3];
 
 /** Offset 0x0AD8 - Reserved
 **/
-  UINT32                      Reserved135;
+  UINT32                      Reserved137;
 
 /** Offset 0x0ADC - Reserved
 **/
-  UINT32                      Reserved136;
+  UINT32                      Reserved138;
 
 /** Offset 0x0AE0 - Reserved
 **/
-  UINT16                      Reserved137;
+  UINT16                      Reserved139;
 
 /** Offset 0x0AE2 - Reserved
 **/
-  UINT16                      Reserved138;
+  UINT16                      Reserved140;
 
 /** Offset 0x0AE4 - Reserved
 **/
-  UINT16                      Reserved139;
+  UINT16                      Reserved141;
 
 /** Offset 0x0AE6 - Reserved
 **/
-  UINT8                       Reserved140;
+  UINT8                       Reserved142;
 
 /** Offset 0x0AE7 - Reserved
 **/
-  UINT8                       Reserved141;
+  UINT8                       Reserved143;
 
 /** Offset 0x0AE8 - Reserved
 **/
-  UINT8                       Reserved142;
+  UINT8                       Reserved144;
 
 /** Offset 0x0AE9 - Reserved
 **/
-  UINT8                       Reserved143;
+  UINT8                       Reserved145;
 
 /** Offset 0x0AEA - Reserved
 **/
-  UINT8                       Reserved144;
+  UINT8                       Reserved146;
 
 /** Offset 0x0AEB - Reserved
 **/
-  UINT8                       Reserved145[5];
+  UINT8                       Reserved147[5];
 
 /** Offset 0x0AF0 - Reserved
 **/
-  UINT64                      Reserved146;
+  UINT64                      Reserved148;
 
 /** Offset 0x0AF8 - Reserved
 **/
-  UINT64                      Reserved147;
+  UINT64                      Reserved149;
 
 /** Offset 0x0B00 - Reserved
 **/
-  UINT32                      Reserved148;
+  UINT32                      Reserved150;
 
 /** Offset 0x0B04 - Reserved
 **/
-  UINT16                      Reserved149;
+  UINT16                      Reserved151;
 
 /** Offset 0x0B06 - Reserved
 **/
-  UINT8                       Reserved150;
+  UINT8                       Reserved152;
 
 /** Offset 0x0B07 - Reserved
 **/
-  UINT8                       Reserved151;
+  UINT8                       Reserved153;
 
 /** Offset 0x0B08 - Reserved
 **/
-  UINT8                       Reserved152;
+  UINT8                       Reserved154;
 
 /** Offset 0x0B09 - Reserved
 **/
-  UINT8                       Reserved153;
+  UINT8                       Reserved155;
 
 /** Offset 0x0B0A - Reserved
 **/
-  UINT8                       Reserved154;
+  UINT8                       Reserved156;
 
 /** Offset 0x0B0B - Reserved
 **/
-  UINT8                       Reserved155;
+  UINT8                       Reserved157;
 
 /** Offset 0x0B0C - Reserved
 **/
-  UINT8                       Reserved156;
+  UINT8                       Reserved158;
 
 /** Offset 0x0B0D - Reserved
 **/
-  UINT8                       Reserved157;
+  UINT8                       Reserved159;
 
 /** Offset 0x0B0E - Reserved
 **/
-  UINT16                      Reserved158;
+  UINT16                      Reserved160;
 
 /** Offset 0x0B10 - Reserved
 **/
-  UINT16                      Reserved159;
+  UINT16                      Reserved161;
 
 /** Offset 0x0B12 - Reserved
 **/
-  UINT16                      Reserved160;
+  UINT16                      Reserved162;
 
 /** Offset 0x0B14 - Reserved
 **/
-  UINT16                      Reserved161;
+  UINT16                      Reserved163;
 
 /** Offset 0x0B16 - Reserved
 **/
-  UINT8                       Reserved162[8];
+  UINT8                       Reserved164[8];
 
 /** Offset 0x0B1E - Reserved
 **/
-  UINT8                       Reserved163[8];
+  UINT8                       Reserved165[8];
 
 /** Offset 0x0B26 - Reserved
 **/
-  UINT16                      Reserved164;
+  UINT16                      Reserved166;
 
 /** Offset 0x0B28 - Reserved
 **/
-  UINT8                       Reserved165;
+  UINT8                       Reserved167;
 
 /** Offset 0x0B29 - Reserved
 **/
-  UINT8                       Reserved166;
+  UINT8                       Reserved168;
 
 /** Offset 0x0B2A -  LP5 Bank Mode
   LP5 Bank Mode. 0: Auto, 1: 8 Bank Mode, 2: 16 Bank Mode, 3: BG Mode, default is 0
@@ -3723,31 +3731,49 @@ typedef struct {
 
 /** Offset 0x0B2B - Reserved
 **/
-  UINT8                       Reserved167;
+  UINT8                       Reserved169;
 
 /** Offset 0x0B2C - Reserved
 **/
-  UINT8                       Reserved168;
+  UINT8                       Reserved170;
 
 /** Offset 0x0B2D - Reserved
 **/
-  UINT8                       Reserved169;
+  UINT8                       Reserved171;
 
 /** Offset 0x0B2E - Reserved
 **/
-  UINT8                       Reserved170;
+  UINT8                       Reserved172;
 
-/** Offset 0x0B2F - Reserved
+/** Offset 0x0B2F - CsPiStartHighinEct
+  Cs Pi Start with High value in Ect: 0(Default)=Disable, 1=Enable
+  $EN_DIS
 **/
-  UINT8                       Reserved171;
+  UINT8                       CsPiStartHighinEct;
 
 /** Offset 0x0B30 - Reserved
 **/
-  UINT8                       Reserved172[4];
+  UINT8                       Reserved173;
+
+/** Offset 0x0B31 - Reserved
+**/
+  UINT8                       Reserved174;
+
+/** Offset 0x0B32 - LowerBasicMemTestSize
+  Reduce BasicMemoryTest size WA: 0(Default)=Disable, 1=Enable
+  $EN_DIS
+**/
+  UINT8                       LowerBasicMemTestSize;
+
+/** Offset 0x0B33 - DisableSagvReorder
+  Disable Sagv reorder on warm boot: 0(Default)=Disable, 1=Enable
+  $EN_DIS
+**/
+  UINT8                       DisableSagvReorder;
 
 /** Offset 0x0B34 - Reserved
 **/
-  UINT8                       Reserved173[4];
+  UINT8                       Reserved175[4];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration

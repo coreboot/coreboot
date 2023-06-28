@@ -2321,7 +2321,8 @@ typedef struct {
   UINT8                       SataRstPcieDeviceResetDelay[3];
 
 /** Offset 0x0A42 - UFS enable/disable
-  PCIe Storage Device Reset Delay in milliseconds. Default value is 100ms
+  Enable/Disable UFS controller, One byte for each Controller - (1,0) to enable controller
+  0 and (0,1) to enable controller 1
   $EN_DIS
 **/
   UINT8                       UfsEnable[2];
@@ -2962,7 +2963,7 @@ typedef struct {
   UINT8                       CpuPcieRpDpcExtensionsEnabled[4];
 
 /** Offset 0x0C18 - CPU PCIe root port connection type
-  0: built-in device, 1:slot
+  DEPRECATED
 **/
   UINT8                       CpuPcieRpSlotImplemented[4];
 
@@ -3808,11 +3809,21 @@ typedef struct {
 
 /** Offset 0x0D87 - Reserved
 **/
-  UINT8                       Reserved92[13];
+  UINT8                       Reserved92;
+
+/** Offset 0x0D88 - Enable or Disable HwP Scalability Tracking
+  Enable or Disable HwP Scalability Tracking. 0: Disable; <b>1: Enable</b>
+  $EN_DIS
+**/
+  UINT8                       EnableHwpScalabilityTracking;
+
+/** Offset 0x0D89 - Reserved
+**/
+  UINT8                       Reserved93[11];
 
 /** Offset 0x0D94 - Reserved
 **/
-  UINT8                       Reserved93[16];
+  UINT8                       Reserved94[16];
 
 /** Offset 0x0DA4 - End of Post message
   Test, Send End of Post message. Disable(0x0): Disable EOP message, Send in PEI(0x1):
@@ -3861,7 +3872,7 @@ typedef struct {
 
 /** Offset 0x0DAB - Reserved
 **/
-  UINT8                       Reserved94[1];
+  UINT8                       Reserved95[1];
 
 /** Offset 0x0DAC - PCIE RP Ltr Max Snoop Latency
   Latency Tolerance Reporting, Max Snoop Latency.
@@ -4013,19 +4024,19 @@ typedef struct {
 
 /** Offset 0x0F96 - Reserved
 **/
-  UINT8                       Reserved95[4];
+  UINT8                       Reserved96[4];
 
 /** Offset 0x0F9A - Reserved
 **/
-  UINT8                       Reserved96[4];
+  UINT8                       Reserved97[4];
 
 /** Offset 0x0F9E - Reserved
 **/
-  UINT8                       Reserved97[4];
+  UINT8                       Reserved98[4];
 
 /** Offset 0x0FA2 - Reserved
 **/
-  UINT8                       Reserved98[4];
+  UINT8                       Reserved99[4];
 
 /** Offset 0x0FA6 - FOMS Control Policy
   Choose the Foms Control Policy, <b>Default = 0 </b>
@@ -4047,23 +4058,23 @@ typedef struct {
 
 /** Offset 0x0FAF - Reserved
 **/
-  UINT8                       Reserved99[8];
+  UINT8                       Reserved100[8];
 
 /** Offset 0x0FB7 - Reserved
 **/
-  UINT8                       Reserved100[8];
+  UINT8                       Reserved101[8];
 
 /** Offset 0x0FBF - Reserved
 **/
-  UINT8                       Reserved101[8];
+  UINT8                       Reserved102[8];
 
 /** Offset 0x0FC7 - Reserved
 **/
-  UINT8                       Reserved102[8];
+  UINT8                       Reserved103[8];
 
 /** Offset 0x0FCF - Reserved
 **/
-  UINT8                       Reserved103;
+  UINT8                       Reserved104;
 
 /** Offset 0x0FD0 - FspEventHandler
   <b>Optional</b> pointer to the boot loader's implementation of FSP_EVENT_HANDLER.
@@ -4078,99 +4089,99 @@ typedef struct {
 
 /** Offset 0x0FD5 - Reserved
 **/
-  UINT8                       Reserved104[4];
+  UINT8                       Reserved105[4];
 
 /** Offset 0x0FD9 - Reserved
 **/
-  UINT8                       Reserved105;
+  UINT8                       Reserved106;
 
 /** Offset 0x0FDA - Reserved
 **/
-  UINT8                       Reserved106;
+  UINT8                       Reserved107;
 
 /** Offset 0x0FDB - Reserved
 **/
-  UINT8                       Reserved107;
+  UINT8                       Reserved108;
 
 /** Offset 0x0FDC - Reserved
 **/
-  UINT32                      Reserved108;
+  UINT32                      Reserved109;
 
 /** Offset 0x0FE0 - Reserved
 **/
-  UINT32                      Reserved109;
+  UINT32                      Reserved110;
 
 /** Offset 0x0FE4 - Reserved
 **/
-  UINT32                      Reserved110[2];
+  UINT32                      Reserved111[2];
 
 /** Offset 0x0FEC - Reserved
 **/
-  UINT32                      Reserved111[2];
+  UINT32                      Reserved112[2];
 
 /** Offset 0x0FF4 - Reserved
 **/
-  UINT32                      Reserved112[2];
+  UINT32                      Reserved113[2];
 
 /** Offset 0x0FFC - Reserved
 **/
-  UINT32                      Reserved113[2];
+  UINT32                      Reserved114[2];
 
 /** Offset 0x1004 - Reserved
 **/
-  UINT32                      Reserved114[2];
+  UINT32                      Reserved115[2];
 
 /** Offset 0x100C - Reserved
 **/
-  UINT32                      Reserved115[2];
+  UINT32                      Reserved116[2];
 
 /** Offset 0x1014 - Reserved
 **/
-  UINT32                      Reserved116[2];
+  UINT32                      Reserved117[2];
 
 /** Offset 0x101C - Reserved
 **/
-  UINT32                      Reserved117[2];
+  UINT32                      Reserved118[2];
 
 /** Offset 0x1024 - Reserved
 **/
-  UINT32                      Reserved118[2];
+  UINT32                      Reserved119[2];
 
 /** Offset 0x102C - Reserved
 **/
-  UINT32                      Reserved119[2];
+  UINT32                      Reserved120[2];
 
 /** Offset 0x1034 - Reserved
 **/
-  UINT32                      Reserved120[2];
+  UINT32                      Reserved121[2];
 
 /** Offset 0x103C - Reserved
 **/
-  UINT32                      Reserved121[2];
+  UINT32                      Reserved122[2];
 
 /** Offset 0x1044 - Reserved
 **/
-  UINT32                      Reserved122[2];
+  UINT32                      Reserved123[2];
 
 /** Offset 0x104C - Reserved
 **/
-  UINT8                       Reserved123[4];
+  UINT8                       Reserved124[4];
 
 /** Offset 0x1050 - Reserved
 **/
-  UINT64                      Reserved124;
+  UINT64                      Reserved125;
 
 /** Offset 0x1058 - Reserved
 **/
-  UINT32                      Reserved125;
+  UINT32                      Reserved126;
 
 /** Offset 0x105C - Reserved
 **/
-  UINT8                       Reserved126[2];
+  UINT8                       Reserved127[2];
 
 /** Offset 0x105E - Reserved
 **/
-  UINT8                       Reserved127[2];
+  UINT8                       Reserved128[2];
 } FSP_S_CONFIG;
 
 /** Fsp S UPD Configuration

@@ -13,6 +13,9 @@
 #include <baseboard/variants.h>
 #include <types.h>
 
+#define TX_DWORD3_P0	0xc8c
+#define TX_SWING_MASK	0x00ff0000
+
 void variant_mainboard_final(void)
 {
 	struct device *dev = NULL;
@@ -31,6 +34,14 @@ void variant_mainboard_final(void)
 	 * [3:0].
 	 */
 	pcr_or32(PID_LPC, PCR_LPC_PRC, (PCR_LPC_CCE_EN | PCR_LPC_PCE_EN));
+
+	/*
+	 * Correct the SATA transmit signal via the High Speed I/O Transmit
+	 * Control Register 3 on SATA port 0.
+	 * Bit [23:16] sets the output voltage swing for TX line.
+	 * The value 0x5a sets the swing level to 0.7 V.
+	 */
+	pcr_rmw32(PID_MODPHY, TX_DWORD3_P0, ~TX_SWING_MASK, 0x5a << 16);
 
 	/* Set Master Enable for on-board PCI device if allowed. */
 	dev = dev_find_device(PCI_VID_SIEMENS, 0x403e, 0);

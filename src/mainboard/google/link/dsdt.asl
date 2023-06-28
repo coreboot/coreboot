@@ -14,7 +14,6 @@ DefinitionBlock(
 	#include <southbridge/intel/common/acpi/platform.asl>
 
 	#include "acpi/platform.asl"
-	#include "acpi/mainboard.asl"
 
 	// Thermal handler
 	#include "acpi/thermal.asl"
@@ -33,6 +32,9 @@ DefinitionBlock(
 			#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
 		}
 	}
+
+	// Mainboard devices must be defined after _SB.PCI0.GFX0 as they're attached to the IGPU
+	#include "acpi/mainboard.asl"
 
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 }

@@ -1866,6 +1866,8 @@ static void acpi_create_spcr(acpi_spcr_t *spcr)
 	spcr->language = 0;
 	spcr->pci_did = 0xffff;
 	spcr->pci_vid = 0xffff;
+
+	header->checksum = acpi_checksum((void *)spcr, header->length);
 }
 
 unsigned long __weak fw_cfg_acpi_tables(unsigned long start)

@@ -28,18 +28,18 @@
  ***************************************************************************/
 
 /**
- * This code was copied from src/vendorcode/amd/pi/00670F00/AGESA.h
+ * This code is based on the src/vendorcode/amd/pi/00670F00/AGESA.h.
+ * SoC-family-specific defines were moved to soc_dmi_info.h file.
  */
+
+#include <soc_dmi_info.h>
+#include <smbios.h>
 
 #define AMD_FSP_DMI_HOB_GUID  {0x4118FC0E, 0x353D, 0x4726, { 0x97, 0xC0, 0x53, 0xCD, 0x92, 0xB6, 0x49, 0x25}}
 
 // Our ACPI HOB max payload, accounting for the size of the HOB header as well as the information structure
 #define HOB_MAX_SIZE                0xFFF8
 #define HOB_GUID_EXTENSION_SIZE     (HOB_MAX_SIZE - sizeof (EFI_HOB_GUID_TYPE))
-
-#define MAX_SOCKETS_SUPPORTED     2   ///< Max number of sockets in system
-#define MAX_CHANNELS_PER_SOCKET   8   ///< Max Channels per sockets
-#define MAX_DIMMS_PER_CHANNEL     4   ///< Max DIMMs on a memory channel (independent of platform)
 
 /// DMI Type 16 offset 04h - Location
 typedef enum {
@@ -92,59 +92,6 @@ typedef struct {
   OUT UINT16                    NumberOfMemoryDevices;  ///< The number of slots or sockets available
                                                         ///< for memory devices in this array.
 } TYPE16_DMI_INFO;
-
-/// DMI Type 17 offset 0Eh - Form Factor
-typedef enum {
-  OtherFormFactor = 0x01,                               ///< Assign 01 to Other
-  UnknowFormFactor,                                     ///< Assign 02 to Unknown
-  SimmFormFactor,                                       ///< Assign 03 to SIMM
-  SipFormFactor,                                        ///< Assign 04 to SIP
-  ChipFormFactor,                                       ///< Assign 05 to Chip
-  DipFormFactor,                                        ///< Assign 06 to DIP
-  ZipFormFactor,                                        ///< Assign 07 to ZIP
-  ProprietaryCardFormFactor,                            ///< Assign 08 to Proprietary Card
-  DimmFormFactorFormFactor,                             ///< Assign 09 to DIMM
-  TsopFormFactor,                                       ///< Assign 10 to TSOP
-  RowOfChipsFormFactor,                                 ///< Assign 11 to Row of chips
-  RimmFormFactor,                                       ///< Assign 12 to RIMM
-  SodimmFormFactor,                                     ///< Assign 13 to SODIMM
-  SrimmFormFactor,                                      ///< Assign 14 to SRIMM
-  FbDimmFormFactor                                      ///< Assign 15 to FB-DIMM
-} DMI_T17_FORM_FACTOR;
-
-/// DMI Type 17 offset 12h - Memory Type
-typedef enum {
-  OtherMemType = 0x01,                                  ///< Assign 01 to Other
-  UnknownMemType,                                       ///< Assign 02 to Unknown
-  DramMemType,                                          ///< Assign 03 to DRAM
-  EdramMemType,                                         ///< Assign 04 to EDRAM
-  VramMemType,                                          ///< Assign 05 to VRAM
-  SramMemType,                                          ///< Assign 06 to SRAM
-  RamMemType,                                           ///< Assign 07 to RAM
-  RomMemType,                                           ///< Assign 08 to ROM
-  FlashMemType,                                         ///< Assign 09 to Flash
-  EepromMemType,                                        ///< Assign 10 to EEPROM
-  FepromMemType,                                        ///< Assign 11 to FEPROM
-  EpromMemType,                                         ///< Assign 12 to EPROM
-  CdramMemType,                                         ///< Assign 13 to CDRAM
-  ThreeDramMemType,                                     ///< Assign 14 to 3DRAM
-  SdramMemType,                                         ///< Assign 15 to SDRAM
-  SgramMemType,                                         ///< Assign 16 to SGRAM
-  RdramMemType,                                         ///< Assign 17 to RDRAM
-  DdrMemType,                                           ///< Assign 18 to DDR
-  Ddr2MemType,                                          ///< Assign 19 to DDR2
-  Ddr2FbdimmMemType,                                    ///< Assign 20 to DDR2 FB-DIMM
-  Ddr3MemType = 0x18,                                   ///< Assign 24 to DDR3
-  Fbd2MemType,                                          ///< Assign 25 to FBD2
-  Ddr4MemType,                                          ///< Assign 26 to DDR4
-  LpDdrMemType,                                         ///< Assign 27 to LPDDR
-  LpDdr2MemType,                                        ///< Assign 28 to LPDDR2
-  LpDdr3MemType,                                        ///< Assign 29 to LPDDR3
-  LpDdr4MemType,                                        ///< Assign 30 to LPDDR4
-  Ddr5MemType = 0x22,                                   ///< Assign 34 to DDR5
-  LpDdr5MemType,                                        ///< Assign 35 to LPDDR5
-  LpDdr5xMemType,                                       ///< Assign 36 to LPDDR5X
-} DMI_T17_MEMORY_TYPE;
 
 /// DMI Type 17 offset 13h - Type Detail
 typedef struct {
@@ -199,13 +146,13 @@ typedef struct {
   OUT UINT16                    TotalWidth;             ///< Total Width, in bits, of this memory device, including any check or error-correction bits.
   OUT UINT16                    DataWidth;              ///< Data Width, in bits, of this memory device.
   OUT UINT16                    MemorySize;             ///< The size of the memory device.
-  OUT DMI_T17_FORM_FACTOR       FormFactor;             ///< The implementation form factor for this memory device.
+  OUT smbios_memory_form_factor FormFactor;             ///< The implementation form factor for this memory device.
   OUT UINT8                     DeviceSet;              ///< Identifies when the Memory Device is one of a set of
                                                         ///< Memory Devices that must be populated with all devices of
                                                         ///< the same type and size, and the set to which this device belongs.
   OUT CHAR8                     DeviceLocator[8];       ///< The string number of the string that identifies the physically labeled socket or board position where the memory device is located.
   OUT CHAR8                     BankLocator[13];        ///< The string number of the string that identifies the physically labeled bank where the memory device is located.
-  OUT DMI_T17_MEMORY_TYPE       MemoryType;             ///< The type of memory used in this device.
+  OUT smbios_memory_type        MemoryType;             ///< The type of memory used in this device.
   OUT DMI_T17_TYPE_DETAIL       TypeDetail;             ///< Additional detail on the memory device type
   OUT UINT16                    Speed;                  ///< Identifies the speed of the device, in megahertz (MHz).
   OUT UINT64                    ManufacturerIdCode;     ///< Manufacturer ID code.
@@ -218,6 +165,7 @@ typedef struct {
   OUT UINT16                    MaximumVoltage;         ///< Maximum operating voltage for this device, in millivolts
   OUT UINT16                    ConfiguredVoltage;      ///< Configured voltage for this device, in millivolts
   // SMBIOS 3.2
+#ifdef SMBIOS_3_2_3_3_SUPPORT
   OUT UINT8                     MemoryTechnology;       ///< Memory technology type for this memory device
   OUT DMI_T17_MEMORY_OPERATING_MODE_CAPABILITY_VAR   MemoryOperatingModeCapability; ///< The operating modes supported by this memory device
   OUT CHAR8                     FirmwareVersion[10];    ///< String number for the firmware version of this memory device
@@ -232,10 +180,11 @@ typedef struct {
   // SMBIOS 3.3
   OUT UINT32                    ExtendedSpeed;          ///< Extended Speed
   OUT UINT32                    ExtendedConfiguredMemorySpeed; ///< Extended Configured memory speed
+#endif
 } __packed TYPE17_DMI_INFO;
 
 /// Collection of pointers to the DMI records
 typedef struct {
   OUT TYPE16_DMI_INFO           T16;                          ///< Type 16 struc
-  OUT TYPE17_DMI_INFO           T17[MAX_SOCKETS_SUPPORTED][MAX_CHANNELS_PER_SOCKET][MAX_DIMMS_PER_CHANNEL]; ///< Type 17 struc
+  OUT TYPE17_DMI_INFO           T17[AGESA_STRUCT_SOCKET_COUNT][AGESA_STRUCT_CHANNELS_PER_SOCKET][AGESA_STRUCT_DIMMS_PER_CHANNEL]; ///< Type 17 struc
 } DMI_INFO;

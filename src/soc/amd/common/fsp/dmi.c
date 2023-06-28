@@ -216,8 +216,8 @@ static void prepare_dmi_16_17(void *unused)
 		}
 	}
 
-	for (unsigned int channel = 0; channel < MAX_CHANNELS_PER_SOCKET; channel++) {
-		for (unsigned int dimm = 0; dimm < MAX_DIMMS_PER_CHANNEL; dimm++) {
+	for (unsigned int channel = 0; channel < AGESA_STRUCT_CHANNELS_PER_SOCKET; channel++) {
+		for (unsigned int dimm = 0; dimm < AGESA_STRUCT_DIMMS_PER_CHANNEL; dimm++) {
 			type17_dmi_info = &dmi_table->T17[0][channel][dimm];
 			/* DIMMs that are present will have a non-zero
 			   handle. */

@@ -380,6 +380,27 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_VGPIO_19, NONE),
 	PAD_NC(GPP_VGPIO_20, NONE),
 	PAD_NC(GPP_VGPIO_21, NONE),
+
+	/* Put option BT_I2S and SoC SSP2 pins in NC mode, ensure that
+	 * all the relevant VGPIOs were able to be overritten via
+	 *  override_gpio_table of each variant of gpio.c
+	 */
+	/* BT_I2S_BCLK */
+	PAD_NC(GPP_VGPIO_30, NONE),
+	/* BT_I2S_SYNC */
+	PAD_NC(GPP_VGPIO_31, NONE),
+	/* BT_I2S_SDO */
+	PAD_NC(GPP_VGPIO_32, NONE),
+	/* BT_I2S_SDI */
+	PAD_NC(GPP_VGPIO_33, NONE),
+	/* SSP2_SCLK */
+	PAD_NC(GPP_VGPIO_34, NONE),
+	/* SSP2_SFRM */
+	PAD_NC(GPP_VGPIO_35, NONE),
+	/* SSP2_TXD */
+	PAD_NC(GPP_VGPIO_36, NONE),
+	/* SSP2_RXD */
+	PAD_NC(GPP_VGPIO_37, NONE),
 };
 
 /* Early pad configuration in bootblock */

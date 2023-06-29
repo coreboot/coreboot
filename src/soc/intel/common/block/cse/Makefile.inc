@@ -24,7 +24,6 @@ endif
 CSE_FPT_INPUT=$(call cse_input_path,$(CONFIG_CSE_FPT_FILE))
 CSE_DATA_INPUT=$(call cse_input_path,$(CONFIG_CSE_DATA_FILE))
 
-get_fmap_value=$(shell awk '$$2 == "$1" {print $$3}' $(obj)/fmap_config.h)
 get_cse_region_offset=$(call int-subtract,$(call get_fmap_value,$(1)) $(CSE_LAYOUT_OFFSET))
 
 CSE_LAYOUT_OFFSET=$(call get_fmap_value,FMAP_SECTION_CSE_LAYOUT_START)

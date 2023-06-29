@@ -1086,13 +1086,17 @@ static void acpi_create_fadt(acpi_header_t *header, void *arg1)
 		return;
 
 	fadt->FADT_MinorVersion = get_acpi_fadt_minor_version();
-	fadt->firmware_ctrl = (unsigned long)facs;
-	fadt->x_firmware_ctl_l = (unsigned long)facs;
-	fadt->x_firmware_ctl_h = 0;
+	if ((uintptr_t)facs <= UINT32_MAX)
+		fadt->firmware_ctrl = (uintptr_t)facs;
+	else
+		fadt->x_firmware_ctl_h = (uint32_t)((uint64_t)(uintptr_t)facs >> 32);
+	fadt->x_firmware_ctl_l = (uint32_t)(uintptr_t)facs;
 
-	fadt->dsdt = (unsigned long)dsdt;
-	fadt->x_dsdt_l = (unsigned long)dsdt;
-	fadt->x_dsdt_h = 0;
+	if ((uintptr_t)dsdt <= UINT32_MAX)
+		fadt->dsdt = (uintptr_t)dsdt;
+	else
+		fadt->x_dsdt_h = (uint32_t)((uint64_t)(uintptr_t)dsdt >> 32);
+	fadt->x_dsdt_l = (uint32_t)(uintptr_t)dsdt;
 
 	/* should be 0 ACPI 3.0 */
 	fadt->reserved = 0;

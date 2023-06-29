@@ -1499,13 +1499,14 @@ unsigned long write_acpi_tables(const unsigned long start)
 	acpi_write_rsdt(rsdt, oem_id, oem_table_id);
 	acpi_write_xsdt(xsdt, oem_id, oem_table_id);
 
-	current = ALIGN_UP(current, 64);
-
-	printk(BIOS_DEBUG, "ACPI:    * FACS\n");
-	facs = (acpi_facs_t *)current;
-	current += sizeof(acpi_facs_t);
-	current = acpi_align_current(current);
-	acpi_create_facs(facs);
+	if (ENV_X86) {
+		printk(BIOS_DEBUG, "ACPI:    * FACS\n");
+		current = ALIGN_UP(current, 64);
+		facs = (acpi_facs_t *)current;
+		current += sizeof(acpi_facs_t);
+		current = acpi_align_current(current);
+		acpi_create_facs(facs);
+	}
 
 	for (size_t i = 0; i < ARRAY_SIZE(tables); i++) {
 		acpi_header_t *header = (acpi_header_t *)current;

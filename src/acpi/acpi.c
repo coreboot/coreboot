@@ -300,7 +300,9 @@ static void acpi_ssdt_write_cbtable(void)
 	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
 	acpigen_write_name("_CRS");
 	acpigen_write_resourcetemplate_header();
-	acpigen_write_mem32fixed(0, base, size);
+	acpigen_resource_consumer_mmio(base, base + size - 1,
+				       MEM_RSRC_FLAG_MEM_READ_ONLY
+				       | MEM_RSRC_FLAG_MEM_ATTR_CACHE);
 	acpigen_write_resourcetemplate_footer();
 	acpigen_pop_len();
 }

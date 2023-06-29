@@ -37,12 +37,12 @@ config SOC_AMD_PHOENIX
 	select SOC_AMD_COMMON_BLOCK_ACPI		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_ACPIMMIO		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_ACPI_ALIB		# TODO: Check if this is still correct
-	select SOC_AMD_COMMON_BLOCK_ACPI_CPPC		# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_ACPI_CPPC
 	select SOC_AMD_COMMON_BLOCK_ACPI_CPU_POWER_STATE
 	select SOC_AMD_COMMON_BLOCK_ACPI_GPIO		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_ACPI_IVRS		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_AOAC
-	select SOC_AMD_COMMON_BLOCK_APOB		# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_APOB
 	select SOC_AMD_COMMON_BLOCK_APOB_HASH
 	select SOC_AMD_COMMON_BLOCK_BANKED_GPIOS
 	select SOC_AMD_COMMON_BLOCK_CPUFREQ_FAM17H_19H
@@ -77,7 +77,7 @@ config SOC_AMD_PHOENIX
 	select SOC_AMD_COMMON_BLOCK_UART
 	select SOC_AMD_COMMON_BLOCK_UCODE
 	select SOC_AMD_COMMON_BLOCK_XHCI
-	select SOC_AMD_COMMON_FSP_CCX_CPPC_HOB		# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_FSP_CCX_CPPC_HOB
 	select SOC_AMD_COMMON_FSP_DMI_TABLES
 	select SOC_AMD_COMMON_FSP_PCI			# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_FSP_PRELOAD_FSPS

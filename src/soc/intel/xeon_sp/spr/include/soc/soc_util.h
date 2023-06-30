@@ -25,6 +25,9 @@
 #endif
 #endif
 
+/* Equals to MAX_IIO_PORTS_PER_SOCKET - 2 * 8, because IOU5 and IOU6 are not used per socket. */
+#define IIO_PORT_SETTINGS (1 + 5 * 8)
+
 const struct SystemMemoryMapHob *get_system_memory_map(void);
 const struct SystemMemoryMapElement *get_system_memory_map_elment(uint8_t *num);
 
@@ -45,5 +48,7 @@ const EWL_PRIVATE_DATA *get_ewl_hob(void);
 uint32_t get_ubox_busno(uint32_t socket, uint8_t offset);
 uint32_t get_socket_ubox_busno(uint32_t socket);
 void soc_set_mrc_cold_boot_flag(bool cold_boot_required);
+void soc_config_iio(FSPM_UPD *mupd, const UPD_IIO_PCIE_PORT_CONFIG_ENTRY
+	mb_iio_table[CONFIG_MAX_SOCKET][IIO_PORT_SETTINGS], const UINT8 mb_iio_bifur[CONFIG_MAX_SOCKET][5]);
 
 #endif /* _SOC_UTIL_H_ */

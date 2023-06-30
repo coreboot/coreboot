@@ -8,7 +8,6 @@ if SOC_AMD_COMMON_BLOCK_UART
 
 config AMD_SOC_CONSOLE_UART
 	bool "Use integrated AMD SoC UART controller for console"
-	select DRIVERS_UART_8250MEM
 	select DRIVERS_UART_8250MEM_32
 	select NO_UART_ON_SUPERIO
 	select UART_OVERRIDE_REFCLK

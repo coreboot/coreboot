@@ -50,16 +50,26 @@ choice
 config XAPIC_ONLY
 	prompt "Set XAPIC mode"
 	bool
+	help
+	  coreboot and SMM runtime only use XAPIC mode.
+	  FIXME: DMAR should have X2APIC optout bit set.
 
 config X2APIC_ONLY
 	prompt "Set X2APIC mode"
 	bool
 	depends on PARALLEL_MP
+	help
+	  coreboot and SMM runtime only use X2APIC mode.
+	  Note: OS switches back to XAPIC mode if VT-d is disabled.
+	  FIXME: S3 resume (and SMM runtime) will break if OS makes the switch.
 
 config X2APIC_RUNTIME
 	prompt "Support both XAPIC and X2APIC"
 	bool
 	depends on PARALLEL_MP
+	help
+	  The switch to X2APIC mode happens early in ramstage. SMM runtime can
+	  support either mode in case the OS switches back to XAPIC.
 
 config X2APIC_LATE_WORKAROUND
 	prompt "Use XAPIC for AP bringup, then change to X2APIC"

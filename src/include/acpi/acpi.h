@@ -1622,7 +1622,10 @@ unsigned long acpi_write_hpet(const struct device *device, unsigned long start,
 void generate_cpu_entries(const struct device *device);
 
 unsigned long acpi_write_dbg2_pci_uart(acpi_rsdp_t *rsdp, unsigned long current,
-				const struct device *dev, uint8_t access_size);
+				       const struct device *dev, uint8_t access_size);
+unsigned long acpi_pl011_write_dbg2_uart(acpi_rsdp_t *rsdp, unsigned long current,
+					 uint64_t base, const char *name);
+
 void acpi_create_dmar(acpi_dmar_t *dmar, enum dmar_flags flags,
 		      unsigned long (*acpi_fill_dmar)(unsigned long));
 unsigned long acpi_create_dmar_drhd(unsigned long current, u8 flags,

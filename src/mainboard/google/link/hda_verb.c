@@ -60,6 +60,9 @@ const u32 cim_verb_data[] = {
 	0x01571b29,
 	0x01570a01,
 
+	/* Enable and set EAPD pin for headphone jack */
+	AZALIA_VERB_12B(0x0, 0x10, 0x78d, 0x2),
+
 	/* Pin Widget Verb Table */
 
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x10280550 */

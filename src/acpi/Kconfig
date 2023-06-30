@@ -68,3 +68,9 @@ config ACPI_LPIT
 	depends on HAVE_ACPI_TABLES
 	help
 	  Selected by platforms that support and fill Intel Low Power Idle Table.
+
+config ACPI_GTDT
+	bool
+	depends on HAVE_ACPI_TABLES
+	help
+	  Selected by platforms that implement ARM generic timers

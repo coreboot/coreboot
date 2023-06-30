@@ -1134,6 +1134,64 @@ static void acpi_create_lpit(acpi_header_t *header, void *unused)
 	header->length = current - (unsigned long)lpit;
 }
 
+static void acpi_create_gtdt(acpi_header_t *header, void *unused)
+{
+	if (!CONFIG(ACPI_GTDT))
+		return;
+
+	acpi_gtdt_t *gtdt = (acpi_gtdt_t *)header;
+	unsigned long current = (unsigned long)gtdt + sizeof(acpi_gtdt_t);
+
+	if (acpi_fill_header(header, "GTDT", GTDT, sizeof(acpi_gtdt_t)) != CB_SUCCESS)
+		return;
+
+	/* Fill out header fields. */
+	gtdt->platform_timer_offset = sizeof(acpi_gtdt_t);
+
+	acpi_soc_fill_gtdt(gtdt);
+	current = acpi_soc_gtdt_add_timers(&gtdt->platform_timer_count, current);
+
+	/* (Re)calculate length. */
+	header->length = current - (unsigned long)gtdt;
+}
+
+unsigned long acpi_gtdt_add_timer_block(unsigned long current, const uint64_t address,
+					   struct acpi_gtdt_timer_entry *timers, size_t number)
+{
+	struct acpi_gtdt_timer_block *block = (struct acpi_gtdt_timer_block *)current;
+	memset(block, 0, sizeof(struct acpi_gtdt_timer_block));
+
+	assert(number < 8 && number != 0);
+	const size_t entries_size = number * sizeof(struct acpi_gtdt_timer_entry);
+
+	block->header.type = ACPI_GTDT_TYPE_TIMER_BLOCK;
+	block->header.length = sizeof(struct acpi_gtdt_timer_block)
+		+ entries_size;
+	block->block_address = address;
+	block->timer_count = number;
+	block->timer_offset = sizeof(struct acpi_gtdt_timer_block);
+	current += sizeof(struct acpi_gtdt_timer_block);
+	memcpy((void *)current, timers, entries_size);
+	current += entries_size;
+	return current;
+}
+
+unsigned long acpi_gtdt_add_watchdog(unsigned long current, uint64_t refresh_frame,
+				     uint64_t control_frame, uint32_t gsiv, uint32_t flags)
+{
+	struct acpi_gtdt_watchdog *wd = (struct acpi_gtdt_watchdog *)current;
+	memset(wd, 0, sizeof(struct acpi_gtdt_watchdog));
+
+	wd->header.type = ACPI_GTDT_TYPE_WATCHDOG;
+	wd->header.length = sizeof(struct acpi_gtdt_watchdog);
+	wd->refresh_frame_address = refresh_frame;
+	wd->control_frame_address = control_frame;
+	wd->timer_interrupt = gsiv;
+	wd->timer_flags = flags;
+
+	return current + sizeof(struct acpi_gtdt_watchdog);
+}
+
 unsigned long acpi_create_lpi_desc_ncst(acpi_lpi_desc_ncst_t *lpi_desc, uint16_t uid)
 {
 	memset(lpi_desc, 0, sizeof(acpi_lpi_desc_ncst_t));
@@ -1333,6 +1391,7 @@ unsigned long write_acpi_tables(const unsigned long start)
 		{ acpi_create_madt, NULL, sizeof(acpi_header_t) },
 		{ acpi_create_bert, NULL, sizeof(acpi_bert_t) },
 		{ acpi_create_spcr, NULL, sizeof(acpi_spcr_t) },
+		{ acpi_create_gtdt, NULL, sizeof(acpi_gtdt_t) },
 	};
 
 	current = start;
@@ -1647,6 +1706,8 @@ int get_acpi_table_revision(enum acpi_tables table)
 		return 0;
 	case SPCR:
 		return 4;
+	case GTDT:
+		return 3;
 	default:
 		return -1;
 	}

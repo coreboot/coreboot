@@ -77,7 +77,7 @@ enum acpi_tables {
 	/* Tables defined by ACPI and used by coreboot */
 	BERT, CEDT, DBG2, DMAR, DSDT, EINJ, FACS, FADT, HEST, HMAT, HPET, IVRS,
 	MADT, MCFG, RSDP, RSDT, SLIT, SRAT, SSDT, TCPA, TPM2, XSDT, ECDT, LPIT,
-	SPCR,
+	SPCR, GTDT,
 	/* Additional proprietary tables used by coreboot */
 	VFCT, NHLT, SPMI, CRAT
 };
@@ -1575,6 +1575,13 @@ unsigned long acpi_create_lpi_desc_ncst(acpi_lpi_desc_ncst_t *lpi_desc, uint16_t
 
 /* chipsets that select ACPI_BERT must implement this function */
 enum cb_err acpi_soc_get_bert_region(void **region, size_t *length);
+
+void acpi_soc_fill_gtdt(acpi_gtdt_t *gtdt);
+unsigned long acpi_soc_gtdt_add_timers(uint32_t *count, unsigned long current);
+unsigned long acpi_gtdt_add_timer_block(unsigned long current, const uint64_t address,
+					   struct acpi_gtdt_timer_entry *timers, size_t number);
+unsigned long acpi_gtdt_add_watchdog(unsigned long current, uint64_t refresh_frame,
+				     uint64_t control_frame, uint32_t gsiv, uint32_t flags);
 
 /* For ACPI S3 support. */
 void __noreturn acpi_resume(void *wake_vec);

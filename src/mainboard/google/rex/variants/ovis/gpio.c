@@ -121,8 +121,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C08, NONE, DEEP, NF2),
 	/* GPP_C09 : [] ==> MISC_SYNC_IN */
 	PAD_NC(GPP_C09, NONE),
-	/* GPP_C10 : [] ==> LAN0_CLKREQ_ODL */
-	PAD_NC(GPP_C10, NONE),
+	/* GPP_C10 : [] ==> EN_LAN_RAILS */
+	PAD_CFG_GPO(GPP_C10, 1, DEEP),
 	/* GPP_C11 : [] ==> SD_CLKREQ_ODL */
 	PAD_CFG_NF(GPP_C11, NONE, DEEP, NF1),
 	/* GPP_C12 : [] ==> WWAN_CLKREQ_ODL */

@@ -400,13 +400,16 @@ static const struct pad_config early_gpio_table[] = {
 
 	/* GPP_H10 : [] ==> SOC_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER_LOCK(GPP_H10, NONE, LOCK_CONFIG),
+
+	/* GPP_D02 : [] ==> SD_PERST_L */
+	PAD_CFG_GPO(GPP_D02, 0, DEEP),
 };
 
 static const struct pad_config romstage_gpio_table[] = {
 	/* A20 : [] ==> SSD_PERST_L */
 	PAD_CFG_GPO(GPP_A20, 0, DEEP),
 	/* GPP_D02 : [] ==> SD_PERST_L */
-	PAD_CFG_GPO(GPP_D02, 1, DEEP),
+	PAD_CFG_GPO(GPP_D02, 0, DEEP),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

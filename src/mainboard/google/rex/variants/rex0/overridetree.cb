@@ -535,10 +535,10 @@ chip soc/intel/meteorlake
 
 				register "nvm_compat" = ""atmel,24c64""
 
-				register "nvm_size" = "0x10000"
+				register "nvm_size" = "0x2000"
 				register "nvm_pagesize" = "0x01"
 				register "nvm_readonly" = "0x01"
-				register "nvm_width" = "0x0E"
+				register "nvm_width" = "0x10"
 
 				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D0"
 
@@ -656,7 +656,7 @@ chip soc/intel/meteorlake
 				register "chip_name" = ""ST M24C64X""
 				register "device_type" = "INTEL_ACPI_CAMERA_NVM"
 
-				register "nvm_size" = "0x10000"
+				register "nvm_size" = "0x2000"
 				register "nvm_pagesize" = "1"
 				register "nvm_readonly" = "1"
 				register "nvm_width" = "0x10"

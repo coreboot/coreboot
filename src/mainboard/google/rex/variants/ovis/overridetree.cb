@@ -63,7 +63,14 @@ chip soc/intel/meteorlake
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 		end	#PCIE7 LAN1 card
-
+		device ref pcie_rp10 on
+			# Enable LAN0 Card PCIE 10 using clk 8
+			register "pcie_rp[PCH_RP(10)]" = "{
+				.clk_src = 8,
+				.clk_req = 8,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end	#PCIE10 LAN0 card
 		device ref pcie_rp11 on
 			# Enable SSD Card PCIE 11 using clk 7
 			register "pcie_rp[PCH_RP(11)]" = "{

@@ -378,7 +378,7 @@ config VBOOT_HASH_BLOCK_SIZE
 	default 0x1000
 
 config CBFS_SIZE
-	default 0x200000
+	default 0x400000
 
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex

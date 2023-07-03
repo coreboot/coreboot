@@ -1,13 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <amdblocks/iommu.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <lib.h>
-
-#define IOMMU_CAP_BASE_LO 0x44
-#define IOMMU_CAP_BASE_HI 0x48
-#define IOMMU_ENABLE (1 << 0)
 
 static void iommu_read_resources(struct device *dev)
 {

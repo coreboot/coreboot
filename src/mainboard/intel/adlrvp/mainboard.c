@@ -79,7 +79,7 @@ const char *mainboard_vbt_filename(void)
 	switch (sku_id) {
 	case ADL_P_LP5_1:
 	case ADL_P_LP5_2:
-		if (cpu_id == CPUID_RAPTORLAKE_P_J0)
+		if (cpu_id == CPUID_RAPTORLAKE_J0)
 			return "vbt_adlrvp_rpl_lp5.bin";
 		return "vbt_adlrvp_lp5.bin";
 	case ADL_M_LP5:

@@ -12,7 +12,7 @@ struct panel_serializable_data STA_ILI9882T = {
 			.pixel_clock = 165280,
 			.lvds_dual_channel = 0,
 			.refresh = 60,
-			.ha = 1200, .hbl = 94, .hso = 32, .hspw = 30,
+			.ha = 1200, .hbl = 174, .hso = 72, .hspw = 30,
 			.va = 1920, .vbl = 80, .vso = 68, .vspw = 2,
 			.phsync = '-', .pvsync = '-',
 			.x_mm = 141, .y_mm = 226,

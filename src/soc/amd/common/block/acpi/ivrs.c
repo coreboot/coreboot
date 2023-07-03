@@ -5,6 +5,7 @@
 #include <amdblocks/cpu.h>
 #include <amdblocks/data_fabric.h>
 #include <amdblocks/ioapic.h>
+#include <amdblocks/iommu.h>
 #include <arch/ioapic.h>
 #include <console/console.h>
 #include <cpu/amd/cpuid.h>
@@ -339,8 +340,8 @@ unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 		/* BDF <bus>:00.2 */
 		ivhd->device_id = 0x02 | (nb_dev->bus->secondary << 8);
 		ivhd->capability_offset = pci_find_capability(iommu_dev, IOMMU_CAP_ID);
-		ivhd->iommu_base_low = pci_read_config32(iommu_dev, 0x44) & 0xffffc000;
-		ivhd->iommu_base_high = pci_read_config32(iommu_dev, 0x48);
+		ivhd->iommu_base_low = pci_read_config32(iommu_dev, IOMMU_CAP_BASE_LO) & 0xffffc000;
+		ivhd->iommu_base_high = pci_read_config32(iommu_dev, IOMMU_CAP_BASE_HI);
 
 		cap_offset_0 = pci_read_config32(iommu_dev, ivhd->capability_offset);
 		cap_offset_10 = pci_read_config32(iommu_dev,

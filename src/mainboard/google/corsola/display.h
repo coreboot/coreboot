@@ -8,7 +8,8 @@
 #include <soc/i2c.h>
 
 #define BRIDGE_I2C		I2C0
-#define PMIC_TPS65132_I2C	I2C6
+#define PMIC_AW37503_SLAVE	0x3E
+#define PMIC_I2C_BUS		I2C6
 
 struct panel_description {
 	void (*power_on)(void);	/* Callback to turn on panel */
@@ -18,6 +19,8 @@ struct panel_description {
 	enum lb_fb_orientation orientation;
 };
 
+void aw37503_init(unsigned int bus);
+bool is_pmic_aw37503(unsigned int bus);
 int configure_display(void);
 uint32_t panel_id(void);
 

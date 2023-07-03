@@ -18,7 +18,7 @@ static void mipi_panel_power_on(void)
 		{ PMIC_TPS65132_ASSDD, 0x5b, 0xFF },
 	};
 	const struct tps65132s_cfg cfg = {
-		.i2c_bus = PMIC_TPS65132_I2C,
+		.i2c_bus = PMIC_I2C_BUS,
 		.en = GPIO_EN_PP3300_DISP_X,
 		.sync = GPIO_EN_PP3300_SDBRDG_X,
 		.settings = reg_settings,
@@ -26,8 +26,17 @@ static void mipi_panel_power_on(void)
 	};
 
 	mainboard_set_regulator_voltage(MTK_REGULATOR_VIO18, 1800000);
-	if (tps65132s_setup(&cfg) != CB_SUCCESS)
+	mtk_i2c_bus_init(PMIC_I2C_BUS, I2C_SPEED_FAST);
+
+	if (is_pmic_aw37503(PMIC_I2C_BUS)) {
+		printk(BIOS_DEBUG, "Initialize and power on PMIC AW37503\n");
+		aw37503_init(PMIC_I2C_BUS);
+		gpio_output(GPIO_EN_PP3300_DISP_X, 1);
+		mdelay(2);
+		gpio_output(GPIO_EN_PP3300_SDBRDG_X, 1);
+	} else if (tps65132s_setup(&cfg) != CB_SUCCESS) {
 		printk(BIOS_ERR, "Failed to setup tps65132s\n");
+	}
 
 	/* DISP_RST_1V8_L */
 	gpio_output(GPIO_EDPBRDG_RST_L, 1);

@@ -30,10 +30,6 @@ enum cb_err tps65132s_setup(const struct tps65132s_cfg *cfg)
 	u8 val;
 	int i;
 
-	/* Initialize I2C bus for PMIC TPS65132 */
-	mtk_i2c_bus_init(cfg->i2c_bus, I2C_SPEED_FAST);
-	mdelay(10);
-
 	gpio_output(cfg->en, 1);
 	gpio_output(cfg->sync, 1);
 	mdelay(10);

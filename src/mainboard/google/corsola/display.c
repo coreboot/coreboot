@@ -3,6 +3,7 @@
 #include <boardid.h>
 #include <cbfs.h>
 #include <console/console.h>
+#include <device/i2c_simple.h>
 #include <edid.h>
 #include <gpio.h>
 #include <soc/ddp.h>
@@ -13,12 +14,31 @@
 #include "display.h"
 #include "gpio.h"
 
+void aw37503_init(unsigned int bus)
+{
+	i2c_write_field(bus, PMIC_AW37503_SLAVE, 0x00, 0x14, 0x1F, 0);
+	i2c_write_field(bus, PMIC_AW37503_SLAVE, 0x01, 0x14, 0x1F, 0);
+	i2c_write_field(bus, PMIC_AW37503_SLAVE, 0x21, 0x4C, 0xFF, 0);
+	i2c_write_field(bus, PMIC_AW37503_SLAVE, 0x03, 0x43, 0xFF, 0);
+	i2c_write_field(bus, PMIC_AW37503_SLAVE, 0x21, 0x00, 0xFF, 0);
+}
+
+bool is_pmic_aw37503(unsigned int bus)
+{
+	u8 vendor_id;
+	return (!i2c_read_field(bus, PMIC_AW37503_SLAVE,
+				0x04, &vendor_id, 0x0F, 0) && vendor_id == 0x01);
+}
+
 static void backlight_control(void)
 {
 	/* Disable backlight before turning on bridge */
 	gpio_output(GPIO_AP_EDP_BKLTEN, 0);
 	gpio_output(GPIO_BL_PWM_1V8, 0);
-	gpio_output(GPIO_EN_PP3300_DISP_X, 1);
+	/* For staryu variants, GPIO_EN_PP3300_DISP_X is controlled in
+	   mipi_panel_power_on() */
+	if (!CONFIG(BOARD_GOOGLE_STARYU_COMMON))
+		gpio_output(GPIO_EN_PP3300_DISP_X, 1);
 }
 
 struct panel_description *get_panel_from_cbfs(struct panel_description *desc)

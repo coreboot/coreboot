@@ -48,6 +48,13 @@ static void mainboard_init(struct device *dev)
 		if (configure_display() < 0)
 			printk(BIOS_ERR, "%s: Failed to init display\n", __func__);
 	} else {
+		if (CONFIG(BOARD_GOOGLE_STARYU_COMMON)) {
+			mtk_i2c_bus_init(PMIC_I2C_BUS, I2C_SPEED_FAST);
+			if (is_pmic_aw37503(PMIC_I2C_BUS)) {
+				printk(BIOS_DEBUG, "Initialize PMIC AW37503\n");
+				aw37503_init(PMIC_I2C_BUS);
+			}
+		}
 		printk(BIOS_INFO, "%s: Skipped display init\n", __func__);
 	}
 }

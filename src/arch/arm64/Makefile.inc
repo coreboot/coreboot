@@ -150,7 +150,7 @@ endif
 # Build ARM TF in debug mode (with assertions) if coreboot has hard assertions
 ifeq ($(CONFIG_FATAL_ASSERTS),y)
 BL31_MAKEARGS += DEBUG=1
-endif # CONFIG_CONSOLE_SERIAL
+endif # CONFIG_FATAL_ASSERTS
 
 # ARM TF's VERBOSE (50) is *very* spammy, so default to INFO (40)
 BL31_MAKEARGS += LOG_LEVEL=40

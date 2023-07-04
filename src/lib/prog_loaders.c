@@ -92,14 +92,14 @@ void __noreturn run_ramstage(void)
 	else
 		timestamp_add_now(TS_ROMSTAGE_END);
 
+	vboot_run_logic();
+
 	/*
 	 * Only x86 systems using ramstage stage cache currently take the same
 	 * firmware path on resume.
 	 */
 	if (ENV_X86 && resume_from_stage_cache())
 		run_ramstage_from_resume(&ramstage);
-
-	vboot_run_logic();
 
 	timestamp_add_now(TS_COPYRAM_START);
 

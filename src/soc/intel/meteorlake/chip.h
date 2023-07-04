@@ -24,12 +24,14 @@
 /* Types of different SKUs */
 enum soc_intel_meteorlake_power_limits {
 	MTL_P_282_CORE,
+	MTL_P_682_CORE,
 	MTL_POWER_LIMITS_COUNT
 };
 
 /* TDP values for different SKUs */
 enum soc_intel_meteorlake_cpu_tdps {
-	TDP_15W = 15
+	TDP_15W = 15,
+	TDP_28W = 28
 };
 
 /* Mapping of different SKUs based on CPU ID and TDP values */
@@ -39,6 +41,7 @@ static const struct {
 	enum soc_intel_meteorlake_cpu_tdps cpu_tdp;
 } cpuid_to_mtl[] = {
 	{ PCI_DID_INTEL_MTL_P_ID_2, MTL_P_282_CORE, TDP_15W },
+	{ PCI_DID_INTEL_MTL_P_ID_1, MTL_P_682_CORE, TDP_28W },
 };
 
 /* Types of display ports */

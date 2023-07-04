@@ -7,7 +7,7 @@
 
 #include "q35.h"
 
-static void bootblock_northbridge_init(void)
+void bootblock_soc_early_init(void)
 {
 	/*
 	 * The "io" variant of the config access is explicitly used to
@@ -24,9 +24,6 @@ static void bootblock_northbridge_init(void)
 	const uint32_t pciexbar = make_pciexbar();
 	pci_io_write_config32(HOST_BRIDGE, D0F0_PCIEXBAR_HI, 0);
 	pci_io_write_config32(HOST_BRIDGE, D0F0_PCIEXBAR_LO, pciexbar);
-
-	if (CONFIG(BOOTBLOCK_CONSOLE))
-		mainboard_machine_check();
 }
 
 static void bootblock_southbridge_init(void)
@@ -40,6 +37,8 @@ static void bootblock_southbridge_init(void)
 
 void bootblock_soc_init(void)
 {
-	bootblock_northbridge_init();
+	if (CONFIG(BOOTBLOCK_CONSOLE))
+		mainboard_machine_check();
+
 	bootblock_southbridge_init();
 }

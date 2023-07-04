@@ -19,6 +19,9 @@ chip soc/intel/meteorlake
 	# putting it under register "common_soc_config" in overridetree.cb file.
 	register "common_soc_config.pch_thermal_trip" = "130"
 
+	# Temporary setting TCC of 90C = Tj max (110) - TCC_Offset (20)
+	register "tcc_offset" = "20"
+
 	# Enable CNVi WiFi
 	register "cnvi_wifi_core" = "true"
 

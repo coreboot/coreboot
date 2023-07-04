@@ -118,6 +118,7 @@ static const struct pad_config gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
+	PAD_CFG_GPI(GPP_B5, NONE, DEEP),		/* DRAM population */
 	PAD_CFG_NF(GPP_C0, NONE, DEEP, NF1),		/* SMB_CLK */
 	PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1),		/* SMB_DATA */
 	PAD_CFG_NF(GPP_C2, NONE, DEEP, NF2),		/* SMB_ALERT_N */

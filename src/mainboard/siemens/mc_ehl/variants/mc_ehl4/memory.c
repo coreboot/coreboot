@@ -57,3 +57,11 @@ const struct mb_cfg *variant_memcfg_config(void)
 {
 	return &mc_ehl_lpddr4x_memcfg_cfg;
 }
+
+bool half_populated(void)
+{
+	/* There are two different memory expansion variants of this mainboard.
+	   The GPIO GPP_B5 indicates whether the mainboard is equipped with half- or
+	   full-populated DRAM. */
+	return gpio_get(GPP_B5);
+}

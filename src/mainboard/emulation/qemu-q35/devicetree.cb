@@ -1,7 +1,7 @@
 chip mainboard/emulation/qemu-q35
 	device cpu_cluster 0 on end
 	device domain 0 on
-		device pci 0.0 mandatory end		# northbridge (q35)
+		device pci 0.0 mandatory ops nb_operations end		# northbridge (q35)
 		chip southbridge/intel/i82801ix
 			# present unconditionally
 			device pci 1f.0 mandatory

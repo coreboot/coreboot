@@ -63,15 +63,9 @@ static void qemu_nb_read_resources(struct device *dev)
 }
 
 
-static struct device_operations nb_operations = {
+struct device_operations nb_operations = {
 	.read_resources   = qemu_nb_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = qemu_nb_init,
-};
-
-static const struct pci_driver nb_driver __pci_driver = {
-	.ops = &nb_operations,
-	.vendor = 0x8086,
-	.device = 0x29c0,
 };

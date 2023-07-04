@@ -1,7 +1,7 @@
 chip mainboard/emulation/qemu-i440fx
 	device cpu_cluster 0 on	end
 	device domain 0 on
-		device pci 0.0 on end		# northbridge (i440fx)
+		device pci 0.0 on ops nb_operations end		# northbridge (i440fx)
 		chip southbridge/intel/i82371eb # southbridge
 			device pci 01.0 on end	# ISA bridge
 			device pci 01.1 on end	# IDE

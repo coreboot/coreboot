@@ -10,6 +10,11 @@
 #include <string.h>
 #include <types.h>
 
+bool __weak half_populated(void)
+{
+	return false;
+}
+
 void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
 	static struct spd_info spd_info;
@@ -29,7 +34,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 		die("SPD in HW-Info not valid!\n");
 	}
 	/* Initialize variant specific configurations */
-	memcfg_init(&memupd->FspmConfig, board_cfg, &spd_info, false);
+	memcfg_init(&memupd->FspmConfig, board_cfg, &spd_info, half_populated());
 
 	/* Enable Row-Hammer prevention */
 	memupd->FspmConfig.RhPrevention = 1;

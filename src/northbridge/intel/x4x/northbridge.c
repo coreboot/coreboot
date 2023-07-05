@@ -13,15 +13,14 @@
 #include <northbridge/intel/x4x/x4x.h>
 #include <cpu/intel/smm_reloc.h>
 #include <cpu/intel/speedstep.h>
+#include <cpu/x86/smm.h>
 
 static void mch_domain_read_resources(struct device *dev)
 {
 	u8 index;
 	u64 tom, touud;
-	u32 tomk, tolud, delta_cbmem;
-	u32 uma_sizek = 0;
+	u32 tolud;
 
-	const u32 top32memk = 4 * (GiB / KiB);
 	index = 3;
 
 	pci_domain_read_resources(dev);
@@ -42,48 +41,11 @@ static void mch_domain_read_resources(struct device *dev)
 
 	printk(BIOS_DEBUG, "TOUUD 0x%llx TOLUD 0x%08x TOM 0x%llx\n", touud, tolud, tom);
 
-	tomk = tolud >> 10;
-
-	/* Graphics memory comes next */
-
-	const u16 ggc = pci_read_config16(mch, D0F0_GGC);
-	printk(BIOS_DEBUG, "IGD decoded, subtracting ");
-
-	/* Graphics memory */
-	const u32 gms_sizek = decode_igd_memory_size((ggc >> 4) & 0xf);
-	printk(BIOS_DEBUG, "%uM UMA", gms_sizek >> 10);
-	tomk -= gms_sizek;
-	uma_sizek += gms_sizek;
-
-	/* GTT Graphics Stolen Memory Size (GGMS) */
-	const u32 gsm_sizek = decode_igd_gtt_size((ggc >> 8) & 0xf);
-	printk(BIOS_DEBUG, " and %uM GTT\n", gsm_sizek >> 10);
-	tomk -= gsm_sizek;
-	uma_sizek += gsm_sizek;
-
-	printk(BIOS_DEBUG, "TSEG decoded, subtracting ");
-	const u32 tseg_sizek = decode_tseg_size(
-		pci_read_config8(dev, D0F0_ESMRAMC)) >> 10;
-	uma_sizek += tseg_sizek;
-	tomk -= tseg_sizek;
-
-	printk(BIOS_DEBUG, "%dM\n", tseg_sizek >> 10);
-
-	/* cbmem_top can be shifted downwards due to alignment.
-	   Mark the region between cbmem_top and tomk as unusable */
-	delta_cbmem = tomk - ((uintptr_t)cbmem_top() >> 10);
-	tomk -= delta_cbmem;
-	uma_sizek += delta_cbmem;
-
-	printk(BIOS_DEBUG, "Unused RAM between cbmem_top and TOM: 0x%xK\n", delta_cbmem);
-
-	printk(BIOS_INFO, "Available memory below 4GB: %uM\n", tomk >> 10);
-
 	/* Report the memory regions */
 	ram_from_to(dev, index++, 0, 0xa0000);
 	mmio_from_to(dev, index++, 0xa0000, 0xc0000);
 	reserved_ram_from_to(dev, index++, 0xc0000, 1 * MiB);
-	ram_resource_kb(dev, index++, 0x100000 >> 10, (tomk - (0x100000 >> 10)));
+	ram_from_to(dev, index++, 1 * MiB, (uintptr_t)cbmem_top());
 
 	/*
 	 * If >= 4GB installed then memory from TOLUD to 4GB
@@ -91,14 +53,14 @@ static void mch_domain_read_resources(struct device *dev)
 	 */
 	upper_ram_end(dev, index++, touud);
 
-	printk(BIOS_DEBUG, "Adding UMA memory area base=0x%08x size=0x%08x\n",
-	       tomk << 10, uma_sizek << 10);
-	uma_resource_kb(dev, index++, tomk, uma_sizek);
+	uintptr_t tseg_base;
+	size_t tseg_size;
+	smm_region(&tseg_base, &tseg_size);
+	mmio_from_to(dev, index++, tseg_base, tolud);
+	reserved_ram_from_to(dev, index++, (uintptr_t)cbmem_top(), tseg_base);
 
 	/* Reserve high memory where the NB BARs are up to 4GiB */
-	fixed_mem_resource_kb(dev, index++, DEFAULT_HECIBAR >> 10,
-				top32memk - (DEFAULT_HECIBAR >> 10),
-				IORESOURCE_RESERVE);
+	mmio_from_to(dev, index++, DEFAULT_HECIBAR, 4ull * GiB);
 
 	mmconf_resource(dev, index++);
 }

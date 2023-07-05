@@ -125,7 +125,6 @@ Method (_QF1, 0, NotSerialized)			// Event: Temperature Trigger
 Method (_Q79, 0, NotSerialized)			// Event: USB Type-C
 {
 	Printf ("EC: USB Type-C")
-	UCEV()
 }
 
 Method (_Q85, 0, NotSerialized)			// Event: HOME

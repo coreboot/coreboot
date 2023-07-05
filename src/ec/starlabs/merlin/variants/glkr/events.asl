@@ -62,7 +62,6 @@ Method (_Q02, 0, NotSerialized)			// Event: Turn off Backlight
 Method (_Q79, 0, NotSerialized)			// Event: USB Type-C
 {
 	Printf ("EC: USB Type-C")
-	UCEV()
 }
 
 Method (_Q60, 0, NotSerialized)			// Event: Trackpad Enable

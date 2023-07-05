@@ -174,7 +174,6 @@ Method (_Q54, 0, NotSerialized)			// Event: Power Button Press
 Method (_Q79, 0, NotSerialized)			// Event: USB Type-C
 {
 	Printf ("EC: USB Type-C")
-	UCEV()
 }
 
 Method (_Q80, 0, NotSerialized)			// Event: Volume Up

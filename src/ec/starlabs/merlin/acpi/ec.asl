@@ -139,7 +139,6 @@ Scope (\_SB.PCI0.LPCB)
 		#include "battery.asl"
 		#include "events.asl"
 		#include "lid.asl"
-		#include "typec.asl"
 
 		Method (_REG, 2, NotSerialized)
 		{

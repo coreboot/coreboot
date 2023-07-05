@@ -36,8 +36,6 @@ int bridge_silicon_revision(void)
 
 static void add_fixed_resources(struct device *dev, int index)
 {
-	struct resource *resource;
-
 	/* 0xe0000000-0xf0000000 PCIe config.
 	   0xfed10000-0xfed14000 MCH
 	   0xfed17000-0xfed18000 HECI
@@ -47,12 +45,7 @@ static void add_fixed_resources(struct device *dev, int index)
 	   0xfed90000-0xfed94000 IOMMU
 	   0xff800000-0xffffffff ROM. */
 
-	resource = new_resource(dev, index++);
-	resource->base = (resource_t)HPET_BASE_ADDRESS;
-	resource->size = (resource_t)0x00100000;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE | IORESOURCE_FIXED |
-			  IORESOURCE_STORED | IORESOURCE_ASSIGNED;
-
+	mmio_range(dev, index++, HPET_BASE_ADDRESS, 0x00100000);
 	mmio_from_to(dev, index++, 0xa0000, 0xc0000);
 	reserved_ram_from_to(dev, index++, 0xc0000, 1 * MiB);
 }
@@ -104,10 +97,10 @@ static void mc_read_resources(struct device *dev)
 	printk(BIOS_DEBUG, "TOUUD: 0x%x\n", (unsigned int)touud);
 
 	/* Report the memory regions */
-	ram_resource_kb(dev, index++, 0, 0xa0000 / KiB);
-	ram_resource_kb(dev, index++, 1 * MiB / KiB, (tseg_base - 1 * MiB) / KiB);
+	ram_range(dev, index++, 0, 0xa0000);
+	ram_from_to(dev, index++, 1 * MiB, tseg_base);
 
-	mmio_resource_kb(dev, index++, tseg_base / KiB, CONFIG_SMM_TSEG_SIZE / KiB);
+	mmio_range(dev, index++, tseg_base, CONFIG_SMM_TSEG_SIZE);
 
 	reg16 = pci_read_config16(pcidev_on_root(0, 0), GGC);
 	const int uma_sizes_gtt[16] =
@@ -129,16 +122,16 @@ static void mc_read_resources(struct device *dev)
 	if (gtt_base > tseg_end) {
 		/* Reserve the gap. MMIO doesn't work in this range. Keep
 		   it uncacheable, though, for easier MTRR allocation. */
-		mmio_resource_kb(dev, index++, tseg_end / KiB, (gtt_base - tseg_end) / KiB);
+		mmio_from_to(dev, index++, tseg_end, gtt_base);
 	}
-	mmio_resource_kb(dev, index++, gtt_base / KiB, uma_size_gtt * KiB);
-	mmio_resource_kb(dev, index++, igd_base / KiB, uma_size_igd * KiB);
+	mmio_range(dev, index++, gtt_base, uma_size_gtt * MiB);
+	mmio_range(dev, index++, igd_base, uma_size_igd * MiB);
 
 	upper_ram_end(dev, index++, touud * MiB);
 
 	/* This memory is not DMA-capable. */
 	if (touud >= 8192 - 64)
-		bad_ram_resource_kb(dev, index++, 0x1fc000000ULL / KiB, 0x004000000 / KiB);
+		bad_ram_range(dev, index++, 0x1fc000000ULL, 0x004000000);
 
 	add_fixed_resources(dev, index);
 }

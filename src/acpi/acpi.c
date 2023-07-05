@@ -1599,7 +1599,8 @@ void *acpi_find_wakeup_vector(void)
 	}
 
 	printk(BIOS_DEBUG, "FADT found at %p\n", fadt);
-	facs = (acpi_facs_t *)(uintptr_t)fadt->firmware_ctrl;
+	facs = (acpi_facs_t *)(uintptr_t)((uint64_t)fadt->x_firmware_ctl_l
+			       | (uint64_t)fadt->x_firmware_ctl_h << 32);
 
 	if (facs == NULL) {
 		printk(BIOS_ALERT,

@@ -6,13 +6,13 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <cpu/cpu.h>
+#include <cpu/x86/smm.h>
 
 #include "e7505.h"
 
 static void mch_domain_read_resources(struct device *dev)
 {
 	int idx;
-	unsigned long tolmk;
 	uint64_t tom, remapbase, remaplimit;
 	struct device *mc_dev;
 
@@ -21,9 +21,6 @@ static void mch_domain_read_resources(struct device *dev)
 	mc_dev = pcidev_on_root(0, 0);
 	if (!mc_dev)
 		die("Could not find MCH device\n");
-
-	tolmk = pci_read_config16(mc_dev, TOLM) >> 11;
-	tolmk <<= 17;
 
 	tom = pci_read_config8(mc_dev, DRB_ROW_7);
 	tom <<= 26;
@@ -39,12 +36,15 @@ static void mch_domain_read_resources(struct device *dev)
 
 	/* Report the memory regions */
 	idx = 10;
-	ram_resource_kb(dev, idx++, 0, tolmk);
-	mmio_resource_kb(dev, idx++, 0xa0000 / KiB, (0xc0000 - 0xa0000) / KiB);
+	ram_range(dev, idx++, 0, 0xa0000);
+	mmio_from_to(dev, idx++, 0xa0000, 0xc0000);
+	ram_from_to(dev, idx++, 0xc0000, 1 * MiB);
 
-	uintptr_t tseg_memory_base = northbridge_get_tseg_base();
-	size_t tseg_memory_size = northbridge_get_tseg_size();
-	mmio_resource_kb(dev, idx++, tseg_memory_base / KiB, tseg_memory_size / KiB);
+	uintptr_t tseg_base;
+	size_t tseg_size;
+	smm_region(&tseg_base, &tseg_size);
+	ram_from_to(dev, idx++, 1 * MiB, tseg_base);
+	mmio_range(dev, idx++, tseg_base, tseg_size);
 
 	ASSERT(tom == remapbase);
 	upper_ram_end(dev, idx++, remaplimit);

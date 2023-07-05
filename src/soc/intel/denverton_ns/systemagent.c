@@ -190,11 +190,8 @@ static void mc_report_map_entries(struct device *dev, uint64_t *values)
 
 static void mc_add_dram_resources(struct device *dev)
 {
-	unsigned long base_k, size_k;
 	unsigned long index;
-	struct resource *resource;
 	uint64_t mc_values[NUM_MAP_ENTRIES];
-	uintptr_t top_of_ram;
 
 	/* Read in the MAP registers and report their values. */
 	mc_read_map_entries(dev, &mc_values[0]);
@@ -204,8 +201,8 @@ static void mc_add_dram_resources(struct device *dev)
 	 * These are the host memory ranges that should be added:
 	 * - 0 -> 0xa0000: cacheable
 	 * - 0xc0000 -> 0x100000 : reserved
-	 * - 0x100000 -> top_of_ram : cacheable
-	 * - top_of_ram -> TSEG: uncacheable
+	 * - 0x100000 -> cbmem_top() : cacheable
+	 * - cbmem_top() -> TSEG: uncacheable
 	 * - TESG -> TOLUD: cacheable with standard MTRRs and reserved
 	 * - 4GiB -> TOUUD: cacheable
 	 *
@@ -232,46 +229,27 @@ static void mc_add_dram_resources(struct device *dev)
 	 * PCI_BASE_ADDRESS_0.
 	 */
 	index = 0;
-	top_of_ram = (uintptr_t)cbmem_top();
 
-	/* 0 - > 0xa0000 */
-	base_k = 0;
-	size_k = (0xa0000 >> 10) - base_k;
-	ram_resource_kb(dev, index++, base_k, size_k);
+	/*
+	 * 0 - > 0xa0000: RAM
+	 * 0xa0000 - 0xbffff: Legacy VGA
+	 * 0xc0000 - 0xfffff: RAM
+	 */
+	ram_range(dev, index++, 0, 0xa0000);
+	mmio_from_to(dev, index++, 0xa0000, 0xc0000);
+	reserved_ram_from_to(dev, index++, 0xc0000, 1 * MiB);
 
-	/* 0x100000 -> top_of_ram */
-	base_k = 0x100000 >> 10;
-	size_k = (top_of_ram >> 10) - base_k;
-	ram_resource_kb(dev, index++, base_k, size_k);
+	/* 0x100000 -> cbmem_top() */
+	ram_from_to(dev, index++, 1 * MiB, (uintptr_t)cbmem_top());
 
-	/* top_of_ram -> TSEG */
-	resource = new_resource(dev, index++);
-	resource->base = top_of_ram;
-	resource->size = mc_values[TSEG_REG] - top_of_ram;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
-			  IORESOURCE_STORED | IORESOURCE_RESERVE |
-			  IORESOURCE_ASSIGNED;
+	/* cbmem_top() -> TSEG */
+	mmio_from_to(dev, index++, (uintptr_t)cbmem_top(), mc_values[TSEG_REG]);
 
 	/* TSEG -> TOLUD */
-	resource = new_resource(dev, index++);
-	resource->base = mc_values[TSEG_REG];
-	resource->size = mc_values[TOLUD_REG] - mc_values[TSEG_REG];
-	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
-			  IORESOURCE_STORED | IORESOURCE_RESERVE |
-			  IORESOURCE_ASSIGNED | IORESOURCE_CACHEABLE;
+	reserved_ram_from_to(dev, index++, mc_values[TSEG_REG], mc_values[TOLUD_REG]);
 
 	/* 4GiB -> TOUUD */
 	upper_ram_end(dev, index++, mc_values[TOUUD_REG]);
-
-	/*
-	 * Reserve everything between A segment and 1MB:
-	 *
-	 * 0xa0000 - 0xbffff: legacy VGA
-	 * 0xc0000 - 0xfffff: reserved RAM
-	 */
-	mmio_resource_kb(dev, index++, (0xa0000 >> 10), (0xc0000 - 0xa0000) >> 10);
-	reserved_ram_resource_kb(dev, index++, (0xc0000 >> 10),
-			      (0x100000 - 0xc0000) >> 10);
 }
 
 static void systemagent_read_resources(struct device *dev)

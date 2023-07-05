@@ -96,7 +96,6 @@ static void mc_add_fixed_mmio_resources(struct device *dev)
 	for (i = 0; i < ARRAY_SIZE(mc_fixed_resources); i++) {
 		u32 base;
 		u32 size;
-		struct resource *resource;
 		unsigned int index;
 
 		size = mc_fixed_resources[i].size;
@@ -104,12 +103,7 @@ static void mc_add_fixed_mmio_resources(struct device *dev)
 		if (!mc_fixed_resources[i].get_resource(dev, index, &base, &size))
 			continue;
 
-		resource = new_resource(dev, mc_fixed_resources[i].index);
-		resource->base = base;
-		resource->size = size;
-		resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_STORED |
-				  IORESOURCE_RESERVE | IORESOURCE_ASSIGNED;
-
+		mmio_range(dev, mc_fixed_resources[i].index, base, size);
 		printk(BIOS_DEBUG, "%s: Adding %s @ %x 0x%08lx-0x%08lx.\n",
 		       __func__, mc_fixed_resources[i].description, index,
 		       (unsigned long)base, (unsigned long)(base + size - 1));
@@ -236,8 +230,7 @@ static void mc_report_map_entries(struct device *dev, uint64_t *values)
 
 static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 {
-	unsigned long base_k, size_k, index;
-	struct resource *resource;
+	int index;
 	uint64_t mc_values[NUM_MAP_ENTRIES];
 
 	/* Read in the MAP registers and report their values */
@@ -283,43 +276,29 @@ static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 	 */
 	index = *resource_cnt;
 
-	/* 0 - > 0xa0000 */
-	base_k = 0;
-	size_k = (0xa0000 >> 10) - base_k;
-	ram_resource_kb(dev, index++, base_k, size_k);
-
-	/* 0xc0000 -> TSEG - DPR */
-	base_k = 0xc0000 >> 10;
-	size_k = (unsigned long)(mc_values[TSEG_REG] >> 10) - base_k;
-	size_k -= dpr.size * MiB / KiB;
-	ram_resource_kb(dev, index++, base_k, size_k);
-
-	/* TSEG - DPR -> BGSM */
-	resource = new_resource(dev, index++);
-	resource->base = mc_values[TSEG_REG] - dpr.size * MiB;
-	resource->size = mc_values[BGSM_REG] - (mc_values[TSEG_REG] - dpr.size * MiB);
-	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_STORED |
-			  IORESOURCE_RESERVE | IORESOURCE_ASSIGNED | IORESOURCE_CACHEABLE;
-
-	/* BGSM -> TOLUD. If the IGD is disabled, BGSM can equal TOLUD. */
-	if (mc_values[BGSM_REG] != mc_values[TOLUD_REG]) {
-		resource = new_resource(dev, index++);
-		resource->base = mc_values[BGSM_REG];
-		resource->size = mc_values[TOLUD_REG] - mc_values[BGSM_REG];
-		resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_STORED |
-				  IORESOURCE_RESERVE | IORESOURCE_ASSIGNED;
-	}
-
-	/* 4GiB -> TOUUD */
-	upper_ram_end(dev, index++, mc_values[TOUUD_REG]);
-
-	/* Reserve everything between A segment and 1MB:
-	 *
+	/*
+	 * 0 - > 0xa0000: RAM
 	 * 0xa0000 - 0xbffff: Legacy VGA
 	 * 0xc0000 - 0xfffff: RAM
 	 */
-	mmio_resource_kb(dev, index++, (0xa0000 >> 10), (0xc0000 - 0xa0000) >> 10);
-	reserved_ram_resource_kb(dev, index++, (0xc0000 >> 10), (0x100000 - 0xc0000) >> 10);
+
+	ram_range(dev, index++, 0, 0xa0000);
+	mmio_from_to(dev, index++, 0xa0000, 0xc0000);
+	reserved_ram_from_to(dev, index++, 0xc0000, 1 * MiB);
+
+	/* 1MiB -> TSEG - DPR */
+	ram_from_to(dev, index++, 1 * MiB, mc_values[TSEG_REG] - dpr.size * MiB);
+
+	/* TSEG - DPR -> BGSM */
+	reserved_ram_from_to(dev, index++, mc_values[TSEG_REG] - dpr.size * MiB,
+			     mc_values[BGSM_REG]);
+
+	/* BGSM -> TOLUD. If the IGD is disabled, BGSM can equal TOLUD. */
+	if (mc_values[BGSM_REG] != mc_values[TOLUD_REG])
+		mmio_from_to(dev, index++, mc_values[BGSM_REG], mc_values[TOLUD_REG]);
+
+	/* 4GiB -> TOUUD */
+	upper_ram_end(dev, index++, mc_values[TOUUD_REG]);
 
 	*resource_cnt = index;
 }
@@ -337,8 +316,8 @@ static void mc_read_resources(struct device *dev)
 
 	/* Add VT-d MMIO resources, if capable */
 	if (vtd_capable) {
-		mmio_resource_kb(dev, index++, GFXVT_BASE_ADDRESS / KiB, GFXVT_BASE_SIZE / KiB);
-		mmio_resource_kb(dev, index++, VTVC0_BASE_ADDRESS / KiB, VTVC0_BASE_SIZE / KiB);
+		mmio_range(dev, index++, GFXVT_BASE_ADDRESS, GFXVT_BASE_SIZE);
+		mmio_range(dev, index++, VTVC0_BASE_ADDRESS, VTVC0_BASE_SIZE);
 	}
 
 	/* Calculate and add DRAM resources */

@@ -27,11 +27,6 @@
 #include <types.h>
 #include <version.h>
 
-#if ENV_X86
-#include <arch/ioapic.h>
-#include <arch/smp/mpspec.h>
-#endif
-
 static acpi_rsdp_t *valid_rsdp(acpi_rsdp_t *rsdp);
 
 u8 acpi_checksum(u8 *table, u32 length)
@@ -137,24 +132,6 @@ static int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u32 base,
 	mmconfig->end_bus_number = end;
 
 	return sizeof(acpi_mcfg_mmconfig_t);
-}
-
-static u16 acpi_sci_int(void)
-{
-#if ENV_X86
-	u8 gsi, irq, flags;
-
-	ioapic_get_sci_pin(&gsi, &irq, &flags);
-
-	/* ACPI Release 6.5, 5.2.9 and 5.2.15.5. */
-	if (!CONFIG(ACPI_HAVE_PCAT_8259))
-		return gsi;
-
-	assert(irq < 16);
-	return irq;
-#else
-	return 0;
-#endif
 }
 
 static void acpi_create_madt(acpi_header_t *header, void *unused)
@@ -1102,8 +1079,6 @@ static void acpi_create_fadt(acpi_header_t *header, void *arg1)
 	fadt->duty_width = 0;
 
 	fadt->preferred_pm_profile = acpi_get_preferred_pm_profile();
-
-	fadt->sci_int = acpi_sci_int();
 
 	arch_fill_fadt(fadt);
 

@@ -1,12 +1,30 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
+#include <arch/ioapic.h>
 #include <cf9_reset.h>
 #include <cpu/x86/smm.h>
 #include <pc80/mc146818rtc.h>
 
+static u16 acpi_sci_int(void)
+{
+	u8 gsi, irq, flags;
+
+	ioapic_get_sci_pin(&gsi, &irq, &flags);
+
+	/* ACPI Release 6.5, 5.2.9 and 5.2.15.5. */
+	if (!CONFIG(ACPI_HAVE_PCAT_8259))
+		return gsi;
+
+	assert(irq < 16);
+	return irq;
+}
+
+
 void arch_fill_fadt(acpi_fadt_t *fadt)
 {
+	fadt->sci_int = acpi_sci_int();
+
 	if (CONFIG(HAVE_CF9_RESET)) {
 		fadt->reset_reg.space_id = ACPI_ADDRESS_SPACE_IO;
 		fadt->reset_reg.bit_width = 8;

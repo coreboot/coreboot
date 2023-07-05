@@ -9,6 +9,7 @@
 #include <cpu/cpu.h>
 #include <cpu/intel/speedstep.h>
 #include <cpu/intel/smm_reloc.h>
+#include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
@@ -27,7 +28,7 @@ static uint64_t get_touud(void)
 static void mch_domain_read_resources(struct device *dev)
 {
 	u64 tom, touud;
-	u32 tomk, tolud, uma_sizek = 0, delta_cbmem;
+	u32 tolud;
 	int idx = 3;
 
 	/* Total Memory 2GB example:
@@ -67,44 +68,8 @@ static void mch_domain_read_resources(struct device *dev)
 	printk(BIOS_DEBUG, "TOUUD 0x%llx TOLUD 0x%08x TOM 0x%llx\n",
 	       touud, tolud, tom);
 
-	tomk = tolud >> 10;
-
-	/* Graphics memory comes next */
-	const u16 ggc = pci_read_config16(mch, D0F0_GGC);
-	if (!(ggc & 2)) {
-		printk(BIOS_DEBUG, "IGD decoded, subtracting ");
-
-		/* Graphics memory */
-		const u32 gms_sizek = decode_igd_memory_size((ggc >> 4) & 0xf);
-		printk(BIOS_DEBUG, "%uM UMA, ", gms_sizek >> 10);
-		tomk -= gms_sizek;
-
-		/* GTT Graphics Stolen Memory Size (GGMS) */
-		const u32 gsm_sizek = decode_igd_gtt_size((ggc >> 8) & 0xf);
-		printk(BIOS_DEBUG, "%uM GTT", gsm_sizek >> 10);
-		tomk -= gsm_sizek;
-
-		uma_sizek = gms_sizek + gsm_sizek;
-	}
-	const u8 esmramc = pci_read_config8(mch, D0F0_ESMRAMC);
-	const u32 tseg_sizek = decode_tseg_size(esmramc);
-	printk(BIOS_DEBUG, " and %uM TSEG\n", tseg_sizek >> 10);
-	tomk -= tseg_sizek;
-	uma_sizek += tseg_sizek;
-
-	/* cbmem_top can be shifted downwards due to alignment.
-	   Mark the region between cbmem_top and tomk as unusable */
-	delta_cbmem = tomk - ((uintptr_t)cbmem_top() >> 10);
-	tomk -= delta_cbmem;
-	uma_sizek += delta_cbmem;
-
-	printk(BIOS_DEBUG, "Unused RAM between cbmem_top and TOM: 0x%xK\n",
-	       delta_cbmem);
-
-	printk(BIOS_INFO, "Available memory below 4GB: %uM\n", tomk >> 10);
-
 	/* Report lowest memory region */
-	ram_resource_kb(dev, idx++, 0, 0xa0000 / KiB);
+	ram_range(dev, idx++, 0, 0xa0000);
 
 	/*
 	 * Reserve everything between A segment and 1MB:
@@ -112,22 +77,35 @@ static void mch_domain_read_resources(struct device *dev)
 	 * 0xa0000 - 0xbffff: Legacy VGA
 	 * 0xc0000 - 0xfffff: RAM
 	 */
-	mmio_resource_kb(dev, idx++, 0xa0000 / KiB, (0xc0000 - 0xa0000) / KiB);
-	reserved_ram_resource_kb(dev, idx++, 0xc0000 / KiB, (1*MiB - 0xc0000) / KiB);
+	mmio_from_to(dev, idx++, 0xa0000, 0xc0000);
+	reserved_ram_from_to(dev, idx++, 0xc0000, 1*MiB);
 
 	/* Report < 4GB memory */
-	ram_resource_kb(dev, idx++, 1*MiB / KiB, tomk - 1*MiB / KiB);
+	ram_range(dev, idx++, 1*MiB, (uintptr_t)cbmem_top());
+
+	/* TSEG */
+	uintptr_t tseg_base;
+	size_t tseg_size;
+	smm_region(&tseg_base, &tseg_size);
+	mmio_range(dev, idx++, tseg_base, tseg_size);
+
+	/* cbmem_top can be shifted downwards due to alignment.
+	   Mark the region between cbmem_top and tseg_base as unusable */
+	if ((uintptr_t)cbmem_top() < tseg_base) {
+		printk(BIOS_DEBUG, "Unused RAM between cbmem_top and TOM: 0x%lx\n",
+		       tseg_base - (uintptr_t)cbmem_top());
+		mmio_from_to(dev, idx++, (uintptr_t)cbmem_top(), tseg_base);
+	}
+
+	/* graphic memory above TSEG */
+	if (tseg_base + tseg_size < tolud)
+		mmio_from_to(dev, idx++, tseg_base + tseg_size, tolud);
 
 	/*
 	 * If >= 4GB installed then memory from TOLUD to 4GB
 	 * is remapped above TOM, TOUUD will account for both
 	 */
 	upper_ram_end(dev, idx++, touud);
-
-	printk(BIOS_DEBUG, "Adding UMA memory area base=0x%llx "
-	       "size=0x%llx\n", ((u64)tomk) << 10, ((u64)uma_sizek) << 10);
-	/* Don't use uma_resource_kb() as our UMA touches the PCI hole. */
-	fixed_mem_resource_kb(dev, idx++, tomk, uma_sizek, IORESOURCE_RESERVE);
 
 	mmconf_resource(dev, idx++);
 }

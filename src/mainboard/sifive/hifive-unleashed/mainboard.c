@@ -6,7 +6,7 @@
 
 static void mainboard_enable(struct device *dev)
 {
-	ram_resource_kb(dev, 0, (uintptr_t)_dram/KiB, sdram_size_mb()*KiB);
+	ram_range(dev, 0, (uintptr_t)_dram, sdram_size_mb());
 }
 
 struct chip_operations mainboard_ops = {

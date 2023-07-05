@@ -238,7 +238,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 		$(OPT_VERSTAGE_FILE) \
 		$(OPT_VERSTAGE_SIG_FILE) \
 		$(OPT_SPL_TABLE_FILE) \
-		--location $(shell printf "%#x" $(GLINDA_FWM_POSITION)) \
+		--location $(call _tohex,$(GLINDA_FWM_POSITION)) \
 		--output $@
 
 $(PSP_BIOSBIN_FILE): $(PSP_ELF_FILE) $(AMDCOMPRESS)
@@ -257,7 +257,7 @@ $(obj)/amdfw_a.rom: $(obj)/amdfw.rom
 		$(OPT_SPL_RW_AB_TABLE_FILE) \
 		$(OPT_SIGNED_AMDFW_A_POSITION) \
 		$(OPT_SIGNED_AMDFW_A_FILE) \
-		--location $(shell printf "%#x" $(GLINDA_FW_A_POSITION)) \
+		--location $(call _tohex,$(GLINDA_FW_A_POSITION)) \
 		--anywhere \
 		--output $@
 
@@ -271,7 +271,7 @@ $(obj)/amdfw_b.rom: $(obj)/amdfw.rom
 		$(OPT_SPL_RW_AB_TABLE_FILE) \
 		$(OPT_SIGNED_AMDFW_B_POSITION) \
 		$(OPT_SIGNED_AMDFW_B_FILE) \
-		--location $(shell printf "%#x" $(GLINDA_FW_B_POSITION)) \
+		--location $(call _tohex,$(GLINDA_FW_B_POSITION)) \
 		--anywhere \
 		--output $@
 

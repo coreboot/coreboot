@@ -134,14 +134,14 @@ PSP_BIOSBIN_DEST=$(shell $(READELF_bootblock) -Wl $(PSP_ELF_FILE) | grep LOAD | 
 # type = 0x63 - construct APOB NV base/size from flash map
 # The flashmap section used for this is expected to be named RW_MRC_CACHE
 APOB_NV_SIZE=$(call get_fmap_value,FMAP_SECTION_RW_MRC_CACHE_SIZE)
-APOB_NV_BASE=$(shell printf "%#x" $(call int-subtract, \
+APOB_NV_BASE=$(call _tohex,$(call int-subtract, \
 	$(call get_fmap_value,FMAP_SECTION_RW_MRC_CACHE_START) $(FMAP_FLASH_START)))
 
 ifeq ($(CONFIG_HAS_RECOVERY_MRC_CACHE),y)
 # On boards with recovery MRC cache, point type 0x63 entry to RECOVERY_MRC_CACHE.
 # Else use RW_MRC_CACHE. This entry will be added in the RO section.
 APOB_NV_RO_SIZE=$(call get_fmap_value,FMAP_SECTION_RECOVERY_MRC_CACHE_SIZE)
-APOB_NV_RO_BASE=$(shell printf "%#x" $(call int-subtract, \
+APOB_NV_RO_BASE=$(call _tohex,$(call int-subtract, \
 	$(call get_fmap_value,FMAP_SECTION_RECOVERY_MRC_CACHE_START) $(FMAP_FLASH_START)))
 else
 APOB_NV_RO_SIZE=$(APOB_NV_SIZE)
@@ -263,7 +263,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 		$(OPT_VERSTAGE_FILE) \
 		$(OPT_VERSTAGE_SIG_FILE) \
 		$(OPT_SPL_TABLE_FILE) \
-		--location $(shell printf "%#x" $(PHOENIX_FWM_POSITION)) \
+		--location $(call _tohex,$(PHOENIX_FWM_POSITION)) \
 		--output $@
 
 ifeq ($(CONFIG_AMDFW_SPLIT),y)
@@ -288,7 +288,7 @@ $(obj)/amdfw_a.rom: $(obj)/amdfw.rom
 		$(OPT_SPL_RW_AB_TABLE_FILE) \
 		$(OPT_SIGNED_AMDFW_A_POSITION) \
 		$(OPT_SIGNED_AMDFW_A_FILE) \
-		--location $(shell printf "%#x" $(PHOENIX_FW_A_POSITION)) \
+		--location $(call _tohex,$(PHOENIX_FW_A_POSITION)) \
 		--anywhere \
 		--output $@
 
@@ -302,7 +302,7 @@ $(obj)/amdfw_b.rom: $(obj)/amdfw.rom
 		$(OPT_SPL_RW_AB_TABLE_FILE) \
 		$(OPT_SIGNED_AMDFW_B_POSITION) \
 		$(OPT_SIGNED_AMDFW_B_FILE) \
-		--location $(shell printf "%#x" $(PHOENIX_FW_B_POSITION)) \
+		--location $(call _tohex,$(PHOENIX_FW_B_POSITION)) \
 		--anywhere \
 		--output $@
 

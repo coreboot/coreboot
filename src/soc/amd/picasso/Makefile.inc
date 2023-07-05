@@ -236,7 +236,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 		$(OPT_APOB0_NV_BASE) \
 		$(OPT_VERSTAGE_FILE) \
 		$(OPT_VERSTAGE_SIG_FILE) \
-		--location $(shell printf "%#x" $(PICASSO_FWM_POSITION)) \
+		--location $(call _tohex,$(PICASSO_FWM_POSITION)) \
 		--output $@
 
 $(PSP_BIOSBIN_FILE): $(PSP_ELF_FILE) $(AMDCOMPRESS)
@@ -252,7 +252,7 @@ $(obj)/amdfw_a.rom: $(obj)/amdfw.rom
 		$(AMDFW_COMMON_ARGS) \
 		$(OPT_APOB_NV_SIZE) \
 		$(OPT_APOB_NV_BASE) \
-		--location $(shell printf "%#x" $(PICASSO_FW_A_POSITION)) \
+		--location $(call _tohex,$(PICASSO_FW_A_POSITION)) \
 		--anywhere \
 		--output $@
 
@@ -263,7 +263,7 @@ $(obj)/amdfw_b.rom: $(obj)/amdfw.rom
 		$(AMDFW_COMMON_ARGS) \
 		$(OPT_APOB_NV_SIZE) \
 		$(OPT_APOB_NV_BASE) \
-		--location $(shell printf "%#x" $(PICASSO_FW_B_POSITION)) \
+		--location $(call _tohex,$(PICASSO_FW_B_POSITION)) \
 		--anywhere \
 		--output $@
 

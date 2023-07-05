@@ -137,7 +137,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(CONFIG_STONEYRIDGE_XHCI_FWM_FILE)) \
 		$(OPT_DEBUG_AMDFWTOOL) \
 		--config $(CONFIG_AMDFW_CONFIG_FILE) \
 		--flashsize $(CONFIG_ROM_SIZE) \
-		--location $(shell printf "0x%x" $(STONEYRIDGE_FWM_POSITION)) \
+		--location $(call _tohex,$(STONEYRIDGE_FWM_POSITION)) \
 		--output	$@
 
 ifeq ($(CONFIG_AMDFW_OUTSIDE_CBFS),y)

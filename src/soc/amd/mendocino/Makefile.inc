@@ -262,7 +262,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 		$(OPT_VERSTAGE_SIG_FILE) \
 		$(OPT_SPL_TABLE_FILE) \
 		$(OPT_MANIFEST) \
-		--location $(shell printf "%#x" $(MENDOCINO_FWM_POSITION)) \
+		--location $(call _tohex,$(MENDOCINO_FWM_POSITION)) \
 		--output $@
 
 ifeq ($(CONFIG_CBFS_VERIFICATION)$(CONFIG_VBOOT_STARTS_IN_BOOTBLOCK),yy)
@@ -288,8 +288,8 @@ $(obj)/amdfw_a.rom: $(obj)/amdfw.rom
 		$(OPT_SIGNED_AMDFW_A_POSITION) \
 		$(OPT_SIGNED_AMDFW_A_FILE) \
 		$(OPT_PSP_LOAD_MP2_FW) \
-		--location $(shell printf "%#x" $(MENDOCINO_FW_A_POSITION)) \
-		--body-location $(shell printf "%#x" $$(($(MENDOCINO_FW_A_POSITION) + $(MENDOCINO_FW_BODY_OFFSET)))) \
+		--location $(call _tohex,$(MENDOCINO_FW_A_POSITION)) \
+		--body-location $(call _tohex,$$(($(MENDOCINO_FW_A_POSITION) + $(MENDOCINO_FW_BODY_OFFSET)))) \
 		--anywhere \
 		--output $@
 
@@ -304,8 +304,8 @@ $(obj)/amdfw_b.rom: $(obj)/amdfw.rom
 		$(OPT_SIGNED_AMDFW_B_POSITION) \
 		$(OPT_SIGNED_AMDFW_B_FILE) \
 		$(OPT_PSP_LOAD_MP2_FW) \
-		--location $(shell printf "%#x" $(MENDOCINO_FW_B_POSITION)) \
-		--body-location $(shell printf "%#x" $$(($(MENDOCINO_FW_B_POSITION) + $(MENDOCINO_FW_BODY_OFFSET)))) \
+		--location $(call _tohex,$(MENDOCINO_FW_B_POSITION)) \
+		--body-location $(call _tohex,$$(($(MENDOCINO_FW_B_POSITION) + $(MENDOCINO_FW_BODY_OFFSET)))) \
 		--anywhere \
 		--output $@
 

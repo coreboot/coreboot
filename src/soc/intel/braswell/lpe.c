@@ -154,8 +154,8 @@ static void lpe_read_resources(struct device *dev)
 	res->align = 12;
 	res->flags = IORESOURCE_MEM;
 
-	reserved_ram_resource_kb(dev, FIRMWARE_PCI_REG_BASE, FIRMWARE_PHYS_BASE >> 10,
-			      FIRMWARE_PHYS_LENGTH >> 10);
+	reserved_ram_range(dev, FIRMWARE_PCI_REG_BASE, FIRMWARE_PHYS_BASE,
+			   FIRMWARE_PHYS_LENGTH);
 }
 
 static void lpe_set_resources(struct device *dev)

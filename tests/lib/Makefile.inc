@@ -40,6 +40,7 @@ tests-y += cbfs-no-verification-has-sha512-test
 tests-y += cbfs-lookup-no-mcache-test
 tests-y += cbfs-lookup-has-mcache-test
 tests-y += lzma-test
+tests-y += ux_locales-test
 
 lib-test-srcs += tests/lib/lib-test.c
 
@@ -241,3 +242,11 @@ lzma-test-srcs += tests/lib/lzma-test.c
 lzma-test-srcs += tests/stubs/console.c
 lzma-test-srcs += src/lib/lzma.c
 lzma-test-srcs += src/lib/lzmadecode.c
+
+ux_locales-test-srcs += tests/lib/ux_locales-test.c
+ux_locales-test-srcs += tests/stubs/console.c
+ux_locales-test-srcs += src/lib/ux_locales.c
+ux_locales-test-mocks += _cbfs_alloc \
+			cbfs_unmap \
+			vb2api_get_locale_id \
+			vboot_get_context

@@ -12,6 +12,7 @@
 #include <acpi/acpi.h>
 #include <northbridge/intel/pineview/pineview.h>
 #include <cpu/intel/smm_reloc.h>
+#include <cpu/x86/smm.h>
 
 /*
  * Reserve everything between A segment and 1MB:
@@ -23,17 +24,7 @@
 
 static void add_fixed_resources(struct device *dev, int index)
 {
-	struct resource *resource;
-
-	resource = new_resource(dev, index++);
-	resource->base = (resource_t)HPET_BASE_ADDRESS;
-	resource->size = (resource_t)0x00100000;
-	resource->flags = IORESOURCE_MEM
-			| IORESOURCE_RESERVE
-			| IORESOURCE_FIXED
-			| IORESOURCE_STORED
-			| IORESOURCE_ASSIGNED;
-
+	mmio_range(dev, index++, HPET_BASE_ADDRESS, 0x00100000);
 	mmio_from_to(dev, index++, 0xa0000, 0xc0000);
 	reserved_ram_from_to(dev, index++, 0xc0000, 1 * MiB);
 }
@@ -41,8 +32,7 @@ static void add_fixed_resources(struct device *dev, int index)
 static void mch_domain_read_resources(struct device *dev)
 {
 	u64 tom, touud;
-	u32 tomk, tolud, tseg_sizek;
-	u32 cbmem_topk, delta_cbmem;
+	u32 tolud;
 	u16 index;
 
 	struct device *mch = pcidev_on_root(0, 0);
@@ -65,43 +55,30 @@ static void mch_domain_read_resources(struct device *dev)
 
 	printk(BIOS_DEBUG, "TOUUD 0x%llx TOLUD 0x%08x TOM 0x%llx ", touud, tolud, tom);
 
-	tomk = tolud / KiB;
-
 	/* Graphics memory */
 	const u16 ggc = pci_read_config16(mch, GGC);
-	const u32 gms_sizek = decode_igd_memory_size((ggc >> 4) & 0xf);
-	printk(BIOS_DEBUG, "%uM UMA", gms_sizek / KiB);
-	tomk -= gms_sizek;
+	const u32 gms_size = decode_igd_memory_size((ggc >> 4) & 0xf) * KiB;
+	printk(BIOS_DEBUG, "%uM UMA", gms_size / MiB);
 
 	/* GTT Graphics Stolen Memory Size (GGMS) */
-	const u32 gsm_sizek = decode_igd_gtt_size((ggc >> 8) & 0xf);
-	printk(BIOS_DEBUG, " and %uM GTT\n", gsm_sizek / KiB);
-	tomk -= gsm_sizek;
+	const u32 gsm_size = decode_igd_gtt_size((ggc >> 8) & 0xf) * KiB;
+	printk(BIOS_DEBUG, " and %uM GTT\n", gsm_size / MiB);
 
-	const u32 tseg_basek = pci_read_config32(mch, TSEG) / KiB;
-	const u32 igd_basek = pci_read_config32(mch, GBSM) / KiB;
-	const u32 gtt_basek = pci_read_config32(mch, BGSM) / KiB;
-
-	/* Subtract TSEG size */
-	tseg_sizek = gtt_basek - tseg_basek;
-	tomk -= tseg_sizek;
-	printk(BIOS_DEBUG, "TSEG decoded, subtracting %dM\n", tseg_sizek / KiB);
-
-	/* cbmem_top can be shifted downwards due to alignment.
-	   Mark the region between cbmem_top and tomk as unusable */
-	cbmem_topk = (uint32_t)cbmem_top() / KiB;
-	delta_cbmem = tomk - cbmem_topk;
-	tomk -= delta_cbmem;
-
-	printk(BIOS_DEBUG, "Unused RAM between cbmem_top and TOMK: 0x%xK\n", delta_cbmem);
+	const u32 igd_base = pci_read_config32(mch, GBSM);
+	const u32 gtt_base = pci_read_config32(mch, BGSM);
 
 	/* Report the memory regions */
-	ram_resource_kb(dev, index++, 0, 0xa0000 / KiB);
-	ram_resource_kb(dev, index++, 1 * MiB / KiB, tomk - 1 * MiB / KiB);
-	mmio_resource_kb(dev, index++, tseg_basek, tseg_sizek);
-	mmio_resource_kb(dev, index++, gtt_basek,  gsm_sizek);
-	mmio_resource_kb(dev, index++, igd_basek,  gms_sizek);
-	reserved_ram_resource_kb(dev, index++, cbmem_topk, delta_cbmem);
+	ram_range(dev, index++, 0, 0xa0000);
+	ram_from_to(dev, index++, 1 * MiB, (uintptr_t)cbmem_top());
+	uintptr_t tseg_base;
+	size_t tseg_size;
+	smm_region(&tseg_base, &tseg_size);
+	mmio_range(dev, index++, tseg_base, tseg_size);
+	mmio_range(dev, index++, gtt_base,  gsm_size);
+	mmio_range(dev, index++, igd_base,  gms_size);
+	printk(BIOS_DEBUG, "Unused RAM between cbmem_top and TOM: 0x%lx\n",
+	       tseg_base - (uintptr_t)cbmem_top());
+	reserved_ram_from_to(dev, index++, (uintptr_t)cbmem_top(), tseg_base);
 
 	/*
 	 * If > 4GB installed then memory from TOLUD to 4GB

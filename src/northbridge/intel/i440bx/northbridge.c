@@ -61,8 +61,8 @@ static void i440bx_domain_read_resources(struct device *dev)
 
 		/* Report the memory regions. */
 		idx = 10;
-		ram_resource_kb(dev, idx++, 0, 640);
-		ram_resource_kb(dev, idx++, 768, tolmk - 768);
+		ram_range(dev, idx++, 0, 0xa0000);
+		ram_from_to(dev, idx++, 0xc0000, tolmk * KiB);
 	}
 }
 

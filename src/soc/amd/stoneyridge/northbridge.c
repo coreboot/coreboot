@@ -363,24 +363,22 @@ void domain_read_resources(struct device *dev)
 	fixed_io_range_reserved(dev, idx++, PCI_IO_CONFIG_INDEX, PCI_IO_CONFIG_PORT_COUNT);
 
 	/* 0x0 -> 0x9ffff */
-	ram_resource_kb(dev, idx++, 0, 0xa0000 / KiB);
+	ram_range(dev, idx++, 0, 0xa0000);
 
 	/* 0xa0000 -> 0xbffff: legacy VGA */
-	mmio_resource_kb(dev, idx++, VGA_MMIO_BASE / KiB, VGA_MMIO_SIZE / KiB);
+	mmio_range(dev, idx++, VGA_MMIO_BASE, VGA_MMIO_SIZE);
 
 	/* 0xc0000 -> 0xfffff: Option ROM */
-	reserved_ram_resource_kb(dev, idx++, 0xc0000 / KiB, 0x40000 / KiB);
+	reserved_ram_from_to(dev, idx++, 0xc0000, 1 * MiB);
 
 	/*
 	 * 0x100000 (1MiB) -> low top usable RAM
 	 * cbmem_top() accounts for low UMA and TSEG if they are used.
 	 */
-	ram_resource_kb(dev, idx++, (1 * MiB) / KiB,
-			(mem_useable - (1 * MiB)) / KiB);
+	ram_from_to(dev, idx++, 1 * MiB, mem_useable);
 
 	/* Low top usable RAM -> Low top RAM (bottom pci mmio hole) */
-	reserved_ram_resource_kb(dev, idx++, mem_useable / KiB,
-					(tom - mem_useable) / KiB);
+	reserved_ram_from_to(dev, idx++, mem_useable, tom);
 
 	/* If there is memory above 4GiB */
 	if (high_tom >> 32) {
@@ -390,13 +388,11 @@ void domain_read_resources(struct device *dev)
 		else
 			high_mem_useable = high_tom;
 
-		ram_resource_kb(dev, idx++, (4ull * GiB) / KiB,
-				((high_mem_useable - (4ull * GiB)) / KiB));
+		ram_from_to(dev, idx++, 4ull * GiB, high_mem_useable);
 
 		/* High top usable RAM -> high top RAM */
 		if (uma_base >= (4ull * GiB)) {
-			reserved_ram_resource_kb(dev, idx++, uma_base / KiB,
-						uma_size / KiB);
+			reserved_ram_range(dev, idx++, uma_base, uma_size);
 		}
 	}
 }

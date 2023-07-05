@@ -6,7 +6,7 @@
 
 static void emmc_read_resources(struct device *dev)
 {
-	mmio_resource_kb(dev, 0, dev->path.mmio.addr / KiB, 4);
+	mmio_range(dev, 0, dev->path.mmio.addr, 4 * KiB);
 }
 
 static void emmc_enable(struct device *dev)

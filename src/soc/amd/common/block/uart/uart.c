@@ -98,7 +98,7 @@ static void uart_enable(struct device *dev)
 
 static void uart_read_resources(struct device *dev)
 {
-	mmio_resource_kb(dev, 0, dev->path.mmio.addr / KiB, 4);
+	mmio_range(dev, 0, dev->path.mmio.addr, 4 * KiB);
 }
 
 struct device_operations amd_uart_mmio_ops = {

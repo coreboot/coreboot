@@ -30,8 +30,8 @@ static void tracehub_read_resources(struct device *dev)
 	}
 	printk(BIOS_DEBUG, "Trace Hub HOB found: addr=0x%08llx length=0x%08llx\n",
 			tracehub_info_hob->addr, tracehub_info_hob->length);
-	reserved_ram_resource_kb(dev, 0, tracehub_info_hob->addr / KiB,
-			tracehub_info_hob->length / KiB);
+	reserved_ram_range(dev, 0, tracehub_info_hob->addr,
+			   tracehub_info_hob->length);
 }
 
 static struct device_operations dev_ops = {

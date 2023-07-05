@@ -545,11 +545,11 @@ static void fast_spi_read_resources(struct device *dev)
 	pci_dev_read_resources(dev);
 
 	/* Add SPI flash MMIO window as a reserved resource. */
-	mmio_resource_kb(dev, 0, FLASH_BASE_ADDR / KiB, FLASH_MMIO_SIZE / KiB);
+	mmio_range(dev, 0, FLASH_BASE_ADDR, FLASH_MMIO_SIZE);
 	/* Add extended SPI flash MMIO window as reserved resource if enabled. */
 	if (CONFIG(FAST_SPI_SUPPORTS_EXT_BIOS_WINDOW)) {
-		mmio_resource_kb(dev, 1, CONFIG_EXT_BIOS_WIN_BASE / KiB,
-				 CONFIG_EXT_BIOS_WIN_SIZE / KiB);
+		mmio_range(dev, 1, CONFIG_EXT_BIOS_WIN_BASE,
+			   CONFIG_EXT_BIOS_WIN_SIZE);
 	}
 }
 

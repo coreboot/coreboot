@@ -32,15 +32,11 @@ void soc_add_fixed_mmio_resources(struct device *dev, int *index)
 		return;
 
 	if (MCHBAR32(GFXVTBAR) & VTBAR_ENABLED) {
-		mmio_resource_kb(dev, *index,
-			      (MCHBAR64(GFXVTBAR) & VTBAR_MASK) / KiB,
-			      VTBAR_SIZE / KiB);
+		mmio_range(dev, *index, MCHBAR64(GFXVTBAR) & VTBAR_MASK, VTBAR_SIZE);
 		(*index)++;
 	}
 	if (MCHBAR32(DEFVTBAR) & VTBAR_ENABLED) {
-		mmio_resource_kb(dev, *index,
-			      (MCHBAR64(DEFVTBAR) & VTBAR_MASK) / KiB,
-			      VTBAR_SIZE / KiB);
+		mmio_range(dev, *index, MCHBAR64(DEFVTBAR) & VTBAR_MASK, VTBAR_SIZE);
 		(*index)++;
 	}
 }

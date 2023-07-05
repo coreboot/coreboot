@@ -258,9 +258,7 @@ static void mc_report_map_entries(struct device *dev, uint64_t *values)
 
 static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 {
-	unsigned long base_k, size_k;
 	unsigned long index;
-	struct resource *resource;
 	uint64_t mc_values[NUM_MAP_ENTRIES];
 	unsigned long dpr_size = 0;
 	u32 dpr_reg;
@@ -277,7 +275,7 @@ static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 	 */
 	dpr_reg = pci_read_config32(dev, DPR);
 	if (dpr_reg & DPR_EPM) {
-		dpr_size = (dpr_reg & DPR_SIZE_MASK) << 16;
+		dpr_size = (dpr_reg & DPR_SIZE_MASK) << 26;
 		printk(BIOS_INFO, "DPR SIZE: 0x%lx\n", dpr_size);
 	}
 
@@ -313,44 +311,27 @@ static void mc_add_dram_resources(struct device *dev, int *resource_cnt)
 	 */
 	index = *resource_cnt;
 
-	/* 0 - > 0xa0000 */
-	base_k = 0;
-	size_k = (0xa0000 >> 10) - base_k;
-	ram_resource_kb(dev, index++, base_k, size_k);
 
-	/* 0xc0000 -> TSEG - DPR */
-	base_k = 0xc0000 >> 10;
-	size_k = (unsigned long)(mc_values[TSEG_REG] >> 10) - base_k;
-	size_k -= dpr_size >> 10;
-	ram_resource_kb(dev, index++, base_k, size_k);
+	/*
+	 * 0 - > 0xa0000: RAM
+	 * 0xa0000 - 0xbffff: Legacy VGA
+	 * 0xc0000 - 0xfffff: RAM
+	 */
+	ram_range(dev, index++, 0, 0xa0000);
+	mmio_from_to(dev, index++, 0xa0000, 0xc0000);
+	reserved_ram_from_to(dev, index++, 0xc0000, 1 * MiB);
+
+	/* 1MiB -> TSEG - DPR */
+	ram_from_to(dev, index++, 1 * MiB, mc_values[TSEG_REG] - dpr_size);
 
 	/* TSEG - DPR -> BGSM */
-	resource = new_resource(dev, index++);
-	resource->base = mc_values[TSEG_REG] - dpr_size;
-	resource->size = mc_values[BGSM_REG] - (mc_values[TSEG_REG] - dpr_size);
-	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
-			  IORESOURCE_STORED | IORESOURCE_RESERVE |
-			  IORESOURCE_ASSIGNED | IORESOURCE_CACHEABLE;
+	reserved_ram_from_to(dev, index++, mc_values[TSEG_REG] - dpr_size, mc_values[BGSM_REG]);
 
 	/* BGSM -> TOLUD */
-	resource = new_resource(dev, index++);
-	resource->base = mc_values[BGSM_REG];
-	resource->size = mc_values[TOLUD_REG] - mc_values[BGSM_REG];
-	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
-			  IORESOURCE_STORED | IORESOURCE_RESERVE |
-			  IORESOURCE_ASSIGNED;
+	mmio_from_to(dev, index++, mc_values[BGSM_REG], mc_values[TOLUD_REG]);
 
 	/* 4GiB -> TOUUD */
 	upper_ram_end(dev, index++, mc_values[TOUUD_REG]);
-
-	/* Reserve everything between A segment and 1MB:
-	 *
-	 * 0xa0000 - 0xbffff: legacy VGA
-	 * 0xc0000 - 0xfffff: RAM
-	 */
-	mmio_resource_kb(dev, index++, (0xa0000 >> 10), (0xc0000 - 0xa0000) >> 10);
-	reserved_ram_resource_kb(dev, index++, (0xc0000 >> 10),
-				(0x100000 - 0xc0000) >> 10);
 
 	*resource_cnt = index;
 }
@@ -369,10 +350,8 @@ static void systemagent_read_resources(struct device *dev)
 
 	/* Add VT-d MMIO resources if capable */
 	if (vtd_capable) {
-		mmio_resource_kb(dev, index++, GFXVT_BASE_ADDRESS / KiB,
-			GFXVT_BASE_SIZE / KiB);
-		mmio_resource_kb(dev, index++, VTVC0_BASE_ADDRESS / KiB,
-			VTVC0_BASE_SIZE / KiB);
+		mmio_range(dev, index++, GFXVT_BASE_ADDRESS, GFXVT_BASE_SIZE);
+		mmio_range(dev, index++, VTVC0_BASE_ADDRESS, VTVC0_BASE_SIZE);
 	}
 
 	/* Calculate and add DRAM resources. */

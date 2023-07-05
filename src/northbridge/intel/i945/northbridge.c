@@ -11,16 +11,13 @@
 #include <acpi/acpi.h>
 #include <cpu/intel/smm_reloc.h>
 #include <cpu/intel/speedstep.h>
+#include <cpu/x86/smm.h>
 #include "i945.h"
 
 static void mch_domain_read_resources(struct device *dev)
 {
-	uint32_t pci_tolm, tseg_sizek, cbmem_topk, delta_cbmem;
-	uint8_t tolud;
-	uint16_t reg16;
-	unsigned long long tomk, tomk_stolen;
-	uint64_t uma_memory_base = 0, uma_memory_size = 0;
-	uint64_t tseg_memory_base = 0, tseg_memory_size = 0;
+	uint32_t pci_tolm;
+	uintptr_t tolud;
 	struct device *const d0f0 = pcidev_on_root(0, 0);
 	int idx = 3;
 
@@ -32,59 +29,33 @@ static void mch_domain_read_resources(struct device *dev)
 	pci_tolm = find_pci_tolm(dev->link_list);
 	printk(BIOS_DEBUG, "pci_tolm: 0x%x\n", pci_tolm);
 
-	tolud = pci_read_config8(d0f0, TOLUD);
-	printk(BIOS_SPEW, "Top of Low Used DRAM: 0x%08x\n", tolud << 24);
-
-	tomk = tolud << 14;
-	tomk_stolen = tomk;
-
-	/* Note: subtract IGD device and TSEG */
-	reg16 = pci_read_config16(d0f0, GGC);
-	if (!(reg16 & 2)) {
-		printk(BIOS_DEBUG, "IGD decoded, subtracting ");
-		int uma_size = decode_igd_memory_size((reg16 >> 4) & 7);
-
-		printk(BIOS_DEBUG, "%dM UMA\n", uma_size / KiB);
-		tomk_stolen -= uma_size;
-
-		/* For reserving UMA memory in the memory map */
-		uma_memory_base = tomk_stolen * 1024ULL;
-		uma_memory_size = uma_size * 1024ULL;
-
-		printk(BIOS_SPEW, "Base of stolen memory: 0x%08x\n",
-		       (unsigned int)uma_memory_base);
-	}
-
-	tseg_sizek = decode_tseg_size(pci_read_config8(d0f0, ESMRAMC)) / KiB;
-	printk(BIOS_DEBUG, "TSEG decoded, subtracting %dM\n", tseg_sizek / KiB);
-	tomk_stolen -= tseg_sizek;
-	tseg_memory_base = tomk_stolen * 1024ULL;
-	tseg_memory_size = tseg_sizek * 1024ULL;
-
-	/* cbmem_top can be shifted downwards due to alignment.
-	   Mark the region between cbmem_top and tomk as unusable */
-	cbmem_topk = ((uintptr_t)cbmem_top() / KiB);
-	delta_cbmem = tomk_stolen - cbmem_topk;
-	tomk_stolen -= delta_cbmem;
-
-	printk(BIOS_DEBUG, "Unused RAM between cbmem_top and TOM: 0x%xK\n", delta_cbmem);
-
-	/* The following needs to be 2 lines, otherwise the second
-	 * number is always 0
-	 */
-	printk(BIOS_INFO, "Available memory: %dK", (uint32_t)tomk_stolen);
-	printk(BIOS_INFO, " (%dM)\n", (uint32_t)(tomk_stolen / KiB));
+	tolud = pci_read_config8(d0f0, TOLUD) << 24;
+	printk(BIOS_SPEW, "Top of Low Used DRAM: 0x%08lx\n", tolud);
 
 	/* Report the memory regions */
-	ram_resource_kb(dev, idx++, 0, 0xa0000 / KiB);
-	ram_resource_kb(dev, idx++, 1 * MiB / KiB, (tomk - 1 * MiB / KiB));
-	uma_resource_kb(dev, idx++, uma_memory_base / KiB, uma_memory_size / KiB);
-	mmio_resource_kb(dev, idx++, tseg_memory_base / KiB, tseg_memory_size / KiB);
-	uma_resource_kb(dev, idx++, cbmem_topk, delta_cbmem);
+	ram_range(dev, idx++, 0, 0xa0000);
+	ram_from_to(dev, idx++, 1 * MiB, (uintptr_t)cbmem_top());
+
+	/* TSEG */
+	uintptr_t tseg_base;
+	size_t tseg_size;
+	smm_region(&tseg_base, &tseg_size);
+	mmio_range(dev, idx++, tseg_base, tseg_size);
+
+	/* cbmem_top can be shifted downwards due to alignment.
+	   Mark the region between cbmem_top and tseg_base as unusable */
+	if ((uintptr_t)cbmem_top() < tseg_base) {
+		printk(BIOS_DEBUG, "Unused RAM between cbmem_top and TOM: 0x%lx\n",
+		       tseg_base - (uintptr_t)cbmem_top());
+		mmio_from_to(dev, idx++, (uintptr_t)cbmem_top(), tseg_base);
+	}
+	if (tseg_base + tseg_size < tolud)
+		mmio_from_to(dev, idx++, tseg_base + tseg_size, tolud);
+
 	/* legacy VGA memory */
-	mmio_resource_kb(dev, idx++, 0xa0000 / KiB, (0xc0000 - 0xa0000) / KiB);
+	mmio_from_to(dev, idx++, 0xa0000, 0xc0000);
 	/* RAM to be used for option roms and BIOS */
-	reserved_ram_resource_kb(dev, idx++, 0xc0000 / KiB, (1 * MiB - 0xc0000) / KiB);
+	reserved_ram_from_to(dev, idx++, 0xc0000, 1 * MiB);
 }
 
 static void mch_domain_set_resources(struct device *dev)

@@ -61,9 +61,6 @@ config ONBOARD_VGA_IS_PRIMARY
 config DIMM_MAX
 	default 2
 
-config VGA_BIOS_ID
-	default "8086,9bc4"
-
 config POST_DEVICE
 	default n
 

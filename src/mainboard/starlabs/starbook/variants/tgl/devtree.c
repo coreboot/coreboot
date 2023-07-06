@@ -31,21 +31,21 @@ void devtree_update(void)
 		soc_conf_4core->tdp_pl1_override	= 15;
 		soc_conf_2core->tdp_pl2_override	= 15;
 		soc_conf_4core->tdp_pl2_override	= 15;
-		cfg->tcc_offset				= 20;
+		cfg->tcc_offset				= 30;
 		break;
 	case PP_BALANCED:
 		soc_conf_2core->tdp_pl1_override	= 15;
 		soc_conf_4core->tdp_pl1_override	= 15;
 		soc_conf_2core->tdp_pl2_override	= 25;
 		soc_conf_4core->tdp_pl2_override	= 25;
-		cfg->tcc_offset				= 15;
+		cfg->tcc_offset				= 25;
 		break;
 	case PP_PERFORMANCE:
 		soc_conf_2core->tdp_pl1_override	= 28;
 		soc_conf_4core->tdp_pl1_override	= 28;
 		soc_conf_2core->tdp_pl2_override	= 40;
 		soc_conf_4core->tdp_pl2_override	= 40;
-		cfg->tcc_offset				= 10;
+		cfg->tcc_offset				= 20;
 		break;
 	}
 

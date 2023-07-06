@@ -37,3 +37,19 @@ config PCIE_DEBUG_INFO
 	  Enable debug logs in PCIe module. Allows debug information on memory
 	  base and limit, prefetchable memory base and limit, prefetchable memory
 	  base upper 32 bits and prefetchable memory limit upper 32 bits.
+
+config PCIE_CLOCK_CONTROL_THROUGH_P2SB
+	bool
+	default n
+	depends on SOC_INTEL_COMMON_BLOCK_PCIE_RTD3
+	help
+	  Enables PCIe CLK control (on/off) through P2SB. The mechanism is supported
+	  starting from MTL platform. In older platforms like ADL & TGL, PCIe CLK is
+	  controlled by sending IPC CMD to PMC.
+
+config IOE_DIE_CLOCK_START
+	int
+	depends on SOC_INTEL_COMMON_BLOCK_IOE_P2SB
+	default 0
+	help
+	  The beginning of IOE DIE pcie src clk number. IOE DIE is started from MTL.

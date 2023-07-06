@@ -28,6 +28,9 @@
 /* ACPI path to the mutex that protects accesses to PMC ModPhy power gating registers */
 #define RTD3_MUTEX_PATH "\\_SB.PCI0.R3MX"
 
+/* ACPI path to control PCIE CLK by P2SB */
+#define RTD3_PCIE_CLK_ENABLE_PATH "\\_SB.PCI0.SPCO"
+
 enum modphy_pg_state {
 	PG_DISABLE = 0,
 	PG_ENABLE = 1,
@@ -121,6 +124,16 @@ static void pcie_rtd3_acpi_method_srck(unsigned int pcie_rp,
 	acpigen_pop_len(); /* Method */
 }
 
+/* Method to enable/disable pcie clock by p2sb*/
+static void p2sb_acpi_set_pci_clock(u8 srcclk_pin, bool enable)
+{
+	acpigen_write_if_cond_ref_of(RTD3_PCIE_CLK_ENABLE_PATH);
+	acpigen_emit_namestring(RTD3_PCIE_CLK_ENABLE_PATH);
+	acpigen_write_integer(srcclk_pin);
+	acpigen_write_integer(enable);
+	acpigen_write_if_end();
+}
+
 static void
 pcie_rtd3_acpi_method_on(unsigned int pcie_rp,
 			 const struct soc_intel_common_block_pcie_rtd3_config *config,
@@ -169,9 +182,13 @@ pcie_rtd3_acpi_method_on(unsigned int pcie_rp,
 			acpigen_write_sleep(config->enable_delay_ms);
 	}
 
-	/* Enable SRCCLK for root port if pin is defined. */
-	if (config->srcclk_pin >= 0)
-		pmc_ipc_acpi_set_pci_clock(pcie_rp, config->srcclk_pin, true);
+	/* Enable SRCCLK for this root port if pin is defined. */
+	if (config->srcclk_pin >= 0) {
+		if (CONFIG(PCIE_CLOCK_CONTROL_THROUGH_P2SB))
+			p2sb_acpi_set_pci_clock(config->srcclk_pin, true);
+		else
+			pmc_ipc_acpi_set_pci_clock(pcie_rp, config->srcclk_pin, true);
+	}
 
 	/* De-assert reset GPIO to bring device out of reset. */
 	if (config->reset_gpio.pin_count) {
@@ -239,8 +256,12 @@ pcie_rtd3_acpi_method_off(int pcie_rp,
 		pcie_rtd3_enable_modphy_pg(pcie_rp, PG_ENABLE);
 
 	/* Disable SRCCLK for this root port if pin is defined. */
-	if (config->srcclk_pin >= 0)
-		pmc_ipc_acpi_set_pci_clock(pcie_rp, config->srcclk_pin, false);
+	if (config->srcclk_pin >= 0) {
+		if (CONFIG(PCIE_CLOCK_CONTROL_THROUGH_P2SB))
+			p2sb_acpi_set_pci_clock(config->srcclk_pin, false);
+		else
+			pmc_ipc_acpi_set_pci_clock(pcie_rp, config->srcclk_pin, false);
+	}
 
 	/* De-assert enable GPIO to turn off device power. */
 	if (config->enable_gpio.pin_count) {

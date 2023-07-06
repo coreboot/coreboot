@@ -6,3 +6,6 @@ config BOARD_SYSTEM76_GAZE18
 
 config BOARD_SYSTEM76_ORYP11
 	bool "oryp11"
+
+config BOARD_SYSTEM76_SERW13
+	bool "serw13"

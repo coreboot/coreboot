@@ -286,6 +286,14 @@ static inline tpm_result_t tis_wait_valid_data(int locality)
 static inline int tis_has_valid_data(int locality)
 {
 	const u8 has_data = TIS_STS_DATA_AVAILABLE | TIS_STS_VALID;
+
+	/*
+	 * Certain TPMs require a small delay here, as they have set
+	 * TIS_STS_VALID first and TIS_STS_DATA_AVAILABLE few clocks later.
+	 */
+	if ((tpm_read_status(locality) & has_data) == has_data)
+		return 1;
+
 	return (tpm_read_status(locality) & has_data) == has_data;
 }
 
@@ -634,14 +642,6 @@ static tpm_result_t tis_readresponse(u8 *buffer, size_t *len)
 
 		if (offset == expected_count)
 			break;	/* We got all we need */
-
-		/*
-		 * Certain TPMs seem to need some delay between tis_wait_valid()
-		 * and tis_has_valid_data(), or some race-condition-related
-		 * issue will occur.
-		 */
-		if (CONFIG(TPM_RDRESP_NEED_DELAY))
-			udelay(10);
 
 	} while (tis_has_valid_data(locality));
 

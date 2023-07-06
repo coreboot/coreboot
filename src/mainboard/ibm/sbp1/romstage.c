@@ -3,9 +3,9 @@
 #include <console/console.h>
 #include <soc/romstage.h>
 #include <soc/ddr.h>
+#include <soc/soc_util.h>
 #include <defs_cxl.h>
 #include <hob_iiouds.h>
-
 
 /* For now only set 3 fields and hard-coded others, should be extended in the future */
 #define CFG_UPD_PCIE_PORT(pexphide, slotimp, slotpsp)	\
@@ -36,7 +36,6 @@
 		.PcieHotPlugOnPort = slotimp,		\
 	}
 
-#define IIO_PORT_SETTINGS (1 + 5 * 8)
 
 static const UPD_IIO_PCIE_PORT_CONFIG_ENTRY
 sbp1_socket_config[CONFIG_MAX_SOCKET][IIO_PORT_SETTINGS] = {
@@ -269,50 +268,6 @@ static const UINT8 sbp1_socket_config_iou[CONFIG_MAX_SOCKET][5] = {
 	},
 };
 
-static void mainboard_config_iio(FSPM_UPD *mupd)
-{
-	UPD_IIO_PCIE_PORT_CONFIG *PciePortConfig;
-	int port, socket;
-
-	PciePortConfig = (UPD_IIO_PCIE_PORT_CONFIG *)(UINTN)mupd->FspmConfig.IioPcieConfigTablePtr;
-	assert(mupd->FspmConfig.IioPcieConfigTableNumber == CONFIG_MAX_SOCKET);
-
-	for (socket = 0; socket < mupd->FspmConfig.IioPcieConfigTableNumber; socket++) {
-
-		/* Array sbp1_socket_config only configures DMI, IOU0 ~ IOU4, the rest will be left zero */
-		for (port = 0; port < IIO_PORT_SETTINGS; port++) {
-			const UPD_IIO_PCIE_PORT_CONFIG_ENTRY *port_cfg = &sbp1_socket_config[socket][port];
-			PciePortConfig[socket].SLOTIMP[port] = port_cfg->SLOTIMP;
-			PciePortConfig[socket].SLOTPSP[port] = port_cfg->SLOTPSP;
-			PciePortConfig[socket].SLOTHPCAP[port] = port_cfg->SLOTHPCAP;
-			PciePortConfig[socket].SLOTHPSUP[port] = port_cfg->SLOTHPSUP;
-			PciePortConfig[socket].SLOTSPLS[port] = port_cfg->SLOTSPLS;
-			PciePortConfig[socket].SLOTSPLV[port] = port_cfg->SLOTSPLV;
-			PciePortConfig[socket].VppAddress[port] = port_cfg->VppAddress;
-			PciePortConfig[socket].SLOTPIP[port] = port_cfg->SLOTPIP;
-			PciePortConfig[socket].SLOTAIP[port] = port_cfg->SLOTAIP;
-			PciePortConfig[socket].SLOTMRLSP[port] = port_cfg->SLOTMRLSP;
-			PciePortConfig[socket].SLOTPCP[port] = port_cfg->SLOTPCP;
-			PciePortConfig[socket].SLOTABP[port] = port_cfg->SLOTABP;
-			PciePortConfig[socket].VppEnabled[port] = port_cfg->VppEnabled;
-			PciePortConfig[socket].VppPort[port] = port_cfg->VppPort;
-			PciePortConfig[socket].MuxAddress[port] = port_cfg->MuxAddress;
-			PciePortConfig[socket].PciePortEnable[port] = port_cfg->PciePortEnable;
-			PciePortConfig[socket].PEXPHIDE[port] = port_cfg->PEXPHIDE;
-			PciePortConfig[socket].PcieHotPlugOnPort[port] = port_cfg->PcieHotPlugOnPort;
-			PciePortConfig[socket].PcieMaxPayload[port] = port_cfg->PcieMaxPayload;
-		}
-		/* Socket0: IOU5 ~ IOU6 are not used, set PEXPHIDE and HidePEXPMenu to 1 */
-		for (port = IIO_PORT_SETTINGS; port < MAX_IIO_PORTS_PER_SOCKET; port++) {
-			PciePortConfig[socket].PEXPHIDE[port] = 1;
-			PciePortConfig[socket].HidePEXPMenu[port] = 1;
-			PciePortConfig[socket].PciePortEnable[port] = 0;
-		}
-		for (port = 0; port < 5; port++)
-			PciePortConfig[socket].ConfigIOU[port] = sbp1_socket_config_iou[socket][port];
-	}
-}
-
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	UINT32 *sktbmp;
@@ -346,7 +301,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	sktbmp[1] = BIT(1) | BIT(5);
 	sktbmp[2] = BIT(1) | BIT(4);
 	sktbmp[3] = BIT(1) | BIT(4);
-	mainboard_config_iio(mupd);
+	soc_config_iio(mupd, sbp1_socket_config, sbp1_socket_config_iou);
 }
 
 bool mainboard_dimm_slot_exists(uint8_t socket, uint8_t channel, uint8_t dimm)

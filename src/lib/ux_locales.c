@@ -10,7 +10,14 @@
 
 #define LANG_ID_MAX 100
 #define LANG_ID_LEN 3
+
+#define PRERAM_LOCALES_VERSION_BYTE 0x01
 #define PRERAM_LOCALES_NAME "preram_locales"
+
+/* We need different delimiters to deal with the case where 'string_name' is the same as
+   'localized_string'. */
+#define DELIM_STR 0x00
+#define DELIM_NAME 0x01
 
 /*
  * Devices which support early vga have the capability to show localized text in
@@ -19,9 +26,11 @@
  * preram_locales located in CBFS is an uncompressed file located in either RO
  * or RW CBFS. It contains the localization information in the following format:
  *
+ * [PRERAM_LOCALES_VERSION_BYTE]
  * [string_name_1] [\x00]
  * [language_id_1] [\x00] [localized_string_1] [\x00]
  * [language_id_2] [\x00] [localized_string_2] [\x00] ...
+ * [\x01]
  * [string_name_2] [\x00] ...
  *
  * This file contains tools to locate the file and search for localized strings
@@ -62,29 +71,34 @@ static void *locales_get_map(size_t *size_out, bool unmap)
 	return cached_state.data;
 }
 
-/* Move to the next string in the data. Strings are separated by 0x00. */
-static size_t move_next(const char *data, size_t offset, size_t size)
+/* Move to the next string in the data. Strings are separated by delim. */
+static size_t move_next(const char *data, size_t offset, size_t size, char delim)
 {
-	if (offset >= size)
-		return size;
-	while (offset < size && data[offset] != '\0')
+	while (offset < size && data[offset] != delim)
 		offset++;
-	offset++;
+	/* If we found delim, move to the start of the next string. */
+	if (offset < size)
+		offset++;
 	return offset;
 }
 
-/* Find the next occurrence of the specific string. */
+/* Find the next occurrence of the specific string. Strings are separated by delim. */
 static size_t search_for(const char *data, size_t offset, size_t size,
-			 const char *str)
+			 const char *str, char delim)
 {
-	if (offset >= size)
-		return size;
 	while (offset < size) {
 		if (!strncmp(data + offset, str, size - offset))
 			return offset;
-		offset = move_next(data, offset, size);
+		offset = move_next(data, offset, size, delim);
 	}
 	return size;
+}
+
+/* Find the next occurrence of the string_name, which should always follow a DELIM_NAME. */
+static inline size_t search_for_name(const char *data, size_t offset, size_t size,
+				     const char *name)
+{
+	return search_for(data, offset, size, name, DELIM_NAME);
 }
 
 /* Find the next occurrence of the integer ID, where ID is less than 100. */
@@ -95,17 +109,18 @@ static size_t search_for_id(const char *data, size_t offset, size_t size,
 		return offset;
 	char int_to_str[LANG_ID_LEN] = {};
 	snprintf(int_to_str, LANG_ID_LEN, "%d", id);
-	return search_for(data, offset, size, int_to_str);
+	return search_for(data, offset, size, int_to_str, DELIM_STR);
 }
 
 const char *ux_locales_get_text(const char *name)
 {
 	const char *data;
-	size_t size, offset, name_offset, next;
+	size_t size, offset, name_offset, next_name_offset, next;
 	uint32_t lang_id;
+	unsigned char version;
 
 	data = locales_get_map(&size, false);
-	if (!data) {
+	if (!data || size == 0) {
 		printk(BIOS_ERR, "%s: %s not found.\n", __func__,
 		       PRERAM_LOCALES_NAME);
 		return NULL;
@@ -123,40 +138,48 @@ const char *ux_locales_get_text(const char *name)
 	printk(BIOS_INFO, "%s: Search for %s with language ID: %u\n",
 	       __func__, name, lang_id);
 
-	/* Search for name. */
-	offset = search_for(data, 0, size, name);
+	/* Check if the version byte is the expected version. */
+	version = (unsigned char)data[0];
+	if (version != PRERAM_LOCALES_VERSION_BYTE) {
+		printk(BIOS_ERR, "%s: The version %u is not the expected one %u\n",
+		       __func__, version, PRERAM_LOCALES_VERSION_BYTE);
+		return NULL;
+	}
+
+	/* Search for name. Skip the version byte. */
+	offset = search_for_name(data, 1, size, name);
 	if (offset >= size) {
 		printk(BIOS_ERR, "%s: Name %s not found.\n", __func__, name);
 		return NULL;
 	}
 	name_offset = offset;
 
-	/* Search for language ID. */
-	offset = search_for_id(data,  name_offset, size, lang_id);
-	/* Language ID not supported; fallback to English if the current
-	 * language is not English (0). */
-	if (offset >= size) {
-		/*
-		 * Since we only support a limited charset, it is very normal
-		 * that a language is not supported and we fallback here
-		 * silently.
-		 */
+	/* Search for language ID. We should not search beyond the range of the current
+	   string_name. */
+	next_name_offset = move_next(data, offset, size, DELIM_NAME);
+	assert(next_name_offset <= size);
+	offset = search_for_id(data,  name_offset, next_name_offset, lang_id);
+	/* Language ID not supported; fallback to English if the current language is not
+	   English (0). */
+	if (offset >= next_name_offset) {
+		/* Since we only support a limited charset, it is very normal that a language
+		   is not supported and we fallback here silently. */
 		if (lang_id != 0)
-			offset = search_for_id(data, name_offset, size, 0);
-		if (offset >= size) {
-			printk(BIOS_ERR, "%s: Neither %d nor 0 found.\n",
-			       __func__, lang_id);
+			offset = search_for_id(data, name_offset, next_name_offset, 0);
+		if (offset >= next_name_offset) {
+			printk(BIOS_ERR, "%s: Neither %d nor 0 found.\n", __func__, lang_id);
 			return NULL;
 		}
 	}
 
-	offset = move_next(data, offset, size);
-	if (offset >= size)
+	/* Move to the corresponding localized_string. */
+	offset = move_next(data, offset, next_name_offset, DELIM_STR);
+	if (offset >= next_name_offset)
 		return NULL;
 
 	/* Validity check that the returned string must be NULL terminated. */
-	next = move_next(data, offset, size) - 1;
-	if (next >= size || data[next] != '\0') {
+	next = move_next(data, offset, next_name_offset, DELIM_STR) - 1;
+	if (next >= next_name_offset || data[next] != '\0') {
 		printk(BIOS_ERR, "%s: %s is not NULL terminated.\n",
 		       __func__, PRERAM_LOCALES_NAME);
 		return NULL;

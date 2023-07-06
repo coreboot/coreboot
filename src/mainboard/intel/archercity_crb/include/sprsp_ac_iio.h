@@ -4,6 +4,7 @@
 #define _SPRSP_AC_IIO_H_
 
 #include <defs_iio.h>
+#include <soc/soc_util.h>
 
 /* For now only set 3 fields and hard-coded others, should be extended in the future */
 #define CFG_UPD_PCIE_PORT(pexphide, slotimp, slotpsp)	\
@@ -38,7 +39,8 @@
 /*
  * Standard ArcherCity IIO PCIe Port Table
  */
-static const UPD_IIO_PCIE_PORT_CONFIG_ENTRY ac_iio_pci_port_skt0[] = {
+static const UPD_IIO_PCIE_PORT_CONFIG_ENTRY ac_iio_pci_port[CONFIG_MAX_SOCKET][IIO_PORT_SETTINGS] = {
+	{
 	/* DMI port: array index 0 */
 	CFG_UPD_PCIE_PORT(0, 0, 0),
 	/* IOU0 (PE0): array index 1 ~ 8 */
@@ -86,10 +88,8 @@ static const UPD_IIO_PCIE_PORT_CONFIG_ENTRY ac_iio_pci_port_skt0[] = {
 	CFG_UPD_PCIE_PORT(1, 0, 0),
 	CFG_UPD_PCIE_PORT(0, 1, 39), /* 59:07.0 */
 	CFG_UPD_PCIE_PORT(1, 0, 0),
-	/* ArcherCity doesn't use IOU5 ~ IOU6. */
-};
-
-static const UPD_IIO_PCIE_PORT_CONFIG_ENTRY ac_iio_pci_port_skt1[] = {
+	},
+	{
 	/* DMI port: array index 0 */
 	CFG_UPD_PCIE_PORT(1, 0, 0),
 	/* IOU0 (PE0): array index 1 ~ 8 */
@@ -137,6 +137,23 @@ static const UPD_IIO_PCIE_PORT_CONFIG_ENTRY ac_iio_pci_port_skt1[] = {
 	CFG_UPD_PCIE_PORT(1, 0, 0),
 	CFG_UPD_PCIE_PORT(0, 1, 39), /* d7:07.0 */
 	CFG_UPD_PCIE_PORT(1, 0, 0),
-	/* ArcherCity doesn't use IOU5 ~ IOU6. */
+	},
 };
-#endif /* _SPRSP_CL_IIO_H_ */
+
+static const UINT8 ac_iio_bifur[CONFIG_MAX_SOCKET][5] = {
+	{
+		IIO_BIFURCATE_xxxxxx16,
+		IIO_BIFURCATE_xxxxxx16,
+		IIO_BIFURCATE_xxxxxx16,
+		IIO_BIFURCATE_x4x4x4x4,
+		IIO_BIFURCATE_x4x4x4x4,
+	},
+	{
+		IIO_BIFURCATE_xxxxxx16,
+		IIO_BIFURCATE_xxxxxx16,
+		IIO_BIFURCATE_xxxxxx16,
+		IIO_BIFURCATE_x4x4x4x4,
+		IIO_BIFURCATE_x4x4x4x4,
+	},
+};
+#endif /* _SPRSP_AC_IIO_H_ */

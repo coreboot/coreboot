@@ -1553,6 +1553,9 @@ unsigned long write_acpi_tables(const unsigned long start)
 
 	if (CONFIG(DEBUG_ACPICA_COMPATIBLE)) {
 		printk(BIOS_DEBUG, "Printing ACPI tables in ACPICA compatible format\n");
+		if (facs)
+			acpidump_print(facs);
+		acpidump_print(dsdt);
 		for (size_t i = 0; xsdt->entry[i] != 0; i++) {
 			acpidump_print((void *)(uintptr_t)xsdt->entry[i]);
 		}

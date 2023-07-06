@@ -1909,6 +1909,10 @@ unsigned long write_acpi_tables(const unsigned long start)
 		header->checksum = acpi_checksum((void *)header, header->length);
 		current += header->length;
 		current = acpi_align_current(current);
+
+		if (tables[i].create_table == acpi_create_dsdt)
+			continue;
+
 		printk(BIOS_DEBUG, "ACPI:    * %.4s\n", header->signature);
 		acpi_add_table(rsdp, header);
 	}

@@ -52,6 +52,9 @@ chip soc/intel/meteorlake
 	# Enable S0ix
 	register "s0ix_enable" = "1"
 
+	# Enable energy reporting
+	register "pch_pm_energy_report_enable" = "1"
+
 	# Enable EDP in PortA
 	register "ddi_port_A_config" = "1"
 	# Enable HDMI in Port B
@@ -334,6 +337,7 @@ chip soc/intel/meteorlake
 				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 		end # PCIE11 SSD Gen4
+		device ref ioe_shared_sram on end
 		device ref xhci on
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on

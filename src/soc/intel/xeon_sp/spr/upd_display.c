@@ -127,13 +127,8 @@ void soc_display_fspm_upd_params(const FSPM_UPD *fspm_old_upd, const FSPM_UPD *f
 /* Display the UPD parameters for SiliconInit */
 void soc_display_fsps_upd_params(const FSPS_UPD *fsps_old_upd, const FSPS_UPD *fsps_new_upd)
 {
-	const FSP_S_CONFIG *new;
-	const FSP_S_CONFIG *old;
-
-	old = &fsps_old_upd->FspsConfig;
-	new = &fsps_new_upd->FspsConfig;
-
-	printk(BIOS_DEBUG, "UPD values for SiliconInit:\n");
-
+	printk(BIOS_DEBUG, "Dump of original UPD values for SiliconInit:\n");
+	hexdump(fsps_old_upd, sizeof(*fsps_old_upd));
+	printk(BIOS_DEBUG, "Dump of updated UPD values for SiliconInit:\n");
 	hexdump(fsps_new_upd, sizeof(*fsps_new_upd));
 }

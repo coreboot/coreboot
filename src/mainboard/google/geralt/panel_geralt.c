@@ -47,6 +47,8 @@ static void power_on_mipi_boe_tv110c9m_ll0(void)
 
 	/* Enable VM18V */
 	mainboard_enable_regulator(MTK_REGULATOR_VDD18, true);
+	mtk_i2c_bus_init(PMIC_TPS65132_I2C, I2C_SPEED_FAST);
+	mdelay(10);
 	if (tps65132s_setup(&cfg) != CB_SUCCESS)
 		printk(BIOS_ERR, "Failed to set up voltage regulator tps65132s\n");
 	gpio_output(GPIO_DISP_RST_1V8_L, 0);

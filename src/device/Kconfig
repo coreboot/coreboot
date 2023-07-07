@@ -994,12 +994,15 @@ config I2C_TRANSFER_TIMEOUT_US
 	  is aborted and an error returned.
 
 config RESOURCE_ALLOCATION_TOP_DOWN
-	def_bool y
+	bool "Allocate resources from top down"
+	default n if PAYLOAD_EDK2
+	default y
 	help
 	  Top-down allocation is required to place resources above 4G by
 	  default (i.e. even when there is still space below). On some
 	  platforms, it might make a difference because of conflicts with
-	  undeclared resources.
+	  undeclared resources. EDK2 is currently reported to also have
+	  problems on some platforms, at least with Intel's IGD.
 
 config XHCI_UTILS
 	def_bool n

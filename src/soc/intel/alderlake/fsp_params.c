@@ -539,6 +539,14 @@ static uint16_t get_vccin_aux_imon_iccmax(void)
 	case PCI_DID_INTEL_ADL_S_ID_10:
 	case PCI_DID_INTEL_ADL_S_ID_11:
 	case PCI_DID_INTEL_ADL_S_ID_12:
+	case PCI_DID_INTEL_RPL_HX_ID_1:
+	case PCI_DID_INTEL_RPL_HX_ID_2:
+	case PCI_DID_INTEL_RPL_HX_ID_3:
+	case PCI_DID_INTEL_RPL_HX_ID_4:
+	case PCI_DID_INTEL_RPL_HX_ID_5:
+	case PCI_DID_INTEL_RPL_HX_ID_6:
+	case PCI_DID_INTEL_RPL_HX_ID_7:
+	case PCI_DID_INTEL_RPL_HX_ID_8:
 		return ICC_MAX_ADL_S;
 	case PCI_DID_INTEL_RPL_S_ID_1:
 	case PCI_DID_INTEL_RPL_S_ID_2:

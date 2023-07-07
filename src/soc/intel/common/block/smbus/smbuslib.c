@@ -40,6 +40,11 @@ static void smbus_read_spd(u8 *spd, u8 addr)
 /* return -1 if SMBus errors otherwise return 0 */
 static int get_spd(u8 *spd, u8 addr)
 {
+	if (CONFIG_DIMM_SPD_SIZE > SPD_PAGE_LEN) {
+		/* Restore to page 0 before reading */
+		smbus_write_byte(SPD_PAGE_0, 0, 0);
+	}
+
 	/* If address is not 0, it will return CB_ERR(-1) if no dimm */
 	if (smbus_read_byte(addr, 0) < 0) {
 		printk(BIOS_INFO, "No memory dimm at address %02X\n",
@@ -101,6 +106,11 @@ enum cb_err get_spd_sn(u8 addr, u32 *sn)
 	/* addr is not a zero. */
 	if (addr == 0x0)
 		return CB_ERR;
+
+	if (CONFIG_DIMM_SPD_SIZE > SPD_PAGE_LEN) {
+		/* Restore to page 0 before reading */
+		smbus_write_byte(SPD_PAGE_0, 0, 0);
+	}
 
 	/* If dimm is not present, set sn to 0xff. */
 	smbus_ret = smbus_read_byte(addr, SPD_DRAM_TYPE);

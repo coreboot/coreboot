@@ -28,14 +28,6 @@
 
 static uint32_t safe_write(uint32_t index, const void *data, uint32_t length);
 
-static uint32_t read_space_firmware(struct vb2_context *ctx)
-{
-	RETURN_ON_FAILURE(tlcl_read(FIRMWARE_NV_INDEX,
-				    ctx->secdata_firmware,
-				    VB2_SECDATA_FIRMWARE_SIZE));
-	return TPM_SUCCESS;
-}
-
 uint32_t antirollback_read_space_kernel(struct vb2_context *ctx)
 {
 	if (!CONFIG(TPM2)) {
@@ -672,14 +664,13 @@ uint32_t antirollback_read_space_firmware(struct vb2_context *ctx)
 {
 	uint32_t rv;
 
-	/* Read the firmware space. */
-	rv = read_space_firmware(ctx);
+	rv = tlcl_read(FIRMWARE_NV_INDEX, ctx->secdata_firmware, VB2_SECDATA_FIRMWARE_SIZE);
 	if (rv == TPM_E_BADINDEX) {
 		/* This seems the first time we've run. Initialize the TPM. */
-		VBDEBUG("TPM: Not initialized yet.\n");
+		VBDEBUG("TPM: Not initialized yet\n");
 		RETURN_ON_FAILURE(factory_initialize_tpm(ctx));
 	} else if (rv != TPM_SUCCESS) {
-		VBDEBUG("TPM: Firmware space in a bad state; giving up.\n");
+		printk(BIOS_ERR, "TPM: Failed to read firmware space: %#x\n", rv);
 		return TPM_E_CORRUPTED_STATE;
 	}
 

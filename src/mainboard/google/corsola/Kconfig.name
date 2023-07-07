@@ -12,6 +12,10 @@ config BOARD_GOOGLE_VOLTORB
 	bool "->  Voltorb"
 	select BOARD_GOOGLE_KINGLER_COMMON
 
+config BOARD_GOOGLE_PONYTA
+	bool "->  Ponyta"
+	select BOARD_GOOGLE_KINGLER_COMMON
+
 comment "Krabby"
 
 config BOARD_GOOGLE_KRABBY

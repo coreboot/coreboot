@@ -61,6 +61,7 @@ config MAINBOARD_PART_NUMBER
 	default "Magikarp" if BOARD_GOOGLE_MAGIKARP
 	default "Voltorb" if BOARD_GOOGLE_VOLTORB
 	default "Starmie" if BOARD_GOOGLE_STARMIE
+	default "Ponyta" if BOARD_GOOGLE_PONYTA
 
 config BOOT_DEVICE_SPI_FLASH_BUS
 	int

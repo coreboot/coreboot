@@ -1,6 +1,7 @@
 config MICROCODE_UPDATE_PRE_RAM
 	bool
 	depends on SUPPORT_CPU_UCODE_IN_CBFS
+	default n if CPU_INTEL_FIRMWARE_INTERFACE_TABLE
 	default y
 	help
 	  Select this option if you want to update the microcode

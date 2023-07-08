@@ -9,6 +9,8 @@
 #include <smp/node.h>
 #include <types.h>
 
+static bool quirk_x2apic_allowed;
+
 void enable_lapic_mode(bool try_set_x2apic)
 {
 	uintptr_t apic_base;
@@ -46,14 +48,18 @@ void enable_lapic_mode(bool try_set_x2apic)
 		die("Switching from X2APIC to XAPIC mode is not implemented.");
 	}
 
+	if (CONFIG(X2APIC_LATE_WORKAROUND) && use_x2apic)
+		quirk_x2apic_allowed = true;
 }
 
 void enable_lapic(void)
 {
 	bool try_set_x2apic = true;
 
-	if (CONFIG(XAPIC_ONLY) || CONFIG(X2APIC_LATE_WORKAROUND))
+	if (CONFIG(XAPIC_ONLY))
 		try_set_x2apic = false;
+	else if (CONFIG(X2APIC_LATE_WORKAROUND))
+		try_set_x2apic = quirk_x2apic_allowed;
 
 	enable_lapic_mode(try_set_x2apic);
 }

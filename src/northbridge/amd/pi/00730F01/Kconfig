@@ -2,6 +2,11 @@
 
 config NORTHBRIDGE_AMD_PI_00730F01
 	bool
+	select NO_DDR5
+	select NO_LPDDR4
+	select NO_DDR4
+	select USE_DDR3
+	select NO_DDR2
 
 if NORTHBRIDGE_AMD_PI_00730F01
 

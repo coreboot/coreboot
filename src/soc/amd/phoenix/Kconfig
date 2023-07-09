@@ -21,10 +21,6 @@ config SOC_AMD_PHOENIX
 	select HAVE_FSP_GOP
 	select HAVE_SMI_HANDLER
 	select IDT_IN_EVERY_STAGE
-	select NO_DDR4
-	select NO_DDR3
-	select NO_DDR2
-	select NO_LPDDR4
 	select PARALLEL_MP_AP_WORK
 	select PLATFORM_USES_FSP2_0
 	select PROVIDES_ROM_SHARING

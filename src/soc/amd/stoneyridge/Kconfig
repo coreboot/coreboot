@@ -11,10 +11,6 @@ config SOC_AMD_STONEYRIDGE
 	select HAVE_CF9_RESET
 	select HAVE_SMI_HANDLER
 	select HAVE_USBDEBUG_OPTIONS
-	select NO_DDR5
-	select NO_DDR3
-	select NO_DDR2
-	select NO_LPDDR4
 	select PARALLEL_MP_AP_WORK
 	select RTC
 	select SOC_AMD_PI

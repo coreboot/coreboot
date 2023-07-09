@@ -25,7 +25,6 @@ romstage-y += raminit_common.c
 romstage-y += raminit_iosav.c
 romstage-y += raminit_native.c
 romstage-y += raminit_tables.c
-romstage-y += ../../../device/dram/ddr3.c
 else
 romstage-y += raminit_mrc.c
 cbfs-files-y += mrc.bin

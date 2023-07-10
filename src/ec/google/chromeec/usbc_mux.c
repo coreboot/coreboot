@@ -9,7 +9,8 @@ static const struct usbc_ops google_chromeec_usbc_ops = {
 	.dp_ops = {
 		.wait_for_connection = google_chromeec_wait_for_displayport,
 		.enter_dp_mode = google_chromeec_typec_control_enter_dp_mode,
-		.wait_for_hpd = google_chromeec_wait_for_dp_hpd,
+		.wait_for_dp_mode_entry = google_chromeec_wait_for_dp_mode_entry,
+		.wait_for_hpd = google_chromeec_wait_for_hpd,
 	},
 };
 

@@ -55,6 +55,15 @@ struct usbc_dp_ops {
 	int (*enter_dp_mode)(int port);
 
 	/*
+	 * Wait up to `timeout_ms` for DP mode entry on a given port.
+	 *
+	 * Return value:
+	 * -1 = timeout
+	 *  0 = success
+	 */
+	int (*wait_for_dp_mode_entry)(int port, long timeout_ms);
+
+	/*
 	 * Wait up to `timeout_ms` for HPD on a given port.
 	 *
 	 * Return value:

@@ -38,10 +38,14 @@ int google_chromeec_usb_get_pd_mux_info(int port, uint8_t *flags);
  *              >=1: Bitmask of the ports that DP device is connected
  */
 int google_chromeec_wait_for_displayport(long timeout_ms);
+/* Poll (up to `timeout_ms` ms) for the DP mode entry
+ * event on the specified port.
+ * Return: 0 on DP mode entry success, -1 on timeout */
+int google_chromeec_wait_for_dp_mode_entry(int port, long timeout_ms);
 /* Poll (up to `timeout_ms` ms) for a Hot-Plug Detect (HPD)
  * event on the specified port.
  * Return: 0 on HPD ready, -1 on timeout */
-int google_chromeec_wait_for_dp_hpd(int port, long timeout_ms);
+int google_chromeec_wait_for_hpd(int port, long timeout_ms);
 /* Send command to EC to request to enter DisplayPort ALT mode on the
  * specified port.
  * Return: 0 on success, -1 on error */

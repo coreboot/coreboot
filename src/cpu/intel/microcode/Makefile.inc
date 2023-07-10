@@ -19,7 +19,7 @@ $(foreach params,$(microcode-params), \
 	$(eval cbfs-files-y += $(params)) \
 	$(eval $(params)-file := $(microcode-params-dir)/$(params)) \
 	$(eval $(params)-type := microcode) \
-	$(eval $(params)-align := $(if $(filter y,$(CONFIG_SOC_AMD_COMMON_BLOCK_LPC_SPI_DMA)),64,16)) \
+	$(eval $(params)-align := 16) \
 )
 
 endif

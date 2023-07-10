@@ -1213,8 +1213,15 @@ static int google_chromeec_usb_pd_get_info(int port, bool *ufp, bool *dbg_acc,
 
 int google_chromeec_typec_control_enter_dp_mode(int port)
 {
+	int ret;
+	struct usbc_mux_info mux_info;
+
 	if (!google_chromeec_check_feature(EC_FEATURE_TYPEC_REQUIRE_AP_MODE_ENTRY))
 		return 0;
+
+	ret = google_chromeec_get_usbc_mux_info(port, &mux_info);
+	if ((ret < 0) || (!mux_info.usb))
+		return -1;
 
 	const struct ec_params_typec_control typec_control = {
 		.port = port,

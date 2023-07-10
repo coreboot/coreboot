@@ -1388,6 +1388,16 @@ int google_chromeec_wait_for_dp_hpd(int port, long timeout_ms)
 	uint8_t mux_flags;
 	struct stopwatch sw;
 
+	if (!google_chromeec_check_feature(EC_FEATURE_TYPEC_REQUIRE_AP_MODE_ENTRY)) {
+		google_chromeec_usb_get_pd_mux_info(port, &mux_flags);
+		if (!(mux_flags & USB_PD_MUX_HPD_LVL) || !(mux_flags & USB_PD_MUX_DP_ENABLED)) {
+			printk(BIOS_WARNING, "DP/HPD not ready. Abort.\n");
+			return -1;
+		}
+
+		return 0;
+	}
+
 	stopwatch_init_msecs_expire(&sw, timeout_ms);
 	do {
 		google_chromeec_usb_get_pd_mux_info(port, &mux_flags);

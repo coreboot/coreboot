@@ -24,8 +24,8 @@ def update_struct( file_path, msg_output, line_number):
         "robot_run_id" : sys.argv[3],
         "url" : sys.argv[4],
         "line" : line_number,
-        "message" : msg_output,}
-    )
+        "message" : "`" + msg_output + "`",
+    })
 
 def parse_file(input_file):
     fp = open (input_file, "r")

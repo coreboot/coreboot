@@ -20,6 +20,9 @@
 
 #define BIAS_CTRL_VW_INDEX_SHIFT		16
 #define BIAS_CTRL_BIT_POS_SHIFT			8
+#define WAIT_FOR_DISPLAYPORT_TIMEOUT_MS		1000
+#define WAIT_FOR_DP_MODE_ENTRY_TIMEOUT_MS	500
+#define WAIT_FOR_HPD_TIMEOUT_MS			3000
 
 static uint32_t tcss_make_conn_cmd(int u, int u3, int u2, int ufp, int hsl,
 					int sbu, int acc)
@@ -277,7 +280,7 @@ static void tcss_init_mux(int port, const struct tcss_port_map *port_map)
 
 static void tcss_configure_dp_mode(const struct tcss_port_map *port_map, size_t num_ports)
 {
-	int ret;
+	int ret, port_bitmask;
 	size_t i;
 	const struct usbc_ops *ops;
 	struct usbc_mux_info mux_info;
@@ -290,9 +293,28 @@ static void tcss_configure_dp_mode(const struct tcss_port_map *port_map, size_t 
 	if (ops == NULL)
 		return;
 
+	port_bitmask = ops->dp_ops.wait_for_connection(WAIT_FOR_DISPLAYPORT_TIMEOUT_MS);
+	if (!port_bitmask)	/* No DP device is connected */
+		return;
+
 	for (i = 0; i < num_ports; i++) {
+		if (!(port_bitmask & BIT(i)))
+			continue;
+
+		ret = ops->dp_ops.enter_dp_mode(i);
+		if (ret < 0)
+			continue;
+
+		ret = ops->dp_ops.wait_for_dp_mode_entry(i, WAIT_FOR_DP_MODE_ENTRY_TIMEOUT_MS);
+		if (ret < 0)
+			continue;
+
+		ret = ops->dp_ops.wait_for_hpd(i, WAIT_FOR_HPD_TIMEOUT_MS);
+		if (ret < 0)
+			continue;
+
 		ret = ops->mux_ops.get_mux_info(i, &mux_info);
-		if ((ret < 0) || (!mux_info.dp))
+		if (ret < 0)
 			continue;
 
 		port_info = &port_map[i];

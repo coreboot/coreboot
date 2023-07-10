@@ -28,7 +28,4 @@ void bootblock_mainboard_early_init(void)
 	/* Enable com1 (0x3f8) and superio (0x2e) */
 	pci_write_config16(PCH_DEV_LPC, LPC_IO_DECODE, lpciod);
 	pci_write_config16(PCH_DEV_LPC, LPC_IO_ENABLES, lpcioe);
-
-	const pnp_devfn_t serial_dev = PNP_DEV(ASPEED_SIO_PORT, AST2400_SUART1);
-	aspeed_enable_serial(serial_dev, CONFIG_TTYS0_BASE);
 }

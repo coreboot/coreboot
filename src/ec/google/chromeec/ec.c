@@ -1352,6 +1352,11 @@ int google_chromeec_wait_for_displayport(long timeout_ms)
 	struct stopwatch sw;
 	int ret = 0;
 
+	if (google_chromeec_check_feature(EC_FEATURE_TYPEC_REQUIRE_AP_MODE_ENTRY)) {
+		printk(BIOS_INFO, "AP Mode Entry enabled, skip waiting for DisplayPort connection\n");
+		return -1;
+	}
+
 	printk(BIOS_INFO, "Waiting for DisplayPort\n");
 	stopwatch_init_msecs_expire(&sw, timeout_ms);
 	while (1) {

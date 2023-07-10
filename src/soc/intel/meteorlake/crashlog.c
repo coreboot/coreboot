@@ -2,6 +2,8 @@
 
 #include <arch/bert_storage.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
+#include <cpu/intel/cpu_ids.h>
 #include <device/pci_ops.h>
 #include <intelblocks/crashlog.h>
 #include <intelblocks/pmc_ipc.h>
@@ -351,6 +353,17 @@ static bool cpu_cl_get_capability(tel_crashlog_devsc_cap_t *cl_devsc_cap)
 	return true;
 }
 
+static u32 get_disc_table_offset(void)
+{
+	u32 offset = cpu_cl_devsc_cap.discovery_data.fields.discovery_table_offset;
+	if (cpu_get_cpuid() >= CPUID_METEORLAKE_B0) {
+		offset <<= 3;
+		printk(BIOS_DEBUG, "adjusted cpu discovery table offset: 0x%x\n", offset);
+	}
+
+	return offset;
+}
+
 static bool cpu_cl_gen_discovery_table(void)
 {
 	u32 bar_addr = 0, disc_tab_addr = 0;
@@ -359,16 +372,10 @@ static bool cpu_cl_gen_discovery_table(void)
 	if (!bar_addr)
 		return false;
 
-	disc_tab_addr = bar_addr +
-			cpu_cl_devsc_cap.discovery_data.fields.discovery_table_offset;
+	disc_tab_addr = bar_addr + get_disc_table_offset();
 	memset(&cpu_cl_disc_tab, 0, sizeof(cpu_crashlog_discovery_table_t));
-
-	printk(BIOS_DEBUG, "cpu discovery table offset: 0x%x\n",
-		cpu_cl_devsc_cap.discovery_data.fields.discovery_table_offset);
-
 	cpu_cl_disc_tab.header.data = ((u64)read32((u32 *)disc_tab_addr) +
 				     ((u64)read32((u32 *)(disc_tab_addr + 4)) << 32));
-
 	printk(BIOS_DEBUG, "cpu_crashlog_discovery_table buffer count: 0x%x\n",
 		cpu_cl_disc_tab.header.fields.count);
 

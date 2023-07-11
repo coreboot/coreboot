@@ -376,6 +376,8 @@ static const struct pad_config gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
+	/* GPP_B16 : [] ==> SOC_HDMI_HPD_L */
+	PAD_CFG_NF(GPP_B16, NONE, DEEP, NF2),
 	/* GPP_B17 : [] ==> EN_WWAN_PWR */
 	PAD_CFG_GPO(GPP_B17, 1, DEEP),
 	/* GPP_B18 : [] ==> SOC_I2C_TPM_SDA */
@@ -391,11 +393,17 @@ static const struct pad_config early_gpio_table[] = {
 
 	/* GPP_E07 : [] ==> WWAN_FCPO_L (updated in romstage) */
 	PAD_CFG_GPO(GPP_E07, 0, DEEP),
+	/* GPP_E14 : [] ==> SOC_EDP_HPD_L */
+	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),
 	/* GPP_H08 : [] ==> UART_DBG_TX_SOC_RX_R */
 	PAD_CFG_NF(GPP_H08, NONE, DEEP, NF1),
 	/* GPP_H09 : [] ==> UART_SOC_TX_DBG_RX_R */
 	PAD_CFG_NF(GPP_H09, NONE, DEEP, NF1),
 
+	/* GPP_H16 : [] ==> DDIB_HDMI_CTRLCLK*/
+	PAD_CFG_NF(GPP_H16, NONE, DEEP, NF1),
+	/* GPP_H17 : [] ==> DDIB_HDMI_CTRLDATA */
+	PAD_CFG_NF(GPP_H17, NONE, DEEP, NF1),
 	/* GPP_D03 : [] ==> EN_PP3300_SD */
 	PAD_CFG_GPO(GPP_D03, 1, DEEP),
 

@@ -887,6 +887,10 @@ S:	Maintained
 F:	/src/soc/intel/braswell/
 F:	/src/vendorcode/intel/fsp/fsp1_1/braswell/
 
+INTEL CANNONLAKE SOC
+S:	Orphan
+F:	src/soc/intel/cannonlake/
+
 INTEL DENVERTON-NS SOC
 M:	Jeff Daly <jeffd@silicom-usa.com>
 M:	Vanessa Eusebio <vanessa.f.eusebio@intel.com>

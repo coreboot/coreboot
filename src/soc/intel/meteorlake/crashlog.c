@@ -12,6 +12,8 @@
 #include <soc/pci_devs.h>
 #include <string.h>
 
+#define CRASHLOG_CONSUMED_MASK	BIT(31)
+
 /* global crashLog info */
 static bool m_pmc_crashLog_support;
 static bool m_pmc_crashLog_present;
@@ -364,6 +366,11 @@ static u32 get_disc_table_offset(void)
 	return offset;
 }
 
+static bool is_crashlog_data_valid(u32 dw0)
+{
+	return (dw0 != 0x0 && dw0 != INVALID_CRASHLOG_RECORD);
+}
+
 static bool cpu_cl_gen_discovery_table(void)
 {
 	u32 bar_addr = 0, disc_tab_addr = 0;
@@ -373,6 +380,11 @@ static bool cpu_cl_gen_discovery_table(void)
 		return false;
 
 	disc_tab_addr = bar_addr + get_disc_table_offset();
+
+	u32 dw0 = read32((u32 *)disc_tab_addr);
+	if (!is_crashlog_data_valid(dw0))
+		return false;
+
 	memset(&cpu_cl_disc_tab, 0, sizeof(cpu_crashlog_discovery_table_t));
 	cpu_cl_disc_tab.header.data = ((u64)read32((u32 *)disc_tab_addr) +
 				     ((u64)read32((u32 *)(disc_tab_addr + 4)) << 32));
@@ -381,7 +393,18 @@ static bool cpu_cl_gen_discovery_table(void)
 
 	int cur_offset = 0;
 	for (int i = 0; i < cpu_cl_disc_tab.header.fields.count; i++) {
-		cur_offset = 8 + 24*i;
+		cur_offset = 8 + 24 * i;
+
+		dw0 = read32((u32 *)disc_tab_addr + cur_offset);
+		if (!is_crashlog_data_valid(dw0))
+			continue;
+
+		if (dw0 & CRASHLOG_CONSUMED_MASK) {
+			printk(BIOS_DEBUG, "cpu crashlog records already consumed."
+						"id: 0x%x dw0: 0x%x\n", i, dw0);
+			break;
+		}
+
 		cpu_cl_disc_tab.buffers[i].data = ((u64)read32((u32 *)(disc_tab_addr +
 						cur_offset)) + ((u64)read32((u32 *)
 						(disc_tab_addr + cur_offset + 4)) << 32));

@@ -60,6 +60,30 @@ static const struct pad_config override_5g_gpio_table[] = {
 	PAD_NC_LOCK(GPP_H23, NONE, LOCK_CONFIG),
 };
 
+/* Pad configuration in ramstage for Pujjo LTE EM060 */
+static const struct pad_config override_em060_gpio_table[] = {
+	/* A8  : WWAN_RF_DISABLE_ODL */
+	PAD_CFG_GPO(GPP_A8, 1, DEEP),
+	/* D3  : WCAM_RST_L ==> NC */
+	PAD_NC_LOCK(GPP_D3, NONE, LOCK_CONFIG),
+	/* D6  : SRCCLKREQ1# ==> WWAN_EN */
+	PAD_CFG_GPO(GPP_D6, 1, DEEP),
+	/* D15  : EN_PP2800_WCAM_X ==> NC */
+	PAD_NC_LOCK(GPP_D15, NONE, LOCK_CONFIG),
+	/* D16  : EN_PP1800_PP1200_WCAM_X ==> NC */
+	PAD_NC_LOCK(GPP_D16, NONE, LOCK_CONFIG),
+	/* D17 : NC ==> SD_WAKE_N */
+	PAD_CFG_GPI_LOCK(GPP_D17, NONE, LOCK_CONFIG),
+	/* F12 : WWAN_RST_L */
+	PAD_CFG_GPO(GPP_F12, 1, DEEP),
+	/* H19 : SOC_I2C_SUB_INT_ODL */
+	PAD_CFG_GPI_APIC(GPP_H19, NONE, PLTRST, LEVEL, NONE),
+	/* H22  : WCAM_MCLK_R ==> NC */
+	PAD_NC(GPP_H22, NONE),
+	/* H23 : WWAN_SAR_DETECT_ODL ==> NC */
+	PAD_NC_LOCK(GPP_H23, NONE, LOCK_CONFIG),
+};
+
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
 	/* A13 : GPP_A13 ==> GSC_SOC_INT_ODL */
@@ -127,9 +151,18 @@ static const struct pad_config early_5g_gpio_table[] = {
 	PAD_CFG_GPO(GPP_H21, 0, DEEP),
 };
 
+/* Pad configuration in romstage for Pujjo */
 static const struct pad_config romstage_gpio_table[] = {
 	/* H12 : UART0_RTS# ==> SD_PERST_L */
 	PAD_CFG_GPO(GPP_H12, 1, DEEP),
+};
+
+/* Pad configuration in romstage for Pujjo WWAN EM060 */
+static const struct pad_config romstage_em060_gpio_table[] = {
+	/* H12 : UART0_RTS# ==> SD_PERST_L */
+	PAD_CFG_GPO(GPP_H12, 1, DEEP),
+	/* F12 : WWAN_RST_L */
+	PAD_CFG_GPO(GPP_F12, 1, DEEP),
 };
 
 const struct pad_config *variant_gpio_override_table(size_t *num)
@@ -137,6 +170,9 @@ const struct pad_config *variant_gpio_override_table(size_t *num)
 	if (fw_config_probe(FW_CONFIG(WWAN_5G, WWAN_5G_PRESENT))) {
 		*num = ARRAY_SIZE(override_5g_gpio_table);
 		return override_5g_gpio_table;
+	} else if (fw_config_probe(FW_CONFIG(LTE_EM060, LTE_EM060_PRESENT))) {
+		*num = ARRAY_SIZE(override_em060_gpio_table);
+		return override_em060_gpio_table;
 	} else {
 		*num = ARRAY_SIZE(override_gpio_table);
 		return override_gpio_table;
@@ -156,6 +192,11 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 
 const struct pad_config *variant_romstage_gpio_table(size_t *num)
 {
-	*num = ARRAY_SIZE(romstage_gpio_table);
-	return romstage_gpio_table;
+	if (fw_config_probe(FW_CONFIG(LTE_EM060, LTE_EM060_PRESENT))) {
+		*num = ARRAY_SIZE(romstage_em060_gpio_table);
+		return romstage_em060_gpio_table;
+	} else {
+		*num = ARRAY_SIZE(romstage_gpio_table);
+		return romstage_gpio_table;
+	}
 }

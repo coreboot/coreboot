@@ -39,6 +39,10 @@ fw_config
 		option WWAN_5G_ABSENT		0
 		option WWAN_5G_PRESENT		1
 	end
+	field LTE_EM060 20
+		option LTE_EM060_ABSENT		0
+		option LTE_EM060_PRESENT	1
+	end
 
 end
 
@@ -458,6 +462,7 @@ chip soc/intel/alderlake
 				register "input_analog_gain" = "1"
 				device i2c 28 on
 					probe LTE LTE_PRESENT
+					probe LTE_EM060 LTE_EM060_PRESENT
 				end
 			end
 			chip drivers/i2c/sx9324
@@ -708,6 +713,7 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_INTERNAL"
 						device ref usb2_port2 on
 							probe LTE LTE_PRESENT
+							probe LTE_EM060 LTE_EM060_PRESENT
 						end
 					end
 					chip drivers/usb/acpi
@@ -769,6 +775,7 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_INTERNAL"
 						device ref usb3_port3 on
 							probe LTE LTE_PRESENT
+							probe LTE_EM060 LTE_EM060_PRESENT
 						end
 					end
 				end

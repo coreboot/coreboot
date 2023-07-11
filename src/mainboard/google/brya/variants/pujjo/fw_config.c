@@ -45,7 +45,7 @@ static const struct pad_config stylus_disable_pads[] = {
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 {
 	if (fw_config_probe(FW_CONFIG(LTE, LTE_ABSENT)) && fw_config_probe(FW_CONFIG(WWAN_5G, WWAN_5G_ABSENT))
-	) {
+	&& fw_config_probe(FW_CONFIG(LTE_EM060, LTE_EM060_ABSENT))) {
 		printk(BIOS_INFO, "Disable LTE-related GPIO pins.\n");
 		gpio_padbased_override(padbased_table, lte_disable_pads,
 						ARRAY_SIZE(lte_disable_pads));

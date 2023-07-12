@@ -818,11 +818,9 @@ static void fill_fsps_cnvi_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
 	/* CNVi */
-#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_P) || CONFIG(SOC_INTEL_ALDERLAKE_PCH_S)
-#if !CONFIG(SOC_INTEL_RAPTORLAKE)
-	/* This option is only available in public FSP headers of ADL-P and ADL-S */
+#if CONFIG(FSP_USE_REPO)
+	/* This option is only available in public FSP headers on FSP repo */
 	s_cfg->CnviWifiCore = is_devfn_enabled(PCH_DEVFN_CNVI_WIFI);
-#endif
 #endif
 	s_cfg->CnviMode = is_devfn_enabled(PCH_DEVFN_CNVI_WIFI);
 	s_cfg->CnviBtCore = config->cnvi_bt_core;
@@ -1032,8 +1030,7 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 		s_cfg->C1e = 0;
 	else
 		s_cfg->C1e = 1;
-
-#if CONFIG(SOC_INTEL_RAPTORLAKE)
+#if CONFIG(SOC_INTEL_RAPTORLAKE) && !CONFIG(FSP_USE_REPO)
 	s_cfg->EnableHwpScalabilityTracking = config->enable_hwp_scalability_tracking;
 #endif
 }

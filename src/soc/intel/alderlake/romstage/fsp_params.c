@@ -158,7 +158,7 @@ static void fill_fspm_mrc_params(FSP_M_CONFIG *m_cfg,
 		m_cfg->DdrFreqLimit = config->max_dram_speed_mts;
 		m_cfg->DdrSpeedControl = 1;
 	}
-#if CONFIG(SOC_INTEL_RAPTORLAKE)
+#if CONFIG(SOC_INTEL_RAPTORLAKE) && !CONFIG(FSP_USE_REPO)
 	m_cfg->LowerBasicMemTestSize = config->lower_basic_mem_test_size;
 	m_cfg->DisableSagvReorder = config->disable_sagv_reorder;
 #endif
@@ -272,7 +272,8 @@ static void fill_fspm_tcss_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->TcssDma0En = is_devfn_enabled(SA_DEVFN_TCSS_DMA0);
 	m_cfg->TcssDma1En = is_devfn_enabled(SA_DEVFN_TCSS_DMA1);
 
-#if CONFIG(SOC_INTEL_RAPTORLAKE)
+#if (CONFIG(SOC_INTEL_RAPTORLAKE) && !CONFIG(FSP_USE_REPO)) || \
+	(!CONFIG(SOC_INTEL_ALDERLAKE_PCH_N) && CONFIG(FSP_USE_REPO))
 	m_cfg->DisableDynamicTccoldHandshake =
 			config->disable_dynamic_tccold_handshake;
 #endif

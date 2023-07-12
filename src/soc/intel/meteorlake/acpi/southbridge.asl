@@ -12,6 +12,9 @@
 #include <soc/intel/common/acpi/ioe_pcr.asl>
 #endif
 
+/* PCIE src clock control */
+#include <soc/intel/common/acpi/pcie_clk.asl>
+
 /* PCH clock */
 #include "camera_clock_ctl.asl"
 

@@ -63,5 +63,5 @@ bool half_populated(void)
 	/* There are two different memory expansion variants of this mainboard.
 	   The GPIO GPP_B5 indicates whether the mainboard is equipped with half- or
 	   full-populated DRAM. */
-	return gpio_get(GPP_B5);
+	return !gpio_get(GPP_B5);
 }

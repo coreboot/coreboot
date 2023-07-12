@@ -8,7 +8,7 @@
 
 /* Die Index */
 #define PCH_P2SB	0x00
-/* TODO: Add index for P2SB which belongs to IOE Die" */
+#define IOE_P2SB	0x01
 
 /*
  * Get PCR register base for specified Die at given PID
@@ -20,8 +20,12 @@ Method (GPCR, 2, NotSerialized)
 	if (Arg0 == PCH_P2SB) {
 		Local0 = CONFIG_PCR_BASE_ADDRESS;
 	} else {
-		Printf ("Invalid Die index (%o)\n", Arg0)
-		Return (0)
+		if (Arg0 == IOE_P2SB) {
+			Local0 = CONFIG_IOE_PCR_BASE_ADDRESS;
+		} else {
+			Printf ("Invalid Die index (%o)\n", Arg0)
+			Return (0)
+		}
 	}
 
 	Return (Local0 + (Arg1 << PCR_PORTID_SHIFT))

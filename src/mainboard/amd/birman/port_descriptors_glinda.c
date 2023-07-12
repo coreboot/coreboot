@@ -19,7 +19,7 @@ static const fsp_dxio_descriptor birman_dxio_descriptors[] = {
 		.link_speed_capability = GEN3,
 		.turn_off_unused_lanes = true,
 		.link_aspm = 2,
-		.link_hotplug = 3,
+		.link_hotplug = HOTPLUG_ENHANCED,
 		.clk_req = CLK_REQ3,
 	},
 	{
@@ -32,7 +32,7 @@ static const fsp_dxio_descriptor birman_dxio_descriptors[] = {
 		.link_speed_capability = GEN3,
 		.turn_off_unused_lanes = true,
 		.link_aspm = 2,
-		.link_hotplug = 3,
+		.link_hotplug = HOTPLUG_ENHANCED,
 		.clk_req = CLK_REQ1,
 	},
 	{
@@ -45,7 +45,7 @@ static const fsp_dxio_descriptor birman_dxio_descriptors[] = {
 		.link_speed_capability = GEN3,
 		.turn_off_unused_lanes = true,
 		.link_aspm = 2,
-		.link_hotplug = 3,
+		.link_hotplug = HOTPLUG_ENHANCED,
 		.gpio_group_id = GPIO_27,
 		.clk_req = CLK_REQ0,
 	},

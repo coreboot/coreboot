@@ -39,7 +39,7 @@ static fsp_dxio_descriptor myst_dxio_descriptors[] = {
 		.function_number = PCI_FUNC(SD_DEVFN),
 		.link_speed_capability = GEN1,
 		.turn_off_unused_lanes = true,
-		.link_hotplug = 3,
+		.link_hotplug = HOTPLUG_ENHANCED,
 		.clk_req = CLK_REQ1,
 	},
 	[DXIO_STORAGE] = { 0 },

@@ -236,6 +236,12 @@ config PCR_BASE_ADDRESS
 	help
 	  This option allows you to select MMIO Base Address of sideband bus.
 
+config IOE_PCR_BASE_ADDRESS
+	hex
+	default 0x3fff0000000
+	help
+	  This option allows you to select MMIO Base Address of IOE sideband bus.
+
 config ECAM_MMCONF_BASE_ADDRESS
 	default 0xc0000000
 

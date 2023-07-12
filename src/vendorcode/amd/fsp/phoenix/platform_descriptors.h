@@ -192,7 +192,7 @@ typedef struct __packed {
 	uint8_t		slot_power_limit;		// PCIe slot power limit
 	uint32_t	slot_power_limit_scale	:2;	// PCIe slot power limit scale
 	uint32_t				:6;
-	uint32_t	link_compliance_mode	:1;	// Force port into compliance mode
+	uint32_t	link_compliance_mode	:1;	// Force port into compliance testing mode
 	uint32_t	link_safe_mode		:1;	// Safe mode capability
 	uint32_t	sb_link			:1;	// Link type
 	uint32_t	clk_pm_support		:1;	// Clock power management support

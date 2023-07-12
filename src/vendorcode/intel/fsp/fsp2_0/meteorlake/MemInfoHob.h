@@ -159,10 +159,6 @@ typedef enum {
 #define MAX_ODT_ENTRIES       11
 #endif
 
-#ifndef MAX_COPY_DIMM_DFE_TAPS
-#define MAX_COPY_DIMM_DFE_TAPS      2
-#endif
-
 #define MAX_TRACE_REGION              5
 #define MAX_TRACE_CACHE_TYPE          2
 
@@ -284,7 +280,6 @@ typedef struct {
   UINT32            VppVoltage[MAX_PROFILE_NUM];
   UINT16            RcompTarget[MAX_PROFILE_NUM][MAX_RCOMP_TARGETS];
   UINT16            DimmOdt[MAX_PROFILE_NUM][MAX_DIMM][MAX_ODT_ENTRIES];
-  INT8              DimmDFE[MAX_PROFILE_NUM][MAX_DDR5_CH][MAX_DIMM][MAX_COPY_DIMM_DFE_TAPS];
   CONTROLLER_INFO   Controller[MAX_NODE];
   UINT32            NumPopulatedChannels;              ///< Total number of memory channels populated
   HOB_SAGV_INFO     SagvConfigInfo;                    ///< This data structure contains SAGV config values that are considered output by the MRC.

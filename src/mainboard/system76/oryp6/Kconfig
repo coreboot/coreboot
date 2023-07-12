@@ -50,7 +50,7 @@ config MAINBOARD_VERSION
 	default "oryp7" if BOARD_SYSTEM76_ORYP7
 
 config CBFS_SIZE
-	default 0xA00000
+	default 0xc00000
 
 config CONSOLE_POST
 	default y

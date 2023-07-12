@@ -52,7 +52,8 @@ config MAINBOARD_VERSION
 	default "addw2" if BOARD_SYSTEM76_ADDW2
 
 config CBFS_SIZE
-	default 0xA00000
+	default 0xa00000 if BOARD_SYSTEM76_ADDW1
+	default 0xc00000
 
 config CONSOLE_POST
 	default y

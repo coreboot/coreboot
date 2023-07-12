@@ -39,7 +39,7 @@ config MAINBOARD_VERSION
 	default "bonw14"
 
 config CBFS_SIZE
-	default 0xA00000
+	default 0xc00000
 
 config CONSOLE_POST
 	default y

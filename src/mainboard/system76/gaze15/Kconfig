@@ -49,7 +49,8 @@ config MAINBOARD_VERSION
 	default "gaze15" if BOARD_SYSTEM76_GAZE15
 
 config CBFS_SIZE
-	default 0xA00000
+	default 0xa00000 if BOARD_SYSTEM76_GAZE14
+	default 0xc00000
 
 config CONSOLE_POST
 	default y

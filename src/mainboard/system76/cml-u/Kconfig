@@ -55,8 +55,7 @@ config MAINBOARD_VERSION
 	default "lemp9" if BOARD_SYSTEM76_LEMP9
 
 config CBFS_SIZE
-	default 0xc00000 if BOARD_SYSTEM76_LEMP9
-	default 0xA00000
+	default 0xc00000
 
 config CONSOLE_POST
 	default y

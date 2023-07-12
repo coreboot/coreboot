@@ -109,7 +109,7 @@ typedef enum {
 	MAX_CONNECTOR_TYPE	// Not valid value, used to verify input
 } ddi_connector_type;
 
-/* Picasso DDI Descriptor: used for configuring display outputs */
+/* DDI Descriptor: used for configuring display outputs */
 typedef struct __packed {
 	uint8_t		connector_type;
 	uint8_t		aux_index;

@@ -151,7 +151,7 @@ enum ddi_connector_type {
 	DDI_MAX_CONNECTOR_TYPE	// Not valid value, used to verify input
 };
 
-/* Cezanne DDI Descriptor: used for configuring display outputs */
+/* DDI Descriptor: used for configuring display outputs */
 typedef struct __packed {
 	uint8_t		connector_type;	// see ddi_connector_type
 	uint8_t		aux_index;	// see ddi_aux_type

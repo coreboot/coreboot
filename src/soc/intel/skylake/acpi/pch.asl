@@ -27,7 +27,7 @@
 #include "pcie.asl"
 
 /* PCR Access */
-#include <soc/intel/common/acpi/pcr.asl>
+#include <soc/intel/common/acpi/pch_pcr.asl>
 
 /* PMC 0:1f.2 */
 #include "pmc.asl"

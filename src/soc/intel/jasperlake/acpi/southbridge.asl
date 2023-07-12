@@ -9,7 +9,7 @@
 #include "pci_irqs.asl"
 
 /* PCR access */
-#include <soc/intel/common/acpi/pcr.asl>
+#include <soc/intel/common/acpi/pch_pcr.asl>
 
 /* PCH clock */
 #include "camera_clock_ctl.asl"

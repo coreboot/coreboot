@@ -9,7 +9,7 @@
 #include "pci_irqs.asl"
 
 /* PCR access */
-#include <soc/intel/common/acpi/pcr.asl>
+#include <soc/intel/common/acpi/pch_pcr.asl>
 
 /* GPIO controller */
 #include "gpio.asl"

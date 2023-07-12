@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 /* PCR access */
-#include <soc/intel/common/acpi/pcr.asl>
+#include <soc/intel/common/acpi/pch_pcr.asl>
 
 /* eMMC, SD Card */
 #include "scs.asl"

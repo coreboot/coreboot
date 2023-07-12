@@ -4,7 +4,7 @@
 #include <soc/pcr_ids.h>
 #include <soc/irq.h>
 #include <soc/intel/common/block/acpi/acpi/gpio_op.asl>
-#include <soc/intel/common/acpi/pcr.asl>
+#include <soc/intel/common/acpi/pch_pcr.asl>
 
 Device (GPIO)
 {

@@ -14,6 +14,8 @@ void fch_pre_init(void)
 	fch_enable_cf9_io();
 
 	enable_aoac_devices();
+
+	configure_espi_with_mb_hook();
 }
 
 /* After console init */

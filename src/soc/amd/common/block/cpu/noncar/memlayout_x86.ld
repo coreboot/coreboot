@@ -112,7 +112,7 @@ SECTIONS
 	EARLY_RESERVED_DRAM_END(.)
 
 	/* Relocated at runtime in cbmem so the address does not matter. */
-	RAMSTAGE(64M, 8M)
+	RAMSTAGE(512M, 8M)
 }
 
 #if ENV_BOOTBLOCK

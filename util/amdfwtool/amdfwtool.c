@@ -706,6 +706,7 @@ static void fill_psp_directory_to_efs(embedded_firmware *amd_romsig, void *pspdi
 	case PLATFORM_PICASSO:
 	case PLATFORM_LUCIENNE:
 	case PLATFORM_RENOIR:
+	case PLATFORM_GENOA:
 	default:
 		/* for combo, it is also combo_psp_directory */
 		amd_romsig->new_psp_directory =
@@ -721,6 +722,7 @@ static void fill_bios_directory_to_efs(embedded_firmware *amd_romsig, void *bios
 	case PLATFORM_RENOIR:
 	case PLATFORM_LUCIENNE:
 	case PLATFORM_CEZANNE:
+	case PLATFORM_GENOA:
 		if (!cb_config->recovery_ab)
 			amd_romsig->bios3_entry =
 				BUFF_TO_RUN_MODE(*ctx, biosdir, AMD_ADDR_REL_BIOS);
@@ -801,6 +803,9 @@ static uint32_t get_psp_id(enum platform soc_id)
 		break;
 	case PLATFORM_PHOENIX:
 		psp_id = 0xBC0D0400;
+		break;
+	case PLATFORM_GENOA:
+		psp_id = 0xBC0C0111;
 		break;
 	case PLATFORM_CARRIZO:
 	default:
@@ -1772,6 +1777,7 @@ static int set_efs_table(uint8_t soc_id, amd_cb_config *cb_config,
 	case PLATFORM_MENDOCINO:
 	case PLATFORM_PHOENIX:
 	case PLATFORM_GLINDA:
+	case PLATFORM_GENOA:
 		amd_romsig->spi_readmode_f17_mod_30_3f = efs_spi_readmode;
 		amd_romsig->spi_fastspeed_f17_mod_30_3f = efs_spi_speed;
 		switch (efs_spi_micron_flag) {

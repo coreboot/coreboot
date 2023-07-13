@@ -1,0 +1,8 @@
+FLASH 32M {
+	BIOS 16M {
+		COREBOOT(CBFS)
+		FMAP 4K
+		RW_VPD 8K
+		RO_VPD 8K
+	}
+}

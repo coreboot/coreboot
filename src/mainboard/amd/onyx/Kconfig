@@ -4,6 +4,11 @@ config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select SOC_AMD_GENOA
 	select MISSING_BOARD_RESET
+	select BOARD_ROMSIZE_KB_32768
+
+config FMDFILE
+	default "src/mainboard/amd/onyx/board.fmd"
+
 
 config MAINBOARD_DIR
 	default "amd/onyx"

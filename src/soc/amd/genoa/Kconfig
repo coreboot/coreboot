@@ -1,0 +1,73 @@
+config SOC_AMD_GENOA
+	bool
+
+if SOC_AMD_GENOA
+
+config SOC_SPECIFIC_OPTIONS
+	def_bool y
+	select ARCH_X86
+	select HAVE_EXP_X86_64_SUPPORT
+	select NO_ECAM_MMCONF_SUPPORT
+	select NO_MONOTONIC_TIMER
+	select RESET_VECTOR_IN_RAM
+	select SOC_AMD_COMMON
+	select SOC_AMD_COMMON_BLOCK_ACPIMMIO
+	select SOC_AMD_COMMON_BLOCK_NONCAR
+	select SOC_AMD_COMMON_BLOCK_PCI_MMCONF
+	select UNKNOWN_TSC_RATE
+
+config USE_EXP_X86_64_SUPPORT
+	default y
+
+config EARLY_RESERVED_DRAM_BASE
+	hex
+	default 0x7000000
+	help
+	  This variable defines the base address of the DRAM which is reserved
+	  for usage by coreboot in early stages (i.e. before ramstage is up).
+	  This memory gets reserved in BIOS tables to ensure that the OS does
+	  not use it, thus preventing corruption of OS memory in case of S3
+	  resume.
+
+config EARLYRAM_BSP_STACK_SIZE
+	hex
+	default 0x1000
+
+config PSP_APOB_DRAM_ADDRESS
+	hex
+	default 0x7001000
+	help
+	  Location in DRAM where the PSP will copy the AGESA PSP Output
+	  Block.
+
+config PSP_APOB_DRAM_SIZE
+	hex
+	default 0x20000
+
+config PRERAM_CBMEM_CONSOLE_SIZE
+	hex
+	default 0x1600
+	help
+	  Increase this value if preram cbmem console is getting truncated
+
+config C_ENV_BOOTBLOCK_SIZE
+	hex
+	default 0x10000
+	help
+	  Sets the size of the bootblock stage that should be loaded in DRAM.
+	  This variable controls the DRAM allocation size in linker script
+	  for bootblock stage.
+
+config ROMSTAGE_ADDR
+	hex
+	default 0x7040000
+	help
+	  Sets the address in DRAM where romstage should be loaded.
+
+config ROMSTAGE_SIZE
+	hex
+	default 0x80000
+	help
+	  Sets the size of DRAM allocation for romstage in linker script.
+
+endif

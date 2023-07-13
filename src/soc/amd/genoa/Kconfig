@@ -7,7 +7,6 @@ config SOC_SPECIFIC_OPTIONS
 	def_bool y
 	select ARCH_X86
 	select HAVE_EXP_X86_64_SUPPORT
-	select NO_ECAM_MMCONF_SUPPORT
 	select RESET_VECTOR_IN_RAM
 	select SOC_AMD_COMMON
 	select SOC_AMD_COMMON_BLOCK_ACPIMMIO
@@ -74,6 +73,14 @@ config ROMSTAGE_SIZE
 	default 0x80000
 	help
 	  Sets the size of DRAM allocation for romstage in linker script.
+
+config ECAM_MMCONF_BASE_ADDRESS
+	hex
+	default 0xE0000000
+
+config ECAM_MMCONF_BUS_NUMBER
+	int
+	default 256
 
 menu "PSP Configuration Options"
 

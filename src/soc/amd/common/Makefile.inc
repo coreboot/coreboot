@@ -53,7 +53,8 @@ amdfw_offset=$(call int-subtract, \
 
 add_bootblock = \
 	$(CBFSTOOL) $(1) add -f $(2) -n apu/amdfw -t amdfw \
-        -b $(amdfw_offset) -r $(call regions-for-file,apu/amdfw)
+        -b $(amdfw_offset) -r $(call regions-for-file,apu/amdfw) \
+	$(CBFSTOOL_ADD_CMD_OPTIONS)
 
 endif # ifeq ($(CONFIG_RESET_VECTOR_IN_RAM),y)
 

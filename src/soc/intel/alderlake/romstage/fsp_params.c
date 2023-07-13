@@ -250,6 +250,9 @@ static void fill_fspm_audio_params(FSP_M_CONFIG *m_cfg,
 	memset(m_cfg->PchHdaAudioLinkDmicEnable, 0, sizeof(m_cfg->PchHdaAudioLinkDmicEnable));
 	memset(m_cfg->PchHdaAudioLinkSspEnable, 0, sizeof(m_cfg->PchHdaAudioLinkSspEnable));
 	memset(m_cfg->PchHdaAudioLinkSndwEnable, 0, sizeof(m_cfg->PchHdaAudioLinkSndwEnable));
+#if CONFIG(SOC_INTEL_RAPTORLAKE)
+	memcpy(m_cfg->PchHdaSdiEnable, config->pch_hda_sdi_enable, sizeof(m_cfg->PchHdaSdiEnable));
+#endif
 }
 
 static void fill_fspm_ish_params(FSP_M_CONFIG *m_cfg,

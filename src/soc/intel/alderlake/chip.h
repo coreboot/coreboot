@@ -23,6 +23,8 @@
 /* Define config parameters for In-Band ECC (IBECC). */
 #define MAX_IBECC_REGIONS	8
 
+#define MAX_HD_AUDIO_SDI_LINKS	2
+
 /* In-Band ECC Operation Mode */
 enum ibecc_mode {
 	IBECC_MODE_PER_REGION,
@@ -413,6 +415,7 @@ struct soc_intel_alderlake_config {
 	/* Audio related */
 	uint8_t pch_hda_audio_link_hda_enable;
 	uint8_t pch_hda_dsp_enable;
+	bool pch_hda_sdi_enable[MAX_HD_AUDIO_SDI_LINKS];
 
 	/* iDisp-Link T-Mode 0: 2T, 2: 4T, 3: 8T, 4: 16T */
 	enum {

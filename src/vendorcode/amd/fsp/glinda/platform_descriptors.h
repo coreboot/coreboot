@@ -82,6 +82,7 @@ enum dxio_link_hotplug_type {
 	HOTPLUG_SERVER_SSD,
 };
 
+/* TODO: update dxio_port_param_type to match the AGESA/FSP code */
 enum dxio_port_param_type {
 	PP_DEVICE = 1,
 	PP_FUNCTION,

@@ -12,6 +12,8 @@
 void fch_pre_init(void)
 {
 	fch_enable_cf9_io();
+
+	enable_aoac_devices();
 }
 
 /* After console init */

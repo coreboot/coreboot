@@ -1,6 +1,8 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 ifeq ($(CONFIG_SOC_AMD_GENOA),y)
 
+all-y		+= mmap_boot.c
+
 bootblock-y	+= early_fch.c
 
 romstage-y	+= romstage.c

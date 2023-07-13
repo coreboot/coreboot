@@ -1,0 +1,71 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if SOC_AMD_OPENSIL
+
+config OPENSIL_DEBUG_OUTPUT
+	bool "OpenSIL console output"
+	default y
+	help
+	  Select this if you want OpenSIL debug messages compiled
+	  in the image.
+
+if OPENSIL_DEBUG_OUTPUT
+
+config OPENSIL_DEBUG_PREFIX
+	bool "Print the opensil prefix"
+	default n
+	help
+	  This prints the function name and line level in front of the
+	  actual message.
+
+config OPENSIL_DEBUG_APOB
+	bool "Enable APOB messages"
+	default n
+	help
+	  Enable printing APOB related messages.
+
+config OPENSIL_DEBUG_NBIO
+	bool "Enable NBIO messages"
+	default y
+	help
+	  Enable printing NBIO related messages.
+
+config OPENSIL_DEBUG_CCX
+	bool "Enable CCX messages"
+	default y
+	help
+	  Enable printing CCX related messages.
+
+config OPENSIL_DEBUG_SMU
+	bool "Enable SMU messages"
+	default y
+	help
+	  Enable printing SMU related messages.
+
+config OPENSIL_DEBUG_DF
+	bool "Enable DF messages"
+	default y
+	help
+	  Enable printing DF related messages.
+
+config OPENSIL_DEBUG_MEM
+	bool "Enable MEM messages"
+	default y
+	help
+	  Enable printing MEM related messages.
+
+config OPENSIL_DEBUG_FCH
+	bool "Enable FCH messages"
+	default y
+	help
+	  Enable printing FCH related messages.
+
+config OPENSIL_DEBUG_RAS
+	bool "Enable RAS messages"
+	default y
+	help
+	  Enable printing RAS related messages.
+
+endif # OPENSIL_DEBUG_OUTPUT
+
+endif # SOC_AMD_OPENSIL

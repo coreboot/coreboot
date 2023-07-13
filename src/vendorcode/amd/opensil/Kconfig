@@ -1,0 +1,17 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if SOC_AMD_OPENSIL
+
+config SOC_AMD_OPENSIL_GENOA
+	bool
+	help
+	  Select this on SoCs that use the Genoa version of opensil.
+
+config AMD_OPENSIL_PATH
+	string
+	default "$(top)/src/vendorcode/amd/opensil/genoa_poc/opensil" if SOC_AMD_OPENSIL_GENOA
+	help
+	  Set to the path of the openSIL directory containing meson.build.
+	  example
+
+endif

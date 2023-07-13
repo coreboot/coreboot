@@ -17,3 +17,10 @@ config AGESA_EXTRA_TIMESTAMPS
 endmenu
 
 endif
+
+config SOC_AMD_OPENSIL
+	bool
+	help
+	  Select this on SoCs that use opensil.
+
+source "src/vendorcode/amd/opensil/Kconfig"

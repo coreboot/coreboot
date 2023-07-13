@@ -251,7 +251,8 @@ static void fill_ssdt_ps2_keyboard(const struct device *dev)
 				 ps2_action_keys,
 				 !!(keybd.capabilities & KEYBD_CAP_FUNCTION_KEYS),
 				 !!(keybd.capabilities & KEYBD_CAP_NUMERIC_KEYPAD),
-				 !!(keybd.capabilities & KEYBD_CAP_SCRNLOCK_KEY));
+				 !!(keybd.capabilities & KEYBD_CAP_SCRNLOCK_KEY),
+				 true);
 }
 
 static const char *ec_acpi_name(const struct device *dev)

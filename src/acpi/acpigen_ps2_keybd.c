@@ -209,7 +209,8 @@ static void ssdt_generate_keymap(struct acpi_dp *dp, uint8_t num_top_row_keys,
 				 enum ps2_action_key action_keys[],
 				 bool can_send_function_keys,
 				 bool has_numeric_keypad,
-				 bool has_scrnlock_key)
+				 bool has_scrnlock_key,
+				 bool has_alpha_num_punct_keys)
 {
 	struct acpi_dp *dp_array;
 	enum ps2_action_key key;
@@ -261,10 +262,14 @@ static void ssdt_generate_keymap(struct acpi_dp *dp, uint8_t num_top_row_keys,
 		total++;
 	}
 
-	/* Write out keymap for rest of keys */
-	for (i = 0; i < ARRAY_SIZE(rest_of_keymaps); i++) {
-		keymap = rest_of_keymaps[i];
-		acpi_dp_add_integer(dp_array, NULL, keymap);
+	/* Provide alphanumeric and punctuation keys (rest of the keyboard) if
+	 * present
+	 */
+	if (has_alpha_num_punct_keys) {
+		for (i = 0; i < ARRAY_SIZE(rest_of_keymaps); i++) {
+			keymap = rest_of_keymaps[i];
+			acpi_dp_add_integer(dp_array, NULL, keymap);
+		}
 	}
 
 	total += ARRAY_SIZE(rest_of_keymaps);
@@ -277,7 +282,8 @@ void acpigen_ps2_keyboard_dsd(const char *scope, uint8_t num_top_row_keys,
 			      enum ps2_action_key action_keys[],
 			      bool can_send_function_keys,
 			      bool has_numeric_keypad,
-			      bool has_scrnlock_key)
+			      bool has_scrnlock_key,
+			      bool has_alpha_num_punct_keys)
 {
 	struct acpi_dp *dsd;
 
@@ -298,7 +304,7 @@ void acpigen_ps2_keyboard_dsd(const char *scope, uint8_t num_top_row_keys,
 	ssdt_generate_physmap(dsd, num_top_row_keys, action_keys);
 	ssdt_generate_keymap(dsd, num_top_row_keys, action_keys,
 			     can_send_function_keys, has_numeric_keypad,
-			     has_scrnlock_key);
+			     has_scrnlock_key, has_alpha_num_punct_keys);
 	acpi_dp_write(dsd);
 	acpigen_pop_len(); /* Scope */
 }

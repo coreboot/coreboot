@@ -221,8 +221,9 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format, u32 lanes,
 		hfp_byte -= d_phy * hfp / (hfp + hbp);
 		hbp_byte -= d_phy * hbp / (hfp + hbp);
 	} else {
-		printk(BIOS_ERR, "HFP plus HBP is not greater than d_phy, "
-		       "the panel may not work properly.\n");
+		printk(BIOS_ERR, "HFP %u plus HBP %u is not greater than d_phy %u, "
+		       "the panel may not work properly.\n", hfp * bytes_per_pixel,
+		       hbp * bytes_per_pixel, d_phy);
 	}
 
 	if (mode_flags & MIPI_DSI_MODE_LINE_END) {
@@ -233,16 +234,16 @@ static void mtk_dsi_config_vdo_timing(u32 mode_flags, u32 format, u32 lanes,
 	}
 
 	if (hfp_byte + hbp_byte < MIN_HFP_BYTE + MIN_HBP_BYTE) {
-		printk(BIOS_ERR, "Calculated hfp_byte and hbp_byte are too small, "
-		       "the panel may not work properly.\n");
+		printk(BIOS_ERR, "Calculated hfp_byte %d and hbp_byte %d are too small, "
+		       "the panel may not work properly.\n", hfp_byte, hbp_byte);
 	} else if (hfp_byte < MIN_HFP_BYTE) {
-		printk(BIOS_NOTICE, "Calculated hfp_byte is too small, "
-		       "adjust it to the minimum value.\n");
+		printk(BIOS_NOTICE, "Calculated hfp_byte %d is too small, "
+		       "adjust it to the minimum value %d.\n", hfp_byte, MIN_HFP_BYTE);
 		hbp_byte -= MIN_HFP_BYTE - hfp_byte;
 		hfp_byte = MIN_HFP_BYTE;
 	} else if (hbp_byte < MIN_HBP_BYTE) {
-		printk(BIOS_NOTICE, "Calculated hbp_byte is too small, "
-		       "adjust it to the minimum value.\n");
+		printk(BIOS_NOTICE, "Calculated hbp_byte %d is too small, "
+		       "adjust it to the minimum value %d.\n", hbp_byte, MIN_HBP_BYTE);
 		hfp_byte -= MIN_HBP_BYTE - hbp_byte;
 		hbp_byte = MIN_HBP_BYTE;
 	}

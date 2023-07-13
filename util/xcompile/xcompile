@@ -58,6 +58,12 @@ elif [ "$(iasl 2>/dev/null | grep -c ACPI)" -gt 0 ]; then
 	IASL=iasl
 fi
 
+if program_exists "${XGCCPATH}/nasm" ; then
+	NASM="${XGCCPATH}/nasm"
+elif program_exists nasm; then
+	NASM=nasm
+fi
+
 if program_exists "${XGCCPATH}/gcc"; then
 	HOSTCC="${XGCCPATH}/gcc"
 elif program_exists gcc; then
@@ -103,6 +109,7 @@ fi
 cat <<EOF
 # platform agnostic and host tools
 XGCCPATH:=${XGCCPATH}
+NASM:=${NASM}
 IASL:=${IASL}
 HOSTCC?=${HOSTCC}
 HOSTCXX?=${HOSTCXX}

@@ -11,7 +11,7 @@
 /* Before console init */
 void fch_pre_init(void)
 {
-
+	fch_enable_cf9_io();
 }
 
 /* After console init */

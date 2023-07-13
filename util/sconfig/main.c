@@ -1328,16 +1328,17 @@ static void expose_device_names(FILE *fil, FILE *head, struct device *ptr, struc
 
 	/* Only devices on root bus here. */
 	if (ptr->bustype == PCI && ptr->parent->dev->bustype == DOMAIN) {
-		fprintf(head, "extern DEVTREE_CONST struct device *const __pci_0_%02x_%d;\n",
-			ptr->path_a, ptr->path_b);
-		fprintf(fil, "DEVTREE_CONST struct device *const __pci_0_%02x_%d = &%s;\n",
-			ptr->path_a, ptr->path_b, ptr->name);
+		fprintf(head, "extern DEVTREE_CONST struct device *const __pci_%d_%02x_%d;\n",
+			ptr->parent->dev->path_a, ptr->path_a, ptr->path_b);
+		fprintf(fil, "DEVTREE_CONST struct device *const __pci_%d_%02x_%d = &%s;\n",
+			ptr->parent->dev->path_a, ptr->path_a, ptr->path_b, ptr->name);
 
 		if (chip_ins->chip->chiph_exists) {
-			fprintf(head, "extern DEVTREE_CONST void *const __pci_0_%02x_%d_config;\n",
-				ptr->path_a, ptr->path_b);
-			fprintf(fil, "DEVTREE_CONST void *const __pci_0_%02x_%d_config = &%s_info_%d;\n",
-				ptr->path_a, ptr->path_b, chip_ins->chip->name_underscore, chip_ins->id);
+			fprintf(head, "extern DEVTREE_CONST void *const __pci_%d_%02x_%d_config;\n",
+				ptr->parent->dev->path_a, ptr->path_a, ptr->path_b);
+			fprintf(fil, "DEVTREE_CONST void *const __pci_%d_%02x_%d_config = &%s_info_%d;\n",
+				ptr->parent->dev->path_a, ptr->path_a, ptr->path_b,
+				chip_ins->chip->name_underscore, chip_ins->id);
 		}
 	}
 

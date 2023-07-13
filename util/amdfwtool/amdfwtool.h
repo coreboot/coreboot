@@ -330,6 +330,11 @@ typedef struct _ish_directory_table {
 #define PSP_BOTH (PSP_LVL1 | PSP_LVL2)
 #define PSP_BOTH_AB (PSP_LVL1_AB | PSP_LVL2_AB)
 
+typedef enum _fwid_type {
+	FWID_TYPE_FWID = 0,
+	FWID_TYPE_UUID,
+} fwid_type_t;
+
 typedef struct _amd_fw_entry_hash {
 	uint16_t fw_id;
 	uint16_t subtype;
@@ -339,9 +344,6 @@ typedef struct _amd_fw_entry_hash {
 
 typedef struct _amd_fw_entry {
 	amd_fw_type type;
-	/* Mendocino and later SoCs use fw_id instead of fw_type. fw_type is still around
-	   for backwards compatibility. fw_id can be populated from the PSP binary file. */
-	uint16_t fw_id;
 	char *filename;
 	uint8_t subprog;
 	uint8_t inst;
@@ -358,6 +360,7 @@ typedef struct _amd_fw_entry {
 	   include but not limited to: *iKek*, *.tkn, *.stkn */
 	bool skip_hashing;
 	uint8_t hash_tbl_id;
+	fwid_type_t fwid_type;
 	uint32_t num_hash_entries;
 	amd_fw_entry_hash *hash_entries;
 	bool generate_manifest;

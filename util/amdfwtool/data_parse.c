@@ -59,6 +59,11 @@ static const char entries_line_regex[] =
 	      H2: Put the hash for the concerned entry in Hash Table 2
 	 */
 	"([[:space:]]+([Hh][0-9]+))?"
+	/* followed by an optional whitespace + "UUID" to indicate the binary is using 16 bytes
+	   UUID as firmware identity. In the absence of this field, the binary is using 2 bytes
+	   FWID as firmware identity.
+	*/
+	"([[:space:]]+(UUID))?"
 	/* followed by optional whitespace */
 	"[[:space:]]*$";
 static regex_t entries_line_expr;
@@ -70,6 +75,8 @@ enum match_id {
 	OPT_LEVEL,
 	OPT_SPACE2,
 	OPT_HASH_TABLE_ID,
+	OPT_SPACE3,
+	OPT_FWID_TYPE,
 	N_MATCHES,
 };
 
@@ -135,7 +142,8 @@ extern amd_fw_entry amd_psp_fw_table[];
 extern amd_bios_entry amd_bios_table[];
 
 static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
-		char level_to_set, uint8_t hash_tbl_id, amd_cb_config *cb_config)
+		char level_to_set, uint8_t hash_tbl_id, fwid_type_t fwid_type,
+		amd_cb_config *cb_config)
 {
 	amd_fw_type fw_type = AMD_FW_INVALID;
 	amd_fw_entry *psp_tableptr;
@@ -493,6 +501,7 @@ static uint8_t find_register_fw_filename_psp_dir(char *fw_name, char *filename,
 				SET_LEVEL(psp_tableptr, level_to_set, PSP,
 					cb_config->recovery_ab);
 				psp_tableptr->hash_tbl_id = hash_tbl_id;
+				psp_tableptr->fwid_type = fwid_type;
 				break;
 			}
 			psp_tableptr++;
@@ -606,6 +615,7 @@ static int is_valid_entry(char *oneline, regmatch_t match[N_MATCHES])
 		oneline[match[FW_FILE].rm_eo] = '\0';
 		oneline[match[OPT_LEVEL].rm_eo] = '\0';
 		oneline[match[OPT_HASH_TABLE_ID].rm_eo] = '\0';
+		oneline[match[OPT_FWID_TYPE].rm_eo] = '\0';
 		retval = 1;
 	} else {
 		retval = 0;
@@ -658,6 +668,14 @@ static uint8_t get_hash_tbl_id(char *line, regoff_t hash_tbl_index)
 	return tbl;
 }
 
+static fwid_type_t get_fwid_type(char *line, regoff_t fwid_type_index)
+{
+	if (fwid_type_index != -1 && !strncmp(&line[fwid_type_index], "UUID", strlen("UUID")))
+		return FWID_TYPE_UUID;
+
+	return FWID_TYPE_FWID;
+}
+
 static uint8_t process_one_line(char *oneline, regmatch_t *match, char *dir,
 	amd_cb_config *cb_config)
 {
@@ -668,8 +686,11 @@ static uint8_t process_one_line(char *oneline, regmatch_t *match, char *dir,
 	regoff_t ch_hash_tbl_index =
 		match[OPT_HASH_TABLE_ID].rm_so == match[OPT_HASH_TABLE_ID].rm_eo ?
 							-1 : match[OPT_HASH_TABLE_ID].rm_so;
+	regoff_t ch_fwid_type_index = match[OPT_FWID_TYPE].rm_so == match[OPT_FWID_TYPE].rm_eo ?
+								-1 : match[OPT_FWID_TYPE].rm_so;
 	char ch_lvl = get_level_from_config(oneline, ch_lvl_index, cb_config);
 	uint8_t ch_hash_tbl = get_hash_tbl_id(oneline, ch_hash_tbl_index);
+	fwid_type_t ch_fwid_type = get_fwid_type(oneline, ch_fwid_type_index);
 
 	path_filename = malloc(MAX_LINE_SIZE * 2 + 2);
 	if (strchr(fn, '/'))
@@ -679,10 +700,10 @@ static uint8_t process_one_line(char *oneline, regmatch_t *match, char *dir,
 		snprintf(path_filename, MAX_LINE_SIZE * 2 + 2, "%.*s/%.*s",
 				MAX_LINE_SIZE, dir, MAX_LINE_SIZE, fn);
 
-	if (find_register_fw_filename_psp_dir(
-			fw_type_str, path_filename, ch_lvl, ch_hash_tbl, cb_config) == 0) {
-		if (find_register_fw_filename_bios_dir(
-				fw_type_str, path_filename, ch_lvl, cb_config) == 0) {
+	if (find_register_fw_filename_psp_dir(fw_type_str, path_filename,
+				ch_lvl, ch_hash_tbl, ch_fwid_type, cb_config) == 0) {
+		if (find_register_fw_filename_bios_dir(fw_type_str, path_filename,
+								ch_lvl, cb_config) == 0) {
 			fprintf(stderr, "Module's name \"%s\" is not valid\n", fw_type_str);
 			return 0; /* Stop parsing. */
 		}

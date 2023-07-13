@@ -384,7 +384,6 @@ void process_signed_psp_firmwares(const char *signed_rom,
 			exit(-1);
 
 		/* File is successfully processed and is part of signed PSP binaries set. */
-		fw_table[i].fw_id = get_psp_fw_type(soc_id, &header);
 		fw_table[i].addr_signed = signed_start_addr;
 		fw_table[i].file_size = (uint32_t)fd_stat.st_size;
 		hash_files[fw_table[i].hash_tbl_id].present = true;

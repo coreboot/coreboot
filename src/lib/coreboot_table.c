@@ -155,8 +155,9 @@ static void lb_framebuffer(struct lb_header *header)
 		uint8_t *fb_ptr = (uint8_t *)(uintptr_t)framebuffer->physical_address;
 		unsigned int width = framebuffer->x_resolution;
 		unsigned int height = framebuffer->y_resolution;
+		unsigned int bytes_per_line = framebuffer->bytes_per_line;
 		unsigned int depth = framebuffer->bits_per_pixel;
-		set_bootsplash(fb_ptr, width, height, depth);
+		set_bootsplash(fb_ptr, width, height, bytes_per_line, depth);
 	}
 }
 

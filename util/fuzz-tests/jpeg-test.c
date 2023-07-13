@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 	jpeg_fetch_size(buf, &width, &height);
 	//printf("width: %d, height: %d\n", width, height);
 	char *pic = malloc(depth / 8 * width * height);
-	int ret = jpeg_decode(buf, pic, width, height, depth, decdata);
+	int ret = jpeg_decode(buf, pic, width, height, width * depth / 8, depth, decdata);
 	//printf("ret: %x\n", ret);
 	return ret;
 }

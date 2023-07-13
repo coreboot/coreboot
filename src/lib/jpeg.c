@@ -267,7 +267,8 @@ int jpeg_check_size(unsigned char *buf, int width, int height)
 }
 
 int jpeg_decode(unsigned char *buf, unsigned char *pic,
-		int width, int height, int depth, struct jpeg_decdata *decdata)
+		int width, int height, int bytes_per_line, int depth,
+		struct jpeg_decdata *decdata)
 {
 	int i, j, m, tac, tdc;
 	int mcusx, mcusy, mx, my;
@@ -382,19 +383,19 @@ int jpeg_decode(unsigned char *buf, unsigned char *pic,
 
 			switch (depth) {
 			case 32:
-				col221111_32(decdata->out, pic
-					+ (my * 16 * mcusx + mx) * 16 * 4,
-					mcusx * 16 * 4);
+				col221111_32(decdata->out,
+					pic + my * 16 * bytes_per_line + mx * 16 * 4,
+					bytes_per_line);
 				break;
 			case 24:
-				col221111(decdata->out, pic
-					+ (my * 16 * mcusx + mx) * 16 * 3,
-					mcusx * 16 * 3);
+				col221111(decdata->out,
+					pic + my * 16 * bytes_per_line + mx * 16 * 3,
+					bytes_per_line);
 				break;
 			case 16:
-				col221111_16(decdata->out, pic
-					+ (my * 16 * mcusx + mx) * (16 * 2),
-					mcusx * (16 * 2));
+				col221111_16(decdata->out,
+					pic + my * 16 * bytes_per_line + mx * 16 * 2,
+					bytes_per_line);
 				break;
 			default:
 				return ERR_DEPTH_MISMATCH;

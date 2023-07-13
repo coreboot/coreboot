@@ -7,6 +7,7 @@ config BOARD_SYSTEM76_ADL_COMMON
 	select DRIVERS_INTEL_PMC
 	select DRIVERS_INTEL_USB4_RETIMER
 	select EC_SYSTEM76_EC
+	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
 	select HAVE_CMOS_DEFAULT
 	select HAVE_OPTION_TABLE
@@ -100,6 +101,9 @@ config MAINBOARD_VERSION
 
 config CONSOLE_POST
 	default y
+
+config D3COLD_SUPPORT
+	default n
 
 config DIMM_SPD_SIZE
 	default 512

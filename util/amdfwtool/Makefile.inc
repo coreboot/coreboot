@@ -5,6 +5,7 @@ amdfwreadobj = amdfwread.o
 
 AMDFWTOOLCFLAGS=-O2 -Wall -Wextra -Wshadow -Werror
 AMDFWTOOLCFLAGS += -I $(top)/src/commonlib/bsd/include
+AMDFWTOOLCFLAGS += -D_GNU_SOURCE # memmem() from string.h
 
 HOSTPKGCONFIG ?= pkg-config
 

@@ -335,8 +335,13 @@ typedef enum _fwid_type {
 	FWID_TYPE_UUID,
 } fwid_type_t;
 
+#define UUID_LEN_BYTES 16
 typedef struct _amd_fw_entry_hash {
-	uint16_t fw_id;
+	fwid_type_t fwid_type;
+	union {
+		uint16_t fw_id;
+		uint8_t uuid[UUID_LEN_BYTES];
+	};
 	uint16_t subtype;
 	uint32_t sha_len;
 	uint8_t sha[SHA384_DIGEST_LENGTH];

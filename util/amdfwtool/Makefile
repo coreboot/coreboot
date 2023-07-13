@@ -16,6 +16,7 @@ TARGETS = amdfwread amdfwtool
 WERROR=-Werror
 CFLAGS=-O2 -Wall -Wextra -Wshadow ${WERROR}
 CFLAGS += -I $(top)/src/commonlib/bsd/include
+CFLAGS += -D_GNU_SOURCE # memmem() from string.h
 
 ifneq ($(PKG_CONFIG),)
 HOSTPKGCONFIG ?= $(PKG_CONFIG)

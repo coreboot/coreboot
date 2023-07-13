@@ -16,6 +16,7 @@
 /* Defines related to hashing signed binaries */
 enum hash_header_ver {
 	HASH_HDR_V1 = 1,
+	HASH_HDR_V2,
 };
 /* Signature ID enums are defined by PSP based on the algorithm used. */
 enum signature_id {
@@ -31,6 +32,8 @@ struct psp_fw_hash_file_info {
 };
 static struct psp_fw_hash_file_info hash_files[MAX_NUM_HASH_TABLES];
 
+#define UUID_MAGIC "gpd.ta.appID"
+
 static uint16_t get_psp_fw_type(enum platform soc_id, struct amd_fw_header *header)
 {
 	switch (soc_id) {
@@ -45,7 +48,17 @@ static uint16_t get_psp_fw_type(enum platform soc_id, struct amd_fw_header *head
 	}
 }
 
-static int add_single_sha(amd_fw_entry_hash *entry, void *buf, enum platform soc_id)
+static void get_psp_fw_uuid(void *buf, size_t buf_len, uint8_t *uuid)
+{
+	void *ptr = memmem(buf, buf_len, UUID_MAGIC, strlen(UUID_MAGIC));
+
+	assert(ptr != NULL);
+
+	memcpy(uuid, ptr + strlen(UUID_MAGIC), UUID_LEN_BYTES);
+}
+
+static int add_single_sha(amd_fw_entry_hash *entry, void *buf, enum platform soc_id,
+								fwid_type_t fwid_type)
 {
 	uint8_t hash[SHA384_DIGEST_LENGTH];
 	struct amd_fw_header *header = (struct amd_fw_header *)buf;
@@ -69,7 +82,11 @@ static int add_single_sha(amd_fw_entry_hash *entry, void *buf, enum platform soc
 	}
 
 	memcpy(entry->sha, hash, entry->sha_len);
-	entry->fw_id = get_psp_fw_type(soc_id, header);
+	entry->fwid_type = fwid_type;
+	if (fwid_type == FWID_TYPE_UUID)
+		get_psp_fw_uuid(buf, header->size_total, entry->uuid);
+	else
+		entry->fw_id = get_psp_fw_type(soc_id, header);
 	entry->subtype = header->fw_subtype;
 
 	return 0;
@@ -104,7 +121,7 @@ static int add_sha(amd_fw_entry *entry, void *buf, size_t buf_size, enum platfor
 	if (num_binaries <= 0)
 		return num_binaries;
 
-	entry->hash_entries = malloc(num_binaries * sizeof(amd_fw_entry_hash));
+	entry->hash_entries = calloc(num_binaries, sizeof(amd_fw_entry_hash));
 	if (!entry->hash_entries) {
 		fprintf(stderr, "Error allocating memory to add FW hash\n");
 		return -1;
@@ -113,7 +130,8 @@ static int add_sha(amd_fw_entry *entry, void *buf, size_t buf_size, enum platfor
 
 	/* Iterate through each binary */
 	for (int i = 0; i < num_binaries; i++) {
-		if (add_single_sha(&entry->hash_entries[i], buf + total_len, soc_id)) {
+		if (add_single_sha(&entry->hash_entries[i], buf + total_len, soc_id,
+								entry->fwid_type)) {
 			free(entry->hash_entries);
 			return -1;
 		}
@@ -124,13 +142,17 @@ static int add_sha(amd_fw_entry *entry, void *buf, size_t buf_size, enum platfor
 	return 0;
 }
 
-static void write_one_psp_firmware_hash_entry(int fd, amd_fw_entry_hash *entry)
+static void write_one_psp_firmware_hash_entry(int fd, amd_fw_entry_hash *entry,
+								uint8_t hash_tbl_id)
 {
-	uint16_t type = entry->fw_id;
 	uint16_t subtype = entry->subtype;
 
-	write_or_fail(fd, &type, sizeof(type));
-	write_or_fail(fd, &subtype, sizeof(subtype));
+	if (hash_files[hash_tbl_id].hash_header.version == HASH_HDR_V2) {
+		write_or_fail(fd, entry->uuid, UUID_LEN_BYTES);
+	} else {
+		write_or_fail(fd, &entry->fw_id, sizeof(entry->fw_id));
+		write_or_fail(fd, &subtype, sizeof(subtype));
+	}
 	write_or_fail(fd, entry->sha, entry->sha_len);
 }
 
@@ -190,12 +212,6 @@ static void write_psp_firmware_hash(amd_fw_entry *fw_table)
 {
 	uint8_t hash_tbl_id;
 
-	for (unsigned int i = 0; i < MAX_NUM_HASH_TABLES; i++) {
-		if (!hash_files[i].present)
-			continue;
-		hash_files[i].hash_header.version = HASH_HDR_V1;
-	}
-
 	for (unsigned int i = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
 		hash_tbl_id = fw_table[i].hash_tbl_id;
 		assert(hash_files[hash_tbl_id].present);
@@ -219,6 +235,12 @@ static void write_psp_firmware_hash(amd_fw_entry *fw_table)
 			continue;
 		write_or_fail(hash_files[i].fd, &hash_files[i].hash_header,
 						sizeof(hash_files[i].hash_header));
+		/* Add a reserved field as expected by version 2 header */
+		if (hash_files[i].hash_header.version == HASH_HDR_V2) {
+			uint16_t reserved = 0;
+
+			write_or_fail(hash_files[i].fd, &reserved, sizeof(reserved));
+		}
 	}
 
 	/* Add all the SHA256 hash entries first followed by SHA384 entries. PSP verstage
@@ -229,7 +251,7 @@ static void write_psp_firmware_hash(amd_fw_entry *fw_table)
 		for (unsigned int j = 0; j < fw_table[i].num_hash_entries; j++) {
 			if (fw_table[i].hash_entries[j].sha_len == SHA256_DIGEST_LENGTH)
 				write_one_psp_firmware_hash_entry(hash_files[hash_tbl_id].fd,
-								&fw_table[i].hash_entries[j]);
+						&fw_table[i].hash_entries[j], hash_tbl_id);
 		}
 	}
 
@@ -238,7 +260,7 @@ static void write_psp_firmware_hash(amd_fw_entry *fw_table)
 		for (unsigned int j = 0; j < fw_table[i].num_hash_entries; j++) {
 			if (fw_table[i].hash_entries[j].sha_len == SHA384_DIGEST_LENGTH)
 				write_one_psp_firmware_hash_entry(hash_files[hash_tbl_id].fd,
-								&fw_table[i].hash_entries[j]);
+						&fw_table[i].hash_entries[j], hash_tbl_id);
 		}
 	}
 
@@ -250,6 +272,15 @@ static void write_psp_firmware_hash(amd_fw_entry *fw_table)
 		fw_table[i].hash_entries = NULL;
 		fw_table[i].num_hash_entries = 0;
 	}
+}
+
+static void update_hash_files_config(amd_fw_entry *fw_table)
+{
+	uint16_t version = fw_table->fwid_type == FWID_TYPE_UUID ? HASH_HDR_V2 : HASH_HDR_V1;
+
+	hash_files[fw_table->hash_tbl_id].present = true;
+	if (version > hash_files[fw_table->hash_tbl_id].hash_header.version)
+		hash_files[fw_table->hash_tbl_id].hash_header.version = version;
 }
 
 /**
@@ -386,7 +417,7 @@ void process_signed_psp_firmwares(const char *signed_rom,
 		/* File is successfully processed and is part of signed PSP binaries set. */
 		fw_table[i].addr_signed = signed_start_addr;
 		fw_table[i].file_size = (uint32_t)fd_stat.st_size;
-		hash_files[fw_table[i].hash_tbl_id].present = true;
+		update_hash_files_config(&fw_table[i]);
 
 		signed_start_addr += fd_stat.st_size + align_bytes;
 

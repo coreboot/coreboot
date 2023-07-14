@@ -558,13 +558,17 @@ unsigned long acpi_fill_cedt(unsigned long current)
 	cxl_uid.byte0 = 'C';
 	cxl_uid.byte1 = 'X';
 	/* Loop through all sockets and stacks, add CHBS for each CXL IIO stack */
-	for (uint8_t s = 0; s < hob->PlatformData.numofIIO; ++s) {
+	for (uint8_t socket = 0, iio = 0; iio < hob->PlatformData.numofIIO; ++socket) {
+		if (!soc_cpu_is_enabled(socket))
+			continue;
+		iio++;
 		for (int x = 0; x < MAX_LOGIC_IIO_STACK; ++x) {
-			const STACK_RES *ri = &hob->PlatformData.IIO_resource[s].StackRes[x];
+			const STACK_RES *ri;
+			ri = &hob->PlatformData.IIO_resource[socket].StackRes[x];
 			if (!is_iio_cxl_stack_res(ri))
 				continue;
 			/* uid needs to match with ACPI CXL device ID, eg. acpi/iiostack.asl */
-			cxl_uid.byte2 = s + '0';
+			cxl_uid.byte2 = socket + '0';
 			cxl_uid.byte3 = x + '0';
 			cxl_ver = ACPI_CEDT_CHBS_CXL_VER_1_1;
 			base = ri->Mmio32Base; /* DP RCRB base */

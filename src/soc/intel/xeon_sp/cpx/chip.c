@@ -115,7 +115,9 @@ static void iio_enable_masks(void)
 
 static void set_pcu_locks(void)
 {
-	for (uint32_t socket = 0; socket < soc_get_num_cpus(); ++socket) {
+	for (uint32_t socket = 0; socket < CONFIG_MAX_SOCKET; ++socket) {
+		if (!soc_cpu_is_enabled(socket))
+			continue;
 		uint32_t bus = get_socket_stack_busno(socket, PCU_IIO_STACK);
 
 		/* configure PCU_CR0_FUN csrs */

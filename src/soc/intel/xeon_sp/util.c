@@ -107,9 +107,13 @@ void get_iiostack_info(struct iiostack_resource *info)
 
 	// copy IIO Stack info from FSP HOB
 	info->no_of_stacks = 0;
-	for (int s = 0; s < hob->PlatformData.numofIIO; ++s) {
+	for (int socket = 0, iio = 0; iio < hob->PlatformData.numofIIO; ++socket) {
+		if (!soc_cpu_is_enabled(socket))
+			continue;
+		iio++;
 		for (int x = 0; x < MAX_IIO_STACK; ++x) {
-			const STACK_RES *ri = &hob->PlatformData.IIO_resource[s].StackRes[x];
+			const STACK_RES *ri;
+			ri = &hob->PlatformData.IIO_resource[socket].StackRes[x];
 			if (!is_iio_stack_res(ri))
 				continue;
 			assert(info->no_of_stacks < (CONFIG_MAX_SOCKET * MAX_IIO_STACK));
@@ -249,7 +253,6 @@ static void set_bios_init_completion_for_package(uint32_t socket)
 
 void set_bios_init_completion(void)
 {
-	/* FIXME: This may need to be changed for multi-socket platforms */
 	uint32_t sbsp_socket_id = 0;
 
 	/*
@@ -257,7 +260,9 @@ void set_bios_init_completion(void)
 	 * to receive the BIOS init completion message. So, we send it to all non-SBSP
 	 * sockets first.
 	 */
-	for (uint32_t socket = 0; socket < soc_get_num_cpus(); ++socket) {
+	for (uint32_t socket = 0; socket < CONFIG_MAX_SOCKET; ++socket) {
+		if (!soc_cpu_is_enabled(socket))
+			continue;
 		if (socket == sbsp_socket_id)
 			continue;
 		set_bios_init_completion_for_package(socket);

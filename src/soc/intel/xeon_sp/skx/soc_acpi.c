@@ -76,7 +76,10 @@ void uncore_inject_dsdt(const struct device *device)
 		return;
 
 	acpigen_write_scope("\\_SB");
-	for (int socket = 0; socket < hob->PlatformData.numofIIO; ++socket) {
+	for (int socket = 0, iio = 0; iio < hob->PlatformData.numofIIO; ++socket) {
+		if (!soc_cpu_is_enabled(socket))
+			continue;
+		iio++;
 		IIO_RESOURCE_INSTANCE iio_resource =
 			hob->PlatformData.IIO_resource[socket];
 		for (int stack = 0; stack <= PSTACK2; ++stack) {

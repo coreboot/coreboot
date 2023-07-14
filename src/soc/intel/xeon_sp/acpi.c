@@ -97,7 +97,10 @@ size_t soc_get_ioapic_info(const uintptr_t *ioapic_bases[])
 
 	*ioapic_bases = xeonsp_ioapic_bases;
 
-	for (int socket = 0; socket < hob->PlatformData.numofIIO; ++socket) {
+	for (int socket = 0, iio = 0; iio < hob->PlatformData.numofIIO; socket++) {
+		if (!soc_cpu_is_enabled(socket))
+			continue;
+		iio++;
 		for (int stack = 0; stack < MAX_IIO_STACK; ++stack) {
 			const STACK_RES *ri =
 				&hob->PlatformData.IIO_resource[socket].StackRes[stack];

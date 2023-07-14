@@ -45,7 +45,7 @@ uint32_t get_socket_stack_busno(uint32_t socket, uint32_t stack)
 {
 	const IIO_UDS *hob = get_iio_uds();
 
-	assert(socket < hob->SystemStatus.numCpus && stack < MAX_LOGIC_IIO_STACK);
+	assert(socket < CONFIG_MAX_SOCKET && stack < MAX_LOGIC_IIO_STACK);
 
 	return hob->PlatformData.IIO_resource[socket].StackRes[stack].BusBase;
 }

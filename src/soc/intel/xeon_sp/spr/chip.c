@@ -92,7 +92,9 @@ static void pcu_pci_or_config32(u8 bus, u8 func, u32 reg, u32 orval)
 
 static void set_pcu_locks(void)
 {
-	for (uint32_t socket = 0; socket < soc_get_num_cpus(); ++socket) {
+	for (uint32_t socket = 0; socket < CONFIG_MAX_SOCKET; ++socket) {
+		if (!soc_cpu_is_enabled(socket))
+			continue;
 		const uint32_t bus = get_ubox_busno(socket, UNCORE_BUS_1);
 
 		/* configure PCU_CR0_FUN csrs */

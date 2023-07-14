@@ -50,11 +50,13 @@ enum cb_err fill_pds(void)
 	memset(pds.pds, 0, sizeof(struct proximity_domain) * pds.num_pds);
 
 	/* Fill in processor domains */
-	uint8_t i, j;
+	uint8_t i, j, socket;
 	struct device *dev;
-	for (i = 0; i < num_sockets; i++) {
+	for (socket = 0, i = 0; i < num_sockets; socket++) {
+		if (!soc_cpu_is_enabled(socket))
+			continue;
 		pds.pds[i].pd_type = PD_TYPE_PROCESSOR;
-		pds.pds[i].socket_bitmap = 1 << hob->PlatformData.IIO_resource[i].SocketID;
+		pds.pds[i].socket_bitmap = 1 << hob->PlatformData.IIO_resource[socket].SocketID;
 		pds.pds[i].distances = malloc(sizeof(uint8_t) * pds.num_pds);
 		if (!pds.pds[i].distances)
 			die("%s %d out of memory.", __FILE__, __LINE__);
@@ -65,6 +67,7 @@ enum cb_err fill_pds(void)
 			else
 				pds.pds[i].distances[j] = 0x0e;
 		}
+		i++;
 	}
 
 	/* If there are no CXL nodes, we are done */

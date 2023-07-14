@@ -41,15 +41,6 @@ DECLARE_ACPIMMIO(acpimmio_acdc_tmr, ACDCTMR);
 
 #undef DECLARE_ACPIMMIO
 
-void enable_acpimmio_decode_pm24(void)
-{
-	uint32_t dw;
-
-	dw = pm_io_read32(ACPIMMIO_DECODE_REGISTER_24);
-	dw |= PM_24_ACPIMMIO_DECODE_EN;
-	pm_io_write32(ACPIMMIO_DECODE_REGISTER_24, dw);
-}
-
 void enable_acpimmio_decode_pm04(void)
 {
 	uint32_t dw;

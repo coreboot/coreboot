@@ -78,9 +78,6 @@ extern uint8_t *MAYBE_CONST acpimmio_aoac;
 
 #undef MAYBE_CONST
 
-/* For older discrete FCHs */
-void enable_acpimmio_decode_pm24(void);
-
 /* For newer integrated FCHs */
 void enable_acpimmio_decode_pm04(void);
 void fch_enable_cf9_io(void);

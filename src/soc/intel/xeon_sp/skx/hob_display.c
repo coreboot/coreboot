@@ -151,7 +151,7 @@ void soc_display_iio_universal_data_hob(void)
 	printk(BIOS_DEBUG, "\tMmiohGranularity: hi: 0x%x, lo:0x%x\n",
 		hob->PlatformData.MmiohGranularity.hi, hob->PlatformData.MmiohGranularity.lo);
 
-	for (int s = 0; s < hob->PlatformData.numofIIO; ++s) {
+	for (int s = 0; s < MAX_SOCKET; ++s) {
 		printk(BIOS_DEBUG, "\t============ Socket %d Info ================\n", s);
 		printk(BIOS_DEBUG, "\tSocketID: 0x%x\n",
 			hob->PlatformData.IIO_resource[s].SocketID);

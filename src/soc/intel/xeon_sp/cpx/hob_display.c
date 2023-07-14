@@ -102,7 +102,7 @@ static void soc_display_iio_universal_data_hob(const IIO_UDS *hob)
 	printk(BIOS_DEBUG, "\tPci64BitResourceAllocation: %d\n",
 		hob->PlatformData.Pci64BitResourceAllocation);
 
-	for (uint8_t s = 0; s < hob->PlatformData.numofIIO; ++s) {
+	for (uint8_t s = 0; s < MAX_SOCKET; ++s) {
 		printk(BIOS_DEBUG, "\t============ Socket %d Info ================\n", s);
 		printk(BIOS_DEBUG, "\tValid: 0x%x\n",
 			hob->PlatformData.IIO_resource[s].Valid);

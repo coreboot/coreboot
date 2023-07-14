@@ -14,8 +14,12 @@ romstage-y	+= romstage.c
 
 ramstage-y	+= aoac.c
 ramstage-y	+= chip.c
+ramstage-y	+= cpu.c
 ramstage-y	+= domain.c
 ramstage-y	+= root_complex.c
+ramstage-y	+= smihandler.c
+
+smm-y		+= smihandler.c
 
 CPPFLAGS_common += -I$(src)/soc/amd/genoa/include
 

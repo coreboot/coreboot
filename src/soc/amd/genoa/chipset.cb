@@ -1,8 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
 chip soc/amd/genoa
-	device cpu_cluster 0 on
-	end
+	device cpu_cluster 0 on ops amd_cpu_bus_ops end
 
 	device domain 0 on
 		ops genoa_pci_domain_ops

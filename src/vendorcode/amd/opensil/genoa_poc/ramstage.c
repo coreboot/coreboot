@@ -11,8 +11,9 @@
 #include <soc/soc_chip.h>
 #include <xSIM-api.h>
 #include "opensil_console.h"
+#include "opensil.h"
 
-static void SIL_STATUS_report(const char *function, const int status)
+void SIL_STATUS_report(const char *function, const int status)
 {
 	const int log_level = status == SilPass ? BIOS_DEBUG : BIOS_ERR;
 	const char *error_string = "Unkown error";

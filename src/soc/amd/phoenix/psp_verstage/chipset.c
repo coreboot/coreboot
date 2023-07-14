@@ -11,51 +11,40 @@
 #include <security/vboot/misc.h>
 #include <security/vboot/vbnv.h>
 
+#define PSP_FW_HASH_FILE_NAME(slot, id) "apu/amdfw_" slot "_hash" id
 /*
  * We can't pass pointer to hash table in the SPI.
  * The AMD PSP team specifically required that whole hash table
  * should be copied into memory before passing them to the PSP
  * to reduce window of TOCTOU.
  */
-#define MAX_NUM_HASH_ENTRIES 128
+#define MAX_NUM_HASH_ENTRIES 64
 static struct psp_fw_hash_table hash_table;
 static struct psp_fw_entry_hash_256 hash_256[MAX_NUM_HASH_ENTRIES];
 static struct psp_fw_entry_hash_384 hash_384[MAX_NUM_HASH_ENTRIES];
 
-void update_psp_fw_hash_table(const char *fname)
-{
-	void *hash_file = cbfs_map(fname, NULL);
-	uint8_t *spi_ptr = (uint8_t *)hash_file;
-	uint32_t len;
+static struct psp_fw_hash_table_v2 hash_table_v2;
+static struct psp_fw_entry_hash_256_v2 hash_256_v2[MAX_NUM_HASH_ENTRIES];
+static struct psp_fw_entry_hash_384_v2 hash_384_v2[MAX_NUM_HASH_ENTRIES];
 
-	if (!spi_ptr) {
-		printk(BIOS_ERR, "AMD Firmware hash table %s not found\n", fname);
-		/*
-		 * If we don't supply hash table, the PSP will refuse to boot.
-		 * So returning here is safe to do.
-		 */
-		return;
-	}
+static void update_one_psp_fw_hash_table_v1(enum verstage_cmd_id cmd, uint8_t *spi_ptr)
+{
+	uint32_t len;
 
 	memcpy(&hash_table, spi_ptr, offsetof(struct psp_fw_hash_table, fw_hash_256));
 
 	if (hash_table.no_of_entries_256 > MAX_NUM_HASH_ENTRIES ||
 			hash_table.no_of_entries_384 > MAX_NUM_HASH_ENTRIES) {
 		printk(BIOS_ERR, "Too many entries in AMD Firmware hash table"
-				 " (SHA256:%d, SHA384:%d)\n",
-				 hash_table.no_of_entries_256, hash_table.no_of_entries_384);
-		cbfs_unmap(hash_file);
-		rdev_munmap(boot_device_ro(), hash_file);
+				 " (SHA256:%d, SHA384:%d)\n", hash_table.no_of_entries_256,
+				 hash_table.no_of_entries_384);
 		return;
 	}
 
-	if (hash_table.no_of_entries_256 == 0 &&
-			hash_table.no_of_entries_384 == 0) {
+	if (hash_table.no_of_entries_256 == 0 && hash_table.no_of_entries_384 == 0) {
 		printk(BIOS_ERR, "No entries in AMD Firmware hash table"
-				 " (SHA256:%d, SHA384:%d)\n",
-				 hash_table.no_of_entries_256, hash_table.no_of_entries_384);
-		cbfs_unmap(hash_file);
-		rdev_munmap(boot_device_ro(), hash_file);
+				 " (SHA256:%d, SHA384:%d)\n", hash_table.no_of_entries_256,
+				 hash_table.no_of_entries_384);
 		return;
 	}
 
@@ -70,9 +59,93 @@ void update_psp_fw_hash_table(const char *fname)
 	len = sizeof(struct psp_fw_entry_hash_384) * hash_table.no_of_entries_384;
 	memcpy(hash_384, spi_ptr, len);
 
-	svc_set_fw_hash_table(&hash_table);
+	svc_set_fw_hash_table(cmd, &hash_table);
+}
+
+static void update_one_psp_fw_hash_table_v2(enum verstage_cmd_id cmd, uint8_t *spi_ptr)
+{
+	uint32_t len;
+
+	memcpy(&hash_table_v2, spi_ptr, offsetof(struct psp_fw_hash_table_v2, fw_hash_256));
+
+	if (hash_table_v2.no_of_entries_256 > MAX_NUM_HASH_ENTRIES ||
+			hash_table_v2.no_of_entries_384 > MAX_NUM_HASH_ENTRIES) {
+		printk(BIOS_ERR, "Too many entries in AMD Firmware hash table"
+				 " (SHA256:%d, SHA384:%d)\n", hash_table_v2.no_of_entries_256,
+				 hash_table_v2.no_of_entries_384);
+		return;
+	}
+
+	if (hash_table_v2.no_of_entries_256 == 0 && hash_table_v2.no_of_entries_384 == 0) {
+		printk(BIOS_ERR, "No entries in AMD Firmware hash table"
+				 " (SHA256:%d, SHA384:%d)\n", hash_table_v2.no_of_entries_256,
+				 hash_table_v2.no_of_entries_384);
+		return;
+	}
+
+	spi_ptr += offsetof(struct psp_fw_hash_table_v2, fw_hash_256);
+
+	hash_table_v2.fw_hash_256 = hash_256_v2;
+	hash_table_v2.fw_hash_384 = hash_384_v2;
+	len = sizeof(struct psp_fw_entry_hash_256_v2) * hash_table_v2.no_of_entries_256;
+	memcpy(hash_256_v2, spi_ptr, len);
+
+	spi_ptr += len;
+	len = sizeof(struct psp_fw_entry_hash_384_v2) * hash_table_v2.no_of_entries_384;
+	memcpy(hash_384_v2, spi_ptr, len);
+
+	svc_set_fw_hash_table(cmd, &hash_table_v2);
+}
+
+static void update_one_psp_fw_hash_table(enum verstage_cmd_id cmd, const char *fname)
+{
+	void *hash_file = cbfs_map(fname, NULL);
+	uint16_t version;
+
+	if (!hash_file) {
+		printk(BIOS_ERR, "AMD Firmware hash table %s not found\n", fname);
+		/*
+		 * If we don't supply hash table, the PSP will refuse to boot.
+		 * So returning here is safe to do.
+		 */
+		return;
+	}
+
+	memcpy(&version, hash_file, sizeof(version));
+	assert(version <= 2);
+	switch (version) {
+	case 1:
+		update_one_psp_fw_hash_table_v1(cmd, hash_file);
+		break;
+	case 2:
+		update_one_psp_fw_hash_table_v2(cmd, hash_file);
+		break;
+	default:
+		printk(BIOS_ERR, "%s: Unexpected version %d\n", __func__, version);
+	}
 	cbfs_unmap(hash_file);
 	rdev_munmap(boot_device_ro(), hash_file);
+}
+
+void update_psp_fw_hash_tables(void)
+{
+	struct vb2_context *ctx = vboot_get_context();
+
+	if (vboot_is_firmware_slot_a(ctx)) {
+		update_one_psp_fw_hash_table(CMD_SET_FW_HASH_TABLE_STAGE1,
+					     PSP_FW_HASH_FILE_NAME("a", ""));
+		update_one_psp_fw_hash_table(CMD_SET_FW_HASH_TABLE_STAGE2,
+					     PSP_FW_HASH_FILE_NAME("a", "1"));
+		update_one_psp_fw_hash_table(CMD_SET_FW_HASH_TABLE_TOS,
+					     PSP_FW_HASH_FILE_NAME("a", "2"));
+	} else {
+		update_one_psp_fw_hash_table(CMD_SET_FW_HASH_TABLE_STAGE1,
+					     PSP_FW_HASH_FILE_NAME("a", ""));
+		update_one_psp_fw_hash_table(CMD_SET_FW_HASH_TABLE_STAGE2,
+					     PSP_FW_HASH_FILE_NAME("a", "1"));
+		update_one_psp_fw_hash_table(CMD_SET_FW_HASH_TABLE_TOS,
+					     PSP_FW_HASH_FILE_NAME("a", "2"));
+	}
 }
 
 uint32_t update_psp_bios_dir(uint32_t *psp_dir_offset, uint32_t *bios_dir_offset)

@@ -92,7 +92,7 @@ struct cmd_param_set_platform_boot_mode {
 };
 
 struct cmd_param_set_fw_hash_table {
-	struct psp_fw_hash_table *ptr_psp_fw_hash_table;
+	void *ptr_psp_fw_hash_table;
 };
 
 struct cmd_param_get_prev_boot_status {

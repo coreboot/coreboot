@@ -118,6 +118,18 @@ void get_iiostack_info(struct iiostack_resource *info)
 	}
 }
 
+/*
+ * Returns true if the CPU in the specified socket was found
+ * during QPI init, false otherwise.
+ */
+bool soc_cpu_is_enabled(const size_t idx)
+{
+	const IIO_UDS *hob = get_iio_uds();
+	assert(idx < CONFIG_MAX_SOCKET);
+
+	return hob->PlatformData.IIO_resource[idx].Valid;
+}
+
 unsigned int soc_get_num_cpus(void)
 {
 	/* The FSP IIO UDS HOB has field numCpus, it is actually socket count */

@@ -394,7 +394,7 @@ void uncore_inject_dsdt(const struct device *device)
 			const STACK_RES *ri =
 				&hob->PlatformData.IIO_resource[socket].StackRes[stack];
 
-			stack_enabled = hob->PlatformData.IIO_resource[socket].Valid &&
+			stack_enabled = soc_cpu_is_enabled(socket) &&
 					ri->Personality < TYPE_RESERVED;
 
 			printk(BIOS_DEBUG, "%s processing socket: %d, stack: %d, type: %d\n",

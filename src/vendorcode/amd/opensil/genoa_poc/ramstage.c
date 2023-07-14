@@ -1,8 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <RcMgr/DfX/RcManager4-api.h>
 #include <amdblocks/reset.h>
 #include <bootstate.h>
 #include <cbmem.h>
+#include <cpu/cpu.h>
 #include <xSIM-api.h>
 #include "opensil_console.h"
 
@@ -38,6 +40,24 @@ static void SIL_STATUS_report(const char *function, const int status)
 	printk(log_level, "%s returned %d (%s)\n", function, status, error_string);
 }
 
+static void setup_rc_manager_default(void)
+{
+	DFX_RCMGR_INPUT_BLK *rc_mgr_input_block = SilFindStructure(SilId_RcManager,  0);
+	/* Let openSIL distribute the resources to the different PCI roots */
+	rc_mgr_input_block->SetRcBasedOnNv = false;
+
+	/* Currently 1P is the only supported configuration */
+	rc_mgr_input_block->SocketNumber = 1;
+	rc_mgr_input_block->RbsPerSocket = 4; /* PCI root bridges per socket */
+	rc_mgr_input_block->McptEnable = true;
+	rc_mgr_input_block->PciExpressBaseAddress = CONFIG_ECAM_MMCONF_BASE_ADDRESS;
+	rc_mgr_input_block->BottomMmioReservedForPrimaryRb = 4ull * GiB - 32 * MiB;
+	rc_mgr_input_block->MmioSizePerRbForNonPciDevice = 16 * MiB;
+	/* MmioAbove4GLimit will be adjusted down in openSIL */
+	rc_mgr_input_block->MmioAbove4GLimit = POWER_OF_2(cpu_phys_address_size());
+	rc_mgr_input_block->Above4GMmioSizePerRbForNonPciDevice = 0;
+}
+
 static void setup_opensil(void *unused)
 {
 	const SIL_STATUS debug_ret = SilDebugSetup(HostDebugService);
@@ -48,6 +68,8 @@ static void setup_opensil(void *unused)
 	/* We run all openSIL timepoints in the same stage so using TP1 as argument is fine. */
 	const SIL_STATUS assign_mem_ret = xSimAssignMemoryTp1(buf, mem_req);
 	SIL_STATUS_report("xSimAssignMemory", assign_mem_ret);
+
+	setup_rc_manager_default();
 }
 
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_ENTRY, setup_opensil, NULL);

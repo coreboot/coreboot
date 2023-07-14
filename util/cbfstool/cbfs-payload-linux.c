@@ -265,6 +265,10 @@ int parse_bzImage_to_payload(const struct buffer *input,
 	 * this information for its jump to real Linux. */
 	params.kernel_start = kernel_base;
 
+	/* To make decisions based on the protocol version,
+	   copy that as well. */
+	params.param_block_version = hdr->protocol_version;
+
 	if (bzp_add_kernel(&bzp, input, setup_size) != 0)
 		return -1;
 

@@ -427,11 +427,12 @@ bool memranges_steal(struct memranges *ranges, resource_t limit, resource_t size
 		return false;
 
 	if (from_top) {
+		limit = MIN(limit, r->end);
 		/* Ensure we're within the range, even aligned down.
 		   Proof is simple: If ALIGN_UP(r->begin) would be
 		   higher, the stolen range wouldn't fit.*/
-		assert(r->begin <= ALIGN_DOWN(range_entry_end(r) - size, POWER_OF_2(align)));
-		*stolen_base = ALIGN_DOWN(range_entry_end(r) - size, POWER_OF_2(align));
+		assert(r->begin <= ALIGN_DOWN(limit - size + 1, POWER_OF_2(align)));
+		*stolen_base = ALIGN_DOWN(limit - size + 1, POWER_OF_2(align));
 	} else {
 		*stolen_base = ALIGN_UP(r->begin, POWER_OF_2(align));
 	}

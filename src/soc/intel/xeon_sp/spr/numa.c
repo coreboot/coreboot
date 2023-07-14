@@ -29,6 +29,7 @@ enum cb_err fill_pds(void)
 {
 	uint8_t num_sockets = soc_get_num_cpus();
 	uint8_t num_cxlnodes = get_cxl_node_count();
+	const IIO_UDS *hob = get_iio_uds();
 
 	/*
 	 * Rules/assumptions:
@@ -53,7 +54,7 @@ enum cb_err fill_pds(void)
 	struct device *dev;
 	for (i = 0; i < num_sockets; i++) {
 		pds.pds[i].pd_type = PD_TYPE_PROCESSOR;
-		pds.pds[i].socket_bitmap = 1 << i;
+		pds.pds[i].socket_bitmap = 1 << hob->PlatformData.IIO_resource[i].SocketID;
 		pds.pds[i].distances = malloc(sizeof(uint8_t) * pds.num_pds);
 		if (!pds.pds[i].distances)
 			die("%s %d out of memory.", __FILE__, __LINE__);

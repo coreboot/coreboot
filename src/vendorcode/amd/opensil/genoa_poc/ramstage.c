@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <FCH/Common/FchCommonCfg.h>
+#include <FCH/Common/FchCore/FchSata/FchSata.h>
 #include <RcMgr/DfX/RcManager4-api.h>
 #include <amdblocks/reset.h>
 #include <bootstate.h>
@@ -92,6 +93,24 @@ static void configure_usb(void)
 		       sizeof(fch_usb_data->OemUsbConfigurationTable.S1Usb31PhyPort));
 }
 
+#define NUM_SATA_CONTROLLERS 4
+static void configure_sata(void)
+{
+	FCHSATA_INPUT_BLK *fch_sata_data = SilFindStructure(SilId_FchSata, 0);
+	FCH_SATA2 *fch_sata_defaults = GetFchSataData();
+	for (int i = 0; i < NUM_SATA_CONTROLLERS; i++) {
+		fch_sata_data[i] = fch_sata_defaults[i];
+		fch_sata_data[i].SataSetMaxGen2 = false;
+		fch_sata_data[i].SataMsiEnable = true;
+		fch_sata_data[i].SataEspPort = 0xFF;
+		fch_sata_data[i].SataRasSupport = true;
+		fch_sata_data[i].SataDevSlpPort1Num = 1;
+		fch_sata_data[i].SataMsiEnable = true;
+		fch_sata_data[i].SataControllerAutoShutdown = true;
+		fch_sata_data[i].SataRxPolarity = 0xFF;
+	}
+}
+
 static void setup_opensil(void *unused)
 {
 	const SIL_STATUS debug_ret = SilDebugSetup(HostDebugService);
@@ -105,6 +124,7 @@ static void setup_opensil(void *unused)
 
 	setup_rc_manager_default();
 	configure_usb();
+	configure_sata();
 }
 
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_ENTRY, setup_opensil, NULL);

@@ -12,4 +12,10 @@ config SOC_AMD_COMMON_BLOCK_ACPIMMIO_BIOSRAM
 	  Add functions to access settings stored in the biosram region.
 	  This is only used by the SoCs using binaryPI and the old AGESA.
 
+config SOC_AMD_COMMON_BLOCK_ACPIMMIO_PM_IO_ACCESS
+	bool
+	help
+	  Add functions to access the PM register block via the indirect
+	  IO register access interface.
+
 endif # SOC_AMD_COMMON_BLOCK_ACPIMMIO

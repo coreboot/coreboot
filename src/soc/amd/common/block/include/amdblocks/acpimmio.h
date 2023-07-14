@@ -6,10 +6,6 @@
 #include <device/mmio.h>
 #include <types.h>
 
-/* IO index/data for accessing PMIO prior to enabling MMIO decode */
-#define PM_INDEX			0xcd6
-#define PM_DATA				0xcd7
-
 /*
  * Power management registers: 0xfed80300 or index/data at IO 0xcd6/cd7. Valid for Mullins and
  * newer SoCs, but not for the generations with separate FCH or Kabini.

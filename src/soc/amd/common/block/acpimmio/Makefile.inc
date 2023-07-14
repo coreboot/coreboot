@@ -4,6 +4,9 @@ ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_ACPIMMIO),y)
 all-y += mmio_util.c
 smm-y += mmio_util.c
 
+all-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPIMMIO_PM_IO_ACCESS) += pm_io_access_util.c
+smm-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPIMMIO_PM_IO_ACCESS) += pm_io_access_util.c
+
 all-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPIMMIO_BIOSRAM) += biosram.c
 smm-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPIMMIO_BIOSRAM) += biosram.c
 

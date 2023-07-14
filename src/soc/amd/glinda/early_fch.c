@@ -19,9 +19,12 @@
 /* Before console init */
 void fch_pre_init(void)
 {
-	/* Enable_acpimmio_decode_pm04 to enable the ACPIMMIO decode which is needed to access
-	   the GPIO registers. */
-	enable_acpimmio_decode_pm04();
+	/*
+	 * PM_04_ACPIMMIO_DECODE_EN which enables the ACPIMMIO decode is already set after
+	 * reset. Since the IO port based indirect PM register space access isn't implemented
+	 * in Phoenix any more, don't call enable_acpimmio_decode_pm04() which uses the
+	 * indirect PM register space access via the IO ports that aren't implemented any more.
+	 */
 	/* Setup SPI base by calling lpc_early_init before setting up eSPI. */
 	lpc_early_init();
 

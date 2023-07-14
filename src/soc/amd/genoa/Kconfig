@@ -193,4 +193,20 @@ config ACPI_SSDT_PSD_INDEPENDENT
 	  cores to transition between p-states independently. A vendor may
 	  choose to generate _PSD object to allow cores to transition together.
 
+config ACPI_BERT
+	bool "Build ACPI BERT Table"
+	default y
+	depends on HAVE_ACPI_TABLES
+	help
+	  Report Machine Check errors identified in POST to the OS in an
+	  ACPI Boot Error Record Table.
+
+config ACPI_BERT_SIZE
+	hex
+	default 0x4000 if ACPI_BERT
+	default 0x0
+	help
+	  Specify the amount of DRAM reserved for gathering the data used to
+	  generate the ACPI table.
+
 endif # SOC_AMD_GENOA

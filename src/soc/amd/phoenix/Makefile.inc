@@ -338,6 +338,18 @@ build_complete:: $(obj)/amdfw_a.rom $(obj)/amdfw_b.rom
 		-n apu/amdfw_a_hash -t raw
 	$(CBFSTOOL) $(obj)/coreboot.rom add -r FW_MAIN_B -f $(obj)/amdfw_b.rom.signed.hash \
 		-n apu/amdfw_b_hash -t raw
+	if [ -n "$(wildcard $(obj)/amdfw_a.rom.signed.1.hash)" ]; then \
+		$(CBFSTOOL) $(obj)/coreboot.rom add -r FW_MAIN_A -f \
+			$(obj)/amdfw_a.rom.signed.1.hash -n apu/amdfw_a_hash1 -t raw; \
+		$(CBFSTOOL) $(obj)/coreboot.rom add -r FW_MAIN_B -f \
+			$(obj)/amdfw_b.rom.signed.1.hash -n apu/amdfw_b_hash1 -t raw; \
+	fi
+	if [ -n "$(wildcard $(obj)/amdfw_a.rom.signed.2.hash)" ]; then \
+		$(CBFSTOOL) $(obj)/coreboot.rom add -r FW_MAIN_A -f \
+			$(obj)/amdfw_a.rom.signed.2.hash -n apu/amdfw_a_hash2 -t raw; \
+		$(CBFSTOOL) $(obj)/coreboot.rom add -r FW_MAIN_B -f \
+			$(obj)/amdfw_b.rom.signed.2.hash -n apu/amdfw_b_hash2 -t raw; \
+	fi
 endif # CONFIG_SEPARATE_SIGNED_PSPFW
 endif
 

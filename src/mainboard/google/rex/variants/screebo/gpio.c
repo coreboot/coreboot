@@ -181,9 +181,9 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_D16, NONE, DEEP, NF2),
 	/* GPP_D17 : [] ==> I2S_SOC_RX_HP_TX */
 	PAD_CFG_NF(GPP_D17, NONE, DEEP, NF2),
-	/* GPP_D18 : net NC is not present in the given design */
-	PAD_NC(GPP_D18, NONE),
-	/* GPP_D19 : [] ==> SD_CLKREQ_ODL */
+	/* GPP_D18 : [] ==> SD_CLKREQ_ODL */
+	PAD_CFG_NF(GPP_D18, NONE, DEEP, NF1),
+	/* GPP_D19 : [] ==> SOC_REC_SWITCH_ODL*/
 	PAD_CFG_NF(GPP_D19, NONE, DEEP, NF1),
 	/* GPP_D20 : net NC is not present in the given design */
 	PAD_NC(GPP_D20, NONE),

@@ -3,6 +3,7 @@
 #include <acpi/acpigen.h>
 #include <amdblocks/cpu.h>
 #include <amdblocks/data_fabric.h>
+#include <amdblocks/root_complex.h>
 #include <arch/ioapic.h>
 #include <arch/vga.h>
 #include <console/console.h>
@@ -159,6 +160,8 @@ void amd_pci_domain_read_resources(struct device *domain)
 	add_io_regions(domain, &idx);
 
 	add_data_fabric_mmio_regions(domain, &idx);
+
+	read_non_pci_resources(domain, &idx);
 }
 
 static void write_ssdt_domain_io_producer_range_helper(const char *domain_name,

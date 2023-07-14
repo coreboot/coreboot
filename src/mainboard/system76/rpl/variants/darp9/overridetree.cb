@@ -1,0 +1,91 @@
+chip soc/intel/alderlake
+	register "power_limits_config[RPL_P_682_482_282_28W_CORE]" = "{
+		.tdp_pl1_override = 20,
+		.tdp_pl2_override = 56,
+	}"
+
+	device domain 0 on
+		subsystemid 0x1558 0x51b1 inherit
+
+		device ref pcie4_0 on
+			# CPU RP#1 x4, Clock 0 (SSD2)
+			register "cpu_pcie_rp[CPU_RP(1)]" = "{
+				.clk_src = 0,
+				.clk_req = 0,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+		device ref pcie4_1 on
+			# CPU RP#3 x4, Clock 4 (SSD1)
+			register "cpu_pcie_rp[CPU_RP(3)]" = "{
+				.clk_src = 4,
+				.clk_req = 4,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+		device ref tbt_pcie_rp0 on end
+		device ref tcss_xhci on
+			register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
+		end
+		device ref tcss_dma0 on end
+		device ref xhci on
+			# USB2
+			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)" # Type-A
+			register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)" # Type-A
+			register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC_SKIP)" # J_TYPEC1 (USB-C)
+			register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)" # Fingerprint
+			register "usb2_ports[5]" = "USB2_PORT_TYPE_C(OC_SKIP)" # J_TYPEC2 (Thunderbolt)
+			register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)" # Camera
+			register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)" # Bluetooth
+			# USB3
+			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A
+			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # J_TYPEC1 CH0
+			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # J_TYPEC1 CH1
+		end
+		device ref i2c0 on
+			# Touchpad I2C bus
+			register "serial_io_i2c_mode[PchSerialIoIndexI2C0]" = "PchSerialIoPci"
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN0412""
+				register "generic.desc" = ""ELAN Touchpad""
+				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_E12)"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 15 on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""FTCS1000""
+				register "generic.desc" = ""FocalTech Touchpad""
+				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_E12)"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 38 on end
+			end
+		end
+		device ref sata off end
+		device ref pcie_rp5 on
+			# PCIe RP#5 x1, Clock 2 (WLAN)
+			register "pch_pcie_rp[PCH_RP(5)]" = "{
+				.clk_src = 2,
+				.clk_req = 2,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+		device ref pcie_rp6 on
+			# PCIe RP#6 x1, Clock 5 (CARD)
+			register "pch_pcie_rp[PCH_RP(6)]" = "{
+				.clk_src = 5,
+				.clk_req = 5,
+				.flags = PCIE_RP_HOTPLUG | PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+		device ref pcie_rp8 on
+			# PCIe RP#8 x1, Clock 6 (GLAN)
+			register "pch_pcie_rp[PCH_RP(8)]" = "{
+				.clk_src = 6,
+				.clk_req = 6,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+	end
+end

@@ -210,6 +210,7 @@ The boards in this section are not real mainboards, but emulators.
 - [Darter Pro 6](system76/darp6.md)
 - [Darter Pro 7](system76/darp7.md)
 - [Darter Pro 8](system76/darp8.md)
+- [Darter Pro 9](system76/darp9.md)
 - [Galago Pro 4](system76/galp4.md)
 - [Galago Pro 5](system76/galp5.md)
 - [Galago Pro 6](system76/galp6.md)

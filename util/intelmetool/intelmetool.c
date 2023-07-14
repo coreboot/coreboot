@@ -467,7 +467,6 @@ int main(int argc, char *argv[])
 		case 'b':
 			cmd_exec = 2;
 			break;
-			break;
 		case 'd':
 			debug = 1;
 			break;

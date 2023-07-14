@@ -139,15 +139,12 @@ static uint8_t get_ddi1_type(void)
 	case 0xc:
 		printk(BIOS_DEBUG, "Configuring DDI1 as HDMI.\n");
 		return DDI_HDMI;
-		break;
 	case 0x13:
 		printk(BIOS_DEBUG, "Configuring DDI1 as DP.\n");
 		return DDI_DP;
-		break;
 	case 0x14:
 		printk(BIOS_DEBUG, "Configuring DDI1 as eDP.\n");
 		return DDI_EDP;
-		break;
 	default:
 		printk(BIOS_WARNING, "Unexpected display connector type %x. Disabling DDI1.\n",
 		       connector_type);

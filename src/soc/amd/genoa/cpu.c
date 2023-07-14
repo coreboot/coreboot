@@ -1,12 +1,14 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/cpu.h>
+#include <amdblocks/mca.h>
 #include <cpu/cpu.h>
 #include <device/device.h>
 #include <soc/cpu.h>
 
 static void model_19_init(struct device *dev)
 {
+	check_mca();
 	set_cstate_io_addr();
 }
 

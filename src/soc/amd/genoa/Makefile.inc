@@ -18,6 +18,7 @@ ramstage-y	+= cpu.c
 ramstage-y	+= domain.c
 ramstage-y	+= root_complex.c
 ramstage-y	+= smihandler.c
+ramstage-y	+= mca.c
 
 smm-y		+= smihandler.c
 

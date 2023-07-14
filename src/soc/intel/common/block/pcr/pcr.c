@@ -271,7 +271,6 @@ int pcr_execute_sideband_msg(pci_devfn_t dev, struct pcr_sbi_msg *msg, uint32_t 
 			printk(BIOS_ERR, "SBI Failure: Wrong Input = %x!\n",
 					msg->opcode);
 			return -1;
-			break;
 	}
 
 	if (pci_read_config16(dev, PCI_VENDOR_ID) == 0xffff) {

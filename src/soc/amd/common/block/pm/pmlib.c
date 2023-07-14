@@ -37,5 +37,5 @@ void pm_set_power_failure_state(void)
 		break;
 	}
 
-	pm_io_write8(PM_RTC_SHADOW_REG, pwr_fail);
+	pm_write8(PM_RTC_SHADOW_REG, pwr_fail);
 }

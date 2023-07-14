@@ -347,9 +347,9 @@ static void lpc_enable_controller(void)
 	u8 byte;
 
 	/* Enable LPC controller */
-	byte = pm_io_read8(PM_LPC_GATING);
+	byte = pm_read8(PM_LPC_GATING);
 	byte |= PM_LPC_ENABLE;
-	pm_io_write8(PM_LPC_GATING, byte);
+	pm_write8(PM_LPC_GATING, byte);
 }
 
 void lpc_early_init(void)

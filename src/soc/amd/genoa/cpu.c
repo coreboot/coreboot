@@ -2,6 +2,7 @@
 
 #include <amdblocks/cpu.h>
 #include <amdblocks/mca.h>
+#include <cpu/amd/microcode.h>
 #include <cpu/cpu.h>
 #include <device/device.h>
 #include <soc/cpu.h>
@@ -10,6 +11,8 @@ static void model_19_init(struct device *dev)
 {
 	check_mca();
 	set_cstate_io_addr();
+
+	amd_apply_microcode_patch();
 }
 
 static struct device_operations cpu_dev_ops = {

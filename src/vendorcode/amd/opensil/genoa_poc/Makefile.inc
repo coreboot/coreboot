@@ -7,6 +7,7 @@ romstage-y += opensil_console.c
 romstage-y += romstage.c
 
 ramstage-y += opensil_console.c
+ramstage-y += ramstage.c
 
 $(obj)/romstage/vendorcode/amd/opensil/genoa_poc/opensil_console.o: CFLAGS_romstage += -D_MSC_EXTENSIONS=0 -DHAS_STRING_H=1 -Wno-unknown-pragmas
 $(obj)/romstage/vendorcode/amd/opensil/genoa_poc/romstage.o: CFLAGS_romstage += -D_MSC_EXTENSIONS=0 -DHAS_STRING_H=1 -Wno-unknown-pragmas

@@ -132,7 +132,6 @@ bool soc_cpu_is_enabled(const size_t idx)
 
 unsigned int soc_get_num_cpus(void)
 {
-	/* The FSP IIO UDS HOB has field numCpus, it is actually socket count */
 	return get_iio_uds()->SystemStatus.numCpus;
 }
 

@@ -16,10 +16,8 @@ Device (S76D) {
 	Method (RSET, 0, Serialized) {
 		Printf ("S76D: RSET")
 		SAPL(0)
-		SKBL(0)
-#if CONFIG(EC_SYSTEM76_EC_COLOR_KEYBOARD)
-			SKBC(0xFFFFFF)
-#endif // CONFIG(EC_SYSTEM76_EC_COLOR_KEYBOARD)
+		SKBB(0)
+		SKBC(0xFFFFFF)
 	}
 
 	Method (INIT, 0, Serialized) {
@@ -67,53 +65,63 @@ Device (S76D) {
 		}
 	}
 
-#if CONFIG(EC_SYSTEM76_EC_COLOR_KEYBOARD)
-	// Set KB LED Brightness
-	Method (SKBL, 1, Serialized) {
+	// Get Keyboard Backlight Kind
+	// 0 - No backlight
+	// 1 - White backlight
+	// 2 - RGB backlight
+	Method (GKBK, 0, Serialized) {
+		Local0 = 0
 		If (^^PCI0.LPCB.EC0.ECOK) {
-			^^PCI0.LPCB.EC0.FDAT = 6
-			^^PCI0.LPCB.EC0.FBUF = Arg0
-			^^PCI0.LPCB.EC0.FBF1 = 0
-			^^PCI0.LPCB.EC0.FBF2 = Arg0
+			^^PCI0.LPCB.EC0.FDAT = 2
 			^^PCI0.LPCB.EC0.FCMD = 0xCA
+			Local0 = ^^PCI0.LPCB.EC0.FBUF
 		}
+		Return (Local0)
 	}
 
-	// Set Keyboard Color
-	Method (SKBC, 1, Serialized) {
-		If (^^PCI0.LPCB.EC0.ECOK) {
-			^^PCI0.LPCB.EC0.FDAT = 0x3
-			^^PCI0.LPCB.EC0.FBUF = (Arg0 & 0xFF)
-			^^PCI0.LPCB.EC0.FBF1 = ((Arg0 >> 16) & 0xFF)
-			^^PCI0.LPCB.EC0.FBF2 = ((Arg0 >> 8) & 0xFF)
-			^^PCI0.LPCB.EC0.FCMD = 0xCA
-			Return (Arg0)
-		} Else {
-			Return (0)
-		}
-	}
-#else // CONFIG(EC_SYSTEM76_EC_COLOR_KEYBOARD)
-	// Get KB LED
-	Method (GKBL, 0, Serialized) {
+	// Get Keyboard Brightness
+	Method (GKBB, 0, Serialized) {
 		Local0 = 0
 		If (^^PCI0.LPCB.EC0.ECOK) {
 			^^PCI0.LPCB.EC0.FDAT = 1
 			^^PCI0.LPCB.EC0.FCMD = 0xCA
 			Local0 = ^^PCI0.LPCB.EC0.FBUF
-			^^PCI0.LPCB.EC0.FCMD = 0
 		}
 		Return (Local0)
 	}
 
-	// Set KB Led
-	Method (SKBL, 1, Serialized) {
+	// Set Keyboard Brightness
+	Method (SKBB, 1, Serialized) {
 		If (^^PCI0.LPCB.EC0.ECOK) {
 			^^PCI0.LPCB.EC0.FDAT = 0
 			^^PCI0.LPCB.EC0.FBUF = Arg0
 			^^PCI0.LPCB.EC0.FCMD = 0xCA
 		}
 	}
-#endif // CONFIG(EC_SYSTEM76_EC_COLOR_KEYBOARD)
+
+	// Get Keyboard Color
+	Method (GKBC, 0, Serialized) {
+		Local0 = 0
+		If (^^PCI0.LPCB.EC0.ECOK) {
+			^^PCI0.LPCB.EC0.FDAT = 4
+			^^PCI0.LPCB.EC0.FCMD = 0xCA
+			Local0 = ^^PCI0.LPCB.EC0.FBUF
+			Local0 |= (^^PCI0.LPCB.EC0.FBF1) << 16
+			Local0 |= (^^PCI0.LPCB.EC0.FBF2) << 8
+		}
+		Return (Local0)
+	}
+
+	// Set Keyboard Color
+	Method (SKBC, 1, Serialized) {
+		If (^^PCI0.LPCB.EC0.ECOK) {
+			^^PCI0.LPCB.EC0.FDAT = 3
+			^^PCI0.LPCB.EC0.FBUF = (Arg0 & 0xFF)
+			^^PCI0.LPCB.EC0.FBF1 = ((Arg0 >> 16) & 0xFF)
+			^^PCI0.LPCB.EC0.FBF2 = ((Arg0 >> 8) & 0xFF)
+			^^PCI0.LPCB.EC0.FCMD = 0xCA
+		}
+	}
 
 	// Fan names
 	Method (NFAN, 0, Serialized) {

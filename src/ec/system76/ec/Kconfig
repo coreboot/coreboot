@@ -8,11 +8,6 @@ config EC_SYSTEM76_EC_BAT_THRESHOLDS
 	bool
 	default y
 
-config EC_SYSTEM76_EC_COLOR_KEYBOARD
-	depends on EC_SYSTEM76_EC
-	bool
-	default n
-
 config EC_SYSTEM76_EC_DGPU
 	depends on EC_SYSTEM76_EC
 	bool

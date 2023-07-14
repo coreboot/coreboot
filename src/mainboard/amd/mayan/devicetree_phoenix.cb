@@ -188,6 +188,7 @@ chip soc/amd/phoenix
 	device domain 0 on
 		device ref iommu on end
 		device ref gpp_bridge_1_1 on end # MXM
+		device ref gpp_bridge_1_2 on end # DT/M.2 SSD1
 		device ref gpp_bridge_2_1 on end # GBE
 		device ref gpp_bridge_2_2 on end # WIFI
 		device ref gpp_bridge_2_4 on end # NVMe SSD

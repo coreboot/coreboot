@@ -118,9 +118,11 @@ extern struct device_operations ioe_pmc_ops;
 #define PMC_GPP_E		0x3
 #define PMC_GPP_H		0x4
 #define PMC_GPP_F		0x5
-#define PMC_GPP_S		0x6
-#define PMC_GPP_B		0x7
-#define PMC_GPP_D		0x8
+#define PMC_GPP_VGPIO3		0x6
+#define PMC_GPP_VGPIO		0x7
+#define PMC_GPP_S		0x8
+#define PMC_GPP_B		0x9
+#define PMC_GPP_D		0xa
 
 #define GBLRST_CAUSE0			0x1924
 #define   GBLRST_CAUSE0_THERMTRIP	(1 << 5)

@@ -23,7 +23,7 @@ ifeq ($(BUILD_TIMELESS),1)
 KERNELVERSION := -TIMELESS--LESSTIME-
 else
 KERNELVERSION := $(strip $(if $(GIT),\
-	$(shell git describe --dirty --always || git describe),\
+	$(shell git describe --abbrev=12 --dirty --always || git describe),\
 	$(if $(wildcard $(top)/.coreboot-version),\
 		$(shell cat $(top)/.coreboot-version),\
 		coreboot-unknown$(KERNELREVISION))))

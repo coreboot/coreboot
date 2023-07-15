@@ -23,8 +23,8 @@ fi
 
 # $1: format string
 get_git_head_data() {
-	LANG="" git log --no-show-signature -1 --format="format:$1" 2>/dev/null || \
-	LANG="" git log -1 --format="format:$1"
+	LANG="" git log --no-show-signature --abbrev=12 -1 --format="format:$1" 2>/dev/null || \
+	LANG="" git log --abbrev=12 -1 --format="format:$1"
 }
 
 if [ "${BUILD_TIMELESS}" = "1" ]; then

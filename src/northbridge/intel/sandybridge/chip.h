@@ -45,7 +45,7 @@ struct northbridge_intel_sandybridge_config {
 
 	/* Data for RAM init */
 
-	/* DIMM SPD address. Use 8bit notation where BIT0 is always zero. */
+	/* DIMM SPD address. */
 	u8 spd_addresses[4];
 
 	/* PEI data for RAM init and early silicon init */

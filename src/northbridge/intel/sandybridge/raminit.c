@@ -4,7 +4,10 @@
 #include <commonlib/region.h>
 #include <cf9_reset.h>
 #include <string.h>
+#include <cbfs.h>
 #include <arch/cpu.h>
+#include <device/device.h>
+#include <device/dram/ddr3.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <device/smbus_host.h>
@@ -16,9 +19,11 @@
 #include <cpu/x86/msr.h>
 #include <types.h>
 
+#include "raminit.h"
 #include "raminit_native.h"
 #include "raminit_common.h"
 #include "sandybridge.h"
+#include "chip.h"
 
 /* FIXME: no support for 3-channel chipsets */
 
@@ -139,12 +144,57 @@ void read_spd(spd_raw_data * spd, u8 addr, bool id_only)
 {
 	int j;
 	if (id_only) {
-		for (j = 117; j < 128; j++)
+		for (j = SPD_DIMM_MOD_ID1; j < 128; j++)
 			(*spd)[j] = smbus_read_byte(addr, j);
 	} else {
-		for (j = 0; j < 256; j++)
+		for (j = 0; j < SPD_SIZE_MAX_DDR3; j++)
 			(*spd)[j] = smbus_read_byte(addr, j);
 	}
+}
+
+/* Temporary stub */
+__weak void mb_get_spd_map(struct spd_info *spdi) {}
+
+__weak void mainboard_get_spd(spd_raw_data *spd, bool id_only)
+{
+	const struct northbridge_intel_sandybridge_config *cfg = config_of_soc();
+	unsigned int i;
+
+	if (CONFIG(HAVE_SPD_IN_CBFS)) {
+		struct spd_info spdi = {0};
+
+		mb_get_spd_map(&spdi);
+
+		size_t spd_file_len;
+		uint8_t *spd_file = cbfs_map("spd.bin", &spd_file_len);
+
+		printk(BIOS_DEBUG, "SPD index %d\n", spdi.spd_index);
+
+		/* SPD file sanity check */
+		if (!spd_file)
+			die("SPD data %s!", "not found");
+
+		if (spd_file_len < ((spdi.spd_index + 1) * SPD_SIZE_MAX_DDR3))
+			die("SPD data %s!", "incomplete");
+
+		/*
+		 * Copy SPD data specified by spd_info.spd_index to all slots marked as
+		 * SPD_MEMORY_DOWN.
+		 *
+		 * Read SPD data from slots with a real SMBus address.
+		 */
+		for (i = 0; i < ARRAY_SIZE(spdi.addresses); i++) {
+			if (spdi.addresses[i] == SPD_MEMORY_DOWN)
+				memcpy(&spd[i], spd_file + (spdi.spd_index * SPD_SIZE_MAX_DDR3), SPD_SIZE_MAX_DDR3);
+			else if (spdi.addresses[i] != 0)
+				read_spd(&spd[i], spdi.addresses[i], id_only);
+		}
+	} else {
+		for (i = 0; i < ARRAY_SIZE(cfg->spd_addresses); i++) {
+			if (cfg->spd_addresses[i] != 0)
+				read_spd(&spd[i], cfg->spd_addresses[i], id_only);
+		}
+	} /* CONFIG(HAVE_SPD_IN_CBFS) */
 }
 
 static void dram_find_spds_ddr3(spd_raw_data *spd, ramctr_timing *ctrl)

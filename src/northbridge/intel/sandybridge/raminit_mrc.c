@@ -264,13 +264,7 @@ static void southbridge_fill_pei_data(struct pei_data *pei_data)
 
 static void devicetree_fill_pei_data(struct pei_data *pei_data)
 {
-	const struct northbridge_intel_sandybridge_config *cfg;
-
-	const struct device *dev = pcidev_on_root(0, 0);
-	if (!dev || !dev->chip_info)
-		return;
-
-	cfg = dev->chip_info;
+	const struct northbridge_intel_sandybridge_config *cfg = config_of_soc();
 
 	switch (cfg->max_mem_clock_mhz) {
 	/* MRC only supports fixed numbers of frequencies */
@@ -292,7 +286,15 @@ static void devicetree_fill_pei_data(struct pei_data *pei_data)
 
 	}
 
-	memcpy(pei_data->spd_addresses, cfg->spd_addresses, sizeof(pei_data->spd_addresses));
+	/*
+	 * SPD addresses are listed in devicetree as actual addresses,
+	 * and for MRC need to be shifted left so bit 0 is always zero.
+	 */
+	if (!CONFIG(HAVE_SPD_IN_CBFS)) {
+		for (unsigned int i = 0; i < ARRAY_SIZE(cfg->spd_addresses); i++) {
+			pei_data->spd_addresses[i] = cfg->spd_addresses[i] << 1;
+		}
+	}
 	memcpy(pei_data->ts_addresses,  cfg->ts_addresses,  sizeof(pei_data->ts_addresses));
 
 	pei_data->ec_present     = cfg->ec_present;
@@ -308,6 +310,49 @@ static void devicetree_fill_pei_data(struct pei_data *pei_data)
 	pei_data->usb3.hs_port_switch_mask = cfg->usb3.hs_port_switch_mask;
 	pei_data->usb3.preboot_support     = cfg->usb3.preboot_support;
 	pei_data->usb3.xhci_streams        = cfg->usb3.xhci_streams;
+}
+
+/* Temporary stub */
+__weak void mb_get_spd_map(struct spd_info *spdi) {}
+
+static void spd_fill_pei_data(struct pei_data *pei_data)
+{
+	struct spd_info spdi = {0};
+	unsigned int i, have_memory_down;
+
+	mb_get_spd_map(&spdi);
+
+	for (i = 0; i < ARRAY_SIZE(spdi.addresses); i++) {
+		if (spdi.addresses[i] == SPD_MEMORY_DOWN) {
+			pei_data->spd_addresses[i] = 0;
+			have_memory_down = 1;
+		} else {
+			/* MRC expects left-aligned SMBus addresses. */
+			pei_data->spd_addresses[i] = spdi.addresses[i] << 1;
+		}
+	}
+	/* Copy SPD data from CBFS for on-board memory */
+	if (have_memory_down) {
+		printk(BIOS_DEBUG, "SPD index %d\n", spdi.spd_index);
+
+		size_t spd_file_len;
+		uint8_t *spd_file = cbfs_map("spd.bin", &spd_file_len);
+
+		if (!spd_file)
+			die("SPD data %s!", "not found");
+
+		if (spd_file_len < ((spdi.spd_index + 1) * SPD_SIZE_MAX_DDR3))
+			die("SPD data %s!", "incomplete");
+
+		/* MRC only uses index 0... */
+		memcpy(pei_data->spd_data[0], spd_file + (spdi.spd_index * SPD_SIZE_MAX_DDR3), SPD_SIZE_MAX_DDR3);
+
+		/* but coreboot uses the other indices */
+		for (i = 1; i < ARRAY_SIZE(spdi.addresses); i++) {
+			if (spdi.addresses[i] == SPD_MEMORY_DOWN)
+				memcpy(pei_data->spd_data[i], pei_data->spd_data[0], SPD_SIZE_MAX_DDR3);
+		}
+	}
 }
 
 static void disable_p2p(void)
@@ -337,6 +382,8 @@ void perform_raminit(int s3resume)
 	northbridge_fill_pei_data(&pei_data);
 	southbridge_fill_pei_data(&pei_data);
 	devicetree_fill_pei_data(&pei_data);
+	if (CONFIG(HAVE_SPD_IN_CBFS))
+		spd_fill_pei_data(&pei_data);
 	mainboard_fill_pei_data(&pei_data);
 
 	post_code(0x3a);

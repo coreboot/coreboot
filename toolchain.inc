@@ -8,7 +8,7 @@ ifeq ($(CCACHE),)
 $(error ccache selected, but not found in PATH)
 endif
 
-export CCACHE_COMPILERCHECK=content
+export CCACHE_COMPILERCHECK=mtime
 export CCACHE_BASEDIR=$(top)
 export CCACHE_STATSLOG=$(obj)/ccache.stats
 

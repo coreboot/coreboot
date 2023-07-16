@@ -447,7 +447,54 @@ config BOOTSPLASH_FILE
 	# Default value set at the end of the file
 	help
 	  The path and filename of the file to use as graphical bootsplash
-	  screen. The file format has to be jpg.
+	  screen. The file format has to be JPEG with YCC 4:2:0 color sampling
+	  unless converted with "Pre-process bootsplash file with ImageMagick".
+
+	  The image can only be displayed by coreboot if it's smaller or has
+	  the same size as the framebuffer resolution. Width and height have
+	  to be a multiple of 16 pixels.
+
+	  Setting these constraints allows a leaner implementation in coreboot.
+	  The minimum necessary ImageMagick command line seems to be:
+	  $ convert input.img -colorspace YCC -sampling-factor 4:2:0 bootsplash.jpg
+
+config BOOTSPLASH_CONVERT
+	bool "Pre-process bootsplash file with ImageMagick"
+	depends on BOOTSPLASH_IMAGE
+	help
+	  Use ImageMagick (`convert` program) to convert a bootsplash image
+	  to the supported JPEG format.
+
+config BOOTSPLASH_CONVERT_QUALITY
+	int "Bootsplash JPEG target quality (%)"
+	depends on BOOTSPLASH_CONVERT
+	range 1 100
+	# Default value set at the end of the file
+
+config BOOTSPLASH_CONVERT_RESIZE
+	bool "Resize bootsplash image"
+	depends on BOOTSPLASH_CONVERT
+	help
+	  Resize the image to the given resolution. Aspect ratio will be kept,
+	  adding black bars as necessary.
+
+config BOOTSPLASH_CONVERT_RESOLUTION
+	string "Bootsplash image target size"
+	depends on BOOTSPLASH_CONVERT_RESIZE
+	# Default value set at the end of the file
+	help
+	  Target image resolution given as <width>x<height>, e.g. 1024x768.
+	  Values not divisible by 16 will be rounded down.
+
+	  When using coreboot to display the bootsplash image (CONFIG_BOOTSPLASH),
+	  set this lower or equal to the minimum resolution you expect.
+
+config BOOTSPLASH_CONVERT_COLORSWAP
+	bool "Swap red and blue color channels"
+	depends on BOOTSPLASH_CONVERT
+	help
+	  The JPEG decoder currently ignores the framebuffer color order.
+	  If your colors seem all wrong, try this option.
 
 config FW_CONFIG
 	bool "Firmware Configuration Probing"
@@ -1443,6 +1490,14 @@ config INCLUDE_CONFIG_FILE
 config BOOTSPLASH_FILE
 	depends on BOOTSPLASH_IMAGE
 	default "bootsplash.jpg"
+
+config BOOTSPLASH_CONVERT_QUALITY
+	depends on BOOTSPLASH_CONVERT
+	default 80
+
+config BOOTSPLASH_CONVERT_RESOLUTION
+	depends on BOOTSPLASH_CONVERT_RESIZE
+	default "1024x768"
 
 config CBFS_SIZE
 	default ROM_SIZE

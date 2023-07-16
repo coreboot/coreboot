@@ -357,6 +357,41 @@ cbfs-files-processor-struct= \
 	$(eval DEPENDENCIES += $(2).d)
 
 #######################################################################
+# Convert image to YCC 4:2:0 JPEG
+#
+# In two steps:
+# 1. Convert to RGB colors, optionally resize and store as BMP.
+# 2. Round final size to multiples of 16, optionally swap colors,
+#    convert (back) to sRGB and store as JPEG.
+# The split is necessary because we don't know the exact, scaled
+# size due to aspect-ratio. Note: IM v7 would allow us to do the
+# calculations in one command using %[fx:...] syntax.
+#
+# arg1: image input file
+# arg2: output jpg
+cbfs-files-processor-jpg420= \
+	$(eval $(2): $(1) $(KCONFIG_AUTOCONFIG);				\
+		printf "    CONVERT    $$<\n";					\
+		res=$(CONFIG_BOOTSPLASH_CONVERT_RESOLUTION);			\
+		res=$$$$(convert $$<						\
+			-colorspace RGB						\
+			$$(BOOTSPLASH_RESIZE-y)					\
+			-format '%wx%h' -write info:				\
+			bmp:$$@);						\
+		convert $$@							\
+			$$(BOOTSPLASH_ROUND16)					\
+			$$(BOOTSPLASH_COLORSWAP-y)				\
+			-colorspace sRGB					\
+			-quality $$(CONFIG_BOOTSPLASH_CONVERT_QUALITY)%		\
+			-interlace none -colorspace YCC -sampling-factor 4:2:0	\
+			jpg:$$@)
+BOOTSPLASH_FLOOR = $$(($${res%%x*} & ~15))x$$(($${res\#\#*x} & ~15))
+BOOTSPLASH_RESIZE-$(CONFIG_BOOTSPLASH_CONVERT_RESIZE) = -resize $(BOOTSPLASH_FLOOR)
+BOOTSPLASH_CEIL = $$((($${res%%x*} + 15) & ~15))x$$((($${res\#\#*x} + 15) & ~15))
+BOOTSPLASH_ROUND16 = -background black -gravity center -extent $(BOOTSPLASH_CEIL)
+BOOTSPLASH_COLORSWAP-$(CONFIG_BOOTSPLASH_CONVERT_COLORSWAP) := -channel-fx 'red<=>blue'
+
+#######################################################################
 # Add handler for arbitrary files in CBFS
 $(call add-special-class,cbfs-files)
 cbfs-files-handler= \
@@ -1281,10 +1316,19 @@ cbfs-files-y += build_info
 build_info-file := $(obj)/build_info
 build_info-type := raw
 
+ifeq ($(CONFIG_BOOTSPLASH_CONVERT),y)
+ifeq ($(shell command -v convert),)
+$(error CONFIG_BOOTSPLASH_CONVERT requires the convert program (part of ImageMagick))
+endif
+cbfs-files-$(CONFIG_BOOTSPLASH_IMAGE) += bootsplash.jpg
+bootsplash.jpg-file := $(call strip_quotes,$(CONFIG_BOOTSPLASH_FILE)):jpg420
+bootsplash.jpg-type := bootsplash
+else
 BOOTSPLASH_SUFFIX=$(suffix $(call strip_quotes,$(CONFIG_BOOTSPLASH_FILE)))
 cbfs-files-$(CONFIG_BOOTSPLASH_IMAGE) += bootsplash$(BOOTSPLASH_SUFFIX)
 bootsplash$(BOOTSPLASH_SUFFIX)-file := $(call strip_quotes,$(CONFIG_BOOTSPLASH_FILE))
 bootsplash$(BOOTSPLASH_SUFFIX)-type := bootsplash
+endif
 
 # Ensure that no payload segment overlaps with memory regions used by ramstage
 # (not for x86 since it can relocate itself in that case)

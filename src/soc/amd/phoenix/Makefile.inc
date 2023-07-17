@@ -131,6 +131,7 @@ PSP_ELF_FILE=$(objcbfs)/bootblock.elf
 PSP_BIOSBIN_SIZE=$(shell $(READELF_bootblock) -Wl $(PSP_ELF_FILE) | grep LOAD | awk '{print $$5}')
 PSP_BIOSBIN_DEST=$(shell $(READELF_bootblock) -Wl $(PSP_ELF_FILE) | grep LOAD | awk '{print $$3}')
 
+ifneq ($(CONFIG_SOC_AMD_COMMON_BLOCK_APOB_NV_DISABLE),y)
 # type = 0x63 - construct APOB NV base/size from flash map
 # The flashmap section used for this is expected to be named RW_MRC_CACHE
 APOB_NV_SIZE=$(call get_fmap_value,FMAP_SECTION_RW_MRC_CACHE_SIZE)
@@ -147,6 +148,7 @@ else
 APOB_NV_RO_SIZE=$(APOB_NV_SIZE)
 APOB_NV_RO_BASE=$(APOB_NV_BASE)
 endif
+endif # !CONFIG_SOC_AMD_COMMON_BLOCK_APOB_NV_DISABLE
 
 ifeq ($(CONFIG_AMDFW_SPLIT),y)
 FMAP_AMDFW_BODY_LOCATION=$(call get_fmap_value,FMAP_SECTION_AMDFWBODY_START)

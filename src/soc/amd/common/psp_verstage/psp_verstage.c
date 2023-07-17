@@ -73,7 +73,6 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 	uint32_t psp_dir_addr, bios_dir_addr;
 	uint32_t *psp_dir_in_spi, *bios_dir_in_spi;
 	const char *fname;
-	const char *hash_fname;
 	void *amdfw_location;
 	struct region fw_slot;
 	void *map_base = NULL;
@@ -86,13 +85,11 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 
 	if (vboot_is_firmware_slot_a(ctx)) {
 		fname = "apu/amdfw_a";
-		hash_fname = "apu/amdfw_a_hash";
 		if (!fmap_locate_area("FW_MAIN_A", &fw_slot))
 			map_base = rdev_mmap(boot_device_ro(), fw_slot.offset, fw_slot.size);
 
 	} else {
 		fname = "apu/amdfw_b";
-		hash_fname = "apu/amdfw_b_hash";
 		if (!fmap_locate_area("FW_MAIN_B", &fw_slot))
 			map_base = rdev_mmap(boot_device_ro(), fw_slot.offset, fw_slot.size);
 	}
@@ -158,7 +155,7 @@ static uint32_t update_boot_region(struct vb2_context *ctx)
 	}
 
 	if (CONFIG(SEPARATE_SIGNED_PSPFW))
-		update_psp_fw_hash_table(hash_fname);
+		update_psp_fw_hash_tables();
 
 	cbfs_unmap(amdfw_location);
 	rdev_munmap(boot_device_ro(), amdfw_location);

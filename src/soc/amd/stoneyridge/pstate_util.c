@@ -21,7 +21,7 @@ static bool all_pstates_have_same_frequency_id(void)
 	bool first = true;
 	uint32_t frequency_id;
 
-	for (i = 0; i < 8; i++) {
+	for (i = 0; i < PSTATE_MSR_COUNT; i++) {
 		pstate_reg.raw = rdmsr(PSTATE_MSR(i)).raw;
 
 		if (!pstate_reg.pstate_en)

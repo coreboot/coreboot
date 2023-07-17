@@ -41,6 +41,7 @@
 #define PS_STS_REG			0xC0010063
 #define PSTATE_0_MSR			0xC0010064
 #define PSTATE_MSR(pstate)		(PSTATE_0_MSR + (pstate))
+#define PSTATE_MSR_COUNT		8
 
 #define MSR_PATCH_LOADER		0xC0010020
 

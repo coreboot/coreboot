@@ -32,10 +32,15 @@ IDs (configure DRAM hardware straps) for any memory part used by a board.
 
 This program takes the following inputs:
 
-*   A JSON file containing a global list of memory parts with their attributes
-    as per the datasheet. This is the list of all known memory parts for the
-    given memory technology.
-*   The memory technology for which to generate the SPDs, e.g. "lp4x".
+*   Path to a JSON file containing a global list of memory parts with their
+    attributes as per the datasheet. This is the list of all known memory parts
+    for the given memory technology.
+
+*   The memory technology for which to generate the SPDs,
+    One of:
+        ddr4,
+        lp4x,
+        lp5
 
 The input JSON file requires the following two fields for every memory part:
 
@@ -456,20 +461,21 @@ The files generated are:
 
 ## Tool 2 - `part_id_gen`
 
-This program takes the following inputs:
+This program takes the following 4 inputs:
 
-*   The SoC platform which the board is based on, e.g. ADL.
-*   The memory technology used by the board, e.g. lp4x.
-*   The path to the directory where the generated Makefile.inc should be placed.
-*   A CSV file containing a list of the memory parts used by the board, with an
-*   optional fixed or exclusive ID for each part and an optional SPD override file.
-*   A fixed ID is simply an integer and it ensure that part (and any that share the same SPD)
-*   will be assigned that ID. An exclusive ID is prefixed with `*` and ensures that
-*   only parts with the same exclusive ID will be assigned that ID, even if they would
-*   otherwise share the same ID. When using an SPD override file, the file will be searched
-*   for in the directory where mem_parts_used is located, if it is not found there then it
-*   will be searched for in the appropriate default spd directory.
-*   NOTE: Only assign a fixed/exclusive ID if required for legacy reasons.
+*   1) The SoC platform which the board is based on, e.g. ADL.
+*   2) The memory technology used by the board, One of ddr4, lp4x, or lp5.
+*   3) The path to the directory where the generated Makefile.inc should be placed.
+*   4) A CSV file containing a list of the memory parts used by the board, with an
+        optional fixed or exclusive ID for each part and an optional SPD override file.
+        A fixed ID is simply an integer and it ensure that part (and any that share the
+        same SPD) will be assigned that ID. An exclusive ID is prefixed with `*` and ensures
+        that only parts with the same exclusive ID will be assigned that ID, even if they would
+        otherwise share the same ID. When using an SPD override file, the file will be searched
+        for in the directory where mem_parts_used is located, if it is not found there then it
+        will be searched for in the appropriate default spd directory.
+
+        NOTE: Only assign a fixed/exclusive ID if required for legacy reasons.
 
 Example of a CSV file using fixed and exclusive IDs, and SPD file overrides:
 
@@ -560,10 +566,12 @@ Usage:
 util/spd_tools/bin/spd_gen <mem_parts_list_json> <mem_technology>
 ```
 
-Example:
+Usage Examples:
 
 ```
+util/spd_tools/bin/spd_gen spd/ddr4/memory_parts.json ddr4
 util/spd_tools/bin/spd_gen spd/lp4x/memory_parts.json lp4x
+util/spd_tools/bin/spd_gen spd/lp5/memory_parts.json lp5
 ```
 
 ### `part_id_gen`
@@ -574,7 +582,7 @@ Usage:
 util/spd_tools/bin/part_id_gen <platform> <mem_technology> <makefile_dir> <mem_parts_used_file>
 ```
 
-Example:
+Usage Example:
 
 ```
 util/spd_tools/bin/part_id_gen \

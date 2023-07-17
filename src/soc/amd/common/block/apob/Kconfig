@@ -4,6 +4,15 @@ config SOC_AMD_COMMON_BLOCK_APOB
 	  Select this option to add firmware support for the non-volatile APOB
 	  cache to the build.
 
+config SOC_AMD_COMMON_BLOCK_APOB_NV_DISABLE
+	bool "Disable non-volatile APOB support"
+	depends on SOC_AMD_COMMON_BLOCK_APOB
+	help
+	  Select this to disable non-volatile APOB cache and train memory
+	  on every boot.
+
+	  If unsure, say N.
+
 config SOC_AMD_COMMON_BLOCK_APOB_HASH
 	bool
 	help

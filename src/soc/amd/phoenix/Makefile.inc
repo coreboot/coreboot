@@ -224,6 +224,9 @@ OPT_RECOVERY_AB_SINGLE_COPY=$(if $(CONFIG_VBOOT_SLOTS_RW_AB), --recovery-ab-sing
 
 OPT_AMDFW_BODY_LOCATION=$(call add_opt_prefix, $(FMAP_AMDFW_BODY_LOCATION), --body-location)
 
+MANIFEST_FILE=$(obj)/amdfw_manifest
+OPT_MANIFEST=$(call add_opt_prefix, $(MANIFEST_FILE), --output-manifest)
+
 AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 		$(OPT_APOB_ADDR) \
 		$(OPT_DEBUG_AMDFWTOOL) \
@@ -263,6 +266,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 		$(OPT_VERSTAGE_FILE) \
 		$(OPT_VERSTAGE_SIG_FILE) \
 		$(OPT_SPL_TABLE_FILE) \
+		$(OPT_MANIFEST) \
 		--location $(call _tohex,$(PHOENIX_FWM_POSITION)) \
 		--output $@
 
@@ -306,6 +310,11 @@ $(obj)/amdfw_b.rom: $(obj)/amdfw.rom
 		--anywhere \
 		--output $@
 
+
+$(MANIFEST_FILE): $(obj)/amdfw.rom
+cbfs-files-y += amdfw_manifest
+amdfw_manifest-file := $(MANIFEST_FILE)
+amdfw_manifest-type := raw
 
 ifeq ($(CONFIG_VBOOT_SLOTS_RW_AB)$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),yy)
 cbfs-files-y += apu/amdfw_a

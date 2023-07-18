@@ -396,6 +396,7 @@ config BOARD_GOOGLE_GOTHRAX
 config BOARD_GOOGLE_CRAASKOV
 	bool "->  Craaskov"
 	select BOARD_GOOGLE_BASEBOARD_NISSA
+	select CHROMEOS_WIFI_SAR if CHROMEOS
 
 config BOARD_GOOGLE_PIRRHA
 	bool "->  Pirrha"

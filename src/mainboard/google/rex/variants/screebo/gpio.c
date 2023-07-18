@@ -67,8 +67,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO_LOCK(GPP_B08, 1, LOCK_CONFIG),
 	/* GPP_B09 : net NC is not present in the given design */
 	PAD_NC(GPP_B09, NONE),
-	/* GPP_B10 : net NC is not present in the given design */
-	PAD_NC(GPP_B10, NONE),
+	/* GPP_B10 : [] ==> WIFI_DISABLE_L */
+	PAD_CFG_GPO(GPP_B10, 1, DEEP),
 	/* GPP_B11 : [] ==> USB_C1_OC_ODL*/
 	PAD_CFG_NF_LOCK(GPP_B11, NONE, NF1, LOCK_CONFIG),
 	/* GPP_B12 : [] ==> SLP_SO_R_L */
@@ -230,7 +230,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E16, NONE),
 	/* GPP_E17 : net NC.  Test pad. */
 	PAD_NC(GPP_E17, NONE),
-	/* GPP_E22 : [] ==> WIFI_DISABLE_L */
+	/* GPP_E22 : [] ==> EN_PP3300_WLAN */
 	PAD_CFG_GPO(GPP_E22, 1, DEEP),
 
 	/* GPP_F00 :  [] ==> CNV_BRI_DT_R */

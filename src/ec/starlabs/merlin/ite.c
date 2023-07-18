@@ -31,38 +31,31 @@ static void ec_mirror_with_count(void)
 {
 	unsigned int cmos_mirror_flag_counter = get_uint_option("mirror_flag_counter", UINT_MAX);
 
-	if (cmos_mirror_flag_counter != UINT_MAX) {
-		printk(BIOS_DEBUG, "ITE: mirror_flag_counter = %u\n", cmos_mirror_flag_counter);
+	if (cmos_mirror_flag_counter == UINT_MAX)
+		return;
 
-		/* Avoid boot loops by only trying a state change once */
-		if (cmos_mirror_flag_counter < MIRROR_ATTEMPTS) {
-			cmos_mirror_flag_counter++;
-			set_uint_option("mirror_flag_counter", cmos_mirror_flag_counter);
-			printk(BIOS_DEBUG, "ITE: Mirror attempt %u/%u.\n", cmos_mirror_flag_counter,
-				MIRROR_ATTEMPTS);
+	printk(BIOS_DEBUG, "ITE: mirror_flag_counter = %u\n", cmos_mirror_flag_counter);
 
-			/* Write the EC mirror flag */
-			ec_write(ECRAM_MIRROR_FLAG, MIRROR_ENABLED);
+	/* Avoid boot loops by only trying a state change once */
+	if (cmos_mirror_flag_counter < MIRROR_ATTEMPTS) {
+		cmos_mirror_flag_counter++;
+		set_uint_option("mirror_flag_counter", cmos_mirror_flag_counter);
+		printk(BIOS_DEBUG, "ITE: Mirror attempt %u/%u.\n", cmos_mirror_flag_counter,
+			MIRROR_ATTEMPTS);
 
-			/* Check what has been written */
-			if (ec_read(ECRAM_MIRROR_FLAG) == MIRROR_ENABLED)
-				poweroff();
-		} else {
-			/*
-			 * If the mirror flags fails after 1 attempt, it will
-			 * likely need a cold boot, or recovering.
-			 */
-			printk(BIOS_ERR, "ITE: Failed to mirror the EC in %u attempts!\n",
-				MIRROR_ATTEMPTS);
-		}
-	} else {
-		printk(BIOS_DEBUG, "ITE: Powering Off");
 		/* Write the EC mirror flag */
 		ec_write(ECRAM_MIRROR_FLAG, MIRROR_ENABLED);
 
 		/* Check what has been written */
 		if (ec_read(ECRAM_MIRROR_FLAG) == MIRROR_ENABLED)
 			poweroff();
+	} else {
+		/*
+		 * If the mirror flags fails after 1 attempt, it will
+		 * likely need a cold boot, or recovering.
+		 */
+		printk(BIOS_ERR, "ITE: Failed to mirror the EC in %u attempts!\n",
+			MIRROR_ATTEMPTS);
 	}
 }
 

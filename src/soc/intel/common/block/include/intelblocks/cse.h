@@ -167,6 +167,18 @@ struct cse_specific_info {
 	uint32_t crc;
 };
 
+/* PSR backup status */
+enum psr_backup_state {
+	PSR_BACKUP_DONE	= 0,
+	PSR_BACKUP_PENDING = 1,
+};
+
+struct psr_backup_status {
+	uint32_t signature;
+	int8_t value;
+	uint16_t checksum;
+};
+
 /* CSE RX and TX error status */
 enum cse_tx_rx_status {
 	/*

@@ -7,6 +7,7 @@
 #include <amdblocks/memmap.h>
 #include <amdblocks/ioapic.h>
 #include <amdblocks/iomap.h>
+#include <amdblocks/root_complex.h>
 #include <arch/ioapic.h>
 #include <arch/vga.h>
 #include <assert.h>
@@ -212,3 +213,27 @@ struct device_operations picasso_root_complex_operations = {
 	.acpi_name		= gnb_acpi_name,
 	.acpi_fill_ssdt		= root_complex_fill_ssdt,
 };
+
+uint32_t get_iohc_misc_smn_base(struct device *domain)
+{
+	return 0x13b10000;
+}
+
+static const struct non_pci_mmio_reg non_pci_mmio[] = {
+	{ 0x2e0, 0xfffffff00000ull,   1 * MiB, NON_PCI_RES_IDX_AUTO },
+	{ 0x2e8, 0xfffffff00000ull,   1 * MiB, NON_PCI_RES_IDX_AUTO },
+	/* The hardware has a 256 byte alignment requirement for the IOAPIC MMIO base, but we
+	   tell the FSP to configure a 4k-aligned base address and this is reported as 4 KiB
+	   resource. */
+	{ 0x2f0, 0xffffffffff00ull,   4 * KiB, IOMMU_IOAPIC_IDX },
+	{ 0x2f8, 0xfffffff00000ull,   1 * MiB, NON_PCI_RES_IDX_AUTO },
+	{ 0x300, 0xfffffff00000ull,   1 * MiB, NON_PCI_RES_IDX_AUTO },
+	{ 0x308, 0xfffffffff000ull,   4 * KiB, NON_PCI_RES_IDX_AUTO },
+	{ 0x318, 0xfffffff80000ull, 512 * KiB, NON_PCI_RES_IDX_AUTO },
+};
+
+const struct non_pci_mmio_reg *get_iohc_non_pci_mmio_regs(size_t *count)
+{
+	*count = ARRAY_SIZE(non_pci_mmio);
+	return non_pci_mmio;
+}

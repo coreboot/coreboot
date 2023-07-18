@@ -131,6 +131,15 @@ config SOC_INTEL_CSE_LITE_SKU
 	help
 	 Enables CSE Lite SKU
 
+config SOC_INTEL_CSE_LITE_PSR
+	bool
+	default n
+	depends on SOC_INTEL_CSE_LITE_SKU
+	help
+	 Select this config if Platform Service Record(PSR) is supported by the platform. This
+	 config is applicable only for Lite SKU, where PSR data backup is required prior to a
+	 CSE firmware downgrade during which CSE data is cleared.
+
 config SOC_INTEL_CSE_SERVER_SKU
 	bool
 	default n

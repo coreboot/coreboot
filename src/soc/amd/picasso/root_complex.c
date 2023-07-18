@@ -141,9 +141,6 @@ static void read_resources(struct device *dev)
 
 	mmconf_resource(dev, idx++);
 
-	/* GNB IOAPIC resource */
-	mmio_range(dev, IOMMU_IOAPIC_IDX, GNB_IO_APIC_ADDR, 0x1000);
-
 	/* Reserve fixed IOMMU MMIO region */
 	mmio_range(dev, idx++, IOMMU_RESERVED_MMIO_BASE, IOMMU_RESERVED_MMIO_SIZE);
 

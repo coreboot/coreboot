@@ -103,12 +103,6 @@ chip soc/intel/alderlake
 				.clk_req = 2,
 				.flags = PCIE_RP_LTR,
 			}"
-			chip soc/intel/common/block/pcie/rtd3
-				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E3)" # PCH_WLAN_EN
-				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B13)" # BUF_PLT_RST#
-				register "srcclk_pin" = "2" # WLAN_CLKREQ#
-				device generic 0 on end
-			end
 		end
 		device ref pcie_rp6 on
 			# PCIe root port #6 x1, Clock 5 (CARD)
@@ -117,12 +111,6 @@ chip soc/intel/alderlake
 				.clk_req = 5,
 				.flags = PCIE_RP_LTR,
 			}"
-			chip soc/intel/common/block/pcie/rtd3
-				# XXX: No enable_gpio = no D3cold?
-				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B13)" # BUF_PLT_RST#
-				register "srcclk_pin" = "5" # CARD_CLKREQ#
-				device generic 0 on end
-			end
 		end
 		device ref pcie_rp7 on
 			# PCIe root port #7 x1, Clock 6 (GLAN)
@@ -141,14 +129,6 @@ chip soc/intel/alderlake
 				.clk_req = 1,
 				.flags = PCIE_RP_LTR,
 			}"
-			chip soc/intel/common/block/pcie/rtd3
-				# XXX: Enable tied to 3.3VS?
-				#register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C2)" # SATA_M2_PWR_EN1
-				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B13)" # BUF_PLT_RST#
-				register "disable_l23" = "true" # Fixes suspend on WD drives
-				register "srcclk_pin" = "1" # SSD_CLKREQ#
-				device generic 0 on end
-			end
 		end
 		device ref gbe on end
 	end

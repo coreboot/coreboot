@@ -146,12 +146,6 @@ chip soc/intel/alderlake
 				.clk_req = 2,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
-			chip soc/intel/common/block/pcie/rtd3
-				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E3)" # PCH_WLAN_EN
-				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B13)" # BUF_PLT_RST#
-				register "srcclk_pin" = "2" # WLAN_CLKREQ#
-				device generic 0 on end
-			end
 		end
 		device ref pcie_rp6 on
 			# PCIe RP#6 x1, Clock 6 (CARD)
@@ -160,12 +154,6 @@ chip soc/intel/alderlake
 				.clk_req = 6,
 				.flags = PCIE_RP_HOTPLUG | PCIE_RP_AER,
 			}"
-			chip soc/intel/common/block/pcie/rtd3
-				# XXX: Enable connected directly to 3.3VS?
-				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B13)" # BUF_PLT_RST#
-				register "srcclk_pin" = "6" # CARD_CLKREQ#
-				device generic 0 on end
-			end
 		end
 		device ref pcie_rp8 on
 			# PCIe RP#8 x1, Clock 5 (GLAN)
@@ -174,13 +162,6 @@ chip soc/intel/alderlake
 				.clk_req = 5,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
-			chip soc/intel/common/block/pcie/rtd3
-				# XXX: Enable connected directly to VDD3?
-				#register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D4)" # GPIO_LAN_EN
-				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B13)" # BUF_PLT_RST#
-				register "srcclk_pin" = "5" # GLAN_CLKREQ#
-				device generic 0 on end
-			end
 		end
 
 		device ref pmc hidden

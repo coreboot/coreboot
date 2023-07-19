@@ -70,6 +70,7 @@ chip soc/intel/tigerlake
 		device ref dptf		on  end
 		device ref tbt_pcie_rp0	on  end
 		device ref gna		on  end
+		device ref crashlog	on  end
 		device ref north_xhci	on
 			register "UsbTcPortEn"			= "1"
 			register "TcssXhciEn"			= "1"

@@ -2,6 +2,7 @@
 
 #include <console/console.h>
 #include <soc/romstage.h>
+#include <soc/ddr.h>
 #include <defs_cxl.h>
 #include <hob_iiouds.h>
 
@@ -346,4 +347,16 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	sktbmp[2] = BIT(1) | BIT(4);
 	sktbmp[3] = BIT(1) | BIT(4);
 	mainboard_config_iio(mupd);
+}
+
+bool mainboard_dimm_slot_exists(uint8_t socket, uint8_t channel, uint8_t dimm)
+{
+	if (socket >= CONFIG_MAX_SOCKET)
+		return false;
+	if (channel >= 8)
+		return false;
+	if (dimm >= 2)
+		return false;
+
+	return true;
 }

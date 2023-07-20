@@ -125,6 +125,8 @@ chip soc/intel/meteorlake
 				register "options.tsr[0].desc" = ""DDR_SOC""
 				register "options.tsr[1].desc" = ""Ambient""
 				register "options.tsr[2].desc" = ""Charger""
+				register "options.tsr[3].desc" = ""VCC_IN""
+				register "options.tsr[4].desc" = ""Typec""
 
 				## Active Policy
 				# FIXME: below values are initial reference values only
@@ -156,10 +158,28 @@ chip soc/intel/meteorlake
 						[2] = {
 							.target = DPTF_TEMP_SENSOR_2,
 							.thresholds = {
-									TEMP_PCT(75, 90),
-									TEMP_PCT(70, 80),
-									TEMP_PCT(65, 70),
-									TEMP_PCT(60, 50),
+									TEMP_PCT(90, 90),
+									TEMP_PCT(85, 80),
+									TEMP_PCT(75, 70),
+									TEMP_PCT(70, 50),
+								}
+							},
+						[3] = {
+							.target = DPTF_TEMP_SENSOR_3,
+							.thresholds = {
+									TEMP_PCT(80, 90),
+									TEMP_PCT(75, 80),
+									TEMP_PCT(70, 70),
+									TEMP_PCT(65, 50),
+								}
+							},
+						[4] = {
+							.target = DPTF_TEMP_SENSOR_4,
+							.thresholds = {
+									TEMP_PCT(70, 90),
+									TEMP_PCT(65, 80),
+									TEMP_PCT(60, 70),
+									TEMP_PCT(55, 50),
 								}
 							}
 				}"
@@ -169,17 +189,17 @@ chip soc/intel/meteorlake
 				register "policies.passive" = "{
 						[0] = DPTF_PASSIVE(CPU,         CPU,           95, 5000),
 						[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 80, 5000),
-						[2] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_1, 80, 5000),
-						[3] = DPTF_PASSIVE(CHARGER,     TEMP_SENSOR_2, 75, 5000),
+						[2] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_1, 70, 5000),
+						[3] = DPTF_PASSIVE(CHARGER,     TEMP_SENSOR_2, 85, 5000),
 				}"
 
 				## Critical Policy
 				# TODO: below values are initial reference values only
 				register "policies.critical" = "{
 						[0] = DPTF_CRITICAL(CPU,          105, SHUTDOWN),
-						[1] = DPTF_CRITICAL(TEMP_SENSOR_0, 85, SHUTDOWN),
-						[2] = DPTF_CRITICAL(TEMP_SENSOR_1, 85, SHUTDOWN),
-						[3] = DPTF_CRITICAL(TEMP_SENSOR_2, 85, SHUTDOWN),
+						[1] = DPTF_CRITICAL(TEMP_SENSOR_0, 95, SHUTDOWN),
+						[2] = DPTF_CRITICAL(TEMP_SENSOR_1, 80, SHUTDOWN),
+						[3] = DPTF_CRITICAL(TEMP_SENSOR_2, 105, SHUTDOWN),
 				}"
 
 				## Power Limits Control
@@ -192,8 +212,8 @@ chip soc/intel/meteorlake
 							.granularity = 200,
 						},
 						.pl2 = {
-							.min_power = 57000,
-							.max_power = 57000,
+							.min_power = 40000,
+							.max_power = 40000,
 							.time_window_min = 28 * MSECS_PER_SEC,
 							.time_window_max = 32 * MSECS_PER_SEC,
 							.granularity = 1000,
@@ -210,14 +230,14 @@ chip soc/intel/meteorlake
 
 				## Fan Performance Control (Percent, Speed, Noise, Power)
 				register "controls.fan_perf" = "{
-						[0] = {  90, 6700, 220, 2200, },
-						[1] = {  80, 5800, 180, 1800, },
+						[0] = {  90, 5900, 220, 2200, },
+						[1] = {  80, 5500, 180, 1800, },
 						[2] = {  70, 5000, 145, 1450, },
-						[3] = {  60, 4900, 115, 1150, },
-						[4] = {  50, 3838,  90,  900, },
-						[5] = {  40, 2904,  55,  550, },
-						[6] = {  30, 2337,  30,  300, },
-						[7] = {  20, 1608,  15,  150, },
+						[3] = {  60, 4500, 115, 1150, },
+						[4] = {  50, 3900,  90,  900, },
+						[5] = {  40, 3250,  55,  550, },
+						[6] = {  30, 2550,  30,  300, },
+						[7] = {  20, 1750,  15,  150, },
 						[8] = {  10,  800,  10,  100, },
 						[9] = {   0,    0,   0,   50, }
 				}"

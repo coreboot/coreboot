@@ -39,6 +39,9 @@ chip soc/intel/meteorlake
 	# Enable HDMI in Port B
 	register "ddi_port_B_config" = "0"
 
+	# Temporary setting TCC of 80C = Tj max (110) - TCC_Offset (30)
+	register "tcc_offset" = "30"
+
 	# Enable Display Port Configuration
 	register "ddi_ports_config" = "{
 		[DDI_PORT_A] = DDI_ENABLE_HPD,

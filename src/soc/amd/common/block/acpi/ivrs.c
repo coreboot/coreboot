@@ -182,8 +182,7 @@ static unsigned long acpi_ivhd_misc(unsigned long current, struct device *dev)
 	add_ivhd_device_entries(NULL, dev, 0, -1, &root_level,
 		&current, dev->link_list->secondary);
 
-	res = probe_resource(pcidev_path_behind(dev->link_list, PCI_DEVFN(0, 0)),
-			     IOMMU_IOAPIC_IDX);
+	res = probe_resource(dev, IOMMU_IOAPIC_IDX);
 	if (res) {
 		/* Describe IOAPIC associated with the IOMMU */
 		current = acpi_fill_ivrs_ioapic(current, (u8 *)(uintptr_t)res->base,

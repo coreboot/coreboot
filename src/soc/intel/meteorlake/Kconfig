@@ -1,32 +1,5 @@
 config SOC_INTEL_METEORLAKE
 	bool
-	help
-	  Intel Meteorlake support. Mainboards should specify the SoC
-	  type using the `SOC_INTEL_METEORLAKE_*` options instead
-	  of selecting this option directly.
-
-config SOC_INTEL_METEORLAKE_U_H
-	bool
-	select SOC_INTEL_METEORLAKE
-	help
-	  Choose this option if your mainboard has a MTL-U (9W or 15W)
-	  or MTL-H (28W or 45W) SoC.
-
-	  Note, the MTL-U/H-Processor Line offered in a 1-Chip Platform
-	  that includes the Compute, SOC, GT, and IOE tile on the same
-	  package.
-
-config SOC_INTEL_METEORLAKE_S
-	bool
-	select SOC_INTEL_METEORLAKE
-	help
-	  Choose this option if your mainboard has a MTL-S (35W or 65W) SoC.
-	  Note, MTL-S SoC combines Compute, GFX, SoC, IOE and PCH die.
-
-if SOC_INTEL_METEORLAKE
-
-config CPU_SPECIFIC_OPTIONS
-	def_bool y
 	select ACPI_INTEL_HARDWARE_SLEEP_VALUES
 	select ARCH_X86
 	select BOOT_DEVICE_SUPPORTS_WRITES
@@ -122,6 +95,30 @@ config CPU_SPECIFIC_OPTIONS
 	select X86_CLFLUSH_CAR
 	select X86_INIT_NEED_1_SIPI
 	select INTEL_KEYLOCKER
+	help
+	  Intel Meteorlake support. Mainboards should specify the SoC
+	  type using the `SOC_INTEL_METEORLAKE_*` options instead
+	  of selecting this option directly.
+
+config SOC_INTEL_METEORLAKE_U_H
+	bool
+	select SOC_INTEL_METEORLAKE
+	help
+	  Choose this option if your mainboard has a MTL-U (9W or 15W)
+	  or MTL-H (28W or 45W) SoC.
+
+	  Note, the MTL-U/H-Processor Line offered in a 1-Chip Platform
+	  that includes the Compute, SOC, GT, and IOE tile on the same
+	  package.
+
+config SOC_INTEL_METEORLAKE_S
+	bool
+	select SOC_INTEL_METEORLAKE
+	help
+	  Choose this option if your mainboard has a MTL-S (35W or 65W) SoC.
+	  Note, MTL-S SoC combines Compute, GFX, SoC, IOE and PCH die.
+
+if SOC_INTEL_METEORLAKE
 
 config SOC_INTEL_METEORLAKE_TCSS_USB4_SUPPORT
 	bool

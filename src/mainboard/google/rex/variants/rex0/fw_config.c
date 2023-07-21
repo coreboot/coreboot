@@ -116,6 +116,20 @@ static const struct pad_config touchscreen_spi_int_pads[] = {
 	PAD_CFG_GPI_APIC(GPP_C07, NONE, PLTRST, EDGE_SINGLE, INVERT),
 };
 
+static const struct pad_config uwb_gspi1_enable_pads[] = {
+	PAD_CFG_GPO_LOCK(GPP_D07, 0, LOCK_CONFIG), /* FPMCU_UWB_MUX_SEL */
+	PAD_CFG_GPO(GPP_E06, 0, DEEP), /* UWB_SOC_SYNC */
+	PAD_CFG_GPO(GPP_F19, 0, DEEP), /* EN_PP1800_UWB */
+	PAD_CFG_GPI_INT(GPP_F20, NONE, PLTRST, LEVEL), /* UWB_SOC_INT */
+};
+
+static const struct pad_config uwb_gspi1_disable_pads[] = {
+	PAD_CFG_GPO_LOCK(GPP_D07, 1, LOCK_CONFIG), /* FPMCU_UWB_MUX_SEL */
+	PAD_NC(GPP_E06, NONE),
+	PAD_NC(GPP_F19, NONE),
+	PAD_NC(GPP_F20, NONE),
+};
+
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 {
 	if (!fw_config_is_provisioned()) {
@@ -160,5 +174,14 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	} else { /* SPI */
 		printk(BIOS_INFO, "Configure Touchscreen Interrupt for SPI.\n");
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchscreen_spi_int_pads);
+	}
+
+	if (fw_config_probe(FW_CONFIG(UWB, UWB_GSPI1)) &&
+		fw_config_probe(FW_CONFIG(FP, FP_ABSENT))) {
+		printk(BIOS_INFO, "Configure GPIOs for UWB over GSPI1.\n");
+		GPIO_PADBASED_OVERRIDE(padbased_table, uwb_gspi1_enable_pads);
+	} else {
+		printk(BIOS_INFO, "Disabling UWB (absent or misconfigured)\n");
+		GPIO_PADBASED_OVERRIDE(padbased_table, uwb_gspi1_disable_pads);
 	}
 }

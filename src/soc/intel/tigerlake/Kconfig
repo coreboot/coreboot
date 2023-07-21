@@ -1,15 +1,5 @@
 config SOC_INTEL_TIGERLAKE
 	bool
-	help
-	  Intel Tigerlake support
-
-config SOC_INTEL_TIGERLAKE_PCH_H
-	bool
-
-if SOC_INTEL_TIGERLAKE
-
-config CPU_SPECIFIC_OPTIONS
-	def_bool y
 	select ACPI_INTEL_HARDWARE_SLEEP_VALUES
 	select ARCH_X86
 	select BOOT_DEVICE_SUPPORTS_WRITES
@@ -97,6 +87,13 @@ config CPU_SPECIFIC_OPTIONS
 	select SOC_INTEL_COMMON_BASECODE_RAMTOP
 	select CR50_USE_LONG_INTERRUPT_PULSES if TPM_GOOGLE_CR50
 	select X86_CLFLUSH_CAR
+	help
+	  Intel Tigerlake support
+
+config SOC_INTEL_TIGERLAKE_PCH_H
+	bool
+
+if SOC_INTEL_TIGERLAKE
 
 config MAX_CPUS
 	int

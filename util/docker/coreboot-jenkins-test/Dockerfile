@@ -1,4 +1,5 @@
-FROM coreboot-sdk
+FROM coreboot/coreboot-jenkins-node:{{SDK_VERSION}}
+
 # Test the built image
 RUN mkdir -p /tmp/work && \
   cd /tmp/work && \
@@ -25,7 +26,7 @@ RUN \
 
 RUN \
   cd /tmp/work && \
-  make -C coreboot test-payloads&& \
+  make -C coreboot test-payloads && \
   make -C coreboot test-tools -j && \
   make -C coreboot test-lint -j && \
   make -C coreboot test-cleanup -j && \

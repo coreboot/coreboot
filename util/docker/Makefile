@@ -48,10 +48,11 @@ coreboot-sdk: test-docker
 		sed "s/{{CROSSGCC_PARAM}}/$(COREBOOT_CROSSGCC_PARAM)/g" | \
 		$(DOCKER) build -t coreboot/coreboot-sdk:$(COREBOOT_IMAGE_TAG) -
 
-coreboot-sdk-test: coreboot-sdk test-docker
-	@echo "Testing coreboot SDK $(crossgcc_version), built from commit $(DOCKER_COMMIT)"
-	cat coreboot-sdk-test/Dockerfile | \
-		$(DOCKER) build -t coreboot/coreboot-sdk-test:$(COREBOOT_IMAGE_TAG) -
+coreboot-jenkins-test: test-docker
+	@echo "Testing coreboot SDK and jenkins node version $(crossgcc_version), built from commit $(DOCKER_COMMIT)"
+	cat coreboot-jenkins-test/Dockerfile | \
+		sed "s/{{SDK_VERSION}}/$(COREBOOT_IMAGE_TAG)/g" | \
+		$(DOCKER) build -t coreboot/coreboot-jenkins-test:$(COREBOOT_IMAGE_TAG) -
 
 upload-coreboot-sdk: test-docker-login
 	$(DOCKER) push coreboot/coreboot-sdk:$(COREBOOT_IMAGE_TAG)
@@ -186,6 +187,7 @@ docker-livehtml-docs:
 help:
 	@echo "Commands for working with docker images:"
 	@echo "  coreboot-sdk                 - Build coreboot-sdk container"
+	@echo "  coreboot-jenkins-test        - Test the coreboot-jenkins-node build functionality"
 	@echo "  upload-coreboot-sdk          - Upload coreboot-sdk to hub.docker.com"
 	@echo "  coreboot-jenkins-node        - Build coreboot-jenkins-node container"
 	@echo "  upload-coreboot-jenkins-node - Upload coreboot-jenkins-node to hub.docker.com"
@@ -215,7 +217,7 @@ help:
 	@echo "  DOCKER_COMMIT=$(DOCKER_COMMIT)"
 
 .PHONY: test-docker test-docker-login
-.PHONY: coreboot-jenkins-node upload-coreboot-jenkins-node
+.PHONY: coreboot-jenkins-node upload-coreboot-jenkins-node coreboot-jenkins-test
 .PHONY: coreboot-sdk upload-coreboot-sdk
 .PHONY: doc.coreboot.org
 .PHONY: clean-coreboot-containers clean-coreboot-images

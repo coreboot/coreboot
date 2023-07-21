@@ -52,34 +52,10 @@ void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 
 void mainboard_fill_pei_data(struct pei_data *pei)
 {
-	uint8_t spdaddr[] = {0xa0, 0xa2, 0xa4, 0xa6}; /* SMBus mul 2 */
-	uint16_t usbcfg[16][3] = {
-		/* {enabled, oc_pin, cable len 0x0080=<8inches/20cm} */
-		{1, 0, 0x0080}, {1, 0, 0x0080}, {1, 1, 0x0080}, {1, 1, 0x0080}, {1, 2, 0x0080},
-		{1, 2, 0x0080}, {1, 3, 0x0080}, {1, 3, 0x0080}, {1, 4, 0x0080}, {1, 4, 0x0080},
-		{1, 6, 0x0080}, {1, 5, 0x0080}, {1, 5, 0x0080}, {1, 6, 0x0080}
-	};
+	const uint8_t spdaddr[] = {0xa0, 0xa2, 0xa4, 0xa6}; /* SMBus mul 2 */
 
 	memcpy(pei->spd_addresses, &spdaddr, sizeof(spdaddr));
 
-	pei->gbe_enable = 0;	   /* Board uses no Intel GbE but a RTL8111F */
-	pei->max_ddr3_freq = 1600; /* 1333=Sandy; 1600=Ivy */
-
-	memcpy(pei->usb_port_config, &usbcfg, sizeof(usbcfg));
-
-	/* ASUS P8Z77-M manual lists some supported DIMMs down to 1.25v */
-	pei->ddr3lv_support = 1;
-	/*
-	 * PCIe 3.0 support. As we use Ivy Bridge, let's enable it,
-	 * but might cause some system instability!
-	 */
-	pei->pcie_init = 1;
-	/*
-	 * 4 bit switch mask. 0=not switchable, 1=switchable
-	 * Means once it's loaded the OS, it can swap ports
-	 * from/to EHCI/xHCI. Z77 has four USB3 ports, so 0xf
-	 */
-	pei->usb3.hs_port_switch_mask = 0xf;
 	/*
 	 * USB 3 mode settings.
 	 * These are obtained from option table then bit masked to keep within range.

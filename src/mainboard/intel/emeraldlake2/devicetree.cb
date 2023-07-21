@@ -11,6 +11,23 @@ chip northbridge/intel/sandybridge
 	# Enable DVI Hotplug with 6ms pulse
 	register "gpu_dp_b_hotplug" = "0x06"
 
+	register "max_mem_clock_mhz" = "800"
+
+	register "usb_port_config" = "{
+		{ 1, 0, 0x0040 },
+		{ 1, 1, 0x0040 },
+		{ 1, 0, 0x0040 },
+		{ 1, 0, 0x0040 },
+		{ 1, 2, 0x0040 },
+		{ 0, 0, 0x0000 },
+		{ 0, 0, 0x0000 },
+		{ 0, 0, 0x0000 },
+		{ 1, 4, 0x0040 },
+		{ 1, 4, 0x0040 },
+		{ 1, 4, 0x0040 },
+		{ 0, 4, 0x0000 },
+		{ 1, 6, 0x0040 },
+		{ 1, 5, 0x0040 }, }"
 
 	chip cpu/intel/model_206ax
 		device cpu_cluster 0 on end

@@ -58,6 +58,10 @@ void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
+	const uint8_t spdaddr[] = {0xa0, 0xa2, 0xa4, 0xa6}; /* SMBus mul 2 */
+
+	memcpy(pei_data->spd_addresses, &spdaddr, sizeof(pei_data->spd_addresses));
+
 	/*
 	 * USB3 mode:
 	 * 0 = Disable: work always as USB 2.0(ehci)
@@ -66,88 +70,9 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 	 * 3 = Smart Auto : same than Auto, but if OS loads USB3 driver
 	 *     and reboots, it will keep the USB3.0 speed
 	 */
-	unsigned int usb3_mode = get_uint_option("usb3_mode", 1);
-	usb3_mode &= 0x3; /* ensure it's 0/1/2/3 only */
-
+	pei_data->usb3.mode = get_uint_option("usb3_mode", 1) & 0x3;
 	/* Load USB3 pre-OS xHCI driver */
-	unsigned int usb3_drv = get_uint_option("usb3_drv", 1);
-	usb3_drv &= 0x1; /* ensure it's 0/1 only */
-
+	pei_data->usb3.preboot_support = get_uint_option("usb3_drv", 1) & 0x1;
 	/* Use USB3 xHCI streams */
-	unsigned int usb3_streams = get_uint_option("usb3_streams", 1);
-	usb3_streams &= 0x1; /* ensure it's 0/1 only */
-
-	struct pei_data pd = {
-		.pei_version = PEI_VERSION,
-		.mchbar = CONFIG_FIXED_MCHBAR_MMIO_BASE,
-		.dmibar = CONFIG_FIXED_DMIBAR_MMIO_BASE,
-		.epbar = CONFIG_FIXED_EPBAR_MMIO_BASE,
-		.pciexbar = CONFIG_ECAM_MMCONF_BASE_ADDRESS,
-		.smbusbar = CONFIG_FIXED_SMBUS_IO_BASE,
-		.wdbbar = 0x4000000,
-		.wdbsize = 0x1000,
-		.hpet_address = HPET_BASE_ADDRESS,
-		.rcba = (uintptr_t)DEFAULT_RCBA,
-		.pmbase = DEFAULT_PMBASE,
-		.gpiobase = DEFAULT_GPIOBASE,
-		.thermalbase = 0xfed08000,
-		.system_type = 1, /* 0=Mobile, 1=Desktop/Server */
-		.tseg_size = CONFIG_SMM_TSEG_SIZE,
-		.spd_addresses = { 0xa0, 0xa2, 0xa4, 0xa6 }, /* SMBus mul 2 */
-		.ts_addresses = { 0x00, 0x00, 0x00, 0x00 },
-		.ec_present = 0, /* Asus 2203 BIOS shows XUECA016, but no EC */
-		.gbe_enable = 0, /* Board uses no Intel GbE but a RTL8111F */
-		.max_ddr3_freq = 1600, /* 1333=Sandy; 1600=Ivy */
-		.usb_port_config = {
-			/* {enabled, oc_pin, cable len 0x0080=<8inches/20cm} */
-			{ 1, 0, 0x0080 }, /* USB3 front internal header */
-			{ 1, 0, 0x0080 }, /* USB3 front internal header */
-			{ 1, 1, 0x0080 }, /* USB3 ETH top connector */
-			{ 1, 1, 0x0080 }, /* USB3 ETH bottom connector */
-			{ 1, 2, 0x0080 }, /* USB2 PS2 top connector */
-			{ 1, 2, 0x0080 }, /* USB2 PS2 bottom connector */
-			{ 1, 3, 0x0080 }, /* USB2 internal header (USB78) */
-			{ 1, 3, 0x0080 }, /* USB2 internal header (USB78) */
-			{ 1, 4, 0x0080 }, /* USB2 internal header (USB910) */
-			{ 1, 4, 0x0080 }, /* USB2 internal header (USB910) */
-			{ 1, 6, 0x0080 }, /* USB2 internal header (USB1112) */
-			{ 1, 5, 0x0080 }, /* USB2 internal header (USB1112) */
-			{ 0, 5, 0x0080 }, /* Unused. Asus DEBUG_PORT ??? */
-			{ 0, 6, 0x0080 }  /* Unused. Asus DEBUG_PORT ??? */
-		},
-		.usb3 = {
-			/* 0=Disable; 1=Enable (start at USB3 speed)
-			 * 2=Auto (start as USB2 speed until OS loads)
-			 * 3=Smart Auto (like Auto but keep speed on reboot)
-			 */
-			usb3_mode,
-			/* 4 bit switch mask. 0=not switchable, 1=switchable
-			 * Means once it's loaded the OS, it can swap ports
-			 * from/to EHCI/xHCI. Z77 has four USB3 ports, so 0xf
-			 */
-			0xf,
-			usb3_drv, /* 1=Load xHCI pre-OS drv */
-			/* 0=Don't use xHCI streams for better compatibility
-			 * 1=use xHCI streams for better speed
-			 */
-			usb3_streams
-		},
-		/* ASUS P8Z77-M PRO manual says 1.35v DIMMs are supported */
-		.ddr3lv_support = 1,
-		/* PCIe 3.0 support. As we use Ivy Bridge, let's enable it,
-		 * but might cause some system instability !
-		 */
-		.pcie_init = 1,
-		/* Command Rate. 0=Auto; 1=1N; 2=2N.
-		 * Leave it always at Auto for compatibility & stability
-		 */
-		.nmode = 0,
-		/* DDR refresh rate. 0=Auto based on DRAM's temperature;
-		 * 1=Normal rate for speed; 2=Double rate for stability
-		 */
-		.ddr_refresh_rate_config = 0
-	};
-
-	/* copy the data to output PEI */
-	*pei_data = pd;
+	pei_data->usb3.xhci_streams = get_uint_option("usb3_streams", 1) & 0x1;
 }

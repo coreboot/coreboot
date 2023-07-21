@@ -115,44 +115,13 @@ static const uint8_t *locate_spd(void)
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	struct pei_data pei_data_template = {
-		.pei_version = PEI_VERSION,
-		.mchbar = CONFIG_FIXED_MCHBAR_MMIO_BASE,
-		.dmibar = CONFIG_FIXED_DMIBAR_MMIO_BASE,
-		.epbar = CONFIG_FIXED_EPBAR_MMIO_BASE,
-		.pciexbar = CONFIG_ECAM_MMCONF_BASE_ADDRESS,
-		.smbusbar = CONFIG_FIXED_SMBUS_IO_BASE,
-		.wdbbar = 0x4000000,
-		.wdbsize = 0x1000,
-		.hpet_address = HPET_BASE_ADDRESS,
-		.rcba = (uintptr_t)DEFAULT_RCBA,
-		.pmbase = DEFAULT_PMBASE,
-		.gpiobase = DEFAULT_GPIOBASE,
-		.thermalbase = 0xfed08000,
-		.system_type = 0, // 0 Mobile, 1 Desktop/Server
-		.tseg_size = CONFIG_SMM_TSEG_SIZE,
-		.spd_addresses = { 0xa0, 0x00,0x00,0x00 },
-		.ts_addresses = { 0x30, 0x00, 0x00, 0x00 },
-		.ec_present = 1,
-		.max_ddr3_freq = 1333,
-		.usb_port_config = {
-			{ 1, 0, 0x0080 }, /* P0: Port 0      (OC0) */
-			{ 1, 1, 0x0080 }, /* P1: Port 1      (OC1) */
-			{ 1, 0, 0x0040 }, /* P2: MINIPCIE1   (no OC) */
-			{ 1, 0, 0x0040 }, /* P3: MMC         (no OC) */
-			{ 0, 0, 0x0000 }, /* P4: Empty */
-			{ 0, 0, 0x0000 }, /* P5: Empty */
-			{ 0, 0, 0x0000 }, /* P6: Empty */
-			{ 0, 0, 0x0000 }, /* P7: Empty */
-			{ 1, 4, 0x0040 }, /* P8: MINIPCIE2   (no OC) */
-			{ 0, 4, 0x0000 }, /* P9: Empty */
-			{ 0, 4, 0x0000 }, /* P10: Empty */
-			{ 1, 4, 0x0040 }, /* P11: Camera     (no OC) */
-			{ 0, 4, 0x0000 }, /* P12: Empty */
-			{ 0, 4, 0x0000 }, /* P13: Empty */
-		},
-	};
-	*pei_data = pei_data_template;
+	const uint8_t spdaddr[] = {0xa0, 0x00, 0x00, 0x00};
+	const uint8_t tsaddr[] = {0x30, 0x00, 0x00, 0x00};
+
+	/* TODO: Confirm if nortbridge_fill_pei_data() gets .system_type right (should be 0) */
+	memcpy(pei_data->spd_addresses, &spdaddr, sizeof(pei_data->spd_addresses));
+	/* Only this board uses .ts_addresses. Fill here to allow removal from devicetree. */
+	memcpy(pei_data->ts_addresses, &tsaddr, sizeof(pei_data->ts_addresses));
 	memcpy(pei_data->spd_data[2], locate_spd(), 256);
 }
 

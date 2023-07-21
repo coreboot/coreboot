@@ -50,44 +50,9 @@ void bootblock_mainboard_early_init(void)
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	struct pei_data pei_data_template = {
-		.pei_version = PEI_VERSION,
-		.mchbar = CONFIG_FIXED_MCHBAR_MMIO_BASE,
-		.dmibar = CONFIG_FIXED_DMIBAR_MMIO_BASE,
-		.epbar = CONFIG_FIXED_EPBAR_MMIO_BASE,
-		.pciexbar = CONFIG_ECAM_MMCONF_BASE_ADDRESS,
-		.smbusbar = CONFIG_FIXED_SMBUS_IO_BASE,
-		.wdbbar = 0x4000000,
-		.wdbsize = 0x1000,
-		.hpet_address = HPET_BASE_ADDRESS,
-		.rcba = (uintptr_t)DEFAULT_RCBA,
-		.pmbase = DEFAULT_PMBASE,
-		.gpiobase = DEFAULT_GPIOBASE,
-		.thermalbase = 0xfed08000,
-		.system_type = 0, // 0 Mobile, 1 Desktop/Server
-		.tseg_size = CONFIG_SMM_TSEG_SIZE,
-		.spd_addresses = { 0xa0, 0x00, 0xa4, 0x00 },
-		.ts_addresses = { 0x00, 0x00, 0x00, 0x00 },
-		.ec_present = 0,
-		.max_ddr3_freq = 1600,
-		.usb_port_config = {
-			{ 1, 0, 0x0040 }, /* P0: Front port  (OC0) */
-			{ 1, 1, 0x0040 }, /* P1: Back port   (OC1) */
-			{ 1, 0, 0x0040 }, /* P2: MINIPCIE1   (no OC) */
-			{ 1, 0, 0x0040 }, /* P3: MMC         (no OC) */
-			{ 1, 2, 0x0040 }, /* P4: Front port  (OC2) */
-			{ 0, 0, 0x0000 }, /* P5: Empty */
-			{ 0, 0, 0x0000 }, /* P6: Empty */
-			{ 0, 0, 0x0000 }, /* P7: Empty */
-			{ 1, 4, 0x0040 }, /* P8: Back port   (OC4) */
-			{ 1, 4, 0x0040 }, /* P9: MINIPCIE3   (no OC) */
-			{ 1, 4, 0x0040 }, /* P10: BLUETOOTH  (no OC) */
-			{ 0, 4, 0x0000 }, /* P11: Empty */
-			{ 1, 6, 0x0040 }, /* P12: Back port  (OC6) */
-			{ 1, 5, 0x0040 }, /* P13: Back port  (OC5) */
-		},
-	};
-	*pei_data = pei_data_template;
+	const uint8_t spdaddr[] = { 0xa0, 0x00, 0xa4, 0x00 };
+
+	memcpy(pei_data->spd_addresses, &spdaddr, sizeof(pei_data->spd_addresses));
 }
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {

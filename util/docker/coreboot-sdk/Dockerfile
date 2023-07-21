@@ -51,7 +51,7 @@ RUN \
 		libgpiod-dev \
 		libjaylink-dev \
 		liblzma-dev \
-		libncurses5-dev \
+		libncurses-dev \
 		libpci-dev \
 		libreadline-dev \
 		libssl-dev \

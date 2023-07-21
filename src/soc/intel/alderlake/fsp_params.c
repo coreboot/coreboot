@@ -922,6 +922,41 @@ static void fill_fsps_pcie_params(FSP_S_CONFIG *s_cfg,
 		s_cfg->PcieRpDetectTimeoutMs[i] = rp_cfg->pcie_rp_detect_timeout_ms;
 	}
 	s_cfg->PcieComplianceTestMode = CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE);
+
+#if CONFIG(FSP_TYPE_IOT)
+	/*
+	 * Intel requires that all enabled PCH PCIe ports have a CLK_REQ signal connected.
+	 * The CLK_REQ is used to wake the silicon when link entered L1 link-state. L1
+	 * link-state is also entered on PCI-PM D3, even with ASPM L1 disabled.
+	 * When no CLK_REQ signal is used, for example when it's using a free running
+	 * clock the Root port silicon will never wake from L1 link state.
+	 * This will trigger a MCE.
+	 *
+	 * Starting with FSP MR4 the UPD 'PchPcieClockGating' allows to work around
+	 * this issue by disabling ClockGating. Disabling ClockGating should be avoided
+	 * as the silicon draws more power when it is idle.
+	 */
+	for (int i = 0; i < CONFIG_MAX_PCH_ROOT_PORTS; i++) {
+		bool clk_req_missing = false;
+		if (!(enable_mask & BIT(i)))
+			continue;
+		const struct pcie_rp_config *rp_cfg = &config->pch_pcie_rp[i];
+		if (CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE)) {
+			clk_req_missing = true;
+		} else if (!rp_cfg->flags && rp_cfg->clk_src == 0 && rp_cfg->clk_req == 0) {
+			clk_req_missing = true;
+		} else if (rp_cfg->flags & PCIE_RP_CLK_REQ_UNUSED) {
+			clk_req_missing = true;
+		}
+		if (clk_req_missing) {
+			printk(BIOS_INFO, "PCH PCIe port %d has no CLK_REQ\n", i + 1);
+			printk(BIOS_INFO, "Disabling PCH PCIE ClockGating+PowerGating.\n");
+			s_cfg->PchPcieClockGating = false;
+			s_cfg->PchPciePowerGating = false;
+			break;
+		}
+	}
+#endif
 }
 
 static void fill_fsps_cpu_pcie_params(FSP_S_CONFIG *s_cfg,

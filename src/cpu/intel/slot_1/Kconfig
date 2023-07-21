@@ -2,11 +2,6 @@
 
 config CPU_INTEL_SLOT_1
 	bool
-
-if CPU_INTEL_SLOT_1
-
-config SLOT_SPECIFIC_OPTIONS
-	def_bool y
 	select CPU_INTEL_MODEL_65X
 	select CPU_INTEL_MODEL_67X
 	select CPU_INTEL_MODEL_68X
@@ -18,6 +13,8 @@ config SLOT_SPECIFIC_OPTIONS
 	select UNKNOWN_TSC_RATE
 	select SETUP_XIP_CACHE
 	select RESERVE_MTRRS_FOR_OS
+
+if CPU_INTEL_SLOT_1
 
 config DCACHE_RAM_BASE
 	hex

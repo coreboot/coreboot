@@ -1,14 +1,11 @@
 config CPU_INTEL_SOCKET_FCBGA559
 	bool
+	select CPU_INTEL_MODEL_106CX
+	select CPU_HAS_L2_ENABLE_MSR
 	help
 	  Select this socket on Intel Pineview
 
 if CPU_INTEL_SOCKET_FCBGA559
-
-config SOCKET_SPECIFIC_OPTIONS
-	def_bool y
-	select CPU_INTEL_MODEL_106CX
-	select CPU_HAS_L2_ENABLE_MSR
 
 config DCACHE_RAM_BASE
 	hex

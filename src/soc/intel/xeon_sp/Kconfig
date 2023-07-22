@@ -75,10 +75,6 @@ config	CPU_SPECIFIC_OPTIONS
 config MAINBOARD_USES_FSP2_0
 	  bool
 	  default y
-
-config USE_FSP2_0_DRIVER
-	  def_bool y
-	  depends on MAINBOARD_USES_FSP2_0
 	  select PLATFORM_USES_FSP2_0
 	  select UDK_202005_BINDING
 	  select POSTCAR_STAGE

@@ -27,10 +27,6 @@ config ACPI_CPU_STRING
 	string
 	default "C%03X"
 
-config SIPI_FINAL_TIMEOUT
-	int
-	default 400000
-
 config PCR_BASE_ADDRESS
 	hex
 	default 0xfd000000

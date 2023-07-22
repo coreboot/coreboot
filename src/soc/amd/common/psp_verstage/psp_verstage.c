@@ -309,7 +309,8 @@ void Main(void)
 	verstage_mainboard_early_init();
 
 	svc_write_postcode(POSTCODE_LATE_INIT);
-	fch_io_enable_legacy_io();
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_ACPIMMIO_PM_IO_ACCESS))
+		fch_io_enable_legacy_io();
 
 	printk(BIOS_DEBUG, "calling verstage_soc_spi_init\n");
 	verstage_soc_spi_init();

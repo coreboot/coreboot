@@ -17,6 +17,7 @@ chip northbridge/intel/sandybridge
 	register "gpu_cpu_backlight" = "0x00000ac8"
 	register "gpu_pch_backlight" = "0x13120000"
 
+	register "spd_addresses" = "{0x50, 0x51, 0x52, 0x53}"
 	register "ec_present" = "1"
 	register "max_mem_clock_mhz" = "800"
 

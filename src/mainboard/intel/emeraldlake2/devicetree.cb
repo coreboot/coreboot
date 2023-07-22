@@ -12,6 +12,7 @@ chip northbridge/intel/sandybridge
 	register "gpu_dp_b_hotplug" = "0x06"
 
 	register "max_mem_clock_mhz" = "800"
+	register "spd_addresses" = "{0x50, 0, 0x52, 0}"
 
 	register "usb_port_config" = "{
 		{ 1, 0, 0x0040 },

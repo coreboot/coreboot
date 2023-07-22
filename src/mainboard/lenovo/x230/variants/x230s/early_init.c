@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {
@@ -19,8 +18,3 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{1, 3, -1}, /* B1P5: WLAN USB */
 	{1, 1, -1}, /* B1P6: Camera */
 };
-
-void mainboard_get_spd(spd_raw_data *spd, bool id_only)
-{
-	read_spd(&spd[0], 0x50, id_only);
-}

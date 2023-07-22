@@ -1,6 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
 chip northbridge/intel/sandybridge
+	register "spd_addresses" = "{0x50, 0, 0x52, 0}"
 	device domain 0 on
 		subsystemid 0x1565 0x3108 inherit
 

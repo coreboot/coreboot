@@ -1,4 +1,6 @@
 chip northbridge/intel/sandybridge
+	# FIXME: The GA-B75M-D3V only has two DIMM slots!
+	register "spd_addresses" = "{0x50, 0x51, 0x52, 0x53}"
 	device domain 0 on
 		subsystemid 0x1458 0x5000 inherit
 		device ref host_bridge on	# Host bridge

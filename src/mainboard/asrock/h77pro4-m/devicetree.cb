@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 chip northbridge/intel/sandybridge
+	register "spd_addresses" = "{0x50, 0x51, 0x52, 0x53}"
 	device domain 0 on
 		device ref host_bridge on # Host bridge
 			subsystemid 0x1849 0x0100

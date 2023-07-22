@@ -11,6 +11,7 @@ chip northbridge/intel/sandybridge
 	register "gpu_panel_power_down_delay" = "500"		# 50ms
 	register "gpu_panel_power_up_delay" = "2000"		# 200ms
 
+	register "spd_addresses" = "{0x50, 0, 0, 0}"
 	device domain 0 on
 		subsystemid 0x17aa 0x2209 inherit
 		chip southbridge/intel/bd82x6x # Intel Series 7 Panther Point PCH

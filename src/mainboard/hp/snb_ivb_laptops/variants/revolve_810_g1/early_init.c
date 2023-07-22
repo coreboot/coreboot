@@ -1,10 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootblock_common.h>
-#include <string.h>
-#include <cbfs.h>
-#include <console/console.h>
-#include <northbridge/intel/sandybridge/raminit_native.h>
+#include <northbridge/intel/sandybridge/raminit.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <ec/hp/kbc1126/ec.h>
 
@@ -35,15 +32,10 @@ void bootblock_mainboard_early_init(void)
 	kbc1126_exit_conf();
 }
 
-void mainboard_get_spd(spd_raw_data *spd, bool id_only)
+void mb_get_spd_map(struct spd_info *spdi)
 {
+	spdi->addresses[0] = 0x50;
 	/* C1S0 is a soldered RAM with no real SPD. Use stored SPD.  */
-	size_t spd_file_len = 0;
-	void *spd_file = cbfs_map("spd.bin", &spd_file_len);
-
-	if (!spd_file || spd_file_len < sizeof(spd_raw_data))
-		die("SPD data for C1S0 not found.");
-
-	read_spd(&spd[0], 0x50, id_only);
-	memcpy(&spd[2], spd_file, spd_file_len);
+	spdi->addresses[2] = SPD_MEMORY_DOWN;
+	spdi->spd_index = 0;
 }

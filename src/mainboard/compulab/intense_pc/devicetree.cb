@@ -6,6 +6,8 @@ chip northbridge/intel/sandybridge # FIXME: check gfx
 	register "gpu_dp_c_hotplug" = "4"
 	register "gpu_dp_d_hotplug" = "4"
 
+	register "spd_addresses" = "{0x50, 0, 0x52, 0}"
+
 	device domain 0 on
 		device ref host_bridge on	# Host bridge
 			subsystemid 0x8086 0x2010

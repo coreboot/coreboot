@@ -1,11 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/hpet.h>
 #include <stdint.h>
 #include <console/console.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>
-#include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
 #include <bootmode.h>
@@ -81,18 +79,8 @@ static void early_ec_init(void)
 	}
 }
 
-void mainboard_get_spd(spd_raw_data *spd, bool id_only)
-{
-	read_spd(&spd[0], 0x50, id_only);
-	read_spd(&spd[2], 0x52, id_only);
-}
-
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	const uint8_t spdaddr[] = {0xA0, 0x00, 0xA4, 0x00};
-
-	memcpy(pei_data->spd_addresses, &spdaddr, sizeof(pei_data->spd_addresses));
-
 	/* TODO: Confirm if nortbridge_fill_pei_data() gets .system_type right (should be 0) */
 }
 

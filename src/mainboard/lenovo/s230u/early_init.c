@@ -1,16 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
-#include <string.h>
-#include <cbfs.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
-#include <northbridge/intel/sandybridge/raminit_native.h>
+#include <northbridge/intel/sandybridge/raminit.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
 #include "ec.h"
-
-#define SPD_LEN 256
 
 void mainboard_pch_lpc_setup(void)
 {
@@ -54,26 +49,27 @@ static const char *mainboard_spd_names[9] = {
 	"HYNIX 2GB",
 };
 
-void mainboard_get_spd(spd_raw_data *spd, bool id_only)
+static unsigned int get_spd_index(void)
 {
-	void *spd_file;
-	size_t spd_file_len = 0;
 	const int spd_gpios[] = {71, 70, 16, 48, -1};
 
-	u32 spd_index = get_gpios(spd_gpios);
+	unsigned int spd_index = get_gpios(spd_gpios);
 	if (spd_index >= ARRAY_SIZE(mainboard_spd_names)) {
 		/* Fallback to pessimistic 2GB image (ELPIDA 2GB) */
 		spd_index = 6;
 	}
 
+	return spd_index;
+}
+
+void mb_get_spd_map(struct spd_info *spdi)
+{
+	unsigned int spd_index = get_spd_index();
+
 	printk(BIOS_INFO, "SPD index %d (%s)\n",
 		spd_index, mainboard_spd_names[spd_index]);
 
 	/* C0S0 is a soldered RAM with no real SPD. Use stored SPD. */
-	spd_file = cbfs_map("spd.bin", &spd_file_len);
-
-	if (!spd_file || spd_file_len < SPD_LEN * spd_index + SPD_LEN)
-		die("SPD data not found.");
-
-	memcpy(spd, spd_file + SPD_LEN * spd_index, SPD_LEN);
+	spdi->addresses[0] = SPD_MEMORY_DOWN;
+	spdi->spd_index = spd_index;
 }

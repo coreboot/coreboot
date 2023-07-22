@@ -6,6 +6,7 @@ chip northbridge/intel/sandybridge
 	register "ddr3lv_support" = "1"
 	# FIXME: Nothing can run native at 800MHz on p8z77-m, others may have same problem
 	register "max_mem_clock_mhz" = "CONFIG(USE_NATIVE_RAMINIT) ? 666 : 800"
+	register "spd_addresses" = "{0x50, 0x51, 0x52, 0x53}"
 
 	register "usb_port_config" = "{
 		{1, 0, 0x0080}, {1, 0, 0x0080}, {1, 1, 0x0080}, {1, 1, 0x0080}, {1, 2, 0x0080},

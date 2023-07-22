@@ -1,4 +1,5 @@
 chip northbridge/intel/sandybridge
+	register "spd_addresses" = "{0x50, 0x51, 0x52, 0x53}"
 	chip cpu/intel/model_206ax
 		device cpu_cluster 0 on end
 

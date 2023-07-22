@@ -6,8 +6,6 @@
 #include <device/pnp_ops.h>
 #include <device/pnp.h>
 #include <northbridge/intel/sandybridge/raminit.h>
-#include <northbridge/intel/sandybridge/raminit_native.h>
-#include <northbridge/intel/sandybridge/sandybridge.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <superio/ite/it8783ef/it8783ef.h>
 #include <superio/ite/common/ite.h>
@@ -37,12 +35,8 @@ void bootblock_mainboard_early_init(void)
 	pnp_exit_conf_state(dev);
 }
 
-void mainboard_fill_pei_data(struct pei_data *const pei_data)
+void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	const uint8_t spdaddr[] = {0xA0, 0xA2, 0xA4, 0xA6};
-
-	memcpy(pei_data->spd_addresses, &spdaddr, sizeof(pei_data->spd_addresses));
-
 	/* TODO: Confirm if need to enable peg10 in devicetree */
 	pei_data->pcie_init = 1;
 }
@@ -64,11 +58,3 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 1, 8 }, /* P12: misc internal  USB2 (no OC) */
 	{ 1, 1, 6 }, /* P13: misc internal  USB2 (OC #6) */
 };
-
-void mainboard_get_spd(spd_raw_data *spd, bool id_only)
-{
-	read_spd(&spd[0], 0x50, id_only);
-	read_spd(&spd[1], 0x51, id_only);
-	read_spd(&spd[2], 0x52, id_only);
-	read_spd(&spd[3], 0x53, id_only);
-}

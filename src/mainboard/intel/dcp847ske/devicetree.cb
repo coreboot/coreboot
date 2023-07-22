@@ -13,6 +13,7 @@ chip northbridge/intel/sandybridge
 
 	# 1333MHz RAM frequency
 	register "max_mem_clock_mhz" = "666"
+	register "spd_addresses" = "{0x50, 0, 0x51, 0}"
 
 	register "usb_port_config" = "{
 		{1, 0, 0x0040},

@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <bootblock_common.h>
-#include <northbridge/intel/sandybridge/raminit_native.h>
 #include <northbridge/intel/sandybridge/raminit.h>
 #include <northbridge/intel/sandybridge/pei_data.h>
 #include <southbridge/intel/bd82x6x/pch.h>
@@ -42,20 +41,8 @@ void bootblock_mainboard_early_init(void)
 	 */
 }
 
-void mainboard_get_spd(spd_raw_data *spd, bool id_only)
-{
-	read_spd(&spd[0], 0x50, id_only);
-	read_spd(&spd[1], 0x51, id_only);
-	read_spd(&spd[2], 0x52, id_only);
-	read_spd(&spd[3], 0x53, id_only);
-}
-
 void mainboard_fill_pei_data(struct pei_data *pei)
 {
-	const uint8_t spdaddr[] = {0xa0, 0xa2, 0xa4, 0xa6}; /* SMBus mul 2 */
-
-	memcpy(pei->spd_addresses, &spdaddr, sizeof(spdaddr));
-
 	/*
 	 * USB 3 mode settings.
 	 * These are obtained from option table then bit masked to keep within range.

@@ -1,16 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/hpet.h>
 #include <bootblock_common.h>
 #include <stdint.h>
 #include <pc80/mc146818rtc.h>
-#include <console/console.h>
 #include <bootmode.h>
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8772f/it8772f.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>
-#include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
 #include <superio/smsc/lpc47n207/lpc47n207.h>
@@ -91,17 +88,7 @@ static void setup_sio_gpios(void)
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	const uint8_t spdaddr[] = {0xa0, 0x00, 0xa4, 0x00};
-
-	memcpy(pei_data->spd_addresses, &spdaddr, sizeof(pei_data->spd_addresses));
-
 	/* TODO: Confirm if nortbridge_fill_pei_data() gets .system_type right (should be 0) */
-}
-
-void mainboard_get_spd(spd_raw_data *spd, bool id_only)
-{
-	read_spd(&spd[0], 0x50, id_only);
-	read_spd(&spd[2], 0x52, id_only);
 }
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {

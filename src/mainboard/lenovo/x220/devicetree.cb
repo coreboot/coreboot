@@ -15,6 +15,7 @@ chip northbridge/intel/sandybridge
 	register "gpu_cpu_backlight" = "0x1155"
 	register "gpu_pch_backlight" = "0x06100610"
 
+	register "spd_addresses" = "{0x50, 0, 0x51, 0}"
 	register "ec_present" = "1"		# I have an embedded controller
 	register "max_mem_clock_mhz" = "666"	# So DDR3 freq = 1333
 

@@ -14,6 +14,8 @@ chip northbridge/intel/sandybridge
 	register "gpu_cpu_backlight" = "0x1155"
 	register "gpu_pch_backlight" = "0x11551155"
 
+	register "spd_addresses" = "{0x50, 0, 0x51, 0}"
+
 	device domain 0 on
 		subsystemid 0x17aa 0x21f3 inherit
 

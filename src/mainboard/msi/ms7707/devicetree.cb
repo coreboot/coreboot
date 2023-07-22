@@ -1,4 +1,5 @@
 chip northbridge/intel/sandybridge
+	register "spd_addresses" = "{0x50, 0, 0x52, 0}"
 	device domain 0 on
 		subsystemid 0x1462 0x7707 inherit
 

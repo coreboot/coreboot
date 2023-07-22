@@ -5,6 +5,8 @@ chip northbridge/intel/sandybridge
 	register "gpu_dp_b_hotplug" = "0"
 	register "gpu_dp_c_hotplug" = "0"
 	register "gpu_dp_d_hotplug" = "0"
+	# BTX mainboard: Reversed mapping
+	register "spd_addresses" = "{0x53, 0x52, 0x51, 0x50}"
 
 	device domain 0 on
 		subsystemid 0x103c 0x1495 inherit

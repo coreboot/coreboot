@@ -1,12 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <stdint.h>
 #include <string.h>
 #include <console/console.h>
-#include <northbridge/intel/sandybridge/raminit_native.h>
+#include <northbridge/intel/sandybridge/raminit.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
-#include <cbfs.h>
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	/* enabled, current, OC pin */
@@ -26,27 +24,10 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 1, -1 },/* P13 Camera */
 };
 
-static uint8_t *get_spd_data(int spd_index)
+static unsigned int get_spd_index(void)
 {
-	uint8_t *spd_file;
-	size_t spd_file_len;
-
-	printk(BIOS_DEBUG, "spd index %d\n", spd_index);
-	spd_file = cbfs_map("spd.bin", &spd_file_len);
-	if (!spd_file)
-		die("SPD data not found.");
-
-	if (spd_file_len < spd_index * 256)
-		die("Missing SPD data.");
-
-	return spd_file + spd_index * 256;
-}
-
-void mainboard_get_spd(spd_raw_data *spd, bool id_only)
-{
-	uint8_t *memory;
 	const int spd_gpio_vector[] = {25, 45, -1};
-	int spd_index = get_gpios(spd_gpio_vector);
+	unsigned int spd_index = get_gpios(spd_gpio_vector);
 
 	/* 4gb model = 0, 8gb model = 1 */
 	/* int extended_memory_version = get_gpio(44); */
@@ -69,7 +50,12 @@ void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 	if (spd_index == 3)
 		die("Unsupported Memory. (detected 'reserved' memory configuration).");
 
-	memory = get_spd_data(spd_index);
-	memcpy(&spd[0], memory, 256);
-	memcpy(&spd[2], memory, 256);
+	return spd_index;
+}
+
+void mb_get_spd_map(struct spd_info *spdi)
+{
+	spdi->addresses[0] = SPD_MEMORY_DOWN;
+	spdi->addresses[2] = SPD_MEMORY_DOWN;
+	spdi->spd_index = get_spd_index();
 }

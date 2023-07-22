@@ -1,15 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/hpet.h>
 #include <bootblock_common.h>
 #include <stdint.h>
 #include <arch/io.h>
 #include <superio/smsc/sio1007/sio1007.h>
-#include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>
-#include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
-#include <southbridge/intel/common/gpio.h>
 
 #define SIO_PORT 0x164e
 
@@ -50,9 +46,6 @@ void bootblock_mainboard_early_init(void)
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	const uint8_t spdaddr[] = { 0xa0, 0x00, 0xa4, 0x00 };
-
-	memcpy(pei_data->spd_addresses, &spdaddr, sizeof(pei_data->spd_addresses));
 }
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {
@@ -72,9 +65,3 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 0, 6 }, /* P12: Back port  (OC6) */
 	{ 1, 0, 5 }, /* P13: Back port  (OC5) */
 };
-
-void mainboard_get_spd(spd_raw_data *spd, bool id_only)
-{
-	read_spd(&spd[0], 0x50, id_only);
-	read_spd(&spd[2], 0x52, id_only);
-}

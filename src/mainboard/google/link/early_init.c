@@ -1,17 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/hpet.h>
-#include <stdint.h>
-#include <string.h>
 #include <device/pci_ops.h>
-#include <console/console.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>
-#include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
 #include "ec/google/chromeec/ec.h"
-#include <cbfs.h>
 
 #include <southbridge/intel/bd82x6x/chip.h>
 
@@ -58,39 +52,15 @@ void mainboard_late_rcba_config(void)
 	DIR_ROUTE(D22IR, PIRQA, PIRQB, PIRQC, PIRQD);
 }
 
-static uint8_t *locate_spd(void)
+static unsigned int get_spd_index(void)
 {
 	const int gpio_vector[] = {41, 42, 43, 10, -1};
-	uint8_t *spd_file;
-	size_t spd_file_len;
-	int spd_index = get_gpios(gpio_vector);
-
-	printk(BIOS_DEBUG, "spd index %d\n", spd_index);
-	spd_file = cbfs_map("spd.bin", &spd_file_len);
-	if (!spd_file)
-		die("SPD data not found.");
-
-	if (spd_file_len < ((spd_index + 1) * 256)) {
-		printk(BIOS_ERR, "spd index override to 0 - old hardware?\n");
-		spd_index = 0;
-	}
-
-	if (spd_file_len < 256)
-		die("Missing SPD data.");
-
-	return spd_file + spd_index * 256;
+	return get_gpios(gpio_vector);
 }
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
 	/* TODO: Confirm if nortbridge_fill_pei_data() gets .system_type right (should be 0) */
-
-	/* LINK has 2 channels of memory down, so spd_data[0] and [2]
-	   both need to be populated */
-	memcpy(pei_data->spd_data[0], locate_spd(),
-	       sizeof(pei_data->spd_data[0]));
-	memcpy(pei_data->spd_data[2], pei_data->spd_data[0],
-	       sizeof(pei_data->spd_data[0]));
 }
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {
@@ -111,12 +81,12 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 0, 0, -1 }, /* P13: Empty */
 };
 
-void mainboard_get_spd(spd_raw_data *spd, bool id_only)
+void mb_get_spd_map(struct spd_info *spdi)
 {
-	/* LINK has 2 channels of memory down, so spd_data[0] and [2]
-	   both need to be populated */
-	memcpy(&spd[0], locate_spd(), 128);
-	memcpy(&spd[2], &spd[0], 128);
+	/* LINK has 2 channels of memory down */
+	spdi->addresses[0] = SPD_MEMORY_DOWN;
+	spdi->addresses[2] = SPD_MEMORY_DOWN;
+	spdi->spd_index = get_spd_index();
 }
 
 void mainboard_early_init(int s3resume)

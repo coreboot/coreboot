@@ -22,6 +22,7 @@ chip northbridge/intel/sandybridge
 	register "usb3.preboot_support" = "1"
 	register "usb3.xhci_streams" = "1"
 
+	register "spd_addresses" = "{0x50, 0, 0x52, 0}"
 	register "ec_present" = "1"
 	register "max_mem_clock_mhz" = "800"
 

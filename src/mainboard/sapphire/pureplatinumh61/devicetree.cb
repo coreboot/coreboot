@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 chip northbridge/intel/sandybridge
+	register "spd_addresses" = "{0x50, 0, 0x51, 0}"
 	device domain 0 on
 		chip southbridge/intel/bd82x6x	# Intel Series 6 Cougar Point PCH
 			register "gen1_dec" = "0x000c0291"

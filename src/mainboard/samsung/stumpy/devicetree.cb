@@ -9,6 +9,7 @@ chip northbridge/intel/sandybridge
 	# Enable DVI Hotplug with 6ms pulse
 	register "gpu_dp_b_hotplug" = "0x06"
 
+	register "spd_addresses" = "{0x50, 0, 0x52, 0}"
 	register "max_mem_clock_mhz" = "666"
 
 	register "usb_port_config" = "{

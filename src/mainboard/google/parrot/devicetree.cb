@@ -17,6 +17,7 @@ chip northbridge/intel/sandybridge
 	register "gpu_cpu_backlight" = "0x000001d4"
 	register "gpu_pch_backlight" = "0x03aa0000"
 
+	register "spd_addresses" = "{0x50, 0, 0x52, 0}"
 	register "ec_present" = "1"
 	# FIXME: Native raminit requires reduced max clock
 	register "max_mem_clock_mhz" = "CONFIG(USE_NATIVE_RAMINIT) ? 666 : 800"

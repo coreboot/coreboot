@@ -1,6 +1,8 @@
 chip northbridge/intel/sandybridge
 	register "gpu_dp_b_hotplug" = "4"
 	register "gpu_dp_c_hotplug" = "4"
+	# BTX mainboard: Reversed mapping
+	register "spd_addresses" = "{0, 0x52, 0, 0x50}"
 	device domain 0x0 on
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
 			register "docking_supported" = "0"

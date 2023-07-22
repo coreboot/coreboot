@@ -2,6 +2,7 @@ chip northbridge/intel/sandybridge
 	# IGD Displays
 	register "gfx" = "GMA_STATIC_DISPLAYS(0)"
 
+	register "spd_addresses" = "{0x50, 0, 0x52, 0}"
 	register "max_mem_clock_mhz" = "800"
 	register "ec_present" = "1"
 

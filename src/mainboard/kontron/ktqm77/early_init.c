@@ -1,13 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/hpet.h>
 #include <bootblock_common.h>
-#include <stdint.h>
 #include <device/pnp_def.h>
 #include <device/pnp_ops.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
-#include <northbridge/intel/sandybridge/raminit_native.h>
 #include <northbridge/intel/sandybridge/raminit.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <southbridge/intel/bd82x6x/pch.h>
@@ -55,9 +52,6 @@ void bootblock_mainboard_early_init(void)
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	const uint8_t spdaddr[] = {0xA0, 0x00, 0xA4, 0x00};
-
-	memcpy(pei_data->spd_addresses, &spdaddr, sizeof(pei_data->spd_addresses));
 }
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {
@@ -77,12 +71,6 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 0, 4 }, /* P12: internal USB 2.0 (OC4) */
 	{ 1, 0, 4 }, /* P13: internal USB 2.0 (OC4) */
 };
-
-void mainboard_get_spd(spd_raw_data *spd, bool id_only)
-{
-	read_spd(&spd[0], 0x50, id_only);
-	read_spd(&spd[2], 0x52, id_only);
-}
 
 void mainboard_early_init(int s3resume)
 {

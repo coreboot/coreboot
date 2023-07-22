@@ -1,11 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/console.h>
-#include <cbfs.h>
-#include <northbridge/intel/sandybridge/raminit_native.h>
-#include <string.h>
+#include <northbridge/intel/sandybridge/raminit.h>
 #include <southbridge/intel/bd82x6x/pch.h>
-#include <ec/lenovo/pmh7/pmh7.h>
 
 const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 0, 0 },  /* SSP1: right */
@@ -24,15 +20,10 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 1, -1 }, /* B1P6: Camera */
 };
 
-void mainboard_get_spd(spd_raw_data *spd, bool id_only)
+void mb_get_spd_map(struct spd_info *spdi)
 {
 	/* C1S0 is a soldered RAM with no real SPD. Use stored SPD. */
-	size_t spd_file_len = 0;
-	void *spd_file = cbfs_map("spd.bin", &spd_file_len);
-
-	if (!spd_file || spd_file_len < sizeof(spd_raw_data))
-		die("SPD data for C1S0 not found.");
-
-	memcpy(&spd[0], spd_file, spd_file_len);
-	read_spd(&spd[2], 0x51, id_only);
+	spdi->addresses[0] = SPD_MEMORY_DOWN;
+	spdi->addresses[2] = 0x51;
+	spdi->spd_index = 0;
 }

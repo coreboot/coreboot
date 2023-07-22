@@ -15,6 +15,7 @@ chip northbridge/intel/sandybridge
 	register "gpu_panel_power_down_delay" = "230"
 	register "gpu_panel_power_up_delay" = "300"
 	register "gpu_pch_backlight" = "0x02880288"
+	register "spd_addresses" = "{0x50, 0, 0x52, 0}"
 
 	device domain 0 on
 

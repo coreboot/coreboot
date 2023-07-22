@@ -1,12 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/hpet.h>
-#include <stdint.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>
-#include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
-#include <southbridge/intel/common/gpio.h>
 #include "ec/compal/ene932/ec.h"
 
 void mainboard_late_rcba_config(void)
@@ -52,10 +48,6 @@ void mainboard_late_rcba_config(void)
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
-	const uint8_t spdaddr[] = {0xA0, 0x00, 0xA4, 0x00};
-
-	memcpy(pei_data->spd_addresses, &spdaddr, sizeof(pei_data->spd_addresses));
-
 	/* TODO: Confirm if nortbridge_fill_pei_data() gets .system_type right (should be 0) */
 }
 
@@ -77,9 +69,3 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 0, 0, -1 }, /* P12: Empty */
 	{ 0, 0, -1 }, /* P13: Empty */
 };
-
-void mainboard_get_spd(spd_raw_data *spd, bool id_only)
-{
-	read_spd(&spd[0], 0x50, id_only);
-	read_spd(&spd[2], 0x52, id_only);
-}

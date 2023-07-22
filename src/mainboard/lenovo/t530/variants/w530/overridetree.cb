@@ -1,4 +1,5 @@
 chip northbridge/intel/sandybridge
+	register "spd_addresses" = "{0x50, 0x52, 0x51, 0x53}"
 	device domain 0 on
 		device pci 02.0 on # Internal graphics VGA controller
 			subsystemid 0x17aa 0x21f5

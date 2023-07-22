@@ -2,12 +2,10 @@
 
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
-#include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <ec/lenovo/pmh7/pmh7.h>
 #include <drivers/lenovo/hybrid_graphics/hybrid_graphics.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
-#include <device/device.h>
 
 static void hybrid_graphics_init(void)
 {
@@ -56,10 +54,4 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 void mainboard_early_init(int s3resume)
 {
 	hybrid_graphics_init();
-}
-
-void mainboard_get_spd(spd_raw_data *spd, bool id_only)
-{
-	read_spd(&spd[0], 0x50, id_only);
-	read_spd(&spd[2], 0x51, id_only);
 }

@@ -6,6 +6,7 @@ chip northbridge/intel/sandybridge
 	register "gpu_dp_c_hotplug" = "4"
 	register "gpu_dp_d_hotplug" = "4"
 	register "gpu_panel_power_cycle_delay" = "4"
+	register "spd_addresses" = "{0x50, 0x51, 0x52, 0x53}"
 
 	device domain 0 on
 		subsystemid 0x15d9 0x0644 inherit

@@ -4,7 +4,6 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
-#include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/common/rcba.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <superio/smsc/sch5545/sch5545.h>
@@ -55,12 +54,4 @@ void mainboard_early_init(int s3resume)
 	/* Disable SMIs and clear SMI status */
 	outb(0, SCH5545_RUNTIME_REG_BASE + SCH5545_RR_SMI_EN);
 	outb(SCH5545_SMI_GLOBAL_STS, SCH5545_RUNTIME_REG_BASE + SCH5545_RR_SMI_STS);
-}
-
-void mainboard_get_spd(spd_raw_data *spd, bool id_only)
-{
-	read_spd(&spd[0], 0x50, id_only);
-	read_spd(&spd[1], 0x51, id_only);
-	read_spd(&spd[2], 0x52, id_only);
-	read_spd(&spd[3], 0x53, id_only);
 }

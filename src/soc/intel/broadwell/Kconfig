@@ -1,18 +1,15 @@
 config SOC_INTEL_BROADWELL
 	bool
-	help
-	  Intel Broadwell and Haswell ULT support.
-
-if SOC_INTEL_BROADWELL
-
-config SOC_SPECIFIC_OPTIONS
-	def_bool y
 	select CACHE_MRC_SETTINGS
 	select CPU_INTEL_HASWELL
 	select INTEL_GMA_ACPI
 	select MRC_SETTINGS_PROTECT
 	select REG_SCRIPT
 	select TCO_SPACE_NOT_YET_SPLIT
+	help
+	  Intel Broadwell and Haswell ULT support.
+
+if SOC_INTEL_BROADWELL
 
 config BROADWELL_LPDDR3
 	bool

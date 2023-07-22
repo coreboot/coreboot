@@ -107,7 +107,9 @@ config MAINBOARD_FAMILY
 	default "Google_Ovis" if BOARD_GOOGLE_BASEBOARD_OVIS
 
 config MAINBOARD_PART_NUMBER
-	default "Rex" if BOARD_GOOGLE_MODEL_REX
+	default "Rex" if BOARD_GOOGLE_REX0
+	default "Rex_Ec_Ish" if BOARD_GOOGLE_REX_EC_ISH
+	default "Rex4ES" if BOARD_GOOGLE_REX4ES
 	default "Screebo" if BOARD_GOOGLE_SCREEBO
 	default "Karis" if BOARD_GOOGLE_KARIS
 	default "Ovis" if BOARD_GOOGLE_OVIS

@@ -118,11 +118,6 @@ config GFX_GMA_PANEL_1_ON_LVDS
 	default y if NORTHBRIDGE_INTEL_GM45 || NORTHBRIDGE_INTEL_IRONLAKE
 	default n
 
-config INTEL_GMA_OPREGION_2_0
-	bool
-	default n if INTEL_GMA_OPREGION_2_1
-	default y
-
 config INTEL_GMA_OPREGION_2_1
 	bool
 	default n

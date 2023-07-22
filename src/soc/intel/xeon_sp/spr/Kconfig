@@ -127,10 +127,6 @@ config MAX_IMC
 	int
 	default 4
 
-config MAX_MC_CHN
-	int
-	default 2
-
 config DIMM_MAX
 	int
 	default 32

@@ -27,10 +27,6 @@ config MAX_SOCKET
 	int
 	default 4
 
-config MAX_SOCKET_UPD
-	int
-	default 4
-
 config MAX_CPUS
 	int
 	default 480

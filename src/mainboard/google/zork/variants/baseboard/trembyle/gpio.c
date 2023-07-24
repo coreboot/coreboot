@@ -405,7 +405,7 @@ const struct soc_amd_gpio *variant_early_gpio_table(size_t *size)
 static const struct soc_amd_gpio romstage_gpio_table[] = {
 	/* Enable touchscreen, hold in reset */
 	/* EN_PWR_TOUCHSCREEN */
-	PAD_GPO(GPIO_32, HIGH),
+	PAD_GPO(GPIO_90, HIGH),
 	/* TOUCHSCREEN_RESET_L */
 	PAD_GPO(GPIO_140, LOW),
 };

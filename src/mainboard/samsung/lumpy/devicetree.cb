@@ -84,7 +84,9 @@ chip northbridge/intel/sandybridge
 				end
 			end
 			device ref sata1 on end # SATA Controller 1
-			device ref smbus on end # SMBus
+			device ref smbus on
+				subsystemid 0x04B4 0x18D1
+			end # SMBus
 			device ref sata2 off end # SATA Controller 2
 			device ref thermal on end # Thermal
 		end

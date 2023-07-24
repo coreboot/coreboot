@@ -82,4 +82,10 @@ config VBOOT_GSCVD
 	bool
 	default n
 
+# Override PSP_SOFTFUSE_BITS from soc/amd/phoenix.
+# The documentation of PSP_SOFTFUSE_BITS is available in #55758 doc (NDA).
+config PSP_SOFTFUSE_BITS
+	string
+	default "36 34 28 6"
+
 endif # BOARD_GOOGLE_BASEBOARD_MYST

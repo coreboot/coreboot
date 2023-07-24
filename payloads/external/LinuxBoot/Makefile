@@ -14,7 +14,9 @@ build/Image: $(CONFIG_LINUXBOOT_KERNEL_PATH)
 	ln -s -r $< $@
 
 
+ifeq ($(CONFIG_LINUXBOOT_COMPILE_KERNEL),y)
 include targets/linux.mk
+endif
 ifeq ($(CONFIG_LINUXBOOT_UROOT),y)
 include targets/u-root.mk
 endif

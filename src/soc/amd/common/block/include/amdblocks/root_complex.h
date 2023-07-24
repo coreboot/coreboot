@@ -6,6 +6,8 @@
 #include <device/device.h>
 #include <types.h>
 
+#define SMN_IOHC_MISC_BASE_13B1	0x13b10000
+
 #define NON_PCI_RES_IDX_AUTO	0
 
 struct non_pci_mmio_reg {

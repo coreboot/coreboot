@@ -213,7 +213,7 @@ struct device_operations picasso_root_complex_operations = {
 
 uint32_t get_iohc_misc_smn_base(struct device *domain)
 {
-	return 0x13b10000;
+	return SMN_IOHC_MISC_BASE_13B1;
 }
 
 static const struct non_pci_mmio_reg non_pci_mmio[] = {

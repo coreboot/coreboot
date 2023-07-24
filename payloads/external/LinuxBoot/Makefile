@@ -13,7 +13,11 @@ LINUX_ARCH-$(CONFIG_LINUXBOOT_RISCV_RV64) = riscv
 build/Image: $(CONFIG_LINUXBOOT_KERNEL_PATH)
 	ln -s -r $< $@
 
-include targets/linux.mk targets/u-root.mk
+
+include targets/linux.mk
+ifeq ($(CONFIG_LINUXBOOT_UROOT),y)
+include targets/u-root.mk
+endif
 
 build/initramfs: $(CONFIG_LINUXBOOT_INITRAMFS_PATH)
 ifeq ($(CONFIG_LINUXBOOT_INITRAMFS_COMPRESSION_XZ),y)

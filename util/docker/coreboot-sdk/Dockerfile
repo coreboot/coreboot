@@ -80,9 +80,7 @@ RUN \
 		wget \
 		xz-utils \
 		zlib1g-dev \
-	&& apt-get clean \
-	&& ln -s /usr/bin/automake /usr/bin/automake-1.15 \
-	&& ln -s /usr/bin/aclocal /usr/bin/aclocal-1.15
+	&& apt-get clean
 
 RUN \
 	cd /tmp && \

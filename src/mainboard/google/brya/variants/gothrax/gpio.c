@@ -21,11 +21,6 @@ static const struct pad_config override_gpio_table[] = {
 	/* A22 : GPP_A22 ==> USB_C1_AUX_DC_N */
 	PAD_CFG_GPO(GPP_A22, 1, DEEP),
 
-	/* B5  : SOC_I2C_SUB_SDA */
-	PAD_NC_LOCK(GPP_B5, NONE, LOCK_CONFIG),
-	/* B6  : SOC_I2C_SUB_SCL */
-	PAD_NC_LOCK(GPP_B6, NONE, LOCK_CONFIG),
-
 	/* C1  : SMBDATA ==> TCHSCR_RST_L */
 	PAD_CFG_GPO(GPP_C1, 1, DEEP),
 
@@ -36,6 +31,8 @@ static const struct pad_config override_gpio_table[] = {
 	/* D16 : EN_PP1800_PP1200_WCAM_X */
 	PAD_NC_LOCK(GPP_D16, NONE, LOCK_CONFIG),
 
+	/* H19 : SOC_I2C_SUB_INT_ODL */
+	PAD_CFG_GPI_APIC(GPP_H19, NONE, PLTRST, LEVEL, NONE),
 	/* H22 : WCAM_MCLK_R */
 	PAD_NC(GPP_H22, NONE),
 };

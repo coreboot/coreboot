@@ -75,7 +75,59 @@ chip soc/intel/alderlake
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for CNVi WLAN
 	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for CNVi WLAN
 
+	register "tcc_offset" = "8"
+
 	device domain 0 on
+		device ref dtt on
+			chip drivers/intel/dptf
+				## sensor information
+				register "options.tsr[0].desc" = ""DDR""
+				register "options.tsr[1].desc" = ""charger""
+				register "options.tsr[2].desc" = ""ambient""
+
+				## Passive Policy
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU,         CPU,           95, 5000),
+					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 70, 5000),
+					[2] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_1, 70, 5000),
+					[3] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_2, 70, 5000),
+				}"
+
+				## Critical Policy
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,               100, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,     95, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,     95, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,     95, SHUTDOWN),
+				}"
+
+				register "controls.power_limits" = "{
+					.pl1 = {
+						.min_power = 5500,
+						.max_power = 6000,
+						.time_window_min = 28 * MSECS_PER_SEC,
+						.time_window_max = 28 * MSECS_PER_SEC,
+						.granularity = 500
+					},
+					.pl2 = {
+						.min_power = 25000,
+						.max_power = 25000,
+						.time_window_min = 32 * MSECS_PER_SEC,
+						.time_window_max = 32 * MSECS_PER_SEC,
+						.granularity = 500
+					}
+				}"
+
+				## Charger Performance Control (Control, mA)
+				register "controls.charger_perf" = "{
+					[0] = { 255, 1700 },
+					[1] = {  24, 1500 },
+					[2] = {  16, 1000 },
+					[3] = {   8,  500 }
+				}"
+				device generic 0 on end
+			end
+		end
 		device ref i2c1 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""ELAN9004""

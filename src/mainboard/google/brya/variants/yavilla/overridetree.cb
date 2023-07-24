@@ -264,6 +264,7 @@ chip soc/intel/alderlake
 				register "chip_name" = ""Ov 8856 Camera""
 				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
 				register "has_power_resource" = "1"
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
 
 				register "ssdb.lanes_used" = "4"
 				register "ssdb.link_used" = "1"
@@ -307,7 +308,6 @@ chip soc/intel/alderlake
 				register "chip_name" = ""DW AF DAC""
 				register "device_type" = "INTEL_ACPI_CAMERA_VCM"
 
-				register "pr0" = ""\\_SB.PCI0.I2C2.CAM0.PRIC""
 				register "vcm_compat" = ""dongwoon,dw9714""
 
 				device i2c 0C on
@@ -320,8 +320,6 @@ chip soc/intel/alderlake
 				register "acpi_name" = ""NVM0""
 				register "chip_name" = ""GT24C08""
 				register "device_type" = "INTEL_ACPI_CAMERA_NVM"
-
-				register "pr0" = ""\\_SB.PCI0.I2C2.CAM0.PRIC""
 
 				register "nvm_size" = "0x2000"
 				register "nvm_pagesize" = "1"

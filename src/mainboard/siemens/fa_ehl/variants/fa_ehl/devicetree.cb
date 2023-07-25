@@ -238,11 +238,7 @@ chip soc/intel/elkhartlake
 			end
 		end
 
-		device pci 1f.0 on	    # eSPI Interface
-			chip drivers/pc80/tpm
-				device pnp 0c31.0 on end
-			end
-		end
+		device pci 1f.0 off end # eSPI Interface
 		device pci 1f.2 hidden	end # Power Management Controller
 		device pci 1f.4	on	end # SMBus
 		device pci 1f.5 on	end # PCH SPI (flash & TPM)

@@ -108,15 +108,15 @@ struct chip_operations soc_amd_stoneyridge_ops = {
 static void earliest_ramstage(void *unused)
 {
 	if (!acpi_is_wakeup_s3()) {
-		post_code(POST_PSP_LOAD_SMU);
+		post_code(POSTCODE_PSP_LOAD_SMU);
 		if (CONFIG(SOC_AMD_PSP_SELECTABLE_SMU_FW))
 			psp_load_named_blob(BLOB_SMU_FW2, "smu_fw2");
 
-		post_code(POST_AGESA_AMDINITENV);
+		post_code(POSTCODE_AGESA_AMDINITENV);
 		do_agesawrapper(AMD_INIT_ENV, "amdinitenv");
 	} else {
 		/* Complete the initial system restoration */
-		post_code(POST_AGESA_AMDS3LATERESTORE);
+		post_code(POSTCODE_AGESA_AMDS3LATERESTORE);
 		do_agesawrapper(AMD_S3LATE_RESTORE, "amds3laterestore");
 	}
 }

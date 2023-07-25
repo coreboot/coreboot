@@ -54,7 +54,7 @@ clear_var_mtrr:
 	inc	%ecx
 	dec	%ebx
 	jnz	clear_var_mtrr
-	post_code(POST_SOC_SET_DEF_MTRR_TYPE)
+	post_code(POSTCODE_SOC_SET_DEF_MTRR_TYPE)
 
 	/* Configure the default memory type to uncacheable. */
 	movl	$MTRR_DEF_TYPE_MSR, %ecx
@@ -62,7 +62,7 @@ clear_var_mtrr:
 	andl	$(~0x00000cff), %eax
 	wrmsr
 
-	post_code(POST_SOC_DETERMINE_CPU_ADDR_BITS)
+	post_code(POSTCODE_SOC_DETERMINE_CPU_ADDR_BITS)
 
 	/* Determine CPU_ADDR_BITS and load PHYSMASK high
 	 * word to %edx.
@@ -106,7 +106,7 @@ addrsize_set_high:
 
 bsp_init:
 
-	post_code(POST_SOC_BSP_INIT)
+	post_code(POSTCODE_SOC_BSP_INIT)
 
 	/* Send INIT IPI to all excluding ourself. */
 	movl	LAPIC(ICR), %edi
@@ -120,7 +120,7 @@ bsp_init:
 	andl	$LAPIC_ICR_BUSY, %ecx
 	jnz	1b
 
-	post_code(POST_SOC_COUNT_CORES)
+	post_code(POSTCODE_SOC_COUNT_CORES)
 
 	movl	$1, %eax
 	cpuid
@@ -155,7 +155,7 @@ cores_counted:
 
 hyper_threading_cpu:
 
-	post_code(POST_SOC_CPU_HYPER_THREADING)
+	post_code(POSTCODE_SOC_CPU_HYPER_THREADING)
 
 	/* Send Start IPI to all excluding ourself. */
 	movl	LAPIC(ICR), %edi
@@ -170,7 +170,7 @@ hyper_threading_cpu:
 	andl	$LAPIC_ICR_BUSY, %ecx
 	jnz	1b
 
-	post_code(POST_SOC_CPU_SIBLING_DELAY)
+	post_code(POSTCODE_SOC_CPU_SIBLING_DELAY)
 
 	/* Wait for sibling CPU to start. */
 1:	movl	$(MTRR_PHYS_BASE(0)), %ecx
@@ -186,14 +186,14 @@ hyper_threading_cpu:
 
 
 ap_init:
-	post_code(POST_SOC_CPU_AP_INIT)
+	post_code(POSTCODE_SOC_CPU_AP_INIT)
 
 	/* Do not disable cache (so BSP can enable it). */
 	movl	%cr0, %eax
 	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
 	movl	%eax, %cr0
 
-	post_code(POST_SOC_SET_MTRR_BASE)
+	post_code(POSTCODE_SOC_SET_MTRR_BASE)
 
 	/* MTRR registers are shared between HT siblings. */
 	movl	$(MTRR_PHYS_BASE(0)), %ecx
@@ -201,7 +201,7 @@ ap_init:
 	xorl	%edx, %edx
 	wrmsr
 
-	post_code(POST_SOC_AP_HALT)
+	post_code(POSTCODE_SOC_AP_HALT)
 
 ap_halt:
 	cli
@@ -212,7 +212,7 @@ ap_halt:
 
 sipi_complete:
 
-	post_code(POST_SOC_SET_CAR_BASE)
+	post_code(POSTCODE_SOC_SET_CAR_BASE)
 
 	/* Set Cache-as-RAM base address. */
 	movl	$(MTRR_PHYS_BASE(0)), %ecx
@@ -228,7 +228,7 @@ sipi_complete:
 	orl	$MTRR_PHYS_MASK_VALID, %eax
 	wrmsr
 
-	post_code(POST_SOC_ENABLE_MTRRS)
+	post_code(POSTCODE_SOC_ENABLE_MTRRS)
 
 	/* Enable MTRR. */
 	movl	$MTRR_DEF_TYPE_MSR, %ecx
@@ -271,7 +271,7 @@ has_msr_11e:
 	wrmsr
 no_msr_11e:
 
-	post_code(POST_SOC_ENABLE_CACHE)
+	post_code(POSTCODE_SOC_ENABLE_CACHE)
 
 	/* Cache the whole rom to fetch microcode updates */
 	movl	$MTRR_PHYS_BASE(1), %ecx
@@ -298,7 +298,7 @@ no_msr_11e:
 	jmp	update_bsp_microcode
 	end_microcode_update:
 #endif
-	post_code(POST_SOC_DISABLE_CACHE)
+	post_code(POSTCODE_SOC_DISABLE_CACHE)
 	/* Disable caching to change MTRR's. */
 	movl	%cr0, %eax
 	orl	$CR0_CacheDisable, %eax
@@ -338,7 +338,7 @@ cache_rom:
 	wrmsr
 
 fill_cache:
-	post_code(POST_SOC_FILL_CACHE)
+	post_code(POSTCODE_SOC_FILL_CACHE)
 	/* Enable cache. */
 	movl	%cr0, %eax
 	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
@@ -381,7 +381,7 @@ fill_cache:
 #endif
 
 before_c_entry:
-	post_code(POST_BOOTBLOCK_BEFORE_C_ENTRY)
+	post_code(POSTCODE_BOOTBLOCK_BEFORE_C_ENTRY)
 	call	bootblock_c_entry_bist
 
 	/* Should never see this postcode */

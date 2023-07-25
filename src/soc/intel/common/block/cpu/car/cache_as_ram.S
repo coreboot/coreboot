@@ -78,7 +78,7 @@
 .global bootblock_pre_c_entry
 bootblock_pre_c_entry:
 
-	post_code(POST_BOOTBLOCK_PRE_C_ENTRY)
+	post_code(POSTCODE_BOOTBLOCK_PRE_C_ENTRY)
 
 /* Bootguard sets up its own CAR and needs separate handling */
 check_boot_guard:
@@ -98,7 +98,7 @@ no_bootguard:
 	jmp	check_mtrr /* Check if CPU properly reset */
 
 no_reset:
-	post_code(POST_SOC_NO_RESET)
+	post_code(POSTCODE_SOC_NO_RESET)
 
 	/* Clear/disable fixed MTRRs */
 	mov	$fixed_mtrr_list, %ebx
@@ -112,7 +112,7 @@ clear_fixed_mtrr:
 	cmp	$fixed_mtrr_list_end, %ebx
 	jl	clear_fixed_mtrr
 
-	post_code(POST_SOC_CLEAR_FIXED_MTRRS)
+	post_code(POSTCODE_SOC_CLEAR_FIXED_MTRRS)
 
 	/* Figure out how many MTRRs we have, and clear them out */
 	mov	$MTRR_CAP_MSR, %ecx
@@ -130,7 +130,7 @@ clear_var_mtrr:
 	dec	%ebx
 	jnz	clear_var_mtrr
 
-	post_code(POST_SOC_CLEAR_VAR_MTRRS)
+	post_code(POSTCODE_SOC_CLEAR_VAR_MTRRS)
 
 	/* Configure default memory type to uncacheable (UC) */
 	mov	$MTRR_DEF_TYPE_MSR, %ecx
@@ -158,7 +158,7 @@ setup_car_mtrr:
 	bts	%eax, %esi
 	dec	%esi			/* esi <- MTRR_PHYS_MASK_HIGH */
 
-	post_code(POST_SOC_SET_UP_CAR_MTRRS)
+	post_code(POSTCODE_SOC_SET_UP_CAR_MTRRS)
 
 #if ((CONFIG_DCACHE_RAM_SIZE & (CONFIG_DCACHE_RAM_SIZE - 1)) == 0)
 	find_free_mtrr
@@ -217,7 +217,7 @@ setup_car_mtrr:
 #else
 #error "DCACHE_RAM_SIZE is not a power of 2 and setup code is missing"
 #endif
-	post_code(POST_SOC_BOOTGUARD_SETUP)
+	post_code(POSTCODE_SOC_BOOTGUARD_SETUP)
 
 	is_bootguard_nem
 	jz	no_bootguard_car_continue
@@ -269,7 +269,7 @@ no_bootguard_car_continue:
 .global car_init_done
 car_init_done:
 
-	post_code(POST_SOC_CAR_INIT_DONE)
+	post_code(POSTCODE_SOC_CAR_INIT_DONE)
 
 	/* Setup bootblock stack */
 	mov	$_ecar_stack, %esp
@@ -296,7 +296,7 @@ car_init_done:
 #endif
 
 before_carstage:
-	post_code(POST_SOC_BEFORE_CARSTAGE)
+	post_code(POSTCODE_SOC_BEFORE_CARSTAGE)
 
 	call	bootblock_c_entry
 	/* Never reached */
@@ -329,11 +329,11 @@ car_nem:
 	or	$0x1, %eax
 	wrmsr
 
-	post_code(POST_SOC_CLEARING_CAR)
+	post_code(POSTCODE_SOC_CLEARING_CAR)
 
 	clear_car
 
-	post_code(POST_SOC_DISABLE_CACHE_EVICT)
+	post_code(POSTCODE_SOC_DISABLE_CACHE_EVICT)
 
 	/* Disable cache eviction (run stage) */
 	mov	$MSR_EVICT_CTL, %ecx
@@ -418,11 +418,11 @@ car_cqos:
 	and	%ebx, %eax
 	wrmsr
 
-	post_code(POST_SOC_CLEARING_CAR)
+	post_code(POSTCODE_SOC_CLEARING_CAR)
 
 	clear_car
 
-	post_code(POST_SOC_DISABLE_CACHE_EVICT)
+	post_code(POSTCODE_SOC_DISABLE_CACHE_EVICT)
 
 	/* Cache is populated. Use mask 1 that will block evicts */
 	mov	$IA32_PQR_ASSOC, %ecx
@@ -447,7 +447,7 @@ car_nem_enhanced:
 	rdmsr
 	or	$0x1, %eax
 	wrmsr
-	post_code(POST_SOC_CAR_NEM_ENHANCED)
+	post_code(POSTCODE_SOC_CAR_NEM_ENHANCED)
 
 	/* Create n-way set associativity of cache */
 	xorl	%edi, %edi
@@ -634,7 +634,7 @@ program_sf2:
 #endif
 	wrmsr
 
-	post_code(POST_SOC_DISABLE_CACHE_EVICT)
+	post_code(POSTCODE_SOC_DISABLE_CACHE_EVICT)
 	/*
 	 * Enable No-Eviction Mode Run State by setting
 	 * NO_EVICT_MODE MSR 2E0h bit [1] = '1'.

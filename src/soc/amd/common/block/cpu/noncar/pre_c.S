@@ -7,7 +7,7 @@
 
 .global bootblock_resume_entry
 bootblock_resume_entry:
-	post_code(POST_BOOTBLOCK_RESUME_ENTRY)
+	post_code(POSTCODE_BOOTBLOCK_RESUME_ENTRY)
 
 	/* Get an early timestamp */
 	rdtsc
@@ -24,7 +24,7 @@ bootblock_resume_entry:
 
 .global bootblock_pre_c_entry
 bootblock_pre_c_entry:
-	post_code(POST_BOOTBLOCK_PRE_C_ENTRY)
+	post_code(POSTCODE_BOOTBLOCK_PRE_C_ENTRY)
 
 #if ENV_X86_64
 	#include <cpu/x86/64bit/entry64.inc>
@@ -57,7 +57,7 @@ bootblock_pre_c_entry:
 	pushl	%eax		/* tsc[31:0] */
 #endif
 
-	post_code(POST_BOOTBLOCK_PRE_C_DONE)
+	post_code(POSTCODE_BOOTBLOCK_PRE_C_DONE)
 
 	call	bootblock_c_entry
 	/* Never reached */

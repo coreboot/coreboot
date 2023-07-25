@@ -11,14 +11,14 @@
 chipset_teardown_car:
 	pop %esp
 
-	post_code(POST_POSTCAR_DISABLE_CACHE)
+	post_code(POSTCODE_POSTCAR_DISABLE_CACHE)
 
 	/* Disable cache. */
 	movl	%cr0, %eax
 	orl	$CR0_CacheDisable, %eax
 	movl	%eax, %cr0
 
-	post_code(POST_POSTCAR_DISABLE_DEF_MTRR)
+	post_code(POSTCODE_POSTCAR_DISABLE_DEF_MTRR)
 
 	/* Disable MTRR. */
 	movl	$MTRR_DEF_TYPE_MSR, %ecx
@@ -26,7 +26,7 @@ chipset_teardown_car:
 	andl	$(~MTRR_DEF_TYPE_EN), %eax
 	wrmsr
 
-	post_code(POST_POSTCAR_TEARDOWN_DONE)
+	post_code(POSTCODE_POSTCAR_TEARDOWN_DONE)
 
 	/* Return to caller. */
 	jmp	*%esp

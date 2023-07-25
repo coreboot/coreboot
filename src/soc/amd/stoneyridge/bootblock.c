@@ -77,7 +77,7 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 void bootblock_soc_early_init(void)
 {
 	bootblock_fch_early_init();
-	post_code(POST_BOOTBLOCK_SOC_EARLY_INIT);
+	post_code(POSTCODE_BOOTBLOCK_SOC_EARLY_INIT);
 }
 
 void bootblock_soc_init(void)

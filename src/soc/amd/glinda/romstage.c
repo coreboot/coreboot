@@ -13,7 +13,7 @@
 
 void __noreturn romstage_main(void)
 {
-	post_code(POST_ROMSTAGE_MAIN);
+	post_code(POSTCODE_ROMSTAGE_MAIN);
 
 	/* Snapshot chipset state prior to any FSP call */
 	fill_chipset_state();

@@ -610,7 +610,7 @@ int heci_reset(void)
 	uint32_t csr;
 
 	/* Clear post code to prevent eventlog entry from unknown code. */
-	post_code(POST_CODE_ZERO);
+	post_code(POSTCODE_CODE_ZERO);
 
 	/* Send reset request */
 	csr = read_host_csr();

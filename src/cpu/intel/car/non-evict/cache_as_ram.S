@@ -34,14 +34,14 @@ wait_for_sipi:
 	bt	$12, %eax
 	jc	wait_for_sipi
 
-	post_code(POST_SOC_SET_DEF_MTRR_TYPE)
+	post_code(POSTCODE_SOC_SET_DEF_MTRR_TYPE)
 	/* Clean-up MTRR_DEF_TYPE_MSR. */
 	movl	$MTRR_DEF_TYPE_MSR, %ecx
 	xorl	%eax, %eax
 	xorl	%edx, %edx
 	wrmsr
 
-	post_code(POST_SOC_CLEAR_FIXED_MTRRS)
+	post_code(POSTCODE_SOC_CLEAR_FIXED_MTRRS)
 	/* Clear/disable fixed MTRRs */
 	mov	$fixed_mtrr_list, %ebx
 	xor	%eax, %eax
@@ -88,7 +88,7 @@ addrsize_set_high:
 	movl	$MTRR_PHYS_MASK(1), %ecx
 	wrmsr
 
-	post_code(POST_SOC_SET_MTRR_BASE)
+	post_code(POSTCODE_SOC_SET_MTRR_BASE)
 	/* Set Cache-as-RAM base address. */
 	movl	$(MTRR_PHYS_BASE(0)), %ecx
 	movl	car_mtrr_start, %eax
@@ -96,7 +96,7 @@ addrsize_set_high:
 	xorl	%edx, %edx
 	wrmsr
 
-	post_code(POST_SOC_SET_MTRR_MASK)
+	post_code(POSTCODE_SOC_SET_MTRR_MASK)
 	/* Set Cache-as-RAM mask. */
 	movl	$(MTRR_PHYS_MASK(0)), %ecx
 	rdmsr
@@ -117,7 +117,7 @@ addrsize_set_high:
 	orl	$MTRR_PHYS_MASK_VALID, %eax
 	wrmsr
 
-	post_code(POST_SOC_ENABLE_MTRRS)
+	post_code(POSTCODE_SOC_ENABLE_MTRRS)
 
 	/* Enable MTRR. */
 	movl	$MTRR_DEF_TYPE_MSR, %ecx
@@ -188,7 +188,7 @@ end_microcode_update:
 	orl	$3, %eax
 	wrmsr
 
-	post_code(POST_SOC_DISABLE_CACHE)
+	post_code(POSTCODE_SOC_DISABLE_CACHE)
 	/* Enable Cache-as-RAM mode by disabling cache. */
 	movl	%cr0, %eax
 	orl	$CR0_CacheDisable, %eax
@@ -199,7 +199,7 @@ end_microcode_update:
 	orl	$MTRR_PHYS_MASK_VALID, %eax
 	wrmsr
 
-	post_code(POST_SOC_ENABLE_CACHE)
+	post_code(POSTCODE_SOC_ENABLE_CACHE)
 	/* Enable cache. */
 	movl	%cr0, %eax
 	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
@@ -234,7 +234,7 @@ end_microcode_update:
 #endif
 
 before_c_entry:
-	post_code(POST_BOOTBLOCK_BEFORE_C_ENTRY)
+	post_code(POSTCODE_BOOTBLOCK_BEFORE_C_ENTRY)
 	call	bootblock_c_entry_bist
 
 	/* Should never see this postcode */

@@ -14,7 +14,7 @@
 
 void __noreturn romstage_main(void)
 {
-	post_code(POST_ROMSTAGE_MAIN);
+	post_code(POSTCODE_ROMSTAGE_MAIN);
 
 	if (CONFIG(WRITE_STB_BUFFER_TO_CONSOLE))
 		write_stb_to_console();

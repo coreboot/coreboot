@@ -61,6 +61,10 @@ config BOARD_GOOGLE_MODEL_SCREEBO
 	select DRIVERS_GENERIC_ALC1015
 	select DRIVERS_GENESYSLOGIC_GL9750
 
+config BOARD_GOOGLE_MODEL_KARIS
+	def_bool n
+	select BOARD_GOOGLE_BASEBOARD_REX
+
 config BOARD_GOOGLE_BASEBOARD_OVIS
 	def_bool n
 	select BOARD_GOOGLE_REX_COMMON
@@ -127,6 +131,7 @@ config MAINBOARD_PART_NUMBER
 	default "Screebo" if BOARD_GOOGLE_SCREEBO
 	default "Screebo4ES" if BOARD_GOOGLE_SCREEBO4ES
 	default "Karis" if BOARD_GOOGLE_KARIS
+	default "Karis4ES" if BOARD_GOOGLE_KARIS4ES
 	default "Ovis" if BOARD_GOOGLE_OVIS
 	default "Ovis4ES" if BOARD_GOOGLE_OVIS4ES
 
@@ -134,7 +139,7 @@ config VARIANT_DIR
 	string
 	default "rex0" if BOARD_GOOGLE_MODEL_REX
 	default "screebo" if BOARD_GOOGLE_MODEL_SCREEBO
-	default "karis" if BOARD_GOOGLE_KARIS
+	default "karis" if BOARD_GOOGLE_MODEL_KARIS
 	default "ovis" if BOARD_GOOGLE_MODEL_OVIS
 
 config DIMM_SPD_SIZE

@@ -35,7 +35,12 @@ void smm_region(uintptr_t *start, size_t *size)
 {
 	static int once;
 
-	fsp_get_smm_region(start, size);
+	if (CONFIG(PLATFORM_USES_FSP2_0)) {
+		fsp_get_smm_region(start, size);
+	} else {
+		*start = (uintptr_t)cbmem_top();
+		*size = CONFIG_SMM_TSEG_SIZE;
+	}
 
 	if (!once) {
 		clear_tvalid();

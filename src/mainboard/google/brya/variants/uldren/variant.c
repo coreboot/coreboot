@@ -10,6 +10,10 @@ static const struct pad_config touchscreen_disable_pads[] = {
 	PAD_NC(GPP_C0, NONE),
 	/* C1  : SMBDATA ==> TCHSCR_RST_L */
 	PAD_NC(GPP_C1, NONE),
+	/* C6  : SML1CLK ==> TCHSCR_REPORT_EN */
+	PAD_NC(GPP_C6, NONE),
+	/* C7  : SML1DATA ==> TCHSCR_INT_ODL */
+	PAD_NC(GPP_C7, NONE),
 	/* H6  : I2C1_SDA ==> SOC_I2C_TCHSCR_SDA */
 	PAD_NC(GPP_H6, NONE),
 	/* H7  : I2C1_SCL ==> SOC_I2C_TCHSCR_SCL */

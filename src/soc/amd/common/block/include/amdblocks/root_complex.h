@@ -22,4 +22,6 @@ void read_non_pci_resources(struct device *domain, unsigned int *idx);
 uint32_t get_iohc_misc_smn_base(struct device *domain);
 const struct non_pci_mmio_reg *get_iohc_non_pci_mmio_regs(size_t *count);
 
+void read_fsp_resources(struct device *dev, unsigned int *idx);
+
 #endif /* AMD_BLOCK_ROOT_COMPLEX_H */

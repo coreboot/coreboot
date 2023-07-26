@@ -2,6 +2,7 @@
 ifeq ($(CONFIG_PLATFORM_USES_FSP2_0),y)
 romstage-y += fsp_reset.c
 romstage-y += fsp_validate.c
+ramstage-y += fsp_report_resources.c
 ramstage-y += fsp_reset.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fsp-acpi.c
 ramstage-$(CONFIG_SOC_AMD_COMMON_FSP_CCX_CPPC_HOB) += fsp_ccx_cppc_hob.c

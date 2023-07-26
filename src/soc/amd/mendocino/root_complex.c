@@ -17,7 +17,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <fsp/amd_misc_data.h>
-#include <fsp/util.h>
 #include <soc/iomap.h>
 #include <stdint.h>
 #include "chip.h"
@@ -149,8 +148,6 @@ static void read_resources(struct device *dev)
 {
 	uint32_t mem_usable = (uintptr_t)cbmem_top();
 	unsigned int idx = 0;
-	const struct hob_header *hob_iterator;
-	const struct hob_resource *res;
 
 	uintptr_t early_reserved_dram_start, early_reserved_dram_end;
 	const struct memmap_early_dram *e = memmap_get_early_dram_usage();
@@ -189,26 +186,7 @@ static void read_resources(struct device *dev)
 	/* Reserve fixed IOMMU MMIO region */
 	mmio_range(dev, idx++, IOMMU_RESERVED_MMIO_BASE, IOMMU_RESERVED_MMIO_SIZE);
 
-	if (fsp_hob_iterator_init(&hob_iterator) != CB_SUCCESS) {
-		printk(BIOS_ERR, "%s incomplete because no HOB list was found\n",
-				__func__);
-		return;
-	}
-
-	while (fsp_hob_iterator_get_next_resource(&hob_iterator, &res) == CB_SUCCESS) {
-		if (res->type == EFI_RESOURCE_SYSTEM_MEMORY && res->addr < mem_usable)
-			continue; /* 0 through low usable was set above */
-		if (res->type == EFI_RESOURCE_MEMORY_MAPPED_IO)
-			continue; /* Done separately */
-
-		if (res->type == EFI_RESOURCE_SYSTEM_MEMORY)
-			ram_range(dev, idx++, res->addr, res->length);
-		else if (res->type == EFI_RESOURCE_MEMORY_RESERVED)
-			reserved_ram_range(dev, idx++, res->addr, res->length);
-		else
-			printk(BIOS_ERR, "Failed to set resources for type %d\n",
-					res->type);
-	}
+	read_fsp_resources(dev, &idx);
 }
 
 static void root_complex_init(struct device *dev)

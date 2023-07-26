@@ -135,6 +135,10 @@ BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdSetupConOutRow=0
 BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdSetupConOutColumn=0
 endif
 
+ifeq ($(CONFIG_TPM_GOOGLE_CR50)$(CONFIG_EDK2_REPO_MRCHROMEBOX),yy)
+BUILD_STR += -D TPM_ENABLE=FALSE
+endif
+
 bootloader = $(word 8,$(subst /, ,$(BUILD_STR)))
 
 ifneq ($(CONFIG_EDK2_CUSTOM_BUILD_PARAMS),)

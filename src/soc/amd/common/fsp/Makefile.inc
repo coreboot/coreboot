@@ -1,7 +1,9 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 ifeq ($(CONFIG_PLATFORM_USES_FSP2_0),y)
+romstage-y += fsp_memmap.c
 romstage-y += fsp_reset.c
 romstage-y += fsp_validate.c
+ramstage-y += fsp_memmap.c
 ramstage-y += fsp_report_resources.c
 ramstage-y += fsp_reset.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fsp-acpi.c

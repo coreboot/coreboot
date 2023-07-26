@@ -17,4 +17,6 @@ struct memmap_early_dram {
 void memmap_stash_early_dram_usage(void);
 const struct memmap_early_dram *memmap_get_early_dram_usage(void);
 
+void fsp_get_smm_region(uintptr_t *start, size_t *size);
+
 #endif /* AMD_BLOCK_MEMMAP_H */

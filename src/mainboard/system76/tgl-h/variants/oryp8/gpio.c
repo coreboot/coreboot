@@ -168,8 +168,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPP_G9, NONE, DEEP), // GPP_G9
 	PAD_NC(GPP_G10, NONE),
 	PAD_CFG_GPI(GPP_G11, NONE, DEEP), // GPP_G11
-	PAD_NC(GPP_G12, NATIVE), // GPP_G12_TBT_LSX_TXD
-	PAD_NC(GPP_G13, NATIVE), // GPP_G13_TBT_LSX0_RXD
+	// GPP_G12 (TBT_LSX0_TXD) configured by FSP
+	// GPP_G13 (TBT_LSX0_RXD) configured by FSP
 	PAD_NC(GPP_G14, NONE),
 	PAD_CFG_GPI(GPP_G15, NONE, DEEP), // GPP_G15
 

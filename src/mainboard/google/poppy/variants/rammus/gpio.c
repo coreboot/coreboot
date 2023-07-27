@@ -166,7 +166,7 @@ static const struct pad_config gpio_table[] = {
 	/* D8  : ISH_I2C1_SCL ==> NC(T0815) */
 	PAD_NC(GPP_D8, NONE),
 	/* D9  : ISH_SPI_CS# ==> HP_IRQ_GPIO */
-	PAD_CFG_GPI_APIC_HIGH(GPP_D9, UP_20K, DEEP),
+	PAD_CFG_GPI_APIC_HIGH(GPP_D9, NONE, PLTRST),
 	/* D10 : ISH_SPI_CLK ==> SPKR_RST_L */
 	PAD_CFG_GPO(GPP_D10, 1, DEEP),
 	/* D11 : ISH_SPI_MISO ==> SPKR_IRQ_L */

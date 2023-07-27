@@ -61,7 +61,6 @@ struct embedded_firmware {
 	uint32_t reserved_4Ch;
 } __attribute__((packed, aligned(16)));
 
-bool efs_is_valid(void);
 bool read_efs_spi_settings(uint8_t *mode, uint8_t *speed);
 
 #endif  /* AMD_COMMON_PSP_EFS_H */

@@ -19,6 +19,7 @@ struct panel_serializable_data STA_ILI9882T = {
 		},
 	},
 	.init = {
+		PANEL_DELAY(20),
 		PANEL_DCS(0xFF, 0x98, 0x82, 0x01),
 		PANEL_DCS(0x00, 0x42),
 		PANEL_DCS(0x01, 0x11),
@@ -325,5 +326,6 @@ struct panel_serializable_data STA_ILI9882T = {
 		PANEL_DCS(0x11),
 		PANEL_DELAY(120),
 		PANEL_DCS(0x29),
+		PANEL_DELAY(20),
 	},
 };

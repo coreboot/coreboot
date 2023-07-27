@@ -22,7 +22,7 @@ struct geo_profile {
 	uint8_t revision;
 	uint8_t chains_count;
 	uint8_t bands_count;
-	uint8_t wgds_table[0];
+	uint8_t wgds_table[];
 } __packed;
 
 struct sar_profile {
@@ -30,7 +30,7 @@ struct sar_profile {
 	uint8_t dsar_set_count;
 	uint8_t chains_count;
 	uint8_t subbands_count;
-	uint8_t sar_table[0];
+	uint8_t sar_table[];
 } __packed;
 
 struct gain_profile {
@@ -38,7 +38,7 @@ struct gain_profile {
 	uint8_t mode;
 	uint8_t chains_count;
 	uint8_t bands_count;
-	uint8_t ppag_table[0];
+	uint8_t ppag_table[];
 } __packed;
 
 struct avg_profile {
@@ -62,7 +62,7 @@ struct dsm_profile {
 struct sar_header {
 	char marker[SAR_STR_PREFIX_SIZE];
 	uint8_t version;
-	uint16_t offsets[0];
+	uint16_t offsets[];
 } __packed;
 
 /* Wifi SAR limit table structure */

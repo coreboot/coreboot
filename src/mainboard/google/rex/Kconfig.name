@@ -22,7 +22,11 @@ config BOARD_GOOGLE_REX_EC_ISH
 
 config BOARD_GOOGLE_OVIS
 	bool "-> Ovis"
-	select BOARD_GOOGLE_BASEBOARD_OVIS
+	select BOARD_GOOGLE_MODEL_OVIS
+
+config BOARD_GOOGLE_OVIS4ES
+	bool "-> Ovis4ES"
+	select BOARD_GOOGLE_MODEL_OVIS
 
 config BOARD_GOOGLE_REX4ES
 	bool "-> Rex4ES"

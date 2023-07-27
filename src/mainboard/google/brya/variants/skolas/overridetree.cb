@@ -122,6 +122,7 @@ chip soc/intel/alderlake
 				# DDIA for eDP
 				register "device[0].name" = ""LCD""
 				# DDIB for HDMI
+				# If HDMI is not enumerated in the kernel, then no GFX device should be added for DDIB
 				register "device[1].name" = ""DD01""
 				# TCP0 (DP-1) for port C0
 				register "device[2].name" = ""DD02""
@@ -135,7 +136,7 @@ chip soc/intel/alderlake
 				register "device[4].name" = ""DD04""
 				register "device[4].use_pld" = "true"
 				register "device[4].pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(3, 1))"
-				# TCP3 (DP-4) unused
+				# TCP3 (DP-4) is unused for any ports but still enumerated in the kernel, so GFX device is added for TCP3
 				register "device[5].name" = ""DD05""
 				device generic 0 on end
 			end

@@ -723,7 +723,7 @@ static u32 me_to_host_words_pending(void)
 
 struct mbp_payload {
 	union mbp_header header;
-	u32 data[0];
+	u32 data[];
 };
 
 /*

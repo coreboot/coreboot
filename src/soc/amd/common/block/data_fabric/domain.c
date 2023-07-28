@@ -224,7 +224,7 @@ void amd_pci_domain_fill_ssdt(const struct device *domain)
 	struct resource *res;
 	for (res = domain->resource_list; res != NULL; res = res->next) {
 		if (!(res->flags & IORESOURCE_ASSIGNED))
-			return;
+			continue;
 		switch (res->flags & IORESOURCE_TYPE_MASK) {
 		case IORESOURCE_IO:
 			write_ssdt_domain_io_producer_range(acpi_device_name(domain),

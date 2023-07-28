@@ -256,7 +256,7 @@ struct bdb_general_definitions {
 	 * number = (block_size - sizeof(bdb_general_definitions))/
 	 *	     sizeof(child_device_config);
 	 */
-	union child_device_config devices[0];
+	union child_device_config devices[];
 } __packed;
 
 struct bdb_lvds_options {

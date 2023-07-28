@@ -244,6 +244,7 @@ config MAINBOARD_PART_NUMBER
 	default "Yavilla" if BOARD_GOOGLE_YAVILLA
 	default "Gothrax" if BOARD_GOOGLE_GOTHRAX
 	default "Craaskov" if BOARD_GOOGLE_CRAASKOV
+	default "Pirrha" if BOARD_GOOGLE_PIRRHA
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -293,6 +294,7 @@ config VARIANT_DIR
 	default "yavilla" if BOARD_GOOGLE_YAVILLA
 	default "gothrax" if BOARD_GOOGLE_GOTHRAX
 	default "craaskov" if BOARD_GOOGLE_CRAASKOV
+	default "pirrha" if BOARD_GOOGLE_PIRRHA
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC if !BOARD_GOOGLE_BASEBOARD_NISSA

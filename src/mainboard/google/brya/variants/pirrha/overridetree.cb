@@ -1,0 +1,6 @@
+chip soc/intel/alderlake
+
+        device domain 0 on
+        end
+
+end

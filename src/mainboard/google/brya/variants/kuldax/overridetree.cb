@@ -51,6 +51,12 @@ chip soc/intel/alderlake
 		[DDI_PORT_3] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
 	}"
 
+	register "power_limits_config[RPL_P_282_242_142_15W_CORE]" = "{
+		.tdp_pl1_override = 15,
+		.tdp_pl2_override = 55,
+		.tdp_pl4 = 100,
+	}"
+
 	device domain 0 on
 		device ref dtt on
 			chip drivers/intel/dptf

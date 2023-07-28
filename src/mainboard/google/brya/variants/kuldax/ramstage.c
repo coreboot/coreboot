@@ -16,6 +16,9 @@ const struct cpu_power_limits limits[] = {
 	{ PCI_DID_INTEL_ADL_P_ID_6, 15, 15000, 15000,  55000,  55000, 123000 },
 	{ PCI_DID_INTEL_ADL_P_ID_5, 28, 28000, 28000,  64000,  64000, 140000 },
 	{ PCI_DID_INTEL_ADL_P_ID_3, 28, 28000, 28000,  64000,  64000, 140000 },
+	{ PCI_DID_INTEL_RPL_P_ID_5, 15, 15000, 15000,  55000,  55000, 100000 },
+	{ PCI_DID_INTEL_RPL_P_ID_4, 15, 15000, 15000,  55000,  55000, 100000 },
+	{ PCI_DID_INTEL_RPL_P_ID_3, 15, 15000, 15000,  55000,  55000, 100000 },
 };
 
 const struct system_power_limits sys_limits[] = {
@@ -25,6 +28,9 @@ const struct system_power_limits sys_limits[] = {
 	{ PCI_DID_INTEL_ADL_P_ID_6, 15, 225 },
 	{ PCI_DID_INTEL_ADL_P_ID_5, 28, 225 },
 	{ PCI_DID_INTEL_ADL_P_ID_3, 28, 225 },
+	{ PCI_DID_INTEL_RPL_P_ID_5, 15, 138 },
+	{ PCI_DID_INTEL_RPL_P_ID_4, 15, 138 },
+	{ PCI_DID_INTEL_RPL_P_ID_3, 15, 138 },
 };
 
 const struct system_power_limits revise_sys_limits[] = {
@@ -34,6 +40,9 @@ const struct system_power_limits revise_sys_limits[] = {
 	{ PCI_DID_INTEL_ADL_P_ID_6, 15, 225 },
 	{ PCI_DID_INTEL_ADL_P_ID_5, 28, 225 },
 	{ PCI_DID_INTEL_ADL_P_ID_3, 28, 225 },
+	{ PCI_DID_INTEL_RPL_P_ID_5, 15, 138 },
+	{ PCI_DID_INTEL_RPL_P_ID_4, 15, 138 },
+	{ PCI_DID_INTEL_RPL_P_ID_3, 15, 138 },
 };
 
 /*

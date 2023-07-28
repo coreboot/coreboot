@@ -86,7 +86,7 @@ struct mem_chip_info {
 		uint8_t manufacturer_id; /* raw value from MR5 */
 		uint8_t revision_id[2];	/* raw values from MR6 and MR7 */
 		uint8_t serial_id[8];	/* LPDDR5 only (set to 0 otherwise), MR47 - MR54 */
-	} entries[0];
+	} entries[];
 };
 
 static inline size_t mem_chip_info_size(int entries)

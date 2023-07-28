@@ -1986,17 +1986,16 @@ static void generate_outputf(FILE *f)
 	fprintf(f, "\n#endif /* __STATIC_FW_CONFIG_H */\n");
 }
 
-static void usage(const char *name)
+static void usage(void)
 {
-	printf("Usage: %s <options>\n", name);
-	printf("Options:\n"
-	       "  -c | --output_c          : Path to output static.c file (required)\n"
-	       "  -r | --output_h          : Path to header static.h file (required)\n"
-	       "  -d | --output_d          : Path to header static_devices.h file (required)\n"
-	       "  -f | --output_f          : Path to header static_fw_config.h file (required)\n"
-	       "  -m | --mainboard_devtree : Path to mainboard devicetree file (required)\n"
-	       "  -o | --override_devtree  : Path to override devicetree file (optional)\n"
-	       "  -p | --chipset_devtree   : Path to chipset/SOC devicetree file (optional)\n");
+	printf("Usage: sconfig <options>\n");
+	printf("  -c | --output_c          : Path to output static.c file (required)\n");
+	printf("  -r | --output_h          : Path to header static.h file (required)\n");
+	printf("  -d | --output_d          : Path to header static_devices.h file (required)\n");
+	printf("  -f | --output_f          : Path to header static_fw_config.h file (required)\n");
+	printf("  -m | --mainboard_devtree : Path to mainboard devicetree file (required)\n");
+	printf("  -o | --override_devtree  : Path to override devicetree file (optional)\n");
+	printf("  -p | --chipset_devtree   : Path to chipset/SOC devicetree file (optional)\n");
 
 	exit(1);
 }
@@ -2049,12 +2048,12 @@ int main(int argc, char **argv)
 			break;
 		case 'h':
 		default:
-			usage(argv[0]);
+			usage();
 		}
 	}
 
 	if (!base_devtree || !outputc || !outputh || !outputd || !outputf)
-		usage(argv[0]);
+		usage();
 
 	if (chipset_devtree) {
 		/* Use the chipset devicetree as the base, then override

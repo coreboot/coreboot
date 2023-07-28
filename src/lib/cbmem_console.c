@@ -28,7 +28,7 @@
 struct cbmem_console {
 	u32 size;
 	u32 cursor;
-	u8  body[0];
+	u8  body[];
 }  __packed;
 
 #define MAX_SIZE (1 << 28)	/* can't be changed without breaking readers! */

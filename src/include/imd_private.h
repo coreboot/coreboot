@@ -28,7 +28,7 @@ struct imd_root {
 	uint32_t entry_align;
 	/* Used for fixing the size of an imd. Relative to the root. */
 	int32_t max_offset;
-	struct imd_entry entries[0];
+	struct imd_entry entries[];
 } __packed;
 
 #define IMD_ROOT_PTR_MAGIC  0xc0389481

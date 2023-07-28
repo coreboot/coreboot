@@ -448,6 +448,9 @@ struct soc_intel_meteorlake_config {
 	 * Set this to 1 in order to reduce BasicMemoryTest size
 	 */
 	bool lower_basic_mem_test_size;
+
+	/* Platform Power Pmax in Watts. Zero means automatic. */
+	uint16_t psys_pmax_watts;
 };
 
 typedef struct soc_intel_meteorlake_config config_t;

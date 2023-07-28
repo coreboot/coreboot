@@ -257,6 +257,11 @@ static void fill_fspm_misc_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->SkipMbpHob = !CONFIG(FSP_PUBLISH_MBP_HOB);
 
 	m_cfg->SkipExtGfxScan = config->skip_ext_gfx_scan;
+
+	/* Set PsysPmax if it is available in DT.
+	   PsysPmax is in unit of 1/8 Watt */
+	if (config->psys_pmax_watts)
+		m_cfg->PsysPmax = config->psys_pmax_watts * 8;
 }
 
 static void fill_fspm_audio_params(FSP_M_CONFIG *m_cfg,

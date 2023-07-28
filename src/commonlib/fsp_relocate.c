@@ -55,7 +55,7 @@ struct fsp_patch_table {
 	uint8_t header_revision;
 	uint8_t reserved;
 	uint32_t patch_entry_num;
-	uint32_t patch_entries[0];
+	uint32_t patch_entries[];
 } __packed;
 
 #define FSPP_SIG 0x50505346

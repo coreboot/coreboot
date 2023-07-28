@@ -34,13 +34,13 @@ struct hsphy_cache {
 	uint32_t hsphy_size;
 	uint8_t hash_algo;
 	uint8_t digest[MAX_HASH_SIZE];
-	uint8_t hsphy_fw[0];
+	uint8_t hsphy_fw[];
 } __packed;
 
 struct ip_push_model {
 	uint16_t count;
 	uint16_t address;
-	uint32_t data[0];
+	uint32_t data[];
 } __packed;
 
 static int heci_get_hsphy_payload(void *buf, uint32_t *buf_size, uint8_t *hash_buf,

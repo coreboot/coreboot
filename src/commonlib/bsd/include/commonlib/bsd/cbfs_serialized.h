@@ -60,7 +60,7 @@ struct cbfs_header {
 	uint32_t align; /* fixed to 64 bytes */
 	uint32_t offset;
 	uint32_t architecture;
-	uint32_t pad[1];
+	uint32_t pad[];
 } __packed;
 
 /* this used to be flexible, but wasn't ever set to something different. */
@@ -103,7 +103,7 @@ struct cbfs_file {
 	uint32_t type;
 	uint32_t attributes_offset;
 	uint32_t offset;
-	char filename[0];
+	char filename[];
 } __packed;
 
 #if defined __GNUC__ && (__GNUC__ * 100 + __GNUC_MINOR__) >= 406
@@ -117,7 +117,7 @@ struct cbfs_file_attribute {
 	uint32_t tag;
 	/* len covers the whole structure, incl. tag and len */
 	uint32_t len;
-	uint8_t data[0];
+	uint8_t data[];
 } __packed;
 
 /* All attribute sizes must be divisible by this! */

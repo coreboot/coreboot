@@ -7,8 +7,7 @@
 #
 
 TINT_VERSION=0.05
-TINT_EXT_VERSION=0.05
-TINT_ARCHIVE_LINK="https://mirror.fsf.org/trisquel/pool/main/t/tint/tint_${TINT_EXT_VERSION}.tar.xz"
+TINT_BASE_URL="https://mirror.fsf.org/trisquel/pool/main/t/tint"
 TINT_ARCHIVE="tint_${TINT_VERSION}.tar.xz"
 TINT_DIR="tint-${TINT_VERSION}"
 TINT_SHA1SUM="859008216930a4584e622d0df41fd75c44d2b47f"
@@ -50,7 +49,7 @@ tint:
 		"./generate_core.sh" ${buildgcc} ${corescript} "prepare_before_patch" ; \
 		chmod +x "./tintify_core.sh" ; \
 		"./tintify_core.sh" ${corescript} ${tintified} \
-			${TINT_ARCHIVE_LINK} ${TINT_ARCHIVE} ${TINT_DIR} ${TINT_SHA1SUM} ; \
+			${TINT_BASE_URL} ${TINT_ARCHIVE} ${TINT_DIR} ${TINT_SHA1SUM} ; \
 	fi ; \
 	chmod +x ${tintified}
 	${tintified}

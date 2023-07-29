@@ -97,6 +97,7 @@ sed -i -e "s/util\/crossgcc\///g" "$corescript"
 
 if [ ! -z "${prepare_before_patch}" ] ; then
 	sed -i -e "/\$TAR \$FLAGS \"\$(basename \"\$archive\")\"/a prepare_\${package} || exit \"\$?\"" "$corescript"
+	sed -i -e "/\$TAR \$FLAGS \"\$archive\"/a prepare_\${package} || exit \"\$?\"" "$corescript"
 fi
 
 #

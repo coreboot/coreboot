@@ -9,7 +9,7 @@
 #
 # USAGE:
 #      	./tintify_core.sh <corescript> <tintified> \
-# 			<TINT_ARCHIVE_LINK> <TINT_ARCHIVE> <TINT_DIR> <TINT_SHA1SUM>
+# 			<TINT_BASE_URL> <TINT_ARCHIVE> <TINT_DIR> <TINT_SHA1SUM>
 # where
 #       corescript - path to input core script
 #       tintified  - path to output tint script
@@ -28,10 +28,12 @@ tintified="$2"
 #
 
 echo "#!/bin/sh" > "$tintified"
-echo "TINT_ARCHIVE_LINK=${3}" >> "$tintified"
+echo "TINT_BASE_URL=${3}" >> "$tintified"
 echo "TINT_ARCHIVE=${4}" >> "$tintified"
+echo "TINT_ARCHIVE_LINK=${3}/${4}" >> "$tintified"
 echo "TINT_DIR=${5}" >> "$tintified"
 echo "TINT_SHA1SUM=${6}" >> "$tintified"
+echo "USE_COREBOOT_MIRROR=0" >> "$tintified"
 
 #
 # Add the replace_plus_with_minus() function - needed to fix the version number

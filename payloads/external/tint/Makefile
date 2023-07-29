@@ -6,11 +6,11 @@
 # Properties of the current TINT version
 #
 
-TINT_VERSION=0.05
+TINT_VERSION=0.07
 TINT_BASE_URL="https://mirror.fsf.org/trisquel/pool/main/t/tint"
 TINT_ARCHIVE="tint_${TINT_VERSION}.tar.xz"
 TINT_DIR="tint-${TINT_VERSION}"
-TINT_SHA1SUM="859008216930a4584e622d0df41fd75c44d2b47f"
+TINT_SHA1SUM="a7ec9355b9ea9d47576757219e9b1f4e51ac93a7"
 
 #
 # Locations of the input/output scripts

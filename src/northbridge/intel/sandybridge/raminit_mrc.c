@@ -312,9 +312,6 @@ static void devicetree_fill_pei_data(struct pei_data *pei_data)
 	pei_data->usb3.xhci_streams        = cfg->usb3.xhci_streams;
 }
 
-/* Temporary stub */
-__weak void mb_get_spd_map(struct spd_info *spdi) {}
-
 static void spd_fill_pei_data(struct pei_data *pei_data)
 {
 	struct spd_info spdi = {0};
@@ -396,19 +393,6 @@ void perform_raminit(int s3resume)
 	pei_data.dimm_channel1_disabled =
 		(!pei_data.spd_addresses[2] && !pei_data.spd_data[2][0]) +
 		(!pei_data.spd_addresses[3] && !pei_data.spd_data[3][0]) * 2;
-
-	/* Fix spd_data. MRC only uses spd_data[0] and ignores the other */
-	for (size_t i = 1; i < ARRAY_SIZE(pei_data.spd_data); i++) {
-		if (pei_data.spd_data[i][0] && !pei_data.spd_data[0][0]) {
-			memcpy(pei_data.spd_data[0], pei_data.spd_data[i],
-			       sizeof(pei_data.spd_data[0]));
-
-		} else if (pei_data.spd_data[i][0] && pei_data.spd_data[0][0]) {
-			if (memcmp(pei_data.spd_data[i], pei_data.spd_data[0],
-			    sizeof(pei_data.spd_data[0])) != 0)
-				die("Onboard SPDs must match each other");
-		}
-	}
 
 	disable_p2p();
 

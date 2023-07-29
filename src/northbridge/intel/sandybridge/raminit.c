@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
-#include <commonlib/region.h>
 #include <cf9_reset.h>
 #include <string.h>
 #include <cbfs.h>
@@ -20,7 +19,6 @@
 #include <types.h>
 
 #include "raminit.h"
-#include "raminit_native.h"
 #include "raminit_common.h"
 #include "sandybridge.h"
 #include "chip.h"
@@ -140,7 +138,7 @@ static int verify_crc16_spds_ddr3(spd_raw_data *spd, ramctr_timing *ctrl)
 	return match;
 }
 
-void read_spd(spd_raw_data * spd, u8 addr, bool id_only)
+static void read_spd(spd_raw_data *spd, u8 addr, bool id_only)
 {
 	int j;
 	if (id_only) {
@@ -152,10 +150,7 @@ void read_spd(spd_raw_data * spd, u8 addr, bool id_only)
 	}
 }
 
-/* Temporary stub */
-__weak void mb_get_spd_map(struct spd_info *spdi) {}
-
-__weak void mainboard_get_spd(spd_raw_data *spd, bool id_only)
+static void mainboard_get_spd(spd_raw_data *spd, bool id_only)
 {
 	const struct northbridge_intel_sandybridge_config *cfg = config_of_soc();
 	unsigned int i;

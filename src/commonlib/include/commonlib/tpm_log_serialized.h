@@ -21,7 +21,7 @@ struct tpm_cb_log_entry {
 struct tpm_cb_log_table {
 	uint16_t max_entries;
 	uint16_t num_entries;
-	struct tpm_cb_log_entry entries[0]; /* Variable number of entries */
+	struct tpm_cb_log_entry entries[]; /* Variable number of entries */
 } __packed;
 
 #endif

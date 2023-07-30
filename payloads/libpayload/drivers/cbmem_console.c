@@ -32,7 +32,7 @@
 struct cbmem_console {
 	uint32_t size;
 	uint32_t cursor;
-	uint8_t body[0];
+	uint8_t body[];
 } __packed;
 
 #define CURSOR_MASK ((1 << 28) - 1)

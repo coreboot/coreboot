@@ -17,7 +17,7 @@ static s32 g_max_cursor_line = 0;
 struct cbmem_console {
 	u32 size;
 	u32 cursor;
-	u8 body[0];
+	u8 body[];
 } __packed;
 
 #define CURSOR_MASK ((1 << 28) - 1)

@@ -31,7 +31,7 @@ struct cbheader {
 	u32 align;
 	u32 offset;
 	u32 architecture;
-	u32 pad[1];
+	u32 pad[];
 } __packed;
 
 struct cbfile {
@@ -40,7 +40,7 @@ struct cbfile {
 	u32 type;
 	u32 checksum;
 	u32 offset;
-	char filename[0];
+	char filename[];
 } __packed;
 
 static int filecount = 0, selected = 0, start_row = 0;

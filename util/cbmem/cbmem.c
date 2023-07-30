@@ -1116,7 +1116,7 @@ static void dump_tpm_log(void)
 struct cbmem_console {
 	u32 size;
 	u32 cursor;
-	u8  body[0];
+	u8  body[];
 }  __attribute__ ((__packed__));
 
 #define CBMC_CURSOR_MASK ((1 << 28) - 1)

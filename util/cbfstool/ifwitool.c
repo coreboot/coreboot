@@ -70,7 +70,7 @@ struct bpdt_entry {
 struct bpdt {
 	struct bpdt_header h;
 	/* In practice, this could be an array of 0 to n entries. */
-	struct bpdt_entry e[0];
+	struct bpdt_entry e[];
 } __packed;
 
 static inline size_t get_bpdt_size(struct bpdt_header *h)
@@ -124,7 +124,7 @@ struct subpart_dir_entry {
 struct subpart_dir {
 	struct subpart_dir_header h;
 	/* In practice, this could be an array of 0 to n entries. */
-	struct subpart_dir_entry e[0];
+	struct subpart_dir_entry e[];
 } __packed;
 
 static inline size_t subpart_dir_size(struct subpart_dir_header *h)

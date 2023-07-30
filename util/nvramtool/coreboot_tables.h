@@ -90,7 +90,7 @@ struct lb_memory_range {
 struct lb_memory {
 	uint32_t tag;
 	uint32_t size;
-	struct lb_memory_range map[0];
+	struct lb_memory_range map[];
 };
 
 #define LB_TAG_HWRPB		0x0002
@@ -106,7 +106,7 @@ struct lb_mainboard {
 	uint32_t size;
 	uint8_t vendor_idx;
 	uint8_t part_number_idx;
-	uint8_t strings[0];
+	uint8_t strings[];
 };
 
 #define LB_TAG_VERSION		0x0004
@@ -122,7 +122,7 @@ struct lb_mainboard {
 struct lb_string {
 	uint32_t tag;
 	uint32_t size;
-	uint8_t string[0];
+	uint8_t string[];
 };
 #define LB_TAG_SERIAL		0x000f
 #define LB_TAG_CONSOLE		0x0010

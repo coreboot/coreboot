@@ -157,7 +157,7 @@ struct bdb_general_definitions {
 	 * number = (block_size - sizeof(bdb_general_definitions))/
 	 *           sizeof(child_device_config);
 	 */
-	struct common_child_dev_config devices[0];
+	struct common_child_dev_config devices[];
 } __attribute__ ((packed));
 
 struct bdb_driver_features {

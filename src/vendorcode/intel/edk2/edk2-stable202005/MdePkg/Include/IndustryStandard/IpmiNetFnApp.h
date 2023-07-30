@@ -432,7 +432,7 @@ typedef union {
 typedef struct {
   UINT8                            CompletionCode;
   IPMI_GET_MESSAGE_CHANNEL_NUMBER  ChannelNumber;
-  UINT8                            MessageData[0];
+  UINT8                            MessageData[];
 } IPMI_GET_MESSAGE_RESPONSE;
 
 //
@@ -456,7 +456,7 @@ typedef union {
 typedef struct {
   UINT8                             CompletionCode;
   IPMI_SEND_MESSAGE_CHANNEL_NUMBER  ChannelNumber;
-  UINT8                             MessageData[0];
+  UINT8                             MessageData[];
 } IPMI_SEND_MESSAGE_REQUEST;
 
 typedef struct {

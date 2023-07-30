@@ -183,7 +183,7 @@ typedef union {
 
 typedef struct {
   IPMI_SET_BOOT_OPTIONS_PARAMETER_VALID  ParameterValid;
-  UINT8                                  ParameterData[0];
+  UINT8                                  ParameterData[];
 } IPMI_SET_BOOT_OPTIONS_REQUEST;
 
 //

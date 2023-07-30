@@ -42,7 +42,7 @@ typedef struct {
 	uint32_t additional_dynamic_memory_size;
 	STM_FEAT stm_features;
 	uint32_t number_of_rev_ids;
-	uint32_t stm_smm_rev_id[1];
+	uint32_t stm_smm_rev_id[];
 
 	// The total STM_HEADER should be 4K.
 } SOFTWARE_STM_HEADER;
@@ -65,7 +65,7 @@ typedef struct {
 typedef struct {
 	uint32_t image_size;
 	uint32_t reserved;
-	uint64_t image_page_base[1]; //[NumberOfPages];
+	uint64_t image_page_base[]; //[NumberOfPages];
 } TXT_BIOS_COMPONENT_UPDATE;
 
 typedef struct {
@@ -413,7 +413,7 @@ typedef struct {
 	uint16_t length;
 	uint8_t originating_bus_number;
 	uint8_t last_node_index;
-	STM_PCI_DEVICE_PATH_NODE pci_device_path[1];
+	STM_PCI_DEVICE_PATH_NODE pci_device_path[];
 	// STM_PCI_DEVICE_PATH_NODE  PciDevicePath[LastNodeIndex + 1];
 } STM_RSC_PCI_CFG_DESC;
 
@@ -524,7 +524,7 @@ typedef enum {
 
 typedef struct {
 	uint32_t page_count;
-	uint64_t pages[1]; // number of elements is PageCount
+	uint64_t pages[]; // number of elements is PageCount
 } STM_EVENT_LOG_MANAGEMENT_REQUEST_DATA_LOG_BUFFER;
 
 typedef union {

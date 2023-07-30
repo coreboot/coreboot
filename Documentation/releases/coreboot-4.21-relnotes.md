@@ -22,10 +22,11 @@ Significant or interesting changes
 
 ### Toolchain updates
 
-* Upgrade IASL from 20221020 to 20230331
-* Upgrade LLVM from 15.0.7 to 16.0.5
-* Upgrade nasm from 2.15.05 to 2.16.01
+* Upgrade IASL from 20221020 to 20230628
+* Upgrade LLVM from 15.0.7 to 16.0.6
+* Upgrade NASM from 2.15.05 to 2.16.01
 * Upgrade CMake from 3.26.3 to 3.26.4
+* Upgrade GCC from 11.3.0 to 11.4.0
 
 Additional coreboot changes
 ---------------------------

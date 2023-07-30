@@ -125,7 +125,7 @@ struct cb_memory_range {
 struct cb_memory {
 	u32 tag;
 	u32 size;
-	struct cb_memory_range map[0];
+	struct cb_memory_range map[];
 };
 
 struct cb_hwrpb {
@@ -139,7 +139,7 @@ struct cb_mainboard {
 	u32 size;
 	u8 vendor_idx;
 	u8 part_number_idx;
-	u8 strings[0];
+	u8 strings[];
 };
 
 enum type_c_orientation {
@@ -166,13 +166,13 @@ struct type_c_port_info {
 
 struct type_c_info {
 	u32 port_count;
-	struct type_c_port_info port_info[0];
+	struct type_c_port_info port_info[];
 };
 
 struct cb_string {
 	u32 tag;
 	u32 size;
-	u8 string[0];
+	u8 string[];
 };
 
 struct cb_serial {
@@ -255,7 +255,7 @@ struct cb_gpios {
 	u32 size;
 
 	u32 count;
-	struct cb_gpio gpios[0];
+	struct cb_gpio gpios[];
 };
 
 struct cb_pcie {
@@ -305,7 +305,7 @@ struct cb_spi_flash {
 	 * space and host address space. This determines the number of entries in mmap_table.
 	 */
 	uint32_t mmap_count;
-	struct flash_mmap_window mmap_table[0];
+	struct flash_mmap_window mmap_table[];
 };
 
 struct cb_boot_media_params {
@@ -344,7 +344,7 @@ struct cb_macs {
 	uint32_t tag;
 	uint32_t size;
 	uint32_t count;
-	struct mac_address mac_addrs[0];
+	struct mac_address mac_addrs[];
 };
 
 struct cb_mmc_info {

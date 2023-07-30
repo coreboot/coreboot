@@ -153,7 +153,7 @@ typedef struct __bdk_if_port
     char        name[16];
     struct __bdk_if_port *next;
     struct __bdk_if_port *poll_next;
-    char        priv[0];
+    char        priv[];
 } __bdk_if_port_t;
 
 typedef __bdk_if_port_t *bdk_if_handle_t;

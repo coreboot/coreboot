@@ -80,7 +80,7 @@ typedef struct
     int next_free_cpi;
     int next_free_rssi;
     int next_free_bpid;
-    nic_t *nic_map[0]; /* Indexed by handle->nic_id */
+    nic_t *nic_map[]; /* Indexed by handle->nic_id */
 } nic_node_state_t;
 
 static nic_node_state_t *global_node_state[BDK_NUMA_MAX_NODES];

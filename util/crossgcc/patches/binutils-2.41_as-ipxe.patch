@@ -13,17 +13,15 @@ diff --git a/gas/as.c b/gas/as.c
 index 728811bc..78b4802c 100644
 --- a/gas/as.c
 +++ b/gas/as.c
-@@ -1203,7 +1203,7 @@ main (int argc, char ** argv)
- {
+@@ -1364,13 +1364,14 @@ main (int argc, char ** argv)
    char ** argv_orig = argv;
    struct stat sob;
--
-+  const char *dev_null_file="/dev/null";
-   int macro_strip_at;
  
-   start_time = get_run_time ();
-@@ -1252,7 +1252,7 @@ main (int argc, char ** argv)
-      so that switches like --hash-size can be honored.  */
++  const char *dev_null_file="/dev/null";
+   gas_early_init (&argc, &argv);
+ 
+   /* Call parse_args before gas_init so that switches like
+      --hash-size can be honored.  */
    parse_args (&argc, &argv);
  
 -  if (argc > 1 && stat (out_file_name, &sob) == 0)

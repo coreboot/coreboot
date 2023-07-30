@@ -41,7 +41,7 @@ struct tpm_1_log_table {
 	struct spec_id_event_data spec_id;
 	struct tpm_1_vendor vendor;
 
-	struct tpm_1_log_entry entries[0]; /* Variable number of entries */
+	struct tpm_1_log_entry entries[]; /* Variable number of entries */
 } __packed;
 
 #endif

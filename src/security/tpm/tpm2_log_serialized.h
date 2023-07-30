@@ -64,7 +64,7 @@ struct tpm_2_log_table {
 	struct tpm_digest_sizes digest_sizes[1];
 	uint8_t vendor_info_size;
 	struct tpm_2_vendor vendor;
-	struct tpm_2_log_entry entries[0]; /* Variable number of entries */
+	struct tpm_2_log_entry entries[]; /* Variable number of entries */
 } __packed;
 
 #endif

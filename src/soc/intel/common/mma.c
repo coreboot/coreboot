@@ -17,7 +17,7 @@
 
 struct mma_data_container {
 	uint32_t mma_signature; /* "MMAD" */
-	uint8_t mma_data[0]; /* Variable size, platform/run time dependent. */
+	uint8_t mma_data[]; /* Variable size, platform/run time dependent. */
 } __packed;
 
 /*

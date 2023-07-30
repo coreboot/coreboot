@@ -429,7 +429,7 @@ typedef struct {
 	u8        icc_profile_index;
 	u8        reserved;
 	u32       icc_reg_bundles;
-	icc_address_mask icc_address_mask[0];
+	icc_address_mask icc_address_mask[];
 } __packed mbp_icc_profile;
 
 typedef struct {

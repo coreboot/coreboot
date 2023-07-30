@@ -506,7 +506,7 @@ typedef struct acpi_ivrs_ivhd {
 	uint16_t pci_segment_group;
 	uint16_t iommu_info;
 	uint32_t iommu_feature_info;
-	uint8_t entry[0];
+	uint8_t entry[];
 } __packed acpi_ivrs_ivhd_t;
 
 /* IVRS (I/O Virtualization Reporting Structure) Type 10h */
@@ -549,7 +549,7 @@ typedef struct acpi_ivrs_ivhd_11 {
 	uint32_t efr_reg_image_low;
 	uint32_t efr_reg_image_high;
 	uint32_t reserved[2];
-	uint8_t entry[0];
+	uint8_t entry[];
 } __packed acpi_ivrs_ivhd11_t;
 
 enum dev_scope_type {
@@ -569,7 +569,7 @@ typedef struct dev_scope {
 	struct {
 		u8 dev;
 		u8 fn;
-	} __packed path[0];
+	} __packed path[];
 } __packed dev_scope_t;
 
 enum dmar_type {
@@ -651,7 +651,7 @@ typedef struct acpi_dmar {
 	u8 host_address_width;
 	u8 flags;
 	u8 reserved[10];
-	dmar_entry_t structure[0];
+	dmar_entry_t structure[];
 } __packed acpi_dmar_t;
 
 /* MADT: APIC Structure Types */
@@ -1246,7 +1246,7 @@ typedef struct acpi_einj_trigger_table {
 	u32 revision;
 	u32 table_size;
 	u32 entry_count;
-	acpi_einj_action_table_t trigger_action[1];
+	acpi_einj_action_table_t trigger_action[];
 } __packed acpi_einj_trigger_table_t;
 
 typedef struct set_error_type {

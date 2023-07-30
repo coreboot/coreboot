@@ -201,7 +201,7 @@ typedef struct acpi_ivrs_ivhd_40 {
 	uint32_t efr_reg_image_low;
 	uint32_t efr_reg_image_high;
 	uint32_t reserved[2];
-	uint8_t entry[0];
+	uint8_t entry[];
 } __packed acpi_ivrs_ivhd40_t;
 
 typedef struct ivrs_ivhd_extended {

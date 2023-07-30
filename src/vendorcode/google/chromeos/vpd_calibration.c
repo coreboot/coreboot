@@ -39,7 +39,7 @@ struct calibration_blob {
  */
 struct calibration_entry {
 	uint32_t size;
-	struct calibration_blob entries[0];  /* A varialble size container. */
+	struct calibration_blob entries[];  /* A varialble size container. */
 };
 
 

@@ -18,4 +18,7 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 
 	// Remap PEG2 as PEG1
 	params->CpuPcieRpFunctionSwap = 1;
+
+	// Enable reporting CPU C10 state over eSPI
+	params->PchEspiHostC10ReportEnable = 1;
 }

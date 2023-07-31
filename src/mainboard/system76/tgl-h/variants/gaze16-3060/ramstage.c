@@ -15,4 +15,7 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 	params->CpuPcieRpAdvancedErrorReporting[1] = 0;
 	params->CpuPcieRpLtrEnable[1] = 1;
 	params->CpuPcieRpPtmEnabled[1] = 0;
+
+	// Enable reporting CPU C10 state over eSPI
+	params->PchEspiHostC10ReportEnable = 1;
 }

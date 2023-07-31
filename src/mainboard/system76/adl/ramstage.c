@@ -17,6 +17,9 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 	params->SataPortDevSlpPinMux[1] = 0x5967400d; // GPP_H13
 
 	params->SataPortsSolidStateDrive[1] = 1;
+
+	// Enable reporting CPU C10 state over eSPI
+	params->PchEspiHostC10ReportEnable = 1;
 }
 
 static void mainboard_init(void *chip_info)

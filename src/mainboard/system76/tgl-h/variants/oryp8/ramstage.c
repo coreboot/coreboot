@@ -21,4 +21,7 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 
 	// Low latency legacy I/O
 	params->PchLegacyIoLowLatency = 1;
+
+	// Enable reporting CPU C10 state over eSPI
+	params->PchEspiHostC10ReportEnable = 1;
 }

@@ -375,6 +375,18 @@
                 "ranksPerChannel": 2,
                 "speedMbps": 4267
             }
+	},
+	{
+            "name": "CXDB4ABAM-ML",
+            "attribs": {
+                "densityPerChannelGb": 8,
+                "banks": 8,
+                "channelsPerDie": 1,
+                "diesPerPackage": 2,
+                "bitWidthPerChannel": 16,
+                "ranksPerChannel": 1,
+                "speedMbps": 4267
+            }
 	}
     ]
 }

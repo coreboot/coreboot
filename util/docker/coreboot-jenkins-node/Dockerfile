@@ -38,24 +38,7 @@ RUN apt-get -y update && \
 		python3-pyrsistent \
 		swig \
 	&& apt-get clean \
-	&& pip3 install --upgrade --no-cache-dir --break-system-packages pip \
-	&& pip3 install --no-cache-dir --break-system-packages \
-		setuptools==58.2.0 \
-		jinja2==3.0.3 \
-		recommonmark===0.5.0 \
-		sphinx===1.8.3 \
-		sphinxcontrib-ditaa===0.6 \
-		sphinx_autobuild===0.7.1 \
-		sphinx_rtd_theme===0.4.2 \
 	&& gem install mdl
-
-# Because of the way that the variables are being replaced, docker's 'COPY'
-# command does not work
-RUN mkdir -p /home/coreboot/.ssh && \
-	echo "{{SSH_KEY}}" > /home/coreboot/.ssh/authorized_keys && \
-	chown -R coreboot:coreboot /home/coreboot/.ssh && \
-	chmod 0700 /home/coreboot/.ssh && \
-	chmod 0600 /home/coreboot/.ssh/authorized_keys
 
 RUN mkdir /var/run/sshd && \
 	chmod 0755 /var/run/sshd && \
@@ -85,4 +68,20 @@ ENTRYPOINT mount /cb-build && \
 	chown coreboot:coreboot /home/coreboot/.ccache && \
 	/usr/sbin/sshd -p 49151 -D
 EXPOSE 49151
-ENV PATH $PATH:/usr/sbin
+
+USER coreboot
+ENV PATH=$PATH:/home/coreboot/.local/bin
+RUN echo "export PATH=$PATH:/opt/xgcc/bin" >> /home/coreboot/.bashrc && \
+	pip3 install --upgrade --no-cache-dir pip \
+	&& pip3 install --no-cache-dir \
+		setuptools==58.2.0 \
+		jinja2==3.0.3 \
+		recommonmark===0.5.0 \
+		sphinx===1.8.3 \
+		sphinxcontrib-ditaa===0.6 \
+		sphinx_autobuild===0.7.1 \
+		sphinx_rtd_theme===0.4.2 \
+	&& mkdir -p /home/coreboot/.ssh && \
+	echo "{{SSH_KEY}}" > /home/coreboot/.ssh/authorized_keys && \
+	chmod 0700 /home/coreboot/.ssh && \
+	chmod 0600 /home/coreboot/.ssh/authorized_keys

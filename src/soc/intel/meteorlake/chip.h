@@ -369,6 +369,16 @@ struct soc_intel_meteorlake_config {
 	uint8_t lan_clk;
 
 	/*
+	 * Enable or Disable C1 C-state Auto Demotion & un-demotion
+	 * The algorithm looks at the behavior of the wake up tracker, how
+	 * often it is waking up, and based on that it demote the c-state.
+	 * Default 0. Set this to 1 in order to disable C1-state auto demotion.
+	 * NOTE: Un-Demotion from Demoted C1 needs to be disabled when
+	 *       C1 C-state Auto Demotion is disabled.
+	 */
+	bool disable_c1_state_auto_demotion;
+
+	/*
 	 * Enable or Disable Package C-state Demotion.
 	 * Default is set to 0.
 	 * Set this to 1 in order to disable Package C-state demotion.

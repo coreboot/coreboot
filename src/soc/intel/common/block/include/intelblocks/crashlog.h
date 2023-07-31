@@ -25,9 +25,18 @@
 
 #define INVALID_CRASHLOG_RECORD			0xdeadbeef
 
-/* Tag field definitions */
+/*
+ * Tag field definitions.
+ * Each region pointed by the descriptor table contains TAG information. This TAG information
+ * is used to identify the type of SRAM the region belongs to, for example:
+ * - TAG 0 represents the SoC PMC region
+ * - TAG 1 represents the IOE PMC region
+ * - TAG 7 represents a special case aka metadata information. This metadata information can be
+ *   SoC specific too.
+ */
 #define CRASHLOG_DESCRIPTOR_TABLE_TAG_SOC	0x0
 #define CRASHLOG_DESCRIPTOR_TABLE_TAG_IOE	0x1
+#define CRASHLOG_DESCRIPTOR_TABLE_TAG_META	0x7
 
 /* PMC crashlog discovery structs */
 typedef union {

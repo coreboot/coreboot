@@ -205,7 +205,9 @@ help:
 	@echo "  docker-abuild                - Run abuild under coreboot-sdk"
 	@echo "      <ABUILD_ARGS='-a -B'>"
 	@echo "  docker-what-jenkins-does     - Run 'what-jenkins-does' target"
-	@echo "  docker-shell                 - Bash prompt in coreboot-jenkins-node"
+	@echo "  docker-jenkins-shell         - Bash prompt in coreboot-jenkins-node"
+	@echo "      <USER=root or USER=coreboot>"
+	@echo "  docker-shell                 - Bash prompt in coreboot-sdk"
 	@echo "      <USER=root or USER=coreboot>"
 	@echo "  docker-jenkins-server        - Run coreboot-jenkins-node image (for server)"
 	@echo "  docker-jenkins-attach        - Open shell in running jenkins server"
@@ -225,6 +227,7 @@ help:
 .PHONY: doc.coreboot.org
 .PHONY: clean-coreboot-containers clean-coreboot-images docker-cleanall
 .PHONY: docker-abuild
-.PHONY: docker-what-jenkins-does docker-shell docker-jenkins-server docker-jenkins-attach
+.PHONY: docker-shell docker-jenkins-shell
+.PHONY: docker-what-jenkins-does docker-jenkins-server docker-jenkins-attach
 .PHONY: docker-build-docs docker-livehtml-docs
 .PHONY: help

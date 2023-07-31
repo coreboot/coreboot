@@ -338,17 +338,17 @@ struct soc_intel_alderlake_config {
 	uint32_t gen4_dec;
 
 	/* Enable S0iX support */
-	int s0ix_enable;
+	bool s0ix_enable;
 	/* Support for TCSS xhci, xdci, TBT PCIe root ports and DMA controllers */
-	uint8_t tcss_d3_hot_disable;
+	bool tcss_d3_hot_disable;
 	/* Enable DPTF support */
-	int dptf_enable;
+	bool dptf_enable;
 
 	/* Deep SX enable for both AC and DC */
-	int deep_s3_enable_ac;
-	int deep_s3_enable_dc;
-	int deep_s5_enable_ac;
-	int deep_s5_enable_dc;
+	bool deep_s3_enable_ac;
+	bool deep_s3_enable_dc;
+	bool deep_s5_enable_ac;
+	bool deep_s5_enable_dc;
 
 	/* Deep Sx Configuration
 	 *  DSX_EN_WAKE_PIN       - Enable WAKE# pin
@@ -376,7 +376,7 @@ struct soc_intel_alderlake_config {
 	} sagv;
 
 	/* Rank Margin Tool. 1:Enable, 0:Disable */
-	uint8_t RMT;
+	bool RMT;
 
 	/* USB related */
 	struct usb2_port_config usb2_ports[16];
@@ -390,21 +390,21 @@ struct soc_intel_alderlake_config {
 
 	/* SATA related */
 	uint8_t sata_mode;
-	uint8_t sata_salp_support;
-	uint8_t sata_ports_enable[8];
-	uint8_t sata_ports_dev_slp[8];
+	bool sata_salp_support;
+	bool sata_ports_enable[8];
+	bool sata_ports_dev_slp[8];
 
 	/*
 	 * Enable(0)/Disable(1) SATA Power Optimizer on PCH side.
 	 * Default 0. Setting this to 1 disables the SATA Power Optimizer.
 	 */
-	uint8_t sata_pwr_optimize_disable;
+	bool sata_pwr_optimize_disable;
 
 	/*
 	 * SATA Port Enable Dito Config.
 	 * Enable DEVSLP Idle Timeout settings (DmVal, DitoVal).
 	 */
-	uint8_t sata_ports_enable_dito_config[8];
+	bool sata_ports_enable_dito_config[8];
 
 	/* SataPortsDmVal is the DITO multiplier. Default is 15. */
 	uint8_t sata_ports_dm_val[8];
@@ -413,8 +413,8 @@ struct soc_intel_alderlake_config {
 	uint16_t sata_ports_dito_val[8];
 
 	/* Audio related */
-	uint8_t pch_hda_audio_link_hda_enable;
-	uint8_t pch_hda_dsp_enable;
+	bool pch_hda_audio_link_hda_enable;
+	bool pch_hda_dsp_enable;
 	bool pch_hda_sdi_enable[MAX_HD_AUDIO_SDI_LINKS];
 
 	/* iDisp-Link T-Mode 0: 2T, 2: 4T, 3: 8T, 4: 16T */
@@ -460,13 +460,14 @@ struct soc_intel_alderlake_config {
 		IGD_SM_56MB = 0xFD,
 		IGD_SM_60MB = 0xFE,
 	} igd_dvmt50_pre_alloc;
-	uint8_t skip_ext_gfx_scan;
+
+	bool skip_ext_gfx_scan;
 
 	/* Enable/Disable EIST. 1b:Enabled, 0b:Disabled */
-	uint8_t eist_enable;
+	bool eist_enable;
 
 	/* Enable C6 DRAM */
-	uint8_t enable_c6dram;
+	bool enable_c6dram;
 
 	/*
 	 * SerialIO device mode selection:
@@ -493,7 +494,7 @@ struct soc_intel_alderlake_config {
 	uint8_t serial_io_gspi_cs_state[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
 
 	/* Enable Pch iSCLK */
-	uint8_t pch_isclk;
+	bool pch_isclk;
 
 	/* CNVi BT Core Enable/Disable */
 	bool cnvi_bt_core;
@@ -525,7 +526,7 @@ struct soc_intel_alderlake_config {
 	 * 0: Use FSP default GPIO PM program,
 	 * 1: coreboot to override GPIO PM program
 	 */
-	uint8_t gpio_override_pm;
+	bool gpio_override_pm;
 
 	/*
 	 * GPIO PM configuration: 0 to disable, 1 to enable power gating
@@ -553,11 +554,11 @@ struct soc_intel_alderlake_config {
 	/* Hybrid storage mode enable (1) / disable (0)
 	 * This mode makes FSP detect Optane and NVME and set PCIe lane mode
 	 * accordingly */
-	uint8_t hybrid_storage_mode;
+	bool hybrid_storage_mode;
 
 #if CONFIG(SOC_INTEL_ALDERLAKE_PCH_N)
 	/* eMMC HS400 mode */
-	uint8_t emmc_enable_hs400_mode;
+	bool emmc_enable_hs400_mode;
 #endif
 
 	/*
@@ -577,7 +578,7 @@ struct soc_intel_alderlake_config {
 	 * Enable(0)/Disable(1) DMI Power Optimizer on PCH side.
 	 * Default 0. Setting this to 1 disables the DMI Power Optimizer.
 	 */
-	uint8_t dmi_power_optimize_disable;
+	bool dmi_power_optimize_disable;
 
 	/*
 	 * Used to communicate the power delivery design capability of the board. This
@@ -590,7 +591,7 @@ struct soc_intel_alderlake_config {
 	 * Enable(1)/Disable(0) CPU Replacement check.
 	 * Default 0. Setting this to 1 to check CPU replacement.
 	 */
-	uint8_t cpu_replacement_check;
+	bool cpu_replacement_check;
 
 	/* ISA Serial Base selection. */
 	enum {
@@ -694,7 +695,7 @@ struct soc_intel_alderlake_config {
 	 */
 	uint8_t fivr_spread_spectrum;
 	/* Enable or Disable Acoustic Noise Mitigation feature */
-	uint8_t acoustic_noise_mitigation;
+	bool acoustic_noise_mitigation;
 	/*
 	 * Acoustic Noise Mitigation Range. Defines the maximum Pre-Wake
 	 * randomization time in micro ticks. This can be programmed only
@@ -703,7 +704,7 @@ struct soc_intel_alderlake_config {
 	 */
 	uint8_t PreWake;
 	/* Disable Fast Slew Rate for Deep Package C States for VR domains */
-	uint8_t fast_pkg_c_ramp_disable[NUM_VR_DOMAINS];
+	bool fast_pkg_c_ramp_disable[NUM_VR_DOMAINS];
 	/*
 	 * Slew Rate configuration for Deep Package C States for VR domains
 	 * 0: Fast/2, 1: Fast/4, 2: Fast/8, 3: Fast/16; see enum slew_rate for values

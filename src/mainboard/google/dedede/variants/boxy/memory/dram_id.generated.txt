@@ -7,3 +7,4 @@ DRAM Part Name                 ID to assign
 K4U6E3S4AB-MGCL                0 (0000)
 H54G46CYRBX267                 0 (0000)
 MT53E512M32D1NP-046 WT:B       0 (0000)
+CXDB4ABAM-ML                   1 (0001)

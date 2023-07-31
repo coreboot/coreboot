@@ -127,8 +127,19 @@ void cl_get_pmc_sram_data(void)
 
 		if (!descriptor_table.regions[i].bits.size)
 			continue;
-
+		/*
+		 * Region with metadata TAG contains information about BDF entry for SOC PMC SRAM
+		 * and IOE SRAM. We don't need to parse this as we already define BDFs in
+		 * soc/pci_devs.h for these SRAMs. Also we need to skip this region as it does not
+		 * contain any crashlog data.
+		 */
 		if (descriptor_table.regions[i].bits.assign_tag ==
+				CRASHLOG_DESCRIPTOR_TABLE_TAG_META) {
+			pmc_crashLog_size -= descriptor_table.regions[i].bits.size *
+						sizeof(u32);
+			printk(BIOS_DEBUG, "Found metadata tag. PMC crashlog size adjusted to: 0x%x\n",
+					pmc_crashLog_size);
+		} else if (descriptor_table.regions[i].bits.assign_tag ==
 				CRASHLOG_DESCRIPTOR_TABLE_TAG_SOC) {
 
 			if (cl_copy_data_from_sram(pmc_sram_base,

@@ -21,7 +21,7 @@ Update this document with changes that should be in the release notes.
 
 ### Toolchain updates
 
-* To be filled in immediately before the release by the release team
+* Upgrade GMP from 6.2.1 to 6.3.0
 
 ### Additional coreboot changes
 

@@ -1,4 +1,8 @@
 fw_config
+	field THERMAL 2 2
+		option THERMAL_FANLESS		0
+		option THERMAL_FAN		1
+	end
 	field WIFI_SAR_ID 6 6
 		option WIFI_GFP2_SAR_ID_0	0
 		option WIFI_GFP2_SAR_ID_1	1
@@ -88,22 +92,22 @@ chip soc/intel/alderlake
 				## Passive Policy
 				register "policies.passive" = "{
 					[0] = DPTF_PASSIVE(CPU,         CPU,           95, 5000),
-					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 75, 5000),
-					[2] = DPTF_PASSIVE(CHARGER,     TEMP_SENSOR_1, 75, 5000),
-					[3] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_2, 75, 5000),
+					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 65, 5000),
+					[2] = DPTF_PASSIVE(CHARGER,     TEMP_SENSOR_1, 65, 5000),
+					[3] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_2, 65, 5000),
 				}"
 
 				## Critical Policy
 				register "policies.critical" = "{
 					[0] = DPTF_CRITICAL(CPU,               105, SHUTDOWN),
-					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,      85, SHUTDOWN),
-					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,      85, SHUTDOWN),
-					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,      85, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,      75, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,      75, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,      75, SHUTDOWN),
 				}"
 
 				register "controls.power_limits" = "{
 					.pl1 = {
-							.min_power = 3000,
+							.min_power = 6000,
 							.max_power = 6000,
 							.time_window_min = 28 * MSECS_PER_SEC,
 							.time_window_max = 32 * MSECS_PER_SEC,
@@ -126,7 +130,11 @@ chip soc/intel/alderlake
 					[3] = {   8,  500 }
 				}"
 
-				device generic 0 on end
+				register "oem_data.oem_variables" = "{
+						[1] = 0x1
+				}"
+
+				device generic 0 alias dptf_policy on end
 			end
 		end
 		device ref i2c1 on

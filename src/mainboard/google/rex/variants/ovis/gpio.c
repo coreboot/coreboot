@@ -185,7 +185,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_D17 : [] ==> I2S_SOC_RX_HP_TX */
 	PAD_CFG_NF(GPP_D17, NONE, DEEP, NF2),
 	/* GPP_D18 : [] ==> LAN_PE_WAKE_ODL */
-	PAD_CFG_GPI_APIC_LOCK(GPP_D18, NONE, LEVEL, INVERT, LOCK_CONFIG),
+	PAD_CFG_GPI_SCI_LOW(GPP_D18, NONE, DEEP, EDGE_SINGLE),
 	/* GPP_D19 : [] ==> SSD_CLKREQ_ODL */
 	PAD_CFG_NF(GPP_D19, NONE, DEEP, NF1),
 	/* GPP_D20 : [] ==> LAN_CLKREQ_ODL */

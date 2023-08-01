@@ -118,6 +118,25 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
 	}"
 	device domain 0 on
+		device ref igpu on
+			chip drivers/gfx/generic
+				register "device_count" = "3"
+				# DDIA for eDP
+				register "device[0].name" = ""LCD""
+				# DDIB is unused and HDMI is not enumerated in the kernel, so no GFX device is added for DDIB
+				# TCP0 (DP-1) for port C0
+				register "device[1].name" = ""DD01""
+				register "device[1].use_pld" = "true"
+				register "device[1].pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(1, 1))"
+				# TCP1 is unused and not enumerated in the kernel, so no GFX device is added for TCP1
+				# TCP2 (DP-2) for port C1
+				register "device[2].name" = ""DD02""
+				register "device[2].use_pld" = "true"
+				register "device[2].pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(2, 1))"
+				# TCP3 is unused and not enumerated in the kernel, so no GFX device is added for TCP3
+				device generic 0 on end
+			end
+		end # Integrated Graphics Device
 		device ref dtt on
 			chip drivers/intel/dptf
 				## sensor information

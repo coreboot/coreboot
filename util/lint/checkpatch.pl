@@ -4221,6 +4221,15 @@ sub process {
 				$herecurr);
 		}
 
+# check for initialized const char arrays that should be static const
+		if ($line =~ /^\+\s*const\s+(char|unsigned\s+char|_*u8|(?:[us]_)?int8_t)\s+\w+\s*\[\s*(?:\w+\s*)?\]\s*=\s*"/) {
+			if (WARN("STATIC_CONST_CHAR_ARRAY",
+				 "const array should probably be static const\n" . $herecurr) &&
+			    $fix) {
+				$fixed[$fixlinenr] =~ s/(^.\s*)const\b/${1}static const/;
+			}
+		}
+
 # check for static char foo[] = "bar" declarations.
 		if ($line =~ /\bstatic\s+char\s+(\w+)\s*\[\s*\]\s*=\s*"/) {
 			WARN("STATIC_CONST_CHAR_ARRAY",

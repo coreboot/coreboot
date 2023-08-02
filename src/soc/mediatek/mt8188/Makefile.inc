@@ -6,7 +6,7 @@ all-y += ../common/gpio.c ../common/gpio_op.c gpio.c
 all-y += ../common/i2c.c i2c.c
 all-y += ../common/pll.c pll.c
 all-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
-all-y += ../common/timer.c ../common/timer_prepare.c
+all-y += timer.c ../common/timer_prepare.c
 all-y += ../common/uart.c
 
 bootblock-y += bootblock.c

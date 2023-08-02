@@ -831,7 +831,7 @@ $(objcbfs)/%.elf: $(objcbfs)/%.debug $(objcbfs)/%.map
 #                mma, efi, deleted, null
 # 4 - Compression type      [$(FILENAME)-compression]
 #                      none, LZMA
-# 5 - Base address          [$(FILANAME)-position]
+# 5 - Base address          [$(FILENAME)-position]
 # 6 - Alignment             [$(FILENAME)-align]
 # 7 - cbfstool flags        [$(FILENAME)-options]
 #

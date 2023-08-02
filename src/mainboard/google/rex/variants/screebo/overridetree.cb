@@ -18,6 +18,11 @@ fw_config
 		option TOUCHSCREEN_ILITEK	1
 		option TOUCHSCREEN_ELAN		2
 	end
+	field DB_SD 11 12
+		option SD_ABSENT 0
+		option SD_GL9750 1
+		option SD_RTS5227S 2
+	end
 end
 
 chip soc/intel/meteorlake
@@ -251,7 +256,10 @@ chip soc/intel/meteorlake
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D03)"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D02)"
 				register "srcclk_pin" = "7"
-				device generic 0 on end
+				device generic 0 on
+					probe DB_SD SD_GL9750
+					probe DB_SD SD_RTS5227S
+				end
 			end
 		end
 		device ref tbt_pcie_rp0 on end

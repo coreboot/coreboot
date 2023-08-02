@@ -1203,7 +1203,7 @@ static int smbios_walk_device_tree(struct device *tree, int *handle, unsigned lo
 
 unsigned long smbios_write_tables(unsigned long current)
 {
-	struct smbios_entry *se;
+	struct smbios_entry *se = NULL;
 	struct smbios_entry30 *se3;
 	unsigned long tables;
 	int len = 0;
@@ -1213,9 +1213,12 @@ unsigned long smbios_write_tables(unsigned long current)
 	current = ALIGN_UP(current, 16);
 	printk(BIOS_DEBUG, "%s: %08lx\n", __func__, current);
 
-	se = (struct smbios_entry *)current;
-	current += sizeof(*se);
-	current = ALIGN_UP(current, 16);
+	// only add a 32 bit entry point if SMBIOS table is below 4G
+	if (current < UINT32_MAX) {
+		se = (struct smbios_entry *)current;
+		current += sizeof(*se);
+		current = ALIGN_UP(current, 16);
+	}
 
 	se3 = (struct smbios_entry30 *)current;
 	current += sizeof(*se3);
@@ -1253,21 +1256,23 @@ unsigned long smbios_write_tables(unsigned long current)
 
 	update_max(len, max_struct_size, smbios_write_type127(&current, handle++));
 
-	/* Install SMBIOS 2.1 entry point */
-	memset(se, 0, sizeof(*se));
-	memcpy(se->anchor, "_SM_", 4);
-	se->length = sizeof(*se);
-	se->major_version = 3;
-	se->minor_version = 0;
-	se->max_struct_size = max_struct_size;
-	se->struct_count = handle;
-	memcpy(se->intermediate_anchor_string, "_DMI_", 5);
+	if (se) {
+		/* Install SMBIOS 2.1 entry point */
+		memset(se, 0, sizeof(*se));
+		memcpy(se->anchor, "_SM_", 4);
+		se->length = sizeof(*se);
+		se->major_version = 3;
+		se->minor_version = 0;
+		se->max_struct_size = max_struct_size;
+		se->struct_count = handle;
+		memcpy(se->intermediate_anchor_string, "_DMI_", 5);
 
-	se->struct_table_address = (u32)tables;
-	se->struct_table_length = len;
+		se->struct_table_address = (u32)tables;
+		se->struct_table_length = len;
 
-	se->intermediate_checksum = smbios_checksum((u8 *)se + 0x10, sizeof(*se) - 0x10);
-	se->checksum = smbios_checksum((u8 *)se, sizeof(*se));
+		se->intermediate_checksum = smbios_checksum((u8 *)se + 0x10, sizeof(*se) - 0x10);
+		se->checksum = smbios_checksum((u8 *)se, sizeof(*se));
+	}
 
 	/* Install SMBIOS 3.0 entry point */
 	memset(se3, 0, sizeof(*se3));

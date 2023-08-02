@@ -18,8 +18,7 @@ static void data_fabric_set_indirect_address(uint16_t fn_reg, uint8_t instance_i
 	ficaa.reg_num = DF_REG_OFFSET(fn_reg) >> 2;
 	ficaa.func_num = DF_REG_FN(fn_reg);
 	ficaa.inst_id = instance_id;
-	pci_write_config32(_SOC_DEV(DF_DEV, DF_REG_FN(DF_FICAA_BIOS)),
-			   DF_REG_OFFSET(DF_FICAA_BIOS), ficaa.raw);
+	data_fabric_broadcast_write32(DF_FICAA_BIOS, ficaa.raw);
 }
 
 uint32_t data_fabric_read32(uint16_t fn_reg, uint8_t instance_id)
@@ -31,8 +30,7 @@ uint32_t data_fabric_read32(uint16_t fn_reg, uint8_t instance_id)
 
 	/* non-broadcast data fabric accesses need to be done via indirect access */
 	data_fabric_set_indirect_address(fn_reg, instance_id);
-	return pci_read_config32(_SOC_DEV(DF_DEV, DF_REG_FN(DF_FICAD_LO)),
-				 DF_REG_OFFSET(DF_FICAD_LO));
+	return data_fabric_broadcast_read32(DF_FICAD_LO);
 }
 
 void data_fabric_write32(uint16_t fn_reg, uint8_t instance_id, uint32_t data)
@@ -44,8 +42,7 @@ void data_fabric_write32(uint16_t fn_reg, uint8_t instance_id, uint32_t data)
 
 	/* non-broadcast data fabric accesses need to be done via indirect access */
 	data_fabric_set_indirect_address(fn_reg, instance_id);
-	pci_write_config32(_SOC_DEV(DF_DEV, DF_REG_FN(DF_FICAD_LO)),
-			   DF_REG_OFFSET(DF_FICAD_LO), data);
+	data_fabric_broadcast_write32(DF_FICAD_LO, data);
 }
 
 void data_fabric_print_mmio_conf(void)

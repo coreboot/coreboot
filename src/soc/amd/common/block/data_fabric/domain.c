@@ -38,8 +38,8 @@ void amd_pci_domain_scan_bus(struct device *domain)
 static void data_fabric_get_mmio_base_size(unsigned int reg,
 					   resource_t *mmio_base, resource_t *mmio_limit)
 {
-	const uint32_t base_reg = data_fabric_broadcast_read32(0, DF_MMIO_BASE(reg));
-	const uint32_t limit_reg = data_fabric_broadcast_read32(0, DF_MMIO_LIMIT(reg));
+	const uint32_t base_reg = data_fabric_broadcast_read32(DF_MMIO_BASE(reg));
+	const uint32_t limit_reg = data_fabric_broadcast_read32(DF_MMIO_LIMIT(reg));
 	/* The raw register values are bits 47..16  of the actual address */
 	*mmio_base = (resource_t)base_reg << D18F0_MMIO_SHIFT;
 	*mmio_limit = (((resource_t)limit_reg + 1) << D18F0_MMIO_SHIFT) - 1;
@@ -101,7 +101,7 @@ static void add_data_fabric_mmio_regions(struct device *domain, unsigned int *id
 		(1ULL << get_usable_physical_address_bits()) - DF_RESERVED_TOP_12GB_MMIO_SIZE;
 
 	for (unsigned int i = 0; i < DF_MMIO_REG_SET_COUNT; i++) {
-		ctrl.raw = data_fabric_broadcast_read32(0, DF_MMIO_CONTROL(i));
+		ctrl.raw = data_fabric_broadcast_read32(DF_MMIO_CONTROL(i));
 
 		/* Relevant MMIO regions need to have both reads and writes enabled */
 		if (!ctrl.we || !ctrl.re)

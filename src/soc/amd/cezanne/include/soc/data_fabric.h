@@ -3,20 +3,21 @@
 #ifndef AMD_CEZANNE_DATA_FABRIC_H
 #define AMD_CEZANNE_DATA_FABRIC_H
 
+#include <amdblocks/data_fabric_defs.h>
 #include <types.h>
 
 /* D18F0 - Fabric Configuration registers */
-#define D18F0_MMIO_BASE0		0x200
-#define D18F0_MMIO_LIMIT0		0x204
+#define D18F0_MMIO_BASE0		DF_REG_ID(0, 0x200)
+#define D18F0_MMIO_LIMIT0		DF_REG_ID(0, 0x204)
 #define   D18F0_MMIO_SHIFT		16
-#define D18F0_MMIO_CTRL0		0x208
+#define D18F0_MMIO_CTRL0		DF_REG_ID(0, 0x208)
 
 #define DF_MMIO_REG_SET_SIZE		4
 #define DF_MMIO_REG_SET_COUNT		8
 
-#define DF_FICAA_BIOS			0x5C
-#define DF_FICAD_LO			0x98
-#define DF_FICAD_HI			0x9C
+#define DF_FICAA_BIOS			DF_REG_ID(4, 0x5C)
+#define DF_FICAD_LO			DF_REG_ID(4, 0x98)
+#define DF_FICAD_HI			DF_REG_ID(4, 0x9C)
 
 #define IOMS0_FABRIC_ID			10
 

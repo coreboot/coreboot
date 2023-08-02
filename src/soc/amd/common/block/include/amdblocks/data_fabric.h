@@ -3,6 +3,7 @@
 #ifndef AMD_BLOCK_DATA_FABRIC_H
 #define AMD_BLOCK_DATA_FABRIC_H
 
+#include <amdblocks/data_fabric_defs.h>
 #include <amdblocks/pci_devs.h>
 #include <device/pci_ops.h>
 #include <soc/data_fabric.h>
@@ -24,21 +25,21 @@
 /* Last 12GB of the usable address space are reserved */
 #define DF_RESERVED_TOP_12GB_MMIO_SIZE		(12ULL * GiB)
 
-uint32_t data_fabric_read32(uint8_t function, uint16_t reg, uint8_t instance_id);
-void data_fabric_write32(uint8_t function, uint16_t reg, uint8_t instance_id, uint32_t data);
+uint32_t data_fabric_read32(uint16_t fn_reg, uint8_t instance_id);
+void data_fabric_write32(uint16_t fn_reg, uint8_t instance_id, uint32_t data);
 
 static __always_inline
-uint32_t data_fabric_broadcast_read32(uint8_t function, uint16_t reg)
+uint32_t data_fabric_broadcast_read32(uint16_t fn_reg)
 {
 	/* No bit masking required. Macros will apply mask to values. */
-	return pci_read_config32(_SOC_DEV(DF_DEV, function), reg);
+	return pci_read_config32(_SOC_DEV(DF_DEV, DF_REG_FN(fn_reg)), DF_REG_OFFSET(fn_reg));
 }
 
 static __always_inline
-void data_fabric_broadcast_write32(uint8_t function, uint16_t reg, uint32_t data)
+void data_fabric_broadcast_write32(uint16_t fn_reg, uint32_t data)
 {
 	/* No bit masking required. Macros will apply mask to values. */
-	pci_write_config32(_SOC_DEV(DF_DEV, function), reg, data);
+	pci_write_config32(_SOC_DEV(DF_DEV, DF_REG_FN(fn_reg)), DF_REG_OFFSET(fn_reg), data);
 }
 
 void data_fabric_print_mmio_conf(void);

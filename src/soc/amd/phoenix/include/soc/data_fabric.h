@@ -3,20 +3,21 @@
 #ifndef AMD_PHOENIX_DATA_FABRIC_H
 #define AMD_PHOENIX_DATA_FABRIC_H
 
+#include <amdblocks/data_fabric_defs.h>
 #include <types.h>
 
 /* D18F0 - Fabric Configuration registers */
-#define D18F0_MMIO_BASE0		0xD80
-#define D18F0_MMIO_LIMIT0		0xD84
+#define D18F0_MMIO_BASE0		DF_REG_ID(0, 0xD80)
+#define D18F0_MMIO_LIMIT0		DF_REG_ID(0, 0xD84)
 #define   D18F0_MMIO_SHIFT		16
-#define D18F0_MMIO_CTRL0		0xD88
+#define D18F0_MMIO_CTRL0		DF_REG_ID(0, 0xD88)
 
 #define DF_MMIO_REG_SET_SIZE		4
 #define DF_MMIO_REG_SET_COUNT		8
 
-#define DF_FICAA_BIOS			0x8C
-#define DF_FICAD_LO			0xB8
-#define DF_FICAD_HI			0xBC
+#define DF_FICAA_BIOS			DF_REG_ID(4, 0x8C)
+#define DF_FICAD_LO			DF_REG_ID(4, 0xB8)
+#define DF_FICAD_HI			DF_REG_ID(4, 0xBC)
 
 #define IOMS0_FABRIC_ID			0x13
 

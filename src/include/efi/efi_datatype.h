@@ -8,8 +8,10 @@
 
 #if CONFIG_UDK_VERSION >= CONFIG_UDK_2017_VERSION
 #include <Guid/StatusCodeDataTypeId.h>
+#include <IndustryStandard/Bmp.h>
 #include <Pi/PiPeiCis.h>
 #include <Pi/PiStatusCode.h>
+#include <Protocol/GraphicsOutput.h>
 #include <Protocol/MpService.h>
 
 /* Data structure for EFI_PEI_SERVICE. */
@@ -24,6 +26,12 @@ typedef EFI_STATUS_CODE_VALUE efi_status_code_value_t;
 typedef EFI_STATUS_CODE_DATA efi_status_code_data_t;
 /* Status string data type definition */
 typedef EFI_STATUS_CODE_STRING_DATA efi_status_code_string_data;
+/* Data structure for EFI_GRAPHICS_OUTPUT_BLT_PIXEL. */
+typedef EFI_GRAPHICS_OUTPUT_BLT_PIXEL efi_graphics_output_blt_pixel;
+/* Data structure for BMP_IMAGE_HEADER. */
+typedef BMP_IMAGE_HEADER efi_bmp_image_header;
+/* Data structure for BMP_COLOR_MAP; . */
+typedef BMP_COLOR_MAP efi_bmp_color_map;
 #endif
 
 /* Basic Data types */

@@ -57,11 +57,11 @@ void data_fabric_print_mmio_conf(void)
 		/* Base and limit address registers don't contain the lower address bits, but
 		   are shifted by D18F0_MMIO_SHIFT bits */
 		base = (uint64_t)data_fabric_broadcast_read32(DF_MMIO_BASE(i))
-			<< D18F0_MMIO_SHIFT;
+			<< DF_MMIO_SHIFT;
 		limit = (uint64_t)data_fabric_broadcast_read32(DF_MMIO_LIMIT(i))
-			<< D18F0_MMIO_SHIFT;
+			<< DF_MMIO_SHIFT;
 		/* Lower D18F0_MMIO_SHIFT address limit bits are all 1 */
-		limit += (1 << D18F0_MMIO_SHIFT) - 1;
+		limit += (1 << DF_MMIO_SHIFT) - 1;
 		printk(BIOS_SPEW, " %2u %16llx %16llx %8x %s %s  %s %4x\n",
 		       i, base, limit, control.raw,
 		       control.re ? "x" : " ",
@@ -121,8 +121,8 @@ void data_fabric_set_mmio_np(void)
 	int reg;
 	uint32_t base, limit;
 	union df_mmio_control ctrl;
-	const uint32_t np_bot = HPET_BASE_ADDRESS >> D18F0_MMIO_SHIFT;
-	const uint32_t np_top = (LAPIC_DEFAULT_BASE - 1) >> D18F0_MMIO_SHIFT;
+	const uint32_t np_bot = HPET_BASE_ADDRESS >> DF_MMIO_SHIFT;
+	const uint32_t np_top = (LAPIC_DEFAULT_BASE - 1) >> DF_MMIO_SHIFT;
 
 	data_fabric_print_mmio_conf();
 

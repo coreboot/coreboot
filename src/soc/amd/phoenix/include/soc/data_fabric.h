@@ -6,11 +6,10 @@
 #include <amdblocks/data_fabric_defs.h>
 #include <types.h>
 
-/* D18F0 - Fabric Configuration registers */
-#define D18F0_MMIO_BASE0		DF_REG_ID(0, 0xD80)
-#define D18F0_MMIO_LIMIT0		DF_REG_ID(0, 0xD84)
-#define   D18F0_MMIO_SHIFT		16
-#define D18F0_MMIO_CTRL0		DF_REG_ID(0, 0xD88)
+#define DF_MMIO_BASE0			DF_REG_ID(0, 0xD80)
+#define DF_MMIO_LIMIT0			DF_REG_ID(0, 0xD84)
+#define   DF_MMIO_SHIFT			16
+#define DF_MMIO_CTRL0			DF_REG_ID(0, 0xD88)
 
 #define DF_MMIO_REG_SET_SIZE		4
 #define DF_MMIO_REG_SET_COUNT		8

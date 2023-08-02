@@ -41,8 +41,8 @@ static void data_fabric_get_mmio_base_size(unsigned int reg,
 	const uint32_t base_reg = data_fabric_broadcast_read32(DF_MMIO_BASE(reg));
 	const uint32_t limit_reg = data_fabric_broadcast_read32(DF_MMIO_LIMIT(reg));
 	/* The raw register values are bits 47..16  of the actual address */
-	*mmio_base = (resource_t)base_reg << D18F0_MMIO_SHIFT;
-	*mmio_limit = (((resource_t)limit_reg + 1) << D18F0_MMIO_SHIFT) - 1;
+	*mmio_base = (resource_t)base_reg << DF_MMIO_SHIFT;
+	*mmio_limit = (((resource_t)limit_reg + 1) << DF_MMIO_SHIFT) - 1;
 }
 
 static void print_df_mmio_outside_of_cpu_mmio_error(unsigned int reg)

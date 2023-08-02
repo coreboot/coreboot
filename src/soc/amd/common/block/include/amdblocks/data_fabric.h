@@ -18,9 +18,9 @@
 #define DF_MMIO_REG_OFFSET(instance) ((instance) * DF_MMIO_REG_SET_SIZE * sizeof(uint32_t))
 
 /* The number of data fabric MMIO registers is SoC-specific */
-#define DF_MMIO_BASE(reg)	(D18F0_MMIO_BASE0 + DF_MMIO_REG_OFFSET(reg))
-#define DF_MMIO_LIMIT(reg)	(D18F0_MMIO_LIMIT0 + DF_MMIO_REG_OFFSET(reg))
-#define DF_MMIO_CONTROL(reg)	(D18F0_MMIO_CTRL0 + DF_MMIO_REG_OFFSET(reg))
+#define DF_MMIO_BASE(reg)	(DF_MMIO_BASE0 + DF_MMIO_REG_OFFSET(reg))
+#define DF_MMIO_LIMIT(reg)	(DF_MMIO_LIMIT0 + DF_MMIO_REG_OFFSET(reg))
+#define DF_MMIO_CONTROL(reg)	(DF_MMIO_CTRL0 + DF_MMIO_REG_OFFSET(reg))
 
 /* Last 12GB of the usable address space are reserved */
 #define DF_RESERVED_TOP_12GB_MMIO_SIZE		(12ULL * GiB)

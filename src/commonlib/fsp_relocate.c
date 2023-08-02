@@ -275,7 +275,7 @@ static int pe_relocate(uintptr_t new_addr, void *pe, void *fsp, size_t fih_off)
 	img_base_off += delta;
 	write_le32(&ophdr->ImageBase, img_base_off);
 
-	return -1;
+	return 0;
 }
 
 static int te_relocate(uintptr_t new_addr, void *te)

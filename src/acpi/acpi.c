@@ -1367,6 +1367,8 @@ static void acpixtract_compatible_hexdump(const void *memory, size_t length)
 
 static void acpidump_print(void *table_ptr)
 {
+	if (table_ptr == NULL)
+		return;
 	const acpi_header_t *header = (acpi_header_t *)table_ptr;
 	const size_t table_size = header->length;
 	printk(BIOS_SPEW, "%.4s @ 0x0000000000000000\n", header->signature);

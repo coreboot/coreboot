@@ -13,7 +13,7 @@
 
 static void data_fabric_set_indirect_address(uint8_t func, uint16_t reg, uint8_t instance_id)
 {
-	union df_ficaa ficaa = { .cfg_inst_acc_en = 1 };
+	union df_ficaa ficaa = { .cfg_inst_acc_en = 1 }; /* target only specific instance */
 	/* convert register address to 32-bit register number */
 	ficaa.reg_num = reg >> 2;
 	ficaa.func_num = func;

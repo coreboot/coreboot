@@ -40,7 +40,7 @@ enum cb_err fill_lb_serial(struct lb_serial *serial)
 	serial->type = LB_SERIAL_TYPE_MEMORY_MAPPED;
 	serial->baseaddr = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
 	serial->baud = get_uart_baudrate();
-	serial->regwidth = 1;
+	serial->regwidth = 4;
 	serial->input_hertz = uart_platform_refclk();
 
 	return CB_SUCCESS;

@@ -28,6 +28,10 @@ fw_config
 		option MB_1C			0
 		option MB_1C_2A			1
 	end
+	field TOUCH_PANEL 40 41
+		option TOUCH_HID_I2C		0
+		option TOUCH_I2C		1
+	end
 end
 
 chip soc/intel/alderlake
@@ -225,11 +229,27 @@ chip soc/intel/alderlake
 			probe WFC WFC_MIPI_OVTI8856
 		end
 		device ref i2c1 on
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0001""
+				register "desc" = ""ELAN Touchscreen""
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
+				register "reset_delay_ms" = "20"
+				register "reset_off_delay_ms" = "2"
+				register "stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C6)"
+				register "stop_delay_ms" = "20"
+				register "stop_off_delay_ms" = "2"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
+				register "enable_delay_ms" = "5"
+				register "has_power_resource" = "1"
+				device i2c 10 on
+					probe TOUCH_PANEL TOUCH_I2C
+				end
+			end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""ELAN2513""
 				register "generic.desc" = ""ELAN Touchscreen""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
-				register "generic.detect" = "1"
 				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
 				register "generic.reset_delay_ms" = "20"
 				register "generic.reset_off_delay_ms" = "2"
@@ -240,7 +260,9 @@ chip soc/intel/alderlake
 				register "generic.enable_delay_ms" = "1"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x01"
-				device i2c 10 on end
+				device i2c 10 on
+					probe TOUCH_PANEL TOUCH_HID_I2C
+				end
 			end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""ELAN900C""

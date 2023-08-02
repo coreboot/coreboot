@@ -85,7 +85,7 @@ static unsigned long gen_crat_memory_entries(struct acpi_crat_header *crat,
 			}
 
 			if (dram_base_reg & DRAM_BASE_HOLE_EN) {
-				dram_hole_ctl = data_fabric_read32(D18F0_DRAM_HOLE_CTL,
+				dram_hole_ctl = data_fabric_read32(DF_DRAM_HOLE_CTL,
 								       IOMS0_FABRIC_ID);
 				hole_base = (dram_hole_ctl & DRAM_HOLE_CTL_BASE);
 				size_below_hole = hole_base - memory_base;

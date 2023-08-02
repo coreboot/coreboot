@@ -50,12 +50,12 @@ union df_ficaa {
 #define D18F0_VGAEN			DF_REG_ID(0, 0x80)
 #define   VGA_ADDR_ENABLE		BIT(0)
 
-#define D18F0_DRAM_HOLE_CTL		DF_REG_ID(0, 0x104)
+#define DF_DRAM_HOLE_CTL		DF_REG_ID(0, 0x104)
 #define   DRAM_HOLE_CTL_VALID		BIT(0)
 #define   DRAM_HOLE_CTL_BASE_SHFT	24
 #define   DRAM_HOLE_CTL_BASE		(0xff << DRAM_HOLE_CTL_BASE_SHFT)
 
-#define D18F0_DRAM_BASE0		DF_REG_ID(0, 0x110)
+#define DF_DRAM_BASE0		DF_REG_ID(0, 0x110)
 #define   DRAM_BASE_REG_VALID		BIT(0)
 #define   DRAM_BASE_HOLE_EN		BIT(1)
 #define   DRAM_BASE_INTLV_CH_SHFT	4
@@ -65,7 +65,7 @@ union df_ficaa {
 #define   DRAM_BASE_ADDR_SHFT		12
 #define   DRAM_BASE_ADDR		(0xfffff << DRAM_BASE_ADDR_SHFT)
 
-#define D18F0_DRAM_LIMIT0			DF_REG_ID(0, 0x114)
+#define DF_DRAM_LIMIT0			DF_REG_ID(0, 0x114)
 #define   DRAM_LIMIT_DST_ID_SHFT		0
 #define   DRAM_LIMIT_DST_ID			(0xff << DRAM_LIMIT_DST_ID_SHFT)
 #define   DRAM_LIMIT_INTLV_NUM_SOCK_SHFT	8
@@ -78,8 +78,8 @@ union df_ficaa {
 #define PICASSO_NUM_DRAM_REG		2
 
 #define DF_DRAM_BASE(dram_map_pair)	((dram_map_pair) * 2 * sizeof(uint32_t) \
-						+ D18F0_DRAM_BASE0)
+						+ DF_DRAM_BASE0)
 #define DF_DRAM_LIMIT(dram_map_pair)	((dram_map_pair) * 2 * sizeof(uint32_t) \
-						+ D18F0_DRAM_LIMIT0)
+						+ DF_DRAM_LIMIT0)
 
 #endif /* AMD_PICASSO_DATA_FABRIC_H */

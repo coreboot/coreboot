@@ -11,8 +11,8 @@
 
 #set -x # Turn echo on....
 
-ABUILD_DATE="Nov 1, 2023"
-ABUILD_VERSION="0.11.02"
+ABUILD_DATE="Nov 18, 2023"
+ABUILD_VERSION="0.11.03"
 
 TOP=$PWD
 
@@ -823,12 +823,12 @@ while true ; do
 			;;
 		--skip_set)	shift
 			skipconfig_set="$1"
-			customizing="${customizing}, Skipping CONFIG_${skipconfig_set}=Y"
+			customizing="${customizing}, Skipping builds with CONFIG_${skipconfig_set}=Y"
 			shift
 			;;
 		--skip_unset)	shift
 			skipconfig_unset="$1"
-			customizing="${customizing}, Skipping CONFIG_${skipconfig_unset} not set"
+			customizing="${customizing}, Skipping builds with CONFIG_${skipconfig_unset} not set"
 			shift
 			;;
 		--asserts)	shift
@@ -934,10 +934,10 @@ if echo "${skipconfig_set}${skipconfig_unset}" | grep -q "CONFIG_" >/dev/null 2>
 fi
 
 customizing=$(echo "$customizing" | cut -c3-)
-if [ "$customizing" = "" ]; then
-	customizing="default configuration"
+if [ -z "$customizing" ]; then
+	customizing="Default configuration"
 fi
-
+customizing="Config: ${customizing}"
 FAILED_BOARDS="$(realpath ${TARGET}/failed_boards)"
 PASSED_BOARDS="$(realpath ${TARGET}/passing_boards)"
 

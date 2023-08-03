@@ -751,7 +751,7 @@ static enum cb_err cse_prep_for_rw_update(const struct cse_bp_info *cse_bp_info,
 	if ((status == CSE_UPDATE_DOWNGRADE) || (status == CSE_UPDATE_CORRUPTED)) {
 		if (cse_data_clear_request(cse_bp_info) != CB_SUCCESS) {
 			printk(BIOS_ERR, "cse_lite: CSE data clear failed!\n");
-			return CB_SUCCESS;
+			return CB_ERR;
 		}
 	}
 

@@ -8,6 +8,40 @@
 
 #define IOMS0_FABRIC_ID			15
 
+#define DF_IO_BASE0			DF_REG_ID(0, 0xd00)
+#define DF_IO_LIMIT0			DF_REG_ID(0, 0xd04)
+
+#define DF_IO_REG_COUNT			8
+
+#define DF_IO_REG_OFFSET(instance)	((instance) * 2 * sizeof(uint32_t))
+#define DF_IO_BASE(reg)			(DF_IO_BASE0 + DF_IO_REG_OFFSET(reg))
+#define DF_IO_LIMIT(reg)		(DF_IO_LIMIT0 + DF_IO_REG_OFFSET(reg))
+
+union df_io_base {
+	struct {
+		uint32_t re		:  1; /* [ 0.. 0] */
+		uint32_t we		:  1; /* [ 1.. 1] */
+		uint32_t		:  3; /* [ 2.. 4] */
+		uint32_t ie		:  1; /* [ 5.. 5] */
+		uint32_t		: 10; /* [ 6..15] */
+		uint32_t io_base	: 13; /* [16..28] */
+		uint32_t		:  3; /* [29..31] */
+	};
+	uint32_t raw;
+};
+
+union df_io_limit {
+	struct {
+		uint32_t dst_fabric_id	:  6; /* [ 0.. 5] */
+		uint32_t		: 10; /* [ 6..15] */
+		uint32_t io_limit	: 13; /* [16..28] */
+		uint32_t		:  3; /* [29..31] */
+	};
+	uint32_t raw;
+};
+
+#define DF_IO_ADDR_SHIFT		12
+
 #define DF_MMIO_BASE0			DF_REG_ID(0, 0xD80)
 #define DF_MMIO_LIMIT0			DF_REG_ID(0, 0xD84)
 #define   DF_MMIO_SHIFT			16

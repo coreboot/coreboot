@@ -8,6 +8,52 @@
 
 #define IOMS0_FABRIC_ID			9
 
+#define DF_IO_BASE0			DF_REG_ID(0, 0xc0)
+#define DF_IO_LIMIT0			DF_REG_ID(0, 0xc4)
+
+#define DF_IO_REG0_OFFSET(instance)	((instance) * 2 * sizeof(uint32_t))
+#define DF_IO_BASE_0_7(reg)		(DF_IO_BASE0 + DF_IO_REG0_OFFSET(reg))
+#define DF_IO_LIMIT_0_7(reg)		(DF_IO_LIMIT0 + DF_IO_REG0_OFFSET(reg))
+
+#if CONFIG(SOC_AMD_REMBRANDT)
+#define DF_IO_BASE8			DF_REG_ID(6, 0xbc)
+#define DF_IO_LIMIT8			DF_REG_ID(6, 0xcc)
+#define DF_IO_REG_COUNT			12
+#define DF_IO_BASE(reg)			((reg) < 8 ? DF_IO_BASE_0_7(reg) : \
+						DF_IO_BASE8 + ((reg) - 8) * sizeof(uint32_t))
+#define DF_IO_LIMIT(reg)		((reg) < 8 ? DF_IO_LIMIT_0_70(reg) : \
+						DF_IO_LIMIT8 + ((reg) - 8) * sizeof(uint32_t))
+#else
+#define DF_IO_REG_COUNT			8
+#define DF_IO_BASE(reg)			DF_IO_BASE_0_7(reg)
+#define DF_IO_LIMIT(reg)		DF_IO_LIMIT_0_7(reg)
+#endif
+
+union df_io_base {
+	struct {
+		uint32_t re		:  1; /* [ 0.. 0] */
+		uint32_t we		:  1; /* [ 1.. 1] */
+		uint32_t		:  3; /* [ 2.. 4] */
+		uint32_t ie		:  1; /* [ 5.. 5] */
+		uint32_t		:  6; /* [ 6..11] */
+		uint32_t io_base	: 13; /* [12..24] */
+		uint32_t		:  7; /* [25..31] */
+	};
+	uint32_t raw;
+};
+
+union df_io_limit {
+	struct {
+		uint32_t dst_fabric_id	:  4; /* [ 0.. 3] */
+		uint32_t		:  8; /* [ 4..11] */
+		uint32_t io_limit	: 13; /* [12..24] */
+		uint32_t		:  7; /* [25..31] */
+	};
+	uint32_t raw;
+};
+
+#define DF_IO_ADDR_SHIFT		12
+
 #define DF_MMIO_BASE0			DF_REG_ID(0, 0x200)
 #define DF_MMIO_LIMIT0			DF_REG_ID(0, 0x204)
 #define   DF_MMIO_SHIFT			16

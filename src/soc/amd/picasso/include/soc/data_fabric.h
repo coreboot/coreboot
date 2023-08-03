@@ -11,6 +11,40 @@
 #define D18F0_VGAEN			DF_REG_ID(0, 0x80)
 #define   VGA_ADDR_ENABLE		BIT(0)
 
+#define DF_IO_BASE0			DF_REG_ID(0, 0xc0)
+#define DF_IO_LIMIT0			DF_REG_ID(0, 0xc4)
+
+#define DF_IO_REG_COUNT			8
+
+#define DF_IO_REG_OFFSET(instance)	((instance) * 2 * sizeof(uint32_t))
+#define DF_IO_BASE(reg)			(DF_IO_BASE0 + DF_IO_REG_OFFSET(reg))
+#define DF_IO_LIMIT(reg)		(DF_IO_LIMIT0 + DF_IO_REG_OFFSET(reg))
+
+union df_io_base {
+	struct {
+		uint32_t re		:  1; /* [ 0.. 0] */
+		uint32_t we		:  1; /* [ 1.. 1] */
+		uint32_t		:  3; /* [ 2.. 4] */
+		uint32_t ie		:  1; /* [ 5.. 5] */
+		uint32_t		:  6; /* [ 6..11] */
+		uint32_t io_base	: 13; /* [12..24] */
+		uint32_t		:  7; /* [25..31] */
+	};
+	uint32_t raw;
+};
+
+union df_io_limit {
+	struct {
+		uint32_t dst_fabric_id	:  8; /* [ 0.. 7] */
+		uint32_t		:  4; /* [ 8..11] */
+		uint32_t io_limit	: 13; /* [12..24] */
+		uint32_t		:  7; /* [25..31] */
+	};
+	uint32_t raw;
+};
+
+#define DF_IO_ADDR_SHIFT		12
+
 #define DF_DRAM_HOLE_CTL		DF_REG_ID(0, 0x104)
 #define   DRAM_HOLE_CTL_VALID		BIT(0)
 #define   DRAM_HOLE_CTL_BASE_SHFT	24

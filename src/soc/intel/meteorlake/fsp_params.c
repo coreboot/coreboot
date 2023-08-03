@@ -10,6 +10,7 @@
 #include <device/pci.h>
 #include <fsp/api.h>
 #include <fsp/fsp_debug_event.h>
+#include <fsp/fsp_gop_blt.h>
 #include <fsp/ppi/mp_service_ppi.h>
 #include <fsp/util.h>
 #include <option.h>
@@ -868,5 +869,10 @@ __weak void mainboard_silicon_init_params(FSP_S_CONFIG *s_cfg)
 /* Handle FSP logo params */
 void soc_load_logo(FSPS_UPD *supd)
 {
-	bmp_load_logo(&supd->FspsConfig.LogoPtr, &supd->FspsConfig.LogoSize);
+	fsp_convert_bmp_to_gop_blt(&supd->FspsConfig.LogoPtr,
+			 &supd->FspsConfig.LogoSize,
+			 &supd->FspsConfig.BltBufferAddress,
+			 &supd->FspsConfig.BltBufferSize,
+			 &supd->FspsConfig.LogoPixelHeight,
+			 &supd->FspsConfig.LogoPixelWidth);
 }

@@ -1,57 +1,5 @@
 config SOC_INTEL_ALDERLAKE
 	bool
-	help
-	  Intel Alderlake support. Mainboards should specify the PCH
-	  type using the `SOC_INTEL_ALDERLAKE_PCH_*` options instead
-	  of selecting this option directly.
-
-config SOC_INTEL_RAPTORLAKE
-	bool
-	select X86_INIT_NEED_1_SIPI
-	help
-	 Intel Raptorlake support. Mainboards using RPL should select
-	 SOC_INTEL_RAPTORLAKE and SOC_INTEL_ALDERLAKE_PCH_* together.
-
-config SOC_INTEL_ALDERLAKE_PCH_M
-	bool
-	select SOC_INTEL_ALDERLAKE
-	help
-	  Choose this option if your mainboard has a PCH-M chipset.
-
-config SOC_INTEL_ALDERLAKE_PCH_N
-	bool
-	select SOC_INTEL_ALDERLAKE
-	select MICROCODE_BLOB_UNDISCLOSED
-	help
-	  Choose this option if your mainboard has a PCH-N chipset.
-
-config SOC_INTEL_ALDERLAKE_PCH_P
-	bool
-	select SOC_INTEL_ALDERLAKE
-	select HAVE_INTEL_FSP_REPO
-	select PLATFORM_USES_FSP2_3
-	help
-	  Choose this option if your mainboard has a PCH-P chipset.
-
-config SOC_INTEL_ALDERLAKE_PCH_S
-	bool
-	select SOC_INTEL_ALDERLAKE
-	select HAVE_INTEL_FSP_REPO if !SOC_INTEL_RAPTORLAKE_PCH_S || (SOC_INTEL_RAPTORLAKE_PCH_S && FSP_TYPE_IOT)
-	select PLATFORM_USES_FSP2_3
-	help
-	  Choose this option if your mainboard has a PCH-S chipset.
-
-config SOC_INTEL_RAPTORLAKE_PCH_S
-	bool
-	select SOC_INTEL_ALDERLAKE_PCH_S
-	select SOC_INTEL_RAPTORLAKE
-	help
-	  Choose this option if your mainboard has a Raptor Lake PCH-S chipset.
-
-if SOC_INTEL_ALDERLAKE
-
-config CPU_SPECIFIC_OPTIONS
-	def_bool y
 	select ACPI_INTEL_HARDWARE_SLEEP_VALUES
 	select ACPI_ADL_IPU_ES_SUPPORT
 	select ARCH_X86
@@ -142,6 +90,55 @@ config CPU_SPECIFIC_OPTIONS
 	select UDK_202005_BINDING
 	select VBOOT_LIB
 	select X86_CLFLUSH_CAR
+	help
+	  Intel Alderlake support. Mainboards should specify the PCH
+	  type using the `SOC_INTEL_ALDERLAKE_PCH_*` options instead
+	  of selecting this option directly.
+
+config SOC_INTEL_RAPTORLAKE
+	bool
+	select X86_INIT_NEED_1_SIPI
+	help
+	 Intel Raptorlake support. Mainboards using RPL should select
+	 SOC_INTEL_RAPTORLAKE and SOC_INTEL_ALDERLAKE_PCH_* together.
+
+config SOC_INTEL_ALDERLAKE_PCH_M
+	bool
+	select SOC_INTEL_ALDERLAKE
+	help
+	  Choose this option if your mainboard has a PCH-M chipset.
+
+config SOC_INTEL_ALDERLAKE_PCH_N
+	bool
+	select SOC_INTEL_ALDERLAKE
+	select MICROCODE_BLOB_UNDISCLOSED
+	help
+	  Choose this option if your mainboard has a PCH-N chipset.
+
+config SOC_INTEL_ALDERLAKE_PCH_P
+	bool
+	select SOC_INTEL_ALDERLAKE
+	select HAVE_INTEL_FSP_REPO
+	select PLATFORM_USES_FSP2_3
+	help
+	  Choose this option if your mainboard has a PCH-P chipset.
+
+config SOC_INTEL_ALDERLAKE_PCH_S
+	bool
+	select SOC_INTEL_ALDERLAKE
+	select HAVE_INTEL_FSP_REPO if !SOC_INTEL_RAPTORLAKE_PCH_S || (SOC_INTEL_RAPTORLAKE_PCH_S && FSP_TYPE_IOT)
+	select PLATFORM_USES_FSP2_3
+	help
+	  Choose this option if your mainboard has a PCH-S chipset.
+
+config SOC_INTEL_RAPTORLAKE_PCH_S
+	bool
+	select SOC_INTEL_ALDERLAKE_PCH_S
+	select SOC_INTEL_RAPTORLAKE
+	help
+	  Choose this option if your mainboard has a Raptor Lake PCH-S chipset.
+
+if SOC_INTEL_ALDERLAKE
 
 config SOC_INTEL_ALDERLAKE_TCSS_USB4_SUPPORT
 	bool

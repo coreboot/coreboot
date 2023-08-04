@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 
 # IMPORTANT!! When a new memory SPD is added here, please ensure that ddp_bitmap
 # is correctly updated in memory.c to indicate if memory id is using DDP.

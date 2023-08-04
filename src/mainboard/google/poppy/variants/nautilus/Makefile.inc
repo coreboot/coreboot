@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 
 SPD_SOURCES  = samsung_dimm_K4E8E324EB-EGCF     # 0b0000
 SPD_SOURCES += samsung_dimm_K4E6E304EB-EGCF     # 0b0001

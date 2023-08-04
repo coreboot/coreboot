@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 ramstage-y += cstates.c
 romstage-y += variants/$(VARIANT_DIR)/gpio.c
 

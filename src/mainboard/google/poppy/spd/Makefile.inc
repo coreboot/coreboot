@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 
 SEC_SPD_BIN = $(obj)/sec-spd.bin
 

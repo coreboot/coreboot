@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 bootblock-y += early_southbridge.c
 romstage-y += early_southbridge.c
 bootblock-y += gpio.c

@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/include
 
 ifeq ($(CONFIG_BOARD_SYSTEM76_GALP5),y)

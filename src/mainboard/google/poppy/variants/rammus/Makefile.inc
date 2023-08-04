@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 SPD_SOURCES  = micron_dimm_MT52L512M32D2PF-093	# 0b0000
 SPD_SOURCES += samsung_dimm_K4E8E324EB-EGCF     # 0b0001
 SPD_SOURCES += micron_dimm_MT52L256M32D1PF-093	# 0b0010

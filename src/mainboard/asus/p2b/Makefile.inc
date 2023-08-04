@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 bootblock-y += bootblock.c
 romstage-$(CONFIG_BOARD_ASUS_P3B_F) += variants/$(VARIANT_DIR)/romstage.c
 

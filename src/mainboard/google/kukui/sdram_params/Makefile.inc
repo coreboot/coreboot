@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 sdram-params :=
 sdram-params += sdram-lpddr4x-K4UBE3D4AA-MGCR-4GB
 sdram-params += sdram-lpddr4x-H9HCNNNCPMALHR-4GB

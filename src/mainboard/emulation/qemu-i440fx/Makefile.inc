@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 romstage-y += memmap.c
 
 postcar-y += memmap.c

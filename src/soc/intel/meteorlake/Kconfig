@@ -426,4 +426,7 @@ config IOE_DIE_CLOCK_START
 	int
 	default 6 if SOC_INTEL_METEORLAKE_U_H
 
+config HAVE_BMP_LOGO_COMPRESS_LZMA
+	default n
+
 endif

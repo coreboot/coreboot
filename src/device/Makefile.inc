@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 ramstage-y += device.c
 ramstage-y += root_device.c
 ramstage-y += cpu_device.c

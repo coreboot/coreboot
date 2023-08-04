@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 # VT-d will not be functional in bootblock and verstage yet.
 # It will become available after FSP memory init.
 # If coreboot does native VT-d initialization, early DMA protection

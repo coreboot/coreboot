@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 ifeq ($(CONFIG_NORTHBRIDGE_INTEL_E7505),y)
 
 ramstage-y += northbridge.c

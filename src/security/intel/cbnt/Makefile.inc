@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 ifeq ($(CONFIG_INTEL_CBNT_SUPPORT),y)
 
 all-y += logging.c

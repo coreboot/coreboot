@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 ramstage-y += vtxprintf.c printk.c vsprintf.c
 ramstage-y += init.c console.c
 ramstage-y += post.c

@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 subdirs-$(CONFIG_TPM_GOOGLE) += tss/vendor/cr50
 
 ## TSS

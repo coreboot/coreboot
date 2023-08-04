@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 romstage-$(CONFIG_INTEL_TXT_LIB) += txtlib.c
 
 ifeq ($(CONFIG_INTEL_TXT),y)

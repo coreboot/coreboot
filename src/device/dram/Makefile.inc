@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 
 romstage-y += ddr_common.c
 ramstage-y += ddr_common.c spd.c

@@ -53,12 +53,12 @@
 
 union df_mmio_control {
 	struct {
-		uint32_t re        :  1; /* [ 0.. 0] */
-		uint32_t we        :  1; /* [ 1.. 1] */
-		uint32_t           :  2; /* [ 3.. 2] */
-		uint32_t fabric_id :  8; /* [11.. 4] */
-		uint32_t np        :  1; /* [12..12] */
-		uint32_t           : 19; /* [31..13] */
+		uint32_t re		:  1; /* [ 0.. 0] */
+		uint32_t we		:  1; /* [ 1.. 1] */
+		uint32_t		:  2; /* [ 3.. 2] */
+		uint32_t dst_fabric_id	:  8; /* [11.. 4] */
+		uint32_t np		:  1; /* [12..12] */
+		uint32_t		: 19; /* [31..13] */
 	};
 	uint32_t raw;
 };

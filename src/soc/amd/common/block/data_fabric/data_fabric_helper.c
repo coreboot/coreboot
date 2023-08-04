@@ -67,13 +67,13 @@ void data_fabric_print_mmio_conf(void)
 		       control.re ? "x" : " ",
 		       control.we ? "x" : " ",
 		       control.np ? "x" : " ",
-		       control.fabric_id);
+		       control.dst_fabric_id);
 	}
 }
 
 void data_fabric_disable_mmio_reg(unsigned int reg)
 {
-	union df_mmio_control ctrl = { .fabric_id = IOMS0_FABRIC_ID };
+	union df_mmio_control ctrl = { .dst_fabric_id = IOMS0_FABRIC_ID };
 	data_fabric_broadcast_write32(DF_MMIO_CONTROL(reg), ctrl.raw);
 	data_fabric_broadcast_write32(DF_MMIO_BASE(reg), 0);
 	data_fabric_broadcast_write32(DF_MMIO_LIMIT(reg), 0);
@@ -173,7 +173,7 @@ void data_fabric_set_mmio_np(void)
 		return;
 	}
 
-	union df_mmio_control np_ctrl = { .fabric_id = IOMS0_FABRIC_ID,
+	union df_mmio_control np_ctrl = { .dst_fabric_id = IOMS0_FABRIC_ID,
 					  .np = 1, .we = 1, .re = 1 };
 	data_fabric_broadcast_write32(DF_MMIO_BASE(reg), np_bot);
 	data_fabric_broadcast_write32(DF_MMIO_LIMIT(reg), np_top);

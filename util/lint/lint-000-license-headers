@@ -61,7 +61,6 @@ Dockerfile|\
 _shipped$|\
 /microcode-[^/]*.h$|\
 /sdram-.*\.inc$|\
-Makefile\.inc|\
 \.fmd|\
 \.cb|\
 \.cfg$|\

@@ -139,18 +139,23 @@ static void add_data_fabric_mmio_regions(struct device *domain, unsigned int *id
 	}
 }
 
+static void report_data_fabric_io(struct device *domain, unsigned int idx,
+				  resource_t io_base, resource_t io_limit)
+{
+	struct resource *res;
+	res = new_resource(domain, idx);
+	res->base = io_base;
+	res->limit = io_limit;
+	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED;
+}
+
 /* Tell the resource allocator about the usable I/O space */
 static void add_io_regions(struct device *domain, unsigned int *idx)
 {
-	struct resource *res;
-
 	/* TODO: Systems with more than one PCI root need to read the data fabric registers to
 	   see which IO ranges get decoded to which PCI root. */
 
-	res = new_resource(domain, (*idx)++);
-	res->base = 0;
-	res->limit = 0xffff;
-	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED;
+	report_data_fabric_io(domain, (*idx)++, 0, 0xffff);
 }
 
 void amd_pci_domain_read_resources(struct device *domain)

@@ -321,20 +321,20 @@ static void tcss_configure_dp_mode(const struct tcss_port_map *port_map, size_t 
 
 		ret = send_pmc_connect_request(i, &mux_info, port_info);
 		if (ret) {
-			printk(BIOS_ERR, "Port %zd connect request failed\n", i);
+			printk(BIOS_ERR, "Port %zu connect request failed\n", i);
 			continue;
 		}
 		ret = send_pmc_safe_mode_request(i, &mux_info, port_info);
 		if (ret) {
-			printk(BIOS_ERR, "Port %zd safe mode request failed\n", i);
+			printk(BIOS_ERR, "Port %zu safe mode request failed\n", i);
 			continue;
 		}
 
 		ret = send_pmc_dp_mode_request(i, &mux_info, port_info);
 		if (ret) {
-			printk(BIOS_ERR, "Port C%zd mux set failed with error %d\n", i, ret);
+			printk(BIOS_ERR, "Port C%zu mux set failed with error %d\n", i, ret);
 		} else {
-			printk(BIOS_INFO, "Port C%zd is configured to DP mode!\n", i);
+			printk(BIOS_INFO, "Port C%zu is configured to DP mode!\n", i);
 			return;
 		}
 	}

@@ -369,6 +369,13 @@ struct elog_event_extended_event {
 #define  ELOG_FW_EARLY_SOL_CSE_SYNC        0x0
 #define  ELOG_FW_EARLY_SOL_MRC             0x1
 
+/* Platform Service Record(PSR) Events */
+#define ELOG_TYPE_PSR_DATA_BACKUP         0xb9
+#define  ELOG_PSR_DATA_BACKUP_SUCCESS      0x0
+#define  ELOG_PSR_DATA_BACKUP_FAILED       0x1
+
+#define ELOG_TYPE_PSR_DATA_LOST           0xba
+
 /* Only the 7-LSB are used for size */
 #define ELOG_MAX_EVENT_SIZE                    0x7F
 

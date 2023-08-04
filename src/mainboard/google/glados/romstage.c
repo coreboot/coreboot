@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi.h>
 #include <baseboard/variant.h>
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
@@ -16,8 +17,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 
 #ifdef EC_ENABLE_KEYBOARD_BACKLIGHT
 	/* Turn on keyboard backlight to indicate we are booting */
-	const FSPM_ARCH_UPD *arch_upd = &mupd->FspmArchUpd;
-	if (arch_upd->BootMode != FSP_BOOT_ON_S3_RESUME)
+	if (!acpi_is_wakeup_s3())
 		google_chromeec_kbbacklight(25);
 #endif
 

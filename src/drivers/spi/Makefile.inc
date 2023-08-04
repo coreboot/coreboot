@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 # SPI flash driver interface
 
 subdirs-y += tpm

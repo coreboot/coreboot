@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 ifeq ($(CONFIG_DRIVERS_I2C_DESIGNWARE),y)
 
 bootblock-y += dw_i2c.c

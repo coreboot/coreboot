@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 ifeq ($(CONFIG_TPM),y)
 
 ramstage-$(CONFIG_TPM_INIT_RAMSTAGE) += tpm.c

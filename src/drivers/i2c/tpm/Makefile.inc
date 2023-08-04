@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 ifeq ($(CONFIG_TPM)$(CONFIG_I2C_TPM),yy)
 
 all-$(CONFIG_DRIVER_TIS_DEFAULT) += tis.c

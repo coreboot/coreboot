@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 ifeq ($(CONFIG_ARCH_X86),y)
 
 all-$(CONFIG_DRIVERS_MC146818)	+= mc146818rtc_boot.c

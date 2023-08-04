@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 bootblock-$(CONFIG_USBDEBUG) += ehci_debug.c pci_ehci.c console.c gadget.c
 verstage-$(CONFIG_USBDEBUG) += ehci_debug.c console.c
 romstage-$(CONFIG_USBDEBUG) += ehci_debug.c pci_ehci.c console.c gadget.c

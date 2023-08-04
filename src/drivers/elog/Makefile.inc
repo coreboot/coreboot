@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 bootblock-$(CONFIG_ELOG) += elog.c
 verstage-$(CONFIG_ELOG) += elog.c
 romstage-$(CONFIG_ELOG) += elog.c

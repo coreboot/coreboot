@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 ifeq ($(CONFIG_ARCH_X86),y)
 
 romstage-$(CONFIG_ROMSTAGE_VGA) += vga_io.c

@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 ifeq ($(CONFIG_SC16IS7XX_INIT),y)
 bootblock-y += sc16is7xx_init.c
 romstage-y += sc16is7xx_init.c

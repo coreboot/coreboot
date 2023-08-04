@@ -12,6 +12,9 @@ config BOARD_GOOGLE_CLAPPER
 config BOARD_GOOGLE_ENGUARDE
 	bool "->  Enguarde"
 
+config BOARD_GOOGLE_EXPRESSO
+	bool "->  Expresso"
+
 config BOARD_GOOGLE_GLIMMER
 	bool "->  Glimmer (Lenovo ThinkPad 11e Chromebook)"
 

@@ -32,6 +32,11 @@ config BOARD_GOOGLE_ENGUARDE
 	select INTEL_GMA_HAVE_VBT
 	select SYSTEM_TYPE_LAPTOP
 
+config BOARD_GOOGLE_EXPRESSO
+	select BOARD_GOOGLE_BASEBOARD_RAMBI
+	select INTEL_GMA_HAVE_VBT
+	select SYSTEM_TYPE_LAPTOP
+
 config BOARD_GOOGLE_GLIMMER
 	select BOARD_GOOGLE_BASEBOARD_RAMBI
 	select INTEL_GMA_HAVE_VBT
@@ -99,6 +104,7 @@ config VARIANT_DIR
 	default "candy" if BOARD_GOOGLE_CANDY
 	default "clapper" if BOARD_GOOGLE_CLAPPER
 	default "enguarde" if BOARD_GOOGLE_ENGUARDE
+	default "expresso" if BOARD_GOOGLE_EXPRESSO
 	default "glimmer" if BOARD_GOOGLE_GLIMMER
 	default "gnawty" if BOARD_GOOGLE_GNAWTY
 	default "heli" if BOARD_GOOGLE_HELI
@@ -117,6 +123,7 @@ config MAINBOARD_PART_NUMBER
 	default "Candy" if BOARD_GOOGLE_CANDY
 	default "Clapper" if BOARD_GOOGLE_CLAPPER
 	default "Enguarde" if BOARD_GOOGLE_ENGUARDE
+	default "Expresso" if BOARD_GOOGLE_EXPRESSO
 	default "Glimmer" if BOARD_GOOGLE_GLIMMER
 	default "Gnawty" if BOARD_GOOGLE_GNAWTY
 	default "Heli" if BOARD_GOOGLE_HELI

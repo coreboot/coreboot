@@ -152,10 +152,40 @@ static void report_data_fabric_io(struct device *domain, unsigned int idx,
 /* Tell the resource allocator about the usable I/O space */
 static void add_data_fabric_io_regions(struct device *domain, unsigned int *idx)
 {
-	/* TODO: Systems with more than one PCI root need to read the data fabric registers to
-	   see which IO ranges get decoded to which PCI root. */
+	union df_io_base base_reg;
+	union df_io_limit limit_reg;
+	resource_t io_base;
+	resource_t io_limit;
 
-	report_data_fabric_io(domain, (*idx)++, 0, 0xffff);
+	for (unsigned int i = 0; i < DF_IO_REG_COUNT; i++) {
+		base_reg.raw = data_fabric_broadcast_read32(DF_IO_BASE(i));
+
+		/* Relevant IO regions need to have both reads and writes enabled */
+		if (!base_reg.we || !base_reg.re)
+			continue;
+
+		limit_reg.raw = data_fabric_broadcast_read32(DF_IO_LIMIT(i));
+
+		/* TODO: Systems with more than one PCI root need to check to which PCI root
+		   the IO range gets decoded to. */
+
+		io_base = base_reg.io_base << DF_IO_ADDR_SHIFT;
+		io_limit = ((limit_reg.io_limit + 1) << DF_IO_ADDR_SHIFT) - 1;
+
+		/* Beware that the lower 25 bits of io_base and io_limit can be non-zero
+		   despite there only being 16 bits worth of IO port address space. */
+		if (io_base > 0xffff) {
+			printk(BIOS_WARNING, "DF IO base register %d value outside of valid "
+					     "IO port address range.\n", i);
+			continue;
+		}
+		/* If only the IO limit is outside of the valid 16 bit IO port range, report
+		   the limit as 0xffff, so that the resource allcator won't put IO BARs outside
+		   of the 16 bit IO port address range. */
+		io_limit = MIN(io_limit, 0xffff);
+
+		report_data_fabric_io(domain, (*idx)++, io_base, io_limit);
+	}
 }
 
 void amd_pci_domain_read_resources(struct device *domain)

@@ -1,10 +1,16 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-if SOC_INTEL_COOPERLAKE_SP
-
-config SOC_SPECIFIC_OPTIONS
-	def_bool y
+config SOC_INTEL_COOPERLAKE_SP
+	bool
+	select XEON_SP_COMMON_BASE
+	select PLATFORM_USES_FSP2_2
+	select CACHE_MRC_SETTINGS
+	select NO_FSP_TEMP_RAM_EXIT
 	select HAVE_INTEL_FSP_REPO
+	help
+	  Intel Cooper Lake-SP support
+
+if SOC_INTEL_COOPERLAKE_SP
 
 config FSP_HEADER_PATH
 	default "3rdparty/fsp/CedarIslandFspBinPkg/Include"

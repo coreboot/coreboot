@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 subdirs-y += ../model_f2x
 subdirs-y += ../../x86/lapic
 subdirs-y += ../microcode

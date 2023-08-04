@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 ramstage-$(CONFIG_CPU_INTEL_COMMON) += common_init.c
 ramstage-$(CONFIG_CPU_INTEL_COMMON) += hyperthreading.c
 ramstage-$(CONFIG_CPU_INTEL_COMMON_VOLTAGE) += voltage.c

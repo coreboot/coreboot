@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 ramstage-y += haswell_init.c
 
 romstage-y += romstage.c

@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 ramstage-y += model_106cx_init.c
 subdirs-y += ../../x86/name
 subdirs-y += ../smm/gen1

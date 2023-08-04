@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 subdirs-y += ../common
 
 ramstage-y += model_f2x_init.c

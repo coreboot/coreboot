@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 ramstage-$(CONFIG_AP_IN_SIPI_WAIT) += lapic_cpu_stop.c
 
 bootblock-$(CONFIG_UDELAY_LAPIC) += apic_timer.c

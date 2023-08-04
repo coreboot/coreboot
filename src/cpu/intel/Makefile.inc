@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 # Note: From here on down, we are socket-centric. Socket choice determines
 # what other CPU files are included.
 #

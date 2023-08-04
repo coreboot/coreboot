@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 subdirs-y += lapic
 subdirs-y += mtrr
 subdirs-y += pae

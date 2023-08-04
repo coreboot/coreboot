@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 bootblock-$(CONFIG_MICROCODE_UPDATE_PRE_RAM) += microcode_asm.S
 
 bootblock-$(CONFIG_SUPPORT_CPU_UCODE_IN_CBFS) += microcode.c

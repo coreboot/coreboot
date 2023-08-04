@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 bootblock-y += fit.c
 
 # The FIT table is generated as a separate CBFS file.

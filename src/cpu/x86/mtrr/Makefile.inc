@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 ramstage-y	+= mtrr.c
 
 romstage-y	+= earlymtrr.c

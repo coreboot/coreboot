@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 all_x86-y += mode_switch.S
 
 # Add --defsym=_start=0 to suppress a linker warning.

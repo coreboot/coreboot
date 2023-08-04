@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 ramstage-y += model_f3x_init.c
 
 subdirs-y += ../smm/gen1

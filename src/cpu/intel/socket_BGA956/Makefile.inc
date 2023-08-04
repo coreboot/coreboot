@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 subdirs-y += ../model_1067x
 subdirs-y += ../microcode
 subdirs-y += ../speedstep

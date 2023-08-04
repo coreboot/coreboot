@@ -16,6 +16,11 @@
 #include <soc/pci_devs.h>
 #include <types.h>
 
+#define GFX_MBUS_CTL		0x4438C
+#define GFX_MBUS_JOIN		BIT(31)
+#define GFX_MBUS_HASHING_MODE	BIT(30)
+#define GFX_MBUS_JOIN_PIPE_SEL	(BIT(28) | BIT(27) | BIT(26))
+
 /* SoC Overrides */
 __weak void graphics_soc_panel_init(struct device *dev)
 {
@@ -256,12 +261,27 @@ static void graphics_dev_read_resources(struct device *dev)
 	}
 }
 
+static void graphics_dev_final(struct device *dev)
+{
+	pci_dev_request_bus_master(dev);
+
+	if (CONFIG(SOC_INTEL_GFX_MBUS_JOIN)) {
+		uint32_t hashing_mode = 0;  /* 2x2 */
+		uint32_t pipe_select = 0; /* None */
+		if (!get_external_display_status()) {
+			hashing_mode = GFX_MBUS_HASHING_MODE; /* 1x4 */
+			pipe_select = GFX_MBUS_JOIN_PIPE_SEL; /* Pipe-A */
+		}
+		graphics_gtt_rmw(GFX_MBUS_CTL, (uint32_t)(~pipe_select), GFX_MBUS_JOIN | hashing_mode);
+	}
+}
+
 const struct device_operations graphics_ops = {
 	.read_resources		= graphics_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= gma_init,
-	.final			= pci_dev_request_bus_master,
+	.final			= graphics_dev_final,
 	.ops_pci		= &pci_dev_ops_pci,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_fill_ssdt		= gma_generate_ssdt,

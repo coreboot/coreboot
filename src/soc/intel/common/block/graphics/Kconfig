@@ -37,4 +37,24 @@ config SOC_INTEL_GFX_NON_PREFETCHABLE_MMIO
 	  Ignore BAR0(offset 0x10)'s pre-fetchable attribute to use non-prefetchable
 	  MMIO to fix OS display driver failure.
 
+config SOC_INTEL_GFX_MBUS_JOIN
+	bool
+	help
+	  The MBUS (Memory Bus) is a high-speed interface that connects the graphics
+	  controller to the system memory. It provides a dedicated data path for graphics
+	  data, which helps to improve graphics performance.
+
+	  The MBUS is a key technology that helps to make the Intel i915 driver powerful
+	  and versatile graphics drivers available. It provides the high-speed data transfer
+	  capabilities that are essential for smooth and responsive graphics performance.
+
+	  Enable this config to ensure that the Intel GFX controller joins the MBUS before the
+	  i915 driver is loaded. This is necessary to prevent the i915 driver from re-initializing
+	  the display if the firmware has already initialized it. Without this config, the i915
+	  driver will initialize the display to bring up the login screen although the firmware
+	  has initialized the display using the GFX MMIO registers and framebuffer.
+
+	  When enabled, saves 75ms-80ms of the boot time by avoiding redundent display
+	  initialization by kernel graphics driver (i.e., i915_gfx).
+
 endif

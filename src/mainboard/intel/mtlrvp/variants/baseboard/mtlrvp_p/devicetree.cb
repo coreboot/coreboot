@@ -52,6 +52,9 @@ chip soc/intel/meteorlake
 	# Enable S0ix
 	register "s0ix_enable" = "1"
 
+	# Disable C1 C-state auto-demotion
+	register "disable_c1_state_auto_demotion" = "1"
+
 	# Enable energy reporting
 	register "pch_pm_energy_report_enable" = "1"
 

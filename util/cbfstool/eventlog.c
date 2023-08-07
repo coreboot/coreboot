@@ -166,6 +166,8 @@ static void eventlog_print_type(const struct event_header *event)
 		{ELOG_TYPE_CROS_DIAGNOSTICS, "Diagnostics Mode"},
 		{ELOG_TYPE_FW_VBOOT_INFO, "Firmware vboot info"},
 		{ELOG_TYPE_FW_EARLY_SOL, "Early Sign of Life"},
+		{ELOG_TYPE_PSR_DATA_BACKUP, "PSR data backup"},
+		{ELOG_TYPE_PSR_DATA_LOST, "PSR data lost"},
 		{ELOG_TYPE_EOL, "End of log"},
 	};
 
@@ -472,6 +474,12 @@ static int eventlog_print_data(const struct event_header *event)
 		{0, NULL},
 	};
 
+	static const struct valstr psr_data_backup_statuses[] = {
+		{ELOG_PSR_DATA_BACKUP_SUCCESS, "Success"},
+		{ELOG_PSR_DATA_BACKUP_FAILED, "Fail"},
+		{0, NULL},
+	};
+
 	size_t elog_type_to_min_size[] = {
 		[ELOG_TYPE_LOG_CLEAR]		= sizeof(uint16_t),
 		[ELOG_TYPE_BOOT]		= sizeof(uint32_t),
@@ -491,6 +499,7 @@ static int eventlog_print_data(const struct event_header *event)
 		[ELOG_TYPE_CROS_DIAGNOSTICS]	= sizeof(uint8_t),
 		[ELOG_TYPE_FW_VBOOT_INFO]	= sizeof(uint16_t),
 		[ELOG_TYPE_FW_EARLY_SOL]	= sizeof(uint8_t),
+		[ELOG_TYPE_PSR_DATA_BACKUP]	= sizeof(uint8_t),
 		[0xff]				= 0,
 	};
 
@@ -645,6 +654,11 @@ static int eventlog_print_data(const struct event_header *event)
 	case ELOG_TYPE_FW_EARLY_SOL: {
 		const uint8_t *sol_event = event_get_data(event);
 		eventlog_printf("%s", val2str(*sol_event, early_sol_path_types));
+		break;
+	}
+	case ELOG_TYPE_PSR_DATA_BACKUP: {
+		const uint8_t *psr_backup_event = event_get_data(event);
+		eventlog_printf("%s", val2str(*psr_backup_event, psr_data_backup_statuses));
 		break;
 	}
 	default:

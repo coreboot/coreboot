@@ -1125,8 +1125,7 @@ F:	src/drivers/*/tpm/
 F:	src/security/tpm/
 
 SUPERIOS & SUPERIOTOOL
-M:	Felix Held <felix-coreboot@felixheld.de>
-S:	Odd Fixes
+S:	Orphan
 F:	src/superio/
 F:	util/superiotool/
 

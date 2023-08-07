@@ -26,8 +26,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_A11, 0, DEEP),
 	/* GPP_A12 : [] ==> EN_UCAM_PWR */
 	PAD_CFG_GPO(GPP_A12, 0, DEEP),
-	/* GPP_A13 : [] ==> SD_PE_LS_PRSNT_L */
-	PAD_CFG_GPI_LOCK(GPP_A13, NONE, LOCK_CONFIG),
+	/* GPP_A13 : Not connected */
+	PAD_NC(GPP_A13, NONE),
 	/* GPP_A14 : [] ==> WWAN_RF_DISABLE_ODL */
 	PAD_NC_LOCK(GPP_A14, NONE, LOCK_CONFIG),
 	/* GPP_A15 : [] ==> WWAN_RST_L */
@@ -115,8 +115,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_C09, NONE),
 	/* GPP_C10 : net NC is not present in the given design */
 	PAD_NC(GPP_C10, NONE),
-	/* GPP_C11 : [] ==> SD_CLKREQ_ODL */
-	PAD_CFG_NF(GPP_C11, NONE, DEEP, NF1),
+	/* GPP_C11 : Not Connected */
+	PAD_NC(GPP_C11, NONE),
 	/* GPP_C12 : [] ==> WWAN_CLKREQ_ODL */
 	PAD_CFG_NF(GPP_C12, NONE, DEEP, NF1),
 	/* GPP_C13 : Not connected */
@@ -142,12 +142,8 @@ static const struct pad_config gpio_table[] = {
 
 	/* GPP_D00 : WCAM_MCLK_R */
 	PAD_CFG_NF(GPP_D00, NONE, DEEP, NF1),
-	/* GPP_D01 : [] ==> SD_PE_WAKE_ODL */
-	PAD_CFG_GPI_LOCK(GPP_D01, NONE, LOCK_CONFIG),
-	/* GPP_D02 : [] ==> SD_PERST_L */
-	PAD_CFG_GPO_LOCK(GPP_D02, 1, LOCK_CONFIG),
-	/* GPP_D03 : [] ==> EN_PP3300_SD */
-	PAD_CFG_GPO_LOCK(GPP_D03, 1, LOCK_CONFIG),
+	/* GPP_D01 : Not Connected */
+	PAD_NC(GPP_D01, NONE),
 	/* GPP_D04 : [] ==> EN_SPKR */
 	PAD_CFG_GPO(GPP_D04, 1, DEEP),
 	/* GPP_D05 : net NC.  Test pad. */
@@ -389,8 +385,8 @@ static const struct pad_config early_gpio_table[] = {
 	/* GPP_H09 : [] ==> UART_SOC_TX_DBG_RX_R */
 	PAD_CFG_NF(GPP_H09, NONE, DEEP, NF1),
 
-	/* GPP_D03 : [] ==> EN_PP3300_SD */
-	PAD_CFG_GPO(GPP_D03, 1, DEEP),
+	/* GPP_D03 : Not Connected */
+	PAD_NC(GPP_D03, NONE),
 
 	/* GPP_E13 :  [] ==> MEM_CH_SEL */
 	PAD_CFG_GPI(GPP_E13, NONE, DEEP),
@@ -411,8 +407,8 @@ static const struct pad_config romstage_gpio_table[] = {
 	PAD_CFG_GPO(GPP_C23, 0, DEEP),
 	/* GPP_E07 : [] ==> WWAN_FCPO_L */
 	PAD_CFG_GPO(GPP_E07, 1, DEEP),
-	/* GPP_D02 : [] ==> SD_PERST_L */
-	PAD_CFG_GPO(GPP_D02, 1, DEEP),
+	/* GPP_D02 : Not Connected */
+	PAD_NC(GPP_D02, NONE),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

@@ -17,10 +17,6 @@ fw_config
 		option WFC_USB			0
 		option WFC_MIPI			1
 	end
-	field DB_SD 10 11
-		option SD_ABSENT		0
-		option SD_GL9755S		1
-	end
 	field DB_USB 12 14
 		option USB_UNKNOWN		0
 		option USB3_PS8815		1
@@ -49,10 +45,6 @@ fw_config
 	field VPU 20
 		option VPU_DIS			0
 		option VPU_EN			1
-	end
-	field ISH 21
-		option ISH_DISABLE		0
-		option ISH_ENABLE		1
 	end
 end
 
@@ -303,13 +295,6 @@ chip soc/intel/meteorlake
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 		end # PCIE10 SSD card
-		device ref ish on
-			probe ISH ISH_ENABLE
-			chip drivers/intel/ish
-				register "firmware_name" = ""rex_ish.bin""
-			device generic 0 on end
-			end
-		end
 		device ref tbt_pcie_rp0 on end
 		device ref tbt_pcie_rp2 on end
 		device ref vpu on
@@ -736,21 +721,6 @@ chip soc/intel/meteorlake
 				end
 			end
 		end	#PCIE6 WWAN card
-		device ref pcie_rp7 on
-			# Enable SD Card PCIE 7 using clk 2
-			register "pcie_rp[PCH_RP(7)]" = "{
-				.clk_src = 2,
-				.clk_req = 2,
-				.flags = PCIE_RP_HOTPLUG | PCIE_RP_LTR | PCIE_RP_AER,
-			}"
-			chip soc/intel/common/block/pcie/rtd3
-				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D03)"
-				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D02)"
-				register "srcclk_pin" = "2"
-				device generic 0 on end
-			end
-			probe DB_SD SD_GL9755S
-		end
 		device ref gspi0 on
 			probe TOUCHSCREEN TOUCHSCREEN_I2C_SPI
 		end

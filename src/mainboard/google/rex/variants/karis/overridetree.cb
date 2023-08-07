@@ -295,14 +295,14 @@ chip soc/intel/meteorlake
 				device generic 0 alias dptf_policy on end
 			end
 		end
-		device ref pcie_rp9 on
-			# Enable SSD Card PCIE 9 using clk 4
-			register "pcie_rp[PCH_RP(9)]" = "{
-				.clk_src = 4,
-				.clk_req = 4,
+		device ref pcie_rp10 on
+			# Enable SSD Card PCIE 10 using clk 8
+			register "pcie_rp[PCIE_RP(10)]" = "{
+				.clk_src = 8,
+				.clk_req = 8,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
-		end	#PCIE9 SSD card
+		end # PCIE10 SSD card
 		device ref ish on
 			probe ISH ISH_ENABLE
 			chip drivers/intel/ish

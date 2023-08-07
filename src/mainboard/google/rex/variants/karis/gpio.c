@@ -119,8 +119,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C11, NONE, DEEP, NF1),
 	/* GPP_C12 : [] ==> WWAN_CLKREQ_ODL */
 	PAD_CFG_NF(GPP_C12, NONE, DEEP, NF1),
-	/* GPP_C13 : [] ==> SSD_CLKREQ_ODL */
-	PAD_CFG_NF(GPP_C13, NONE, DEEP, NF1),
+	/* GPP_C13 : Not connected */
+	PAD_NC(GPP_C13, NONE),
 	/* GPP_C15 : [] ==> WWAN_DPR_SAR_ODL */
 	PAD_CFG_GPO(GPP_C15, 1, DEEP),
 	/* GPP_C16 : [] ==> USB_C0_LSX_TX */
@@ -180,8 +180,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D18, NONE),
 	/* GPP_D19 : [] ==> EC_SOC_REC_SWITCH_ODL */
 	PAD_CFG_GPI_LOCK(GPP_D19, NONE, LOCK_CONFIG),
-	/* GPP_D20 : net NC is not present in the given design */
-	PAD_NC(GPP_D20, NONE),
+	/* GPP_D20 : [] ==> SSD_CLKREQ_ODL */
+	PAD_CFG_NF(GPP_D20, NONE, DEEP, NF1),
 	/* GPP_D21 : [] ==> WLAN_CLKREQ_ODLl */
 	PAD_CFG_NF(GPP_D21, NONE, DEEP, NF2),
 	/* GPP_D22 : net NC is not present in the given design */

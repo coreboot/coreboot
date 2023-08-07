@@ -8,6 +8,37 @@
 
 #define IOMS0_FABRIC_ID			15
 
+#define DF_PCI_CFG_BASE0		DF_REG_ID(0, 0xc80)
+#define DF_PCI_CFG_LIMIT0		DF_REG_ID(0, 0xc84)
+
+#define DF_PCI_CFG_MAP_COUNT		8
+
+#define DF_PCI_CFG_REG_OFFSET(instance)	((instance) * 2 * sizeof(uint32_t))
+#define DF_PCI_CFG_BASE(reg)		(DF_PCI_CFG_BASE0 + DF_PCI_CFG_REG_OFFSET(reg))
+#define DF_PCI_CFG_LIMIT(reg)		(DF_PCI_CFG_LIMIT0 + DF_PCI_CFG_REG_OFFSET(reg))
+
+union df_pci_cfg_base {
+	struct {
+		uint32_t re		: 1; /* [ 0.. 0] */
+		uint32_t we		: 1; /* [ 1.. 1] */
+		uint32_t		: 6; /* [ 2.. 7] */
+		uint32_t segment_num	: 8; /* [ 8..15] */
+		uint32_t bus_num_base	: 8; /* [16..23] */
+		uint32_t		: 8; /* [24..31] */
+	};
+	uint32_t raw;
+};
+
+union df_pci_cfg_limit {
+	struct {
+		uint32_t dst_fabric_id	:  6; /* [ 0.. 5] */
+		uint32_t		: 10; /* [ 6..15] */
+		uint32_t bus_num_limit	:  8; /* [16..23] */
+		uint32_t		:  8; /* [24..31] */
+	};
+	uint32_t raw;
+};
+
 #define DF_IO_BASE0			DF_REG_ID(0, 0xd00)
 #define DF_IO_LIMIT0			DF_REG_ID(0, 0xd04)
 

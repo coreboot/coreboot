@@ -8,6 +8,25 @@
 
 #define IOMS0_FABRIC_ID			9
 
+#define DF_PCI_CFG_MAP0			DF_REG_ID(0, 0xa0)
+
+#define DF_PCI_CFG_MAP_COUNT		8
+
+#define DF_PCI_CFG_MAP(reg)		(DF_PCI_CFG_MAP0 + (reg) * sizeof(uint32_t))
+
+union df_pci_cfg_map {
+	struct {
+		uint32_t re		: 1; /* [ 0.. 0] */
+		uint32_t we		: 1; /* [ 1.. 1] */
+		uint32_t		: 2; /* [ 2.. 3] */
+		uint32_t dst_fabric_id	: 4; /* [ 4.. 7] */
+		uint32_t		: 8; /* [ 8..15] */
+		uint32_t bus_num_base	: 8; /* [16..23] */
+		uint32_t bus_num_limit	: 8; /* [24..31] */
+	};
+	uint32_t raw;
+};
+
 #define DF_IO_BASE0			DF_REG_ID(0, 0xc0)
 #define DF_IO_LIMIT0			DF_REG_ID(0, 0xc4)
 

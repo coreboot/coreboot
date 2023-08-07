@@ -1,4 +1,0 @@
-# SPDX-License-Identifier: GPL-2.0-only
-
-config SUPERIO_SERVERENGINES_PILOT
-	bool

@@ -80,7 +80,7 @@ Device(SUPERIO_DEV) {
 	{
 		/* Announce the used I/O ports to the OS */
 		Return (ResourceTemplate () {
-			FixedIO (SUPERIO_PNP_BASE, 0x02)
+			IO (Decode16, SUPERIO_PNP_BASE, SUPERIO_PNP_BASE, 0x01, 0x02)
 		})
 	}
 

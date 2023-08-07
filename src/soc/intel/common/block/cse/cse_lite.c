@@ -135,6 +135,8 @@ struct get_bp_info_rsp {
 	struct cse_bp_info bp_info;
 } __packed;
 
+static struct get_bp_info_rsp cse_bp_info_rsp;
+
 enum cse_fw_state {
 	/* The CMOS and CBMEM have the current fw version. */
 	CSE_FW_WARM_BOOT,
@@ -202,15 +204,20 @@ enum cb_err cse_get_boot_performance_data(struct cse_boot_perf_rsp *boot_perf_rs
 	return CB_SUCCESS;
 }
 
-
-static uint8_t cse_get_current_bp(const struct cse_bp_info *cse_bp_info)
+static const struct cse_bp_info *cse_get_bp_info_from_rsp(void)
 {
+	return &cse_bp_info_rsp.bp_info;
+}
+
+static uint8_t cse_get_current_bp(void)
+{
+	const struct cse_bp_info *cse_bp_info = cse_get_bp_info_from_rsp();
 	return cse_bp_info->current_bp;
 }
 
-static const struct cse_bp_entry *cse_get_bp_entry(enum boot_partition_id bp,
-		const struct cse_bp_info *cse_bp_info)
+static const struct cse_bp_entry *cse_get_bp_entry(enum boot_partition_id bp)
 {
+	const struct cse_bp_info *cse_bp_info = cse_get_bp_info_from_rsp();
 	return &cse_bp_info->bp_entries[bp];
 }
 
@@ -358,9 +365,10 @@ static void preram_cse_info_sync_to_cbmem(int is_recovery)
 CBMEM_CREATION_HOOK(preram_cse_info_sync_to_cbmem);
 #endif
 
-static void cse_print_boot_partition_info(const struct cse_bp_info *cse_bp_info)
+static void cse_print_boot_partition_info(void)
 {
 	const struct cse_bp_entry *cse_bp;
+	const struct cse_bp_info *cse_bp_info = cse_get_bp_info_from_rsp();
 
 	printk(BIOS_DEBUG, "cse_lite: Number of partitions = %d\n",
 			cse_bp_info->total_number_of_bp);
@@ -370,14 +378,14 @@ static void cse_print_boot_partition_info(const struct cse_bp_info *cse_bp_info)
 	printk(BIOS_DEBUG, "cse_lite: Flags = 0x%x\n", cse_bp_info->flags);
 
 	/* Log version info of RO & RW partitions */
-	cse_bp = cse_get_bp_entry(RO, cse_bp_info);
+	cse_bp = cse_get_bp_entry(RO);
 	printk(BIOS_DEBUG, "cse_lite: %s version = %d.%d.%d.%d (Status=0x%x, Start=0x%x, End=0x%x)\n",
 			GET_BP_STR(RO), cse_bp->fw_ver.major, cse_bp->fw_ver.minor,
 			cse_bp->fw_ver.hotfix, cse_bp->fw_ver.build,
 			cse_bp->status, cse_bp->start_offset,
 			cse_bp->end_offset);
 
-	cse_bp = cse_get_bp_entry(RW, cse_bp_info);
+	cse_bp = cse_get_bp_entry(RW);
 	printk(BIOS_DEBUG, "cse_lite: %s version = %d.%d.%d.%d (Status=0x%x, Start=0x%x, End=0x%x)\n",
 			GET_BP_STR(RW), cse_bp->fw_ver.major, cse_bp->fw_ver.minor,
 			cse_bp->fw_ver.hotfix, cse_bp->fw_ver.build,
@@ -413,7 +421,7 @@ static bool cse_is_bp_cmd_info_possible(void)
 	return false;
 }
 
-static enum cb_err cse_get_bp_info(struct get_bp_info_rsp *bp_info_rsp)
+static enum cb_err cse_get_bp_info(void)
 {
 	struct get_bp_info_req {
 		struct mkhi_hdr hdr;
@@ -433,19 +441,19 @@ static enum cb_err cse_get_bp_info(struct get_bp_info_rsp *bp_info_rsp)
 
 	size_t resp_size = sizeof(struct get_bp_info_rsp);
 
-	if (heci_send_receive(&info_req, sizeof(info_req), bp_info_rsp, &resp_size,
+	if (heci_send_receive(&info_req, sizeof(info_req), &cse_bp_info_rsp, &resp_size,
 									HECI_MKHI_ADDR)) {
 		printk(BIOS_ERR, "cse_lite: Could not get partition info\n");
 		return CB_ERR;
 	}
 
-	if (bp_info_rsp->hdr.result) {
+	if (cse_bp_info_rsp.hdr.result) {
 		printk(BIOS_ERR, "cse_lite: Get partition info resp failed: %d\n",
-				bp_info_rsp->hdr.result);
+				cse_bp_info_rsp.hdr.result);
 		return CB_ERR;
 	}
 
-	cse_print_boot_partition_info(&bp_info_rsp->bp_info);
+	cse_print_boot_partition_info();
 
 	return CB_SUCCESS;
 }
@@ -499,7 +507,7 @@ static enum cb_err cse_set_next_boot_partition(enum boot_partition_id bp)
 	return CB_SUCCESS;
 }
 
-static enum cb_err cse_data_clear_request(const struct cse_bp_info *cse_bp_info)
+static enum cb_err cse_data_clear_request(void)
 {
 	struct data_clr_request {
 		struct mkhi_hdr hdr;
@@ -513,7 +521,7 @@ static enum cb_err cse_data_clear_request(const struct cse_bp_info *cse_bp_info)
 	};
 
 	if (!cse_is_hfs1_cws_normal() || !cse_is_hfs1_com_soft_temp_disable() ||
-			cse_get_current_bp(cse_bp_info) != RO) {
+			cse_get_current_bp() != RO) {
 		printk(BIOS_ERR, "cse_lite: CSE doesn't meet DATA CLEAR cmd prerequisites\n");
 		return CB_ERR;
 	}
@@ -565,20 +573,20 @@ static enum cb_err cse_set_and_boot_from_next_bp(enum boot_partition_id bp)
 	return CB_ERR;
 }
 
-static enum cb_err cse_boot_to_rw(const struct cse_bp_info *cse_bp_info)
+static enum cb_err cse_boot_to_rw(void)
 {
-	if (cse_get_current_bp(cse_bp_info) == RW)
+	if (cse_get_current_bp() == RW)
 		return CB_SUCCESS;
 
 	return cse_set_and_boot_from_next_bp(RW);
 }
 
 /* Check if CSE RW data partition is valid or not */
-static bool cse_is_rw_dp_valid(const struct cse_bp_info *cse_bp_info)
+static bool cse_is_rw_dp_valid(void)
 {
 	const struct cse_bp_entry *rw_bp;
 
-	rw_bp = cse_get_bp_entry(RW, cse_bp_info);
+	rw_bp = cse_get_bp_entry(RW);
 	return rw_bp->status != BP_STATUS_DATA_FAILURE;
 }
 
@@ -586,7 +594,7 @@ static bool cse_is_rw_dp_valid(const struct cse_bp_info *cse_bp_info)
  * It returns true if RW partition doesn't indicate BP_STATUS_DATA_FAILURE
  * otherwise false if any operation fails.
  */
-static enum cb_err cse_fix_data_failure_err(const struct cse_bp_info *cse_bp_info)
+static enum cb_err cse_fix_data_failure_err(void)
 {
 	/*
 	 * If RW partition status indicates BP_STATUS_DATA_FAILURE,
@@ -594,35 +602,34 @@ static enum cb_err cse_fix_data_failure_err(const struct cse_bp_info *cse_bp_inf
 	 *  - Send SET BOOT PARTITION INFO(RW) command to set CSE's next partition
 	 *  - Issue GLOBAL RESET HECI command.
 	 */
-	if (cse_is_rw_dp_valid(cse_bp_info))
+	if (cse_is_rw_dp_valid())
 		return CB_SUCCESS;
 
-	if (cse_data_clear_request(cse_bp_info) != CB_SUCCESS)
+	if (cse_data_clear_request() != CB_SUCCESS)
 		return CB_ERR;
 
-	return cse_boot_to_rw(cse_bp_info);
+	return cse_boot_to_rw();
 }
 
-static const struct fw_version *cse_get_bp_entry_version(enum boot_partition_id bp,
-		const struct cse_bp_info *bp_info)
+static const struct fw_version *cse_get_bp_entry_version(enum boot_partition_id bp)
 {
 	const struct cse_bp_entry *cse_bp;
 
-	cse_bp = cse_get_bp_entry(bp, bp_info);
+	cse_bp = cse_get_bp_entry(bp);
 	return &cse_bp->fw_ver;
 }
 
-static const struct fw_version *cse_get_rw_version(const struct cse_bp_info *cse_bp_info)
+static const struct fw_version *cse_get_rw_version(void)
 {
-	return cse_get_bp_entry_version(RW, cse_bp_info);
+	return cse_get_bp_entry_version(RW);
 }
 
-static void cse_get_bp_entry_range(const struct cse_bp_info *cse_bp_info,
-		enum boot_partition_id bp, uint32_t *start_offset, uint32_t *end_offset)
+static void cse_get_bp_entry_range(enum boot_partition_id bp, uint32_t *start_offset,
+		uint32_t *end_offset)
 {
 	const struct cse_bp_entry *cse_bp;
 
-	cse_bp = cse_get_bp_entry(bp, cse_bp_info);
+	cse_bp = cse_get_bp_entry(bp);
 
 	if (start_offset)
 		*start_offset = cse_bp->start_offset;
@@ -632,11 +639,11 @@ static void cse_get_bp_entry_range(const struct cse_bp_info *cse_bp_info,
 
 }
 
-static bool cse_is_rw_bp_status_valid(const struct cse_bp_info *cse_bp_info)
+static bool cse_is_rw_bp_status_valid(void)
 {
 	const struct cse_bp_entry *rw_bp;
 
-	rw_bp = cse_get_bp_entry(RW, cse_bp_info);
+	rw_bp = cse_get_bp_entry(RW);
 
 	if (rw_bp->status == BP_STATUS_PARTITION_NOT_PRESENT ||
 			rw_bp->status == BP_STATUS_GENERAL_FAILURE) {
@@ -646,9 +653,9 @@ static bool cse_is_rw_bp_status_valid(const struct cse_bp_info *cse_bp_info)
 	return true;
 }
 
-static enum cb_err cse_boot_to_ro(const struct cse_bp_info *cse_bp_info)
+static enum cb_err cse_boot_to_ro(void)
 {
-	if (cse_get_current_bp(cse_bp_info) == RO)
+	if (cse_get_current_bp() == RO)
 		return CB_SUCCESS;
 
 	return cse_set_and_boot_from_next_bp(RO);
@@ -677,8 +684,7 @@ static bool cse_is_rw_bp_sign_valid(const struct region_device *target_rdev)
 	return cse_bp_sign == CSE_RW_SIGNATURE;
 }
 
-static enum cb_err cse_get_target_rdev(const struct cse_bp_info *cse_bp_info,
-		struct region_device *target_rdev)
+static enum cb_err cse_get_target_rdev(struct region_device *target_rdev)
 {
 	struct region_device cse_region_rdev;
 	size_t size;
@@ -688,7 +694,7 @@ static enum cb_err cse_get_target_rdev(const struct cse_bp_info *cse_bp_info,
 	if (cse_get_rw_rdev(&cse_region_rdev) != CB_SUCCESS)
 		return CB_ERR;
 
-	cse_get_bp_entry_range(cse_bp_info, RW, &start_offset, &end_offset);
+	cse_get_bp_entry_range(RW, &start_offset, &end_offset);
 	size = end_offset + 1 - start_offset;
 
 	if (rdev_chain(target_rdev, &cse_region_rdev, start_offset, size))
@@ -822,8 +828,7 @@ static enum cb_err get_cse_ver_from_cbfs(struct fw_version *cbfs_rw_version)
 	return CB_SUCCESS;
 }
 
-static enum cse_update_status cse_check_update_status(const struct cse_bp_info *cse_bp_info,
-							struct region_device *target_rdev)
+static enum cse_update_status cse_check_update_status(struct region_device *target_rdev)
 {
 	int ret;
 	struct fw_version cbfs_rw_version;
@@ -840,7 +845,7 @@ static enum cse_update_status cse_check_update_status(const struct cse_bp_info *
 			cbfs_rw_version.hotfix,
 			cbfs_rw_version.build);
 
-	ret = cse_compare_sub_part_version(&cbfs_rw_version, cse_get_rw_version(cse_bp_info));
+	ret = cse_compare_sub_part_version(&cbfs_rw_version, cse_get_rw_version());
 	if (ret == 0)
 		return CSE_UPDATE_NOT_REQUIRED;
 	else if (ret < 0)
@@ -882,8 +887,7 @@ static bool is_cse_fw_update_enabled(void)
 	return true;
 }
 
-static enum csme_failure_reason cse_update_rw(const struct cse_bp_info *cse_bp_info,
-		const void *cse_cbfs_rw, const size_t cse_blob_sz,
+static enum csme_failure_reason cse_update_rw(const void *cse_cbfs_rw, const size_t cse_blob_sz,
 		struct region_device *target_rdev)
 {
 	if (region_device_sz(target_rdev) < cse_blob_sz) {
@@ -901,19 +905,18 @@ static enum csme_failure_reason cse_update_rw(const struct cse_bp_info *cse_bp_i
 	return CSE_NO_ERROR;
 }
 
-static enum cb_err cse_prep_for_rw_update(const struct cse_bp_info *cse_bp_info,
-				   enum cse_update_status status)
+static enum cb_err cse_prep_for_rw_update(enum cse_update_status status)
 {
 	/*
 	 * To set CSE's operation mode to HMRFPO mode:
 	 * 1. Ensure CSE to boot from RO(BP1)
 	 * 2. Send HMRFPO_ENABLE command to CSE
 	 */
-	if (cse_boot_to_ro(cse_bp_info) != CB_SUCCESS)
+	if (cse_boot_to_ro() != CB_SUCCESS)
 		return CB_ERR;
 
 	if ((status == CSE_UPDATE_DOWNGRADE) || (status == CSE_UPDATE_CORRUPTED)) {
-		if (cse_data_clear_request(cse_bp_info) != CB_SUCCESS) {
+		if (cse_data_clear_request() != CB_SUCCESS) {
 			printk(BIOS_ERR, "cse_lite: CSE data clear failed!\n");
 			return CB_ERR;
 		}
@@ -922,9 +925,8 @@ static enum cb_err cse_prep_for_rw_update(const struct cse_bp_info *cse_bp_info,
 	return cse_hmrfpo_enable();
 }
 
-static enum csme_failure_reason cse_trigger_fw_update(const struct cse_bp_info *cse_bp_info,
-						      enum cse_update_status status,
-						      struct region_device *target_rdev)
+static enum csme_failure_reason cse_trigger_fw_update(enum cse_update_status status,
+		struct region_device *target_rdev)
 {
 	enum csme_failure_reason rv;
 	uint8_t *cbfs_rw_hash;
@@ -960,13 +962,13 @@ static enum csme_failure_reason cse_trigger_fw_update(const struct cse_bp_info *
 		goto error_exit;
 	}
 
-	if (cse_prep_for_rw_update(cse_bp_info, status) != CB_SUCCESS) {
+	if (cse_prep_for_rw_update(status) != CB_SUCCESS) {
 		rv = CSE_COMMUNICATION_ERROR;
 		goto error_exit;
 	}
 
 	cse_fw_update_misc_oper();
-	rv = cse_update_rw(cse_bp_info, cse_cbfs_rw, size, target_rdev);
+	rv = cse_update_rw(cse_cbfs_rw, size, target_rdev);
 
 error_exit:
 	cbfs_unmap(cbfs_rw_hash);
@@ -974,24 +976,24 @@ error_exit:
 	return rv;
 }
 
-static uint8_t cse_fw_update(const struct cse_bp_info *cse_bp_info)
+static uint8_t cse_fw_update(void)
 {
 	struct region_device target_rdev;
 	enum cse_update_status status;
 
-	if (cse_get_target_rdev(cse_bp_info, &target_rdev) != CB_SUCCESS) {
+	if (cse_get_target_rdev(&target_rdev) != CB_SUCCESS) {
 		printk(BIOS_ERR, "cse_lite: Failed to get CSE RW Partition\n");
 		return CSE_LITE_SKU_RW_ACCESS_ERROR;
 	}
 
-	status = cse_check_update_status(cse_bp_info, &target_rdev);
+	status = cse_check_update_status(&target_rdev);
 	if (status == CSE_UPDATE_NOT_REQUIRED)
 		return CSE_NO_ERROR;
 	if (status == CSE_UPDATE_METADATA_ERROR)
 		return CSE_LITE_SKU_RW_METADATA_NOT_FOUND;
 
 	printk(BIOS_DEBUG, "cse_lite: CSE RW update is initiated\n");
-	return cse_trigger_fw_update(cse_bp_info, status, &target_rdev);
+	return cse_trigger_fw_update(status, &target_rdev);
 }
 
 static const char *cse_sub_part_str(enum bpdt_entry_type type)
@@ -1006,8 +1008,7 @@ static const char *cse_sub_part_str(enum bpdt_entry_type type)
 	}
 }
 
-static enum cb_err cse_locate_area_as_rdev_rw(const struct cse_bp_info *cse_bp_info,
-		size_t bp, struct region_device  *cse_rdev)
+static enum cb_err cse_locate_area_as_rdev_rw(size_t bp, struct region_device  *cse_rdev)
 {
 	struct region_device cse_region_rdev;
 	uint32_t size;
@@ -1018,9 +1019,9 @@ static enum cb_err cse_locate_area_as_rdev_rw(const struct cse_bp_info *cse_bp_i
 		return CB_ERR;
 
 	if (!strcmp(cse_regions[bp], "RO"))
-		cse_get_bp_entry_range(cse_bp_info, RO, &start_offset, &end_offset);
+		cse_get_bp_entry_range(RO, &start_offset, &end_offset);
 	else
-		cse_get_bp_entry_range(cse_bp_info, RW, &start_offset, &end_offset);
+		cse_get_bp_entry_range(RW, &start_offset, &end_offset);
 
 	size = end_offset + 1 - start_offset;
 
@@ -1032,15 +1033,15 @@ static enum cb_err cse_locate_area_as_rdev_rw(const struct cse_bp_info *cse_bp_i
 	return CB_SUCCESS;
 }
 
-static enum cb_err cse_sub_part_get_target_rdev(const struct cse_bp_info *cse_bp_info,
-	struct region_device *target_rdev, size_t bp, enum bpdt_entry_type type)
+static enum cb_err cse_sub_part_get_target_rdev(struct region_device *target_rdev, size_t bp,
+						enum bpdt_entry_type type)
 {
 	struct bpdt_header bpdt_hdr;
 	struct region_device cse_rdev;
 	struct bpdt_entry bpdt_entries[MAX_SUBPARTS];
 	uint8_t i;
 
-	if (cse_locate_area_as_rdev_rw(cse_bp_info, bp, &cse_rdev) != CB_SUCCESS) {
+	if (cse_locate_area_as_rdev_rw(bp, &cse_rdev) != CB_SUCCESS) {
 		printk(BIOS_ERR, "cse_lite: Failed to locate %s in the CSE Region\n",
 				cse_regions[bp]);
 		return CB_ERR;
@@ -1121,14 +1122,14 @@ static void cse_sub_part_get_source_fw_version(void *subpart_cbfs_rw, struct fw_
 	fw_ver->build = man_hdr->binary_version.build;
 }
 
-static enum cb_err cse_prep_for_component_update(const struct cse_bp_info *cse_bp_info)
+static enum cb_err cse_prep_for_component_update(void)
 {
 	/*
 	 * To set CSE's operation mode to HMRFPO mode:
 	 * 1. Ensure CSE to boot from RO(BP1)
 	 * 2. Send HMRFPO_ENABLE command to CSE
 	 */
-	if (cse_boot_to_ro(cse_bp_info) != CB_SUCCESS)
+	if (cse_boot_to_ro() != CB_SUCCESS)
 		return CB_ERR;
 
 	return cse_hmrfpo_enable();
@@ -1173,7 +1174,7 @@ static enum csme_failure_reason handle_cse_sub_part_fw_update_rv(enum csme_failu
 }
 
 static enum csme_failure_reason cse_sub_part_fw_component_update(enum bpdt_entry_type type,
-		const struct cse_bp_info *cse_bp_info, const char *name)
+		const char *name)
 {
 	struct region_device target_rdev;
 	struct fw_version target_fw_ver, source_fw_ver;
@@ -1194,7 +1195,7 @@ static enum csme_failure_reason cse_sub_part_fw_component_update(enum bpdt_entry
 
 	/* Trigger sub-partition update in CSE RO and CSE RW */
 	for (size_t bp = 0; bp < ARRAY_SIZE(cse_regions); bp++) {
-		if (cse_sub_part_get_target_rdev(cse_bp_info, &target_rdev, bp, type) != CB_SUCCESS) {
+		if (cse_sub_part_get_target_rdev(&target_rdev, bp, type) != CB_SUCCESS) {
 			rv = CSE_LITE_SKU_SUB_PART_ACCESS_ERR;
 			goto error_exit;
 		}
@@ -1218,7 +1219,7 @@ static enum csme_failure_reason cse_sub_part_fw_component_update(enum bpdt_entry
 		printk(BIOS_INFO, "CSE %s %s Update initiated\n", GET_BP_STR(bp),
 				cse_sub_part_str(type));
 
-		if (cse_prep_for_component_update(cse_bp_info) != CB_SUCCESS) {
+		if (cse_prep_for_component_update() != CB_SUCCESS) {
 			rv = CSE_LITE_SKU_SUB_PART_ACCESS_ERR;
 			goto error_exit;
 		}
@@ -1234,7 +1235,7 @@ error_exit:
 	return rv;
 }
 
-static enum csme_failure_reason cse_sub_part_fw_update(const struct cse_bp_info *cse_bp_info)
+static enum csme_failure_reason cse_sub_part_fw_update(void)
 {
 	if (skip_cse_sub_part_update()) {
 		printk(BIOS_INFO, "CSE Sub-partition update not required\n");
@@ -1242,21 +1243,17 @@ static enum csme_failure_reason cse_sub_part_fw_update(const struct cse_bp_info 
 	}
 
 	enum csme_failure_reason rv;
-	rv = cse_sub_part_fw_component_update(IOM_FW, cse_bp_info,
-			CONFIG_SOC_INTEL_CSE_IOM_CBFS_NAME);
+	rv = cse_sub_part_fw_component_update(IOM_FW, CONFIG_SOC_INTEL_CSE_IOM_CBFS_NAME);
 
 	handle_cse_sub_part_fw_update_rv(rv);
 
-	rv = cse_sub_part_fw_component_update(NPHY_FW, cse_bp_info,
-			CONFIG_SOC_INTEL_CSE_NPHY_CBFS_NAME);
+	rv = cse_sub_part_fw_component_update(NPHY_FW, CONFIG_SOC_INTEL_CSE_NPHY_CBFS_NAME);
 
 	return handle_cse_sub_part_fw_update_rv(rv);
 }
 
 static void do_cse_fw_sync(void)
 {
-	static struct get_bp_info_rsp cse_bp_info;
-
 	/*
 	 * If system is in recovery mode, skip CSE Lite update if CSE sub-partition update
 	 * is not enabled and continue to update CSE sub-partitions.
@@ -1272,7 +1269,7 @@ static void do_cse_fw_sync(void)
 		return;
 	}
 
-	if (cse_get_bp_info(&cse_bp_info) != CB_SUCCESS) {
+	if (cse_get_bp_info() != CB_SUCCESS) {
 		printk(BIOS_ERR, "cse_lite: Failed to get CSE boot partition info\n");
 
 		 /* If system is in recovery mode, don't trigger recovery again */
@@ -1287,12 +1284,11 @@ static void do_cse_fw_sync(void)
 
 	/*
 	 * If system is in recovery mode, CSE Lite update has to be skipped but CSE
-	 * sub-partitions like NPHY and IOM have to be updated. If CSE sub-parition update
+	 * sub-partitions like NPHY and IOM have to be updated. If CSE sub-partition update
 	 * fails during recovery, just continue to boot.
 	 */
 	if (CONFIG(SOC_INTEL_CSE_SUB_PART_UPDATE) && vboot_recovery_mode_enabled()) {
-		if (cse_sub_part_fw_update(&cse_bp_info.bp_info) ==
-				CSE_LITE_SKU_PART_UPDATE_SUCCESS) {
+		if (cse_sub_part_fw_update() == CSE_LITE_SKU_PART_UPDATE_SUCCESS) {
 			cse_board_reset();
 			do_global_reset();
 			die("ERROR: GLOBAL RESET Failed to reset the system\n");
@@ -1301,7 +1297,7 @@ static void do_cse_fw_sync(void)
 		return;
 	}
 
-	if (cse_fix_data_failure_err(&cse_bp_info.bp_info) != CB_SUCCESS)
+	if (cse_fix_data_failure_err() != CB_SUCCESS)
 		cse_trigger_vboot_recovery(CSE_LITE_SKU_DATA_WIPE_ERROR);
 
 	/*
@@ -1311,18 +1307,18 @@ static void do_cse_fw_sync(void)
 	 */
 	if (is_cse_fw_update_enabled()) {
 		uint8_t rv;
-		rv = cse_fw_update(&cse_bp_info.bp_info);
+		rv = cse_fw_update();
 		if (rv)
 			cse_trigger_vboot_recovery(rv);
 	}
 
 	if (CONFIG(SOC_INTEL_CSE_SUB_PART_UPDATE))
-		cse_sub_part_fw_update(&cse_bp_info.bp_info);
+		cse_sub_part_fw_update();
 
-	if (!cse_is_rw_bp_status_valid(&cse_bp_info.bp_info))
+	if (!cse_is_rw_bp_status_valid())
 		cse_trigger_vboot_recovery(CSE_LITE_SKU_RW_JUMP_ERROR);
 
-	if (cse_boot_to_rw(&cse_bp_info.bp_info) != CB_SUCCESS) {
+	if (cse_boot_to_rw() != CB_SUCCESS) {
 		printk(BIOS_ERR, "cse_lite: Failed to switch to RW\n");
 		cse_trigger_vboot_recovery(CSE_LITE_SKU_RW_SWITCH_ERROR);
 	}

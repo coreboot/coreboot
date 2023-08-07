@@ -68,9 +68,6 @@ chip soc/intel/tigerlake
 	# rdmsr --bitfield 31:24 --decimal 0x1A2
 	register "tcc_offset" = "8"
 
-	# Enable CNVi BT
-	register "CnviBtCore" = "true"
-
 # PM Util (soc/intel/tigerlake/pmutil.c)
 	# GPE configuration
 	register "pmc_gpe0_dw0" = "PMC_GPP_R"
@@ -101,6 +98,8 @@ chip soc/intel/tigerlake
 		# From PCH EDS(615985)
 		device ref shared_ram on end
 		device ref cnvi_wifi on
+			register "CnviBtCore" = true
+			register "CnviBtAudioOffload" = true
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_PME_B0"
 				device generic 0 on end

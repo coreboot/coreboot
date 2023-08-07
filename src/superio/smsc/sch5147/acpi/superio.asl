@@ -74,7 +74,7 @@ Device(SUPERIO_DEV) {
 	{
 		/* Announce the used i/o ports to the OS */
 		Return (ResourceTemplate () {
-			FixedIO (SUPERIO_PNP_BASE, 0x02)
+			IO (Decode16, SUPERIO_PNP_BASE, SUPERIO_PNP_BASE, 0x01, 0x02)
 		})
 	}
 
@@ -140,8 +140,8 @@ Device (SUPERIO_ID(KBD, SUPERIO_KBC_LDN)) {
 	Method (_CRS, 0, Serialized)
 	{
 		Name (CRS, ResourceTemplate () {
-			FixedIO (0x0060, 0x01)
-			FixedIO (0x0064, 0x01)
+			IO (Decode16, 0x0060, 0x0060, 0x01, 0x01)
+			IO (Decode16, 0x0064, 0x0064, 0x01, 0x01)
 			IRQNoFlags (IR0) {}
 		})
 		ENTER_CONFIG_MODE (SUPERIO_KBC_LDN)
@@ -153,8 +153,8 @@ Device (SUPERIO_ID(KBD, SUPERIO_KBC_LDN)) {
 	Name (_PRS, ResourceTemplate ()
 	{
 		StartDependentFn (0,0) {
-			FixedIO (0x0060, 0x01)
-			FixedIO (0x0064, 0x01)
+			IO (Decode16, 0x0060, 0x0060, 0x01, 0x01)
+			IO (Decode16, 0x0064, 0x0064, 0x01, 0x01)
 			IRQNoFlags () {1}
 		}
 		EndDependentFn()
@@ -163,8 +163,8 @@ Device (SUPERIO_ID(KBD, SUPERIO_KBC_LDN)) {
 	Method (_SRS, 1, Serialized)
 	{
 		Name (TMPL, ResourceTemplate () {
-			FixedIO (0x0060, 0x01)
-			FixedIO (0x0064, 0x01)
+			IO (Decode16, 0x0060, 0x0060, 0x01, 0x01)
+			IO (Decode16, 0x0064, 0x0064, 0x01, 0x01)
 			IRQNoFlags (IR0) {}
 		})
 		ENTER_CONFIG_MODE (SUPERIO_KBC_LDN)

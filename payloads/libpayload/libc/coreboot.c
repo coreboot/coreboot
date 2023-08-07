@@ -224,6 +224,9 @@ static void cb_parse_cbmem_entry(void *ptr, struct sysinfo_t *info)
 	case CBMEM_ID_ACPI_GNVS:
 		info->acpi_gnvs = cbmem_entry->address;
 		break;
+	case CBMEM_ID_SMBIOS:
+		info->smbios = cbmem_entry->address;
+		break;
 	case CBMEM_ID_CBFS_RO_MCACHE:
 		info->cbfs_ro_mcache_offset = cbmem_entry->address;
 		info->cbfs_ro_mcache_size = cbmem_entry->entry_size;

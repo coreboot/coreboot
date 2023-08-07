@@ -113,6 +113,7 @@ struct sysinfo_t {
 	uintptr_t acpi_gnvs;
 	uintptr_t acpi_cnvs;
 	uintptr_t acpi_rsdp;
+	uintptr_t smbios;
 
 #define UNDEFINED_STRAPPING_ID	(~0)
 #define UNDEFINED_FW_CONFIG	~((uint64_t)0)

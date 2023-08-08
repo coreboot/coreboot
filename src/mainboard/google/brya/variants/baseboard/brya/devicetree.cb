@@ -14,6 +14,10 @@ chip soc/intel/alderlake
 	# S0ix enable
 	register "s0ix_enable" = "1"
 
+	# Disable package C state demotion on Raptorlake as a W/A for S0ix issues
+	# seen on J0 and Q0 SKUs
+	register "disable_package_c_state_demotion" = "1"
+
 	# DPTF enable
 	register "dptf_enable" = "1"
 

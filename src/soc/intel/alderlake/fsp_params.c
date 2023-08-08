@@ -1061,11 +1061,12 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 
 	s_cfg->VrPowerDeliveryDesign = config->vr_power_delivery_design;
 
-	/* FIXME: Disable package C state demotion on Raptorlake as a W/A for S0ix issues */
-	if ((cpu_id == CPUID_RAPTORLAKE_J0) || (cpu_id == CPUID_RAPTORLAKE_Q0))
-		s_cfg->PkgCStateDemotion = 0;
-	else
-		s_cfg->PkgCStateDemotion = !config->disable_package_c_state_demotion;
+	/* C state demotion must be disabled for Raptorlake J0 and Q0 SKUs */
+	assert(!(config->s0ix_enable && ((cpu_id == CPUID_RAPTORLAKE_J0) ||
+		(cpu_id == CPUID_RAPTORLAKE_Q0)) &&
+		!config->disable_package_c_state_demotion));
+
+	s_cfg->PkgCStateDemotion = !config->disable_package_c_state_demotion;
 
 	if (cpu_id == CPUID_RAPTORLAKE_J0 || cpu_id == CPUID_RAPTORLAKE_Q0)
 		s_cfg->C1e = 0;

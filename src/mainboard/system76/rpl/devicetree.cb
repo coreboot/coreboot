@@ -17,6 +17,10 @@ chip soc/intel/alderlake
 	# Thermal
 	register "tcc_offset" = "8"
 
+	# Disable package C state demotion on Raptorlake as a W/A for S0ix issues
+	# seen on J0 and Q0 SKUs
+	register "disable_package_c_state_demotion" = "1"
+
 	device cpu_cluster 0 on end
 
 	device domain 0 on

@@ -15,8 +15,10 @@ enum cb_err data_fabric_get_pci_bus_numbers(struct device *domain, uint8_t *firs
 		pci_bus_base.raw = data_fabric_broadcast_read32(DF_PCI_CFG_BASE(i));
 		pci_bus_limit.raw = data_fabric_broadcast_read32(DF_PCI_CFG_LIMIT(i));
 
-		/* TODO: Systems with more than one PCI root need to check to which PCI root
-		   the PCI bus number range gets decoded to. */
+		if (CONFIG(SOC_AMD_COMMON_BLOCK_DATA_FABRIC_DOMAIN_MULTI_PCI_ROOT) &&
+		    pci_bus_limit.dst_fabric_id != domain->path.domain.domain)
+			continue;
+
 		if (pci_bus_base.we && pci_bus_base.re) {
 			/* TODO: Implement support for multiple PCI segments in coreboot */
 			if (pci_bus_base.segment_num) {
@@ -31,5 +33,7 @@ enum cb_err data_fabric_get_pci_bus_numbers(struct device *domain, uint8_t *firs
 		}
 	}
 
+	printk(BIOS_ERR, "No valid DF PCI CFG register pair found for domain %x.\n",
+	       domain->path.domain.domain);
 	return CB_ERR;
 }

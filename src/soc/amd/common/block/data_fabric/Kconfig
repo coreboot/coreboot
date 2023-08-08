@@ -14,6 +14,22 @@ config SOC_AMD_COMMON_BLOCK_DATA_FABRIC_DOMAIN
 	  fabric registers so that it knows in which regions it can properly
 	  allocate the non-fixed MMIO devices.
 
+config SOC_AMD_COMMON_BLOCK_DATA_FABRIC_DOMAIN_MULTI_PCI_ROOT
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_DATA_FABRIC_DOMAIN
+	help
+	  On AMD SoCs with more than one PCI root, make sure to only report the
+	  PCI bus number, IO, and MMIO resources that get decoded to a specific
+	  PCI root in the corresponding coreboot domain. This will make sure
+	  that the allocation the resoucre allocator calculates will be decoded
+	  correctly to the PCI roots. In order for coreboot to know the correct
+	  mapping, the coreboot domain numbers must be set to the corresponding
+	  data fabric destination ID. On AMD systems with only one PCI root,
+	  this isn't needed and even though selecting this option works when
+	  the coreboot domain numbers are set up correctly, some link-time
+	  optimizations won't be possible, so it's preferable to only select
+	  this option on SoCs with multiple PCI roots.
+
 config SOC_AMD_COMMON_BLOCK_DATA_FABRIC_MULTI_PCI_SEGMENT
 	bool
 	depends on SOC_AMD_COMMON_BLOCK_DATA_FABRIC_DOMAIN

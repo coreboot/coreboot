@@ -113,8 +113,10 @@ static void add_data_fabric_mmio_regions(struct device *domain, unsigned int *id
 		if (ctrl.np)
 			continue;
 
-		/* TODO: Systems with more than one PCI root need to check to which PCI root
-		   the MMIO range gets decoded to. */
+		/* Only look at MMIO regions that are decoded to the right PCI root */
+		if (CONFIG(SOC_AMD_COMMON_BLOCK_DATA_FABRIC_DOMAIN_MULTI_PCI_ROOT) &&
+		    ctrl.dst_fabric_id != domain->path.domain.domain)
+			continue;
 
 		data_fabric_get_mmio_base_size(i, &mmio_base, &mmio_limit);
 
@@ -168,8 +170,10 @@ static void add_data_fabric_io_regions(struct device *domain, unsigned int *idx)
 
 		limit_reg.raw = data_fabric_broadcast_read32(DF_IO_LIMIT(i));
 
-		/* TODO: Systems with more than one PCI root need to check to which PCI root
-		   the IO range gets decoded to. */
+		/* Only look at IO regions that are decoded to the right PCI root */
+		if (CONFIG(SOC_AMD_COMMON_BLOCK_DATA_FABRIC_DOMAIN_MULTI_PCI_ROOT) &&
+		    limit_reg.dst_fabric_id != domain->path.domain.domain)
+			continue;
 
 		io_base = base_reg.io_base << DF_IO_ADDR_SHIFT;
 		io_limit = ((limit_reg.io_limit + 1) << DF_IO_ADDR_SHIFT) - 1;

@@ -736,6 +736,9 @@ struct soc_intel_alderlake_config {
 	 */
 	bool disable_package_c_state_demotion;
 
+	/* Enable Enhanced C States */
+	bool enable_c1e;
+
 	/* i915 struct for GMA backlight control */
 	struct i915_gpu_controller_info gfx;
 

@@ -1070,7 +1070,7 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->PkgCStateDemotion = !config->disable_package_c_state_demotion;
 
 	if (cpu_id == CPUID_RAPTORLAKE_J0 || cpu_id == CPUID_RAPTORLAKE_Q0)
-		s_cfg->C1e = 0;
+		s_cfg->C1e = config->enable_c1e;
 	else
 		s_cfg->C1e = 1;
 #if CONFIG(SOC_INTEL_RAPTORLAKE) && !CONFIG(FSP_USE_REPO)

@@ -108,13 +108,13 @@ main() {
 			git fetch 2>/dev/null
 		fi
 
-		if git branch -a | grep -q "origin/main"; then
-			branch_name="origin/main"
-		elif git branch -a | grep -q "origin/master"; then
-			branch_name="origin/master"
-		elif git branch -a | grep -q "origin/trunk"; then
-			branch_name="origin/trunk"
-		fi
+		declare -a branches=("origin/main" "origin/master" "origin/trunk")
+		for branch in "${branches[@]}"; do
+			if git branch -a | grep "${branch}" > /dev/null; then
+				branch_name="${branch}"
+				break
+			fi
+		done
 
 		updated_commit_id="$(git log --pretty='%h' -n 1 "${branch_name}" -- )"
 		updated_commit_description="$(git log --pretty='%ci - (%s)' -n 1 "${updated_commit_id}")"
@@ -138,7 +138,7 @@ main() {
 			cd "${TOP}" || exit 1
 			git add "${submodule}" > /dev/null 2>&1 || exit 1
 			git commit -s -F- > /dev/null 2>&1 <<-EOF
-	Update ${submodule##*/} submodule to upstream master
+	Update ${submodule##*/} submodule to upstream ${branch##*/}
 
 	Updating from commit id ${initial_commit_id}:
 	$initial_commit_description

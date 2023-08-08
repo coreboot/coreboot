@@ -1,20 +1,20 @@
 # Writing unit tests for coreboot
 
 ## Introduction
-General thoughts about unit testing coreboot can be found in [Unit
-testing coreboot](../technotes/2020-03-unit-testing-coreboot.md).
+General thoughts about unit testing coreboot can be found in
+[Unit-testing coreboot](../technotes/2020-03-unit-testing-coreboot.md).
 Additionally, [code coverage](../technotes/2021-05-code-coverage.md)
 support is available for unit tests.
 
 This document aims to guide developers through the process of adding and
 writing unit tests for coreboot modules.
 
-As an example of unit under test, `src/device/i2c.c` (referred hereafter
+As an example of unit-under-test, `src/device/i2c.c` (referred hereafter
 as UUT "Unit Under Test") will be used. This is simple module, thus it
 should be easy for the reader to focus solely on the testing logic,
 without the need to spend too much time on digging deeply into the
 source code details and flow of operations. That being said, a good
-understanding of what the unit under test is doing is crucial for
+understanding of what the unit-under-test is doing is crucial for
 writing unit tests.
 
 This tutorial should also be helpful for developers who want to follow
@@ -23,7 +23,7 @@ though TDD has a different work flow of building tests first, followed
 by the code that satisfies them, the process of writing tests and adding
 them to the tree is the same.
 
-## Analysis of unit under test
+## Analysis of unit-under-test
 First of all, it is necessary to precisely establish what we want to
 test in a particular module. Usually this will be an externally exposed
 API, which can be used by other modules.
@@ -69,7 +69,7 @@ UUT and not on the other modules. While some software dependencies may
 be hard to be mock (for example due to complicated dependencies) and
 thus should be simply linked into the test binaries, all hardware
 dependencies need to be mocked out, since in the user-space host
-environment, targets hardware is not available.
+environment, target hardware is not available.
 
 ```eval_rst
 .. admonition:: i2c-test example
@@ -142,12 +142,12 @@ for coreboot `make unit-tests`.
      make unit-tests
 ```
 
-When trying to build test binary, one can often see linker complains
-about `undefined reference` to couple of symbols. This is one of
+When trying to build test binary, one can often see the linker complaining
+about `undefined reference` for a couple of symbols. This is one of the
 solutions to determine all external dependencies of UUT - iteratively
 build test and resolve errors one by one. At this step, developer should
 decide either it's better to add an extra module to provide necessary
-definitions or rather mock such dependency. Quick guide through adding
+definitions or rather mock such dependency. A quick guide about adding
 mocks is provided later in this doc.
 
 ## Writing new tests
@@ -324,8 +324,8 @@ a described range.
 .. admonition:: i2c-test example
 
    In our example, we may want to check that `platform_i2c_transfer` is
-   fed with number of segments bigger than 0, each segment has flags
-   which are in supported range and each segment has buf which is
+   fed with a number of segments bigger than 0, each segment has flags
+   which are in the supported range and each segment has a buf which is
    non-NULL. We are expecting such values for _every_ call, thus the
    last parameter in `expect*` macros is -1.
 
@@ -375,16 +375,16 @@ API documentation.
 
 ### Test runner
 Finally, the developer needs to implement the test `main()` function.
-All tests should be registered there and cmocka test runner invoked. All
-methods for invoking Cmocka test are described
+All tests should be registered there and the cmocka test runner invoked.
+All methods for invoking Cmocka test are described
 [here](https://api.cmocka.org/group__cmocka__exec.html).
 
 ```eval_rst
 .. admonition:: i2c-test example
 
    We don't need any extra setup and teardown functions for i2c-test, so
-   let's simply register test for `i2c_read_field` and return from main
-   value which is output of Cmocka's runner (it returns number of tests
+   let's simply register the test for `i2c_read_field` and return from
+   main the output of Cmocka's runner (it returns number of tests
    that failed).
 
    .. code-block:: c

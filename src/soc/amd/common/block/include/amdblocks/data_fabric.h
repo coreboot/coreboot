@@ -48,6 +48,9 @@ void data_fabric_disable_mmio_reg(unsigned int reg);
 int data_fabric_find_unused_mmio_reg(void);
 void data_fabric_set_mmio_np(void);
 
+enum cb_err data_fabric_get_pci_bus_numbers(struct device *domain, uint8_t *first_bus,
+					    uint8_t *last_bus);
+
 /* Inform the resource allocator about the usable IO and MMIO regions and PCI bus numbers */
 void amd_pci_domain_read_resources(struct device *domain);
 void amd_pci_domain_scan_bus(struct device *domain);

@@ -13,3 +13,14 @@ config SOC_AMD_COMMON_BLOCK_DATA_FABRIC_DOMAIN
 	  resource allocator about the MMIO regions configured in the data
 	  fabric registers so that it knows in which regions it can properly
 	  allocate the non-fixed MMIO devices.
+
+config SOC_AMD_COMMON_BLOCK_DATA_FABRIC_MULTI_PCI_SEGMENT
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_DATA_FABRIC_DOMAIN
+	help
+	  Some AMD SoCs support more than one PCI segment with 256 buses. Those
+	  SoCs however have a different data fabric register layout for the PCI
+	  bus number decoding. SoCs that use a data fabric register pair for
+	  the PCI bus number which includes the segment number must select this
+	  option; SoCs that use one data fabric register for the PCI bus number
+	  which doesn't include a segment number field mustn't select this.

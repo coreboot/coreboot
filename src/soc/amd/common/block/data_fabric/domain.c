@@ -16,10 +16,15 @@ void amd_pci_domain_scan_bus(struct device *domain)
 {
 	uint8_t bus, limit;
 
-	/* TODO: Systems with more than one PCI root need to read the data fabric registers to
-	   see which PCI bus numbers get decoded to which PCI root. */
-	bus = 0;
-	limit = CONFIG_ECAM_MMCONF_BUS_NUMBER - 1;
+	if (data_fabric_get_pci_bus_numbers(domain, &bus, &limit) != CB_SUCCESS) {
+		printk(BIOS_ERR, "No PCI bus numbers decoded to PCI root.\n");
+		return;
+	}
+
+	/* TODO: Check if bus >= CONFIG_ECAM_MMCONF_BUS_NUMBER and return in that case */
+
+	/* Make sure to not report more than CONFIG_ECAM_MMCONF_BUS_NUMBER PCI buses */
+	limit = MIN(limit, CONFIG_ECAM_MMCONF_BUS_NUMBER - 1);
 
 	/* Set bus first number of PCI root */
 	domain->link_list->secondary = bus;

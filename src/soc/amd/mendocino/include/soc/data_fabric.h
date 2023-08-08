@@ -6,7 +6,11 @@
 #include <amdblocks/data_fabric_defs.h>
 #include <types.h>
 
-#define IOMS0_FABRIC_ID			9
+#if CONFIG(SOC_AMD_REMBRANDT)
+#define IOMS0_FABRIC_ID			0xd
+#else
+#define IOMS0_FABRIC_ID			0x9
+#endif
 
 #define DF_PCI_CFG_MAP0			DF_REG_ID(0, 0xa0)
 

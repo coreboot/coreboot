@@ -5,6 +5,7 @@
 
 #include <amdblocks/data_fabric_defs.h>
 #include <amdblocks/pci_devs.h>
+#include <device/device.h>
 #include <device/pci_ops.h>
 #include <soc/data_fabric.h>
 #include <soc/pci_devs.h>

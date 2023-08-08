@@ -9,6 +9,7 @@ Controller etc.
 - [X11SSH-TF](x11ssh-tf/x11ssh-tf.md)
 - [X11SSH-F/LN4F](x11ssh-f/x11ssh-f.md)
 - [X11SSM-F](x11ssm-f/x11ssm-f.md)
+- [X11SSW-F](x11ssw-f/x11ssw-f.md)
 
 ## Required proprietary blobs
 

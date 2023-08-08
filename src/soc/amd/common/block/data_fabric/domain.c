@@ -25,13 +25,10 @@ void amd_pci_domain_scan_bus(struct device *domain)
 	domain->link_list->secondary = bus;
 	/* subordinate needs to be the same as secondary before pci_domain_scan_bus call. */
 	domain->link_list->subordinate = bus;
+	/* Tell allocator about maximum PCI bus number in domain */
+	domain->link_list->max_subordinate = limit;
 
 	pci_domain_scan_bus(domain);
-
-	/* pci_domain_scan_bus will modify subordinate, so change it back to the maximum
-	   bus number decoded to this PCI root for the acpigen_resource_producer_bus_number
-	   call to write the correct ACPI code. */
-	domain->link_list->subordinate = limit;
 }
 
 /* Read the registers and return normalized values */
@@ -246,9 +243,9 @@ void amd_pci_domain_fill_ssdt(const struct device *domain)
 
 	/* PCI bus number range in domain */
 	printk(BIOS_DEBUG, "%s _CRS: adding busses [%x-%x]\n", acpi_device_name(domain),
-	       domain->link_list->secondary, domain->link_list->subordinate);
+	       domain->link_list->secondary, domain->link_list->max_subordinate);
 	acpigen_resource_producer_bus_number(domain->link_list->secondary,
-					     domain->link_list->subordinate);
+					     domain->link_list->max_subordinate);
 
 	if (domain->link_list->secondary == 0) {
 		/* ACPI 6.4.2.5 I/O Port Descriptor */

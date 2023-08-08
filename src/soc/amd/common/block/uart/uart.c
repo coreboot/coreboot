@@ -67,13 +67,11 @@ static const char *uart_acpi_name(const struct device *dev)
 		return NULL;
 }
 
-/* This gets called for both enabled and disabled devices. */
+/* This gets called for enabled devices only. */
 static void uart_inject_ssdt(const struct device *dev)
 {
 	acpigen_write_scope(acpi_device_path(dev));
-
-	acpigen_write_STA(acpi_device_status(dev));
-
+	acpigen_write_store_int_to_namestr(acpi_device_status(dev), "STAT");
 	acpigen_pop_len(); /* Scope */
 }
 #endif

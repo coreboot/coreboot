@@ -47,10 +47,6 @@ Device (FUR0)
 		IRQ (Edge, ActiveHigh, Exclusive) { 10 }
 		Memory32Fixed (ReadWrite, APU_UART0_BASE, 0x2000)
 	})
-	Method (_STA, 0x0, NotSerialized)
-	{
-		Return (0x0F)
-	}
 }
 
 Device (FUR1) {
@@ -61,10 +57,6 @@ Device (FUR1) {
 			IRQ (Edge, ActiveHigh, Exclusive) { 11 }
 			Memory32Fixed (ReadWrite, APU_UART1_BASE, 0x2000)
 	})
-	Method (_STA, 0x0, NotSerialized)
-	{
-			Return (0x0F)
-	}
 }
 
 Device (I2CA) {

@@ -21,6 +21,12 @@ static const unsigned int aoac_devs[] = {
 	FCH_AOAC_DEV_I2C3,
 };
 
+void wait_for_aoac_enabled(unsigned int dev)
+{
+	while (!is_aoac_device_enabled(dev))
+		udelay(100);
+}
+
 void enable_aoac_devices(void)
 {
 	bool status;

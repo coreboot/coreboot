@@ -28,6 +28,7 @@ verstage-y += i2c.c
 postcar-y += memmap.c
 postcar-$(CONFIG_VBOOT_MEASURED_BOOT) += i2c.c
 
+ramstage-y += aoac.c
 ramstage-y += BiosCallOuts.c
 ramstage-y += i2c.c
 ramstage-y += chip.c

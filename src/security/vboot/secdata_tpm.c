@@ -53,7 +53,7 @@ uint32_t antirollback_read_space_kernel(struct vb2_context *ctx)
 	uint8_t size = VB2_SECDATA_KERNEL_SIZE;
 	uint32_t ret;
 
-	/* Start with the version 1.0 size used by all modern cr50-boards. */
+	/* Start with the version 1.0 size used by all modern Cr50/Ti50 boards. */
 	ret = tlcl_read(KERNEL_NV_INDEX, ctx->secdata_kernel, size);
 	if (ret == TPM_E_RANGE) {
 		/* Fallback to version 0.2(minimum) size and re-read. */
@@ -400,8 +400,8 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 	RETURN_ON_FAILURE(setup_fwmp_space(ctx));
 
 	/*
-	 * Define and write zero-touch enrollment (ZTE) spaces.  For Cr50 devices,
-	 * these are set up elsewhere via TPM vendor commands.
+	 * Define and write zero-touch enrollment (ZTE) spaces.  For ChromeOS devices with
+	 * Google TPM, these are set up elsewhere via TPM vendor commands.
 	 */
 	if (CONFIG(CHROMEOS) && !(CONFIG(TPM_GOOGLE)))
 		RETURN_ON_FAILURE(setup_zte_spaces());

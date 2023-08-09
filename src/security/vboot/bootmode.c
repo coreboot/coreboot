@@ -61,8 +61,9 @@ int __weak get_ec_is_trusted(void)
 {
 	/*
 	 * If board doesn't override this, by default we always assume EC is in
-	 * RW and untrusted. However, newer platforms are supposed to use cr50
-	 * BOOT_MODE to report this and won't need to override this anymore.
+	 * RW and untrusted. However, newer platforms with Google TPM are supposed
+	 * to use GSC BOOT_MODE to report this and won't need to override this
+	 * anymore.
 	 */
 	return 0;
 }

@@ -212,19 +212,19 @@ static void check_boot_mode(struct vb2_context *ctx)
 	rv = tlcl_cr50_get_boot_mode(&boot_mode);
 	switch (rv) {
 	case TPM_E_NO_SUCH_COMMAND:
-		printk(BIOS_WARNING, "Cr50 does not support GET_BOOT_MODE.\n");
+		printk(BIOS_WARNING, "GSC does not support GET_BOOT_MODE.\n");
 		/* Proceed to legacy boot model. */
 		return;
 	case TPM_SUCCESS:
 		break;
 	default:
 		printk(BIOS_ERR,
-		       "Communication error in getting Cr50 boot mode.\n");
-		vb2api_fail(ctx, VB2_RECOVERY_CR50_BOOT_MODE, rv);
+		       "Communication error in getting GSC boot mode.\n");
+		vb2api_fail(ctx, VB2_RECOVERY_GSC_BOOT_MODE, rv);
 		return;
 	}
 
-	printk(BIOS_INFO, "Cr50 says boot_mode is %s(0x%02x).\n",
+	printk(BIOS_INFO, "GSC says boot_mode is %s(0x%02x).\n",
 	       get_boot_mode_string(boot_mode), boot_mode);
 
 	if (boot_mode == EC_EFS_BOOT_MODE_UNTRUSTED_RO)

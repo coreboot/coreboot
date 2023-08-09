@@ -203,8 +203,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_E07, 1, DEEP),
 	/* GPP_E08 : [] ==> SAR2_INT_L */
 	PAD_CFG_GPI_APIC_LOCK(GPP_E08, NONE, LEVEL, NONE, LOCK_CONFIG),
-	/* GPP_E09 : No heuristic was found useful */
-	PAD_CFG_NF_LOCK(GPP_E09, NONE, NF1, LOCK_CONFIG),
+	/* GPP_E09 : Not Connected */
+	PAD_NC(GPP_E09, NONE),
 	/* GPP_E10 : [] ==> SOC_FPMCU_INT_L */
 	PAD_CFG_GPI_IRQ_WAKE_LOCK(GPP_E10, NONE, LEVEL, INVERT, LOCK_CONFIG),
 	/* GPP_E11 : [] ==> MEM_STRAP_0 */

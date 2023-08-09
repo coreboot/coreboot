@@ -53,6 +53,17 @@ static const struct pad_config bt_i2s_enable_pads[] = {
 	PAD_CFG_NF(GPP_VGPIO37, NONE, DEEP, NF1),
 };
 
+static const struct pad_config discrete_bt_i2s_enable_pads[] = {
+	/* GPP_S00 : [] ==> I2S1_SCLK */
+	PAD_CFG_NF(GPP_S00, NONE, DEEP, NF6),
+	/* GPP_S01 : [] ==> I2S1_SFRM */
+	PAD_CFG_NF(GPP_S01, NONE, DEEP, NF6),
+	/* GPP_S02 : [] ==> I2S1_TXD */
+	PAD_CFG_NF(GPP_S02, NONE, DEEP, NF6),
+	/* GPP_S03 : [] ==> I2S1_RXD */
+	PAD_CFG_NF(GPP_S03, NONE, DEEP, NF6),
+};
+
 static const struct pad_config bt_i2s_disable_pads[] = {
 	/* GPP_V30 : [] ==> BT_I2S_BCLK */
 	PAD_NC(GPP_VGPIO30, NONE),
@@ -131,6 +142,11 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		GPIO_PADBASED_OVERRIDE(padbased_table, sndw_disable_pads);
 		printk(BIOS_INFO, "Configure GPIOs for BT offload mode.\n");
 		GPIO_PADBASED_OVERRIDE(padbased_table, bt_i2s_enable_pads);
+	} else if (fw_config_probe(FW_CONFIG(AUDIO, MAX98360_ALC5682I_DISCRETE_I2S_BT))) {
+		printk(BIOS_INFO, "Configure GPIOs for I2S audio.\n");
+		GPIO_PADBASED_OVERRIDE(padbased_table, sndw_disable_pads);
+		printk(BIOS_INFO, "Configure GPIOs for BT offload mode(discrete).\n");
+		GPIO_PADBASED_OVERRIDE(padbased_table, discrete_bt_i2s_enable_pads);
 	}
 
 	if (fw_config_probe(FW_CONFIG(ISH, ISH_ENABLE))) {

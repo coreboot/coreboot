@@ -11,9 +11,9 @@ config USE_PC_CMOS_ALTCENTURY
 	  May be useful for legacy OSes that assume its presence.
 
 config PC_CMOS_BASE_PORT_BANK0
-	hex "Base port for CMOS bank 0 index/data registers"
+	hex
 	default 0x70
 
 config PC_CMOS_BASE_PORT_BANK1
-	hex "Base port for CMOS bank 1 index/data registers"
+	hex
 	default 0x72

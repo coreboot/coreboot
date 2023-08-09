@@ -19,9 +19,6 @@
 #define IORESOURCE_PREFETCH	0x00001000	/* No side effects */
 #define IORESOURCE_READONLY	0x00002000
 #define IORESOURCE_CACHEABLE	0x00004000
-#define IORESOURCE_RANGELENGTH	0x00008000
-#define IORESOURCE_SHADOWABLE	0x00010000
-#define IORESOURCE_BUS_HAS_VGA	0x00020000
 /* This resource filters all of the unclaimed transactions to the bus below. */
 #define IORESOURCE_SUBTRACTIVE  0x00040000
 /* The IO resource has a bus below it. */

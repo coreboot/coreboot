@@ -105,18 +105,14 @@ static void lpc_init(struct device *dev)
 
 static void lpc_read_resources(struct device *dev)
 {
-	struct resource *res;
 	unsigned long idx = 0;
 
 	/* Get the normal pci resources of this device */
 	pci_dev_read_resources(dev);
 
-	/* Add an extra subtractive resource for both memory and I/O. */
-	res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
-	res->base = 0;
-	res->size = 0x1000;
-	res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
-		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	/* Add an extra subtractive resource for I/O. */
+	fixed_io_range_flags(dev, IOINDEX_SUBTRACTIVE(0, 0), 0, 0x1000,
+			     IORESOURCE_SUBTRACTIVE);
 
 	/* Only up to 16 MByte of the SPI flash can be mapped right below 4 GB */
 	mmio_range(dev, idx++, FLASH_BELOW_4GB_MAPPING_REGION_BASE,

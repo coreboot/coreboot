@@ -87,18 +87,18 @@ chip soc/intel/jasperlake
 			chip drivers/intel/dptf
 				## Passive Policy
 				register "policies.passive" = "{
-					[0] = DPTF_PASSIVE(CPU, CPU,           90, 10000),
-					[1] = DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 80, 60000),
-					[2] = DPTF_PASSIVE(CPU, TEMP_SENSOR_1, 75, 15000),
-					[3] = DPTF_PASSIVE(CPU, TEMP_SENSOR_2, 55, 15000)
+					[0] = DPTF_PASSIVE(CPU, CPU,           95, 10000),
+					[1] = DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 90, 60000),
+					[2] = DPTF_PASSIVE(CPU, TEMP_SENSOR_1, 90, 60000),
+					[3] = DPTF_PASSIVE(CPU, TEMP_SENSOR_2, 90, 15000)
 				}"
 
 				## Critical Policy
 				register "policies.critical" = "{
 					[0] = DPTF_CRITICAL(CPU,           105, SHUTDOWN),
-					[1] = DPTF_CRITICAL(TEMP_SENSOR_0, 90, SHUTDOWN),
-					[2] = DPTF_CRITICAL(TEMP_SENSOR_1, 80, SHUTDOWN),
-					[3] = DPTF_CRITICAL(TEMP_SENSOR_2, 80, SHUTDOWN)
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0, 100, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1, 100, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2, 100, SHUTDOWN)
 				}"
 
 				register "controls.power_limits" = "{

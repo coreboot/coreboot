@@ -59,7 +59,6 @@ static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index,
 static void read_resources(struct device *dev)
 {
 	unsigned int idx = 0;
-	struct resource *res;
 
 	/* The northbridge has no PCI BARs implemented, so there's no need to call
 	   pci_dev_read_resources for it */
@@ -72,10 +71,7 @@ static void read_resources(struct device *dev)
 	mmconf_resource(dev, idx++);
 
 	/* NB IOAPIC2 resource */
-	res = new_resource(dev, idx++); /* IOAPIC2 */
-	res->base = IO_APIC2_ADDR;
-	res->size = 0x00001000;
-	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	mmio_range(dev, idx++, IO_APIC2_ADDR, 0x1000);
 }
 
 static void set_resource(struct device *dev, struct resource *res, u32 nodeid)

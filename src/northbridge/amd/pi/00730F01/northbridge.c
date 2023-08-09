@@ -158,8 +158,6 @@ static void add_fixed_resources(struct device *dev, int index)
 
 static void nb_read_resources(struct device *dev)
 {
-	struct resource *res;
-
 	/*
 	 * This MMCONF resource must be reserved in the PCI domain.
 	 * It is not honored by the coreboot resource allocator if it is in
@@ -168,10 +166,7 @@ static void nb_read_resources(struct device *dev)
 	mmconf_resource(dev, MMIO_CONF_BASE);
 
 	/* NB IOAPIC2 resource */
-	res = new_resource(dev, IO_APIC2_ADDR); /* IOAPIC2 */
-	res->base = IO_APIC2_ADDR;
-	res->size = 0x00001000;
-	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	mmio_range(dev, IO_APIC2_ADDR, IO_APIC2_ADDR, 0x1000);
 
 	add_fixed_resources(dev, 0);
 }

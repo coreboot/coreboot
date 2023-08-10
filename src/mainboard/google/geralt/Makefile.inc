@@ -3,6 +3,7 @@
 bootblock-y += memlayout.ld
 bootblock-y += bootblock.c
 bootblock-y += chromeos.c
+bootblock-$(CONFIG_VBOOT_CBFS_INTEGRATION) += reset.c
 
 verstage-y += memlayout.ld
 verstage-y += chromeos.c

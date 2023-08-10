@@ -27,9 +27,10 @@ DefinitionBlock(
 			#include <soc/intel/baytrail/acpi/southcluster.asl>
 			#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
 		}
-
+#if CONFIG(CHROMEOS)
 		/* Dynamic Platform Thermal Framework */
 		#include "acpi/dptf.asl"
+#endif
 	}
 
 	#include <southbridge/intel/common/acpi/sleepstates.asl>

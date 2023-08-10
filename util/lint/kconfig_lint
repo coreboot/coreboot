@@ -25,6 +25,7 @@ my $show_note_output        = 0;      # flag to show minor notes text
 my $print_full_output       = 0;      # flag to print wholeconfig output
 my $output_file             = "-";    # filename of output - set stdout by default
 my $dont_use_git_grep       = 0;
+my $include_site_local      = 0;
 
 # Globals
 my $top_dir        = ".";             # Directory where Kconfig is run
@@ -63,6 +64,9 @@ sub Main {
 		$dont_use_git_grep = 1;
 		print STDERR "\nGit grep unavailable, falling back to regular grep...\n";
 	}
+    if ( !$include_site_local) {
+        $exclude_dirs_and_files = "^site-local\|" . $exclude_dirs_and_files;
+    }
 
     open( STDOUT, "> $output_file" ) or die "Can't open $output_file for output: $!\n";
 
@@ -730,9 +734,12 @@ sub build_and_parse_kconfig_tree {
 
         # source <prompt>
         elsif ( $line =~ /^\s*source\s+"?([^"\s]+)"?\s*(?>#.*)?$/ ) {
-            my @newfile = load_kconfig_file( $1, $filename, $line_no, 0, $filename, $line_no );
-            unshift( @config_to_parse, @newfile );
+            my $input_file = $1;
             $parseline[0]{text} = "# '$line'\n";
+            if ( $line !~ "site-local" || $include_site_local ) {
+                my @newfile = load_kconfig_file( $input_file, $filename, $line_no, 0, $filename, $line_no );
+                unshift( @config_to_parse, @newfile );
+            }
         }
         elsif (
             ( $line =~ /^\s*#/ ) ||    #comments
@@ -1356,6 +1363,7 @@ sub check_arguments {
         'path=s'         => \$top_dir,
         'c|config=s'     => \$config_file,
         'G|no_git_grep'  => \$dont_use_git_grep,
+        'S|site_local'   => \$include_site_local,
     );
 
     if ($suppress_error_output) {
@@ -1379,6 +1387,7 @@ sub usage {
     print " --path=dir          Path to top level kconfig\n";
     print " -c|--config=file    Filename of config file to load\n";
     print " -G|--no_git_grep    Use standard grep tools instead of git grep\n";
+    print " -S|--site_local     Include the site-local directory\n";
 
     exit(0);
 }

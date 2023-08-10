@@ -52,7 +52,7 @@ static const struct pad_config early_gpio_table[] = {
 	/* D6  : WWAN_EN */
 	PAD_CFG_GPO(GPP_D6, 0, DEEP),
 	/* H20 : IMGCLKOUT1 ==> WLAN_PERST_L */
-	PAD_CFG_GPO(GPP_H20, 0, DEEP),
+	PAD_CFG_GPO(GPP_H20, 1, DEEP),
 	/* A13 : GPP_A13 ==> GSC_SOC_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
 	/* E12 : THC0_SPI1_IO1 ==> SOC_WP_OD */

@@ -15,7 +15,7 @@ void *tpm_cb_log_cbmem_init(void)
 	if (tclt)
 		return tclt;
 
-	if (cbmem_possibly_online()) {
+	if (ENV_HAS_CBMEM) {
 		tclt = cbmem_find(CBMEM_ID_TPM_CB_LOG);
 		if (!tclt) {
 			size_t tpm_log_len = sizeof(struct tpm_cb_log_table) +

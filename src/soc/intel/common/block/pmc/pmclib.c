@@ -64,7 +64,7 @@ struct chipset_power_state *pmc_get_power_state(void)
 {
 	struct chipset_power_state *ptr = NULL;
 
-	if (cbmem_possibly_online())
+	if (ENV_HAS_CBMEM)
 		ptr = acpi_get_pm_state();
 
 	/* cbmem is online but ptr is not populated yet */

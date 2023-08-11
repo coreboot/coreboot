@@ -136,28 +136,12 @@ void cbmem_add_records_to_cbtable(struct lb_header *header);
 #define CBMEM_READY_HOOK_EARLY(x)	_CBMEM_INIT_HOOK_UNUSED(x)
 #endif
 
-/*
- * Returns 0 for the stages where we know that cbmem does not come online.
- * Even if this function returns 1 for romstage, depending upon the point in
- * bootup, cbmem might not actually be online.
- */
-static inline int cbmem_possibly_online(void)
-{
-	if (ENV_BOOTBLOCK)
-		return 0;
-
-	if (ENV_SEPARATE_VERSTAGE && !CONFIG(VBOOT_STARTS_IN_ROMSTAGE))
-		return 0;
-
-	return 1;
-}
-
 /* Returns 1 after running cbmem init hooks, 0 otherwise. */
 static inline int cbmem_online(void)
 {
 	extern int cbmem_initialized;
 
-	if (!cbmem_possibly_online())
+	if (!ENV_HAS_CBMEM)
 		return 0;
 
 	return cbmem_initialized;

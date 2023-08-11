@@ -14,7 +14,7 @@ static void *vboot_get_workbuf(void)
 {
 	void *wb = NULL;
 
-	if (cbmem_possibly_online())
+	if (ENV_HAS_CBMEM)
 		wb = cbmem_find(CBMEM_ID_VBOOT_WORKBUF);
 
 	if (!wb && !CONFIG(VBOOT_STARTS_IN_ROMSTAGE) && preram_symbols_available())

@@ -45,7 +45,7 @@ void *tpm2_log_cbmem_init(void)
 	if (tclt)
 		return tclt;
 
-	if (cbmem_possibly_online()) {
+	if (ENV_HAS_CBMEM) {
 		size_t tpm_log_len;
 		struct tcg_efi_spec_id_event *hdr;
 

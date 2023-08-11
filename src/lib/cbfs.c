@@ -618,7 +618,7 @@ void cbfs_boot_device_find_mcache(struct cbfs_boot_device *cbd, uint32_t id)
 		return;
 
 	const struct cbmem_entry *entry;
-	if (cbmem_possibly_online() &&
+	if (ENV_HAS_CBMEM &&
 	    (entry = cbmem_entry_find(id))) {
 		cbd->mcache = cbmem_entry_start(entry);
 		cbd->mcache_size = cbmem_entry_size(entry);

@@ -94,7 +94,7 @@ fail:
 
 static int init_vpd_rdevs_from_cbmem(void)
 {
-	if (!cbmem_possibly_online())
+	if (!ENV_HAS_CBMEM)
 		return -1;
 
 	struct vpd_cbmem *cbmem = cbmem_find(CBMEM_ID_VPD);

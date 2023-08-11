@@ -161,8 +161,7 @@ void *tpm_log_init(void)
 
 	/* We are dealing here with pre CBMEM environment.
 	 * If cbmem isn't available use CAR or SRAM */
-	if (!cbmem_possibly_online() &&
-		!CONFIG(VBOOT_RETURN_FROM_VERSTAGE))
+	if (!ENV_HAS_CBMEM && !CONFIG(VBOOT_RETURN_FROM_VERSTAGE))
 		return _tpm_log;
 	else if (ENV_CREATES_CBMEM
 		 && !CONFIG(VBOOT_RETURN_FROM_VERSTAGE)) {

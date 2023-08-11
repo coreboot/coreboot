@@ -269,12 +269,6 @@ void show_all_devs_resources(int debug_level, const char *msg);
 #define DEV_FUNC_EXIT(dev)
 #endif /* DEBUG_FUNC */
 
-/* Rounding for boundaries.
- * Due to some chip bugs, go ahead and round IO to 16
- */
-#define DEVICE_IO_ALIGN 16
-#define DEVICE_MEM_ALIGN 4096
-
 extern struct device_operations default_dev_ops_root;
 void pci_domain_read_resources(struct device *dev);
 void pci_domain_set_resources(struct device *dev);

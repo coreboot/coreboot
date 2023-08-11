@@ -165,6 +165,10 @@ config PCR_SRTM
 	int
 	default 2
 
+config PCR_FW_VER
+	int
+	default 10
+
 # PCR for measuring data which changes during runtime
 # e.g. CMOS, NVRAM...
 config PCR_RUNTIME_DATA

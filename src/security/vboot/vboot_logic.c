@@ -190,7 +190,10 @@ static tpm_result_t extend_pcrs(struct vb2_context *ctx)
 	rc = vboot_extend_pcr(ctx, CONFIG_PCR_BOOT_MODE, BOOT_MODE_PCR);
 	if (rc)
 		return rc;
-	return vboot_extend_pcr(ctx, CONFIG_PCR_HWID, HWID_DIGEST_PCR);
+	rc = vboot_extend_pcr(ctx, CONFIG_PCR_HWID, HWID_DIGEST_PCR);
+	if (rc)
+		return rc;
+	return vboot_extend_pcr(ctx, CONFIG_PCR_FW_VER, FIRMWARE_VERSION_PCR);
 }
 
 #define EC_EFS_BOOT_MODE_VERIFIED_RW	0x00

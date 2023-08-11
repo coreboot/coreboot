@@ -8,7 +8,7 @@
 
 #define TPM_PCR_BOOT_MODE "VBOOT: boot mode"
 #define TPM_PCR_GBB_HWID_NAME "VBOOT: GBB HWID"
-#define TPM_PCR_MINIMUM_DIGEST_SIZE 20
+#define TPM_PCR_FIRMWARE_VERSION "VBOOT: firmware ver"
 
 tpm_result_t vboot_setup_tpm(struct vb2_context *ctx)
 {
@@ -54,6 +54,10 @@ tpm_result_t vboot_extend_pcr(struct vb2_context *ctx, int pcr,
 	case HWID_DIGEST_PCR:
 		return tpm_extend_pcr(pcr, algo, buffer, vb2_digest_size(algo),
 				      TPM_PCR_GBB_HWID_NAME);
+	/* firmware version */
+	case FIRMWARE_VERSION_PCR:
+		return tpm_extend_pcr(pcr, algo, buffer, vb2_digest_size(algo),
+				      TPM_PCR_FIRMWARE_VERSION);
 	default:
 		return TPM_CB_FAIL;
 	}

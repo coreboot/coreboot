@@ -2,6 +2,7 @@
 
 #include <device/mmio.h>
 #include <arch/interrupt.h>
+#include <arch/null_breakpoint.h>
 #include <arch/registers.h>
 #include <boot/coreboot_tables.h>
 #include <console/console.h>
@@ -178,14 +179,20 @@ static void setup_realmode_idt(void)
 	struct realmode_idt *idts = (struct realmode_idt *) 0;
 	int i;
 
+	/* It's expected that we write to the NULL page in the first two iterations of the
+	   following loop, so temporarily disable the NULL breakpoint. */
+	null_breakpoint_disable();
+
 	/* Copy IDT stub code for each interrupt. This might seem wasteful
 	 * but it is really simple
 	 */
-	 for (i = 0; i < 256; i++) {
+	for (i = 0; i < 256; i++) {
 		idts[i].cs = 0;
 		idts[i].offset = 0x1000 + (i * __idt_handler_size);
 		write_idt_stub((void *)((uintptr_t)idts[i].offset), i);
 	}
+
+	null_breakpoint_init();
 
 	/* Many option ROMs use the hard coded interrupt entry points in the
 	 * system bios. So install them at the known locations.

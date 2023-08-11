@@ -240,3 +240,13 @@ const struct non_pci_mmio_reg *get_iohc_non_pci_mmio_regs(size_t *count)
 	*count = ARRAY_SIZE(non_pci_mmio);
 	return non_pci_mmio;
 }
+
+signed int get_iohc_fabric_id(struct device *domain)
+{
+	switch (domain->path.domain.domain) {
+	case 0:
+		return IOMS0_FABRIC_ID;
+	default:
+		return -1;
+	}
+}

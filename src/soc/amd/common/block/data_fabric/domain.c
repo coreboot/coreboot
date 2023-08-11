@@ -94,6 +94,7 @@ static void report_data_fabric_mmio(struct device *domain, unsigned int idx,
 /* Tell the resource allocator about the usable MMIO ranges configured in the data fabric */
 static void add_data_fabric_mmio_regions(struct device *domain, unsigned int *idx)
 {
+	const signed int iohc_dest_fabric_id = get_iohc_fabric_id(domain);
 	union df_mmio_control ctrl;
 	resource_t mmio_base;
 	resource_t mmio_limit;
@@ -114,8 +115,7 @@ static void add_data_fabric_mmio_regions(struct device *domain, unsigned int *id
 			continue;
 
 		/* Only look at MMIO regions that are decoded to the right PCI root */
-		if (CONFIG(SOC_AMD_COMMON_BLOCK_DATA_FABRIC_DOMAIN_MULTI_PCI_ROOT) &&
-		    ctrl.dst_fabric_id != domain->path.domain.domain)
+		if (ctrl.dst_fabric_id != iohc_dest_fabric_id)
 			continue;
 
 		data_fabric_get_mmio_base_size(i, &mmio_base, &mmio_limit);
@@ -156,6 +156,7 @@ static void report_data_fabric_io(struct device *domain, unsigned int idx,
 /* Tell the resource allocator about the usable I/O space */
 static void add_data_fabric_io_regions(struct device *domain, unsigned int *idx)
 {
+	const signed int iohc_dest_fabric_id = get_iohc_fabric_id(domain);
 	union df_io_base base_reg;
 	union df_io_limit limit_reg;
 	resource_t io_base;
@@ -171,8 +172,7 @@ static void add_data_fabric_io_regions(struct device *domain, unsigned int *idx)
 		limit_reg.raw = data_fabric_broadcast_read32(DF_IO_LIMIT(i));
 
 		/* Only look at IO regions that are decoded to the right PCI root */
-		if (CONFIG(SOC_AMD_COMMON_BLOCK_DATA_FABRIC_DOMAIN_MULTI_PCI_ROOT) &&
-		    limit_reg.dst_fabric_id != domain->path.domain.domain)
+		if (limit_reg.dst_fabric_id != iohc_dest_fabric_id)
 			continue;
 
 		io_base = base_reg.io_base << DF_IO_ADDR_SHIFT;

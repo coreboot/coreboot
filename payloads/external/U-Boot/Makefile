@@ -5,7 +5,7 @@ TAG-$(CONFIG_UBOOT_STABLE)=$(STABLE_COMMIT_ID)
 
 project_name=U-Boot
 project_dir=u-boot
-project_git_repo=http://git.denx.de/u-boot.git
+project_git_repo=http://github.com/u-boot/u-boot/
 project_build_dir=build
 project_config_file=$(project_build_dir)/.config
 

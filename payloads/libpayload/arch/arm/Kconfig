@@ -26,10 +26,5 @@
 ## SUCH DAMAGE.
 ##
 
-if ARCH_ARM
-
-config ARCH_SPECIFIC_OPTIONS
-	def_bool y
+config ARCH_ARM
 	select LITTLE_ENDIAN
-
-endif

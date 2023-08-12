@@ -26,12 +26,11 @@
 ## SUCH DAMAGE.
 ##
 
-if ARCH_X86
-
-config ARCH_SPECIFIC_OPTIONS
-	def_bool y
+config ARCH_X86
 	select LITTLE_ENDIAN
 	select IO_ADDRESS_SPACE
+
+if ARCH_X86
 
 config ENABLE_APIC
 	bool "Enables the Local APIC"

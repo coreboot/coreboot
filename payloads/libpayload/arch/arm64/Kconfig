@@ -26,11 +26,10 @@
 ## SUCH DAMAGE.
 ##
 
-if ARCH_ARM64
-
-config ARCH_SPECIFIC_OPTIONS
-	def_bool y
+config ARCH_ARM64
 	select LITTLE_ENDIAN
+
+if ARCH_ARM64
 
 config ARM64_A53_ERRATUM_843419
 	bool "Enable Cortex-A53 erratum 843419 linker workaround"

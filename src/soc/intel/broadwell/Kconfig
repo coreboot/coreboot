@@ -6,6 +6,7 @@ config SOC_INTEL_BROADWELL
 	select MRC_SETTINGS_PROTECT
 	select REG_SCRIPT
 	select TCO_SPACE_NOT_YET_SPLIT
+	select INTEL_LYNXPOINT_LP
 	help
 	  Intel Broadwell and Haswell ULT support.
 

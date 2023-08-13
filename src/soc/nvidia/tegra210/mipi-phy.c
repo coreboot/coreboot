@@ -26,7 +26,7 @@ int mipi_dphy_set_timing(struct tegra_dsi *dsi)
 	u32 tclkpost = ((DSI_PHY_TIMING_DIV(((70) + ((52) * (DSI_TBIT(freq)))),
 			freq)));
 	u32 tclkzero = (DSI_PHY_TIMING_DIV(260, freq));
-	u32 ttlpx = (DSI_PHY_TIMING_DIV(60, freq)) ;
+	u32 ttlpx = (DSI_PHY_TIMING_DIV(60, freq));
 	u32 tclkprepare = (DSI_PHY_TIMING_DIV(60, freq));
 	u32 tclkpre = 1; //min = 8*UI per mipi spec, tclk_pre=0 should be ok, but using 1 value
 	u32 twakeup = 0x7F; //min = 1ms

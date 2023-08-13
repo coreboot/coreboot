@@ -86,7 +86,7 @@ static void h8_log_ec_version(void)
 	u8 len;
 	u16 fwvh, fwvl;
 
-	len = h8_build_id_and_function_spec_version(ecfw, sizeof ecfw - 1);
+	len = h8_build_id_and_function_spec_version(ecfw, sizeof(ecfw) - 1);
 	ecfw[len] = 0;
 
 	fwvh = ec_read(0xe9);

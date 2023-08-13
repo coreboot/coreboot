@@ -636,7 +636,7 @@ void clock_select_i2s_clk_source(void)
 
 int clock_set_i2s_clk_prescaler(unsigned int src_frq, unsigned int dst_frq)
 {
-	unsigned int div ;
+	unsigned int div;
 
 	if ((dst_frq == 0) || (src_frq == 0)) {
 		printk(BIOS_DEBUG, "%s: Invalid frequency input for prescaler\n", __func__);

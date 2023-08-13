@@ -543,7 +543,7 @@ static int rk_mipi_dsi_check_fifo(struct rk_mipi_dsi *dsi, u32 flag)
 	do {
 		val = read32(&dsi->mipi_regs->dsi_cmd_pkt_status);
 		if (!(val & flag))
-			return 0 ;
+			return 0;
 	} while (!stopwatch_expired(&sw));
 
 	return -1;
@@ -567,7 +567,7 @@ static int rk_mipi_dsi_gen_pkt_hdr_write(struct rk_mipi_dsi *dsi, u32 hdr_val)
 	do {
 		val = read32(&dsi->mipi_regs->dsi_cmd_pkt_status);
 		if ((val & mask) == mask)
-			return 0 ;
+			return 0;
 	} while (!stopwatch_expired(&sw));
 	printk(BIOS_ERR, "failed to write command FIFO\n");
 

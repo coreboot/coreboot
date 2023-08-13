@@ -25,7 +25,7 @@ int mt6391_configure_ca53_voltage(int uv)
 
 	/* For buck delay, default slew rate is 6.25mv/0.5us */
 	if (buck_val > current_val)
-		return ((buck_val - current_val) / 2) ;
+		return ((buck_val - current_val) / 2);
 	else
 		return 0;
 }

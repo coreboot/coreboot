@@ -47,7 +47,7 @@ config SOC_INTEL_COMMON_BLOCK_HECI1_DISABLE_USING_PCR
 
 config SOC_INTEL_STORE_CSE_FW_VERSION
 	bool
-	default n
+	default y
 	depends on SOC_INTEL_CSE_LITE_SKU
 	help
 	  This configuration option stores CSE RW FW version in CBMEM area.

@@ -160,6 +160,13 @@ struct cse_fw_partition_info {
 	struct cse_fw_ish_version_info ish_partition_info;
 };
 
+/* CSE Specific Information */
+struct cse_specific_info {
+	struct cse_fw_partition_info cse_fwp_version;
+	bool cse_downgrade_requested;
+	uint32_t crc;
+};
+
 /* CSE RX and TX error status */
 enum cse_tx_rx_status {
 	/*

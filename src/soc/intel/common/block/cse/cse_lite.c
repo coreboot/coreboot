@@ -6,6 +6,7 @@
 #include <commonlib/region.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
+#include <crc_byte.h>
 #include <fmap.h>
 #include <intelbasecode/debug_feature.h>
 #include <intelblocks/cse.h>
@@ -134,6 +135,8 @@ struct get_bp_info_rsp {
 
 static const char * const cse_regions[] = {"RO", "RW"};
 
+static struct cse_specific_info cse_info;
+
 void cse_log_ro_write_protection_info(bool mfg_mode)
 {
 	bool cse_ro_wp_en = is_spi_wp_cse_ro_en();
@@ -198,6 +201,88 @@ static const struct cse_bp_entry *cse_get_bp_entry(enum boot_partition_id bp,
 	return &cse_bp_info->bp_entries[bp];
 }
 
+static bool is_cbmem_cse_info_valid(const struct cse_specific_info *info)
+{
+	uint32_t crc = ~CRC(info, offsetof(struct cse_specific_info, crc), crc32_byte);
+
+	/*
+	 * Authenticate the CBMEM persistent data.
+	 *
+	 * The underlying assumption is that an event (i.e., CSE upgrade/downgrade) which
+	 * could change the values stored in this region has to also trigger the global
+	 * reset. Hence, CBMEM persistent data won't be available any time after such
+	 * event (global reset or cold reset) being initiated.
+	 *
+	 * During warm boot scenarios CBMEM contents remain persistent hence, we don't
+	 * want to override the existing data in CBMEM to avoid any additional boot latency.
+	 */
+	if (info->crc != crc)
+		return false;
+
+	return true;
+}
+
+static void cbmem_store_cse_info_crc(struct cse_specific_info *info)
+{
+	info->crc = ~CRC(info, offsetof(struct cse_specific_info, crc), crc32_byte);
+}
+
+/*
+ * Helper function that stores current CSE firmware version to CBMEM memory,
+ * except during recovery mode.
+ */
+static void cse_store_rw_fw_version(const struct cse_bp_entry *cse_bp)
+{
+	if (vboot_recovery_mode_enabled())
+		return;
+
+	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_ROMSTAGE)) {
+		memcpy(&(cse_info.cse_fwp_version.cur_cse_fw_version), &(cse_bp->fw_ver),
+			 sizeof(struct fw_version));
+		return;
+	}
+
+	struct cse_specific_info *info = cbmem_add(CBMEM_ID_CSE_INFO, sizeof(*info));
+	if (!info)
+		return;
+
+	/* Avoid CBMEM update if CBMEM already has persistent data */
+	if (is_cbmem_cse_info_valid(info))
+		return;
+
+	memset(info, 0, sizeof(*info));
+
+	memcpy(&(info->cse_fwp_version.cur_cse_fw_version), &(cse_bp->fw_ver),
+		 sizeof(struct fw_version));
+
+	/* Update the CRC */
+	cbmem_store_cse_info_crc(info);
+}
+
+#if CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_ROMSTAGE)
+/* Function to copy PRERAM CSE specific info to pertinent CBMEM. */
+static void preram_cse_info_sync_to_cbmem(int is_recovery)
+{
+	if (vboot_recovery_mode_enabled() || !CONFIG(SOC_INTEL_STORE_CSE_FW_VERSION))
+		return;
+
+	struct cse_specific_info *info = cbmem_add(CBMEM_ID_CSE_INFO, sizeof(*info));
+	if (!info)
+		return;
+
+	/* Avoid sync into CBMEM if CBMEM already has persistent data */
+	if (is_cbmem_cse_info_valid(info))
+		return;
+
+	memcpy(info, &cse_info, sizeof(struct cse_specific_info));
+
+	/* Update the CRC */
+	cbmem_store_cse_info_crc(info);
+}
+
+CBMEM_CREATION_HOOK(preram_cse_info_sync_to_cbmem);
+#endif
+
 static void cse_print_boot_partition_info(const struct cse_bp_info *cse_bp_info)
 {
 	const struct cse_bp_entry *cse_bp;
@@ -223,6 +308,10 @@ static void cse_print_boot_partition_info(const struct cse_bp_info *cse_bp_info)
 			cse_bp->fw_ver.hotfix, cse_bp->fw_ver.build,
 			cse_bp->status, cse_bp->start_offset,
 			cse_bp->end_offset);
+
+	/* Store the CSE RW Firmware Version into CBMEM */
+	if (CONFIG(SOC_INTEL_STORE_CSE_FW_VERSION))
+		cse_store_rw_fw_version(cse_bp);
 }
 
 /*
@@ -1171,26 +1260,6 @@ void cse_fw_sync(void)
 	timestamp_add_now(TS_CSE_FW_SYNC_END);
 }
 
-/*
- * Helper function that stores current CSE firmware version to CBMEM memory,
- * except during recovery mode.
- */
-static void cse_store_rw_fw_version(void)
-{
-	if (vboot_recovery_mode_enabled())
-		return;
-
-	struct get_bp_info_rsp cse_bp_info;
-	if (cse_get_bp_info(&cse_bp_info) != CB_SUCCESS) {
-		printk(BIOS_ERR, "cse_lite: Failed to get CSE boot partition info\n");
-		return;
-	}
-	const struct cse_bp_entry *cse_bp = cse_get_bp_entry(RW, &cse_bp_info.bp_info);
-	struct cse_fw_partition_info *version;
-	version = cbmem_add(CBMEM_ID_CSE_PARTITION_VERSION, sizeof(*version));
-	memcpy(&(version->cur_cse_fw_version), &(cse_bp->fw_ver), sizeof(struct fw_version));
-}
-
 static enum cb_err send_get_fpt_partition_info_cmd(enum fpt_partition_id id,
 	struct fw_version_resp *resp)
 {
@@ -1303,9 +1372,6 @@ static void ramstage_cse_misc_ops(void *unused)
 	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_RAMSTAGE))
 		cse_fw_sync();
 
-	/* Store the CSE RW Firmware Version into CBMEM */
-	if (CONFIG(SOC_INTEL_STORE_CSE_FW_VERSION))
-		cse_store_rw_fw_version();
 	/*
 	 * Store the ISH RW Firmware Version into CBMEM if ISH partition
 	 * is available

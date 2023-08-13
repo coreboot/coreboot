@@ -122,6 +122,20 @@ const char *soc_acpi_name(const struct device *dev)
 }
 #endif
 
+#if CONFIG(SOC_INTEL_STORE_ISH_FW_VERSION)
+/* SoC override API to identify if ISH Firmware existed inside CSE FPT */
+bool soc_is_ish_partition_enabled(void)
+{
+	struct device *ish = pcidev_path_on_root(PCI_DEVFN_ISH);
+	uint16_t ish_pci_id = ish ? pci_read_config16(ish, PCI_DEVICE_ID) : 0xFFFF;
+
+	if (ish_pci_id == 0xFFFF)
+		return false;
+
+	return true;
+}
+#endif
+
 /* SoC routine to fill GPIO PM mask and value for GPIO_MISCCFG register */
 static void soc_fill_gpio_pm_configuration(void)
 {

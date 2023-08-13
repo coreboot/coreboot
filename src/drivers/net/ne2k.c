@@ -130,10 +130,10 @@ static void str2mac(const char *str, unsigned char *mac)
 			acc += (c - '0');
 		} else if ((c >= 'a') && (c <= 'f')) {
 			acc *= 16;
-			acc += ((c - 'a') + 10) ;
+			acc += ((c - 'a') + 10);
 		} else if ((c >= 'A') && (c <= 'F')) {
 			acc *= 16;
-			acc += ((c - 'A') + 10) ;
+			acc += ((c - 'A') + 10);
 		} else {
 			*mac++ = acc;
 			acc = 0;
@@ -216,7 +216,8 @@ void ne2k_transmit(unsigned int eth_nic_base)
 	outb(D8390_COMMAND_PS0 | D8390_COMMAND_TXP | D8390_COMMAND_RD2 | D8390_COMMAND_STA, eth_nic_base + D8390_P0_COMMAND);
 
 	/* wait for operation finish */
-	while ((inb(eth_nic_base + D8390_P0_ISR) & D8390_ISR_PTX) != D8390_ISR_PTX) ;
+	while ((inb(eth_nic_base + D8390_P0_ISR) & D8390_ISR_PTX) != D8390_ISR_PTX)
+		;
 
 	set_count(eth_nic_base, 0);
 }

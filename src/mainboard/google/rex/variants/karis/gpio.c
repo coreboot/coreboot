@@ -101,10 +101,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_C01, 0, DEEP),
 	/* GPP_C02 : SOC_TCHSCR_SPI_INT_STRAP ==> Component NC */
 	PAD_NC(GPP_C02, NONE),
-	/* GPP_C03 : [] ==> EN_WCAM_SENR_PWR */
-	PAD_CFG_GPO_LOCK(GPP_C03, 0, LOCK_CONFIG),
-	/* GPP_C04 : [] ==> EN_WCAM_PWR */
-	PAD_CFG_GPO_LOCK(GPP_C04, 0, LOCK_CONFIG),
+	/* GPP_C03 : [] ==> Test pad. */
+	PAD_NC(GPP_C03, NONE),
+	/* GPP_C04 : net NC. */
+	PAD_NC(GPP_C04, NONE),
 	/* GPP_C05 : [] ==> WWAN_PERST_L_STRAP */
 	PAD_CFG_GPO(GPP_C05, 1, PLTRST),
 	/* GPP_C06 : [] ==> SOC_TCHSCR_RPT_EN */
@@ -140,8 +140,8 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_C23 : [] ==> FP_RST_ODL */
 	PAD_CFG_GPO_LOCK(GPP_C23, 1, LOCK_CONFIG),
 
-	/* GPP_D00 : WCAM_MCLK_R */
-	PAD_CFG_NF(GPP_D00, NONE, DEEP, NF1),
+	/* GPP_D00 : Not connected. */
+	PAD_NC(GPP_D00, NONE),
 	/* GPP_D01 : Not Connected */
 	PAD_NC(GPP_D01, NONE),
 	/* GPP_D04 : [] ==> EN_SPKR */
@@ -357,8 +357,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_V12, NONE, DEEP, NF1),
 	/* GPP_V14 : [] ==> SOC_WAKE_L */
 	PAD_CFG_NF(GPP_V14, NONE, DEEP, NF1),
-	/* GPP_V22 : [] ==> WCAM_RST_L */
-	PAD_CFG_GPO(GPP_V22, 0, DEEP),
+	/* GPP_V22 : NC net. */
+	PAD_NC(GPP_V22, NONE),
 	/* GPP_V23 : [] ==> UCAM_RST_L */
 	PAD_CFG_GPO(GPP_V23, 0, DEEP),
 };

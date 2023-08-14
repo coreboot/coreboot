@@ -23,5 +23,4 @@ void mainboard_smi_sleep(u8 slp_typ)
 	default:
 		break;
 	}
-	return;
 }

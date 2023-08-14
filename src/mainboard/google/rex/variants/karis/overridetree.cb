@@ -34,10 +34,6 @@ fw_config
 		option WIFI_CNVI		0
 		option WIFI_PCIE		1
 	end
-	field TOUCHSCREEN 19
-		option TOUCHSCREEN_I2C		0
-		option TOUCHSCREEN_I2C_SPI	1
-	end
 	field VPU 20
 		option VPU_DIS			0
 		option VPU_EN			1
@@ -73,7 +69,7 @@ chip soc/intel/meteorlake
 	}"
 
 	register "serial_io_gspi_mode" = "{
-		[PchSerialIoIndexGSPI0] = PchSerialIoPci,
+		[PchSerialIoIndexGSPI0] = PchSerialIoDisabled,
 		[PchSerialIoIndexGSPI1] = PchSerialIoPci,
 		[PchSerialIoIndexGSPI2] = PchSerialIoDisabled,
 	}"
@@ -421,9 +417,7 @@ chip soc/intel/meteorlake
 				register "generic.stop_off_delay_ms" = "2"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x01"
-				device i2c 10 on
-					probe TOUCHSCREEN TOUCHSCREEN_I2C
-				end
+				device i2c 10 on end
 			end
 			chip drivers/generic/gpio_keys
 				register "name" = ""PENH""
@@ -582,9 +576,6 @@ chip soc/intel/meteorlake
 				end
 			end
 		end	#PCIE6 WWAN card
-		device ref gspi0 on
-			probe TOUCHSCREEN TOUCHSCREEN_I2C_SPI
-		end
 		device ref gspi1 on
 			chip drivers/spi/acpi
 				register "name" = ""CRFP""

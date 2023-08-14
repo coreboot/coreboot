@@ -113,7 +113,6 @@ void pnp_set_drq(struct device *dev, u8 index, u8 drq)
 
 void pnp_read_resources(struct device *dev)
 {
-	return;
 }
 
 static void pnp_set_resource(struct device *dev, struct resource *resource)

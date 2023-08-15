@@ -18,4 +18,16 @@
 /* CPU CrashLog MMIO Registers */
 #define CRASHLOG_MAILBOX_INTF_ADDRESS		0x6038
 
+typedef union {
+	struct {
+		u32 reserved1		:27;
+		u32 set_storage_off	:1;
+		u32 set_re_arm		:1;
+		u32 reserved2		:1;
+		u32 set_clr		:1;
+		u32 reserved3		:1;
+	} fields;
+	u32 data;
+} __packed cl_punit_control_interface_t;
+
 #endif /* _SOC_METEORLAKE_CRASHLOG_H_ */

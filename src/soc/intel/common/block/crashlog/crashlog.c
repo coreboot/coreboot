@@ -154,6 +154,16 @@ int __weak cpu_cl_clear_data(void)
 	return cpu_cl_mailbox_cmd(CPU_CRASHLOG_CMD_CLEAR, 0);
 }
 
+void __weak cpu_cl_rearm(void)
+{
+	/* empty implementation */
+}
+
+void __weak cpu_cl_cleanup(void)
+{
+	/* empty implementation */
+}
+
 int pmc_cl_gen_descriptor_table(u32 desc_table_addr,
 				pmc_crashlog_desc_table_t *descriptor_table)
 {
@@ -466,6 +476,10 @@ void cl_get_cpu_sram_data(void)
 
 	/* clear telemetry SRAM region */
 	cpu_cl_clear_data();
+	/* perform any SOC specific cleanup */
+	cpu_cl_cleanup();
+	/* rearm crashlog */
+	cpu_cl_rearm();
 }
 
 void collect_pmc_and_cpu_crashlog_from_srams(void)

@@ -138,7 +138,6 @@ typedef union {
 	u64 data;
 } __packed cpu_crashlog_header_t;
 
-
 /* Structures for CPU CrashLog mailbox interface */
 typedef union {
 	struct {
@@ -192,6 +191,8 @@ u32 cl_gen_cpu_bar_addr(void);
 int cpu_cl_poll_mailbox_ready(u32 cl_mailbox_addr);
 int cpu_cl_mailbox_cmd(u8 cmd, u8 param);
 int cpu_cl_clear_data(void);
+void cpu_cl_rearm(void);
+void cpu_cl_cleanup(void);
 int pmc_cl_gen_descriptor_table(u32 desc_table_addr,
 				pmc_crashlog_desc_table_t *descriptor_table);
 bool pmc_cl_discovery(void);

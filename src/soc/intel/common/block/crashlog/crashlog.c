@@ -114,13 +114,13 @@ int cpu_cl_poll_mailbox_ready(u32 cl_mailbox_addr)
 
 	do {
 		cl_mailbox_interface.data = read32((u32 *)cl_mailbox_addr);
-		udelay(CPU_CRASHLOG_MAILBOX_WAIT_STALL);
+		udelay(CPU_CRASHLOG_WAIT_STALL);
 		stall_cnt++;
 	} while ((cl_mailbox_interface.fields.busy == 1)
-		 && stall_cnt < CPU_CRASHLOG_MAILBOX_WAIT_TIMEOUT);
+		 && stall_cnt < CPU_CRASHLOG_WAIT_TIMEOUT);
 
 	if ((cl_mailbox_interface.fields.busy == 1)
-	    && (stall_cnt >= CPU_CRASHLOG_MAILBOX_WAIT_TIMEOUT)) {
+	    && (stall_cnt >= CPU_CRASHLOG_WAIT_TIMEOUT)) {
 		printk(BIOS_ERR, "CPU crashlog mailbox timed out.\n");
 		return 0;
 	}

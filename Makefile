@@ -316,6 +316,11 @@ $(eval $(postinclude-hooks))
 # Eliminate duplicate mentions of source files in a class
 $(foreach class,$(classes),$(eval $(class)-srcs:=$(sort $($(class)-srcs))))
 
+ifeq ($(CONFIG_IWYU),y)
+MAKEFLAGS += -k
+SAVE_IWYU_OUTPUT := 2>&1 | grep "should\|\#include\|---\|include-list\|^[[:blank:]]\?\'" | tee -a $$(obj)/iwyu.txt
+endif
+
 # Build Kconfig .ads if necessary
 ifeq ($(CONFIG_ROMSTAGE_ADA),y)
 romstage-srcs += $(obj)/romstage/$(notdir $(KCONFIG_AUTOADS))
@@ -382,7 +387,7 @@ $$(call src-to-obj,$1,$$(1).$2): $$(1).$2 $(KCONFIG_AUTOHEADER) $(4)
 	@printf "    CC         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
 	$(CC_$(1)) \
 		-MMD $$$$(CPPFLAGS_$(1)) $$$$(CFLAGS_$(1)) -MT $$$$(@) \
-		$(3) -c -o $$$$@ $$$$<
+		$(3) -c -o $$$$@ $$$$< $(SAVE_IWYU_OUTPUT)
 end$(EMPTY)if
 en$(EMPTY)def
 end$(EMPTY)if

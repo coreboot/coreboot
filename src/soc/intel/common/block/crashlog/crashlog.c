@@ -149,7 +149,7 @@ int cpu_cl_mailbox_cmd(u8 cmd, u8 param)
 	return 1;
 }
 
-int cpu_cl_clear_data(void)
+int __weak cpu_cl_clear_data(void)
 {
 	return cpu_cl_mailbox_cmd(CPU_CRASHLOG_CMD_CLEAR, 0);
 }

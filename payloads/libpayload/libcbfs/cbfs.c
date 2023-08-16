@@ -151,6 +151,7 @@ static void *do_load(union cbfs_mdata *mdata, ssize_t offset, void *buf, size_t 
 		     bool skip_verification)
 {
 	bool malloced = false;
+	size_t buf_size = 0;
 	size_t out_size;
 	uint32_t compression = CBFS_COMPRESS_NONE;
 	const struct cbfs_file_attr_compression *cattr =
@@ -162,8 +163,13 @@ static void *do_load(union cbfs_mdata *mdata, ssize_t offset, void *buf, size_t 
 		out_size = be32toh(mdata->h.len);
 	}
 
+	if (size_inout) {
+		buf_size = *size_inout;
+		*size_inout = out_size;
+	}
+
 	if (buf) {
-		if (!size_inout || *size_inout < out_size) {
+		if (!size_inout || buf_size < out_size) {
 			ERROR("'%s' buffer too small\n", mdata->h.filename);
 			return NULL;
 		}
@@ -183,8 +189,6 @@ static void *do_load(union cbfs_mdata *mdata, ssize_t offset, void *buf, size_t 
 			free(buf);
 		return NULL;
 	}
-	if (size_inout)
-		*size_inout = out_size;
 
 	return buf;
 }

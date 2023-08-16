@@ -13,8 +13,8 @@ enum cse_boot_perf_data_v1 {
 	/* CSME ROM completed execution / CSME RBE started */
 	PERF_DATA_CSME_ROM_COMPLETED = 2,
 
-	/* CSME got ESE Init Done indication from ESE */
-	PERF_DATA_CSME_GOT_ESE_INIT_DONE = 3,
+	/* CSME got ISSE Init Done indication from ISSE */
+	PERF_DATA_CSME_GOT_ISSE_INIT_DONE = 3,
 
 	/* CSME RBE start PMC patch/es loading */
 	PERF_DATA_CSME_RBE_PMC_PATCH_LOADING_START = 4,

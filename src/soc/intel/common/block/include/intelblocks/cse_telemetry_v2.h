@@ -13,8 +13,8 @@ enum cse_boot_perf_data_v2 {
 	/* CSME ROM completed execution / CSME RBE started */
 	PERF_DATA_CSME_ROM_COMPLETED = 2,
 
-	/* CSME got ESE Init Done indication from ESE */
-	PERF_DATA_CSME_GOT_ESE_INIT_DONE = 3,
+	/* CSME got ISSE Init Done indication from ISSE */
+	PERF_DATA_CSME_GOT_ISSE_INIT_DONE = 3,
 
 	/* CSME RBE started SOC.PMC patch and payloads read from SPI flash */
 	PERF_DATA_CSME_RBE_SOC_PMC_PATCH_LOADING_START = 4,
@@ -43,11 +43,11 @@ enum cse_boot_perf_data_v2 {
 	/* CSME BUP start running  */
 	PERF_DATA_CSME_BUP_START = 12,
 
-	/* CSME established IPC channel communication with ESE */
-	PERF_DATA_CSME_IPC_CHANNEL_FOR_ESE_UP = 13,
+	/* CSME established IPC channel communication with ISSE */
+	PERF_DATA_CSME_IPC_CHANNEL_FOR_ISSE_UP = 13,
 
-	/* ESE FW initialization completed */
-	PERF_DATA_ESE_FW_INIT_DONE = 14,
+	/* ISSE FW initialization completed */
+	PERF_DATA_ISSE_FW_INIT_DONE = 14,
 
 	/* PMC set PPS */
 	PERF_DATA_PMC_SET_PPS = 15,
@@ -73,8 +73,8 @@ enum cse_boot_perf_data_v2 {
 	/* PMC indicated CSME that SYS_PWROK was asserted */
 	PERF_DATA_PMC_SYS_PWROK_ASSERTED = 22,
 
-	/* ESE sent IPC message to CSME indicating PUnit load completed */
-	PERF_DATA_ESE_PUNIT_LOAD_COMPLETED = 23,
+	/* ISSE sent IPC message to CSME indicating PUnit load completed */
+	PERF_DATA_ISSE_PUNIT_LOAD_COMPLETED = 23,
 
 	/* PMC indicates CSME that xxPLTRST was de-asserted */
 	PERF_DATA_PMC_PLTRST_DEASSERTED = 24,
@@ -94,8 +94,8 @@ enum cse_boot_perf_data_v2 {
 	/* PMC sent "Core Reset Done Ack - Sent" message to CSME */
 	PERF_DATA_PMC_SENT_CRDA = 29,
 
-	/* ESE sent IPC message to CSME indicating DMU load completed */
-	PERF_DATA_ESE_DMU_LOAD_COMPLETED = 30,
+	/* ISSE sent IPC message to CSME indicating DMU load completed */
+	PERF_DATA_ISSE_DMU_LOAD_COMPLETED = 30,
 
 	/* ACM Active indication - ACM started its execution */
 	PERF_DATA_ACM_START = 31,

@@ -40,6 +40,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		mupd->FspmConfig.VtdBaseAddress[3] = 0;
 		mupd->FspmConfig.TcssDma0En = 0;
 		mupd->FspmConfig.TcssItbtPcie0En = 0;
+		mupd->FspmConfig.TcssXhciEn = 0;
 	}
 
 	mupd->FspmConfig.DmiMaxLinkSpeed = 4;

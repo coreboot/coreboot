@@ -85,8 +85,14 @@ static const struct pad_config ish_enable_pads[] = {
 	PAD_CFG_NF(GPP_B08, NONE, DEEP, NF4),
 	/* GPP_E15 : ISH_GP5A, SOC_ISH_IMU_INT_L */
 	PAD_CFG_NF(GPP_E15, NONE, DEEP, NF8),
+	/* GPP_E16 : ISH_GP10, SOC_EC_ISH_NB_MODE */
+	PAD_CFG_NF(GPP_E16, NONE, DEEP, NF8),
 	/* GPP_F22 : ISH_GP8A, SOC_ISH_ALS_INT_L */
 	PAD_CFG_NF(GPP_F22, NONE, DEEP, NF8),
+	/* GPP_F23 : ISH_GP9A, LID_OPEN_1V8 */
+	PAD_CFG_NF(GPP_F23, NONE, DEEP, NF8),
+	/* GPP_H11 : ISH_GP11A, SOC_ISH_IMU_INT_L */
+	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF8),
 };
 
 static const struct pad_config touchscreen_i2c_int_pads[] = {

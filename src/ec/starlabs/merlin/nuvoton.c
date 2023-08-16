@@ -256,17 +256,11 @@ static void merlin_init(struct device *dev)
 	 * Values:	Off, On
 	 * Default:	On
 	 *
+	 * Note:	Always enable, as the brightness level of `off` disables it.
+	 *
 	 */
-	const uint8_t kbl_state[] = {
-		KBL_DISABLED,
-		KBL_ENABLED
-	};
 
-	ec_write(ECRAM_KBL_STATE,
-		get_ec_value_from_option("kbl_state",
-					 1,
-					 kbl_state,
-					 ARRAY_SIZE(kbl_state)));
+	ec_write(ECRAM_KBL_STATE, KBL_ENABLED);
 }
 
 static struct device_operations ops = {

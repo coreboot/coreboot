@@ -1,3 +1,10 @@
+fw_config
+	field WIFI_SAR_ID 30 31
+		option ID_0			0
+		option UNUSED			3
+	end
+end
+
 chip soc/intel/alderlake
 	register "domain_vr_config[VR_DOMAIN_IA]" = "{
 		.enable_fast_vmode = 1,

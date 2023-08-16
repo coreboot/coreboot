@@ -10,7 +10,7 @@ LINUX_ARCH-$(CONFIG_LINUXBOOT_ARM64)      = arm64
 LINUX_ARCH-$(CONFIG_LINUXBOOT_RISCV_RV32) = riscv
 LINUX_ARCH-$(CONFIG_LINUXBOOT_RISCV_RV64) = riscv
 
-build/Image: $(CONFIG_LINUXBOOT_KERNEL_PATH)
+build/Image: $(CONFIG_LINUXBOOT_KERNEL_PATH) | build
 	ln -s -r $< $@
 
 
@@ -21,7 +21,7 @@ ifeq ($(CONFIG_LINUXBOOT_UROOT),y)
 include targets/u-root.mk
 endif
 
-build/initramfs: $(CONFIG_LINUXBOOT_INITRAMFS_PATH)
+build/initramfs: $(CONFIG_LINUXBOOT_INITRAMFS_PATH) | build
 ifeq ($(CONFIG_LINUXBOOT_INITRAMFS_COMPRESSION_XZ),y)
 	xz --keep --force --check=crc32 --lzma2=dict=1MiB $(CONFIG_LINUXBOOT_INITRAMFS_PATH)
 endif

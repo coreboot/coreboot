@@ -121,20 +121,11 @@ static int pmif_init_ulposc(void)
 
 int pmif_clk_init(void)
 {
-	u32 ulposc1;
-
-	/* check hardware default value first */
-	ulposc1 = pmif_get_ulposc_freq_mhz(CALI_DEFAULT_CAP_VALUE);
-	if (pmif_ulposc_check(ulposc1, FREQ_260MHZ)) {
-		/*
-		 * If the hardware value is not what we want, we need to adjust
-		 * it by the software setting.
-		 */
-		pmif_clockmonitor_config(false);
-		if (pmif_init_ulposc())
-			return E_NODEV;
-		pmif_clockmonitor_config(true);
-	}
+	/* initialize pmif clock */
+	pmif_clockmonitor_config(false);
+	if (pmif_init_ulposc())
+		return E_NODEV;
+	pmif_clockmonitor_config(true);
 
 	/* turn off pmic_cg_tmr, cg_ap, cg_md, cg_conn clock */
 	SET32_BITFIELDS(&mt8188_infracfg_ao->module_sw_cg_0_set, PMIC_CG_TMR, 1, PMIC_CG_AP, 1,

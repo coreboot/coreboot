@@ -249,6 +249,7 @@ config MAINBOARD_PART_NUMBER
 	default "Gothrax" if BOARD_GOOGLE_GOTHRAX
 	default "Craaskov" if BOARD_GOOGLE_CRAASKOV
 	default "Pirrha" if BOARD_GOOGLE_PIRRHA
+	default "Quandiso" if BOARD_GOOGLE_QUANDISO
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -299,6 +300,7 @@ config VARIANT_DIR
 	default "gothrax" if BOARD_GOOGLE_GOTHRAX
 	default "craaskov" if BOARD_GOOGLE_CRAASKOV
 	default "pirrha" if BOARD_GOOGLE_PIRRHA
+	default "quandiso" if BOARD_GOOGLE_QUANDISO
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC if !BOARD_GOOGLE_BASEBOARD_NISSA

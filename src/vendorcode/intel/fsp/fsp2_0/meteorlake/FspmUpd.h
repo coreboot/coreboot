@@ -1445,16 +1445,14 @@ typedef struct {
   UINT16                      IccLimit[6];
 
 /** Offset 0x0766 - Enable/Disable VR FastVmode. The VR will initiate reactive protection if Fast Vmode is enabled.
-  Enable/Disable VR FastVmode; [0] for IA, [1] for GT, 0: Disable; <b>1: Enable</b>.
-  [2] for SA, <b>0: Disable</b>; 1: Enable.
+  Enable/Disable VR FastVmode; 0: Disable; <b>1: Enable</b>. For all VR by domain
   0: Disable, 1: Enable
 **/
   UINT8                       EnableFastVmode[6];
 
 /** Offset 0x076C - Enable CEP
-  Enable/Disable CEP (Current Excursion Protection) Support. [0] for IA, [1] for GT,
-  0: Disable; <b>1: Enable</b>. [2] for SA, <b>0: Disable</b>; 1: Enable. [3] through
-  [5] are Reserved.
+  Enable/Disable CEP (Current Excursion Protection) Support. 0: Disable; <b>1: Enable</b>.
+  [0] for IA, [1] for GT, [2] for SA, [3] through [5] are Reserved.
   $EN_DIS
 **/
   UINT8                       CepEnable[6];

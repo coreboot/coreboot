@@ -813,7 +813,7 @@ typedef struct {
 **/
   UINT8                       Reserved17;
 
-/** Offset 0x04D0 - Pointer of ChipsetInit Binary
+/** Offset 0x04D0 - Pointer to ChipsetInit Binary
   ChipsetInit Binary Pointer.
 **/
   UINT32                      ChipsetInitBinPtr;

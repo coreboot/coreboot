@@ -1333,11 +1333,12 @@ static void store_ish_version(void)
 	if (vboot_recovery_mode_enabled())
 		return;
 
-	struct cse_fw_partition_info *version;
-	size_t size = sizeof(struct fw_version);
-	version = cbmem_find(CBMEM_ID_CSE_PARTITION_VERSION);
-	if (version == NULL)
+	struct cse_specific_info *info = cbmem_find(CBMEM_ID_CSE_INFO);
+	if (info == NULL)
 		return;
+
+	struct cse_fw_partition_info *version = &(info->cse_fwp_version);
+	size_t size = sizeof(struct fw_version);
 
 	/*
 	 * Compare if stored cse version (from the previous boot) is same as current
@@ -1360,6 +1361,9 @@ static void store_ish_version(void)
 			/* Since cse version has been updated, ish version needs to be updated. */
 			memcpy(&(version->ish_partition_info.cur_ish_fw_version),
 				&(resp.manifest_data.version), size);
+
+			/* Update the CRC */
+			cbmem_store_cse_info_crc(info);
 		}
 	}
 }

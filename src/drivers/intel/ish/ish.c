@@ -50,15 +50,15 @@ static void intel_ish_enable(struct device *dev)
 
 static void intel_ish_get_version(void)
 {
-	struct cse_fw_partition_info *version = cbmem_find(CBMEM_ID_CSE_PARTITION_VERSION);
-	if (version == NULL)
+	struct cse_specific_info *info = cbmem_find(CBMEM_ID_CSE_INFO);
+	if (info == NULL)
 		return;
 
 	printk(BIOS_DEBUG, "ISH version: %d.%d.%d.%d\n",
-		version->ish_partition_info.cur_ish_fw_version.major,
-		version->ish_partition_info.cur_ish_fw_version.minor,
-		version->ish_partition_info.cur_ish_fw_version.hotfix,
-		version->ish_partition_info.cur_ish_fw_version.build);
+		info->cse_fwp_version.ish_partition_info.cur_ish_fw_version.major,
+		info->cse_fwp_version.ish_partition_info.cur_ish_fw_version.minor,
+		info->cse_fwp_version.ish_partition_info.cur_ish_fw_version.hotfix,
+		info->cse_fwp_version.ish_partition_info.cur_ish_fw_version.build);
 }
 
 static void intel_ish_final(struct device *dev)

@@ -92,7 +92,6 @@ chip soc/amd/mendocino
 			register "generic.hid" = ""PIXA2635""
 			register "generic.desc" = ""PIXA Touchpad""
 			register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_40)"
-			#register "generic.irq_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPIO_40)"
 			register "generic.wake" = "GEVENT_20"
 			register "generic.detect" = "1"
 			register "hid_desc_reg_offset" = "0x01"

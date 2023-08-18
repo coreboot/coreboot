@@ -59,10 +59,10 @@ struct soc_intel_apollolake_config {
 	uint8_t pcie_rp_clkreq_pin[MAX_PCIE_PORTS];
 
 	/* Enable/disable hot-plug for root ports (0 = disable, 1 = enable). */
-	uint8_t pcie_rp_hotplug_enable[MAX_PCIE_PORTS];
+	bool pcie_rp_hotplug_enable[MAX_PCIE_PORTS];
 
 	/* De-emphasis enable configuration for each PCIe root port */
-	uint8_t pcie_rp_deemphasis_enable[MAX_PCIE_PORTS];
+	bool pcie_rp_deemphasis_enable[MAX_PCIE_PORTS];
 
 	/* [14:8] DDR mode Number of dealy elements.Each = 125pSec.
 	 * [6:0] SDR mode Number of dealy elements.Each = 125pSec.
@@ -104,10 +104,10 @@ struct soc_intel_apollolake_config {
 	uint8_t emmc_host_max_speed;
 
 	/* Sata Ports Hot Plug */
-	uint8_t sata_ports_hot_plug[2];
+	bool sata_ports_hot_plug[2];
 
 	/* Sata Ports Enable */
-	uint8_t sata_ports_enable[2];
+	bool sata_ports_enable[2];
 
 	/* Sata Ports Solid State Drive */
 	uint8_t sata_ports_ssd[2];
@@ -133,10 +133,10 @@ struct soc_intel_apollolake_config {
 	uint32_t gen4_dec;
 
 	/* Configure LPSS S0ix Enable */
-	uint8_t lpss_s0ix_enable;
+	bool lpss_s0ix_enable;
 
 	/* Enable DPTF support */
-	int dptf_enable;
+	bool dptf_enable;
 
 	/* TCC activation offset value in degrees Celsius */
 	uint32_t tcc_offset;
@@ -144,12 +144,12 @@ struct soc_intel_apollolake_config {
 	/* Configure Audio clk gate and power gate
 	 * IOSF-SB port ID 92 offset 0x530 [5] and [3]
 	 */
-	uint8_t hdaudio_clk_gate_enable;
-	uint8_t hdaudio_pwr_gate_enable;
-	uint8_t hdaudio_bios_config_lockdown;
+	bool hdaudio_clk_gate_enable;
+	bool hdaudio_pwr_gate_enable;
+	bool hdaudio_bios_config_lockdown;
 
 	/* Enhanced C-states */
-	int enhanced_cstates;
+	bool enhanced_cstates;
 
 	/* SLP S3 minimum assertion width. */
 	int slp_s3_assertion_width_usecs;
@@ -161,7 +161,7 @@ struct soc_intel_apollolake_config {
 	struct usb2_eye_per_port usb2eye[APOLLOLAKE_USB2_PORT_MAX];
 
 	/* Override USB port configuration */
-	uint8_t usb_config_override;
+	bool usb_config_override;
 	struct usb_port_config usb2_port[APOLLOLAKE_USB2_PORT_MAX];
 	struct usb_port_config usb3_port[APOLLOLAKE_USB3_PORT_MAX];
 
@@ -184,7 +184,7 @@ struct soc_intel_apollolake_config {
 	 * disable Compliance Mode. Set TRUE to disable Compliance Mode.
 	 * 0:FALSE(Default), 1:True.
 	 */
-	uint8_t disable_compliance_mode;
+	bool disable_compliance_mode;
 
 	/* Options to change USB3 ModPhy setting for the Integrated Filter (IF)
 	 * value. Default is 0 to not changing default IF value (0x12). Set
@@ -196,7 +196,7 @@ struct soc_intel_apollolake_config {
 	 * LDO voltage. Set TRUE to increase LDO voltage with 40mV.
 	 * 0:FALSE (default), 1:True.
 	 */
-	uint8_t mod_phy_voltage_bump;
+	bool mod_phy_voltage_bump;
 
 	/* Options to adjust PMIC Vdd2 voltage. Default is 0 to not adjusting
 	 * the PMIC Vdd2 default voltage 1.20v. Upd for changing Vdd2 Voltage
@@ -210,7 +210,7 @@ struct soc_intel_apollolake_config {
 	 * capability in FSP. Setting this option to 1 in devicetree will enable
 	 * the Upd parameter VtdEnable.
 	 */
-	uint8_t enable_vtd;
+	bool enable_vtd;
 
 	/* Options to disable the LFPS periodic sampling for USB3 Ports.
 	 * Default value of PMCTRL_REG bits[7:4] is 9 which means periodic sampling
@@ -218,13 +218,13 @@ struct soc_intel_apollolake_config {
 	 * Set 1 to update XHCI host MMIO BAR + PMCTRL_REG (0x80A4 bits[7:4]) to 0
 	 * 0:Enable (default), 1:Disable.
 	 */
-	uint8_t disable_xhci_lfps_pm;
+	bool disable_xhci_lfps_pm;
 
 	/* SATA Aggressive Link Power Management */
-	uint8_t disable_sata_salp_support;
+	bool disable_sata_salp_support;
 
 	/* Sata Power Optimisation */
-	uint8_t sata_pwr_optimize_disable;
+	bool sata_pwr_optimize_disable;
 
 	/* SATA speed limit */
 	enum sata_speed_limit sata_speed;

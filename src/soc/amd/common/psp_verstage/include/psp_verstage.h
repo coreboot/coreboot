@@ -7,7 +7,7 @@
 #include <amdblocks/psp_efs.h>
 #include <bl_uapp/bl_syscall_public.h>
 #include <stdint.h>
-#include <soc/psp_transfer.h>
+#include <psp_verstage/psp_transfer.h>
 #include <psp_post_code.h>
 
 #define EMBEDDED_FW_SIGNATURE			0x55aa55aa

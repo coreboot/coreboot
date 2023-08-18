@@ -12,8 +12,8 @@
 #include <fmap.h>
 #include <fmap_config.h>
 #include <pc80/mc146818rtc.h>
+#include <psp_verstage/psp_transfer.h>
 #include <soc/iomap.h>
-#include <soc/psp_transfer.h>
 #include <security/tpm/tspi.h>
 #include <security/tpm/tss.h>
 #include <security/vboot/vbnv.h>

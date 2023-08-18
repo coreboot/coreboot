@@ -3,7 +3,7 @@
 #include <bootblock_common.h>
 #include <console/console.h>
 #include <cpu/x86/tsc.h>
-#include <soc/psp_transfer.h>
+#include <psp_verstage/psp_transfer.h>
 #include <symbols.h>
 #include <timestamp.h>
 #include <types.h>

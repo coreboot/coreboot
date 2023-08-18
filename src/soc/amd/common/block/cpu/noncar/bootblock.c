@@ -6,8 +6,8 @@
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/tsc.h>
+#include <psp_verstage/psp_transfer.h>
 #include <soc/southbridge.h>
-#include <soc/psp_transfer.h>
 #include <stdint.h>
 
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)

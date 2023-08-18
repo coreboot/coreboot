@@ -5,6 +5,8 @@ subdirs-y += fsp
 subdirs-y += pi
 subdirs-y += vboot
 
+CPPFLAGS_common += -I$(src)/soc/amd/common/vboot/include
+
 ifneq ($(V),)
 OPT_DEBUG_AMDFWTOOL = --debug
 endif

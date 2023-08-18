@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <memlayout.h>
-#include <soc/psp_transfer.h>
 #include <fmap_config.h>
+#include <psp_verstage/psp_transfer.h>
 #include <soc/psp_verstage_addr.h>
 
 ENTRY(_psp_vs_start)

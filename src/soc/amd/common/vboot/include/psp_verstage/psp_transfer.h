@@ -1,9 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Update for Glinda */
-
-#ifndef AMD_GLINDA_PSP_TRANSFER_H
-#define AMD_GLINDA_PSP_TRANSFER_H
+#ifndef AMD_COMMON_PSP_TRANSFER_H
+#define AMD_COMMON_PSP_TRANSFER_H
 
 # if (CONFIG_CMOS_RECOVERY_BYTE != 0)
 #  define CMOS_RECOVERY_BYTE CONFIG_CMOS_RECOVERY_BYTE
@@ -61,4 +59,5 @@ void replay_transfer_buffer_cbmemc(void);
 void boot_with_psp_timestamp(uint64_t base_timestamp);
 
 #endif
-#endif	/* AMD_GLINDA_PSP_TRANSFER_H */
+
+#endif	/* AMD_COMMON_PSP_TRANSFER_H */

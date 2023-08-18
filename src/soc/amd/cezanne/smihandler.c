@@ -13,7 +13,7 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 #include <elog.h>
-#include <soc/psp_transfer.h>
+#include <psp_verstage/psp_transfer.h>
 #include <soc/smi.h>
 #include <soc/smu.h>
 #include <soc/southbridge.h>

@@ -2,7 +2,7 @@
 
 #include <memlayout.h>
 #include <arch/header.ld>
-#include <soc/psp_transfer.h>
+#include <psp_verstage/psp_transfer.h>
 
 #define EARLY_RESERVED_DRAM_START(addr)		REGION_START(early_reserved_dram, addr)
 #define EARLY_RESERVED_DRAM_END(addr)		REGION_END(early_reserved_dram, addr)

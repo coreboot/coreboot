@@ -172,4 +172,7 @@ config FIXED_DMIBAR_MMIO_BASE
 config FIXED_EPBAR_MMIO_BASE
 	default 0xfed19000
 
+config PRERAM_CBFS_CACHE_SIZE
+	default 0x0
+
 endif

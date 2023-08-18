@@ -110,6 +110,9 @@ config DCACHE_RAM_SIZE
 	  and/or romstage. Note DCACHE_RAM_SIZE and DCACHE_RAM_MRC_VAR_SIZE
 	  must add up to a power of 2.
 
+config PRERAM_CBFS_CACHE_SIZE
+	default 0x0
+
 config DCACHE_RAM_MRC_VAR_SIZE
 	hex
 	default 0x8000

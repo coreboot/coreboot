@@ -153,6 +153,13 @@ config CBFS_MCACHE_SIZE
 	  Increase this value if you see CBFS mcache overflow warnings. Do NOT
 	  change this value for vboot RW updates!
 
+config PRERAM_CBFS_CACHE_SIZE
+	hex
+	default 0x4000
+	help
+	  Define the size of the Pre-RAM stages CBFS cache. A size of
+	  zero disables the CBFS cache feature in pre-memory stages.
+
 config PC80_SYSTEM
 	bool
 	default y if ARCH_X86

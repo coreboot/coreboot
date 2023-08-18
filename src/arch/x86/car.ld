@@ -51,6 +51,9 @@
 	FMAP_CACHE(., FMAP_SIZE)
 #endif
 
+	. = ALIGN(CONFIG_CBFS_CACHE_ALIGN);
+	CBFS_CACHE(., CONFIG_PRERAM_CBFS_CACHE_SIZE)
+
 	/* Reserve sizeof(struct ehci_dbg_info). */
 	REGION(car_ehci_dbg_info, ., 80, 1)
 

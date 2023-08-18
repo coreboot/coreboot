@@ -5,6 +5,7 @@
 #include <device/device.h>
 
 extern struct device_operations pmc_ops;
+extern struct device_operations ioe_pmc_ops;
 
 /* PCI Configuration Space (D31:F2): PMC */
 #define  PWRMBASE		0x10

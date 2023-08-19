@@ -1,0 +1,56 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+chip northbridge/intel/sandybridge
+	register "spd_addresses" = "{0x50, 0, 0x52, 0}"
+
+	device domain 0x0 on
+		device ref igd on
+			register "gfx" = "GMA_STATIC_DISPLAYS(1)"
+			register "gpu_dp_b_hotplug" = "4"
+			register "gpu_dp_c_hotplug" = "4"
+			register "gpu_dp_d_hotplug" = "4"
+			register "gpu_panel_port_select" = "0"
+			register "gpu_panel_power_backlight_off_delay" = "2300"
+			register "gpu_panel_power_backlight_on_delay" = "2300"
+			register "gpu_panel_power_cycle_delay" = "6"
+			register "gpu_panel_power_down_delay" = "400"
+			register "gpu_panel_power_up_delay" = "400"
+		end
+
+		chip southbridge/intel/bd82x6x # Intel 6/7 Series PCH
+			register "docking_supported" = "1"
+
+			register "gpi0_routing" = "2"
+			register "pcie_hotplug_map" = "{ 0, 0, 1, 1, 0, 0, 0, 0 }"
+			register "pcie_port_coalesce" = "1"
+
+			register "spi_lvscc" = "0x2005"
+			register "spi_uvscc" = "0x2005"
+
+			device ref gbe		on end
+			device ref ehci2	on end
+			device ref hda		on end
+			device ref pcie_rp1	on end # WWAN Slot
+			device ref pcie_rp2	on end # SLAN Slot
+			device ref pcie_rp3	on end # ExpressCard
+			device ref pcie_rp4	on end # E-Module (optical bay)
+			device ref pcie_rp5	on end # Extra Half Mini PCIe slot
+			device ref pcie_rp6	on end # SD/MMC Card Reader
+			device ref ehci1	on end
+			device ref lpc		on
+				register "gen1_dec" = "0x007c0681"
+				register "gen2_dec" = "0x005c0921"
+				register "gen3_dec" = "0x003c07e1"
+				register "gen4_dec" = "0x00000911" # Ports 0x910/0x911 for EC
+
+				chip ec/dell/mec5035
+					device pnp ff.0 on end
+				end
+			end
+			device ref sata1	on
+				register "sata_interface_speed_support" = "0x3"
+				register "sata_port_map" = "0x33"
+			end
+		end
+	end
+end

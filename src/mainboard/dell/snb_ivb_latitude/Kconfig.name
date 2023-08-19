@@ -1,0 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_DELL_LATITUDE_E6430
+	bool "Latitude E6430"

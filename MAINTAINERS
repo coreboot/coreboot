@@ -340,7 +340,7 @@ F:	src/mainboard/gizmosphere/
 
 GOOGLE REX MAINBOARDS
 M:	Subrata Banik <subratabanik@google.com>
-M:	Tarun Tuli <taruntuli@google.com>
+M:	Tarun Tuli <tstuli@gmail.com>
 M:	Kapil Porwal <kapilporwal@google.com>
 M:	Jakub Czapiga <jacz@semihalf.com>
 M:	Eran Mitrani <mitrani@google.com>
@@ -348,12 +348,10 @@ S:	Maintained
 F:	src/mainboard/google/rex/
 
 GOOGLE BRYA MAINBOARDS
-M:	Tarun Tuli <taruntuli@google.com>
 S:	Maintained
 F:	src/mainboard/google/brya/
 
 GOOGLE HATCH MAINBOARDS
-M:	Tarun Tuli <taruntuli@google.com>
 S:	Maintained
 F:	src/mainboard/google/hatch/
 
@@ -866,7 +864,7 @@ F:	src/soc/amd/stoneyridge/
 
 INTEL METEORLAKE SOC
 M:	Subrata Banik <subratabanik@google.com>
-M:	Tarun Tuli <taruntuli@google.com>
+M:	Tarun Tuli <tstuli@gmail.com>
 M:	Kapil Porwal <kapilporwal@google.com>
 M:	Jakub Czapiga <jacz@semihalf.com>
 M:	Eran Mitrani <mitrani@google.com>
@@ -875,7 +873,6 @@ F:	src/soc/intel/meteorlake/
 
 INTEL ALDERLAKE SOC
 M:	Subrata Banik <subratabanik@google.com>
-M:	Tarun Tuli <taruntuli@google.com>
 S:	Maintained
 F:	src/soc/intel/alderlake/
 
@@ -910,7 +907,6 @@ F:	src/soc/intel/elkhartlake/
 
 INTEL TIGERLAKE SOC
 M:	Subrata Banik <subratabanik@google.com>
-M:	Tarun Tuli <taruntuli@google.com>
 S:	Maintained
 F:	src/soc/intel/tigerlake/
 

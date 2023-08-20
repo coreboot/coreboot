@@ -553,7 +553,7 @@ if [ $UPLOAD_RESULTS -eq 1 ]; then
 	git add "${vendor}"
 	git commit -a -m "${mainboard_dir}/${tagged_version}/${timestamp}"
 	count=0
-	until git push origin master || test $count -eq 3; do
+	until git push origin main || test $count -eq 3; do
 	        git pull --rebase
 		count=$((count + 1))
 	done

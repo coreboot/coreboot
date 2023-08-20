@@ -46,7 +46,7 @@ RUN \
 		libcurl4 \
 		libcurl4-openssl-dev \
 		libelf-dev \
-		libfreetype6-dev \
+		libfreetype-dev \
 		libftdi1-dev \
 		libglib2.0-dev \
 		libgmp-dev \

@@ -78,8 +78,9 @@ lint lint-stable lint-extended:
 
 ABUILD_OPTIONS=--blobs --junit --cpus $(CPUS) --payloads $(JENKINS_PAYLOAD)
 ABUILD_OPTIONS+=$(if $(V),--verbose,)
-ABUILD_OPTIONS+=$(if $(JENKINS_NOCCACHE),,--ccache)
 ABUILD_OPTIONS+=$(JENKINS_ABUILD_OPT)
+
+CCACHE_OPTIONS=$(if $(JENKINS_NOCCACHE),,--ccache)
 
 COREBOOT_BUILD_DIR?=coreboot-builds
 
@@ -119,12 +120,12 @@ ifneq ($(JENKINS_SKIP_SCANBUILD_TEST),y)
 	NAME=scanbuild; SCANBUILD_ARGS='-k -plist-html -maxloop 10' util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/$${NAME} $(ABUILD_OPTIONS) -scan-build --target EMULATION_QEMU_X86_Q35 --exitcode --name $${NAME}
 endif
 ifneq ($(JENKINS_SKIP_GCC_TESTS),y)
-	NAME=gcc-chromeos; util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/$${NAME} $(ABUILD_OPTIONS) -x --name $${NAME} --clean
-	NAME=gcc; util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/$${NAME} $(ABUILD_OPTIONS) --name $${NAME} --clean-somewhat
+	NAME=gcc-chromeos; util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/$${NAME} $(ABUILD_OPTIONS) $(CCACHE_OPTIONS) -x --name $${NAME} --clean
+	NAME=gcc; util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/$${NAME} $(ABUILD_OPTIONS) $(CCACHE_OPTIONS) --name $${NAME} --clean-somewhat
 endif
 ifneq ($(JENKINS_SKIP_CLANG_TESTS),y)
-	NAME=clang-chromeos; util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/$${NAME} $(ABUILD_OPTIONS) -L -x --name $${NAME} --clean
-	NAME=clang; util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/$${NAME} $(ABUILD_OPTIONS) -L --name $${NAME} --clean
+	NAME=clang-chromeos; util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/$${NAME} $(ABUILD_OPTIONS) $(CCACHE_OPTIONS) -L -x --name $${NAME} --clean
+	NAME=clang; util/abuild/abuild -o $(COREBOOT_BUILD_DIR)/$${NAME} $(ABUILD_OPTIONS) $(CCACHE_OPTIONS) -L --name $${NAME} --clean
 endif
 
 test-payloads:

@@ -1,0 +1,36 @@
+#!/usr/bin/bash
+
+GERRIT_USER=$1
+
+QUERY_AGE="age:1year"
+MESSAGE_AGE="a year"
+
+if [[ -z "${GERRIT_USER}" || "${GERRIT_USER}" = "-h" || "${GERRIT_USER}" = "--help" ]]; then
+	echo "Usage: $0 <Gerrit username>"
+	exit 0
+fi
+
+if ! command -v jq >/dev/null 2>&1; then
+	echo "Error.  Please install the package 'jq' before continuing."
+	exit 1
+fi
+
+gerrit_cmd() {
+	ssh -p 29418 "${GERRIT_USER}@review.coreboot.org" gerrit "$@"
+}
+
+abandon_patch() {
+	local patch=$1
+	message="\'\"This patch has not been touched in over ${MESSAGE_AGE}. Anyone who wants to take over work on this patch, please feel free to restore it and do any work needed to get it merged. If you create a new patch based on this work, please credit the original author.\"\'"
+
+	echo "Abandoning ${patch}"
+	gerrit_cmd review --project coreboot --abandon --message "${message}" "${patch}"
+}
+
+get_patchlist() {
+	gerrit_cmd query --format=JSON --no-limit --current-patch-set "repo:coreboot AND status:open AND ${QUERY_AGE}" | \
+		jq  -Mr '.currentPatchSet.revision' | \
+		grep -v null
+}
+
+for patch in $(get_patchlist); do abandon_patch "${patch}"; done

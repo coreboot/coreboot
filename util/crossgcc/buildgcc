@@ -30,6 +30,7 @@ DESTDIR=
 SAVETEMPS=0
 BOOTSTRAP=0
 THREADS=1
+FETCH_ONLY=0
 USE_COREBOOT_MIRROR=0
 COREBOOT_MIRROR_URL="https://www.coreboot.org/releases/crossgcc-sources"
 
@@ -581,6 +582,7 @@ myhelp()
 	printf "        (defaults to $TARGETDIR)\n\n"
 	printf "    [-D|--destdir <dest dir>]     destination directory to install cross compiler to\n"
 	printf "                                  (for RPM builds, default unset)\n"
+	printf "    [-f|--fetch]                  Download tarballs, but don't build anything\n"
 	printf "    [-P|--package <package>]      Build a specific package: GCC, CLANG, IASL\n"
 	printf "                                  (defaults to $PACKAGE)\n"
 	printf "GCC specific options:\n"
@@ -928,7 +930,7 @@ getopt - > /dev/null 2>/dev/null || gcc -o getopt getopt.c
 getoptbrand="$(getopt -V 2>/dev/null | sed -e '1!d' -e 's,^\(......\).*,\1,')"
 if [ "${getoptbrand}" = "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=$(getopt -l print-version,version,help,clean,directory:,bootstrap,bootstrap-only,platform:,languages:,package:,jobs:,destdir:,savetemps,scripting,ccache,supported:,urls,nocolor,mirror -o WVhcd:bBp:l:P:j:D:tSys:unm -- "$@")
+	args=$(getopt -l print-version,version,help,clean,directory:,bootstrap,bootstrap-only,platform:,languages:,package:,jobs:,destdir:,savetemps,scripting,ccache,supported:,urls,nocolor,mirror,fetch -o WVhcd:bBp:l:P:j:D:tSys:unmf -- "$@")
 	getopt_ret=$?
 	eval set -- "$args"
 else
@@ -958,6 +960,7 @@ while true ; do
 		-l|--languages)		shift; LANGUAGES="$1"; shift;;
 		-m|--mirror)		shift; USE_COREBOOT_MIRROR=1;;
 		-D|--destdir)		shift; DESTDIR="$1"; shift;;
+		-f|--fetch)		shift; FETCH_ONLY=1;;
 		-j|--jobs)		shift; THREADS="$1"; JOBS="-j $1"; shift;;
 		-P|--package)		shift; PACKAGE="$1"; shift;;
 		-y|--ccache)		shift; USECCACHE=1;;
@@ -1223,6 +1226,10 @@ for P in $PACKAGES; do
 	verify_hash "$P" || exit "$?"
 done
 printf "Downloaded tarballs ... ${green}ok${NC}\n"
+
+if [ ${FETCH_ONLY} -eq 1 ]; then
+	exit 0
+fi
 
 printf "Unpacking and patching ...\n"
 for P in $PACKAGES; do

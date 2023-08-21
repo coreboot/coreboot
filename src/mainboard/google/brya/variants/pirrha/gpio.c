@@ -36,7 +36,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* F6  : NC */
 	PAD_NC(GPP_F6, NONE),
 	/* F12 : GSXDOUT ==> EMR_INT_ODL */
-	PAD_CFG_GPI_APIC(GPP_F12, NONE, PLTRST, LEVEL, INVERT),
+	PAD_CFG_GPI_INT(GPP_F12, NONE, PLTRST, LEVEL),
 	/* F13 : SOC_PEN_DETECT_R_ODL ==> NC */
 	PAD_NC(GPP_F13, NONE),
 	/* F15 : SOC_PEN_DETECT_OEL ==> NC */

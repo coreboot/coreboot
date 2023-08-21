@@ -205,6 +205,8 @@ sub Main {
             if ( $owner && exists( $aliases{$owner} ) ) {
                 $owner = $aliases{$owner};
             }
+            $owner =~ s/"/'/g;
+            $owner =~ s/,/./g;
 
             $author = $commit_info->{'currentPatchSet'}{'author'}{'name'};
             if ( $author && exists( $aliases{$author} ) ) {
@@ -213,10 +215,13 @@ sub Main {
             if ( !$author ) {
                 $author = $commit_info->{'currentPatchSet'}{'author'}{'username'};
             }
+            $author =~ s/"/'/g;
+            $author =~ s/,/./g;
             $author_email   = $commit_info->{'currentPatchSet'}{'author'}{'email'};
             $inserted_lines = $commit_info->{'currentPatchSet'}{'sizeInsertions'};
             $deleted_lines  = $commit_info->{'currentPatchSet'}{'sizeDeletions'};
             $subject        = $commit_info->{'subject'};
+            $subject =~ s/"/'/g;
 
             #get the patch's submitter
             my $approvals = $commit_info->{'currentPatchSet'}{'approvals'};
@@ -275,6 +280,8 @@ sub Main {
                         $commenter = $aliases{$commenter};
                     }
                 }
+                $commenter =~ s/"/'/g;
+                $commenter =~ s/,/./g;
                 if ( $commenter && $author && $commenter eq $author ) {
                     next;
                 }
@@ -307,6 +314,8 @@ sub Main {
                             $submitter = $aliases{$submitter};
                         }
                     }
+                    $submitter =~ s/"/'/g;
+                    $submitter =~ s/,/./g;
 
                     if ( $approval->{'type'} eq "Code-Review" ) {
                         my $patch_reviewer = $approval->{'by'}{'name'};
@@ -483,16 +492,16 @@ sub Main {
         $Days += 1;
     }
 
-    print "\n- Total Commits: $number_of_commits\n";
-    printf "- Average Commits per day: %.2f\n", $number_of_commits / $Days;
-    print "- Total lines added: $total_added\n";
-    printf "- Average lines added per commit: %.2f\n", $total_added / $number_of_commits;
-    print "- Number of patches adding more than 100 lines: $patches_over_100_lines\n";
-    printf "- Average lines added per small commit: %.2f\n", ( $total_added - $total_lines_large_patches ) / ( $number_of_commits - $patches_over_100_lines );
+    print "\n* Total Commits: $number_of_commits\n";
+    printf "* Average Commits per day: %.2f\n", $number_of_commits / $Days;
+    print "* Total lines added: $total_added\n";
+    printf "* Average lines added per commit: %.2f\n", $total_added / $number_of_commits;
+    print "* Number of patches adding more than 100 lines: $patches_over_100_lines\n";
+    printf "* Average lines added per small commit: %.2f\n", ( $total_added - $total_lines_large_patches ) / ( $number_of_commits - $patches_over_100_lines );
 
-    print "- Total lines removed: $total_removed\n";
-    printf "- Average lines removed per commit: %.2f\n", $total_removed / $number_of_commits;
-    print "- Total difference between added and removed: " . ( $total_added - $total_removed ) . "\n\n";
+    print "* Total lines removed: $total_removed\n";
+    printf "* Average lines removed per commit: %.2f\n", $total_removed / $number_of_commits;
+    print "* Total difference between added and removed: " . ( $total_added - $total_removed ) . "\n\n";
 
     print "=== Authors - Number of commits ===\n";
     printf "%-30s ,%5s ,%5s ,%6s ,%6s , %-52s ,%6s, %-19s , %s\n", "Author", "Ptchs", "Revws", "Cmnts", "Sbmts", "Email", "Prcnt", "Last commit", "Earliest_commit";

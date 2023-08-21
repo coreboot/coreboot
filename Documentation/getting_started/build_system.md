@@ -62,6 +62,23 @@ supported options are:
 
 `position` and `align` are mutually exclusive.
 
+### Adding Makefile fragments
+
+You can use the `add_intermediate` helper to add new post-processing steps for
+the final `coreboot.rom` image. For example you can add new files to CBFS by
+adding something like this to `site-local/Makefile.inc`
+
+```
+$(call add_intermediate, add_mrc_data)
+	$(CBFSTOOL) $< write -r RW_MRC_CACHE -f site-local/my-mrc-recording.bin
+```
+
+Note that the second line must start with a tab, not spaces.
+
+```eval_rst
+See also :doc:`../tutorial/managing_local_additions`.
+```
+
 #### FMAP region support
 With the addition of FMAP flash partitioning support to coreboot, there was a
 need to extend the specification of files to provide more precise control

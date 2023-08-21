@@ -36,16 +36,37 @@
 - Agah
 - Anahera
 - Anahera4ES
+- Aurash
+- Banshee
 - Brask
 - Brya 0
+- Craask
+- Craaskov
+- Constitution
+- Crota
 - Felwinter
+- Gaelin
 - Gimble
 - Gimble4ES
+- Gladios
+- Gothrax
+- Hades
 - Kano
+- Kinox
+- Kuldax
+- Joxer
+- Lisbon
+- Marasov
+- Mithrax
+- Moli
 - Nivviks
 - Nereid
+- Omnigul
+- Osiris
+- Pirrha
 - Primus
 - Primus4ES
+- Pujjo
 - Redrix
 - Redrix4ES
 - Skolas
@@ -53,31 +74,13 @@
 - Taeko
 - Taeko4ES
 - Taniks
+- Uldren
 - Vell
 - Volmar
-- Banshee
-- Crota
-- Moli
-- Kinox
-- Craask
-- Osiris
-- Mithrax
-- Kuldax
-- Joxer
-- Pujjo
 - Xivu
-- Gaelin
 - Yaviks
-- Lisbon
-- Zydron
-- Gladios
-- Marasov
-- Omnigul
-- Constitution
-- Aurash
-- Hades
-- Uldren
 - Yavilla
+- Zydron
 - Butterfly (HP Pavilion Chromebook 14)
 - Cherry
 - Dojo
@@ -85,6 +88,7 @@
 - Kingler
 - Steelix
 - Voltorb
+- Ponyta
 - Krabby
 - Tentacruel
 - Magikarp
@@ -211,6 +215,13 @@
 - Coral
 - Rex 0
 - Screebo
+- Screebo4ES
+- Karis
+- Karis4ES
+- Rex EC ISH
+- Ovis
+- Ovis4ES
+- Rex4ES
 - Arcada (Latitude 5300 2-in-1 Chromebook Enterprise)
 - Sarien (Dell Latitude 5400 Chromebook Enterprise)
 - Skyrim
@@ -245,21 +256,21 @@
 - Veyron_Speedy (ASUS C201 Chromebook)
 - Veyron_Mickey (Asus Chromebit CS10)
 - Veyron_Rialto
-- Chronicler
-- Collis
+- Chronicler (FMV Chromebook 14F)
+- Collis (Asus Chromebook Flip CX3)
 - Copano (ASUS Chromebook Flip CX5400)
 - Delbin (ASUS Chromebook Flip CX5)
 - Drobit (ASUS Chromebook CX9400)
-- Eldrid
+- Eldrid (HP Chromebook x360 14c)
 - Elemi (HP Pro c640 G2 Chromebook)
 - Halvor
-- Lindar
+- Lindar (Lenovo 5i-14/Slim 5 Chromebook)
 - Malefor
 - Terrador
 - Todor
 - Trondo
-- Voema
-- Volet
+- Voema (Acer Chromebook Spin 514)
+- Volet (Acer Chromebook 515)
 - Volteer
 - Volteer2
 - Volteer2_Ti50
@@ -287,6 +298,7 @@
 - Alderlake-M RVP with Chrome EC
 - Alderlake-N RVP
 - Alderlake-N RVP with Chrome EC
+- Raptorlake silicon with Alderlake-P RVP
 - Raptorlake silicon with Alderlake-P RVP and Chrome EC
 - Basking Ridge CRB
 - Coffeelake U SO-DIMM DDR4 RVP
@@ -295,7 +307,6 @@
 - Coffeelake S U-DIMM DDR4 RVP8
 - Cometlake U DDR4 RVP
 - Elkhartlake LPDDR4x CRB
-- Galileo
 - Glkrvp
 - Jasperlake DDR4/LPDDR4 RVP
 - Jasperlake DDR4/LPDDR4 RVP with Chrome EC
@@ -347,6 +358,8 @@
 ## MSI
 - PRO Z690-A (WIFI) DDR4
 - PRO Z690-A (WIFI)
+- PRO Z790-P (WIFI) DDR4
+- PRO Z790-P (WIFI)
 
 ## OpenCellular
 - Elgon (GBCv2)
@@ -372,6 +385,11 @@
 ## Star Labs
 - Star Labs Lite Mk III (N5000)
 - Star Labs Lite Mk IV (N5030)
+- Star Labs LabTop Mk III (i7-8550u)
+- Star Labs LabTop Mk IV (i3-10110U and i7-10710U)
+- Star Labs StarBook Mk V (i3-1115G4 and i7-1165G7)
+- Star Labs StarBook Mk VI (i3-1220P and i7-1260P)
+- Star Labs StarBook Mk VI (i3-1315U and i7-1360P)
 
 ## Supermicro
 - X11SSH-TF

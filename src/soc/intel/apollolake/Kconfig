@@ -1,27 +1,6 @@
 config SOC_INTEL_APOLLOLAKE
 	bool
 	select INTEL_CAR_CQOS
-	help
-	  Intel Apollolake support
-
-config SOC_INTEL_GEMINILAKE
-	bool
-	default n
-	select SOC_INTEL_APOLLOLAKE
-	select SOC_INTEL_COMMON_BLOCK_CNVI
-	select SOC_INTEL_COMMON_BLOCK_CPU_MPINIT
-	select SOC_INTEL_COMMON_BLOCK_SGX
-	select SOC_INTEL_COMMON_BLOCK_GSPI_VERSION_2
-	select IDT_IN_EVERY_STAGE
-	select PAGING_IN_CACHE_AS_RAM
-	select INTEL_CAR_NEM
-	help
-	  Intel Geminilake support
-
-if SOC_INTEL_APOLLOLAKE
-
-config CPU_SPECIFIC_OPTIONS
-	def_bool y
 	select ACPI_INTEL_HARDWARE_SLEEP_VALUES
 	select ACPI_NO_PCAT_8259
 	select ARCH_X86
@@ -102,6 +81,24 @@ config CPU_SPECIFIC_OPTIONS
 	# This SoC does not map SPI flash like many previous SoC. Therefore we
 	# provide a custom media driver that facilitates mapping
 	select X86_CUSTOM_BOOTMEDIA
+	help
+	  Intel Apollolake support
+
+config SOC_INTEL_GEMINILAKE
+	bool
+	default n
+	select SOC_INTEL_APOLLOLAKE
+	select SOC_INTEL_COMMON_BLOCK_CNVI
+	select SOC_INTEL_COMMON_BLOCK_CPU_MPINIT
+	select SOC_INTEL_COMMON_BLOCK_SGX
+	select SOC_INTEL_COMMON_BLOCK_GSPI_VERSION_2
+	select IDT_IN_EVERY_STAGE
+	select PAGING_IN_CACHE_AS_RAM
+	select INTEL_CAR_NEM
+	help
+	  Intel Geminilake support
+
+if SOC_INTEL_APOLLOLAKE
 
 config SKIP_CSE_RBP
 	bool

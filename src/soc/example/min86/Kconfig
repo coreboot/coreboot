@@ -1,5 +1,9 @@
 config SOC_EXAMPLE_MIN86
 	bool
+	select ARCH_X86
+	select NO_MONOTONIC_TIMER
+	select NO_ECAM_MMCONF_SUPPORT
+	select UNKNOWN_TSC_RATE
 	help
 	  This example SoC code along with the example/min86 mainboard
 	  should serve as a minimal example how a buildable x86 SoC code
@@ -11,13 +15,6 @@ config SOC_EXAMPLE_MIN86
 	  when common coreboot code changes.
 
 if SOC_EXAMPLE_MIN86
-
-config SOC_SPECIFIC_OPTIONS
-	def_bool y
-	select ARCH_X86
-	select NO_MONOTONIC_TIMER
-	select NO_ECAM_MMCONF_SUPPORT
-	select UNKNOWN_TSC_RATE
 
 config DCACHE_BSP_STACK_SIZE		# required by arch/x86/car.ld
 	default 0x100

@@ -1,12 +1,5 @@
 config SOC_INTEL_ELKHARTLAKE
 	bool
-	help
-	  Intel Elkhartlake support
-
-if SOC_INTEL_ELKHARTLAKE
-
-config CPU_SPECIFIC_OPTIONS
-	def_bool y
 	select ACPI_INTEL_HARDWARE_SLEEP_VALUES
 	select ARCH_X86
 	select BOOT_DEVICE_SUPPORTS_WRITES
@@ -69,6 +62,10 @@ config CPU_SPECIFIC_OPTIONS
 	select USE_FSP_NOTIFY_PHASE_POST_PCI_ENUM
 	select SOC_INTEL_RAPL_DISABLE_VIA_MCHBAR
 	select X86_CLFLUSH_CAR
+	help
+	  Intel Elkhartlake support
+
+if SOC_INTEL_ELKHARTLAKE
 
 config MAX_CPUS
 	int

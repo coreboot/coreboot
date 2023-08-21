@@ -2,17 +2,6 @@
 
 config SOC_INTEL_DENVERTON_NS
 	bool
-	help
-	  Intel Denverton-NS SoC support
-
-if SOC_INTEL_DENVERTON_NS
-
-config CPU_INTEL_NUM_FIT_ENTRIES
-	int
-	default 1
-
-config CPU_SPECIFIC_OPTIONS
-	def_bool y
 	select ARCH_X86
 	select BOOT_DEVICE_SUPPORTS_WRITES
 	select CACHE_MRC_SETTINGS
@@ -50,6 +39,14 @@ config CPU_SPECIFIC_OPTIONS
 	select USE_FSP_NOTIFY_PHASE_POST_PCI_ENUM
 	select USE_FSP_NOTIFY_PHASE_READY_TO_BOOT
 	select USE_FSP_NOTIFY_PHASE_END_OF_FIRMWARE
+	help
+	  Intel Denverton-NS SoC support
+
+if SOC_INTEL_DENVERTON_NS
+
+config CPU_INTEL_NUM_FIT_ENTRIES
+	int
+	default 1
 
 config ECAM_MMCONF_BASE_ADDRESS
 	default 0xe0000000

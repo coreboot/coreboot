@@ -591,7 +591,7 @@ static void edp_host_train_set(uint32_t train)
 	uint32_t data = 0;
 	uint32_t shift = train - 1;
 
-	printk(BIOS_INFO, "train=%d", train);
+	printk(BIOS_INFO, "train=%d\n", train);
 
 	edp_state_ctrl(SW_LINK_TRAINING_PATTERN1 << shift);
 	while (--cnt) {
@@ -1321,18 +1321,18 @@ static void edp_ctrl_link_enable(struct edp_ctrl *ctrl,
 		mdss_clock_configure(MDSS_CLK_EDP_LINK, 0, 1, 0, 0, 0, 0);
 		ret = mdss_clock_enable(MDSS_CLK_EDP_LINK);
 		if (ret != 0)
-			printk(BIOS_ERR, "failed to enable link clk");
+			printk(BIOS_ERR, "failed to enable link clk\n");
 
 		mdss_clock_configure(MDSS_CLK_EDP_LINK_INTF, 0, 1, 0, 0, 0, 0);
 		ret = mdss_clock_enable(MDSS_CLK_EDP_LINK_INTF);
 		if (ret != 0)
-			printk(BIOS_ERR, "failed to enable link intf clk");
+			printk(BIOS_ERR, "failed to enable link intf clk\n");
 
 		edp_ctrl_pixel_clock_dividers(ctrl, &m, &n);
 		mdss_clock_configure(MDSS_CLK_EDP_PIXEL, 0, 2, 0, m, n, n);
 		ret = mdss_clock_enable(MDSS_CLK_EDP_PIXEL);
 		if (ret != 0)
-			printk(BIOS_ERR, "failed to enable pixel clk");
+			printk(BIOS_ERR, "failed to enable pixel clk\n");
 
 		edp_mainlink_ctrl(1);
 	} else {

@@ -40,7 +40,7 @@ static void add_mem_chip_info(int unused)
 
 	if (!mem_chip_info || !mem_chip_info->num_entries ||
 	    mem_chip_info->struct_version != MEM_CHIP_STRUCT_VERSION) {
-		printk(BIOS_ERR, "Did not receive valid mem_chip_info from QcLib!");
+		printk(BIOS_ERR, "Did not receive valid mem_chip_info from QcLib!\n");
 		return;
 	}
 

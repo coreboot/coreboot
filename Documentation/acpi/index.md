@@ -11,6 +11,9 @@ upwards.
 
 - [GPIO toggling in ACPI AML](gpio.md)
 
+## Windows-specific ACPI documentation
+
+- [Windows-specific documentation](windows.md)
 
 ##  ACPI specification - Useful links
 

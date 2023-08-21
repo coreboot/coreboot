@@ -348,10 +348,14 @@ S:	Maintained
 F:	src/mainboard/google/rex/
 
 GOOGLE BRYA MAINBOARDS
+M:	Subrata Banik <subratabanik@google.com>
+M:	Nick Vaccaro <nvaccaro@chromium.org>
 S:	Maintained
 F:	src/mainboard/google/brya/
 
 GOOGLE HATCH MAINBOARDS
+M:	Subrata Banik <subratabanik@google.com>
+M:	Nick Vaccaro <nvaccaro@chromium.org>
 S:	Maintained
 F:	src/mainboard/google/hatch/
 
@@ -873,6 +877,7 @@ F:	src/soc/intel/meteorlake/
 
 INTEL ALDERLAKE SOC
 M:	Subrata Banik <subratabanik@google.com>
+M:	Nick Vaccaro <nvaccaro@chromium.org>
 S:	Maintained
 F:	src/soc/intel/alderlake/
 
@@ -907,6 +912,7 @@ F:	src/soc/intel/elkhartlake/
 
 INTEL TIGERLAKE SOC
 M:	Subrata Banik <subratabanik@google.com>
+M:	Nick Vaccaro <nvaccaro@chromium.org>
 S:	Maintained
 F:	src/soc/intel/tigerlake/
 

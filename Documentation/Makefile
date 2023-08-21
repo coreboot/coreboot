@@ -6,6 +6,9 @@
 
 PDFLATEX  = pdflatex -t a4
 BUILDDIR ?= _build
+SPHINXOPTS ?= -j auto
+
+export SPHINXOPTS
 
 FIGS=codeflow.pdf hypertransport.pdf
 
@@ -57,7 +60,7 @@ distclean: clean
 	rm -f corebootPortingGuide.pdf
 
 livesphinx: $(BUILDDIR)
-	$(MAKE) -f Makefile.sphinx livehtml SPHINXOPTS="$(SPHINXOPTS)" BUILDDIR="$(BUILDDIR)"
+	$(MAKE) -f Makefile.sphinx livehtml BUILDDIR="$(BUILDDIR)"
 
 test:
 	@echo "Test for logging purposes - Failing tests will not fail the build"

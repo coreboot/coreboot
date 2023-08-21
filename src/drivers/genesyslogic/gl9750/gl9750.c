@@ -22,6 +22,10 @@ static void gl9750_enable(struct device *dev)
 	 */
 	pci_and_config32(dev, CFG2, ~CFG2_L0S_SUPPORT);
 
+	if (CONFIG(DRIVERS_GENESYSLOGIC_GL9750_INVERT_WP))
+		/* invert write protect polarity */
+		pci_or_config32(dev, CFG1, CFG1_WP_INVERT);
+
 	/* Set Vendor Config to be non-configurable */
 	pci_and_config32(dev, CFG, ~CFG_EN);
 }

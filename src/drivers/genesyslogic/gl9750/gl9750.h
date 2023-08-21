@@ -7,6 +7,8 @@
 
 #define CFG		0x800
 #define   CFG_EN	0x1
+#define CFG1			0x844
+#define   CFG1_WP_INVERT	(0x1 << 31)
 #define CFG2			0x848
 #define   CFG2_L0S_SUPPORT	(0x1 << 6)
 

@@ -2,6 +2,7 @@
 
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
+#include <intelblocks/early_graphics.h>
 #include <types.h>
 #include <soc/gpio.h>
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -402,6 +403,33 @@ static const struct pad_config romstage_gpio_table[] = {
 	/* B4  : PROC_GP3 ==> SSD_PERST_L */
 	PAD_CFG_GPO(GPP_B4, 1, DEEP),
 };
+
+const struct pad_config early_graphics_gpio_table[] = {
+	/* A18 : DDSP_HPDB ==> HDMI_HPD */
+	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),
+	/* D1  : ISH_GP1 ==> HDMI_IN_PLUGIN */
+	PAD_CFG_GPO_LOCK(GPP_D1, 1, LOCK_CONFIG),
+	/* D11 : ISH_SPI_MISO ==> HDMIA_CTRLCLK */
+	PAD_CFG_NF_LOCK(GPP_D11, NONE, NF2, LOCK_CONFIG),
+	/* D12 : ISH_SPI_MOSI ==> HDMIA_CTRLDATA */
+	PAD_CFG_NF_LOCK(GPP_D12, NONE, NF2, LOCK_CONFIG),
+	/* E14 : DDSP_HPDA ==> HDMIA_HPD */
+	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),
+	/* E20 : DDP2_CTRLCLK ==> HDMIA_CTRLCLK */
+	PAD_CFG_NF(GPP_E20, NONE, DEEP, NF1),
+	/* E21 : DDP2_CTRLDATA ==> HDMIA_CTRLDATA_STRAP */
+	PAD_CFG_NF(GPP_E21, NONE, DEEP, NF1),
+	/* H15 : DDPB_CTRLCLK ==> DDIB_HDMI_CTRLCLK */
+	PAD_CFG_NF(GPP_H15, NONE, DEEP, NF1),
+	/* H17 : DDPB_CTRLDATA ==> DDIB_HDMI_CTRLDATA */
+	PAD_CFG_NF(GPP_H17, NONE, DEEP, NF1),
+};
+
+const struct pad_config *variant_early_graphics_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(early_graphics_gpio_table);
+	return early_graphics_gpio_table;
+}
 
 const struct pad_config *__weak variant_gpio_table(size_t *num)
 {

@@ -127,11 +127,11 @@ implementations currently use combo tables.
 +--------------+---------------+------------------+----------------------------+
 | Address Mode | 0x0F[7:6]     | 2                | 00: x86 Physical address   |
 |              |               |                  | 01: offset from start of   |
-|              |               |                  |     BIOS (flash offset)    |
+|              |               |                  | BIOS (flash offset)        |
 |              |               |                  | 02: offset from start of   |
-|              |               |                  |     directory header       |
+|              |               |                  | directory header           |
 |              |               |                  | 03: offset from start of   |
-|              |               |                  |     partition              |
+|              |               |                  | partition                  |
 +--------------+---------------+------------------+----------------------------+
 
 ```

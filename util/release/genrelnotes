@@ -166,8 +166,7 @@ get_log_submodule() {
 	commits=$(echo "$log" | wc -l)
 
 	if [ -n "$log" ]; then
-		printf "%s\n" "$submodule_dir ($commits commits)" >> "$LOGFILE"
-		printf "\n" >> "$LOGFILE"
+		printf "* %s: Update from commit id %s to %s (%s commits)\n" "${submodule_dir}" "${old_version:0:10}" "${new_version:0:10}" "${commits}" >> "$LOGFILE"
 	fi
 	); then
 	version_ctrl_c
@@ -534,12 +533,12 @@ NEW_AUTHORS=$(git log --pretty=%an "${OLD_GIT_VERSION}" 2>/dev/null | sort | \
 NEW_AUTHOR_LIST=$( grep -Fxv -f "$before_names" "$after_names")
 rm -f "$before_names" "$after_names"
 {
-	printf -- "- Total commits: %s\n" "$TOTAL_COMMITS"
-	printf -- "- Total authors: %s\n" \
+	printf -- "* Total commits: %s\n" "$TOTAL_COMMITS"
+	printf -- "* Total authors: %s\n" \
 		"$(git log "${OLD_GIT_VERSION}..${NEW_GIT_VERSION}" 2>/dev/null | \
 		grep -e '^Author:' | sed 's/.*Author: //' | sed 's/ <.*.>//' | \
 		sort | uniq | wc -l)"
-	printf -- "- New authors: %s\n\nNew Authors:\n%s\n" "$NEW_AUTHORS" \
+	printf -- "* New authors: %s\n\nNew Authors:\n%s\n" "$NEW_AUTHORS" \
 		"$NEW_AUTHOR_LIST"
 } >> "$LOGFILE"
 
@@ -548,7 +547,7 @@ printf "\n%-40s:  %5s\n" "Developer" "Commits" >> "$LOGFILE"
 git log "${OLD_GIT_VERSION}..${NEW_GIT_VERSION}" 2>/dev/null | grep '^Author: ' | \
 	sed 's|Author: ||' | sed 's|\s<.*||' | sort | uniq | \
 	while read -r line; do
-		 printf "%-40s:  %5s %5s\n" "$line" \
+		 printf "* %-40s:  %5s %5s\n" "$line" \
 		 	"$(git log "${OLD_GIT_VERSION}" 2>/dev/null | \
 		 	grep -c "^Author: ${line} <")" \
 		 	"$(git log "${NEW_GIT_VERSION}" 2>/dev/null | \

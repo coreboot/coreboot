@@ -38,6 +38,16 @@ if [ -z "${VERSION_NAME}" ] || [ "${VERSION_NAME}" = "--help" ] || [ -z "${COMMI
 	exit 1
 fi
 
+pause() {
+  local text=$1
+
+  echo
+  if [ -n "$text" ]; then
+    echo "$text"
+  fi
+  read -r -p "Press [Enter] key to continue..."
+}
+
 # Verify that tar supports --sort
 if ! tar --sort=name -cf /dev/null /dev/null 2>/dev/null ; then
 	echo "Error: The installed version of tar does not support --sort"
@@ -70,12 +80,14 @@ fi
 
 	util/crossgcc/buildgcc -W > .crossgcc-version
 
-	git submodule update --init --checkout
 	if [ -n "${GPG_KEY_ID}" ]; then
+		pause "The next step will need your PGP key's passphrase, so be ready."
 		git tag -a -s -u "$GPG_KEY_ID" --force "${VERSION_NAME}" -m "coreboot version ${VERSION_NAME}" --
 	else
 		git tag -a --force "${VERSION_NAME}" -m "coreboot version ${VERSION_NAME}" --
 	fi
+
+	git submodule update --init --checkout
 
 	printf "%s-%s\n" "$VERSION_NAME"  "$(git log --pretty=%h -1)" > .coreboot-version
 	printf "%s\n" "$(git log --pretty=format:%ci -1)" > "${TIME_FILE}"

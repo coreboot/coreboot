@@ -51,12 +51,22 @@ chip soc/intel/jasperlake
 	}"
 
 	# USB Port Configuration
+	register "usb2_ports[0]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_DE_EMP_ON_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_28P15MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}"	# Type-C Port C0
 	register "usb2_ports[2]" = "{
 		.enable = 1,
 		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_DE_EMP_ON_PRE_EMP_ON,
 		.pre_emp_bias  = USB2_BIAS_28P15MV,
 		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
-	}"	# Type-A
+	}"	# Type-A Port A0
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"     # Camera
 	register "usb2_ports[7]" = "{
 		.enable = 1,

@@ -23,6 +23,7 @@ Update this document with changes that should be in the release notes.
 
 * Upgrade GMP from 6.2.1 to 6.3.0
 * Upgrade binutils from 2.40 to 2.41
+* Upgrade MPFR from 4.2.0 to 4.2.1
 
 ### Additional coreboot changes
 

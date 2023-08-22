@@ -19,6 +19,7 @@
 #include <soc/serialio.h>
 #include <soc/usb.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 #define MAX_HD_AUDIO_DMIC_LINKS 2
 #define MAX_HD_AUDIO_SNDW_LINKS 4
@@ -76,15 +77,15 @@ struct soc_intel_jasperlake_config {
 	uint32_t gen4_dec;
 
 	/* Enable S0iX support */
-	int s0ix_enable;
+	bool s0ix_enable;
 	/* Enable DPTF support */
-	int dptf_enable;
+	bool dptf_enable;
 
 	/* Deep SX enable for both AC and DC */
-	int deep_s3_enable_ac;
-	int deep_s3_enable_dc;
-	int deep_s5_enable_ac;
-	int deep_s5_enable_dc;
+	bool deep_s3_enable_ac;
+	bool deep_s3_enable_dc;
+	bool deep_s5_enable_ac;
+	bool deep_s5_enable_dc;
 
 	/* Deep Sx Configuration
 	 *  DSX_EN_WAKE_PIN       - Enable WAKE# pin
@@ -107,8 +108,12 @@ struct soc_intel_jasperlake_config {
 		SaGv_Enabled,
 	} SaGv;
 
-	/* Rank Margin Tool. 1:Enable, 0:Disable */
-	uint8_t RMT;
+	/* Rank Margin Tool
+	 *
+	 * true: Enable
+	 * false: Disable
+	 */
+	bool RMT;
 
 	/* USB related */
 	struct usb2_port_config usb2_ports[16];
@@ -125,22 +130,22 @@ struct soc_intel_jasperlake_config {
 
 	/* SATA related */
 	uint8_t SataMode;
-	uint8_t SataSalpSupport;
-	uint8_t SataPortsEnable[8];
-	uint8_t SataPortsDevSlp[8];
+	bool SataSalpSupport;
+	bool SataPortsEnable[8];
+	bool SataPortsDevSlp[8];
 
 	/* Audio related */
-	uint8_t PchHdaDspEnable;
-	uint8_t PchHdaAudioLinkHdaEnable;
-	uint8_t PchHdaAudioLinkDmicEnable[MAX_HD_AUDIO_DMIC_LINKS];
-	uint8_t PchHdaAudioLinkSspEnable[MAX_HD_AUDIO_SSP_LINKS];
-	uint8_t PchHdaAudioLinkSndwEnable[MAX_HD_AUDIO_SNDW_LINKS];
+	bool PchHdaDspEnable;
+	bool PchHdaAudioLinkHdaEnable;
+	bool PchHdaAudioLinkDmicEnable[MAX_HD_AUDIO_DMIC_LINKS];
+	bool PchHdaAudioLinkSspEnable[MAX_HD_AUDIO_SSP_LINKS];
+	bool PchHdaAudioLinkSndwEnable[MAX_HD_AUDIO_SNDW_LINKS];
 	uint8_t PchHdaIDispLinkTmode;
 	uint8_t PchHdaIDispLinkFrequency;
-	uint8_t PchHdaIDispCodecDisconnect;
+	bool PchHdaIDispCodecDisconnect;
 
 	/* PCIe Root Ports */
-	uint8_t PcieRpEnable[CONFIG_MAX_ROOT_PORTS];
+	bool PcieRpEnable[CONFIG_MAX_ROOT_PORTS];
 	/* PCIe output clocks type to PCIe devices.
 	 * 0-23: PCH rootport, 0x70: LAN, 0x80: unspecified but in use,
 	 * 0xFF: not used */
@@ -150,7 +155,7 @@ struct soc_intel_jasperlake_config {
 	uint8_t PcieClkSrcClkReq[CONFIG_MAX_PCIE_CLOCK_SRC];
 
 	/* Probe CLKREQ# signal before enabling CLKREQ# based power management.*/
-	uint8_t PcieRpClkReqDetect[CONFIG_MAX_ROOT_PORTS];
+	bool PcieRpClkReqDetect[CONFIG_MAX_ROOT_PORTS];
 
 	/* PCIe RP L1 substate */
 	enum L1_substates_control PcieRpL1Substates[CONFIG_MAX_ROOT_PORTS];
@@ -159,26 +164,26 @@ struct soc_intel_jasperlake_config {
 	struct pcie_modphy_config pcie_mp_cfg[CONFIG_MAX_ROOT_PORTS];
 
 	/* SMBus */
-	uint8_t SmbusEnable;
+	bool SmbusEnable;
 
 	/* eMMC and SD */
-	uint8_t ScsEmmcHs400Enabled;
+	bool ScsEmmcHs400Enabled;
 
 	/* Enable if SD Card Power Enable Signal is Active High */
-	uint8_t SdCardPowerEnableActiveHigh;
+	bool SdCardPowerEnableActiveHigh;
 
 	/* VR Config Settings for IA Core */
 	uint16_t ImonSlope;
 	uint16_t ImonOffset;
 
 	/* Gfx related */
-	uint8_t SkipExtGfxScan;
+	bool SkipExtGfxScan;
 
 	/* Enable/Disable EIST. 1b:Enabled, 0b:Disabled */
-	uint8_t eist_enable;
+	bool eist_enable;
 
 	/* Enable C6 DRAM */
-	uint8_t enable_c6dram;
+	bool enable_c6dram;
 
 	/*
 	 * SerialIO device mode selection:
@@ -223,21 +228,21 @@ struct soc_intel_jasperlake_config {
 	unsigned int sdcard_cd_gpio;
 
 	/* Enable Pch iSCLK */
-	uint8_t pch_isclk;
+	bool pch_isclk;
 
 	/* CNVi BT Audio Offload: Enable/Disable BT Audio Offload. */
 	bool CnviBtAudioOffload;
 
 	/* Tcss */
-	uint8_t TcssXhciEn;
-	uint8_t TcssXdciEn;
+	bool TcssXhciEn;
+	bool TcssXdciEn;
 
 	/*
 	 * Override GPIO PM configuration:
-	 * 0: Use FSP default GPIO PM program,
-	 * 1: coreboot to override GPIO PM program
+	 * false: Use FSP default GPIO PM program,
+	 * true: coreboot to override GPIO PM program
 	 */
-	uint8_t gpio_override_pm;
+	bool gpio_override_pm;
 
 	/*
 	 * GPIO PM configuration: 0 to disable, 1 to enable power gating
@@ -259,28 +264,40 @@ struct soc_intel_jasperlake_config {
 	uint8_t DdiPortAConfig;
 	uint8_t DdiPortBConfig;
 
-	/* Enable(1)/Disable(0) HPD */
-	uint8_t DdiPortAHpd;
-	uint8_t DdiPortBHpd;
-	uint8_t DdiPortCHpd;
-	uint8_t DdiPort1Hpd;
-	uint8_t DdiPort2Hpd;
-	uint8_t DdiPort3Hpd;
-	uint8_t DdiPort4Hpd;
+	/* HDP config
+	 *
+	 * true: Enable HDB
+	 * false: Disable HDP
+	 */
+	bool DdiPortAHpd;
+	bool DdiPortBHpd;
+	bool DdiPortCHpd;
+	bool DdiPort1Hpd;
+	bool DdiPort2Hpd;
+	bool DdiPort3Hpd;
+	bool DdiPort4Hpd;
 
-	/* Enable(1)/Disable(0) DDC */
-	uint8_t DdiPortADdc;
-	uint8_t DdiPortBDdc;
-	uint8_t DdiPortCDdc;
-	uint8_t DdiPort1Ddc;
-	uint8_t DdiPort2Ddc;
-	uint8_t DdiPort3Ddc;
-	uint8_t DdiPort4Ddc;
+	/* DDC config
+	 *
+	 * true: Enable DDC
+	 * false: Disable DDC
+	 */
+	bool DdiPortADdc;
+	bool DdiPortBDdc;
+	bool DdiPortCDdc;
+	bool DdiPort1Ddc;
+	bool DdiPort2Ddc;
+	bool DdiPort3Ddc;
+	bool DdiPort4Ddc;
 
-	/* Hybrid storage mode enable (1) / disable (0)
+	/* Hybrid storage mode
 	 * This mode makes FSP detect Optane and NVME and set PCIe lane mode
-	 * accordingly */
-	uint8_t HybridStorageMode;
+	 * accordingly
+	 *
+	 * true: Enable Hybrid storage mode
+	 * false Dsiable Hybrid storage mode
+	 */
+	bool HybridStorageMode;
 
 	/*
 	 * Override CPU flex ratio value:
@@ -294,12 +311,14 @@ struct soc_intel_jasperlake_config {
 	uint8_t cpu_ratio_override;
 
 	/* Skip CPU replacement check
-	 * 0: disable
-	 * 1: enable
+	 *
 	 * Setting this option to skip CPU replacement check to avoid the forced MRC training
 	 * for the platforms with soldered down SOC.
+	 *
+	 * false: disable
+	 * true: enable
 	 */
-	uint8_t SkipCpuReplacementCheck;
+	bool SkipCpuReplacementCheck;
 
 	/*
 	 * SLP_S3 Minimum Assertion Width Policy
@@ -377,7 +396,7 @@ struct soc_intel_jasperlake_config {
 	 * Disable Fast Slew Rate for Deep Package C States based on
 	 * Acoustic Noise Mitigation feature enabled.
 	 */
-	uint8_t FastPkgCRampDisable;
+	bool FastPkgCRampDisable;
 
 	/*
 	 * Slew Rate configuration for Deep Package C States for VCCIN VR domain
@@ -393,9 +412,11 @@ struct soc_intel_jasperlake_config {
 
 	/*
 	 * Enable or Disable Acoustic Noise Mitigation feature.
-	 * 0: Disabled ; 1: Enabled
+	 *
+	 * false: Disabled
+	 * true: Enabled
 	 */
-	uint8_t AcousticNoiseMitigation;
+	bool AcousticNoiseMitigation;
 
 	/*
 	 * Acoustic Noise Mitigation Range.Defines the maximum Pre-Wake

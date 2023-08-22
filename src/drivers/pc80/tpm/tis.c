@@ -832,6 +832,11 @@ static struct device_operations lpc_tpm_ops = {
 #endif
 };
 
+static struct device_operations noop_tpm_ops = {
+	.read_resources = noop_read_resources,
+	.set_resources = noop_set_resources,
+};
+
 static struct pnp_info pnp_dev_info[] = {
 	{ .flags = PNP_IRQ0 }
 };
@@ -841,6 +846,8 @@ static void enable_dev(struct device *dev)
 	if (CONFIG(TPM))
 		pnp_enable_devices(dev, &lpc_tpm_ops,
 			ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
+	else
+		pnp_enable_devices(dev, &noop_tpm_ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
 struct chip_operations drivers_pc80_tpm_ops = {

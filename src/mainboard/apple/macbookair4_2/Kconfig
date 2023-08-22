@@ -15,6 +15,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_HAS_LIBGFXINIT
 	select HAVE_CMOS_DEFAULT
 	select HAVE_OPTION_TABLE
+	select HAVE_SPD_IN_CBFS
 
 config MAINBOARD_DIR
 	default "apple/macbookair4_2"

@@ -56,6 +56,11 @@ config BOARD_GOOGLE_MODEL_REX
 	select DRIVERS_SOUNDWIRE_CS42L42
 	select DRIVERS_SOUNDWIRE_MAX98363
 
+config BOARD_GOOGLE_MODEL_REX_EC_ISH
+	def_bool n
+	select BOARD_GOOGLE_MODEL_REX
+	select SOC_INTEL_STORE_ISH_FW_VERSION
+
 config BOARD_GOOGLE_MODEL_SCREEBO
 	def_bool n
 	select BOARD_GOOGLE_BASEBOARD_REX
@@ -117,8 +122,8 @@ config DEVICETREE
 	default "variants/baseboard/\$(CONFIG_BASEBOARD_DIR)/devicetree.cb"
 
 config FMDFILE
-	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos_ec_ish-debug-fsp.fmd" if CHROMEOS && BOARD_GOOGLE_REX_EC_ISH && BUILDING_WITH_DEBUG_FSP
-	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos_ec_ish.fmd" if CHROMEOS && BOARD_GOOGLE_REX_EC_ISH
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos_ec_ish-debug-fsp.fmd" if CHROMEOS && BOARD_GOOGLE_MODEL_REX_EC_ISH && BUILDING_WITH_DEBUG_FSP
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos_ec_ish.fmd" if CHROMEOS && BOARD_GOOGLE_MODEL_REX_EC_ISH
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-debug-fsp.fmd" if CHROMEOS && BUILDING_WITH_DEBUG_FSP
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if CHROMEOS
 
@@ -134,6 +139,7 @@ config MAINBOARD_PART_NUMBER
 	default "Rex" if BOARD_GOOGLE_REX0
 	default "Rex_Ec_Ish" if BOARD_GOOGLE_REX_EC_ISH
 	default "Rex4ES" if BOARD_GOOGLE_REX4ES
+	default "Rex4ES_Ec_Ish" if BOARD_GOOGLE_REX4ES_EC_ISH
 	default "Screebo" if BOARD_GOOGLE_SCREEBO
 	default "Screebo4ES" if BOARD_GOOGLE_SCREEBO4ES
 	default "Karis" if BOARD_GOOGLE_KARIS

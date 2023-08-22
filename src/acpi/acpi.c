@@ -48,7 +48,7 @@ void acpi_add_table(acpi_rsdp_t *rsdp, void *table)
 {
 	int i, entries_num;
 	acpi_rsdt_t *rsdt;
-	acpi_xsdt_t *xsdt = NULL;
+	acpi_xsdt_t *xsdt;
 
 	/* The 32bit RSDT may not be valid if tables live above 4GiB */
 	rsdt = (acpi_rsdt_t *)(uintptr_t)rsdp->rsdt_address;
@@ -1408,10 +1408,33 @@ unsigned long write_acpi_tables(const unsigned long start)
 		if (!rsdp)
 			return fw;
 
+		current = fw;
+		current = acpi_align_current(current);
+		if (rsdp->xsdt_address == 0) {
+			xsdt = (acpi_xsdt_t *)current;
+			current += sizeof(acpi_xsdt_t);
+			current = acpi_align_current(current);
+
+			/*
+			 * Qemu only creates an RSDT.
+			 * Add an XSDT based on the existing RSDT entries.
+			 */
+			acpi_rsdt_t *existing_rsdt = (acpi_rsdt_t *)(uintptr_t)rsdp->rsdt_address;
+			acpi_write_rsdp(rsdp, existing_rsdt, xsdt, oem_id);
+			acpi_write_xsdt(xsdt, oem_id, oem_table_id);
+			/*
+			 * Copy existing entries to the new XSDT. This will override existing
+			 * RSDT entries with the same value.
+			 */
+			for (int i = 0; existing_rsdt->entry[i]; i++)
+				acpi_add_table(rsdp, (void *)(uintptr_t)existing_rsdt->entry[i]);
+
+		}
+
 		/* Add BOOT0000 for Linux google firmware driver */
 		printk(BIOS_DEBUG, "ACPI:     * SSDT\n");
-		ssdt = (acpi_header_t *)fw;
-		current = (unsigned long)ssdt + sizeof(acpi_header_t);
+		ssdt = (acpi_header_t *)current;
+		current += sizeof(acpi_header_t);
 
 		memset((void *)ssdt, 0, sizeof(acpi_header_t));
 

@@ -1,6 +1,6 @@
-# HP Compaq 8300 Elite USDT
+# HP Compaq Elite 8300 USDT
 
-This page describes how to run coreboot on the [Compaq 8300 Elite USDT] desktop
+This page describes how to run coreboot on the [Compaq Elite 8300 USDT] desktop
 from [HP].
 
 ## Flashing coreboot
@@ -27,9 +27,8 @@ from [HP].
 
 ### Internal programming
 
-TODO: investigate
-
-The board has two jumpers that might be relevant: FDO (Flash Descriptor Override) and BB (?).
+Internal programming is possible. Shorting the Flash Descriptor Override
+(FDO) jumper bypasses all write protections.
 
 ### External programming
 
@@ -62,5 +61,5 @@ Wake on LAN is active works great.
 This board has a Nuvoton NPCD379 SuperIO chip. Fan speed and PS/2 keyboard work
 fine using coreboot's existing code for :doc:`../../superio/nuvoton/npcd378`.
 
-[Compaq 8300 USDT]: https://support.hp.com/gb-en/product/hp-compaq-elite-8300-ultra-slim-pc/5232866
+[Compaq Elite 8300 USDT]: https://support.hp.com/gb-en/product/hp-compaq-elite-8300-ultra-slim-pc/5232866
 [HP]: https://www.hp.com/

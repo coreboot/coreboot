@@ -61,6 +61,11 @@ static const struct pad_config sd_disable_pads[] = {
 	PAD_NC_LOCK(GPP_H13, NONE, LOCK_CONFIG),
 };
 
+static const struct pad_config disable_wifi_pch_susclk[] = {
+	/* GPD8 ==> NC */
+	PAD_NC(GPD8, NONE),
+};
+
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 {
 	if (fw_config_is_provisioned() && !fw_config_probe(FW_CONFIG(STORAGE, STORAGE_EMMC))) {
@@ -82,5 +87,11 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		printk(BIOS_INFO, "Disable SD card GPIO pins.\n");
 		gpio_padbased_override(padbased_table, sd_disable_pads,
 				       ARRAY_SIZE(sd_disable_pads));
+	}
+	/* SAR_ID_3 for MT7922 */
+	if (fw_config_probe(FW_CONFIG(WIFI_SAR_ID, SAR_ID_3))) {
+		printk(BIOS_INFO, "Disable PCH SUSCLK.\n");
+		gpio_padbased_override(padbased_table, disable_wifi_pch_susclk,
+					ARRAY_SIZE(disable_wifi_pch_susclk));
 	}
 }

@@ -16,6 +16,7 @@
 #include <soc/pmc.h>
 #include <soc/serialio.h>
 #include <soc/usb.h>
+#include <stdbool.h>
 #include <stdint.h>
 
 /* Define config parameters for In-Band ECC (IBECC). */
@@ -165,17 +166,17 @@ struct soc_intel_meteorlake_config {
 	uint32_t gen4_dec;
 
 	/* Enable S0iX support */
-	int s0ix_enable;
+	bool s0ix_enable;
 	/* Support for TCSS xhci, xdci, TBT PCIe root ports and DMA controllers */
-	uint8_t tcss_d3_hot_disable;
+	bool tcss_d3_hot_disable;
 	/* Enable DPTF support */
-	int dptf_enable;
+	bool dptf_enable;
 
 	/* Deep SX enable for both AC and DC */
-	int deep_s3_enable_ac;
-	int deep_s3_enable_dc;
-	int deep_s5_enable_ac;
-	int deep_s5_enable_dc;
+	bool deep_s3_enable_ac;
+	bool deep_s3_enable_dc;
+	bool deep_s5_enable_ac;
+	bool deep_s5_enable_dc;
 
 	/* Deep Sx Configuration
 	 *  DSX_EN_WAKE_PIN       - Enable WAKE# pin
@@ -208,8 +209,8 @@ struct soc_intel_meteorlake_config {
 		SAGV_POINTS_0_1_2_3 = 0x0f,
 	} sagv_wp_bitmap;
 
-	/* Rank Margin Tool. 1:Enable, 0:Disable */
-	uint8_t rmt;
+	/* Rank Margin Tool. true:Enable, false:Disable */
+	bool rmt;
 
 	/* USB related */
 	struct usb2_port_config usb2_ports[CONFIG_SOC_INTEL_USB2_DEV_MAX];
@@ -225,21 +226,21 @@ struct soc_intel_meteorlake_config {
 
 	/* SATA related */
 	uint8_t sata_mode;
-	uint8_t sata_salp_support;
-	uint8_t sata_ports_enable[8];
-	uint8_t sata_ports_dev_slp[8];
+	bool sata_salp_support;
+	bool sata_ports_enable[8];
+	bool sata_ports_dev_slp[8];
 
 	/*
-	 * Enable(0)/Disable(1) SATA Power Optimizer on PCH side.
-	 * Default 0. Setting this to 1 disables the SATA Power Optimizer.
+	 * Enable(false)/Disable(true) SATA Power Optimizer on PCH side.
+	 * Default false. Setting this to true disables the SATA Power Optimizer.
 	 */
-	uint8_t sata_pwr_optimize_disable;
+	bool sata_pwr_optimize_disable;
 
 	/*
 	 * SATA Port Enable Dito Config.
 	 * Enable DEVSLP Idle Timeout settings (DmVal, DitoVal).
 	 */
-	uint8_t sata_ports_enable_dito_config[8];
+	bool sata_ports_enable_dito_config[8];
 
 	/* SataPortsDmVal is the DITO multiplier. Default is 15. */
 	uint8_t sata_ports_dm_val[8];
@@ -247,8 +248,8 @@ struct soc_intel_meteorlake_config {
 	uint16_t sata_ports_dito_val[8];
 
 	/* Audio related */
-	uint8_t pch_hda_audio_link_hda_enable;
-	uint8_t pch_hda_dsp_enable;
+	bool pch_hda_audio_link_hda_enable;
+	bool pch_hda_dsp_enable;
 
 	bool pch_hda_sdi_enable[MAX_HD_AUDIO_SDI_LINKS];
 
@@ -294,10 +295,11 @@ struct soc_intel_meteorlake_config {
 		IGD_SM_56MB = 0xFD,
 		IGD_SM_60MB = 0xFE,
 	} igd_dvmt50_pre_alloc;
-	uint8_t skip_ext_gfx_scan;
 
-	/* Enable/Disable EIST. 1b:Enabled, 0b:Disabled */
-	uint8_t eist_enable;
+	bool skip_ext_gfx_scan;
+
+	/* Enable/Disable EIST. true:Enabled, false:Disabled */
+	bool eist_enable;
 
 	/*
 	 * When enabled, this feature makes the SoC throttle when the power
@@ -445,16 +447,16 @@ struct soc_intel_meteorlake_config {
 	uint8_t cpu_ratio_override;
 
 	/*
-	 * Enable(0)/Disable(1) DMI Power Optimizer on PCH side.
-	 * Default 0. Setting this to 1 disables the DMI Power Optimizer.
+	 * Enable(true)/Disable(false) DMI Power Optimizer on PCH side.
+	 * Default false. Setting this to true disables the DMI Power Optimizer.
 	 */
-	uint8_t dmi_pwr_optimize_disable;
+	bool dmi_pwr_optimize_disable;
 
 	/*
-	 * Enable(1)/Disable(0) CPU Replacement check.
-	 * Default 0. Setting this to 1 to check CPU replacement.
+	 * Enable(true)/Disable(false) CPU Replacement check.
+	 * Default false. Setting this to true to check CPU replacement.
 	 */
-	uint8_t cpu_replacement_check;
+	bool cpu_replacement_check;
 
 	/* ISA Serial Base selection. */
 	enum {
@@ -472,7 +474,8 @@ struct soc_intel_meteorlake_config {
 	 * Enable or Disable C1 C-state Auto Demotion & un-demotion
 	 * The algorithm looks at the behavior of the wake up tracker, how
 	 * often it is waking up, and based on that it demote the c-state.
-	 * Default 0. Set this to 1 in order to disable C1-state auto demotion.
+	 * Default false. Set this to true in order to disable C1-state auto
+	 * demotion.
 	 * NOTE: Un-Demotion from Demoted C1 needs to be disabled when
 	 *       C1 C-state Auto Demotion is disabled.
 	 */
@@ -480,8 +483,8 @@ struct soc_intel_meteorlake_config {
 
 	/*
 	 * Enable or Disable Package C-state Demotion.
-	 * Default is set to 0.
-	 * Set this to 1 in order to disable Package C-state demotion.
+	 * Default is set to false.
+	 * Set this to true in order to disable Package C-state demotion.
 	 * NOTE: Un-Demotion from demoted Package C-state needs to be disabled
 	 *       when auto demotion is disabled.
 	 */
@@ -507,8 +510,8 @@ struct soc_intel_meteorlake_config {
 
 	/*
 	 * Enable or Disable Reduced BasicMemoryTest size.
-	 * Default is set to 0.
-	 * Set this to 1 in order to reduce BasicMemoryTest size
+	 * Default is set to false.
+	 * Set this to true in order to reduce BasicMemoryTest size
 	 */
 	bool lower_basic_mem_test_size;
 
@@ -519,9 +522,9 @@ struct soc_intel_meteorlake_config {
 	uint16_t psys_pl2_watts;
 
 	/* Enable or Disable Acoustic Noise Mitigation feature */
-	uint8_t enable_acoustic_noise_mitigation;
+	bool enable_acoustic_noise_mitigation;
 	/* Disable Fast Slew Rate for Deep Package C States for VR domains */
-	uint8_t disable_fast_pkgc_ramp[NUM_VR_DOMAINS];
+	bool disable_fast_pkgc_ramp[NUM_VR_DOMAINS];
 	/*
 	 * Slew Rate configuration for Deep Package C States for VR domains
 	 * as per `enum slew_rate` data type.

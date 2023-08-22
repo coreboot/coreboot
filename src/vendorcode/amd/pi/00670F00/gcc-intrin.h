@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: BSD-3-Clause */
+
 /*
  * Copyright (c) 2011, Advanced Micro Devices, Inc. All rights reserved.
  * Copyright (c) 2014, Edward O'Callaghan <eocallaghan@alterapraxis.com>

@@ -1,6 +1,6 @@
 fw_config
 	field DB_USB 0 1
-		option DB_NONE			0
+		option DB_1A			0
 		option DB_1C_1A			1
 		option DB_1C			2
 		option DB_1C_LTE		3

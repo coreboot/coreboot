@@ -85,7 +85,7 @@ help_coreboot help::
 	@echo  '  clean                 - Remove coreboot build artifacts'
 	@echo  '  distclean             - Remove build artifacts and config files'
 	@echo  '  sphinx                - Build sphinx documentation for coreboot'
-	@echo  '  sphinx-lint           - Build sphinx documenttion for coreboot with warnings as errors'
+	@echo  '  sphinx-lint           - Build sphinx documentation for coreboot with warnings as errors'
 	@echo  '  filelist              - Show files used in current build'
 	@echo  '  printall              - print makefile info for debugging'
 	@echo  '  gitconfig             - set up git to submit patches to coreboot'

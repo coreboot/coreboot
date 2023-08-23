@@ -16,10 +16,16 @@ static const struct pad_config override_gpio_table[] = {
 	/* A22 : GPP_A22 ==> USB_C1_AUX_DC_N */
 	PAD_CFG_GPO(GPP_A22, 1, DEEP),
 
+	/* D3  : WCAM_RST_L ==> NC */
+	PAD_NC_LOCK(GPP_D3, NONE, LOCK_CONFIG),
 	/* D6  : WWAN_EN */
 	PAD_CFG_GPO(GPP_D6, 1, DEEP),
 	/* D8  : SD_CLKREQ_ODL ==> NC  */
 	PAD_NC(GPP_D8, NONE),
+	/* D15 : EN_PP2800_WCAM_X ==> NC */
+	PAD_NC_LOCK(GPP_D15, NONE, LOCK_CONFIG),
+	/* D16 : EN_PP1800_PP1200_WCAM_X ==> NC */
+	PAD_NC_LOCK(GPP_D16, NONE, LOCK_CONFIG),
 
 	/* F6  : CNV_PA_BLANKING ==> NC */
 	PAD_NC(GPP_F6, NONE),

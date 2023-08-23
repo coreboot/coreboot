@@ -250,6 +250,7 @@ config MAINBOARD_PART_NUMBER
 	default "Craaskov" if BOARD_GOOGLE_CRAASKOV
 	default "Pirrha" if BOARD_GOOGLE_PIRRHA
 	default "Quandiso" if BOARD_GOOGLE_QUANDISO
+	default "Nokris" if BOARD_GOOGLE_NOKRIS
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -301,6 +302,7 @@ config VARIANT_DIR
 	default "craaskov" if BOARD_GOOGLE_CRAASKOV
 	default "pirrha" if BOARD_GOOGLE_PIRRHA
 	default "quandiso" if BOARD_GOOGLE_QUANDISO
+	default "nokris" if BOARD_GOOGLE_NOKRIS
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC if !BOARD_GOOGLE_BASEBOARD_NISSA

@@ -222,7 +222,7 @@ chip soc/intel/jasperlake
 		end # I2C 4
 		device pci 1c.2 on
 			chip drivers/net
-				register "customized_leds" = "0x05af"
+				register "customized_leds" = "0x07af"
 				register "wake" = "GPE0_DW0_03" # GPP_B3
 				register "stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D4)"
 				register "device_index" = "0"

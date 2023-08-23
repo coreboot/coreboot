@@ -10,15 +10,13 @@ Method (_Q06, 0, NotSerialized)			// Event: Backlight Brightness Up
 	^^^^HIDD.HPEM (19)
 }
 
-Method (_Q0A, 0, NotSerialized)			// Event: AC Power Connected
+Method (_Q0A, 0, NotSerialized)			// Event: Charger Status Update
 {
-	Notify (BAT0, 0x81)
 	Notify (ADP1, 0x80)
 }
 
-Method (_Q0B, 0, NotSerialized)			// Event: AC Power Disconnected
+Method (_Q0B, 0, NotSerialized)			// Event: Battery Information Update
 {
-	Notify (BAT0, 0x81)
 	Notify (BAT0, 0x80)
 }
 

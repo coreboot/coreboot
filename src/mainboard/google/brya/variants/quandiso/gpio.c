@@ -20,12 +20,12 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC_LOCK(GPP_D3, NONE, LOCK_CONFIG),
 	/* D6  : WWAN_EN */
 	PAD_CFG_GPO(GPP_D6, 1, DEEP),
-	/* D8  : SD_CLKREQ_ODL ==> NC  */
-	PAD_NC(GPP_D8, NONE),
 	/* D15 : EN_PP2800_WCAM_X ==> NC */
 	PAD_NC_LOCK(GPP_D15, NONE, LOCK_CONFIG),
 	/* D16 : EN_PP1800_PP1200_WCAM_X ==> NC */
 	PAD_NC_LOCK(GPP_D16, NONE, LOCK_CONFIG),
+	/* D17 : NC ==> SD_WAKE_N */
+	PAD_CFG_GPI_LOCK(GPP_D17, NONE, LOCK_CONFIG),
 
 	/* F6  : CNV_PA_BLANKING ==> NC */
 	PAD_NC(GPP_F6, NONE),
@@ -38,10 +38,6 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_H8, NONE),
 	/* H9  : CNV_MFUART2_TXD ==> NC */
 	PAD_NC(GPP_H9, NONE),
-	/* H12 : SD_PERST_L ==> NC */
-	PAD_NC(GPP_H12, NONE),
-	/* H13 : EN_PP3300_SD_X ==> NC */
-	PAD_NC(GPP_H13, NONE),
 	/* H15 : HDMI_SRC_SCL */
 	PAD_CFG_NF(GPP_H15, NONE, DEEP, NF1),
 	/* H17 : HDMI_SRC_SDA */
@@ -72,6 +68,10 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),
 	/* H11 : UART0_TXD ==> UART_SOC_TX_DBG_RX */
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
+	/* H12 : UART0_RTS# ==> SD_PERST_L */
+	PAD_CFG_GPO(GPP_H12, 0, DEEP),
+	/* H13 : UART0_CTS# ==> EN_PP3300_SD_X */
+	PAD_CFG_GPO(GPP_H13, 1, DEEP),
 	/* B11 : PMCALERT# ==> EN_PP3300_WLAN_X */
 	PAD_CFG_GPO(GPP_B11, 1, DEEP),
 	/* F12 : WWAN_RST_ODL */
@@ -84,6 +84,8 @@ static const struct pad_config romstage_gpio_table[] = {
 	PAD_CFG_GPO(GPP_C0, 1, DEEP),
 	/* C1  : SMBDATA ==> USI_RST_L */
 	PAD_CFG_GPO(GPP_C1, 0, DEEP),
+	/* H12 : UART0_RTS# ==> SD_PERST_L */
+	PAD_CFG_GPO(GPP_H12, 0, DEEP),
 	/* H20 : IMGCLKOUT1 ==> WLAN_PERST_L */
 	PAD_CFG_GPO(GPP_H20, 1, DEEP),
 };

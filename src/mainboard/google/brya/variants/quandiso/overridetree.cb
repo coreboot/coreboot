@@ -23,21 +23,11 @@ fw_config
 		option WFC_ABSENT		0
 		option WFC_MIPI_OVTI8856	1
 	end
-	field MB_HDMI 12
-		option HDMI_ABSENT		0
-		option HDMI_PRESENT		1
-	end
-	field MB_USB 15
-		option MB_1C			0
-		option MB_1C_2A			1
-	end
 	field WIFI_SAR_ID2 16 19
-		option INTEL_YAVILLA_LTE	0
-		option INTEL_YAVILLA_WIFI	1
-		option INTEL_YAVILLY_LTE	2
-		option INTEL_YAVILLY_WIFI	3
-		option INTEL_YAVIJO_LTE		4
-		option INTEL_YAVIJO_WIFI	5
+		option INTEL_QUANDISO_LTE	0
+		option INTEL_QUANDISO_WIFI	1
+		option INTEL_QUANDISO360_LTE	2
+		option INTEL_QUANDISO360_WIFI	3
 		option UNUSED			15
 	end
 end
@@ -345,7 +335,21 @@ chip soc/intel/alderlake
 				device pci 00.0 on end
 			end
 		end
-		device ref pcie_rp7 off end #PCIE7 no SD card
+		device ref pcie_rp7 on
+			# Enable SD Card PCIe 7 using clk 3
+			register "pch_pcie_rp[PCH_RP(7)]" = "{
+				.clk_src = 3,
+				.clk_req = 3,
+				.flags = PCIE_RP_HOTPLUG | PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H13)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H12)"
+				register "srcclk_pin" = "3"
+				device generic 0 on end
+			end
+			probe SD_CARD SD_PRESENT
+		end
 		device ref emmc on end
 		device ref ish on
 			chip drivers/intel/ish

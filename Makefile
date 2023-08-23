@@ -468,10 +468,10 @@ cscope:
 	cscope -bR
 
 sphinx:
-	$(MAKE) -C Documentation -f Makefile.sphinx html
+	$(MAKE) -C Documentation sphinx
 
 sphinx-lint:
-	$(MAKE) SPHINXOPTS=-W -C Documentation -f Makefile.sphinx html
+	$(MAKE) SPHINXOPTS=-W -C Documentation sphinx
 
 symlink:
 	@echo "Creating Symbolic Links.."; \

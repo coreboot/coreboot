@@ -16,6 +16,11 @@ static const struct pad_config override_gpio_table[] = {
 	/* A22 : GPP_A22 ==> USB_C1_AUX_DC_N */
 	PAD_CFG_GPO(GPP_A22, 1, DEEP),
 
+	/* B5  : I2C2_SDA ==> I2C_P_SENSOR_SDA */
+	PAD_CFG_NF(GPP_B5, NONE, DEEP, NF2),
+	/* B6  : I2C2_SCL ==> I2C_P_SENSOR_SCL */
+	PAD_CFG_NF(GPP_B6, NONE, DEEP, NF2),
+
 	/* D3  : WCAM_RST_L ==> NC */
 	PAD_NC_LOCK(GPP_D3, NONE, LOCK_CONFIG),
 	/* D6  : WWAN_EN */
@@ -42,8 +47,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_NF(GPP_H15, NONE, DEEP, NF1),
 	/* H17 : HDMI_SRC_SDA */
 	PAD_CFG_NF(GPP_H17, NONE, DEEP, NF1),
-	/* H19 : SRCCLKREQ4# ==> NC */
-	PAD_NC(GPP_H19, NONE),
+	/* H19 : SRCCLKREQ4# ==> P_SENSOR_INT_L */
+	PAD_CFG_GPI_APIC(GPP_H19, NONE, PLTRST, LEVEL, NONE),
 	/* H23 : WWAN_SAR_DETECT_ODL */
 	PAD_CFG_GPO(GPP_H23, 1, DEEP),
 };

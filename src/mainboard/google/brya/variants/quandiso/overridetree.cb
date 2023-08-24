@@ -21,7 +21,7 @@ fw_config
 	end
 	field WFC 11
 		option WFC_ABSENT		0
-		option WFC_MIPI_OVTI8856	1
+		option WFC_PRESENT		1
 	end
 	field WIFI_SAR_ID2 16 19
 		option INTEL_QUANDISO_LTE	0
@@ -87,11 +87,12 @@ chip soc/intel/alderlake
 
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E22, .pad_auxn_dc = GPP_E23}"
 
-	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# USB2 WWAN
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# USB2 WWAN
+	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"     # Rear Camera
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for PCIe WLAN
 	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for CNVi WLAN
 
-	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB3 WWAN
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB3 WWAN
 
 	# Configure external V1P05/Vnn/VnnSx Rails
 	register "ext_fivr_settings" = "{
@@ -478,16 +479,18 @@ chip soc/intel/alderlake
 						device ref usb2_port3 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB2 Type-A Port A1 (MLB)""
+						register "desc" = ""USB2 Type-A Port A1 (DB)""
 						register "type" = "UPC_TYPE_A"
 						register "use_custom_pld" = "true"
 						register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, LEFT, ACPI_PLD_GROUP(4, 1))"
-						device ref usb2_port4 on end
+						device ref usb2_port4 on
+							probe DB_USB DB_1C_1A
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 WWAN""
 						register "type" = "UPC_TYPE_INTERNAL"
-						device ref usb2_port5 on
+						device ref usb2_port4 on
 							probe DB_USB DB_1C_LTE
 						end
 					end
@@ -495,6 +498,13 @@ chip soc/intel/alderlake
 						register "desc" = ""USB2 UFC""
 						register "type" = "UPC_TYPE_INTERNAL"
 						device ref usb2_port6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 WF Camera""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port7 on
+							probe WFC WFC_PRESENT
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Bluetooth""
@@ -522,12 +532,14 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_USB3_A"
                                                 register "use_custom_pld" = "true"
 						register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, LEFT, ACPI_PLD_GROUP(4, 1))"
-						device ref usb3_port2 on end
+						device ref usb3_port2 on
+							probe DB_USB DB_1C_1A
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB3 WWAN""
 						register "type" = "UPC_TYPE_INTERNAL"
-						device ref usb3_port3 on
+						device ref usb3_port2 on
 							probe DB_USB DB_1C_LTE
 						end
 					end

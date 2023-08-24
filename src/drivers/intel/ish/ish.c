@@ -12,7 +12,7 @@
 static void ish_fill_ssdt_generator(const struct device *dev)
 {
 	struct drivers_intel_ish_config *config = dev->chip_info;
-	struct device *root = dev->bus->dev;
+	struct device *root = dev->upstream->dev;
 	struct acpi_dp *dsd;
 
 	if (!config)

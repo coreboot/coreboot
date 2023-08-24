@@ -39,13 +39,13 @@ static const struct sci_source xhci_sci_sources[] = {
 
 enum cb_err pci_xhci_get_wake_gpe(const struct device *dev, int *gpe)
 {
-	if (dev->bus->dev->path.type != DEVICE_PATH_PCI)
+	if (dev->upstream->dev->path.type != DEVICE_PATH_PCI)
 		return CB_ERR_ARG;
 
 	if (dev->path.type != DEVICE_PATH_PCI)
 		return CB_ERR_ARG;
 
-	if (dev->bus->dev->path.pci.devfn == PCIE_ABC_A_DEVFN) {
+	if (dev->upstream->dev->path.pci.devfn == PCIE_ABC_A_DEVFN) {
 		if (dev->path.pci.devfn == XHCI0_DEVFN) {
 			*gpe = xhci_sci_sources[0].gpe;
 			return CB_SUCCESS;
@@ -55,7 +55,7 @@ enum cb_err pci_xhci_get_wake_gpe(const struct device *dev, int *gpe)
 		}
 	}
 
-	if (dev->bus->dev->path.pci.devfn == PCIE_ABC_C_DEVFN) {
+	if (dev->upstream->dev->path.pci.devfn == PCIE_ABC_C_DEVFN) {
 		if (dev->path.pci.devfn == USB4_XHCI0_DEVFN) {
 			*gpe = xhci_sci_sources[2].gpe;
 			return CB_SUCCESS;

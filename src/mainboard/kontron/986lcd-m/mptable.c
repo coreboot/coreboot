@@ -18,7 +18,7 @@ static void *smp_write_config_table(void *v)
 
 	firewire = dev_find_device(0x104c, 0x8023, 0);
 	if (firewire) {
-		firewire_bus = firewire->bus->secondary;
+		firewire_bus = firewire->upstream->secondary;
 	}
 
 	/* If a riser card is used, this riser is detected on bus 4, so its secondary bus is the */
@@ -27,7 +27,7 @@ static void *smp_write_config_table(void *v)
 	if (!riser)
 		riser = dev_find_device(0x3388, 0x0022, 0);
 	if (riser) {
-		riser_bus = riser->link_list->secondary;
+		riser_bus = riser->downstream->secondary;
 	}
 
 	mptable_write_buses(mc, NULL, &isa_bus);

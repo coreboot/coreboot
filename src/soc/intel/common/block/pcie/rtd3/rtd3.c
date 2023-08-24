@@ -140,7 +140,7 @@ pcie_rtd3_acpi_method_on(unsigned int pcie_rp,
 			 enum pcie_rp_type rp_type,
 			 const struct device *dev)
 {
-	const struct device *parent = dev->bus->dev;
+	const struct device *parent = dev->upstream->dev;
 
 	acpigen_write_method_serialized("_ON", 0);
 
@@ -224,7 +224,7 @@ pcie_rtd3_acpi_method_off(int pcie_rp,
 			  const struct device *dev)
 
 {
-	const struct device *parent = dev->bus->dev;
+	const struct device *parent = dev->upstream->dev;
 
 	acpigen_write_method_serialized("_OFF", 0);
 
@@ -385,7 +385,7 @@ static void pcie_rtd3_acpi_fill_ssdt(const struct device *dev)
 
 	const struct soc_intel_common_block_pcie_rtd3_config *config = config_of(dev);
 	static const char *const power_res_states[] = {"_PR0"};
-	const struct device *parent = dev->bus->dev;
+	const struct device *parent = dev->upstream->dev;
 	const char *scope = acpi_device_path(parent);
 	const struct opregion opregion = OPREGION("PXCS", PCI_CONFIG, 0, 0xff);
 	const struct fieldlist fieldlist[] = {

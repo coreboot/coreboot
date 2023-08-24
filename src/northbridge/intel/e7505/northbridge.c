@@ -52,7 +52,7 @@ static void mch_domain_read_resources(struct device *dev)
 
 static void mch_domain_set_resources(struct device *dev)
 {
-	assign_resources(dev->link_list);
+	assign_resources(dev->downstream);
 }
 
 struct device_operations e7505_pci_domain_ops = {

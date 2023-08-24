@@ -97,7 +97,7 @@ u32 dev_path_encode(const struct device *dev)
 	case DEVICE_PATH_ROOT:
 		break;
 	case DEVICE_PATH_PCI:
-		ret |= dev->bus->segment_group << 16 | dev->bus->secondary << 8 | dev->path.pci.devfn;
+		ret |= dev->upstream->segment_group << 16 | dev->upstream->secondary << 8 | dev->path.pci.devfn;
 		break;
 	case DEVICE_PATH_PNP:
 		ret |= dev->path.pnp.port << 8 | dev->path.pnp.device;
@@ -169,8 +169,8 @@ const char *dev_path(const struct device *dev)
 		case DEVICE_PATH_PCI:
 			snprintf(buffer, sizeof(buffer),
 				 "PCI: %02x:%02x:%02x.%01x",
-				 dev->bus->segment_group,
-				 dev->bus->secondary,
+				 dev->upstream->segment_group,
+				 dev->upstream->secondary,
 				 PCI_SLOT(dev->path.pci.devfn),
 				 PCI_FUNC(dev->path.pci.devfn));
 			break;
@@ -180,7 +180,7 @@ const char *dev_path(const struct device *dev)
 			break;
 		case DEVICE_PATH_I2C:
 			snprintf(buffer, sizeof(buffer), "I2C: %02x:%02x",
-				 dev->bus->secondary,
+				 dev->upstream->secondary,
 				 dev->path.i2c.device);
 			break;
 		case DEVICE_PATH_APIC:
@@ -253,8 +253,8 @@ const char *dev_name(const struct device *dev)
 struct device *dev_get_pci_domain(struct device *dev)
 {
 	/* Walk up the tree up to the PCI domain */
-	while (dev && dev->bus && !is_root_device(dev)) {
-		dev = dev->bus->dev;
+	while (dev && dev->upstream && !is_root_device(dev)) {
+		dev = dev->upstream->dev;
 		if (dev->path.type == DEVICE_PATH_DOMAIN)
 			return dev;
 	}
@@ -529,10 +529,10 @@ void report_resource_stored(struct device *dev, const struct resource *resource,
 	end = resource_end(resource);
 	buf[0] = '\0';
 
-	if (dev->link_list && (resource->flags & IORESOURCE_PCI_BRIDGE)) {
+	if (dev->downstream && (resource->flags & IORESOURCE_PCI_BRIDGE)) {
 		snprintf(buf, sizeof(buf),
-			 "seg %02x bus %02x ", dev->link_list->segment_group,
-			 dev->link_list->secondary);
+			 "seg %02x bus %02x ", dev->downstream->segment_group,
+			 dev->downstream->secondary);
 	}
 	printk(BIOS_DEBUG, "%s %02lx <- [0x%016llx - 0x%016llx] size 0x%08llx "
 	       "gran 0x%02x %s%s%s\n", dev_path(dev), resource->index,
@@ -560,8 +560,8 @@ void search_bus_resources(struct bus *bus, unsigned long type_mask,
 
 			/* If it is a subtractive resource recurse. */
 			if (res->flags & IORESOURCE_SUBTRACTIVE) {
-				if (curdev->link_list)
-					search_bus_resources(curdev->link_list, type_mask, type,
+				if (curdev->downstream)
+					search_bus_resources(curdev->downstream, type_mask, type,
 							     search, gp);
 				continue;
 			}
@@ -617,8 +617,8 @@ void disable_children(struct bus *bus)
 	struct device *child;
 
 	for (child = bus->children; child; child = child->sibling) {
-		if (child->link_list)
-			disable_children(child->link_list);
+		if (child->downstream)
+			disable_children(child->downstream);
 		dev_set_enabled(child, 0);
 	}
 }
@@ -634,10 +634,10 @@ bool dev_is_active_bridge(struct device *dev)
 	if (!dev || !dev->enabled)
 		return 0;
 
-	if (!dev->link_list || !dev->link_list->children)
+	if (!dev->downstream || !dev->downstream->children)
 		return 0;
 
-	for (child = dev->link_list->children; child; child = child->sibling) {
+	for (child = dev->downstream->children; child; child = child->sibling) {
 		if (child->path.type == DEVICE_PATH_NONE)
 			continue;
 		if (child->enabled)
@@ -659,9 +659,9 @@ static void resource_tree(const struct device *root, int debug_level, int depth)
 	indent[i] = '\0';
 
 	printk(BIOS_DEBUG, "%s%s", indent, dev_path(root));
-	if (root->link_list && root->link_list->children)
+	if (root->downstream && root->downstream->children)
 		printk(BIOS_DEBUG, " child on link 0 %s",
-			  dev_path(root->link_list->children));
+			  dev_path(root->downstream->children));
 	printk(BIOS_DEBUG, "\n");
 
 	for (res = root->resource_list; res; res = res->next) {
@@ -672,10 +672,10 @@ static void resource_tree(const struct device *root, int debug_level, int depth)
 			  res->index);
 	}
 
-	if (!root->link_list)
+	if (!root->downstream)
 		return;
 
-	for (child = root->link_list->children; child; child = child->sibling)
+	for (child = root->downstream->children; child; child = child->sibling)
 		resource_tree(child, debug_level, depth + 1);
 }
 
@@ -709,10 +709,10 @@ void show_devs_tree(const struct device *dev, int debug_level, int depth)
 	printk(debug_level, "%s%s: enabled %d\n",
 		  depth_str, dev_path(dev), dev->enabled);
 
-	if (!dev->link_list)
+	if (!dev->downstream)
 		return;
 
-	for (sibling = dev->link_list->children; sibling; sibling = sibling->sibling)
+	for (sibling = dev->downstream->children; sibling; sibling = sibling->sibling)
 		show_devs_tree(sibling, debug_level, depth + 1);
 }
 
@@ -890,7 +890,7 @@ const char *dev_path_name(enum device_path_type type)
 
 bool dev_path_hotplug(const struct device *dev)
 {
-	for (dev = dev->bus->dev; dev != dev->bus->dev; dev = dev->bus->dev) {
+	for (dev = dev->upstream->dev; dev != dev->upstream->dev; dev = dev->upstream->dev) {
 		if (dev->hotplug_port)
 			return true;
 	}
@@ -909,7 +909,7 @@ void log_resource(const char *type, const struct device *dev, const struct resou
 bool is_cpu(const struct device *cpu)
 {
 	return cpu->path.type == DEVICE_PATH_APIC &&
-	       cpu->bus->dev->path.type == DEVICE_PATH_CPU_CLUSTER;
+	       cpu->upstream->dev->path.type == DEVICE_PATH_CPU_CLUSTER;
 }
 
 bool is_enabled_cpu(const struct device *cpu)
@@ -929,5 +929,6 @@ bool is_enabled_pci(const struct device *pci)
 
 bool is_pci_dev_on_bus(const struct device *pci, unsigned int bus)
 {
-	return is_pci(pci) && pci->bus->segment_group == 0 && pci->bus->secondary == bus;
+	return is_pci(pci) && pci->upstream->segment_group == 0
+		&& pci->upstream->secondary == bus;
 }

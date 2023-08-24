@@ -610,7 +610,7 @@ void wifi_cnvi_fill_ssdt(const struct device *dev)
 	if (!dev)
 		return;
 
-	path = acpi_device_path(dev->bus->dev);
+	path = acpi_device_path(dev->upstream->dev);
 	if (!path)
 		return;
 

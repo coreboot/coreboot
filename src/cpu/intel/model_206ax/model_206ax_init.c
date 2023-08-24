@@ -223,7 +223,7 @@ static void configure_c_states(void)
 
 static void configure_thermal_target(struct device *dev)
 {
-	struct cpu_intel_model_206ax_config *conf = dev->bus->dev->chip_info;
+	struct cpu_intel_model_206ax_config *conf = dev->upstream->dev->chip_info;
 	msr_t msr;
 
 	if (boot_cpu()) {

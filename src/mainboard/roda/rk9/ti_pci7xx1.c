@@ -19,7 +19,7 @@ static void pci7xx1_enable(struct device *const dev)
 		u16 gcr = pci_read_config16(dev, 0x86);
 		for (fn = 5; fn > 0; --fn) {
 			const struct device *const d =
-				pcidev_path_behind(dev->bus, PCI_DEVFN(slot, fn));
+				pcidev_path_behind(dev->upstream, PCI_DEVFN(slot, fn));
 			if (!d || d->enabled) continue;
 			printk(BIOS_DEBUG,
 				"%s: Hiding function #%d.\n", __func__, fn);

@@ -21,10 +21,10 @@ static void m88e1512_init(struct device *dev)
 	if (config->downshift_cnt) {
 		if (config->downshift_cnt > DOWNSHIFT_CNT_MAX) {
 			printk(BIOS_INFO, "%s: Downshift counter for %s is too large.\n",
-					dev_path(dev->bus->dev), dev->chip_ops->name);
+					dev_path(dev->upstream->dev), dev->chip_ops->name);
 		} else {
 			printk(BIOS_DEBUG, "%s: Enable downshift after %d attempts for %s.\n",
-					dev_path(dev->bus->dev), config->downshift_cnt,
+					dev_path(dev->upstream->dev), config->downshift_cnt,
 					dev->chip_ops->name);
 
 			reg = mdio_read(dev, COPPER_SPEC_CTRL_REG_1);
@@ -42,7 +42,7 @@ static void m88e1512_init(struct device *dev)
 	/* Configure LEDs if requested. */
 	if (config->configure_leds) {
 		printk(BIOS_DEBUG, "%s: Set a customized LED mode for %s.\n",
-				dev_path(dev->bus->dev), dev->chip_ops->name);
+				dev_path(dev->upstream->dev), dev->chip_ops->name);
 
 		/* Select page 3 to access LED function control register. */
 		switch_page(dev, 3);
@@ -57,7 +57,7 @@ static void m88e1512_init(struct device *dev)
 	/* INTn can be routed to LED[2] pin. */
 	if (config->enable_int) {
 		printk(BIOS_DEBUG, "%s: INTn is routed to LED[2] pin %s.\n",
-				dev_path(dev->bus->dev), dev->chip_ops->name);
+				dev_path(dev->upstream->dev), dev->chip_ops->name);
 
 		/* Select page 3 to access LED function control register. */
 		switch_page(dev, 3);
@@ -70,7 +70,7 @@ static void m88e1512_init(struct device *dev)
 	/* Set RGMII output impedance manually. */
 	if (config->force_mos) {
 		printk(BIOS_DEBUG, "%s: Set RGMII driver strength manually for %s.\n",
-				dev_path(dev->bus->dev), dev->chip_ops->name);
+				dev_path(dev->upstream->dev), dev->chip_ops->name);
 
 		/* Select page 2 to access RGMII output impedance calibration override
 		   register. */

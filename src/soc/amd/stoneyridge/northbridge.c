@@ -52,9 +52,9 @@ static void read_resources(struct device *dev)
 
 static void create_vga_resource(struct device *dev)
 {
-	if (!dev->link_list)
+	if (!dev->downstream)
 		return;
-	if (!(dev->link_list->bridge_ctrl & PCI_BRIDGE_CTL_VGA))
+	if (!(dev->downstream->bridge_ctrl & PCI_BRIDGE_CTL_VGA))
 		return;
 
 	printk(BIOS_DEBUG, "VGA: %s has VGA device\n",	dev_path(dev));
@@ -67,8 +67,8 @@ static void set_resources(struct device *dev)
 	/* do we need this? */
 	create_vga_resource(dev);
 
-	if (dev->link_list && dev->link_list->children)
-		assign_resources(dev->link_list);
+	if (dev->downstream && dev->downstream->children)
+		assign_resources(dev->downstream);
 }
 
 static void northbridge_init(struct device *dev)

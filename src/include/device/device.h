@@ -95,8 +95,8 @@ struct bus {
  */
 
 struct device {
-	DEVTREE_CONST struct bus *bus;	/* bus this device is on, for bridge
-					 * devices, it is the up stream bus */
+	DEVTREE_CONST struct bus *upstream;
+	DEVTREE_CONST struct bus *downstream;
 
 	DEVTREE_CONST struct device *sibling;	/* next device on this bus */
 
@@ -123,11 +123,6 @@ struct device {
 
 	/* Base registers for this device. I/O, MEM and Expansion ROM */
 	DEVTREE_CONST struct resource *resource_list;
-
-	/* links are (downstream) buses attached to the device, usually a leaf
-	 * device with no children has 0 buses attached and a bridge has 1 bus
-	 */
-	DEVTREE_CONST struct bus *link_list;
 
 #if !DEVTREE_EARLY
 	struct device_operations *ops;
@@ -458,11 +453,11 @@ static inline DEVTREE_CONST void *config_of(const struct device *dev)
 
 static inline bool is_root_device(const struct device *dev)
 {
-	if (!dev || !dev->bus)
+	if (!dev || !dev->upstream)
 		return false;
 
 	return (dev->path.type == DEVICE_PATH_ROOT) ||
-	       (dev->bus->dev == dev);
+	       (dev->upstream->dev == dev);
 }
 
 void enable_static_device(struct device *dev);

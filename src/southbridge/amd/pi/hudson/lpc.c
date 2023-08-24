@@ -171,8 +171,8 @@ static void hudson_lpc_enable_childrens_resources(struct device *dev)
 	reg_var[0] = pci_read_config16(dev, 0x64);
 
 	struct device *child;
-	if (dev->link_list) {
-		for (child = dev->link_list->children; child; child = child->sibling) {
+	if (dev->downstream) {
+		for (child = dev->downstream->children; child; child = child->sibling) {
 			if (child->enabled && (child->path.type == DEVICE_PATH_PNP)) {
 				struct resource *res;
 				for (res = child->resource_list; res; res = res->next) {

@@ -59,7 +59,7 @@ void uncore_fill_ssdt(const struct device *device)
 	const IIO_UDS *hob = get_iio_uds();
 
 	/* Only add RTxx entries once. */
-	if (device->bus->secondary != 0)
+	if (device->upstream->secondary != 0)
 		return;
 
 	for (int socket = 0, iio = 0; iio < hob->PlatformData.numofIIO; ++socket) {

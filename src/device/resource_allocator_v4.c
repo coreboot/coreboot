@@ -78,7 +78,7 @@ static void print_resource_ranges(const struct device *dev, const struct memrang
 
 static bool dev_has_children(const struct device *dev)
 {
-	const struct bus *bus = dev->link_list;
+	const struct bus *bus = dev->downstream;
 	return bus && bus->children;
 }
 
@@ -122,7 +122,7 @@ static void update_bridge_resource(const struct device *bridge, struct resource 
 	resource_t base;
 	const unsigned long type_mask = IORESOURCE_TYPE_MASK | IORESOURCE_PREFETCH;
 	const unsigned long type_match = bridge_res->flags & type_mask;
-	struct bus *bus = bridge->link_list;
+	struct bus *bus = bridge->downstream;
 
 	child_res = NULL;
 
@@ -208,7 +208,7 @@ static void compute_bridge_resources(const struct device *bridge, unsigned long 
 {
 	const struct device *child;
 	struct resource *res;
-	struct bus *bus = bridge->link_list;
+	struct bus *bus = bridge->downstream;
 	const unsigned long type_mask = IORESOURCE_TYPE_MASK | IORESOURCE_PREFETCH;
 
 	for (res = bridge->resource_list; res; res = res->next) {
@@ -256,10 +256,10 @@ static void compute_domain_resources(const struct device *domain)
 	const struct device *child;
 	const int print_depth = 1;
 
-	if (domain->link_list == NULL)
+	if (domain->downstream == NULL)
 		return;
 
-	for (child = domain->link_list->children; child; child = child->sibling) {
+	for (child = domain->downstream->children; child; child = child->sibling) {
 
 		/* Skip if this is not a bridge or has no children under it. */
 		if (!dev_has_children(child))
@@ -299,7 +299,7 @@ static void avoid_fixed_resources(struct memranges *ranges, const struct device 
 		memranges_create_hole(ranges, res->base, res->size);
 	}
 
-	bus = dev->link_list;
+	bus = dev->downstream;
 	if (bus == NULL)
 		return;
 
@@ -399,7 +399,7 @@ static void allocate_toplevel_resources(const struct device *const domain,
 
 	setup_resource_ranges(domain, type, &ranges);
 
-	while ((dev = largest_resource(domain->link_list, &res, type_mask, type))) {
+	while ((dev = largest_resource(domain->downstream, &res, type_mask, type))) {
 
 		if (!res->size)
 			continue;
@@ -441,7 +441,7 @@ static void allocate_bridge_resources(const struct device *bridge)
 {
 	const unsigned long type_mask =
 		IORESOURCE_TYPE_MASK | IORESOURCE_PREFETCH | IORESOURCE_FIXED;
-	struct bus *const bus = bridge->link_list;
+	struct bus *const bus = bridge->downstream;
 	struct resource *res;
 	struct device *child;
 
@@ -496,7 +496,7 @@ static void allocate_domain_resources(const struct device *domain)
 	allocate_toplevel_resources(domain, IORESOURCE_MEM);
 
 	struct device *child;
-	for (child = domain->link_list->children; child; child = child->sibling) {
+	for (child = domain->downstream->children; child; child = child->sibling) {
 		if (!dev_has_children(child))
 			continue;
 
@@ -553,10 +553,10 @@ void allocate_resources(const struct device *root)
 {
 	const struct device *child;
 
-	if ((root == NULL) || (root->link_list == NULL))
+	if ((root == NULL) || (root->downstream == NULL))
 		return;
 
-	for (child = root->link_list->children; child; child = child->sibling) {
+	for (child = root->downstream->children; child; child = child->sibling) {
 
 		if (child->path.type != DEVICE_PATH_DOMAIN)
 			continue;

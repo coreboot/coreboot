@@ -275,7 +275,7 @@ static u8 dnv_get_int_line(struct device *irq_dev)
 
 	/* Swizzle this device if needed */
 	config = targ_dev->chip_info;
-	parent_bdf = targ_dev->path.pci.devfn | targ_dev->bus->secondary << 8;
+	parent_bdf = targ_dev->path.pci.devfn | targ_dev->upstream->secondary << 8;
 	if (is_dnv_swizzled_rp(parent_bdf) && irq_dev != targ_dev) {
 		swiz_int_pin = dnv_get_swizzled_pin(config, parent_bdf, new_int_pin);
 		printk(BIOS_DEBUG, "%s: dnv swizzle %s from %c to %c\n", __func__,
@@ -387,7 +387,7 @@ static void pch_pirq_init(struct device *dev)
 
 		int_line = dnv_get_int_line(irq_dev);
 		printk(BIOS_DEBUG, "%s: %02x:%02x.%d pin %d int line %d\n", __func__,
-		       irq_dev->bus->secondary, devfn >> 3, devfn & 0x7, int_pin, int_line);
+		       irq_dev->upstream->secondary, devfn >> 3, devfn & 0x7, int_pin, int_line);
 
 		pci_write_config8(irq_dev, PCI_INTERRUPT_LINE, int_line);
 	}

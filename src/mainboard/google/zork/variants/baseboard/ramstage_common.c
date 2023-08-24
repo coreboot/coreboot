@@ -115,7 +115,7 @@ void variant_touchscreen_update(void)
 	if (variant_uses_v3_6_schematics())
 		return;
 
-	while ((child = dev_bus_each_child(mmio_dev->link_list, child)) != NULL) {
+	while ((child = dev_bus_each_child(mmio_dev->downstream, child)) != NULL) {
 		struct drivers_i2c_generic_config *cfg;
 
 		if (child->chip_ops == &drivers_i2c_generic_ops) {

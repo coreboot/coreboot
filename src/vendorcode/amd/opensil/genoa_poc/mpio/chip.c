@@ -129,7 +129,7 @@ static void per_device_config(MPIOCLASS_INPUT_BLK *mpio_data, struct device *dev
 			      struct vendorcode_amd_opensil_genoa_poc_mpio_config *const config)
 {
 	static uint32_t slot_num;
-	const uint32_t domain = dev->bus->dev->path.domain.domain;
+	const uint32_t domain = dev->upstream->dev->path.domain.domain;
 	const uint32_t devfn = dev->path.pci.devfn;
 	printk(BIOS_DEBUG, "Setting MPIO port for domain 0x%x, PCI %d:%d\n",
 	       domain, PCI_SLOT(devfn), PCI_FUNC(devfn));
@@ -189,6 +189,6 @@ void configure_mpio(void)
 	/* Find all devices with this chip that are directly below the chip */
 	for (struct device *dev = &dev_root; dev; dev = dev->next)
 		if (dev->chip_ops == &vendorcode_amd_opensil_genoa_poc_mpio_ops &&
-		    dev->chip_info != dev->bus->dev->chip_info)
-			per_device_config(mpio_data, dev->bus->dev, dev->chip_info);
+		    dev->chip_info != dev->upstream->dev->chip_info)
+			per_device_config(mpio_data, dev->upstream->dev, dev->chip_info);
 }

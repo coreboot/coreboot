@@ -34,8 +34,8 @@ static void i440bx_domain_read_resources(struct device *dev)
 
 	pci_domain_read_resources(dev);
 
-	pci_tolm = find_pci_tolm(dev->link_list);
-	mc_dev = dev->link_list->children;
+	pci_tolm = find_pci_tolm(dev->downstream);
+	mc_dev = dev->downstream->children;
 	if (mc_dev) {
 		unsigned long tomk, tolmk;
 		int idx;

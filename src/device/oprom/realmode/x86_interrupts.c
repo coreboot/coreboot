@@ -138,7 +138,7 @@ int int1a_handler(void)
 			X86_EAX |= PCIBIOS_SUCCESSFUL;
 			// busnum is an unsigned char;
 			// devfn is an int, so we mask it off.
-			busdevfn = (dev->bus->secondary << 8)
+			busdevfn = (dev->upstream->secondary << 8)
 			    | (dev->path.pci.devfn & 0xff);
 			printk(BIOS_DEBUG, "0x%x: return 0x%x\n", func, busdevfn);
 			X86_EBX = busdevfn;

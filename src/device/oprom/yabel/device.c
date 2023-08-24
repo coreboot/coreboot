@@ -65,7 +65,7 @@ biosemu_dev_get_addr_info(void)
 {
 	int taa_index = 0;
 	struct resource *r;
-	u8 bus = bios_device.dev->bus->secondary;
+	u8 bus = bios_device.dev->upstream->secondary;
 	u16 devfn = bios_device.dev->path.pci.devfn;
 
 	bios_device.bus =  bus;

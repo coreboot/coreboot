@@ -19,7 +19,7 @@ static void usb4_pcie_acpi_fill_ssdt(const struct device *dev)
 	int port_id;
 
 	/* Get parent PCI device */
-	parent = dev->bus->dev;
+	parent = dev->upstream->dev;
 	if (!parent) {
 		printk(BIOS_ERR, "%s: Unable to find parent device\n", __func__);
 		return;

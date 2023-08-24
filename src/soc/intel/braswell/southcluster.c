@@ -117,7 +117,7 @@ static void write_pci_config_irqs(void)
 			continue;
 
 		current_bdf = irq_dev->path.pci.devfn |
-			irq_dev->bus->secondary << 8;
+			irq_dev->upstream->secondary << 8;
 
 		/*
 		 * Step 1: Get the INT_PIN and device structure to look for
@@ -132,7 +132,7 @@ static void write_pci_config_irqs(void)
 		original_int_pin = pci_read_config8(irq_dev, PCI_INTERRUPT_PIN);
 
 		parent_bdf = targ_dev->path.pci.devfn
-			| targ_dev->bus->secondary << 8;
+			| targ_dev->upstream->secondary << 8;
 		device_num = PCI_SLOT(parent_bdf);
 
 		if (ir->pcidev[device_num] == 0) {

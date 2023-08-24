@@ -225,7 +225,7 @@ static unsigned long acpi_create_dmar_ds_pci_br_for_port(unsigned long current,
 							 uint32_t pcie_seg,
 							 bool is_atsr, bool *first)
 {
-	const uint32_t bus = bridge_dev->bus->secondary;
+	const uint32_t bus = bridge_dev->upstream->secondary;
 	const uint32_t dev = PCI_SLOT(bridge_dev->path.pci.devfn);
 	const uint32_t func = PCI_FUNC(bridge_dev->path.pci.devfn);
 

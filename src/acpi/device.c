@@ -83,8 +83,8 @@ const char *acpi_device_name(const struct device *dev)
 	}
 
 	/* Walk up the tree to find if any parent can identify this device */
-	while (pdev->bus) {
-		pdev = pdev->bus->dev;
+	while (pdev->upstream) {
+		pdev = pdev->upstream->dev;
 		if (!pdev)
 			break;
 		if (is_root_device(pdev))
@@ -147,8 +147,8 @@ static ssize_t acpi_device_path_fill(const struct device *dev, char *buf,
 		return cur;
 
 	/* Walk up the tree to the root device */
-	if (!is_root_device(dev) && dev->bus && dev->bus->dev)
-		next = acpi_device_path_fill(dev->bus->dev, buf, buf_len, cur);
+	if (!is_root_device(dev) && dev->upstream && dev->upstream->dev)
+		next = acpi_device_path_fill(dev->upstream->dev, buf, buf_len, cur);
 	if (next < 0)
 		return next;
 
@@ -182,10 +182,10 @@ const char *acpi_device_scope(const struct device *dev)
 {
 	static char buf[DEVICE_PATH_MAX] = {};
 
-	if (!dev || !dev->bus || !dev->bus->dev)
+	if (!dev || !dev->upstream || !dev->upstream->dev)
 		return NULL;
 
-	if (acpi_device_path_fill(dev->bus->dev, buf, sizeof(buf), 0) <= 0)
+	if (acpi_device_path_fill(dev->upstream->dev, buf, sizeof(buf), 0) <= 0)
 		return NULL;
 
 	return buf;

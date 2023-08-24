@@ -186,7 +186,7 @@ static unsigned long add_ivhd_dev_entry(struct device *parent, struct device *de
 		ivrs_ivhd_generic_t *ivhd_entry = (ivrs_ivhd_generic_t *)*current;
 
 		ivhd_entry->type = type;
-		ivhd_entry->dev_id = dev->path.pci.devfn | (dev->bus->secondary << 8);
+		ivhd_entry->dev_id = dev->path.pci.devfn | (dev->upstream->secondary << 8);
 		ivhd_entry->dte_setting = data;
 		*current += sizeof(ivrs_ivhd_generic_t);
 	} else if (type == IVHD_DEV_8_BYTE_ALIAS_SELECT) {
@@ -195,12 +195,12 @@ static unsigned long add_ivhd_dev_entry(struct device *parent, struct device *de
 		ivrs_ivhd_alias_t *ivhd_entry = (ivrs_ivhd_alias_t *)*current;
 
 		ivhd_entry->type = type;
-		ivhd_entry->dev_id = dev->path.pci.devfn | (dev->bus->secondary << 8);
+		ivhd_entry->dev_id = dev->path.pci.devfn | (dev->upstream->secondary << 8);
 		ivhd_entry->dte_setting = data;
 		ivhd_entry->reserved1 = 0;
 		ivhd_entry->reserved2 = 0;
 		ivhd_entry->source_dev_id = parent->path.pci.devfn |
-					    (parent->bus->secondary << 8);
+					    (parent->upstream->secondary << 8);
 		*current += sizeof(ivrs_ivhd_alias_t);
 	}
 
@@ -243,7 +243,7 @@ static void add_ivhd_device_entries(struct device *parent, struct device *dev,
 
 	if (dev->path.type == DEVICE_PATH_PCI) {
 
-		if ((dev->bus->secondary == 0x0) &&
+		if ((dev->upstream->secondary == 0x0) &&
 		    (dev->path.pci.devfn == 0x0))
 			*root_level = depth;
 
@@ -253,8 +253,8 @@ static void add_ivhd_device_entries(struct device *parent, struct device *dev,
 		}
 	}
 
-	if (dev->link_list) {
-		for (sibling = dev->link_list->children; sibling; sibling = sibling->sibling)
+	if (dev->downstream) {
+		for (sibling = dev->downstream->children; sibling; sibling = sibling->sibling)
 			add_ivhd_device_entries(dev, sibling, depth + 1, depth, root_level,
 						current, ivhd_length);
 	}
@@ -290,12 +290,12 @@ static unsigned long acpi_fill_ivrs11(unsigned long current, acpi_ivrs_t *ivrs_a
 	ivhd_11->flags = ivrs_agesa->ivhd.flags & 0x3f;
 	ivhd_11->length = sizeof(struct acpi_ivrs_ivhd_11);
 	/* BDF <bus>:00.2 */
-	ivhd_11->device_id = 0x02 | (nb_dev->bus->secondary << 8);
+	ivhd_11->device_id = 0x02 | (nb_dev->upstream->secondary << 8);
 	/* PCI Capability block 0x40 (type 0xf, "Secure device") */
 	ivhd_11->capability_offset = 0x40;
 	ivhd_11->iommu_base_low = ivrs_agesa->ivhd.iommu_base_low;
 	ivhd_11->iommu_base_high = ivrs_agesa->ivhd.iommu_base_high;
-	ivhd_11->pci_segment_group = nb_dev->bus->segment_group;
+	ivhd_11->pci_segment_group = nb_dev->upstream->segment_group;
 	ivhd_11->iommu_info = ivrs_agesa->ivhd.iommu_info;
 	ivhd_11->iommu_attributes.perf_counters =
 		(IOMMU_MMIO32(ivhd_11->iommu_base_low + 0x4000) >> 7) & 0xf;
@@ -358,12 +358,12 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 		ivrs->ivhd.flags = ivrs_agesa->ivhd.flags;
 		ivrs->ivhd.length = sizeof(struct acpi_ivrs_ivhd);
 		/* BDF <bus>:00.2 */
-		ivrs->ivhd.device_id = 0x02 | (nb_dev->bus->secondary << 8);
+		ivrs->ivhd.device_id = 0x02 | (nb_dev->upstream->secondary << 8);
 		/* PCI Capability block 0x40 (type 0xf, "Secure device") */
 		ivrs->ivhd.capability_offset = 0x40;
 		ivrs->ivhd.iommu_base_low = ivrs_agesa->ivhd.iommu_base_low;
 		ivrs->ivhd.iommu_base_high = ivrs_agesa->ivhd.iommu_base_high;
-		ivrs->ivhd.pci_segment_group = nb_dev->bus->segment_group;
+		ivrs->ivhd.pci_segment_group = nb_dev->upstream->segment_group;
 		ivrs->ivhd.iommu_info = ivrs_agesa->ivhd.iommu_info;
 		ivrs->ivhd.iommu_feature_info = ivrs_agesa->ivhd.iommu_feature_info;
 		/* Enable EFR if supported */

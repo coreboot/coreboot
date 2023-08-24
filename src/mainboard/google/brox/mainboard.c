@@ -106,7 +106,7 @@ static void mainboard_dev_init(struct device *dev)
 static void mainboard_generate_wwan_shutdown(const struct device *dev)
 {
 	const struct drivers_wwan_fm_config *config = config_of(dev);
-	const struct device *parent = dev->bus->dev;
+	const struct device *parent = dev->upstream->dev;
 
 	if (!config)
 		return;
@@ -126,7 +126,7 @@ static void mainboard_generate_wwan_shutdown(const struct device *dev)
 static void mainboard_generate_dgpu_shutdown(const struct device *dev)
 {
 	/* Call `_OFF` from the Power Resource associated with the dGPU's PEG port. */
-	const struct device *parent = dev->bus->dev;
+	const struct device *parent = dev->upstream->dev;
 
 	if (parent)
 		acpigen_emit_namestring(acpi_device_path_join(parent, "PGPR._OFF"));

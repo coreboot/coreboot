@@ -82,7 +82,7 @@ static void mainboard_generate_s0ix_hook(void)
 static void mainboard_generate_wwan_shutdown(const struct device *dev)
 {
 	const struct drivers_wwan_fm_config *config = config_of(dev);
-	const struct device *parent = dev->bus->dev;
+	const struct device *parent = dev->upstream->dev;
 
 	if (!config)
 		return;

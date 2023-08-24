@@ -375,7 +375,7 @@ handleInt1a(void)
 		} else if (CONFIG(YABEL_PCI_ACCESS_OTHER_DEVICES)) {
 			dev = dev_find_device(M.x86.R_DX, M.x86.R_CX, 0);
 			if (dev != NULL) {
-				M.x86.R_BH = dev->bus->secondary;
+				M.x86.R_BH = dev->upstream->secondary;
 				M.x86.R_BL = dev->path.pci.devfn;
 				DEBUG_PRINTF_INTR
 				    ("%s(): function %x: PCI Find Device --> 0x%04x\n",

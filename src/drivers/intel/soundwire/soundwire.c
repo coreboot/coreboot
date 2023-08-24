@@ -21,7 +21,7 @@ static bool link_enabled(const struct device *dev, unsigned int link)
 {
 	struct device *child;
 
-	for (child = dev->link_list->children; child; child = child->sibling) {
+	for (child = dev->downstream->children; child; child = child->sibling) {
 		if (child->enabled && child->path.type == DEVICE_PATH_GENERIC &&
 		    child->path.generic.id == link)
 			return true;

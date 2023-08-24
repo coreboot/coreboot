@@ -384,7 +384,7 @@ void pnp_enable_devices(struct device *base_dev, struct device_operations *ops,
 			continue;
 
 		path.pnp.device = info[i].function;
-		dev = alloc_find_dev(base_dev->bus, &path);
+		dev = alloc_find_dev(base_dev->upstream, &path);
 
 		/* Don't initialize a device multiple times. */
 		if (dev->ops)

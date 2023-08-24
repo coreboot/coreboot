@@ -760,7 +760,7 @@ static void fill_fsps_pci_ssid_params(FSP_S_CONFIG *s_cfg,
 
 	for (dev = all_devices; dev; dev = dev->next) {
 		if (!(is_dev_enabled(dev) && dev->path.type == DEVICE_PATH_PCI &&
-		    dev->bus->secondary == 0))
+		    dev->upstream->secondary == 0))
 			continue;
 
 		if (dev->path.pci.devfn == PCI_DEVFN_ROOT) {

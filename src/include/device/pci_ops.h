@@ -12,8 +12,8 @@ void __noreturn pcidev_die(void);
 
 static __always_inline pci_devfn_t pcidev_bdf(const struct device *dev)
 {
-	return (dev->path.pci.devfn << 12) | (dev->bus->secondary << 20) |
-			(dev->bus->segment_group << 28);
+	return (dev->path.pci.devfn << 12) | (dev->upstream->secondary << 20) |
+		(dev->upstream->segment_group << 28);
 }
 
 static __always_inline pci_devfn_t pcidev_assert(const struct device *dev)

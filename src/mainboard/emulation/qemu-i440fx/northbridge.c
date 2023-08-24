@@ -39,7 +39,7 @@ static void qemu_reserve_ports(struct device *dev, unsigned int idx,
 
 static void cpu_pci_domain_set_resources(struct device *dev)
 {
-	assign_resources(dev->link_list);
+	assign_resources(dev->downstream);
 }
 
 static void cpu_pci_domain_read_resources(struct device *dev)

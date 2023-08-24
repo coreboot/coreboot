@@ -34,12 +34,12 @@ void amd_pci_domain_scan_bus(struct device *domain)
 	limit = MIN(limit, PCI_BUSES_PER_SEGMENT_GROUP - 1);
 
 	/* Set bus first number of PCI root */
-	domain->link_list->secondary = bus;
+	domain->downstream->secondary = bus;
 	/* subordinate needs to be the same as secondary before pci_host_bridge_scan_bus call. */
-	domain->link_list->subordinate = bus;
+	domain->downstream->subordinate = bus;
 	/* Tell allocator about maximum PCI bus number in domain */
-	domain->link_list->max_subordinate = limit;
-	domain->link_list->segment_group = segment_group;
+	domain->downstream->max_subordinate = limit;
+	domain->downstream->segment_group = segment_group;
 
 	pci_host_bridge_scan_bus(domain);
 }
@@ -249,12 +249,12 @@ void amd_pci_domain_fill_ssdt(const struct device *domain)
 
 	/* PCI bus number range in domain */
 	printk(BIOS_DEBUG, "%s _CRS: adding busses [%x-%x] in segment group %x\n",
-	       acpi_device_name(domain), domain->link_list->secondary,
-	       domain->link_list->max_subordinate, domain->link_list->segment_group);
-	acpigen_resource_producer_bus_number(domain->link_list->secondary,
-					     domain->link_list->max_subordinate);
+	       acpi_device_name(domain), domain->downstream->secondary,
+	       domain->downstream->max_subordinate, domain->downstream->segment_group);
+	acpigen_resource_producer_bus_number(domain->downstream->secondary,
+					     domain->downstream->max_subordinate);
 
-	if (domain->link_list->secondary == 0 && domain->link_list->segment_group == 0) {
+	if (domain->downstream->secondary == 0 && domain->downstream->segment_group == 0) {
 		/* ACPI 6.4.2.5 I/O Port Descriptor */
 		acpigen_write_io16(PCI_IO_CONFIG_INDEX, PCI_IO_CONFIG_LAST_PORT, 1,
 				   PCI_IO_CONFIG_PORT_COUNT, 1);
@@ -282,7 +282,7 @@ void amd_pci_domain_fill_ssdt(const struct device *domain)
 		}
 	}
 
-	if (domain->link_list->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
+	if (domain->downstream->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
 		printk(BIOS_DEBUG, "%s _CRS: adding VGA resource\n", acpi_device_name(domain));
 		acpigen_resource_producer_mmio(VGA_MMIO_BASE, VGA_MMIO_LIMIT,
 			MEM_RSRC_FLAG_MEM_READ_WRITE | MEM_RSRC_FLAG_MEM_ATTR_CACHE);
@@ -290,9 +290,8 @@ void amd_pci_domain_fill_ssdt(const struct device *domain)
 
 	acpigen_write_resourcetemplate_footer();
 
-	acpigen_write_SEG(domain->link_list->segment_group);
-	acpigen_write_BBN(domain->link_list->secondary);
-
+	acpigen_write_SEG(domain->downstream->segment_group);
+	acpigen_write_BBN(domain->downstream->secondary);
 	/* Scope */
 	acpigen_pop_len();
 }

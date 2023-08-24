@@ -25,7 +25,7 @@ void variant_devtree_update(void)
 		}
 	} while (mmio_dev->path.mmio.addr != APU_I2C0_BASE);
 
-	while ((child = dev_bus_each_child(mmio_dev->link_list, child)) != NULL) {
+	while ((child = dev_bus_each_child(mmio_dev->downstream, child)) != NULL) {
 		if (child->path.type != DEVICE_PATH_I2C)
 			continue;
 		if (child->path.i2c.device != RT58_I2C_ADDRESS)

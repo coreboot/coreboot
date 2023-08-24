@@ -107,11 +107,11 @@ void pcix_scan_bridge(struct device *dev)
 	sstatus = pci_read_config16(dev, pos + PCI_X_SEC_STATUS);
 
 	if (PCI_X_SSTATUS_MFREQ(sstatus) != PCI_X_SSTATUS_CONVENTIONAL_PCI)
-		pcix_tune_bus(dev->link_list);
+		pcix_tune_bus(dev->downstream);
 
 	/* Print the PCI-X bus speed. */
-	printk(BIOS_DEBUG, "PCI: %02x:%02x: %s\n", dev->link_list->segment_group,
-	       dev->link_list->secondary, pcix_speed(sstatus));
+	printk(BIOS_DEBUG, "PCI: %02x:%02x: %s\n", dev->downstream->segment_group,
+	       dev->downstream->secondary, pcix_speed(sstatus));
 }
 
 /** Default device operations for PCI-X bridges */

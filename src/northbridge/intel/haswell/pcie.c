@@ -20,8 +20,8 @@ static const char *pcie_acpi_name(const struct device *dev)
 	if (dev->path.type != DEVICE_PATH_PCI)
 		return NULL;
 
-	assert(dev->bus);
-	if (dev->bus->secondary == 0)
+	assert(dev->upstream);
+	if (dev->upstream->secondary == 0)
 		switch (dev->path.pci.devfn) {
 		case PCI_DEVFN(1, 0):
 			return "PEGP";
@@ -31,12 +31,12 @@ static const char *pcie_acpi_name(const struct device *dev)
 			return "PEG2";
 		};
 
-	struct device *const port = dev->bus->dev;
+	struct device *const port = dev->upstream->dev;
 	assert(port);
-	assert(port->bus);
+	assert(port->upstream);
 
 	if (dev->path.pci.devfn == PCI_DEVFN(0, 0) &&
-	    port->bus->secondary == 0 &&
+	    port->upstream->secondary == 0 &&
 	    (port->path.pci.devfn == PCI_DEVFN(1, 0) ||
 	    port->path.pci.devfn == PCI_DEVFN(1, 1) ||
 	    port->path.pci.devfn == PCI_DEVFN(1, 2)))

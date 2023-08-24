@@ -144,7 +144,7 @@ static enum acpi_device_sleep_states get_min_sleep_state(
 
 	case DEVICE_PATH_PCI:
 		/* skip external buses*/
-		if ((dev->bus->secondary != 0) || (!states_arr))
+		if ((dev->upstream->secondary != 0) || (!states_arr))
 			return ACPI_DEVICE_SLEEP_NONE;
 		for (size_t i = 0; i < size; i++)
 			if (states_arr[i].pci_dev == dev->path.pci.devfn)

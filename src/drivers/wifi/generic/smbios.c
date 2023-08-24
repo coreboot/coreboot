@@ -38,5 +38,5 @@ int smbios_write_wifi_pcie(struct device *dev, int *handle, unsigned long *curre
 
 int smbios_write_wifi_cnvi(struct device *dev, int *handle, unsigned long *current)
 {
-	return smbios_write_wifi_pcie(dev->bus->dev, handle, current);
+	return smbios_write_wifi_pcie(dev->upstream->dev, handle, current);
 }

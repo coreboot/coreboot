@@ -51,7 +51,7 @@ void variant_mainboard_final(void)
 
 		/* Disable clock outputs 0-3 (CLKOUT) for upstream XIO2001 PCIe to PCI
 		   Bridge. */
-		struct device *parent = dev->bus->dev;
+		struct device *parent = dev->upstream->dev;
 		if (parent && parent->device == PCI_DID_TI_XIO2001)
 			pci_write_config8(parent, 0xd8, 0x0f);
 	}
@@ -60,7 +60,7 @@ void variant_mainboard_final(void)
 	   mainboard. */
 	dev = dev_find_device(PCI_VID_SIEMENS, 0x403f, 0);
 	if (dev) {
-		struct device *parent = dev->bus->dev;
+		struct device *parent = dev->upstream->dev;
 		if (parent && parent->device == PCI_DID_TI_XIO2001)
 			pci_write_config8(parent, 0xd8, 0x3e);
 	}

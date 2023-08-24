@@ -449,7 +449,7 @@ static void configure_c_states(void)
 static void configure_thermal_target(struct device *dev)
 {
 	/* Make sure your devicetree has the cpu_cluster below chip cpu/intel/haswell! */
-	struct cpu_intel_haswell_config *conf = dev->bus->dev->chip_info;
+	struct cpu_intel_haswell_config *conf = dev->upstream->dev->chip_info;
 	msr_t msr;
 
 	/* Set TCC activation offset if supported */

@@ -226,12 +226,12 @@ static void ecam0_init(struct device *dev)
 	 * Search for missing devices on BUS 1.
 	 * Only required for ARI capability programming.
 	 */
-	ecam0_fix_missing_devices(bridge->link_list);
+	ecam0_fix_missing_devices(bridge->downstream);
 
 	/* Program secure ARI capability on bus 1 */
 	child_last = NULL;
 	for (i = 0; i <= PCI_DEVFN(0x1f, 7); i++) {
-		child = pcidev_path_behind(bridge->link_list, i);
+		child = pcidev_path_behind(bridge->downstream, i);
 		if (!child || !child->enabled)
 			continue;
 
@@ -250,7 +250,7 @@ static void ecam0_init(struct device *dev)
 	/* Program insecure ARI capability on bus 1 */
 	child_last = NULL;
 	for (i = 0; i <= PCI_DEVFN(0x1f, 7); i++) {
-		child = pcidev_path_behind(bridge->link_list, i);
+		child = pcidev_path_behind(bridge->downstream, i);
 		if (!child)
 			continue;
 		config = child->chip_info;
@@ -281,7 +281,7 @@ static void ecam0_init(struct device *dev)
 
 	/* Enable / disable devices and functions on bus 1 */
 	for (i = 0; i <= PCI_DEVFN(0x1f, 7); i++) {
-		child = pcidev_path_behind(bridge->link_list, i);
+		child = pcidev_path_behind(bridge->downstream, i);
 		config = child ? child->chip_info : NULL;
 		if (child && child->enabled &&
 		    ((config && !config->secure) || !config))
@@ -293,7 +293,7 @@ static void ecam0_init(struct device *dev)
 	/* Apply IRQ on PCI devices */
 	/* UUA */
 	for (i = 0; i < 4; i++) {
-		child = pcidev_path_behind(bridge->link_list,
+		child = pcidev_path_behind(bridge->downstream,
 				      PCI_DEVFN(8, i));
 		if (!child)
 			continue;

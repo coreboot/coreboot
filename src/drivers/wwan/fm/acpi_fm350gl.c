@@ -317,7 +317,7 @@ static void wwan_fm350gl_acpi_gpio_events(const struct device *dev)
 static void wwan_fm350gl_acpi_fill_ssdt(const struct device *dev)
 {
 	const struct drivers_wwan_fm_config *config = config_of(dev);
-	const struct device *parent = dev->bus->dev;
+	const struct device *parent = dev->upstream->dev;
 	const char *scope = acpi_device_path(parent);
 	const struct soc_intel_common_block_pcie_rtd3_config *rtd3_config;
 

@@ -284,11 +284,11 @@ void smp_write_intsrc_pci_bridge(struct mp_config_table *mc,
 
 	unsigned char dstirq_x[4];
 
-	if (!dev->link_list)
+	if (!dev->downstream)
 		return;
 
-	child = dev->link_list->children;
-	srcbus = dev->link_list->secondary;
+	child = dev->downstream->children;
+	srcbus = dev->downstream->secondary;
 
 	while (child) {
 		if (child->path.type != DEVICE_PATH_PCI)
@@ -476,7 +476,7 @@ void mptable_write_buses(struct mp_config_table *mc, int *max_pci_bus,
 	memset(buses, 0, sizeof(buses));
 
 	for (dev = all_devices; dev; dev = dev->next) {
-		struct bus *bus = dev->link_list;
+		struct bus *bus = dev->downstream;
 		if (!bus)
 			continue;
 		if (bus->secondary > 255) {

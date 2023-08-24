@@ -19,7 +19,7 @@ static void *smp_write_config_table(void *v)
 
 	firewire = dev_find_device(0x104c, 0x8023, 0);
 	if (firewire) {
-		firewire_bus = firewire->bus->secondary;
+		firewire_bus = firewire->upstream->secondary;
 		printk(BIOS_SPEW, "Firewire device is on bus %x\n",
 				firewire_bus);
 	}
@@ -30,7 +30,7 @@ static void *smp_write_config_table(void *v)
 	if (!riser)
 		riser = dev_find_device(0x3388, 0x0022, 0);
 	if (riser) {
-		riser_bus = riser->link_list->secondary;
+		riser_bus = riser->downstream->secondary;
 		printk(BIOS_SPEW, "Riser bus is %x\n", riser_bus);
 	}
 

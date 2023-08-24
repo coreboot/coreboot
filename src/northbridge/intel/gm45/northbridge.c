@@ -122,7 +122,7 @@ static void mch_domain_set_resources(struct device *dev)
 			report_resource_stored(dev, resource, "");
 	}
 
-	assign_resources(dev->link_list);
+	assign_resources(dev->downstream);
 }
 
 static void mch_domain_init(struct device *dev)

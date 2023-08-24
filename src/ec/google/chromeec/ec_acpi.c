@@ -273,7 +273,7 @@ void google_chromeec_fill_ssdt_generator(const struct device *dev)
 	path.type = DEVICE_PATH_GENERIC;
 	path.generic.id = 0;
 	path.generic.subid = 0;
-	ec = alloc_find_dev(dev->bus, &path);
+	ec = alloc_find_dev(dev->upstream, &path);
 	ec->ops = &ec_ops;
 
 	if (CONFIG(DRIVERS_INTEL_DPTF))

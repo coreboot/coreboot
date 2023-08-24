@@ -145,8 +145,8 @@ static void pch_pcie_pm_early(struct device *dev)
 	 * must be a static device from devicetree.cb.
 	 * If one is found assume it's an integrated device and not a PCIe slot.
 	 */
-	if (dev->link_list)
-		child = pcidev_path_behind(dev->link_list, PCI_DEVFN(0, 0));
+	if (dev->downstream)
+		child = pcidev_path_behind(dev->downstream, PCI_DEVFN(0, 0));
 
 	/* Set slot power limit as configured above */
 	reg32 = pci_read_config32(dev, cap + PCI_EXP_SLTCAP);

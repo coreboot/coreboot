@@ -42,7 +42,7 @@ static uint8_t is_mac_adr_valid(uint8_t mac[MAC_ADDR_LEN])
  */
 enum cb_err mainboard_get_mac_address(struct device *dev, uint8_t mac[MAC_ADDR_LEN])
 {
-	struct bus *parent = dev->bus;
+	struct bus *parent = dev->upstream;
 	uint8_t buf[16], mapping[16], i = 0, chain_len = 0;
 
 	memset(buf, 0, sizeof(buf));
@@ -51,10 +51,10 @@ enum cb_err mainboard_get_mac_address(struct device *dev, uint8_t mac[MAC_ADDR_L
 	/* The first entry in the tree is the device itself. */
 	buf[0] = dev->path.pci.devfn;
 	chain_len = 1;
-	for (i = 1; i < MAX_PATH_DEPTH && parent->dev->bus->subordinate; i++) {
+	for (i = 1; i < MAX_PATH_DEPTH && parent->dev->upstream->subordinate; i++) {
 		buf[i] = parent->dev->path.pci.devfn;
 		chain_len++;
-		parent = parent->dev->bus;
+		parent = parent->dev->upstream;
 	}
 	if (i == MAX_PATH_DEPTH) {
 		/* The path is deeper than MAX_PATH_DEPTH devices, error. */

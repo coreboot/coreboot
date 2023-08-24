@@ -1229,7 +1229,7 @@ static void pass1(FILE *fil, FILE *head, struct device *ptr, struct device *next
 	else
 		fprintf(fil, "\t.ops = NULL,\n");
 	fprintf(fil, "#endif\n");
-	fprintf(fil, "\t.bus = &%s_bus,\n", ptr->parent->dev->name);
+	fprintf(fil, "\t.upstream = &%s_bus,\n", ptr->parent->dev->name);
 	fprintf(fil, "\t.path = {");
 	fprintf(fil, ptr->path, ptr->path_a, ptr->path_b);
 	fprintf(fil, "},\n");
@@ -1250,10 +1250,10 @@ static void pass1(FILE *fil, FILE *head, struct device *ptr, struct device *next
 			ptr->name);
 	}
 	if (has_children)
-		fprintf(fil, "\t.link_list = &%s_bus,\n",
+		fprintf(fil, "\t.downstream = &%s_bus,\n",
 			ptr->name);
 	else
-		fprintf(fil, "\t.link_list = NULL,\n");
+		fprintf(fil, "\t.downstream = NULL,\n");
 	if (ptr->sibling)
 		fprintf(fil, "\t.sibling = &%s,\n", ptr->sibling->name);
 	else

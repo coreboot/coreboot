@@ -101,7 +101,7 @@ static struct device *__alloc_dev(struct bus *parent, struct device_path *path)
 	dev->enabled = 1;
 
 	/* Add the new device to the list of children of the bus. */
-	dev->bus = parent;
+	dev->upstream = parent;
 	if (child)
 		child->sibling = dev;
 	else
@@ -139,13 +139,13 @@ DECLARE_SPIN_LOCK(bus_lock)
  */
 static struct bus *__alloc_bus(struct device *parent)
 {
-	if (parent->link_list)
-		return parent->link_list;
+	if (parent->downstream)
+		return parent->downstream;
 
 	struct bus *bus = calloc(1, sizeof(struct bus));
 	if (!bus)
 		die("Couldn't allocate downstream bus!\n");
-	parent->link_list = bus;
+	parent->downstream = bus;
 	bus->dev = parent;
 
 	return bus;
@@ -205,8 +205,8 @@ static void read_resources(struct bus *bus)
 		curdev->ops->read_resources(curdev);
 
 		/* Read in the resources behind the current device's links. */
-		if (curdev->link_list)
-			read_resources(curdev->link_list);
+		if (curdev->downstream)
+			read_resources(curdev->downstream);
 	}
 	post_log_clear();
 	printk(BIOS_SPEW, "%s %s segment group %d bus %d done\n",
@@ -236,7 +236,7 @@ static void set_vga_bridge_bits(void)
 			continue;
 
 		printk(BIOS_DEBUG, "found VGA at %s\n", dev_path(dev));
-		if (dev->bus->no_vga16) {
+		if (dev->upstream->no_vga16) {
 			printk(BIOS_WARNING,
 				"A bridge on the path doesn't support 16-bit VGA decoding!");
 		}
@@ -270,7 +270,7 @@ static void set_vga_bridge_bits(void)
 		/* All legacy VGA cards have MEM & I/O space registers. */
 		vga->command |= (PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
 		vga_pri = vga;
-		bus = vga->bus;
+		bus = vga->upstream;
 	}
 
 	/* Now walk up the bridges setting the VGA enable. */
@@ -278,7 +278,7 @@ static void set_vga_bridge_bits(void)
 		printk(BIOS_DEBUG, "Setting PCI_BRIDGE_CTL_VGA for bridge %s\n",
 		       dev_path(bus->dev));
 		bus->bridge_ctrl |= PCI_BRIDGE_CTL_VGA | PCI_BRIDGE_CTL_VGA16;
-		bus = (bus == bus->dev->bus) ? 0 : bus->dev->bus;
+		bus = (bus == bus->dev->upstream) ? 0 : bus->dev->upstream;
 	}
 }
 
@@ -343,8 +343,8 @@ static void enable_resources(struct bus *link)
 	}
 
 	for (dev = link->children; dev; dev = dev->sibling) {
-		if (dev->link_list)
-			enable_resources(dev->link_list);
+		if (dev->downstream)
+			enable_resources(dev->downstream);
 	}
 	post_log_clear();
 }
@@ -391,7 +391,7 @@ static void scan_bus(struct device *busdev)
 
 	do_scan_bus = 1;
 	while (do_scan_bus) {
-		struct bus *link = busdev->link_list;
+		struct bus *link = busdev->downstream;
 		busdev->ops->scan_bus(busdev);
 		do_scan_bus = 0;
 		if (!link || !link->reset_needed)
@@ -399,7 +399,7 @@ static void scan_bus(struct device *busdev)
 		if (reset_bus(link))
 			do_scan_bus = 1;
 		else
-			busdev->bus->reset_needed = 1;
+			busdev->upstream->reset_needed = 1;
 	}
 
 	scan_time = stopwatch_duration_msecs(&sw);
@@ -496,14 +496,14 @@ void dev_configure(void)
 	/* Read the resources for the entire tree. */
 
 	printk(BIOS_INFO, "Reading resources...\n");
-	read_resources(root->link_list);
+	read_resources(root->downstream);
 	printk(BIOS_INFO, "Done reading resources.\n");
 
 	print_resource_tree(root, BIOS_SPEW, "After reading.");
 
 	allocate_resources(root);
 
-	assign_resources(root->link_list);
+	assign_resources(root->downstream);
 	printk(BIOS_INFO, "Done setting resources.\n");
 	print_resource_tree(root, BIOS_SPEW, "After assigning values.");
 
@@ -521,8 +521,8 @@ void dev_enable(void)
 	printk(BIOS_INFO, "Enabling resources...\n");
 
 	/* Now enable everything. */
-	if (dev_root.link_list)
-		enable_resources(dev_root.link_list);
+	if (dev_root.downstream)
+		enable_resources(dev_root.downstream);
 
 	printk(BIOS_INFO, "done.\n");
 }
@@ -546,7 +546,7 @@ static void init_dev(struct device *dev)
 		long init_time;
 
 		if (dev->path.type == DEVICE_PATH_I2C) {
-			printk(BIOS_DEBUG, "smbus: %s->", dev_path(dev->bus->dev));
+			printk(BIOS_DEBUG, "smbus: %s->", dev_path(dev->upstream->dev));
 		}
 
 		printk(BIOS_DEBUG, "%s init\n", dev_path(dev));
@@ -572,8 +572,8 @@ static void init_link(struct bus *link)
 	}
 
 	for (dev = link->children; dev; dev = dev->sibling)
-		if (dev->link_list)
-			init_link(dev->link_list);
+		if (dev->downstream)
+			init_link(dev->downstream);
 }
 
 /**
@@ -590,8 +590,8 @@ void dev_initialize(void)
 	init_dev(&dev_root);
 
 	/* Now initialize everything. */
-	if (dev_root.link_list)
-		init_link(dev_root.link_list);
+	if (dev_root.downstream)
+		init_link(dev_root.downstream);
 	post_log_clear();
 
 	printk(BIOS_INFO, "Devices initialized\n");
@@ -626,8 +626,8 @@ static void final_link(struct bus *link)
 		final_dev(dev);
 
 	for (dev = link->children; dev; dev = dev->sibling)
-		if (dev->link_list)
-			final_link(dev->link_list);
+		if (dev->downstream)
+			final_link(dev->downstream);
 }
 /**
  * Finalize all devices in the global device tree.
@@ -643,7 +643,7 @@ void dev_finalize(void)
 	final_dev(&dev_root);
 
 	/* Now finalize everything. */
-	final_link(dev_root.link_list);
+	final_link(dev_root.downstream);
 
 	printk(BIOS_INFO, "Devices finalized\n");
 }

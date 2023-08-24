@@ -26,10 +26,10 @@ static const struct sci_source xhci_sci_sources[] = {
 
 enum cb_err pci_xhci_get_wake_gpe(const struct device *dev, int *gpe)
 {
-	if (dev->bus->dev->path.type != DEVICE_PATH_PCI)
+	if (dev->upstream->dev->path.type != DEVICE_PATH_PCI)
 		return CB_ERR_ARG;
 
-	if (dev->bus->dev->path.pci.devfn != PCIE_GPP_A_DEVFN)
+	if (dev->upstream->dev->path.pci.devfn != PCIE_GPP_A_DEVFN)
 		return CB_ERR_ARG;
 
 	if (dev->path.type != DEVICE_PATH_PCI)

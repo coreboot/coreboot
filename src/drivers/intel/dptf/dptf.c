@@ -503,7 +503,7 @@ static void write_device_definitions(const struct device *dev)
 	enum dptf_participant p;
 
 	/* The CPU device gets an _ADR that matches the ACPI PCI address for 00:04.00 */
-	parent = dev && dev->bus ? dev->bus->dev : NULL;
+	parent = dev && dev->upstream ? dev->upstream->dev : NULL;
 	if (!parent || parent->path.type != DEVICE_PATH_PCI) {
 		printk(BIOS_ERR, "%s: DPTF objects must live under 00:04.0 PCI device\n",
 		       __func__);

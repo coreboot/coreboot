@@ -22,7 +22,7 @@
 
 static void configure_thermal_target(struct device *dev)
 {
-	struct cpu_intel_model_2065x_config *conf = dev->bus->dev->chip_info;
+	struct cpu_intel_model_2065x_config *conf = dev->upstream->dev->chip_info;
 	msr_t msr;
 
 	/* Set TCC activation offset if supported */

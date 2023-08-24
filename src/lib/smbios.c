@@ -1114,8 +1114,8 @@ static int smbios_generate_type41_from_devtree(struct device *dev, int *handle,
 	return smbios_write_type41(current, handle,
 					name, // name
 					instance_id, // inst
-					dev->bus->segment_group, // segment group
-					dev->bus->secondary, //bus
+					dev->upstream->segment_group, // segment group
+					dev->upstream->secondary, //bus
 					PCI_SLOT(dev->path.pci.devfn), // device
 					PCI_FUNC(dev->path.pci.devfn), // func
 					device_type);
@@ -1167,8 +1167,8 @@ static int smbios_generate_type9_from_devtree(struct device *dev, int *handle,
 				  0,
 				  1,
 				  0,
-				  dev->bus->segment_group,
-				  dev->bus->secondary,
+				  dev->upstream->segment_group,
+				  dev->upstream->secondary,
 				  dev->path.pci.devfn);
 }
 

@@ -46,7 +46,7 @@ void uncore_fill_ssdt(const struct device *device)
 	struct iiostack_resource stack_info = {0};
 
 	/* Only add RTxx entries once. */
-	if (device->bus->secondary != 0 || device->bus->segment_group != 0)
+	if (device->upstream->secondary != 0 || device->upstream->segment_group != 0)
 		return;
 
 	get_iiostack_info(&stack_info);

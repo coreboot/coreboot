@@ -230,7 +230,7 @@ ati_rom_acpi_fill_vfct(const struct device *device, acpi_vfct_t *vfct_struct,
 		printk(BIOS_ERR, "%s failed\n", __func__);
 		return current;
 	}
-	if (device->bus->segment_group) {
+	if (device->upstream->segment_group) {
 		printk(BIOS_ERR, "VFCT only supports GPU in first PCI segment group.\n");
 		return current;
 	}
@@ -243,7 +243,7 @@ ati_rom_acpi_fill_vfct(const struct device *device, acpi_vfct_t *vfct_struct,
 
 	header->DeviceID = device->device;
 	header->VendorID = device->vendor;
-	header->PCIBus = device->bus->secondary;
+	header->PCIBus = device->upstream->secondary;
 	header->PCIFunction = PCI_FUNC(device->path.pci.devfn);
 	header->PCIDevice = PCI_SLOT(device->path.pci.devfn);
 	header->ImageLength = rom->size * 512;

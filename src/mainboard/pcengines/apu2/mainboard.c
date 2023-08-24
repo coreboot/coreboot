@@ -277,7 +277,7 @@ const char *smbios_mainboard_serial_number(void)
 
 	dev = pcidev_on_root(2, 2);
 	if (dev)
-		dev = pcidev_path_behind(dev->link_list, PCI_DEVFN(0, 0));
+		dev = pcidev_path_behind(dev->downstream, PCI_DEVFN(0, 0));
 	if (!dev)
 		return serial;
 

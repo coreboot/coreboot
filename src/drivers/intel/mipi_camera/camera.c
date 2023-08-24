@@ -199,7 +199,7 @@ static void camera_generate_pld(const struct device *dev)
 static uint32_t address_for_dev_type(const struct device *dev, uint8_t dev_type)
 {
 	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
-	uint16_t i2c_bus = dev->bus ? dev->bus->secondary : 0xFFFF;
+	uint16_t i2c_bus = dev->upstream ? dev->upstream->secondary : 0xFFFF;
 	uint16_t i2c_addr;
 
 	switch (dev_type) {
@@ -416,7 +416,7 @@ static void camera_fill_sensor(const struct device *dev)
 				.type = DEVICE_PATH_I2C,
 				.i2c.device = config->vcm_address,
 			};
-			struct device *vcm_dev = find_dev_path(dev->bus, &path);
+			struct device *vcm_dev = find_dev_path(dev->upstream, &path);
 			struct drivers_intel_mipi_camera_config *vcm_config;
 			vcm_config = vcm_dev ? vcm_dev->chip_info : NULL;
 
@@ -927,7 +927,7 @@ static void camera_fill_ssdt(const struct device *dev)
 	const struct device *pdev;
 
 	if (config->has_power_resource) {
-		pdev = dev->bus->dev;
+		pdev = dev->upstream->dev;
 		if (!pdev || !pdev->enabled)
 			return;
 
@@ -951,7 +951,7 @@ static void camera_fill_ssdt(const struct device *dev)
 		write_i2c_camera_device(dev, scope);
 		break;
 	case DEVICE_PATH_GENERIC:
-		pdev = dev->bus->dev;
+		pdev = dev->upstream->dev;
 		scope = acpi_device_scope(pdev);
 		if (!scope)
 			return;

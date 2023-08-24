@@ -13,8 +13,8 @@ static void generic_set_resources(struct device *dev)
 	if (!dev)
 		return;
 
-	if (dev->link_list)
-		assign_resources(dev->link_list);
+	if (dev->downstream)
+		assign_resources(dev->downstream);
 
 	for (res = dev->resource_list; res; res = res->next) {
 		if (!(res->flags & IORESOURCE_ASSIGNED))
@@ -159,8 +159,8 @@ static void generic_ssdt(const struct device *dev)
 		acpigen_write_acquire(mutex, 0xffff);
 
 		/* Pick one of the children as the generic SIO doesn't have config mode */
-		if (dev->link_list && dev->link_list->children)
-			pnp_ssdt_enter_conf_mode(dev->link_list->children, "^INDX", "^DATA");
+		if (dev->downstream && dev->downstream->children)
+			pnp_ssdt_enter_conf_mode(dev->downstream->children, "^INDX", "^DATA");
 
 		/* Backup LDN */
 		acpigen_write_store();
@@ -178,8 +178,8 @@ static void generic_ssdt(const struct device *dev)
 		acpigen_emit_namestring("^LDN");
 
 		/* Pick one of the children as the generic SIO doesn't have config mode */
-		if (dev->link_list && dev->link_list->children)
-			pnp_ssdt_exit_conf_mode(dev->link_list->children, "^INDX", "^DATA");
+		if (dev->downstream && dev->downstream->children)
+			pnp_ssdt_exit_conf_mode(dev->downstream->children, "^INDX", "^DATA");
 
 		acpigen_write_release(mutex);
 	}

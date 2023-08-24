@@ -26,7 +26,7 @@ static void mch_domain_read_resources(struct device *dev)
 	/* Can we find out how much memory we can use at most
 	 * this way?
 	 */
-	pci_tolm = find_pci_tolm(dev->link_list);
+	pci_tolm = find_pci_tolm(dev->downstream);
 	printk(BIOS_DEBUG, "pci_tolm: 0x%x\n", pci_tolm);
 
 	tolud = pci_read_config8(d0f0, TOLUD) << 24;
@@ -65,7 +65,7 @@ static void mch_domain_set_resources(struct device *dev)
 	for (res = dev->resource_list; res; res = res->next)
 		report_resource_stored(dev, res, "");
 
-	assign_resources(dev->link_list);
+	assign_resources(dev->downstream);
 }
 
 static const char *northbridge_acpi_name(const struct device *dev)

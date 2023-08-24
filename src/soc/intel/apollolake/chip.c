@@ -478,7 +478,7 @@ static void parse_devicetree(FSP_S_CONFIG *silconfig)
 		return;
 	}
 	/* Only disable bus 0 devices. */
-	for (dev = dev->bus->children; dev; dev = dev->sibling) {
+	for (dev = dev->upstream->children; dev; dev = dev->sibling) {
 		if (!dev->enabled)
 			disable_dev(dev, silconfig);
 	}

@@ -78,7 +78,7 @@ void iio_pci_domain_scan_bus(struct device *dev)
 	bus->max_subordinate = sr->BusLimit;
 
 	printk(BIOS_SPEW, "Scanning IIO stack %d: busses %x-%x\n", dev->path.domain.domain,
-	       dev->link_list->secondary, dev->link_list->max_subordinate);
+	       dev->downstream->secondary, dev->downstream->max_subordinate);
 	pci_host_bridge_scan_bus(dev);
 }
 
@@ -116,14 +116,14 @@ void attach_iio_stacks(struct device *dev)
 
 			if (!is_pcie_iio_stack_res(ri)) {
 				if (CONFIG(HAVE_IOAT_DOMAINS))
-					soc_create_ioat_domains(dn, dev->bus, ri);
+					soc_create_ioat_domains(dn, dev->upstream, ri);
 				continue;
 			}
 
 			struct device_path path;
 			path.type = DEVICE_PATH_DOMAIN;
 			path.domain.domain = dn.domain_path;
-			struct device *iio_domain = alloc_dev(dev->bus, &path);
+			struct device *iio_domain = alloc_dev(dev->upstream, &path);
 			if (iio_domain == NULL)
 				die("%s: out of memory.\n", __func__);
 			iio_domain->ops = &iio_pcie_domain_ops;

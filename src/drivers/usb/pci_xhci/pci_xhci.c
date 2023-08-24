@@ -76,7 +76,7 @@ static const struct device *get_xhci_dev(const struct device *dev)
 		if (is_root_device(dev))
 			return NULL;
 
-		dev = dev->bus->dev;
+		dev = dev->upstream->dev;
 	}
 
 	return dev;

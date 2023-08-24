@@ -415,7 +415,7 @@ void vbe_textmode_console(void)
 
 void run_bios(struct device *dev, unsigned long addr)
 {
-	u32 num_dev = (dev->bus->secondary << 8) | dev->path.pci.devfn;
+	u32 num_dev = (dev->upstream->secondary << 8) | dev->path.pci.devfn;
 
 	/* Setting up required hardware.
 	 * Removing this will cause random illegal instruction exceptions

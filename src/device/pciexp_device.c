@@ -302,7 +302,7 @@ static void pciexp_enable_ltr(struct device *dev)
 	struct device *parent = NULL;
 	unsigned int parent_cap = 0;
 	if (!dev->ops->ops_pci || !dev->ops->ops_pci->get_ltr_max_latencies) {
-		parent = dev->bus->dev;
+		parent = dev->upstream->dev;
 		if (parent->path.type != DEVICE_PATH_PCI)
 			return;
 		parent_cap = pci_find_capability(parent, PCI_CAP_ID_PCIE);
@@ -319,9 +319,9 @@ bool pciexp_get_ltr_max_latencies(struct device *dev, u16 *max_snoop, u16 *max_n
 	do {
 		if (dev->ops->ops_pci && dev->ops->ops_pci->get_ltr_max_latencies)
 			break;
-		if (dev->bus->dev == dev || dev->bus->dev->path.type != DEVICE_PATH_PCI)
+		if (dev->upstream->dev == dev || dev->upstream->dev->path.type != DEVICE_PATH_PCI)
 			return false;
-		dev = dev->bus->dev;
+		dev = dev->upstream->dev;
 	} while (true);
 
 	dev->ops->ops_pci->get_ltr_max_latencies(max_snoop, max_nosnoop);
@@ -627,7 +627,7 @@ static void clear_lane_error_status(struct device *dev)
 
 static void pciexp_tune_dev(struct device *dev)
 {
-	struct device *root = dev->bus->dev;
+	struct device *root = dev->upstream->dev;
 	unsigned int root_cap, cap;
 
 	cap = pci_find_capability(dev, PCI_CAP_ID_PCIE);
@@ -752,7 +752,7 @@ void pciexp_hotplug_scan_bridge(struct device *dev)
 	/* Add dummy slot to preserve resources, must happen after bus scan */
 	struct device *dummy;
 	struct device_path dummy_path = { .type = DEVICE_PATH_NONE };
-	dummy = alloc_dev(dev->link_list, &dummy_path);
+	dummy = alloc_dev(dev->downstream, &dummy_path);
 	dummy->ops = &pciexp_hotplug_dummy_ops;
 }
 

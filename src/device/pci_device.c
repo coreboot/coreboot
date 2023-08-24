@@ -585,7 +585,7 @@ void pci_domain_read_resources(struct device *dev)
 
 void pci_domain_set_resources(struct device *dev)
 {
-	assign_resources(dev->link_list);
+	assign_resources(dev->downstream);
 }
 
 static void pci_store_resource(const struct device *const dev,
@@ -718,8 +718,8 @@ void pci_dev_set_resources(struct device *dev)
 	for (res = dev->resource_list; res; res = res->next)
 		pci_set_resource(dev, res);
 
-	if (dev->link_list && dev->link_list->children)
-		assign_resources(dev->link_list);
+	if (dev->downstream && dev->downstream->children)
+		assign_resources(dev->downstream);
 
 	/* Set a default latency timer. */
 	pci_write_config8(dev, PCI_LATENCY_TIMER, 0x40);
@@ -782,10 +782,10 @@ void pci_bus_enable_resources(struct device *dev)
 	 * Enable I/O in command register if there is VGA card
 	 * connected with (even it does not claim I/O resource).
 	 */
-	if (dev->link_list->bridge_ctrl & PCI_BRIDGE_CTL_VGA)
+	if (dev->downstream->bridge_ctrl & PCI_BRIDGE_CTL_VGA)
 		dev->command |= PCI_COMMAND_IO;
 	ctrl = pci_read_config16(dev, PCI_BRIDGE_CONTROL);
-	ctrl |= dev->link_list->bridge_ctrl;
+	ctrl |= dev->downstream->bridge_ctrl;
 	ctrl |= (PCI_BRIDGE_CTL_PARITY | PCI_BRIDGE_CTL_SERR); /* Error check. */
 	printk(BIOS_DEBUG, "%s bridge ctrl <- %04x\n", dev_path(dev), ctrl);
 	pci_write_config16(dev, PCI_BRIDGE_CONTROL, ctrl);
@@ -843,7 +843,7 @@ static int should_run_oprom(struct device *dev, struct rom_header *rom)
 {
 	static int should_run = -1;
 
-	if (dev->bus->segment_group) {
+	if (dev->upstream->segment_group) {
 		printk(BIOS_ERR, "Only option ROMs of devices in first PCI segment group can "
 				 "be run.\n");
 		return 0;
@@ -990,7 +990,7 @@ static void pci_bridge_vga_compat(struct bus *const bus)
 	pci_write_config16(bus->dev, PCI_BRIDGE_CONTROL, bridge_ctrl);
 
 	/* If the upstream bridge doesn't support VGA16, we don't have to check */
-	bus->no_vga16 |= bus->dev->bus->no_vga16;
+	bus->no_vga16 |= bus->dev->upstream->no_vga16;
 	if (bus->no_vga16)
 		return;
 
@@ -1215,7 +1215,7 @@ struct device *pci_probe_dev(struct device *dev, struct bus *bus,
 	if (!dev) {
 		struct device dummy;
 
-		dummy.bus = bus;
+		dummy.upstream = bus;
 		dummy.path.type = DEVICE_PATH_PCI;
 		dummy.path.pci.devfn = devfn;
 
@@ -1317,9 +1317,9 @@ struct device *pci_probe_dev(struct device *dev, struct bus *bus,
  */
 unsigned int pci_match_simple_dev(struct device *dev, pci_devfn_t sdev)
 {
-	return dev->bus->secondary == PCI_DEV2BUS(sdev) &&
-			dev->bus->segment_group == PCI_DEV2SEG(sdev) &&
-			dev->path.pci.devfn == PCI_DEV2DEVFN(sdev);
+	return dev->upstream->secondary == PCI_DEV2BUS(sdev) &&
+		dev->upstream->segment_group == PCI_DEV2SEG(sdev) &&
+		dev->path.pci.devfn == PCI_DEV2DEVFN(sdev);
 }
 
 /**
@@ -1333,14 +1333,14 @@ unsigned int pci_match_simple_dev(struct device *dev, pci_devfn_t sdev)
  */
 uint16_t pci_find_cap_recursive(const struct device *dev, uint16_t cap)
 {
-	assert(dev->bus);
+	assert(dev->upstream);
 	uint16_t pos = pci_find_capability(dev, cap);
-	const struct device *bridge = dev->bus->dev;
+	const struct device *bridge = dev->upstream->dev;
 	while (bridge && (bridge->path.type == DEVICE_PATH_PCI)) {
-		assert(bridge->bus);
+		assert(bridge->upstream);
 		if (!pci_find_capability(bridge, cap))
 			return 0;
-		bridge = bridge->bus->dev;
+		bridge = bridge->upstream->dev;
 	}
 	return pos;
 }
@@ -1546,7 +1546,7 @@ typedef enum {
 static void pci_bridge_route(struct bus *link, scan_state state)
 {
 	struct device *dev = link->dev;
-	struct bus *parent = dev->bus;
+	struct bus *parent = dev->upstream;
 	uint8_t primary, secondary, subordinate;
 
 	if (state == PCI_ROUTE_SCAN) {
@@ -1625,17 +1625,17 @@ void do_pci_scan_bridge(struct device *dev,
 
 	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(dev));
 
-	if (dev->link_list == NULL) {
+	if (dev->downstream == NULL) {
 		struct bus *link;
 		link = malloc(sizeof(*link));
 		if (link == NULL)
 			die("Couldn't allocate a link!\n");
 		memset(link, 0, sizeof(*link));
 		link->dev = dev;
-		dev->link_list = link;
+		dev->downstream = link;
 	}
 
-	bus = dev->link_list;
+	bus = dev->downstream;
 
 	pci_bridge_vga_compat(bus);
 
@@ -1670,7 +1670,7 @@ void pci_scan_bridge(struct device *dev)
  */
 void pci_host_bridge_scan_bus(struct device *dev)
 {
-	struct bus *link = dev->link_list;
+	struct bus *link = dev->downstream;
 	pci_scan_bus(link, PCI_DEVFN(0, 0), 0xff);
 }
 
@@ -1733,8 +1733,8 @@ static int swizzle_irq_pins(struct device *dev, struct device **parent_bridge)
 
 	/* While our current device has parent devices */
 	child = dev;
-	for (parent = child->bus->dev; parent; parent = parent->bus->dev) {
-		parent_bus = parent->bus->secondary;
+	for (parent = child->upstream->dev; parent; parent = parent->upstream->dev) {
+		parent_bus = parent->upstream->secondary;
 		parent_devfn = parent->path.pci.devfn;
 		child_devfn = child->path.pci.devfn;
 
@@ -1798,7 +1798,7 @@ int get_pci_irq_pins(struct device *dev, struct device **parent_bdg)
 	if (!(dev->enabled && (dev->path.type == DEVICE_PATH_PCI)))
 		return -1;
 
-	bus = dev->bus->secondary;
+	bus = dev->upstream->secondary;
 	devfn = dev->path.pci.devfn;
 
 	/* Get and validate the interrupt pin used. Only 1-4 are allowed */

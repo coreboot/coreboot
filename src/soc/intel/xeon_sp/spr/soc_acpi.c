@@ -341,7 +341,7 @@ void uncore_fill_ssdt(const struct device *device)
 	bool stack_enabled;
 
 	/* Only add RTxx entries once. */
-	if (device->bus->secondary != 0)
+	if (device->upstream->secondary != 0)
 		return;
 
 	/*
@@ -502,7 +502,7 @@ unsigned long xeonsp_acpi_create_madt_lapics(unsigned long current)
 
 	for (cpu = all_devices; cpu; cpu = cpu->next) {
 		if ((cpu->path.type != DEVICE_PATH_APIC)
-		    || (cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER)) {
+		    || (cpu->upstream->dev->path.type != DEVICE_PATH_CPU_CLUSTER)) {
 			continue;
 		}
 		if (!cpu->enabled)

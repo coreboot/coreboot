@@ -19,7 +19,7 @@ const struct mdio_bus_operations *dev_get_mdio_ops(struct device *dev)
 uint16_t mdio_read(struct device *dev, uint8_t offset)
 {
 	const struct mdio_bus_operations *mdio_ops;
-	struct device *parent = dev->bus->dev;
+	struct device *parent = dev->upstream->dev;
 
 	assert(dev->path.type == DEVICE_PATH_MDIO);
 	mdio_ops = dev_get_mdio_ops(parent);
@@ -30,7 +30,7 @@ uint16_t mdio_read(struct device *dev, uint8_t offset)
 void mdio_write(struct device *dev, uint8_t offset, uint16_t val)
 {
 	const struct mdio_bus_operations *mdio_ops;
-	struct device *parent = dev->bus->dev;
+	struct device *parent = dev->upstream->dev;
 
 	assert(dev->path.type == DEVICE_PATH_MDIO);
 	mdio_ops = dev_get_mdio_ops(parent);

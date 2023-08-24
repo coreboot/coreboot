@@ -700,8 +700,8 @@ void acpi_create_ipmi(const struct device *device,
 
 	if (device->path.type == DEVICE_PATH_PCI) {
 		spmi->pci_device_flag = ACPI_IPMI_PCI_DEVICE_FLAG;
-		spmi->pci_segment_group = device->bus->segment_group;
-		spmi->pci_bus = device->bus->secondary;
+		spmi->pci_segment_group = device->upstream->segment_group;
+		spmi->pci_bus = device->upstream->secondary;
 		spmi->pci_device = device->path.pci.devfn >> 3;
 		spmi->pci_function = device->path.pci.devfn & 0x7;
 	} else if (type != IPMI_INTERFACE_SSIF) {

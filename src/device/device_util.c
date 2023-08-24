@@ -560,16 +560,9 @@ void search_bus_resources(struct bus *bus, unsigned long type_mask,
 
 			/* If it is a subtractive resource recurse. */
 			if (res->flags & IORESOURCE_SUBTRACTIVE) {
-				struct bus *subbus;
-				for (subbus = curdev->link_list; subbus;
-				     subbus = subbus->next)
-					if (subbus->link_num
-					== IOINDEX_SUBTRACTIVE_LINK(res->index))
-						break;
-				if (!subbus) /* Why can subbus be NULL?  */
-					break;
-				search_bus_resources(subbus, type_mask, type,
-						     search, gp);
+				if (curdev->link_list)
+					search_bus_resources(curdev->link_list, type_mask, type,
+							     search, gp);
 				continue;
 			}
 			search(gp, curdev, res);
@@ -624,9 +617,8 @@ void disable_children(struct bus *bus)
 	struct device *child;
 
 	for (child = bus->children; child; child = child->sibling) {
-		struct bus *link;
-		for (link = child->link_list; link; link = link->next)
-			disable_children(link);
+		if (child->link_list)
+			disable_children(child->link_list);
 		dev_set_enabled(child, 0);
 	}
 }
@@ -637,7 +629,6 @@ void disable_children(struct bus *bus)
  */
 bool dev_is_active_bridge(struct device *dev)
 {
-	struct bus *link;
 	struct device *child;
 
 	if (!dev || !dev->enabled)
@@ -646,71 +637,20 @@ bool dev_is_active_bridge(struct device *dev)
 	if (!dev->link_list || !dev->link_list->children)
 		return 0;
 
-	for (link = dev->link_list; link; link = link->next) {
-		for (child = link->children; child; child = child->sibling) {
-			if (child->path.type == DEVICE_PATH_NONE)
-				continue;
-
-			if (child->enabled)
-				return 1;
-		}
+	for (child = dev->link_list->children; child; child = child->sibling) {
+		if (child->path.type == DEVICE_PATH_NONE)
+			continue;
+		if (child->enabled)
+			return 1;
 	}
 
 	return 0;
-}
-
-/**
- * Ensure the device has a minimum number of bus links.
- *
- * @param dev The device to add links to.
- * @param total_links The minimum number of links to have.
- */
-void add_more_links(struct device *dev, unsigned int total_links)
-{
-	struct bus *link, *last = NULL;
-	int link_num = -1;
-
-	for (link = dev->link_list; link; link = link->next) {
-		if (link_num < link->link_num)
-			link_num = link->link_num;
-		last = link;
-	}
-
-	if (last) {
-		int links = total_links - (link_num + 1);
-		if (links > 0) {
-			link = malloc(links * sizeof(*link));
-			if (!link)
-				die("Couldn't allocate more links!\n");
-			memset(link, 0, links * sizeof(*link));
-			last->next = link;
-		} else {
-			/* No more links to add */
-			return;
-		}
-	} else {
-		link = malloc(total_links * sizeof(*link));
-		if (!link)
-			die("Couldn't allocate more links!\n");
-		memset(link, 0, total_links * sizeof(*link));
-		dev->link_list = link;
-	}
-
-	for (link_num = link_num + 1; link_num < total_links; link_num++) {
-		link->link_num = link_num;
-		link->dev = dev;
-		link->next = link + 1;
-		last = link;
-		link = link->next;
-	}
-	last->next = NULL;
 }
 
 static void resource_tree(const struct device *root, int debug_level, int depth)
 {
 	int i = 0;
 	struct device *child;
-	struct bus *link;
 	struct resource *res;
 	char indent[30];	/* If your tree has more levels, it's wrong. */
 
@@ -732,10 +672,11 @@ static void resource_tree(const struct device *root, int debug_level, int depth)
 			  res->index);
 	}
 
-	for (link = root->link_list; link; link = link->next) {
-		for (child = link->children; child; child = child->sibling)
-			resource_tree(child, debug_level, depth + 1);
-	}
+	if (!root->link_list)
+		return;
+
+	for (child = root->link_list->children; child; child = child->sibling)
+		resource_tree(child, debug_level, depth + 1);
 }
 
 void print_resource_tree(const struct device *root, int debug_level,
@@ -760,7 +701,6 @@ void show_devs_tree(const struct device *dev, int debug_level, int depth)
 	char depth_str[20];
 	int i;
 	struct device *sibling;
-	struct bus *link;
 
 	for (i = 0; i < depth; i++)
 		depth_str[i] = ' ';
@@ -769,11 +709,11 @@ void show_devs_tree(const struct device *dev, int debug_level, int depth)
 	printk(debug_level, "%s%s: enabled %d\n",
 		  depth_str, dev_path(dev), dev->enabled);
 
-	for (link = dev->link_list; link; link = link->next) {
-		for (sibling = link->children; sibling;
-		     sibling = sibling->sibling)
-			show_devs_tree(sibling, debug_level, depth + 1);
-	}
+	if (!dev->link_list)
+		return;
+
+	for (sibling = dev->link_list->children; sibling; sibling = sibling->sibling)
+		show_devs_tree(sibling, debug_level, depth + 1);
 }
 
 void show_all_devs_tree(int debug_level, const char *msg)

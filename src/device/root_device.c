@@ -38,31 +38,27 @@ void enable_static_device(struct device *dev)
 void enable_static_devices(struct device *bus)
 {
 	struct device *child;
-	struct bus *link;
 
-	for (link = bus->link_list; link; link = link->next) {
-		for (child = link->children; child; child = child->sibling) {
-			enable_static_device(child);
-		}
-	}
+	if (!bus->link_list)
+		return;
+
+	for (child = bus->link_list->children; child; child = child->sibling)
+		enable_static_device(child);
 }
 
 void scan_generic_bus(struct device *bus)
 {
 	struct device *child;
-	struct bus *link;
 	static int bus_max = 0;
 
 	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(bus));
 
-	for (link = bus->link_list; link; link = link->next) {
+	if (bus->link_list) {
+		bus->link_list->secondary = ++bus_max;
 
-		link->secondary = ++bus_max;
-
-		for (child = link->children; child; child = child->sibling) {
+		for (child = bus->link_list->children; child; child = child->sibling) {
 			enable_static_device(child);
-			printk(BIOS_DEBUG, "bus: %s[%d]->", dev_path(child->bus->dev),
-			       child->bus->link_num);
+			printk(BIOS_DEBUG, "bus: %s->", dev_path(child->bus->dev));
 		}
 	}
 
@@ -86,14 +82,12 @@ void scan_smbus(struct device *bus)
  */
 void scan_static_bus(struct device *bus)
 {
-	struct bus *link;
-
 	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(bus));
 
 	enable_static_devices(bus);
 
-	for (link = bus->link_list; link; link = link->next)
-		scan_bridges(link);
+	if (bus->link_list)
+		scan_bridges(bus->link_list);
 
 	printk(BIOS_SPEW, "%s for %s done\n", __func__, dev_path(bus));
 }

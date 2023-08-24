@@ -4,11 +4,13 @@
 
 #define DEVICE_H
 
-#include <device/resource.h>
+#include <console/console.h>
 #include <device/path.h>
 #include <device/pci_type.h>
+#include <device/resource.h>
 #include <smbios.h>
 #include <static.h>
+#include <stdlib.h>
 #include <types.h>
 
 struct fw_config;
@@ -78,10 +80,8 @@ static inline void noop_set_resources(struct device *dev) {}
 struct bus {
 	DEVTREE_CONST struct device *dev;	/* This bridge device */
 	DEVTREE_CONST struct device *children;	/* devices behind this bridge */
-	DEVTREE_CONST struct bus *next;		/* The next bridge on this device */
 	unsigned int	bridge_ctrl;		/* Bridge control register */
 	uint16_t	bridge_cmd;		/* Bridge command register */
-	unsigned char	link_num;		/* The index of this link */
 	uint16_t	secondary;		/* secondary bus number */
 	uint16_t	subordinate;		/* subordinate bus number */
 	uint16_t	max_subordinate;	/* max subordinate bus number */
@@ -193,7 +193,6 @@ struct device *dev_get_pci_domain(struct device *dev);
 void dev_set_enabled(struct device *dev, int enable);
 void disable_children(struct bus *bus);
 bool dev_is_active_bridge(struct device *dev);
-void add_more_links(struct device *dev, unsigned int total_links);
 bool is_dev_enabled(const struct device *const dev);
 bool is_devfn_enabled(unsigned int devfn);
 bool is_cpu(const struct device *cpu);

@@ -1238,7 +1238,7 @@ yyreduce:
   case 26: /* @2: %empty  */
                                                        {
 	(yyval.dev) = new_device_raw(cur_parent, cur_chip_instance, (yyvsp[-3].number), (yyvsp[-2].string), (yyvsp[-1].string), (yyvsp[0].number));
-	cur_parent = (yyval.dev)->last_bus;
+	cur_parent = (yyval.dev)->bus;
 }
     break;
 
@@ -1251,7 +1251,7 @@ yyreduce:
   case 28: /* @3: %empty  */
                                        {
 	(yyval.dev) = new_device_reference(cur_parent, cur_chip_instance, (yyvsp[-1].string), (yyvsp[0].number));
-	cur_parent = (yyval.dev)->last_bus;
+	cur_parent = (yyval.dev)->bus;
 }
     break;
 

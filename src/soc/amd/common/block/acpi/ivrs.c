@@ -140,7 +140,6 @@ static void add_ivhd_device_entries(struct device *parent, struct device *dev,
 				    unsigned long *current, uint16_t nb_bus)
 {
 	struct device *sibling;
-	struct bus *link;
 
 	if (!root_level)
 		return;
@@ -155,11 +154,11 @@ static void add_ivhd_device_entries(struct device *parent, struct device *dev,
 				ivrs_add_device_or_bridge(parent, dev, current);
 	}
 
-	for (link = dev->link_list; link; link = link->next)
-		for (sibling = link->children; sibling; sibling =
-		     sibling->sibling)
-			add_ivhd_device_entries(dev, sibling, depth + 1, depth, root_level,
-						current, nb_bus);
+	if (!dev->link_list)
+		return;
+	for (sibling = dev->link_list->children; sibling; sibling = sibling->sibling)
+		add_ivhd_device_entries(dev, sibling, depth + 1, depth, root_level, current,
+					nb_bus);
 }
 
 static unsigned long acpi_ivhd_misc(unsigned long current, struct device *dev)

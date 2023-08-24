@@ -278,20 +278,20 @@ static void configure_child_espi_windows(struct device *child)
 
 static void lpc_enable_children_resources(struct device *dev)
 {
-	struct bus *link;
 	struct device *child;
 
-	for (link = dev->link_list; link; link = link->next) {
-		for (child = link->children; child; child = child->sibling) {
-			if (!child->enabled)
-				continue;
-			if (child->path.type != DEVICE_PATH_PNP)
-				continue;
-			if (CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI))
-				configure_child_espi_windows(child);
-			else
-				configure_child_lpc_windows(dev, child);
-		}
+	if (!dev->link_list)
+		return;
+
+	for (child = dev->link_list->children; child; child = child->sibling) {
+		if (!child->enabled)
+			continue;
+		if (child->path.type != DEVICE_PATH_PNP)
+			continue;
+		if (CONFIG(SOC_AMD_COMMON_BLOCK_USE_ESPI))
+			configure_child_espi_windows(child);
+		else
+			configure_child_lpc_windows(dev, child);
 	}
 }
 

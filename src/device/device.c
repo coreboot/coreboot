@@ -187,13 +187,11 @@ static void read_resources(struct bus *bus)
 {
 	struct device *curdev;
 
-	printk(BIOS_SPEW, "%s %s segment group %d bus %d link: %d\n", dev_path(bus->dev),
-	       __func__, bus->segment_group, bus->secondary, bus->link_num);
+	printk(BIOS_SPEW, "%s %s segment group %d bus %d\n", dev_path(bus->dev),
+	       __func__, bus->segment_group, bus->secondary);
 
 	/* Walk through all devices and find which resources they need. */
 	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
-		struct bus *link;
-
 		if (!curdev->enabled)
 			continue;
 
@@ -207,12 +205,12 @@ static void read_resources(struct bus *bus)
 		curdev->ops->read_resources(curdev);
 
 		/* Read in the resources behind the current device's links. */
-		for (link = curdev->link_list; link; link = link->next)
-			read_resources(link);
+		if (curdev->link_list)
+			read_resources(curdev->link_list);
 	}
 	post_log_clear();
-	printk(BIOS_SPEW, "%s %s segment group %d bus %d link: %d done\n",
-	       dev_path(bus->dev), __func__, bus->segment_group, bus->secondary, bus->link_num);
+	printk(BIOS_SPEW, "%s %s segment group %d bus %d done\n",
+	       dev_path(bus->dev), __func__, bus->segment_group, bus->secondary);
 }
 
 struct device *vga_pri = NULL;
@@ -301,8 +299,8 @@ void assign_resources(struct bus *bus)
 {
 	struct device *curdev;
 
-	printk(BIOS_SPEW, "%s %s, segment group %d bus %d link: %d\n",
-	       dev_path(bus->dev), __func__, bus->segment_group, bus->secondary, bus->link_num);
+	printk(BIOS_SPEW, "%s %s, segment group %d bus %d\n",
+	       dev_path(bus->dev), __func__, bus->segment_group, bus->secondary);
 
 	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
 		if (!curdev->enabled || !curdev->resource_list)
@@ -317,8 +315,8 @@ void assign_resources(struct bus *bus)
 		curdev->ops->set_resources(curdev);
 	}
 	post_log_clear();
-	printk(BIOS_SPEW, "%s %s, segment group %d bus %d link: %d done\n",
-	       dev_path(bus->dev), __func__, bus->segment_group, bus->secondary, bus->link_num);
+	printk(BIOS_SPEW, "%s %s, segment group %d bus %d done\n",
+	       dev_path(bus->dev), __func__, bus->segment_group, bus->secondary);
 }
 
 /**
@@ -336,7 +334,6 @@ void assign_resources(struct bus *bus)
 static void enable_resources(struct bus *link)
 {
 	struct device *dev;
-	struct bus *c_link;
 
 	for (dev = link->children; dev; dev = dev->sibling) {
 		if (dev->enabled && dev->ops && dev->ops->enable_resources) {
@@ -346,8 +343,8 @@ static void enable_resources(struct bus *link)
 	}
 
 	for (dev = link->children; dev; dev = dev->sibling) {
-		for (c_link = dev->link_list; c_link; c_link = c_link->next)
-			enable_resources(c_link);
+		if (dev->link_list)
+			enable_resources(dev->link_list);
 	}
 	post_log_clear();
 }
@@ -394,17 +391,15 @@ static void scan_bus(struct device *busdev)
 
 	do_scan_bus = 1;
 	while (do_scan_bus) {
-		struct bus *link;
+		struct bus *link = busdev->link_list;
 		busdev->ops->scan_bus(busdev);
 		do_scan_bus = 0;
-		for (link = busdev->link_list; link; link = link->next) {
-			if (link->reset_needed) {
-				if (reset_bus(link))
-					do_scan_bus = 1;
-				else
-					busdev->bus->reset_needed = 1;
-			}
-		}
+		if (!link || !link->reset_needed)
+			continue;
+		if (reset_bus(link))
+			do_scan_bus = 1;
+		else
+			busdev->bus->reset_needed = 1;
 	}
 
 	scan_time = stopwatch_duration_msecs(&sw);
@@ -523,13 +518,11 @@ void dev_configure(void)
  */
 void dev_enable(void)
 {
-	struct bus *link;
-
 	printk(BIOS_INFO, "Enabling resources...\n");
 
 	/* Now enable everything. */
-	for (link = dev_root.link_list; link; link = link->next)
-		enable_resources(link);
+	if (dev_root.link_list)
+		enable_resources(dev_root.link_list);
 
 	printk(BIOS_INFO, "done.\n");
 }
@@ -553,8 +546,7 @@ static void init_dev(struct device *dev)
 		long init_time;
 
 		if (dev->path.type == DEVICE_PATH_I2C) {
-			printk(BIOS_DEBUG, "smbus: %s[%d]->",
-			       dev_path(dev->bus->dev), dev->bus->link_num);
+			printk(BIOS_DEBUG, "smbus: %s->", dev_path(dev->bus->dev));
 		}
 
 		printk(BIOS_DEBUG, "%s init\n", dev_path(dev));
@@ -572,7 +564,6 @@ static void init_dev(struct device *dev)
 static void init_link(struct bus *link)
 {
 	struct device *dev;
-	struct bus *c_link;
 
 	for (dev = link->children; dev; dev = dev->sibling) {
 		post_code(POSTCODE_BS_DEV_INIT);
@@ -580,10 +571,9 @@ static void init_link(struct bus *link)
 		init_dev(dev);
 	}
 
-	for (dev = link->children; dev; dev = dev->sibling) {
-		for (c_link = dev->link_list; c_link; c_link = c_link->next)
-			init_link(c_link);
-	}
+	for (dev = link->children; dev; dev = dev->sibling)
+		if (dev->link_list)
+			init_link(dev->link_list);
 }
 
 /**
@@ -594,16 +584,14 @@ static void init_link(struct bus *link)
  */
 void dev_initialize(void)
 {
-	struct bus *link;
-
 	printk(BIOS_INFO, "Initializing devices...\n");
 
 	/* First call the mainboard init. */
 	init_dev(&dev_root);
 
 	/* Now initialize everything. */
-	for (link = dev_root.link_list; link; link = link->next)
-		init_link(link);
+	if (dev_root.link_list)
+		init_link(dev_root.link_list);
 	post_log_clear();
 
 	printk(BIOS_INFO, "Devices initialized\n");
@@ -633,15 +621,13 @@ static void final_dev(struct device *dev)
 static void final_link(struct bus *link)
 {
 	struct device *dev;
-	struct bus *c_link;
 
 	for (dev = link->children; dev; dev = dev->sibling)
 		final_dev(dev);
 
-	for (dev = link->children; dev; dev = dev->sibling) {
-		for (c_link = dev->link_list; c_link; c_link = c_link->next)
-			final_link(c_link);
-	}
+	for (dev = link->children; dev; dev = dev->sibling)
+		if (dev->link_list)
+			final_link(dev->link_list);
 }
 /**
  * Finalize all devices in the global device tree.
@@ -651,16 +637,13 @@ static void final_link(struct bus *link)
  */
 void dev_finalize(void)
 {
-	struct bus *link;
-
 	printk(BIOS_INFO, "Finalize devices...\n");
 
 	/* First call the mainboard finalize. */
 	final_dev(&dev_root);
 
 	/* Now finalize everything. */
-	for (link = dev_root.link_list; link; link = link->next)
-		final_link(link);
+	final_link(dev_root.link_list);
 
 	printk(BIOS_INFO, "Devices finalized\n");
 }

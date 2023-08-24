@@ -713,16 +713,13 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 void pci_dev_set_resources(struct device *dev)
 {
 	struct resource *res;
-	struct bus *bus;
 	u8 line;
 
 	for (res = dev->resource_list; res; res = res->next)
 		pci_set_resource(dev, res);
 
-	for (bus = dev->link_list; bus; bus = bus->next) {
-		if (bus->children)
-			assign_resources(bus);
-	}
+	if (dev->link_list && dev->link_list->children)
+		assign_resources(dev->link_list);
 
 	/* Set a default latency timer. */
 	pci_write_config8(dev, PCI_LATENCY_TIMER, 0x40);

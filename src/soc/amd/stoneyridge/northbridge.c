@@ -52,16 +52,9 @@ static void read_resources(struct device *dev)
 
 static void create_vga_resource(struct device *dev)
 {
-	struct bus *link;
-
-	/* find out which link the VGA card is connected,
-	 * we only deal with the 'first' vga card */
-	for (link = dev->link_list ; link ; link = link->next)
-		if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA)
-			break;
-
-	/* no VGA card installed */
-	if (link == NULL)
+	if (!dev->link_list)
+		return;
+	if (!(dev->link_list->bridge_ctrl & PCI_BRIDGE_CTL_VGA))
 		return;
 
 	printk(BIOS_DEBUG, "VGA: %s has VGA device\n",	dev_path(dev));
@@ -71,14 +64,11 @@ static void create_vga_resource(struct device *dev)
 
 static void set_resources(struct device *dev)
 {
-	struct bus *bus;
-
 	/* do we need this? */
 	create_vga_resource(dev);
 
-	for (bus = dev->link_list ; bus ; bus = bus->next)
-		if (bus->children)
-			assign_resources(bus);
+	if (dev->link_list && dev->link_list->children)
+		assign_resources(dev->link_list);
 }
 
 static void northbridge_init(struct device *dev)

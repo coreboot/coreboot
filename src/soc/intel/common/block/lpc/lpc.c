@@ -100,13 +100,13 @@ static void pch_lpc_loop_resources(struct device *dev)
  */
 static void pch_lpc_set_child_resources(struct device *dev)
 {
-	struct bus *link;
 	struct device *child;
 
-	for (link = dev->link_list; link; link = link->next) {
-		for (child = link->children; child; child = child->sibling)
-			pch_lpc_loop_resources(child);
-	}
+	if (!dev->link_list)
+		return;
+
+	for (child = dev->link_list->children; child; child = child->sibling)
+		pch_lpc_loop_resources(child);
 }
 
 static void pch_lpc_set_resources(struct device *dev)

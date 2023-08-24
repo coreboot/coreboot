@@ -134,7 +134,6 @@ static void hudson_lpc_set_resources(struct device *dev)
  */
 static void hudson_lpc_enable_childrens_resources(struct device *dev)
 {
-	struct bus *link;
 	u32 reg, reg_x;
 	int var_num = 0;
 	u16 reg_var[3];
@@ -171,12 +170,10 @@ static void hudson_lpc_enable_childrens_resources(struct device *dev)
 	reg_var[1] = pci_read_config16(dev, 0x66);
 	reg_var[0] = pci_read_config16(dev, 0x64);
 
-	for (link = dev->link_list; link; link = link->next) {
-		struct device *child;
-		for (child = link->children; child;
-		     child = child->sibling) {
-			if (child->enabled
-			    && (child->path.type == DEVICE_PATH_PNP)) {
+	struct device *child;
+	if (dev->link_list) {
+		for (child = dev->link_list->children; child; child = child->sibling) {
+			if (child->enabled && (child->path.type == DEVICE_PATH_PNP)) {
 				struct resource *res;
 				for (res = child->resource_list; res; res = res->next) {
 					u32 base, end;	/*  don't need long long */

@@ -235,7 +235,6 @@ static void add_ivhd_device_entries(struct device *parent, struct device *dev,
 				    unsigned long *current, uint16_t *ivhd_length)
 {
 	struct device *sibling;
-	struct bus *link;
 
 	if (!root_level) {
 		root_level = malloc(sizeof(int8_t));
@@ -254,11 +253,11 @@ static void add_ivhd_device_entries(struct device *parent, struct device *dev,
 		}
 	}
 
-	for (link = dev->link_list; link; link = link->next)
-		for (sibling = link->children; sibling; sibling =
-		     sibling->sibling)
+	if (dev->link_list) {
+		for (sibling = dev->link_list->children; sibling; sibling = sibling->sibling)
 			add_ivhd_device_entries(dev, sibling, depth + 1, depth, root_level,
 						current, ivhd_length);
+	}
 
 	free(root_level);
 }

@@ -106,17 +106,11 @@ struct chip {
 
 struct device;
 struct bus {
-	/* Instance/ID of the bus under the device. */
-	int id;
-
 	/* Pointer to device to which this bus belongs. */
 	struct device *dev;
 
 	/* Pointer to list of children. */
 	struct device *children;
-
-	/* Pointer to next bus for the device. */
-	struct bus *next_bus;
 };
 
 struct device {
@@ -157,10 +151,8 @@ struct device {
 	/* Pointer to chip instance for this device. */
 	struct chip_instance *chip_instance;
 
-	/* Pointer to list of buses under this device. */
+	/* Pointer to the bus under this device. */
 	struct bus *bus;
-	/* Pointer to last bus under this device. */
-	struct bus *last_bus;
 
 	/* Global identifier of the ops for this device. */
 	char *ops_id;

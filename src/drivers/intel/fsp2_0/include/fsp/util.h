@@ -74,7 +74,7 @@ union extended_fsp_revision {
 	} rev;
 };
 
-#if CONFIG_UDK_VERSION < CONFIG_UDK_2017_VERSION
+#if CONFIG_UDK_VERSION < 2017
 enum resource_type {
 	EFI_RESOURCE_SYSTEM_MEMORY		= 0,
 	EFI_RESOURCE_MEMORY_MAPPED_IO		= 1,

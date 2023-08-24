@@ -54,7 +54,7 @@ config MRC_SAVE_HASH_IN_TPM
 
 config MRC_CACHE_USING_MRC_VERSION
 	bool
-	default y if UDK_VERSION >= UDK_202302_VERSION
+	default y if UDK_VERSION >= 202302
 	default n
 	help
 	  Use the MRC version info from FSP extended header to store the MRC cache data.

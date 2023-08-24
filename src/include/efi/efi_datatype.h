@@ -6,7 +6,7 @@
 #include <Base.h>
 #include <Uefi/UefiBaseType.h>
 
-#if CONFIG_UDK_VERSION >= CONFIG_UDK_2017_VERSION
+#if CONFIG_UDK_VERSION >= 2017
 #include <Guid/StatusCodeDataTypeId.h>
 #include <IndustryStandard/Bmp.h>
 #include <Pi/PiPeiCis.h>

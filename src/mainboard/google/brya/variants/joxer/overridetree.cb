@@ -1,4 +1,8 @@
 fw_config
+	field DB_USB 0 1
+		option DB_ABSENT		0
+		option DB_1C			1
+	end
 	field THERMAL 2 2
 		option THERMAL_FANLESS		0
 		option THERMAL_FAN		1
@@ -340,7 +344,9 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
                                                 register "use_custom_pld" = "true"
                                                 register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(2, 1))"
-						device ref tcss_usb3_port2 on end
+						device ref tcss_usb3_port2 on
+							probe DB_USB DB_1C
+						end
 					end
 				end
 			end
@@ -360,7 +366,9 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
                                                 register "use_custom_pld" = "true"
                                                 register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(2, 1))"
-						device ref usb2_port2 on end
+						device ref usb2_port2 on
+							probe DB_USB DB_1C
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Type-A Port A0 (MLB)""

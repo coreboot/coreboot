@@ -2,3 +2,5 @@
 
 romstage-y += hwilib.c
 ramstage-y += hwilib.c
+
+CPPFLAGS_common += -I$(src)/vendorcode/siemens/hwilib

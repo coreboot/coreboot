@@ -219,6 +219,8 @@ const struct pmc_to_gpio_route *soc_pmc_gpio_routes(size_t *num)
 		{ PMC_GPP_E, GPP_E },
 		{ PMC_GPP_H, GPP_H },
 		{ PMC_GPP_F, GPP_F },
+		{ PMC_GPP_VGPIO3, GPP_VGPIO3 },
+		{ PMC_GPP_VGPIO, GPP_VGPIO },
 		{ PMC_GPP_S, GPP_S },
 		{ PMC_GPP_B, GPP_B },
 		{ PMC_GPP_D, GPP_D },

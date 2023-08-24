@@ -253,11 +253,11 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_F13 : GSPI1_SOC_DI_FPMCU_DO_LS_R */
 	PAD_CFG_NF(GPP_F13, NONE, DEEP, NF5),
 	/* GPP_F14 : net NC. */
-	PAD_NC(GPP_F19, NONE),
+	PAD_NC(GPP_F14, NONE),
 	/* GPP_F15 : net NC. */
-	PAD_NC(GPP_F19, NONE),
+	PAD_NC(GPP_F15, NONE),
 	/* GPP_F16 : net NC. */
-	PAD_NC(GPP_F19, NONE),
+	PAD_NC(GPP_F16, NONE),
 	/* GPP_F17 : [] ==> GSPI1_SOC_CS_L */
 	PAD_CFG_NF(GPP_F17, NONE, DEEP, NF5),
 	/* GPP_F18 : net NC. */

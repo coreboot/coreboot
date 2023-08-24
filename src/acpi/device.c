@@ -76,8 +76,11 @@ const char *acpi_device_name(const struct device *dev)
 		return NULL;
 
 	/* Check for device specific handler */
-	if (dev->ops && dev->ops->acpi_name)
-		return dev->ops->acpi_name(dev);
+	if (dev->ops && dev->ops->acpi_name) {
+		name = dev->ops->acpi_name(dev);
+		if (name)
+			return name;
+	}
 
 	/* Walk up the tree to find if any parent can identify this device */
 	while (pdev->bus) {

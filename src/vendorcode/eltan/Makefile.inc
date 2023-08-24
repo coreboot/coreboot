@@ -1,3 +1,3 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
-subdirs-y += security
+subdirs-$(CONFIG_USE_VENDORCODE_ELTAN) += security

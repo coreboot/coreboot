@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 static void print_bool(const char *const name, const bool val)
 {
@@ -107,8 +108,9 @@ int main(int argc, char *argv[])
 				print_dec(name, val);
 			} else {
 				fprintf(stderr,
-					"couldn't parse value '%s' for '%s'\n",
+					"toada: Error: Couldn't parse value '%s' for '%s'\n",
 					val, name);
+				exit(1);
 			}
 			continue;
 		default:

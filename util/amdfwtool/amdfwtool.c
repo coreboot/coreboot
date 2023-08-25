@@ -910,10 +910,12 @@ static void dump_psp_firmwares(amd_fw_entry *fw_table)
 {
 	amd_fw_entry *index;
 
-	printf("PSP firmware components:");
+	printf("PSP firmware components:\n");
 	for (index = fw_table; index->type != AMD_FW_INVALID; index++) {
 		if (index->filename)
-			printf("  %2x: %s\n", index->type, index->filename);
+			printf("  %2x: level=%x, subprog=%x, inst=%x, %s\n",
+				index->type, index->level, index->subprog, index->inst,
+				index->filename);
 	}
 }
 
@@ -921,10 +923,11 @@ static void dump_bdt_firmwares(amd_bios_entry *fw_table)
 {
 	amd_bios_entry *index;
 
-	printf("BIOS Directory Table (BDT) components:");
+	printf("BIOS Directory Table (BDT) components:\n");
 	for (index = fw_table; index->type != AMD_BIOS_INVALID; index++) {
 		if (index->filename)
-			printf("  %2x: %s\n", index->type, index->filename);
+			printf("  %2x: level=%x, %s\n",
+				index->type, index->level, index->filename);
 	}
 }
 

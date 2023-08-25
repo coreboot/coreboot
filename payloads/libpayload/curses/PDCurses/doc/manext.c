@@ -30,7 +30,7 @@
 
 #define MAX_LINE 255
 
-void display_info()
+void display_info(void)
 {
     fprintf(stderr, "\nMANEXT 1.03 Copyright (C) 1991-1996 Mark Hessling\n"
                     "All rights reserved.\n"

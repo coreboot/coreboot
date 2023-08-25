@@ -49,8 +49,8 @@ file `Python`
 * __cbmem__ - CBMEM parser to read e.g. timestamps and console log `C`
 * __chromeos__ - These scripts can be used to access ChromeOS
 resources, for example to extract System Agent reference code and other
-blobs (e.g. mrc.bin, refcode, VGA option roms) from a ChromeOS
-recovery image. `C`
+blobs (e.g. mrc.bin, refcode, VGA option roms) from a ChromeOS recovery
+image. `C`
 * __crossgcc__ - A cross toolchain builder for -elf toolchains (ie. no
 libc support) `Bash`
 * __docker__ - Dockerfiles for _coreboot-sdk_, _coreboot-jenkins-node_,
@@ -88,7 +88,7 @@ firmware of many HP laptops with 8051-based SMSC KBC1098/KBC1126
 embedded controller and insert them to the firmware image. `C`
 * __kconfig__ - Build system `Make`
 * __lint__ - Source linter and linting rules `Shell`
-* __liveiso__ - A script and NixOS configuration files to create an ISO
+* __nixos__ - A script and NixOS configuration files to create an ISO
 image for testing purposes and for working on firmware. `Bash`
 * __mainboard__ - mainboard specific scripts
 	* _google_ - Directory for google mainboard specific scripts
@@ -138,6 +138,10 @@ for the files modified in a patch or for a file `Perl`
 license headers `Shell`
 	* _parse-maintainers.pl_ - Script to alphabetize MAINTAINERS
 file `Perl`
+	* _rm_unused_code_ - Remove all code not used for a platform
+from the local git repository for auditing or release `Bash`
+	* _show_platforms.sh_ - Makes a list of platforms in the tree.
+Does not show variants. `Shell`
 	* _ucode_h_to_bin.sh_ - Microcode conversion tool `Bash`
 	* _update_submodules_ - Check all submodules for updates `Bash`
 * __showdevicetree__ - Compile and dump the device tree `C`
@@ -162,9 +166,9 @@ the documentation `Bash`
 * __x86__ - Generates 32-bit PAE page tables based on a CSV input file.
 `Go`
 * __xcompile__ - Cross compile setup `Bash`
-
 ## In depth documentation
 
+* [abuild](util/abuild/index.md)
 * [cbfstool](util/cbfstool/index.md)
 * [ifdtool](util/ifdtool/index.md)
 * [intelp2m](util/intelp2m/index.md)

@@ -28,12 +28,16 @@ Name (STAT, 0x1)  /* Variable to save power state 1 - D0, 0 - D3C */
 Method (_S0W, 0x0)
 {
 #if CONFIG(D3COLD_SUPPORT)
-	Return (0x4)
+	Return (0x04)
 #else
-	Return (0x3)
+	Return (0x03)
 #endif	// D3COLD_SUPPORT
 }
 
+/*
+ * Get power resources that are dependent on this device for Operating System Power Management
+ * to put the device in the D0 device state
+ */
 Method (_PR0)
 {
 #if CONFIG(D3COLD_SUPPORT)
@@ -48,7 +52,7 @@ Method (_PR0)
 	} Else {
 		Return (Package() { \_SB.PCI0.TBT1 })
 	}
-#endif // D3COLD_SUPPORT
+#endif	// D3COLD_SUPPORT
 }
 
 Method (_PR3)
@@ -73,8 +77,8 @@ Method (_PR3)
  */
 Method (D3CX, 0, Serialized)
 {
-	DD3E = 0	/* Disable DMA RTD3 */
-	STAT = 0x1
+	DD3E = 0x00	/* Disable DMA RTD3 */
+	STAT = 0x01
 }
 
 /*
@@ -82,8 +86,8 @@ Method (D3CX, 0, Serialized)
  */
 Method (D3CE, 0, Serialized)
 {
-	DD3E = 1	/* Enable DMA RTD3 */
-	STAT = 0
+	DD3E = 0x01	/* Enable DMA RTD3 */
+	STAT = 0x00
 }
 
 /*

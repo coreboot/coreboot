@@ -392,7 +392,10 @@ Scope (\_SB.PCI0)
 	}
 
 
-	/* From RegBar Base, IOM_TypeC_SW_configuration_1 is at offset 0x40 */
+	/*
+	 * From RegBar Base, IOM_TypeC_SW_configuration_1 is in offset 0xC10040, where
+	 * 0x40 is the register offset.
+	 */
 	OperationRegion (IOMR, SystemMemory, IOM_BASE_ADDR, 0x100)
 	Field (IOMR, DWordAcc, NoLock, Preserve)
 	{
@@ -603,7 +606,6 @@ Scope (\_SB.PCI0)
 			Printf("Skip D3C entry.")
 			Return
 		}
-
 
 		/* Request IOM for D3 cold entry sequence. */
 		/*

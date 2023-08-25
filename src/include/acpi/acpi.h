@@ -217,8 +217,7 @@ typedef struct acpi_tpm2 {
 } __packed acpi_tpm2_t;
 
 typedef struct acpi_mcfg_mmconfig {
-	u32 base_address;
-	u32 base_reserved;
+	u64 base_address;
 	u16 pci_segment_group_number;
 	u8 start_bus_number;
 	u8 end_bus_number;

@@ -265,14 +265,22 @@ usb_hid_process_keyboard_event(usbhid_inst_t *const inst,
 
 	modifiers = 0;
 
-	if (current->modifiers & 0x01) /* Left-Ctrl */   modifiers |= KB_MOD_CTRL;
-	if (current->modifiers & 0x02) /* Left-Shift */  modifiers |= KB_MOD_SHIFT;
-	if (current->modifiers & 0x04) /* Left-Alt */    modifiers |= KB_MOD_ALT;
-	if (current->modifiers & 0x08) /* Left-GUI */;
-	if (current->modifiers & 0x10) /* Right-Ctrl */  modifiers |= KB_MOD_CTRL;
-	if (current->modifiers & 0x20) /* Right-Shift */ modifiers |= KB_MOD_SHIFT;
-	if (current->modifiers & 0x40) /* Right-AltGr */ modifiers |= KB_MOD_ALT;
-	if (current->modifiers & 0x80) /* Right-GUI */;
+	if (current->modifiers & 0x01) /* Left-Ctrl */
+		modifiers |= KB_MOD_CTRL;
+	if (current->modifiers & 0x02) /* Left-Shift */
+		modifiers |= KB_MOD_SHIFT;
+	if (current->modifiers & 0x04) /* Left-Alt */
+		modifiers |= KB_MOD_ALT;
+	if (current->modifiers & 0x08) /* Left-GUI */
+		;
+	if (current->modifiers & 0x10) /* Right-Ctrl */
+		modifiers |= KB_MOD_CTRL;
+	if (current->modifiers & 0x20) /* Right-Shift */
+		modifiers |= KB_MOD_SHIFT;
+	if (current->modifiers & 0x40) /* Right-AltGr */
+		modifiers |= KB_MOD_ALT;
+	if (current->modifiers & 0x80) /* Right-GUI */
+		;
 
 	if ((current->modifiers & 0x05) && ((current->keys[0] == 0x4c) ||
 				(current->keys[0] == 0x63))) {

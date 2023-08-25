@@ -112,7 +112,7 @@ void init_dma_memory(void *start, u32 size)
 #endif
 }
 
-int dma_initialized()
+int dma_initialized(void)
 {
 	return dma != heap;
 }

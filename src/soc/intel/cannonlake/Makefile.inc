@@ -85,10 +85,7 @@ endif
 bootblock-y += gpio_common.c
 ramstage-y += gpio_common.c
 
-ifeq ($(CONFIG_SOC_INTEL_CANNONLAKE),y)
-# Not yet in intel-microcode repo
-#cpu_microcode_bins += $(wildcard 3rdparty/intel-microcode/intel-ucode/06-66-*)
-else ifeq ($(CONFIG_SOC_INTEL_COFFEELAKE),y)
+ifeq ($(CONFIG_SOC_INTEL_COFFEELAKE),y)
 ifeq ($(CONFIG_SOC_INTEL_CANNONLAKE_PCH_H),y)
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-9e-0a
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-9e-0b

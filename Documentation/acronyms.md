@@ -24,7 +24,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * ACPI - The [**Advanced Configuration and Power
   Interface**](http://en.wikipedia.org/wiki/Advanced_Configuration_and_Power_Interface)
   is an industry standard for letting the OS control power management.
-  * [http://www.acpi.info/](http://www.acpi.info/)
+  * [https://uefi.org/specifications](https://uefi.org/specifications)
   * [http://kernelslacker.livejournal.com/88243.html](http://kernelslacker.livejournal.com/88243.html)
 * ADC - [**Analog-to-Digital Converter**](https://en.wikipedia.org/wiki/Analog-to-digital_converter)
 * ADL - Intel: [**Alder Lake**](https://en.wikichip.org/wiki/intel/microarchitectures/alder_lake)
@@ -32,11 +32,11 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * AESKL - Intel: AES Key Locker
 * AGESA - [**AMD Generic Encapsulated Software Architecture**](https://en.wikipedia.org/wiki/AGESA_)
 * AGP - The [**Accelerated Graphics
-  Port**](http://en.wikipedia.org/wiki/Accelerated_Graphics_Port) is an
+  Port**](https://en.wikipedia.org/wiki/Accelerated_Graphics_Port) is an
   older (1997-2004) point-to-point bus for video cards to communicate
   with the processor.
 * AHCI - The [**Advanced Host Controller
-  Interface**](http://en.wikipedia.org/wiki/Advanced_Host_Controller_Interface)
+  Interface**](https://en.wikipedia.org/wiki/Advanced_Host_Controller_Interface)
   is a standard register set for communicating with a SATA controller.
   * [http://www.intel.com/technology/serialata/ahci.htm](http://www.intel.com/technology/serialata/ahci.htm)
   * [http://download.intel.com/technology/serialata/pdf/rev1_3.pdf](http://download.intel.com/technology/serialata/pdf/rev1_3.pdf)
@@ -54,7 +54,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * AMPL - AMD: [**Advanced Platform Management Link**](https://web.archive.org/web/20220509053546/https://developer.amd.com/wordpress/media/2012/10/419181.pdf) - Also referred to as
   SBI: Sideband Interface
 * AMT - Intel: [**Active Management Technology**](https://en.wikipedia.org/wiki/Intel_Active_Management_Technology)
-* ANSI - [**American National Standards Institute**](American_National_Standards_Institute)
+* ANSI - [**American National Standards Institute**](https://en.wikipedia.org/wiki/American_National_Standards_Institute)
 * AOAC - AMD: Always On, Always Connected
 * AP - Application processor - The main processor on the board (as
   opposed to the embedded controller or other processors that may be on
@@ -63,7 +63,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * APCB - AMD: AMD PSP Customization Block
 * API - [**Application Programming Interface**](https://en.wikipedia.org/wiki/API)
 * APIC - [**Advanced Programmable Interrupt
-  Controller**](http://en.wikipedia.org/wiki/Advanced_Programmable_Interrupt_Controller)
+  Controller**](https://en.wikipedia.org/wiki/Advanced_Programmable_Interrupt_Controller)
   this is an advanced version of a PIC that can handle interrupts from
   and for multiple CPUs. Modern systems usually have several APICs:
   Local APICs (LAPIC) are CPU-bound, IO-APICs are bridge-bound.
@@ -98,7 +98,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 
 ## B
 
-* BAR - [**Base Address Register**](http://en.wikipedia.org/wiki/Base_Address_Register) This generally refers to one of the
+* BAR - [**Base Address Register**](https://en.wikipedia.org/wiki/Base_Address_Register) This generally refers to one of the
   base address registers in the PCI config space of a PCI device
 * Baud - [**Baud**](https://en.wikipedia.org/wiki/Baud) - Not an acronym - Symbol rate unit of symbols per second, named
   after Émile Baudot
@@ -117,7 +117,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   the entire 4GiB of the 32-bit address space. Also known as flat mode
   or [**Unreal mode**](https://en.wikipedia.org/wiki/Unreal_mode).
 * BIOS - [**Basic Input/Output
-  System**](http://en.wikipedia.org/wiki/BIOS)
+  System**](https://en.wikipedia.org/wiki/BIOS)
 * BIST - The [**Built-in Self Test**](https://en.wikipedia.org/wiki/Built-in_self-test) is a test run by the processor on
   itself when it is first started. Usually, any nonzero value indicates
   that the selftest failed.
@@ -183,7 +183,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   generally used to describe a section of NVRAM (Non-volatile RAM), in
   this case a section battery-backed memory in the RTC (Real Time Clock)
   that is typically used to store BIOS settings.
-  *[http://en.wikipedia.org/wiki/Nonvolatile_BIOS_memory](http://en.wikipedia.org/wiki/Nonvolatile_BIOS_memory)
+  *[https://en.wikipedia.org/wiki/Nonvolatile_BIOS_memory](https://en.wikipedia.org/wiki/Nonvolatile_BIOS_memory)
 * CNL - Intel: [**Cannon Lake**](https://en.wikichip.org/wiki/intel/microarchitectures/cannon_lake) (formerly Skymont)
 * CNVi - Intel: [**Connectivity Integration**](https://en.wikipedia.org/wiki/CNVi)
 * CPL - x86: Current Privilege Level - Privilege levels range from 0-3; lower numbers are more privileged.
@@ -191,14 +191,14 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * CPPC - AMD: Collaborative Processor Performance Controls
 * CPS - Characters Per Second
 * CPU - [**Central Processing
-  Unit**](http://en.wikipedia.org/wiki/Central_processing_unit)
+  Unit**](https://en.wikipedia.org/wiki/Central_processing_unit)
 * CPUID - x86: [**CPU Identification**](https://en.wikipedia.org/wiki/CPUID) opcode
 * Cr50 - Google: The first generation Google Security Chip (GSC) used on
   ChromeOS devices.
 * CRB - Customer Reference Board
 * CRLF - Carriage Return, Line Feed - \\r\\n - The standard window EOL
   (End-of-Line) marker.
-* crt0 - [**C Run Time 0**](http://en.wikipedia.org/wiki/Crt0)
+* crt0 - [**C Run Time 0**](https://en.wikipedia.org/wiki/Crt0)
 * crt0s - crt0 Source code
 * CRT - [**Cathode Ray Tube**](https://en.wikipedia.org/wiki/Cathode-ray_tube)
 * CSE - Intel: Converged Security Engine
@@ -226,7 +226,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   still has power.
 * D3 Cold - ACPI Device power state: Power is completely removed from
   the device.
-* DASH - [**Desktop and mobile Architecture for System Hardware**](Desktop_and_mobile_Architecture_for_System_Hardware)
+* DASH - [**Desktop and mobile Architecture for System Hardware**](https://en.wikipedia.org/wiki/Desktop_and_mobile_Architecture_for_System_Hardware)
 * DB - DaughterBoard
 * DbC - USB: Debug Capability on the USB host controller
 * DC - Electricity: Direct Current
@@ -244,7 +244,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * DIMM - [**Dual Inline Memory Module**](https://en.wikipedia.org/wiki/DIMM)
 * DIP - [**Dual inline package**](https://en.wikipedia.org/wiki/Dual_in-line_package)
 * DMA - [**Direct Memory
-  Access**](http://en.wikipedia.org/wiki/Direct_memory_access) Allows
+  Access**](https://en.wikipedia.org/wiki/Direct_memory_access) Allows
   certain hardware subsystems within a computer to access system memory
   for reading and/or writing independently of the main CPU. Examples of
   systems that use DMA: Hard Disk Controller, Disk Drive Controller,
@@ -252,7 +252,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   computers, as it allows devices of different speeds to communicate
   without subjecting the CPU to a massive interrupt load.
 * DMI - Direct Media Interface is a link/bus between CPU and PCH.
-* DMI - [**Desktop Management Interface**](Desktop_Management_Interface)
+* DMI - [**Desktop Management Interface**](https://en.wikipedia.org/wiki/Desktop_Management_Interface)
 * DMIC - Digital Microphone
 * DMTF - [**Distributed Management Task Force**](https://en.wikipedia.org/wiki/Distributed_Management_Task_Force)
 * DMZ - Demilitarized Zone
@@ -358,7 +358,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * FPDT - ACPI: Firmware Performance Data Table
 * FPGA - [**Field-Programmable Gate Array**](https://en.wikipedia.org/wiki/Field-programmable_gate_array)
 * Framebuffer - The
-  [**framebuffer**](http://en.wikipedia.org/wiki/Framebuffer) is a part
+  [**framebuffer**](https://en.wikipedia.org/wiki/Framebuffer) is a part
   of RAM in a computer which is allocated to hold the graphics
   information for one frame or picture. This information typically
   consists of color values for every pixel on the screen. A framebuffer
@@ -446,7 +446,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   resume quickly from S3 if the system stays powered, and resume from
   the disk if power is lost.
 * Hypertransport - AMD: The
-  [**Hypertransport**](http://en.wikipedia.org/wiki/Hypertransport) bus
+  [**Hypertransport**](https://en.wikipedia.org/wiki/Hypertransport) bus
   is an older (2001-2017) high-speed electrical interconnection protocol
   specification between CPU, Memory, and (occasionally) peripheral
   devices.  This was originally called the Lightning Data Transport
@@ -622,7 +622,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * MKBP - Matrix Keyboard Protocol
 * MMC - [**MultiMedia
   Card**](https://en.wikipedia.org/wiki/MultiMediaCard)
-* MMIO - [**Memory Mapped I/O**](http://en.wikipedia.org/wiki/MMIO)
+* MMIO - [**Memory Mapped I/O**](https://en.wikipedia.org/wiki/MMIO)
   allows peripherals' memory or registers to be accessed directly
   through the memory bus.  When the memory bus size was very small, this
   was initially done by hiding any memory at that address, effectively
@@ -652,7 +652,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * MTS or MT/s - MegaTransfers per second
 * MTL - Intel: Meteor Lake
 * MTL - ARM: MHU Transport Layer
-* MTRR - [**Memory Type and Range Register**](http://en.wikipedia.org/wiki/MTRR)
+* MTRR - [**Memory Type and Range Register**](https://en.wikipedia.org/wiki/MTRR)
   allows to set the cache behaviour on memory access in x86. Basically,
   it tells the CPU how to cache certain ranges of memory
   (e.g. write-through, write-combining, write-back...). Memory ranges
@@ -731,17 +731,17 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * PCD - UEFI: Platform Configuration Database
 * PCH - Intel: [**Platform Controller Hub**](https://en.wikipedia.org/wiki/Platform_Controller_Hub)
 * PCI - [**Peripheral Control
-  Interconnect**](http://en.wikipedia.org/wiki/Peripheral_Component_Interconnect)
+  Interconnect**](https://en.wikipedia.org/wiki/Peripheral_Component_Interconnect)
   - Replaced generally by PCIe (PCI Express)
 * PCI Configuration Space - The [**PCI Config
-  space**](http://en.wikipedia.org/wiki/PCI_Configuration_Space) is an
+  space**](https://en.wikipedia.org/wiki/PCI_Configuration_Space) is an
   [address space](https://en.wikipedia.org/wiki/Address_space) for all
   PCI devices.  Originally, this address space was accessed through an
   index/data pair by writing the address that you wanted to read/write
   into the I/O address 0xCF8, then reading or writing I/O Address 0xCFC.
   This has been updated to an MMIO method which increases each PCI
   function's configuration space from 256 bytes to 4K.
-* PCIe - [**PCI Express**](http://en.wikipedia.org/wiki/Pci_express)
+* PCIe - [**PCI Express**](https://en.wikipedia.org/wiki/Pci_express)
 * PCMCIA: Personal Computer Memory Card International Association
 * PCO - AMD: [**Picasso**](https://en.wikichip.org/wiki/amd/cores/picasso)
 * PCR: TPM: Platform Configuration Register
@@ -757,7 +757,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * PEP - Intel: Power Engine Plug-in
 * PEXVDD - Nvidia Power: PCIExpress Voltage
 * PHX - AMD: Phoenix SoC
-* PHY - [**PHYsical layer**](http://en.wikipedia.org/wiki/PHY) - The
+* PHY - [**PHYsical layer**](https://en.wikipedia.org/wiki/PHY) - The
   hardware that implements the send/receive functionality of a
   communication protocol.
 * PI - Platform Initialization
@@ -776,7 +776,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * PIT - Generally refers to the 8253/8254 [**Programmable Interval
   Timer**](https://en.wikipedia.org/wiki/Programmable_interval_timer).
 * PLCC - [**Plastic leaded chip
-  carrier**](http://en.wikipedia.org/wiki/Plastic_leaded_chip_carrier)
+  carrier**](https://en.wikipedia.org/wiki/Plastic_leaded_chip_carrier)
 * PLL - [**Phase-Locked
   Loop**](https://en.wikipedia.org/wiki/Phase-locked_loop)
 * PM - Platform Management
@@ -843,7 +843,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   Segment:Offset index pair.  In 2022, this is still the mode that
   x86-64 processors are in at the reset vector!
 * RDMA - [**Remote Direct Memory
-  Access**](http://en.wikipedia.org/wiki/Remote_Direct_Memory_Access) is
+  Access**](https://en.wikipedia.org/wiki/Remote_Direct_Memory_Access) is
   a concept whereby two or more computers communicate via DMA directly
   from main memory of one system to the main memory of another.
 * RFC - Request for Comment
@@ -962,7 +962,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * SO-DIMM: Small Outline Dual In-Line Memory Module
 * SoC - System on a Chip
 * SOIC - [**Small-Outline Integrated
-  Circuit**](http://en.wikipedia.org/wiki/Small-outline_integrated_circuit)
+  Circuit**](https://en.wikipedia.org/wiki/Small-outline_integrated_circuit)
 * SPD - [**Serial Presence
   Detect**](https://en.wikipedia.org/wiki/Serial_presence_detect)
 * SPI - [**Serial Peripheral

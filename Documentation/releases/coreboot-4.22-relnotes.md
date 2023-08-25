@@ -13,7 +13,6 @@ Update this document with changes that should be in the release notes.
   A final version of the notes are done after the release.
 
 ### Significant or interesting changes
-----------------------------------
 
 * Add changes that need a full description here
 
@@ -25,7 +24,6 @@ Update this document with changes that should be in the release notes.
 * To be filled in immediately before the release by the release team
 
 ### Additional coreboot changes
----------------------------
 
 The following are changes across a number of patches, or changes worth
 noting, but not needing a full description.
@@ -33,22 +31,18 @@ noting, but not needing a full description.
 * Changes that only need a line or two of description go here.
 
 ### Platform Updates
-----------------
 
 * To be filled in immediately before the release by the release team
 
 ### Plans to move platform support to a branch
-------------------------------------------
 
 * Section to be filled in or removed after discussion
 
 ### Statistics from the 4.21 to the 4.22 release
---------------------------------------------
 
 * To be filled in immediately before the release by the release team
 
 
 ### Significant Known and Open Issues
----------------------------------
 
 * To be filled in immediately before the release by the release team

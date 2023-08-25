@@ -274,7 +274,7 @@ static int _pdc_vsscanf(const char *buf, const char *fmt, va_list arg_ptr)
                             NEXT(c);
                             goto string;
                         }
-                        /* fall through */
+                        __fallthrough;
                     default:
                         if (fmt[1] == '-' && fmt[2]
                             && f < (unsigned char)fmt[2])

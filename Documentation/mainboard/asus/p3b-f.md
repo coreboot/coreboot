@@ -90,7 +90,7 @@ for only CPU models that the board will actually be run with.
 
 ```eval_rst
 +------------------+--------------------------------------------------+
-| Northbridge      | :doc:`../../northbridge/intel/i440bx/index`      |
+| Northbridge      | Intel I440BX                                     |
 +------------------+--------------------------------------------------+
 | Southbridge      | i82371eb                                         |
 +------------------+--------------------------------------------------+

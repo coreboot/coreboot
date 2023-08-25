@@ -125,8 +125,7 @@ The boards in this section are not real mainboards, but emulators.
 ### Ivy Bridge series
 
 - [T430](lenovo/t430.md)
-- [T530](lenovo/w530.md)
-- [W530](lenovo/w530.md)
+- [T530 / W530](lenovo/w530.md)
 - [T430 / T530 / X230 / W530 common](lenovo/Ivy_Bridge_series.md)
 - [T431s](lenovo/t431s.md)
 - [X230s](lenovo/x230s.md)

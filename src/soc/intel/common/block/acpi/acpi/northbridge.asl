@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <arch/hpet.h>
+#include <commonlib/bsd/helpers.h>
 #include <soc/iomap.h>
 
 Name (_HID, EisaId ("PNP0A08") /* PCI Express Bus */)
@@ -165,6 +166,15 @@ Method (_CRS, 0, Serialized)
 				0x00000000, 0x10000, 0x1ffff, 0x00000000,
 				0x10000,,, PM02)
 
+#if !((CONFIG_PCR_BASE_ADDRESS >= PCH_PRESERVED_BASE_ADDRESS) && \
+      (CONFIG_PCR_BASE_ADDRESS < PCH_PRESERVED_BASE_ADDRESS + PCH_PRESERVED_BASE_SIZE))
+		/* SBREG BAR if outside of PCH reserved resource */
+		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
+				NonCacheable, ReadWrite,
+				0x00000000, 0x000000000, 0x00000000, 0x00000000,
+				0x00000000,,, SM01)
+#endif
+
 		/* PCH reserved resource (0xfc800000-0xfe7fffff) */
 		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
 				Cacheable, ReadWrite,
@@ -191,6 +201,18 @@ Method (_CRS, 0, Serialized)
 	 */
 	PMIN = \_SB.PCI0.MCHC.TLUD & (0xfff << 20)
 	PLEN = PMAX - PMIN + 1
+
+#if !((CONFIG_PCR_BASE_ADDRESS >= PCH_PRESERVED_BASE_ADDRESS) && \
+      (CONFIG_PCR_BASE_ADDRESS < PCH_PRESERVED_BASE_ADDRESS + PCH_PRESERVED_BASE_SIZE))
+	/* Fix up SBREG BAR memory region if outside PCH reserved resource */
+	CreateDwordField (MCRS, SM01._MIN, SMIN)
+	CreateDwordField (MCRS, SM01._MAX, SMAX)
+	CreateDwordField (MCRS, SM01._LEN, SLEN)
+
+	SMIN = P2SB_BAR
+	SLEN = P2SB_SIZE
+	SMAX = SMIN + SLEN - 1
+#endif
 
 	/* Patch PM02 range based on Memory Size */
 	If (A4GS == 0) {

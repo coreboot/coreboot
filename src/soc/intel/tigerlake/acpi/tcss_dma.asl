@@ -96,13 +96,6 @@ Method (D3CE, 0, Serialized)
  * TCSS D3 Cold and TBT RTD3 is only available when system power state is in S0.
  */
 Name (SD3C, 0)
-Method (_PS0, 0, Serialized)
-{
-}
-
-Method (_PS3, 0, Serialized)
-{
-}
 
 Method (_DSW, 3)
 {

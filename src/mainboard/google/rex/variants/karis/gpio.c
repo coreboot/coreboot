@@ -28,10 +28,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_A12, 0, DEEP),
 	/* GPP_A13 : Not connected */
 	PAD_NC(GPP_A13, NONE),
-	/* GPP_A14 : [] ==> WWAN_RF_DISABLE_ODL */
-	PAD_NC_LOCK(GPP_A14, NONE, LOCK_CONFIG),
-	/* GPP_A15 : [] ==> WWAN_RST_L */
-	PAD_CFG_GPO(GPP_A15, 1, DEEP),
+	/* GPP_A14 : NC pad. */
+	PAD_NC(GPP_A14, NONE),
+	/* GPP_A15 : NC pad. */
+	PAD_NC(GPP_A15, NONE),
 	/* GPP_A16 : GPP_A16 ==> ESPI_SOC_ALERT_L */
 	PAD_CFG_NF_IOSSTATE(GPP_A16, UP_20K, DEEP, NF1, IGNORE),
 	/* GPP_A17 : [] ==> EC_SOC_INT_ODL */
@@ -43,8 +43,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_A19, 1, DEEP),
 	/* GPP_A20 : [] ==> SSD_PERST_L */
 	PAD_CFG_GPO_LOCK(GPP_A20, 1, LOCK_CONFIG),
-	/* GPP_A21 : [] ==> WWAN_CONFIG2 */
-	PAD_CFG_GPI(GPP_A21, NONE, DEEP),
+	/* GPP_A21 : [] ==> PMCALERT */
+	PAD_NC(GPP_A21, NONE),
 
 	/* GPP_B00 : [] ==> TCHPAD_INT_ODL_LS */
 	PAD_CFG_GPI_IRQ_WAKE_LOCK(GPP_B00, NONE, LEVEL, INVERT, LOCK_CONFIG),
@@ -80,8 +80,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF_LOCK(GPP_B15, NONE, NF1, LOCK_CONFIG),
 	/* GPP_B16 : [] ==> SOC_HDMI_HPD_L */
 	PAD_CFG_NF(GPP_B16, NONE, DEEP, NF2),
-	/* GPP_B17 : [] ==> EN_WWAN_PWR */
-	PAD_CFG_GPO(GPP_B17, 1, DEEP),
+	/* GPP_B17 : NC pad. */
+	PAD_NC(GPP_B17, NONE),
 	/* GPP_B18 : [] ==> SOC_I2C_TPM_SDA */
 	PAD_CFG_NF_LOCK(GPP_B18, NONE, NF2, LOCK_CONFIG),
 	/* GPP_B19 : [] ==> SOC_I2C_TPM_SCL */
@@ -92,8 +92,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF_LOCK(GPP_B21, NONE, NF2, LOCK_CONFIG),
 	/* GPP_B22 : [] ==> USB4_RT_FORCE_PWR */
 	PAD_CFG_GPO(GPP_B22, 0, DEEP),
-	/* GPP_B23 : [] ==> WWAN_CONFIG0 */
-	PAD_CFG_GPI_LOCK(GPP_B23, NONE, LOCK_CONFIG),
+	/* GPP_B23 : NC pad. */
+	PAD_NC(GPP_B23, NONE),
 
 	/* GPP_C00 : [] ==> EN_TCHSCR_PWR */
 	PAD_CFG_GPO(GPP_C00, 0, DEEP),
@@ -106,7 +106,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_C04 : net NC. */
 	PAD_NC(GPP_C04, NONE),
 	/* GPP_C05 : [] ==> WWAN_PERST_L_STRAP */
-	PAD_CFG_GPO(GPP_C05, 1, PLTRST),
+	PAD_NC(GPP_C05, NONE),
 	/* GPP_C06 : [] ==> SOC_TCHSCR_RPT_EN */
 	PAD_CFG_GPO(GPP_C06, 0, DEEP),
 	/* GPP_C07 : [] ==> SOC_TCHSCR_INT */
@@ -119,12 +119,12 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_C10, NONE),
 	/* GPP_C11 : Not Connected */
 	PAD_NC(GPP_C11, NONE),
-	/* GPP_C12 : [] ==> WWAN_CLKREQ_ODL */
-	PAD_CFG_NF(GPP_C12, NONE, DEEP, NF1),
+	/* GPP_C12 : NC pad. */
+	PAD_NC(GPP_C12, NONE),
 	/* GPP_C13 : Not connected */
 	PAD_NC(GPP_C13, NONE),
 	/* GPP_C15 : [] ==> WWAN_DPR_SAR_ODL */
-	PAD_CFG_GPO(GPP_C15, 1, DEEP),
+	PAD_NC(GPP_C15, NONE),
 	/* GPP_C16 : [] ==> USB_C0_LSX_TX */
 	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),
 	/* GPP_C17 : [] ==> USB_C0_LSX_RX */
@@ -201,8 +201,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_E05, 1, DEEP),
 	/* GPP_E06 : GPP_E06_STRAP ==> Component NC */
 	PAD_NC(GPP_E06, NONE),
-	/* GPP_E07 : [] ==> WWAN_FCPO_L */
-	PAD_CFG_GPO(GPP_E07, 1, DEEP),
+	/* GPP_E07 : NC pad. */
+	PAD_NC(GPP_E07, NONE),
 	/* GPP_E08 : [] ==> SAR2_INT_L */
 	PAD_CFG_GPI_APIC_LOCK(GPP_E08, NONE, LEVEL, NONE, LOCK_CONFIG),
 	/* GPP_E09 : Not Connected */
@@ -246,8 +246,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_F08, 1, DEEP),
 	/* GPP_F09 : [] ==> WLAN_PE_WAKE_ODL */
 	PAD_CFG_GPI_IRQ_WAKE(GPP_F09, NONE, PLTRST, LEVEL, INVERT),
-	/* GPP_F10 : [] ==> WWAN_PCIE_WAKE_ODL */
-	PAD_CFG_GPI_IRQ_WAKE(GPP_F10, NONE, PLTRST, LEVEL, INVERT),
+	/* GPP_F10 : NC pad. */
+	PAD_NC(GPP_F10, NONE),
 	/* GPP_F11 : GSP1_SOC_CLK_R */
 	PAD_CFG_NF(GPP_F11, NONE, DEEP, NF5),
 	/* GPP_F12 : GSPI1_SOC_DO_FPMCU_DI_R */
@@ -367,21 +367,13 @@ static const struct pad_config gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
-	/* GPP_B17 : [] ==> EN_WWAN_PWR */
-	PAD_CFG_GPO(GPP_B17, 1, DEEP),
 	/* GPP_B18 : [] ==> SOC_I2C_TPM_SDA */
 	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF2),
 	/* GPP_B19 : [] ==> SOC_I2C_TPM_SCL */
 	PAD_CFG_NF(GPP_B19, NONE, DEEP, NF2),
-	/* GPP_C05 : [] ==> WWAN_PERST_L_STRAP (updated in ramstage) */
-	PAD_CFG_GPO(GPP_C05, 0, DEEP),
-	/* GPP_A15 : [] ==> WWAN_RST_L (updated in ramstage) */
-	PAD_CFG_GPO(GPP_A15, 0, DEEP),
 	/* GPP_E03 : [] ==> GSC_SOC_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_E03, NONE, PLTRST, LEVEL, INVERT),
 
-	/* GPP_E07 : [] ==> WWAN_FCPO_L (updated in romstage) */
-	PAD_CFG_GPO(GPP_E07, 0, DEEP),
 	/* GPP_H08 : [] ==> UART_DBG_TX_SOC_RX_R */
 	PAD_CFG_NF(GPP_H08, NONE, DEEP, NF1),
 	/* GPP_H09 : [] ==> UART_SOC_TX_DBG_RX_R */
@@ -407,8 +399,6 @@ static const struct pad_config romstage_gpio_table[] = {
 	PAD_CFG_GPO(GPP_A20, 0, DEEP),
 	/* GPP_C23 : [] ==> FP_RST_ODL */
 	PAD_CFG_GPO(GPP_C23, 0, DEEP),
-	/* GPP_E07 : [] ==> WWAN_FCPO_L */
-	PAD_CFG_GPO(GPP_E07, 1, DEEP),
 	/* GPP_D02 : Not Connected */
 	PAD_NC(GPP_D02, NONE),
 };

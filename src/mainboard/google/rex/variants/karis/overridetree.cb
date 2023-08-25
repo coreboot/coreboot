@@ -4,11 +4,6 @@ fw_config
 		option MAX98360_ALC5682I_I2S	1
 		option MAX98363_CS42L42_SNDW	2
 	end
-	field CELLULAR 4 5
-		option CELLULAR_ABSENT		0
-		option CELLULAR_USB		1
-		option CELLULAR_PCIE		2
-	end
 	field UFC 6 7
 		option UFC_USB			0
 		option UFC_MIPI			1
@@ -546,36 +541,6 @@ chip soc/intel/meteorlake
 				end
 			end
 		end	#PCIE5 WLAN card
-		device ref pcie_rp6 on
-			probe CELLULAR CELLULAR_PCIE
-			# Enable WWAN Card PCIE 6 using clk 3
-			register "pcie_rp[PCH_RP(6)]" = "{
-				.clk_src = 3,
-				.clk_req = 3,
-				.flags = PCIE_RP_HOTPLUG | PCIE_RP_LTR | PCIE_RP_AER,
-			}"
-			chip soc/intel/common/block/pcie/rtd3
-				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C05)"
-				register "reset_off_delay_ms" = "20"
-				register "srcclk_pin" = "3"
-				register "ext_pm_support" = "ACPI_PCIE_RP_EMIT_ALL"
-				register "skip_on_off_support" = "true"
-				device generic 0 alias rp6_rtd3 on
-					probe CELLULAR CELLULAR_PCIE
-				end
-			end
-			chip drivers/wwan/fm
-				register "fcpo_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E07)"
-				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A15)"
-				register "perst_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C05)"
-				register "wake_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F10)"
-				register "add_acpi_dma_property" = "true"
-				use rp6_rtd3 as rtd3dev
-				device generic 0 alias rp6_wwan on
-					probe CELLULAR CELLULAR_PCIE
-				end
-			end
-		end	#PCIE6 WWAN card
 		device ref gspi1 on
 			chip drivers/spi/acpi
 				register "name" = ""CRFP""

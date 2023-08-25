@@ -26,7 +26,9 @@
 ## SUCH DAMAGE.
 ##
 
+ifneq ($(CONFIG_LP_COMPILER_LLVM_CLANG),y)
 CFLAGS += -mpreferred-stack-boundary=2
+endif
 
 head.o-y += head.S
 libc-y += main.c sysinfo.c

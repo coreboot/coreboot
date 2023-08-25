@@ -12,7 +12,7 @@
 
 const char *get_wifi_sar_cbfs_filename(void)
 {
-	return "wifi_sar_0.hex";
+	return get_wifi_sar_fw_config_filename(FW_CONFIG_FIELD(WIFI));
 }
 
 void variant_generate_s0ix_hook(enum s0ix_entry entry)

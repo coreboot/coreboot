@@ -3608,6 +3608,7 @@
 #define PCI_DID_INTEL_MTL_IOE_M_PMC		0x7ebe
 #define PCI_DID_INTEL_MTL_IOE_P_PMC		0x7ece
 #define PCI_DID_INTEL_RPP_P_PMC			0x51a1
+#define PCI_DID_INTEL_RPP_S_PMC			0x7a21
 
 /* Intel I2C device Ids */
 #define PCI_DID_INTEL_LPT_LP_I2C0		0x9c61
@@ -4292,6 +4293,7 @@
 #define PCI_DID_INTEL_MTL_IOE_M_P2SB		0x7eb8
 #define PCI_DID_INTEL_MTL_IOE_P_P2SB		0x7ec8
 #define PCI_DID_INTEL_RPP_P_P2SB		0x51a0
+#define PCI_DID_INTEL_RPP_S_P2SB		0x7a20
 
 /* Intel SRAM device Ids */
 #define PCI_DID_INTEL_APL_SRAM			0x5aec

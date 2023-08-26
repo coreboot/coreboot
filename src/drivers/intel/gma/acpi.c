@@ -31,7 +31,7 @@ drivers_intel_gma_displays_ssdt_generate(const struct i915_gpu_controller_info *
 	acpigen_emit_byte(RETURN_OP);
 	acpigen_write_package(conf->ndid);
 	for (i = 0; i < conf->ndid; i++) {
-		acpigen_write_dword (conf->did[i] | 0x80010000);
+		acpigen_write_dword(conf->did[i] | 0x80010000);
 	}
 	acpigen_pop_len(); /* End Package. */
 

@@ -89,7 +89,7 @@ void intel_gmbus_read_edid(u8 *mmio, u8 bus, u8 slave, u8 *edid, u32 edid_size)
 	write32(GMBUS1_ADDR, GMBUS_SW_RDY | GMBUS_CYCLE_STOP);
 	write32(GMBUS2_ADDR, GMBUS_INUSE);
 
-	printk (BIOS_SPEW, "EDID:\n");
+	printk(BIOS_SPEW, "EDID:\n");
 	for (i = 0; i < 128; i++) {
 		printk(BIOS_SPEW, " %02x", edid[i]);
 		if ((i & 0xf) == 0xf)

@@ -16,6 +16,6 @@ namespace NvramToolCli {
 Configuration::Parameters readParameters(QString* error = nullptr);
 QStringList readOptions(const QString& parameter, QString* error = nullptr);
 bool writeParameters(const Configuration::Parameters& parameters, QString* error = nullptr);
-QString version();
+QString version(void);
 
 }

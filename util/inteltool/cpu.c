@@ -222,7 +222,7 @@ int print_sgx(void)
 	return error;
 }
 
-static int is_tme_supported()
+static int is_tme_supported(void)
 {
 	cpuid_result_t cpuid_regs;
 
@@ -236,17 +236,17 @@ static int is_tme_supported()
         return (cpuid_regs.ecx & TME_SUPPORTED);
 }
 
-static msr_t read_tme_activate_msr(){
+static msr_t read_tme_activate_msr(void){
 	return rdmsr_from_cpu(0, IA32_TME_ACTIVATE);
 }
 
-static int is_tme_locked()
+static int is_tme_locked(void)
 {
 	msr_t data = read_tme_activate_msr();
 	return (data.lo & TME_LOCKED);
 }
 
-static int is_tme_enabled()
+static int is_tme_enabled(void)
 {
 	msr_t data = read_tme_activate_msr();
 	return (data.lo & TME_ENABLED);
@@ -271,7 +271,7 @@ void print_tme(void)
 #endif
 }
 
-static bool is_keylocker_supported()
+static bool is_keylocker_supported(void)
 {
 	cpuid_result_t cpuid_regs;
 	msr_t msr;
@@ -287,7 +287,7 @@ static bool is_keylocker_supported()
 	return ((cpuid_regs.ecx & KEYLOCKER_SUPPORTED) && (msr.lo & PRMRR_SUPPORTED));
 }
 
-static bool is_aeskl_enabled()
+static bool is_aeskl_enabled(void)
 {
 	cpuid_result_t cpuid_regs;
 

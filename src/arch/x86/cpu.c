@@ -124,8 +124,8 @@ static const char *cpu_vendor_name(int vendor)
 {
 	const char *name;
 	name = "<invalid CPU vendor>";
-	if ((vendor < ARRAY_SIZE(x86_vendor_name)) &&
-		(x86_vendor_name[vendor] != 0))
+	if (vendor < ARRAY_SIZE(x86_vendor_name) &&
+		x86_vendor_name[vendor] != 0)
 		name = x86_vendor_name[vendor];
 	return name;
 }
@@ -145,7 +145,7 @@ static void identify_cpu(struct device *cpu)
 			cpu->device = 0x00000400; /* 486 */
 		else
 			cpu->device = 0x00000300; /* 386 */
-		if ((cpu->device == 0x00000400) && test_cyrix_52div())
+		if (cpu->device == 0x00000400 && test_cyrix_52div())
 			memcpy(vendor_name, "CyrixInstead", 13);
 			/* If we ever care we can enable cpuid here */
 		/* Detect NexGen with old hypercode */
@@ -195,7 +195,7 @@ struct cpu_driver *find_cpu_driver(struct device *cpu)
 		const struct cpu_device_id *id;
 		for (id = driver->id_table;
 		     id->vendor != X86_VENDOR_INVALID; id++) {
-			if ((cpu->vendor == id->vendor) &&
+			if (cpu->vendor == id->vendor &&
 			    cpuid_match(cpu->device, id->device, id->device_match_mask))
 				return driver;
 			if (id->vendor == X86_VENDOR_ANY)

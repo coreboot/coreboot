@@ -333,7 +333,7 @@ static uint8_t tpm2_read_access_reg(void)
 static void tpm2_write_access_reg(uint8_t cmd)
 {
 	/* Writes to access register can set only 1 bit at a time. */
-	assert (!(cmd & (cmd - 1)));
+	assert(!(cmd & (cmd - 1)));
 
 	tpm2_write_reg(TPM_ACCESS_REG, &cmd, sizeof(cmd));
 }

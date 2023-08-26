@@ -87,7 +87,7 @@ static void *add_target(const struct targetdef *t) {
 	return targets;
 }
 
-static int found_system() {
+static int found_system(void) {
 	if (!sys || (sys && !sys->name)) {
 		fprintf(stderr, "Unable to detect the current operating system!\n");
 		fprintf(stderr, "On Linux, please run 'modprobe msr' and try again.\n");

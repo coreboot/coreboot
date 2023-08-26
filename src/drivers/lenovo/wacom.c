@@ -35,25 +35,25 @@ drivers_lenovo_is_wacom_present(void)
 		return result;
 
 	if (CONFIG(DIGITIZER_PRESENT)) {
-		printk (BIOS_INFO, "Digitizer state forced as present\n");
+		printk(BIOS_INFO, "Digitizer state forced as present\n");
 		return (result = 1);
 	}
 
 	if (CONFIG(DIGITIZER_ABSENT)) {
-		printk (BIOS_INFO, "Digitizer state forced as absent\n");
+		printk(BIOS_INFO, "Digitizer state forced as absent\n");
 		return (result = 0);
 	}
 
 	superio = dev_find_slot_pnp (0x164e, 3);
 	if (!superio) {
-		printk (BIOS_INFO, "No Super I/O, skipping wacom\n");
+		printk(BIOS_INFO, "No Super I/O, skipping wacom\n");
 		return (result = 0);
 	}
 
 	/* Probe ID. */
 	sioid = pnp_read_config(superio, 0x20);
 	if (sioid == 0xff) {
-		printk (BIOS_INFO, "Super I/O probe failed, skipping wacom\n");
+		printk(BIOS_INFO, "Super I/O probe failed, skipping wacom\n");
 		return (result = 0);
 	}
 
@@ -63,10 +63,10 @@ drivers_lenovo_is_wacom_present(void)
 	printk (BIOS_DEBUG, "Lenovo P/N is %s\n", pn);
 	for (i = 0; i < ARRAY_SIZE (tablet_numbers); i++)
 		if (memcmp (tablet_numbers[i], pn, 4) == 0) {
-			printk (BIOS_DEBUG, "Lenovo P/N %s is a tablet\n", pn);
+			printk(BIOS_DEBUG, "Lenovo P/N %s is a tablet\n", pn);
 			return (result = 1);
 		}
-	printk (BIOS_DEBUG, "Lenovo P/N %s is not a tablet\n", pn);
+	printk(BIOS_DEBUG, "Lenovo P/N %s is not a tablet\n", pn);
 	return (result = 0);
 }
 

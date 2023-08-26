@@ -854,7 +854,7 @@ typedef struct acpi_dbg2_header {
 	acpi_header_t header;
 	uint32_t devices_offset;
 	uint32_t devices_count;
-} __attribute__((packed)) acpi_dbg2_header_t;
+} __packed acpi_dbg2_header_t;
 
 /* DBG2: Microsoft Debug Port Table 2 device entry */
 typedef struct acpi_dbg2_device {
@@ -870,7 +870,7 @@ typedef struct acpi_dbg2_device {
 	uint8_t  reserved[2];
 	uint16_t base_address_offset;
 	uint16_t address_size_offset;
-} __attribute__((packed)) acpi_dbg2_device_t;
+} __packed acpi_dbg2_device_t;
 
 /* FADT (Fixed ACPI Description Table) */
 typedef struct acpi_fadt {

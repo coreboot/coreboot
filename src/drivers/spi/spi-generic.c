@@ -98,7 +98,7 @@ unsigned int spi_crop_chunk(const struct spi_slave *slave, unsigned int cmd_len,
 	if (deduct_opcode_len)
 		cmd_len--;
 
-	/* Subtract command length from useable buffer size. If
+	/* Subtract command length from usable buffer size. If
 	   deduct_opcode_len is set, only subtract the number command bytes
 	   after the opcode. If the adjusted cmd_len is larger than ctrlr_max
 	   return 0 to inidicate an error. */

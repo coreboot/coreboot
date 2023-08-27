@@ -376,6 +376,11 @@ struct elog_event_extended_event {
 
 #define ELOG_TYPE_PSR_DATA_LOST           0xba
 
+/*
+ * Events related to Firmware Splash Screen
+ */
+#define ELOG_TYPE_FW_SPLASH_SCREEN        0xbb
+
 /* Only the 7-LSB are used for size */
 #define ELOG_MAX_EVENT_SIZE                    0x7F
 

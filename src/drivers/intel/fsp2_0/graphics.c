@@ -2,6 +2,7 @@
 
 #include <boot/coreboot_tables.h>
 #include <console/console.h>
+#include <elog.h>
 #include <fsp/graphics.h>
 #include <fsp/util.h>
 #include <soc/intel/common/vbt.h>
@@ -48,6 +49,28 @@ static const struct fsp_framebuffer {
 	[pixel_bgrx_8bpc] = { {16, 8}, {8, 8}, {0, 8}, {24, 8} },
 };
 
+enum fw_splash_screen_status {
+	FW_SPLASH_SCREEN_DISABLED,
+	FW_SPLASH_SCREEN_ENABLED,
+};
+
+/*
+ * Update elog with Firmware Splash Screen related information
+ * based on enum fw_splash_screen_status.
+ *
+ * Possible values for input argument are:
+ * TRUE - FSP initializes display when BMP_LOGO config is enabled.
+ * FALSE - Failed to initialize display although BMP_LOGO config is selected.
+ *
+ * Ignore if BMP_LOGO config is not selected.
+ */
+static void update_fw_splash_screen_event(enum fw_splash_screen_status status)
+{
+	if (!CONFIG(BMP_LOGO))
+		return;
+
+	elog_add_event_byte(ELOG_TYPE_FW_SPLASH_SCREEN, status);
+}
 
 void fsp_report_framebuffer_info(const uintptr_t framebuffer_bar,
 				 enum lb_fb_orientation orientation)
@@ -62,6 +85,7 @@ void fsp_report_framebuffer_info(const uintptr_t framebuffer_bar,
 	 */
 	if (!framebuffer_bar) {
 		printk(BIOS_ALERT, "Framebuffer BAR invalid\n");
+		update_fw_splash_screen_event(FW_SPLASH_SCREEN_DISABLED);
 		return;
 	}
 
@@ -69,15 +93,18 @@ void fsp_report_framebuffer_info(const uintptr_t framebuffer_bar,
 
 	if (!ginfo) {
 		printk(BIOS_ALERT, "Graphics hand-off block not found\n");
+		update_fw_splash_screen_event(FW_SPLASH_SCREEN_DISABLED);
 		return;
 	}
 
 	if (ginfo->pixel_format >= ARRAY_SIZE(fsp_framebuffer_format_map)) {
 		printk(BIOS_ALERT, "FSP set unknown framebuffer format: %d\n",
 		       ginfo->pixel_format);
+		update_fw_splash_screen_event(FW_SPLASH_SCREEN_DISABLED);
 		return;
 	}
 
+	update_fw_splash_screen_event(FW_SPLASH_SCREEN_ENABLED);
 	fbinfo = fsp_framebuffer_format_map + ginfo->pixel_format;
 
 	const struct lb_framebuffer fb = {

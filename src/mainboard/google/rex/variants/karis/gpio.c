@@ -187,8 +187,8 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_D23 : net NC is not present in the given design */
 	PAD_NC(GPP_D23, NONE),
 
-	/* GPP_E00 : [] ==> SAR1_INT_L */
-	PAD_CFG_GPI_APIC(GPP_E00, NONE, PLTRST, LEVEL, NONE),
+	/* GPP_E00 : NC net. */
+	PAD_NC(GPP_E00, NONE),
 	/* GPP_E01 : MEM_STRAP_2 ==> Component NC */
 	PAD_CFG_GPI_LOCK(GPP_E01, NONE, LOCK_CONFIG),
 	/* GPP_E02 : MEM_STRAP_1 ==> Component NC */
@@ -203,8 +203,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E06, NONE),
 	/* GPP_E07 : NC pad. */
 	PAD_NC(GPP_E07, NONE),
-	/* GPP_E08 : [] ==> SAR2_INT_L */
-	PAD_CFG_GPI_APIC_LOCK(GPP_E08, NONE, LEVEL, NONE, LOCK_CONFIG),
+	/* GPP_E08 : NC net. */
+	PAD_NC(GPP_E08, NONE),
 	/* GPP_E09 : Not Connected */
 	PAD_NC(GPP_E09, NONE),
 	/* GPP_E10 : [] ==> SOC_FPMCU_INT_L */

@@ -25,6 +25,7 @@
 #define VENDOR_ID_SST				0xbf
 #define VENDOR_ID_STMICRO			0x20
 #define VENDOR_ID_WINBOND			0xef
+#define VENDOR_ID_ISSI				0x9d
 
 /* Controller-specific definitions: */
 

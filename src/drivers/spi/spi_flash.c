@@ -397,6 +397,9 @@ static const struct spi_flash_vendor_info *spi_flash_vendors[] = {
 #if CONFIG(SPI_FLASH_WINBOND)
 	&spi_flash_winbond_vi,
 #endif
+#if CONFIG(SPI_FLASH_ISSI)
+	&spi_flash_issi_vi,
+#endif
 };
 #define IDCODE_LEN 5
 

@@ -155,6 +155,13 @@ config SPI_FLASH_WINBOND
 	  Select this option if your chipset driver needs to store certain
 	  data in the SPI flash and your SPI flash is made by Winbond.
 
+config SPI_FLASH_ISSI
+	bool
+	default y if SPI_FLASH_INCLUDE_ALL_DRIVERS
+	help
+	  Select this option if your chipset driver needs to store certain
+	  data in the SPI flash and your SPI flash is made by ISSI.
+
 config SPI_FLASH_HAS_VOLATILE_GROUP
 	bool
 	default n

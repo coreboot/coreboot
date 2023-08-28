@@ -30,6 +30,7 @@ $(1)-$(CONFIG_SPI_FLASH_SPANSION) += spansion.c
 $(1)-$(CONFIG_SPI_FLASH_SST) += sst.c
 $(1)-$(CONFIG_SPI_FLASH_STMICRO) += stmicro.c
 $(1)-$(CONFIG_SPI_FLASH_WINBOND) += winbond.c
+$(1)-$(CONFIG_SPI_FLASH_ISSI) += issi.c
 endef
 
 $(eval $(call add_spi_stage,bootblock,_EARLY))

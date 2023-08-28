@@ -24,3 +24,12 @@ config SOC_AMD_COMMON_BLOCK_DATA_FABRIC_MULTI_PCI_SEGMENT
 	  the PCI bus number which includes the segment number must select this
 	  option; SoCs that use one data fabric register for the PCI bus number
 	  which doesn't include a segment number field mustn't select this.
+
+config SOC_AMD_COMMON_BLOCK_DATA_FABRIC_EXTENDED_MMIO
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_DATA_FABRIC_DOMAIN
+	help
+	  Some AMD SoCs support more than 48 bit MMIO addresses. In order to
+	  have enough bits for this, the MMIO address extension register is
+	  introduced. SoCs that have this register must select this option in
+	  order for the MMIO regions to be reported correctly.

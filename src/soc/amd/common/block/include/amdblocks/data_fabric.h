@@ -22,6 +22,9 @@
 #define DF_MMIO_BASE(reg)	(DF_MMIO_BASE0 + DF_MMIO_REG_OFFSET(reg))
 #define DF_MMIO_LIMIT(reg)	(DF_MMIO_LIMIT0 + DF_MMIO_REG_OFFSET(reg))
 #define DF_MMIO_CONTROL(reg)	(DF_MMIO_CTRL0 + DF_MMIO_REG_OFFSET(reg))
+#if CONFIG(SOC_AMD_COMMON_BLOCK_DATA_FABRIC_EXTENDED_MMIO)
+#define DF_MMIO_ADDR_EXT(reg)	(DF_MMIO_ADDR_EXT0 + DF_MMIO_REG_OFFSET(reg))
+#endif
 
 /* Last 12GB of the usable address space are reserved */
 #define DF_RESERVED_TOP_12GB_MMIO_SIZE		(12ULL * GiB)
@@ -50,6 +53,9 @@ void data_fabric_set_mmio_np(void);
 
 enum cb_err data_fabric_get_pci_bus_numbers(struct device *domain, uint8_t *first_bus,
 					    uint8_t *last_bus);
+
+void data_fabric_get_mmio_base_size(unsigned int reg, resource_t *mmio_base,
+				    resource_t *mmio_limit);
 
 /* Inform the resource allocator about the usable IO and MMIO regions and PCI bus numbers */
 void amd_pci_domain_read_resources(struct device *domain);

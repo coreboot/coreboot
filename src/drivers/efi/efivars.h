@@ -19,7 +19,7 @@
  *        on output the number of bytes written.
  */
 
-enum cb_err efi_fv_get_option(struct region_device *rdev,
+enum cb_err efi_fv_get_option(const struct region_device *rdev,
 			      const EFI_GUID *guid,
 			      const char *name,
 			      void *dest,
@@ -36,12 +36,12 @@ enum cb_err efi_fv_get_option(struct region_device *rdev,
  * @data: memory buffer where to read data from
  * @size: the size of buffer pointed to by data
  */
-enum cb_err efi_fv_set_option(struct region_device *rdev,
+enum cb_err efi_fv_set_option(const struct region_device *rdev,
 			      const EFI_GUID *guid,
 			      const char *name,
 			      void *data,
 			      uint32_t size);
 
-enum cb_err efi_fv_print_options(struct region_device *rdev);
+enum cb_err efi_fv_print_options(const struct region_device *rdev);
 
 #endif /* _EDK2_OPTION_H_ */

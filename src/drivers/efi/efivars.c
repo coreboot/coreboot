@@ -404,16 +404,17 @@ static enum cb_err efi_fv_init(struct region_device *rdev, bool *auth_format)
 	return ret;
 }
 
-enum cb_err efi_fv_print_options(struct region_device *rdev)
+enum cb_err efi_fv_print_options(const struct region_device *rdev)
 {
 	enum cb_err ret;
 	bool auth_format;
+	struct region_device store_rdev = *rdev;
 
-	ret = efi_fv_init(rdev, &auth_format);
+	ret = efi_fv_init(&store_rdev, &auth_format);
 	if (ret != CB_SUCCESS)
 		return ret;
 
-	return walk_variables(rdev, auth_format, print_var, NULL);
+	return walk_variables(&store_rdev, auth_format, print_var, NULL);
 }
 
 /*
@@ -422,7 +423,7 @@ enum cb_err efi_fv_print_options(struct region_device *rdev)
  * - rdev is the spi flash region to operate on
  * - the FVH and variable store header must have been initialized by a third party
  */
-enum cb_err efi_fv_get_option(struct region_device *rdev,
+enum cb_err efi_fv_get_option(const struct region_device *rdev,
 			      const EFI_GUID *guid,
 			      const char *name,
 			      void *dest,
@@ -431,8 +432,9 @@ enum cb_err efi_fv_get_option(struct region_device *rdev,
 	struct efi_find_args args;
 	bool auth_format;
 	enum cb_err ret;
+	struct region_device store_rdev = *rdev;
 
-	ret = efi_fv_init(rdev, &auth_format);
+	ret = efi_fv_init(&store_rdev, &auth_format);
 	if (ret != CB_SUCCESS)
 		return ret;
 
@@ -441,7 +443,7 @@ enum cb_err efi_fv_get_option(struct region_device *rdev,
 	args.size = size;
 	args.data = dest;
 
-	return walk_variables(rdev, auth_format, find_and_copy, &args);
+	return walk_variables(&store_rdev, auth_format, find_and_copy, &args);
 }
 
 static enum cb_err write_auth_hdr(struct region_device *rdev, const EFI_GUID *guid,
@@ -577,20 +579,21 @@ static enum cb_err write_hdr(struct region_device *rdev, const EFI_GUID *guid,
  * - rdev is the spi flash region to operate on
  * - the FVH and variable store header must have been initialized by a third party
  */
-enum cb_err efi_fv_set_option(struct region_device *rdev,
+enum cb_err efi_fv_set_option(const struct region_device *rdev,
 			      const EFI_GUID *guid,
 			      const char *name,
 			      void *data,
 			      uint32_t size)
 {
 	struct region_device rdev_old;
+	struct region_device store_rdev = *rdev;
 	struct efi_find_compare_args args;
 	bool found_existing;
 	VARIABLE_HEADER hdr;
 	bool auth_format;
 	enum cb_err ret;
 
-	ret = efi_fv_init(rdev, &auth_format);
+	ret = efi_fv_init(&store_rdev, &auth_format);
 	if (ret != CB_SUCCESS)
 		return ret;
 
@@ -601,7 +604,7 @@ enum cb_err efi_fv_set_option(struct region_device *rdev,
 	args.match = false;
 	args.data = data;
 
-	ret = walk_variables(rdev, auth_format, find_and_compare, &args);
+	ret = walk_variables(&store_rdev, auth_format, find_and_compare, &args);
 	found_existing = ret == CB_SUCCESS;
 
 	if (found_existing) {
@@ -610,17 +613,17 @@ enum cb_err efi_fv_set_option(struct region_device *rdev,
 		if (args.match)
 			return CB_SUCCESS;
 
-		rdev_old = *rdev;
+		rdev_old = store_rdev;
 
 		/* Mark as to be deleted */
 		hdr.State = VAR_IN_DELETED_TRANSITION;
-		if (rdev_writeat(rdev, &hdr.State, offsetof(VARIABLE_HEADER, State),
+		if (rdev_writeat(&store_rdev, &hdr.State, offsetof(VARIABLE_HEADER, State),
 			sizeof(hdr.State)) != sizeof(hdr.State))
 			return CB_EFI_ACCESS_ERROR;
 	}
 
 	/* Walk to end of variable store */
-	ret = walk_variables(rdev, auth_format, noop, NULL);
+	ret = walk_variables(&store_rdev, auth_format, noop, NULL);
 	if (ret != CB_EFI_OPTION_NOT_FOUND)
 		return ret;
 
@@ -632,9 +635,9 @@ enum cb_err efi_fv_set_option(struct region_device *rdev,
 	 */
 
 	if (auth_format)
-		ret = write_auth_hdr(rdev, guid, name, data, size);
+		ret = write_auth_hdr(&store_rdev, guid, name, data, size);
 	else
-		ret = write_hdr(rdev, guid, name, data, size);
+		ret = write_hdr(&store_rdev, guid, name, data, size);
 	if (ret != CB_SUCCESS)
 		return ret;
 

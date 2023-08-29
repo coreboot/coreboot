@@ -4,6 +4,7 @@ entries
 
 # start-bit	length	config	config-ID	name
 0		112	r	0		reserved_memory
+400		80	r	0		ramtop
 1352		8	e	1		power_on_after_fail
 
 enumerations

@@ -129,10 +129,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),
 	/* GPP_C17 : [] ==> USB_C0_LSX_RX */
 	PAD_CFG_NF(GPP_C17, NONE, DEEP, NF1),
-	/* GPP_C18 : [] ==> USB_C0_AUX_DC_P */
-	PAD_CFG_NF(GPP_C18, NONE, DEEP, NF6),
-	/* GPP_C19 : [] ==> USB_C0_AUX_DC_N */
-	PAD_CFG_NF(GPP_C19, NONE, DEEP, NF6),
+	/* GPP_C18 : Not Connected. */
+	PAD_NC(GPP_C18, NONE),
+	/* GPP_C19 : Not Connected. */
+	PAD_NC(GPP_C19, NONE),
 	/* GPP_C20 : [] ==> USB_C1_LSX_TX */
 	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),
 	/* GPP_C21 : [] ==> USB_C1_LSX_RX */
@@ -324,10 +324,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_S02, NONE, DEEP, NF3),
 	/* GPP_S03 : [] ==> DMIC_SOC_DATA0_WLAN_PCM_IN */
 	PAD_CFG_NF(GPP_S03, NONE, DEEP, NF3),
-	/* GPP_S04 : [] ==> SDW_SPKR_CLK */
-	PAD_CFG_NF(GPP_S04, NONE, DEEP, NF1),
-	/* GPP_S05 : [] ==> SDW_SPKR_DATA */
-	PAD_CFG_NF(GPP_S05, NONE, DEEP, NF1),
+	/* GPP_S04 : Not connected. */
+	PAD_NC(GPP_S04, NONE),
+	/* GPP_S05 : Not connected. */
+	PAD_NC(GPP_S05, NONE),
 	/* GPP_S06 : [] ==> DMIC_SOC_CLK1_DB_RC */
 	PAD_CFG_NF(GPP_S06, NONE, DEEP, NF3),
 	/* GPP_S07 : [] ==> DMIC_SOC_DATA1_DB */

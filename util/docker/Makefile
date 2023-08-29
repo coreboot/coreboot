@@ -42,17 +42,19 @@ test-docker-login: test-docker
 
 coreboot-sdk: test-docker
 	@echo "Building coreboot SDK $(crossgcc_version) from commit $(DOCKER_COMMIT)"
-	cat coreboot-sdk/Dockerfile | \
-		sed "s/{{DOCKER_COMMIT}}/$(DOCKER_COMMIT)/g" | \
-		sed "s/{{SDK_VERSION}}/$(COREBOOT_IMAGE_TAG)/g" | \
-		sed "s/{{CROSSGCC_PARAM}}/$(COREBOOT_CROSSGCC_PARAM)/g" | \
-		$(DOCKER) build -t coreboot/coreboot-sdk:$(COREBOOT_IMAGE_TAG) -
+	$(DOCKER) build \
+		--tag coreboot/coreboot-sdk:$(COREBOOT_IMAGE_TAG) \
+		--build-arg=SDK_VERSION="$(SDK_VERSION)" \
+		--build-arg=DOCKER_COMMIT="$(DOCKER_COMMIT)" \
+		--build-arg=CROSSGCC_PARAM="$(COREBOOT_CROSSGCC_PARAM)" \
+		coreboot-sdk
 
 coreboot-jenkins-test: test-docker
 	@echo "Testing coreboot SDK and jenkins node version $(crossgcc_version), built from commit $(DOCKER_COMMIT)"
-	cat coreboot-jenkins-test/Dockerfile | \
-		sed "s/{{SDK_VERSION}}/$(COREBOOT_IMAGE_TAG)/g" | \
-		$(DOCKER) build -t coreboot/coreboot-jenkins-test:$(COREBOOT_IMAGE_TAG) -
+	$(DOCKER) build \
+		--tag coreboot/coreboot-jenkins-test:$(COREBOOT_IMAGE_TAG) \
+		--build-arg=SDK_VERSION="$(COREBOOT_IMAGE_TAG)" \
+		coreboot-jenkins-test
 
 upload-coreboot-sdk: test-docker-login
 	$(DOCKER) push coreboot/coreboot-sdk:$(COREBOOT_IMAGE_TAG)

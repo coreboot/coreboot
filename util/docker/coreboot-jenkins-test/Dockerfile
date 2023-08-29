@@ -1,4 +1,6 @@
-FROM coreboot/coreboot-jenkins-node:{{SDK_VERSION}}
+ARG SDK_VERSION
+
+FROM coreboot/coreboot-jenkins-node:${SDK_VERSION}
 
 # Test the built image
 RUN mkdir -p /tmp/work && \

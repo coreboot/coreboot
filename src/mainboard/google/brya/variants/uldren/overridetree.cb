@@ -222,10 +222,7 @@ chip soc/intel/alderlake
 				register "generic.enable_delay_ms" = "1"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x20"
-				device i2c 2c on
-					probe TOUCHSCREEN TOUCHSCREEN_UNKNOWN
-					probe TOUCHSCREEN TOUCHSCREEN_WDT8752A
-				end
+				device i2c 2c on end
 			end
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0001""
@@ -241,10 +238,7 @@ chip soc/intel/alderlake
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
 				register "enable_delay_ms" = "1"
 				register "has_power_resource" = "1"
-				device i2c 10 on
-					probe TOUCHSCREEN TOUCHSCREEN_UNKNOWN
-					probe TOUCHSCREEN TOUCHSCREEN_EKTH5012
-				end
+				device i2c 10 on end
 			end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""ELAN900C""
@@ -260,10 +254,7 @@ chip soc/intel/alderlake
 				register "generic.enable_delay_ms" = "6"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x01"
-				device i2c 16 on
-					probe TOUCHSCREEN TOUCHSCREEN_UNKNOWN
-					probe TOUCHSCREEN TOUCHSCREEN_EKTH7D18
-				end
+				device i2c 16 on end
 			end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GXTP7996""
@@ -278,10 +269,7 @@ chip soc/intel/alderlake
 				register "generic.enable_delay_ms" = "10"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x01"
-				device i2c 5d on
-					probe TOUCHSCREEN TOUCHSCREEN_UNKNOWN
-					probe TOUCHSCREEN TOUCHSCREEN_GT7996F
-				end
+				device i2c 5d on end
 			end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GTCH7502""
@@ -296,10 +284,7 @@ chip soc/intel/alderlake
 				register "generic.enable_delay_ms" = "30"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x01"
-				device i2c 40 on
-					probe TOUCHSCREEN TOUCHSCREEN_UNKNOWN
-					probe TOUCHSCREEN TOUCHSCREEN_GTCH7502
-				end
+				device i2c 40 on end
 			end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""WDHT2601""
@@ -314,10 +299,7 @@ chip soc/intel/alderlake
 				register "generic.enable_delay_ms" = "1"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x20"
-				device i2c 3c on
-					probe TOUCHSCREEN TOUCHSCREEN_UNKNOWN
-					probe TOUCHSCREEN TOUCHSCREEN_WDT8790A
-				end
+				device i2c 3c on end
 			end
 		end
 		device ref i2c3 on
@@ -345,10 +327,7 @@ chip soc/intel/alderlake
 				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F14_IRQ)"
 				register "wake" = "GPE0_DW2_14"
 				register "detect" = "1"
-				device i2c 15 on
-					probe TOUCHPAD TOUCHPAD_UNKNOWN
-					probe TOUCHPAD TOUCHPAD_EKT3744
-				end
+				device i2c 15 on end
 			end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GXTP7863""
@@ -357,10 +336,7 @@ chip soc/intel/alderlake
 				register "generic.wake" = "GPE0_DW2_14"
 				register "generic.detect" = "1"
 				register "hid_desc_reg_offset" = "0x20"
-				device i2c 2c on
-					probe TOUCHPAD TOUCHPAD_UNKNOWN
-					probe TOUCHPAD TOUCHPAD_GT7863
-				end
+				device i2c 2c on end
 			end
 		end
 		device ref pcie_rp7 off end

@@ -46,7 +46,7 @@ static struct param {
 	const char *region_name;
 	const char *source_region;
 	const char *bootblock;
-	const char *ignore_section;
+	const char *ignore_sections;
 	const char *ucode_region;
 	uint64_t u64val;
 	uint32_t type;
@@ -1179,9 +1179,9 @@ static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset,
 		uint32_t host_space_address = convert_addr_space(param.image_region, *offset);
 		assert(IS_HOST_SPACE_ADDRESS(host_space_address));
 		ret = parse_elf_to_xip_stage(buffer, &output, host_space_address,
-					     param.ignore_section, stageheader);
+					     param.ignore_sections, stageheader);
 	} else {
-		ret = parse_elf_to_stage(buffer, &output, param.ignore_section,
+		ret = parse_elf_to_stage(buffer, &output, param.ignore_sections,
 					 stageheader);
 	}
 	if (ret != 0)
@@ -1968,7 +1968,8 @@ static void usage(char *name)
 	     "        (linux specific: [-C cmdline] [-I initrd])           "
 			"Add a payload to the ROM\n"
 	     " add-stage [-r image,regions] -f FILE -n NAME [-A hash] \\\n"
-	     "        [-c compression] [-b base] [-S section-to-ignore] \\\n"
+	     "        [-c compression] [-b base] \\\n"
+	     "        [-S comma-separated-section(s)-to-ignore] \\\n"
 	     "        [-a alignment] [-Q|--pow2page] \\\n"
 	     "        [-y|--xip] [--ibb]                                \\\n"
 	     "        [--ext-win-base win-base --ext-win-size win-size]     "
@@ -2271,7 +2272,7 @@ int main(int argc, char **argv)
 				param.cmdline = optarg;
 				break;
 			case 'S':
-				param.ignore_section = optarg;
+				param.ignore_sections = optarg;
 				break;
 			case 'y':
 				param.stage_xip = true;

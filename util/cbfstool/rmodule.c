@@ -247,13 +247,13 @@ static int find_program_segment(struct rmod_context *ctx)
 	for (i = 0; i < pelf->ehdr.e_phnum; i++) {
 		if (pelf->phdr[i].p_type != PT_LOAD)
 			continue;
-		phdr = &pelf->phdr[i];
+		if (!phdr)
+			phdr = &pelf->phdr[i];
 		nsegments++;
 	}
 
-	if (nsegments != 1) {
-		ERROR("Unexpected number of loadable segments: %d.\n",
-		      nsegments);
+	if (nsegments == 0) {
+		ERROR("No loadable segment found.\n");
 		return -1;
 	}
 
@@ -262,6 +262,7 @@ static int find_program_segment(struct rmod_context *ctx)
 	     (long long)phdr->p_memsz);
 
 	ctx->phdr = phdr;
+	ctx->nsegments = nsegments;
 
 	return 0;
 }
@@ -269,18 +270,17 @@ static int find_program_segment(struct rmod_context *ctx)
 static int
 filter_relocation_sections(struct rmod_context *ctx)
 {
-	int i;
+	int i, j;
 	const char *shstrtab;
 	struct parsed_elf *pelf;
 	const Elf64_Phdr *phdr;
 
 	pelf = &ctx->pelf;
-	phdr = ctx->phdr;
 	shstrtab = buffer_get(pelf->strtabs[pelf->ehdr.e_shstrndx]);
 
 	/*
 	 * Find all relocation sections that contain relocation entries
-	 * for sections that fall within the bounds of the segment. For
+	 * for sections that fall within the bounds of the segments. For
 	 * easier processing the pointer to the relocation array for the
 	 * sections that don't fall within the loadable program are NULL'd
 	 * out.
@@ -319,11 +319,18 @@ filter_relocation_sections(struct rmod_context *ctx)
 			continue;
 		}
 
-		if (shdr->sh_addr < phdr->p_vaddr ||
-		    ((shdr->sh_addr + shdr->sh_size) >
-		     (phdr->p_vaddr + phdr->p_memsz))) {
+		for (j = 0; j < pelf->ehdr.e_phnum; j++) {
+			phdr = &pelf->phdr[j];
+			if (phdr->p_type == PT_LOAD &&
+			    shdr->sh_addr >= phdr->p_vaddr &&
+			    ((shdr->sh_addr + shdr->sh_size) <=
+			     (phdr->p_vaddr + phdr->p_memsz)))
+				break;
+		}
+		if (j == pelf->ehdr.e_phnum) {
 			ERROR("Relocations being applied to section %d not "
-			      "within segment region.\n", sh_info);
+			      "within segments region.\n", sh_info);
+			pelf->relocs[i] = NULL;
 			return -1;
 		}
 	}
@@ -487,6 +494,11 @@ write_elf(const struct rmod_context *ctx, const struct buffer *in,
 	Elf64_Xword total_size;
 	Elf64_Addr addr;
 	Elf64_Ehdr ehdr;
+
+	if (ctx->nsegments != 1) {
+		ERROR("Multiple loadable segments is not supported.\n");
+		return -1;
+	}
 
 	bit64 = ctx->pelf.ehdr.e_ident[EI_CLASS] == ELFCLASS64;
 

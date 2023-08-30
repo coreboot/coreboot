@@ -29,6 +29,8 @@ struct rmod_context {
 	struct parsed_elf pelf;
 	/* Program segment. */
 	Elf64_Phdr *phdr;
+	/* Number of loadable segments. */
+	size_t nsegments;
 	/* Symbol string table. */
 	char *strtab;
 

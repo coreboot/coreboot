@@ -288,6 +288,46 @@ static int rmod_filter(struct reloc_filter *f, const Elf64_Rela *r)
 	return 0;
 }
 
+/* Returns a NULL-terminated list of loadable segments.  Returns NULL if no
+ * loadable segments were found or if two consecutive segments are not
+ * consecutive in their physical address space.
+ */
+static Elf64_Phdr **find_loadable_segments(struct parsed_elf *pelf)
+{
+	Elf64_Phdr **phdrs = NULL;
+	Elf64_Phdr *prev = NULL, *cur;
+	size_t size = 1, i;
+
+	for (i = 0; i < pelf->ehdr.e_phnum; i++, prev = cur) {
+		cur = &pelf->phdr[i];
+
+		if (cur->p_type != PT_LOAD || cur->p_memsz == 0)
+			continue;
+
+		phdrs = realloc(phdrs, sizeof(*phdrs) * ++size);
+		if (!phdrs) {
+			ERROR("Memory allocation failed\n");
+			return NULL;
+		}
+		phdrs[size - 2] = cur;
+
+		if (!prev)
+			continue;
+
+		if (prev->p_paddr + prev->p_memsz != cur->p_paddr ||
+		    prev->p_filesz != prev->p_memsz) {
+			ERROR("Loadable segments physical addresses should "
+			      "be consecutive\n");
+			free(phdrs);
+			return NULL;
+		}
+	}
+
+	if (phdrs)
+		phdrs[size - 1] = NULL;
+	return phdrs;
+}
+
 int parse_elf_to_xip_stage(const struct buffer *input, struct buffer *output,
 			   uint32_t location, const char *ignore_sections,
 			   struct cbfs_file_attr_stageheader *stageheader)
@@ -296,11 +336,13 @@ int parse_elf_to_xip_stage(const struct buffer *input, struct buffer *output,
 	struct rmod_context *rmodctx;
 	struct reloc_filter filter;
 	struct parsed_elf *pelf;
-	uint32_t adjustment;
+	uint32_t adjustment, memsz = 0;
 	struct buffer binput;
 	struct buffer boutput;
+	Elf64_Phdr **toload, **phdr;
 	Elf64_Xword i;
 	int ret = -1;
+	size_t filesz = 0;
 
 	rmodctx = &xipctx.rmodctx;
 	pelf = &rmodctx->pelf;
@@ -324,27 +366,37 @@ int parse_elf_to_xip_stage(const struct buffer *input, struct buffer *output,
 	if (rmodule_collect_relocations(rmodctx, &filter))
 		goto out;
 
-	if (buffer_create(output, pelf->phdr->p_filesz, input->name) != 0) {
+	toload = find_loadable_segments(pelf);
+	if (!toload)
+		goto out;
+
+	for (phdr = toload; *phdr; phdr++)
+		filesz += (*phdr)->p_filesz;
+	if (buffer_create(output, filesz, input->name) != 0) {
 		ERROR("Unable to allocate memory: %m\n");
 		goto out;
 	}
 	buffer_clone(&boutput, output);
-	memset(buffer_get(&boutput), 0, pelf->phdr->p_filesz);
+	memset(buffer_get(&boutput), 0, filesz);
 	buffer_set_size(&boutput, 0);
 
-	/* Single loadable segment. The entire segment moves to final
-	 * location from based on virtual address of loadable segment. */
+	/* The program segment moves to final location from based on virtual
+	 * address of loadable segment. */
 	adjustment = location - pelf->phdr->p_vaddr;
 	DEBUG("Relocation adjustment: %08x\n", adjustment);
 
+	for (phdr = toload; *phdr; phdr++)
+		memsz += (*phdr)->p_memsz;
 	fill_cbfs_stageheader(stageheader,
 			      (uint32_t)pelf->ehdr.e_entry + adjustment,
 			      (uint32_t)pelf->phdr->p_vaddr + adjustment,
-			      pelf->phdr->p_memsz);
-	/* Need an adjustable buffer. */
-	buffer_clone(&binput, input);
-	buffer_seek(&binput, pelf->phdr->p_offset);
-	bputs(&boutput, buffer_get(&binput), pelf->phdr->p_filesz);
+			      memsz);
+	for (phdr = toload; *phdr; phdr++) {
+		/* Need an adjustable buffer. */
+		buffer_clone(&binput, input);
+		buffer_seek(&binput, (*phdr)->p_offset);
+		bputs(&boutput, buffer_get(&binput), (*phdr)->p_filesz);
+	}
 
 	buffer_clone(&boutput, output);
 

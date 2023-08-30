@@ -59,7 +59,7 @@
 	 * cbmem console. This is useful for clearing this area on a per-stage
 	 * basis when more than one stage uses cache-as-ram. */
 
-#if ENV_SEPARATE_BSS
+#if ENV_SEPARATE_DATA_AND_BSS
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_bss = .;
 	/* Allow global uninitialized variables for stages without CAR teardown. */
@@ -89,10 +89,31 @@
 	_shadow_size = (_ebss - _car_region_start) >> 3;
 	REGION(asan_shadow, ., _shadow_size, ARCH_POINTER_ALIGN_SIZE)
 #endif
-	_car_unallocated_start = .;
-	_car_region_end = . + CONFIG_DCACHE_RAM_SIZE - (. - _car_region_start)
-			  - CONFIG_FSP_T_RESERVED_SIZE;
 }
+
+#if ENV_SEPARATE_DATA_AND_BSS
+/* This symbol defines the load address of the Cache-As-RAM .data
+ * section. It should be right at the end of the .text section (_etext)
+ * and ARCH_POINTER_ALIGN_SIZE aligned. */
+_data_load = _etext;
+
+_bogus = ASSERT(_etext == ALIGN(_etext, ARCH_POINTER_ALIGN_SIZE), "Cache-As-RAM load address is improperly defined.");
+
+.data ALIGN(ARCH_POINTER_ALIGN_SIZE) : AT (_data_load) {
+	_data = .;
+	*(.data);
+	*(.data.*);
+	*(.sdata);
+	*(.sdata.*);
+	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
+	_edata = .;
+	RECORD_SIZE(data)
+} : data_segment
+#endif
+
+_car_unallocated_start = .;
+_car_region_end = . + CONFIG_DCACHE_RAM_SIZE - (. - _car_region_start)
+		  - CONFIG_FSP_T_RESERVED_SIZE;
 
 . = _car_region_start;
 .car.fspm_rc_heap . (NOLOAD) : {
@@ -124,18 +145,11 @@ _rom_mtrr_mask = ~(CACHE_ROM_SIZE - 1);
 _rom_mtrr_base = _rom_mtrr_mask;
 #endif
 
-/* Global variables are not allowed in romstage
- * This section is checked during stage creation to ensure
- * that there are no global variables present
- */
-
-. = 0xffffff00;
-.illegal_globals . : {
-	*(.data)
-	*(.data.*)
-}
-
+#if ENV_SEPARATE_DATA_AND_BSS
+_bogus = ASSERT((CONFIG_DCACHE_RAM_SIZE == 0) || (SIZEOF(.car.data) + SIZEOF(.data) <= CONFIG_DCACHE_RAM_SIZE), "Cache as RAM area is too full");
+#else
 _bogus = ASSERT((CONFIG_DCACHE_RAM_SIZE == 0) || (SIZEOF(.car.data) <= CONFIG_DCACHE_RAM_SIZE), "Cache as RAM area is too full");
+#endif
 #if CONFIG(PAGING_IN_CACHE_AS_RAM)
 _bogus2 = ASSERT(_pagetables == ALIGN(_pagetables, 4096), "_pagetables aren't 4KiB aligned");
 #endif

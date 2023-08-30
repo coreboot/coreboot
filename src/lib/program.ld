@@ -72,7 +72,7 @@
 #endif
 
 /* Include data, bss, and heap in that order. Not defined for all stages. */
-#if ENV_HAS_DATA_SECTION
+#if !ENV_SEPARATE_DATA_AND_BSS
 .data . : {
 	. = ALIGN(ARCH_CACHELINE_ALIGN_SIZE);
 	_data = .;
@@ -116,7 +116,7 @@
 }
 #endif
 
-#if !ENV_SEPARATE_BSS
+#if !ENV_SEPARATE_DATA_AND_BSS
 .bss . : {
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_bss = .;

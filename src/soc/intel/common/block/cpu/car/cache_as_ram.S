@@ -295,6 +295,9 @@ car_init_done:
 	pushl	%eax	/* tsc[31:0] */
 #endif
 
+	/* Copy .data section content to Cache-As-Ram */
+#include <cpu/x86/copy_data_section.inc>
+
 before_carstage:
 	post_code(POSTCODE_SOC_BEFORE_CARSTAGE)
 

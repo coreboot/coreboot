@@ -274,16 +274,16 @@
 #if ENV_X86
 /* Indicates memory layout is determined with arch/x86/car.ld. */
 #define ENV_CACHE_AS_RAM		(ENV_ROMSTAGE_OR_BEFORE && !CONFIG(RESET_VECTOR_IN_RAM))
-/* No .data sections with execute-in-place from ROM.  */
-#define ENV_HAS_DATA_SECTION	!ENV_CACHE_AS_RAM
 #else
-/* Both .data and .bss, sometimes SRAM not DRAM. */
-#define ENV_HAS_DATA_SECTION	1
 #define ENV_CACHE_AS_RAM		0
 #endif
 
-/* Indicates if the stage uses the _bss region defined in arch/x86/car.ld */
-#define ENV_SEPARATE_BSS	(ENV_CACHE_AS_RAM && (ENV_BOOTBLOCK || !CONFIG(NO_XIP_EARLY_STAGES)))
+/* Indicates .data section support. */
+#define ENV_HAS_DATA_SECTION		1
+
+/* Indicates if the stage uses the _data and _bss regions defined in
+ * arch/x86/car.ld */
+#define ENV_SEPARATE_DATA_AND_BSS	(ENV_CACHE_AS_RAM && (ENV_BOOTBLOCK || !CONFIG(NO_XIP_EARLY_STAGES)))
 
 /* Currently rmodules, ramstage and smm have heap. */
 #define ENV_HAS_HEAP_SECTION	(ENV_RMODULE || ENV_RAMSTAGE || ENV_SMM)

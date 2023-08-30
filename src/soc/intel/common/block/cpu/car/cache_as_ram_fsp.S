@@ -93,6 +93,9 @@ CAR_init_done:
 	movd	%mm1, %eax
 	push	%eax
 
+	/* Copy .data section content to Cache-As-Ram */
+#include <cpu/x86/copy_data_section.inc>
+
 	/* We can call into C functions now */
 	call	bootblock_c_entry
 

@@ -3,6 +3,16 @@
 #include <memlayout.h>
 #include <arch/header.ld>
 
+/*
+ * The bootblock linker script should be included before the Cache-As-RAM linker
+ * script. Indeed, if it is included after and Cache-As-RAM .data section
+ * support is enabled, the definition order of the sections makes the linker
+ * create an image with an almost 4 GB hole.
+ */
+#if ENV_BOOTBLOCK
+INCLUDE "bootblock/arch/x86/bootblock.ld"
+#endif /* ENV_BOOTBLOCK */
+
 SECTIONS
 {
 	/*
@@ -36,7 +46,3 @@ SECTIONS
 	POSTCAR(32M, 1M)
 #endif
 }
-
-#if ENV_BOOTBLOCK
-	INCLUDE "bootblock/arch/x86/bootblock.ld"
-#endif  /* ENV_BOOTBLOCK */

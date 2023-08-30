@@ -50,6 +50,11 @@ DECLARE_REGION(heap)
 DECLARE_REGION(asan_shadow)
 #endif
 
+#if ENV_SEPARATE_DATA_AND_BSS
+DECLARE_REGION(data)
+DECLARE_REGION(data_load)
+#endif
+
 /* Regions for execution units. */
 
 DECLARE_REGION(payload)

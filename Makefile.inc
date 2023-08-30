@@ -1267,7 +1267,11 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
 #
 # Make sure that segment for .car.data is ignored while adding romstage.
 $(CONFIG_CBFS_PREFIX)/romstage-align := 64
+ifeq ($(CONFIG_NO_XIP_EARLY_STAGES),y)
 $(CONFIG_CBFS_PREFIX)/romstage-options := -S ".car.data"
+else
+$(CONFIG_CBFS_PREFIX)/romstage-options := -S ".car.data,.data"
+endif
 
 # If CAR does not support execution of code, romstage on x86 is expected to be
 # xip.

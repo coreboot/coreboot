@@ -33,8 +33,8 @@ _start:
 	/* reset stack pointer to CAR/EARLYRAM stack */
 	mov	$_STACK_TOP, %esp
 
+#if ENV_SEPARATE_DATA_AND_BSS
 	/* clear .bss section as it is not shared */
-#if ENV_SEPARATE_BSS
 	cld
 	xor	%eax, %eax
 	movl	$(_ebss), %ecx
@@ -42,6 +42,14 @@ _start:
 	sub	%edi, %ecx
 	shrl	$2, %ecx
 	rep	stosl
+
+	/* Copy .data section content to Cache-As-Ram */
+	movl	$(_edata), %ecx
+	movl	$(_data), %edi
+	sub	%edi, %ecx
+	shrl	$2, %ecx
+	movl	$(_data_load),%esi
+	rep	movsl
 #endif
 
 #if ((ENV_SEPARATE_VERSTAGE && CONFIG(VERSTAGE_DEBUG_SPINLOOP)) \

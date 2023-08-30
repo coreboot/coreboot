@@ -100,6 +100,9 @@ pages_done:
 	pushl	%eax
 #endif
 
+	/* Copy .data section content to Cache-As-Ram */
+#include <cpu/x86/copy_data_section.inc>
+
 before_c_entry:
 	call	bootblock_c_entry_bist
 	/* Never returns */

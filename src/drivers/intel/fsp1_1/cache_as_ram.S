@@ -180,6 +180,9 @@ CAR_init_done:
 	movd	%mm0, %eax
 	pushl	%eax	/* tsc[31:0] */
 
+	/* Copy .data section content to Cache-As-Ram */
+#include <cpu/x86/copy_data_section.inc>
+
 before_romstage:
 	/* Call bootblock_c_entry(uint64_t base_timestamp) */
 	call	bootblock_c_entry

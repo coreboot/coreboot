@@ -137,7 +137,12 @@ $(CONFIG_CBFS_PREFIX)/verstage-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
 endif	# CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK
 
 ifeq ($(CONFIG_ARCH_VERSTAGE_X86_32)$(CONFIG_ARCH_VERSTAGE_X86_64),y)
-$(CONFIG_CBFS_PREFIX)/verstage-options := -a 64 -S ".car.data"
+$(CONFIG_CBFS_PREFIX)/verstage-options := -a 64
+ifeq ($(CONFIG_NO_XIP_EARLY_STAGES),y)
+$(CONFIG_CBFS_PREFIX)/verstage-options += -S ".car.data"
+else
+$(CONFIG_CBFS_PREFIX)/verstage-options += -S ".car.data,.data"
+endif
 
 # If CAR does not support execution of code, verstage on x86 is expected to be
 # xip.

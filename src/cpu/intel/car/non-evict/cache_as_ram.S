@@ -233,6 +233,9 @@ end_microcode_update:
 	pushl	%eax	/* tsc[31:0] */
 #endif
 
+	/* Copy .data section content to Cache-As-Ram */
+#include <cpu/x86/copy_data_section.inc>
+
 before_c_entry:
 	post_code(POSTCODE_BOOTBLOCK_BEFORE_C_ENTRY)
 	call	bootblock_c_entry_bist

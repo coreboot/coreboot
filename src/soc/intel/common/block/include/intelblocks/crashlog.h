@@ -129,11 +129,17 @@ typedef struct {
 
 typedef union {
 	struct {
-		u64 access_type	:4;
-		u64 crash_type	:4;
-		u64 count	:8;
-		u64 reserved	:16;
-		u64 guid	:32;
+		u64 access_type		:4;
+		u64 crash_type		:4;
+		u64 count		:8;
+		u64 reserved1		:4;
+		u64 clr_support		:1;
+		u64 storage_off_support	:1;
+		u64 reserved2		:2;
+		u64 storage_off_status	:1;
+		u64 re_arm_status	:1;
+		u64 reserved3		:6;
+		u64 guid		:32;
 	} fields;
 	u64 data;
 } __packed cpu_crashlog_header_t;

@@ -7,6 +7,9 @@ fw_config
 	end
 	field WIFI_SAR_ID 2 3
 		option SAR_ID_0			0
+		option SAR_ID_1			1
+		option SAR_ID_2			2
+		option SAR_ID_3			3
 	end
 	field STYLUS 9
 		option STYLUS_ABSENT		0

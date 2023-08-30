@@ -1214,8 +1214,8 @@ typedef struct {
   UINT8                       Avx2RatioOffset;
 
 /** Offset 0x0403 - AVX3 Ratio Offset
-  0(Default)= No Offset. Range 0 - 31. Specifies number of bins to decrease AVX ratio
-  vs. Core Ratio. Uses Mailbox MSR 0x150, cmd 0x1B.
+  DEPRECATED. 0(Default)= No Offset. Range 0 - 31. Specifies number of bins to decrease
+  AVX ratio vs. Core Ratio. Uses Mailbox MSR 0x150, cmd 0x1B.
 **/
   UINT8                       Avx3RatioOffset;
 
@@ -2793,7 +2793,7 @@ typedef struct {
 
 /** Offset 0x0C4A - Reserved
 **/
-  UINT8                       Reserved66[2];
+  UINT8                      Reserved66[2];
 
 /** Offset 0x0C4C - BCLK RFI Frequency
   Bclk RFI Frequency for each SAGV point in Hz units. 98000000Hz = 98MHz <b>0 - No
@@ -3016,8 +3016,8 @@ typedef struct {
   UINT8                       Avx2VoltageScaleFactor;
 
 /** Offset 0x0DD8 - Avx512 Voltage Guardband Scaling Factor
-  AVX512 Voltage Guardband Scale factor applied to AVX512 workloads. Range is 0-200
-  in 1/100 units, where a value of 125 would apply a 1.25 scale factor.
+  DEPRECATED. AVX512 Voltage Guardband Scale factor applied to AVX512 workloads. Range
+  is 0-200 in 1/100 units, where a value of 125 would apply a 1.25 scale factor.
 **/
   UINT8                       Avx512VoltageScaleFactor;
 

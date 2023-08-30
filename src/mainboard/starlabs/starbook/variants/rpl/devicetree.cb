@@ -9,6 +9,8 @@ chip soc/intel/alderlake
 	register "cnvi_bt_core"			= "1"
 	register "cnvi_bt_audio_offload"	= "1"
 
+	register "disable_dynamic_tccold_handshake" = "1"
+
 	# Serial I/O
 	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0]		= PchSerialIoPci,

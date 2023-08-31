@@ -24,8 +24,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF_IOSSTATE(GPP_A06, UP_20K, DEEP, NF1, IGNORE),
 	/* GPP_A11 : [] ==> EN_UCAM_SENR_PWR */
 	PAD_CFG_GPO(GPP_A11, 0, DEEP),
-	/* GPP_A12 : [] ==> EN_UCAM_PWR */
-	PAD_CFG_GPO(GPP_A12, 0, DEEP),
+	/* GPP_A12 : [] ==> EN_UCAM_PWR, test point. */
+	PAD_NC(GPP_A12, NONE),
 	/* GPP_A13 : Not connected */
 	PAD_NC(GPP_A13, NONE),
 	/* GPP_A14 : NC pad. */
@@ -38,7 +38,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC_LOCK(GPP_A17, NONE, LEVEL, INVERT, LOCK_CONFIG),
 
 	/* GPP_A18 : [] ==> CAM_PSW_L */
-	PAD_CFG_GPI_INT_LOCK(GPP_A18, NONE, EDGE_BOTH, LOCK_CONFIG),
+	PAD_NC(GPP_A18, NONE),
 	/* GPP_A19 : [] ==> EN_PP3300_SSD */
 	PAD_CFG_GPO(GPP_A19, 1, DEEP),
 	/* GPP_A20 : [] ==> SSD_PERST_L */
@@ -60,8 +60,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPP_B05, NONE, DEEP),
 	/* GPP_B06 : [] ==> HP_INT_L_R */
 	PAD_CFG_GPI_INT(GPP_B06, NONE, PLTRST, EDGE_BOTH),
-	/* GPP_B07 : [] ==> RST_HP_L */
-	PAD_CFG_GPO(GPP_B07, 1, DEEP),
+	/* GPP_B07 : [] ==> CAM_DET_L */
+	PAD_CFG_GPI_INT_LOCK(GPP_B07, NONE, EDGE_BOTH, LOCK_CONFIG),
 	/* GPP_B08 : net NC is not present in the given design */
 	PAD_NC(GPP_B08, NONE),
 	/* GPP_B09 : [] ==> EN_FCAM_PWR */
@@ -154,8 +154,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D06, NONE),
 	/* GPP_D07 : [] ==> FPMCU_UWB_MUX_SEL, test pad. */
 	PAD_NC(GPP_D07, NONE),
-	/* GPP_D08 : net NC.  Test pad. */
-	PAD_NC(GPP_D08, NONE),
+	/* GPP_D08 : [] ==> CAM_NC_RES */
+	PAD_CFG_GPO(GPP_D08, 1, DEEP),
 	/* GPP_D09 : [] ==> I2S_MCLK_R */
 	PAD_CFG_NF(GPP_D09, NONE, DEEP, NF2),
 	/* GPP_D10 : [] ==> I2S_SPKR_SCLK_R */
@@ -241,7 +241,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_F06 :  [] ==> WWAN_WLAN_COEX3 */
 	PAD_CFG_NF(GPP_F06, NONE, DEEP, NF1),
 	/* GPP_F07 :  [] ==> UCAM_MCLK_R */
-	PAD_CFG_GPO(GPP_F07, 0, DEEP),
+	PAD_NC(GPP_F07, NONE),
 	/* GPP_F08 : [] ==> WLAN_PERST_L */
 	PAD_CFG_GPO(GPP_F08, 1, DEEP),
 	/* GPP_F09 : [] ==> WLAN_PE_WAKE_ODL */
@@ -301,8 +301,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_H13, NONE, DEEP, NF1),
 	/* GPP_H14 : [] ==> SLP_S0_GATE_R */
 	PAD_CFG_GPO(GPP_H14, 1, PLTRST),
-	/* GPP_H15 : [] ==> EN_DMIC_SOC_DATA */
-	PAD_CFG_GPO(GPP_H15, 0, PLTRST),
+	/* GPP_H15 : [] ==> CAM_SEN_EN */
+	PAD_CFG_GPO_LOCK(GPP_H15, 0, LOCK_CONFIG),
 	/* GPP_H16 : [] ==> DDIB_HDMI_CTRLCLK*/
 	PAD_CFG_NF(GPP_H16, NONE, DEEP, NF1),
 	/* GPP_H17 : [] ==> DDIB_HDMI_CTRLDATA */

@@ -1,0 +1,6 @@
+chip soc/amd/genoa
+
+	device domain 0 on
+	end
+
+end

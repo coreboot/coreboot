@@ -1,0 +1,14 @@
+if BOARD_AMD_ONYX
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_AMD_GENOA
+	select MISSING_BOARD_RESET
+
+config MAINBOARD_DIR
+	default "amd/onyx"
+
+config MAINBOARD_PART_NUMBER
+	default "Onyx"
+
+endif

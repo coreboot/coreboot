@@ -19,9 +19,8 @@ fw_config
 		option TOUCHSCREEN_ELAN		2
 	end
 	field DB_SD 11 12
-		option SD_ABSENT 0
-		option SD_GL9750 1
-		option SD_RTS5227S 2
+		option SD_GL9750		0
+		option SD_RTS5227S		1
 	end
 end
 

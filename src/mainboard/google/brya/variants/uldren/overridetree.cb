@@ -16,6 +16,7 @@ fw_config
 		option TOUCHSCREEN_EKTH5012	4
 		option TOUCHSCREEN_WDT8752A	5
 		option TOUCHSCREEN_GTCH7502	6
+		option TOUCHSCREEN_WDT8790A	7
 	end
 	field EXT_VR 14 14
 		option EXT_VR_PRESENT	0
@@ -298,6 +299,24 @@ chip soc/intel/alderlake
 				device i2c 40 on
 					probe TOUCHSCREEN TOUCHSCREEN_UNKNOWN
 					probe TOUCHSCREEN TOUCHSCREEN_GTCH7502
+				end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""WDHT2601""
+				register "generic.desc" = ""WDT Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
+				register "generic.detect" = "1"
+				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
+				register "generic.reset_delay_ms" = "20"
+				register "generic.stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C6)"
+				register "generic.stop_delay_ms" = "130"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
+				register "generic.enable_delay_ms" = "1"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x20"
+				device i2c 3c on
+					probe TOUCHSCREEN TOUCHSCREEN_UNKNOWN
+					probe TOUCHSCREEN TOUCHSCREEN_WDT8790A
 				end
 			end
 		end

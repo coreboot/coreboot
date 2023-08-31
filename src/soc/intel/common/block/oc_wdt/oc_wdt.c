@@ -22,7 +22,7 @@
  *
  * timeout - Time in seconds before OC watchdog times out. Supported range = 70 - 1024
  */
-void oc_wdt_start(unsigned int timeout)
+static void oc_wdt_start(unsigned int timeout)
 {
 	uint32_t oc_wdt_ctrl;
 
@@ -48,6 +48,12 @@ void oc_wdt_start(unsigned int timeout)
 	outl(oc_wdt_ctrl, PCH_OC_WDT_CTL);
 }
 
+/* Checks if OC WDT is enabled and returns true if so, otherwise false. */
+static bool is_oc_wdt_enabled(void)
+{
+	return (inl(PCH_OC_WDT_CTL) & PCH_OC_WDT_CTL_EN) ? true : false;
+}
+
 /* Reloads the OC watchdog (if enabled) preserving the current settings. */
 void oc_wdt_reload(void)
 {
@@ -65,7 +71,7 @@ void oc_wdt_reload(void)
 }
 
 /* Disables the OC WDT. */
-void oc_wdt_disable(void)
+static void oc_wdt_disable(void)
 {
 	uint32_t oc_wdt_ctrl;
 
@@ -76,14 +82,22 @@ void oc_wdt_disable(void)
 	outl(oc_wdt_ctrl, PCH_OC_WDT_CTL);
 }
 
-/* Checks if OC WDT is enabled and returns true if so, otherwise false. */
-bool is_oc_wdt_enabled(void)
-{
-	return (inl(PCH_OC_WDT_CTL) & PCH_OC_WDT_CTL_EN) ? true : false;
-}
-
 /* Returns currently programmed OC watchdog timeout in seconds */
 unsigned int oc_wdt_get_current_timeout(void)
 {
 	return (inl(PCH_OC_WDT_CTL) & PCH_OC_WDT_CTL_TOV_MASK) + 1;
+}
+
+/* Starts and reloads the OC watchdog if enabled in Kconfig */
+void setup_oc_wdt(void)
+{
+	if (CONFIG(SOC_INTEL_COMMON_OC_WDT_ENABLE)) {
+		oc_wdt_start(CONFIG_SOC_INTEL_COMMON_OC_WDT_TIMEOUT_SECONDS);
+		if (is_oc_wdt_enabled())
+			printk(BIOS_DEBUG, "OC Watchdog enabled\n");
+		else
+			printk(BIOS_ERR, "Failed to enable OC watchdog\n");
+	} else {
+		oc_wdt_disable();
+	}
 }

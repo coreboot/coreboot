@@ -18,6 +18,10 @@ fw_config
 		option TOUCHSCREEN_ILITEK	1
 		option TOUCHSCREEN_ELAN		2
 	end
+	field FP_MCU 10
+		option FP_MCU_STM		0
+		option FP_MCU_NPCX		1
+	end
 	field DB_SD 11 12
 		option SD_GL9750		0
 		option SD_RTS5227S		1

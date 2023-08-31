@@ -24,6 +24,7 @@ DefinitionBlock(
 			#include <soc/intel/common/block/acpi/acpi/northbridge.asl>
 			#include <soc/intel/jasperlake/acpi/southbridge.asl>
 			#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
+			#include <soc/intel/common/block/acpi/acpi/gna.asl>
 		}
 	}
 

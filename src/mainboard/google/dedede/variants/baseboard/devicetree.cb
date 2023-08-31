@@ -285,6 +285,7 @@ chip soc/intel/jasperlake
 			end
 		end # SA Thermal device
 		device pci 05.0 off end # IPU
+		device pci 08.0 on  end # GNA
 		device pci 09.0 off end # Intel Trace Hub
 		device pci 12.6 off end # GSPI 2
 		device pci 14.0 on

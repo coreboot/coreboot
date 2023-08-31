@@ -1005,6 +1005,13 @@ config RESOURCE_ALLOCATION_TOP_DOWN
 	  undeclared resources. EDK2 is currently reported to also have
 	  problems on some platforms, at least with Intel's IGD.
 
+config ALWAYS_ALLOW_ABOVE_4G_ALLOCATION
+	bool
+	default n if ARCH_X86
+	default y
+	help
+	  Don't limit mem resources to 4G, but to their actual limit.
+
 config XHCI_UTILS
 	def_bool n
 	help

@@ -84,6 +84,9 @@ static bool dev_has_children(const struct device *dev)
 
 static resource_t effective_limit(const struct resource *const res)
 {
+	if (CONFIG(ALWAYS_ALLOW_ABOVE_4G_ALLOCATION))
+		return res->limit;
+
 	/* Always allow bridge resources above 4G. */
 	if (res->flags & IORESOURCE_BRIDGE)
 		return res->limit;

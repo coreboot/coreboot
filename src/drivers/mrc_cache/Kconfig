@@ -27,7 +27,7 @@ config MRC_WRITE_NV_LATE
 	help
 	  MRC settings are normally written to NVRAM at BS_DEV_ENUMERATE-EXIT.
 	  If a platform requires MRC settings written to NVRAM later than
-	  normal, select this item.  This will cause the write to occur at
+	  normal, select this item. This will cause the write to occur at
 	  BS_OS_RESUME_CHECK-ENTRY.
 
 config MRC_STASH_TO_CBMEM

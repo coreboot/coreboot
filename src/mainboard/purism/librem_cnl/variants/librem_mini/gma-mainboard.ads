@@ -10,6 +10,7 @@ private package GMA.Mainboard is
 
    ports : constant Port_List :=
      (DP1,  -- DisplayPort connector
+      HDMI1, -- DisplayPort connector, needed for passive DisplayPort to DVI/HDMI adapters
       DP2,  -- HDMI connector through Parade DP175 LSPCON
       others => Disabled);
 

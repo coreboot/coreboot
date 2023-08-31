@@ -97,7 +97,7 @@ void northbridge_write_smram(u8 smram)
 struct device_operations i945_pci_domain_ops = {
 	.read_resources   = mch_domain_read_resources,
 	.set_resources    = mch_domain_set_resources,
-	.scan_bus         = pci_domain_scan_bus,
+	.scan_bus         = pci_host_bridge_scan_bus,
 	.acpi_name        = northbridge_acpi_name,
 };
 

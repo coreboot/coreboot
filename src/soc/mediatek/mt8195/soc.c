@@ -53,7 +53,7 @@ static struct device_operations soc_ops = {
 static struct device_operations pci_domain_ops = {
 	.read_resources = &mtk_pcie_domain_read_resources,
 	.set_resources = &mtk_pcie_domain_set_resources,
-	.scan_bus = &pci_domain_scan_bus,
+	.scan_bus = &pci_host_bridge_scan_bus,
 	.enable = &mtk_pcie_domain_enable,
 };
 

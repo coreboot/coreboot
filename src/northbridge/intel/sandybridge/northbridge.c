@@ -55,7 +55,7 @@ static const char *northbridge_acpi_name(const struct device *dev)
 struct device_operations sandybridge_pci_domain_ops = {
 	.read_resources    = pci_domain_read_resources,
 	.set_resources     = pci_domain_set_resources,
-	.scan_bus          = pci_domain_scan_bus,
+	.scan_bus          = pci_host_bridge_scan_bus,
 	.write_acpi_tables = northbridge_write_acpi_tables,
 	.acpi_name         = northbridge_acpi_name,
 };

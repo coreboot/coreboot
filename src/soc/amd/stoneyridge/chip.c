@@ -84,7 +84,7 @@ struct device_operations stoneyridge_pci_domain_ops = {
 	.read_resources	  = domain_read_resources,
 	.set_resources	  = pci_domain_set_resources,
 	.enable_resources = domain_enable_resources,
-	.scan_bus	  = pci_domain_scan_bus,
+	.scan_bus	  = pci_host_bridge_scan_bus,
 	.acpi_name	  = soc_acpi_name,
 };
 

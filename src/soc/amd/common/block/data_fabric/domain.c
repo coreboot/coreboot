@@ -28,12 +28,12 @@ void amd_pci_domain_scan_bus(struct device *domain)
 
 	/* Set bus first number of PCI root */
 	domain->link_list->secondary = bus;
-	/* subordinate needs to be the same as secondary before pci_domain_scan_bus call. */
+	/* subordinate needs to be the same as secondary before pci_host_bridge_scan_bus call. */
 	domain->link_list->subordinate = bus;
 	/* Tell allocator about maximum PCI bus number in domain */
 	domain->link_list->max_subordinate = limit;
 
-	pci_domain_scan_bus(domain);
+	pci_host_bridge_scan_bus(domain);
 }
 
 static void print_df_mmio_outside_of_cpu_mmio_error(unsigned int reg)

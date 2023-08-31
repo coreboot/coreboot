@@ -1662,7 +1662,7 @@ void pci_scan_bridge(struct device *dev)
  *
  * @param dev Pointer to the domain.
  */
-void pci_domain_scan_bus(struct device *dev)
+void pci_host_bridge_scan_bus(struct device *dev)
 {
 	struct bus *link = dev->link_list;
 	pci_scan_bus(link, PCI_DEVFN(0, 0), 0xff);

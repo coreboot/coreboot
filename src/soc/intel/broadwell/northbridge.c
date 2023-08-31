@@ -400,7 +400,7 @@ static const struct pci_driver systemagent_driver __pci_driver = {
 struct device_operations broadwell_pci_domain_ops = {
 	.read_resources    = &pci_domain_read_resources,
 	.set_resources     = &pci_domain_set_resources,
-	.scan_bus          = &pci_domain_scan_bus,
+	.scan_bus          = &pci_host_bridge_scan_bus,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.write_acpi_tables = &northbridge_write_acpi_tables,
 #endif

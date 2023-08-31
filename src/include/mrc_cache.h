@@ -47,4 +47,10 @@ void *mrc_cache_current_mmap_leak(int type, uint32_t version,
 int mrc_cache_stash_data(int type, uint32_t version, const void *data,
 			 size_t size);
 
+/**
+ * API to locate the FSP Non-Volatile Storage Data (aka memory training data)
+ * and store into the NVS.
+ */
+void save_memory_training_data(void);
+
 #endif /* _COMMON_MRC_CACHE_H_ */

@@ -74,8 +74,11 @@ static void do_fsp_post_memory_init(bool s3wake, uint32_t version)
 		(uintptr_t)cbmem_find(CBMEM_ID_FSP_RESERVED_MEMORY))
 		die("Failed to accommodate FSP reserved memory request!\n");
 
-	if (CONFIG(CACHE_MRC_SETTINGS) && !s3wake)
+	if (CONFIG(CACHE_MRC_SETTINGS) && !s3wake) {
 		do_cbmem_version_entry(cbmem_id, version);
+		if (!CONFIG(FSP_NVS_DATA_POST_SILICON_INIT))
+			save_memory_training_data();
+	}
 
 	/* Create romstage handof information */
 	romstage_handoff_init(s3wake);

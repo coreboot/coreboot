@@ -9,6 +9,7 @@
 #include <console/console.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
+#include <mrc_cache.h>
 #include <program_loading.h>
 #include <soc/intel/common/reset.h>
 #include <soc/intel/common/vbt.h>
@@ -252,6 +253,9 @@ void fsp_silicon_init(void)
 {
 	fsps_load();
 	do_silicon_init(&fsps_hdr);
+
+	if (CONFIG(CACHE_MRC_SETTINGS) && CONFIG(FSP_NVS_DATA_POST_SILICON_INIT))
+		save_memory_training_data();
 
 	if (CONFIG(DISPLAY_FSP_TIMESTAMPS))
 		fsp_display_timestamp();

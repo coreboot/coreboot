@@ -1,13 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <acpi/acpi.h>
-#include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <fsp/util.h>
 #include <mrc_cache.h>
 
-static void save_mrc_data(void *unused)
+void save_memory_training_data(void)
 {
 	size_t mrc_data_size;
 	const void *mrc_data;
@@ -41,13 +40,3 @@ static void save_mrc_data(void *unused)
 				 mrc_data_size) < 0)
 		printk(BIOS_ERR, "Failed to stash MRC data\n");
 }
-
-/*
- * Should be done before ramstage_cse_fw_sync() to avoid traning memory twice on
- * a cold boot after a full firmware update.
- */
-#if CONFIG(FSP_NVS_DATA_POST_SILICON_INIT)
-BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_EXIT, save_mrc_data, NULL);
-#else
-BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, save_mrc_data, NULL);
-#endif

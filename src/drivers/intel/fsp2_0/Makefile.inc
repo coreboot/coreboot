@@ -16,6 +16,7 @@ romstage-y += memory_init.c
 romstage-$(CONFIG_MMA) += mma_core.c
 romstage-y += cbmem.c
 romstage-$(CONFIG_ENABLE_FSP_ERROR_INFO) += fsp_error_info_hob.c
+romstage-$(CONFIG_CACHE_MRC_SETTINGS) += save_mrc_data.c
 
 ramstage-y += debug.c
 ramstage-$(CONFIG_FSP_USES_CB_DEBUG_EVENT_HANDLER) += fsp_debug_event.c
@@ -30,7 +31,7 @@ ramstage-y += notify.c
 ramstage-y += silicon_init.c
 ramstage-$(CONFIG_DISPLAY_UPD_DATA) += upd_display.c
 ramstage-y += util.c
-ramstage-$(CONFIG_CACHE_MRC_SETTINGS) += save_mrc_data.c
+ramstage-$(CONFIG_FSP_NVS_DATA_POST_SILICON_INIT) += save_mrc_data.c
 ramstage-$(CONFIG_MMA) += mma_core.c
 ramstage-$(CONFIG_ENABLE_FSP_ERROR_INFO) += fsp_error_info_hob.c
 ramstage-$(CONFIG_BMP_LOGO) += fsp_gop_blt.c

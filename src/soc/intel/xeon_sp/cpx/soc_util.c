@@ -25,14 +25,9 @@ const struct SystemMemoryMapHob *get_system_memory_map(void)
 	return *memmap_addr;
 }
 
-bool stack_needs_resource_alloc(const STACK_RES *res)
-{
-	return res->Personality == TYPE_UBOX_IIO;
-}
-
 bool is_pcie_iio_stack_res(const STACK_RES *res)
 {
-	return stack_needs_resource_alloc(res);
+	return res->Personality == TYPE_UBOX_IIO;
 }
 
 uint8_t get_stack_busno(const uint8_t stack)
@@ -114,5 +109,26 @@ void soc_set_mrc_cold_boot_flag(bool cold_boot_required)
 	printk(BIOS_SPEW, "MRC status: 0x%02x want 0x%02x\n", mrc_status, new_mrc_status);
 	if (new_mrc_status != mrc_status) {
 		cmos_write(new_mrc_status, CMOS_OFFSET_MRC_STATUS);
+	}
+}
+
+void get_iiostack_info(struct iiostack_resource *info)
+{
+	const IIO_UDS *hob = get_iio_uds();
+
+	// copy IIO Stack info from FSP HOB
+	info->no_of_stacks = 0;
+	for (int socket = 0, iio = 0; iio < hob->PlatformData.numofIIO; ++socket) {
+		if (!soc_cpu_is_enabled(socket))
+			continue;
+		iio++;
+		for (int x = 0; x < MAX_IIO_STACK; ++x) {
+			const STACK_RES *ri;
+			ri = &hob->PlatformData.IIO_resource[socket].StackRes[x];
+			if (!is_pcie_iio_stack_res(ri))
+				continue;
+			assert(info->no_of_stacks < (CONFIG_MAX_SOCKET * MAX_IIO_STACK));
+			memcpy(&info->res[info->no_of_stacks++], ri, sizeof(STACK_RES));
+		}
 	}
 }

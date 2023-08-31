@@ -104,9 +104,9 @@ size_t soc_get_ioapic_info(const uintptr_t *ioapic_bases[])
 		for (int stack = 0; stack < MAX_IIO_STACK; ++stack) {
 			const STACK_RES *ri =
 				&hob->PlatformData.IIO_resource[socket].StackRes[stack];
-			if (!stack_needs_resource_alloc(ri))
-				continue;
 			uint32_t ioapic_base = ri->IoApicBase;
+			if (ioapic_base == 0 || ioapic_base == 0xFFFFFFFF)
+				continue;
 			assert(index < ARRAY_SIZE(xeonsp_ioapic_bases));
 			xeonsp_ioapic_bases[index++] = ioapic_base;
 			if (!CONFIG(XEON_SP_HAVE_IIO_IOAPIC))

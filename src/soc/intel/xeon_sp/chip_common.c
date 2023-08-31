@@ -110,7 +110,7 @@ void attach_iio_stacks(struct device *dev)
 				continue;
 
 			const STACK_RES *ri = &hob->PlatformData.IIO_resource[s].StackRes[x];
-			if (!stack_needs_resource_alloc(ri))
+			if (ri->BusBase > ri->BusLimit)
 				continue;
 
 			if (!is_pcie_iio_stack_res(ri)) {

@@ -74,7 +74,7 @@ union dpr_register txt_get_chipset_dpr(void)
 		for (int stack = 0; stack < MAX_IIO_STACK; ++stack) {
 			const STACK_RES *ri =
 				&hob->PlatformData.IIO_resource[socket].StackRes[stack];
-			if (!stack_needs_resource_alloc(ri))
+			if (ri->VtdBarAddress == 0)
 				continue;
 			uint8_t bus = ri->BusBase;
 			dev = VTD_DEV(bus);

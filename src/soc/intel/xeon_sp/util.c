@@ -101,27 +101,6 @@ const IIO_UDS *get_iio_uds(void)
 	return hob;
 }
 
-void get_iiostack_info(struct iiostack_resource *info)
-{
-	const IIO_UDS *hob = get_iio_uds();
-
-	// copy IIO Stack info from FSP HOB
-	info->no_of_stacks = 0;
-	for (int socket = 0, iio = 0; iio < hob->PlatformData.numofIIO; ++socket) {
-		if (!soc_cpu_is_enabled(socket))
-			continue;
-		iio++;
-		for (int x = 0; x < MAX_IIO_STACK; ++x) {
-			const STACK_RES *ri;
-			ri = &hob->PlatformData.IIO_resource[socket].StackRes[x];
-			if (!stack_needs_resource_alloc(ri))
-				continue;
-			assert(info->no_of_stacks < (CONFIG_MAX_SOCKET * MAX_IIO_STACK));
-			memcpy(&info->res[info->no_of_stacks++], ri, sizeof(STACK_RES));
-		}
-	}
-}
-
 /*
  * Returns true if the CPU in the specified socket was found
  * during QPI init, false otherwise.

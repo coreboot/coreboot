@@ -83,6 +83,7 @@ const char *soc_acpi_name(const struct device *dev)
 	case SA_DEVFN_TBT2:		return "TRP2";
 	case SA_DEVFN_TBT3:		return "TRP3";
 	case SA_DEVFN_IPU:		return "IPU0";
+	case SA_DEVFN_GNA:		return "GNA";
 	case PCH_DEVFN_ISH:		return "ISHB";
 	case PCH_DEVFN_XHCI:		return "XHCI";
 	case PCH_DEVFN_I2C0:		return "I2C0";

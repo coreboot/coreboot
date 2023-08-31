@@ -26,6 +26,10 @@ fw_config
 		option SD_GL9750		0
 		option SD_RTS5227S		1
 	end
+	field WIFI_SAR_ID 13
+		option WIFI_SAR_ID_0		0
+		option WIFI_SAR_ID_1		1
+	end
 end
 
 chip soc/intel/meteorlake

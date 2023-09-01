@@ -810,7 +810,6 @@ F:	src/drivers/intel/fsp2_0/
 AMD Cezanne
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
-M:	Raul E Rangel <rrangel@chromium.org>
 M:	Fred Reitberger <reitbergerfred@gmail.com>
 M:	Matt DeVillier <matt.devillier@amd.corp-partner.google.com>
 L:	amd_coreboot_org_changes@googlegroups.com
@@ -821,7 +820,6 @@ F:	src/vendorcode/amd/fsp/cezanne/
 AMD common SoC code
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
-M:	Raul E Rangel <rrangel@chromium.org>
 M:	Fred Reitberger <reitbergerfred@gmail.com>
 M:	Matt DeVillier <matt.devillier@amd.corp-partner.google.com>
 L:	amd_coreboot_org_changes@googlegroups.com
@@ -841,7 +839,6 @@ F:	src/vendorcode/amd/fsp/picasso/
 AMD Mendocino
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
-M:	Raul E Rangel <rrangel@chromium.org>
 M:	Fred Reitberger <reitbergerfred@gmail.com>
 M:	Matt DeVillier <matt.devillier@amd.corp-partner.google.com>
 L:	amd_coreboot_org_changes@googlegroups.com

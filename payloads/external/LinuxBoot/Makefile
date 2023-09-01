@@ -33,7 +33,7 @@ endif
 
 ifeq ($(CONFIG_LINUXBOOT_KERNEL_BZIMAGE),y)
 
-build/bzImage: $(kernel_dir)/arch/x86/boot/bzImage | build
+build/bzImage: $(kernel_dir)/arch/x86/boot/bzImage build/initramfs | build
 	cp $< $@
 
 else ifeq ($(CONFIG_LINUXBOOT_KERNEL_UIMAGE),y)

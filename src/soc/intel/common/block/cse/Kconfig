@@ -379,3 +379,11 @@ config CSE_BPDT_VERSION
 	  This config indicates the BPDT version used by CSE for a given SoC.
 
 endif
+
+config CSE_RESET_CLEAR_EC_AP_IDLE_FLAG
+	bool
+	default y if !SYSTEM_TYPE_LAPTOP
+	help
+	  Select this if the variant is a Chromebox/base. This allows AP to direct EC
+	  to clear AP_IDLE flag before triggering reset to make sure AP can boot up
+	  after reset.

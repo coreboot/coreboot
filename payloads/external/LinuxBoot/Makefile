@@ -21,7 +21,11 @@ ifeq ($(CONFIG_LINUXBOOT_UROOT),y)
 include targets/u-root.mk
 endif
 
+ifeq ($(CONFIG_LINUXBOOT_BUILD_INITRAMFS),y)
 build/initramfs: $(CONFIG_LINUXBOOT_INITRAMFS_PATH) | build
+else
+build/initramfs:
+endif
 ifeq ($(CONFIG_LINUXBOOT_INITRAMFS_COMPRESSION_XZ),y)
 	xz --keep --force --check=crc32 --lzma2=dict=1MiB $(CONFIG_LINUXBOOT_INITRAMFS_PATH)
 endif

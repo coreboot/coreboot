@@ -66,12 +66,24 @@ static const struct pad_config disable_wifi_pch_susclk[] = {
 	PAD_NC(GPD8, NONE),
 };
 
+static const struct pad_config disable_usbc1_pins[] = {
+	/* GPP_A21: USB_C1_AUX_DC_P => NC */
+	PAD_NC(GPP_A21, NONE),
+	/* GPP_A22: USB_C1_AUX_DC_N => NC */
+	PAD_NC(GPP_A22, NONE),
+};
+
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 {
 	if (fw_config_is_provisioned() && !fw_config_probe(FW_CONFIG(STORAGE, STORAGE_EMMC))) {
 		printk(BIOS_INFO, "Disable eMMC GPIO pins.\n");
 		gpio_padbased_override(padbased_table, emmc_disable_pads,
 				       ARRAY_SIZE(emmc_disable_pads));
+	}
+	if (fw_config_is_provisioned() && fw_config_probe(FW_CONFIG(DB_USB, DB_1A))) {
+		printk(BIOS_INFO, "Disable USBC1 AUX Pins.\n");
+		gpio_padbased_override(padbased_table, disable_usbc1_pins,
+					ARRAY_SIZE(disable_usbc1_pins));
 	}
 	if (!fw_config_probe(FW_CONFIG(DB_USB, DB_1C_LTE))) {
 		printk(BIOS_INFO, "Disable LTE-related GPIO pins on yavilla.\n");

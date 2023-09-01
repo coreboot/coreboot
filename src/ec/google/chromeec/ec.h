@@ -411,6 +411,11 @@ int google_chromeec_regulator_set_voltage(uint32_t index, uint32_t min_mv,
  */
 int google_chromeec_regulator_get_voltage(uint32_t index, uint32_t *voltage_mv);
 
+/**
+ * Clear EC AP_IDLE flag
+ */
+void google_chromeec_clear_ec_ap_idle(void);
+
 #if CONFIG(HAVE_ACPI_TABLES)
 /**
  * Writes USB Type-C PD related information to the SSDT

@@ -3,6 +3,7 @@
 config SOC_AMD_REMBRANDT_BASE
 	bool
 	select ACPI_SOC_NVS
+	select ADD_FSP_BINARIES if USE_AMD_BLOBS
 	select ARCH_X86
 	select BOOT_DEVICE_SUPPORTS_WRITES if BOOT_DEVICE_SPI_FLASH
 	select CACHE_MRC_SETTINGS
@@ -110,6 +111,20 @@ config CHIPSET_DEVICETREE
 	string
 	default "soc/amd/mendocino/chipset_mendocino.cb" if SOC_AMD_MENDOCINO
 	default "soc/amd/mendocino/chipset_rembrandt.cb"
+
+config FSP_M_FILE
+	string "FSP-M (memory init) binary path and filename"
+	depends on ADD_FSP_BINARIES
+	default "3rdparty/amd_blobs/mendocino/MENDOCINO_M.fd" if SOC_AMD_MENDOCINO
+	help
+	  The path and filename of the FSP-M binary for this platform.
+
+config FSP_S_FILE
+	string "FSP-S (silicon init) binary path and filename"
+	depends on ADD_FSP_BINARIES
+	default "3rdparty/amd_blobs/mendocino/MENDOCINO_S.fd" if SOC_AMD_MENDOCINO
+	help
+	  The path and filename of the FSP-S binary for this platform.
 
 config EARLY_RESERVED_DRAM_BASE
 	hex

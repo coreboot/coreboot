@@ -229,11 +229,12 @@ static void fill_fspm_vr_config_params(FSP_M_CONFIG *m_cfg,
 {
 	/* FastVmode Settings for VR domains */
 	for (size_t domain = 0; domain < NUM_VR_DOMAINS; domain++) {
-		m_cfg->CepEnable[domain] = config->cep_enable[domain];
-		if (m_cfg->CepEnable[domain]) {
-			m_cfg->EnableFastVmode[domain] = config->enable_fast_vmode[domain];
-			if (m_cfg->EnableFastVmode[domain])
+		if (config->cep_enable[domain]) {
+			m_cfg->CepEnable[domain] = config->cep_enable[domain];
+			if (config->enable_fast_vmode[domain]) {
+				m_cfg->EnableFastVmode[domain] = config->enable_fast_vmode[domain];
 				m_cfg->IccLimit[domain] = config->fast_vmode_i_trip[domain];
+			}
 		}
 	}
 }

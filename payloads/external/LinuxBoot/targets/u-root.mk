@@ -3,7 +3,7 @@
 uroot_package = github.com/u-root/u-root
 uroot_build = build/go/src/$(uroot_package)
 
-UROOT_ARCH-$(CONFIG_LIBUXBOOT_X86_64)      = amd64
+UROOT_ARCH-$(CONFIG_LINUXBOOT_X86_64)      = amd64
 UROOT_ARCH-$(CONFIG_LINUXBOOT_X86)         = 386
 UROOT_ARCH-$(CONFIG_LINUXBOOT_ARM64)       = arm64
 UROOT_ARCH-$(CONFIG_LINUXBOOT_RISCV_RV64)  = riscv64

@@ -302,7 +302,7 @@ void arch_bootstate_coreboot_exit(void)
 
 /* cpu_info() looks at address 0 at the base of %gs for a pointer to struct cpu_info */
 static struct per_cpu_segment_data segment_data[CONFIG_MAX_CPUS];
-struct cpu_info cpu_infos[CONFIG_MAX_CPUS];
+struct cpu_info cpu_infos[CONFIG_MAX_CPUS] = {0};
 
 enum cb_err set_cpu_info(unsigned int index, struct device *cpu)
 {

@@ -54,6 +54,8 @@ static void acpi_set_hybrid_cpu_apicid_order(void *unused)
 	uint32_t i, j = 0;
 
 	for (i = 0; i < ARRAY_SIZE(cpu_apic_info.apic_ids); i++) {
+		if (!cpu_infos[i].cpu)
+			continue;
 		if (cpu_infos[i].cpu->path.apic.core_type == CPU_TYPE_PERF)
 			cpu_apic_info.apic_ids[perf_core_cnt++] =
 				cpu_infos[i].cpu->path.apic.apic_id;

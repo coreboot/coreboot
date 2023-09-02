@@ -410,13 +410,26 @@ config FSP_ENABLE_SERIAL_DEBUG
 	  coreboot native debug driver when coreboot has integrated the debug FSP
 	  binaries. coreboot disables serial messages when this config is not enabled.
 
-config SAVE_MRC_AFTER_FSPS
+config FSP_NVS_DATA_POST_SILICON_INIT
 	bool
 	default n
-	depends on XEON_SP_COMMON_BASE
 	help
-	  Save MRC training data after FSP-S. Select this on platforms that generate MRC
-	  cache HOB data as part of FSP-S rather than FSP-M.
+	  Select this config to enable the workaround for Intel SoC platforms that
+	  do not adhere to the FSP 2.x specification requirement, where the FSP
+	  Silicon Init API produces Non-Volatile Storage (NVS) data instead of the
+	  FSP-Memory Init API.
+
+	  According to the FSP 2.x specification (section 11.3), the FSP populates the
+	  NVS data using the FSP_NON_VOLATILE_STORAGE_HOB and expects the boot firmware
+	  to parse the FSP_NON_VOLATILE_STORAGE_HOB after the FspMemoryInit() API in API
+	  mode.
+
+	  However, not all Intel SoC platforms that support the FSP 2.x specification
+	  adhere to this requirement. For example, the FSP binary for XEON SP platform
+	  produces NVS data (aka FSP_NON_VOLATILE_STORAGE_HOB) after the FspSiliconInit()
+	  API. Therefore, attempting to locate NVS data after the FspMemoryInit() API on
+	  these platforms would result in an error. Use this config to find the NVS data
+	  and store it in Non-Volatile Storage after the FspSiliconInit() API.
 
 config FSP_MULTIPHASE_SI_INIT_RETURN_BROKEN
 	bool

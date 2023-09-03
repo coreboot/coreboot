@@ -245,9 +245,18 @@ pci_rom_acpi_fill_vfct(const struct device *device, acpi_vfct_t *vfct_struct,
 	header->PCIFunction = PCI_FUNC(device->path.pci.devfn);
 	header->PCIDevice = PCI_SLOT(device->path.pci.devfn);
 	header->ImageLength = rom->size * 512;
-	memcpy((void *)&header->VbiosContent, rom, header->ImageLength);
+	memcpy((void *)header->VbiosContent, rom, header->ImageLength);
 
 	vfct_struct->VBIOSImageOffset = (size_t)header - (size_t)vfct_struct;
+
+	/* Calculate and set checksum for VBIOS data if FSP GOP driver used,
+	   Since GOP driver modifies ATOMBIOS tables at end of VBIOS */
+	if (CONFIG(RUN_FSP_GOP)) {
+		/* Clear existing checksum before recalculating */
+		header->VbiosContent[VFCT_VBIOS_CHECKSUM_OFFSET] = 0;
+		header->VbiosContent[VFCT_VBIOS_CHECKSUM_OFFSET] =
+				acpi_checksum(header->VbiosContent, header->ImageLength);
+	}
 
 	current += header->ImageLength;
 	return current;

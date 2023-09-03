@@ -466,6 +466,8 @@ typedef struct acpi_lpi_desc_ncst {
 	uint64_t counter_frequency;	/* Frequency in cycles per second - 0 means TSC freq */
 } __packed acpi_lpi_desc_ncst_t;
 
+#define VFCT_VBIOS_CHECKSUM_OFFSET  0x21
+
 /* VFCT image header */
 typedef struct acpi_vfct_image_hdr {
 	u32 PCIBus;
@@ -477,7 +479,7 @@ typedef struct acpi_vfct_image_hdr {
 	u16 SSID;
 	u32 Revision;
 	u32 ImageLength;
-	u8  VbiosContent;	// dummy - copy VBIOS here
+	u8  VbiosContent[];	// dummy - copy VBIOS here
 } __packed acpi_vfct_image_hdr_t;
 
 /* VFCT (VBIOS Fetch Table) */

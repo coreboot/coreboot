@@ -57,9 +57,6 @@ void show_psp_transfer_info(void)
 		printk(BIOS_INFO, "PSP boot mode: %s\n",
 				info->psp_info & PSP_INFO_PRODUCTION_MODE ?
 				"Production" : "Development");
-		printk(BIOS_INFO, "Silicon level: %s\n",
-				info->psp_info & PSP_INFO_PRODUCTION_SILICON ?
-				"Production" : "Pre-Production");
 	}
 }
 

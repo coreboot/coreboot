@@ -103,10 +103,10 @@ static const unsigned short intel_pci_device_ids[] = {
 	PCI_DID_WSP_8275_SERIES_1_WIFI,
 	/* Thunder Peak 2 */
 	PCI_DID_TP_9260_SERIES_WIFI,
-	/* Cyclone Peak */
-	PCI_DID_CyP_6SERIES_WIFI,
-	/* Typhoon Peak */
-	PCI_DID_TyP_6SERIES_WIFI,
+	/* Cyclone Peak (CyP) */
+	PCI_DID_CP_6SERIES_WIFI,
+	/* Typhoon Peak (TyP) */
+	PCI_DID_TP_6SERIES_WIFI,
 	0
 };
 

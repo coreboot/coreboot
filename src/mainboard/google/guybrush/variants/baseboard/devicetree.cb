@@ -360,7 +360,7 @@ chip soc/amd/cezanne
 		end
 	end # domain
 
-	device ref i2c_3 on
+	device ref i2c_3 hidden
 		chip drivers/i2c/tpm
 			register "hid" = ""GOOG0005""
 			register "desc" = ""Cr50 TPM""

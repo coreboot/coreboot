@@ -107,6 +107,8 @@ static const unsigned short intel_pci_device_ids[] = {
 	PCI_DID_CP_6SERIES_WIFI,
 	/* Typhoon Peak (TyP) */
 	PCI_DID_TP_6SERIES_WIFI,
+	/* Misty Peak (MtP) */
+	PCI_DID_MP_7SERIES_WIFI,
 	0
 };
 

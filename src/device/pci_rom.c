@@ -219,7 +219,7 @@ static struct rom_header *check_initialized(const struct device *dev)
 }
 
 static unsigned long
-pci_rom_acpi_fill_vfct(const struct device *device, acpi_vfct_t *vfct_struct,
+ati_rom_acpi_fill_vfct(const struct device *device, acpi_vfct_t *vfct_struct,
 		       unsigned long current)
 {
 	acpi_vfct_image_hdr_t *header = &vfct_struct->image_hdr;
@@ -280,7 +280,7 @@ pci_rom_write_acpi_tables(const struct device *device, unsigned long current,
 
 		current = ALIGN_UP(current, 8);
 		vfct = (acpi_vfct_t *)current;
-		acpi_create_vfct(device, vfct, pci_rom_acpi_fill_vfct);
+		acpi_create_vfct(device, vfct, ati_rom_acpi_fill_vfct);
 		if (vfct->header.length) {
 			printk(BIOS_DEBUG, "ACPI:    * VFCT at %lx\n", current);
 			current += vfct->header.length;

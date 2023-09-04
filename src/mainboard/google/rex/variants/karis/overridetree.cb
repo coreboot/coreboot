@@ -1,23 +1,21 @@
 fw_config
-	field DB_USB 12 14
-		option USB_UNKNOWN		0
-		option USB3_PS8815		1
-		option USB4_KB8010		2
-		option USB4_ANX7452		3
-		option USB4_HAYDEN_BRIDGE	4
-		option USB4_ANX7452_V2		5
+	field STYLUS 2
+		option STYLUS_ABSENT		0
+		option STYLUS_PRESENT		1
 	end
-	field FP 15
-		option FP_PRESENT		0
-		option FP_ABSENT		1
+	field AUDIO 3 5
+		option ALC5650_NO_AMP_I2S	0
 	end
-	field WIFI 18
+	field MIPI_CAM 8 9
+		option UF_CAM_HI556		0
+	end
+	field FP_MCU 10 11
+		option FP_ABSENT		0
+		option FP_MCU_NUVOTON		1
+	end
+	field WIFI_TYPE 13
 		option WIFI_CNVI		0
 		option WIFI_PCIE		1
-	end
-	field VPU 20
-		option VPU_DIS			0
-		option VPU_EN			1
 	end
 end
 
@@ -252,9 +250,7 @@ chip soc/intel/meteorlake
 		end # PCIE10 SSD card
 		device ref tbt_pcie_rp0 on end
 		device ref tbt_pcie_rp2 on end
-		device ref vpu on
-			probe VPU VPU_EN
-		end
+		device ref vpu on end
 		device ref tcss_xhci on
 			chip drivers/usb/acpi
 				device ref tcss_root_hub on
@@ -335,7 +331,7 @@ chip soc/intel/meteorlake
 				register "add_acpi_dma_property" = "true"
 				register "enable_cnvi_ddr_rfim" = "true"
 				device generic 0 on
-					probe WIFI WIFI_CNVI
+					probe WIFI_TYPE WIFI_CNVI
 				end
 			end
 		end
@@ -349,7 +345,9 @@ chip soc/intel/meteorlake
 				register "cio2_lanes_used" = "{2}" # 2 CSI Camera lanes are used
 				register "cio2_lane_endpoint[0]" = ""^I2C5.CAM0""
 				register "cio2_prt[0]" = "4"
-				device generic 0 on end
+				device generic 0 on
+					probe MIPI_CAM UF_CAM_HI556
+				end
 			end
 		end
 		device ref i2c0 on
@@ -362,7 +360,9 @@ chip soc/intel/meteorlake
 				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
 				register "property_list[0].name" = ""realtek,jd-mode""
 				register "property_list[0].integer" = "2"
-				device i2c 1a on end
+				device i2c 1a on
+					probe AUDIO ALC5650_NO_AMP_I2S
+				end
 			end
 		end #I2C0
 		device ref i2c1 on
@@ -391,7 +391,9 @@ chip soc/intel/meteorlake
 				register "key.linux_code" = "SW_PEN_INSERTED"
 				register "key.linux_input_type" = "EV_SW"
 				register "key.label" = ""pen_eject""
-				device generic 0 on end
+				device generic 0 on
+					probe STYLUS STYLUS_PRESENT
+				end
 			end
 		end
 		device ref i2c2 on end
@@ -449,7 +451,9 @@ chip soc/intel/meteorlake
 				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(2, 0)"
 				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
 				register "off_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
-				device i2c 20 on end
+				device i2c 20 on
+					probe MIPI_CAM UF_CAM_HI556
+				end
 			end
 			chip drivers/intel/mipi_camera
 				register "acpi_hid" = "ACPI_DT_NAMESPACE_HID"
@@ -479,11 +483,13 @@ chip soc/intel/meteorlake
 				register "off_seq.ops_cnt" = "1"
 				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
-				device i2c 50 on end
+				device i2c 50 on
+					probe MIPI_CAM UF_CAM_HI556
+				end
 			end
 		end #I2C5
 		device ref pcie_rp5 on
-			probe WIFI WIFI_PCIE
+			probe WIFI_TYPE WIFI_PCIE
 			# Enable WLAN Card PCIE 5 using clk 5
 			register "pcie_rp[PCH_RP(5)]" = "{
 				.clk_src = 5,
@@ -494,7 +500,7 @@ chip soc/intel/meteorlake
 				register "wake" = "GPE0_DW2_09"
 				register "add_acpi_dma_property" = "true"
 				device pci 00.0 on
-					probe WIFI WIFI_PCIE
+					probe WIFI_TYPE WIFI_PCIE
 				end
 			end
 			chip soc/intel/common/block/pcie/rtd3
@@ -502,7 +508,7 @@ chip soc/intel/meteorlake
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F08)"
 				register "srcclk_pin" = "5"
 				device generic 0 on
-					probe WIFI WIFI_PCIE
+					probe WIFI_TYPE WIFI_PCIE
 				end
 			end
 		end	#PCIE5 WLAN card
@@ -518,7 +524,9 @@ chip soc/intel/meteorlake
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C23)"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B11)"
 				register "enable_delay_ms" = "3"
-				device spi 0 on end
+				device spi 0 on
+					probe FP_MCU FP_MCU_NUVOTON
+				end
 			end # FPMCU
 		end
 		device ref soc_espi on

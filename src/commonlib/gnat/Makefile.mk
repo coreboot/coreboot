@@ -10,7 +10,7 @@ ADAFLAGS_libgnat-$(1) := \
 	--RTS=$$(obj)/libgnat-$(1)/ \
 	-gnatg \
 	-gnatpg \
-	-I$$(src)/lib/gnat/ \
+	-I$(dir) \
 	$$(GCC_ADAFLAGS_$(1)) \
 	-Werror \
 	-fno-pie \

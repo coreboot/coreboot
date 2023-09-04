@@ -24,7 +24,7 @@ HEADER_EXCLUDED="\
 ^src/drivers/net/ne2k.c\$|\
 ^src/drivers/xgi/common/initdef.h\$|\
 ^src/drivers/xgi/common/vstruct.h\$|\
-^src/lib/gnat/|\
+^src/commonlib/gnat/|\
 ^src/lib/lzmadecode.[ch]\$|\
 ^src/lib/stack.c\$|\
 ^src/sbom/TAGS|\

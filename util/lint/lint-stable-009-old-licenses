@@ -15,7 +15,7 @@ LINTDIR="$(
 . "${LINTDIR}/helper_functions.sh"
 
 HEADER_EXCLUDED="\
-^src/lib/gnat/|\
+^src/commonlib/gnat/|\
 ^src/vendorcode/|\
 ^util/kconfig/|\
 \<COPYING\>|\

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpigen.h>
 #include <assert.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/gpio.h>
@@ -60,6 +61,15 @@ static const char *i2c_acpi_name(const struct device *dev)
 	}
 	printk(BIOS_ERR, "%s: Could not find %lu\n", __func__, (uintptr_t)dev->path.mmio.addr);
 	return NULL;
+}
+
+static void i2c_acpi_fill_ssdt(const struct device *dev)
+{
+	dw_i2c_acpi_fill_ssdt(dev);
+
+	acpigen_write_scope(acpi_device_path(dev));
+	acpigen_write_store_int_to_namestr(acpi_device_status(dev), "STAT");
+	acpigen_pop_len(); /* Scope */
 }
 
 int dw_i2c_soc_dev_to_bus(const struct device *dev)
@@ -129,7 +139,7 @@ struct device_operations soc_amd_i2c_mmio_ops = {
 	.set_resources = noop_set_resources,
 	.scan_bus = scan_smbus,
 	.acpi_name = i2c_acpi_name,
-	.acpi_fill_ssdt = dw_i2c_acpi_fill_ssdt,
+	.acpi_fill_ssdt = i2c_acpi_fill_ssdt,
 	.ops_i2c_bus = &dw_i2c_bus_ops,
 };
 

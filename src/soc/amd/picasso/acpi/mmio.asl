@@ -279,9 +279,10 @@ Device (I2C0) {
 		}
 	}
 
+	Name (STAT, 0x0)
 	Method (_STA, 0x0, NotSerialized)
 	{
-		Return (0x0F)
+		Return (STAT)
 	}
 
 	AOAC_DEVICE(5, 0)
@@ -315,9 +316,10 @@ Device (I2C1) {
 		}
 	}
 
+	Name (STAT, 0x0)
 	Method (_STA, 0x0, NotSerialized)
 	{
-		Return (0x0F)
+		Return (STAT)
 	}
 
 	AOAC_DEVICE(6, 0)
@@ -352,9 +354,10 @@ Device (I2C2) {
 		}
 	}
 
+	Name (STAT, 0x0)
 	Method (_STA, 0x0, NotSerialized)
 	{
-		Return (0x0F)
+		Return (STAT)
 	}
 
 	AOAC_DEVICE(FCH_AOAC_DEV_I2C2, 0)
@@ -388,9 +391,11 @@ Device (I2C3)
 			Return (Local0)
 		}
 	}
+
+	Name (STAT, 0x0)
 	Method (_STA, 0x0, NotSerialized)
 	{
-		Return (0x0F)
+		Return (STAT)
 	}
 
 	AOAC_DEVICE(FCH_AOAC_DEV_I2C3, 0)

@@ -78,9 +78,10 @@ Device (I2CA) {
 		Memory32Fixed (ReadWrite, APU_I2C0_BASE, 0x1000)
 	})
 
+	Name (STAT, 0x0)
 	Method (_STA, 0x0, NotSerialized)
 	{
-		Return (0x0F)
+		Return (STAT)
 	}
 }
 
@@ -93,9 +94,11 @@ Device (I2CB)
 		IRQ (Edge, ActiveHigh, Exclusive) { 15 }
 		Memory32Fixed (ReadWrite, APU_I2C1_BASE, 0x1000)
 	})
+
+	Name (STAT, 0x0)
 	Method (_STA, 0x0, NotSerialized)
 	{
-		Return (0x0F)
+		Return (STAT)
 	}
 }
 
@@ -108,9 +111,10 @@ Device (I2CC) {
 		Memory32Fixed (ReadWrite, APU_I2C2_BASE, 0x1000)
 	})
 
+	Name (STAT, 0x0)
 	Method (_STA, 0x0, NotSerialized)
 	{
-		Return (0x0F)
+		Return (STAT)
 	}
 }
 
@@ -122,9 +126,11 @@ Device (I2CD)
 		IRQ (Edge, ActiveHigh, Exclusive) { 14 }
 		Memory32Fixed(ReadWrite, APU_I2C3_BASE, 0x1000)
 	})
+
+	Name (STAT, 0x0)
 	Method (_STA, 0x0, NotSerialized)
 	{
-		Return (0x0F)
+		Return (STAT)
 	}
 }
 

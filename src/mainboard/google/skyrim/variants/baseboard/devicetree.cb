@@ -198,7 +198,7 @@ chip soc/amd/mendocino
 	device ref i2c_0 on end
 	device ref i2c_1 on end
 	device ref i2c_2 on end
-	device ref i2c_3 on
+	device ref i2c_3 hidden
 		chip drivers/i2c/tpm
 			register "hid" = ""GOOG0005""
 			register "desc" = ""Ti50 TPM""

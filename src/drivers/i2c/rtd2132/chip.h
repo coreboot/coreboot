@@ -11,7 +11,7 @@ struct drivers_i2c_rtd2132_config {
 	u16 t4; /* Delay from backlight output disable to PWM output disable. */
 	u16 t5; /* Delay from PWM output disable to LVDS output disable. */
 	u16 t6; /* Delay from LVDS output disable to panel Vcc disable. */
-	u16 t7; /* Delay between tweo panel power on/off sequence. */
+	u16 t7; /* Delay between two panel power on/off sequence. */
 
 	/*
 	 * LVDS swap.

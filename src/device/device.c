@@ -579,7 +579,7 @@ void dev_initialize(void)
  * Finalize a specific device.
  *
  * The parent should be finalized first to avoid having an ordering problem.
- * This is done by calling the parent's final() method before its childrens'
+ * This is done by calling the parent's final() method before its children's
  * final() methods.
  *
  * @param dev The device to be initialized.

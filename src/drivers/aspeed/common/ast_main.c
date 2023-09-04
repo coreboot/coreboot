@@ -440,7 +440,7 @@ int ast_driver_load(struct drm_device *dev, unsigned long flags)
 		if (ret)
 			goto out_free;
 		ast->vram_size = ast_get_vram_info(dev);
-		DRM_INFO("dram MCLK=%u Mhz type=%d bus_width=%d size=%08x\n",
+		DRM_INFO("dram MCLK=%u MHz type=%d bus_width=%d size=%08x\n",
 			 ast->mclk, ast->dram_type,
 			 ast->dram_bus_width, ast->vram_size);
 	}

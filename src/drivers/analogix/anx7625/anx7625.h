@@ -189,7 +189,7 @@
 #define AP_AV_STATUS 0x28
 #define AP_VIDEO_CHG (1<<2)
 #define AP_AUDIO_CHG (1<<3)
-#define AP_MIPI_MUTE (1<<4) /* 1:MIPI input mute, 0: ummute */
+#define AP_MIPI_MUTE (1<<4) /* 1:MIPI input mute, 0: unmute */
 #define AP_MIPI_RX_EN (1<<5) /* 1: MIPI RX input in  0: no RX in */
 #define AP_DISABLE_PD (1<<6)
 #define AP_DISABLE_DISPLAY (1<<7)

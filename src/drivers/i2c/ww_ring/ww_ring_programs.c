@@ -89,7 +89,7 @@ static const TiLp55231Program solid_000000_program = {
  * The three internal engines seem to be competing for resources and get out
  * of sync in seconds if left running asynchronously.
  *
- * When solid patterns are deployed with instanteneous color intensity
+ * When solid patterns are deployed with instantaneous color intensity
  * changes, all three LEDs can be controlled by one engine in sequential
  * accesses. But the controllers still need to be synchronized.
  *

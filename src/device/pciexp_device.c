@@ -245,7 +245,7 @@ static void pciexp_enable_common_clock(struct device *root, unsigned int root_ca
 
 static void pciexp_enable_clock_power_pm(struct device *endp, unsigned int endp_cap)
 {
-	/* check if per port clk req is supported in device */
+	/* check if per port clkreq is supported in device */
 	u32 endp_ca;
 	u16 lnkctl;
 	endp_ca = pci_read_config32(endp, endp_cap + PCI_EXP_LNKCAP);

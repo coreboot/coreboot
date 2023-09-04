@@ -528,7 +528,7 @@ struct	cmos_checksum {
 struct lb_smmstorev2 {
 	uint32_t tag;
 	uint32_t size;
-	uint32_t num_blocks;		/* Number of writeable blocks in SMM */
+	uint32_t num_blocks;		/* Number of writable blocks in SMM */
 	uint32_t block_size;		/* Size of a block in byte. Default: 64 KiB */
 	uint32_t mmap_addr;		/* MMIO address of the store for read only access */
 	uint32_t com_buffer;		/* Physical address of the communication buffer */

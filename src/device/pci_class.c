@@ -93,7 +93,7 @@ static const PCI_SUBCLASS communication[] = {
 	{ 0x02, "Multiport serial controller" },
 	{ 0x03, "Modem" },
 	{ 0x04, "GPIB controller" },
-	{ 0x05, "Smard Card controller" },
+	{ 0x05, "Smart Card controller" },
 	{ 0x80, "Communication controller" }
 };
 

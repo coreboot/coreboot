@@ -123,7 +123,7 @@ enum cb_err fsp_hob_iterator_get_next_guid_extension(const struct hob_header **h
 						     const uint8_t guid[16],
 						     const void **data, size_t *size);
 
-/* Function to extract the FSP timestamp from FPDT Hob and display */
+/* Function to extract the FSP timestamp from FPDT HOB and display */
 void fsp_display_timestamp(void);
 const void *fsp_get_hob_list(void);
 void *fsp_get_hob_list_ptr(void);

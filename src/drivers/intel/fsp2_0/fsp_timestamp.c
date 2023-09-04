@@ -32,7 +32,7 @@ struct generic_event_record {
 } __packed;
 
 /*
- * Performance Hob:
+ * Performance HOB:
  *   GUID - fpdt_guid;
  *   Data - FPDT_PEI_EXT_PERF_HEADER one or more FPDT records
 */

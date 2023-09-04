@@ -182,7 +182,7 @@ static const char bios_log_prefix[BIOS_LOG_PREFIX_MAX_LEVEL + 1][5] = {
  * When printing to terminals supporting ANSI escape sequences, the following
  * escape sequences can be printed to highlight the respective log levels
  * according to the BIOS_LOG_ESCAPE_PATTERN printf() pattern. At the end of a
- * line, highlighting should be reset with the BIOS_LOG_ESCAPE_RESET seqence.
+ * line, highlighting should be reset with the BIOS_LOG_ESCAPE_RESET sequence.
  *
  * The escape sequences used here set flags with the following meanings:
  * 1 = bold, 4 = underlined, 5 = blinking, 7 = inverted

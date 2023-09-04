@@ -160,7 +160,7 @@ void exc_dispatch(struct exc_state *state, uint64_t idx)
 
 static int test_exception_handler(struct exc_state *state, uint64_t vector_id)
 {
-	/* Update instruction pointer to next instrution. */
+	/* Update instruction pointer to next instruction. */
 	state->elx.elr += sizeof(uint32_t);
 	raw_write_elr_el3(state->elx.elr);
 	return EXC_RET_HANDLED;

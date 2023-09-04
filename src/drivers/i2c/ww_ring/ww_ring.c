@@ -310,7 +310,7 @@ static int ledc_init_validate(TiLp55231 *ledc)
 	}
 
 	/*
-	 * Signal Depthcharge that the controller has been initiazed by
+	 * Signal Depthcharge that the controller has been initialized by
 	 * coreboot.
 	 */
 	data = LP55231_VARIABLE_COOKIE;
@@ -340,7 +340,7 @@ int ww_ring_display_pattern(unsigned int i2c_bus, enum display_pattern pattern)
 
 			/*
 			 * First stop all running programs to avoid
-			 * inerference between the controllers.
+			 * interference between the controllers.
 			 */
 			for (j = 0; j < WW_RING_NUM_LED_CONTROLLERS; j++) {
 				if (!lp55231s[j].dev_addr)

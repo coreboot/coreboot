@@ -15,7 +15,7 @@
  * The Bridge device's PCI config space has information about the
  * fb aperture size and the amount of pre-reserved memory.
  * This is all handled in the intel-gtt.ko module. i915.ko only
- * cares about the vga bit for the vga rbiter.
+ * cares about the vga bit for the vga arbiter.
  */
 #define INTEL_GMCH_CTRL		0x52
 #define INTEL_GMCH_VGA_DISABLE  (1 << 1)
@@ -1384,7 +1384,7 @@
 #define   SDVOC_GANG_MODE		(1 << 16)
 #define   SDVO_ENCODING_SDVO		(0x0 << 10)
 #define   SDVO_ENCODING_HDMI		(0x2 << 10)
-/** Requird for HDMI operation */
+/** Required for HDMI operation */
 #define   SDVO_NULL_PACKETS_DURING_VSYNC (1 << 9)
 #define   SDVO_COLOR_RANGE_16_235	(1 << 8)
 #define   SDVO_BORDER_ENABLE		(1 << 7)
@@ -1485,7 +1485,7 @@
 
 /* Video Data Island Packet control */
 #define VIDEO_DIP_DATA		0x61178
-/* Read the description of VIDEO_DIP_DATA (before Haswel) or VIDEO_DIP_ECC
+/* Read the description of VIDEO_DIP_DATA (before Haswell) or VIDEO_DIP_ECC
  * (Haswell and newer) to see which VIDEO_DIP_DATA byte corresponds to each byte
  * of the infoframe structure specified by CEA-861. */
 #define   VIDEO_DIP_DATA_SIZE	32
@@ -1630,7 +1630,7 @@
 #define BLC_HIST_CTL		0x61260
 
 /* New registers for PCH-split platforms. Safe where new bits show up, the
- * register layout machtes with gen4 BLC_PWM_CTL[12]. */
+ * register layout matches with gen4 BLC_PWM_CTL[12]. */
 #define BLC_PWM_CPU_CTL2	0x48250
 #define  BLC_PWM2_ENABLE        (1UL<<31)
 #define BLC_PWM_CPU_CTL		0x48254
@@ -2037,7 +2037,7 @@
 /** Sets the rollover for the second subcarrier phase generation DDA */
 # define TV_SCDDA2_SIZE_MASK		0x7fff0000
 # define TV_SCDDA2_SIZE_SHIFT		16
-/** Sets the increent of the second subcarrier phase generation DDA */
+/** Sets the increment of the second subcarrier phase generation DDA */
 # define TV_SCDDA2_INC_MASK		0x00007fff
 # define TV_SCDDA2_INC_SHIFT		0
 
@@ -2045,7 +2045,7 @@
 /** Sets the rollover for the third subcarrier phase generation DDA */
 # define TV_SCDDA3_SIZE_MASK		0x7fff0000
 # define TV_SCDDA3_SIZE_SHIFT		16
-/** Sets the increent of the third subcarrier phase generation DDA */
+/** Sets the increment of the third subcarrier phase generation DDA */
 # define TV_SCDDA3_INC_MASK		0x00007fff
 # define TV_SCDDA3_INC_SHIFT		0
 

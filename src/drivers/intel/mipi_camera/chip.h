@@ -112,7 +112,7 @@ struct resource_config {
 struct clk_config {
 	/* IMGCLKOUT_x being used for a port */
 	uint8_t clknum;
-	/* frequency setting: 0:24Mhz, 1:19.2 Mhz */
+	/* frequency setting: 0:24MHz, 1:19.2 MHz */
 	uint8_t freq;
 };
 

@@ -33,7 +33,7 @@ void udelay(u32 usecs)
 		timer_fsb = get_timer_fsb();
 	}
 
-	/* Calculate the number of ticks to run, our FSB runs at timer_fsb Mhz
+	/* Calculate the number of ticks to run, our FSB runs at timer_fsb MHz
 	 */
 	ticks = usecs * timer_fsb;
 	start = lapic_read(LAPIC_TMCCT);

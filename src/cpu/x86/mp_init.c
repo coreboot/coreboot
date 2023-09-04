@@ -777,7 +777,7 @@ static enum cb_err install_permanent_handler(int num_cpus, uintptr_t smbase,
 				     size_t smsize, size_t save_state_size)
 {
 	/*
-	 * All the CPUs will relocate to permanaent handler now. Set parameters
+	 * All the CPUs will relocate to permanent handler now. Set parameters
 	 * needed for all CPUs. The placement of each CPUs entry point is
 	 * determined by the loader. This code simply provides the beginning of
 	 * SMRAM region, the number of CPUs who will use the handler, the stack

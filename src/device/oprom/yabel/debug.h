@@ -70,7 +70,7 @@ static inline void set_ci(void) {};
  * |||||||||-DEBUG_VBE - Print messages related to VESA BIOS Extension (VBE) functions
  * ||||||||||-DEBUG_PRINT_INT10 - let INT10 (i.e. character output) calls print messages to Debug output
  * |||||||||||-DEBUG_INTR - Print messages related to interrupt handling
- * ||||||||||||-DEBUG_CHECK_VMEM_ACCESS - Print messages related to accesse to certain areas of the virtual Memory (e.g. BDA (BIOS Data Area) or Interrupt Vectors)
+ * ||||||||||||-DEBUG_CHECK_VMEM_ACCESS - Print messages related to accesses to certain areas of the virtual Memory (e.g. BDA (BIOS Data Area) or Interrupt Vectors)
  * |||||||||||||-DEBUG_MEM - Print memory access made by option ROM (NOTE: this also includes accesses to fetch instructions)
  * ||||||||||||||-DEBUG_IO - Print I/O access made by option rom
  * 11000111111111 - Max Binary Value, Debug All (WARNING: - This could run for hours)

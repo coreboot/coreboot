@@ -537,7 +537,7 @@ static void write_device_definitions(const struct device *dev)
 	acpigen_pop_len(); /* Scope */
 }
 
-/* Emites policy definitions for each policy type */
+/* Emits policy definitions for each policy type */
 static void write_policies(const struct drivers_intel_dptf_config *config)
 {
 	dptf_write_enabled_policies(config->policies.active, DPTF_MAX_ACTIVE_POLICIES,

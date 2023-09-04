@@ -123,7 +123,7 @@ const char *fsp_get_hob_type_name(const struct hob_header *hob)
 		if (hob->type == hob_type_names[index].type)
 			return hob_type_names[index].name;
 
-	/* Get name for SOC specific hob */
+	/* Get name for SOC specific HOB */
 	name = soc_get_hob_type_name(hob);
 	if (name != NULL)
 		return name;
@@ -162,7 +162,7 @@ void fsp_print_guid_extension_hob(const struct hob_header *hob)
 	fsp_print_guid(BIOS_SPEW, res->owner_guid);
 	printk(BIOS_SPEW, ": %s\n", fsp_get_guid_name(res->owner_guid));
 
-	/* Some of the SoC FSP specific hobs are of type HOB_TYPE_GUID_EXTENSION */
+	/* Some of the SoC FSP specific HOBs are of type HOB_TYPE_GUID_EXTENSION */
 	soc_display_hob(hob);
 }
 

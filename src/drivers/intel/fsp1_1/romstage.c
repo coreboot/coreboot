@@ -85,7 +85,7 @@ static void raminit_common(struct romstage_params *params)
 	if (!s3wake)
 		mainboard_save_dimm_info(params);
 
-	/* Create romstage handof information */
+	/* Create romstage handoff information */
 	if (romstage_handoff_init(
 			params->power_state->prev_sleep_state == ACPI_S3) < 0)
 		/* FIXME: A "system" reset is likely enough: */

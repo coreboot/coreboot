@@ -80,7 +80,7 @@ static void do_fsp_post_memory_init(bool s3wake, uint32_t version)
 			save_memory_training_data();
 	}
 
-	/* Create romstage handof information */
+	/* Create romstage handoff information */
 	romstage_handoff_init(s3wake);
 }
 

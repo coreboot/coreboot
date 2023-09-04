@@ -127,7 +127,7 @@ typedef struct {
 	u32	aslc;		/* Offset 4   ASLE interrupt command / status */
 	u32	tche;		/* Offset 8   Technology enabled indicator */
 	u32	alsi;		/* Offset 12  Current ALS illuminance reading */
-	u32	bclp;		/* Offset 16  Backlight britness to set */
+	u32	bclp;		/* Offset 16  Backlight brightness to set */
 	u32	pfit;		/* Offset 20  Panel fitting Request */
 	u32	cblv;		/* Offset 24  Brightness Current State */
 	u16	bclm[20];	/* Offset 28  Backlight Brightness Level Duty

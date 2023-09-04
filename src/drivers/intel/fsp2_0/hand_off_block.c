@@ -107,10 +107,10 @@ static void save_hob_list(int is_recovery)
 	const void *hob_list;
 	cbmem_loc = cbmem_add(CBMEM_ID_FSP_RUNTIME, sizeof(*cbmem_loc));
 	if (cbmem_loc == NULL)
-		die("Error: Could not add cbmem area for hob list.\n");
+		die("Error: Could not add cbmem area for HOB list.\n");
 	hob_list = fsp_get_hob_list();
 	if (!hob_list)
-		die("Error: Could not locate hob list pointer.\n");
+		die("Error: Could not locate HOB list pointer.\n");
 	*cbmem_loc = (uintptr_t)hob_list;
 }
 

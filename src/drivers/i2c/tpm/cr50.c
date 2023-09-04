@@ -123,7 +123,7 @@ static int cr50_i2c_write(uint8_t addr, const uint8_t *buffer, size_t len)
 }
 
 /*
- * Cr50 processes reset requests asynchronously and consceivably could be busy
+ * Cr50 processes reset requests asynchronously and conceivably could be busy
  * executing a long command and not reacting to the reset pulse for a while.
  *
  * This function will make sure that the AP does not proceed with boot until

@@ -239,7 +239,7 @@ void raminit(struct romstage_params *params)
 	mrc_hob = get_guid_hob(&mrc_guid, hob_list_ptr);
 	if (mrc_hob == NULL) {
 		printk(BIOS_DEBUG,
-			"Memory Configuration Data Hob not present\n");
+			"Memory Configuration Data HOB not present\n");
 	} else {
 		params->data_to_save = GET_GUID_HOB_DATA(mrc_hob);
 		params->data_to_save_size = ALIGN_UP(

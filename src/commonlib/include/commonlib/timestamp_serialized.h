@@ -295,7 +295,7 @@ static const struct timestamp_id_to_name {
 
 	/* Intel ME related timestamps */
 	TS_NAME_DEF(TS_ME_INFORM_DRAM_START, TS_ME_INFORM_DRAM_END,
-		    "waiting for ME acknowledgement of raminit"),
+		    "waiting for ME acknowledgment of raminit"),
 	TS_NAME_DEF(TS_ME_INFORM_DRAM_END, 0, "finished waiting for ME response"),
 	TS_NAME_DEF(TS_ME_END_OF_POST_START, TS_ME_END_OF_POST_END, "before sending EOP to ME"),
 	TS_NAME_DEF(TS_ME_END_OF_POST_END, 0, "after sending EOP to ME"),

@@ -8,7 +8,7 @@
 
 /* LZ4 comes with its own supposedly portable memory access functions, but they
  * seem to be very inefficient in practice (at least on ARM64). Since coreboot
- * knows about endinaness and allows some basic assumptions (such as unaligned
+ * knows about endianness and allows some basic assumptions (such as unaligned
  * access support), we can easily write the ones we need ourselves. */
 static uint16_t LZ4_readLE16(const void *src)
 {

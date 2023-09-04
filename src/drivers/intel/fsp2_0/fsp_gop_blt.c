@@ -207,7 +207,7 @@ static void *fill_blt_buffer(efi_bmp_image_header *header,
 				gop_blt->Red   = *bmp_image;
 				break;
 
-			/* Conver 32 bit to 24bit bmp - just ignore the final byte of each pixel */
+			/* Convert 32 bit to 24bit bmp - just ignore the final byte of each pixel */
 			case 32:
 				gop_blt->Blue  = *bmp_image++;
 				gop_blt->Green = *bmp_image++;

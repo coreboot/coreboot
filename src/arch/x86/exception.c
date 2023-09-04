@@ -305,7 +305,7 @@ static int get_packet(char *buffer)
 	int count;
 	char ch;
 
-	/* Wishlit implement a timeout in get_packet */
+	/* TODO: implement a timeout in get_packet */
 	do {
 		/* wait around for the start character, ignore all other
 		 * characters

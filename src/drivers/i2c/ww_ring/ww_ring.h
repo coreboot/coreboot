@@ -5,12 +5,12 @@
 
 /*
  * Different types of display patterns to be shown by the LED ring while
- * contrlled by coreboot.
+ * controlled by coreboot.
  */
 enum display_pattern {
 	WWR_ALL_OFF,		/* Turn the LEDs off. */
 	WWR_RECOVERY_PUSHED,	/* Recovery button push detected on start up. */
-	WWR_WIPEOUT_REQUEST,	/* Held long enough for wipout request. */
+	WWR_WIPEOUT_REQUEST,	/* Held long enough for wipeout request. */
 	WWR_RECOVERY_REQUEST,	/* Held long enough for recovery request. */
 	WWR_NORMAL_BOOT		/* No buttons pressed, normal boot sequence. */
 };

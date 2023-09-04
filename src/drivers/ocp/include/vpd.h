@@ -64,7 +64,7 @@ enum cxl_memory_mode {
 #define DISABLE_BOOTDRIVE "disable_bootdrive"
 #define DISABLE_BOOTDRIVE_DEFAULT 0 /* By default don't disable */
 
-/* Skip Global reset so that information in Previous Boot Error Hob won't be cleared */
+/* Skip Global reset so that information in Previous Boot Error HOB won't be cleared */
 #define SKIP_GLOBAL_RESET "skip_global_reset"
 #define SKIP_GLOBAL_RESET_DEFAULT 1
 

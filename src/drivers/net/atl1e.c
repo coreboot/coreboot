@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 /*
- * This driver sets the macaddress of a Atheros AR8121/AR8113/AR8114
+ * This driver sets the MAC address of an Atheros AR8121/AR8113/AR8114
  */
 
 #include <device/mmio.h>

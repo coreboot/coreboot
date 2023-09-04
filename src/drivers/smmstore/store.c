@@ -185,7 +185,7 @@ static enum cb_err scan_end(struct region_device *store)
 
 	if (k_sz != 0xffffffff) {
 		printk(BIOS_WARNING,
-			"eof of data marker looks invalid: 0x%x\n", k_sz);
+			"EOF of data marker looks invalid: 0x%x\n", k_sz);
 		return CB_ERR;
 	}
 

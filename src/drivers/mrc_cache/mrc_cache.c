@@ -431,7 +431,7 @@ static void log_event_cache_update(uint8_t slot, enum result res)
 /* During ramstage this code purposefully uses incoherent transactions between
  * read and write. The read assumes a memory-mapped boot device that can be used
  * to quickly locate and compare the up-to-date data. However, when an update
- * is required it uses the writeable region access to perform the update. */
+ * is required it uses the writable region access to perform the update. */
 static void update_mrc_cache_by_type(int type,
 				     struct mrc_metadata *new_md,
 				     const void *new_data,

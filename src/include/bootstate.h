@@ -51,7 +51,7 @@
  *          |
  *    BS_OS_RESUME_CHECK -------- BS_OS_RESUME
  *          |                          |
- *    BS_WRITE_TABLES              os handoff
+ *    BS_WRITE_TABLES              OS handoff
  *          |
  *    BS_PAYLOAD_LOAD
  *          |

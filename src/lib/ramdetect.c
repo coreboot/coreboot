@@ -18,7 +18,7 @@ int __weak probe_mb(const uintptr_t dram_start, const uintptr_t size)
 	void *ptr = (void *) addr;
 	size_t i;
 
-	/* Don't accidentally clober oneself. */
+	/* Don't accidentally clobber oneself. */
 	if (OVERLAP(addr, addr + sizeof(uint32_t), (uintptr_t)_program, (uintptr_t) _eprogram))
 		return 1;
 

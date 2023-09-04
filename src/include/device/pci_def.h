@@ -24,7 +24,7 @@
 
 #define PCI_STATUS		0x06	/* 16 bits */
 #define  PCI_STATUS_CAP_LIST	0x10	/* Support Capability List */
-#define  PCI_STATUS_66MHZ	0x20	/* Support 66 Mhz PCI 2.1 bus */
+#define  PCI_STATUS_66MHZ	0x20	/* Support 66 MHz PCI 2.1 bus */
 /* Support User Definable Features [obsolete] */
 #define  PCI_STATUS_UDF		0x40
 #define  PCI_STATUS_FAST_BACK	0x80	/* Accept fast-back to back */

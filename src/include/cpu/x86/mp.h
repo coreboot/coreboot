@@ -75,7 +75,7 @@ struct mp_ops {
 		uintptr_t staggered_smbase);
 	/*
 	 * Optionally provide a callback that is called after the APs
-	 * and the BSP have gone through the initialion sequence.
+	 * and the BSP have gone through the initialization sequence.
 	 */
 	void (*post_mp_init)(void);
 };

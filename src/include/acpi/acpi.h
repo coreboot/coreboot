@@ -1727,8 +1727,8 @@ void acpi_create_slit(acpi_slit_t *slit,
 
 /*
  * Create a Memory Proximity Domain Attributes structure for HMAT,
- * given proximity domain for the attached initiaor, and
- * proximimity domain for the memory.
+ * given proximity domain for the attached initiator, and
+ * proximity domain for the memory.
  */
 int acpi_create_hmat_mpda(acpi_hmat_mpda_t *mpda, u32 initiator, u32 memory);
 /* Create Heterogeneous Memory Attribute Table */

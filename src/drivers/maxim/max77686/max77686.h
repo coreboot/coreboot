@@ -77,8 +77,8 @@ enum {
 };
 
 enum {
-	MAX77686_MV = 0,	/* mili volt */
-	MAX77686_UV		/* micro volt */
+	MAX77686_MV = 0,	/* millivolt */
+	MAX77686_UV		/* microvolt */
 };
 
 /**

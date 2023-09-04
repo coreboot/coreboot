@@ -92,7 +92,7 @@ struct dimm_attr_ddr2_st {
 	u8 rev;
 	/* Supported CAS mask, bit 0 == CL0 .. bit7 == CL7 */
 	u8 cas_supported;
-	/* Maximum cloclk to data cycle times for various CAS.
+	/* Maximum clock to data cycle times for various CAS.
 	 * Fields 0 and 1 are unused. */
 	u32 cycle_time[8];
 	/* Maximum data access times for various CAS.

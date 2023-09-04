@@ -647,7 +647,7 @@ void tpm_ppi_acpi_fill_ssdt(const struct device *dev)
 
 	/*
 	 * Returns One if the PPI spec supports this functions.
-	 * That doesn't necessarily mean that the firmware implemtents it, or the
+	 * That doesn't necessarily mean that the firmware implements it, or the
 	 * TPM can execute the function.
 	 *
 	 * Arg0: Integer PPI function

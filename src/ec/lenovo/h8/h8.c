@@ -53,7 +53,7 @@ enum battery {
 
 /* h8 charge priority. Defines if primary or secondary
  * battery is charged first.
- * Because NVRAM is complete the otherway around as this register,
+ * Because NVRAM is complete the other way around as this register,
  * it's inverted by if
  */
 static void h8_charge_priority(enum battery battery)

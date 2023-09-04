@@ -216,7 +216,7 @@ static const char *memory_device_type(u8 code)
 
 	if (code >= MEMORY_TYPE_OTHER && code <= MEMORY_TYPE_HBM3)
 		return type[code - 1];
-	return "Unsupproted";
+	return "Unsupported";
 }
 
 static void dump_smbios_type17(struct dimm_info *dimm)
@@ -646,7 +646,7 @@ int smbios_write_type9(unsigned long *current, int *handle,
 
 	t->slot_designation = smbios_add_string(t->eos, name ? name : "SLOT");
 	t->slot_type = type;
-	/* TODO add slot_id supoort, will be "_SUN" for ACPI devices */
+	/* TODO add slot_id support, will be "_SUN" for ACPI devices */
 	t->slot_id = id;
 	t->slot_data_bus_width = bandwidth;
 	t->current_usage = usage;

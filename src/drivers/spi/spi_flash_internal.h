@@ -112,7 +112,7 @@ extern const struct spi_flash_vendor_info spi_flash_atmel_vi;
 extern const struct spi_flash_vendor_info spi_flash_eon_vi;
 extern const struct spi_flash_vendor_info spi_flash_gigadevice_vi;
 extern const struct spi_flash_vendor_info spi_flash_macronix_vi;
-/* Probing order matters between the spansion sequence. */
+/* Probing order matters between the Spansion sequence. */
 extern const struct spi_flash_vendor_info spi_flash_spansion_ext1_vi;
 extern const struct spi_flash_vendor_info spi_flash_spansion_ext2_vi;
 extern const struct spi_flash_vendor_info spi_flash_spansion_vi;

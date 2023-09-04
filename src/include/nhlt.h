@@ -27,7 +27,7 @@ struct nhlt_format_config;
  * Most code should use the SoC variants of the functions because
  * there is required logic needed to be performed by the SoC. The SoC
  * code should be abstracting the inner details of these functions that
- * specically apply to NHLT objects for that SoC.
+ * specifically apply to NHLT objects for that SoC.
  *
  * An example sequence:
  *
@@ -146,7 +146,7 @@ uintptr_t nhlt_serialize(struct nhlt *nhlt, uintptr_t acpi_addr);
  * Serialize NHLT object to ACPI table. Take in the beginning address of where
  * the table will reside oem_id and oem_table_id and return the address of the
  * next ACPI table. On error 0 will be returned. The NHLT object is no longer
- * valid after thisfunction is called.
+ * valid after this function is called.
  */
 uintptr_t nhlt_serialize_oem_overrides(struct nhlt *nhlt, uintptr_t acpi_addr,
 		const char *oem_id, const char *oem_table_id,

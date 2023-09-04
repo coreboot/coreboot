@@ -229,7 +229,7 @@ void mp_init_cpus(DEVTREE_CONST struct bus *cpu_bus);
 static inline void mp_cpu_bus_init(struct device *dev)
 {
 	/*
-	 * When no LAPIC device is specified in the devietree inside the CPU cluster device,
+	 * When no LAPIC device is specified in the devicetree inside the CPU cluster device,
 	 * neither a LAPIC device nor the link/bus between the CPU cluster and the LAPIC device
 	 * will be present in the static device tree and the link_list struct element of the
 	 * CPU cluster device will be NULL. In this case add one link, so that the

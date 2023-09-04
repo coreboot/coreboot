@@ -207,7 +207,7 @@ static int response_resolve(int response_type, uint8_t *response,
 {
 	__maybe_unused static const char * const sd_err[] = {
 		"Card is locked",
-		"wp erase skip | lock/unlok cmd failed",
+		"wp erase skip | lock/unlock cmd failed",
 		"error",
 		"CC error",
 		"card err failed",
@@ -302,7 +302,7 @@ static int spi_sdcard_do_command_help(const struct spi_sdcard *card,
 	/* send crc */
 	spi_sdcard_sendbyte(card, crc);
 
-	/* waitting for response */
+	/* waiting for response */
 	wait = 0xffff;
 	while (((c = spi_sdcard_recvbyte(card)) & 0x80) && --wait)
 		;
@@ -318,7 +318,7 @@ static int spi_sdcard_do_command_help(const struct spi_sdcard *card,
 	}
 
 	if (type == RSP_R1b) {
-		/* waitting done */
+		/* waiting done */
 		wait = 0xffffff;
 		while (c == 0 && --wait)
 			c = spi_sdcard_recvbyte(card);
@@ -368,7 +368,7 @@ size_t spi_sdcard_size(const struct spi_sdcard *card)
 	/* enable CS */
 	spi_sdcard_enable_cs(card);
 
-	/* waitting start block token */
+	/* waiting start block token */
 	wait = 0xffff;
 	while ((spi_sdcard_recvbyte(card) != CT_BLOCK_START) && --wait)
 		;
@@ -505,7 +505,7 @@ int spi_sdcard_single_read(const struct spi_sdcard *card,
 	/* enable cs */
 	spi_sdcard_enable_cs(card);
 
-	/* waitting start block token */
+	/* waiting start block token */
 	wait = 0xffff;
 	while ((spi_sdcard_recvbyte(card) != CT_BLOCK_START) && --wait)
 		;
@@ -558,7 +558,7 @@ int spi_sdcard_multiple_read(const struct spi_sdcard *card,
 	for (int i = 0; i < block_num; i++) {
 		uint16_t c = 0;
 
-		/* waitting start block token */
+		/* waiting start block token */
 		wait = 0xffff;
 		while ((spi_sdcard_recvbyte(card) != CT_BLOCK_START) && --wait)
 			;
@@ -662,7 +662,7 @@ int spi_sdcard_single_write(const struct spi_sdcard *card,
 	if (spi_sdcard_do_command(card, WRITE_BLOCK, block_address, NULL))
 		return -1;
 
-	/* eanbele cs */
+	/* enable cs */
 	spi_sdcard_enable_cs(card);
 
 	/* send start block token */

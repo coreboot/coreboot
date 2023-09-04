@@ -63,7 +63,7 @@ int boot_device_wp_region(const struct region_device *rd,
 void boot_device_init(void);
 
 /*
- * Restrict read/write access to the bootmedia using platform defined rules.
+ * Restrict read/write access to the boot-media using platform defined rules.
  */
 #if CONFIG(BOOTMEDIA_LOCK_NONE) || (CONFIG(BOOTMEDIA_LOCK_IN_VERSTAGE) && ENV_RAMSTAGE)
 static inline void boot_device_security_lockdown(void) {}

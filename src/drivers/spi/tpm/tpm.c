@@ -2,7 +2,7 @@
 /* This is a driver for a SPI interfaced TPM2 device.
  *
  * It assumes that the required SPI interface has been initialized before the
- * driver is started. A 'sruct spi_slave' pointer passed at initialization is
+ * driver is started. A 'struct spi_slave' pointer passed at initialization is
  * used to direct traffic to the correct SPI interface. This driver does not
  * provide a way to instantiate multiple TPM devices. Also, to keep things
  * simple, the driver unconditionally uses of TPM locality zero.
@@ -134,7 +134,7 @@ static enum cb_err start_transaction(int read_write, size_t bytes, unsigned int 
 	 * flow control (Section "6.4.5 Flow Control").
 	 *
 	 * Again, the slave (TPM device) expects each transaction to start
-	 * with a 4 byte header trasmitted by master. The header indicates if
+	 * with a 4 byte header transmitted by master. The header indicates if
 	 * the master needs to read or write a register, and the register
 	 * address.
 	 *
@@ -231,7 +231,7 @@ static void trace_dump(const char *prefix, uint32_t reg,
 
 		/*
 		 * Data read from or written to FIFO or not in 4 byte
-		 * quantiites is printed byte at a time.
+		 * quantities is printed byte at a time.
 		 */
 		for (i = 0; i < bytes; i++) {
 			if (current_char &&
@@ -697,7 +697,7 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
 	if (debug_level_)
 		printk(BIOS_DEBUG, "\n");
 
-	/* Verify that 'data available' is not asseretd any more. */
+	/* Verify that 'data available' is not asserted any more. */
 	read_tpm_sts(&status);
 	if ((status & expected_status_bits) != TPM_STS_VALID) {
 		printk(BIOS_ERR, "unexpected final status %#x\n", status);

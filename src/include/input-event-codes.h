@@ -755,7 +755,7 @@
 #define KEY_MACRO_PRESET3		0x2b5
 
 /*
- * Some keyboards have a buildin LCD panel where the contents are controlled
+ * Some keyboards have a built-in LCD panel where the contents are controlled
  * by the host. Often these have a number of keys directly below the LCD
  * intended for controlling a menu shown on the LCD. These keys often don't
  * have any labeling so we just name them KEY_KBD_LCD_MENU#

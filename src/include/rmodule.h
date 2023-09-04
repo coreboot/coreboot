@@ -16,7 +16,7 @@ enum {
 
 struct rmodule;
 
-/* Public API for loading rmdoules. */
+/* Public API for loading rmodules. */
 int rmodule_parse(void *ptr, struct rmodule *m);
 void *rmodule_parameters(const struct rmodule *m);
 void *rmodule_entry(const struct rmodule *m);

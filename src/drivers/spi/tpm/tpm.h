@@ -11,7 +11,7 @@
 #define TPM_LOCALITY_0_SPI_BASE 0x00d40000
 
 /*
- * A tpm device descriptor, values read from the appropriate device regisrers
+ * A TPM device descriptor, values read from the appropriate device registers
  * are cached here.
  */
 struct tpm2_info {
@@ -33,7 +33,7 @@ tpm_result_t tpm2_init(struct spi_slave *spi_if);
  * Each command processing consists of sending the command to the TPM, by
  * writing it into the FIFO register, then polling the status register until
  * the TPM is ready to respond, then reading the response from the FIFO
- * regitster. The size of the response can be gleaned from the 6 byte header.
+ * register. The size of the response can be gleaned from the 6 byte header.
  *
  * This function places the response into the tpm2_response buffer and returns
  * the size of the response.

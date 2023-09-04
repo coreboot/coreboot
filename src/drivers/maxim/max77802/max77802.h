@@ -199,7 +199,7 @@ enum {
 #define MAX77802_BUCK_TYPE2_ON	(1 << 4)
 #define MAX77802_BUCK_TYPE2_IGNORE_PWRREQ (1 << 5)
 
-/* LDO35 1.2 volt value for bridge ic */
+/* LDO35 1.2 volt value for bridge IC */
 #define MAX77802_LDO35CTRL1_1_2V (1 << 4)
 #define MAX77802_LOD35CTRL1_ON	 (1 << 6)
 

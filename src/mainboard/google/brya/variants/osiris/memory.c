@@ -136,10 +136,11 @@ const struct mb_cfg *variant_memory_params(void)
 	const char *hynix_mem1 = "H54G46CYRBX267";
 	const char *hynix_mem2 = "H54G56CYRBX247";
 
-	if (!strcmp(part_num, hynix_mem1) || !strcmp(part_num, hynix_mem2)) {
-		printk(BIOS_INFO, "Enable cs_pi_start_high_in_ect for Hynix memory\n");
-		return &hynix_memcfg;
-	} else {
-		return &osiris_memcfg;
+	if (part_num) {
+		if (!strcmp(part_num, hynix_mem1) || !strcmp(part_num, hynix_mem2)) {
+			printk(BIOS_INFO, "Enable cs_pi_start_high_in_ect for Hynix memory\n");
+			return &hynix_memcfg;
+		}
 	}
+	return &osiris_memcfg;
 }

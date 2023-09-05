@@ -135,12 +135,13 @@ static const struct mb_cfg hynix_memconfig = {
 const struct mb_cfg *variant_memory_params(void)
 {
 	const char *dram_part_num = mainboard_get_dram_part_num();
-	if (strcmp(dram_part_num, "H54G46CYRBX267N") == 0) {
-		printk(BIOS_INFO, "Enable cs_pi_start_high_in_ect for Hynix DRAM part\n");
-		return &hynix_memconfig;
-	} else {
-		return &baseboard_memcfg;
+	if (dram_part_num) {
+		if (strcmp(dram_part_num, "H54G46CYRBX267N") == 0) {
+			printk(BIOS_INFO, "Enable cs_pi_start_high_in_ect for Hynix DRAM part\n");
+			return &hynix_memconfig;
+		}
 	}
+	return &baseboard_memcfg;
 }
 
 int variant_memory_sku(void)

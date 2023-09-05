@@ -8,7 +8,7 @@ chip soc/amd/cezanne
 			device ref acp on
 				chip drivers/amd/i2s_machine_dev
 					register "hid" = ""AMDI5619""
-					device generic 0.0 on end
+					device generic 0.0 hidden end
 				end
 			end # Audio
 		end

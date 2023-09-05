@@ -25,18 +25,6 @@ enum devapc_ao_offset {
 /******************************************************************************
  * STRUCTURE DEFINITION
  ******************************************************************************/
-struct apc_infra_peri_dom_16 {
-	unsigned char d_permission[16];
-};
-
-struct apc_infra_peri_dom_8 {
-	unsigned char d_permission[8];
-};
-
-struct apc_infra_peri_dom_4 {
-	unsigned char d_permission[4];
-};
-
 enum devapc_sys_dom_num {
 	DOM_NUM_INFRA_AO_SYS0 = 8,
 	DOM_NUM_MM_AO_SYS0 = 4,
@@ -66,13 +54,5 @@ DEFINE_BIT(SCP_SSPM_SEC, 21)
 DEFINE_BITFIELD(SPM_DOM, 11, 8)
 DEFINE_BITFIELD(SCP_DOM, 3, 0)
 DEFINE_BITFIELD(ADSP_DOM, 3, 0)
-
-/* Domain Remap */
-DEFINE_BITFIELD(TWO_BIT_DOM_REMAP_0, 1, 0)
-DEFINE_BITFIELD(TWO_BIT_DOM_REMAP_1, 3, 2)
-DEFINE_BITFIELD(TWO_BIT_DOM_REMAP_2, 5, 4)
-DEFINE_BITFIELD(TWO_BIT_DOM_REMAP_3, 7, 6)
-DEFINE_BITFIELD(TWO_BIT_DOM_REMAP_4, 9, 8)
-DEFINE_BITFIELD(TWO_BIT_DOM_REMAP_5, 11, 10)
 
 #endif

@@ -21,18 +21,6 @@ DEFINE_BIT(MCUPM_SEC, 1)
 /******************************************************************************
  * STRUCTURE DEFINITION
  ******************************************************************************/
-struct apc_infra_peri_dom_16 {
-	unsigned char d_permission[16];
-};
-
-struct apc_infra_peri_dom_8 {
-	unsigned char d_permission[8];
-};
-
-struct apc_infra_peri_dom_4 {
-	unsigned char d_permission[4];
-};
-
 enum devapc_sys_dom_num {
 	DOM_NUM_INFRA_AO_SYS0 = 16,
 	DOM_NUM_INFRA_AO_SYS1 = 4,

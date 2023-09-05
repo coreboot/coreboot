@@ -56,12 +56,12 @@ static struct tpm_inf_dev tpm_dev;
  * 2) wait for TPM to indicate it is ready
  * 3) read 'len' bytes of TPM response into the provided 'buffer'
  *
- * Return -1 on error, 0 on success.
+ * Returns TSS Return Code from TCG TPM Structures.  See tss_errors.h
  */
-static int cr50_i2c_read(uint8_t addr, uint8_t *buffer, size_t len)
+static tpm_result_t cr50_i2c_read(uint8_t addr, uint8_t *buffer, size_t len)
 {
 	if (tpm_dev.addr == 0)
-		return -1;
+		return TPM_CB_FAIL;
 
 	/* Clear interrupt before starting transaction */
 	cr50_plat_irq_status();
@@ -69,20 +69,20 @@ static int cr50_i2c_read(uint8_t addr, uint8_t *buffer, size_t len)
 	/* Send the register address byte to the TPM */
 	if (i2c_write_raw(tpm_dev.bus, tpm_dev.addr, &addr, 1)) {
 		printk(BIOS_ERR, "%s: Address write failed\n", __func__);
-		return -1;
+		return TPM_CB_FAIL;
 	}
 
 	/* Wait for TPM to be ready with response data */
 	if (cr50_wait_tpm_ready() != CB_SUCCESS)
-		return -1;
+		return TPM_CB_FAIL;
 
 	/* Read response data from the TPM */
 	if (i2c_read_raw(tpm_dev.bus, tpm_dev.addr, buffer, len)) {
 		printk(BIOS_ERR, "%s: Read response failed\n", __func__);
-		return -1;
+		return TPM_CB_FAIL;
 	}
 
-	return 0;
+	return TPM_SUCCESS;
 }
 
 /*
@@ -96,14 +96,14 @@ static int cr50_i2c_read(uint8_t addr, uint8_t *buffer, size_t len)
  * 2) send the address+data to the TPM
  * 3) wait for TPM to indicate it is done writing
  *
- * Returns -1 on error, 0 on success.
+ * Returns TSS Return Code from TCG TPM Structures.  See tss_errors.h
  */
-static int cr50_i2c_write(uint8_t addr, const uint8_t *buffer, size_t len)
+static tpm_result_t cr50_i2c_write(uint8_t addr, const uint8_t *buffer, size_t len)
 {
 	if (tpm_dev.addr == 0)
-		return -1;
+		return TPM_CB_INVALID_ARG;
 	if (len > CR50_MAX_BUFSIZE)
-		return -1;
+		return TPM_CB_INVALID_ARG;
 
 	/* Prepend the 'register address' to the buffer */
 	tpm_dev.buf[0] = addr;
@@ -115,11 +115,11 @@ static int cr50_i2c_write(uint8_t addr, const uint8_t *buffer, size_t len)
 	/* Send write request buffer with address */
 	if (i2c_write_raw(tpm_dev.bus, tpm_dev.addr, tpm_dev.buf, len + 1)) {
 		printk(BIOS_ERR, "%s: Error writing to TPM\n", __func__);
-		return -1;
+		return TPM_CB_FAIL;
 	}
 
 	/* Wait for TPM to be ready */
-	return cr50_wait_tpm_ready() == CB_SUCCESS ? 0 : -1;
+	return cr50_wait_tpm_ready() == CB_SUCCESS ? TPM_SUCCESS : TPM_CB_FAIL;
 }
 
 /*
@@ -128,11 +128,13 @@ static int cr50_i2c_write(uint8_t addr, const uint8_t *buffer, size_t len)
  *
  * This function will make sure that the AP does not proceed with boot until
  * TPM finished reset processing.
+ *
+ * Returns TSS Return Code from TCG TPM Structures.  See tss_errors.h
  */
-static int process_reset(void)
+static tpm_result_t process_reset(void)
 {
 	struct stopwatch sw;
-	int rc = 0;
+	tpm_result_t rc = TPM_SUCCESS;
 	uint8_t access;
 
 	/*
@@ -162,59 +164,72 @@ static int process_reset(void)
 		printk(BIOS_INFO, "TPM ready after %lld ms\n",
 		       stopwatch_duration_msecs(&sw));
 
-		return 0;
+		return TPM_SUCCESS;
 	} while (!stopwatch_expired(&sw));
 
-	if (rc)
-		printk(BIOS_ERR, "Failed to read TPM\n");
-	else
+	if (rc) {
+		printk(BIOS_ERR, "Failed to read TPM with error %d\n", rc);
+		return rc;
+	} else
 		printk(BIOS_ERR,
 			"TPM failed to reset after %lld ms, status: %#x\n",
 			stopwatch_duration_msecs(&sw), access);
-
-	return -1;
+	return TPM_CB_FAIL;
 }
 
 /*
  * Locality could be already claimed (if this is a later coreboot stage and
  * the RO did not release it), or not yet claimed, if this is verstage or the
  * older RO did release it.
+ *
+ * Returns TSS Return Code from TCG TPM Structures.  See tss_errors.h
  */
-static int claim_locality(void)
+static tpm_result_t claim_locality(void)
 {
 	uint8_t access;
 	const uint8_t mask = TPM_ACCESS_VALID | TPM_ACCESS_ACTIVE_LOCALITY;
+	tpm_result_t rc = TPM_SUCCESS;
 
-	if (cr50_i2c_read(TPM_ACCESS(0), &access, sizeof(access)))
-		return -1;
+	rc = cr50_i2c_read(TPM_ACCESS(0), &access, sizeof(access));
+	if (rc)
+		return rc;
 
 	if ((access & mask) == mask) {
 		printk(BIOS_INFO, "Locality already claimed\n");
-		return 0;
+		return TPM_SUCCESS;
 	}
 
 	access = TPM_ACCESS_REQUEST_USE;
-	if (cr50_i2c_write(TPM_ACCESS(0),
-			   &access, sizeof(access)))
-		return -1;
+	rc = cr50_i2c_write(TPM_ACCESS(0),
+			   &access, sizeof(access));
+	if (rc)
+		return rc;
 
-	if (cr50_i2c_read(TPM_ACCESS(0), &access, sizeof(access)))
-		return -1;
+	rc = cr50_i2c_read(TPM_ACCESS(0), &access, sizeof(access));
+	if (rc)
+		return rc;
 
 	if ((access & mask) != mask) {
 		printk(BIOS_INFO, "Failed to claim locality.\n");
-		return -1;
+		return TPM_CB_FAIL;
 	}
 
-	return 0;
+	return TPM_SUCCESS;
 }
 
-/* cr50 requires all 4 bytes of status register to be read */
+/*
+ * cr50 requires all 4 bytes of status register to be read
+ *
+ * Returns lowest 8-bits of the TIS Status register value
+ * see tis_status bit mask enumerated type in tis.h.
+ * Return 0 on error.
+ */
 static uint8_t cr50_i2c_tis_status(void)
 {
 	uint8_t buf[4];
-	if (cr50_i2c_read(TPM_STS(tpm_dev.locality), buf, sizeof(buf)) < 0) {
-		printk(BIOS_ERR, "%s: Failed to read status\n", __func__);
+	tpm_result_t rc = cr50_i2c_read(TPM_STS(tpm_dev.locality), buf, sizeof(buf));
+	if (rc) {
+		printk(BIOS_ERR, "%s: Failed to read status with error %#x\n", __func__, rc);
 		return 0;
 	}
 	return buf[0];
@@ -229,16 +244,21 @@ static void cr50_i2c_tis_ready(void)
 }
 
 /* cr50 uses bytes 3:2 of status register for burst count and
- * all 4 bytes must be read */
-static int cr50_i2c_wait_burststs(uint8_t mask, size_t *burst, int *status)
+ * all 4 bytes must be read
+ *
+ * Returns TSS Return Code from TCG TPM Structures.  See tss_errors.h
+ */
+static tpm_result_t cr50_i2c_wait_burststs(uint8_t mask, size_t *burst, int *status)
 {
 	uint8_t buf[4];
 	struct stopwatch sw;
+	tpm_result_t rc = TPM_SUCCESS;
 
 	stopwatch_init_msecs_expire(&sw, CR50_TIMEOUT_LONG_MS);
 
 	while (!stopwatch_expired(&sw)) {
-		if (cr50_i2c_read(TPM_STS(tpm_dev.locality), buf, sizeof(buf)) != 0) {
+		rc = cr50_i2c_read(TPM_STS(tpm_dev.locality), buf, sizeof(buf));
+		if (rc) {
 			mdelay(CR50_TIMEOUT_SHORT_MS);
 			continue;
 		}
@@ -249,13 +269,14 @@ static int cr50_i2c_wait_burststs(uint8_t mask, size_t *burst, int *status)
 		/* Check if mask matches and burst is valid */
 		if ((*status & mask) == mask &&
 		    *burst > 0 && *burst <= CR50_MAX_BUFSIZE)
-			return 0;
+			return TPM_SUCCESS;
 
 		mdelay(CR50_TIMEOUT_SHORT_MS);
 	}
-
-	printk(BIOS_ERR, "%s: Timeout reading burst and status\n", __func__);
-	return -1;
+	printk(BIOS_ERR, "%s: Timeout reading burst and status with error %#x\n", __func__, rc);
+	if (rc)
+		return rc;
+	return TPM_CB_TIMEOUT;
 }
 
 static int cr50_i2c_tis_recv(uint8_t *buf, size_t buf_len)
@@ -264,18 +285,21 @@ static int cr50_i2c_tis_recv(uint8_t *buf, size_t buf_len)
 	uint8_t addr = TPM_DATA_FIFO(tpm_dev.locality);
 	uint8_t mask = TPM_STS_VALID | TPM_STS_DATA_AVAIL;
 	int status;
+	tpm_result_t rc = TPM_SUCCESS;
 
 	if (buf_len < TPM_HEADER_SIZE)
 		goto out_err;
 
-	if (cr50_i2c_wait_burststs(mask, &burstcnt, &status) < 0) {
-		printk(BIOS_ERR, "%s: First chunk not available\n", __func__);
+	rc = cr50_i2c_wait_burststs(mask, &burstcnt, &status);
+	if (rc) {
+		printk(BIOS_ERR, "%s: First chunk not available with error %#x\n", __func__, rc);
 		goto out_err;
 	}
 
 	/* Read first chunk of burstcnt bytes */
-	if (cr50_i2c_read(addr, buf, burstcnt) != 0) {
-		printk(BIOS_ERR, "%s: Read failed\n", __func__);
+	rc = cr50_i2c_read(addr, buf, burstcnt);
+	if (rc) {
+		printk(BIOS_ERR, "%s: Read failed with error %#x\n", __func__, rc);
 		goto out_err;
 	}
 
@@ -291,12 +315,13 @@ static int cr50_i2c_tis_recv(uint8_t *buf, size_t buf_len)
 	current = burstcnt;
 	while (current < expected) {
 		/* Read updated burst count and check status */
-		if (cr50_i2c_wait_burststs(mask, &burstcnt, &status) < 0)
+		if (cr50_i2c_wait_burststs(mask, &burstcnt, &status))
 			goto out_err;
 
 		len = MIN(burstcnt, expected - current);
-		if (cr50_i2c_read(addr, buf + current, len) != 0) {
-			printk(BIOS_ERR, "%s: Read failed\n", __func__);
+		rc = cr50_i2c_read(addr, buf + current, len);
+		if (rc) {
+			printk(BIOS_ERR, "%s: Read failed with error %#x\n", __func__, rc);
 			goto out_err;
 		}
 
@@ -304,7 +329,7 @@ static int cr50_i2c_tis_recv(uint8_t *buf, size_t buf_len)
 	}
 
 	/* Ensure TPM is done reading data */
-	if (cr50_i2c_wait_burststs(TPM_STS_VALID, &burstcnt, &status) < 0)
+	if (cr50_i2c_wait_burststs(TPM_STS_VALID, &burstcnt, &status))
 		goto out_err;
 	if (status & TPM_STS_DATA_AVAIL) {
 		printk(BIOS_ERR, "%s: Data still available\n", __func__);
@@ -326,6 +351,7 @@ static int cr50_i2c_tis_send(uint8_t *buf, size_t len)
 	size_t burstcnt, limit, sent = 0;
 	uint8_t tpm_go[4] = { TPM_STS_GO };
 	struct stopwatch sw;
+	tpm_result_t rc = TPM_SUCCESS;
 
 	stopwatch_init_msecs_expire(&sw, CR50_TIMEOUT_LONG_MS);
 
@@ -348,14 +374,15 @@ static int cr50_i2c_tis_send(uint8_t *buf, size_t len)
 			mask |= TPM_STS_DATA_EXPECT;
 
 		/* Read burst count and check status */
-		if (cr50_i2c_wait_burststs(mask, &burstcnt, &status) < 0)
+		if (cr50_i2c_wait_burststs(mask, &burstcnt, &status))
 			goto out_err;
 
 		/* Use burstcnt - 1 to account for the address byte
 		 * that is inserted by cr50_i2c_write() */
 		limit = MIN(burstcnt - 1, len);
-		if (cr50_i2c_write(TPM_DATA_FIFO(tpm_dev.locality), &buf[sent], limit) != 0) {
-			printk(BIOS_ERR, "%s: Write failed\n", __func__);
+		rc = cr50_i2c_write(TPM_DATA_FIFO(tpm_dev.locality), &buf[sent], limit);
+		if (rc) {
+			printk(BIOS_ERR, "%s: Write failed with error %#x\n", __func__, rc);
 			goto out_err;
 		}
 
@@ -364,7 +391,7 @@ static int cr50_i2c_tis_send(uint8_t *buf, size_t len)
 	}
 
 	/* Ensure TPM is not expecting more data */
-	if (cr50_i2c_wait_burststs(TPM_STS_VALID, &burstcnt, &status) < 0)
+	if (cr50_i2c_wait_burststs(TPM_STS_VALID, &burstcnt, &status))
 		goto out_err;
 	if (status & TPM_STS_DATA_EXPECT) {
 		printk(BIOS_ERR, "%s: Data still expected\n", __func__);
@@ -372,8 +399,9 @@ static int cr50_i2c_tis_send(uint8_t *buf, size_t len)
 	}
 
 	/* Start the TPM command */
-	if (cr50_i2c_write(TPM_STS(tpm_dev.locality), tpm_go, sizeof(tpm_go)) < 0) {
-		printk(BIOS_ERR, "%s: Start command failed\n", __func__);
+	rc = cr50_i2c_write(TPM_STS(tpm_dev.locality), tpm_go, sizeof(tpm_go));
+	if (rc) {
+		printk(BIOS_ERR, "%s: Start command failed with error %#x\n", __func__, rc);
 		goto out_err;
 	}
 	return sent;
@@ -396,14 +424,15 @@ static void cr50_vendor_init(struct tpm_chip *chip)
 	chip->cancel = &cr50_i2c_tis_ready;
 }
 
-int tpm_vendor_probe(unsigned int bus, uint32_t addr)
+tpm_result_t tpm_vendor_probe(unsigned int bus, uint32_t addr)
 {
-	return 0;
+	return TPM_SUCCESS;
 }
 
-static int cr50_i2c_probe(uint32_t *did_vid)
+static tpm_result_t cr50_i2c_probe(uint32_t *did_vid)
 {
 	int retries;
+	tpm_result_t rc = TPM_SUCCESS;
 
 	/*
 	 * 1s should be enough to synchronize with the TPM even under the
@@ -414,14 +443,13 @@ static int cr50_i2c_probe(uint32_t *did_vid)
 	printk(BIOS_INFO, "Probing TPM I2C: ");
 
 	for (retries = 100; retries > 0; retries--) {
-		int rc;
 
 		rc = cr50_i2c_read(TPM_DID_VID(0), (uint8_t *)did_vid, 4);
 
 		/* Exit once DID and VID verified */
 		if (!rc && (*did_vid == CR50_DID_VID || *did_vid == TI50_DID_VID)) {
 			printk(BIOS_INFO, "done! DID_VID 0x%08x\n", *did_vid);
-			return 0;
+			return TPM_SUCCESS;
 		}
 
 		/* TPM might be resetting, let's retry in a bit. */
@@ -432,17 +460,21 @@ static int cr50_i2c_probe(uint32_t *did_vid)
 	/*
 	 * I2C reads failed, or the DID and VID didn't match
 	 */
-	printk(BIOS_ERR, "DID_VID 0x%08x not recognized\n", *did_vid);
-	return -1;
+	if (!rc) {
+		printk(BIOS_ERR, "DID_VID 0x%08x not recognized\n", *did_vid);
+		return TPM_CB_FAIL;
+	}
+	return rc;
 }
 
-int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
+tpm_result_t tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 {
 	uint32_t did_vid = 0;
+	tpm_result_t rc = TPM_SUCCESS;
 
 	if (dev_addr == 0) {
 		printk(BIOS_ERR, "%s: missing device address\n", __func__);
-		return -1;
+		return TPM_CB_FAIL;
 	}
 
 	tpm_dev.bus = bus;
@@ -450,15 +482,19 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 
 	cr50_vendor_init(chip);
 
-	if (cr50_i2c_probe(&did_vid))
-		return -1;
+	rc = cr50_i2c_probe(&did_vid);
+	if (rc)
+		return rc;
 
-	if (ENV_SEPARATE_VERSTAGE || ENV_BOOTBLOCK)
-		if (process_reset())
-			return -1;
+	if (ENV_SEPARATE_VERSTAGE || ENV_BOOTBLOCK) {
+		rc = process_reset();
+		if (rc)
+			return rc;
+	}
 
-	if (claim_locality())
-		return -1;
+	rc = claim_locality();
+	if (rc)
+		return rc;
 
 	printk(BIOS_DEBUG, "cr50 TPM 2.0 (i2c %u:0x%02x id %#x)\n",
 	       bus, dev_addr, did_vid >> 16);
@@ -470,7 +506,7 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 	}
 
 	chip->is_open = 1;
-	return 0;
+	return TPM_SUCCESS;
 }
 
 enum cb_err tis_vendor_write(unsigned int addr, const void *buffer, size_t bytes)

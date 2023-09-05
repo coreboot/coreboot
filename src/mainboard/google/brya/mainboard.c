@@ -34,10 +34,10 @@ static void mainboard_smbios_strings(struct device *dev, struct smbios_type11 *t
 
 void mainboard_update_soc_chip_config(struct soc_intel_alderlake_config *config)
 {
-	int rc;
+	tpm_result_t rc;
 
 	rc = tlcl_lib_init();
-	if (rc != VB2_SUCCESS) {
+	if (rc != TPM_SUCCESS) {
 		printk(BIOS_ERR, "tlcl_lib_init() failed: %#x\n", rc);
 		return;
 	}

@@ -7,7 +7,7 @@
 
 static void disable_platform_hierarchy(void *unused)
 {
-	int rc;
+	tpm_result_t rc;
 
 	if (!CONFIG(TPM2))
 		return;
@@ -17,7 +17,7 @@ static void disable_platform_hierarchy(void *unused)
 
 	rc = tlcl_lib_init();
 
-	if (rc != VB2_SUCCESS) {
+	if (rc != TPM_SUCCESS) {
 		printk(BIOS_ERR, "tlcl_lib_init() failed: %#x\n", rc);
 		return;
 	}

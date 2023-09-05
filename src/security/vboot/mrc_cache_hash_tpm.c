@@ -12,10 +12,12 @@
 void mrc_cache_update_hash(uint32_t index, const uint8_t *data, size_t size)
 {
 	struct vb2_hash hash;
+	tpm_result_t rc = TPM_SUCCESS;
 
 	/* Initialize TPM driver. */
-	if (tlcl_lib_init() != VB2_SUCCESS) {
-		printk(BIOS_ERR, "MRC: TPM driver initialization failed.\n");
+	rc = tlcl_lib_init();
+	if (rc != TPM_SUCCESS) {
+		printk(BIOS_ERR, "MRC: TPM driver initialization failed with error %#x.\n", rc);
 		return;
 	}
 
@@ -35,9 +37,9 @@ void mrc_cache_update_hash(uint32_t index, const uint8_t *data, size_t size)
 	}
 
 	/* Write hash of data to TPM space. */
-	if (antirollback_write_space_mrc_hash(index, hash.sha256, sizeof(hash.sha256))
-	    != TPM_SUCCESS) {
-		printk(BIOS_ERR, "MRC: Could not save hash to TPM.\n");
+	rc = antirollback_write_space_mrc_hash(index, hash.sha256, sizeof(hash.sha256));
+	if (rc != TPM_SUCCESS) {
+		printk(BIOS_ERR, "MRC: Could not save hash to TPM with error %#x.\n", rc);
 		return;
 	}
 
@@ -47,17 +49,19 @@ void mrc_cache_update_hash(uint32_t index, const uint8_t *data, size_t size)
 int mrc_cache_verify_hash(uint32_t index, const uint8_t *data, size_t size)
 {
 	struct vb2_hash tpm_hash = { .algo = VB2_HASH_SHA256 };
+	tpm_result_t rc = TPM_SUCCESS;
 
 	/* Initialize TPM driver. */
-	if (tlcl_lib_init() != VB2_SUCCESS) {
-		printk(BIOS_ERR, "MRC: TPM driver initialization failed.\n");
+	rc = tlcl_lib_init();
+	if (rc != TPM_SUCCESS) {
+		printk(BIOS_ERR, "MRC: TPM driver initialization failed with error %#x.\n", rc);
 		return 0;
 	}
 
 	/* Read hash of MRC data saved in TPM. */
-	if (antirollback_read_space_mrc_hash(index, tpm_hash.sha256, sizeof(tpm_hash.sha256))
-	    != TPM_SUCCESS) {
-		printk(BIOS_ERR, "MRC: Could not read hash from TPM.\n");
+	rc = antirollback_read_space_mrc_hash(index, tpm_hash.sha256, sizeof(tpm_hash.sha256));
+	if (rc != TPM_SUCCESS) {
+		printk(BIOS_ERR, "MRC: Could not read hash from TPM with error %#x.\n", rc);
 		return 0;
 	}
 

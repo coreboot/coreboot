@@ -4,7 +4,7 @@
  * TPM error codes.
  *
  * Copy-pasted and lightly edited from TCG TPM Main Part 2 TPM Structures
- * Version 1.2 Level 2 Revision 103 26 October 2006 Draft.
+ * Version 1.2 Level 2 Revision 116 1 March 2011.
  */
 
 #ifndef TSS_ERRORS_H_
@@ -17,11 +17,13 @@ typedef uint32_t tpm_result_t;
 
 #define TPM_BASE 0x0
 
-#define TPM_NON_FATAL 0x800
+#define TPM_NON_FATAL (0x800 + TPM_BASE)
 #define TPM_CB_ERROR TPM_Vendor_Specific32
 
 #define TPM_SUCCESS               ((tpm_result_t) (TPM_BASE + 0x00))
 #define TPM_BADINDEX              ((tpm_result_t) (TPM_BASE + 0x02))
+#define TPM_BAD_PARAMETER         ((tpm_result_t) (TPM_BASE + 0x03))
+#define TPM_FAIL                  ((tpm_result_t) (TPM_BASE + 0x09))
 #define TPM_OWNER_SET             ((tpm_result_t) (TPM_BASE + 0x14))
 #define TPM_IOERROR               ((tpm_result_t) (TPM_BASE + 0x1F))
 #define TPM_INVALID_POSTINIT      ((tpm_result_t) (TPM_BASE + 0x26))
@@ -29,6 +31,7 @@ typedef uint32_t tpm_result_t;
 #define TPM_AREA_LOCKED           ((tpm_result_t) (TPM_BASE + 0x3C))
 #define TPM_MAXNVWRITES           ((tpm_result_t) (TPM_BASE + 0x48))
 
+#define TPM_RETRY          ((tpm_result_t) (TPM_NON_FATAL + 0x00))
 #define TPM_NEEDS_SELFTEST ((tpm_result_t) (TPM_NON_FATAL + 0x01))
 #define TPM_DOING_SELFTEST ((tpm_result_t) (TPM_NON_FATAL + 0x02))
 
@@ -56,5 +59,7 @@ typedef uint32_t tpm_result_t;
 #define TPM_CB_HASH_ERROR             ((tpm_result_t) (TPM_CB_ERROR + 0x8D))
 #define TPM_CB_NO_SUCH_COMMAND        ((tpm_result_t) (TPM_CB_ERROR + 0x8E))
 #define TPM_CB_RANGE                  ((tpm_result_t) (TPM_CB_ERROR + 0x8F))
+#define TPM_CB_FAIL                   ((tpm_result_t) (TPM_CB_ERROR + 0x90))
+#define TPM_CB_TIMEOUT                ((tpm_result_t) (TPM_CB_ERROR + 0x91))
 
 #endif /* TSS_ERRORS_H_ */

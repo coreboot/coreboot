@@ -46,7 +46,7 @@ void *tpm_process_command(TPM_CC command, void *command_body)
 	return tpm_unmarshal_response(command, &ib);
 }
 
-static uint32_t tlcl_send_startup(TPM_SU type)
+static tpm_result_t tlcl_send_startup(TPM_SU type)
 {
 	struct tpm2_startup startup;
 	struct tpm2_response *response;
@@ -75,12 +75,12 @@ static uint32_t tlcl_send_startup(TPM_SU type)
 	return TPM_IOERROR;
 }
 
-uint32_t tlcl_resume(void)
+tpm_result_t tlcl_resume(void)
 {
 	return tlcl_send_startup(TPM_SU_STATE);
 }
 
-static uint32_t tlcl_send_shutdown(TPM_SU type)
+static tpm_result_t tlcl_send_shutdown(TPM_SU type)
 {
 	struct tpm2_shutdown shutdown;
 	struct tpm2_response *response;
@@ -104,12 +104,12 @@ static uint32_t tlcl_send_shutdown(TPM_SU type)
 	return TPM_IOERROR;
 }
 
-uint32_t tlcl_save_state(void)
+tpm_result_t tlcl_save_state(void)
 {
 	return tlcl_send_shutdown(TPM_SU_STATE);
 }
 
-uint32_t tlcl_assert_physical_presence(void)
+tpm_result_t tlcl_assert_physical_presence(void)
 {
 	/*
 	 * Nothing to do on TPM2 for this, use platform hierarchy availability
@@ -135,7 +135,7 @@ static TPM_ALG_ID tpmalg_from_vb2_hash(enum vb2_hash_algorithm hash_type)
 	}
 }
 
-uint32_t tlcl_extend(int pcr_num, const uint8_t *digest_data,
+tpm_result_t tlcl_extend(int pcr_num, const uint8_t *digest_data,
 		     enum vb2_hash_algorithm digest_type)
 {
 	struct tpm2_pcr_extend_cmd pcr_ext_cmd;
@@ -163,14 +163,14 @@ uint32_t tlcl_extend(int pcr_num, const uint8_t *digest_data,
 	return TPM_SUCCESS;
 }
 
-uint32_t tlcl_finalize_physical_presence(void)
+tpm_result_t tlcl_finalize_physical_presence(void)
 {
 	/* Nothing needs to be done with tpm2. */
 	printk(BIOS_INFO, "%s:%s:%d\n", __FILE__, __func__, __LINE__);
 	return TPM_SUCCESS;
 }
 
-uint32_t tlcl_force_clear(void)
+tpm_result_t tlcl_force_clear(void)
 {
 	struct tpm2_response *response;
 
@@ -184,7 +184,7 @@ uint32_t tlcl_force_clear(void)
 	return TPM_SUCCESS;
 }
 
-uint32_t tlcl_clear_control(bool disable)
+tpm_result_t tlcl_clear_control(bool disable)
 {
 	struct tpm2_response *response;
 	struct tpm2_clear_control_cmd cc = {
@@ -204,33 +204,36 @@ uint32_t tlcl_clear_control(bool disable)
 static uint8_t tlcl_init_done;
 
 /* This function is called directly by vboot, uses vboot return types. */
-uint32_t tlcl_lib_init(void)
+tpm_result_t tlcl_lib_init(void)
 {
+	tpm_result_t rc = TPM_SUCCESS;
 	if (tlcl_init_done)
-		return VB2_SUCCESS;
+		return rc;
 
-	if (tis_init()) {
-		printk(BIOS_ERR, "%s: tis_init returned error\n", __func__);
-		return VB2_ERROR_UNKNOWN;
+	rc = tis_init();
+	if (rc) {
+		printk(BIOS_ERR, "%s: tis_init returned error %d\n", __func__, rc);
+		return rc;
 	}
-
-	if (tis_open()) {
-		printk(BIOS_ERR, "%s: tis_open returned error\n", __func__);
-		return VB2_ERROR_UNKNOWN;
+	rc = tis_open();
+	if (rc) {
+		printk(BIOS_ERR, "%s: tis_open returned error %d\n"
+			, __func__, rc);
+		return rc;
 	}
 
 	tlcl_init_done = 1;
 
-	return VB2_SUCCESS;
+	return rc;
 }
 
-uint32_t tlcl_physical_presence_cmd_enable(void)
+tpm_result_t tlcl_physical_presence_cmd_enable(void)
 {
 	printk(BIOS_INFO, "%s:%s:%d\n", __FILE__, __func__, __LINE__);
 	return TPM_SUCCESS;
 }
 
-uint32_t tlcl_read(uint32_t index, void *data, uint32_t length)
+tpm_result_t tlcl_read(uint32_t index, void *data, uint32_t length)
 {
 	struct tpm2_nv_read_cmd nv_readc;
 	struct tpm2_response *response;
@@ -279,7 +282,7 @@ uint32_t tlcl_read(uint32_t index, void *data, uint32_t length)
 	return TPM_SUCCESS;
 }
 
-uint32_t tlcl_self_test_full(void)
+tpm_result_t tlcl_self_test_full(void)
 {
 	struct tpm2_self_test st;
 	struct tpm2_response *response;
@@ -292,7 +295,7 @@ uint32_t tlcl_self_test_full(void)
 	return TPM_SUCCESS;
 }
 
-uint32_t tlcl_lock_nv_write(uint32_t index)
+tpm_result_t tlcl_lock_nv_write(uint32_t index)
 {
 	struct tpm2_response *response;
 	/* TPM Will reject attempts to write at non-defined index. */
@@ -311,12 +314,12 @@ uint32_t tlcl_lock_nv_write(uint32_t index)
 	return TPM_SUCCESS;
 }
 
-uint32_t tlcl_startup(void)
+tpm_result_t tlcl_startup(void)
 {
 	return tlcl_send_startup(TPM_SU_CLEAR);
 }
 
-uint32_t tlcl_write(uint32_t index, const void *data, uint32_t length)
+tpm_result_t tlcl_write(uint32_t index, const void *data, uint32_t length)
 {
 	struct tpm2_nv_write_cmd nv_writec;
 	struct tpm2_response *response;
@@ -339,7 +342,7 @@ uint32_t tlcl_write(uint32_t index, const void *data, uint32_t length)
 	return TPM_SUCCESS;
 }
 
-uint32_t tlcl_set_bits(uint32_t index, uint64_t bits)
+tpm_result_t tlcl_set_bits(uint32_t index, uint64_t bits)
 {
 	struct tpm2_nv_setbits_cmd nvsb_cmd;
 	struct tpm2_response *response;
@@ -362,7 +365,7 @@ uint32_t tlcl_set_bits(uint32_t index, uint64_t bits)
 	return TPM_SUCCESS;
 }
 
-uint32_t tlcl_define_space(uint32_t space_index, size_t space_size,
+tpm_result_t tlcl_define_space(uint32_t space_index, size_t space_size,
 			   const TPMA_NV nv_attributes,
 			   const uint8_t *nv_policy, size_t nv_policy_size)
 {
@@ -437,7 +440,7 @@ uint16_t tlcl_get_hash_size_from_algo(TPMI_ALG_HASH hash_algo)
 	return value;
 }
 
-uint32_t tlcl_disable_platform_hierarchy(void)
+tpm_result_t tlcl_disable_platform_hierarchy(void)
 {
 	struct tpm2_response *response;
 	struct tpm2_hierarchy_control_cmd hc = {
@@ -453,7 +456,7 @@ uint32_t tlcl_disable_platform_hierarchy(void)
 	return TPM_SUCCESS;
 }
 
-uint32_t tlcl_get_capability(TPM_CAP capability, uint32_t property,
+tpm_result_t tlcl_get_capability(TPM_CAP capability, uint32_t property,
 		uint32_t property_count,
 		TPMS_CAPABILITY_DATA *capability_data)
 {

@@ -22,17 +22,17 @@ struct tpm_output_header {
 	uint32_t return_code;
 } __packed;
 
-int tis_open(void)
+tpm_result_t tis_open(void)
 {
-	return 0;
+	return TPM_SUCCESS;
 }
 
-int tis_init(void)
+tpm_result_t tis_init(void)
 {
-	return 0;
+	return TPM_SUCCESS;
 }
 
-int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
+tpm_result_t tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
 		uint8_t *recvbuf, size_t *rbuf_len)
 {
 	size_t hdr_bytes;
@@ -60,8 +60,10 @@ int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
 			sbuf_size);
 		if ((status < 0) && (!stopwatch_expired(&sw)))
 			continue;
-		if (status < 0)
-			return status;
+		if (status < 0) {
+			printk(BIOS_ERR, "I2C write error: %d\n", status);
+			return TPM_CB_COMMUNICATION_ERROR;
+		}
 		break;
 	}
 
@@ -79,7 +81,7 @@ int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
 		udelay(SLEEP_DURATION);
 	} while (!stopwatch_expired(&sw));
 	if (status != sizeof(*header))
-		return -1;
+		return TPM_CB_COMMUNICATION_ERROR;
 
 	/* Determine the number of bytes remaining */
 	recv_bytes = MIN(be32_to_cpu(*(uint32_t *)&header->length),
@@ -94,8 +96,10 @@ int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
 		/* Read the full TPM response */
 		status = i2c_read_raw(CONFIG_DRIVER_TPM_I2C_BUS,
 			CONFIG_DRIVER_TPM_I2C_ADDR, recvbuf, recv_bytes);
-		if (status < 0)
-			return status;
+		if (status < 0) {
+			printk(BIOS_ERR, "I2C read error: %d\n", status);
+			return TPM_CB_COMMUNICATION_ERROR;
+		}
 	}
 
 	/* Return the number of bytes received */
@@ -110,5 +114,5 @@ int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
 	}
 
 	/* Successful transfer */
-	return 0;
+	return TPM_SUCCESS;
 }

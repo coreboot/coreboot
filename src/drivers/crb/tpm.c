@@ -67,7 +67,7 @@ static void crb_readControlArea(void)
 }
 
 /* Wait for Reg to be expected Value  */
-static int crb_wait_for_reg32(const void *addr, uint32_t timeoutMs, uint32_t mask,
+static tpm_result_t crb_wait_for_reg32(const void *addr, uint32_t timeoutMs, uint32_t mask,
 			      uint32_t expectedValue)
 {
 	uint32_t regValue;
@@ -81,13 +81,13 @@ static int crb_wait_for_reg32(const void *addr, uint32_t timeoutMs, uint32_t mas
 		regValue = read32(addr);
 
 		if ((regValue & mask) == expectedValue)
-			return 0;
+			return TPM_SUCCESS;
 
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_ERR,
 			       "CRB_WAIT: Error - Timed out with RegValue: %08x, Mask: %08x, Expected: %08x\n",
 			       regValue, mask, expectedValue);
-			return -1;
+			return TPM_CB_TIMEOUT;
 		}
 	}
 }
@@ -96,27 +96,27 @@ static int crb_wait_for_reg32(const void *addr, uint32_t timeoutMs, uint32_t mas
  *
  * Checks if the CRB Interface is ready
  */
-static int crb_probe(void)
+static tpm_result_t crb_probe(void)
 {
 	uint64_t tpmStatus = read64(CRB_REG(cur_loc, CRB_REG_INTF_ID));
 	printk(BIOS_SPEW, "Interface ID Reg. %llx\n", tpmStatus);
 
 	if ((tpmStatus & CRB_INTF_REG_CAP_CRB) == 0) {
 		printk(BIOS_DEBUG, "TPM: CRB Interface is not supported.\n");
-		return -1;
+		return TPM_CB_FAIL;
 	}
 
 	if ((tpmStatus & (0xf)) != 1) {
 		printk(BIOS_DEBUG,
 		       "TPM: CRB Interface is not active. System needs reboot in order to active TPM.\n");
 		write32(CRB_REG(cur_loc, CRB_REG_INTF_ID), CRB_INTF_REG_INTF_SEL);
-		return -1;
+		return TPM_CB_FAIL;
 	}
 
 	write32(CRB_REG(cur_loc, CRB_REG_INTF_ID), CRB_INTF_REG_INTF_SEL);
 	write32(CRB_REG(cur_loc, CRB_REG_INTF_ID), CRB_INTF_REG_INTF_LOCK);
 
-	return 0;
+	return TPM_SUCCESS;
 }
 
 /*
@@ -129,7 +129,7 @@ static uint8_t crb_activate_locality(void)
 	uint8_t locality = (read8(CRB_REG(0, CRB_REG_LOC_STATE)) >> 2) & 0x07;
 	printk(BIOS_SPEW, "Active locality: %i\n", locality);
 
-	int rc = crb_wait_for_reg32(CRB_REG(locality, CRB_REG_LOC_STATE), 750,
+	tpm_result_t rc = crb_wait_for_reg32(CRB_REG(locality, CRB_REG_LOC_STATE), 750,
 				    LOC_STATE_LOC_ASSIGN, LOC_STATE_LOC_ASSIGN);
 
 	if (!rc && (locality == 0))
@@ -141,15 +141,15 @@ static uint8_t crb_activate_locality(void)
 	rc = crb_wait_for_reg32(CRB_REG(locality, CRB_REG_LOC_STATE), 750, LOC_STATE_LOC_ASSIGN,
 				LOC_STATE_LOC_ASSIGN);
 	if (rc) {
-		printk(BIOS_ERR, "TPM: Error - No Locality has been assigned TPM-wise.\n");
+		printk(BIOS_ERR, "TPM: Error (%#x) - No Locality has been assigned TPM-wise.\n", rc);
 		return 0;
 	}
 
 	rc = crb_wait_for_reg32(CRB_REG(locality, CRB_REG_LOC_STATE), 1500,
 				LOC_STATE_REG_VALID_STS, LOC_STATE_REG_VALID_STS);
 	if (rc) {
-		printk(BIOS_ERR, "TPM: Error - LOC_STATE Register %u contains errors.\n",
-		       locality);
+		printk(BIOS_ERR, "TPM: Error (%#x) - LOC_STATE Register %u contains errors.\n",
+		       rc, locality);
 		return 0;
 	}
 
@@ -157,27 +157,27 @@ static uint8_t crb_activate_locality(void)
 }
 
 /* Switch Device into a Ready State */
-static int crb_switch_to_ready(void)
+static tpm_result_t crb_switch_to_ready(void)
 {
 	/* Transition into ready state */
 	write8(CRB_REG(cur_loc, CRB_REG_REQUEST), 0x1);
-	int rc = crb_wait_for_reg32(CRB_REG(cur_loc, CRB_REG_REQUEST), 200,
+	tpm_result_t rc = crb_wait_for_reg32(CRB_REG(cur_loc, CRB_REG_REQUEST), 200,
 					CRB_REG_REQUEST_CMD_RDY, 0x0);
 	if (rc) {
 		printk(BIOS_ERR,
-		       "TPM: Error - TPM did not transition into ready state in time.\n");
-		return -1;
+		       "TPM Error (%#x): TPM did not transition into ready state in time.\n", rc);
+		return rc;
 	}
 
 	/* Check TPM_CRB_CTRL_STS[0] to be "0" - no unrecoverable error */
 	rc = crb_wait_for_reg32(CRB_REG(cur_loc, CRB_REG_STATUS), 500, CRB_REG_STATUS_ERROR,
 				0x0);
 	if (rc) {
-		printk(BIOS_ERR, "TPM: Fatal Error - Could not recover.\n");
-		return -1;
+		printk(BIOS_ERR, "TPM Error (%#x): Could not recover.\n", rc);
+		return rc;
 	}
 
-	return 0;
+	return TPM_SUCCESS;
 }
 
 /*
@@ -188,11 +188,12 @@ static int crb_switch_to_ready(void)
  * normal bring up mode.
  *
  */
-int tpm2_init(void)
+tpm_result_t tpm2_init(void)
 {
-	if (crb_probe()) {
+	tpm_result_t rc = crb_probe();
+	if (rc) {
 		printk(BIOS_ERR, "TPM: Probe failed.\n");
-		return -1;
+		return rc;
 	}
 
 	/* Read back control area structure */
@@ -211,7 +212,7 @@ int tpm2_init(void)
 	/* Good to go. */
 	printk(BIOS_SPEW, "TPM: CRB TPM initialized successfully\n");
 
-	return 0;
+	return TPM_SUCCESS;
 }
 
 static void set_ptt_cmd_resp_buffers(void)
@@ -231,7 +232,7 @@ static void set_ptt_cmd_resp_buffers(void)
 size_t tpm2_process_command(const void *tpm2_command, size_t command_size, void *tpm2_response,
 			    size_t max_response)
 {
-	int rc;
+	tpm_result_t rc;
 
 	if (command_size > control_area.command_size) {
 		printk(BIOS_ERR, "TPM: Command size is too big.\n");
@@ -248,12 +249,15 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size, void 
 	// Check if CMD bit is cleared.
 	rc = crb_wait_for_reg32(CRB_REG(0, CRB_REG_START), 250, CRB_REG_START_START, 0x0);
 	if (rc) {
-		printk(BIOS_ERR, "TPM: Error - Cmd Bit not cleared.\n");
+		printk(BIOS_ERR, "TPM Error (%#x): Cmd Bit not cleared.\n", rc);
 		return -1;
 	}
 
-	if (crb_switch_to_ready())
+	rc = crb_switch_to_ready();
+	if (rc) {
+		printk(BIOS_DEBUG, "TPM Error (%#x): Can not transition into ready state.\n", rc);
 		return -1;
+	}
 
 	// Write to Command Buffer
 	memcpy(control_area.command_bfr, tpm2_command, command_size);
@@ -272,14 +276,14 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size, void 
 	// Poll for Response
 	rc = crb_wait_for_reg32(CRB_REG(cur_loc, CRB_REG_START), 3500, CRB_REG_START_START, 0);
 	if (rc) {
-		printk(BIOS_DEBUG, "TPM: Command Timed out.\n");
+		printk(BIOS_DEBUG, "TPM Error (%#x): Command Timed out.\n", rc);
 		return -1;
 	}
 
 	// Check for errors
 	rc = crb_wait_for_reg32(CRB_REG(cur_loc, CRB_REG_STATUS), 200, CRB_REG_STATUS_ERROR, 0);
 	if (rc) {
-		printk(BIOS_DEBUG, "TPM: Command errored.\n");
+		printk(BIOS_DEBUG, "TPM Error (%#x): Command errored.\n", rc);
 		return -1;
 	}
 
@@ -293,8 +297,9 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size, void 
 	// Copy Response
 	memcpy(tpm2_response, control_area.response_bfr, length);
 
-	if (crb_switch_to_ready()) {
-		printk(BIOS_DEBUG, "TPM: Can not transition into ready state again.\n");
+	rc = crb_switch_to_ready();
+	if (rc) {
+		printk(BIOS_DEBUG, "TPM Error (%#x): Can not transition into ready state again.\n", rc);
 		return -1;
 	}
 

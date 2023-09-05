@@ -137,22 +137,22 @@ static inline void tpm_log_dump(void *unused)
  * @param name sets additional info where the digest comes from
  * @return TPM_SUCCESS on success. If not a tpm error is returned
  */
-uint32_t tpm_extend_pcr(int pcr, enum vb2_hash_algorithm digest_algo,
-			const uint8_t *digest, size_t digest_len,
-			const char *name);
+tpm_result_t tpm_extend_pcr(int pcr, enum vb2_hash_algorithm digest_algo,
+			    const uint8_t *digest, size_t digest_len,
+			    const char *name);
 
 /**
  * Issue a TPM_Clear and re-enable/reactivate the TPM.
  * @return TPM_SUCCESS on success. If not a tpm error is returned
  */
-uint32_t tpm_clear_and_reenable(void);
+tpm_result_t tpm_clear_and_reenable(void);
 
 /**
  * Start the TPM and establish the root of trust.
  * @param s3flag tells the tpm setup if we wake up from a s3 state on x86
  * @return TPM_SUCCESS on success. If not a tpm error is returned
  */
-uint32_t tpm_setup(int s3flag);
+tpm_result_t tpm_setup(int s3flag);
 
 /**
  * Measure a given region device and extend given PCR with the result.
@@ -161,7 +161,7 @@ uint32_t tpm_setup(int s3flag);
  * @param *rname Name of the region that is measured
  * @return TPM error code in case of error otherwise TPM_SUCCESS
  */
-uint32_t tpm_measure_region(const struct region_device *rdev, uint8_t pcr,
-			    const char *rname);
+tpm_result_t tpm_measure_region(const struct region_device *rdev, uint8_t pcr,
+				const char *rname);
 
 #endif /* TSPI_H_ */

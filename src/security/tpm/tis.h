@@ -3,6 +3,7 @@
 #ifndef TIS_H_
 #define TIS_H_
 
+#include <security/tpm/tss_errors.h>
 #include <types.h>
 
 enum tis_access {
@@ -34,19 +35,19 @@ enum tis_status {
 /*
  * tis_init()
  *
- * Initialize the TPM device. Returns 0 on success or -1 on
- * failure (in case device probing did not succeed).
+ * Initialize the TPM device.
+ * Returns TSS Return Code from TCG TPM Structures.  See tss_errors.h
  */
-int tis_init(void);
+tpm_result_t tis_init(void);
 
 /*
  * tis_open()
  *
  * Requests access to locality 0 for the caller.
  *
- * Returns 0 on success, -1 on failure.
+ * Returns TSS Return Code from TCG TPM Structures.  See tss_errors.h
  */
-int tis_open(void);
+tpm_result_t tis_open(void);
 
 /*
  * tis_sendrecv()
@@ -58,10 +59,9 @@ int tis_open(void);
  * @recvbuf - memory to save the response to
  * @recv_len - pointer to the size of the response buffer
  *
- * Returns 0 on success (and places the number of response bytes at recv_len)
- * or -1 on failure.
+ * Returns TSS Return Code from TCG TPM Structures.  See tss_errors.h
  */
-int tis_sendrecv(const u8 *sendbuf, size_t send_size, u8 *recvbuf,
+tpm_result_t tis_sendrecv(const u8 *sendbuf, size_t send_size, u8 *recvbuf,
 			size_t *recv_len);
 
 /*

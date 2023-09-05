@@ -12,6 +12,7 @@
 #ifndef __DRIVERS_TPM_SLB9635_I2C_TPM_H__
 #define __DRIVERS_TPM_SLB9635_I2C_TPM_H__
 
+#include <security/tpm/tss_errors.h>
 #include <stdint.h>
 
 enum tpm_timeout {
@@ -51,8 +52,8 @@ struct tpm_chip {
 
 /* ---------- Interface for TPM vendor ------------ */
 
-int tpm_vendor_probe(unsigned int bus, uint32_t addr);
+tpm_result_t tpm_vendor_probe(unsigned int bus, uint32_t addr);
 
-int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr);
+tpm_result_t tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr);
 
 #endif /* __DRIVERS_TPM_SLB9635_I2C_TPM_H__ */

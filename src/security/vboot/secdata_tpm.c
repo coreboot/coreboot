@@ -18,17 +18,17 @@
 	printk(BIOS_INFO, "%s():%d: " format, __func__, __LINE__, ## args)
 
 #define RETURN_ON_FAILURE(tpm_cmd) do {				\
-		uint32_t rc_;					\
+		tpm_result_t rc_;					\
 		if ((rc_ = (tpm_cmd)) != TPM_SUCCESS) {		\
 			VBDEBUG("Antirollback: %08x returned by " #tpm_cmd \
-				 "\n", (int)rc_);			\
+				 "\n", (tpm_result_t)rc_);			\
 			return rc_;					\
 		}							\
 	} while (0)
 
-static uint32_t safe_write(uint32_t index, const void *data, uint32_t length);
+static tpm_result_t safe_write(uint32_t index, const void *data, uint32_t length);
 
-uint32_t antirollback_read_space_kernel(struct vb2_context *ctx)
+tpm_result_t antirollback_read_space_kernel(struct vb2_context *ctx)
 {
 	if (!CONFIG(TPM2)) {
 		/*
@@ -51,7 +51,7 @@ uint32_t antirollback_read_space_kernel(struct vb2_context *ctx)
 	}
 
 	uint8_t size = VB2_SECDATA_KERNEL_SIZE;
-	uint32_t rc;
+	tpm_result_t rc;
 
 	/* Start with the version 1.0 size used by all modern Cr50/Ti50 boards. */
 	rc = tlcl_read(KERNEL_NV_INDEX, ctx->secdata_kernel, size);
@@ -72,7 +72,7 @@ uint32_t antirollback_read_space_kernel(struct vb2_context *ctx)
 
 #if CONFIG(TPM2)
 
-static uint32_t read_space_mrc_hash(uint32_t index, uint8_t *data)
+static tpm_result_t read_space_mrc_hash(uint32_t index, uint8_t *data)
 {
 	RETURN_ON_FAILURE(tlcl_read(index, data,
 				    HASH_NV_SIZE));
@@ -206,7 +206,7 @@ static uint32_t define_space(const char *name, uint32_t index, uint32_t length,
 			     const TPMA_NV nv_attributes,
 			     const uint8_t *nv_policy, size_t nv_policy_size)
 {
-	uint32_t rc;
+	tpm_result_t rc;
 
 	rc = tlcl_define_space(index, length, nv_attributes, nv_policy,
 			       nv_policy_size);
@@ -227,16 +227,16 @@ static uint32_t define_space(const char *name, uint32_t index, uint32_t length,
 }
 
 /* Nothing special in the TPM2 path yet. */
-static uint32_t safe_write(uint32_t index, const void *data, uint32_t length)
+static tpm_result_t safe_write(uint32_t index, const void *data, uint32_t length)
 {
 	return tlcl_write(index, data, length);
 }
 
-static uint32_t setup_space(const char *name, uint32_t index, const void *data,
-			    uint32_t length, const TPMA_NV nv_attributes,
-			    const uint8_t *nv_policy, size_t nv_policy_size)
+static tpm_result_t setup_space(const char *name, uint32_t index, const void *data,
+				uint32_t length, const TPMA_NV nv_attributes,
+				const uint8_t *nv_policy, size_t nv_policy_size)
 {
-	uint32_t rc;
+	tpm_result_t rc;
 
 	rc = define_space(name, index, length, nv_attributes, nv_policy,
 			  nv_policy_size);
@@ -246,7 +246,7 @@ static uint32_t setup_space(const char *name, uint32_t index, const void *data,
 	return safe_write(index, data, length);
 }
 
-static uint32_t setup_firmware_space(struct vb2_context *ctx)
+static tpm_result_t setup_firmware_space(struct vb2_context *ctx)
 {
 	uint32_t firmware_space_size = vb2api_secdata_firmware_create(ctx);
 
@@ -256,7 +256,7 @@ static uint32_t setup_firmware_space(struct vb2_context *ctx)
 			   sizeof(pcr0_allowed_policy));
 }
 
-static uint32_t setup_fwmp_space(struct vb2_context *ctx)
+static tpm_result_t setup_fwmp_space(struct vb2_context *ctx)
 {
 	uint32_t fwmp_space_size = vb2api_secdata_fwmp_create(ctx);
 
@@ -264,7 +264,7 @@ static uint32_t setup_fwmp_space(struct vb2_context *ctx)
 			   fwmp_attr, NULL, 0);
 }
 
-static uint32_t setup_kernel_space(struct vb2_context *ctx)
+static tpm_result_t setup_kernel_space(struct vb2_context *ctx)
 {
 	uint32_t kernel_space_size = vb2api_secdata_kernel_create(ctx);
 
@@ -272,7 +272,7 @@ static uint32_t setup_kernel_space(struct vb2_context *ctx)
 			    kernel_space_size, rw_space_attributes, NULL, 0);
 }
 
-static uint32_t set_mrc_hash_space(uint32_t index, const uint8_t *data)
+static tpm_result_t set_mrc_hash_space(uint32_t index, const uint8_t *data)
 {
 	if (index == MRC_REC_HASH_NV_INDEX) {
 		return setup_space("RO MRC Hash", index, data, HASH_NV_SIZE,
@@ -289,9 +289,9 @@ static uint32_t set_mrc_hash_space(uint32_t index, const uint8_t *data)
  *
  * These spaces are not used by firmware, but we do need to initialize them.
  */
-static uint32_t setup_zte_spaces(void)
+static tpm_result_t setup_zte_spaces(void)
 {
-	uint32_t rc;
+	tpm_result_t rc;
 	uint64_t rma_bytes_counter_default = 0;
 	uint8_t rma_sn_bits_default[16];
 	uint8_t board_id_default[12];
@@ -307,7 +307,7 @@ static uint32_t setup_zte_spaces(void)
 			 zte_attr,
 			 unsatisfiable_policy, sizeof(unsatisfiable_policy));
 	if (rc != TPM_SUCCESS) {
-		VBDEBUG("%s: Failed to set up RMA + SN Bits space\n", __func__);
+		VBDEBUG("%s: Failed to set up RMA + SN Bits space with error %#x\n", __func__, rc);
 		return rc;
 	}
 
@@ -316,7 +316,7 @@ static uint32_t setup_zte_spaces(void)
 			 zte_attr,
 			 unsatisfiable_policy, sizeof(unsatisfiable_policy));
 	if (rc != TPM_SUCCESS) {
-		VBDEBUG("%s: Failed to set up Board ID space\n", __func__);
+		VBDEBUG("%s: Failed to set up Board ID space with error %#x\n", __func__, rc);
 		return rc;
 	}
 
@@ -326,7 +326,7 @@ static uint32_t setup_zte_spaces(void)
 			  zte_rma_bytes_attr,
 			  unsatisfiable_policy, sizeof(unsatisfiable_policy));
 	if (rc != TPM_SUCCESS) {
-		VBDEBUG("%s: Failed to define RMA Bytes space\n", __func__);
+		VBDEBUG("%s: Failed to define RMA Bytes space with error %#x\n", __func__, rc);
 		return rc;
 	}
 
@@ -337,8 +337,8 @@ static uint32_t setup_zte_spaces(void)
 	rc = tlcl_set_bits(ZTE_RMA_BYTES_COUNTER_INDEX,
 			   rma_bytes_counter_default);
 	if (rc != TPM_SUCCESS) {
-		VBDEBUG("%s: Failed to init RMA Bytes counter space\n",
-			__func__);
+		VBDEBUG("%s: Failed to init RMA Bytes counter space wit error %#x\n",
+			__func__, rc);
 		return rc;
 	}
 
@@ -351,7 +351,7 @@ static uint32_t setup_zte_spaces(void)
  * This space is not used by firmware but needs to survive owner clear. Thus, it
  * needs to be created here.
  */
-static uint32_t enterprise_rollback_create_space(void)
+static tpm_result_t enterprise_rollback_create_space(void)
 {
 	uint8_t rollback_space_default[32] = {0};
 
@@ -361,9 +361,10 @@ static uint32_t enterprise_rollback_create_space(void)
 			   unsatisfiable_policy, sizeof(unsatisfiable_policy));
 }
 
-static uint32_t setup_widevine_counter_spaces(void)
+static tpm_result_t setup_widevine_counter_spaces(void)
 {
-	uint32_t index, rc;
+	uint32_t index;
+	tpm_result_t rc;
 
 	for (index = 0; index < NUM_WIDEVINE_COUNTERS; index++) {
 		rc = define_space(WIDEVINE_COUNTER_NAME,
@@ -375,10 +376,10 @@ static uint32_t setup_widevine_counter_spaces(void)
 		if (rc != TPM_SUCCESS)
 			return rc;
 	}
-	return TPM_SUCCESS;
+	return rc;
 }
 
-static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
+static tpm_result_t _factory_initialize_tpm(struct vb2_context *ctx)
 {
 	RETURN_ON_FAILURE(tlcl_force_clear());
 
@@ -428,12 +429,12 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 	return TPM_SUCCESS;
 }
 
-uint32_t antirollback_lock_space_firmware(void)
+tpm_result_t antirollback_lock_space_firmware(void)
 {
 	return tlcl_lock_nv_write(FIRMWARE_NV_INDEX);
 }
 
-uint32_t antirollback_read_space_mrc_hash(uint32_t index, uint8_t *data, uint32_t size)
+tpm_result_t antirollback_read_space_mrc_hash(uint32_t index, uint8_t *data, uint32_t size)
 {
 	if (size != HASH_NV_SIZE) {
 		VBDEBUG("TPM: Incorrect buffer size for hash idx %#x. "
@@ -444,10 +445,10 @@ uint32_t antirollback_read_space_mrc_hash(uint32_t index, uint8_t *data, uint32_
 	return read_space_mrc_hash(index, data);
 }
 
-uint32_t antirollback_write_space_mrc_hash(uint32_t index, const uint8_t *data, uint32_t size)
+tpm_result_t antirollback_write_space_mrc_hash(uint32_t index, const uint8_t *data, uint32_t size)
 {
 	uint8_t spc_data[HASH_NV_SIZE];
-	uint32_t rc;
+	tpm_result_t rc;
 
 	if (size != HASH_NV_SIZE) {
 		VBDEBUG("TPM: Incorrect buffer size for hash idx %#x. "
@@ -472,18 +473,18 @@ uint32_t antirollback_write_space_mrc_hash(uint32_t index, const uint8_t *data, 
 	return safe_write(index, data, size);
 }
 
-uint32_t antirollback_lock_space_mrc_hash(uint32_t index)
+tpm_result_t antirollback_lock_space_mrc_hash(uint32_t index)
 {
 	return tlcl_lock_nv_write(index);
 }
 
-static uint32_t read_space_vbios_hash(uint8_t *data)
+static tpm_result_t read_space_vbios_hash(uint8_t *data)
 {
 	RETURN_ON_FAILURE(tlcl_read(VBIOS_CACHE_NV_INDEX, data, HASH_NV_SIZE));
 	return TPM_SUCCESS;
 }
 
-uint32_t antirollback_read_space_vbios_hash(uint8_t *data, uint32_t size)
+tpm_result_t antirollback_read_space_vbios_hash(uint8_t *data, uint32_t size)
 {
 	if (size != HASH_NV_SIZE) {
 		VBDEBUG("TPM: Incorrect buffer size for hash idx %#x. "
@@ -494,10 +495,10 @@ uint32_t antirollback_read_space_vbios_hash(uint8_t *data, uint32_t size)
 	return read_space_vbios_hash(data);
 }
 
-uint32_t antirollback_write_space_vbios_hash(const uint8_t *data, uint32_t size)
+tpm_result_t antirollback_write_space_vbios_hash(const uint8_t *data, uint32_t size)
 {
 	uint8_t spc_data[HASH_NV_SIZE];
-	uint32_t rc;
+	tpm_result_t rc;
 
 	if (size != HASH_NV_SIZE) {
 		VBDEBUG("TPM: Incorrect buffer size for hash idx %#x. "
@@ -532,9 +533,9 @@ uint32_t antirollback_write_space_vbios_hash(const uint8_t *data, uint32_t size)
  * This is not expected to happen frequently, but it could happen.
  */
 
-static uint32_t safe_write(uint32_t index, const void *data, uint32_t length)
+static tpm_result_t safe_write(uint32_t index, const void *data, uint32_t length)
 {
-	uint32_t rc = tlcl_write(index, data, length);
+	tpm_result_t rc = tlcl_write(index, data, length);
 	if (rc == TPM_MAXNVWRITES) {
 		RETURN_ON_FAILURE(tpm_clear_and_reenable());
 		return tlcl_write(index, data, length);
@@ -549,9 +550,9 @@ static uint32_t safe_write(uint32_t index, const void *data, uint32_t length)
  * writes because we only define spaces once at initialization, but we'd
  * rather be paranoid about this.
  */
-static uint32_t safe_define_space(uint32_t index, uint32_t perm, uint32_t size)
+static tpm_result_t safe_define_space(uint32_t index, uint32_t perm, uint32_t size)
 {
-	uint32_t rc = tlcl_define_space(index, perm, size);
+	tpm_result_t rc = tlcl_define_space(index, perm, size);
 	if (rc == TPM_MAXNVWRITES) {
 		RETURN_ON_FAILURE(tpm_clear_and_reenable());
 		return tlcl_define_space(index, perm, size);
@@ -560,10 +561,10 @@ static uint32_t safe_define_space(uint32_t index, uint32_t perm, uint32_t size)
 	}
 }
 
-static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
+static tpm_result_t _factory_initialize_tpm(struct vb2_context *ctx)
 {
 	TPM_PERMANENT_FLAGS pflags;
-	uint32_t rc;
+	tpm_result_t rc;
 
 	vb2api_secdata_firmware_create(ctx);
 	vb2api_secdata_kernel_create_v0(ctx);
@@ -618,7 +619,7 @@ static uint32_t _factory_initialize_tpm(struct vb2_context *ctx)
 	return TPM_SUCCESS;
 }
 
-uint32_t antirollback_lock_space_firmware(void)
+tpm_result_t antirollback_lock_space_firmware(void)
 {
 	return tlcl_set_global_lock();
 }
@@ -632,9 +633,9 @@ uint32_t antirollback_lock_space_firmware(void)
  * nvLocked bit and ensures the physical presence command is enabled and
  * locked.
  */
-static uint32_t factory_initialize_tpm(struct vb2_context *ctx)
+static tpm_result_t factory_initialize_tpm(struct vb2_context *ctx)
 {
-	uint32_t rc;
+	tpm_result_t rc;
 
 	VBDEBUG("TPM: factory initialization\n");
 
@@ -664,9 +665,9 @@ static uint32_t factory_initialize_tpm(struct vb2_context *ctx)
 	return TPM_SUCCESS;
 }
 
-uint32_t antirollback_read_space_firmware(struct vb2_context *ctx)
+tpm_result_t antirollback_read_space_firmware(struct vb2_context *ctx)
 {
-	uint32_t rc;
+	tpm_result_t rc;
 
 	rc = tlcl_read(FIRMWARE_NV_INDEX, ctx->secdata_firmware, VB2_SECDATA_FIRMWARE_SIZE);
 	if (rc == TPM_BADINDEX) {
@@ -678,10 +679,10 @@ uint32_t antirollback_read_space_firmware(struct vb2_context *ctx)
 		return TPM_CB_CORRUPTED_STATE;
 	}
 
-	return TPM_SUCCESS;
+	return rc;
 }
 
-uint32_t antirollback_write_space_firmware(struct vb2_context *ctx)
+tpm_result_t antirollback_write_space_firmware(struct vb2_context *ctx)
 {
 	if (CONFIG(TPM_GOOGLE_IMMEDIATELY_COMMIT_FW_SECDATA))
 		tlcl_cr50_enable_nvcommits();
@@ -689,7 +690,7 @@ uint32_t antirollback_write_space_firmware(struct vb2_context *ctx)
 			  VB2_SECDATA_FIRMWARE_SIZE);
 }
 
-uint32_t antirollback_write_space_kernel(struct vb2_context *ctx)
+tpm_result_t antirollback_write_space_kernel(struct vb2_context *ctx)
 {
 	/* Learn the expected size. */
 	uint8_t size = VB2_SECDATA_KERNEL_MIN_SIZE;
@@ -710,10 +711,6 @@ uint32_t antirollback_write_space_kernel(struct vb2_context *ctx)
 
 vb2_error_t vb2ex_tpm_clear_owner(struct vb2_context *ctx)
 {
-	uint32_t rc;
 	printk(BIOS_INFO, "Clearing TPM owner\n");
-	rc = tpm_clear_and_reenable();
-	if (rc)
-		return VB2_ERROR_EX_TPM_CLEAR_OWNER;
-	return VB2_SUCCESS;
+	return tpm_clear_and_reenable() == TPM_SUCCESS ? VB2_SUCCESS : VB2_ERROR_EX_TPM_CLEAR_OWNER;
 }

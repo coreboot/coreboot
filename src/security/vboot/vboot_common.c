@@ -2,6 +2,7 @@
 
 #include <console/cbmem_console.h>
 #include <reset.h>
+#include <security/tpm/tss_errors.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/vboot_common.h>
 #include <security/vboot/vbnv.h>
@@ -12,14 +13,14 @@
 static void save_secdata(struct vb2_context *ctx)
 {
 	if (ctx->flags & VB2_CONTEXT_SECDATA_FIRMWARE_CHANGED
-	    && (CONFIG(VBOOT_MOCK_SECDATA) || tlcl_lib_init() == VB2_SUCCESS)) {
+	    && (CONFIG(VBOOT_MOCK_SECDATA) || tlcl_lib_init() == TPM_SUCCESS)) {
 		printk(BIOS_INFO, "Saving secdata firmware\n");
 		antirollback_write_space_firmware(ctx);
 		ctx->flags &= ~VB2_CONTEXT_SECDATA_FIRMWARE_CHANGED;
 	}
 
 	if (ctx->flags & VB2_CONTEXT_SECDATA_KERNEL_CHANGED
-	    && (CONFIG(VBOOT_MOCK_SECDATA) || tlcl_lib_init() == VB2_SUCCESS)) {
+	    && (CONFIG(VBOOT_MOCK_SECDATA) || tlcl_lib_init() == TPM_SUCCESS)) {
 		printk(BIOS_INFO, "Saving secdata kernel\n");
 		antirollback_write_space_kernel(ctx);
 		ctx->flags &= ~VB2_CONTEXT_SECDATA_KERNEL_CHANGED;

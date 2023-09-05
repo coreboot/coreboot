@@ -2,6 +2,7 @@
 
 #include <security/tpm/tspi.h>
 #include <security/vboot/tpm_common.h>
+#include <security/tpm/tss_errors.h>
 #include <vb2_api.h>
 #include <vb2_sha.h>
 
@@ -9,9 +10,9 @@
 #define TPM_PCR_GBB_HWID_NAME "VBOOT: GBB HWID"
 #define TPM_PCR_MINIMUM_DIGEST_SIZE 20
 
-uint32_t vboot_setup_tpm(struct vb2_context *ctx)
+tpm_result_t vboot_setup_tpm(struct vb2_context *ctx)
 {
-	uint32_t rc;
+	tpm_result_t rc;
 
 	rc = tpm_setup(ctx->flags & VB2_CONTEXT_S3_RESUME);
 	if (rc == TPM_CB_MUST_REBOOT)
@@ -20,16 +21,14 @@ uint32_t vboot_setup_tpm(struct vb2_context *ctx)
 	return rc;
 }
 
-vb2_error_t vboot_extend_pcr(struct vb2_context *ctx, int pcr,
+tpm_result_t vboot_extend_pcr(struct vb2_context *ctx, int pcr,
 			     enum vb2_pcr_digest which_digest)
 {
 	uint8_t buffer[VB2_PCR_DIGEST_RECOMMENDED_SIZE];
 	uint32_t size = sizeof(buffer);
-	vb2_error_t rv;
 
-	rv = vb2api_get_pcr_digest(ctx, which_digest, buffer, &size);
-	if (rv != VB2_SUCCESS)
-		return rv;
+	if (vb2api_get_pcr_digest(ctx, which_digest, buffer, &size) != VB2_SUCCESS)
+		return TPM_CB_FAIL;
 
 	/*
 	 * On TPM 1.2, all PCRs are intended for use with SHA1. We truncate our
@@ -56,6 +55,6 @@ vb2_error_t vboot_extend_pcr(struct vb2_context *ctx, int pcr,
 		return tpm_extend_pcr(pcr, algo, buffer, vb2_digest_size(algo),
 				      TPM_PCR_GBB_HWID_NAME);
 	default:
-		return VB2_ERROR_UNKNOWN;
+		return TPM_CB_FAIL;
 	}
 }

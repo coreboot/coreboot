@@ -7,6 +7,7 @@
 #include <fmap.h>
 #include <security/tpm/tspi/crtm.h>
 #include <security/tpm/tss/vendor/cr50/cr50.h>
+#include <security/tpm/tss_errors.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/vbnv.h>
 #include <security/vboot/tpm_common.h>
@@ -182,12 +183,12 @@ static vb2_error_t hash_body(struct vb2_context *ctx,
 	return handle_digest_result(hash_digest, hash_digest_sz);
 }
 
-static vb2_error_t extend_pcrs(struct vb2_context *ctx)
+static tpm_result_t extend_pcrs(struct vb2_context *ctx)
 {
-	vb2_error_t rv;
-	rv = vboot_extend_pcr(ctx, CONFIG_PCR_BOOT_MODE, BOOT_MODE_PCR);
-	if (rv)
-		return rv;
+	tpm_result_t rc;
+	rc = vboot_extend_pcr(ctx, CONFIG_PCR_BOOT_MODE, BOOT_MODE_PCR);
+	if (rc)
+		return rc;
 	return vboot_extend_pcr(ctx, CONFIG_PCR_HWID, HWID_DIGEST_PCR);
 }
 
@@ -210,7 +211,7 @@ static const char *get_boot_mode_string(uint8_t boot_mode)
 static void check_boot_mode(struct vb2_context *ctx)
 {
 	uint8_t boot_mode;
-	int rc;
+	tpm_result_t rc;
 
 	rc = tlcl_cr50_get_boot_mode(&boot_mode);
 	switch (rc) {
@@ -222,7 +223,7 @@ static void check_boot_mode(struct vb2_context *ctx)
 		break;
 	default:
 		printk(BIOS_ERR,
-		       "Communication error in getting GSC boot mode.\n");
+		       "Communication error(%#x) in getting GSC boot mode.\n", rc);
 		vb2api_fail(ctx, VB2_RECOVERY_GSC_BOOT_MODE, rc);
 		return;
 	}
@@ -240,6 +241,7 @@ static void check_boot_mode(struct vb2_context *ctx)
 void verstage_main(void)
 {
 	struct vb2_context *ctx;
+	tpm_result_t tpm_rc;
 	vb2_error_t rv;
 
 	timestamp_add_now(TS_VBOOT_START);
@@ -363,10 +365,13 @@ void verstage_main(void)
 	/* Only extend PCRs once on boot. */
 	if (!(ctx->flags & VB2_CONTEXT_S3_RESUME)) {
 		timestamp_add_now(TS_TPMPCR_START);
-		rv = extend_pcrs(ctx);
-		if (rv) {
-			printk(BIOS_WARNING, "Failed to extend TPM PCRs (%#x)\n", rv);
-			vboot_fail_and_reboot(ctx, VB2_RECOVERY_RO_TPM_U_ERROR, rv);
+		tpm_rc = extend_pcrs(ctx);
+		if (tpm_rc) {
+			printk(BIOS_WARNING, "Failed to extend TPM PCRs (%#x)\n",
+				tpm_rc);
+			vboot_fail_and_reboot(ctx,
+				VB2_RECOVERY_RO_TPM_U_ERROR,
+				tpm_rc);
 		}
 		timestamp_add_now(TS_TPMPCR_END);
 	}
@@ -374,19 +379,21 @@ void verstage_main(void)
 	/* Lock TPM */
 
 	timestamp_add_now(TS_TPMLOCK_START);
-	rv = antirollback_lock_space_firmware();
-	if (rv) {
-		printk(BIOS_INFO, "Failed to lock TPM (%#x)\n", rv);
+	tpm_rc = antirollback_lock_space_firmware();
+	if (tpm_rc) {
+		printk(BIOS_INFO, "Failed to lock TPM (%#x)\n", tpm_rc);
 		vboot_fail_and_reboot(ctx, VB2_RECOVERY_RO_TPM_L_ERROR, 0);
 	}
 	timestamp_add_now(TS_TPMLOCK_END);
 
 	/* Lock rec hash space if available. */
 	if (CONFIG(VBOOT_HAS_REC_HASH_SPACE)) {
-		rv = antirollback_lock_space_mrc_hash(MRC_REC_HASH_NV_INDEX);
-		if (rv) {
-			printk(BIOS_INFO, "Failed to lock rec hash space(%#x)\n", rv);
-			vboot_fail_and_reboot(ctx, VB2_RECOVERY_RO_TPM_REC_HASH_L_ERROR, rv);
+		tpm_rc = antirollback_lock_space_mrc_hash(
+				MRC_REC_HASH_NV_INDEX);
+		if (tpm_rc) {
+			printk(BIOS_INFO, "Failed to lock rec hash space(%#x)\n",
+				tpm_rc);
+			vboot_fail_and_reboot(ctx, VB2_RECOVERY_RO_TPM_REC_HASH_L_ERROR, tpm_rc);
 		}
 	}
 

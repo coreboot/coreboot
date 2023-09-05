@@ -208,7 +208,7 @@ static uint32_t save_buffers(void)
  */
 static void psp_verstage_s0i3_resume(void)
 {
-	uint32_t rc;
+	tpm_result_t rc;
 
 	post_code(POSTCODE_VERSTAGE_S0I3_RESUME);
 

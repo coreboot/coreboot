@@ -10,6 +10,7 @@
 
 #include <types.h>
 #include <security/tpm/tspi.h>
+#include <security/tpm/tss_errors.h>
 #include <vb2_sha.h>
 
 struct vb2_context;
@@ -52,23 +53,23 @@ enum vb2_pcr_digest;
 
 /* All functions return TPM_SUCCESS (zero) if successful, non-zero if error */
 
-uint32_t antirollback_read_space_firmware(struct vb2_context *ctx);
+tpm_result_t antirollback_read_space_firmware(struct vb2_context *ctx);
 
 /**
  * Write may be called if the versions change.
  */
-uint32_t antirollback_write_space_firmware(struct vb2_context *ctx);
+tpm_result_t antirollback_write_space_firmware(struct vb2_context *ctx);
 
 /**
  * Read and write kernel space in TPM.
  */
-uint32_t antirollback_read_space_kernel(struct vb2_context *ctx);
-uint32_t antirollback_write_space_kernel(struct vb2_context *ctx);
+tpm_result_t antirollback_read_space_kernel(struct vb2_context *ctx);
+tpm_result_t antirollback_write_space_kernel(struct vb2_context *ctx);
 
 /**
  * Lock must be called.
  */
-uint32_t antirollback_lock_space_firmware(void);
+tpm_result_t antirollback_lock_space_firmware(void);
 
 /*
  * Read MRC hash data from TPM.
@@ -79,7 +80,7 @@ uint32_t antirollback_lock_space_firmware(void);
  * @param data  pointer to buffer where hash from TPM read into
  * @param size  size of buffer
  */
-uint32_t antirollback_read_space_mrc_hash(uint32_t index, uint8_t *data, uint32_t size);
+tpm_result_t antirollback_read_space_mrc_hash(uint32_t index, uint8_t *data, uint32_t size);
 /*
  * Write new hash data to MRC space in TPM.\
  * @param index index into TPM NVRAM where hash is stored The index
@@ -89,7 +90,7 @@ uint32_t antirollback_read_space_mrc_hash(uint32_t index, uint8_t *data, uint32_
  * @param data  pointer to buffer of hash value to be written
  * @param size  size of buffer
 */
-uint32_t antirollback_write_space_mrc_hash(uint32_t index, const uint8_t *data,
+tpm_result_t antirollback_write_space_mrc_hash(uint32_t index, const uint8_t *data,
 					   uint32_t size);
 /*
  * Lock down MRC hash space in TPM.
@@ -98,19 +99,19 @@ uint32_t antirollback_write_space_mrc_hash(uint32_t index, const uint8_t *data,
  *              MRC_RW_HASH_NV_INDEX depending upon whether we are
  *              booting in recovery or normal mode.
 */
-uint32_t antirollback_lock_space_mrc_hash(uint32_t index);
+tpm_result_t antirollback_lock_space_mrc_hash(uint32_t index);
 
 /*
  * Read VBIOS hash data from TPM.
  * @param data  pointer to buffer where hash from TPM read into
  * @param size  size of buffer
  */
-uint32_t antirollback_read_space_vbios_hash(uint8_t *data, uint32_t size);
+tpm_result_t antirollback_read_space_vbios_hash(uint8_t *data, uint32_t size);
 /*
  * Write new hash data to VBIOS space in TPM.
  * @param data  pointer to buffer of hash value to be written
  * @param size  size of buffer
 */
-uint32_t antirollback_write_space_vbios_hash(const uint8_t *data, uint32_t size);
+tpm_result_t antirollback_write_space_vbios_hash(const uint8_t *data, uint32_t size);
 
 #endif  /* ANTIROLLBACK_H_ */

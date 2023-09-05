@@ -7,6 +7,7 @@
 #if CONFIG(VENDORCODE_ELTAN_MBOOT)
 #include <mboot.h>
 #endif
+#include <security/tpm/tss_errors.h>
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
 #include <soc/romstage.h>
@@ -71,9 +72,9 @@ static const uint8_t crtm_version[] =
 	CONFIG_VENDORCODE_ELTAN_CRTM_VERSION_STRING COREBOOT_VERSION COREBOOT_EXTRA_VERSION
 	" " COREBOOT_BUILD;
 
-int mb_crtm(void)
+tpm_result_t mb_crtm(void)
 {
-	int rc = TPM_IOERROR;
+	tpm_result_t rc = TPM_IOERROR;
 	TCG_PCR_EVENT2_HDR tcgEventHdr;
 
 	/* Use FirmwareVersion string to represent CRTM version. */

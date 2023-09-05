@@ -19,27 +19,24 @@ static struct tpm_chip chip;
 #define TPM_CMD_COUNT_BYTE 2
 #define TPM_CMD_ORDINAL_BYTE 6
 
-int tis_open(void)
+tpm_result_t tis_open(void)
 {
-	int rc;
+	tpm_result_t rc;
 
 	if (chip.is_open) {
 		printk(BIOS_DEBUG, "%s() called twice.\n", __func__);
-		return -1;
+		return TPM_CB_FAIL;
 	}
 
 	rc = tpm_vendor_init(&chip, CONFIG_DRIVER_TPM_I2C_BUS,
 			     CONFIG_DRIVER_TPM_I2C_ADDR);
-	if (rc < 0)
+	if (rc != TPM_SUCCESS)
 		chip.is_open = 0;
 
-	if (rc)
-		return -1;
-
-	return 0;
+	return rc;
 }
 
-int tis_init(void)
+tpm_result_t tis_init(void)
 {
 	return tpm_vendor_probe(CONFIG_DRIVER_TPM_I2C_BUS,
 				CONFIG_DRIVER_TPM_I2C_ADDR);
@@ -48,23 +45,23 @@ int tis_init(void)
 static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 			size_t rbufsiz)
 {
-	int rc;
+	int rc = -1;
 	uint32_t count;
 
 	memcpy(&count, sbuf + TPM_CMD_COUNT_BYTE, sizeof(count));
 	count = be32_to_cpu(count);
 
 	if (!chip.send || !chip.status || !chip.cancel)
-		return -1;
+		goto out;
 
 	if (count == 0) {
 		printk(BIOS_DEBUG, "%s: no data\n", __func__);
-		return -1;
+		goto out;
 	}
 	if (count > sbufsiz) {
 		printk(BIOS_DEBUG, "%s: invalid count value %#x %zx\n", __func__,
 			count, sbufsiz);
-		return -1;
+		goto out;
 	}
 
 	ASSERT(chip.send);
@@ -95,11 +92,10 @@ static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 	ASSERT(chip.cancel);
 	chip.cancel();
 	printk(BIOS_DEBUG, "%s: Operation Timed out\n", __func__);
-	rc = -1; //ETIME;
+	rc = -1;
 	goto out;
 
 out_recv:
-
 	rc = chip.recv((uint8_t *)rbuf, rbufsiz);
 	if (rc < 0)
 		printk(BIOS_DEBUG, "%s: tpm_recv: error %d\n", __func__, rc);
@@ -107,7 +103,7 @@ out:
 	return rc;
 }
 
-int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
+tpm_result_t tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
 		uint8_t *recvbuf, size_t *rbuf_len)
 {
 	ASSERT(sbuf_size >= 10);
@@ -124,12 +120,12 @@ int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
 
 	if (len < 10) {
 		*rbuf_len = 0;
-		return -1;
+		return TPM_CB_FAIL;
 	}
 
 	if (len > *rbuf_len) {
 		*rbuf_len = len;
-		return -1;
+		return TPM_CB_FAIL;
 	}
 
 	*rbuf_len = len;
@@ -142,5 +138,5 @@ int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
 		hexdump(recvbuf, *rbuf_len);
 	}
 
-	return 0;
+	return TPM_SUCCESS;
 }

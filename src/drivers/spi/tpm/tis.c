@@ -29,29 +29,31 @@ static const char *tis_get_dev_name(struct tpm2_info *info)
 	return "Unknown";
 }
 
-int tis_open(void)
+tpm_result_t tis_open(void)
 {
 	if (tpm_is_open) {
 		printk(BIOS_ERR, "%s() called twice.\n", __func__);
-		return -1;
+		return TPM_CB_FAIL;
 	}
-	return 0;
+	return TPM_SUCCESS;
 }
 
-int tis_init(void)
+tpm_result_t tis_init(void)
 {
 	struct spi_slave spi;
 	struct tpm2_info info;
+	tpm_result_t rc = TPM_SUCCESS;
 
 	if (spi_setup_slave(CONFIG_DRIVER_TPM_SPI_BUS,
 			    CONFIG_DRIVER_TPM_SPI_CHIP, &spi)) {
 		printk(BIOS_ERR, "Failed to setup TPM SPI slave\n");
-		return -1;
+		return TPM_CB_FAIL;
 	}
 
-	if (tpm2_init(&spi)) {
+	rc = tpm2_init(&spi);
+	if (rc) {
 		printk(BIOS_ERR, "Failed to initialize TPM SPI interface\n");
-		return -1;
+		return rc;
 	}
 
 	tpm2_get_info(&info);
@@ -59,18 +61,18 @@ int tis_init(void)
 	printk(BIOS_INFO, "Initialized TPM device %s revision %d\n",
 	       tis_get_dev_name(&info), info.revision);
 
-	return 0;
+	return TPM_SUCCESS;
 }
 
-int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
+tpm_result_t tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
 		 uint8_t *recvbuf, size_t *rbuf_len)
 {
 	int len = tpm2_process_command(sendbuf, sbuf_size, recvbuf, *rbuf_len);
 
 	if (len == 0)
-		return -1;
+		return TPM_CB_FAIL;
 
 	*rbuf_len = len;
 
-	return 0;
+	return TPM_SUCCESS;
 }

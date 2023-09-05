@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* This is a driver for a Command Response Buffer Interface */
 
+#include <security/tpm/tss_errors.h>
+
 /* CRB driver */
 /* address of locality 0 (CRB) */
 #define TPM_CRB_BASE_ADDRESS        CONFIG_CRB_TPM_BASE_ADDRESS
@@ -58,7 +60,7 @@ struct tpm2_info {
 	uint16_t revision;
 };
 
-int tpm2_init(void);
+tpm_result_t tpm2_init(void);
 void tpm2_get_info(struct tpm2_info *tpm2_info);
 size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
 			    void *tpm2_response, size_t max_response);

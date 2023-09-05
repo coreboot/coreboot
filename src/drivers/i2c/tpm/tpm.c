@@ -451,7 +451,7 @@ out_err:
 
 /* Initialization of I2C TPM */
 
-int tpm_vendor_probe(unsigned int bus, uint32_t addr)
+tpm_result_t tpm_vendor_probe(unsigned int bus, uint32_t addr)
 {
 	struct stopwatch sw;
 	uint8_t buf = 0;
@@ -487,18 +487,18 @@ int tpm_vendor_probe(unsigned int bus, uint32_t addr)
 	 * Claim failure if the ValidSts (bit 7) is clear.
 	 */
 	if (!(buf & TPM_STS_VALID))
-		return -1;
+		return TPM_CB_FAIL;
 
-	return 0;
+	return TPM_SUCCESS;
 }
 
-int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
+tpm_result_t tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 {
 	uint32_t vendor;
 
 	if (dev_addr == 0) {
 		printk(BIOS_ERR, "%s: missing device address\n", __func__);
-		return -1;
+		return TPM_CB_FAIL;
 	}
 
 	tpm_dev.chip_type = UNKNOWN;
@@ -518,7 +518,7 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 	chip->cancel = &tpm_tis_i2c_ready;
 
 	if (request_locality(0) != 0)
-		return -1;
+		return TPM_CB_FAIL;
 
 	/* Read four bytes from DID_VID register */
 	if (iic_tpm_read(TPM_DID_VID(0), (uint8_t *)&vendor, 4) < 0)
@@ -543,9 +543,9 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 	 * Standard timeout values are used so far
 	 */
 
-	return 0;
+	return TPM_SUCCESS;
 
 out_err:
 	release_locality(0, 1);
-	return -1;
+	return TPM_CB_FAIL;
 }

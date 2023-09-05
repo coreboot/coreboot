@@ -74,17 +74,6 @@
 #define TIS_ACCESS_REQUEST_USE         (1 << 1) /* 0x02 */
 #define TIS_ACCESS_TPM_ESTABLISHMENT   (1 << 0) /* 0x01 */
 
-/*
- * Error value returned if a tpm register does not enter the expected state
- * after continuous polling. No actual TPM register reading ever returns ~0,
- * so this value is a safe error indication to be mixed with possible status
- * register values.
- */
-#define TPM_TIMEOUT_ERR			(~0)
-
-/* Error value returned on various TPM driver errors */
-#define TPM_DRIVER_ERR		(~0)
-
  /* 1 second is plenty for anything TPM does.*/
 #define MAX_DELAY_US	USECS_PER_SEC
 
@@ -248,9 +237,9 @@ static inline u32 tpm_read_int_polarity(int locality)
  * @mask - bitmask for the bitfield(s) to watch
  * @expected - value the field(s) are supposed to be set to
  *
- * Returns 0 on success or TPM_TIMEOUT_ERR on timeout.
+ * Returns TPM_SUCCESS on success or TPM_CB_TIMEOUT on timeout.
  */
-static int tis_wait_sts(int locality, u8 mask, u8 expected)
+static tpm_result_t tis_wait_sts(int locality, u8 mask, u8 expected)
 {
 	struct stopwatch sw;
 
@@ -258,24 +247,24 @@ static int tis_wait_sts(int locality, u8 mask, u8 expected)
 	do {
 		u8 value = tpm_read_status(locality);
 		if ((value & mask) == expected)
-			return 0;
+			return TPM_SUCCESS;
 		udelay(1);
 	} while (!stopwatch_expired(&sw));
-	return TPM_TIMEOUT_ERR;
+	return TPM_CB_TIMEOUT;
 }
 
-static inline int tis_wait_ready(int locality)
+static inline tpm_result_t tis_wait_ready(int locality)
 {
 	return tis_wait_sts(locality, TIS_STS_COMMAND_READY,
 	                    TIS_STS_COMMAND_READY);
 }
 
-static inline int tis_wait_valid(int locality)
+static inline tpm_result_t tis_wait_valid(int locality)
 {
 	return tis_wait_sts(locality, TIS_STS_VALID, TIS_STS_VALID);
 }
 
-static inline int tis_wait_valid_data(int locality)
+static inline tpm_result_t tis_wait_valid_data(int locality)
 {
 	const u8 has_data = TIS_STS_DATA_AVAILABLE | TIS_STS_VALID;
 	return tis_wait_sts(locality, has_data, has_data);
@@ -302,9 +291,9 @@ static inline int tis_expect_data(int locality)
  * @mask - bitmask for the bitfield(s) to watch
  * @expected - value the field(s) are supposed to be set to
  *
- * Returns 0 on success or TPM_TIMEOUT_ERR on timeout.
+ * Returns TPM_SUCCESS on success or TPM_CB_TIMEOUT on timeout.
  */
-static int tis_wait_access(int locality, u8 mask, u8 expected)
+static tpm_result_t tis_wait_access(int locality, u8 mask, u8 expected)
 {
 	struct stopwatch sw;
 
@@ -312,13 +301,13 @@ static int tis_wait_access(int locality, u8 mask, u8 expected)
 	do {
 		u8 value = tpm_read_access(locality);
 		if ((value & mask) == expected)
-			return 0;
+			return TPM_SUCCESS;
 		udelay(1);
 	} while (!stopwatch_expired(&sw));
-	return TPM_TIMEOUT_ERR;
+	return TPM_CB_TIMEOUT;
 }
 
-static inline int tis_wait_received_access(int locality)
+static inline tpm_result_t tis_wait_received_access(int locality)
 {
 	return tis_wait_access(locality, TIS_ACCESS_ACTIVE_LOCALITY,
 	                       TIS_ACCESS_ACTIVE_LOCALITY);
@@ -345,10 +334,8 @@ static inline void tis_request_access(int locality)
  * In practice not all TPMs behave the same so it is necessary to be
  * flexible when trying to set command ready.
  *
- * Returns 0 on success if the TPM is ready for transactions.
- * Returns TPM_TIMEOUT_ERR if the command ready bit does not get set.
  */
-static int tis_command_ready(u8 locality)
+static tpm_result_t tis_command_ready(u8 locality)
 {
 	u32 status;
 
@@ -360,7 +347,7 @@ static int tis_command_ready(u8 locality)
 
 	/* Check if command ready is set yet */
 	if (status & TIS_STS_COMMAND_READY)
-		return 0;
+		return TPM_SUCCESS;
 
 	/* 2nd attempt to set command ready */
 	tpm_write_status(TIS_STS_COMMAND_READY, locality);
@@ -373,10 +360,10 @@ static int tis_command_ready(u8 locality)
  *
  * Probe the TPM device and try determining its manufacturer/device name.
  *
- * Returns 0 on success (the device is found or was found during an earlier
- * invocation) or TPM_DRIVER_ERR if the device is not found.
+ * Returns TPM_SUCCESS on success (the device is found or was found during
+ * an earlier invocation) or TPM_CB_FAIL if the device is not found.
  */
-int tis_init(void)
+tpm_result_t tis_init(void)
 {
 	const char *device_name = "unknown";
 	const char *vendor_name = device_name;
@@ -386,12 +373,12 @@ int tis_init(void)
 	int i;
 
 	if (vendor_dev_id)
-		return 0;  /* Already probed. */
+		return TPM_SUCCESS;  /* Already probed. */
 
 	didvid = tpm_read_did_vid(0);
 	if (!didvid || (didvid == 0xffffffff)) {
 		printf("%s: No TPM device found\n", __func__);
-		return TPM_DRIVER_ERR;
+		return TPM_CB_FAIL;
 	}
 
 	vendor_dev_id = didvid;
@@ -419,7 +406,7 @@ int tis_init(void)
 	}
 	/* this will have to be converted into debug printout */
 	printk(BIOS_INFO, "Found TPM %s by %s\n", device_name, vendor_name);
-	return 0;
+	return TPM_SUCCESS;
 }
 
 /*
@@ -430,19 +417,21 @@ int tis_init(void)
  * @data - address of the data to send, byte by byte
  * @len - length of the data to send
  *
- * Returns 0 on success, TPM_DRIVER_ERR on error (in case the device does
+ * Returns TPM_SUCCESS on success, TPM_CB_FAIL on error (in case the device does
  * not accept the entire command).
  */
-static u32 tis_senddata(const u8 *const data, u32 len)
+static tpm_result_t tis_senddata(const u8 *const data, u32 len)
 {
 	u32 offset = 0;
 	u16 burst = 0;
 	u8 locality = 0;
+	tpm_result_t rc = TPM_SUCCESS;
 
-	if (tis_wait_ready(locality)) {
-		printf("%s:%d - failed to get 'command_ready' status\n",
-		       __FILE__, __LINE__);
-		return TPM_DRIVER_ERR;
+	rc = tis_wait_ready(locality);
+	if (rc) {
+		printf("%s:%d - failed to get 'command_ready' status with error %#x\n",
+		       __FILE__, __LINE__, rc);
+		return rc;
 	}
 	burst = tpm_read_burst_count(locality);
 
@@ -456,7 +445,7 @@ static u32 tis_senddata(const u8 *const data, u32 len)
 			if (stopwatch_expired(&sw)) {
 				printf("%s:%d failed to feed %u bytes of %u\n",
 				       __FILE__, __LINE__, len - offset, len);
-				return TPM_DRIVER_ERR;
+				return TPM_CB_TIMEOUT;
 			}
 			udelay(1);
 			burst = tpm_read_burst_count(locality);
@@ -475,10 +464,11 @@ static u32 tis_senddata(const u8 *const data, u32 len)
 		while (count--)
 			tpm_write_data(data[offset++], locality);
 
-		if (tis_wait_valid(locality) || !tis_expect_data(locality)) {
-			printf("%s:%d TPM command feed overflow\n",
-			       __FILE__, __LINE__);
-			return TPM_DRIVER_ERR;
+		rc = tis_wait_valid(locality);
+		if (rc || !tis_expect_data(locality)) {
+			printf("%s:%d TPM command feed overflow with error %#x\n",
+			       __FILE__, __LINE__, rc);
+			return rc ? rc : TPM_CB_FAIL;
 		}
 
 		burst = tpm_read_burst_count(locality);
@@ -498,16 +488,17 @@ static u32 tis_senddata(const u8 *const data, u32 len)
 	 * Verify that TPM does not expect any more data as part of this
 	 * command.
 	 */
-	if (tis_wait_valid(locality) || tis_expect_data(locality)) {
-		printf("%s:%d unexpected TPM status %#x\n",
-		       __FILE__, __LINE__, tpm_read_status(locality));
-		return TPM_DRIVER_ERR;
+	rc = tis_wait_valid(locality);
+	if (rc || tis_expect_data(locality)) {
+		printf("%s:%d unexpected TPM error %#x with status %#x\n",
+		       __FILE__, __LINE__, rc, tpm_read_status(locality));
+		return rc ? rc : TPM_CB_FAIL;
 	}
 
 	/* OK, sitting pretty, let's start the command execution. */
 	tpm_write_status(TIS_STS_TPM_GO, locality);
 
-	return 0;
+	return TPM_SUCCESS;
 }
 
 /*
@@ -518,22 +509,25 @@ static u32 tis_senddata(const u8 *const data, u32 len)
  * @buffer - address where to read the response, byte by byte.
  * @len - pointer to the size of buffer
  *
- * On success stores the number of received bytes to len and returns 0. On
- * errors (misformatted TPM data or synchronization problems) returns
- * TPM_DRIVER_ERR.
+ * On success stores the number of received bytes to len and returns
+ * TPM_SUCCESS. On errors (misformatted TPM data or synchronization
+ * problems) returns TPM_CB_FAIL.
  */
-static u32 tis_readresponse(u8 *buffer, size_t *len)
+static tpm_result_t tis_readresponse(u8 *buffer, size_t *len)
 {
 	u16 burst_count;
 	u32 offset = 0;
 	u8 locality = 0;
 	u32 expected_count = *len;
 	int max_cycles = 0;
+	tpm_result_t rc = TPM_SUCCESS;
 
 	/* Wait for the TPM to process the command */
-	if (tis_wait_valid_data(locality)) {
-		printf("%s:%d failed processing command\n", __FILE__, __LINE__);
-		return TPM_DRIVER_ERR;
+	rc = tis_wait_valid_data(locality);
+	if (rc) {
+		printf("%s:%d failed processing command with error %#x\n",
+			   __FILE__, __LINE__, rc);
+		return rc;
 	}
 
 	do {
@@ -541,7 +535,7 @@ static u32 tis_readresponse(u8 *buffer, size_t *len)
 			if (max_cycles++ == MAX_DELAY_US) {
 				printf("%s:%d TPM stuck on read\n",
 				       __FILE__, __LINE__);
-				return TPM_DRIVER_ERR;
+				return TPM_CB_FAIL;
 			}
 			udelay(1);
 		}
@@ -569,16 +563,17 @@ static u32 tis_readresponse(u8 *buffer, size_t *len)
 					printf("%s:%d bad response size %u\n",
 					       __FILE__, __LINE__,
 					       expected_count);
-					return TPM_DRIVER_ERR;
+					return TPM_CB_FAIL;
 				}
 			}
 		}
 
 		/* Wait for the next portion */
-		if (tis_wait_valid(locality)) {
-			printf("%s:%d failed to read response\n",
-			       __FILE__, __LINE__);
-			return TPM_DRIVER_ERR;
+		rc = tis_wait_valid(locality);
+		if (rc) {
+			printf("%s:%d failed to read response with error %#x\n",
+			       __FILE__, __LINE__, rc);
+			return rc;
 		}
 
 		if (offset == expected_count)
@@ -599,15 +594,16 @@ static u32 tis_readresponse(u8 *buffer, size_t *len)
 		printf("%s:%d wrong receive status: %#x %u bytes left\n",
 		       __FILE__, __LINE__, tpm_read_status(locality),
 	               tpm_read_burst_count(locality));
-		return TPM_DRIVER_ERR;
+		return TPM_CB_FAIL;
 	}
 
 	/* Tell the TPM that we are done. */
-	if (tis_command_ready(locality) == TPM_TIMEOUT_ERR)
-		return TPM_DRIVER_ERR;
+	rc = tis_command_ready(locality);
+	if (rc)
+		return rc;
 
 	*len = offset;
-	return 0;
+	return TPM_SUCCESS;
 }
 
 /*
@@ -615,31 +611,30 @@ static u32 tis_readresponse(u8 *buffer, size_t *len)
  *
  * Requests access to locality 0 for the caller.
  *
- * Returns 0 on success, TPM_DRIVER_ERR on failure.
+ * Returns TPM_SUCCESS on success, TSS Error on failure.
  */
-int tis_open(void)
+tpm_result_t tis_open(void)
 {
 	u8 locality = 0; /* we use locality zero for everything */
+	tpm_result_t rc = TPM_SUCCESS;
 
 	if (!tis_has_access(locality)) {
 		/* request access to locality */
 		tis_request_access(locality);
 
 		/* did we get a lock? */
-		if (tis_wait_received_access(locality)) {
-			printf("%s:%d - failed to lock locality %u\n",
-			__FILE__, __LINE__, locality);
-			return TPM_DRIVER_ERR;
+		rc = tis_wait_received_access(locality);
+		if (rc) {
+			printf("%s:%d - failed to lock locality %u with error %#x\n",
+			__FILE__, __LINE__, locality, rc);
+			return rc;
 		}
 
 		/* Certain TPMs seem to need some delay here or they hang... */
 		udelay(10);
 	}
 
-	if (tis_command_ready(locality) == TPM_TIMEOUT_ERR)
-		return TPM_DRIVER_ERR;
-
-	return 0;
+	return tis_command_ready(locality);
 }
 
 /*
@@ -652,16 +647,17 @@ int tis_open(void)
  * @recvbuf - memory to save the response to
  * @recv_len - pointer to the size of the response buffer
  *
- * Returns 0 on success (and places the number of response bytes at recv_len)
- * or TPM_DRIVER_ERR on failure.
+ * Returns TPM_SUCCESS on success (and places the number of response bytes
+ * at recv_len) or TPM_CB_FAIL on failure.
  */
-int tis_sendrecv(const uint8_t *sendbuf, size_t send_size,
+tpm_result_t tis_sendrecv(const uint8_t *sendbuf, size_t send_size,
 		 uint8_t *recvbuf, size_t *recv_len)
 {
-	if (tis_senddata(sendbuf, send_size)) {
-		printf("%s:%d failed sending data to TPM\n",
-		       __FILE__, __LINE__);
-		return TPM_DRIVER_ERR;
+	tpm_result_t rc = tis_senddata(sendbuf, send_size);
+	if (rc) {
+		printf("%s:%d failed sending data to TPM with error %#x\n",
+		       __FILE__, __LINE__, rc);
+		return rc;
 	}
 
 	return tis_readresponse(recvbuf, recv_len);
@@ -680,14 +676,15 @@ int tis_sendrecv(const uint8_t *sendbuf, size_t send_size,
  * @vector - TPM interrupt vector
  * @polarity - TPM interrupt polarity
  *
- * Returns 0 on success, TPM_DRIVER_ERR on failure.
+ * Returns TPM_SUCCESS on success, TPM_CB_FAIL on failure.
  */
-static int tis_setup_interrupt(int vector, int polarity)
+static tpm_result_t tis_setup_interrupt(int vector, int polarity)
 {
 	u8 locality = 0;
+	tpm_result_t rc = tlcl_lib_init();
 
-	if (tlcl_lib_init())
-		return TPM_DRIVER_ERR;
+	if (rc)
+		return rc;
 
 	/* Set TPM interrupt vector */
 	tpm_write_int_vector(vector, locality);
@@ -695,7 +692,7 @@ static int tis_setup_interrupt(int vector, int polarity)
 	/* Set TPM interrupt polarity and disable interrupts */
 	tpm_write_int_polarity(polarity, locality);
 
-	return 0;
+	return TPM_SUCCESS;
 }
 
 static void lpc_tpm_read_resources(struct device *dev)

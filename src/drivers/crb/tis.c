@@ -35,50 +35,52 @@ static const char *tis_get_dev_name(struct tpm2_info *info)
 	return "Unknown";
 }
 
-int tis_open(void)
+tpm_result_t tis_open(void)
 {
 	if (tpm_is_open) {
 		printk(BIOS_ERR, "%s called twice.\n", __func__);
-		return -1;
+		return TPM_CB_FAIL;
 	}
 
 	if (CONFIG(HAVE_INTEL_PTT)) {
 		if (!ptt_active()) {
 			printk(BIOS_ERR, "%s: Intel PTT is not active.\n", __func__);
-			return -1;
+			return TPM_CB_FAIL;
 		}
 		printk(BIOS_DEBUG, "%s: Intel PTT is active.\n", __func__);
 	}
 
-	return 0;
+	return TPM_SUCCESS;
 }
 
-int tis_init(void)
+tpm_result_t tis_init(void)
 {
 	struct tpm2_info info;
 
 	// Wake TPM up (if necessary)
-	if (tpm2_init() != 0)
-		return -1;
+	tpm_result_t rc = tpm2_init();
+	if (rc)
+		return rc;
 
 	tpm2_get_info(&info);
 
 	printk(BIOS_INFO, "Initialized TPM device %s revision %d\n", tis_get_dev_name(&info),
 	       info.revision);
 
-	return 0;
+	return TPM_SUCCESS;
 }
 
-int tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size, uint8_t *recvbuf, size_t *rbuf_len)
+tpm_result_t tis_sendrecv(const uint8_t *sendbuf, size_t sbuf_size,
+					uint8_t *recvbuf, size_t *rbuf_len)
 {
 	int len = tpm2_process_command(sendbuf, sbuf_size, recvbuf, *rbuf_len);
 
 	if (len == 0)
-		return -1;
+		return TPM_CB_FAIL;
 
 	*rbuf_len = len;
 
-	return 0;
+	return TPM_SUCCESS;
 }
 
 static void crb_tpm_fill_ssdt(const struct device *dev)
@@ -118,28 +120,28 @@ static const char *crb_tpm_acpi_name(const struct device *dev)
 }
 
 #if CONFIG(GENERATE_SMBIOS_TABLES) && CONFIG(TPM2)
-static int tpm_get_cap(uint32_t property, uint32_t *value)
+static tpm_result_t tpm_get_cap(uint32_t property, uint32_t *value)
 {
 	TPMS_CAPABILITY_DATA cap_data;
 	int i;
-	uint32_t rc;
+	tpm_result_t rc;
 
 	if (!value)
-		return -1;
+		return TPM_CB_INVALID_ARG;
 
 	rc = tlcl_get_capability(TPM_CAP_TPM_PROPERTIES, property, 1, &cap_data);
 
 	if (rc)
-		return -1;
+		return rc;
 
 	for (i = 0 ; i < cap_data.data.tpmProperties.count; i++) {
 		if (cap_data.data.tpmProperties.tpmProperty[i].property == property) {
 			*value = cap_data.data.tpmProperties.tpmProperty[i].value;
-			return 0;
+			return TPM_SUCCESS;
 		}
 	}
 
-	return -1;
+	return TPM_CB_FAIL;
 }
 
 static int smbios_write_type43_tpm(struct device *dev, int *handle, unsigned long *current)

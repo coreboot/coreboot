@@ -13,7 +13,7 @@
  */
 EFI_TCG2_EVENT_ALGORITHM_BITMAP tpm2_get_active_pcrs(void)
 {
-	int rc;
+	tpm_result_t rc;
 	TPML_PCR_SELECTION Pcrs;
 	EFI_TCG2_EVENT_ALGORITHM_BITMAP tpmHashAlgorithmBitmap = 0;
 	uint32_t activePcrBanks = 0;
@@ -75,10 +75,10 @@ EFI_TCG2_EVENT_ALGORITHM_BITMAP tpm2_get_active_pcrs(void)
  * @retval TPM_SUCCESS		Operation completed successfully.
  * @retval TPM_IOERROR		The command was unsuccessful.
  */
-int tpm2_get_capability_pcrs(TPML_PCR_SELECTION *Pcrs)
+tpm_result_t tpm2_get_capability_pcrs(TPML_PCR_SELECTION *Pcrs)
 {
 	TPMS_CAPABILITY_DATA TpmCap;
-	int rc;
+	tpm_result_t rc;
 	int index;
 
 	rc = tlcl_get_capability(TPM_CAP_PCRS, 0, 1, &TpmCap);
@@ -115,7 +115,7 @@ int tpm2_get_capability_pcrs(TPML_PCR_SELECTION *Pcrs)
  * @retval TPM_SUCCESS		Operation completed successfully.
  * @retval TPM_IOERROR		Unexpected device behavior.
  */
-int mboot_hash_extend_log(uint64_t flags, uint8_t *hashData, uint32_t hashDataLen,
+tpm_result_t mboot_hash_extend_log(uint64_t flags, uint8_t *hashData, uint32_t hashDataLen,
 	TCG_PCR_EVENT2_HDR *newEventHdr, uint8_t *eventLog)
 {
 	TPMT_HA *digest = NULL;
@@ -149,7 +149,7 @@ int mboot_hash_extend_log(uint64_t flags, uint8_t *hashData, uint32_t hashDataLe
 void invalidate_pcrs(void)
 {
 	int pcr;
-	int rc;
+	tpm_result_t rc;
 
 	TCG_PCR_EVENT2_HDR tcgEventHdr;
 	uint8_t invalidate = 1;
@@ -227,10 +227,9 @@ void mboot_print_buffer(uint8_t *buffer, uint32_t bufferSize)
  * @retval TPM_SUCCESS		Operation completed successfully.
  * @retval TPM_IOERROR		Unexpected device behavior.
  */
-int mb_measure_log_worker(const char *name, uint32_t type, uint32_t pcr,
+tpm_result_t mb_measure_log_worker(const char *name, uint32_t type, uint32_t pcr,
 			  TCG_EVENTTYPE eventType, const char *event_msg)
 {
-	int rc;
 	TCG_PCR_EVENT2_HDR tcgEventHdr;
 	uint8_t *base;
 	size_t size;
@@ -240,7 +239,7 @@ int mb_measure_log_worker(const char *name, uint32_t type, uint32_t pcr,
 
 	if (base == NULL) {
 		printk(BIOS_DEBUG, "%s: CBFS locate fail: %s\n", __func__, name);
-		return VB2_ERROR_READ_FILE_OPEN;
+		return TPM_IOERROR;
 	}
 
 	printk(BIOS_DEBUG, "%s: CBFS locate success: %s\n", __func__, name);
@@ -250,8 +249,7 @@ int mb_measure_log_worker(const char *name, uint32_t type, uint32_t pcr,
 	if (event_msg)
 		tcgEventHdr.eventSize = (uint32_t) strlen(event_msg);
 
-	rc = mboot_hash_extend_log(0, base, size, &tcgEventHdr, (uint8_t *)event_msg);
-	return rc;
+	return mboot_hash_extend_log(0, base, size, &tcgEventHdr, (uint8_t *)event_msg);
 }
 
 /*
@@ -271,15 +269,17 @@ int mb_measure_log_worker(const char *name, uint32_t type, uint32_t pcr,
  * @retval TPM_IOERROR		Unexpected device behavior.
 **/
 
-__weak int mb_entry(int wake_from_s3)
+__weak tpm_result_t mb_entry(int wake_from_s3)
 {
-	int rc;
+	tpm_result_t rc;
 
 	/* Initialize TPM driver. */
 	printk(BIOS_DEBUG, "%s: tlcl_lib_init\n", __func__);
-	if (tlcl_lib_init() != VB2_SUCCESS) {
-		printk(BIOS_ERR, "%s: TPM driver initialization failed.\n", __func__);
-		return TPM_IOERROR;
+	rc = tlcl_lib_init();
+	if (rc != TPM_SUCCESS) {
+		printk(BIOS_ERR, "%s: TPM driver initialization failed with error %#x.\n",
+			__func__, rc);
+		return rc;
 	}
 
 	if (wake_from_s3) {
@@ -315,9 +315,9 @@ __weak int mb_entry(int wake_from_s3)
  * @retval TPM_IOERROR		Unexpected device behavior.
  */
 
-__weak int mb_measure(int wake_from_s3)
+__weak tpm_result_t mb_measure(int wake_from_s3)
 {
-	uint32_t rc;
+	tpm_result_t rc;
 
 	rc = mb_entry(wake_from_s3);
 	if (rc == TPM_SUCCESS) {
@@ -357,9 +357,9 @@ __weak int mb_measure(int wake_from_s3)
  * @retval TPM_SUCCESS		Operation completed successfully.
  * @retval TPM_IOERROR		Unexpected device behavior.
  */
-__weak int mb_measure_log_start(void)
+__weak tpm_result_t mb_measure_log_start(void)
 {
-	int rc;
+	tpm_result_t rc;
 	uint32_t i;
 
 	if ((tpm2_get_active_pcrs() & EFI_TCG2_BOOT_HASH_ALG_SHA256) == 0x0) {
@@ -369,9 +369,9 @@ __weak int mb_measure_log_start(void)
 	}
 
 	rc = mb_crtm();
-	if (rc != TPM_SUCCESS) {
+	if (rc) {
 		printk(BIOS_DEBUG, "%s: Fail! CRTM Version can't be measured."
-			" ABORTING!!!\n", __func__);
+			" Received error %#x, ABORTING!!!\n", __func__, rc);
 		return rc;
 	}
 	printk(BIOS_DEBUG, "%s: Success! CRTM Version measured.\n", __func__);
@@ -414,9 +414,9 @@ static const uint8_t crtm_version[] =
  * @retval TPM_SUCCESS		Operation completed successfully.
  * @retval TPM_IOERROR		Unexpected device behavior.
 **/
-__weak int mb_crtm(void)
+__weak tpm_result_t mb_crtm(void)
 {
-	int rc;
+	tpm_result_t rc;
 	TCG_PCR_EVENT2_HDR tcgEventHdr;
 	uint8_t hash[VB2_SHA256_DIGEST_SIZE];
 	uint8_t *msgPtr;

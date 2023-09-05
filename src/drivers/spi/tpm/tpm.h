@@ -4,6 +4,7 @@
 #define __COREBOOT_SRC_DRIVERS_SPI_TPM_TPM_H
 
 #include <drivers/tpm/cr50.h>
+#include <security/tpm/tss_errors.h>
 #include <stddef.h>
 #include <spi-generic.h>
 
@@ -26,7 +27,7 @@ struct tpm2_info {
  *
  * Return 0 on success, non-zero on failure.
  */
-int tpm2_init(struct spi_slave *spi_if);
+tpm_result_t tpm2_init(struct spi_slave *spi_if);
 
 /*
  * Each command processing consists of sending the command to the TPM, by

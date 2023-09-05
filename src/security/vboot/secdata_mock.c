@@ -6,6 +6,7 @@
  */
 
 #include <security/tpm/tspi.h>
+#include <security/tpm/tss_errors.h>
 #include <vb2_api.h>
 
 #include "antirollback.h"
@@ -15,18 +16,18 @@ vb2_error_t vb2ex_tpm_clear_owner(struct vb2_context *ctx)
 	return VB2_SUCCESS;
 }
 
-vb2_error_t antirollback_read_space_firmware(struct vb2_context *ctx)
+tpm_result_t antirollback_read_space_firmware(struct vb2_context *ctx)
 {
 	vb2api_secdata_firmware_create(ctx);
-	return VB2_SUCCESS;
+	return TPM_SUCCESS;
 }
 
-vb2_error_t antirollback_write_space_firmware(struct vb2_context *ctx)
+tpm_result_t antirollback_write_space_firmware(struct vb2_context *ctx)
 {
-	return VB2_SUCCESS;
+	return TPM_SUCCESS;
 }
 
-vb2_error_t antirollback_read_space_kernel(struct vb2_context *ctx)
+tpm_result_t antirollback_read_space_kernel(struct vb2_context *ctx)
 {
 	/*
 	 * The new kernel secdata v1 stores the last read EC hash, and reboots the
@@ -41,41 +42,41 @@ vb2_error_t antirollback_read_space_kernel(struct vb2_context *ctx)
 	 * v0 device when using MOCK_SECDATA.
 	 */
 	vb2api_secdata_kernel_create_v0(ctx);
-	return VB2_SUCCESS;
+	return TPM_SUCCESS;
 }
 
-vb2_error_t antirollback_write_space_kernel(struct vb2_context *ctx)
+tpm_result_t antirollback_write_space_kernel(struct vb2_context *ctx)
 {
-	return VB2_SUCCESS;
+	return TPM_SUCCESS;
 }
 
-vb2_error_t antirollback_lock_space_firmware(void)
+tpm_result_t antirollback_lock_space_firmware(void)
 {
-	return VB2_SUCCESS;
+	return TPM_SUCCESS;
 }
 
-vb2_error_t antirollback_lock_space_mrc_hash(uint32_t index)
+tpm_result_t antirollback_lock_space_mrc_hash(uint32_t index)
 {
-	return VB2_SUCCESS;
+	return TPM_SUCCESS;
 }
 
-vb2_error_t antirollback_read_space_mrc_hash(uint32_t index, uint8_t *data, uint32_t size)
+tpm_result_t antirollback_read_space_mrc_hash(uint32_t index, uint8_t *data, uint32_t size)
 {
-	return VB2_SUCCESS;
+	return TPM_SUCCESS;
 }
 
-vb2_error_t antirollback_write_space_mrc_hash(uint32_t index, const uint8_t *data,
+tpm_result_t antirollback_write_space_mrc_hash(uint32_t index, const uint8_t *data,
 					      uint32_t size)
 {
-	return VB2_SUCCESS;
+	return TPM_SUCCESS;
 }
 
-vb2_error_t antirollback_read_space_vbios_hash(uint8_t *data, uint32_t size)
+tpm_result_t antirollback_read_space_vbios_hash(uint8_t *data, uint32_t size)
 {
-	return VB2_SUCCESS;
+	return TPM_SUCCESS;
 }
 
-vb2_error_t antirollback_write_space_vbios_hash(const uint8_t *data, uint32_t size)
+tpm_result_t antirollback_write_space_vbios_hash(const uint8_t *data, uint32_t size)
 {
-	return VB2_SUCCESS;
+	return TPM_SUCCESS;
 }

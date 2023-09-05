@@ -25,7 +25,7 @@ void __weak mainboard_prepare_cr50_reset(void) {}
  */
 static int cr50_is_reset_needed(void)
 {
-	int rc;
+	tpm_result_t rc;
 	uint8_t tpm_mode;
 
 	rc = tlcl_cr50_get_tpm_mode(&tpm_mode);
@@ -70,7 +70,7 @@ static int cr50_is_reset_needed(void)
 
 static void enable_update(void *unused)
 {
-	int rc;
+	tpm_result_t rc;
 	int cr50_reset_reqd = 0;
 	uint8_t num_restored_headers;
 
@@ -84,7 +84,7 @@ static void enable_update(void *unused)
 
 	rc = tlcl_lib_init();
 
-	if (rc != VB2_SUCCESS) {
+	if (rc != TPM_SUCCESS) {
 		printk(BIOS_ERR, "tlcl_lib_init() failed for CR50 update: %#x\n",
 		       rc);
 		return;

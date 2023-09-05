@@ -30,14 +30,14 @@ static int cr50_is_reset_needed(void)
 
 	rc = tlcl_cr50_get_tpm_mode(&tpm_mode);
 
-	if (rc == TPM_E_NO_SUCH_COMMAND) {
+	if (rc == TPM_CB_NO_SUCH_COMMAND) {
 		printk(BIOS_INFO,
 		       "Cr50 does not support TPM mode command\n");
 		/* Older Cr50 firmware, assume no Cr50 reset is required */
 		return 0;
 	}
 
-	if (rc == TPM_E_MUST_REBOOT) {
+	if (rc == TPM_CB_MUST_REBOOT) {
 		/*
 		 * Cr50 indicated a reboot is required to restore TPM
 		 * functionality.

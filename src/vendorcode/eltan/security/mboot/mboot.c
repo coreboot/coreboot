@@ -73,7 +73,7 @@ EFI_TCG2_EVENT_ALGORITHM_BITMAP tpm2_get_active_pcrs(void)
  * @param[out] Pcrs		The Pcr Selection
  *
  * @retval TPM_SUCCESS		Operation completed successfully.
- * @retval TPM_E_IOERROR	The command was unsuccessful.
+ * @retval TPM_IOERROR		The command was unsuccessful.
  */
 int tpm2_get_capability_pcrs(TPML_PCR_SELECTION *Pcrs)
 {
@@ -113,7 +113,7 @@ int tpm2_get_capability_pcrs(TPML_PCR_SELECTION *Pcrs)
  * @param[in] eventLog		description of the event.
  *
  * @retval TPM_SUCCESS		Operation completed successfully.
- * @retval TPM_E_IOERROR	Unexpected device behavior.
+ * @retval TPM_IOERROR		Unexpected device behavior.
  */
 int mboot_hash_extend_log(uint64_t flags, uint8_t *hashData, uint32_t hashDataLen,
 	TCG_PCR_EVENT2_HDR *newEventHdr, uint8_t *eventLog)
@@ -130,7 +130,7 @@ int mboot_hash_extend_log(uint64_t flags, uint8_t *hashData, uint32_t hashDataLe
 	} else {
 		struct vb2_hash tmp;
 		if (vb2_hash_calculate(false, hashData, hashDataLen, VB2_HASH_SHA256, &tmp))
-			return TPM_E_IOERROR;
+			return TPM_IOERROR;
 		memcpy(digest->digest.sha256, tmp.sha256, sizeof(tmp.sha256));
 	}
 
@@ -225,7 +225,7 @@ void mboot_print_buffer(uint8_t *buffer, uint32_t bufferSize)
  * @param[in] event_msg		description of the event.
  *
  * @retval TPM_SUCCESS		Operation completed successfully.
- * @retval TPM_E_IOERROR	Unexpected device behavior.
+ * @retval TPM_IOERROR		Unexpected device behavior.
  */
 int mb_measure_log_worker(const char *name, uint32_t type, uint32_t pcr,
 			  TCG_EVENTTYPE eventType, const char *event_msg)
@@ -268,7 +268,7 @@ int mb_measure_log_worker(const char *name, uint32_t type, uint32_t pcr,
  * @param[in] wake_from_s3	1 if we are waking from S3, 0 standard boot
  *
  * @retval TPM_SUCCESS		Operation completed successfully.
- * @retval TPM_E_IOERROR	Unexpected device behavior.
+ * @retval TPM_IOERROR		Unexpected device behavior.
 **/
 
 __weak int mb_entry(int wake_from_s3)
@@ -279,7 +279,7 @@ __weak int mb_entry(int wake_from_s3)
 	printk(BIOS_DEBUG, "%s: tlcl_lib_init\n", __func__);
 	if (tlcl_lib_init() != VB2_SUCCESS) {
 		printk(BIOS_ERR, "%s: TPM driver initialization failed.\n", __func__);
-		return TPM_E_IOERROR;
+		return TPM_IOERROR;
 	}
 
 	if (wake_from_s3) {
@@ -312,7 +312,7 @@ __weak int mb_entry(int wake_from_s3)
  * @param[in] wake_from_s3	1 if we are waking from S3, 0 standard boot
  *
  * @retval TPM_SUCCESS		Operation completed successfully.
- * @retval TPM_E_IOERROR	Unexpected device behavior.
+ * @retval TPM_IOERROR		Unexpected device behavior.
  */
 
 __weak int mb_measure(int wake_from_s3)
@@ -355,7 +355,7 @@ __weak int mb_measure(int wake_from_s3)
  * @param[in]  none
  *
  * @retval TPM_SUCCESS		Operation completed successfully.
- * @retval TPM_E_IOERROR	Unexpected device behavior.
+ * @retval TPM_IOERROR		Unexpected device behavior.
  */
 __weak int mb_measure_log_start(void)
 {
@@ -365,7 +365,7 @@ __weak int mb_measure_log_start(void)
 	if ((tpm2_get_active_pcrs() & EFI_TCG2_BOOT_HASH_ALG_SHA256) == 0x0) {
 		printk(BIOS_DEBUG, "%s: SHA256 PCR Bank not active in TPM.\n",
 			__func__);
-		return TPM_E_IOERROR;
+		return TPM_IOERROR;
 	}
 
 	rc = mb_crtm();
@@ -412,7 +412,7 @@ static const uint8_t crtm_version[] =
  * function with the same name there.
  *
  * @retval TPM_SUCCESS		Operation completed successfully.
- * @retval TPM_E_IOERROR	Unexpected device behavior.
+ * @retval TPM_IOERROR		Unexpected device behavior.
 **/
 __weak int mb_crtm(void)
 {
@@ -440,7 +440,7 @@ __weak int mb_crtm(void)
 	rc = get_intel_me_hash(hash);
 	if (rc) {
 		printk(BIOS_DEBUG, "get_intel_me_hash returned 0x%x\n", rc);
-		rc = TPM_E_IOERROR;
+		rc = TPM_IOERROR;
 		return rc;
 	}
 

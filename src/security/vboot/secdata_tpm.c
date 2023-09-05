@@ -46,7 +46,7 @@ uint32_t antirollback_read_space_kernel(struct vb2_context *ctx)
 		if (perms != TPM_NV_PER_PPWRITE) {
 			printk(BIOS_ERR,
 			       "TPM: invalid secdata_kernel permissions\n");
-			return TPM_E_CORRUPTED_STATE;
+			return TPM_CB_CORRUPTED_STATE;
 		}
 	}
 
@@ -55,7 +55,7 @@ uint32_t antirollback_read_space_kernel(struct vb2_context *ctx)
 
 	/* Start with the version 1.0 size used by all modern Cr50/Ti50 boards. */
 	rc = tlcl_read(KERNEL_NV_INDEX, ctx->secdata_kernel, size);
-	if (rc == TPM_E_RANGE) {
+	if (rc == TPM_CB_RANGE) {
 		/* Fallback to version 0.2(minimum) size and re-read. */
 		VBDEBUG("Antirollback: NV read out of range, trying min size\n");
 		size = VB2_SECDATA_KERNEL_MIN_SIZE;
@@ -210,11 +210,11 @@ static uint32_t define_space(const char *name, uint32_t index, uint32_t length,
 
 	rc = tlcl_define_space(index, length, nv_attributes, nv_policy,
 			       nv_policy_size);
-	if (rc == TPM_E_NV_DEFINED) {
+	if (rc == TPM_CB_NV_DEFINED) {
 		/*
 		 * Continue with writing: it may be defined, but not written
 		 * to. In that case a subsequent tlcl_read() would still return
-		 * TPM_E_BADINDEX on TPM 2.0. The cases when some non-firmware
+		 * TPM_BADINDEX on TPM 2.0. The cases when some non-firmware
 		 * space is defined while the firmware space is not there
 		 * should be rare (interrupted initialization), so no big harm
 		 * in writing once again even if it was written already.
@@ -439,7 +439,7 @@ uint32_t antirollback_read_space_mrc_hash(uint32_t index, uint8_t *data, uint32_
 		VBDEBUG("TPM: Incorrect buffer size for hash idx 0x%x. "
 			"(Expected=0x%x Actual=0x%x).\n", index, HASH_NV_SIZE,
 			size);
-		return TPM_E_READ_FAILURE;
+		return TPM_CB_READ_FAILURE;
 	}
 	return read_space_mrc_hash(index, data);
 }
@@ -453,11 +453,11 @@ uint32_t antirollback_write_space_mrc_hash(uint32_t index, const uint8_t *data, 
 		VBDEBUG("TPM: Incorrect buffer size for hash idx 0x%x. "
 			"(Expected=0x%x Actual=0x%x).\n", index, HASH_NV_SIZE,
 			size);
-		return TPM_E_WRITE_FAILURE;
+		return TPM_CB_WRITE_FAILURE;
 	}
 
 	rc = read_space_mrc_hash(index, spc_data);
-	if (rc == TPM_E_BADINDEX) {
+	if (rc == TPM_BADINDEX) {
 		/*
 		 * If space is not defined already for hash, define
 		 * new space.
@@ -489,7 +489,7 @@ uint32_t antirollback_read_space_vbios_hash(uint8_t *data, uint32_t size)
 		VBDEBUG("TPM: Incorrect buffer size for hash idx 0x%x. "
 			"(Expected=0x%x Actual=0x%x).\n", VBIOS_CACHE_NV_INDEX, HASH_NV_SIZE,
 			size);
-		return TPM_E_READ_FAILURE;
+		return TPM_CB_READ_FAILURE;
 	}
 	return read_space_vbios_hash(data);
 }
@@ -503,11 +503,11 @@ uint32_t antirollback_write_space_vbios_hash(const uint8_t *data, uint32_t size)
 		VBDEBUG("TPM: Incorrect buffer size for hash idx 0x%x. "
 			"(Expected=0x%x Actual=0x%x).\n", VBIOS_CACHE_NV_INDEX, HASH_NV_SIZE,
 			size);
-		return TPM_E_WRITE_FAILURE;
+		return TPM_CB_WRITE_FAILURE;
 	}
 
 	rc = read_space_vbios_hash(spc_data);
-	if (rc == TPM_E_BADINDEX) {
+	if (rc == TPM_BADINDEX) {
 		/*
 		 * If space is not defined already for hash, define
 		 * new space.
@@ -535,7 +535,7 @@ uint32_t antirollback_write_space_vbios_hash(const uint8_t *data, uint32_t size)
 static uint32_t safe_write(uint32_t index, const void *data, uint32_t length)
 {
 	uint32_t rc = tlcl_write(index, data, length);
-	if (rc == TPM_E_MAXNVWRITES) {
+	if (rc == TPM_MAXNVWRITES) {
 		RETURN_ON_FAILURE(tpm_clear_and_reenable());
 		return tlcl_write(index, data, length);
 	} else {
@@ -552,7 +552,7 @@ static uint32_t safe_write(uint32_t index, const void *data, uint32_t length)
 static uint32_t safe_define_space(uint32_t index, uint32_t perm, uint32_t size)
 {
 	uint32_t rc = tlcl_define_space(index, perm, size);
-	if (rc == TPM_E_MAXNVWRITES) {
+	if (rc == TPM_MAXNVWRITES) {
 		RETURN_ON_FAILURE(tpm_clear_and_reenable());
 		return tlcl_define_space(index, perm, size);
 	} else {
@@ -669,13 +669,13 @@ uint32_t antirollback_read_space_firmware(struct vb2_context *ctx)
 	uint32_t rc;
 
 	rc = tlcl_read(FIRMWARE_NV_INDEX, ctx->secdata_firmware, VB2_SECDATA_FIRMWARE_SIZE);
-	if (rc == TPM_E_BADINDEX) {
+	if (rc == TPM_BADINDEX) {
 		/* This seems the first time we've run. Initialize the TPM. */
 		VBDEBUG("TPM: Not initialized yet\n");
 		RETURN_ON_FAILURE(factory_initialize_tpm(ctx));
 	} else if (rc != TPM_SUCCESS) {
 		printk(BIOS_ERR, "TPM: Failed to read firmware space: %#x\n", rc);
-		return TPM_E_CORRUPTED_STATE;
+		return TPM_CB_CORRUPTED_STATE;
 	}
 
 	return TPM_SUCCESS;

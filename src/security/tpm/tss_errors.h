@@ -12,36 +12,49 @@
 
 #include <stdint.h>
 
-#define TPM_E_BASE 0x0
-#define TPM_E_NON_FATAL 0x800
+typedef uint32_t tpm_result_t;
+#define TPM_Vendor_Specific32 0x400
 
-#define TPM_SUCCESS                 ((uint32_t)0x00000000)
-#define TPM_E_AREA_LOCKED           ((uint32_t)0x0000003c)
-#define TPM_E_BADINDEX              ((uint32_t)0x00000002)
-#define TPM_E_BAD_PRESENCE          ((uint32_t)0x0000002d)
-#define TPM_E_IOERROR               ((uint32_t)0x0000001f)
-#define TPM_E_INVALID_POSTINIT      ((uint32_t)0x00000026)
-#define TPM_E_MAXNVWRITES           ((uint32_t)0x00000048)
-#define TPM_E_OWNER_SET             ((uint32_t)0x00000014)
+#define TPM_BASE 0x0
 
-#define TPM_E_NEEDS_SELFTEST ((uint32_t)(TPM_E_NON_FATAL + 1))
-#define TPM_E_DOING_SELFTEST ((uint32_t)(TPM_E_NON_FATAL + 2))
+#define TPM_NON_FATAL 0x800
+#define TPM_CB_ERROR TPM_Vendor_Specific32
 
-#define TPM_E_ALREADY_INITIALIZED    ((uint32_t)0x00005000)  /* vboot local */
-#define TPM_E_INTERNAL_INCONSISTENCY ((uint32_t)0x00005001)  /* vboot local */
-#define TPM_E_MUST_REBOOT            ((uint32_t)0x00005002)  /* vboot local */
-#define TPM_E_CORRUPTED_STATE        ((uint32_t)0x00005003)  /* vboot local */
-#define TPM_E_COMMUNICATION_ERROR    ((uint32_t)0x00005004)  /* vboot local */
-#define TPM_E_RESPONSE_TOO_LARGE     ((uint32_t)0x00005005)  /* vboot local */
-#define TPM_E_NO_DEVICE              ((uint32_t)0x00005006)  /* vboot local */
-#define TPM_E_INPUT_TOO_SMALL        ((uint32_t)0x00005007)  /* vboot local */
-#define TPM_E_WRITE_FAILURE          ((uint32_t)0x00005008)  /* vboot local */
-#define TPM_E_READ_EMPTY             ((uint32_t)0x00005009)  /* vboot local */
-#define TPM_E_READ_FAILURE           ((uint32_t)0x0000500a)  /* vboot local */
-#define TPM_E_NV_DEFINED             ((uint32_t)0x0000500b)  /* vboot local */
-#define TPM_E_INVALID_ARG            ((uint32_t)0x0000500c)
-#define TPM_E_HASH_ERROR             ((uint32_t)0x0000500d)
-#define TPM_E_NO_SUCH_COMMAND        ((uint32_t)0x0000500e)
-#define TPM_E_RANGE                  ((uint32_t)0x0000500f)
+#define TPM_SUCCESS               ((tpm_result_t) (TPM_BASE + 0x00))
+#define TPM_BADINDEX              ((tpm_result_t) (TPM_BASE + 0x02))
+#define TPM_OWNER_SET             ((tpm_result_t) (TPM_BASE + 0x14))
+#define TPM_IOERROR               ((tpm_result_t) (TPM_BASE + 0x1F))
+#define TPM_INVALID_POSTINIT      ((tpm_result_t) (TPM_BASE + 0x26))
+#define TPM_BAD_PRESENCE          ((tpm_result_t) (TPM_BASE + 0x2D))
+#define TPM_AREA_LOCKED           ((tpm_result_t) (TPM_BASE + 0x3C))
+#define TPM_MAXNVWRITES           ((tpm_result_t) (TPM_BASE + 0x48))
+
+#define TPM_NEEDS_SELFTEST ((tpm_result_t) (TPM_NON_FATAL + 0x01))
+#define TPM_DOING_SELFTEST ((tpm_result_t) (TPM_NON_FATAL + 0x02))
+
+/* The following values are defind at the offset 0x480 which is a combination
+ *    of the 32-bit vendor specific value from the TCG standard(0x400) and an
+ *    offset of 0x80 to assist in identifying these return values when the 8-bit
+ *    truncated value is used.
+ *
+ * Valid offset range is 128-255(0x80-0xFF)
+*/
+
+#define TPM_CB_ALREADY_INITIALIZED    ((tpm_result_t) (TPM_CB_ERROR + 0x80))
+#define TPM_CB_INTERNAL_INCONSISTENCY ((tpm_result_t) (TPM_CB_ERROR + 0x81))
+#define TPM_CB_MUST_REBOOT            ((tpm_result_t) (TPM_CB_ERROR + 0x82))
+#define TPM_CB_CORRUPTED_STATE        ((tpm_result_t) (TPM_CB_ERROR + 0x83))
+#define TPM_CB_COMMUNICATION_ERROR    ((tpm_result_t) (TPM_CB_ERROR + 0x84))
+#define TPM_CB_RESPONSE_TOO_LARGE     ((tpm_result_t) (TPM_CB_ERROR + 0x85))
+#define TPM_CB_NO_DEVICE              ((tpm_result_t) (TPM_CB_ERROR + 0x86))
+#define TPM_CB_INPUT_TOO_SMALL        ((tpm_result_t) (TPM_CB_ERROR + 0x87))
+#define TPM_CB_WRITE_FAILURE          ((tpm_result_t) (TPM_CB_ERROR + 0x88))
+#define TPM_CB_READ_EMPTY             ((tpm_result_t) (TPM_CB_ERROR + 0x89))
+#define TPM_CB_READ_FAILURE           ((tpm_result_t) (TPM_CB_ERROR + 0x8A))
+#define TPM_CB_NV_DEFINED             ((tpm_result_t) (TPM_CB_ERROR + 0x8B))
+#define TPM_CB_INVALID_ARG            ((tpm_result_t) (TPM_CB_ERROR + 0x8C))
+#define TPM_CB_HASH_ERROR             ((tpm_result_t) (TPM_CB_ERROR + 0x8D))
+#define TPM_CB_NO_SUCH_COMMAND        ((tpm_result_t) (TPM_CB_ERROR + 0x8E))
+#define TPM_CB_RANGE                  ((tpm_result_t) (TPM_CB_ERROR + 0x8F))
 
 #endif /* TSS_ERRORS_H_ */

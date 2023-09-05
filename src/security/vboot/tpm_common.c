@@ -14,7 +14,7 @@ uint32_t vboot_setup_tpm(struct vb2_context *ctx)
 	uint32_t rc;
 
 	rc = tpm_setup(ctx->flags & VB2_CONTEXT_S3_RESUME);
-	if (rc == TPM_E_MUST_REBOOT)
+	if (rc == TPM_CB_MUST_REBOOT)
 		ctx->flags |= VB2_CONTEXT_SECDATA_WANTS_REBOOT;
 
 	return rc;

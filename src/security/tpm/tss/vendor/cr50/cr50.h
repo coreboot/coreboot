@@ -72,9 +72,9 @@ uint32_t tlcl_cr50_get_recovery_button(uint8_t *recovery_button_state);
  *
  * Returns TPM_SUCCESS if TPM mode command completed, the Cr50 does not need a
  * reboot, and the tpm_mode parameter is set to the current TPM mode.
- * Returns TPM_E_MUST_REBOOT if TPM mode command completed, but the Cr50
+ * Returns TPM_CB_MUST_REBOOT if TPM mode command completed, but the Cr50
  * requires a reboot.
- * Returns TPM_E_NO_SUCH_COMMAND if the Cr50 does not support the command.
+ * Returns TPM_CB_NO_SUCH_COMMAND if the Cr50 does not support the command.
  * Other returns value indicate a failure accessing the TPM.
  */
 uint32_t tlcl_cr50_get_tpm_mode(uint8_t *tpm_mode);
@@ -83,7 +83,7 @@ uint32_t tlcl_cr50_get_tpm_mode(uint8_t *tpm_mode);
  * CR50 specific TPM command sequence to query the current boot mode.
  *
  * Returns TPM_SUCCESS if boot mode is successfully retrieved.
- * Returns TPM_E_* for errors.
+ * Returns TPM_* for errors.
  */
 uint32_t tlcl_cr50_get_boot_mode(uint8_t *boot_mode);
 
@@ -99,7 +99,7 @@ uint32_t tlcl_cr50_immediate_reset(uint16_t timeout_ms);
 /**
  * CR50 specific TPM command sequence to issue an EC reset.
  *
- * Returns TPM_E_* for errors.
+ * Returns TPM_* for errors.
  * On Success, this function invokes halt() and does not return.
  */
 uint32_t tlcl_cr50_reset_ec(void);

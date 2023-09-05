@@ -63,8 +63,8 @@ void mainboard_after_memory_init(void)
  *
  * @param[in]  activePcr	bitmap of the support
  *
- * @retval TPM_SUCCESS		Operation completed successfully.
- * @retval TPM_E_IOERROR	Unexpected device behavior.
+ * @retval TPM_SUCCESS	Operation completed successfully.
+ * @retval TPM_IOERROR	Unexpected device behavior.
  */
 
 static const uint8_t crtm_version[] =
@@ -73,7 +73,7 @@ static const uint8_t crtm_version[] =
 
 int mb_crtm(void)
 {
-	int rc = TPM_E_IOERROR;
+	int rc = TPM_IOERROR;
 	TCG_PCR_EVENT2_HDR tcgEventHdr;
 
 	/* Use FirmwareVersion string to represent CRTM version. */

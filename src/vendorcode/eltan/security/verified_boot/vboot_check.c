@@ -113,7 +113,7 @@ fail:
  * @param[in] eventType		Event type to use when logging
 
  * @retval TPM_SUCCESS		Operation completed successfully.
- * @retval TPM_E_IOERROR	Unexpected device behavior.
+ * @retval TPM_IOERROR		Unexpected device behavior.
  */
 static int measure_item(uint32_t pcr, uint8_t *hashData, uint32_t hashDataLen,
 		int8_t *event_msg, TCG_EVENTTYPE eventType)

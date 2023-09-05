@@ -57,7 +57,7 @@ static uint32_t tlcl_send_startup(TPM_SU type)
 	/* IO error, tpm2_response pointer is empty. */
 	if (!response) {
 		printk(BIOS_ERR, "%s: TPM communication error\n", __func__);
-		return TPM_E_IOERROR;
+		return TPM_IOERROR;
 	}
 
 	printk(BIOS_INFO, "%s: Startup return code is %x\n",
@@ -66,13 +66,13 @@ static uint32_t tlcl_send_startup(TPM_SU type)
 	switch (response->hdr.tpm_code) {
 	case TPM_RC_INITIALIZE:
 		/* TPM already initialized. */
-		return TPM_E_INVALID_POSTINIT;
+		return TPM_INVALID_POSTINIT;
 	case TPM2_RC_SUCCESS:
 		return TPM_SUCCESS;
 	}
 
-	/* Collapse any other errors into TPM_E_IOERROR. */
-	return TPM_E_IOERROR;
+	/* Collapse any other errors into TPM_IOERROR. */
+	return TPM_IOERROR;
 }
 
 uint32_t tlcl_resume(void)
@@ -91,7 +91,7 @@ static uint32_t tlcl_send_shutdown(TPM_SU type)
 	/* IO error, tpm2_response pointer is empty. */
 	if (!response) {
 		printk(BIOS_ERR, "%s: TPM communication error\n", __func__);
-		return TPM_E_IOERROR;
+		return TPM_IOERROR;
 	}
 
 	printk(BIOS_INFO, "%s: Shutdown return code is %x\n",
@@ -100,8 +100,8 @@ static uint32_t tlcl_send_shutdown(TPM_SU type)
 	if (response->hdr.tpm_code == TPM2_RC_SUCCESS)
 		return TPM_SUCCESS;
 
-	/* Collapse any other errors into TPM_E_IOERROR. */
-	return TPM_E_IOERROR;
+	/* Collapse any other errors into TPM_IOERROR. */
+	return TPM_IOERROR;
 }
 
 uint32_t tlcl_save_state(void)
@@ -144,7 +144,7 @@ uint32_t tlcl_extend(int pcr_num, const uint8_t *digest_data,
 
 	alg = tpmalg_from_vb2_hash(digest_type);
 	if (alg == TPM_ALG_ERROR)
-		return TPM_E_HASH_ERROR;
+		return TPM_CB_HASH_ERROR;
 
 	pcr_ext_cmd.pcrHandle = HR_PCR + pcr_num;
 	pcr_ext_cmd.digests.count = 1;
@@ -158,7 +158,7 @@ uint32_t tlcl_extend(int pcr_num, const uint8_t *digest_data,
 	printk(BIOS_INFO, "%s: response is %x\n",
 	       __func__, response ? response->hdr.tpm_code : -1);
 	if (!response || response->hdr.tpm_code)
-		return TPM_E_IOERROR;
+		return TPM_IOERROR;
 
 	return TPM_SUCCESS;
 }
@@ -179,7 +179,7 @@ uint32_t tlcl_force_clear(void)
 	       __func__, response ? response->hdr.tpm_code : -1);
 
 	if (!response || response->hdr.tpm_code)
-		return TPM_E_IOERROR;
+		return TPM_IOERROR;
 
 	return TPM_SUCCESS;
 }
@@ -196,7 +196,7 @@ uint32_t tlcl_clear_control(bool disable)
 		__func__, response ? response->hdr.tpm_code : -1);
 
 	if (!response || response->hdr.tpm_code)
-		return TPM_E_IOERROR;
+		return TPM_IOERROR;
 
 	return TPM_SUCCESS;
 }
@@ -244,7 +244,7 @@ uint32_t tlcl_read(uint32_t index, void *data, uint32_t length)
 
 	/* Need to map tpm error codes into internal values. */
 	if (!response)
-		return TPM_E_READ_FAILURE;
+		return TPM_CB_READ_FAILURE;
 
 	printk(BIOS_INFO, "%s:%d index %#x return code %x\n",
 	       __FILE__, __LINE__, index, response->hdr.tpm_code);
@@ -259,20 +259,20 @@ uint32_t tlcl_read(uint32_t index, void *data, uint32_t length)
 		 * hasn't been defined.
 		 */
 	case TPM_RC_CR50_NV_UNDEFINED:
-		return TPM_E_BADINDEX;
+		return TPM_BADINDEX;
 
 	case TPM_RC_NV_RANGE:
-		return TPM_E_RANGE;
+		return TPM_CB_RANGE;
 
 	default:
-		return TPM_E_READ_FAILURE;
+		return TPM_CB_READ_FAILURE;
 	}
 
 	if (length > response->nvr.buffer.t.size)
-		return TPM_E_RESPONSE_TOO_LARGE;
+		return TPM_CB_RESPONSE_TOO_LARGE;
 
 	if (length < response->nvr.buffer.t.size)
-		return TPM_E_READ_EMPTY;
+		return TPM_CB_READ_EMPTY;
 
 	memcpy(data, response->nvr.buffer.t.buffer, length);
 
@@ -306,7 +306,7 @@ uint32_t tlcl_lock_nv_write(uint32_t index)
 	       __func__, response ? response->hdr.tpm_code : -1);
 
 	if (!response || response->hdr.tpm_code)
-		return TPM_E_IOERROR;
+		return TPM_IOERROR;
 
 	return TPM_SUCCESS;
 }
@@ -334,7 +334,7 @@ uint32_t tlcl_write(uint32_t index, const void *data, uint32_t length)
 
 	/* Need to map tpm error codes into internal values. */
 	if (!response || response->hdr.tpm_code)
-		return TPM_E_WRITE_FAILURE;
+		return TPM_CB_WRITE_FAILURE;
 
 	return TPM_SUCCESS;
 }
@@ -357,7 +357,7 @@ uint32_t tlcl_set_bits(uint32_t index, uint64_t bits)
 
 	/* Need to map tpm error codes into internal values. */
 	if (!response || response->hdr.tpm_code)
-		return TPM_E_WRITE_FAILURE;
+		return TPM_CB_WRITE_FAILURE;
 
 	return TPM_SUCCESS;
 }
@@ -392,16 +392,16 @@ uint32_t tlcl_define_space(uint32_t space_index, size_t space_size,
 	       response ? response->hdr.tpm_code : -1);
 
 	if (!response)
-		return TPM_E_NO_DEVICE;
+		return TPM_CB_NO_DEVICE;
 
 	/* Map TPM2 return codes into common vboot representation. */
 	switch (response->hdr.tpm_code) {
 	case TPM2_RC_SUCCESS:
 		return TPM_SUCCESS;
 	case TPM2_RC_NV_DEFINED:
-		return TPM_E_NV_DEFINED;
+		return TPM_CB_NV_DEFINED;
 	default:
-		return TPM_E_INTERNAL_INCONSISTENCY;
+		return TPM_CB_INTERNAL_INCONSISTENCY;
 	}
 }
 
@@ -448,7 +448,7 @@ uint32_t tlcl_disable_platform_hierarchy(void)
 	response = tpm_process_command(TPM2_Hierarchy_Control, &hc);
 
 	if (!response || response->hdr.tpm_code)
-		return TPM_E_INTERNAL_INCONSISTENCY;
+		return TPM_CB_INTERNAL_INCONSISTENCY;
 
 	return TPM_SUCCESS;
 }
@@ -467,14 +467,14 @@ uint32_t tlcl_get_capability(TPM_CAP capability, uint32_t property,
 	if (property_count > 1) {
 		printk(BIOS_ERR, "%s: property_count more than one not "
 		       "supported yet\n", __func__);
-		return TPM_E_IOERROR;
+		return TPM_IOERROR;
 	}
 
 	response = tpm_process_command(TPM2_GetCapability, &cmd);
 
 	if (!response) {
 		printk(BIOS_ERR, "%s: Command Failed\n", __func__);
-		return TPM_E_IOERROR;
+		return TPM_IOERROR;
 	}
 
 	memcpy(capability_data, &response->gc.cd, sizeof(TPMS_CAPABILITY_DATA));

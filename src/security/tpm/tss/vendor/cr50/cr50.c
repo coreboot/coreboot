@@ -24,7 +24,7 @@ uint32_t tlcl_cr50_enable_nvcommits(void)
 			       response->hdr.tpm_code);
 		else
 			printk(BIOS_INFO, "%s: failed\n", __func__);
-		return TPM_E_IOERROR;
+		return TPM_IOERROR;
 	}
 	return TPM_SUCCESS;
 }
@@ -42,7 +42,7 @@ uint32_t tlcl_cr50_enable_update(uint16_t timeout_ms,
 	response = tpm_process_command(TPM2_CR50_VENDOR_COMMAND, command_body);
 
 	if (!response || response->hdr.tpm_code)
-		return TPM_E_IOERROR;
+		return TPM_IOERROR;
 
 	*num_restored_headers = response->vcr.num_restored_headers;
 	return TPM_SUCCESS;
@@ -58,7 +58,7 @@ uint32_t tlcl_cr50_get_recovery_button(uint8_t *recovery_button_state)
 	response = tpm_process_command(TPM2_CR50_VENDOR_COMMAND, &sub_command);
 
 	if (!response || response->hdr.tpm_code)
-		return TPM_E_IOERROR;
+		return TPM_IOERROR;
 
 	*recovery_button_state = response->vcr.recovery_button_state;
 	return TPM_SUCCESS;
@@ -75,7 +75,7 @@ uint32_t tlcl_cr50_get_tpm_mode(uint8_t *tpm_mode)
 	response = tpm_process_command(TPM2_CR50_VENDOR_COMMAND, &mode_command);
 
 	if (!response)
-		return TPM_E_IOERROR;
+		return TPM_IOERROR;
 
 	if (response->hdr.tpm_code == VENDOR_RC_INTERNAL_ERROR) {
 		/*
@@ -83,7 +83,7 @@ uint32_t tlcl_cr50_get_tpm_mode(uint8_t *tpm_mode)
 		 * is disabled. The Cr50 requires a reboot to re-enable the key
 		 * ladder.
 		 */
-		return TPM_E_MUST_REBOOT;
+		return TPM_CB_MUST_REBOOT;
 	}
 
 	if (response->hdr.tpm_code == VENDOR_RC_NO_SUCH_COMMAND ||
@@ -91,12 +91,12 @@ uint32_t tlcl_cr50_get_tpm_mode(uint8_t *tpm_mode)
 		/*
 		 * Explicitly inform caller when command is not supported
 		 */
-		return TPM_E_NO_SUCH_COMMAND;
+		return TPM_CB_NO_SUCH_COMMAND;
 	}
 
 	if (response->hdr.tpm_code) {
 		/* Unexpected return code from Cr50 */
-		return TPM_E_IOERROR;
+		return TPM_IOERROR;
 	}
 
 	/* TPM command completed without error */
@@ -115,16 +115,16 @@ uint32_t tlcl_cr50_get_boot_mode(uint8_t *boot_mode)
 	response = tpm_process_command(TPM2_CR50_VENDOR_COMMAND, &mode_command);
 
 	if (!response)
-		return TPM_E_IOERROR;
+		return TPM_IOERROR;
 
 	if (response->hdr.tpm_code == VENDOR_RC_NO_SUCH_COMMAND ||
 	    response->hdr.tpm_code == VENDOR_RC_NO_SUCH_SUBCOMMAND)
 		/* Explicitly inform caller when command is not supported */
-		return TPM_E_NO_SUCH_COMMAND;
+		return TPM_CB_NO_SUCH_COMMAND;
 
 	if (response->hdr.tpm_code)
 		/* Unexpected return code from Cr50 */
-		return TPM_E_IOERROR;
+		return TPM_IOERROR;
 
 	*boot_mode = response->vcr.boot_mode;
 
@@ -145,7 +145,7 @@ uint32_t tlcl_cr50_immediate_reset(uint16_t timeout_ms)
 				       &reset_command_body);
 
 	if (!response)
-		return TPM_E_IOERROR;
+		return TPM_IOERROR;
 
 	return TPM_SUCCESS;
 }
@@ -160,16 +160,16 @@ uint32_t tlcl_cr50_reset_ec(void)
 	response = tpm_process_command(TPM2_CR50_VENDOR_COMMAND, &reset_cmd);
 
 	if (!response)
-		return TPM_E_IOERROR;
+		return TPM_IOERROR;
 
 	if (response->hdr.tpm_code == VENDOR_RC_NO_SUCH_COMMAND ||
 	    response->hdr.tpm_code == VENDOR_RC_NO_SUCH_SUBCOMMAND)
 		/* Explicitly inform caller when command is not supported */
-		return TPM_E_NO_SUCH_COMMAND;
+		return TPM_CB_NO_SUCH_COMMAND;
 
 	if (response->hdr.tpm_code)
 		/* Unexpected return code from Cr50 */
-		return TPM_E_IOERROR;
+		return TPM_IOERROR;
 
 	printk(BIOS_DEBUG, "EC reset coming up...\n");
 	halt();

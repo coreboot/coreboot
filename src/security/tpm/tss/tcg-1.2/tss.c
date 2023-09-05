@@ -108,7 +108,7 @@ uint32_t tlcl_send_receive(const uint8_t *request, uint8_t *response,
 						     max_length);
 	/* If the command fails because the self test has not completed, try it
 	 * again after attempting to ensure that the self test has completed. */
-	if (rc == TPM_E_NEEDS_SELFTEST || rc == TPM_E_DOING_SELFTEST) {
+	if (rc == TPM_NEEDS_SELFTEST || rc == TPM_DOING_SELFTEST) {
 		rc = tlcl_continue_self_test();
 		if (rc != TPM_SUCCESS)
 			return rc;
@@ -125,7 +125,7 @@ uint32_t tlcl_send_receive(const uint8_t *request, uint8_t *response,
 		do {
 			rc = tlcl_send_receive_no_retry(request, response,
 							    max_length);
-		} while (rc == TPM_E_DOING_SELFTEST);
+		} while (rc == TPM_DOING_SELFTEST);
 #endif
 	}
 	return rc;
@@ -238,7 +238,7 @@ uint32_t tlcl_read(uint32_t index, void *data, uint32_t length)
 		uint8_t *nv_read_cursor = response + kTpmResponseHeaderLength;
 		from_tpm_uint32(nv_read_cursor, &result_length);
 		if (result_length > length)
-			return TPM_E_IOERROR;
+			return TPM_IOERROR;
 		nv_read_cursor += sizeof(uint32_t);
 		memcpy(data, nv_read_cursor, result_length);
 	}
@@ -301,7 +301,7 @@ uint32_t tlcl_get_permanent_flags(TPM_PERMANENT_FLAGS *pflags)
 		return rc;
 	from_tpm_uint32(response + kTpmResponseHeaderLength, &size);
 	if (size != sizeof(TPM_PERMANENT_FLAGS))
-		return TPM_E_IOERROR;
+		return TPM_IOERROR;
 	memcpy(pflags, response + kTpmResponseHeaderLength + sizeof(size),
 	       sizeof(TPM_PERMANENT_FLAGS));
 	return rc;
@@ -338,7 +338,7 @@ uint32_t tlcl_extend(int pcr_num, const uint8_t *digest_data,
 	uint8_t response[kTpmResponseHeaderLength + kPcrDigestLength];
 
 	if (digest_algo != VB2_HASH_SHA1)
-		return TPM_E_INVALID_ARG;
+		return TPM_CB_INVALID_ARG;
 
 	memcpy(&cmd, &tpm_extend_cmd, sizeof(cmd));
 	to_tpm_uint32(cmd.buffer + tpm_extend_cmd.pcrNum, pcr_num);

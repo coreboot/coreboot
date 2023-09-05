@@ -172,3 +172,12 @@ config PCR_RUNTIME_DATA
 	default 3
 
 endmenu # Trusted Platform Module (tpm)
+
+config TPM_SETUP_HIBERNATE_ON_ERR
+	bool
+	depends on EC_GOOGLE_CHROMEEC
+	help
+	  Select this to force a device to hibernate on the next AP shutdown when a TPM
+	  setup error occurs. This will cause a cold boot of the system and offer an
+	  opportunity to recover the TPM should it be hung. This is only effective if
+	  the Z-State brings the power rail down.

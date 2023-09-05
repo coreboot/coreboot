@@ -247,4 +247,9 @@ config SPI_FLASH_STMICRO
 config SPI_FLASH_WINBOND
 	default y
 
+# Enable hibernate on TPM setup error as needed
+config TPM_SETUP_HIBERNATE_ON_ERR
+	bool
+	default y
+
 endif # BOARD_GOOGLE_BASEBOARD_SKYRIM

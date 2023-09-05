@@ -93,7 +93,6 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 		end
-		device ref heci1	on  end
 		device ref sata		on
 			register "sata_salp_support"		= "1"
 			register "sata_ports_enable[1]"		= "1"

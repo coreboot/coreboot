@@ -113,7 +113,6 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 		end
-		device ref heci1	on  end
 		device ref pcie_rp5	on				# WiFi
 			chip drivers/wifi/generic
 				register "wake"			= "GPE0_PME_B0"

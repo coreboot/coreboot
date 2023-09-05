@@ -271,7 +271,7 @@ int mb_measure_log_worker(const char *name, uint32_t type, uint32_t pcr,
  * @retval TPM_E_IOERROR	Unexpected device behavior.
 **/
 
-int __attribute__((weak)) mb_entry(int wake_from_s3)
+__weak int mb_entry(int wake_from_s3)
 {
 	int status;
 
@@ -315,7 +315,7 @@ int __attribute__((weak)) mb_entry(int wake_from_s3)
  * @retval TPM_E_IOERROR	Unexpected device behavior.
  */
 
-int __attribute__((weak))mb_measure(int wake_from_s3)
+__weak int mb_measure(int wake_from_s3)
 {
 	uint32_t status;
 
@@ -357,7 +357,7 @@ int __attribute__((weak))mb_measure(int wake_from_s3)
  * @retval TPM_SUCCESS		Operation completed successfully.
  * @retval TPM_E_IOERROR	Unexpected device behavior.
  */
-int __attribute__((weak))mb_measure_log_start(void)
+__weak int mb_measure_log_start(void)
 {
 	int status;
 	uint32_t i;
@@ -414,7 +414,7 @@ static const uint8_t crtm_version[] =
  * @retval TPM_SUCCESS		Operation completed successfully.
  * @retval TPM_E_IOERROR	Unexpected device behavior.
 **/
-int __attribute__((weak))mb_crtm(void)
+__weak int mb_crtm(void)
 {
 	int status;
 	TCG_PCR_EVENT2_HDR tcgEventHdr;

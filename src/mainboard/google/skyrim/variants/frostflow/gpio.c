@@ -7,8 +7,6 @@
 
 /* GPIO configuration in ramstage */
 static const struct soc_amd_gpio override_gpio_table[] = {
-	/* EN_PWR_WWAN_X => CAM_PSW_L */
-	PAD_INT(GPIO_8, PULL_NONE, BOTH_EDGES, STATUS_DELIVERY),
 	/* SOC_SAR_INT_L => Unused */
 	PAD_NC(GPIO_17),
 	/* WWAN_RST_L => Unused */

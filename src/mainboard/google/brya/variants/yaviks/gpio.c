@@ -40,6 +40,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_F13, NONE),
 	/* F15 : GSXSRESET# ==> NC */
 	PAD_NC_LOCK(GPP_F15, NONE, LOCK_CONFIG),
+	/* F23 : V1P05EXT_CTRL ==> NC */
+	PAD_NC(GPP_F23, NONE),
 
 	/* H8  : CNV_MFUART2_RXD ==> NC */
 	PAD_NC(GPP_H8, NONE),

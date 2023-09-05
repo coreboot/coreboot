@@ -498,7 +498,7 @@ tpm_result_t tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t d
 
 	if (dev_addr == 0) {
 		printk(BIOS_ERR, "%s: missing device address\n", __func__);
-		return TPM_CB_FAIL;
+		return TPM_CB_INVALID_ARG;
 	}
 
 	tpm_dev.chip_type = UNKNOWN;

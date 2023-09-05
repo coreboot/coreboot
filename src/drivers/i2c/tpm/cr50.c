@@ -61,7 +61,7 @@ static struct tpm_inf_dev tpm_dev;
 static tpm_result_t cr50_i2c_read(uint8_t addr, uint8_t *buffer, size_t len)
 {
 	if (tpm_dev.addr == 0)
-		return TPM_CB_FAIL;
+		return TPM_CB_INVALID_ARG;
 
 	/* Clear interrupt before starting transaction */
 	cr50_plat_irq_status();
@@ -69,17 +69,17 @@ static tpm_result_t cr50_i2c_read(uint8_t addr, uint8_t *buffer, size_t len)
 	/* Send the register address byte to the TPM */
 	if (i2c_write_raw(tpm_dev.bus, tpm_dev.addr, &addr, 1)) {
 		printk(BIOS_ERR, "%s: Address write failed\n", __func__);
-		return TPM_CB_FAIL;
+		return TPM_CB_COMMUNICATION_ERROR;
 	}
 
 	/* Wait for TPM to be ready with response data */
 	if (cr50_wait_tpm_ready() != CB_SUCCESS)
-		return TPM_CB_FAIL;
+		return TPM_CB_TIMEOUT;
 
 	/* Read response data from the TPM */
 	if (i2c_read_raw(tpm_dev.bus, tpm_dev.addr, buffer, len)) {
 		printk(BIOS_ERR, "%s: Read response failed\n", __func__);
-		return TPM_CB_FAIL;
+		return TPM_CB_COMMUNICATION_ERROR;
 	}
 
 	return TPM_SUCCESS;
@@ -115,11 +115,11 @@ static tpm_result_t cr50_i2c_write(uint8_t addr, const uint8_t *buffer, size_t l
 	/* Send write request buffer with address */
 	if (i2c_write_raw(tpm_dev.bus, tpm_dev.addr, tpm_dev.buf, len + 1)) {
 		printk(BIOS_ERR, "%s: Error writing to TPM\n", __func__);
-		return TPM_CB_FAIL;
+		return TPM_CB_COMMUNICATION_ERROR;
 	}
 
 	/* Wait for TPM to be ready */
-	return cr50_wait_tpm_ready() == CB_SUCCESS ? TPM_SUCCESS : TPM_CB_FAIL;
+	return cr50_wait_tpm_ready() == CB_SUCCESS ? TPM_SUCCESS : TPM_CB_TIMEOUT;
 }
 
 /*
@@ -276,7 +276,7 @@ static tpm_result_t cr50_i2c_wait_burststs(uint8_t mask, size_t *burst, int *sta
 	printk(BIOS_ERR, "%s: Timeout reading burst and status with error %#x\n", __func__, rc);
 	if (rc)
 		return rc;
-	return TPM_CB_TIMEOUT;
+	return TPM_CB_COMMUNICATION_ERROR;
 }
 
 static int cr50_i2c_tis_recv(uint8_t *buf, size_t buf_len)
@@ -464,7 +464,7 @@ static tpm_result_t cr50_i2c_probe(uint32_t *did_vid)
 		printk(BIOS_ERR, "DID_VID 0x%08x not recognized\n", *did_vid);
 		return TPM_CB_FAIL;
 	}
-	return rc;
+	return TPM_CB_COMMUNICATION_ERROR;
 }
 
 tpm_result_t tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
@@ -474,7 +474,7 @@ tpm_result_t tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t d
 
 	if (dev_addr == 0) {
 		printk(BIOS_ERR, "%s: missing device address\n", __func__);
-		return TPM_CB_FAIL;
+		return TPM_CB_INVALID_ARG;
 	}
 
 	tpm_dev.bus = bus;

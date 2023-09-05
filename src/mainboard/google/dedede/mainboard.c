@@ -14,11 +14,11 @@
 static void mainboard_update_soc_chip_config(void)
 {
 	struct soc_intel_jasperlake_config *cfg = config_of_soc();
-	int ret;
+	int rc;
 
-	ret = tlcl_lib_init();
-	if (ret != VB2_SUCCESS) {
-		printk(BIOS_ERR, "tlcl_lib_init() failed: 0x%x\n", ret);
+	rc = tlcl_lib_init();
+	if (rc != VB2_SUCCESS) {
+		printk(BIOS_ERR, "tlcl_lib_init() failed: 0x%x\n", rc);
 		return;
 	}
 

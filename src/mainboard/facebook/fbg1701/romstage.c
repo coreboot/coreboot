@@ -73,7 +73,7 @@ static const uint8_t crtm_version[] =
 
 int mb_crtm(void)
 {
-	int status = TPM_E_IOERROR;
+	int rc = TPM_E_IOERROR;
 	TCG_PCR_EVENT2_HDR tcgEventHdr;
 
 	/* Use FirmwareVersion string to represent CRTM version. */
@@ -84,13 +84,13 @@ int mb_crtm(void)
 	tcgEventHdr.eventSize = sizeof(crtm_version);
 	printk(BIOS_DEBUG, "%s: EventSize - %u\n", __func__, tcgEventHdr.eventSize);
 
-	status = mboot_hash_extend_log(0, (uint8_t *)crtm_version,
+	rc = mboot_hash_extend_log(0, (uint8_t *)crtm_version,
 				       tcgEventHdr.eventSize, &tcgEventHdr,
 				       (uint8_t *)crtm_version);
-	if (status) {
-		printk(BIOS_DEBUG, "Measure CRTM Version returned 0x%x\n", status);
+	if (rc) {
+		printk(BIOS_DEBUG, "Measure CRTM Version returned 0x%x\n", rc);
 	}
 
-	return status;
+	return rc;
 }
 #endif

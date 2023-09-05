@@ -13,14 +13,14 @@
  */
 EFI_TCG2_EVENT_ALGORITHM_BITMAP tpm2_get_active_pcrs(void)
 {
-	int status;
+	int rc;
 	TPML_PCR_SELECTION Pcrs;
 	EFI_TCG2_EVENT_ALGORITHM_BITMAP tpmHashAlgorithmBitmap = 0;
 	uint32_t activePcrBanks = 0;
 	uint32_t index;
 
-	status = tpm2_get_capability_pcrs(&Pcrs);
-	if (status != TPM_SUCCESS) {
+	rc = tpm2_get_capability_pcrs(&Pcrs);
+	if (rc != TPM_SUCCESS) {
 		tpmHashAlgorithmBitmap = EFI_TCG2_BOOT_HASH_ALG_SHA1;
 		activePcrBanks = EFI_TCG2_BOOT_HASH_ALG_SHA1;
 	} else {
@@ -78,11 +78,11 @@ EFI_TCG2_EVENT_ALGORITHM_BITMAP tpm2_get_active_pcrs(void)
 int tpm2_get_capability_pcrs(TPML_PCR_SELECTION *Pcrs)
 {
 	TPMS_CAPABILITY_DATA TpmCap;
-	int status;
+	int rc;
 	int index;
 
-	status = tlcl_get_capability(TPM_CAP_PCRS, 0, 1, &TpmCap);
-	if (status == TPM_SUCCESS) {
+	rc = tlcl_get_capability(TPM_CAP_PCRS, 0, 1, &TpmCap);
+	if (rc == TPM_SUCCESS) {
 		Pcrs->count = TpmCap.data.assignedPCR.count;
 		printk(BIOS_DEBUG, "Pcrs->count = %d\n", Pcrs->count);
 		for (index = 0; index < Pcrs->count; index++) {
@@ -97,7 +97,7 @@ int tpm2_get_capability_pcrs(TPML_PCR_SELECTION *Pcrs)
 				Pcrs->pcrSelections[index].sizeofSelect);
 		}
 	}
-	return status;
+	return rc;
 }
 
 /*
@@ -149,7 +149,7 @@ int mboot_hash_extend_log(uint64_t flags, uint8_t *hashData, uint32_t hashDataLe
 void invalidate_pcrs(void)
 {
 	int pcr;
-	int status;
+	int rc;
 
 	TCG_PCR_EVENT2_HDR tcgEventHdr;
 	uint8_t invalidate = 1;
@@ -161,12 +161,12 @@ void invalidate_pcrs(void)
 		tcgEventHdr.eventType = EV_NO_ACTION;
 		tcgEventHdr.eventSize = (uint32_t) sizeof(invalidate);
 
-		status = mboot_hash_extend_log(0, (uint8_t *)&invalidate,
+		rc = mboot_hash_extend_log(0, (uint8_t *)&invalidate,
 					       tcgEventHdr.eventSize, &tcgEventHdr,
 					       (uint8_t *)"Invalidate PCR");
-		if (status != TPM_SUCCESS)
+		if (rc != TPM_SUCCESS)
 			printk(BIOS_DEBUG, "%s: invalidating pcr %d returned"
-				" 0x%x\n", __func__, pcr, status);
+				" 0x%x\n", __func__, pcr, rc);
 	}
 }
 
@@ -230,7 +230,7 @@ void mboot_print_buffer(uint8_t *buffer, uint32_t bufferSize)
 int mb_measure_log_worker(const char *name, uint32_t type, uint32_t pcr,
 			  TCG_EVENTTYPE eventType, const char *event_msg)
 {
-	int status;
+	int rc;
 	TCG_PCR_EVENT2_HDR tcgEventHdr;
 	uint8_t *base;
 	size_t size;
@@ -250,8 +250,8 @@ int mb_measure_log_worker(const char *name, uint32_t type, uint32_t pcr,
 	if (event_msg)
 		tcgEventHdr.eventSize = (uint32_t) strlen(event_msg);
 
-	status = mboot_hash_extend_log(0, base, size, &tcgEventHdr, (uint8_t *)event_msg);
-	return status;
+	rc = mboot_hash_extend_log(0, base, size, &tcgEventHdr, (uint8_t *)event_msg);
+	return rc;
 }
 
 /*
@@ -273,7 +273,7 @@ int mb_measure_log_worker(const char *name, uint32_t type, uint32_t pcr,
 
 __weak int mb_entry(int wake_from_s3)
 {
-	int status;
+	int rc;
 
 	/* Initialize TPM driver. */
 	printk(BIOS_DEBUG, "%s: tlcl_lib_init\n", __func__);
@@ -284,16 +284,16 @@ __weak int mb_entry(int wake_from_s3)
 
 	if (wake_from_s3) {
 		printk(BIOS_DEBUG, "%s: tlcl_resume\n", __func__);
-		status = tlcl_resume();
+		rc = tlcl_resume();
 	} else {
 		printk(BIOS_DEBUG, "%s: tlcl_startup\n", __func__);
-		status = tlcl_startup();
+		rc = tlcl_startup();
 	}
 
-	if (status)
-		printk(BIOS_ERR, "%s: StartUp failed 0x%x!\n", __func__, status);
+	if (rc)
+		printk(BIOS_ERR, "%s: StartUp failed 0x%x!\n", __func__, rc);
 
-	return status;
+	return rc;
 }
 
 /*
@@ -317,25 +317,25 @@ __weak int mb_entry(int wake_from_s3)
 
 __weak int mb_measure(int wake_from_s3)
 {
-	uint32_t status;
+	uint32_t rc;
 
-	status = mb_entry(wake_from_s3);
-	if (status == TPM_SUCCESS) {
+	rc = mb_entry(wake_from_s3);
+	if (rc == TPM_SUCCESS) {
 		printk(BIOS_DEBUG, "%s: StartUp, successful!\n", __func__);
-		status = mb_measure_log_start();
-		if (status == TPM_SUCCESS) {
+		rc = mb_measure_log_start();
+		if (rc == TPM_SUCCESS) {
 			printk(BIOS_DEBUG, "%s: Measuring, successful!\n", __func__);
 		} else {
 			invalidate_pcrs();
 			printk(BIOS_ERR, "%s: Measuring returned 0x%x unsuccessful! PCRs invalidated.\n",
-			       __func__, status);
+			       __func__, rc);
 		}
 	} else {
 		invalidate_pcrs();
 		printk(BIOS_ERR, "%s: StartUp returned 0x%x, unsuccessful! PCRs invalidated.\n", __func__,
-		       status);
+		       rc);
 	}
-	return status;
+	return rc;
 }
 
 /*
@@ -359,7 +359,7 @@ __weak int mb_measure(int wake_from_s3)
  */
 __weak int mb_measure_log_start(void)
 {
-	int status;
+	int rc;
 	uint32_t i;
 
 	if ((tpm2_get_active_pcrs() & EFI_TCG2_BOOT_HASH_ALG_SHA256) == 0x0) {
@@ -368,32 +368,32 @@ __weak int mb_measure_log_start(void)
 		return TPM_E_IOERROR;
 	}
 
-	status = mb_crtm();
-	if (status != TPM_SUCCESS) {
+	rc = mb_crtm();
+	if (rc != TPM_SUCCESS) {
 		printk(BIOS_DEBUG, "%s: Fail! CRTM Version can't be measured."
 			" ABORTING!!!\n", __func__);
-		return status;
+		return rc;
 	}
 	printk(BIOS_DEBUG, "%s: Success! CRTM Version measured.\n", __func__);
 
 	/* Log the items defined by the mainboard */
 	for (i = 0; i < ARRAY_SIZE(mb_log_list); i++) {
-		status = mb_measure_log_worker(
+		rc = mb_measure_log_worker(
 				mb_log_list[i].cbfs_name,
 				mb_log_list[i].cbfs_type, mb_log_list[i].pcr,
 				mb_log_list[i].eventType,
 				mb_log_list[i].event_msg);
-		if (status != TPM_SUCCESS) {
+		if (rc != TPM_SUCCESS) {
 			printk(BIOS_DEBUG, "%s: Fail! %s can't be measured."
 				"ABORTING!!!\n", __func__,
 				mb_log_list[i].cbfs_name);
-			return status;
+			return rc;
 		}
 		printk(BIOS_DEBUG, "%s: Success! %s measured to pcr"
 			"%d.\n", __func__, mb_log_list[i].cbfs_name,
 			mb_log_list[i].pcr);
 	}
-	return status;
+	return rc;
 }
 
 static const uint8_t crtm_version[] =
@@ -416,7 +416,7 @@ static const uint8_t crtm_version[] =
 **/
 __weak int mb_crtm(void)
 {
-	int status;
+	int rc;
 	TCG_PCR_EVENT2_HDR tcgEventHdr;
 	uint8_t hash[VB2_SHA256_DIGEST_SIZE];
 	uint8_t *msgPtr;
@@ -430,18 +430,18 @@ __weak int mb_crtm(void)
 	printk(BIOS_DEBUG, "%s: EventSize - %u\n", __func__,
 		tcgEventHdr.eventSize);
 
-	status = mboot_hash_extend_log(0, (uint8_t *)crtm_version, tcgEventHdr.eventSize,
+	rc = mboot_hash_extend_log(0, (uint8_t *)crtm_version, tcgEventHdr.eventSize,
 				       &tcgEventHdr, (uint8_t *)crtm_version);
-	if (status) {
-		printk(BIOS_DEBUG, "Measure CRTM Version returned 0x%x\n", status);
-		return status;
+	if (rc) {
+		printk(BIOS_DEBUG, "Measure CRTM Version returned 0x%x\n", rc);
+		return rc;
 	}
 
-	status = get_intel_me_hash(hash);
-	if (status) {
-		printk(BIOS_DEBUG, "get_intel_me_hash returned 0x%x\n", status);
-		status = TPM_E_IOERROR;
-		return status;
+	rc = get_intel_me_hash(hash);
+	if (rc) {
+		printk(BIOS_DEBUG, "get_intel_me_hash returned 0x%x\n", rc);
+		rc = TPM_E_IOERROR;
+		return rc;
 	}
 
 	/* Add the me hash */
@@ -453,10 +453,10 @@ __weak int mb_crtm(void)
 
 	msgPtr = NULL;
 	tcgEventHdr.eventSize = 0;
-	status = mboot_hash_extend_log(MBOOT_HASH_PROVIDED, hash, sizeof(hash), &tcgEventHdr,
+	rc = mboot_hash_extend_log(MBOOT_HASH_PROVIDED, hash, sizeof(hash), &tcgEventHdr,
 				       msgPtr);
-	if (status)
-		printk(BIOS_DEBUG, "Add ME hash returned 0x%x\n", status);
+	if (rc)
+		printk(BIOS_DEBUG, "Add ME hash returned 0x%x\n", rc);
 
-	return status;
+	return rc;
 }

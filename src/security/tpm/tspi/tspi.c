@@ -15,49 +15,49 @@ static uint32_t tpm1_invoke_state_machine(void)
 {
 	uint8_t disabled;
 	uint8_t deactivated;
-	uint32_t result = TPM_SUCCESS;
+	uint32_t rc = TPM_SUCCESS;
 
 	/* Check that the TPM is enabled and activated. */
-	result = tlcl_get_flags(&disabled, &deactivated, NULL);
-	if (result != TPM_SUCCESS) {
+	rc = tlcl_get_flags(&disabled, &deactivated, NULL);
+	if (rc != TPM_SUCCESS) {
 		printk(BIOS_ERR, "TPM: Can't read capabilities.\n");
-		return result;
+		return rc;
 	}
 
 	if (disabled) {
 		printk(BIOS_INFO, "TPM: is disabled. Enabling...\n");
 
-		result = tlcl_set_enable();
-		if (result != TPM_SUCCESS) {
+		rc = tlcl_set_enable();
+		if (rc != TPM_SUCCESS) {
 			printk(BIOS_ERR, "TPM: Can't set enabled state.\n");
-			return result;
+			return rc;
 		}
 	}
 
 	if (!!deactivated != CONFIG(TPM_DEACTIVATE)) {
 		printk(BIOS_INFO,
 		       "TPM: Unexpected TPM deactivated state. Toggling...\n");
-		result = tlcl_set_deactivated(!deactivated);
-		if (result != TPM_SUCCESS) {
+		rc = tlcl_set_deactivated(!deactivated);
+		if (rc != TPM_SUCCESS) {
 			printk(BIOS_ERR,
 			       "TPM: Can't toggle deactivated state.\n");
-			return result;
+			return rc;
 		}
 
 		deactivated = !deactivated;
-		result = TPM_E_MUST_REBOOT;
+		rc = TPM_E_MUST_REBOOT;
 	}
 
-	return result;
+	return rc;
 }
 #endif
 
 static uint32_t tpm_setup_s3_helper(void)
 {
-	uint32_t result;
+	uint32_t rc;
 
-	result = tlcl_resume();
-	switch (result) {
+	rc = tlcl_resume();
+	switch (rc) {
 	case TPM_SUCCESS:
 		break;
 
@@ -67,25 +67,25 @@ static uint32_t tpm_setup_s3_helper(void)
 		 * in S3, so it's already initialized.
 		 */
 		printk(BIOS_INFO, "TPM: Already initialized.\n");
-		result = TPM_SUCCESS;
+		rc = TPM_SUCCESS;
 		break;
 
 	default:
-		printk(BIOS_ERR, "TPM: Resume failed (%#x).\n", result);
+		printk(BIOS_ERR, "TPM: Resume failed (%#x).\n", rc);
 		break;
 	}
 
-	return result;
+	return rc;
 }
 
-static uint32_t tpm_setup_epilogue(uint32_t result)
+static uint32_t tpm_setup_epilogue(uint32_t rc)
 {
-	if (result != TPM_SUCCESS)
+	if (rc != TPM_SUCCESS)
 		post_code(POSTCODE_TPM_FAILURE);
 	else
 		printk(BIOS_INFO, "TPM: setup succeeded\n");
 
-	return result;
+	return rc;
 }
 
 static int tpm_is_setup;
@@ -135,12 +135,12 @@ static inline int tspi_tpm_is_setup(void)
  */
 uint32_t tpm_setup(int s3flag)
 {
-	uint32_t result;
+	uint32_t rc;
 
-	result = tlcl_lib_init();
-	if (result != TPM_SUCCESS) {
+	rc = tlcl_lib_init();
+	if (rc != TPM_SUCCESS) {
 		printk(BIOS_ERR, "TPM: Can't initialize.\n");
-		return tpm_setup_epilogue(result);
+		return tpm_setup_epilogue(rc);
 	}
 
 	/* Handle special init for S3 resume path */
@@ -149,69 +149,69 @@ uint32_t tpm_setup(int s3flag)
 		return tpm_setup_epilogue(tpm_setup_s3_helper());
 	}
 
-	result = tlcl_startup();
+	rc = tlcl_startup();
 	if (CONFIG(TPM_STARTUP_IGNORE_POSTINIT)
-	    && result == TPM_E_INVALID_POSTINIT) {
+	    && rc == TPM_E_INVALID_POSTINIT) {
 		printk(BIOS_DEBUG, "TPM: ignoring invalid POSTINIT\n");
-		result = TPM_SUCCESS;
+		rc = TPM_SUCCESS;
 	}
-	if (result != TPM_SUCCESS) {
+	if (rc != TPM_SUCCESS) {
 		printk(BIOS_ERR, "TPM: Can't run startup command.\n");
-		return tpm_setup_epilogue(result);
+		return tpm_setup_epilogue(rc);
 	}
 
-	result = tlcl_assert_physical_presence();
-	if (result != TPM_SUCCESS) {
+	rc = tlcl_assert_physical_presence();
+	if (rc != TPM_SUCCESS) {
 		/*
 		 * It is possible that the TPM was delivered with the physical
 		 * presence command disabled.  This tries enabling it, then
 		 * tries asserting PP again.
 		 */
-		result = tlcl_physical_presence_cmd_enable();
-		if (result != TPM_SUCCESS) {
+		rc = tlcl_physical_presence_cmd_enable();
+		if (rc != TPM_SUCCESS) {
 			printk(BIOS_ERR, "TPM: Can't enable physical presence command.\n");
-			return tpm_setup_epilogue(result);
+			return tpm_setup_epilogue(rc);
 		}
 
-		result = tlcl_assert_physical_presence();
-		if (result != TPM_SUCCESS) {
+		rc = tlcl_assert_physical_presence();
+		if (rc != TPM_SUCCESS) {
 			printk(BIOS_ERR, "TPM: Can't assert physical presence.\n");
-			return tpm_setup_epilogue(result);
+			return tpm_setup_epilogue(rc);
 		}
 	}
 
 #if CONFIG(TPM1)
-	result = tpm1_invoke_state_machine();
+	rc = tpm1_invoke_state_machine();
 #endif
 	if (CONFIG(TPM_MEASURED_BOOT))
-		result = tspi_measure_cache_to_pcr();
+		rc = tspi_measure_cache_to_pcr();
 
 	tpm_is_setup = 1;
-	return tpm_setup_epilogue(result);
+	return tpm_setup_epilogue(rc);
 }
 
 uint32_t tpm_clear_and_reenable(void)
 {
-	uint32_t result;
+	uint32_t rc;
 
 	printk(BIOS_INFO, "TPM: Clear and re-enable\n");
-	result = tlcl_force_clear();
-	if (result != TPM_SUCCESS) {
+	rc = tlcl_force_clear();
+	if (rc != TPM_SUCCESS) {
 		printk(BIOS_ERR, "TPM: Can't initiate a force clear.\n");
-		return result;
+		return rc;
 	}
 
 #if CONFIG(TPM1)
-	result = tlcl_set_enable();
-	if (result != TPM_SUCCESS) {
+	rc = tlcl_set_enable();
+	if (rc != TPM_SUCCESS) {
 		printk(BIOS_ERR, "TPM: Can't set enabled state.\n");
-		return result;
+		return rc;
 	}
 
-	result = tlcl_set_deactivated(0);
-	if (result != TPM_SUCCESS) {
+	rc = tlcl_set_deactivated(0);
+	if (rc != TPM_SUCCESS) {
 		printk(BIOS_ERR, "TPM: Can't set deactivated state.\n");
-		return result;
+		return rc;
 	}
 #endif
 
@@ -221,24 +221,24 @@ uint32_t tpm_clear_and_reenable(void)
 uint32_t tpm_extend_pcr(int pcr, enum vb2_hash_algorithm digest_algo,
 			const uint8_t *digest, size_t digest_len, const char *name)
 {
-	uint32_t result;
+	uint32_t rc;
 
 	if (!digest)
 		return TPM_E_IOERROR;
 
 	if (tspi_tpm_is_setup()) {
-		result = tlcl_lib_init();
-		if (result != TPM_SUCCESS) {
+		rc = tlcl_lib_init();
+		if (rc != TPM_SUCCESS) {
 			printk(BIOS_ERR, "TPM: Can't initialize library.\n");
-			return result;
+			return rc;
 		}
 
 		printk(BIOS_DEBUG, "TPM: Extending digest for `%s` into PCR %d\n", name, pcr);
-		result = tlcl_extend(pcr, digest, digest_algo);
-		if (result != TPM_SUCCESS) {
+		rc = tlcl_extend(pcr, digest, digest_algo);
+		if (rc != TPM_SUCCESS) {
 			printk(BIOS_ERR, "TPM: Extending hash for `%s` into PCR %d failed.\n",
 			       name, pcr);
-			return result;
+			return rc;
 		}
 	}
 

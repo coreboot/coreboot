@@ -122,14 +122,14 @@ static int tpm_get_cap(uint32_t property, uint32_t *value)
 {
 	TPMS_CAPABILITY_DATA cap_data;
 	int i;
-	uint32_t status;
+	uint32_t rc;
 
 	if (!value)
 		return -1;
 
-	status = tlcl_get_capability(TPM_CAP_TPM_PROPERTIES, property, 1, &cap_data);
+	rc = tlcl_get_capability(TPM_CAP_TPM_PROPERTIES, property, 1, &cap_data);
 
-	if (status)
+	if (rc)
 		return -1;
 
 	for (i = 0 ; i < cap_data.data.tpmProperties.count; i++) {

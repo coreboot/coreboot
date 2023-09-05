@@ -57,9 +57,9 @@ static inline int tpm_command_size(const uint8_t *buffer)
 /* Gets the code field of a TPM command. */
 static inline int tpm_command_code(const uint8_t *buffer)
 {
-	uint32_t code;
-	from_tpm_uint32(buffer + sizeof(uint16_t) + sizeof(uint32_t), &code);
-	return code;
+	uint32_t rc;
+	from_tpm_uint32(buffer + sizeof(uint16_t) + sizeof(uint32_t), &rc);
+	return rc;
 }
 
 /* Gets the return code field of a TPM result. */
@@ -76,27 +76,27 @@ static uint32_t tlcl_send_receive_no_retry(const uint8_t *request,
 					   uint8_t *response, int max_length)
 {
 	uint32_t response_length = max_length;
-	uint32_t result;
+	uint32_t rc;
 
-	result = tpm_send_receive(request, tpm_command_size(request),
+	rc = tpm_send_receive(request, tpm_command_size(request),
 					response, &response_length);
-	if (result != 0) {
+	if (rc != 0) {
 		/* Communication with TPM failed, so response is garbage */
 		VBDEBUG("TPM: command 0x%x send/receive failed: 0x%x\n",
-			tpm_command_code(request), result);
-		return result;
+			tpm_command_code(request), rc);
+		return rc;
 	}
 	/* Otherwise, use the result code from the response */
-	result = tpm_return_code(response);
+	rc = tpm_return_code(response);
 
 	/* TODO: add paranoia about returned response_length vs. max_length
 	 * (and possibly expected length from the response header).  See
 	 * crosbug.com/17017 */
 
 	VBDEBUG("TPM: command 0x%x returned 0x%x\n",
-		tpm_command_code(request), result);
+		tpm_command_code(request), rc);
 
-return result;
+return rc;
 }
 
 /* Sends a TPM command and gets a response.  Returns 0 if success or the TPM
@@ -104,17 +104,17 @@ return result;
 uint32_t tlcl_send_receive(const uint8_t *request, uint8_t *response,
 			   int max_length)
 {
-	uint32_t result = tlcl_send_receive_no_retry(request, response,
+	uint32_t rc = tlcl_send_receive_no_retry(request, response,
 						     max_length);
 	/* If the command fails because the self test has not completed, try it
 	 * again after attempting to ensure that the self test has completed. */
-	if (result == TPM_E_NEEDS_SELFTEST || result == TPM_E_DOING_SELFTEST) {
-		result = tlcl_continue_self_test();
-		if (result != TPM_SUCCESS)
-			return result;
+	if (rc == TPM_E_NEEDS_SELFTEST || rc == TPM_E_DOING_SELFTEST) {
+		rc = tlcl_continue_self_test();
+		if (rc != TPM_SUCCESS)
+			return rc;
 #if defined(TPM_BLOCKING_CONTINUESELFTEST) || defined(VB_RECOVERY_MODE)
 		/* Retry only once */
-		result = tlcl_send_receive_no_retry(request, response,
+		rc = tlcl_send_receive_no_retry(request, response,
 						    max_length);
 #else
 		/* This needs serious testing. The TPM specification says: "iii.
@@ -123,12 +123,12 @@ uint32_t tlcl_send_receive(const uint8_t *request, uint8_t *response,
 		 * ContinueSelfTest is non-blocking, how do we know that the
 		 * actions have completed other than trying again? */
 		do {
-			result = tlcl_send_receive_no_retry(request, response,
+			rc = tlcl_send_receive_no_retry(request, response,
 							    max_length);
-		} while (result == TPM_E_DOING_SELFTEST);
+		} while (rc == TPM_E_DOING_SELFTEST);
 #endif
 	}
-	return result;
+	return rc;
 }
 
 /* Sends a command and returns the error code. */
@@ -226,15 +226,15 @@ uint32_t tlcl_read(uint32_t index, void *data, uint32_t length)
 	struct s_tpm_nv_read_cmd cmd;
 	uint8_t response[TPM_LARGE_ENOUGH_COMMAND_SIZE];
 	uint32_t result_length;
-	uint32_t result;
+	uint32_t rc;
 
 	VBDEBUG("TPM: %s(0x%x, %d)\n", __func__, index, length);
 	memcpy(&cmd, &tpm_nv_read_cmd, sizeof(cmd));
 	to_tpm_uint32(cmd.buffer + tpm_nv_read_cmd.index, index);
 	to_tpm_uint32(cmd.buffer + tpm_nv_read_cmd.length, length);
 
-	result = tlcl_send_receive(cmd.buffer, response, sizeof(response));
-	if (result == TPM_SUCCESS && length > 0) {
+	rc = tlcl_send_receive(cmd.buffer, response, sizeof(response));
+	if (rc == TPM_SUCCESS && length > 0) {
 		uint8_t *nv_read_cursor = response + kTpmResponseHeaderLength;
 		from_tpm_uint32(nv_read_cursor, &result_length);
 		if (result_length > length)
@@ -243,7 +243,7 @@ uint32_t tlcl_read(uint32_t index, void *data, uint32_t length)
 		memcpy(data, nv_read_cursor, result_length);
 	}
 
-	return result;
+	return rc;
 }
 
 uint32_t tlcl_assert_physical_presence(void)
@@ -295,24 +295,24 @@ uint32_t tlcl_get_permanent_flags(TPM_PERMANENT_FLAGS *pflags)
 {
 	uint8_t response[TPM_LARGE_ENOUGH_COMMAND_SIZE];
 	uint32_t size;
-	uint32_t result = tlcl_send_receive(tpm_getflags_cmd.buffer, response,
+	uint32_t rc = tlcl_send_receive(tpm_getflags_cmd.buffer, response,
 					    sizeof(response));
-	if (result != TPM_SUCCESS)
-		return result;
+	if (rc != TPM_SUCCESS)
+		return rc;
 	from_tpm_uint32(response + kTpmResponseHeaderLength, &size);
 	if (size != sizeof(TPM_PERMANENT_FLAGS))
 		return TPM_E_IOERROR;
 	memcpy(pflags, response + kTpmResponseHeaderLength + sizeof(size),
 	       sizeof(TPM_PERMANENT_FLAGS));
-	return result;
+	return rc;
 }
 
 uint32_t tlcl_get_flags(uint8_t *disable, uint8_t *deactivated,
 			uint8_t *nvlocked)
 {
 	TPM_PERMANENT_FLAGS pflags;
-	uint32_t result = tlcl_get_permanent_flags(&pflags);
-	if (result == TPM_SUCCESS) {
+	uint32_t rc = tlcl_get_permanent_flags(&pflags);
+	if (rc == TPM_SUCCESS) {
 		if (disable)
 			*disable = pflags.disable;
 		if (deactivated)
@@ -322,7 +322,7 @@ uint32_t tlcl_get_flags(uint8_t *disable, uint8_t *deactivated,
 		VBDEBUG("TPM: flags disable=%d, deactivated=%d, nvlocked=%d\n",
 			pflags.disable, pflags.deactivated, pflags.nvLocked);
 	}
-	return result;
+	return rc;
 }
 
 uint32_t tlcl_set_global_lock(void)
@@ -352,16 +352,16 @@ uint32_t tlcl_get_permissions(uint32_t index, uint32_t *permissions)
 	struct s_tpm_getpermissions_cmd cmd;
 	uint8_t response[TPM_LARGE_ENOUGH_COMMAND_SIZE];
 	uint8_t *nvdata;
-	uint32_t result;
+	uint32_t rc;
 	uint32_t size;
 
 	memcpy(&cmd, &tpm_getpermissions_cmd, sizeof(cmd));
 	to_tpm_uint32(cmd.buffer + tpm_getpermissions_cmd.index, index);
-	result = tlcl_send_receive(cmd.buffer, response, sizeof(response));
-	if (result != TPM_SUCCESS)
-		return result;
+	rc = tlcl_send_receive(cmd.buffer, response, sizeof(response));
+	if (rc != TPM_SUCCESS)
+		return rc;
 
 	nvdata = response + kTpmResponseHeaderLength + sizeof(size);
 	from_tpm_uint32(nvdata + kNvDataPublicPermissionsOffset, permissions);
-	return result;
+	return rc;
 }

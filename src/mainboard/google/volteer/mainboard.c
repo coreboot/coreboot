@@ -82,7 +82,7 @@ static void mainboard_enable(struct device *dev)
 
 void mainboard_update_soc_chip_config(struct soc_intel_tigerlake_config *cfg)
 {
-	int ret;
+	int rc;
 	if (!CONFIG(TPM_GOOGLE_CR50) || !CONFIG(SPI_TPM)) {
 		/*
 		 * Negotiation of long interrupt pulses is only supported via SPI.  I2C is only
@@ -93,9 +93,9 @@ void mainboard_update_soc_chip_config(struct soc_intel_tigerlake_config *cfg)
 		return;
 	}
 
-	ret = tlcl_lib_init();
-	if (ret != VB2_SUCCESS) {
-		printk(BIOS_ERR, "tlcl_lib_init() failed: 0x%x\n", ret);
+	rc = tlcl_lib_init();
+	if (rc != VB2_SUCCESS) {
+		printk(BIOS_ERR, "tlcl_lib_init() failed: 0x%x\n", rc);
 		return;
 	}
 

@@ -10,13 +10,13 @@
 
 uint32_t vboot_setup_tpm(struct vb2_context *ctx)
 {
-	uint32_t result;
+	uint32_t rc;
 
-	result = tpm_setup(ctx->flags & VB2_CONTEXT_S3_RESUME);
-	if (result == TPM_E_MUST_REBOOT)
+	rc = tpm_setup(ctx->flags & VB2_CONTEXT_S3_RESUME);
+	if (rc == TPM_E_MUST_REBOOT)
 		ctx->flags |= VB2_CONTEXT_SECDATA_WANTS_REBOOT;
 
-	return result;
+	return rc;
 }
 
 vb2_error_t vboot_extend_pcr(struct vb2_context *ctx, int pcr,

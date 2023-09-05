@@ -127,7 +127,7 @@ static vb2_error_t hash_body(struct vb2_context *ctx,
 	const size_t hash_digest_sz = sizeof(hash_digest);
 	size_t block_size = sizeof(block);
 	size_t offset;
-	vb2_error_t rv;
+	vb2_error_t rc;
 
 	/* Clear the full digest so that any hash digests less than the
 	 * max have trailing zeros. */
@@ -146,9 +146,9 @@ static vb2_error_t hash_body(struct vb2_context *ctx,
 	offset = 0;
 
 	/* Start the body hash */
-	rv = vb2api_init_hash(ctx, VB2_HASH_TAG_FW_BODY);
-	if (rv)
-		return rv;
+	rc = vb2api_init_hash(ctx, VB2_HASH_TAG_FW_BODY);
+	if (rc)
+		return rc;
 
 	/* Extend over the body */
 	while (remaining) {
@@ -161,9 +161,9 @@ static vb2_error_t hash_body(struct vb2_context *ctx,
 			return VB2_ERROR_UNKNOWN;
 		load_ts += timestamp_get() - temp_ts;
 
-		rv = vb2api_extend_hash(ctx, block, block_size);
-		if (rv)
-			return rv;
+		rc = vb2api_extend_hash(ctx, block, block_size);
+		if (rc)
+			return rc;
 
 		remaining -= block_size;
 		offset += block_size;
@@ -173,9 +173,9 @@ static vb2_error_t hash_body(struct vb2_context *ctx,
 	timestamp_add_now(TS_HASHING_END);
 
 	/* Check the result (with RSA signature verification) */
-	rv = vb2api_check_hash_get_digest(ctx, hash_digest, hash_digest_sz);
-	if (rv)
-		return rv;
+	rc = vb2api_check_hash_get_digest(ctx, hash_digest, hash_digest_sz);
+	if (rc)
+		return rc;
 
 	timestamp_add_now(TS_HASH_BODY_END);
 
@@ -210,10 +210,10 @@ static const char *get_boot_mode_string(uint8_t boot_mode)
 static void check_boot_mode(struct vb2_context *ctx)
 {
 	uint8_t boot_mode;
-	int rv;
+	int rc;
 
-	rv = tlcl_cr50_get_boot_mode(&boot_mode);
-	switch (rv) {
+	rc = tlcl_cr50_get_boot_mode(&boot_mode);
+	switch (rc) {
 	case TPM_E_NO_SUCH_COMMAND:
 		printk(BIOS_WARNING, "GSC does not support GET_BOOT_MODE.\n");
 		/* Proceed to legacy boot model. */
@@ -223,7 +223,7 @@ static void check_boot_mode(struct vb2_context *ctx)
 	default:
 		printk(BIOS_ERR,
 		       "Communication error in getting GSC boot mode.\n");
-		vb2api_fail(ctx, VB2_RECOVERY_GSC_BOOT_MODE, rv);
+		vb2api_fail(ctx, VB2_RECOVERY_GSC_BOOT_MODE, rc);
 		return;
 	}
 

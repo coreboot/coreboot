@@ -7,7 +7,7 @@
 
 static void disable_platform_hierarchy(void *unused)
 {
-	int ret;
+	int rc;
 
 	if (!CONFIG(TPM2))
 		return;
@@ -15,17 +15,17 @@ static void disable_platform_hierarchy(void *unused)
 	if (!CONFIG(RESUME_PATH_SAME_AS_BOOT))
 		return;
 
-	ret = tlcl_lib_init();
+	rc = tlcl_lib_init();
 
-	if (ret != VB2_SUCCESS) {
-		printk(BIOS_ERR, "tlcl_lib_init() failed: %x\n", ret);
+	if (rc != VB2_SUCCESS) {
+		printk(BIOS_ERR, "tlcl_lib_init() failed: %x\n", rc);
 		return;
 	}
 
-	ret = tlcl_disable_platform_hierarchy();
-	if (ret != TPM_SUCCESS)
+	rc = tlcl_disable_platform_hierarchy();
+	if (rc != TPM_SUCCESS)
 		printk(BIOS_ERR, "Platform hierarchy disablement failed: %x\n",
-			ret);
+			rc);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, disable_platform_hierarchy,

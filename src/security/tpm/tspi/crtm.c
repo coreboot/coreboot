@@ -192,11 +192,11 @@ int tspi_measure_cache_to_pcr(void)
 	i = 0;
 	while (!tpm_log_get(i++, &pcr, &digest_data, &digest_algo, &event_name)) {
 		printk(BIOS_DEBUG, "TPM: Write digest for %s into PCR %d\n", event_name, pcr);
-		int result = tlcl_extend(pcr, digest_data, digest_algo);
-		if (result != TPM_SUCCESS) {
+		int rc = tlcl_extend(pcr, digest_data, digest_algo);
+		if (rc != TPM_SUCCESS) {
 			printk(BIOS_ERR,
 			       "TPM: Writing digest of %s into PCR failed with error %d\n",
-				event_name, result);
+				event_name, rc);
 			return VB2_ERROR_UNKNOWN;
 		}
 	}

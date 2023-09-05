@@ -25,27 +25,27 @@ void __weak mainboard_prepare_cr50_reset(void) {}
  */
 static int cr50_is_reset_needed(void)
 {
-	int ret;
+	int rc;
 	uint8_t tpm_mode;
 
-	ret = tlcl_cr50_get_tpm_mode(&tpm_mode);
+	rc = tlcl_cr50_get_tpm_mode(&tpm_mode);
 
-	if (ret == TPM_E_NO_SUCH_COMMAND) {
+	if (rc == TPM_E_NO_SUCH_COMMAND) {
 		printk(BIOS_INFO,
 		       "Cr50 does not support TPM mode command\n");
 		/* Older Cr50 firmware, assume no Cr50 reset is required */
 		return 0;
 	}
 
-	if (ret == TPM_E_MUST_REBOOT) {
+	if (rc == TPM_E_MUST_REBOOT) {
 		/*
 		 * Cr50 indicated a reboot is required to restore TPM
 		 * functionality.
 		 */
 		return 1;
-	} else if (ret != TPM_SUCCESS)	{
+	} else if (rc != TPM_SUCCESS)	{
 		/* TPM command failed, continue booting. */
-		printk(BIOS_ERR, "Attempt to get CR50 TPM mode failed: %x\n", ret);
+		printk(BIOS_ERR, "Attempt to get CR50 TPM mode failed: %x\n", rc);
 		return 0;
 	}
 
@@ -70,7 +70,7 @@ static int cr50_is_reset_needed(void)
 
 static void enable_update(void *unused)
 {
-	int ret;
+	int rc;
 	int cr50_reset_reqd = 0;
 	uint8_t num_restored_headers;
 
@@ -82,23 +82,23 @@ static void enable_update(void *unused)
 	if (vboot_get_context()->flags & VB2_CONTEXT_FORCE_RECOVERY_MODE)
 		return;
 
-	ret = tlcl_lib_init();
+	rc = tlcl_lib_init();
 
-	if (ret != VB2_SUCCESS) {
+	if (rc != VB2_SUCCESS) {
 		printk(BIOS_ERR, "tlcl_lib_init() failed for CR50 update: %x\n",
-		       ret);
+		       rc);
 		return;
 	}
 
 	timestamp_add_now(TS_TPM_ENABLE_UPDATE_START);
 
 	/* Reboot in 1000 ms if necessary. */
-	ret = tlcl_cr50_enable_update(CR50_RESET_DELAY_MS,
+	rc = tlcl_cr50_enable_update(CR50_RESET_DELAY_MS,
 				      &num_restored_headers);
 
-	if (ret != TPM_SUCCESS) {
+	if (rc != TPM_SUCCESS) {
 		printk(BIOS_ERR, "Attempt to enable CR50 update failed: %x\n",
-		       ret);
+		       rc);
 		return;
 	}
 
@@ -142,16 +142,16 @@ static void enable_update(void *unused)
 	 * the mainboard specific code runs.
 	 */
 	if (cr50_reset_reqd) {
-		ret = tlcl_cr50_immediate_reset(CR50_RESET_DELAY_MS);
+		rc = tlcl_cr50_immediate_reset(CR50_RESET_DELAY_MS);
 
-		if (ret != TPM_SUCCESS) {
+		if (rc != TPM_SUCCESS) {
 			/*
 			 * Reset request failed due to TPM error, continue
 			 * booting but the current boot will likely end up at
 			 * the recovery screen.
 			 */
 			printk(BIOS_ERR, "Attempt to reset CR50 failed: %x\n",
-			       ret);
+			       rc);
 			return;
 		}
 	}

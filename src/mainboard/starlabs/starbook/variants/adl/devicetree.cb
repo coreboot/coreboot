@@ -87,7 +87,6 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref shared_sram	on  end
-		device ref heci1	on  end
 		device ref sata		on
 			register "sata_salp_support"		= "1"
 			register "sata_ports_enable[1]"		= "1"
@@ -166,7 +165,6 @@ chip soc/intel/alderlake
 				device pnp 4e.19 off end			# Power Management Channel 5
 			end
 		end
-		device ref p2sb		on  end
 		device ref hda		on
 			register "pch_hda_audio_link_hda_enable"	= "1"
 			register "pch_hda_idisp_codec_enable"		= "1"

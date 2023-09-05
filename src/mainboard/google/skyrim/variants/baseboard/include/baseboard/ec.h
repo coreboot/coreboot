@@ -69,7 +69,12 @@
 #define SIO_EC_MEMMAP_ENABLE /* EC Memory Map Resources */
 #define SIO_EC_HOST_ENABLE   /* EC Host Interface Resources */
 #define SIO_EC_ENABLE_PS2K   /* Enable PS/2 Keyboard */
-#define SIO_EC_PS2K_IRQ Interrupt(ResourceConsumer, Level, ActiveLow, Shared) {1}
+/*
+ * This interrupt should technically be level, since that is the contract between the EC
+ * and the AP, but under Windows it produces an IRQ storm so Edge needs to be used instead.
+ * Both Windows and Linux are happy with Edge, so we'll use it for now.
+ */
+#define SIO_EC_PS2K_IRQ Interrupt(ResourceConsumer, Edge, ActiveLow, Shared) {1}
 
 /* Enable EC sync interrupt */
 #define EC_ENABLE_SYNC_IRQ_GPIO

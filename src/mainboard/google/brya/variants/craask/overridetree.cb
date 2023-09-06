@@ -14,7 +14,7 @@ fw_config
 		option STYLUS_PRESENT		1
 	end
 	field SD_CARD 5
-		option SD_GL9750S		0
+		option SD_PRESENT		0
 		option SD_ABSENT		1
 	end
 	field AMP 6 7
@@ -598,7 +598,7 @@ chip soc/intel/alderlake
 				register "srcclk_pin" = "3"
 				device generic 0 on end
 			end
-			probe SD_CARD SD_GL9750S
+			probe SD_CARD SD_PRESENT
 		end
 		device ref pcie_rp9 on
 			# Enable NVMe SSD PCIe 9-12 using clk_src1 and clk_req2 mapping to hardware

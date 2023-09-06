@@ -85,7 +85,7 @@ static int crb_wait_for_reg32(const void *addr, uint32_t timeoutMs, uint32_t mas
 
 		if (stopwatch_expired(&sw)) {
 			printk(BIOS_ERR,
-			       "CRB_WAIT: Error - Returning Zero with RegValue: %08x, Mask: %08x, Expected: %08x\n",
+			       "CRB_WAIT: Error - Timed out with RegValue: %08x, Mask: %08x, Expected: %08x\n",
 			       regValue, mask, expectedValue);
 			return -1;
 		}

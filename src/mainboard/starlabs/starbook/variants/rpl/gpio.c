@@ -108,8 +108,8 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B9, NONE),
 	/* B10:		Not Connected					*/
 	PAD_NC(GPP_B10, NONE),
-	/* B11:		I2C PMC PD Interrupt	Test Point 28		*/
-	PAD_NC(GPP_B11, NONE),
+	/* B11:		I2C PMC PD Interrupt				*/
+	PAD_CFG_NF(GPP_B11, NONE, DEEP, NF1),
 	/* B12:		PM SLP S0					*/
 	PAD_CFG_NF(GPP_B12, NONE, DEEP, NF1),
 	/* B13:		PLT RST						*/

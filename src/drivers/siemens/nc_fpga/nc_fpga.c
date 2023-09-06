@@ -31,7 +31,7 @@ static void init_temp_mon (void *base_adr)
 	if ((hwilib_get_field(FANSensorNum, &num, 1) != 1) ||
 	    (num == 0) || (num > MAX_NUM_SENSORS))
 		return;
-	for (i = 0; i < num; i ++) {
+	for (i = 0; i < num; i++) {
 		if (hwilib_get_field(FANSensorCfg0 + i, (uint8_t *)&cc[0],
 		    sizeof(cc)) == sizeof(cc)) {
 			ctrl->sensorcfg[cc[0]].rmin = cc[1] & 0xffff;

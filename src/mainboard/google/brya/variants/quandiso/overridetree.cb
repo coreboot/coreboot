@@ -30,6 +30,10 @@ fw_config
 		option INTEL_QUANDISO360_WIFI	3
 		option UNUSED			15
 	end
+	field AUDIO_AMP 20 21
+		option MAX98360A		0
+		option ALC1019			1
+	end
 end
 
 chip soc/intel/alderlake
@@ -346,6 +350,13 @@ chip soc/intel/alderlake
 				register "property_list[0].integer" = "1"
 				device i2c 1a on end
 			end
+			chip drivers/generic/alc1015
+				register "hid" = ""RTL1019""
+				register "sdb" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A11)"
+				device generic 0 on
+					probe AUDIO_AMP ALC1019
+				end
+			end
 		end
 		device ref i2c5 on
 			chip drivers/i2c/generic
@@ -372,7 +383,9 @@ chip soc/intel/alderlake
 				register "hid" = ""MX98360A""
 				register "sdmode_gpio" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A11)"
 				register "sdmode_delay" = "5"
-				device generic 0 on end
+				device generic 0 on
+					probe AUDIO_AMP MAX98360A
+				end
 			end
 		end
 		device ref pcie_rp4 on

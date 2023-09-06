@@ -278,9 +278,6 @@
 #define ENV_CACHE_AS_RAM		0
 #endif
 
-/* Indicates .data section support. */
-#define ENV_HAS_DATA_SECTION		1
-
 /* Indicates if the stage uses the _data and _bss regions defined in
  * arch/x86/car.ld */
 #define ENV_SEPARATE_DATA_AND_BSS	(ENV_CACHE_AS_RAM && (ENV_BOOTBLOCK || !CONFIG(NO_XIP_EARLY_STAGES)))

@@ -34,12 +34,6 @@ typedef __WINT_TYPE__ wint_t;
 #define DEVTREE_CONST
 #endif
 
-#if ENV_HAS_DATA_SECTION
-#define MAYBE_STATIC_NONZERO static
-#else
-#define MAYBE_STATIC_NONZERO
-#endif
-
 /* Provide a pointer to address 0 that thwarts any "accessing this is
  * undefined behaviour and do whatever" trickery in compilers.
  * Use when you _really_ need to read32(zeroptr) (ie. read address 0).

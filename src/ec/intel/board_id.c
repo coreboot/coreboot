@@ -19,7 +19,7 @@ static uint32_t get_board_id_via_ext_ec(void)
 /* Get Board ID via EC I/O port write/read */
 int get_rvp_board_id(void)
 {
-	MAYBE_STATIC_NONZERO int id = BOARD_ID_UNKNOWN;
+	static int id = BOARD_ID_UNKNOWN;
 
 	if (CONFIG(EC_GOOGLE_CHROMEEC)) { /* CHROME_EC */
 		id = get_board_id_via_ext_ec();

@@ -5,7 +5,7 @@
 
 uint32_t board_id(void)
 {
-	MAYBE_STATIC_NONZERO uint32_t id = BOARD_ID_INIT;
+	static uint32_t id = BOARD_ID_INIT;
 
 	if (id == BOARD_ID_INIT) {
 		uint8_t ec_id;

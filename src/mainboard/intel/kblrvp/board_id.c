@@ -9,7 +9,7 @@
  */
 int get_ec_boardinfo(void)
 {
-	MAYBE_STATIC_NONZERO int ec_info = -1;
+	static int ec_info = -1;
 	if (ec_info < 0) {
 		uint8_t buffer[2];
 		uint8_t index;

@@ -19,7 +19,7 @@ static uint32_t get_board_id_via_ext_ec(void)
 /* Get Board ID via EC I/O port write/read */
 int get_board_id(void)
 {
-	MAYBE_STATIC_NONZERO int id = -1;
+	static int id = -1;
 
 	if (id < 0) {
 		if (CONFIG(EC_GOOGLE_CHROMEEC)) {

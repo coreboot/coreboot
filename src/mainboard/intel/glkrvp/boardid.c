@@ -12,7 +12,7 @@
 
 uint32_t board_id(void)
 {
-	MAYBE_STATIC_NONZERO int id = -1;
+	static int id = -1;
 	if (id < 0) {
 		if (CONFIG(EC_GOOGLE_CHROMEEC))
 			id = variant_board_id();

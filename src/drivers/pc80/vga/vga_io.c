@@ -90,7 +90,7 @@ unsigned char
 vga_sr_read(unsigned char index)
 {
 	outb(index, VGA_SR_INDEX);
-	return (inb(VGA_SR_VALUE));
+	return inb(VGA_SR_VALUE);
 }
 
 void
@@ -118,7 +118,7 @@ unsigned char
 vga_cr_read(unsigned char index)
 {
 	outb(index, VGA_CR_INDEX);
-	return (inb(VGA_CR_VALUE));
+	return inb(VGA_CR_VALUE);
 }
 
 void
@@ -182,7 +182,7 @@ unsigned char
 vga_gr_read(unsigned char index)
 {
 	outb(index, VGA_GR_INDEX);
-	return (inb(VGA_GR_VALUE));
+	return inb(VGA_GR_VALUE);
 }
 
 void

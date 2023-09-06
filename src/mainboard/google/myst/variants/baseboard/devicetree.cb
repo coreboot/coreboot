@@ -364,7 +364,7 @@ chip soc/amd/phoenix
 	device ref uart_0 on end # UART0
 	device ref i2c_0 on end
 	device ref i2c_1 on end
-	device ref i2c_2 on
+	device ref i2c_2 hidden
 		chip drivers/i2c/tpm
 			register "hid" = ""GOOG0005""
 			register "desc" = ""Ti50 TPM""

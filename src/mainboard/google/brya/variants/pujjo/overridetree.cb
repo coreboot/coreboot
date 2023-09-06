@@ -45,6 +45,10 @@ fw_config
 		option LTE_EM060_ABSENT		0
 		option LTE_EM060_PRESENT	1
 	end
+	field PANEL_IVO_BOE 21
+		option IVO_BOE_ABSENT		0
+		option IVO_BOE_PRESENT		1
+	end
 
 end
 

@@ -3,6 +3,8 @@
 #include <fw_config.h>
 #include <baseboard/variants.h>
 #include <baseboard/gpio.h>
+#include <console/console.h>
+#include <drivers/intel/gma/opregion.h>
 #include <sar.h>
 #include <delay.h>
 
@@ -67,4 +69,14 @@ void variant_init(void)
 		mdelay(FM350_PERST_DEALY_MS);
 		gpio_configure_pads(fm350_perst_pad, ARRAY_SIZE(fm350_perst_pad));
 	}
+}
+
+const char *mainboard_vbt_filename(void)
+{
+	if (fw_config_probe(FW_CONFIG(PANEL_IVO_BOE, IVO_BOE_PRESENT))) {
+		printk(BIOS_INFO, "Use vbt-pujjo1e.bin\n");
+		return "vbt-pujjo1e.bin";
+	}
+	printk(BIOS_INFO, "Use vbt.bin\n");
+	return "vbt.bin";
 }

@@ -38,7 +38,6 @@
 #define STM_SM_MONITOR_STATE_ENABLED 1
 
 typedef struct {
-
 	uint64_t vmcs_revision_id : 31;
 	uint64_t always_zero : 1;
 	uint64_t vmcs_size : 13;
@@ -482,7 +481,6 @@ int add_pi_resource(STM_RSC *resource_list, uint32_t num_entries)
 		return -1; // INVALID_PARAMETER;
 
 	if (!m_stm_resources_ptr) {
-
 		// Copy EndResource for initialization
 		m_stm_resources_ptr = stm_resource_heap;
 		m_stm_resource_total_size = CONFIG_BIOS_RESOURCE_LIST_SIZE;
@@ -648,7 +646,6 @@ bool stm_check_stm_image(void *stm_image, uint32_t stm_imagesize)
 
 	if (stm_header->hw_stm_hdr.cr3_offset
 	    >= stm_header->sw_stm_hdr.static_image_size) {
-
 		// We will create page table, just in case that SINIT does not
 		// create it.
 		if (min_mseg_size < stm_header->hw_stm_hdr.cr3_offset

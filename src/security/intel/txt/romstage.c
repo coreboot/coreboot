@@ -69,13 +69,11 @@ void intel_txt_romstage_init(void)
 	const bool is_wake_error = !!(txt_ests & TXT_ESTS_WAKE_ERROR_STS);
 
 	if (CONFIG(INTEL_TXT_LOGGING)) {
-
 		printk(BIOS_INFO, "TEE-TXT: TPM established: %s\n",
 		       establishment ? "true" : "false");
 	}
 
 	if (establishment && is_wake_error) {
-
 		printk(BIOS_ERR, "TEE-TXT: Secrets remain in memory. SCLEAN is required.\n");
 
 		if (txt_ests & TXT_ESTS_TXT_RESET_STS) {

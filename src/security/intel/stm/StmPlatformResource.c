@@ -152,7 +152,6 @@ static void add_msr_resources(void)
 	uint32_t Index;
 
 	for (Index = 0; Index < ARRAY_SIZE(msr_table); Index++) {
-
 		rsc_msr_tpl.msr_index = (uint32_t)msr_table[Index].msr_index;
 		rsc_msr_tpl.read_mask = (uint64_t)msr_table[Index].read_mask;
 		rsc_msr_tpl.write_mask = (uint64_t)msr_table[Index].write_mask;
@@ -172,7 +171,6 @@ extern uint8_t *m_stm_resources_ptr;
 
 void add_resources_cmd(void)
 {
-
 	m_stm_resources_ptr = NULL;
 
 	add_simple_resources();

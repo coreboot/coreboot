@@ -162,7 +162,6 @@ void stm_setup(uintptr_t mseg, int cpu, uintptr_t smbase,
 	stm_resource_heap = (uint8_t *)addr_calc;
 
 	if (cpu == 0) {
-
 		// need to create the BIOS resource list once
 		printk(BIOS_DEBUG, "STM: stm_resource_heap located at %p\n",
 				stm_resource_heap);

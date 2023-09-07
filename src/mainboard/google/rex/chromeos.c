@@ -9,7 +9,12 @@
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	struct lb_gpio chromeos_gpios[] = {
+#if CONFIG(VBOOT_LID_SWITCH)
 		{-1, ACTIVE_HIGH, get_lid_switch(), "lid"},
+#else
+		/* fake LID open to avoid shutdown in depthcharge */
+		{-1, ACTIVE_HIGH, 1, "lid"},
+#endif
 		{-1, ACTIVE_HIGH, 0, "power"},
 		{-1, ACTIVE_HIGH, gfx_get_init_done(), "oprom"},
 		{-1, ACTIVE_HIGH, 0, "EC in RW"},

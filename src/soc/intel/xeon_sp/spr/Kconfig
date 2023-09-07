@@ -145,7 +145,7 @@ config DIMM_SPD_SIZE
 
 config MAX_ACPI_TABLE_SIZE_KB
 	int
-	default 400 if MAX_SOCKET = 4
+	default 512 if MAX_SOCKET = 4
 	default 224
 
 config FIXED_SMBUS_IO_BASE

@@ -103,7 +103,7 @@ static void mainboard_fill_ssdt(const struct device *dev)
 {
 	const struct device *wwan = DEV_PTR(rp6_wwan);
 
-	if (wwan) {
+	if (is_dev_enabled(wwan)) {
 		acpigen_write_scope("\\_SB");
 		acpigen_write_method_serialized("MPTS", 1);
 		mainboard_generate_wwan_shutdown(wwan);

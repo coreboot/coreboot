@@ -59,7 +59,7 @@ void variant_devtree_update(void)
 			cfg->emmc_config.timing = SD_EMMC_EMMC_HS200;
 		}
 	} else {
-		cfg->emmc_config.timing = SD_EMMC_DISABLE;
+		DEV_PTR(emmc)->enabled = 0;
 	}
 
 	update_audio_configuration();

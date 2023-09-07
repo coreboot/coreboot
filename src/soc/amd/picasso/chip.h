@@ -177,6 +177,9 @@ struct soc_amd_picasso_config {
 		 *  HS400 -> NONE (0x05)
 		 *
 		 * The kernel driver uses a heuristic to determine if HS400 is supported.
+		 *
+		 * If the eMMC MMIO device is disabled in the devicetree,
+		 * fsps_update_emmc_config will set timing to SD_EMMC_DISABLE.
 		*/
 		enum {
 			SD_EMMC_DISABLE,

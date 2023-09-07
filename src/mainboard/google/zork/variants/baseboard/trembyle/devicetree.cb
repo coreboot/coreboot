@@ -436,4 +436,6 @@ chip soc/amd/picasso
 
 	device ref uart_0 on end # console
 
+	device ref emmc on end
+
 end	# chip soc/amd/picasso

@@ -49,8 +49,11 @@ int cpu_phys_address_size(void)
 	if (!(cpu_have_cpuid()))
 		return 32;
 
-	if (cpu_cpuid_extended_level() >= 0x80000008)
-		return cpuid_eax(0x80000008) & 0xff;
+	if (cpu_cpuid_extended_level() >= 0x80000008) {
+		int size = cpuid_eax(0x80000008) & 0xff;
+		size -= get_reserved_phys_addr_bits();
+		return size;
+	}
 
 	if (cpuid_edx(1) & (CPUID_FEATURE_PAE | CPUID_FEATURE_PSE36))
 		return 36;

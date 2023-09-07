@@ -33,4 +33,7 @@
 
 #define MSR_PKG_C10_RESIDENCY	0x632
 
+#define MSR_TME_ACTIVATE			0x982
+#define  TME_ACTIVATE_HI_KEYID_BITS_MASK	0xf
+
 #endif /* CPU_INTEL_MSR_H */

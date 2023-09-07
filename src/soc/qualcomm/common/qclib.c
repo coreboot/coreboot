@@ -115,8 +115,11 @@ static void write_qclib_log_to_cbmemc(struct qclib_cb_if_table_entry *te)
 	int i;
 	char *ptr = (char *)te->blob_address;
 
-	for (i = 0; i < te->size; i++)
-		__cbmemc_tx_byte(*ptr++);
+	for (i = 0; i < te->size; i++) {
+		char c = *ptr++;
+		if (c != '\r')
+			__cbmemc_tx_byte(c);
+	}
 }
 
 static void write_table_entry(struct qclib_cb_if_table_entry *te)

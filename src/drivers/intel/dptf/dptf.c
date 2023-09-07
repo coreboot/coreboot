@@ -112,7 +112,7 @@ static void dptf_write_generic_participant(const char *name,
 	acpigen_write_STA(sta_val);
 
 	if (str)
-		acpigen_write_name_string("_STR", str);
+		acpigen_write_name_unicode("_STR", str);
 
 	acpigen_write_name_integer("PTYP", ptype);
 
@@ -143,7 +143,7 @@ static void write_fan(const struct drivers_intel_dptf_config *config,
 	acpigen_write_name("_HID");
 	dptf_write_hid(platform_info->use_eisa_hids, platform_info->fan_hid);
 	acpigen_write_name_integer("_UID", fan_uid++);
-	acpigen_write_name_string("_STR", DEFAULT_FAN_STR);
+	acpigen_write_name_unicode("_STR", DEFAULT_FAN_STR);
 	acpigen_write_name_integer("PTYP", DPTF_GENERIC_PARTICIPANT_TYPE_FAN);
 	acpigen_write_STA(get_STA_value(config, participant));
 	acpigen_pop_len(); /* Device */
@@ -329,7 +329,7 @@ static void write_create_tpch(const struct dptf_platform_info *platform_info)
 	acpigen_write_device("TPCH");
 	acpigen_write_name("_HID");
 	dptf_write_hid(platform_info->use_eisa_hids, platform_info->tpch_device_hid);
-	acpigen_write_name_string("_STR", DEFAULT_TPCH_STR);
+	acpigen_write_name_unicode("_STR", DEFAULT_TPCH_STR);
 	acpigen_write_name_integer("PTYP", DPTF_GENERIC_PARTICIPANT_TYPE_TPCH);
 	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
 }
@@ -402,7 +402,7 @@ static void write_create_tpwr(const struct drivers_intel_dptf_config *config,
 	if (platform_info->tpwr_device_hid != NULL)
 		dptf_write_hid(platform_info->use_eisa_hids, platform_info->tpwr_device_hid);
 	acpigen_write_name_string("_UID", "TPWR");
-	acpigen_write_name_string("_STR", DEFAULT_POWER_STR);
+	acpigen_write_name_unicode("_STR", DEFAULT_POWER_STR);
 	acpigen_write_name_integer("PTYP", DPTF_GENERIC_PARTICIPANT_TYPE_POWER);
 	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
 
@@ -429,7 +429,7 @@ static void write_create_tbat(const struct dptf_platform_info *platform_info)
 	if (platform_info->tbat_device_hid != NULL)
 		dptf_write_hid(platform_info->use_eisa_hids, platform_info->tbat_device_hid);
 	acpigen_write_name_string("_UID", "1");
-	acpigen_write_name_string("_STR", DEFAULT_BATTERY_STR);
+	acpigen_write_name_unicode("_STR", DEFAULT_BATTERY_STR);
 	acpigen_write_name_integer("PTYP", DPTF_GENERIC_PARTICIPANT_TYPE_BATTERY);
 	acpigen_write_STA(ACPI_STATUS_DEVICE_ALL_ON);
 	acpigen_write_device_end(); /* TBAT Battery Participant Device */

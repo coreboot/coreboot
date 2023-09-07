@@ -488,7 +488,7 @@ void dptf_write_STR(const char *str)
 	if (!str)
 		return;
 
-	acpigen_write_name_string("_STR", str);
+	acpigen_write_name_unicode("_STR", str);
 }
 
 void dptf_write_fan_options(bool fine_grained, int step_size, bool low_speed_notify)

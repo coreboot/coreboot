@@ -61,7 +61,7 @@ static void thermal_zone_fill_ssdt(const struct device *dev)
 	acpigen_write_thermal_zone(name);
 
 	if (config->description)
-		acpigen_write_name_string("_STR", config->description);
+		acpigen_write_name_unicode("_STR", config->description);
 
 	if (config->polling_period)
 		acpigen_write_name_integer(

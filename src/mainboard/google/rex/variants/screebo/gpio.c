@@ -107,8 +107,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_C04, NONE),
 	/* GPP_C05 : [] ==> WWAN_PERST_L_STRAP */
 	PAD_NC(GPP_C05, NONE),
-	/* GPP_C06 : [] ==> SOC_TCHSCR_RPT_EN */
-	PAD_CFG_GPO(GPP_C06, 0, DEEP),
+	/* GPP_C06 : net NC.  Test pad. */
+	PAD_NC(GPP_C06, NONE),
 	/* GPP_C07 : [] ==> SOC_TCHSCR_INT */
 	PAD_CFG_GPI_APIC(GPP_C07, NONE, PLTRST, LEVEL, NONE),
 	/* GPP_C08 : [] ==> SOCHOT_ODL */

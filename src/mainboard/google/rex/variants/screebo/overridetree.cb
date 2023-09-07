@@ -427,8 +427,6 @@ chip soc/intel/meteorlake
 				register "generic.reset_delay_ms" = "200"
 				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B17)"
 				register "generic.enable_delay_ms" = "12"
-				register "generic.stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C06)"
-				register "generic.stop_off_delay_ms" = "2"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 41 on
@@ -445,8 +443,6 @@ chip soc/intel/meteorlake
 				register "generic.reset_off_delay_ms" = "2"
 				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B17)"
 				register "generic.enable_delay_ms" = "1"
-				register "generic.stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C06)"
-				register "generic.stop_off_delay_ms" = "2"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 10 on

@@ -101,8 +101,10 @@ static unsigned long write_acpi_table(unsigned long rom_table_end)
 		rom_table_end = ALIGN_UP(rom_table_end, 16);
 		new_high_table_pointer = write_acpi_tables(high_table_pointer);
 		if (new_high_table_pointer > (high_table_pointer
-			+ max_acpi_size))
-			printk(BIOS_ERR, "Increase ACPI size\n");
+			+ max_acpi_size)) {
+			printk(BIOS_CRIT, "ACPI tables overflowed and corrupted CBMEM!\n");
+			printk(BIOS_ERR, "Increase config MAX_ACPI_TABLE_SIZE_KB!\n");
+		}
 		printk(BIOS_DEBUG, "ACPI tables: %ld bytes.\n",
 				new_high_table_pointer - high_table_pointer);
 

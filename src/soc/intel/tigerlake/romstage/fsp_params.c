@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <console/console.h>
+#include <cpu/intel/common/common.h>
 #include <cpu/intel/cpu_ids.h>
 #include <cpu/x86/msr.h>
 #include <device/device.h>

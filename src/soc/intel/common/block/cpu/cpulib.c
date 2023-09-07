@@ -19,7 +19,6 @@
 #define CPUID_HYBRID_INFORMATION		0x1a
 
 /* Structured Extended Feature Flags */
-#define CPUID_STRUCT_EXTENDED_FEATURE_FLAGS	0x7
 #define HYBRID_FEATURE				BIT(15)
 
 /*
@@ -483,15 +482,6 @@ void init_core_prmrr(void)
 
 	if (msr.lo & MTRR_CAP_PRMRR)
 		sync_core_prmrr();
-}
-
-bool is_tme_supported(void)
-{
-	struct cpuid_result cpuid_regs;
-
-	/* ECX[13] is feature capability */
-	cpuid_regs = cpuid_ext(CPUID_STRUCT_EXTENDED_FEATURE_FLAGS, 0x0);
-	return (cpuid_regs.ecx & TME_SUPPORTED);
 }
 
 void set_tme_core_activate(void)

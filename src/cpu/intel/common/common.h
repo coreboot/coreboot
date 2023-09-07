@@ -66,4 +66,12 @@ void set_energy_perf_pref(u8 pref);
  */
 void enable_energy_perf_pref(void);
 
+/*
+ * Check if Total Memory Encryption (TME) is supported by the CPU
+ *
+ * coreboot shall detect the existence of TME feature by running CPUID instruction:
+ * CPUID leaf 7/sub-leaf 0: Return Value in ECX [bit 13] = 1
+ */
+bool is_tme_supported(void);
+
 #endif

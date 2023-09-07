@@ -51,6 +51,9 @@ static inline unsigned int cpuid_get_max_func(void)
 #define CPUID_FEATURE_PSE36 (1 << 17)
 #define CPUID_FEAURE_HTT (1 << 28)
 
+/* Structured Extended Feature Flags */
+#define CPUID_STRUCT_EXTENDED_FEATURE_FLAGS 0x7
+
 // Intel leaf 0x4, AMD leaf 0x8000001d EAX
 
 #define CPUID_CACHE(x, res) \

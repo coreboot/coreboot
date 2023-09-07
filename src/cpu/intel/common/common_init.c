@@ -14,6 +14,9 @@
 #define  CPUID_6_ENGERY_PERF_PREF	(1 << 10)
 #define  CPUID_6_HWP			(1 << 7)
 
+/* Structured Extended Feature Flags */
+#define CPUID_EXT_FEATURE_TME_SUPPORTED (1 << 13)
+
 void set_vmx_and_lock(void)
 {
 	set_feature_ctrl_vmx();
@@ -226,4 +229,12 @@ void set_energy_perf_pref(u8 pref)
 {
 	msr_unset_and_set(IA32_HWP_REQUEST, IA32_HWP_REQUEST_EPP_MASK,
 		(uint64_t)pref << IA32_HWP_REQUEST_EPP_SHIFT);
+}
+
+bool is_tme_supported(void)
+{
+	struct cpuid_result cpuid_regs;
+
+	cpuid_regs = cpuid_ext(CPUID_STRUCT_EXTENDED_FEATURE_FLAGS, 0x0);
+	return (cpuid_regs.ecx & CPUID_EXT_FEATURE_TME_SUPPORTED);
 }

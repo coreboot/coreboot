@@ -191,14 +191,6 @@ void enable_pm_timer_emulation(void);
 void init_core_prmrr(void);
 
 /*
- * Check if TME is supported by the CPU
- *
- * coreboot shall detect the existence of TME feature by running CPUID instruction:
- * CPUID leaf 7/sub-leaf 0: Return Value in ECX [bit 13] = 1
- */
-bool is_tme_supported(void);
-
-/*
  * Set TME core activate MSR
  *
  * Write zero to TME core activate MSR will translate the TME_ACTIVATE[MK_TME_KEYID_BITS]

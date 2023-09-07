@@ -58,7 +58,7 @@ struct mbox_buffer_header {
 
 struct mbox_default_buffer {	/* command-response buffer unused by command */
 	struct mbox_buffer_header header;
-} __attribute__((packed, aligned(32)));
+} __packed __aligned(32);
 
 struct smm_req_buffer {
 	uint64_t smm_base;		/* TSEG base */
@@ -76,17 +76,17 @@ struct smm_req_buffer {
 struct mbox_cmd_smm_info_buffer {
 	struct mbox_buffer_header header;
 	struct smm_req_buffer req;
-} __attribute__((packed, aligned(32)));
+} __packed __aligned(32);
 
 struct mbox_cmd_sx_info_buffer {
 	struct mbox_buffer_header header;
 	u8 sleep_type;
-} __attribute__((packed, aligned(32)));
+} __packed __aligned(32);
 
 struct mbox_cmd_late_spl_buffer {
 	struct mbox_buffer_header header;
 	uint32_t	spl_value;
-} __attribute__((packed, aligned(32)));
+} __packed __aligned(32);
 
 struct dtpm_config {
 	uint32_t gpio;

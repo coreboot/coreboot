@@ -15,7 +15,7 @@
 
 static struct sha_generic_data sha_op;
 static uint32_t sha_op_size_remaining;
-static uint8_t __attribute__((aligned(32))) sha_hash[64];
+static uint8_t __aligned(32) sha_hash[64];
 
 vb2_error_t vb2ex_hwcrypto_digest_init(enum vb2_hash_algorithm hash_alg, uint32_t data_size)
 {

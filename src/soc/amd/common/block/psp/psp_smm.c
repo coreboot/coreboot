@@ -16,11 +16,11 @@
 
 struct {
 	u8 buffer[C2P_BUFFER_MAXSIZE];
-} __attribute__((aligned(32))) c2p_buffer;
+} __aligned(32) c2p_buffer;
 
 struct {
 	u8 buffer[P2C_BUFFER_MAXSIZE];
-} __attribute__((aligned(32))) p2c_buffer;
+} __aligned(32) p2c_buffer;
 
 static uint32_t smm_flag; /* Non-zero for SMM, clear when not */
 

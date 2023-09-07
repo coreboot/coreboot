@@ -24,7 +24,7 @@
 struct second_gen_efs { /* todo: expand for Server products */
 	uint32_t gen:1; /* Client products only use bit 0 */
 	uint32_t reserved:31;
-} __attribute__((packed));
+} __packed;
 
 #define EFS_SECOND_GEN 0
 
@@ -59,7 +59,7 @@ struct embedded_firmware {
 	uint8_t reserved_4Ah;
 	uint8_t reserved_4Bh;
 	uint32_t reserved_4Ch;
-} __attribute__((packed, aligned(16)));
+} __packed __aligned(16);
 
 bool read_efs_spi_settings(uint8_t *mode, uint8_t *speed);
 

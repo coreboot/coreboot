@@ -113,7 +113,7 @@ static enum cb_err get_nv_rdev_rw(struct region_device *r)
 }
 
 static struct apob_thread_context {
-	uint8_t buffer[DEFAULT_MRC_CACHE_SIZE] __attribute__((aligned(64)));
+	uint8_t buffer[DEFAULT_MRC_CACHE_SIZE] __aligned(64);
 	struct thread_handle handle;
 	struct region_device apob_rdev;
 } global_apob_thread;

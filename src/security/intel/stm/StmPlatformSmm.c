@@ -70,7 +70,7 @@ int load_stm_image(uintptr_t mseg)
 struct descriptor {
 	uint16_t limit;
 	uintptr_t base;
-} __attribute__((packed));
+} __packed;
 
 static void read_gdtr(struct descriptor *gdtr)
 {

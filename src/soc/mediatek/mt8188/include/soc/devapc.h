@@ -11,12 +11,13 @@ enum devapc_ao_offset {
 	SYS0_D0_APC_0 = 0x00000,
 	SYS1_D0_APC_0 = 0x01000,
 	SYS2_D0_APC_0 = 0x02000,
+	DOM_REMAP_0_0 = 0x00800,
+	DOM_REMAP_0_1 = 0x00804,
+	DOM_REMAP_2_0 = 0x00820,
 	MAS_DOM_0 = 0x00900,
 	MAS_SEC_0 = 0x00A00,
 	AO_APC_CON = 0x00F00,
 };
-
-DEFINE_BIT(MCUPM_SEC, 1)
 
 /******************************************************************************
  * STRUCTURE DEFINITION
@@ -54,6 +55,8 @@ enum devapc_cfg_index {
 /******************************************************************************
  * Bit Field DEFINITION
  ******************************************************************************/
- /* TODO */
+/* INFRA */
+DEFINE_BIT(CPU_EB_SEC, 1)
+DEFINE_BIT(SCP_SSPM_SEC, 2)
 
 #endif /* SOC_MEDIATEK_MT8188_DEVAPC_H */

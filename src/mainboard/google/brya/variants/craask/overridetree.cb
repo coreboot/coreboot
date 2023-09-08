@@ -19,6 +19,7 @@ fw_config
 	end
 	field AMP 6 7
 		option AMP_MX98360A		0
+		option AMP_ALC5650		1
 	end
 	field THERMAL_SOLUTION 10 12
 		option THERMAL_SOLUTION_6W	0
@@ -30,6 +31,7 @@ fw_config
 	field CODEC 32 33
 		option CODEC_ALC5682I_VS	0
 		option CODEC_NAU8825		1
+		option CODEC_ALC5650 		2
 	end
 	field TS_SOURCE 38 41
 		option TS_UNPROVISIONED 	0
@@ -552,6 +554,19 @@ chip soc/intel/alderlake
 				register "property_list[0].integer" = "1"
 				device i2c 1a on
 					probe CODEC CODEC_ALC5682I_VS
+				end
+			end
+			chip drivers/i2c/generic
+				register "hid" = ""10EC5650""
+				register "name" = ""RT58""
+				register "desc" = ""Realtek RT5650""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_A23)"
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-mode""
+				register "property_list[0].integer" = "2"
+				device i2c 1a on
+					probe CODEC CODEC_ALC5650
 				end
 			end
 		end

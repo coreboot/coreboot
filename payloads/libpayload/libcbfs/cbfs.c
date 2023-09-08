@@ -90,8 +90,11 @@ static bool cbfs_file_hash_mismatch(const void *buffer, size_t size,
 		ERROR("'%s' does not have a file hash!\n", mdata->h.filename);
 		return true;
 	}
-	if (vb2_hash_verify(cbfs_hwcrypto_allowed(), buffer, size, hash) != VB2_SUCCESS) {
+	vb2_error_t rv = vb2_hash_verify(cbfs_hwcrypto_allowed(), buffer, size, hash);
+	if (rv != VB2_SUCCESS) {
 		ERROR("'%s' file hash mismatch!\n", mdata->h.filename);
+		if (CONFIG(LP_VBOOT_CBFS_INTEGRATION) && !vboot_recovery_mode_enabled())
+			vboot_fail_and_reboot(vboot_get_context(), VB2_RECOVERY_FW_BODY, rv);
 		return true;
 	}
 

@@ -9,6 +9,13 @@ config VBOOT_LIB
 
 if VBOOT_LIB
 
+config VBOOT_CBFS_INTEGRATION
+	bool "Enable vboot and CBFS integration"
+	default n
+	depends on CBFS_VERIFICATION
+	help
+	  Say yes to request reboot on CBFS file hash mismatch in non-recovery mode.
+
 config VBOOT_TPM2_MODE
 	bool "TPM2 Mode"
 	default y

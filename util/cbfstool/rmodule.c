@@ -168,6 +168,19 @@ static int relocation_for_weak_extern_symbols(struct rmod_context *ctx, Elf64_Re
 	return 0;
 }
 
+static int relocation_for_undefined_symbol(struct rmod_context *ctx, Elf64_Rela *r)
+{
+	Elf64_Sym *s = &ctx->pelf.syms[ELF64_R_SYM(r->r_info)];
+
+	if (s->st_shndx == SHN_UNDEF) {
+		DEBUG("Omitting relocation for undefined symbol: %s\n",
+		      &ctx->strtab[s->st_name]);
+		return 1;
+	}
+
+	return 0;
+}
+
 /*
  * Relocation processing loops.
  */
@@ -211,6 +224,9 @@ static int for_each_reloc(struct rmod_context *ctx, struct reloc_filter *f,
 				continue;
 
 			if (relocation_for_weak_extern_symbols(ctx, r))
+				continue;
+
+			if (relocation_for_undefined_symbol(ctx, r))
 				continue;
 
 			/* Allow the provided filter to have precedence. */

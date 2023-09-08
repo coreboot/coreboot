@@ -1636,6 +1636,11 @@ static void infra_init(uintptr_t base)
 	SET32_BITFIELDS(getreg(base, MAS_SEC_0), CPU_EB_SEC, SECURE_TRANS);
 	SET32_BITFIELDS(getreg(base, MAS_SEC_0), SCP_SSPM_SEC, SECURE_TRANS);
 
+	/* Master Domain */
+	SET32_BITFIELDS(getreg(base, MAS_DOM_0),
+			SCP_SSPM_DOM, DOMAIN_3,
+			CPU_EB_DOM, DOMAIN_14);
+
 	/*
 	 * Domain Remap: INFRA (4-bit) -> MMSYS (2-bit)
 	 *               domain 0      -> domain 0
@@ -1670,6 +1675,9 @@ static void peri_init(uintptr_t base)
 	/* Default APC setting */
 	set_peri_ao_apc(base);
 
+	/* Master Domain */
+	SET32_BITFIELDS(getreg(base, MAS_DOM_0), SPM_DOM, DOMAIN_9);
+
 	/*
 	 * Domain Remap: INFRA (4-bit) -> TINYSYS (3-bit)
 	 *               domain 0      -> domain 0
@@ -1694,6 +1702,11 @@ static void peri_par_init(uintptr_t base)
 {
 	/* Default APC setting */
 	set_peri_par_ao_apc(base);
+
+	/* Master Domain */
+	SET32_BITFIELDS(getreg_domain(base, MAS_DOM_0, 0, 4),
+			PCIE0_DOM, DOMAIN_2);
+
 }
 
 static void fmem_master_init(uintptr_t base)

@@ -244,6 +244,9 @@ static void write_vbios_cache_to_fmap(void *unused)
 						VBIOS_CACHE_FMAP_SIZE) != VBIOS_CACHE_FMAP_SIZE)
 		printk(BIOS_ERR, "Failed to save vbios data to flash; rdev_writeat() failed.\n");
 
+	/* copy modified vbios data from PCI_VGA_RAM_IMAGE_START to buffer before hashing */
+	memcpy(vbios_data, (void *)PCI_VGA_RAM_IMAGE_START, VBIOS_CACHE_FMAP_SIZE);
+
 	/* save data hash to TPM NVRAM for validation on subsequent boots */
 	vbios_cache_update_hash(vbios_data, VBIOS_CACHE_FMAP_SIZE);
 

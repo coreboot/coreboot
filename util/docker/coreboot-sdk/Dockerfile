@@ -60,7 +60,6 @@ RUN \
 		m4 \
 		make \
 		msitools \
-		nasm \
 		neovim \
 		openssh-client \
 		openssl \

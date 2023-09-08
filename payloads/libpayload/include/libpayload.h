@@ -414,6 +414,13 @@ void mouse_cursor_add_input_driver(struct mouse_cursor_input_driver *in);
  * @{
  */
 int exec(long addr, int argc, char **argv);
+
+/*
+ * reboot() handles reboot requests made by libpayload. It has weak implementation
+ * which should be overridden by payload.
+ */
+void __noreturn reboot(void);
+
 /** @} */
 
 /**

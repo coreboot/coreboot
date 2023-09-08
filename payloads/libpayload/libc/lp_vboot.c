@@ -26,3 +26,18 @@ struct vb2_context *vboot_get_context(void)
 
 	return ctx;
 }
+
+void vboot_fail_and_reboot(struct vb2_context *ctx, uint8_t reason, uint8_t subcode)
+{
+	if (reason)
+		vb2api_fail(ctx, reason, subcode);
+
+	printf("vboot: reboot requested (reason: %#x, subcode %#x)", reason, subcode);
+	vb2ex_commit_data(ctx);
+	reboot();
+}
+
+int vboot_recovery_mode_enabled(void)
+{
+	return !!(vboot_get_context()->flags & VB2_CONTEXT_RECOVERY_MODE);
+}

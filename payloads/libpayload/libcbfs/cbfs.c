@@ -8,6 +8,7 @@
 #include <commonlib/bsd/cbfs_private.h>
 #include <commonlib/bsd/fmap_serialized.h>
 #include <libpayload.h>
+#include <lp_vboot.h>
 #include <lz4.h>
 #include <lzma.h>
 #include <string.h>
@@ -232,5 +233,9 @@ void *_cbfs_unverified_area_load(const char *area, const char *name, void *buf,
    policy on using HW crypto. */
 __weak bool cbfs_hwcrypto_allowed(void)
 {
-	return true;
+	/* Avoid compiling vboot calls to prevent linker errors. */
+	if (!CONFIG(LP_CBFS_VERIFICATION))
+		return true;
+
+	return vb2api_hwcrypto_allowed(vboot_get_context());
 }

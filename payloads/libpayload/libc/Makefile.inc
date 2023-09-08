@@ -40,6 +40,10 @@ libc-$(CONFIG_LP_LIBC) += coreboot.c
 libc-$(CONFIG_LP_LIBC) += fmap.c
 libc-$(CONFIG_LP_LIBC) += fpmath.c
 
+ifeq ($(CONFIG_LP_VBOOT_LIB),y)
+libc-$(CONFIG_LP_LIBC) += lp_vboot.c
+endif
+
 ifeq ($(CONFIG_LP_LIBC),y)
 libc-srcs += $(coreboottop)/src/commonlib/bsd/elog.c
 endif

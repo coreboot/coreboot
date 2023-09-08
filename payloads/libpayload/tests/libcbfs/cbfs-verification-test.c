@@ -42,6 +42,16 @@ vb2_error_t vb2_hash_verify(bool allow_hwcrypto, const void *buf, uint32_t size,
 	return VB2_ERROR_SHA_MISMATCH;
 }
 
+bool vb2api_hwcrypto_allowed(struct vb2_context *ctx)
+{
+	return true;
+}
+
+struct vb2_context *vboot_get_context(void)
+{
+	return NULL;
+}
+
 unsigned long ulzman(const unsigned char *src, unsigned long srcn, unsigned char *dst,
 		     unsigned long dstn)
 {

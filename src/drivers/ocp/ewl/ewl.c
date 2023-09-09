@@ -63,7 +63,7 @@ void get_ewl(void)
 	EWL_ENTRY_HEADER *warning_header;
 	printk(BIOS_DEBUG, "Number of EWL entries %d\n", hob->numEntries);
 	while (offset < hob->status.Header.FreeOffset) {
-		warning_header = (EWL_ENTRY_HEADER *) &(hob->status.Buffer[offset]);
+		warning_header = (EWL_ENTRY_HEADER *)(&(hob->status.Buffer[offset]));
 		if (warning_header->Type == EwlType3) {
 			printk(BIOS_ERR, "EWL type: %d size:%d severity level:%d\n",
 					warning_header->Type,

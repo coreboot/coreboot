@@ -16,6 +16,7 @@ enum _spkr_tplg {
 	max98390,
 	rt1011,
 	rt1015,
+	rt1019,
 };
 
 /* Jack topology */

@@ -19,6 +19,7 @@ static const char *get_spkr_tplg_str(enum _spkr_tplg tplg)
 	case max98390: return "max98390";
 	case rt1011: return "rt1011";
 	case rt1015: return "rt1015";
+	case rt1019: return "rt1019";
 	default: return "default";
 	}
 }

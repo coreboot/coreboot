@@ -103,7 +103,7 @@ void soc_xhci_log_wake_events(void)
 			.controller = i_xhci,
 		};
 
-		const struct resource *res = (const struct resource *) &res_store[i_slot].resources[0];
+		const struct resource *res = (const struct resource *)(&res_store[i_slot].resources[0]);
 		enum cb_err err
 			= xhci_resource_for_each_supported_usb_cap(res, &context,
 								   &xhci_cap_callback);

@@ -788,7 +788,7 @@ static int ich_hwseq_read(const struct spi_flash *flash, u32 addr, size_t len,
 		printk(BIOS_ERR,
 			"Attempt to read %x-%x which is out of chip\n",
 			(unsigned int)addr,
-			(unsigned int)addr+(unsigned int) len);
+			(unsigned int)addr+(unsigned int)len);
 		return -1;
 	}
 

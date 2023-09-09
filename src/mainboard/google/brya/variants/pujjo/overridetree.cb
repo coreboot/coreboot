@@ -615,6 +615,23 @@ chip soc/intel/alderlake
 					probe AUDIO MAX98357_ALC5682IVS
 				end
 			end
+			chip drivers/sof
+				register "spkr_tplg" = "max98360a"
+				register "jack_tplg" = "rt5682"
+				register "mic_tplg" = "_2ch_pdm0"
+				device generic 0 on
+					probe AUDIO MAX98357_ALC5682I
+					probe AUDIO MAX98357_ALC5682IVS
+				end
+			end
+			chip drivers/sof
+				register "spkr_tplg" = "rt1019"
+				register "jack_tplg" = "rt5682"
+				register "mic_tplg" = "_2ch_pdm0"
+				device generic 0 on
+					probe AUDIO ALC1019_ALC5682IVS
+				end
+			end
 		end
 		device ref pcie_rp3 on
 			# WWAN PCIE 3 using clk 0

@@ -105,7 +105,7 @@ void cl_get_pmc_sram_data(void)
 	/* allocate memory for the PMC crash records to be copied */
 	unsigned long pmc_cl_cbmem_addr;
 
-	pmc_cl_cbmem_addr = (unsigned long) cbmem_add(CBMEM_ID_PMC_CRASHLOG,
+	pmc_cl_cbmem_addr = (unsigned long)cbmem_add(CBMEM_ID_PMC_CRASHLOG,
 			pmc_crashLog_size);
 	if (!pmc_cl_cbmem_addr) {
 		printk(BIOS_ERR, "Unable to allocate CBMEM PMC crashLog entry.\n");
@@ -113,7 +113,7 @@ void cl_get_pmc_sram_data(void)
 	}
 
 	memset((void *)pmc_cl_cbmem_addr, 0, pmc_crashLog_size);
-	soc_pmc_dest = (u32 *)(uintptr_t) pmc_cl_cbmem_addr;
+	soc_pmc_dest = (u32 *)(uintptr_t)pmc_cl_cbmem_addr;
 
 	bool pmc_sram = true;
 
@@ -179,7 +179,7 @@ void cl_get_pmc_sram_data(void)
 	/* allocate memory for the IOE crashlog records to be copied */
 	unsigned long ioe_cl_cbmem_addr;
 
-	ioe_cl_cbmem_addr = (unsigned long) cbmem_add(CBMEM_ID_IOE_CRASHLOG,
+	ioe_cl_cbmem_addr = (unsigned long)cbmem_add(CBMEM_ID_IOE_CRASHLOG,
 							ioe_crashLog_size);
 	if (!ioe_cl_cbmem_addr) {
 		printk(BIOS_ERR, "Unable to allocate CBMEM IOE crashLog entry.\n");
@@ -187,7 +187,7 @@ void cl_get_pmc_sram_data(void)
 	}
 
 	memset((void *)ioe_cl_cbmem_addr, 0, ioe_crashLog_size);
-	ioe_pmc_dest = (u32 *)(uintptr_t) ioe_cl_cbmem_addr;
+	ioe_pmc_dest = (u32 *)(uintptr_t)ioe_cl_cbmem_addr;
 
 	/* process crashlog records for IOE SRAM */
 	for (int i = 0; i < descriptor_table.numb_regions + 1; i++) {

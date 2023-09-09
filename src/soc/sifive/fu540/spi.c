@@ -28,7 +28,7 @@ static void spi_tx(volatile struct spi_ctrl *spictrl, uint8_t in)
 		);
 	} while (r < 0);
 #else
-	while ((int32_t) spictrl->txdata.raw_bits < 0)
+	while ((int32_t)spictrl->txdata.raw_bits < 0)
 		;
 	spictrl->txdata.data = in;
 #endif
@@ -40,9 +40,9 @@ static void spi_tx(volatile struct spi_ctrl *spictrl, uint8_t in)
 static uint8_t spi_rx(volatile struct spi_ctrl *spictrl)
 {
 	int32_t out;
-	while ((out = (int32_t) spictrl->rxdata.raw_bits) < 0)
+	while ((out = (int32_t)spictrl->rxdata.raw_bits) < 0)
 		;
-	return (uint8_t) out;
+	return (uint8_t)out;
 }
 
 static int spi_claim_bus_(const struct spi_slave *slave)

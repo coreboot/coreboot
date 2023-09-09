@@ -48,8 +48,8 @@ static inline void phy_reset(volatile uint32_t *ddrphyreg, const uint32_t *physe
 }
 
 static inline void ux00ddr_writeregmap(size_t ahbregaddr, const uint32_t *ctlsettings, const uint32_t *physettings) {
-  volatile uint32_t *ddrctlreg = (volatile uint32_t *) ahbregaddr;
-  volatile uint32_t *ddrphyreg = ((volatile uint32_t *) ahbregaddr) + (0x2000 / sizeof(uint32_t));
+  volatile uint32_t *ddrctlreg = (volatile uint32_t *)ahbregaddr;
+  volatile uint32_t *ddrphyreg = ((volatile uint32_t *)ahbregaddr) + (0x2000 / sizeof(uint32_t));
 
   unsigned int i;
   for (i=0;i<=264;i++) {
@@ -102,7 +102,7 @@ static inline void ux00ddr_mask_leveling_completed_interrupt(size_t ahbregaddr) 
 static inline void ux00ddr_setuprangeprotection(size_t ahbregaddr, size_t end_addr) {
   _REG32(209<<2, ahbregaddr) = 0x0;
   size_t end_addr_16Kblocks = ((end_addr >> 14) & 0x7FFFFF)-1;
-  _REG32(210<<2, ahbregaddr) = ((uint32_t) end_addr_16Kblocks);
+  _REG32(210<<2, ahbregaddr) = ((uint32_t)end_addr_16Kblocks);
   _REG32(212<<2, ahbregaddr) = 0x0;
   _REG32(214<<2, ahbregaddr) = 0x0;
   _REG32(216<<2, ahbregaddr) = 0x0;

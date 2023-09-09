@@ -144,14 +144,14 @@ bool southbridge_support_c5(void)
 {
 	struct device *lpc_dev = __pci_0_1f_0;
 	struct southbridge_intel_i82801jx_config *config = lpc_dev->chip_info;
-	return config->c5_enable == 1;
+	return config->c5_enable;
 }
 
 bool southbridge_support_c6(void)
 {
 	struct device *lpc_dev = __pci_0_1f_0;
 	struct southbridge_intel_i82801jx_config *config = lpc_dev->chip_info;
-	return config->c6_enable == 1;
+	return config->c6_enable;
 }
 
 static void i82801jx_power_options(struct device *dev)

@@ -56,12 +56,12 @@ struct southbridge_intel_i82801ix_config {
 
 	/* IDE configuration */
 	uint8_t sata_port_map : 6;
-	unsigned int sata_clock_request : 1;
-	unsigned int sata_traffic_monitor : 1;
+	bool sata_clock_request;
+	bool sata_traffic_monitor;
 
-	unsigned int c4onc3_enable:1;
-	unsigned int c5_enable : 1;
-	unsigned int c6_enable : 1;
+	bool c4onc3_enable;
+	bool c5_enable;
+	bool c6_enable;
 
 	unsigned int throttle_duty : 3;
 

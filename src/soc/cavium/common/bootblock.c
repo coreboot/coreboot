@@ -8,10 +8,10 @@
 #include <timestamp.h>
 #include <soc/bootblock.h>
 
-__attribute__((weak)) void bootblock_mainboard_early_init(void) { /* no-op */ }
-__attribute__((weak)) void bootblock_soc_early_init(void) { /* do nothing */ }
-__attribute__((weak)) void bootblock_soc_init(void) { /* do nothing */ }
-__attribute__((weak)) void bootblock_mainboard_init(void) { /* do nothing */ }
+__weak void bootblock_mainboard_early_init(void) { /* no-op */ }
+__weak void bootblock_soc_early_init(void) { /* do nothing */ }
+__weak void bootblock_soc_init(void) { /* do nothing */ }
+__weak void bootblock_mainboard_init(void) { /* do nothing */ }
 
 /* C code entry point for the boot block */
 void bootblock_main(const uint64_t reg_x0,

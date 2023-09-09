@@ -112,7 +112,7 @@ void soc_save_dimm_info(void)
 }
 
 /* Add any mainboard specific information */
-__attribute__((weak)) void mainboard_add_dimm_info(struct memory_info *mem_info,
+__weak void mainboard_add_dimm_info(struct memory_info *mem_info,
 						   int channel, int dimm,
 						   int index)
 {

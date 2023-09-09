@@ -133,7 +133,7 @@ struct GPIO_CONFIG {
 	**/
 	uint32_t OtherSettings : 2;
 	uint32_t RsvdBits : 27; ///< Reserved bits for future extension
-} __attribute__((packed));
+} __packed;
 
 typedef enum { GpioHardwareDefault = 0x0 } GPIO_HARDWARE_DEFAULT;
 

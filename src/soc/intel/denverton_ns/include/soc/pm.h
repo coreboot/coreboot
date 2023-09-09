@@ -26,7 +26,7 @@ struct chipset_power_state {
 	uint32_t gen_pmcon_b;
 	uint32_t gblrst_cause[2];
 	uint32_t prev_sleep_state;
-} __attribute__((packed));
+} __packed;
 
 /* Get base address PMC memory mapped registers. */
 uint8_t *pmc_mmio_regs(void);

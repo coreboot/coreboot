@@ -3,8 +3,8 @@
  * Utility functions needed for (some) EABI conformant tool chains.
  */
 
-int raise (int signum) __attribute__((used));
-int raise (int signum)
+int raise(int signum) __attribute__((used));
+int raise(int signum)
 {
 	return 0;
 }

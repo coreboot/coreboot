@@ -39,8 +39,8 @@ int64_t bdk_twsix_read_ia(bdk_node_t node, int twsi_id, uint8_t dev_addr,
 	struct i2c_msg seg[2];
 	u32 buf;
 
-	assert (num_bytes < 5);
-	assert (ia_width_bytes < 3);
+	assert(num_bytes < 5);
+	assert(ia_width_bytes < 3);
 
 	seg[0].flags = 0;
 	seg[0].slave = dev_addr;
@@ -81,8 +81,8 @@ int bdk_twsix_write_ia(bdk_node_t node, int twsi_id, uint8_t dev_addr,
 	struct i2c_msg seg;
 	u8 buf[10];
 
-	assert (num_bytes <= 8);
-	assert (ia_width_bytes < 3);
+	assert(num_bytes <= 8);
+	assert(ia_width_bytes < 3);
 
 	memcpy(buf, &internal_addr, ia_width_bytes);
 	memcpy(&buf[ia_width_bytes], &data, num_bytes);

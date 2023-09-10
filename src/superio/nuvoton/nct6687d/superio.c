@@ -7,6 +7,7 @@
 #include <option.h>
 #include <superio/conf_mode.h>
 
+#include "chip.h"
 #include "nct6687d.h"
 
 #define MAINBOARD_POWER_OFF	0
@@ -23,6 +24,9 @@
 
 static void nct6687d_init(struct device *dev)
 {
+	const struct superio_nuvoton_nct6687d_config *conf;
+	const struct resource *res;
+
 	if (!dev->enabled)
 		return;
 
@@ -50,6 +54,12 @@ static void nct6687d_init(struct device *dev)
 		printk(BIOS_INFO, "set power %s after power fail\n",
 		       power_status ? "on" : "off");
 		break;
+	case NCT6687D_EC:
+		conf = dev->chip_info;
+		res = probe_resource(dev, PNP_IDX_IO0);
+		if (!conf || !res)
+			break;
+		nct6687d_hwm_init(res->base, conf);
 	}
 }
 

@@ -45,9 +45,9 @@ void intel_acpi_pcie_hotplug_generator(u8 *hotplug_map, int port_number)
 
 			acpigen_write_method("_RMV", 0);
 			/* ReturnOp  */
-			acpigen_emit_byte (0xa4);
+			acpigen_emit_byte(0xa4);
 			/* One  */
-			acpigen_emit_byte (0x01);
+			acpigen_emit_byte(0x01);
 			acpigen_pop_len();
 			acpigen_pop_len();
 			acpigen_pop_len();

@@ -21,7 +21,7 @@ static void enable_core_clocks(int cpu)
 		CRC_RST_CPUG_CLR_CORE3 | CRC_RST_CPUG_CLR_CX3,
 	};
 
-	assert (cpu < CONFIG_MAX_CPUS);
+	assert(cpu < CONFIG_MAX_CPUS);
 
 	/* Clear reset of CPU components. */
 	write32(CLK_RST_REG(rst_cpug_cmplx_clr), cpu_clocks[cpu]);

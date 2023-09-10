@@ -19,7 +19,7 @@ static void *nc_fpga_bar0;
 		dst = ((typeof(dst))var); \
 }
 
-static void init_temp_mon (void *base_adr)
+static void init_temp_mon(void *base_adr)
 {
 	uint32_t cc[5], i = 0;
 	uint8_t num = 0;
@@ -48,7 +48,7 @@ static void init_temp_mon (void *base_adr)
 	FPGA_SET_PARAM(T_Crit, ctrl->t_crit);
 }
 
-static void init_fan_ctrl (void *base_adr)
+static void init_fan_ctrl(void *base_adr)
 {
 	uint8_t mask = 0, freeze_disable = 0, fan_req = 0;
 	volatile fan_ctrl_t *ctrl = (fan_ctrl_t *)base_adr;

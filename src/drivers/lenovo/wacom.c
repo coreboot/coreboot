@@ -44,7 +44,7 @@ drivers_lenovo_is_wacom_present(void)
 		return (result = 0);
 	}
 
-	superio = dev_find_slot_pnp (0x164e, 3);
+	superio = dev_find_slot_pnp(0x164e, 3);
 	if (!superio) {
 		printk(BIOS_INFO, "No Super I/O, skipping wacom\n");
 		return (result = 0);
@@ -60,9 +60,9 @@ drivers_lenovo_is_wacom_present(void)
 	pn = lenovo_mainboard_partnumber();
 	if (!pn)
 		return (result = 0);
-	printk (BIOS_DEBUG, "Lenovo P/N is %s\n", pn);
-	for (i = 0; i < ARRAY_SIZE (tablet_numbers); i++)
-		if (memcmp (tablet_numbers[i], pn, 4) == 0) {
+	printk(BIOS_DEBUG, "Lenovo P/N is %s\n", pn);
+	for (i = 0; i < ARRAY_SIZE(tablet_numbers); i++)
+		if (memcmp(tablet_numbers[i], pn, 4) == 0) {
 			printk(BIOS_DEBUG, "Lenovo P/N %s is a tablet\n", pn);
 			return (result = 1);
 		}

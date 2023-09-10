@@ -16,7 +16,7 @@
 #error "FIXME: CALLOUT_ENTRY is UINT32 Data, not UINT Data"
 #endif
 
-AGESA_STATUS GetBiosCallout (UINT32 Func, UINTN Data, VOID *ConfigPtr)
+AGESA_STATUS GetBiosCallout(UINT32 Func, UINTN Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS status;
 	UINTN i;

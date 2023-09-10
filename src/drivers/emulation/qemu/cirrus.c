@@ -171,14 +171,14 @@ enum
 #define CIRRUS_HIDDEN_DAC_888COLOR 0xc5
 
 static void
-write_hidden_dac (uint8_t data)
+write_hidden_dac(uint8_t data)
 {
-	inb (0x3c8);
-	inb (0x3c6);
-	inb (0x3c6);
-	inb (0x3c6);
-	inb (0x3c6);
-	outb (data, 0x3c6);
+	inb(0x3c8);
+	inb(0x3c6);
+	inb(0x3c6);
+	inb(0x3c6);
+	inb(0x3c6);
+	outb(data, 0x3c6);
 }
 
 static void cirrus_init_linear_fb(struct device *dev)
@@ -208,22 +208,22 @@ static void cirrus_init_linear_fb(struct device *dev)
 	printk(BIOS_DEBUG, "QEMU VGA: cirrus framebuffer @ %x (pci bar 0)\n",
 	       addr);
 
-	vga_misc_write (VGA_IO_MISC_COLOR);
+	vga_misc_write(VGA_IO_MISC_COLOR);
 
-	vga_sr_write (VGA_SR_MEMORY_MODE,
+	vga_sr_write(VGA_SR_MEMORY_MODE,
 		      VGA_SR_MEMORY_MODE_NORMAL);
 
-	vga_sr_write (VGA_SR_MAP_MASK_REGISTER,
+	vga_sr_write(VGA_SR_MAP_MASK_REGISTER,
 		      (1 << VGA_TEXT_TEXT_PLANE)
 		      | (1 << VGA_TEXT_ATTR_PLANE));
 
-	vga_sr_write (VGA_SR_CLOCKING_MODE,
+	vga_sr_write(VGA_SR_CLOCKING_MODE,
 		      VGA_SR_CLOCKING_MODE_8_DOT_CLOCK);
 
 	vga_palette_disable();
 
 	/* Disable CR0-7 write protection.  */
-	vga_cr_write (VGA_CR_VSYNC_END, 0);
+	vga_cr_write(VGA_CR_VSYNC_END, 0);
 
 	overflow = ((vertical_total >> VGA_CR_OVERFLOW_VERT_TOTAL1_SHIFT)
 		    & VGA_CR_OVERFLOW_VERT_TOTAL1_MASK)
@@ -248,56 +248,56 @@ static void cirrus_init_linear_fb(struct device *dev)
 		| ((line_compare >> VGA_CR_CELL_HEIGHT_LINE_COMPARE_SHIFT)
 		   & VGA_CR_CELL_HEIGHT_LINE_COMPARE_MASK);
 
-	vga_cr_write (VGA_CR_HTOTAL, horizontal_total - 1);
-	vga_cr_write (VGA_CR_HORIZ_END, horizontal_end - 1);
-	vga_cr_write (VGA_CR_HBLANK_START, horizontal_blank_start - 1);
-	vga_cr_write (VGA_CR_HBLANK_END, horizontal_blank_end);
-	vga_cr_write (VGA_CR_HORIZ_SYNC_PULSE_START,
+	vga_cr_write(VGA_CR_HTOTAL, horizontal_total - 1);
+	vga_cr_write(VGA_CR_HORIZ_END, horizontal_end - 1);
+	vga_cr_write(VGA_CR_HBLANK_START, horizontal_blank_start - 1);
+	vga_cr_write(VGA_CR_HBLANK_END, horizontal_blank_end);
+	vga_cr_write(VGA_CR_HORIZ_SYNC_PULSE_START,
 		      horizontal_sync_pulse_start);
-	vga_cr_write (VGA_CR_HORIZ_SYNC_PULSE_END,
+	vga_cr_write(VGA_CR_HORIZ_SYNC_PULSE_END,
 		      horizontal_sync_pulse_end);
-	vga_cr_write (VGA_CR_VERT_TOTAL, vertical_total & 0xff);
-	vga_cr_write (VGA_CR_OVERFLOW, overflow);
-	vga_cr_write (VGA_CR_CELL_HEIGHT, cell_height_reg);
-	vga_cr_write (VGA_CR_VSYNC_START, vertical_sync_start & 0xff);
-	vga_cr_write (VGA_CR_VSYNC_END, vertical_sync_end & 0x0f);
-	vga_cr_write (VGA_CR_VDISPLAY_END, vdisplay_end & 0xff);
-	vga_cr_write (VGA_CR_PITCH, pitch & 0xff);
-	vga_cr_write (VGA_CR_VERTICAL_BLANK_START, vertical_blank_start & 0xff);
-	vga_cr_write (VGA_CR_VERTICAL_BLANK_END, vertical_blank_end & 0xff);
-	vga_cr_write (VGA_CR_LINE_COMPARE, line_compare & 0xff);
+	vga_cr_write(VGA_CR_VERT_TOTAL, vertical_total & 0xff);
+	vga_cr_write(VGA_CR_OVERFLOW, overflow);
+	vga_cr_write(VGA_CR_CELL_HEIGHT, cell_height_reg);
+	vga_cr_write(VGA_CR_VSYNC_START, vertical_sync_start & 0xff);
+	vga_cr_write(VGA_CR_VSYNC_END, vertical_sync_end & 0x0f);
+	vga_cr_write(VGA_CR_VDISPLAY_END, vdisplay_end & 0xff);
+	vga_cr_write(VGA_CR_PITCH, pitch & 0xff);
+	vga_cr_write(VGA_CR_VERTICAL_BLANK_START, vertical_blank_start & 0xff);
+	vga_cr_write(VGA_CR_VERTICAL_BLANK_END, vertical_blank_end & 0xff);
+	vga_cr_write(VGA_CR_LINE_COMPARE, line_compare & 0xff);
 
-	vga_gr_write (VGA_GR_MODE, VGA_GR_MODE_256_COLOR | VGA_GR_MODE_READ_MODE1);
-	vga_gr_write (VGA_GR_GR6, VGA_GR_GR6_GRAPHICS_MODE);
+	vga_gr_write(VGA_GR_MODE, VGA_GR_MODE_256_COLOR | VGA_GR_MODE_READ_MODE1);
+	vga_gr_write(VGA_GR_GR6, VGA_GR_GR6_GRAPHICS_MODE);
 
-	vga_sr_write (VGA_SR_MEMORY_MODE, VGA_SR_MEMORY_MODE_NORMAL);
+	vga_sr_write(VGA_SR_MEMORY_MODE, VGA_SR_MEMORY_MODE_NORMAL);
 
-	vga_cr_write (CIRRUS_CR_EXTENDED_DISPLAY,
+	vga_cr_write(CIRRUS_CR_EXTENDED_DISPLAY,
 		      (pitch >> CIRRUS_CR_EXTENDED_DISPLAY_PITCH_SHIFT)
 		      & CIRRUS_CR_EXTENDED_DISPLAY_PITCH_MASK);
 
-	vga_cr_write (VGA_CR_MODE, VGA_CR_MODE_TIMING_ENABLE
+	vga_cr_write(VGA_CR_MODE, VGA_CR_MODE_TIMING_ENABLE
 		      | VGA_CR_MODE_BYTE_MODE
 		      | VGA_CR_MODE_NO_HERCULES | VGA_CR_MODE_NO_CGA);
 
-	vga_cr_write (VGA_CR_START_ADDR_LOW_REGISTER, 0);
-	vga_cr_write (VGA_CR_START_ADDR_HIGH_REGISTER, 0);
+	vga_cr_write(VGA_CR_START_ADDR_LOW_REGISTER, 0);
+	vga_cr_write(VGA_CR_START_ADDR_HIGH_REGISTER, 0);
 
-	cr_ext = vga_cr_read (CIRRUS_CR_EXTENDED_DISPLAY);
+	cr_ext = vga_cr_read(CIRRUS_CR_EXTENDED_DISPLAY);
 	cr_ext &= ~(CIRRUS_CR_EXTENDED_DISPLAY_START_MASK1
 		    | CIRRUS_CR_EXTENDED_DISPLAY_START_MASK2);
-	vga_cr_write (CIRRUS_CR_EXTENDED_DISPLAY, cr_ext);
+	vga_cr_write(CIRRUS_CR_EXTENDED_DISPLAY, cr_ext);
 
-	cr_overlay = vga_cr_read (CIRRUS_CR_EXTENDED_OVERLAY);
+	cr_overlay = vga_cr_read(CIRRUS_CR_EXTENDED_OVERLAY);
 	cr_overlay &= ~(CIRRUS_CR_EXTENDED_OVERLAY_DISPLAY_START_MASK);
-	vga_cr_write (CIRRUS_CR_EXTENDED_OVERLAY, cr_overlay);
+	vga_cr_write(CIRRUS_CR_EXTENDED_OVERLAY, cr_overlay);
 
 	sr_ext = CIRRUS_SR_EXTENDED_MODE_LFB_ENABLE
 		| CIRRUS_SR_EXTENDED_MODE_ENABLE_EXT
 		| CIRRUS_SR_EXTENDED_MODE_32BPP;
 	hidden_dac = CIRRUS_HIDDEN_DAC_888COLOR;
-	vga_sr_write (CIRRUS_SR_EXTENDED_MODE, sr_ext);
-	write_hidden_dac (hidden_dac);
+	vga_sr_write(CIRRUS_SR_EXTENDED_MODE, sr_ext);
+	write_hidden_dac(hidden_dac);
 
 	fb_add_framebuffer_info(addr, width, height, 4 * width, 32);
 }

@@ -17,10 +17,10 @@ struct efi_wrapper_params {
 	/* Mainboard Inputs */
 	int version;
 
-	void ABI_X86 (*console_out)(unsigned char byte);
+	void ABI_X86(*console_out)(unsigned char byte);
 
 	unsigned int tsc_ticks_per_microsecond;
 } __packed;
 
-typedef int ABI_X86 (*efi_wrapper_entry_t)(struct efi_wrapper_params *);
+typedef int ABI_X86(*efi_wrapper_entry_t)(struct efi_wrapper_params *);
 #endif

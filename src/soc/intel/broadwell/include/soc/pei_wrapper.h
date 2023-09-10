@@ -5,7 +5,7 @@
 
 #include <soc/pei_data.h>
 
-typedef int ABI_X86 (*pei_wrapper_entry_t)(struct pei_data *pei_data);
+typedef int ABI_X86(*pei_wrapper_entry_t)(struct pei_data *pei_data);
 
 static inline void pei_data_usb2_port(struct pei_data *pei_data, int port,
 				      uint16_t length, uint8_t enable,

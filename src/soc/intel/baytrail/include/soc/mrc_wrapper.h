@@ -58,7 +58,7 @@ struct mrc_params {
 
 	struct mrc_mainboard_params mainboard;
 
-	void ABI_X86 (*console_out)(unsigned char byte);
+	void ABI_X86(*console_out)(unsigned char byte);
 
 	int prev_sleep_state;
 
@@ -76,6 +76,6 @@ struct mrc_params {
 } __packed;
 
 /* Call into wrapper. */
-typedef int ABI_X86 (*mrc_wrapper_entry_t)(struct mrc_params *);
+typedef int ABI_X86(*mrc_wrapper_entry_t)(struct mrc_params *);
 
 #endif /* _MRC_WRAPPER_H_ */

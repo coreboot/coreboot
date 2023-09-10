@@ -245,7 +245,7 @@ static void set_ioapic_used(uint32_t irq)
 {
 	size_t word_offset = irq / 32;
 	size_t bit_offset = irq % 32;
-	assert (word_offset < ARRAY_SIZE(gpio_ioapic_irqs_used));
+	assert(word_offset < ARRAY_SIZE(gpio_ioapic_irqs_used));
 	gpio_ioapic_irqs_used[word_offset] |= BIT(bit_offset);
 }
 
@@ -253,7 +253,7 @@ bool gpio_routes_ioapic_irq(uint32_t irq)
 {
 	size_t word_offset = irq / 32;
 	size_t bit_offset = irq % 32;
-	assert (word_offset < ARRAY_SIZE(gpio_ioapic_irqs_used));
+	assert(word_offset < ARRAY_SIZE(gpio_ioapic_irqs_used));
 	return (gpio_ioapic_irqs_used[word_offset] & BIT(bit_offset)) != 0;
 }
 
@@ -830,7 +830,7 @@ static int gpio_route_pmc_gpio_gpe(int pmc_gpe_num)
 	int i;
 
 	routes = soc_pmc_gpio_routes(&num_routes);
-	assert (routes != NULL);
+	assert(routes != NULL);
 	for (i = 0; i < num_routes; i++, routes++) {
 		if (pmc_gpe_num == routes->pmc)
 			return routes->gpio;

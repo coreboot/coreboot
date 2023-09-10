@@ -9,7 +9,7 @@
 
 #define ABI_X86 __attribute__((regparm(0)))
 
-typedef void ABI_X86 (*tx_byte_func)(unsigned char byte);
+typedef void ABI_X86(*tx_byte_func)(unsigned char byte);
 
 enum board_type {
 	BOARD_TYPE_CRB_MOBILE = 0,	/* CRB Mobile */

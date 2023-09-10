@@ -30,7 +30,7 @@ static void mainboard_enable(struct device *dev)
 	};
 
 	for (i = 0; i < 256; i++)
-		ec_write (i, dmp[i]);
+		ec_write(i, dmp[i]);
 
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS, GMA_INT15_PANEL_FIT_DEFAULT, GMA_INT15_BOOT_DISPLAY_LFP, 2);
 

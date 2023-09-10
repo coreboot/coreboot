@@ -153,7 +153,7 @@ static void dram_find_spds_ddr3(spd_raw_data *spd, ramctr_timing *ctrl)
 	int channel, slot, spd_slot;
 	bool can_use_ecc = ctrl->ecc_supported;
 
-	memset (ctrl->rankmap, 0, sizeof(ctrl->rankmap));
+	memset(ctrl->rankmap, 0, sizeof(ctrl->rankmap));
 
 	ctrl->extended_temperature_range = 1;
 	ctrl->auto_self_refresh = 1;

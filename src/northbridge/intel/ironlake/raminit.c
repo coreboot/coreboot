@@ -34,7 +34,7 @@
 
 #define NORTHBRIDGE PCI_DEV(0, 0, 0)
 #define SOUTHBRIDGE PCI_DEV(0, 0x1f, 0)
-#define GMA PCI_DEV (0, 0x2, 0x0)
+#define GMA PCI_DEV(0, 0x2, 0x0)
 
 #define FOR_ALL_RANKS					   \
   for (channel = 0; channel < NUM_CHANNELS; channel++)	   \
@@ -134,7 +134,7 @@ static u32 gav_real(int line, u32 in)
 	return in;
 }
 
-#define gav(x) gav_real (__LINE__, (x))
+#define gav(x) gav_real(__LINE__, (x))
 
 /* Global allocation of timings_car */
 timing_bounds_t timings_car[64];

@@ -156,7 +156,7 @@ static void sdram_initialize(struct pei_data *pei_data)
 	entry = cbfs_map("mrc.bin", NULL);
 	if (entry) {
 		int rv;
-		rv = entry (pei_data);
+		rv = entry(pei_data);
 		if (rv) {
 			switch (rv) {
 			case -1:

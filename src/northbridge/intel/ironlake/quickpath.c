@@ -611,9 +611,9 @@ void late_quickpath_init(struct raminfo *info, const int s3resume)
 	if (deven & 8) {
 		mchbar_setbits32(0xff8, 3 << 11);
 		mchbar_clrbits32(0x2cb0, ~0);
-		pci_read_config8(PCI_DEV (0, 0x2, 0x0), 0x4c);
-		pci_read_config8(PCI_DEV (0, 0x2, 0x0), 0x4c);
-		pci_read_config8(PCI_DEV (0, 0x2, 0x0), 0x4e);
+		pci_read_config8(PCI_DEV(0, 0x2, 0x0), 0x4c);
+		pci_read_config8(PCI_DEV(0, 0x2, 0x0), 0x4c);
+		pci_read_config8(PCI_DEV(0, 0x2, 0x0), 0x4e);
 
 		mchbar_read8(0x1150);
 		mchbar_read8(0x1151);

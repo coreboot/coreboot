@@ -90,7 +90,7 @@ static void report_memory_config(void)
 	}
 }
 
-typedef int ABI_X86 (*pei_wrapper_entry_t)(struct pei_data *pei_data);
+typedef int ABI_X86(*pei_wrapper_entry_t)(struct pei_data *pei_data);
 
 static void ABI_X86 send_to_console(unsigned char b)
 {

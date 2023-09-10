@@ -733,7 +733,7 @@ static void collect_dimm_config(sysinfo_t *const sysinfo)
 	for (i = 0; i < 4; i++)
 		if (sysinfo->spd_map[i]) {
 			const u8 spd = smbus_read_byte(sysinfo->spd_map[i], 2);
-			printk (BIOS_DEBUG, "%x:%x:%x\n",
+			printk(BIOS_DEBUG, "%x:%x:%x\n",
 				i, sysinfo->spd_map[i],
 				spd);
 			if ((spd == 7) || (spd == 8) || (spd == 0xb)) {

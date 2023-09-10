@@ -4,7 +4,7 @@
 
 /* Enable PS/2 Mouse */
 #define SIO_EC_ENABLE_PS2M
-#define SIO_EC_PS2M_IRQ Interrupt (ResourceConsumer, Level, ActiveLow, Shared) {12}
+#define SIO_EC_PS2M_IRQ Interrupt(ResourceConsumer, Level, ActiveLow, Shared) {12}
 
 #undef MAINBOARD_EC_S3_WAKE_EVENTS
 #undef MAINBOARD_EC_S3_DEVICE_EVENTS

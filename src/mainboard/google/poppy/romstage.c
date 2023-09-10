@@ -68,7 +68,7 @@ static void mainboard_print_spd_info(const uint8_t *spd, enum memory_type type)
 	char spd_name[SPD_PART_LEN+1] = { 0 };
 	const struct dram_info *info = &spd_info[type];
 
-	assert (info->type_code == spd[SPD_DRAM_TYPE_OFF]);
+	assert(info->type_code == spd[SPD_DRAM_TYPE_OFF]);
 
 	/* Module type */
 	printk(BIOS_INFO, "SPD: module type is %s\n", info->str);

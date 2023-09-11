@@ -42,13 +42,6 @@ CPPFLAGS_common += -I$(src)/soc/amd/mendocino/acpi
 CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/mendocino
 CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/common
 
-# ROMSIG Normally At ROMBASE + 0x20000
-# +-----------+---------------+----------------+------------+
-# |0x55AA55AA |               |                |            |
-# +-----------+---------------+----------------+------------+
-# |           |  PSPDIR ADDR  |  BIOSDIR ADDR  |
-# +-----------+---------------+----------------+
-
 # 0x80 accounts for the cbfs_file struct + filename + metadata structs, aligned to 64 bytes
 # Building the cbfs image will fail if the offset isn't large enough
 AMD_FW_AB_POSITION := 0x80

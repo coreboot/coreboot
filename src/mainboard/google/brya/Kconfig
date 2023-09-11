@@ -170,6 +170,7 @@ config DRIVER_TPM_I2C_BUS
 	default 0x0 if BOARD_GOOGLE_CRAASKOV
 	default 0x0 if BOARD_GOOGLE_GOTHRAX
 	default 0x0 if BOARD_GOOGLE_PIRRHA
+	default 0x1 if BOARD_GOOGLE_DOCHI
 
 config DRIVER_TPM_I2C_ADDR
 	hex
@@ -251,6 +252,7 @@ config MAINBOARD_PART_NUMBER
 	default "Pirrha" if BOARD_GOOGLE_PIRRHA
 	default "Quandiso" if BOARD_GOOGLE_QUANDISO
 	default "Nokris" if BOARD_GOOGLE_NOKRIS
+	default "Dochi" if BOARD_GOOGLE_DOCHI
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -303,6 +305,7 @@ config VARIANT_DIR
 	default "pirrha" if BOARD_GOOGLE_PIRRHA
 	default "quandiso" if BOARD_GOOGLE_QUANDISO
 	default "nokris" if BOARD_GOOGLE_NOKRIS
+	default "dochi" if BOARD_GOOGLE_DOCHI
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC if !BOARD_GOOGLE_BASEBOARD_NISSA

@@ -12,6 +12,9 @@ const char *get_wifi_sar_cbfs_filename(void)
 
 void variant_update_soc_chip_config(struct soc_intel_meteorlake_config *config)
 {
+	if (fw_config_probe(FW_CONFIG(AUDIO, ALC1019_ALC5682I_I2S)))
+		config->cnvi_bt_audio_offload = true;
+
     /* SOC Aux orientation override:
 	* This is a bitfield that corresponds to up to 4 TCSS ports.
 	* Bits (0,1) allocated for TCSS Port1 configuration and Bits (2,3)for TCSS Port2.

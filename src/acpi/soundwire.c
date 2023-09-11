@@ -400,7 +400,7 @@ void soundwire_gen_codec(struct acpi_dp *dsd, const struct soundwire_codec *code
 		struct acpi_dp *dpn;
 
 		/* Stop processing at the first invalid data port. */
-		if (entry->port < SOUNDWIRE_MIN_DPN || entry->port > SOUNDWIRE_MAX_DPN)
+		if (entry->port < SOUNDWIRE_MIN_DPN || entry->port >= SOUNDWIRE_MAX_DPN)
 			break;
 
 		if (entry->source) {

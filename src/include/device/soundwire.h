@@ -419,7 +419,7 @@ struct soundwire_dpn_entry {
 struct soundwire_codec {
 	struct soundwire_slave *slave;
 	struct soundwire_audio_mode *audio_mode[SOUNDWIRE_MAX_MODE];
-	struct soundwire_dpn_entry dpn[SOUNDWIRE_MAX_DPN - SOUNDWIRE_MIN_DPN];
+	struct soundwire_dpn_entry dpn[SOUNDWIRE_MAX_DPN];
 	struct soundwire_bra_mode *dp0_bra_mode[SOUNDWIRE_MAX_MODE];
 	struct soundwire_dp0 *dp0;
 	struct soundwire_multilane *multilane;

@@ -5,3 +5,9 @@ config DRIVERS_INTEL_MIPI_CAMERA
 	help
 	  MIPI CSI I2C camera SSDT generator. Generates SSDB and PWDB
 	  structures which are used by the Intel kernel drivers.
+
+config DRIVERS_INTEL_MIPI_SUPPORTS_PRE_PRODUCTION_SOC
+	def_bool n
+	help
+	  Use this config to provide information to IPU kernel driver
+	  if pre-production or production signed IPU FW needs to be loaded.

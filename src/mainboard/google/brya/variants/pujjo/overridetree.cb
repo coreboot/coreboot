@@ -36,6 +36,7 @@ fw_config
 		option WIFI_SAR_TABLE_2		2
 		option WIFI_SAR_TABLE_3		3
 		option WIFI_SAR_TABLE_4		4
+		option WIFI_SAR_TABLE_5		5
 	end
 	field WWAN_5G 19
 		option WWAN_5G_ABSENT		0

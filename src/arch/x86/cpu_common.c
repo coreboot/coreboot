@@ -44,7 +44,7 @@ unsigned int cpu_cpuid_extended_level(void)
 	return cpuid_eax(0x80000000);
 }
 
-int cpu_phys_address_size(void)
+unsigned int cpu_phys_address_size(void)
 {
 	if (!(cpu_have_cpuid()))
 		return 32;

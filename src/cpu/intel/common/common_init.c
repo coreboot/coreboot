@@ -248,7 +248,7 @@ bool is_tme_supported(void)
  * configured in the MSRs according to the capabilities and platform
  * configuration. For instance, after FSP-M.
  */
-static int get_tme_keyid_bits(void)
+static unsigned int get_tme_keyid_bits(void)
 {
 	msr_t msr;
 
@@ -256,7 +256,7 @@ static int get_tme_keyid_bits(void)
 	return msr.hi & TME_ACTIVATE_HI_KEYID_BITS_MASK;
 }
 
-int get_reserved_phys_addr_bits(void)
+unsigned int get_reserved_phys_addr_bits(void)
 {
 	if (!is_tme_supported())
 		return 0;

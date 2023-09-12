@@ -1,6 +1,6 @@
 chip soc/intel/alderlake
-	# Support 5200 MT/s memory
-	register "max_dram_speed_mts" = "5200"
+	# Support 5600 MT/s memory
+	register "max_dram_speed_mts" = "5600"
 
 	device domain 0 on
 		subsystemid 0x1558 0x3702 inherit

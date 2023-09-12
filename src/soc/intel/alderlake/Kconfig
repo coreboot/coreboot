@@ -1,7 +1,6 @@
 config SOC_INTEL_ALDERLAKE
 	bool
 	select ACPI_INTEL_HARDWARE_SLEEP_VALUES
-	select ACPI_ADL_IPU_ES_SUPPORT
 	select ARCH_X86
 	select BOOT_DEVICE_SUPPORTS_WRITES
 	select CACHE_MRC_SETTINGS
@@ -449,11 +448,6 @@ config DIMMS_PER_CHANNEL
 config MRC_CHANNEL_WIDTH
 	int
 	default 16
-
-config ACPI_ADL_IPU_ES_SUPPORT
-	def_bool n
-	help
-	  Enables ACPI entry to provide silicon type information to IPU kernel driver.
 
 config ALDERLAKE_ENABLE_SOC_WORKAROUND
 	bool

@@ -1,13 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpigen.h>
-#include <amdblocks/cpu.h>
 #include <amdblocks/data_fabric.h>
 #include <amdblocks/root_complex.h>
 #include <arch/ioapic.h>
 #include <arch/vga.h>
 #include <console/console.h>
 #include <cpu/amd/mtrr.h>
+#include <cpu/cpu.h>
 #include <device/device.h>
 #include <device/pci_ops.h>
 #include <types.h>
@@ -90,7 +90,7 @@ static void add_data_fabric_mmio_regions(struct device *domain, unsigned int *id
 
 	/* The last 12GB of the usable address space are reserved and can't be used for MMIO */
 	const resource_t reserved_upper_mmio_base =
-		(1ULL << get_usable_physical_address_bits()) - DF_RESERVED_TOP_12GB_MMIO_SIZE;
+		(1ULL << cpu_phys_address_size()) - DF_RESERVED_TOP_12GB_MMIO_SIZE;
 
 	for (unsigned int i = 0; i < DF_MMIO_REG_SET_COUNT; i++) {
 		ctrl.raw = data_fabric_broadcast_read32(DF_MMIO_CONTROL(i));

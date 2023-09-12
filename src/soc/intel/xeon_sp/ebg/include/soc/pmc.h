@@ -50,5 +50,7 @@
 #define  SCIS_IRQ23		7
 #define ST_PG_FDIS1		0x1e20
 #define  ST_FDIS_LK		(1 << 31)
+#define NST_PG_FDIS1		0x1e28
+#define  NST_FDIS_DSP		(1 << 23)
 
 #endif

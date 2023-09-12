@@ -92,6 +92,16 @@ config ARCH_X86_64_PGTBL_LOC
 	  The position where to place pagetables. Needs to be known at
 	  compile time. Must not overlap other files in CBFS.
 
+config RESERVED_PHYSICAL_ADDRESS_BITS_SUPPORT
+	bool
+	help
+	  On some systems, the upper physical address bits are reserved and
+	  used as a tag which is typically related to a memory encryption
+	  feature. When selecting this option, the SoC code needs to implement
+	  get_reserved_phys_addr_bits so that the common code knows how many of
+	  the most significant physical address bits are reserved and can't be
+	  used as address bits.
+
 # This is an SMP option. It relates to starting up APs.
 # It is usually set in mainboard/*/Kconfig.
 # TODO: Improve description.

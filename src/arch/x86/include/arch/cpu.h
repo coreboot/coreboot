@@ -316,7 +316,7 @@ size_t get_cache_size(const struct cpu_cache_info *info);
  */
 bool fill_cpu_cache_info(uint8_t level, struct cpu_cache_info *info);
 
-#if CONFIG(CPU_INTEL_COMMON)
+#if CONFIG(RESERVED_PHYSICAL_ADDRESS_BITS_SUPPORT)
 unsigned int get_reserved_phys_addr_bits(void);
 #else
 /* Default implementation */

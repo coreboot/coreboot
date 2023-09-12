@@ -3,3 +3,4 @@
 ramstage-y += gpio.c
 
 ramstage-y += variant.c
+ramstage-y += ramstage.c

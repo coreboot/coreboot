@@ -90,6 +90,8 @@ enum cb_err mainboard_ptn3460_config(struct ptn_3460_config *cfg)
 	cfg->t5_delay = 0x01;
 	/* Enable backlight control. */
 	cfg->backlight_ctrl = 0x00;
+	/* Enable PWMI passthrough mode. */
+	cfg->pin_cfg_ctrl1 = 0x10;
 
 	return CB_SUCCESS;
 }

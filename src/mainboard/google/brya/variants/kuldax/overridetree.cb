@@ -13,6 +13,10 @@ fw_config
 		option TC_USB4	0
 		option TC_USB3	1
 	end
+	field USB_HUB 32
+		option HUB_ABSENT	0
+		option HUB_PRESENT	1
+	end
 end
 
 chip soc/intel/alderlake
@@ -281,7 +285,16 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_A"
 						register "use_custom_pld" = "true"
 						register "custom_pld" = "ACPI_PLD_TYPE_A(FRONT, RIGHT, ACPI_PLD_GROUP(1, 2))"
-						device ref usb2_port9 on end
+						device ref usb2_port9 on
+							probe USB_HUB HUB_ABSENT
+						end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Hub for Type-A Port A0/A4/A5 (MLB)""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port9 on
+							probe USB_HUB HUB_PRESENT
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Bluetooth""
@@ -295,7 +308,16 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_USB3_A"
 						register "use_custom_pld" = "true"
 						register "custom_pld" = "ACPI_PLD_TYPE_A(FRONT, RIGHT, ACPI_PLD_GROUP(1, 2))"
-						device ref usb3_port1 on end
+						device ref usb3_port1 on
+							probe USB_HUB HUB_ABSENT
+						end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Hub for Type-A Port A0/A4/A5 (MLB)""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb3_port1 on
+							probe USB_HUB HUB_PRESENT
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB3 Type-A Port A1 (MLB)""

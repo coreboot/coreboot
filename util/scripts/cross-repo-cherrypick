@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
 # Adapt to your remote branch:
-BRANCH="origin/master"
+BRANCH="origin/main"
 
 # When pulling in patches from another tree from a gerrit repository,
 # do the following at the end of a larger cherry-pick series:
@@ -24,7 +24,7 @@ commit_message() {
 ORIGIN_HOST=$( commit_message |grep "^Reviewed-on: " |head -1 |cut -d/ -f3 )
 case "${ORIGIN_HOST}" in
 	review.coreboot.org)
-		BRANCH="origin/master"
+		BRANCH="origin/main"
 		MESSAGE_PREFIX="UPSTREAM: "
 		;;
 	chromium-review.googlesource.com)

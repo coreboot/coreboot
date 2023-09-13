@@ -87,6 +87,8 @@ static void gpio_keys_fill_ssdt_generator(const struct device *dev)
 		acpi_dp_add_child(dsd, "button-0", child);
 	acpi_dp_write(dsd);
 
+	acpigen_write_STA(acpi_device_status(dev));
+
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */
 }

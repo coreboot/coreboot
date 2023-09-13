@@ -364,7 +364,7 @@ chip soc/amd/picasso
 					# Set low (0) = Select DMIC0
 					# Set high (1) = Select DMIC1
 					register "dmic_select_gpio" = "ACPI_GPIO_OUTPUT(GPIO_67)"
-					device generic 0.0 alias acp_machine on end
+					device generic 0.0 alias acp_machine hidden end
 				end
 			end # Audio
 			device ref hda off end # HDA

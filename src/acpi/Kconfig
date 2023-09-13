@@ -86,6 +86,12 @@ config ACPI_GTDT
 	help
 	  Selected by platforms that implement ARM generic timers
 
+config ACPI_IORT
+	def_bool n
+	depends on ARCH_ARM64 && HAVE_ACPI_TABLES
+	help
+	  Selected by platforms that implement ARM IO Remap table.
+
 config MAX_ACPI_TABLE_SIZE_KB
 	int
 	default 144

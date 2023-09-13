@@ -105,6 +105,7 @@ enum acpi_tables {
 	XSDT,   /* Extended System Description Table */
 	/* Additional proprietary tables used by coreboot */
 	CRAT,   /* Component Resource Attribute Table */
+	IORT,   /* Input Output Remapping Table */
 	NHLT,   /* Non HD audio Link Table */
 	SPMI,   /* Server Platform Management Interface table */
 	VFCT    /* VBIOS Fetch Table */

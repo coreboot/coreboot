@@ -14,6 +14,7 @@
  */
 
 #include <acpi/acpi.h>
+#include <acpi/acpi_iort.h>
 #include <acpi/acpi_ivrs.h>
 #include <acpi/acpigen.h>
 #include <cbfs.h>
@@ -1194,6 +1195,26 @@ unsigned long acpi_gtdt_add_watchdog(unsigned long current, uint64_t refresh_fra
 	return current + sizeof(struct acpi_gtdt_watchdog);
 }
 
+static void acpi_create_iort(acpi_header_t *header, void *unused)
+{
+	if (!CONFIG(ACPI_IORT))
+		return;
+
+	acpi_iort_t *iort = (acpi_iort_t *)header;
+	unsigned long current = (unsigned long)iort + sizeof(acpi_iort_t);
+
+	if (acpi_fill_header(header, "IORT", IORT, sizeof(acpi_iort_t)) != CB_SUCCESS)
+		return;
+
+	iort->node_count = 0;
+	iort->node_offset = current - (unsigned long)iort;
+
+	current = acpi_soc_fill_iort(iort, current);
+
+	/* (Re)calculate length */
+	header->length = current - (unsigned long)iort;
+}
+
 unsigned long acpi_create_lpi_desc_ncst(acpi_lpi_desc_ncst_t *lpi_desc, uint16_t uid)
 {
 	memset(lpi_desc, 0, sizeof(acpi_lpi_desc_ncst_t));
@@ -1409,6 +1430,7 @@ unsigned long write_acpi_tables(const unsigned long start)
 		{ acpi_create_spcr, NULL, sizeof(acpi_spcr_t) },
 		{ acpi_create_gtdt, NULL, sizeof(acpi_gtdt_t) },
 		{ acpi_create_pptt, NULL, sizeof(acpi_pptt_t) },
+		{ acpi_create_iort, NULL, sizeof(acpi_iort_t) },
 	};
 
 	current = start;
@@ -1760,6 +1782,8 @@ int get_acpi_table_revision(enum acpi_tables table)
 		return 3;
 	case PPTT: /* ACPI 6.4 */
 		return 3;
+	case IORT: /* IO Remapping Table E.e */
+		return 6;
 	default:
 		return -1;
 	}

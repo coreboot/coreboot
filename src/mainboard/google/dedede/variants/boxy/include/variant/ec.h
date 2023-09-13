@@ -3,6 +3,6 @@
 #ifndef MAINBOARD_EC_H
 #define MAINBOARD_EC_H
 
-#include <baseboard/ec.h>
+#include <baseboard/dibbi/ec.h>
 
 #endif

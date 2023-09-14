@@ -279,6 +279,7 @@ void video_console_clear(void);
 void video_console_cursor_enable(int state);
 void video_console_get_cursor(unsigned int *x, unsigned int *y, unsigned int *en);
 void video_console_set_cursor(unsigned int cursorx, unsigned int cursory);
+void video_console_move_cursor(int x, int y);
 /*
  * print characters on video console with colors. note that there is a size
  * restriction for the internal buffer. so, output string can be truncated.

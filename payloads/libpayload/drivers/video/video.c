@@ -122,6 +122,13 @@ void video_console_putc(u8 row, u8 col, unsigned int ch)
 		console->putc(row, col, ch);
 }
 
+void video_console_move_cursor(int x, int y)
+{
+	cursorx += x;
+	cursory += y;
+	video_console_fixup_cursor();
+}
+
 void video_console_putchar(unsigned int ch)
 {
 	if (!console)

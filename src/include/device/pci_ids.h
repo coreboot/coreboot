@@ -4060,9 +4060,13 @@
 #define PCI_DID_INTEL_RPL_P_GT1				0xa720
 #define PCI_DID_INTEL_RPL_P_GT2				0xa7a8
 #define PCI_DID_INTEL_RPL_P_GT3				0xa7a0
-#define PCI_DID_INTEL_RPL_P_GT4				0xa7a9
-#define PCI_DID_INTEL_RPL_P_GT5				0xa7a1
-#define PCI_DID_INTEL_RPL_P_GT6				0xa721
+#define PCI_DID_INTEL_RPL_P_GT4				0xa7aa
+#define PCI_DID_INTEL_RPL_P_GT5				0xa7ab
+#define PCI_DID_INTEL_RPL_U_GT1				0xa7a9
+#define PCI_DID_INTEL_RPL_U_GT2				0xa7a1
+#define PCI_DID_INTEL_RPL_U_GT3				0xa721
+#define PCI_DID_INTEL_RPL_U_GT4				0xa7ac
+#define PCI_DID_INTEL_RPL_U_GT5				0xa7ad
 
 /* Intel Northbridge Ids */
 #define PCI_DID_INTEL_APL_NB			0x5af0

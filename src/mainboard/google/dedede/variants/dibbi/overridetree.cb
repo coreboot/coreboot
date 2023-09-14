@@ -166,7 +166,6 @@ chip soc/intel/jasperlake
 		end # SA Thermal device
 		device pci 14.0 on
 			chip drivers/usb/acpi
-				# TODO (b/264960828) verify PLD values
 				device usb 0.0 on
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Type-C Port C0""
@@ -220,15 +219,15 @@ chip soc/intel/jasperlake
 						device usb 3.3 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB3 Type-A Port A2""
-						register "type" = "UPC_TYPE_USB3_A"
-						register "group" = "ACPI_PLD_GROUP(1, 4)"
-						device usb 3.4 on end
-					end
-					chip drivers/usb/acpi
 						register "desc" = ""USB3 Type-A Port A3""
 						register "type" = "UPC_TYPE_USB3_A"
 						register "group" = "ACPI_PLD_GROUP(1, 5)"
+						device usb 3.4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port A2""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(1, 4)"
 						device usb 3.5 on end
 					end
 				end

@@ -55,6 +55,8 @@ const char *soc_acpi_name(const struct device *dev)
 			case 1: return "SS02";
 			case 2: return "SS03";
 			case 3: return "SS04";
+			case 4: return "SS05";
+			case 5: return "SS06";
 			}
 			break;
 		}

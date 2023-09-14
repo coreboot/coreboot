@@ -50,7 +50,9 @@ chip soc/intel/xeon_sp/spr
 		device pci 16.4 on end # Intel device 1be4: PCH ME HECI #3
 		device pci 16.5 on end # Intel device 1be5: PCH ME HECI #4
 		device pci 16.6 on end # Intel device 1be6
-		device pci 17.0 on end # Intel device 1ba2: PCH SATA controller (AHCI)
+		device pci 17.0 on end # Intel device 1ba2: PCH SATA controller 0 (AHCI)
+		device pci 18.0 on end # Intel device 1bf2: PCH SATA controller 1 (AHCI)
+		device pci 19.0 on end # Intel device 1bd2: PCH SATA controller 2 (AHCI)
 		device pci 1a.0 on end # Intel device 1bb4: PCH PCIe Root Port #12
 		device pci 1b.0 on end # Intel device 1bb5: PCH PCIe Root Port #13
 		device pci 1e.0 on end # Intel device Communication controller: Intel Corporation Device 1bad

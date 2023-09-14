@@ -21,7 +21,7 @@
 #include "flashrom.h"
 
 #define FLASHROM_EXEC_NAME "flashrom"
-#define FLASHROM_PROGRAMMER_INTERNAL_AP "host"
+#define FLASHROM_PROGRAMMER_INTERNAL_AP "internal"
 
 /**
  * Helper to create a temporary file.

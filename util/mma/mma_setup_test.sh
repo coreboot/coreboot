@@ -86,7 +86,7 @@ show_usage() {
 
 write_flash() {
 	printf "Writing back flash contents "${flashrom_temp_image}"\n"
-	flashrom -p host -w "${flashrom_temp_image}" --noverify-all || \
+	flashrom -p internal -w "${flashrom_temp_image}" --noverify-all || \
 		{
 			printf "failed to read flash\n" ;
 			exit -1;
@@ -176,7 +176,7 @@ main() {
 	remove_file_if_exists "${flashrom_temp_image}"
 
 	printf "Reading flash contents to "${flashrom_temp_image}"\n"
-	flashrom -p host -r "${flashrom_temp_image}" || \
+	flashrom -p internal -r "${flashrom_temp_image}" || \
 		{
 			printf "failed to read flash\n" ;
 			exit -1;

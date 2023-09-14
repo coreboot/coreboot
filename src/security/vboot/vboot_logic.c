@@ -182,10 +182,13 @@ static vb2_error_t hash_body(struct vb2_context *ctx,
 	return handle_digest_result(hash_digest, hash_digest_sz);
 }
 
-static uint32_t extend_pcrs(struct vb2_context *ctx)
+static vb2_error_t extend_pcrs(struct vb2_context *ctx)
 {
-	return vboot_extend_pcr(ctx, CONFIG_PCR_BOOT_MODE, BOOT_MODE_PCR) ||
-		   vboot_extend_pcr(ctx, CONFIG_PCR_HWID, HWID_DIGEST_PCR);
+	vb2_error_t rv;
+	rv = vboot_extend_pcr(ctx, CONFIG_PCR_BOOT_MODE, BOOT_MODE_PCR);
+	if (rv)
+		return rv;
+	return vboot_extend_pcr(ctx, CONFIG_PCR_HWID, HWID_DIGEST_PCR);
 }
 
 #define EC_EFS_BOOT_MODE_VERIFIED_RW	0x00
@@ -346,8 +349,7 @@ void verstage_main(void)
 						  vb2_digest_size(metadata_hash->algo));
 	} else {
 		struct region_device fw_body;
-		rv = vboot_locate_firmware(ctx, &fw_body);
-		if (rv)
+		if (vboot_locate_firmware(ctx, &fw_body))
 			die_with_post_code(POSTCODE_INVALID_ROM,
 					   "Failed to read FMAP to locate firmware");
 

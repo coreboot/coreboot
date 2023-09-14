@@ -180,5 +180,5 @@ The generated file includes a compressed initrd **initramfs.cpio.xz**, which
 will be decompressed by the Linux kernel, a compressed kernel **Image.lzma**,
 which will be decompressed by the FIT loader and an uncompressed devicetree blob.
 
-[uImage.FIT]: https://raw.githubusercontent.com/u-boot/u-boot/master/doc/uImage.FIT/howto.txt
+[uImage.FIT]: https://github.com/u-boot/u-boot/blob/master/doc/usage/fit/howto.rst
 [U-Boot]: https://www.denx.de/wiki/U-Boot

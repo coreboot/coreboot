@@ -146,9 +146,9 @@ coreboot is primarily developed in the
 system, using [Gerrit](https://review.coreboot.org) to manage
 contributions and code review.
 
-In general we try to keep the `master` branch in the repository functional
+In general we try to keep the `main` branch in the repository functional
 for all hardware we support. So far, the only guarantee we can make is
-that the master branch will (nearly) always build for all boards in a
+that the main branch will (nearly) always build for all boards in a
 standard configuration.
 
 However, we're continually working on improvements to our infrastructure to
@@ -200,4 +200,4 @@ Contents:
 * [External Resources](external_docs.md)
 * [Documentation License](documentation_license.md)
 
-[Documentation]: https://review.coreboot.org/plugins/gitiles/coreboot/+/refs/heads/master/Documentation/
+[Documentation]: https://review.coreboot.org/plugins/gitiles/coreboot/+/refs/heads/main/Documentation/

@@ -234,7 +234,7 @@ be set when you push the patches into gerrit. For example, to push a set of
 commits with the i915-kernel-x60 set, use the command:
 
 ```Bash
-git push origin HEAD:refs/for/master%topic=i915-kernel-x60
+git push origin HEAD:refs/for/main%topic=i915-kernel-x60
 ```
 
 * If one of your patches isn't ready to be merged, make sure it's obvious
@@ -247,7 +247,7 @@ isn't as obvious as the commit message. These patches can also be pushed with
 the wip flag:
 
 ```Bash
-git push origin HEAD:refs/for/master%wip
+git push origin HEAD:refs/for/main%wip
 ```
 
 * When pushing patches that are not for submission, these should be marked
@@ -259,13 +259,13 @@ who knows their commit ID, so don't use this for sensitive changes. To push
 a private change, use the command:
 
 ```Bash
-git push origin HEAD:refs/for/master%private
+git push origin HEAD:refs/for/main%private
 ```
 
 * Multiple push options can be combined:
 
 ```Bash
-git push origin HEAD:refs/for/master%private,wip,topic=experiment
+git push origin HEAD:refs/for/main%private,wip,topic=experiment
 ```
 
 * Respond to anyone who has taken the time to review your patches, even if
@@ -292,7 +292,7 @@ changed.
 helps others and shows that these mainboards are currently being
 maintained. At some point, boards that are not up to date in the
 board-status repo will probably end up getting removed from the coreboot
-master branch.
+main branch.
 
 * Abandon patches that are no longer useful, or that you don’t intend to
 keep working on to get submitted.

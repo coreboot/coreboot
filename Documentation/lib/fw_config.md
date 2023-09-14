@@ -106,8 +106,8 @@ protection)* with the `ectool` command in a ChromeOS environment.
 For more information on the firmware configuration field on ChromeOS devices see the Chromium
 documentation for [Firmware Config][1] and [Board Info][2].
 
-[1]: http://chromium.googlesource.com/chromiumos/docs/+/master/design_docs/firmware_config.md
-[2]: http://chromium.googlesource.com/chromiumos/docs/+/master/design_docs/cros_board_info.md
+[1]: http://chromium.googlesource.com/chromiumos/docs/+/HEAD/design_docs/firmware_config.md
+[2]: http://chromium.googlesource.com/chromiumos/docs/+/HEAD/design_docs/cros_board_info.md
 
 ## Firmware Configuration Table
 

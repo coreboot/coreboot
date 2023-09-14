@@ -386,7 +386,7 @@ want to submit all commits in the currently checked-out branch for
 review on gerrit:
 { \small
 \begin{verbatim}
-$ git config remote.origin.push HEAD:refs/for/master
+$ git config remote.origin.push HEAD:refs/for/main
 \end{verbatim}
 }
 
@@ -399,10 +399,10 @@ $ make gitconfig
 
 \subsection{Work flow}
 
-It is recommended that you make a new branch when you start to work, not pushing changes to master.
+It is recommended that you make a new branch when you start to work, not pushing changes to main.
 { \small
 \begin{verbatim}
-$ git checkout master -b mybranch
+$ git checkout main -b mybranch
 \end{verbatim}
 }
 After you have done your changes, run:
@@ -452,7 +452,7 @@ make a new local commit that fixes the issues reported by the
 reviewers, then rebase the change by preserving the same Change-ID. We
 recommend you to use the git rebase command in interactive mode,
 
-Once your patch gets a +2 comment, your patch can be merged (cherry-pick, actually) to origin/master.
+Once your patch gets a +2 comment, your patch can be merged (cherry-pick, actually) to origin/main.
 
 %
 % Working with Gerrit
@@ -474,9 +474,9 @@ click \url{https://review.coreboot.org}
 |Search for status:open                                     |
 +-----------------------------------------------------------+
 |Subject      Status   Owner  Project  Branch Updated CR V  |
-|cpu: Rename..      Alexandru coreboot master 1:20 PM +1    |
-|cpu: Only a..      Alexandru coreboot master 1:17 PM    X  |
-|arch/x86: D..      Alexandru coreboot master 1:09 PM       |
+|cpu: Rename..      Alexandru coreboot main   1:20 PM +1    |
+|cpu: Only a..      Alexandru coreboot main   1:17 PM    X  |
+|arch/x86: D..      Alexandru coreboot main   1:09 PM       |
 |                                                           |
 |                                                  Next ->  |
 |Press '?' to view keyboard shortcuts | Powered by Gerrit   |
@@ -637,7 +637,7 @@ Gerrit makes reviews easier by showing changes in a side-by-side
 display, and allowing inline comments to be added by any reviewer.
 
 Gerrit simplifies Git based project maintainership by permitting any
-authorized user to submit changes to the master Git repository, rather
+authorized user to submit changes to the upstream Git repository, rather
 than requiring all approved changes to be merged in by hand by the
 project maintainer. This functionality enables a more centralized
 usage of Git.

@@ -250,7 +250,6 @@ chip soc/intel/meteorlake
 		end # PCIE10 SSD card
 		device ref tbt_pcie_rp0 on end
 		device ref tbt_pcie_rp2 on end
-		device ref vpu on end
 		device ref tcss_xhci on
 			chip drivers/usb/acpi
 				device ref tcss_root_hub on

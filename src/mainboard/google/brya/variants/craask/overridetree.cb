@@ -3,6 +3,7 @@ fw_config
 		option DB_NONE			0
 		option DB_1C_1A			1
 		option DB_1C_LTE		2
+		option DB_1A_HDMI		3
 	end
 	field WFC 2 3
 		option WFC_ABSENT		0
@@ -644,7 +645,9 @@ chip soc/intel/alderlake
 					chip drivers/intel/pmc_mux/conn
 						use usb2_port2 as usb2_port
 						use tcss_usb3_port2 as usb3_port
-						device generic 1 alias conn1 on end
+						device generic 1 alias conn1 on
+							probe DB_USB DB_1C_1A
+						end
 					end
 				end
 			end
@@ -684,7 +687,9 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
                                                 register "use_custom_pld" = "true"
                                                 register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(2, 1))"
-						device ref usb2_port2 on end
+						device ref usb2_port2 on
+							probe DB_USB DB_1C_1A
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Type-A Port A0 (MLB)""

@@ -1,0 +1,82 @@
+config BOARD_PURISM_BASEBOARD_LIBREM_JSL
+	def_bool n
+	select BOARD_ROMSIZE_KB_16384
+	select DRIVERS_GENERIC_CBFS_SERIAL
+	select DRIVERS_USB_ACPI
+	select DRIVERS_I2C_GENERIC
+	select DRIVERS_I2C_HID
+	select EC_ACPI
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_SPD_IN_CBFS
+	select INTEL_GMA_HAVE_VBT
+	select NO_UART_ON_SUPERIO
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select SOC_INTEL_JASPERLAKE
+	select SYSTEM_TYPE_DETACHABLE
+	select USE_LEGACY_8254_TIMER
+
+config BOARD_PURISM_LIBREM_11
+	select BOARD_PURISM_BASEBOARD_LIBREM_JSL
+
+if BOARD_PURISM_BASEBOARD_LIBREM_JSL
+
+config MAINBOARD_DIR
+	default "purism/librem_jsl"
+
+config MAINBOARD_FAMILY
+	string
+	default "Librem 11" if BOARD_PURISM_BASEBOARD_LIBREM_JSL
+
+config MAINBOARD_PART_NUMBER
+	default "Librem 11" if BOARD_PURISM_BASEBOARD_LIBREM_JSL
+
+config MAX_CPUS
+	int
+	default 4
+
+config CBFS_SIZE
+	default 0x700000 if BOARD_PURISM_BASEBOARD_LIBREM_JSL
+
+config DIMM_MAX
+	default 2
+
+config DIMM_SPD_SIZE
+	default 512
+
+config VGA_BIOS_ID
+	string
+	default "8086,4e61" if BOARD_PURISM_BASEBOARD_LIBREM_JSL
+
+config NO_POST
+	default y
+
+config INTEL_GMA_VBT_FILE
+	default "src/mainboard/purism/librem_jsl/data.vbt"
+
+config ENABLE_UART2
+	bool "Enable UART2 debug output"
+	default n
+	select INTEL_LPSS_UART_FOR_CONSOLE
+	help
+	  Enable UART2 for debug output.
+
+	  This UART can be used for boot logging by coreboot and payloads.
+
+	  For Linux, boot with `console=uart,mmio32,0xfe032000,115200n8`.
+	  (0xfe032000 is CONSOLE_UART_BASE_ADDRESS for Jasper Lake.)  Blacklist
+	  intel_lpss_pci so it does not reconfigure the UART.
+
+	  Soldering is required to access these signals.  On the reverse side of
+	  the board, there are two test points directly underneath the SoC (the
+	  only two test points between the heatsink screw holes).  The pad
+	  nearest the M.2 socket is TX, the other is RX.  The signals are 3.3V
+	  (do NOT connect directly to an RS-232 serial port).
+
+config UART_FOR_CONSOLE
+	default 2 if ENABLE_UART2
+
+config FSP_TEMP_RAM_SIZE
+	default 0x28000
+
+endif

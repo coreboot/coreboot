@@ -1,0 +1,8 @@
+Vendor name: Purism
+Board name: Librem Jasper Lake baseboard
+Category: misc
+Release year: 2023
+ROM package: SOIC-8
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

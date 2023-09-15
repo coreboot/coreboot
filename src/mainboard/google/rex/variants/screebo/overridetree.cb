@@ -51,9 +51,6 @@ chip soc/intel/meteorlake
 	# Enable HDMI in Port B
 	register "ddi_port_B_config" = "0"
 
-	# Temporary setting TCC of 80C = Tj max (110) - TCC_Offset (30)
-	register "tcc_offset" = "30"
-
 	# TODO(b/287170545): workaround avoid DUT random hang
 	register "sagv_wp_bitmap" = "SAGV_POINTS_0_1_2"
 

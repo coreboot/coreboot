@@ -121,6 +121,8 @@ config DEVICETREE
 	default "variants/baseboard/\$(CONFIG_BASEBOARD_DIR)/devicetree.cb"
 
 config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos4es-debug-fsp.fmd" if CHROMEOS && BUILDING_WITH_DEBUG_FSP && SOC_INTEL_METEORLAKE_PRE_PRODUCTION_SILICON
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos4es.fmd" if CHROMEOS && SOC_INTEL_METEORLAKE_PRE_PRODUCTION_SILICON
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-debug-fsp.fmd" if CHROMEOS && BUILDING_WITH_DEBUG_FSP
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if CHROMEOS
 

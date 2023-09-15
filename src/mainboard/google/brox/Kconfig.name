@@ -1,0 +1,4 @@
+comment "Brox"
+
+config BOARD_GOOGLE_BROX
+	bool "->  Brox"

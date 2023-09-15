@@ -1,0 +1,157 @@
+config BOARD_GOOGLE_BROX_COMMON
+	def_bool n
+	select DRIVERS_GENERIC_GPIO_KEYS
+	select DRIVERS_I2C_GENERIC
+	select DRIVERS_I2C_HID
+	select DRIVERS_INTEL_DPTF
+	select DRIVERS_INTEL_DPTF_SUPPORTS_TPCH
+	select DRIVERS_INTEL_PMC
+	select DRIVERS_INTEL_SOUNDWIRE
+	select DRIVERS_INTEL_USB4_RETIMER
+	select DRIVERS_SPI_ACPI
+	select DRIVERS_WIFI_GENERIC
+	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_BOARDID
+	select EC_GOOGLE_CHROMEEC_ESPI
+	select EC_GOOGLE_CHROMEEC_SKUID
+	select ENABLE_TCSS_USB_DETECTION if !CHROMEOS
+	select FW_CONFIG
+	select FW_CONFIG_SOURCE_CHROMEEC_CBI
+	select GOOGLE_SMBIOS_MAINBOARD_VERSION
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_FSP_LOGO_SUPPORT if RUN_FSP_GOP
+	select I2C_TPM
+	select INTEL_LPSS_UART_FOR_CONSOLE
+	select MAINBOARD_HAS_CHROMEOS
+	select MAINBOARD_HAS_TPM2
+	select PMC_IPC_ACPI_INTERFACE
+	select SOC_INTEL_CSE_LITE_SKU
+#	select SOC_INTEL_CSE_SEND_EOP_ASYNC
+	select SOC_INTEL_COMMON_BLOCK_USB4
+	select SOC_INTEL_COMMON_BLOCK_TCSS
+	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
+	select SOC_INTEL_COMMON_BASECODE_DEBUG_FEATURE
+	select SOC_INTEL_CRASHLOG
+	select SOC_INTEL_CSE_PRE_CPU_RESET_TELEMETRY_V1
+
+config BOARD_GOOGLE_BASEBOARD_BROX
+	def_bool n
+	select BOARD_GOOGLE_BROX_COMMON
+	select BOARD_ROMSIZE_KB_32768
+	select DRIVERS_AUDIO_SOF
+	select DRIVERS_GFX_GENERIC
+	select HAVE_SLP_S0_GATE
+	select MEMORY_SOLDERDOWN
+	select SOC_INTEL_COMMON_BLOCK_IPU
+	select SOC_INTEL_CRASHLOG
+	select SOC_INTEL_RAPTORLAKE
+	select SOC_INTEL_RAPTORLAKE_PCH_S
+	select SYSTEM_TYPE_LAPTOP
+	select TPM_GOOGLE_CR50
+
+config BOARD_GOOGLE_BROX
+	bool "->  Brox"
+	select BOARD_GOOGLE_BASEBOARD_BROX
+
+if BOARD_GOOGLE_BROX_COMMON
+
+config BASEBOARD_DIR
+	string
+	default "brox" if BOARD_GOOGLE_BASEBOARD_BROX
+
+config CHROMEOS
+	select EC_GOOGLE_CHROMEEC_SWITCHES
+	select HAS_RECOVERY_MRC_CACHE
+
+config CHROMEOS_WIFI_SAR
+	bool "Enable SAR options for ChromeOS build"
+	depends on CHROMEOS
+	select DSAR_ENABLE
+	select GEO_SAR_ENABLE
+	select SAR_ENABLE
+	select USE_SAR
+
+config DEVICETREE
+	default "variants/baseboard/\$(CONFIG_BASEBOARD_DIR)/devicetree.cb"
+
+config DRIVER_TPM_I2C_BUS
+	hex
+	default 0x1 if BOARD_GOOGLE_BROX
+
+config DRIVER_TPM_I2C_ADDR
+	hex
+	default 0x50
+
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if CHROMEOS
+
+config TPM_TIS_ACPI_INTERRUPT
+	int
+	default 13
+
+config OVERRIDE_DEVICETREE
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
+
+config MAINBOARD_DIR
+	default "google/brox"
+
+config MAINBOARD_FAMILY
+	string
+	default "Google_Brox" if BOARD_GOOGLE_BASEBOARD_BROX
+
+config MAINBOARD_PART_NUMBER
+	default "Brox" if BOARD_GOOGLE_BROX
+
+config VARIANT_DIR
+	default "brox" if BOARD_GOOGLE_BROX
+
+config VBOOT
+	select VBOOT_EARLY_EC_SYNC
+	select VBOOT_LID_SWITCH
+
+config DIMM_SPD_SIZE
+	default 512
+
+config UART_FOR_CONSOLE
+	int
+	default 0
+
+config HAVE_WWAN_POWER_SEQUENCE
+	def_bool n
+	help
+	  Select this if the variant has a WWAN module and requires the poweroff sequence
+	  to be performed on shutdown. Must define WWAN_FCPO, WWAN_RST and WWAN_PERST GPIOs
+	  in variant.h, as well as T1_OFF_MS (time between PERST & RST) and T2_OFF_MS (time
+	  between RST and FCPO). WWAN_PERST and T1_OFF_MS are only necessary for PCIe WWAN
+	  (when HAVE_PCIE_WWAN is also selected).
+
+config HAVE_PCIE_WWAN
+	def_bool n
+
+config USE_PM_ACPI_TIMER
+	default y if BOARD_GOOGLE_PRIMUS4ES
+	default n
+
+config MEMORY_SODIMM
+	def_bool n
+	select SPD_CACHE_ENABLE
+	select SPD_CACHE_IN_FMAP
+
+config MEMORY_SOLDERDOWN
+	def_bool n
+	select CHROMEOS_DRAM_PART_NUMBER_IN_CBI if CHROMEOS
+	select HAVE_SPD_IN_CBFS
+
+config HAVE_SLP_S0_GATE
+	def_bool n
+
+config PCIEXP_DEFAULT_MAX_RESIZABLE_BAR_BITS
+	int
+	default 33
+
+config VBT_DATA_SIZE_KB
+	int
+	default 10
+
+endif # BOARD_GOOGLE_BROX_COMMON

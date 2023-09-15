@@ -443,6 +443,14 @@ unsigned int __weak smbios_cpu_get_voltage(void)
 	return 0; /* Unknown */
 }
 
+unsigned int smbios_get_max_sockets(void)
+{
+	if (CONFIG_MAX_SOCKET == 1)
+		return 1;
+	else
+		return smbios_soc_get_max_sockets();
+}
+
 static int smbios_write_type1(unsigned long *current, int handle)
 {
 	struct smbios_type1 *t = smbios_carve_table(*current, SMBIOS_SYSTEM_INFORMATION,
@@ -1233,9 +1241,11 @@ unsigned long smbios_write_tables(unsigned long current)
 	handle++;
 	update_max(len, max_struct_size, smbios_write_type3(&current, handle++));
 
-	struct smbios_type4 *type4 = (struct smbios_type4 *)current;
-	update_max(len, max_struct_size, smbios_write_type4(&current, handle++));
-	len += smbios_write_type7_cache_parameters(&current, &handle, &max_struct_size, type4);
+	for (unsigned int s = 0; s < smbios_get_max_sockets(); s++) {
+		struct smbios_type4 *type4 = (struct smbios_type4 *)current;
+		update_max(len, max_struct_size, smbios_write_type4(&current, handle++));
+		len += smbios_write_type7_cache_parameters(&current, &handle, &max_struct_size, type4);
+	}
 	update_max(len, max_struct_size, smbios_write_type11(&current, &handle));
 	if (CONFIG(ELOG))
 		update_max(len, max_struct_size,

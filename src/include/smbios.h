@@ -74,6 +74,8 @@ void smbios_cpu_get_core_counts(u16 *core_count, u16 *thread_count);
 unsigned int smbios_cpu_get_max_speed_mhz(void);
 unsigned int smbios_cpu_get_current_speed_mhz(void);
 unsigned int smbios_cpu_get_voltage(void);
+unsigned int smbios_get_max_sockets(void);
+unsigned int smbios_soc_get_max_sockets(void);
 
 const char *smbios_mainboard_manufacturer(void);
 const char *smbios_mainboard_product_name(void);

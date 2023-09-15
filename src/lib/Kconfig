@@ -49,6 +49,10 @@ config DIMM_MAX
 	  It is multiplication of number of channel to number of DIMMs per
 	  channel
 
+config MAX_SOCKET
+	int
+	default 1
+
 config DIMM_SPD_SIZE
 	int
 	default 256

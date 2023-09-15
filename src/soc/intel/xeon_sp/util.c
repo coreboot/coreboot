@@ -90,6 +90,11 @@ unsigned int soc_get_num_cpus(void)
 	return get_iio_uds()->SystemStatus.numCpus;
 }
 
+unsigned int smbios_soc_get_max_sockets(void)
+{
+	return soc_get_num_cpus();
+}
+
 union p2sb_bdf soc_get_hpet_bdf(void)
 {
 	if (CONFIG(SOC_INTEL_COMMON_IBL_BASE)) {

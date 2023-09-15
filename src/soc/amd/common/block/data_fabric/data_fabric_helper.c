@@ -54,14 +54,7 @@ void data_fabric_print_mmio_conf(void)
 		"idx             base            limit  control R W NP F-ID\n");
 	for (unsigned int i = 0; i < DF_MMIO_REG_SET_COUNT; i++) {
 		control.raw = data_fabric_broadcast_read32(DF_MMIO_CONTROL(i));
-		/* Base and limit address registers don't contain the lower address bits, but
-		   are shifted by D18F0_MMIO_SHIFT bits */
-		base = (uint64_t)data_fabric_broadcast_read32(DF_MMIO_BASE(i))
-			<< DF_MMIO_SHIFT;
-		limit = (uint64_t)data_fabric_broadcast_read32(DF_MMIO_LIMIT(i))
-			<< DF_MMIO_SHIFT;
-		/* Lower D18F0_MMIO_SHIFT address limit bits are all 1 */
-		limit += (1 << DF_MMIO_SHIFT) - 1;
+		data_fabric_get_mmio_base_size(i, &base, &limit);
 		printk(BIOS_SPEW, " %2u %16llx %16llx %8x %s %s  %s %4x\n",
 		       i, base, limit, control.raw,
 		       control.re ? "x" : " ",

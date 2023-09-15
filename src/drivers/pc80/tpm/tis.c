@@ -369,12 +369,14 @@ static int tis_command_ready(u8 locality)
 }
 
 /*
+ * tis_init()
+ *
  * Probe the TPM device and try determining its manufacturer/device name.
  *
  * Returns 0 on success (the device is found or was found during an earlier
  * invocation) or TPM_DRIVER_ERR if the device is not found.
  */
-static u32 tis_probe(void)
+int tis_init(void)
 {
 	const char *device_name = "unknown";
 	const char *vendor_name = device_name;
@@ -605,19 +607,6 @@ static u32 tis_readresponse(u8 *buffer, size_t *len)
 		return TPM_DRIVER_ERR;
 
 	*len = offset;
-	return 0;
-}
-
-/*
- * tis_init()
- *
- * Initialize the TPM device. Returns 0 on success or TPM_DRIVER_ERR on
- * failure (in case device probing did not succeed).
- */
-int tis_init(void)
-{
-	if (tis_probe())
-		return TPM_DRIVER_ERR;
 	return 0;
 }
 

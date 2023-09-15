@@ -71,7 +71,7 @@ void data_fabric_print_mmio_conf(void)
 	}
 }
 
-void data_fabric_disable_mmio_reg(unsigned int reg)
+static void data_fabric_disable_mmio_reg(unsigned int reg)
 {
 	union df_mmio_control ctrl = { .dst_fabric_id = IOMS0_FABRIC_ID };
 	data_fabric_broadcast_write32(DF_MMIO_CONTROL(reg), ctrl.raw);
@@ -86,7 +86,7 @@ static bool is_mmio_reg_disabled(unsigned int reg)
 	return !(ctrl.we || ctrl.re);
 }
 
-int data_fabric_find_unused_mmio_reg(void)
+static int data_fabric_find_unused_mmio_reg(void)
 {
 	for (unsigned int i = 0; i < DF_MMIO_REG_SET_COUNT; i++) {
 		if (is_mmio_reg_disabled(i))

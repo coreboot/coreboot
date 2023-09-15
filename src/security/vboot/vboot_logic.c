@@ -386,7 +386,7 @@ void verstage_main(void)
 		rv = antirollback_lock_space_mrc_hash(MRC_REC_HASH_NV_INDEX);
 		if (rv) {
 			printk(BIOS_INFO, "Failed to lock rec hash space(%x)\n", rv);
-			vboot_fail_and_reboot(ctx, VB2_RECOVERY_RO_TPM_REC_HASH_L_ERROR, 0);
+			vboot_fail_and_reboot(ctx, VB2_RECOVERY_RO_TPM_REC_HASH_L_ERROR, rv);
 		}
 	}
 

@@ -121,6 +121,14 @@ config SOC_INTEL_METEORLAKE_S
 	  Choose this option if your mainboard has a MTL-S (35W or 65W) SoC.
 	  Note, MTL-S SoC combines Compute, GFX, SoC, IOE and PCH die.
 
+config SOC_INTEL_METEORLAKE_PRE_PRODUCTION_SILICON
+	bool
+	default n
+	help
+	  Choose this option if your mainboard has a Meteor Lake pre-production
+	  silicon. Typically known as engineering samples (like ES). This type
+	  of the silicon are very common for early platform development.
+
 if SOC_INTEL_METEORLAKE
 
 config SOC_INTEL_METEORLAKE_TCSS_USB4_SUPPORT

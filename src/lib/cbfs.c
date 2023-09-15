@@ -443,8 +443,7 @@ static void *do_alloc(union cbfs_mdata *mdata, struct region_device *rdev,
 		return mapping;
 	} else if (!cbfs_cache.size) {
 		/* In order to use the cbfs_cache you need to add a CBFS_CACHE to your
-		 * memlayout. For stages that don't have .data sections (x86 pre-RAM),
-		 * it is not possible to add a CBFS_CACHE. */
+		 * memlayout. */
 		ERROR("Cannot map compressed file %s without cbfs_cache\n", mdata->h.filename);
 		return NULL;
 	} else {

@@ -3,7 +3,7 @@
 #include <tests/test.h>
 #include <stdlib.h>
 #include <string.h>
-#include <list.h>
+#include <commonlib/list.h>
 
 struct test_container {
 	int value;

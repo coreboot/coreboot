@@ -1,8 +1,10 @@
 /* Taken from depthcharge: src/base/list.h */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#ifndef __LIST_H__
-#define __LIST_H__
+#ifndef __COMMONLIB_LIST_H__
+#define __COMMONLIB_LIST_H__
+
+#include <commonlib/helpers.h>
 
 struct list_node {
 	struct list_node *next;
@@ -24,4 +26,4 @@ void list_append(struct list_node *node, struct list_node *head);
 		(ptr) = container_of((ptr)->member.next,                      \
 			typeof(*(ptr)), member))
 
-#endif /* __LIST_H__ */
+#endif /* __COMMONLIB_LIST_H__ */

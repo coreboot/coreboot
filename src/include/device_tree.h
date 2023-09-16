@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <list.h>
+#include <commonlib/list.h>
 
 /*
  * Flattened device tree structures/constants.

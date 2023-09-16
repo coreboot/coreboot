@@ -28,8 +28,6 @@ CFLAGS_ramstage += $(CFLAGS_asan)
 $(obj)/ramstage/lib/asan.o: CFLAGS_asan =
 endif
 
-all-y += list.c
-
 decompressor-y += decompressor.c
 $(call src-to-obj,decompressor,$(dir)/decompressor.c): $(objcbfs)/bootblock.lz4
 $(call src-to-obj,decompressor,$(dir)/decompressor.c): CCACHE_EXTRAFILES=$(objcbfs)/bootblock.lz4

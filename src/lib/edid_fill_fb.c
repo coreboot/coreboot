@@ -6,7 +6,7 @@
 #include <framebuffer_info.h>
 #include <string.h>
 #include <stdlib.h>
-#include <list.h>
+#include <commonlib/list.h>
 
 struct fb_info {
 	struct list_node node;

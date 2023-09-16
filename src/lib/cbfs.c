@@ -6,10 +6,10 @@
 #include <cbmem.h>
 #include <commonlib/bsd/cbfs_private.h>
 #include <commonlib/bsd/compression.h>
+#include <commonlib/list.h>
 #include <console/console.h>
 #include <fmap.h>
 #include <lib.h>
-#include <list.h>
 #include <metadata_hash.h>
 #include <security/tpm/tspi/crtm.h>
 #include <security/vboot/vboot_common.h>

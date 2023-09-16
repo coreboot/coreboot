@@ -48,4 +48,7 @@ ifeq ($(CONFIG_LP_LIBC),y)
 libc-srcs += $(coreboottop)/src/commonlib/bsd/elog.c
 libc-srcs += $(coreboottop)/src/commonlib/bsd/gcd.c
 libc-srcs += $(coreboottop)/src/commonlib/bsd/ipchksum.c
+ifeq ($(CONFIG_LP_GPL),y)
+libc-srcs += $(coreboottop)/src/commonlib/list.c
+endif
 endif

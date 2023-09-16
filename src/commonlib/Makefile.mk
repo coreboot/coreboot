@@ -53,6 +53,8 @@ romstage-y += bsd/lz4_wrapper.c
 ramstage-y += bsd/lz4_wrapper.c
 postcar-y += bsd/lz4_wrapper.c
 
+all-y += list.c
+
 ramstage-y += sort.c
 
 romstage-y += bsd/elog.c

@@ -1,7 +1,7 @@
 /* Taken from depthcharge: src/base/list.c */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <list.h>
+#include <commonlib/list.h>
 
 void list_remove(struct list_node *node)
 {

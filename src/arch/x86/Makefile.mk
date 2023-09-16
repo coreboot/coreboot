@@ -261,6 +261,7 @@ ramstage-y += ebda.c
 ramstage-y += exception.c
 ramstage-y += idt.S
 ramstage-$(CONFIG_IOAPIC) += ioapic.c
+ramstage-y += dma.c
 ramstage-y += memcpy.c
 ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += memmove_32.c
 ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_64) += memmove_64.S

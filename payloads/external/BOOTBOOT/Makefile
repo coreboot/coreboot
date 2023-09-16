@@ -1,8 +1,5 @@
 project_git_repo=https://gitlab.com/bztsrc/bootboot.git
 project_dir=bootboot
-ifeq ($(CONFIG_COREBOOT_BUILD),)
-include ../../../.config
-endif
 ifeq ($(CONFIG_ARCH_ARM64),y)
 loader_dir=$(project_dir)/aarch64-cb
 else

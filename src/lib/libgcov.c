@@ -23,7 +23,6 @@ permissions described in the GCC Runtime Library Exception, version
 3.1, as published by the Free Software Foundation.
 */
 
-#define __COREBOOT__
 #ifdef __COREBOOT__
 #include <stdlib.h>
 #include <string.h>

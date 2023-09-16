@@ -3,10 +3,13 @@
 #ifndef __HALT_H__
 #define __HALT_H__
 
-/**
- * halt the system reliably
- */
-void __noreturn halt(void);
+#include <arch/hlt.h>
+#include <commonlib/bsd/stdlib.h>
+
+static inline __noreturn void halt(void)
+{
+	abort();
+}
 
 /* Power off the system. */
 void poweroff(void);

@@ -481,6 +481,7 @@ CPPFLAGS_common += -include $(src)/include/rules.h
 CPPFLAGS_common += -include $(src)/commonlib/bsd/include/commonlib/bsd/compiler.h
 CPPFLAGS_common += -I3rdparty
 CPPFLAGS_common += -D__BUILD_DIR__=\"$(obj)\"
+CPPFLAGS_common += -D__COREBOOT__
 
 ifeq ($(BUILD_TIMELESS),1)
 CPPFLAGS_common += -D__TIMELESS__

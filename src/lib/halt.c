@@ -3,7 +3,7 @@
 #include <arch/hlt.h>
 #include <halt.h>
 
-void halt(void)
+void __noreturn abort(void)
 {
 	while (1)
 		hlt();

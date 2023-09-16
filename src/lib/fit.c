@@ -12,7 +12,7 @@
 #include <memrange.h>
 #include <fit.h>
 #include <boardid.h>
-#include <commonlib/stdlib.h>
+#include <stdlib.h>
 #include <types.h>
 
 static struct list_node image_nodes;

@@ -525,4 +525,15 @@ int getline(char *buffer, int len);
 /* Defined in arch/${ARCH}/selfboot.c */
 void selfboot(void *entry);
 
+/* Enter remote GDB mode. Will initialize connection if not already up. */
+void gdb_enter(void);
+/* Disconnect existing GDB connection if one exists. */
+void gdb_exit(s8 exit_status);
+
+void __noreturn halt(void);
+#if CONFIG(LP_REMOTEGDB)
+/* Override abort()/halt() to trap into GDB if it is enabled. */
+#define halt() do { gdb_enter(); halt(); } while (0)
+#endif
+
 #endif

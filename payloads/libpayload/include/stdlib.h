@@ -30,6 +30,7 @@
 #ifndef _STDLIB_H
 #define _STDLIB_H
 
+#include <commonlib/bsd/stdlib.h>
 #include <die.h>
 #include <stddef.h>
 #include <string.h>
@@ -38,11 +39,7 @@
  * @defgroup malloc Memory allocation functions
  * @{
  */
-void free(void *ptr);
-void *malloc(size_t size);
-void *calloc(size_t nmemb, size_t size);
 void *realloc(void *ptr, size_t size);
-void *memalign(size_t align, size_t size);
 void *dma_malloc(size_t size);
 void *dma_memalign(size_t align, size_t size);
 
@@ -136,43 +133,8 @@ void print_malloc_map(void);
 
 void init_dma_memory(void *start, u32 size);
 int dma_initialized(void);
-int dma_coherent(const void *ptr);
 void dma_allocator_range(void **start_out, size_t *size_out);
 
-static inline void *xmalloc_work(size_t size, const char *file,
-				 const char *func, int line)
-{
-	void *ret = malloc(size);
-	if (!ret && size) {
-		die_work(file, func, line, "Failed to malloc %zu bytes.\n",
-			 size);
-	}
-	return ret;
-}
-#define xmalloc(size) xmalloc_work((size), __FILE__, __func__, __LINE__)
-
-static inline void *xzalloc_work(size_t size, const char *file,
-				 const char *func, int line)
-{
-	void *ret = xmalloc_work(size, file, func, line);
-	memset(ret, 0, size);
-	return ret;
-}
-#define xzalloc(size) xzalloc_work((size), __FILE__, __func__, __LINE__)
-
-static inline void *xmemalign_work(size_t align, size_t size, const char *file,
-				  const char *func, int line)
-{
-	void *ret = memalign(align, size);
-	if (!ret && size) {
-		die_work(file, func, line,
-			 "Failed to memalign %zu bytes with %zu alignment.\n",
-			 size, align);
-	}
-	return ret;
-}
-#define xmemalign(align, size) \
-	xmemalign_work((align), (size), __FILE__, __func__, __LINE__)
 /** @} */
 
 /**
@@ -205,27 +167,13 @@ long int labs(long int j);
 long long int llabs(long long int j);
 /** @} */
 
-/* Enter remote GDB mode. Will initialize connection if not already up. */
-void gdb_enter(void);
-/* Disconnect existing GDB connection if one exists. */
-void gdb_exit(s8 exit_status);
-
-/**
- * Stop execution and halt the processor (this function does not return).
- */
-void halt(void) __attribute__((noreturn));
-void exit(int status) __attribute__((noreturn));
-#define abort() halt()    /**< Alias for the halt() function */
-#if CONFIG(LP_REMOTEGDB)
-/* Override abort()/halt() to trap into GDB if it is enabled. */
-#define halt() do { gdb_enter(); halt(); } while (0)
-#endif
-
 void qsort(void *aa, size_t n, size_t es, int (*cmp)(const void *, const void *));
 char *getenv(const char*);
 uint64_t __umoddi3(uint64_t num, uint64_t den);
 uint64_t  __udivdi3(uint64_t num, uint64_t den);
 uint64_t __ashldi3(uint64_t num, unsigned shift);
 uint64_t __lshrdi3(uint64_t num, unsigned shift);
+
+void __noreturn exit(int status);
 
 #endif

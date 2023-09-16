@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only OR MIT */
 
-#include <commonlib/stdlib.h>
 #include <console/console.h>
 #include <device/mmio.h>
 #include <device/resource.h>

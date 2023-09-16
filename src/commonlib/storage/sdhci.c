@@ -6,7 +6,7 @@
 #include "bouncebuf.h"
 #include <commonlib/sd_mmc_ctrlr.h>
 #include <commonlib/sdhci.h>
-#include <commonlib/stdlib.h>
+#include <commonlib/bsd/stdlib.h>
 #include <commonlib/storage.h>
 #include <delay.h>
 #include <endian.h>
@@ -20,11 +20,6 @@
 			|| (CONFIG(SDHCI_ADMA_IN_VERSTAGE) && ENV_SEPARATE_VERSTAGE) \
 			|| (CONFIG(SDHCI_ADMA_IN_ROMSTAGE) && ENV_SEPARATE_ROMSTAGE) \
 			|| ENV_POSTCAR || ENV_RAMSTAGE)
-
-__weak void *dma_malloc(size_t length_in_bytes)
-{
-	return malloc(length_in_bytes);
-}
 
 void sdhci_reset(struct sdhci_ctrlr *sdhci_ctrlr, u8 mask)
 {

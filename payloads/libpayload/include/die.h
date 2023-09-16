@@ -29,13 +29,14 @@
 #ifndef __DIE_H__
 #define __DIE_H__
 
-void die_work(const char *file, const char *func, const int line,
-	   const char *fmt, ...)
-	__attribute__((format (printf, 4, 5)))
-	__attribute__((noreturn));
+#include <stdio.h>
+#include <stdlib.h>
 
 #define die(fmt, args...) \
-	do { die_work(__FILE__, __func__, __LINE__, fmt, ##args); } \
+	do {  \
+		printf("%s:%d %s(): " fmt, __FILE__, __LINE__, __func__, ##args); \
+		abort(); \
+	} \
 	while (0)
 
 #define die_if(condition, fmt, args...) \

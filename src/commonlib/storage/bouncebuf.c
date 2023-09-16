@@ -7,7 +7,7 @@
 #include "bouncebuf.h"
 #include "storage.h"
 #include <string.h>
-#include <commonlib/stdlib.h>
+#include <commonlib/bsd/stdlib.h>
 
 static int addr_aligned(struct bounce_buffer *state)
 {

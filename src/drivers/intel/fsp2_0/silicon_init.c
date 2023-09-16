@@ -5,7 +5,7 @@
 #include <cbfs.h>
 #include <cbmem.h>
 #include <commonlib/fsp.h>
-#include <commonlib/stdlib.h>
+#include <stdlib.h>
 #include <console/console.h>
 #include <fsp/api.h>
 #include <fsp/util.h>

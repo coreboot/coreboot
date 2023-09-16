@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <boot/coreboot_tables.h>
-#include <commonlib/stdlib.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/mmio.h>
@@ -15,7 +14,6 @@
 #include <soc/pcie.h>
 #include <soc/pcie_common.h>
 #include <soc/soc_chip.h>
-#include <stdlib.h>
 #include <types.h>
 
 #define PCIE_SETTING_REG		0x80

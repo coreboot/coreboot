@@ -2,7 +2,7 @@
 
 #include <cbmem.h>
 #include <symbols.h>
-#include <device_tree.h>
+#include <commonlib/device_tree.h>
 #include <console/console.h>
 
 DECLARE_REGION(fdt_pointer)

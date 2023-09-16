@@ -1,8 +1,8 @@
 /* Taken from depthcharge: src/base/device_tree.h */
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#ifndef __DEVICE_TREE_H__
-#define __DEVICE_TREE_H__
+#ifndef __COMMONLIB_DEVICE_TREE_H__
+#define __COMMONLIB_DEVICE_TREE_H__
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -229,4 +229,4 @@ int dt_apply_fixups(struct device_tree *tree);
  */
 struct device_tree_node *dt_init_reserved_memory_node(struct device_tree *tree);
 
-#endif /* __DEVICE_TREE_H__ */
+#endif /* __COMMONLIB_DEVICE_TREE_H__ */

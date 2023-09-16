@@ -6,7 +6,7 @@
 #include <bootmem.h>
 #include <cbfs.h>
 #include <device/device.h>
-#include <device_tree.h>
+#include <commonlib/device_tree.h>
 #include <bootmem.h>
 #include <arch/mmu.h>
 #include <mainboard/addressmap.h>

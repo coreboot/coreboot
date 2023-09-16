@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <commonlib/device_tree.h>
 #include <console/console.h>
-#include <device_tree.h>
 #include <helpers/file.h>
 #include <stddef.h>
 #include <stdint.h>

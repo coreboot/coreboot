@@ -163,9 +163,6 @@ ramstage-$(CONFIG_ACPI_NHLT) += nhlt.c
 ramstage-$(CONFIG_PAYLOAD_FIT_SUPPORT) += fit.c
 ramstage-$(CONFIG_PAYLOAD_FIT_SUPPORT) += fit_payload.c
 
-romstage-$(CONFIG_FLATTENED_DEVICE_TREE) += device_tree.c
-ramstage-$(CONFIG_FLATTENED_DEVICE_TREE) += device_tree.c
-
 romstage-$(CONFIG_TIMER_QUEUE) += timer_queue.c
 ramstage-$(CONFIG_TIMER_QUEUE) += timer_queue.c
 

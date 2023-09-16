@@ -49,6 +49,7 @@ libc-srcs += $(coreboottop)/src/commonlib/bsd/gcd.c
 libc-srcs += $(coreboottop)/src/commonlib/bsd/ipchksum.c
 libc-srcs += $(coreboottop)/src/commonlib/bsd/string.c
 ifeq ($(CONFIG_LP_GPL),y)
+libc-srcs += $(coreboottop)/src/commonlib/device_tree.c
 libc-srcs += $(coreboottop)/src/commonlib/list.c
 endif
 endif

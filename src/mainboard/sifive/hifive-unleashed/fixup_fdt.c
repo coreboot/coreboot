@@ -7,7 +7,7 @@
 #include <soc/otp.h>
 #include <soc/sdram.h>
 #include <cbfs.h>
-#include <device_tree.h>
+#include <commonlib/device_tree.h>
 #include <bootstate.h>
 #include <mcall.h>
 

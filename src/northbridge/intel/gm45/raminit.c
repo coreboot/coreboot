@@ -1965,7 +1965,7 @@ static void jedec_init_ddr2(const timings_t *const timings,
 		jedec_command(rankaddr, DCC_CMD_ABP, 0);
 		jedec_command(rankaddr, DCC_CMD_CBR, 0);
 		udelay(1);
-		read32((void *)(rankaddr));
+		read32p(rankaddr);
 
 		jedec_command(rankaddr, DCC_SET_MREG, WR | CAS | BTinterleaved | BL8);
 		jedec_command(rankaddr, DCC_SET_EREGx(1), OCDdefault | ODT_150OHMS);

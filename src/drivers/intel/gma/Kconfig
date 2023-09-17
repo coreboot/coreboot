@@ -122,6 +122,22 @@ config INTEL_GMA_OPREGION_2_1
 	bool
 	default n
 
+config INTEL_GMA_VERSION_2
+	bool
+	default n
+	help
+	  Intel display port and pipe related register definitions have changed since
+	  Tiger Lake SoC. This option enables support for the updated `TRANS_DDI_FUNC_CTL`
+	  register definitions.
+
+	  SoCs that support Intel GMA Version 2 include:
+	  * Alder Lake
+	  * Meteor Lake
+	  * Tiger Lake
+
+	  If you are unsure whether your SoC supports Intel GMA Version 2, it is safe to
+	  disable this option.
+
 if GFX_GMA || EARLY_GFX_GMA
 
 config GFX_GMA_DYN_CPU

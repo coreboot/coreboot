@@ -30,6 +30,12 @@ enum port {
 	PORT_A = 0,
 	PORT_B,
 	PORT_C,
+#if CONFIG(INTEL_GMA_VERSION_2)
+	PORT_USB_C1,
+	PORT_USB_C2,
+	PORT_USB_C3,
+	PORT_USB_C4,
+#endif
 	PORT_D,
 	PORT_E,
 	I915_NUM_PORTS
@@ -39,6 +45,9 @@ enum pipe {
 	PIPE_A = 0,
 	PIPE_B,
 	PIPE_C,
+#if CONFIG(INTEL_GMA_VERSION_2)
+	PIPE_D,
+#endif
 	I915_NUM_PIPES
 };
 

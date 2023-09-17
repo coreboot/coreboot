@@ -4181,9 +4181,17 @@
 						   TRANS_DDI_FUNC_CTL_B)
 #define  TRANS_DDI_FUNC_ENABLE		(1UL<<31)
 /* Those bits are ignored by pipe EDP since it can only connect to DDI A */
-#define  TRANS_DDI_PORT_MASK		(7<<28)
-#define  TRANS_DDI_SELECT_PORT(x)	((x)<<28)
-#define  TRANS_DDI_PORT_NONE		(0<<28)
+#if CONFIG(INTEL_GMA_VERSION_2)
+#define  TRANS_DDI_PORT_SHIFT		27
+#define  TRANS_DDI_PORT_WIDTH		0xf
+#define  TRANS_DDI_SELECT_PORT(x)	(((x) + 1) << TRANS_DDI_PORT_SHIFT)
+#else
+#define  TRANS_DDI_PORT_SHIFT		28
+#define  TRANS_DDI_PORT_WIDTH		7
+#define  TRANS_DDI_SELECT_PORT(x)	((x) << TRANS_DDI_PORT_SHIFT)
+#endif
+#define  TRANS_DDI_PORT_MASK		(TRANS_DDI_PORT_WIDTH << TRANS_DDI_PORT_SHIFT)
+#define  TRANS_DDI_PORT_NONE		(0 << TRANS_DDI_PORT_SHIFT)
 #define  TRANS_DDI_MODE_SELECT_MASK	(7<<24)
 #define  TRANS_DDI_MODE_SELECT_HDMI	(0<<24)
 #define  TRANS_DDI_MODE_SELECT_DVI	(1<<24)

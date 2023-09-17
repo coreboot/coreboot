@@ -37,9 +37,9 @@ struct chipset_power_state *fill_power_state(void)
 	power_state.gpe0_en  = inl(ACPI_BASE_ADDRESS + GPE0_EN);
 	power_state.tco_sts  = inl(ACPI_BASE_ADDRESS + TCO_STS);
 
-	power_state.prsts      = read32((void *)(PMC_BASE_ADDRESS + PRSTS));
-	power_state.gen_pmcon1 = read32((void *)(PMC_BASE_ADDRESS + GEN_PMCON1));
-	power_state.gen_pmcon2 = read32((void *)(PMC_BASE_ADDRESS + GEN_PMCON2));
+	power_state.prsts      = read32p(PMC_BASE_ADDRESS + PRSTS);
+	power_state.gen_pmcon1 = read32p(PMC_BASE_ADDRESS + GEN_PMCON1);
+	power_state.gen_pmcon2 = read32p(PMC_BASE_ADDRESS + GEN_PMCON2);
 
 	power_state.prev_sleep_state = chipset_prev_sleep_state(&power_state);
 

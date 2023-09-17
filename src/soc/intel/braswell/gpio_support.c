@@ -146,5 +146,5 @@ int gpio_get(gpio_t gpio_num)
 
 int get_gpio(int community_base, int pad0_offset)
 {
-	return (read32((void *)(community_base + pad0_offset))) & PAD_RX_BIT;
+	return (read32p(community_base + pad0_offset)) & PAD_RX_BIT;
 }

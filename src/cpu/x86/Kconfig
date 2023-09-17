@@ -163,11 +163,19 @@ config SMM_ASEG
 	bool
 	default n
 	depends on !NO_SMM
+	help
+	  Legacy memory region of SMM (System Management Mode). It has been
+	  replaced by TSEG and is currently only used for QEMU emulation target.
 
 config SMM_TSEG
 	bool
 	default y
 	depends on !(NO_SMM || SMM_ASEG)
+	help
+	  Top of Low Memory Segment (TSEG) is comprised of the SMRAM and IEDRAM.
+	  SMRAM is a memory region used in SMM (System Management Mode) only.
+	  IEDRAM is a memory region used for enhanced debug features.
+	  SMM-mode processor access to TSEG always targets the physical DRAM.
 
 if HAVE_SMI_HANDLER
 

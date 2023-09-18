@@ -5,4 +5,6 @@
 
 #include <baseboard/gpio.h>
 
+#define SD_CARD_POWER		GPP_H13
+
 #endif

@@ -118,7 +118,7 @@ ramstage-y += memmove.S
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += bl31.c
 ramstage-y += transition.c transition_asm.S
 ramstage-$(CONFIG_PAYLOAD_FIT_SUPPORT) += fit_payload.c
-ramstage-$(CONFIG_HAVE_ACPI_SUPPORT) += acpi.c
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 
 rmodules_arm64-y += memset.S
 rmodules_arm64-y += memcpy.S

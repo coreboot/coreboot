@@ -21,6 +21,11 @@
 		ALIAS_REGION(mem_stack, stack)
 #endif
 
+#define OPENSBI(addr, size) \
+	_ = ASSERT(addr == CONFIG_OPENSBI_TEXT_START, \
+		"opensbi linker address must equal CONFIG_OPENSBI_TEXT_START"); \
+	REGION(opensbi, addr, size, 4K)
+
 /* TODO: Need to add DMA_COHERENT region like on ARM? */
 
 #endif /* __ARCH_MEMLAYOUT_H */

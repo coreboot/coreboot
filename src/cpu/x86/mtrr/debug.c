@@ -101,25 +101,25 @@ static void display_variable_mtrr(int index, uint64_t address_mask)
 	uint64_t base_address;
 	uint64_t length;
 	uint64_t mask;
-	const msr_t msr_a = rdmsr(MTRR_PHYS_BASE(index));
-	const msr_t msr_m = rdmsr(MTRR_PHYS_MASK(index));
+	const msr_t msr_base = rdmsr(MTRR_PHYS_BASE(index));
+	const msr_t msr_mask = rdmsr(MTRR_PHYS_MASK(index));
 
-	if (msr_m.raw & MTRR_PHYS_MASK_VALID) {
-		base_address = (msr_a.raw & 0xfffffffffffff000ULL)
+	if (msr_mask.raw & MTRR_PHYS_MASK_VALID) {
+		base_address = (msr_base.raw & 0xfffffffffffff000ULL)
 			& address_mask;
 		printk(BIOS_DEBUG,
 			"0x%016llx: PHYBASE%d: Address = 0x%016llx, %s\n",
-			msr_a.raw, index, base_address,
-			display_mtrr_type(msr_a.raw & MTRR_DEF_TYPE_MASK));
-		mask = (msr_m.raw & 0xfffffffffffff000ULL) & address_mask;
+			msr_base.raw, index, base_address,
+			display_mtrr_type(msr_base.raw & MTRR_DEF_TYPE_MASK));
+		mask = (msr_mask.raw & 0xfffffffffffff000ULL) & address_mask;
 		length = (~mask & address_mask) + 1;
 		printk(BIOS_DEBUG,
 			"0x%016llx: PHYMASK%d: Length  = 0x%016llx, Valid\n",
-			msr_m.raw, index, length);
+			msr_mask.raw, index, length);
 	} else {
-		printk(BIOS_DEBUG, "0x%016llx: PHYBASE%d\n", msr_a.raw, index);
+		printk(BIOS_DEBUG, "0x%016llx: PHYBASE%d\n", msr_base.raw, index);
 		printk(BIOS_DEBUG, "0x%016llx: PHYMASK%d: Disabled\n",
-			msr_m.raw, index);
+			msr_mask.raw, index);
 	}
 }
 

@@ -98,12 +98,11 @@ static void display_mtrr_def_type(void)
 
 static void display_variable_mtrr(int index, uint64_t address_mask)
 {
-	const uint32_t msr_reg = MTRR_PHYS_BASE(index);
 	uint64_t base_address;
 	uint64_t length;
 	uint64_t mask;
-	const msr_t msr_a = rdmsr(msr_reg);
-	const msr_t msr_m = rdmsr(msr_reg + 1);
+	const msr_t msr_a = rdmsr(MTRR_PHYS_BASE(index));
+	const msr_t msr_m = rdmsr(MTRR_PHYS_MASK(index));
 
 	if (msr_m.raw & MTRR_PHYS_MASK_VALID) {
 		base_address = (msr_a.raw & 0xfffffffffffff000ULL)

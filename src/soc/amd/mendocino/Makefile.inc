@@ -81,6 +81,7 @@ endif
 
 # Use additional Soft Fuse bits specified in Kconfig
 PSP_SOFTFUSE_BITS += $(call strip_quotes, $(CONFIG_PSP_SOFTFUSE_BITS))
+PSP_RO_SOFTFUSE_BITS=$(PSP_SOFTFUSE_BITS)
 
 # type = 0x3a
 ifeq ($(CONFIG_HAVE_PSP_WHITELIST_FILE),y)
@@ -158,6 +159,8 @@ endif # CONFIG_SEPARATE_SIGNED_PSPFW
 set-bit=$(call int-shift-left, 1 $(call _toint,$1))
 PSP_SOFTFUSE=$(shell A=$(call int-add, \
 		$(foreach bit,$(PSP_SOFTFUSE_BITS),$(call set-bit,$(bit)))); printf "0x%x" $$A)
+PSP_RO_SOFTFUSE=$(shell A=$(call int-add, \
+		  $(foreach bit,$(PSP_RO_SOFTFUSE_BITS),$(call set-bit,$(bit)))); printf "0x%x" $$A)
 
 #
 # Build the arguments to amdfwtool (order is unimportant).  Missing file names
@@ -194,6 +197,7 @@ OPT_SIGNED_AMDFW_B_POSITION=$(call add_opt_prefix, $(SIGNED_AMDFW_B_POSITION), -
 OPT_SIGNED_AMDFW_B_FILE=$(call add_opt_prefix, $(SIGNED_AMDFW_B_FILE), --signed-output)
 
 OPT_PSP_SOFTFUSE=$(call add_opt_prefix, $(PSP_SOFTFUSE), --soft-fuse)
+OPT_PSP_RO_SOFTFUSE=$(call add_opt_prefix, $(PSP_RO_SOFTFUSE), --soft-fuse)
 
 OPT_WHITELIST_FILE=$(call add_opt_prefix, $(PSP_WHITELIST_FILE), --whitelist)
 OPT_SPL_TABLE_FILE=$(call add_opt_prefix, $(SPL_TABLE_FILE), --spl-table)
@@ -211,7 +215,6 @@ AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 		$(OPT_PSP_BIOSBIN_FILE) \
 		$(OPT_PSP_BIOSBIN_DEST) \
 		$(OPT_PSP_BIOSBIN_SIZE) \
-		$(OPT_PSP_SOFTFUSE) \
 		--use-pspsecureos \
 		--load-s0i3 \
 		$(OPT_TOKEN_UNLOCK) \
@@ -229,6 +232,9 @@ AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 ifeq ($(CONFIG_VBOOT),)
 AMDFW_COMMON_ARGS += $(OPT_PSP_LOAD_MP2_FW)
 OPT_PSP_LOAD_MP2_FW =
+else
+# Disable MP2 FW loading in VBOOT RO
+PSP_RO_SOFTFUSE_BITS += 29
 endif
 
 $(obj)/amdfw.rom:	$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
@@ -249,6 +255,7 @@ $(obj)/amdfw.rom:	$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 		$(OPT_VERSTAGE_SIG_FILE) \
 		$(OPT_SPL_TABLE_FILE) \
 		$(OPT_MANIFEST) \
+		$(OPT_PSP_RO_SOFTFUSE) \
 		--location $(CONFIG_AMD_FWM_POSITION) \
 		--output $@
 
@@ -275,6 +282,7 @@ $(obj)/amdfw_a.rom: $(obj)/amdfw.rom
 		$(OPT_SIGNED_AMDFW_A_POSITION) \
 		$(OPT_SIGNED_AMDFW_A_FILE) \
 		$(OPT_PSP_LOAD_MP2_FW) \
+		$(OPT_PSP_SOFTFUSE) \
 		--location $(call _tohex,$(MENDOCINO_FW_A_POSITION)) \
 		--body-location $(call _tohex,$$(($(MENDOCINO_FW_A_POSITION) + $(MENDOCINO_FW_BODY_OFFSET)))) \
 		--anywhere \
@@ -291,6 +299,7 @@ $(obj)/amdfw_b.rom: $(obj)/amdfw.rom
 		$(OPT_SIGNED_AMDFW_B_POSITION) \
 		$(OPT_SIGNED_AMDFW_B_FILE) \
 		$(OPT_PSP_LOAD_MP2_FW) \
+		$(OPT_PSP_SOFTFUSE) \
 		--location $(call _tohex,$(MENDOCINO_FW_B_POSITION)) \
 		--body-location $(call _tohex,$$(($(MENDOCINO_FW_B_POSITION) + $(MENDOCINO_FW_BODY_OFFSET)))) \
 		--anywhere \

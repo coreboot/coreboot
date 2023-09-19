@@ -19,7 +19,7 @@ static const char *display_mtrr_type(uint32_t type)
 	}
 }
 
-static void display_mtrr_fixed_types(uint64_t msr,
+static void display_mtrr_fixed_types(msr_t msr_data,
 	uint32_t starting_address, uint32_t memory_size)
 {
 	uint32_t base_address;
@@ -28,13 +28,13 @@ static void display_mtrr_fixed_types(uint64_t msr,
 	uint32_t next_type;
 	uint32_t type;
 
-	type = msr & MTRR_DEF_TYPE_MASK;
+	type = msr_data.raw & MTRR_DEF_TYPE_MASK;
 	base_address = starting_address;
 	next_address = base_address;
 	for (index = 0; index < 64; index += 8) {
 		next_address = starting_address + (memory_size *
 			((index >> 3) + 1));
-		next_type = (msr >> index) & MTRR_DEF_TYPE_MASK;
+		next_type = (msr_data.raw >> index) & MTRR_DEF_TYPE_MASK;
 		if (next_type != type) {
 			printk(BIOS_DEBUG, "    0x%08x - 0x%08x: %s\n",
 				base_address, next_address - 1,
@@ -54,7 +54,7 @@ static void display_4k_mtrr(uint32_t msr_reg, uint32_t starting_address,
 {
 	const msr_t msr = rdmsr(msr_reg);
 	printk(BIOS_DEBUG, "0x%016llx: %s\n", msr.raw, name);
-	display_mtrr_fixed_types(msr.raw, starting_address, 0x1000);
+	display_mtrr_fixed_types(msr, starting_address, 0x1000);
 }
 
 static void display_16k_mtrr(uint32_t msr_reg, uint32_t starting_address,
@@ -62,14 +62,14 @@ static void display_16k_mtrr(uint32_t msr_reg, uint32_t starting_address,
 {
 	const msr_t msr = rdmsr(msr_reg);
 	printk(BIOS_DEBUG, "0x%016llx: %s\n", msr.raw, name);
-	display_mtrr_fixed_types(msr.raw, starting_address, 0x4000);
+	display_mtrr_fixed_types(msr, starting_address, 0x4000);
 }
 
 static void display_64k_mtrr(void)
 {
 	const msr_t msr = rdmsr(MTRR_FIX_64K_00000);
 	printk(BIOS_DEBUG, "0x%016llx: IA32_MTRR_FIX64K_00000\n", msr.raw);
-	display_mtrr_fixed_types(msr.raw, 0, 0x10000);
+	display_mtrr_fixed_types(msr, 0, 0x10000);
 }
 
 static void display_mtrrcap(void)

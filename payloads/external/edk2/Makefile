@@ -38,7 +38,7 @@ endif
 endif
 
 #
-# EDK II has the following build options relevant to coreboot:
+# EDK II (edk2/master) has the following build options relevant to coreboot:
 #
 #
 # OPTION			= DEFAULT_VALUE
@@ -66,10 +66,6 @@ endif
 # DISABLE_SERIAL_TERMINAL	= FALSE
 ifneq ($(CONFIG_EDK2_SERIAL_SUPPORT),y)
 BUILD_STR += -D DISABLE_SERIAL_TERMINAL=TRUE
-endif
-# FOLLOW_BGRT_SPEC		= FALSE
-ifeq ($(CONFIG_EDK2_FOLLOW_BGRT_SPEC),y)
-BUILD_STR += -D FOLLOW_BGRT_SPEC=TRUE
 endif
 # MAX_VARIABLE_SIZE		= 0x10000
 ifeq ($(CONFIG_SMMSTORE_V2),y)
@@ -119,9 +115,29 @@ endif
 ifeq ($(CONFIG_PCIEXP_SUPPORT_RESIZABLE_BARS), y)
 BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdPcieResizableBarSupport=TRUE
 endif
+
+#
+# The MrChromebox repository has the following addition options:
+#
+ifeq ($(CONFIG_EDK2_REPO_MRCHROMEBOX),y)
+
+# FOLLOW_BGRT_SPEC		= FALSE
+ifeq ($(CONFIG_EDK2_FOLLOW_BGRT_SPEC),y)
+BUILD_STR += -D FOLLOW_BGRT_SPEC=TRUE
+endif
 # GOP_DRIVER			= FALSE
 ifeq ($(CONFIG_EDK2_GOP_DRIVER), y)
 BUILD_STR += -D USE_PLATFORM_GOP=TRUE
+endif
+# PRIORITIZE_INTERNAL		= FALSE
+ifeq ($(CONFIG_EDK2_PRIORITIZE_INTERNAL),y)
+BUILD_STR += -D PRIORITIZE_INTERNAL=TRUE
+endif
+# TPM_ENABLE			= TRUE
+ifeq ($(CONFIG_TPM_GOOGLE_CR50),y)
+BUILD_STR += -D TPM_ENABLE=FALSE
+endif
+
 endif
 
 #
@@ -133,10 +149,6 @@ BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdConOutRow=0
 BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdConOutColumn=0
 BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdSetupConOutRow=0
 BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdSetupConOutColumn=0
-endif
-
-ifeq ($(CONFIG_TPM_GOOGLE_CR50)$(CONFIG_EDK2_REPO_MRCHROMEBOX),yy)
-BUILD_STR += -D TPM_ENABLE=FALSE
 endif
 
 bootloader = $(word 8,$(subst /, ,$(BUILD_STR)))

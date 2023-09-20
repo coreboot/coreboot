@@ -27,39 +27,6 @@ static uint8_t get_ec_value_from_option(const char *name,
 	return lut[index];
 }
 
-static void ec_mirror_with_count(void)
-{
-	unsigned int cmos_mirror_flag_counter = get_uint_option("mirror_flag_counter", UINT_MAX);
-
-	if (cmos_mirror_flag_counter == UINT_MAX)
-		return;
-
-	printk(BIOS_DEBUG, "ITE: mirror_flag_counter = %u\n", cmos_mirror_flag_counter);
-
-	/* Avoid boot loops by only trying a state change once */
-	if (cmos_mirror_flag_counter < MIRROR_ATTEMPTS) {
-		cmos_mirror_flag_counter++;
-		set_uint_option("mirror_flag_counter", cmos_mirror_flag_counter);
-		printk(BIOS_DEBUG, "ITE: Mirror attempt %u/%u.\n", cmos_mirror_flag_counter,
-			MIRROR_ATTEMPTS);
-
-		/* Write the EC mirror flag */
-		ec_write(ECRAM_MIRROR_FLAG, MIRROR_ENABLED);
-
-		/* Check what has been written */
-		if (ec_read(ECRAM_MIRROR_FLAG) == MIRROR_ENABLED)
-			poweroff();
-	} else {
-		/*
-		 * If the mirror flags fails after 1 attempt, it will
-		 * likely need a cold boot, or recovering.
-		 */
-		printk(BIOS_ERR, "ITE: Failed to mirror the EC in %u attempts!\n",
-			MIRROR_ATTEMPTS);
-	}
-}
-
-
 void ec_mirror_flag(void)
 {
 	/*
@@ -74,12 +41,18 @@ void ec_mirror_flag(void)
 	 */
 	uint16_t ec_version = ec_get_version();
 
+	/* Full mirror support was added in EC 1.18 (0x0112) */
+	if (ec_version < 0x0112)
+		return;
+
 	if (CONFIG(EC_STARLABS_MIRROR_SUPPORT) &&
 		(CONFIG(DRIVERS_INTEL_USB4_RETIMER) || get_uint_option("mirror_flag", 0)) &&
 		(ec_version != CONFIG_EC_STARLABS_MIRROR_VERSION)) {
+
 		printk(BIOS_ERR, "ITE: EC version 0x%x doesn't match coreboot version 0x%x.\n",
 			ec_version, CONFIG_EC_STARLABS_MIRROR_VERSION);
-		ec_mirror_with_count();
+
+		ec_write(ECRAM_MIRROR_FLAG, MIRROR_ENABLED);
 	}
 }
 

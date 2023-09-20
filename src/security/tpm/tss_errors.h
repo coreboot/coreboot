@@ -15,6 +15,7 @@
 #define TPM_E_BASE 0x0
 #define TPM_E_NON_FATAL 0x800
 
+#define TPM_SUCCESS                 ((uint32_t)0x00000000)
 #define TPM_E_AREA_LOCKED           ((uint32_t)0x0000003c)
 #define TPM_E_BADINDEX              ((uint32_t)0x00000002)
 #define TPM_E_BAD_PRESENCE          ((uint32_t)0x0000002d)

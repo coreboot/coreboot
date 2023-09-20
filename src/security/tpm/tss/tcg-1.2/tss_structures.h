@@ -8,7 +8,7 @@
 #define TCG1_TSS_STRUCTURES_H_
 
 #include <stdint.h>
-#include "../common/tss_common.h"
+#include <security/tpm/tss_errors.h>
 
 #define TPM_MAX_COMMAND_SIZE 4096
 #define TPM_LARGE_ENOUGH_COMMAND_SIZE 256  /* saves space in the firmware */

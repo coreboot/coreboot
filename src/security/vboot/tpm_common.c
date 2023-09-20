@@ -7,6 +7,7 @@
 
 #define TPM_PCR_BOOT_MODE "VBOOT: boot mode"
 #define TPM_PCR_GBB_HWID_NAME "VBOOT: GBB HWID"
+#define TPM_PCR_MINIMUM_DIGEST_SIZE 20
 
 uint32_t vboot_setup_tpm(struct vb2_context *ctx)
 {

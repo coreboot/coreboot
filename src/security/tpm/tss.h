@@ -12,7 +12,6 @@
 #include <types.h>
 #include <vb2_sha.h>
 
-#include <security/tpm/tss/common/tss_common.h>
 #include <security/tpm/tss_errors.h>
 #include <security/tpm/tss/vendor/cr50/cr50.h>
 

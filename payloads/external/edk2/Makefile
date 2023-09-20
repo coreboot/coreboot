@@ -194,9 +194,10 @@ $(EDK2_PATH): $(WORKSPACE)
 			echo "    $(CONFIG_EDK2_TAG_OR_REV) is not a valid git reference"; \
 			exit 1; \
 		fi; \
-		if git status --ignore-submodules=dirty | grep -q clean; then \
+		if git status --ignore-submodules=dirty | grep -q -e clean -e "nothing added"; then \
 			echo "    Checking out $(project_name) revision $(CONFIG_EDK2_TAG_OR_REV)"; \
 			git checkout --detach $(CONFIG_EDK2_TAG_OR_REV) -f; \
+			git submodule update --checkout --recursive; \
 		else \
 			echo "    Working directory not clean; will not overwrite"; \
 		fi; \

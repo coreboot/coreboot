@@ -348,7 +348,7 @@ chip soc/intel/cannonlake
 				register "hid" = ""1AF80175""
 				register "name" = ""PS17""
 				register "desc" = ""Parade PS175""
-				device i2c 4a on end
+				device i2c 4a hidden end
 			end
 		end
 		device ref i2c3		on
@@ -357,7 +357,7 @@ chip soc/intel/cannonlake
 				register "hid" = ""10EC2142""
 				register "name" = ""RTD2""
 				register "desc" = ""Realtek RTD2142""
-				device i2c 4a on end
+				device i2c 4a hidden end
 			end
 		end
 		device ref i2c4		on

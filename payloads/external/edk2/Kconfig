@@ -278,6 +278,13 @@ config EDK2_GOP_FILE
 	help
 	  The name of the GOP driver file passed to edk2.
 
+config EDK2_DISABLE_TPM
+	bool "Disable TPM support in edk2"
+	default y if EDK2_REPO_MRCHROMEBOX && TPM_GOOGLE_CR50 && SOC_AMD_COMMON
+	help
+	  Select this option to disable TPM support in edk2. This is necessary to avoid boot
+	  hangs on some boards with a CR50 TPM, particularly those with an AMD Zen SoC.
+
 config EDK2_CUSTOM_BUILD_PARAMS
 	string "edk2 additional custom build parameters"
 	default "-D VARIABLE_SUPPORT=SMMSTORE" if EDK2_REPO_MRCHROMEBOX && SMMSTORE_V2

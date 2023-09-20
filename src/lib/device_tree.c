@@ -75,10 +75,14 @@ static void print_property(const struct fdt_property *prop, int depth)
 	int is_string = prop->size > 0 &&
 			((char *)prop->data)[prop->size - 1] == '\0';
 
-	if (is_string)
-		for (const char *c = prop->data; *c != '\0'; c++)
-			if (!isprint(*c))
+	if (is_string) {
+		for (int i = 0; i < prop->size - 1; i++) {
+			if (!isprint(((char *)prop->data)[i])) {
 				is_string = 0;
+				break;
+			}
+		}
+	}
 
 	print_indent(depth);
 	if (is_string) {

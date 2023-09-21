@@ -89,19 +89,15 @@ uint32_t cpu_get_feature_flags_edx(void)
 
 enum cpu_type cpu_check_deterministic_cache_cpuid_supported(void)
 {
-	struct cpuid_result res;
-
 	if (cpu_is_intel()) {
-		res = cpuid(0);
-		if (res.eax < 4)
+		if (cpuid_eax(0) < 4)
 			return CPUID_COMMAND_UNSUPPORTED;
 		return CPUID_TYPE_INTEL;
 	} else if (cpu_is_amd()) {
 		if (cpu_cpuid_extended_level() < 0x80000001)
 			return CPUID_COMMAND_UNSUPPORTED;
 
-		res = cpuid(0x80000001);
-		if (!(res.ecx & (1 << 22)))
+		if (!(cpuid_ecx(0x80000001) & (1 << 22)))
 			return CPUID_COMMAND_UNSUPPORTED;
 
 		return CPUID_TYPE_AMD;

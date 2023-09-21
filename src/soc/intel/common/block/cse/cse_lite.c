@@ -278,8 +278,11 @@ static enum cse_fw_state get_cse_state(const struct fw_version *cur_cse_fw_ver,
  * Helper function that stores current CSE firmware version to CBMEM memory,
  * except during recovery mode.
  */
-static void cse_store_rw_fw_version(const struct cse_bp_entry *cse_bp)
+static void cse_store_rw_fw_version(void)
 {
+	const struct cse_bp_entry *cse_bp;
+	cse_bp = cse_get_bp_entry(RW);
+
 	if (vboot_recovery_mode_enabled())
 		return;
 
@@ -391,10 +394,6 @@ static void cse_print_boot_partition_info(void)
 			cse_bp->fw_ver.hotfix, cse_bp->fw_ver.build,
 			cse_bp->status, cse_bp->start_offset,
 			cse_bp->end_offset);
-
-	/* Store the CSE RW Firmware Version into CBMEM */
-	if (CONFIG(SOC_INTEL_STORE_CSE_FW_VERSION))
-		cse_store_rw_fw_version(cse_bp);
 }
 
 /*
@@ -1281,6 +1280,10 @@ static void do_cse_fw_sync(void)
 			return;
 		}
 	}
+
+	/* Store the CSE RW Firmware Version into CBMEM */
+	if (CONFIG(SOC_INTEL_STORE_CSE_FW_VERSION))
+		cse_store_rw_fw_version();
 
 	/*
 	 * If system is in recovery mode, CSE Lite update has to be skipped but CSE

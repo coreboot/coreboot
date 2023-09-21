@@ -209,11 +209,11 @@ const struct pad_config gpio_table[] = {
 	/* D5:		Not Connected					*/
 	PAD_NC(GPP_D5, NONE),
 	/* D6:		Clock Request 1		PCH M.2 SSD		*/
-	PAD_NC(GPP_D6, NONE),
+//	PAD_NC(GPP_D6, NONE),
 	/* D7:		Clock Request 2		Wireless LAN		*/
-	PAD_CFG_NF(GPP_D7, NONE, DEEP, NF1),
+//	PAD_CFG_NF(GPP_D7, NONE, DEEP, NF1),
 	/* D8:		Clock Request 3		LAN			*/
-	PAD_NC(GPP_D8, NONE),
+//	PAD_NC(GPP_D8, NONE),
 	/* D9:		GSPI 2 FPS					*/
 	PAD_NC(GPP_D9, NONE),
 	/* D10:		GSPI 2 Clock					*/
@@ -374,7 +374,7 @@ const struct pad_config gpio_table[] = {
 	/* H18:		CPI C10 Gate					*/
 	PAD_CFG_NF(GPP_H18, NONE, DEEP, NF1),
 	/* H19:		Clock Request 4		CPU M.2 SSD		*/
-	PAD_CFG_NF(GPP_H19, NONE, DEEP, NF1),
+//	PAD_CFG_NF(GPP_H19, NONE, DEEP, NF1),
 	/* H20:		Not Connected					*/
 	PAD_NC(GPP_H20, NONE),
 	/* H21:		Not Connected					*/

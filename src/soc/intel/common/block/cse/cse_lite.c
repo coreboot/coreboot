@@ -12,6 +12,7 @@
 #include <intelblocks/cse.h>
 #include <intelblocks/cse_layout.h>
 #include <intelblocks/spi.h>
+#include <intelblocks/systemagent.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/vboot_common.h>
 #include <soc/intel/common/reset.h>
@@ -420,6 +421,38 @@ static bool cse_is_bp_cmd_info_possible(void)
 	return false;
 }
 
+static struct get_bp_info_rsp *sync_cse_bp_info_to_cbmem(void)
+{
+	struct get_bp_info_rsp *cse_bp_info_in_cbmem = cbmem_find(CBMEM_ID_CSE_BP_INFO);
+
+	if (cse_bp_info_in_cbmem != NULL)
+		return cse_bp_info_in_cbmem;
+
+	cse_bp_info_in_cbmem = cbmem_add(CBMEM_ID_CSE_BP_INFO,
+		sizeof(struct get_bp_info_rsp));
+
+	if (!cse_bp_info_in_cbmem) {
+		printk(BIOS_ERR, "Unable to store Boot Parition Info in cbmem\n");
+		return NULL;
+	}
+
+	/* Copy the CSE Boot Partition Info command response to cbmem */
+	memcpy(cse_bp_info_in_cbmem, &cse_bp_info_rsp, sizeof(struct get_bp_info_rsp));
+
+	return cse_bp_info_in_cbmem;
+}
+
+static bool is_cse_bp_info_valid(struct get_bp_info_rsp *bp_info_rsp)
+{
+	/*
+	 * In case the cse_bp_info_rsp header group ID, command is incorrect or is_resp is 0,
+	 * then return false to indicate cse_bp_info is not valid.
+	 */
+	return (bp_info_rsp->hdr.group_id != MKHI_GROUP_ID_BUP_COMMON ||
+		bp_info_rsp->hdr.command != MKHI_BUP_COMMON_GET_BOOT_PARTITION_INFO ||
+		!bp_info_rsp->hdr.is_resp) ? false : true;
+}
+
 static enum cb_err cse_get_bp_info(void)
 {
 	struct get_bp_info_req {
@@ -432,6 +465,33 @@ static enum cb_err cse_get_bp_info(void)
 		.hdr.command = MKHI_BUP_COMMON_GET_BOOT_PARTITION_INFO,
 		.reserved = {0},
 	};
+
+	/*
+	 * If SOC_INTEL_CSE_LITE_SYNC_IN_RAMSTAGE config is selected and memory has been
+	 * initialized, check if there is cse bp info response stored in cbmem. Once the data
+	 * is validated, copy it to the global cse_bp_info_rsp so that it can be used by other
+	 * functions. In case, data is not available in cbmem or invalid, continue to send the
+	 * GET_BOOT_PARTITION_INFO command, else return.
+	 */
+	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_RAMSTAGE) && cbmem_online()) {
+		struct get_bp_info_rsp *cse_bp_info_in_cbmem = sync_cse_bp_info_to_cbmem();
+		if (cse_bp_info_in_cbmem) {
+			if (is_cse_bp_info_valid(cse_bp_info_in_cbmem)) {
+				memcpy(&cse_bp_info_rsp, cse_bp_info_in_cbmem,
+					sizeof(struct get_bp_info_rsp));
+				return CB_SUCCESS;
+			}
+		}
+	} else {
+		/*
+		 * If SOC_INTEL_CSE_LITE_SYNC_IN_ROMSTAGE config is selected, check if the
+		 * global cse bp info response stored in global cse_bp_info_rsp is valid.
+		 * In case, it is not valid, continue to send the GET_BOOT_PARTITION_INFO
+		 * command, else return.
+		 */
+		if (is_cse_bp_info_valid(&cse_bp_info_rsp))
+			return CB_SUCCESS;
+	}
 
 	if (!cse_is_bp_cmd_info_possible()) {
 		printk(BIOS_ERR, "cse_lite: CSE does not meet prerequisites\n");
@@ -453,9 +513,29 @@ static enum cb_err cse_get_bp_info(void)
 	}
 
 	cse_print_boot_partition_info();
-
 	return CB_SUCCESS;
 }
+
+void cse_fill_bp_info(void)
+{
+	if (vboot_recovery_mode_enabled())
+		return;
+
+	if (cse_get_bp_info() != CB_SUCCESS)
+		cse_trigger_vboot_recovery(CSE_COMMUNICATION_ERROR);
+}
+
+/* Function to copy PRERAM CSE BP info to pertinent CBMEM. */
+static void preram_cse_bp_info_sync_to_cbmem(int is_recovery)
+{
+	if (vboot_recovery_mode_enabled())
+		return;
+
+	sync_cse_bp_info_to_cbmem();
+}
+
+CBMEM_CREATION_HOOK(preram_cse_bp_info_sync_to_cbmem);
+
 /*
  * It sends HECI command to notify CSE about its next boot partition. When coreboot wants
  * CSE to boot from certain partition (BP1 <RO> or BP2 <RW>), then this command can be used.

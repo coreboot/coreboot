@@ -129,8 +129,11 @@ void mainboard_romstage_entry(void)
 	/* Initialize HECI interface */
 	cse_init(HECI1_BASE_ADDRESS);
 
-	if (!s3wake && CONFIG(SOC_INTEL_CSE_LITE_SKU))
-		cse_fw_sync();
+	if (!s3wake && CONFIG(SOC_INTEL_CSE_LITE_SKU)) {
+		cse_fill_bp_info();
+		if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_ROMSTAGE))
+			cse_fw_sync();
+	}
 
 	/* Update coreboot timestamp table with CSE timestamps */
 	if (CONFIG(SOC_INTEL_CSE_PRE_CPU_RESET_TELEMETRY))

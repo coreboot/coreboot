@@ -9,7 +9,7 @@ friction in the community.
 
 Note that as with many rules, there are exceptions. Some have been noted
 in the 'More Detail' section. If you feel there is an exception not listed
-here, please discuss it in the mailing list to get this document  updated.
+here, please discuss it in the mailing list to get this document updated.
 Don't just assume that it's okay, even if someone on IRC says it is.
 
 

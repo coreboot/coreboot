@@ -24,8 +24,7 @@ issues.
 
 Currently active Jenkins admins:
 *   Patrick Georgi:
-    *   Email: [patrick@georgi-clan.de](mailto:patrick@georgi-clan.de)
-    *   IRC: pgeorgi
+    *   Email: [patrick@coreboot.org](mailto:patrick@coreboot.org)
 *   Martin Roth:
     *   Email: [gaumless@gmail.com](mailto:gaumless@gmail.com)
     *   IRC: martinr

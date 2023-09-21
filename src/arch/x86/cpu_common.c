@@ -97,8 +97,7 @@ enum cpu_type cpu_check_deterministic_cache_cpuid_supported(void)
 			return CPUID_COMMAND_UNSUPPORTED;
 		return CPUID_TYPE_INTEL;
 	} else if (cpu_is_amd()) {
-		res = cpuid(0x80000000);
-		if (res.eax < 0x80000001)
+		if (cpu_cpuid_extended_level() < 0x80000001)
 			return CPUID_COMMAND_UNSUPPORTED;
 
 		res = cpuid(0x80000001);

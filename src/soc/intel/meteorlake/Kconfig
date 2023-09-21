@@ -439,4 +439,14 @@ config IOE_DIE_CLOCK_START
 config HAVE_BMP_LOGO_COMPRESS_LZMA
 	default n
 
+# The default offset to store CSE RW FW version information is at 68.
+# However, in Intel Meteor Lake based systems that use PSR, the additional
+# size required to keep CSE RW FW version information and PSR back-up status
+# in adjacent CMOS memory at offset 68 is not available. Therefore, we
+# override the default offset to 161, which has enough space to keep both
+# the CSE related information together.
+config SOC_INTEL_CSE_FW_PARTITION_CMOS_OFFSET
+	int
+	default 161
+
 endif

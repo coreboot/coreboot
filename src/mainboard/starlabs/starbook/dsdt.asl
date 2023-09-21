@@ -38,6 +38,8 @@ DefinitionBlock(
 #endif
 #endif
 
+		#include <soc/intel/common/block/acpi/acpi/gna.asl>
+
 		/* PS/2 Keyboard */
 		#include <drivers/pc80/pc/ps2_controller.asl>
 	}

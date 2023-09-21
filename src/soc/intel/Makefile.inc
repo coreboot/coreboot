@@ -33,6 +33,18 @@ $(call cse_add_decomp,bp1,$(1))
 $(call cse_add_decomp,bp2,$(1))
 endef
 
+# (Comment to help with greping for uses)
+#
+# This uses the following Kconfigs:
+# CSE_PMCP_FILE
+# CSE_IOMP_FILE
+# CSE_TBTP_FILE
+# CSE_NPHY_FILE
+# CSE_PCHC_FILE
+# CSE_IUNP_FILE
+# CSE_OEMP_FILE
+#
+# For example `$(call cse_add_input_to_bp1_bp2,PMCP)` will process CONFIG_CSE_PMCP_FILE
 define cse_add_input
 $(call cse_add_file,cse_input_files,$(call cse_input_path,$(CONFIG_CSE_$(2)_FILE)),$(1),$(2))
 endef

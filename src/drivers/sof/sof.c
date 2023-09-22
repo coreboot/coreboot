@@ -20,6 +20,7 @@ static const char *get_spkr_tplg_str(enum _spkr_tplg tplg)
 	case rt1011: return "rt1011";
 	case rt1015: return "rt1015";
 	case rt1019: return "rt1019";
+	case rt5650_sp: return "rt5650";
 	default: return "default";
 	}
 }
@@ -30,6 +31,7 @@ static const char *get_jack_tplg_str(enum _jack_tplg tplg)
 	case cs42l42: return "cs42l42";
 	case da7219: return "da7219";
 	case nau8825: return "nau8825";
+	case rt5650_hp: return "rt5650";
 	case rt5682: return "rt5682";
 	default: return "default";
 	}

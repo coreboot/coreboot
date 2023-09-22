@@ -30,8 +30,6 @@ vb2_error_t vboot_extend_pcr(struct vb2_context *ctx, int pcr,
 	rv = vb2api_get_pcr_digest(ctx, which_digest, buffer, &size);
 	if (rv != VB2_SUCCESS)
 		return rv;
-	if (size < TPM_PCR_MINIMUM_DIGEST_SIZE)
-		return VB2_ERROR_UNKNOWN;
 
 	/*
 	 * On TPM 1.2, all PCRs are intended for use with SHA1. We truncate our

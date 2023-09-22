@@ -49,13 +49,13 @@ static void mipi_panel_power_on(void)
 static struct panel_description starmie_panels[] = {
 	/* K&D panel vendor and ILI9882T chip,
 	   K&D and STA panel are identical except manufacturer_name. */
-	[3] = {
+	[6] = {
 		.power_on = mipi_panel_power_on,
 		.name = "STA_ILI9882T",
 		.orientation = LB_FB_ORIENTATION_LEFT_UP,
 	},
 	/* STA panel vendor and ILI9882T chip */
-	[8] = {
+	[9] = {
 		.power_on = mipi_panel_power_on,
 		.name = "STA_ILI9882T",
 		.orientation = LB_FB_ORIENTATION_LEFT_UP,

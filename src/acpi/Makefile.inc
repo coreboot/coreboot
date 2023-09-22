@@ -8,6 +8,7 @@ ramstage-y += acpi_apic.c
 ramstage-y += acpi_dmar.c
 ramstage-y += acpi_hpet.c
 endif
+ramstage-$(CONFIG_ACPI_PPTT) += acpi_pptt.c
 ramstage-y += acpigen.c
 ramstage-y += acpigen_dptf.c
 ramstage-y += acpigen_dsm.c

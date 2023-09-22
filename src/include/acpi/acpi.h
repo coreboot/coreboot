@@ -93,6 +93,7 @@ enum acpi_tables {
 	LPIT,   /* Low Power Idle Table */
 	MADT,   /* Multiple APIC Description Table */
 	MCFG,   /* PCI Express Memory Mapped Configuration */
+	PPTT,	/* Processor Properties Topology Table */
 	RSDP,   /* Root System Description Pointer */
 	RSDT,   /* Root System Description Table */
 	SLIT,   /* System Locality Distance Information Table */
@@ -102,7 +103,6 @@ enum acpi_tables {
 	TCPA,   /* Trusted Computing Platform Alliance Table */
 	TPM2,   /* Trusted Platform Module 2.0 Table */
 	XSDT,   /* Extended System Description Table */
-
 	/* Additional proprietary tables used by coreboot */
 	CRAT,   /* Component Resource Attribute Table */
 	NHLT,   /* Non HD audio Link Table */
@@ -1419,6 +1419,110 @@ typedef struct acpi_einj {
 	acpi_einj_action_table_t action_table[ACTION_COUNT];
 } __packed acpi_einj_t;
 
+/* PPTT definitions */
+
+#define PPTT_NODE_TYPE_CPU   0
+#define PPTT_NODE_TYPE_CACHE 1
+
+/* PPTT structures for ACPI generation */
+
+typedef struct acpi_pptt_cpu_node {
+	u8  type;         // type = 0 (processor structure specification)
+	u8  length;       // in bytes
+	u8  reserved[2];  // reserved, must be zero
+	u32 flags;        // processor hierarchy node structure flags
+	u32 parent;       // reference (delta of pptt-start and node) to parent node, must be zero if no parent
+	u32 processor_id; // must match id in MADT, if actual processor
+	u32 n_resources;  // number of resource structure references
+	u32 resources[];  // resource structure references
+} acpi_pptt_cpu_node_t;
+
+typedef struct acpi_pptt_cache_node {
+	u8  type;          // type = 1 (cache type structure)
+	u8  length;        // length = 28
+	u8  reserved[2];   // reserved, must be zero
+	u32 flags;         // cache structure flags
+	u32 next_level;    // reference to next level cache, null if last cache level
+	u32 size;          // cache size in bytes
+	u32 n_sets;        // number of sets in the cache
+	u8  associativity; // integer number of ways
+	u8  attributes;    // bits[7:5] reserved, must be zero
+	u16 line_size;     // in bytes
+	u32 cache_id;      // unique, non-zero
+} acpi_pptt_cache_node_t;
+
+union acpi_pptt_body {
+	acpi_pptt_cpu_node_t   cpu;
+	acpi_pptt_cache_node_t cache;
+};
+
+typedef struct acpi_pptt {
+	acpi_header_t header;
+
+	/*
+	 * followed by a variable length body
+	 * consisting of processor topology structures.
+	 *
+	 * see acpi_pptt_cpu_node and
+	 * acpi_pptt_cache_node.
+	 */
+	union acpi_pptt_body body[];
+} __packed acpi_pptt_t;
+
+/* PPTT structures for topology description */
+
+union pptt_cache_flags {
+	struct {
+		u32 size_valid          : 1;
+		u32 n_sets_valid        : 1;
+		u32 associativity_valid : 1;
+		u32 alloc_type_valid    : 1;
+		u32 cache_type_valid    : 1;
+		u32 write_policy_valid  : 1;
+		u32 line_size_valid     : 1;
+		u32 cache_id_valid      : 1;
+		u32 reserved            : 24;
+	};
+
+	u32 raw;
+};
+
+union pptt_cpu_flags {
+	struct {
+		u32 is_physical_package : 1;
+		u32 processor_id_valid  : 1;
+		u32 is_thread           : 1;
+		u32 is_leaf             : 1;
+		u32 is_identical_impl   : 1;
+		u32 reserved            : 27;
+	};
+
+	u32 raw;
+};
+
+struct pptt_cache {
+	u32    size;
+	u32    numsets;
+	u8     associativity;
+	u8     attributes;
+	u16    line_size;
+	union  pptt_cache_flags flags;
+	struct pptt_cache       *next_level;
+};
+
+struct pptt_cpu_resources {
+	struct pptt_cache         *cache;
+	struct pptt_cpu_resources *next;
+};
+
+struct pptt_topology {
+	u32    processor_id;
+	union  pptt_cpu_flags flags;
+	struct pptt_cpu_resources *resources;
+	struct pptt_topology      *sibling;
+	struct pptt_topology      *child;
+};
+
 /* SPCR (Serial Port Console Redirection Table) */
 typedef struct acpi_spcr {
 	acpi_header_t header;
@@ -1589,6 +1693,9 @@ int acpi_create_cedt_chbs(acpi_cedt_chbs_t *chbs, u32 uid, u32 cxl_ver, u64 base
 int acpi_create_cedt_cfmws(acpi_cedt_cfmws_t *cfmws, u64 base_hpa, u64 window_size,
 	u8 eniw, u32 hbig, u16 restriction, u16 qtg_id, const u32 *interleave_target);
 
+/* PPTT related functions */
+void acpi_create_pptt_body(acpi_pptt_t *pptt);
+struct pptt_topology *acpi_get_pptt_topology(void);
 
 int acpi_create_madt_ioapic_from_hw(acpi_madt_ioapic_t *ioapic, u32 addr);
 

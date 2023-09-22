@@ -91,3 +91,17 @@ config MAX_ACPI_TABLE_SIZE_KB
 	default 144
 	help
 	  Set the maximum size of all ACPI tables in KiB.
+
+config ACPI_PPTT
+	bool
+	depends on HAVE_ACPI_TABLES
+	help
+	  Selected to build an ACPI Processor Properties Topology Table.
+
+config ACPI_PPTT_MAX_CACHES
+	int
+	depends on ACPI_PPTT
+	default 4
+	help
+	  This variable sets the maximum number of distinct caches per
+	  topology level. Increasing this option also increases stack usage.

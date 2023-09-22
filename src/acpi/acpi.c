@@ -1204,6 +1204,18 @@ unsigned long acpi_create_lpi_desc_ncst(acpi_lpi_desc_ncst_t *lpi_desc, uint16_t
 	return lpi_desc->header.length;
 }
 
+static void acpi_create_pptt(acpi_header_t *header, void *unused)
+{
+	if (!CONFIG(ACPI_PPTT))
+		return;
+
+	if (acpi_fill_header(header, "PPTT", PPTT, sizeof(acpi_pptt_t)) != CB_SUCCESS)
+		return;
+
+	acpi_pptt_t *pptt = (acpi_pptt_t *)header;
+	acpi_create_pptt_body(pptt);
+}
+
 static uint8_t acpi_spcr_type(void)
 {
 	/* 16550-compatible with parameters defined in Generic Address Structure */
@@ -1394,6 +1406,7 @@ unsigned long write_acpi_tables(const unsigned long start)
 		{ acpi_create_bert, NULL, sizeof(acpi_bert_t) },
 		{ acpi_create_spcr, NULL, sizeof(acpi_spcr_t) },
 		{ acpi_create_gtdt, NULL, sizeof(acpi_gtdt_t) },
+		{ acpi_create_pptt, NULL, sizeof(acpi_pptt_t) },
 	};
 
 	current = start;
@@ -1742,6 +1755,8 @@ int get_acpi_table_revision(enum acpi_tables table)
 	case SPCR:
 		return 4;
 	case GTDT:
+		return 3;
+	case PPTT: /* ACPI 6.4 */
 		return 3;
 	default:
 		return -1;

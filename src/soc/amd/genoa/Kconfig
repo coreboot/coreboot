@@ -19,6 +19,10 @@ config SOC_SPECIFIC_OPTIONS
 config USE_EXP_X86_64_SUPPORT
 	default y
 
+config CHIPSET_DEVICETREE
+	string
+	default "soc/amd/genoa/chipset.cb"
+
 config EARLY_RESERVED_DRAM_BASE
 	hex
 	default 0x7000000

@@ -93,7 +93,7 @@ struct ich_spi_controller {
 	uint8_t *data;
 	unsigned int databytes;
 	uint8_t *status;
-	uint16_t *control;
+	uint8_t *control;	/* Unaligned on ICH9 */
 	uint32_t *bbar;
 	uint32_t *fpr;
 	uint8_t fpr_max;
@@ -300,7 +300,7 @@ void spi_init(void)
 		cntlr.data = (uint8_t *)ich7_spi->spid;
 		cntlr.databytes = sizeof(ich7_spi->spid);
 		cntlr.status = (uint8_t *)&ich7_spi->spis;
-		cntlr.control = &ich7_spi->spic;
+		cntlr.control = (uint8_t *)&ich7_spi->spic;
 		cntlr.bbar = &ich7_spi->bbar;
 		cntlr.preop = &ich7_spi->preop;
 		cntlr.fpr = &ich7_spi->pbr[0];
@@ -317,7 +317,7 @@ void spi_init(void)
 		cntlr.data = (uint8_t *)ich9_spi->fdata;
 		cntlr.databytes = sizeof(ich9_spi->fdata);
 		cntlr.status = &ich9_spi->ssfs;
-		cntlr.control = (uint16_t *)ich9_spi->ssfc;
+		cntlr.control = ich9_spi->ssfc;
 		cntlr.bbar = &ich9_spi->bbar;
 		cntlr.preop = &ich9_spi->preop;
 		cntlr.fpr = &ich9_spi->pr[0];
@@ -579,8 +579,13 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 		 * bitesout size was 1, decremented to zero while executing
 		 * spi_setup_opcode() above. Tell the chip to send the
 		 * command.
+		 *
+		 * On ICH9 the control register is not natually aligned.
+		 * Write the high byte first to prevent triggering a transfer
+		 * when writing two bytes on the bus using outw instruction.
 		 */
-		writew_(control, cntlr.control);
+		writeb_(control >> 8, &cntlr.control[1]);
+		writeb_(control, &cntlr.control[0]);
 
 		/* wait for the result */
 		status = ich_status_poll(SPIS_CDS | SPIS_FCERR, 1);
@@ -636,8 +641,13 @@ static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 		control |= SPIC_DS;
 		control |= (data_length - 1) << 8;
 
-		/* write it */
-		writew_(control, cntlr.control);
+		/*
+		 * On ICH9 the control register is not natually aligned.
+		 * Write the high byte first to prevent triggering a transfer
+		 * when writing two bytes on the bus using outw instruction.
+		 */
+		writeb_(control >> 8, &cntlr.control[1]);
+		writeb_(control, &cntlr.control[0]);
 
 		/* Wait for Cycle Done Status or Flash Cycle Error. */
 		status = ich_status_poll(SPIS_CDS | SPIS_FCERR, 1);

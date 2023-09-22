@@ -439,6 +439,13 @@ struct soc_intel_meteorlake_config {
 
 	/* Gear Selection for SAGV points. 0: Auto, 1: Gear 1, 2: Gear 2, 4: Gear 4 */
 	uint8_t sagv_gear[MAX_SAGV_POINTS];
+
+	/*
+	 * Enable or Disable Reduced BasicMemoryTest size.
+	 * Default is set to 0.
+	 * Set this to 1 in order to reduce BasicMemoryTest size
+	 */
+	bool lower_basic_mem_test_size;
 };
 
 typedef struct soc_intel_meteorlake_config config_t;

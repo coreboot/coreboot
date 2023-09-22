@@ -31,6 +31,56 @@ intel_igd_get_controller_info(const struct device *device)
 	return NULL;
 }
 
+/*
+ * Transcoders contain the timing generators for eDP, DP, and HDMI interfaces.
+ * Intel transcoders are based on Quick Sync Video, which offloads video
+ * encoding and decoding tasks from the CPU to the GPU.
+ *
+ * On Intel silicon, there are four display pipes (DDI-A to DDI-D) that support
+ * blending, color adjustments, scaling, and dithering.
+ *
+ * From the display block diagram perspective, the front end of the display
+ * contains the pipes. The pipes connect to the transcoder. The transcoder
+ * (except for wireless) connects to the DDIs to drive the IO/PHY.
+ *
+ * This logic checks if the DDI-A port is attached to the transcoder and
+ * enabled (bit 27). Traditionally, the on-board display (eDP) is attached to DDI-A.
+ * If the above conditions is met, then the on-board display is present and enabled.
+ *
+ * On platforms without an on-board display (i.e., value at bits 27-30 is between 2-9),
+ * meaning that DDI-A (eDP) is not enabled.
+ *
+ * Additionally, if bits 27-30 are all set to 0, this means that no DDI ports
+ * are enabled, and there is no display.
+ *
+ * Consider external display is present and enabled, if eDP/DDI-A is not enabled
+ * and transcoder is attached to any DDI port (bits 27-30 are not zero).
+ */
+static int get_external_display_status(void)
+{
+	uint32_t ddi_func_ctrl = graphics_gtt_read(TRANS_DDI_FUNC_CTL_A);
+	ddi_func_ctrl &= TRANS_DDI_PORT_MASK;
+
+	/*
+	 * Check if transcoder is none or connected to DDI-A port (aka eDP).
+	 * Report no external display in both cases.
+	 */
+	if (ddi_func_ctrl == TRANS_DDI_PORT_NONE) {
+		return 0;
+	} else {
+		if (ddi_func_ctrl == TRANS_DDI_SELECT_PORT(PORT_A))
+			return 0;
+		else
+			return 1;
+	}
+}
+
+/* Check and report if an external display is attached */
+int fsp_soc_report_external_display(void)
+{
+	return graphics_get_framebuffer_address() && get_external_display_status();
+}
+
 static void gma_init(struct device *const dev)
 {
 	intel_gma_init_igd_opregion();

@@ -182,7 +182,7 @@ int smbios_write_type4(unsigned long *current, int handle)
 		if ((res.edx) & BIT(28))
 			characteristics |= BIT(4); /* BIT4: Hardware Thread */
 
-		if (((cpuid_eax(0x80000000) - 0x80000000) + 1) > 2) {
+		if (((cpu_cpuid_extended_level() - 0x80000000) + 1) > 2) {
 			res = cpuid(0x80000001);
 
 			if ((res.edx) & BIT(20))

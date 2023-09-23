@@ -60,7 +60,7 @@ struct cbfs_header {
 	uint32_t align; /* fixed to 64 bytes */
 	uint32_t offset;
 	uint32_t architecture;
-	uint32_t pad[];
+	uint32_t pad[1];
 } __packed;
 
 /* this used to be flexible, but wasn't ever set to something different. */

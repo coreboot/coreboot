@@ -90,7 +90,7 @@ uint32_t cpu_get_feature_flags_edx(void)
 enum cpu_type cpu_check_deterministic_cache_cpuid_supported(void)
 {
 	if (cpu_is_intel()) {
-		if (cpuid_eax(0) < 4)
+		if (cpuid_get_max_func() < 4)
 			return CPUID_COMMAND_UNSUPPORTED;
 		return CPUID_TYPE_INTEL;
 	} else if (cpu_is_amd()) {

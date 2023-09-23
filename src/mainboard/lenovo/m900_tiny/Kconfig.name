@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_LENOVO_THINKCENTRE_M900_TINY
+	bool "ThinkCentre M700 / M900 Tiny"

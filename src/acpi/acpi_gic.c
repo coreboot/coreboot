@@ -12,7 +12,7 @@ static int acpi_create_madt_one_gicc_v3(acpi_madt_gicc_t *gicc, u32 acpi_uid, u3
 	gicc->cpu_interface_number = 0; /* V3, no compat mode */
 	gicc->acpi_processor_uid = acpi_uid;
 	gicc->flags.enabled = 1;
-	gicc->parking_protocol_persion = 0; /* Assume PSCI exclusively */
+	gicc->parking_protocol_version = 0; /* Assume PSCI exclusively */
 	gicc->performance_interrupt_gsiv = pi_gsiv;
 	gicc->parked_address = 0;
 	gicc->physical_base_address = 0; /* V3, no compat mode */

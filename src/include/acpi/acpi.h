@@ -1428,7 +1428,7 @@ _Static_assert(sizeof(acpi_spcr_t) == 88, "acpi_spcr_t must have an 88 byte size
 /* GTDT - Generic Timer Description Table (ACPI 5.1) Version 2 */
 typedef struct acpi_table_gtdt {
 	acpi_header_t header;	/* Common ACPI table header */
-	u64 counter_block_addresss;
+	u64 counter_block_address;
 	u32 reserved;
 	u32 secure_el1_interrupt;
 	u32 secure_el1_flags;

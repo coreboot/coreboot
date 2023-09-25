@@ -113,6 +113,7 @@ as well (such as
   * [Resource & Documentation Center](https://www.intel.com/content/www/us/en/resources-documentation/developer.html)
   * [Architecture Software Developer Manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)
   * [Intel specific ACPI](https://www.intel.com/content/www/us/en/standards/processor-vendor-specific-acpi-specification.html)
+  * [coreboot on Eagle Stream](https://www.intel.com/content/www/us/en/content-details/778593/coreboot-practice-on-eagle-stream.html)
 
 * Rockchip
   * [Open Source Wiki](https://opensource.rock-chips.com/wiki_Main_Page)

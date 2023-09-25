@@ -89,10 +89,29 @@ static const acpi_cstate_t cstate_map[] = {
 	},
 };
 
+static const char *const c_state_names[] = {"C0", "C1", "C1E", "C3", "C6", "C7", "C7S"};
+
 static int get_logical_cores_per_package(void)
 {
 	msr_t msr = rdmsr(MSR_CORE_THREAD_COUNT);
 	return msr.lo & 0xffff;
+}
+
+static void print_supported_cstates(void)
+{
+	uint8_t state, substate;
+
+	printk(BIOS_DEBUG, "Supported C-states: ");
+
+	for (size_t i = 0; i < ARRAY_SIZE(cstate_map); i++) {
+		state = (cstate_map[i].resource.addrl >> 4) + 1;
+		substate = cstate_map[i].resource.addrl & 0xf;
+
+		/* CPU C0 is always supported */
+		if (i == 0 || cpu_get_c_substate_support(state) > substate)
+			printk(BIOS_DEBUG, " %s", c_state_names[i]);
+	}
+	printk(BIOS_DEBUG, "\n");
 }
 
 static void generate_C_state_entries(const struct device *dev)
@@ -102,7 +121,6 @@ static void generate_C_state_entries(const struct device *dev)
 	const int acpi_cstates[3] = { conf->acpi_c1, conf->acpi_c2, conf->acpi_c3 };
 
 	acpi_cstate_t acpi_cstate_map[ARRAY_SIZE(acpi_cstates)] = { 0 };
-
 	/* Count number of active C-states */
 	int count = 0;
 
@@ -319,6 +337,8 @@ void generate_cpu_entries(const struct device *device)
 
 	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n",
 	       numcpus, cores_per_package);
+
+	print_supported_cstates();
 
 	for (int cpu_id = 0; cpu_id < numcpus; cpu_id++)
 		for (int core_id = 0; core_id < cores_per_package; core_id++)

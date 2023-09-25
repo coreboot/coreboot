@@ -1706,6 +1706,7 @@ unsigned long acpi_create_madt_lapic_nmis(unsigned long current);
 
 uintptr_t platform_get_gicd_base(void);
 uintptr_t platform_get_gicr_base(void);
+int platform_get_gic_its(uintptr_t **base);
 
 int acpi_create_srat_lapic(acpi_srat_lapic_t *lapic, u8 node, u8 apic);
 int acpi_create_srat_x2apic(acpi_srat_x2apic_t *x2apic, u32 node, u32 apic);

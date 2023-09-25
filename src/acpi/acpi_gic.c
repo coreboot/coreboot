@@ -79,11 +79,37 @@ static unsigned long acpi_create_madt_gicr_v3(unsigned long current)
 	return current + gicr->length;
 }
 
+__weak int platform_get_gic_its(uintptr_t **base)
+{
+	return 0;
+}
+
+static unsigned long acpi_create_madt_gic_its_v3(unsigned long current)
+{
+	int i, its_count;
+	uintptr_t *its_base;
+
+	its_count = platform_get_gic_its(&its_base);
+
+	for (i = 0; i < its_count; i++) {
+		acpi_madt_gic_its_t *gic_its = (acpi_madt_gic_its_t *)current;
+		memset(gic_its, 0, sizeof(acpi_madt_gic_its_t));
+		gic_its->type = GIC_ITS;
+		gic_its->gic_its_id = i;
+		gic_its->physical_base_address = its_base[i];
+		gic_its->length = sizeof(acpi_madt_gic_its_t);
+
+		current = current + gic_its->length;
+	}
+	return current;
+}
+
 unsigned long acpi_arch_fill_madt(acpi_madt_t *madt, unsigned long current)
 {
 	current = acpi_create_madt_giccs_v3(current);
 	current = acpi_create_madt_gicd_v3(current);
 	current = acpi_create_madt_gicr_v3(current);
+	current = acpi_create_madt_gic_its_v3(current);
 
 	return current;
 }

@@ -557,4 +557,7 @@ config HSPHY_FW_MAX_SIZE
 	hex
 	default 0x8000
 
+config HAVE_BMP_LOGO_COMPRESS_LZMA
+	default n
+
 endif

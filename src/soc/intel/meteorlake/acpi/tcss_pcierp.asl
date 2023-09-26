@@ -1,6 +1,24 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-OperationRegion (PXCS, SystemMemory, BASE(_ADR), 0x800)
+/*
+ * TCSS PCIE RP Channel Configuration (CCFG) Config Space register offsets
+ * MPC - Miscellaneous Port Configuration Register
+ * RPPGEN - Root Port Power Gating Enable Register
+ * SMSCS - SMI/SCI Status Register
+ */
+#if CONFIG(SOC_INTEL_METEORLAKE_PRE_PRODUCTION_SILICON)
+#define PXCS_OPREGION_SIZE		0x800
+#define TCSS_CFG_MPC_FROM_CCFG		0xD8
+#define TCSS_CFG_SMSCS_FROM_CCFG	0xDC
+#define TCSS_CFG_RPPGEN_FROM_CCFG	0xE2
+#else
+#define PXCS_OPREGION_SIZE		0xC00
+#define TCSS_CFG_MPC_FROM_CCFG		0xBA8
+#define TCSS_CFG_SMSCS_FROM_CCFG	0xBAC
+#define TCSS_CFG_RPPGEN_FROM_CCFG	0xBB2
+#endif
+
+OperationRegion (PXCS, SystemMemory, BASE(_ADR), PXCS_OPREGION_SIZE)
 Field (PXCS, AnyAcc, NoLock, Preserve)
 {
 	VDID, 32,
@@ -25,11 +43,12 @@ Field (PXCS, AnyAcc, NoLock, Preserve)
 	PSPX, 1,       /* 16,  PME Status */
 	Offset(0xA4),
 	D3HT, 2,       /* Power State */
-	Offset(0xD8),  /* 0xD8, MPC - Miscellaneous Port Configuration Register */
+#if CONFIG(SOC_INTEL_METEORLAKE_PRE_PRODUCTION_SILICON)
+	Offset(TCSS_CFG_MPC_FROM_CCFG),
 	, 30,
 	HPEX, 1,       /* 30,  Hot Plug SCI Enable */
 	PMEX, 1,       /* 31,  Power Management SCI Enable */
-	Offset(0xE2),  /* 0xE2, RPPGEN - Root Port Power Gating Enable */
+	Offset(TCSS_CFG_RPPGEN_FROM_CCFG),
 	, 2,
 	L23E, 1,       /* 2,   L23_Rdy Entry Request (L23ER) */
 	L23R, 1,       /* 3,   L23_Rdy to Detect Transition (L23R2DT) */
@@ -41,11 +60,29 @@ Field (PXCS, AnyAcc, NoLock, Preserve)
 	, 3,
 	RPER, 1,       /*  RTD3PERST[3] */
 	RPFE, 1,       /*  RTD3PFETDIS[4] */
+#else
+	Offset(0x420), /* 0x420, PCIEPMECTL (PCIe PM Extension Control) */
+	, 30,
+	DPGE, 1,       /* PCIEPMECTL[30]: Disabled, Detect and L23_Rdy State PHY Lane */
+		       /* Power Gating Enable (DLSULPPGE) */
+	Offset(0x5BC), /* 0x5BC, PCIE ADVMCTRL */
+	, 3,
+	RPER, 1,       /*  RTD3PERST[3] */
+	RPFE, 1,       /*  RTD3PFETDIS[4] */
+	Offset(TCSS_CFG_MPC_FROM_CCFG),
+	, 30,
+	HPEX, 1,       /* 30,  Hot Plug SCI Enable */
+	PMEX, 1,       /* 31,  Power Management SCI Enable */
+	Offset(TCSS_CFG_RPPGEN_FROM_CCFG),
+	, 2,
+	L23E, 1,       /* 2,   L23_Rdy Entry Request (L23ER) */
+	L23R, 1,       /* 3,   L23_Rdy to Detect Transition (L23R2DT) */
+#endif
 }
 
 Field (PXCS, AnyAcc, NoLock, WriteAsZeros)
 {
-	Offset(0xDC),  /* 0xDC, SMSCS - SMI/SCI Status Register */
+	Offset(TCSS_CFG_SMSCS_FROM_CCFG),
 	, 30,
 	HPSX, 1,       /* 30,  Hot Plug SCI Status */
 	PMSX, 1        /* 31,  Power Management SCI Status */

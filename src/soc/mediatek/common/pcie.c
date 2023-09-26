@@ -127,11 +127,23 @@ volatile union pci_bank *pci_map_bus(pci_devfn_t dev)
 	return (void *)(base + PCIE_CFG_OFFSET_ADDR);
 }
 
-static int mtk_pcie_set_trans_window(struct device *dev, uintptr_t table,
+static void mtk_pcie_set_table(uintptr_t table, uint32_t cpu_addr,
+			       uint32_t pci_addr, uint32_t size, uint32_t attr)
+{
+	write32p(table, cpu_addr | PCIE_ATR_SIZE(__fls(size)));
+	write32p(table + PCIE_ATR_SRC_ADDR_MSB_OFFSET, 0);
+	write32p(table + PCIE_ATR_TRSL_ADDR_LSB_OFFSET, pci_addr);
+	write32p(table + PCIE_ATR_TRSL_ADDR_MSB_OFFSET, 0);
+	write32p(table + PCIE_ATR_TRSL_PARAM_OFFSET, attr);
+}
+
+static int mtk_pcie_set_trans_window(size_t *count, uintptr_t table_base,
 				     const struct mtk_pcie_mmio_res *mmio_res)
 {
 	const char *range_type;
+	uintptr_t table;
 	uint32_t table_attr;
+	uint32_t cpu_addr, pci_addr, remaining, size;
 
 	if (!mmio_res)
 		return -1;
@@ -148,17 +160,44 @@ static int mtk_pcie_set_trans_window(struct device *dev, uintptr_t table,
 		return -1;
 	}
 
-	write32p(table, mmio_res->cpu_addr |
-		 PCIE_ATR_SIZE(__fls(mmio_res->size)));
-	write32p(table + PCIE_ATR_SRC_ADDR_MSB_OFFSET, 0);
-	write32p(table + PCIE_ATR_TRSL_ADDR_LSB_OFFSET, mmio_res->pci_addr);
-	write32p(table + PCIE_ATR_TRSL_ADDR_MSB_OFFSET, 0);
-	write32p(table + PCIE_ATR_TRSL_PARAM_OFFSET, table_attr);
+	cpu_addr = mmio_res->cpu_addr;
+	pci_addr = mmio_res->pci_addr;
+	remaining = mmio_res->size;
 
-	printk(BIOS_INFO,
-	       "%s: set %s trans window: cpu_addr = %#x, pci_addr = %#x, size = %#x\n",
-	       __func__, range_type, mmio_res->cpu_addr, mmio_res->pci_addr,
-	       mmio_res->size);
+	while (remaining && *count < PCIE_MAX_TRANS_TABLES) {
+		/*
+		 * The table size needs to be a power of 2.
+		 * In addition, cpu_addr needs to be aligned to the size.
+		 */
+		size = BIT(__fls(remaining));
+
+		if (cpu_addr > 0)
+			size = MIN(size, BIT(__ffs(cpu_addr)));
+
+		/* Minimum size of translate table is 4KiB */
+		if (size < 4 * KiB) {
+			printk(BIOS_ERR, "%s: table size %#x is less than 4KiB\n",
+			       __func__, size);
+			return -1;
+		}
+
+		table = table_base + *count * PCIE_ATR_TLB_SET_OFFSET;
+		mtk_pcie_set_table(table, cpu_addr, pci_addr, size, table_attr);
+
+		printk(BIOS_INFO,
+		       "%s: set %s trans window: cpu_addr = %#x, pci_addr = %#x, size = %#x\n",
+		       __func__, range_type, cpu_addr, pci_addr, size);
+		cpu_addr += size;
+		pci_addr += size;
+		remaining -= size;
+		(*count)++;
+	}
+
+	if (remaining) {
+		printk(BIOS_ERR, "%s: Not enough translation windows, remaining size: %#x\n",
+		       __func__, remaining);
+		return -1;
+	}
 
 	return 0;
 }
@@ -194,17 +233,18 @@ void mtk_pcie_domain_set_resources(struct device *dev)
 {
 	const mtk_soc_config_t *config = config_of(dev);
 	const struct mtk_pcie_config *conf = &config->pcie_config;
-	uintptr_t table;
+	uintptr_t table_base = conf->base + PCIE_TRANS_TABLE_BASE_REG;
+	size_t count = 0;
 
 	/* Initialize I/O space constraints. */
-	table = conf->base + PCIE_TRANS_TABLE_BASE_REG;
-	if (mtk_pcie_set_trans_window(dev, table, &conf->mmio_res_io) < 0)
-		printk(BIOS_ERR, "%s: Failed to set IO window\n", __func__);
+	if (mtk_pcie_set_trans_window(&count, table_base, &conf->mmio_res_io) < 0) {
+		printk(BIOS_ERR, "%s: Failed to set IO window, ignore it\n",
+		       __func__);
+		count = 0;
+	}
 
 	/* Initialize memory resources constraints. */
-	table = conf->base + PCIE_TRANS_TABLE_BASE_REG +
-		PCIE_ATR_TLB_SET_OFFSET;
-	if (mtk_pcie_set_trans_window(dev, table, &conf->mmio_res_mem) < 0)
+	if (mtk_pcie_set_trans_window(&count, table_base, &conf->mmio_res_mem) < 0)
 		printk(BIOS_ERR, "%s: Failed to set MEM window\n", __func__);
 
 	pci_domain_set_resources(dev);

@@ -7,6 +7,7 @@ __scripts__
                       various human readable formats. `Bash`
   * _dts-to-fmd.sh_ -Converts a depthcharge fmap.dts into an fmaptool
                      compatible .fmd format `Bash`
+  * _find_new_user_commits.sh_ - Finds new gerrit committers `Bash`
   * _find-unused-kconfig-symbols.sh_ - Points out Kconfig variables
                                        that may be unused. There are
                                        some false positives, but it

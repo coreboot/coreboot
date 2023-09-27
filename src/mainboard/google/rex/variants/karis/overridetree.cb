@@ -72,6 +72,8 @@ chip soc/intel/meteorlake
 		[PchSerialIoIndexI2C5] = PchSerialIoPci,
 	}"
 
+	register "tcc_offset" = "10"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

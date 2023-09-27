@@ -1,10 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <FCH/Common/FchCommonCfg.h>
 #include <RcMgr/DfX/RcManager4-api.h>
 #include <amdblocks/reset.h>
 #include <bootstate.h>
 #include <cbmem.h>
 #include <cpu/cpu.h>
+#include <device/device.h>
+#include <soc/soc_chip.h>
 #include <xSIM-api.h>
 #include "opensil_console.h"
 
@@ -58,6 +61,37 @@ static void setup_rc_manager_default(void)
 	rc_mgr_input_block->Above4GMmioSizePerRbForNonPciDevice = 0;
 }
 
+#define NUM_XHCI_CONTROLLERS 2
+static void configure_usb(void)
+{
+	const struct soc_amd_genoa_config *soc_config = config_of_soc();
+	const struct soc_usb_config *usb = &soc_config->usb;
+
+	FCHUSB_INPUT_BLK *fch_usb_data = SilFindStructure(SilId_FchUsb, 0);
+	fch_usb_data->Xhci0Enable = usb->xhci0_enable;
+	fch_usb_data->Xhci1Enable = usb->xhci1_enable;
+	fch_usb_data->Xhci2Enable = false; /* there's no XHCI2 on this SoC */
+	for (int i = 0; i < NUM_XHCI_CONTROLLERS; i++) {
+		memcpy(&fch_usb_data->XhciOCpinSelect[i].Usb20OcPin, &usb->usb2_oc_pins[i],
+		       sizeof(fch_usb_data->XhciOCpinSelect[i].Usb20OcPin));
+		memcpy(&fch_usb_data->XhciOCpinSelect[i].Usb31OcPin, &usb->usb3_oc_pins[i],
+		       sizeof(fch_usb_data->XhciOCpinSelect[i].Usb31OcPin));
+	}
+	fch_usb_data->XhciOcPolarityCfgLow = usb->polarity_cfg_low;
+	fch_usb_data->Usb3PortForceGen1 = usb->usb3_force_gen1.raw;
+
+	/* Instead of overwriting the whole OemUsbConfigurationTable, only copy the relevant
+	   fields to the pre-populated data structure */
+	fch_usb_data->OemUsbConfigurationTable.Usb31PhyEnable = usb->usb31_phy_enable;
+	if (usb->usb31_phy_enable)
+		memcpy(&fch_usb_data->OemUsbConfigurationTable.Usb31PhyPort, usb->usb31_phy,
+		       sizeof(fch_usb_data->OemUsbConfigurationTable.Usb31PhyPort));
+	fch_usb_data->OemUsbConfigurationTable.Usb31PhyEnable = usb->s1_usb31_phy_enable;
+	if (usb->s1_usb31_phy_enable)
+		memcpy(&fch_usb_data->OemUsbConfigurationTable.S1Usb31PhyPort, usb->s1_usb31_phy,
+		       sizeof(fch_usb_data->OemUsbConfigurationTable.S1Usb31PhyPort));
+}
+
 static void setup_opensil(void *unused)
 {
 	const SIL_STATUS debug_ret = SilDebugSetup(HostDebugService);
@@ -70,6 +104,7 @@ static void setup_opensil(void *unused)
 	SIL_STATUS_report("xSimAssignMemory", assign_mem_ret);
 
 	setup_rc_manager_default();
+	configure_usb();
 }
 
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_ENTRY, setup_opensil, NULL);

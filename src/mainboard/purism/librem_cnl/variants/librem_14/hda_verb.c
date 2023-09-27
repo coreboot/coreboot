@@ -5,6 +5,7 @@
 #include <console/console.h>
 
 const u32 cim_verb_data[] = {
+	/* Board revision 01 has ALC256 */
 	0x10ec0256,	/* Codec Vendor/Device ID: Realtek ALC256 */
 	0x10ec0256,	/* Subsystem ID */
 	16,		/* Number of entries */
@@ -47,6 +48,45 @@ const u32 cim_verb_data[] = {
 	0x02050007,
 	0x02040200,
 
+	/* Board revision 02 has ALC269 */
+	0x10ec0269,	/* Codec Vendor/Device ID: Realtek ALC269 */
+	0x10ec0269,	/* Subsystem ID */
+	16,		/* Number of entries */
+
+	AZALIA_RESET(0x1),
+
+	AZALIA_SUBVENDOR(0, 0x10ec129e),
+	AZALIA_PIN_CFG(0, 0x12, 0x90A60140), /* DMIC */
+	AZALIA_PIN_CFG(0, 0x14, 0x90170120), /* FRONT (Port-D) */
+	AZALIA_PIN_CFG(0, 0x17, 0x40000000), /* MONO-OUT (Port-H) */
+	AZALIA_PIN_CFG(0, 0x18, 0x04A11030), /* MIC1 (Port-B) */
+	AZALIA_PIN_CFG(0, 0x19, 0x411111F0), /* MIC2 (Port-F) */
+	AZALIA_PIN_CFG(0, 0x1A, 0x411111F0), /* LINE1 (Port-C) */
+	AZALIA_PIN_CFG(0, 0x1B, 0x411111F0), /* LINE2 (Port-E) */
+	AZALIA_PIN_CFG(0, 0x1D, 0x40E4A105), /* BEEP-IN */
+	AZALIA_PIN_CFG(0, 0x1E, 0x411111F0), /* S/PDIF-OUT1 */
+	AZALIA_PIN_CFG(0, 0x21, 0x04211010), /* HP-OUT (Port-I) */
+
+	0x02050011,
+	0x02041410,
+	0x02050012,
+	0x02041901,
+
+	0x0205000D,
+	0x02044440,
+	0x02050007,
+	0x02040040,
+
+	0x02050002,
+	0x0204AAB8,
+	0x02050008,
+	0x02040300,
+
+	0x02050017,
+	0x020400AF,
+	0x02050005,
+	0x020400C0,
+
 	0x8086280b,	/* Codec Vendor/Device ID: Intel CometPoint HDMI */
 	0x80860101,	/* Subsystem ID */
 	4,		/* Number of entries */
@@ -61,8 +101,8 @@ const u32 pc_beep_verbs[] = {};
 
 AZALIA_ARRAY_SIZES;
 
-/* Older verbs with no jack detect - needed if an older Librem EC is in use that
-   lacks jack detect.  Headphones can be selected manually. */
+/* Older ALC256 verbs with no jack detect - needed if an older Librem EC is in
+   use that lacks jack detect.  Headphones can be selected manually. */
 static const u32 no_jack_detect_verbs[] = {
 	AZALIA_PIN_CFG(0, 0x19, 0x04a11130), /* Jack analog mic */
 	AZALIA_PIN_CFG(0, 0x21, 0x04211120), /* Jack analog out */

@@ -460,11 +460,11 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_C5 - NC */
 	PAD_NC(GPP_C5, NONE),
 
-	/* GPP_C6 - SMBL1CLK */
-	PAD_CFG_NF(GPP_C6, NONE, DEEP, NF1),
+	/* GPP_C6 - NC */
+	PAD_NC(GPP_C6, NONE),
 
-	/* GPP_C7 - SMBL1DATA */
-	PAD_CFG_NF(GPP_C7, NONE, DEEP, NF1),
+	/* GPP_C7 - NC */
+	PAD_NC(GPP_C7, NONE),
 
 	/* GPP_C8 - NC */
 	PAD_NC(GPP_C8, NONE),

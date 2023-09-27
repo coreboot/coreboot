@@ -47,7 +47,9 @@ CPPFLAGS_common += -I$(src)/drivers/intel/fsp2_0/include
 
 FSP_T_CBFS = $(call strip_quotes,$(CONFIG_FSP_T_CBFS))
 FSP_M_CBFS = $(call strip_quotes,$(CONFIG_FSP_M_CBFS))
+FSP_M_CBFS_2 = $(call strip_quotes,$(CONFIG_FSP_M_CBFS_2))
 FSP_S_CBFS = $(call strip_quotes,$(CONFIG_FSP_S_CBFS))
+FSP_S_CBFS_2 = $(call strip_quotes,$(CONFIG_FSP_S_CBFS_2))
 
 # Add FSP blobs into cbfs. SoC code may supply  additional options with
 # -options, e.g --xip or -b
@@ -62,30 +64,47 @@ endif # CONFIG_FSP_T_XIP
 endif # CONFIG_ADD_FSP_BINARIES && CONFIG_FSP_CAR
 
 cbfs-files-$(CONFIG_ADD_FSP_BINARIES) += $(FSP_M_CBFS)
+ifeq ($(CONFIG_PLATFORM_USES_SECOND_FSP)$(CONFIG_ADD_FSP_BINARIES),yy)
+cbfs-files-y += $(FSP_M_CBFS_2)
+endif
 $(FSP_M_CBFS)-file := $(call strip_quotes,$(CONFIG_FSP_M_FILE))
+$(FSP_M_CBFS_2)-file := $(call strip_quotes,$(CONFIG_FSP_M_FILE_2))
 $(FSP_M_CBFS)-type := fsp
+$(FSP_M_CBFS_2)-type := fsp
 ifeq ($(CONFIG_FSP_M_XIP),y)
 $(FSP_M_CBFS)-options := --xip $(TXTIBB)
+$(FSP_M_CBFS_2)-options := --xip $(TXTIBB)
 endif
 ifeq ($(CONFIG_FSP_COMPRESS_FSP_M_LZMA),y)
 $(FSP_M_CBFS)-compression := LZMA
+$(FSP_M_CBFS_2)-compression := LZMA
 else ifeq ($(CONFIG_FSP_COMPRESS_FSP_M_LZ4),y)
 $(FSP_M_CBFS)-compression := LZ4
+$(FSP_M_CBFS_2)-compression := LZ4
 endif
 ifneq ($(CONFIG_FSP_ALIGNMENT_FSP_M),)
 $(FSP_M_CBFS)-align := $(CONFIG_FSP_ALIGNMENT_FSP_M)
+$(FSP_M_CBFS_2)-align := $(CONFIG_FSP_ALIGNMENT_FSP_M)
 endif
 
 cbfs-files-$(CONFIG_ADD_FSP_BINARIES) += $(FSP_S_CBFS)
+ifeq ($(CONFIG_PLATFORM_USES_SECOND_FSP)$(CONFIG_ADD_FSP_BINARIES),yy)
+cbfs-files-y += $(FSP_S_CBFS_2)
+endif
 $(FSP_S_CBFS)-file := $(call strip_quotes,$(CONFIG_FSP_S_FILE))
+$(FSP_S_CBFS_2)-file := $(call strip_quotes,$(CONFIG_FSP_S_FILE_2))
 $(FSP_S_CBFS)-type := fsp
+$(FSP_S_CBFS_2)-type := fsp
 ifeq ($(CONFIG_FSP_COMPRESS_FSP_S_LZMA),y)
 $(FSP_S_CBFS)-compression := LZMA
+$(FSP_S_CBFS_2)-compression := LZMA
 else ifeq ($(CONFIG_FSP_COMPRESS_FSP_S_LZ4),y)
 $(FSP_S_CBFS)-compression := LZ4
+$(FSP_S_CBFS_2)-compression := LZ4
 endif
 ifneq ($(CONFIG_FSP_ALIGNMENT_FSP_S),)
 $(FSP_S_CBFS)-align := $(CONFIG_FSP_ALIGNMENT_FSP_S)
+$(FSP_S_CBFS_2)-align := $(CONFIG_FSP_ALIGNMENT_FSP_S)
 endif
 
 ifeq ($(CONFIG_FSP_FULL_FD),y)
@@ -96,6 +115,14 @@ $(obj)/Fsp_S.fd: $(call strip_quotes,$(CONFIG_FSP_FD_PATH)) $(obj)/Fsp_M.fd
 	true
 
 $(obj)/Fsp_T.fd: $(call strip_quotes,$(CONFIG_FSP_FD_PATH)) $(obj)/Fsp_M.fd
+	true
+endif
+
+ifeq ($(CONFIG_PLATFORM_USES_SECOND_FSP)$(CONFIG_FSP_FULL_FD),yy)
+$(obj)/Fsp_2_M.fd: $(call strip_quotes,$(CONFIG_FSP_FD_PATH_2)) $(DOTCONFIG)
+	python 3rdparty/fsp/Tools/SplitFspBin.py split -f $(CONFIG_FSP_FD_PATH_2) -o "$(obj)" -n "Fsp_2.fd"
+
+$(obj)/Fsp_2_S.fd: $(call strip_quotes,$(CONFIG_FSP_FD_PATH_2)) $(obj)/Fsp_M.fd
 	true
 endif
 
@@ -126,6 +153,14 @@ endif # CONFIG_FSP_M_FILE
 ifeq ($(call strip_quotes,$(CONFIG_FSP_S_FILE)),)
 $(error No FSP-S binary file specified.)
 endif # CONFIG_FSP_S_FILE
+ifeq ($(CONFIG_PLATFORM_USES_SECOND_FSP),y)
+ifeq ($(call strip_quotes,$(CONFIG_FSP_M_FILE_2)),)
+$(error No second FSP-M binary file specified.)
+endif # CONFIG_FSP_M_FILE_2
+ifeq ($(call strip_quotes,$(CONFIG_FSP_S_FILE_2)),)
+$(error No second FSP-S binary file specified.)
+endif # CONFIG_FSP_S_FILE_2
+endif # CONFIG_PLATFORM_USES_SECOND_FSP
 else # CONFIG_ADD_FSP_BINARIES
 build_complete:: warn_no_fsp_binaries
 endif # CONFIG_ADD_FSP_BINARIES

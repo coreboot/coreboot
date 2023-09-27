@@ -238,7 +238,8 @@ static uint32_t fsp_mrc_version(void)
 	uint32_t ver = 0;
 #if CONFIG(MRC_CACHE_USING_MRC_VERSION)
 	size_t fspm_blob_size;
-	void *fspm_blob_file = cbfs_map(CONFIG_FSP_M_CBFS, &fspm_blob_size);
+	const char *fspm_cbfs = soc_select_fsp_m_cbfs();
+	void *fspm_blob_file = cbfs_map(fspm_cbfs, &fspm_blob_size);
 	if (!fspm_blob_file)
 		return 0;
 
@@ -386,16 +387,18 @@ void preload_fspm(void)
 	if (!CONFIG(CBFS_PRELOAD))
 		return;
 
-	printk(BIOS_DEBUG, "Preloading %s\n", CONFIG_FSP_M_CBFS);
-	cbfs_preload(CONFIG_FSP_M_CBFS);
+	const char *fspm_cbfs = soc_select_fsp_m_cbfs();
+	printk(BIOS_DEBUG, "Preloading %s\n", fspm_cbfs);
+	cbfs_preload(fspm_cbfs);
 }
 
 void fsp_memory_init(bool s3wake)
 {
 	struct range_entry prog_ranges[2];
 	struct fspm_context context;
+	const char *fspm_cbfs = soc_select_fsp_m_cbfs();
 	struct fsp_load_descriptor fspld = {
-		.fsp_prog = PROG_INIT(PROG_REFCODE, CONFIG_FSP_M_CBFS),
+		.fsp_prog = PROG_INIT(PROG_REFCODE, fspm_cbfs),
 		.arg = &context,
 	};
 	struct fsp_header *hdr = &context.header;

@@ -211,8 +211,9 @@ static void *fsps_allocator(void *arg_unused, size_t size, const union cbfs_mdat
 
 void fsps_load(void)
 {
+	const char *fsps_cbfs = soc_select_fsp_s_cbfs();
 	struct fsp_load_descriptor fspld = {
-		.fsp_prog = PROG_INIT(PROG_REFCODE, CONFIG_FSP_S_CBFS),
+		.fsp_prog = PROG_INIT(PROG_REFCODE, fsps_cbfs),
 		.alloc = fsps_allocator,
 	};
 	struct prog *fsps = &fspld.fsp_prog;
@@ -245,8 +246,9 @@ void preload_fsps(void)
 	if (!CONFIG(CBFS_PRELOAD))
 		return;
 
-	printk(BIOS_DEBUG, "Preloading %s\n", CONFIG_FSP_S_CBFS);
-	cbfs_preload(CONFIG_FSP_S_CBFS);
+	const char *fsps_cbfs = soc_select_fsp_s_cbfs();
+	printk(BIOS_DEBUG, "Preloading %s\n", fsps_cbfs);
+	cbfs_preload(fsps_cbfs);
 }
 
 void fsp_silicon_init(void)

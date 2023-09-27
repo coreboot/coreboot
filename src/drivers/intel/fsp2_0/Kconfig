@@ -79,6 +79,16 @@ config ADD_FSP_BINARIES
 	help
 	  Add the FSP-M and FSP-S binaries to CBFS.
 
+config PLATFORM_USES_SECOND_FSP
+	bool
+	default n
+	help
+	  The platform uses two sets of FSP-M/FSP-S binaries and selects the
+	  appropriate one at runtime.  At least one platform requires different
+	  binaries depending on CPU stepping, so supporting any stepping
+	  requires embedding two FSPs.  The platform indicates which is the
+	  "first" and "second" FSP.
+
 config FSP_T_CBFS
 	string "Name of FSP-T in CBFS"
 	depends on FSP_CAR
@@ -132,6 +142,40 @@ config FSP_S_FILE
 	default "\$(obj)/Fsp_S.fd" if FSP_FULL_FD
 	help
 	  The path and filename of the Intel FSP-S binary for this platform.
+
+if PLATFORM_USES_SECOND_FSP
+
+config FSP_S_CBFS_2
+	string "Name of the second FSP-S in CBFS"
+	default "fsps_2.bin"
+
+config FSP_M_CBFS_2
+	string "Name of the second FSP-M in CBFS"
+	default "fspm_2.bin"
+
+config FSP_FD_PATH_2
+	string "Location of the second FSP FD file" if FSP_FULL_FD && !FSP_USE_REPO
+	help
+	  Path to the FSP FD file that contains the individual FSP-M and FSP-S
+	  binaries. The file gets split at build-time.
+
+config FSP_M_FILE_2
+	string "Intel FSP-M (memory init) second binary path and filename" if !FSP_FULL_FD
+	depends on ADD_FSP_BINARIES
+	default "\$(obj)/Fsp_2_M.fd" if FSP_FULL_FD
+	help
+	  The path and filename of the second Intel FSP-M binary for this
+	  platform.
+
+config FSP_S_FILE_2
+	string "Intel FSP-S (silicon init) second binary path and filename" if !FSP_FULL_FD
+	depends on ADD_FSP_BINARIES
+	default "\$(obj)/Fsp_2_S.fd" if FSP_FULL_FD
+	help
+	  The path and filename of the second Intel FSP-S binary for this
+	  platform.
+
+endif
 
 config FSP_CAR
 	bool

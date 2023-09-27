@@ -179,6 +179,21 @@ void fsp_handle_reset(uint32_t status);
 /* SoC/chipset must provide this to handle platform-specific reset codes */
 void chipset_handle_reset(uint32_t status);
 
+#if CONFIG(PLATFORM_USES_SECOND_FSP)
+/* The SoC must implement these to choose the appropriate FSP-M/FSP-S binary. */
+const char *soc_select_fsp_m_cbfs(void);
+const char *soc_select_fsp_s_cbfs(void);
+#else
+static inline const char *soc_select_fsp_m_cbfs(void)
+{
+	return CONFIG_FSP_M_CBFS;
+}
+static inline const char *soc_select_fsp_s_cbfs(void)
+{
+	return CONFIG_FSP_S_CBFS;
+}
+#endif
+
 typedef asmlinkage uint32_t (*temp_ram_exit_fn)(void *param);
 typedef asmlinkage uint32_t (*fsp_memory_init_fn)
 				   (void *raminit_upd, void **hob_list);

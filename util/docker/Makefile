@@ -44,7 +44,7 @@ coreboot-sdk: test-docker
 	@echo "Building coreboot SDK $(crossgcc_version) from commit $(DOCKER_COMMIT)"
 	$(DOCKER) build \
 		--tag coreboot/coreboot-sdk:$(COREBOOT_IMAGE_TAG) \
-		--build-arg=SDK_VERSION="$(SDK_VERSION)" \
+		--build-arg=SDK_VERSION="$(COREBOOT_IMAGE_TAG)" \
 		--build-arg=DOCKER_COMMIT="$(DOCKER_COMMIT)" \
 		--build-arg=CROSSGCC_PARAM="$(COREBOOT_CROSSGCC_PARAM)" \
 		coreboot-sdk

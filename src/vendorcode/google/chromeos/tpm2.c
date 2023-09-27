@@ -18,13 +18,13 @@ static void disable_platform_hierarchy(void *unused)
 	rc = tlcl_lib_init();
 
 	if (rc != VB2_SUCCESS) {
-		printk(BIOS_ERR, "tlcl_lib_init() failed: %x\n", rc);
+		printk(BIOS_ERR, "tlcl_lib_init() failed: %#x\n", rc);
 		return;
 	}
 
 	rc = tlcl_disable_platform_hierarchy();
 	if (rc != TPM_SUCCESS)
-		printk(BIOS_ERR, "Platform hierarchy disablement failed: %x\n",
+		printk(BIOS_ERR, "Platform hierarchy disablement failed: %#x\n",
 			rc);
 }
 

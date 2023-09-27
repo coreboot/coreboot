@@ -88,7 +88,7 @@ int mb_crtm(void)
 				       tcgEventHdr.eventSize, &tcgEventHdr,
 				       (uint8_t *)crtm_version);
 	if (rc) {
-		printk(BIOS_DEBUG, "Measure CRTM Version returned 0x%x\n", rc);
+		printk(BIOS_DEBUG, "Measure CRTM Version returned %#x\n", rc);
 	}
 
 	return rc;

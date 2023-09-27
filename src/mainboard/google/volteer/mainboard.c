@@ -95,7 +95,7 @@ void mainboard_update_soc_chip_config(struct soc_intel_tigerlake_config *cfg)
 
 	rc = tlcl_lib_init();
 	if (rc != VB2_SUCCESS) {
-		printk(BIOS_ERR, "tlcl_lib_init() failed: 0x%x\n", rc);
+		printk(BIOS_ERR, "tlcl_lib_init() failed: %#x\n", rc);
 		return;
 	}
 

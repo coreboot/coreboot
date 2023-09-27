@@ -509,7 +509,7 @@ static enum cb_err wait_for_status(uint32_t status_mask, uint32_t status_expecte
 	do {
 		udelay(1000);
 		if (stopwatch_expired(&sw)) {
-			printk(BIOS_ERR, "failed to get expected status %x\n",
+			printk(BIOS_ERR, "failed to get expected status %#x\n",
 			       status_expected);
 			return CB_ERR;
 		}

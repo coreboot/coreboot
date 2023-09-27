@@ -436,8 +436,8 @@ uint32_t antirollback_lock_space_firmware(void)
 uint32_t antirollback_read_space_mrc_hash(uint32_t index, uint8_t *data, uint32_t size)
 {
 	if (size != HASH_NV_SIZE) {
-		VBDEBUG("TPM: Incorrect buffer size for hash idx 0x%x. "
-			"(Expected=0x%x Actual=0x%x).\n", index, HASH_NV_SIZE,
+		VBDEBUG("TPM: Incorrect buffer size for hash idx %#x. "
+			"(Expected=%#x Actual=%#x).\n", index, HASH_NV_SIZE,
 			size);
 		return TPM_CB_READ_FAILURE;
 	}
@@ -450,8 +450,8 @@ uint32_t antirollback_write_space_mrc_hash(uint32_t index, const uint8_t *data, 
 	uint32_t rc;
 
 	if (size != HASH_NV_SIZE) {
-		VBDEBUG("TPM: Incorrect buffer size for hash idx 0x%x. "
-			"(Expected=0x%x Actual=0x%x).\n", index, HASH_NV_SIZE,
+		VBDEBUG("TPM: Incorrect buffer size for hash idx %#x. "
+			"(Expected=%#x Actual=%#x).\n", index, HASH_NV_SIZE,
 			size);
 		return TPM_CB_WRITE_FAILURE;
 	}
@@ -486,8 +486,8 @@ static uint32_t read_space_vbios_hash(uint8_t *data)
 uint32_t antirollback_read_space_vbios_hash(uint8_t *data, uint32_t size)
 {
 	if (size != HASH_NV_SIZE) {
-		VBDEBUG("TPM: Incorrect buffer size for hash idx 0x%x. "
-			"(Expected=0x%x Actual=0x%x).\n", VBIOS_CACHE_NV_INDEX, HASH_NV_SIZE,
+		VBDEBUG("TPM: Incorrect buffer size for hash idx %#x. "
+			"(Expected=%#x Actual=%#x).\n", VBIOS_CACHE_NV_INDEX, HASH_NV_SIZE,
 			size);
 		return TPM_CB_READ_FAILURE;
 	}
@@ -500,8 +500,8 @@ uint32_t antirollback_write_space_vbios_hash(const uint8_t *data, uint32_t size)
 	uint32_t rc;
 
 	if (size != HASH_NV_SIZE) {
-		VBDEBUG("TPM: Incorrect buffer size for hash idx 0x%x. "
-			"(Expected=0x%x Actual=0x%x).\n", VBIOS_CACHE_NV_INDEX, HASH_NV_SIZE,
+		VBDEBUG("TPM: Incorrect buffer size for hash idx %#x. "
+			"(Expected=%#x Actual=%#x).\n", VBIOS_CACHE_NV_INDEX, HASH_NV_SIZE,
 			size);
 		return TPM_CB_WRITE_FAILURE;
 	}

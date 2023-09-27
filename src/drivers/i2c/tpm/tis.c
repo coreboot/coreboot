@@ -62,7 +62,7 @@ static ssize_t tpm_transmit(const uint8_t *sbuf, size_t sbufsiz, void *rbuf,
 		return -1;
 	}
 	if (count > sbufsiz) {
-		printk(BIOS_DEBUG, "%s: invalid count value %x %zx\n", __func__,
+		printk(BIOS_DEBUG, "%s: invalid count value %#x %zx\n", __func__,
 			count, sbufsiz);
 		return -1;
 	}

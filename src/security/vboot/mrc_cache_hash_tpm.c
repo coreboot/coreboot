@@ -41,7 +41,7 @@ void mrc_cache_update_hash(uint32_t index, const uint8_t *data, size_t size)
 		return;
 	}
 
-	printk(BIOS_INFO, "MRC: TPM MRC hash idx 0x%x updated successfully.\n", index);
+	printk(BIOS_INFO, "MRC: TPM MRC hash idx %#x updated successfully.\n", index);
 }
 
 int mrc_cache_verify_hash(uint32_t index, const uint8_t *data, size_t size)
@@ -67,7 +67,7 @@ int mrc_cache_verify_hash(uint32_t index, const uint8_t *data, size_t size)
 		return 0;
 	}
 
-	printk(BIOS_INFO, "MRC: Hash idx 0x%x comparison successful.\n", index);
+	printk(BIOS_INFO, "MRC: Hash idx %#x comparison successful.\n", index);
 
 	return 1;
 }

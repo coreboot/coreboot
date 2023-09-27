@@ -45,7 +45,7 @@ static int cr50_is_reset_needed(void)
 		return 1;
 	} else if (rc != TPM_SUCCESS)	{
 		/* TPM command failed, continue booting. */
-		printk(BIOS_ERR, "Attempt to get CR50 TPM mode failed: %x\n", rc);
+		printk(BIOS_ERR, "Attempt to get CR50 TPM mode failed: %#x\n", rc);
 		return 0;
 	}
 
@@ -85,7 +85,7 @@ static void enable_update(void *unused)
 	rc = tlcl_lib_init();
 
 	if (rc != VB2_SUCCESS) {
-		printk(BIOS_ERR, "tlcl_lib_init() failed for CR50 update: %x\n",
+		printk(BIOS_ERR, "tlcl_lib_init() failed for CR50 update: %#x\n",
 		       rc);
 		return;
 	}
@@ -97,7 +97,7 @@ static void enable_update(void *unused)
 				      &num_restored_headers);
 
 	if (rc != TPM_SUCCESS) {
-		printk(BIOS_ERR, "Attempt to enable CR50 update failed: %x\n",
+		printk(BIOS_ERR, "Attempt to enable CR50 update failed: %#x\n",
 		       rc);
 		return;
 	}
@@ -150,7 +150,7 @@ static void enable_update(void *unused)
 			 * booting but the current boot will likely end up at
 			 * the recovery screen.
 			 */
-			printk(BIOS_ERR, "Attempt to reset CR50 failed: %x\n",
+			printk(BIOS_ERR, "Attempt to reset CR50 failed: %#x\n",
 			       rc);
 			return;
 		}

@@ -82,7 +82,7 @@ static uint32_t tlcl_send_receive_no_retry(const uint8_t *request,
 					response, &response_length);
 	if (rc != 0) {
 		/* Communication with TPM failed, so response is garbage */
-		VBDEBUG("TPM: command 0x%x send/receive failed: 0x%x\n",
+		VBDEBUG("TPM: command %#x send/receive failed: %#x\n",
 			tpm_command_code(request), rc);
 		return rc;
 	}
@@ -93,7 +93,7 @@ static uint32_t tlcl_send_receive_no_retry(const uint8_t *request,
 	 * (and possibly expected length from the response header).  See
 	 * crosbug.com/17017 */
 
-	VBDEBUG("TPM: command 0x%x returned 0x%x\n",
+	VBDEBUG("TPM: command %#x returned %#x\n",
 		tpm_command_code(request), rc);
 
 return rc;
@@ -193,7 +193,7 @@ uint32_t tlcl_continue_self_test(void)
 uint32_t tlcl_define_space(uint32_t index, uint32_t perm, uint32_t size)
 {
 	struct s_tpm_nv_definespace_cmd cmd;
-	VBDEBUG("TPM: TlclDefineSpace(0x%x, 0x%x, %d)\n", index, perm, size);
+	VBDEBUG("TPM: TlclDefineSpace(%#x, %#x, %d)\n", index, perm, size);
 	memcpy(&cmd, &tpm_nv_definespace_cmd, sizeof(cmd));
 	to_tpm_uint32(cmd.buffer + tpm_nv_definespace_cmd.index, index);
 	to_tpm_uint32(cmd.buffer + tpm_nv_definespace_cmd.perm, perm);
@@ -208,7 +208,7 @@ uint32_t tlcl_write(uint32_t index, const void *data, uint32_t length)
 	const int total_length =
 			kTpmRequestHeaderLength + kWriteInfoLength + length;
 
-	VBDEBUG("TPM: %s(0x%x, %d)\n", __func__, index, length);
+	VBDEBUG("TPM: %s(%#x, %d)\n", __func__, index, length);
 	memcpy(&cmd, &tpm_nv_write_cmd, sizeof(cmd));
 	assert(total_length <= TPM_LARGE_ENOUGH_COMMAND_SIZE);
 	set_tpm_command_size(cmd.buffer, total_length);
@@ -228,7 +228,7 @@ uint32_t tlcl_read(uint32_t index, void *data, uint32_t length)
 	uint32_t result_length;
 	uint32_t rc;
 
-	VBDEBUG("TPM: %s(0x%x, %d)\n", __func__, index, length);
+	VBDEBUG("TPM: %s(%#x, %d)\n", __func__, index, length);
 	memcpy(&cmd, &tpm_nv_read_cmd, sizeof(cmd));
 	to_tpm_uint32(cmd.buffer + tpm_nv_read_cmd.index, index);
 	to_tpm_uint32(cmd.buffer + tpm_nv_read_cmd.length, length);

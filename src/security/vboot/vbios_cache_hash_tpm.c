@@ -41,7 +41,7 @@ void vbios_cache_update_hash(const uint8_t *data, size_t size)
 		return;
 	}
 
-	printk(BIOS_INFO, "VBIOS_CACHE: TPM NV idx 0x%x updated successfully.\n",
+	printk(BIOS_INFO, "VBIOS_CACHE: TPM NV idx %#x updated successfully.\n",
 			VBIOS_CACHE_NV_INDEX);
 }
 
@@ -68,7 +68,7 @@ enum cb_err vbios_cache_verify_hash(const uint8_t *data, size_t size)
 		return CB_ERR;
 	}
 
-	printk(BIOS_INFO, "VBIOS_CACHE: Hash idx 0x%x comparison successful.\n",
+	printk(BIOS_INFO, "VBIOS_CACHE: Hash idx %#x comparison successful.\n",
 			VBIOS_CACHE_NV_INDEX);
 
 	return CB_SUCCESS;

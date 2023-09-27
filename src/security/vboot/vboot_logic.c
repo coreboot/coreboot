@@ -318,7 +318,7 @@ void verstage_main(void)
 		 * For any other error code, save context if needed and reboot.
 		 */
 		if (rv == VB2_ERROR_API_PHASE1_RECOVERY) {
-			printk(BIOS_INFO, "Recovery requested (%x)\n", rv);
+			printk(BIOS_INFO, "Recovery requested (%#x)\n", rv);
 			vboot_save_data(ctx);
 			extend_pcrs(ctx); /* ignore failures */
 			goto verstage_main_exit;
@@ -376,7 +376,7 @@ void verstage_main(void)
 	timestamp_add_now(TS_TPMLOCK_START);
 	rv = antirollback_lock_space_firmware();
 	if (rv) {
-		printk(BIOS_INFO, "Failed to lock TPM (%x)\n", rv);
+		printk(BIOS_INFO, "Failed to lock TPM (%#x)\n", rv);
 		vboot_fail_and_reboot(ctx, VB2_RECOVERY_RO_TPM_L_ERROR, 0);
 	}
 	timestamp_add_now(TS_TPMLOCK_END);
@@ -385,7 +385,7 @@ void verstage_main(void)
 	if (CONFIG(VBOOT_HAS_REC_HASH_SPACE)) {
 		rv = antirollback_lock_space_mrc_hash(MRC_REC_HASH_NV_INDEX);
 		if (rv) {
-			printk(BIOS_INFO, "Failed to lock rec hash space(%x)\n", rv);
+			printk(BIOS_INFO, "Failed to lock rec hash space(%#x)\n", rv);
 			vboot_fail_and_reboot(ctx, VB2_RECOVERY_RO_TPM_REC_HASH_L_ERROR, rv);
 		}
 	}

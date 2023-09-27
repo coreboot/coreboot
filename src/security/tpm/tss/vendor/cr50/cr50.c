@@ -20,7 +20,7 @@ uint32_t tlcl_cr50_enable_nvcommits(void)
 
 	if (!response || (response && response->hdr.tpm_code)) {
 		if (response)
-			printk(BIOS_INFO, "%s: failed %x\n", __func__,
+			printk(BIOS_INFO, "%s: failed %#x\n", __func__,
 			       response->hdr.tpm_code);
 		else
 			printk(BIOS_INFO, "%s: failed\n", __func__);

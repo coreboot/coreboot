@@ -35,9 +35,9 @@
 		printk(BIOS_DEBUG, fmt, ##args);	\
 	}
 #define TPM_DEBUG_IO_READ(reg_, val_) \
-	TPM_DEBUG("Read reg 0x%x returns 0x%x\n", (reg_), (val_))
+	TPM_DEBUG("Read reg %#x returns %#x\n", (reg_), (val_))
 #define TPM_DEBUG_IO_WRITE(reg_, val_) \
-	TPM_DEBUG("Write reg 0x%x with 0x%x\n", (reg_), (val_))
+	TPM_DEBUG("Write reg %#x with %#x\n", (reg_), (val_))
 #define printf(x...) printk(BIOS_ERR, x)
 
 /* coreboot wrapper for TPM driver (end) */
@@ -499,7 +499,7 @@ static u32 tis_senddata(const u8 *const data, u32 len)
 	 * command.
 	 */
 	if (tis_wait_valid(locality) || tis_expect_data(locality)) {
-		printf("%s:%d unexpected TPM status 0x%x\n",
+		printf("%s:%d unexpected TPM status %#x\n",
 		       __FILE__, __LINE__, tpm_read_status(locality));
 		return TPM_DRIVER_ERR;
 	}
@@ -596,7 +596,7 @@ static u32 tis_readresponse(u8 *buffer, size_t *len)
 
 	/* * Make sure we indeed read all there was. */
 	if (tis_has_valid_data(locality)) {
-		printf("%s:%d wrong receive status: %x %u bytes left\n",
+		printf("%s:%d wrong receive status: %#x %u bytes left\n",
 		       __FILE__, __LINE__, tpm_read_status(locality),
 	               tpm_read_burst_count(locality));
 		return TPM_DRIVER_ERR;

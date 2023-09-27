@@ -460,7 +460,7 @@ int tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t dev_addr)
 	if (claim_locality())
 		return -1;
 
-	printk(BIOS_DEBUG, "cr50 TPM 2.0 (i2c %u:0x%02x id 0x%x)\n",
+	printk(BIOS_DEBUG, "cr50 TPM 2.0 (i2c %u:0x%02x id %#x)\n",
 	       bus, dev_addr, did_vid >> 16);
 
 	if (tpm_first_access_this_boot()) {

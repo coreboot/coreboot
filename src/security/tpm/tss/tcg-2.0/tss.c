@@ -60,7 +60,7 @@ static uint32_t tlcl_send_startup(TPM_SU type)
 		return TPM_IOERROR;
 	}
 
-	printk(BIOS_INFO, "%s: Startup return code is %x\n",
+	printk(BIOS_INFO, "%s: Startup return code is %#x\n",
 	       __func__, response->hdr.tpm_code);
 
 	switch (response->hdr.tpm_code) {
@@ -94,7 +94,7 @@ static uint32_t tlcl_send_shutdown(TPM_SU type)
 		return TPM_IOERROR;
 	}
 
-	printk(BIOS_INFO, "%s: Shutdown return code is %x\n",
+	printk(BIOS_INFO, "%s: Shutdown return code is %#x\n",
 	       __func__, response->hdr.tpm_code);
 
 	if (response->hdr.tpm_code == TPM2_RC_SUCCESS)
@@ -155,7 +155,7 @@ uint32_t tlcl_extend(int pcr_num, const uint8_t *digest_data,
 
 	response = tpm_process_command(TPM2_PCR_Extend, &pcr_ext_cmd);
 
-	printk(BIOS_INFO, "%s: response is %x\n",
+	printk(BIOS_INFO, "%s: response is %#x\n",
 	       __func__, response ? response->hdr.tpm_code : -1);
 	if (!response || response->hdr.tpm_code)
 		return TPM_IOERROR;
@@ -175,7 +175,7 @@ uint32_t tlcl_force_clear(void)
 	struct tpm2_response *response;
 
 	response = tpm_process_command(TPM2_Clear, NULL);
-	printk(BIOS_INFO, "%s: response is %x\n",
+	printk(BIOS_INFO, "%s: response is %#x\n",
 	       __func__, response ? response->hdr.tpm_code : -1);
 
 	if (!response || response->hdr.tpm_code)
@@ -192,7 +192,7 @@ uint32_t tlcl_clear_control(bool disable)
 	};
 
 	response = tpm_process_command(TPM2_ClearControl, &cc);
-	printk(BIOS_INFO, "%s: response is %x\n",
+	printk(BIOS_INFO, "%s: response is %#x\n",
 		__func__, response ? response->hdr.tpm_code : -1);
 
 	if (!response || response->hdr.tpm_code)
@@ -246,7 +246,7 @@ uint32_t tlcl_read(uint32_t index, void *data, uint32_t length)
 	if (!response)
 		return TPM_CB_READ_FAILURE;
 
-	printk(BIOS_INFO, "%s:%d index %#x return code %x\n",
+	printk(BIOS_INFO, "%s:%d index %#x return code %#x\n",
 	       __FILE__, __LINE__, index, response->hdr.tpm_code);
 	switch (response->hdr.tpm_code) {
 	case 0:
@@ -287,7 +287,7 @@ uint32_t tlcl_self_test_full(void)
 	st.yes_no = 1;
 
 	response = tpm_process_command(TPM2_SelfTest, &st);
-	printk(BIOS_INFO, "%s: response is %x\n",
+	printk(BIOS_INFO, "%s: response is %#x\n",
 	       __func__, response ? response->hdr.tpm_code : -1);
 	return TPM_SUCCESS;
 }
@@ -302,7 +302,7 @@ uint32_t tlcl_lock_nv_write(uint32_t index)
 
 	response = tpm_process_command(TPM2_NV_WriteLock, &nv_wl);
 
-	printk(BIOS_INFO, "%s: response is %x\n",
+	printk(BIOS_INFO, "%s: response is %#x\n",
 	       __func__, response ? response->hdr.tpm_code : -1);
 
 	if (!response || response->hdr.tpm_code)
@@ -329,7 +329,7 @@ uint32_t tlcl_write(uint32_t index, const void *data, uint32_t length)
 
 	response = tpm_process_command(TPM2_NV_Write, &nv_writec);
 
-	printk(BIOS_INFO, "%s: response is %x\n",
+	printk(BIOS_INFO, "%s: response is %#x\n",
 	       __func__, response ? response->hdr.tpm_code : -1);
 
 	/* Need to map tpm error codes into internal values. */
@@ -352,7 +352,7 @@ uint32_t tlcl_set_bits(uint32_t index, uint64_t bits)
 
 	response = tpm_process_command(TPM2_NV_SetBits, &nvsb_cmd);
 
-	printk(BIOS_INFO, "%s: response is %x\n",
+	printk(BIOS_INFO, "%s: response is %#x\n",
 	       __func__, response ? response->hdr.tpm_code : -1);
 
 	/* Need to map tpm error codes into internal values. */
@@ -388,7 +388,7 @@ uint32_t tlcl_define_space(uint32_t space_index, size_t space_size,
 	}
 
 	response = tpm_process_command(TPM2_NV_DefineSpace, &nvds_cmd);
-	printk(BIOS_INFO, "%s: response is %x\n", __func__,
+	printk(BIOS_INFO, "%s: response is %#x\n", __func__,
 	       response ? response->hdr.tpm_code : -1);
 
 	if (!response)

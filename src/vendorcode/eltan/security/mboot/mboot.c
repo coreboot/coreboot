@@ -47,7 +47,7 @@ EFI_TCG2_EVENT_ALGORITHM_BITMAP tpm2_get_active_pcrs(void)
 			case TPM_ALG_SM3_256:
 			default:
 				printk(BIOS_DEBUG, "%s: unsupported algorithm "
-					"reported - 0x%x\n", __func__,
+					"reported - %#x\n", __func__,
 					Pcrs.pcrSelections[index].hash);
 				break;
 			}
@@ -88,7 +88,7 @@ int tpm2_get_capability_pcrs(TPML_PCR_SELECTION *Pcrs)
 		for (index = 0; index < Pcrs->count; index++) {
 			Pcrs->pcrSelections[index].hash =
 				swab16(TpmCap.data.assignedPCR.pcrSelections[index].hash);
-			printk(BIOS_DEBUG, "Pcrs->pcrSelections[%d].hash = 0x%x\n", index,
+			printk(BIOS_DEBUG, "Pcrs->pcrSelections[%d].hash = %#x\n", index,
 			       Pcrs->pcrSelections[index].hash);
 			Pcrs->pcrSelections[index].sizeofSelect =
 				TpmCap.data.assignedPCR.pcrSelections[index].sizeofSelect;
@@ -166,7 +166,7 @@ void invalidate_pcrs(void)
 					       (uint8_t *)"Invalidate PCR");
 		if (rc != TPM_SUCCESS)
 			printk(BIOS_DEBUG, "%s: invalidating pcr %d returned"
-				" 0x%x\n", __func__, pcr, rc);
+				" %#x\n", __func__, pcr, rc);
 	}
 }
 
@@ -291,7 +291,7 @@ __weak int mb_entry(int wake_from_s3)
 	}
 
 	if (rc)
-		printk(BIOS_ERR, "%s: StartUp failed 0x%x!\n", __func__, rc);
+		printk(BIOS_ERR, "%s: StartUp failed %#x!\n", __func__, rc);
 
 	return rc;
 }
@@ -327,12 +327,12 @@ __weak int mb_measure(int wake_from_s3)
 			printk(BIOS_DEBUG, "%s: Measuring, successful!\n", __func__);
 		} else {
 			invalidate_pcrs();
-			printk(BIOS_ERR, "%s: Measuring returned 0x%x unsuccessful! PCRs invalidated.\n",
+			printk(BIOS_ERR, "%s: Measuring returned %#x unsuccessful! PCRs invalidated.\n",
 			       __func__, rc);
 		}
 	} else {
 		invalidate_pcrs();
-		printk(BIOS_ERR, "%s: StartUp returned 0x%x, unsuccessful! PCRs invalidated.\n", __func__,
+		printk(BIOS_ERR, "%s: StartUp returned %#x, unsuccessful! PCRs invalidated.\n", __func__,
 		       rc);
 	}
 	return rc;
@@ -433,13 +433,13 @@ __weak int mb_crtm(void)
 	rc = mboot_hash_extend_log(0, (uint8_t *)crtm_version, tcgEventHdr.eventSize,
 				       &tcgEventHdr, (uint8_t *)crtm_version);
 	if (rc) {
-		printk(BIOS_DEBUG, "Measure CRTM Version returned 0x%x\n", rc);
+		printk(BIOS_DEBUG, "Measure CRTM Version returned %#x\n", rc);
 		return rc;
 	}
 
 	rc = get_intel_me_hash(hash);
 	if (rc) {
-		printk(BIOS_DEBUG, "get_intel_me_hash returned 0x%x\n", rc);
+		printk(BIOS_DEBUG, "get_intel_me_hash returned %#x\n", rc);
 		rc = TPM_IOERROR;
 		return rc;
 	}
@@ -456,7 +456,7 @@ __weak int mb_crtm(void)
 	rc = mboot_hash_extend_log(MBOOT_HASH_PROVIDED, hash, sizeof(hash), &tcgEventHdr,
 				       msgPtr);
 	if (rc)
-		printk(BIOS_DEBUG, "Add ME hash returned 0x%x\n", rc);
+		printk(BIOS_DEBUG, "Add ME hash returned %#x\n", rc);
 
 	return rc;
 }

@@ -256,7 +256,7 @@ void process_verify_list(const verify_item_t list[])
 						   list[i].hash_index, list[i].pcr);
 			break;
 		default:
-			printk(BIOS_EMERG, "INVALID TYPE IN VERIFY LIST 0x%x\n", list[i].type);
+			printk(BIOS_EMERG, "INVALID TYPE IN VERIFY LIST %#x\n", list[i].type);
 			die("HASH verification failed!\n");
 		}
 		i++;
@@ -289,7 +289,7 @@ void verified_boot_early_check(void)
 	printk(BIOS_SPEW, "%s: processing early items\n", __func__);
 
 	if (CONFIG(VENDORCODE_ELTAN_MBOOT)) {
-		printk(BIOS_DEBUG, "mb_measure returned 0x%x\n",
+		printk(BIOS_DEBUG, "mb_measure returned %#x\n",
 		mb_measure(platform_is_resuming()));
 	}
 
@@ -338,7 +338,7 @@ static int process_oprom_list(const verify_item_t list[],
 			}
 			break;
 		default:
-			printk(BIOS_EMERG, "%s: INVALID TYPE IN OPTION ROM LIST 0x%x\n",
+			printk(BIOS_EMERG, "%s: INVALID TYPE IN OPTION ROM LIST %#x\n",
 			       __func__, list[i].type);
 			die("HASH verification failed!\n");
 		}

@@ -38,10 +38,9 @@ void set_cstate_io_addr(void)
 /* Number of most significant physical address bits reserved for secure memory encryption */
 unsigned int get_reserved_phys_addr_bits(void)
 {
-	if (rdmsr(SYSCFG_MSR).raw & SYSCFG_MSR_SMEE)
-		return (cpuid_ebx(CPUID_EBX_MEM_ENCRYPT) &
-			CPUID_EBX_MEM_ENCRYPT_ADDR_BITS_MASK) >>
-			CPUID_EBX_MEM_ENCRYPT_ADDR_BITS_SHIFT;
-	else
+	if (!(rdmsr(SYSCFG_MSR).raw & SYSCFG_MSR_SMEE))
 		return 0;
+
+	return (cpuid_ebx(CPUID_EBX_MEM_ENCRYPT) & CPUID_EBX_MEM_ENCRYPT_ADDR_BITS_MASK) >>
+			CPUID_EBX_MEM_ENCRYPT_ADDR_BITS_SHIFT;
 }

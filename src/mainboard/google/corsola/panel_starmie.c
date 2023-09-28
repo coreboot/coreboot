@@ -34,6 +34,7 @@ static void mipi_panel_power_on(void)
 		gpio_output(GPIO_EN_PP3300_DISP_X, 1);
 		mdelay(2);
 		gpio_output(GPIO_EN_PP3300_SDBRDG_X, 1);
+		mdelay(3);
 	} else if (tps65132s_setup(&cfg) != CB_SUCCESS) {
 		printk(BIOS_ERR, "Failed to setup tps65132s\n");
 	}

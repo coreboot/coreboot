@@ -46,9 +46,7 @@ PSP_WHITELIST_FILE=$(CONFIG_PSP_WHITELIST_FILE)
 endif
 
 # type = 0x55
-ifeq ($(CONFIG_HAVE_SPL_FILE),y)
 SPL_TABLE_FILE=$(CONFIG_SPL_TABLE_FILE)
-endif
 
 #
 # BIOS Directory Table items - proper ordering is managed by amdfwtool

@@ -361,37 +361,38 @@ config PSP_WHITELIST_FILE
 	depends on HAVE_PSP_WHITELIST_FILE
 	default "site-local/3rdparty/amd_blobs/phoenix/PSP/wtl-phx.sbin"
 
-config HAVE_SPL_FILE
-	bool "Have a mainboard specific SPL table file"
+config PERFORM_SPL_FUSING
+	bool "Send SPL fuse command to PSP"
 	default n
 	help
-	  Have a mainboard specific Security Patch Level (SPL) table file. SPL file
-	  is required to support PSP FW anti-rollback and needs to be created by AMD.
-	  The default SPL file applies to all boards that use the concerned SoC and
-	  is dropped under 3rdparty/blobs. The mainboard specific SPL file override
-	  can be applied through SPL_TABLE_FILE config.
+	  Send the Security Patch Level (SPL) fusing command to the PSP in
+	  order to update the minimum SPL version to be written to the SoC's
+	  fuse bits. This will prevent using any embedded firmware components
+	  with lower SPL version.
 
 	  If unsure, answer 'n'
 
 config SPL_TABLE_FILE
-	string "SPL table file"
-	depends on HAVE_SPL_FILE
-	default "3rdparty/blobs/mainboard/\$(CONFIG_MAINBOARD_DIR)/TypeId0x55_SplTableBl_PHX.sbin"
+	string "SPL table file override"
+	help
+	  Provide a mainboard-specific Security Patch Level (SPL) table file
+	  override. The SPL file is required to support PSP FW anti-rollback
+	  and needs to be created by AMD. The default SPL file specified in the
+	  SoC's fw.cfg is in the corresponding folder of the amd_blobs submodule
+	  and applies to all boards that use the SoC without verstage on PSP.
+	  In the verstage on PSP case, a different SPL file is specific as an
+	  override via this Kconfig option.
 
 config HAVE_SPL_RW_AB_FILE
 	bool "Have a separate mainboard-specific SPL file in RW A/B partitions"
 	default n
-	depends on HAVE_SPL_FILE
 	depends on VBOOT_SLOTS_RW_AB
 	help
 	  Have separate mainboard-specific Security Patch Level (SPL) table
-	  file for the RW A/B FMAP partitions. See the help text of
-	  HAVE_SPL_FILE for a more detailed description.
+	  file for the RW A/B FMAP partitions.
 
 config SPL_RW_AB_TABLE_FILE
-	string "Separate SPL table file for RW A/B partitions"
-	depends on HAVE_SPL_RW_AB_FILE
-	default "3rdparty/blobs/mainboard/\$(CONFIG_MAINBOARD_DIR)/TypeId0x55_SplTableBl_PHX.sbin"
+	string "Separate SPL table file override for RW A/B partitions"
 
 config PSP_SOFTFUSE_BITS
 	string "PSP Soft Fuse bits to enable"

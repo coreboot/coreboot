@@ -96,13 +96,12 @@ config PSP_LOAD_MP2_FW
 	depends on CHROMEOS
 	default y
 
-config HAVE_SPL_FILE
+config PERFORM_SPL_FUSING
 	bool
 	default y
 
 config SPL_TABLE_FILE
 	string
-	depends on HAVE_SPL_FILE
 	default "3rdparty/blobs/mainboard/google/skyrim/TypeId0x55_SplTableBl_MDN_CHROME_RO.sbin"
 
 config HAVE_SPL_RW_AB_FILE
@@ -111,7 +110,6 @@ config HAVE_SPL_RW_AB_FILE
 
 config SPL_RW_AB_TABLE_FILE
 	string
-	depends on HAVE_SPL_RW_AB_FILE
 	default "3rdparty/blobs/mainboard/google/skyrim/TypeId0x55_SplTableBl_MDN_CHROME.sbin"
 
 config SOC_AMD_COMMON_BLOCK_PSP_FUSE_SPL

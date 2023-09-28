@@ -494,7 +494,11 @@ chip soc/intel/alderlake
 					chip drivers/intel/pmc_mux/conn
 						use usb2_port2 as usb2_port
 						use tcss_usb3_port2 as usb3_port
-						device generic 1 alias conn1 on end
+						device generic 1 alias conn1 on
+							probe DB_USB DB_1C_1A
+							probe DB_USB DB_1C
+							probe DB_USB DB_1C_LTE
+						end
 					end
 				end
 			end
@@ -514,7 +518,11 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
                                                 register "use_custom_pld" = "true"
                                                 register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(2, 1))"
-						device ref tcss_usb3_port2 on end
+						device ref tcss_usb3_port2 on
+							probe DB_USB DB_1C_1A
+							probe DB_USB DB_1C
+							probe DB_USB DB_1C_LTE
+						end
 					end
 				end
 			end
@@ -534,7 +542,11 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
                                                 register "use_custom_pld" = "true"
                                                 register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(2, 1))"
-						device ref usb2_port2 on end
+						device ref usb2_port2 on
+							probe DB_USB DB_1C_1A
+							probe DB_USB DB_1C
+							probe DB_USB DB_1C_LTE
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Type-A Port A0 (MLB)""
@@ -561,6 +573,7 @@ chip soc/intel/alderlake
 						register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, RIGHT, ACPI_PLD_GROUP(3, 1))"
 						device ref usb2_port4 on
 							probe DB_USB DB_1C_1A
+							probe DB_USB DB_1A
 						end
 					end
 					chip drivers/usb/acpi
@@ -614,6 +627,7 @@ chip soc/intel/alderlake
                                                 register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, RIGHT, ACPI_PLD_GROUP(3, 1))"
 						device ref usb3_port2 on
 							probe DB_USB DB_1C_1A
+							probe DB_USB DB_1A
 						end
 					end
 					chip drivers/usb/acpi

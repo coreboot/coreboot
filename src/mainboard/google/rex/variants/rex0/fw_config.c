@@ -85,9 +85,9 @@ static const struct pad_config bt_i2s_disable_pads[] = {
 
 static const struct pad_config ish_enable_pads[] = {
 	/* GPP_B02 : ISH I2C0_SDA */
-	PAD_CFG_NF(GPP_B02, NONE, DEEP, NF3),
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_B02, NONE, DEEP, NF3),
 	/* GPP_B03 : ISH_I2C0_SCL */
-	PAD_CFG_NF(GPP_B03, NONE, DEEP, NF3),
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_B03, NONE, DEEP, NF3),
 	/* GPP_D05 : ISH_UART_TX */
 	PAD_CFG_NF(GPP_D05, NONE, DEEP, NF2),
 	/* GPP_D06 : ISH_UART_RX */

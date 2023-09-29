@@ -31,6 +31,7 @@ static const struct typedesc_t types_cbfs_compression[] = {
 static struct typedesc_t filetypes[] unused = {
 	{CBFS_TYPE_BOOTBLOCK, "bootblock"},
 	{CBFS_TYPE_CBFSHEADER, "cbfs header"},
+	{CBFS_TYPE_LEGACY_STAGE, "legacy stage"},
 	{CBFS_TYPE_STAGE, "stage"},
 	{CBFS_TYPE_SELF, "simple elf"},
 	{CBFS_TYPE_FIT_PAYLOAD, "fit_payload"},

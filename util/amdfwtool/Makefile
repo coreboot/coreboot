@@ -14,7 +14,7 @@ TOOL_OBJ = $(TOOL_SRC:%.c=%.o)
 HEADER=amdfwtool.h
 TARGETS = amdfwread amdfwtool
 WERROR=-Werror
-CFLAGS=-O2 -Wall -Wextra -Wshadow ${WERROR}
+CFLAGS :=-O2 -Wall -Wextra -Wshadow ${WERROR}
 CFLAGS += -I $(top)/src/commonlib/bsd/include
 CFLAGS += -D_GNU_SOURCE # memmem() from string.h
 
@@ -24,6 +24,9 @@ else
 HOSTPKGCONFIG ?= pkg-config
 endif
 CFLAGS += $(shell $(HOSTPKGCONFIG) --cflags libcrypto)
+ifneq ($(.SHELLSTATUS),0)
+$(error "Ensure that pkg-config is installed.")
+endif
 LDFLAGS += $(shell $(HOSTPKGCONFIG) --libs libcrypto)
 
 all: $(TARGETS)

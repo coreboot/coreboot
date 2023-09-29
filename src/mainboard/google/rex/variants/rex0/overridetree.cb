@@ -186,25 +186,25 @@ chip soc/intel/meteorlake
 						[0] = {
 							.target = DPTF_TEMP_SENSOR_0,
 							.thresholds = {
-									TEMP_PCT(75, 90),
-									TEMP_PCT(70, 80),
-									TEMP_PCT(65, 70),
-									TEMP_PCT(60, 60),
-									TEMP_PCT(55, 50),
-									TEMP_PCT(50, 40),
-									TEMP_PCT(45, 30),
+									TEMP_PCT(70, 97),
+									TEMP_PCT(65, 90),
+									TEMP_PCT(60, 80),
+									TEMP_PCT(55, 75),
+									TEMP_PCT(50, 65),
+									TEMP_PCT(45, 45),
+									TEMP_PCT(43, 30),
 								}
 							},
 						[1] = {
 							.target = DPTF_TEMP_SENSOR_1,
 							.thresholds = {
-									TEMP_PCT(75, 90),
-									TEMP_PCT(70, 80),
-									TEMP_PCT(65, 70),
-									TEMP_PCT(60, 60),
-									TEMP_PCT(55, 50),
-									TEMP_PCT(50, 40),
-									TEMP_PCT(45, 30),
+									TEMP_PCT(70, 97),
+									TEMP_PCT(65, 90),
+									TEMP_PCT(60, 80),
+									TEMP_PCT(55, 75),
+									TEMP_PCT(50, 65),
+									TEMP_PCT(45, 45),
+									TEMP_PCT(43, 30),
 								}
 							},
 						[2] = {

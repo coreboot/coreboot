@@ -1,4 +1,8 @@
 fw_config
+	field DB_USB 0 1
+		option DB_USB_UNKNOWN		0
+		option DB_USB4_ANX7452		1
+	end
 	field STYLUS 2
 		option STYLUS_ABSENT		0
 		option STYLUS_PRESENT		1
@@ -15,6 +19,10 @@ fw_config
 	field FP_MCU 10 11
 		option FP_ABSENT		0
 		option FP_MCU_NUVOTON		1
+		option FP_MCU_ELAN		2
+	end
+	field KB_TYPE 12
+		option KB_TYPE_DEFAULT		0
 	end
 	field WIFI_TYPE 13
 		option WIFI_CNVI		0

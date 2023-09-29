@@ -453,7 +453,8 @@ typedef struct acpi_lpi_desc_hdr {
 	uint16_t reserved;
 } __packed acpi_lpi_desc_hdr_t;
 
-#define ACPI_LPIT_CTR_FREQ_TSC 0
+#define ACPI_LPIT_CTR_FREQ_TSC	0
+#define ACPI_LPIT_SLP_S0_FREQ	0
 
 /* LPIT: Native C-state instruction based LPI structure */
 typedef struct acpi_lpi_desc_ncst {

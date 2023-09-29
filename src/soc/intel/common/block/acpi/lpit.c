@@ -50,13 +50,13 @@ unsigned long acpi_fill_lpit(unsigned long current)
 	sys_counter->entry_trigger.space_id		= ACPI_ADDRESS_SPACE_FIXED;
 	sys_counter->entry_trigger.access_size		= ACPI_ACCESS_SIZE_UNDEFINED;
 
-	/* Slp_S0 residency counter */
+	/* slp_s0 residency counter */
 	sys_counter->residency_counter.addrl		= PCH_PWRM_BASE_ADDRESS + SLP_S0_RES;
 	sys_counter->residency_counter.bit_offset	=  0;
 	sys_counter->residency_counter.bit_width	= 32;
 	sys_counter->residency_counter.space_id		= ACPI_ADDRESS_SPACE_MEMORY;
 	sys_counter->residency_counter.access_size	= ACPI_ACCESS_SIZE_DWORD_ACCESS;
-	sys_counter->counter_frequency			= ACPI_LPIT_CTR_FREQ_TSC;
+	sys_counter->counter_frequency			= ACPI_LPIT_SLP_S0_FREQ;
 
 	/* Min. residency and worst-case latency (from FSP and vendor dumps) */
 	sys_counter->min_residency			= 30000; /* break-even: 30 ms */

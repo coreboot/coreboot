@@ -109,6 +109,20 @@
 # error "CONFIG_IED_REGION_SIZE is not a power of 2"
 #endif
 
+/*
+ * List of supported C-states for Sandy Bridge/Ivy Bridge.
+ */
+enum {
+	C_STATE_C0		=  0,
+	C_STATE_C1		=  1,
+	C_STATE_C1E		=  2,
+	C_STATE_C3		=  3,
+	C_STATE_C6		=  4,
+	C_STATE_C7		=  5,
+	C_STATE_C7S		=  6,
+	NUM_C_STATES,
+};
+
 /* Lock MSRs */
 void intel_model_206ax_finalize_smm(void);
 

@@ -13,79 +13,52 @@
 #include "model_206ax.h"
 #include "chip.h"
 
+#define MWAIT_RES(state, sub_state)                         \
+	{                                                   \
+		.addrl = (((state) << 4) | (sub_state)),    \
+		.space_id = ACPI_ADDRESS_SPACE_FIXED,       \
+		.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,    \
+		.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,    \
+		.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD, \
+	}
+
 /*
  * List of supported C-states in this processor
  *
  * Latencies are typical worst-case package exit time in uS
  * taken from the SandyBridge BIOS specification.
  */
-static const acpi_cstate_t cstate_map[] = {
-	{	/* 0: C0 */
-	}, {	/* 1: C1 */
+static acpi_cstate_t cstate_map[NUM_C_STATES] = {
+	[C_STATE_C0] = { },
+	[C_STATE_C1] = {
 		.latency = 1,
 		.power = 1000,
-		.resource = {
-			.addrl = 0x00,	/* MWAIT State 0 */
-			.space_id = ACPI_ADDRESS_SPACE_FIXED,
-			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
-			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
-			.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD,
-		}
+		.resource = MWAIT_RES(0, 0),
 	},
-	{	/* 2: C1E */
+	[C_STATE_C1E] = {
 		.latency = 1,
 		.power = 1000,
-		.resource = {
-			.addrl = 0x01,	/* MWAIT State 0 Sub-state 1 */
-			.space_id = ACPI_ADDRESS_SPACE_FIXED,
-			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
-			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
-			.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD,
-		}
+		.resource = MWAIT_RES(0, 1),
 	},
-	{	/* 3: C3 */
+	[C_STATE_C3] = {
 		.latency = 63,
 		.power = 500,
-		.resource = {
-			.addrl = 0x10,	/* MWAIT State 1 */
-			.space_id = ACPI_ADDRESS_SPACE_FIXED,
-			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
-			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
-			.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD,
-		}
+		.resource = MWAIT_RES(1, 0),
 	},
-	{	/* 4: C6 */
+	[C_STATE_C6] = {
 		.latency = 87,
 		.power = 350,
-		.resource = {
-			.addrl = 0x20,	/* MWAIT State 2 */
-			.space_id = ACPI_ADDRESS_SPACE_FIXED,
-			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
-			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
-			.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD,
-		}
+		.resource = MWAIT_RES(2, 0),
 	},
-	{	/* 5: C7 */
+	[C_STATE_C7] = {
 		.latency = 90,
 		.power = 200,
-		.resource = {
-			.addrl = 0x30,	/* MWAIT State 3 */
-			.space_id = ACPI_ADDRESS_SPACE_FIXED,
-			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
-			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
-			.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD,
-		}
+		.resource = MWAIT_RES(3, 0),
 	},
-	{	/* 6: C7S */
+	[C_STATE_C7S] = {
 		.latency = 90,
 		.power = 200,
-		.resource = {
-			.addrl = 0x31,	/* MWAIT State 3 Sub-state 1 */
-			.space_id = ACPI_ADDRESS_SPACE_FIXED,
-			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
-			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
-			.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD,
-		}
+		.resource = MWAIT_RES(3, 1),
 	},
 };
 

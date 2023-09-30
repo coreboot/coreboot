@@ -56,39 +56,36 @@ static inline uint32_t cpuid_eax(uint32_t eax)
 	return eax;
 }
 
-static inline uint32_t cpuid_ebx(const uint32_t eax)
+static inline uint32_t cpuid_ebx(uint32_t eax)
 {
 	uint32_t ebx;
 
 	asm volatile(
 		"cpuid;"
-		: "=b" (ebx)
-		: "a" (eax)
-		: "ecx", "edx");
+		: "=b" (ebx), "+a" (eax)
+		:: "ecx", "edx");
 	return ebx;
 }
 
-static inline uint32_t cpuid_ecx(const uint32_t eax)
+static inline uint32_t cpuid_ecx(uint32_t eax)
 {
 	uint32_t ecx;
 
 	asm volatile(
 		"cpuid;"
-		: "=c" (ecx)
-		: "a" (eax)
-		: "ebx", "edx");
+		: "=c" (ecx), "+a" (eax)
+		:: "ebx", "edx");
 	return ecx;
 }
 
-static inline uint32_t cpuid_edx(const uint32_t eax)
+static inline uint32_t cpuid_edx(uint32_t eax)
 {
 	uint32_t edx;
 
 	asm volatile(
 		"cpuid;"
-		: "=d" (edx)
-		: "a" (eax)
-		: "ebx", "ecx");
+		: "=d" (edx), "+a" (eax)
+		:: "ebx", "ecx");
 	return edx;
 }
 

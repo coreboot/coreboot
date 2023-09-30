@@ -87,23 +87,77 @@ static void print_supported_cstates(void)
 	printk(BIOS_DEBUG, "\n");
 }
 
+/*
+ * Returns the supported C-state or the next lower one that
+ * is supported.
+ */
+static int get_supported_cstate(int cstate)
+{
+	uint8_t state, substate;
+	size_t i;
+
+	assert(cstate < NUM_C_STATES);
+
+	for (i = cstate; i > 0; i--) {
+		state = (cstate_map[i].resource.addrl >> 4) + 1;
+		substate = cstate_map[i].resource.addrl & 0xf;
+		if (cpu_get_c_substate_support(state) > substate)
+			break;
+	}
+
+	if (cstate != i)
+		printk(BIOS_INFO, "Requested C-state %s not supported, using %s instead\n",
+		       c_state_names[cstate], c_state_names[i]);
+
+	return i;
+}
+
 static void generate_C_state_entries(const struct device *dev)
 {
 	struct cpu_intel_model_206ax_config *conf = dev->chip_info;
 
-	const int acpi_cstates[3] = { conf->acpi_c1, conf->acpi_c2, conf->acpi_c3 };
+	int acpi_cstates[3] = { conf->acpi_c1, conf->acpi_c2, conf->acpi_c3 };
 
 	acpi_cstate_t acpi_cstate_map[ARRAY_SIZE(acpi_cstates)] = { 0 };
 	/* Count number of active C-states */
 	int count = 0;
 
 	for (int i = 0; i < ARRAY_SIZE(acpi_cstates); i++) {
-		if (acpi_cstates[i] > 0 && acpi_cstates[i] < ARRAY_SIZE(cstate_map)) {
-			acpi_cstate_map[count] = cstate_map[acpi_cstates[i]];
-			acpi_cstate_map[count].ctype = i + 1;
-			count++;
+		/* Remove invalid states */
+		if (acpi_cstates[i] >= ARRAY_SIZE(cstate_map)) {
+			printk(BIOS_ERR, "Invalid C-state in devicetree: %d\n",
+			       acpi_cstates[i]);
+			acpi_cstates[i] = 0;
+			continue;
+		}
+		/* Skip C0, it's always supported */
+		if (acpi_cstates[i] == 0)
+			continue;
+
+		/* Find supported state. Might downgrade a state. */
+		acpi_cstates[i] = get_supported_cstate(acpi_cstates[i]);
+
+		/* Remove duplicate states */
+		for (int j = i - 1; j >= 0; j--) {
+			if (acpi_cstates[i] == acpi_cstates[j]) {
+				acpi_cstates[i] = 0;
+				break;
+			}
 		}
 	}
+
+	/* Convert C-state to ACPI C-states */
+	for (int i = 0; i < ARRAY_SIZE(acpi_cstates); i++) {
+		if (acpi_cstates[i] == 0)
+			continue;
+		acpi_cstate_map[count] = cstate_map[acpi_cstates[i]];
+		acpi_cstate_map[count].ctype = i + 1;
+
+		count++;
+		printk(BIOS_DEBUG, "Advertising ACPI C State type C%d as CPU %s\n",
+		       i + 1, c_state_names[acpi_cstates[i]]);
+	}
+
 	acpigen_write_CST_package(acpi_cstate_map, count);
 }
 

@@ -6,6 +6,7 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <string.h>
+#include <timer.h>
 
 #include "chip.h"
 #include "pch.h"
@@ -296,6 +297,52 @@ static void pch_pcie_devicetree_update(
 	       sizeof(new_hotplug_map));
 }
 
+static void check_device_present(struct device *dev)
+{
+	struct southbridge_intel_bd82x6x_config *config = dev->chip_info;
+	struct stopwatch timeout;
+	bool present, hot_plugable;
+	uint32_t cap;
+
+	/* Set slot implemented. */
+	cap = pci_find_capability(dev, PCI_CAP_ID_PCIE);
+	pci_or_config16(dev, cap + PCI_EXP_FLAGS, PCI_EXP_FLAGS_SLOT);
+
+	/*
+	 * By setting the PCI_EXP_FLAGS_SLOT bit in register PCI_EXP_FLAGS the
+	 * PCI_EXP_SLTSTA_PDS bit will be updated with in band device
+	 * detection from the PCIe PHY. While this is primarly used for PCIe
+	 * hot-plug detection, it is more reliable than probing for downstream
+	 * devices by reading DID/VID PCI registers of such.
+	 *
+	 * Usually the PCI_EXP_FLAGS_SLOT isn't set for integrated devices,
+	 * but to simplify device detection it's set for all ports.
+	 *
+	 * It also allows to detect device before PCI enumeration has run.
+	 */
+	hot_plugable = config && config->pcie_hotplug_map[PCI_FUNC(dev->path.pci.devfn)];
+	present = !!(pci_read_config16(dev, cap + PCI_EXP_SLTSTA) & PCI_EXP_SLTSTA_PDS);
+
+	printk(BIOS_DEBUG, "%s: %s downstream device\n",
+	       dev_path(dev), present ? "Found a" : "No");
+
+	if (!present && !hot_plugable) {
+		/* No device present. */
+		stopwatch_init_usecs_expire(&timeout, 50 * 1000);
+		pci_or_config32(dev, 0x338, 1 << 26);
+
+		while (!stopwatch_expired(&timeout)) {
+			if ((pci_read_config32(dev, 0x328) & (0x1f << 23)) == 0)
+				break;
+			udelay(100);
+		}
+		dev->enabled = 0;
+	} else if (present && !hot_plugable && !dev->enabled) {
+		/* Port will be disabled, but device present. Disable link. */
+		pci_or_config32(dev, cap + PCI_EXP_LNKCTL, PCI_EXP_LNKCTL_LD);
+	}
+}
+
 /* Special handling for PCIe Root Port devices */
 static void pch_pcie_enable(struct device *dev)
 {
@@ -303,6 +350,8 @@ static void pch_pcie_enable(struct device *dev)
 
 	if (!config)
 		return;
+
+	check_device_present(dev);
 
 	/*
 	 * Save a copy of the Root Port Function Number map when

@@ -9,7 +9,7 @@
 
 /* board_id is provided by ec/google/chromeec/ec_boardid.c */
 
-#define ADC_LEVELS 12
+#define ADC_LEVELS 8
 
 enum {
 	/* RAM IDs */
@@ -20,37 +20,33 @@ enum {
 	PANEL_ID_LOW_CHANNEL = 5,
 };
 
-static const unsigned int ram_voltages[ADC_LEVELS] = {
+static const unsigned int ram_voltages[] = {
 	/* ID : Voltage (unit: uV) */
-	[0]  =   74300,
-	[1]  =  211700,
-	[2]  =  318800,
-	[3]  =  428600,
-	[4]  =  541700,
-	[5]  =  665800,
-	[6]  =  781400,
-	[7]  =  900000,
-	[8]  = 1023100,
-	[9]  = 1137000,
-	[10] = 1240000,
-	[11] = 1342600,
+	[0] =   74296,
+	[1] =  211673,
+	[2] =  365055,
+	[3] =  524272,
+	[4] =  706302,
+	[5] =  899119,
+	[6] = 1108941,
+	[7] = 1342616,
 };
 
-static const unsigned int panel_voltages[ADC_LEVELS] = {
+_Static_assert(ARRAY_SIZE(ram_voltages) == ADC_LEVELS, "Wrong array size of ram_voltages");
+
+static const unsigned int panel_voltages[] = {
 	/* ID : Voltage (unit: uV) */
-	[0]  =       0,
-	[1]  =  283000,
-	[2]  =  394000,
-	[3]  =  503000,
-	[4]  =  608000,
-	[5]  =  712000,
-	[6]  =  823000,
-	[7]  =  937000,
-	[8]  = 1046000,
-	[9]  = 1155000,
-	[10] = 1277000,
-	[11] = 1434000,
+	[0] =       0,
+	[1] =  282774,
+	[2] =  472379,
+	[3] =  652542,
+	[4] =  830258,
+	[5] = 1011767,
+	[6] = 1209862,
+	[7] = 1427880,
 };
+
+_Static_assert(ARRAY_SIZE(panel_voltages) == ADC_LEVELS, "Wrong array size of panel_voltages");
 
 static const unsigned int *adc_voltages[] = {
 	[RAM_ID_LOW_CHANNEL] = ram_voltages,

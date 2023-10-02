@@ -243,12 +243,18 @@ static void pch_pcie_enable(struct device *dev)
 
 static void pch_pciexp_scan_bridge(struct device *dev)
 {
+	uint32_t cap = pci_find_capability(dev, PCI_CAP_ID_PCIE);
+
 	if (CONFIG(PCIEXP_HOTPLUG) && pci_is_hotplugable(dev)) {
 		pciexp_hotplug_scan_bridge(dev);
 	} else {
 		/* Normal PCIe Scan */
 		pciexp_scan_bridge(dev);
 	}
+	if ((pci_read_config16(dev, cap + PCI_EXP_SLTSTA) & PCI_EXP_SLTSTA_PDS) &&
+	    !dev_is_active_bridge(dev))
+		printk(BIOS_WARNING, "%s: Has a slow downstream device. Enumeration failed.\n",
+			dev_path(dev));
 
 	/* Late Power Management init after bridge device enumeration */
 	pch_pcie_pm_late(dev);

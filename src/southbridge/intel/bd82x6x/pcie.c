@@ -32,6 +32,13 @@ static const char *pch_pcie_acpi_name(const struct device *dev)
 	return NULL;
 }
 
+static bool pci_is_hotplugable(struct device *dev)
+{
+	struct southbridge_intel_bd82x6x_config *config = dev->chip_info;
+
+	return config && config->pcie_hotplug_map[PCI_FUNC(dev->path.pci.devfn)];
+}
+
 static void pch_pcie_pm_early(struct device *dev)
 {
 	u16 link_width_p0, link_width_p4;
@@ -179,7 +186,6 @@ static void pch_pcie_pm_late(struct device *dev)
 static void pci_init(struct device *dev)
 {
 	u16 reg16;
-	struct southbridge_intel_bd82x6x_config *config = dev->chip_info;
 
 	printk(BIOS_DEBUG, "Initializing PCH PCIe bridge.\n");
 
@@ -202,7 +208,7 @@ static void pci_init(struct device *dev)
 	pci_write_config16(dev, 0x1e, reg16);
 
 	/* Enable expresscard hotplug events.  */
-	if (config->pcie_hotplug_map[PCI_FUNC(dev->path.pci.devfn)]) {
+	if (pci_is_hotplugable(dev)) {
 		pci_or_config32(dev, 0xd8, 1 << 30);
 		pci_write_config16(dev, 0x42, 0x142);
 	}
@@ -216,9 +222,7 @@ static void pch_pcie_enable(struct device *dev)
 
 static void pch_pciexp_scan_bridge(struct device *dev)
 {
-	struct southbridge_intel_bd82x6x_config *config = dev->chip_info;
-
-	if (CONFIG(PCIEXP_HOTPLUG) && config->pcie_hotplug_map[PCI_FUNC(dev->path.pci.devfn)]) {
+	if (CONFIG(PCIEXP_HOTPLUG) && pci_is_hotplugable(dev)) {
 		pciexp_hotplug_scan_bridge(dev);
 	} else {
 		/* Normal PCIe Scan */

@@ -71,6 +71,9 @@ config MAINBOARD_SMBIOS_PRODUCT_NAME
 	string
 	default "Lite"
 
+config POWER_STATE_OFF_AFTER_FAILURE
+	default y
+
 config TRACKPAD_INTERRUPT
 	hex
 	default 0x1 if BOARD_STARLABS_LITE_GLK

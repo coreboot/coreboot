@@ -158,6 +158,10 @@ config ME_BIN_PATH
 	string
 	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/intel_me.bin"
 
+
+config POWER_STATE_OFF_AFTER_FAILURE
+	default y
+
 config EDK2_BOOTSPLASH_FILE
 	string
 	default "3rdparty/blobs/mainboard/starlabs/Logo.bmp"

@@ -17,6 +17,7 @@
 #include "chip.h"
 
 #define SOUTHBRIDGE PCI_DEV(0, 0x1f, 0)
+#define PCI_DEVICE_ID_INTEL_UM77 0x1e58
 
 static void wait_iobp(void)
 {
@@ -135,7 +136,14 @@ void early_pch_init_native_dmi_post(void)
 
 void early_pch_init_native(void)
 {
+	const u16 dev_id = pci_read_config16(PCH_LPC_DEV, PCI_DEVICE_ID);
+	u8 pcie_ports = (dev_id == PCI_DEVICE_ID_INTEL_UM77) ? 4 : 8;
+
 	pci_write_config8(SOUTHBRIDGE, 0xa6, pci_read_config8(SOUTHBRIDGE, 0xa6) | 2);
+
+	/* Clear this bit early for PCIe device detection */
+	for (uint8_t i = 0; i < pcie_ports; i++)
+		pci_update_config32(PCH_PCIE_DEV(i), 0x338, ~(1 << 26), 0);
 
 	RCBA32(CIR1) = 0x00109000;
 	RCBA32(REC); // !!! = 0x00000000

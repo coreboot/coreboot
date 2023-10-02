@@ -74,11 +74,14 @@ void early_usb_init(const struct southbridge_usb_port *portmap);
 #define PCH_EHCI2_DEV		PCI_DEV(0, 0x1a, 0)
 #define PCH_ME_DEV		PCI_DEV(0, 0x16, 0)
 #define PCH_THERMAL_DEV		PCI_DEV(0, 0x1f, 6)
-#define PCH_PCIE_DEV_SLOT	28
 #define PCH_IOAPIC_PCI_BUS	250
 #define PCH_IOAPIC_PCI_SLOT	31
 #define PCH_HPET_PCI_BUS	250
 #define PCH_HPET_PCI_SLOT	15
+
+/* PCI Configuration Space (D28:F0): PCI2PCI */
+#define PCH_PCIE_DEV_SLOT	28
+#define PCH_PCIE_DEV(_func)	PCI_DEV(0, PCH_PCIE_DEV_SLOT, _func)
 
 /* PCI Configuration Space (D20:F0): xHCI */
 #define PCH_XHCI_DEV		PCI_DEV(0, 0x14, 0)

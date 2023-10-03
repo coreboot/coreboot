@@ -131,6 +131,10 @@ void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue)
 /* Set bit in function disable register to hide this device */
 static void pch_hide_devfn(unsigned int devfn)
 {
+	struct device *dev = pcidev_path_on_root(devfn);
+	if (dev)
+		dev->hidden = true;
+
 	switch (devfn) {
 	case PCI_DEVFN(20, 0): /* xHCI */
 		if (pch_silicon_type() == PCH_TYPE_PPT) {

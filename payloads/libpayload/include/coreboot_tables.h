@@ -220,6 +220,11 @@ enum cb_fb_orientation {
 	CB_FB_ORIENTATION_RIGHT_UP = 3,
 };
 
+struct cb_framebuffer_flags {
+	u8 has_external_display : 1;
+	u8 reserved : 7;
+};
+
 struct cb_framebuffer {
 	u32 tag;
 	u32 size;
@@ -238,6 +243,8 @@ struct cb_framebuffer {
 	u8 reserved_mask_pos;
 	u8 reserved_mask_size;
 	u8 orientation;
+	struct cb_framebuffer_flags flags;
+	u8 pad;
 };
 
 #define CB_GPIO_ACTIVE_LOW 0

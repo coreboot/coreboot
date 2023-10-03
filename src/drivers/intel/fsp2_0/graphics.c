@@ -54,6 +54,13 @@ enum fw_splash_screen_status {
 	FW_SPLASH_SCREEN_ENABLED,
 };
 
+/* Check and report if an external display is attached */
+__weak int fsp_soc_report_external_display(void)
+{
+	/* Default implementation, on-board display enabled */
+	return 0;
+}
+
 /*
  * Update elog with Firmware Splash Screen related information
  * based on enum fw_splash_screen_status.
@@ -123,6 +130,9 @@ void fsp_report_framebuffer_info(const uintptr_t framebuffer_bar,
 		.reserved_mask_pos   = fbinfo->rsvd.pos,
 		.reserved_mask_size  = fbinfo->rsvd.size,
 		.orientation         = orientation,
+		.flags = {
+			.has_external_display = fsp_soc_report_external_display(),
+		},
 	};
 
 	fb_add_framebuffer_info_ex(&fb);

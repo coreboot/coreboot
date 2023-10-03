@@ -19,10 +19,6 @@ fw_config
 		option SD_PRESENT		0
 		option SD_ABSENT		1
 	end
-	field WFC 11
-		option WFC_ABSENT		0
-		option WFC_PRESENT		1
-	end
 	field WIFI_SAR_ID2 16 19
 		option INTEL_QUANDISO_LTE	0
 		option INTEL_QUANDISO_WIFI	1
@@ -33,6 +29,10 @@ fw_config
 	field AUDIO_AMP 20 21
 		option MAX98360A		0
 		option ALC1019			1
+	end
+	field USB_WFC 22 23
+		option USB_WFC_ABSENT		0
+		option USB_WFC_PRESENT		1
 	end
 end
 
@@ -516,7 +516,7 @@ chip soc/intel/alderlake
 						register "desc" = ""USB2 WF Camera""
 						register "type" = "UPC_TYPE_INTERNAL"
 						device ref usb2_port7 on
-							probe WFC WFC_PRESENT
+							probe USB_WFC USB_WFC_PRESENT
 						end
 					end
 					chip drivers/usb/acpi

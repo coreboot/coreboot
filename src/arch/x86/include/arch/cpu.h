@@ -99,6 +99,10 @@ static inline unsigned int cpuid_get_max_func(void)
 #define CPUID_CACHE_NO_OF_SETS_MASK 0xffffffff
 #define CPUID_CACHE_NO_OF_SETS(res) CPUID_CACHE(NO_OF_SETS, (res).ecx)
 
+// Intel leaf 0x5
+#define CPUID_FEATURE_MONITOR_MWAIT		(1 << 0)
+#define CPUID_FEATURE_INTERUPT_BREAK_EVENT	(1 << 1)
+
 unsigned int cpu_cpuid_extended_level(void);
 int cpu_have_cpuid(void);
 
@@ -309,6 +313,15 @@ size_t cpu_get_max_cache_share(const struct cpu_cache_info *info);
 
 /* get_cache_size to calculate the cache size. */
 size_t get_cache_size(const struct cpu_cache_info *info);
+
+/*
+ * Returns the sub-states supported by the specified CPU
+ * C-state level.
+ *
+ * Level 0 corresponds to the lowest C-state (C0).
+ * Higher levels are processor specific.
+ */
+uint8_t cpu_get_c_substate_support(const int state);
 
 /*
  * fill_cpu_cache_info to get all required cache info data and fill into cpu_cache_info

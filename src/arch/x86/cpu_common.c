@@ -187,6 +187,22 @@ size_t get_cache_size(const struct cpu_cache_info *info)
 	return info->num_ways * info->physical_partitions * info->line_size * info->num_sets;
 }
 
+/*
+ * Returns the sub-states supported by the specified CPU
+ * C-state level.
+ *
+ * Level 0 corresponds to the lowest C-state (C0).
+ * Higher levels are processor specific.
+ */
+uint8_t cpu_get_c_substate_support(const int state)
+{
+	if ((cpuid_get_max_func() < 5) ||
+	    !(cpuid_ecx(5) & CPUID_FEATURE_MONITOR_MWAIT) || (state > 4))
+		return 0;
+
+	return (cpuid_edx(5) >> (state * 4)) & 0xf;
+}
+
 bool fill_cpu_cache_info(uint8_t level, struct cpu_cache_info *info)
 {
 	if (!info)

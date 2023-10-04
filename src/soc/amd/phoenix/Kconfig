@@ -64,6 +64,7 @@ config SOC_AMD_PHOENIX
 	select SOC_AMD_COMMON_BLOCK_PM
 	select SOC_AMD_COMMON_BLOCK_PM_CHIPSET_STATE_SAVE
 	select SOC_AMD_COMMON_BLOCK_PSP_GEN2		# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_PSP_SPL
 	select SOC_AMD_COMMON_BLOCK_RESET
 	select SOC_AMD_COMMON_BLOCK_SMBUS
 	select SOC_AMD_COMMON_BLOCK_SMI
@@ -361,39 +362,6 @@ config PSP_WHITELIST_FILE
 	string "Debug whitelist file path"
 	depends on HAVE_PSP_WHITELIST_FILE
 	default "site-local/3rdparty/amd_blobs/phoenix/PSP/wtl-phx.sbin"
-
-config PERFORM_SPL_FUSING
-	bool "Send SPL fuse command to PSP"
-	default n
-	help
-	  Send the Security Patch Level (SPL) fusing command to the PSP in
-	  order to update the minimum SPL version to be written to the SoC's
-	  fuse bits. This will prevent using any embedded firmware components
-	  with lower SPL version.
-
-	  If unsure, answer 'n'
-
-config SPL_TABLE_FILE
-	string "SPL table file override"
-	help
-	  Provide a mainboard-specific Security Patch Level (SPL) table file
-	  override. The SPL file is required to support PSP FW anti-rollback
-	  and needs to be created by AMD. The default SPL file specified in the
-	  SoC's fw.cfg is in the corresponding folder of the amd_blobs submodule
-	  and applies to all boards that use the SoC without verstage on PSP.
-	  In the verstage on PSP case, a different SPL file is specific as an
-	  override via this Kconfig option.
-
-config HAVE_SPL_RW_AB_FILE
-	bool "Have a separate mainboard-specific SPL file in RW A/B partitions"
-	default n
-	depends on VBOOT_SLOTS_RW_AB
-	help
-	  Have separate mainboard-specific Security Patch Level (SPL) table
-	  file for the RW A/B FMAP partitions.
-
-config SPL_RW_AB_TABLE_FILE
-	string "Separate SPL table file override for RW A/B partitions"
 
 config PSP_SOFTFUSE_BITS
 	string "PSP Soft Fuse bits to enable"

@@ -29,13 +29,50 @@ config SOC_AMD_PSP_SELECTABLE_SMU_FW
 	  fanned set of blobs.  Ask your AMD representative whether your APU
 	  is considered fanless.
 
-config SOC_AMD_COMMON_BLOCK_PSP_FUSE_SPL
+config SOC_AMD_COMMON_BLOCK_PSP_SPL
 	bool
-	default n
-	depends on SOC_AMD_COMMON_BLOCK_PSP_GEN2
 	help
-	  Enable sending of set SPL message to PSP. Enable this option if the platform
-	  will require SPL fusing to be performed by PSP.
+	  Select this option in the SoC's Kconfig to include the Security Patch
+	  Level (SPL) support code. This code will only send the actual SPL
+	  fuse update command to the PSP if the PERFORM_SPL_FUSING option is
+	  also selected.
+
+config PERFORM_SPL_FUSING
+	bool "Send SPL fusing command to PSP"
+	default n
+	depends on SOC_AMD_COMMON_BLOCK_PSP_SPL
+	help
+	  Send the Security Patch Level (SPL) fusing command to the PSP in
+	  order to update the minimum SPL version to be written to the SoC's
+	  fuse bits. This will prevent using any embedded firmware components
+	  with lower SPL version.
+
+	  If unsure, answer 'n'
+
+config SPL_TABLE_FILE
+	string "SPL table file override"
+	depends on SOC_AMD_COMMON_BLOCK_PSP_SPL
+	help
+	  Provide a mainboard-specific Security Patch Level (SPL) table file
+	  override. The SPL file is required to support PSP FW anti-rollback
+	  and needs to be created by AMD. The default SPL file specified in the
+	  SoC's fw.cfg is in the corresponding folder of the amd_blobs submodule
+	  and applies to all boards that use the SoC without verstage on PSP.
+	  In the verstage on PSP case, a different SPL file is specific as an
+	  override via this Kconfig option.
+
+config HAVE_SPL_RW_AB_FILE
+	bool "Have a separate mainboard-specific SPL file in RW A/B partitions"
+	default n
+	depends on SOC_AMD_COMMON_BLOCK_PSP_SPL
+	depends on VBOOT_SLOTS_RW_AB
+	help
+	  Have separate mainboard-specific Security Patch Level (SPL) table
+	  file for the RW A/B FMAP partitions.
+
+config SPL_RW_AB_TABLE_FILE
+	string "Separate SPL table file override for RW A/B partitions"
+	depends on HAVE_SPL_RW_AB_FILE
 
 config PSP_PLATFORM_SECURE_BOOT
 	bool "Platform secure boot enable"

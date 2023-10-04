@@ -96,10 +96,6 @@ config PSP_LOAD_MP2_FW
 	depends on CHROMEOS
 	default y
 
-config PERFORM_SPL_FUSING
-	bool
-	default y
-
 config SPL_TABLE_FILE
 	string
 	default "3rdparty/blobs/mainboard/google/skyrim/TypeId0x55_SplTableBl_MDN_CHROME_RO.sbin"
@@ -112,7 +108,7 @@ config SPL_RW_AB_TABLE_FILE
 	string
 	default "3rdparty/blobs/mainboard/google/skyrim/TypeId0x55_SplTableBl_MDN_CHROME.sbin"
 
-config SOC_AMD_COMMON_BLOCK_PSP_FUSE_SPL
+config PERFORM_SPL_FUSING
 	default y if BOARD_GOOGLE_WINTERHOLD
 	default y if BOARD_GOOGLE_FROSTFLOW
 	default y if BOARD_GOOGLE_MARKARTH

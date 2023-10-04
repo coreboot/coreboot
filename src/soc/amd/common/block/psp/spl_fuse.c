@@ -38,7 +38,7 @@ static void psp_set_spl_fuse(void *unused)
 		return;
 	}
 
-	if (!CONFIG(SOC_AMD_COMMON_BLOCK_PSP_FUSE_SPL))
+	if (!CONFIG(PERFORM_SPL_FUSING))
 		return;
 
 	printk(BIOS_DEBUG, "PSP: SPL Fusing Update Requested.\n");

@@ -29,6 +29,6 @@ ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_I2C3_TPM_SHARED_WITH_PSP) += tpm.c
 smm-y += psp_gen2.c
 smm-y += psp_smm_gen2.c
 
-ramstage-$(CONFIG_PERFORM_SPL_FUSING) += spl_fuse.c
+ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_PSP_SPL) += spl_fuse.c
 
 endif # CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN2

@@ -54,8 +54,8 @@ void boot_with_psp_timestamp(uint64_t base_timestamp)
 		 * part of coreboot uses the TSC tick time as granularity, so this needs to be
 		 * converted.
 		 */
-		tse->entry_stamp += timestamp_from_usec(psp_ts_table->base_time) +
-			base_timestamp;
+		tse->entry_stamp = timestamp_from_usec(psp_ts_table->base_time +
+						       tse->entry_stamp) + base_timestamp;
 	}
 
 	bootblock_main_with_timestamp(base_timestamp, psp_ts_table->entries,

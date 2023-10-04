@@ -4,6 +4,7 @@ ifeq ($(CONFIG_SOC_AMD_GENOA),y)
 all-y		+= mmap_boot.c
 all-y		+= reset.c
 all-y		+= config.c
+all-y		+= gpio.c
 
 bootblock-y	+= early_fch.c
 bootblock-y	+= aoac.c

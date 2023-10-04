@@ -229,10 +229,8 @@ static void pci_init(struct device *dev)
 	pci_write_config16(dev, 0x1e, reg16);
 
 	/* Enable expresscard hotplug events.  */
-	if (pci_is_hotplugable(dev)) {
+	if (pci_is_hotplugable(dev))
 		pci_or_config32(dev, 0xd8, 1 << 30);
-		pci_write_config16(dev, 0x42, 0x142);
-	}
 }
 
 static void pch_pcie_enable(struct device *dev)

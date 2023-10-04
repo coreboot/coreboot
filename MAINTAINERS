@@ -350,6 +350,7 @@ F:	src/mainboard/google/rex/
 GOOGLE BRYA MAINBOARDS
 M:	Subrata Banik <subratabanik@google.com>
 M:	Nick Vaccaro <nvaccaro@chromium.org>
+M:	Eric Lai <ericllai@google.com>
 S:	Maintained
 F:	src/mainboard/google/brya/
 

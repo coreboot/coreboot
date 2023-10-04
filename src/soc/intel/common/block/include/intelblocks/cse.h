@@ -611,4 +611,9 @@ enum cb_err cse_get_fw_feature_state(uint32_t *feature_state);
 /* Fills the CSE Boot Partition Info response */
 void cse_fill_bp_info(void);
 
+/*
+ * Check if a CSE Firmware update is required
+ * Returns true if an update is required, false otherwise
+ */
+bool is_cse_fw_update_required(void);
 #endif // SOC_INTEL_COMMON_CSE_H

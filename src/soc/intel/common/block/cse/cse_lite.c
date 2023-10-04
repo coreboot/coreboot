@@ -1122,6 +1122,30 @@ static void initiate_psr_data_backup(void)
 	backup_psr_data();
 }
 
+/*
+ * Check if a CSE Firmware update is required
+ * returns true if an update is required, false otherwise
+ */
+bool is_cse_fw_update_required(void)
+{
+	struct fw_version cbfs_rw_version;
+
+	if (!is_cse_fw_update_enabled())
+		return false;
+
+	/*
+	 * First, check if cse_bp_info_rsp global structure is populated.
+	 * If not, it implies that cse_fill_bp_info() function is not called.
+	 */
+	if (!is_cse_bp_info_valid(&cse_bp_info_rsp))
+		return false;
+
+	if (get_cse_ver_from_cbfs(&cbfs_rw_version) == CB_ERR)
+		return false;
+
+	return !!cse_compare_sub_part_version(&cbfs_rw_version, cse_get_rw_version());
+}
+
 static uint8_t cse_fw_update(void)
 {
 	struct region_device target_rdev;

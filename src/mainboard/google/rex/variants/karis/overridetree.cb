@@ -6,6 +6,9 @@ fw_config
 	field AUDIO 3 5
 		option ALC5650_NO_AMP_I2S	0
 	end
+	field FAN 6 7
+		option FAN_SETTING_1		0
+	end
 	field MIPI_CAM 8 9
 		option UF_CAM_HI556		0
 	end
@@ -237,7 +240,9 @@ chip soc/intel/meteorlake
 				register "options.fan.fine_grained_control" = "1"
 				register "options.fan.step_size" = "2"
 
-				device generic 0 alias dptf_policy on end
+				device generic 0 alias dptf_policy on
+					probe FAN FAN_SETTING_1
+				end
 			end
 		end
 		device ref pcie_rp10 on

@@ -92,6 +92,24 @@ chip soc/intel/alderlake
 	register "common_soc_config" = "{
 		.i2c[0] = {
 			.early_init = 1,
+			.speed = I2C_SPEED_FAST_PLUS,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST_PLUS,
+				.scl_lcnt = 56,
+				.scl_hcnt = 30,
+				.sda_hold = 7,
+			}
+		},
+		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 158,
+				.scl_hcnt = 79,
+				.sda_hold = 30,
+			}
+		},
+		.i2c[3] = {
 			.speed = I2C_SPEED_FAST,
 			.speed_config[0] = {
 				.speed = I2C_SPEED_FAST,
@@ -100,31 +118,13 @@ chip soc/intel/alderlake
 				.sda_hold = 7,
 			}
 		},
-		.i2c[1] = {
-			.speed = I2C_SPEED_FAST,
-			.speed_config[0] = {
-				.speed = I2C_SPEED_FAST,
-				.scl_lcnt = 160,
-				.scl_hcnt = 79,
-				.sda_hold = 7,
-			}
-		},
-		.i2c[3] = {
-			.speed = I2C_SPEED_FAST,
-			.speed_config[0] = {
-				.speed = I2C_SPEED_FAST,
-				.scl_lcnt = 157,
-				.scl_hcnt = 79,
-				.sda_hold = 7,
-			}
-		},
 		.i2c[5] = {
 			.speed = I2C_SPEED_FAST,
 			.speed_config[0] = {
 				.speed = I2C_SPEED_FAST,
-				.scl_lcnt = 152,
+				.scl_lcnt = 158,
 				.scl_hcnt = 79,
-				.sda_hold = 7,
+				.sda_hold = 40,
 			}
 		},
 	}"

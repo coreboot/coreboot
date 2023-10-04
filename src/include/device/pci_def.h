@@ -430,6 +430,7 @@
 #define  PCI_EXP_CLK_PM		0x40000	/* Clock Power Management */
 #define  PCI_EXP_LNKCAP_PORT	0xff000000 /* Port Number */
 #define PCI_EXP_LNKCTL		16	/* Link Control */
+#define  PCI_EXP_LNKCTL_LD	0x10	/* Link Disable */
 #define  PCI_EXP_LNKCTL_RL	0x20	/* Retrain Link */
 #define  PCI_EXP_LNKCTL_CCC	0x40	/* Common Clock Configuration */
 #define  PCI_EXP_EN_CLK_PM	0x100	/* Enable Clock Power Management */
@@ -437,10 +438,14 @@
 #define  PCI_EXP_LNKSTA_LT	0x800	/* Link Training */
 #define  PCI_EXP_LNKSTA_SLC	0x1000	/* Slot Clock Configuration */
 #define PCI_EXP_SLTCAP		20	/* Slot Capabilities */
+#define  PCI_EXP_SLTCAP_HPS	0x0020	/* Hot-Plug Surprise */
 #define  PCI_EXP_SLTCAP_HPC	0x0040	/* Hot-Plug Capable */
+#define  PCI_EXP_SLTCAP_SPLV	0x7f80	/* Slot Power Limit Value */
+#define  PCI_EXP_SLTCAP_SPLS	0x18000	/* Slot Power Limit Scale */
 #define  PCI_EXP_SLTCAP_PSN	0xfff80000 /* Physical Slot Number */
 #define PCI_EXP_SLTCTL		24	/* Slot Control */
 #define PCI_EXP_SLTSTA		26	/* Slot Status */
+#define  PCI_EXP_SLTSTA_PDS	0x40	/* Presence Detect Status */
 #define PCI_EXP_RTCTL		28	/* Root Control */
 #define  PCI_EXP_RTCTL_SECEE	0x01	/* System Error on Correctable Error */
 #define  PCI_EXP_RTCTL_SENFEE	0x02	/* System Error on Non-Fatal Error */

@@ -1080,7 +1080,17 @@ if [ -n "$CC" ]; then
 	fi
 else
 	if searchtool gnatgcc "Free Software Foundation" nofail > /dev/null; then
+		# gnatgcc is deprecated and in recent GCC releases its purpose is
+		# fulfilled by the gcc binary. In case of a deprecated gnatgcc
+		# version is installed, it doesn't provide the expected output and
+		# hostcc_has_gnat1() fails. In this case, just set the value of CC
+		# to gcc.
+		# TODO: Remove this whole branch when time is appropriate as the
+		#       second branch fulfills our needs.
 		CC=gnatgcc
+		if ! hostcc_has_gnat1; then
+			CC=gcc
+		fi
 	elif searchtool gcc "Free Software Foundation" nofail > /dev/null; then
 		CC=gcc
 	else

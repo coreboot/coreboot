@@ -695,6 +695,7 @@ F:	src/mainboard/sifive/
 F:	util/riscv/
 
 X86 ARCHITECTURE
+M:	Jeremy Compostella <jeremy.compostella@intel.com>
 S:	MAINTAINED
 F:	src/arch/x86/
 F:	src/cpu/x86/
@@ -785,6 +786,7 @@ F:	src/southbridge/amd/
 F:	src/include/cpu/amd/
 
 INTEL SUPPORT
+R:	Intel_Coreboot_Reviewers <intel_coreboot_reviewers@intel.com>
 S:	Maintained
 F:	src/vendorcode/intel/
 F:	src/cpu/intel/
@@ -801,6 +803,7 @@ F:	src/drivers/intel/fsp1_1/
 
 INTEL FSP 2.0
 M:	Andrey Petrov <andrey.petrov@gmail.com>
+M:	Ronak Kanabar <ronak.kanabar@intel.com>
 S:	Maintained
 F:	src/drivers/intel/fsp2_0/
 
@@ -1036,6 +1039,7 @@ F:	util/ifdtool/
 
 INTELTOOL
 M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
+M:	Pratik Prajapati <pratikkumar.v.prajapati@intel.com>
 F:	util/inteltool/
 
 INTELMETOOL
@@ -1069,6 +1073,7 @@ F:	src/drivers/aspeed/common/
 F:	src/drivers/aspeed/ast2050/
 
 ACPI
+R:	Cliff Huang <cliff.huang@intel.com>
 M:	Lance Zhao <lance.zhao@gmail.com>
 M:	Tim Wawrzynczak <inforichland@gmail.com>
 S:	Supported

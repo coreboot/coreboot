@@ -91,3 +91,6 @@ config BOARD_GOOGLE_TARANZA
 
 config BOARD_GOOGLE_BOXY
 	bool "->  Boxy"
+
+config BOARD_GOOGLE_DEXI
+	bool "->  Dexi"

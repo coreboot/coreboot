@@ -93,7 +93,7 @@ static const struct pad_config romstage_gpio_table[] = {
 	/* C1  : SMBDATA ==> USI_RST_L */
 	PAD_CFG_GPO(GPP_C1, 0, DEEP),
 	/* H12 : UART0_RTS# ==> SD_PERST_L */
-	PAD_CFG_GPO(GPP_H12, 0, DEEP),
+	PAD_CFG_GPO(GPP_H12, 1, DEEP),
 	/* H20 : IMGCLKOUT1 ==> WLAN_PERST_L */
 	PAD_CFG_GPO(GPP_H20, 1, DEEP),
 };

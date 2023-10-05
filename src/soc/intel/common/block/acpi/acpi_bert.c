@@ -7,14 +7,14 @@
 #include <intelblocks/acpi.h>
 #include <intelblocks/crashlog.h>
 
-static bool boot_error_src_present(void)
+static bool boot_error_src_present(cl_node_t *head)
 {
 	if (!discover_crashlog()) {
 		printk(BIOS_SPEW, "Crashlog discovery result: crashlog not found\n");
 		return false;
 	}
 
-	collect_pmc_and_cpu_crashlog_from_srams();
+	collect_pmc_and_cpu_crashlog_from_srams(head);
 
 	/* Discovery tables sizes can be larger than the actual valid collected data */
 	u32 crashlog_size = cl_get_total_data_size();
@@ -25,11 +25,11 @@ static bool boot_error_src_present(void)
 static enum cb_err record_crashlog_into_bert(void **region, size_t *length)
 {
 	acpi_generic_error_status_t *status = NULL;
-	size_t cpu_record_size, pmc_record_size;
 	size_t gesb_header_size;
-	void *cl_data = NULL;
+	void *cl_acpi_data = NULL;
+	cl_node_t cl_list_head = {.size = 0, .data = NULL, .next = NULL};
 
-	if (!boot_error_src_present()) {
+	if (!boot_error_src_present(&cl_list_head)) {
 		return CB_ERR;
 	}
 
@@ -47,67 +47,38 @@ static enum cb_err record_crashlog_into_bert(void **region, size_t *length)
 	}
 
 	if (cl_get_total_data_size() > bert_storage_remaining()) {
-		printk(BIOS_ERR, "Crashlog entry would exceed "
-				"available region\n");
+		printk(BIOS_ERR, "Crashlog entry would exceed available region\n");
 		return CB_ERR;
 	}
 
-	cpu_record_size = cl_get_cpu_record_size();
-	if (cpu_record_size) {
-		cl_data = new_cper_fw_error_crashlog(status, cpu_record_size);
-		if (!cl_data) {
-			printk(BIOS_ERR, "Crashlog CPU entry(size 0x%zx) "
-				"would exceed available region\n",
-				cpu_record_size);
-			return CB_ERR;
-		}
-		printk(BIOS_DEBUG, "cl_data %p, cpu_record_size 0x%zx\n",
-			cl_data, cpu_record_size);
-		cl_fill_cpu_records(cl_data);
-	}
+	bool multi_entry = false;
+	cl_node_t *cl_node = cl_list_head.next;
+	while (cl_node) {
 
-	pmc_record_size = cl_get_pmc_record_size();
-	if (pmc_record_size) {
-		/* Allocate new FW ERR structure in case PMC crashlog is present */
-		if (pmc_record_size && !bert_append_fw_err(status)) {
-			printk(BIOS_ERR, "Crashlog PMC entry would "
-				"exceed available region\n");
-			return CB_ERR;
+		if ((cl_node->size <= 0) || (!(cl_node->data))) {
+			cl_node = cl_node->next;
+			continue;
 		}
 
-		cl_data = new_cper_fw_error_crashlog(status, pmc_record_size);
-		if (!cl_data) {
-			printk(BIOS_ERR, "Crashlog PMC entry(size 0x%zx) "
-				"would exceed available region\n",
-				pmc_record_size);
-			return CB_ERR;
-		}
-		printk(BIOS_DEBUG, "cl_data %p, pmc_record_size 0x%zx\n",
-			cl_data, pmc_record_size);
-		cl_fill_pmc_records(cl_data);
-	}
-
-	if (CONFIG(SOC_INTEL_IOE_DIE_SUPPORT)) {
-		size_t ioe_record_size = cl_get_ioe_record_size();
-		if (ioe_record_size) {
-			/*  Allocate new FW ERR structure in case IOE crashlog is present */
-			if (ioe_record_size && !bert_append_fw_err(status)) {
-				printk(BIOS_ERR, "Crashlog IOE entry would "
-						"exceed available region\n");
+		if (multi_entry) {
+			if (!bert_append_fw_err(status)) {
+				printk(BIOS_ERR, "Crashlog entry would exceed available region\n");
 				return CB_ERR;
 			}
-
-			cl_data = new_cper_fw_error_crashlog(status, ioe_record_size);
-			if (!cl_data) {
-				printk(BIOS_ERR, "Crashlog IOE entry(size 0x%zx) "
-						"would exceed available region\n",
-						ioe_record_size);
-				return CB_ERR;
-			}
-			printk(BIOS_DEBUG, "cl_data %p, ioe_record_size 0x%zx\n",
-					cl_data, ioe_record_size);
-			cl_fill_ioe_records(cl_data);
 		}
+
+		cl_acpi_data = new_cper_fw_error_crashlog(status, cl_node->size);
+		if (!cl_acpi_data) {
+			printk(BIOS_ERR, "Crashlog entry(size 0x%x) would exceed available region\n",
+					cl_node->size);
+			return CB_ERR;
+		}
+		memcpy(cl_acpi_data, (void *) cl_node->data, cl_node->size);
+
+		cl_node_t *temp = cl_node;
+		cl_node = cl_node->next;
+		free_cl_node(temp);
+		multi_entry = true;
 	}
 
 	*length = status->data_length + gesb_header_size;

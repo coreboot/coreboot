@@ -330,11 +330,36 @@ bool cl_copy_data_from_sram(u32 src_bar,
 	return true;
 }
 
-void __weak cl_get_pmc_sram_data(void)
+cl_node_t *malloc_cl_node(size_t len)
 {
-	u32 *dest = NULL;
+	cl_node_t *node = malloc(sizeof(cl_node_t));
+	if (!node)
+		return NULL;
+
+	node->data = malloc(len * sizeof(u32));
+	if (!(node->data))
+		return NULL;
+
+	node->size = len * sizeof(u32);
+	node->next = NULL;
+
+	return node;
+}
+
+void free_cl_node(cl_node_t *node)
+{
+	if (!node)
+		return;
+	if (node->data)
+		free(node->data);
+	free(node);
+}
+
+void __weak cl_get_pmc_sram_data(cl_node_t *head)
+{
 	u32 tmp_bar_addr = cl_get_cpu_tmp_bar();
 	u32 pmc_crashLog_size = cl_get_pmc_record_size();
+	cl_node_t *cl_cur = head;
 
 	if (!cl_pmc_sram_has_mmio_access() || !tmp_bar_addr)
 		return;
@@ -353,7 +378,7 @@ void __weak cl_get_pmc_sram_data(void)
 			goto pmc_send_re_arm_after_reset;
 		}
 		printk(BIOS_DEBUG, "PMC crashLog size in discovery mode : 0x%X\n",
-		       pmc_crashLog_size);
+				pmc_crashLog_size);
 	} else {
 		if (discovery_buf.bits.dis) {
 			printk(BIOS_DEBUG, "PCH crashlog is disabled in legacy mode.\n");
@@ -362,51 +387,65 @@ void __weak cl_get_pmc_sram_data(void)
 		pmc_crashLog_size = (discovery_buf.bits.size != 0) ?
 					discovery_buf.bits.size : 0xC00;
 		printk(BIOS_DEBUG, "PMC crashLog size in legacy mode : 0x%X\n",
-		       pmc_crashLog_size);
+				pmc_crashLog_size);
 	}
 
-	/* allocate mem for the record to be copied */
-	unsigned long pmc_cl_cbmem_addr;
-
-	pmc_cl_cbmem_addr = (unsigned long)cbmem_add(CBMEM_ID_PMC_CRASHLOG,
-						pmc_crashLog_size);
-	if (!pmc_cl_cbmem_addr) {
-		printk(BIOS_ERR, "Unable to allocate CBMEM PMC crashLog entry.\n");
-		return;
-	}
-
-	memset((void *)pmc_cl_cbmem_addr, 0, pmc_crashLog_size);
-	dest = (u32 *)(uintptr_t)pmc_cl_cbmem_addr;
 	bool pmc_sram = true;
-	pmc_crashlog_desc_table_t descriptor_table =  cl_get_pmc_descriptor_table();
+	pmc_crashlog_desc_table_t descriptor_table = cl_get_pmc_descriptor_table();
+
+	/* goto tail node */
+	while (cl_cur && cl_cur->next) {
+		cl_cur = cl_cur->next;
+	}
+
 	if (discovery_buf.bits.discov_mechanism == 1) {
 		for (int i = 0; i < descriptor_table.numb_regions; i++) {
+
+			cl_node_t *cl_node = malloc_cl_node(descriptor_table.regions[i].bits.size);
+			if (!cl_node) {
+				printk(BIOS_DEBUG, "failed to allocate cl_node [region = %d]\n", i);
+				goto pmc_send_re_arm_after_reset;
+			}
+
 			if (cl_copy_data_from_sram(tmp_bar_addr,
-						  descriptor_table.regions[i].bits.offset,
-						  descriptor_table.regions[i].bits.size,
-						  dest,
-						  i,
-						  pmc_sram)) {
-				dest = (u32 *)((u32)dest +
-						(descriptor_table.regions[i].bits.size
-						* sizeof(u32)));
+						descriptor_table.regions[i].bits.offset,
+						descriptor_table.regions[i].bits.size,
+						cl_node->data,
+						i,
+						pmc_sram)) {
+				cl_cur->next = cl_node;
+				cl_cur = cl_cur->next;
 			} else {
 				pmc_crashLog_size -= descriptor_table.regions[i].bits.size *
 							sizeof(u32);
 				printk(BIOS_DEBUG, "discover mode PMC crashlog size adjusted"
-					" to: 0x%x\n", pmc_crashLog_size);
+						" to: 0x%x\n", pmc_crashLog_size);
+				/* free cl_node */
+				free_cl_node(cl_node);
 			}
 		}
 	} else {
-		if (!cl_copy_data_from_sram(tmp_bar_addr,
-					   discovery_buf.bits.base_offset,
-					   discovery_buf.bits.size,
-					   dest,
-					   0,
-					   pmc_sram)) {
+
+		cl_node_t *cl_node = malloc_cl_node(discovery_buf.bits.size);
+		if (!cl_node) {
+			printk(BIOS_DEBUG, "failed to allocate cl_node\n");
+			goto pmc_send_re_arm_after_reset;
+		}
+
+		if (cl_copy_data_from_sram(tmp_bar_addr,
+					discovery_buf.bits.base_offset,
+					discovery_buf.bits.size,
+					cl_node->data,
+					0,
+					pmc_sram)) {
+			cl_cur->next = cl_node;
+			cl_cur = cl_cur->next;
+		} else {
 			pmc_crashLog_size -= discovery_buf.bits.size * sizeof(u32);
 			printk(BIOS_DEBUG, "legacy mode PMC crashlog size adjusted to: 0x%x\n",
-			       pmc_crashLog_size);
+					pmc_crashLog_size);
+			/* free cl_node */
+			free_cl_node(cl_node);
 		}
 	}
 
@@ -422,10 +461,9 @@ pmc_send_re_arm_after_reset:
 
 }
 
-void cl_get_cpu_sram_data(void)
+void cl_get_cpu_sram_data(cl_node_t *head)
 {
-	u32 tmp_bar_addr = 0;
-	u32 *dest = NULL;
+	cl_node_t *cl_cur = head;
 	u32 m_cpu_crashLog_size = cl_get_cpu_record_size();
 	cpu_crashlog_discovery_table_t cpu_cl_disc_tab = cl_get_cpu_discovery_table();
 
@@ -435,35 +473,41 @@ void cl_get_cpu_sram_data(void)
 	}
 
 	printk(BIOS_DEBUG, "CPU crash data size: 0x%X bytes in 0x%X region(s).\n",
-	       m_cpu_crashLog_size, cpu_cl_disc_tab.header.fields.count);
+			m_cpu_crashLog_size, cpu_cl_disc_tab.header.fields.count);
 
-	/* allocate memory buffers for CPU crashog data to be copied */
-	unsigned long cpu_crashlog_cbmem_addr;
-	cpu_crashlog_cbmem_addr = (unsigned long)cbmem_add(CBMEM_ID_CPU_CRASHLOG,
-								m_cpu_crashLog_size);
-	if (!cpu_crashlog_cbmem_addr) {
-		printk(BIOS_ERR, "Failed to add CPU main crashLog entries to CBMEM.\n");
-		return;
+	/* goto tail node */
+	while (cl_cur && cl_cur->next) {
+		cl_cur = cl_cur->next;
 	}
 
-	memset((void *)cpu_crashlog_cbmem_addr, 0, m_cpu_crashLog_size);
-	tmp_bar_addr = cl_get_cpu_bar_addr();
-	dest = (u32 *)(uintptr_t)cpu_crashlog_cbmem_addr;
-	bool pmc_sram = false;
-
 	for (int i = 0 ; i < cpu_cl_disc_tab.header.fields.count ; i++) {
-		if (cl_copy_data_from_sram(tmp_bar_addr,
-					   cpu_cl_disc_tab.buffers[i].fields.offset,
-					   cpu_cl_disc_tab.buffers[i].fields.size,
-					   dest,
-					   i,
-					   pmc_sram)) {
-			dest = (u32 *)((u32)dest +
-					(cpu_cl_disc_tab.buffers[i].fields.size * sizeof(u32)));
+
+		u32 cpu_bar_addr = cl_get_cpu_bar_addr();
+		bool pmc_sram = false;
+
+		if (!cpu_cl_disc_tab.buffers[i].fields.size) {
+			continue;
+		}
+
+		cl_node_t *cl_node = malloc_cl_node(cpu_cl_disc_tab.buffers[i].fields.size);
+		if (!cl_node) {
+			printk(BIOS_DEBUG, "failed to allocate cl_node [buffer = %d]\n", i);
+			return;
+		}
+
+		if (cl_copy_data_from_sram(cpu_bar_addr,
+					cpu_cl_disc_tab.buffers[i].fields.offset,
+					cpu_cl_disc_tab.buffers[i].fields.size,
+					cl_node->data,
+					i,
+					pmc_sram)) {
+			cl_cur->next = cl_node;
+			cl_cur = cl_cur->next;
+
 		} else {
 			m_cpu_crashLog_size -= cpu_cl_disc_tab.buffers[i].fields.size
-						* sizeof(u32);
-
+				* sizeof(u32);
+			free_cl_node(cl_node);
 			/* for CPU skip all buffers if the 1st one is not valid */
 			if (i == 0) {
 				m_cpu_crashLog_size = 0;
@@ -482,7 +526,7 @@ void cl_get_cpu_sram_data(void)
 	cpu_cl_rearm();
 }
 
-void collect_pmc_and_cpu_crashlog_from_srams(void)
+void collect_pmc_and_cpu_crashlog_from_srams(cl_node_t *head)
 {
 	if (pmc_crashlog_support() && cl_pmc_data_present()
 		&& (cl_get_pmc_record_size() > 0)) {
@@ -490,7 +534,7 @@ void collect_pmc_and_cpu_crashlog_from_srams(void)
 			cl_pmc_en_gen_on_all_reboot();
 			printk(BIOS_DEBUG, "Crashlog collection enabled on every reboot.\n");
 		}
-		cl_get_pmc_sram_data();
+		cl_get_pmc_sram_data(head);
 	} else {
 		printk(BIOS_DEBUG, "Skipping PMC crashLog collection. Data not present.\n");
 	}
@@ -500,74 +544,8 @@ void collect_pmc_and_cpu_crashlog_from_srams(void)
 	if (cpu_crashlog_support() && cl_cpu_data_present()
 		&& (cl_get_cpu_record_size() > 0)) {
 		printk(BIOS_DEBUG, "CPU crashLog present.\n");
-		cl_get_cpu_sram_data();
+		cl_get_cpu_sram_data(head);
 	} else {
 		printk(BIOS_DEBUG, "Skipping CPU crashLog collection. Data not present.\n");
 	}
-}
-
-bool cl_fill_cpu_records(void *cl_record)
-{
-	void *cl_src_addr = NULL;
-
-	u32 m_cpu_crashLog_size = cl_get_cpu_record_size();
-
-	if (!cl_cpu_data_present() || m_cpu_crashLog_size == 0) {
-		printk(BIOS_DEBUG, "CPU crashLog not present, skipping.\n");
-		return false;
-	}
-
-	printk(BIOS_DEBUG, "CPU crash data collection.\n");
-	cl_src_addr = cbmem_find(CBMEM_ID_CPU_CRASHLOG);
-	if (!cl_src_addr) {
-		printk(BIOS_DEBUG, "CPU crash data, CBMEM not found\n");
-		return false;
-	}
-	memcpy(cl_record, cl_src_addr, m_cpu_crashLog_size);
-
-	return true;
-}
-
-bool cl_fill_pmc_records(void *cl_record)
-{
-	void *cl_src_addr = NULL;
-
-	u32 m_pmc_crashLog_size = cl_get_pmc_record_size();
-
-	if (!cl_pmc_data_present() || m_pmc_crashLog_size == 0) {
-		printk(BIOS_DEBUG, "PMC crashLog not present, skipping.\n");
-		return false;
-	}
-
-	printk(BIOS_DEBUG, "PMC crash data collection.\n");
-	cl_src_addr = cbmem_find(CBMEM_ID_PMC_CRASHLOG);
-	if (!cl_src_addr) {
-		printk(BIOS_DEBUG, "PMC crash data, CBMEM not found\n");
-		return false;
-	}
-	memcpy(cl_record, cl_src_addr, m_pmc_crashLog_size);
-
-	return true;
-}
-
-bool cl_fill_ioe_records(void *cl_record)
-{
-	void *cl_src_addr = NULL;
-
-	u32 m_ioe_crashLog_size = cl_get_ioe_record_size();
-
-	if (!cl_ioe_data_present() || m_ioe_crashLog_size == 0) {
-		printk(BIOS_DEBUG, "IOE crashLog not present, skipping.\n");
-		return false;
-	}
-
-	printk(BIOS_DEBUG, "IOE PMC crash data collection.\n");
-	cl_src_addr = cbmem_find(CBMEM_ID_IOE_CRASHLOG);
-	if (!cl_src_addr) {
-		printk(BIOS_DEBUG, "IOE crash data, CBMEM not found\n");
-		return false;
-	}
-	memcpy(cl_record, cl_src_addr, m_ioe_crashLog_size);
-
-	return true;
 }

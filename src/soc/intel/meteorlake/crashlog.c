@@ -23,10 +23,7 @@ static bool m_pmc_crashLog_support;
 static bool m_pmc_crashLog_present;
 static bool m_cpu_crashLog_support;
 static bool m_cpu_crashLog_present;
-static bool m_ioe_crashLog_support;
-static bool m_ioe_crashLog_present;
 static u32 m_pmc_crashLog_size;
-static u32 m_ioe_crashLog_size;
 static u32 m_cpu_crashLog_size;
 static u32 cpu_crash_version;
 static pmc_ipc_discovery_buf_t discovery_buf;
@@ -74,21 +71,20 @@ static void configure_sram(const struct device *sram_dev, u32 base_addr)
 	pci_or_config16(sram_dev, PCI_COMMAND, PCI_COMMAND_MEMORY);
 }
 
-void cl_get_pmc_sram_data(void)
+void cl_get_pmc_sram_data(cl_node_t *head)
 {
-	u32 *soc_pmc_dest = NULL, *ioe_pmc_dest = NULL;
 	u32 pmc_sram_base = cl_get_cpu_tmp_bar();
 	u32 ioe_sram_base = get_sram_bar(PCI_DEVFN_IOE_SRAM);
 	u32 pmc_crashLog_size = cl_get_pmc_record_size();
-	u32 ioe_crashLog_size = 0;
-
-	if (!pmc_sram_base) {
-		printk(BIOS_ERR, "PMC SRAM base not valid\n");
-		return;
-	}
+	cl_node_t *cl_cur = head;
 
 	if (!pmc_crashLog_size) {
 		printk(BIOS_ERR, "No PMC crashlog records\n");
+		return;
+	}
+
+	if (!pmc_sram_base) {
+		printk(BIOS_ERR, "PMC SRAM base not valid\n");
 		return;
 	}
 
@@ -107,23 +103,16 @@ void cl_get_pmc_sram_data(void)
 
 	printk(BIOS_DEBUG, "PMC crashLog size : 0x%x\n", pmc_crashLog_size);
 
-	/* allocate memory for the PMC crash records to be copied */
-	unsigned long pmc_cl_cbmem_addr;
-
-	pmc_cl_cbmem_addr = (unsigned long)cbmem_add(CBMEM_ID_PMC_CRASHLOG,
-			pmc_crashLog_size);
-	if (!pmc_cl_cbmem_addr) {
-		printk(BIOS_ERR, "Unable to allocate CBMEM PMC crashLog entry.\n");
-		return;
+	/* goto tail node */
+	while (cl_cur && cl_cur->next) {
+		cl_cur = cl_cur->next;
 	}
 
-	memset((void *)pmc_cl_cbmem_addr, 0, pmc_crashLog_size);
-	soc_pmc_dest = (u32 *)(uintptr_t)pmc_cl_cbmem_addr;
-
-	bool pmc_sram = true;
-
-	/* process crashlog records for SOC PMC SRAM */
+	/* process crashlog records */
 	for (int i = 0; i < descriptor_table.numb_regions + 1; i++) {
+
+		u32 sram_base = 0;
+		bool pmc_sram = true;
 		printk(BIOS_DEBUG, "Region[0x%x].Tag=0x%x offset=0x%x, size=0x%x\n",
 				i,
 				descriptor_table.regions[i].bits.assign_tag,
@@ -132,6 +121,7 @@ void cl_get_pmc_sram_data(void)
 
 		if (!descriptor_table.regions[i].bits.size)
 			continue;
+
 		/*
 		 * Region with metadata TAG contains information about BDF entry for SOC PMC SRAM
 		 * and IOE SRAM. We don't need to parse this as we already define BDFs in
@@ -144,90 +134,45 @@ void cl_get_pmc_sram_data(void)
 						sizeof(u32);
 			printk(BIOS_DEBUG, "Found metadata tag. PMC crashlog size adjusted to: 0x%x\n",
 					pmc_crashLog_size);
-		} else if (descriptor_table.regions[i].bits.assign_tag ==
-				CRASHLOG_DESCRIPTOR_TABLE_TAG_SOC) {
+			continue;
+		} else {
+			if (descriptor_table.regions[i].bits.assign_tag ==
+					CRASHLOG_DESCRIPTOR_TABLE_TAG_SOC)
+				sram_base = pmc_sram_base;
+			else if (descriptor_table.regions[i].bits.assign_tag ==
+					CRASHLOG_DESCRIPTOR_TABLE_TAG_IOE)
+				sram_base = ioe_sram_base;
+			else
+				continue;
 
-			if (cl_copy_data_from_sram(pmc_sram_base,
+			cl_node_t *cl_node = malloc_cl_node(descriptor_table.regions[i].bits.size);
+
+			if (!cl_node) {
+				printk(BIOS_DEBUG, "failed to allocate cl_node [region = %d]\n", i);
+				goto pmc_send_re_arm_after_reset;
+			}
+
+			if (cl_copy_data_from_sram(sram_base,
 						descriptor_table.regions[i].bits.offset,
 						descriptor_table.regions[i].bits.size,
-						soc_pmc_dest,
+						cl_node->data,
 						i,
 						pmc_sram)) {
-				soc_pmc_dest = (u32 *)((u32)soc_pmc_dest +
-						(descriptor_table.regions[i].bits.size
-						 * sizeof(u32)));
+				cl_cur->next = cl_node;
+				cl_cur = cl_cur->next;
 			} else {
+				/* coping data from sram failed */
 				pmc_crashLog_size -= descriptor_table.regions[i].bits.size *
-					sizeof(u32);
+									sizeof(u32);
 				printk(BIOS_DEBUG, "PMC crashlog size adjusted to: 0x%x\n",
 							pmc_crashLog_size);
+				/* free cl_node */
+				free_cl_node(cl_node);
 			}
-		} else if (descriptor_table.regions[i].bits.assign_tag ==
-				CRASHLOG_DESCRIPTOR_TABLE_TAG_IOE) {
-			/*
-			 * SOC PMC crashlog records contains information about IOE SRAM
-			 * records as well. Calculate IOE records size while parsing SOC
-			 * PME SRAM.
-			 */
-			ioe_crashLog_size += descriptor_table.regions[i].bits.size * sizeof(u32);
 		}
 	}
 
-	pmc_crashLog_size -= ioe_crashLog_size;
 	update_new_pmc_crashlog_size(&pmc_crashLog_size);
-
-	if (ioe_crashLog_size)
-		m_ioe_crashLog_present = true;
-	else
-		goto pmc_send_re_arm_after_reset;
-
-	/* allocate memory for the IOE crashlog records to be copied */
-	unsigned long ioe_cl_cbmem_addr;
-
-	ioe_cl_cbmem_addr = (unsigned long)cbmem_add(CBMEM_ID_IOE_CRASHLOG,
-							ioe_crashLog_size);
-	if (!ioe_cl_cbmem_addr) {
-		printk(BIOS_ERR, "Unable to allocate CBMEM IOE crashLog entry.\n");
-		return;
-	}
-
-	memset((void *)ioe_cl_cbmem_addr, 0, ioe_crashLog_size);
-	ioe_pmc_dest = (u32 *)(uintptr_t)ioe_cl_cbmem_addr;
-
-	/* process crashlog records for IOE SRAM */
-	for (int i = 0; i < descriptor_table.numb_regions + 1; i++) {
-		printk(BIOS_DEBUG, "Region[0x%x].Tag=0x%x offset=0x%x, size=0x%x\n",
-				i,
-				descriptor_table.regions[i].bits.assign_tag,
-				descriptor_table.regions[i].bits.offset,
-				descriptor_table.regions[i].bits.size);
-
-		if (!descriptor_table.regions[i].bits.size)
-			continue;
-
-		if (descriptor_table.regions[i].bits.assign_tag ==
-				CRASHLOG_DESCRIPTOR_TABLE_TAG_IOE) {
-
-			if (cl_copy_data_from_sram(ioe_sram_base,
-						descriptor_table.regions[i].bits.offset,
-						descriptor_table.regions[i].bits.size,
-						ioe_pmc_dest,
-						i,
-						pmc_sram)) {
-				ioe_pmc_dest = (u32 *)((u32)ioe_pmc_dest +
-						(descriptor_table.regions[i].bits.size
-						 * sizeof(u32)));
-			} else {
-
-				ioe_crashLog_size -= descriptor_table.regions[i].bits.size *
-								sizeof(u32);
-				printk(BIOS_DEBUG, "IOE crashlog size adjusted to: 0x%x\n",
-								ioe_crashLog_size);
-			}
-		}
-	}
-
-	update_new_ioe_crashlog_size(&ioe_crashLog_size);
 
 pmc_send_re_arm_after_reset:
 	/* when bit 7 of discov cmd resp is set -> bit 2 of size field */
@@ -264,9 +209,7 @@ bool pmc_cl_discovery(void)
 			(discovery_buf.conv_bits64.crash_dis_sts == 1)) {
 		printk(BIOS_INFO, "PCH crashlog feature not supported.\n");
 		m_pmc_crashLog_support = false;
-		m_ioe_crashLog_support = false;
 		m_pmc_crashLog_size = 0;
-		m_ioe_crashLog_size = 0;
 		printk(BIOS_DEBUG, "discovery_buf supported: %d, mechanism: %d, CrashDisSts: %d\n",
 			discovery_buf.conv_bits64.supported,
 			discovery_buf.conv_bits64.discov_mechanism,
@@ -464,9 +407,9 @@ void reset_discovery_buffers(void)
 
 int cl_get_total_data_size(void)
 {
-	printk(BIOS_DEBUG, "crashlog size:pmc-0x%x, ioe-pmc-0x%x cpu-0x%x\n",
-			m_pmc_crashLog_size, m_ioe_crashLog_size, m_cpu_crashLog_size);
-	return m_pmc_crashLog_size + m_cpu_crashLog_size + m_ioe_crashLog_size;
+	printk(BIOS_DEBUG, "crashlog size:pmc-0x%x, cpu-0x%x\n",
+			m_pmc_crashLog_size, m_cpu_crashLog_size);
+	return m_pmc_crashLog_size + m_cpu_crashLog_size;
 }
 
 static u32 get_control_status_interface(void)
@@ -566,11 +509,6 @@ int cl_get_cpu_record_size(void)
 	return m_cpu_crashLog_size;
 }
 
-int cl_get_ioe_record_size(void)
-{
-	return m_ioe_crashLog_size;
-}
-
 bool cl_cpu_data_present(void)
 {
 	return m_cpu_crashLog_present;
@@ -579,11 +517,6 @@ bool cl_cpu_data_present(void)
 bool cl_pmc_data_present(void)
 {
 	return m_pmc_crashLog_present;
-}
-
-bool cl_ioe_data_present(void)
-{
-	return m_ioe_crashLog_present;
 }
 
 bool cpu_crashlog_support(void)
@@ -599,11 +532,6 @@ bool pmc_crashlog_support(void)
 void update_new_pmc_crashlog_size(u32 *pmc_crash_size)
 {
 	m_pmc_crashLog_size = *pmc_crash_size;
-}
-
-void update_new_ioe_crashlog_size(u32 *ioe_crash_size)
-{
-	m_ioe_crashLog_size = *ioe_crash_size;
 }
 
 cpu_crashlog_discovery_table_t cl_get_cpu_discovery_table(void)

@@ -88,11 +88,6 @@ config VBOOT_STARTS_IN_BOOTBLOCK
 	bool
 	default y if VBOOT && !VBOOT_STARTS_BEFORE_BOOTBLOCK
 
-# TODO(b/277087492): Enable GSC CBFS verification
-config VBOOT_GSCVD
-	bool
-	default n
-
 # Override PSP_SOFTFUSE_BITS from soc/amd/phoenix.
 # The documentation of PSP_SOFTFUSE_BITS is available in #55758 doc (NDA).
 config PSP_SOFTFUSE_BITS

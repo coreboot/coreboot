@@ -140,11 +140,11 @@ void update_psp_fw_hash_tables(void)
 					     PSP_FW_HASH_FILE_NAME("a", "2"));
 	} else {
 		update_one_psp_fw_hash_table(CMD_SET_FW_HASH_TABLE_STAGE1,
-					     PSP_FW_HASH_FILE_NAME("a", ""));
+					     PSP_FW_HASH_FILE_NAME("b", ""));
 		update_one_psp_fw_hash_table(CMD_SET_FW_HASH_TABLE_STAGE2,
-					     PSP_FW_HASH_FILE_NAME("a", "1"));
+					     PSP_FW_HASH_FILE_NAME("b", "1"));
 		update_one_psp_fw_hash_table(CMD_SET_FW_HASH_TABLE_TOS,
-					     PSP_FW_HASH_FILE_NAME("a", "2"));
+					     PSP_FW_HASH_FILE_NAME("b", "2"));
 	}
 }
 

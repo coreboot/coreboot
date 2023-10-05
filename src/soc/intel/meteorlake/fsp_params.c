@@ -666,6 +666,7 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->C1StateUnDemotion = !config->disable_c1_state_auto_demotion;
 	s_cfg->C1StateAutoDemotion = !config->disable_c1_state_auto_demotion;
 	s_cfg->PkgCStateDemotion = !config->disable_package_c_state_demotion;
+	s_cfg->PkgCStateUnDemotion = !config->disable_package_c_state_demotion;
 	s_cfg->PmcV1p05PhyExtFetControlEn = 1;
 
 	/* Enable PCH to CPU energy report feature. */

@@ -419,6 +419,8 @@ struct soc_intel_meteorlake_config {
 	 * Enable or Disable Package C-state Demotion.
 	 * Default is set to 0.
 	 * Set this to 1 in order to disable Package C-state demotion.
+	 * NOTE: Un-Demotion from demoted Package C-state needs to be disabled
+	 *       when auto demotion is disabled.
 	 */
 	bool disable_package_c_state_demotion;
 

@@ -96,9 +96,9 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B23, NONE),
 
 	/* GPP_C00 : [] ==> EN_TCHSCR_PWR */
-	PAD_CFG_GPO(GPP_C00, 0, DEEP),
+	PAD_CFG_GPO(GPP_C00, 1, DEEP),
 	/* GPP_C01 : [] ==>  SOC_TCHSCR_RST_R_L */
-	PAD_CFG_GPO(GPP_C01, 0, DEEP),
+	PAD_CFG_GPO(GPP_C01, 1, DEEP),
 	/* GPP_C02 : SOC_TCHSCR_SPI_INT_STRAP ==> Component NC */
 	PAD_NC(GPP_C02, NONE),
 	/* GPP_C03 : [] ==> Test pad. */
@@ -399,6 +399,10 @@ static const struct pad_config romstage_gpio_table[] = {
 	PAD_CFG_GPO(GPP_A20, 0, DEEP),
 	/* GPP_C23 : [] ==> FP_RST_ODL */
 	PAD_CFG_GPO(GPP_C23, 0, DEEP),
+	/* GPP_C00 : [] ==> EN_TCHSCR_PWR */
+	PAD_CFG_GPO(GPP_C00, 1, DEEP),
+	/* GPP_C01 : [] ==> SOC_TCHSCR_RST_R_L */
+	PAD_CFG_GPO(GPP_C01, 0, DEEP),
 	/* GPP_D02 : Not Connected */
 	PAD_NC(GPP_D02, NONE),
 };

@@ -10,73 +10,212 @@
 
 3mdeb Embedded Systems Consulting
 9elements Agency GmbH
+Aamir Bohra
+Aaron Durbin
+Abe Levkoy
+Abel Briggs
 Abhinav Hardikar
+AdaCore
+Adam Liu
+Adam Mills
 Advanced Computing Lab, LANL
 Advanced Micro Devices, Inc.
-AdaCore
 AG Electronics Ltd.
+Ahamed Husni
+Akshu Agrawal
+Al Hirani
+Alan Huang
+AlanKY Lee
+Alec Wang
+Alex James
+Alex Levin
+Alex Miao
 Alex Thiessen
 Alex Züpke
+Alex1 Kao
 Alexander Couzens
+Alexander Goncharov
 Alexandru Gagniuc
+Alexey Buyanov
+Alexey Vazhnov
+Alice Sell
+Allen-KH Cheng
+Amanda Hwang
+American Megatrends International, LLC
+Amersel
+Amit Caleechurn
 Analog Devices Inc.
 Analogix Semiconductor
+Anand Mistry
+Anand Vaikar
 Andre Heider
+Andrew McRae
+Andrew SH Cheng
+Andrey Pronin
 Andriy Gapon
 Andy Fleming
+Andy Pont
+Andy-ld Lu
 Angel Pons
+Anil Kumar K
+Anna Karaś
+Annie Chen
 Anton Kochkov
+Ao Zhong
+Arashk Mahshidfar
+Arec Kao
+Ariel Fang
 ARM Limited and Contributors
 Arthur Heymans
 Asami Doi
+Aseda Aboagye
+Ashish Kumar Mishra
+Ashqti
 ASPEED Technology Inc.
 Atheros Corporation
 Atmel Corporation
+Balaji Manigandan
+Balázs Vinarz
 BAP - Bruhnspace Advanced Projects
+Baruch Siach
+Ben Chuang
+Ben Kao
+Ben McMillen
+Ben Zhang
+Benjamin Doron
+Bernardo Perez Priego
+Bhanu Prakash Maiya
 Bill Xie
+Bin Meng
 Bitland Tech Inc.
+Bob Moragues
+Bora Guvendik
 Boris Barbulovski
+Boris Mittelberg
+Brandon Breitenstein
+Brian Norris
+Bryant Ou
 Carl-Daniel Hailfinger
+Casper Chang
+Caveh Jalali
 Cavium Inc.
+Chao Gui
+Chen-Tsung Hsieh
+Chia-Ling Hou
+Chien-Chih Tseng
+Chris Wang
+Christian Gmeiner
+Christian Walter
 Christoph Grenz
+Christopher Meis
+Chuangwei Technology Co., Ltd
+Chun-Jie Chen
+Cirrus Logic, Inc.
+CK HU
+Clay Daniels
+Cliff Huang
 Code Aurora Forum
+Compal Electronics, Inc.
+Cong Yang
+CoolStar
 coresystems GmbH
 Corey Osgood
 Curt Brune
+Curtis Chen
 Custom Ideas
+Cyberus Technology GmbH
+Da Lao
+Daisuke Nojiri
 Damien Zammit
+Dan Callaghan
+Daniel Campello
+Daniel Gröber
+Daniel Kang
+Daniel Maslowski
+Daniel Peng
+Daniel Rosa Franzini
 Dave Airlie
 David Brownell
 David Greenman
 David Hendricks
+David Lin
+David Milosevic
 David Mosberger-Tang
 David Mueller
 David S. Peterson
+David Wu
+Dawei Chien
+Deepika Punyamurtula
+Deepti Deshatty
 Denis 'GNUtoo' Carikli
 Denis Dowling
 DENX Software Engineering
+Deomid 'rojer' Ryabkov
+Derek Basehore
+Derek Huang
 Derek Waldner
 Digital Design Corporation
+Dinesh Gehlot
+Divya S Sasidharan
+Dmitry Ponamorev
+Dmitry Torokhov
 DMP Electronics Inc.
+Dominik Behr
 Donghwa Lee
 Drew Eckhardt
+Dtrain Hsu
+Duan Huayang
+Dun Tan
+Duncan Laurie
 Dynon Avionics
+Ed Sharma
+Eddy Lu
+Edward Hill
 Edward O'Callaghan
+Edward-JW Yang
 Egbert Eich
+Elias Souza
+Eloy Degen
 ELSOFT AG
 Eltan B.V
+Eltan B.V.
 Elyes Haouas
+Eran Mitrani
 Eric Biederman
+Eric Lai
+Eric Peers
+EricKY Cheng
+EricR Lai
+Erik van den Bogaert
 Eswar Nallusamy
+Ethan Tsao
+Eugene Myers
+Evan Green
 Evgeny Zinoviev
+Fabian Groffen
 Fabian Kunkel
+Fabio Aiuto
 Fabrice Bellard
 Facebook, Inc.
+Felix Friedlander
 Felix Held
 Felix Singer
+Fengquan Chen
+Flora Fu
+Florian Laufenböck
+Francois Toguo Fotso
+Frank Chu
+Frank Wu
+Franklin Lin
+Frans Hendriks
+Fred Reitberger
 Frederic Potter
 Free Software Foundation, Inc.
 Freescale Semiconductor, Inc.
+Furquan Shaikh
+Gaggery Tsai
+Gang C Chen 
+Garmin Chang
 Gary Jennejohn
 George Trudeau
 Gerald Van Baren
@@ -84,164 +223,563 @@ Gerd Hoffmann
 Gergely Kiss
 Google LLC
 Greg Watson
+Grzegorz Bernacki
 Guennadi Liakhovetski
+Guodong Liu
+Gwendal Grignou
 Hal Martin
+Hao Chou
+Hao Wang
 HardenedLinux
-Hewlett-Packard Development Company, L.P.
+Harsha B R
+Harshit Sharma
+Henry C Chen
 Hewlett Packard Enterprise Development LP
+Hewlett-Packard Development Company, L.P.
+Himanshu Sahdev
+Housong Zhang
+Hsiao Chien Sung
+Hsin-hsiung wang
+Hsin-Te Yuan
+Hsuan Ting Chen
+Huaqin Technology Co., Ltd
 Huaqin Telecom Inc.
+Hui Liu
+Huijuan Xie
+Hung-Te Lin
+Ian Douglas Scott
+Ian Feng
 IBM Corporation
 Idwer Vollering
+Igor Bagnucki
 Igor Pavlov
+Ikjoon Jang
 Imagination Technologies
 Infineon Technologies
 InKi Dae
+INSPUR Co., Ltd
 Intel Corporation
+Inventec Corp
 Iru Cai
+Isaac Lee
 Isaku Yamahata
+Ivan Chen
 Ivan Vatlin
+Ivy Jian
+Jack Rosenthal
+Jacob Garber
+Jairaj Arava
+Jakub Czapiga
+James Chao
+James Lo
 James Ye
+Jamie Chen
+Jamie Ryu
+Jan Dabros
+Jan Samek
+Jan Tatje
+Jason Glenesk
+Jason Nein
+Jason V Le
+Jason Z Chen
 Jason Zhao
+jason-ch chen
+Jason-jh Lin
+Jay Patel
+Jeff Chase
+Jeff Daly
+Jeff Li
+Jérémy Compostella
+Jeremy Soller
+Jes Klinke
+Jesper Lin
+Jessy Jiang
+Jett Rink
+Jg Daolongzhu
+Jian Tong
+Jianeng Ceng
+Jianjun Wang
+Jim Lai
+Jimmy Su
+Jincheng Li
+Jingle Hsu
+Jitao Shi
 Joe Pillow
+Joe Tessler
+Joel Kitching
+Joey Peng
 Johanna Schander
+John Su
+John Zhao
+Johnny Li
+Johnny Lin
+johnson wang
+Jon Murphy
 Jonas 'Sortie' Termansen
+Jonas Loeffelholz
 Jonathan A. Kollasch
 Jonathan Neuschäfer
+Jonathan Zhang
+Jonathon Hall
 Jordan Crouse
 Jörg Mische
 Joseph Smith
+Josie Nordrum
+Julia Tsai
+Julian Schroeder
+Julian Stecklina
+Julien Viard de Galbert
+Julius Werner
+Kacper Stojek
+Kaiyen Chang
+Kane Chen
+Kangheui Won
+Kapil Porwal
+Karol Zmyslowski
+Karthik Ramasubramanian
 Keith Hui
 Keith Packard
+Kenneth Chan
+Kevin Chang
+Kevin Cheng
+Kevin Chiu
+Kevin Chowski
 Kevin Cody-Little
+Kevin Keijzer
 Kevin O'Connor
+Kevin3 Yang
+kewei xu
+Kilari Raasi
+Kirk Wang
+Konrad Adamczyk
 Kontron Europe GmbH
+Kornel Dulęba
+Krishna P Bhat D
+Krystian Hebel
 Kshitij
+Kshitiz Godara
+Kulkarni. Srinivas
+Kun Liu
+Kyle Lin
 Kyösti Mälkki
+Lance Zhao
+Lawrence Chang
 Leah Rowe
+Lean Sheng Tan
 Lei Wen
+Lenovo Group Ltd
+Leo Chou
 Li-Ta Lo
+Liam Flaherty
 Libra Li
 Libretrend LDA
+Lijian Zhao
+Liju-Clr Chen
 Linaro Limited
+linear
 Linus Torvalds
 Linux Networx, Inc.
 LiPPERT ADLINK Technology GmbH
+Liya Li
 Lubomir Rintel
 Luc Verhaegen
+Lucas Chen
+Mac Chiang
 Maciej Matuszczyk
+Maciej Pijanowski
+Macpaul Lin
+Madhusudanarao Amara
+Magf
+Malik Hsu
+Mandy Liu
+Manoj Gupta
 Marc Bertens
 Marc Jones
+Marco Chen
+Marek Kasiewicz
 Marek Vasut
+Mario Scheithauer
 Marius Gröger
+Mariusz Szafranski
+Mariusz Szafrański
+Mark Hasemeyer
+Mark Hsieh
+Mars Chen
+Marshall Dawson
 Martin Mares
 Martin Renters
 Martin Roth
 Marvell International Ltd.
 Marvell Semiconductor Inc.
+Marx Wang
+Masanori Ogino
+Máté Kukri
+Matei Dibu
+Mathew King
+Matt Chen
+Matt Delco
 Matt DeVillier
+Matt Papageorge
+Matthew Blecker
+Matthew Ziegelbaum
+Mattias Nissler
+Maulik V Vaghela
+MAULIK V VAGHELA
+Maulik Vaghela
+Max Fritz
 Maxim Polyakov
+Maximilian Brune
+Mediatek Inc.
 MediaTek Inc.
+Meera Ravindranath
+Meng-Huan Yu
+Meta Platforms, Inc
+mgabryelski1
+Mice Lin
 Michael Brunner
-Michael Schroeder
+Michael Büchler
 Michael Niewöhner
+Michael Schroeder
+Michael Strosche
+Michael Walle
+Michał Kopeć
+Michal Suchanek
+Michał Żygowski
+Micro-Star INT'L CO., LTD.
 Mika Westerberg
+Mike Banon
+Mike Shih
+Miriam Polzer
+mkurumel
+Moises Garcia
 Mondrian Nuessle
+Monikaanan
 MontaVista Software, Inc.
+Morgan Jang
+Moritz Fischer
+Morris Hsu
+mtk15698
+mturney mturney
+Musse Abdullahi
 Myles Watson
+Nancy.Lin
+Naresh Solanki
+Nathan Lu
+Neill Corlett
 Network Appliance Inc.
+Nicholas Chin
 Nicholas Sielicki
 Nick Barker
+Nick Chen
+Nick Vaccaro
 Nico Huber
 Nico Rikken
 Nicola Corna
+Nicolas Boichat
+Nicole Faerber
+Nikolai Vyssotski
 Nils Jacobs
+Nina Wu
 Nir Tzachar
 Nokia Corporation
+Nuvoton Technology Corporation
 NVIDIA Corporation
 Olivier Langlois
 Ollie Lo
 Omar Pakker
 Online SAS
+Opal Voravootivat
 Orion Technologies, LLC
+Pablo Ceballos
+Pablo Stebler
+Pan Gao
 Patrick Georgi
+Patrick Huang
 Patrick Rudolph
+Patrik Tesarik
 Pattrick Hueper
+Paul Fagerburg
+Paul Menzel
+Paul2 Huang
 Paulo Alcantara
 Pavel Sayekat
+Paz Zcharya
 PC Engines GmbH
+Pegatron Corp
+Peichao Li
 Per Odlund
 Peter Korsgaard
+Peter Lemenkov
+Peter Marheine
 Peter Stuge
+Petr Cvek
+Philip Chen
+Philipp Bartsch
 Philipp Degler
 Philipp Deppenwiese
 Philipp Hug
+Piotr Kleinschmidt
+Po Xu
+Prasad Malisetty
+Prashant Malani
+Pratik Vishwakarma
+Pratikkumar Prajapati
+Pratikkumar V Prajapati
 Protectli
 Purism SPC
-Qualcomm Technologies
+Purism, SPC
+Qii Wang
+Qualcomm Technologies, Inc.
+Quanta Computer INC
+Raihow Shi
+Rajat Jain
+Rajesh Patil
 Raptor Engineering, LLC
+Rasheed Hsueh
+Raul Rangel
+Ravi Kumar
+Ravi Mistry
+Ravindra
+Ravishankar Sarawadi
+Ray Han Lim Ng
+Raymond Chung
 Red Hat, Inc
+ReddestDream
+Rehan Ghori
 Reinhard Meyer
+Reka Norman
+Ren Kuo
 Renze Nicolai
+Reto Buerki
+Rex Chou
+Rex-BC Chen
+Ricardo Quesada
+Ricardo Ribalda
 Richard Spiegel
 Richard Woodruff
+Rick Lee
+Ricky Chang
+Riku Viitanen
+Ritul Guru
+Rizwan Qureshi
+Rnhmjoj
+Rob Barnes
 Rob Landley
+Robert Chen
 Robert Reeves
+Robert Zieba
 Robinson P. Tryon
 Rockchip, Inc.
+Rocky Phagura
+Roger Lu
+Roja Rani Yarubandi
 Romain Lievin
 Roman Zippel
+Ron Lee
+Ron Minnich
+Ronak Kanabar
 Ronald G. Minnich
+Rory Liu
 Rudolf Marek
+Rui Zhou
+Ruihai Zhou
+Runyang Chen
 Russell King
 Ruud Schramp
+Ruwen Liu
+Ryan Chuang
+Ryan Lin
 Sage Electronic Engineering, LLC
+Sajida Bhanu
+Sam Lewis
+Sam McNally
 Sam Ravnborg
 Samsung Electronics
 Samuel Holland
+Sandeep Maheswaram
+Sathya Prakash M R
+Satya Priya Kakitapalli
+Saurabh Mishra
 SciTech Software, Inc.
-Sebastian Grzywna
+Scott Chao
+SDC Systems Ltd
+Sean Rhodes
+Sebastian 'Swift Geek' Grzywna
 secunet Security Networks AG
+Selma Bensaid
+Semihalf
+Sen Chu
 Sencore Inc
 Sergej Ivanov
+Sergii Dmytruk
+Serin Yeh
+Seven Lee
+SH Kim
+Shahina Shaik
+Shaocheng Wang
+Shaoming Chen
+Shaunak Saha
+Shelley Chen
+Shelly Chang
+Sheng-Liang Pan
+Shiyu Sun
+Shon Wang
+Shou-Chieh Hsu
+Shreesh Chhabbi
+Shuo Liu
 Siemens AG
 SiFive, Inc
+Silicom Ltd.
 Silicon Integrated System Corporation
 Silverback Ltd.
+Simon Glass
+Simon Yang
+Simon Zhou
+Sindhoor Tilak
+Solomon Alan-Dei
+Song Fan
+Sridhar Siricilla
+Srinidhi N Kaushik
+Srinivasa Rao Mandadapu
+ST Microelectronics
+Stanley Wu
+Star Labs Online Ltd
+Stefan Binding
+Stefan Ott
 Stefan Reinauer
 Stefan Tauner
+Stephen Edworthy
 Steve Magnani
 Steve Shenton
-ST Microelectronics
+Subrata Banik
+Sudheer Amrabadi
+Sugnan Prabhu S
+Sukumar Ghorai
+Sumeet R Pawnikar
+Sunwei Li
 SUSE LINUX AG
 Sven Schnelle
 Syed Mohammed Khasim
-System76
+System76, Inc.
+szarpaj
+T Michael Turney
+TangYiwei
+Taniya Das
+Tao Xia
+Tarun Tuli
+Teddy Shih
+Terry Chen
 Texas Instruments
 The Android Open Source Project
 The ChromiumOS Authors
 The Linux Foundation
 The Regents of the University of California
+Thejaswani Putta
+Thomas Heijligen
 Thomas Winischhofer
+Tim Chen
+Tim Chu
+Tim Crawford
+Tim Van Patten
+Tim Wawrzynczak
+Timofey Komarov
 Timothy Pearson
+tinghan shen
 Tobias Diedrich
+Tom Hiller
+Tommie Lin
+Tony Huang
+Tracy Wu
+Trevor Wu
 Tristan Corrick
 Tungsten Graphics, Inc.
 Tyan Computer Corp.
+Tyler Wang
+Tzung-Bi Shih
+U.S. National Security Agency
 ucRobotics Inc.
+Uday Bhat
 University of Heidelberg
+Usha P
 Uwe Hermann
+Uwe Poeche
+V Sowmya
+Václav Straka
+Vadim Bendebury
+Van Chen
+Varshit B Pandya
+Veerabhadrarao Badiganti
+Venkat Thogaru
+Venkata Krishna Nimmagadda
 VIA Technologies, Inc
+Victor Ding
+Vidya Gopalakrishnan
 Vikram Narayanan
+Vikrant L Jadeja
+Vinod Polimera
 Vipin Kumar
+Vitaly Rodionov
 Vladimir Serbinenko
 Vlado Cibic
+Vsujithk
 Wang Qing Pei
+Wanghao11
 Ward Vandewege
+Wayne Wang
+Weimin Wu
+Weiyi Lu
+Wenbin Mei
+Wentao Qin
+Werner Zeh
 Wilbert Duijvenvoorde
+William Wei
+Wilson Chou
+Wim Vervoorn
 Win Enterprises
+Wisley Chen
+Wistron Corp
 Wiwynn Corp.
+Wiwynn Corporation
+Wizard Shen
+Wojciech Macek
 Wolfgang Denk
+Won Chung
+Wonkyu Kim
+Wuxy 
+Xin Ji
+Xixi Chen
+Xuxin Xiong
 YADRO
+Yan Liu
 Yann Collet
+Yaroslav Kurlaev
+YH Lin
+Yidi Lin
+Yilin Yang
 Yinghai Lu
+Yolk Shih
+Yong Zhi
+Yongkun Yu
+Yongqiang Niu
+Yu-hsuan Hsu
+Yu-Ping Wu
+Yuanliding
+Yuchen He
+Yuchen Huang
+Yunlong Jia
 Zachary Yedidia
+Zanxi Chen
+Zhanyong Wang
+Zheng Bao
+Zhenguo Li
+Zhi7 Li
+Zhiqiang Ma
+Zhixing Ma
+Zhiyong Tao
+zhongtian wu
+Zhuohao Lee
+Ziang Wang
+Zoey Wu
+Zoltan Baldaszti
+小田喜陽彦
+陳建宏

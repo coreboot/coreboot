@@ -366,7 +366,7 @@ chip soc/intel/meteorlake
 		end #I2C0
 		device ref i2c1 on
 			chip drivers/i2c/hid
-				register "generic.hid" = ""ELAN90FC""
+				register "generic.hid" = ""ELAN9004""
 				register "generic.desc" = ""ELAN Touchscreen""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C07_IRQ)"
 				register "generic.detect" = "1"

@@ -7,6 +7,7 @@
 
 typedef __PTRDIFF_TYPE__ ptrdiff_t;
 typedef __SIZE_TYPE__ size_t;
+#define SIZE_MAX __SIZE_MAX__
 /* There is a GCC macro for a size_t type, but not
  * for a ssize_t type. Below construct tricks GCC
  * into making __SIZE_TYPE__ signed.

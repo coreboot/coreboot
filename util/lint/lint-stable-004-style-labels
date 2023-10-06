@@ -14,5 +14,6 @@ LINTDIR="$(
 
 ${FIND_FILES} | \
 	grep "^src/.*\.[csS]$" | \
+	grep -v "^src/vendorcode/wuffs/" | \
 	xargs grep -Hn '^[[:space:]][[:space:]]*[a-z][a-z]*:[[:space:]]*$' | \
 	grep -v "[^a-z_]default:"

@@ -104,10 +104,6 @@ config IED_REGION_SIZE
 	hex
 	default 0x0
 
-config HEAP_SIZE
-	hex
-	default 0x8000
-
 config MAX_ROOT_PORTS
 	int
 	default 7

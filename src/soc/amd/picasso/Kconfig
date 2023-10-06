@@ -264,10 +264,6 @@ config S3_VGA_ROM_RUN
 	bool
 	default n
 
-config HEAP_SIZE
-	hex
-	default 0xc0000
-
 config SERIRQ_CONTINUOUS_MODE
 	bool
 	default n

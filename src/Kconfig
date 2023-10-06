@@ -751,8 +751,7 @@ config RTC
 
 config HEAP_SIZE
 	hex
-	default 0x100000 if FLATTENED_DEVICE_TREE
-	default 0x4000
+	default 0x100000
 
 config STACK_SIZE
 	hex

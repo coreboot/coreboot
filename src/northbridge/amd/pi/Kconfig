@@ -29,8 +29,4 @@ config HW_MEM_HOLE_SIZEK
 	hex
 	default 0x200000
 
-config HEAP_SIZE
-	hex
-	default 0xc0000
-
 endif # NORTHBRIDGE_AMD_PI

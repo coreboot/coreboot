@@ -151,10 +151,6 @@ config EXCLUDE_NATIVE_SD_INTERFACE
 	help
 	  If you set this option to n, will not use native SD controller.
 
-config HEAP_SIZE
-	hex
-	default 0x80000
-
 config IED_REGION_SIZE
 	hex
 	default 0x400000

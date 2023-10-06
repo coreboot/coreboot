@@ -152,10 +152,6 @@ config IED_REGION_SIZE
 config INTEL_TME
 	default n
 
-config HEAP_SIZE
-	hex
-	default 0x10000
-
 config MAX_ROOT_PORTS
 	int
 	default 24 if SOC_INTEL_TIGERLAKE_PCH_H

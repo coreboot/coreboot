@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi.h>
 #include <console/console.h>
 #include <string.h>
 #include <cbfs.h>
@@ -200,7 +201,8 @@ void sanitize_cmos(void)
 {
 	const unsigned char *cmos_default;
 	const bool cmos_need_reset =
-		CONFIG(STATIC_OPTION_TABLE) || cmos_error() || !cmos_lb_cks_valid();
+		(CONFIG(STATIC_OPTION_TABLE) || cmos_error() || !cmos_lb_cks_valid())
+		&& !acpi_is_wakeup_s3();
 	size_t length = 128;
 	size_t i;
 

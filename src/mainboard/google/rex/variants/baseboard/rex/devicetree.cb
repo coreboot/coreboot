@@ -50,17 +50,17 @@ chip soc/intel/meteorlake
 
 	register "sagv" = "SAGV_ENABLED"
 
-	register "sagv_freq_mhz[0]" = "3200"
+	register "sagv_freq_mhz[0]" = "2133"
 	register "sagv_gear[0]" = "4"
 
-	register "sagv_freq_mhz[1]" = "6000"
+	register "sagv_freq_mhz[1]" = "4267"
 	register "sagv_gear[1]" = "4"
 
-	register "sagv_freq_mhz[2]" = "6400"
+	register "sagv_freq_mhz[2]" = "6000"
 	register "sagv_gear[2]" = "4"
 
-	register "sagv_freq_mhz[3]" = "5600"
-	register "sagv_gear[3]" = "2"
+	register "sagv_freq_mhz[3]" = "6400"
+	register "sagv_gear[3]" = "4"
 
 	# Set on-board graphics as primary display
 	register "skip_ext_gfx_scan" = "1"

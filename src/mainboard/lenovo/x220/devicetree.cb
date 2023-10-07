@@ -77,9 +77,12 @@ chip northbridge/intel/sandybridge
 			end # Intel Gigabit Ethernet
 			device ref ehci2 on end # USB2 EHCI #2
 			device ref hda on end # High Definition Audio
-			device ref pcie_rp1 on end # PCIe Port #1
-			device ref pcie_rp2 on end # PCIe Port #2 (wlan)
-			device ref pcie_rp3 on end # PCIe Port #3
+			device ref pcie_rp1 off end # PCIe Port #1
+			device ref pcie_rp2 on # PCIe Port #2 (wlan)
+				smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthShort"
+					"WIFI" "SlotDataBusWidth1X"
+			end
+			device ref pcie_rp3 off end # PCIe Port #3
 			device ref pcie_rp4 on
 				smbios_slot_desc "7" "3" "ExpressCard Slot" "8"
 			end # PCIe Port #4
@@ -91,7 +94,7 @@ chip northbridge/intel/sandybridge
 				end
 			end # PCIe Port #5 (SD)
 			device ref pcie_rp6 off end # PCIe Port #6
-			device ref pcie_rp7 on end # PCIe Port #7
+			device ref pcie_rp7 on end # PCIe Port #7 Optional XHCI controller
 			device ref pcie_rp8 off end # PCIe Port #8
 			device ref ehci1 on end # USB2 EHCI #1
 			device ref pci_bridge off end # PCI bridge

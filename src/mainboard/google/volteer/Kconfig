@@ -180,7 +180,8 @@ config DRIVER_TPM_I2C_ADDR
 
 config INTEL_GMA_VBT_FILE
 	default "src/mainboard/\$(MAINBOARDDIR)/variants/\$(VARIANT_DIR)/data.vbt" \
-		if BOARD_GOOGLE_ELEMI || BOARD_GOOGLE_LINDAR || BOARD_GOOGLE_VOEMA
+		if BOARD_GOOGLE_ELEMI || BOARD_GOOGLE_LINDAR || \
+		   BOARD_GOOGLE_VOEMA || BOARD_GOOGLE_DROBIT
 	default "src/mainboard/\$(MAINBOARDDIR)/variants/baseboard/data.vbt" if INTEL_GMA_HAVE_VBT
 
 config MAINBOARD_DIR

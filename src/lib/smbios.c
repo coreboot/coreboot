@@ -6,6 +6,7 @@
 #include <console/console.h>
 #include <version.h>
 #include <device/device.h>
+#include <device/pciexp.h>
 #include <device/dram/spd.h>
 #include <elog.h>
 #include <endian.h>
@@ -1136,6 +1137,7 @@ static int smbios_generate_type9_from_devtree(struct device *dev, int *handle,
 	enum slot_data_bus_bandwidth bandwidth;
 	enum misc_slot_type type;
 	enum misc_slot_length length;
+	uint8_t characteristics_1 = 0, characteristics_2 = 0;
 
 	if (dev->path.type != DEVICE_PATH_PCI)
 		return 0;
@@ -1156,15 +1158,30 @@ static int smbios_generate_type9_from_devtree(struct device *dev, int *handle,
 	else
 		bandwidth = SlotDataBusWidthUnknown;
 
-	if (dev->smbios_slot_type)
+	if (dev->smbios_slot_type > SlotTypeUnknown) {
 		type = dev->smbios_slot_type;
-	else
+		if ((type >= SlotTypePciExpress && type <= SlotTypeEDSFF_E3) ||
+		    (type >= SlotTypeAgp && type <= SlotTypeM2Socket3) ||
+		    (type == SlotTypePci)) {
+			characteristics_1 |= SMBIOS_SLOT_3P3V;
+		}
+		if ((type >= SlotTypeAgp && type <= SlotTypeAgp8X) ||
+		    (type == SlotTypePci))
+			characteristics_1 |= SMBIOS_SLOT_5V;
+	} else {
+		characteristics_1 = SMBIOS_SLOT_UNKNOWN;
 		type = SlotTypeUnknown;
+	}
 
 	if (dev->smbios_slot_length)
 		length = dev->smbios_slot_length;
 	else
 		length = SlotLengthUnknown;
+
+	if (pci_has_pme_pin(dev))
+		characteristics_2 |= SMBIOS_SLOT_PME;
+	if (CONFIG(PCIEXP_PLUGIN_SUPPORT) && pciexp_dev_is_slot_hot_plug_cap(dev))
+		characteristics_2 |= SMBIOS_SLOT_HOTPLUG;
 
 	return smbios_write_type9(current, handle,
 				  dev->smbios_slot_designation,
@@ -1173,8 +1190,8 @@ static int smbios_generate_type9_from_devtree(struct device *dev, int *handle,
 				  usage,
 				  length,
 				  0,
-				  1,
-				  0,
+				  characteristics_1,
+				  characteristics_2,
 				  dev->upstream->segment_group,
 				  dev->upstream->secondary,
 				  dev->path.pci.devfn);

@@ -271,6 +271,21 @@ chip soc/intel/alderlake
 				register "reg_adv_ctrl18" = "0x33"
 				register "reg_adv_ctrl19" = "0xf0"
 				register "reg_adv_ctrl20" = "0xf0"
+
+				register "ph0_pin" = "{1, 3, 3}"
+				register "ph1_pin" = "{3, 2, 1}"
+				register "ph2_pin" = "{3, 3, 1}"
+				register "ph3_pin" = "{1, 3, 3}"
+				register "ph01_resolution" = "512"
+				register "ph23_resolution" = "1024"
+				register "startup_sensor" = "1"
+				register "ph01_proxraw_strength" = "2"
+				register "ph23_proxraw_strength" = "2"
+				register "avg_pos_strength" = "256"
+				register "cs_idle_sleep" = ""gnd""
+				register "int_comp_resistor" = ""lowest""
+				register "input_precharge_resistor_ohms" = "4000"
+				register "input_analog_gain" = "3"
 				device i2c 28 on end
 			end
 		end

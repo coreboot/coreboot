@@ -126,17 +126,19 @@ static void pch_pcie_pm_early(struct device *dev)
 	reg32 &= ~(1 << 31); /* Disable PME# SCI for native PME handling */
 	pci_write_config32(dev, 0xd8, reg32);
 
+	cap = pci_find_capability(dev, PCI_CAP_ID_PCIE);
+
 	/* Adjust ASPM L1 exit latency */
-	reg32 = pci_read_config32(dev, 0x4c);
-	reg32 &= ~((1 << 17) | (1 << 16) | (1 << 15));
+	reg32 = pci_read_config32(dev, cap + PCI_EXP_LNKCAP);
+	reg32 &= ~PCI_EXP_LNKCAP_L1EL;
 	if (RCBA32(CIR9) & (1 << 16)) {
 		/* If RCBA+2320[15]=1 set ASPM L1 to 8-16us */
-		reg32 |= (1 << 17);
+		reg32 |= (4 << 15);
 	} else {
 		/* Else set ASPM L1 to 2-4us */
-		reg32 |= (1 << 16);
+		reg32 |= (2 << 15);
 	}
-	pci_write_config32(dev, 0x4c, reg32);
+	pci_write_config32(dev, cap + PCI_EXP_LNKCAP, reg32);
 
 	/*
 	 * PCI device enumeration hasn't started yet, thus any downstream device here
@@ -147,8 +149,6 @@ static void pch_pcie_pm_early(struct device *dev)
 		child = pcidev_path_behind(dev->link_list, PCI_DEVFN(0, 0));
 
 	/* Set slot power limit as configured above */
-	cap = pci_find_capability(dev, PCI_CAP_ID_PCIE);
-
 	reg32 = pci_read_config32(dev, cap + PCI_EXP_SLTCAP);
 	if (pci_is_hotplugable(dev))
 		reg32 |= (PCI_EXP_SLTCAP_HPS | PCI_EXP_SLTCAP_HPC);

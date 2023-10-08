@@ -91,3 +91,18 @@ const struct pad_config *variant_override_gpio_table(size_t *num)
 	*num = ARRAY_SIZE(gpio_table);
 	return gpio_table;
 }
+
+static const gpio_t hpd_gpios[] = {
+	/* HDMI1 */
+	GPP_A17,
+	/* HDMI2 */
+	GPP_A16,
+	/* USB C0 */
+	GPP_B23,
+};
+
+const gpio_t *variant_hpd_gpios(size_t *num)
+{
+	*num = ARRAY_SIZE(hpd_gpios);
+	return hpd_gpios;
+}

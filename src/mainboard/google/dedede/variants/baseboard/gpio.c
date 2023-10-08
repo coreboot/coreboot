@@ -489,3 +489,9 @@ static const struct cros_gpio cros_gpios[] = {
 };
 
 DECLARE_WEAK_CROS_GPIOS(cros_gpios);
+
+const gpio_t *__weak variant_hpd_gpios(size_t *num)
+{
+	*num = 0;
+	return NULL;
+}

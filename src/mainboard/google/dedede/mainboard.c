@@ -3,12 +3,15 @@
 #include <acpi/acpi.h>
 #include <acpi/acpigen.h>
 #include <baseboard/variants.h>
+#include <bootmode.h>
 #include <console/console.h>
+#include <delay.h>
 #include <device/device.h>
 #include <drivers/tpm/cr50.h>
 #include <ec/ec.h>
 #include <security/tpm/tss.h>
 #include <soc/soc_chip.h>
+#include <timer.h>
 #include <vb2_api.h>
 
 static void mainboard_update_soc_chip_config(void)
@@ -30,11 +33,61 @@ static void mainboard_update_soc_chip_config(void)
 	}
 }
 
+static bool any_hpd_ready(const gpio_t *gpios, size_t num_gpios)
+{
+	for (size_t i = 0; i < num_gpios; i++) {
+		if (gpio_get(gpios[i]))
+			return true;
+	}
+
+	return false;
+}
+
+static void mainboard_wait_for_hpd(void)
+{
+	static const long display_timeout_ms = 3000;
+	struct stopwatch sw;
+	size_t num_gpios;
+	const gpio_t *hpd_gpios = variant_hpd_gpios(&num_gpios);
+
+	if (num_gpios == 0) {
+		printk(BIOS_WARNING, "No HPD GPIOs, skip waiting\n");
+		return;
+	}
+
+	printk(BIOS_INFO, "Waiting for HPD\n");
+
+	/* Pins will be configured back by gpio_configure_pads. */
+	for (size_t i = 0; i < num_gpios; i++) {
+		gpio_input(hpd_gpios[i]);
+	}
+
+	stopwatch_init_msecs_expire(&sw, display_timeout_ms);
+	while (!any_hpd_ready(hpd_gpios, num_gpios)) {
+		if (stopwatch_expired(&sw)) {
+			printk(BIOS_WARNING,
+			       "HPD not ready after %ld ms. Abort.\n",
+			       display_timeout_ms);
+			return;
+		}
+		mdelay(200);
+	}
+	printk(BIOS_INFO, "HPD ready after %lld ms\n",
+	       stopwatch_duration_msecs(&sw));
+}
+
 static void mainboard_init(void *chip_info)
 {
 	const struct pad_config *base_pads;
 	const struct pad_config *override_pads;
 	size_t base_num, override_num;
+
+	/*
+	 * For chromeboxes, wait for DP HPD to be asserted before
+	 * entering FSP-S, otherwise display init may fail.
+	 */
+	if (!CONFIG(SYSTEM_TYPE_LAPTOP) && display_init_required())
+		mainboard_wait_for_hpd();
 
 	base_pads = baseboard_gpio_table(&base_num);
 	override_pads = variant_override_gpio_table(&override_num);

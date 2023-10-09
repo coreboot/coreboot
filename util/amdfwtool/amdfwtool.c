@@ -1088,7 +1088,6 @@ static void *new_bios_dir(context *ctx, bool multi)
 	ptr = BUFF_CURRENT(*ctx);
 	((bios_directory_hdr *) ptr)->additional_info = 0;
 	((bios_directory_hdr *) ptr)->additional_info_fields.address_mode = ctx->address_mode;
-	ctx->current_table = ctx->current;
 	adjust_current_pointer(ctx,
 		sizeof(bios_directory_hdr) + MAX_BIOS_ENTRIES * sizeof(bios_directory_entry),
 		1);
@@ -1179,6 +1178,7 @@ static void integrate_bios_firmwares(context *ctx,
 	int apob_idx;
 	uint32_t size;
 	uint64_t source;
+	uint32_t current_table_save;
 
 	/* This function can create a primary table, a secondary table, or a
 	 * flattened table which contains all applicable types.  These if-else
@@ -1196,6 +1196,8 @@ static void integrate_bios_firmwares(context *ctx,
 	else
 		level = BDT_BOTH;
 
+	current_table_save = ctx->current_table;
+	ctx->current_table = (char *)biosdir - ctx->rom;
 	adjust_current_pointer(ctx, 0, TABLE_ALIGNMENT);
 
 	for (i = 0, count = 0; fw_table[i].type != AMD_BIOS_INVALID; i++) {
@@ -1396,6 +1398,7 @@ static void integrate_bios_firmwares(context *ctx,
 	}
 
 	fill_dir_header(biosdir, count, cookie, ctx, cb_config);
+	ctx->current_table = current_table_save;
 }
 
 static int set_efs_table(uint8_t soc_id, amd_cb_config *cb_config,

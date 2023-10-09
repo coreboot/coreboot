@@ -846,7 +846,7 @@ static void integrate_psp_ab(context *ctx, psp_directory_table *pspdir,
 	uint32_t current_table_save;
 
 	current_table_save = ctx->current_table;
-	ctx->current_table = (char *)pspdir - ctx->rom;
+	ctx->current_table = BUFF_TO_RUN_MODE(*ctx, pspdir, AMD_ADDR_REL_BIOS);
 	count = pspdir->header.num_entries;
 	assert_fw_entry(count, MAX_PSP_ENTRIES, ctx);
 	pspdir->entries[count].type = (uint8_t)ab;
@@ -982,7 +982,7 @@ static void integrate_psp_firmwares(context *ctx,
 			level = PSP_BOTH_AB;
 	}
 	current_table_save = ctx->current_table;
-	ctx->current_table = (char *)pspdir - ctx->rom;
+	ctx->current_table = BUFF_TO_RUN_MODE(*ctx, pspdir, AMD_ADDR_REL_BIOS);
 	adjust_current_pointer(ctx, 0, TABLE_ALIGNMENT);
 
 	for (i = 0, count = 0; fw_table[i].type != AMD_FW_INVALID; i++) {
@@ -1092,7 +1092,7 @@ static void add_psp_firmware_entry(context *ctx,
 	uint32_t current_table_save;
 
 	current_table_save = ctx->current_table;
-	ctx->current_table = (char *)pspdir - ctx->rom;
+	ctx->current_table = BUFF_TO_RUN_MODE(*ctx, pspdir, AMD_ADDR_REL_BIOS);
 
 	/* If there is an entry of "type", replace it. */
 	for (index = 0; index < count; index++) {
@@ -1222,7 +1222,7 @@ static void integrate_bios_levels(context *ctx, amd_cb_config *cb_config)
 				TABLE_ALIGNMENT);
 	} else if (ctx->biosdir2) {
 		current_table_save = ctx->current_table;
-		ctx->current_table = (char *)ctx->biosdir - ctx->rom;
+		ctx->current_table = BUFF_TO_RUN_MODE(*ctx, ctx->biosdir, AMD_ADDR_REL_BIOS);
 		count = ctx->biosdir->header.num_entries;
 		assert_fw_entry(count, MAX_BIOS_ENTRIES, ctx);
 		ctx->biosdir->entries[count].type = AMD_BIOS_L2_PTR;
@@ -1287,7 +1287,7 @@ static void integrate_bios_firmwares(context *ctx,
 		level = BDT_BOTH;
 
 	current_table_save = ctx->current_table;
-	ctx->current_table = (char *)biosdir - ctx->rom;
+	ctx->current_table = BUFF_TO_RUN_MODE(*ctx, biosdir, AMD_ADDR_REL_BIOS);
 	adjust_current_pointer(ctx, 0, TABLE_ALIGNMENT);
 
 	for (i = 0, count = 0; fw_table[i].type != AMD_BIOS_INVALID; i++) {

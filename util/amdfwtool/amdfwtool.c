@@ -1814,7 +1814,7 @@ static int set_efs_table(uint8_t soc_id, amd_cb_config *cb_config,
 	return 0;
 }
 
-static ssize_t write_body(char *output, void *body_offset, ssize_t body_size, context *ctx)
+static ssize_t write_body(char *output, void *body_offset, ssize_t body_size)
 {
 	char body_name[PATH_MAX], body_tmp_name[PATH_MAX];
 	int ret;
@@ -1828,26 +1828,22 @@ static ssize_t write_body(char *output, void *body_offset, ssize_t body_size, co
 	if (ret < 0) {
 		fprintf(stderr, "Error %s forming BODY tmp file name: %d\n",
 							strerror(errno), ret);
-		amdfwtool_cleanup(ctx);
-		exit(1);
+		return -1;
 	} else if ((unsigned int)ret >= sizeof(body_tmp_name)) {
 		fprintf(stderr, "BODY File name %d  > %zu\n", ret, sizeof(body_tmp_name));
-		amdfwtool_cleanup(ctx);
-		exit(1);
+		return -1;
 	}
 
 	fd = open(body_tmp_name, O_RDWR | O_CREAT | O_TRUNC, 0666);
 	if (fd < 0) {
 		fprintf(stderr, "Error: Opening %s file: %s\n", body_tmp_name, strerror(errno));
-		amdfwtool_cleanup(ctx);
-		exit(1);
+		return -1;
 	}
 
 	bytes = write_from_buf_to_file(fd, body_offset, body_size);
 	if (bytes != body_size) {
 		fprintf(stderr, "Error: Writing to file %s failed\n", body_tmp_name);
-		amdfwtool_cleanup(ctx);
-		exit(1);
+		return -1;
 	}
 	close(fd);
 
@@ -1855,14 +1851,12 @@ static ssize_t write_body(char *output, void *body_offset, ssize_t body_size, co
 	ret = snprintf(body_name, sizeof(body_name), "%s%s", output, BODY_FILE_SUFFIX);
 	if (ret < 0) {
 		fprintf(stderr, "Error %s forming BODY file name: %d\n", strerror(errno), ret);
-		amdfwtool_cleanup(ctx);
-		exit(1);
+		return -1;
 	}
 
 	if (rename(body_tmp_name, body_name)) {
 		fprintf(stderr, "Error: renaming file %s to %s\n", body_tmp_name, body_name);
-		amdfwtool_cleanup(ctx);
-		exit(1);
+		return -1;
 	}
 
 	return bytes;
@@ -2562,7 +2556,7 @@ int main(int argc, char **argv)
 		ssize_t bytes;
 
 		bytes = write_body(output, BUFF_OFFSET(ctx, body_location),
-			ctx.current - body_location, &ctx);
+			ctx.current - body_location);
 		if (bytes != ctx.current - body_location) {
 			fprintf(stderr, "Error: Writing body\n");
 			retval = 1;

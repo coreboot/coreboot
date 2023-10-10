@@ -435,9 +435,16 @@ void process_signed_psp_firmwares(const char *signed_rom,
 		amd_fw_entry *fw_table,
 		uint64_t signed_start_addr,
 		enum platform soc_id);
+
+#define EFS_FILE_SUFFIX ".efs"
+#define TMP_FILE_SUFFIX ".tmp"
+#define BODY_FILE_SUFFIX ".body"
+
 void write_or_fail(int fd, void *ptr, size_t size);
 ssize_t read_from_file_to_buf(int fd, void *buf, size_t buf_size);
 ssize_t write_from_buf_to_file(int fd, const void *buf, size_t buf_size);
+ssize_t write_body(char *output, void *body_offset, ssize_t body_size);
+ssize_t copy_blob(void *dest, const char *src_file, size_t room);
 #define OK 0
 
 #define LINE_EOF (1)

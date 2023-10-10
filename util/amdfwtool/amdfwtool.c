@@ -95,10 +95,6 @@
 
 #define DEFAULT_SOFT_FUSE_CHAIN "0x1"
 
-#define EFS_FILE_SUFFIX ".efs"
-#define TMP_FILE_SUFFIX ".tmp"
-#define BODY_FILE_SUFFIX ".body"
-
 static void output_manifest(int manifest_fd, amd_fw_entry *fw_entry);
 
 /*
@@ -743,41 +739,6 @@ static void fill_bios_directory_to_efs(embedded_firmware *amd_romsig, void *bios
 			BUFF_TO_RUN_MODE(*ctx, biosdir, AMD_ADDR_REL_BIOS);
 		break;
 	}
-}
-
-static ssize_t copy_blob(void *dest, const char *src_file, size_t room)
-{
-	int fd;
-	struct stat fd_stat;
-	ssize_t bytes;
-
-	fd = open(src_file, O_RDONLY);
-	if (fd < 0) {
-		fprintf(stderr, "Error opening file: %s: %s\n",
-		       src_file, strerror(errno));
-		return -1;
-	}
-
-	if (fstat(fd, &fd_stat)) {
-		fprintf(stderr, "fstat error: %s\n", strerror(errno));
-		close(fd);
-		return -2;
-	}
-
-	if ((size_t)fd_stat.st_size > room) {
-		fprintf(stderr, "Error: %s will not fit.  Exiting.\n", src_file);
-		close(fd);
-		return -3;
-	}
-
-	bytes = read(fd, dest, (size_t)fd_stat.st_size);
-	close(fd);
-	if (bytes != (ssize_t)fd_stat.st_size) {
-		fprintf(stderr, "Error while reading %s\n", src_file);
-		return -4;
-	}
-
-	return bytes;
 }
 
 static uint32_t get_psp_id(enum platform soc_id)
@@ -1812,54 +1773,6 @@ static int set_efs_table(uint8_t soc_id, amd_cb_config *cb_config,
 		return 1;
 	}
 	return 0;
-}
-
-static ssize_t write_body(char *output, void *body_offset, ssize_t body_size)
-{
-	char body_name[PATH_MAX], body_tmp_name[PATH_MAX];
-	int ret;
-	int fd;
-	ssize_t bytes = -1;
-
-	/* Create a tmp file and rename it at the end so that make does not get confused
-	   if amdfwtool is killed for some unexpected reasons. */
-	ret = snprintf(body_tmp_name, sizeof(body_tmp_name), "%s%s%s",
-			output, BODY_FILE_SUFFIX, TMP_FILE_SUFFIX);
-	if (ret < 0) {
-		fprintf(stderr, "Error %s forming BODY tmp file name: %d\n",
-							strerror(errno), ret);
-		return -1;
-	} else if ((unsigned int)ret >= sizeof(body_tmp_name)) {
-		fprintf(stderr, "BODY File name %d  > %zu\n", ret, sizeof(body_tmp_name));
-		return -1;
-	}
-
-	fd = open(body_tmp_name, O_RDWR | O_CREAT | O_TRUNC, 0666);
-	if (fd < 0) {
-		fprintf(stderr, "Error: Opening %s file: %s\n", body_tmp_name, strerror(errno));
-		return -1;
-	}
-
-	bytes = write_from_buf_to_file(fd, body_offset, body_size);
-	if (bytes != body_size) {
-		fprintf(stderr, "Error: Writing to file %s failed\n", body_tmp_name);
-		return -1;
-	}
-	close(fd);
-
-	/* Rename the tmp file */
-	ret = snprintf(body_name, sizeof(body_name), "%s%s", output, BODY_FILE_SUFFIX);
-	if (ret < 0) {
-		fprintf(stderr, "Error %s forming BODY file name: %d\n", strerror(errno), ret);
-		return -1;
-	}
-
-	if (rename(body_tmp_name, body_name)) {
-		fprintf(stderr, "Error: renaming file %s to %s\n", body_tmp_name, body_name);
-		return -1;
-	}
-
-	return bytes;
 }
 
 void open_process_config(char *config, amd_cb_config *cb_config, int debug)

@@ -13,7 +13,6 @@
 #include <intelblocks/cse.h>
 #include <intelblocks/cse_layout.h>
 #include <intelblocks/spi.h>
-#include <intelblocks/systemagent.h>
 #include <security/vboot/misc.h>
 #include <security/vboot/vboot_common.h>
 #include <soc/intel/common/reset.h>

@@ -6,6 +6,20 @@
 #include <amdblocks/data_fabric_defs.h>
 #include <types.h>
 
+#define DF_VGA_EN			DF_REG_ID(0, 0xc08)
+
+union df_vga_en {
+	struct {
+		uint32_t ve		:  1; /* [ 0.. 0] */
+		uint32_t np		:  1; /* [ 1.. 1] */
+		uint32_t cpu_dis	:  1; /* [ 2.. 2] */
+		uint32_t		:  1; /* [ 3.. 3] */
+		uint32_t dst_fabric_id	: 12; /* [ 4..15] */
+		uint32_t		: 16; /* [16..31] */
+	};
+	uint32_t raw;
+};
+
 #define DF_PCI_CFG_BASE0		DF_REG_ID(0, 0xc80)
 #define DF_PCI_CFG_LIMIT0		DF_REG_ID(0, 0xc84)
 

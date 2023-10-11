@@ -427,14 +427,39 @@ typedef struct _amd_cb_config {
 	bool use_combo;
 	bool have_apcb_bk;
 	enum platform soc_id;
+
+	uint8_t efs_spi_readmode, efs_spi_speed, efs_spi_micron_flag;
+	uint32_t body_location, efs_location;
+	uint64_t signed_start_addr;
+	char *manifest_file;
+	const char *signed_output_file;
+	char *output, *config;
+	char *combo_config[MAX_COMBO_ENTRIES];
+	int debug;
 } amd_cb_config;
 
-void register_fw_fuse(char *str);
+typedef struct _context {
+	char *rom;		/* target buffer, size of flash device */
+	uint32_t rom_size;	/* size of flash device */
+	uint32_t address_mode;	/* 0:abs address; 1:relative to flash; 2: relative to table */
+	uint32_t current;	/* pointer within flash & proxy buffer */
+	uint32_t current_pointer_saved;
+	uint32_t current_table;
+	void *amd_psp_fw_table_clean;
+	void *amd_bios_table_clean;
+	struct _combo_apcb {
+		char *filename;
+		uint8_t ins;
+		uint8_t sub;
+	} combo_apcb[MAX_COMBO_ENTRIES], combo_apcb_bk[MAX_COMBO_ENTRIES];
+} context;
+
 uint8_t process_config(FILE *config, amd_cb_config *cb_config);
 void process_signed_psp_firmwares(const char *signed_rom,
 		amd_fw_entry *fw_table,
 		uint64_t signed_start_addr,
 		enum platform soc_id);
+int find_bios_entry(amd_bios_type type);
 
 #define EFS_FILE_SUFFIX ".efs"
 #define TMP_FILE_SUFFIX ".tmp"
@@ -449,5 +474,8 @@ ssize_t copy_blob(void *dest, const char *src_file, size_t room);
 
 #define LINE_EOF (1)
 #define LINE_TOO_LONG (2)
+
+int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config, context *ctx);
+void register_apcb_combo(amd_cb_config *cb_config, int combo_index, context *ctx);
 
 #endif	/* _AMD_FW_TOOL_H_ */

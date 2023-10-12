@@ -411,7 +411,6 @@ chip soc/intel/meteorlake
 				end
 			end
 		end
-		device ref i2c2 on end
 		device ref i2c3 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""

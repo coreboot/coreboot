@@ -73,6 +73,9 @@ struct drivers_intel_dptf_config {
 	/* Rest of platform Power */
 	uint32_t prop;
 
+	/* Device Configuration */
+	uint32_t dcfg;
+
 	bool dptf_multifan_support;
 };
 

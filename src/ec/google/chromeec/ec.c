@@ -1532,3 +1532,19 @@ void google_chromeec_clear_ec_ap_idle(void)
 	else
 		printk(BIOS_ERR, "Failed to clear EC AP_IDLE flag\n");
 }
+
+bool google_chromeec_is_battery_present_and_above_critical_threshold(void)
+{
+	struct ec_params_battery_dynamic_info params = {
+		.index = 0,
+	};
+	struct ec_response_battery_dynamic_info resp;
+
+	if (ec_cmd_battery_get_dynamic(PLAT_EC, &params, &resp) == 0) {
+		/* Check if battery is present and LEVEL_CRITICAL is not set */
+		if (resp.flags && !(resp.flags & EC_BATT_FLAG_LEVEL_CRITICAL))
+			return true;
+	}
+
+	return false;
+}

@@ -8,6 +8,16 @@ and those providing after-market firmware to extend the usefulness of devices.
 
 ## Hardware shipping with coreboot
 
+### Nitrokey
+
+[Nitrokey](https://nitrokey.com) is a german IT security hardware vendor which
+offers a range of laptops, PCs, HSMs, and networking devices with coreboot and
+[Dasharo](https://dasharo.com/). The devices come with neutralized Intel
+Management Engine (ME) and with pre-installed [Heads](http://osresearch.net) or
+EDK2 payload providing measured boot and verified boot protection. For
+additional security the systems can be physically sealed and pictures of those
+sealings are sent via encrypted email.
+
 ### NovaCustom laptops
 
 [NovaCustom](https://configurelaptop.eu/) sells configurable laptops with

@@ -51,9 +51,6 @@ chip soc/intel/meteorlake
 	# Enable HDMI in Port B
 	register "ddi_port_B_config" = "0"
 
-	# TODO(b/287170545): workaround avoid DUT random hang
-	register "sagv_wp_bitmap" = "SAGV_POINTS_0_1_2"
-
 	# Enable Display Port Configuration
 	register "ddi_ports_config" = "{
 		[DDI_PORT_A] = DDI_ENABLE_HPD,

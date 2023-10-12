@@ -566,16 +566,17 @@ static void adjust_current_pointer(context *ctx, uint32_t add, uint32_t align)
 	set_current_pointer(ctx, ALIGN_UP(ctx->current + add, align));
 }
 
-static void *new_psp_dir(context *ctx, int multi)
+static void *new_psp_dir(context *ctx, amd_cb_config *cb_config)
 {
 	void *ptr;
+	uint32_t align_end = cb_config->need_ish ? TABLE_ALIGNMENT : 1;
 
 	/*
 	 * Force both onto boundary when multi.  Primary table is after
 	 * updatable table, so alignment ensures primary can stay intact
 	 * if secondary is reprogrammed.
 	 */
-	if (multi)
+	if (cb_config->multi_level)
 		adjust_current_pointer(ctx, 0, TABLE_ERASE_ALIGNMENT);
 	else
 		adjust_current_pointer(ctx, 0, TABLE_ALIGNMENT);
@@ -586,7 +587,7 @@ static void *new_psp_dir(context *ctx, int multi)
 	((psp_directory_header *)ptr)->additional_info_fields.address_mode = ctx->address_mode;
 	adjust_current_pointer(ctx,
 		sizeof(psp_directory_header) + MAX_PSP_ENTRIES * sizeof(psp_directory_entry),
-		1);
+		align_end);
 	return ptr;
 }
 
@@ -612,7 +613,8 @@ static void *new_combo_dir(context *ctx)
 	return ptr;
 }
 
-static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie, context *ctx)
+static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie,
+	context *ctx, amd_cb_config *cb_config)
 {
 	psp_combo_directory *cdir = directory;
 	psp_directory_table *dir = directory;
@@ -647,7 +649,14 @@ static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie, co
 		break;
 	case PSP_COOKIE:
 	case PSPL2_COOKIE:
-		table_size = ctx->current - ctx->current_table;
+		if (cookie == PSP_COOKIE && cb_config->need_ish)
+			/* The ISH header can not be in the space defined by L1 table size.
+			 * The space is allocated when the L1 header is created. */
+			table_size = TABLE_ALIGNMENT;
+		else
+			/* Generally table size not just constains the header,
+			 * but all the FWs. */
+			table_size = ctx->current - ctx->current_table;
 		if ((table_size % TABLE_ALIGNMENT) != 0) {
 			fprintf(stderr, "The PSP table size should be 4K aligned\n");
 			amdfwtool_cleanup(ctx);
@@ -1116,7 +1125,7 @@ static void integrate_psp_firmwares(context *ctx,
 		count++;
 	}
 
-	fill_dir_header(pspdir, count, cookie, ctx);
+	fill_dir_header(pspdir, count, cookie, ctx, cb_config);
 	ctx->current_table = current_table_save;
 }
 
@@ -1479,7 +1488,7 @@ static void integrate_bios_firmwares(context *ctx,
 		count++;
 	}
 
-	fill_dir_header(biosdir, count, cookie, ctx);
+	fill_dir_header(biosdir, count, cookie, ctx, cb_config);
 }
 
 enum {
@@ -2347,13 +2356,13 @@ int main(int argc, char **argv)
 
 		if (cb_config.multi_level) {
 			/* Do 2nd PSP directory followed by 1st */
-			pspdir2 = new_psp_dir(&ctx, cb_config.multi_level);
+			pspdir2 = new_psp_dir(&ctx, &cb_config);
 			integrate_psp_firmwares(&ctx, pspdir2, NULL, NULL,
 						amd_psp_fw_table, PSPL2_COOKIE, &cb_config);
 			if (cb_config.recovery_ab && !cb_config.recovery_ab_single_copy) {
 				/* Create a copy of PSP Directory 2 in the backup slot B.
 				   Related biosdir2_b copy will be created later. */
-				pspdir2_b = new_psp_dir(&ctx, cb_config.multi_level);
+				pspdir2_b = new_psp_dir(&ctx, &cb_config);
 				integrate_psp_firmwares(&ctx, pspdir2_b, NULL, NULL,
 						amd_psp_fw_table, PSPL2_COOKIE, &cb_config);
 			} else {
@@ -2367,12 +2376,12 @@ int main(int argc, char **argv)
 				 */
 				pspdir2_b = NULL; /* More explicitly */
 			}
-			pspdir = new_psp_dir(&ctx, cb_config.multi_level);
+			pspdir = new_psp_dir(&ctx, &cb_config);
 			integrate_psp_firmwares(&ctx, pspdir, pspdir2, pspdir2_b,
 					amd_psp_fw_table, PSP_COOKIE, &cb_config);
 		} else {
 			/* flat: PSP 1 cookie and no pointer to 2nd table */
-			pspdir = new_psp_dir(&ctx, cb_config.multi_level);
+			pspdir = new_psp_dir(&ctx, &cb_config);
 			integrate_psp_firmwares(&ctx, pspdir, NULL, NULL,
 					amd_psp_fw_table, PSP_COOKIE, &cb_config);
 		}
@@ -2388,7 +2397,8 @@ int main(int argc, char **argv)
 			psp_combo_dir->entries[combo_index].lvl2_addr =
 				BUFF_TO_RUN_MODE(ctx, pspdir, AMD_ADDR_REL_BIOS);
 
-			fill_dir_header(psp_combo_dir, combo_index + 1, PSP2_COOKIE, &ctx);
+			fill_dir_header(psp_combo_dir, combo_index + 1,
+				PSP2_COOKIE, &ctx, &cb_config);
 		}
 
 		if (have_bios_tables(amd_bios_table)) {
@@ -2441,7 +2451,7 @@ int main(int argc, char **argv)
 					BUFF_TO_RUN_MODE(ctx, biosdir, AMD_ADDR_REL_BIOS);
 
 				fill_dir_header(bhd_combo_dir, combo_index + 1,
-					BHD2_COOKIE, &ctx);
+					BHD2_COOKIE, &ctx, &cb_config);
 			}
 		}
 	} while (cb_config.use_combo && ++combo_index < MAX_COMBO_ENTRIES &&

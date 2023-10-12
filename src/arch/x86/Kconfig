@@ -160,6 +160,23 @@ config PRERAM_CBFS_CACHE_SIZE
 	  Define the size of the Pre-RAM stages CBFS cache. A size of
 	  zero disables the CBFS cache feature in pre-memory stages.
 
+config POSTRAM_CBFS_CACHE_IN_BSS
+	bool
+	default y if !SOC_AMD_COMMON_BLOCK_NONCAR
+	help
+	  Allocate the post-memory CBFS cache scratchpad in the .bss
+	  section. CBFS cache will rely on a simple static C buffer
+	  while traditionally CBFS cache memory region is reserved in
+	  the device memory layout.
+
+config RAMSTAGE_CBFS_CACHE_SIZE
+	hex
+	default 0x4000
+	depends on POSTRAM_CBFS_CACHE_IN_BSS
+	help
+	  Define the size of the ramstage CBFS cache. A size of zero
+	  disables the CBFS cache feature in ramstage.
+
 config PC80_SYSTEM
 	bool
 	default y if ARCH_X86

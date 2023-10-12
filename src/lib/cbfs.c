@@ -20,8 +20,16 @@
 #include <thread.h>
 #include <timestamp.h>
 
+#if ENV_X86 && (ENV_POSTCAR || ENV_SMM)
+struct mem_pool cbfs_cache = MEM_POOL_INIT(NULL, 0, 0);
+#elif CONFIG(POSTRAM_CBFS_CACHE_IN_BSS) && ENV_RAMSTAGE
+static u8 cache_buffer[CONFIG_RAMSTAGE_CBFS_CACHE_SIZE];
+struct mem_pool cbfs_cache =
+	MEM_POOL_INIT(cache_buffer, sizeof(cache_buffer), CONFIG_CBFS_CACHE_ALIGN);
+#else
 struct mem_pool cbfs_cache =
 	MEM_POOL_INIT(_cbfs_cache, REGION_SIZE(cbfs_cache), CONFIG_CBFS_CACHE_ALIGN);
+#endif
 
 static void switch_to_postram_cache(int unused)
 {

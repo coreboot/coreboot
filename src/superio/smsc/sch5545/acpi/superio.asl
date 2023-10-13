@@ -56,7 +56,6 @@ Device(SIO1) {
 	Name (IOST, 0x0001) /* IO decoding status */
 	Name (MSFG, 1) /* Mouse wake config */
 	Name (KBFG, 1) /* Keyboard wake config */
-	Name (PMFG, 0) /* Wake config */
 
 	/* SuperIO configuration ports */
 	OperationRegion (CREG, SystemIO, SUPERIO_PNP_BASE, 0x02)
@@ -338,7 +337,6 @@ Device(SIO1) {
 	/* SIO wake method */
 	Method (SIOW, 1, NotSerialized)
 	{
-		PMFG = PMS1
 		If (Arg0 == 1)
 		{
 			GPKM ()
@@ -362,15 +360,38 @@ Device(SIO1) {
 
 	Method (SIOH, 0, NotSerialized)
 	{
-		If (PMFG & 0x08)
+		Local0 = PMS1
+
+		If (Local0 & 0x08)
 		{
+			PMS1 = 0x08
 			Notify (PS2K, 0x02) // Device Wake
 		}
 
-		If (PMFG & 0x10)
+		If (Local0 & 0x10)
 		{
+			PMS1 = 0x10
 			Notify (PS2M, 0x02) // Device Wake
 		}
+
+		If (Local0 & 0x04)
+		{
+			PMS1 = 0x04
+#ifdef SCH5545_SHOW_UARTA
+			Notify (UAR1, 0x02) // Device Wake
+#endif
+		}
+
+		If (Local0 & 0x02)
+		{
+			PMS1 = 0x02
+#ifdef SCH5545_SHOW_UARTB
+			Notify (UAR2, 0x02) // Device Wake
+#endif
+		}
+
+		Local0 = PMES
+		PMES = (Local0 & 1)
 	}
 #endif // SCH5545_RUNTIME_BASE
 #endif // SCH5545_SHOW_KBC

@@ -11,7 +11,8 @@
 
 typedef struct __packed {
 	/** Offset 0x0020**/	uint32_t                    vbios_buffer;
-	/** Offset 0x0024**/	uint64_t                    gop_reserved;
+	/** Offset 0x0024**/	uint32_t                    gop_reserved;
+	/** Offset 0x0028**/	uint32_t                    logo_bmp_buffer;
 	/** Offset 0x002C**/	uint32_t                    reserved1;
 	/** Offset 0x0030**/	uint16_t                    UpdTerminator;
 } FSP_S_CONFIG;

@@ -6,6 +6,7 @@
 #include <amdblocks/apob_cache.h>
 #include <amdblocks/vbios_cache.h>
 #include <bootmode.h>
+#include <bootsplash.h>
 #include <console/console.h>
 #include <device/pci.h>
 #include <fsp/api.h>
@@ -51,4 +52,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	 */
 	if (!acpi_is_wakeup_s3())
 		payload_preload();
+}
+
+void soc_load_logo(FSPS_UPD *supd)
+{
+	uint32_t logo_size;
+	bmp_load_logo(&supd->FspsConfig.logo_bmp_buffer, &logo_size);
 }

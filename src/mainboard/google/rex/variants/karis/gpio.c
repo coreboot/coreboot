@@ -196,7 +196,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_E03 : [] ==> GSC_SOC_INT_ODL */
 	PAD_CFG_GPI_APIC_LOCK(GPP_E03, NONE, LEVEL, INVERT, LOCK_CONFIG),
 	/* GPP_E04 : [] ==> SOC_PEN_DETECT */
-	PAD_CFG_GPI_IRQ_WAKE(GPP_E04, NONE, PLTRST, LEVEL, INVERT),
+	PAD_CFG_GPI_GPIO_DRIVER(GPP_E04, NONE, PLTRST),
 	/* GPP_E05 : [] ==> USB_A0_RT_RST_ODL */
 	PAD_CFG_GPO(GPP_E05, 1, DEEP),
 	/* GPP_E06 : GPP_E06_STRAP ==> Component NC */
@@ -205,8 +205,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E07, NONE),
 	/* GPP_E08 : NC net. */
 	PAD_NC(GPP_E08, NONE),
-	/* GPP_E09 : Not Connected */
-	PAD_NC(GPP_E09, NONE),
+	/* GPP_E09 : SOC_PEN_DETECT */
+	PAD_CFG_GPI_SCI_LOCK(GPP_E09, NONE, EDGE_SINGLE, NONE, LOCK_CONFIG),
 	/* GPP_E10 : [] ==> SOC_FPMCU_INT_L */
 	PAD_CFG_GPI_IRQ_WAKE_LOCK(GPP_E10, NONE, LEVEL, INVERT, LOCK_CONFIG),
 	/* GPP_E11 : [] ==> MEM_STRAP_0 */

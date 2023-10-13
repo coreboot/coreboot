@@ -397,8 +397,11 @@ chip soc/intel/meteorlake
 			end
 			chip drivers/generic/gpio_keys
 				register "name" = ""PENH""
-				# GPP_E04 is the IRQ source
+				# GPP_E04 is the IRQ source, and GPP_E09 is the wake source
 				register "gpio" = "ACPI_GPIO_INPUT_ACTIVE_LOW(GPP_E04)"
+				register "key.wake_gpe" = "GPE0_DW1_09"
+				register "key.wakeup_route" = "WAKEUP_ROUTE_SCI"
+				register "key.wakeup_event_action" = "EV_ACT_DEASSERTED"
 				register "key.dev_name" = ""EJCT""
 				register "key.linux_code" = "SW_PEN_INSERTED"
 				register "key.linux_input_type" = "EV_SW"

@@ -470,7 +470,7 @@ Device(SIO1) {
 
 #ifdef SCH5545_SHOW_UARTB
 #define SUPERIO_UARTB_LDN 8
-	Device (UAR1)
+	Device (UAR2)
 	{
 		Name (_HID, EisaId ("PNP0501"))
 		Name (_UID, SUPERIO_UID(SER, SUPERIO_UARTB_LDN))

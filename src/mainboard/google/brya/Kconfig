@@ -656,6 +656,7 @@ config MAINBOARD_PART_NUMBER
 	default "Quandiso" if BOARD_GOOGLE_QUANDISO
 	default "Nokris" if BOARD_GOOGLE_NOKRIS
 	default "Dochi" if BOARD_GOOGLE_DOCHI
+	default "Anraggar" if BOARD_GOOGLE_ANRAGGAR
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -709,6 +710,7 @@ config VARIANT_DIR
 	default "quandiso" if BOARD_GOOGLE_QUANDISO
 	default "nokris" if BOARD_GOOGLE_NOKRIS
 	default "dochi" if BOARD_GOOGLE_DOCHI
+	default "anraggar" if BOARD_GOOGLE_ANRAGGAR
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC if !BOARD_GOOGLE_BASEBOARD_NISSA

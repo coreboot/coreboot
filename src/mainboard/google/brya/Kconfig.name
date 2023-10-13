@@ -152,3 +152,7 @@ config BOARD_GOOGLE_NOKRIS
 
 config BOARD_GOOGLE_DOCHI
 	bool "->  Dochi"
+
+config BOARD_GOOGLE_ANRAGGAR
+	bool "->  Anraggar"
+	select BOARD_GOOGLE_BASEBOARD_NISSA

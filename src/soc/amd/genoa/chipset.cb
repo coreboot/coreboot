@@ -5,6 +5,7 @@ chip soc/amd/genoa
 	end
 
 	device domain 0 on
+		ops genoa_pci_domain_ops
 		device pci 00.0 alias gnb_0 on end
 		device pci 00.2 alias iommu_0 on ops amd_iommu_ops end
 		device pci 00.3 alias rcec_0 off end
@@ -72,6 +73,7 @@ chip soc/amd/genoa
 	end
 
 	device domain 1 on
+		ops genoa_pci_domain_ops
 		device pci 00.0 alias gnb_1 on end
 		device pci 00.2 alias iommu_1 on ops amd_iommu_ops end
 		device pci 00.3 alias rcec_1 off end
@@ -112,6 +114,7 @@ chip soc/amd/genoa
 	end
 
 	device domain 2 on
+		ops genoa_pci_domain_ops
 		device pci 00.0 alias gnb_2 on end
 		device pci 00.2 alias iommu_2 on ops amd_iommu_ops end
 		device pci 00.3 alias rcec_2 off end
@@ -152,6 +155,7 @@ chip soc/amd/genoa
 	end
 
 	device domain 3 on
+		ops genoa_pci_domain_ops
 		device pci 00.0 alias gnb_3 on end
 		device pci 00.2 alias iommu_3 on ops amd_iommu_ops end
 		device pci 00.3 alias rcec_3 off end

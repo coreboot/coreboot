@@ -62,6 +62,7 @@ void data_fabric_print_mmio_conf(void)
 	}
 }
 
+#if CONFIG(HAVE_ACPI_TABLES)
 static const char *data_fabric_acpi_name(const struct device *dev)
 {
 	const char *df_acpi_names[8] = {
@@ -82,10 +83,13 @@ static const char *data_fabric_acpi_name(const struct device *dev)
 	printk(BIOS_ERR, "%s: Unhandled device id 0x%x\n", __func__, dev->device);
 	return NULL;
 }
+#endif
 
 struct device_operations amd_data_fabric_ops = {
 	.read_resources		= noop_read_resources,
 	.set_resources		= noop_set_resources,
+#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name		= data_fabric_acpi_name,
 	.acpi_fill_ssdt		= acpi_device_write_pci_dev,
+#endif
 };

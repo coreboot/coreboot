@@ -85,6 +85,15 @@ config SOC_AMD_COMMON_BLOCK_SMM
 	  Add common SMM relocation, finalization and handler functionality to
 	  the build.
 
+config SOC_AMD_COMMON_LATE_SMM_LOCKING
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_SMM
+	help
+	  Select this option to perform SMM locking late in soc_finalize(), rather than earlier
+	  in smm_relocation_handler(). This is required for pre-Zen SoCs like Stoneyridge which
+	  call into an AGESA binary as part of S3 resume, and require SMM to still be unlocked
+	  at that time.
+
 config SOC_AMD_COMMON_BLOCK_SVI2
 	bool
 	help

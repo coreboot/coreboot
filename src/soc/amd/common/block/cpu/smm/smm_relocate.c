@@ -52,14 +52,6 @@ static void get_smm_info(uintptr_t *perm_smbase, size_t *perm_smsize,
 	*smm_save_state_size = sizeof(amd64_smm_state_save_area_t);
 }
 
-static void tseg_valid(void)
-{
-	msr_t mask = rdmsr(SMM_MASK_MSR);
-	mask.lo |= SMM_TSEG_VALID;
-
-	wrmsr(SMM_MASK_MSR, mask);
-}
-
 static void smm_relocation_handler(void)
 {
 	uintptr_t tseg_base;
@@ -87,8 +79,11 @@ static void smm_relocation_handler(void)
 	};
 	wrmsr(SMM_BASE_MSR, smm_base);
 
-	tseg_valid();
-	lock_smm();
+
+	if (!CONFIG(SOC_AMD_COMMON_LATE_SMM_LOCKING)) {
+		tseg_valid();
+		lock_smm();
+	}
 }
 
 static void post_mp_init(void)

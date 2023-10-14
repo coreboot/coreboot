@@ -9,8 +9,30 @@
 #include <cpu/x86/msr.h>
 #include <types.h>
 
+static void late_smm_lock(void *unused)
+{
+	/* Finalize SMM settings */
+	if (is_smm_locked()) /* Skip if already locked, avoid GPF */
+		return;
+
+	if (CONFIG(HAVE_SMI_HANDLER))
+		tseg_valid();
+
+	lock_smm();
+}
+
+static void late_smm_finalize(void)
+{
+	printk(BIOS_SPEW, "Lock SMM configuration\n");
+	if (mp_run_on_all_cpus(late_smm_lock, NULL) != CB_SUCCESS)
+		printk(BIOS_WARNING, "Failed to finalize all cores\n");
+}
+
 static void soc_finalize(void *unused)
 {
+	if (CONFIG(SOC_AMD_COMMON_LATE_SMM_LOCKING))
+		late_smm_finalize();
+
 	if (!acpi_is_wakeup_s3()) {
 		acpi_clear_pm_gpe_status();
 

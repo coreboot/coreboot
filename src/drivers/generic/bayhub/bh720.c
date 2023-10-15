@@ -9,8 +9,12 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
+#include <acpi/acpigen.h>
+#include <acpi/acpigen_pci.h>
 #include "chip.h"
 #include "bh720.h"
+
+#define BH720_ACPI_NAME	"BHUB"
 
 static u32 bh720_read_pcr(u32 sdbar, u32 addr)
 {
@@ -99,12 +103,55 @@ static void bh720_init(struct device *dev)
 	}
 }
 
+static void bh720_fill_ssdt(const struct device *dev)
+{
+	if (dev->path.type != DEVICE_PATH_PCI) {
+		return;
+	}
+
+	const char *scope = acpi_device_scope(dev);
+	const char *name = acpi_device_name(dev);
+	if (!scope || !name)
+		return;
+
+	/* Device */
+	acpigen_write_scope(scope);
+	acpigen_write_device(name);
+
+	acpigen_write_ADR_pci_device(dev);
+	acpigen_write_STA(acpi_device_status(dev));
+
+	/* Card */
+	acpigen_write_device("CARD");
+	acpigen_write_ADR(0x08); //eMMC is always on address 0x8
+
+	/*
+	 * Method (_RMV, 0, NotSerialized) { Return (0) }
+	 */
+	acpigen_write_method("_RMV", 0); /* Method */
+	acpigen_emit_byte(RETURN_OP);
+	acpigen_write_byte(0);
+	acpigen_pop_len(); /* Method */
+
+	acpigen_pop_len(); /* Card */
+
+	acpigen_pop_len(); /* Device */
+	acpigen_pop_len(); /* Scope */
+}
+
+static const char *bh720_acpi_name(const struct device *dev)
+{
+	return BH720_ACPI_NAME;
+}
+
 static struct device_operations bh720_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.ops_pci		= &pci_dev_ops_pci,
 	.init			= bh720_init,
+	.acpi_name		= bh720_acpi_name,
+	.acpi_fill_ssdt		= bh720_fill_ssdt
 };
 
 static const unsigned short pci_device_ids[] = {

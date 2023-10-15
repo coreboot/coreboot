@@ -31,6 +31,14 @@ intel_igd_get_controller_info(const struct device *device)
 	return NULL;
 }
 
+static uint32_t graphics_get_ddi_func_ctrl(unsigned long reg)
+{
+	uint32_t ddi_func_ctrl = graphics_gtt_read(reg);
+	ddi_func_ctrl &= TRANS_DDI_PORT_MASK;
+
+	return ddi_func_ctrl;
+}
+
 /*
  * Transcoders contain the timing generators for eDP, DP, and HDMI interfaces.
  * Intel transcoders are based on Quick Sync Video, which offloads video
@@ -58,20 +66,31 @@ intel_igd_get_controller_info(const struct device *device)
  */
 static int get_external_display_status(void)
 {
-	uint32_t ddi_func_ctrl = graphics_gtt_read(TRANS_DDI_FUNC_CTL_A);
-	ddi_func_ctrl &= TRANS_DDI_PORT_MASK;
+	/* Read the transcoder register for DDI-A (eDP) */
+	uint32_t ddi_a_func_ctrl = graphics_get_ddi_func_ctrl(TRANS_DDI_FUNC_CTL_A);
+	/* Read the transcoder register for DDI-B (HDMI) */
+	uint32_t ddi_b_func_ctrl = graphics_get_ddi_func_ctrl(TRANS_DDI_FUNC_CTL_B);
 
 	/*
 	 * Check if transcoder is none or connected to DDI-A port (aka eDP).
 	 * Report no external display in both cases.
 	 */
-	if (ddi_func_ctrl == TRANS_DDI_PORT_NONE) {
+	if (ddi_a_func_ctrl == TRANS_DDI_PORT_NONE) {
 		return 0;
 	} else {
-		if (ddi_func_ctrl == TRANS_DDI_SELECT_PORT(PORT_A))
-			return 0;
-		else
+		if ((ddi_a_func_ctrl == TRANS_DDI_SELECT_PORT(PORT_A)) &&
+			 (ddi_b_func_ctrl == TRANS_DDI_SELECT_PORT(PORT_B))) {
+			/*
+			 * Dual display detected: both DDI-A(eDP) and
+			 * DDI-B(HDMI) pipes are active
+			 */
 			return 1;
+		} else {
+			if (ddi_a_func_ctrl == TRANS_DDI_SELECT_PORT(PORT_A))
+				return 0;
+			else
+				return 1;
+		}
 	}
 }
 

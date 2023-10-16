@@ -10,4 +10,6 @@ DefinitionBlock (
 	ACPI_TABLE_CREATOR,
 	0x00010001	/* OEM Revision */
 )
+{	/* Start of ASL file */
+	#include <globalnvs.asl>
 } /* End of ASL file */

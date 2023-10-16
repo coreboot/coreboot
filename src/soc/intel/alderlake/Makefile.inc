@@ -78,11 +78,11 @@ endif
 ifeq ($(CONFIG_SOC_INTEL_ALDERLAKE_PCH_S),y)
 # 06-97-00, 06-97-01, 06-97-04 are ADL-S Engineering Samples
 # 06-97-02 are ADL-S/HX Quality Samples but also ADL-HX Engineering Samples
-# ADL-S/HX C0 and ADL-S H0
+# 06-b7-00 are RPL-S Engineering Samples
+# ADL-S/HX C0/H0 and RPL-S C0/H0
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-97-05
 # RPL-S/HX B0
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-b7-01
-# 06-b7-00, 06-b7-02, 06-b7-05 RPL-S/HX A0, C0 and H0 missing
 else ifeq ($(CONFIG_SOC_INTEL_ALDERLAKE_PCH_N),y)
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-be-00
 else

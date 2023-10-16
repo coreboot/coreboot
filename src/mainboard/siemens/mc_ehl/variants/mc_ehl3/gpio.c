@@ -20,10 +20,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B23, NONE, PLTRST, NF2),		/* PCHHOT_N */
 
 	/* Community 0 - GpioGroup GPP_T */
-	PAD_NC(GPP_T4, NONE),				/* Not connected */
-	PAD_NC(GPP_T5, NONE),				/* Not connected */
-	PAD_NC(GPP_T6, NONE),				/* Not connected */
-	PAD_NC(GPP_T7, NONE),				/* Not connected */
+	PAD_CFG_NF(GPP_T4, NONE, DEEP, NF1),		/* PSE_GBE0_INT */
+	PAD_CFG_GPO(GPP_T5, 1, DEEP),			/* PSE_GBE0_RST_N */
+	PAD_CFG_NF(GPP_T6, NONE, DEEP, NF1),		/* PSE_GBE0_AUXTS */
+	PAD_CFG_NF(GPP_T7, NONE, DEEP, NF1),		/* PSE_GBE0_PPS */
 	PAD_CFG_NF(GPP_T12, NONE, DEEP, NF2),		/* SIO_UART0_RXD */
 	PAD_CFG_NF(GPP_T13, NONE, DEEP, NF2),		/* SIO_UART0_TXD */
 
@@ -47,10 +47,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_V11, NONE, DEEP, NF1),		/* EMMC_RESET */
 
 	/* Community 1 - GpioGroup GPP_H */
-	PAD_CFG_NF(GPP_H0, NONE, DEEP, NF1),		/* PSE_GBE1_INT */
-	PAD_CFG_GPO(GPP_H1, 1, DEEP),			/* PSE_GBE1_RST_N */
-	PAD_CFG_NF(GPP_H2, NONE, DEEP, NF1),		/* PSE_GBE1_AUXTS */
-	PAD_CFG_NF(GPP_H3, NONE, DEEP, NF1),		/* PSE_GBE1_PPS */
+	PAD_NC(GPP_H0, NONE),				/* Not connected */
+	PAD_NC(GPP_H1, NONE),				/* Not connected */
+	PAD_NC(GPP_H2, NONE),				/* Not connected */
+	PAD_NC(GPP_H3, NONE),				/* Not connected */
 	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF1),		/* PCIE_CLKREQ4_N */
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF1),		/* PCIE_CLKREQ5_N */
 
@@ -80,36 +80,36 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_S1, NONE),				/* Not connected */
 
 	/* Community 3 - GpioGroup GPP_A */
-	PAD_NC(GPP_A0, NONE),				/* Not connected */
-	PAD_NC(GPP_A1, NONE),				/* Not connected */
-	PAD_NC(GPP_A2, NONE),				/* Not connected */
-	PAD_NC(GPP_A3, NONE),				/* Not connected */
-	PAD_NC(GPP_A4, NONE),				/* Not connected */
-	PAD_NC(GPP_A5, NONE),				/* Not connected */
-	PAD_NC(GPP_A6, NONE),				/* Not connected */
-	PAD_NC(GPP_A7, NONE),				/* Not connected */
-	PAD_NC(GPP_A8, NONE),				/* Not connected */
-	PAD_NC(GPP_A9, NONE),				/* Not connected */
-	PAD_NC(GPP_A10, NONE),				/* Not connected */
-	PAD_CFG_NF(GPP_A11, NONE, DEEP, NF1),		/* PSE_GBE1_RGMII_TXD3 */
-	PAD_CFG_NF(GPP_A12, NONE, DEEP, NF1),		/* PSE_GBE1_RGMII_TXD2 */
-	PAD_CFG_NF(GPP_A13, NONE, DEEP, NF1),		/* PSE_GBE1_RGMII_TXD1 */
-	PAD_CFG_NF(GPP_A14, NONE, DEEP, NF1),		/* PSE_GBE1_RGMII_TXD0 */
-	PAD_CFG_NF(GPP_A15, NONE, DEEP, NF1),		/* PSE_GBE1_RGMII_TXCLK */
-	PAD_CFG_NF(GPP_A16, NONE, DEEP, NF1),		/* PSE_GBE1_RGMII_TXCTL */
-	PAD_CFG_NF(GPP_A17, NONE, DEEP, NF1),		/* PSE_GBE1_RGMII_RXCLK */
-	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),		/* PSE_GBE1_RGMII_RXCTL */
-	PAD_CFG_NF(GPP_A19, NONE, DEEP, NF1),		/* PSE_GBE1_RGMII_RXD3 */
-	PAD_CFG_NF(GPP_A20, NONE, DEEP, NF1),		/* PSE_GBE1_RGMII_RXD2 */
-	PAD_CFG_NF(GPP_A21, NONE, DEEP, NF1),		/* PSE_GBE1_RGMII_RXD1 */
-	PAD_CFG_NF(GPP_A22, NONE, DEEP, NF1),		/* PSE_GBE1_RGMII_RXD0 */
-	PAD_NC(GPP_A23, NONE),				/* Not connected */
+	PAD_CFG_NF(GPP_A0, NONE, DEEP, NF1),		/* PSE_GBE0_RGMII_TXD3 */
+	PAD_CFG_NF(GPP_A1, NONE, DEEP, NF1),		/* PSE_GBE0_RGMII_TXD2 */
+	PAD_CFG_NF(GPP_A2, NONE, DEEP, NF1),		/* PSE_GBE0_RGMII_TXD1 */
+	PAD_CFG_NF(GPP_A3, NONE, DEEP, NF1),		/* PSE_GBE0_RGMII_TXD0 */
+	PAD_CFG_NF(GPP_A4, NONE, DEEP, NF1),		/* PSE_GBE0_RGMII_TXCLK */
+	PAD_CFG_NF(GPP_A5, NONE, DEEP, NF1),		/* PSE_GBE0_RGMII_TXCTL */
+	PAD_CFG_NF(GPP_A6, NONE, DEEP, NF1),		/* PSE_GBE0_RGMII_RXCLK */
+	PAD_CFG_NF(GPP_A7, NONE, DEEP, NF1),		/* PSE_GBE0_RGMII_RXD3 */
+	PAD_CFG_NF(GPP_A8, NONE, DEEP, NF1),		/* PSE_GBE0_RGMII_RXD2 */
+	PAD_CFG_NF(GPP_A9, NONE, DEEP, NF1),		/* PSE_GBE0_RGMII_RXD1 */
+	PAD_CFG_NF(GPP_A10, NONE, DEEP, NF1),		/* PSE_GBE0_RGMII_RXD0 */
+	PAD_NC(GPP_A11, NONE),				/* Not connected */
+	PAD_NC(GPP_A12, NONE),				/* Not connected */
+	PAD_NC(GPP_A13, NONE),				/* Not connected */
+	PAD_NC(GPP_A14, NONE),				/* Not connected */
+	PAD_NC(GPP_A15, NONE),				/* Not connected */
+	PAD_NC(GPP_A16, NONE),				/* Not connected */
+	PAD_NC(GPP_A17, NONE),				/* Not connected */
+	PAD_NC(GPP_A18, NONE),				/* Not connected */
+	PAD_NC(GPP_A19, NONE),				/* Not connected */
+	PAD_NC(GPP_A20, NONE),				/* Not connected */
+	PAD_NC(GPP_A21, NONE),				/* Not connected */
+	PAD_NC(GPP_A22, NONE),				/* Not connected */
+	PAD_CFG_NF(GPP_A23, NONE, DEEP, NF1),		/* PSE_GBE0_RGMII_RXCTL */
 
 	/* Community 4 - GpioGroup GPP_C */
-	PAD_NC(GPP_C3, NONE),				/* Not connected */
-	PAD_NC(GPP_C4, NONE),				/* Not connected */
-	PAD_CFG_NF(GPP_C6, NONE, DEEP, NF1),		/* PSE_GBE0_AUXTS */
-	PAD_CFG_NF(GPP_C7, NONE, DEEP, NF1),		/* PSE_GBE0_PPS */
+	PAD_CFG_NF(GPP_C3, NONE, DEEP, NF1),		/* PSE_GBE0_MDC */
+	PAD_CFG_NF(GPP_C4, NONE, DEEP, NF1),		/* PSE_GBE0_MDIO */
+	PAD_NC(GPP_C6, NONE),				/* Not connected */
+	PAD_NC(GPP_C7, NONE),				/* Not connected */
 	PAD_CFG_NF(GPP_C12, NONE, DEEP, NF4),		/* SIO_UART1_RXD */
 	PAD_CFG_NF(GPP_C13, NONE, DEEP, NF4),		/* SIO_UART1_TXD */
 	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),		/* GBE_MDIO */

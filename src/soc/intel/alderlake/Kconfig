@@ -128,7 +128,7 @@ config SOC_INTEL_ALDERLAKE_PCH_P
 config SOC_INTEL_ALDERLAKE_PCH_S
 	bool
 	select SOC_INTEL_ALDERLAKE
-	select HAVE_INTEL_FSP_REPO if !SOC_INTEL_RAPTORLAKE_PCH_S || (SOC_INTEL_RAPTORLAKE_PCH_S && FSP_TYPE_IOT)
+	select HAVE_INTEL_FSP_REPO
 	select PLATFORM_USES_FSP2_3
 	help
 	  Choose this option if your mainboard has a PCH-S chipset.

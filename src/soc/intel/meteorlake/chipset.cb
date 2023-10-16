@@ -17,6 +17,10 @@ chip soc/intel/meteorlake
 	# Reduce the size of BasicMemoryTests to speed up the boot time.
 	register "lower_basic_mem_test_size" = "true"
 
+	# The power state current threshold is defined in 1/4 A
+	# increments. A value of 400 = 100A.
+	register "ps_cur_2_threshold[VR_DOMAIN_SA]" = "40" # 10A
+
 	# NOTE: if any variant wants to override this value, use the same format
 	# as register "common_soc_config.pch_thermal_trip" = "value", instead of
 	# putting it under register "common_soc_config" in overridetree.cb file.

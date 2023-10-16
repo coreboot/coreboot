@@ -238,6 +238,12 @@ static void fill_fspm_vr_config_params(FSP_M_CONFIG *m_cfg,
 				m_cfg->IccLimit[domain] = config->fast_vmode_i_trip[domain];
 			}
 		}
+		if (config->ps_cur_1_threshold[domain])
+			m_cfg->Psi1Threshold[domain] = config->ps_cur_1_threshold[domain];
+		if (config->ps_cur_2_threshold[domain])
+			m_cfg->Psi2Threshold[domain] = config->ps_cur_2_threshold[domain];
+		if (config->ps_cur_3_threshold[domain])
+			m_cfg->Psi3Threshold[domain] = config->ps_cur_3_threshold[domain];
 	}
 }
 

@@ -306,6 +306,30 @@ struct soc_intel_meteorlake_config {
 	 */
 	uint16_t fast_vmode_i_trip[NUM_VR_DOMAINS];
 
+	/*
+	 * Power state current threshold 1.
+	 * Defined in 1/4 A increments. A value of 400 = 100A. Range 0-512,
+	 * which translates to 0-128A. 0 = AUTO. [0] for IA, [1] for GT, [2] for
+	 * SA, [3] through [5] are Reserved.
+	 */
+	uint16_t ps_cur_1_threshold[NUM_VR_DOMAINS];
+
+	/*
+	 * Power state current threshold 2.
+	 * Defined in 1/4 A increments. A value of 400 = 100A. Range 0-512,
+	 * which translates to 0-128A. 0 = AUTO. [0] for IA, [1] for GT, [2] for
+	 * SA, [3] through [5] are Reserved.
+	 */
+	uint16_t ps_cur_2_threshold[NUM_VR_DOMAINS];
+
+	/*
+	 * Power state current threshold 3.
+	 * Defined in 1/4 A increments. A value of 400 = 100A. Range 0-512,
+	 * which translates to 0-128A. 0 = AUTO. [0] for IA, [1] for GT, [2] for
+	 * SA, [3] through [5] are Reserved.
+	 */
+	uint16_t ps_cur_3_threshold[NUM_VR_DOMAINS];
+
 	uint8_t PmTimerDisabled;
 	/*
 	 * SerialIO device mode selection:

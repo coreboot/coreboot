@@ -13,6 +13,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_A7, NONE),
 	/* A8  : SRCCLKREQ7# ==> NC */
 	PAD_NC(GPP_A8, NONE),
+	/* A11 : PMC_I2C_SDA ==> NC */
+	PAD_NC(GPP_A11, NONE),
 	/* A12 : SATAXPCIE1 ==>  NC  */
 	PAD_NC(GPP_A12, NONE),
 	/* A15 : USB_OC2# ==> NC */
@@ -22,8 +24,15 @@ static const struct pad_config override_gpio_table[] = {
 	/* A20 : DDSP_HPD2 ==> NC */
 	PAD_NC(GPP_A20, NONE),
 
+	/* B2  : VRALERT# ==> NC */
+	PAD_NC_LOCK(GPP_B2, NONE, LOCK_CONFIG),
 	/* B3  : PROC_GP2 ==> NC */
 	PAD_NC_LOCK(GPP_B3, NONE, LOCK_CONFIG),
+
+	/* C3 : SML0CLK ==> NC */
+	PAD_NC_LOCK(GPP_C3, NONE, LOCK_CONFIG),
+	/* C4 : SML0DATA ==> NC */
+	PAD_NC_LOCK(GPP_C4, NONE, LOCK_CONFIG),
 
 	/* D3  : ISH_GP3 ==> NC */
 	PAD_NC_LOCK(GPP_D3, NONE, LOCK_CONFIG),
@@ -37,6 +46,12 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_D8, NONE),
 	/* D9  : ISH_SPI_CS# ==> NC */
 	PAD_NC_LOCK(GPP_D9, NONE, LOCK_CONFIG),
+	/* D13 : ISH_UART0_RXD ==> NC */
+	PAD_NC_LOCK(GPP_D13, NONE, LOCK_CONFIG),
+	/* D14 : ISH_UART0_TXD ==> NC */
+	PAD_NC_LOCK(GPP_D14, NONE, LOCK_CONFIG),
+	/* D15 : ISH_UART0_RTS# ==> NC */
+	PAD_NC_LOCK(GPP_D15, NONE, LOCK_CONFIG),
 	/* D16 : ISH_UART0_CTS# ==> NC */
 	PAD_NC_LOCK(GPP_D16, NONE, LOCK_CONFIG),
 	/* D17  : UART1_RXD ==> APU_PEN_DETECT_ODL */
@@ -50,6 +65,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_E3, NONE),
 	/* E4  : SATA_DEVSLP0 ==> NC */
 	PAD_NC(GPP_E4, NONE),
+	/* E5  : SATA_DEVSLP1 ==> NC */
+	PAD_NC(GPP_E5, NONE),
 	/* E7  : PROC_GP1 ==> NC */
 	PAD_NC(GPP_E7, NONE),
 	/* E10 : THC0_SPI1_CS# ==> NC */
@@ -63,6 +80,8 @@ static const struct pad_config override_gpio_table[] = {
 
 	/* F6  : CNV_PA_BLANKING ==> NC */
 	PAD_NC(GPP_F6, NONE),
+	/* F19 : SRCCLKREQ6# ==> NC */
+	PAD_NC(GPP_F19, NONE),
 	/* F20 : EXT_PWR_GATE# ==> NC */
 	PAD_NC(GPP_F20, NONE),
 	/* F21 : EXT_PWR_GATE2# ==> NC */
@@ -80,8 +99,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC_LOCK(GPP_H12, NONE, LOCK_CONFIG),
 	/* H13 : I2C7_SCL ==> NC */
 	PAD_NC_LOCK(GPP_H13, NONE, LOCK_CONFIG),
-	/* H19 : SRCCLKREQ4# ==> EMMC_CLKREQ_ODL */
-	PAD_CFG_NF(GPP_H19, NONE, DEEP, NF1),
+	/* H19 : SRCCLKREQ4# ==> NC */
+	PAD_NC(GPP_H19, NONE),
 	/* H20 : IMGCLKOUT1 ==> NC */
 	PAD_NC(GPP_H20, NONE),
 	/* H21 : IMGCLKOUT2 ==> NC */

@@ -24,6 +24,12 @@ config BOARD_GOOGLE_OVIS
 config BOARD_GOOGLE_OVIS4ES
 	bool "-> Ovis4ES"
 
+config BOARD_GOOGLE_DEKU
+	bool "-> Deku"
+
+config BOARD_GOOGLE_DEKU4ES
+	bool "-> Deku4ES"
+
 config BOARD_GOOGLE_REX4ES
 	bool "-> Rex4ES"
 

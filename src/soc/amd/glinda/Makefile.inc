@@ -43,9 +43,14 @@ CPPFLAGS_common += -I$(src)/soc/amd/glinda/acpi
 CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/glinda
 CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/common
 
-# 0x40 accounts for the cbfs_file struct + filename + metadata structs, aligned to 64 bytes
-# Building the cbfs image will fail if the offset isn't large enough
+# Building the cbfs image will fail if the offset, aligned to 64 bytes, isn't large enough
+ifeq ($(CONFIG_CBFS_VERIFICATION),y)
+# 0x80 accounts for the cbfs_file struct + filename + metadata structs
+AMD_FW_AB_POSITION := 0x80
+else # ($(CONFIG_CBFS_VERIFICATION), y)
+# 0x40 accounts for the cbfs_file struct + filename + metadata structs without hash attribute
 AMD_FW_AB_POSITION := 0x40
+endif # ($(CONFIG_CBFS_VERIFICATION), y)
 
 GLINDA_FW_A_POSITION=$(call int-add, \
 	$(call get_fmap_value,FMAP_SECTION_FW_MAIN_A_START) $(AMD_FW_AB_POSITION))

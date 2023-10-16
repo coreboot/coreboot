@@ -34,6 +34,7 @@ oldconfig: KCONFIG_STRICT=
 
 savedefconfig: $(objk)/conf
 	cp $(DOTCONFIG) $(DEFCONFIG)
+	chmod +w $(DEFCONFIG)
 	$< --savedefconfig=$(DEFCONFIG) $(KBUILD_KCONFIG)
 
 FORCE:

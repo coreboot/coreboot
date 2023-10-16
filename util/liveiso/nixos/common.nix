@@ -8,7 +8,7 @@
 		<nixpkgs/nixos/modules/installer/cd-dvd/iso-image.nix>
 	];
 
-	system.stateVersion = "22.11";
+	system.stateVersion = "23.05";
 
 	isoImage = {
 		makeEfiBootable = true;
@@ -33,7 +33,7 @@
 			"console=ttyS0,115200"
 			"console=tty0"
 			"iomem=relaxed"
-			"intel-spi.writeable=1"
+			"spi_intel.writeable=1"
 		];
 		# pkgs.linuxPackages == lts
 		# pkgs.linuxPackages_latest == stable
@@ -75,7 +75,7 @@
 		];
 		openssh = {
 			enable = true;
-			permitRootLogin = "yes";
+			settings.PermitRootLogin = "yes";
 		};
 	};
 

@@ -7,6 +7,10 @@ Device (I2S1)
 {
 	Name (_HID, "AMDI5682")
 	Name (_CID, "AMDI5682")
+	Method (_STA, 0, NotSerialized)  // _STA: Status
+	{
+		Return (0x0B)
+	}
 
 	/* Device-Specific Data */
 	Name (_DSD, Package ()

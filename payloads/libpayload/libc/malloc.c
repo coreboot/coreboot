@@ -123,6 +123,18 @@ int dma_coherent(const void *ptr)
 	return !dma_initialized() || (dma->start <= ptr && dma->end > ptr);
 }
 
+/* Get the range of memory that can be allocated by the dma allocator. */
+void dma_allocator_range(void **start_out, size_t *size_out)
+{
+	if (dma_initialized()) {
+		*start_out = dma->start;
+		*size_out = dma->end - dma->start;
+	} else {
+		*start_out = NULL;
+		*size_out = 0;
+	}
+}
+
 /* Find free block of size >= len */
 static hdrtype_t volatile *find_free_block(int len, struct memory_type *type)
 {

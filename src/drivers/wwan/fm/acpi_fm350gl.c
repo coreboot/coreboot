@@ -2,6 +2,8 @@
 
 #include <acpi/acpigen.h>
 #include <acpi/acpi_device.h>
+#include <gpio.h>
+#include <stdio.h>
 #include "chip.h"
 #include "soc/intel/common/block/include/intelblocks/acpi.h"
 #include "soc/intel/common/block/pcie/rtd3/chip.h"
@@ -263,6 +265,55 @@ static const char *wwan_fm350gl_acpi_name(const struct device *dev)
 	return "PXSX";
 }
 
+static void
+wwan_fm350gl_acpi_event_interrupts(const struct acpi_gpio *wake_gpio)
+{
+	acpigen_write_name("_AEI");
+	acpigen_write_resourcetemplate_header();
+	acpi_device_write_gpio(wake_gpio);
+	acpigen_write_resourcetemplate_footer();
+}
+
+static void
+wwan_fm350gl_acpi_event_method(const struct device *dev,
+			       const struct acpi_gpio *wake_gpio)
+{
+	char name[5];
+	uint16_t pin;
+
+	pin = wake_gpio->pins[0];
+	if (CONFIG(GENERIC_GPIO_LIB))
+		pin = gpio_acpi_pin(pin);
+
+	if (pin > 0xff) {
+		printk(BIOS_ERR, "%s: pins above 0xFF are unsupported (pin %u)\n",
+		       __func__, pin);
+		return;
+	}
+
+	snprintf(name, sizeof(name), "_%c%02X",
+		 wake_gpio->irq.mode == ACPI_IRQ_EDGE_TRIGGERED ? 'E' : 'L', pin);
+
+	acpigen_write_method_serialized(name, 0);
+	acpigen_notify(acpi_device_path(dev), 0x02); /* NOTIFY_DEVICE_WAKE */
+	acpigen_write_method_end();
+}
+
+static void wwan_fm350gl_acpi_gpio_events(const struct device *dev)
+{
+	const struct drivers_wwan_fm_config *config = config_of(dev);
+	const struct acpi_gpio *wake_gpio = &config->wake_gpio;
+
+	/* Write into GPIO controller's scope */
+	if (CONFIG(GENERIC_GPIO_LIB))
+		acpigen_write_scope(wake_gpio->resource ? : gpio_acpi_path(wake_gpio->pins[0]));
+	else
+		acpigen_write_scope(wake_gpio->resource);
+	wwan_fm350gl_acpi_event_interrupts(wake_gpio);
+	wwan_fm350gl_acpi_event_method(dev, wake_gpio);
+	acpigen_write_scope_end();
+}
+
 static void wwan_fm350gl_acpi_fill_ssdt(const struct device *dev)
 {
 	const struct drivers_wwan_fm_config *config = config_of(dev);
@@ -323,6 +374,9 @@ static void wwan_fm350gl_acpi_fill_ssdt(const struct device *dev)
 		acpigen_write_device_end(); /* Device */
 	}
 	acpigen_write_scope_end(); /* Scope */
+
+	if (config->wake_gpio.pin_count && config->wake_gpio.type == ACPI_GPIO_TYPE_INTERRUPT)
+		wwan_fm350gl_acpi_gpio_events(dev);
 }
 
 static struct device_operations wwan_fm350gl_ops = {

@@ -35,3 +35,11 @@ config SEPARATE_SIGNED_PSPFW
 	help
 	  Put signed AMD/PSP firmwares outside FW_MAIN_[AB] so vboot doesn't verify them,
 	  and rely on PSP's verification.
+
+config PSP_VERSTAGE_STACK_IS_MAPPED
+	bool
+	default y if SOC_AMD_PICASSO
+	default n
+	help
+	  This configuration indicates whether the PSP Verstage stack is mapped to a virtual
+	  address space. This has been the case so far only in Picasso SoC.

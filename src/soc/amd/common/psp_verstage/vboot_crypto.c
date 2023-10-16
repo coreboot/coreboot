@@ -90,8 +90,11 @@ vb2_error_t vb2ex_hwcrypto_digest_extend(const uint8_t *buf, uint32_t size)
 	 * mapped address of SPI flash which makes crypto engine to return invalid address.
 	 * Hence if the buffer is from SRAM, pass it to crypto engine. Else copy into a
 	 * temporary buffer before passing it to crypto engine.
+	 *
+	 * Similarly in some SoCs, PSP verstage stack is mapped to a virtual address space.
+	 * In those SoCs, assume that the buffer is from SRAM and pass it to crypto engine.
 	 */
-	if (buf >= _sram && (buf + size) < _esram)
+	if (CONFIG(PSP_VERSTAGE_STACK_IS_MAPPED) || (buf >= _sram && (buf + size) < _esram))
 		return vb2ex_hwcrypto_digest_extend_psp_sram(buf, size);
 
 	while (size) {

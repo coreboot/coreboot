@@ -8,7 +8,7 @@ chip soc/amd/stoneyridge
 		ops stoneyridge_pci_domain_ops
 		device pci 00.0 alias gnb on ops stoneyridge_northbridge_operations end
 		device pci 00.2 alias iommu off ops amd_iommu_ops end
-		device pci 01.0 alias gfx off end # internal GPU
+		device pci 01.0 alias gfx off ops amd_graphics_ops end # internal GPU
 		device pci 01.1 alias gfx_hda off end # display HD Audio controller
 		device pci 02.0 on end # Dummy Host Bridge, do not disable
 		device pci 02.1 alias gpp_bridge_0 off end

@@ -4,6 +4,10 @@ fw_config
 		option STORAGE_UFS			1
 		option STORAGE_NVME			2
 	end
+	field FINGERPRINT 9
+		option DISABLE_FP			0
+		option ENABLE_FP			1
+	end
 end
 
 chip soc/intel/alderlake
@@ -318,6 +322,23 @@ chip soc/intel/alderlake
 				device i2c 2c on end
 			end
 		end #I2C5
+		device ref gspi1 on
+			chip drivers/spi/acpi
+				register "name" = ""CRFP""
+				register "hid" = "ACPI_DT_NAMESPACE_HID"
+				register "uid" = "1"
+				register "compat_string" = ""google,cros-ec-spi""
+				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F15_IRQ)"
+				register "wake" = "GPE0_DW2_15"
+				register "has_power_resource" = "1"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D1)"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D2)"
+				register "enable_delay_ms" = "3"
+				device spi 0 hidden
+					probe FINGERPRINT ENABLE_FP
+				end
+			end # FPMCU
+		end
 		device ref pcie_rp8 off end
 		device ref pcie_rp9 on
 			# Enable NVMe PCIE 9 using clk 1

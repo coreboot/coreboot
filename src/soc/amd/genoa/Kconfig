@@ -44,6 +44,10 @@ config EARLYRAM_BSP_STACK_SIZE
 	hex
 	default 0x1000
 
+config MAX_CPUS
+	int
+	default 384
+
 config PSP_APOB_DRAM_ADDRESS
 	hex
 	default 0x7001000

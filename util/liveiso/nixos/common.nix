@@ -170,7 +170,6 @@
 		upterm
 		usbutils
 		wget
-		xfsprogs.bin
 		zfs
 		zip
 		zstd

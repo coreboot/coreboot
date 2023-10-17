@@ -13,6 +13,11 @@ armv8_flags = -march=$(march) -I$(src)/arch/arm64/include/armv8/ -D__COREBOOT_AR
 ################################################################################
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_ARMV8_64),y)
 
+ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
+decompressor-ld-ccopts += -target arm64-elf
+bootblock-ld-ccopts += -target arm64-elf
+endif
+
 ifneq ($(CONFIG_BOOTBLOCK_CUSTOM),y)
 decompressor-y += bootblock.S
 ifneq ($(CONFIG_COMPRESS_BOOTBLOCK),y)
@@ -44,6 +49,10 @@ endif
 ################################################################################
 ifeq ($(CONFIG_ARCH_VERSTAGE_ARMV8_64),y)
 
+ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
+verstage-ld-ccopts += -target arm64-elf
+endif
+
 verstage-y += cache.c
 verstage-y += cpu.S
 verstage-y += exception.c
@@ -56,6 +65,10 @@ endif
 ## romstage
 ################################################################################
 ifeq ($(CONFIG_ARCH_ROMSTAGE_ARMV8_64),y)
+
+ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
+romstage-ld-ccopts += -target arm64-elf
+endif
 
 romstage-y += cache.c
 romstage-y += cpu.S
@@ -72,6 +85,10 @@ endif
 ## ramstage
 ################################################################################
 ifeq ($(CONFIG_ARCH_RAMSTAGE_ARMV8_64),y)
+
+ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
+ramstage-ld-ccopts += -target arm64-elf
+endif
 
 ramstage-y += cache.c
 ramstage-y += cpu.S

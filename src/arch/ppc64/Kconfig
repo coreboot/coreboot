@@ -2,6 +2,7 @@
 
 config ARCH_PPC64
 	bool
+	select ARCH_SUPPORTS_CLANG
 
 config ARCH_BOOTBLOCK_PPC64
 	bool

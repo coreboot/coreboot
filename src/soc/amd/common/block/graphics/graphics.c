@@ -114,6 +114,18 @@ static void generate_atif(const struct device *dev)
 	acpigen_pop_len(); /* Scope */
 }
 
+static void generate_acp(const struct device *dev)
+{
+	/* Scope (\_SB.PCI0.IGFX) */
+	acpigen_write_scope(acpi_device_path(dev));
+	acpigen_write_device("ACP");
+
+	acpigen_write_name_string("_HID", "BOOT0003");
+
+	acpigen_pop_len(); /* Device */
+	acpigen_pop_len(); /* Scope */
+}
+
 static void graphics_fill_ssdt(const struct device *dev)
 {
 	acpi_device_write_pci_dev(dev);
@@ -124,6 +136,9 @@ static void graphics_fill_ssdt(const struct device *dev)
 
 	if (CONFIG(SOC_AMD_COMMON_BLOCK_GRAPHICS_ATIF))
 		generate_atif(dev);
+
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_GRAPHICS_ACP))
+		generate_acp(dev);
 }
 
 static const char *graphics_acpi_name(const struct device *dev)

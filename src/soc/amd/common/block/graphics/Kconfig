@@ -26,3 +26,10 @@ config USE_SELECTIVE_GOP_INIT
 	  Select this option to only run the FSP GOP driver when needed for pre-OS display init
 	  (eg, Recovery and Developer Modes). Otherwise, use cached VBIOS/ATOMBIOS tables.
 	  Selecting this option will save approx. 130ms boot time on the normal boot path.
+
+config SOC_AMD_COMMON_BLOCK_GRAPHICS_ACP
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_GRAPHICS
+	help
+	  Select this option to provide Audio CoProcessor ACPI device for pre-Ryzen APUs for
+	  use by custom Windows drivers.

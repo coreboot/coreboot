@@ -6,6 +6,6 @@
 
 void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config)
 {
-	if (fw_config_probe(FW_CONFIG(FPMCU_MASK, FPMCU_DISABLED)))
+	if (fw_config_probe(FW_CONFIG(FP_MCU, FP_ABSENT)))
 		config->serial_io_gspi_mode[PchSerialIoIndexGSPI1] = PchSerialIoDisabled;
 }

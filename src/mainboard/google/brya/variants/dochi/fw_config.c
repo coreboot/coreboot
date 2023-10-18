@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <bootstate.h>
+#include <baseboard/gpio.h>
+#include <baseboard/variants.h>
 #include <console/console.h>
 #include <fw_config.h>
-#include <gpio.h>
 
 static const struct pad_config fp_disable_pads[] = {
 	PAD_NC(GPP_D0, NONE),	/* D0  : ISH_GP0 ==> PCH_FP_BOOT0 */
@@ -11,11 +11,10 @@ static const struct pad_config fp_disable_pads[] = {
 	PAD_NC(GPP_D2, NONE),	/* D2  : ISH_GP2 ==> EN_FP_PWR */
 };
 
-static void fw_config_handle(void *unused)
+void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 {
-	if (fw_config_probe(FW_CONFIG(FPMCU_MASK, FPMCU_DISABLED))) {
-		printk(BIOS_INFO, "Disabling FP pads\n");
-		gpio_configure_pads(fp_disable_pads, ARRAY_SIZE(fp_disable_pads));
+	if (fw_config_probe(FW_CONFIG(FP_MCU, FP_ABSENT))) {
+		printk(BIOS_INFO, "Configure GPIOs for no FP module.\n");
+		gpio_padbased_override(padbased_table, fp_disable_pads, ARRAY_SIZE(fp_disable_pads));
 	}
 }
-BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, fw_config_handle, NULL);

@@ -452,4 +452,7 @@ config SOC_INTEL_COMMON_BLOCK_ACPI_SLP_S0_FREQ_HZ
 	help
 	  slp_s0_residency granularity in 122us ticks (i.e. ~8.2KHz) in Meteor Lake.
 
+config CPU_INTEL_COMMON_RESERVED_PHYS_ADDR_BITS
+	default 4
+
 endif

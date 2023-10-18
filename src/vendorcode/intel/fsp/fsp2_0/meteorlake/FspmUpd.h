@@ -1442,9 +1442,30 @@ typedef struct {
 **/
   UINT16                      DcLoadline[6];
 
-/** Offset 0x063C - Reserved
+/** Offset 0x063C - Power State 1 Threshold current
+  PS Current Threshold1, defined in 1/4 A increments. A value of 400 = 100A. Range
+  0-512, which translates to 0-128A. 0 = AUTO. [0] for IA, [1] for GT, [2] for SA,
+  [3] through [5] are Reserved.
 **/
-  UINT8                      Reserved34[90];
+  UINT16                      Psi1Threshold[6];
+
+/** Offset 0x0648 - Power State 2 Threshold current
+  PS Current Threshold2, defined in 1/4 A increments. A value of 400 = 100A. Range
+  0-512, which translates to 0-128A. 0 = AUTO. [0] for IA, [1] for GT, [2] for SA,
+  [3] through [5] are Reserved.
+**/
+  UINT16                      Psi2Threshold[6];
+
+/** Offset 0x0654 - Power State 3 Threshold current
+  PS Current Threshold3, defined in 1/4 A increments. A value of 400 = 100A. Range
+  0-512, which translates to 0-128A. 0 = AUTO. [0] for IA, [1] for GT, [2] for SA,
+  [3] through [5] are Reserved.
+**/
+  UINT16                      Psi3Threshold[6];
+
+/** Offset 0x0660 - Reserved
+**/
+  UINT8                       Reserved34[54];
 
 /** Offset 0x0696 - Thermal Design Current enable/disable
   Thermal Design Current enable/disable; <b>0: Disable</b>; 1: Enable. [0] for IA,

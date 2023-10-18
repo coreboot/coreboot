@@ -10,19 +10,6 @@ Date:   Fri Nov 22 22:08:15 2019 +0100
     Change-Id: I9e62b05e45709f1539e455e2eed37308609be15e
     Signed-off-by: Patrick Georgi <pgeorgi@google.com>
 
-Index: kconfig/symbol.c
-===================================================================
---- kconfig.orig/symbol.c
-+++ kconfig/symbol.c
-@@ -757,7 +757,7 @@ const char *sym_get_string_default(struc
- 		}
- 	case S_INT:
- 	case S_HEX:
--		return str;
-+		return "0";
- 	case S_STRING:
- 		return str;
- 	case S_UNKNOWN:
 Index: kconfig/confdata.c
 ===================================================================
 --- kconfig.orig/confdata.c

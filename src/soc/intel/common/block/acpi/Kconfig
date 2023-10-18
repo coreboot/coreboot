@@ -65,3 +65,13 @@ config SOC_INTEL_UFS_LTR_DISQUALIFY
 	  LTR needs to be disqualified for UFS in D3 to ensure PMC
 	  ignores LTR from UFS IP which is infinite.
 endif
+
+if SOC_INTEL_COMMON_BLOCK_ACPI_LPIT
+
+config SOC_INTEL_COMMON_BLOCK_ACPI_SLP_S0_FREQ_HZ
+	hex
+	help
+	  Define the slp_s0_residency frequency to be reported in the
+	  LPIT ACPI table.
+
+endif

@@ -56,7 +56,8 @@ unsigned long acpi_fill_lpit(unsigned long current)
 	sys_counter->residency_counter.bit_width	= 32;
 	sys_counter->residency_counter.space_id		= ACPI_ADDRESS_SPACE_MEMORY;
 	sys_counter->residency_counter.access_size	= ACPI_ACCESS_SIZE_DWORD_ACCESS;
-	sys_counter->counter_frequency			= ACPI_LPIT_SLP_S0_FREQ;
+	sys_counter->counter_frequency			=
+		CONFIG_SOC_INTEL_COMMON_BLOCK_ACPI_SLP_S0_FREQ_HZ;
 
 	/* Min. residency and worst-case latency (from FSP and vendor dumps) */
 	sys_counter->min_residency			= 30000; /* break-even: 30 ms */

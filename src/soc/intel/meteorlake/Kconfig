@@ -447,8 +447,7 @@ config SOC_INTEL_CSE_FW_PARTITION_CMOS_OFFSET
 	int
 	default 161
 
-config ACPI_SOC_INTEL_SLP_S0_FREQ_HZ
-	hex
+config SOC_INTEL_COMMON_BLOCK_ACPI_SLP_S0_FREQ_HZ
 	default 0x2005
 	help
 	  slp_s0_residency granularity in 122us ticks (i.e. ~8.2KHz) in Meteor Lake.

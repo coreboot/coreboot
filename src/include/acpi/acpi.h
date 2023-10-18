@@ -454,11 +454,6 @@ typedef struct acpi_lpi_desc_hdr {
 } __packed acpi_lpi_desc_hdr_t;
 
 #define ACPI_LPIT_CTR_FREQ_TSC	0
-#if defined CONFIG_ACPI_SOC_INTEL_SLP_S0_FREQ_HZ && CONFIG_ACPI_SOC_INTEL_SLP_S0_FREQ_HZ != 0
-#define ACPI_LPIT_SLP_S0_FREQ CONFIG_ACPI_SOC_INTEL_SLP_S0_FREQ_HZ
-#else
-#define ACPI_LPIT_SLP_S0_FREQ 0
-#endif
 
 
 /* LPIT: Native C-state instruction based LPI structure */

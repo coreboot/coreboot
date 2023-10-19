@@ -146,7 +146,7 @@ chip soc/intel/jasperlake
 				device i2c 15 on end
 			end
 			chip drivers/i2c/hid
-				register "generic.hid" = ""GXTP7288""
+				register "generic.hid" = ""GDIX0000""
 				register "generic.desc" = ""Goodix Touchpad""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_B3_IRQ)"
 				register "generic.wake" = "GPE0_DW0_03"

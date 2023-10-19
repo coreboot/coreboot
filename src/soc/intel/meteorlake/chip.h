@@ -18,8 +18,27 @@
 #include <soc/usb.h>
 #include <stdint.h>
 
+/* Define config parameters for In-Band ECC (IBECC). */
+#define MAX_IBECC_REGIONS 8
+
 #define MAX_SAGV_POINTS 4
 #define MAX_HD_AUDIO_SDI_LINKS 2
+
+/* In-Band ECC Operation Mode */
+enum ibecc_mode {
+	IBECC_MODE_PER_REGION,
+	IBECC_MODE_NONE,
+	IBECC_MODE_ALL
+};
+
+struct ibecc_config {
+	bool enable;
+	bool parity_en;
+	enum ibecc_mode mode;
+	bool region_enable[MAX_IBECC_REGIONS];
+	uint16_t region_base[MAX_IBECC_REGIONS];
+	uint16_t region_mask[MAX_IBECC_REGIONS];
+};
 
 /* Types of different SKUs */
 enum soc_intel_meteorlake_power_limits {
@@ -150,6 +169,9 @@ struct soc_intel_meteorlake_config {
 
 	/* TCC activation offset */
 	uint32_t tcc_offset;
+
+	/* In-Band ECC (IBECC) configuration */
+	struct ibecc_config ibecc;
 
 	/* System Agent dynamic frequency support. Only effects ULX/ULT CPUs.
 	 * When enabled memory will be training at two different frequencies.

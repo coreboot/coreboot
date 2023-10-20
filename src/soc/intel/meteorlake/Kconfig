@@ -457,4 +457,13 @@ config SOC_INTEL_COMMON_BLOCK_ACPI_SLP_S0_FREQ_HZ
 config CPU_INTEL_COMMON_RESERVED_PHYS_ADDR_BITS
 	default 4
 
+config SOC_INTEL_METEORLAKE_SIGN_OF_LIFE
+	bool
+	default y if !SOC_INTEL_METEORLAKE_PRE_PRODUCTION_SILICON
+	depends on MAINBOARD_HAS_CHROMEOS
+	select VBT_CBFS_COMPRESSION_DEFAULT_LZ4
+	help
+	  Enable the FSP-M Sign-of-Life feature to display a
+	  configurable text message on screen during memory training
+	  and CSME update.
 endif

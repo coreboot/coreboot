@@ -1,18 +1,22 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <assert.h>
+#include <bootmode.h>
 #include <console/console.h>
 #include <cpu/intel/common/common.h>
 #include <cpu/intel/cpu_ids.h>
 #include <cpu/x86/msr.h>
 #include <device/device.h>
+#include <device/pci.h>
 #include <drivers/wifi/generic/wifi.h>
 #include <fsp/fsp_debug_event.h>
 #include <fsp/util.h>
 #include <intelbasecode/ramtop.h>
 #include <intelblocks/cpulib.h>
+#include <intelblocks/cse.h>
 #include <intelblocks/pcie_rp.h>
 #include <option.h>
+#include <soc/cpu.h>
 #include <soc/gpio_soc_defs.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>
@@ -22,6 +26,7 @@
 #include <soc/soc_chip.h>
 #include <soc/soc_info.h>
 #include <string.h>
+#include <ux_locales.h>
 
 #define FSP_CLK_NOTUSED			0xFF
 #define FSP_CLK_LAN			0x70
@@ -418,6 +423,52 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		fill_fspm_params[i](m_cfg, config);
 }
 
+#define UX_MEMORY_TRAINING_DESC	"memory_training_desc"
+
+#define VGA_INIT_CONTROL_ENABLE		BIT(0)
+/* Tear down legacy VGA mode before exiting FSP-M. */
+#define VGA_INIT_CONTROL_TEAR_DOWN	BIT(1)
+
+static void fill_fspm_sign_of_life(FSP_M_CONFIG *m_cfg,
+				   FSPM_ARCH_UPD *arch_upd)
+{
+	void *vbt;
+	size_t vbt_size;
+	uint32_t vga_init_control = 0;
+
+	/* Memory training.  */
+	if (!arch_upd->NvsBufferPtr)
+		vga_init_control = VGA_INIT_CONTROL_ENABLE |
+			VGA_INIT_CONTROL_TEAR_DOWN;
+
+	if (is_cse_fw_update_required())
+		vga_init_control = VGA_INIT_CONTROL_ENABLE;
+
+	if (!vga_init_control)
+		return;
+
+	const char *text = ux_locales_get_text(UX_MEMORY_TRAINING_DESC);
+	/* No localized text found; fallback to built-in English. */
+	if (!text)
+		text = "Your device is finishing an update. "
+		       "This may take 1-2 minutes.\n"
+		       "Please do not turn off your device.";
+
+	vbt = cbfs_map("vbt.bin", &vbt_size);
+	if (!vbt) {
+		printk(BIOS_ERR, "Could not load vbt.bin\n");
+		return;
+	}
+
+	printk(BIOS_INFO, "Enabling FSP-M Sign-of-Life\n");
+
+	m_cfg->VgaInitControl = vga_init_control;
+	m_cfg->VbtPtr = (UINT32)vbt;
+	m_cfg->VbtSize = vbt_size;
+	m_cfg->LidStatus = CONFIG(VBOOT_LID_SWITCH) ? get_lid_switch() : CONFIG(RUN_FSP_GOP);
+	m_cfg->VgaMessage = (UINT32)text;
+}
+
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	const struct soc_intel_meteorlake_config *config;
@@ -443,6 +494,10 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	config = config_of_soc();
 
 	soc_memory_init_params(m_cfg, config);
+
+	if (CONFIG(SOC_INTEL_METEORLAKE_SIGN_OF_LIFE))
+		fill_fspm_sign_of_life(m_cfg, arch_upd);
+
 	mainboard_memory_init_params(mupd);
 }
 

@@ -206,6 +206,7 @@ static void configure_c_states(void)
 		msr = rdmsr(MSR_PP0_CURRENT_CONFIG);
 		msr.lo &= ~0x1fff;
 		msr.lo |= PP0_CURRENT_LIMIT;
+		msr.lo |= PP0_CURRENT_LIMIT_LOCK;
 		wrmsr(MSR_PP0_CURRENT_CONFIG, msr);
 
 		/* Secondary Plane Current Limit */
@@ -215,6 +216,7 @@ static void configure_c_states(void)
 			msr.lo |= PP1_CURRENT_LIMIT_IVB;
 		else
 			msr.lo |= PP1_CURRENT_LIMIT_SNB;
+		msr.lo |= PP1_CURRENT_LIMIT_LOCK;
 		wrmsr(MSR_PP1_CURRENT_CONFIG, msr);
 	}
 }

@@ -4,7 +4,6 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pnp.h>
-#include <option.h>
 #include <pc80/keyboard.h>
 #include <stdint.h>
 #include "mec5035.h"
@@ -100,10 +99,6 @@ static void mec5035_init(struct device *dev)
 	mec5035_mouse_touchpad(TP_PS2_MOUSE);
 
 	pc_keyboard_init(NO_AUX_DEVICE);
-
-	mec5035_radio_enable(RADIO_WLAN, get_uint_option("wlan", 1));
-	mec5035_radio_enable(RADIO_WWAN, get_uint_option("wwan", 1));
-	mec5035_radio_enable(RADIO_WPAN, get_uint_option("bluetooth", 1));
 }
 
 static struct device_operations ops = {

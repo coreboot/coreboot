@@ -23,7 +23,7 @@
 
 /* Types of different SKUs */
 enum soc_intel_meteorlake_power_limits {
-	MTL_P_282_CORE,
+	MTL_P_282_242_CORE,
 	MTL_P_682_CORE,
 	MTL_POWER_LIMITS_COUNT
 };
@@ -40,7 +40,8 @@ static const struct {
 	enum soc_intel_meteorlake_power_limits limits;
 	enum soc_intel_meteorlake_cpu_tdps cpu_tdp;
 } cpuid_to_mtl[] = {
-	{ PCI_DID_INTEL_MTL_P_ID_2, MTL_P_282_CORE, TDP_15W },
+	{ PCI_DID_INTEL_MTL_P_ID_5, MTL_P_282_242_CORE, TDP_15W },
+	{ PCI_DID_INTEL_MTL_P_ID_2, MTL_P_282_242_CORE, TDP_15W },
 	{ PCI_DID_INTEL_MTL_P_ID_1, MTL_P_682_CORE, TDP_28W },
 };
 

@@ -77,13 +77,18 @@ const char *soc_acpi_name(const struct device *dev)
 	case SA_DEVFN_PEG1:		return "PEG1";
 	case SA_DEVFN_PEG2:		return "PEG2";
 	case SA_DEVFN_PEG3:		return "PEG3";
+	case SA_DEVFN_IGD:		return "GFX0";
+	case SA_DEVFN_TCSS_XHCI:	return "TXHC";
 	case SA_DEVFN_TCSS_XDCI:	return "TXDC";
+	case SA_DEVFN_TCSS_DMA0:	return "TDM0";
+	case SA_DEVFN_TCSS_DMA1:	return "TDM1";
 	case SA_DEVFN_TBT0:		return "TRP0";
 	case SA_DEVFN_TBT1:		return "TRP1";
 	case SA_DEVFN_TBT2:		return "TRP2";
 	case SA_DEVFN_TBT3:		return "TRP3";
 	case SA_DEVFN_IPU:		return "IPU0";
 	case SA_DEVFN_GNA:		return "GNA";
+	case SA_DEVFN_DPTF:		return "TCPU";
 	case PCH_DEVFN_ISH:		return "ISHB";
 	case PCH_DEVFN_XHCI:		return "XHCI";
 	case PCH_DEVFN_I2C0:		return "I2C0";
@@ -125,9 +130,13 @@ const char *soc_acpi_name(const struct device *dev)
 	case PCH_DEVFN_GSPI1:		return "SPI1";
 	case PCH_DEVFN_GSPI2:		return "SPI2";
 	case PCH_DEVFN_GSPI3:		return "SPI3";
+	case PCH_DEVFN_ESPI:		return "LPCB";
 	case PCH_DEVFN_HDA:		return "HDAS";
 	case PCH_DEVFN_SMBUS:		return "SBUS";
 	case PCH_DEVFN_GBE:		return "GLAN";
+	case PCH_DEVFN_SRAM:		return "SRAM";
+	case PCH_DEVFN_SPI:		return "FSPI";
+	case PCH_DEVFN_CSE:		return "HEC1";
 	}
 
 	return NULL;

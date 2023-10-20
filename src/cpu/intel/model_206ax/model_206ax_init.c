@@ -16,6 +16,7 @@
 #include <cpu/intel/smm_reloc.h>
 #include <cpu/intel/common/common.h>
 #include <smbios.h>
+#include <smp/node.h>
 #include <types.h>
 
 /* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */
@@ -170,45 +171,52 @@ static void configure_c_states(void)
 	msr.lo |= (1 << 15);	// Lock C-State MSR
 	wrmsr(MSR_PKG_CST_CONFIG_CONTROL, msr);
 
-	msr = rdmsr(MSR_MISC_PWR_MGMT);
-	msr.lo &= ~(1 << 0);	// Enable P-state HW_ALL coordination
-	wrmsr(MSR_MISC_PWR_MGMT, msr);
+	if (boot_cpu()) {
+		/*
+		 * The following MSRs are in scope 'Package', thus it's sufficient
+		 * to write them once on one core.
+		 */
 
-	msr = rdmsr(MSR_POWER_CTL);
-	msr.lo |= (1 << 18);	// Enable Energy Perf Bias MSR 0x1b0
-	msr.lo |= (1 << 1);	// C1E Enable
-	msr.lo |= (1 << 0);	// Bi-directional PROCHOT#
-	wrmsr(MSR_POWER_CTL, msr);
+		msr = rdmsr(MSR_MISC_PWR_MGMT);
+		msr.lo &= ~(1 << 0);	// Enable P-state HW_ALL coordination
+		wrmsr(MSR_MISC_PWR_MGMT, msr);
 
-	/* C3 Interrupt Response Time Limit */
-	msr.hi = 0;
-	msr.lo = IRTL_VALID | IRTL_1024_NS | 0x50;
-	wrmsr(MSR_PKGC3_IRTL, msr);
+		msr = rdmsr(MSR_POWER_CTL);
+		msr.lo |= (1 << 18);	// Enable Energy Perf Bias MSR 0x1b0
+		msr.lo |= (1 << 1);	// C1E Enable
+		msr.lo |= (1 << 0);	// Bi-directional PROCHOT#
+		wrmsr(MSR_POWER_CTL, msr);
 
-	/* C6 Interrupt Response Time Limit */
-	msr.hi = 0;
-	msr.lo = IRTL_VALID | IRTL_1024_NS | 0x68;
-	wrmsr(MSR_PKGC6_IRTL, msr);
+		/* C3 Interrupt Response Time Limit */
+		msr.hi = 0;
+		msr.lo = IRTL_VALID | IRTL_1024_NS | 0x50;
+		wrmsr(MSR_PKGC3_IRTL, msr);
 
-	/* C7 Interrupt Response Time Limit */
-	msr.hi = 0;
-	msr.lo = IRTL_VALID | IRTL_1024_NS | 0x6D;
-	wrmsr(MSR_PKGC7_IRTL, msr);
+		/* C6 Interrupt Response Time Limit */
+		msr.hi = 0;
+		msr.lo = IRTL_VALID | IRTL_1024_NS | 0x68;
+		wrmsr(MSR_PKGC6_IRTL, msr);
 
-	/* Primary Plane Current Limit */
-	msr = rdmsr(MSR_PP0_CURRENT_CONFIG);
-	msr.lo &= ~0x1fff;
-	msr.lo |= PP0_CURRENT_LIMIT;
-	wrmsr(MSR_PP0_CURRENT_CONFIG, msr);
+		/* C7 Interrupt Response Time Limit */
+		msr.hi = 0;
+		msr.lo = IRTL_VALID | IRTL_1024_NS | 0x6D;
+		wrmsr(MSR_PKGC7_IRTL, msr);
 
-	/* Secondary Plane Current Limit */
-	msr = rdmsr(MSR_PP1_CURRENT_CONFIG);
-	msr.lo &= ~0x1fff;
-	if (cpuid_eax(1) >= 0x30600)
-		msr.lo |= PP1_CURRENT_LIMIT_IVB;
-	else
-		msr.lo |= PP1_CURRENT_LIMIT_SNB;
-	wrmsr(MSR_PP1_CURRENT_CONFIG, msr);
+		/* Primary Plane Current Limit */
+		msr = rdmsr(MSR_PP0_CURRENT_CONFIG);
+		msr.lo &= ~0x1fff;
+		msr.lo |= PP0_CURRENT_LIMIT;
+		wrmsr(MSR_PP0_CURRENT_CONFIG, msr);
+
+		/* Secondary Plane Current Limit */
+		msr = rdmsr(MSR_PP1_CURRENT_CONFIG);
+		msr.lo &= ~0x1fff;
+		if (cpuid_eax(1) >= 0x30600)
+			msr.lo |= PP1_CURRENT_LIMIT_IVB;
+		else
+			msr.lo |= PP1_CURRENT_LIMIT_SNB;
+		wrmsr(MSR_PP1_CURRENT_CONFIG, msr);
+	}
 }
 
 static void configure_thermal_target(struct device *dev)
@@ -216,13 +224,20 @@ static void configure_thermal_target(struct device *dev)
 	struct cpu_intel_model_206ax_config *conf = dev->bus->dev->chip_info;
 	msr_t msr;
 
-	/* Set TCC activation offset if supported */
-	msr = rdmsr(MSR_PLATFORM_INFO);
-	if ((msr.lo & (1 << 30)) && conf->tcc_offset) {
-		msr = rdmsr(MSR_TEMPERATURE_TARGET);
-		msr.lo &= ~(0xf << 24); /* Bits 27:24 */
-		msr.lo |= (conf->tcc_offset & 0xf) << 24;
-		wrmsr(MSR_TEMPERATURE_TARGET, msr);
+	if (boot_cpu()) {
+		/*
+		 * The following MSR is in scope 'Package', thus it's sufficient
+		 * to write it once on one core.
+		 */
+
+		/* Set TCC activation offset if supported */
+		msr = rdmsr(MSR_PLATFORM_INFO);
+		if ((msr.lo & (1 << 30)) && conf->tcc_offset) {
+			msr = rdmsr(MSR_TEMPERATURE_TARGET);
+			msr.lo &= ~(0xf << 24); /* Bits 27:24 */
+			msr.lo |= (conf->tcc_offset & 0xf) << 24;
+			wrmsr(MSR_TEMPERATURE_TARGET, msr);
+		}
 	}
 }
 
@@ -241,10 +256,17 @@ static void configure_misc(void)
 	msr.hi = 0;
 	wrmsr(IA32_THERM_INTERRUPT, msr);
 
-	/* Enable package critical interrupt only */
-	msr.lo = 1 << 4;
-	msr.hi = 0;
-	wrmsr(IA32_PACKAGE_THERM_INTERRUPT, msr);
+	if (boot_cpu()) {
+		/*
+		 * The following MSR is in scope 'Package', thus it's sufficient
+		 * to write it once on one core.
+		 */
+
+		/* Enable package critical interrupt only */
+		msr.lo = 1 << 4;
+		msr.hi = 0;
+		wrmsr(IA32_PACKAGE_THERM_INTERRUPT, msr);
+	}
 }
 
 static void set_max_ratio(void)

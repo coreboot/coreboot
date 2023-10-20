@@ -190,17 +190,26 @@ static void configure_c_states(struct device *dev)
 
 		/* C3 Interrupt Response Time Limit */
 		msr.hi = 0;
-		msr.lo = IRTL_VALID | IRTL_1024_NS | 0x50;
+		if (IS_IVY_CPU(cpu_get_cpuid()))
+			msr.lo = IRTL_VALID | IRTL_1024_NS | 0x3b;
+		else
+			msr.lo = IRTL_VALID | IRTL_1024_NS | 0x50;
 		wrmsr(MSR_PKGC3_IRTL, msr);
 
 		/* C6 Interrupt Response Time Limit */
 		msr.hi = 0;
-		msr.lo = IRTL_VALID | IRTL_1024_NS | 0x68;
+		if (IS_IVY_CPU(cpu_get_cpuid()))
+			msr.lo = IRTL_VALID | IRTL_1024_NS | 0x50;
+		else
+			msr.lo = IRTL_VALID | IRTL_1024_NS | 0x68;
 		wrmsr(MSR_PKGC6_IRTL, msr);
 
 		/* C7 Interrupt Response Time Limit */
 		msr.hi = 0;
-		msr.lo = IRTL_VALID | IRTL_1024_NS | 0x6D;
+		if (IS_IVY_CPU(cpu_get_cpuid()))
+			msr.lo = IRTL_VALID | IRTL_1024_NS | 0x57;
+		else
+			msr.lo = IRTL_VALID | IRTL_1024_NS | 0x6D;
 		wrmsr(MSR_PKGC7_IRTL, msr);
 
 		/* Primary Plane Current Limit (Icc) */

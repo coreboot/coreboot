@@ -219,8 +219,6 @@ chip soc/intel/cannonlake
 			end
 		end # I2C #1
 
-		device pci 15.2 off end # I2C #2
-
 		device pci 19.0 on
 			chip drivers/i2c/da7219
 				# TODO: these settings were copied from another board

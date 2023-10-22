@@ -143,7 +143,6 @@ chip soc/intel/cannonlake
 				device i2c 15 on end
 			end
 		end # I2C #1
-		device pci 15.2 off end # I2C #2
 		device pci 15.3 off end # I2C #3
 		device pci 19.0 on
 			chip drivers/i2c/generic

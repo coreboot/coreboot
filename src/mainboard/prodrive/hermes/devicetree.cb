@@ -170,11 +170,12 @@ chip soc/intel/cannonlake
 		# This device does not have any function on CNP-H, but it needs
 		# to be here so that the resource allocator is aware of UART 2.
 		device pci 19.0 hidden end
-		chip soc/intel/common/block/uart
-			device pci 19.2 hidden
+		device pci 19.2 hidden
+			chip soc/intel/common/block/uart
 				register "devid" = "PCI_DID_INTEL_CNP_H_UART2"
-			end # UART #2, in ACPI mode
-		end
+				device generic 0 hidden end
+			end
+		end # UART #2, in ACPI mode
 		device pci 1b.4 on	# PCIe root port 21 (Slot 1)
 			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthOther" "SLOT1" "SlotDataBusWidth4X"
 			register "PcieRpEnable[20]" = "1"

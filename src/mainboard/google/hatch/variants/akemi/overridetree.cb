@@ -72,99 +72,49 @@ chip soc/intel/cannonlake
 	register "ScsEmmcHs400Enabled" = "1"
 
 	device domain 0 on
-		device pci 02.0 on	# Integrated Graphics Device
+		device ref igpu		on
 			register "gfx" = "GMA_DEFAULT_PANEL(0)"
 		end
-		device pci 14.0 on
+		device ref xhci		on
 			chip drivers/usb/acpi
-				register "desc" = ""Root Hub""
-				register "type" = "UPC_TYPE_HUB"
-				device usb 0.0 on
-					chip drivers/usb/acpi
-						register "desc" = ""Left Type-C Port""
-						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
-						register "group" = "ACPI_PLD_GROUP(1, 1)"
-						device usb 2.0 on end
-					end
-					chip drivers/usb/acpi
-						register "desc" = ""Right Type-C Port 1""
-						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
-						register "group" = "ACPI_PLD_GROUP(2, 1)"
-						device usb 2.1 on end
-					end
-					chip drivers/usb/acpi
-						register "desc" = ""Left Type-A Port""
-						register "type" = "UPC_TYPE_A"
-						register "group" = "ACPI_PLD_GROUP(1, 2)"
-						device usb 2.2 on end
-					end
+				device ref xhci_root_hub on
 					chip drivers/usb/acpi
 						# No Type-A Port 1
-						device usb 2.3 off end
+						device ref usb2_port4 off end
 					end
 					chip drivers/usb/acpi
 						# Unused
-						device usb 2.4 off end
+						device ref usb2_port5 off end
 					end
 					chip drivers/usb/acpi
 						# No WWAN
-						device usb 2.5 off end
-					end
-					chip drivers/usb/acpi
-						register "desc" = ""Camera""
-						register "type" = "UPC_TYPE_INTERNAL"
-						device usb 2.6 on end
+						device ref usb2_port6 off end
 					end
 					chip drivers/usb/acpi
 						# Unused
-						device usb 2.7 off end
+						device ref usb2_port8 off end
 					end
 					chip drivers/usb/acpi
 						# Unused
-						device usb 2.8 off end
-					end
-					chip drivers/usb/acpi
-						register "desc" = ""Bluetooth""
-						register "type" = "UPC_TYPE_INTERNAL"
-						register "reset_gpio" =
-								"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C14)"
-						device usb 2.9 on end
-					end
-					chip drivers/usb/acpi
-						register "desc" = ""Left Type-C Port""
-						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
-						register "group" = "ACPI_PLD_GROUP(1, 1)"
-						device usb 3.0 on end
-					end
-					chip drivers/usb/acpi
-						register "desc" = ""Right Type-C Port 1""
-						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
-						register "group" = "ACPI_PLD_GROUP(2, 1)"
-						device usb 3.1 on end
-					end
-					chip drivers/usb/acpi
-						register "desc" = ""Left Type-A Port""
-						register "type" = "UPC_TYPE_USB3_A"
-						register "group" = "ACPI_PLD_GROUP(1, 2)"
-						device usb 3.2 on end
+						device ref usb2_port9 off end
 					end
 					chip drivers/usb/acpi
 						# No Type-A Port 1
-						device usb 3.3 off end
+						device ref usb3_port4 off end
 					end
 					chip drivers/usb/acpi
 						# No WWAN
-						device usb 3.4 off end
+						device ref usb3_port5 off end
 					end
 					chip drivers/usb/acpi
 						# Unused
-						device usb 3.5 off end
+						device ref usb3_port6 off end
 					end
 				end
 			end
 		end # USB xHCI
-		device pci 14.5 on  end # SDCard
-		device pci 15.0 on
+		device ref sdxc		on end
+		device ref i2c0		on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
@@ -184,7 +134,7 @@ chip soc/intel/cannonlake
 				device i2c 0x2c on end
 			end
 		end # I2C #0
-		device pci 15.1 on
+		device ref i2c1		on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0001""
 				register "desc" = ""ELAN Touchscreen""
@@ -218,7 +168,7 @@ chip soc/intel/cannonlake
 				device i2c 5d on end
 			end
 		end # I2C #1
-		device pci 19.0 on
+		device ref i2c4		on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""
 				register "name" = ""RT58""
@@ -232,8 +182,8 @@ chip soc/intel/cannonlake
 				device i2c 1a on end
 			end
 		end #I2C #4
-		device pci 1a.0 on  end # eMMC
-		device pci 1f.3 on
+		device ref emmc		on end
+		device ref hda		on
 			chip drivers/generic/max98357a
 				register "hid" = ""MX98357A""
 				register "sdmode_gpio" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H3)"
@@ -246,7 +196,7 @@ chip soc/intel/cannonlake
 				register "mic_tplg" = "_2ch_pdm0"
 				device generic 0 on end
 			end
-		end # Intel HDA
+		end
 	end
 
 end

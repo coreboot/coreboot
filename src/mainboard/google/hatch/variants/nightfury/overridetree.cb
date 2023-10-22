@@ -262,7 +262,6 @@ chip soc/intel/cannonlake
 		# No PCIe WiFi
 		device pci 1d.5 off end
 		device pci 1a.0 on  end #eMMC
-		device pci 1e.3 off end # GSPI #1
 		device pci 1f.3 on
 			chip drivers/sof
 				register "spkr_tplg" = "max98390"

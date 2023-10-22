@@ -234,7 +234,6 @@ chip soc/intel/cannonlake
 			end
 		end #I2C #4
 		device pci 1a.0 on  end # eMMC
-		device pci 1e.3 off end # GSPI #1
 		device pci 1f.3 on
 			chip drivers/generic/max98357a
 				register "hid" = ""MX98357A""

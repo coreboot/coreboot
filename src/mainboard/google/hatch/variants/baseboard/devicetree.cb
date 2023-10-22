@@ -337,7 +337,7 @@ chip soc/intel/cannonlake
 				device spi 0 on end
 			end
 		end # GSPI #0
-		device pci 1e.3 on end # GSPI #1
+		device pci 1e.3 off end # GSPI #1
 		device pci 1f.0 on
 			chip ec/google/chromeec
 				device pnp 0c09.0 on end

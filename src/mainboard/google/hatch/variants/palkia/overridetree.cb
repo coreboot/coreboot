@@ -183,8 +183,6 @@ chip soc/intel/cannonlake
 				device i2c 39 on end
 			end
 		end #I2C #4
-		# GSPI #1 unused
-		device pci 1e.3 off end
 
 		device pci 1f.3 on
 			chip drivers/generic/max98357a

@@ -1,0 +1,134 @@
+chip soc/intel/cannonlake
+
+	device cpu_cluster 0 on end
+	device domain 0 on
+		device pci 00.0 alias system_agent on	end	# Host Bridge
+		device pci 01.0 alias peg0         off	end	# PCIe x16
+		device pci 01.1 alias peg1         off	end	# PCIe x8
+		device pci 01.2 alias peg2         off	end	# PCIe x4
+		device pci 02.0 alias igpu         off	end	# Integrated Graphics Device
+		device pci 04.0 alias dptf         off	end	# SA Thermal device
+		device pci 05.0 alias ipu          off	end	# Imaging Processing Unit
+		device pci 08.0 alias gna          off	end	# Gaussian mixture model, Neural network accelerator
+		device pci 12.0 alias thermal      off	end	# Thermal Subsystem
+		device pci 12.5 alias ufs          off	end	# UFS SCS
+		device pci 12.6 alias gspi2        off	end	# GSPI #2
+		device pci 13.0 alias ish          off	end	# ISH
+		device pci 14.0 alias xhci         off		# USB xHCI
+			chip drivers/usb/acpi
+				register "type" = "UPC_TYPE_HUB"
+				device usb 0.0 alias xhci_root_hub off
+					chip drivers/usb/acpi
+						device usb 2.0 alias usb2_port1 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.1 alias usb2_port2 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.2 alias usb2_port3 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.3 alias usb2_port4 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.4 alias usb2_port5 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.5 alias usb2_port6 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.6 alias usb2_port7 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.7 alias usb2_port8 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.8 alias usb2_port9 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.9 alias usb2_port10 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.10 alias usb2_port11 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.11 alias usb2_port12 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.0 alias usb3_port1 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.1 alias usb3_port2 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.2 alias usb3_port3 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.3 alias usb3_port4 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.4 alias usb3_port5 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.5 alias usb3_port6 off end
+					end
+				end
+			end
+		end
+		device pci 14.1 alias xdci         off	end	# USB xDCI (OTG)
+		device pci 14.2 alias shared_sram  off  end	# Shared SRAM
+		device pci 14.3 alias cnvi_wifi    off	end	# CNVi Wifi
+		device pci 14.5 alias sdxc         off	end	# SDCard
+		device pci 15.0 alias i2c0         off	end	# I2C #0
+		device pci 15.1 alias i2c1         off	end	# I2C #1
+		device pci 15.2 alias i2c2         off	end	# I2C #2
+		device pci 15.3 alias i2c3         off	end	# I2C #3
+		device pci 16.0 alias heci1        on	end	# Management Engine Interface 1
+		device pci 16.1 alias heci2        off	end	# Management Engine Interface 2
+		device pci 16.2 alias csme_ider    off	end	# Management Engine IDE-R
+		device pci 16.3 alias csme_ktr     off	end	# Management Engine KT Redirection
+		device pci 16.4 alias heci3        off	end	# Management Engine Interface 3
+		device pci 16.5 alias heci4        off	end	# Management Engine Interface 4
+		device pci 17.0 alias sata         off	end	# SATA
+		device pci 19.0 alias i2c4         off	end	# I2C #4
+		device pci 19.1 alias i2c5         off	end	# I2C #5
+		device pci 19.2 alias uart2        off	end	# UART #2
+		device pci 1a.0 alias emmc         off	end	# eMMC
+		device pci 1b.0 alias pcie_rp17    off	end	# PCI Express Port 17
+		device pci 1b.1 alias pcie_rp18    off	end	# PCI Express Port 18
+		device pci 1b.2 alias pcie_rp19    off	end	# PCI Express Port 19
+		device pci 1b.3 alias pcie_rp20    off	end	# PCI Express Port 20
+		device pci 1b.4 alias pcie_rp21    off	end	# PCI Express Port 21
+		device pci 1b.5 alias pcie_rp22    off	end	# PCI Express Port 22
+		device pci 1b.6 alias pcie_rp23    off	end	# PCI Express Port 23
+		device pci 1b.7 alias pcie_rp24    off	end	# PCI Express Port 24
+		device pci 1c.0 alias pcie_rp1     off	end	# PCI Express Port 1
+		device pci 1c.1 alias pcie_rp2     off	end	# PCI Express Port 2
+		device pci 1c.2 alias pcie_rp3     off	end	# PCI Express Port 3
+		device pci 1c.3 alias pcie_rp4     off	end	# PCI Express Port 4
+		device pci 1c.4 alias pcie_rp5     off	end	# PCI Express Port 5
+		device pci 1c.5 alias pcie_rp6     off	end	# PCI Express Port 6
+		device pci 1c.6 alias pcie_rp7     off	end	# PCI Express Port 7
+		device pci 1c.7 alias pcie_rp8     off	end	# PCI Express Port 8
+		device pci 1d.0 alias pcie_rp9     off	end	# PCI Express Port 9
+		device pci 1d.1 alias pcie_rp10    off	end	# PCI Express Port 10
+		device pci 1d.2 alias pcie_rp11    off	end	# PCI Express Port 11
+		device pci 1d.3 alias pcie_rp12    off	end	# PCI Express Port 12
+		device pci 1d.4 alias pcie_rp13    off	end	# PCI Express Port 13
+		device pci 1d.5 alias pcie_rp14    off	end	# PCI Express Port 14
+		device pci 1d.6 alias pcie_rp15    off	end	# PCI Express Port 15
+		device pci 1d.7 alias pcie_rp16    off	end	# PCI Express Port 16
+		device pci 1e.0 alias uart0        off	end	# UART #0
+		device pci 1e.1 alias uart1        off	end	# UART #1
+		device pci 1e.2 alias gspi0        off	end	# GSPI #0
+		device pci 1e.3 alias gspi1        off	end	# GSPI #1
+		device pci 1f.0 alias lpc_espi     on	end	# LPC Interface
+		device pci 1f.1 alias p2sb      hidden	end	# P2SB
+		device pci 1f.2 alias pmc       hidden	end	# Power Management Controller
+		device pci 1f.3 alias hda          off	end	# Intel HDA
+		device pci 1f.4 alias smbus        off	end	# SMBus
+		device pci 1f.5 alias fast_spi     on	end	# PCH SPI
+		device pci 1f.6 alias gbe          off	end	# GbE
+		device pci 1f.7 alias tracehub     off	end	# TraceHub
+	end
+end

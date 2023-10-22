@@ -9,6 +9,7 @@ config SOC_INTEL_CANNONLAKE_BASE
 	select CPU_INTEL_FIRMWARE_INTERFACE_TABLE
 	select CPU_SUPPORTS_PM_TIMER_EMULATION
 	select DISPLAY_FSP_VERSION_INFO
+	select DRIVERS_USB_ACPI
 	select EDK2_CPU_TIMER_LIB if PAYLOAD_EDK2
 	select FSP_COMPRESS_FSP_S_LZMA
 	select FSP_M_XIP
@@ -162,6 +163,11 @@ config FSP_TEMP_RAM_SIZE
 	  The amount of anticipated heap usage in CAR by FSP.
 	  Refer to Platform FSP integration guide document to know
 	  the exact FSP requirement for Heap setup.
+
+config CHIPSET_DEVICETREE
+	string
+	default "soc/intel/cannonlake/chipset_pch_h.cb" if SOC_INTEL_CANNONLAKE_PCH_H
+	default "soc/intel/cannonlake/chipset.cb"
 
 config IFD_CHIPSET
 	string

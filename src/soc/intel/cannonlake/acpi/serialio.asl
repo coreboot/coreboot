@@ -77,3 +77,9 @@ Device (UAR2)
 	Name (_DDN, "Serial IO UART Controller 2")
 }
 #endif
+
+Device (FSPI)
+{
+	Name (_ADR, 0x001f0005)
+	Name (_DDN, "Fast SPI")
+}

@@ -105,11 +105,11 @@ chip soc/intel/cannonlake
 	register "common_soc_config.emmc_dll.emmc_rx_strobe_cntl" = "0x1515"
 
 	device domain 0 on
-		device pci 02.0 on	# Integrated Graphics Device
+		device ref igpu		on
 			register "gfx" = "GMA_DEFAULT_PANEL(0)"
 		end
-		device pci 14.5 on  end # SDCard
-		device pci 15.0 on
+		device ref sdxc		on end
+		device ref i2c0		on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
@@ -128,8 +128,8 @@ chip soc/intel/cannonlake
 				register "hid_desc_reg_offset" = "0x20"
 				device i2c 0x2c on end
 			end
-		end # I2C #0
-		device pci 15.1 on
+		end
+		device ref i2c1		on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0001""
 				register "desc" = ""ELAN Touchscreen""
@@ -187,7 +187,7 @@ chip soc/intel/cannonlake
 				device generic 0 on end
 			end
 		end # I2C #1
-		device pci 19.0 on
+		device ref i2c4		on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""
 				register "name" = ""RT58""
@@ -200,9 +200,9 @@ chip soc/intel/cannonlake
 				register "property_list[0].integer" = "1"
 				device i2c 1a on end
 			end
-		end #I2C #4
-		device pci 1a.0 on  end # eMMC
-		device pci 1f.3 on
+		end
+		device ref emmc		on end
+		device ref hda		on
 			chip drivers/generic/max98357a
 				register "hid" = ""MX98357A""
 				register "sdmode_gpio" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H3)"
@@ -215,7 +215,7 @@ chip soc/intel/cannonlake
 				register "mic_tplg" = "_2ch_pdm0"
 				device generic 0 on end
 			end
-		end # Intel HDA
+		end
 	end
 
 end

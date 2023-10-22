@@ -289,7 +289,7 @@ chip soc/intel/cannonlake
 				device generic 0 on end
 			end
 		end # CNVi wifi
-		device pci 14.5 on  end # SDCard
+		device pci 14.5 off end # SDCard
 		device pci 15.0 on  end # I2C #0
 		device pci 15.1 on  end # I2C #1
 		device pci 15.2 off end # I2C #2

@@ -136,9 +136,6 @@ chip soc/intel/cannonlake
 			end
 		end # I2C 1
 
-		# I2C #3 unused
-		device pci 15.3 off end
-
 		device pci 19.0 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""

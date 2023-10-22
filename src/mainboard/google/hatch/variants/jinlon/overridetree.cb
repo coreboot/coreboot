@@ -69,7 +69,7 @@ chip soc/intel/cannonlake
 	register "ScsEmmcHs400Enabled" = "1"
 
 	device domain 0 on
-		device pci 02.0 on
+		device ref igpu		on
 			register "gfx" = "GMA_DEFAULT_PANEL(0)"
 			chip drivers/gfx/generic
 				register "device_count" = "1"
@@ -82,22 +82,22 @@ chip soc/intel/cannonlake
 				register "device[0].privacy.gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E0)"
 				device generic 0 alias eps on end
 			end
-		end # Integrated Graphics Device
-                device pci 14.0 on
+		end
+		device ref xhci		on
 			chip drivers/usb/acpi
-				device usb 0.0 on
+				device ref xhci_root_hub on
 					chip drivers/usb/acpi
 						# The Linux Kernel does not allow an inverted BOTH_EDGE irq
 						# So we need to use GpioIO() instead of GpioInt()
 						# https://www.kernel.org/doc/Documentation/acpi/gpio-properties.txt
 						register "privacy_gpio" = "ACPI_GPIO_INPUT_ACTIVE_LOW(GPP_D4)"
-						device usb 2.6 on end
+						device ref usb2_port7 on end
 					end
 				end
 			end
-                end # USB xHCI
-		device pci 14.5 on  end # SDCard
-		device pci 15.0 on
+		end
+		device ref sdxc		on end
+		device ref i2c0		on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
@@ -106,8 +106,8 @@ chip soc/intel/cannonlake
 				register "detect" = "1"
 				device i2c 15 on end
 			end
-		end # I2C #0
-		device pci 15.1 on
+		end
+		device ref i2c1		on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GTCH7503""
 				register "generic.desc" = ""G2TOUCH Touchscreen""
@@ -168,7 +168,7 @@ chip soc/intel/cannonlake
 				device i2c 15 on end
 			end
 		end # I2C #1
-		device pci 19.0 on
+		device ref i2c4		on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""
 				register "name" = ""RT58""
@@ -181,9 +181,9 @@ chip soc/intel/cannonlake
 				register "property_list[0].integer" = "1"
 				device i2c 1a on end
 			end
-		end #I2C #4
-		device pci 1a.0 on  end # eMMC
-		device pci 1e.3 on
+		end
+		device ref emmc		on end
+		device ref gspi1	on
 			chip drivers/spi/acpi
 				register "name" = ""CRFP""
 				register "hid" = "ACPI_DT_NAMESPACE_HID"
@@ -193,8 +193,8 @@ chip soc/intel/cannonlake
 				register "wake" = "GPE0_DW0_23"
 				device spi 1 on end
 			end # FPMCU
-		end # GSPI #1
-		device pci 1f.3 on
+		end
+		device ref hda		on
 			chip drivers/generic/max98357a
 				register "hid" = ""MX98357A""
 				register "sdmode_gpio" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H3)"
@@ -207,7 +207,7 @@ chip soc/intel/cannonlake
 				register "mic_tplg" = "_2ch_pdm0"
 				device generic 0 on end
 			end
-		end # Intel HDA
+		end
 	end
 
 end

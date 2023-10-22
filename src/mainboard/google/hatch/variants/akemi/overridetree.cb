@@ -12,7 +12,7 @@ chip soc/intel/cannonlake
 		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled,
 		[PchSerialIoIndexSPI0] = PchSerialIoPci,
-		[PchSerialIoIndexSPI1] = PchSerialIoPci,
+		[PchSerialIoIndexSPI1] = PchSerialIoDisabled,
 		[PchSerialIoIndexSPI2] = PchSerialIoDisabled,
 		[PchSerialIoIndexUART0] = PchSerialIoSkipInit,
 		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
@@ -37,7 +37,6 @@ chip soc/intel/cannonlake
 	#|                   | required to set up a BAR  |
 	#|                   | for TPM communication     |
 	#|                   | before memory is up       |
-	#| GSPI1             | FP MCU                    |
 	#| I2C0              | Touchpad                  |
 	#| I2C1              | Touch screen              |
 	#| I2C4              | Audio                     |

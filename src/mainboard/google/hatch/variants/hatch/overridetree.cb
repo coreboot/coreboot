@@ -3,10 +3,10 @@ chip soc/intel/cannonlake
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C3]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled,
 		[PchSerialIoIndexSPI0] = PchSerialIoPci,
 		[PchSerialIoIndexSPI1] = PchSerialIoPci,
 		[PchSerialIoIndexSPI2] = PchSerialIoDisabled,
@@ -35,6 +35,7 @@ chip soc/intel/cannonlake
 	#| GSPI1             | FP MCU                    |
 	#| I2C0              | Touchpad                  |
 	#| I2C1              | Touch screen              |
+	#| I2C3              | Proximity sensor          |
 	#| I2C4              | Audio                     |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{

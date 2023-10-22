@@ -7,10 +7,10 @@ chip soc/intel/cannonlake
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C3]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled,
 		[PchSerialIoIndexSPI0] = PchSerialIoPci,
 		[PchSerialIoIndexSPI1] = PchSerialIoPci,
 		[PchSerialIoIndexSPI2] = PchSerialIoDisabled,

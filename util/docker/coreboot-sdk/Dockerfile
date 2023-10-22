@@ -15,6 +15,7 @@ RUN \
 	useradd -p locked -m coreboot && \
 	apt-get -qq update && \
 	apt-get -qqy install --no-install-recommends \
+		bash-completion \
 		bc \
 		bison \
 		bsdextrautils \

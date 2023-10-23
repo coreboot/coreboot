@@ -761,10 +761,6 @@ int elog_init(void)
 
 	elog_size = region_device_sz(&elog_state.nv_dev);
 	mirror_buffer = elog_mirror_buf;
-	if (!mirror_buffer) {
-		printk(BIOS_ERR, "ELOG: Unable to allocate backing store\n");
-		return -1;
-	}
 	rdev_chain_mem_rw(&elog_state.mirror_dev, mirror_buffer, elog_size);
 
 	/*

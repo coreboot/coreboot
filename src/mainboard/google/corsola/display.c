@@ -63,17 +63,18 @@ struct panel_description *get_panel_from_cbfs(struct panel_description *desc)
 
 static struct panel_description *get_active_panel(void)
 {
-	if (CONFIG(BOARD_GOOGLE_KINGLER_COMMON))
-		if (CONFIG(BOARD_GOOGLE_STEELIX) && board_id() < 2)
-			return get_ps8640_description();
-		else
-			return get_anx7625_description();
-	else if (CONFIG(BOARD_GOOGLE_KRABBY_COMMON))
+	/* Board-specific exceptions */
+	if (CONFIG(BOARD_GOOGLE_STEELIX) && board_id() < 2) /* Early builds use PS8640 */
 		return get_ps8640_description();
-	else if (CONFIG(BOARD_GOOGLE_STARYU_COMMON))
-		return get_panel_description();
-	else
-		return NULL;
+
+	if (CONFIG(DRIVER_ANALOGIX_ANX7625))
+		return get_anx7625_description();
+
+	if (CONFIG(DRIVER_PARADE_PS8640))
+		return get_ps8640_description();
+
+	/* MIPI panels */
+	return get_panel_description();
 }
 
 int configure_display(void)

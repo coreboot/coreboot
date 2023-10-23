@@ -23,6 +23,9 @@ config BOARD_GOOGLE_TENTACRUEL
 config BOARD_GOOGLE_MAGIKARP
 	bool "->  Magikarp"
 
+config BOARD_GOOGLE_CHINCHOU
+	bool "->  Chinchou"
+
 comment "Staryu"
 
 config BOARD_GOOGLE_STARMIE

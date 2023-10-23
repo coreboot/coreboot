@@ -422,6 +422,8 @@ int spd_xmp_decode_ddr3(struct dimm_attr_ddr3_st *dimm, spd_raw_data spd,
 		/* Medium Timebase =
 		 *   Medium Timebase (MTB) Dividend /
 		 *   Medium Timebase (MTB) Divisor */
+		if (spd[181] == 0) // Avoid dividing by zero.
+			return SPD_STATUS_INVALID;
 		mtb = (((u32)spd[180]) << 8) / spd[181];
 
 		dimm->dimms_per_channel = ((spd[178] >> 2) & 0x3) + 1;
@@ -437,6 +439,8 @@ int spd_xmp_decode_ddr3(struct dimm_attr_ddr3_st *dimm, spd_raw_data spd,
 		/* Medium Timebase =
 		 *   Medium Timebase (MTB) Dividend /
 		 *   Medium Timebase (MTB) Divisor */
+		if (spd[183] == 0) // Avoid dividing by zero.
+			return SPD_STATUS_INVALID;
 		mtb = (((u32)spd[182]) << 8) / spd[183];
 
 		dimm->dimms_per_channel = ((spd[178] >> 4) & 0x3) + 1;

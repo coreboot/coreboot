@@ -18,6 +18,9 @@
 #include <device/dram/common.h>
 #include <types.h>
 
+/** Maximum SPD size supported */
+#define SPD_SIZE_MAX_DDR4	512
+
 #define SPD_DDR4_PART_OFF	329
 #define SPD_DDR4_PART_LEN	20
 

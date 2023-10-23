@@ -12,6 +12,9 @@
 #include <device/dram/common.h>
 #include <types.h>
 
+/** Maximum SPD size supported */
+#define SPD_SIZE_MAX_DDR5	1024
+
 /**
  * Converts DDR5 clock speed in MHz to the standard reported speed in MT/s
  */

@@ -19,6 +19,9 @@
 #include <device/dram/common.h>
 #include <types.h>
 
+/** Maximum SPD size supported */
+#define SPD_SIZE_MAX_DDR3	256
+
 /**
  * Convenience definitions for SPD offsets
  *

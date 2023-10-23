@@ -23,9 +23,11 @@ chip soc/intel/skylake
 
 	# FSP Configuration
 	register "SataSalpSupport" = "0"
-	register "SataPortsEnable[0]" = "0"
-	register "SataPortsEnable[1]" = "0"
-	register "SataPortsEnable[2]" = "0"
+	register "SataPortsEnable" = "{
+		[0] = 0,
+		[1] = 0,
+		[2] = 0,
+	}"
 	register "DspEnable" = "0"
 	register "IoBufferOwnership" = "0"
 	register "SsicPortEnable" = "0"
@@ -124,23 +126,23 @@ chip soc/intel/skylake
 
 	register "PcieRpHotPlug[4]" = "1"
 
-	# USB
-	register "usb2_ports[0]" = "USB2_PORT_MID(OC1)"		# Type-A Port (right)
-	register "usb2_ports[1]" = "USB2_PORT_MID(OC1)"		# Type-A Port (left)
+	register "usb2_ports" = "{
+		[0] = USB2_PORT_MID(OC1),	/* Type-A Port (right) */
+		[1] = USB2_PORT_MID(OC1),	/* Type-A Port (left) */
+		[2] = USB2_PORT_MID(OC1),	/* TODO Unknown. Maybe USBC? */
+		[3] = USB2_PORT_MID(OC1),	/* TODO Unknown. Maybe USBC? */
+		[4] = USB2_PORT_MID(OC1),	/* TODO Unknown. Maybe USBC? */
+		[5] = USB2_PORT_MID(OC1),	/* TODO Unknown. Maybe USBC? */
+		[6] = USB2_PORT_FLEX(OC2),	/* Camera */
+		[7] = USB2_PORT_FLEX(OC2),	/* Keyboard */
+		[8] = USB2_PORT_FLEX(OC2),	/* Touchscreen */
+	}"
 
-	register "usb2_ports[2]" = "USB2_PORT_MID(OC1)"		# TODO Unknown. Maybe USBC?
-	register "usb2_ports[3]" = "USB2_PORT_MID(OC1)"		# TODO Unknown. Maybe USBC?
-	register "usb2_ports[4]" = "USB2_PORT_MID(OC1)"		# TODO Unknown. Maybe USBC?
-	register "usb2_ports[5]" = "USB2_PORT_MID(OC1)"		# TODO Unknown. Maybe USBC?
-
-	register "usb2_ports[6]" = "USB2_PORT_FLEX(OC2)"	# Camera
-	register "usb2_ports[7]" = "USB2_PORT_FLEX(OC2)"	# Keyboard
-	register "usb2_ports[8]" = "USB2_PORT_FLEX(OC2)"	# Touchscreen
-
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A Port (left)
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A Port (right)
-
-	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC1)"	# TODO Unknown. Maybe USBC?
+	register "usb3_ports" = "{
+		[0] = USB3_PORT_DEFAULT(OC1),	/* Type-A Port (left) */
+		[1] = USB3_PORT_DEFAULT(OC1),	/* Type-A Port (right) */
+		[5] = USB3_PORT_DEFAULT(OC1),	/* TODO Unknown. Maybe USBC? */
+	}"
 
 	# PL1 override 25W
 	# PL2 override 44W

@@ -70,20 +70,23 @@ chip soc/intel/skylake
 		device pci 02.0 on  end	# Integrated Graphics Device
 		device pci 08.0 on  end	# Gaussian Mixture Model
 		device pci 14.0 on	# USB xHCI
-			register "usb2_ports[0]" = "USB2_PORT_LONG(OC0)"
-			register "usb2_ports[1]" = "USB2_PORT_LONG(OC0)"
-			register "usb2_ports[2]" = "USB2_PORT_LONG(OC1)"
-			register "usb2_ports[3]" = "USB2_PORT_LONG(OC1)"
-			register "usb2_ports[4]" = "USB2_PORT_LONG(OC2)" # Debug
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_LONG(OC0),
+				[1] = USB2_PORT_LONG(OC0),
+				[2] = USB2_PORT_LONG(OC1),
+				[3] = USB2_PORT_LONG(OC1),
+				[4] = USB2_PORT_LONG(OC2), /* Debug */
+			}"
 		end
 		device pci 14.2 on  end	# Thermal Subsystem
 		device pci 16.0 on  end	# Management Engine Interface 1
 		device pci 17.0 on	# SATA
-			register "SataSalpSupport"	= "1"
-			register "SataPortsEnable[0]"	= "1"
-			register "SataPortsEnable[1]"	= "1"
-			register "SataPortsEnable[2]"	= "1"
-			# SataPortsDevSlp not supported
+			register "SataSalpSupport" = "1"
+			register "SataPortsEnable" = "{
+				[0] = 1,
+				[1] = 1,
+				[2] = 1,
+			}"
 		end
 		device pci 1d.0 on	# PCI Express Port 9 (COMe 0)
 			register "PcieRpEnable[8]" = "1"

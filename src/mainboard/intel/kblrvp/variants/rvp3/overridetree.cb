@@ -74,24 +74,26 @@ chip soc/intel/skylake
 	# RP10, uses CLK SRC 4
 	register "PcieRpClkSrcNumber[9]" = "4"
 
-	# USB 2.0 Enable all ports
-	register "usb2_ports[0]" = "USB2_PORT_MAX(OC0)"		# TYPE-A Port
-	register "usb2_ports[1]" = "USB2_PORT_MAX(OC2)"		# TYPE-A Port
-	register "usb2_ports[2]" = "USB2_PORT_MAX(OC_SKIP)"	# Bluetooth
-	register "usb2_ports[4]" = "USB2_PORT_MAX(OC_SKIP)"	# Type-A Port
-	register "usb2_ports[5]" = "USB2_PORT_MAX(OC2)"		# TYPE-A Port
-	register "usb2_ports[6]" = "USB2_PORT_MAX(OC_SKIP)"	# TYPE-A Port
-	register "usb2_ports[7]" = "USB2_PORT_MAX(OC_SKIP)"	# TYPE-A Port
-	register "usb2_ports[8]" = "USB2_PORT_MAX(OC_SKIP)"	# TYPE-A Port
-	register "usb2_ports[9]" = "USB2_PORT_MAX(OC1)"		# TYPE-A Port
-	register "usb2_ports[10]" = "USB2_PORT_MAX(OC_SKIP)"	# TYPE-A Port
-	register "usb2_ports[11]" = "USB2_PORT_MAX(OC_SKIP)"	# TYPE-A Port
+	register "usb2_ports" = "{
+		[0] = USB2_PORT_MAX(OC0),	/* TYPE-A Port */
+		[1] = USB2_PORT_MAX(OC2),	/* TYPE-A Port */
+		[2] = USB2_PORT_MAX(OC_SKIP),	/* Bluetooth */
+		[4] = USB2_PORT_MAX(OC_SKIP),	/* Type-A Port */
+		[5] = USB2_PORT_MAX(OC2),	/* TYPE-A Port */
+		[6] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
+		[7] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
+		[8] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
+		[9] = USB2_PORT_MAX(OC1),	/* TYPE-A Port */
+		[10] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
+		[11] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
+	}"
 
-	# USB 3.0 Enable Port 1-4. Port 5 & 6 Disabled
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# TYPE-A Port
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# TYPE-A Port
-	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# TYPE-A Port
-	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC1)"	# TYPE-A Port
+	register "usb3_ports" = "{
+		[0] = USB3_PORT_DEFAULT(OC0),		/* TYPE-A Port */
+		[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* TYPE-A Port */
+		[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* TYPE-A Port */
+		[3] = USB3_PORT_DEFAULT(OC1),		/* TYPE-A Port */
+	}"
 
 	register "SsicPortEnable" = "1" # Enable SSIC for WWAN
 

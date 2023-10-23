@@ -95,31 +95,35 @@ chip soc/intel/skylake
 	register "PcieRpClkReqNumber[8]" = "6"
 	register "PcieRpClkReqNumber[16]" = "7"
 
-	register "usb2_ports[0]" = "USB2_PORT_MAX(OC2)"	    # Type-C Port
-	register "usb2_ports[1]" = "USB2_PORT_MAX(OC5)"	    # Front panel
-	register "usb2_ports[2]" = "USB2_PORT_MAX(OC4)"	    # Back panel
-	register "usb2_ports[3]" = "USB2_PORT_MAX(OC4)"     # Back panel
-	register "usb2_ports[4]" = "USB2_PORT_MAX(OC1)"     # Back panel-1
-	register "usb2_ports[5]" = "USB2_PORT_MAX(OC1)"     # Back panel
-	register "usb2_ports[6]" = "USB2_PORT_MAX(OC_SKIP)"     # Back panel
-	register "usb2_ports[7]" = "USB2_PORT_MAX(OC_SKIP)"     # Front panel
-	register "usb2_ports[8]" = "USB2_PORT_MAX(OC_SKIP)"     # M.2 BT
-	register "usb2_ports[9]" = "USB2_PORT_MAX(OC2)"     # Front panel
-	register "usb2_ports[10]" = "USB2_PORT_MAX(OC_SKIP)"    # Back panel
-	register "usb2_ports[11]" = "USB2_PORT_MAX(OC_SKIP)"    # Back panel-1
-	register "usb2_ports[12]" = "USB2_PORT_MAX(OC3)"    # Back panel
-	register "usb2_ports[13]" = "USB2_PORT_MAX(OC_SKIP)"    # Back panel
+	register "usb2_ports" = "{
+		[0] = USB2_PORT_MAX(OC2),	/* Type-C Port */
+		[1] = USB2_PORT_MAX(OC5),	/* Front panel */
+		[2] = USB2_PORT_MAX(OC4),	/* Back panel */
+		[3] = USB2_PORT_MAX(OC4),	/* Back panel */
+		[4] = USB2_PORT_MAX(OC1),	/* Back panel-1 */
+		[5] = USB2_PORT_MAX(OC1),	/* Back panel */
+		[6] = USB2_PORT_MAX(OC_SKIP),	/* Back panel */
+		[7] = USB2_PORT_MAX(OC_SKIP),	/* Front panel */
+		[8] = USB2_PORT_MAX(OC_SKIP),	/* M.2 BT */
+		[9] = USB2_PORT_MAX(OC2),	/* Front panel */
+		[10] = USB2_PORT_MAX(OC_SKIP),	/* Back panel */
+		[11] = USB2_PORT_MAX(OC_SKIP),	/* Back panel-1 */
+		[12] = USB2_PORT_MAX(OC3),	/* Back panel */
+		[13] = USB2_PORT_MAX(OC_SKIP),	/* Back panel */
+	}"
 
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-C Port
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)" # Back panel
-	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC1)" # Back panel
-	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC0)" # Back panel-2
-	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC0)" # Front Panel
-	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Front Panel
-	register "usb3_ports[6]" = "USB3_PORT_DEFAULT(OC2)" # Front Panel
-	register "usb3_ports[7]" = "USB3_PORT_DEFAULT(OC2)" # Front Panel
-	register "usb3_ports[8]" = "USB3_PORT_DEFAULT(OC3)" # Back panel
-	register "usb3_ports[9]" = "USB3_PORT_DEFAULT(OC_SKIP)" # LAN
+	register "usb3_ports" = "{
+		[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* Type-C Port */
+		[1] = USB3_PORT_DEFAULT(OC1),		/* Back panel */
+		[2] = USB3_PORT_DEFAULT(OC1),		/* Back panel */
+		[3] = USB3_PORT_DEFAULT(OC0),		/* Back panel-2 */
+		[4] = USB3_PORT_DEFAULT(OC0),		/* Front Panel */
+		[5] = USB3_PORT_DEFAULT(OC_SKIP),	/* Front Panel */
+		[6] = USB3_PORT_DEFAULT(OC2),		/* Front Panel */
+		[7] = USB3_PORT_DEFAULT(OC2),		/* Front Panel */
+		[8] = USB3_PORT_DEFAULT(OC3),		/* Back panel */
+		[9] = USB3_PORT_DEFAULT(OC_SKIP),	/* LAN */
+	}"
 
 	register "SsicPortEnable" = "1" # Enable SSIC for WWAN
 

@@ -16,31 +16,34 @@ chip soc/intel/skylake
 		device pci 04.0 on  end		# CPU Thermal
 		device pci 08.0 on  end		# GMM
 		device pci 14.0 on		# xHCI
-			register "usb2_ports[0]"  = "USB2_PORT_MID(OC0)"
-			register "usb2_ports[1]"  = "USB2_PORT_MID(OC0)"
-			register "usb2_ports[2]"  = "USB2_PORT_MID(OC4)"
-			register "usb2_ports[3]"  = "USB2_PORT_MID(OC4)"
-			register "usb2_ports[4]"  = "USB2_PORT_MID(OC2)"
-			register "usb2_ports[5]"  = "USB2_PORT_MID(OC2)"
-			register "usb2_ports[6]"  = "USB2_PORT_MID(OC0)"
-			register "usb2_ports[7]"  = "USB2_PORT_MID(OC0)"
-			register "usb2_ports[8]"  = "USB2_PORT_MID(OC0)"
-			register "usb2_ports[9]"  = "USB2_PORT_MID(OC0)"
-			register "usb2_ports[10]" = "USB2_PORT_MID(OC1)"
-			register "usb2_ports[11]" = "USB2_PORT_MID(OC1)"
-			register "usb2_ports[12]" = "USB2_PORT_MID(OC_SKIP)"
-			register "usb2_ports[13]" = "USB2_PORT_MID(OC_SKIP)"
-
-			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"
-			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)"
-			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC3)"
-			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC3)"
-			register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC1)"
-			register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC1)"
-			register "usb3_ports[6]" = "USB3_PORT_DEFAULT(OC_SKIP)"
-			register "usb3_ports[7]" = "USB3_PORT_DEFAULT(OC_SKIP)"
-			register "usb3_ports[8]" = "USB3_PORT_DEFAULT(OC_SKIP)"
-			register "usb3_ports[9]" = "USB3_PORT_DEFAULT(OC_SKIP)"
+			register "usb2_ports" = "{
+				[0]  = USB2_PORT_MID(OC0),
+				[1]  = USB2_PORT_MID(OC0),
+				[2]  = USB2_PORT_MID(OC4),
+				[3]  = USB2_PORT_MID(OC4),
+				[4]  = USB2_PORT_MID(OC2),
+				[5]  = USB2_PORT_MID(OC2),
+				[6]  = USB2_PORT_MID(OC0),
+				[7]  = USB2_PORT_MID(OC0),
+				[8]  = USB2_PORT_MID(OC0),
+				[9]  = USB2_PORT_MID(OC0),
+				[10] = USB2_PORT_MID(OC1),
+				[11] = USB2_PORT_MID(OC1),
+				[12] = USB2_PORT_MID(OC_SKIP),
+				[13] = USB2_PORT_MID(OC_SKIP),
+			}"
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC0),
+				[1] = USB3_PORT_DEFAULT(OC0),
+				[2] = USB3_PORT_DEFAULT(OC3),
+				[3] = USB3_PORT_DEFAULT(OC3),
+				[4] = USB3_PORT_DEFAULT(OC1),
+				[5] = USB3_PORT_DEFAULT(OC1),
+				[6] = USB3_PORT_DEFAULT(OC_SKIP),
+				[7] = USB3_PORT_DEFAULT(OC_SKIP),
+				[8] = USB3_PORT_DEFAULT(OC_SKIP),
+				[9] = USB3_PORT_DEFAULT(OC_SKIP),
+			}"
 		end
 		device pci 14.1 off end		# USB OTG
 		device pci 14.2 on  end		# PCH Thermal

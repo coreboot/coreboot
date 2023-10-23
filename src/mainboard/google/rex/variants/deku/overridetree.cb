@@ -1,5 +1,24 @@
 chip soc/intel/meteorlake
 
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"	# USB2_C2
+	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC0)"	# USB2_C0
+	register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC0)"	# USB2_C1
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC3)"		# Type-A Port A0
+	register "usb2_ports[4]" = "USB2_PORT_TYPE_C(OC0)"	# USB2_C3
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC3)"		# Type-A Port A4
+	register "usb2_ports[6]" = "USB2_PORT_MID(OC3)"		# Type-A Port A1
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC3)"		# Type-A Port A2
+	register "usb2_ports[8]" = "USB2_PORT_MID(OC3)"		# Type-A Port A3
+	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 Bluetooth
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC3)"	# USB3/2 Type-A Port A0
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC3)"	# USB3/2 Type-A Port A1
+
+	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC0)"
+	register "tcss_ports[1]" = "TCSS_PORT_DEFAULT(OC0)"
+	register "tcss_ports[2]" = "TCSS_PORT_DEFAULT(OC0)"
+	register "tcss_ports[3]" = "TCSS_PORT_DEFAULT(OC0)"
+
 	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C1] = PchSerialIoDisabled,

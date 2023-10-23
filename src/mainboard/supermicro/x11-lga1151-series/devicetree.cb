@@ -5,15 +5,15 @@ chip soc/intel/skylake
 
 	# SATA configuration
 	register "SataSalpSupport" = "1"
-	register "SataPortsEnable" = "{ \
-		[0]	= 1, \
-		[1]	= 1, \
-		[2]	= 1, \
-		[3]	= 1, \
-		[4]	= 1, \
-		[5]	= 1, \
-		[6]	= 1, \
-		[7]	= 1, \
+	register "SataPortsEnable" = "{
+		[0] = 1,
+		[1] = 1,
+		[2] = 1,
+		[3] = 1,
+		[4] = 1,
+		[5] = 1,
+		[6] = 1,
+		[7] = 1,
 	}"
 
 	# LPC

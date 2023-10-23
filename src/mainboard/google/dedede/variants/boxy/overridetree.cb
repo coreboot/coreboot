@@ -83,13 +83,13 @@ chip soc/intel/jasperlake
 	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# Type-C Port C1
 
 	#Bitmap for Wake Enable on USB attach/detach
-	register "usb2_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(1) | \
-					      USB_PORT_WAKE_ENABLE(2) | \
-					      USB_PORT_WAKE_ENABLE(3) | \
+	register "usb2_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(1) |
+					      USB_PORT_WAKE_ENABLE(2) |
+					      USB_PORT_WAKE_ENABLE(3) |
 					      USB_PORT_WAKE_ENABLE(4)"
-	register "usb3_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(1) | \
-					      USB_PORT_WAKE_ENABLE(2) | \
-					      USB_PORT_WAKE_ENABLE(3) | \
+	register "usb3_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(1) |
+					      USB_PORT_WAKE_ENABLE(2) |
+					      USB_PORT_WAKE_ENABLE(3) |
 					      USB_PORT_WAKE_ENABLE(4)"
 
 	device domain 0 on

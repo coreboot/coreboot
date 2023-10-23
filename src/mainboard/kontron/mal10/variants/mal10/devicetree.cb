@@ -89,11 +89,11 @@ chip soc/intel/apollolake
 		end # LPC
 		device pci 1f.1 on      # SMBUS
 			chip drivers/i2c/nct7802y # Hardware Monitor
-				register "sensors" = "{			\
-					.local_enable = 1,		\
-					.rtd[2] = RTD_VOLTAGE_MODE,	\
-					.rtd[1] = RTD_VOLTAGE_MODE,	\
-					.rtd[0] = RTD_THERMISTOR_MODE,	\
+				register "sensors" = "{
+					.local_enable = 1,
+					.rtd[2] = RTD_VOLTAGE_MODE,
+					.rtd[1] = RTD_VOLTAGE_MODE,
+					.rtd[0] = RTD_THERMISTOR_MODE,
 				}"
 				# FAN0
 				register "fan[0].mode"          = "FAN_SMART"

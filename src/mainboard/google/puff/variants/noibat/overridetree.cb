@@ -72,13 +72,13 @@ chip soc/intel/cannonlake
 	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC0)"     # Type-A Port 0
 
 	# Bitmap for Wake Enable on USB attach/detach
-	register "usb2_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(1) | \
-					      USB_PORT_WAKE_ENABLE(2) | \
-					      USB_PORT_WAKE_ENABLE(3) | \
+	register "usb2_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(1) |
+					      USB_PORT_WAKE_ENABLE(2) |
+					      USB_PORT_WAKE_ENABLE(3) |
 					      USB_PORT_WAKE_ENABLE(6)"
-	register "usb3_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(1) | \
-					      USB_PORT_WAKE_ENABLE(2) | \
-					      USB_PORT_WAKE_ENABLE(3) | \
+	register "usb3_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(1) |
+					      USB_PORT_WAKE_ENABLE(2) |
+					      USB_PORT_WAKE_ENABLE(3) |
 					      USB_PORT_WAKE_ENABLE(5)"
 
 	# Enable eMMC HS400

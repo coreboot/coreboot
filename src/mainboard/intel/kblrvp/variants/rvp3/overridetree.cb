@@ -24,16 +24,16 @@ chip soc/intel/skylake
 	#| VrVoltageLimit | 1.52V | 1.52V | 1.52V | 1.52V |
 	#+----------------+-------+-------+-------+-------+
 	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
-		.vr_config_enable = 1, \
-		.psi1threshold = VR_CFG_AMP(20), \
-		.psi2threshold = VR_CFG_AMP(5), \
-		.psi3threshold = VR_CFG_AMP(1), \
-		.psi3enable = 1, \
-		.psi4enable = 1, \
-		.imon_slope = 0, \
-		.imon_offset = 0, \
-		.icc_max = VR_CFG_AMP(7), \
-		.voltage_limit = 1520 \
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0,
+		.imon_offset = 0,
+		.icc_max = VR_CFG_AMP(7),
+		.voltage_limit = 1520
 	}"
 
 	# Enable Root ports.
@@ -96,18 +96,18 @@ chip soc/intel/skylake
 	register "SsicPortEnable" = "1" # Enable SSIC for WWAN
 
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
-	register "SerialIoDevMode" = "{ \
-		[PchSerialIoIndexI2C0]  = PchSerialIoPci, \
-		[PchSerialIoIndexI2C1]  = PchSerialIoPci, \
-		[PchSerialIoIndexI2C2]  = PchSerialIoPci, \
-		[PchSerialIoIndexI2C3]  = PchSerialIoPci, \
-		[PchSerialIoIndexI2C4]  = PchSerialIoPci, \
-		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexSpi0]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexUart0] = PchSerialIoPci, \
-		[PchSerialIoIndexUart1] = PchSerialIoDisabled, \
-		[PchSerialIoIndexUart2] = PchSerialIoSkipInit, \
+	register "SerialIoDevMode" = "{
+		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C3]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled,
+		[PchSerialIoIndexSpi0]  = PchSerialIoDisabled,
+		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled,
+		[PchSerialIoIndexUart0] = PchSerialIoPci,
+		[PchSerialIoIndexUart1] = PchSerialIoDisabled,
+		[PchSerialIoIndexUart2] = PchSerialIoSkipInit,
 	}"
 
 	device domain 0 on

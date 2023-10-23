@@ -38,15 +38,15 @@ chip soc/intel/skylake
 	register "SaGv" = "SaGv_Enabled"
 
 	register "SataSalpSupport" = "1"
-	register "SataPortsEnable" = "{ \
-		[0]	= 1, \
-		[1]	= 0, \
-		[2]	= 0, \
-		[3]	= 0, \
-		[4]	= 0, \
-		[5]	= 0, \
-		[6]	= 0, \
-		[7]	= 0, \
+	register "SataPortsEnable" = "{
+		[0] = 1,
+		[1] = 0,
+		[2] = 0,
+		[3] = 0,
+		[4] = 0,
+		[5] = 0,
+		[6] = 0,
+		[7] = 0,
 	}"
 
 	# Enabling SLP_S3#, SLP_S4#, SLP_SUS and SLP_A Stretch
@@ -77,55 +77,55 @@ chip soc/intel/skylake
 	#| VrVoltageLimit | 1.52V | 1.52V | 1.52V | 1.52V |
 	#+----------------+-------+-------+-------+-------+
 	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
-		.vr_config_enable = 1, \
-		.psi1threshold = VR_CFG_AMP(20), \
-		.psi2threshold = VR_CFG_AMP(5), \
-		.psi3threshold = VR_CFG_AMP(1), \
-		.psi3enable = 1, \
-		.psi4enable = 1, \
-		.imon_slope = 0, \
-		.imon_offset = 0, \
-		.icc_max = VR_CFG_AMP(5.1), \
-		.voltage_limit = 1520 \
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0,
+		.imon_offset = 0,
+		.icc_max = VR_CFG_AMP(5.1),
+		.voltage_limit = 1520
 	}"
 
 	register "domain_vr_config[VR_IA_CORE]" = "{
-		.vr_config_enable = 1, \
-		.psi1threshold = VR_CFG_AMP(20), \
-		.psi2threshold = VR_CFG_AMP(5), \
-		.psi3threshold = VR_CFG_AMP(1), \
-		.psi3enable = 1, \
-		.psi4enable = 1, \
-		.imon_slope = 0, \
-		.imon_offset = 0, \
-		.icc_max = VR_CFG_AMP(32), \
-		.voltage_limit = 1520 \
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0,
+		.imon_offset = 0,
+		.icc_max = VR_CFG_AMP(32),
+		.voltage_limit = 1520
 	}"
 
 	register "domain_vr_config[VR_GT_UNSLICED]" = "{
-		.vr_config_enable = 1, \
-		.psi1threshold = VR_CFG_AMP(20), \
-		.psi2threshold = VR_CFG_AMP(5), \
-		.psi3threshold = VR_CFG_AMP(1), \
-		.psi3enable = 1, \
-		.psi4enable = 1, \
-		.imon_slope = 0, \
-		.imon_offset = 0, \
-		.icc_max = VR_CFG_AMP(35),\
-		.voltage_limit = 1520 \
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0,
+		.imon_offset = 0,
+		.icc_max = VR_CFG_AMP(35),
+		.voltage_limit = 1520
 	}"
 
 	register "domain_vr_config[VR_GT_SLICED]" = "{
-		.vr_config_enable = 1, \
-		.psi1threshold = VR_CFG_AMP(20), \
-		.psi2threshold = VR_CFG_AMP(5), \
-		.psi3threshold = VR_CFG_AMP(1), \
-		.psi3enable = 1, \
-		.psi4enable = 1, \
-		.imon_slope = 0, \
-		.imon_offset = 0, \
-		.icc_max = VR_CFG_AMP(31), \
-		.voltage_limit = 1520 \
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0,
+		.imon_offset = 0,
+		.icc_max = VR_CFG_AMP(31),
+		.voltage_limit = 1520
 	}"
 
 	# Send an extra VR mailbox command for the PS4 exit issue
@@ -198,18 +198,18 @@ chip soc/intel/skylake
 	register "SsicPortEnable" = "0"
 
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
-	register "SerialIoDevMode" = "{ \
-		[PchSerialIoIndexI2C0]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexI2C1]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexI2C4]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexSpi0]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexUart0] = PchSerialIoPci, \
-		[PchSerialIoIndexUart1] = PchSerialIoDisabled, \
-		[PchSerialIoIndexUart2] = PchSerialIoDisabled, \
+	register "SerialIoDevMode" = "{
+		[PchSerialIoIndexI2C0]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C1]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C4]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled,
+		[PchSerialIoIndexSpi0]  = PchSerialIoDisabled,
+		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled,
+		[PchSerialIoIndexUart0] = PchSerialIoPci,
+		[PchSerialIoIndexUart1] = PchSerialIoDisabled,
+		[PchSerialIoIndexUart2] = PchSerialIoDisabled,
 	}"
 
 	device cpu_cluster 0 on end

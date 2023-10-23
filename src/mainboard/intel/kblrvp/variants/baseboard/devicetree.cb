@@ -55,55 +55,55 @@ chip soc/intel/skylake
 	#| VrVoltageLimit | 1.52V | 1.52V | 1.52V | 1.52V |
 	#+----------------+-------+-------+-------+-------+
 	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
-		.vr_config_enable = 1, \
-		.psi1threshold = VR_CFG_AMP(20), \
-		.psi2threshold = VR_CFG_AMP(4), \
-		.psi3threshold = VR_CFG_AMP(1), \
-		.psi3enable = 1, \
-		.psi4enable = 1, \
-		.imon_slope = 0, \
-		.imon_offset = 0, \
-		.icc_max = VR_CFG_AMP(7), \
-		.voltage_limit = 1520 \
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(4),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0,
+		.imon_offset = 0,
+		.icc_max = VR_CFG_AMP(7),
+		.voltage_limit = 1520
 	}"
 
 	register "domain_vr_config[VR_IA_CORE]" = "{
-		.vr_config_enable = 1, \
-		.psi1threshold = VR_CFG_AMP(20), \
-		.psi2threshold = VR_CFG_AMP(5), \
-		.psi3threshold = VR_CFG_AMP(1), \
-		.psi3enable = 1, \
-		.psi4enable = 1, \
-		.imon_slope = 0, \
-		.imon_offset = 0, \
-		.icc_max = VR_CFG_AMP(34), \
-		.voltage_limit = 1520 \
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0,
+		.imon_offset = 0,
+		.icc_max = VR_CFG_AMP(34),
+		.voltage_limit = 1520
 	}"
 
 	register "domain_vr_config[VR_GT_UNSLICED]" = "{
-		.vr_config_enable = 1, \
-		.psi1threshold = VR_CFG_AMP(20), \
-		.psi2threshold = VR_CFG_AMP(5), \
-		.psi3threshold = VR_CFG_AMP(1), \
-		.psi3enable = 1, \
-		.psi4enable = 1, \
-		.imon_slope = 0, \
-		.imon_offset = 0, \
-		.icc_max = VR_CFG_AMP(35),\
-		.voltage_limit = 1520 \
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0,
+		.imon_offset = 0,
+		.icc_max = VR_CFG_AMP(35),
+		.voltage_limit = 1520
 	}"
 
 	register "domain_vr_config[VR_GT_SLICED]" = "{
-		.vr_config_enable = 1, \
-		.psi1threshold = VR_CFG_AMP(20), \
-		.psi2threshold = VR_CFG_AMP(5), \
-		.psi3threshold = VR_CFG_AMP(1), \
-		.psi3enable = 1, \
-		.psi4enable = 1, \
-		.imon_slope = 0, \
-		.imon_offset = 0, \
-		.icc_max = VR_CFG_AMP(35), \
-		.voltage_limit = 1520 \
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0,
+		.imon_offset = 0,
+		.icc_max = VR_CFG_AMP(35),
+		.voltage_limit = 1520
 	}"
 
 	# Send an extra VR mailbox command for the PS4 exit issue

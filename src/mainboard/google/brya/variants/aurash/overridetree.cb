@@ -37,13 +37,13 @@ chip soc/intel/alderlake
 	}" # Type-A port A2
 	register "tcss_ports[3]" = "TCSS_PORT_EMPTY"		# Disable TCP3
 	# Bitmap for Wake Enable on USB attach/detach
-	register "usb2_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(4) | \
-					      USB_PORT_WAKE_ENABLE(6) | \
-					      USB_PORT_WAKE_ENABLE(7) | \
+	register "usb2_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(4) |
+					      USB_PORT_WAKE_ENABLE(6) |
+					      USB_PORT_WAKE_ENABLE(7) |
 					      USB_PORT_WAKE_ENABLE(8)"
-	register "usb3_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(1) | \
-					      USB_PORT_WAKE_ENABLE(2) | \
-					      USB_PORT_WAKE_ENABLE(3) | \
+	register "usb3_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(1) |
+					      USB_PORT_WAKE_ENABLE(2) |
+					      USB_PORT_WAKE_ENABLE(3) |
 					      USB_PORT_WAKE_ENABLE(4)"
 	register "tcc_offset" = "0"	# TCC of 100C
 	register "power_limits_config[ADL_P_142_242_282_15W_CORE]" = "{

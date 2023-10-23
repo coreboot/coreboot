@@ -112,11 +112,11 @@ chip soc/intel/skylake
 			# make boards with better PCHs, which can have up to six SATA ports.
 			# However, the H110 PCH only has four SATA ports, which explains why
 			# two connectors are missing.
-			register "SataPortsEnable" = "{ \
-				[0]     = 1, \
-				[1]     = 1, \
-				[2]     = 1, \
-				[3]     = 1, \
+			register "SataPortsEnable" = "{
+				[0] = 1,
+				[1] = 1,
+				[2] = 1,
+				[3] = 1,
 			}"
 		end
 		device pci 19.0 off end # UART #2

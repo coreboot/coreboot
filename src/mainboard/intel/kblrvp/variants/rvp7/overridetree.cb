@@ -29,55 +29,55 @@ chip soc/intel/skylake
 	#* VrVoltageLimit command not sent.
 
 	register "domain_vr_config[VR_SYSTEM_AGENT]" = "{
-		.vr_config_enable = 1, \
-		.psi1threshold = VR_CFG_AMP(20), \
-		.psi2threshold = VR_CFG_AMP(5), \
-		.psi3threshold = VR_CFG_AMP(1), \
-		.psi3enable = 1, \
-		.psi4enable = 1, \
-		.imon_slope = 0, \
-		.imon_offset = 0, \
-		.icc_max = 0, \
-		.voltage_limit = 0 \
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0,
+		.imon_offset = 0,
+		.icc_max = 0,
+		.voltage_limit = 0
 	}"
 
 	register "domain_vr_config[VR_IA_CORE]" = "{
-		.vr_config_enable = 1, \
-		.psi1threshold = VR_CFG_AMP(20), \
-		.psi2threshold = VR_CFG_AMP(5), \
-		.psi3threshold = VR_CFG_AMP(1), \
-		.psi3enable = 1, \
-		.psi4enable = 1, \
-		.imon_slope = 0, \
-		.imon_offset = 0, \
-		.icc_max = 0, \
-		.voltage_limit = 0 \
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0,
+		.imon_offset = 0,
+		.icc_max = 0,
+		.voltage_limit = 0
 	}"
 
 	register "domain_vr_config[VR_GT_UNSLICED]" = "{
-		.vr_config_enable = 1, \
-		.psi1threshold = VR_CFG_AMP(20), \
-		.psi2threshold = VR_CFG_AMP(5), \
-		.psi3threshold = VR_CFG_AMP(1), \
-		.psi3enable = 1, \
-		.psi4enable = 1, \
-		.imon_slope = 0, \
-		.imon_offset = 0, \
-		.icc_max = 0 ,\
-		.voltage_limit = 0 \
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0,
+		.imon_offset = 0,
+		.icc_max = 0,
+		.voltage_limit = 0
 	}"
 
 	register "domain_vr_config[VR_GT_SLICED]" = "{
-		.vr_config_enable = 1, \
-		.psi1threshold = VR_CFG_AMP(20), \
-		.psi2threshold = VR_CFG_AMP(5), \
-		.psi3threshold = VR_CFG_AMP(1), \
-		.psi3enable = 1, \
-		.psi4enable = 1, \
-		.imon_slope = 0, \
-		.imon_offset = 0, \
-		.icc_max = 0, \
-		.voltage_limit = 0 \
+		.vr_config_enable = 1,
+		.psi1threshold = VR_CFG_AMP(20),
+		.psi2threshold = VR_CFG_AMP(5),
+		.psi3threshold = VR_CFG_AMP(1),
+		.psi3enable = 1,
+		.psi4enable = 1,
+		.imon_slope = 0,
+		.imon_offset = 0,
+		.icc_max = 0,
+		.voltage_limit = 0
 	}"
 
 	# Enable Root ports.
@@ -133,18 +133,18 @@ chip soc/intel/skylake
 	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC2)"	# TYPE-A Port
 	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# TYPE-A Port
 
-	register "SerialIoDevMode" = "{ \
-		[PchSerialIoIndexI2C0]  = PchSerialIoPci, \
-		[PchSerialIoIndexI2C1]  = PchSerialIoPci, \
-		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexI2C4]  = PchSerialIoPci, \
-		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexSpi0]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled, \
-		[PchSerialIoIndexUart0] = PchSerialIoPci, \
-		[PchSerialIoIndexUart1] = PchSerialIoDisabled, \
-		[PchSerialIoIndexUart2] = PchSerialIoSkipInit, \
+	register "SerialIoDevMode" = "{
+		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled,
+		[PchSerialIoIndexSpi0]  = PchSerialIoDisabled,
+		[PchSerialIoIndexSpi1]  = PchSerialIoDisabled,
+		[PchSerialIoIndexUart0] = PchSerialIoPci,
+		[PchSerialIoIndexUart1] = PchSerialIoDisabled,
+		[PchSerialIoIndexUart2] = PchSerialIoSkipInit,
 	}"
 
 	# Use default SD card detect GPIO configuration

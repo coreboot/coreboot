@@ -33,15 +33,15 @@ chip soc/intel/skylake
 	#+----------------+-------+-----------------------------------+
 
 	# Bitmap for Wake Enable on USB attach/detach
-	register "usb2_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(2) | \
-					      USB_PORT_WAKE_ENABLE(3) | \
-					      USB_PORT_WAKE_ENABLE(4) | \
-					      USB_PORT_WAKE_ENABLE(5) | \
+	register "usb2_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(2) |
+					      USB_PORT_WAKE_ENABLE(3) |
+					      USB_PORT_WAKE_ENABLE(4) |
+					      USB_PORT_WAKE_ENABLE(5) |
 					      USB_PORT_WAKE_ENABLE(6)"
-	register "usb3_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(2) | \
-					      USB_PORT_WAKE_ENABLE(3) | \
-					      USB_PORT_WAKE_ENABLE(4) | \
-					      USB_PORT_WAKE_ENABLE(5) | \
+	register "usb3_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(2) |
+					      USB_PORT_WAKE_ENABLE(3) |
+					      USB_PORT_WAKE_ENABLE(4) |
+					      USB_PORT_WAKE_ENABLE(5) |
 					      USB_PORT_WAKE_ENABLE(6)"
 
 	# GPE configuration

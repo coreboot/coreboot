@@ -40,30 +40,32 @@ chip soc/intel/skylake
 	}"
 
 	device domain 0 on
-		device pci 01.0 on end	# unused
-		device pci 01.1 on	# PCIE Slot (JPCIE1)
+		device ref peg0 on end	# unused
+		device ref peg1 on
+			# Slot JPCIE1
 			register "PcieRpEnable[0]" = "1"
 			smbios_slot_desc "SlotTypePciExpressGen3X8" "SlotLengthShort" "CPU SLOT6 PCI-E 3.0 X8" "SlotDataBusWidth4X"
 		end
-		device pci 1c.0 on	# PCI Express Port 1 (Slot JPCIE1)
+		device ref pcie_rp1 on
+			# Slot JPCIE1
 			register "PcieRpEnable[2]" = "1"
 			smbios_slot_desc "SlotTypePciExpressGen3X4" "SlotLengthLong" "PCH SLOT4 PCI-E 3.0 X2(IN X4)" "SlotDataBusWidth2X"
 		end
-		device pci 1c.2 on	# PCI Express Port 3
+		device ref pcie_rp3 on
 			device pci 00.0 on	# Aspeed PCI Bridge
 				device pci 00.0 on end	# Aspeed 2400 VGA
 			end
 		end
-		device pci 1c.4 on	# PCI Express Port 5
+		device ref pcie_rp5 on
 			register "PcieRpEnable[4]" = "1"
 			device pci 00.0 on end	# 10GbE
 			device pci 00.1 on end	# 10GbE
 		end
-		device pci 1d.0 on	# PCI Express Port 9
+		device ref pcie_rp9 on
 			register "PcieRpEnable[8]" = "1"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2 2280" "SlotDataBusWidth4X"
 		end
-		device pci 1f.0 on	# LPC Interface
+		device ref lpc_espi on
 			chip drivers/ipmi
 				use pch_gpio as gpio_dev
 				register "post_complete_gpio" = "GPP_B20"

@@ -354,9 +354,6 @@ static bool validate_resource(STM_RSC *resource_list, uint32_t num_entries)
 
 			if (resource->header.length != sizeof(STM_RSC_MEM_DESC))
 				return false;
-
-			if (resource->mem.rwx_attributes > FULL_ACCS)
-				return false;
 			break;
 
 		case IO_RANGE:

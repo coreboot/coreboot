@@ -159,8 +159,8 @@ config ME_BIN_PATH
 	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/intel_me.bin"
 
 
-config POWER_STATE_OFF_AFTER_FAILURE
-	default y
+config POWER_STATE_DEFAULT_ON_AFTER_FAILURE
+	default n
 
 config EDK2_BOOTSPLASH_FILE
 	string

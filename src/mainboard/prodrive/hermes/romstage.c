@@ -83,7 +83,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	cannonlake_memcfg_init(&memupd->FspmConfig, &baseboard_mem_cfg);
 
 	/* Tell FSP-M about the desired primary video adapter so that GGC is set up properly */
-	if (board_cfg && board_cfg->primary_video == PRIMARY_VIDEO_INTEL)
+	if (board_cfg->primary_video == PRIMARY_VIDEO_INTEL)
 		memupd->FspmConfig.PrimaryDisplay = 0; /* iGPU is primary */
 
 	/* Overwrite memupd */

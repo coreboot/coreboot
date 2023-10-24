@@ -584,7 +584,7 @@ static ssize_t relocate_fvh(uintptr_t new_addr, void *fsp, size_t fsp_size,
 		printk(FSP_DBG_LVL, "file offset: %zx\n", file_offset);
 
 		/* First file and section should be FSP info header. */
-		if (fih_offset != NULL && *fih_offset == 0)
+		if (*fih_offset == 0)
 			*fih_offset = file_offset;
 
 		ffsfh = relative_offset(fsp, file_offset);
@@ -671,14 +671,8 @@ ssize_t fsp_component_relocate(uintptr_t new_addr, void *fsp, size_t size)
 	while (offset < size) {
 		ssize_t nparsed;
 
-		/* Relocate each FV within the FSP region. The FSP_INFO_HEADER
-		 * should only be located in the first FV. */
-		if (offset == 0)
-			nparsed = relocate_fvh(new_addr, fsp, size, offset,
-						&fih_offset);
-		else
-			nparsed = relocate_fvh(new_addr, fsp, size, offset,
-						NULL);
+		/* Relocate each FV within the FSP region. */
+		nparsed = relocate_fvh(new_addr, fsp, size, offset, &fih_offset);
 
 		/* FV should be larger than 0 or failed to parse. */
 		if (nparsed <= 0) {

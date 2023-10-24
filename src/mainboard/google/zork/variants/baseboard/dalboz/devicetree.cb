@@ -346,11 +346,11 @@ chip soc/amd/picasso
 		end
 		device ref lpc_bridge on
 			chip ec/google/chromeec
-				device pnp 0c09.0 on
+				device pnp 0c09.0 alias cros_ec on
 					chip ec/google/chromeec/i2c_tunnel
 						register "uid" = "1"
 						register "remote_bus" = "8"
-						device generic 0.0 on
+						device generic 0.0 alias cros_ec_i2c_8 on
 							chip drivers/i2c/generic
 								register "hid" = ""10EC5682""
 								register "name" = ""RT58""

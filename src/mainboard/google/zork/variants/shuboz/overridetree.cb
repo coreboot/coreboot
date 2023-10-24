@@ -95,9 +95,9 @@ chip soc/amd/picasso
 		end
 		device ref lpc_bridge on
 			chip ec/google/chromeec
-				device pnp 0c09.0 on
+				device ref cros_ec on
 					chip ec/google/chromeec/i2c_tunnel
-						device generic 0.0 on
+						device ref cros_ec_i2c_8 on
 							chip drivers/i2c/generic
 								register "hid" = ""10EC5682""
 								register "name" = ""RT58""

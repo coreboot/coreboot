@@ -183,7 +183,7 @@ int variant_get_daughterboard_id(void)
 	return extract_field(FW_CONFIG_MASK_DB_INDEX, FW_CONFIG_DB_INDEX_SHIFT);
 }
 
-bool variant_has_fingerprint(void)
+__weak bool variant_has_fingerprint(void)
 {
 	if (CONFIG(VARIANT_HAS_FPMCU))
 		return true;

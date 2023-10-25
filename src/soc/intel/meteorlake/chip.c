@@ -151,6 +151,18 @@ static void soc_fill_gpio_pm_configuration(void)
 	gpio_pm_configure(value, TOTAL_GPIO_COMM);
 }
 
+/* Enable tracehub in device tree */
+static void soc_enable_tracehub(void)
+{
+	struct device *dev;
+
+	dev = pcidev_path_on_root(PCI_DEVFN_NPK);
+	if (dev) {
+		dev->enabled = 1;
+		printk(BIOS_DEBUG, "Tracehub is enabled.\n");
+	}
+}
+
 void soc_init_pre_device(void *chip_info)
 {
 	config_t *config = config_of_soc();
@@ -158,6 +170,9 @@ void soc_init_pre_device(void *chip_info)
 	/* Validate TBT image authentication */
 	config->tbt_authentication = ioe_p2sb_sbi_read(PID_IOM,
 					IOM_CSME_IMR_TBT_STATUS) & TBT_VALID_AUTHENTICATION;
+
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_TRACEHUB))
+		soc_enable_tracehub();
 
 	/* Perform silicon specific init. */
 	fsp_silicon_init();

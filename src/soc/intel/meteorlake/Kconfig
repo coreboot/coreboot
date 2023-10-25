@@ -353,6 +353,7 @@ config SOC_INTEL_METEORLAKE_DEBUG_CONSENT
 	# USB DBC is more common for developers so make this default to 6 if
 	# SOC_INTEL_DEBUG_CONSENT=y
 	default 6 if SOC_INTEL_DEBUG_CONSENT
+	default 2 if SOC_INTEL_COMMON_BLOCK_TRACEHUB
 	default 0
 	help
 	  This is to control debug interface on SOC.

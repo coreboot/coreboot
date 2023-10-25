@@ -54,6 +54,7 @@ clean:
 	rm -f  build/u-root
 	rm -f  build/initramfs*
 	rm -f  build/bzImage
+	rm -f  build/uImage
 
 distclean:
 	rm -rf build

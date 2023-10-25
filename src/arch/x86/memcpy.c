@@ -14,19 +14,26 @@ void *memcpy(void *dest, const void *src, size_t n)
 	check_memory_region((unsigned long)dest, n, true, _RET_IP_);
 #endif
 
-	asm volatile(
 #if ENV_X86_64
-		"rep ; movsd\n\t"
+	asm volatile(
+		"rep ; movsq\n\t"
 		"mov %4,%%rcx\n\t"
+		"rep ; movsb\n\t"
+		: "=&c" (d0), "=&D" (d1), "=&S" (d2)
+		: "0" (n >> 3), "g" (n & 7), "1" (dest), "2" (src)
+		: "memory"
+	);
 #else
+	asm volatile(
 		"rep ; movsl\n\t"
 		"movl %4,%%ecx\n\t"
-#endif
 		"rep ; movsb\n\t"
 		: "=&c" (d0), "=&D" (d1), "=&S" (d2)
 		: "0" (n >> 2), "g" (n & 3), "1" (dest), "2" (src)
 		: "memory"
 	);
+#endif
+
 
 	return dest;
 }

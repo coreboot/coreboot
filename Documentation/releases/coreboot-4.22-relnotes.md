@@ -59,6 +59,44 @@ Related important commits:
 - b7832de0260b042c25bf8f53abcb32e20a29ae9c ("x86: Add .data section
   support for pre-memory stages")
 
+### x86: Support CBFS cache for pre-memory stages and ramstage
+
+The CBFS cache scratchpad offers a generic way to decompress CBFS
+files through the cbfs_map() function without having to reserve a
+per-file specific memory region.
+
+CBFS cache x86 support has been added to pre-memory stages and
+ramstage.
+
+1. **pre-memory stages**: The new `PRERAM_CBFS_CACHE_SIZE` Kconfig can
+   be used to set the pre-memory stages CBFS cache size. A cache size
+   of zero disables the CBFS cache feature for all pre-memory
+   stages. The default value is 16 KiB which seems a reasonable
+   minimal value enough to satisfy basic needs such as the
+   decompression of a small configuration file. This setting can be
+   adjusted depending on the platform needs and capabilities.
+
+   Note that we have set this size to zero for all the platforms
+   without enough space in Cache-As-RAM to accommodate the default
+   size.
+
+2. **ramstage**: The new `RAMSTAGE_CBFS_CACHE_SIZE` Kconfig can be
+   used to set the ramstage CBFS cache size. A cache size of zero
+   disables the CBFS cache feature for ramstage. Similarly to
+   pre-memory stages support, the default size is 16 KiB.
+
+   As we want to support S3 suspend/resume use-case, the CBFS cache
+   memory cannot be released to the operating system and therefore
+   cannot be an unreserved memory region. The ramstage CBFS cache
+   scratchpad is defined as a simple C static buffer as it allows us
+   to keep the simple and robust design of the static initialization
+   of the `cbfs_cache` global variable (cf. src/lib/cbfs.c).
+
+   However, since some AMD SoCs (cf. `SOC_AMD_COMMON_BLOCK_NONCAR`
+   Kconfig) already define a `_cbfs_cache` region we also introduced a
+   `POSTRAM_CBFS_CACHE_IN_BSS` Kconfig to gate the use of a static
+   buffer as the CBFS cache scratchpad.
+
 ### Toolchain updates
 
 * Upgrade GMP from 6.2.1 to 6.3.0

@@ -1000,6 +1000,9 @@ menu "Debugging"
 comment "CPU Debug Settings"
 source "src/cpu/*/Kconfig.debug_cpu"
 
+comment "Vendorcode Debug Settings"
+	source "src/vendorcode/*/*/Kconfig.debug"
+
 comment "BLOB Debug Settings"
 source "src/drivers/intel/fsp*/Kconfig.debug_blob"
 

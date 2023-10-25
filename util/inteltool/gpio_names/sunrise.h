@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef GPIO_NAMES_SUNRISE_H
 #define GPIO_NAMES_SUNRISE_H
 

@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef GPIO_NAMES_GEMINILAKE_H
 #define GPIO_NAMES_GEMINILAKE_H
 

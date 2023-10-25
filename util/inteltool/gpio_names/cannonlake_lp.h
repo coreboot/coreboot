@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef GPIO_NAMES_CANNONLAKE_LP
 #define GPIO_NAMES_CANNONLAKE_LP
 

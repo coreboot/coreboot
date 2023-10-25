@@ -45,8 +45,8 @@ $(kernel_dir)/.config: $(CONFIG_LINUXBOOT_KERNEL_CONFIGFILE) | $(kernel_dir)
 
 $(kernel_dir)/vmlinux : $(kernel_dir)/.config | $(kernel_dir)
 	@echo "    MAKE       Linux $(kernel_version)"
-	echo "$(MAKE) -j 4 -C $(kernel_dir) $(KERNEL_MAKE_FLAGS) vmlinux"
-	$(MAKE) -j 4 -C $(kernel_dir) $(KERNEL_MAKE_FLAGS) vmlinux
+	echo "$(MAKE) -j $(CPUS) -C $(kernel_dir) $(KERNEL_MAKE_FLAGS) vmlinux"
+	$(MAKE) -j $(CPUS) -C $(kernel_dir) $(KERNEL_MAKE_FLAGS) vmlinux
 
 build/vmlinux.bin: $(kernel_dir)/vmlinux | build
 	$(OBJCOPY) -O binary $< $@

@@ -63,7 +63,9 @@ static const struct slot_irq_constraints irq_constraints[] = {
 	{
 		.slot = PCI_DEV_SLOT_DPTF,
 		.fns = {
-			ANY_PIRQ(PCI_DEVFN_DPTF),
+			/* Dynamic Tuning Technology (DTT) device IRQ is not
+			   programmable and is INT_A/PIRQ_A (IRQ 16) */
+			FIXED_INT_PIRQ(PCI_DEVFN_DPTF, PCI_INT_A, PIRQ_A),
 		},
 	},
 	{

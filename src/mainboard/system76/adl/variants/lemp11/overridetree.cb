@@ -39,17 +39,19 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref xhci on
-			# USB2
-			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)" # Type-A Left
-			register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)" # Type-A Right
-			register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC_SKIP)" # J_TYPEC1
-			register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)" # 3G/LTE
-			register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)" # Camera
-			register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)" # Bluetooth
-			# USB3
-			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A Left
-			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A Right
-			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)" # 3G/LTE
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC_SKIP),		/* Type-A Left */
+				[1] = USB2_PORT_MID(OC_SKIP),		/* Type-A Right */
+				[2] = USB2_PORT_TYPE_C(OC_SKIP),	/* J_TYPEC1 */
+				[3] = USB2_PORT_MID(OC_SKIP),		/* 3G/LTE */
+				[6] = USB2_PORT_MID(OC_SKIP),		/* Camera */
+				[9] = USB2_PORT_MID(OC_SKIP),		/* Bluetooth */
+			}"
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* Type-A Left */
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* Type-A Right */
+				[3] = USB3_PORT_DEFAULT(OC_SKIP),	/* 3G/LTE */
+			}"
 			# ACPI
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on

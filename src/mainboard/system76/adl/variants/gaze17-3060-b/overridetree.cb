@@ -83,18 +83,20 @@ chip soc/intel/alderlake
 		end
 		device ref tcss_dma0 on end
 		device ref xhci on
-			# USB2
-			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)" # USB 3.2 Type-A audio board
-			register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB 3.2 Type-C
-			register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)" # USB 2.0 Type-A audio board
-			register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)" # Fingerprint
-			register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)" # Camera
-			register "usb2_ports[8]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Thunderbolt Type-C
-			register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)" # Bluetooth
-			# USB3
-			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB 3.2 Type-A audio board
-			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB 3.2 Type-C side A
-			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB 3.2 Type-C side B
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC_SKIP),		/* USB 3.2 Type-A audio board */
+				[2] = USB2_PORT_TYPE_C(OC_SKIP),	/* USB 3.2 Type-C */
+				[5] = USB2_PORT_MID(OC_SKIP),		/* USB 2.0 Type-A audio board */
+				[6] = USB2_PORT_MID(OC_SKIP),		/* Fingerprint */
+				[7] = USB2_PORT_MID(OC_SKIP),		/* Camera */
+				[8] = USB2_PORT_TYPE_C(OC_SKIP),	/* Thunderbolt Type-C */
+				[9] = USB2_PORT_MID(OC_SKIP),		/* Bluetooth */
+			}"
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB 3.2 Type-A audio board */
+				[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB 3.2 Type-C side A */
+				[3] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB 3.2 Type-C side B */
+			}"
 		end
 		device ref pcie_rp5 on
 			# PCIe root port #5 x1, Clock 2 (WLAN)

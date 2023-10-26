@@ -64,19 +64,21 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref xhci on
-			# USB2
-			register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)" # TYPEC1 (USB 3.2 Gen2)
-			register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)" # J_USB2
-			register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)" # J_USB1
-			register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)" # Per-KB
-			register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)" # Fingerprint
-			register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)" # Camera
-			register "usb2_ports[8]" = "USB2_PORT_TYPE_C(OC_SKIP)" # TYPEC2 (Thunderbolt)
-			register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)" # Bluetooth
-			# USB3
-			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # TYPEC1 (USB 3.2 Gen2)
-			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # J_USB2
-			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # J_USB1
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_TYPE_C(OC_SKIP),	/* TYPEC1 (USB 3.2 Gen2) */
+				[1] = USB2_PORT_MID(OC_SKIP),		/* J_USB2 */
+				[2] = USB2_PORT_MID(OC_SKIP),		/* J_USB1 */
+				[5] = USB2_PORT_MID(OC_SKIP),		/* Per-KB */
+				[6] = USB2_PORT_MID(OC_SKIP),		/* Fingerprint */
+				[7] = USB2_PORT_MID(OC_SKIP),		/* Camera */
+				[8] = USB2_PORT_TYPE_C(OC_SKIP),	/* TYPEC2 (Thunderbolt) */
+				[9] = USB2_PORT_MID(OC_SKIP),		/* Bluetooth */
+			}"
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* TYPEC1 (USB 3.2 Gen2) */
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* J_USB2 */
+				[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* J_USB1 */
+			}"
 			# ACPI
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on

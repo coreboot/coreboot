@@ -65,3 +65,6 @@
 	path = util/goswid
 	url = ../goswid
 	branch = trunk
+[submodule "src/vendorcode/amd/opensil/genoa_poc/opensil"]
+	path = src/vendorcode/amd/opensil/genoa_poc/opensil
+	url = ../opensil_genoa_poc.git

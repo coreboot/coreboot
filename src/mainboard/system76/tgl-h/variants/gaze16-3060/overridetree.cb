@@ -29,23 +29,27 @@ chip soc/intel/tigerlake
 			register "PcieClkSrcClkReq[7]" = "7"
 		end
 		device ref south_xhci on
-			# USB2
-			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)" # USB 3.2 Gen 2 (Right)
-			register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)" # USB 3.2 Gen 1 (Left)
-			register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB 3.2 Gen 2 Type C (Back)
-			register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)" # USB 2.0 (Left)
-			register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)" # Camera
-			register "usb2_ports[8]" = "USB2_PORT_MID(OC_SKIP)" # Per-Key
-			register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)" # Fingerprint
-			register "usb2_ports[13]" = "USB2_PORT_MID(OC_SKIP)" # Bluetooth
-			# USB3
-			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB 3.2 Gen 2 (Right)
-			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB 3.2 Gen 1 (Left)
-			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB 3.2 Gen 2 Type C (Back)
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC_SKIP),		/* USB 3.2 Gen 2 (Right) */
+				[1] = USB2_PORT_MID(OC_SKIP),		/* USB 3.2 Gen 1 (Left) */
+				[2] = USB2_PORT_TYPE_C(OC_SKIP),	/* USB 3.2 Gen 2 Type C (Back) */
+				[5] = USB2_PORT_MID(OC_SKIP),		/* USB 2.0 (Left) */
+				[7] = USB2_PORT_MID(OC_SKIP),		/* Camera */
+				[8] = USB2_PORT_MID(OC_SKIP),		/* Per-Key */
+				[9] = USB2_PORT_MID(OC_SKIP),		/* Fingerprint */
+				[13] = USB2_PORT_MID(OC_SKIP),		/* Bluetooth */
+			}"
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB 3.2 Gen 2 (Right) */
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB 3.2 Gen 1 (Left) */
+				[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB 3.2 Gen 2 Type C (Back) */
+			}"
 		end
 		device ref sata on
-			register "SataPortsEnable[0]" = "1" # HDD (SATA0B)
-			register "SataPortsEnable[1]" = "1" # SSD2 (SATA1A)
+			register "SataPortsEnable" = "{
+				[0] = 1, /* HDD (SATA0B) */
+				[1] = 1, /* SSD2 (SATA1A) */
+			}"
 		end
 		device ref pcie_rp5 on
 			# PCIe root port #5 x1, Clock 8 (GLAN)

@@ -110,26 +110,30 @@ chip soc/intel/skylake
 		device ref igpu on end
 		device ref sa_thermal on end
 		device ref south_xhci on
-			# USB2
-			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"         # Type-A port right
-			register "usb2_ports[1]" = "USB2_PORT_FLEX(OC_SKIP)"        # 3G / LTE
-			register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC_SKIP)"      # Type-C port right
-			register "usb2_ports[3]" = "USB2_PORT_FLEX(OC_SKIP)"        # Camera
-			register "usb2_ports[4]" = "USB2_PORT_FLEX(OC_SKIP)"        # Bluetooth
-			register "usb2_ports[6]" = "USB2_PORT_FLEX(OC_SKIP)"        # Type-A port left
-			register "usb2_ports[7]" = "USB2_PORT_TYPE_C(OC_SKIP)"      # Type-C port right
-			# USB3
-			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"     # Type-A port right
-			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"     # 4G
-			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"     # Type C port right
-			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"     # Type-A port left
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC_SKIP),		/* Type-A port right */
+				[1] = USB2_PORT_FLEX(OC_SKIP),		/* 3G / LTE */
+				[2] = USB2_PORT_TYPE_C(OC_SKIP),	/* Type-C port right */
+				[3] = USB2_PORT_FLEX(OC_SKIP),		/* Camera */
+				[4] = USB2_PORT_FLEX(OC_SKIP),		/* Bluetooth */
+				[6] = USB2_PORT_FLEX(OC_SKIP),		/* Type-A port left */
+				[7] = USB2_PORT_TYPE_C(OC_SKIP),	/* Type-C port right */
+			}"
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* Type-A port right */
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* 4G */
+				[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* Type C port right */
+				[3] = USB3_PORT_DEFAULT(OC_SKIP),	/* Type-A port left */
+			}"
 		end
 		device ref thermal on end
 		device ref sata on
 			register "SataSalpSupport" = "0"
-			register "SataPortsEnable[0]" = "1"
-			register "SataPortsEnable[2]" = "1"
 			register "SataSpeedLimit" = "2"
+			register "SataPortsEnable" = "{
+				[0] = 1,
+				[2] = 1,
+			}"
 		end
 		device ref pcie_rp1 on
 			# Root port #1 x4 (TBT)

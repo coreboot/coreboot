@@ -163,6 +163,7 @@ config CHROMEOS_WIFI_SAR
 	select USE_SAR
 
 config DEVICETREE
+	default "variants/baseboard/\$(CONFIG_BASEBOARD_DIR)/devicetree_pre_prod.cb" if SOC_INTEL_METEORLAKE_PRE_PRODUCTION_SILICON
 	default "variants/baseboard/\$(CONFIG_BASEBOARD_DIR)/devicetree.cb"
 
 config FMDFILE

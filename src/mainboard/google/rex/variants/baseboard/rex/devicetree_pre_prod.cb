@@ -1,7 +1,7 @@
 chip soc/intel/meteorlake
 
 	# GPE configuration
-	register "pmc_gpe0_dw0" = "GPP_D"
+	register "pmc_gpe0_dw0" = "GPP_B"
 	register "pmc_gpe0_dw1" = "GPP_E"
 	register "pmc_gpe0_dw2" = "GPP_F"
 
@@ -45,25 +45,22 @@ chip soc/intel/meteorlake
 	# DPTF enable
 	register "dptf_enable" = "1"
 
-	# Temporary setting TCC of 100C = Tj max (110) - TCC_Offset (10)
-	register "tcc_offset" = "10"
-
 	# Enable CNVi BT
 	register "cnvi_bt_core" = "true"
 
 	register "sagv" = "SAGV_ENABLED"
 
-	register "sagv_freq_mhz[0]" = "2133"
+	register "sagv_freq_mhz[0]" = "3200"
 	register "sagv_gear[0]" = "4"
 
-	register "sagv_freq_mhz[1]" = "4267"
+	register "sagv_freq_mhz[1]" = "6000"
 	register "sagv_gear[1]" = "4"
 
-	register "sagv_freq_mhz[2]" = "6000"
+	register "sagv_freq_mhz[2]" = "6400"
 	register "sagv_gear[2]" = "4"
 
-	register "sagv_freq_mhz[3]" = "6400"
-	register "sagv_gear[3]" = "4"
+	register "sagv_freq_mhz[3]" = "5600"
+	register "sagv_gear[3]" = "2"
 
 	# Set on-board graphics as primary display
 	register "skip_ext_gfx_scan" = "1"
@@ -78,6 +75,17 @@ chip soc/intel/meteorlake
 	register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
 	register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
 	register "pch_hda_idisp_codec_enable" = "1"
+
+	# As per doc 640982, Intel MTL-U 15W CPU supports FVM on IA and SA
+	# The ICC Limit is represented in 1/4 A increments, i.e., a value of 400 = 100A
+	# For IA VR configuration
+	register "enable_fast_vmode[VR_DOMAIN_IA]" = "1"
+	register "cep_enable[VR_DOMAIN_IA]" = "1"
+	register "fast_vmode_i_trip[VR_DOMAIN_IA]" = "264" # 66A
+	# For SA VR configuration
+	register "enable_fast_vmode[VR_DOMAIN_SA]" = "1"
+	register "cep_enable[VR_DOMAIN_SA]" = "1"
+	register "fast_vmode_i_trip[VR_DOMAIN_SA]" = "84" # 21A
 
 	device domain 0 on
 		device ref igpu on end

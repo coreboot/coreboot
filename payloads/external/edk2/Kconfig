@@ -60,7 +60,9 @@ config EDK2_REPO_OFFICIAL
 	  Select this option if you want to use the official edk2 repository to build
 	  edk2.
 
-	  Please note, this option will not work on any SOC without modification.
+	  Please note, commit c4fdec0a83d6 ("UefiCpuPkg/MtrrLib: Improve MtrrDebugPrintAllMtrrsWorker"),
+	  and the preceding MTRR patches, must be in the branch used or edk2 will not boot due
+	  to trampling MTRRs set up by coreboot.
 
 config EDK2_REPO_CUSTOM
 	bool "Specify your own repository"

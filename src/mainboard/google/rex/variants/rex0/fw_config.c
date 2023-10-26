@@ -126,6 +126,10 @@ static const struct pad_config uwb_gspi1_disable_pads[] = {
 	PAD_NC(GPP_F20, NONE),
 };
 
+static const struct pad_config wwan_disable_pads[] = {
+	PAD_CFG_GPO(GPP_B17, 0, DEEP) /* EN_WWAN_PWR */
+};
+
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 {
 	if (!fw_config_is_provisioned()) {
@@ -179,5 +183,10 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	} else {
 		printk(BIOS_INFO, "Disabling UWB (absent or misconfigured)\n");
 		GPIO_PADBASED_OVERRIDE(padbased_table, uwb_gspi1_disable_pads);
+	}
+
+	if (fw_config_probe(FW_CONFIG(CELLULAR, CELLULAR_ABSENT))) {
+		printk(BIOS_INFO, "Configure GPIOs for no cellular.\n");
+		GPIO_PADBASED_OVERRIDE(padbased_table, wwan_disable_pads);
 	}
 }

@@ -40,6 +40,14 @@ chip soc/intel/meteorlake
 		.tdp_pl4 = 84,
 	}"
 
+	# Override FVM and VR (IA and SA) configuration: Disable
+	register "enable_fast_vmode[VR_DOMAIN_IA]" = "0"
+	register "cep_enable[VR_DOMAIN_IA]" = "0"
+	register "fast_vmode_i_trip[VR_DOMAIN_IA]" = "0"
+	register "enable_fast_vmode[VR_DOMAIN_SA]" = "0"
+	register "cep_enable[VR_DOMAIN_SA]" = "0"
+	register "fast_vmode_i_trip[VR_DOMAIN_SA]" = "0"
+
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC1)"	# USB2_C1
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC0)"	# USB2_C0
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC2)"	# Type-A Port A1

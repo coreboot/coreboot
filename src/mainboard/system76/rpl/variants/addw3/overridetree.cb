@@ -8,18 +8,21 @@ chip soc/intel/alderlake
 		#TODO: DDIB and DDID are both connected to TBT
 
 		device ref xhci on
-			# USB2
-			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)" # Type-A 3.2 Gen 1 (Left)
-			register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)" # Type-A 2.0 (Left)
-			# Port reset messaging cannot be used, so do not use USB2_PORT_TYPE_C for these
-			register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)" # Type-C 3.2 Gen 2 (Rear)
-			register "usb2_ports[8]" = "USB2_PORT_MID(OC_SKIP)" # Type-C Thunderbolt (Right)
-			register "usb2_ports[10]" = "USB2_PORT_MID(OC_SKIP)" # Camera
-			register "usb2_ports[11]" = "USB2_PORT_MID(OC_SKIP)" # Secure Pad
-			register "usb2_ports[13]" = "USB2_PORT_MID(OC_SKIP)" # Bluetooth
-			# USB3
-			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A 3.2 Gen 1 (Left)
-			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-C 3.2 Gen 2 (Rear)
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC_SKIP),		/* Type-A 3.2 Gen 1 (Left) */
+				[1] = USB2_PORT_MID(OC_SKIP),		/* Type-A 2.0 (Left) */
+				/* Port reset messaging cannot be used,
+				 * so do not use USB2_PORT_TYPE_C for these */
+				[2] = USB2_PORT_MID(OC_SKIP),		/* Type-C 3.2 Gen 2 (Rear) */
+				[8] = USB2_PORT_MID(OC_SKIP),		/* Type-C Thunderbolt (Right) */
+				[10] = USB2_PORT_MID(OC_SKIP),		/* Camera */
+				[11] = USB2_PORT_MID(OC_SKIP),		/* Secure Pad */
+				[13] = USB2_PORT_MID(OC_SKIP),		/* Bluetooth */
+			}"
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* Type-A 3.2 Gen 1 (Left) */
+				[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* Type-C 3.2 Gen 2 (Rear) */
+			}"
 		end
 
 		device ref i2c0 on

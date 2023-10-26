@@ -8,19 +8,21 @@ chip soc/intel/alderlake
 		end
 		device ref tcss_dma0 on end
 		device ref xhci on
-			# USB2
-			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)" # AJ_USB1: USB-A 3.2 Gen 1 (Left)
-			register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)" # J_TYPEC1: USB-C Thunderbolt (Right)
-			register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC_SKIP)" # J_TYPEC2: USB-C 3.2 Gen 2 (Back)
-			register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)" # Per-key RGB
-			register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)" # J_USB1: USB-A 3.2 Gen 1 (Right)
-			register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)" # Camera
-			register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)" # Bluetooth
-			# USB3
-			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # AJ_USB1: USB-A 3.2 Gen 1 (Left)
-			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # J_USB1: USB-A 3.2 Gen 1 (Right)
-			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # J_TYPEC2: USB-C 3.2 Gen 2 (Back)
-			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)" # J_TYPEC2: USB-C 3.2 Gen 2 (Back)
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC_SKIP),		/* AJ_USB1: USB-A 3.2 Gen 1 (Left) */
+				[1] = USB2_PORT_TYPE_C(OC_SKIP),	/* J_TYPEC1: USB-C Thunderbolt (Right) */
+				[2] = USB2_PORT_TYPE_C(OC_SKIP),	/* J_TYPEC2: USB-C 3.2 Gen 2 (Back) */
+				[4] = USB2_PORT_MID(OC_SKIP),		/* Per-key RGB */
+				[5] = USB2_PORT_MID(OC_SKIP),		/* J_USB1: USB-A 3.2 Gen 1 (Right) */
+				[7] = USB2_PORT_MID(OC_SKIP),		/* Camera */
+				[9] = USB2_PORT_MID(OC_SKIP),		/* Bluetooth */
+			}"
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* AJ_USB1: USB-A 3.2 Gen 1 (Left) */
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* J_USB1: USB-A 3.2 Gen 1 (Right) */
+				[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* J_TYPEC2: USB-C 3.2 Gen 2 (Back) */
+				[3] = USB3_PORT_DEFAULT(OC_SKIP),	/* J_TYPEC2: USB-C 3.2 Gen 2 (Back) */
+			}"
 		end
 
 		device ref i2c0 on

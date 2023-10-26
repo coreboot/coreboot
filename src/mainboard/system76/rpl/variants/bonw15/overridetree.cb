@@ -6,18 +6,21 @@ chip soc/intel/alderlake
 		subsystemid 0x1558 0x3702 inherit
 
 		device ref xhci on
-			# USB2
-			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)" # Type-A 3.2 Gen 2 (Left, Front)
-			register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)" # Type-A 3.2 Gen 2 (Left, Rear)
-			register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)" # Camera
-			register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)" # Per-key RGB
-			# Port reset messaging cannot be used, so do not use USB2_PORT_TYPE_C for these
-			register "usb2_ports[8]" = "USB2_PORT_MID(OC_SKIP)" # Type-C Thunderbolt (Right, Front)
-			register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)" # Type-C Thunderbolt with PD (Right, Rear)
-			register "usb2_ports[13]" = "USB2_PORT_MID(OC_SKIP)" # Bluetooth
-			# USB3
-			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A 3.2 Gen 2 (Left, Front)
-			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A 3.2 Gen 2 (Left, Rear)
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC_SKIP),		/* Type-A 3.2 Gen 2 (Left, Front) */
+				[1] = USB2_PORT_MID(OC_SKIP),		/* Type-A 3.2 Gen 2 (Left, Rear) */
+				[5] = USB2_PORT_MID(OC_SKIP),		/* Camera */
+				[6] = USB2_PORT_MID(OC_SKIP),		/* Per-key RGB */
+				/* Port reset messaging cannot be used,
+				 * so do not use USB2_PORT_TYPE_C for these */
+				[8] = USB2_PORT_MID(OC_SKIP),		/* Type-C Thunderbolt (Right, Front) */
+				[9] = USB2_PORT_MID(OC_SKIP),		/* Type-C Thunderbolt with PD (Right, Rear) */
+				[13] = USB2_PORT_MID(OC_SKIP),		/* Bluetooth */
+			}"
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* Type-A 3.2 Gen 2 (Left, Front) */
+				[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* Type-A 3.2 Gen 2 (Left, Rear) */
+			}"
 		end
 
 		device ref i2c0 on

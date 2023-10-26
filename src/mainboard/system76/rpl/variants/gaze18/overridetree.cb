@@ -3,19 +3,21 @@ chip soc/intel/alderlake
 		subsystemid 0x1558 0x5630 inherit
 
 		device ref xhci on
-			# USB2
-			register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)" # J_TYPEC1 (USB 3.1 Gen2)
-			register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)" # Type-A (USB 3.1 Gen2)
-			register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)" # J_TYPEC2 (USB 3.1 Gen2)
-			register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)" # Finger
-			register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)" # Camera
-			register "usb2_ports[8]" = "USB2_PORT_MID(OC_SKIP)" # Type-A
-			register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)" # Bluetooth
-			# USB3
-			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-A (USB 3.1 Gen2)
-			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # J_TYPEC2
-			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # J_TYPEC1
-			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)" # J_TYPEC1
+			register "usb2_ports" = "{
+				[2] = USB2_PORT_MID(OC_SKIP),		/* J_TYPEC1 (USB 3.1 Gen2) */
+				[4] = USB2_PORT_MID(OC_SKIP),		/* Type-A (USB 3.1 Gen2) */
+				[5] = USB2_PORT_MID(OC_SKIP),		/* J_TYPEC2 (USB 3.1 Gen2) */
+				[6] = USB2_PORT_MID(OC_SKIP),		/* Finger */
+				[7] = USB2_PORT_MID(OC_SKIP),		/* Camera */
+				[8] = USB2_PORT_MID(OC_SKIP),		/* Type-A */
+				[9] = USB2_PORT_MID(OC_SKIP),		/* Bluetooth */
+			}"
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* Type-A (USB 3.1 Gen2) */
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* J_TYPEC2 */
+				[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* J_TYPEC1 */
+				[3] = USB3_PORT_DEFAULT(OC_SKIP),	/* J_TYPEC1 */
+			}"
 		end
 
 		device ref i2c0 on

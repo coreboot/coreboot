@@ -67,19 +67,21 @@ chip soc/intel/cannonlake
 		device pci 12.6 off end # GSPI #2
 		device pci 13.0 off end # Integrated Sensor Hub
 		device pci 14.0 on      # USB xHCI
-			# USB2
-			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)" # USB 3 Right
-			register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)" # USB 3 Left
-			register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Type-C
-			register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)" # USB 2 Left
-			register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)" # Camera
-			register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)" # Fingerprint
-			register "usb2_ports[13]" = "USB2_PORT_MID(OC_SKIP)" # Bluetooth
-			# USB3
-			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB 3 Right
-			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB 3 Left
-			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-C
-			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-C
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC_SKIP),		/* USB 3 Right */
+				[1] = USB2_PORT_MID(OC_SKIP),		/* USB 3 Left */
+				[2] = USB2_PORT_TYPE_C(OC_SKIP),	/* Type-C */
+				[5] = USB2_PORT_MID(OC_SKIP),		/* USB 2 Left */
+				[7] = USB2_PORT_MID(OC_SKIP),		/* Camera */
+				[9] = USB2_PORT_MID(OC_SKIP),		/* Fingerprint */
+				[13] = USB2_PORT_MID(OC_SKIP),		/* Bluetooth */
+			}"
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB 3 Right */
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB 3 Left */
+				[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* Type-C */
+				[3] = USB3_PORT_DEFAULT(OC_SKIP),	/* Type-C */
+			}"
 		end
 		device pci 14.1 off end # USB xDCI (OTG)
 		device pci 14.2 on  end # Shared SRAM
@@ -100,8 +102,10 @@ chip soc/intel/cannonlake
 		device pci 16.4 off end # Management Engine Interface 3
 		device pci 16.5 off end # Management Engine Interface 4
 		device pci 17.0 on      # SATA
-			register "SataPortsEnable[1]" = "1" # SSD (SATA1A)
-			register "SataPortsEnable[4]" = "1" # HDD (SATA4)
+			register "SataPortsEnable" = "{
+				[1] = 1, /* SSD (SATA1A) */
+				[4] = 1, /* HDD (SATA4) */
+			}"
 		end
 		device pci 19.0 off end # I2C #4
 		device pci 19.1 off end # I2C #5

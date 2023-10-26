@@ -3,20 +3,22 @@ chip soc/intel/cannonlake
 		subsystemid 0x1558 0x1404 inherit
 
 		device pci 14.0 on      # USB xHCI
-			# USB2
-			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"		# Type-A port 1
-			register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"		# 3G / LTE
-			register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC_SKIP)"		# Type-C port 3
-			register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"		# USB Board port 4
-			register "usb2_ports[6]" = "USB2_PORT_MAX(OC_SKIP)"		# Camera
-			register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"		# Bluetooth
-			# USB3
-			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# Type-A port 1
-			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# 4G
-			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# Type-C port 3
-			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# USB Board port 4
-			register "usb3_ports[4]" = "USB3_PORT_EMPTY"			# Used by TBT
-			register "usb3_ports[5]" = "USB3_PORT_EMPTY"			# Used by TBT
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC_SKIP),		/* Type-A port 1 */
+				[1] = USB2_PORT_MID(OC_SKIP),		/* 3G / LTE */
+				[2] = USB2_PORT_TYPE_C(OC_SKIP),	/* Type-C port 3 */
+				[3] = USB2_PORT_MID(OC_SKIP),		/* USB Board port 4 */
+				[6] = USB2_PORT_MAX(OC_SKIP),		/* Camera */
+				[9] = USB2_PORT_MID(OC_SKIP),		/* Bluetooth */
+			}"
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* Type-A port 1 */
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* 4G */
+				[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* Type-C port 3 */
+				[3] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB Board port 4 */
+				[4] = USB3_PORT_EMPTY,			/* Used by TBT */
+				[5] = USB3_PORT_EMPTY,			/* Used by TBT */
+			}"
 		end
 		device pci 15.0 on      # I2C #0
 			chip drivers/i2c/hid
@@ -29,8 +31,10 @@ chip soc/intel/cannonlake
 			end
 		end
 		device pci 17.0 on      # SATA
-			register "SataPortsEnable[0]" = "1"
-			register "SataPortsEnable[2]" = "1"
+			register "SataPortsEnable" = "{
+				[0] = 1,
+				[2] = 1,
+			}"
 		end
 		device pci 1c.4 on      # PCI Express Port 5
 			# PCI Express Root port #5 x4, Clock 4 (TBT)

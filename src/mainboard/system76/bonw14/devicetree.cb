@@ -73,23 +73,25 @@ chip soc/intel/cannonlake
 		device pci 12.6 off end # GSPI #2
 		device pci 13.0 off end # Integrated Sensor Hub
 		device pci 14.0 on      # USB xHCI
-			# USB2
-			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)" # USB 3_2
-			register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)" # USB 3_1
-			register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)" # USB 3_4
-			register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)" # USB 3_3
-			register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)" # Per-key RGB
-			register "usb2_ports[5]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB Type-C
-			register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)" # XFI
-			register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)" # Camera
-			register "usb2_ports[8]" = "USB2_PORT_MID(OC_SKIP)" # Light guide
-			register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)" # Fingerprint
-			register "usb2_ports[13]" = "USB2_PORT_MID(OC_SKIP)" # Bluetooth
-			# USB3
-			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB 3_2
-			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # ANX7440
-			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB 3_4
-			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB 3_3
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC_SKIP),		/* USB 3_2 */
+				[1] = USB2_PORT_MID(OC_SKIP),		/* USB 3_1 */
+				[2] = USB2_PORT_MID(OC_SKIP),		/* USB 3_4 */
+				[3] = USB2_PORT_MID(OC_SKIP),		/* USB 3_3 */
+				[4] = USB2_PORT_MID(OC_SKIP),		/* Per-key RGB */
+				[5] = USB2_PORT_TYPE_C(OC_SKIP),	/* USB Type-C */
+				[6] = USB2_PORT_MID(OC_SKIP),		/* XFI */
+				[7] = USB2_PORT_MID(OC_SKIP),		/* Camera */
+				[8] = USB2_PORT_MID(OC_SKIP),		/* Light guide */
+				[9] = USB2_PORT_MID(OC_SKIP),		/* Fingerprint */
+				[13] = USB2_PORT_MID(OC_SKIP),		/* Bluetooth */
+			}"
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB 3_2 */
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* ANX7440 */
+				[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB 3_4 */
+				[3] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB 3_3 */
+			}"
 		end
 		device pci 14.2 on  end # Shared SRAM
 		device pci 14.3 on      # CNVi wifi
@@ -119,9 +121,11 @@ chip soc/intel/cannonlake
 		device pci 16.4 off end # Management Engine Interface 3
 		device pci 16.5 off end # Management Engine Interface 4
 		device pci 17.0 on      # SATA
-			register "SataPortsEnable[1]" = "1" # SATA1A (SSD)
-			register "SataPortsEnable[3]" = "1" # SATA3 (M.2_SATA3)
-			register "SataPortsEnable[4]" = "1" # SATA4 (SSD2)
+			register "SataPortsEnable" = "{
+				[1] = 1, /* SATA1A (SSD) */
+				[3] = 1, /* SATA3 (M.2_SATA3) */
+				[4] = 1, /* SATA4 (SSD2) */
+			}"
 		end
 		device pci 19.2 off end # UART #2
 		device pci 1a.0 off end # eMMC

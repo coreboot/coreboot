@@ -66,23 +66,25 @@ chip soc/intel/cannonlake
 		device pci 12.6 off end # GSPI #2
 		device pci 13.0 off end # Integrated Sensor Hub
 		device pci 14.0 on      # USB xHCI
-			# USB2
-			register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB 3.1 Gen 2 TYPE-C and DisplayPort
-			register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB 3.1 Gen 2 TYPE-C
-			register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)" # USB 3.1 Gen 2
-			register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)" # USB 3.1 Gen 1 audio
-			register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)" # USB 3.1 Gen 1 back
-			register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)" # Fingerprint
-			register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)" # Per-Key RGB keyboard
-			register "usb2_ports[8]" = "USB2_PORT_MID(OC_SKIP)" # Camera
-			register "usb2_ports[13]" = "USB2_PORT_MID(OC_SKIP)" # Bluetooth
-			# USB3
-			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB 3.1 Gen 2 TYPE-C and DisplayPort
-			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB 3.1 Gen 2 right
-			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB 3.1 Gen 2 TYPE-C (without TBT)
-			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB 3.1 Gen 2 TYPE-C (without TBT)
-			register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB 3.1 Gen 1 audio
-			register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB 3.1 Gen 1 back
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_TYPE_C(OC_SKIP),	/* USB 3.1 Gen 2 TYPE-C and DisplayPort */
+				[1] = USB2_PORT_TYPE_C(OC_SKIP),	/* USB 3.1 Gen 2 TYPE-C */
+				[2] = USB2_PORT_MID(OC_SKIP),		/* USB 3.1 Gen 2 */
+				[4] = USB2_PORT_MID(OC_SKIP),		/* USB 3.1 Gen 1 audio */
+				[5] = USB2_PORT_MID(OC_SKIP),		/* USB 3.1 Gen 1 back */
+				[6] = USB2_PORT_MID(OC_SKIP),		/* Fingerprint */
+				[7] = USB2_PORT_MID(OC_SKIP),		/* Per-Key RGB keyboard */
+				[8] = USB2_PORT_MID(OC_SKIP),		/* Camera */
+				[13] = USB2_PORT_MID(OC_SKIP),		/* Bluetooth */
+			}"
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB 3.1 Gen 2 TYPE-C and DisplayPort */
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB 3.1 Gen 2 right */
+				[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB 3.1 Gen 2 TYPE-C (without TBT) */
+				[3] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB 3.1 Gen 2 TYPE-C (without TBT) */
+				[4] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB 3.1 Gen 1 audio */
+				[5] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB 3.1 Gen 1 back */
+			}"
 		end
 		device pci 14.2 on  end # Shared SRAM
 		device pci 14.3 on      # CNVi wifi
@@ -103,8 +105,10 @@ chip soc/intel/cannonlake
 		device pci 16.4 off end # Management Engine Interface 3
 		device pci 16.5 off end # Management Engine Interface 4
 		device pci 17.0 on      # SATA
-			register "SataPortsEnable[0]" = "1" # HDD (SATA0B)
-			register "SataPortsEnable[1]" = "1" # SSD1 (SATA1A)
+			register "SataPortsEnable" = "{
+				[0] = 1, /* HDD (SATA0B) */
+				[1] = 1, /* SSD1 (SATA1A) */
+			}"
 		end
 		device pci 19.2 off end # UART #2
 		device pci 1a.0 off end # eMMC

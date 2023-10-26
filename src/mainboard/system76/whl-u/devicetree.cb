@@ -69,20 +69,22 @@ chip soc/intel/cannonlake
 		device pci 12.6 off end # GSPI #2
 		device pci 13.0 off end # Integrated Sensor Hub
 		device pci 14.0 on      # USB xHCI
-			# USB2
-			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"		# USB-A
-			register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"		# 3G / LTE
-			register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC_SKIP)"		# USB-C
-			register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"		# USB-A
-			register "usb2_ports[6]" = "USB2_PORT_MAX(OC_SKIP)"		# Camera
-			register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"		# Bluetooth
-			# USB3
-			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# USB-A
-			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# 4G on galp3-c, NC on darp5
-			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# USB-C
-			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"		# USB-A
-			register "usb3_ports[4]" = "USB3_PORT_EMPTY"			# Used by TBT
-			register "usb3_ports[5]" = "USB3_PORT_EMPTY"			# Used by TBT
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC_SKIP),		/* USB-A */
+				[1] = USB2_PORT_MID(OC_SKIP),		/* 3G / LTE */
+				[2] = USB2_PORT_TYPE_C(OC_SKIP),	/* USB-C */
+				[3] = USB2_PORT_MID(OC_SKIP),		/* USB-A */
+				[6] = USB2_PORT_MAX(OC_SKIP),		/* Camera */
+				[9] = USB2_PORT_MID(OC_SKIP),		/* Bluetooth */
+			}"
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB-A */
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* 4G on galp3-c, NC on darp5 */
+				[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB-C */
+				[3] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB-A */
+				[4] = USB3_PORT_EMPTY,			/* Used by TBT */
+				[5] = USB3_PORT_EMPTY,			/* Used by TBT */
+			}"
 		end
 		device pci 14.1 off end # USB xDCI (OTG)
 		device pci 14.3 on      # CNVi wifi
@@ -103,8 +105,10 @@ chip soc/intel/cannonlake
 		device pci 16.4 off end # Management Engine Interface 3
 		device pci 16.5 off end # Management Engine Interface 4
 		device pci 17.0 on      # SATA
-			register "SataPortsEnable[0]" = "1"
-			register "SataPortsEnable[2]" = "1"
+			register "SataPortsEnable" = "{
+				[0] = 1,
+				[2] = 1,
+			}"
 		end
 		device pci 19.0 off end # I2C #4
 		device pci 19.1 off end # I2C #5

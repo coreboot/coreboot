@@ -134,9 +134,9 @@ TOOLCPPFLAGS += -I$(top)/src
 TOOLCPPFLAGS += -I$(top)/src/vendorcode/intel/edk2/uefi_2.4/MdePkg/Include
 
 TOOLLDFLAGS ?=
-HOSTCFLAGS += -fms-extensions
 
 ifeq ($(shell uname -s | cut -c-7 2>/dev/null), MINGW32)
+HOSTCFLAGS += -fms-extensions
 TOOLCFLAGS += -mno-ms-bitfields
 endif
 ifeq ($(shell uname -o 2>/dev/null), Cygwin)

@@ -291,8 +291,9 @@ sub check_config_macro {
                         show_error( "CONFIG($symbol) used at $file:$lineno."
                               . "  CONFIG() is only valid for type 'bool', not '$symbols{$symbol}{type}'." );
                     }
-                }
-                else {
+                } elsif ($symbol =~ /\S+##\S+/ ) {
+                    show_warning( "C preprocessor macro CONFIG_$symbol found at $file:$lineno." );
+                } else {
                     show_error("CONFIG() used on unknown value ($symbol) at $file:$lineno.");
                 }
             }

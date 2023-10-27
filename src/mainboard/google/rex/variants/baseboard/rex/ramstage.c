@@ -20,11 +20,29 @@ const struct cpu_tdp_power_limits performance_efficient_limits[] = {
 		.pl2_max_power = 57000,
 		.pl4_power = 114000
 	},
+	{
+		.mch_id = PCI_DID_INTEL_MTL_P_ID_5,
+		.cpu_tdp = 15,
+		.pl1_min_power = 10000,
+		.pl1_max_power = 15000,
+		.pl2_min_power = 57000,
+		.pl2_max_power = 57000,
+		.pl4_power = 114000
+	},
 };
 
 const struct cpu_tdp_power_limits power_optimized_limits[] = {
 	{
 		.mch_id = PCI_DID_INTEL_MTL_P_ID_2,
+		.cpu_tdp = 15,
+		.pl1_min_power = 10000,
+		.pl1_max_power = 15000,
+		.pl2_min_power = 57000,
+		.pl2_max_power = 57000,
+		.pl4_power = 64000
+	},
+	{
+		.mch_id = PCI_DID_INTEL_MTL_P_ID_5,
 		.cpu_tdp = 15,
 		.pl1_min_power = 10000,
 		.pl1_max_power = 15000,

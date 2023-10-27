@@ -16,7 +16,19 @@
 #include <soc/pci_devs.h>
 #include <types.h>
 
+/* Display Type:
+*  0 - only internal display aka eDP attached
+*  1 - only external display aka HDMI/USB-C attached
+*  2 - dual display aka both internal and external display attached
+*/
+enum display_type {
+	INTERNAL_DISPLAY_ONLY,
+	EXTERNAL_DISPLAY_ONLY,
+	DUAL_DISPLAY,
+};
+
 #define GFX_MBUS_CTL		0x4438C
+#define GFX_MBUS_SEL(x)		(GFX_MBUS_CTL + (x))
 #define GFX_MBUS_JOIN		BIT(31)
 #define GFX_MBUS_HASHING_MODE	BIT(30)
 #define GFX_MBUS_JOIN_PIPE_SEL	(BIT(28) | BIT(27) | BIT(26))
@@ -69,7 +81,7 @@ static uint32_t graphics_get_ddi_func_ctrl(unsigned long reg)
  * Consider external display is present and enabled, if eDP/DDI-A is not enabled
  * and transcoder is attached to any DDI port (bits 27-30 are not zero).
  */
-static int get_external_display_status(void)
+static enum display_type get_external_display_status(void)
 {
 	/* Read the transcoder register for DDI-A (eDP) */
 	uint32_t ddi_a_func_ctrl = graphics_get_ddi_func_ctrl(TRANS_DDI_FUNC_CTL_A);
@@ -81,20 +93,27 @@ static int get_external_display_status(void)
 	 * Report no external display in both cases.
 	 */
 	if (ddi_a_func_ctrl == TRANS_DDI_PORT_NONE) {
-		return 0;
+		return INTERNAL_DISPLAY_ONLY;
 	} else {
-		if ((ddi_a_func_ctrl == TRANS_DDI_SELECT_PORT(PORT_A)) &&
-			 (ddi_b_func_ctrl == TRANS_DDI_SELECT_PORT(PORT_B))) {
+		if (ddi_a_func_ctrl == TRANS_DDI_SELECT_PORT(PORT_A) &&
+			 (ddi_b_func_ctrl == TRANS_DDI_SELECT_PORT(PORT_B)
+#if CONFIG(INTEL_GMA_VERSION_2)
+			 || ddi_b_func_ctrl == TRANS_DDI_SELECT_PORT(PORT_USB_C1)
+			 || ddi_b_func_ctrl == TRANS_DDI_SELECT_PORT(PORT_USB_C2)
+			 || ddi_b_func_ctrl == TRANS_DDI_SELECT_PORT(PORT_USB_C3)
+			 || ddi_b_func_ctrl == TRANS_DDI_SELECT_PORT(PORT_USB_C4)
+#endif
+		)) {
 			/*
 			 * Dual display detected: both DDI-A(eDP) and
 			 * DDI-B(HDMI) pipes are active
 			 */
-			return 1;
+			return DUAL_DISPLAY;
 		} else {
 			if (ddi_a_func_ctrl == TRANS_DDI_SELECT_PORT(PORT_A))
-				return 0;
+				return INTERNAL_DISPLAY_ONLY;
 			else
-				return 1;
+				return EXTERNAL_DISPLAY_ONLY;
 		}
 	}
 }
@@ -266,13 +285,25 @@ static void graphics_dev_final(struct device *dev)
 	pci_dev_request_bus_master(dev);
 
 	if (CONFIG(SOC_INTEL_GFX_MBUS_JOIN)) {
+		enum display_type type = get_external_display_status();
 		uint32_t hashing_mode = 0;  /* 2x2 */
-		uint32_t pipe_select = 0; /* None */
-		if (!get_external_display_status()) {
+		if (type == INTERNAL_DISPLAY_ONLY) {
 			hashing_mode = GFX_MBUS_HASHING_MODE; /* 1x4 */
-			pipe_select = GFX_MBUS_JOIN_PIPE_SEL; /* Pipe-A */
+			/* Only eDP pipes is joining the MBUS */
+			graphics_gtt_rmw(GFX_MBUS_SEL(PIPE_A), PIPE_A, GFX_MBUS_JOIN | hashing_mode);
+		} else if (type == DUAL_DISPLAY) {
+			/* All pipes are joining the MBUS */
+			graphics_gtt_rmw(GFX_MBUS_SEL(PIPE_A), PIPE_A, GFX_MBUS_JOIN | hashing_mode);
+			graphics_gtt_rmw(GFX_MBUS_SEL(PIPE_B), PIPE_B, GFX_MBUS_JOIN | hashing_mode);
+			graphics_gtt_rmw(GFX_MBUS_SEL(PIPE_C), PIPE_C, GFX_MBUS_JOIN | hashing_mode);
+#if CONFIG(INTEL_GMA_VERSION_2)
+			graphics_gtt_rmw(GFX_MBUS_SEL(PIPE_D), PIPE_D, GFX_MBUS_JOIN | hashing_mode);
+#endif
+		} else {
+			/* No pipe joins the MBUS */
+			graphics_gtt_rmw(GFX_MBUS_CTL, GFX_MBUS_JOIN_PIPE_SEL,
+					 GFX_MBUS_JOIN | hashing_mode);
 		}
-		graphics_gtt_rmw(GFX_MBUS_CTL, (uint32_t)(~pipe_select), GFX_MBUS_JOIN | hashing_mode);
 	}
 }
 

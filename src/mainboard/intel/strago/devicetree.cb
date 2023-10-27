@@ -66,8 +66,6 @@ chip soc/intel/braswell
 	# LPE audio codec settings
 	register "lpe_codec_clk_src" = "LPE_CLK_SRC_XTAL" # 19.2MHz clock
 
-	register "dptf_enable" = "true"
-
 	# Enable devices in ACPI mode
 	register "lpss_acpi_mode" = "1"
 	register "emmc_acpi_mode" = "1"
@@ -86,7 +84,7 @@ chip soc/intel/braswell
 		device pci 00.0 on end	# 8086 2280 - SoC transaction router
 		device pci 02.0 on end	# 8086 22b0/22b1 - B1/C0 stepping Graphics and Display
 		device pci 03.0 off end	# 8086 22b8 - Camera and Image Processor
-		device pci 0b.0 on end	# 8086 22dc - ?
+		device pci 0b.0 on end	# 8086 22dc - PUNIT/DPTF
 		device pci 10.0 on end	# 8086 2294 - MMC Port
 		device pci 11.0 off end	# 8086 0F15 - SDIO Port
 		device pci 12.0 on end	# 8086 0F16 - SD Port

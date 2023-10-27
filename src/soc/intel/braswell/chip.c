@@ -79,7 +79,7 @@ void soc_silicon_init_params(SILICON_INIT_UPD *params)
 	params->AzaliaConfigPtr			= 0;
 	params->PunitPwrConfigDisable		= config->PunitPwrConfigDisable;
 	params->ChvSvidConfig			= config->ChvSvidConfig;
-	params->DptfDisable			= config->DptfDisable;
+	params->DptfDisable			= !is_devfn_enabled(PCI_DEVFN(PUNIT_DEV, 0));
 	params->PcdEmmcMode			= config->PcdEmmcMode;
 	params->PcdUsb3ClkSsc			= 1;
 	params->PcdDispClkSsc			= 1;

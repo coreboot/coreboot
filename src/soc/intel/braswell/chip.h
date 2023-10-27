@@ -42,8 +42,6 @@ enum usb_comp_bg_value {
 struct soc_intel_braswell_config {
 	bool enable_xdp_tap;
 
-	bool dptf_enable;
-
 	enum serirq_mode serirq_mode;
 
 	/* Disable SLP_X stretching after SUS power well loss */
@@ -104,7 +102,6 @@ struct soc_intel_braswell_config {
 	uint8_t  PcdEnableI2C6;
 	uint8_t  PunitPwrConfigDisable;
 	uint8_t  ChvSvidConfig;
-	uint8_t  DptfDisable;
 	uint8_t  PcdEmmcMode;
 	uint8_t  Usb2Port0PerPortPeTxiSet;
 	uint8_t  Usb2Port0PerPortTxiSet;

@@ -62,7 +62,6 @@ chip soc/intel/braswell
 	register "ISPEnable" = "0"		# Disable IUNIT
 	register "ISPPciDevConfig" = "3"
 	register "PcdSdDetectChk" = "0" # Disable SD card detect
-	register "DptfDisable" = "1"
 
 	# Enable devices in PCI mode
 	register "lpss_acpi_mode" = "0"

@@ -70,9 +70,7 @@ size_t size_of_dnvs(void)
 
 void soc_fill_gnvs(struct global_nvs *gnvs)
 {
-	const struct soc_intel_braswell_config *config = config_of_soc();
-
-	gnvs->dpte = config->dptf_enable;
+	gnvs->dpte = is_devfn_enabled(PCI_DEVFN(PUNIT_DEV, 0));
 
 	/* Fill in the Wi-Fi Region ID */
 	if (CONFIG(HAVE_REGULATORY_DOMAIN))

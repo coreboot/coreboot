@@ -73,7 +73,7 @@ compiler](https://chromium-review.googlesource.com/#/c/255031) inside coreboot
 utility folder that can be used to generate final firmware images (i.e.
 `coreboot.rom`) formatted by Flashmap.
 
-The FMD implementation is in coreboot `utils/cbfstool` folder. Here's an
+The FMD implementation is in coreboot `util/cbfstool` folder. Here's an
 informal language description:
 
 ```

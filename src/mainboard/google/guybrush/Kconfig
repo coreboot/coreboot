@@ -2,6 +2,7 @@
 
 config BOARD_GOOGLE_BASEBOARD_GUYBRUSH
 	def_bool n
+	select AMD_FWM_POSITION_C20000_DEFAULT
 	select AMD_SOC_CONSOLE_UART
 	select BOARD_ROMSIZE_KB_16384
 	select CONSOLE_CBMEM_DUMP_TO_UART if !CONSOLE_SERIAL
@@ -43,7 +44,9 @@ config BOARD_GOOGLE_BASEBOARD_GUYBRUSH
 	select SOC_AMD_COMMON_BLOCK_USE_ESPI
 	select SYSTEM_TYPE_LAPTOP
 	select TPM_GOOGLE_CR50
-	select AMD_FWM_POSITION_C20000_DEFAULT
+
+config BOARD_GOOGLE_DEWATT
+	select BOARD_GOOGLE_BASEBOARD_GUYBRUSH
 
 config BOARD_GOOGLE_GUYBRUSH
 	select BOARD_GOOGLE_BASEBOARD_GUYBRUSH
@@ -51,9 +54,6 @@ config BOARD_GOOGLE_GUYBRUSH
 config BOARD_GOOGLE_NIPPERKIN
 	select BOARD_GOOGLE_BASEBOARD_GUYBRUSH
 	select DRIVERS_GFX_GENERIC
-
-config BOARD_GOOGLE_DEWATT
-	select BOARD_GOOGLE_BASEBOARD_GUYBRUSH
 
 if BOARD_GOOGLE_BASEBOARD_GUYBRUSH
 
@@ -84,9 +84,9 @@ config MAINBOARD_DIR
 	default "google/guybrush"
 
 config MAINBOARD_PART_NUMBER
+	default "Dewatt" if BOARD_GOOGLE_DEWATT
 	default "Guybrush" if BOARD_GOOGLE_GUYBRUSH
 	default "Nipperkin" if BOARD_GOOGLE_NIPPERKIN
-	default "Dewatt" if BOARD_GOOGLE_DEWATT
 
 config DRIVER_TPM_I2C_BUS
 	hex
@@ -141,18 +141,18 @@ config OVERRIDE_EFS_SPI_SPEED
 
 config OVERRIDE_EFS_SPI_SPEED_MIN_BOARD
 	hex
+	default 0x3 if BOARD_GOOGLE_DEWATT
 	default 0x4 if BOARD_GOOGLE_GUYBRUSH
 	default 0x2 if BOARD_GOOGLE_NIPPERKIN
-	default 0x3 if BOARD_GOOGLE_DEWATT
 	default 0xffffffff
 	help
 	  Minimum board version starting which the Override EFS SPI Speed
 	  configuration has to be applied.
 
 config VARIANT_DIR
+	default "dewatt" if BOARD_GOOGLE_DEWATT
 	default "guybrush" if BOARD_GOOGLE_GUYBRUSH
 	default "nipperkin" if BOARD_GOOGLE_NIPPERKIN
-	default "dewatt" if BOARD_GOOGLE_DEWATT
 
 config DEVICETREE
 	default "variants/baseboard/devicetree.cb"

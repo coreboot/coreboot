@@ -1,16 +1,16 @@
 comment "Skyrim"
 
+config BOARD_GOOGLE_CRYSTALDRIFT
+	bool "->  Crystaldrift"
+
+config BOARD_GOOGLE_FROSTFLOW
+	bool "->  Frostflow (ASUS Chromebook CM34 Flip)"
+
+config BOARD_GOOGLE_MARKARTH
+	bool "->  Markarth (Acer Chromebook Plus 514)"
+
 config BOARD_GOOGLE_SKYRIM
 	bool "->  Skyrim"
 
 config BOARD_GOOGLE_WINTERHOLD
-	bool "->  Winterhold"
-
-config BOARD_GOOGLE_FROSTFLOW
-	bool "->  Frostflow"
-
-config BOARD_GOOGLE_CRYSTALDRIFT
-	bool "->  Crystaldrift"
-
-config BOARD_GOOGLE_MARKARTH
-	bool "->  Markarth"
+	bool "->  Winterhold (Dell Latitude 3445 Chromebook)"

@@ -1,31 +1,31 @@
 comment "Zork"
 
-config BOARD_GOOGLE_DALBOZ
-	bool "->  Dalboz"
-
-config BOARD_GOOGLE_VILBOZ
-	bool "->  Vilboz (Lenovo 100e/300e Gen3 AMD)"
-
-config BOARD_GOOGLE_EZKINIL
-	bool "->  Ezkinil (Acer Chromebook Spin 514)"
-
-config BOARD_GOOGLE_MORPHIUS
-	bool "->  Morphius (Lenovo ThinkPad C13 Yoga Chromebook)"
-
-config BOARD_GOOGLE_TREMBYLE
-	bool "->  Trembyle"
-
 config BOARD_GOOGLE_BERKNIP
 	bool "->  Berknip (HP Pro c645 Chromebook Enterprise)"
 
-config BOARD_GOOGLE_WOOMAX
-	bool "->  Woomax (ASUS Chromebook Flip CM5)"
+config BOARD_GOOGLE_DALBOZ
+	bool "->  Dalboz"
 
 config BOARD_GOOGLE_DIRINBOZ
 	bool "->  Dirinboz (HP Chromebook 14a-nd0097nr)"
 
-config BOARD_GOOGLE_SHUBOZ
-	bool "->  Shuboz"
+config BOARD_GOOGLE_EZKINIL
+	bool "->  Ezkinil (Acer Chromebook Spin 514)"
 
 config BOARD_GOOGLE_GUMBOZ
 	bool "->  Gumboz (HP Chromebook x360 14a)"
+
+config BOARD_GOOGLE_MORPHIUS
+	bool "->  Morphius (Lenovo ThinkPad C13 Yoga Chromebook)"
+
+config BOARD_GOOGLE_SHUBOZ
+	bool "->  Shuboz"
+
+config BOARD_GOOGLE_TREMBYLE
+	bool "->  Trembyle"
+
+config BOARD_GOOGLE_VILBOZ
+	bool "->  Vilboz (Lenovo 100e/300e Gen3 AMD)"
+
+config BOARD_GOOGLE_WOOMAX
+	bool "->  Woomax (ASUS Chromebook Flip CM5)"

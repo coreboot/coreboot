@@ -115,6 +115,9 @@ config DISABLE_HPET
 	 Enable this to disable the HPET support
 	 Solves the Linux MP-BIOS bug timer not connected.
 
+config HPET_MIN_TICKS
+	default 0x80
+
 config USE_GOOGLE_FSP
 	bool
 	help

@@ -184,7 +184,7 @@ chip soc/intel/cannonlake
 				register "compat_string" = ""google,cros-ec-spi""
 				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_A23_IRQ)"
 				register "wake" = "GPE0_DW0_23"
-				device spi 1 on end
+				device spi 1 hidden end
 			end # FPMCU
 		end
 		device ref hda		on

@@ -12,7 +12,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "raminit_native.h"
+#include "sandybridge.h"
 #include "raminit_common.h"
 #include "raminit_tables.h"
 

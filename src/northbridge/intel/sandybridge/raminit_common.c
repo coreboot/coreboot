@@ -11,7 +11,6 @@
 #include <delay.h>
 #include <types.h>
 
-#include "raminit_native.h"
 #include "raminit_common.h"
 #include "raminit_tables.h"
 #include "sandybridge.h"

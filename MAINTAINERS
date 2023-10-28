@@ -695,7 +695,7 @@ F:	src/mainboard/sifive/
 F:	util/riscv/
 
 X86 ARCHITECTURE
-M:	Jeremy Compostella <jeremy.compostella@intel.com>
+M:	Jérémy Compostella <jeremy.compostella@intel.com>
 S:	MAINTAINED
 F:	src/arch/x86/
 F:	src/cpu/x86/

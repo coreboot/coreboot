@@ -618,11 +618,16 @@ static int is_valid_entry(char *oneline, regmatch_t match[N_MATCHES])
 		   match[4]: Optional directory level to be dropped
 		   match[6]: Optional hash table ID to put the hash for the entry
 		 */
-		oneline[match[FW_TYPE].rm_eo] = '\0';
-		oneline[match[FW_FILE].rm_eo] = '\0';
-		oneline[match[OPT_LEVEL].rm_eo] = '\0';
-		oneline[match[OPT_HASH_TABLE_ID].rm_eo] = '\0';
-		oneline[match[OPT_FWID_TYPE].rm_eo] = '\0';
+		if (match[FW_TYPE].rm_eo != -1)
+			oneline[match[FW_TYPE].rm_eo] = '\0';
+		if (match[FW_FILE].rm_eo != -1)
+			oneline[match[FW_FILE].rm_eo] = '\0';
+		if (match[OPT_LEVEL].rm_eo != -1)
+			oneline[match[OPT_LEVEL].rm_eo] = '\0';
+		if (match[OPT_HASH_TABLE_ID].rm_eo != -1)
+			oneline[match[OPT_HASH_TABLE_ID].rm_eo] = '\0';
+		if (match[OPT_FWID_TYPE].rm_eo != -1)
+			oneline[match[OPT_FWID_TYPE].rm_eo] = '\0';
 		retval = 1;
 	} else {
 		retval = 0;

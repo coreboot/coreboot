@@ -12,3 +12,4 @@ This section contains documentation about coreboot on specific Intel SOCs.
 - [Firmware Interface Table](fit.md)
 - [Apollolake](apollolake/index.md)
 - [CSE FW Update](cse_fw_update/cse_fw_update.md)
+- [Xeon Scalable processor](xeon_sp/index.md)

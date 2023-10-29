@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <console/console.h>
 #include <device/mmio.h>
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
@@ -23,8 +24,22 @@ void early_usb_init(const struct southbridge_usb_port *portmap)
 	/* Unlock registers.  */
 	write_pmbase16(UPRWC, read_pmbase16(UPRWC) | UPRWC_WR_EN);
 
-	for (i = 0; i < 14; i++)
-		RCBA32(USBIR0 + 4 * i) = currents[portmap[i].current];
+	for (i = 0; i < 14; i++) {
+		if (portmap[i].enabled && !pch_is_mobile() && portmap[i].current == 0) {
+			/*
+			 * Note for developers: You can fix this by re-running autoport on
+			 * vendor firmware and then updating portmap currents accordingly.
+			 * If that is not possible, another option is to choose a non-zero
+			 * current setting. In either case, please test all the USB ports.
+			 */
+			printk(BIOS_ERR, "%s: USB%02d: current setting of 0 is an invalid setting for desktop!\n",
+			       __func__, i);
+
+			RCBA32(USBIR0 + 4 * i) = currents[1];
+		} else {
+			RCBA32(USBIR0 + 4 * i) = currents[portmap[i].current];
+		}
+	}
 	for (i = 0; i < 10; i++)
 		RCBA32(0x3538 + 4 * i) = 0;
 

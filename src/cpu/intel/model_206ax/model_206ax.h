@@ -131,7 +131,6 @@ void intel_model_206ax_finalize_smm(void);
 /* Configure power limits for turbo mode */
 void set_power_limits(u8 power_limit_1_time);
 int cpu_config_tdp_levels(void);
-int get_platform_id(void);
 
 static inline u8 cpu_stepping(void)
 {

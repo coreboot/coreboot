@@ -323,9 +323,6 @@ static void model_206ax_report(void)
 	fill_processor_name(processor_name);
 	printk(BIOS_INFO, "CPU: %s.\n", processor_name);
 
-	/* Print platform ID */
-	printk(BIOS_INFO, "CPU: platform id %x\n", get_platform_id());
-
 	/* CPUID and features */
 	cpu_id = cpu_get_cpuid();
 	printk(BIOS_INFO, "CPU: cpuid(1) 0x%x\n", cpu_id);

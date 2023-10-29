@@ -2,14 +2,19 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <cpu/intel/model_206ax/model_206ax.h>
+#include <device/pci_def.h>
+#include <device/pci_ops.h>
 #include "sandybridge.h"
 
 enum platform_type get_platform_type(void)
 {
-	const int id = get_platform_id();
-	if (id != 1 && id != 4)
-		printk(BIOS_WARNING, "Unknown platform id 0x%x\n", id);
-
-	return (id == 4) ? PLATFORM_MOBILE : PLATFORM_DESKTOP_SERVER;
+	switch (pci_s_read_config16(HOST_BRIDGE, PCI_DEVICE_ID) & 0xc) {
+	case 0x0: /* Desktop */
+		return PLATFORM_DESKTOP_SERVER;
+	case 0x4: /* Mobile */
+		return PLATFORM_MOBILE;
+	case 0x8: /* Server */
+	default:
+		return PLATFORM_DESKTOP_SERVER;
+	}
 }

@@ -9,10 +9,6 @@ subdirs-y += ../turbo
 
 ramstage-y += acpi.c
 
-ramstage-y += common.c
-romstage-y += common.c
-smm-y += common.c
-
 smm-y += finalize.c
 
 cpu_microcode_bins += $(wildcard 3rdparty/intel-microcode/intel-ucode/06-2a-*)

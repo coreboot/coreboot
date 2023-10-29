@@ -150,14 +150,13 @@ static void start_peg_link_training(void)
 
 void systemagent_early_init(void)
 {
+	const size_t is_mobile = get_platform_type() == PLATFORM_MOBILE;
 	u32 capid0_a;
 	u8 reg8;
 
 	/* Device ID Override Enable should be done very early */
 	capid0_a = pci_read_config32(HOST_BRIDGE, CAPID0_A);
 	if (capid0_a & (1 << 10)) {
-		const size_t is_mobile = get_platform_type() == PLATFORM_MOBILE;
-
 		reg8 = pci_read_config8(HOST_BRIDGE, DIDOR);
 		reg8 &= ~7; /* Clear 2:0 */
 
@@ -166,6 +165,9 @@ void systemagent_early_init(void)
 
 		pci_write_config8(HOST_BRIDGE, DIDOR, reg8);
 	}
+
+	/* Print platform type */
+	printk(BIOS_INFO, "Detected system type: %s\n", is_mobile ? "mobile" : "desktop");
 
 	/* Setup all BARs required for early PCIe and raminit */
 	sandybridge_setup_bars();

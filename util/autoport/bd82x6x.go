@@ -309,6 +309,10 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 		0x2000055b: 2,
 		0x20000f51: 3,
 		0x2000094a: 4,
+		0x2000035f: 5,
+		0x20000f53: 6,
+		0x20000357: 7,
+		0x20000353: 8,
 	}
 
 	for port := uint(0); port < 14; port++ {
@@ -327,10 +331,16 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 				}
 			}
 		}
-		fmt.Fprintf(sb, "\t{ %d, %d, %d },\n",
+		current, ok := currentMap[inteltool.RCBA[uint16(0x3500+4*port)]]
+		comment := ""
+		if !ok {
+			comment = fmt.Sprintf("// FIXME: Unknown current: RCBA(0x%x)=0x%x", 0x3500+4*port, uint16(0x3500+4*port))
+		}
+		fmt.Fprintf(sb, "\t{ %d, %d, %d }, %s\n",
 			((inteltool.RCBA[0x359c]>>port)&1)^1,
-			currentMap[inteltool.RCBA[uint16(0x3500+4*port)]],
-			OCPin)
+			current,
+			OCPin,
+			comment)
 	}
 	sb.WriteString("};\n")
 

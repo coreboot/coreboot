@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <cbmem.h>
+#include <console/console.h>
 #include <fmap.h>
 #include <vb2_api.h>
 #include <security/vboot/misc.h>
@@ -28,6 +29,7 @@ static void *vboot_get_workbuf(void)
 struct vb2_context *vboot_get_context(void)
 {
 	void *wb;
+	vb2_error_t rv;
 
 	/* Return if context has already been initialized/restored. */
 	if (vboot_ctx)
@@ -37,15 +39,17 @@ struct vb2_context *vboot_get_context(void)
 
 	/* Restore context from a previous stage. */
 	if (vboot_logic_executed()) {
-		assert(vb2api_reinit(wb, &vboot_ctx) == VB2_SUCCESS);
+		rv = vb2api_reinit(wb, &vboot_ctx);
+		if (rv != VB2_SUCCESS)
+			die("%s: vb2api_reinit returned %#x\n", __func__, rv);
 		return vboot_ctx;
 	}
 
 	assert(verification_should_run());
 
 	/* Initialize vb2_shared_data and friends. */
-	assert(vb2api_init(wb, VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE,
-			   &vboot_ctx) == VB2_SUCCESS);
+	rv = vb2api_init(wb, VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE, &vboot_ctx);
+	assert(rv == VB2_SUCCESS);
 
 	return vboot_ctx;
 }

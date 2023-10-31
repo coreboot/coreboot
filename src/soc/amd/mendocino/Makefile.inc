@@ -161,9 +161,9 @@ endif # CONFIG_SEPARATE_SIGNED_PSPFW
 # Soft Fuse type = 0xb - See #55758 (NDA) for bit definitions.
 set-bit=$(call int-shift-left, 1 $(call _toint,$1))
 PSP_SOFTFUSE=$(shell A=$(call int-add, \
-		$(foreach bit,$(PSP_SOFTFUSE_BITS),$(call set-bit,$(bit)))); printf "0x%x" $$A)
+		$(foreach bit,$(sort $(PSP_SOFTFUSE_BITS)),$(call set-bit,$(bit)))); printf "0x%x" $$A)
 PSP_RO_SOFTFUSE=$(shell A=$(call int-add, \
-		  $(foreach bit,$(PSP_RO_SOFTFUSE_BITS),$(call set-bit,$(bit)))); printf "0x%x" $$A)
+		  $(foreach bit,$(sort $(PSP_RO_SOFTFUSE_BITS)),$(call set-bit,$(bit)))); printf "0x%x" $$A)
 
 #
 # Build the arguments to amdfwtool (order is unimportant).  Missing file names

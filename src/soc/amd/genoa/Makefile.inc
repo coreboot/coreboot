@@ -74,7 +74,7 @@ PSP_BIOSBIN_DEST=$(shell $(READELF_bootblock) -Wl $(PSP_ELF_FILE) | grep LOAD | 
 # Soft Fuse type = 0xb - See #57299 (NDA) for bit definitions.
 set-bit=$(call int-shift-left, 1 $(call _toint,$1))
 PSP_SOFTFUSE=$(shell A=$(call int-add, \
-		$(foreach bit,$(PSP_SOFTFUSE_BITS),$(call set-bit,$(bit)))); printf "0x%x" $$A)
+		$(foreach bit,$(sort $(PSP_SOFTFUSE_BITS)),$(call set-bit,$(bit)))); printf "0x%x" $$A)
 
 #
 # Build the arguments to amdfwtool (order is unimportant).  Missing file names

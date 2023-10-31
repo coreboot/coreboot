@@ -52,6 +52,8 @@ chip soc/intel/meteorlake
 	register "cnvi_bt_core" = "true"
 
 	register "sagv" = "SAGV_ENABLED"
+	# TODO(b/287170545): workaround avoid DUT random hang
+	register "sagv_wp_bitmap" = "SAGV_POINTS_0_1_2"
 
 	register "sagv_freq_mhz[0]" = "3200"
 	register "sagv_gear[0]" = "4"

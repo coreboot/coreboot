@@ -43,7 +43,7 @@ struct ibecc_config {
 /* Types of different SKUs */
 enum soc_intel_meteorlake_power_limits {
 	MTL_P_282_242_CORE,
-	MTL_P_682_CORE,
+	MTL_P_682_482_CORE,
 	MTL_POWER_LIMITS_COUNT
 };
 
@@ -61,7 +61,8 @@ static const struct {
 } cpuid_to_mtl[] = {
 	{ PCI_DID_INTEL_MTL_P_ID_5, MTL_P_282_242_CORE, TDP_15W },
 	{ PCI_DID_INTEL_MTL_P_ID_2, MTL_P_282_242_CORE, TDP_15W },
-	{ PCI_DID_INTEL_MTL_P_ID_1, MTL_P_682_CORE, TDP_28W },
+	{ PCI_DID_INTEL_MTL_P_ID_3, MTL_P_682_482_CORE, TDP_28W },
+	{ PCI_DID_INTEL_MTL_P_ID_1, MTL_P_682_482_CORE, TDP_28W },
 };
 
 /* Types of display ports */

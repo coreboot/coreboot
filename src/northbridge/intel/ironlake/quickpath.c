@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <commonlib/bsd/gcd.h>
 #include <console/console.h>
 #include <cpu/intel/model_2065x/model_2065x.h>
 #include <cpu/x86/msr.h>
@@ -11,31 +12,14 @@
 
 #define NORTHBRIDGE PCI_DEV(0, 0, 0)
 
-static unsigned int gcd(unsigned int a, unsigned int b)
-{
-	unsigned int t;
-	if (a > b) {
-		t = a;
-		a = b;
-		b = t;
-	}
-	/* invariant a < b.  */
-	while (a) {
-		t = b % a;
-		b = a;
-		a = t;
-	}
-	return b;
-}
-
 static inline int div_roundup(int a, int b)
 {
 	return DIV_ROUND_UP(a, b);
 }
 
-static unsigned int lcm(unsigned int a, unsigned int b)
+static u32 lcm(u32 a, u32 b)
 {
-	return (a * b) / gcd(a, b);
+	return (a * b) / gcd32(a, b);
 }
 
 struct stru1 {
@@ -65,7 +49,7 @@ compute_frequence_ratios(struct raminfo *info, u16 freq1, u16 freq2,
 	int freq_max_reduced;
 	int freq3, freq4;
 
-	g = gcd(freq1, freq2);
+	g = gcd32(freq1, freq2);
 	freq1_reduced = freq1 / g;
 	freq2_reduced = freq2 / g;
 	freq_min_reduced = MIN(freq1_reduced, freq2_reduced);

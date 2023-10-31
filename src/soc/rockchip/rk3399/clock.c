@@ -1,9 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <assert.h>
+#include <commonlib/bsd/gcd.h>
 #include <console/console.h>
-#include <device/mmio.h>
 #include <delay.h>
+#include <device/mmio.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/grf.h>
@@ -776,16 +777,6 @@ uint32_t rkclk_i2c_clock_for_bus(unsigned int bus)
 	return freq;
 }
 
-static u32 clk_gcd(u32 a, u32 b)
-{
-	while (b != 0) {
-		int r = b;
-		b = a % b;
-		a = r;
-	}
-	return a;
-}
-
 void rkclk_configure_i2s(unsigned int hz)
 {
 	int n, d;
@@ -805,7 +796,7 @@ void rkclk_configure_i2s(unsigned int hz)
 		RK_CLRBITS(1 << 12 | 1 << 5 | 1 << 4 | 1 << 3));
 
 	/* set frac divider */
-	v = clk_gcd(CPLL_HZ, hz);
+	v = gcd32(CPLL_HZ, hz);
 	n = (CPLL_HZ / v) & (0xffff);
 	d = (hz / v) & (0xffff);
 	assert(hz == (u64)CPLL_HZ * d / n);

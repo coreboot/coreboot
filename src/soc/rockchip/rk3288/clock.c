@@ -1,9 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <device/mmio.h>
 #include <assert.h>
+#include <commonlib/bsd/gcd.h>
 #include <console/console.h>
 #include <delay.h>
+#include <device/mmio.h>
 #include <lib.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
@@ -438,16 +439,6 @@ void rkclk_configure_spi(unsigned int bus, unsigned int hz)
 	}
 }
 
-static u32 clk_gcd(u32 a, u32 b)
-{
-	while (b != 0) {
-		int r = b;
-		b = a % b;
-		a = r;
-	}
-	return a;
-}
-
 void rkclk_configure_i2s(unsigned int hz)
 {
 	int n, d;
@@ -462,7 +453,7 @@ void rkclk_configure_i2s(unsigned int hz)
 			      1 << 15 | 0 << 12 | 1 << 8 | 0 << 0));
 
 	/* set frac divider */
-	v = clk_gcd(GPLL_HZ, hz);
+	v = gcd32(GPLL_HZ, hz);
 	n = (GPLL_HZ / v) & (0xffff);
 	d = (hz / v) & (0xffff);
 	assert(hz == GPLL_HZ / n * d);

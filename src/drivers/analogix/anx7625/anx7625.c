@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <commonlib/bsd/gcd.h>
 #include <delay.h>
 #include <device/i2c_simple.h>
 #include <edid.h>
@@ -152,30 +153,14 @@ static int wait_aux_op_finish(uint8_t bus)
 	return 0;
 }
 
-static unsigned long gcd(unsigned long a, unsigned long b)
-{
-	if (a == 0)
-		return b;
-
-	while (b != 0) {
-		if (a > b)
-			a = a - b;
-		else
-			b = b - a;
-	}
-
-	return a;
-}
-
 /* Reduce fraction a/b */
-static void anx7625_reduction_of_a_fraction(unsigned long *_a,
-					    unsigned long *_b)
+static void anx7625_reduction_of_a_fraction(u32 *_a, u32 *_b)
 {
-	unsigned long gcd_num;
-	unsigned long a = *_a, b = *_b, old_a, old_b;
+	u32 gcd_num;
+	u32 a = *_a, b = *_b, old_a, old_b;
 	u32 denom = 1;
 
-	gcd_num = gcd(a, b);
+	gcd_num = gcd32(a, b);
 	a /= gcd_num;
 	b /= gcd_num;
 
@@ -198,9 +183,7 @@ static void anx7625_reduction_of_a_fraction(unsigned long *_a,
 	*_b = b;
 }
 
-static int anx7625_calculate_m_n(u32 pixelclock,
-				 unsigned long *m, unsigned long *n,
-				 uint8_t *pd)
+static int anx7625_calculate_m_n(u32 pixelclock, u32 *m, u32 *n, uint8_t *pd)
 {
 	uint8_t post_divider = *pd;
 	if (pixelclock > PLL_OUT_FREQ_ABS_MAX / POST_DIVIDER_MIN) {
@@ -300,7 +283,7 @@ static int anx7625_odfc_config(uint8_t bus, uint8_t post_divider)
 
 static int anx7625_dsi_video_config(uint8_t bus, struct display_timing *dt)
 {
-	unsigned long m, n;
+	u32 m, n;
 	u16 htotal;
 	int ret;
 	uint8_t post_divider = 0;
@@ -311,7 +294,7 @@ static int anx7625_dsi_video_config(uint8_t bus, struct display_timing *dt)
 		return -1;
 	}
 
-	ANXINFO("compute M(%lu), N(%lu), divider(%d).\n", m, n, post_divider);
+	ANXINFO("compute M(%u), N(%u), divider(%d).\n", m, n, post_divider);
 
 	/* configure pixel clock */
 	ret = anx7625_reg_write(bus, RX_P0_ADDR, PIXEL_CLOCK_L,

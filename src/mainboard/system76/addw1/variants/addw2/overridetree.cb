@@ -10,7 +10,7 @@ chip soc/intel/cannonlake
 	device domain 0 on
 		subsystemid 0x1558 0x65e1 inherit
 
-		device pci 15.0 on      # I2C #0
+		device ref i2c0		on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""SYNA1202""
 				register "generic.desc" = ""Synaptics Touchpad""

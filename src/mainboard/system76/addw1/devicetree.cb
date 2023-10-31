@@ -53,21 +53,17 @@ chip soc/intel/cannonlake
 
 	device domain 0 on
 		subsystemid 0x1558 0x65d1 inherit
-		device pci 00.0 on  end # Host Bridge
-		device pci 01.0 on      # GPU Port
+		device ref peg0		on
 			# PCI Express Graphics #0 x16, Clock 8 (NVIDIA GPU)
 			register "PcieClkSrcUsage[8]" = "0x40"
 			register "PcieClkSrcClkReq[8]" = "8"
 		end
-		device pci 02.0 on  end # Integrated Graphics Device
-		device pci 04.0 on      # SA Thermal device
+		device ref igpu		on	end
+		device ref dptf		on
 			register "Device4Enable" = "1"
 		end
-		device pci 12.0 on  end # Thermal Subsystem
-		device pci 12.5 off end # UFS SCS
-		device pci 12.6 off end # GSPI #2
-		device pci 13.0 off end # Integrated Sensor Hub
-		device pci 14.0 on      # USB xHCI
+		device ref thermal	on	end
+		device ref xhci		on
 			register "usb2_ports" = "{
 				[0] = USB2_PORT_TYPE_C(OC_SKIP),	/* USB 3.1 Gen 2 TYPE-C and DisplayPort */
 				[1] = USB2_PORT_TYPE_C(OC_SKIP),	/* USB 3.1 Gen 2 TYPE-C */
@@ -88,33 +84,21 @@ chip soc/intel/cannonlake
 				[5] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB 3.1 Gen 1 back */
 			}"
 		end
-		device pci 14.2 on  end # Shared SRAM
-		device pci 14.3 on      # CNVi wifi
+		device ref shared_sram	on	end
+		device ref cnvi_wifi	on
 			chip drivers/wifi/generic
 				register "wake" = "PME_B0_EN_BIT"
 				device generic 0 on end
 			end
 		end
-		device pci 14.5 off end # SDCard
-		device pci 15.0 on  end # I2C #0
-		device pci 15.1 off end # I2C #1
-		device pci 15.2 off end # I2C #2
-		device pci 15.3 off end # I2C #3
-		device pci 16.0 on  end # Management Engine Interface 1
-		device pci 16.1 off end # Management Engine Interface 2
-		device pci 16.2 off end # Management Engine IDE-R
-		device pci 16.3 off end # Management Engine KT Redirection
-		device pci 16.4 off end # Management Engine Interface 3
-		device pci 16.5 off end # Management Engine Interface 4
-		device pci 17.0 on      # SATA
+		device ref i2c0		on	end
+		device ref sata		on
 			register "SataPortsEnable" = "{
 				[0] = 1, /* HDD (SATA0B) */
 				[1] = 1, /* SSD1 (SATA1A) */
 			}"
 		end
-		device pci 19.2 off end # UART #2
-		device pci 1a.0 off end # eMMC
-		device pci 1b.0 on      # PCI Express Port 17
+		device ref pcie_rp17	on
 			# PCI Express root port #17 x4, Clock 0 (Thunderbolt)
 			register "PcieRpEnable[16]" = "1"
 			register "PcieRpLtrEnable[16]" = "1"
@@ -122,10 +106,7 @@ chip soc/intel/cannonlake
 			register "PcieClkSrcUsage[0]" = "16"
 			register "PcieClkSrcClkReq[0]" = "0"
 		end
-		device pci 1b.1 off end # PCI Express Port 18
-		device pci 1b.2 off end # PCI Express Port 19
-		device pci 1b.3 off end # PCI Express Port 20
-		device pci 1b.4 on      # PCI Express Port 21
+		device ref pcie_rp21	on
 			# PCI Express root port #21 x4, Clock 10 (SSD2)
 			register "PcieRpEnable[20]" = "1"
 			register "PcieRpLtrEnable[20]" = "1"
@@ -133,18 +114,7 @@ chip soc/intel/cannonlake
 			register "PcieClkSrcClkReq[10]" = "10"
 			register "PcieRpSlotImplemented[20]" = "1"
 		end
-		device pci 1b.5 off end # PCI Express Port 22
-		device pci 1b.6 off end # PCI Express Port 23
-		device pci 1b.7 off end # PCI Express Port 24
-		device pci 1c.0 off end # PCI Express Port 1
-		device pci 1c.1 off end # PCI Express Port 2
-		device pci 1c.2 off end # PCI Express Port 3
-		device pci 1c.3 off end # PCI Express Port 4
-		device pci 1c.4 off end # PCI Express Port 5
-		device pci 1c.5 off end # PCI Express Port 6
-		device pci 1c.6 off end # PCI Express Port 7
-		device pci 1c.7 off end # PCI Express Port 8
-		device pci 1d.0 on      # PCI Express Port 9
+		device ref pcie_rp9	on
 			# PCI Express root port #9 x4, Clock 9 (SSD1)
 			register "PcieRpEnable[8]" = "1"
 			register "PcieRpLtrEnable[8]" = "1"
@@ -152,11 +122,7 @@ chip soc/intel/cannonlake
 			register "PcieClkSrcClkReq[9]" = "9"
 			register "PcieRpSlotImplemented[8]" = "1"
 		end
-		device pci 1d.1 off end # PCI Express Port 10
-		device pci 1d.2 off end # PCI Express Port 11
-		device pci 1d.3 off end # PCI Express Port 12
-		device pci 1d.4 off end # PCI Express Port 13
-		device pci 1d.5 on      # PCI Express Port 14
+		device ref pcie_rp14	on
 			# PCI Express root port #14 x1, Clock 5 (GLAN)
 			register "PcieRpEnable[13]" = "1"
 			register "PcieRpLtrEnable[13]" = "1"
@@ -164,7 +130,7 @@ chip soc/intel/cannonlake
 			register "PcieClkSrcClkReq[5]" = "5"
 			register "PcieRpSlotImplemented[13]" = "1"
 		end
-		device pci 1d.6 on      # PCI Express Port 15
+		device ref pcie_rp15	on
 			# PCI Express root port #15 x1, Clock 7 (Card Reader)
 			register "PcieRpEnable[14]" = "1"
 			register "PcieRpLtrEnable[14]" = "1"
@@ -172,7 +138,7 @@ chip soc/intel/cannonlake
 			register "PcieClkSrcClkReq[7]" = "7"
 			register "PcieRpSlotImplemented[14]" = "1"
 		end
-		device pci 1d.7 on      # PCI Express Port 16
+		device ref pcie_rp16	on
 			# PCI Express root port #16 x1, Clock 6 (WLAN)
 			register "PcieRpEnable[15]" = "1"
 			register "PcieRpLtrEnable[15]" = "1"
@@ -180,11 +146,7 @@ chip soc/intel/cannonlake
 			register "PcieClkSrcClkReq[6]" = "6"
 			register "PcieRpSlotImplemented[15]" = "1"
 		end
-		device pci 1e.0 off end # UART #0
-		device pci 1e.1 off end # UART #1
-		device pci 1e.2 off end # GSPI #0
-		device pci 1e.3 off end # GSPI #1
-		device pci 1f.0 on      # LPC Interface
+		device ref lpc_espi	on
 			register "gen1_dec" = "0x00040069"
 			register "gen2_dec" = "0x00fc0e01"
 			register "gen3_dec" = "0x00fc0f01"
@@ -192,18 +154,14 @@ chip soc/intel/cannonlake
 				device pnp 0c31.0 on end
 			end
 		end
-		device pci 1f.1 off end # P2SB
-		device pci 1f.2 hidden end # Power Management Controller
-		device pci 1f.3 on      # Intel HDA
+		device ref hda		on
 			register "PchHdaAudioLinkHda" = "1"
 		end
-		device pci 1f.4 on      # SMBus
+		device ref smbus	on
 			chip drivers/i2c/tas5825m
 				register "id" = "0"
 				device i2c 4e on end # (8bit address: 0x9c)
 			end
 		end
-		device pci 1f.5 on  end # PCH SPI
-		device pci 1f.6 off end # GbE
 	end
 end

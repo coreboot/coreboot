@@ -1,0 +1,116 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip northbridge/intel/sandybridge
+	register "spd_addresses" = "{0x50, 0x51, 0x52, 0x53}"
+	device domain 0 on
+		chip southbridge/intel/bd82x6x	# Intel Series 7 Panther Point PCH
+			register "gen1_dec" = "0x003c0a01"
+
+			# Set max SATA speed to 6.0 Gb/s
+			register "sata_port_map" = "0x3f"
+			register "sata_interface_speed_support" = "0x3"
+
+			register "usb_port_config" = "{
+				{ 1, 5, 0 },
+				{ 1, 5, 0 },
+				{ 1, 5, 1 },
+				{ 1, 5, 1 },
+				{ 1, 5, 2 },
+				{ 1, 5, 2 },
+				{ 1, 5, 3 },
+				{ 1, 5, 3 },
+				{ 1, 5, 4 },
+				{ 1, 5, 4 },
+				{ 1, 5, 6 },
+				{ 1, 5, 5 },
+				{ 1, 5, 5 },
+				{ 1, 5, 6 }
+			}"
+
+			register "xhci_switchable_ports" = "0xf"
+			register "superspeed_capable_ports" = "0xf"
+
+			device ref xhci on	# USB 3.0 Controller
+				subsystemid 0x1458 0x5007
+			end
+			device ref mei1 off	end	# Management Engine Interface 1
+			device ref ehci2 on	# USB2 EHCI #2
+				subsystemid 0x1458 0x5006
+			end
+			device ref hda on	# High Definition Audio
+				subsystemid 0x1458 0xa002
+			end
+			device ref pcie_rp1 on  end	# PCIe Port #1: PCIEX4 slot
+			device ref pcie_rp2 off end	# PCIe Port #2
+			device ref pcie_rp3 off end	# PCIe Port #3
+			device ref pcie_rp4 off end	# PCIe Port #4
+			device ref pcie_rp5 on		# PCIe Port #5: AR8161 GbE
+				device pci 00.0 on end
+			end
+			device ref pcie_rp6 on	end	# PCIe Port #6: PCIEX1 slot
+			device ref pcie_rp7 on	end	# PCIe Port #7: IT8892E PCIe-to-PCI
+			device ref pcie_rp8 off end	# PCIe Port #8
+			device ref ehci1 on	# USB2 EHCI #1
+				subsystemid 0x1458 0x5006
+			end
+			device ref pci_bridge off end # PCI bridge
+			device ref lpc on # ISA/LPC bridge
+				subsystemid 0x1458 0x5001
+				chip superio/ite/it8728f
+
+					register "TMPIN1.mode"   = "THERMAL_RESISTOR"
+					register "TMPIN1.min"    = "-10"
+					register "TMPIN1.max"    = "100"
+					register "TMPIN2.mode"   = "THERMAL_MODE_DISABLED"
+					register "TMPIN3.mode"   = "THERMAL_PECI"
+					register "TMPIN3.offset" = "100"
+					register "TMPIN3.min"    = "0"
+					register "TMPIN3.max"    = "100"
+
+					register "ec.vin_mask"   = "VIN7 | VIN4 | VIN3 | VIN2 | VIN1 | VIN0"
+
+					device pnp 2e.0 off end	# FDC
+					device pnp 2e.1 on	# Serial Port 1
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.2 on
+						io 0x60 = 0x2f8
+						irq 0x70 = 3
+					end
+					device pnp 2e.3 on
+						io 0x60 = 0x378
+						irq 0x70 = 7
+						drq 0x74 = 4
+					end
+					device pnp 2e.4 on	# EC
+						io 0x60 = 0xa30
+						irq 0x70 = 9
+						io 0x62 = 0xa20
+					end
+					device pnp 2e.5 on	# Keyboard
+						io 0x60 = 0x60
+						irq 0x70 = 1
+						io 0x62 = 0x64
+					end
+					device pnp 2e.6 on	# Mouse
+						irq 0x70 = 12
+					end
+					device pnp 2e.7 off end	# GPIO
+					device pnp 2e.a off end	# IR
+				end
+
+				chip drivers/pc80/tpm
+					device pnp 0c31.0 off end
+				end
+			end
+			device ref sata1 on	# SATA Controller 1
+				subsystemid 0x1458 0xb005
+			end
+			device ref smbus on	# SMBus
+				subsystemid 0x1458 0x5001
+			end
+			device ref sata2 off end	# SATA Controller 2
+		end
+	end
+end

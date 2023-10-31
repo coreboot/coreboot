@@ -382,6 +382,18 @@ void early_usb_init(const struct southbridge_usb_port *portmap);
 #define USBIR12		0x3530	/* 32bit */
 #define USBIR13		0x3534	/* 32bit */
 
+/* Up to 5" onboard trace length */
+#define USBIR_TXRX_GAIN_MOBILE_LOW	0x20000153
+
+/* Up to 6" onboard trace length */
+#define USBIR_TXRX_GAIN_DESKTOP_LOW	0x20000F53
+
+/* Up to 14" onboard trace length, up to 8" on wires */
+#define USBIR_TXRX_GAIN_DEFAULT		0x20000f57
+
+/* Up to 10" onboard trace length, up to 15" on wires */
+#define USBIR_TXRX_GAIN_HIGH		0x2000055B
+
 /* Miscellaneous Control Register */
 #define MISCCTL		0x3590	/* 32bit */
 /* USB Port Disable Override */

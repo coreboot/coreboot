@@ -1,21 +1,228 @@
-BasedOnStyle:					LLVM
-Language:					Cpp
-IndentWidth:					8
-UseTab:						Always
-BreakBeforeBraces:				Linux
-AllowShortIfStatementsOnASingleLine:		false
-IndentCaseLabels:				false
-SortIncludes:					false
-ContinuationIndentWidth:			8
-ColumnLimit:					96
-AlwaysBreakBeforeMultilineStrings:		true
-AllowShortLoopsOnASingleLine:			false
-AllowShortFunctionsOnASingleLine:		false
-AlignEscapedNewlinesLeft:			false
-AlignTrailingComments:				true
-AllowAllParametersOfDeclarationOnNextLine:	false
-AlignAfterOpenBracket:				true
-SpaceAfterCStyleCast:				false
-MaxEmptyLinesToKeep:				2
-BreakBeforeBinaryOperators:			NonAssignment
-BreakStringLiterals:				false
+# SPDX-License-Identifier: GPL-2.0
+#
+# clang-format configuration file. Intended for clang-format >= 16.
+#
+# For more information, see:
+#
+#   https://clang.llvm.org/docs/ClangFormat.html
+#   https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+#   https://clang-format-configurator.site/
+#
+
+---
+Language:        Cpp
+AccessModifierOffset: -4
+AlignAfterOpenBracket: Align
+AlignArrayOfStructures: Left
+AlignConsecutiveAssignments:
+  Enabled:         false
+  AcrossEmptyLines: false
+  AcrossComments:  true
+  AlignCompound:   false
+  PadOperators:    true
+AlignConsecutiveBitFields:
+  Enabled:         true
+  AcrossEmptyLines: false
+  AcrossComments:  false
+  AlignCompound:   false
+  PadOperators:    true
+AlignConsecutiveDeclarations:
+  Enabled:         false
+  AcrossEmptyLines: false
+  AcrossComments:  false
+  AlignCompound:   false
+  PadOperators:    true
+AlignConsecutiveMacros:
+  Enabled:         true
+  AcrossEmptyLines: false
+  AcrossComments:  false
+  AlignCompound:   false
+  PadOperators:    true
+AlignEscapedNewlines: Left
+AlignOperands:   Align
+AlignTrailingComments:
+  Kind:            Always
+  OverEmptyLines:  0
+AllowAllArgumentsOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortEnumsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLambdasOnASingleLine: All
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakAfterDefinitionReturnType: None
+AlwaysBreakAfterReturnType: None
+AlwaysBreakBeforeMultilineStrings: false
+AlwaysBreakTemplateDeclarations: MultiLine
+
+# git grep '^#define [^[:space:]]*__.*[^[:space:]]*__attribute__' | grep -v "vendorcode\|payloads\|util" | sed "s|.*:||;s|^#define \([^[:space:]]*__[^([:space:]]*\).*$|  - '\1'|" | LC_ALL=C sort -u
+AttributeMacros:
+  - '__aligned'
+  - '__always_inline'
+  - '__always_unused'
+  - '__cpu_driver'
+  - '__fallthrough'
+  - '__maybe_unused'
+  - '__must_check'
+  - '__noreturn'
+  - '__packed'
+  - '__pci_driver'
+  - '__printf'
+  - '__weak'
+BinPackArguments: true
+BinPackParameters: true
+BitFieldColonSpacing: Both
+BraceWrapping:
+  AfterCaseLabel:  false
+  AfterClass:      false
+  AfterControlStatement: Never
+  AfterEnum:       false
+  AfterExternBlock: false
+  AfterFunction:   true
+  AfterNamespace:  true
+  AfterObjCDeclaration: false
+  AfterStruct:     false
+  AfterUnion:      false
+  BeforeCatch:     false
+  BeforeElse:      false
+  BeforeLambdaBody: false
+  BeforeWhile:     false
+  IndentBraces:    false
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
+BreakAfterAttributes: Never
+BreakAfterJavaFieldAnnotations: false
+BreakArrays:     false
+BreakBeforeBinaryOperators: None
+BreakBeforeConceptDeclarations: Always
+BreakBeforeBraces: Custom
+BreakBeforeInlineASMColon: OnlyMultiline
+BreakBeforeTernaryOperators: false
+BreakConstructorInitializers: AfterColon
+BreakInheritanceList: AfterColon
+BreakStringLiterals: false
+ColumnLimit:     96
+CommentPragmas:  '^ IWYU pragma:'
+CompactNamespaces: false
+ConstructorInitializerIndentWidth: 8
+ContinuationIndentWidth: 8
+Cpp11BracedListStyle: true
+DerivePointerAlignment: false
+DisableFormat:   false
+EmptyLineAfterAccessModifier: Never
+EmptyLineBeforeAccessModifier: LogicalBlock
+ExperimentalAutoDetectBinPacking: false
+FixNamespaceComments: false
+
+# git grep '^#define [^[:space:]]*for_each[^[:space:]]*(' | grep -v "vendorcode\|payloads\|util" | sed "s|.*:||;s|^#define \([^[:space:]]*for_each[^[:space:]]*\)(.*$|  - '\1'|" | LC_ALL=C sort -u
+ForEachMacros:
+  - 'list_for_each'
+
+# git grep -i '^#define \+if[^[:space:]]*(' | grep -v "vendorcode\|payloads\|util" | sed "s|.*:||;s|^#define \([^[:space:]]*if[^[:space:]]*\)(.*$|  - '\1'|I" | grep -v IFIX | LC_ALL=C sort -u
+IfMacros:
+  - 'IF_CHANNEL_POPULATED'
+  - 'IF_DIMM_POPULATED'
+  - 'IF_RANK_POPULATED'
+  - 'IfBit0'
+IncludeBlocks:   Preserve
+IncludeIsMainSourceRegex: ''
+IndentAccessModifiers: false
+IndentCaseBlocks: false
+IndentCaseLabels: false
+IndentExternBlock: AfterExternBlock
+IndentGotoLabels: false
+IndentPPDirectives: None
+IndentRequiresClause: true
+IndentWidth:     8
+IndentWrappedFunctionNames: false
+InsertBraces:    false
+InsertNewlineAtEOF: true
+InsertTrailingCommas: None
+IntegerLiteralSeparator:
+  Binary:          0
+  BinaryMinDigits: 0
+  Decimal:         0
+  DecimalMinDigits: 0
+  Hex:             0
+  HexMinDigits:    0
+JavaScriptQuotes: Leave
+JavaScriptWrapImports: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+LambdaBodyIndentation: Signature
+LineEnding:      LF
+MacroBlockBegin: ''
+MacroBlockEnd:   ''
+MaxEmptyLinesToKeep: 1
+NamespaceIndentation: None
+ObjCBinPackProtocolList: Auto
+ObjCBlockIndentWidth: 8
+ObjCBreakBeforeNestedBlockParam: true
+ObjCSpaceAfterProperty: true
+ObjCSpaceBeforeProtocolList: true
+PackConstructorInitializers: BinPack
+PenaltyBreakAssignment: 10
+PenaltyBreakBeforeFirstCallParameter: 30
+PenaltyBreakComment: 10
+PenaltyBreakFirstLessLess: 0
+PenaltyBreakOpenParenthesis: 0
+PenaltyBreakString: 10
+PenaltyBreakTemplateDeclaration: 10
+PenaltyExcessCharacter: 100
+PenaltyIndentedWhitespace: 0
+PenaltyReturnTypeOnItsOwnLine: 60
+PointerAlignment: Right
+PPIndentWidth:   -1
+QualifierAlignment: Left
+ReferenceAlignment: Pointer
+ReflowComments:  false
+RemoveBracesLLVM: false
+RemoveSemicolon: false
+RequiresClausePosition: OwnLine
+RequiresExpressionIndentation: OuterScope
+SeparateDefinitionBlocks: Leave
+ShortNamespaceLines: 1
+SortIncludes:    Never
+SortJavaStaticImport: Before
+SortUsingDeclarations: Never
+SpaceAfterCStyleCast: false
+SpaceAfterLogicalNot: false
+SpaceAfterTemplateKeyword: true
+SpaceAroundPointerQualifiers: Default
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCaseColon: false
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeParens: ControlStatementsExceptControlMacros
+SpaceBeforeParensOptions:
+  AfterControlStatements: true
+  AfterForeachMacros: false
+  AfterFunctionDefinitionName: false
+  AfterFunctionDeclarationName: false
+  AfterIfMacros:   false
+  AfterOverloadedOperator: false
+  AfterRequiresInClause: false
+  AfterRequiresInExpression: false
+  BeforeNonEmptyParentheses: false
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeSquareBrackets: false
+SpaceInEmptyBlock: false
+SpaceInEmptyParentheses: false
+SpacesBeforeTrailingComments: 1
+SpacesInAngles:  Never
+SpacesInConditionalStatement: false
+SpacesInContainerLiterals: false
+SpacesInCStyleCastParentheses: false
+SpacesInLineCommentPrefix:
+  Minimum:         1
+  Maximum:         1
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+Standard:        c++17
+TabWidth:        8
+UseTab:          ForContinuationAndIndentation
+...
+

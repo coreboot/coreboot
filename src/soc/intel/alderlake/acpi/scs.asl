@@ -18,7 +18,7 @@ Scope (\_SB.PCI0) {
 	}
 
 	/* EMMC */
-	Device(PEMC) {
+	Device(EMMC) {
 		Name(_ADR, 0x001A0000)
 		Name (_DDN, "eMMC Controller")
 		Name(TEMP, 0)

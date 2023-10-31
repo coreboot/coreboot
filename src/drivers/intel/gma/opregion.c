@@ -19,40 +19,39 @@ const char *mainboard_vbt_filename(void)
 	return "vbt.bin";
 }
 
-static char vbt_data[CONFIG_VBT_DATA_SIZE_KB * KiB];
-static size_t vbt_data_sz;
-
 void *locate_vbt(size_t *vbt_size)
 {
-	uint32_t vbtsig = 0;
+	static void *data;
+	static size_t size;
 
-	if (vbt_data_sz != 0) {
-		if (vbt_size)
-			*vbt_size = vbt_data_sz;
-		return (void *)vbt_data;
+	if (data)
+		goto out;
+
+	data = cbfs_map(mainboard_vbt_filename(), &size);
+	if (!data || size == 0) {
+		printk(BIOS_ERR, "Could not find or load %s CBFS file\n",
+		       mainboard_vbt_filename());
+		goto err;
 	}
 
-	const char *filename = mainboard_vbt_filename();
-
-	size_t file_size = cbfs_load(filename, vbt_data, sizeof(vbt_data));
-
-	if (file_size == 0)
-		return NULL;
-
-	if (vbt_size)
-		*vbt_size = file_size;
-
-	memcpy(&vbtsig, vbt_data, sizeof(vbtsig));
-	if (vbtsig != VBT_SIGNATURE) {
-		printk(BIOS_ERR, "Missing/invalid signature in VBT data file!\n");
-		return NULL;
+	if (*(uint32_t *)data == VBT_SIGNATURE) {
+		printk(BIOS_INFO, "Found a VBT of %zu bytes\n", size);
+		goto out;
 	}
 
-	printk(BIOS_INFO, "Found a VBT of %zu bytes after decompression\n",
-		file_size);
-	vbt_data_sz = file_size;
+	printk(BIOS_ERR, "Missing/invalid signature in VBT data file!\n");
 
-	return (void *)vbt_data;
+err:
+	if (data) {
+		cbfs_unmap(data);
+		data = NULL;
+	}
+	size = 0;
+
+out:
+	if (vbt_size && size)
+		*vbt_size = size;
+	return data;
 }
 
 /* Write ASLS PCI register and prepare SWSCI register. */

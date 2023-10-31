@@ -59,10 +59,6 @@ config INTEL_GMA_SWSMISCI
 config INTEL_GMA_LIBGFXINIT_EDID
 	bool
 
-config VBT_DATA_SIZE_KB
-	int
-	default 8
-
 config VBT_CBFS_COMPRESSION_DEFAULT_LZ4
 	def_bool n
 	help

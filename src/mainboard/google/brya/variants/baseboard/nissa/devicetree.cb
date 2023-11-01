@@ -1,4 +1,8 @@
 fw_config
+	field AUDIO_CONFIG 28
+		option AMP_GPIO			0
+		option AMP_RT5650		1
+	end
 	field SD_BOOT 29
 		option SD_BOOT_ENABLE		0
 		option SD_BOOT_DISABLE		1

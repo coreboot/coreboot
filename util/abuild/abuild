@@ -11,8 +11,8 @@
 
 #set -x # Turn echo on....
 
-ABUILD_DATE="Feb 3, 2023"
-ABUILD_VERSION="0.11.01"
+ABUILD_DATE="Nov 1, 2023"
+ABUILD_VERSION="0.11.02"
 
 TOP=$PWD
 
@@ -561,7 +561,7 @@ function build_config
 		tail -n $CONTEXT "$build_dir/config.log" 2> /dev/null || tail -$CONTEXT "$build_dir/config.log"
 
 		junit "</testcase>"
-		echo "$BUILD_NAME - Log: ${TOP}/$build_dir/config.log" >> "$FAILED_BOARDS"
+		echo "$BUILD_NAME - Log: $build_dir/config.log" >> "$FAILED_BOARDS"
 		return
 	fi
 
@@ -607,6 +607,18 @@ EOF
 	junit "</testcase>"
 }
 
+function record_mainboard
+{
+	local log=$1
+
+	if test "$mode" != "text" && test -f "$TARGET/abuild/${log}.xml"; then
+		cat "$TARGET/abuild/${log}.xml" >> "$REAL_XMLFILE"
+		echo "$TARGET/abuild/${log}.xml written to $REAL_XMLFILE" >&2
+	else
+		echo "Warning: $TARGET/abuild/${log}.xml not found." >&2
+	fi
+}
+
 # One target may build several configs
 function build_target
 {
@@ -630,6 +642,7 @@ function build_target
 			echo "Building config $BUILD_NAME"
 			build_dir=$TARGET/${BUILD_NAME}
 			build_config "$MAINBOARD" "$build_dir" "$BUILD_NAME" "$config"
+			record_mainboard "$BUILD_NAME"
 			remove_target "$BUILD_NAME"
 		done
 	fi
@@ -637,6 +650,7 @@ function build_target
 	echo "Building board $MAINBOARD (using default config)"
 	build_dir=$TARGET/${MAINBOARD}
 	build_config "$MAINBOARD" "$build_dir" "$MAINBOARD"
+	record_mainboard "$MAINBOARD"
 	remove_target "$MAINBOARD"
 }
 
@@ -1043,9 +1057,6 @@ if [ "$target" != "" ]; then
 		exit 1
 	else
 		build_target "${MAINBOARD}"
-		test "$mode" != "text" && \
-		test -f "$TARGET/abuild/${MAINBOARD}.xml" && \
-		cat "$TARGET/abuild/${MAINBOARD}.xml" >> "$REAL_XMLFILE"
 		XMLFILE=$REAL_XMLFILE
 	fi
 else

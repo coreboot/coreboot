@@ -88,7 +88,7 @@ chip soc/intel/alderlake
 				.clk_src = 0,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
-			device pci 00.0 alias dgpu on end
+			device generic 0 alias dgpu on end
 		end
 		device ref dtt on
 			chip drivers/intel/dptf
@@ -232,7 +232,7 @@ chip soc/intel/alderlake
 				register "wake" = "GPE0_DW0_07"
 				register "device_index" = "0"
 				register "add_acpi_dma_property" = "true"
-				device pci 00.0 on end
+				device generic 0 on end
 			end
 		end 	#RTL8111H Ethernet NIC
 		device ref pcie_rp4 off end

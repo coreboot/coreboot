@@ -280,31 +280,42 @@ static void graphics_dev_read_resources(struct device *dev)
 	}
 }
 
+static void graphics_join_mbus(void)
+{
+	enum display_type type = get_external_display_status();
+	uint32_t hashing_mode = 0;  /* 2x2 */
+	if (type == INTERNAL_DISPLAY_ONLY) {
+		hashing_mode = GFX_MBUS_HASHING_MODE; /* 1x4 */
+		/* Only eDP pipes is joining the MBUS */
+		graphics_gtt_rmw(GFX_MBUS_SEL(PIPE_A), PIPE_A, GFX_MBUS_JOIN | hashing_mode);
+	} else if (type == DUAL_DISPLAY) {
+		/* All pipes are joining the MBUS */
+		graphics_gtt_rmw(GFX_MBUS_SEL(PIPE_A), PIPE_A, GFX_MBUS_JOIN | hashing_mode);
+		graphics_gtt_rmw(GFX_MBUS_SEL(PIPE_B), PIPE_B, GFX_MBUS_JOIN | hashing_mode);
+		graphics_gtt_rmw(GFX_MBUS_SEL(PIPE_C), PIPE_C, GFX_MBUS_JOIN | hashing_mode);
+#if CONFIG(INTEL_GMA_VERSION_2)
+		graphics_gtt_rmw(GFX_MBUS_SEL(PIPE_D), PIPE_D, GFX_MBUS_JOIN | hashing_mode);
+#endif
+	} else {
+		/* No pipe joins the MBUS */
+		graphics_gtt_rmw(GFX_MBUS_CTL, GFX_MBUS_JOIN_PIPE_SEL,
+				 GFX_MBUS_JOIN | hashing_mode);
+	}
+}
+
 static void graphics_dev_final(struct device *dev)
 {
 	pci_dev_request_bus_master(dev);
 
-	if (CONFIG(SOC_INTEL_GFX_MBUS_JOIN)) {
-		enum display_type type = get_external_display_status();
-		uint32_t hashing_mode = 0;  /* 2x2 */
-		if (type == INTERNAL_DISPLAY_ONLY) {
-			hashing_mode = GFX_MBUS_HASHING_MODE; /* 1x4 */
-			/* Only eDP pipes is joining the MBUS */
-			graphics_gtt_rmw(GFX_MBUS_SEL(PIPE_A), PIPE_A, GFX_MBUS_JOIN | hashing_mode);
-		} else if (type == DUAL_DISPLAY) {
-			/* All pipes are joining the MBUS */
-			graphics_gtt_rmw(GFX_MBUS_SEL(PIPE_A), PIPE_A, GFX_MBUS_JOIN | hashing_mode);
-			graphics_gtt_rmw(GFX_MBUS_SEL(PIPE_B), PIPE_B, GFX_MBUS_JOIN | hashing_mode);
-			graphics_gtt_rmw(GFX_MBUS_SEL(PIPE_C), PIPE_C, GFX_MBUS_JOIN | hashing_mode);
-#if CONFIG(INTEL_GMA_VERSION_2)
-			graphics_gtt_rmw(GFX_MBUS_SEL(PIPE_D), PIPE_D, GFX_MBUS_JOIN | hashing_mode);
-#endif
-		} else {
-			/* No pipe joins the MBUS */
-			graphics_gtt_rmw(GFX_MBUS_CTL, GFX_MBUS_JOIN_PIPE_SEL,
-					 GFX_MBUS_JOIN | hashing_mode);
-		}
-	}
+	/*
+	 * Call function to join the MBUS if GFX PEIM module inside FSP
+	 * binary is taking care of graphics initialization based on
+	 * RUN_FSP_GOP config option.
+	 *
+	 * Skip FW joining the MBUS in case of non-FSP solution.
+	 */
+	if (CONFIG(RUN_FSP_GOP) && CONFIG(SOC_INTEL_GFX_MBUS_JOIN) && display_init_required())
+		graphics_join_mbus();
 }
 
 const struct device_operations graphics_ops = {

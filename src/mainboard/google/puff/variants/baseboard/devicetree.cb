@@ -323,7 +323,7 @@ chip soc/intel/cannonlake
 		device pci 1d.5 on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_DW1_01"
-				device pci 00.0 on  end
+				device generic 0 on  end
 			end
 			register "PcieRpSlotImplemented[13]" = "1"
 		end # PCI Express Port 14 (x4)

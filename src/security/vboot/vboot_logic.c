@@ -374,7 +374,7 @@ void verstage_main(void)
 	}
 
 	if (rv)
-		vboot_fail_and_reboot(ctx, VB2_RECOVERY_FW_GET_FW_BODY, rv);
+		vboot_save_and_reboot(ctx, rv);
 	vboot_save_data(ctx);
 
 	/* Only extend PCRs once on boot. */

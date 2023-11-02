@@ -1087,10 +1087,7 @@ static void fill_mp_state_smm(struct mp_state *state, const struct mp_ops *ops)
 	/*
 	 * Make sure there is enough room for the SMM descriptor
 	 */
-	if (CONFIG(STM)) {
-		state->smm_save_state_size +=
-			ALIGN_UP(sizeof(TXT_PROCESSOR_SMM_DESCRIPTOR), 0x100);
-	}
+	state->smm_save_state_size += STM_PSD_SIZE;
 
 	/*
 	 * Default to smm_initiate_relocation() if trigger callback isn't

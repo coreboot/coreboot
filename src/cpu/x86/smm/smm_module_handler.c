@@ -9,6 +9,7 @@
 #include <cpu/x86/smm.h>
 #include <rmodule.h>
 #include <types.h>
+#include <security/intel/stm/SmmStm.h>
 
 #if CONFIG(SPI_FLASH_SMM)
 #include <spi-generic.h>
@@ -103,7 +104,8 @@ void *smm_get_save_state(int cpu)
 	if (cpu > smm_runtime.num_cpus)
 		return NULL;
 
-	return (void *)(smm_runtime.save_state_top[cpu] - smm_runtime.save_state_size);
+	return (void *)(smm_runtime.save_state_top[cpu] -
+			(smm_runtime.save_state_size - STM_PSD_SIZE));
 }
 
 uint32_t smm_revision(void)

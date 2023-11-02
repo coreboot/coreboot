@@ -33,6 +33,15 @@
 
 #define SMM_PCI_RESOURCE_STORE_NUM_RESOURCES 6
 
+/*
+ * SMI Transfer Monitor (STM) descriptor reserved in SMM save state.
+ */
+#if CONFIG(STM)
+#define STM_PSD_SIZE ALIGN_UP(sizeof(TXT_PROCESSOR_SMM_DESCRIPTOR), 0x100)
+#else
+#define STM_PSD_SIZE 0
+#endif
+
 /* Send cmd to APM_CNT with HAVE_SMI_HANDLER checking. */
 int apm_control(u8 cmd);
 u8 apm_get_apmc(void);

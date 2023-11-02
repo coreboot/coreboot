@@ -54,6 +54,7 @@
 #include <err.h>
 #include <errno.h>
 */
+#include <commonlib/bsd/gcd.h>
 #include <libpayload.h>
 #include <getopt.h>
 #define warnx(x...) printf(x)
@@ -88,7 +89,6 @@ static int getopt_internal(int, char * const *, const char *,
 			   const struct option *, int *, int);
 static int parse_long_options(char * const *, const char *,
 			      const struct option *, int *, int);
-static int gcd(int, int);
 static void permute_args(int, int, int, char * const *);
 
 static char *place = EMSG; /* option letter processing */
@@ -104,24 +104,6 @@ static const char ambig[] = "ambiguous option -- %.*s";
 static const char noarg[] = "option doesn't take an argument -- %.*s";
 static const char illoptchar[] = "unknown option -- %c";
 static const char illoptstring[] = "unknown option -- %s";
-
-/*
- * Compute the greatest common divisor of a and b.
- */
-static int
-gcd(int a, int b)
-{
-	int c;
-
-	c = a % b;
-	while (c != 0) {
-		a = b;
-		b = c;
-		c = a % b;
-	}
-
-	return (b);
-}
 
 /*
  * Exchange the block from nonopt_start to nonopt_end with the block
@@ -140,7 +122,7 @@ permute_args(int panonopt_start, int panonopt_end, int opt_end,
 	 */
 	nnonopts = panonopt_end - panonopt_start;
 	nopts = opt_end - panonopt_end;
-	ncycle = gcd(nnonopts, nopts);
+	ncycle = gcd32(nnonopts, nopts);
 	cyclelen = (opt_end - panonopt_start) / ncycle;
 
 	for (i = 0; i < ncycle; i++) {

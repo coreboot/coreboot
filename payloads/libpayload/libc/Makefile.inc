@@ -46,4 +46,5 @@ endif
 
 ifeq ($(CONFIG_LP_LIBC),y)
 libc-srcs += $(coreboottop)/src/commonlib/bsd/elog.c
+libc-srcs += $(coreboottop)/src/commonlib/bsd/gcd.c
 endif

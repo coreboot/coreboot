@@ -31,8 +31,11 @@ uint64_t get_fmap_flash_offset(void)
 
 static int verify_fmap(const struct fmap *fmap)
 {
-	if (memcmp(fmap->signature, FMAP_SIGNATURE, sizeof(fmap->signature)))
+	if (memcmp(fmap->signature, FMAP_SIGNATURE, sizeof(fmap->signature))) {
+		if (ENV_INITIAL_STAGE)
+			printk(BIOS_ERR, "Invalid FMAP at %#x\n", FMAP_OFFSET);
 		return -1;
+	}
 
 	static bool done = false;
 	if (!CONFIG(CBFS_VERIFICATION) || !ENV_INITIAL_STAGE || done)
@@ -82,9 +85,8 @@ static void setup_preram_cache(struct region_device *cache_rdev)
 		if (!verify_fmap(fmap))
 			goto register_cache;
 
-		printk(BIOS_ERR, "FMAP cache corrupted?!\n");
-		if (CONFIG(TOCTOU_SAFETY))
-			die("TOCTOU safety relies on FMAP cache");
+		/* This shouldn't happen, so no point providing a fallback path here. */
+		die("FMAP cache corrupted?!\n");
 	}
 
 	/* In case we fail below, make sure the cache is invalid. */
@@ -118,6 +120,10 @@ static int find_fmap_directory(struct region_device *fmrd)
 	if (region_device_sz(&fmap_cache))
 		return rdev_chain_full(fmrd, &fmap_cache);
 
+	/* Cache setup in pre-RAM stages can't fail, unless flash I/O in general failed. */
+	if (!CONFIG(NO_FMAP_CACHE) && ENV_ROMSTAGE_OR_BEFORE)
+		return -1;
+
 	boot_device_init();
 	boot = boot_device_ro();
 
@@ -130,8 +136,6 @@ static int find_fmap_directory(struct region_device *fmrd)
 		return -1;
 
 	if (verify_fmap(fmap)) {
-		printk(BIOS_ERR, "FMAP missing or corrupted at offset 0x%zx!\n",
-		       offset);
 		rdev_munmap(boot, fmap);
 		return -1;
 	}

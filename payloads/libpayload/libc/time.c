@@ -38,6 +38,7 @@
 #if CONFIG(LP_ARCH_X86) && CONFIG(LP_NVRAM)
 #include <arch/rdtsc.h>
 #endif
+#include <commonlib/bsd/gcd.h>
 #include <inttypes.h>
 
 extern u32 cpu_khz;
@@ -170,17 +171,21 @@ void arch_ndelay(uint64_t ns)
 
 u64 timer_us(u64 base)
 {
-	static u64 hz;
+	static u32 hz, mult = USECS_PER_SEC;
+	u32 div;
 
 	// Only check timer_hz once. Assume it doesn't change.
 	if (hz == 0) {
 		hz = timer_hz();
-		if (hz < 1000000) {
-			printf("Timer frequency %" PRIu64 " is too low, "
+		if (hz < mult) {
+			printf("Timer frequency %" PRIu32 " is too low, "
 			       "must be at least 1MHz.\n", hz);
 			halt();
 		}
+		div = gcd32(hz, mult);
+		hz /= div;
+		mult /= div;
 	}
 
-	return (1000000 * timer_raw_value()) / hz - base;
+	return (mult * timer_raw_value()) / hz - base;
 }

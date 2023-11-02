@@ -32,7 +32,7 @@
 #include <arch/lib_helpers.h>
 #include <libpayload.h>
 
-uint64_t timer_hz(void)
+uint32_t timer_hz(void)
 {
 	return raw_read_cntfrq_el0();
 }

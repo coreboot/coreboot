@@ -33,10 +33,12 @@
 
 #include <libpayload.h>
 #include <arch/rdtsc.h>
+#include <assert.h>
 
-uint64_t timer_hz(void)
+uint32_t timer_hz(void)
 {
-	return (uint64_t)lib_sysinfo.cpu_khz * 1000;
+	assert(UINT32_MAX / 1000 >= lib_sysinfo.cpu_khz);
+	return lib_sysinfo.cpu_khz * 1000;
 }
 
 uint64_t timer_raw_value(void)

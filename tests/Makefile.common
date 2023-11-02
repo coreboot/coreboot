@@ -36,7 +36,7 @@ TEST_INCLUDES += -I$(testsrc)/include/mocks -I$(testsrc)/include
 
 TEST_INCLUDES += -I$(src) -I$(src)/include -I$(src)/commonlib/include \
 	-I$(src)/commonlib/bsd/include -I$(src)/arch/x86/include \
-	-I$(top)/3rdparty/vboot/firmware/include
+	-I$(abspath $(VBOOT_SOURCE))/firmware/include
 
 # Path for Kconfig autoheader
 TEST_INCLUDES += -I$(dir $(TEST_KCONFIG_AUTOHEADER))

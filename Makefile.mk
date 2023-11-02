@@ -484,7 +484,6 @@ CPPFLAGS_common += -Isrc/include
 CPPFLAGS_common += -Isrc/commonlib/include
 CPPFLAGS_common += -Isrc/commonlib/bsd/include
 CPPFLAGS_common += -I$(obj)
-VBOOT_SOURCE ?= 3rdparty/vboot
 CPPFLAGS_common += -I$(VBOOT_SOURCE)/firmware/include
 CPPFLAGS_common += -include $(src)/include/kconfig.h
 CPPFLAGS_common += -include $(src)/include/rules.h

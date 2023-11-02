@@ -460,7 +460,6 @@ COREBOOT_EXPORTS += COREBOOT_EXTRA_VERSION
 endif
 
 CPPFLAGS_common := -Isrc -Isrc/include -Isrc/commonlib/include -Isrc/commonlib/bsd/include -I$(obj)
-VBOOT_SOURCE ?= 3rdparty/vboot
 CPPFLAGS_common += -I$(VBOOT_SOURCE)/firmware/include
 CPPFLAGS_common += -include $(src)/include/kconfig.h
 CPPFLAGS_common += -include $(src)/include/rules.h

@@ -197,7 +197,7 @@ const char *smbios_mainboard_product_name(void)
 		snprintf(product, sizeof(product), "Akali"); break;
 	case SKU_0_AKALI360:
 	case SKU_1_AKALI360:
-		snprintf(product, sizeof(product), "Akali 360"); break;
+		snprintf(product, sizeof(product), "Akali360"); break;
 	case SKU_0_BARD:
 	case SKU_1_BARD:
 	case SKU_2_BARD:

@@ -5,6 +5,7 @@
 #include <device/device.h>
 #include <gpio.h>
 #include <soc/bl31.h>
+#include <soc/i2c.h>
 #include <soc/msdc.h>
 #include <soc/spm.h>
 #include <soc/usb.h>
@@ -12,7 +13,7 @@
 #include "display.h"
 #include "gpio.h"
 
-static void configure_audio(void)
+static void configure_alc1019(void)
 {
 	mtcmos_audio_power_on();
 
@@ -21,6 +22,20 @@ static void configure_audio(void)
 	gpio_set_mode(GPIO(I2S2_BCK), PAD_I2S2_BCK_FUNC_I2S2_BCK);
 	gpio_set_mode(GPIO(I2S2_LRCK), PAD_I2S2_LRCK_FUNC_I2S2_LRCK);
 	gpio_set_mode(GPIO(EINT4), PAD_EINT4_FUNC_I2S3_DO);
+}
+
+static void configure_alc5645(void)
+{
+	mtcmos_audio_power_on();
+
+	/* Set up I2S */
+	gpio_set_mode(GPIO(I2S1_MCK), PAD_I2S1_MCK_FUNC_I2S1_MCK);
+	gpio_set_mode(GPIO(I2S1_BCK), PAD_I2S1_BCK_FUNC_I2S1_BCK);
+	gpio_set_mode(GPIO(I2S1_LRCK), PAD_I2S1_LRCK_FUNC_I2S1_LRCK);
+	gpio_set_mode(GPIO(I2S1_DO), PAD_I2S1_DO_FUNC_I2S1_DO);
+
+	/* Init I2C bus timing register for audio codecs */
+	mtk_i2c_bus_init(I2C5, I2C_SPEED_STANDARD);
 }
 
 static void mainboard_init(struct device *dev)
@@ -36,7 +51,10 @@ static void mainboard_init(struct device *dev)
 
 	setup_usb_host();
 
-	configure_audio();
+	if (CONFIG(BOARD_GOOGLE_CHINCHOU))
+		configure_alc5645();
+	else
+		configure_alc1019();
 
 	if (spm_init())
 		printk(BIOS_ERR, "spm init failed, system suspend may not work\n");

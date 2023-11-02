@@ -152,4 +152,9 @@ config PSP_SOFTFUSE_BITS
 endmenu
 
 
+#TODO: Check if the value of HEAP_SIZE is optimal
+config HEAP_SIZE
+	hex
+	default 0x200000
+
 endif # SOC_AMD_GENOA

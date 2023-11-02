@@ -38,8 +38,10 @@ static int verify_fmap(const struct fmap *fmap)
 	if (!CONFIG(CBFS_VERIFICATION) || !ENV_INITIAL_STAGE || done)
 		return 0;	/* Only need to check hash in first stage. */
 
+	/* On error we need to die right here, lest we risk a TOCTOU attack where the cache is
+	   filled with a tampered FMAP but the later fallback path is fed a valid one. */
 	if (metadata_hash_verify_fmap(fmap, FMAP_SIZE) != VB2_SUCCESS)
-		return -1;
+		die("FMAP verification failure");
 
 	done = true;
 	return 0;

@@ -187,9 +187,9 @@ const char *fizz_oem_name[] = {
 	"Wukong",
 	"Wukong",
 	"Teemo",
-	"",
+	"Karma",
 	"Jax",
-	"",
+	"Endeavour",
 	"Excelsior"
 };
 

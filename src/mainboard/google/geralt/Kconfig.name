@@ -2,3 +2,6 @@ comment "Geralt"
 
 config BOARD_GOOGLE_GERALT
 	bool "->  Geralt"
+
+config BOARD_GOOGLE_CIRI
+	bool "->  Ciri"

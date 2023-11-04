@@ -33,7 +33,6 @@
  * I2C0 and I2C1 even though they are not functional.
  */
 #define I2C_MASTER_DEV_COUNT		4
-#define I2C_MASTER_START_INDEX		2
 #define I2C_PERIPHERAL_DEV_COUNT	1
 #define I2C_CTRLR_COUNT			(I2C_MASTER_DEV_COUNT + I2C_PERIPHERAL_DEV_COUNT)
 

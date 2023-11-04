@@ -32,6 +32,27 @@ int pch_silicon_type(void)
 	return pch_type;
 }
 
+bool pch_is_mobile(void)
+{
+	const u16 devids[] = {
+		PCI_DID_INTEL_6_SERIES_MOBILE_SFF, PCI_DID_INTEL_6_SERIES_MOBILE,
+		PCI_DID_INTEL_6_SERIES_UM67, PCI_DID_INTEL_6_SERIES_HM65,
+		PCI_DID_INTEL_6_SERIES_HM67, PCI_DID_INTEL_6_SERIES_QS67,
+		PCI_DID_INTEL_6_SERIES_QM67,
+		PCI_DID_INTEL_7_SERIES_MOBILE, PCI_DID_INTEL_7_SERIES_MOBILE_SFF,
+		PCI_DID_INTEL_7_SERIES_QM77, PCI_DID_INTEL_7_SERIES_QS77,
+		PCI_DID_INTEL_7_SERIES_HM77, PCI_DID_INTEL_7_SERIES_UM77,
+		PCI_DID_INTEL_7_SERIES_HM76, PCI_DID_INTEL_7_SERIES_HM75,
+		PCI_DID_INTEL_7_SERIES_HM70, PCI_DID_INTEL_7_SERIES_NM70
+	};
+	u16 devid = pci_s_read_config16(PCH_LPC_DEV, PCI_DEVICE_ID);
+
+	for (size_t i = 0; i < ARRAY_SIZE(devids); i++)
+		if (devid == devids[i])
+			return true;
+	return false;
+}
+
 int pch_silicon_supported(int type, int rev)
 {
 	int cur_type = pch_silicon_type();

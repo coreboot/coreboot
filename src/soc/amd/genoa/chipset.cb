@@ -213,13 +213,13 @@ chip soc/amd/genoa
 	device mmio 0xfedc4000 alias i2c_2 off end
 	device mmio 0xfedc5000 alias i2c_3 off end
 	device mmio 0xfedc6000 alias i2c_4 off end
-	device mmio 0xfedc7000 alias i2c_5 off end
+	device mmio 0xfedcb000 alias i2c_5 off end
 	device mmio 0xfedc9000 alias uart_0 off end
 	device mmio 0xfedca000 alias uart_1 off end
 	device mmio 0xfedce000 alias uart_2 off end
-	device mmio 0xfedd2600 alias i3c_0 off end
-	device mmio 0xfedd3600 alias i3c_1 off end
-	device mmio 0xfedd4600 alias i3c_2 off end
-	device mmio 0xfedd5600 alias i3c_3 off end
+	device mmio 0xfedd2000 alias i3c_0 off end
+	device mmio 0xfedd3000 alias i3c_1 off end
+	device mmio 0xfedd4000 alias i3c_2 off end
+	device mmio 0xfedd6000 alias i3c_3 off end
 
 end

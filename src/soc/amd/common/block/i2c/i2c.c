@@ -44,6 +44,7 @@ const struct dw_i2c_bus_config *dw_i2c_get_soc_cfg(unsigned int bus)
 	return &cfg[bus];
 }
 
+#if CONFIG(HAVE_ACPI_TABLES)
 static const char *i2c_acpi_name(const struct device *dev)
 {
 	size_t i;
@@ -71,6 +72,7 @@ static void i2c_acpi_fill_ssdt(const struct device *dev)
 	acpigen_write_store_int_to_namestr(acpi_device_status(dev), "STAT");
 	acpigen_pop_len(); /* Scope */
 }
+#endif
 
 int dw_i2c_soc_dev_to_bus(const struct device *dev)
 {
@@ -138,8 +140,10 @@ struct device_operations soc_amd_i2c_mmio_ops = {
 	.read_resources = i2c_read_resources,
 	.set_resources = noop_set_resources,
 	.scan_bus = scan_smbus,
+#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name = i2c_acpi_name,
 	.acpi_fill_ssdt = i2c_acpi_fill_ssdt,
+#endif
 	.ops_i2c_bus = &dw_i2c_bus_ops,
 };
 

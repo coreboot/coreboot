@@ -25,26 +25,6 @@ config BUILD_IPXE
 
 endchoice
 
-choice
-	prompt "iPXE version"
-	default IPXE_STABLE
-	depends on BUILD_IPXE
-
-config IPXE_STABLE
-	bool "2022.1"
-	help
-	  iPXE uses a rolling release with no stable version, for
-	  reproducibility, use the last commit of a given month as the
-	  'stable' version.
-	  This is iPXE from the end of January, 2022.
-
-config IPXE_MASTER
-	bool "master"
-	help
-	  Newest iPXE version.
-
-endchoice
-
 config PXE_ROM_FILE
 	string "PXE ROM filename"
 	depends on PXE_ROM
@@ -67,6 +47,27 @@ config PXE_ROM_ID
 
 	  Under GNU/Linux you can run `lspci -nn` to list the IDs of your PCI devices.
 
+if BUILD_IPXE
+
+choice
+	prompt "iPXE version"
+	default IPXE_STABLE
+
+config IPXE_STABLE
+	bool "2022.1"
+	help
+	  iPXE uses a rolling release with no stable version, for
+	  reproducibility, use the last commit of a given month as the
+	  'stable' version.
+	  This is iPXE from the end of January, 2022.
+
+config IPXE_MASTER
+	bool "master"
+	help
+	  Newest iPXE version.
+
+endchoice
+
 config PXE_SERIAL_CONSOLE
 	bool "Enable iPXE serial console"
 	def_bool y
@@ -79,14 +80,12 @@ config PXE_SERIAL_CONSOLE
 config PXE_NO_PROMPT
 	bool "Do not show prompt to boot from PXE"
 	default n
-	depends on BUILD_IPXE
 	help
 	  Don't wait for the user to press Ctrl-B.
 	  The PXE still can be run as it shows up in SeaBIOS's payload list.
 
 config PXE_ADD_SCRIPT
 	bool "Embed an iPXE script for automated provisioning"
-	depends on BUILD_IPXE
 	default n
 	help
 	  Enable to embed a script that is run instead of an iPXE shell.
@@ -105,10 +104,11 @@ config PXE_SCRIPT
 config PXE_HAS_HTTPS
 	bool "Enable HTTPS protocol"
 	default y
-	depends on BUILD_IPXE
 	help
 	  Enable HTTPS protocol, which allows you to encrypt all communication
 	  with a web server and to verify the server's identity
 
+endif # BUILD_IPXE
 endmenu
-endif
+
+endif # PXE

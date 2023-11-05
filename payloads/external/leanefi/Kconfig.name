@@ -1,0 +1,6 @@
+config PAYLOAD_LEANEFI
+	bool "leanefi"
+	depends on ARCH_ARM64
+	help
+	  Select this option if you want to build a coreboot image
+	  with an leanefi payload.

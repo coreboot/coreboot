@@ -28,6 +28,7 @@ payloads/external/edk2 \
 payloads/external/GRUB2 \
 payloads/external/LinuxBoot \
 payloads/external/skiboot \
+payloads/external/leanefi \
 payloads/external/coreDOOM \
 
 force-payload:

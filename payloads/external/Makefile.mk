@@ -436,6 +436,13 @@ payloads/external/skiboot/build/skiboot.elf:
 	$(MAKE) -C payloads/external/skiboot all \
 		CONFIG_SKIBOOT_GIT_REPO=$(CONFIG_SKIBOOT_GIT_REPO) \
 		CONFIG_SKIBOOT_REVISION=$(CONFIG_SKIBOOT_REVISION)
+
+# leanefi
+
+payloads/external/leanefi/leanefi/build/leanefi.elf: FORCE $(DOTCONFIG)
+	$(MAKE) -C payloads/external/leanefi
+FORCE: ;
+
 # COREDOOM
 
 payloads/external/coreDOOM/coredoom/doomgeneric/coredoom.elf coredoom:

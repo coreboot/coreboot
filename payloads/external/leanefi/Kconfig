@@ -1,0 +1,58 @@
+if PAYLOAD_LEANEFI
+
+menu "leanEFI configuration"
+
+config PAYLOAD_FILE
+	string
+	default "payloads/external/leanefi/leanefi/build/leanefi.elf"
+
+config LEANEFI_EFI_ECPT
+	bool
+	default y if ARCH_ARM64
+
+config LEANEFI_HEAP_SIZE
+	int "Heap size"
+	default 131072
+	help
+	  This is the heap size (malloc'able size) available
+	  to the payload.
+
+	  If unsure, set to 131072 (128K)
+
+config LEANEFI_STACK_SIZE
+	int "Stack size"
+	default 16384
+	help
+	  This is the stack size available to the payload.
+
+	  If unsure, set to 16384 (16K)
+
+config LEANEFI_BASE_ADDRESS
+	hex "Base address"
+	default 0x62000000 if BOARD_EMULATION_QEMU_AARCH64
+	#default 0x10023300000 if BOARD_EMULATION_QEMU_SBSA
+	help
+	  This is the base address for the payload.
+
+config LEANEFI_PAYLOAD
+	bool "Add a payload"
+	default y
+	help
+	  If selected leanEFI will start a payload.
+	  This option should only be unselected for debug purposes.
+
+config LEANEFI_PAYLOAD_PATH
+	string "path to leanefi payload"
+	depends on LEANEFI_PAYLOAD
+
+config LEANEFI_FDT
+	bool "Add an FDT that is propagated as EFI configuration table"
+	default y if BOARD_EMULATION_QEMU_AARCH64
+
+config LEANEFI_FDT_PATH
+	string "path to FDT"
+	depends on LEANEFI_FDT
+
+endmenu
+
+endif

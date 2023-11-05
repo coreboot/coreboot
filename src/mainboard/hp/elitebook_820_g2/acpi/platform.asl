@@ -10,5 +10,8 @@ Method(_WAK,1)
 
 Method(_PTS,1)
 {
-	\_SB.PCI0.LPCB.EC0.SLPT = Arg0
+	If (Arg0 != 5)
+	{
+		\_SB.PCI0.LPCB.EC0.SLPT = Arg0
+	}
 }

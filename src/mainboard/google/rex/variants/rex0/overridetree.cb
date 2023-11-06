@@ -43,17 +43,18 @@ fw_config
 		option WIFI_CNVI		0
 		option WIFI_PCIE		1
 	end
-	field TOUCHSCREEN 19
+	field TOUCHSCREEN 19 20
 		option TOUCHSCREEN_I2C		0
-		option TOUCHSCREEN_I2C_SPI	1
-	end
-	field VPU 20
-		option VPU_DIS			0
-		option VPU_EN			1
+		option TOUCHSCREEN_GSPI		1
+		option TOUCHSCREEN_THC		2
 	end
 	field ISH 21
 		option ISH_DISABLE		0
 		option ISH_ENABLE		1
+	end
+	field VPU 22
+		option VPU_DIS			0
+		option VPU_EN			1
 	end
 end
 
@@ -810,7 +811,7 @@ chip soc/intel/meteorlake
 			probe DB_SD SD_GL9755S
 		end
 		device ref gspi0 on
-			probe TOUCHSCREEN TOUCHSCREEN_I2C_SPI
+			probe TOUCHSCREEN TOUCHSCREEN_GSPI
 		end
 		device ref gspi1 on
 			chip drivers/spi/acpi

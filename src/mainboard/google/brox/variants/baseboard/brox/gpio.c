@@ -371,6 +371,14 @@ const struct pad_config *__weak variant_gpio_override_table(size_t *num)
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
+	/* GPP_E2  : THC0_SPI1_IO3 ==> GSC_PCH_INT_ODL */
+	PAD_CFG_GPI_APIC_LOCK(GPP_E2, NONE, LEVEL, INVERT, LOCK_CONFIG),
+	/* GPP_E8 : GPP_E8 ==> PCH_WP_OD */
+	PAD_CFG_GPI_LOCK(GPP_E8, NONE, LOCK_CONFIG),
+	/* GPP_H8 : [NF1: I2C4_SDA NF2: CNV_MFUART2_RXD NF6: USB_C_GPP_H8] ==> PCH_I2C_GSC_SDA */
+	PAD_CFG_NF(GPP_H8, NONE, DEEP, NF1),
+	/* GPP_H9 : [NF1: I2C4_SCL NF2: CNV_MFUART2_TXD] ==> PCH_I2C_GSC_SCL */
+	PAD_CFG_NF(GPP_H9, NONE, DEEP, NF1),
 };
 
 const struct pad_config *__weak variant_early_gpio_table(size_t *num)

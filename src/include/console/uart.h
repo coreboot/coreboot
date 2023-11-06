@@ -84,7 +84,7 @@ static inline void __uart_tx_byte(u8 data)	{}
 static inline void __uart_tx_flush(void)	{}
 #endif
 
-#if CONFIG(GDB_STUB) && (ENV_ROMSTAGE || ENV_RAMSTAGE)
+#if CONFIG(GDB_STUB) && (ENV_ROMSTAGE_OR_BEFORE || ENV_RAMSTAGE)
 #define CONF_UART_FOR_GDB	CONFIG_UART_FOR_CONSOLE
 static inline void __gdb_hw_init(void)	{ uart_init(CONF_UART_FOR_GDB); }
 static inline void __gdb_tx_byte(u8 data)

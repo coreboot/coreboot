@@ -6,14 +6,10 @@
 
 uint32_t variant_board_sku(void)
 {
-#if ENV_ROMSTAGE
-	uint32_t sku_id = SKU_UNKNOWN;
-#else
 	static uint32_t sku_id = SKU_UNKNOWN;
 
 	if (sku_id != SKU_UNKNOWN)
 		return sku_id;
-#endif
 
 	/*
 	*  Nautilus uses GPP_B20 to determine SKU

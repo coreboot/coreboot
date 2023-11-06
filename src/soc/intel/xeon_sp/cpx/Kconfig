@@ -71,6 +71,10 @@ config CPU_MICROCODE_CBFS_LEN
 	hex
 	default 0x7C00
 
+config HEAP_SIZE
+	hex
+	default 0x80000
+
 config STACK_SIZE
 	hex
 	default 0x4000

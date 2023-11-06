@@ -9,7 +9,7 @@ void ne2k_append_data(unsigned char *d, int len, unsigned int base);
 int ne2k_init(unsigned int eth_nic_base);
 void ne2k_transmit(unsigned int eth_nic_base);
 
-#if CONFIG(CONSOLE_NE2K) && (ENV_ROMSTAGE || ENV_RAMSTAGE)
+#if CONFIG(CONSOLE_NE2K) && (ENV_ROMSTAGE_OR_BEFORE || ENV_RAMSTAGE)
 static inline void __ne2k_init(void)
 {
 	ne2k_init(CONFIG_CONSOLE_NE2K_IO_PORT);

@@ -266,8 +266,7 @@ int ne2k_init(unsigned int eth_nic_base)
 	pci_devfn_t dev;
 	unsigned char c;
 
-	/* FIXME: This console is not enabled for bootblock. */
-	if (!ENV_ROMSTAGE)
+	if (!ENV_ROMSTAGE_OR_BEFORE)
 		return 0;
 
 	/* For this to work, mainboard code must have configured

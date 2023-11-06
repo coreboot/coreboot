@@ -31,7 +31,7 @@ int get_write_protect_state(void)
 	 * there is a 10K pullup. Disable the internal pull in romstage so that
 	 * there isn't any ambiguity in the reading.
 	 */
-	if (ENV_ROMSTAGE)
+	if (ENV_ROMSTAGE_OR_BEFORE)
 		ssus_disable_internal_pull(WP_STATUS_PAD);
 
 	/* WP is enabled when the pin is reading high. */

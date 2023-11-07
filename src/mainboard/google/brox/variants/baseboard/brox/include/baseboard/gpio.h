@@ -12,8 +12,6 @@
 #define GPE_EC_WAKE		GPE0_DW2_17
 /* WP signal to PCH */
 #define GPIO_PCH_WP		GPP_E15
-/* EC in RW or RO */
-#define GPIO_EC_IN_RW		GPP_F18
 /* Used to gate SoC's SLP_S0# signal */
 #define GPIO_SLP_S0_GATE	GPP_F9
 /* GPIO IRQ for tight timestamps / wake support */

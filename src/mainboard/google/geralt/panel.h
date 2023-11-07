@@ -16,6 +16,7 @@ struct panel_description {
 	bool pwm_ctrl_gpio;
 };
 
+void configure_mipi_pwm_backlight(void);
 void fill_lp_backlight_gpios(struct lb_gpios *gpios);
 uint32_t panel_id(void);
 struct panel_description *get_panel_description(uint32_t panel_id);

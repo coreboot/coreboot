@@ -156,6 +156,8 @@ static void fill_fspm_mrc_params(FSP_M_CONFIG *m_cfg,
 	}
 
 	m_cfg->RMT = config->rmt;
+	m_cfg->RMC = 0;
+	m_cfg->MarginLimitCheck = 0;
 	/* Enable MRC Fast Boot */
 	m_cfg->MrcFastBoot = 1;
 	m_cfg->LowerBasicMemTestSize = config->lower_basic_mem_test_size;

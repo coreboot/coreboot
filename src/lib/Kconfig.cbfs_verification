@@ -25,7 +25,7 @@ config TOCTOU_SAFETY
 	depends on !NO_FMAP_CACHE
 	depends on !NO_CBFS_MCACHE
 	depends on !USE_OPTION_TABLE && !FSP_CAR  # Known to access CBFS before CBMEM init
-	depends on !VBOOT # TODO: can only allow this once vboot fully integrated
+	depends on !VBOOT || VBOOT_CBFS_INTEGRATION
 	depends on NO_XIP_EARLY_STAGES
 	help
 	  Say yes here to eliminate time-of-check vs. time-of-use vulnerabilities

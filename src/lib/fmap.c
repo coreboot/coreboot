@@ -122,7 +122,7 @@ static int find_fmap_directory(struct region_device *fmrd)
 	if (boot == NULL)
 		return -1;
 
-	fmap = rdev_mmap(boot, offset, sizeof(struct fmap));
+	fmap = rdev_mmap(boot, offset, FMAP_SIZE);
 
 	if (fmap == NULL)
 		return -1;

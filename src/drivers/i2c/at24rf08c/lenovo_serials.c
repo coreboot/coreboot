@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <build.h>
 #include <types.h>
 #include <string.h>
 #include <device/device.h>
@@ -183,16 +184,11 @@ const char *smbios_mainboard_version(void)
 
 const char *smbios_mainboard_bios_version(void)
 {
-	static char *s = NULL;
-
 	/* Satisfy thinkpad_acpi.  */
 	if (strlen(CONFIG_LOCALVERSION))
 		return "CBET4000 " CONFIG_LOCALVERSION;
 
-	if (s != NULL)
-		return s;
-	s = strconcat("CBET4000 ", coreboot_version);
-	return s;
+	return "CBET4000 " COREBOOT_VERSION;
 }
 
 const char *smbios_mainboard_manufacturer(void)

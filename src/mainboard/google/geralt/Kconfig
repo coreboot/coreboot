@@ -68,7 +68,8 @@ config DRIVER_TPM_I2C_ADDR
 
 config SDCARD_INIT
 	bool
-	default y
+	default y if BOARD_GOOGLE_GERALT
+	default n if BOARD_GOOGLE_CIRI
 
 choice
 	prompt "Speaker AMP for Geralt"

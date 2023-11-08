@@ -3,10 +3,14 @@
 #include <boardid.h>
 #include <cbfs.h>
 #include <console/console.h>
+#include <delay.h>
 #include <edid.h>
 #include <gpio.h>
 #include <identity.h>
 #include <soc/gpio_common.h>
+#include <soc/i2c.h>
+#include <soc/pmif.h>
+#include <soc/regulator.h>
 #include <string.h>
 
 #include "gpio.h"
@@ -58,4 +62,23 @@ void fill_lp_backlight_gpios(struct lb_gpios *gpios)
 	};
 
 	lb_add_gpios(gpios, backlight_gpios, ARRAY_SIZE(backlight_gpios));
+}
+
+void power_on_mipi_panel(const struct tps65132s_cfg *cfg)
+{
+	mtk_i2c_bus_init(cfg->i2c_bus, I2C_SPEED_FAST);
+
+	/* Enable VM18V */
+	mainboard_enable_regulator(MTK_REGULATOR_VDD18, true);
+	mdelay(2);
+	if (tps65132s_setup(cfg) != CB_SUCCESS)
+		printk(BIOS_ERR, "Failed to set up voltage regulator tps65132s\n");
+	gpio_output(GPIO_DISP_RST_1V8_L, 0);
+	mdelay(1);
+	gpio_output(GPIO_DISP_RST_1V8_L, 1);
+	mdelay(1);
+	gpio_output(GPIO_DISP_RST_1V8_L, 0);
+	mdelay(1);
+	gpio_output(GPIO_DISP_RST_1V8_L, 1);
+	mdelay(6);
 }

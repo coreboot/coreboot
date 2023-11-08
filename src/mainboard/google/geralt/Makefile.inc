@@ -24,4 +24,5 @@ ramstage-y += mainboard.c
 ramstage-y += panel.c
 ramstage-y += regulator.c
 ramstage-y += reset.c
+ramstage-$(CONFIG_BOARD_GOOGLE_CIRI) += panel_ciri.c
 ramstage-$(CONFIG_BOARD_GOOGLE_GERALT) += panel_geralt.c

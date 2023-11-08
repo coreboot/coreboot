@@ -2,7 +2,8 @@ fw_config
 	field DB_USB 0 1
 		option DB_NONE		0
 		option DB_C_A		1
-		option DB_C_LTE		2
+		option DB_C_A_LTE	2
+		option DB_A		3
 	end
 	field THERMAL_SOLUTION 2
 		option THERMAL_SOLUTION_PASSIVE	0
@@ -18,6 +19,10 @@ fw_config
 	field STYLUS 7
 		option STYLUS_ABSENT	0
 		option STYLUS_PRESENT	1
+	end
+	field WFC 8
+		option WFC_PRESENT	0
+		option WFC_ABSENT	1
 	end
 end
 
@@ -286,7 +291,9 @@ chip soc/intel/alderlake
 				register "int_comp_resistor" = ""lowest""
 				register "input_precharge_resistor_ohms" = "4000"
 				register "input_analog_gain" = "3"
-				device i2c 28 on end
+				device i2c 28 on
+					probe DB_USB DB_C_A_LTE
+				end
 			end
 		end
 		device ref i2c3 on
@@ -385,7 +392,9 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "use_custom_pld" = "true"
 						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(2, 1))"
-						device ref tcss_usb3_port2 on end
+						device ref tcss_usb3_port2 on
+							probe DB_USB DB_A
+						end
 					end
 				end
 			end
@@ -411,7 +420,9 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "use_custom_pld" = "true"
 						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(2, 1))"
-						device ref usb2_port2 on end
+						device ref usb2_port2 on
+							probe DB_USB DB_A
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Type-A Port A0 (MLB)""
@@ -430,7 +441,9 @@ chip soc/intel/alderlake
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 WWAN""
 						register "type" = "UPC_TYPE_INTERNAL"
-						device ref usb2_port5 on end
+						device ref usb2_port5 on
+							probe DB_USB DB_C_A_LTE
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 UFC""
@@ -440,7 +453,9 @@ chip soc/intel/alderlake
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 WFC""
 						register "type" = "UPC_TYPE_INTERNAL"
-						device ref usb2_port7 on end
+						device ref usb2_port7 on
+							probe WFC WFC_PRESENT
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Bluetooth""
@@ -473,7 +488,9 @@ chip soc/intel/alderlake
 					chip drivers/usb/acpi
 						register "desc" = ""USB3 WWAN""
 						register "type" = "UPC_TYPE_INTERNAL"
-						device ref usb3_port3 on end
+						device ref usb3_port3 on
+							probe DB_USB DB_C_A_LTE
+						end
 					end
 				end
 			end

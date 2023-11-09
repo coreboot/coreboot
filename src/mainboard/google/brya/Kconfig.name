@@ -155,4 +155,3 @@ config BOARD_GOOGLE_DOCHI
 
 config BOARD_GOOGLE_ANRAGGAR
 	bool "->  Anraggar"
-	select BOARD_GOOGLE_BASEBOARD_NISSA

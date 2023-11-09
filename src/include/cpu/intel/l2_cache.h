@@ -44,7 +44,7 @@
 #define BBLCR3_L2_SIZE_2M          (0x08 << 13)
 #define BBLCR3_L2_SIZE_4M          (0x10 << 13)
 /* bits [22:20] */
-#define BBLCR3_L2_PHYSICAL_RANGE   (0x7 << 20);
+#define BBLCR3_L2_PHYSICAL_RANGE   (0x7 << 20)
 /* TODO: This bitmask does not agree with Intel's documentation.
  * Get confirmation one way or another.
  */

@@ -24,7 +24,7 @@
 #define barrier() __asm__ __volatile__("" : : : "memory")
 #endif
 
-#define nop()		asm volatile("nop");
+#define nop()		asm volatile("nop")
 
 #define force_read(x) (*(volatile typeof(x) *)&(x))
 

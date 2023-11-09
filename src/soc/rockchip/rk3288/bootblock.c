@@ -8,6 +8,9 @@
 #include <soc/timer.h>
 #include <symbols.h>
 
+_Static_assert(!CONFIG(CBFS_VERIFICATION),
+	       "RK3288 doesn't have enough PRERAM_CBFS_CACHE to support the FMAP mapping needed for CBFS verification");
+
 void bootblock_soc_init(void)
 {
 	rkclk_init();

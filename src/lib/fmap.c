@@ -130,7 +130,8 @@ static int find_fmap_directory(struct region_device *fmrd)
 	if (boot == NULL)
 		return -1;
 
-	fmap = rdev_mmap(boot, offset, FMAP_SIZE);
+	fmap = rdev_mmap(boot, offset,
+			 CONFIG(CBFS_VERIFICATION) ? FMAP_SIZE : sizeof(struct fmap));
 
 	if (fmap == NULL)
 		return -1;

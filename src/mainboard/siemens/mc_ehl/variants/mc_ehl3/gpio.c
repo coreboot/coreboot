@@ -17,7 +17,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B15, NONE, PLTRST, NF5),		/* ESPI_CS1_N */
 	PAD_NC(GPP_B18, NONE),				/* Not connected */
 	PAD_NC(GPP_B19, NONE),				/* Not connected */
-	PAD_NC(GPP_B23, NONE),				/* Not connected */
+	PAD_CFG_NF(GPP_B23, NONE, PLTRST, NF2),		/* PCHHOT_N */
 
 	/* Community 0 - GpioGroup GPP_T */
 	PAD_NC(GPP_T4, NONE),				/* Not connected */

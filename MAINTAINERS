@@ -837,6 +837,13 @@ L:	amd_coreboot_org_changes@googlegroups.com
 S:	Maintained
 F:	src/soc/amd/common/
 
+AMD Genoa
+M:	Felix Held <felix-coreboot@felixheld.de>
+M:	Martin Roth <gaumless@gmail.com>
+M:	Varshit Pandya <pandyavarshit@gmail.com>
+S:	Maintained
+F:	src/soc/amd/genoa/
+
 AMD Mendocino
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>

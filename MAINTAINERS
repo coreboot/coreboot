@@ -136,7 +136,7 @@ F:	src/mainboard/adlink/
 
 
 
-AMD family 17h and 19h reference boards
+AMD non-server family 17h and 19h reference boards
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
 M:	Fred Reitberger <reitbergerfred@gmail.com>
@@ -148,6 +148,13 @@ F:	src/mainboard/amd/chausie/
 F:	src/mainboard/amd/majolica/
 F:	src/mainboard/amd/mandolin/
 F:	src/mainboard/amd/mayan/
+
+AMD server family 19h reference boards
+M:	Felix Held <felix-coreboot@felixheld.de>
+M:	Martin Roth <gaumless@gmail.com>
+M:	Varshit Pandya <pandyavarshit@gmail.com>
+S:	Maintained
+F:	src/mainboard/amd/onyx/
 
 AMD reference boards outside of family 17h and 19h
 S:	Odd Fixes

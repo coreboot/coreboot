@@ -7,7 +7,11 @@
 .section ".text._start", "ax", %progbits
 .globl _start
 _start:
-	/* cbmem_top is passed via a2 */
+	# The romstage may pass the following arguments:
+	#   a0: the value of mhartid
+	#   a1: a pointer to the flattened devicetree
+	#   a2: cbmem_top
+
 	la   t0, _cbmem_top_ptr
 #if __riscv_xlen == 32
 	sw   a2, (t0)
@@ -28,6 +32,7 @@ _start:
 
 	# initialize hart-local storage
 	csrr a0, mhartid
+	#NOTE a1 contains FDT and should not be cluttered above
 	call hls_init
 
 	li   a0, CONFIG_RISCV_WORKING_HARTID

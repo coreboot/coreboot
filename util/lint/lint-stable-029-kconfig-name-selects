@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+# DESCR: Check that boards don't use select Kconfig.name
+
+export LC_ALL=C
+FAIL=0
+
+for board in src/mainboard/*/*; do
+  if [ -f ${board}/Kconfig.name ] && grep -q "select " "${board}/Kconfig.name"; then
+    echo "Mainboard ${board} uses 'select' in Kconfig.name"
+    FAIL=1
+  fi
+done
+
+exit ${FAIL}

@@ -29,7 +29,7 @@ static struct device_operations hda_audio_ops = {
 };
 
 static const struct pci_driver hdaaudio_driver __pci_driver = {
-	.ops			= CONFIG(AZALIA_PLUGIN_SUPPORT) ?
+	.ops			= CONFIG(AZALIA_HDA_CODEC_SUPPORT) ?
 				&default_azalia_audio_ops : &hda_audio_ops,
 	.vendor			= PCI_VID_AMD,
 	.devices		= pci_device_ids,

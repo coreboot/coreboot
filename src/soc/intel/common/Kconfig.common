@@ -38,7 +38,7 @@ endif
 
 config SOC_INTEL_COMMON
 	bool
-	select AZALIA_PLUGIN_SUPPORT
+	select AZALIA_HDA_CODEC_SUPPORT
 	select ACPI_SOC_NVS
 	help
 	  common code for Intel SOCs

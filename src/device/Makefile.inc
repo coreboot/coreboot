@@ -4,12 +4,12 @@ ramstage-y += device.c
 ramstage-y += root_device.c
 ramstage-y += cpu_device.c
 ramstage-y += device_util.c
-ramstage-$(CONFIG_AZALIA_PLUGIN_SUPPORT) += azalia_device.c
+ramstage-$(CONFIG_AZALIA_HDA_CODEC_SUPPORT) += azalia_device.c
 ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += pnp_device.c
 ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_64) += pnp_device.c
 ramstage-y += smbus_ops.c
 
-ifeq ($(CONFIG_AZALIA_PLUGIN_SUPPORT),y)
+ifeq ($(CONFIG_AZALIA_HDA_CODEC_SUPPORT),y)
 ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/hda_verb.c)
 endif
 

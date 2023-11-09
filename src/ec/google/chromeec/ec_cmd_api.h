@@ -45,6 +45,12 @@ extern "C" {
  * Please keep this list sorted by function name.
  */
 
+static inline int ec_cmd_battery_config(CROS_EC_COMMAND_INFO *h, uint8_t *r)
+{
+	return CROS_EC_COMMAND(h, EC_CMD_BATTERY_CONFIG, 0, NULL, 0, r,
+			       BATT_CONF_MAX_SIZE);
+}
+
 static inline int ec_cmd_get_sku_id(CROS_EC_COMMAND_INFO *h,
 				    struct ec_sku_id_info *r)
 {
@@ -232,6 +238,7 @@ ec_cmd_usb_pd_set_amode(CROS_EC_COMMAND_INFO *h,
 
 _CROS_EC_C0_F_PF_RF(EC_CMD_ADC_READ, adc_read);
 _CROS_EC_CV_F_P(EC_CMD_ADD_ENTROPY, 0, add_entropy, rollback_add_entropy);
+_CROS_EC_C0_F_PF(EC_CMD_AP_FW_STATE, ap_fw_state);
 _CROS_EC_C0_F(EC_CMD_AP_RESET, ap_reset);
 _CROS_EC_CV_F_P(EC_CMD_BATTERY_CUT_OFF, 1, battery_cut_off_v1, battery_cutoff);
 _CROS_EC_C0_F(EC_CMD_BATTERY_CUT_OFF, battery_cut_off);
@@ -247,6 +254,9 @@ _CROS_EC_C0_F_PF_RF(EC_CMD_BATTERY_VENDOR_PARAM, battery_vendor_param);
 _CROS_EC_C0_F_PF(EC_CMD_BUTTON, button);
 _CROS_EC_C0_F_PF_RF(EC_CMD_CEC_GET, cec_get);
 _CROS_EC_C0_F_PF(EC_CMD_CEC_SET, cec_set);
+_CROS_EC_C1_F_PF(EC_CMD_CEC_WRITE_MSG, cec_write);
+_CROS_EC_C0_F_PF_RF(EC_CMD_CEC_READ_MSG, cec_read);
+_CROS_EC_C0_F_RF(EC_CMD_CEC_PORT_COUNT, cec_port_count);
 _CROS_EC_C0_F_PF_RF(EC_CMD_CHARGESPLASH, chargesplash);
 _CROS_EC_CV_F_P_R(EC_CMD_CHARGE_CONTROL, 2, charge_control_v2, charge_control,
 		  charge_control);

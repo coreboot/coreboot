@@ -149,8 +149,4 @@ config PCIEXP_DEFAULT_MAX_RESIZABLE_BAR_BITS
 	int
 	default 33
 
-config VBT_DATA_SIZE_KB
-	int
-	default 10
-
 endif # BOARD_GOOGLE_BROX_COMMON

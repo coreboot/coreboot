@@ -38,16 +38,57 @@ void acpigen_write_len_f(void)
 
 void acpigen_pop_len(void)
 {
-	int len;
+	size_t len;
 	ASSERT(ltop > 0)
 	char *p = len_stack[--ltop];
 	len = gencurrent - p;
 	ASSERT(len <= ACPIGEN_MAXLEN)
-	/* generate store length for 0xfffff max */
-	p[0] = (0x80 | (len & 0xf));
-	p[1] = (len >> 4 & 0xff);
-	p[2] = (len >> 12 & 0xff);
+	const size_t payload_len = len - 3;
 
+	if (len <= 0x3f + 2) {
+		/* PkgLength of up to 0x3f can be encoded in one PkgLength byte instead of the
+		   reserved 3 bytes. Since only 1 PkgLength byte will be written, the payload
+		   data needs to be moved by 2 bytes */
+		memmove(&p[1], &p[3], payload_len);
+		/* Adjust the PkgLength to take into account that we only use 1 of the 3
+		   reserved bytes */
+		len -= 2;
+		/* The two most significant bits of PkgLength get the value of 0 to indicate
+		   there are no additional PkgLength bytes. In this case the single PkgLength
+		   byte encodes the length in its lower 6 bits */
+		p[0] = len;
+		/* Adjust pointer for next ACPI bytecode byte */
+		acpigen_set_current(p + len);
+	} else if (len <= 0xfff + 1) {
+		/* PkgLength of up to 0xfff can be encoded in 2 PkgLength bytes instead of the
+		   reserved 3 bytes. Since only 2 PkgLength bytes will be written, the payload
+		   data needs to be moved by 1 byte */
+		memmove(&p[2], &p[3], payload_len);
+		/* Adjust the PkgLength to take into account that we only use 2 of the 3
+		   reserved bytes */
+		len -= 1;
+		/* The two most significant bits of PkgLength get the value of 1 to indicate
+		   there's a second PkgLength byte. The lower 4 bits of the first PkgLength
+		   byte and the second PkgLength byte encode the length */
+		p[0] = (0x1 << 6 | (len & 0xf));
+		p[1] = (len >> 4 & 0xff);
+		/* Adjust pointer for next ACPI bytecode byte */
+		acpigen_set_current(p + len);
+	} else if (len <= 0xfffff) {
+		/* PkgLength of up to 0xfffff can be encoded in 3 PkgLength bytes. Since this
+		   is the amount of reserved bytes, no need to move the payload in this case */
+		/* The two most significant bits of PkgLength get the value of 2 to indicate
+		   there are two more PkgLength bytes following the first one. The lower 4 bits
+		   of the first PkgLength byte and the two following PkgLength bytes encode the
+		   length */
+		p[0] = (0x2 << 6 | (len & 0xf));
+		p[1] = (len >> 4 & 0xff);
+		p[2] = (len >> 12 & 0xff);
+		/* No need to adjust pointer for next ACPI bytecode byte */
+	} else {
+		/* The case of PkgLength up to 0xfffffff isn't supported at the moment */
+		printk(BIOS_ERR, "%s: package length exceeds maximum of 0xfffff.\n", __func__);
+	}
 }
 
 void acpigen_set_current(char *curr)

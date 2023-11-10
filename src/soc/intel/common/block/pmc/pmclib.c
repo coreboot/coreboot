@@ -461,10 +461,25 @@ void pmc_fill_pm_reg_info(struct chipset_power_state *ps)
 /* Reads and prints ACPI specific PM registers */
 int pmc_fill_power_state(struct chipset_power_state *ps)
 {
+	/* Define the sleep state string */
+	static const char * const acpi_sleep_states[] = {
+		[SLP_TYP_S0] = "S0",
+		[SLP_TYP_S1] = "S1",
+		[SLP_TYP_S3] = "S3",
+		[SLP_TYP_S4] = "S4",
+		[SLP_TYP_S5] = "S5",
+	};
+
 	pmc_fill_pm_reg_info(ps);
 
 	ps->prev_sleep_state = pmc_prev_sleep_state(ps);
-	printk(BIOS_DEBUG, "prev_sleep_state %d\n", ps->prev_sleep_state);
+
+	if (ps->prev_sleep_state < ARRAY_SIZE(acpi_sleep_states) &&
+		acpi_sleep_states[ps->prev_sleep_state] != NULL)
+		printk(BIOS_DEBUG, "prev_sleep_state %d (%s)\n", ps->prev_sleep_state,
+			acpi_sleep_states[ps->prev_sleep_state]);
+	else
+		printk(BIOS_DEBUG, "prev_sleep_state %d (unknown state)\n", ps->prev_sleep_state);
 
 	return ps->prev_sleep_state;
 }

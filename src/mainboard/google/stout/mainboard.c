@@ -35,9 +35,6 @@ static void mainboard_init(struct device *dev)
 		pci_write_config8(ethernet_dev, 0x81, 0x01);
 }
 
-// mainboard_enable is executed as first thing after
-// enumerate_buses().
-
 static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;

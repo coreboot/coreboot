@@ -21,9 +21,6 @@ static int mainboard_smbios_data(struct device *dev, int *handle,
 	return variant_smbios_data(dev, handle, current);
 }
 
-// mainboard_enable is executed as first thing after
-// enumerate_buses().
-
 static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;

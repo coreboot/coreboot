@@ -18,9 +18,6 @@ static void mainboard_init(struct device *dev)
 	lan_init();
 }
 
-// mainboard_enable is executed as first thing after
-// enumerate_buses().
-
 static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;

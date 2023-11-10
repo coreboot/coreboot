@@ -12,9 +12,6 @@ void mainboard_suspend_resume(void)
 	apm_control(APM_CNT_FINALIZE);
 }
 
-// mainboard_enable is executed as first thing after
-// enumerate_buses().
-
 static void mainboard_enable(struct device *dev)
 {
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_EDP, GMA_INT15_PANEL_FIT_CENTERING, GMA_INT15_BOOT_DISPLAY_DEFAULT, 0);

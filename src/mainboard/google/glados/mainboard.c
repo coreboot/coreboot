@@ -87,10 +87,6 @@ static unsigned long mainboard_write_acpi_tables(
 	return end_addr;
 }
 
-/*
- * mainboard_enable is executed as first thing after
- * enumerate_buses().
- */
 static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;

@@ -64,9 +64,6 @@ static int lumpy_onboard_smbios_data(struct device *dev, int *handle,
 	return len;
 }
 
-// mainboard_enable is executed as first thing after
-// enumerate_buses().
-
 static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;

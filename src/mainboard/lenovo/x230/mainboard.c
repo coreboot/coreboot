@@ -3,9 +3,6 @@
 #include <device/device.h>
 #include <drivers/intel/gma/int15.h>
 
-// mainboard_enable is executed as first thing after
-// enumerate_buses().
-
 static void mainboard_enable(struct device *dev)
 {
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS,

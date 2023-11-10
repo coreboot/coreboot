@@ -40,8 +40,6 @@ static void mainboard_init(struct device *dev)
 	install_intel_vga_int15_handler(GMA_INT15_ACTIVE_LFP_INT_LVDS, GMA_INT15_PANEL_FIT_TXT_STRETCH, 0, 3);
 }
 
-// mainboard_enable is executed as first thing after
-// enumerate_buses(). Is there no mainboard_init()?
 static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;

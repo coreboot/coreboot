@@ -20,10 +20,6 @@ static void mainboard_reserve_resources(struct device *dev)
 	res->flags = IORESOURCE_IRQ | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
-/*
- * mainboard_enable is executed as first thing after
- * enumerate_buses().
- */
 static void mainboard_enable(struct device *dev)
 {
 	mainboard_reserve_resources(dev);

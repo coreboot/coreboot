@@ -12,10 +12,6 @@ static void mainboard_init(struct device *dev)
 		mainboard_ec_init();
 }
 
-/*
- * mainboard_enable is executed as first thing after
- * enumerate_buses().
- */
 static void mainboard_enable(struct device *dev)
 {
 	dev->ops->init = mainboard_init;

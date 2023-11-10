@@ -138,10 +138,6 @@ static int int15_handler(void)
 #endif
 
 
-
-/* mainboard_enable is executed as first thing after */
-/* enumerate_buses(). */
-
 static void mainboard_enable(struct device *dev)
 {
 #if CONFIG(PCI_OPTION_ROM_RUN_YABEL) || \

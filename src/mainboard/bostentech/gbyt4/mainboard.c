@@ -3,9 +3,6 @@
 #include <device/device.h>
 #include <soc/int15.h>
 
-// mainboard_enable is executed as first thing after
-// enumerate_buses().
-
 static void mainboard_enable(struct device *dev)
 {
 	/* Install custom int15 handler for VGA OPROM */

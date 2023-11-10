@@ -2340,7 +2340,16 @@ typedef struct {
 
 /** Offset 0x1B58 - Reserved
 **/
-  UINT8                       Reserved58[77];
+  UINT8                       Reserved58;
+
+/** Offset 0x1B59 - ITbt Usb4CmMode value
+  ITbt Usb4CmMode value. 0:Firmware CM, 1:Software CM
+**/
+  UINT8                       Usb4CmMode;
+
+/** Offset 0x1B5A - Reserved
+**/
+  UINT8                       Reserved59[75];
 
 /** Offset 0x1BA5 - RSR feature
   Enable or Disable RSR feature; 0: Disable; <b>1: Enable </b>
@@ -2350,7 +2359,7 @@ typedef struct {
 
 /** Offset 0x1BA6 - Reserved
 **/
-  UINT8                       Reserved59[4];
+  UINT8                       Reserved60[4];
 
 /** Offset 0x1BAA - Enable or Disable HWP
   Enable/Disable Intel(R) Speed Shift Technology support. Enabling will expose the
@@ -2747,7 +2756,7 @@ typedef struct {
 
 /** Offset 0x1C1A - Reserved
 **/
-  UINT8                       Reserved60[2];
+  UINT8                       Reserved61[2];
 
 /** Offset 0x1C1C - Package Long duration turbo mode power limit
   Power Limit 1 in Milli Watts. BIOS will round to the nearest 1/8W when programming.
@@ -2787,7 +2796,7 @@ typedef struct {
 
 /** Offset 0x1C2C - Reserved
 **/
-  UINT8                      Reserved61[4];
+  UINT8                      Reserved62[4];
 
 /** Offset 0x1C30 - Tcc Offset Time Window for RATL
 **/
@@ -2864,7 +2873,7 @@ typedef struct {
 
 /** Offset 0x1C54 - Reserved
 **/
-  UINT8                       Reserved62;
+  UINT8                       Reserved63;
 
 /** Offset 0x1C55 - Race To Halt
   Enable/Disable Race To Halt feature. RTH will dynamically increase CPU frequency
@@ -2876,7 +2885,7 @@ typedef struct {
 
 /** Offset 0x1C56 - Reserved
 **/
-  UINT8                       Reserved63;
+  UINT8                       Reserved64;
 
 /** Offset 0x1C57 - Set HW P-State Interrupts Enabled for for MISC_PWR_MGMT
   Set HW P-State Interrupts Enabled for for MISC_PWR_MGMT; <b>0: Disable</b>; 1: Enable.
@@ -2886,7 +2895,7 @@ typedef struct {
 
 /** Offset 0x1C58 - Reserved
 **/
-  UINT8                       Reserved64[4];
+  UINT8                       Reserved65[4];
 
 /** Offset 0x1C5C - Enable or Disable C1 Cstate Demotion
   Enable or Disable C1 Cstate Auto Demotion. Disable; <b>1: Enable</b>
@@ -2944,7 +2953,7 @@ typedef struct {
 
 /** Offset 0x1C64 - Reserved
 **/
-  UINT8                       Reserved65;
+  UINT8                       Reserved66;
 
 /** Offset 0x1C65 - Dual Tau Boost
   Enable Dual Tau Boost feature. This is only applicable for Desktop 35W/65W/125W
@@ -2955,7 +2964,7 @@ typedef struct {
 
 /** Offset 0x1C66 - Reserved
 **/
-  UINT8                       Reserved66[34];
+  UINT8                       Reserved67[34];
 
 /** Offset 0x1C88 - End of Post message
   Test, Send End of Post message. Disable(0x0): Disable EOP message, Send in PEI(0x1):
@@ -2993,7 +3002,7 @@ typedef struct {
 
 /** Offset 0x1C8D - Reserved
 **/
-  UINT8                       Reserved67[17];
+  UINT8                       Reserved68[17];
 
 /** Offset 0x1C9E - Enable LOCKDOWN SMI
   Enable SMI_LOCK bit to prevent writes to the Global SMI Enable bit.
@@ -3022,7 +3031,7 @@ typedef struct {
 
 /** Offset 0x1CA2 - Reserved
 **/
-  UINT8                       Reserved68[2];
+  UINT8                       Reserved69[2];
 
 /** Offset 0x1CA4 - PCIE RP Ltr Max Snoop Latency
   Latency Tolerance Reporting, Max Snoop Latency.
@@ -3071,7 +3080,7 @@ typedef struct {
 
 /** Offset 0x1E1D - Reserved
 **/
-  UINT8                       Reserved69;
+  UINT8                       Reserved70;
 
 /** Offset 0x1E1E - PCIE RP Slot Power Limit Value
   Specifies upper limit on power supplie by slot. Leave as 0 to set to default.
@@ -3118,7 +3127,7 @@ typedef struct {
 
 /** Offset 0x1E5E - Reserved
 **/
-  UINT8                       Reserved70[105];
+  UINT8                       Reserved71[105];
 
 /** Offset 0x1EC7 - PMC C10 dynamic threshold dajustment enable
   Set if you want to enable PMC C10 dynamic threshold adjustment. Only works on supported SKUs
@@ -3128,7 +3137,7 @@ typedef struct {
 
 /** Offset 0x1EC8 - Reserved
 **/
-  UINT8                       Reserved71[36];
+  UINT8                       Reserved72[36];
 
 /** Offset 0x1EEC - FspEventHandler
   <b>Optional</b> pointer to the boot loader's implementation of FSP_EVENT_HANDLER.
@@ -3137,7 +3146,7 @@ typedef struct {
 
 /** Offset 0x1EF0 - Reserved
 **/
-  UINT8                       Reserved72[32];
+  UINT8                       Reserved73[32];
 } FSP_S_CONFIG;
 
 /** Fsp S UPD Configuration

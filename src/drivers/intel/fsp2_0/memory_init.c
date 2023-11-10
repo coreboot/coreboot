@@ -160,6 +160,16 @@ static enum cb_err fsp_fill_common_arch_params(FSPM_ARCH_UPD *arch_upd,
 	 * and are not related to FSP stack at all.
 	 * Non-CAR FSP 2.0 platforms pass a DRAM location for the FSP stack.
 	 */
+	static const char * const fsp_bootmode_strings[] = {
+		[FSP_BOOT_WITH_FULL_CONFIGURATION] = "boot with full config",
+		[FSP_BOOT_WITH_MINIMAL_CONFIGURATION] = "boot with minimal config",
+		[FSP_BOOT_ASSUMING_NO_CONFIGURATION_CHANGES] = "boot assuming no config change",
+		[FSP_BOOT_ON_S4_RESUME] = "boot on s4 resume",
+		[FSP_BOOT_ON_S3_RESUME] = "boot on s3 resume",
+		[FSP_BOOT_ON_FLASH_UPDATE] = "boot on flash update",
+		[FSP_BOOT_IN_RECOVERY_MODE] = "boot in recovery mode",
+	};
+
 	if (CONFIG(FSP_USES_CB_STACK) || !ENV_CACHE_AS_RAM) {
 		arch_upd->StackBase = (uintptr_t)temp_ram;
 		arch_upd->StackSize = sizeof(temp_ram);
@@ -180,7 +190,12 @@ static enum cb_err fsp_fill_common_arch_params(FSPM_ARCH_UPD *arch_upd,
 			arch_upd->BootMode = FSP_BOOT_WITH_FULL_CONFIGURATION;
 	}
 
-	printk(BIOS_SPEW, "bootmode is set to: %d\n", arch_upd->BootMode);
+	if (arch_upd->BootMode < ARRAY_SIZE(fsp_bootmode_strings) &&
+		fsp_bootmode_strings[arch_upd->BootMode] != NULL)
+		printk(BIOS_SPEW, "bootmode is set to: %d (%s)\n", arch_upd->BootMode,
+			fsp_bootmode_strings[arch_upd->BootMode]);
+	else
+		printk(BIOS_SPEW, "bootmode is set to: %d (unknown mode)\n", arch_upd->BootMode);
 
 	return CB_SUCCESS;
 }

@@ -31,6 +31,7 @@ RUN apt-get -y update && \
 		sdcc \
 		python3-pip \
 		pykwalify \
+		python3-venv \
 		python3-yaml \
 		python3-pyelftools \
 		python3-jsonschema \
@@ -70,10 +71,13 @@ ENTRYPOINT mount /cb-build && \
 EXPOSE 49151
 
 USER coreboot
-ENV PATH=$PATH:/home/coreboot/.local/bin
-RUN echo "export PATH=$PATH:/opt/xgcc/bin" >> /home/coreboot/.bashrc && \
-	pip3 install --upgrade --no-cache-dir pip \
-	&& pip3 install --no-cache-dir \
+ENV VIRTUAL_ENV="/home/coreboot/python3"
+ENV PATH=$VIRTUAL_ENV/bin:$PATH:/home/coreboot/.local/bin
+RUN echo 'export PATH=$PATH:/opt/xgcc/bin' >> /home/coreboot/.bashrc && \
+	echo "source ${VIRTUAL_ENV}/bin/activate"  >> /home/coreboot/.bashrc && \
+	python3 -m venv /home/coreboot/python3 && \
+	pip3 install --upgrade --no-cache-dir pip && \
+	pip3 install --no-cache-dir \
 		setuptools==58.2.0 \
 		jinja2==3.1.2 \
 		recommonmark===0.7.1 \

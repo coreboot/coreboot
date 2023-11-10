@@ -29,6 +29,8 @@ void acpigen_write_len_f(void)
 {
 	ASSERT(ltop < (ACPIGEN_LENSTACK_SIZE - 1))
 	len_stack[ltop++] = gencurrent;
+	/* Reserve 3 bytes for PkgLength. The actual byte values will be written later in the
+	   acpigen_pop_len call. */
 	acpigen_emit_byte(0);
 	acpigen_emit_byte(0);
 	acpigen_emit_byte(0);

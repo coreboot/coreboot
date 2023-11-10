@@ -76,37 +76,41 @@ static void test_acpigen_single_if(void **state)
 	assert_int_equal(if_package_length, block_length);
 }
 
-static void create_nested_ifs_recursive(char *stack_start[], char *stack_end[], u32 i, u32 n)
+static void create_nested_ifs_recursive(size_t stack_len[], u32 i, u32 n)
 {
 	if (i >= n)
 		return;
 
-	stack_start[i] = acpigen_get_current();
+	char *const start = acpigen_get_current();
 	acpigen_write_if_and(LOCAL0_OP, ZERO_OP);
 
 	for (int k = 0; k < 3; ++k)
 		acpigen_write_store_ops(ZERO_OP, LOCAL1_OP);
 
-	create_nested_ifs_recursive(stack_start, stack_end, i + 1, n);
+	create_nested_ifs_recursive(stack_len, i + 1, n);
 
 	acpigen_pop_len();
-	stack_end[i] = acpigen_get_current();
+	stack_len[i] = acpigen_get_current() - start;
 }
 
 static void test_acpigen_nested_ifs(void **state)
 {
 	char *acpigen_buf = *state;
 	const size_t nesting_level = 8;
-	char *block_start[8] = {0};
-	char *block_end[8] = {0};
+	size_t block_len[8] = {0};
 
 	acpigen_set_current(acpigen_buf);
 
-	create_nested_ifs_recursive(block_start, block_end, 0, nesting_level);
+	create_nested_ifs_recursive(block_len, 0, nesting_level);
 
-	for (int i = 0; i < nesting_level; ++i)
-		assert_int_equal(decode_package_length(block_start[i]),
-				 block_end[i] - block_start[i] - 1);
+	for (int i = 0, j = 0; i < nesting_level; ++i, ++j) {
+		/* Find next if op */
+		for (; j < ACPIGEN_TEST_BUFFER_SZ; ++j) {
+			if ((u8)acpigen_buf[j] == IF_OP)
+				break;
+		}
+		assert_int_equal(decode_package_length(acpigen_buf + j), block_len[i] - 1);
+	}
 }
 
 static void test_acpigen_write_package(void **state)

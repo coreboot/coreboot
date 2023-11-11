@@ -2,6 +2,7 @@
 
 chip northbridge/intel/haswell
 	register "gpu_dp_c_hotplug" = "4"
+	register "spd_addresses" = "{0x50, 0x51, 0x52, 0x53}"
 
 	chip cpu/intel/haswell
 		device cpu_cluster 0 on

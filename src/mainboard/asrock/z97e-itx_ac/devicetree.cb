@@ -3,6 +3,7 @@ chip northbridge/intel/haswell
 	register "gpu_dp_b_hotplug" = "4"
 	register "gpu_dp_c_hotplug" = "4"
 	register "gpu_dp_d_hotplug" = "4"
+	register "spd_addresses" = "{0x50, 0, 0x52, 0}"
 
 	chip cpu/intel/haswell
 		device cpu_cluster 0 on

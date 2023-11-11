@@ -11,6 +11,7 @@ chip northbridge/intel/haswell
 	# Enable DVI Hotplug with 6ms pulse
 	register "gpu_dp_b_hotplug" = "0x06"
 
+	register "spd_addresses" = "{0x50, 0x51, 0x52, 0x53}"
 	chip cpu/intel/haswell
 		device cpu_cluster 0 on ops haswell_cpu_bus_ops end
 	end

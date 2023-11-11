@@ -8,6 +8,7 @@ chip northbridge/intel/haswell
 	# This mainboard has a DP output
 	register "gpu_dp_c_hotplug" = "7"
 
+	register "spd_addresses" = "{0x50, 0x51, 0x52, 0x53}"
 	chip cpu/intel/haswell
 		device cpu_cluster 0 on ops haswell_cpu_bus_ops end
 	end

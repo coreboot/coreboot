@@ -2,18 +2,9 @@
 
 #include <stdint.h>
 #include <northbridge/intel/haswell/haswell.h>
-#include <northbridge/intel/haswell/raminit.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <ec/lenovo/pmh7/pmh7.h>
 #include <device/pci_ops.h>
-
-void mb_get_spd_map(struct spd_info *spdi)
-{
-	spdi->addresses[0] = 0x50;
-	spdi->addresses[1] = 0x52;
-	spdi->addresses[2] = 0x51;
-	spdi->addresses[3] = 0x53;
-}
 
 const struct usb2_port_config mainboard_usb2_ports[MAX_USB2_PORTS] = {
 	/* Length, Enable, OCn#, Location */

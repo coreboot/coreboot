@@ -16,6 +16,7 @@ romstage-y += memmap.c
 romstage-y += romstage.c
 romstage-y += early_init.c
 romstage-y += report_platform.c
+romstage-y += raminit_shared.c
 
 postcar-y += memmap.c
 

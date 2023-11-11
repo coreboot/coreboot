@@ -13,6 +13,7 @@ chip northbridge/intel/haswell
 		.backlight_pwm_hz	= 220,
 	}"
 	register "ec_present" = "true"
+	register "spd_addresses" = "{0x50, 0, 0x51, 0}"
 	chip cpu/intel/haswell
 		device cpu_cluster 0 on ops haswell_cpu_bus_ops end
 	end

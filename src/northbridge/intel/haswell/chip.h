@@ -39,6 +39,8 @@ struct northbridge_intel_haswell_config {
 	bool usb_xhci_on_resume;
 
 	struct i915_gpu_controller_info gfx;
+
+	u8 spd_addresses[4];
 };
 
 #endif /* NORTHBRIDGE_INTEL_HASWELL_CHIP_H */

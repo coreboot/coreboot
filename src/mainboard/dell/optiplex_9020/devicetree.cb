@@ -3,6 +3,7 @@
 chip northbridge/intel/haswell
 	# This mainboard has VGA
 	register "gpu_ddi_e_connected" = "1"
+	register "spd_addresses" = "{0x50, 0x51, 0x52, 0x53}"
 
 	chip cpu/intel/haswell
 		device cpu_cluster 0 on ops haswell_cpu_bus_ops end

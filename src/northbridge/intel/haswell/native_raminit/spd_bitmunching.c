@@ -5,6 +5,7 @@
 #include <console/console.h>
 #include <device/dram/ddr3.h>
 #include <device/smbus_host.h>
+#include <northbridge/intel/haswell/chip.h>
 #include <northbridge/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/raminit.h>
 #include <string.h>
@@ -70,8 +71,9 @@ static void get_spd_for_dimm(struct raminit_dimm_info *const dimm, const uint8_t
 
 static void get_spd_data(struct sysinfo *ctrl)
 {
+	const struct northbridge_intel_haswell_config *cfg = config_of_soc();
 	struct spd_info spdi = {0};
-	mb_get_spd_map(&spdi);
+	get_spd_info(&spdi, cfg);
 	const uint8_t *cbfs_spd = get_spd_data_from_cbfs(&spdi);
 	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
 		for (uint8_t slot = 0; slot < NUM_SLOTS; slot++) {

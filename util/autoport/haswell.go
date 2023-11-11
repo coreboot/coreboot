@@ -65,6 +65,7 @@ func (i haswellmc) Scan(ctx Context, addr PCIDevData) {
 			"usb_xhci_on_resume":  "false",
 			/* FIXME:XX hardcoded.  */
 			"gfx": "GMA_STATIC_DISPLAYS(0)",
+			"spd_addresses": "{0x50, 0x51, 0x52, 0x53}\" # FIXME: Put proper SPD map here",
 		},
 		Children: []DevTreeNode{
 			{

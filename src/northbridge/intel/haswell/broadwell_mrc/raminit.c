@@ -374,9 +374,8 @@ void perform_raminit(const int s3resume)
 	/* Broadwell MRC uses ACPI values for boot_mode */
 	pei_data.boot_mode = s3resume ? ACPI_S3 : ACPI_S0;
 
-	/* Obtain the SPD addresses from mainboard code */
 	struct spd_info spdi = {0};
-	mb_get_spd_map(&spdi);
+	get_spd_info(&spdi, cfg);
 
 	/*
 	 * Read the SPDs over SMBus in coreboot code so that the data can be used to

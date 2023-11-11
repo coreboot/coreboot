@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <northbridge/intel/haswell/haswell.h>
-#include <northbridge/intel/haswell/raminit.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 
 void mainboard_config_rcba(void)
@@ -37,12 +36,6 @@ void mainboard_config_rcba(void)
 	RCBA16(D21IR) = DIR_ROUTE(PIRQE, PIRQF, PIRQF, PIRQF); /* SIO */
 	RCBA16(D20IR) = DIR_ROUTE(PIRQC, PIRQC, PIRQC, PIRQC); /* XHCI */
 	RCBA16(D23IR) = DIR_ROUTE(PIRQH, PIRQH, PIRQH, PIRQH); /* SDIO */
-}
-
-void mb_get_spd_map(struct spd_info *spdi)
-{
-	spdi->addresses[0] = 0x50;
-	spdi->addresses[2] = 0x52;
 }
 
 const struct usb2_port_config mainboard_usb2_ports[MAX_USB2_PORTS] = {

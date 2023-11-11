@@ -1,6 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-or-later
 
 chip northbridge/intel/haswell
+	register "spd_addresses" = "{0x50, 0, 0x52, 0}"
 	chip cpu/intel/haswell
 		device cpu_cluster 0 on ops haswell_cpu_bus_ops end
 	end

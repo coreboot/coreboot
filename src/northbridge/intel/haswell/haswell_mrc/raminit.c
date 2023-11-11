@@ -391,9 +391,8 @@ void perform_raminit(const int s3resume)
 	/* MRC has hardcoded assumptions of 2 meaning S3 wake. Normalize it here. */
 	pei_data.boot_mode = s3resume ? 2 : 0;
 
-	/* Obtain the SPD addresses from mainboard code */
 	struct spd_info spdi = {0};
-	mb_get_spd_map(&spdi);
+	get_spd_info(&spdi, cfg);
 
 	/* MRC expects left-aligned SMBus addresses, and 0xff for memory-down */
 	for (size_t i = 0; i < ARRAY_SIZE(spdi.addresses); i++) {

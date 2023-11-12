@@ -14,15 +14,15 @@ chip soc/intel/skylake
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC3)"	# Type-A Port (board)
 
 	device domain 0 on
-		device pci 15.0 on
+		device ref i2c0		on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0001""
 				register "desc" = ""ELAN Touchscreen""
 				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_E7_IRQ)"
 				device i2c 10 on end
 			end
-		end # I2C #0
-		device pci 15.1 on
+		end
+		device ref i2c1		on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
@@ -30,8 +30,8 @@ chip soc/intel/skylake
 				register "wake" = "GPE0_DW0_05"
 				device i2c 15 on end
 			end
-		end # I2C #1
-		device pci 19.2 on
+		end
+		device ref i2c4		on
 			chip drivers/i2c/nau8825
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_F10_IRQ)"
 				register "jkdet_enable" = "1"
@@ -53,14 +53,14 @@ chip soc/intel/skylake
 				register "jack_eject_debounce" = "0"
 				device i2c 1a on end
 			end
-		end # I2C #4
-		device pci 1f.3 on
+		end
+		device ref hda		on
 			chip drivers/generic/max98357a
 				register "hid" = ""MX98357A""
 				register "sdmode_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E3)"
 				register "sdmode_delay" = "5"
 				device generic 0 on end
 			end
-		end # Intel HDA
+		end
 	end
 end

@@ -19,15 +19,15 @@ chip soc/intel/skylake
 	register "sdcard_cd_gpio" = "GPP_A7"
 
 	device domain 0 on
-		device pci 15.0 on
+		device ref i2c0		on
 			chip drivers/i2c/generic
 				register "hid" = ""RAYD0001""
 				register "desc" = ""Raydium Touchscreen""
 				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_E7_IRQ)"
 				device i2c 39 on end
 			end
-		end # I2C #0
-		device pci 15.1 on
+		end
+		device ref i2c1		on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
@@ -35,8 +35,8 @@ chip soc/intel/skylake
 				register "wake" = "GPE0_DW0_05"
 				device i2c 15 on end
 			end
-		end # I2C #1
-		device pci 19.2 on
+		end
+		device ref i2c4		on
 			chip drivers/i2c/nau8825
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_F10_IRQ)"
 				register "jkdet_enable" = "1"
@@ -73,9 +73,9 @@ chip soc/intel/skylake
 				register "device_present_gpio" = "GPP_E3"
 				device i2c 35 on end
 			end
-		end # I2C #4
-		device pci 1e.6 on  end # SDCard
-		device pci 1f.3 on
+		end
+		device ref sdxc		on  end
+		device ref hda		on
 			chip drivers/generic/max98357a
 				register "hid" = ""MX98357A""
 				register "sdmode_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E3)"
@@ -84,6 +84,6 @@ chip soc/intel/skylake
 				register "sdmode_delay" = "5"
 				device generic 0 on end
 			end
-		end # Intel HDA
+		end
 	end
 end

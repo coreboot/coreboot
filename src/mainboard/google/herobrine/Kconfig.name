@@ -2,36 +2,27 @@ comment "Herobrine"
 
 config BOARD_GOOGLE_HEROBRINE
 	bool "->  Herobrine"
-	select BOARD_GOOGLE_HEROBRINE_COMMON
 
 config BOARD_GOOGLE_HEROBRINE_REV0
 	bool "->  Herobrine_Rev0"
-	select BOARD_GOOGLE_HEROBRINE_COMMON
 
 config BOARD_GOOGLE_SENOR
 	bool "->  Senor"
-	select BOARD_GOOGLE_HEROBRINE_COMMON
 
 config BOARD_GOOGLE_PIGLIN
 	bool "->  Piglin"
-	select BOARD_GOOGLE_HEROBRINE_COMMON
 
 config BOARD_GOOGLE_HOGLIN
 	bool "-> Hoglin"
-	select BOARD_GOOGLE_HEROBRINE_COMMON
 
 config BOARD_GOOGLE_VILLAGER
 	bool "-> Villager"
-	select BOARD_GOOGLE_HEROBRINE_COMMON
 
 config BOARD_GOOGLE_EVOKER
 	bool "-> Evoker"
-	select BOARD_GOOGLE_HEROBRINE_COMMON
 
 config BOARD_GOOGLE_ZOGLIN
 	bool "-> Zoglin"
-	select BOARD_GOOGLE_HEROBRINE_COMMON
 
 config BOARD_GOOGLE_ZOMBIE
 	bool "->  Zombie"
-	select BOARD_GOOGLE_HEROBRINE_COMMON

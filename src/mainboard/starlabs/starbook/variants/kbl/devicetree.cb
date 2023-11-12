@@ -114,7 +114,7 @@ chip soc/intel/skylake
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280" "SlotDataBusWidth4X"
 		end
 		device ref uart0	on  end
-		device pci 1f.0 on						# LPC Interface
+		device ref lpc_espi on
 			register "gen1_dec"			= "0x000c0681"
 			register "gen2_dec"			= "0x000c1641"
 			register "gen3_dec"			= "0x00000069"

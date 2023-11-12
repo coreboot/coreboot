@@ -66,10 +66,9 @@ chip soc/intel/skylake
 	device cpu_cluster 0 on end
 
 	device domain 0 on
-		device pci 00.0 on  end	# Host Bridge
-		device pci 02.0 on  end	# Integrated Graphics Device
-		device pci 08.0 on  end	# Gaussian Mixture Model
-		device pci 14.0 on	# USB xHCI
+		device ref igpu		on  end
+		device ref gmm		on  end
+		device ref south_xhci	on
 			register "usb2_ports" = "{
 				[0] = USB2_PORT_LONG(OC0),
 				[1] = USB2_PORT_LONG(OC0),
@@ -78,9 +77,9 @@ chip soc/intel/skylake
 				[4] = USB2_PORT_LONG(OC2), /* Debug */
 			}"
 		end
-		device pci 14.2 on  end	# Thermal Subsystem
-		device pci 16.0 on  end	# Management Engine Interface 1
-		device pci 17.0 on	# SATA
+		device ref thermal	on  end
+		device ref heci1	on  end
+		device ref sata		on
 			register "SataSalpSupport" = "1"
 			register "SataPortsEnable" = "{
 				[0] = 1,
@@ -88,16 +87,16 @@ chip soc/intel/skylake
 				[2] = 1,
 			}"
 		end
-		device pci 1d.0 on	# PCI Express Port 9 (COMe 0)
+		device ref pcie_rp9	on
 			register "PcieRpEnable[8]" = "1"
 		end
-		device pci 1d.1 on	# PCI Express Port 10 (COMe 1)
+		device ref pcie_rp10	on
 			register "PcieRpEnable[9]" = "1"
 		end
-		device pci 1d.2 on	# PCI Express Port 11 (COMe 2)
+		device ref pcie_rp11	on
 			register "PcieRpEnable[10]" = "1"
 		end
-		device pci 1f.0 on	# LPC Interface
+		device ref lpc_espi	on
 			register "serirq_mode" = "SERIRQ_CONTINUOUS"
 
 			# EC/kempld at 0xa80/0xa81
@@ -111,14 +110,12 @@ chip soc/intel/skylake
 				device generic 0.0 on end # UART #0
 			end
 		end
-		device pci 1f.1 on  end	# P2SB
-		device pci 1f.2 on  end	# Power Management Controller
-		device pci 1f.4 on	# SMBus
+		device ref smbus	on
 			chip drivers/i2c/nct7802y
 				device i2c 0x2e on end
 			end
 		end
-		device pci 1f.5 on  end	# PCH SPI
-		device pci 1f.6 on  end	# GbE
+		device ref fast_spi	on  end
+		device ref gbe		on  end
 	end
 end

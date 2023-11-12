@@ -5,7 +5,7 @@ chip soc/intel/skylake
 	register "SkipExtGfxScan" = "1"
 
 	device domain 0 on
-		device pci 1f.0 on
+		device ref lpc_espi	on
 			chip ec/kontron/kempld
 				device generic 1.0 on # I2C
 					chip drivers/i2c/lm96000
@@ -40,16 +40,14 @@ chip soc/intel/skylake
 					end
 				end
 			end
-		end # LPC Interface
-		device pci 1f.4 on
+		end
+		device ref smbus	on
 			chip drivers/i2c/nct7802y
 				register "fan[1].mode" = "FAN_MANUAL"
 				register "fan[1].duty_cycle" = "100"
 
 				device i2c 0x2e on end
 			end
-		end # SMBus
-		device pci 1f.5 on  end # PCH SPI
-		device pci 1f.6 on  end # GbE # Debug
+		end
 	end
 end

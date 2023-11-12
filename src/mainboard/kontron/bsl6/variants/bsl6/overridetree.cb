@@ -21,12 +21,12 @@ chip soc/intel/skylake
 	register "SataPortsEnable[3]"	= "1"
 
 	device domain 0 on
-		device pci 1c.0 on  end # PCI Express Port 1
-		device pci 1c.1 on  end # PCI Express Port 2
-		device pci 1c.2 on  end # PCI Express Port 3
-		device pci 1c.3 on  end # PCI Express Port 4
-		device pci 1d.3 on  end # PCI Express Port 12
-		device pci 1f.4 on
+		device ref pcie_rp1	on  end
+		device ref pcie_rp2	on  end
+		device ref pcie_rp3	on  end
+		device ref pcie_rp4	on  end
+		device ref pcie_rp12	on  end
+		device ref smbus	on
 			chip drivers/i2c/nct7802y
 				register "peci[0]" = "{ PECI_DOMAIN_0, 100 }"
 				register "fan[1].mode" = "FAN_SMART"
@@ -40,6 +40,6 @@ chip soc/intel/skylake
 
 				device i2c 0x2e on end
 			end
-		end # SMBus
+		end
 	end
 end

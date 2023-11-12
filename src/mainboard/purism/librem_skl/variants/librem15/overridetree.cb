@@ -22,6 +22,6 @@ chip soc/intel/skylake
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Type-C Port
 
 	device domain 0 on
-		device pci 1c.4 on  end # PCI Express Port 5
+		device ref pcie_rp5 on  end
 	end
 end

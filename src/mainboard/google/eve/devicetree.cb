@@ -230,10 +230,9 @@ chip soc/intel/skylake
 
 	device cpu_cluster 0 on end
 	device domain 0 on
-		device pci 00.0 on  end # Host Bridge
-		device pci 02.0 on  end # Integrated Graphics Device
-		device pci 04.0 on  end # SA thermal subsystem
-		device pci 14.0 on
+		device ref igpu		on  end
+		device ref sa_thermal	on  end
+		device ref south_xhci	on
 			chip drivers/usb/acpi
 				register "desc" = ""Root Hub""
 				register "type" = "UPC_TYPE_HUB"
@@ -279,11 +278,9 @@ chip soc/intel/skylake
 					end
 				end
 			end
-		end # USB xHCI
-		device pci 14.1 off end # USB xDCI (OTG)
-		device pci 14.2 on  end # Thermal Subsystem
-		device pci 14.3 off end # Camera
-		device pci 15.0 on
+		end
+		device ref thermal	on  end
+		device ref i2c0		on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""WCOM50C1""
 				register "generic.desc" = ""WCOM Digitizer""
@@ -292,15 +289,15 @@ chip soc/intel/skylake
 				register "hid_desc_reg_offset" = "0x1"
 				device i2c 0a on end
 			end
-		end # I2C #0
-		device pci 15.1 on
+		end
+		device ref i2c1		on
 			chip drivers/i2c/tpm
 				register "hid" = ""GOOG0005""
 				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_E0_IRQ)"
 				device i2c 50 on end
 			end
-		end # I2C #1
-		device pci 15.2 on
+		end
+		device ref i2c2		on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""ACPI0C50""
 				register "generic.sub" = ""1AE0006B""
@@ -314,17 +311,10 @@ chip soc/intel/skylake
 				register "desc" = ""Touchpad EC Interface""
 				device i2c 1e on end
 			end
-		end # I2C #2
-		device pci 15.3 off end # I2C #3
-		device pci 16.0 on  end # Management Engine Interface 1
-		device pci 16.1 off end # Management Engine Interface 2
-		device pci 16.2 off end # Management Engine IDE-R
-		device pci 16.3 off end # Management Engine KT Redirection
-		device pci 16.4 off end # Management Engine Interface 3
-		device pci 17.0 off end # SATA
-		device pci 19.0 on  end # UART #2
-		device pci 19.1 off end # I2C #5
-		device pci 19.2 on
+		end
+		device ref heci1	on  end
+		device ref uart2	on  end
+		device ref i2c4		on
 			chip drivers/i2c/max98927
 				register "interleave_mode" = "1"
 				register "vmon_slot_no" = "4"
@@ -371,26 +361,15 @@ chip soc/intel/skylake
 				device i2c 57 on end
 			end
 		end # I2C #4
-		device pci 1c.0 on
+		device ref pcie_rp1	on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_PCI_EXP"
 				device pci 00.0 on end
 			end
-		end # PCI Express Port 1
-		device pci 1c.1 off end # PCI Express Port 2
-		device pci 1c.2 off end # PCI Express Port 3
-		device pci 1c.3 off end # PCI Express Port 4
-		device pci 1c.4 on  end # PCI Express Port 5
-		device pci 1c.5 off end # PCI Express Port 6
-		device pci 1c.6 off end # PCI Express Port 7
-		device pci 1c.7 off end # PCI Express Port 8
-		device pci 1d.0 off end # PCI Express Port 9
-		device pci 1d.1 off end # PCI Express Port 10
-		device pci 1d.2 off end # PCI Express Port 11
-		device pci 1d.3 off end # PCI Express Port 12
-		device pci 1e.0 on  end # UART #0
-		device pci 1e.1 off end # UART #1
-		device pci 1e.2 on
+		end
+		device ref pcie_rp5	on  end
+		device ref uart0	on  end
+		device ref gspi0	on
 			chip drivers/spi/acpi
 				register "hid" = "ACPI_DT_NAMESPACE_HID"
 				register "compat_string" = ""realtek,rt5514""
@@ -398,21 +377,15 @@ chip soc/intel/skylake
 				register "speed" = "12 * MHz"
 				device spi 0 on end
 			end
-		end # GSPI #0
-		device pci 1e.3 off end # GSPI #1
-		device pci 1e.4 on  end # eMMC
-		device pci 1e.5 off end # SDIO
-		device pci 1e.6 off end # SDCard
-		device pci 1f.0 on
+		end
+		device ref emmc		on  end
+		device ref lpc_espi	on
 			chip ec/google/chromeec
 				device pnp 0c09.0 on end
 			end
-		end # LPC Interface
-		device pci 1f.1 on  end # P2SB
-		device pci 1f.2 on  end # Power Management Controller
-		device pci 1f.3 on  end # Intel HDA
-		device pci 1f.4 on  end # SMBus
-		device pci 1f.5 on  end # PCH SPI
-		device pci 1f.6 off end # GbE
+		end
+		device ref hda		on  end
+		device ref smbus	on  end
+		device ref fast_spi	on  end
 	end
 end

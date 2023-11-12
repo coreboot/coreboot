@@ -62,10 +62,11 @@ ramstage-$(CONFIG_SDHCI_CONTROLLER) += sdhci.c ../common/storage/sdhci_msm.c
 CPPFLAGS_common += -Isrc/soc/qualcomm/sc7280/include
 CPPFLAGS_common += -Isrc/soc/qualcomm/common/include
 
-SC7280_BLOB := $(top)/3rdparty/qc_blobs/sc7280
+BL31_MAKEARGS += PLAT=sc7280
 
 ################################################################################
-BL31_MAKEARGS += PLAT=sc7280
+ifeq ($(CONFIG_USE_QC_BLOBS),y)
+SC7280_BLOB := $(top)/3rdparty/qc_blobs/sc7280
 
 ifeq ($(CONFIG_QC_SDI_ENABLE),y)
 BL31_MAKEARGS += QTI_SDI_BUILD=1
@@ -173,5 +174,7 @@ $(GSI_FW_CBFS)-file := $(GSI_FW_FILE)
 $(GSI_FW_CBFS)-type := raw
 $(GSI_FW_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(GSI_FW_CBFS)
+
+endif
 
 endif

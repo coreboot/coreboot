@@ -56,6 +56,8 @@ CPPFLAGS_common += -Isrc/soc/qualcomm/common/include
 
 BL31_MAKEARGS += PLAT=sc7180
 
+ifeq ($(CONFIG_USE_QC_BLOBS),y)
+
 SC7180_BLOB := $(top)/3rdparty/qc_blobs/sc7180
 
 ifeq ($(CONFIG_QC_SDI_ENABLE),y)
@@ -148,5 +150,7 @@ $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.elf
 	@printf "\nqgpt.py 4K sector size\n"
 	@util/qualcomm/qgpt.py $(objcbfs)/merged_bb_qcsec.mbn \
 		$(objcbfs)/bootblock.bin
+
+endif
 
 endif

@@ -88,9 +88,6 @@ chip soc/intel/skylake
 
 			register "PrimaryDisplay" = "Display_Switchable"
 		end
-		device ref sa_thermal	off	end
-		device ref chap		off	end
-		device ref gmm		off	end
 		device ref south_xhci	on
 			register "usb2_ports[0]" = "{
 				.enable		= 1,
@@ -212,9 +209,7 @@ chip soc/intel/skylake
 				end
 			end
 		end
-		device ref south_xdci	off	end
 		device ref thermal	on	end
-		device ref cio		off	end
 		device ref i2c0		on
 			chip drivers/i2c/hid
 				register "generic.name" = ""TPL0""
@@ -257,30 +252,34 @@ chip soc/intel/skylake
 		device ref uart2	on	end
 		# Board has no GPIO expander on I2C4 (despite SetupUtility claim that it does - this would be static text)
 		device ref pcie_rp1	on
+			# dGPU; x4
 			register "PcieRpEnable[0]" = "1"
 			register "PcieRpAdvancedErrorReporting[0]" = "1"
 			register "PcieRpLtrEnable[0]" = "1"
 			register "PcieRpClkReqSupport[0]" = "1"
 			register "PcieRpClkReqNumber[0]" = "0"
 			register "PcieRpMaxPayload[0]" = "RpMaxPayload_256"
-		end # PCI Express Port 1 (dGPU; x4)
+		end
 		device ref pcie_rp7	on
+			# NGFF; x2
 			register "PcieRpEnable[6]" = "1"
 			register "PcieRpAdvancedErrorReporting[6]" = "1"
 			register "PcieRpLtrEnable[6]" = "1"
 			register "PcieRpClkReqSupport[6]" = "1"
 			register "PcieRpClkReqNumber[6]" = "3"
 			register "PcieRpMaxPayload[6]" = "RpMaxPayload_256"
-		end # PCI Express Port 7 (NGFF; x2)
+		end
 		device ref pcie_rp9	on
+			# LAN
 			register "PcieRpEnable[8]" = "1"
 			register "PcieRpAdvancedErrorReporting[8]" = "1"
 			register "PcieRpLtrEnable[8]" = "1"
 			register "PcieRpClkReqSupport[8]" = "1"
 			register "PcieRpClkReqNumber[8]" = "1"
 			register "PcieRpMaxPayload[8]" = "RpMaxPayload_256"
-		end # PCI Express Port 9 (LAN)
+		end
 		device ref pcie_rp10	on
+			# WLAN
 			register "PcieRpEnable[9]" = "1"
 			register "PcieRpAdvancedErrorReporting[9]" = "1"
 			register "PcieRpLtrEnable[9]" = "1"
@@ -289,7 +288,7 @@ chip soc/intel/skylake
 			register "PcieRpMaxPayload[9]" = "RpMaxPayload_256"
 			# ASPM L0s is broken/unsupported on Qualcomm Atheros QCA6174 (AER: corrected errors)
 			register "pcie_rp_aspm[9]" = "AspmL1"
-		end # PCI Express Port 10 (WLAN)
+		end
 		# Although vendor's platform NVS area shows SCS is enabled, the SD card reader is actually connected over USB
 		device ref lpc_espi	on
 			register "lpc_iod" = "0x0010"	# 80h-81h; ComB: 2F8h-2FFh (COM 2)
@@ -301,7 +300,6 @@ chip soc/intel/skylake
 			# EC/KBC requires continuous mode
 			register "serirq_mode" = "SERIRQ_CONTINUOUS"
 		end
-		device ref p2sb		on	end
 		device ref pmc		on
 			# Note that GPE events called out in ASL code rely on this
 			# route. i.e. If this route changes then the affected GPE
@@ -325,7 +323,6 @@ chip soc/intel/skylake
 		end
 		device ref smbus	on	end
 		device ref fast_spi	on	end
-		device ref tracehub	off	end
 	end
 	chip drivers/crb
 		device mmio 0xfed40000 on end

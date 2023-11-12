@@ -2,52 +2,39 @@ comment "Trogdor"
 
 config BOARD_GOOGLE_BUBS
 	bool "->  Bubs"
-	select BOARD_GOOGLE_TROGDOR_COMMON
 
 config BOARD_GOOGLE_COACHZ
 	bool "->  Coachz"
-	select BOARD_GOOGLE_TROGDOR_COMMON
 
 config BOARD_GOOGLE_GELARSHIE
 	bool "->  Gelarshie"
-	select BOARD_GOOGLE_TROGDOR_COMMON
 
 config BOARD_GOOGLE_HOMESTAR
 	bool "->  Homestar"
-	select BOARD_GOOGLE_TROGDOR_COMMON
 
 config BOARD_GOOGLE_KINGOFTOWN
 	bool "->  Kingoftown"
-	select BOARD_GOOGLE_TROGDOR_COMMON
 
 config BOARD_GOOGLE_LAZOR
 	bool "->  Lazor"
-	select BOARD_GOOGLE_TROGDOR_COMMON
 
 config BOARD_GOOGLE_MARZIPAN
 	bool "->  Marzipan"
-	select BOARD_GOOGLE_TROGDOR_COMMON
 
 config BOARD_GOOGLE_MRBLAND
 	bool "->  Mrbland"
-	select BOARD_GOOGLE_TROGDOR_COMMON
 
 config BOARD_GOOGLE_PAZQUEL
 	bool "->  Pazquel"
-	select BOARD_GOOGLE_TROGDOR_COMMON
 
 config BOARD_GOOGLE_POMPOM
 	bool "->  Pompom"
-	select BOARD_GOOGLE_TROGDOR_COMMON
 
 config BOARD_GOOGLE_QUACKINGSTICK
 	bool "->  Quackingstick"
-	select BOARD_GOOGLE_TROGDOR_COMMON
 
 config BOARD_GOOGLE_WORMDINGLER
 	bool "->  Wormdingler"
-	select BOARD_GOOGLE_TROGDOR_COMMON
 
 config BOARD_GOOGLE_TROGDOR
 	bool "->  Trogdor"
-	select BOARD_GOOGLE_TROGDOR_COMMON

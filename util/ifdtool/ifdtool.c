@@ -1068,6 +1068,14 @@ static void create_fmap_template(char *image, int size, const char *layout_fname
 		if (region.limit == 0 || region.base == 0x07FFF000)
 			continue;
 
+		/* Is there an FMAP equivalent? IFD reserved regions are usually thrown out
+		 * of the FMAP here
+		 */
+		if (!region_names[region.type].fmapname) {
+			printf("Skip IFD region: %s\n", region_names[region.type].pretty);
+			continue;
+		}
+
 		/* Here we decide to use the coreboot generated FMAP BIOS region, instead of
 		 * the one specified in the IFD. The case when IFD and FMAP BIOS region do not
 		 * match cannot be caught here, therefore one should still validate IFD and

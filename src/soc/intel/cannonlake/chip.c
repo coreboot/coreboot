@@ -85,7 +85,6 @@ const char *soc_acpi_name(const struct device *dev)
 	case SA_DEVFN_GNA:	return "GNA";
 	case PCH_DEVFN_XHCI:	return "XHCI";
 	case PCH_DEVFN_USBOTG:	return "XDCI";
-	case PCH_DEVFN_THERMAL:	return "THRM";
 	case PCH_DEVFN_I2C0:	return "I2C0";
 	case PCH_DEVFN_I2C1:	return "I2C1";
 	case PCH_DEVFN_I2C2:	return "I2C2";
@@ -95,7 +94,6 @@ const char *soc_acpi_name(const struct device *dev)
 	case PCH_DEVFN_CSE_IDER:	return "CSED";
 	case PCH_DEVFN_CSE_KT:	return "CSKT";
 	case PCH_DEVFN_CSE_3:	return "CSE3";
-	case PCH_DEVFN_SATA:	return "SATA";
 	case PCH_DEVFN_UART2:	return "UAR2";
 	case PCH_DEVFN_I2C4:	return "I2C4";
 	case PCH_DEVFN_I2C5:	return "I2C5";

@@ -293,7 +293,7 @@ void mmu_restore_context(const struct mmu_context *mmu_context)
 void mmu_enable(void)
 {
 	assert_correct_ttb_mapping(_ttb);
-	assert_correct_ttb_mapping(_ettb - 1);
+	assert_correct_ttb_mapping((void *)((uintptr_t)_ettb - 1));
 
 	uint32_t sctlr = raw_read_sctlr_el3();
 	sctlr |= SCTLR_C | SCTLR_M | SCTLR_I;

@@ -5,7 +5,6 @@
 
 /* If you need to change this, change acpigen_pop_len too */
 #define ACPIGEN_RSVD_PKGLEN_BYTES	3
-#define ACPIGEN_MAXLEN			0xfffff
 
 #include <lib.h>
 #include <string.h>
@@ -38,7 +37,6 @@ void acpigen_pop_len(void)
 	ASSERT(ltop > 0)
 	char *p = len_stack[--ltop];
 	len = gencurrent - p;
-	ASSERT(len <= ACPIGEN_MAXLEN)
 	const size_t payload_len = len - ACPIGEN_RSVD_PKGLEN_BYTES;
 
 	if (len <= 0x3f + 2) {

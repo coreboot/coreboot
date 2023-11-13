@@ -3,12 +3,9 @@
 /* How much nesting do we support? */
 #define ACPIGEN_LENSTACK_SIZE 10
 
-/*
- * If you need to change this, change acpigen_write_len_f and
- * acpigen_pop_len
- */
-
-#define ACPIGEN_MAXLEN 0xfffff
+/* If you need to change this, change acpigen_pop_len too */
+#define ACPIGEN_RSVD_PKGLEN_BYTES	3
+#define ACPIGEN_MAXLEN			0xfffff
 
 #include <lib.h>
 #include <string.h>
@@ -29,11 +26,10 @@ void acpigen_write_len_f(void)
 {
 	ASSERT(ltop < (ACPIGEN_LENSTACK_SIZE - 1))
 	len_stack[ltop++] = gencurrent;
-	/* Reserve 3 bytes for PkgLength. The actual byte values will be written later in the
-	   acpigen_pop_len call. */
-	acpigen_emit_byte(0);
-	acpigen_emit_byte(0);
-	acpigen_emit_byte(0);
+	/* Reserve ACPIGEN_RSVD_PKGLEN_BYTES bytes for PkgLength. The actual byte values will
+	   be written later in the corresponding acpigen_pop_len call. */
+	for (size_t i = 0; i < ACPIGEN_RSVD_PKGLEN_BYTES; i++)
+		acpigen_emit_byte(0);
 }
 
 void acpigen_pop_len(void)
@@ -43,13 +39,14 @@ void acpigen_pop_len(void)
 	char *p = len_stack[--ltop];
 	len = gencurrent - p;
 	ASSERT(len <= ACPIGEN_MAXLEN)
-	const size_t payload_len = len - 3;
+	const size_t payload_len = len - ACPIGEN_RSVD_PKGLEN_BYTES;
 
 	if (len <= 0x3f + 2) {
 		/* PkgLength of up to 0x3f can be encoded in one PkgLength byte instead of the
 		   reserved 3 bytes. Since only 1 PkgLength byte will be written, the payload
 		   data needs to be moved by 2 bytes */
-		memmove(&p[1], &p[3], payload_len);
+		memmove(&p[ACPIGEN_RSVD_PKGLEN_BYTES - 2],
+			&p[ACPIGEN_RSVD_PKGLEN_BYTES], payload_len);
 		/* Adjust the PkgLength to take into account that we only use 1 of the 3
 		   reserved bytes */
 		len -= 2;
@@ -63,7 +60,8 @@ void acpigen_pop_len(void)
 		/* PkgLength of up to 0xfff can be encoded in 2 PkgLength bytes instead of the
 		   reserved 3 bytes. Since only 2 PkgLength bytes will be written, the payload
 		   data needs to be moved by 1 byte */
-		memmove(&p[2], &p[3], payload_len);
+		memmove(&p[ACPIGEN_RSVD_PKGLEN_BYTES - 1],
+			&p[ACPIGEN_RSVD_PKGLEN_BYTES], payload_len);
 		/* Adjust the PkgLength to take into account that we only use 2 of the 3
 		   reserved bytes */
 		len -= 1;

@@ -383,14 +383,14 @@ void clock_enable_qup(int qup);
 void clock_configure_sdcc1(uint32_t hz);
 void clock_configure_sdcc2(uint32_t hz);
 void clock_configure_dfsr(int qup);
-int clock_enable_gdsc(enum clk_gdsc gdsc_type);
+enum cb_err clock_enable_gdsc(enum clk_gdsc gdsc_type);
 
-int mdss_clock_configure(enum clk_mdss clk_type, uint32_t hz,
+enum cb_err mdss_clock_configure(enum clk_mdss clk_type, uint32_t hz,
 			uint32_t source, uint32_t divider,
 			uint32_t m, uint32_t n, uint32_t d);
-int mdss_clock_enable(enum clk_mdss clk_type);
-int clock_enable_pcie(enum clk_pcie clk_type);
-int clock_configure_mux(enum clk_pcie clk_type, u32 src_type);
+enum cb_err mdss_clock_enable(enum clk_mdss clk_type);
+enum cb_err clock_enable_pcie(enum clk_pcie clk_type);
+enum cb_err clock_configure_mux(enum clk_pcie clk_type, u32 src_type);
 
 /* Subsystem Reset */
 static struct aoss *const aoss = (void *)AOSS_CC_BASE;

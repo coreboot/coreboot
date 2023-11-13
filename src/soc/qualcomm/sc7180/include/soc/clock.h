@@ -195,7 +195,7 @@ void clock_configure_qspi(uint32_t hz);
 void clock_configure_qup(int qup, uint32_t hz);
 void clock_enable_qup(int qup);
 void clock_configure_dfsr(int qup);
-int mdss_clock_configure(enum mdss_clock clk_type, uint32_t source,
+enum cb_err mdss_clock_configure(enum mdss_clock clk_type, uint32_t source,
 			uint32_t divider, uint32_t m, uint32_t n, uint32_t d);
 int mdss_clock_enable(enum mdss_clock clk_type);
 

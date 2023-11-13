@@ -181,7 +181,8 @@ static void fill_tme_params(FSP_M_CONFIG *m_cfg)
 	m_cfg->TmeEnable = CONFIG(INTEL_TME) && is_tme_supported();
 	if (!m_cfg->TmeEnable)
 		return;
-	m_cfg->GenerateNewTmeKey = CONFIG(TME_KEY_REGENERATION_ON_WARM_BOOT);
+	m_cfg->GenerateNewTmeKey = CONFIG(TME_KEY_REGENERATION_ON_WARM_BOOT) &&
+			 CONFIG(SOC_INTEL_COMMON_BASECODE_RAMTOP);
 	if (m_cfg->GenerateNewTmeKey) {
 		uint32_t ram_top = get_ramtop_addr();
 		if (!ram_top) {

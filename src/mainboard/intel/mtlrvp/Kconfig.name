@@ -2,7 +2,10 @@ config BOARD_INTEL_MTLRVP_P
 	bool "Meteorlake-P RVP"
 
 config BOARD_INTEL_MTLRVP_P_EXT_EC
-	bool "Meteorlake-P RVP with Chrome EC"
+	bool "Meteorlake-P RVP with Chrome EC for Prod Silicon"
+
+config BOARD_INTEL_MTLRVP4ES_P_EXT_EC
+	bool "Meteorlake-P RVP with Chrome EC for non-Prod Silicon"
 
 config BOARD_INTEL_MTLRVP_P_MCHP
 	bool "Meteorlake-P RVP with Microchip EC"

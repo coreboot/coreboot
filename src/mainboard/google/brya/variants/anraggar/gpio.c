@@ -9,6 +9,8 @@
 static const struct pad_config override_gpio_table[] = {
 	/* A7  : NC ==> LTE_Present */
 	PAD_CFG_GPI(GPP_A7, NONE, DEEP),
+	/* A8  : GPP_A8 ==> WWAN_RF_DISABLE_ODL */
+	PAD_CFG_GPO(GPP_A8, 1, DEEP),
 	/* A18 : NC ==> HDMI_HPD_SRC*/
 	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),
 
@@ -80,8 +82,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPP_F11, 1, DEEP),
 	/* F12 : GSXDOUT ==> WWAN_RST_L */
 	PAD_CFG_GPO(GPP_F12, 0, DEEP),
-	/* F16 : NC ==> WWAN_PWR_ENABLE */
-	PAD_CFG_GPO(GPP_F16, 1, DEEP),
+	/* D6 : NC ==> WWAN_PWR_ENABLE */
+	PAD_CFG_GPO(GPP_D6, 1, DEEP),
 
 	/* H4  : I2C0_SDA ==> SOC_I2C_GSC_SDA */
 	PAD_CFG_NF(GPP_H4, NONE, DEEP, NF1),

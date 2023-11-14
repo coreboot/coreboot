@@ -409,7 +409,8 @@ chip soc/intel/alderlake
 				[3] = USB2_PORT_MID(OC_SKIP),		/* Type-A DB (6.2 inch) */
 				[4] = USB2_PORT_SHORT(OC_SKIP),	/* LTE (3.3 inch) */
 				[5] = USB2_PORT_SHORT(OC_SKIP),	/* UFC (3.7 inch) */
-				[7] = USB2_PORT_SHORT(OC_SKIP),	/* BT  (2.5 inch) */
+				[7] = USB2_PORT_SHORT(OC_SKIP),	/* Bluetooth port for PCIe WLAN (2.5 inch) */
+				[9] = USB2_PORT_SHORT(OC_SKIP),	/* Bluetooth port for CNVi WLAN */
 			}"
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
@@ -452,10 +453,16 @@ chip soc/intel/alderlake
 						device ref usb2_port6 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB2 Bluetooth""
+						register "desc" = ""PCIe Bluetooth""
 						register "type" = "UPC_TYPE_INTERNAL"
 						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D4)"
 						device ref usb2_port8 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""CNVi Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D4)"
+						device ref usb2_port10 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB3 Type-A Port A0 (MLB)""

@@ -72,30 +72,4 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	mcfg->CpuPcieRpClockReqMsgEnable[0] = 0;
 	mcfg->CpuPcieRpClockReqMsgEnable[1] = 0;
 	mcfg->CpuPcieRpClockReqMsgEnable[2] = 0;
-
-	// shared clock
-	mcfg->PcieClkSrcUsage[0] = 0x80;
-	mcfg->PcieClkSrcClkReq[0] = 0xFF;
-	// i225
-	mcfg->PcieClkSrcUsage[1] = 9; // RP 10
-	mcfg->PcieClkSrcClkReq[1] = 1;
-
-	// FIX Apparently Rootports don't like the idea of not having a clksrc and clkreq
-	// attached to it. For example if we set PcieClkSrcClkReq[1] above to 0xFF (unused)
-	// it will not come back out of L1. You can easily test this on windows by trying to
-	// update the i225 driver in device manager or use setpci in Linux to set Device in D3.
-	// The same applies to all other rootports no matter which devices are connected to it.
-	// Therefore we put each rootport (that does not have a clkreq, clksrc)
-	// to a not connected (not routed out) clksrc and clkreq. That seems to be a current FSP Bug.
-	// workaround and will be removed as soon as FSP is fixed.
-	mcfg->PcieClkSrcUsage[2] = 4; // Rootport 5
-	mcfg->PcieClkSrcClkReq[2] = 0;
-	mcfg->PcieClkSrcUsage[3] = 5; // Rootport 6
-	mcfg->PcieClkSrcClkReq[3] = 0;
-	mcfg->PcieClkSrcUsage[4] = 8; // Rootport 9
-	mcfg->PcieClkSrcClkReq[4] = 0;
-	mcfg->PcieClkSrcUsage[5] = 6; // Rootport 7
-	mcfg->PcieClkSrcClkReq[5] = 0;
-	mcfg->PcieClkSrcUsage[6] = 7; // Rootport 8
-	mcfg->PcieClkSrcClkReq[6] = 0;
 }

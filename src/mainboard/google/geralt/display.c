@@ -33,9 +33,9 @@ int configure_display(void)
 	panel->power_on();
 
 	mtk_ddp_init();
-	mdelay(200);
 
 	if (panel->disp_path == DISP_PATH_EDP) {
+		mdelay(200);
 		if (mtk_edp_init(&edid) < 0) {
 			printk(BIOS_ERR, "%s: Failed to initialize eDP\n", __func__);
 			return -1;

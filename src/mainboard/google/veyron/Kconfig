@@ -1,27 +1,11 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
 config BOARD_GOOGLE_VEYRON
-	def_bool n
-
-config BOARD_GOOGLE_VEYRON_JAQ
-	select BOARD_GOOGLE_VEYRON
-	select SYSTEM_TYPE_LAPTOP
-
-config BOARD_GOOGLE_VEYRON_JERRY
-	select BOARD_GOOGLE_VEYRON
-	select SYSTEM_TYPE_LAPTOP
-
-config BOARD_GOOGLE_VEYRON_MIGHTY
-	select BOARD_GOOGLE_VEYRON
-	select SYSTEM_TYPE_LAPTOP
-
-config BOARD_GOOGLE_VEYRON_MINNIE
-	select BOARD_GOOGLE_VEYRON
-	select SYSTEM_TYPE_LAPTOP
-
-config BOARD_GOOGLE_VEYRON_SPEEDY
-	select BOARD_GOOGLE_VEYRON
-	select SYSTEM_TYPE_LAPTOP
+	def_bool BOARD_GOOGLE_VEYRON_JAQ || \
+		 BOARD_GOOGLE_VEYRON_JERRY || \
+		 BOARD_GOOGLE_VEYRON_MIGHTY || \
+		 BOARD_GOOGLE_VEYRON_MINNIE || \
+		 BOARD_GOOGLE_VEYRON_SPEEDY
 
 if BOARD_GOOGLE_VEYRON
 
@@ -29,11 +13,9 @@ if BOARD_GOOGLE_VEYRON
 # resistors. These get overpowered by the SoC's internal pull-downs, so we
 # cannot read those pins as tri-state. They're restricted to binary RAM codes.
 config VEYRON_FORCE_BINARY_RAM_CODE
-	bool
-	default y if BOARD_GOOGLE_VEYRON_JAQ
-	default y if BOARD_GOOGLE_VEYRON_JERRY
-	default y if BOARD_GOOGLE_VEYRON_MIGHTY
-	default n
+	def_bool BOARD_GOOGLE_VEYRON_JAQ || \
+		 BOARD_GOOGLE_VEYRON_JERRY || \
+		 BOARD_GOOGLE_VEYRON_MIGHTY
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -48,6 +30,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select SPI_FLASH_WINBOND
 	select I2C_TPM
 	select MAINBOARD_HAS_TPM1
+	select SYSTEM_TYPE_LAPTOP
 
 config VBOOT
 	select VBOOT_VBNV_FLASH

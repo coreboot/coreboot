@@ -1,25 +1,12 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-config BOARD_GOOGLE_GRU_COMMON  # Umbrella option to be selected by variant boards.
-	def_bool n
-
-config BOARD_GOOGLE_KEVIN
-	select BOARD_GOOGLE_GRU_COMMON
-
-config BOARD_GOOGLE_GRU
-	select BOARD_GOOGLE_GRU_COMMON
-
-config BOARD_GOOGLE_BOB
-	select BOARD_GOOGLE_GRU_COMMON
-
-config BOARD_GOOGLE_SCARLET
-	select BOARD_GOOGLE_GRU_COMMON
-
-config BOARD_GOOGLE_NEFARIO
-	select BOARD_GOOGLE_GRU_COMMON
-
-config BOARD_GOOGLE_RAINIER
-	select BOARD_GOOGLE_GRU_COMMON
+config BOARD_GOOGLE_GRU_COMMON
+	def_bool BOARD_GOOGLE_BOB || \
+		 BOARD_GOOGLE_GRU || \
+		 BOARD_GOOGLE_KEVIN || \
+		 BOARD_GOOGLE_NEFARIO || \
+		 BOARD_GOOGLE_RAINIER || \
+		 BOARD_GOOGLE_SCARLET
 
 if BOARD_GOOGLE_GRU_COMMON
 
@@ -27,23 +14,21 @@ if BOARD_GOOGLE_GRU_COMMON
 # convenience. Explicitly override it when building for earlier Kevins.
 config GRU_HAS_TPM2
 	bool "Build for a board revision with a SPI TPM 2.0"
-	default n if BOARD_GOOGLE_KEVIN
-	default y
+	default !BOARD_GOOGLE_KEVIN
 
 config GRU_HAS_CENTERLOG_PWM
-	bool
-	default y if BOARD_GOOGLE_GRU || BOARD_GOOGLE_KEVIN || BOARD_GOOGLE_BOB
-	default n
+	def_bool BOARD_GOOGLE_GRU || \
+		 BOARD_GOOGLE_KEVIN || \
+		 BOARD_GOOGLE_BOB
 
 config GRU_HAS_WLAN_RESET
-	bool
-	default y if BOARD_GOOGLE_GRU || BOARD_GOOGLE_KEVIN || BOARD_GOOGLE_BOB
-	default n
+	def_bool BOARD_GOOGLE_GRU || \
+		 BOARD_GOOGLE_KEVIN || \
+		 BOARD_GOOGLE_BOB
 
 config GRU_BASEBOARD_SCARLET
-	bool
-	default y if BOARD_GOOGLE_SCARLET || BOARD_GOOGLE_RAINIER
-	default n
+	def_bool BOARD_GOOGLE_SCARLET || \
+		 BOARD_GOOGLE_RAINIER
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y

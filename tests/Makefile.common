@@ -157,10 +157,13 @@ $($(1)-sysobjs): $(testobj)/$(1)/%.o: $$$$*.c $$($(1)-config-file)
 
 # Link against Cmocka if not disabled
 ifeq ($(strip $(filter-out 0 n no,$($(1)-no_test_framework))),)
+ifneq ($(USE_SYSTEM_CMOCKA),)
 $($(1)-objs): TEST_CFLAGS += -I$(cmockasrc)/include
-$($(1)-bin): TEST_LDFLAGS += -L$(cmockaobj)/src -lcmocka -Wl,-rpath=$(cmockaobj)/src
+$($(1)-bin): TEST_LDFLAGS += -L$(cmockaobj)/src -Wl,-rpath=$(cmockaobj)/src
 $($(1)-bin): TEST_CFLAGS += -I$(cmockasrc)/include
 $($(1)-bin): $(CMOCKA_LIB)
+endif
+$($(1)-bin): TEST_LDFLAGS += -lcmocka
 endif
 
 $($(1)-bin): $($(1)-objs) $($(1)-sysobjs)

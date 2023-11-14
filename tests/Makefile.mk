@@ -24,6 +24,15 @@ TEST_CFLAGS += --coverage
 TEST_LDFLAGS += --coverage
 endif
 
+# Use system cmoka in default, or build from 3rdparty source code if requested
+USE_SYSTEM_CMOCKA ?= 1
+ifeq ($(USE_SYSTEM_CMOCKA),1)
+ifeq ($(shell $(HOSTPKG_CONFIG) --exists cmocka || echo 1),1)
+$(warning No system cmocka, build from 3rdparty instead...)
+USE_SYSTEM_CMOCKA=0
+endif
+endif
+
 stages := decompressor bootblock romstage smm verstage
 stages += ramstage rmodule postcar libagesa
 
@@ -186,6 +195,7 @@ help-unit-tests help::
 	@echo  '*** coreboot unit-tests targets ***'
 	@echo  '  Use "COV=1 make [target]" to enable code coverage for unit tests'
 	@echo  '  Use "GDB_DEBUG=1 make [target]" to build with debug symbols'
+	@echo  '  Use "USE_SYSTEM_CMOCKA=0 make [target]" to build Cmocka from source'
 	@echo  '  unit-tests            - Run all unit-tests from tests/'
 	@echo  '  clean-unit-tests      - Remove unit-tests build artifacts'
 	@echo  '  list-unit-tests       - List all unit-tests'

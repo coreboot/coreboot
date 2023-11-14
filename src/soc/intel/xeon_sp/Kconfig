@@ -91,6 +91,9 @@ config ECAM_MMCONF_BASE_ADDRESS
 config ECAM_MMCONF_BUS_NUMBER
 	default 256
 
+config ALWAYS_ALLOW_ABOVE_4G_ALLOCATION
+	default y
+
 config HEAP_SIZE
 	hex
 	default 0x80000

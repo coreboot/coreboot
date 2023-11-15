@@ -831,7 +831,7 @@ static const char *domain_acpi_name(const struct device *dev)
 	return NULL;
 }
 
-static struct device_operations pci_domain_ops = {
+struct device_operations amd_fam16_mod30_pci_domain_ops = {
 	.read_resources	  = domain_read_resources,
 	.set_resources	  = pci_domain_set_resources,
 	.scan_bus	  = pci_host_bridge_scan_bus,
@@ -863,26 +863,15 @@ void generate_cpu_entries(const struct device *device)
 	}
 }
 
-static struct device_operations cpu_bus_ops = {
+struct device_operations amd_fam16_mod30_cpu_bus_ops = {
 	.read_resources	= noop_read_resources,
 	.set_resources	= noop_set_resources,
 	.init		= mp_cpu_bus_init,
 	.acpi_fill_ssdt	= generate_cpu_entries,
 };
 
-static void root_complex_enable_dev(struct device *dev)
-{
-	/* Set the operations if it is a special bus type */
-	if (dev->path.type == DEVICE_PATH_DOMAIN) {
-		dev->ops = &pci_domain_ops;
-	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
-		dev->ops = &cpu_bus_ops;
-	}
-}
-
 struct chip_operations northbridge_amd_pi_00730F01_ops = {
 	CHIP_NAME("AMD FAM16 Root Complex")
-	.enable_dev = root_complex_enable_dev,
 	.final = fam16_finalize,
 };
 

@@ -89,3 +89,4 @@ RUN echo 'export PATH=$PATH:/opt/xgcc/bin' >> /home/coreboot/.bashrc && \
 	echo "{{SSH_KEY}}" > /home/coreboot/.ssh/authorized_keys && \
 	chmod 0700 /home/coreboot/.ssh && \
 	chmod 0600 /home/coreboot/.ssh/authorized_keys
+USER root

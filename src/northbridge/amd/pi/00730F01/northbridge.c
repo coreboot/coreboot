@@ -695,12 +695,6 @@ static void fam16_finalize(void *chip_info)
 	}
 }
 
-struct chip_operations northbridge_amd_pi_00730F01_ops = {
-	CHIP_NAME("AMD FAM16 Northbridge")
-	.enable_dev = 0,
-	.final = fam16_finalize,
-};
-
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 struct hw_mem_hole_info {
 	unsigned int hole_startk;
@@ -886,9 +880,10 @@ static void root_complex_enable_dev(struct device *dev)
 	}
 }
 
-struct chip_operations northbridge_amd_pi_00730F01_root_complex_ops = {
+struct chip_operations northbridge_amd_pi_00730F01_ops = {
 	CHIP_NAME("AMD FAM16 Root Complex")
 	.enable_dev = root_complex_enable_dev,
+	.final = fam16_finalize,
 };
 
 /*********************************************************************

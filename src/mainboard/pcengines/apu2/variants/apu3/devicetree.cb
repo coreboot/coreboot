@@ -1,16 +1,14 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
-chip northbridge/amd/pi/00730F01/root_complex
+chip northbridge/amd/pi/00730F01
 	device domain 0 on
 		subsystemid 0x1022 0x1410 inherit
-		chip northbridge/amd/pi/00730F01
-			device ref iommu	on end
-			device ref gpp_bridge_0	on end	# mPCIe slot 2 (on GFX lane)
-			device ref gpp_bridge_1	on end	# LAN3
-			device ref gpp_bridge_2	on end	# LAN2
-			device ref gpp_bridge_3	on end	# LAN1
-			device ref gpp_bridge_4	on end	# mPCIe slot 1
-		end
+		device ref iommu		on end
+		device ref gpp_bridge_0		on end	# mPCIe slot 2 (on GFX lane)
+		device ref gpp_bridge_1		on end	# LAN3
+		device ref gpp_bridge_2		on end	# LAN2
+		device ref gpp_bridge_3		on end	# LAN1
+		device ref gpp_bridge_4		on end	# mPCIe slot 1
 
 		chip southbridge/amd/pi/hudson		# it is under NB/SB Link, but on the same pci bus
 			device ref xhci		on end	# XHCI HC0 muxed with EHCI 2

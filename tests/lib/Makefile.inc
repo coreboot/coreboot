@@ -250,3 +250,4 @@ ux_locales-test-mocks += _cbfs_alloc \
 			cbfs_unmap \
 			vb2api_get_locale_id \
 			vboot_get_context
+ux_locales-test-config += CONFIG_VBOOT=1

@@ -1,32 +1,23 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
 chip northbridge/amd/pi/00730F01/root_complex
-	device cpu_cluster 0 on end
-
 	device domain 0 on
 		subsystemid 0x1022 0x1410 inherit
-
 		chip northbridge/amd/pi/00730F01
-			device pci 0.0 on  end # Root Complex
-			device pci 0.2 on end # IOMMU
-			device pci 1.0 off  end # Internal Graphics P2P bridge 0x9804
-			device pci 1.1 off  end # Internal Multimedia
-			device pci 2.0 on  end # PCIe Host Bridge
-			device pci 2.1 on  end # mPCIe slot 2 (on GFX lane)
-			device pci 2.2 on  end # LAN3
-			device pci 2.3 on  end # LAN2
-			device pci 2.4 on  end # LAN1
-			device pci 2.5 on  end # mPCIe slot 1
-			device pci 8.0 on  end # Platform Security Processor
-		end	#chip northbridge/amd/pi/00730F01
+			device ref iommu	on end
+			device ref gpp_bridge_0	on end	# mPCIe slot 2 (on GFX lane)
+			device ref gpp_bridge_1	on end	# LAN3
+			device ref gpp_bridge_2	on end	# LAN2
+			device ref gpp_bridge_3	on end	# LAN1
+			device ref gpp_bridge_4	on end	# mPCIe slot 1
+		end
 
-		chip southbridge/amd/pi/hudson # it is under NB/SB Link, but on the same pci bus
-			device pci 10.0 on  end # XHCI HC0 muxed with EHCI 2
-			device pci 11.0 on  end # SATA
-			device pci 12.0 on  end # USB EHCI0 usb[0:3] is connected
-			device pci 13.0 on  end # USB EHCI1 usb[4:7]
-			device pci 14.0 on  end # SM
-			device pci 14.3 on      # LPC 0x439d
+		chip southbridge/amd/pi/hudson		# it is under NB/SB Link, but on the same pci bus
+			device ref xhci		on end	# XHCI HC0 muxed with EHCI 2
+			device ref sata		on end
+			device ref ehci_0	on end	# USB EHCI0 usb[0:3] is connected
+			device ref ehci_1	on end	# USB EHCI1 usb[4:7]
+			device ref lpc_bridge	on
 				chip superio/nuvoton/nct5104d # SIO NCT5104D
 					register "irq_trigger_type" = "0"
 					register "reset_gpios" = "1"
@@ -58,19 +49,10 @@ chip northbridge/amd/pi/00730F01/root_complex
 					device pnp 2e.107 on end
 					device pnp 2e.607 off end
 					device pnp 2e.f on end
-				end # SIO NCT5104D
-			end # LPC 0x439d
-
-			device pci 14.7 on  end # SD
-			device pci 16.0 on  end # USB EHCI2 usb[8:7] - muxed with XHCI
-		end	#chip southbridge/amd/pi/hudson
-
-		device pci 18.0 on  end
-		device pci 18.1 on  end
-		device pci 18.2 on  end
-		device pci 18.3 on  end
-		device pci 18.4 on  end
-		device pci 18.5 on  end
-
-	end #domain
-end #northbridge/amd/pi/00730F01/root_complex
+				end
+			end
+			device ref sdhci	on end
+			device ref ehci_2	on end	# USB EHCI2 usb[8:7] - muxed with XHCI
+		end
+	end
+end

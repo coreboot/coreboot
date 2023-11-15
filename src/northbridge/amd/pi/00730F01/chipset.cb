@@ -1,0 +1,40 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+chip northbridge/amd/pi/00730F01/root_complex
+	device cpu_cluster 0 on end
+
+	device domain 0 on
+		chip northbridge/amd/pi/00730F01
+			device pci 0.0 alias gnb		on  end
+			device pci 0.2 alias iommu		off end
+			device pci 1.0 alias gfx		off end
+			device pci 1.1 alias gfx_hda		off end
+			device pci 2.0				on  end # Dummy Host Bridge, do not disable
+			device pci 2.1 alias gpp_bridge_0	off end
+			device pci 2.2 alias gpp_bridge_1	off end
+			device pci 2.3 alias gpp_bridge_2	off end
+			device pci 2.4 alias gpp_bridge_3	off end
+			device pci 2.5 alias gpp_bridge_4	off end
+			device pci 8.0 alias psp		on  end
+		end
+
+		chip southbridge/amd/pi/hudson
+			device pci 10.0 alias xhci		off end
+			device pci 11.0 alias sata		off end
+			device pci 12.0 alias ehci_0		off end
+			device pci 13.0 alias ehci_1		off end
+			device pci 14.0 alias smbus		on  end
+			device pci 14.2 alias hda		off end
+			device pci 14.3 alias lpc_bridge	on  end
+			device pci 14.7 alias sdhci		off end
+			device pci 16.0 alias ehci_2		off end
+		end
+
+		device pci 18.0 alias ht_0			on  end
+		device pci 18.1 alias ht_1			on  end
+		device pci 18.2 alias ht_2			on  end
+		device pci 18.3 alias ht_3			on  end
+		device pci 18.4 alias ht_4			on  end
+		device pci 18.5 alias ht_5			on  end
+	end
+end

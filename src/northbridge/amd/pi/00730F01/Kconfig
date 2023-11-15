@@ -6,6 +6,10 @@ config NORTHBRIDGE_AMD_PI_00730F01
 
 if NORTHBRIDGE_AMD_PI_00730F01
 
+config CHIPSET_DEVICETREE
+	string
+	default "northbridge/amd/pi/00730F01/chipset.cb"
+
 config HW_MEM_HOLE_SIZEK
 	hex
 	default 0x100000

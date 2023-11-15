@@ -46,19 +46,19 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 	fill_lp_backlight_gpios(gpios);
 
-	if (CONFIG(SDCARD_INIT)) {
+	if (CONFIG(GERALT_SDCARD_INIT)) {
 		struct lb_gpio sd_card_gpios[] = {
 			{GPIO_SD_CD_ODL.id, ACTIVE_LOW, -1, "SD card detect"},
 		};
 		lb_add_gpios(gpios, sd_card_gpios, ARRAY_SIZE(sd_card_gpios));
 	}
 
-	if (CONFIG(USE_MAX98390)) {
+	if (CONFIG(GERALT_USE_MAX98390)) {
 		struct lb_gpio max98390_gpios[] = {
 			{GPIO_RST_SPKR_L.id, ACTIVE_LOW, -1, "speaker reset"},
 		};
 		lb_add_gpios(gpios, max98390_gpios, ARRAY_SIZE(max98390_gpios));
-	} else if (CONFIG(USE_NAU8318)) {
+	} else if (CONFIG(GERALT_USE_NAU8318)) {
 		struct lb_gpio nau8318_gpios[] = {
 			{GPIO_EN_SPKR.id, ACTIVE_HIGH, -1, "speaker enable"},
 			{GPIO_BEEP_ON_OD.id, ACTIVE_HIGH, -1, "beep enable"},

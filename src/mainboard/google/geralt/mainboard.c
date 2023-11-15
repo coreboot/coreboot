@@ -31,7 +31,7 @@ static void configure_i2s(void)
 
 static void configure_audio(void)
 {
-	if (CONFIG(USE_MAX98390)) {
+	if (CONFIG(GERALT_USE_MAX98390)) {
 		printk(BIOS_DEBUG, "Configure MAX98390 audio\n");
 
 		mtk_i2c_bus_init(I2C0, I2C_SPEED_FAST);
@@ -54,7 +54,7 @@ static void mainboard_init(struct device *dev)
 
 	configure_audio();
 
-	if (CONFIG(SDCARD_INIT))
+	if (CONFIG(GERALT_SDCARD_INIT))
 		mtk_msdc_configure_sdcard();
 
 	setup_usb_host();

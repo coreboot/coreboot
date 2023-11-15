@@ -42,7 +42,7 @@ static void mainboard_init(struct device *dev)
 {
 	mtk_msdc_configure_emmc(true);
 
-	if (CONFIG(SDCARD_INIT)) {
+	if (CONFIG(CORSOLA_SDCARD_INIT)) {
 		printk(BIOS_INFO, "SD card init\n");
 
 		/* External SD Card connected via USB */

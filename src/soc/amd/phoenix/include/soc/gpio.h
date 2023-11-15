@@ -3,7 +3,7 @@
 #ifndef AMD_PHOENIX_GPIO_H
 #define AMD_PHOENIX_GPIO_H
 
-#define GPIO_DEVICE_NAME	"AMD0030"
+#define GPIO_DEVICE_NAME	"AMDI0030"
 #define GPIO_DEVICE_DESC	"GPIO Controller"
 
 #ifndef __ACPI__

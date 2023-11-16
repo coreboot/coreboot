@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+config BOARD_EMULATION_QEMU_SBSA
+	bool "QEMU sbsa"

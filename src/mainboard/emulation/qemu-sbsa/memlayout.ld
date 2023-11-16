@@ -1,0 +1,25 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+
+#include <memlayout.h>
+#include <arch/header.ld>
+
+/*
+ * Memory map for QEMU sbsa-ref machine since
+ * [hw/arm/sbsa-ref.c, c6f3cbca32bde9ee94d9949aa63e8a7ef2d7bc5b]
+ */
+SECTIONS
+{
+	REGION(flash, 0x10000000, CONFIG_ROM_SIZE, 8)
+
+	DRAM_START(0x10000000000)
+	BOOTBLOCK(0x10020010000, 64K)
+	STACK(0x10020020000, 54K)
+	CBFS_MCACHE(0x1002002D800, 8K)
+	FMAP_CACHE(0x1002002F800, 2K)
+	TIMESTAMP(0x10020030000, 1K)
+	TTB(0x10020070000, 128K)
+	RAMSTAGE(0x100200b0000, 16M)
+	REGION(fdt_pointer, 0x100210b0000, ARCH_POINTER_ALIGN_SIZE, ARCH_POINTER_ALIGN_SIZE)
+
+	POSTRAM_CBFS_CACHE(0x10021200000, 1M)
+}

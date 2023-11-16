@@ -1,0 +1,55 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+if BOARD_EMULATION_QEMU_SBSA
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select ARCH_BOOTBLOCK_ARMV8_64
+	select ARCH_VERSTAGE_ARMV8_64
+	select ARCH_ROMSTAGE_ARMV8_64
+	select ARCH_RAMSTAGE_ARMV8_64
+	select ARM64_USE_ARCH_TIMER
+	select BOARD_ROMSIZE_KB_32768
+	select BOOTBLOCK_CUSTOM
+	select BOOT_DEVICE_NOT_SPI_FLASH
+	select DRIVERS_UART_PL011
+	select FLATTENED_DEVICE_TREE
+	select HAVE_LINEAR_FRAMEBUFFER
+	select MAINBOARD_FORCE_NATIVE_VGA_INIT
+	select MAINBOARD_HAS_NATIVE_VGA_INIT
+	select MISSING_BOARD_RESET
+	select PCI
+	select HAVE_ACPI_TABLES
+	select ACPI_GTDT
+	select ACPI_COMMON_MADT_GICC_V3
+	select GENERATE_SMBIOS_TABLES
+
+config ARM64_CURRENT_EL
+	default 2
+
+config ECAM_MMCONF_BASE_ADDRESS
+	default 0xf0000000
+
+config ECAM_MMCONF_BUS_NUMBER
+	default 256
+
+config FMDFILE
+	default "src/mainboard/emulation/qemu-sbsa/flash.fmd"
+
+config MAINBOARD_DIR
+	default "emulation/qemu-sbsa"
+
+config MAINBOARD_PART_NUMBER
+	default "QEMU sbsa"
+
+config MAX_CPUS
+	default 128
+
+config MAINBOARD_VENDOR
+	default "QEMU"
+
+config DRAM_SIZE_MB
+	int
+	default 8388608 # The maximum dram size is 8192GiB.
+
+endif #  BOARD_EMULATION_QEMU_SBSA

@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+chip mainboard/emulation/qemu-sbsa
+	register "vgic_maintenance_interrupt" = "0x19"
+	register "performance_interrupt_gsiv" = "0x17"
+
+	device cpu_cluster 0 on ops qemu_aarch64_cpu_ops end
+
+	device domain 0 on ops qemu_aarch64_pci_domain_ops
+		device pci 00.0 on end
+	end
+end

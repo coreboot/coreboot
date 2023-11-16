@@ -90,6 +90,7 @@ The boards in this section are not real mainboards, but emulators.
 Spike RISC-V emulator <emulation/spike-riscv.md>
 QEMU RISC-V emulator <emulation/qemu-riscv.md>
 QEMU AArch64 emulator <emulation/qemu-aarch64.md>
+QEMU SBSA emulator <emulation/qemu-sbsa.md>
 QEMU x86 Q35 <emulation/qemu-q35.md>
 QEMU x86 PC <emulation/qemu-i440fx.md>
 QEMU POWER9 <emulation/qemu-power9.md>

@@ -3,6 +3,7 @@
 # ugly to put it in here, but unavoidable
 config SEPARATE_ROMSTAGE
 	default n if BOARD_EMULATION_QEMU_RISCV
+	default n if BOARD_EMULATION_QEMU_SBSA
 
 if VENDOR_EMULATION
 

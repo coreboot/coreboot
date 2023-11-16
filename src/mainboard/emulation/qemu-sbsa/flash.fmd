@@ -1,0 +1,23 @@
+#
+# custom fmap which takes the additional TF-A region into account
+#
+# +-------------+ <-- 0x0
+# |    TF-A     |
+# +-------------+ <-- BIOS_BASE
+# |  bootblock  |
+# +-------------+ <-- BIOS_BASE + 128K
+# |    FMAP     |
+# +-------------+ <-- BIOS_BASE + 128K + FMAP_SIZE
+# |    CBFS     |
+# +-------------+ <-- ROM_SIZE
+#
+
+FLASH@0x10000000 CONFIG_ROM_SIZE {
+
+	BIOS {
+
+		BOOTBLOCK 128K
+		FMAP 0x200
+		COREBOOT(CBFS)
+	}
+}

@@ -48,11 +48,11 @@ struct device_operations {
 	void (*enable)(struct device *dev);
 	void (*vga_disable)(struct device *dev);
 	void (*reset_bus)(struct bus *bus);
-#if CONFIG(GENERATE_SMBIOS_TABLES)
+
 	int (*get_smbios_data)(struct device *dev, int *handle,
 		unsigned long *current);
 	void (*get_smbios_strings)(struct device *dev, struct smbios_type11 *t);
-#endif
+
 #if CONFIG(HAVE_ACPI_TABLES)
 	unsigned long (*write_acpi_tables)(const struct device *dev,
 		unsigned long start, struct acpi_rsdp *rsdp);

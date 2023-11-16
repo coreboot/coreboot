@@ -10,7 +10,7 @@ chip northbridge/intel/sandybridge
 	end
 	device domain 0 on
 		ops sandybridge_pci_domain_ops
-		device pci 00.0 alias host_bridge on end # host bridge
+		device pci 00.0 alias host_bridge on ops sandybridge_host_bridge_ops end
 		device pci 01.0 alias peg10 off end # PEG10
 		device pci 01.1 alias peg11 off end # PEG11
 		device pci 01.2 alias peg12 off end # PEG12

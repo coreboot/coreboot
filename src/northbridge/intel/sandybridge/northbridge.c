@@ -390,25 +390,13 @@ static void mc_gen_ssdt(const struct device *dev)
 	set_above_4g_pci(dev);
 }
 
-static struct device_operations mc_ops = {
+struct device_operations sandybridge_host_bridge_ops = {
 	.read_resources         = mc_read_resources,
 	.set_resources          = pci_dev_set_resources,
 	.enable_resources       = pci_dev_enable_resources,
 	.init                   = northbridge_init,
 	.ops_pci                = &pci_dev_ops_pci,
 	.acpi_fill_ssdt		= mc_gen_ssdt,
-};
-
-static const unsigned short pci_device_ids[] = {
-	0x0100, 0x0104, 0x0108,		/* Sandy Bridge */
-	0x0150, 0x0154, 0x0158,		/* Ivy Bridge */
-	0
-};
-
-static const struct pci_driver mc_driver __pci_driver = {
-	.ops     = &mc_ops,
-	.vendor  = PCI_VID_INTEL,
-	.devices = pci_device_ids,
 };
 
 struct device_operations sandybridge_cpu_bus_ops = {

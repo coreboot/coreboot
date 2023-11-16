@@ -46,27 +46,34 @@ static uint64_t get_ccsidr_el1_numsets(uint64_t ccsidr_el1)
 	}
 }
 
-void cpu_get_cache_info(enum cache_level level, enum cache_type type, size_t *cache_size, size_t *assoc)
+enum cb_err cpu_get_cache_info(const enum cache_level level, const enum cache_type type,
+			       struct cache_info *info)
 {
 	uint64_t ccsidr_el1;
 
-	if (cache_size == NULL || assoc == NULL)
-		return;
+	if (info == NULL || level < CACHE_L1 || level > CACHE_L7)
+		return CB_ERR_ARG;
 
-	if (level < CACHE_L1 || level > CACHE_L7)
-		return;
-
-	/* [0] - Indicates instruction cache; [3:1] - Indicates cache level */
+	/*
+	 * select target cache.
+	 * [0] - Indicates instruction cache [3:1] - Indicates cache level
+	 */
 	raw_write_csselr_el1(((level - 1) << 1) | (type == CACHE_INSTRUCTION));
 	ccsidr_el1 = raw_read_ccsidr_el1();
 
 	/* [2:0] - Indicates (Log2(Number of bytes in cache line) - 4) */
-	uint8_t line_length = 1 << ((ccsidr_el1 & 0x7) + 4);
+	info->line_bytes    = (1 << ((ccsidr_el1 & 0x7) + 4));
+
 	/* (Number of sets in cache) - 1 */
-	uint64_t num_sets = get_ccsidr_el1_numsets(ccsidr_el1) + 1;
+	info->numsets       = get_ccsidr_el1_numsets(ccsidr_el1) + 1;
+
 	/* (Associativity of cache) - 1 */
-	*assoc = get_ccsidr_el1_assoc(ccsidr_el1) + 1;
-	*cache_size = line_length * *assoc * num_sets;
+	info->associativity = get_ccsidr_el1_assoc(ccsidr_el1) + 1;
+
+	/* computed size of cache in bytes */
+	info->size          = info->line_bytes * info->associativity * info->numsets;
+
+	return CB_SUCCESS;
 }
 
 unsigned int dcache_line_bytes(void)

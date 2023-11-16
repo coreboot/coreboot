@@ -31,8 +31,16 @@ enum cache_type {
 	CACHE_UNIFIED = 4,
 };
 
+struct cache_info {
+	uint64_t size;          // total size of cache in bytes
+	uint64_t associativity; // number of cache lines in a set
+	uint64_t numsets;       // number of sets in a cache
+	uint8_t  line_bytes;    // size of cache line in bytes
+};
+
 enum cache_type cpu_get_cache_type(enum cache_level level);
-void cpu_get_cache_info(enum cache_level level, enum cache_type, size_t *cache_size, size_t *assoc);
+enum cb_err cpu_get_cache_info(const enum cache_level level, const enum cache_type type,
+			       struct cache_info *info);
 
 /* dcache clean by virtual address to PoC */
 void dcache_clean_by_mva(void const *addr, size_t len);

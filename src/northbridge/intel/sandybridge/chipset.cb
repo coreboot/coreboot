@@ -26,7 +26,7 @@ chip northbridge/intel/sandybridge
 			device pci 16.3 alias me_kt off end      # Management Engine KT
 			device pci 19.0 alias gbe off end        # Intel Gigabit Ethernet
 			device pci 1a.0 alias ehci2 off end      # USB2 EHCI #2
-			device pci 1b.0 alias hda off end        # High Definition Audio
+			device pci 1b.0 alias hda off ops bd82x6x_azalia_ops end        # High Definition Audio
 			device pci 1c.0 alias pcie_rp1 off ops bd82x6x_pcie_rp_ops end   # PCIe Port #1
 			device pci 1c.1 alias pcie_rp2 off ops bd82x6x_pcie_rp_ops end   # PCIe Port #2
 			device pci 1c.2 alias pcie_rp3 off ops bd82x6x_pcie_rp_ops end   # PCIe Port #3

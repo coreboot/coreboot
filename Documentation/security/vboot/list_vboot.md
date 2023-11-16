@@ -33,6 +33,7 @@
 - Panther (ASUS Chromebox CN60)
 - Tricky (Dell Chromebox 3010)
 - Zako (HP Chromebox G1)
+- Brox
 - Agah
 - Anahera
 - Anahera4ES
@@ -67,6 +68,7 @@
 - Primus
 - Primus4ES
 - Pujjo
+- Quandiso
 - Redrix
 - Redrix4ES
 - Skolas
@@ -81,6 +83,9 @@
 - Yaviks
 - Yavilla
 - Zydron
+- Nokris
+- Dochi
+- Anraggar
 - Butterfly (HP Pavilion Chromebook 14)
 - Cherry
 - Dojo
@@ -92,6 +97,7 @@
 - Krabby
 - Tentacruel
 - Magikarp
+- Chinchou
 - Starmie
 - Banon (Acer Chromebook 15 (CB3-532))
 - Celes (Samsung Chromebook 3)
@@ -112,6 +118,7 @@
 - Foster
 - Gale (Google WiFi)
 - Geralt
+- Ciri
 - Asuka (Dell Chromebook 13 3380)
 - Caroline (Samsung Chromebook Pro)
 - Cave (Asus Chromebook Flip C302SA)
@@ -125,9 +132,9 @@
 - Scarlet
 - Nefario
 - Rainier
+- Dewatt (Acer Chromebook Spin 514)
 - Guybrush
-- Nipperkin
-- Dewatt
+- Nipperkin (HP Elite c645 G2 Chromebook)
 - Akemi (IdeaPad Flex 5/5i Chromebook)
 - Dratini (HP Pro c640 Chromebook)
 - Hatch
@@ -221,14 +228,17 @@
 - Rex EC ISH
 - Ovis
 - Ovis4ES
+- Deku
+- Deku4ES
 - Rex4ES
+- Rex4ES EC ISH
 - Arcada (Latitude 5300 2-in-1 Chromebook Enterprise)
 - Sarien (Dell Latitude 5400 Chromebook Enterprise)
-- Skyrim
-- Winterhold
-- Frostflow
 - Crystaldrift
-- Markarth
+- Frostflow (ASUS Chromebook CM34 Flip)
+- Markarth (Acer Chromebook Plus 514)
+- Skyrim
+- Winterhold (Dell Latitude 3445 Chromebook)
 - Falco (HP Chromebook 14)
 - Leon (Toshiba Chromebook)
 - Peppy (Acer C720/C720P Chromebook)
@@ -275,16 +285,16 @@
 - Volteer2
 - Volteer2_Ti50
 - Voxel (Acer Chromebook Spin 713 (CP713-3W))
-- Dalboz
-- Vilboz (Lenovo 100e/300e Gen3 AMD)
-- Ezkinil (Acer Chromebook Spin 514)
-- Morphius (Lenovo ThinkPad C13 Yoga Chromebook)
-- Trembyle
 - Berknip (HP Pro c645 Chromebook Enterprise)
-- Woomax (ASUS Chromebook Flip CM5)
+- Dalboz
 - Dirinboz (HP Chromebook 14a-nd0097nr)
-- Shuboz
+- Ezkinil (Acer Chromebook Spin 514)
 - Gumboz (HP Chromebook x360 14a)
+- Morphius (Lenovo ThinkPad C13 Yoga Chromebook)
+- Shuboz
+- Trembyle
+- Vilboz (Lenovo 100e/300e Gen3 AMD)
+- Woomax (ASUS Chromebook Flip CM5)
 
 ## HP
 - Z220 CMT Workstation
@@ -316,7 +326,8 @@
 - Kabylake DDR4 RVP11
 - Kunimitsu
 - Meteorlake-P RVP
-- Meteorlake-P RVP with Chrome EC
+- Meteorlake-P RVP with Chrome EC for Prod Silicon
+- Meteorlake-P RVP with Chrome EC for non-Prod Silicon
 - Meteorlake-P RVP with Microchip EC
 - shadowmountain
 - Strago
@@ -395,6 +406,7 @@
 - X11SSH-TF
 - X11SSM-F
 - X11SSH-F/LN4F
+- X11SSW-F
 
 ## UP
 - Squared

@@ -15,7 +15,6 @@ absobj := $(abspath $(obj))
 
 additional-dirs :=
 
-VBOOT_SOURCE ?= $(abspath 3rdparty/vboot)
 VBOOT_HOST_BUILD ?= $(abspath $(objutil)/vboot_lib)
 
 COREBOOT_EXPORTS := COREBOOT_EXPORTS

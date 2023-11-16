@@ -40,21 +40,9 @@ static struct device *get_node_pci(u32 nodeid, u32 fn)
 	return pcidev_on_root(DEV_CDB + nodeid, fn);
 }
 
-static struct device *get_mc_dev(void)
-{
-	return pcidev_on_root(DEV_CDB, 0);
-}
-
 static unsigned int get_node_nums(void)
 {
-	static unsigned int node_nums;
-
-	if (node_nums)
-		return node_nums;
-
-	node_nums = ((pci_read_config32(get_mc_dev(), 0x60) >> 4) & 7) + 1; //NodeCnt[2:0]
-
-	return node_nums;
+	return 1;
 }
 
 static void get_fx_devs(void)

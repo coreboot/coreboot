@@ -8,7 +8,7 @@ chip soc/intel/skylake
 	register "SaGv" = "SaGv_FixedHigh"
 
 	device domain 0 on
-		device pci 14.0 on
+		device ref south_xhci on
 			chip drivers/usb/acpi
 				device usb 0.0 on
 					chip drivers/usb/acpi
@@ -33,8 +33,8 @@ chip soc/intel/skylake
 					end
 				end
 			end
-		end # USB xHCI
-		device pci 19.1 on
+		end
+		device ref i2c5 on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5663""
 				register "name" = ""RT53""
@@ -42,6 +42,6 @@ chip soc/intel/skylake
 				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_D9)"
 				device i2c 13 on end
 			end
-		end # I2C #5
+		end
 	end
 end

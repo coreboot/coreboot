@@ -21,15 +21,9 @@ static void iommu_read_resources(struct device *dev)
 	res->flags = IORESOURCE_MEM;
 }
 
-static struct device_operations iommu_ops = {
+struct device_operations amd_pi_iommu_ops = {
 	.read_resources = iommu_read_resources,
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.ops_pci = &pci_dev_ops_pci,
-};
-
-static const struct pci_driver iommu_driver __pci_driver = {
-	.ops = &iommu_ops,
-	.vendor = PCI_VID_AMD,
-	.device = PCI_DID_AMD_16H_MODEL_303F_NB_IOMMU,
 };

@@ -33,11 +33,6 @@ static struct device *get_node_pci(u32 nodeid, u32 fn)
 	return pcidev_on_root(DEV_CDB + nodeid, fn);
 }
 
-static unsigned int get_node_nums(void)
-{
-	return 1;
-}
-
 static int get_dram_base_limit(u32 nodeid, resource_t *basek, resource_t *limitk)
 {
 	u32 temp;
@@ -573,38 +568,15 @@ struct hw_mem_hole_info {
 static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 {
 	struct hw_mem_hole_info mem_hole;
-	int i;
 	mem_hole.hole_startk = CONFIG_HW_MEM_HOLE_SIZEK;
 	mem_hole.node_id = -1;
-	for (i = 0; i < get_node_nums(); i++) {
-		resource_t basek, limitk;
-		u32 hole;
-		if (!get_dram_base_limit(i, &basek, &limitk))
-			continue; // no memory on this node
-		hole = pci_read_config32(get_node_pci(i, 1), 0xf0);
+
+	resource_t basek, limitk;
+	if (get_dram_base_limit(0, &basek, &limitk)) { // memory on this node
+		u32 hole = pci_read_config32(get_node_pci(0, 1), 0xf0);
 		if (hole & 2) { // we find the hole
 			mem_hole.hole_startk = (hole & (0xff << 24)) >> 10;
-			mem_hole.node_id = i; // record the node No with hole
-			break; // only one hole
-		}
-	}
-
-	/* We need to double check if there is special set on base reg and limit reg
-	 * are not continuous instead of hole, it will find out its hole_startk.
-	 */
-	if (mem_hole.node_id == -1) {
-		resource_t limitk_pri = 0;
-		for (i = 0; i < get_node_nums(); i++) {
-			resource_t base_k, limit_k;
-			if (!get_dram_base_limit(i, &base_k, &limit_k))
-				continue; // no memory on this node
-			if (base_k > 4 * 1024 * 1024) break; // don't need to go to check
-			if (limitk_pri != base_k) { // we find the hole
-				mem_hole.hole_startk = (unsigned int)limitk_pri; // must be below 4G
-				mem_hole.node_id = i;
-				break; //only one hole
-			}
-			limitk_pri = limit_k;
+			mem_hole.node_id = 0; // record the node No with hole
 		}
 	}
 	return mem_hole;

@@ -110,6 +110,13 @@ static const struct spi_flash_part_id flash_table[] = {
 		.fast_read_dual_output_support	= 1,
 		.fast_read_dual_io_support	= 1,
 	},
+	{
+		/* GD25LQ255E */
+		.id[0]				= 0x6019,
+		.nr_sectors_shift		= 13,
+		.fast_read_dual_output_support	= 1,
+		.fast_read_dual_io_support	= 1,
+	},
 };
 
 const struct spi_flash_vendor_info spi_flash_gigadevice_vi = {

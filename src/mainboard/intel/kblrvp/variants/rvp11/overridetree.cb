@@ -107,14 +107,14 @@ chip soc/intel/skylake
 	}"
 
 	device domain 0 on
-		device pci 04.0 off end # SA thermal subsystem
-		device pci 15.2 off end # I2C #2
-		device pci 15.3 off end # I2C #3
-		device pci 17.0 on  end # SATA
-		device pci 19.2 off end # I2C #4
-		device pci 1e.4 off end # eMMC
-		device pci 1e.6 off end # SDCard
-		device pci 1f.3 on  end # Intel HDA
-		device pci 1f.6 on  end # GbE
+		device ref sa_thermal	off end
+		device ref i2c2		off end
+		device ref i2c3		off end
+		device ref sata		on  end
+		device ref i2c4		off end
+		device ref emmc		off end
+		device ref sdxc		off end
+		device ref hda		on  end
+		device ref gbe		on  end
 	end
 end

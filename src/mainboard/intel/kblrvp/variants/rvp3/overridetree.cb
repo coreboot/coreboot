@@ -113,18 +113,18 @@ chip soc/intel/skylake
 	}"
 
 	device domain 0 on
-		device pci 05.0 on  end # SA IMGU
-		device pci 14.3 on  end # Camera
-		device pci 1c.0 on  end # PCI Express Port 1 x4 SLOT1
-		device pci 1c.4 on  end # PCI Express Port 5 x1 SLOT2/LAN
-		device pci 1c.5 on  end # PCI Express Port 6 x1 SLOT3
-		device pci 1d.0 on  end # PCI Express Port 9  x1 WLAN
-		device pci 1d.1 on  end # PCI Express Port 10 x1 WIGIG
-		device pci 1f.0 on
+		device ref imgu		on  end
+		device ref cio		on  end
+		device ref pcie_rp1	on  end # x4 SLOT1
+		device ref pcie_rp5	on  end # x1 SLOT2/LAN
+		device ref pcie_rp6	on  end # x1 SLOT3
+		device ref pcie_rp9	on  end # x1 WLAN
+		device ref pcie_rp10	on  end # x1 WIGIG
+		device ref lpc_espi	on
 			chip drivers/pc80/tpm
 				device pnp 0c31.0 on end
 			end
-		end # LPC Interface
-		device pci 1f.3 on  end # Intel HDA
+		end
+		device ref hda		on  end
 	end
 end

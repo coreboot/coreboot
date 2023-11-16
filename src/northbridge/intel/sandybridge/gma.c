@@ -640,7 +640,7 @@ static void gma_func0_disable(struct device *dev)
 	dev->enabled = 0;
 }
 
-static struct device_operations gma_func0_ops = {
+struct device_operations sandybridge_gma_func0_ops = {
 	.read_resources         = pci_dev_read_resources,
 	.set_resources          = pci_dev_set_resources,
 	.enable_resources       = pci_dev_enable_resources,
@@ -649,17 +649,4 @@ static struct device_operations gma_func0_ops = {
 	.vga_disable                = gma_func0_disable,
 	.ops_pci                = &pci_dev_ops_pci,
 	.acpi_name              = gma_acpi_name,
-};
-
-static const unsigned short pci_device_ids[] = {
-	0x0102, 0x0106, 0x010a, 0x0112,
-	0x0116, 0x0122, 0x0126, 0x0156,
-	0x0166, 0x0162, 0x016a, 0x0152,
-	0
-};
-
-static const struct pci_driver gma __pci_driver = {
-	.ops     = &gma_func0_ops,
-	.vendor  = PCI_VID_INTEL,
-	.devices = pci_device_ids,
 };

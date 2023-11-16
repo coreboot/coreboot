@@ -14,7 +14,7 @@ chip northbridge/intel/sandybridge
 		device pci 01.0 alias peg10 off end # PEG10
 		device pci 01.1 alias peg11 off end # PEG11
 		device pci 01.2 alias peg12 off end # PEG12
-		device pci 02.0 alias igd off end # vga controller
+		device pci 02.0 alias igd off ops sandybridge_gma_func0_ops end # vga controller
 		device pci 04.0 alias dev4 off end # Device 4
 		device pci 06.0 alias peg60 off end # PEG60
 

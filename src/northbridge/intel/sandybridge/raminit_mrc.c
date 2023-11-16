@@ -315,7 +315,7 @@ static void devicetree_fill_pei_data(struct pei_data *pei_data)
 static void spd_fill_pei_data(struct pei_data *pei_data)
 {
 	struct spd_info spdi = {0};
-	unsigned int i, have_memory_down;
+	unsigned int i, have_memory_down = 0;
 
 	mb_get_spd_map(&spdi);
 

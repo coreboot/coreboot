@@ -25,15 +25,8 @@
 #include <southbridge/amd/pi/hudson/pci_devs.h>
 #include <amdblocks/cpu.h>
 
-#define MAX_NODE_NUMS MAX_NODES
 #define PCIE_CAP_AER		BIT(5)
 #define PCIE_CAP_ACS		BIT(6)
-
-static struct device *__f0_dev[MAX_NODE_NUMS];
-static struct device *__f1_dev[MAX_NODE_NUMS];
-static struct device *__f2_dev[MAX_NODE_NUMS];
-static struct device *__f4_dev[MAX_NODE_NUMS];
-static unsigned int fx_devs = 0;
 
 static struct device *get_node_pci(u32 nodeid, u32 fn)
 {
@@ -45,32 +38,11 @@ static unsigned int get_node_nums(void)
 	return 1;
 }
 
-static void get_fx_devs(void)
-{
-	int i;
-	for (i = 0; i < MAX_NODE_NUMS; i++) {
-		__f0_dev[i] = get_node_pci(i, 0);
-		__f1_dev[i] = get_node_pci(i, 1);
-		__f2_dev[i] = get_node_pci(i, 2);
-		__f4_dev[i] = get_node_pci(i, 4);
-		if (__f0_dev[i] != NULL && __f1_dev[i] != NULL)
-			fx_devs = i + 1;
-	}
-	if (__f1_dev[0] == NULL || __f0_dev[0] == NULL || fx_devs == 0) {
-		die("Cannot find 0:0x18.[0|1]\n");
-	}
-	printk(BIOS_DEBUG, "fx_devs = 0x%x\n", fx_devs);
-}
-
 static int get_dram_base_limit(u32 nodeid, resource_t *basek, resource_t *limitk)
 {
 	u32 temp;
 
-	if (fx_devs == 0)
-		get_fx_devs();
-
-
-	temp = pci_read_config32(__f1_dev[nodeid], 0x40 + (nodeid << 3)); //[39:24] at [31:16]
+	temp = pci_read_config32(get_node_pci(nodeid, 1), 0x40 + (nodeid << 3)); //[39:24] at [31:16]
 	if (!(temp & 1))
 		return 0; // this memory range is not enabled
 	/*
@@ -82,7 +54,7 @@ static int get_dram_base_limit(u32 nodeid, resource_t *basek, resource_t *limitk
 	 * BKDG address[39:0] <= {DramLimit[39:24], FF_FFFFh} converted as above but
 	 * ORed with 0xffff to get real limit before shifting.
 	 */
-	temp = pci_read_config32(__f1_dev[nodeid], 0x44 + (nodeid << 3)); //[39:24] at [31:16]
+	temp = pci_read_config32(get_node_pci(nodeid, 1), 0x44 + (nodeid << 3)); //[39:24] at [31:16]
 	*limitk = ((temp & 0xffff0000) | 0xffff) >> (10 - 8);
 	*limitk += 1; // round up last byte
 
@@ -99,11 +71,8 @@ static void add_fixed_resources(struct device *dev, int index)
 	mmio_resource_kb(dev, index++, VGA_MMIO_BASE >> 10, VGA_MMIO_SIZE >> 10);
 	reserved_ram_resource_kb(dev, index++, 0xc0000 >> 10, (0x100000 - 0xc0000) >> 10);
 
-	if (fx_devs == 0)
-		get_fx_devs();
-
 	/* Check if CC6 save area is enabled (bit 18 CC6SaveEn)  */
-	if (pci_read_config32(__f2_dev[0], 0x118) & (1 << 18)) {
+	if (pci_read_config32(get_node_pci(0, 2), 0x118) & (1 << 18)) {
 		/* Add CC6 DRAM UC resource residing at DRAM Limit of size 16MB as per BKDG */
 		resource_t basek, limitk;
 		if (!get_dram_base_limit(0, &basek, &limitk))
@@ -612,7 +581,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 		u32 hole;
 		if (!get_dram_base_limit(i, &basek, &limitk))
 			continue; // no memory on this node
-		hole = pci_read_config32(__f1_dev[i], 0xf0);
+		hole = pci_read_config32(get_node_pci(i, 1), 0xf0);
 		if (hole & 2) { // we find the hole
 			mem_hole.hole_startk = (hole & (0xff << 24)) >> 10;
 			mem_hole.node_id = i; // record the node No with hole

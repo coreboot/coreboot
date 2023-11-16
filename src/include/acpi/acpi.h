@@ -75,12 +75,39 @@ enum coreboot_acpi_ids {
 };
 
 enum acpi_tables {
-	/* Tables defined by ACPI and used by coreboot */
-	BERT, CEDT, DBG2, DMAR, DSDT, EINJ, FACS, FADT, HEST, HMAT, HPET, IVRS,
-	MADT, MCFG, RSDP, RSDT, SLIT, SRAT, SSDT, TCPA, TPM2, XSDT, ECDT, LPIT,
-	SPCR, GTDT,
+	/* Alphabetic list of Tables defined by ACPI and used by coreboot */
+	BERT,   /* Boot Error Record Table */
+	CEDT,   /* CXL Early Discovery Table */
+	DBG2,   /* Debug Port Table 2 */
+	DMAR,   /* DMA Remapping Table */
+	DSDT,   /* Differentiated System Description Table */
+	ECDT,   /* Embedded Controller Boot Resources Table */
+	EINJ,   /* Error Injection Table */
+	FACS,   /* Firmware ACPI Control Structure */
+	FADT,   /* Fixed ACPI Description Table */
+	GTDT,   /* Generic Timer Description Table */
+	HEST,   /* Hardware Error Source Table */
+	HMAT,   /* Heterogeneous Memory Attribute Table */
+	HPET,   /* High Precision Event Timer Table */
+	IVRS,   /* I/O Virtualization Reporting Structure */
+	LPIT,   /* Low Power Idle Table */
+	MADT,   /* Multiple APIC Description Table */
+	MCFG,   /* PCI Express Memory Mapped Configuration */
+	RSDP,   /* Root System Description Pointer */
+	RSDT,   /* Root System Description Table */
+	SLIT,   /* System Locality Distance Information Table */
+	SPCR,   /* Serial Port Console Redirection Table */
+	SRAT,   /* System Resource Affinity Table */
+	SSDT,   /* Secondary System Description Table */
+	TCPA,   /* Trusted Computing Platform Alliance Table */
+	TPM2,   /* Trusted Platform Module 2.0 Table */
+	XSDT,   /* Extended System Description Table */
+
 	/* Additional proprietary tables used by coreboot */
-	VFCT, NHLT, SPMI, CRAT
+	CRAT,   /* Component Resource Attribute Table */
+	NHLT,   /* Non HD audio Link Table */
+	SPMI,   /* Server Platform Management Interface table */
+	VFCT    /* VBIOS Fetch Table */
 };
 
 /* RSDP (Root System Description Pointer) */

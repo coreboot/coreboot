@@ -258,7 +258,7 @@ static void pch_pciexp_scan_bridge(struct device *dev)
 	pch_pcie_pm_late(dev);
 }
 
-static struct device_operations device_ops = {
+struct device_operations bd82x6x_pcie_rp_ops = {
 	.read_resources		= pci_bus_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_bus_enable_resources,
@@ -267,16 +267,4 @@ static struct device_operations device_ops = {
 	.scan_bus		= pch_pciexp_scan_bridge,
 	.acpi_name		= pch_pcie_acpi_name,
 	.ops_pci		= &pci_dev_ops_pci,
-};
-
-static const unsigned short pci_device_ids[] = { 0x1c10, 0x1c12, 0x1c14, 0x1c16,
-						 0x1c18, 0x1c1a, 0x1c1c, 0x1c1e,
-						 0x1e10, 0x1e12, 0x1e14, 0x1e16,
-						 0x1e18, 0x1e1a, 0x1e1c, 0x1e1e,
-						 0 };
-
-static const struct pci_driver pch_pcie __pci_driver = {
-	.ops	 = &device_ops,
-	.vendor	 = PCI_VID_INTEL,
-	.devices = pci_device_ids,
 };

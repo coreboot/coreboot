@@ -6,7 +6,6 @@
 #include <device/pci_ids.h>
 #include <assert.h>
 
-#if CONFIG(HAVE_ACPI_TABLES)
 static const char *pcie_acpi_name(const struct device *dev)
 {
 	assert(dev);
@@ -41,7 +40,6 @@ static const char *pcie_acpi_name(const struct device *dev)
 
 	return NULL;
 }
-#endif
 
 static struct device_operations device_ops = {
 	.read_resources		= pci_bus_read_resources,
@@ -51,9 +49,7 @@ static struct device_operations device_ops = {
 	.reset_bus		= pci_bus_reset,
 	.init			= pci_dev_init,
 	.ops_pci		= &pci_dev_ops_pci,
-#if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name		= pcie_acpi_name,
-#endif
 };
 
 static const unsigned short pci_device_ids[] = {

@@ -633,7 +633,7 @@ static unsigned long agesa_write_acpi_tables(const struct device *device,
 	return current;
 }
 
-static struct device_operations northbridge_operations = {
+struct device_operations amd_pi_northbridge_ops = {
 	.read_resources	  = nb_read_resources,
 	.set_resources	  = nb_set_resources,
 	.enable_resources = pci_dev_enable_resources,
@@ -641,12 +641,6 @@ static struct device_operations northbridge_operations = {
 	.ops_pci           = &pci_dev_ops_pci,
 	.acpi_fill_ssdt   = northbridge_fill_ssdt_generator,
 	.write_acpi_tables = agesa_write_acpi_tables,
-};
-
-static const struct pci_driver family16_northbridge __pci_driver = {
-	.ops	= &northbridge_operations,
-	.vendor = PCI_VID_AMD,
-	.device = PCI_DID_AMD_16H_MODEL_303F_NB_HT,
 };
 
 static void fam16_finalize(void *chip_info)

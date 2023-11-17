@@ -614,7 +614,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 static void domain_read_resources(struct device *dev)
 {
 	unsigned long mmio_basek;
-	int i, idx;
+	int idx;
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	struct hw_mem_hole_info mem_hole;
 #endif
@@ -640,27 +640,23 @@ static void domain_read_resources(struct device *dev)
 #endif
 
 	idx = 0x10;
-	for (i = 0; i < get_node_nums(); i++) {
-		resource_t basek, limitk, sizek; // 4 1T
-
-		if (!get_dram_base_limit(i, &basek, &limitk))
-			continue; // no memory on this node
-
+	resource_t basek, limitk, sizek;
+	if (get_dram_base_limit(0, &basek, &limitk)) {
 		sizek = limitk - basek;
 
-		printk(BIOS_DEBUG, "node %d: basek=%08llx, limitk=%08llx, sizek=%08llx,\n",
-				   i, basek, limitk, sizek);
+		printk(BIOS_DEBUG, "basek=%08llx, limitk=%08llx, sizek=%08llx,\n",
+				   basek, limitk, sizek);
 
 		/* See if we need a hole from 0xa0000 (640K) to 0xfffff (1024K) */
 		if (basek < 640 && sizek > 1024) {
-			ram_resource_kb(dev, (idx | i), basek, 640 - basek);
+			ram_resource_kb(dev, idx, basek, 640 - basek);
 			idx += 0x10;
 			basek = 1024;
 			sizek = limitk - basek;
 		}
 
-		printk(BIOS_DEBUG, "node %d: basek=%08llx, limitk=%08llx, sizek=%08llx,\n",
-				   i, basek, limitk, sizek);
+		printk(BIOS_DEBUG, "basek=%08llx, limitk=%08llx, sizek=%08llx,\n",
+				   basek, limitk, sizek);
 
 		/* split the region to accommodate pci memory space */
 		if ((basek < 4 * 1024 * 1024) && (limitk > mmio_basek)) {
@@ -668,7 +664,7 @@ static void domain_read_resources(struct device *dev)
 				unsigned int pre_sizek;
 				pre_sizek = mmio_basek - basek;
 				if (pre_sizek > 0) {
-					ram_resource_kb(dev, (idx | i), basek, pre_sizek);
+					ram_resource_kb(dev, idx, basek, pre_sizek);
 					idx += 0x10;
 					sizek -= pre_sizek;
 				}
@@ -684,10 +680,10 @@ static void domain_read_resources(struct device *dev)
 			}
 		}
 
-		ram_resource_kb(dev, (idx | i), basek, sizek);
+		ram_resource_kb(dev, idx, basek, sizek);
 		idx += 0x10;
-		printk(BIOS_DEBUG, "node %d: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
-				i, mmio_basek, basek, limitk);
+		printk(BIOS_DEBUG, "mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
+				mmio_basek, basek, limitk);
 	}
 
 	add_uma_resource_below_tolm(dev, 7);

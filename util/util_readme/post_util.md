@@ -4,6 +4,7 @@
 * [cbfstool](util/cbfstool/index.md)
 * [ifdtool](util/ifdtool/index.md)
 * [intelp2m](util/intelp2m/index.md)
+* [smmstoretool](util/smmstoretool/index.md)
 
 ## Generated documentation
 

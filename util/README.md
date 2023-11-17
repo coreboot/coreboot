@@ -133,6 +133,7 @@ from the local git repository for auditing or release `Bash`
 Does not show variants. `Shell`
 	* _ucode_h_to_bin.sh_ - Microcode conversion tool `Bash`
 	* _update_submodules_ - Check all submodules for updates `Bash`
+* __smmstoretool__ - Offline SMMSTORE variable modification tool `C`
 * __spdtool__ - Dumps SPD ROMs from a given blob to separate files
 using known patterns and reserved bits. Useful for analysing firmware
 that holds SPDs on boards that have soldered down DRAM. `python`

@@ -100,6 +100,15 @@ static const struct pad_config bt_i2s_disable_pads[] = {
 	PAD_NC(GPP_VGPIO_37, NONE),
 };
 
+static const struct pad_config hps_disable_pads[] = {
+	/* E3  : PROC_GP0 ==> HPS_INT_ODL */
+	PAD_NC(GPP_E3, NONE),
+	/* E7  : PROC_GP1 ==> EN_HPS_PWR */
+	PAD_NC(GPP_E7, NONE),
+	/* F20 : EXT_PWR_GATE# ==> HPS_RST_R */
+	PAD_NC(GPP_F20, NONE),
+};
+
 static const struct pad_config lte_disable_pads[] = {
 	/* A7  : WWAN_PCIE_WAKE_ODL */
 	PAD_NC(GPP_A7, NONE),
@@ -182,6 +191,11 @@ static void fw_config_handle(void *unused)
 	if (fw_config_probe(FW_CONFIG(DB_LTE, LTE_ABSENT))) {
 		printk(BIOS_INFO, "Disable LTE related GPIO pins.\n");
 		gpio_configure_pads(lte_disable_pads, ARRAY_SIZE(lte_disable_pads));
+	}
+
+	if (fw_config_probe(FW_CONFIG(HPS, HPS_ABSENT))) {
+		printk(BIOS_INFO, "Disable HPS related GPIO pins.\n");
+		gpio_configure_pads(hps_disable_pads, ARRAY_SIZE(hps_disable_pads));
 	}
 }
 BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, fw_config_handle, NULL);

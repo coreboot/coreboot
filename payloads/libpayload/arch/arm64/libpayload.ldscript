@@ -58,6 +58,8 @@ SECTIONS
 	_edata = .;
 
 	.bss : {
+		*(.ttb_buffer)
+
 		*(.sbss)
 		*(.sbss.*)
 		*(.bss)

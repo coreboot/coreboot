@@ -100,6 +100,29 @@ static const struct pad_config bt_i2s_disable_pads[] = {
 	PAD_NC(GPP_VGPIO_37, NONE),
 };
 
+static const struct pad_config lte_disable_pads[] = {
+	/* A7  : WWAN_PCIE_WAKE_ODL */
+	PAD_NC(GPP_A7, NONE),
+	/* A8  : WWAN_RF_DISABLE_ODL */
+	PAD_NC(GPP_A8, NONE),
+	/* D5  : SRCCLKREQ0# ==> WWAN_DPR_SAR_ODL */
+	PAD_NC(GPP_D5, NONE),
+	/* E0  : SATAXPCIE0 ==> WWAN_PERST_L */
+	PAD_NC(GPP_E0, NONE),
+	/* E10 : THC0_SPI1_CS# ==> WWAN_CONFIG0 */
+	PAD_NC_LOCK(GPP_E10, NONE, LOCK_CONFIG),
+	/* E16 : WWAN_RST_L */
+	PAD_NC(GPP_E16, NONE),
+	/* E17 : THC0_SPI1_INT# ==> WWAN_CONFIG3 */
+	PAD_NC_LOCK(GPP_E17, NONE, LOCK_CONFIG),
+	/* F21 : EXT_PWR_GATE2# ==> WWAN_FCPO_L */
+	PAD_NC(GPP_F21, NONE),
+	/* H23 : SRCCLKREQ5# ==> WWAN_CLKREQ_ODL */
+	PAD_NC(GPP_H23, NONE),
+	/* GPD11 : LANPHYC ==> WWAN_CONFIG1 */
+	PAD_NC(GPD11, NONE),
+};
+
 static void enable_i2s(void)
 {
 	gpio_configure_pads(dmic_enable_pads, ARRAY_SIZE(dmic_enable_pads));
@@ -154,6 +177,11 @@ static void fw_config_handle(void *unused)
 
 		if (fw_config_probe(FW_CONFIG(AUDIO, NAU8318_NAU88L25B_I2S)))
 			gpio_configure_pads(nau8318_enable_pads, ARRAY_SIZE(nau8318_enable_pads));
+	}
+
+	if (fw_config_probe(FW_CONFIG(DB_LTE, LTE_ABSENT))) {
+		printk(BIOS_INFO, "Disable LTE related GPIO pins.\n");
+		gpio_configure_pads(lte_disable_pads, ARRAY_SIZE(lte_disable_pads));
 	}
 }
 BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, fw_config_handle, NULL);

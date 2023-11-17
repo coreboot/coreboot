@@ -32,7 +32,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* D8  : SRCCLKREQ3# ==> SD_CLKREQ_ODL ==> NC */
 	PAD_NC_LOCK(GPP_D8, NONE, LOCK_CONFIG),
 	/* D13 : NC ==> EN_PP1800_WCAM_X */
-	PAD_CFG_GPO_LOCK(GPP_D13, 0, LOCK_CONFIG),
+	PAD_CFG_GPO_LOCK(GPP_D13, 1, LOCK_CONFIG),
 
 	/* E20 : DDP2_CTRLCLK ==> HDMI_DDC_SCL ==> NC */
 	PAD_NC_LOCK(GPP_E20, NONE, LOCK_CONFIG),
@@ -48,7 +48,7 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_GPO_LOCK(GPP_F11, 1, LOCK_CONFIG),
 	/* F12 : GSXDOUT ==> WWAN_RST_L */
 	PAD_CFG_GPO_LOCK(GPP_F12, 1, LOCK_CONFIG),
-	/* F18 : THC1_SPI2_INT# ==> EC_IN_RW_OD ==> EN_PP2800_AVDD*/
+	/* F18 : THC1_SPI2_INT# ==> EN_PP2800_AFVDD */
 	PAD_CFG_GPO(GPP_F18, 0, DEEP),
 	/* F23 : V1P05_CTRL ==> V1P05EXT_CTRL ==> NC*/
 	PAD_NC_LOCK(GPP_F23, NONE, LOCK_CONFIG),

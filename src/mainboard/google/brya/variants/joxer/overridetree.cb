@@ -285,10 +285,14 @@ chip soc/intel/alderlake
 				register "desc" = ""Headset Codec""
 				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_A23)"
 				# Set the jd_src to RT5668_JD1 for jack detection
-				register "property_count" = "1"
+				register "property_count" = "2"
 				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
 				register "property_list[0].name" = ""realtek,jd-src""
 				register "property_list[0].integer" = "1"
+				# Set the ldo-sel to RT5668_JD1 for ldo output
+				register "property_list[1].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[1].name" = ""realtek,ldo-sel""
+				register "property_list[1].integer" = "3"
 				device i2c 1a on end
 			end
 		end

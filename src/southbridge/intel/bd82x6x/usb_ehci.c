@@ -90,20 +90,11 @@ static struct pci_operations lops_pci = {
 	.set_subsystem	= &usb_ehci_set_subsystem,
 };
 
-static struct device_operations usb_ehci_ops = {
+struct device_operations bd82x6x_usb_ehci_ops = {
 	.read_resources		= pci_ehci_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= usb_ehci_init,
 	.ops_pci		= &lops_pci,
 	.acpi_name		= usb_ehci_acpi_name,
-};
-
-static const unsigned short pci_device_ids[] = { 0x1c26, 0x1c2d, 0x1e26, 0x1e2d,
-						 0 };
-
-static const struct pci_driver pch_usb_ehci __pci_driver = {
-	.ops	 = &usb_ehci_ops,
-	.vendor	 = PCI_VID_INTEL,
-	.devices = pci_device_ids,
 };

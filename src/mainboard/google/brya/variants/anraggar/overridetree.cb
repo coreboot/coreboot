@@ -366,8 +366,8 @@ chip soc/intel/alderlake
 		end
 		device ref pch_espi on
 			chip ec/google/chromeec
-				use conn0 as mux_conn[0]
-				use conn1 as mux_conn[1]
+				use conn0 as mux_conn[1]
+				use conn1 as mux_conn[0]
 				device pnp 0c09.0 on end
 			end
 		end
@@ -375,12 +375,12 @@ chip soc/intel/alderlake
 			chip drivers/intel/pmc_mux
 				device generic 0 on
 					chip drivers/intel/pmc_mux/conn
-						use usb2_port1 as usb2_port
+						use usb2_port2 as usb2_port
 						use tcss_usb3_port1 as usb3_port
 						device generic 0 alias conn0 on end
 					end
 					chip drivers/intel/pmc_mux/conn
-						use usb2_port2 as usb2_port
+						use usb2_port1 as usb2_port
 						use tcss_usb3_port2 as usb3_port
 						device generic 1 alias conn1 on end
 					end

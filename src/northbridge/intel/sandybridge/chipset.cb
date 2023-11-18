@@ -19,7 +19,7 @@ chip northbridge/intel/sandybridge
 		device pci 06.0 alias peg60 off end # PEG60
 
 		chip southbridge/intel/bd82x6x # Intel Series 6/7 PCH
-			device pci 14.0 alias xhci off end       # USB 3.0 Controller (only on 7 series)
+			device pci 14.0 alias xhci off ops bd82x6x_usb_xhci_ops end # XHCI Controller only on 7 series
 			device pci 16.0 alias mei1 on end        # Management Engine Interface 1
 			device pci 16.1 alias mei2 off end       # Management Engine Interface 2
 			device pci 16.2 alias me_ide_r off end   # Management Engine IDE-R

@@ -29,6 +29,8 @@ static const struct pad_config override_gpio_table[] = {
 	/* B11 : NC ==> EN_PP3300_WLAN_X*/
 	PAD_CFG_GPO(GPP_B11, 0, DEEP),
 
+	/* D6 : NC ==> WWAN_PWR_ENABLE */
+	PAD_CFG_GPO(GPP_D6, 1, DEEP),
 	/* D8  : SRCCLKREQ3# ==> SD_CLKREQ_ODL ==> NC */
 	PAD_NC_LOCK(GPP_D8, NONE, LOCK_CONFIG),
 	/* D13 : NC ==> EN_PP1800_WCAM_X */

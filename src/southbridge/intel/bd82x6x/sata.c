@@ -219,6 +219,10 @@ static void sata_init(struct device *dev)
 		~(1 << 16 | 0x3f << 7 | 3 << 5 | 3 << 3),
 		1 << 24 | 1 << 22 | 1 << 20 | 1 << 19 |
 		1 << 18 | 1 << 14 | 0x04 << 7 | 1 << 3);
+
+	/* SATA clock gating. Must be done after writing register 0x94. */
+	pch_iobp_update(0xEA007F07, ~0U, (1 << 31));
+	pch_iobp_update(0xEA004000, ~0U, (1 << 7));
 }
 
 static void sata_enable(struct device *dev)

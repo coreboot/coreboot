@@ -28,7 +28,7 @@ case "${ORIGIN_HOST}" in
 		MESSAGE_PREFIX="UPSTREAM: "
 		;;
 	chromium-review.googlesource.com)
-		BRANCH="cros/chromeos-2016.05"
+		BRANCH="cros/main"
 		MESSAGE_PREFIX=""
 		;;
 esac

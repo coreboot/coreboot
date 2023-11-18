@@ -73,7 +73,7 @@ _init:
 
 	/* Store current stack pointer and set up new stack. */
 	movl %esp, %eax
-	movl $_stack, %esp
+	movl $_estack, %esp
 	pushl %eax
 
 	/* Enable special x86 functions if present. */

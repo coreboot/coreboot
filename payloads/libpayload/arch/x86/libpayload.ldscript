@@ -39,29 +39,35 @@ SECTIONS
 	_start = .;
 
 	.text : {
+		_text = .;
 		*(.text._entry)
 		*(.text)
 		*(.text.*)
+		_etext = .;
 	}
 
 	.rodata : {
+		_rodata = .;
 		*(.rodata)
 		*(.rodata.*)
+		_erodata = .;
 	}
 
 	.data : {
+		_data = .;
 		*(.data)
 		*(.data.*)
+		_edata = .;
 	}
 
-	_edata = .;
-
 	.bss : {
+		_bss = .;
 		*(.sbss)
 		*(.sbss.*)
 		*(.bss)
 		*(.bss.*)
 		*(COMMON)
+		_ebss = .;
 
 		/* Stack and heap */
 
@@ -71,10 +77,10 @@ SECTIONS
 		. = ALIGN(16);
 		_eheap = .;
 
-		_estack = .;
+		_stack = .;
 		. += CONFIG_LP_STACK_SIZE;
 		. = ALIGN(16);
-		_stack = .;
+		_estack = .;
 	}
 
 	_end = .;

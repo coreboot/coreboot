@@ -36,7 +36,7 @@ chip northbridge/intel/sandybridge
 			device pci 1c.6 alias pcie_rp7 off ops bd82x6x_pcie_rp_ops end   # PCIe Port #7
 			device pci 1c.7 alias pcie_rp8 off ops bd82x6x_pcie_rp_ops end   # PCIe Port #8
 			device pci 1d.0 alias ehci1 off end      # USB2 EHCI #1
-			device pci 1e.0 alias pci_bridge off end # PCI bridge
+			device pci 1e.0 alias pci_bridge off ops bd82x6x_pci_bridge_ops end
 			device pci 1f.0 alias lpc on ops bd82x6x_lpc_bridge_ops end
 			device pci 1f.2 alias sata1 off end      # SATA Controller 1
 			device pci 1f.3 alias smbus on ops bd82x6x_smbus_ops end

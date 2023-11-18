@@ -35,23 +35,11 @@ static void pci_init(struct device *dev)
 	pci_write_config16(dev, SECSTS, reg16);
 }
 
-static struct device_operations device_ops = {
+struct device_operations bd82x6x_pci_bridge_ops = {
 	.read_resources		= pci_bus_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_bus_enable_resources,
 	.init			= pci_init,
 	.scan_bus		= pci_scan_bridge,
 	.ops_pci		= &pci_dev_ops_pci,
-};
-
-static const unsigned short pci_device_ids[] = {
-	0x2448, /* Mobile */
-	0x244e, /* Desktop */
-	0
-};
-
-static const struct pci_driver pch_pci __pci_driver = {
-	.ops		= &device_ops,
-	.vendor		= PCI_VID_INTEL,
-	.devices	= pci_device_ids,
 };

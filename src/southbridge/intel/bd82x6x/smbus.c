@@ -28,7 +28,7 @@ static const char *smbus_acpi_name(const struct device *dev)
 	return "SBUS";
 }
 
-static struct device_operations smbus_ops = {
+struct device_operations bd82x6x_smbus_ops = {
 	.read_resources		= smbus_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
@@ -37,12 +37,4 @@ static struct device_operations smbus_ops = {
 	.ops_smbus_bus		= &lops_smbus_bus,
 	.ops_pci		= &pci_dev_ops_pci,
 	.acpi_name		= smbus_acpi_name,
-};
-
-static const unsigned short pci_device_ids[] = { 0x1c22, 0x1e22, 0 };
-
-static const struct pci_driver pch_smbus __pci_driver = {
-	.ops	 = &smbus_ops,
-	.vendor	 = PCI_VID_INTEL,
-	.devices = pci_device_ids,
 };

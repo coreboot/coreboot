@@ -39,7 +39,7 @@ chip northbridge/intel/sandybridge
 			device pci 1e.0 alias pci_bridge off end # PCI bridge
 			device pci 1f.0 alias lpc on ops bd82x6x_lpc_bridge_ops end
 			device pci 1f.2 alias sata1 off end      # SATA Controller 1
-			device pci 1f.3 alias smbus on end       # SMBus
+			device pci 1f.3 alias smbus on ops bd82x6x_smbus_ops end
 			device pci 1f.5 alias sata2 off end      # SATA Controller 2
 			device pci 1f.6 alias thermal off end    # Thermal
 		end

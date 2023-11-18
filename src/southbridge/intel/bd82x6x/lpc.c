@@ -658,7 +658,7 @@ void intel_southbridge_override_spi(
 		memcpy(spi_config, &config->spi, sizeof(*spi_config));
 }
 
-static struct device_operations device_ops = {
+struct device_operations bd82x6x_lpc_bridge_ops = {
 	.read_resources		= pch_lpc_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
@@ -670,27 +670,4 @@ static struct device_operations device_ops = {
 	.enable			= pch_lpc_enable,
 	.scan_bus		= scan_static_bus,
 	.ops_pci		= &pci_dev_ops_pci,
-};
-
-/* IDs for LPC device of Intel 6 Series Chipset, Intel 7 Series Chipset, and
- * Intel C200 Series Chipset
- */
-
-static const unsigned short pci_device_ids[] = {
-	0x1c40, 0x1c41, 0x1c42, 0x1c43, 0x1c44, 0x1c45, 0x1c46, 0x1c47, 0x1c48,
-	0x1c49, 0x1c4a, 0x1c4b, 0x1c4c, 0x1c4d, 0x1c4e, 0x1c4f, 0x1c50, 0x1c51,
-	0x1c52, 0x1c53, 0x1c54, 0x1c55, 0x1c56, 0x1c57, 0x1c58, 0x1c59, 0x1c5a,
-	0x1c5b, 0x1c5c, 0x1c5d, 0x1c5e, 0x1c5f,
-
-	0x1e41, 0x1e42, 0x1e43, 0x1e44, 0x1e45, 0x1e46, 0x1e47, 0x1e48, 0x1e49,
-	0x1e4a, 0x1e4b, 0x1e4c, 0x1e4d, 0x1e4e, 0x1e4f, 0x1e50, 0x1e51, 0x1e52,
-	0x1e53, 0x1e54, 0x1e55, 0x1e56, 0x1e57, 0x1e58, 0x1e59, 0x1e5a, 0x1e5b,
-	0x1e5c, 0x1e5d, 0x1e5e, 0x1e5f,
-
-	0 };
-
-static const struct pci_driver pch_lpc __pci_driver = {
-	.ops	 = &device_ops,
-	.vendor	 = PCI_VID_INTEL,
-	.devices = pci_device_ids,
 };

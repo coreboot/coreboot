@@ -1,7 +1,7 @@
-Upcoming release - coreboot 4.22
+coreboot 4.22 & 4.22.01 releases
 ========================================================================
 
-The next release is planned for mid-February, 2024
+The next release is planned for the 19th of February, 2024
 
 These notes cover the latest updates and improvements to coreboot over
 the past three months. A big thank you to the returning contributors as
@@ -10,6 +10,17 @@ greatly appreciate everyone's dedication and expertise. As with past
 releases, this one reflects a commitment to open source innovation,
 security enhancements, and expanding hardware support.
 
+
+### 4.22.01 release
+
+The week between tagging a release and announcing it publicly is used
+to test the tagged version and make sure everything is working as we
+expect. This is done instead of freezing the tree and doing release
+candidates before the release.
+
+For the 4.22 release cycle we found an uninitialized variable error on
+the sandybridge/ivybridge platforms and rolled that into the 4.22.01
+release package.
 
 ### coreboot version naming update
 
@@ -235,15 +246,15 @@ Platform Updates
 Statistics from the 4.21 to the 4.22 release
 --------------------------------------------
 
-* Total Commits: 885
-* Average Commits per day: 10.72
-* Total lines added: 58276
-* Average lines added per commit: 65.85
-* Number of patches adding more than 100 lines: 54
-* Average lines added per small commit: 37.77
-* Total lines removed: 27790
-* Average lines removed per commit: 31.40
-* Total difference between added and removed: 30486
+* Total Commits: 977
+* Average Commits per day: 10.98
+* Total lines added: 62993
+* Average lines added per commit: 64.48
+* Number of patches adding more than 100 lines: 60
+* Average lines added per small commit: 37.55
+* Total lines removed: 30042
+* Average lines removed per commit: 30.75
+* Total difference between added and removed: 32951
 * Total authors: 135
 * New authors: 14
 

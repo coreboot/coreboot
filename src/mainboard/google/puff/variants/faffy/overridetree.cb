@@ -429,7 +429,7 @@ chip soc/intel/cannonlake
 				register "wake" = "GPE0_DW1_07" # GPP_C7
 				register "device_index" = "0"
 				register "enable_aspm_l1_2" = "1"
-				device generic 0 on end
+				device pci 00.0 on end
 			end
 			register "PcieRpSlotImplemented[6]" = "1"
 		end # RTL8111H Ethernet NIC

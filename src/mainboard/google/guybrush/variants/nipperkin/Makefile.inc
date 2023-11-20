@@ -9,10 +9,6 @@ romstage-y += tpm_tis.c
 ramstage-y += tpm_tis.c
 verstage-y += tpm_tis.c
 
-bootblock-y += variant.c
-romstage-y += variant.c
-ramstage-y += variant.c
-
 ramstage-y += ramstage.c
 
 subdirs-y += ./memory

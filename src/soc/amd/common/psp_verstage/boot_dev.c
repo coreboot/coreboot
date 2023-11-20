@@ -20,6 +20,8 @@ static void *boot_dev_mmap(const struct region_device *rd, size_t offset, size_t
 	uint32_t ret;
 
 	mdev = container_of(rd, __typeof__(*mdev), rdev);
+	if (CONFIG(PSP_VERSTAGE_MAP_ENTIRE_SPIROM))
+		return &(mdev->base[offset]);
 
 	if (mdev->base) {
 		if ((ret = svc_map_spi_rom(&mdev->base[offset], size, (void **)&mapping))
@@ -36,6 +38,9 @@ static void *boot_dev_mmap(const struct region_device *rd, size_t offset, size_t
 static int boot_dev_munmap(const struct region_device *rd, void *mapping)
 {
 	uint32_t ret;
+
+	if (CONFIG(PSP_VERSTAGE_MAP_ENTIRE_SPIROM))
+		return 0;
 
 	active_map_count--;
 	if ((ret = svc_unmap_spi_rom(mapping)) != BL_OK)

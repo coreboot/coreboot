@@ -235,6 +235,7 @@ void Main(void)
 	uint32_t retval;
 	struct vb2_context *ctx = NULL;
 	uint32_t bootmode;
+	void *boot_dev_base;
 
 	/*
 	 * Do not use printk() before console_init()
@@ -350,7 +351,16 @@ void Main(void)
 	if (retval)
 		reboot_into_recovery(ctx, retval);
 
+	if (CONFIG(PSP_VERSTAGE_MAP_ENTIRE_SPIROM)) {
+		post_code(POSTCODE_UNMAP_SPI_ROM);
+		boot_dev_base = rdev_mmap_full(boot_device_ro());
+		if (boot_dev_base) {
+			if (svc_unmap_spi_rom((void *)boot_dev_base))
+				printk(BIOS_ERR, "Error unmapping SPI rom\n");
+		}
+	}
 	assert(!boot_dev_get_active_map_count());
+
 	post_code(POSTCODE_UNMAP_FCH_DEVICES);
 	unmap_fch_devices();
 

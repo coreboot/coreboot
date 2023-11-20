@@ -43,3 +43,11 @@ config PSP_VERSTAGE_STACK_IS_MAPPED
 	help
 	  This configuration indicates whether the PSP Verstage stack is mapped to a virtual
 	  address space. This has been the case so far only in Picasso SoC.
+
+config PSP_VERSTAGE_MAP_ENTIRE_SPIROM
+	bool
+	default y if SOC_AMD_CEZANNE
+	default n
+	help
+	  This configuration indicates whether PSP Verstage needs to map the entire SPI ROM.
+	  This is required only in Cezanne SoC at the moment.

@@ -97,6 +97,13 @@ void *map_spi_rom(void)
 	if (svc_get_spi_rom_info(&spi))
 		printk(BIOS_DEBUG, "Error getting SPI ROM info.\n");
 
+	if (CONFIG(PSP_VERSTAGE_MAP_ENTIRE_SPIROM) && spi.SpiBiosSmnBase != 0) {
+		uintptr_t *addr = NULL;
+
+		if (svc_map_spi_rom(spi.SpiBiosSmnBase, CONFIG_ROM_SIZE, (void **)&addr))
+			printk(BIOS_DEBUG, "Error mapping SPI ROM to address.\n");
+		return addr;
+	}
 	return spi.SpiBiosSmnBase;
 }
 

@@ -64,12 +64,14 @@ chip soc/intel/skylake
 		end
 		device ref uart2	on	end
 		device ref pcie_rp5	on
+			# IT8893E PCI Bridge
 			register "PcieRpEnable[4]"			= "1"
 			register "PcieRpLtrEnable[4]"			= "1"
 			register "PcieRpAdvancedErrorReporting[4]"	= "1"
 			register "PcieRpClkSrcNumber[4]"		= "11"
 		end
 		device ref pcie_rp6	on
+			# PCIe x1 slot
 			register "PcieRpEnable[5]"			= "1"
 			register "PcieRpHotPlug[5]"			= "1"
 			register "PcieRpLtrEnable[5]"			= "1"
@@ -77,12 +79,14 @@ chip soc/intel/skylake
 			register "PcieRpClkSrcNumber[5]"		= "6"
 		end
 		device ref pcie_rp7	on
+			# RTL8111 GbE NIC
 			register "PcieRpEnable[6]"			= "1"
 			register "PcieRpLtrEnable[6]"			= "1"
 			register "PcieRpAdvancedErrorReporting[6]"	= "1"
 			register "PcieRpClkSrcNumber[6]"		= "10"
 		end
 		device ref pcie_rp8	on
+			# M.2 2230 slot
 			register "PcieRpEnable[7]"			= "1"
 			register "PcieRpHotPlug[7]"			= "1"
 			register "PcieRpLtrEnable[7]"			= "1"

@@ -4,8 +4,7 @@ chip northbridge/intel/sandybridge
 	# All MRC-capable boards in family (P8Z77-M[ PRO]) lists supported
 	# DIMMs down to 1.25v
 	register "ddr3lv_support" = "1"
-	# FIXME: Nothing can run native at 800MHz on p8z77-m, others may have same problem
-	register "max_mem_clock_mhz" = "CONFIG(USE_NATIVE_RAMINIT) ? 666 : 800"
+	register "max_mem_clock_mhz" = "800"
 	register "spd_addresses" = "{0x50, 0x51, 0x52, 0x53}"
 
 	register "usb_port_config" = "{

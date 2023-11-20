@@ -25,6 +25,20 @@ $(objk)/Makefile.real: $(dir $(lastword $(MAKEFILE_LIST)))Makefile
 
 kecho := echo
 
+###
+# Read a file, replacing newlines with spaces
+#
+# Make 4.2 or later can read a file by using its builtin function.
+#
+# Imported from Linux upstream:
+# commit 6768fa4bcb6c1618248f135d04b9287ba2724ae0
+# Author: Masahiro Yamada <masahiroy@kernel.org>
+ifneq ($(filter-out 3.% 4.0 4.1, $(MAKE_VERSION)),)
+read-file = $(subst $(newline),$(space),$(file < $1))
+else
+read-file = $(shell cat $1 2>/dev/null)
+endif
+
 -include $(objk)/Makefile.real
 unexport KCONFIG_DEFCONFIG_LIST
 

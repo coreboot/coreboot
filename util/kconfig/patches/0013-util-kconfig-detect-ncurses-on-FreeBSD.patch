@@ -13,7 +13,7 @@ Index: kconfig/mconf-cfg.sh
 ===================================================================
 --- kconfig.orig/mconf-cfg.sh
 +++ kconfig/mconf-cfg.sh
-@@ -33,6 +33,12 @@ if [ -f /usr/include/ncurses/ncurses.h ]
+@@ -36,6 +36,12 @@ if [ -f /usr/include/ncurses/ncurses.h ]
  	exit 0
  fi
  

@@ -102,7 +102,7 @@ Index: kconfig/mconf.c
  static const char mconf_readme[] =
  "Overview\n"
  "--------\n"
-@@ -953,6 +955,7 @@ static void conf_save(void)
+@@ -943,6 +945,7 @@ static void conf_message_callback(const
  static int handle_exit(void)
  {
  	int res;
@@ -110,7 +110,7 @@ Index: kconfig/mconf.c
  
  	save_and_exit = 1;
  	reset_subtitle();
-@@ -967,6 +970,13 @@ static int handle_exit(void)
+@@ -957,6 +960,13 @@ static int handle_exit(void)
  
  	end_dialog(saved_x, saved_y);
  

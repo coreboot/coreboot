@@ -40,9 +40,6 @@ void zconf_nextfiles(const char *name);
 int zconf_lineno(void);
 const char *zconf_curname(void);
 
-/* conf.c */
-extern int kconfig_warnings;
-
 /* confdata.c */
 const char *conf_get_configname(void);
 void set_all_choice_values(struct symbol *csym);
@@ -105,6 +102,7 @@ const char *menu_get_prompt(struct menu *menu);
 struct menu *menu_get_parent_menu(struct menu *menu);
 bool menu_has_help(struct menu *menu);
 const char *menu_get_help(struct menu *menu);
+int get_jump_key_char(void);
 struct gstr get_relations_str(struct symbol **sym_arr, struct list_head *head);
 void menu_get_ext_help(struct menu *menu, struct gstr *help);
 

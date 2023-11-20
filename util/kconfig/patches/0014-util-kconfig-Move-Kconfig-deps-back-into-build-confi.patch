@@ -35,7 +35,7 @@ Index: kconfig/confdata.c
  static int conf_set_sym_val(struct symbol *sym, int def, int def_flags, char *p)
  {
  	char *p2;
-@@ -1093,19 +1100,19 @@ static int conf_write_autoconf_cmd(const
+@@ -1106,19 +1113,19 @@ static int conf_write_autoconf_cmd(const
  
  static int conf_touch_deps(void)
  {

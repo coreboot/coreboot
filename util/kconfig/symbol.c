@@ -37,6 +37,7 @@ static struct symbol symbol_empty = {
 
 struct symbol *modules_sym;
 static tristate modules_val;
+static int sym_warnings;
 
 enum symbol_type sym_get_type(struct symbol *sym)
 {
@@ -319,13 +320,14 @@ static void sym_warn_unmet_dep(struct symbol *sym)
 			       "  Selected by [m]:\n");
 
 	fputs(str_get(&gs), stderr);
-	kconfig_warnings++;
+	sym_warnings++;
 }
 
 void sym_calc_value(struct symbol *sym)
 {
 	struct symbol_value newval, oldval;
 	struct property *prop;
+	const char *werror;
 	struct expr *e;
 
 	if (!sym)
@@ -341,8 +343,9 @@ void sym_calc_value(struct symbol *sym)
 		sym_calc_value(prop_get_symbol(prop));
 	}
 
+	werror = getenv("KCONFIG_WERROR");
+	sym_warnings = 0;
 	sym->flags |= SYMBOL_VALID;
-
 	oldval = sym->curr;
 
 	switch (sym->type) {
@@ -432,6 +435,9 @@ void sym_calc_value(struct symbol *sym)
 	default:
 		;
 	}
+
+	if (sym_warnings && werror)
+		exit(1);
 
 	sym->curr = newval;
 	if (sym_is_choice(sym) && newval.tri == yes)

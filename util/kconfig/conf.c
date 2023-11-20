@@ -16,8 +16,6 @@
 
 #include "lkc.h"
 
-int kconfig_warnings = 0;
-
 static void conf(struct menu *menu);
 static void check_conf(struct menu *menu);
 
@@ -722,7 +720,6 @@ int main(int ac, char **av)
 	const char *progname = av[0];
 	int opt;
 	const char *name, *defconfig_file = NULL /* gcc uninit */;
-	char *env;
 	int no_conf_write = 0;
 
 	tty_stdio = isatty(0) && isatty(1);
@@ -828,13 +825,6 @@ int main(int ac, char **av)
 		break;
 	default:
 		break;
-	}
-
-	env = getenv("KCONFIG_STRICT");
-	if (env && *env && kconfig_warnings) {
-		fprintf(stderr, "\n*** ERROR: %d warnings encountered, and "
-			"warnings are errors.\n\n", kconfig_warnings);
-		exit(1);
 	}
 
 	if (sync_kconfig) {

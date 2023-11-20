@@ -69,9 +69,6 @@ These variables are typically set in the makefiles or on the make command line.
 These variables were added to Kconfig specifically for coreboot and are not
 included in the Linux version.
 
-- KCONFIG_STRICT=value. Define to enable warnings as errors.   This is enabled
-  in coreboot, and should not be changed.
-
 - KCONFIG_NEGATIVES=value. Define to show negative values in the autoconf.h file
   (build/config.h). This is enabled in coreboot, and should not be changed.
 
@@ -101,6 +98,9 @@ included in the Linux version.
 
 - KCONFIG_SPLITCONFIG=”directory name for individual SYMBOL.h files”.
   coreboot sets this to $(obj)/config.
+
+- KCONFIG_WERROR=value. Define to enable warnings as errors. This is enabled
+  in coreboot, and should not be changed.
 
 #### Used only for ‘make menuconfig’
 - MENUCONFIG_MODE=single_menu.  Set to "single_menu" to enable.  All other
@@ -1160,10 +1160,6 @@ saved .config file. As always, a 'select' statement overrides any specified
 - coreboot has added the glob operator '*' for the 'source' keyword.
 - coreboot’s Kconfig always defines variables except for strings. In other
   Kconfig implementations, bools set to false/0/no are not defined.
-- coreboot’s version of Kconfig adds the KCONFIG_STRICT environment variable to
-  error out if there are any issues in the Kconfig files.  In the Linux kernel,
-  Kconfig will generate a warning, but will still output an updated .config or
-  config.h file.
 
 
 ## Kconfig Editor Highlighting

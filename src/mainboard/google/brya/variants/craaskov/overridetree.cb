@@ -1,3 +1,10 @@
+fw_config
+	field THERMAL_SOLUTION 0 0
+		option THERMAL_SOLUTION_6W 0
+		option THERMAL_SOLUTION_15W 1
+	end
+end
+
 chip soc/intel/alderlake
 	register "sagv" = "SaGv_Enabled"
 
@@ -99,6 +106,22 @@ chip soc/intel/alderlake
 				register "options.tsr[1].desc" = ""charger""
 				register "options.tsr[2].desc" = ""ambient""
 
+				## Active Policy
+				register "policies.active" = "{
+					[0] = {
+						.target = DPTF_CPU,
+						.thresholds = {
+								TEMP_PCT(0, 0),
+								TEMP_PCT(35, 27),
+								TEMP_PCT(38, 31),
+								TEMP_PCT(39, 35),
+								TEMP_PCT(42, 41),
+								TEMP_PCT(60, 47),
+								TEMP_PCT(70, 100),
+						}
+					}
+				}"
+
 				## Passive Policy
 				register "policies.passive" = "{
 					[0] = DPTF_PASSIVE(CPU,         CPU,           95, 5000),
@@ -117,8 +140,8 @@ chip soc/intel/alderlake
 
 				register "controls.power_limits" = "{
 					.pl1 = {
-						.min_power = 5500,
-						.max_power = 6000,
+						.min_power = 6000,
+						.max_power = 20000,
 						.time_window_min = 28 * MSECS_PER_SEC,
 						.time_window_max = 28 * MSECS_PER_SEC,
 						.granularity = 500
@@ -139,7 +162,75 @@ chip soc/intel/alderlake
 					[2] = {  16, 1000 },
 					[3] = {   8,  500 }
 				}"
-				device generic 0 on end
+				device generic 0 on
+					probe THERMAL_SOLUTION THERMAL_SOLUTION_6W
+				end
+			end
+			chip drivers/intel/dptf
+				## sensor information
+				register "options.tsr[0].desc" = ""DDR""
+				register "options.tsr[1].desc" = ""charger""
+				register "options.tsr[2].desc" = ""ambient""
+
+				## Active Policy
+				register "policies.active" = "{
+					[0] = {
+						.target = DPTF_CPU,
+						.thresholds = {
+								TEMP_PCT(0, 0),
+								TEMP_PCT(35, 27),
+								TEMP_PCT(38, 31),
+								TEMP_PCT(39, 35),
+								TEMP_PCT(42, 41),
+								TEMP_PCT(60, 47),
+								TEMP_PCT(70, 100),
+						}
+					}
+				}"
+
+				## Passive Policy
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU,         CPU,           95, 5000),
+					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 70, 5000),
+					[2] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_1, 70, 5000),
+					[3] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_2, 70, 5000),
+				}"
+
+				## Critical Policy
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,               100, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,     95, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,     95, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,     95, SHUTDOWN),
+				}"
+
+				register "controls.power_limits" = "{
+					.pl1 = {
+						.min_power = 15000,
+						.max_power = 20000,
+						.time_window_min = 28 * MSECS_PER_SEC,
+						.time_window_max = 28 * MSECS_PER_SEC,
+						.granularity = 500
+					},
+					.pl2 = {
+						.min_power = 35000,
+						.max_power = 35000,
+						.time_window_min = 32 * MSECS_PER_SEC,
+						.time_window_max = 32 * MSECS_PER_SEC,
+						.granularity = 500
+					}
+				}"
+
+				## Charger Performance Control (Control, mA)
+				register "controls.charger_perf" = "{
+					[0] = { 255, 1700 },
+					[1] = {  24, 1500 },
+					[2] = {  16, 1000 },
+					[3] = {   8,  500 }
+				}"
+				device generic 1 on
+					probe THERMAL_SOLUTION THERMAL_SOLUTION_15W
+				end
 			end
 		end
 		device ref i2c1 on

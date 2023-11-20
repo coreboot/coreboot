@@ -896,6 +896,14 @@ unsigned long acpi_pl011_write_dbg2_uart(acpi_rsdp_t *rsdp, unsigned long curren
 				    name);
 }
 
+unsigned long acpi_16550_mmio32_write_dbg2_uart(acpi_rsdp_t *rsdp, unsigned long current,
+					 uint64_t base, const char *name)
+{
+	return acpi_write_dbg2_uart(rsdp, current, ACPI_ADDRESS_SPACE_MEMORY, base,
+				    0x100, ACPI_ACCESS_SIZE_DWORD_ACCESS,
+				    name);
+}
+
 static void acpi_create_facs(void *header)
 {
 	acpi_facs_t *facs = header;

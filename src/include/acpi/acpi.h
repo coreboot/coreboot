@@ -1659,6 +1659,8 @@ unsigned long acpi_write_dbg2_pci_uart(acpi_rsdp_t *rsdp, unsigned long current,
 				       const struct device *dev, uint8_t access_size);
 unsigned long acpi_pl011_write_dbg2_uart(acpi_rsdp_t *rsdp, unsigned long current,
 					 uint64_t base, const char *name);
+unsigned long acpi_16550_mmio32_write_dbg2_uart(acpi_rsdp_t *rsdp, unsigned long current,
+					 uint64_t base, const char *name);
 
 void acpi_create_dmar(acpi_dmar_t *dmar, enum dmar_flags flags,
 		      unsigned long (*acpi_fill_dmar)(unsigned long));

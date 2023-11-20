@@ -14,7 +14,7 @@ Index: kconfig/confdata.c
 ===================================================================
 --- kconfig.orig/confdata.c
 +++ kconfig/confdata.c
-@@ -715,7 +715,12 @@ static void print_symbol_for_dotconfig(F
+@@ -725,7 +725,12 @@ static void print_symbol_for_dotconfig(F
  
  static void print_symbol_for_autoconf(FILE *fp, struct symbol *sym)
  {
@@ -28,7 +28,7 @@ Index: kconfig/confdata.c
  }
  
  void print_symbol_for_listconfig(struct symbol *sym)
-@@ -740,6 +745,10 @@ static void print_symbol_for_c(FILE *fp,
+@@ -750,6 +755,10 @@ static void print_symbol_for_c(FILE *fp,
  	case S_TRISTATE:
  		switch (*val) {
  		case 'n':
@@ -39,7 +39,7 @@ Index: kconfig/confdata.c
  			return;
  		case 'm':
  			sym_suffix = "_MODULE";
-@@ -751,6 +760,12 @@ static void print_symbol_for_c(FILE *fp,
+@@ -761,6 +770,12 @@ static void print_symbol_for_c(FILE *fp,
  	case S_HEX:
  		if (val[0] != '0' || (val[1] != 'x' && val[1] != 'X'))
  			val_prefix = "0x";
@@ -52,7 +52,7 @@ Index: kconfig/confdata.c
  		break;
  	case S_STRING:
  		escaped = escape_string_value(val);
-@@ -1108,8 +1123,9 @@ static int __conf_write_autoconf(const c
+@@ -1177,8 +1192,9 @@ static int __conf_write_autoconf(const c
  
  	conf_write_heading(file, comment_style);
  

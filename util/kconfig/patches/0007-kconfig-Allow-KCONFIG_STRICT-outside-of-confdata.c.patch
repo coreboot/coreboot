@@ -62,7 +62,7 @@ Index: kconfig/confdata.c
 ===================================================================
 --- kconfig.orig/confdata.c
 +++ kconfig/confdata.c
-@@ -530,11 +530,7 @@ load:
+@@ -537,11 +537,7 @@ load:
  	free(line);
  	fclose(in);
  

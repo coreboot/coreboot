@@ -112,3 +112,7 @@ config ENABLE_EC_UART1
 	  U81 on the bottom of the board near the front edge; the IC is not
 	  populated.  TX is pin 14, RX is pin 19.  The signals are 3.3V (do NOT
 	  connect directly to an RS-232 serial port).
+
+config EDK2_BOOT_TIMEOUT
+	int
+	default 4 if BOARD_PURISM_LIBREM_MINI || BOARD_PURISM_LIBREM_MINI_V2

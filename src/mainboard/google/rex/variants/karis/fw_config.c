@@ -30,6 +30,8 @@ static const struct pad_config fp_disable_pads[] = {
 static const struct pad_config stylus_disable_pads[] = {
 	/* GPP_E04 : SOC_PEN_DETECT */
 	PAD_NC(GPP_E04, NONE),
+	/* GPP_E09 : SOC_PEN_DETECT */
+	PAD_NC(GPP_E09, NONE),
 };
 
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)

@@ -43,6 +43,16 @@ ships with coreboot and support upstream maintenance for the devices through a
 third party, [3mdeb](https://3mdeb.com). They provide current and tested
 firmware binaries on [GitHub](https://pcengines.github.io).
 
+### Protectli
+
+[Protectli](https://protectli.com) is dedicated to providing reliable,
+cost-effective, and secure computer equipment with coreboot-based firmware
+tailored for their hardware. It comes with the [Dasharo](#dasharo)
+firmware, maintained by [3mdeb](https://3mdeb.com/). Protectli hardware has
+verified support for many popular operating systems, such as Linux distributions,
+FreeBSD, and Windows. Support includes Debian, Ubuntu, OPNsense, pfSense,
+ProxMox VE, VMware ESXi, Windows 10 and 11, and many more.
+
 ### Purism
 
 [Purism](https://www.puri.sm) sells laptops with a focus on user privacy and

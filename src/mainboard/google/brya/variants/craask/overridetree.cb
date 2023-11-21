@@ -598,6 +598,15 @@ chip soc/intel/alderlake
 				register "hid_desc_reg_offset" = "0x20"
 				device i2c 0x2c on end
 			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""PIXA2303""
+				register "generic.desc" = ""PIXA Touchpad""
+				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F14_IRQ)"
+				register "generic.wake" = "GPE0_DW2_14"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x20"
+				device i2c 0x68 on end
+			end
 		end
 		device ref hda on
 			chip drivers/generic/max98357a

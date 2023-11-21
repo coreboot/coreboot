@@ -41,6 +41,10 @@ config BOARD_EXT_EC_SPECIFIC_OPTIONS
 	def_bool n
 	select BOARD_INTEL_MTLRVP_COMMON
 	select DRIVERS_INTEL_PMC
+	select EC_ACPI
+	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_ESPI
+	select EC_GOOGLE_CHROMEEC_BOARDID
 	select FW_CONFIG
 	select FW_CONFIG_SOURCE_CHROMEEC_CBI
 
@@ -109,11 +113,7 @@ choice
 	  Select whether the board has Intel EC or/and Chrome EC
 
 config MTL_CHROME_EC
-	bool "Chrome EC"
-	select EC_ACPI
-	select EC_GOOGLE_CHROMEEC
-	select EC_GOOGLE_CHROMEEC_ESPI
-	select EC_GOOGLE_CHROMEEC_BOARDID
+	bool "Chrome EC with Internal SPI flash"
 
 config MTL_INTEL_EC
 	bool "Intel EC"

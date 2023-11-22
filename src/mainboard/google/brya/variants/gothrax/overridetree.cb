@@ -55,7 +55,7 @@ chip soc/intel/alderlake
 	# [22:16] steps of delay for DDR50, each 125ps, range: 0 - 78.
 	# [14:8] steps of delay for SDR25/HS50, each 125ps, range: 0 - 119.
 	# [6:0] steps of delay for SDR12, each 125ps, range: 0 - 119.
-	register "common_soc_config.emmc_dll.emmc_rx_cmd_data_cntl1" = "0x1C1B1D1B"
+	register "common_soc_config.emmc_dll.emmc_rx_cmd_data_cntl1" = "0x1C1B4F1B"
 
 	# EMMC RX CMD/DATA Delay 2
 	# Refer to EDS-Vol2-42.3.12.
@@ -66,13 +66,13 @@ chip soc/intel/alderlake
 	#         11: Reserved
 	# [14:8] steps of delay for Auto Tuning Mode, each 125ps, range: 0 - 39.
 	# [6:0] steps of delay for HS200, each 125ps, range: 0 - 79.
-	register "common_soc_config.emmc_dll.emmc_rx_cmd_data_cntl2" = "0x1004c"
+	register "common_soc_config.emmc_dll.emmc_rx_cmd_data_cntl2" = "0x10005"
 
 	# EMMC Rx Strobe Delay
 	# Refer to EDS-Vol2-42.3.11.
 	# [14:8] Rx Strobe Delay DLL 1(HS400 Mode), each 125ps, range: 0 - 39.
 	# [6:0] Rx Strobe Delay DLL 2(HS400 Mode), each 125ps, range: 0 - 39.
-	register "common_soc_config.emmc_dll.emmc_rx_strobe_cntl" = "0x01515"
+	register "common_soc_config.emmc_dll.emmc_rx_strobe_cntl" = "0x11515"
 
 	# Bit 0 - C0 has no redriver, so enable SBU muxing in the SoC.
 	# Bit 2 - C1 has a redriver which does SBU muxing.

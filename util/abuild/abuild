@@ -883,7 +883,7 @@ while true ; do
 			chromeos=true
 			testclass=chromeos
 			customizing="${customizing}, chromeos"
-			configoptions="${configoptions}CONFIG_CHROMEOS=y\nCONFIG_VBOOT_MEASURED_BOOT=y\n"
+			configoptions="${configoptions}CONFIG_CHROMEOS=y\n"
 			;;
 		-X|--xmlfile)	shift
 			XMLFILE=$1

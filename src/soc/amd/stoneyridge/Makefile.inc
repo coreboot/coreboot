@@ -26,7 +26,7 @@ verstage-y += gpio.c
 verstage-y += i2c.c
 
 postcar-y += memmap.c
-postcar-$(CONFIG_VBOOT_MEASURED_BOOT) += i2c.c
+postcar-$(CONFIG_TPM_MEASURED_BOOT) += i2c.c
 
 ramstage-y += aoac.c
 ramstage-y += BiosCallOuts.c

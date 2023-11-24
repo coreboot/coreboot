@@ -9,7 +9,7 @@ updates using an A/B partitioning scheme once enabled.
 ## Enabling vboot
 You can enable [vboot] in Kconfig's *Security* section. Besides a verified
 boot you can also enable a measured boot by setting
-`CONFIG_VBOOT_MEASURED_BOOT`. Both options need a working TPM, which is
+`CONFIG_TPM_MEASURED_BOOT`. Both options need a working TPM, which is
 present on all recent Lenovo devices.
 
 ## Updating and recovery

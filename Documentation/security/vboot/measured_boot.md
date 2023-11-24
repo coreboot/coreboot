@@ -68,7 +68,7 @@ specific IBB measurements without hard-coding them.
 
 #### Runtime Data
 * CBFS data which changes by external input dynamically. Never stays the same.
-* It is identified by VBOOT_MEASURED_BOOT_RUNTIME_DATA kconfig option and
+* It is identified by TPM_MEASURED_BOOT_RUNTIME_DATA kconfig option and
   measured into a different PCR (PCR_RUNTIME_DATA kconfig option, 3 by default)
   in order to avoid PCR pre-calculation issues.
 

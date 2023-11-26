@@ -25,6 +25,9 @@ $(objk)/Makefile.real: $(dir $(lastword $(MAKEFILE_LIST)))Makefile
 
 kecho := echo
 
+cmd = $(cmd_$(1))
+cmd_conf_cfg = $< $(addprefix $(obj)/$*conf-, cflags libs bin); touch $(obj)/$*conf-bin
+
 ###
 # Read a file, replacing newlines with spaces
 #

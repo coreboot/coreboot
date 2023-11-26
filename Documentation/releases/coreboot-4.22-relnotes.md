@@ -29,14 +29,14 @@ name scheme. For future releases, coreboot is switching to a
 Year.Month.Sub-version naming scheme. As such, the next release,
 scheduled for February of 2024 will be numbered 24.02, with the
 sub-version of 00 implied. If we need to do a fix or future release of
-the 24.02 release, we’ll append the values .01, .02 and so on to the
+the 24.02 release, we'll append the values .01, .02 and so on to the
 initial release value.
 
 
 ### coreboot default branch update
 
 Immediately after the 4.21 release, the coreboot project changed the
-default git branch from ‘master’ to ‘main’. For the first couple of
+default git branch from 'master' to 'main'. For the first couple of
 months after the change, The master branch was synced with the main
 branch several times a day, allowing people time to update any scripts.
 As of 2023-11-01, the sync rate has slowed to once a week. This will
@@ -166,7 +166,7 @@ GPU drivers will fail to load with a code 43 error in Device Manager.
 Additional coreboot changes
 ---------------------------
 
-* Move all ‘select’ statements from Kconfig.name files to Kconfig
+* Move all 'select' statements from Kconfig.name files to Kconfig
 * acpigen now generates variable-length PkgLength fields instead of a
   fixed 3-byte size to improve compatibility and to bring it in line
   with IASL

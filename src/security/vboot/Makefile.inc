@@ -30,6 +30,8 @@ $$(VBOOT_LIB_$(1)): $(obj)/config.h
 	EC_EFS="$(CONFIG_VBOOT_EC_EFS)" \
 	X86_SHA_EXT="$(if $(CONFIG_ARCH_$(call toupper,$(1))_X86_32)$(CONFIG_ARCH_$(call toupper,$(1))_X86_64),$\
 			$(CONFIG_VBOOT_X86_SHA256_ACCELERATION))" \
+	VB2_X86_RSA_ACCELERATION="$(if $(CONFIG_ARCH_$(call toupper,$(1))_X86_32)$(CONFIG_ARCH_$(call toupper,$(1))_X86_64),$\
+			$(CONFIG_VBOOT_X86_RSA_ACCELERATION))" \
 	ARMV8_CRYPTO_EXT="$(if $(CONFIG_ARCH_$(call toupper,$(1))_ARMV8_64),$$(CONFIG_VBOOT_ARMV8_CE_SHA256_ACCELERATION))" \
 	$(MAKE) -C $(VBOOT_SOURCE) \
 		BUILD=$$(abspath $$(dir $$(VBOOT_LIB_$(1)))) \
@@ -128,6 +130,10 @@ romstage-$(CONFIG_MRC_SAVE_HASH_IN_TPM) += mrc_cache_hash_tpm.c
 ramstage-$(CONFIG_MRC_SAVE_HASH_IN_TPM) += mrc_cache_hash_tpm.c
 
 ramstage-$(CONFIG_SOC_AMD_GFX_CACHE_VBIOS_IN_FMAP) += vbios_cache_hash_tpm.c
+
+ifeq ($(CONFIG_VBOOT_X86_RSA_ACCELERATION),y)
+CPPFLAGS_common += -DVB2_X86_RSA_ACCELERATION
+endif
 
 ifeq ($(CONFIG_VBOOT_SEPARATE_VERSTAGE),y)
 

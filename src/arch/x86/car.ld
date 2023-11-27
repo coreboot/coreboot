@@ -17,7 +17,7 @@
 #if CONFIG(VBOOT_STARTS_IN_BOOTBLOCK)
 	/* Vboot work buffer only needs to be available when verified boot
 	 * starts in bootblock. */
-	VBOOT2_WORK(., 12K)
+	VBOOT2_WORK(., VB2_FIRMWARE_WORKBUF_RECOMMENDED_SIZE)
 #endif
 #if CONFIG(TPM_MEASURED_BOOT)
 	/* Vboot measured boot TPM log measurements.

@@ -31,6 +31,16 @@ config VBOOT_X86_SHA_EXT
 	  This option enables SHA256 implementation using x86 SHA processor extension
 	  instructions: sha256msg1, sha256msg2, sha256rnds2.
 
+config VBOOT_X86_RSA_ACCELERATION
+	bool "Use SSE2 instructions for RSA signature verification"
+	default y if CHROMEOS
+	default n
+	depends on ARCH_X86
+	help
+	  Use paddq, pmuludq, psrlq, punpckldq and punpcklqdq SSE2
+	  instructions to accelerate the modulus exponentiation which
+	  is part of the RSA signature verification process.
+
 config VBOOT_SHA_ARMV8_CE
 	bool "SHA256 implementation using ARMv8 Crypto Extension"
 	default y if CHROMEOS

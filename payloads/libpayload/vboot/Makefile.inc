@@ -29,6 +29,10 @@ ifeq ($(CONFIG_LP_ARCH_MOCK)$(VBOOT_FIRMWARE_ARCH-y),)
 $(error vboot requires architecture to be set in the configuration)
 endif
 
+ifeq ($(CONFIG_LP_VBOOT_X86_RSA_ACCELERATION),y)
+CPPFLAGS_common += -DVB2_X86_RSA_ACCELERATION
+endif
+
 $(VBOOT_FW_LIB): $(obj)/libpayload-config.h
 	@printf "    MAKE       $(subst $(obj)/,,$(@))\n"
 	+$(Q) FIRMWARE_ARCH="$(VBOOT_FIRMWARE_ARCH-y)" \
@@ -37,6 +41,7 @@ $(VBOOT_FW_LIB): $(obj)/libpayload-config.h
 		$(MAKE) -C "$(VBOOT_SOURCE)" \
 		TPM2_MODE=$(call kconfig-to-binary, $(CONFIG_LP_VBOOT_TPM2_MODE)) \
 		X86_SHA_EXT=$(call kconfig-to-binary, $(CONFIG_LP_VBOOT_X86_SHA_EXT)) \
+		VB2_X86_RSA_ACCELERATION=$(call kconfig-to-binary, $(CONFIG_LP_VBOOT_X86_RSA_ACCELERATION)) \
 		ARMV8_CRYPTO_EXT=$(call kconfig-to-binary, $(CONFIG_LP_VBOOT_SHA_ARMV8_CE)) \
 		UNROLL_LOOPS=1 \
 		BUILD="$(VBOOT_BUILD_DIR)" \

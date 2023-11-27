@@ -5,10 +5,13 @@
 #include <southbridge/intel/common/early_spi.h>
 #include "pch.h"
 
-static void enable_port80_on_lpc(void)
+static void setup_port80(void)
 {
-	/* Enable port 80 POST on LPC */
-	RCBA32(GCS) &= (~0x04);
+	/* Enable port 80 POST */
+	if (CONFIG(POST_DEVICE_PCI_PCIE))
+		RCBA32(GCS) |= 0x04; /* ... on PCI(e) */
+	else
+		RCBA32(GCS) &= (~0x04); /* ... on LPC */
 }
 
 static void set_spi_speed(void)
@@ -37,7 +40,7 @@ void bootblock_early_southbridge_init(void)
 
 	early_pch_init();
 
-	enable_port80_on_lpc();
+	setup_port80();
 	set_spi_speed();
 
 	/* Enable upper 128bytes of CMOS */

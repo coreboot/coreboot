@@ -19,6 +19,15 @@ const struct cpu_tdp_power_limits limits[] = {
 		.pl2_max_power = 64000,
 		.pl4_power = 120000
 	},
+	{
+		.mch_id = PCI_DID_INTEL_MTL_P_ID_3,
+		.cpu_tdp = 28,
+		.pl1_min_power = 19000,
+		.pl1_max_power = 28000,
+		.pl2_min_power = 64000,
+		.pl2_max_power = 64000,
+		.pl4_power = 120000
+	},
 };
 
 void __weak variant_devtree_update(void)

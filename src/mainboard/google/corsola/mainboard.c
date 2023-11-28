@@ -3,6 +3,7 @@
 #include <bootmode.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <fw_config.h>
 #include <gpio.h>
 #include <soc/bl31.h>
 #include <soc/i2c.h>
@@ -51,10 +52,11 @@ static void mainboard_init(struct device *dev)
 
 	setup_usb_host();
 
-	if (CONFIG(BOARD_GOOGLE_CHINCHOU))
-		configure_alc5645();
-	else
+	if (!fw_config_is_provisioned() ||
+	    fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_ALC1019)))
 		configure_alc1019();
+	else if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_ALC5645)))
+		configure_alc5645();
 
 	if (spm_init())
 		printk(BIOS_ERR, "spm init failed, system suspend may not work\n");

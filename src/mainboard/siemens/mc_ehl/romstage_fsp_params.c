@@ -38,4 +38,8 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 
 	/* Enable Row-Hammer prevention */
 	memupd->FspmConfig.RhPrevention = 1;
+	if (CONFIG(BOARD_SIEMENS_MC_EHL1)) {
+		/* Allow writes to EEPROM addresses 0x50..0x57. */
+		memupd->FspmConfig.SmbusSpdWriteDisable = 0;
+	}
 }

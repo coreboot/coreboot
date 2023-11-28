@@ -2,7 +2,7 @@ fw_config
 	field DB_USB 0 1
 		option DB_NONE			0
 		option DB_1C_1A			1
-		option DB_1C			2
+		option DB_LTE			2
 		option DB_1C_LTE		3
 	end
 	field WIFI_SAR_ID 2 3
@@ -333,6 +333,7 @@ chip soc/intel/alderlake
 				register "reg_adv_ctrl19" = "0xf0"
 				register "reg_adv_ctrl20" = "0xf0"
 				device i2c 28 on
+					probe DB_USB DB_LTE
 					probe DB_USB DB_1C_LTE
 				end
 			end
@@ -444,7 +445,6 @@ chip soc/intel/alderlake
 						use tcss_usb3_port2 as usb3_port
 						device generic 1 alias conn1 on
 							probe DB_USB DB_1C_1A
-							probe DB_USB DB_1C
 							probe DB_USB DB_1C_LTE
 						end
 					end
@@ -468,7 +468,6 @@ chip soc/intel/alderlake
                                                 register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(2, 1))"
 						device ref tcss_usb3_port2 on
 							probe DB_USB DB_1C_1A
-							probe DB_USB DB_1C
 							probe DB_USB DB_1C_LTE
 						end
 					end
@@ -492,7 +491,6 @@ chip soc/intel/alderlake
                                                 register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(2, 1))"
 						device ref usb2_port2 on
 							probe DB_USB DB_1C_1A
-							probe DB_USB DB_1C
 							probe DB_USB DB_1C_LTE
 						end
 					end
@@ -565,6 +563,7 @@ chip soc/intel/alderlake
 						register "desc" = ""USB3 WWAN""
 						register "type" = "UPC_TYPE_INTERNAL"
 						device ref usb3_port2 on
+							probe DB_USB DB_LTE
 							probe DB_USB DB_1C_LTE
 						end
 					end

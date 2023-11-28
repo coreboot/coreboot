@@ -75,7 +75,8 @@ static const struct pad_config disable_wifi_pch_susclk[] = {
 
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 {
-	if (!fw_config_probe(FW_CONFIG(DB_USB, DB_1C_LTE))) {
+	if (!fw_config_probe(FW_CONFIG(DB_USB, DB_1C_LTE)) &&
+	    !fw_config_probe(FW_CONFIG(DB_USB, DB_LTE))) {
 		printk(BIOS_INFO, "Disable LTE-related GPIO pins.\n");
 		gpio_padbased_override(padbased_table, lte_disable_pads,
 				       ARRAY_SIZE(lte_disable_pads));

@@ -47,8 +47,6 @@ unexport KCONFIG_DEFCONFIG_LIST
 
 # Fill in Linux kconfig build rules to work
 
-oldconfig: KCONFIG_STRICT=
-
 savedefconfig: $(objk)/conf
 	cp $(DOTCONFIG) $(DEFCONFIG)
 	chmod +w $(DEFCONFIG)

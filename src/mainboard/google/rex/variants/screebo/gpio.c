@@ -75,8 +75,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B12, NONE, DEEP, NF1),
 	/* GPP_B13 : [] ==> PLT_RST_L */
 	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),
-	/* GPP_B14 : GPP_B14_STRAP ==> Component NC */
-	PAD_NC(GPP_B14, NONE),
+	/* GPP_B14 : GPP_B14_STRAP ==> USB_OC2 */
+	PAD_CFG_NF_LOCK(GPP_B14, UP_20K, NF1, LOCK_CONFIG),
 	/* GPP_B15 : [] ==> USB_OC3# */
 	PAD_CFG_NF_LOCK(GPP_B15, NONE, NF1, LOCK_CONFIG),
 	/* GPP_B16 : [] ==> SOC_HDMI_HPD_L */

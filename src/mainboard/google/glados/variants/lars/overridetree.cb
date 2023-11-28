@@ -20,6 +20,12 @@ chip soc/intel/skylake
 				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_E7_IRQ)"
 				device i2c 10 on end
 			end
+			chip drivers/i2c/generic
+				register "hid" = ""MLFS0000""
+				register "desc" = ""Melfas Touchscreen""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_E7_IRQ)"
+				device i2c 34 on end
+			end
 		end
 		device ref i2c1		on
 			chip drivers/i2c/generic

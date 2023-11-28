@@ -129,6 +129,22 @@ enum vr_domain {
 	NUM_VR_DOMAINS
 };
 
+/*
+ * Slew Rate configuration for Deep Package C States for VR domain.
+ * They are fast time divided by 2.
+ * 0 - Fast/2
+ * 1 - Fast/4
+ * 2 - Fast/8
+ * 3 - Fast/16
+ */
+enum slew_rate {
+	SLEW_FAST_2,
+	SLEW_FAST_4,
+	SLEW_FAST_8,
+	SLEW_FAST_16,
+	SLEW_IGNORE = 0xff,
+};
+
 struct soc_intel_meteorlake_config {
 
 	/* Common struct containing soc config data required by common code */
@@ -499,6 +515,16 @@ struct soc_intel_meteorlake_config {
 
 	/* Platform Power Pmax in Watts. Zero means automatic. */
 	uint16_t psys_pmax_watts;
+
+	/* Enable or Disable Acoustic Noise Mitigation feature */
+	uint8_t enable_acoustic_noise_mitigation;
+	/* Disable Fast Slew Rate for Deep Package C States for VR domains */
+	uint8_t disable_fast_pkgc_ramp[NUM_VR_DOMAINS];
+	/*
+	 * Slew Rate configuration for Deep Package C States for VR domains
+	 * as per `enum slew_rate` data type.
+	 */
+	uint8_t slow_slew_rate_config[NUM_VR_DOMAINS];
 };
 
 typedef struct soc_intel_meteorlake_config config_t;

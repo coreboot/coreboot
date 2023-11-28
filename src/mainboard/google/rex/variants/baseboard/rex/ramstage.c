@@ -96,8 +96,10 @@ const struct cpu_tdp_power_limits power_optimized_limits[] = {
 };
 #endif
 
-void variant_devtree_update(void)
+void __weak variant_devtree_update(void)
 {
+	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
+
 	const struct cpu_tdp_power_limits *limits = performance_efficient_limits;
 	size_t limits_size = ARRAY_SIZE(performance_efficient_limits);
 
@@ -114,4 +116,9 @@ void variant_devtree_update(void)
 	}
 
 	variant_update_cpu_power_limits(limits, limits_size);
+}
+
+void baseboard_devtree_update(void)
+{
+	variant_devtree_update();
 }

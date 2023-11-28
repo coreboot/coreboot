@@ -31,7 +31,9 @@ enum s0ix_entry {
 
 void variant_generate_s0ix_hook(enum s0ix_entry entry);
 
-/* Modify devictree settings during ramstage */
+/* Modify devictree settings during ramstage by baseboard */
+void baseboard_devtree_update(void);
+/* Modify devictree settings during ramstage by dedicated variant */
 void variant_devtree_update(void);
 
 #endif /*__BASEBOARD_VARIANTS_H__ */

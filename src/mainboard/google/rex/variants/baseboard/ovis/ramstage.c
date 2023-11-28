@@ -21,8 +21,15 @@ const struct cpu_tdp_power_limits limits[] = {
 	},
 };
 
-void variant_devtree_update(void)
+void __weak variant_devtree_update(void)
 {
+	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
+
 	size_t total_entries = ARRAY_SIZE(limits);
 	variant_update_cpu_power_limits(limits, total_entries);
+}
+
+void baseboard_devtree_update(void)
+{
+	variant_devtree_update();
 }

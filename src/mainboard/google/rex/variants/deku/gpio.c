@@ -144,7 +144,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_D00 : net NC is not present in the given design */
 	PAD_NC(GPP_D00, NONE),
 	/* GPP_D01 : [] ==> LAN1_PCIE_WAKE_ODL */
-	PAD_CFG_GPI_IRQ_WAKE(GPP_D01, NONE, PLTRST, LEVEL, INVERT),
+	PAD_CFG_GPI_SCI_LOW(GPP_D01, NONE, DEEP, EDGE_SINGLE),
 	/* GPP_D02 : [] ==> LAN1_PERST_L */
 	PAD_CFG_GPO_LOCK(GPP_D02, 1, LOCK_CONFIG),
 	/* GPP_D03 : net NC is not present in the given design */
@@ -199,7 +199,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_E03 : [] ==> GSC_SOC_INT_ODL */
 	PAD_CFG_GPI_APIC_LOCK(GPP_E03, NONE, LEVEL, INVERT, LOCK_CONFIG),
 	/* GPP_E04 : [] ==> LAN0_PCIE_WAKE_ODL */
-	PAD_CFG_GPI_IRQ_WAKE(GPP_E04, NONE, PLTRST, LEVEL, INVERT),
+	PAD_CFG_GPI_SCI_LOW(GPP_E04, NONE, DEEP, EDGE_SINGLE),
 	/* GPP_E05 : [] ==> WLAN_PCIE_WAKE_ODL */
 	PAD_CFG_GPI_IRQ_WAKE(GPP_E05, NONE, PLTRST, LEVEL, INVERT),
 	/* GPP_E06 : GPP_E06_STRAP ==> Component NC */

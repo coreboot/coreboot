@@ -239,17 +239,4 @@ config USE_PM_ACPI_TIMER
 config HAVE_SLP_S0_GATE
 	def_bool n
 
-choice
-	prompt "Choose desired processor power limits (PLs)"
-	default PL_BASELINE if BOARD_GOOGLE_MODEL_SCREEBO
-	default PL_PERFORMANCE
-
-config PL_PERFORMANCE
-	bool "Performance: Maximum PLs for maximum performance"
-
-config PL_BASELINE
-	bool "Baseline: Baseline PLs for balanced performance at lower power"
-
-endchoice
-
 endif # BOARD_GOOGLE_REX_COMMON

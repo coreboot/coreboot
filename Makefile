@@ -23,6 +23,7 @@ COREBOOT_EXPORTS += top src srck obj objutil objk
 DOTCONFIG ?= $(top)/.config
 KCONFIG_CONFIG = $(DOTCONFIG)
 KCONFIG_AUTOADS := $(obj)/cb-config.ads
+KCONFIG_RUSTCCFG := $(obj)/cb-config.rustcfg
 KCONFIG_AUTOHEADER := $(obj)/config.h
 KCONFIG_AUTOCONFIG := $(obj)/auto.conf
 KCONFIG_DEPENDENCIES := $(obj)/auto.conf.cmd
@@ -42,6 +43,7 @@ COREBOOT_EXPORTS += KCONFIG_WERROR
 endif
 COREBOOT_EXPORTS += KCONFIG_WARN_UNKNOWN_SYMBOLS
 COREBOOT_EXPORTS += KCONFIG_AUTOADS KCONFIG_PACKAGE
+COREBOOT_EXPORTS += KCONFIG_RUSTCCFG
 
 # Make does not offer a recursive wildcard function, so here's one:
 rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))

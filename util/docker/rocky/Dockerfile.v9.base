@@ -1,0 +1,48 @@
+FROM rockylinux:9
+
+RUN \
+	echo "install_weak_deps=False" >> /etc/dnf/dnf.conf && \
+	dnf update -y && \
+	dnf install -y epel-release 'dnf-command(config-manager)' && \
+	dnf config-manager --set-enabled epel && \
+	dnf config-manager --set-enabled epel-testing && \
+	dnf config-manager --set-enabled crb && \
+	rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-9 && \
+	dnf update -y && \
+	dnf install -y \
+		bash-completion \
+		bc \
+		bison \
+		bzip2 \
+		ccache \
+		cmake \
+		cscope \
+		diffutils \
+		dtc \
+		flex \
+		gcc-c++ \
+		git \
+		go \
+		htop \
+		lcov \
+		less \
+		make \
+		meson \
+		ncurses-devel \
+		neovim \
+		nss-devel \
+		nss-util-devel \
+		openssl-devel \
+		patch \
+		perl-English \
+		perl-FindBin \
+		perl-Hash-Util \
+		perl-Sys-Hostname \
+		python3 \
+		shellcheck \
+		tmux \
+		xz \
+		zlib-devel && \
+	dnf install -y --repo epel-testing gcc-gnat && \
+	dnf clean all && \
+	ln -s /usr/bin/python3 /usr/bin/python

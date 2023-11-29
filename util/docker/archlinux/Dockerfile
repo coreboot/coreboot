@@ -13,17 +13,23 @@ RUN pacman-key --init && \
 RUN pacman -S --noconfirm \
 	base-devel \
 	bash-completion \
+	bc \
 	bzip2 \
 	ccache \
+	cmake \
 	cscope \
+	dtc \
 	gcc-ada \
 	git \
 	go \
 	htop \
 	lcov \
 	less \
+	meson \
 	msitools \
 	neovim \
+	nss \
+	openssh \
 	openssl \
 	python3 \
 	shellcheck \

@@ -41,5 +41,6 @@
 #define SIO_EC_HOST_ENABLE       /* EC Host Interface Resources */
 
 #define EC_ENABLE_SYNC_IRQ      /* Enable tight timestamp / wake support */
+#define EC_SYNC_IRQ_WAKE_CAPABLE /* Let the OS know ec_sync is wake capable */
 
 #endif /* __BASEBOARD_EC_H__ */

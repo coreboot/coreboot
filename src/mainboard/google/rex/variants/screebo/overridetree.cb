@@ -289,6 +289,7 @@ chip soc/intel/meteorlake
 			chip soc/intel/common/block/pcie/rtd3
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D03)"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D02)"
+				register "enable_delay_ms" = "1"
 				register "srcclk_pin" = "6"
 				device generic 0 on
 					probe DB_SD SD_GL9750

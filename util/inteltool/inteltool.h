@@ -344,6 +344,19 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_DNV_LPC		0x19dc
 #define PCI_DEVICE_ID_INTEL_GLK_LPC		0x31E8
 
+/* Elkhart Lake */
+#define PCI_DEVICE_ID_INTEL_ELKHART_LAKE_1	0x4514
+#define PCI_DEVICE_ID_INTEL_ELKHART_LAKE_2	0x4516
+#define PCI_DEVICE_ID_INTEL_ELKHART_LAKE_3	0x4518
+#define PCI_DEVICE_ID_INTEL_ELKHART_LAKE_4	0x451a
+#define PCI_DEVICE_ID_INTEL_ELKHART_LAKE_5	0x4528
+#define PCI_DEVICE_ID_INTEL_ELKHART_LAKE_6	0x452a
+#define PCI_DEVICE_ID_INTEL_ELKHART_LAKE_7	0x452c
+#define PCI_DEVICE_ID_INTEL_ELKHART_LAKE_8	0x452e
+#define PCI_DEVICE_ID_INTEL_ELKHART_LAKE_9	0x4532
+#define PCI_DEVICE_ID_INTEL_ELKHART_LAKE_10	0x4534
+#define PCI_DEVICE_ID_INTEL_ELKHART_LAKE_11	0x4536
+
 /* Intel starts counting these generations with the integration of the DRAM controller */
 #define PCI_DEVICE_ID_INTEL_CORE_0TH_GEN	0xd132 /* Nehalem */
 #define PCI_DEVICE_ID_INTEL_CORE_1ST_GEN_D	0x0040 /* Clarkdale (Westmere Desktop) */
@@ -486,6 +499,13 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_TGL_GT1_2		0x9A68
 #define PCI_DEVICE_ID_INTEL_TGL_GT2_ULT_1	0x9A78
 #define PCI_DEVICE_ID_INTEL_TGL_GT2_ULT_2	0x9A70
+/* Elkhart Lake */
+#define PCI_DEVICE_ID_INTEL_EHL_GT1_1		0x4541
+#define PCI_DEVICE_ID_INTEL_EHL_GT1_2		0x4551
+#define PCI_DEVICE_ID_INTEL_EHL_GT1_3		0x4555
+#define PCI_DEVICE_ID_INTEL_EHL_GT1_4		0x4557
+#define PCI_DEVICE_ID_INTEL_EHL_GT1_5		0x4570
+#define PCI_DEVICE_ID_INTEL_EHL_GT1_6		0x4571
 #define PCI_DEVICE_ID_INTEL_ADL_S_GT1		0x4680
 #define PCI_DEVICE_ID_INTEL_ADL_S_GT1_2		0x4682
 #define PCI_DEVICE_ID_INTEL_ADL_S_GT1_3		0x4690
@@ -538,7 +558,7 @@ int print_epbar(struct pci_dev *nb);
 int print_dmibar(struct pci_dev *nb);
 int print_pciexbar(struct pci_dev *nb);
 int print_ambs(struct pci_dev *nb, struct pci_access *pacc);
-int print_spi(struct pci_dev *sb);
+int print_spi(struct pci_dev *sb, struct pci_access *pacc);
 int print_gfx(struct pci_dev *gfx);
 int print_ahci(struct pci_dev *ahci);
 int print_sgx(void);

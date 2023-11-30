@@ -77,6 +77,28 @@ static const io_register_t alderlake_espi_cfg_registers[] = {
 	{0xDC, 4, "ESPI_BC"},
 };
 
+static const io_register_t elkhart_espi_cfg_registers[] = {
+	{0x00, 4, "ESPI_DID_VID"},
+	{0x04, 4, "ESPI_STS_CMD"},
+	{0x08, 4, "ESPI_CC_RID"},
+	{0x0C, 4, "ESPI_BIST_HTYPE_PLT_CLS"},
+	{0x2C, 4, "ESPI_SS"},
+	{0x34, 4, "ESPI_CAPP"},
+	{0x80, 4, "ESPI_IOD_IOE"},
+	{0x84, 4, "ESPI_LGIR1"},
+	{0x88, 4, "ESPI_LGIR2"},
+	{0x8C, 4, "ESPI_LGIR3"},
+	{0x90, 4, "ESPI_LGIR4"},
+	{0x94, 4, "ESPI_ULKMC"},
+	{0xA0, 4, "ESPI_CS1IORE"},
+	{0xA4, 4, "ESPI_CS1GIR1"},
+	{0xA8, 4, "ESPI_CS1GMR1"},
+	{0xD0, 4, "ESPI_FS1"},
+	{0xD4, 4, "ESPI_FS2"},
+	{0xD8, 4, "ESPI_BDE"},
+	{0xDC, 4, "ESPI_BC"},
+};
+
 int print_lpc(struct pci_dev *sb, struct pci_access *pacc)
 {
 	size_t i, cfg_registers_size = 0;
@@ -137,6 +159,24 @@ int print_lpc(struct pci_dev *sb, struct pci_access *pacc)
 		printf("Device 0:1f.0 is eSPI (BC.LPC_ESPI=1)\n\n");
 		cfg_registers = alderlake_espi_cfg_registers;
 		cfg_registers_size = ARRAY_SIZE(alderlake_espi_cfg_registers);
+		break;
+	case PCI_DEVICE_ID_INTEL_EHL:
+		dev = pci_get_dev(pacc, sb->domain, sb->bus, sb->dev, 0);
+		if (!dev) {
+			printf("LPC/eSPI interface not found.\n");
+			return 1;
+		}
+		bc = pci_read_long(dev, SUNRISE_LPC_BC);
+		if (bc & (1 << 2)) {
+			printf("Device 0:1f.0 is eSPI (BC.LPC_ESPI=1)\n\n");
+			cfg_registers = elkhart_espi_cfg_registers;
+			cfg_registers_size = ARRAY_SIZE(elkhart_espi_cfg_registers);
+
+		} else {
+			printf("Device 0:1f.0 is LPC (BC.LPC_ESPI=0)\n\n");
+			cfg_registers = sunrise_lpc_cfg_registers;
+			cfg_registers_size = ARRAY_SIZE(sunrise_lpc_cfg_registers);
+		}
 		break;
 	default:
 		printf("Error: Dumping LPC/eSPI on this southbridge is not (yet) supported.\n");

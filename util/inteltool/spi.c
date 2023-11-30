@@ -42,6 +42,21 @@ static const io_register_t adl_pch_bios_cntl_registers[] = {
 	{ 0x12, 19, "Reserved" },
 };
 
+static const io_register_t elkhart_bios_cntl_registers[] = {
+	{ 0x0, 1, "BIOSWE - write enable" },
+	{ 0x1, 1, "BLE - lock enable" },
+	{ 0x2, 1, "ESPI - eSPI Enable Pin Strap" },
+	{ 0x3, 1, "Reserved" },
+	{ 0x4, 1, "TS - TopSwapStatus" },
+	{ 0x5, 1, "EISS - Enable InSMM.STS" },
+	{ 0x6, 1, "BBS - Boot BIOS Strap" },
+	{ 0x7, 1, "BILD - BIOS Interface Lock-Down" },
+	{ 0x8, 1, "BWPDS - BIOS Write Protect Disable Status" },
+	{ 0x9, 1, "Reserved" },
+	{ 0xa, 1, "BWRS - BIOS Write Status" },
+	{ 0xb, 1, "BWRE - BIOS Write Reporting (Async-SMI) Enable" },
+};
+
 #define ICH9_SPIBAR 0x3800
 #define ICH78_SPIBAR 0x3020
 
@@ -95,6 +110,66 @@ static const io_register_t ich7_spi_bar_registers[] = {
 	{ 0x68, 4, "PBR2 Protected BIOS Range 2" },
 };
 
+/*
+ * Intel Atom x6000E Series, and Intel Pentium and Celeron N and J Series Processors for IoT Applications
+ * February 2023,
+ * Document number 636722
+ */
+static const io_register_t elkhart_spi_bar_registers[] = {
+	{ 0x00, 4, "BFPR - BIOS Flash primary region" },
+	{ 0x04, 2, "HSFSTS - Hardware Sequencing Flash Status" },
+	{ 0x06, 2, "HSFCTL - Hardware Sequencing Flash Control" },
+	{ 0x08, 4, "FADDR - Flash Address" },
+	{ 0x0c, 4, "BIOS_DLOCK - Discrete Lock Bits" },
+	{ 0x10, 4, "FDATA0" },
+	/* 0x10 .. 0x4f are filled with data */
+	{ 0x50, 4, "FRACC - Flash Region Access Permissions" },
+	{ 0x54, 4, "Flash Region 0" },
+	{ 0x58, 4, "Flash Region 1" },
+	{ 0x5c, 4, "Flash Region 2" },
+	{ 0x60, 4, "Flash Region 3" },
+	{ 0x64, 4, "Flash Region 4" },
+	{ 0x68, 4, "Flash Region 5" },
+	{ 0x6c, 4, "Flash Region 6" },
+	{ 0x70, 4, "Flash Region 7" },
+	{ 0x74, 4, "Flash Region 8" },
+	{ 0x78, 4, "Flash Region 9" },
+	{ 0x7c, 4, "Flash Region 10" },
+	{ 0x80, 4, "Flash Region 11" },
+	{ 0x84, 4, "FPR0 - Flash Protected Range 0" },
+	{ 0x88, 4, "FPR0 - Flash Protected Range 1" },
+	{ 0x8c, 4, "FPR0 - Flash Protected Range 2" },
+	{ 0x90, 4, "FPR0 - Flash Protected Range 3" },
+	{ 0x94, 4, "FPR0 - Flash Protected Range 4" },
+	{ 0x98, 4, "GPR0 - Global Protected Range 0" },
+	{ 0xa0, 4, "SSFSTS - Software Sequencing Flash Status" },
+	{ 0xa4, 2, "PREOP - Prefix opcode Configuration" },
+	{ 0xa6, 2, "OPTYPE - Opcode Type Configuration" },
+	{ 0xa8, 4, "OPMENU0 - Opcode Menu Configuration" },
+	{ 0xac, 4, "OPMENU1 - Opcode Menu Configuration" },
+	{ 0xb0, 4, "SFRACC - Secondary Flash Region Access Permissions" },
+	{ 0xb4, 4, "FDOC - Flash Descriptor Observability Control" },
+	{ 0xb8, 4, "FDOD - Flash Descriptor Observability Data" },
+	{ 0xc0, 4, "AFC - Additional Flash Control" },
+	{ 0xc4, 4, "SFDP0_VSCC0 - Vendor Specific Component Capabilities" },
+	{ 0xc8, 4, "SFDP0_VSCC1 - Vendor Specific Component Capabilities" },
+	{ 0xcc, 4, "PTINX - Parameter Table Index" },
+	{ 0xd0, 4, "PTDATA - Parameter Table Data" },
+	{ 0xd4, 4, "SBRS - SPI Bus Requester Status" },
+	{ 0xe0, 4, "FREG12 - Flash Region" },
+	{ 0xe4, 4, "FREG13 - Flash Region" },
+	{ 0xe8, 4, "FREG14 - Flash Region" },
+	{ 0xec, 4, "FREG15 - Flash Region" },
+	{ 0x118, 4, "BM_WAP - BIOS Master Read Access Permissions (BIOS_BM_RAP)" },
+	{ 0x11c, 4, "BM_WAP - BIOS Master Write Access Permissions (BIOS_BM_WAP)" },
+	{ 0x184, 4, "CSXE_PR0 - CSXE Flash Protected Range" },
+	{ 0x188, 4, "CSXE_PR1 - CSXE Flash Protected Range" },
+	{ 0x18c, 4, "CSXE_PR2 - CSXE Flash Protected Range" },
+	{ 0x190, 4, "CSXE_PR3 - CSXE Flash Protected Range" },
+	{ 0x194, 4, "CSXE_PR4 - CSXE Flash Protected Range" },
+	{ 0x198, 4, "CSXE_PR0 - CSXE Flash Protected Range" },
+	{ 0x198, 4, "CSXE_WPR0 - Write Protected Range 0" },
+};
 
 static int print_bioscntl(struct pci_dev *sb)
 {
@@ -232,6 +307,11 @@ static int print_bioscntl(struct pci_dev *sb)
 		bios_cntl_register = adl_pch_bios_cntl_registers;
 		size = ARRAY_SIZE(adl_pch_bios_cntl_registers);
 		break;
+	case PCI_DEVICE_ID_INTEL_EHL:
+		bios_cntl = pci_read_byte(sb, 0xdc);
+		bios_cntl_register = elkhart_bios_cntl_registers;
+		size = ARRAY_SIZE(elkhart_bios_cntl_registers);
+		break;
 	default:
 		printf("Error: Dumping SPI on this southbridge is not (yet) supported.\n");
 		return 1;
@@ -250,12 +330,13 @@ static int print_bioscntl(struct pci_dev *sb)
 	return 0;
 }
 
-static int print_spibar(struct pci_dev *sb) {
+static int print_spibar(struct pci_dev *sb, struct pci_access *pacc) {
 	int i, size = 0, rcba_size = 0x4000;
 	volatile uint8_t *rcba;
 	uint32_t rcba_phys;
 	const io_register_t *spi_register = NULL;
 	uint32_t spibaroffset;
+	struct pci_dev *spidev;
 
 	printf("\n============= SPI Bar ==============\n\n");
 
@@ -378,6 +459,25 @@ static int print_spibar(struct pci_dev *sb) {
 		size = ARRAY_SIZE(spi_bar_registers);
 		spi_register = spi_bar_registers;
 		break;
+	case PCI_DEVICE_ID_INTEL_EHL:
+		/* the southbridge is the eSPI controller, we need to get the SPI flash controller */
+		if (!(spidev = pci_get_dev(pacc, sb->domain, sb->bus, sb->dev, 5))) {
+			perror("Error: no spi device 0:31.5\n");
+			return 1;
+		}
+
+		rcba_phys = ((uint64_t)pci_read_long(spidev, 0x10) & 0xfffff000);
+		rcba_size = 4096;
+		if (!rcba_phys) {
+			fprintf(stderr, "Error: no valid bar 0 of device 0:31.5 found %x %x\n", rcba_phys, rcba_size);
+			return 1;
+		}
+
+		/* this is not rcba, but we keep it to use common code */
+		spibaroffset = 0;
+		spi_register = elkhart_spi_bar_registers;
+		size = ARRAY_SIZE(elkhart_spi_bar_registers);
+		break;
 	case PCI_DEVICE_ID_INTEL_ICH:
 	case PCI_DEVICE_ID_INTEL_ICH0:
 	case PCI_DEVICE_ID_INTEL_ICH2:
@@ -420,6 +520,6 @@ static int print_spibar(struct pci_dev *sb) {
 	return 0;
 }
 
-int print_spi(struct pci_dev *sb) {
-	return (print_bioscntl(sb) || print_spibar(sb));
+int print_spi(struct pci_dev *sb, struct pci_access *pacc) {
+	return (print_bioscntl(sb) || print_spibar(sb, pacc));
 }

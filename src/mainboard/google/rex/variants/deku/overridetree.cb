@@ -55,6 +55,11 @@ chip soc/intel/meteorlake
 	}"
 
 	device domain 0 on
+		device ref dtt on
+			chip drivers/intel/dptf
+				device generic 0 alias dptf_policy on end
+			end
+		end
 		device ref pcie_rp7 on
 			# Enable LAN1 Card PCIE 7 using clk 2
 			register "pcie_rp[PCH_RP(7)]" = "{

@@ -65,6 +65,10 @@ chip soc/intel/meteorlake
 	register "sagv_freq_mhz[3]" = "6400"
 	register "sagv_gear[3]" = "4"
 
+	# set EPP to 45%: 45 * 256/100 = 115 = 0x73
+	register "enable_energy_perf_pref" = "true"
+	register "energy_perf_pref_value" = "0x73"
+
 	# Set on-board graphics as primary display
 	register "skip_ext_gfx_scan" = "1"
 

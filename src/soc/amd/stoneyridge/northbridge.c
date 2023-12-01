@@ -30,31 +30,6 @@
 
 #include "chip.h"
 
-static void set_io_addr_reg(struct device *dev, u32 nodeid, u32 linkn, u32 reg,
-			u32 io_min, u32 io_max)
-{
-	u32 tempreg;
-
-	/* io range allocation.  Limit */
-	tempreg = (nodeid & 0xf) | ((nodeid & 0x30) << (8 - 4)) | (linkn << 4)
-						| ((io_max & 0xf0) << (12 - 4));
-	pci_write_config32(SOC_ADDR_DEV, reg + 4, tempreg);
-	tempreg = 3 | ((io_min & 0xf0) << (12 - 4)); /* base: ISA and VGA ? */
-	pci_write_config32(SOC_ADDR_DEV, reg, tempreg);
-}
-
-static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index,
-						u32 mmio_min, u32 mmio_max)
-{
-	u32 tempreg;
-
-	/* io range allocation.  Limit */
-	tempreg = (nodeid & 0xf) | (linkn << 4) | (mmio_max & 0xffffff00);
-	pci_write_config32(SOC_ADDR_DEV, reg + 4, tempreg);
-	tempreg = 3 | (nodeid & 0x30) | (mmio_min & 0xffffff00);
-	pci_write_config32(SOC_ADDR_DEV, reg, tempreg);
-}
-
 static void read_resources(struct device *dev)
 {
 	unsigned int idx = 0;
@@ -71,50 +46,6 @@ static void read_resources(struct device *dev)
 
 	/* NB IOAPIC2 resource */
 	mmio_range(dev, idx++, IO_APIC2_ADDR, 0x1000);
-}
-
-static void set_resource(struct device *dev, struct resource *res, u32 nodeid)
-{
-	resource_t rbase, rend;
-	unsigned int reg, link_num;
-	char buf[50];
-
-	/* Make certain the resource has actually been set */
-	if (!(res->flags & IORESOURCE_ASSIGNED))
-		return;
-
-	/* If I have already stored this resource don't worry about it */
-	if (res->flags & IORESOURCE_STORED)
-		return;
-
-	/* Only handle PCI memory and IO resources */
-	if (!(res->flags & (IORESOURCE_MEM | IORESOURCE_IO)))
-		return;
-
-	/* Ensure I am actually looking at a resource of function 1 */
-	if ((res->index & 0xffff) < 0x1000)
-		return;
-
-	/* Get the base address */
-	rbase = res->base;
-
-	/* Get the limit (rounded up) */
-	rend  = resource_end(res);
-
-	/* Get the register and link */
-	reg  = res->index & 0xfff; /* 4k */
-	link_num = IOINDEX_LINK(res->index);
-
-	if (res->flags & IORESOURCE_IO)
-		set_io_addr_reg(dev, nodeid, link_num, reg, rbase >> 8, rend >> 8);
-	else if (res->flags & IORESOURCE_MEM)
-		set_mmio_addr_reg(nodeid, link_num, reg,
-				(res->index >> 24), rbase >> 8, rend >> 8);
-
-	res->flags |= IORESOURCE_STORED;
-	snprintf(buf, sizeof(buf), " <node %x link %x>",
-			nodeid, link_num);
-	report_resource_stored(dev, res, buf);
 }
 
 /**
@@ -144,14 +75,9 @@ static void create_vga_resource(struct device *dev)
 static void set_resources(struct device *dev)
 {
 	struct bus *bus;
-	struct resource *res;
 
 	/* do we need this? */
 	create_vga_resource(dev);
-
-	/* Set each resource we have found */
-	for (res = dev->resource_list ; res ; res = res->next)
-		set_resource(dev, res, 0);
 
 	for (bus = dev->link_list ; bus ; bus = bus->next)
 		if (bus->children)

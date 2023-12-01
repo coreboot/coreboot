@@ -29,7 +29,7 @@
 
 .arm
 .global LastBytes
-.section PSP_FOOTER_DATA, "ad", %note
+.section PSP_FOOTER_DATA, "a", %note
 .balign 64
 
 // Note: this is used for determining the size of the binary. It is 64 byte aligned and 64 byte

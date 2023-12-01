@@ -39,13 +39,6 @@ void run_payload(struct prog *prog, void *fdt, int payload_mode)
 	status = INSERT_FIELD(status, MSTATUS_MPIE, 0);
 
 	switch (payload_mode) {
-	case RISCV_PAYLOAD_MODE_U:
-		status = INSERT_FIELD(status, MSTATUS_MPP, PRV_U);
-		/* Trap vector base address point to the payload */
-		write_csr(utvec, doit);
-		/* disable U-Mode interrupt */
-		write_csr(uie, 0);
-		break;
 	case RISCV_PAYLOAD_MODE_S:
 		status = INSERT_FIELD(status, MSTATUS_MPP, PRV_S);
 		/* Trap vector base address point to the payload */

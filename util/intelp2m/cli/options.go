@@ -12,11 +12,12 @@ import (
 var name = filepath.Base(os.Args[0])
 
 const usagePlatform = `usage: -platform <type>
-    type: adl | apl | cnl | ebg | jsl | lbg | mtl | snr | tgl | ?
+    type: adl | apl | cnl | ebg | ehl | jsl | lbg | mtl | snr | tgl | ?
         adl - Alder Lake PCH
         apl - Apollo Lake SoC
         cnl - CannonLake-LP or Whiskeylake/Coffeelake/Cometlake-U SoC
         ebg - Emmitsburg PCH with Xeon SP
+        ehl - Elkhart Lake SoC
         jsl - Jasper Lake SoC
         lbg - Lewisburg PCH with Xeon SP
         mtl - MeteorLake SoC

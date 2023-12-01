@@ -9,6 +9,7 @@ import (
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/cnl"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/ebg"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/ehl"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/jsl"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/lbg"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/mtl"
@@ -30,6 +31,7 @@ var platformConstructorMap = map[p2m.PlatformType]Constructor{
 	p2m.Meteor:     mtl.GetPlatform,
 	p2m.Emmitsburg: ebg.GetPlatform,
 	p2m.Lewisburg:  lbg.GetPlatform,
+	p2m.Elkhart:    ehl.GetPlatform,
 }
 
 var GppMap = map[p2m.PlatformType][]string{
@@ -42,6 +44,7 @@ var GppMap = map[p2m.PlatformType][]string{
 	p2m.Meteor:     mtl.GPPGroups,
 	p2m.Emmitsburg: ebg.GPPGroups,
 	p2m.Lewisburg:  lbg.GPPGroups,
+	p2m.Elkhart:    ehl.GPPGroups,
 }
 
 func GetConstructor() (Constructor, error) {

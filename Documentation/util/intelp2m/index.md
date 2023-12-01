@@ -73,6 +73,7 @@ The utility supports the following chipsets from Intel:
 * `apl` - Apollo Lake SoC
 * `cnl` - CannonLake-LP or Whiskeylake/Coffeelake/Cometlake-U SoC
 * `ebg` - Emmitsburg PCH with Xeon SP
+* `ehl` - Elkhart Lake SoC
 * `jsl` - Jasper Lake SoC
 * `lbg` - Lewisburg PCH with Xeon SP
 * `mtl` - MeteorLake SoC

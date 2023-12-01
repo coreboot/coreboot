@@ -17,6 +17,7 @@ const (
 	Tiger
 	Meteor
 	Emmitsburg
+	Elkhart
 )
 
 const (
@@ -36,6 +37,7 @@ var platforms = map[string]PlatformType{
 	"jsl": Jasper,
 	"mtl": Meteor,
 	"ebg": Emmitsburg,
+	"ehl": Elkhart,
 }
 
 var fields = map[string]FieldType{

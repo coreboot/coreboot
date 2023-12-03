@@ -1227,6 +1227,19 @@ static void validate_layout(char *image, int size)
 		matches++; // found a match between FMAP and IFD region
 
 		if ((uint)region.base != area->offset || (uint)region.size != area->size) {
+			if (i == REGION_BIOS) {
+				/*
+				 * BIOS FMAP region is a special case
+				 * coreboots FMAP BIOS region depends on the CONFIG_CBFS_SIZE
+				 * while the IFD BIOS region is always of static size.
+				 * Therefore we just make sure that the BIOS region of the FMAP
+				 * is inside the region specified by the IFD
+				 */
+				if ((uint)region.base <= area->offset &&
+				   ((uint)region.base + region.size) >= (area->offset + area->size)) {
+					continue;
+				}
+			}
 			printf("Region mismatch between %s and %s\n", region_names[i].terse, area->name);
 			printf(" Descriptor region %s:\n", region_names[i].terse);
 			printf("  offset: 0x%08x\n", region.base);

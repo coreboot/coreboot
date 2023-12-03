@@ -97,7 +97,7 @@ External (\PPKG, MethodObj)
 
 		Name (_AL0, Package () { FAN })
 
-		PowerResource (FPwR, 0, 0)
+		PowerResource (FPWR, 0, 0)
 		{
 			/*
 			 * WINDOWS BUG: Don't read from EmbeddedControl
@@ -127,7 +127,7 @@ External (\PPKG, MethodObj)
 		Device (FAN)
 		{
 			Name (_HID, EISAID ("PNP0C0B"))
-			Name (_PR0, Package () { FPwR })
+			Name (_PR0, Package () { FPWR })
 		}
 	}
 

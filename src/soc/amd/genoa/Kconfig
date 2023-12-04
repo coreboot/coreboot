@@ -163,6 +163,13 @@ config PSP_SOFTFUSE_BITS
 	  See #57299 (NDA) for additional bit definitions.
 endmenu
 
+config CONSOLE_UART_BASE_ADDRESS
+	depends on CONSOLE_SERIAL && AMD_SOC_CONSOLE_UART
+	hex
+	default 0xfedc9000 if UART_FOR_CONSOLE = 0
+	default 0xfedca000 if UART_FOR_CONSOLE = 1
+	default 0xfedce000 if UART_FOR_CONSOLE = 2
+
 config SMM_TSEG_SIZE
 	hex
 	default 0x800000

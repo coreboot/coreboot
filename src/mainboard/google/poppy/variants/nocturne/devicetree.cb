@@ -246,11 +246,11 @@ chip soc/intel/skylake
 
 	device cpu_cluster 0 on end
 	device domain 0 on
-		device pci 00.0 on  end # Host Bridge
-		device pci 02.0 on  end # Integrated Graphics Device
-		device pci 04.0 on  end # SA thermal subsystem
-		device pci 05.0 on  end # SA IMGU
-		device pci 14.0 on
+		device ref system_agent 	on  end
+		device ref igpu 		on  end
+		device ref sa_thermal 		on  end
+		device ref imgu 		on  end
+		device ref south_xhci		on
 			chip drivers/usb/acpi
 				register "desc" = ""Root Hub""
 				register "type" = "UPC_TYPE_HUB"
@@ -278,11 +278,11 @@ chip soc/intel/skylake
 					end
 				end
 			end
-		end # USB xHCI
-		device pci 14.1 on  end # USB xDCI (OTG)
-		device pci 14.2 on  end # Thermal Subsystem
-		device pci 14.3 on  end # Camera
-		device pci 15.0 on
+		end
+		device ref south_xdci 		on  end
+		device ref thermal		on  end
+		device ref cio			on  end
+		device ref i2c0			on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""WCOM50C1""
 				register "generic.desc" = ""WCOM Digitizer""
@@ -297,8 +297,8 @@ chip soc/intel/skylake
 				register "hid_desc_reg_offset" = "0x1"
 				device i2c 0a on end
 			end
-		end # I2C #0 - Touchscreen
-		device pci 15.1 on
+		end
+		device ref i2c1			on
 			chip drivers/i2c/sx9310
 				register "desc" = ""Right SAR Proximity Sensor""
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D9_IRQ)"
@@ -315,17 +315,17 @@ chip soc/intel/skylake
 				register "startup_sensor" = "0"
 				register "proxraw_strength" = "0"
 			end
-		end # I2C #1
-		device pci 15.2 off end # I2C #2
-		device pci 15.3 on  end # I2C #3 - Camera
-		device pci 16.0 on  end # Management Engine Interface 1
-		device pci 16.1 off end # Management Engine Interface 2
-		device pci 16.2 off end # Management Engine IDE-R
-		device pci 16.3 off end # Management Engine KT Redirection
-		device pci 16.4 off end # Management Engine Interface 3
-		device pci 17.0 off end # SATA
-		device pci 19.0 on  end # UART #2
-		device pci 19.1 on
+		end
+		device ref i2c2	 		off end
+		device ref i2c3	 		on  end
+		device ref heci1 		on  end
+		device ref heci2 		off end
+		device ref csme_ider	 	off end
+		device ref csme_ktr 		off end
+		device ref heci3	 	off end
+		device ref sata 		off end
+		device ref uart2	 	on  end
+		device ref i2c5			on
 			chip drivers/i2c/sx9310
 				register "desc" = ""Left SAR Proximity Sensor""
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D10_IRQ)"
@@ -342,8 +342,8 @@ chip soc/intel/skylake
 				register "startup_sensor" = "0"
 				register "proxraw_strength" = "0"
 			end
-		end # I2C #5
-		device pci 19.2 on
+		end
+		device ref i2c4			on
 			chip drivers/i2c/max98373
 				register "vmon_slot_no" = "4"
 				register "imon_slot_no" = "5"
@@ -360,35 +360,35 @@ chip soc/intel/skylake
 				register "name" = ""MAXL""
 				device i2c 31 on end
 			end
-		end # I2C #4 - Audio
-		device pci 1c.0 on
+		end
+		device ref pcie_rp1		on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_DW2_01"
 				device pci 00.0 on end
 			end
-		end # PCI Express Port 1
-		device pci 1c.1 off end # PCI Express Port 2
-		device pci 1c.2 off end # PCI Express Port 3
-		device pci 1c.3 off end # PCI Express Port 4
-		device pci 1c.4 off end # PCI Express Port 5
-		device pci 1c.5 off end # PCI Express Port 6
-		device pci 1c.6 off end # PCI Express Port 7
-		device pci 1c.7 off end # PCI Express Port 8
-		device pci 1d.0 on  end # PCI Express Port 9
-		device pci 1d.1 off end # PCI Express Port 10
-		device pci 1d.2 off end # PCI Express Port 11
-		device pci 1d.3 off end # PCI Express Port 12
-		device pci 1e.0 off end # UART #0
-		device pci 1e.1 off end # UART #1
-		device pci 1e.2 on
+		end
+		device ref pcie_rp2		off end
+		device ref pcie_rp3		off end
+		device ref pcie_rp4		off end
+		device ref pcie_rp5		off end
+		device ref pcie_rp6		off end
+		device ref pcie_rp7		off end
+		device ref pcie_rp8		off end
+		device ref pcie_rp9		on  end
+		device ref pcie_rp10		off end
+		device ref pcie_rp11		off end
+		device ref pcie_rp12		off end
+		device ref uart0		off end
+		device ref uart1		off end
+		device ref gspi0		on
 			chip drivers/spi/acpi
 				register "hid" = "ACPI_DT_NAMESPACE_HID"
 				register "compat_string" = ""google,cr50""
 				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_E0_IRQ)"
 				device spi 0 on end
 			end
-		end # GSPI #0
-		device pci 1e.3 on
+		end
+		device ref gspi1		on
 			chip drivers/spi/acpi
 				register "name" = ""CRFP""
 				register "hid" = "ACPI_DT_NAMESPACE_HID"
@@ -398,20 +398,20 @@ chip soc/intel/skylake
 				register "wake" = "GPE0_DW0_09" # GPP_C9
 				device spi 0 on end
 			end # FPMCU
-		end # GSPI #1
-		device pci 1e.4 on  end # eMMC
-		device pci 1e.5 off end # SDIO
-		device pci 1e.6 off end # SDCard
-		device pci 1f.0 on
+		end
+		device ref emmc 		on  end
+		device ref sdio 		off end
+		device ref sdxc 		off end
+		device ref lpc_espi		on
 			chip ec/google/chromeec
 				device pnp 0c09.0 on end
 			end
-		end # LPC Interface
-		device pci 1f.1 on  end # P2SB
-		device pci 1f.2 on  end # Power Management Controller
-		device pci 1f.3 on  end # Intel HDA
-		device pci 1f.4 on  end # SMBus
-		device pci 1f.5 on  end # PCH SPI
-		device pci 1f.6 off end # GbE
+		end
+		device ref p2sb 		on  end
+		device ref pmc 			on  end
+		device ref hda 			on  end
+		device ref smbus	 	on  end
+		device ref fast_spi 		on  end
+		device ref gbe 			off end
 	end
 end

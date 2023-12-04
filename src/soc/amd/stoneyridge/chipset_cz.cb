@@ -10,13 +10,13 @@ chip soc/amd/stoneyridge
 		device pci 00.2 alias iommu off ops amd_iommu_ops end
 		device pci 01.0 alias gfx off ops amd_graphics_ops end # internal GPU
 		device pci 01.1 alias gfx_hda off end # display HD Audio controller
-		device pci 02.0 on end # Dummy Host Bridge, do not disable
+		device pci 02.0 on end # Dummy device function, do not disable
 		device pci 02.1 alias gpp_bridge_0 off end
 		device pci 02.2 alias gpp_bridge_1 off end
 		device pci 02.3 alias gpp_bridge_2 off end
 		device pci 02.4 alias gpp_bridge_3 off end
 		device pci 02.5 alias gpp_bridge_4 off end
-		device pci 03.0 on end # Dummy Host Bridge, do not disable
+		device pci 03.0 on end # Dummy device function, do not disable
 		device pci 03.1 alias gfx_bridge_0 off end
 		device pci 03.2 alias gfx_bridge_1 off end
 		device pci 03.3 alias gfx_bridge_2 off end

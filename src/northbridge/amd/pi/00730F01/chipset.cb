@@ -11,7 +11,7 @@ chip northbridge/amd/pi/00730F01
 		device pci 0.2 alias iommu			off end
 		device pci 1.0 alias gfx			off end
 		device pci 1.1 alias gfx_hda			off end
-		device pci 2.0					on  end # Dummy Host Bridge, do not disable
+		device pci 2.0					on  end # Dummy device function, do not disable
 		device pci 2.1 alias gpp_bridge_0		off end
 		device pci 2.2 alias gpp_bridge_1		off end
 		device pci 2.3 alias gpp_bridge_2		off end

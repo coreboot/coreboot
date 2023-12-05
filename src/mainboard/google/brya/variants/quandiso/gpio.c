@@ -16,11 +16,6 @@ static const struct pad_config override_gpio_table[] = {
 	/* A22 : GPP_A22 ==> USB_C1_AUX_DC_N */
 	PAD_CFG_GPO(GPP_A22, 1, DEEP),
 
-	/* B5  : I2C2_SDA ==> I2C_P_SENSOR_SDA */
-	PAD_CFG_NF(GPP_B5, NONE, DEEP, NF2),
-	/* B6  : I2C2_SCL ==> I2C_P_SENSOR_SCL */
-	PAD_CFG_NF(GPP_B6, NONE, DEEP, NF2),
-
 	/* C1  : SMBDATA ==> USI_RST_L */
 	PAD_CFG_GPO(GPP_C1, 1, DEEP),
 

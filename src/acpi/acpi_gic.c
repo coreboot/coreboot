@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
+#include <device/device.h>
 
 static int acpi_create_madt_one_gicc_v3(acpi_madt_gicc_t *gicc, u32 acpi_uid, u32 pi_gsiv,
 					uint32_t vgic_mi, uint64_t mpidr)

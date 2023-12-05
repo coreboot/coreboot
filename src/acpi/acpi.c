@@ -22,6 +22,7 @@
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
+#include <device/device.h>
 #include <device/mmio.h>
 #include <device/pci.h>
 #include <drivers/uart/pl011.h>

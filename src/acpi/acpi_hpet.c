@@ -3,6 +3,7 @@
 #include <acpi/acpi.h>
 #include <arch/hpet.h>
 #include <console/console.h>
+#include <device/device.h>
 #include <device/mmio.h>
 #include <version.h>
 

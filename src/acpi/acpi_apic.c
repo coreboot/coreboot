@@ -5,6 +5,7 @@
 #include <arch/smp/mpspec.h>
 #include <commonlib/sort.h>
 #include <cpu/cpu.h>
+#include <device/device.h>
 
 static int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic)
 {

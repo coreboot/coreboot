@@ -3,9 +3,10 @@
 config DRIVERS_EMULATION_QEMU_BOCHS
 	bool "bochs dispi interface vga driver"
 	default y
-	depends on CPU_QEMU_X86
+	depends on PCI
+	depends on VENDOR_EMULATION
 	depends on MAINBOARD_DO_NATIVE_VGA_INIT
-	select HAVE_VGA_TEXT_FRAMEBUFFER
+	select HAVE_VGA_TEXT_FRAMEBUFFER if CPU_QEMU_X86
 	select HAVE_LINEAR_FRAMEBUFFER
 	select VGA
 	help

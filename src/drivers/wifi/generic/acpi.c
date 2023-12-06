@@ -5,6 +5,7 @@
 #include <acpi/acpigen_pci.h>
 #include <console/console.h>
 #include <device/pci_ids.h>
+#include <mtcl.h>
 #include <sar.h>
 #include <stdlib.h>
 #include <wrdd.h>
@@ -576,7 +577,18 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 
 	acpigen_write_dsm_uuid_arr(dsm_ids, dsm_count);
 
-	acpigen_pop_len(); /* Scope */
+	/*
+	 * Fill MediaTek MTCL related ACPI structure iff the device type is PCI,
+	 * the device has the MediaTek vendor ID, and the MTCL feature is
+	 * configured.
+	 */
+	if (CONFIG(USE_MTCL)) {
+		if (dev->path.type == DEVICE_PATH_PCI &&
+		    dev->vendor == PCI_VID_MEDIATEK)
+			write_mtcl_function();
+	}
+
+	acpigen_write_scope_end(); /* Scope */
 
 	printk(BIOS_INFO, "%s: %s %s\n", scope, dev->chip_ops ? dev->chip_ops->name : "",
 	       dev_path(dev));

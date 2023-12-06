@@ -14,6 +14,15 @@ config DRIVERS_INTEL_WIFI
 	   When enabled, add identifiers in ACPI and SMBIOS tables to
 	   make OS drivers work with certain Intel PCI-e WiFi chipsets.
 
+config DRIVERS_MTK_WIFI
+	bool "Support MediaTek PCI-e WiFi adapters"
+	depends on PCI
+	default y if PCIEXP_PLUGIN_SUPPORT
+	select DRIVERS_WIFI_GENERIC
+	help
+	  When enabled, add identifiers in ACPI tables to make OS
+	  drivers work with certain MediaTek PCI-e WiFi chipsets.
+
 if DRIVERS_WIFI_GENERIC
 
 config USE_SAR
@@ -50,3 +59,17 @@ config DSAR_SET_NUM
 	  There can be up to 3 optional SAR table sets.
 
 endif # DRIVERS_WIFI_GENERIC
+
+config USE_MTCL
+	bool
+	default n
+	depends on DRIVERS_MTK_WIFI
+	help
+	  When enabled, adds the MTCL function for MediaTek WiFi chipsets.
+	  This function supplies country list information used to enable or
+	  disable operation on 5.9GHz and 6GHz bands.
+
+config WIFI_MTCL_CBFS_FILEPATH
+	string "The cbfs file which has WIFI MTCL defaults"
+	depends on USE_MTCL
+	default ""

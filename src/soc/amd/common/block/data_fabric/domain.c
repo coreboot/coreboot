@@ -14,10 +14,16 @@
 
 void amd_pci_domain_scan_bus(struct device *domain)
 {
-	uint8_t bus, limit;
+	uint8_t segment_group, bus, limit;
 
-	if (data_fabric_get_pci_bus_numbers(domain, &bus, &limit) != CB_SUCCESS) {
+	if (data_fabric_get_pci_bus_numbers(domain, &segment_group, &bus, &limit) != CB_SUCCESS) {
 		printk(BIOS_ERR, "No PCI bus numbers decoded to PCI root.\n");
+		return;
+	}
+
+	/* TODO: Implement support for more than one PCI segment group in coreboot */
+	if (segment_group) {
+		printk(BIOS_ERR, "coreboot currently only supports one PCI segment group.\n");
 		return;
 	}
 

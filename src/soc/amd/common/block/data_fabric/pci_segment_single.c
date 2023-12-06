@@ -6,8 +6,8 @@
 #include <device/device.h>
 #include <types.h>
 
-enum cb_err data_fabric_get_pci_bus_numbers(struct device *domain, uint8_t *first_bus,
-					    uint8_t *last_bus)
+enum cb_err data_fabric_get_pci_bus_numbers(struct device *domain, uint8_t *segment_group,
+					    uint8_t *first_bus, uint8_t *last_bus)
 {
 	const signed int iohc_dest_fabric_id = get_iohc_fabric_id(domain);
 	union df_pci_cfg_map pci_bus_map;
@@ -19,6 +19,7 @@ enum cb_err data_fabric_get_pci_bus_numbers(struct device *domain, uint8_t *firs
 			continue;
 
 		if (pci_bus_map.we && pci_bus_map.re) {
+			*segment_group = 0;
 			*first_bus = pci_bus_map.bus_num_base;
 			*last_bus = pci_bus_map.bus_num_limit;
 			return CB_SUCCESS;

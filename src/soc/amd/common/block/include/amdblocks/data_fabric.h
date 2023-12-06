@@ -49,8 +49,8 @@ void data_fabric_broadcast_write32(uint16_t fn_reg, uint32_t data)
 void data_fabric_print_mmio_conf(void);
 void data_fabric_set_mmio_np(void);
 
-enum cb_err data_fabric_get_pci_bus_numbers(struct device *domain, uint8_t *first_bus,
-					    uint8_t *last_bus);
+enum cb_err data_fabric_get_pci_bus_numbers(struct device *domain, uint8_t *segment_group,
+					    uint8_t *first_bus, uint8_t *last_bus);
 
 void data_fabric_get_mmio_base_size(unsigned int reg, resource_t *mmio_base,
 				    resource_t *mmio_limit);

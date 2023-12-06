@@ -6,8 +6,8 @@
 #include <device/device.h>
 #include <types.h>
 
-enum cb_err data_fabric_get_pci_bus_numbers(struct device *domain, uint8_t *first_bus,
-					    uint8_t *last_bus)
+enum cb_err data_fabric_get_pci_bus_numbers(struct device *domain, uint8_t *segment_group,
+					    uint8_t *first_bus, uint8_t *last_bus)
 {
 	const signed int iohc_dest_fabric_id = get_iohc_fabric_id(domain);
 	union df_pci_cfg_base pci_bus_base;
@@ -21,13 +21,7 @@ enum cb_err data_fabric_get_pci_bus_numbers(struct device *domain, uint8_t *firs
 			continue;
 
 		if (pci_bus_base.we && pci_bus_base.re) {
-			/* TODO: Implement support for multiple PCI segments in coreboot */
-			if (pci_bus_base.segment_num) {
-				printk(BIOS_ERR, "DF PCI CFG register pair %d uses bus "
-						 "segment != 0.\n", i);
-				return CB_ERR;
-			}
-
+			*segment_group = pci_bus_base.segment_num;
 			*first_bus = pci_bus_base.bus_num_base;
 			*last_bus = pci_bus_limit.bus_num_limit;
 			return CB_SUCCESS;

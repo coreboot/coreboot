@@ -110,4 +110,26 @@ typedef struct acpi_iort_root_complex {
 
 unsigned long acpi_soc_fill_iort(acpi_iort_t *iort, unsigned long current);
 
+/* ITS Group */
+unsigned long acpi_iort_its_entry(unsigned long current, acpi_iort_t *iort, acpi_iort_node_t **its,
+			u32 its_count, u32 *identifiers);
+
+/* SMMUv3 */
+unsigned long acpi_iort_smmuv3_entry(unsigned long current, acpi_iort_t *iort,
+				     acpi_iort_node_t **smmu_v3, u64 base, u32 flags);
+
+/* ID mapping */
+unsigned long acpi_iort_id_map_entry(unsigned long current, acpi_iort_node_t *node, u32 input_base,
+				     u32 id_count, u32 output_base, u32 output_reference,
+				     u32 flags);
+
+/* Named Component */
+unsigned long acpi_iort_nc_entry(unsigned long current, acpi_iort_t *iort, acpi_iort_node_t **nc,
+				 u32 node_flags, u64 memory_properties, u32 memory_address_limit,
+				 char *device_name);
+/* Root Complex */
+unsigned long acpi_iort_rc_entry(unsigned long current, acpi_iort_t *node, acpi_iort_node_t **rc,
+				 u64 memory_properties, u32 ats_attribute, u32 pci_segment_number,
+				 u8 memory_address_limit, u16 pasid_capabilities);
+
 #endif

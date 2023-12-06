@@ -33,9 +33,7 @@ DefinitionBlock(
 #elif CONFIG(SOC_INTEL_ALDERLAKE) || CONFIG(SOC_INTEL_RAPTORLAKE)
 		#include <soc/intel/common/block/acpi/acpi/northbridge.asl>
 		#include <soc/intel/alderlake/acpi/southbridge.asl>
-#if CONFIG(DRIVERS_INTEL_USB4_RETIMER)
 		#include <soc/intel/alderlake/acpi/tcss.asl>
-#endif
 #endif
 
 		#include <soc/intel/common/block/acpi/acpi/gna.asl>

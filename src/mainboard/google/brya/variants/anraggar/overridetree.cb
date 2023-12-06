@@ -56,7 +56,7 @@ chip soc/intel/alderlake
 	# motherboard to USBC connector
 	register "tcss_aux_ori" = "4"
 
-	register "typec_aux_bias_pads[1]" = "{
+	register "typec_aux_bias_pads[0]" = "{
 		.pad_auxp_dc = GPP_E22,
 		.pad_auxn_dc = GPP_E23
 	}"
@@ -366,8 +366,8 @@ chip soc/intel/alderlake
 		end
 		device ref pch_espi on
 			chip ec/google/chromeec
-				use conn0 as mux_conn[1]
-				use conn1 as mux_conn[0]
+				use conn0 as mux_conn[0]
+				use conn1 as mux_conn[1]
 				device pnp 0c09.0 on end
 			end
 		end
@@ -375,13 +375,13 @@ chip soc/intel/alderlake
 			chip drivers/intel/pmc_mux
 				device generic 0 on
 					chip drivers/intel/pmc_mux/conn
-						use usb2_port2 as usb2_port
-						use tcss_usb3_port1 as usb3_port
+						use usb2_port1 as usb2_port
+						use tcss_usb3_port2 as usb3_port
 						device generic 0 alias conn0 on end
 					end
 					chip drivers/intel/pmc_mux/conn
-						use usb2_port1 as usb2_port
-						use tcss_usb3_port2 as usb3_port
+						use usb2_port2 as usb2_port
+						use tcss_usb3_port1 as usb3_port
 						device generic 1 alias conn1 on end
 					end
 				end
@@ -391,18 +391,18 @@ chip soc/intel/alderlake
 			chip drivers/usb/acpi
 				device ref tcss_root_hub on
 					chip drivers/usb/acpi
-						register "desc" = ""USB3 Type-C Port C0 (DB)""
+						register "desc" = ""USB3 Type-C Port C0 (MLB)""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "use_custom_pld" = "true"
-						register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(2, 1))"
-						device ref tcss_usb3_port1 on end
+						register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(1, 1))"
+						device ref tcss_usb3_port2 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB3 Type-C Port C1 (MLB)""
+						register "desc" = ""USB3 Type-C Port C1 (DB)""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "use_custom_pld" = "true"
-						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(1, 1))"
-						device ref tcss_usb3_port2 on end
+						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(2, 1))"
+						device ref tcss_usb3_port1 on end
 					end
 				end
 			end

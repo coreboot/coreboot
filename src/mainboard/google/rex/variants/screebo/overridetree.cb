@@ -35,7 +35,7 @@ end
 chip soc/intel/meteorlake
 
 	register "power_limits_config[MTL_P_282_242_CORE]" = "{
-		.tdp_pl1_override = 15,
+		.tdp_pl1_override = 25,
 		.tdp_pl2_override = 40,
 		.tdp_pl4 = 84,
 	}"

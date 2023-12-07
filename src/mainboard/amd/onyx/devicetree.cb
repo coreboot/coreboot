@@ -53,6 +53,7 @@ chip soc/amd/genoa
 		}"
 
 	device domain 0 on
+		device ref iommu_0 on end
 		device ref gpp_bridge_0_0_a on
 			chip vendorcode/amd/opensil/genoa_poc/mpio # P2
 				register "start_lane" = "48"
@@ -84,6 +85,7 @@ chip soc/amd/genoa
 	end
 
 	device domain 1 on
+		device ref iommu_1 on end
 		device ref gpp_bridge_1_0_a on
 			chip vendorcode/amd/opensil/genoa_poc/mpio # P3
 				register "start_lane" = "16"
@@ -105,6 +107,7 @@ chip soc/amd/genoa
 	end
 
 	device domain 2 on
+		device ref iommu_2 on end
 		device ref gpp_bridge_2_0_a on
 			chip vendorcode/amd/opensil/genoa_poc/mpio # P1
 				register "start_lane" = "32"
@@ -128,6 +131,7 @@ chip soc/amd/genoa
 	end
 
 	device domain 3 on
+		device ref iommu_3 on end
 		device ref gpp_bridge_3_0_a on
 			chip vendorcode/amd/opensil/genoa_poc/mpio # P0
 				register "start_lane" = "0"

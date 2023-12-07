@@ -54,6 +54,7 @@ chip soc/amd/genoa
 
 	device domain 0 on
 		device ref iommu_0 on end
+		device ref rcec_0 on end
 		device ref gpp_bridge_0_0_a on
 			chip vendorcode/amd/opensil/genoa_poc/mpio # P2
 				register "start_lane" = "48"
@@ -82,10 +83,19 @@ chip soc/amd/genoa
 				device generic 0 on end
 			end
 		end
+		device ref gpp_bridge_0_a on
+			device ref xhci_0 on end
+			device ref mp0_0 on end
+		end
+		device ref gpp_bridge_0_b on
+			device ref sata_0_0 on end
+			device ref sata_0_1 on end
+		end
 	end
 
 	device domain 1 on
 		device ref iommu_1 on end
+		device ref rcec_1 on end
 		device ref gpp_bridge_1_0_a on
 			chip vendorcode/amd/opensil/genoa_poc/mpio # P3
 				register "start_lane" = "16"
@@ -108,6 +118,7 @@ chip soc/amd/genoa
 
 	device domain 2 on
 		device ref iommu_2 on end
+		device ref rcec_2 on end
 		device ref gpp_bridge_2_0_a on
 			chip vendorcode/amd/opensil/genoa_poc/mpio # P1
 				register "start_lane" = "32"
@@ -132,6 +143,7 @@ chip soc/amd/genoa
 
 	device domain 3 on
 		device ref iommu_3 on end
+		device ref rcec_3 on end
 		device ref gpp_bridge_3_0_a on
 			chip vendorcode/amd/opensil/genoa_poc/mpio # P0
 				register "start_lane" = "0"
@@ -177,6 +189,14 @@ chip soc/amd/genoa
 				register "aspm" = "L1"
 				device generic 0 on end
 			end
+		end
+		device ref gpp_bridge_3_a on
+			device ref xhci_3 on end
+			device ref mp0_3 on end
+		end
+		device ref gpp_bridge_3_b on
+			device ref sata_3_0 on end
+			device ref sata_3_1 on end
 		end
 	end
 

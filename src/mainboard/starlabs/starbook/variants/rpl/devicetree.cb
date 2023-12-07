@@ -5,6 +5,7 @@ chip soc/intel/alderlake
 
 	# FSP Silicon
 	register "eist_enable"			= "1"
+	register "enable_c1e"			= "1"
 
 	register "cnvi_bt_core"			= "1"
 	register "cnvi_bt_audio_offload"	= "1"

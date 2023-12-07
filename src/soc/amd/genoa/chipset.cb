@@ -43,7 +43,7 @@ chip soc/amd/genoa
 
 		device pci 07.0 on end # Dummy device function, do not disable
 		device pci 07.1 alias gpp_bridge_0_a off # Internal GPP Bridge 0 to Bus B0
-			device pci 0.0 off end # Dummy PCIe function
+			device pci 0.0 on end # Dummy PCIe function
 			device pci 0.1 off end
 			device pci 0.2 alias primary_NTB_0 off end # Primary PCIe Non-TransparentBridge
 			device pci 0.3 alias secondry_NTB_0 off end # Secondary vNTB
@@ -107,7 +107,7 @@ chip soc/amd/genoa
 
 		device pci 07.0 on end # Dummy device function, do not disable
 		device pci 07.1 alias gpp_bridge_1_a off
-			device pci 0.0 off end # Dummy PCIe function
+			device pci 0.0 on end # Dummy PCIe function
 			device pci 0.1 off end #SDXI
 		end
 	end
@@ -148,7 +148,7 @@ chip soc/amd/genoa
 
 		device pci 07.0 on end # Dummy device function, do not disable
 		device pci 07.1 alias gpp_bridge_2_a off
-			device pci 0.0 off end # Dummy PCIe function
+			device pci 0.0 on end # Dummy PCIe function
 			device pci 0.1 off end
 		end
 	end
@@ -193,7 +193,7 @@ chip soc/amd/genoa
 
 		device pci 07.0 on end # Dummy device function, do not disable
 		device pci 07.1 alias gpp_bridge_3_a off
-			device pci 0.0 off end # Dummy PCIe function
+			device pci 0.0 on end # Dummy PCIe function
 			device pci 0.1 off end #SDXI
 			device pci 0.2 alias primary_NTB_3 off end # Primary PCIe Non-TransparentBridge
 			device pci 0.3 alias secondry_NTB_3 off end # Secondary vNTB

@@ -38,6 +38,8 @@ $$(VBOOT_LIB_$(1)): $(obj)/config.h
 		fwlib \
 		$(if $(CONFIG_SBOM_VBOOT),$$(abspath $$(dir $$(VBOOT_LIB_$(1))))/vboot_host.pc)
 
+.PHONY: $$(VBOOT_LIB_$(1))
+
 $(1)-srcs += $$(VBOOT_LIB_$(1))
 
 endef # vboot-for-stage

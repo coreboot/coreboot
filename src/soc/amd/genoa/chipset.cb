@@ -207,7 +207,7 @@ chip soc/amd/genoa
 			device pci 0.5 alias mp0_3 off end # PSP (MP0)
 		end
 
-		device pci 07.2 alias gpp_bridge_3b off
+		device pci 07.2 alias gpp_bridge_3_b off
 			device pci 0.0 alias sata_3_0 off end # first SATA controller; AHCI mode
 			device pci 0.1 alias sata_3_1 off end # second SATA controller; AHCI mode
 		end

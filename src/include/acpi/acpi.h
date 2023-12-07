@@ -102,6 +102,7 @@ enum acpi_tables {
 	SSDT,   /* Secondary System Description Table */
 	TCPA,   /* Trusted Computing Platform Alliance Table */
 	TPM2,   /* Trusted Platform Module 2.0 Table */
+	WDAT,   /* Watchdog Action Table */
 	XSDT,   /* Extended System Description Table */
 	/* Additional proprietary tables used by coreboot */
 	CRAT,   /* Component Resource Attribute Table */
@@ -1657,6 +1658,70 @@ struct acpi_gtdt_watchdog {
 #define ACPI_GTDT_WATCHDOG_IRQ_POLARITY     (1<<1)
 #define ACPI_GTDT_WATCHDOG_SECURE           (1<<2)
 
+enum acpi_wdat_actions {
+	ACPI_WDAT_RESET = 1,
+	ACPI_WDAT_GET_CURRENT_COUNTDOWN = 4,
+	ACPI_WDAT_GET_COUNTDOWN = 5,
+	ACPI_WDAT_SET_COUNTDOWN = 6,
+	ACPI_WDAT_GET_RUNNING_STATE = 8,
+	ACPI_WDAT_SET_RUNNING_STATE = 9,
+	ACPI_WDAT_GET_STOPPED_STATE = 10,
+	ACPI_WDAT_SET_STOPPED_STATE = 11,
+	ACPI_WDAT_GET_REBOOT = 16,
+	ACPI_WDAT_SET_REBOOT = 17,
+	ACPI_WDAT_GET_SHUTDOWN = 18,
+	ACPI_WDAT_SET_SHUTDOWN = 19,
+	ACPI_WDAT_GET_STATUS = 32,
+	ACPI_WDAT_SET_STATUS = 33,
+	ACPI_WDAT_ACTION_RESERVED = 34	/* 34 and greater are reserved */
+};
+
+enum acpi_wdat_instructions {
+	ACPI_WDAT_READ_VALUE = 0,
+	ACPI_WDAT_READ_COUNTDOWN = 1,
+	ACPI_WDAT_WRITE_VALUE = 2,
+	ACPI_WDAT_WRITE_COUNTDOWN = 3,
+	ACPI_WDAT_INSTRUCTION_RESERVED = 4,	/* 4 and greater are reserved */
+	ACPI_WDAT_PRESERVE_REGISTER = 0x80	/* Except for this value */
+};
+
+enum acpi_wdat_flags {
+	ACPI_WDAT_FLAG_DISABLED = 0,
+	ACPI_WDAT_FLAG_ENABLED = 1
+};
+
+enum acpi_wdat_access_size {
+	ACPI_WDAT_ACCESS_SIZE_BYTE = 1,
+	ACPI_WDAT_ACCESS_SIZE_WORD = 2,
+	ACPI_WDAT_ACCESS_SIZE_DWORD = 3
+};
+
+/* ACPI WDAT */
+typedef struct acpi_wdat_entry {
+	u8 action;
+	u8 instruction;
+	u16 reserved;
+	struct acpi_gen_regaddr register_region;
+	u32 value;
+	u32 mask;
+} __packed acpi_wdat_entry_t;
+
+typedef struct acpi_table_wdat {
+	acpi_header_t header;	/* Common ACPI table header */
+	u32 header_length;
+	u16 pci_segment;
+	u8 pci_bus;
+	u8 pci_device;
+	u8 pci_function;
+	u8 reserved[3];
+	u32 timer_period;
+	u32 max_count;
+	u32 min_count;
+	u8 flags;
+	u8 reserved2[3];
+	u32 entries;
+} __packed acpi_wdat_t;
+
 uintptr_t get_coreboot_rsdp(void);
 void acpi_create_einj(acpi_einj_t *einj, uintptr_t addr, u8 actions);
 
@@ -1818,6 +1883,35 @@ unsigned long acpi_gtdt_add_timer_block(unsigned long current, const uint64_t ad
 					   struct acpi_gtdt_timer_entry *timers, size_t number);
 unsigned long acpi_gtdt_add_watchdog(unsigned long current, uint64_t refresh_frame,
 				     uint64_t control_frame, uint32_t gsiv, uint32_t flags);
+
+/*
+ * Populate primary acpi_wdat_t struct to provide basic information about watchdog and
+ * associated acpi_wdat_entry_t structures, which correspond to watchdog-related
+ * actions such as start/stop watchdog, set timeout, ping watchdog, get remaining time,
+ * etc. Each acpi_wdat_entry_t entry indicates what needs to be written to a specific
+ * address to perform a specific action or at which address the watchdog-related
+ * information is stored.
+ *
+ * The acpi_wdat_entry_t structures follow the acpi_wdat_t, so the table layout is as
+ * follows:
+ *  +---------------------+
+ *  | acpi_wdat_t {       |
+ *  |     ...             |
+ *  | }                   |
+ *  | acpi_wdat_entry_t { |
+ *  |     ...             |
+ *  | }                   |
+ *  | acpi_wdat_entry_t { |
+ *  |     ...             |
+ *  | }                   |
+ *  +---------------------+
+ *
+ * @param wdat Pointer to populate acpi_wdat_t struct
+ * @param current Position in memory after the acpi_wdat_t struct which also indicates
+ *                the position where the first acpi_wdat_entry_t must be placed.
+ * @return Position after last acpi_wdat_entry_t struct
+ */
+unsigned long acpi_soc_fill_wdat(acpi_wdat_t *wdat, unsigned long current);
 
 /* For ACPI S3 support. */
 void __noreturn acpi_resume(void *wake_vec);

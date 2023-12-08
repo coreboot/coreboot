@@ -103,7 +103,7 @@ AGESA_POST_MEM_INPUT_ELF = $(call strip_quotes,$(CONFIG_AGESA_POST_MEMORY_BINARY
 
 # If no post-mem file then also skip pre-mem file
 ifeq ($(AGESA_POST_MEM_INPUT_ELF),)
-files_added:: warn_no_agesa
+show_notices:: warn_no_agesa
 else
 AGESA_POST_MEM_ELF = $(objcbfs)/$(patsubst %.elf,%.debug,$(notdir $(AGESA_POST_MEM_INPUT_ELF)))
 AGESA_POST_MEM_ELF_RMOD = $(AGESA_POST_MEM_ELF).rmod
@@ -132,7 +132,7 @@ else # CONFIG_AGESA_SPLIT_MEMORY_FILES
 
 AGESA_BINARYPI_INPUT_FILE = $(call strip_quotes,$(CONFIG_AGESA_BINARY_PI_FILE))
 ifeq ($(AGESA_BINARYPI_INPUT_FILE),)
-files_added:: warn_no_agesa
+show_notices:: warn_no_agesa
 else
 
 cbfs-files-y += $(CONFIG_AGESA_CBFS_NAME)

@@ -16,7 +16,7 @@ ifneq ($(wildcard $(MAINBOARD_BLOBS_DIR)/APCB_FP8_LPDDR5.bin),)
 APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_FP8_LPDDR5.bin
 APCB_SOURCES_RECOVERY = $(MAINBOARD_BLOBS_DIR)/APCB_FP8_LPDDR5_DefaultRecovery.bin
 else
-files_added:: warn_no_apcb
+show_notices:: warn_no_apcb
 endif
 
 ifeq ($(CONFIG_BIRMAN_HAVE_MCHP_FW),y)
@@ -25,7 +25,7 @@ $(call add_intermediate, add_mchp_fw)
 	$(CBFSTOOL) $(obj)/coreboot.pre write -r EC_BODY -f $(CONFIG_BIRMAN_MCHP_FW_FILE) --fill-upward
 
 else
-files_added:: warn_no_mchp
+show_notices:: warn_no_mchp
 endif # CONFIG_BIRMAN_HAVE_MCHP_FW
 
 PHONY+=warn_no_mchp

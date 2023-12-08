@@ -15,7 +15,7 @@ ifeq ($(CONFIG_EC_STARLABS_ADD_ITE_BIN),y)
 add_ite_fw: $(obj)/coreboot.pre
 	$(CBFSTOOL) $(obj)/coreboot.pre write -r EC -f $(CONFIG_EC_STARLABS_ITE_BIN_PATH) -u
 else
-files_added:: warn_no_ite_fw
+show_notices:: warn_no_ite_fw
 
 PHONY+=warn_no_ite_fw
 warn_no_ite_fw:

@@ -386,7 +386,7 @@ files_added:: $(obj)/coreboot.rom $(FUTILITY) $(CBFSTOOL)
 		printf "    FLASHMAP Layout generated for RO and A partition.\n"; \
 	fi
 else
-files_added::
+show_notices::
 	@printf "    FLASHMAP Layout generated for RO partition only.\n"
 	@printf "             Beware that there is no failure safety in case of update now!\n"
 endif

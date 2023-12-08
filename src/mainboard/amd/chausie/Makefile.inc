@@ -14,7 +14,7 @@ ifneq ($(wildcard $(MAINBOARD_BLOBS_DIR)/APCB_FT6.bin),)
 APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_FT6.bin
 APCB_SOURCES_RECOVERY = $(MAINBOARD_BLOBS_DIR)/APCB_FT6_DefaultRecovery.bin
 else
-files_added:: warn_no_apcb
+show_notices:: warn_no_apcb
 endif
 
 ifeq ($(CONFIG_CHAUSIE_HAVE_MCHP_FW),y)
@@ -32,7 +32,7 @@ ec/ecfw-position := $(CHAUSIE_EC_POSITION)
 ec/ecfw-type := raw
 
 else
-files_added:: warn_no_mchp
+show_notices:: warn_no_mchp
 endif # CONFIG_CHAUSIE_HAVE_MCHP_FW
 
 PHONY+=warn_no_mchp

@@ -7,5 +7,5 @@ APCB_SOURCES_RECOVERY = $(MAINBOARD_BLOBS_DIR)/Typex68_0_0_0_ApcbRec.bin
 APCB_SOURCES_RECOVERY1 = $(MAINBOARD_BLOBS_DIR)/Typex68_0_8_0_ApcbRec.bin
 APCB_SOURCES_RECOVERY2 = $(MAINBOARD_BLOBS_DIR)/Typex68_0_9_0_ApcbRec.bin
 else
-files_added:: warn_no_apcb
+show_notices:: warn_no_apcb
 endif

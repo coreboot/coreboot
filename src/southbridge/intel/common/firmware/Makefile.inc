@@ -9,7 +9,7 @@ ifeq ($(CONFIG_HAVE_INTEL_FIRMWARE),y)
 ifeq ($(CONFIG_HAVE_IFD_BIN),y)
 $(call add_intermediate, add_intel_firmware)
 else ifeq ($(CONFIG_INTEL_DESCRIPTOR_MODE_REQUIRED),y)
-files_added:: warn_intel_firmware
+show_notices:: warn_intel_firmware
 endif
 
 IFD_BIN_PATH := $(CONFIG_IFD_BIN_PATH)

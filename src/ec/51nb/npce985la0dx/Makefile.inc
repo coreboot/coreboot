@@ -7,7 +7,7 @@ ifeq ($(CONFIG_EC_51NB_NPCE985LA0DX_FIRMWARE),y)
 	$(CBFSTOOL) $(obj)/coreboot.rom write -r EC -f $(CONFIG_EC_51NB_NPCE985LA0DX_FW) --fill-upward
 endif
 
-build_complete::
+show_notices::
 ifeq ($(CONFIG_EC_51NB_NPCE985LA0DX_FIRMWARE),)
 	printf "\n** WARNING **\n"
 	printf "You haven't added the firmware blobs for 51NB EC.\n"

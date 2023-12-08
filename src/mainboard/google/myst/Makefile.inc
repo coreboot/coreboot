@@ -42,10 +42,10 @@ $(obj)/$(APCB_NAME).gen: $(SPD_SOURCES) \
 			     --spd_sources $(SPD_SOURCES)
 else
 $(info SPD sources not found.  Skipping APCB.)
-files_added:: die_no_apcb
+show_notices:: die_no_apcb
 endif
 
 else
 $(info APCB sources not found.  Skipping APCB.)
-files_added:: warn_no_apcb
+show_notices:: warn_no_apcb
 endif

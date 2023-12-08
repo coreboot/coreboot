@@ -22,7 +22,7 @@ $(call add_intermediate, add_mchp_fw)
 	$(CBFSTOOL) $< write -r EC -f $(CONFIG_MANDOLIN_MCHP_FW_FILE) --fill-upward
 
 else
-files_added:: warn_no_mchp
+show_notices:: warn_no_mchp
 endif # CONFIG_MANDOLIN_HAVE_MCHP_FW
 
 PHONY+=warn_no_mchp

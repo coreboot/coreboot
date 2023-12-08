@@ -162,7 +162,7 @@ $(error No second FSP-S binary file specified.)
 endif # CONFIG_FSP_S_FILE_2
 endif # CONFIG_PLATFORM_USES_SECOND_FSP
 else # CONFIG_ADD_FSP_BINARIES
-build_complete:: warn_no_fsp_binaries
+show_notices:: warn_no_fsp_binaries
 endif # CONFIG_ADD_FSP_BINARIES
 
 PHONY+=warn_no_fsp_binaries

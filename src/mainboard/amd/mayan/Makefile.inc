@@ -14,7 +14,7 @@ ifneq ($(wildcard $(MAINBOARD_BLOBS_DIR)/APCB_Updatable.bin),)
 APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_Updatable.bin
 APCB_SOURCES_RECOVERY = $(MAINBOARD_BLOBS_DIR)/APCB_DefaultRecovery.bin
 else
-files_added:: warn_no_apcb
+show_notices:: warn_no_apcb
 endif
 
 ifeq ($(CONFIG_MAYAN_HAVE_MCHP_FW),y)
@@ -27,7 +27,7 @@ ec/ecfw-position := $(CONFIG_MAYAN_MCHP_FW_OFFSET)
 ec/ecfw-type := raw
 
 else
-files_added:: warn_no_mchp
+show_notices:: warn_no_mchp
 endif # CONFIG_MAYAN_HAVE_MCHP_FW
 
 PHONY+=warn_no_mchp

@@ -185,7 +185,7 @@ warn_no_amdfw:
 
 PHONY+=warn_no_amdfw
 
-files_added:: warn_no_amdfw
+show_notices:: warn_no_amdfw
 
 endif # ifneq ($(FIRMWARE_LOCATION),)
 

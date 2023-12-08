@@ -17,7 +17,7 @@ ecfw2.bin-position := $(CONFIG_KBC1126_FW2_OFFSET)
 ecfw2.bin-type := raw
 endif
 
-build_complete::
+show_notices::
 ifeq ($(CONFIG_KBC1126_FIRMWARE),)
 	printf "\n** WARNING **\n"
 	printf "You haven't added the firmware blobs for KBC1126 EC.\n"

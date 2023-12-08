@@ -74,6 +74,8 @@ endif
 
 ifeq ($(CONFIG_INTEL_CBNT_BPM_ONLY_UNSIGNED),y)
 build_complete:: $(obj)/bpm_unsigned.bin
+
+show_notices::
 	@printf "\n** WARNING **\n"
 	@printf "Build generated an unsigned BPM image: build/bpm_unsigned.bin.\n"
 	@printf "The resulting image will not work with CBnT.\n"
@@ -141,7 +143,7 @@ ifeq ($(CONFIG_INTEL_CBNT_KM_ONLY_UNSIGNED),y)
 $(call add_intermediate, gen_unsigned_km, $(obj)/km_unsigned.bin)
 	@printf "Generating unsgined KM\n"
 
-build_complete::
+show_notices::
 	@printf "\n** WARNING **\n"
 	@printf "Build generated an unsigned KM image: build/km_unsiged.bin.\n"
 	@printf "The resulting image will not work with CBnT.\n"

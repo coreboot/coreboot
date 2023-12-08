@@ -50,7 +50,7 @@ print-repo-info-payloads:
 	-$(foreach payload, $(PAYLOADS_LIST), $(MAKE) -C $(payload) print-repo-info 2>/dev/null; )
 
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
-files_added:: warn_no_payload
+show_notices:: warn_no_payload
 endif
 
 warn_no_payload:

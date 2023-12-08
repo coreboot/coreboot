@@ -22,14 +22,14 @@ void select_hal(hal_t hal, void *data)
 {
 	switch(hal) {
 #ifdef CMOS_HAL
-		case HAL_CMOS:
-			current_access = &cmos_hal;
-			break;
+	case HAL_CMOS:
+		current_access = &cmos_hal;
+		break;
 #endif
-		case HAL_MEMORY:
-		default:
-			current_access = &memory_hal;
-			break;
+	case HAL_MEMORY:
+	default:
+		current_access = &memory_hal;
+		break;
 	}
 	current_access->init(data);
 }

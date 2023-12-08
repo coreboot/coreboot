@@ -1374,44 +1374,44 @@ static int cbfs_print_decoded_payload_segment_info(
 	 * cbfs_decode_payload_segment.
 	 */
 	switch (seg->type) {
-		case PAYLOAD_SEGMENT_CODE:
-		case PAYLOAD_SEGMENT_DATA:
-			fprintf(fp, "    %s (%s compression, offset: 0x%x, "
-				"load: 0x%" PRIx64 ", length: %d/%d)\n",
-				(seg->type == PAYLOAD_SEGMENT_CODE ?
-				 "code " : "data"),
-				lookup_name_by_type(types_cbfs_compression,
-						    seg->compression,
-						    "(unknown)"),
-				seg->offset, seg->load_addr, seg->len,
-				seg->mem_len);
-			break;
+	case PAYLOAD_SEGMENT_CODE:
+	case PAYLOAD_SEGMENT_DATA:
+		fprintf(fp, "    %s (%s compression, offset: 0x%x, "
+			"load: 0x%" PRIx64 ", length: %d/%d)\n",
+			(seg->type == PAYLOAD_SEGMENT_CODE ?
+			 "code " : "data"),
+			lookup_name_by_type(types_cbfs_compression,
+					    seg->compression,
+					    "(unknown)"),
+			seg->offset, seg->load_addr, seg->len,
+			seg->mem_len);
+		break;
 
-		case PAYLOAD_SEGMENT_ENTRY:
-			fprintf(fp, "    entry (0x%" PRIx64 ")\n",
-				seg->load_addr);
-			break;
+	case PAYLOAD_SEGMENT_ENTRY:
+		fprintf(fp, "    entry (0x%" PRIx64 ")\n",
+			seg->load_addr);
+		break;
 
-		case PAYLOAD_SEGMENT_BSS:
-			fprintf(fp, "    BSS (address 0x%016" PRIx64 ", "
-				"length 0x%x)\n",
-				seg->load_addr, seg->len);
-			break;
+	case PAYLOAD_SEGMENT_BSS:
+		fprintf(fp, "    BSS (address 0x%016" PRIx64 ", "
+			"length 0x%x)\n",
+			seg->load_addr, seg->len);
+		break;
 
-		case PAYLOAD_SEGMENT_PARAMS:
-			fprintf(fp, "    parameters\n");
-			break;
+	case PAYLOAD_SEGMENT_PARAMS:
+		fprintf(fp, "    parameters\n");
+		break;
 
-		default:
-			fprintf(fp, "   0x%x (%s compression, offset: 0x%x, "
-				"load: 0x%" PRIx64 ", length: %d/%d\n",
-				seg->type,
-				lookup_name_by_type(types_cbfs_compression,
-						    seg->compression,
-						    "(unknown)"),
-				seg->offset, seg->load_addr, seg->len,
-				seg->mem_len);
-			break;
+	default:
+		fprintf(fp, "   0x%x (%s compression, offset: 0x%x, "
+			"load: 0x%" PRIx64 ", length: %d/%d\n",
+			seg->type,
+			lookup_name_by_type(types_cbfs_compression,
+					    seg->compression,
+					    "(unknown)"),
+			seg->offset, seg->load_addr, seg->len,
+			seg->mem_len);
+		break;
 	}
 	return 0;
 }
@@ -1484,26 +1484,26 @@ int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
 
 	/* note the components of the subheader may be in host order ... */
 	switch (be32toh(entry->type)) {
-		case CBFS_TYPE_STAGE:
-			cbfs_print_stage_info(entry, fp);
-			break;
+	case CBFS_TYPE_STAGE:
+		cbfs_print_stage_info(entry, fp);
+		break;
 
-		case CBFS_TYPE_SELF:
-			payload = (struct cbfs_payload_segment *)
-					CBFS_SUBHEADER(entry);
-			while (payload) {
-				struct cbfs_payload_segment seg;
-				cbfs_decode_payload_segment(&seg, payload);
-				cbfs_print_decoded_payload_segment_info(
-						&seg, fp);
-				if (seg.type == PAYLOAD_SEGMENT_ENTRY)
-					break;
-				else
-				payload ++;
-			}
-			break;
-		default:
-			break;
+	case CBFS_TYPE_SELF:
+		payload = (struct cbfs_payload_segment *)
+				CBFS_SUBHEADER(entry);
+		while (payload) {
+			struct cbfs_payload_segment seg;
+			cbfs_decode_payload_segment(&seg, payload);
+			cbfs_print_decoded_payload_segment_info(
+					&seg, fp);
+			if (seg.type == PAYLOAD_SEGMENT_ENTRY)
+				break;
+			else
+			payload ++;
+		}
+		break;
+	default:
+		break;
 	}
 	return 0;
 }

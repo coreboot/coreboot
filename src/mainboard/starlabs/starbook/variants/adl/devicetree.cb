@@ -171,6 +171,17 @@ chip soc/intel/alderlake
 				device pnp 4e.19 off end			# Power Management Channel 5
 			end
 		end
+		device ref pmc		hidden
+			chip drivers/intel/pmc_mux
+				device generic 0 on
+					chip drivers/intel/pmc_mux/conn
+						use usb2_port1 as usb2_port
+						use usb3_port3 as usb3_port
+						device generic 0 alias conn0 on end
+					end
+				end
+			end
+		end
 		device ref hda		on
 			register "pch_hda_sdi_enable[0]"		= "1"
 			register "pch_hda_audio_link_hda_enable"	= "1"

@@ -160,15 +160,15 @@ void raminit_thermal(const sysinfo_t *sysinfo)
 	}
 
 	switch (sysinfo->selected_timings.fsb_clock) {
-		case FSB_CLOCK_667MHz:
-			mchbar_write32(0x11d0, 0x0fd88000);
-			break;
-		case FSB_CLOCK_800MHz:
-			mchbar_write32(0x11d0, 0x1303c000);
-			break;
-		case FSB_CLOCK_1067MHz:
-			mchbar_write32(0x11d0, 0x194a0000);
-			break;
+	case FSB_CLOCK_667MHz:
+		mchbar_write32(0x11d0, 0x0fd88000);
+		break;
+	case FSB_CLOCK_800MHz:
+		mchbar_write32(0x11d0, 0x1303c000);
+		break;
+	case FSB_CLOCK_1067MHz:
+		mchbar_write32(0x11d0, 0x194a0000);
+		break;
 	}
 	tmp = mchbar_read32(0x11d4) & ~0x1f;
 	mchbar_write32(0x11d4, tmp | 4);

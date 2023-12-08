@@ -71,37 +71,37 @@ void get_gmch_info(sysinfo_t *sysinfo)
 	else
 		sysinfo->gfx_type = GMCH_UNKNOWN;
 	switch (sysinfo->gfx_type) {
-		case GMCH_GM45:
-			printk(BIOS_SPEW, "GMCH: GM45\n");
-			break;
-		case GMCH_GM47:
-			printk(BIOS_SPEW, "GMCH: GM47\n");
-			break;
-		case GMCH_GM49:
-			printk(BIOS_SPEW, "GMCH: GM49\n");
-			break;
-		case GMCH_GE45:
-			printk(BIOS_SPEW, "GMCH: GE45\n");
-			break;
-		case GMCH_GL40:
-			printk(BIOS_SPEW, "GMCH: GL40\n");
-			break;
-		case GMCH_GL43:
-			printk(BIOS_SPEW, "GMCH: GL43\n");
-			break;
-		case GMCH_GS40:
-			printk(BIOS_SPEW, "GMCH: GS40\n");
-			break;
-		case GMCH_GS45:
-			printk(BIOS_SPEW, "GMCH: GS45, using %s-power mode\n",
-			       sysinfo->gs45_low_power_mode ? "low" : "high");
-			break;
-		case GMCH_PM45:
-			printk(BIOS_SPEW, "GMCH: PM45\n");
-			break;
-		case GMCH_UNKNOWN:
-			printk(BIOS_SPEW, "unknown GMCH\n");
-			break;
+	case GMCH_GM45:
+		printk(BIOS_SPEW, "GMCH: GM45\n");
+		break;
+	case GMCH_GM47:
+		printk(BIOS_SPEW, "GMCH: GM47\n");
+		break;
+	case GMCH_GM49:
+		printk(BIOS_SPEW, "GMCH: GM49\n");
+		break;
+	case GMCH_GE45:
+		printk(BIOS_SPEW, "GMCH: GE45\n");
+		break;
+	case GMCH_GL40:
+		printk(BIOS_SPEW, "GMCH: GL40\n");
+		break;
+	case GMCH_GL43:
+		printk(BIOS_SPEW, "GMCH: GL43\n");
+		break;
+	case GMCH_GS40:
+		printk(BIOS_SPEW, "GMCH: GS40\n");
+		break;
+	case GMCH_GS45:
+		printk(BIOS_SPEW, "GMCH: GS45, using %s-power mode\n",
+		       sysinfo->gs45_low_power_mode ? "low" : "high");
+		break;
+	case GMCH_PM45:
+		printk(BIOS_SPEW, "GMCH: PM45\n");
+		break;
+	case GMCH_UNKNOWN:
+		printk(BIOS_SPEW, "unknown GMCH\n");
+		break;
 	}
 
 	sysinfo->txt_enabled = !(capid & (1 << (37-32)));
@@ -110,25 +110,25 @@ void get_gmch_info(sysinfo_t *sysinfo)
 	}
 
 	switch (render_freq) {
-		case 4:
-			sysinfo->max_render_mhz = 800;
-			break;
-		case 0:
-			sysinfo->max_render_mhz = 667;
-			break;
-		case 1:
-			sysinfo->max_render_mhz = 533;
-			break;
-		case 2:
-			sysinfo->max_render_mhz = 400;
-			break;
-		case 3:
-			sysinfo->max_render_mhz = 333;
-			break;
-		default:
-			printk(BIOS_SPEW, "Unknown render frequency\n");
-			sysinfo->max_render_mhz = 0;
-			break;
+	case 4:
+		sysinfo->max_render_mhz = 800;
+		break;
+	case 0:
+		sysinfo->max_render_mhz = 667;
+		break;
+	case 1:
+		sysinfo->max_render_mhz = 533;
+		break;
+	case 2:
+		sysinfo->max_render_mhz = 400;
+		break;
+	case 3:
+		sysinfo->max_render_mhz = 333;
+		break;
+	default:
+		printk(BIOS_SPEW, "Unknown render frequency\n");
+		sysinfo->max_render_mhz = 0;
+		break;
 	}
 	if (sysinfo->max_render_mhz != 0) {
 		printk(BIOS_SPEW, "Render frequency: %d MHz\n", sysinfo->max_render_mhz);
@@ -146,17 +146,17 @@ void get_gmch_info(sysinfo_t *sysinfo)
 
 	u32 ddr_cap = capid>>30 & 0x3;
 	switch (ddr_cap) {
-		case 0:
-			sysinfo->max_ddr3_mt = 1067;
-			break;
-		case 1:
-			sysinfo->max_ddr3_mt = 800;
-			break;
-		case 2:
-		case 3:
-			printk(BIOS_SPEW, "GMCH not DDR3 capable\n");
-			sysinfo->max_ddr3_mt = 0;
-			break;
+	case 0:
+		sysinfo->max_ddr3_mt = 1067;
+		break;
+	case 1:
+		sysinfo->max_ddr3_mt = 800;
+		break;
+	case 2:
+	case 3:
+		printk(BIOS_SPEW, "GMCH not DDR3 capable\n");
+		sysinfo->max_ddr3_mt = 0;
+		break;
 	}
 	if (sysinfo->max_ddr3_mt != 0) {
 		printk(BIOS_SPEW, "GMCH supports DDR3 with %d MT or less\n", sysinfo->max_ddr3_mt);
@@ -164,18 +164,18 @@ void get_gmch_info(sysinfo_t *sysinfo)
 
 	const unsigned int max_fsb = (capid >> 28) & 0x3;
 	switch (max_fsb) {
-		case 1:
-			sysinfo->max_fsb_mhz = 1067;
-			break;
-		case 2:
-			sysinfo->max_fsb_mhz = 800;
-			break;
-		case 3:
-			sysinfo->max_fsb_mhz = 667;
-			break;
-		default:
-			die("unknown FSB capability\n");
-			break;
+	case 1:
+		sysinfo->max_fsb_mhz = 1067;
+		break;
+	case 2:
+		sysinfo->max_fsb_mhz = 800;
+		break;
+	case 3:
+		sysinfo->max_fsb_mhz = 667;
+		break;
+	default:
+		die("unknown FSB capability\n");
+		break;
 	}
 	if (sysinfo->max_fsb_mhz != 0) {
 		printk(BIOS_SPEW, "GMCH supports FSB with up to %d MHz\n", sysinfo->max_fsb_mhz);
@@ -515,10 +515,10 @@ static fsb_clock_t read_fsb_clock(void)
 static mem_clock_t clock_index(const unsigned int clock)
 {
 	switch (clock) {
-		case 533:	return MEM_CLOCK_533MHz;
-		case 400:	return MEM_CLOCK_400MHz;
-		case 333:	return MEM_CLOCK_333MHz;
-		default:	die("Unknown clock value.\n");
+	case 533:	return MEM_CLOCK_533MHz;
+	case 400:	return MEM_CLOCK_400MHz;
+	case 333:	return MEM_CLOCK_333MHz;
+	default:	die("Unknown clock value.\n");
 	}
 	return -1; /* Won't be reached. */
 }
@@ -567,9 +567,9 @@ static unsigned int find_common_clock_cas(sysinfo_t *const sysinfo,
 	sysinfo->selected_timings.fsb_clock = read_fsb_clock();
 	unsigned int fsb_mhz = 0;
 	switch (sysinfo->selected_timings.fsb_clock) {
-		case FSB_CLOCK_1067MHz:	fsb_mhz = 1067; break;
-		case FSB_CLOCK_800MHz:	fsb_mhz =  800; break;
-		case FSB_CLOCK_667MHz:	fsb_mhz =  667; break;
+	case FSB_CLOCK_1067MHz:	fsb_mhz = 1067; break;
+	case FSB_CLOCK_800MHz:	fsb_mhz =  800; break;
+	case FSB_CLOCK_667MHz:	fsb_mhz =  667; break;
 	}
 
 	unsigned int clock = 256000 / tCKmin;
@@ -1666,20 +1666,20 @@ static void ddr_read_io_init(const mem_clock_t ddr_clock,
 			tmp &= ~((3 << 25) | (1 << 8) | (7 << 16) | (0xf << 20) | (1 << 27));
 			tmp |= (1 << 27);
 			switch (ddr_clock) {
-				case MEM_CLOCK_667MT:
-					tmp |= (1 << 16) | (4 << 20);
-					break;
-				case MEM_CLOCK_800MT:
-					tmp |= (2 << 16) | (3 << 20);
-					break;
-				case MEM_CLOCK_1067MT:
-					if (!sff)
-						tmp |= (2 << 16) | (1 << 20);
-					else
-						tmp |= (2 << 16) | (2 << 20);
-					break;
-				default:
-					die("Wrong clock");
+			case MEM_CLOCK_667MT:
+				tmp |= (1 << 16) | (4 << 20);
+				break;
+			case MEM_CLOCK_800MT:
+				tmp |= (2 << 16) | (3 << 20);
+				break;
+			case MEM_CLOCK_1067MT:
+				if (!sff)
+					tmp |= (2 << 16) | (1 << 20);
+				else
+					tmp |= (2 << 16) | (2 << 20);
+				break;
+			default:
+				die("Wrong clock");
 			}
 			mchbar_write32(addr, tmp);
 		}
@@ -1707,15 +1707,15 @@ static void ddr3_memory_io_init(const mem_clock_t ddr3clock,
 		 (1<<16) | (1<<18) | (1<<27) | (0xf<<28));
 	tmp |= (1<<7) | (1<<11) | (1<<16);
 	switch (ddr3clock) {
-		case MEM_CLOCK_667MT:
-			tmp |= 9 << 28;
-			break;
-		case MEM_CLOCK_800MT:
-			tmp |= 7 << 28;
-			break;
-		case MEM_CLOCK_1067MT:
-			tmp |= 8 << 28;
-			break;
+	case MEM_CLOCK_667MT:
+		tmp |= 9 << 28;
+		break;
+	case MEM_CLOCK_800MT:
+		tmp |= 7 << 28;
+		break;
+	case MEM_CLOCK_1067MT:
+		tmp |= 8 << 28;
+		break;
 	}
 	mchbar_write32(0x140c, tmp);
 
@@ -1725,15 +1725,15 @@ static void ddr3_memory_io_init(const mem_clock_t ddr3clock,
 	tmp &= ~((1<<20) | (7<<11) | (0xf << 24) | (0xf << 16));
 	tmp |= (3<<11);
 	switch (ddr3clock) {
-		case MEM_CLOCK_667MT:
-			tmp |= (2 << 24) | (10 << 16);
-			break;
-		case MEM_CLOCK_800MT:
-			tmp |= (3 << 24) | (7 << 16);
-			break;
-		case MEM_CLOCK_1067MT:
-			tmp |= (4 << 24) | (4 << 16);
-			break;
+	case MEM_CLOCK_667MT:
+		tmp |= (2 << 24) | (10 << 16);
+		break;
+	case MEM_CLOCK_800MT:
+		tmp |= (3 << 24) | (7 << 16);
+		break;
+	case MEM_CLOCK_1067MT:
+		tmp |= (4 << 24) | (4 << 16);
+		break;
 	}
 	mchbar_write32(0x1414, tmp);
 
@@ -1747,15 +1747,15 @@ static void ddr3_memory_io_init(const mem_clock_t ddr3clock,
 	tmp &= ~((0xf << 8) | (0x7 << 20) | 0xf | (0xf << 24));
 	tmp |= (0x3 << 20) | (5 << 24);
 	switch (ddr3clock) {
-		case MEM_CLOCK_667MT:
-			tmp |= (2 << 8) | 0xc;
-			break;
-		case MEM_CLOCK_800MT:
-			tmp |= (3 << 8) | 0xa;
-			break;
-		case MEM_CLOCK_1067MT:
-			tmp |= (4 << 8) | 0x7;
-			break;
+	case MEM_CLOCK_667MT:
+		tmp |= (2 << 8) | 0xc;
+		break;
+	case MEM_CLOCK_800MT:
+		tmp |= (3 << 8) | 0xa;
+		break;
+	case MEM_CLOCK_1067MT:
+		tmp |= (4 << 8) | 0x7;
+		break;
 	}
 	mchbar_write32(0x142c, tmp);
 

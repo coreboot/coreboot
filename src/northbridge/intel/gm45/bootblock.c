@@ -10,10 +10,10 @@
 static uint32_t encode_pciexbar_length(void)
 {
 	switch (CONFIG_ECAM_MMCONF_BUS_NUMBER) {
-		case 256: return 0 << 1;
-		case 128: return 1 << 1;
-		case  64: return 2 << 1;
-		default:  return dead_code_t(uint32_t);
+	case 256: return 0 << 1;
+	case 128: return 1 << 1;
+	case  64: return 2 << 1;
+	default:  return dead_code_t(uint32_t);
 	}
 }
 

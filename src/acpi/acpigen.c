@@ -2459,10 +2459,10 @@ void acpigen_write_delay_until_namestr_int(uint32_t wait_ms, const char *name, u
 	uint32_t wait_ms_segment = 1;
 	uint32_t segments = wait_ms;
 
-	/* Sleep in 16ms segments if delay is more than 32ms. */
-	if (wait_ms > 32) {
-		wait_ms_segment = 16;
-		segments = wait_ms / 16;
+	/* Sleep in 2ms segments if delay is more than 2ms. */
+	if (wait_ms > 2) {
+		wait_ms_segment = 2;
+		segments = wait_ms / wait_ms_segment;
 	}
 
 	acpigen_write_store_int_to_op(segments, LOCAL7_OP);

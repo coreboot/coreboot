@@ -112,28 +112,28 @@ static void mainboard_smi_handle_ec_sci(void)
 	printk(BIOS_DEBUG, "EC event %#02x\n", event);
 
 	switch (event) {
-		/* brightness up */
-		case 0x14:
-			mainboard_smi_brightness_up();
-			break;
-		/* brightness down */
-		case 0x15:
-			mainboard_smi_brightness_down();
-			break;
-		/* Fn-F9 Key */
-		case 0x18:
-		/* power loss */
-		case 0x27:
-		/* undock event */
-		case 0x50:
-			mainboard_smi_dock_disconnect();
-			break;
-		/* dock event */
-		case 0x37:
-			mainboard_smi_dock_connect();
-			break;
-		default:
-			break;
+	/* brightness up */
+	case 0x14:
+		mainboard_smi_brightness_up();
+		break;
+	/* brightness down */
+	case 0x15:
+		mainboard_smi_brightness_down();
+		break;
+	/* Fn-F9 Key */
+	case 0x18:
+	/* power loss */
+	case 0x27:
+	/* undock event */
+	case 0x50:
+		mainboard_smi_dock_disconnect();
+		break;
+	/* dock event */
+	case 0x37:
+		mainboard_smi_dock_connect();
+		break;
+	default:
+		break;
 	}
 }
 
@@ -146,21 +146,21 @@ void mainboard_smi_gpi(u32 gpi)
 int mainboard_smi_apmc(u8 data)
 {
 	switch (data) {
-		case APM_CNT_ACPI_ENABLE:
-			/* use 0x1600/0x1604 to prevent races with userspace */
-			ec_set_ports(0x1604, 0x1600);
-			/* route H8SCI to SCI */
-			gpi_route_interrupt(GPE_EC_SCI, GPI_IS_SCI);
-			break;
-		case APM_CNT_ACPI_DISABLE:
-			/* we have to use port 0x62/0x66, as 0x1600/0x1604 doesn't
-			   provide a EC query function */
-			ec_set_ports(0x66, 0x62);
-			/* route H8SCI# to SMI */
-			gpi_route_interrupt(GPE_EC_SCI, GPI_IS_SMI);
-			break;
-		default:
-			break;
+	case APM_CNT_ACPI_ENABLE:
+		/* use 0x1600/0x1604 to prevent races with userspace */
+		ec_set_ports(0x1604, 0x1600);
+		/* route H8SCI to SCI */
+		gpi_route_interrupt(GPE_EC_SCI, GPI_IS_SCI);
+		break;
+	case APM_CNT_ACPI_DISABLE:
+		/* we have to use port 0x62/0x66, as 0x1600/0x1604 doesn't
+		   provide a EC query function */
+		ec_set_ports(0x66, 0x62);
+		/* route H8SCI# to SMI */
+		gpi_route_interrupt(GPE_EC_SCI, GPI_IS_SMI);
+		break;
+	default:
+		break;
 	}
 	return 0;
 }

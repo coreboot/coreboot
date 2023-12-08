@@ -8,7 +8,7 @@
 		<nixpkgs/nixos/modules/installer/cd-dvd/iso-image.nix>
 	];
 
-	system.stateVersion = "23.05";
+	system.stateVersion = "23.11";
 
 	isoImage = {
 		makeEfiBootable = true;
@@ -64,7 +64,6 @@
 		bluetooth = {
 			enable = true;
 			powerOnBoot = false;
-			package = pkgs.bluezFull;
 		};
 	};
 

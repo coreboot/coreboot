@@ -33,10 +33,10 @@ static const char *const exception_names[] = {
 static const char *mstatus_to_previous_mode(uintptr_t ms)
 {
 	switch (ms & MSTATUS_MPP) {
-		case 0x00000000: return "user";
-		case 0x00000800: return "supervisor";
-		case 0x00001000: return "hypervisor";
-		case 0x00001800: return "machine";
+	case 0x00000000: return "user";
+	case 0x00000800: return "supervisor";
+	case 0x00001000: return "hypervisor";
+	case 0x00001800: return "machine";
 	}
 
 	return "unknown";
@@ -117,31 +117,31 @@ void trap_handler(trapframe *tf)
 	}
 
 	switch (tf->cause) {
-		case CAUSE_MISALIGNED_FETCH:
-		case CAUSE_FETCH_ACCESS:
-		case CAUSE_ILLEGAL_INSTRUCTION:
-		case CAUSE_BREAKPOINT:
-		case CAUSE_LOAD_ACCESS:
-		case CAUSE_STORE_ACCESS:
-		case CAUSE_USER_ECALL:
-		case CAUSE_HYPERVISOR_ECALL:
-		case CAUSE_MACHINE_ECALL:
-			print_trap_information(tf);
-			break;
-		case CAUSE_SUPERVISOR_ECALL:
-			handle_sbi(tf);
-			return;
-		case CAUSE_MISALIGNED_LOAD:
-		case CAUSE_MISALIGNED_STORE:
-			print_trap_information(tf);
-			handle_misaligned(tf);
-			return;
-		default:
-			printk(BIOS_EMERG, "================================\n");
-			printk(BIOS_EMERG, "coreboot: can not handle a trap:\n");
-			printk(BIOS_EMERG, "================================\n");
-			print_trap_information(tf);
-			break;
+	case CAUSE_MISALIGNED_FETCH:
+	case CAUSE_FETCH_ACCESS:
+	case CAUSE_ILLEGAL_INSTRUCTION:
+	case CAUSE_BREAKPOINT:
+	case CAUSE_LOAD_ACCESS:
+	case CAUSE_STORE_ACCESS:
+	case CAUSE_USER_ECALL:
+	case CAUSE_HYPERVISOR_ECALL:
+	case CAUSE_MACHINE_ECALL:
+		print_trap_information(tf);
+		break;
+	case CAUSE_SUPERVISOR_ECALL:
+		handle_sbi(tf);
+		return;
+	case CAUSE_MISALIGNED_LOAD:
+	case CAUSE_MISALIGNED_STORE:
+		print_trap_information(tf);
+		handle_misaligned(tf);
+		return;
+	default:
+		printk(BIOS_EMERG, "================================\n");
+		printk(BIOS_EMERG, "coreboot: can not handle a trap:\n");
+		printk(BIOS_EMERG, "================================\n");
+		print_trap_information(tf);
+		break;
 	}
 
 	die("Can't recover from trap. Halting.\n");

@@ -59,22 +59,36 @@ COREBOOT_EXPORTS += CCACHE_EXTRAFILES
 
 #######################################################################
 # root rule to resolve if in build mode (ie. configuration exists)
-real-target: $(obj)/config.h coreboot files_added
+real-target: $(obj)/config.h coreboot files_added show_coreboot show_notices
 coreboot: $(obj)/coreboot.rom $(obj)/cbfstool $(obj)/rmodtool $(obj)/ifwitool $(obj)/cse_fpt $(obj)/cse_serger
 
-# This target can be used in site local to run scripts or additional
-# targets after the build completes by creating a Makefile.inc in the
-# site-local directory with a target named 'build_complete::'
-build_complete:: coreboot
+# This target can be used to run scripts or additional targets
+# after the build completes by creating a target named 'build_complete::'
+.PHONY: build_complete
+build_complete:: | coreboot
+
+# This target can be used to run rules after all files were added to CBFS,
+# for example to process FMAP regions or the entire image.
+.PHONY: files_added
+files_added:: | build_complete
+
+# This target should come just before the show_notices target.  If there
+# are no notices, the build should finish with the text of what was just
+# built.
+.PHONY: show_coreboot
+show_coreboot: | files_added
+	$(CBFSTOOL) $(obj)/coreboot.rom print -r $(subst $(spc),$(comma),$(all-regions))
 	printf "\nBuilt %s (%s)\n" $(MAINBOARDDIR) $(CONFIG_MAINBOARD_PART_NUMBER)
 	if [ -f "$(CCACHE_STATSLOG)" ]; then \
 		printf "\nccache statistics\n"; \
 		$(CCACHE) --show-log-stats -v; \
 	fi
 
-# This target can be used to run rules after all files were added to CBFS,
-# for example to process FMAP regions or the entire image.
-files_added:: build_complete
+# This is intended to run at the *very end* of the build to show warnings
+# notices and the like.  If another target needs to be added, add it
+# BEFORE this target.
+.PHONY: show_notices
+show_notices:: | show_coreboot
 
 #######################################################################
 # our phony targets
@@ -1241,7 +1255,6 @@ endif # CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE
 	@printf "    CBFSLAYOUT  $(subst $(obj)/,,$(@))\n\n"
 	$(CBFSTOOL) $@ layout
 	@printf "    CBFSPRINT  $(subst $(obj)/,,$(@))\n\n"
-	$(CBFSTOOL) $@ print -r $(subst $(spc),$(comma),$(all-regions))
 ifeq ($(CONFIG_CBFS_VERIFICATION),y)
 	line=$$($(CBFSTOOL) $@ print -kv 2>/dev/null | grep -F '[CBFS VERIFICATION (COREBOOT)]') ;\
 	if ! printf "$$line" | grep -q 'fully valid'; then \

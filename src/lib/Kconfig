@@ -143,3 +143,9 @@ config DECOMPRESS_OFAST
 	default y
 	help
 	  Compile the decompressing function in -Ofast instead of standard -Os
+
+config PROBE_RAM
+	def_bool y if VENDOR_EMULATION
+	help
+	  When enabled it will be possible to detect usable RAM using probe_ram
+	  function.

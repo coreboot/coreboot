@@ -575,8 +575,6 @@ static struct mmu_memrange *_mmu_add_fb_range(
 
 	prop.type = TYPE_DMA_MEM;
 
-	/* make sure to allocate a size of multiple of GRANULE_SIZE */
-	size = ALIGN_UP(size, GRANULE_SIZE);
 	prop.size = size;
 	prop.lim_excl = MIN_64_BIT_ADDR;
 	prop.align = MB_SIZE;
@@ -633,6 +631,9 @@ static void mmu_add_fb_range(struct mmu_ranges *mmu_ranges)
 	fb_size = framebuffer->bytes_per_line * framebuffer->y_resolution;
 	if (!fb_size)
 		return;
+
+	/* make sure to allocate a size of multiple of GRANULE_SIZE */
+	fb_size = ALIGN_UP(fb_size, GRANULE_SIZE);
 
 	/* framebuffer address has been set already, so just add it as DMA */
 	if (framebuffer->physical_address) {

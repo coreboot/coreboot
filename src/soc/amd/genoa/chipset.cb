@@ -115,6 +115,8 @@ chip soc/amd/genoa
 		device pci 07.1 alias gpp_bridge_1_a off
 			device pci 0.0 on end # Dummy PCIe function
 			device pci 0.1 off end #SDXI
+			device pci 0.2 alias primary_NTB_1 off end # Primary PCIe Non-TransparentBridge
+			device pci 0.3 alias secondry_NTB_1 off end # Secondary vNTB
 		end
 	end
 
@@ -156,6 +158,8 @@ chip soc/amd/genoa
 		device pci 07.1 alias gpp_bridge_2_a off
 			device pci 0.0 on end # Dummy PCIe function
 			device pci 0.1 off end
+			device pci 0.2 alias primary_NTB_2 off end # Primary PCIe Non-TransparentBridge
+			device pci 0.3 alias secondry_NTB_2 off end # Secondary vNTB
 		end
 	end
 

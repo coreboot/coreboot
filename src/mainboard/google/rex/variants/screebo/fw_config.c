@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <baseboard/variants.h>
+#include <ec/google/chromeec/ec.h>
 #include <bootstate.h>
 #include <console/console.h>
 #include <fw_config.h>
@@ -66,8 +67,19 @@ static const struct pad_config bt_i2s_disable_pads[] = {
 	PAD_NC(GPP_VGPIO37, NONE),
 };
 
+static const struct pad_config usb_oc2_gpio_pads[] = {
+	PAD_CFG_NF_LOCK(GPP_B14, UP_20K, NF1, LOCK_CONFIG),
+};
+
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 {
+	uint32_t id = 0;
+	google_chromeec_get_board_version(&id);
+	if (id == 2 || id == 1) {
+		printk(BIOS_INFO, "Configure GPIOs for evt and dvt1.\n");
+		GPIO_PADBASED_OVERRIDE(padbased_table, usb_oc2_gpio_pads);
+	}
+
 	if (!fw_config_is_provisioned()) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, i2s_disable_pads);
 		GPIO_PADBASED_OVERRIDE(padbased_table, dmic_disable_pads);

@@ -49,10 +49,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B00, NONE),
 	/* GPP_B01 : [] ==> BT_DISABLE_L */
 	PAD_CFG_GPO(GPP_B01, 1, DEEP),
-	/* GPP_B02 : [] ==> SOC_ISH_I2C_SDA */
-	PAD_CFG_NF_LOCK(GPP_B02, NONE, NF3, LOCK_CONFIG),
-	/* GPP_B03 : [] ==> SOC_ISH_I2C_SCL */
-	PAD_CFG_NF_LOCK(GPP_B03, NONE, NF3, LOCK_CONFIG),
+	/* GPP_B02 : net NC is not present in the given design */
+	PAD_NC(GPP_B02, NONE),
+	/* GPP_B03 : net NC is not present in the given design */
+	PAD_NC(GPP_B03, NONE),
 	/* GPP_B04 : [GPP_B04_STRAP] ==> Component NC */
 	PAD_NC(GPP_B04, NONE),
 	/* GPP_B05 : net NC is not present in the given design */

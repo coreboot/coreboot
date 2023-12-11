@@ -27,7 +27,6 @@ struct usb31_phy_settings {
 struct soc_usb_config {
 	uint8_t xhci0_enable : 1;
 	uint8_t xhci1_enable : 1;
-	uint8_t xhci2_enable : 1;
 	struct {
 		uint8_t port0 : 4;
 		uint8_t port1 : 4;

@@ -217,4 +217,12 @@ bool is_keylocker_supported(void);
  */
 void disable_three_strike_error(void);
 
+/*
+ * This function stops the Three Strike event from signaling and prevent
+ * the Three Strike Counter from incrementing.
+ * This is the new MSR introduces starting from Intel Meteor Lake-C0 (QS) stepping SoC
+ * It helps to collect more useful CPU traces for debugging.
+ */
+void disable_signaling_three_strike_event(void);
+
 #endif	/* SOC_INTEL_COMMON_BLOCK_CPULIB_H */

@@ -505,3 +505,12 @@ void disable_three_strike_error(void)
 	msr.lo = msr.lo | DISABLE_CPU_ERROR;
 	wrmsr(MSR_PREFETCH_CTL, msr);
 }
+
+void disable_signaling_three_strike_event(void)
+{
+	msr_t msr;
+
+	msr = rdmsr(MSR_DISABLE_SIGNALING_THREE_STRIKE_EVENT);
+	msr.lo = msr.lo | THREE_STRIKE_COUNT;
+	wrmsr(MSR_DISABLE_SIGNALING_THREE_STRIKE_EVENT, msr);
+}

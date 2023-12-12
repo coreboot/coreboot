@@ -49,7 +49,7 @@ static void genoa_domain_set_resources(struct device *domain)
 }
 
 struct device_operations genoa_pci_domain_ops = {
-	.read_resources	  = genoa_domain_read_resources,
-	.set_resources	  = genoa_domain_set_resources,
-	.scan_bus	  = amd_pci_domain_scan_bus,
+	.read_resources	= genoa_domain_read_resources,
+	.set_resources	= genoa_domain_set_resources,
+	.scan_bus	= amd_pci_domain_scan_bus,
 };

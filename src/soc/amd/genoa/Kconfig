@@ -5,13 +5,16 @@ if SOC_AMD_GENOA
 
 config SOC_SPECIFIC_OPTIONS
 	def_bool y
+	select ACPI_SOC_NVS
 	select ARCH_X86
+	select HAVE_ACPI_TABLES
 	select HAVE_EXP_X86_64_SUPPORT
 	select HAVE_SMI_HANDLER
 	select RESET_VECTOR_IN_RAM
 	select SOC_AMD_COMMON
 	select SOC_AMD_COMMON_BLOCK_ACPI
 	select SOC_AMD_COMMON_BLOCK_ACPIMMIO
+	select SOC_AMD_COMMON_BLOCK_ACPI_CPU_POWER_STATE
 	select SOC_AMD_COMMON_BLOCK_AOAC
 	select SOC_AMD_COMMON_BLOCK_BANKED_GPIOS
 	select SOC_AMD_COMMON_BLOCK_CPUFREQ_FAM17H_19H
@@ -32,6 +35,7 @@ config SOC_SPECIFIC_OPTIONS
 	select SOC_AMD_COMMON_BLOCK_SMM
 	select SOC_AMD_COMMON_BLOCK_SMU
 	select SOC_AMD_COMMON_BLOCK_SMU_SX_ENTRY
+	select SOC_AMD_COMMON_BLOCK_SVI3
 	select SOC_AMD_COMMON_BLOCK_TSC
 	select SOC_AMD_COMMON_BLOCK_UART
 	select SOC_AMD_COMMON_BLOCK_UCODE
@@ -178,5 +182,13 @@ config SMM_TSEG_SIZE
 config HEAP_SIZE
 	hex
 	default 0x200000
+
+config ACPI_SSDT_PSD_INDEPENDENT
+	bool "Allow core p-state independent transitions"
+	default y
+	help
+	  AMD recommends the ACPI _PSD object to be configured to cause
+	  cores to transition between p-states independently. A vendor may
+	  choose to generate _PSD object to allow cores to transition together.
 
 endif # SOC_AMD_GENOA

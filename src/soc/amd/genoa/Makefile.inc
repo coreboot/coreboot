@@ -13,6 +13,7 @@ bootblock-y	+= aoac.c
 
 romstage-y	+= romstage.c
 
+ramstage-y	+= acpi.c
 ramstage-y	+= aoac.c
 ramstage-y	+= chip.c
 ramstage-y	+= cpu.c
@@ -23,6 +24,7 @@ ramstage-y	+= mca.c
 
 smm-y		+= smihandler.c
 
+CPPFLAGS_common += -I$(src)/soc/amd/genoa/acpi
 CPPFLAGS_common += -I$(src)/soc/amd/genoa/include
 
 ifeq ($(call int-gt, $(CONFIG_ROM_SIZE) 0x1000000), 1)

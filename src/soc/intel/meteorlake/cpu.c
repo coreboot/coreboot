@@ -142,7 +142,10 @@ void soc_core_init(struct device *cpu)
 
 	if (CONFIG(DROP_CPU_FEATURE_PROGRAM_IN_FSP)) {
 		/* Disable 3-strike error */
-		disable_three_strike_error();
+		if (CONFIG(SOC_INTEL_METEORLAKE_PRE_PRODUCTION_SILICON))
+			disable_three_strike_error();
+		else
+			disable_signaling_three_strike_event();
 
 		set_aesni_lock();
 

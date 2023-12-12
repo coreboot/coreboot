@@ -349,7 +349,7 @@ GOOGLE REX MAINBOARDS
 M:	Subrata Banik <subratabanik@google.com>
 M:	Tarun Tuli <tstuli@gmail.com>
 M:	Kapil Porwal <kapilporwal@google.com>
-M:	Jakub Czapiga <jacz@semihalf.com>
+M:	Jakub Czapiga <czapiga@google.com>
 M:	Eran Mitrani <mitrani@google.com>
 M:	Dinesh Gehlot <digehlot@google.com>
 S:	Maintained
@@ -886,7 +886,7 @@ INTEL METEORLAKE SOC
 M:	Subrata Banik <subratabanik@google.com>
 M:	Tarun Tuli <tstuli@gmail.com>
 M:	Kapil Porwal <kapilporwal@google.com>
-M:	Jakub Czapiga <jacz@semihalf.com>
+M:	Jakub Czapiga <czapiga@google.com>
 M:	Eran Mitrani <mitrani@google.com>
 M:	Dinesh Gehlot <digehlot@google.com>
 S:	Maintained
@@ -1180,7 +1180,7 @@ S:	Maintained
 F:	src/drivers/i2c/tas5825m/
 
 TESTS
-M:	Jakub Czapiga <jacz@semihalf.com>
+M:	Jakub Czapiga <czapiga@google.com>
 S:	Maintained
 F:	tests/
 F:	payloads/libpayload/tests/

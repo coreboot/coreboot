@@ -11,7 +11,6 @@ DefinitionBlock (
 	0x00010001	/* OEM Revision */
 )
 {	/* Start of ASL file */
-	#include <globalnvs.asl>
 
 	#include <soc.asl>
 } /* End of ASL file */

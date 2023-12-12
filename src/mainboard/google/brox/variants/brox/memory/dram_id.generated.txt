@@ -7,3 +7,4 @@ DRAM Part Name                 ID to assign
 MT62F512M32D2DR-031 WT:B       0 (0000)
 H9JCNNNBK3MLYR-N6E             0 (0000)
 MT62F1G32D4DR-031 WT:B         1 (0001)
+MT62F1G32D2DS-023 WT:B         2 (0010)

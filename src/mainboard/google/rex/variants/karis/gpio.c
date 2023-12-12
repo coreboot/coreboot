@@ -398,6 +398,9 @@ static const struct pad_config early_gpio_table[] = {
 
 	/* GPP_H10 : [] ==> SOC_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER_LOCK(GPP_H10, NONE, LOCK_CONFIG),
+
+	/* GPP_C00 : [] ==> EN_TCHSCR_PWR */
+	PAD_CFG_GPO(GPP_C00, 1, DEEP),
 };
 
 static const struct pad_config romstage_gpio_table[] = {

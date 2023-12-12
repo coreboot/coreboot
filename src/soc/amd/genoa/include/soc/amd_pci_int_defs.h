@@ -38,8 +38,8 @@
 #define PIRQ_GPP2	0x52	/* GPPInt2 */
 #define PIRQ_GPP3	0x53	/* GPPInt3 */
 /* 0x54-0x59 reserved */
-#define PIRQ_SCI	0x60	/* SCI Interrupt */
-#define PIRQ_SMI	0x61	/* SMI Interrupt */
+#define PIRQ_GSCI	0x60	/* SCI Interrupt */
+#define PIRQ_GSMI	0x61	/* SMI Interrupt */
 #define PIRQ_GPIO	0x62	/* GPIO Interrupt */
 /* 0x63-0x6f reserved */
 #define PIRQ_I2C0	0x70	/* I2C0/I3C0 */

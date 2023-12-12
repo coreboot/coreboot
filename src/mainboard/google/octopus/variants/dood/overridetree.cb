@@ -85,7 +85,7 @@ chip soc/intel/apollolake
 			chip drivers/i2c/da7219
 				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPIO_137_IRQ)"
 				register "btn_cfg" = "50"
-				register "mic_det_thr" = "500"
+				register "mic_det_thr" = "200"
 				register "jack_ins_deb" = "20"
 				register "jack_det_rate" = ""32ms_64ms""
 				register "jack_rem_deb" = "1"

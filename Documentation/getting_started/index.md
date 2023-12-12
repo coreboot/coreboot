@@ -7,3 +7,4 @@
 * [Writing Documentation](writing_documentation.md)
 * [Setting up GPIOs](gpio.md)
 * [Adding devices to a device tree](devicetree.md)
+* [Frequently Asked Questions](faq.md)

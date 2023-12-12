@@ -9,6 +9,8 @@
 #include <amdblocks/data_fabric.h>
 #include <arch/ioapic.h>
 #include <console/console.h>
+#include <device/device.h>
+#include <soc/acpi.h>
 #include <vendorcode/amd/opensil/genoa_poc/opensil.h>
 
 /* TODO: this can go in a common place */
@@ -51,6 +53,20 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 
 	fadt->x_firmware_ctl_l = 0;	/* set to 0 if firmware_ctrl is used */
 	fadt->x_firmware_ctl_h = 0;
+}
+
+unsigned long soc_acpi_write_tables(const struct device *device, unsigned long current,
+				    struct acpi_rsdp *rsdp)
+{
+	/* IVRS */
+	acpi_ivrs_t *ivrs;
+	current = acpi_align_current(current);
+	ivrs = (acpi_ivrs_t *)current;
+	acpi_create_ivrs(ivrs, acpi_fill_ivrs);
+	current += ivrs->header.length;
+	acpi_add_table(rsdp, ivrs);
+
+	return current;
 }
 
 /* There are only the following 2 C-states reported by the reference firmware */

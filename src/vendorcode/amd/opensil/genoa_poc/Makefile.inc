@@ -8,6 +8,7 @@ CPPFLAGS_romstage += -I$(opensil_dir)/Include -I$(opensil_dir)/xUSL -I$(opensil_
 romstage-y += opensil_console.c
 romstage-y += romstage.c
 
+ramstage-y += acpi.c
 ramstage-y += memmap.c
 ramstage-y += opensil_console.c
 ramstage-y += ramstage.c

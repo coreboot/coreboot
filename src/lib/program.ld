@@ -149,6 +149,15 @@
 _eprogram = .;
 RECORD_SIZE(program)
 
+/* The stage cache drops CONFIG_HEAP_SIZE bytes from the end of the in-memory
+   image of the ramstage, so ensure that when moving that many bytes backwards
+   from the program end, we're in the heap (or later), in some region that
+   doesn't contain initialized code or data. */
+#if ENV_RAMSTAGE
+_bogus = ASSERT(_eprogram - CONFIG_HEAP_SIZE >= _heap,
+	"HEAP_SIZE and heap misaligned");
+#endif
+
 /* Discard the sections we don't need/want */
 
 zeroptr = 0;

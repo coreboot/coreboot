@@ -21,14 +21,21 @@ void stage_cache_add(int stage_id, const struct prog *stage)
 	meta->entry_addr = (uintptr_t)prog_entry(stage);
 	meta->arg = (uintptr_t)prog_entry_arg(stage);
 
-	c = cbmem_add(CBMEM_ID_STAGEx_CACHE + stage_id, prog_size(stage));
+	unsigned int p_size = prog_size(stage);
+	if (stage_id == STAGE_RAMSTAGE) {
+		/* heap resides at the end of the image and will be
+		   reinitialized, so it doesn't make sense to copy it around. */
+		p_size -= CONFIG_HEAP_SIZE;
+	}
+
+	c = cbmem_add(CBMEM_ID_STAGEx_CACHE + stage_id, p_size);
 	if (c == NULL) {
 		printk(BIOS_ERR, "Can't add stage_cache %x to cbmem\n",
 				CBMEM_ID_STAGEx_CACHE + stage_id);
 		return;
 	}
 
-	memcpy(c, prog_start(stage), prog_size(stage));
+	memcpy(c, prog_start(stage), p_size);
 }
 
 void stage_cache_add_raw(int stage_id, const void *base, const size_t size)

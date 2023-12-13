@@ -49,7 +49,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	fadt->pm_tmr_len = 4;	/* 32 bits */
 	fadt->gpe0_blk_len = 8;	/* 64 bits */
 
-	fill_fadt_extended_pm_regs(fadt);
+	fill_fadt_extended_pm_io(fadt);
 
 	fadt->iapc_boot_arch = cfg->common_config.fadt_boot_arch; /* legacy free default */
 	fadt->flags |=	ACPI_FADT_WBINVD | /* See table 5-34 ACPI 6.3 spec */

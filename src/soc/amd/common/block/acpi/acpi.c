@@ -93,11 +93,6 @@ void acpi_clear_pm_gpe_status(void)
 	acpi_write32(MMIO_ACPI_GPE0_STS, acpi_read32(MMIO_ACPI_GPE0_STS));
 }
 
-void fill_fadt_extended_pm_regs(acpi_fadt_t *fadt)
-{
-	fill_fadt_extended_pm_io(fadt);
-}
-
 int acpi_get_sleep_type(void)
 {
 	return acpi_sleep_from_pm1(acpi_read16(MMIO_ACPI_PM1_CNT_BLK));

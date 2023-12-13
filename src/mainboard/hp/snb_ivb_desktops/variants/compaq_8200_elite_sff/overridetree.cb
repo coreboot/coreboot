@@ -1,0 +1,31 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip northbridge/intel/sandybridge
+	device domain 0 on
+		subsystemid 0x103c 0x1495 inherit
+
+		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+			register "sata_port_map" = "0xf"
+			register "spi_uvscc" = "0x0"
+			register "usb_port_config" = "{
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+			}"
+
+			device ref pcie_rp7 on  end	# PCIe Port #7
+			device ref pcie_rp8 on  end	# PCIe Port #8
+		end
+	end
+end

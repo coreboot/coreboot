@@ -7,23 +7,6 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, NPCD378_SP2)
 
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-};
-
 void bootblock_mainboard_early_init(void)
 {
 	if (CONFIG(CONSOLE_SERIAL))

@@ -1,4 +1,0 @@
-## SPDX-License-Identifier: GPL-2.0-only
-
-config BOARD_HP_COMPAQ_8200_ELITE_SFF_PC
-	bool "Compaq 8200 Elite SFF"

@@ -9,7 +9,7 @@
 #include <device/device.h>
 #include <soc/cpu.h>
 
-_Static_assert(CONFIG_MAX_CPUS == 8, "Do not override MAX_CPUS. To reduce the number of "
+_Static_assert(CONFIG_MAX_CPUS == 24, "Do not override MAX_CPUS. To reduce the number of "
 	"available cores, use the downcore_mode and disable_smt devicetree settings instead.");
 
 static void zen_2_3_init(struct device *dev)

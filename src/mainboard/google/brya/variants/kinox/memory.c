@@ -17,6 +17,8 @@ static const struct mb_cfg ddr4_mem_config = {
 		.targets = {50, 20, 25, 25, 25},
 	},
 
+	.LpDdrDqDqsReTraining = 1,
+
 	.ect = 1, /* Early Command Training */
 
 	.UserBd = BOARD_TYPE_MOBILE,

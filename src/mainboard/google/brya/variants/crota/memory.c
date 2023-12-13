@@ -67,6 +67,8 @@ static const struct mb_cfg baseboard_memcfg = {
 		.ccc_config = 0xff,
 	},
 
+	.LpDdrDqDqsReTraining = 1,
+
 	.ect = 1, /* Early Command Training */
 
 };

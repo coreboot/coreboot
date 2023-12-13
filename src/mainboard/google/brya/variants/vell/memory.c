@@ -58,6 +58,8 @@ static const struct mb_cfg baseboard_memcfg = {
 		.ddr7 = { .dqs0 = 0, .dqs1 = 1 },
 	},
 
+	.LpDdrDqDqsReTraining = 1,
+
 	.ect = true, /* Early Command Training */
 	.UserBd =  BOARD_TYPE_ULT_ULX_T4,
 

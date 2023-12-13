@@ -63,6 +63,8 @@ static const struct mb_cfg kano_memcfg = {
 		.ddr7 = { .dqs0 = 1, .dqs1 = 0 },
 	},
 
+	.LpDdrDqDqsReTraining = 1,
+
 	.ect = 1, /* Enable Early Command Training */
 };
 
@@ -124,6 +126,8 @@ static const struct mb_cfg hynix_memcfg = {
 		.ddr6 = { .dqs0 = 1, .dqs1 = 0 },
 		.ddr7 = { .dqs0 = 1, .dqs1 = 0 },
 	},
+
+	.LpDdrDqDqsReTraining = 1,
 
 	.ect = 1, /* Enable Early Command Training */
 

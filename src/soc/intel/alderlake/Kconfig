@@ -401,7 +401,7 @@ config FSP_TYPE_IOT
 config FSP_HEADER_PATH
 	string "Location of FSP headers"
 	default "src/vendorcode/intel/fsp/fsp2_0/alderlake_n/" if SOC_INTEL_ALDERLAKE_PCH_N && !FSP_USE_REPO
-	default "src/vendorcode/intel/fsp/fsp2_0/raptorlake/4301.01/" if SOC_INTEL_RAPTORLAKE && !FSP_USE_REPO
+	default "src/vendorcode/intel/fsp/fsp2_0/raptorlake/" if SOC_INTEL_RAPTORLAKE && !FSP_USE_REPO
 	default "3rdparty/fsp/RaptorLakeFspBinPkg/IoT/RaptorLakeS/Include/" if SOC_INTEL_RAPTORLAKE_PCH_S && FSP_TYPE_IOT
 	default "3rdparty/fsp/RaptorLakeFspBinPkg/Client/RaptorLakeP/Include/" if SOC_INTEL_ALDERLAKE_PCH_P && SOC_INTEL_RAPTORLAKE
 	default "3rdparty/fsp/RaptorLakeFspBinPkg/Client/RaptorLakeS/Include/" if SOC_INTEL_ALDERLAKE_PCH_S && SOC_INTEL_RAPTORLAKE

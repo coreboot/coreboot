@@ -12,7 +12,7 @@ config OPENSIL_DEBUG_OUTPUT
 if OPENSIL_DEBUG_OUTPUT
 
 config OPENSIL_DEBUG_PREFIX
-	bool "Print the opensil prefix"
+	bool "Print the openSIL prefix"
 	default n
 	help
 	  This prints the function name and line level in front of the

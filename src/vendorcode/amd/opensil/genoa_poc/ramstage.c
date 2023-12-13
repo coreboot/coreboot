@@ -146,17 +146,17 @@ static void opensil_entry(void *timepoint)
 		ret = InitializeSiTp3();
 		break;
 	default:
-		printk(BIOS_ERR, "Unknown opensil timepoint\n");
+		printk(BIOS_ERR, "Unknown openSIL timepoint\n");
 		return;
 	}
 	char opensil_function[16];
 	snprintf(opensil_function, sizeof(opensil_function), "InitializeSiTp%d", tp);
 	SIL_STATUS_report(opensil_function, ret);
 	if (ret == SilResetRequestColdImm || ret == SilResetRequestColdDef) {
-		printk(BIOS_INFO, "openSil requested a cold reset");
+		printk(BIOS_INFO, "openSIL requested a cold reset");
 		do_cold_reset();
 	} else if (ret == SilResetRequestWarmImm || ret == SilResetRequestWarmDef) {
-		printk(BIOS_INFO, "openSil requested a warm reset");
+		printk(BIOS_INFO, "openSIL requested a warm reset");
 		do_warm_reset();
 	}
 }

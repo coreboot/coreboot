@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* Keep this in sync with opensil SilCommon.h file */
+/* Keep this in sync with openSIL SilCommon.h file */
 #define DEBUG_FILTER_APOB       0x00000001UL
 #define DEBUG_FILTER_NBIO       0x00000002UL
 #define DEBUG_FILTER_CCX        0x00000004UL

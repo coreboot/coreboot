@@ -21,6 +21,6 @@ endif
 config SOC_AMD_OPENSIL
 	bool
 	help
-	  Select this on SoCs that use opensil.
+	  Select this on SoCs that use openSIL.
 
 source "src/vendorcode/amd/opensil/Kconfig"

@@ -132,31 +132,31 @@ chip soc/intel/alderlake
 		device ref dtt on
 			chip drivers/intel/dptf
 				## sensor information
-				register "options.tsr[0].desc" = ""Memory""
-				register "options.tsr[1].desc" = ""Charger""
+				register "options.tsr[0].desc" = ""CPU_VR""
+				register "options.tsr[1].desc" = ""CPU""
 				register "options.tsr[2].desc" = ""Ambient""
+				register "options.tsr[3].desc" = ""Charger""
 
 				# TODO: below values are initial reference values only
 				## Passive Policy
 				register "policies.passive" = "{
 					[0] = DPTF_PASSIVE(CPU,    	CPU,    	95, 5000),
 					[1] = DPTF_PASSIVE(CPU,    	TEMP_SENSOR_0,	75, 5000),
-					[2] = DPTF_PASSIVE(CHARGER,    TEMP_SENSOR_1,	75, 5000),
-					[3] = DPTF_PASSIVE(CPU,    	TEMP_SENSOR_2,	75, 5000),
+					[2] = DPTF_PASSIVE(CPU,    	TEMP_SENSOR_1,	75, 5000),
+					[3] = DPTF_PASSIVE(CPU,	TEMP_SENSOR_2,	75, 5000),
+					[4] = DPTF_PASSIVE(CHARGER,  	TEMP_SENSOR_3,	75, 5000),
 				}"
 
 				## Critical Policy
 				register "policies.critical" = "{
-					[0] = DPTF_CRITICAL(CPU,    		105, SHUTDOWN),
-					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,	85, SHUTDOWN),
-					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,	85, SHUTDOWN),
-					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,	85, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,	100, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,	80, SHUTDOWN),
 				}"
 
 				register "controls.power_limits" = "{
 					.pl1 = {
-							.min_power = 3000,
-							.max_power = 6000,
+							.min_power = 6000,
+							.max_power = 15000,
 							.time_window_min = 28 * MSECS_PER_SEC,
 							.time_window_max = 32 * MSECS_PER_SEC,
 							.granularity = 200
@@ -172,7 +172,7 @@ chip soc/intel/alderlake
 
 				## Charger Performance Control (Control, mA)
 				register "controls.charger_perf" = "{
-					[0] = { 255, 1700 },
+					[0] = { 255, 3000 },
 					[1] = {  24, 1500 },
 					[2] = {  16, 1000 },
 					[3] = {   8,  500 }

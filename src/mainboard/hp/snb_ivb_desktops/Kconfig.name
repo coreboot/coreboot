@@ -1,5 +1,8 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
+config BOARD_HP_COMPAQ_ELITE_8300_USDT
+	bool "Compaq Elite 8300 USDT"
+
 config BOARD_HP_Z220_CMT_WORKSTATION
 	bool "Z220 CMT Workstation"
 

@@ -18,6 +18,7 @@ ramstage-y	+= aoac.c
 ramstage-y	+= chip.c
 ramstage-y	+= cpu.c
 ramstage-y	+= domain.c
+ramstage-y	+= fch.c
 ramstage-y	+= root_complex.c
 ramstage-y	+= smihandler.c
 ramstage-y	+= mca.c

@@ -336,3 +336,8 @@ smm-$(CONFIG_X86_TOP4G_BOOTMEDIA_MAP) += mmap_boot.c
 smm-$(CONFIG_DEBUG_NULL_DEREF_BREAKPOINTS_IN_ALL_STAGES) += null_breakpoint.c
 
 smm-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/smihandler.c)
+
+ifneq ($(CONFIG_HAVE_CONFIGURABLE_APMC_SMI_PORT),y)
+ramstage-y += apmc_smi_port.c
+smm-y += apmc_smi_port.c
+endif

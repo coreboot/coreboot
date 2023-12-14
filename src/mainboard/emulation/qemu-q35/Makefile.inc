@@ -20,5 +20,4 @@ all-y += ../qemu-i440fx/bootmode.c
 
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 
-smm-y += smi.c
 smm-y += memmap.c

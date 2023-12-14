@@ -316,6 +316,13 @@ config HAVE_CF9_RESET_PREPARE
 	bool
 	depends on HAVE_CF9_RESET
 
+config HAVE_CONFIGURABLE_APMC_SMI_PORT
+	bool
+	help
+	  SoCs that have a configurable APMC SMI command port, should select
+	  this option and implement pm_acpi_smi_cmd_port() that returns the IO
+	  port.
+
 config PIRQ_ROUTE
 	bool
 	default n

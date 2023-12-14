@@ -3,6 +3,9 @@
 config BOARD_HP_COMPAQ_8200_ELITE_SFF_PC
 	bool "Compaq 8200 Elite SFF"
 
+config BOARD_HP_COMPAQ_8200_ELITE_USDT
+	bool "Compaq 8200 Elite USDT"
+
 config BOARD_HP_COMPAQ_ELITE_8300_USDT
 	bool "Compaq Elite 8300 USDT"
 

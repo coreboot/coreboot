@@ -1,0 +1,7 @@
+Category: mini
+Board URL: https://support.hp.com/us-en/product/details/hp-compaq-8200-elite-ultra-slim-pc/5037958
+ROM protocol: SPI
+ROM socketed: n
+ROM package: SOIC-8
+Flashrom support: y
+Release year: 2011

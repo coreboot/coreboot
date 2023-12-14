@@ -1,0 +1,40 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip northbridge/intel/sandybridge
+	register "spd_addresses" = "{0, 0x52, 0, 0x50}"
+
+	device domain 0 on
+		subsystemid 0x103c 0x1496 inherit
+
+		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+			register "sata_port_map" = "0x3"
+			register "usb_port_config" = "{
+				{ 1, 0, 0 },
+				{ 1, 0, 0 },
+				{ 1, 0, 0 },
+				{ 1, 0, 0 },
+				{ 1, 0, 3 },
+				{ 1, 0, 3 },
+				{ 1, 0, 3 },
+				{ 1, 0, 3 },
+				{ 1, 0, 5 },
+				{ 1, 0, 5 },
+				{ 1, 0, 5 },
+				{ 1, 0, 5 },
+				{ 1, 0, 7 },
+				{ 1, 0, 7 },
+			}"
+
+			device ref lpc on
+				chip superio/common
+					device pnp 2e.ff on
+						chip superio/nuvoton/npcd378
+							# Parallel port
+							device pnp 2e.1 off  end
+						end
+					end
+				end
+			end
+		end
+	end
+end

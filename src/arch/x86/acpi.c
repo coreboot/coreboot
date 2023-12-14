@@ -39,7 +39,7 @@ void arch_fill_fadt(acpi_fadt_t *fadt)
 	}
 
 	if (permanent_smi_handler()) {
-		fadt->smi_cmd = APM_CNT;
+		fadt->smi_cmd = pm_acpi_smi_cmd_port();
 		fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
 		fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
 	}

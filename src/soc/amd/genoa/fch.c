@@ -74,9 +74,17 @@ static void set_pci_irqs(void)
 	/* TODO: PIRQ configuration */
 }
 
+static void fch_init_acpi_ports(void)
+{
+	/* Configure and enable APMC SMI Command Port */
+	pm_write16(PM_ACPI_SMI_CMD, APM_CNT);
+	configure_smi(SMITYPE_SMI_CMD_PORT, SMI_MODE_SMI);
+}
+
 static void fch_init(void *unused)
 {
 	set_pci_irqs();
+	fch_init_acpi_ports();
 }
 
 /*

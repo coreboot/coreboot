@@ -38,7 +38,7 @@ int apm_control(u8 cmd)
 	apmc_log(__func__, cmd);
 
 	/* Now raise the SMI. */
-	outb(cmd, APM_CNT);
+	outb(cmd, pm_acpi_smi_cmd_port());
 
 	printk(BIOS_DEBUG, "APMC done.\n");
 	return 0;
@@ -46,8 +46,8 @@ int apm_control(u8 cmd)
 
 u8 apm_get_apmc(void)
 {
-	/* Emulate B2 register as the FADT / Linux expects it */
-	u8 cmd = inb(APM_CNT);
+	/* Read command byte from APMC SMI IO port */
+	u8 cmd = inb(pm_acpi_smi_cmd_port());
 
 	apmc_log("SMI#", cmd);
 	return cmd;

@@ -282,8 +282,8 @@
  * arch/x86/car.ld */
 #define ENV_SEPARATE_DATA_AND_BSS	(ENV_CACHE_AS_RAM && (ENV_BOOTBLOCK || !CONFIG(NO_XIP_EARLY_STAGES)))
 
-/* Currently rmodules, ramstage and smm have heap. */
-#define ENV_HAS_HEAP_SECTION	(ENV_RMODULE || ENV_RAMSTAGE || ENV_SMM)
+/* Currently rmodules and ramstage have heap. */
+#define ENV_HAS_HEAP_SECTION	(ENV_RMODULE || ENV_RAMSTAGE)
 
 /* Set USER_SPACE in the makefile for the rare code that runs in userspace */
 #if defined(__USER_SPACE__)

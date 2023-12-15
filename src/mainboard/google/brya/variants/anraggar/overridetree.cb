@@ -499,6 +499,7 @@ chip soc/intel/alderlake
 				end
 			end
 		end
+		device ref pcie_rp7 off end # SDCard
 		device ref hda on
 			chip drivers/sof
 				register "spkr_tplg" = "rt5650_sp"

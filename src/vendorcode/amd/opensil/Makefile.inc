@@ -8,7 +8,7 @@ endif
 
 opensil_dir := $(call strip_quotes,$(CONFIG_AMD_OPENSIL_PATH))
 
-subdirs-$(CONFIG_SOC_AMD_OPENSIL_GENOA) += genoa_poc
+subdirs-$(CONFIG_SOC_AMD_OPENSIL_GENOA_POC) += genoa_poc
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
 cpu_family_string="x86"

@@ -22,7 +22,8 @@ subdirs-y += variants/$(VARIANT_DIR)
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/baseboard/include
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include
 
-APCB_NAME=APCB_CZN_D4
+APCB_NAME=data.apcb
+APCB_PATH=$(src)/mainboard/$(MAINBOARDDIR)
 
 LIB_SPD_DEPS = $(SPD_SOURCES)
 
@@ -31,7 +32,7 @@ APCB_SOURCES_RECOVERY = $(obj)/$(APCB_NAME).gen
 
 $(obj)/$(APCB_NAME).gen: $(SPD_SOURCES) \
 			$(APCB_V3_EDIT_TOOL) \
-			$(MAINBOARD_BLOBS_DIR)/$(APCB_NAME).bin
-	$(APCB_V3_EDIT_TOOL) $(MAINBOARD_BLOBS_DIR)/$(APCB_NAME).bin \
+			$(APCB_PATH)/$(APCB_NAME)
+	$(APCB_V3_EDIT_TOOL) $(APCB_PATH)/$(APCB_NAME) \
 			     $(obj)/$(APCB_NAME).gen  \
 			     --spd_sources $(SPD_SOURCES)

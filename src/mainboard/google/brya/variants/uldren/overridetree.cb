@@ -222,7 +222,9 @@ chip soc/intel/alderlake
 				register "generic.enable_delay_ms" = "1"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x20"
-				device i2c 2c on end
+				device i2c 2c on
+					probe TOUCHSCREEN TOUCHSCREEN_UNKNOWN
+				end
 			end
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0001""
@@ -238,7 +240,9 @@ chip soc/intel/alderlake
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
 				register "enable_delay_ms" = "1"
 				register "has_power_resource" = "1"
-				device i2c 10 on end
+				device i2c 10 on
+					probe TOUCHSCREEN TOUCHSCREEN_UNKNOWN
+				end
 			end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""ELAN900C""
@@ -254,7 +258,9 @@ chip soc/intel/alderlake
 				register "generic.enable_delay_ms" = "6"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x01"
-				device i2c 16 on end
+				device i2c 16 on
+					probe TOUCHSCREEN TOUCHSCREEN_UNKNOWN
+				end
 			end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GXTP7996""
@@ -269,7 +275,9 @@ chip soc/intel/alderlake
 				register "generic.enable_delay_ms" = "10"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x01"
-				device i2c 5d on end
+				device i2c 5d on
+					probe TOUCHSCREEN TOUCHSCREEN_UNKNOWN
+				end
 			end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GTCH7502""
@@ -284,7 +292,9 @@ chip soc/intel/alderlake
 				register "generic.enable_delay_ms" = "30"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x01"
-				device i2c 40 on end
+				device i2c 40 on
+					probe TOUCHSCREEN TOUCHSCREEN_UNKNOWN
+				end
 			end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""WDHT2601""
@@ -299,7 +309,9 @@ chip soc/intel/alderlake
 				register "generic.enable_delay_ms" = "1"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x20"
-				device i2c 3c on end
+				device i2c 3c on
+					probe TOUCHSCREEN TOUCHSCREEN_UNKNOWN
+				end
 			end
 		end
 		device ref i2c3 on

@@ -1,0 +1,2 @@
+config BOARD_AMD_ONYX_POC
+	bool "Onyx_poc"

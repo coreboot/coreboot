@@ -1,4 +1,4 @@
-if BOARD_AMD_ONYX
+if BOARD_AMD_ONYX_POC
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
@@ -7,14 +7,14 @@ config BOARD_SPECIFIC_OPTIONS
 	select AMD_SOC_CONSOLE_UART
 
 config FMDFILE
-	default "src/mainboard/amd/onyx/board.fmd"
+	default "src/mainboard/amd/onyx_poc/board.fmd"
 
 
 config MAINBOARD_DIR
-	default "amd/onyx"
+	default "amd/onyx_poc"
 
 config MAINBOARD_PART_NUMBER
-	default "Onyx"
+	default "Onyx_poc"
 
 # Use BMC SOL console on SoC UART1 by default
 config UART_FOR_CONSOLE

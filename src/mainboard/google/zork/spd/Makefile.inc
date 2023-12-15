@@ -5,13 +5,14 @@ SPD_SOURCES_DIR=$(dir $(word 1, $(SPD_SOURCES)))
 APCB_SOURCES=$(foreach f, $(basename $(notdir $(SPD_SOURCES))), $(obj)/APCB_$(f).gen)
 
 # APCB binary with magic numbers to be replaced by apcb_edit tool
-APCB_MAGIC_BLOB:=$(FIRMWARE_LOCATION)/APCB_magic.bin
+APCB_NAME=data.apcb
+APCB_PATH=$(src)/mainboard/$(MAINBOARDDIR)
 
 $(obj)/APCB_%.gen:	$(SPD_SOURCES_DIR)%.hex \
 			$(APCB_EDIT_TOOL) \
-			$(APCB_MAGIC_BLOB)
+			$(APCB_PATH)/$(APCB_NAME)
 	$(APCB_EDIT_TOOL) \
-	$(APCB_MAGIC_BLOB) \
+	$(APCB_PATH)/$(APCB_NAME) \
 	$@ \
 	--hex \
 	--strip_manufacturer_information \

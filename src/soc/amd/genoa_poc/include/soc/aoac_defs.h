@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef AMD_GENOA_AOAC_DEFS_H
-#define AMD_GENOA_AOAC_DEFS_H
+#ifndef AMD_GENOA_POC_AOAC_DEFS_H
+#define AMD_GENOA_POC_AOAC_DEFS_H
 
 /* FCH AOAC device offsets for AOAC_DEV_D3_CTL/AOAC_DEV_D3_STATE */
 #define FCH_AOAC_DEV_CLK_GEN		0
@@ -17,4 +17,4 @@
 #define FCH_AOAC_DEV_AMBA		17
 #define FCH_AOAC_DEV_ESPI		27
 
-#endif /* AMD_GENOA_AOAC_DEFS_H */
+#endif /* AMD_GENOA_POC_AOAC_DEFS_H */

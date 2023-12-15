@@ -7,6 +7,6 @@
 
 const struct soc_amd_common_config *soc_get_common_config(void)
 {
-	const struct soc_amd_genoa_config *cfg = config_of_soc();
+	const struct soc_amd_genoa_poc_config *cfg = config_of_soc();
 	return &cfg->common_config;
 }

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef AMD_GENOA_AMD_PCI_INT_DEFS_H
-#define AMD_GENOA_AMD_PCI_INT_DEFS_H
+#ifndef AMD_GENOA_POC_AMD_PCI_INT_DEFS_H
+#define AMD_GENOA_POC_AMD_PCI_INT_DEFS_H
 
 /*
  *  * PIRQ and device routing - these define the index into the
@@ -53,4 +53,4 @@
 #define PIRQ_UART2	0x78	/* UART2 */
 #define PIRQ_UART3	0x79	/* UART3 */
 
-#endif /* AMD_GENOA_AMD_PCI_INT_DEFS_H */
+#endif /* AMD_GENOA_POC_AMD_PCI_INT_DEFS_H */

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef AMD_GENOA_I2C_H
-#define AMD_GENOA_I2C_H
+#ifndef AMD_GENOA_POC_I2C_H
+#define AMD_GENOA_POC_I2C_H
 
 #include <gpio.h>
 #include <types.h>
@@ -33,4 +33,4 @@
 
 void reset_i2c_peripherals(void);
 
-#endif /* AMD_GENOA_I2C_H */
+#endif /* AMD_GENOA_POC_I2C_H */

@@ -1,4 +1,4 @@
-chip soc/amd/genoa
+chip soc/amd/genoa_poc
 
 	# USB configuration
 	register "usb.xhci0_enable" = "1"

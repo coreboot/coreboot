@@ -2,7 +2,7 @@ if BOARD_AMD_ONYX
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
-	select SOC_AMD_GENOA
+	select SOC_AMD_GENOA_POC
 	select BOARD_ROMSIZE_KB_32768
 	select AMD_SOC_CONSOLE_UART
 

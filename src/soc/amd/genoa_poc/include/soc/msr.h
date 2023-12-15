@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef AMD_GENOA_MSR_H
-#define AMD_GENOA_MSR_H
+#ifndef AMD_GENOA_POC_MSR_H
+#define AMD_GENOA_POC_MSR_H
 
 /* MSRC001_00[6B:64] P-state [7:0] bit definitions */
 union pstate_msr {
@@ -38,4 +38,4 @@ union pstate_msr {
 #define MSR_MAX_PERFORMANCE_FREQUENCY_CLOCK_COUNT	0xe7
 #define MSR_ACTUAL_PERFORMANCE_FREQUENCY_CLOCK_COUNT	0xe8
 
-#endif /* AMD_GENOA_MSR_H */
+#endif /* AMD_GENOA_POC_MSR_H */

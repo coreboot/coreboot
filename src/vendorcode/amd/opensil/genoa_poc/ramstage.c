@@ -66,7 +66,7 @@ static void setup_rc_manager_default(void)
 #define NUM_XHCI_CONTROLLERS 2
 static void configure_usb(void)
 {
-	const struct soc_amd_genoa_config *soc_config = config_of_soc();
+	const struct soc_amd_genoa_poc_config *soc_config = config_of_soc();
 	const struct soc_usb_config *usb = &soc_config->usb;
 
 	FCHUSB_INPUT_BLK *fch_usb_data = SilFindStructure(SilId_FchUsb, 0);

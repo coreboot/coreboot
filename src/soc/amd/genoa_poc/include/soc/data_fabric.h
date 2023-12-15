@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef AMD_GENOA_DATA_FABRIC_H
-#define AMD_GENOA_DATA_FABRIC_H
+#ifndef AMD_GENOA_POC_DATA_FABRIC_H
+#define AMD_GENOA_POC_DATA_FABRIC_H
 
 #include <amdblocks/data_fabric_defs.h>
 #include <types.h>
@@ -135,4 +135,4 @@ union df_ficaa {
 	uint32_t raw;
 };
 
-#endif /* AMD_GENOA_DATA_FABRIC_H */
+#endif /* AMD_GENOA_POC_DATA_FABRIC_H */

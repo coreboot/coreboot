@@ -13,8 +13,8 @@ static void soc_final(void *chip_info)
 {
 }
 
-struct chip_operations soc_amd_genoa_ops = {
-	CHIP_NAME("AMD Genoa SoC")
+struct chip_operations soc_amd_genoa_poc_ops = {
+	CHIP_NAME("AMD Genoa SoC Proof of Concept")
 	.init = soc_init,
 	.final = soc_final,
 };

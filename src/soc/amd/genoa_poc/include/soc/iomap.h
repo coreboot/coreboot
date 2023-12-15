@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef AMD_GENOA_IOMAP_H
-#define AMD_GENOA_IOMAP_H
+#ifndef AMD_GENOA_POC_IOMAP_H
+#define AMD_GENOA_POC_IOMAP_H
 
 #define I2C_MASTER_DEV_COUNT		6
 #define I2C_PERIPHERAL_DEV_COUNT	0
@@ -34,4 +34,4 @@
 #define APU_I3C2_BASE			0xfedd4000
 #define APU_I3C3_BASE			0xfedd6000
 
-#endif /* AMD_GENOA_IOMAP_H */
+#endif /* AMD_GENOA_POC_IOMAP_H */

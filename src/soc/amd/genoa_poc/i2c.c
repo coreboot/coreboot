@@ -27,7 +27,7 @@ static const struct soc_i2c_ctrlr_info i2c_ctrlr[I2C_CTRLR_COUNT] = {
 
 void reset_i2c_peripherals(void)
 {
-	const struct soc_amd_genoa_config *cfg = config_of_soc();
+	const struct soc_amd_genoa_poc_config *cfg = config_of_soc();
 	struct soc_i2c_peripheral_reset_info reset_info;
 
 	reset_info.i2c_scl_reset_mask = cfg->i2c_scl_reset & GPIO_I2C_MASK;
@@ -49,7 +49,7 @@ const struct soc_i2c_ctrlr_info *soc_get_i2c_ctrlr_info(size_t *num_ctrlrs)
 
 const struct dw_i2c_bus_config *soc_get_i2c_bus_config(size_t *num_buses)
 {
-	const struct soc_amd_genoa_config *config = config_of_soc();
+	const struct soc_amd_genoa_poc_config *config = config_of_soc();
 
 	*num_buses = ARRAY_SIZE(config->i2c);
 	return config->i2c;

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef AMD_GENOA_SMU_H
-#define AMD_GENOA_SMU_H
+#ifndef AMD_GENOA_POC_SMU_H
+#define AMD_GENOA_POC_SMU_H
 
 /* SMU mailbox register offsets in SMN */
 #define SMN_SMU_MESG_ID		0x3b10530
@@ -20,4 +20,4 @@ enum smu_message_id {
  */
 void smu_sx_entry(void);
 
-#endif /* AMD_GENOA_SMU_H */
+#endif /* AMD_GENOA_POC_SMU_H */

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#ifndef AMD_GENOA_SMI_H
-#define AMD_GENOA_SMI_H
+#ifndef AMD_GENOA_POC_SMI_H
+#define AMD_GENOA_POC_SMI_H
 
 #include <types.h>
 
@@ -179,4 +179,4 @@
 
 #define SMI_MODE_MASK			0x03
 
-#endif /* AMD_GENOA_SMI_H */
+#endif /* AMD_GENOA_POC_SMI_H */

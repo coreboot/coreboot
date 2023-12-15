@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef AMD_GENOA_GPIO_H
-#define AMD_GENOA_GPIO_H
+#ifndef AMD_GENOA_POC_GPIO_H
+#define AMD_GENOA_POC_GPIO_H
 
 #define GPIO_DEVICE_NAME	"AMDI0030"
 #define GPIO_DEVICE_DESC	"GPIO Controller"
@@ -267,4 +267,4 @@
 #define GPIO_266_IOMUX_PCIE_RST0_L 0
 #define GPIO_266_IOMUX_GPIOxx 1
 
-#endif /* AMD_GENOA_GPIO_H */
+#endif /* AMD_GENOA_POC_GPIO_H */

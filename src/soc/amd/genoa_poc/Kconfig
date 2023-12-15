@@ -1,7 +1,7 @@
-config SOC_AMD_GENOA
+config SOC_AMD_GENOA_POC
 	bool
 
-if SOC_AMD_GENOA
+if SOC_AMD_GENOA_POC
 
 config SOC_SPECIFIC_OPTIONS
 	def_bool y
@@ -51,7 +51,7 @@ config USE_EXP_X86_64_SUPPORT
 
 config CHIPSET_DEVICETREE
 	string
-	default "soc/amd/genoa/chipset.cb"
+	default "soc/amd/genoa_poc/chipset.cb"
 
 config DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ
 	int
@@ -124,7 +124,7 @@ menu "PSP Configuration Options"
 
 config AMDFW_CONFIG_FILE
 	string
-	default "src/soc/amd/genoa/fw.cfg"
+	default "src/soc/amd/genoa_poc/fw.cfg"
 
 config PSP_DISABLE_POSTCODES
 	bool "Disable PSP post codes"
@@ -209,4 +209,4 @@ config ACPI_BERT_SIZE
 	  Specify the amount of DRAM reserved for gathering the data used to
 	  generate the ACPI table.
 
-endif # SOC_AMD_GENOA
+endif # SOC_AMD_GENOA_POC

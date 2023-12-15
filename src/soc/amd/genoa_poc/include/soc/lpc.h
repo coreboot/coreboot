@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef AMD_GENOA_LPC_H
-#define AMD_GENOA_LPC_H
+#ifndef AMD_GENOA_POC_LPC_H
+#define AMD_GENOA_POC_LPC_H
 
 #define SPI_BASE_ADDRESS_REGISTER	0xa0
 #define   SPI_BASE_ALIGNMENT		BIT(8)
@@ -13,4 +13,4 @@
 #define   SPI_ROM_ALT_ENABLE		BIT(0)
 #define   SPI_PRESERVE_BITS		(BIT(0) | BIT(1) | BIT(2) | BIT(3) | BIT(4))
 
-#endif /* AMD_GENOA_LPC_H */
+#endif /* AMD_GENOA_POC_LPC_H */

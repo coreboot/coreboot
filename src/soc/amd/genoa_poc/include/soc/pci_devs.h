@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef AMD_GENOA_PCI_DEVS_H
-#define AMD_GENOA_PCI_DEVS_H
+#ifndef AMD_GENOA_POC_PCI_DEVS_H
+#define AMD_GENOA_POC_PCI_DEVS_H
 
 #include <device/pci_def.h>
 #include <amdblocks/pci_devs.h>
@@ -45,4 +45,4 @@
 #define DF_F7_DEVFN		PCI_DEVFN(DF_DEV, 7)
 #define SOC_DF_F7_DEV		_SOC_DEV(DF_DEV, 7)
 
-#endif
+#endif /* AMD_GENOA_POC_PCI_DEVS_H */

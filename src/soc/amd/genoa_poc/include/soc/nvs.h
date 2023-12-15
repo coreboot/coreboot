@@ -4,12 +4,12 @@
 
 /*
  * NOTE: The layout of the global_nvs structure below must match the layout
- * in soc/soc/amd/genoa/acpi/globalnvs.asl !!!
+ * in soc/soc/amd/genoa_poc/acpi/globalnvs.asl !!!
  *
  */
 
-#ifndef AMD_GENOA_NVS_H
-#define AMD_GENOA_NVS_H
+#ifndef AMD_GENOA_POC_NVS_H
+#define AMD_GENOA_POC_NVS_H
 
 #include <stdint.h>
 
@@ -19,4 +19,4 @@ struct __packed global_nvs {
 	uint64_t	gpei; /* 0x08 - 0x0f - GPE Wake Source */
 };
 
-#endif /* AMD_GENOA_NVS_H */
+#endif /* AMD_GENOA_POC_NVS_H */

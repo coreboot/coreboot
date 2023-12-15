@@ -2,7 +2,7 @@
 
 /*
  * NOTE: The layout of the GNVS structure below must match the layout in
- * soc/amd/genoa/include/soc/nvs.h !!!
+ * soc/amd/genoa_poc/include/soc/nvs.h !!!
  */
 
 Field (GNVS, ByteAcc, NoLock, Preserve)

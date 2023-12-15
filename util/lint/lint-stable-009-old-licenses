@@ -23,6 +23,7 @@ HEADER_EXCLUDED="\
 \.cksum$|\
 \.bin$|\
 \.vbt$|\
+\.apcb$|\
 \.hex$|\
 \.patch$|\
 _shipped$|\

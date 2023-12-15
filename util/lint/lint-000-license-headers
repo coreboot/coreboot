@@ -68,6 +68,7 @@ _shipped$|\
 config|\
 cmos\.layout|\
 cmos\.default\
+\.apcb$|\
 "
 
 #space separated list of directories to test

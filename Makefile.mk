@@ -1307,6 +1307,7 @@ $(CONFIG_CBFS_PREFIX)/romstage-options += $(TXTIBB)
 endif
 else # CONFIG_SEPARATE_ROMSTAGE
 postinclude-hooks += $$(eval bootblock-srcs += $$(romstage-srcs))
+postinclude-hooks += $$(eval bootblock-libs += $$(romstage-libs))
 endif
 
 cbfs-files-$(CONFIG_HAVE_RAMSTAGE) += $(CONFIG_CBFS_PREFIX)/ramstage

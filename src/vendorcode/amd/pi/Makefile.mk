@@ -160,7 +160,6 @@ $(agesa_output_path)/libagesa.a: $(call src-to-obj,libagesa,$(agesa_src_files))
 	@printf "    AGESA      $(subst $(obj)/,,$(@))\n"
 	$(AR_libagesa) rcsDT $@ $+
 
-bootblock-libs += $(agesa_output_path)/libagesa.a
 romstage-libs += $(agesa_output_path)/libagesa.a
 ramstage-libs += $(agesa_output_path)/libagesa.a
 

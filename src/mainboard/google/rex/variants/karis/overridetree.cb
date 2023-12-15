@@ -29,6 +29,10 @@ fw_config
 		option WIFI_CNVI		0
 		option WIFI_PCIE		1
 	end
+	field PANEL_PWRSEQ_EC_CONTROL 14
+		option DISABLE			0
+		option ENABLE			1
+	end
 end
 
 chip soc/intel/meteorlake

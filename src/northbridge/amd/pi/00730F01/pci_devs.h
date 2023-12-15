@@ -3,8 +3,6 @@
 #ifndef _AMD_00730F01_PCI_DEVS_H_
 #define _AMD_00730F01_PCI_DEVS_H_
 
-#define BUS0 0
-
 /* Graphics and Display */
 #define GFX_DEV 0x1
 #define GFX_FUNC 0

@@ -5,8 +5,6 @@
 
 #include <device/pci_def.h>
 
-#define BUS0			0
-
 /* XHCI */
 #define XHCI_DEV		0x10
 #define XHCI_FUNC		0

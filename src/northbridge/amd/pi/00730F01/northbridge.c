@@ -74,20 +74,6 @@ static void get_fx_devs(void)
 	printk(BIOS_DEBUG, "fx_devs = 0x%x\n", fx_devs);
 }
 
-static void f1_write_config32(unsigned int reg, u32 value)
-{
-	int i;
-	if (fx_devs == 0)
-		get_fx_devs();
-	for (i = 0; i < fx_devs; i++) {
-		struct device *dev;
-		dev = __f1_dev[i];
-		if (dev && dev->enabled) {
-			pci_write_config32(dev, reg, value);
-		}
-	}
-}
-
 static int get_dram_base_limit(u32 nodeid, resource_t *basek, resource_t *limitk)
 {
 	u32 temp;
@@ -113,24 +99,6 @@ static int get_dram_base_limit(u32 nodeid, resource_t *basek, resource_t *limitk
 	*limitk += 1; // round up last byte
 
 	return 1;
-}
-
-static u32 amdfam16_nodeid(struct device *dev)
-{
-	return (dev->path.pci.devfn >> 3) - DEV_CDB;
-}
-
-static void set_vga_enable_reg(u32 nodeid, u32 linkn)
-{
-	u32 val;
-
-	val =  1 | (nodeid << 4) | (linkn << 12);
-	/* it will routing
-	 * (1)mmio 0xa0000:0xbffff
-	 * (2)io   0x3b0:0x3bb, 0x3c0:0x3df
-	 */
-	f1_write_config32(0xf4, val);
-
 }
 
 static void add_fixed_resources(struct device *dev, int index)
@@ -169,49 +137,6 @@ static void nb_read_resources(struct device *dev)
 	mmio_range(dev, IO_APIC2_ADDR, IO_APIC2_ADDR, 0x1000);
 
 	add_fixed_resources(dev, 0);
-}
-
-static void create_vga_resource(struct device *dev, unsigned int nodeid)
-{
-	struct bus *link;
-	unsigned int sblink;
-
-	sblink = (pci_read_config32(get_mc_dev(), 0x64) >> 8) & 7; // don't forget sublink1
-
-	/* find out which link the VGA card is connected,
-	 * we only deal with the 'first' vga card */
-	for (link = dev->link_list; link; link = link->next) {
-		if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-#if CONFIG(MULTIPLE_VGA_ADAPTERS)
-			extern struct device *vga_pri; // the primary vga device, defined in device.c
-			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d bus range [%d,%d]\n", vga_pri->bus->secondary,
-					link->secondary, link->subordinate);
-			/* We need to make sure the vga_pri is under the link */
-			if ((vga_pri->bus->secondary >= link->secondary) &&
-			    (vga_pri->bus->secondary <= link->subordinate))
-#endif
-				break;
-		}
-	}
-
-	/* no VGA card installed */
-	if (link == NULL)
-		return;
-
-	printk(BIOS_DEBUG, "VGA: %s (aka node %d) link %d has VGA device\n", dev_path(dev), nodeid, sblink);
-	set_vga_enable_reg(nodeid, sblink);
-}
-
-static void nb_set_resources(struct device *dev)
-{
-	unsigned int nodeid;
-
-	/* Find the nodeid */
-	nodeid = amdfam16_nodeid(dev);
-
-	create_vga_resource(dev, nodeid); //TODO: do we need this?
-
-	pci_dev_set_resources(dev);
 }
 
 static void northbridge_init(struct device *dev)
@@ -635,7 +560,7 @@ static unsigned long agesa_write_acpi_tables(const struct device *device,
 
 struct device_operations amd_pi_northbridge_ops = {
 	.read_resources	  = nb_read_resources,
-	.set_resources	  = nb_set_resources,
+	.set_resources	  = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init		  = northbridge_init,
 	.ops_pci           = &pci_dev_ops_pci,

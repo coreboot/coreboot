@@ -33,11 +33,11 @@ static struct device *get_node_pci(u32 nodeid, u32 fn)
 	return pcidev_on_root(DEV_CDB + nodeid, fn);
 }
 
-static int get_dram_base_limit(u32 nodeid, resource_t *basek, resource_t *limitk)
+static int get_dram_base_limit(resource_t *basek, resource_t *limitk)
 {
 	u32 temp;
 
-	temp = pci_read_config32(get_node_pci(nodeid, 1), 0x40 + (nodeid << 3)); //[39:24] at [31:16]
+	temp = pci_read_config32(get_node_pci(0, 1), 0x40); //[39:24] at [31:16]
 	if (!(temp & 1))
 		return 0; // this memory range is not enabled
 	/*
@@ -49,7 +49,7 @@ static int get_dram_base_limit(u32 nodeid, resource_t *basek, resource_t *limitk
 	 * BKDG address[39:0] <= {DramLimit[39:24], FF_FFFFh} converted as above but
 	 * ORed with 0xffff to get real limit before shifting.
 	 */
-	temp = pci_read_config32(get_node_pci(nodeid, 1), 0x44 + (nodeid << 3)); //[39:24] at [31:16]
+	temp = pci_read_config32(get_node_pci(0, 1), 0x44); //[39:24] at [31:16]
 	*limitk = ((temp & 0xffff0000) | 0xffff) >> (10 - 8);
 	*limitk += 1; // round up last byte
 
@@ -70,7 +70,7 @@ static void add_fixed_resources(struct device *dev, int index)
 	if (pci_read_config32(get_node_pci(0, 2), 0x118) & (1 << 18)) {
 		/* Add CC6 DRAM UC resource residing at DRAM Limit of size 16MB as per BKDG */
 		resource_t basek, limitk;
-		if (!get_dram_base_limit(0, &basek, &limitk))
+		if (!get_dram_base_limit(&basek, &limitk))
 			return;
 		mmio_resource_kb(dev, index++, limitk, 16 * 1024);
 	}
@@ -572,7 +572,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 	mem_hole.node_id = -1;
 
 	resource_t basek, limitk;
-	if (get_dram_base_limit(0, &basek, &limitk)) { // memory on this node
+	if (get_dram_base_limit(&basek, &limitk)) { // memory on this node
 		u32 hole = pci_read_config32(get_node_pci(0, 1), 0xf0);
 		if (hole & 2) { // we find the hole
 			mem_hole.hole_startk = (hole & (0xff << 24)) >> 10;
@@ -613,7 +613,7 @@ static void domain_read_resources(struct device *dev)
 
 	idx = 0x10;
 	resource_t basek, limitk, sizek;
-	if (get_dram_base_limit(0, &basek, &limitk)) {
+	if (get_dram_base_limit(&basek, &limitk)) {
 		sizek = limitk - basek;
 
 		printk(BIOS_DEBUG, "basek=%08llx, limitk=%08llx, sizek=%08llx,\n",

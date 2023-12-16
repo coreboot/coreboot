@@ -555,7 +555,6 @@ static void fam16_finalize(void *chip_info)
 	}
 }
 
-#if CONFIG_HW_MEM_HOLE_SIZEK != 0
 struct hw_mem_hole_info {
 	unsigned int hole_startk;
 	int node_id;
@@ -563,7 +562,6 @@ struct hw_mem_hole_info {
 static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 {
 	struct hw_mem_hole_info mem_hole;
-	mem_hole.hole_startk = CONFIG_HW_MEM_HOLE_SIZEK;
 	mem_hole.node_id = -1;
 
 	resource_t basek, limitk;
@@ -576,15 +574,12 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 	}
 	return mem_hole;
 }
-#endif
 
 static void domain_read_resources(struct device *dev)
 {
 	unsigned long mmio_basek;
 	unsigned long idx = 0;
-#if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	struct hw_mem_hole_info mem_hole;
-#endif
 	resource_t basek = 0;
 	resource_t limitk = 0;
 	resource_t sizek;
@@ -594,7 +589,6 @@ static void domain_read_resources(struct device *dev)
 	/* TOP_MEM MSR is our boundary between DRAM and MMIO under 4G */
 	mmio_basek = get_top_of_mem_below_4gb() >> 10;
 
-#if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	/* if the hw mem hole is already set in raminit stage, here we will compare
 	 * mmio_basek and hole_basek. if mmio_basek is bigger that hole_basek and will
 	 * use hole_basek as mmio_basek and we don't need to reset hole.
@@ -607,7 +601,6 @@ static void domain_read_resources(struct device *dev)
 	if ((mem_hole.node_id !=  -1) && (mmio_basek > mem_hole.hole_startk)) {
 		mmio_basek = mem_hole.hole_startk;
 	}
-#endif
 
 	get_dram_base_limit(&basek, &limitk);
 	sizek = limitk - basek;

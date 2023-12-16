@@ -4296,7 +4296,7 @@ typedef struct {
 
 /** Offset 0x104C
 **/
-  UINT8                       Rsvd39[4];
+  UINT8                       CpuPcieRpTestForceLtrOverride[4];
 
 /** Offset 0x1050 - MemoryBuffer
   MemoryBuffer address

@@ -3754,8 +3754,8 @@ typedef struct {
   UINT32                      SerialIoUartDebugCtsPinMux;
 
 /** Offset 0x0AA8 - Ppr Enable Type
-  Enable Soft or Hard PPR <b>0:Disable</b>, 2:Hard PPR
-  0:Disable, 2:Hard PPR
+  Enable Soft or Hard PPR 0:Disable, 1:Soft PPR, <b>2:Hard PPR</b>, 3:No Repair
+  0:Disable, 1:Soft PPR, 2:Hard PPR, 3:No Repair
 **/
   UINT8                       PprEnable;
 
@@ -3795,8 +3795,16 @@ typedef struct {
   UINT8                       CpuPcieRpSlotImplemented[4];
 
 /** Offset 0x0AB6
+  Enable PPR Run Once 0:Disable, <b>1:Enable<b>
+  0:Disable, 1:Enable
 **/
-  UINT8                       Rsvd28[2];
+  UINT8                       PprRunOnce;
+
+/** Offset 0x0AB7 - Post Package Repair
+  Enables/Disable Post Package Repair
+  $EN_DIS
+**/
+  UINT8                       PPR;
 
 /** Offset 0x0AB8 - IbeccErrInjAddress
   Address to match against for ECC error injection

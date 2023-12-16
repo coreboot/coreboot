@@ -281,6 +281,8 @@ typedef struct {
   BOOLEAN           MemorySpeedReducedWrongDimmSlot;   ///< Can be used by OEM BIOS to display a warning on the screen that DDR speed was reduced due to wrong DIMM population
   BOOLEAN           MemorySpeedReducedMixedConfig;     ///< Can be used by OEM BIOS to display a warning on the screen that DDR speed was reduced due to mixed DIMM config
   BOOLEAN           DynamicMemoryBoostTrainingFailed;  ///< TRUE if Dynamic Memory Boost failed to train and was force disabled on the last full training boot. FALSE otherwise.
+  UINT16            PprDetectedErrors;                 ///< PPR: Counts of detected bad rows.
+  UINT16            PprRepairFails;                    ///< PPR: Counts of repair failure.
 } MEMORY_INFO_DATA_HOB;
 
 /**

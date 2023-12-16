@@ -28,16 +28,11 @@
 #define PCIE_CAP_AER		BIT(5)
 #define PCIE_CAP_ACS		BIT(6)
 
-static struct device *get_node_pci(u32 nodeid, u32 fn)
-{
-	return pcidev_on_root(DEV_CDB + nodeid, fn);
-}
-
 static int get_dram_base_limit(resource_t *basek, resource_t *limitk)
 {
 	u32 temp;
 
-	temp = pci_read_config32(get_node_pci(0, 1), 0x40); //[39:24] at [31:16]
+	temp = pci_read_config32(DEV_PTR(ht_1), 0x40); //[39:24] at [31:16]
 	if (!(temp & 1))
 		return 0; // this memory range is not enabled
 	/*
@@ -49,7 +44,7 @@ static int get_dram_base_limit(resource_t *basek, resource_t *limitk)
 	 * BKDG address[39:0] <= {DramLimit[39:24], FF_FFFFh} converted as above but
 	 * ORed with 0xffff to get real limit before shifting.
 	 */
-	temp = pci_read_config32(get_node_pci(0, 1), 0x44); //[39:24] at [31:16]
+	temp = pci_read_config32(DEV_PTR(ht_1), 0x44); //[39:24] at [31:16]
 	*limitk = ((temp & 0xffff0000) | 0xffff) >> (10 - 8);
 	*limitk += 1; // round up last byte
 
@@ -67,7 +62,7 @@ static void add_fixed_resources(struct device *dev, int index)
 	reserved_ram_resource_kb(dev, index++, 0xc0000 >> 10, (0x100000 - 0xc0000) >> 10);
 
 	/* Check if CC6 save area is enabled (bit 18 CC6SaveEn)  */
-	if (pci_read_config32(get_node_pci(0, 2), 0x118) & (1 << 18)) {
+	if (pci_read_config32(DEV_PTR(ht_2), 0x118) & (1 << 18)) {
 		/* Add CC6 DRAM UC resource residing at DRAM Limit of size 16MB as per BKDG */
 		resource_t basek, limitk;
 		if (!get_dram_base_limit(&basek, &limitk))
@@ -573,7 +568,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 
 	resource_t basek, limitk;
 	if (get_dram_base_limit(&basek, &limitk)) { // memory on this node
-		u32 hole = pci_read_config32(get_node_pci(0, 1), 0xf0);
+		u32 hole = pci_read_config32(DEV_PTR(ht_1), 0xf0);
 		if (hole & 2) { // we find the hole
 			mem_hole.hole_startk = (hole & (0xff << 24)) >> 10;
 			mem_hole.node_id = 0; // record the node No with hole

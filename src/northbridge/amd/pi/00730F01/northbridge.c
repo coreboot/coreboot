@@ -586,7 +586,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 static void domain_read_resources(struct device *dev)
 {
 	unsigned long mmio_basek;
-	int idx;
+	unsigned long idx = 0;
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	struct hw_mem_hole_info mem_hole;
 #endif
@@ -611,7 +611,6 @@ static void domain_read_resources(struct device *dev)
 	}
 #endif
 
-	idx = 0x10;
 	resource_t basek, limitk, sizek;
 	if (get_dram_base_limit(&basek, &limitk)) {
 		sizek = limitk - basek;
@@ -621,8 +620,7 @@ static void domain_read_resources(struct device *dev)
 
 		/* See if we need a hole from 0xa0000 (640K) to 0xfffff (1024K) */
 		if (basek < 640 && sizek > 1024) {
-			ram_resource_kb(dev, idx, basek, 640 - basek);
-			idx += 0x10;
+			ram_resource_kb(dev, idx++, basek, 640 - basek);
 			basek = 1024;
 			sizek = limitk - basek;
 		}
@@ -636,8 +634,7 @@ static void domain_read_resources(struct device *dev)
 				unsigned int pre_sizek;
 				pre_sizek = mmio_basek - basek;
 				if (pre_sizek > 0) {
-					ram_resource_kb(dev, idx, basek, pre_sizek);
-					idx += 0x10;
+					ram_resource_kb(dev, idx++, basek, pre_sizek);
 					sizek -= pre_sizek;
 				}
 				basek = mmio_basek;
@@ -652,13 +649,12 @@ static void domain_read_resources(struct device *dev)
 			}
 		}
 
-		ram_resource_kb(dev, idx, basek, sizek);
-		idx += 0x10;
+		ram_resource_kb(dev, idx++, basek, sizek);
 		printk(BIOS_DEBUG, "mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
 				mmio_basek, basek, limitk);
 	}
 
-	add_uma_resource_below_tolm(dev, 7);
+	add_uma_resource_below_tolm(dev, idx++);
 }
 
 static const char *domain_acpi_name(const struct device *dev)

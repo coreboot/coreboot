@@ -169,10 +169,8 @@ struct rom_header *pci_rom_load(struct device *dev,
 	 * devices have a mismatch between the hardware and the ROM.
 	 */
 	if ((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA) {
-#if !CONFIG(MULTIPLE_VGA_ADAPTERS)
 		extern struct device *vga_pri; /* Primary VGA device (device.c). */
 		if (dev != vga_pri) return NULL; /* Only one VGA supported. */
-#endif
 		if ((void *)PCI_VGA_RAM_IMAGE_START != rom_header) {
 			printk(BIOS_DEBUG,
 			       "Copying VGA ROM Image from %p to 0x%x, 0x%x bytes\n",

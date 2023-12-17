@@ -297,10 +297,6 @@ config YABEL_DIRECTHW
 	  they can still access all devices in the system.
 	  Enable this option for a good compromise between security and speed.
 
-config MULTIPLE_VGA_ADAPTERS
-	bool
-	default n
-
 menu "Display"
 	depends on HAVE_VGA_TEXT_FRAMEBUFFER || HAVE_LINEAR_FRAMEBUFFER
 

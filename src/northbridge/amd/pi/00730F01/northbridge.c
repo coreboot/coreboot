@@ -590,6 +590,9 @@ static void domain_read_resources(struct device *dev)
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	struct hw_mem_hole_info mem_hole;
 #endif
+	resource_t basek = 0;
+	resource_t limitk = 0;
+	resource_t sizek;
 
 	pci_domain_read_resources(dev);
 
@@ -611,48 +614,45 @@ static void domain_read_resources(struct device *dev)
 	}
 #endif
 
-	resource_t basek, limitk, sizek;
-	if (get_dram_base_limit(&basek, &limitk)) {
+	get_dram_base_limit(&basek, &limitk);
+	sizek = limitk - basek;
+
+	printk(BIOS_DEBUG, "basek=%08llx, limitk=%08llx, sizek=%08llx,\n",
+			   basek, limitk, sizek);
+
+	/* See if we need a hole from 0xa0000 (640K) to 0xfffff (1024K) */
+	if (basek < 640 && sizek > 1024) {
+		ram_resource_kb(dev, idx++, basek, 640 - basek);
+		basek = 1024;
 		sizek = limitk - basek;
-
-		printk(BIOS_DEBUG, "basek=%08llx, limitk=%08llx, sizek=%08llx,\n",
-				   basek, limitk, sizek);
-
-		/* See if we need a hole from 0xa0000 (640K) to 0xfffff (1024K) */
-		if (basek < 640 && sizek > 1024) {
-			ram_resource_kb(dev, idx++, basek, 640 - basek);
-			basek = 1024;
-			sizek = limitk - basek;
-		}
-
-		printk(BIOS_DEBUG, "basek=%08llx, limitk=%08llx, sizek=%08llx,\n",
-				   basek, limitk, sizek);
-
-		/* split the region to accommodate pci memory space */
-		if ((basek < 4 * 1024 * 1024) && (limitk > mmio_basek)) {
-			if (basek <= mmio_basek) {
-				unsigned int pre_sizek;
-				pre_sizek = mmio_basek - basek;
-				if (pre_sizek > 0) {
-					ram_resource_kb(dev, idx++, basek, pre_sizek);
-					sizek -= pre_sizek;
-				}
-				basek = mmio_basek;
-			}
-			if ((basek + sizek) <= 4 * 1024 * 1024) {
-				sizek = 0;
-			}
-			else {
-				uint64_t topmem2 = get_top_of_mem_above_4gb();
-				basek = 4 * 1024 * 1024;
-				sizek = topmem2 / 1024 - basek;
-			}
-		}
-
-		ram_resource_kb(dev, idx++, basek, sizek);
-		printk(BIOS_DEBUG, "mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
-				mmio_basek, basek, limitk);
 	}
+
+	printk(BIOS_DEBUG, "basek=%08llx, limitk=%08llx, sizek=%08llx,\n",
+			   basek, limitk, sizek);
+
+	/* split the region to accommodate pci memory space */
+	if ((basek < 4 * 1024 * 1024) && (limitk > mmio_basek)) {
+		if (basek <= mmio_basek) {
+			unsigned int pre_sizek;
+			pre_sizek = mmio_basek - basek;
+			if (pre_sizek > 0) {
+				ram_resource_kb(dev, idx++, basek, pre_sizek);
+				sizek -= pre_sizek;
+			}
+			basek = mmio_basek;
+		}
+		if ((basek + sizek) <= 4 * 1024 * 1024) {
+			sizek = 0;
+		} else {
+			uint64_t topmem2 = get_top_of_mem_above_4gb();
+			basek = 4 * 1024 * 1024;
+			sizek = topmem2 / 1024 - basek;
+		}
+	}
+
+	ram_resource_kb(dev, idx++, basek, sizek);
+	printk(BIOS_DEBUG, "mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
+			mmio_basek, basek, limitk);
 
 	add_uma_resource_below_tolm(dev, idx++);
 }

@@ -230,6 +230,9 @@ const char *dev_path(const struct device *dev)
 		case DEVICE_PATH_MDIO:
 			snprintf(buffer, sizeof(buffer), "MDIO: %02x", dev->path.mdio.addr);
 			break;
+		case DEVICE_PATH_GICC_V3:
+			snprintf(buffer, sizeof(buffer), "GICV3: %02x", dev->path.gicc_v3.mpidr);
+			break;
 		default:
 			printk(BIOS_ERR, "Unknown device path type: %d\n",
 			       dev->path.type);

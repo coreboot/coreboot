@@ -3,6 +3,10 @@
 #include <acpi/acpi.h>
 #include <device/device.h>
 
+__weak void platform_fill_gicc(acpi_madt_gicc_t *gicc)
+{
+}
+
 static int acpi_create_madt_one_gicc_v3(acpi_madt_gicc_t *gicc, u32 acpi_uid, u32 pi_gsiv,
 					uint32_t vgic_mi, uint64_t mpidr)
 {
@@ -29,6 +33,8 @@ static int acpi_create_madt_one_gicc_v3(acpi_madt_gicc_t *gicc, u32 acpi_uid, u3
 	 * Bits [7:0] Aff0 : Match Aff0 of target processor MPIDR
 	*/
 	gicc->mpidr = mpidr & 0xff00fffffful;
+
+	platform_fill_gicc(gicc);
 
 	return gicc->length;
 }

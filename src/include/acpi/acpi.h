@@ -1780,6 +1780,7 @@ unsigned long acpi_create_madt_one_lapic(unsigned long current, u32 cpu, u32 api
 
 unsigned long acpi_create_madt_lapic_nmis(unsigned long current);
 
+void platform_fill_gicc(acpi_madt_gicc_t *gicc);
 uintptr_t platform_get_gicd_base(void);
 uintptr_t platform_get_gicr_base(void);
 int platform_get_gic_its(uintptr_t **base);

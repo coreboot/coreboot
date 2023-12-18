@@ -200,4 +200,6 @@ chip soc/amd/genoa_poc
 		end
 	end
 
+	device ref uart_1 on end
+
 end

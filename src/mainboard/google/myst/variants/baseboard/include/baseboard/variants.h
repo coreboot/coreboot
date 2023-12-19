@@ -7,18 +7,6 @@
 #include <platform_descriptors.h>
 #include <soc/pci_devs.h>
 
-#define WWAN_DEVFN	PCIE_GPP_2_1_DEVFN
-#define WLAN_DEVFN	PCIE_GPP_2_2_DEVFN
-#define SD_DEVFN	PCIE_GPP_2_3_DEVFN
-#define NVME_DEVFN	PCIE_GPP_2_4_DEVFN
-
-enum dxio_port_id {
-	DXIO_WWAN,
-	DXIO_WLAN,
-	DXIO_SD,
-	DXIO_STORAGE
-};
-
 /* This function provides base GPIO configuration table. */
 void baseboard_gpio_table(const struct soc_amd_gpio **gpio, size_t *size);
 
@@ -42,5 +30,10 @@ void variant_override_gpio_table(const struct soc_amd_gpio **gpio, size_t *size)
 
 /* This function provides GPIO settings for TPM i2c bus. */
 void variant_tpm_gpio_table(const struct soc_amd_gpio **gpio, size_t *size);
+
+/*
+ * This function allows a variant to override dxio descriptors passed to the FSP.
+ */
+void variant_get_dxio_descriptors(const fsp_dxio_descriptor **dxio_descriptor, size_t *num);
 
 #endif /* __BASEBOARD_VARIANTS_H__ */

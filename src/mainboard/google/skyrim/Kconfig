@@ -141,14 +141,6 @@ config VARIANT_DIR
 	default "skyrim" if BOARD_GOOGLE_SKYRIM
 	default "winterhold" if BOARD_GOOGLE_WINTERHOLD
 
-config USE_VARIANT_DXIO_DESCRIPTOR
-	bool
-	default y if BOARD_GOOGLE_MARKARTH || BOARD_GOOGLE_WINTERHOLD
-	default n
-	help
-	  Enable this to allow a variant to override the dxio descriptor values
-	  in port_descriptors.c
-
 config USE_SELECTIVE_GOP_INIT
 	default y if CHROMEOS && RUN_FSP_GOP && BOARD_GOOGLE_SKYRIM
 

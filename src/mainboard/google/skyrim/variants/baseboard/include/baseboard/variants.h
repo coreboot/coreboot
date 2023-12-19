@@ -7,10 +7,6 @@
 #include <soc/pci_devs.h>
 #include <platform_descriptors.h>
 
-#define WLAN_DEVFN	PCIE_GPP_2_0_DEVFN
-#define SD_DEVFN	PCIE_GPP_2_1_DEVFN
-#define NVME_DEVFN	PCIE_GPP_2_2_DEVFN
-
 /* This function provides base GPIO configuration table. */
 void baseboard_gpio_table(const struct soc_amd_gpio **gpio, size_t *size);
 
@@ -41,7 +37,10 @@ void baseboard_romstage_gpio_table(const struct soc_amd_gpio **gpio, size_t *siz
 /* This function allows variant to override any GPIO init in romstage. */
 void variant_romstage_override_gpio_table(const struct soc_amd_gpio **gpio, size_t *size);
 
-/* Allow variants to override the DXIO Descriptors */
-void variant_get_dxio_descriptor(const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num);
+/*
+ * This function allows a variant to override dxio descriptors passed to the FSP.
+ */
+void variant_get_dxio_descriptors(const fsp_dxio_descriptor **dxio_descriptor,
+					   size_t *num);
 
 #endif /* __BASEBOARD_VARIANTS_H__ */

@@ -553,10 +553,6 @@ chip soc/intel/meteorlake
 				register "on_seq.ops_cnt" = "1"
 				register "on_seq.ops[0]" = "SEQ_OPS_GPIO_ENABLE(0, 0)"
 
-				#_OFF
-				register "off_seq.ops_cnt" = "1"
-				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
-
 				register "nvm_size" = "0x2000"
 				register "nvm_pagesize" = "1"
 				register "nvm_readonly" = "1"

@@ -463,4 +463,8 @@ config SOC_INTEL_METEORLAKE_SIGN_OF_LIFE
 	  Enable the FSP-M Sign-of-Life feature to display a
 	  configurable text message on screen during memory training
 	  and CSME update.
+
+config SOC_PHYSICAL_ADDRESS_WIDTH
+	default 42
+
 endif

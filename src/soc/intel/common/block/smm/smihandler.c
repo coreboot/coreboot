@@ -297,9 +297,13 @@ static void southbridge_smi_store(
 	const bool wp_enabled = !fast_spi_wpd_status();
 	if (wp_enabled) {
 		set_insmm_sts(true);
-		fast_spi_disable_wp();
-		/* Not clearing SPI sync SMI status here results in hangs */
+		/*
+		 * As per BWG, clearing "SPI_BIOS_CONTROL_SYNC_SS"
+		 * bit is a must prior setting SPI_BIOS_CONTROL_WPD" bit
+		 * to avoid 3-strike error.
+		 */
 		fast_spi_clear_sync_smi_status();
+		fast_spi_disable_wp();
 	}
 
 	/* drivers/smmstore/smi.c */

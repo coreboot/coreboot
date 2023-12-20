@@ -76,6 +76,9 @@ static void update_fw_splash_screen_event(enum fw_splash_screen_status status)
 	if (!CONFIG(BMP_LOGO))
 		return;
 
+	printk(BIOS_DEBUG, "Firmware Splash Screen : %s\n",
+		       status ? "Enabled" : "Disabled");
+
 	elog_add_event_byte(ELOG_TYPE_FW_SPLASH_SCREEN, status);
 }
 

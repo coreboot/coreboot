@@ -1,0 +1,304 @@
+chip soc/intel/jasperlake
+
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| GSPI0             | cr50 TPM. Early init is   |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#|                   | before memory is up       |
+	#| I2C4              | Audio                     |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.gspi[0] = {
+			.speed_mhz = 1,
+			.early_init = 1,
+		},
+		.i2c[4] = {
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 190,
+				.scl_hcnt = 100,
+				.sda_hold = 40,
+			}
+		},
+	}"
+
+	# Power limit config
+	register "power_limits_config[JSL_N4500_6W_CORE]" = "{
+		.tdp_pl1_override = 6,
+		.tdp_pl2_override = 20,
+		.tdp_pl4 = 60,
+	}"
+
+	register "power_limits_config[JSL_N5100_6W_CORE]" = "{
+		.tdp_pl1_override = 6,
+		.tdp_pl2_override = 20,
+		.tdp_pl4 = 60,
+	}"
+
+	# Enable Root Port 3 (index 2) for LAN
+	# External PCIe port 7 is mapped to PCIe Root Port 3
+	register "PcieRpEnable[2]" = "1"
+	register "PcieClkSrcUsage[4]" = "2"
+
+	# Enable Root Port 7 (index 6) for WLAN
+	# External PCIe port 3 is mapped to PCIe Root Port 7
+	register "PcieRpEnable[6]" = "1"
+	register "PcieClkSrcUsage[3]" = "6"
+
+	# Disable PCIe Root Port 8
+	register "PcieRpEnable[7]" = "0"
+
+	# Audio related configurations
+	register "PchHdaAudioLinkDmicEnable[0]" = "0"
+	register "PchHdaAudioLinkDmicEnable[1]" = "0"
+
+	# Disable SD card
+	register "sdcard_cd_gpio" = "0"
+	register "SdCardPowerEnableActiveHigh" = "0"
+
+	# Disable eDP on port A
+	register "DdiPortAConfig" = "0"
+
+	# Enable HPD and DDC for DDI port A
+	register "DdiPortAHpd" = "1"
+	register "DdiPortADdc" = "1"
+
+	# Does not support external vnn power rail
+	register "disable_external_bypass_vr" = "1"
+
+	# USB Port Configuration
+	register "usb2_ports[0]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_11P25MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-C Port 0
+	register "usb2_ports[1]" = "{
+		.enable = 1,
+		.ocpin = OC1,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_11P25MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-A Port A0
+	register "usb2_ports[2]" = "{
+		.enable = 1,
+		.ocpin = OC2,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_11P25MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-A Port A1
+	register "usb2_ports[3]" = "{
+		.enable = 1,
+		.ocpin = OC3,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_11P25MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-A Port A2
+	register "usb2_ports[4]" = "{
+		.enable = 1,
+		.ocpin = OC0,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_11P25MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-A Port A3
+	register "usb2_ports[6]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias  = USB2_BIAS_11P25MV,
+		.pre_emp_bit   = USB2_HALF_BIT_PRE_EMP,
+	}" # Type-A Port A4
+
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" #  USB3/1 Type-A Port A4
+	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/1 Type-A Port A2
+	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/1 Type-A Port A3
+
+	# Bitmap for Wake Enable on USB attach/detach
+	register "usb2_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(1) |
+					      USB_PORT_WAKE_ENABLE(2) |
+					      USB_PORT_WAKE_ENABLE(3) |
+					      USB_PORT_WAKE_ENABLE(4) |
+					      USB_PORT_WAKE_ENABLE(5) |
+					      USB_PORT_WAKE_ENABLE(7)"
+	register "usb3_wake_enable_bitmap" = "USB_PORT_WAKE_ENABLE(1) |
+					      USB_PORT_WAKE_ENABLE(2) |
+					      USB_PORT_WAKE_ENABLE(3) |
+					      USB_PORT_WAKE_ENABLE(4) |
+					      USB_PORT_WAKE_ENABLE(5) |
+					      USB_PORT_WAKE_ENABLE(6)"
+
+	device domain 0 on
+		device pci 04.0 on
+			chip drivers/intel/dptf
+				## Passive Policy
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU, CPU,           90, 10000),
+					[1] = DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 80, 60000),
+					[2] = DPTF_PASSIVE(CPU, TEMP_SENSOR_1, 75, 15000),
+					[3] = DPTF_PASSIVE(CPU, TEMP_SENSOR_2, 55, 15000)
+				}"
+
+				## Critical Policy
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,           105, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0, 90, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1, 80, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2, 80, SHUTDOWN)
+				}"
+
+				register "controls.power_limits" = "{
+					.pl1 = {
+						.min_power = 3000,
+						.max_power = 6000,
+						.time_window_min = 1 * MSECS_PER_SEC,
+						.time_window_max = 1 * MSECS_PER_SEC,
+						.granularity = 100,
+					},
+					.pl2 = {
+						.min_power = 20000,
+						.max_power = 20000,
+						.time_window_min = 1 * MSECS_PER_SEC,
+						.time_window_max = 1 * MSECS_PER_SEC,
+						.granularity = 1000,
+					}
+				}"
+
+				register "options.tsr[0].desc" = ""Memory""
+				register "options.tsr[1].desc" = ""Power""
+				register "options.tsr[2].desc" = ""Chassis""
+
+				## Charger Performance Control (Control, mA)
+				register "controls.charger_perf" = "{
+					[0] = { 255, 3000 },
+					[1] = {  24, 1500 },
+					[2] = {  16, 1000 },
+					[3] = {   8,  500 }
+				}"
+
+				device generic 0 on end
+			end
+		end # SA Thermal device
+		device pci 14.0 on
+			chip drivers/usb/acpi
+				device usb 0.0 on
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port C0""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(2, 1)"
+						device usb 2.0 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port A0""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(2, 2)"
+						device usb 2.1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port A1""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(2, 3)"
+						device usb 2.2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port A2""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(1, 3)"
+						device usb 2.3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port A3""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(1, 2)"
+						device usb 2.4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port A4""
+						register "type" = "UPC_TYPE_A"
+						register "group" = "ACPI_PLD_GROUP(1, 1)"
+						device usb 2.6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Port C0""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(2, 1)"
+						device usb 3.0 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port A4""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(1, 1)"
+						device usb 3.1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port A0""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(2, 2)"
+						device usb 3.2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port A1""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(2, 3)"
+						device usb 3.3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port A3""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(1, 2)"
+						device usb 3.4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port A2""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "group" = "ACPI_PLD_GROUP(1, 3)"
+						device usb 3.5 on end
+					end
+				end
+			end
+		end # USB xHCI
+		device pci 15.0 off end # I2C 0
+		device pci 15.1 off end # I2C 1
+		device pci 15.2 off end # I2C 2
+		device pci 15.3 off end # I2C 3
+		device pci 19.0 on
+			chip drivers/i2c/generic
+				register "hid" = ""RTL5682""
+				register "name" = ""RT58""
+				register "desc" = ""Realtek RT5682""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_D16)"
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on end
+			end
+		end # I2C 4
+		device pci 1c.2 on
+			chip drivers/net
+				register "customized_leds" = "0x05af"
+				register "wake" = "GPE0_DW0_03" # GPP_B3
+				register "stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D4)"
+				register "device_index" = "0"
+				device pci 00.0 on end
+			end
+		end # PCI Express Root Port 3 - RTL8111H LAN
+		device pci 1c.6 on
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_DW2_03"
+				device pci 00.0 on  end
+			end
+		end # PCI Express Root Port 7 - WLAN
+		device pci 1c.7 off end # PCI Express Root Port 8
+		device pci 1f.3 on end # Intel HDA
+	end
+end

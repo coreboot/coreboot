@@ -94,3 +94,6 @@ config BOARD_GOOGLE_BOXY
 
 config BOARD_GOOGLE_DEXI
 	bool "->  Dexi"
+
+config BOARD_GOOGLE_DITA
+	bool "->  Dita"

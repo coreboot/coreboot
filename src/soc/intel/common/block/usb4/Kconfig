@@ -27,3 +27,32 @@ config SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
 	select PCIEXP_HOTPLUG
 	help
 	  Enable USB4 PCIe resources for reserving hotplug buses and memory.
+
+config DEFAULT_SOFTWARE_CONNECTION_MANAGER
+	bool
+	help
+	  select to default to using the Software Connection Manager
+
+choice
+	prompt "Connection Manager"
+	depends on SOC_INTEL_COMMON_BLOCK_USB4
+	default SOFTWARE_CONNECTION_MANAGER if DEFAULT_SOFTWARE_CONNECTION_MANAGER
+	default FIRMWARE_CONNECTION_MANAGER
+	help
+	  Software Connection Manager doesn't work with Linux 5.13 or later,
+	  resulting in TBT ports timing out. Firmware Connection Manager works
+	  correctly.
+	  Linux patch:
+	    torvalds/linux@c6da62a
+	    c6da62a219d028de10f2e22e93a34c7ee2b88d03
+
+config FIRMWARE_CONNECTION_MANAGER
+	bool "Firmware Connection Manager"
+	help
+	  Disable SCM so that FCM can be used
+
+config SOFTWARE_CONNECTION_MANAGER
+	bool "Software Connection Manager"
+	help
+	  Enable SCM so it's used instead of FCM.
+endchoice

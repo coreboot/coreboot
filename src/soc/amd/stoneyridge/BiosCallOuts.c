@@ -65,8 +65,9 @@ AGESA_STATUS agesa_fch_initenv(uint32_t Func, uintptr_t FchData,
 				FchParams_env->Sata.SataIdeMode = TRUE;
 				break;
 			}
-		} else
+		} else {
 			FchParams_env->Sata.SataIdeMode = FALSE;
+		}
 
 		/* Platform updates */
 		platform_FchParams_env(FchParams_env);

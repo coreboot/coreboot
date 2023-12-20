@@ -393,7 +393,8 @@ chip soc/intel/alderlake
 						register "use_custom_pld" = "true"
 						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(2, 1))"
 						device ref tcss_usb3_port2 on
-							probe DB_USB DB_A
+							probe DB_USB DB_C_A
+							probe DB_USB DB_C_A_LTE
 						end
 					end
 				end
@@ -421,7 +422,8 @@ chip soc/intel/alderlake
 						register "use_custom_pld" = "true"
 						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(2, 1))"
 						device ref usb2_port2 on
-							probe DB_USB DB_A
+							probe DB_USB DB_C_A
+							probe DB_USB DB_C_A_LTE
 						end
 					end
 					chip drivers/usb/acpi

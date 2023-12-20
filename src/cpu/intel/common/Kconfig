@@ -31,14 +31,6 @@ config SET_MSR_AESNI_LOCK_BIT
 config CPU_INTEL_COMMON_TIMEBASE
 	bool
 
-config CPU_INTEL_COMMON_RESERVED_PHYS_ADDR_BITS
-	int
-	help
-	  Specify the number of physical address reserved bits.  This
-	  config can be set for SoCs with reserved bits which cannot
-	  be probed at runtime.  A runtime detection by hardware
-	  probing will be attempted if the value is -1.
-
 endif
 
 config CPU_INTEL_COMMON_VOLTAGE

@@ -258,9 +258,6 @@ static unsigned int get_tme_keyid_bits(void)
 
 unsigned int get_reserved_phys_addr_bits(void)
 {
-	if (CONFIG_CPU_INTEL_COMMON_RESERVED_PHYS_ADDR_BITS)
-		return CONFIG_CPU_INTEL_COMMON_RESERVED_PHYS_ADDR_BITS;
-
 	if (!is_tme_supported())
 		return 0;
 

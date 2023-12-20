@@ -26,9 +26,8 @@ static inline int sb_ide_enable(void)
 
 void SetFchResetParams(FCH_RESET_INTERFACE *params)
 {
-	const struct device *dev = pcidev_path_on_root(SATA_DEVFN);
 	params->Xhci0Enable = CONFIG(STONEYRIDGE_XHCI_ENABLE);
-	if (dev && dev->enabled) {
+	if (is_dev_enabled(DEV_PTR(sata))) {
 		params->SataEnable = sb_sata_enable();
 		params->IdeEnable = sb_ide_enable();
 	} else {
@@ -39,10 +38,9 @@ void SetFchResetParams(FCH_RESET_INTERFACE *params)
 
 void SetFchEnvParams(FCH_INTERFACE *params)
 {
-	const struct device *dev = pcidev_path_on_root(SATA_DEVFN);
 	params->AzaliaController = AzEnable;
 	params->SataClass = CONFIG_STONEYRIDGE_SATA_MODE;
-	if (dev && dev->enabled) {
+	if (is_dev_enabled(DEV_PTR(sata))) {
 		params->SataEnable = is_sata_config();
 		params->IdeEnable = !params->SataEnable;
 		params->SataIdeMode = (CONFIG_STONEYRIDGE_SATA_MODE ==

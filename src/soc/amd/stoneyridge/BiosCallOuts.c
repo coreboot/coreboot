@@ -37,7 +37,6 @@ AGESA_STATUS agesa_fch_initenv(uint32_t Func, uintptr_t FchData,
 							void *ConfigPtr)
 {
 	AMD_CONFIG_PARAMS *StdHeader = ConfigPtr;
-	const struct device *dev = pcidev_path_on_root(SATA_DEVFN);
 
 	if (StdHeader->Func == AMD_INIT_ENV) {
 		FCH_DATA_BLOCK *FchParams_env = (FCH_DATA_BLOCK *)FchData;
@@ -52,7 +51,7 @@ AGESA_STATUS agesa_fch_initenv(uint32_t Func, uintptr_t FchData,
 
 		/* SATA configuration */
 		FchParams_env->Sata.SataClass = CONFIG_STONEYRIDGE_SATA_MODE;
-		if (dev && dev->enabled) {
+		if (is_dev_enabled(DEV_PTR(sata))) {
 			switch ((SATA_CLASS)CONFIG_STONEYRIDGE_SATA_MODE) {
 			case SataRaid:
 			case SataAhci:

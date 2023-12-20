@@ -125,8 +125,6 @@ void fch_init(void *chip_info)
 
 static void set_sb_aoac(struct aoac_devs *aoac)
 {
-	const struct device *sd, *sata;
-
 	aoac->ic0e = is_aoac_device_enabled(FCH_AOAC_DEV_I2C0);
 	aoac->ic1e = is_aoac_device_enabled(FCH_AOAC_DEV_I2C1);
 	aoac->ic2e = is_aoac_device_enabled(FCH_AOAC_DEV_I2C2);
@@ -137,10 +135,8 @@ static void set_sb_aoac(struct aoac_devs *aoac)
 	aoac->xhce = is_aoac_device_enabled(FCH_AOAC_DEV_USB3);
 
 	/* Rely on these being in sync with devicetree */
-	sd = pcidev_path_on_root(SD_DEVFN);
-	aoac->sd_e = sd && sd->enabled ? 1 : 0;
-	sata = pcidev_path_on_root(SATA_DEVFN);
-	aoac->st_e = sata && sata->enabled ? 1 : 0;
+	aoac->sd_e = is_dev_enabled(DEV_PTR(sdhci)) ? 1 : 0;
+	aoac->st_e = is_dev_enabled(DEV_PTR(sata)) ? 1 : 0;
 	aoac->espi = 1;
 }
 

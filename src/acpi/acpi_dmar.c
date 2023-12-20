@@ -26,7 +26,7 @@ void acpi_create_dmar(acpi_dmar_t *dmar, enum dmar_flags flags,
 	header->length = sizeof(acpi_dmar_t);
 	header->revision = get_acpi_table_revision(DMAR);
 
-	dmar->host_address_width = cpu_phys_address_size() - 1;
+	dmar->host_address_width = soc_phys_address_size() - 1;
 	dmar->flags = flags;
 
 	current = acpi_fill_dmar(current);

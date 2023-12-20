@@ -391,4 +391,16 @@ config DUMP_SMBIOS_TYPE17
 	bool "Dump part of SMBIOS type17 dimm information"
 	depends on GENERATE_SMBIOS_TABLES
 
+config SOC_PHYSICAL_ADDRESS_WIDTH
+	int
+	default 0
+	help
+	  On some System-on-Chip the physical address size available
+	  at the SoC level may be different than at the CPU
+	  level. This configuration can be use to set the physical
+	  address width (in bits) of the SoC.
+
+	  If not set, both CPU and SoC physical address width are
+	  assume to be the same.
+
 endif

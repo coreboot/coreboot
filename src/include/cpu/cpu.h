@@ -10,6 +10,7 @@ void cpu_initialize(void);
 uintptr_t cpu_get_lapic_addr(void);
 struct bus;
 unsigned int cpu_phys_address_size(void);
+unsigned int soc_phys_address_size(void);
 
 #if ENV_RAMSTAGE
 #define __cpu_driver __attribute__((used, __section__(".rodata.cpu_driver")))

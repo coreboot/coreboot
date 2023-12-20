@@ -60,6 +60,14 @@ unsigned int cpu_phys_address_size(void)
 	return 32;
 }
 
+unsigned int soc_phys_address_size(void)
+{
+	if (CONFIG_SOC_PHYSICAL_ADDRESS_WIDTH)
+		return CONFIG_SOC_PHYSICAL_ADDRESS_WIDTH;
+
+	return cpu_phys_address_size();
+}
+
 /*
  * Get processor id using cpuid eax=1
  * return value in EAX register

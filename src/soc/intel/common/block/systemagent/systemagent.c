@@ -313,7 +313,7 @@ void ssdt_set_above_4g_pci(const struct device *dev)
 	uint64_t touud;
 	sa_read_map_entry(pcidev_path_on_root(SA_DEVFN_ROOT), &sa_memory_map[SA_TOUUD_REG],
 			  &touud);
-	const uint64_t len = POWER_OF_2(cpu_phys_address_size()) - touud;
+	const uint64_t len = POWER_OF_2(soc_phys_address_size()) - touud;
 
 	const char *scope = acpi_device_path(dev);
 	acpigen_write_scope(scope);

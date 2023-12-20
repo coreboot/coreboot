@@ -578,7 +578,7 @@ void pci_domain_read_resources(struct device *dev)
 	/* Initialize 64-bit memory resource constraints above 4G. */
 	res = new_resource(dev, IOINDEX_SUBTRACTIVE(2, 0));
 	res->base  = 4ULL * GiB;
-	res->limit = (1ULL << cpu_phys_address_size()) - 1;
+	res->limit = (1ULL << soc_phys_address_size()) - 1;
 	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
 		     IORESOURCE_ASSIGNED;
 }

@@ -58,7 +58,7 @@ static void fsps_update_emmc_config(FSP_S_CONFIG *scfg,
 
 	/* Make sure that the FSP knows that the EMMC controller should be disabled when the
 	   corresponding MMIO device is disabled */
-	if (!DEV_PTR(emmc)->enabled)
+	if (!is_dev_enabled(DEV_PTR(emmc)))
 		val = SD_DISABLE;
 
 	scfg->emmc0_mode = val;

@@ -2865,7 +2865,6 @@ void final_registers(ramctr_timing *ctrl)
 
 	mchbar_setbits32(MC_INIT_STATE_G, 1 << 0);
 	mchbar_setbits32(MC_INIT_STATE_G, 1 << 7);
-	mchbar_write32(BANDTIMERS_SNB, 0xfa);
 
 	/* Find a populated channel */
 	FOR_ALL_POPULATED_CHANNELS

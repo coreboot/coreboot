@@ -135,17 +135,17 @@ vb2_error_t vb2ex_hwcrypto_digest_finalize(uint8_t *digest, uint32_t digest_size
 
 vb2_error_t vb2ex_hwcrypto_modexp(const struct vb2_public_key *key,
 				  uint8_t *inout,
-				  uint32_t *workbuf32, int exp)
+				  void *workbuf, size_t workbuf_size,
+				  int exp)
 {
-	/* workbuf32 is guaranteed to be a length of
-	 * 3 * key->arrsize * sizeof(uint32_t).
+	/*
 	 * Since PSP expects everything in LE and *inout is BE array,
 	 * we'll use workbuf for temporary buffer for endian conversion.
 	 */
 	struct mod_exp_params mod_exp_param;
 	unsigned int key_bytes = key->arrsize * sizeof(uint32_t);
-	uint32_t *sig_swapped = workbuf32;
-	uint32_t *output_buffer = &workbuf32[key->arrsize];
+	uint32_t *sig_swapped = workbuf;
+	uint32_t *output_buffer = &sig_swapped[key->arrsize];
 	uint32_t *inout_32 = (uint32_t *)inout;
 	uint32_t retval;
 	uint32_t i;
@@ -156,6 +156,9 @@ vb2_error_t vb2ex_hwcrypto_modexp(const struct vb2_public_key *key,
 	    key->sig_alg != VB2_SIG_RSA4096) {
 		return VB2_ERROR_EX_HWCRYPTO_UNSUPPORTED;
 	}
+
+	if ((void *)&output_buffer[key->arrsize] - workbuf > workbuf_size)
+		return VB2_ERROR_WORKBUF_SMALL;
 
 	for (i = 0; i < key->arrsize; i++)
 		sig_swapped[i] = swab32(inout_32[key->arrsize - i - 1]);

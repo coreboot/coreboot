@@ -2833,7 +2833,10 @@ void final_registers(ramctr_timing *ctrl)
 	}
 
 	mchbar_write32(PM_BW_LIMIT_CONFIG, 0x5f7003ff);
-	mchbar_write32(PM_DLL_CONFIG, 0x00073000 | ctrl->mdll_wake_delay);
+	if (IS_SANDY_CPU(ctrl->cpu))
+		mchbar_write32(PM_DLL_CONFIG, 0x000330f0);
+	else
+		mchbar_write32(PM_DLL_CONFIG, 0x00073000 | ctrl->mdll_wake_delay);
 
 	FOR_ALL_CHANNELS {
 		switch (ctrl->rankmap[channel]) {

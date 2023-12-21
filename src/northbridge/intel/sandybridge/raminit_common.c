@@ -2809,8 +2809,8 @@ void final_registers(ramctr_timing *ctrl)
 	int t3_ns;
 	u32 r32;
 
-	/* FIXME: This register only exists on Ivy Bridge */
-	mchbar_write32(WMM_READ_CONFIG, 0x46);
+	if (IS_IVY_CPU(ctrl->cpu))
+		mchbar_write32(WMM_READ_CONFIG, 0x46);
 
 	FOR_ALL_CHANNELS {
 		union tc_othp_reg tc_othp = {

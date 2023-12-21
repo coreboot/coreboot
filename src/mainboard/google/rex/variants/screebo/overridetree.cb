@@ -224,8 +224,8 @@ chip soc/intel/meteorlake
 				# TODO: below values are initial reference values only
 				register "policies.critical" = "{
 						[0] = DPTF_CRITICAL(TEMP_SENSOR_0, 90, SHUTDOWN),
-						[1] = DPTF_CRITICAL(TEMP_SENSOR_1, 90, SHUTDOWN),
-						[2] = DPTF_CRITICAL(TEMP_SENSOR_2, 95, SHUTDOWN),
+						[1] = DPTF_CRITICAL(TEMP_SENSOR_1, 70, SHUTDOWN),
+						[2] = DPTF_CRITICAL(TEMP_SENSOR_2, 80, SHUTDOWN),
 				}"
 
 				## Power Limits Control

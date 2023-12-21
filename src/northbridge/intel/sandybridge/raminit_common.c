@@ -171,7 +171,7 @@ void dram_timing_regs(ramctr_timing *ctrl)
 		.tXPDLL  = MIN(ctrl->tXPDLL, 31),
 		.tXP     = MIN(ctrl->tXP, 7),
 		.tAONPD  = ctrl->tAONPD,
-		.tCPDED  = 2,
+		.tCPDED  = 1,
 		.tPRPDEN = 1,
 	};
 
@@ -2816,7 +2816,10 @@ void final_registers(ramctr_timing *ctrl)
 		union tc_othp_reg tc_othp = {
 			.raw = mchbar_read32(TC_OTHP_ch(channel)),
 		};
-		tc_othp.tCPDED = 1;
+		if (IS_SANDY_CPU(ctrl->cpu) && (ctrl->cpu & 0xf) < SNB_STEP_D0)
+			tc_othp.tCPDED = 2;
+		else
+			tc_othp.tCPDED = 1;
 		mchbar_write32(TC_OTHP_ch(channel), tc_othp.raw);
 
 		/* 64 DCLKs until idle, decision per rank */

@@ -667,13 +667,19 @@ static void write_mrreg(ramctr_timing *ctrl, int channel, int slotrank, int reg,
 }
 
 /* Obtain optimal power down mode for current configuration */
-static enum power_down_mode get_power_down_mode(ramctr_timing *ctrl)
+static enum power_down_mode get_power_down_mode(ramctr_timing *ctrl, int channel)
 {
+	int slotrank;
+
 	if (ctrl->tXP > 8)
 		return PDM_NONE;
 
 	if (ctrl->tXPDLL > 32)
 		return PDM_PPD;
+
+	FOR_ALL_POPULATED_RANKS
+		if (!ctrl->info.dimm[channel][slotrank >> 1].flags.dll_off_mode)
+			return PDM_APD_PPD;
 
 	if (CONFIG(RAMINIT_ALWAYS_ALLOW_DLL_OFF) || get_platform_type() == PLATFORM_MOBILE)
 		return PDM_DLL_OFF;
@@ -681,12 +687,12 @@ static enum power_down_mode get_power_down_mode(ramctr_timing *ctrl)
 	return PDM_APD_PPD;
 }
 
-static u32 make_mr0(ramctr_timing *ctrl, u8 rank)
+static u32 make_mr0(ramctr_timing *ctrl, int channel, u8 rank)
 {
 	u16 mr0reg, mch_cas, mch_wr;
 	static const u8 mch_wr_t[12] = { 1, 2, 3, 4, 0, 5, 0, 6, 0, 7, 0, 0 };
 
-	const enum power_down_mode power_down = get_power_down_mode(ctrl);
+	const enum power_down_mode power_down = get_power_down_mode(ctrl, channel);
 
 	const bool slow_exit = power_down == PDM_DLL_OFF || power_down == PDM_APD_DLL_OFF;
 
@@ -715,7 +721,7 @@ static u32 make_mr0(ramctr_timing *ctrl, u8 rank)
 
 static void dram_mr0(ramctr_timing *ctrl, u8 rank, int channel)
 {
-	write_mrreg(ctrl, channel, rank, 0, make_mr0(ctrl, rank));
+	write_mrreg(ctrl, channel, rank, 0, make_mr0(ctrl, channel, rank));
 }
 
 static odtmap get_ODT(ramctr_timing *ctrl, int channel)
@@ -2818,13 +2824,13 @@ void final_registers(ramctr_timing *ctrl)
 		};
 		tc_othp.tCPDED = 1;
 		mchbar_write32(TC_OTHP_ch(channel), tc_othp.raw);
-	}
 
-	/* 64 DCLKs until idle, decision per rank */
-	mchbar_write32(PM_PDWN_CONFIG, get_power_down_mode(ctrl) << 8 | 64);
+		/* 64 DCLKs until idle, decision per rank */
+		r32 = get_power_down_mode(ctrl, channel) << 8 | 64;
+		mchbar_write32(PM_PDWN_CONFIG_ch(channel), r32);
 
-	FOR_ALL_CHANNELS
 		mchbar_write32(PM_TRML_M_CONFIG_ch(channel), 0x00000aaa);
+	}
 
 	mchbar_write32(PM_BW_LIMIT_CONFIG, 0x5f7003ff);
 	mchbar_write32(PM_DLL_CONFIG, 0x00073000 | ctrl->mdll_wake_delay);

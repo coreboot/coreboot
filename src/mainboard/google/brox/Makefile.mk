@@ -10,6 +10,7 @@ romstage-y += romstage.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += mainboard.c
 ramstage-y += ec.c
+ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_HDA_VERB) += hda_verb.c
 
 BASEBOARD_DIR:=$(call strip_quotes,$(CONFIG_BASEBOARD_DIR))
 

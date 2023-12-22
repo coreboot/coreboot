@@ -2,4 +2,4 @@
 host=review.coreboot.org
 port=29418
 project=coreboot
-defaultbranch=master
+defaultbranch=main

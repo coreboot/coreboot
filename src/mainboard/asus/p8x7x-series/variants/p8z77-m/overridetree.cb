@@ -23,16 +23,12 @@ chip northbridge/intel/sandybridge
 			}"
 
 			device ref pcie_rp1 on  end	# PCIe x4 slot
-			device ref pcie_rp2 off end
-			device ref pcie_rp3 off end
-			device ref pcie_rp4 off end
 			device ref pcie_rp5 on  end	# PCIe x1 slot
 			device ref pcie_rp6 on		# RTL8111F GbE NIC
 				subsystemid 0x1849 0x1e1a
 				device pci 00.0 on end  # make onboard
 			end
 			device ref pcie_rp7 on  end	# PCI slot via ASM1083
-			device ref pcie_rp8 off end
 			device ref lpc on
 				chip superio/nuvoton/nct6779d
 					device pnp 2e.1 off end		# Parallel

@@ -15,7 +15,6 @@ chip northbridge/intel/sandybridge
 	# from runtime code)
 
 	device domain 0 on
-		device ref host_bridge on  end
 		device ref peg10 on  end # PCIEX16_1
 		device ref igd on  end
 
@@ -28,30 +27,10 @@ chip northbridge/intel/sandybridge
 			register "xhci_switchable_ports"    = "0x0000000f"
 
 			device ref xhci on  end
-			device ref mei1 on  end
-			device ref mei2 off end
-			device ref me_ide_r off end
-			device ref me_kt off end
-			device ref gbe off end
 			device ref ehci2 on  end
 			device ref hda on  end
-
-			device ref pcie_rp1 off end
-			device ref pcie_rp2 off end
-			device ref pcie_rp3 off end
-			device ref pcie_rp4 off end
-			device ref pcie_rp5 off end
-			device ref pcie_rp6 off end
-			device ref pcie_rp7 off end
-			device ref pcie_rp8 off end
-
 			device ref ehci1 on  end
-			device ref pci_bridge off end
-			device ref lpc on end
 			device ref sata1 on  end # SATA (AHCI)
-			device ref smbus on  end
-			device ref sata2 off end # SATA (Legacy)
-			device ref thermal off end
 		end
 	end
 end

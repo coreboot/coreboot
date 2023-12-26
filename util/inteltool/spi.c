@@ -26,6 +26,22 @@ static const io_register_t pch_bios_cntl_registers[] = {
 	{ 0x6, 2, "reserved" },
 };
 
+static const io_register_t adl_pch_bios_cntl_registers[] = {
+	{ 0x0, 1, "WPD - Write Protect Disable" },
+	{ 0x1, 1, "LE - Lock Enable" },
+	{ 0x2, 1, "ESPI - eSPI Enable Pin Strap" },
+	{ 0x3, 1, "Reserved" },
+	{ 0x4, 1, "TS - Top Swap" },
+	{ 0x5, 1, "EISS - Enable InSMM.STS" },
+	{ 0x6, 1, "BBS - Boot BIOS Strap" },
+	{ 0x7, 1, "BILD - BIOS Interface Lock-Down" },
+	{ 0x8, 1, "BWPDS - BIOS Write Protect Disable Status" },
+	{ 0x9, 1, "Reserved" },
+	{ 0x10, 1, "BWRS - BIOS Write Status" },
+	{ 0x11, 1, "BWRE - BIOS Write Reporting (Async-SMI)" },
+	{ 0x12, 19, "Reserved" },
+};
+
 #define ICH9_SPIBAR 0x3800
 #define ICH78_SPIBAR 0x3020
 
@@ -78,6 +94,7 @@ static const io_register_t ich7_spi_bar_registers[] = {
 	{ 0x64, 4, "PBR1 Protected BIOS Range 1" },
 	{ 0x68, 4, "PBR2 Protected BIOS Range 2" },
 };
+
 
 static int print_bioscntl(struct pci_dev *sb)
 {
@@ -209,6 +226,11 @@ static int print_bioscntl(struct pci_dev *sb)
 		bios_cntl = pci_read_byte(sb, 0xdc);
 		bios_cntl_register = pch_bios_cntl_registers;
 		size = ARRAY_SIZE(pch_bios_cntl_registers);
+		break;
+	case PCI_DEVICE_ID_INTEL_ADL_N:
+		bios_cntl = pci_read_byte(sb, 0xdc);
+		bios_cntl_register = adl_pch_bios_cntl_registers;
+		size = ARRAY_SIZE(adl_pch_bios_cntl_registers);
 		break;
 	default:
 		printf("Error: Dumping SPI on this southbridge is not (yet) supported.\n");
@@ -362,6 +384,7 @@ static int print_spibar(struct pci_dev *sb) {
 	case PCI_DEVICE_ID_INTEL_ICH4:
 	case PCI_DEVICE_ID_INTEL_ICH4M:
 	case PCI_DEVICE_ID_INTEL_ICH5:
+	case PCI_DEVICE_ID_INTEL_ADL_N:
 		printf("This southbridge does not have RCBA.\n");
 		return 1;
 	default:

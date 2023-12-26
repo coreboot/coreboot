@@ -20,6 +20,7 @@
 #include "gpio_names/emmitsburg.h"
 #include "gpio_names/sunrise.h"
 #include "gpio_names/tigerlake.h"
+#include "gpio_names/alderlake_n.h"
 #include "gpio_names/alderlake_h.h"
 #include "gpio_names/alderlake_p.h"
 #include "gpio_names/elkhartlake.h"
@@ -241,6 +242,10 @@ const struct gpio_community *const *get_gpio_communities(struct pci_dev *const s
 		*community_count = ARRAY_SIZE(alderlake_pch_p_communities);
 		*pad_stepping = 16;
 		return alderlake_pch_p_communities;
+	case PCI_DEVICE_ID_INTEL_ADL_N:
+		*community_count = ARRAY_SIZE(alderlake_pch_n_communities);
+		*pad_stepping = 16;
+		return alderlake_pch_n_communities;
 	case PCI_DEVICE_ID_INTEL_JSL:
 		*community_count = ARRAY_SIZE(jasperlake_pch_communities);
 		*pad_stepping = 16;

@@ -309,6 +309,7 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_ADL_P		0x5182
 #define PCI_DEVICE_ID_INTEL_ADL_M		0x5187
 #define PCI_DEVICE_ID_INTEL_RPL_P		0x519d
+#define PCI_DEVICE_ID_INTEL_ADL_N		0x5481
 
 #define PCI_DEVICE_ID_INTEL_EHL			0x4b00
 #define PCI_DEVICE_ID_INTEL_JSL			0x4d87
@@ -388,6 +389,9 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_CORE_ADL_ID_P_6_8	0x4641 /* Alderlake P 6+8 */
 #define PCI_DEVICE_ID_INTEL_CORE_ADL_ID_P_4_8	0x4621 /* Alderlake P 4+8 */
 #define PCI_DEVICE_ID_INTEL_CORE_ADL_ID_P_2_8	0x4601 /* Alderlake P 2+8 */
+#define PCI_DEVICE_ID_INTEL_CORE_ADL_ID_N_0_8	0x4617 /* Alderlake N 0+8 */
+#define PCI_DEVICE_ID_INTEL_CORE_ADL_ID_N_0_4	0x461b /* Alderlake N 0+4 */
+#define PCI_DEVICE_ID_INTEL_CORE_ADL_ID_N_0_4_1	0x461c /* Alderlake N 0+4 */
 #define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_8_6	0xa706 /* Raptorlake H 8+6 */
 
 /* Intel GPUs */
@@ -469,6 +473,9 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_ADL_S_GT1_2		0x4682
 #define PCI_DEVICE_ID_INTEL_ADL_S_GT1_3		0x4690
 #define PCI_DEVICE_ID_INTEL_ADL_S_GT1_4		0x4692
+#define PCI_DEVICE_ID_INTEL_ADL_N_UHD		0x46D0
+#define PCI_DEVICE_ID_INTEL_ADL_N_UHD_2		0x46D1
+#define PCI_DEVICE_ID_INTEL_ADL_N_UHD_3		0x46D2
 #define PCI_DEVICE_ID_INTEL_RPL_H_IRIS_XE	0xa7a0
 
 #if !defined(__DARWIN__) && !defined(__FreeBSD__)

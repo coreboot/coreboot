@@ -148,6 +148,9 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc, const char *dump_s
 	case PCI_DEVICE_ID_INTEL_82Q965:
 	case PCI_DEVICE_ID_INTEL_ATOM_DXXX:
 	case PCI_DEVICE_ID_INTEL_ATOM_NXXX:
+	case PCI_DEVICE_ID_INTEL_CORE_ADL_ID_N_0_8:
+	case PCI_DEVICE_ID_INTEL_CORE_ADL_ID_N_0_4:
+	case PCI_DEVICE_ID_INTEL_CORE_ADL_ID_N_0_4_1:
 		mchbar_phys = pci_read_long(nb, 0x48);
 
 		/* Test if bit 0 of the MCHBAR reg is 1 to enable memory reads.

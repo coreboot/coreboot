@@ -180,6 +180,12 @@ static const struct {
 	  "12th generation (Alder Lake P family) Core Processor"},
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_ADL_ID_P_2_8,
 	  "12th generation (Alder Lake P family) Core Processor"},
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_ADL_ID_N_0_8,
+	  "12th generation (Alder Lake N family) Intel Processor"},
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_ADL_ID_N_0_4,
+	  "12th generation (Alder Lake N family) Intel Processor"},
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_ADL_ID_N_0_4_1,
+	  "12th generation (Alder Lake N family) Intel Processor"},
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_8_6,
 	  "13th generation (Raptor Lake H family) Core Processor"},
 
@@ -416,6 +422,7 @@ static const struct {
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_C266, "C266" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_EHL, "Elkhart Lake" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_JSL, "Jasper Lake" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ADL_N, "Alder Lake-N"},
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_RPL_P, "Raptor Lake" },
 
 	/* Intel GPUs */
@@ -573,7 +580,11 @@ static const struct {
 	  "Intel(R) AlderLake-S GT1" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ADL_S_GT1_4,
 	  "Intel(R) AlderLake-S GT1" },
-	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_UHD_GRAPHICS,
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ADL_N_UHD,
+	  "Intel(R) UHD Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ADL_N_UHD_2,
+	  "Intel(R) UHD Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ADL_N_UHD_3,
 	  "Intel(R) UHD Graphics" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_RPL_H_IRIS_XE,
 	  "Intel(R) Iris Xe Graphics [RPL-P]" },

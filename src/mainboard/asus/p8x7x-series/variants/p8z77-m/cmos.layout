@@ -51,6 +51,11 @@ entries
 #
 424          1       e       1        usb3_streams
 
+# audio_panel_type
+# HD Audio or AC'97
+#
+425          1       e       9        audio_panel_type
+
 # -----------------------------------------------------------------
 # Sandy/Ivy Bridge MRC Scrambler Seed values
 # note: MUST NOT be covered by checksum!
@@ -127,6 +132,10 @@ enumerations
 8     1     Enable
 8     2     Auto
 8     3     SmartAuto
+
+# audio_panel_type
+9     0     HDA
+9     1     AC97
 
 # -----------------------------------------------------------------
 # <startBit[must be byte-aligned]> <endBit[must be byte aligned]>

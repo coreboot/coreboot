@@ -348,6 +348,9 @@ static int marshal_cr50_vendor_command(struct obuf *ob, const void *command_body
 	case TPM2_CR50_SUB_CMD_RESET_EC:
 		rc |= obuf_write_be16(ob, *sub_command);
 		break;
+	case TPM2_CR50_SUB_CMD_GET_FACTORY_CONFIG:
+		rc |= obuf_write_be16(ob, *sub_command);
+		break;
 	default:
 		/* Unsupported subcommand. */
 		printk(BIOS_WARNING, "Unsupported cr50 subcommand: 0x%04x\n",
@@ -581,6 +584,8 @@ static int unmarshal_vendor_command(struct ibuf *ib,
 		return ibuf_read_be8(ib, &vcr->boot_mode);
 	case TPM2_CR50_SUB_CMD_RESET_EC:
 		break;
+	case TPM2_CR50_SUB_CMD_GET_FACTORY_CONFIG:
+		return ibuf_read_be64(ib, &vcr->factory_config);
 	default:
 		printk(BIOS_ERR,
 		       "%s:%d - unsupported vendor command %#04x!\n",

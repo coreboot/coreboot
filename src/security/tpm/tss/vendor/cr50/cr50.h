@@ -17,6 +17,7 @@
 #define TPM2_CR50_SUB_CMD_TPM_MODE (40)
 #define TPM2_CR50_SUB_CMD_GET_BOOT_MODE (52)
 #define TPM2_CR50_SUB_CMD_RESET_EC (53)
+#define TPM2_CR50_SUB_CMD_GET_FACTORY_CONFIG (68)
 
 /* Cr50 vendor-specific error codes. */
 #define VENDOR_RC_ERR              0x00000500
@@ -104,5 +105,13 @@ tpm_result_t tlcl_cr50_immediate_reset(uint16_t timeout_ms);
  * On Success, this function invokes halt() and does not return.
  */
 tpm_result_t tlcl_cr50_reset_ec(void);
+
+/**
+ * TPM command to get the factory config.
+ *
+ * Returns TPM_* for errors.
+ * On Success, TPM_SUCCESS if factory config is successfully retrieved.
+ */
+tpm_result_t tlcl_cr50_get_factory_config(uint64_t *factory_config);
 
 #endif /* CR50_TSS_STRUCTURES_H_ */

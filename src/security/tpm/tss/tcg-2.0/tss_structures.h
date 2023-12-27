@@ -352,6 +352,11 @@ struct vendor_command_response {
 		uint8_t recovery_button_state;
 		uint8_t tpm_mode;
 		uint8_t boot_mode;
+		/*
+		 * bits 63..8 : reserved
+		 * bits 7..0 : factory config
+		 */
+		uint64_t factory_config;
 	};
 };
 

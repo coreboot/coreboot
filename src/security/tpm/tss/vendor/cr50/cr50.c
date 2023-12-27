@@ -176,3 +176,31 @@ tpm_result_t tlcl_cr50_reset_ec(void)
 
 	return TPM_SUCCESS;
 }
+
+tpm_result_t tlcl_cr50_get_factory_config(uint64_t *factory_config)
+{
+	struct tpm2_response *response;
+	uint16_t factory_config_command = TPM2_CR50_SUB_CMD_GET_FACTORY_CONFIG;
+	*factory_config = 0;
+
+	response = tpm_process_command(TPM2_CR50_VENDOR_COMMAND, &factory_config_command);
+
+	if (!response)
+		return TPM_IOERROR;
+
+	/* Explicitly inform caller when command is not supported */
+	if (response->hdr.tpm_code == VENDOR_RC_NO_SUCH_COMMAND ||
+	    response->hdr.tpm_code == VENDOR_RC_NO_SUCH_SUBCOMMAND)
+		return TPM_CB_NO_SUCH_COMMAND;
+
+	/* Unexpected return code from TPM */
+	if (response->hdr.tpm_code)
+		return TPM_IOERROR;
+
+	/* TPM command completed without error */
+	*factory_config = response->vcr.factory_config;
+
+	printk(BIOS_INFO, "Reading factory config = %016" PRIX64 "\n", *factory_config);
+
+	return TPM_SUCCESS;
+}

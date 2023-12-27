@@ -93,6 +93,8 @@ struct smm_runtime {
 #endif
 	uintptr_t save_state_top[CONFIG_MAX_CPUS];
 	int smm_log_level;
+	uintptr_t smmstore_com_buffer_base;
+	size_t smmstore_com_buffer_size;
 } __packed;
 
 struct smm_module_params {
@@ -230,5 +232,7 @@ bool smm_pci_resource_store_fill_resources(struct smm_pci_resource_info *slots, 
 					   const struct device **devices, size_t num_devices);
 
 void smm_pci_resource_store_init(struct smm_runtime *smm_runtime);
+
+void smm_get_smmstore_com_buffer(uintptr_t *base, size_t *size);
 
 #endif /* CPU_X86_SMM_H */

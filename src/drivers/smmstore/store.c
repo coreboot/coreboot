@@ -1,11 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <boot_device.h>
-#include <fmap.h>
-#include <fmap_config.h>
 #include <commonlib/helpers.h>
 #include <commonlib/region.h>
 #include <console/console.h>
+#include <cpu/x86/smm.h>
+#include <fmap.h>
+#include <fmap_config.h>
 #include <smmstore.h>
 #include <types.h>
 
@@ -283,14 +284,10 @@ int smmstore_clear_region(void)
 
 /* Implementation of Version 2 */
 
-static bool store_initialized;
 static struct region_device mdev_com_buf;
 
 static int smmstore_rdev_chain(struct region_device *rdev)
 {
-	if (!store_initialized)
-		return -1;
-
 	return rdev_chain_full(rdev, &mdev_com_buf);
 }
 
@@ -303,12 +300,10 @@ int smmstore_init(void *buf, size_t len)
 	if (!buf || len < SMM_BLOCK_SIZE)
 		return -1;
 
-	if (store_initialized)
+	if (smm_points_to_smram(buf, len))
 		return -1;
 
 	rdev_chain_mem_rw(&mdev_com_buf, buf, len);
-
-	store_initialized = true;
 
 	return 0;
 }

@@ -78,24 +78,19 @@ static uint32_t smmstorev1_exec(uint8_t command, void *param)
 static uint32_t smmstorev2_exec(uint8_t command, void *param)
 {
 	uint32_t ret = SMMSTORE_RET_FAILURE;
+	static bool initialized = false;
+
+	if (!initialized) {
+		uintptr_t base;
+		size_t size;
+		smm_get_smmstore_com_buffer(&base, &size);
+
+		if (smmstore_init((void *)base, size))
+			return SMMSTORE_RET_FAILURE;
+		initialized = true;
+	}
 
 	switch (command) {
-	case SMMSTORE_CMD_INIT: {
-		printk(BIOS_DEBUG, "Init SMM store\n");
-		struct smmstore_params_init *params = param;
-
-		if (range_check(params, sizeof(*params)) != 0)
-			break;
-
-		void *buf = (void *)(uintptr_t)params->com_buffer;
-
-		if (range_check(buf, params->com_buffer_size) != 0)
-			break;
-
-		if (smmstore_init(buf, params->com_buffer_size) == 0)
-			ret = SMMSTORE_RET_SUCCESS;
-		break;
-	}
 	case SMMSTORE_CMD_RAW_READ: {
 		printk(BIOS_DEBUG, "Raw read from SMM store, param = %p\n", param);
 		struct smmstore_params_raw_read *params = param;

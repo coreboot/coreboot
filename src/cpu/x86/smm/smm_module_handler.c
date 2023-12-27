@@ -60,6 +60,12 @@ int get_console_loglevel(void)
 }
 #endif
 
+void smm_get_smmstore_com_buffer(uintptr_t *base, size_t *size)
+{
+	*base = smm_runtime.smmstore_com_buffer_base;
+	*size = smm_runtime.smmstore_com_buffer_size;
+}
+
 void smm_get_cbmemc_buffer(void **buffer_out, size_t *size_out)
 {
 	*buffer_out = smm_runtime.cbmemc;

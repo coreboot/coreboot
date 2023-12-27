@@ -10,6 +10,7 @@
 #include <device/device.h>
 #include <device/mmio.h>
 #include <rmodule.h>
+#include <smmstore.h>
 #include <stdio.h>
 #include <string.h>
 #include <types.h>
@@ -350,6 +351,22 @@ static void setup_smihandler_params(struct smm_runtime *mod_params,
 
 	if (CONFIG(SMM_PCI_RESOURCE_STORE))
 		smm_pci_resource_store_init(mod_params);
+
+	if (CONFIG(SMMSTORE_V2)) {
+		struct smmstore_params_info info;
+		if (smmstore_get_info(&info) < 0) {
+			printk(BIOS_INFO, "SMMSTORE: Failed to get meta data\n");
+			return;
+		}
+
+		void *ptr = cbmem_add(CBMEM_ID_SMM_COMBUFFER, info.block_size);
+		if (!ptr) {
+			printk(BIOS_ERR, "SMMSTORE: Failed to add com buffer\n");
+			return;
+		}
+		mod_params->smmstore_com_buffer_base = (uintptr_t)ptr;
+		mod_params->smmstore_com_buffer_size = info.block_size;
+	}
 }
 
 static void print_region(const char *name, const struct region region)

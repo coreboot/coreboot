@@ -124,25 +124,9 @@ additional calling arguments are passed via `%ebx`.
 **NOTE**: The size of the struct entries are in the native word size of
 smihandler. This means 32 bits in almost all cases.
 
-#### - SMMSTORE_CMD_INIT = 4
+#### - SMMSTORE_CMD_INIT_DEPRECATED = 4
 
-This installs the communication buffer to use and thus enables the
-SMMSTORE handler. This command can only be executed once and is done
-by the firmware. Calling this function at runtime has no effect.
-
-The additional parameter buffer `%ebx` contains a pointer to the
-following struct:
-
-```C
-struct smmstore_params_init {
-	uint32_t com_buffer;
-	uint32_t com_buffer_size;
-} __packed;
-```
-
-INPUT:
-- `com_buffer`: Physical address of the communication buffer (CBMEM)
-- `com_buffer_size`: Size in bytes of the communication buffer
+Unused, returns SMMSTORE_REG_UNSUPPORTED.
 
 #### - SMMSTORE_CMD_RAW_READ = 5
 

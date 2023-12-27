@@ -26,6 +26,12 @@ void mainboard_prepare_cr50_reset(void);
 void cbmem_add_vpd_calibration_data(void);
 void chromeos_set_me_hash(u32*, int);
 void chromeos_set_ramoops(void *ram_oops, size_t size);
+/*
+ * The factory config space is a one-time programmable info page.
+ * For the unprovisioned one, the read will be 0x0.
+ * Return `-1` in case of error.
+ */
+int64_t chromeos_get_factory_config(void);
 
 /*
  * Declaration for mainboards to use to generate ACPI-specific ChromeOS needs.

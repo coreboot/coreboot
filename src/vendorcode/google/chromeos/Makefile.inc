@@ -9,6 +9,7 @@ ramstage-$(CONFIG_CHROMEOS_DISABLE_PLATFORM_HIERARCHY_ON_RESUME) += tpm2.c
 ramstage-$(CONFIG_HAVE_REGULATORY_DOMAIN) += wrdd.c
 ramstage-$(CONFIG_USE_SAR) += sar.c
 ramstage-$(CONFIG_TPM_GOOGLE) += cr50_enable_update.c
+ramstage-$(CONFIG_TPM_GOOGLE) += tpm_factory_config.c
 
 romstage-$(CONFIG_CHROMEOS_CSE_BOARD_RESET_OVERRIDE) += cse_board_reset.c
 ramstage-$(CONFIG_CHROMEOS_CSE_BOARD_RESET_OVERRIDE) += cse_board_reset.c

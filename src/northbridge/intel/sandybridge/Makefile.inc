@@ -27,6 +27,7 @@ romstage-y += raminit_native.c
 romstage-y += raminit_tables.c
 else
 romstage-y += raminit_mrc.c
+romstage-y += mrc_wrapper.S
 cbfs-files-y += mrc.bin
 mrc.bin-file := $(call strip_quotes,$(CONFIG_MRC_FILE))
 mrc.bin-position := 0xfffa0000

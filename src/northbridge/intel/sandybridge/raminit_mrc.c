@@ -28,6 +28,7 @@
 #include <security/vboot/vboot_common.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <memory_info.h>
+#include <mode_switch.h>
 
 /* Management Engine is in the southbridge */
 #include <southbridge/intel/bd82x6x/me.h>
@@ -49,13 +50,17 @@
 
 #define MRC_CACHE_VERSION 0
 
+/* Assembly functions: */
+void mrc_wrapper(void *func_ptr, uint32_t arg1);
+
 static void save_mrc_data(struct pei_data *pei_data)
 {
 	u16 c1, c2, checksum;
 
 	/* Save the MRC S3 restore data to cbmem */
-	mrc_cache_stash_data(MRC_TRAINING_DATA, MRC_CACHE_VERSION, pei_data->mrc_output,
-			pei_data->mrc_output_len);
+	mrc_cache_stash_data(MRC_TRAINING_DATA, MRC_CACHE_VERSION,
+			     (void *)(uintptr_t)pei_data->mrc_output_ptr,
+			     pei_data->mrc_output_len);
 
 	/* Save the MRC seed values to CMOS */
 	cmos_write32(pei_data->scrambler_seed, CMOS_OFFSET_MRC_SEED);
@@ -81,7 +86,7 @@ static void prepare_mrc_cache(struct pei_data *pei_data)
 	size_t mrc_size;
 
 	/* Preset just in case there is an error */
-	pei_data->mrc_input = NULL;
+	pei_data->mrc_input_ptr = 0;
 	pei_data->mrc_input_len = 0;
 
 	/* Read scrambler seeds from CMOS */
@@ -108,18 +113,18 @@ static void prepare_mrc_cache(struct pei_data *pei_data)
 		return;
 	}
 
-	pei_data->mrc_input = mrc_cache_current_mmap_leak(MRC_TRAINING_DATA,
+	pei_data->mrc_input_ptr = (uintptr_t)mrc_cache_current_mmap_leak(MRC_TRAINING_DATA,
 							  MRC_CACHE_VERSION,
 							  &mrc_size);
-	if (!pei_data->mrc_input) {
+	if (!pei_data->mrc_input_ptr) {
 		/* Error message printed in find_current_mrc_cache */
 		return;
 	}
 
 	pei_data->mrc_input_len = mrc_size;
 
-	printk(BIOS_DEBUG, "%s: at %p, size %zx\n", __func__,
-	       pei_data->mrc_input, mrc_size);
+	printk(BIOS_DEBUG, "%s: at 0x%x, size %zx\n", __func__,
+	       pei_data->mrc_input_ptr, mrc_size);
 }
 
 /**
@@ -129,7 +134,7 @@ static void prepare_mrc_cache(struct pei_data *pei_data)
  */
 static void sdram_initialize(struct pei_data *pei_data)
 {
-	int (*entry)(struct pei_data *pei_data) __attribute__((regparm(1)));
+	int (*entry)(struct pei_data *pei_data);
 
 	/* Wait for ME to be ready */
 	intel_early_me_init();
@@ -144,19 +149,19 @@ static void sdram_initialize(struct pei_data *pei_data)
 	prepare_mrc_cache(pei_data);
 
 	/* If MRC data is not found we cannot continue S3 resume. */
-	if (pei_data->boot_mode == 2 && !pei_data->mrc_input) {
+	if (pei_data->boot_mode == 2 && !pei_data->mrc_input_ptr) {
 		printk(BIOS_DEBUG, "Giving up in %s: No MRC data\n", __func__);
 		system_reset();
 	}
 
 	/* Pass console handler in pei_data */
-	pei_data->tx_byte = do_putchar;
+	pei_data->tx_byte_ptr = (uintptr_t)do_putchar;
 
 	/* Locate and call UEFI System Agent binary. */
 	entry = cbfs_map("mrc.bin", NULL);
 	if (entry) {
 		int rv;
-		rv = entry(pei_data);
+		rv = protected_mode_call_2arg(mrc_wrapper, (uintptr_t)entry, (uintptr_t)pei_data);
 		if (rv) {
 			switch (rv) {
 			case -1:
@@ -403,7 +408,7 @@ void perform_raminit(int s3resume)
 
 	/* Sanity check mrc_var location by verifying a known field */
 	mrc_var = (void *)DCACHE_RAM_MRC_VAR_BASE;
-	if (mrc_var->tx_byte == (uintptr_t)pei_data.tx_byte) {
+	if (mrc_var->tx_byte == pei_data.tx_byte_ptr) {
 		printk(BIOS_DEBUG, "MRC_VAR pool occupied [%08x,%08x]\n",
 		       mrc_var->pool_base, mrc_var->pool_base + mrc_var->pool_used);
 

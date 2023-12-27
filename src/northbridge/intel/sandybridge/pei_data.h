@@ -50,10 +50,10 @@ struct pei_data
 	uint32_t scrambler_seed;
 	uint32_t scrambler_seed_s3;
 	/* Data read from flash and passed into MRC */
-	unsigned char *mrc_input;
+	uint32_t mrc_input_ptr;
 	unsigned int mrc_input_len;
 	/* Data from MRC that should be saved to flash */
-	unsigned char *mrc_output;
+	uint32_t mrc_output_ptr;
 	unsigned int mrc_output_len;
 	/*
 	 * Max frequency DDR3 could be ran at. Could be one of four values:
@@ -87,7 +87,9 @@ struct pei_data
 	 * which DIMMs should use the SPD from spd_data[0].
 	 */
 	uint8_t spd_data[4][256];
-	tx_byte_func tx_byte;
+	/* 32 bit pointer to tx_byte_func */
+	uint32_t tx_byte_ptr;
+
 	int ddr3lv_support;
 	/*
 	 * pcie_init needs to be set to 1 to have the system agent initialize PCIe.

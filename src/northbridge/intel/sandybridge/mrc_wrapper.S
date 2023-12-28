@@ -25,3 +25,13 @@ mrc_wrapper:
 	mov	%ebp, %esp
 	popal
 	ret
+
+	/*
+	 * Callback for MRC to print a character on the console.
+	 * As MRC is x86_32 call into long mode and use the x86_64
+	 * function do_putchar to print to console.
+	 */
+
+#include <src/cpu/x86/64bit/prot2long.inc>
+
+prot2lm_wrapper do_putchar

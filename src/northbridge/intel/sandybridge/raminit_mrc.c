@@ -52,6 +52,7 @@
 
 /* Assembly functions: */
 void mrc_wrapper(void *func_ptr, uint32_t arg1);
+void __prot2lm_do_putchar(uint8_t byte);
 
 static void save_mrc_data(struct pei_data *pei_data)
 {
@@ -154,8 +155,14 @@ static void sdram_initialize(struct pei_data *pei_data)
 		system_reset();
 	}
 
-	/* Pass console handler in pei_data */
-	pei_data->tx_byte_ptr = (uintptr_t)do_putchar;
+	/*
+	 * Pass console handler in pei_data. On x86_64 provide a wrapper around
+	 * do_putchar that switches to long mode before calling do_putchar.
+	 */
+	if (ENV_X86_64)
+		pei_data->tx_byte_ptr = (uintptr_t)__prot2lm_do_putchar;
+	else
+		pei_data->tx_byte_ptr = (uintptr_t)do_putchar;
 
 	/* Locate and call UEFI System Agent binary. */
 	entry = cbfs_map("mrc.bin", NULL);

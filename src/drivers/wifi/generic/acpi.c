@@ -144,7 +144,7 @@ static void wifi_dsm_unii4_control_enable(void *args)
 static void wifi_dsm_ddrrfim_func3_cb(void *ptr)
 {
 	const bool is_cnvi_ddr_rfim_enabled = *(bool *)ptr;
-	acpigen_write_return_integer(is_cnvi_ddr_rfim_enabled ? 1 : 0);
+	acpigen_write_return_integer(is_cnvi_ddr_rfim_enabled ? 0 : 1);
 }
 
 static void (*wifi_dsm_callbacks[])(void *) = {

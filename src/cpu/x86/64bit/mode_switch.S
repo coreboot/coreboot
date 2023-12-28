@@ -1,14 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+/* Calls a x86_32 function from x86_64 context */
 .text
 .code64
 	.section ".text.protected_mode_call", "ax", @progbits
-	.globl protected_mode_call_narg
-protected_mode_call_narg:
-
-	push	%rbp
-	mov	%rsp, %rbp
+	.globl protected_mode_call_3arg
+protected_mode_call_3arg:
 	/* Preserve registers */
+	push	%rbp
 	push	%rbx
 	push	%r12
 	push	%r13
@@ -19,58 +18,47 @@ protected_mode_call_narg:
 	movl	%gs, %eax
 	push	%rax
 
-	/* Arguments to stack */
-	push	%rdi
-	push	%rsi
-	push	%rdx
-	push	%rcx
+	/* Store stack pointer */
+	mov	%rsp, %rbp
 
+	/* Align stack and make space for arguments */
+	movabs	$0xfffffffffffffff0, %rax
+	andq	%rax, %rsp
+	sub	$16, %rsp
+
+	/* Arguments to stack */
+	movl	%edi, 12(%rsp)
+	movl	%esi, 0(%rsp)
+	movl	%edx, 4(%rsp)
+	movl	%ecx, 8(%rsp)
+
+	/* Drop to protected mode */
 	#include <cpu/x86/64bit/exit32.inc>
 
-	movl	-56(%ebp), %eax	/* Argument count */
-	movl	-72(%ebp), %edx	/* Argument 0 */
-	movl	-80(%ebp), %ecx	/* Argument 1 */
+	/* Fetch function to call */
+	movl	12(%esp), %ebx
 
-	/* Align the stack */
-	andl	$0xFFFFFFF0, %esp
-	test	%eax, %eax
-	je	1f	/* Zero arguments */
-
-	subl	$1, %eax
-	test	%eax, %eax
-	je	2f	/* One argument */
-
-	/* Two arguments */
-	subl	$8, %esp
-	pushl	%ecx	/* Argument 1 */
-	pushl	%edx	/* Argument 0 */
-	jmp	1f
-2:
-	subl	$12, %esp
-	pushl	%edx	/* Argument 0 */
-
-1:
-	movl	-64(%ebp), %ebx	/* Function to call */
+	/* Call function */
 	call	*%ebx
 	movl	%eax, %ebx
 
-	/* Preserves ebx */
+	/* Jump to long mode. Preserves ebx */
 	#include <cpu/x86/64bit/entry64.inc>
 
 	/* Place return value in rax */
 	movl	%ebx, %eax
 
-	/* Restore registers */
-	mov	-48(%rbp), %rbx
-	movl	%ebx, %gs
-	mov	-40(%rbp), %r15
-	mov	-32(%rbp), %r14
-	mov	-24(%rbp), %r13
-	mov	-16(%rbp), %r12
-	mov	-8(%rbp), %rbx
-
 	/* Restore stack pointer */
 	mov	%rbp, %rsp
+
+	/* Restore registers */
+	pop	%rbx
+	movl	%ebx, %gs
+	pop	%r15
+	pop	%r14
+	pop	%r13
+	pop	%r12
+	pop	%rbx
 	pop	%rbp
 
 	ret

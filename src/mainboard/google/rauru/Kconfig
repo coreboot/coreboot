@@ -1,0 +1,30 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+# Umbrella option to be selected by variant boards.
+config BOARD_GOOGLE_RAURU_COMMON
+	def_bool BOARD_GOOGLE_RAURU
+
+if BOARD_GOOGLE_RAURU_COMMON
+
+config VBOOT
+	select VBOOT_VBNV_FLASH
+	select VBOOT_NO_BOARD_SUPPORT
+	select VBOOT_MOCK_SECDATA
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_MEDIATEK_MT8196
+	select BOARD_ROMSIZE_KB_8192
+	select MAINBOARD_HAS_CHROMEOS
+	select COMMON_CBFS_SPI_WRAPPER
+	select SPI_FLASH
+	select SPI_FLASH_INCLUDE_ALL_DRIVERS
+
+config MAINBOARD_DIR
+	string
+	default "google/rauru"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Rauru" if BOARD_GOOGLE_RAURU
+endif

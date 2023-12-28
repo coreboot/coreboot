@@ -1,6 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
 all_x86-y += mode_switch.S
+all_x86-y += mode_switch2.S
 
 # Add --defsym=_start=0 to suppress a linker warning.
 $(objcbfs)/pt: $(dir)/pt.S $(obj)/config.h

@@ -32,6 +32,18 @@ void chromeos_set_ramoops(void *ram_oops, size_t size);
  * Return `-1` in case of error.
  */
 int64_t chromeos_get_factory_config(void);
+/*
+ * Determines whether a ChromeOS device is branded as a Chromebook Plus
+ * based on specific bit flags:
+ *
+ * - Bit 4 (0x10): Indicates whether the device chassis has the
+ *                 "chromebook-plus" branding.
+ * - Bits 3-0 (0x1): Must be 0x1 to signify compliance with Chromebook Plus
+ *                   hardware specifications.
+ *
+ * To be considered a Chromebook Plus, either of these conditions needs to be met.
+ */
+bool chromeos_device_branded_plus(void);
 
 /*
  * Declaration for mainboards to use to generate ACPI-specific ChromeOS needs.

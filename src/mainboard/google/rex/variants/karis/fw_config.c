@@ -35,10 +35,27 @@ static const struct pad_config stylus_disable_pads[] = {
 };
 
 static const struct pad_config cnvi_bt_disable_pads[] = {
-	/* GPP_F04 : [] ==> CNV_RF_RST_L */
+	/* GPP_F00 :  [] ==> CNV_BRI_DT_R */
+	PAD_NC(GPP_F00, NONE),
+	/* GPP_F01 :  [] ==> CNV_BRI_RSP */
+	PAD_NC(GPP_F01, NONE),
+	/* GPP_F02 :  [] ==> CNV_RGI_DT_Rl */
+	PAD_NC(GPP_F02, NONE),
+	/* GPP_F03 :  [] ==> CNV_RGI_RSP */
+	PAD_NC(GPP_F03, NONE),
+	/* GPP_F04 :  [] ==> CNV_RF_RST_L */
 	PAD_NC(GPP_F04, NONE),
-	/* GPP_F05 : [] ==> CNV_CLKREQ */
+	/* GPP_F05 :  [] ==> CNV_CLKREQ */
 	PAD_NC(GPP_F05, NONE),
+};
+
+static const struct pad_config discrete_bt_disable_pads[] = {
+	/* GPP_S01 : [] ==> SDW_HP_DATA_WLAN_PCM_SYNC */
+	PAD_NC(GPP_S01, NONE),
+	/* GPP_S02 : [] ==> DMIC_SOC_CLK0_WLAN_PCM_OUT */
+	PAD_NC(GPP_S02, NONE),
+	/* GPP_D21 : [] ==> WLAN_CLKREQ_ODLl */
+	PAD_NC(GPP_D21, NONE),
 };
 
 static const struct pad_config bt_i2s_enable_pads[] = {
@@ -81,13 +98,11 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		printk(BIOS_INFO, "Configure GPIOs for no FP module.\n");
 		GPIO_PADBASED_OVERRIDE(padbased_table, fp_disable_pads);
 	}
-	if (fw_config_probe(FW_CONFIG(AUDIO, ALC5650_NO_AMP_I2S))) {
-		printk(BIOS_INFO, "Configure GPIOs for BT offload mode.\n");
-		GPIO_PADBASED_OVERRIDE(padbased_table, bt_i2s_enable_pads);
-	}
 	if (fw_config_probe(FW_CONFIG(WIFI_TYPE, WIFI_CNVI))) {
 		printk(BIOS_INFO, "Configure GPIOs for CNVi WIFI/BT module.\n");
 		GPIO_PADBASED_OVERRIDE(padbased_table, bt_i2s_enable_pads);
+		printk(BIOS_INFO, "Disable GPIOs for PCIe WIFI/BT module.\n");
+		GPIO_PADBASED_OVERRIDE(padbased_table, discrete_bt_disable_pads);
 	}
 	if (fw_config_probe(FW_CONFIG(WIFI_TYPE, WIFI_PCIE))) {
 		printk(BIOS_INFO, "Configure GPIOs for discrete WIFI/BT module.\n");

@@ -1,0 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_DELL_PRECISION_M4800
+	bool "Precision M4800"

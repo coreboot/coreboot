@@ -1,0 +1,94 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+chip northbridge/intel/haswell
+	register "spd_addresses" = "{0x50, 0x51, 0x52, 0x53}"
+	register "ec_present" = "true"
+
+	chip cpu/intel/haswell
+		device cpu_cluster 0 on
+			ops haswell_cpu_bus_ops
+		end
+	end
+
+	device domain 0 on
+		ops haswell_pci_domain_ops
+		subsystemid 0x1028 0x05cc inherit
+
+		device pci 00.0 on end		# Mobile Host bridge
+		device pci 01.0 on		# PEG
+			smbios_slot_desc "SlotTypeMxm30TypeA" "SlotLengthOther"
+					 "MXM" "SlotDataBusWidth16X"
+		end
+		device pci 02.0 on		# Internal graphics VGA controller
+			register "gfx" = "GMA_STATIC_DISPLAYS(0)"
+			register "gpu_ddi_e_connected" = "1"
+			register "gpu_dp_d_hotplug" = "4"
+			register "panel_cfg" = "{
+				.up_delay_ms		= 200,
+				.down_delay_ms		=  50,
+				.cycle_delay_ms		= 500,
+				.backlight_on_delay_ms	=   1,
+				.backlight_off_delay_ms	=   1,
+				.backlight_pwm_hz	= 220,
+			}"
+		end
+		device pci 03.0 on end		# Mini-HD audio
+
+		chip southbridge/intel/lynxpoint # Intel 8 Series Lynx Point PCH
+			register "docking_supported" = "1"
+			register "gpe0_en_1" = "0x1090042"
+			register "gpi0_routing" = "2"
+
+			device pci 14.0 on  end		# xHCI Controller
+			device pci 16.0 on  end		# Management Engine Interface 1
+			device pci 19.0 on  end		# Intel I217-LM GbE NIC
+			device pci 1a.0 on  end		# USB2 EHCI #2
+			device pci 1b.0 on  end		# High Definition Audio
+			device pci 1c.0 on		# PCIe Port #1
+				smbios_slot_desc "SlotTypePciExpressMini52pinWithoutBSKO"
+						 "SlotLengthLong" "Mini PCIe (WWAN)"
+						 "SlotDataBusWidth1X"
+			end
+			device pci 1c.1 off end		# PCIe Port #2
+			device pci 1c.2 on		# PCIe Port #3
+				smbios_slot_desc "SlotTypePciExpressMini52pinWithoutBSKO"
+						 "SlotLengthShort" "Mini PCIe (WLAN)"
+						 "SlotDataBusWidth1X"
+			end
+			device pci 1c.3 off end		# PCIe Port #4
+			device pci 1c.4 off end		# PCIe Port #5
+			device pci 1c.5 on		# PCIe Port #6
+				smbios_slot_desc "SlotTypePciExpressMini52pinWithoutBSKO"
+						 "SlotLengthShort" "Mini PCIe (1/2MC (PP))"
+						 "SlotDataBusWidth1X"
+			end
+			device pci 1c.6 on		# PCIe Port #7
+				smbios_slot_desc "SlotTypePcmcia" "SlotLengthLong"
+						 "ExpressCard" "SlotDataBusWidth1X"
+			end
+			device pci 1c.7 on  end		# PCIe Port #8 (MMI Card reader)
+			device pci 1d.0 on  end		# USB2 EHCI #1
+			device pci 1f.0 on		# LPC bridge
+				# Ports 0x910/0x911 for EC mailbox interface
+				register "gen1_dec" = "LPC_IO(0x910, 0x4)"
+				# Ports 0x930/0x934 for EC ACPI interface
+				register "gen2_dec" = "LPC_IO(0x930, 0x8)"
+				chip drivers/pc80/tpm
+					device pnp 0c31.0 on end
+				end
+				chip ec/dell/mec5035
+					device pnp ff.0 on end
+				end
+			end
+			device pci 1f.2 on		# SATA Controller (AHCI)
+				register "sata_port0_gen3_dtle" = "0x7"
+				register "sata_port1_gen3_dtle" = "0x5"
+				# [0] HDD1, [1] ODD, [2] Dock, [3] ESATA, [4] mSATA
+				register "sata_port_map" = "0x1f"
+			end
+			device pci 1f.3  on end		# SMBus
+			device pci 1f.5 off end		# SATA Controller (Legacy)
+			device pci 1f.6 off end		# Thermal
+		end
+	end
+end

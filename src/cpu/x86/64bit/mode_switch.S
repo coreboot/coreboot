@@ -4,8 +4,8 @@
 .text
 .code64
 	.section ".text.protected_mode_call", "ax", @progbits
-	.globl protected_mode_call_3arg
-protected_mode_call_3arg:
+	.globl protected_mode_call_wrapper
+protected_mode_call_wrapper:
 	/* Preserve registers */
 	push	%rbp
 	push	%rbx

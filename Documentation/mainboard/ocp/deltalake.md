@@ -222,4 +222,4 @@ and [u-root] as initramfs.
 [All about u-root]: https://github.com/linuxboot/book/tree/master/u-root
 [u-root]: https://u-root.org/
 [ChromeOS VPD]: https://chromium.googlesource.com/chromiumos/platform/vpd/+/master/README.md
-[src/mainboard/ocp/deltalake/vpd.h]: https://review.coreboot.org/plugins/gitiles/coreboot/+/refs/heads/master/src/mainboard/ocp/deltalake/vpd.h
+[src/mainboard/ocp/deltalake/vpd.h]: https://review.coreboot.org/plugins/gitiles/coreboot/+/HEAD/src/mainboard/ocp/deltalake/vpd.h

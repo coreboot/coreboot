@@ -6,13 +6,14 @@
 #include <fw_config.h>
 #include <gpio.h>
 #include <soc/bl31.h>
+#include <soc/display.h>
 #include <soc/i2c.h>
 #include <soc/msdc.h>
 #include <soc/spm.h>
 #include <soc/usb.h>
 
-#include "display.h"
 #include "gpio.h"
+#include "panel.h"
 
 static void configure_alc1019(void)
 {
@@ -65,7 +66,7 @@ static void mainboard_init(struct device *dev)
 		register_reset_to_bl31(GPIO_RESET.id, true);
 
 	if (display_init_required()) {
-		if (configure_display() < 0)
+		if (mtk_display_init() < 0)
 			printk(BIOS_ERR, "%s: Failed to init display\n", __func__);
 	} else {
 		if (CONFIG(BOARD_GOOGLE_STARYU_COMMON)) {

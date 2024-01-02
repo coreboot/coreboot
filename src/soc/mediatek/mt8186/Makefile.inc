@@ -38,6 +38,7 @@ ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += ../common/bl31.c
 ramstage-y += ../common/ddp.c ddp.c
 ramstage-y += ../common/devapc.c devapc.c
 ramstage-y += ../common/dfd.c
+ramstage-y += ../common/display.c
 ramstage-y += ../common/dsi.c ../common/mtk_mipi_dphy.c
 ramstage-y += ../common/emi.c
 ramstage-y += ../common/mcu.c
@@ -53,6 +54,7 @@ ramstage-y += ../common/tps65132s.c
 ramstage-y += ../common/usb.c usb.c
 
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8186/include
+CPPFLAGS_common += -Isrc/soc/mediatek/common/dp/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/include
 
 BL31_MAKEARGS += PLAT=mt8186

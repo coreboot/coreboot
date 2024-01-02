@@ -6,7 +6,7 @@
 #include <ec/google/chromeec/ec.h>
 #include <soc/auxadc.h>
 
-#include "display.h"
+#include "panel.h"
 
 /* board_id is provided by ec/google/chromeec/ec_boardid.c */
 

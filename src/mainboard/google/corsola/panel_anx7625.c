@@ -7,8 +7,8 @@
 #include <gpio.h>
 #include <soc/i2c.h>
 
-#include "display.h"
 #include "gpio.h"
+#include "panel.h"
 
 static void bridge_anx7625_power_on(void)
 {
@@ -23,39 +23,42 @@ static void bridge_anx7625_power_on(void)
 	gpio_output(GPIO_EDPBRDG_RST_L, 1);
 }
 
-static int bridge_anx7625_get_edid(u8 i2c_bus, struct edid *edid)
+static int bridge_anx7625_get_edid(struct edid *edid)
 {
-	if (anx7625_init(i2c_bus) < 0) {
+	if (anx7625_init(BRIDGE_I2C) < 0) {
 		printk(BIOS_ERR, "%s: Can't init ANX7625 bridge\n", __func__);
 		return -1;
 	}
-	if (anx7625_dp_get_edid(i2c_bus, edid) < 0) {
+	if (anx7625_dp_get_edid(BRIDGE_I2C, edid) < 0) {
 		printk(BIOS_ERR, "%s: Can't get panel's edid\n", __func__);
 		return -1;
 	}
 	return 0;
 }
 
-static int bridge_anx7625_post_power_on(u8 i2c_bus, struct edid *edid)
+static int bridge_anx7625_post_power_on(const struct edid *edid)
 {
-	return anx7625_dp_start(i2c_bus, edid);
+	return anx7625_dp_start(BRIDGE_I2C, edid);
 }
 
-static struct panel_serializable_data anx7625_data;
+static void panel_power_on(void)
+{
+	/* Turn on the panel */
+	gpio_output(GPIO_EN_PP3300_DISP_X, 1);
+	bridge_anx7625_power_on();
+}
 
 static struct panel_description anx7625_bridge = {
-	.s = &anx7625_data,
+	.configure_backlight = backlight_control,
+	.power_on = panel_power_on,
+	.get_edid = bridge_anx7625_get_edid,
 	.post_power_on = bridge_anx7625_post_power_on,
+	.disp_path = DISP_PATH_MIPI,
 	.orientation = LB_FB_ORIENTATION_NORMAL,
 };
 
 struct panel_description *get_anx7625_description(void)
 {
 	mtk_i2c_bus_init(BRIDGE_I2C, I2C_SPEED_FAST);
-	bridge_anx7625_power_on();
-	if (bridge_anx7625_get_edid(BRIDGE_I2C, &anx7625_bridge.s->edid) < 0) {
-		printk(BIOS_ERR, "Can't get panel's edid\n");
-		return NULL;
-	}
 	return &anx7625_bridge;
 }

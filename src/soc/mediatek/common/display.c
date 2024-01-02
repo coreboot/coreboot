@@ -37,6 +37,12 @@ static struct panel_serializable_data *get_mipi_cmd_from_cbfs(struct panel_descr
 	return NULL;
 }
 
+__weak int mtk_edp_init(struct edid *edid)
+{
+	printk(BIOS_WARNING, "%s: Not supported\n", __func__);
+	return -1;
+}
+
 int mtk_display_init(void)
 {
 	struct edid edid;

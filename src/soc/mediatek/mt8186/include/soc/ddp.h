@@ -11,6 +11,7 @@
 #include <device/mmio.h>
 #include <soc/addressmap.h>
 #include <soc/ddp_common.h>
+#include <soc/display.h>
 #include <types.h>
 
 #define SMI_LARB_PORT_L0_OVL_RDMA0 0x388
@@ -253,8 +254,5 @@ static struct disp_aal_regs *const disp_aal = (void *)DISP_AAL0_BASE;
 static struct disp_gamma_regs *const disp_gamma = (void *)DISP_GAMMA0_BASE;
 static struct disp_postmask_regs *const disp_postmask = (void *)DISP_POSTMASK0_BASE;
 static struct disp_dither_regs *const disp_dither = (void *)DISP_DITHER0_BASE;
-
-void mtk_ddp_init(void);
-void mtk_ddp_mode_set(const struct edid *edid);
 
 #endif

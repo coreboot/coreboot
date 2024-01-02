@@ -8,8 +8,8 @@
 #include <soc/i2c.h>
 #include <soc/regulator.h>
 
-#include "display.h"
 #include "gpio.h"
+#include "panel.h"
 
 static void bridge_ps8640_power_on(void)
 {
@@ -45,35 +45,38 @@ static void bridge_ps8640_power_on(void)
 	gpio_output(GPIO_EDPBRDG_RST_L, 1);
 }
 
-static int bridge_ps8640_get_edid(u8 i2c_bus, struct edid *edid)
+static void panel_power_on(void)
+{
+	/* Turn on the panel */
+	gpio_output(GPIO_EN_PP3300_DISP_X, 1);
+	bridge_ps8640_power_on();
+}
+
+static int bridge_ps8640_get_edid(struct edid *edid)
 {
 	const u8 chip = 0x8;
 
-	if (ps8640_init(i2c_bus, chip) < 0) {
+	if (ps8640_init(BRIDGE_I2C, chip) < 0) {
 		printk(BIOS_ERR, "%s: Can't init PS8640 bridge\n", __func__);
 		return -1;
 	}
-	if (ps8640_get_edid(i2c_bus, chip, edid) < 0) {
+	if (ps8640_get_edid(BRIDGE_I2C, chip, edid) < 0) {
 		printk(BIOS_ERR, "%s: Can't get panel's edid\n", __func__);
 		return -1;
 	}
 	return 0;
 }
 
-static struct panel_serializable_data ps8640_data;
-
 static struct panel_description ps8640_bridge = {
-	.s = &ps8640_data,
+	.configure_backlight = backlight_control,
+	.power_on = panel_power_on,
+	.get_edid = bridge_ps8640_get_edid,
+	.disp_path = DISP_PATH_MIPI,
 	.orientation = LB_FB_ORIENTATION_NORMAL,
 };
 
 struct panel_description *get_ps8640_description(void)
 {
 	mtk_i2c_bus_init(BRIDGE_I2C, I2C_SPEED_FAST);
-	bridge_ps8640_power_on();
-	if (bridge_ps8640_get_edid(BRIDGE_I2C, &ps8640_bridge.s->edid) < 0) {
-		printk(BIOS_ERR, "Can't get panel's edid\n");
-		return NULL;
-	}
 	return &ps8640_bridge;
 }

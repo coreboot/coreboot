@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
 #include <console/console.h>
 #include <security/tpm/tss.h>
 #include <types.h>
@@ -9,11 +10,11 @@
 #define CHROMEBOOK_PLUS_SOFT_BRANDED BIT(0)
 #define CHROMEBOOK_PLUS_DEVICE (CHROMEBOOK_PLUS_HARD_BRANDED | CHROMEBOOK_PLUS_SOFT_BRANDED)
 
-int64_t chromeos_get_factory_config(void)
+uint64_t chromeos_get_factory_config(void)
 {
-	static int64_t factory_config = -1;
+	static uint64_t factory_config = UNDEFINED_FACTORY_CONFIG;
 
-	if (factory_config >= 0)
+	if (factory_config != UNDEFINED_FACTORY_CONFIG)
 		return factory_config;
 
 	/* Initialize TPM driver. */
@@ -21,16 +22,18 @@ int64_t chromeos_get_factory_config(void)
 	if (rc != TPM_SUCCESS) {
 		printk(BIOS_ERR, "%s:%d - tlcl_lib_init() failed: %#x\n",
 		       __func__, __LINE__, rc);
-		return -1;
+		return UNDEFINED_FACTORY_CONFIG;
 	}
 
-	rc = tlcl_cr50_get_factory_config((uint64_t *)&factory_config);
+	rc = tlcl_cr50_get_factory_config(&factory_config);
 
 	if (rc != TPM_SUCCESS) {
 		printk(BIOS_ERR, "%s:%d - tlcl_cr50_get_factory_config() failed: %#x\n",
 		       __func__, __LINE__, rc);
-		return -1;
+		return UNDEFINED_FACTORY_CONFIG;
 	}
+
+	assert(factory_config != UNDEFINED_FACTORY_CONFIG);
 
 	return factory_config;
 }
@@ -48,9 +51,9 @@ int64_t chromeos_get_factory_config(void)
  */
 bool chromeos_device_branded_plus(void)
 {
-	int64_t factory_config = chromeos_get_factory_config();
+	uint64_t factory_config = chromeos_get_factory_config();
 
-	if (factory_config < 0)
+	if (factory_config == UNDEFINED_FACTORY_CONFIG)
 		return false;
 
 	return factory_config & CHROMEBOOK_PLUS_DEVICE;

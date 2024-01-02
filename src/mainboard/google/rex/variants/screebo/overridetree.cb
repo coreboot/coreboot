@@ -514,6 +514,7 @@ chip soc/intel/meteorlake
 				register "num_freq_entries" = "1"
 				register "link_freq[0]" = "400 * MHz"
 				register "remote_name" = ""IPU0""
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
 
 				register "has_power_resource" = "1"
 				#Controls

@@ -52,7 +52,8 @@ static struct panel_description panels[] = {
 	[1] = {
 		.name = "BOE_TV110C9M_LL0",
 		.power_on = power_on_mipi_boe_tv110c9m_ll0,
-		.configure_panel_backlight = configure_mipi_pwm_backlight,
+		.configure_backlight = configure_mipi_pwm_backlight,
+		.orientation = LB_FB_ORIENTATION_BOTTOM_UP,
 		.disp_path = DISP_PATH_MIPI,
 		.pwm_ctrl_gpio = true,
 	},

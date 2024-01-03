@@ -5,6 +5,7 @@
 
 #include <soc/addressmap.h>
 #include <soc/ddp_common.h>
+#include <soc/display.h>
 #include <types.h>
 
 #define MAIN_PATH_OVL_NR 1
@@ -281,14 +282,5 @@ static struct disp_dither_regs *const disp_dither = (void *)DISP_DITHER0_BASE;
 enum {
 	SMI_LARB_PORT_L0_OVL_RDMA0	= 0xF88,
 };
-
-enum disp_path_sel {
-	DISP_PATH_NONE = 0,
-	DISP_PATH_EDP,
-	DISP_PATH_MIPI,
-};
-
-void mtk_ddp_init(void);
-void mtk_ddp_mode_set(const struct edid *edid, enum disp_path_sel);
 
 #endif

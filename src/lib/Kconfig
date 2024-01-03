@@ -149,3 +149,7 @@ config PROBE_RAM
 	help
 	  When enabled it will be possible to detect usable RAM using probe_ram
 	  function.
+
+config HAVE_CUSTOM_BMP_LOGO
+	def_bool n
+	depends on BMP_LOGO

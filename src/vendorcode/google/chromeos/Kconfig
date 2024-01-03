@@ -79,5 +79,28 @@ config CHROMEOS_NVS
 	bool
 	depends on ACPI_SOC_NVS
 
+config CHROMEOS_FW_SPLASH_SCREEN
+	bool "Display Splash Screen in firmware"
+	default n
+	select BMP_LOGO
+	select HAVE_CUSTOM_BMP_LOGO
+	help
+	  Select this option to display the manufacturer's logo or
+	  custom image (OEM splash screen) early in the boot process.
+	  This can enhance the user experience by providing visual
+	  feedback while the system starts up. For example, ChromeOS
+	  devices use this option to show their logo before the operating
+	  system loads.
+
+config CHROMEOS_LOGO_PATH
+	string "Path to ChromeOS logo file"
+	depends on CHROMEOS_FW_SPLASH_SCREEN
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/logo.bmp"
+
+config CHROMEBOOK_PLUS_LOGO_PATH
+	string "Path to Chromebook Plus logo file"
+	depends on CHROMEOS_FW_SPLASH_SCREEN
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/logo.bmp"
+
 endif # CHROMEOS
 endmenu

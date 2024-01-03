@@ -20,3 +20,15 @@ romstage-y += watchdog.c
 ramstage-y += watchdog.c
 
 romstage-$(CONFIG_CHROMEOS_DRAM_PART_NUMBER_IN_CBI) += dram_part_num_override.c
+ramstage-$(CONFIG_CHROMEOS_FW_SPLASH_SCREEN) += splash.c
+
+# Add logo to the cbfs image
+cbfs-files-$(CONFIG_CHROMEOS_FW_SPLASH_SCREEN) += cb_logo.bmp
+cb_logo.bmp-file := $(call strip_quotes,$(CONFIG_CHROMEOS_LOGO_PATH))
+cb_logo.bmp-type := raw
+cb_logo.bmp-compression := $(CBFS_COMPRESS_FLAG)
+
+cbfs-files-$(CONFIG_CHROMEOS_FW_SPLASH_SCREEN) += cb_plus_logo.bmp
+cb_plus_logo.bmp-file := $(call strip_quotes,$(CONFIG_CHROMEBOOK_PLUS_LOGO_PATH))
+cb_plus_logo.bmp-type := raw
+cb_plus_logo.bmp-compression := $(CBFS_COMPRESS_FLAG)

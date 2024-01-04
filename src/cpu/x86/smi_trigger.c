@@ -3,6 +3,7 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
+#include <smm_call.h>
 #include <stdint.h>
 
 static void apmc_log(const char *fn, u8 cmd)
@@ -38,7 +39,7 @@ enum cb_err apm_control(u8 cmd)
 	apmc_log(__func__, cmd);
 
 	/* Now raise the SMI. */
-	outb(cmd, pm_acpi_smi_cmd_port());
+	call_smm(cmd, 0, NULL);
 
 	printk(BIOS_DEBUG, "APMC done.\n");
 	return CB_SUCCESS;

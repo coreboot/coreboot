@@ -13,8 +13,11 @@ static inline u32 call_smm(u8 cmd, u8 subcmd, void *arg)
 {
 	u32 res = 0;
 	__asm__ __volatile__ (
-		"outb %b0, %3"
+		"outb %%al, %%dx"
 		: "=a" (res)
-		: "a" ((subcmd << 8) | cmd), "b" (arg), "i" (APM_CNT));
+		: "a" ((subcmd << 8) | cmd),
+		  "b" (arg),
+		  "d" (APM_CNT)
+		: "memory");
 	return res;
 }

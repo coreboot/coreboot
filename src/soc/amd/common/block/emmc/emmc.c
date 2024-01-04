@@ -12,7 +12,7 @@ static void emmc_read_resources(struct device *dev)
 
 static void emmc_enable(struct device *dev)
 {
-	if (!dev->enabled)
+	if (!dev->enabled && !CONFIG(SOC_AMD_COMMON_BLOCK_EMMC_SKIP_POWEROFF))
 		power_off_aoac_device(FCH_AOAC_DEV_EMMC);
 }
 

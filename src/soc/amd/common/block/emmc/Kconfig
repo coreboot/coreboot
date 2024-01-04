@@ -2,3 +2,10 @@ config SOC_AMD_COMMON_BLOCK_EMMC
 	bool
 	help
 	  Select this option to use AMD common EMMC driver support.
+
+config SOC_AMD_COMMON_BLOCK_EMMC_SKIP_POWEROFF
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_EMMC
+	help
+	  Select this option to try to switch off the power of the eMMC
+	  controller via the AOAC registers.

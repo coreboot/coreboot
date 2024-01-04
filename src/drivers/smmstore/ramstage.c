@@ -5,6 +5,7 @@
 #include <commonlib/helpers.h>
 #include <commonlib/region.h>
 #include <console/console.h>
+#include <smm_call.h>
 #include <smmstore.h>
 #include <types.h>
 #include <cbmem.h>
@@ -37,8 +38,7 @@ void lb_smmstorev2(struct lb_header *header)
 static void init_store(void *unused)
 {
 	struct smmstore_params_init args;
-	uint32_t eax = ~0;
-	uint32_t ebx;
+	uint32_t ret = ~0;
 
 	if (smmstore_get_info(&info) < 0) {
 		printk(BIOS_INFO, "SMMSTORE: Failed to get meta data\n");
@@ -53,20 +53,13 @@ static void init_store(void *unused)
 
 	args.com_buffer = (uintptr_t)ptr;
 	args.com_buffer_size = info.block_size;
-	ebx = (uintptr_t)&args;
 
 	printk(BIOS_INFO, "SMMSTORE: Setting up SMI handler\n");
 
 	/* Issue SMI using APM to update the com buffer and to lock the SMMSTORE */
-	__asm__ __volatile__ (
-		"outb %%al, %%dx"
-		: "=a" (eax)
-		: "a" ((SMMSTORE_CMD_INIT << 8) | APM_CNT_SMMSTORE),
-		  "b" (ebx),
-		  "d" (APM_CNT)
-		: "memory");
+	ret = call_smm(APM_CNT_SMMSTORE, SMMSTORE_CMD_INIT, &args);
 
-	if (eax != SMMSTORE_RET_SUCCESS) {
+	if (ret != SMMSTORE_RET_SUCCESS) {
 		printk(BIOS_ERR, "SMMSTORE: Failed to install com buffer\n");
 		return;
 	}

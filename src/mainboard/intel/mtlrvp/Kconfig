@@ -107,13 +107,18 @@ config DIMM_SPD_SIZE
 choice
 	prompt "ON BOARD EC"
 	default MTL_INTEL_EC if BOARD_INTEL_MTLRVP_P
-	default MTL_CHROME_EC if BOARD_INTEL_MTLRVP_P_EXT_EC || BOARD_INTEL_MTLRVP_P_MCHP || BOARD_INTEL_MTLRVP4ES_P_EXT_EC
+	default MTL_CHROME_EC if BOARD_INTEL_MTLRVP_P_EXT_EC || BOARD_INTEL_MTLRVP4ES_P_EXT_EC
+	default MTL_CHROME_EC_SHARED_SPI if BOARD_INTEL_MTLRVP_P_MCHP
 	help
 	  This option allows you to select the on board EC to use.
 	  Select whether the board has Intel EC or/and Chrome EC
 
 config MTL_CHROME_EC
 	bool "Chrome EC with Internal SPI flash"
+
+config MTL_CHROME_EC_SHARED_SPI
+	bool "Chrome EC with External Shared SPI flash"
+	select MAINBOARD_USES_IFD_EC_REGION
 
 config MTL_INTEL_EC
 	bool "Intel EC"
@@ -122,7 +127,7 @@ endchoice
 
 config VBOOT
 	select VBOOT_LID_SWITCH
-	select EC_GOOGLE_CHROMEEC_SWITCHES if MTL_CHROME_EC
+	select EC_GOOGLE_CHROMEEC_SWITCHES if MTL_CHROME_EC || MTL_CHROME_EC_SHARED_SPI
 
 config UART_FOR_CONSOLE
 	int

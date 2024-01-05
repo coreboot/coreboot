@@ -926,9 +926,16 @@ typedef struct {
 **/
   UINT8                       DdiPort4Ddc;
 
-/** Offset 0x02BE - Reserved
+/** Offset 0x02BE - GPIO PIN MUX to choose between GPP_SA and GPP_SD Group.
+  Default will be 0 for each Display PIN Mux which is GPP_SA Group. (0 = SA GROUP,
+  1 = SD GROUP). BIT0 - EDP VDDEN, BIT1 - EDP BKLTEN,  BIT2 - EDP BKLTCTRL, BIT3
+  - DDI-A, BIT4 - DDI-1/HPD1, BIT5 - DDI-2/HPD2, BIT6 - DDI-3/HPD3, BIT7 - DDI-4/HPD4
 **/
-  UINT8                       Reserved16[18];
+  UINT8                       DisplayGpioPinMux;
+
+/** Offset 0x02BF - Reserved
+**/
+  UINT8                       Reserved16[17];
 
 /** Offset 0x02D0 - Per-core HT Disable
   Defines the per-core HT disable mask where: 1 - Disable selected logical core HT,

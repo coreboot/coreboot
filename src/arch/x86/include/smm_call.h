@@ -4,7 +4,10 @@
 #include <cpu/x86/smm.h>
 
 /*
- * calls into SMM with the given cmd and subcmd in eax, and arg in ebx
+ * Call the APMC SMI handler that resides in SMM. First, the command and sub-command are stored
+ * in eax, and the argument pointer is stored in ebx, then the command byte is written to the
+ * APMC IO port to trigger the SMI. The APMC SMI handler then reads the command from the APMC
+ * IO port and the contents of eax and ebx from the SMM state save area.
  *
  * static inline because the resulting assembly is often smaller than
  * the call sequence due to constant folding.

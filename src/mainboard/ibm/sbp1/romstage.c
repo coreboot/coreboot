@@ -279,8 +279,13 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	/* Determines if warnings are promoted to system level. */
 	mupd->FspmConfig.promoteWarnings = 0x0;
 
-	/* Set FSP debug message to Disable */
-	mupd->FspmConfig.serialDebugMsgLvl = 0x0;
+	if (CONFIG(DEFAULT_CONSOLE_LOGLEVEL_7) ||
+	    CONFIG(DEFAULT_CONSOLE_LOGLEVEL_8))
+		mupd->FspmConfig.serialDebugMsgLvl = 3;
+	else if (CONFIG(DEFAULT_CONSOLE_LOGLEVEL_6))
+		mupd->FspmConfig.serialDebugMsgLvl = 1;
+	else
+		mupd->FspmConfig.serialDebugMsgLvl = 0;
 
 	/* Force 256MiB MMCONF (Segment0) only */
 	mupd->FspmConfig.mmCfgSize = 0x2;

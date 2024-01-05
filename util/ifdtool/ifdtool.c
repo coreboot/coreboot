@@ -1329,6 +1329,36 @@ static int check_region(const struct frba *frba, unsigned int region_type)
 	return !!((region.base < region.limit) && (region.size > 0));
 }
 
+/*
+ * Platforms from CNL onwards support up to 16 flash regions, not 12. The
+ * permissions for regions [15:12] are stored in extended region read/write
+ * access fields in the FLMSTR registers.
+ *
+ * FLMSTR with extended regions:
+ *   31:20 Region Write Access
+ *   19:8  Region Read Access
+ *    7:4  Extended Region Write Access
+ *    3:0  Extended Region Read Access
+ *
+ * FLMSTR without extended regions:
+ *   31:20 Region Write Access
+ *   19:8  Region Read Access
+ *    7:0  Reserved
+ */
+static bool platform_has_extended_regions(void)
+{
+	switch (platform) {
+	case PLATFORM_CNL:
+	case PLATFORM_JSL:
+	case PLATFORM_TGL:
+	case PLATFORM_ADL:
+	case PLATFORM_MTL:
+		return true;
+	default:
+		return false;
+	}
+}
+
 static void lock_descriptor(const char *filename, char *image, int size)
 {
 	int wr_shift, rd_shift;
@@ -1341,11 +1371,21 @@ static void lock_descriptor(const char *filename, char *image, int size)
 		wr_shift = FLMSTR_WR_SHIFT_V2;
 		rd_shift = FLMSTR_RD_SHIFT_V2;
 
-		/* Clear non-reserved bits */
-		fmba->flmstr1 &= 0xff;
-		fmba->flmstr2 &= 0xff;
-		fmba->flmstr3 &= 0xff;
-		fmba->flmstr5 &= 0xff;
+		/*
+		 * Clear all read/write access bits. See comment on
+		 * platform_has_extended_regions() for bitfields.
+		 */
+		if (platform_has_extended_regions()) {
+			fmba->flmstr1 = 0;
+			fmba->flmstr2 = 0;
+			fmba->flmstr3 = 0;
+			fmba->flmstr5 = 0;
+		} else {
+			fmba->flmstr1 &= 0xff;
+			fmba->flmstr2 &= 0xff;
+			fmba->flmstr3 &= 0xff;
+			fmba->flmstr5 &= 0xff;
+		}
 	} else {
 		wr_shift = FLMSTR_WR_SHIFT_V1;
 		rd_shift = FLMSTR_RD_SHIFT_V1;
@@ -1482,11 +1522,21 @@ static void unlock_descriptor(const char *filename, char *image, int size)
 		exit(EXIT_FAILURE);
 
 	if (ifd_version >= IFD_VERSION_2) {
-		/* Access bits for each region are read: 19:8 write: 31:20 */
-		fmba->flmstr1 = 0xffffff00 | (fmba->flmstr1 & 0xff);
-		fmba->flmstr2 = 0xffffff00 | (fmba->flmstr2 & 0xff);
-		fmba->flmstr3 = 0xffffff00 | (fmba->flmstr3 & 0xff);
-		fmba->flmstr5 = 0xffffff00 | (fmba->flmstr5 & 0xff);
+		/*
+		 * Set all read/write access bits. See comment on
+		 * platform_has_extended_regions() for bitfields.
+		 */
+		if (platform_has_extended_regions()) {
+			fmba->flmstr1 = 0xffffffff;
+			fmba->flmstr2 = 0xffffffff;
+			fmba->flmstr3 = 0xffffffff;
+			fmba->flmstr5 = 0xffffffff;
+		} else {
+			fmba->flmstr1 = 0xffffff00 | (fmba->flmstr1 & 0xff);
+			fmba->flmstr2 = 0xffffff00 | (fmba->flmstr2 & 0xff);
+			fmba->flmstr3 = 0xffffff00 | (fmba->flmstr3 & 0xff);
+			fmba->flmstr5 = 0xffffff00 | (fmba->flmstr5 & 0xff);
+		}
 	} else {
 		fmba->flmstr1 = 0xffff0000;
 		fmba->flmstr2 = 0xffff0000;

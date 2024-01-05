@@ -6,7 +6,7 @@
 #include <amdblocks/data_fabric_defs.h>
 #include <types.h>
 
-#define IOMS0_FABRIC_ID			15
+#define IOMS0_FABRIC_ID			0x14
 
 #define DF_PCI_CFG_BASE0		DF_REG_ID(0, 0xc80)
 #define DF_PCI_CFG_LIMIT0		DF_REG_ID(0, 0xc84)

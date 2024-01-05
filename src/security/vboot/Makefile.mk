@@ -33,6 +33,7 @@ $$(VBOOT_LIB_$(1)): $(obj)/config.h
 	VB2_X86_RSA_ACCELERATION="$(if $(CONFIG_ARCH_$(call toupper,$(1))_X86_32)$(CONFIG_ARCH_$(call toupper,$(1))_X86_64),$\
 			$(CONFIG_VBOOT_X86_RSA_ACCELERATION))" \
 	ARMV8_CRYPTO_EXT="$(if $(CONFIG_ARCH_$(call toupper,$(1))_ARMV8_64),$$(CONFIG_VBOOT_ARMV8_CE_SHA256_ACCELERATION))" \
+	ARM64_RSA_ACCELERATION="$(if $(CONFIG_ARCH_$(call toupper,$(1))_ARM64),$$(CONFIG_VBOOT_ARM64_RSA_ACCELERATION))" \
 	$(MAKE) -C $(VBOOT_SOURCE) \
 		BUILD=$$(abspath $$(dir $$(VBOOT_LIB_$(1)))) \
 		V=$(V) \

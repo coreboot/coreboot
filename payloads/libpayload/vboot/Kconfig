@@ -49,4 +49,16 @@ config VBOOT_SHA_ARMV8_CE
 	help
 	  This option enables SHA256 implementation using ARMv8 Crypto Extension.
 
+config VBOOT_ARM64_RSA_ACCELERATION
+	bool "Use arm64 SIMD instructions to accelerate RSA signature verification"
+	default y
+	depends on ARCH_ARM64
+	help
+	  Use arm64 SIMD instructions (NEON) to parallelize two multiplications
+	  in the modulus exponentiation algorithm, which speeds up RSA signature
+	  verification in vboot. This is supported on all arm64 CPUs so you'd
+	  generally always want this enabled, unless your SoC is overriding
+	  vboot's hwcrypto API with its own crypto accelerator IP instead (or
+	  you're trying really hard to save on code size).
+
 endif

@@ -46,6 +46,7 @@ $(VBOOT_FW_LIB): $(obj)/libpayload-config.h
 		X86_SHA_EXT=$(call kconfig-to-binary, $(CONFIG_LP_VBOOT_X86_SHA_EXT)) \
 		VB2_X86_RSA_ACCELERATION=$(call kconfig-to-binary, $(CONFIG_LP_VBOOT_X86_RSA_ACCELERATION)) \
 		ARMV8_CRYPTO_EXT=$(call kconfig-to-binary, $(CONFIG_LP_VBOOT_SHA_ARMV8_CE)) \
+		ARM64_RSA_ACCELERATION=$(call kconfig-to-binary, $(CONFIG_LP_VBOOT_ARM64_RSA_ACCELERATION)) \
 		UNROLL_LOOPS=1 \
 		BUILD="$(VBOOT_BUILD_DIR)" \
 		V=$(V) \

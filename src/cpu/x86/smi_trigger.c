@@ -29,11 +29,11 @@ static void apmc_log(const char *fn, u8 cmd)
 	}
 }
 
-int apm_control(u8 cmd)
+enum cb_err apm_control(u8 cmd)
 {
 	/* Never proceed inside SMI handler or without one. */
 	if (ENV_SMM || !CONFIG(HAVE_SMI_HANDLER))
-		return -1;
+		return CB_ERR;
 
 	apmc_log(__func__, cmd);
 
@@ -41,7 +41,7 @@ int apm_control(u8 cmd)
 	outb(cmd, pm_acpi_smi_cmd_port());
 
 	printk(BIOS_DEBUG, "APMC done.\n");
-	return 0;
+	return CB_SUCCESS;
 }
 
 u8 apm_get_apmc(void)

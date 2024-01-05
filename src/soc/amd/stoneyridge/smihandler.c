@@ -21,7 +21,7 @@
  */
 static void stoneyridge_fch_apmc_smi_handler(void)
 {
-	const uint8_t cmd = inb(pm_acpi_smi_cmd_port());
+	const uint8_t cmd = apm_get_apmc();
 
 	switch (cmd) {
 	case APM_CNT_ACPI_ENABLE:

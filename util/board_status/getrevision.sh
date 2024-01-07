@@ -112,7 +112,7 @@ tagged_revision() {
 	local r
 
 	if git_is_file_tracked "$1" ; then
-		r=$(git describe --tags --dirty)
+		r=$(git describe --dirty)
 	else
 		return ${EXIT_FAILURE}
 	fi

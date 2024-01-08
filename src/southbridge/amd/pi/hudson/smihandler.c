@@ -28,12 +28,12 @@ static void hudson_apmc_smi_handler(void)
 	const uint8_t cmd = inb(ACPI_SMI_CTL_PORT);
 
 	switch (cmd) {
-	case ACPI_SMI_CMD_ENABLE:
+	case APM_CNT_ACPI_ENABLE:
 		reg32 = inl(ACPI_PM1_CNT_BLK);
 		reg32 |= (1 << 0);	/* SCI_EN */
 		outl(reg32, ACPI_PM1_CNT_BLK);
 		break;
-	case ACPI_SMI_CMD_DISABLE:
+	case APM_CNT_ACPI_DISABLE:
 		reg32 = inl(ACPI_PM1_CNT_BLK);
 		reg32 &= ~(1 << 0);	/* clear SCI_EN */
 		outl(ACPI_PM1_CNT_BLK, reg32);

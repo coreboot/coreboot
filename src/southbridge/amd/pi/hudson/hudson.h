@@ -45,8 +45,6 @@
 #define ACPI_SCI_IRQ			9
 
 #define ACPI_SMI_CTL_PORT		0xb2
-#define ACPI_SMI_CMD_DISABLE		0xbe
-#define ACPI_SMI_CMD_ENABLE		0xef
 
 #define REV_HUDSON_A11			0x11
 #define REV_HUDSON_A12			0x12

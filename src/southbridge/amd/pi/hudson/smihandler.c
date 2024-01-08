@@ -25,7 +25,7 @@ enum smi_source {
 static void hudson_apmc_smi_handler(void)
 {
 	u32 reg32;
-	const uint8_t cmd = inb(ACPI_SMI_CTL_PORT);
+	const uint8_t cmd = apm_get_apmc();
 
 	switch (cmd) {
 	case APM_CNT_ACPI_ENABLE:

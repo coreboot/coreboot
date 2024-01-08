@@ -466,6 +466,7 @@ config SOC_INTEL_METEORLAKE_SIGN_OF_LIFE
 	  and CSME update.
 
 config SOC_PHYSICAL_ADDRESS_WIDTH
+	int
 	default 42
 
 endif

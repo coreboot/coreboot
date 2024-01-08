@@ -53,7 +53,7 @@ static const struct mb_cfg baseboard_memcfg = {
 		.ddr3 = { .dqs0 = 0, .dqs1 = 1 },
 		.ddr4 = { .dqs0 = 0, .dqs1 = 1 },
 		.ddr5 = { .dqs0 = 0, .dqs1 = 1 },
-		.ddr6 = { .dqs0 = 0, .dqs1 = 1 },
+		.ddr6 = { .dqs0 = 1, .dqs1 = 0 },
 		.ddr7 = { .dqs0 = 0, .dqs1 = 1 }
 	},
 

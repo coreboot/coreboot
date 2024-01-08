@@ -1,3 +1,28 @@
+fw_config
+	field RETIMER 0 1
+		option RETIMER_UNKNOWN			0
+		option RETIMER_BYPASS			1
+		option RETIMER_JHL8040			2
+	end
+	field STORAGE 2 3
+		option STORAGE_UNKNOWN			0
+		option STORAGE_UFS			1
+		option STORAGE_NVME			2
+	end
+	field WIFI 4 4
+		option WIFI_CNVI			0
+		option WIFI_PCIE			1
+	end
+	field AUDIO 5 7
+		option AUDIO_UNKNOWN			0
+		option AUDIO_REALTEK_ALC256		1
+	end
+	field UFS_CAMERA 8 9
+		option UFS_CAMERA_NONE			0
+		option UFS_CAMERA_OV2740		1
+	end
+end
+
 chip soc/intel/alderlake
 	device domain 0 on
 		device ref igpu on

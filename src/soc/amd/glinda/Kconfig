@@ -36,6 +36,7 @@ config SOC_AMD_GLINDA
 	select SOC_AMD_COMMON_BLOCK_ACPI_CPU_POWER_STATE
 	select SOC_AMD_COMMON_BLOCK_ACPI_GPIO		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_ACPI_IVRS		# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_ACPI_MADT
 	select SOC_AMD_COMMON_BLOCK_AOAC		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_APOB		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_APOB_HASH		# TODO: Check if this is still correct

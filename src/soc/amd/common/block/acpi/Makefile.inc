@@ -12,6 +12,7 @@ ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPI_CPPC) += cppc.c
 ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPI_CPU_POWER_STATE) += cpu_power_state.c
 ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPI_GPIO) += gpio.c
 ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPI_IVRS) += ivrs.c
+ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPI_MADT) += madt.c
 
 romstage-y += elog.c
 ramstage-y += elog.c

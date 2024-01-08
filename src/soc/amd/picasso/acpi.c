@@ -24,14 +24,6 @@
 #include <soc/southbridge.h>
 #include "chip.h"
 
-unsigned long acpi_fill_madt(unsigned long current)
-{
-	current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current,
-						   GNB_IO_APIC_ADDR);
-
-	return current;
-}
-
 /*
  * Reference section 5.2.9 Fixed ACPI Description Table (FADT)
  * in the ACPI 3.0b specification.

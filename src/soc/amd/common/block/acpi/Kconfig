@@ -30,6 +30,12 @@ config SOC_AMD_COMMON_BLOCK_ACPI_GPIO
 config SOC_AMD_COMMON_BLOCK_ACPI_IVRS
 	bool
 
+config SOC_AMD_COMMON_BLOCK_ACPI_MADT
+	bool
+	help
+	  Select this to add the common AMD acpi_fill_madt implementation to
+	  the build which adds the MADT entries for all non-FCH IOAPICs.
+
 config ACPI_SSDT_PSD_INDEPENDENT
 	bool "Allow core p-state independent transitions"
 	default y

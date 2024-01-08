@@ -6,28 +6,11 @@
 #include <amdblocks/acpi.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/cpu.h>
-#include <amdblocks/data_fabric.h>
 #include <arch/ioapic.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <soc/acpi.h>
 #include <vendorcode/amd/opensil/genoa_poc/opensil.h>
-
-/* TODO: this can go in a common place */
-unsigned long acpi_fill_madt(unsigned long current)
-{
-	struct device *dev = NULL;
-	while ((dev = dev_find_path(dev, DEVICE_PATH_DOMAIN)) != NULL) {
-		struct resource *res = probe_resource(dev, IOMMU_IOAPIC_IDX);
-		if (!res)
-			continue;
-
-		current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current,
-						   res->base);
-	}
-
-	return current;
-}
 
 void acpi_fill_fadt(acpi_fadt_t *fadt)
 {

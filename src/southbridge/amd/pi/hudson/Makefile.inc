@@ -36,6 +36,8 @@ all-y += reset.c
 smm-y += smihandler.c
 smm-y += smi_util.c
 
+CPPFLAGS_common += -I$(src)/southbridge/amd/pi/hudson/include
+
 # ROMSIG At ROMBASE + 0x20000:
 # +-----------+---------------+----------------+------------+
 # |0x55AA55AA |EC ROM Address |GEC ROM Address |USB3 ROM    |

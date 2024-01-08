@@ -35,6 +35,15 @@ static struct panel_description ciri_panels[] = {
 		.disp_path = DISP_PATH_MIPI,
 		.pwm_ctrl_gpio = true,
 	},
+
+	[34] = {
+		.name = "IVO_T109NW41",
+		.power_on = power_on_mipi_himax_83102j,
+		.configure_backlight = configure_mipi_pwm_backlight,
+		.orientation = LB_FB_ORIENTATION_LEFT_UP,
+		.disp_path = DISP_PATH_MIPI,
+		.pwm_ctrl_gpio = true,
+	}
 };
 
 struct panel_description *get_panel_description(uint32_t panel_id)

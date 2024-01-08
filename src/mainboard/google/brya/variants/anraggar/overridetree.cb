@@ -1,3 +1,12 @@
+fw_config
+	field CAMERA 12 13
+		option UF_720P_WF		0
+		option UF_1080P			1
+		option UF_720P			2
+		option UF_1080P_WF		3
+	end
+end
+
 chip soc/intel/alderlake
 	register "sagv" = "SaGv_Enabled"
 
@@ -210,7 +219,10 @@ chip soc/intel/alderlake
 				register "cio2_lanes_used" = "{4}" # 4 CSI Camera lanes are used
 				register "cio2_lane_endpoint[0]" = ""^I2C2.CAM0""
 				register "cio2_prt[0]" = "1"
-				device generic 0 on end
+				device generic 0 on
+					probe CAMERA UF_720P_WF
+					probe CAMERA UF_1080P_WF
+				end
 			end
 		end
 		device ref i2c1 on
@@ -281,7 +293,10 @@ chip soc/intel/alderlake
 				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
 				register "off_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
-				device i2c 36 on end
+				device i2c 36 on
+					probe CAMERA UF_720P_WF
+					probe CAMERA UF_1080P_WF
+				end
 			end
 			chip drivers/intel/mipi_camera
 				register "acpi_uid" = "2"
@@ -303,7 +318,10 @@ chip soc/intel/alderlake
 				register "off_seq.ops_cnt" = "1"
 				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
-				device i2c 0C on end
+				device i2c 0C on
+					probe CAMERA UF_720P_WF
+					probe CAMERA UF_1080P_WF
+				end
 			end
 			chip drivers/intel/mipi_camera
 				register "acpi_uid" = "1"
@@ -317,7 +335,10 @@ chip soc/intel/alderlake
 				register "nvm_width" = "0x10"
 				register "nvm_compat" = ""atmel,24c64""
 
-				device i2c 50 on end
+				device i2c 50 on
+					probe CAMERA UF_720P_WF
+					probe CAMERA UF_1080P_WF
+				end
 			end
 		end
 		device ref i2c3 on

@@ -6,7 +6,9 @@
 
 #include <amdblocks/acpimmio.h>
 #include <console/console.h>
+#include <cpu/x86/smm.h>
 
+#include "hudson.h"
 #include "smi.h"
 
 #define HUDSON_SMI_ACPI_COMMAND		75
@@ -76,4 +78,9 @@ void hudson_disable_gevent_smi(uint8_t gevent)
 void hudson_enable_acpi_cmd_smi(void)
 {
 	configure_smi(HUDSON_SMI_ACPI_COMMAND, SMI_MODE_SMI);
+}
+
+uint16_t pm_acpi_smi_cmd_port(void)
+{
+	return pm_read16(PM_ACPI_SMI_CMD);
 }

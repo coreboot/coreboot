@@ -62,8 +62,6 @@ SECTIONS
 	}
 
 	.bss : {
-		*(.ttb_buffer)
-
 		_bss = .;
 		*(.sbss)
 		*(.sbss.*)

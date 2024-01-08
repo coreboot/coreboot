@@ -41,8 +41,11 @@ static unsigned int max_tables;
 static uint64_t *xlat_addr;
 
 static int free_idx;
-static uint8_t ttb_buffer[TTB_DEFAULT_SIZE] __aligned(GRANULE_SIZE)
-	__attribute__((__section__(".ttb_buffer")));
+
+/* We refer to this in the linker script for ChormeOS's depthcharge payload
+ * and to please not change the name without discussing with us.
+ * Please contact: jwerner@chromium.org or yich@chromium.org */
+static uint8_t ttb_buffer[TTB_DEFAULT_SIZE] __aligned(GRANULE_SIZE);
 
 static const char * const tag_to_string[] = {
 	[TYPE_NORMAL_MEM] = "normal",

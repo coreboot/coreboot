@@ -27,7 +27,7 @@ enum {
 	PLL_MAX_INDEX,
 };
 
-struct pll_reg_info {
+static const struct pll_reg_info {
 	u32	*base_reg;
 	u32	*lock_enb_reg;
 	u32	lock_enb_val;
@@ -40,7 +40,7 @@ struct pll_reg_info {
 	u32	kcp_shift:5;	/* kcp bits location */
 	u32	kvco_shift:5;	/* kvco bit location */
 	u32	rsvd:7;
-} static const pll_reg_table[] = {
+} pll_reg_table[] = {
 	[PLLX_INDEX] = { .base_reg = CLK_RST_REG(pllx_base),
 			 .lock_enb_reg = CLK_RST_REG(pllx_misc),
 			 .lock_enb_val = PLLPAXS_MISC_LOCK_ENABLE,
@@ -127,10 +127,10 @@ struct pll_fields {
  * PLLM is set up dynamically by clock_sdram().
  * PLLP is hardwired to 408 MHz in HW (unless we set BASE_OVRD).
  */
-struct {
+static struct {
 	int			khz;
 	struct pll_fields	plls[PLL_MAX_INDEX];
-} static osc_table[16] = {
+} osc_table[16] = {
 	[OSC_FREQ_12] = {
 		.khz = 12000,
 		.plls = {

@@ -80,7 +80,7 @@ union __attribute__((transparent_union)) pll_fields {
  * PLLU:   1 MHz < CF <  6 MHz, 480 MHz < VCO <  960 MHz
  * PLLDP: 12 MHz < CF < 38 MHz, 600 MHz < VCO < 1200 MHz
  * (values taken from Linux' drivers/clk/tegra/clk-tegra124.c). */
-struct {
+static const struct {
 	int khz;
 	struct pllcx_dividers	pllx;	/* target:  CONFIG_PLLX_KHZ */
 	struct pllcx_dividers	pllc;	/* target:  600 MHz */
@@ -89,7 +89,7 @@ struct {
 	struct pllu_dividers	pllu;	/* target;  960 MHz */
 	struct pllcx_dividers	plldp;	/* target;  270 MHz */
 	/* PLLDP treats p differently (OUT = VCO / (p + 1) for p < 6). */
-} static const osc_table[16] = {
+} osc_table[16] = {
 	[OSC_FREQ_12] = {
 		.khz = 12000,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 12000, .m =  1, .p = 0},

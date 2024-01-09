@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <amdblocks/ioapic.h>
 #include <amdblocks/data_fabric.h>
 #include <amdblocks/root_complex.h>
 #include <amdblocks/smn.h>

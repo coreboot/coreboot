@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
-#include <amdblocks/data_fabric.h>
+#include <amdblocks/ioapic.h>
 #include <device/device.h>
 
 unsigned long acpi_fill_madt(unsigned long current)

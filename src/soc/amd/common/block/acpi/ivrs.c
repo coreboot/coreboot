@@ -3,7 +3,6 @@
 #include <acpi/acpi_ivrs.h>
 #include <amdblocks/acpi.h>
 #include <amdblocks/cpu.h>
-#include <amdblocks/data_fabric.h>
 #include <amdblocks/ioapic.h>
 #include <amdblocks/iommu.h>
 #include <arch/ioapic.h>

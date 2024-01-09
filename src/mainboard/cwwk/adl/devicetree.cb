@@ -1,0 +1,80 @@
+chip soc/intel/alderlake
+
+	register "s0ix_enable" = "1"
+
+	register "usb2_ports[0]" = "USB2_PORT_SHORT(OC_SKIP)"
+	register "usb2_ports[1]" = "USB2_PORT_SHORT(OC_SKIP)"
+	register "usb2_ports[2]" = "USB2_PORT_SHORT(OC_SKIP)"
+	register "usb2_ports[3]" = "USB2_PORT_SHORT(OC_SKIP)"
+	register "usb2_ports[6]" = "USB2_PORT_SHORT(OC_SKIP)" # microSD card reader
+
+	register "pch_pcie_rp[PCH_RP(1)]" = "{
+		.clk_src = 0,
+		.clk_req = 0,
+		.flags = PCIE_RP_LTR | PCIE_RP_AER,
+	}"
+
+	register "pch_pcie_rp[PCH_RP(7)]" = "{
+		.clk_src = 1,
+		.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_UNUSED | PCIE_RP_BUILT_IN,
+		.pcie_rp_aspm = ASPM_DISABLE,
+	}"
+
+	register "pch_pcie_rp[PCH_RP(9)]" = "{
+		.clk_src = 2,
+		.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_UNUSED | PCIE_RP_BUILT_IN,
+		.pcie_rp_aspm = ASPM_DISABLE,
+	}"
+
+	register "pch_pcie_rp[PCH_RP(10)]" = "{
+		.clk_src = 3,
+		.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_UNUSED | PCIE_RP_BUILT_IN,
+		.pcie_rp_aspm = ASPM_DISABLE,
+	}"
+
+	register "pch_pcie_rp[PCH_RP(11)]" = "{
+		.clk_src = 4,
+		.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_UNUSED | PCIE_RP_BUILT_IN,
+		.pcie_rp_aspm = ASPM_DISABLE,
+	}"
+
+	register "pch_pcie_rp[PCH_RP(12)]" = "{
+		.clk_src = 5,
+		.clk_req = 5,
+		.flags = PCIE_RP_LTR | PCIE_RP_AER,
+	}"
+
+	# Enable EDP in PortA
+	register "ddi_portA_config" = "1"
+
+	device domain 0 on
+		device ref igpu on end
+		device ref dtt on end
+		device ref crashlog off end
+		device ref xhci on end
+		device ref shared_sram on end
+		device ref pcie_rp1 on end
+		device ref pcie_rp7 on end
+		device ref pcie_rp9 on end
+		device ref pcie_rp10 on end
+		device ref pcie_rp11 on end
+		device ref pcie_rp12 on end # M.2 E key port
+		device ref pch_espi on
+			chip superio/ite/it8613e
+				device pnp 2e.0 off end
+				device pnp 2e.1 on      # COM 1
+					io 0x60 = 0x3f8
+					irq 0x70 = 0x4
+					irq 0xf0 = 0x1
+				end
+				device pnp 2e.4 off end # Environment Controller
+				device pnp 2e.5 off end # Keyboard
+				device pnp 2e.6 off end # Mouse
+				device pnp 2e.7 off end # GPIO
+				device pnp 2e.a off end # CIR
+			end
+		end
+		device ref hda on end
+		device ref smbus on end
+	end
+end

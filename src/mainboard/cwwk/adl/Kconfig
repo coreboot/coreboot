@@ -1,0 +1,27 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+if BOARD_CWWK_ADL_N
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_16384
+	select DRIVERS_UART_8250IO
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select INTEL_GMA_HAVE_VBT
+	select SOC_INTEL_ALDERLAKE_PCH_N
+	select SUPERIO_ITE_IT8613E
+
+config MAINBOARD_DIR
+	default "cwwk/adl"
+
+config MAINBOARD_PART_NUMBER
+	default "CW-AL-4L-V1.0"
+
+config DIMM_MAX
+	default 2
+
+config NO_POST
+	default y
+
+endif

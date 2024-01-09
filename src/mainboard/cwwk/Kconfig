@@ -1,0 +1,17 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+if VENDOR_CWWK
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/cwwk/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/cwwk/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	default "CWWK"
+
+endif # VENDOR_CWWK

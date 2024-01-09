@@ -43,6 +43,13 @@ __weak int mtk_edp_init(struct edid *edid)
 	return -1;
 }
 
+__weak int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes,
+			const struct edid *edid, const u8 *init_commands)
+{
+	printk(BIOS_WARNING, "%s: Not supported\n", __func__);
+	return -1;
+}
+
 int mtk_display_init(void)
 {
 	struct edid edid;

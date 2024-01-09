@@ -45,6 +45,7 @@ ramstage-y += ../common/early_init.c
 ramstage-y += ../common/ddp.c ddp.c
 ramstage-y += ../common/devapc.c devapc.c
 ramstage-y += ../common/dfd.c
+ramstage-y += ../common/display.c
 ramstage-y += ../common/dpm.c
 ramstage-$(CONFIG_DPM_FOUR_CHANNEL) += ../common/dpm_4ch.c
 ramstage-y += ../common/dp/dp_intf.c ../common/dp/dptx.c ../common/dp/dptx_hal.c dp_intf.c

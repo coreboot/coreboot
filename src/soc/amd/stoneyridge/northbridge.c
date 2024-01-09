@@ -43,9 +43,6 @@ static void read_resources(struct device *dev)
 	 * the CPU_CLUSTER.
 	 */
 	mmconf_resource(dev, idx++);
-
-	/* NB IOAPIC2 resource */
-	mmio_range(dev, idx++, IO_APIC2_ADDR, 0x1000);
 }
 
 /**
@@ -300,6 +297,10 @@ void domain_read_resources(struct device *dev)
 
 	/* Low top usable RAM -> Low top RAM (bottom pci mmio hole) */
 	reserved_ram_from_to(dev, idx++, mem_useable, tom);
+
+	/* NB IOAPIC2 resource. IOMMU_IOAPIC_IDX is used as index, so that the common AMD MADT
+	   code can find this resource */
+	mmio_range(dev, IOMMU_IOAPIC_IDX, IO_APIC2_ADDR, 0x1000);
 
 	/* If there is memory above 4GiB */
 	if (high_tom >> 32) {

@@ -244,7 +244,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_F6 : [NF1: CNV_PA_BLANKING NF6: USB_C_GPP_F6] ==> SOC_GPP_F6 (NC)*/
 	PAD_NC(GPP_F6, NONE),
 	/* GPP_F7 : [NF6: USB_C_GPP_F7] ==> EN_PP3300_TCHSCR */
-	PAD_CFG_GPO(GPP_F7, 0, PLTRST),
+	PAD_CFG_GPO(GPP_F7, 1, PLTRST),
 	/* GPP_F9 : [NF1: BOOTMPC NF6: USB_C_GPP_F9] ==> SSD_PERST_L */
 	PAD_CFG_GPO(GPP_F9, 1, DEEP),
 	/* GPP_F10 : GPP_F10 ==> GPP_F10_STRAP (NC) */

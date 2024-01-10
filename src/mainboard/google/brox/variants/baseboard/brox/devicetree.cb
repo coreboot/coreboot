@@ -168,6 +168,26 @@ chip soc/intel/alderlake
 				device i2c 0x15 on end
 			end
 		end #I2C0
+		device ref i2c1 on
+			chip drivers/i2c/hid
+				register "generic.hid" = ""WACOM4A0D""
+				register "generic.desc" = ""BOE Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_F18_IRQ)"
+				register "generic.detect" = "1"
+				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F17)"
+				register "generic.reset_delay_ms" = "100"
+				register "generic.reset_off_delay_ms" = "10"
+				register "generic.enable_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_F7)"
+				register "generic.enable_delay_ms" = "6"
+				register "generic.stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F16)"
+				register "generic.stop_off_delay_ms" = "100"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 0x0A on
+				end
+			end
+		end
 		device ref i2c4 on
 			chip drivers/i2c/tpm
 				register "hid" = ""GOOG0005""

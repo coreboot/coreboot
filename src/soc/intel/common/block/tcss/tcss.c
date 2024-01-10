@@ -269,7 +269,7 @@ static int send_pmc_dp_mode_request(int port, const struct usbc_mux_info *mux_da
 	return 0;
 }
 
-static void tcss_init_mux(int port, const struct tcss_port_map *port_map)
+static void disconnect_tcss_devices(int port, const struct tcss_port_map *port_map)
 {
 	int ret;
 
@@ -447,7 +447,7 @@ void tcss_configure(const struct typec_aux_bias_pads aux_bias_pads[MAX_TYPE_C_PO
 
 	if (CONFIG(TCSS_HAS_USBC_OPS))
 		for (i = 0; i < num_ports; i++)
-			tcss_init_mux(i, &port_map[i]);
+			disconnect_tcss_devices(i, &port_map[i]);
 
 	/* This should be performed before alternate modes are entered */
 	if (tcss_ops.configure_aux_bias_pads)

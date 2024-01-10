@@ -442,23 +442,22 @@ void tcss_configure(const struct typec_aux_bias_pads aux_bias_pads[MAX_TYPE_C_PO
 	size_t i;
 
 	port_map = tcss_get_port_info(&num_ports);
-	if (port_map == NULL)
+	if ((port_map == NULL) || platform_is_resuming())
 		return;
 
-	if (!platform_is_resuming()) {
+	if (CONFIG(TCSS_HAS_USBC_OPS))
 		for (i = 0; i < num_ports; i++)
 			tcss_init_mux(i, &port_map[i]);
 
-		/* This should be performed before alternate modes are entered */
-		if (tcss_ops.configure_aux_bias_pads)
-			tcss_ops.configure_aux_bias_pads(aux_bias_pads);
+	/* This should be performed before alternate modes are entered */
+	if (tcss_ops.configure_aux_bias_pads)
+		tcss_ops.configure_aux_bias_pads(aux_bias_pads);
 
-		if (CONFIG(ENABLE_TCSS_DISPLAY_DETECTION))
-			tcss_configure_dp_mode(port_map, num_ports);
+	if (CONFIG(ENABLE_TCSS_DISPLAY_DETECTION))
+		tcss_configure_dp_mode(port_map, num_ports);
 
-		if (CONFIG(ENABLE_TCSS_USB_DETECTION))
-			tcss_configure_usb_mode(port_map, num_ports);
-	}
+	if (CONFIG(ENABLE_TCSS_USB_DETECTION))
+		tcss_configure_usb_mode(port_map, num_ports);
 }
 
 bool tcss_valid_tbt_auth(void)

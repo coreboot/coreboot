@@ -2,17 +2,28 @@ config SOC_INTEL_COMMON_BLOCK_TCSS
 	def_bool n
 	select FSPS_USE_MULTI_PHASE_INIT
 	help
-	  Sets up USB2/3 port mapping in TCSS MUX and sets MUX to disconnect state
+	  Sets up USB2/3 port mapping in TCSS MUX
+
+config TCSS_HAS_USBC_OPS
+	bool "Enable USB-C MUX operations via the EC"
+	default y if EC_GOOGLE_CHROMEEC
+	depends on SOC_INTEL_COMMON_BLOCK_TCSS
+	help
+	  Enable USB-C operations via the EC. Requires `usbc_get_ops` to control features
+	  such as HPD and DP Mode entry. Currently, only the ChromeEC implements this, see
+	  (ec/google/chromeec/usbc_mux.c).
+
+	  This results in the MUX being set to a disabled state.
 
 config ENABLE_TCSS_DISPLAY_DETECTION
 	bool "Enable detection of displays over USB Type-C ports with TCSS"
-	depends on SOC_INTEL_COMMON_BLOCK_TCSS && RUN_FSP_GOP
+	depends on TCSS_HAS_USBC_OPS && RUN_FSP_GOP
 	help
 	  Enable displays to be detected over Type-C ports during boot.
 
 config ENABLE_TCSS_USB_DETECTION
 	bool "Enable detection of USB boot devices attached to USB Type-C ports with TCSS"
-	depends on SOC_INTEL_COMMON_BLOCK_TCSS
+	depends on TCSS_HAS_USBC_OPS
 	help
 	  Enable USB-C attached storage devices to be detected at boot.
 	  This option is required for some payloads (eg, edk2), without which devices attached

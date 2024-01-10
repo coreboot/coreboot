@@ -11,12 +11,6 @@
 #include "hudson.h"
 #include "smi.h"
 
-#if CONFIG(HUDSON_LEGACY_FREE)
-	#define FADT_BOOT_ARCH ACPI_FADT_LEGACY_FREE
-#else
-	#define FADT_BOOT_ARCH (ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042)
-#endif
-
 /*
  * Reference section 5.2.9 Fixed ACPI Description Table (FADT)
  * in the ACPI 3.0b specification.
@@ -40,7 +34,13 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 
 	fadt->duty_offset = 1;	/* CLK_VAL bits 3:1 */
 	fadt->duty_width = 3;	/* CLK_VAL bits 3:1 */
-	fadt->iapc_boot_arch = FADT_BOOT_ARCH;	/* See table 5-10 */
+
+	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_FREE;	/* See table 5-10 */
+	if (CONFIG(HUDSON_FADT_LEGACY_DEVICES))
+		fadt->iapc_boot_arch |= ACPI_FADT_LEGACY_DEVICES;
+	if (CONFIG(HUDSON_FADT_8042))
+		fadt->iapc_boot_arch |= ACPI_FADT_8042;
+
 	fadt->res2 = 0;		/* reserved, MUST be 0 ACPI 3.0 */
 	fadt->flags |= ACPI_FADT_WBINVD | /* See table 5-10 ACPI 3.0a spec */
 				ACPI_FADT_C1_SUPPORTED |

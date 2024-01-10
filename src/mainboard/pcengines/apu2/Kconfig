@@ -51,10 +51,6 @@ config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y
 
-config HUDSON_LEGACY_FREE
-	bool
-	default y
-
 config AGESA_BINARY_PI_FILE
 	string
 	default "3rdparty/blobs/mainboard/pcengines/apu2/AGESA.bin"

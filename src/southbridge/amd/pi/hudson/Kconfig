@@ -129,11 +129,16 @@ comment "AHCI7804"
 comment "IDE to AHCI7804"
 	depends on HUDSON_SATA_MODE = 6
 
-config HUDSON_LEGACY_FREE
-	bool "System is legacy free"
+config HUDSON_FADT_LEGACY_DEVICES
+	bool
 	help
-	  Select y if there is no keyboard controller in the system.
-	  This sets variables in AGESA and ACPI.
+	  Select if there are legacy devices on the LPC bus.
+
+config HUDSON_FADT_8042
+	bool
+	help
+	  Select if there is an 8042-compatible keyboard controller in the
+	  system.
 
 config AMDFW_OUTSIDE_CBFS
 	def_bool n

@@ -181,6 +181,20 @@ chip soc/intel/alderlake
 			}"
 			probe STORAGE STORAGE_NVME
 		end
+		device ref pcie_rp5 on
+			register "pch_pcie_rp[PCH_RP(5)]" = "{
+				.clk_src = 1,
+				.clk_req = 1,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			chip soc/intel/common/block/pcie/rtd3
+				# enable_gpio is controlled by the EC with EC_EN_PP3300_WLAN
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H2)"
+				register "srcclk_pin" = "1"
+				device generic 0 on end
+			end
+			probe WIFI WIFI_PCIE
+		end
 		device ref ish on
 			chip drivers/intel/ish
 				register "add_acpi_dma_property" = "true"

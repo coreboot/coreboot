@@ -98,6 +98,18 @@ chip soc/intel/alderlake
 
 	register "tcc_offset" = "8"
 
+	register "power_limits_config[ADL_N_041_6W_CORE]" = "{
+		.tdp_pl1_override = 20,
+		.tdp_pl2_override = 25,
+		.tdp_pl4 = 78,
+	}"
+
+	register "power_limits_config[ADL_N_081_15W_CORE]" = "{
+		.tdp_pl1_override = 20,
+		.tdp_pl2_override = 35,
+		.tdp_pl4 = 83,
+	}"
+
 	device domain 0 on
 		device ref dtt on
 			chip drivers/intel/dptf
@@ -111,13 +123,25 @@ chip soc/intel/alderlake
 					[0] = {
 						.target = DPTF_CPU,
 						.thresholds = {
-								TEMP_PCT(0, 0),
-								TEMP_PCT(35, 27),
-								TEMP_PCT(38, 31),
-								TEMP_PCT(39, 35),
-								TEMP_PCT(42, 41),
-								TEMP_PCT(60, 47),
 								TEMP_PCT(70, 100),
+								TEMP_PCT(60, 65),
+								TEMP_PCT(42, 60),
+								TEMP_PCT(39, 55),
+								TEMP_PCT(38, 50),
+								TEMP_PCT(35, 43),
+								TEMP_PCT(31, 30),
+						}
+					},
+					[1] = {
+						.target = DPTF_TEMP_SENSOR_0,
+						.thresholds = {
+								TEMP_PCT(60, 100),
+								TEMP_PCT(55, 65),
+								TEMP_PCT(52, 60),
+								TEMP_PCT(50, 55),
+								TEMP_PCT(48, 50),
+								TEMP_PCT(45, 43),
+								TEMP_PCT(41, 30),
 						}
 					}
 				}"
@@ -162,6 +186,7 @@ chip soc/intel/alderlake
 					[2] = {  16, 1000 },
 					[3] = {   8,  500 }
 				}"
+
 				device generic 0 on
 					probe THERMAL_SOLUTION THERMAL_SOLUTION_6W
 				end
@@ -177,13 +202,25 @@ chip soc/intel/alderlake
 					[0] = {
 						.target = DPTF_CPU,
 						.thresholds = {
-								TEMP_PCT(0, 0),
-								TEMP_PCT(35, 27),
-								TEMP_PCT(38, 31),
-								TEMP_PCT(39, 35),
-								TEMP_PCT(42, 41),
-								TEMP_PCT(60, 47),
 								TEMP_PCT(70, 100),
+								TEMP_PCT(60, 65),
+								TEMP_PCT(42, 58),
+								TEMP_PCT(39, 53),
+								TEMP_PCT(38, 47),
+								TEMP_PCT(35, 43),
+								TEMP_PCT(31, 30),
+						}
+					},
+					[1] = {
+						.target = DPTF_TEMP_SENSOR_0,
+						.thresholds = {
+								TEMP_PCT(60, 100),
+								TEMP_PCT(55, 65),
+								TEMP_PCT(52, 58),
+								TEMP_PCT(50, 53),
+								TEMP_PCT(48, 47),
+								TEMP_PCT(45, 43),
+								TEMP_PCT(41, 30),
 						}
 					}
 				}"
@@ -228,6 +265,7 @@ chip soc/intel/alderlake
 					[2] = {  16, 1000 },
 					[3] = {   8,  500 }
 				}"
+
 				device generic 1 on
 					probe THERMAL_SOLUTION THERMAL_SOLUTION_15W
 				end

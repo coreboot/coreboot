@@ -168,6 +168,16 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 		end
+		device ref i2c0 on
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0000""
+				register "desc" = ""ELAN Touchpad""
+				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_E3_IRQ)"
+				register "wake" = "GPE0_DW2_03"
+				register "detect" = "1"
+				device i2c 0x15 on end
+			end
+		end #I2C0
 		device ref i2c4 on
 			chip drivers/i2c/tpm
 				register "hid" = ""GOOG0005""

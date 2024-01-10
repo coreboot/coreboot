@@ -13,21 +13,24 @@ vboot-fixup-includes = $(filter -I$(coreboottop)/%, $(1)) \
 		       $(patsubst include/%.h,$(top)/include/%.h,\
 		       $(filter-out -I$(obj),\
 		       $(filter-out -I$(coreboottop)/%,$(1)))))
-ifeq ($(CONFIG_LP_ARCH_MOCK),)
-VBOOT_CFLAGS += $(call vboot-fixup-includes,$(CFLAGS))
-VBOOT_CFLAGS += -I$(abspath $(obj))
-endif
-
-# Enable vboot debug by default
-VBOOT_CFLAGS += -DVBOOT_DEBUG
 
 VBOOT_FIRMWARE_ARCH-$(CONFIG_LP_ARCH_ARM) := arm
 VBOOT_FIRMWARE_ARCH-$(CONFIG_LP_ARCH_X86) := x86
 VBOOT_FIRMWARE_ARCH-$(CONFIG_LP_ARCH_ARM64) := arm64
 
-ifeq ($(CONFIG_LP_ARCH_MOCK)$(VBOOT_FIRMWARE_ARCH-y),)
+ifneq ($(CONFIG_LP_ARCH_MOCK),)
+VBOOT_FIRMWARE_ARCH-y := mock
+else
+VBOOT_CFLAGS += $(call vboot-fixup-includes,$(CFLAGS))
+VBOOT_CFLAGS += -I$(abspath $(obj))
+endif
+
+ifeq ($(VBOOT_FIRMWARE_ARCH-y),)
 $(error vboot requires architecture to be set in the configuration)
 endif
+
+# Enable vboot debug by default
+VBOOT_CFLAGS += -DVBOOT_DEBUG
 
 ifeq ($(CONFIG_LP_VBOOT_X86_RSA_ACCELERATION),y)
 CPPFLAGS_common += -DVB2_X86_RSA_ACCELERATION

@@ -9,6 +9,7 @@ defconfig
 build/
 coreboot-builds/
 coreboot-builds*/
+generated/
 
 site-local
 

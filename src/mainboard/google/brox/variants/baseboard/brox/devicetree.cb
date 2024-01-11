@@ -161,13 +161,6 @@ chip soc/intel/alderlake
 		device ref tcss_dma1 on end
 		device ref xhci on end
 		device ref shared_sram on end
-		device ref cnvi_wifi on
-			chip drivers/wifi/generic
-				register "wake" = "GPE0_PME_B0"
-				register "add_acpi_dma_property" = "true"
-				device generic 0 on end
-			end
-		end
 		device ref i2c0 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""

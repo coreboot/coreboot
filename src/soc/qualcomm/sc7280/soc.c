@@ -19,7 +19,7 @@ static void soc_read_resources(struct device *dev)
 	void *start = NULL;
 	void *end = NULL;
 
-	ram_range(dev, 0, (uintptr_t)ddr_region->offset, ddr_region->size);
+	ram_range(dev, 0, (uintptr_t)region_offset(ddr_region), region_sz(ddr_region));
 	reserved_ram_range(dev, 1, (uintptr_t)_dram_soc, REGION_SIZE(dram_soc));
 	reserved_ram_range(dev, 2, (uintptr_t)_dram_wlan, REGION_SIZE(dram_wlan));
 	reserved_ram_range(dev, 3, (uintptr_t)_dram_wpss, REGION_SIZE(dram_wpss));

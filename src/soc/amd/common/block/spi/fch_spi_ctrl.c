@@ -221,8 +221,8 @@ static int fch_spi_flash_protect(const struct spi_flash *flash, const struct reg
 	size_t addr, len, gran_value, total_ranges, range;
 	bool granularity_64k = true; /* assume 64k granularity */
 
-	addr = region->offset;
-	len = region->size;
+	addr = region_offset(region);
+	len = region_sz(region);
 
 	reg32 = pci_read_config32(SOC_LPC_DEV, ROM_ADDRESS_RANGE2_START);
 	rom_base = WORD_TO_DWORD_UPPER(reg32);

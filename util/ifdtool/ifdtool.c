@@ -1451,6 +1451,10 @@ static void lock_descriptor(const char *filename, char *image, int size)
 			fmba->flmstr5 |= (1 << REGION_EC) << rd_shift;
 			fmba->flmstr5 |= (1 << REGION_EC) << wr_shift;
 		}
+		if (check_region(frba, REGION_DEV_EXP2)) {
+			/* BIOS can read SPI device expansion 2 region. */
+			fmba->flmstr1 |= (1 << REGION_DEV_EXP2) << rd_shift;
+		}
 		break;
 	case PLATFORM_DNV:
 	case PLATFORM_WBG:

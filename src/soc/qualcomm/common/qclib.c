@@ -101,9 +101,8 @@ static void write_ddr_information(struct qclib_cb_if_table_entry *te)
 	uint64_t ddr_size;
 
 	/* Save DDR info in SRAM region to share with ramstage */
-	ddr_region->offset = te->blob_address;
 	ddr_size = te->size;
-	ddr_region->size = ddr_size * MiB;
+	*ddr_region = region_create(te->blob_address, ddr_size * MiB);
 
 	/* Use DDR info to configure MMU */
 	qc_mmu_dram_config_post_dram_init(

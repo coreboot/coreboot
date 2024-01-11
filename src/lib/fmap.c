@@ -199,8 +199,7 @@ int fmap_locate_area(const char *name, struct region *ar)
 		printk(BIOS_DEBUG, "FMAP: area %s found @ %x (%d bytes)\n",
 		       name, le32toh(area->offset), le32toh(area->size));
 
-		ar->offset = le32toh(area->offset);
-		ar->size = le32toh(area->size);
+		*ar = region_create(le32toh(area->offset), le32toh(area->size));
 
 		rdev_munmap(&fmrd, area);
 

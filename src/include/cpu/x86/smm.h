@@ -142,7 +142,10 @@ bool smm_region_overlaps_handler(const struct region *r);
 /* Returns true if the memory pointed to overlaps with SMM reserved memory. */
 static inline bool smm_points_to_smram(const void *ptr, const size_t len)
 {
-	const struct region r = {(uintptr_t)ptr, len};
+	struct region r;
+
+	if (region_create_untrusted(&r, (uintptr_t)ptr, len) != CB_SUCCESS)
+		return true; /* Play it safe and pretend it overlaps if we can't tell. */
 
 	return smm_region_overlaps_handler(&r);
 }

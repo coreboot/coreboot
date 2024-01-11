@@ -115,11 +115,10 @@ static int smm_create_map(const uintptr_t smbase, const unsigned int num_cpus,
 		const size_t segment_number = i / cpus_per_segment;
 		cpus[i].smbase = smbase - SMM_CODE_SEGMENT_SIZE * segment_number
 			- needed_ss_size * (i % cpus_per_segment);
-		cpus[i].stub_code.offset = cpus[i].smbase + SMM_ENTRY_OFFSET;
-		cpus[i].stub_code.size = stub_size;
-		cpus[i].ss.offset = cpus[i].smbase + SMM_CODE_SEGMENT_SIZE
-			- params->cpu_save_state_size;
-		cpus[i].ss.size = params->cpu_save_state_size;
+		cpus[i].stub_code = region_create(cpus[i].smbase + SMM_ENTRY_OFFSET, stub_size);
+		cpus[i].ss = region_create(
+				cpus[i].smbase + SMM_CODE_SEGMENT_SIZE - params->cpu_save_state_size,
+				params->cpu_save_state_size);
 		cpus[i].active = 1;
 	}
 
@@ -482,16 +481,14 @@ int smm_load_module(const uintptr_t smram_base, const size_t smram_size,
 	if (rmodule_parse(&_binary_smm_start, &smi_handler))
 		return -1;
 
-	const struct region smram = { .offset = smram_base, .size = smram_size };
+	const struct region smram = region_create(smram_base, smram_size);
 	const uintptr_t smram_top = region_end(&smram);
 
 	const size_t stm_size =
 		CONFIG(STM) ? CONFIG_MSEG_SIZE + CONFIG_BIOS_RESOURCE_LIST_SIZE : 0;
 
 	if (CONFIG(STM)) {
-		struct region stm = {};
-		stm.offset = smram_top - stm_size;
-		stm.size = stm_size;
+		struct region stm = region_create(smram_top - stm_size, stm_size);
 		if (append_and_check_region(smram, stm, region_list, "STM"))
 			return -1;
 		printk(BIOS_DEBUG, "MSEG size     0x%x\n", CONFIG_MSEG_SIZE);
@@ -503,20 +500,14 @@ int smm_load_module(const uintptr_t smram_base, const size_t smram_size,
 	const uintptr_t handler_base =
 		ALIGN_DOWN(smram_top - stm_size - handler_size,
 			   handler_alignment);
-	struct region handler = {
-		.offset = handler_base,
-		.size = handler_size
-	};
+	struct region handler = region_create(handler_base, handler_size);
 	if (append_and_check_region(smram, handler, region_list, "HANDLER"))
 		return -1;
 
 	uintptr_t stub_segment_base;
 	if (ENV_X86_64) {
 		uintptr_t pt_base = install_page_table(handler_base);
-		struct region page_tables = {
-			.offset = pt_base,
-			.size = handler_base - pt_base,
-		};
+		struct region page_tables = region_create(pt_base, handler_base - pt_base);
 		if (append_and_check_region(smram, page_tables, region_list, "PAGE TABLES"))
 			return -1;
 		params->cr3 = pt_base;
@@ -540,10 +531,8 @@ int smm_load_module(const uintptr_t smram_base, const size_t smram_size,
 			return -1;
 	}
 
-	struct region stacks = {
-		.offset = smram_base,
-		.size = params->num_concurrent_save_states * CONFIG_SMM_MODULE_STACK_SIZE
-	};
+	struct region stacks = region_create(smram_base,
+			params->num_concurrent_save_states * CONFIG_SMM_MODULE_STACK_SIZE);
 	printk(BIOS_DEBUG, "\n");
 	if (append_and_check_region(smram, stacks, region_list, "stacks"))
 		return -1;

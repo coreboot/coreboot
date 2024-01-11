@@ -267,8 +267,7 @@ static void winbond_bpbits_to_region(const size_t granularity,
 		tb = !tb;
 	}
 
-	out->offset = tb ? 0 : flash_size - protected_size;
-	out->size = protected_size;
+	*out = region_create(tb ? 0 : flash_size - protected_size, protected_size);
 }
 
 /*
@@ -525,8 +524,8 @@ winbond_set_write_protection(const struct spi_flash *flash,
 
 	if (region_sz(&wp_region) > flash->size / 2) {
 		cmp = 1;
-		wp_region.offset = tb ? 0 : region_sz(&wp_region);
-		wp_region.size = flash->size - region_sz(&wp_region);
+		wp_region = region_create(tb ? 0 : region_sz(&wp_region),
+					  flash->size - region_sz(&wp_region));
 		tb = !tb;
 	} else {
 		cmp = 0;

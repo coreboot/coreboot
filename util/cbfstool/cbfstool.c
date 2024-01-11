@@ -324,19 +324,25 @@ struct mmap_window {
 static int mmap_window_table_size;
 static struct mmap_window mmap_window_table[MMAP_MAX_WINDOWS];
 
-static void add_mmap_window(size_t flash_offset, size_t host_offset,
-			    size_t window_size)
+static int add_mmap_window(unsigned long flash_offset, unsigned long host_offset, unsigned long window_size)
 {
 	if (mmap_window_table_size >= MMAP_MAX_WINDOWS) {
 		ERROR("Too many memory map windows\n");
-		return;
+		return 1;
 	}
 
-	mmap_window_table[mmap_window_table_size].flash_space.offset = flash_offset;
-	mmap_window_table[mmap_window_table_size].host_space.offset = host_offset;
-	mmap_window_table[mmap_window_table_size].flash_space.size = window_size;
-	mmap_window_table[mmap_window_table_size].host_space.size = window_size;
+	if (region_create_untrusted(
+			&mmap_window_table[mmap_window_table_size].flash_space,
+			flash_offset, window_size) != CB_SUCCESS ||
+	    region_create_untrusted(
+			&mmap_window_table[mmap_window_table_size].host_space,
+			host_offset, window_size) != CB_SUCCESS) {
+		ERROR("Invalid mmap window size %lu.\n", window_size);
+		return 1;
+	}
+
 	mmap_window_table_size++;
+	return 0;
 }
 
 
@@ -377,7 +383,9 @@ static int decode_mmap_arg(char *arg)
 		return 1;
 	}
 
-	add_mmap_window(mmap_args.flash_base, mmap_args.mmap_base, mmap_args.mmap_size);
+	if (add_mmap_window(mmap_args.flash_base, mmap_args.mmap_base, mmap_args.mmap_size))
+		return 1;
+
 	return 0;
 }
 
@@ -403,7 +411,8 @@ static bool create_mmap_windows(void)
 		 * maximum of 16MiB. If the window is smaller than 16MiB, the SPI flash window is mapped
 		 * at the top of the host window just below 4G.
 		 */
-		add_mmap_window(std_window_flash_offset, DEFAULT_DECODE_WINDOW_TOP - std_window_size, std_window_size);
+		if (add_mmap_window(std_window_flash_offset, DEFAULT_DECODE_WINDOW_TOP - std_window_size, std_window_size))
+			return false;
 	} else {
 		/*
 		 * Check provided memory map

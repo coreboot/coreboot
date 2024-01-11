@@ -10,14 +10,11 @@ uintptr_t temp_memory_end;
 
 void report_fspt_output(void)
 {
-	const struct region fsp_car_region = {
-		.offset = temp_memory_start,
-		.size = temp_memory_end - temp_memory_start,
-	};
-	const struct region coreboot_car_region = {
-		.offset = (uintptr_t)_car_region_start,
-		.size = (uintptr_t)_car_region_size,
-	};
+	const struct region fsp_car_region = region_create(
+			temp_memory_start, temp_memory_end - temp_memory_start);
+	const struct region coreboot_car_region = region_create(
+			(uintptr_t)_car_region_start, (uintptr_t)_car_region_size);
+
 	printk(BIOS_DEBUG, "FSP-T: reported temp_mem region: [0x%08lx,0x%08lx)\n",
 	       temp_memory_start, temp_memory_end);
 	if (!region_is_subregion(&fsp_car_region, &coreboot_car_region)) {

@@ -610,12 +610,12 @@ int spi_flash_status(const struct spi_flash *flash, u8 *reg)
 int spi_flash_is_write_protected(const struct spi_flash *flash,
 				 const struct region *region)
 {
-	struct region flash_region = { 0 };
+	struct region flash_region;
 
 	if (!flash || !region)
 		return -1;
 
-	flash_region.size = flash->size;
+	flash_region = region_create(0, flash->size);
 
 	if (!region_is_subregion(&flash_region, region))
 		return -1;
@@ -633,13 +633,13 @@ int spi_flash_set_write_protected(const struct spi_flash *flash,
 				  const struct region *region,
 				  const enum spi_flash_status_reg_lockdown mode)
 {
-	struct region flash_region = { 0 };
+	struct region flash_region;
 	int ret;
 
 	if (!flash)
 		return -1;
 
-	flash_region.size = flash->size;
+	flash_region = region_create(0, flash->size);
 
 	if (!region_is_subregion(&flash_region, region))
 		return -1;
@@ -755,12 +755,12 @@ int spi_flash_ctrlr_protect_region(const struct spi_flash *flash,
 				   const enum ctrlr_prot_type type)
 {
 	const struct spi_ctrlr *ctrlr;
-	struct region flash_region = { 0 };
+	struct region flash_region;
 
 	if (!flash)
 		return -1;
 
-	flash_region.size = flash->size;
+	flash_region = region_create(0, flash->size);
 
 	if (!region_is_subregion(&flash_region, region))
 		return -1;

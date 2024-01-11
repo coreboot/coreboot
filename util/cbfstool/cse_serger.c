@@ -820,15 +820,22 @@ static int cmd_add(void)
 	return 0;
 }
 
-static void parse_region(struct region *r, char *arg)
+static int parse_region(struct region *r, char *arg)
 {
 	char *tok;
 
 	tok = strtok(arg, ":");
-	r->offset = strtol(tok, NULL, 0);
+	unsigned long offset = strtoul(tok, NULL, 0);
 
 	tok = strtok(NULL, ":");
-	r->size = strtol(tok, NULL, 0);
+	unsigned long size = strtoul(tok, NULL, 0);
+
+	if (region_create_untrusted(r, offset, size) != CB_SUCCESS) {
+		ERROR("Invalid region: %lx:%lx\n", offset, size);
+		return -1;
+	}
+
+	return 0;
 }
 
 static struct command {
@@ -991,19 +998,24 @@ int main(int argc, char **argv)
 				params.partition_type = atoi(optarg);
 				break;
 			case LONGOPT_BP1:
-				parse_region(&params.layout_regions[BP1], optarg);
+				if (parse_region(&params.layout_regions[BP1], optarg))
+					return 1;
 				break;
 			case LONGOPT_BP2:
-				parse_region(&params.layout_regions[BP2], optarg);
+				if (parse_region(&params.layout_regions[BP2], optarg))
+					return 1;
 				break;
 			case LONGOPT_BP3:
-				parse_region(&params.layout_regions[BP3], optarg);
+				if (parse_region(&params.layout_regions[BP3], optarg))
+					return 1;
 				break;
 			case LONGOPT_BP4:
-				parse_region(&params.layout_regions[BP4], optarg);
+				if (parse_region(&params.layout_regions[BP4], optarg))
+					return 1;
 				break;
 			case LONGOPT_DATA:
-				parse_region(&params.layout_regions[DP], optarg);
+				if (parse_region(&params.layout_regions[DP], optarg))
+					return 1;
 				break;
 			case LONGOPT_BP1_FILE:
 				params.layout_files[BP1] = optarg;

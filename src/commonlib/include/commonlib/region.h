@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <commonlib/bsd/cb_err.h>
 #include <commonlib/bsd/helpers.h>
 #include <commonlib/mem_pool.h>
 
@@ -94,10 +95,20 @@ struct region_device {
 		},					\
 	}
 
-/* Helper to dynamically initialize region device. */
-void region_device_init(struct region_device *rdev,
-			const struct region_device_ops *ops, size_t offset,
-			size_t size);
+static inline struct region region_create(size_t offset, size_t size)
+{
+	assert(offset + size - 1 >= offset);
+	return (struct region){ .offset = offset, .size = size };
+}
+
+static inline enum cb_err region_create_untrusted(
+		struct region *r, unsigned long long offset, unsigned long long size)
+{
+	if (offset > SIZE_MAX || size > SIZE_MAX || (size_t)(offset + size - 1) < offset)
+		return CB_ERR_ARG;
+	*r = (struct region){ .offset = offset, .size = size };
+	return CB_SUCCESS;
+}
 
 /* Return 1 if child is subregion of parent, else 0. */
 int region_is_subregion(const struct region *p, const struct region *c);
@@ -122,6 +133,11 @@ static inline bool region_overlap(const struct region *r1, const struct region *
 	return (region_end(r1) > region_offset(r2)) &&
 	       (region_offset(r1) < region_end(r2));
 }
+
+/* Helper to dynamically initialize region device. */
+void region_device_init(struct region_device *rdev,
+			const struct region_device_ops *ops, size_t offset,
+			size_t size);
 
 static inline const struct region *region_device_region(
 					const struct region_device *rdev)

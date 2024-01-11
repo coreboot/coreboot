@@ -218,7 +218,7 @@ static unsigned long acpi_fill_ivrs40(unsigned long current, acpi_ivrs_ivhd_t *i
 	ivhd_40->capability_offset = pci_find_capability(iommu_dev, IOMMU_CAP_ID);
 	ivhd_40->iommu_base_low = ivhd->iommu_base_low;
 	ivhd_40->iommu_base_high = ivhd->iommu_base_high;
-	ivhd_40->pci_segment_group = 0x0000;
+	ivhd_40->pci_segment_group = nb_dev->bus->segment_group;
 	ivhd_40->iommu_info = ivhd->iommu_info;
 	/* For type 40h bits 31:28 and 12:0 are reserved */
 	ivhd_40->iommu_attributes = ivhd->iommu_feature_info & 0xfffe000;
@@ -275,7 +275,7 @@ static unsigned long acpi_fill_ivrs11(unsigned long current, acpi_ivrs_ivhd_t *i
 	ivhd_11->capability_offset = pci_find_capability(iommu_dev, IOMMU_CAP_ID);
 	ivhd_11->iommu_base_low = ivhd->iommu_base_low;
 	ivhd_11->iommu_base_high = ivhd->iommu_base_high;
-	ivhd_11->pci_segment_group = 0x0000;
+	ivhd_11->pci_segment_group = nb_dev->bus->segment_group;
 	ivhd_11->iommu_info = ivhd->iommu_info;
 	ivhd11_attr_ptr = (ivhd11_iommu_attr_t *)&ivhd->iommu_feature_info;
 	ivhd_11->iommu_attributes.perf_counters = ivhd11_attr_ptr->perf_counters;
@@ -365,7 +365,7 @@ unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 		ivhd->flags |= ((mmio_x18_value & MMIO_CTRL_HT_TUN_EN) ?
 							IVHD_FLAG_HT_TUN_EN : 0);
 
-		ivhd->pci_segment_group = 0x0000;
+		ivhd->pci_segment_group = nb_dev->bus->segment_group;
 
 		ivhd->iommu_info = pci_read_config16(iommu_dev,
 			ivhd->capability_offset + 0x10) & 0x1F;

@@ -591,9 +591,22 @@
 #define PCI_SLOT(devfn)		(((devfn) >> 3) & 0x1f)
 #define PCI_FUNC(devfn)		((devfn) & 0x07)
 
+/*
+ * CONFIG_ECAM_MMCONF_BUS_NUMBER is a power of 2. For values <= 256,
+ * PCI_BUSES_PER_SEGMENT_GROUP is CONFIG_ECAM_MMCONF_BUS_NUMBER and PCI_SEGMENT_GROUP_COUNT
+ * is 1. For values > 256, PCI_BUSES_PER_SEGMENT_GROUP is 256 and PCI_SEGMENT_GROUP_COUNT is
+ * CONFIG_ECAM_MMCONF_BUS_NUMBER / 256.
+*/
+#define PCI_BUS_NUMBER_MASK		0xff
+#define PCI_SEGMENT_GROUP_COUNT		(((CONFIG_ECAM_MMCONF_BUS_NUMBER - 1) >> 8) + 1)
+#define PCI_BUSES_PER_SEGMENT_GROUP	(((CONFIG_ECAM_MMCONF_BUS_NUMBER - 1) & PCI_BUS_NUMBER_MASK) + 1)
+#define PCI_PER_SEGMENT_GROUP_ECAM_SIZE	(256 * MiB)
+
 /* Translation from PCI_DEV() to devicetree bus and path.pci.devfn. */
 #define PCI_DEV2DEVFN(sdev)		(((sdev)>>12) & 0xff)
 #define PCI_DEV2SEGBUS(sdev)	(((sdev)>>20) & 0xfff)
+#define PCI_DEV2BUS(sdev)	(((sdev)>>20) & PCI_BUS_NUMBER_MASK)
+#define PCI_DEV2SEG(sdev)	(((sdev)>>28) & 0xf)
 
 /* Fields from within the device's class value. */
 #define PCI_CLASS_GET_DEVICE(c) (c >> 8)

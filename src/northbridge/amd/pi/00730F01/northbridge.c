@@ -296,7 +296,7 @@ static unsigned long acpi_fill_ivrs11(unsigned long current, acpi_ivrs_t *ivrs_a
 	ivhd_11->capability_offset = 0x40;
 	ivhd_11->iommu_base_low = ivrs_agesa->ivhd.iommu_base_low;
 	ivhd_11->iommu_base_high = ivrs_agesa->ivhd.iommu_base_high;
-	ivhd_11->pci_segment_group = 0x0000;
+	ivhd_11->pci_segment_group = nb_dev->bus->segment_group;
 	ivhd_11->iommu_info = ivrs_agesa->ivhd.iommu_info;
 	ivhd_11->iommu_attributes.perf_counters =
 		(IOMMU_MMIO32(ivhd_11->iommu_base_low + 0x4000) >> 7) & 0xf;
@@ -364,7 +364,7 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 		ivrs->ivhd.capability_offset = 0x40;
 		ivrs->ivhd.iommu_base_low = ivrs_agesa->ivhd.iommu_base_low;
 		ivrs->ivhd.iommu_base_high = ivrs_agesa->ivhd.iommu_base_high;
-		ivrs->ivhd.pci_segment_group = 0x0000;
+		ivrs->ivhd.pci_segment_group = nb_dev->bus->segment_group;
 		ivrs->ivhd.iommu_info = ivrs_agesa->ivhd.iommu_info;
 		ivrs->ivhd.iommu_feature_info = ivrs_agesa->ivhd.iommu_feature_info;
 		/* Enable EFR if supported */

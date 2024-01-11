@@ -152,8 +152,8 @@ static void read_resources(struct bus *bus)
 {
 	struct device *curdev;
 
-	printk(BIOS_SPEW, "%s %s bus %d link: %d\n", dev_path(bus->dev),
-	       __func__, bus->secondary, bus->link_num);
+	printk(BIOS_SPEW, "%s %s segment group %d bus %d link: %d\n", dev_path(bus->dev),
+	       __func__, bus->segment_group, bus->secondary, bus->link_num);
 
 	/* Walk through all devices and find which resources they need. */
 	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
@@ -176,8 +176,8 @@ static void read_resources(struct bus *bus)
 			read_resources(link);
 	}
 	post_log_clear();
-	printk(BIOS_SPEW, "%s %s bus %d link: %d done\n",
-	       dev_path(bus->dev), __func__, bus->secondary, bus->link_num);
+	printk(BIOS_SPEW, "%s %s segment group %d bus %d link: %d done\n",
+	       dev_path(bus->dev), __func__, bus->segment_group, bus->secondary, bus->link_num);
 }
 
 struct device *vga_pri = NULL;
@@ -266,8 +266,8 @@ void assign_resources(struct bus *bus)
 {
 	struct device *curdev;
 
-	printk(BIOS_SPEW, "%s %s, bus %d link: %d\n",
-	       dev_path(bus->dev), __func__, bus->secondary, bus->link_num);
+	printk(BIOS_SPEW, "%s %s, segment group %d bus %d link: %d\n",
+	       dev_path(bus->dev), __func__, bus->segment_group, bus->secondary, bus->link_num);
 
 	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
 		if (!curdev->enabled || !curdev->resource_list)
@@ -282,8 +282,8 @@ void assign_resources(struct bus *bus)
 		curdev->ops->set_resources(curdev);
 	}
 	post_log_clear();
-	printk(BIOS_SPEW, "%s %s, bus %d link: %d done\n",
-	       dev_path(bus->dev), __func__, bus->secondary, bus->link_num);
+	printk(BIOS_SPEW, "%s %s, segment group %d bus %d link: %d done\n",
+	       dev_path(bus->dev), __func__, bus->segment_group, bus->secondary, bus->link_num);
 }
 
 /**

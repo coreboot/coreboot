@@ -589,6 +589,13 @@ config ECAM_MMCONF_BASE_ADDRESS
 config ECAM_MMCONF_BUS_NUMBER
 	int
 	depends on ECAM_MMCONF_SUPPORT
+	help
+	  Total number of PCI buses in the system across all segment groups.
+	  The number needs to be a power of 2. For values <= 256,
+	  PCI_BUSES_PER_SEGMENT_GROUP is CONFIG_ECAM_MMCONF_BUS_NUMBER and
+	  PCI_SEGMENT_GROUP_COUNT is 1. For values > 256,
+	  PCI_BUSES_PER_SEGMENT_GROUP is 256 and PCI_SEGMENT_GROUP_COUNT is
+	  CONFIG_ECAM_MMCONF_BUS_NUMBER / 256.
 
 config ECAM_MMCONF_LENGTH
 	hex
@@ -597,6 +604,8 @@ config ECAM_MMCONF_LENGTH
 	default 0x04000000 if ECAM_MMCONF_BUS_NUMBER = 64
 	default 0x08000000 if ECAM_MMCONF_BUS_NUMBER = 128
 	default 0x10000000 if ECAM_MMCONF_BUS_NUMBER = 256
+	default 0x20000000 if ECAM_MMCONF_BUS_NUMBER = 512
+	default 0x80000000 if ECAM_MMCONF_BUS_NUMBER = 1024
 	default 0x0
 
 config PCI_ALLOW_BUS_MASTER

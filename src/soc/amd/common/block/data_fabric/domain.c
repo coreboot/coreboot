@@ -9,6 +9,7 @@
 #include <cpu/amd/mtrr.h>
 #include <cpu/cpu.h>
 #include <device/device.h>
+#include <device/pci.h>
 #include <device/pci_ops.h>
 #include <types.h>
 
@@ -21,16 +22,16 @@ void amd_pci_domain_scan_bus(struct device *domain)
 		return;
 	}
 
-	/* TODO: Implement support for more than one PCI segment group in coreboot */
-	if (segment_group) {
-		printk(BIOS_ERR, "coreboot currently only supports one PCI segment group.\n");
+	if (segment_group >= PCI_SEGMENT_GROUP_COUNT) {
+		printk(BIOS_ERR, "Skipping domain %u due to too large segment group %u.\n",
+		       domain->path.domain.domain, segment_group);
 		return;
 	}
 
-	/* TODO: Check if bus >= CONFIG_ECAM_MMCONF_BUS_NUMBER and return in that case */
+	/* TODO: Check if bus >= PCI_BUSES_PER_SEGMENT_GROUP and return in that case */
 
-	/* Make sure to not report more than CONFIG_ECAM_MMCONF_BUS_NUMBER PCI buses */
-	limit = MIN(limit, CONFIG_ECAM_MMCONF_BUS_NUMBER - 1);
+	/* Make sure to not report more than PCI_BUSES_PER_SEGMENT_GROUP PCI buses */
+	limit = MIN(limit, PCI_BUSES_PER_SEGMENT_GROUP - 1);
 
 	/* Set bus first number of PCI root */
 	domain->link_list->secondary = bus;
@@ -38,6 +39,7 @@ void amd_pci_domain_scan_bus(struct device *domain)
 	domain->link_list->subordinate = bus;
 	/* Tell allocator about maximum PCI bus number in domain */
 	domain->link_list->max_subordinate = limit;
+	domain->link_list->segment_group = segment_group;
 
 	pci_host_bridge_scan_bus(domain);
 }
@@ -246,12 +248,13 @@ void amd_pci_domain_fill_ssdt(const struct device *domain)
 	acpigen_write_resourcetemplate_header();
 
 	/* PCI bus number range in domain */
-	printk(BIOS_DEBUG, "%s _CRS: adding busses [%x-%x]\n", acpi_device_name(domain),
-	       domain->link_list->secondary, domain->link_list->max_subordinate);
+	printk(BIOS_DEBUG, "%s _CRS: adding busses [%x-%x] in segment group %x\n",
+	       acpi_device_name(domain), domain->link_list->secondary,
+	       domain->link_list->max_subordinate, domain->link_list->segment_group);
 	acpigen_resource_producer_bus_number(domain->link_list->secondary,
 					     domain->link_list->max_subordinate);
 
-	if (domain->link_list->secondary == 0) {
+	if (domain->link_list->secondary == 0 && domain->link_list->segment_group == 0) {
 		/* ACPI 6.4.2.5 I/O Port Descriptor */
 		acpigen_write_io16(PCI_IO_CONFIG_INDEX, PCI_IO_CONFIG_LAST_PORT, 1,
 				   PCI_IO_CONFIG_PORT_COUNT, 1);
@@ -287,7 +290,7 @@ void amd_pci_domain_fill_ssdt(const struct device *domain)
 
 	acpigen_write_resourcetemplate_footer();
 
-	acpigen_write_SEG(0);
+	acpigen_write_SEG(domain->link_list->segment_group);
 	acpigen_write_BBN(domain->link_list->secondary);
 
 	/* Scope */

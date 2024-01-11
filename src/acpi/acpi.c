@@ -150,9 +150,14 @@ static void acpi_create_madt(acpi_header_t *header, void *unused)
 
 static unsigned long acpi_fill_mcfg(unsigned long current)
 {
-	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)current,
-			CONFIG_ECAM_MMCONF_BASE_ADDRESS, 0, 0,
-			CONFIG_ECAM_MMCONF_BUS_NUMBER - 1);
+	for (int i = 0; i < PCI_SEGMENT_GROUP_COUNT; i++) {
+		current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)current,
+			CONFIG_ECAM_MMCONF_BASE_ADDRESS + i * PCI_PER_SEGMENT_GROUP_ECAM_SIZE,
+			i,
+			0,
+			PCI_BUSES_PER_SEGMENT_GROUP - 1);
+	}
+
 	return current;
 }
 
@@ -695,6 +700,7 @@ void acpi_create_ipmi(const struct device *device,
 
 	if (device->path.type == DEVICE_PATH_PCI) {
 		spmi->pci_device_flag = ACPI_IPMI_PCI_DEVICE_FLAG;
+		spmi->pci_segment_group = device->bus->segment_group;
 		spmi->pci_bus = device->bus->secondary;
 		spmi->pci_device = device->path.pci.devfn >> 3;
 		spmi->pci_function = device->path.pci.devfn & 0x7;

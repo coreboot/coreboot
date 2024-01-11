@@ -18,7 +18,7 @@ static void genoa_domain_read_resources(struct device *domain)
 	amd_pci_domain_read_resources(domain);
 
 	// We only want to add the DRAM memory map once
-	if (domain->link_list->secondary == 0) {
+	if (domain->link_list->secondary == 0 && domain->link_list->segment_group == 0) {
 		/* 0x1000 is a large enough first index to be sure to not overlap with the
 		   resources added by amd_pci_domain_read_resources */
 		add_opensil_memmap(domain, 0x1000);

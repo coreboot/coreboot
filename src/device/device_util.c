@@ -97,7 +97,7 @@ u32 dev_path_encode(const struct device *dev)
 	case DEVICE_PATH_ROOT:
 		break;
 	case DEVICE_PATH_PCI:
-		ret |= dev->bus->secondary << 8 | dev->path.pci.devfn;
+		ret |= dev->bus->segment_group << 16 | dev->bus->secondary << 8 | dev->path.pci.devfn;
 		break;
 	case DEVICE_PATH_PNP:
 		ret |= dev->path.pnp.port << 8 | dev->path.pnp.device;
@@ -168,7 +168,8 @@ const char *dev_path(const struct device *dev)
 			break;
 		case DEVICE_PATH_PCI:
 			snprintf(buffer, sizeof(buffer),
-				 "PCI: %02x:%02x.%01x",
+				 "PCI: %02x:%02x:%02x.%01x",
+				 dev->bus->segment_group,
 				 dev->bus->secondary,
 				 PCI_SLOT(dev->path.pci.devfn),
 				 PCI_FUNC(dev->path.pci.devfn));
@@ -525,7 +526,8 @@ void report_resource_stored(struct device *dev, const struct resource *resource,
 
 	if (dev->link_list && (resource->flags & IORESOURCE_PCI_BRIDGE)) {
 		snprintf(buf, sizeof(buf),
-			 "bus %02x ", dev->link_list->secondary);
+			 "seg %02x bus %02x ", dev->link_list->segment_group,
+			 dev->link_list->secondary);
 	}
 	printk(BIOS_DEBUG, "%s %02lx <- [0x%016llx - 0x%016llx] size 0x%08llx "
 	       "gran 0x%02x %s%s%s\n", dev_path(dev), resource->index,
@@ -982,5 +984,5 @@ bool is_enabled_pci(const struct device *pci)
 
 bool is_pci_dev_on_bus(const struct device *pci, unsigned int bus)
 {
-	return is_pci(pci) && pci->bus->secondary == bus;
+	return is_pci(pci) && pci->bus->segment_group == 0 && pci->bus->secondary == bus;
 }

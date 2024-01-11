@@ -35,6 +35,7 @@ static DEVTREE_CONST struct device *dev_find_slot(unsigned int bus,
 	for (dev = all_devices; dev; dev = dev->next) {
 		if ((dev->path.type == DEVICE_PATH_PCI) &&
 		    (dev->bus->secondary == bus) &&
+		    (dev->bus->segment_group == 0) &&
 		    (dev->path.pci.devfn == devfn)) {
 			result = dev;
 			break;
@@ -233,7 +234,7 @@ DEVTREE_CONST struct device *pcidev_path_on_bus(unsigned int bus, pci_devfn_t de
 			dev = dev->next;
 			continue;
 		}
-		if (dev->bus->secondary == bus)
+		if (dev->bus->secondary == bus && dev->bus->segment_group == 0)
 			return pcidev_path_behind(dev->bus, devfn);
 		dev = dev->next;
 	}

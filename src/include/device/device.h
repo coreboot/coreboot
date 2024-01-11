@@ -86,6 +86,7 @@ struct bus {
 	uint16_t	secondary;		/* secondary bus number */
 	uint16_t	subordinate;		/* subordinate bus number */
 	uint16_t	max_subordinate;	/* max subordinate bus number */
+	uint8_t		segment_group;		/* PCI segment group */
 
 	unsigned int	reset_needed : 1;
 	unsigned int	no_vga16 : 1;		/* No support for 16-bit VGA decoding */

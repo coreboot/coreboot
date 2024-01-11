@@ -846,6 +846,12 @@ static int should_run_oprom(struct device *dev, struct rom_header *rom)
 {
 	static int should_run = -1;
 
+	if (dev->bus->segment_group) {
+		printk(BIOS_ERR, "Only option ROMs of devices in first PCI segment group can "
+				 "be run.\n");
+		return 0;
+	}
+
 	if (CONFIG(VENDORCODE_ELTAN_VBOOT))
 		if (rom != NULL)
 			if (!verified_boot_should_run_oprom(rom))
@@ -1314,7 +1320,8 @@ struct device *pci_probe_dev(struct device *dev, struct bus *bus,
  */
 unsigned int pci_match_simple_dev(struct device *dev, pci_devfn_t sdev)
 {
-	return dev->bus->secondary == PCI_DEV2SEGBUS(sdev) &&
+	return dev->bus->secondary == PCI_DEV2BUS(sdev) &&
+			dev->bus->segment_group == PCI_DEV2SEG(sdev) &&
 			dev->path.pci.devfn == PCI_DEV2DEVFN(sdev);
 }
 
@@ -1428,7 +1435,8 @@ void pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 	struct device *dev, **prev;
 	int once = 0;
 
-	printk(BIOS_DEBUG, "PCI: %s for bus %02x\n", __func__, bus->secondary);
+	printk(BIOS_DEBUG, "PCI: %s for segment group %02x bus %02x\n", __func__,
+	       bus->segment_group, bus->secondary);
 
 	/* Maximum sane devfn is 0xFF. */
 	if (max_devfn > 0xff) {
@@ -1549,7 +1557,8 @@ static void pci_bridge_route(struct bus *link, scan_state state)
 		link->subordinate = link->secondary + dev->hotplug_buses;
 		link->max_subordinate = parent->max_subordinate
 						? parent->max_subordinate
-						: (CONFIG_ECAM_MMCONF_BUS_NUMBER - 1);
+						: (PCI_BUSES_PER_SEGMENT_GROUP - 1);
+		link->segment_group = parent->segment_group;
 	}
 
 	if (link->secondary > link->max_subordinate)

@@ -192,7 +192,7 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 	struct range_entry fsp_mem;
 
 	/* Only add dram resources once. */
-	if (dev->bus->secondary != 0)
+	if (dev->bus->secondary != 0 || dev->bus->segment_group != 0)
 		return;
 
 	/* Read in the MAP registers and report their values. */

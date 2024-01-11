@@ -230,6 +230,10 @@ ati_rom_acpi_fill_vfct(const struct device *device, acpi_vfct_t *vfct_struct,
 		printk(BIOS_ERR, "%s failed\n", __func__);
 		return current;
 	}
+	if (device->bus->segment_group) {
+		printk(BIOS_ERR, "VFCT only supports GPU in first PCI segment group.\n");
+		return current;
+	}
 
 	printk(BIOS_DEBUG, "           Copying %sVBIOS image from %p\n",
 			rom == (struct rom_header *)

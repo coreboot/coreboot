@@ -363,7 +363,7 @@ static int append_and_check_region(const struct region smram,
 {
 	unsigned int region_counter = 0;
 	for (; region_counter < SMM_REGIONS_ARRAY_SIZE; region_counter++)
-		if (region_list[region_counter].size == 0)
+		if (region_sz(&region_list[region_counter]) == 0)
 			break;
 
 	if (region_counter >= SMM_REGIONS_ARRAY_SIZE) {

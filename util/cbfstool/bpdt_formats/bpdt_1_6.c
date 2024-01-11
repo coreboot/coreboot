@@ -149,14 +149,14 @@ static cse_layout_ptr create_cse_layout(const struct region *r)
 	if (!l)
 		return NULL;
 
-	l->data_offset = r[DP].offset;
-	l->data_size = r[DP].size;
-	l->bp1_offset = r[BP1].offset;
-	l->bp1_size = r[BP1].size;
-	l->bp2_offset = r[BP2].offset;
-	l->bp2_size = r[BP2].size;
-	l->bp3_offset = r[BP3].offset;
-	l->bp3_size = r[BP3].size;
+	l->data_offset = region_offset(&r[DP]);
+	l->data_size = region_sz(&r[DP]);
+	l->bp1_offset = region_offset(&r[BP1]);
+	l->bp1_size = region_sz(&r[BP1]);
+	l->bp2_offset = region_offset(&r[BP2]);
+	l->bp2_size = region_sz(&r[BP2]);
+	l->bp3_offset = region_offset(&r[BP3]);
+	l->bp3_size = region_sz(&r[BP3]);
 	l->checksum = 0;		/* unused */
 
 	return l;

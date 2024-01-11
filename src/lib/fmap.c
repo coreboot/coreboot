@@ -235,15 +235,15 @@ int fmap_find_region_name(const struct region * const ar,
 		if (area == NULL)
 			return -1;
 
-		if ((ar->offset != le32toh(area->offset)) ||
-		    (ar->size != le32toh(area->size))) {
+		if (region_offset(ar) != le32toh(area->offset) ||
+		    region_sz(ar) != le32toh(area->size)) {
 			rdev_munmap(&fmrd, area);
 			offset += sizeof(struct fmap_area);
 			continue;
 		}
 
 		printk(BIOS_DEBUG, "FMAP: area (%zx, %zx) found, named %s\n",
-			ar->offset, ar->size, area->name);
+			region_offset(ar), region_sz(ar), area->name);
 
 		memcpy(name, area->name, FMAP_STRLEN);
 
@@ -253,7 +253,7 @@ int fmap_find_region_name(const struct region * const ar,
 	}
 
 	printk(BIOS_DEBUG, "FMAP: area (%zx, %zx) not found\n",
-		ar->offset, ar->size);
+		region_offset(ar), region_sz(ar));
 
 	return -1;
 }

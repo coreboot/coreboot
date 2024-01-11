@@ -338,7 +338,7 @@ config CPU_BCLK_MHZ
 
 config CONSOLE_UART_BASE_ADDRESS
 	hex
-	default 0xddffc000
+	default 0xcdffc000
 	depends on INTEL_LPSS_UART_FOR_CONSOLE
 
 # M and N divisor values for clock frequency configuration.
@@ -395,5 +395,8 @@ config BOOTBLOCK_IN_CBFS
 config HAVE_PAM0_REGISTER
 	bool
 	default n
+
+config DOMAIN_RESOURCE_32BIT_LIMIT
+	default PCR_BASE_ADDRESS
 
 endif

@@ -278,6 +278,7 @@ static int create_smbios_type9(int *handle, unsigned long *current)
 					  slot_id,
 					  characteristics_1,
 					  characteristics_2,
+					  0, /* segment group */
 					  stack_busnos[slotinfo[index].stack],
 					  slotinfo[index].dev_func);
 	}

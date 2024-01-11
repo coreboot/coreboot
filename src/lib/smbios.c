@@ -639,7 +639,8 @@ int smbios_write_type9(unsigned long *current, int *handle,
 			const enum slot_data_bus_bandwidth bandwidth,
 			const enum misc_slot_usage usage,
 			const enum misc_slot_length length,
-			const u16 id, u8 slot_char1, u8 slot_char2, u8 bus, u8 dev_func)
+			const u16 id, u8 slot_char1, u8 slot_char2,
+			u8 segment_group, u8 bus, u8 dev_func)
 {
 	struct smbios_type9 *t = smbios_carve_table(*current, SMBIOS_SYSTEM_SLOTS,
 						    sizeof(*t), *handle);
@@ -653,7 +654,7 @@ int smbios_write_type9(unsigned long *current, int *handle,
 	t->slot_length = length;
 	t->slot_characteristics_1 = slot_char1;
 	t->slot_characteristics_2 = slot_char2;
-	t->segment_group_number = 0;
+	t->segment_group_number = segment_group;
 	t->bus_number = bus;
 	t->device_function_number = dev_func;
 	t->data_bus_width = SlotDataBusWidthOther;
@@ -1165,6 +1166,7 @@ static int smbios_generate_type9_from_devtree(struct device *dev, int *handle,
 				  length,
 				  0,
 				  1,
+				  0,
 				  0,
 				  dev->bus->secondary,
 				  dev->path.pci.devfn);

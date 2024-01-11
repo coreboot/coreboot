@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include "ubtc.asl"
-
 Scope (\_SB.PCI0.LPCB)
 {
 	#include "cmos.asl"

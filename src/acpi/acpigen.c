@@ -868,6 +868,17 @@ void acpigen_write_BBN(uint8_t base_bus_number)
 	acpigen_pop_len();
 }
 
+void acpigen_write_SEG(uint8_t segment_group_number)
+{
+	/*
+	 * Method (_SEG, 0, NotSerialized) { Return (status) }
+	 */
+	acpigen_write_method("_SEG", 0);
+	acpigen_emit_byte(RETURN_OP);
+	acpigen_write_byte(segment_group_number);
+	acpigen_pop_len();
+}
+
 void acpigen_write_LPI_package(u64 level, const struct acpi_lpi_state *states, u16 nentries)
 {
 	/*

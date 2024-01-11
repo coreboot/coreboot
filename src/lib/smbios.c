@@ -971,7 +971,7 @@ int smbios_write_type39(unsigned long *current, int *handle,
 }
 
 int smbios_write_type41(unsigned long *current, int *handle,
-			const char *name, u8 instance, u16 segment,
+			const char *name, u8 instance, u16 segment_group,
 			u8 bus, u8 device, u8 function, u8 device_type)
 {
 	struct smbios_type41 *t = smbios_carve_table(*current,
@@ -982,7 +982,7 @@ int smbios_write_type41(unsigned long *current, int *handle,
 	t->device_type = device_type;
 	t->device_status = 1;
 	t->device_type_instance = instance;
-	t->segment_group_number = segment;
+	t->segment_group_number = segment_group;
 	t->bus_number = bus;
 	t->device_number = device;
 	t->function_number = function;
@@ -1114,7 +1114,7 @@ static int smbios_generate_type41_from_devtree(struct device *dev, int *handle,
 	return smbios_write_type41(current, handle,
 					name, // name
 					instance_id, // inst
-					0, // segment
+					0, // segment group
 					dev->bus->secondary, //bus
 					PCI_SLOT(dev->path.pci.devfn), // device
 					PCI_FUNC(dev->path.pci.devfn), // func

@@ -41,7 +41,7 @@ int smbios_write_type38(unsigned long *current, int *handle,
 			const u64 base_addr, const u8 base_modifier,
 			const u8 irq);
 int smbios_write_type41(unsigned long *current, int *handle,
-			const char *name, u8 instance, u16 segment,
+			const char *name, u8 instance, u16 segment_group,
 			u8 bus, u8 device, u8 function, u8 device_type);
 enum smbios_temp_location;
 enum smbios_temp_status;

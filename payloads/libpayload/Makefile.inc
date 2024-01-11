@@ -128,8 +128,8 @@ install: real-target
 	install -m 755 -d $(DESTDIR)/libpayload/include
 	find include -type d -exec install -m755 -d $(DESTDIR)/libpayload/{} \;
 	find include -type f -exec install -m644 {} $(DESTDIR)/libpayload/{} \;
-	cd $(coreboottop)/src/commonlib/bsd && find include -type d -exec install -m755 -d $(DESTDIR)/libpayload/{} \;
-	cd $(coreboottop)/src/commonlib/bsd && find include -type f -exec install -m644 {} $(DESTDIR)/libpayload/{} \;
+	cd $(coreboottop)/src/commonlib/bsd && find include -type d -exec install -m755 -d $(abspath $(DESTDIR))/libpayload/{} \;
+	cd $(coreboottop)/src/commonlib/bsd && find include -type f -exec install -m644 {} $(abspath $(DESTDIR))/libpayload/{} \;
 	install -m 644 $(obj)/libpayload-config.h $(DESTDIR)/libpayload/include
 	$(foreach item,$(includes), \
 		install -m 755 -d $(DESTDIR)/libpayload/include/$(call extract_nth,2,$(item)); \

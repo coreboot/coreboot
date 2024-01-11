@@ -1,4 +1,9 @@
 fw_config
+	field WIFI 10 11
+		option UNKNOWN		0
+		option WIFI_6		1
+		option WIFI_6E		2
+	end
 	field CAMERA 12 13
 		option UF_720P_WF		0
 		option UF_1080P			1

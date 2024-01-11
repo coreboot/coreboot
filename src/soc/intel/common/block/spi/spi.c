@@ -123,6 +123,9 @@ struct device_operations spi_dev_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
+	PCI_DID_INTEL_LNL_GSPI0,
+	PCI_DID_INTEL_LNL_GSPI1,
+	PCI_DID_INTEL_LNL_GSPI2,
 	PCI_DID_INTEL_MTL_GSPI0,
 	PCI_DID_INTEL_MTL_GSPI1,
 	PCI_DID_INTEL_MTL_GSPI2,

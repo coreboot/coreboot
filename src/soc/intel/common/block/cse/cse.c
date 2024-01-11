@@ -1477,6 +1477,7 @@ struct device_operations cse_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
+	PCI_DID_INTEL_LNL_CSE0,
 	PCI_DID_INTEL_MTL_CSE0,
 	PCI_DID_INTEL_APL_CSE0,
 	PCI_DID_INTEL_GLK_CSE0,

@@ -1,4 +1,8 @@
 fw_config
+	field WIFI_SAR_ID 21 22
+		option WIFI_SAR_ID_0			0
+		option WIFI_SAR_ID_1			1
+	end
 	field AUDIO_CODEC_SOURCE 41 43
 		option AUDIO_CODEC_UNPROVISIONED 0
 		option AUDIO_CODEC_ALC5682 1

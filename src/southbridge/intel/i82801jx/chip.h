@@ -3,6 +3,7 @@
 #ifndef SOUTHBRIDGE_INTEL_I82801JX_CHIP_H
 #define SOUTHBRIDGE_INTEL_I82801JX_CHIP_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
 enum {
@@ -59,7 +60,7 @@ struct southbridge_intel_i82801jx_config {
 		uint8_t scale : 2;
 	} pcie_power_limits[6];
 
-	uint8_t pcie_hotplug_map[8];
+	bool pcie_hotplug_map[8];
 
 	/* Additional LPC IO decode ranges */
 	uint32_t gen1_dec;

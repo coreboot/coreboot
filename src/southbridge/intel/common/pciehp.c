@@ -4,10 +4,11 @@
 #include <acpi/acpigen.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <stdbool.h>
 
 #include "pciehp.h"
 
-void intel_acpi_pcie_hotplug_generator(u8 *hotplug_map, int port_number)
+void intel_acpi_pcie_hotplug_generator(bool *hotplug_map, int port_number)
 {
 	int port;
 	int have_hotplug = 0;

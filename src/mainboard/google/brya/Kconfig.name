@@ -152,3 +152,6 @@ config BOARD_GOOGLE_DOCHI
 
 config BOARD_GOOGLE_ANRAGGAR
 	bool "->  Anraggar"
+
+config BOARD_GOOGLE_XOL
+	bool "->  Xol"

@@ -12,7 +12,6 @@
 #include "gpio.h"
 #include <gpio.h>
 #include <timer.h>
-#include <delay.h>
 
 static int64_t bmc_ready_elapsed = 0;
 

@@ -66,7 +66,6 @@
 - Osiris
 - Pirrha
 - Primus
-- Primus4ES
 - Pujjo
 - Quandiso
 - Redrix

@@ -96,9 +96,6 @@ config BOARD_GOOGLE_PIRRHA
 config BOARD_GOOGLE_PRIMUS
 	bool "->  Primus"
 
-config BOARD_GOOGLE_PRIMUS4ES
-	bool "->  Primus4ES"
-
 config BOARD_GOOGLE_PUJJO
 	bool "->  Pujjo"
 

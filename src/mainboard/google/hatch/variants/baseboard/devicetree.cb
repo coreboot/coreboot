@@ -162,7 +162,6 @@ chip soc/intel/cannonlake
 	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# WWAN
 
 	# Enable Root port 9(x4) for NVMe.
-	register "PcieRpEnable[8]" = "true"
 	register "PcieRpLtrEnable[8]" = "true"
 	# RP 9 uses CLK SRC 1
 	register "PcieClkSrcUsage[1]" = "8"
@@ -170,7 +169,6 @@ chip soc/intel/cannonlake
 	register "PcieClkSrcClkReq[1]" = "1"
 
 	# PCIe port 14 for M.2 E-key WLAN
-	register "PcieRpEnable[13]" = "true"
 	register "PcieRpLtrEnable[13]" = "true"
 	# RP 14 uses CLK SRC 3
 	register "PcieClkSrcUsage[3]" = "13"

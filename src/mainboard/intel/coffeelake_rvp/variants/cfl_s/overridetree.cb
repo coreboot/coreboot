@@ -40,31 +40,6 @@ chip soc/intel/cannonlake
 	register "PchHdaDspEnable" = "false"
 	register "PchHdaAudioLinkHda" = "1"
 
-	register "PcieRpEnable[0]" = "true"
-	register "PcieRpEnable[1]" = "true"
-	register "PcieRpEnable[2]" = "true"
-	register "PcieRpEnable[3]" = "true"
-	register "PcieRpEnable[4]" = "true"
-	register "PcieRpEnable[5]" = "false"
-	register "PcieRpEnable[6]" = "false"
-	register "PcieRpEnable[7]" = "false"
-	register "PcieRpEnable[8]" = "true"
-	register "PcieRpEnable[9]" = "false"
-	register "PcieRpEnable[10]" = "false"
-	register "PcieRpEnable[11]" = "false"
-	register "PcieRpEnable[12]" = "false"
-	register "PcieRpEnable[13]" = "false"
-	register "PcieRpEnable[14]" = "false"
-	register "PcieRpEnable[15]" = "false"
-	register "PcieRpEnable[16]" = "true"
-	register "PcieRpEnable[17]" = "true"
-	register "PcieRpEnable[18]" = "true"
-	register "PcieRpEnable[19]" = "true"
-	register "PcieRpEnable[20]" = "true"
-	register "PcieRpEnable[21]" = "true"
-	register "PcieRpEnable[22]" = "true"
-	register "PcieRpEnable[23]" = "true"
-
 	register "PcieClkSrcUsage[0]" = "PCIE_CLK_NOTUSED"
 	register "PcieClkSrcUsage[1]" = "8"
 	register "PcieClkSrcUsage[2]" = "PCIE_CLK_LAN"
@@ -103,38 +78,28 @@ chip soc/intel/cannonlake
 		device pci 19.1 off end # I2C #5 (Not available on PCH-H)
 		device pci 19.2 on  end # UART #2
 		device pci 1a.0 on  end # eMMC
-		device pci 1c.0 on	# PCI Express Port 1
+		device ref pcie_rp1 on
 			register "PcieRpSlotImplemented[0]" = "1"
 		end
-		device pci 1c.4 on	# PCI Express Port 5
+		device ref pcie_rp5 on
 			register "PcieRpSlotImplemented[4]" = "1"
 		end
-		device pci 1c.5 off end # PCI Express Port 6
-		device pci 1c.6 off end # PCI Express Port 7
-		device pci 1c.7 off end # PCI Express Port 8
-		device pci 1d.0 on	# PCI Express Port 9 x4 SLOT 1
+		device ref pcie_rp9 on	# x4 SLOT 1
 			register "PcieRpSlotImplemented[8]" = "1"
 		end
-		device pci 1d.1 off end # PCI Express Port 10
-		device pci 1d.2 off end # PCI Express Port 11
-		device pci 1d.3 off end # PCI Express Port 12
-		device pci 1d.4 off end # PCI Express Port 13
-		device pci 1d.5 off end # PCI Express Port 14
-		device pci 1d.6 off end # PCI Express Port 15
-		device pci 1d.7 off end # PCI Express Port 16
-		device pci 1b.0 on	# PCI Express Port 17
+		device ref pcie_rp17 on
 			register "PcieRpSlotImplemented[16]" = "1"
 		end
-		device pci 1b.1 on	# PCI Express Port 18
+		device ref pcie_rp18 on
 			register "PcieRpSlotImplemented[17]" = "1"
 		end
-		device pci 1b.2 on	# PCI Express Port 19
+		device ref pcie_rp19 on
 			register "PcieRpSlotImplemented[18]" = "1"
 		end
-		device pci 1b.3 on	# PCI Express Port 20
+		device ref pcie_rp20 on
 			register "PcieRpSlotImplemented[19]" = "1"
 		end
-		device pci 1b.4 on	# PCI Express Port 21 X4 SLOT 2
+		device ref pcie_rp21 on	# x4 SLOT 2
 			register "PcieRpSlotImplemented[20]" = "1"
 		end
 		device pci 1e.1 off end # UART #1

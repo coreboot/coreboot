@@ -81,39 +81,33 @@ chip soc/intel/cannonlake
 			end
 		end
 		device ref pcie_rp1		off
-			register "PcieRpEnable[0]" = "false" # Debug (x1)
 			register "PcieClkSrcUsage[2]" = "0"
 			register "PcieClkSrcClkReq[2]" = "2"
 		end
 		device ref pcie_rp5		on
-			register "PcieRpEnable[4]" = "true" # CORE (x1)
 			register "PcieClkSrcUsage[4]" = "4"
 			register "PcieClkSrcClkReq[4]" = "4"
 			register "PcieRpSlotImplemented[4]" = "1"
 		end
 		device ref pcie_rp6		on
 			device pci 00.0 on end	# i210 (x1)
-			register "PcieRpEnable[5]" = "true"
 			register "PcieClkSrcUsage[5]" = "5"
 			register "PcieClkSrcClkReq[5]" = "5"
 			register "PcieRpSlotImplemented[5]" = "0"
 		end
 		device ref pcie_rp7		on
 			device pci 00.0 on end	# VL805 Front Rack/UIB (x1)
-			register "PcieRpEnable[6]" = "true"
 			register "PcieClkSrcUsage[1]" = "6"
 			register "PcieClkSrcClkReq[1]" = "1"
 			register "PcieRpSlotImplemented[6]" = "0"
 		end
 		device ref pcie_rp8		on
 			device pci 00.0 on end	# VL805 Back MB (x1)
-			register "PcieRpEnable[7]" = "true"
 			register "PcieClkSrcUsage[0]" = "7"
 			register "PcieClkSrcClkReq[0]" = "0"
 			register "PcieRpSlotImplemented[7]" = "0"
 		end
 		device ref pcie_rp17		on
-			register "PcieRpEnable[16]" = "true" # NVMe (x4)
 			register "PcieClkSrcUsage[7]" = "16"
 			register "PcieClkSrcClkReq[7]" = "7"
 			register "PcieRpSlotImplemented[16]" = "1"

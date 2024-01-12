@@ -166,7 +166,6 @@ struct soc_intel_cannonlake_config {
 	bool PchHdaAudioLinkSndw4;
 
 	/* PCIe Root Ports */
-	bool PcieRpEnable[CONFIG_MAX_ROOT_PORTS];
 	/* PCIe output clocks type to PCIe devices.
 	 * 0-23: PCH rootport, 0x70: LAN, 0x80: unspecified but in use,
 	 * 0xFF: not used */

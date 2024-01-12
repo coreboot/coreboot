@@ -6,11 +6,13 @@
 #include <console/console.h>
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
+#include <intelblocks/pcie_rp.h>
 #include <intelblocks/pmclib.h>
 #include <option.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
+#include <soc/pcie.h>
 #include <soc/romstage.h>
 #include <types.h>
 
@@ -24,7 +26,6 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
 	FSP_M_TEST_CONFIG *tconfig = &mupd->FspmTestConfig;
 	unsigned int i;
-	uint32_t mask = 0;
 
 	m_cfg->HyperThreading = get_uint_option("hyper_threading", CONFIG(FSP_HYPERTHREADING));
 
@@ -51,11 +52,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 		m_cfg->UserBd = BOARD_TYPE_ULT_ULX;
 	m_cfg->RMT = config->RMT;
 
-	for (i = 0; i < ARRAY_SIZE(config->PcieRpEnable); i++) {
-		if (config->PcieRpEnable[i])
-			mask |= (1 << i);
-	}
-	m_cfg->PcieRpEnableMask = mask;
+	m_cfg->PcieRpEnableMask = pcie_rp_enable_mask(get_pch_pcie_rp_table());
 	m_cfg->PrmrrSize = get_valid_prmrr_size();
 	m_cfg->EnableC6Dram = config->enable_c6dram;
 #if CONFIG(SOC_INTEL_COMETLAKE)

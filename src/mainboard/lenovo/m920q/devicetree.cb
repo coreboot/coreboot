@@ -67,28 +67,24 @@ chip soc/intel/cannonlake
 		end
 
 		device ref pcie_rp6	on # WLAN
-			register "PcieRpEnable[5]"		= "1"
 			register "PcieRpSlotImplemented[5]"	= "1"
 			register "PcieClkSrcUsage[3]"		= "5"
 			register "PcieClkSrcClkReq[3]"		= "3"
 		end
 
 		device ref pcie_rp9	on # PCIe x4
-			register "PcieRpEnable[8]"		= "1"
 			register "PcieRpSlotImplemented[8]"	= "1"
 			register "PcieClkSrcUsage[2]"		= "8"
 			register "PcieClkSrcClkReq[2]"		= "2"
 		end
 
 		device ref pcie_rp17 on # M.2 SSD #2
-			register "PcieRpEnable[16]"		= "1"
 			register "PcieRpSlotImplemented[16]"	= "1"
 			register "PcieClkSrcUsage[10]"		= "16"
 			register "PcieClkSrcClkReq[10]"		= "10"
 		end
 
 		device ref pcie_rp21 on # M.2 SSD #1
-			register "PcieRpEnable[20]"		= "1"
 			register "PcieRpSlotImplemented[20]"	= "1"
 			register "PcieClkSrcUsage[4]"		= "20"
 			register "PcieClkSrcClkReq[4]"		= "4"

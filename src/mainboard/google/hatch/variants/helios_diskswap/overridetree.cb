@@ -20,7 +20,6 @@ chip soc/intel/cannonlake
 	}"
 
 	# Enable Root port 9(x2) for NVMe.
-	register "PcieRpEnable[8]" = "true"
 	register "PcieRpLtrEnable[8]" = "true"
 	# RP 9 uses CLK SRC 1
 	register "PcieClkSrcUsage[1]" = "8"
@@ -28,7 +27,6 @@ chip soc/intel/cannonlake
 	register "PcieClkSrcClkReq[1]" = "1"
 
 	# Enable Root port 11(x2) for NVMe.
-	register "PcieRpEnable[10]" = "true"
 	register "PcieRpLtrEnable[10]" = "true"
 	# RP 11 uses CLK SRC 2
 	register "PcieClkSrcUsage[2]" = "10"
@@ -36,7 +34,6 @@ chip soc/intel/cannonlake
 	register "PcieClkSrcClkReq[2]" = "1"
 
 	# No PCIe WiFi
-	register "PcieRpEnable[13]" = "false"
 
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
@@ -184,8 +181,9 @@ chip soc/intel/cannonlake
 				device i2c 3b on end
 			end
 		end #I2C #4
-		device ref pcie_rp9	on end # (x2 NVMe)
-		device ref pcie_rp11	on end # (x2 NVMe)
+		device ref pcie_rp9	on  end # (x2 NVMe)
+		device ref pcie_rp11	on  end # (x2 NVMe)
+		device ref pcie_rp14	off end # No PCIe Wifi
 		device ref gspi1	on
 			chip drivers/spi/acpi
 				register "name" = ""CRFP""

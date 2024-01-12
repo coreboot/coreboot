@@ -20,7 +20,6 @@ chip soc/intel/cannonlake
 	}"
 
 	# No PCIe WiFi
-	register "PcieRpEnable[13]" = "false"
 
 	# Enable DMIC1
 	register "PchHdaAudioLinkDmic1" = "1"
@@ -219,8 +218,7 @@ chip soc/intel/cannonlake
 				device i2c 0x39 on end
 			end
 		end
-		# No PCIe WiFi
-		device ref pcie_rp14	off end
+		device ref pcie_rp14	off end # No PCIe Wifi
 		device ref emmc		on end
 		device ref hda		on
 			chip drivers/sof

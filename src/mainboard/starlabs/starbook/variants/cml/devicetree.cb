@@ -163,7 +163,6 @@ chip soc/intel/cannonlake
 		device ref uart2 on  end
 		device ref pcie_rp9 on						# SSD x4
 			register "PcieRpSlotImplemented[8]"	= "1"
-			register "PcieRpEnable[8]"		= "1"
 			register "PcieRpLtrEnable[8]"		= "true"
 			register "PcieClkSrcUsage[1]"		= "0x08"
 			register "PcieClkSrcClkReq[1]"		= "1"

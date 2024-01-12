@@ -20,7 +20,6 @@ chip soc/intel/cannonlake
 	}"
 
 	# No PCIe WiFi
-	register "PcieRpEnable[13]" = "false"
 
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
@@ -176,6 +175,7 @@ chip soc/intel/cannonlake
 				device i2c 3b on end
 			end
 		end #I2C #4
+		device ref pcie_rp14	off end # No PCIe Wifi
 		device ref gspi1	on
 			chip drivers/spi/acpi
 				register "name" = ""CRFP""

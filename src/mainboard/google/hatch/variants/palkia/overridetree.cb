@@ -22,9 +22,6 @@ chip soc/intel/cannonlake
 	register "usb2_ports[2]" = "USB2_PORT_LONG(OC_SKIP)"    # SD CARD
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # SD CARD
 
-	# No PCIe WiFi
-	register "PcieRpEnable[13]" = "false"
-
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field	     |	Value			 |
@@ -175,6 +172,7 @@ chip soc/intel/cannonlake
 				device i2c 39 on end
 			end
 		end
+		device ref pcie_rp14	off end # No PCIe Wifi
 		device ref hda		on
 			chip drivers/generic/max98357a
 				register "hid" = ""MX98357A""

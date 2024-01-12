@@ -20,6 +20,7 @@ bootblock-y += p2sb.c
 
 romstage-y += espi.c
 romstage-y += meminit.c
+romstage-y += pcie_rp.c
 romstage-y += reset.c
 
 ramstage-y += acpi.c

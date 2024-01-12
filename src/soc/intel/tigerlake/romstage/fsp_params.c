@@ -9,6 +9,7 @@
 #include <fsp/util.h>
 #include <gpio.h>
 #include <intelblocks/cpulib.h>
+#include <intelblocks/pcie_rp.h>
 #include <option.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>
@@ -21,7 +22,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_tigerlake_config *config)
 {
 	unsigned int i;
-	uint32_t cpu_id, mask = 0;
+	uint32_t cpu_id;
 
 	m_cfg->HyperThreading = get_uint_option("hyper_threading", CONFIG(FSP_HYPERTHREADING));
 
@@ -49,11 +50,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		m_cfg->CpuRatio = (flex_ratio.lo >> 8) & 0xff;
 	}
 
-	for (i = 0; i < ARRAY_SIZE(config->PcieRpEnable); i++) {
-		if (config->PcieRpEnable[i])
-			mask |= (1 << i);
-	}
-	m_cfg->PcieRpEnableMask = mask;
+	m_cfg->PcieRpEnableMask = pcie_rp_enable_mask(soc_get_pch_rp_groups());
 
 	memcpy(m_cfg->PcieClkSrcUsage, config->PcieClkSrcUsage,
 		sizeof(config->PcieClkSrcUsage));

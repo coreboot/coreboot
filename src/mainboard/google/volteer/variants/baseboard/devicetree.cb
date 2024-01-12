@@ -112,28 +112,24 @@ chip soc/intel/tigerlake
 	# EC memory map range is 0x900-0x9ff
 	register "gen3_dec" = "0x00fc0901"
 
-	# Enable NVMe PCIE 9 using clk 0
-	register "PcieRpEnable[8]" = "1"
+	# NVMe PCIE 9 using clk 0
 	register "PcieRpLtrEnable[8]" = "1"
 	register "PcieClkSrcUsage[0]" = "8"
 	register "PcieClkSrcClkReq[0]" = "0"
 	register "PcieRpSlotImplemented[8]" = "1"
 
-	# Enable Optane PCIE 11 using clk 0
-	register "PcieRpEnable[10]" = "1"
+	# Optane PCIE 11 using clk 0
 	register "PcieRpLtrEnable[10]" = "1"
 	register "HybridStorageMode" = "0"
 	register "PcieRpSlotImplemented[10]" = "1"
 
-	# Enable SD Card PCIE 8 using clk 3
-	register "PcieRpEnable[7]" = "1"
+	# SD Card PCIE 8 using clk 3
 	register "PcieRpLtrEnable[7]" = "1"
 	register "PcieRpHotPlug[7]" = "1"
 	register "PcieClkSrcUsage[3]" = "7"
 	register "PcieClkSrcClkReq[3]" = "3"
 
-	# Enable WLAN PCIE 7 using clk 1
-	register "PcieRpEnable[6]" = "1"
+	# WLAN PCIE 7 using clk 1
 	register "PcieRpLtrEnable[6]" = "1"
 	register "PcieClkSrcUsage[1]" = "6"
 	register "PcieClkSrcClkReq[1]" = "1"
@@ -469,7 +465,6 @@ chip soc/intel/tigerlake
 		device ref i2c3 on end
 		device ref heci1 on end
 		device ref sata on end
-		device ref pcie_rp1 on end
 		device ref pcie_rp7 on end
 		device ref pcie_rp8 on
 			probe DB_SD SD_GL9755S

@@ -154,7 +154,6 @@ chip soc/intel/tigerlake
 			end
 		end
 		device ref pcie_rp3 on
-			register "PcieRpEnable[2]" = "true"
 			register "PcieRpLtrEnable[2]" = "true"
 			register "PcieClkSrcUsage[1]" = "2"
 			register "PcieClkSrcClkReq[1]" = "1"
@@ -167,14 +166,12 @@ chip soc/intel/tigerlake
 		device ref pcie_rp6 on
 			# Card reader
 			device pci 00.0 on end
-			register "PcieRpEnable[5]" = "true"
 			register "PcieRpLtrEnable[5]" = "true"
 			register "PcieClkSrcUsage[2]" = "5"
 			register "PcieClkSrcClkReq[2]" = "2"
 		end
 		device ref pcie_rp9 on
 			# SSD2 - PCIe mode
-			register "PcieRpEnable[8]" = "true"
 			register "PcieRpLtrEnable[8]" = "true"
 			register "PcieClkSrcUsage[0]" = "8"
 			register "PcieClkSrcClkReq[0]" = "0"

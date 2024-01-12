@@ -258,7 +258,6 @@ struct soc_intel_tigerlake_config {
 	uint8_t PchHdaIDispCodecDisconnect;
 
 	/* PCIe Root Ports */
-	uint8_t PcieRpEnable[CONFIG_MAX_ROOT_PORTS];
 	uint8_t PcieRpHotPlug[CONFIG_MAX_ROOT_PORTS];
 	/* Implemented as slot or built-in? */
 	uint8_t PcieRpSlotImplemented[CONFIG_MAX_ROOT_PORTS];

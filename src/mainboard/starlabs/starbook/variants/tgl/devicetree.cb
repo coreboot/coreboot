@@ -133,7 +133,6 @@ chip soc/intel/tigerlake
 		device ref uart2	on  end
 		device ref pcie_rp9	on
 			register "HybridStorageMode"		= "0"
-			register "PcieRpEnable[8]"		= "1"
 			register "PcieRpLtrEnable[8]"		= "1"
 			register "PcieClkSrcUsage[3]"		= "0x08"
 			register "PcieClkSrcClkReq[3]"		= "3"

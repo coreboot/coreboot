@@ -5,8 +5,10 @@
 #include <device/device.h>
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
+#include <intelblocks/pcie_rp.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
+#include <soc/pcie.h>
 #include <soc/romstage.h>
 #include <soc/soc_chip.h>
 
@@ -14,7 +16,6 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_jasperlake_config *config)
 {
 	unsigned int i;
-	uint32_t mask = 0;
 
 	/*
 	 * If IGD is enabled, set IGD stolen size to 60MB.
@@ -61,13 +62,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		}
 	}
 
-	/* PCIe root port configuration */
-	for (i = 0; i < ARRAY_SIZE(config->PcieRpEnable); i++) {
-		if (config->PcieRpEnable[i])
-			mask |= (1 << i);
-	}
-
-	m_cfg->PcieRpEnableMask = mask;
+	m_cfg->PcieRpEnableMask = pcie_rp_enable_mask(pch_rp_groups);
 
 	FSP_ARRAY_LOAD(m_cfg->PcieClkSrcUsage, config->PcieClkSrcUsage);
 	FSP_ARRAY_LOAD(m_cfg->PcieClkSrcClkReq, config->PcieClkSrcClkReq);

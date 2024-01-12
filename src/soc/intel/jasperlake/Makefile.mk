@@ -22,6 +22,7 @@ bootblock-y += p2sb.c
 romstage-y += espi.c
 romstage-y += gpio.c
 romstage-y += meminit.c
+romstage-y += pcie_rp.c
 romstage-y += reset.c
 
 ramstage-y += acpi.c
@@ -35,6 +36,7 @@ ramstage-y += gpio.c
 ramstage-y += graphics.c
 ramstage-y += lockdown.c
 ramstage-y += p2sb.c
+ramstage-y += pcie_rp.c
 ramstage-y += pmc.c
 ramstage-y += reset.c
 ramstage-y += systemagent.c

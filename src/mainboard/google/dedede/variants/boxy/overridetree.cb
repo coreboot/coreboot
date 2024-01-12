@@ -46,18 +46,13 @@ chip soc/intel/jasperlake
 		.tdp_pl4 = 60,
 	}"
 
-	# Enable Root Port 3 (index 2) for LAN
+	# Root Port 3 (index 2) for LAN
 	# External PCIe port 7 is mapped to PCIe Root Port 3
-	register "PcieRpEnable[2]" = "1"
 	register "PcieClkSrcUsage[4]" = "2"
 
-	# Enable Root Port 7 (index 6) for WLAN
+	# Root Port 7 (index 6) for WLAN
 	# External PCIe port 3 is mapped to PCIe Root Port 7
-	register "PcieRpEnable[6]" = "1"
 	register "PcieClkSrcUsage[3]" = "6"
-
-	# Disable PCIe Root Port 8
-	register "PcieRpEnable[7]" = "0"
 
 	# Audio related configurations
 	register "PchHdaAudioLinkDmicEnable[0]" = "0"

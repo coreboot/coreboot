@@ -107,17 +107,6 @@ chip soc/intel/jasperlake
 		[PchSerialIoIndexUART2] = PchSerialIoSkipInit,
 	}"
 
-	# PCIE Root Port Configuration
-	register "PcieRpEnable[0]" = "0"
-	register "PcieRpEnable[1]" = "0"
-	register "PcieRpEnable[2]" = "0"
-	register "PcieRpEnable[3]" = "0"
-	register "PcieRpEnable[4]" = "0"
-	register "PcieRpEnable[5]" = "0"
-	register "PcieRpEnable[6]" = "0"
-	# PCIe Root Port 8 (index 7) hosts M.2 E-key WLAN.
-	register "PcieRpEnable[7]" = "1"
-
 	register "PcieClkSrcUsage[0]" = "0xff"
 	register "PcieClkSrcUsage[1]" = "0xff"
 	register "PcieClkSrcUsage[2]" = "0xff"
@@ -394,7 +383,7 @@ chip soc/intel/jasperlake
 		device pci 1c.5 off end # PCI Express Root Port 6
 		device pci 1c.6 off end # PCI Express Root Port 7
 		# External PCIe port 4 is mapped to PCIe Root port 8
-		device pci 1c.7 on  end # PCI Express Root Port 8 - WLAN
+		device pci 1c.7 on  end # PCI Express Root Port 8 - hosts M.2 E-key WLAN
 		device pci 1e.0 off end # UART 0
 		device pci 1e.1 off end # UART 1
 		device pci 1e.2 on

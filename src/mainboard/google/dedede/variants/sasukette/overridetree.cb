@@ -8,8 +8,6 @@ fw_config
 end
 
 chip soc/intel/jasperlake
-	# Disable PCIe Root Port 8 (index 7)
-	register "PcieRpEnable[7]" = "0"
 	# Disable PCIe Clock Source 4 (index 3)
 	register "PcieClkSrcUsage[3]" = "0xff"
 
@@ -227,6 +225,7 @@ chip soc/intel/jasperlake
 				end
 			end
 		end #I2C 4
+		device pci 1c.7 off end # PCI Express Root Port 8
 		device pci 1f.3 on
 			chip drivers/generic/alc1015
 				register "sdb" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D17)"

@@ -63,11 +63,6 @@ chip soc/intel/jasperlake
 	register "PchHdaAudioLinkDmicEnable[0]" = "1"
 	register "PchHdaAudioLinkDmicEnable[1]" = "1"
 
-	# PCIe port 1 for M.2 E-key WLAN
-	# Enable Root Port 4(x4) for NVMe
-	register "PcieRpEnable[1]" = "1"
-	register "PcieRpEnable[4]" = "1"
-
 	# Enable ClkReqDetect 1 for WLAN
 	# Enable ClkReqDetect 4 for NVMe
 	register "PcieRpClkReqDetect[1]" = "1"
@@ -469,14 +464,8 @@ chip soc/intel/jasperlake
 
 		device pci 19.2 on  end # UART #2
 		device pci 1a.0 on  end # eMMC
-		device pci 1c.0 off end # PCI Express Port 1
-		device pci 1c.1 on  end # PCI Express Port 2 - WLAN
-		device pci 1c.2 off end # PCI Express Port 3
-		device pci 1c.3 off end # PCI Express Port 4
+		device pci 1c.1 on  end # PCI Express Port 2 - M.2 E-key WLAN
 		device pci 1c.4 on  end # PCI Express Port 5 - NVMe
-		device pci 1c.5 off end # PCI Express Port 6
-		device pci 1c.6 off end # PCI Express Port 7
-		device pci 1c.7 off end # PCI Express Port 8
 		device pci 1e.0 on  end # UART #0
 		device pci 1e.1 off end # UART #1
 		device pci 1e.2 off end # GSPI #0

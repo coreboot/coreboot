@@ -43,12 +43,6 @@ chip soc/intel/elkhartlake
 	register "usb3_ports[3]" = "USB3_PORT_EMPTY"
 
 	# PCIe root ports related UPDs
-	register "PcieRpEnable[0]" = "1"
-	register "PcieRpEnable[1]" = "1"
-	register "PcieRpEnable[2]" = "1"
-	register "PcieRpEnable[4]" = "1"
-	register "PcieRpEnable[6]" = "1"
-
 	register "PcieClkSrcUsage[0]" = "PCIE_CLK_NOTUSED"
 	register "PcieClkSrcUsage[1]" = "PCIE_CLK_FREE"
 	register "PcieClkSrcUsage[2]" = "PCIE_CLK_FREE"

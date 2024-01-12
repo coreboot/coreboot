@@ -212,7 +212,6 @@ struct soc_intel_elkhartlake_config {
 	uint8_t PchHdaAudioLinkSndwEnable[MAX_HD_AUDIO_SNDW_LINKS];
 
 	/* PCIe Root Ports */
-	uint8_t PcieRpEnable[CONFIG_MAX_ROOT_PORTS];
 	uint8_t PcieRpHotPlug[CONFIG_MAX_ROOT_PORTS];
 
 	/* PCIe output clocks type to PCIe devices.

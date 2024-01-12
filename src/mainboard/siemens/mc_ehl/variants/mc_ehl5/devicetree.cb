@@ -40,9 +40,6 @@ chip soc/intel/elkhartlake
 	register "SkipCpuReplacementCheck" = "1"
 
 	# PCIe root ports related UPDs
-	register "PcieRpEnable[1]" = "1"
-	register "PcieRpEnable[6]" = "1"
-
 	register "PcieClkSrcUsage[0]" = "PCIE_CLK_NOTUSED"
 	register "PcieClkSrcUsage[1]" = "PCIE_CLK_FREE"
 	register "PcieClkSrcUsage[2]" = "PCIE_CLK_NOTUSED"

@@ -22,8 +22,11 @@
 #define  TCO_BASE_EN		(1 << 8)
 #define  TCO_BASE_LOCK		(1 << 0)
 
-/* Get base address of TCO I/O registers. */
-static uint16_t tco_get_bar(void)
+#define TCO_TMR_MIN_VALUE	2
+#define TCO_TMR_MAX_VALUE	1023
+#define TCO_TMR_PERIOD_MS	600
+
+uint16_t tco_get_bar(void)
 {
 	return TCO_BASE_ADDRESS;
 }
@@ -72,6 +75,9 @@ uint32_t tco_reset_status(void)
 	/* TCO Status 2 register */
 	tco2_sts = tco_read_reg(TCO2_STS);
 	tco_write_reg(TCO2_STS, tco2_sts | TCO2_STS_SECOND_TO);
+
+	if (CONFIG(ACPI_WDAT_WDT))
+		tco_write_reg(TCO_MESSAGE1, tco2_sts & TCO2_STS_SECOND_TO);
 
 	return (tco2_sts << 16) | tco1_sts;
 }
@@ -136,4 +142,19 @@ void tco_configure(void)
 	/* Enable intruder interrupt if TCO interrupts are enabled*/
 	if (CONFIG(SOC_INTEL_COMMON_BLOCK_SMM_TCO_ENABLE))
 		tco_intruder_smi_enable();
+}
+
+uint32_t tco_get_timer_period(void)
+{
+	return TCO_TMR_PERIOD_MS;
+}
+
+uint32_t tco_get_timer_min_value(void)
+{
+	return TCO_TMR_MIN_VALUE;
+}
+
+uint32_t tco_get_timer_max_value(void)
+{
+	return TCO_TMR_MAX_VALUE;
 }

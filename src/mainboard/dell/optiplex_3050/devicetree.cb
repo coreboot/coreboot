@@ -39,7 +39,6 @@ chip soc/intel/skylake
 
 		# M.2 SSD
 		device ref pcie_rp21 on
-			register "PcieRpEnable[20]"                     = "1"
 			register "PcieRpClkReqSupport[20]"              = "1"
 			register "PcieRpClkReqNumber[20]"               = "3"
 			register "PcieRpAdvancedErrorReporting[20]"     = "1"
@@ -50,14 +49,12 @@ chip soc/intel/skylake
 
 		# Realtek LAN
 		device ref pcie_rp5 on
-			register "PcieRpEnable[4]"			= "1"
 			register "PcieRpClkReqSupport[4]"		= "0"
 			register "PcieRpHotPlug[4]"			= "0"
 		end
 
 		# M.2 WiFi
 		device ref pcie_rp8 on
-			register "PcieRpEnable[7]"			= "1"
 			register "PcieRpClkReqSupport[7]"		= "0"
 			register "PcieRpHotPlug[7]"			= "1"
 		end

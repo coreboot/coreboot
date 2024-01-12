@@ -171,13 +171,6 @@ struct soc_intel_skylake_config {
 	} Peg2MaxLinkWidth;
 
 	/*
-	 * Enable/Disable Root Port
-	 * 0: Disable Root Port
-	 * 1: Enable Root Port
-	 */
-	bool PcieRpEnable[CONFIG_MAX_ROOT_PORTS];
-
-	/*
 	 * Enable/Disable Clk-req support for Root Port
 	 * 0: Disable Clk-Req
 	 * 1: Enable Clk-req

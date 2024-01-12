@@ -20,26 +20,11 @@ chip soc/intel/skylake
 		device ref sata		on
 			register "SataPortsEnable[3]"	= "1"
 		end
-		device ref pcie_rp1	on
-			# COMe 4
-			register "PcieRpEnable[0]" = "true"
-		end
-		device ref pcie_rp2	on
-			# COMe 5
-			register "PcieRpEnable[1]" = "true"
-		end
-		device ref pcie_rp3	on
-			# COMe 6
-			register "PcieRpEnable[2]" = "true"
-		end
-		device ref pcie_rp4	on
-			# COMe 7
-			register "PcieRpEnable[3]" = "true"
-		end
-		device ref pcie_rp12	on
-			# COMe 3
-			register "PcieRpEnable[11]" = "true"
-		end
+		device ref pcie_rp1	on  end # COMe 4
+		device ref pcie_rp2	on  end # COMe 5
+		device ref pcie_rp3	on  end # COMe 6
+		device ref pcie_rp4	on  end # COMe 7
+		device ref pcie_rp12	on  end # COMe 3
 		device ref smbus	on
 			chip drivers/i2c/nct7802y
 				register "peci[0]" = "{ PECI_DOMAIN_0, 100 }"

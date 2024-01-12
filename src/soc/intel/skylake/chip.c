@@ -25,6 +25,7 @@
 #include <soc/itss.h>
 #include <soc/irq.h>
 #include <soc/pci_devs.h>
+#include <soc/pcie.h>
 #include <soc/ramstage.h>
 #include <soc/systemagent.h>
 #include <soc/usb.h>
@@ -33,22 +34,6 @@
 #include <types.h>
 
 #include "chip.h"
-
-static const struct pcie_rp_group pch_lp_rp_groups[] = {
-	{ .slot = PCH_DEV_SLOT_PCIE,	.count = 8, .lcap_port_base = 1 },
-	{ .slot = PCH_DEV_SLOT_PCIE_1,	.count = 4, .lcap_port_base = 1 },
-	{ 0 }
-};
-
-static const struct pcie_rp_group pch_h_rp_groups[] = {
-	{ .slot = PCH_DEV_SLOT_PCIE,	.count = 8, .lcap_port_base = 1 },
-	{ .slot = PCH_DEV_SLOT_PCIE_1,	.count = 8, .lcap_port_base = 1 },
-	/* Sunrise Point PCH-H actually only has 4 ports in the
-	   third group. But that would require a runtime check
-	   and probing 4 non-existent ports shouldn't hurt. */
-	{ .slot = PCH_DEV_SLOT_PCIE_2,	.count = 8, .lcap_port_base = 1 },
-	{ 0 }
-};
 
 #if CONFIG(HAVE_ACPI_TABLES)
 const char *soc_acpi_name(const struct device *dev)
@@ -181,10 +166,7 @@ void soc_init_pre_device(void *chip_info)
 	itss_restore_irq_polarities(GPIO_IRQ_START, GPIO_IRQ_END);
 
 	/* swap enabled PCI ports in device tree if needed */
-	if (CONFIG(SKYLAKE_SOC_PCH_H))
-		pcie_rp_update_devicetree(pch_h_rp_groups);
-	else
-		pcie_rp_update_devicetree(pch_lp_rp_groups);
+	pcie_rp_update_devicetree(get_pch_pcie_rp_table());
 }
 
 struct device_operations pci_domain_ops = {

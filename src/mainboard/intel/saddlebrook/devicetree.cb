@@ -186,24 +186,20 @@ chip soc/intel/skylake
 		device ref i2c4		on end
 		device ref pcie_rp1	on end
 		device ref pcie_rp6	on
-			register "PcieRpEnable[5]" = "true"
 			register "PcieRpClkReqSupport[5]" = "1"
 			register "PcieRpClkReqNumber[5]" = "0"
 		end
 		device ref pcie_rp8	on
 			# x1
-			register "PcieRpEnable[7]" = "true"
 			register "PcieRpClkReqSupport[7]" = "1"
 			register "PcieRpClkReqNumber[7]" = "3"
 		end
 		device ref pcie_rp9	on
 			# x4
-			register "PcieRpEnable[8]" = "true"
 			register "PcieRpClkReqSupport[8]" = "1"
 			register "PcieRpClkReqNumber[8]" = "4"
 		end
 		device ref pcie_rp13	on
-			register "PcieRpEnable[12]" = "true"
 			register "PcieRpClkReqSupport[12]" = "1"
 			register "PcieRpClkReqNumber[12]" = "1"
 		end

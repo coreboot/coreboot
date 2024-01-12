@@ -251,7 +251,6 @@ chip soc/intel/skylake
 		# Board has no GPIO expander on I2C4 (despite SetupUtility claim that it does - this would be static text)
 		device ref pcie_rp1	on
 			# dGPU; x4
-			register "PcieRpEnable[0]" = "true"
 			register "PcieRpAdvancedErrorReporting[0]" = "1"
 			register "PcieRpLtrEnable[0]" = "true"
 			register "PcieRpClkReqSupport[0]" = "1"
@@ -260,7 +259,6 @@ chip soc/intel/skylake
 		end
 		device ref pcie_rp7	on
 			# NGFF; x2
-			register "PcieRpEnable[6]" = "true"
 			register "PcieRpAdvancedErrorReporting[6]" = "1"
 			register "PcieRpLtrEnable[6]" = "true"
 			register "PcieRpClkReqSupport[6]" = "1"
@@ -269,7 +267,6 @@ chip soc/intel/skylake
 		end
 		device ref pcie_rp9	on
 			# LAN
-			register "PcieRpEnable[8]" = "true"
 			register "PcieRpAdvancedErrorReporting[8]" = "1"
 			register "PcieRpLtrEnable[8]" = "true"
 			register "PcieRpClkReqSupport[8]" = "1"
@@ -278,7 +275,6 @@ chip soc/intel/skylake
 		end
 		device ref pcie_rp10	on
 			# WLAN
-			register "PcieRpEnable[9]" = "true"
 			register "PcieRpAdvancedErrorReporting[9]" = "1"
 			register "PcieRpLtrEnable[9]" = "true"
 			register "PcieRpClkReqSupport[9]" = "1"

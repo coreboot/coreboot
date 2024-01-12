@@ -143,12 +143,8 @@ chip soc/intel/skylake
 				[2] = 1,
 			}"
 		end
-		device ref pcie_rp5	on
-			register "PcieRpEnable[4]" = "true"
-		end
-		device ref pcie_rp9	on
-			register "PcieRpEnable[8]" = "true"
-		end
+		device ref pcie_rp5	on  end
+		device ref pcie_rp9	on  end
 		device ref lpc_espi	on
 			# EC/KBC requires continuous mode
 			register "serirq_mode" = "SERIRQ_CONTINUOUS"

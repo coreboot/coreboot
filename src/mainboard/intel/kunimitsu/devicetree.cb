@@ -210,7 +210,6 @@ chip soc/intel/skylake
 			end
 		end
 		device ref pcie_rp1	on
-			register "PcieRpEnable[0]" = "true"
 			register "PcieRpClkReqSupport[0]" = "1"
 			register "PcieRpClkReqNumber[0]" = "1"
 			chip drivers/wifi/generic
@@ -219,7 +218,6 @@ chip soc/intel/skylake
 			end
 		end
 		device ref pcie_rp5	on
-			register "PcieRpEnable[4]" = "true"
 			register "PcieRpClkReqSupport[4]" = "1"
 			register "PcieRpClkReqNumber[4]" = "2"
 		end

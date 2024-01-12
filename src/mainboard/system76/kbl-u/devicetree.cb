@@ -133,7 +133,6 @@ chip soc/intel/skylake
 		end
 		device ref pcie_rp1 on
 			# Root port #1 x4 (TBT)
-			register "PcieRpEnable[0]" = "true"
 			register "PcieRpClkReqSupport[0]" = "1"
 			register "PcieRpClkReqNumber[0]" = "4"
 			register "PcieRpClkSrcNumber[0]" = "4"
@@ -143,7 +142,6 @@ chip soc/intel/skylake
 		end
 		device ref pcie_rp5 on
 			# Root port #5 x1 (LAN)
-			register "PcieRpEnable[4]" = "true"
 			register "PcieRpClkReqSupport[4]" = "1"
 			register "PcieRpClkReqNumber[4]" = "3"
 			register "PcieRpClkSrcNumber[4]" = "3"
@@ -152,7 +150,6 @@ chip soc/intel/skylake
 		end
 		device ref pcie_rp6 on
 			# Root port #6 x1 (WLAN)
-			register "PcieRpEnable[5]" = "true"
 			register "PcieRpClkReqSupport[5]" = "1"
 			register "PcieRpClkReqNumber[5]" = "2"
 			register "PcieRpClkSrcNumber[5]" = "2"
@@ -161,7 +158,6 @@ chip soc/intel/skylake
 		end
 		device ref pcie_rp9 on
 			# Root port #9 x4 (NVMe)
-			register "PcieRpEnable[8]" = "true"
 			register "PcieRpClkReqSupport[8]" = "1"
 			register "PcieRpClkReqNumber[8]" = "5"
 			register "PcieRpClkSrcNumber[8]" = "5"

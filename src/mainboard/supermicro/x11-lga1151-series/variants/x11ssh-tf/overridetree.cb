@@ -41,12 +41,10 @@ chip soc/intel/skylake
 		device ref peg0 on end	# unused
 		device ref peg1 on
 			# Slot JPCIE1
-			register "PcieRpEnable[0]" = "true"
 			smbios_slot_desc "SlotTypePciExpressGen3X8" "SlotLengthShort" "CPU SLOT6 PCI-E 3.0 X8" "SlotDataBusWidth4X"
 		end
 		device ref pcie_rp1 on
 			# Slot JPCIE1
-			register "PcieRpEnable[2]" = "true"
 			smbios_slot_desc "SlotTypePciExpressGen3X4" "SlotLengthLong" "PCH SLOT4 PCI-E 3.0 X2(IN X4)" "SlotDataBusWidth2X"
 		end
 		device ref pcie_rp3 on
@@ -55,12 +53,10 @@ chip soc/intel/skylake
 			end
 		end
 		device ref pcie_rp5 on
-			register "PcieRpEnable[4]" = "true"
 			device pci 00.0 on end	# 10GbE
 			device pci 00.1 on end	# 10GbE
 		end
 		device ref pcie_rp9 on
-			register "PcieRpEnable[8]" = "true"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2 2280" "SlotDataBusWidth4X"
 		end
 		device ref lpc_espi on

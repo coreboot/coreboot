@@ -140,36 +140,28 @@ chip soc/intel/skylake
 			}"
 			register "SataSpeedLimit" = "2"
 		end
-		device ref pcie_rp3	on
-			register "PcieRpEnable[2]"  = "1"
-		end
+		device ref pcie_rp3	on  end
 		device ref pcie_rp4	on
-			register "PcieRpEnable[3]"  = "1"
 			register "PcieRpClkSrcNumber[3]"  = "1"
 		end
 		device ref pcie_rp5	on
-			register "PcieRpEnable[4]"  = "1"
 			register "PcieRpClkSrcNumber[4]"  = "2"
 			smbios_slot_desc "SlotTypePciExpressMini52pinWithoutBSKO"
 					 "SlotLengthOther" "MPCIE_WIFI1" "SlotDataBusWidth1X"
 		end
 		device ref pcie_rp6	on  end
 		device ref pcie_rp9	on
-			register "PcieRpEnable[8]"  = "1"
 			register "PcieRpClkSrcNumber[8]"  = "3"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther"
 					 "SSD_M.2 2242/2280" "SlotDataBusWidth4X"
 		end
 		device ref pcie_rp10	on
-			register "PcieRpEnable[9]"  = "1"
 			register "PcieRpClkSrcNumber[9]"  = "3"
 		end
 		device ref pcie_rp11	on
-			register "PcieRpEnable[10]" = "true"
 			register "PcieRpClkSrcNumber[10]" = "3"
 		end
 		device ref pcie_rp12	on
-			register "PcieRpEnable[11]" = "true"
 			register "PcieRpClkSrcNumber[11]" = "3"
 		end
 		device ref lpc_espi	on

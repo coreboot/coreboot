@@ -161,14 +161,12 @@ chip soc/intel/skylake
 			}"
 		end
 		device ref pcie_rp17 on # M.2 2280 / 2242 - SSD
-			register "PcieRpEnable[16]"			= "1"
 			register "PcieRpAdvancedErrorReporting[16]"	= "1"
 			register "PcieRpLtrEnable[16]"			= "true"
 			register "PcieRpClkSrcNumber[16]"		= "7"
 			register "PcieRpHotPlug[16]"			= "1"
 		end
 		device ref pcie_rp7 on # M.2 2230 - WLAN
-			register "PcieRpEnable[6]"			= "1"
 			register "PcieRpAdvancedErrorReporting[6]"	= "1"
 			register "PcieRpLtrEnable[6]"			= "true"
 			register "PcieRpClkSrcNumber[6]"		= "1"

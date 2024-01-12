@@ -157,7 +157,6 @@ chip soc/intel/skylake
 		device ref pcie_rp3	on
 			# x1 baseboard WWAN
 			# PCIE Port 3 x1 -> Module x1 : Mapped to PCIe 2 on the baseboard
-			register "PcieRpEnable[2]" = "true"
 			register "PcieRpClkReqSupport[2]" = "0"
 			register "PcieRpMaxPayload[2]" = "RpMaxPayload_256"
 			register "PcieRpLtrEnable[2]" = "true"
@@ -167,7 +166,6 @@ chip soc/intel/skylake
 		device ref pcie_rp6	on
 			# x1 baseboard i210
 			# PCIE Port 6 x1 -> BASEBOARD x1 i210 : Mapped to PCIe 4 on the baseboard
-			register "PcieRpEnable[5]" = "true"
 			register "PcieRpClkReqSupport[5]" = "0"
 			register "PcieRpMaxPayload[5]" = "RpMaxPayload_256"
 			register "PcieRpLtrEnable[5]" = "true"
@@ -177,7 +175,6 @@ chip soc/intel/skylake
 		device ref pcie_rp9	on
 			# x4 FPGA
 			# PCIE Port 9 x4 -> BASEBOARD PEG0-3 FPGA
-			register "PcieRpEnable[8]" = "true"
 			register "PcieRpClkReqSupport[8]" = "0"
 			register "PcieRpHotPlug[8]" = "1"
 			register "PcieRpMaxPayload[8]" = "RpMaxPayload_256"

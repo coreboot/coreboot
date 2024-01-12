@@ -289,7 +289,6 @@ chip soc/intel/skylake
 		device ref pcie_rp3	on
 			# LAN, will be swapped to port 1 by FSP
 			# x1
-			register "PcieRpEnable[2]" = "true"
 			register "PcieRpClkReqSupport[2]" = "1"
 			register "PcieRpClkReqNumber[2]" = "0"
 			register "PcieRpAdvancedErrorReporting[2]" = "1"
@@ -304,7 +303,6 @@ chip soc/intel/skylake
 		end
 		device ref pcie_rp4	on
 			# x1 WLAN
-			register "PcieRpEnable[3]" = "true"
 			register "PcieRpClkReqSupport[3]" = "1"
 			register "PcieRpClkReqNumber[3]" = "5"
 			register "PcieRpAdvancedErrorReporting[3]" = "1"
@@ -317,7 +315,6 @@ chip soc/intel/skylake
 		end
 		device ref pcie_rp5	on
 			# x4 NVMe
-			register "PcieRpEnable[4]" = "true"
 			register "PcieRpClkReqSupport[4]" = "1"
 			register "PcieRpClkReqNumber[4]" = "1"
 			register "PcieRpAdvancedErrorReporting[4]" = "1"
@@ -326,7 +323,6 @@ chip soc/intel/skylake
 		end
 		device ref pcie_rp9	on
 			# 2nd LAN
-			register "PcieRpEnable[8]" = "true"
 			register "PcieRpClkReqSupport[8]" = "1"
 			register "PcieRpClkReqNumber[8]" = "2"
 			register "PcieRpAdvancedErrorReporting[8]" = "1"
@@ -339,7 +335,6 @@ chip soc/intel/skylake
 			end
 		end
 		device ref pcie_rp11	on
-			register "PcieRpEnable[10]" = "true"
 			register "PcieRpClkReqSupport[10]" = "1"
 			register "PcieRpClkReqNumber[10]" = "2"
 			register "PcieRpAdvancedErrorReporting[10]" = "1"
@@ -347,7 +342,6 @@ chip soc/intel/skylake
 			register "PcieRpClkSrcNumber[10]" = "2"
 		end
 		device ref pcie_rp12	on
-			register "PcieRpEnable[11]" = "true"
 			register "PcieRpClkReqSupport[11]" = "1"
 			register "PcieRpClkReqNumber[11]" = "2"
 			register "PcieRpAdvancedErrorReporting[11]" = "1"

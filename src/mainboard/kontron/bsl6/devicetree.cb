@@ -85,15 +85,9 @@ chip soc/intel/skylake
 				[2] = 1,
 			}"
 		end
-		device ref pcie_rp9	on
-			register "PcieRpEnable[8]" = "true"
-		end
-		device ref pcie_rp10	on
-			register "PcieRpEnable[9]" = "true"
-		end
-		device ref pcie_rp11	on
-			register "PcieRpEnable[10]" = "true"
-		end
+		device ref pcie_rp9	on  end
+		device ref pcie_rp10	on  end
+		device ref pcie_rp11	on  end
 		device ref lpc_espi	on
 			register "serirq_mode" = "SERIRQ_CONTINUOUS"
 

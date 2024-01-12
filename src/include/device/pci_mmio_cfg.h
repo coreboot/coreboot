@@ -31,6 +31,10 @@ union pci_bank {
 #error "CONFIG_ECAM_MMCONF_BASE_ADDRESS undefined!"
 #endif
 
+#if CONFIG_ECAM_MMCONF_BUS_NUMBER == 0
+#error "CONFIG_ECAM_MMCONF_BUS_NUMBER is undefined!"
+#endif
+
 #if CONFIG_ECAM_MMCONF_BUS_NUMBER * MiB != CONFIG_ECAM_MMCONF_LENGTH
 #error "CONFIG_ECAM_MMCONF_LENGTH does not correspond with CONFIG_ECAM_MMCONF_BUS_NUMBER!"
 #endif

@@ -46,7 +46,7 @@ my %used_symbols;                     # structure of symbols used in the tree, a
 my @collected_symbols;                #
 my %selected_symbols;                 # list of symbols that are enabled by a select statement
 
-my $exclude_unused = '_SPECIFIC_OPTIONS|SOUTH_BRIDGE_OPTIONS';
+my $exclude_unused = '_SPECIFIC_OPTIONS';
 
 Main();
 

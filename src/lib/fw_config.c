@@ -9,8 +9,6 @@
 #include <fw_config.h>
 #include <inttypes.h>
 #include <lib.h>
-#include <stdbool.h>
-#include <stdint.h>
 #include <drivers/vpd/vpd.h>
 
 uint64_t fw_config_get(void)

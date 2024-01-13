@@ -4,7 +4,7 @@ chip northbridge/intel/sandybridge
 		chip southbridge/intel/bd82x6x # Intel Series 7 Panther Point PCH
 			# Enable hotplug on Port 5 for Thunderbolt controller
 			register "pcie_hotplug_map" = "{ 0, 0, 1, 0, 1, 0, 0, 0 }"
-			device ref pcie_rp5 on end # PCIe Port #5 Thunderbolt controller
+			device ref pcie_rp5 on end # Thunderbolt controller
 			device ref lpc on
 				chip ec/lenovo/h8
 					device pnp ff.2 on end # dummy
@@ -12,7 +12,7 @@ chip northbridge/intel/sandybridge
 					register "bdc_gpio_num" = "54"
 					register "bdc_gpio_lvl" = "0"
 				end
-			end # LPC Controller
+			end
 		end
 	end
 end

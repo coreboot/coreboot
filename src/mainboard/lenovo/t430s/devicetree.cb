@@ -17,9 +17,9 @@ chip northbridge/intel/sandybridge
 	device domain 0 on
 		subsystemid 0x17aa 0x21fb inherit
 
-		device ref host_bridge on end # host bridge
-		device ref peg10 on end # PCIe Bridge for discrete graphics
-		device ref igd on end # Integrated Graphics Controller
+		device ref host_bridge on end
+		device ref peg10 on end # Discrete graphics
+		device ref igd on end
 
 		chip southbridge/intel/bd82x6x # Intel Series 7 Panther Point PCH
 			# GPI routing
@@ -52,28 +52,28 @@ chip northbridge/intel/sandybridge
 			register "spi_uvscc" = "0x2005"
 			register "spi_lvscc" = "0x2005"
 
-			device ref xhci on end # USB 3.0 Controller
-			device ref mei1 on end # Management Engine Interface 1
-			device ref mei2 off end # Management Engine Interface 2
-			device ref me_ide_r off end # Management Engine IDE-R
-			device ref me_kt off end # Management Engine KT
+			device ref xhci on end
+			device ref mei1 on end
+			device ref mei2 off end
+			device ref me_ide_r off end
+			device ref me_kt off end
 			device ref gbe on
 				subsystemid 0x17aa 0x21f3
-			end # Intel Gigabit Ethernet
-			device ref ehci2 on end # USB Enhanced Host Controller #2
-			device ref hda on end # High Definition Audio Controller
-			device ref pcie_rp1 off end # PCIe Port #1
-			device ref pcie_rp2 on end # PCIe Port #2 Integrated Wireless LAN
+			end
+			device ref ehci2 on end
+			device ref hda on end
+			device ref pcie_rp1 off end
+			device ref pcie_rp2 on end # Integrated Wireless LAN
 			device ref pcie_rp3 on
 				smbios_slot_desc "7" "3" "ExpressCard Slot" "8"
-			end # PCIe Port #3 ExpressCard
-			device ref pcie_rp4 off end # PCIe Port #4
-			device ref pcie_rp5 off end # PCIe Port #5
-			device ref pcie_rp6 off end # PCIe Port #6 Intel Gigabit Ethernet PHY (not PCIe)
-			device ref pcie_rp7 off end # PCIe Port #7
-			device ref pcie_rp8 off end # PCIe Port #8
-			device ref ehci1 on end # USB Enhanced Host Controller #1
-			device ref pci_bridge off end # PCI bridge
+			end
+			device ref pcie_rp4 off end
+			device ref pcie_rp5 off end
+			device ref pcie_rp6 off end
+			device ref pcie_rp7 off end
+			device ref pcie_rp8 off end
+			device ref ehci1 on end
+			device ref pci_bridge off end
 			device ref lpc on
 				chip ec/lenovo/pmh7
 					device pnp ff.1 on end # dummy
@@ -117,8 +117,8 @@ chip northbridge/intel/sandybridge
 					register "eventd_enable" = "0xff"
 					register "evente_enable" = "0x0d"
 				end
-			end # LPC Controller
-			device ref sata1 on end # 6 port SATA AHCI Controller
+			end
+			device ref sata1 on end
 			device ref smbus on
 				# eeprom, 8 virtual devices, same chip
 				chip drivers/i2c/at24rf08c
@@ -131,9 +131,9 @@ chip northbridge/intel/sandybridge
 					device i2c 5e on end
 					device i2c 5f on end
 				end
-			end # SMBus Controller
-			device ref sata2 off end # SATA Controller 2
-			device ref thermal on end # Thermal
+			end
+			device ref sata2 off end
+			device ref thermal on end
 		end
 	end
 end

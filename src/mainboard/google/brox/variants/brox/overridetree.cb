@@ -172,5 +172,24 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 		end
+		device ref pcie4_0 on
+			# Enable CPU PCIE RP 1 using CLK 3
+			register "cpu_pcie_rp[CPU_RP(1)]" = "{
+				.clk_req = 3,
+				.clk_src = 3,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			probe STORAGE STORAGE_NVME
+		end
+		device ref ish on
+			chip drivers/intel/ish
+				register "add_acpi_dma_property" = "true"
+				device generic 0 on end
+			end
+			probe STORAGE STORAGE_UFS
+		end
+		device ref ufs on
+			probe STORAGE STORAGE_UFS
+		end
 	end
 end

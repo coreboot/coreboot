@@ -187,21 +187,6 @@ chip soc/intel/alderlake
 		end
 		device ref heci1 on end
 		device ref sata on end
-		device ref pcie4_0 on
-			# Enable CPU PCIE RP 1 using CLK 3
-			register "cpu_pcie_rp[CPU_RP(1)]" = "{
-				.clk_req = 3,
-				.clk_src = 3,
-				.flags = PCIE_RP_LTR | PCIE_RP_AER,
-			}"
-		end
-		device ref ish on
-			chip drivers/intel/ish
-				register "add_acpi_dma_property" = "true"
-				device generic 0 on end
-			end
-		end
-		device ref ufs on end
 		device ref uart0 on end
 		device ref gspi1 on end
 		device ref pch_espi on

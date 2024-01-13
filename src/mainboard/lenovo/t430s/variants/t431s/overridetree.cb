@@ -15,7 +15,7 @@ chip northbridge/intel/sandybridge
 	device domain 0 on
 		subsystemid 0x17aa 0x2208 inherit
 
-		device pci 01.0 off end # PCIe Bridge for discrete graphics
+		device ref peg10 off end # PCIe Bridge for discrete graphics
 
 		chip southbridge/intel/bd82x6x # Intel Series 7 Panther Point PCH
 			# Enable SATA ports 0 (HDD bay) & 1 (WWAN M.2 SATA) & 4 (dock)
@@ -23,15 +23,15 @@ chip northbridge/intel/sandybridge
 			# T431s has no Express Card slot.
 			register "pcie_hotplug_map" = "{ 0, 0, 0, 0, 0, 0, 0, 0 }"
 
-			device pci 1c.0 on # PCIe Port #1
+			device ref pcie_rp1 on # PCIe Port #1
 				chip drivers/ricoh/rce822 # Ricoh cardreader
 					register "disable_mask" = "0x87"
 					register "sdwppol" = "0"
 					device pci 00.0 on end # Ricoh SD card reader
 				end
 			end
-			device pci 1c.2 off end # PCIe Port #3
-			device pci 1f.0 on
+			device ref pcie_rp3 off end # PCIe Port #3
+			device ref lpc on
 				chip ec/lenovo/h8
 					device pnp ff.2 on end # dummy
 					register "config0" = "0xa6"
@@ -42,7 +42,7 @@ chip northbridge/intel/sandybridge
 					register "has_bdc_detection" = "0"
 				end
 			end # LPC Controller
-			device pci 1f.6 off end # Thermal
+			device ref thermal off end # Thermal
 		end
 	end
 end

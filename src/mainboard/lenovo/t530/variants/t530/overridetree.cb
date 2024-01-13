@@ -2,7 +2,7 @@ chip northbridge/intel/sandybridge
 	register "spd_addresses" = "{0x50, 0, 0x51, 0}"
 	device domain 0 on
 		chip southbridge/intel/bd82x6x # Intel Series 7 Panther Point PCH
-			device ref lpc on # PCI-LPC bridge
+			device ref lpc on
 				chip ec/lenovo/h8
 					device pnp ff.2 on end # dummy
 					register "has_wwan_detection" = "1"

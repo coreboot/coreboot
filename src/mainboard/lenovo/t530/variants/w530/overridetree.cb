@@ -1,26 +1,26 @@
 chip northbridge/intel/sandybridge
 	register "spd_addresses" = "{0x50, 0x52, 0x51, 0x53}"
 	device domain 0 on
-		device ref igd on # Internal graphics VGA controller
+		device ref igd on
 			subsystemid 0x17aa 0x21f5
 		end
 		chip southbridge/intel/bd82x6x # Intel Series 7 Panther Point PCH
-			device ref me_kt on end # Management Engine KT
-			device ref pcie_rp1 on # PCIe Port #1
+			device ref me_kt on end
+			device ref pcie_rp1 on
 				chip drivers/ricoh/rce822 # Ricoh cardreader
 					register "disable_mask" = "0x83"
 					register "sdwppol" = "1"
 					device pci 00.0 on end # Ricoh SD card reader
 				end
 			end
-			device ref lpc on # PCI-LPC bridge
+			device ref lpc on
 				chip ec/lenovo/h8
 					device pnp ff.2 on end # dummy
 					register "config1" = "0x01"
 					register "config3" = "0xe2"
 				end
 			end
-			device ref thermal off end # Thermal
+			device ref thermal off end
 		end
 	end
 end

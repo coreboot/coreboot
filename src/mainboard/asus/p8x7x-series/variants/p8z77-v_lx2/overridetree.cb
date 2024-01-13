@@ -6,16 +6,16 @@ chip northbridge/intel/sandybridge
 		chip southbridge/intel/bd82x6x
 			register "gen1_dec" = "0x000c0291"
 
-			device pci 1c.0 on  end		# RP #1: PCIEX16_2 (electrical x4)
-			device pci 1c.1 off end		# RP #2:
-			device pci 1c.2 off end		# RP #3:
-			device pci 1c.3 off end		# RP #4:
-			device pci 1c.4 on  end		# RP #5: RTL8111 GbE NIC
-			device pci 1c.5 on  end		# RP #6: ASM1083 PCI Bridge
-			device pci 1c.6 on  end		# RP #7: PCIEX1_1
-			device pci 1c.7 on  end		# RP #8: PCIEX1_2
+			device ref pcie_rp1 on  end	# PCIEX16_2 (electrical x4)
+			device ref pcie_rp2 off end
+			device ref pcie_rp3 off end
+			device ref pcie_rp4 off end
+			device ref pcie_rp5 on  end	# RTL8111 GbE NIC
+			device ref pcie_rp6 on  end	# ASM1083 PCI Bridge
+			device ref pcie_rp7 on  end	# PCIEX1_1
+			device ref pcie_rp8 on  end	# PCIEX1_2
 
-			device pci 1f.0 on		# LPC bridge
+			device ref lpc on
 				chip superio/nuvoton/nct6779d
 					device pnp 2e.1   off end	# Parallel
 					device pnp 2e.2   on		# UART A

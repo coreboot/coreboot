@@ -3,19 +3,19 @@
 chip northbridge/intel/sandybridge
 	device domain 0 on
 		subsystemid 0x1043 0x84ca inherit
-		device pci 01.1 on  end # PCIEX_16_2
+		device ref peg11 on  end # PCIEX_16_2
 		chip southbridge/intel/bd82x6x
 			register "gen1_dec" = "0x000c0291"
 
-			device pci 19.0 on  end	# Intel Gigabit Ethernet
-			device pci 1c.0 on  end	# PCIe Port 1 PCIEX_16_3 (electrical x1 or x4)
-			device pci 1c.1 on  end	# PCIe Port 2 PCIEX_1_1
-			device pci 1c.3 on  end	# PCIe Port 4 ASM1061 SATA or PCIEX_1_2
-			device pci 1c.4 on  end	# PCIe Port 5 ASM1083 PCI Bridge
-			device pci 1c.6 on  end	# PCIe Port 7 Wi-Fi Go!
-			device pci 1c.7 on  end	# PCIe Port 8 ASM1042 USB3
+			device ref gbe on  end
+			device ref pcie_rp1 on  end	# PCIEX_16_3 (electrical x1 or x4)
+			device ref pcie_rp2 on  end	# PCIEX_1_1
+			device ref pcie_rp4 on  end	# ASM1061 SATA or PCIEX_1_2
+			device ref pcie_rp5 on  end	# ASM1083 PCI Bridge
+			device ref pcie_rp7 on  end	# Wi-Fi Go!
+			device ref pcie_rp8 on  end	# ASM1042 USB3
 
-			device pci 1f.0 on	# LPC bridge
+			device ref lpc on
 				chip superio/nuvoton/nct6779d
 					device pnp 2e.1 off end		# Parallel
 					device pnp 2e.2 on		# UART A

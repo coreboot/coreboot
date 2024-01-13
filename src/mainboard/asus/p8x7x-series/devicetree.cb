@@ -21,9 +21,9 @@ chip northbridge/intel/sandybridge
 	# from runtime code)
 
 	device domain 0 on
-		device ref host_bridge on  end		# Host bridge
-		device ref peg10 on  end		# PCIEX16_1
-		device ref igd on  end		# iGPU
+		device ref host_bridge on  end
+		device ref peg10 on  end # PCIEX16_1
+		device ref igd on  end
 
 		chip southbridge/intel/bd82x6x
 			register "sata_interface_speed_support" = "0x3"
@@ -34,32 +34,31 @@ chip northbridge/intel/sandybridge
 			register "xhci_overcurrent_mapping" = "0x00000c03"
 			register "xhci_switchable_ports"    = "0x0000000f"
 
-			device ref xhci on  end		# xHCI
-			device ref mei1 on  end		# MEI #1
-			device ref mei2 off end		# MEI #2
-			device ref me_ide_r off end		# ME IDE-R
-			device ref me_kt off end		# ME KT
-			device ref gbe off end		# Intel GbE
-			device ref ehci2 on  end		# EHCI #2
-			device ref hda on  end		# HD Audio
+			device ref xhci on  end
+			device ref mei1 on  end
+			device ref mei2 off end
+			device ref me_ide_r off end
+			device ref me_kt off end
+			device ref gbe off end
+			device ref ehci2 on  end
+			device ref hda on  end
 
-			device ref pcie_rp1 off end		# RP #1
-			device ref pcie_rp2 off end		# RP #2
-			device ref pcie_rp3 off end		# RP #3
-			device ref pcie_rp4 off end		# RP #4
-			device ref pcie_rp5 off end		# RP #5
-			device ref pcie_rp6 off end		# RP #6
-			device ref pcie_rp7 off end		# RP #7
-			device ref pcie_rp8 off end		# RP #8
+			device ref pcie_rp1 off end
+			device ref pcie_rp2 off end
+			device ref pcie_rp3 off end
+			device ref pcie_rp4 off end
+			device ref pcie_rp5 off end
+			device ref pcie_rp6 off end
+			device ref pcie_rp7 off end
+			device ref pcie_rp8 off end
 
-			device ref ehci1 on  end		# EHCI #1
-			device ref pci_bridge off end		# PCI bridge
-			device ref lpc on		# LPC bridge
-			end
-			device ref sata1 on  end		# SATA (AHCI)
-			device ref smbus on  end		# SMBus
-			device ref sata2 off end		# SATA (Legacy)
-			device ref thermal off end		# Thermal
+			device ref ehci1 on  end
+			device ref pci_bridge off end
+			device ref lpc on end
+			device ref sata1 on  end # SATA (AHCI)
+			device ref smbus on  end
+			device ref sata2 off end # SATA (Legacy)
+			device ref thermal off end
 		end
 	end
 end

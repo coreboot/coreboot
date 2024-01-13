@@ -13,16 +13,16 @@ chip northbridge/intel/sandybridge
 			register "gen4_dec" = "0x0000ff29"
 			register "pcie_port_coalesce" = "true"
 
-			device pci 1c.0 on  end	# PCIe Port 1 PCIEX_16_3
-			device pci 1c.1 on  end	# PCIe Port 2 RTL8111F
-			device pci 1c.2 off end	# PCIe Port 3 unused
-			device pci 1c.3 off end	# PCIe Port 4 unused
-			device pci 1c.4 off end	# PCIe Port 5 unused
-			device pci 1c.5 on  end	# PCIe Port 6 ASM1042 USB3
-			device pci 1c.6 on  end	# PCIe Port 7 ASM1061 eSATA
-			device pci 1c.7 off end	# PCIe Port 8 unused
+			device ref pcie_rp1 on  end	# PCIEX_16_3
+			device ref pcie_rp2 on  end	# RTL8111F
+			device ref pcie_rp3 off end
+			device ref pcie_rp4 off end
+			device ref pcie_rp5 off end
+			device ref pcie_rp6 on  end	# ASM1042 USB3
+			device ref pcie_rp7 on  end	# ASM1061 eSATA
+			device ref pcie_rp8 off end
 
-			device pci 1f.0 on	# LPC bridge
+			device ref lpc on
 				chip superio/nuvoton/nct6779d
 					device pnp 2e.1 off end	# Parallel
 					device pnp 2e.2 off end	# UART A

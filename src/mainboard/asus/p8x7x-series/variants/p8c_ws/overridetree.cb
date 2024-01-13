@@ -2,21 +2,21 @@
 
 chip northbridge/intel/sandybridge
 	device domain 0 on
-		device pci 01.1 on  end		# PCIEX16_2 (electrical x8)
-		device pci 06.0 on  end		# PCIEX16_3 (electrical x4)
+		device ref peg11 on  end	# PCIEX16_2 (electrical x8)
+		device ref peg60 on  end	# PCIEX16_3 (electrical x4)
 		subsystemid 0x1043 0x84ca inherit
 		chip southbridge/intel/bd82x6x
 			register "gen1_dec" = "0x000c0291"
-			device pci 1c.0 on  end		# RP #1: PCIEX16_4 (electrical x4)
-			device pci 1c.1 off end		# RP #2:
-			device pci 1c.2 off end		# RP #3:
-			device pci 1c.3 off end		# RP #4:
-			device pci 1c.4 on  end		# RP #5: PCIEX1_1
-			device pci 1c.5 on  end		# RP #6: 82574 GbE #1
-			device pci 1c.6 on  end		# RP #7: 82574 GbE #2
-			device pci 1c.7 off end		# RP #8:
-			device pci 1e.0 on  end		# PCI bridge
-			device pci 1f.0 on		# LPC bridge
+			device ref pcie_rp1 on  end	# PCIEX16_4 (electrical x4)
+			device ref pcie_rp2 off end
+			device ref pcie_rp3 off end
+			device ref pcie_rp4 off end
+			device ref pcie_rp5 on  end	# PCIEX1_1
+			device ref pcie_rp6 on  end	# 82574 GbE #1
+			device ref pcie_rp7 on  end	# 82574 GbE #2
+			device ref pcie_rp8 off end
+			device ref pci_bridge on  end
+			device ref lpc on
 				chip superio/nuvoton/nct6776
 					device pnp 2e.0   off end # Floppy
 					device pnp 2e.1   on      # Parallel

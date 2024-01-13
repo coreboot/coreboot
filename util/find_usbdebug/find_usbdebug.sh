@@ -35,7 +35,7 @@ find_devs_in_tree () {
 	busstr=`printf "Bus %02d" "$bus"`
 	portstr="Port $port"
 
-	hubs_to_ignore="8087:0020 8087:0024"
+	hubs_to_ignore="8087:0020 8087:0024 8087:8000 8087:8008"
 	reqlvl=1
 
 	found=

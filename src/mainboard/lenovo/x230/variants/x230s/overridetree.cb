@@ -19,7 +19,7 @@ chip northbridge/intel/sandybridge
 			# Enable SATA ports 0 (HDD bay) & 1 (WWAN M.2 SATA)
 			register "sata_port_map" = "0x3"
 
-			device ref lpc on # LPC bridge
+			device ref lpc on
 				chip ec/lenovo/h8
 					register "config1" = "0x05"
 					register "config3" = "0xc4"
@@ -29,7 +29,7 @@ chip northbridge/intel/sandybridge
 					register "has_bdc_detection" = "0"
 					device pnp ff.2 on end
 				end
-			end # LPC Controller
+			end
 		end
 	end
 end

@@ -5,13 +5,13 @@ chip northbridge/intel/sandybridge
 			register "pcie_hotplug_map" = "{ 0, 0, 1, 0, 0, 0, 0, 0 }"
 			device ref pcie_rp3 on
 				smbios_slot_desc "7" "3" "ExpressCard Slot" "8"
-			end # PCIe Port #3 (expresscard)
-			device ref lpc on # LPC bridge
+			end
+			device ref lpc on
 				chip ec/lenovo/h8
 					register "eventa_enable" = "0x01"
 					device pnp ff.2 on end
 				end
-			end # LPC Controller
+			end
 		end
 	end
 end

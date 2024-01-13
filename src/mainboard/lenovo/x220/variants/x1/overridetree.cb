@@ -21,10 +21,10 @@ chip northbridge/intel/sandybridge
 			# X1 does not have ExpressCard slot
 			register "pcie_hotplug_map" = "{ 0, 0, 0, 0, 0, 0, 0, 0 }"
 
-			device ref pcie_rp1 off end # PCIe Port #1
-			device ref pcie_rp3 off end # PCIe Port #3
-			device ref pcie_rp4 off end # PCIe Port #4
-			device ref lpc on #LPC bridge
+			device ref pcie_rp1 off end
+			device ref pcie_rp3 off end
+			device ref pcie_rp4 off end
+			device ref lpc on
 				chip ec/lenovo/h8
 					device pnp ff.2 on end # dummy
 					register "config2" = "0xe0"
@@ -36,7 +36,7 @@ chip northbridge/intel/sandybridge
 					register "event5_enable" = "0x3c"
 					register "evente_enable" = "0x3d"
 				end
-			end # LPC bridge
+			end
 		end
 	end
 end

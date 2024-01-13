@@ -8,7 +8,7 @@ chip northbridge/intel/sandybridge
 
 			device ref pcie_rp1 on  end	# PCIe x1 Port (PCIEX1_1)
 			device ref pcie_rp2 on  end	# PCIe x1 Port (PCIEX1_2)
-			device ref pcie_rp3 on	# Realtek RTL8111E Ethernet Controller
+			device ref pcie_rp3 on		# Realtek RTL8111E Ethernet Controller
 				chip drivers/net
 					register "customized_leds" = "0x00f6"
 					register "wake" = "9"
@@ -16,10 +16,10 @@ chip northbridge/intel/sandybridge
 				end
 			end
 			device ref pcie_rp4 on  end	# ASMedia ASM1042 USB3 Controller
-			device ref pcie_rp5 on  end	# RP #6: ASM1083 PCI Bridge
+			device ref pcie_rp5 on  end	# ASM1083 PCI Bridge
 			device ref pcie_rp6 on  end	# ASMedia ASM1062 SATA Controller
-			device ref pcie_rp7 off end	# Unused PCIe Port
-			device ref pcie_rp8 off end	# Unused PCIe Port
+			device ref pcie_rp7 off end
+			device ref pcie_rp8 off end
 
 			device ref lpc on	# LPC bridge
 				chip superio/nuvoton/nct6776

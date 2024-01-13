@@ -5,21 +5,21 @@ chip northbridge/intel/sandybridge
 		subsystemid 0x1043 0x844d inherit
 		chip southbridge/intel/bd82x6x
 			register "gen1_dec" = "0x000c0291"
-			device ref hda on      # High Definition Audio controller
+			device ref hda on
 				subsystemid 0x1043 0x8445
 			end
-			device ref pcie_rp1 off end # PCIe Port #1
-			device ref pcie_rp2 off end # PCIe Port #2
-			device ref pcie_rp3 off end # PCIe Port #3
+			device ref pcie_rp1 off end
+			device ref pcie_rp2 off end
+			device ref pcie_rp3 off end
 			device ref pcie_rp4 on  end # PCIe x1 Slot 1 PCIE_1
 			device ref pcie_rp5 on  end # PCIe x1 Slot 2 PCIE_2
 			device ref pcie_rp6 on      # Realtek Gigabit NIC
 				device pci 00.0 on end
 			end
-			device ref pcie_rp7 off end # PCIe Port #7
-			device ref pcie_rp8 off end # PCIe Port #8
+			device ref pcie_rp7 off end
+			device ref pcie_rp8 off end
 
-			device ref lpc on      # LPC bridge PCI-LPC bridge
+			device ref lpc on
 				chip superio/nuvoton/nct6779d
 					device pnp 2e.1 off end	# Parallel
 					device pnp 2e.2 off end	# UART A

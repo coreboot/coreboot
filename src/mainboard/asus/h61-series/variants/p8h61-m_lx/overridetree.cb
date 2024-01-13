@@ -6,7 +6,7 @@ chip northbridge/intel/sandybridge
 		chip southbridge/intel/bd82x6x
 			register "gen1_dec" = "0x00000295" # Super I/O HWM
 
-			device ref hda on      # HD audio controller
+			device ref hda on
 				subsystemid 0x1043 0x8445
 			end
 			device ref pcie_rp1 on  end # PCIe 1x slot (PCIEX1_1)
@@ -18,13 +18,13 @@ chip northbridge/intel/sandybridge
 					device pci 00.0 on end
 				end
 			end
-			device ref pcie_rp4 off end # Unused PCIe port
+			device ref pcie_rp4 off end
 			device ref pcie_rp5 on  end # PCIe 1x slot (PCIEX1_3)
-			device ref pcie_rp6 off end # Unused PCIe port
-			device ref pcie_rp7 off end # Unused PCIe port
-			device ref pcie_rp8 off end # Unused PCIe port
+			device ref pcie_rp6 off end
+			device ref pcie_rp7 off end
+			device ref pcie_rp8 off end
 
-			device ref lpc on      # LPC bridge
+			device ref lpc on
 				chip superio/nuvoton/nct6776
 					device pnp 2e.0   off end # Floppy
 					device pnp 2e.1   on      # Parallel

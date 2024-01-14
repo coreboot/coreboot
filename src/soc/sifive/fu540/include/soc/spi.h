@@ -2,6 +2,7 @@
 
 #ifndef __SOC_SIFIVE_HIFIVE_U_SPI_H__
 #define __SOC_SIFIVE_HIFIVE_U_SPI_H__
+
 #include <spi-generic.h>
 
 /* Data Pins: MOSI MISO */

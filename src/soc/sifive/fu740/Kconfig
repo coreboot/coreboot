@@ -1,0 +1,63 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_SIFIVE_FU740
+	bool
+	select ARCH_RISCV_RV64
+	select ARCH_RISCV_S
+	select ARCH_RISCV_U
+	select ARCH_RISCV_PMP
+	select ARCH_BOOTBLOCK_RISCV
+	select ARCH_VERSTAGE_RISCV
+	select ARCH_ROMSTAGE_RISCV
+	select ARCH_RAMSTAGE_RISCV
+	select DRIVERS_UART_SIFIVE
+	select RISCV_USE_ARCH_TIMER
+	select UART_OVERRIDE_REFCLK
+	select RISCV_HAS_OPENSBI
+
+config SEPARATE_ROMSTAGE
+	default n if SOC_SIFIVE_FU740
+
+if SOC_SIFIVE_FU740
+
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/soc/sifive/fu740/memlayout.ld"
+
+config RISCV_ARCH
+	string
+	default "rv64imac"
+
+config RISCV_ABI
+	string
+	default "lp64"
+
+config RISCV_CODEMODEL
+	string
+	default "medany"
+
+# 4x U7 cores (RV64IMAFDC) + 1x S7 core (RV64IMAC)
+config MAX_CPUS
+	int
+	default 5
+
+config RISCV_WORKING_HARTID
+	int
+	default 1 # use U7 core as S7 core does not support supervisor mode
+
+config OPENSBI_PLATFORM
+	string
+	default "generic"
+
+config OPENSBI_TEXT_START
+	hex
+	default 0x80000000
+
+config OPENSBI_FW_DYNAMIC_BOOT_HART
+	int
+	default 1
+	help
+	  Choose the first U74 core as boot hart since
+	  hart 0 is the S7 which does not support Supervisor mode
+
+endif

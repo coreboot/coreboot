@@ -1,0 +1,51 @@
+1. refactor SPI code. It works but there are quite some TODO left and it also currently only supports 1 MSEL configuration
+2. sometimes PCIe is not working with the following error message in Linux:
+[    0.619711] shpchp: Standard Hot Plug PCI Controller Driver version: 0.4
+[    0.621521] fu740-pcie e00000000.pcie: host bridge /soc/pcie@e00000000 ranges:
+[    0.621603] fu740-pcie e00000000.pcie:       IO 0x0060080000..0x006008ffff -> 0x0060080000
+[    0.621659] fu740-pcie e00000000.pcie:      MEM 0x0060090000..0x007fffffff -> 0x0060090000
+[    0.621685] fu740-pcie e00000000.pcie:      MEM 0x2000000000..0x3fffffffff -> 0x2000000000
+[    0.727890] fu740-pcie e00000000.pcie: iATU: unroll T, 8 ob, 8 ib, align 4K, limit 4096G
+[    0.828041] fu740-pcie e00000000.pcie: PCIe Gen.1 x8 link up
+[    1.828944] fu740-pcie e00000000.pcie: Phy link never came up
+[    1.828961] fu740-pcie e00000000.pcie: error: link did not start at new speed
+[    1.829142] ------------[ cut here ]------------
+[    1.829152] WARNING: CPU: 2 PID: 1 at drivers/pci/controller/dwc/pcie-fu740.c:232 fu740_pcie_start_link+0x1b4/0x1ce
+[    1.829191] Modules linked in:
+[    1.829205] CPU: 2 PID: 1 Comm: swapper/0 Not tainted 6.5.0-9-generic #9.1-Ubuntu
+[    1.829215] Hardware name: SiFive HiFive Unmatched A00 (DT)
+[    1.829221] epc : fu740_pcie_start_link+0x1b4/0x1ce
+[    1.829234]  ra : fu740_pcie_start_link+0x1ca/0x1ce
+[    1.829247] epc : ffffffff806fa1ac ra : ffffffff806fa1c2 sp : ffffffc800023b30
+[    1.829256]  gp : ffffffff822602d8 tp : ffffffd88027b600 t0 : ffffffff82029670
+[    1.829263]  t1 : 0000000000000000 t2 : 0000000000000000 s0 : ffffffc800023b70
+[    1.829270]  s1 : ffffffd88095d840 a0 : 0000000000000000 a1 : 0000000000000000
+[    1.829276]  a2 : 0000000000000000 a3 : 0000000000000000 a4 : 0000000000000000
+[    1.829282]  a5 : 0000000000000000 a6 : 0000000000000000 a7 : 0000000000000000
+[    1.829288]  s2 : ffffffffffffff92 s3 : 0000000000716c81 s4 : ffffffd8802b2c10
+[    1.829295]  s5 : 0000000000000003 s6 : ffffffffffffff92 s7 : ffffffff8108b448
+[    1.829301]  s8 : 0000000000000008 s9 : ffffffff80e00106 s10: 0000000000000000
+[    1.829307]  s11: 0000000000000000 t3 : 0000000000000000 t4 : 0000000000000000
+[    1.829313]  t5 : 0000000000000000 t6 : 0000000000000000
+[    1.829317] status: 0000000200000120 badaddr: ffffffffffffff92 cause: 0000000000000003
+[    1.829326] [<ffffffff806fa1ac>] fu740_pcie_start_link+0x1b4/0x1ce
+[    1.829341] [<ffffffff806f8692>] dw_pcie_host_init+0x21e/0x2cc
+[    1.829355] [<ffffffff806fa2ca>] fu740_pcie_probe+0x104/0x15a
+[    1.829366] [<ffffffff8083e510>] platform_probe+0x5e/0xc6
+[    1.829388] [<ffffffff8083a7b4>] call_driver_probe+0x22/0x142
+[    1.829400] [<ffffffff8083b36e>] really_probe+0x9a/0x2a2
+[    1.829413] [<ffffffff8083b5f4>] __driver_probe_device+0x7e/0x146
+[    1.829425] [<ffffffff8083b6f4>] driver_probe_device+0x38/0xd0
+[    1.829436] [<ffffffff8083b966>] __driver_attach+0xee/0x1e8
+[    1.829448] [<ffffffff80838e78>] bus_for_each_dev+0x6c/0xc4
+[    1.829460] [<ffffffff8083acbe>] driver_attach+0x26/0x34
+[    1.829471] [<ffffffff8083a1fe>] bus_add_driver+0x112/0x21e
+[    1.829483] [<ffffffff8083cb12>] driver_register+0x52/0x106
+[    1.829497] [<ffffffff8083e0b6>] __platform_driver_register+0x28/0x34
+[    1.829511] [<ffffffff80e3322e>] fu740_pcie_driver_init+0x22/0x2c
+[    1.829528] [<ffffffff80002962>] do_one_initcall+0x5c/0x1e2
+[    1.829542] [<ffffffff80e01836>] kernel_init_freeable+0x286/0x300
+[    1.829560] [<ffffffff80ce5b40>] kernel_init+0x2a/0x16e
+[    1.829584] [<ffffffff80003f82>] ret_from_fork+0xe/0x20
+[    1.829597] ---[ end trace 0000000000000000 ]---
+[    1.829635] fu740-pcie: probe of e00000000.pcie failed with error -110

@@ -647,7 +647,7 @@ static size_t get_cse_region_end_offset(void)
 	size_t end_offset;
 
 	for (size_t i = 0; i < BP_TOTAL; i++) {
-		end_offset = region_end(&params.layout_regions[i]);
+		end_offset = region_last(&params.layout_regions[i]) + 1;
 		if (end_offset > offset)
 			offset = end_offset;
 	}

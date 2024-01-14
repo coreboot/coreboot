@@ -423,9 +423,9 @@ static bool create_mmap_windows(void)
 						   &mmap_window_table[j].flash_space)) {
 					ERROR("Flash space windows (base=0x%zx, limit=0x%zx) and (base=0x%zx, limit=0x%zx) overlap!\n",
 					      region_offset(&mmap_window_table[i].flash_space),
-					      region_end(&mmap_window_table[i].flash_space),
+					      region_last(&mmap_window_table[i].flash_space),
 					      region_offset(&mmap_window_table[j].flash_space),
-					      region_end(&mmap_window_table[j].flash_space));
+					      region_last(&mmap_window_table[j].flash_space));
 					return false;
 				}
 
@@ -433,9 +433,9 @@ static bool create_mmap_windows(void)
 						   &mmap_window_table[j].host_space)) {
 					ERROR("Host space windows (base=0x%zx, limit=0x%zx) and (base=0x%zx, limit=0x%zx) overlap!\n",
 					      region_offset(&mmap_window_table[i].flash_space),
-					      region_end(&mmap_window_table[i].flash_space),
+					      region_last(&mmap_window_table[i].flash_space),
 					      region_offset(&mmap_window_table[j].flash_space),
-					      region_end(&mmap_window_table[j].flash_space));
+					      region_last(&mmap_window_table[j].flash_space));
 					return false;
 				}
 			}

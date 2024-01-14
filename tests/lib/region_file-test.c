@@ -145,12 +145,8 @@ static void test_region_file_init_real_data(void **state)
 static void test_region_file_init_invalid_region_device(void **state)
 {
 	struct region_device bad_dev;
-	struct region_file regf;
 
-	rdev_chain_mem_rw(&bad_dev, NULL, 0);
-
-	/* Expect fail when passing invalid region_device. */
-	assert_int_equal(-1, region_file_init(&regf, &bad_dev));
+	assert_int_equal(rdev_chain_mem_rw(&bad_dev, NULL, 0), -1);
 }
 
 static void test_region_file_data(void **state)

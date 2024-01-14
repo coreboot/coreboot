@@ -124,15 +124,15 @@ static inline size_t region_sz(const struct region *r)
 	return r->size;
 }
 
-static inline size_t region_end(const struct region *r)
+static inline size_t region_last(const struct region *r)
 {
-	return region_offset(r) + region_sz(r);
+	return region_offset(r) + (region_sz(r) - 1);
 }
 
 static inline bool region_overlap(const struct region *r1, const struct region *r2)
 {
-	return (region_end(r1) > region_offset(r2)) &&
-	       (region_offset(r1) < region_end(r2));
+	return (region_last(r1) >= region_offset(r2)) &&
+	       (region_offset(r1) <= region_last(r2));
 }
 
 /* Helper to dynamically initialize region device. */
@@ -156,9 +156,9 @@ static inline size_t region_device_offset(const struct region_device *rdev)
 	return region_offset(region_device_region(rdev));
 }
 
-static inline size_t region_device_end(const struct region_device *rdev)
+static inline size_t region_device_last(const struct region_device *rdev)
 {
-	return region_end(region_device_region(rdev));
+	return region_last(region_device_region(rdev));
 }
 
 /* Memory map entire region device. Same semantics as rdev_mmap() above. */

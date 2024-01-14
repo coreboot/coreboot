@@ -341,7 +341,7 @@ static void setup_smihandler_params(struct smm_runtime *mod_params,
 	}
 
 	for (int i = 0; i < loader_params->num_cpus; i++)
-		mod_params->save_state_top[i] = region_end(&cpus[i].ss);
+		mod_params->save_state_top[i] = region_last(&cpus[i].ss) + 1;
 
 	if (CONFIG(RUNTIME_CONFIGURABLE_SMM_LOGLEVEL))
 		mod_params->smm_log_level = mainboard_set_smm_log_level();
@@ -371,7 +371,7 @@ static void setup_smihandler_params(struct smm_runtime *mod_params,
 static void print_region(const char *name, const struct region region)
 {
 	printk(BIOS_DEBUG, "%-12s [0x%zx-0x%zx]\n", name, region_offset(&region),
-	       region_end(&region));
+	       region_last(&region));
 }
 
 /* STM + Handler + (Stub + Save state) * CONFIG_MAX_CPUS + stacks + page tables*/
@@ -482,7 +482,7 @@ int smm_load_module(const uintptr_t smram_base, const size_t smram_size,
 		return -1;
 
 	const struct region smram = region_create(smram_base, smram_size);
-	const uintptr_t smram_top = region_end(&smram);
+	const uintptr_t smram_top = region_last(&smram) + 1;
 
 	const size_t stm_size =
 		CONFIG(STM) ? CONFIG_MSEG_SIZE + CONFIG_BIOS_RESOURCE_LIST_SIZE : 0;

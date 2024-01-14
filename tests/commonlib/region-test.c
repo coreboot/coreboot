@@ -17,7 +17,7 @@ static void test_region(void **state)
 	struct region outer = {.offset = VAL(2), .size = VAL(4)};
 	assert_int_equal(region_offset(&outer), VAL(2));
 	assert_int_equal(region_sz(&outer), VAL(4));
-	assert_int_equal(region_end(&outer), VAL(6));
+	assert_int_equal(region_last(&outer), VAL(6) - 1);
 
 	struct region inner = {.offset = VAL(3), .size = VAL(2)};
 	assert_true(region_is_subregion(&outer, &inner));
@@ -118,7 +118,7 @@ static void test_rdev_basics(void **state)
 {
 	assert_int_equal(region_device_offset(&mock_rdev), 0);
 	assert_int_equal(region_device_sz(&mock_rdev), ~(size_t)0);
-	assert_int_equal(region_device_end(&mock_rdev), ~(size_t)0);
+	assert_int_equal(region_device_last(&mock_rdev), ~(size_t)0 - 1);
 }
 
 /*
@@ -254,7 +254,7 @@ static void test_rdev_chain(void **state)
 	assert_int_equal(rdev_chain(&child, &mock_rdev, child_offs, child_size), 0);
 	assert_int_equal(region_device_sz(&child), child_size);
 	assert_int_equal(region_device_offset(&child), child_offs);
-	assert_int_equal(region_device_end(&child), child_offs + child_size);
+	assert_int_equal(region_device_last(&child), child_offs + child_size - 1);
 	assert_int_equal(rdev_relative_offset(&mock_rdev, &child), child_offs);
 	assert_int_equal(rdev_relative_offset(&child, &mock_rdev), -1);
 

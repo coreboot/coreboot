@@ -96,7 +96,7 @@ endif #CONFIG_ARCH_BOOTBLOCK_RISCV
 ################################################################################
 ifeq ($(CONFIG_ARCH_ROMSTAGE_RISCV),y)
 
-romstage-y += romstage.S
+romstage-$(CONFIG_SEPARATE_ROMSTAGE) += romstage.S
 
 # Build the romstage
 
@@ -163,10 +163,9 @@ $(OPENSBI_TARGET): $(obj)/config.h | $(OPENSBI_SOURCE)
 		AR="$(AR_ramstage)" \
 		PLATFORM=$(CONFIG_OPENSBI_PLATFORM) \
 		O="$(OPENSBI_BUILD)" \
-		FW_JUMP=y \
+		FW_JUMP=n \
 		FW_DYNAMIC=y \
 		FW_PAYLOAD=n \
-		FW_PAYLOAD_OFFSET=0 \
 		FW_TEXT_START=$(CONFIG_OPENSBI_TEXT_START)
 
 $(OPENSBI): $(OPENSBI_TARGET)

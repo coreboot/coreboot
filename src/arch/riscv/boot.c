@@ -31,10 +31,12 @@ static void do_arch_prog_run(struct arch_prog_run_args *args)
 		fdt = prog_entry_arg(prog);
 
 	if (ENV_RAMSTAGE && prog_type(prog) == PROG_PAYLOAD) {
-		if (CONFIG(RISCV_OPENSBI))
+		if (CONFIG(RISCV_OPENSBI)) {
+			// tell OpenSBI to switch to Supervisor mode before jumping to payload
 			run_payload_opensbi(prog, fdt, args->opensbi, RISCV_PAYLOAD_MODE_S);
-		else
+		} else {
 			run_payload(prog, fdt, RISCV_PAYLOAD_MODE_S);
+		}
 	} else {
 		void (*doit)(int hart_id, void *fdt, void *arg) = prog_entry(prog);
 		doit(hart_id, fdt, prog_entry_arg(prog));

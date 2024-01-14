@@ -47,9 +47,16 @@ static void sifive_uart_init(struct sifive_uart_registers *regs, int div)
 
 void uart_init(unsigned int idx)
 {
-	unsigned int div;
-	div = uart_baudrate_divisor(get_uart_baudrate(),
-		uart_platform_refclk(), uart_input_clock_divider());
+	/*
+	 * according to FU540/FU740 manual:
+	 * f_baud = f_in / (div + 1)
+	 * <=>
+	 * div = (f_in / f_baud) - 1
+	 */
+	unsigned int div = uart_baudrate_divisor(get_uart_baudrate(), uart_platform_refclk(),
+			uart_input_clock_divider());
+	div -= 1;
+
 	sifive_uart_init(uart_platform_baseptr(idx), div);
 }
 

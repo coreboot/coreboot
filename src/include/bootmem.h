@@ -46,6 +46,7 @@ enum bootmem_type {
  * BM_MEM_RAMSTAGE : Translates to LB_MEM_RAM.
  * BM_MEM_PAYLOAD  : Translates to LB_MEM_RAM.
  * BM_MEM_BL31     : Translates to LB_MEM_RESERVED.
+ * BM_MEM_OPENSBI  : Translates to LB_MEM_RESERVED.
  */
 void bootmem_write_memory_table(struct lb_memory *mem);
 

@@ -20,6 +20,8 @@ void run_opensbi(const int hart_id,
 		.version = FW_DYNAMIC_INFO_VERSION_MAX,
 		.next_mode = payload_mode,
 		.next_addr = (uintptr_t)payload,
+		.options = 0,
+		.boot_hart = CONFIG_OPENSBI_FW_DYNAMIC_BOOT_HART,
 	};
 
 	csr_write(mepc, opensbi);

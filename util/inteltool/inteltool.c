@@ -180,6 +180,8 @@ static const struct {
 	  "12th generation (Alder Lake P family) Core Processor"},
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_ADL_ID_P_2_8,
 	  "12th generation (Alder Lake P family) Core Processor"},
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_8_6,
+	  "13th generation (Raptor Lake H family) Core Processor"},
 
 	/* Southbridges (LPC controllers) */
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82371XX, "371AB/EB/MB" },
@@ -414,6 +416,7 @@ static const struct {
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_C266, "C266" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_EHL, "Elkhart Lake" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_JSL, "Jasper Lake" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_RPL_P, "Raptor Lake" },
 
 	/* Intel GPUs */
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_G35_EXPRESS,
@@ -572,6 +575,8 @@ static const struct {
 	  "Intel(R) AlderLake-S GT1" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_UHD_GRAPHICS,
 	  "Intel(R) UHD Graphics" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_RPL_H_IRIS_XE,
+	  "Intel(R) Iris Xe Graphics [RPL-P]" },
 };
 
 #ifndef __DARWIN__

@@ -388,6 +388,7 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_CORE_ADL_ID_P_6_8	0x4641 /* Alderlake P 6+8 */
 #define PCI_DEVICE_ID_INTEL_CORE_ADL_ID_P_4_8	0x4621 /* Alderlake P 4+8 */
 #define PCI_DEVICE_ID_INTEL_CORE_ADL_ID_P_2_8	0x4601 /* Alderlake P 2+8 */
+#define PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_8_6	0xa706 /* Raptorlake H 8+6 */
 
 /* Intel GPUs */
 #define PCI_DEVICE_ID_INTEL_G35_EXPRESS		0x2982
@@ -468,6 +469,7 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_ADL_S_GT1_2		0x4682
 #define PCI_DEVICE_ID_INTEL_ADL_S_GT1_3		0x4690
 #define PCI_DEVICE_ID_INTEL_ADL_S_GT1_4		0x4692
+#define PCI_DEVICE_ID_INTEL_RPL_H_IRIS_XE	0xa7a0
 
 #if !defined(__DARWIN__) && !defined(__FreeBSD__)
 typedef struct { uint32_t hi, lo; } msr_t;

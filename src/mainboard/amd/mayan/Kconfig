@@ -14,7 +14,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select PCIEXP_COMMON_CLOCK
 	select PCIEXP_L1_SUB_STATE
 	select SOC_AMD_COMMON_BLOCK_ESPI_RETAIN_PORT80_EN
-	select SOC_AMD_PHOENIX
+	select SOC_AMD_PHOENIX_FSP
 
 config FMDFILE
 	default "src/mainboard/amd/mayan/chromeos.fmd" if CHROMEOS

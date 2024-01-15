@@ -3,7 +3,7 @@
 # TODO: Move as much as possible to common
 # TODO: Update for Phoenix
 
-ifeq ($(CONFIG_SOC_AMD_PHOENIX),y)
+ifeq ($(CONFIG_SOC_AMD_PHOENIX_BASE),y)
 
 subdirs-$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK) += psp_verstage
 
@@ -355,4 +355,4 @@ vboot-gscvd-ranges += $(call amdfwread-range-cmd,PSPL2: 0x52)
 endif # ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
 endif # ifeq ($(CONFIG_VBOOT_GSCVD),y)
 
-endif # ($(CONFIG_SOC_AMD_PHOENIX),y)
+endif # ($(CONFIG_SOC_AMD_PHOENIX_BASE),y)

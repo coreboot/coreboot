@@ -89,8 +89,6 @@ static void merlin_init(struct device *dev)
 
 	ec_mirror_flag();
 
-	pc_keyboard_init(NO_AUX_DEVICE);
-
 	/*
 	 * Restore settings from CMOS into EC RAM:
 	 *

@@ -112,7 +112,7 @@ static void configure_sata(void)
 	}
 }
 
-static void setup_opensil(void *unused)
+void setup_opensil(void)
 {
 	const SIL_STATUS debug_ret = SilDebugSetup(HostDebugService);
 	SIL_STATUS_report("SilDebugSetup", debug_ret);
@@ -129,9 +129,7 @@ static void setup_opensil(void *unused)
 	configure_mpio();
 }
 
-BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_ENTRY, setup_opensil, NULL);
-
-static void opensil_entry(void *timepoint)
+void opensil_entry(SIL_TIMEPOINT timepoint)
 {
 	SIL_STATUS ret;
 	SIL_TIMEPOINT tp = (uintptr_t)timepoint;
@@ -162,7 +160,4 @@ static void opensil_entry(void *timepoint)
 	}
 }
 
-/* TODO: look into calling these functions from some SoC device operations instead of using
- * BOOT_STATE_INIT_ENTRY */
-BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_EXIT, opensil_entry, (void *)SIL_TP1);
-/* TODO add other timepoints later. Are they NOOP? */
+/* TODO: also call timepoints 2 and 3 from coreboot. Are they NOOP? */

@@ -117,5 +117,6 @@
 
 void fch_pre_init(void);
 void fch_early_init(void);
+void fch_init(void *chip_info);
 
 #endif /* AMD_GENOA_POC_SOUTHBRIDGE_H */

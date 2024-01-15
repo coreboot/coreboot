@@ -3,10 +3,17 @@
 #include <device/device.h>
 #include <soc/southbridge.h>
 #include <soc/acpi.h>
+#include <soc/southbridge.h>
+#include <vendorcode/amd/opensil/genoa_poc/opensil.h>
 
 static void soc_init(void *chip_info)
 {
 	default_dev_ops_root.write_acpi_tables = soc_acpi_write_tables;
+
+	setup_opensil();
+	opensil_entry(SIL_TP1);
+
+	fch_init(chip_info);
 }
 
 static void soc_final(void *chip_info)

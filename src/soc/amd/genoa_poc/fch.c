@@ -81,14 +81,8 @@ static void fch_init_acpi_ports(void)
 	configure_smi(SMITYPE_SMI_CMD_PORT, SMI_MODE_SMI);
 }
 
-static void fch_init(void *unused)
+void fch_init(void *chip_info)
 {
 	set_pci_irqs();
 	fch_init_acpi_ports();
 }
-
-/*
- * Hook this function into the PCI state machine on entry into BS_DEV_ENABLE.
- * TODO: can this be done without using BOOT_STATE_INIT_ENTRY?
- */
-BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, fch_init, NULL);

@@ -112,7 +112,12 @@ enum azalia_pin_location_2 {
 	LOCATION_OTHER
 };
 
-#define AZALIA_PIN_DESC(conn, location2, location1, dev, type, color, no_presence_detect, \
+enum azalia_pin_misc {
+	JACK_PRESENCE_DETECT = 0,
+	NO_JACK_PRESENCE_DETECT,
+};
+
+#define AZALIA_PIN_DESC(conn, location2, location1, dev, type, color, misc, \
 			association, sequence) \
 	(((conn) << 30) | \
 	 ((location2) << 27) | \
@@ -120,7 +125,7 @@ enum azalia_pin_location_2 {
 	 ((dev) << 20) | \
 	 ((type) << 16) | \
 	 ((color) << 12) | \
-	 ((no_presence_detect) << 8) | \
+	 ((misc) << 8) | \
 	 ((association) << 4) | \
 	 ((sequence) << 0))
 

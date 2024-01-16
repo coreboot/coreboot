@@ -107,25 +107,32 @@ static void dump_regs(const struct superio_registers reg_table[],
 
 	if (alternate_dump) {
 		int skip_def = 0;
+		int val;
 
-		printf("\nidx   val    def\n");
+		printf("\nidx    def    val\n");
 
 		for (k = 0; idx[k] != EOT; k++) {
-			printf("0x%02x: 0x%02x", idx[k], regval(port, idx[k]));
-
 			if (skip_def || def[k] == EOT) {
 				skip_def = 1;
 				printf("\n");
 				continue;
 			}
+
+			printf("0x%02x:  ", idx[k]);
+			val = regval(port, idx[k]);
+
 			if (def[k] == NANA)
-				printf("   (NA)\n");
+				printf("(NA)   0x%02x\n", val);
 			else if (def[k] == RSVD)
-				printf("   (RR)\n");
+				printf("(RR)   0x%02x\n", val);
 			else if (def[k] == MISC)
-				printf("   (MM)\n");
-			else
-				printf("   (0x%02x)\n", def[k]);
+				printf("(MM)   0x%02x\n", val);
+			else {
+				if (def[k] == val)
+					printf("0x%02x   0x%02x\n", def[k], val);
+				else
+					printf("0x%02x  [0x%02x]\n", def[k], val);
+			}
 		}
 	} else {
 		printf("\nidx");

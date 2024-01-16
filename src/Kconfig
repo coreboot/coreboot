@@ -906,6 +906,7 @@ menu "System tables"
 config GENERATE_MP_TABLE
 	prompt "Generate an MP table" if HAVE_MP_TABLE
 	bool
+	depends on !ECAM_MMCONF_SUPPORT || ECAM_MMCONF_BUS_NUMBER <= 256
 	default HAVE_MP_TABLE
 	help
 	  Generate an MP table (conforming to the Intel MultiProcessor

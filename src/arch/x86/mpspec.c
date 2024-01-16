@@ -14,10 +14,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#if CONFIG(ECAM_MMCONF_SUPPORT) && PCI_SEGMENT_GROUP_COUNT > 1
-#error "MPTable doesn't support systems with multiple PCI segment groups"
-#endif
-
 /* Initialize the specified "mc" struct with initial values. */
 void mptable_init(struct mp_config_table *mc)
 {

@@ -91,4 +91,11 @@ config DEVAPC_DEBUG
 	  When this option is enabled, the DEVAPC driver prints the settings after
 	  initialization.
 
+config EARLY_MMU_INIT
+	bool
+	default n
+	help
+	  When this option is enabled, `mtk_mmu_init()` will be done in
+	  `bootblock_soc_early_init()` to reduce the boot time.
+
 endif

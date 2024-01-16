@@ -9,7 +9,7 @@ all-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 all-y += timer.c ../common/timer_prepare.c
 all-y += ../common/uart.c
 
-bootblock-y += bootblock.c
+bootblock-y += ../common/bootblock.c bootblock.c
 bootblock-y += ../common/eint_event.c
 bootblock-y += ../common/lastbus_v2.c lastbus.c
 bootblock-y += ../common/mmu_operations.c

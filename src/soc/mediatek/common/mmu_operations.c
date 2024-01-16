@@ -9,6 +9,13 @@ __weak void mtk_soc_after_dram(void) { /* do nothing */ }
 
 void mtk_mmu_init(void)
 {
+	static bool mmu_inited;
+
+	if (mmu_inited)
+		return;
+
+	mmu_inited = true;
+
 	mmu_init();
 
 	/*

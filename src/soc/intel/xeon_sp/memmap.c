@@ -4,6 +4,7 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <device/pci_ops.h>
+#include <device/pci_ids.h>
 #include <cpu/x86/smm.h>
 #include <soc/soc_util.h>
 #include <soc/pci_devs.h>
@@ -53,7 +54,6 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 #if !defined(__SIMPLE_DEVICE__)
 union dpr_register txt_get_chipset_dpr(void)
 {
-	const IIO_UDS *hob = get_iio_uds();
 	union dpr_register dpr;
 	struct device *dev = VTD_DEV(0);
 
@@ -66,31 +66,15 @@ union dpr_register txt_get_chipset_dpr(void)
 
 	dpr.raw = pci_read_config32(dev, VTD_LTDPR);
 
-	/* Compare the LTDPR register on all iio stacks */
-	for (int socket = 0, iio = 0; iio < hob->PlatformData.numofIIO; ++socket) {
-		if (!soc_cpu_is_enabled(socket))
-			continue;
-		iio++;
-		for (int stack = 0; stack < MAX_IIO_STACK; ++stack) {
-			const STACK_RES *ri =
-				&hob->PlatformData.IIO_resource[socket].StackRes[stack];
-			if (ri->VtdBarAddress == 0)
-				continue;
-			uint8_t bus = ri->BusBase;
-			dev = VTD_DEV(bus);
-
-			if (!dev) {
-				printk(BIOS_ERR, "BUS %x: Unable to find VTD PCI dev\n", bus);
-				dpr.raw = 0;
-				return  dpr;
-			}
-
-			union dpr_register test_dpr = { .raw = pci_read_config32(dev, VTD_LTDPR) };
-			if (dpr.raw != test_dpr.raw) {
-				printk(BIOS_ERR, "LTDPR not the same on all IIO's");
-				dpr.raw = 0;
-				return dpr;
-			}
+	dev = NULL;
+	/* Look for VTD devices on all sockets */
+	while ((dev = dev_find_device(PCI_VID_INTEL, MMAP_VTD_STACK_CFG_REG_DEVID, dev))) {
+		/* Compare the LTDPR register on all iio stacks */
+		union dpr_register test_dpr = { .raw = pci_read_config32(dev, VTD_LTDPR) };
+		if (dpr.raw != test_dpr.raw) {
+			printk(BIOS_ERR, "LTDPR not the same on all IIO's");
+			dpr.raw = 0;
+			return dpr;
 		}
 	}
 	return dpr;

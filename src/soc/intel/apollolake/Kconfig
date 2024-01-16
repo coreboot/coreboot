@@ -255,10 +255,6 @@ config IFWI_FILE_NAME
 	help
 	  Name of file to store in the IFWI region.
 
-config HEAP_SIZE
-	hex
-	default 0x8000
-
 config MAX_ROOT_PORTS
 	int
 	default 6

@@ -25,8 +25,4 @@ config S3_VGA_ROM_RUN
 
 source "src/northbridge/amd/pi/00730F01/Kconfig"
 
-config HEAP_SIZE
-	hex
-	default 0xc0000
-
 endif # NORTHBRIDGE_AMD_PI

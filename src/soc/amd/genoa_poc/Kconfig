@@ -182,11 +182,6 @@ config SMM_TSEG_SIZE
 	hex
 	default 0x800000
 
-#TODO: Check if the value of HEAP_SIZE is optimal
-config HEAP_SIZE
-	hex
-	default 0x200000
-
 config ACPI_SSDT_PSD_INDEPENDENT
 	bool "Allow core p-state independent transitions"
 	default y

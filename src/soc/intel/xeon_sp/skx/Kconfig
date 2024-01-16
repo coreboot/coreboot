@@ -55,10 +55,6 @@ config CPU_MICROCODE_CBFS_LEN
 	hex
 	default 0x7C00
 
-config HEAP_SIZE
-	hex
-	default 0x80000
-
 config IED_REGION_SIZE
 	hex
 	default 0x400000

@@ -1,0 +1,142 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/intel/cannonlake
+	register "power_limits_config" = "{
+		.tdp_pl2_override = 65,
+	}"
+
+	# Unmap unused CLKREQ lines, otherwise CLKSRC #0 won't work
+	register "PcieClkSrcClkReq[1]"	= "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[5]"	= "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[7]"	= "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[8]"	= "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[9]"	= "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[11]"	= "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[12]"	= "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[13]"	= "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[14]"	= "PCIE_CLK_NOTUSED"
+	register "PcieClkSrcClkReq[15]"	= "PCIE_CLK_NOTUSED"
+
+	device domain 0 on
+		subsystemid 0x17aa 0x3136 inherit
+		# Slot JP3
+		device ref peg0 		on
+			register "PcieClkSrcUsage[0]"	= "0x40"
+			register "PcieClkSrcClkReq[0]"	= "0"
+		end
+		device ref igpu 		on	end
+		device ref dptf 		on	end
+		device ref thermal 		on	end
+		device ref xhci 		on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC0),		// Internal USB header
+				[1] = USB2_PORT_TYPE_C(OC1),		// Front port (charger)
+				[3] = USB2_PORT_TYPE_C(OC2),		// Front Type C port
+				[4] = USB2_PORT_MID(OC4),		// Rear USB 3.1 port 1
+				[5] = USB2_PORT_MID(OC6),		// Rear USB 3.1 port 2
+				[6] = USB2_PORT_MID(OC3),		// Rear USB 3.0 port 1
+				[7] = USB2_PORT_MID(OC5),		// Rear USB 3.0 port 2
+				[13] = USB2_PORT_SHORT(OC_SKIP),	// M.2 2230
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC1),	// Front port (charger)
+				[1] = USB3_PORT_DEFAULT(OC2),	// Front Type C port
+				[2] = USB3_PORT_DEFAULT(OC4),	// Rear USB 3.1 port 1
+				[3] = USB3_PORT_DEFAULT(OC6),	// Rear USB 3.2 port 2
+				[4] = USB3_PORT_DEFAULT(OC3),	// Rear USB 3.0 port 1
+				[5] = USB3_PORT_DEFAULT(OC5),	// Rear USB 3.0 port 2
+				[6] = USB3_PORT_DEFAULT(OC0),	// Internal USB header
+			}"
+		end
+		device ref shared_sram	on	end
+		device ref cnvi_wifi	on
+			chip drivers/wifi/generic
+				register "wake" = "PME_B0_EN_BIT"
+				device generic 0 on end
+			end
+		end
+		device ref heci1	on	end
+		device ref heci3	on	end
+		device ref sata		on
+			register "SataSalpSupport" = "1"
+			register "SataPortsEnable" = "{
+				[0] = 1, // on-board SATA1
+				[4] = 1, // M.2 SATA on M920x
+			}"
+		end
+
+		device ref pcie_rp6	on # WLAN
+			register "PcieRpEnable[5]"		= "1"
+			register "PcieRpSlotImplemented[5]"	= "1"
+			register "PcieClkSrcUsage[3]"		= "5"
+			register "PcieClkSrcClkReq[3]"		= "3"
+		end
+
+		device ref pcie_rp9	on # PCIe x4
+			register "PcieRpEnable[8]"		= "1"
+			register "PcieRpSlotImplemented[8]"	= "1"
+			register "PcieClkSrcUsage[2]"		= "8"
+			register "PcieClkSrcClkReq[2]"		= "2"
+		end
+
+		device ref pcie_rp17 on # M.2 SSD #2
+			register "PcieRpEnable[16]"		= "1"
+			register "PcieRpSlotImplemented[16]"	= "1"
+			register "PcieClkSrcUsage[10]"		= "16"
+			register "PcieClkSrcClkReq[10]"		= "10"
+		end
+
+		device ref pcie_rp21 on # M.2 SSD #1
+			register "PcieRpEnable[20]"		= "1"
+			register "PcieRpSlotImplemented[20]"	= "1"
+			register "PcieClkSrcUsage[4]"		= "20"
+			register "PcieClkSrcClkReq[4]"		= "4"
+		end
+
+		device ref lpc_espi	on
+			chip superio/nuvoton/nct6687d
+				device pnp 2e.1 off	end	# Parallel port
+				device pnp 2e.2 off	end	# UARTA (USB debug port?)
+				device pnp 2e.3 on		# UARTB - COM1 header - optional sub-board
+					io 0x60 = 0x3f8
+					irq 0x70 = 4
+					irq 0xf0 = 0
+					irq 0xf1 = 0
+				end
+				device pnp 2e.5 off	end	# Keyboard
+				device pnp 2e.6 off	end	# CIR
+				device pnp 2e.7 off	end	# GPIO0-7
+				device pnp 2e.8 off	end	# P80 UART
+				device pnp 2e.9 off	end	# GPIO8-9, GPIO1-8 AF
+				device pnp 2e.a on		# ACPI
+					io 0x60 = 0x00
+					irq 0x70 = 0x40
+				end
+				device pnp 2e.b on		# EC
+					io 0x60 = 0xa20
+					irq 0x70 = 0
+				end
+				device pnp 2e.c off	end	# RTC
+				device pnp 2e.d off	end	# Deep Sleep
+				device pnp 2e.e on		# TACH/PWM assignment
+					irq 0xe4 = 0x10
+					irq 0xe5 = 0x09
+				end
+				device pnp 2e.f off	end	# Function register
+			end
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on	end
+			end
+		end
+		device ref hda	on
+			register "PchHdaAudioLinkHda"	= "1"
+		end
+		device ref smbus	on	end
+		device ref fast_spi	on	end
+		device ref gbe	on
+			register "PcieClkSrcUsage[6]"	= "PCIE_CLK_LAN"
+			register "PcieClkSrcClkReq[6]"	= "6"
+		end
+	end
+end

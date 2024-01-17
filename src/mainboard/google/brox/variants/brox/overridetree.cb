@@ -17,9 +17,9 @@ fw_config
 		option AUDIO_UNKNOWN			0
 		option AUDIO_REALTEK_ALC256		1
 	end
-	field UFS_CAMERA 8 9
-		option UFS_CAMERA_NONE			0
-		option UFS_CAMERA_OV2740		1
+	field UFC 8 9
+		option UFC_NONE				0
+		option UFC_OV2740			1
 	end
 end
 

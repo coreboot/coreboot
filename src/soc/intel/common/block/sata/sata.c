@@ -1,8 +1,26 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpigen.h>
+#include <acpi/acpigen_pci.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <intelblocks/acpi.h>
+
+static void sata_acpi_fill_ssdt(const struct device *dev)
+{
+	const char *scope = acpi_device_path(dev);
+
+	if (!scope)
+		return;
+
+	acpigen_write_scope(scope);
+	acpigen_write_device(soc_acpi_name(dev));
+	acpigen_write_ADR_pci_device(dev);
+	acpigen_write_STA(acpi_device_status(dev));
+	acpigen_pop_len(); /* Device */
+	acpigen_pop_len(); /* Scope */
+}
 
 struct device_operations sata_ops = {
 	.read_resources		= pci_dev_read_resources,
@@ -10,6 +28,9 @@ struct device_operations sata_ops = {
 	.enable_resources	= pci_dev_enable_resources,
 	.final			= pci_dev_request_bus_master,
 	.ops_pci		= &pci_dev_ops_pci,
+#if CONFIG(HAVE_ACPI_TABLES)
+	.acpi_fill_ssdt		= sata_acpi_fill_ssdt,
+#endif
 };
 
 static const unsigned short pci_device_ids[] = {

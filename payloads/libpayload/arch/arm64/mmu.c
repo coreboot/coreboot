@@ -42,10 +42,13 @@ static uint64_t *xlat_addr;
 
 static int free_idx;
 
-/* We refer to this in the linker script for ChormeOS's depthcharge payload
- * and to please not change the name without discussing with us.
- * Please contact: jwerner@chromium.org or yich@chromium.org */
-static uint8_t ttb_buffer[TTB_DEFAULT_SIZE] __aligned(GRANULE_SIZE);
+/*
+ * We refer to the section ".bss.ttb_buffer" in the linker script for ChromeOS's depthcharge
+ * payload. Please DO NOT change the section name without discussing with us.
+ * Please contact: jwerner@chromium.org or yich@chromium.org
+ */
+static uint8_t ttb_buffer[TTB_DEFAULT_SIZE] __aligned(GRANULE_SIZE)
+	__section(".bss.ttb_buffer");
 
 static const char * const tag_to_string[] = {
 	[TYPE_NORMAL_MEM] = "normal",

@@ -460,12 +460,12 @@ void smihandler_southbridge_tco(
 	if (!tco_sts)
 		return;
 
-	if (tco_sts & TCO_TIMEOUT) { /* TIMEOUT */
+	if (tco_sts & TCO1_STS_TIMEOUT) { /* TIMEOUT */
 		/* Handle TCO timeout */
 		printk(BIOS_DEBUG, "TCO Timeout.\n");
 	}
 
-	if (tco_sts & (TCO_INTRD_DET << 16)) { /* INTRUDER# assertion */
+	if (tco_sts & (TCO2_INTRD_DET << 16)) { /* INTRUDER# assertion */
 		/*
 		 * Handle intrusion event
 		 * If we ever get here, probably the case has been opened.

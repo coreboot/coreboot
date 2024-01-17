@@ -76,7 +76,7 @@ static void pch_log_power_and_resets(const struct chipset_power_state *ps)
 
 	/* TCO Timeout */
 	if (ps->prev_sleep_state != ACPI_S3 &&
-	    ps->tco1_sts & TCO_TIMEOUT)
+	    ps->tco1_sts & TCO1_STS_TIMEOUT)
 		elog_add_event(ELOG_TYPE_TCO_RESET);
 
 	/* Power Button Override */

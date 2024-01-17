@@ -3,6 +3,8 @@
 #ifndef _DENVERTON_NS_PMC_H_
 #define _DENVERTON_NS_PMC_H_
 
+#include <soc/intel/common/tco.h>
+
 /* Memory mapped IO registers behind PMC_BASE_ADDRESS */
 #define PMC_ACPI_BASE 0x40 /* IO BAR */
 #define MASK_PMC_ACPI_BASE 0xfffc
@@ -213,29 +215,6 @@
 #define IE_SCI_EN (1 << 3)
 #define SWGPE_EN (1 << 2)
 #define HOT_PLUG_EN (1 << 1)
-
-/* TCO registers and fields live behind TCOBASE I/O bar in SMBus device. */
-#define TCO_RLD 0x00
-#define TCO1_STS 0x04
-#define TCO1_STS_TCO_SLVSEL (1 << 13)
-#define TCO1_STS_CPUSERR (1 << 12)
-#define TCO1_STS_CPUSMI (1 << 10)
-#define TCO1_STS_CPUSCI (1 << 9)
-#define TCO1_STS_BIOSWR (1 << 8)
-#define TCO1_STS_NEWCENTURY (1 << 7)
-#define TCO1_STS_TIMEOUT (1 << 3)
-#define TCO1_STS_TCO_INT (1 << 2)
-#define TCO1_STS_OS_TCO_SMI (1 << 1)
-#define TCO1_STS_NMI2SMI (1 << 0)
-#define TCO2_STS 0x06
-#define TCO2_STS_SMLINK_SLAVE_SMI 0x04
-#define TCO2_STS_SECOND_TO 0x02
-#define TCO2_STS_INTRD_DET 0x01
-#define TCO1_CNT 0x08
-#define TCO_LOCK (1 << 12)
-#define TCO_TMR_HLT (1 << 11)
-#define TCO2_CNT 0x0a
-#define TCO_TMR 0x12
 
 /* Memory mapped IO registers behind PMC_BASE_ADDRESS */
 #define PRSTS			0x10

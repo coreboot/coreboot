@@ -10,13 +10,8 @@
 #undef TCO1_CNT
 #endif
 
-#define PMBASE_TCO_OFFSET	0x60
+#include <soc/intel/common/tco.h>
 
-#define TCO1_STS		0x04
-#define  TCO_TIMEOUT		(1 << 3)
-#define TCO2_STS		0x06
-#define  TCO2_STS_SECOND_TO	(1 << 1)
-#define TCO1_CNT		0x08
-#define  TCO_TMR_HLT		(1 << 11)
+#define PMBASE_TCO_OFFSET	0x60
 
 #endif /* SOUTHBRIDGE_INTEL_COMMON_TCO_H */

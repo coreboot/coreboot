@@ -56,7 +56,7 @@ void tco_lockdown(void)
 
 	/* TCO Lock down */
 	tcocnt = tco_read_reg(TCO1_CNT);
-	tcocnt |= TCO_LOCK;
+	tcocnt |= TCO1_LOCK;
 	tco_write_reg(TCO1_CNT, tcocnt);
 }
 
@@ -83,7 +83,7 @@ static void tco_timer_disable(void)
 
 	/* Program TCO timer halt */
 	tcocnt = tco_read_reg(TCO1_CNT);
-	tcocnt |= TCO_TMR_HLT;
+	tcocnt |= TCO1_TMR_HLT;
 	tco_write_reg(TCO1_CNT, tcocnt);
 }
 
@@ -94,8 +94,8 @@ static void tco_intruder_smi_enable(void)
 
 	/* Make TCO issue an SMI on INTRD_DET assertion */
 	tcocnt = tco_read_reg(TCO2_CNT);
-	tcocnt &= ~TCO_INTRD_SEL_MASK;
-	tcocnt |= TCO_INTRD_SEL_SMI;
+	tcocnt &= ~TCO2_INTRD_SEL_MASK;
+	tcocnt |= TCO2_INTRD_SEL_SMI;
 	tco_write_reg(TCO2_CNT, tcocnt);
 }
 

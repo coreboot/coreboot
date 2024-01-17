@@ -110,7 +110,7 @@ static void early_tco_init(void)
 
 	/*  Halt the TCO timer */
 	uint16_t reg16 = inw(tco_base + TCO1_CNT);
-	reg16 |= TCO_TMR_HLT;
+	reg16 |= TCO1_TMR_HLT;
 	outw(reg16, tco_base + TCO1_CNT);
 
 	/* Clear the Second TCO status bit */

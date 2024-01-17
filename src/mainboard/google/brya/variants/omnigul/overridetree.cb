@@ -131,6 +131,8 @@ chip soc/intel/alderlake
 				register "device_count" = "6"
 				# DDIA for eDP
 				register "device[0].name" = ""LCD""
+				# Internal panel on the first port of the graphics chip
+				register "device[0].addr" = "0x80010400"
 				# DDIB for HDMI
 				register "device[1].name" = ""DD01""
 				# TCP0 (DP-1) for port C0

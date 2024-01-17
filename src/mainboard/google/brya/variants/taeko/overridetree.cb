@@ -142,6 +142,8 @@ chip soc/intel/alderlake
 				register "device_count" = "3"
 				# DDIA for eDP
 				register "device[0].name" = ""LCD""
+				# Internal panel on the first port of the graphics chip
+				register "device[0].addr" = "0x80010400"
 				# DDIB is unused and HDMI is not enumerated in the kernel, so no GFX device is added for DDIB
 				# TCP0 (DP-1) for port C0
 				register "device[1].name" = ""DD01""

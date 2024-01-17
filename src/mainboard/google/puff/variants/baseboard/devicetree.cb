@@ -198,14 +198,14 @@ chip soc/intel/cannonlake
 	device cpu_cluster 0 on end
 
 	device domain 0 on
-		device pci 00.0 on end # Host Bridge
-		device pci 02.0 on  end # Integrated Graphics Device
-		device pci 04.0 off end # SA Thermal device
-		device pci 05.0 off end # SA IPU
-		device pci 12.0 on end # Thermal Subsystem
-		device pci 12.5 off end # UFS SCS
-		device pci 12.6 off end # GSPI #2
-		device pci 14.0 on
+		device ref system_agent on end
+		device ref igpu on  end
+		device ref dptf off end
+		device ref ipu off end
+		device ref thermal on end
+		device ref ufs off end
+		device ref gspi2 off end
+		device ref xhci on
 			chip drivers/usb/acpi
 				register "desc" = ""Root Hub""
 				register "type" = "UPC_TYPE_HUB"
@@ -281,78 +281,80 @@ chip soc/intel/cannonlake
 					end
 				end
 			end
-		end # USB xHCI
-		device pci 14.1 off end # USB xDCI (OTG)
-		device pci 14.3 on
+		end
+		device ref xdci off end
+		device ref cnvi_wifi on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_PME_B0"
 				device generic 0 on end
 			end
-		end # CNVi wifi
-		device pci 14.5 on  end # SDCard
-		device pci 15.0 on  end # I2C #0
-		device pci 15.1 on  end # I2C #1
-		device pci 15.2 on  end # I2C #2
-		device pci 15.3 on  end # I2C #3
-		device pci 16.0 on  end # Management Engine Interface 1
-		device pci 16.1 off end # Management Engine Interface 2
-		device pci 16.2 off end # Management Engine IDE-R
-		device pci 16.3 off end # Management Engine KT Redirection
-		device pci 16.4 off end # Management Engine Interface 3
-		device pci 16.5 off end # Management Engine Interface 4
-		device pci 17.0 on  end # SATA
-		device pci 19.0 on  end # I2C #4
-		device pci 19.1 off end # I2C #5
-		device pci 19.2 off end # UART #2
-		device pci 1a.0 off end # eMMC
-		device pci 1c.0 off end # PCI Express Port 1 (USB)
-		device pci 1c.1 off end # PCI Express Port 2 (USB)
-		device pci 1c.2 off end # PCI Express Port 3 (USB)
-		device pci 1c.3 off end # PCI Express Port 4 (USB)
-		device pci 1c.4 off end # PCI Express Port 5 (USB)
-		device pci 1c.5 off end # PCI Express Port 6
-		device pci 1c.6 off end # PCI Express Port 7
-		device pci 1c.7 off end # PCI Express Port 8
-		device pci 1d.0 on	# PCI Express Port 9 (X4 NVME)
+		end
+		device ref sdxc on  end
+		device ref i2c0 on  end
+		device ref i2c1 on  end
+		device ref i2c2 on  end
+		device ref i2c3 on  end
+		device ref heci1 on  end
+		device ref heci2 off end
+		device ref csme_ider off end
+		device ref csme_ktr off end
+		device ref heci3 off end
+		device ref heci4 off end
+		device ref sata on  end
+		device ref i2c4 on  end
+		device ref i2c5 off end
+		device ref uart2 off end
+		device ref emmc off end
+		device ref pcie_rp1 off end
+		device ref pcie_rp2 off end
+		device ref pcie_rp3 off end
+		device ref pcie_rp4 off end
+		device ref pcie_rp5 off end
+		device ref pcie_rp6 off end
+		device ref pcie_rp7 off end
+		device ref pcie_rp8 off end
+		device ref pcie_rp9 on
+			# X4 NVME
 			register "PcieRpSlotImplemented[8]" = "1"
 		end
-		device pci 1d.1 off end # PCI Express Port 10
-		device pci 1d.2 off end # PCI Express Port 11
-		device pci 1d.3 off end # PCI Express Port 12
-		device pci 1d.4 off end # PCI Express port 13
-		device pci 1d.5 on
+		device ref pcie_rp10 off end
+		device ref pcie_rp11 off end
+		device ref pcie_rp12 off end
+		device ref pcie_rp13 off end
+		device ref pcie_rp14 on
+			# x4
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_DW1_01"
 				device generic 0 on  end
 			end
 			register "PcieRpSlotImplemented[13]" = "1"
-		end # PCI Express Port 14 (x4)
-		device pci 1e.0 on  end # UART #0
-		device pci 1e.1 off end # UART #1
-		device pci 1e.2 on
+		end
+		device ref uart0 on  end
+		device ref uart1 off end
+		device ref gspi0 on
 			chip drivers/spi/acpi
 				register "hid" = "ACPI_DT_NAMESPACE_HID"
 				register "compat_string" = ""google,cr50""
 				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_C21_IRQ)"
 				device spi 0 on end
 			end
-		end # GSPI #0
-		device pci 1e.3 on end # GSPI #1
-		device pci 1f.0 on
+		end
+		device ref gspi1 on end
+		device ref lpc_espi on
 			chip ec/google/chromeec
 				device pnp 0c09.0 on end
 			end
-		end # eSPI Interface
-		device pci 1f.1 on  end # P2SB
-		device pci 1f.2 hidden end # Power Management Controller
-		device pci 1f.3 on
+		end
+		device ref p2sb on  end
+		device ref pmc hidden end
+		device ref hda on
 			chip drivers/sof
 				register "jack_tplg" = "rt5682"
 				device generic 0 on end
 			end
-		end # Intel HDA
-		device pci 1f.4 on  end # SMBus
-		device pci 1f.5 on  end # PCH SPI
-		device pci 1f.6 off end # GbE
+		end
+		device ref smbus on  end
+		device ref fast_spi on  end
+		device ref gbe off end
 	end
 end

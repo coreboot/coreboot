@@ -94,6 +94,7 @@ const char *soc_acpi_name(const struct device *dev)
 	case PCH_DEVFN_CSE_IDER:	return "CSED";
 	case PCH_DEVFN_CSE_KT:	return "CSKT";
 	case PCH_DEVFN_CSE_3:	return "CSE3";
+	case PCH_DEVFN_SATA:	return "SATA";
 	case PCH_DEVFN_UART2:	return "UAR2";
 	case PCH_DEVFN_I2C4:	return "I2C4";
 	case PCH_DEVFN_I2C5:	return "I2C5";

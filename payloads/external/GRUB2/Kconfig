@@ -15,7 +15,7 @@ choice
 	default GRUB2_STABLE
 
 config GRUB2_STABLE
-	bool "2.06"
+	bool "2.12"
 	help
 	  Stable GRUB2 version
 

@@ -6,6 +6,7 @@ romstage-y += fsp_romstage.c
 romstage-y += fsp_validate.c
 ramstage-y += fsp_graphics.c
 ramstage-y += fsp_memmap.c
+ramstage-y += fsp_ramstage.c
 ramstage-y += fsp_report_resources.c
 ramstage-y += fsp_reset.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fsp-acpi.c

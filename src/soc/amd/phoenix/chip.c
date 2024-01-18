@@ -3,10 +3,10 @@
 /* TODO: Update for Phoenix */
 
 #include <amdblocks/data_fabric.h>
+#include <amdblocks/fsp.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <fsp/api.h>
 #include <soc/acpi.h>
 #include <soc/cpu.h>
 #include <soc/pci_devs.h>
@@ -39,7 +39,7 @@ static void soc_init(void *chip_info)
 {
 	default_dev_ops_root.write_acpi_tables = agesa_write_acpi_tables;
 
-	fsp_silicon_init();
+	amd_fsp_silicon_init();
 
 	data_fabric_set_mmio_np();
 

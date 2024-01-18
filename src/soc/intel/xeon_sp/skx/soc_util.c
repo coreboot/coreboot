@@ -3,6 +3,8 @@
 #include <assert.h>
 #include <console/console.h>
 #include <device/pci.h>
+#include <device/pci_def.h>
+#include <device/pci_ids.h>
 #include <hob_iiouds.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/pcr.h>
@@ -110,55 +112,55 @@ uint32_t get_socket_ubox_busno(uint32_t socket)
 	return get_socket_stack_busno(socket, PCU_IIO_STACK);
 }
 
+#if ENV_RAMSTAGE
 void config_reset_cpl3_csrs(void)
 {
 	uint32_t data, plat_info, max_min_turbo_limit_ratio;
+	struct device *dev;
 
-	for (uint32_t socket = 0; socket < MAX_SOCKET; ++socket) {
-		uint32_t bus = get_socket_stack_busno(socket, PCU_IIO_STACK);
-
-		/* configure PCU_CR0_FUN csrs */
-		pci_devfn_t cr0_dev = PCI_DEV(bus, PCU_DEV, PCU_CR0_FUN);
-		data = pci_s_read_config32(cr0_dev, PCU_CR0_P_STATE_LIMITS);
+	dev = NULL;
+	while ((dev = dev_find_device(PCI_VID_INTEL, PCU_CR0_DEVID, dev))) {
+		data = pci_read_config32(dev, PCU_CR0_P_STATE_LIMITS);
 		data |= P_STATE_LIMITS_LOCK;
-		pci_s_write_config32(cr0_dev, PCU_CR0_P_STATE_LIMITS, data);
+		pci_write_config32(dev, PCU_CR0_P_STATE_LIMITS, data);
 
-		plat_info = pci_s_read_config32(cr0_dev, PCU_CR0_PLATFORM_INFO);
-		dump_csr64("", cr0_dev, PCU_CR0_PLATFORM_INFO);
+		plat_info = pci_read_config32(dev, PCU_CR0_PLATFORM_INFO);
+		dump_csr64(dev, PCU_CR0_PLATFORM_INFO);
 		max_min_turbo_limit_ratio =
 			(plat_info & MAX_NON_TURBO_LIM_RATIO_MASK) >>
 				MAX_NON_TURBO_LIM_RATIO_SHIFT;
 		printk(BIOS_SPEW, "plat_info: 0x%x, max_min_turbo_limit_ratio: 0x%x\n",
 			plat_info, max_min_turbo_limit_ratio);
+	}
 
-		/* configure PCU_CR1_FUN csrs */
-		pci_devfn_t cr1_dev = PCI_DEV(bus, PCU_DEV, PCU_CR1_FUN);
-
-		data = pci_s_read_config32(cr1_dev, PCU_CR1_SAPMCTL);
+	dev = NULL;
+	while ((dev = dev_find_device(PCI_VID_INTEL, PCU_CR1_DEVID, dev))) {
+		data = pci_read_config32(dev, PCU_CR1_SAPMCTL);
 		/* clear bits 27:31 - FSP sets this with 0x7 which needs to be cleared */
 		data &= 0x0fffffff;
 		data |= SAPMCTL_LOCK_MASK;
-		pci_s_write_config32(cr1_dev, PCU_CR1_SAPMCTL, data);
+		pci_write_config32(dev, PCU_CR1_SAPMCTL, data);
+	}
 
-		/* configure PCU_CR1_FUN csrs */
-		pci_devfn_t cr2_dev = PCI_DEV(bus, PCU_DEV, PCU_CR2_FUN);
-
+	dev = NULL;
+	while ((dev = dev_find_device(PCI_VID_INTEL, PCU_CR2_DEVID, dev))) {
 		data = PCIE_IN_PKGCSTATE_L1_MASK;
-		pci_s_write_config32(cr2_dev, PCU_CR2_PKG_CST_ENTRY_CRITERIA_MASK, data);
+		pci_write_config32(dev, PCU_CR2_PKG_CST_ENTRY_CRITERIA_MASK, data);
 
 		data = KTI_IN_PKGCSTATE_L1_MASK;
-		pci_s_write_config32(cr2_dev, PCU_CR2_PKG_CST_ENTRY_CRITERIA_MASK2, data);
+		pci_write_config32(dev, PCU_CR2_PKG_CST_ENTRY_CRITERIA_MASK2, data);
 
 		data = PROCHOT_RATIO;
 		printk(BIOS_SPEW, "PCU_CR2_PROCHOT_RESPONSE_RATIO_REG data: 0x%x\n", data);
-		pci_s_write_config32(cr2_dev, PCU_CR2_PROCHOT_RESPONSE_RATIO_REG, data);
-		dump_csr("", cr2_dev, PCU_CR2_PROCHOT_RESPONSE_RATIO_REG);
+		pci_write_config32(dev, PCU_CR2_PROCHOT_RESPONSE_RATIO_REG, data);
+		dump_csr(dev, PCU_CR2_PROCHOT_RESPONSE_RATIO_REG);
 
-		data = pci_s_read_config32(cr2_dev, PCU_CR2_DYNAMIC_PERF_POWER_CTL);
+		data = pci_read_config32(dev, PCU_CR2_DYNAMIC_PERF_POWER_CTL);
 		data |= UNOCRE_PLIMIT_OVERRIDE_SHIFT;
-		pci_s_write_config32(cr2_dev, PCU_CR2_DYNAMIC_PERF_POWER_CTL, data);
+		pci_write_config32(dev, PCU_CR2_DYNAMIC_PERF_POWER_CTL, data);
 	}
 }
+#endif
 
 /*
  * EX: SKX-SP

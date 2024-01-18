@@ -6,6 +6,7 @@
 #include <cpu/x86/lapic.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <device/pci_def.h>
 #include <device/pciexp.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/lpc_lib.h>
@@ -80,45 +81,41 @@ static void chip_enable_dev(struct device *dev)
 	}
 }
 
-static void pcu_pci_or_config32(u8 bus, u8 func, u32 reg, u32 orval)
-{
-	u32 data;
-	const uint32_t pcie_offset = PCI_DEV(bus, PCU_DEV, func);
-
-	data = pci_s_read_config32(pcie_offset, reg);
-	data |= orval;
-	pci_s_write_config32(pcie_offset, reg, data);
-}
-
 static void set_pcu_locks(void)
 {
-	for (uint32_t socket = 0; socket < CONFIG_MAX_SOCKET; ++socket) {
-		if (!soc_cpu_is_enabled(socket))
-			continue;
-		const uint32_t bus = get_ubox_busno(socket, UNCORE_BUS_1);
+	struct device *dev = NULL;
 
-		/* configure PCU_CR0_FUN csrs */
-		pcu_pci_or_config32(bus, PCU_CR0_FUN, PCU_CR0_P_STATE_LIMITS,
-				    P_STATE_LIMITS_LOCK);
-		pcu_pci_or_config32(bus, PCU_CR0_FUN, PCU_CR0_PACKAGE_RAPL_LIMIT_UPR,
-				    PKG_PWR_LIM_LOCK_UPR);
-		pcu_pci_or_config32(bus, PCU_CR0_FUN, PCU_CR0_TURBO_ACTIVATION_RATIO,
-				    TURBO_ACTIVATION_RATIO_LOCK);
+	while ((dev = dev_find_device(PCI_VID_INTEL, PCU_CR0_DEVID, dev))) {
+		printk(BIOS_SPEW, "%s: locking registers\n", dev_path(dev));
+		pci_or_config32(dev, PCU_CR0_P_STATE_LIMITS, P_STATE_LIMITS_LOCK);
+		pci_or_config32(dev, PCU_CR0_PACKAGE_RAPL_LIMIT_UPR,
+				PKG_PWR_LIM_LOCK_UPR);
+		pci_or_config32(dev, PCU_CR0_TURBO_ACTIVATION_RATIO,
+				TURBO_ACTIVATION_RATIO_LOCK);
+	}
 
-		/* configure PCU_CR2_FUN csrs */
-		pcu_pci_or_config32(bus, PCU_CR2_FUN, PCU_CR2_DRAM_POWER_INFO_UPR,
-				    DRAM_POWER_INFO_LOCK_UPR);
-		pcu_pci_or_config32(bus, PCU_CR2_FUN, PCU_CR2_DRAM_PLANE_POWER_LIMIT_UPR,
-				    PP_PWR_LIM_LOCK_UPR);
+	dev = NULL;
+	while ((dev = dev_find_device(PCI_VID_INTEL, PCU_CR2_DEVID, dev))) {
+		printk(BIOS_SPEW, "%s: locking registers\n", dev_path(dev));
+		pci_or_config32(dev, PCU_CR2_DRAM_POWER_INFO_UPR,
+				DRAM_POWER_INFO_LOCK_UPR);
+		pci_or_config32(dev, PCU_CR2_DRAM_PLANE_POWER_LIMIT_UPR,
+				PP_PWR_LIM_LOCK_UPR);
+	}
 
-		/* configure PCU_CR3_FUN csrs */
-		pcu_pci_or_config32(bus, PCU_CR3_FUN, PCU_CR3_CONFIG_TDP_CONTROL, TDP_LOCK);
+	dev = NULL;
+	while ((dev = dev_find_device(PCI_VID_INTEL, PCU_CR3_DEVID, dev))) {
+		printk(BIOS_SPEW, "%s: locking registers\n", dev_path(dev));
+		pci_or_config32(dev, PCU_CR3_CONFIG_TDP_CONTROL, TDP_LOCK);
+	}
 
-		/* configure PCU_CR6_FUN csrs */
-		pcu_pci_or_config32(bus, PCU_CR6_FUN, PCU_CR6_PLATFORM_RAPL_LIMIT_CFG_UPR,
-				    PLT_PWR_LIM_LOCK_UPR);
-		pcu_pci_or_config32(bus, PCU_CR6_FUN, PCU_CR6_PLATFORM_POWER_INFO_CFG_UPR,
-				    PLT_PWR_INFO_LOCK_UPR);
+	dev = NULL;
+	while ((dev = dev_find_device(PCI_VID_INTEL, PCU_CR6_DEVID, dev))) {
+		printk(BIOS_SPEW, "%s: locking registers\n", dev_path(dev));
+		pci_or_config32(dev, PCU_CR6_PLATFORM_RAPL_LIMIT_CFG_UPR,
+				PLT_PWR_LIM_LOCK_UPR);
+		pci_or_config32(dev, PCU_CR6_PLATFORM_POWER_INFO_CFG_UPR,
+				PLT_PWR_INFO_LOCK_UPR);
 	}
 }
 

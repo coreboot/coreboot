@@ -9,17 +9,15 @@
 #include <hob_iiouds.h>
 #include <soc/pch_pci_devs.h>
 
-#define dump_csr(fmt, dev, reg) \
-	printk(BIOS_SPEW, "%s%x:%x:%x reg: %s (0x%x), data: 0x%x\n", \
-		fmt, ((uint32_t)dev >> 20) & 0xfff, ((uint32_t)dev >> 15) & 0x1f, \
-		((uint32_t)dev >> 12) & 0x07, \
-		#reg, reg, pci_s_read_config32(dev, reg))
+#define dump_csr(dev, reg) \
+	printk(BIOS_SPEW, "%s reg: %s (0x%x), data: 0x%x\n", \
+		dev_path(dev), \
+		#reg, reg, pci_read_config32(dev, reg))
 
-#define dump_csr64(fmt, dev, reg) \
-	printk(BIOS_SPEW, "%s%x:%x:%x reg: %s (0x%x), data: 0x%x%x\n", \
-		fmt, ((uint32_t)dev >> 20) & 0xfff, ((uint32_t)dev >> 15) & 0x1f, \
-		((uint32_t)dev >> 12) & 0x07, #reg, reg, \
-		pci_s_read_config32(dev, reg+4), pci_s_read_config32(dev, reg))
+#define dump_csr64(dev, reg) \
+	printk(BIOS_SPEW, "%s reg: %s (0x%x), data: 0x%x%x\n", \
+		dev_path(dev), #reg, reg, \
+		pci_read_config32(dev, reg+4), pci_read_config32(dev, reg))
 
 #define SAD_ALL_DEV			29
 #define SAD_ALL_FUNC			0
@@ -36,8 +34,10 @@
 #define PCU_IIO_STACK                   1
 #define PCU_DEV                         30
 #define PCU_CR1_FUN                     1
+#define PCU_CR1_DEVID                   0x2081
 
 #define PCU_CR0_FUN                     0
+#define PCU_CR0_DEVID                   0x2080
 #define PCU_DEV_CR0(bus)                _PCU_DEV(bus, PCU_CR0_FUN)
 #define PCU_CR0_PLATFORM_INFO           0xa8
 #define PCU_CR0_P_STATE_LIMITS          0xd8
@@ -72,6 +72,8 @@
 
 #define PCU_CR1_DESIRED_CORES_CFG2_REG                     0xa0
 #define PCU_CR1_DESIRED_CORES_CFG2_REG_LOCK_MASK           BIT(31)
+
+#define PCU_CR2_DEVID                   0x2082
 
 #if !defined(__SIMPLE_DEVICE__)
 #define _UBOX_DEV(func)		pcidev_path_on_root_debug(PCI_DEVFN(UBOX_DEV, func), __func__)

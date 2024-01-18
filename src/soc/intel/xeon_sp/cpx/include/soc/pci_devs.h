@@ -24,6 +24,7 @@
 #define PCU_DEV                         30
 
 #define PCU_CR0_FUN                     0
+#define PCU_CR0_DEVID                   0x344a
 #define PCU_DEV_CR0(bus)                                   _PCU_DEV(bus, PCU_CR0_FUN)
 #define PCU_CR0_PLATFORM_INFO                              0xa8
 #define PCU_CR0_TURBO_ACTIVATION_RATIO                     0xb0
@@ -37,6 +38,7 @@
 #define   PMAX_LOCK                                        BIT(31)
 
 #define PCU_CR1_FUN                     1
+#define PCU_CR1_DEVID                   0x344b
 #define PCU_DEV_CR1(bus)                                   _PCU_DEV(bus, PCU_CR1_FUN)
 #define PCU_CR1_BIOS_MB_DATA_REG                           0x8c
 
@@ -64,6 +66,7 @@
 #define SAPMCTL_LOCK_MASK                                   BIT(31)
 
 #define PCU_CR2_FUN                     2
+#define PCU_CR2_DEVID                   0x344c
 #define PCU_DEV_CR2(bus)                                   _PCU_DEV(bus, PCU_CR2_FUN)
 #define PCU_CR2_DRAM_POWER_INFO_LWR                        0xa8
 #define PCU_CR2_DRAM_POWER_INFO_UPR                        (PCU_CR2_DRAM_POWER_INFO_LWR + 4)
@@ -72,6 +75,7 @@
 #define PP_PWR_LIM_LOCK                                    BIT(31)
 
 #define PCU_CR3_FUN                     3
+#define PCU_CR3_DEVID                   0x344d
 #define PCU_DEV_CR3(bus)                                   _PCU_DEV(bus, PCU_CR3_FUN)
 #define PCU_CR3_CONFIG_TDP_CONTROL                         0x60
 #define   TDP_LOCK                                         BIT(31)

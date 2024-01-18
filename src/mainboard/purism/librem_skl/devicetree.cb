@@ -157,7 +157,7 @@ chip soc/intel/skylake
 		device ref south_xdci	on  end
 		device ref thermal	on  end
 		device ref sata		on  end
-		device ref pcie_rp1	on  end
+		device ref pcie_rp5	on  end
 		device ref pcie_rp9	on  end
 		device ref lpc_espi	on
 			chip drivers/pc80/tpm

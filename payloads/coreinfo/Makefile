@@ -70,7 +70,7 @@ $(obj)/config.h:
 
 $(shell mkdir -p $(objk)/lxdialog $(KCONFIG_SPLITCONFIG))
 
-include $(srck)/Makefile.inc
+include $(srck)/Makefile.mk
 
 .PHONY: $(PHONY) prepare all real-all defaultbuild
 

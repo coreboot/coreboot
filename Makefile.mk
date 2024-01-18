@@ -1158,7 +1158,7 @@ FMAP_CBFS_SIZE := $(call int-subtract,$(FMAP_BIOS_SIZE) $(FMAP_CBFS_BASE))
 
 endif # ifeq ($(CONFIG_ARCH_X86),y)
 
-$(obj)/fmap.fmd: $(top)/Makefile.inc $(DEFAULT_FLASHMAP) $(obj)/config.h
+$(obj)/fmap.fmd: $(top)/Makefile.mk $(DEFAULT_FLASHMAP) $(obj)/config.h
 	sed -e "s,##ROM_BASE##,$(FMAP_ROM_ADDR)," \
 	    -e "s,##ROM_SIZE##,$(FMAP_ROM_SIZE)," \
 	    -e "s,##BIOS_BASE##,$(FMAP_BIOS_BASE)," \

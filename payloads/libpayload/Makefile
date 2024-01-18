@@ -103,7 +103,7 @@ endif
 
 # This include must come _before_ the pattern rules below!
 # Order _does_ matter for pattern rules.
-include $(srck)/Makefile.inc
+include $(srck)/Makefile.mk
 
 include $(HAVE_DOTCONFIG)
 
@@ -127,7 +127,7 @@ ARCH-$(CONFIG_LP_ARCH_MOCK)    := mock
 # 3. when make distclean is run
 # 4. when make help% or make clean% is run
 # 5. when make %-test or make %-tests or make %coverage-report is run
-# Don't waste time on reading all Makefile.incs in these cases
+# Don't waste time on reading all Makefiles in these cases
 ifeq ($(strip $(HAVE_DOTCONFIG)),)
 NOCOMPILE := 1
 endif

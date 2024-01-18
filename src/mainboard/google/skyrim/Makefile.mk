@@ -25,7 +25,7 @@ APCB_PATH=$(src)/mainboard/$(MAINBOARDDIR)
 ifneq ($(wildcard $(APCB_PATH)/$(APCB_NAME)),)
 $(info APCB sources present.)
 
-ifneq ($(wildcard $(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/memory/Makefile.inc),)
+ifneq ($(wildcard $(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/memory/Makefile.mk),)
 
 LIB_SPD_DEPS = $(SPD_SOURCES)
 

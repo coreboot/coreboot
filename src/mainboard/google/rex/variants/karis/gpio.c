@@ -403,6 +403,8 @@ static const struct pad_config early_gpio_table[] = {
 
 	/* GPP_C00 : [] ==> EN_TCHSCR_PWR */
 	PAD_CFG_GPO(GPP_C00, 1, DEEP),
+	/* GPP_C01 : [] ==> SOC_TCHSCR_RST_R_L */
+	PAD_CFG_GPO(GPP_C01, 0, DEEP),
 };
 
 static const struct pad_config romstage_gpio_table[] = {

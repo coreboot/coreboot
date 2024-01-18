@@ -24,7 +24,7 @@ chip soc/intel/cannonlake
 
 # Actual device tree
 	device domain 0 on
-		device pci 02.0 on	# Integrated Graphics Device
+		device ref igpu on
 			register "gfx" = "GMA_DEFAULT_PANEL(0)"
 			register "panel_cfg" = "{
 				.up_delay_ms		=  200,
@@ -35,7 +35,7 @@ chip soc/intel/cannonlake
 				.backlight_off_delay_ms	=    1,
 			}"
 		end
-		device pci 14.0 on	# USB xHCI
+		device ref xhci on
 			chip drivers/usb/acpi
 				device usb 0.0 on
 					chip drivers/usb/acpi
@@ -131,8 +131,8 @@ chip soc/intel/cannonlake
 			register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC2)"	# Type-C left
 			register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Card Reader
 		end
-		device pci 14.1 off end # USB xDCI (OTG)
-		device pci 15.0 on	# I2C #0
+		device ref xdci off end
+		device ref i2c0 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""HTIX5288""
 				register "generic.name" = ""TPD0""
@@ -142,7 +142,7 @@ chip soc/intel/cannonlake
 				device i2c 2c on end
 			end
 		end
-		device pci 17.0 on	# SATA
+		device ref sata on
 			register "satapwroptimize" = "1"
 			register "SataSalpSupport" = "1"
 			# Port 2 (M.2 / inner)
@@ -152,7 +152,7 @@ chip soc/intel/cannonlake
 			register "SataPortsEnable[2]" = "1"
 			register "SataPortsDevSlp[2]" = "1"
 		end
-		device pci 1c.6 on	# PCI Express Port 7 -- x1 M.2/E 2230 (WLAN)
+		device ref pcie_rp7 on	# x1 M.2/E 2230 (WLAN)
 			register "PcieRpEnable[6]" = "1"
 			register "PcieRpSlotImplemented[6]" = "1"
 			register "PcieRpLtrEnable[6]" = "1"
@@ -161,13 +161,13 @@ chip soc/intel/cannonlake
 			register "PcieClkSrcClkReq[2]" = "2"
 			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/E 2230" "SlotDataBusWidth1X"
 		end
-		device pci 1c.7 on	# PCI Express Port 8
+		device ref pcie_rp8 on
 			device pci 00.0 on end # x1 (LAN)
 			register "PcieRpEnable[7]" = "1"
 			register "PcieClkSrcUsage[3]" = "7"
 			register "PcieClkSrcClkReq[3]" = "3"
 		end
-		device pci 1d.0 on	# PCI Express Port 9 -- x4 M.2/M 2280 (NVMe)
+		device ref pcie_rp9 on	# x4 M.2/M 2280 (NVMe)
 			register "PcieRpEnable[8]" = "1"
 			register "PcieRpSlotImplemented[8]" = "1"
 			register "PcieRpLtrEnable[8]" = "1"
@@ -175,7 +175,7 @@ chip soc/intel/cannonlake
 			register "PcieClkSrcClkReq[0]" = "0"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280" "SlotDataBusWidth4X"
 		end
-		device pci 1d.4 on	# PCI Express Port 13 -- x4 M.2/M 2280 (NVMe)
+		device ref pcie_rp13 on	# x4 M.2/M 2280 (NVMe)
 			register "PcieRpEnable[12]" = "1"
 			register "PcieRpSlotImplemented[12]" = "1"
 			register "PcieRpLtrEnable[12]" = "1"
@@ -183,7 +183,7 @@ chip soc/intel/cannonlake
 			register "PcieClkSrcClkReq[1]" = "1"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280" "SlotDataBusWidth4X"
 		end
-		device pci 1f.0 on	# LPC Bridge
+		device ref lpc_espi on
 			# LPC configuration from lspci -s 1f.0 -xxx
 			# Address 0x88: Decode 0x68 - 0x6F (EC PM channel)
 			register "gen1_dec" = "0x00040069"

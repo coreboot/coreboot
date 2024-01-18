@@ -20,7 +20,7 @@ chip soc/intel/cannonlake
 
 # Actual device tree
 	device domain 0 on
-		device pci 14.0 on	# USB xHCI
+		device ref xhci on
 			chip drivers/usb/acpi
 				device usb 0.0 on
 					chip drivers/usb/acpi
@@ -123,12 +123,12 @@ chip soc/intel/cannonlake
 			register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC2)"	# Type-A rear lower
 			register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC2)"	# Type-A rear upper
 		end
-		device pci 17.0 on	# SATA
+		device ref sata on
 			register "SataPortsEnable[0]" = "1" # 2.5"
 			register "SataPortsEnable[2]" = "1" # m.2
 			register "satapwroptimize" = "1"
 		end
-		device pci 1c.7 on	# PCI Express Port 8 -- x1 M.2/E 2230 (WLAN)
+		device ref pcie_rp8 on	# x1 M.2/E 2230 (WLAN)
 			register "PcieRpSlotImplemented[7]" = "1"
 			register "PcieRpEnable[7]" = "1"
 			register "PcieRpLtrEnable[7]" = "1"
@@ -136,13 +136,13 @@ chip soc/intel/cannonlake
 			register "PcieClkSrcUsage[2]" = "0x80"
 			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/E 2230" "SlotDataBusWidth1X"
 		end
-		device pci 1d.1 on	# PCI Express Port 10
+		device ref pcie_rp10 on
 			device pci 00.0 on end # x1 (LAN)
 			register "PcieRpEnable[9]" = "1"
 			register "PcieClkSrcUsage[3]" = "9"
 			register "PcieClkSrcClkReq[3]" = "3"
 		end
-		device pci 1d.4 on	# PCI Express Port 13 -- x4 M.2/M 2280 (NVMe)
+		device ref pcie_rp13 on	# x4 M.2/M 2280 (NVMe)
 			register "PcieRpSlotImplemented[12]" = "1"
 			register "PcieRpEnable[12]" = "1"
 			register "PcieRpLtrEnable[12]" = "1"
@@ -150,7 +150,7 @@ chip soc/intel/cannonlake
 			register "PcieClkSrcClkReq[1]" = "1"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280" "SlotDataBusWidth4X"
 		end
-		device pci 1f.0 on	# LPC Bridge
+		device ref lpc_espi on
 			chip superio/ite/it8528e
 				device pnp 2e.1 on      # UART1
 					io 0x60 = 0x3F8

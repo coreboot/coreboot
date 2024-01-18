@@ -6,8 +6,8 @@ chip northbridge/intel/sandybridge
 	device domain 0 on
 		subsystemid 0x103c 0x1621 inherit
 
-		device ref peg10 off end # PEG
-		device ref igd on  end # iGPU
+		device ref peg10 off end
+		device ref igd on  end
 
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
 			register "gen1_dec" = "0x007c0201"
@@ -20,20 +20,20 @@ chip northbridge/intel/sandybridge
 			# FIXME: ports 3, 5 are untested
 			register "sata_port_map" = "0x3b"
 
-			device ref pcie_rp1 on  end # PCIe Port #1
-			device ref pcie_rp2 on      # PCIe Port #2, ExpressCard
+			device ref pcie_rp1 on  end
+			device ref pcie_rp2 on
 				smbios_slot_desc "SlotTypePcmcia" "SlotLengthShort"
 					"ExpressCard Slot" "SlotDataBusWidth1X"
 			end
-			device ref pcie_rp3 on  end # PCIe Port #3, SD/MMC and FireWire
-			device ref pcie_rp4 on      # PCIe Port #4, WLAN
+			device ref pcie_rp3 on  end # SD/MMC and FireWire
+			device ref pcie_rp4 on      # WLAN
 				smbios_slot_desc "SlotTypePciExpressMini52pinWithoutBSKO"
 					"SlotLengthShort" "Mini PCIe" "SlotDataBusWidth1X"
 			end
-			device ref pcie_rp5 off end # PCIe Port #5
-			device ref pcie_rp6 off end # PCIe Port #6
-			device ref pcie_rp7 on  end # PCIe Port #7, WWAN
-			device ref pcie_rp8 off end # PCIe Port #8
+			device ref pcie_rp5 off end
+			device ref pcie_rp6 off end
+			device ref pcie_rp7 on  end # WWAN
+			device ref pcie_rp8 off end
 			device ref lpc on
 				chip ec/hp/kbc1126
 					register "ec_data_port" = "0x60"

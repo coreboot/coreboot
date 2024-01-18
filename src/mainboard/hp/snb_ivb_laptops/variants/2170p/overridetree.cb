@@ -7,8 +7,8 @@ chip northbridge/intel/sandybridge
 	device domain 0 on
 		subsystemid 0x103c 0x1815 inherit
 
-		device ref peg10 off end	# PCIe Bridge for discrete graphics
-		device ref igd on  end	# Internal graphics
+		device ref peg10 off end
+		device ref igd on  end
 
 		chip southbridge/intel/bd82x6x	# Intel Series 7 Panther Point PCH
 			# mailbox at 0x200/0x201 and PM1 at 0x220
@@ -24,17 +24,17 @@ chip northbridge/intel/sandybridge
 			register "xhci_overcurrent_mapping" = "0x00000c03"
 			register "xhci_switchable_ports"    = "0x0000000f"
 
-			device ref xhci on  end	# USB 3.0 Controller
-			device ref mei1 on  end	# Management Engine KT
-			device ref pcie_rp1 on  end	# PCIe Port #1
-			device ref pcie_rp2 off end	# PCIe Port #2
-			device ref pcie_rp3 on  end	# PCIe Port #3, SD/MMC
-			device ref pcie_rp4 on  end	# PCIe Port #4, WLAN
-			device ref pcie_rp5 off end	# PCIe Port #5
-			device ref pcie_rp6 off end	# PCIe Port #6
-			device ref pcie_rp7 off end	# PCIe Port #7
-			device ref pcie_rp8 off end	# PCIe Port #8
-			device ref lpc on	# LPC bridge
+			device ref xhci on  end
+			device ref mei1 on  end
+			device ref pcie_rp1 on  end
+			device ref pcie_rp2 off end
+			device ref pcie_rp3 on  end	# SD/MMC
+			device ref pcie_rp4 on  end	# WLAN
+			device ref pcie_rp5 off end
+			device ref pcie_rp6 off end
+			device ref pcie_rp7 off end
+			device ref pcie_rp8 off end
+			device ref lpc on
 				chip ec/hp/kbc1126
 					register "ec_data_port" = "0x62"
 					register "ec_cmd_port"  = "0x66"

@@ -3,7 +3,7 @@
 # Note: From here on down, we are socket-centric. Socket choice determines
 # what other CPU files are included.
 #
-# Therefore: ONLY include Makefile.inc from socket directories!
+# Therefore: ONLY include Makefiles from socket directories!
 
 subdirs-$(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE) += fit
 subdirs-$(CONFIG_CPU_INTEL_SOCKET_441) += socket_441

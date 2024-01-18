@@ -774,6 +774,11 @@ build_cross_GCC() {
 	[ -n "$CXX" ] && $CXX --version | grep clang >/dev/null 2>&1 && \
 		CLANGCXXFLAGS="-fbracket-depth=1024"
 
+	# standard code model is medlow but all mainboards are compiled with medany code model
+	if [ "${TARGETARCH}" = "riscv64-elf" ]; then
+		CFLAGS_FOR_TARGET_EXTRA="-mcmodel=medany"
+	fi
+
 	# GCC does not honor HOSTCFLAGS at all. CFLAGS are used for
 	# both target and host object files.
 	# There's a work-around called CFLAGS_FOR_BUILD and CFLAGS_FOR_TARGET
@@ -783,7 +788,7 @@ build_cross_GCC() {
 	# using C++.
 	# shellcheck disable=SC2086
 	CC="$(hostcc target)" CXX="$(hostcxx target)" \
-		CFLAGS_FOR_TARGET="-O2 -Dinhibit_libc" \
+		CFLAGS_FOR_TARGET="${CFLAGS_FOR_TARGET_EXTRA} -O2 -Dinhibit_libc" \
 		CFLAGS="$HOSTCFLAGS $CLANGFLAGS" \
 		CFLAGS_FOR_BUILD="$HOSTCFLAGS $CLANGFLAGS" \
 		CXXFLAGS="$HOSTCFLAGS $CLANGCXXFLAGS" \

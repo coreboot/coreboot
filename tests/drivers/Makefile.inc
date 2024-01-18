@@ -11,4 +11,3 @@ efivars-test-cflags += -I src/vendorcode/intel/edk2/UDK2017/MdePkg/Include/
 efivars-test-cflags += -I src/vendorcode/intel/edk2/UDK2017/MdePkg/Include/Ia32/
 efivars-test-cflags += -I src/vendorcode/intel/edk2/UDK2017/MdePkg/Include/Pi/
 efivars-test-cflags += -I src/vendorcode/intel/edk2/UDK2017/MdeModulePkg/Include/
-

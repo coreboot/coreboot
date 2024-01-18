@@ -7,8 +7,8 @@ chip northbridge/intel/sandybridge
 	device domain 0 on
 		subsystemid 0x103c 0x161c inherit
 
-		device pci 01.0 on  end	# PCIe Bridge for discrete graphics
-		device pci 02.0 on  end	# Internal graphics
+		device ref peg10 on  end	# PCIe Bridge for discrete graphics
+		device ref igd on  end	# Internal graphics
 
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
 			# mailbox at 0x200/0x201 and PM1 at 0x220
@@ -21,16 +21,16 @@ chip northbridge/intel/sandybridge
 			# HDD(0), ODD(1), docking(3,5), eSATA(4)
 			register "sata_port_map" = "0x3b"
 
-			device pci 16.3 on  end	# Management Engine KT
-			device pci 1c.0 on  end	# PCIe Port #1
-			device pci 1c.1 on  end	# PCIe Port #2, ExpressCard
-			device pci 1c.2 on  end	# PCIe Port #3, SD/MMC
-			device pci 1c.3 on  end	# PCIe Port #4, WLAN
-			device pci 1c.4 off end	# PCIe Port #5
-			device pci 1c.5 off end	# PCIe Port #6
-			device pci 1c.6 on  end	# PCIe Port #7, WWAN
-			device pci 1c.7 on  end	# PCIe Port #8, NEC USB 3.0 Host Controller
-			device pci 1f.0 on	# LPC bridge
+			device ref me_kt on  end	# Management Engine KT
+			device ref pcie_rp1 on  end	# PCIe Port #1
+			device ref pcie_rp2 on  end	# PCIe Port #2, ExpressCard
+			device ref pcie_rp3 on  end	# PCIe Port #3, SD/MMC
+			device ref pcie_rp4 on  end	# PCIe Port #4, WLAN
+			device ref pcie_rp5 off end	# PCIe Port #5
+			device ref pcie_rp6 off end	# PCIe Port #6
+			device ref pcie_rp7 on  end	# PCIe Port #7, WWAN
+			device ref pcie_rp8 on  end	# PCIe Port #8, NEC USB 3.0 Host Controller
+			device ref lpc on	# LPC bridge
 				chip ec/hp/kbc1126
 					register "ec_data_port" = "0x60"
 					register "ec_cmd_port"  = "0x64"

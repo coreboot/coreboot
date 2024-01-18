@@ -40,20 +40,20 @@ chip soc/intel/cannonlake
 	device cpu_cluster 0 on end
 
 	device domain 0 on
-		device pci 00.0 on  end # Host Bridge
-		device pci 01.0 on      # PCIE6 - x16 or x8
+		device ref system_agent on  end
+		device ref peg0 on      # x16 or x8
 			register "PcieClkSrcUsage[3]" = "0x40"
 			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthOther" "PCIE6" "SlotDataBusWidth16X"
 		end
-		device pci 01.1 on      # PCIE4 - x8
+		device ref peg1 on      # x8
 			register "PcieClkSrcUsage[4]" = "0x41"
 			smbios_slot_desc "SlotTypePciExpressGen3X8" "SlotLengthOther" "PCIE4" "SlotDataBusWidth8X"
 		end
-		device pci 02.0 on  end # Integrated Graphics Device
-		device pci 04.0 off end # SA Thermal Device
-		device pci 08.0 on  end # Gaussian Mixture
-		device pci 12.0 on  end # Thermal Subsystem
-		device pci 14.0 on      # USB xHCI
+		device ref igpu on  end
+		device ref dptf off end
+		device ref gna on  end
+		device ref thermal on  end
+		device ref xhci on
 			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"	# USB 3.1 front left
 			register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"	# USB 3.1 front right
 			register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# USB_1_2 header port A
@@ -176,20 +176,20 @@ chip soc/intel/cannonlake
 				end
 			end
 		end
-		device pci 14.1 off end # USB xDCI (OTG)
-		device pci 14.2 on  end # RAM controller
-		device pci 14.3 off end
-		device pci 14.5 off end # SDCard
-		device pci 15.0 off  end # I2C #0
-		device pci 15.1 off end # I2C #1
-		device pci 15.2 off end # I2C #2
-		device pci 15.3 off end # I2C #3
-		device pci 16.0 off end # Management Engine Interface 1
-		device pci 16.1 off end # Management Engine Interface 2
-		device pci 16.2 off end # Management Engine IDE Redirection
-		device pci 16.3 off end # Management Engine KT Redirection
-		device pci 16.4 off end # Management Engine Interface 3
-		device pci 17.0 on
+		device ref xdci off end
+		device ref shared_sram on  end
+		device ref cnvi_wifi off end
+		device ref sdxc off end
+		device ref i2c0 off  end
+		device ref i2c1 off end
+		device ref i2c2 off end
+		device ref i2c3 off end
+		device ref heci1 off end
+		device ref heci2 off end
+		device ref csme_ider off end
+		device ref csme_ktr off end
+		device ref heci3 off end
+		device ref sata on
 			register "satapwroptimize" = "1"
 
 			register "SataPortsEnable[0]" = "1"
@@ -209,22 +209,22 @@ chip soc/intel/cannonlake
 			register "SataPortsHotPlug[5]" = "1"
 			register "SataPortsHotPlug[6]" = "1"
 			register "SataPortsHotPlug[7]" = "1"
-		end # SATA
-		device pci 1b.4 on	# PCI Express Port 21 - PCIE5
+		end
+		device ref pcie_rp21 on
 			register "PcieRpSlotImplemented[20]" = "1"
 			register "PcieRpEnable[20]" = "1"
 			register "PcieRpLtrEnable[20]" = "1"
 			register "PcieClkSrcUsage[10]" = "20"
 			smbios_slot_desc "SlotTypePciExpressGen3X4" "SlotLengthOther" "PCIE5" "SlotDataBusWidth4X"
 		end
-		device pci 1c.0 on	# PCI Express Port 1 - M2_1
+		device ref pcie_rp1 on
 			register "PcieRpSlotImplemented[0]" = "1"
 			register "PcieRpEnable[0]" = "1"
 			register "PcieRpLtrEnable[0]" = "1"
 			register "PcieClkSrcUsage[1]" = "0x80"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M2_1" "SlotDataBusWidth4X"
 		end
-		device pci 1d.0 on	# PCI Express Port 9 - GbE #1
+		device ref pcie_rp9 on	# GbE #1
 			register "PcieRpEnable[8]" = "1"
 			register "PcieRpLtrEnable[8]" = "1"
 			register "PcieClkSrcUsage[14]" = "8"
@@ -237,12 +237,12 @@ chip soc/intel/cannonlake
 				smbios_dev_info 1
 			end
 		end
-		device pci 1d.1 on	# PCI Express Port 10 - BMC video
+		device ref pcie_rp10 on	# BMC video
 			register "PcieRpEnable[9]" = "1"
 			register "PcieRpLtrEnable[9]" = "1"
 			register "PcieClkSrcUsage[8]" = "9"
 		end
-		device pci 1d.2 on	# PCI Express Port 11 - GbE #2
+		device ref pcie_rp11 on	# GbE #2
 			register "PcieRpEnable[10]" = "1"
 			register "PcieRpLtrEnable[10]" = "1"
 			register "PcieClkSrcUsage[11]" = "10"
@@ -250,11 +250,11 @@ chip soc/intel/cannonlake
 				smbios_dev_info 2
 			end
 		end
-		device pci 1e.0 off end # UART #0
-		device pci 1e.1 off end # UART #1
-		device pci 1e.2 off end # GSPI #0
-		device pci 1e.3 off end # GSPI #1
-		device pci 1f.0 on      # LPC Interface
+		device ref uart0 off end
+		device ref uart1 off end
+		device ref gspi0 off end
+		device ref gspi1 off end
+		device ref lpc_espi on
 			# This board has a lot of SuperIO LDNs with I/O BARs, the LPC generic
 			# I/O ranges must be configured manually.
 			register "gen1_dec" = "0x000c0ca1"	# IPMI: ca0-caf
@@ -385,10 +385,10 @@ chip soc/intel/cannonlake
 				device pnp 0c31.0 on end
 			end
 		end
-		device pci 1f.1 off end # P2SB
-		device pci 1f.2 hidden end # PMC
-		device pci 1f.3 off end # Intel HDA
-		device pci 1f.4 on  end # SMBus
-		device pci 1f.5 on  end # SPI
+		device ref p2sb off end
+		device ref pmc hidden end
+		device ref hda off end
+		device ref smbus on  end
+		device ref fast_spi on  end
 	end
 end

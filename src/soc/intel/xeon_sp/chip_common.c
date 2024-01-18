@@ -22,6 +22,86 @@ static const STACK_RES *domain_to_stack_res(const struct device *dev)
 	return &hob->PlatformData.IIO_resource[dn.socket].StackRes[dn.stack];
 }
 
+/**
+ * Find a device of a given vendor and type for the specified socket.
+ * The function iterates over all PCI domains of the specified socket
+ * and matches the PCI vendor and device ID.
+ *
+ * @param socket The socket where to search for the device.
+ * @param vendor A PCI vendor ID (e.g. 0x8086 for Intel).
+ * @param device A PCI device ID.
+ * @return Pointer to the device struct.
+ */
+struct device *dev_find_device_on_socket(uint8_t socket, u16 vendor, u16 device)
+{
+	struct device *domain, *dev = NULL;
+	union xeon_domain_path dn;
+
+	while ((dev = dev_find_device(vendor, device, dev))) {
+		domain = dev_get_pci_domain(dev);
+		if (!domain)
+			continue;
+		dn.domain_path = domain->path.domain.domain;
+		if (dn.socket != socket)
+			continue;
+		return dev;
+	}
+
+	return NULL;
+}
+
+/**
+ * Returns the socket ID where the specified device is connected to.
+ * This is an integer in the range [0, CONFIG_MAX_SOCKET).
+ *
+ * @param dev The device to look up
+ *
+ * @return Socket ID the device is attached to, negative number on error.
+ */
+int iio_pci_domain_socket_from_dev(struct device *dev)
+{
+	struct device *domain;
+	union xeon_domain_path dn;
+
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
+		domain = dev;
+	else
+		domain = dev_get_pci_domain(dev);
+
+	if (!domain)
+		return -1;
+
+	dn.domain_path = domain->path.domain.domain;
+
+	return dn.socket;
+}
+
+/**
+ * Returns the stack ID where the specified device is connected to.
+ * This is an integer in the range [0, MAX_IIO_STACK).
+ *
+ * @param dev The device to look up
+ *
+ * @return Stack ID the device is attached to, negative number on error.
+ */
+int iio_pci_domain_stack_from_dev(struct device *dev)
+{
+	struct device *domain;
+	union xeon_domain_path dn;
+
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
+		domain = dev;
+	else
+		domain = dev_get_pci_domain(dev);
+
+	if (!domain)
+		return -1;
+
+	dn.domain_path = domain->path.domain.domain;
+
+	return dn.stack;
+}
+
 void iio_pci_domain_read_resources(struct device *dev)
 {
 	struct resource *res;

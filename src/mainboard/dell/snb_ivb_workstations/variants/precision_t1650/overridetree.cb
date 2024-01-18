@@ -4,16 +4,16 @@ chip northbridge/intel/sandybridge
 
 		chip southbridge/intel/bd82x6x # Intel Series 7 Panther Point PCH
 			register "sata_port_map" = "0xf"
-			device ref pcie_rp3 on	# PCIe Port #3
+			device ref pcie_rp3 on
 				smbios_slot_desc "SlotTypePciExpressGen2X1" "SlotLengthShort" "SLOT2" "SlotDataBusWidth1X"
 			end
-			device ref pcie_rp5 on	# PCIe Port #5
+			device ref pcie_rp5 on
 				smbios_slot_desc "SlotTypePciExpressGen2X16" "SlotLengthLong" "SLOT4" "SlotDataBusWidth4X"
 			end
-			device ref pcie_rp6 on  end	# PCIe Port #6
-			device ref pcie_rp7 on  end	# PCIe Port #7
-			device ref pcie_rp8 on  end	# PCIe Port #8
-			device ref pci_bridge on	# PCI bridge
+			device ref pcie_rp6 on  end
+			device ref pcie_rp7 on  end
+			device ref pcie_rp8 on  end
+			device ref pci_bridge on
 				smbios_slot_desc "SlotTypePci" "SlotLengthLong" "SLOT3" "SlotDataBusWidth32Bit"
 			end
 		end

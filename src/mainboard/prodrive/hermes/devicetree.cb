@@ -139,44 +139,44 @@ chip soc/intel/cannonlake
 	device cpu_cluster 0 on end
 
 	device domain 0 on
-		device pci 00.0 on  end # Host Bridge
-		device pci 01.0 on # PEG x8             / Slot 2
+		device ref system_agent on  end
+		device ref peg0 on # x8             / Slot 2
 			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthOther" "SLOT2" "SlotDataBusWidth8X"
 		end
-		device pci 01.1 on # PEG x4 or x8       / Slot 6
+		device ref peg1 on # x4 or x8       / Slot 6
 			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthOther" "SLOT6" "SlotDataBusWidth4X"
 		end
-		device pci 01.2 on # PEG x4 or disabled / Slot 4
+		device ref peg2 on # x4 or disabled / Slot 4
 			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthOther" "SLOT4" "SlotDataBusWidth4X"
 		end
-		device pci 02.0 on end	# Integrated Graphics Device
-		device pci 04.0 on  end # SA Thermal device
-		device pci 08.0 on  end # Gaussian Mixture
-		device pci 12.0 on  end # Thermal Subsystem
-		device pci 14.0 on  end # USB xHCI
-		device pci 14.1 off end # USB xDCI (OTG)
-		device pci 14.2 on  end # RAM controller
-		device pci 14.3 on
+		device ref igpu on end
+		device ref dptf on  end
+		device ref gna on  end
+		device ref thermal on  end
+		device ref xhci on  end
+		device ref xdci off end
+		device ref shared_sram on  end
+		device ref cnvi_wifi on
 			chip drivers/wifi/generic
 				register "wake" = "PME_B0_EN_BIT"
 				device generic 0 on end
 			end
-		end  # CNVi wifi
-		device pci 14.5 off end # SDCard
-		device pci 16.0 on  end # Management Engine Interface 1
-		device pci 16.1 on  end # Management Engine Interface 2
-		device pci 16.4 off end # Management Engine Interface 3
-		device pci 17.0 on  end # SATA
+		end
+		device ref sdxc off end
+		device ref heci1 on  end
+		device ref heci2 on  end
+		device ref heci3 off end
+		device ref sata on  end
 		# This device does not have any function on CNP-H, but it needs
 		# to be here so that the resource allocator is aware of UART 2.
-		device pci 19.0 hidden end
-		device pci 19.2 hidden
+		device ref i2c4 hidden end
+		device ref uart2 hidden # in ACPI mode
 			chip soc/intel/common/block/uart
 				register "devid" = "PCI_DID_INTEL_CNP_H_UART2"
 				device generic 0 hidden end
 			end
-		end # UART #2, in ACPI mode
-		device pci 1b.4 on	# PCIe root port 21 (Slot 1)
+		end
+		device ref pcie_rp21 on
 			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthOther" "SLOT1" "SlotDataBusWidth4X"
 			register "PcieRpEnable[20]" = "1"
 			register "PcieRpLtrEnable[20]" = "1"
@@ -185,7 +185,7 @@ chip soc/intel/cannonlake
 			register "PcieRpAdvancedErrorReporting[20]" = "1"
 			register "PcieRpAspm[20]" = "AspmDisabled"
 		end
-		device pci 1c.0 on	# PCIe root port 1 (Slot 3)
+		device ref pcie_rp1 on
 			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthOther" "SLOT3" "SlotDataBusWidth4X"
 			register "PcieRpEnable[0]" = "1"
 			register "PcieRpLtrEnable[0]" = "1"
@@ -194,48 +194,48 @@ chip soc/intel/cannonlake
 			register "PcieRpAdvancedErrorReporting[0]" = "1"
 			register "PcieRpAspm[0]" = "AspmDisabled"
 		end
-		device pci 1c.4 on	# PCIe root port 5 (PHY 3)
+		device ref pcie_rp5 on	# PHY 3
 			register "PcieRpEnable[4]" = "1"
 			register "PcieRpLtrEnable[4]" = "1"
 			device pci 00.0 on
 				smbios_dev_info 3
 			end
 		end
-		device pci 1c.5 on	# PCIe root port 6 (PHY 4)
+		device ref pcie_rp6 on	# PHY 4
 			register "PcieRpEnable[5]" = "1"
 			register "PcieRpLtrEnable[5]" = "1"
 			device pci 00.0 on
 				smbios_dev_info 4
 			end
 		end
-		device pci 1c.6 on	# PCIe root port 7 (PHY 2)
+		device ref pcie_rp7 on	# PHY 2
 			register "PcieRpEnable[6]" = "1"
 			register "PcieRpLtrEnable[6]" = "1"
 			device pci 00.0 on
 				smbios_dev_info 2
 			end
 		end
-		device pci 1c.7 on	# PCIe root port 8 (PHY 1)
+		device ref pcie_rp8 on	# PHY 1
 			register "PcieRpEnable[7]" = "1"
 			register "PcieRpLtrEnable[7]" = "1"
 			device pci 00.0 on
 				smbios_dev_info 1
 			end
 		end
-		device pci 1d.0 on	# PCIe root port 9 (M2 M)
+		device ref pcie_rp9 on
 			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthOther" "M2 M" "SlotDataBusWidth4X"
 			register "PcieRpEnable[8]" = "1"
 			register "PcieRpLtrEnable[8]" = "1"
 			register "PcieRpSlotImplemented[8]" = "1"
 		end
-		device pci 1d.5 on	# PCIe root port 14 (PHY 0)
+		device ref pcie_rp14 on	# PHY 0
 			register "PcieRpEnable[13]" = "1"
 			register "PcieRpLtrEnable[13]" = "1"
 			device pci 00.0 on
 				smbios_dev_info 0
 			end
 		end
-		device pci 1d.6 on	# PCIe root port 15 (BMC)
+		device ref pcie_rp15 on	# BMC
 			device pci 00.0 on	# Aspeed PCI Bridge
 				device pci 00.0 on end  # Aspeed 2500 VGA
 			end
@@ -243,26 +243,26 @@ chip soc/intel/cannonlake
 			register "PcieRpLtrEnable[14]" = "1"
 			register "PcieRpSlotImplemented[14]" = "1"
 		end
-		device pci 1d.7 on	# PCIe root port 16 (M.2 E/CNVi)
+		device ref pcie_rp16 on	# M.2 E/CNVi
 			# Disabled when CNVi is present
 			register "PcieRpEnable[15]" = "1"
 			register "PcieRpLtrEnable[15]" = "1"
 			register "PcieRpSlotImplemented[15]" = "1"
 		end
-		device pci 1e.0 on  end # UART #0
-		device pci 1e.1 on  end # UART #1
-		device pci 1e.2 off end # GSPI #0
-		device pci 1e.3 off end # GSPI #1
-		device pci 1f.0 on	# LPC Interface
+		device ref uart0 on  end
+		device ref uart1 on  end
+		device ref gspi0 off end
+		device ref gspi1 off end
+		device ref lpc_espi on
 			chip drivers/pc80/tpm
 				device pnp 0c31.0 on end
 			end
 			# AST2500, but not enabled to decode LPC cycles
 		end
-		device pci 1f.1 on     end # P2SB
-		device pci 1f.2 hidden end # Power Management Controller
-		device pci 1f.3 on     end # Intel HDA
-		device pci 1f.4 on     end # SMBus
-		device pci 1f.5 on     end # PCH SPI
+		device ref p2sb on     end
+		device ref pmc hidden end
+		device ref hda on     end
+		device ref smbus on     end
+		device ref fast_spi on     end
 	end
 end

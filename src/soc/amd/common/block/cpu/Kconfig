@@ -38,6 +38,12 @@ config ACPI_CPU_STRING
 	string
 	default "C%03X"
 
+config SOC_AMD_COMMON_ROMSTAGE_LEGACY_DMA_FIXUP
+	bool
+	help
+	  Disable the legacy DMA decodes again after the call into the
+	  reference code in romstage to fix up things.
+
 endif # SOC_AMD_COMMON_BLOCK_NONCAR
 
 config SOC_AMD_COMMON_BLOCK_CPUFREQ_FAM15H_16H

@@ -17,7 +17,6 @@ bootblock-y	+= early_fch.c
 bootblock-y	+= espi_util.c
 
 romstage-y	+= fsp_m_params.c
-romstage-y	+= romstage.c
 
 ramstage-y	+= acpi.c
 ramstage-y	+= agesa_acpi.c

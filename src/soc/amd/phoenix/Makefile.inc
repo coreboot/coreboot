@@ -22,7 +22,6 @@ bootblock-y	+= espi_util.c
 verstage-y	+= espi_util.c
 
 romstage-$(CONFIG_SOC_AMD_PHOENIX_FSP) += fsp_m_params.c
-romstage-y	+= romstage.c
 romstage-y	+= soc_util.c
 
 ramstage-y	+= acpi.c

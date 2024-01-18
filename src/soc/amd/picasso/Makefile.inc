@@ -17,7 +17,6 @@ all_x86-y += uart.c
 bootblock-y += early_fch.c
 
 romstage-y += fsp_m_params.c
-romstage-y += romstage.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += agesa_acpi.c

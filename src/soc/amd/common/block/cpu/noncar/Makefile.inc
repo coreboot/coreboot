@@ -8,6 +8,7 @@ bootblock-y += pre_c.S
 bootblock-y += write_resume_eip.c
 bootblock-$(CONFIG_TPM_MEASURED_BOOT) += bootblock_measure.c
 romstage-y += memmap.c
+romstage-y += romstage.c
 ramstage-y += cpu.c
 romstage-y += cpu.c
 ramstage-y += memmap.c

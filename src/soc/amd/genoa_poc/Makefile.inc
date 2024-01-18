@@ -11,8 +11,6 @@ all-y		+= uart.c
 bootblock-y	+= early_fch.c
 bootblock-y	+= aoac.c
 
-romstage-y	+= romstage.c
-
 ramstage-y	+= acpi.c
 ramstage-y	+= aoac.c
 ramstage-y	+= chip.c

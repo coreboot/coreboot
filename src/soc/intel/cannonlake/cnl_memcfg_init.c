@@ -74,7 +74,7 @@ static void meminit_spd_data(FSP_M_CONFIG *mem_cfg, uint8_t mem_slot,
 /*
  * Initialize default memory settings using the spd file specified by
  * spd_index. The spd_index is an index into the SPD_SOURCES array defined
- * in spd/Makefile.inc.
+ * in spd/Makefile.mk.
  */
 static void meminit_cbfs_spd_index(FSP_M_CONFIG *mem_cfg,
 				   int spd_index, uint8_t mem_slot)

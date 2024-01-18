@@ -92,7 +92,51 @@ static struct device_operations iio_pcie_domain_ops = {
 	.scan_bus = iio_pci_domain_scan_bus,
 };
 
-/* Attach IIO stack as domains */
+/*
+ * Used by UBOX stacks. Those contain multiple PCI host bridges, each having
+ * only one bus with UBOX devices. UBOX devices have no resources.
+ */
+static struct device_operations ubox_pcie_domain_ops = {
+	.read_resources = noop_read_resources,
+	.set_resources = noop_set_resources,
+	.scan_bus = pci_host_bridge_scan_bus,
+};
+
+/*
+ * On the first Xeon-SP generations there are no separate UBOX stacks,
+ * and the UBOX devices reside on the first and second IIO. Starting
+ * with 3rd gen Xeon-SP the UBOX devices are located on their own IIO.
+ */
+static void soc_create_ubox_domains(const union xeon_domain_path dp, struct bus *upstream,
+				    const unsigned int bus_base, const unsigned int bus_limit)
+{
+	union xeon_domain_path new_path = {
+		.domain_path = dp.domain_path
+	};
+
+	for (int i = bus_base; i <= bus_limit; i++) {
+		new_path.bus = i;
+
+		struct device_path path = {
+			.type = DEVICE_PATH_DOMAIN,
+			.domain = {
+				.domain = new_path.domain_path,
+			},
+		};
+		struct device *const domain = alloc_dev(upstream, &path);
+		if (!domain)
+			die("%s: out of memory.\n", __func__);
+
+		domain->ops = &ubox_pcie_domain_ops;
+
+		struct bus *const bus = alloc_bus(domain);
+		bus->secondary = i;
+		bus->subordinate = bus->secondary;
+		bus->max_subordinate = bus->secondary;
+	}
+}
+
+/* Attach stack as domains */
 void attach_iio_stacks(struct device *dev)
 {
 	const IIO_UDS *hob = get_iio_uds();
@@ -114,19 +158,19 @@ void attach_iio_stacks(struct device *dev)
 			dn.stack = x;
 			dn.bus = ri->BusBase;
 
-			if (!is_pcie_iio_stack_res(ri)) {
-				if (CONFIG(HAVE_IOAT_DOMAINS))
-					soc_create_ioat_domains(dn, dev->upstream, ri);
-				continue;
-			}
+			if (is_ubox_stack_res(ri)) {
+				soc_create_ubox_domains(dn, dev->upstream, ri->BusBase, ri->BusLimit);
+			} else if (is_pcie_iio_stack_res(ri)) {
+				struct device_path path;
+				path.type = DEVICE_PATH_DOMAIN;
+				path.domain.domain = dn.domain_path;
+				struct device *iio_domain = alloc_dev(dev->upstream, &path);
+				if (iio_domain == NULL)
+					die("%s: out of memory.\n", __func__);
 
-			struct device_path path;
-			path.type = DEVICE_PATH_DOMAIN;
-			path.domain.domain = dn.domain_path;
-			struct device *iio_domain = alloc_dev(dev->upstream, &path);
-			if (iio_domain == NULL)
-				die("%s: out of memory.\n", __func__);
-			iio_domain->ops = &iio_pcie_domain_ops;
+				iio_domain->ops = &iio_pcie_domain_ops;
+			} else if (CONFIG(HAVE_IOAT_DOMAINS))
+				soc_create_ioat_domains(dn, dev->upstream, ri);
 		}
 	}
 }

@@ -30,6 +30,11 @@ bool is_pcie_iio_stack_res(const STACK_RES *res)
 	return res->Personality == TYPE_UBOX_IIO;
 }
 
+bool is_ubox_stack_res(const STACK_RES *res)
+{
+	return res->Personality == TYPE_UBOX;
+}
+
 uint8_t get_stack_busno(const uint8_t stack)
 {
 	if (stack >= MAX_IIO_STACK) {

@@ -24,6 +24,7 @@ struct iiostack_resource {
 
 void get_iiostack_info(struct iiostack_resource *info);
 bool is_pcie_iio_stack_res(const STACK_RES *res);
+bool is_ubox_stack_res(const STACK_RES *res);
 void bios_done_msr(void *unused);
 
 #endif

@@ -59,6 +59,29 @@ bool is_pcie_iio_stack_res(const STACK_RES *res)
 	return res->BusBase < res->BusLimit;
 }
 
+bool is_ubox_stack_res(const STACK_RES *res)
+{
+	/*
+	 * Unlike on later platforms there's no separate "UBOX" stack.
+	 *
+	 * The UBOX devices can always be found on the first bus on the stack IIO0 (CSTACK).
+	 * This bus is also referred to as uncore bus 0 or B(30).
+	 * It has at a fixed address the UBOX:
+	 * B(30):8.0 8086:2014
+	 * B(30):8.1 8086:2015
+	 * B(30):8.2 8086:2016
+	 *
+	 * The PCU devices can always be on the first bus of the stack IIO1 (PSTACK).
+	 * This bus is also referred to as uncore bus 1 or B(31).
+	 * It has at a fixed address the PCU:
+	 * B(31):30.0 8086:2080
+	 * B(31):30.1 8086:2081
+	 * B(31):30.2 8086:2082
+	 */
+
+	return false;
+}
+
 uint8_t get_stack_busno(const uint8_t stack)
 {
 	if (stack >= MAX_IIO_STACK) {

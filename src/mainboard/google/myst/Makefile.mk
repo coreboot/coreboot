@@ -28,7 +28,7 @@ APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/$(APCB_NAME).bin
 # Add the below section back in after the apcbtool is updated to handle the
 # Phoenix APCB SPD configuration.
 
-ifneq ($(wildcard $(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/memory/Makefile.inc),)
+ifneq ($(wildcard $(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/memory/Makefile.mk),)
 
 LIB_SPD_DEPS = $(SPD_SOURCES)
 

@@ -78,6 +78,11 @@ bool is_ubox_stack_res(const STACK_RES *res)
 	return res->Personality == TYPE_UBOX;
 }
 
+bool is_ioat_iio_stack_res(const STACK_RES *res)
+{
+	return res->Personality == TYPE_DINO;
+}
+
 /*
  * Given a stack resource, figure out whether the corresponding stack has
  * CXL device.

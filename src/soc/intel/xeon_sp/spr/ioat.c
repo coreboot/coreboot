@@ -86,7 +86,7 @@ void soc_create_ioat_domains(const union xeon_domain_path path, struct bus *cons
 
 	/* The FSP HOB doesn't provide accurate information about the
 	   resource allocation. Hence use pre-defined offsets. Based
-	   on ACPI code in create_dsdt_dino_resource(), soc_acpi.c: */
+	   on ACPI code in create_dsdt_ioat_resource(), soc_acpi.c: */
 	resource_t mem64_base, mem64_limit, bus_base, bus_limit;
 
 	/* CPM0 */

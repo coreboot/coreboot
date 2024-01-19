@@ -335,9 +335,8 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket,
 #endif
 	}
 
-#if CONFIG(SOC_INTEL_SAPPHIRERAPIDS_SP) || CONFIG(SOC_INTEL_COOPERLAKE_SP)
-	// Add DINO End Points (with memory resources. We don't report every End Point device.)
-	if (ri->Personality == TYPE_DINO) {
+	// Add IOAT End Points (with memory resources. We don't report every End Point device.)
+	if (is_ioat_iio_stack_res(ri)) {
 		for (int b = ri->BusBase; b <= ri->BusLimit; ++b) {
 			struct device *dev = pcidev_path_on_bus(b, PCI_DEVFN(0, 0));
 			while (dev) {
@@ -357,7 +356,6 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket,
 			}
 		}
 	}
-#endif
 
 	// Add HPET
 	if (socket == 0 && stack == IioStack0) {
@@ -488,9 +486,7 @@ static unsigned long acpi_create_rhsa(unsigned long current)
 	return current;
 }
 
-/* Skylake-SP doesn't have DINO but not sure how to verify this on CPX */
-#if CONFIG(SOC_INTEL_SAPPHIRERAPIDS_SP) || CONFIG(SOC_INTEL_COOPERLAKE_SP)
-static unsigned long xeonsp_create_satc_dino(unsigned long current, const STACK_RES *ri)
+static unsigned long xeonsp_create_satc_ioat(unsigned long current, const STACK_RES *ri)
 {
 	for (int b = ri->BusBase; b <= ri->BusLimit; ++b) {
 		struct device *dev = pcidev_path_on_bus(b, PCI_DEVFN(0, 0));
@@ -517,22 +513,21 @@ static unsigned long acpi_create_satc(unsigned long current, const IIO_UDS *hob)
 	// Add the SATC header
 	current += acpi_create_dmar_satc(current, 0, 0);
 
-	// Find the DINO devices on each socket
+	// Find the IOAT devices on each socket
 	for (int socket = CONFIG_MAX_SOCKET - 1; socket >= 0; --socket) {
 		if (!soc_cpu_is_enabled(socket))
 			continue;
 		for (int stack = (MAX_LOGIC_IIO_STACK - 1); stack >= 0; --stack) {
 			const STACK_RES *ri = &hob->PlatformData.IIO_resource[socket].StackRes[stack];
-			// Add the DINO ATS devices to the SATC
-			if (ri->Personality == TYPE_DINO)
-				current = xeonsp_create_satc_dino(current, ri);
+			// Add the IOAT ATS devices to the SATC
+			if (is_ioat_iio_stack_res(ri))
+				current = xeonsp_create_satc_ioat(current, ri);
 		}
 	}
 
 	acpi_dmar_satc_fixup(tmp, current);
 	return current;
 }
-#endif
 
 static unsigned long acpi_fill_dmar(unsigned long current)
 {
@@ -555,10 +550,9 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 	// RHSA
 	current = acpi_create_rhsa(current);
 
-#if CONFIG(SOC_INTEL_SAPPHIRERAPIDS_SP) || CONFIG(SOC_INTEL_COOPERLAKE_SP)
 	// SATC
-	current = acpi_create_satc(current, hob);
-#endif
+	if (CONFIG(HAVE_IOAT_DOMAINS))
+		current = acpi_create_satc(current, hob);
 
 	return current;
 }

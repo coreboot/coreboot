@@ -25,6 +25,14 @@ struct iiostack_resource {
 void get_iiostack_info(struct iiostack_resource *info);
 bool is_pcie_iio_stack_res(const STACK_RES *res);
 bool is_ubox_stack_res(const STACK_RES *res);
+#if CONFIG(HAVE_IOAT_DOMAINS)
+bool is_ioat_iio_stack_res(const STACK_RES *res);
+#else
+static inline bool is_ioat_iio_stack_res(const STACK_RES *res)
+{
+	return false;
+}
+#endif
 void bios_done_msr(void *unused);
 
 #endif

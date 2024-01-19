@@ -189,7 +189,7 @@ static void create_dsdt_iou_cxl_resource(uint8_t socket, uint8_t stack, const ST
 	acpigen_pop_len();
 }
 
-static void create_dsdt_dino_resource(uint8_t socket, uint8_t stack, const STACK_RES *ri, bool stack_enabled)
+static void create_dsdt_ioat_resource(uint8_t socket, uint8_t stack, const STACK_RES *ri, bool stack_enabled)
 {
 	if (!stack_enabled)
 		return;
@@ -381,7 +381,7 @@ void uncore_fill_ssdt(const struct device *device)
 						stack_enabled);
 				create_dsdt_stack_sta(socket, stack, ri, stack_enabled);
 			} else if (stack >= IioStack8 && stack <= IioStack11) { // TYPE_DINO
-				create_dsdt_dino_resource(socket, stack, ri, stack_enabled);
+				create_dsdt_ioat_resource(socket, stack, ri, stack_enabled);
 				create_dsdt_stack_sta(socket, stack, ri, stack_enabled);
 			} else if (stack == IioStack13) { // TYPE_UBOX
 				create_dsdt_ubox_resource(socket, stack, ri, stack_enabled);

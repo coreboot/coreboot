@@ -50,6 +50,10 @@
 #define __noreturn __attribute__((__noreturn__))
 #endif
 
+#ifndef __section
+#define __section(section) __attribute__((__section__(section)))
+#endif
+
 #ifndef __always_inline
 #define __always_inline inline __attribute__((__always_inline__))
 #endif

@@ -12,12 +12,14 @@
 static const STACK_RES *domain_to_stack_res(const struct device *dev)
 {
 	assert(dev->path.type == DEVICE_PATH_DOMAIN);
-	const unsigned int dn = dev->path.domain.domain;
+	const union xeon_domain_path dn = {
+		.domain_path = dev->path.domain.domain
+	};
 
 	const IIO_UDS *hob = get_iio_uds();
 	assert(hob != NULL);
 
-	return &hob->PlatformData.IIO_resource[dn / MAX_LOGIC_IIO_STACK].StackRes[dn % MAX_LOGIC_IIO_STACK];
+	return &hob->PlatformData.IIO_resource[dn.socket].StackRes[dn.stack];
 }
 
 void iio_pci_domain_read_resources(struct device *dev)
@@ -101,6 +103,7 @@ static struct device_operations iio_pcie_domain_ops = {
 void attach_iio_stacks(struct device *dev)
 {
 	const IIO_UDS *hob = get_iio_uds();
+	union xeon_domain_path dn = { .domain_path = 0 };
 	if (!hob)
 		return;
 
@@ -113,15 +116,20 @@ void attach_iio_stacks(struct device *dev)
 			if (ri->BusBase > ri->BusLimit)
 				continue;
 
+			/* Prepare domain path */
+			dn.socket = s;
+			dn.stack = x;
+			dn.bus = ri->BusBase;
+
 			if (!is_pcie_iio_stack_res(ri)) {
 				if (CONFIG(HAVE_IOAT_DOMAINS))
-					soc_create_ioat_domains(dev->bus, ri);
+					soc_create_ioat_domains(dn, dev->bus, ri);
 				continue;
 			}
 
 			struct device_path path;
 			path.type = DEVICE_PATH_DOMAIN;
-			path.domain.domain = s * MAX_LOGIC_IIO_STACK + x;
+			path.domain.domain = dn.domain_path;
 			struct device *iio_domain = alloc_dev(dev->bus, &path);
 			if (iio_domain == NULL)
 				die("%s: out of memory.\n", __func__);

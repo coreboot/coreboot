@@ -114,7 +114,7 @@ defconfig pointing to your [software-name] generated File.
 as part of your software's build process. For example in form of a
 Makefile target.
 
-2. Change src/sbom/Makefile.inc (in order to know where to find the
+2. Change src/sbom/Makefile.mk (in order to know where to find the
 CoSWID/SWID/uSWID file) as well as the Makefile in coreboot which
 builds said software. For example for GRUB2 that could mean to add a
 Makefile target in payloads/external/GRUB2/Makefile.

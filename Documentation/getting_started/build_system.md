@@ -7,10 +7,10 @@ to the point of providing its own custom language.
 The overhead of learning this new syntax is (hopefully) offset by its lower
 complexity.
 
-The build system is defined in the toplevel `Makefile` and `toolchain.inc`
+The build system is defined in the toplevel `Makefile` and `toolchain.mk`
 and is supposed to be generic (and is in fact used with a number of other
 projects).  Project specific configuration should reside in files called
-`Makefile.inc`.
+`Makefile.mk`.
 
 In general, the build system provides a number of "classes" that describe
 various parts of the build. These cover the various build targets in coreboot
@@ -36,7 +36,7 @@ TODO: explain how to create new classes and how to evaluate them.
 ### subdirs
 `subdirs` contains subdirectories (relative to the current directory) that
 should also be handled by the build system. The build system expects these
-directories to contain a file called `Makefile.inc`.
+directories to contain a file called `Makefile.mk`.
 
 Subdirectories are not read at the point where the `subdirs` statement
 resides but later, after the current directory is handled (and potentially
@@ -66,7 +66,7 @@ supported options are:
 
 You can use the `add_intermediate` helper to add new post-processing steps for
 the final `coreboot.rom` image. For example you can add new files to CBFS by
-adding something like this to `site-local/Makefile.inc`
+adding something like this to `site-local/Makefile.mk`
 
 ```
 $(call add_intermediate, add_mrc_data)
@@ -100,4 +100,4 @@ The default implementation just returns `COREBOOT` (the default region) for
 all files.
 
 vboot provides its own implementation of `regions-for-file` that can be used
-as reference in `src/vboot/Makefile.inc`.
+as reference in `src/vboot/Makefile.mk`.

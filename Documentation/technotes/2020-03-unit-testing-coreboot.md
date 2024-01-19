@@ -247,13 +247,13 @@ tests/lib/string-test and tests/device/i2c-test:
 │   ├── include
 │   │   ├── mocks <- mock headers, which replace original headers
 │   │
-│   ├── Makefile.inc <- top Makefile for unit tests subsystem
+│   ├── Makefile.mk <- top Makefile for unit tests subsystem
 │   ├── lib
-│   │   ├── Makefile.inc
+│   │   ├── Makefile.mk
 │   │   ├── string-test.c <- test code for src/lib/string.c
 │   │   │
 │   ├── device
-│   │   ├── Makefile.inc
+│   │   ├── Makefile.mk
 │       ├── i2c-test.c
 │
 ├── build

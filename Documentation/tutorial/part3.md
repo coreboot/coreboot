@@ -96,8 +96,8 @@ suffix `-test` to the UUT name when creating a new test harness file.
    be registered with the coreboot unit testing infrastructure.
 ```
 
-Every directory under `tests/` should contain a Makefile.inc, similar to
-what can be seen under the `src/`. Register a new test in Makefile.inc,
+Every directory under `tests/` should contain a Makefile.mk, similar to
+what can be seen under the `src/`. Register a new test in Makefile.mk,
 by __appending__ test name to the `tests-y` variable.
 
 ```eval_rst
@@ -285,7 +285,7 @@ stimulate UUT as required without changing the source code.
 
 coreboot unit test infrastructure supports overriding of functions at
 link time.  This is as simple as adding a `name_of_function` to be
-mocked into <test_name>-mocks variable in Makefile.inc. The result is
+mocked into <test_name>-mocks variable in Makefile.mk. The result is
 that the test's implementation of that function is called instead of
 coreboot's.
 

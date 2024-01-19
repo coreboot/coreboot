@@ -963,7 +963,7 @@ variable.  This is not set in coreboot, which uses the default CONFIG_ prefix
 for all of its symbols.
 
 The coreboot makefile forces the config.h file to be included into all coreboot
-C files. This is done in Makefile.inc on the compiler command line using the
+C files. This is done in Makefile.mk on the compiler command line using the
 “-include $(obj)/config.h” command line option.
 
 Example of various symbol types in the config.h file:

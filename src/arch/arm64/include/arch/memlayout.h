@@ -22,7 +22,7 @@
 /* ARM64 stacks need 16-byte alignment. */
 #define STACK(addr, size) \
 	REGION(stack, addr, size, 16) \
-	_ = ASSERT(size >= 2K, "stack should be >= 2K, see toolchain.inc");
+	_ = ASSERT(size >= 2K, "stack should be >= 2K, see toolchain.mk");
 
 #define BL31(addr, size) \
 	REGION(bl31, addr, size, 4K) \

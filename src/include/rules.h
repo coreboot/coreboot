@@ -156,7 +156,7 @@
 #define ENV_STRING "UNKNOWN"
 #endif
 
-/* Define helpers about the current architecture, based on toolchain.inc. */
+/* Define helpers about the current architecture, based on toolchain.mk. */
 
 #if defined(__ARCH_arm__)
 #define ENV_ARM 1

@@ -20,7 +20,7 @@
 /* ARM stacks need 8-byte alignment and stay in one place through ramstage. */
 #define STACK(addr, size) \
 	REGION(stack, addr, size, 8) \
-	_ = ASSERT(size >= 2K, "stack should be >= 2K, see toolchain.inc");
+	_ = ASSERT(size >= 2K, "stack should be >= 2K, see toolchain.mk");
 
 #define DMA_COHERENT(addr, size) \
 	REGION(dma_coherent, addr, size, SUPERPAGE_SIZE) \

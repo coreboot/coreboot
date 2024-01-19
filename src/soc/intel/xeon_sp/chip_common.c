@@ -77,6 +77,7 @@ void iio_pci_domain_scan_bus(struct device *dev)
 	}
 
 	struct bus *bus = dev->link_list;
+	bus->dev = dev;
 	bus->secondary = sr->BusBase;
 	bus->subordinate = sr->BusBase;
 	bus->max_subordinate = sr->BusLimit;

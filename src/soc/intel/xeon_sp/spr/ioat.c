@@ -45,6 +45,7 @@ static void create_ioat_domain(struct bus *const upstream, const unsigned int do
 		die("%s: out of memory.\n", __func__);
 
 	struct bus *const bus = domain->link_list;
+	bus->dev = domain;
 	bus->secondary = bus_base;
 	bus->subordinate = bus->secondary;
 	bus->max_subordinate = bus_limit;

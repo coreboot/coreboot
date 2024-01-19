@@ -249,14 +249,6 @@ const char *dev_name(const struct device *dev)
 		return "unknown";
 }
 
-const char *bus_path(struct bus *bus)
-{
-	static char buffer[BUS_PATH_MAX];
-	snprintf(buffer, sizeof(buffer),
-		 "%s,%d", dev_path(bus->dev), bus->link_num);
-	return buffer;
-}
-
 /**
  * Allocate 64 more resources to the free list.
  *

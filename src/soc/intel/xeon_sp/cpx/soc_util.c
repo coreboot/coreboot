@@ -35,7 +35,8 @@ bool is_ubox_stack_res(const STACK_RES *res)
 	return res->Personality == TYPE_UBOX;
 }
 
-uint8_t get_stack_busno(const uint8_t stack)
+/* Returns the UBOX(stack) bus number when called from socket0 */
+uint8_t socket0_get_ubox_busno(const uint8_t stack)
 {
 	if (stack >= MAX_IIO_STACK) {
 		printk(BIOS_ERR, "%s: Stack %u does not exist!\n", __func__, stack);
@@ -53,14 +54,6 @@ uint32_t get_socket_stack_busno(uint32_t socket, uint32_t stack)
 	assert(socket < CONFIG_MAX_SOCKET && stack < MAX_LOGIC_IIO_STACK);
 
 	return hob->PlatformData.IIO_resource[socket].StackRes[stack].BusBase;
-}
-
-uint32_t get_socket_ubox_busno(uint32_t socket)
-{
-	if (socket == 0)
-		return get_stack_busno(PCU_IIO_STACK);
-
-	return get_socket_stack_busno(socket, PCU_IIO_STACK);
 }
 
 /*

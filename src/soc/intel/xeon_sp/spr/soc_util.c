@@ -144,23 +144,18 @@ uint32_t get_socket_stack_busno(uint32_t socket, uint32_t stack)
 	return hob->PlatformData.IIO_resource[socket].StackRes[stack].BusBase;
 }
 
-uint32_t get_ubox_busno(uint32_t socket, uint8_t offset)
+/* Returns the UBOX(offset) bus number for socket0 */
+uint8_t socket0_get_ubox_busno(uint8_t offset)
 {
 	const IIO_UDS *hob = get_iio_uds();
 
-	assert(socket < CONFIG_MAX_SOCKET);
 	for (int stack = 0; stack < MAX_LOGIC_IIO_STACK; ++stack) {
-		if (hob->PlatformData.IIO_resource[socket].StackRes[stack].Personality
+		if (hob->PlatformData.IIO_resource[0].StackRes[stack].Personality
 		    == TYPE_UBOX)
-			return (hob->PlatformData.IIO_resource[socket].StackRes[stack].BusBase
+			return (hob->PlatformData.IIO_resource[0].StackRes[stack].BusBase
 				+ offset);
 	}
 	die("Unable to locate UBOX BUS NO");
-}
-
-uint32_t get_socket_ubox_busno(uint32_t socket)
-{
-	return get_ubox_busno(socket, UNCORE_BUS_1);
 }
 
 void bios_done_msr(void *unused)

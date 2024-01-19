@@ -195,7 +195,7 @@ static int create_smbios_type9(int *handle, unsigned long *current)
 		printk(BIOS_ERR, "Failed to get IPMI PCIe config\n");
 
 	for (index = 0; index < ARRAY_SIZE(stack_busnos); index++)
-		stack_busnos[index] = get_stack_busno(index);
+		stack_busnos[index] = socket0_get_ubox_busno(index);
 
 	for (index = 0; index < ARRAY_SIZE(slotinfo); index++) {
 		uint8_t characteristics_1 = 0;

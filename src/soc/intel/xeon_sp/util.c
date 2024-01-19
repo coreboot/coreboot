@@ -17,12 +17,15 @@
 #include <soc/util.h>
 #include <timer.h>
 
+/* Only call this code from socket0! */
 void unlock_pam_regions(void)
 {
 	uint32_t pam0123_unlock_dram = 0x33333330;
 	uint32_t pam456_unlock_dram = 0x00333333;
-	uint32_t bus1 = get_socket_ubox_busno(0);
+	/* Get UBOX(1) for socket0 */
+	uint32_t bus1 = socket0_get_ubox_busno(PCU_IIO_STACK);
 
+	/* Assume socket0 owns PCI segment 0 */
 	pci_io_write_config32(PCI_DEV(bus1, SAD_ALL_DEV, SAD_ALL_FUNC),
 		SAD_ALL_PAM0123_CSR, pam0123_unlock_dram);
 	pci_io_write_config32(PCI_DEV(bus1, SAD_ALL_DEV, SAD_ALL_FUNC),

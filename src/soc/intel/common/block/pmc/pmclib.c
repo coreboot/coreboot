@@ -463,11 +463,11 @@ int pmc_fill_power_state(struct chipset_power_state *ps)
 {
 	/* Define the sleep state string */
 	static const char * const acpi_sleep_states[] = {
-		[SLP_TYP_S0] = "S0",
-		[SLP_TYP_S1] = "S1",
-		[SLP_TYP_S3] = "S3",
-		[SLP_TYP_S4] = "S4",
-		[SLP_TYP_S5] = "S5",
+		[ACPI_S0] = "S0",
+		[ACPI_S1] = "S1",
+		[ACPI_S3] = "S3",
+		[ACPI_S4] = "S4",
+		[ACPI_S5] = "S5",
 	};
 
 	pmc_fill_pm_reg_info(ps);

@@ -768,7 +768,7 @@ gitconfig:
 install-git-commit-clangfmt:
 	cp util/scripts/prepare-commit-msg.clang-format .git/hooks/prepare-commit-msg
 
-include util/crossgcc/Makefile.inc
+include util/crossgcc/Makefile.mk
 
 .PHONY: tools
 tools: $(objutil)/kconfig/conf $(objutil)/kconfig/toada $(CBFSTOOL) $(objutil)/cbfstool/cbfs-compression-tool $(FMAPTOOL) $(RMODTOOL) $(IFWITOOL) $(objutil)/nvramtool/nvramtool $(objutil)/sconfig/sconfig $(IFDTOOL) $(CBOOTIMAGE) $(AMDFWTOOL) $(AMDCOMPRESS) $(FUTILITY) $(BINCFG) $(IFITTOOL) $(objutil)/supermicro/smcbiosinfo $(CSE_FPT) $(CSE_SERGER) $(AMDFWREAD)

@@ -23,4 +23,4 @@ ifneq ($(Q),)
 endif
 endif
 
-include Makefile.inc
+include Makefile.mk

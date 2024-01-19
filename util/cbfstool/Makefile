@@ -91,7 +91,7 @@ ifneq ($(V),1)
 .SILENT:
 endif
 
-include Makefile.inc
+include Makefile.mk
 
 $(objutil)/cbfstool/cbfstool.o: $(VBOOT_SOURCE)/firmware/include/vb2_sha.h
 $(objutil)/cbfstool/elogtool.o: $(VBOOT_SOURCE)/firmware/include/vb2_sha.h

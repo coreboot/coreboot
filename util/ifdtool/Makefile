@@ -10,7 +10,7 @@ HOSTCC ?= $(CC)
 HOSTCFLAGS ?= $(CFLAGS)
 top := ../..
 objutil := ..
-include Makefile.inc
+include Makefile.mk
 
 PROGRAM=$(objutil)/ifdtool/ifdtool
 

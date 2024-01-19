@@ -2,10 +2,10 @@
 
 # This automatically adds a `qemu` make target if a compatible
 # configuration is selected. There are some notable variables
-# that can be set or adapted in `Makefile.inc` files, the make
+# that can be set or adapted in `Makefile.mk` files, the make
 # command line or the environment:
 #
-# Primarily for `Makefile.inc` use:
+# Primarily for `Makefile.mk` use:
 # QEMU-y		the QEMU executable
 # QEMU_CFG-y		a QEMU config that sets the available default devices,
 #			used to run more comprehensive tests by default,

@@ -35,6 +35,7 @@
 #define SAD_ALL_FUNC 0
 #define SAD_ALL_PAM0123_CSR 0x80
 #define SAD_ALL_PAM456_CSR 0x84
+#define SAD_ALL_DEVID 0x344f
 
 #if !defined(__SIMPLE_DEVICE__)
 #define _PCU_DEV(bus, func) pcidev_path_on_bus(bus, PCI_DEVFN(PCU_DEV, func))

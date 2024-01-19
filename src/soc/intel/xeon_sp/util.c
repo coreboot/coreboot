@@ -17,19 +17,6 @@
 #include <soc/util.h>
 #include <timer.h>
 
-void lock_pam0123(void)
-{
-	if (get_lockdown_config() != CHIPSET_LOCKDOWN_COREBOOT)
-		return;
-
-	/* section 16.3.19 of Intel doc. #612246 */
-	uint32_t pam0123_lock = 0x33333331;
-	uint32_t bus1 = get_socket_ubox_busno(0);
-
-	pci_s_write_config32(PCI_DEV(bus1, SAD_ALL_DEV, SAD_ALL_FUNC),
-		SAD_ALL_PAM0123_CSR, pam0123_lock);
-}
-
 void unlock_pam_regions(void)
 {
 	uint32_t pam0123_unlock_dram = 0x33333330;
@@ -121,6 +108,21 @@ unsigned int soc_get_num_cpus(void)
 }
 
 #if ENV_RAMSTAGE /* Setting devtree variables is only allowed in ramstage. */
+
+void lock_pam0123(void)
+{
+	const uint32_t pam0123_lock = 0x33333331;
+	struct device *dev;
+
+	if (get_lockdown_config() != CHIPSET_LOCKDOWN_COREBOOT)
+		return;
+
+	dev = NULL;
+	/* Look for SAD_ALL devices on all sockets */
+	while ((dev = dev_find_device(PCI_VID_INTEL, SAD_ALL_DEVID, dev)))
+		pci_write_config32(dev, SAD_ALL_PAM0123_CSR, pam0123_lock);
+}
+
 /* return true if command timed out else false */
 static bool wait_for_bios_cmd_cpl(struct device *pcu1, uint32_t reg, uint32_t mask,
 				  uint32_t target)

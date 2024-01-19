@@ -185,8 +185,6 @@ find_areas() {
 # up manually.
 version_ctrl_c() {
 	printf "\n Cleaning up and exiting.\n" >&2
-	find 'src' -name 'gnumakefile' \
-		-exec rename 's/gnumakefile/Makefile\.inc/' {} \;
 	git checkout origin/main > /dev/null 2>&1
 	git submodule update --init --checkout  > /dev/null 2>&1
 	rm "$LOGFILE"
@@ -221,23 +219,17 @@ show_diff () {
 }
 
 get_sloc () {
-	# Because cloc works on extensions, and .inc identifies as pascal,
-	# while we use it both for Makefile.inc and some files that are
-	# really C, do three passes: everything but .inc files, all .inc files
-	# that aren't Makefiles, all Makefile.inc, then combine them.
-
 	local base
 	base=$(mktemp)
-	find src -name Makefile.inc > "${base}.mak"
 
 	cloc --progress-rate=0 --quiet \
 		--script-lang="Bourne Shell",bash --exclude-ext=inc \
 		--exclude-dir=vendorcode "--out=${base}" src
 	cloc --progress-rate=0 --quiet \
-		"--exclude-list-file=${base}.mak" --force-lang=c,inc \
+		"--exclude-list-file=${base}.mk" --force-lang=c,inc \
 		--exclude-dir=vendorcode "--out=${base}.c" src
 	cloc --progress-rate=0 --quiet \
-		"--list-file=${base}.mak" --force-lang=make,inc \
+		"--list-file=${base}.mk" --force-lang=make,inc \
 		--exclude-dir=vendorcode "--out=${base}.m" src
 	cloc --progress-rate=0 --quiet --sum-reports \
 		"${base}" "${base}.c" "${base}.m" --out "${base}.result"
@@ -267,9 +259,9 @@ done
 printf "Logging directories in the old tree\n" >&2
 mainboard_list_old=$(grep -h "^[[:space:]]*config\>[[:space:]]*\<BOARD_" src/mainboard/*/*/Kconfig.name 2>/dev/null | sed "s,^.*\<BOARD_\([A-Z0-9_]*\)\>.*$,\1," | sort)
 cpu_list_old=$(find_areas "src/cpu" "Kconfig" "intel/common")
-soc_list_old=$(find_areas "src/soc" "Makefile.inc" "intel/common\|amd/common\|romstage")
+soc_list_old=$(find_areas "src/soc" "Makefile.mk" "intel/common\|amd/common\|romstage")
 northbridge_list_old=$(find_areas "src/northbridge" "Kconfig" "")
-sio_list_old=$(find_areas "src/superio" "Makefile.inc" "")
+sio_list_old=$(find_areas "src/superio" "Makefile.mk" "")
 southbridge_list_old=$(find_areas "src/southbridge" "Kconfig" "")
 
 echo "Calculating old SLOC"
@@ -290,9 +282,9 @@ done
 echo "Logging directories in the new tree." >&2
 mainboard_list_new=$(grep -h "^[[:space:]]*config\>[[:space:]]*\<BOARD_" src/mainboard/*/*/Kconfig.name 2>/dev/null | sed "s,^.*\<BOARD_\([A-Z0-9_]*\)\>.*$,\1," | sort)
 cpu_list_new=$(find_areas "src/cpu" "Kconfig" "intel/common")
-soc_list_new=$(find_areas "src/soc" "Makefile.inc" "intel/common\|amd/common\|romstage")
+soc_list_new=$(find_areas "src/soc" "Makefile.mk" "intel/common\|amd/common\|romstage")
 northbridge_list_new=$(find_areas "src/northbridge" "Kconfig" "")
-sio_list_new=$(find_areas "src/superio" "Makefile.inc" "")
+sio_list_new=$(find_areas "src/superio" "Makefile.mk" "")
 southbridge_list_new=$(find_areas "src/southbridge" "Kconfig" "")
 
 printf "Calculating new SLOC\n"
@@ -472,7 +464,7 @@ get_log_dedupe "Vendorcode"	"src/vendorcode"
 
 # Then look at areas that are usually outside the mainboards and architectures
 get_log_dedupe "Build system" \
-	"Makefile Makefile.inc toolchain.inc src/Kconfig src/cpu/Makefile.inc"
+	"Makefile Makefile.mk toolchain.mk src/Kconfig src/cpu/Makefile.mk"
 
 get_log_dedupe "Submodules" "3rdparty util/nvidia/cbootimage"
 

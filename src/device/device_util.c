@@ -249,6 +249,19 @@ const char *dev_name(const struct device *dev)
 		return "unknown";
 }
 
+/* Returns the PCI domain for the given PCI device */
+struct device *dev_get_pci_domain(struct device *dev)
+{
+	/* Walk up the tree up to the PCI domain */
+	while (dev && dev->bus && !is_root_device(dev)) {
+		dev = dev->bus->dev;
+		if (dev->path.type == DEVICE_PATH_DOMAIN)
+			return dev;
+	}
+
+	return NULL;
+}
+
 /**
  * Allocate 64 more resources to the free list.
  *

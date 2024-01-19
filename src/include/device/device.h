@@ -188,6 +188,7 @@ void assign_resources(struct bus *bus);
 const char *dev_name(const struct device *dev);
 const char *dev_path(const struct device *dev);
 u32 dev_path_encode(const struct device *dev);
+struct device *dev_get_pci_domain(struct device *dev);
 void dev_set_enabled(struct device *dev, int enable);
 void disable_children(struct bus *bus);
 bool dev_is_active_bridge(struct device *dev);

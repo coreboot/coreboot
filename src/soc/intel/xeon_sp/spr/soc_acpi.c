@@ -376,7 +376,9 @@ void uncore_fill_ssdt(const struct device *device)
 
 			if (stack <= IioStack5) { // TYPE_UBOX_IIO
 				create_dsdt_iou_pci_resource(socket, stack, ri, stack_enabled);
-				create_dsdt_iou_cxl_resource(socket, stack, ri, stack_enabled);
+				if (is_iio_cxl_stack_res(ri))
+					create_dsdt_iou_cxl_resource(socket, stack, ri,
+						stack_enabled);
 				create_dsdt_stack_sta(socket, stack, ri, stack_enabled);
 			} else if (stack >= IioStack8 && stack <= IioStack11) { // TYPE_DINO
 				create_dsdt_dino_resource(socket, stack, ri, stack_enabled);

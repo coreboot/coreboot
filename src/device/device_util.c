@@ -192,7 +192,7 @@ const char *dev_path(const struct device *dev)
 				 dev->path.ioapic.ioapic_id);
 			break;
 		case DEVICE_PATH_DOMAIN:
-			snprintf(buffer, sizeof(buffer), "DOMAIN: %04x",
+			snprintf(buffer, sizeof(buffer), "DOMAIN: %08x",
 				dev->path.domain.domain);
 			break;
 		case DEVICE_PATH_CPU_CLUSTER:

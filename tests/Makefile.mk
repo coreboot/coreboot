@@ -44,7 +44,7 @@ $(foreach attribute,$(attributes),
 $(eval $(1)$(2)-stage := $(if $($(1)$(2)-stage),$($(1)$(2)-stage),ramstage))
 $(if $(findstring $($(1)$(2)-stage), $(stages)),,
 	$(error Wrong $(1)$(2)-stage value $($(1)$(2)-stage). \
-		Check your $(dir $(1)$(2))Makefile.inc))
+		Check your $(dir $(1)$(2))Makefile.mk))
 endef
 
 $(call add-special-class, tests)

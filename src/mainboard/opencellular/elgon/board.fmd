@@ -6,7 +6,7 @@ FLASH@0x0 16M {
 			FMAP@0x0 0x1000
 			# bootblock includes trusted/non-trusted CLIB, CSIB,
 			# and BL1FWs packaged in
-			# src/soc/cavium/common/Makefile.inc.
+			# src/soc/cavium/common/Makefile.mk.
 			BOOTBLOCK@0x10000 0x70000
 			COREBOOT(CBFS)@0x80000 0xf7c000
 		}

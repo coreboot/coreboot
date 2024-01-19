@@ -8,7 +8,7 @@ FLASH@0x0 16M {
 			RO_FRID@0x1000 0x100
 			# bootblock includes trusted/non-trusted CLIB, CSIB,
 			# and BL1FWs packaged in
-			# src/soc/cavium/common/Makefile.inc.
+			# src/soc/cavium/common/Makefile.mk.
 			BOOTBLOCK@0x10000 0x70000
 			COREBOOT(CBFS)@0x80000 0x2fc000
 			GBB@0x37c000 0x80000

@@ -38,6 +38,6 @@ void variant_memory_init_params(FSPM_UPD *mupd, const int spd_index)
 
 int is_dual_channel(const int spd_index)
 {
-	/* Per Makefile.inc, dual channel indices 1,3,5 */
+	/* Per Makefile.mk, dual channel indices 1,3,5 */
 	return (spd_index & 0x1);
 }

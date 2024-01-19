@@ -259,7 +259,7 @@ remove_kconfigs() {
 remove_unused() {
   local dir
   # Most files can be removed simply by looking at the time, but
-  # all Kconfig and Makefile.inc files in the entire tree are accessed
+  # all Kconfig and Makefiles in the entire tree are accessed
   # whether they're used or not.
   remove_kconfigs
 

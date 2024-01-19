@@ -57,7 +57,7 @@ config VGA_BIOS_ID
 	default "8086,22b0"
 	help
 	  The VGA_BIOS_ID for the C0 version of the video bios is hardcoded
-	  in soc/intel/braswell/Makefile.inc as 8086,22b1
+	  in soc/intel/braswell/Makefile.mk as 8086,22b1
 
 endif #RUN_FSP_GOP
 

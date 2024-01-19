@@ -739,7 +739,7 @@ func main() {
 	}
 
 	if len(BootBlockFiles) > 0 || len(ROMStageFiles) > 0 || len(RAMStageFiles) > 0 || len(SMMFiles) > 0 {
-		mf := Create(ctx, "Makefile.inc")
+		mf := Create(ctx, "Makefile.mk")
 		defer mf.Close()
 		writeMF(mf, BootBlockFiles, "bootblock")
 		writeMF(mf, ROMStageFiles, "romstage")

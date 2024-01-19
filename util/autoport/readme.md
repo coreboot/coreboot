@@ -238,7 +238,7 @@ to create a binary file with this SPD data:
 
 Then, move the generated file into your mainboard's directory
 and hook it up to the build system by adding the following
-lines to `Makefile.inc`:
+lines to `Makefile.mk`:
 
 	cbfs-files-y += spd.bin
 	spd.bin-file := spd.bin

@@ -135,15 +135,6 @@ uint8_t get_cxl_node_count(void)
 	return count;
 }
 
-uint32_t get_socket_stack_busno(uint32_t socket, uint32_t stack)
-{
-	const IIO_UDS *hob = get_iio_uds();
-
-	assert(socket < CONFIG_MAX_SOCKET && stack < MAX_LOGIC_IIO_STACK);
-
-	return hob->PlatformData.IIO_resource[socket].StackRes[stack].BusBase;
-}
-
 /* Returns the UBOX(offset) bus number for socket0 */
 uint8_t socket0_get_ubox_busno(uint8_t offset)
 {

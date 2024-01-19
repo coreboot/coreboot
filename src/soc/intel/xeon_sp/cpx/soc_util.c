@@ -47,15 +47,6 @@ uint8_t socket0_get_ubox_busno(const uint8_t stack)
 	return pci_io_read_config32(dev, offset) >> (8 * (stack % 4)) & 0xff;
 }
 
-uint32_t get_socket_stack_busno(uint32_t socket, uint32_t stack)
-{
-	const IIO_UDS *hob = get_iio_uds();
-
-	assert(socket < CONFIG_MAX_SOCKET && stack < MAX_LOGIC_IIO_STACK);
-
-	return hob->PlatformData.IIO_resource[socket].StackRes[stack].BusBase;
-}
-
 /*
  * EX: CPX-SP
  * Ports    Stack   Stack(HOB)  IioConfigIou

@@ -31,8 +31,6 @@
 const struct SystemMemoryMapHob *get_system_memory_map(void);
 const struct SystemMemoryMapElement *get_system_memory_map_elment(uint8_t *num);
 
-uint32_t get_socket_stack_busno(uint32_t socket, uint32_t stack);
-
 bool is_iio_cxl_stack_res(const STACK_RES *res);
 
 void soc_display_iio_universal_data_hob(const IIO_UDS *hob);

@@ -86,7 +86,7 @@ config OPENSBI_PLATFORM
 
 config OPENSBI_TEXT_START
 	hex
-	default 0x80020000
+	default 0x80400000
 
 config PCI_IOBASE
 	hex

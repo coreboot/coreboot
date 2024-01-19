@@ -57,13 +57,22 @@ config RISCV_OPENSBI
 
 if RISCV_OPENSBI
 
+choice
+	prompt "choose how to get OpenSBI"
+	default OPENSBI_SOURCE
+
+config OPENSBI_SOURCE
+	bool "build OpenSBI from source"
+	depends on COMPILER_LLVM_CLANG
+
 config OPENSBI_BLOB
 	bool "Include OpenSBI ELF binary blob"
-	depends on RISCV_OPENSBI
 	help
 	  If enabled it allows to specify a file path to an already compiled OpenSBI binary.
 	  If disabled the OpenSBI binary will be compiled from upstream OpenSBI repository.
 	  This option is discouraged as compatibility with out-of-tree blobs may break anytime.
+
+endchoice
 
 config OPENSBI_BLOB_PATH
 	string "Path to external opensbi.elf"

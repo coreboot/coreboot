@@ -162,17 +162,29 @@ OPENSBI_BUILD  := $(abspath $(obj)/3rdparty/opensbi)
 OPENSBI_TARGET := $(OPENSBI_BUILD)/platform/$(CONFIG_OPENSBI_PLATFORM)/firmware/fw_dynamic.elf
 OPENSBI := $(obj)/opensbi.elf
 
-# TODO: Building with clang has troubles finding the proper linker.
-# Always use GCC for now.
+# OpenSBI must be built as a PIE, which only clang + lld support. OPENSBI_SOURCE
+# depends on COMPILER_LLVM_CLANG, so CC_ramstage is clang here. Pass the tools
+# explicitly instead of an LLVM= directory prefix: OpenSBI reconstructs all of
+# its tools from that prefix and needs clang, ld.lld, llvm-ar and llvm-objcopy
+# in one directory, which can't be derived from $(CC_ramstage) directly (it may
+# be ccache-prefixed or a bare "clang" found via PATH). Take the last word to
+# strip a ccache wrapper, and fall back to bare tool names found via PATH when
+# the compiler itself is not an absolute path.
+OPENSBI_CC := $(lastword $(CC_ramstage))
+OPENSBI_BIN := $(dir $(OPENSBI_CC))
+ifeq ($(OPENSBI_BIN),./)
+OPENSBI_BIN :=
+endif
+
 $(OPENSBI_TARGET): $(obj)/config.h | $(OPENSBI_SOURCE)
 	printf "    MAKE       $(subst $(obj)/,,$(@))\n"
 	mkdir -p $(OPENSBI_BUILD)
 	$(MAKE) \
 		-C "$(OPENSBI_SOURCE)" \
-		CC="$(GCC_ramstage) -fno-builtin -std=gnu11" \
-		LD="$(LD_ramstage)" \
-		OBJCOPY="$(OBJCOPY_ramstage)" \
-		AR="$(AR_ramstage)" \
+		CC="$(OPENSBI_CC)" \
+		LD="$(OPENSBI_BIN)ld.lld" \
+		AR="$(OPENSBI_BIN)llvm-ar" \
+		OBJCOPY="$(OPENSBI_BIN)llvm-objcopy" \
 		PLATFORM=$(CONFIG_OPENSBI_PLATFORM) \
 		O="$(OPENSBI_BUILD)" \
 		FW_JUMP=n \

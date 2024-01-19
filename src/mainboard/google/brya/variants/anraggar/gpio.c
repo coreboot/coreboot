@@ -69,6 +69,24 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC_LOCK(GPP_R6, NONE, LOCK_CONFIG),
 	/* R7 : DMIC_DATA_1A ==> NC */
 	PAD_NC_LOCK(GPP_R7, NONE, LOCK_CONFIG),
+
+	/* Configure the virtual CNVi Bluetooth I2S GPIO pads */
+	/* BT_I2S_BCLK */
+	PAD_CFG_NF(GPP_VGPIO_30, NONE, DEEP, NF3),
+	/* BT_I2S_SYNC */
+	PAD_CFG_NF(GPP_VGPIO_31, NONE, DEEP, NF3),
+	/* BT_I2S_SDO */
+	PAD_CFG_NF(GPP_VGPIO_32, NONE, DEEP, NF3),
+	/* BT_I2S_SDI */
+	PAD_CFG_NF(GPP_VGPIO_33, NONE, DEEP, NF3),
+	/* SSP2_SCLK */
+	PAD_CFG_NF(GPP_VGPIO_34, NONE, DEEP, NF1),
+	/* SSP2_SFRM */
+	PAD_CFG_NF(GPP_VGPIO_35, NONE, DEEP, NF1),
+	/* SSP_TXD */
+	PAD_CFG_NF(GPP_VGPIO_36, NONE, DEEP, NF1),
+	/* SSP_RXD */
+	PAD_CFG_NF(GPP_VGPIO_37, NONE, DEEP, NF1),
 };
 
 /* Early pad configuration in bootblock */

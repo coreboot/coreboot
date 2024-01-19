@@ -81,6 +81,9 @@ chip soc/intel/alderlake
 		.configure_ext_fivr = 0,
 	}"
 
+	# Enable the Cnvi BT Audio Offload
+	register "cnvi_bt_audio_offload" = "1"
+
 	# Intel Common SoC Config
 	#+-------------+------------------------------+
 	#| Field	|  Value			|

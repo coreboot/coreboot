@@ -73,7 +73,7 @@ chip soc/intel/cannonlake
 			register "gfx" = "GMA_DEFAULT_PANEL(0)"
 			chip drivers/gfx/generic
 				register "device_count" = "1"
-				register "device[0].name" = ""LCD""
+				register "device[0].name" = ""LCD0""
 				# Use ChromeOS privacy screen HID
 				register "device[0].hid" = ""GOOG0010""
 				# Internal panel on the first port of the graphics chip

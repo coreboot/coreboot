@@ -92,7 +92,7 @@ chip soc/intel/alderlake
 			chip drivers/gfx/generic
 				register "device_count" = "6"
 				# DDIA for eDP
-				register "device[0].name" = ""LCD""
+				register "device[0].name" = ""LCD0""
 				# Internal panel on the first port of the graphics chip
 				register "device[0].addr" = "0x80010400"
 				# DDIB for HDMI

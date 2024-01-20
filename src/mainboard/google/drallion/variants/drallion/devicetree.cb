@@ -223,7 +223,7 @@ chip soc/intel/cannonlake
 			register "gfx" = "GMA_DEFAULT_PANEL(0)"
 			chip drivers/gfx/generic
 				register "device_count" = "1"
-				register "device[0].name" = ""LCD""
+				register "device[0].name" = ""LCD0""
 				# Address is set following the ACPI spec section A.3.2
 				# for an internal panel on the first port of the graphics chip
 				register "device[0].addr" = "0x80010400"

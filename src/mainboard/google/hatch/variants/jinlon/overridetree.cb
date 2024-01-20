@@ -70,7 +70,6 @@ chip soc/intel/cannonlake
 
 	device domain 0 on
 		device ref igpu		on
-			register "gfx" = "GMA_DEFAULT_PANEL(0)"
 			chip drivers/gfx/generic
 				register "device_count" = "1"
 				register "device[0].name" = ""LCD0""
@@ -81,6 +80,13 @@ chip soc/intel/cannonlake
 				register "device[0].privacy.enabled" = "1"
 				register "device[0].privacy.gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E0)"
 				device generic 0 alias eps on end
+			end
+			chip drivers/gfx/generic
+				register "device_count" = "1"
+				register "device[0].name" = ""LCD0""
+				# Internal panel on the first port of the graphics chip
+				register "device[0].addr" = "0x80010400"
+				device generic 1 alias no_eps on end
 			end
 		end
 		device ref xhci		on

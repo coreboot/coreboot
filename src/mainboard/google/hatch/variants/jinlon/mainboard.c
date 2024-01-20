@@ -21,9 +21,11 @@ static bool eps_sku(uint32_t sku_id)
 static void check_for_eps(uint32_t sku_id)
 {
 	struct device *eps_dev = DEV_PTR(eps);
+	struct device *no_eps_dev = DEV_PTR(no_eps);
 
 	if (eps_sku(sku_id)) {
 		printk(BIOS_INFO, "SKU ID %u has EPS\n", sku_id);
+		no_eps_dev->enabled = 0;
 		return;
 	}
 

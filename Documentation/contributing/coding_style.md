@@ -808,7 +808,7 @@ eDP display panel encounters an I2C error, it should print a "cannot read EDID"
 message and return an error code. The calling display initialization function
 knows that without the EDID there is no way to initialize the display correctly,
 so it will also immediately return with an error code without running its
-remaining code that would initialize the SoC's display controller. Exeuction
+remaining code that would initialize the SoC's display controller. Execution
 returns further up the function stack to the mainboard initialization code
 which continues booting despite the failed display initialization, since
 display functionality is non-essential to the system. (Code is encouraged but

@@ -330,6 +330,7 @@ LabTop Mk III <starlabs/labtop_kbl.md>
 LabTop Mk IV <starlabs/labtop_cml.md>
 StarLite Mk III <starlabs/lite_glk.md>
 StarLite Mk IV <starlabs/lite_glkr.md>
+StarLite Mk V <starlabs/lite_adl.md>
 StarBook Mk V <starlabs/starbook_tgl.md>
 StarBook Mk VI <starlabs/starbook_adl.md>
 Flashing devices <starlabs/common/flashing.md>

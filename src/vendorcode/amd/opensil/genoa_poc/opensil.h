@@ -11,4 +11,6 @@ int add_opensil_memmap(struct device *dev, int idx);
 // Fill in FADT from openSIL
 void opensil_fill_fadt_io_ports(acpi_fadt_t *fadt);
 
+void configure_mpio(void);
+
 #endif

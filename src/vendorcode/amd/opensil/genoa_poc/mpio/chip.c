@@ -7,6 +7,11 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include "chip.h"
+#include "../opensil.h"
+
+struct chip_operations vendorcode_amd_opensil_genoa_poc_mpio_ops = {
+	CHIP_NAME("AMD GENOA MPIO")
+};
 
 static void nbio_config(void)
 {
@@ -175,7 +180,7 @@ static void per_device_config(MPIOCLASS_INPUT_BLK *mpio_data, struct device *dev
 	mpio_port++;
 }
 
-static void configure_mpio(void *const config)
+void configure_mpio(void)
 {
 	MPIOCLASS_INPUT_BLK *mpio_data = SilFindStructure(SilId_MpioClass, 0);
 	mpio_global_config(mpio_data);
@@ -183,11 +188,6 @@ static void configure_mpio(void *const config)
 
 	/* Find all devices with this chip */
 	for (struct device *dev = &dev_root; dev; dev = dev->next)
-		if (dev->chip_ops->init == configure_mpio)
+		if (dev->chip_ops == &vendorcode_amd_opensil_genoa_poc_mpio_ops)
 			per_device_config(mpio_data, dev->bus->dev, dev->chip_info);
 }
-
-struct chip_operations vendorcode_amd_opensil_genoa_poc_mpio_ops = {
-	CHIP_NAME("AMD GENOA MPIO")
-	.init = configure_mpio,
-};

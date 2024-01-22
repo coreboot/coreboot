@@ -126,6 +126,7 @@ static void setup_opensil(void *unused)
 	setup_rc_manager_default();
 	configure_usb();
 	configure_sata();
+	configure_mpio();
 }
 
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_ENTRY, setup_opensil, NULL);

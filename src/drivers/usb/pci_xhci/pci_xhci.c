@@ -73,7 +73,7 @@ static bool xhci_port_exists(const struct device *dev, const struct usb_path *pa
 static const struct device *get_xhci_dev(const struct device *dev)
 {
 	while (dev && dev->ops != &xhci_pci_ops) {
-		if (dev->path.type == DEVICE_PATH_ROOT)
+		if (is_root_device(dev))
 			return NULL;
 
 		dev = dev->bus->dev;

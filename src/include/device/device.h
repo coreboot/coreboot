@@ -458,6 +458,15 @@ static inline DEVTREE_CONST void *config_of(const struct device *dev)
  */
 #define config_of_soc()		__pci_0_00_0_config
 
+static inline bool is_root_device(const struct device *dev)
+{
+	if (!dev || !dev->bus)
+		return false;
+
+	return (dev->path.type == DEVICE_PATH_ROOT) ||
+	       (dev->bus->dev == dev);
+}
+
 void enable_static_device(struct device *dev);
 void enable_static_devices(struct device *bus);
 void scan_smbus(struct device *bus);

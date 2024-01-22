@@ -87,7 +87,7 @@ const char *acpi_device_name(const struct device *dev)
 		pdev = pdev->bus->dev;
 		if (!pdev)
 			break;
-		if (pdev->path.type == DEVICE_PATH_ROOT)
+		if (is_root_device(pdev))
 			break;
 		if (pdev->ops && pdev->ops->acpi_name)
 			name = pdev->ops->acpi_name(dev);
@@ -147,16 +147,15 @@ static ssize_t acpi_device_path_fill(const struct device *dev, char *buf,
 		return cur;
 
 	/* Walk up the tree to the root device */
-	if (dev->path.type != DEVICE_PATH_ROOT && dev->bus && dev->bus->dev)
+	if (!is_root_device(dev) && dev->bus && dev->bus->dev)
 		next = acpi_device_path_fill(dev->bus->dev, buf, buf_len, cur);
 	if (next < 0)
 		return next;
 
 	/* Fill in the path from the root device */
 	next += snprintf(buf + next, buf_len - next, "%s%s",
-			 (dev->path.type == DEVICE_PATH_ROOT
-				|| (strlen(name) == 0)) ?
-					"" : ".", name);
+			 (is_root_device(dev) || (strlen(name) == 0)) ?
+			 "" : ".", name);
 
 	return next;
 }

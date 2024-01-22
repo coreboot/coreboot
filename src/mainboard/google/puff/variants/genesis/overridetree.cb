@@ -8,9 +8,9 @@ chip soc/intel/cannonlake
 		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C3]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C5]  = PchSerialIoDisabled,
 		[PchSerialIoIndexSPI0] = PchSerialIoPci,
-		[PchSerialIoIndexSPI1] = PchSerialIoPci,
+		[PchSerialIoIndexSPI1] = PchSerialIoDisabled,
 		[PchSerialIoIndexSPI2] = PchSerialIoDisabled,
 		[PchSerialIoIndexUART0] = PchSerialIoSkipInit,
 		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
@@ -150,7 +150,6 @@ chip soc/intel/cannonlake
 	#|                   | required to set up a BAR  |
 	#|                   | for TPM communication     |
 	#|                   | before memory is up       |
-	#| I2C0              | RFU                       |
 	#| I2C2              | PS175                     |
 	#| I2C3              | MST                       |
 	#| I2C4              | Audio                     |
@@ -159,11 +158,6 @@ chip soc/intel/cannonlake
 		.gspi[0] = {
 			.speed_mhz = 1,
 			.early_init = 1,
-		},
-		.i2c[0] = {
-			.speed = I2C_SPEED_FAST,
-			.rise_time_ns = 0,
-			.fall_time_ns = 0,
 		},
 		.i2c[2] = {
 			.speed = I2C_SPEED_FAST,

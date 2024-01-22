@@ -186,8 +186,9 @@ void configure_mpio(void)
 	mpio_global_config(mpio_data);
 	nbio_config();
 
-	/* Find all devices with this chip */
+	/* Find all devices with this chip that are directly below the chip */
 	for (struct device *dev = &dev_root; dev; dev = dev->next)
-		if (dev->chip_ops == &vendorcode_amd_opensil_genoa_poc_mpio_ops)
+		if (dev->chip_ops == &vendorcode_amd_opensil_genoa_poc_mpio_ops &&
+		    dev->chip_info != dev->bus->dev->chip_info)
 			per_device_config(mpio_data, dev->bus->dev, dev->chip_info);
 }

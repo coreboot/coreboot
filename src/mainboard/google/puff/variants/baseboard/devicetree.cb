@@ -198,14 +198,9 @@ chip soc/intel/cannonlake
 	device cpu_cluster 0 on end
 
 	device domain 0 on
-		device ref system_agent on end
-		device ref igpu on  end
-		device ref dptf off end
-		device ref ipu off end
-		device ref thermal on end
-		device ref ufs off end
-		device ref gspi2 off end
-		device ref xhci on
+		device ref igpu		on end
+		device ref thermal	on end
+		device ref xhci		on
 			chip drivers/usb/acpi
 				register "desc" = ""Root Hub""
 				register "type" = "UPC_TYPE_HUB"
@@ -282,46 +277,25 @@ chip soc/intel/cannonlake
 				end
 			end
 		end
-		device ref xdci off end
-		device ref cnvi_wifi on
+		device ref cnvi_wifi	on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_PME_B0"
 				device generic 0 on end
 			end
 		end
-		device ref sdxc on  end
-		device ref i2c0 on  end
-		device ref i2c1 on  end
-		device ref i2c2 on  end
-		device ref i2c3 on  end
-		device ref heci1 on  end
-		device ref heci2 off end
-		device ref csme_ider off end
-		device ref csme_ktr off end
-		device ref heci3 off end
-		device ref heci4 off end
-		device ref sata on  end
-		device ref i2c4 on  end
-		device ref i2c5 off end
-		device ref uart2 off end
-		device ref emmc off end
-		device ref pcie_rp1 off end
-		device ref pcie_rp2 off end
-		device ref pcie_rp3 off end
-		device ref pcie_rp4 off end
-		device ref pcie_rp5 off end
-		device ref pcie_rp6 off end
-		device ref pcie_rp7 off end
-		device ref pcie_rp8 off end
-		device ref pcie_rp9 on
+		device ref sdxc		on end
+		device ref i2c0		on end
+		device ref i2c1		on end
+		device ref i2c2		on end
+		device ref i2c3		on end
+		device ref heci1	on end
+		device ref sata		on end
+		device ref i2c4		on end
+		device ref pcie_rp9	on
 			# X4 NVME
 			register "PcieRpSlotImplemented[8]" = "1"
 		end
-		device ref pcie_rp10 off end
-		device ref pcie_rp11 off end
-		device ref pcie_rp12 off end
-		device ref pcie_rp13 off end
-		device ref pcie_rp14 on
+		device ref pcie_rp14	on
 			# x4
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_DW1_01"
@@ -329,9 +303,8 @@ chip soc/intel/cannonlake
 			end
 			register "PcieRpSlotImplemented[13]" = "1"
 		end
-		device ref uart0 on  end
-		device ref uart1 off end
-		device ref gspi0 on
+		device ref uart0	on end
+		device ref gspi0	on
 			chip drivers/spi/acpi
 				register "hid" = "ACPI_DT_NAMESPACE_HID"
 				register "compat_string" = ""google,cr50""
@@ -339,22 +312,20 @@ chip soc/intel/cannonlake
 				device spi 0 on end
 			end
 		end
-		device ref gspi1 on end
+		device ref gspi1	on end
 		device ref lpc_espi on
 			chip ec/google/chromeec
 				device pnp 0c09.0 on end
 			end
 		end
-		device ref p2sb on  end
-		device ref pmc hidden end
-		device ref hda on
+		device ref p2sb		on end
+		device ref hda		on
 			chip drivers/sof
 				register "jack_tplg" = "rt5682"
 				device generic 0 on end
 			end
 		end
-		device ref smbus on  end
-		device ref fast_spi on  end
-		device ref gbe off end
+		device ref smbus	on end
+		device ref fast_spi	on end
 	end
 end

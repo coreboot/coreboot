@@ -185,7 +185,7 @@ chip soc/intel/cannonlake
 	register "sata_port[1].TxGen3DeEmph" = "0x20"
 
 	device domain 0 on
-		device ref dptf on
+		device ref dptf		on
 			chip drivers/intel/dptf
 				## Active Policy
 				register "policies.active[0]" = "{.target=DPTF_CPU,
@@ -239,7 +239,7 @@ chip soc/intel/cannonlake
 				device generic 0 on end
 			end
 		end
-		device ref xhci on
+		device ref xhci		on
 			chip drivers/usb/acpi
 				device usb 0.0 on
 					chip drivers/usb/acpi
@@ -261,8 +261,8 @@ chip soc/intel/cannonlake
 						device usb 2.2 on end
 					end
 					chip drivers/usb/acpi
-                                                device usb 2.3 off end
-                                        end
+						device usb 2.3 off end
+					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Type-C Port 1""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
@@ -270,8 +270,8 @@ chip soc/intel/cannonlake
 						device usb 2.4 on end
 					end
 					chip drivers/usb/acpi
-                                                register "desc" = ""Camera""
-                                                register "type" = "UPC_TYPE_INTERNAL"
+						register "desc" = ""Camera""
+						register "type" = "UPC_TYPE_INTERNAL"
 						device usb 2.5 on end
 					end
 					chip drivers/usb/acpi
@@ -310,25 +310,24 @@ chip soc/intel/cannonlake
 				end
 			end
 		end
-		device ref sdxc off end
-		device ref i2c0 on
+		device ref sdxc		off end
+		device ref i2c0		on
 			# ALC1015
 			chip drivers/i2c/generic
-                                register "hid" = ""10EC1015""
-                                register "desc" = ""Realtek SPK AMP L""
-                                register "uid" = "0"
-                                device i2c 28 on end
-                        end
-                        chip drivers/i2c/generic
-                                register "hid" = ""10EC1015""
-                                register "desc" = ""Realtek SPK AMP R""
-                                register "uid" = "1"
-                                device i2c 29 on end
-                        end
+				register "hid" = ""10EC1015""
+				register "desc" = ""Realtek SPK AMP L""
+				register "uid" = "0"
+				device i2c 28 on end
+			end
+			chip drivers/i2c/generic
+				register "hid" = ""10EC1015""
+				register "desc" = ""Realtek SPK AMP R""
+				register "uid" = "1"
+				device i2c 29 on end
+			end
 		end
-		device ref i2c1 off end
-		device ref i2c2 on  end # LVDS
-		device ref i2c3 on
+		device ref i2c2		on end # LVDS
+		device ref i2c3		on
 			# Touchscreen
 			chip drivers/i2c/hid
 				register "generic.hid" = ""WDHT2002""
@@ -343,8 +342,7 @@ chip soc/intel/cannonlake
 				device i2c 2c on end
 			end
 		end
-		device ref heci1 on  end
-		device ref i2c4 on
+		device ref i2c4		on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""
 				register "name" = ""RT58""
@@ -385,13 +383,12 @@ chip soc/intel/cannonlake
 				device generic 0 on end
 			end
 		end
-		device ref emmc on  end
-		device ref pcie_rp11 on
+		device ref emmc		on end
+		device ref pcie_rp11	on
 			# X2 NVMe
 			register "PcieRpSlotImplemented[10]" = "1"
 		end
-		device ref gspi1 off end
-		device ref hda on
+		device ref hda		on
 			chip drivers/sof
 				register "spkr_tplg" = "rt1015"
 				register "jack_tplg" = "rt5682"

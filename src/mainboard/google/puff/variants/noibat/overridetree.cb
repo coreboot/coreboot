@@ -192,7 +192,7 @@ chip soc/intel/cannonlake
 	register "sata_port[1].TxGen3DeEmph" = "0x20"
 
 	device domain 0 on
-		device ref dptf on
+		device ref dptf		on
 			chip drivers/intel/dptf
 				## Active Policy
 				register "policies.active[0]" = "{.target=DPTF_CPU,
@@ -255,7 +255,7 @@ chip soc/intel/cannonlake
 				device generic 0 on end
 			end
 		end
-		device ref xhci on
+		device ref xhci		on
 			chip drivers/usb/acpi
 				device usb 0.0 on
 					chip drivers/usb/acpi
@@ -324,11 +324,7 @@ chip soc/intel/cannonlake
 				end
 			end
 		end
-		device ref i2c0 off
-			# RFU - Reserved for Future Use.
-		end
-		device ref i2c1 off end
-		device ref i2c2 on
+		device ref i2c2		on
 			# PCON PS175
 			chip drivers/i2c/generic
 				register "hid" = ""1AF80175""
@@ -337,7 +333,7 @@ chip soc/intel/cannonlake
 				device i2c 4a on end
 			end
 		end
-		device ref i2c3 on
+		device ref i2c3		on
 			# Realtek RTD2142
 			chip drivers/i2c/generic
 				register "hid" = ""10EC2142""
@@ -346,8 +342,7 @@ chip soc/intel/cannonlake
 				device i2c 4a on end
 			end
 		end
-		device ref heci1 on end
-		device ref i2c4 on
+		device ref i2c4		on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""
 				register "name" = ""RT58""
@@ -361,8 +356,8 @@ chip soc/intel/cannonlake
 				device i2c 1a on end
 			end
 		end
-		device ref emmc on  end
-		device ref pcie_rp7 on
+		device ref emmc		on end
+		device ref pcie_rp7	on
 			# RTL8111H Ethernet NIC
 			chip drivers/net
 				register "customized_leds" = "0x05af"
@@ -373,11 +368,10 @@ chip soc/intel/cannonlake
 			end
 			register "PcieRpSlotImplemented[6]" = "1"
 		end
-		device ref pcie_rp11 on
+		device ref pcie_rp11	on
 			# X2 NVMe
 			register "PcieRpSlotImplemented[10]" = "1"
 		end
-		device ref gspi1 off end
 	end
 
 	# VR Settings Configuration for 4 Domains

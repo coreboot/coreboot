@@ -243,7 +243,7 @@ chip soc/intel/cannonlake
 	register "sata_port[1].TxGen3DeEmph" = "0x20"
 
 	device domain 0 on
-		device ref dptf on
+		device ref dptf		on
 			chip drivers/intel/dptf
 				## Active Policy
 				register "policies.active[0]" = "{.target=DPTF_CPU,
@@ -305,7 +305,7 @@ chip soc/intel/cannonlake
 				device generic 0 on end
 			end
 		end
-		device ref xhci on
+		device ref xhci		on
 			chip drivers/usb/acpi
 				device usb 0.0 on
 					chip drivers/usb/acpi
@@ -384,11 +384,7 @@ chip soc/intel/cannonlake
 				end
 			end
 		end
-		device ref i2c0 off
-			# RFU - Reserved for Future Use.
-		end
-		device ref i2c1 off end
-		device ref i2c2 on
+		device ref i2c2		on
 			# PCON PS175
 			chip drivers/i2c/generic
 				register "hid" = ""1AF80175""
@@ -397,7 +393,7 @@ chip soc/intel/cannonlake
 				device i2c 4a on end
 			end
 		end
-		device ref i2c3 on
+		device ref i2c3		on
 			# Realtek RTD2142
 			chip drivers/i2c/generic
 				register "hid" = ""10EC2142""
@@ -406,8 +402,7 @@ chip soc/intel/cannonlake
 				device i2c 4a on end
 			end
 		end
-		device ref heci1 on  end
-		device ref i2c4 on
+		device ref i2c4		on
 			chip drivers/i2c/generic
 				register "hid" = ""10EC5682""
 				register "name" = ""RT58""
@@ -421,8 +416,7 @@ chip soc/intel/cannonlake
 				device i2c 1a on end
 			end
 		end
-		device ref emmc off end
-		device ref pcie_rp7 on
+		device ref pcie_rp7	on
 			# LAN
 			chip drivers/net # RTL8111H Ethernet NIC
 				register "customized_leds" = "0x05af"
@@ -432,29 +426,29 @@ chip soc/intel/cannonlake
 				device pci 00.0 on end
 			end
 		end
-		device ref pcie_rp8 on
+		device ref pcie_rp8	on
 			# WLAN
 			register "PcieRpSlotImplemented[7]" = "1" # M.2 Slot
 		end
-		device ref pcie_rp9 on
+		device ref pcie_rp9	on
 			# TPU
 			register "PcieRpSlotImplemented[8]" = "1" # M.2 Slot
 		end
-		device ref pcie_rp10 off end
-		device ref pcie_rp11 on end
+		device ref pcie_rp11	on
 			# TPU1
 			register "PcieRpSlotImplemented[10]" = "1" # M.2 Slot
-		device ref pcie_rp12 on end
+		end
+		device ref pcie_rp12	on
 			# TPU0
 			register "PcieRpSlotImplemented[11]" = "1" # M.2 Slot
-		device ref pcie_rp13 on
+		end
+		device ref pcie_rp13	on
 			# X4 i350 NIC
 			register "PcieRpSlotImplemented[12]" = "0" # Built-in
 		end
-		device ref pcie_rp14 on end # non-root
-		device ref pcie_rp15 on end # non-root
-		device ref pcie_rp16 on end # non-root
-		device ref gspi1 off end
+		device ref pcie_rp14	on end # non-root
+		device ref pcie_rp15	on end # non-root
+		device ref pcie_rp16	on end # non-root
 	end
 
 	# VR Settings Configuration for 4 Domains

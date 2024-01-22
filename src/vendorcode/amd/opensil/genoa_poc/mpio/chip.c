@@ -175,7 +175,7 @@ static void per_device_config(MPIOCLASS_INPUT_BLK *mpio_data, struct device *dev
 	mpio_port++;
 }
 
-static void mpio_config(void *const config)
+static void configure_mpio(void *const config)
 {
 	MPIOCLASS_INPUT_BLK *mpio_data = SilFindStructure(SilId_MpioClass, 0);
 	mpio_global_config(mpio_data);
@@ -183,11 +183,11 @@ static void mpio_config(void *const config)
 
 	/* Find all devices with this chip */
 	for (struct device *dev = &dev_root; dev; dev = dev->next)
-		if (dev->chip_ops->init == mpio_config)
+		if (dev->chip_ops->init == configure_mpio)
 			per_device_config(mpio_data, dev->bus->dev, dev->chip_info);
 }
 
 struct chip_operations vendorcode_amd_opensil_genoa_poc_mpio_ops = {
 	CHIP_NAME("AMD GENOA MPIO")
-	.init = mpio_config,
+	.init = configure_mpio,
 };

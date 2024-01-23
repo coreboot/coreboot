@@ -7,31 +7,31 @@
 
 /* PL011 r1p5 registers */
 struct pl011_uart {
-	u32 dr;
-	u32 rsr_ecr;
-	u8 rsvd1[0x10];
-	u32 fr;
-	u8 rsvd2[0x4];
-	u32 ilpr;
-	u32 ibrd;
-	u32 fbrd;
-	u32 lcr_h;
-	u32 cr;
-	u32 ifls;
-	u32 imsc;
-	u32 ris;
-	u32 mis;
-	u32 icr;
-	u32 dmacr;
-	u8 rsvd3[0xf94];
-	u32 periphid0;
-	u32 periphid1;
-	u32 periphid2;
-	u32 periphid3;
-	u32 cellid0;
-	u32 cellid1;
-	u32 cellid2;
-	u32 cellid3;
+	u32 dr;          // offset: 0x0    Data Register
+	u32 rsr_ecr;     // offset: 0x4    Receive Status Register / Error Clear Register
+	u8 rsvd1[0x10];  // offset: 0x8    Reserved
+	u32 fr;          // offset: 0x18   Flag Register
+	u8 rsvd2[0x4];   // offset: 0x1C   Reserved
+	u32 ilpr;        // offset: 0x20   (IrDA) Low-Power Counter Register
+	u32 ibrd;        // offset: 0x24   Integer Baud Rate Register
+	u32 fbrd;        // offset: 0x28   Fractional Baud Rate Register
+	u32 lcr_h;       // offset: 0x2C   Line Control Register
+	u32 cr;          // offset: 0x30   Control Register
+	u32 ifls;        // offset: 0x34   Interrupt FIFO Level Select Register
+	u32 imsc;        // offset: 0x38   Interrupt Mask Set/Clear Register
+	u32 ris;         // offset: 0x3C   Raw Interrupt Status Register
+	u32 mis;         // offset: 0x40   Masked Interrupt status Register
+	u32 icr;         // offset: 0x44   Interrupt Clear Register
+	u32 dmacr;       // offset: 0x48   DMA Control Register
+	u8 rsvd3[0xf94]; // offset: 0x4C   Reserved
+	u32 periphid0;   // offset: 0xFE0  UART PeriphID0 Register
+	u32 periphid1;   // offset: 0xFE4  UART PeriphID1 Register
+	u32 periphid2;   // offset: 0xFE8  UART PeriphID2 Register
+	u32 periphid3;   // offset: 0xFEC  UART PeriphID3 Register
+	u32 cellid0;     // offset: 0xFF0  UART CellID0 Register
+	u32 cellid1;     // offset: 0xFF4  UART CellID1 Register
+	u32 cellid2;     // offset: 0xFF8  UART CellID2 Register
+	u32 cellid3;     // offset: 0xFFC  UART CellID3 Register
 };
 check_member(pl011_uart, cellid3, 0xffc);
 

@@ -23,12 +23,21 @@ chip northbridge/intel/sandybridge
 
 			device ref me_kt on  end
 			device ref pcie_rp1 on  end
-			device ref pcie_rp2 on  end	# ExpressCard
+			device ref pcie_rp2 on
+				smbios_slot_desc "SlotTypePcmcia" "SlotLengthShort"
+					"ExpressCard Slot" "SlotDataBusWidth1X"
+			end
 			device ref pcie_rp3 on  end	# SD/MMC
-			device ref pcie_rp4 on  end	# WLAN
+			device ref pcie_rp4 on     	# WLAN
+				smbios_slot_desc "SlotTypePciExpressMini52pinWithoutBSKO"
+					"SlotLengthShort" "Mini PCIe" "SlotDataBusWidth1X"
+			end
 			device ref pcie_rp5 off end
 			device ref pcie_rp6 off end
-			device ref pcie_rp7 on  end	# WWAN
+			device ref pcie_rp7 on     	# WWAN
+				smbios_slot_desc "SlotTypePciExpressMini52pinWithoutBSKO"
+					"SlotLengthLong" "Mini PCIe" "SlotDataBusWidth1X"
+			end
 			device ref pcie_rp8 on  end	# NEC USB 3.0 Host Controller
 			device ref lpc on
 				chip ec/hp/kbc1126

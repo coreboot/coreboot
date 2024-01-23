@@ -32,7 +32,10 @@ chip northbridge/intel/sandybridge
 			end
 			device ref pcie_rp5 off end
 			device ref pcie_rp6 off end
-			device ref pcie_rp7 on  end # WWAN
+			device ref pcie_rp7 on      # WWAN
+				smbios_slot_desc "SlotTypePciExpressMini52pinWithoutBSKO"
+					"SlotLengthLong" "Mini PCIe" "SlotDataBusWidth1X"
+			end
 			device ref pcie_rp8 off end
 			device ref lpc on
 				chip ec/hp/kbc1126

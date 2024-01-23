@@ -160,6 +160,25 @@ void i2c_generic_fill_ssdt(const struct device *dev,
 		acpi_device_add_power_res(&power_res_params);
 	}
 
+	/* Rotation Matrix */
+	if (config->has_rotation_matrix) {
+		acpigen_write_method("ROTM", 0);
+		acpigen_write_package(3);
+
+		for (int i = 0; i < 3; i++) {
+			char matrix_row[12];
+			snprintf(matrix_row, sizeof(matrix_row), "%d %d %d",
+				 config->rotation_matrix[i * 3 + 0],
+				 config->rotation_matrix[i * 3 + 1],
+				 config->rotation_matrix[i * 3 + 2]);
+
+			acpigen_write_string(matrix_row);
+		}
+
+		acpigen_pop_len();
+		acpigen_pop_len();
+	}
+
 	/* Callback if any. */
 	if (callback)
 		callback(dev);

@@ -69,6 +69,19 @@ struct drivers_i2c_generic_config {
 	/* Delay to be inserted after enabling stop. */
 	unsigned int stop_off_delay_ms;
 
+	/*
+	 * The Rotation Matrix' allows specifying a 3x3 matrix representing
+	 * the orientation of devices, such as accelerometers. Each value in
+	 * the matrix can be one of -1, 0, or 1, indicating the transformation
+	 * applied to the device's axes.
+	 *
+	 * It is expected by linux and required for the OS to correctly interpret
+	 * the data from the device.
+	 */
+	bool has_rotation_matrix;
+	int rotation_matrix[9];
+
+
 	/* Generic properties for exporting device-specific data to the OS */
 	struct acpi_dp property_list[MAX_GENERIC_PROPERTY_LIST];
 	int property_count;

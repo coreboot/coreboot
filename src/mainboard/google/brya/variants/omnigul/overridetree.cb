@@ -4,6 +4,10 @@ fw_config
 		option STORAGE_UFS			1
 		option STORAGE_NVME			2
 	end
+	field WIFI_SAR_TABLE 5
+		option OMNIGUL_WIFI_SAR_0                       0
+		option OMNIKNIGHT_WIFI_SAR_1                    1
+	end
 	field FINGERPRINT 9
 		option DISABLE_FP			0
 		option ENABLE_FP			1

@@ -90,6 +90,9 @@ chip soc/intel/meteorlake
 		[PchSerialIoIndexI2C5] = PchSerialIoPci,
 	}"
 
+	# Override TCC of 90C = Tj max (110) - TCC_Offset (20)
+	register "tcc_offset" = "20"
+
 	# Acoustic Noise settings and slew rate configuration:
 	#  slew rate for IA Domain: Fast/8
 	#  slew rate for GT Domain: Fast/8

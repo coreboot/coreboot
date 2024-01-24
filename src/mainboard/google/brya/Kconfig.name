@@ -9,6 +9,9 @@ config BOARD_GOOGLE_ANAHERA
 config BOARD_GOOGLE_ANAHERA4ES
 	bool "->  Anahera4ES"
 
+config BOARD_GOOGLE_ANRAGGAR
+	bool "->  Anraggar"
+
 config BOARD_GOOGLE_AURASH
 	bool "->  Aurash"
 
@@ -32,6 +35,9 @@ config BOARD_GOOGLE_CONSTITUTION
 
 config BOARD_GOOGLE_CROTA
 	bool "->  Crota"
+
+config BOARD_GOOGLE_DOCHI
+	bool "->  Dochi"
 
 config BOARD_GOOGLE_FELWINTER
 	bool "->  Felwinter"
@@ -83,6 +89,9 @@ config BOARD_GOOGLE_NIVVIKS
 
 config BOARD_GOOGLE_NEREID
 	bool "->  Nereid"
+
+config BOARD_GOOGLE_NOKRIS
+	bool "->  Nokris"
 
 config BOARD_GOOGLE_OMNIGUL
 	bool "->  Omnigul"
@@ -143,15 +152,6 @@ config BOARD_GOOGLE_YAVILLA
 
 config BOARD_GOOGLE_ZYDRON
 	bool "->  Zydron"
-
-config BOARD_GOOGLE_NOKRIS
-	bool "->  Nokris"
-
-config BOARD_GOOGLE_DOCHI
-	bool "->  Dochi"
-
-config BOARD_GOOGLE_ANRAGGAR
-	bool "->  Anraggar"
 
 config BOARD_GOOGLE_XOL
 	bool "->  Xol"

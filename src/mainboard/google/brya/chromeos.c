@@ -24,6 +24,10 @@ int get_write_protect_state(void)
 
 int get_ec_is_trusted(void)
 {
+	/* With Ti50, VB2_CONTEXT_EC_TRUSTED should be set according to the boot mode. */
+	if (CONFIG(TPM_GOOGLE_TI50))
+		return 0;
+
 	/* EC is trusted if not in RW. */
 	return !gpio_get(GPIO_EC_IN_RW);
 }

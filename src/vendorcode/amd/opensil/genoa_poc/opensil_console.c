@@ -39,6 +39,6 @@ void HostDebugService(size_t MsgLevel, const char *SilPrefix, const char *Messag
 	/* print formatted message */
 	va_list args;
 	va_start(args, Line);
-	printk(loglevel, Message, args);
+	vprintk(loglevel, Message, args);
 	va_end(args);
 }

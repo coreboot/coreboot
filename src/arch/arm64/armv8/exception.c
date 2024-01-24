@@ -101,9 +101,20 @@ enum cb_err exception_handler_unregister(uint64_t vid, struct exception_handler 
 
 static void print_exception_info(struct exc_state *state, uint64_t idx)
 {
-	/* Poor man's sign of life in case printk() is shot. */
+	/*
+	 * Sign of life in case printk() is shot. Prints !EXCEPT! to UART
+	 * Not using a loop but instead calling __uart_tx_byte separately is intentionally here
+	 * because in rare cases it will not print if it needs to access memory addresses
+	 */
 	__uart_tx_byte('\r');
 	__uart_tx_byte('\n');
+	__uart_tx_byte('!');
+	__uart_tx_byte('E');
+	__uart_tx_byte('X');
+	__uart_tx_byte('C');
+	__uart_tx_byte('E');
+	__uart_tx_byte('P');
+	__uart_tx_byte('T');
 	__uart_tx_byte('!');
 
 	printk(BIOS_DEBUG, "\nexception %s\n",

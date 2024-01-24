@@ -7,7 +7,7 @@
 #include <device/pci_ids.h>
 #include <soc/platform_descriptors.h>
 
-/* Update gpp glk req config based on DXIO descriptors and enabled devices. */
+/* Update gpp clk req config based on DXIO descriptors and enabled devices. */
 void pcie_gpp_dxio_update_clk_req_config(enum gpp_clk_req *gpp_clk_config,
 					 size_t gpp_clk_config_num)
 {

@@ -104,6 +104,10 @@ config ECAM_MMCONF_BUS_NUMBER
 	int
 	default 64
 
+# This number must be equal or lower than what's reported in ACPI PCI _CRS
+config DOMAIN_RESOURCE_32BIT_LIMIT
+	default ECAM_MMCONF_BASE_ADDRESS
+
 config DCACHE_RAM_BASE
 	hex
 	default 0xfefe0000

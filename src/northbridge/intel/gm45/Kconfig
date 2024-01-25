@@ -31,6 +31,10 @@ config ECAM_MMCONF_BUS_NUMBER
 	int
 	default 64
 
+# This number must be equal or lower than what's reported in ACPI PCI _CRS
+config DOMAIN_RESOURCE_32BIT_LIMIT
+	default 0xfec00000
+
 config SMM_RESERVED_SIZE
 	hex
 	default 0x100000

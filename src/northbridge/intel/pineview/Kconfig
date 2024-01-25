@@ -38,4 +38,8 @@ config FIXED_DMIBAR_MMIO_BASE
 config FIXED_EPBAR_MMIO_BASE
 	default 0xfed19000
 
+# This number must be equal or lower than what's reported in ACPI PCI _CRS
+config DOMAIN_RESOURCE_32BIT_LIMIT
+	default 0xfec00000
+
 endif

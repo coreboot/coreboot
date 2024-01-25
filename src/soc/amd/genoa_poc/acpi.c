@@ -42,12 +42,7 @@ unsigned long soc_acpi_write_tables(const struct device *device, unsigned long c
 				    struct acpi_rsdp *rsdp)
 {
 	/* IVRS */
-	acpi_ivrs_t *ivrs;
-	current = acpi_align_current(current);
-	ivrs = (acpi_ivrs_t *)current;
-	acpi_create_ivrs(ivrs, acpi_fill_ivrs);
-	current += ivrs->header.length;
-	acpi_add_table(rsdp, ivrs);
+	current = acpi_add_ivrs_table(current, rsdp);
 
 	return current;
 }

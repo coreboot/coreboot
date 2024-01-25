@@ -297,7 +297,7 @@ static unsigned long acpi_fill_ivrs11(unsigned long current, acpi_ivrs_ivhd_t *i
 	return acpi_fill_ivrs40(current, ivhd, nb_dev, iommu_dev);
 }
 
-unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
+static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 {
 	unsigned long current_backup;
 	uint64_t mmio_x30_value;
@@ -430,6 +430,19 @@ unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 		current += sizeof(struct acpi_ivrs_ivhd);
 	}
 	current -= sizeof(struct acpi_ivrs_ivhd);
+
+	return current;
+}
+
+unsigned long acpi_add_ivrs_table(unsigned long current, acpi_rsdp_t *rsdp)
+{
+	acpi_ivrs_t *ivrs;
+
+	current = acpi_align_current(current);
+	ivrs = (acpi_ivrs_t *)current;
+	acpi_create_ivrs(ivrs, acpi_fill_ivrs);
+	current += ivrs->header.length;
+	acpi_add_table(rsdp, ivrs);
 
 	return current;
 }

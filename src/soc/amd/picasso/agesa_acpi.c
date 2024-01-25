@@ -542,7 +542,6 @@ static unsigned long acpi_fill_crat(struct acpi_crat_header *crat, unsigned long
 uintptr_t agesa_write_acpi_tables(const struct device *device, uintptr_t current,
 				  acpi_rsdp_t *rsdp)
 {
-	acpi_ivrs_t *ivrs;
 	struct acpi_crat_header *crat;
 
 	/* CRAT */
@@ -557,11 +556,7 @@ uintptr_t agesa_write_acpi_tables(const struct device *device, uintptr_t current
 	current = add_agesa_fsp_acpi_table(AMD_FSP_ACPI_ALIB_HOB_GUID, "ALIB", rsdp, current);
 
 	/* IVRS */
-	current = acpi_align_current(current);
-	ivrs = (acpi_ivrs_t *)current;
-	acpi_create_ivrs(ivrs, acpi_fill_ivrs);
-	current += ivrs->header.length;
-	acpi_add_table(rsdp, ivrs);
+	current = acpi_add_ivrs_table(current, rsdp);
 
 	/* Add SRAT, MSCT, SLIT if needed in the future */
 

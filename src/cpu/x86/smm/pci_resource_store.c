@@ -34,6 +34,8 @@ bool smm_pci_resource_store_fill_resources(struct smm_pci_resource_info *slots, 
 		slots[i_slot].pci_addr = pci_addr;
 		slots[i_slot].class_device = PCI_CLASS_GET_DEVICE(devices[i_dev]->class);
 		slots[i_slot].class_prog = PCI_CLASS_GET_PROG(devices[i_dev]->class);
+		slots[i_slot].vendor_id = devices[i_dev]->vendor;
+		slots[i_slot].device_id = devices[i_dev]->device;
 
 		/* Use the resource list to get our BARs. */
 		if (!devices[i_dev]->resource_list)

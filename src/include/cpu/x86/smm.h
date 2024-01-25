@@ -73,6 +73,8 @@ extern unsigned char _binary_smm_end[];
 
 struct smm_pci_resource_info {
 	pci_devfn_t pci_addr;
+	uint16_t vendor_id;
+	uint16_t device_id;
 	uint16_t class_device;
 	uint8_t class_prog;
 	struct resource resources[SMM_PCI_RESOURCE_STORE_NUM_RESOURCES];

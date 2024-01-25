@@ -4,6 +4,7 @@
 #include <commonlib/bsd/helpers.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
+#include <cpu/x86/smm.h>
 #include <cpxsp_dl_gpio.h>
 #include <device/device.h>
 #include <device/pci_def.h>
@@ -16,6 +17,7 @@
 #include <security/intel/txt/txt.h>
 #include <smbios.h>
 #include <soc/ramstage.h>
+#include <soc/smmrelocate.h>
 #include <soc/soc_util.h>
 #include <soc/util.h>
 #include <stdio.h>
@@ -334,6 +336,11 @@ struct chip_operations mainboard_ops = {
 	.enable_dev = mainboard_enable,
 	.final = mainboard_final,
 };
+
+void smm_mainboard_pci_resource_store_init(struct smm_pci_resource_info *slots, size_t size)
+{
+	soc_ubox_store_resources(slots, size);
+}
 
 bool skip_intel_txt_lockdown(void)
 {

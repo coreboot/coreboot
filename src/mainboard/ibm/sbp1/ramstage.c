@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-
+#include <cpu/x86/smm.h>
 #include <soc/ramstage.h>
+#include <soc/smmrelocate.h>
 
 #include "include/spr_sbp1_gpio.h"
 #include <bootstate.h>
@@ -31,6 +32,11 @@ static void finalize_boot(void *unused)
 	printk(BIOS_DEBUG, "FM_BIOS_POST_CMPLT_N cleared.\n");
 	/* Clear FM_BIOS_POST_CMPLT_N */
 	gpio_output(GPPC_C17, 0);
+}
+
+void smm_mainboard_pci_resource_store_init(struct smm_pci_resource_info *slots, size_t size)
+{
+	soc_ubox_store_resources(slots, size);
 }
 
 BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, finalize_boot, NULL);

@@ -7,9 +7,11 @@
 #include <cpu/intel/em64t101_save_state.h>
 #include <cpu/intel/smm_reloc.h>
 #include <console/console.h>
+#include <device/pci_ids.h>
 #include <smp/node.h>
 #include <soc/msr.h>
 #include <soc/smmrelocate.h>
+#include <soc/pci_devs.h>
 
 static void fill_in_relocation_params(struct smm_relocation_params *params)
 {
@@ -136,4 +138,22 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 
 	if (mtrr_cap.lo & SMRR_SUPPORTED)
 		write_smrr(relo_params);
+}
+
+void soc_ubox_store_resources(struct smm_pci_resource_info *slots, size_t size)
+{
+	struct device *devices[CONFIG_MAX_SOCKET] = {0};
+	size_t devices_count = 0;
+	struct device *dev = NULL;
+
+	/*
+	 * Collect all UBOX DFX devices. Depending on the actual socket count
+	 * the bus numbers changed and the PCI segment group might be different.
+	 * Pass all devices to SMM for platform lockdown.
+	 */
+	while ((dev = dev_find_device(PCI_VID_INTEL, UBOX_DFX_DEVID, dev))) {
+		devices[devices_count++] = dev;
+	}
+
+	smm_pci_resource_store_fill_resources(slots, size, (const struct device **)devices, devices_count);
 }

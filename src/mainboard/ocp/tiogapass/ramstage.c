@@ -1,8 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <cpu/x86/smm.h>
 #include <drivers/ipmi/ipmi_ops.h>
 #include <drivers/ocp/dmi/ocp_dmi.h>
 #include <soc/ramstage.h>
+#include <soc/smmrelocate.h>
 
 extern struct fru_info_str fru_strings;
 
@@ -174,6 +176,11 @@ static void mainboard_enable(struct device *dev)
 
 static void mainboard_final(void *chip_info)
 {
+}
+
+void smm_mainboard_pci_resource_store_init(struct smm_pci_resource_info *slots, size_t size)
+{
+	soc_ubox_store_resources(slots, size);
 }
 
 struct chip_operations mainboard_ops = {

@@ -20,12 +20,11 @@
 #define UNCORE_BUS_0 0
 #define UNCORE_BUS_1 1
 
-/* UBOX Registers [B:30, D:0, F:1] */
-#define UBOX_DECS_DEV 0
-#define UBOX_URACU_FUNC 1
+/* UBOX Registers [U(1), D:0, F:1] */
 #define SMM_FEATURE_CONTROL 0x8c
 #define SMM_CODE_CHK_EN BIT(2)
 #define SMM_FEATURE_CONTROL_LOCK BIT(0)
+#define UBOX_DFX_DEVID 0x3251
 
 /* CHA registers [B:31, D:29, F:0/F:1]
  * SAD is the previous xeon_sp register name. Keep defines for shared code.
@@ -187,7 +186,5 @@
 #define CRASHLOG_CTL 0x1B8
 #define BIOS_CRASHLOG_CTL 0x158
 #define CRASHLOG_CTL_DIS BIT(2)
-
-pci_devfn_t soc_get_ubox_pmon_dev(void);
 
 #endif /* _SOC_PCI_DEVS_H_ */

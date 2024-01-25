@@ -86,13 +86,11 @@
 
 #define UBOX_DEV			8
 
-#define UBOX_PMON_BUS			0
-#define UBOX_PMON_DEV			8
-#define UBOX_PMON_FUNC			1
-#define UBOX_DEV_PMON			_UBOX_DEV(UBOX_PMON_FUNC)
+/* Bus: B0, Device: 8, Function: 1 */
 #define SMM_FEATURE_CONTROL		0x7c
 #define SMM_CODE_CHK_EN			BIT(2)
 #define SMM_FEATURE_CONTROL_LOCK	BIT(0)
+#define UBOX_DFX_DEVID			0x2015
 
 
 #define UBOX_DECS_BUS			0
@@ -182,7 +180,5 @@
 // IIO DFX Global D7F7 registers
 #define IIO_DFX_TSWCTL0		0x30c
 #define IIO_DFX_LCK_CTL		0x504
-
-pci_devfn_t soc_get_ubox_pmon_dev(void);
 
 #endif /* _SOC_PCI_DEVS_H_ */

@@ -1,10 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/device.h>
+#include <soc/usb.h>
 
 static void mainboard_init(struct device *dev)
 {
-	/* TODO: add mainboard init */
+	setup_usb_host();
 }
 
 static void mainboard_enable(struct device *dev)

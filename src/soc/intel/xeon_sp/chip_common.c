@@ -72,14 +72,7 @@ void iio_pci_domain_scan_bus(struct device *dev)
 	if (!sr)
 		return;
 
-	if (!dev->link_list) {
-		dev->link_list = calloc(1, sizeof(struct bus));
-		if (!dev->link_list)
-			die("%s: out of memory.\n", __func__);
-	}
-
-	struct bus *bus = dev->link_list;
-	bus->dev = dev;
+	struct bus *bus = alloc_bus(dev);
 	bus->secondary = sr->BusBase;
 	bus->subordinate = sr->BusBase;
 	bus->max_subordinate = sr->BusLimit;

@@ -125,6 +125,41 @@ struct device *alloc_dev(struct bus *parent, struct device_path *path)
 	return dev;
 }
 
+DECLARE_SPIN_LOCK(bus_lock)
+
+/**
+ * Allocate a new bus structure
+ *
+ * Allocate a new downstream bus structure below a device and attach it
+ * to the device tree if the device doesn't already have a downstream bus.
+ *
+ * @param parent Parent device the to be created bus should be attached to.
+ * @return Pointer to the newly created bus structure or the existing bus.
+ *
+ */
+static struct bus *__alloc_bus(struct device *parent)
+{
+	if (parent->link_list)
+		return parent->link_list;
+
+	struct bus *bus = calloc(1, sizeof(struct bus));
+	if (!bus)
+		die("Couldn't allocate downstream bus!\n");
+	parent->link_list = bus;
+	bus->dev = parent;
+
+	return bus;
+}
+
+struct bus *alloc_bus(struct device *parent)
+{
+	struct bus *bus;
+	spin_lock(&bus_lock);
+	bus = __alloc_bus(parent);
+	spin_unlock(&bus_lock);
+	return bus;
+}
+
 /**
  * See if a device structure already exists and if not allocate it.
  *

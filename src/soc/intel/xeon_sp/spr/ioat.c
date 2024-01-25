@@ -45,12 +45,7 @@ static void create_ioat_domain(const union xeon_domain_path dp, struct bus *cons
 
 	domain->ops = &ioat_domain_ops;
 
-	domain->link_list = calloc(1, sizeof(struct bus));
-	if (!domain->link_list)
-		die("%s: out of memory.\n", __func__);
-
-	struct bus *const bus = domain->link_list;
-	bus->dev = domain;
+	struct bus *const bus = alloc_bus(domain);
 	bus->secondary = bus_base;
 	bus->subordinate = bus->secondary;
 	bus->max_subordinate = bus_limit;

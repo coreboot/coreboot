@@ -171,6 +171,7 @@ extern struct bus	*free_links;
 
 /* Generic device interface functions */
 struct device *alloc_dev(struct bus *parent, struct device_path *path);
+struct bus *alloc_bus(struct device *parent);
 void dev_initialize_chips(void);
 void dev_enumerate(void);
 void dev_configure(void);
@@ -229,10 +230,9 @@ void mp_init_cpus(DEVTREE_CONST struct bus *cpu_bus);
 static inline void mp_cpu_bus_init(struct device *dev)
 {
 	/* Make sure the cpu cluster has a downstream bus for LAPICs to be allocated. */
-	if (!dev->link_list)
-		add_more_links(dev, 1);
+	struct bus *bus = alloc_bus(dev);
 
-	mp_init_cpus(dev->link_list);
+	mp_init_cpus(bus);
 }
 
 /* Debug functions */

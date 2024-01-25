@@ -41,7 +41,6 @@ smm-y += gpio.c
 CPPFLAGS_common += -I$(src)/soc/amd/picasso/include
 CPPFLAGS_common += -I$(src)/soc/amd/picasso/acpi
 CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/picasso
-CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/picasso/include
 CPPFLAGS_common += -I$(src)/vendorcode/amd/fsp/common
 
 # 0x40 accounts for the cbfs_file struct + filename + metadata structs, aligned to 64 bytes

@@ -35,14 +35,6 @@ static const struct pad_config stylus_disable_pads[] = {
 };
 
 static const struct pad_config cnvi_bt_disable_pads[] = {
-	/* GPP_F00 :  [] ==> CNV_BRI_DT_R */
-	PAD_NC(GPP_F00, NONE),
-	/* GPP_F01 :  [] ==> CNV_BRI_RSP */
-	PAD_NC(GPP_F01, NONE),
-	/* GPP_F02 :  [] ==> CNV_RGI_DT_Rl */
-	PAD_NC(GPP_F02, NONE),
-	/* GPP_F03 :  [] ==> CNV_RGI_RSP */
-	PAD_NC(GPP_F03, NONE),
 	/* GPP_F04 :  [] ==> CNV_RF_RST_L */
 	PAD_NC(GPP_F04, NONE),
 	/* GPP_F05 :  [] ==> CNV_CLKREQ */
@@ -54,8 +46,6 @@ static const struct pad_config discrete_bt_disable_pads[] = {
 	PAD_NC(GPP_S01, NONE),
 	/* GPP_S02 : [] ==> DMIC_SOC_CLK0_WLAN_PCM_OUT */
 	PAD_NC(GPP_S02, NONE),
-	/* GPP_D21 : [] ==> WLAN_CLKREQ_ODLl */
-	PAD_NC(GPP_D21, NONE),
 };
 
 static const struct pad_config bt_i2s_enable_pads[] = {

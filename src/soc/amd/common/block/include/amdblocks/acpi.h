@@ -5,6 +5,7 @@
 
 #include <acpi/acpi.h>
 #include <amdblocks/gpio.h>
+#include <device/device.h>
 #include <types.h>
 
 /* ACPI MMIO registers 0xfed80800 */

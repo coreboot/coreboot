@@ -52,8 +52,8 @@ struct chipset_power_state {
 unsigned long southbridge_write_acpi_tables(const struct device *device, unsigned long current,
 					    struct acpi_rsdp *rsdp);
 
-uintptr_t add_agesa_fsp_acpi_table(guid_t guid, const char *name, acpi_rsdp_t *rsdp,
-				   uintptr_t current);
+unsigned long add_agesa_fsp_acpi_table(guid_t guid, const char *name, acpi_rsdp_t *rsdp,
+				       unsigned long current);
 
 void acpi_log_events(const struct chipset_power_state *ps);
 unsigned long acpi_add_ivrs_table(unsigned long current, acpi_rsdp_t *rsdp);

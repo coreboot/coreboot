@@ -15,8 +15,8 @@ struct amd_fsp_acpi_hob_info {
 	uint16_t hob_payload[0xffc8]; /* maximum payload size */
 } __packed;
 
-uintptr_t add_agesa_fsp_acpi_table(guid_t guid, const char *name, acpi_rsdp_t *rsdp,
-				   uintptr_t current)
+unsigned long add_agesa_fsp_acpi_table(guid_t guid, const char *name, acpi_rsdp_t *rsdp,
+				       unsigned long current)
 {
 	const struct amd_fsp_acpi_hob_info *data;
 	void *table = (void *)current;

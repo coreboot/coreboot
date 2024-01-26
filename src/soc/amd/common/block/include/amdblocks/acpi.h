@@ -50,6 +50,9 @@ struct chipset_power_state {
 	struct gpio_wake_state gpio_state;
 };
 
+unsigned long soc_acpi_write_tables(const struct device *device, unsigned long current,
+				    acpi_rsdp_t *rsdp);
+
 unsigned long southbridge_write_acpi_tables(const struct device *device, unsigned long current,
 					    struct acpi_rsdp *rsdp);
 

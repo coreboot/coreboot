@@ -131,9 +131,8 @@ static unsigned long acpi_fill_hest(acpi_hest_t *hest)
 	return (unsigned long)current;
 }
 
-static unsigned long soc_acpi_write_tables(const struct device *device,
-					   unsigned long current,
-					   acpi_rsdp_t *rsdp)
+unsigned long soc_acpi_write_tables(const struct device *device, unsigned long current,
+				    acpi_rsdp_t *rsdp)
 {
 	acpi_srat_t *srat;
 	acpi_slit_t *slit;

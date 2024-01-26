@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <amdblocks/acpi.h>
 #include <device/device.h>
 #include <soc/southbridge.h>
-#include <soc/acpi.h>
 #include <soc/southbridge.h>
 #include <vendorcode/amd/opensil/genoa_poc/opensil.h>
 

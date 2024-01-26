@@ -6,6 +6,17 @@
 #include <acpi/acpi_device.h>
 #include <acpi/acpi_pld.h>
 
+/* ACPI spec 6.5 table B-2, Display Output Device */
+#define DOD_FW_DETECT	BIT(16)	/* Platform boot firmware can detect the device. */
+#define DOD_DID_STD	BIT(31)	/* DID Scheme: Use standard bit-field definitions */
+enum display_type {
+	other	= 0,
+	vga	= 1, /* VGA, CRT, VESA monitor */
+	tv	= 2, /* TV/HDTV or analog monitor */
+	ext	= 3, /* External digital monitor (DVI, HDMI, DP) */
+	panel	= 4, /* Internal/integrated digital flat panel */
+};
+
 /* Config for electronic privacy screen */
 struct drivers_gfx_generic_privacy_screen_config {
 	/* Is privacy screen available on this graphics device */
@@ -32,7 +43,10 @@ struct drivers_gfx_generic_device_config {
 	const char *name;
 	/* Value to use for _HID Name, will take precedence over _ADR */
 	const char *hid;
-	/* The address of the output device. See section A.3.2 */
+	/* The display type of the output device. See definition above */
+	enum display_type type;
+	/* The address of the output device.
+	   Will be dynamically generated if not set and display_type is set */
 	unsigned int addr;
 	/* Electronic privacy screen specific config */
 	struct drivers_gfx_generic_privacy_screen_config privacy;

@@ -114,8 +114,16 @@ static void gfx_fill_ssdt_generator(const struct device *dev)
 	acpigen_write_method("_DOD", 0);
 	acpigen_emit_byte(RETURN_OP);
 	acpigen_write_package(config->device_count);
-	for (i = 0; i < config->device_count; i++)
+	for (i = 0; i < config->device_count; i++) {
+		/* Generate the Device ID if addr = 0 and type != 0 */
+		if (!config->device[i].addr && config->device[i].type)
+			/* Though not strictly necessary, set the display index and
+			   port attachment to the device index, to ensure uniqueness */
+			config->device[i].addr = DOD_DID_STD | DOD_FW_DETECT | \
+						(config->device[i].type << 8) | \
+						(i << 4) | (i);
 		acpigen_write_dword(config->device[i].addr);
+	}
 	acpigen_pop_len(); /* End Package. */
 	acpigen_pop_len(); /* End Method. */
 

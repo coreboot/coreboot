@@ -58,8 +58,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 unsigned long soc_acpi_write_tables(const struct device *device, unsigned long current,
 				    acpi_rsdp_t *rsdp)
 {
-	/* TODO: look into adding CRAT */
-
 	/* IVRS */
 	current = acpi_add_ivrs_table(current, rsdp);
 

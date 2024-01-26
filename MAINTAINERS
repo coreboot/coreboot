@@ -948,6 +948,7 @@ S:	Supported
 F:	src/soc/intel/xeon_sp/
 F:	src/vendorcode/intel/fsp/fsp2_0/skylake_sp/
 F:	src/vendorcode/intel/fsp/fsp2_0/copperlake_sp/
+F:	src/vendorcode/intel/fsp/fsp2_0/sapphirerapids_sp/
 
 MEDIATEK SOCS
 M:	Hung-Te Lin <hungte@chromium.org>

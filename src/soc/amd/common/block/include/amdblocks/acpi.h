@@ -62,6 +62,8 @@ unsigned long add_agesa_fsp_acpi_table(guid_t guid, const char *name, acpi_rsdp_
 				       unsigned long current);
 
 void acpi_log_events(const struct chipset_power_state *ps);
+
+unsigned long acpi_add_crat_table(unsigned long current, acpi_rsdp_t *rsdp);
 unsigned long acpi_add_ivrs_table(unsigned long current, acpi_rsdp_t *rsdp);
 
 #endif /* AMD_BLOCK_ACPI_H */

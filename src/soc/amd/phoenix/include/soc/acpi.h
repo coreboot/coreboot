@@ -12,7 +12,7 @@
 
 #define ACPI_SCI_IRQ 9
 
-uintptr_t agesa_write_acpi_tables(const struct device *device, uintptr_t current,
-				  acpi_rsdp_t *rsdp);
+uintptr_t soc_acpi_write_tables(const struct device *device, uintptr_t current,
+				acpi_rsdp_t *rsdp);
 
 #endif /* AMD_PHOENIX_ACPI_H */

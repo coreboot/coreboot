@@ -539,8 +539,8 @@ static unsigned long acpi_fill_crat(struct acpi_crat_header *crat, unsigned long
 	return current;
 }
 
-uintptr_t agesa_write_acpi_tables(const struct device *device, uintptr_t current,
-				  acpi_rsdp_t *rsdp)
+uintptr_t soc_acpi_write_tables(const struct device *device, uintptr_t current,
+				acpi_rsdp_t *rsdp)
 {
 	struct acpi_crat_header *crat;
 

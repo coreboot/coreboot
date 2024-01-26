@@ -35,7 +35,7 @@ struct device_operations mendocino_pci_domain_ops = {
 
 static void soc_init(void *chip_info)
 {
-	default_dev_ops_root.write_acpi_tables = agesa_write_acpi_tables;
+	default_dev_ops_root.write_acpi_tables = soc_acpi_write_tables;
 
 	amd_fsp_silicon_init();
 

@@ -131,9 +131,9 @@ static unsigned long acpi_fill_hest(acpi_hest_t *hest)
 	return (unsigned long)current;
 }
 
-static unsigned long agesa_write_acpi_tables(const struct device *device,
-					     unsigned long current,
-					     acpi_rsdp_t *rsdp)
+static unsigned long soc_acpi_write_tables(const struct device *device,
+					   unsigned long current,
+					   acpi_rsdp_t *rsdp)
 {
 	acpi_srat_t *srat;
 	acpi_slit_t *slit;
@@ -210,7 +210,7 @@ struct device_operations stoneyridge_northbridge_operations = {
 	.enable_resources = pci_dev_enable_resources,
 	.init		  = northbridge_init,
 	.acpi_fill_ssdt   = acpi_fill_root_complex_tom,
-	.write_acpi_tables = agesa_write_acpi_tables,
+	.write_acpi_tables = soc_acpi_write_tables,
 };
 
 /*

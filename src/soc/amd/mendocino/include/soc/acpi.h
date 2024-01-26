@@ -10,7 +10,7 @@
 
 #define ACPI_SCI_IRQ 9
 
-uintptr_t soc_acpi_write_tables(const struct device *device, uintptr_t current,
-				acpi_rsdp_t *rsdp);
+unsigned long soc_acpi_write_tables(const struct device *device, unsigned long current,
+				    acpi_rsdp_t *rsdp);
 
 #endif /* AMD_MENDOCINO_ACPI_H */

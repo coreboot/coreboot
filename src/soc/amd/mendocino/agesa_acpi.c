@@ -9,8 +9,8 @@
 #include <soc/acpi.h>
 #include <types.h>
 
-uintptr_t soc_acpi_write_tables(const struct device *device, uintptr_t current,
-				acpi_rsdp_t *rsdp)
+unsigned long soc_acpi_write_tables(const struct device *device, unsigned long current,
+				    acpi_rsdp_t *rsdp)
 {
 	/* TODO: look into adding CRAT */
 

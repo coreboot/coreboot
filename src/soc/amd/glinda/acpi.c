@@ -16,6 +16,7 @@
 #include <arch/smp/mpspec.h>
 #include <console/console.h>
 #include <cpu/amd/cpuid.h>
+#include <device/device.h>
 #include <soc/iomap.h>
 #include <types.h>
 #include "chip.h"
@@ -55,6 +56,19 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 		fadt->flags |= ACPI_FADT_LOW_PWR_IDLE_S0;
 
 	fadt->flags |= cfg->common_config.fadt_flags; /* additional board-specific flags */
+}
+
+unsigned long soc_acpi_write_tables(const struct device *device, unsigned long current,
+				    acpi_rsdp_t *rsdp)
+{
+	/* TODO: look into adding CRAT */
+
+	/* IVRS */
+	current = acpi_add_ivrs_table(current, rsdp);
+
+	current = acpi_add_fsp_tables(current, rsdp);
+
+	return current;
 }
 
 const acpi_cstate_t cstate_cfg_table[] = {

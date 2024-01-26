@@ -19,6 +19,7 @@
 #include <amdblocks/chip.h>
 #include <amdblocks/cpu.h>
 #include <amdblocks/ioapic.h>
+#include <device/device.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 #include "chip.h"
@@ -56,6 +57,22 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 			ACPI_FADT_S4_RTC_VALID |
 			ACPI_FADT_REMOTE_POWER_ON;
 	fadt->flags |= cfg->fadt_flags; /* additional board-specific flags */
+}
+
+unsigned long soc_acpi_write_tables(const struct device *device, unsigned long current,
+				    acpi_rsdp_t *rsdp)
+{
+	/* CRAT */
+	current = acpi_add_crat_table(current, rsdp);
+
+	/* IVRS */
+	current = acpi_add_ivrs_table(current, rsdp);
+
+	/* Add SRAT, MSCT, SLIT if needed in the future */
+
+	current = acpi_add_fsp_tables(current, rsdp);
+
+	return current;
 }
 
 const acpi_cstate_t cstate_cfg_table[] = {

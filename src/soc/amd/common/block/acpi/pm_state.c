@@ -4,7 +4,6 @@
 #include <acpi/acpi_pm.h>
 #include <amdblocks/acpi.h>
 #include <bootstate.h>
-#include <soc/acpi.h>
 #include <soc/nvs.h>
 #include <soc/southbridge.h>
 #include <types.h>

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <amdblocks/acpi.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/mmio.h>
@@ -11,7 +12,6 @@
 #include <boardid.h>
 #include <gpio.h>
 #include <smbios.h>
-#include <soc/acpi.h>
 #include <soc/cpu.h>
 #include <soc/pci_devs.h>
 #include <soc/platform_descriptors.h>

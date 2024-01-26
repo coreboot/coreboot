@@ -17,7 +17,6 @@
 #include <amdblocks/ioapic.h>
 #include <amdblocks/iomap.h>
 #include <amdblocks/lpc.h>
-#include <soc/acpi.h>
 #include <soc/iomap.h>
 #include <soc/lpc.h>
 #include <soc/southbridge.h>

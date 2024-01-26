@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <amdblocks/acpi.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/amd_pci_util.h>
 #include <amdblocks/xhci.h>
@@ -8,7 +9,6 @@
 #include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <drivers/i2c/tpm/chip.h>
-#include <soc/acpi.h>
 #include <variant/ec.h>
 
 /* The IRQ mapping in fch_irq_map ends up getting written to the indirect address space that is

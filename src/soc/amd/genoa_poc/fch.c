@@ -7,7 +7,6 @@
 #include <amdblocks/smi.h>
 #include <bootstate.h>
 #include <cpu/x86/smm.h>
-#include <soc/acpi.h>
 #include <soc/amd_pci_int_defs.h>
 #include <soc/smi.h>
 #include <soc/southbridge.h>

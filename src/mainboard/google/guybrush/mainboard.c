@@ -2,6 +2,7 @@
 
 #include <acpi/acpi.h>
 #include <acpi/acpigen.h>
+#include <amdblocks/acpi.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/amd_pci_util.h>
 #include <amdblocks/psp.h>
@@ -12,7 +13,6 @@
 #include <device/device.h>
 #include <drivers/i2c/tpm/chip.h>
 #include <gpio.h>
-#include <soc/acpi.h>
 #include <variant/ec.h>
 
 #define BACKLIGHT_GPIO			GPIO_129

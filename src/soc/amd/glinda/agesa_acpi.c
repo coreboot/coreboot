@@ -6,7 +6,6 @@
 #include <amdblocks/acpi.h>
 #include <device/device.h>
 #include <FspGuids.h>
-#include <soc/acpi.h>
 #include <types.h>
 
 unsigned long soc_acpi_write_tables(const struct device *device, unsigned long current,

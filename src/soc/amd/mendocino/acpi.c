@@ -15,7 +15,6 @@
 #include <arch/smp/mpspec.h>
 #include <console/console.h>
 #include <cpu/amd/cpuid.h>
-#include <soc/acpi.h>
 #include <soc/iomap.h>
 #include <types.h>
 #include "chip.h"

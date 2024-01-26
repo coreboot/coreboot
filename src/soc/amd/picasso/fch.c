@@ -13,7 +13,6 @@
 #include <amdblocks/gpio.h>
 #include <amdblocks/i2c.h>
 #include <amdblocks/smi.h>
-#include <soc/acpi.h>
 #include <soc/cpu.h>
 #include <soc/i2c.h>
 #include <soc/iomap.h>

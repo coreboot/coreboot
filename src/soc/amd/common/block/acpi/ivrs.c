@@ -12,7 +12,6 @@
 #include <device/mmio.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
-#include <soc/acpi.h>
 #include <soc/data_fabric.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>

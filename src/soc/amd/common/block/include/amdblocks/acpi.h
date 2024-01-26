@@ -8,6 +8,8 @@
 #include <device/device.h>
 #include <types.h>
 
+#define ACPI_SCI_IRQ 9
+
 /* ACPI MMIO registers 0xfed80800 */
 #define MMIO_ACPI_PM1_EVT_BLK		0x00
 #define  MMIO_ACPI_PM1_STS		0x00

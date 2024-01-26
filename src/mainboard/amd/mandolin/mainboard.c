@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <amdblocks/acpi.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <amdblocks/amd_pci_util.h>
 #include <FspsUpd.h>
-#include <soc/acpi.h>
 #include <soc/cpu.h>
 #include <soc/southbridge.h>
 #include <soc/pci_devs.h>

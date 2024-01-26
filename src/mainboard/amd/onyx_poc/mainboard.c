@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <soc/acpi.h>
+#include <amdblocks/acpi.h>
 #include <soc/amd_pci_int_defs.h>
 #include <amdblocks/amd_pci_util.h>
 #include <types.h>

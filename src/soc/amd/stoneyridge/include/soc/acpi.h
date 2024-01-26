@@ -6,8 +6,6 @@
 #include <acpi/acpi.h>
 #include <amdblocks/acpi.h>
 
-#define ACPI_SCI_IRQ 9
-
 #if CONFIG(STONEYRIDGE_LEGACY_FREE)
 	#define FADT_BOOT_ARCH ACPI_FADT_LEGACY_FREE
 #else

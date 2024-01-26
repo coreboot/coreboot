@@ -82,8 +82,8 @@ enum cb_err mainboard_ptn3460_config(struct ptn_3460_config *cfg)
 	cfg->t2_delay = 0x01;
 	/* LVDS to backlight active delay: 200 ms */
 	cfg->t3_timing = 0x04;
-	/* Minimum re-power delay: 500 ms */
-	cfg->t12_timing = 0x0a;
+	/* Minimum re-power delay: 1 s */
+	cfg->t12_timing = 0x14;
 	/* Backlight off to LVDS inactive delay: 200 ms */
 	cfg->t4_timing = 0x04;
 	/* Enable LVDS to VDD inactive delay. */

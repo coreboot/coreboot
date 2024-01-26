@@ -367,6 +367,11 @@ static const struct pad_config gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
+	/* GPP_A19 : [] ==> EN_PP3300_SSD */
+	PAD_CFG_GPO(GPP_A19, 0, DEEP),
+	/* GPP_A20 : [] ==> SSD_PERST_L */
+	PAD_CFG_GPO(GPP_A20, 1, DEEP),
+
 	/* GPP_B16 : [] ==> SOC_HDMI_HPD_L */
 	PAD_CFG_NF(GPP_B16, NONE, DEEP, NF2),
 	/* GPP_B18 : [] ==> SOC_I2C_TPM_SDA */
@@ -393,9 +398,6 @@ static const struct pad_config early_gpio_table[] = {
 	/* GPP_E13 :  [] ==> MEM_CH_SEL */
 	PAD_CFG_GPI(GPP_E13, NONE, DEEP),
 
-	/* GPP_A20 : [] ==> SSD_PERST_L */
-	PAD_CFG_GPO(GPP_A20, 0, DEEP),
-
 	/* GPP_H10 : [] ==> SOC_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER_LOCK(GPP_H10, NONE, LOCK_CONFIG),
 
@@ -404,6 +406,9 @@ static const struct pad_config early_gpio_table[] = {
 };
 
 static const struct pad_config romstage_gpio_table[] = {
+	/* GPP_A19 : [] ==> EN_PP3300_SSD */
+	PAD_CFG_GPO(GPP_A19, 1, DEEP),
+
 	/* GPP_B11 : [] ==> EN_FP_PWR */
 	PAD_CFG_GPO(GPP_B11, 0, DEEP),
 	/* A20 : [] ==> SSD_PERST_L */

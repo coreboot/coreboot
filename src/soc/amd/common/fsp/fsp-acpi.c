@@ -4,6 +4,7 @@
 #include <amdblocks/acpi.h>
 #include <console/console.h>
 #include <fsp/util.h>
+#include <FspGuids.h>
 #include <string.h>
 #include <types.h>
 
@@ -15,8 +16,8 @@ struct amd_fsp_acpi_hob_info {
 	uint16_t hob_payload[0xffc8]; /* maximum payload size */
 } __packed;
 
-unsigned long add_agesa_fsp_acpi_table(guid_t guid, const char *name, acpi_rsdp_t *rsdp,
-				       unsigned long current)
+static unsigned long add_agesa_fsp_acpi_table(guid_t guid, const char *name, acpi_rsdp_t *rsdp,
+					      unsigned long current)
 {
 	const struct amd_fsp_acpi_hob_info *data;
 	void *table = (void *)current;
@@ -41,6 +42,15 @@ unsigned long add_agesa_fsp_acpi_table(guid_t guid, const char *name, acpi_rsdp_
 	current += data->table_size_in_bytes;
 	acpi_add_table(rsdp, table);
 	current = acpi_align_current(current);
+
+	return current;
+}
+
+unsigned long acpi_add_fsp_tables(unsigned long current, acpi_rsdp_t *rsdp)
+{
+	/* add ALIB SSDT from HOB */
+	current = acpi_align_current(current);
+	current = add_agesa_fsp_acpi_table(AMD_FSP_ACPI_ALIB_HOB_GUID, "ALIB", rsdp, current);
 
 	return current;
 }

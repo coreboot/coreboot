@@ -66,7 +66,8 @@ unsigned long soc_acpi_write_tables(const struct device *device, unsigned long c
 	/* IVRS */
 	current = acpi_add_ivrs_table(current, rsdp);
 
-	current = acpi_add_fsp_tables(current, rsdp);
+	if (CONFIG(PLATFORM_USES_FSP2_0))
+		current = acpi_add_fsp_tables(current, rsdp);
 
 	return current;
 }

@@ -21,7 +21,6 @@ verstage-y	+= espi_util.c
 romstage-y	+= fsp_m_params.c
 
 ramstage-y	+= acpi.c
-ramstage-y	+= agesa_acpi.c
 ramstage-y	+= chip.c
 ramstage-y	+= cpu.c
 ramstage-y	+= fch.c

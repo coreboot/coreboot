@@ -20,7 +20,6 @@ romstage-y += fsp_m_params.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi_crat.c
-ramstage-$(CONFIG_HAVE_ACPI_TABLES) += agesa_acpi.c
 ramstage-y += chip.c
 ramstage-y += cpu.c
 ramstage-y += fch.c

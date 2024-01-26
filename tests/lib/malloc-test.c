@@ -34,11 +34,6 @@ TEST_REGION(test_heap, TEST_HEAP_SZ);
 TEST_SYMBOL(_heap, _test_heap);
 TEST_SYMBOL(_eheap, _etest_heap);
 
-void die(const char *msg, ...)
-{
-	function_called();
-}
-
 static int setup_test(void **state)
 {
 	free_mem_ptr = &_heap;
@@ -56,9 +51,8 @@ static int setup_calloc_test(void **state)
 
 static void test_malloc_out_of_memory(void **state)
 {
-	/* Expect die() call if out of memory */
-	expect_function_call(die);
-	cb_malloc(TEST_HEAP_SZ);
+	void *ptr = cb_malloc(TEST_HEAP_SZ);
+	assert_ptr_equal(ptr, NULL);
 }
 
 static void test_malloc_zero(void **state)
@@ -102,8 +96,8 @@ static void test_memalign_different_alignments(void **state)
 
 static void test_memalign_out_of_memory(void **state)
 {
-	expect_function_call(die);
-	cb_memalign(16, TEST_HEAP_SZ);
+	void *ptr = cb_memalign(16, TEST_HEAP_SZ);
+	assert_ptr_equal(ptr, NULL);
 }
 
 static void test_memalign_zero(void **state)

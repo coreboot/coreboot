@@ -44,7 +44,10 @@ void *memalign(size_t boundary, size_t size)
 				p, free_mem_ptr);
 		printk(BIOS_ERR, "but free_mem_end_ptr is %p\n",
 				free_mem_end_ptr);
-		die("Error! %s: Out of memory (free_mem_ptr >= free_mem_end_ptr)", __func__);
+		printk(BIOS_ERR, "Error! %s: Out of memory "
+				"(free_mem_ptr >= free_mem_end_ptr)",
+				__func__);
+		return NULL;
 	}
 
 	MALLOCDBG("%s %p\n", __func__, p);

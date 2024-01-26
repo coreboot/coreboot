@@ -97,7 +97,7 @@ chip soc/intel/alderlake
 				# DDIA for eDP
 				register "device[0].name" = ""LCD0""
 				# Internal panel on the first port of the graphics chip
-				register "device[0].addr" = "0x80010400"
+				register "device[0].type" = "panel"
 				# DDIB for HDMI
 				register "device[1].name" = ""DD01""
 				# TCP0 (DP-1) is unused for any ports but still enumerated in the kernel, so GFX device is added for TCP0

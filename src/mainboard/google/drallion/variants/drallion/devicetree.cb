@@ -225,7 +225,7 @@ chip soc/intel/cannonlake
 				register "device[0].name" = ""LCD0""
 				# Address is set following the ACPI spec section A.3.2
 				# for an internal panel on the first port of the graphics chip
-				register "device[0].addr" = "0x80010400"
+				register "device[0].type" = "panel"
 				register "device[0].privacy.enabled" = "1"
 				register "device[0].privacy.detect_function" = ""\\_SB.PCI0.LPCB.EC0.GPVD""
 				register "device[0].privacy.status_function" = ""\\_SB.PCI0.LPCB.EC0.GPVX""

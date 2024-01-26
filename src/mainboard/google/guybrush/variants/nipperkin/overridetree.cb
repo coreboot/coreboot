@@ -185,7 +185,7 @@ chip soc/amd/cezanne
 					# Use ChromeOS privacy screen _HID
 					register "device[0].hid" = ""GOOG0010""
 					# Internal panel on the first port of the graphics chip
-					register "device[0].addr" = "0x80010400"
+					register "device[0].type" = "panel"
 					register "device[0].privacy.enabled" = "1"
 					register "device[0].privacy.gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_18)"
 					device generic 0.0 on

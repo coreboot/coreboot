@@ -130,6 +130,7 @@ chip soc/intel/meteorlake
 				register "device_count" = "6"
 				# DDIA for eDP
 				register "device[0].name" = ""LCD""
+				register "device[0].type" = "panel"
 				# DDIB for HDMI
 				register "device[1].name" = ""DD01""
 				# TCP0 (DP-1) for port C0

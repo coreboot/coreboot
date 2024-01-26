@@ -155,6 +155,7 @@ chip soc/intel/meteorlake
 				register "device_count" = "6"
 				# DDIA for eDP
 				register "device[0].name" = ""LCD""
+				register "device[0].type" = "panel"
 				# DDIB for HDMI
 				# If HDMI is not enumerated in the kernel, then no GFX device should be added for DDIB
 				register "device[1].name" = ""DD01""

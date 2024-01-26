@@ -1577,10 +1577,28 @@ static void disable_gpr0(const char *filename, char *image, int size)
 		fprintf(stderr, "Disabling GPR0 not supported on this platform\n");
 		exit(EXIT_FAILURE);
 	}
+	/* If bit 31 is set then GPR0 protection is enable */
+	bool gpr0_status = fpsba->pchstrp[gpr0_offset] & 0x80000000;
+	if (!gpr0_status) {
+		printf("GPR0 protection is already disabled\n");
+		return;
+	}
 
+	printf("Value at GPRD offset (%d) is 0x%08x\n", gpr0_offset, fpsba->pchstrp[gpr0_offset]);
+	printf("--------- GPR0 Protected Range --------------\n");
+	/*
+	 * Start Address: bit 0-15 of the GPRD represents the protected region start address,
+	 * where bit 0-11 of the start address are assumed to be zero.
+	 */
+	printf("Start address = 0x%08x\n", (fpsba->pchstrp[gpr0_offset] & 0xffff) << 12);
+	/*
+	 * End Address: bit 16-30 of the GPRD represents the protected region end address,
+	 * where bit 0-11 of the end address are assumed to be 0xfff.
+	 */
+	printf("End address = 0x%08x\n",
+			 ((fpsba->pchstrp[gpr0_offset] >> 16) & 0x7fff) << 12 | 0xfff);
 	/* 0 means GPR0 protection is disabled */
 	fpsba->pchstrp[gpr0_offset] = 0;
-
 	write_image(filename, image, size);
 }
 

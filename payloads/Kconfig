@@ -40,6 +40,17 @@ config PAYLOAD_FIT
 	  You will be able to specify the location and file name of the
 	  payload image later.
 
+config PAYLOAD_FLAT_BINARY
+	bool "A flat binary"
+	select PAYLOAD_IS_FLAT_BINARY
+	help
+	  Select this option if you have a flat binary without any
+	  executable format surrounding it which coreboot should run
+	  as soon as the basic hardware initialization is completed.
+
+	  You will be able to specify the location and file name of the
+	  payload image later.
+
 source "payloads/external/*/Kconfig.name"
 
 endchoice
@@ -82,17 +93,15 @@ config COMPRESSED_PAYLOAD_LZ4
 endchoice
 
 config PAYLOAD_OPTIONS
-	string "Additional cbfstool options"
+	string "Additional cbfstool options" if PAYLOAD_FLAT_BINARY
 	default ""
+	depends on PAYLOAD_IS_FLAT_BINARY
 	help
 	  Additional cbfstool options for the payload
 
 config PAYLOAD_IS_FLAT_BINARY
-	bool "Payload is a flat binary"
+	bool
 	default n
-	help
-	  Add the payload to cbfs as a flat binary type instead of as an
-	  elf payload
 
 config PAYLOAD_FIT_SUPPORT
 	bool "FIT support"

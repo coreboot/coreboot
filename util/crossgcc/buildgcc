@@ -722,7 +722,7 @@ build_BINUTILS() {
 		--enable-multilib \
 		--disable-docs \
 		--disable-texinfo \
-		${BINUTILS_OPTIONS} \
+		${TARGET_BINUTILS_OPTIONS} \
 		CFLAGS="$HOSTCFLAGS" \
 		CXXFLAGS="$HOSTCFLAGS" || touch .failed
 	# shellcheck disable=SC2086
@@ -811,6 +811,7 @@ build_cross_GCC() {
 		--disable-libcc1 \
 		--disable-decimal-float \
 		${GCC_OPTIONS} \
+		${TARGET_GCC_OPTIONS} \
 		--enable-languages="${LANGUAGES}" \
 		--with-system-zlib \
 		--with-gmp="$DESTDIR$TARGETDIR" \
@@ -995,8 +996,8 @@ case "$TARGETARCH" in
 	i386-elf)		;;
 	i386-mingw32)		;;
 	riscv-elf)		TARGETARCH=riscv64-elf
-				GCC_OPTIONS="$GCC_OPTIONS --with-isa-spec=20191213"
-				BINUTILS_OPTIONS="$BINUTILS_OPTIONS --with-isa-spec=20191213";;
+				TARGET_GCC_OPTIONS="$TARGET_GCC_OPTIONS --with-isa-spec=20191213"
+				TARGET_BINUTILS_OPTIONS="$TARGET_BINUTILS_OPTIONS --with-isa-spec=20191213";;
 	powerpc64*-linux*)	;;
 	i386*)			TARGETARCH=i386-elf;;
 	arm*)			TARGETARCH=arm-eabi;;

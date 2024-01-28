@@ -63,7 +63,7 @@ void intel_txt_romstage_init(void)
 		return;
 	}
 
-	const uint8_t txt_ests = read8((void *)TXT_ESTS);
+	const uint8_t txt_ests = read8p(TXT_ESTS);
 
 	const bool establishment = is_establishment_bit_asserted();
 	const bool is_wake_error = !!(txt_ests & TXT_ESTS_WAKE_ERROR_STS);

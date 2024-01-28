@@ -20,7 +20,7 @@ bool is_establishment_bit_asserted(void)
 	stopwatch_init_msecs_expire(&timer, 50);
 
 	while (true) {
-		access = read8((void *)TPM_ACCESS_REG);
+		access = read8p(TPM_ACCESS_REG);
 
 		/* Register returns all ones if TPM is missing */
 		if (access == 0xff)

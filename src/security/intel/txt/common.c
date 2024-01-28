@@ -100,7 +100,7 @@ int intel_txt_log_acm_error(const uint32_t acm_error)
 
 void intel_txt_log_spad(void)
 {
-	const uint64_t acm_status = read64((void *)TXT_SPAD);
+	const uint64_t acm_status = read64p(TXT_SPAD);
 
 	printk(BIOS_INFO, "TXT-STS: ACM verification ");
 
@@ -138,8 +138,8 @@ bool intel_txt_memory_has_secrets(void)
 	if (!CONFIG(INTEL_TXT))
 		return false;
 
-	ret = (read8((void *)TXT_ESTS) & TXT_ESTS_WAKE_ERROR_STS) ||
-	      (read64((void *)TXT_E2STS) & TXT_E2STS_SECRET_STS);
+	ret = (read8p(TXT_ESTS) & TXT_ESTS_WAKE_ERROR_STS) ||
+	      (read64p(TXT_E2STS) & TXT_E2STS_SECRET_STS);
 
 	if (ret)
 		printk(BIOS_CRIT, "TXT-STS: Secrets in memory!\n");
@@ -154,10 +154,10 @@ bool intel_txt_chipset_is_production_fused(void)
 	 * Chapter B.1.7 and B.1.9
 	 * Intel TXT Software Development Guide (Document: 315168-015)
 	 */
-	uint32_t reg = read32((void *)TXT_VER_FSBIF);
+	uint32_t reg = read32p(TXT_VER_FSBIF);
 
 	if (reg == 0 || reg == UINT32_MAX)
-		reg = read32((void *)TXT_VER_QPIIF);
+		reg = read32p(TXT_VER_QPIIF);
 
 	return (reg & TXT_VER_PRODUCTION_FUSED) ? true : false;
 }
@@ -320,11 +320,11 @@ void intel_txt_run_sclean(void)
 		return;
 
 	/* FIXME: Do we need to program these two? */
-	//write32((void *)MCU_BASE_ADDR, 0xffe1a990);
-	//write32((void *)APINIT_ADDR, 0xfffffff0);
+	//write32p(MCU_BASE_ADDR, 0xffe1a990);
+	//write32p(APINIT_ADDR, 0xfffffff0);
 
-	write32((void *)BIOACM_ADDR, (uintptr_t)acm_data);
-	write32((void *)SEMAPHORE, 0);
+	write32p(BIOACM_ADDR, (uintptr_t)acm_data);
+	write32p(SEMAPHORE, 0);
 
 	/*
 	 * The time SCLEAN will take depends on the installed RAM size.
@@ -364,14 +364,14 @@ int intel_txt_run_bios_acm(const u8 input_params)
 
 	cbfs_unmap(acm_data);
 
-	const uint64_t acm_status = read64((void *)TXT_SPAD);
+	const uint64_t acm_status = read64p(TXT_SPAD);
 	if (acm_status & ACMERROR_TXT_VALID) {
 		printk(BIOS_ERR, "TEE-TXT: FATAL ACM launch error !\n");
 		/*
 		 * WARNING !
 		 * To clear TXT.BIOSACM.ERRORCODE you must issue a cold reboot!
 		 */
-		intel_txt_log_acm_error(read32((void *)TXT_BIOSACM_ERRORCODE));
+		intel_txt_log_acm_error(read32p(TXT_BIOSACM_ERRORCODE));
 		return -1;
 	}
 
@@ -460,7 +460,7 @@ bool intel_txt_prepare_txt_env(void)
 	if ((eax & 0x7d) != 0x7d)
 		failure = true;
 
-	const uint64_t status = read64((void *)TXT_SPAD);
+	const uint64_t status = read64p(TXT_SPAD);
 
 	if (status & ACMSTS_TXT_DISABLED) {
 		printk(BIOS_INFO, "TEE-TXT: TXT disabled by BIOS policy in FIT.\n");

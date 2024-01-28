@@ -20,8 +20,8 @@
 /* FIXME: Seems to work only on some platforms */
 static void log_ibb_measurements(void)
 {
-	const uint64_t mseg_size = read64((void *)TXT_MSEG_SIZE);
-	uint64_t mseg_base = read64((void *)TXT_MSEG_BASE);
+	const uint64_t mseg_size = read64p(TXT_MSEG_SIZE);
+	uint64_t mseg_base = read64p(TXT_MSEG_BASE);
 
 	if (!mseg_size || !mseg_base || mseg_size <= mseg_base)
 		return;
@@ -34,14 +34,14 @@ static void log_ibb_measurements(void)
 
 	printk(BIOS_INFO, "TEE-TXT: IBB Hash 0x");
 	for (; mseg_base < mseg_size; mseg_base++)
-		printk(BIOS_INFO, "%02X", read8((void *)(uintptr_t)mseg_base));
+		printk(BIOS_INFO, "%02X", read8p((uintptr_t)mseg_base));
 
 	printk(BIOS_INFO, "\n");
 }
 
 void bootmem_platform_add_ranges(void)
 {
-	uint64_t status = read64((void *)TXT_SPAD);
+	uint64_t status = read64p(TXT_SPAD);
 
 	if (status & ACMSTS_TXT_DISABLED)
 		return;
@@ -67,7 +67,7 @@ void bootmem_platform_add_ranges(void)
 			  BM_MEM_RESERVED);
 
 	const union dpr_register dpr = {
-		.raw = read32((void *)TXT_DPR),
+		.raw = read32p(TXT_DPR),
 	};
 
 	const uint32_t dpr_base = dpr.top - dpr.size * MiB;
@@ -78,13 +78,13 @@ void bootmem_platform_add_ranges(void)
 
 static bool get_wake_error_status(void)
 {
-	const uint8_t error = read8((void *)TXT_ESTS);
+	const uint8_t error = read8p(TXT_ESTS);
 	return !!(error & TXT_ESTS_WAKE_ERROR_STS);
 }
 
 static void check_secrets_txt(void *unused)
 {
-	uint64_t status = read64((void *)TXT_SPAD);
+	uint64_t status = read64p(TXT_SPAD);
 
 	if (status & ACMSTS_TXT_DISABLED)
 		return;
@@ -102,7 +102,7 @@ static void check_secrets_txt(void *unused)
 		intel_txt_run_bios_acm(ACMINPUT_CLEAR_SECRETS);
 
 		/* Should never reach this point ... */
-		intel_txt_log_acm_error(read32((void *)TXT_BIOSACM_ERRORCODE));
+		intel_txt_log_acm_error(read32p(TXT_BIOSACM_ERRORCODE));
 		die("Waiting for platform reset...\n");
 	}
 }
@@ -121,7 +121,7 @@ BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_ENTRY, check_secrets_txt, NULL);
  */
 static void init_intel_txt(void *unused)
 {
-	const uint64_t status = read64((void *)TXT_SPAD);
+	const uint64_t status = read64p(TXT_SPAD);
 
 	if (status & ACMSTS_TXT_DISABLED)
 		return;
@@ -250,10 +250,10 @@ static void txt_heap_push_bdr_for_two_acms(u8 **heap_struct)
 	txt_heap_fill_common_bdr(&data.bdr);
 	txt_heap_fill_bios_spec(&data.spec);
 
-	void *sinit_base = (void *)(uintptr_t)read64((void *)TXT_SINIT_BASE);
+	void *sinit_base = (void *)(uintptr_t)read64p(TXT_SINIT_BASE);
 	data.bdr.bios_sinit_size = cbfs_load(CONFIG_INTEL_TXT_CBFS_SINIT_ACM,
 					     sinit_base,
-					     read64((void *)TXT_SINIT_SIZE));
+					     read64p(TXT_SINIT_SIZE));
 
 	/* Extended elements - ACM addresses */
 	data.heap_acm.header.type = HEAP_EXTDATA_TYPE_ACM;
@@ -295,9 +295,9 @@ static void txt_heap_push_bdr_for_one_acm(u8 **heap_struct)
 	txt_heap_fill_common_bdr(&data.bdr);
 	txt_heap_fill_bios_spec(&data.spec);
 
-	void *sinit_base = (void *)(uintptr_t)read64((void *)TXT_SINIT_BASE);
+	void *sinit_base = (void *)(uintptr_t)read64p(TXT_SINIT_BASE);
 	/* Clear SINIT ACM memory */
-	memset(sinit_base, 0, read64((void *)TXT_SINIT_SIZE));
+	memset(sinit_base, 0, read64p(TXT_SINIT_SIZE));
 
 	/* Extended elements - ACM addresses */
 	data.heap_acm.header.type = HEAP_EXTDATA_TYPE_ACM;
@@ -318,7 +318,7 @@ static void txt_heap_push_bdr_for_one_acm(u8 **heap_struct)
 static void txt_initialize_heap(void)
 {
 	/* Fill TXT.HEAP.BASE with 4 subregions */
-	u8 *heap_struct = (void *)((uintptr_t)read64((void *)TXT_HEAP_BASE));
+	u8 *heap_struct = (void *)((uintptr_t)read64p(TXT_HEAP_BASE));
 
 	/*
 	 * Since we may have either BIOS ACM or both BIOS and SINIT ACMs in
@@ -365,7 +365,7 @@ static void lockdown_intel_txt(void *unused)
 	if (skip_intel_txt_lockdown())
 		return;
 
-	const uint64_t status = read64((void *)TXT_SPAD);
+	const uint64_t status = read64p(TXT_SPAD);
 
 	uint32_t txt_feature_flags = 0;
 	uintptr_t tseg_base;
@@ -401,7 +401,7 @@ static void lockdown_intel_txt(void *unused)
 	 * Chapter 5.5.6.1 DMA Protection Memory Region
 	 */
 
-	const u8 dpr_capable = !!(read64((void *)TXT_CAPABILITIES) &
+	const u8 dpr_capable = !!(read64p(TXT_CAPABILITIES) &
 				  TXT_CAPABILITIES_DPR);
 	printk(BIOS_INFO, "TEE-TXT: DPR capable %x\n", dpr_capable);
 
@@ -443,28 +443,28 @@ static void lockdown_intel_txt(void *unused)
 		dpr.prs = 0;
 		dpr.epm = 0;
 
-		write64((void *)TXT_DPR, dpr.raw);
+		write64p(TXT_DPR, dpr.raw);
 
 		printk(BIOS_INFO, "TEE-TXT: TXT.DPR 0x%08x\n",
-		       read32((void *)TXT_DPR));
+		       read32p(TXT_DPR));
 	}
 
 	/*
 	 * Document Number: 558294
 	 * Chapter 5.5.6.3 Intel TXT Heap Memory Region
 	 */
-	write64((void *)TXT_HEAP_SIZE, CONFIG_INTEL_TXT_HEAP_SIZE);
-	write64((void *)TXT_HEAP_BASE,
-		ALIGN_DOWN(tseg_base - read64((void *)TXT_HEAP_SIZE), 4096));
+	write64p(TXT_HEAP_SIZE, CONFIG_INTEL_TXT_HEAP_SIZE);
+	write64p(TXT_HEAP_BASE,
+		ALIGN_DOWN(tseg_base - read64p(TXT_HEAP_SIZE), 4096));
 
 	/*
 	 * Document Number: 558294
 	 * Chapter 5.5.6.2 SINIT Memory Region
 	 */
-	write64((void *)TXT_SINIT_SIZE, CONFIG_INTEL_TXT_SINIT_SIZE);
-	write64((void *)TXT_SINIT_BASE,
-		ALIGN_DOWN(read64((void *)TXT_HEAP_BASE) -
-			   read64((void *)TXT_SINIT_SIZE), 4096));
+	write64p(TXT_SINIT_SIZE, CONFIG_INTEL_TXT_SINIT_SIZE);
+	write64p(TXT_SINIT_BASE,
+		ALIGN_DOWN(read64p(TXT_HEAP_BASE) -
+			   read64p(TXT_SINIT_SIZE), 4096));
 
 	/*
 	 * FIXME: Server-TXT capable platforms need to install an STM in SMM and set up MSEG.
@@ -474,8 +474,8 @@ static void lockdown_intel_txt(void *unused)
 	 * Chapter 5.10.1 SMM in the Intel TXT for Servers Environment
 	 * Disable MSEG.
 	 */
-	write64((void *)TXT_MSEG_SIZE, 0);
-	write64((void *)TXT_MSEG_BASE, 0);
+	write64p(TXT_MSEG_SIZE, 0);
+	write64p(TXT_MSEG_BASE, 0);
 
 	/* Only initialize the heap on regular boots */
 	if (!acpi_is_wakeup_s3())

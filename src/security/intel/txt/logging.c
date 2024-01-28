@@ -35,7 +35,7 @@ const char *intel_txt_processor_error_type(uint8_t type)
  */
 static void log_txt_error(const char *phase)
 {
-	const uint64_t txt_error = read64((void *)TXT_ERROR);
+	const uint64_t txt_error = read64p(TXT_ERROR);
 
 	if (txt_error & ACMERROR_TXT_VALID) {
 		printk(BIOS_ERR, "%s: Error occurred\n", phase);
@@ -63,9 +63,9 @@ void intel_txt_log_bios_acm_error(void)
 
 	printk(BIOS_INFO, "TEE-TXT: State of ACM and ucode update:\n");
 
-	bios_acm_error = read32((void *)TXT_BIOSACM_ERRORCODE);
-	acm_status = read64((void *)TXT_SPAD);
-	txt_error = read64((void *)TXT_ERROR);
+	bios_acm_error = read32p(TXT_BIOSACM_ERRORCODE);
+	acm_status = read64p(TXT_SPAD);
+	txt_error = read64p(TXT_ERROR);
 
 	/* Errors by BIOS ACM or FIT */
 	if ((txt_error & ACMERROR_TXT_VALID) &&
@@ -81,10 +81,10 @@ void intel_txt_log_bios_acm_error(void)
 	}
 
 	/* Check for fatal ACM error and TXT reset */
-	uint8_t error = read8((void *)TXT_ESTS);
+	uint8_t error = read8p(TXT_ESTS);
 	if (error & TXT_ESTS_TXT_RESET_STS) {
 		printk(BIOS_CRIT, "TXT-STS: Intel TXT reset detected\n");
-		intel_txt_log_acm_error(read32((void *)TXT_ERROR));
+		intel_txt_log_acm_error(read32p(TXT_ERROR));
 	}
 }
 
@@ -178,12 +178,12 @@ void txt_dump_chipset_info(void)
 {
 	printk(BIOS_INFO, "TEE-TXT: Chipset Key Hash 0x");
 	for (int i = 0; i < TXT_ACM_KEY_HASH_LEN; i++) {
-		printk(BIOS_INFO, "%llx", read64((void *)TXT_ACM_KEY_HASH +
+		printk(BIOS_INFO, "%llx", read64p(TXT_ACM_KEY_HASH +
 		       (i * sizeof(uint64_t))));
 	}
 	printk(BIOS_INFO, "\n");
 
-	printk(BIOS_INFO, "TEE-TXT: DIDVID 0x%x\n", read32((void *)TXT_DIDVID));
+	printk(BIOS_INFO, "TEE-TXT: DIDVID 0x%x\n", read32p(TXT_DIDVID));
 	printk(BIOS_INFO, "TEE-TXT: production fused chipset: %s\n",
 	       intel_txt_chipset_is_production_fused() ? "true" : "false");
 }
@@ -199,18 +199,18 @@ void txt_dump_regions(void)
 
 	uint64_t reg64;
 
-	reg64 = read64((void *)TXT_HEAP_BASE);
+	reg64 = read64p(TXT_HEAP_BASE);
 	if ((reg64 != 0 && reg64 != ~0UL) &&
-	    (read64((void *)(uintptr_t)reg64) >= (sizeof(*bdr) + sizeof(uint64_t))))
+	    (read64p((uintptr_t)reg64) >= (sizeof(*bdr) + sizeof(uint64_t))))
 		bdr = (void *)((uintptr_t)reg64 + sizeof(uint64_t));
 
 	printk(BIOS_DEBUG, "TEE-TXT: TSEG 0x%lx, size %zu MiB\n", tseg_base, tseg_size / MiB);
-	printk(BIOS_DEBUG, "TEE-TXT: TXT.HEAP.BASE  0x%llx\n", read64((void *)TXT_HEAP_BASE));
-	printk(BIOS_DEBUG, "TEE-TXT: TXT.HEAP.SIZE  0x%llx\n", read64((void *)TXT_HEAP_SIZE));
-	printk(BIOS_DEBUG, "TEE-TXT: TXT.SINIT.BASE 0x%llx\n", read64((void *)TXT_SINIT_BASE));
-	printk(BIOS_DEBUG, "TEE-TXT: TXT.SINIT.SIZE 0x%llx\n", read64((void *)TXT_SINIT_SIZE));
-	printk(BIOS_DEBUG, "TEE-TXT: TXT.MSEG.BASE  0x%llx\n", read64((void *)TXT_MSEG_BASE));
-	printk(BIOS_DEBUG, "TEE-TXT: TXT.MSEG.SIZE  0x%llx\n", read64((void *)TXT_MSEG_SIZE));
+	printk(BIOS_DEBUG, "TEE-TXT: TXT.HEAP.BASE  0x%llx\n", read64p(TXT_HEAP_BASE));
+	printk(BIOS_DEBUG, "TEE-TXT: TXT.HEAP.SIZE  0x%llx\n", read64p(TXT_HEAP_SIZE));
+	printk(BIOS_DEBUG, "TEE-TXT: TXT.SINIT.BASE 0x%llx\n", read64p(TXT_SINIT_BASE));
+	printk(BIOS_DEBUG, "TEE-TXT: TXT.SINIT.SIZE 0x%llx\n", read64p(TXT_SINIT_SIZE));
+	printk(BIOS_DEBUG, "TEE-TXT: TXT.MSEG.BASE  0x%llx\n", read64p(TXT_MSEG_BASE));
+	printk(BIOS_DEBUG, "TEE-TXT: TXT.MSEG.SIZE  0x%llx\n", read64p(TXT_MSEG_SIZE));
 
 	if (bdr) {
 		printk(BIOS_DEBUG, "TEE-TXT: BiosDataRegion.bios_sinit_size 0x%x\n",

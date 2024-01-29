@@ -39,7 +39,8 @@ static void soc_init(void *chip_info)
 {
 	default_dev_ops_root.write_acpi_tables = soc_acpi_write_tables;
 
-	amd_fsp_silicon_init();
+	if (CONFIG(PLATFORM_USES_FSP2_0))
+		amd_fsp_silicon_init();
 
 	data_fabric_set_mmio_np();
 

@@ -208,3 +208,22 @@ struct region_name {
 	const char *filename;
 	const char *fmapname;
 };
+
+struct cse_fpt {
+	const char signature[4];
+	uint32_t count;
+	uint8_t header_version;
+	uint8_t entry_version;
+	uint8_t length;
+	uint8_t crc;
+	uint8_t reserved[20];
+};
+
+struct cse_fpt_sub_part {
+	const char signature[4];
+	uint32_t reserved_1;
+	uint32_t offset;
+	uint32_t length;
+	uint8_t reserved_2[12];
+	uint32_t flags;
+};

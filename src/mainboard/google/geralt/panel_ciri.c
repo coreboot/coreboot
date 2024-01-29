@@ -2,6 +2,7 @@
 
 #include <console/console.h>
 #include <soc/i2c.h>
+#include <soc/regulator.h>
 
 #include "gpio.h"
 #include "panel.h"
@@ -23,6 +24,7 @@ static void power_on_mipi_himax_83102j(void)
 		.settings = reg_settings,
 		.setting_counts = ARRAY_SIZE(reg_settings),
 	};
+	mainboard_set_regulator_voltage(MTK_REGULATOR_VDD18, 1900000);
 	power_on_mipi_panel(&cfg);
 }
 

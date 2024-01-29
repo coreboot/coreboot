@@ -38,6 +38,8 @@ void mainboard_set_regulator_voltage(enum mtk_regulator regulator, uint32_t volt
 
 	if (id == MT6359P_SIM1)
 		mt6359p_set_vsim1_voltage(voltage_uv);
+	else if (id == MT6359P_VM18)
+		mt6359p_set_vm18_voltage(voltage_uv);
 	else
 		mt6359p_buck_set_voltage(id, voltage_uv);
 }

@@ -37,10 +37,6 @@ bool smm_pci_resource_store_fill_resources(struct smm_pci_resource_info *slots, 
 		slots[i_slot].vendor_id = devices[i_dev]->vendor;
 		slots[i_slot].device_id = devices[i_dev]->device;
 
-		/* Use the resource list to get our BARs. */
-		if (!devices[i_dev]->resource_list)
-			continue;
-
 		size_t i_res = 0;
 		for (const struct resource *res = devices[i_dev]->resource_list; res != NULL;
 			res = res->next) {

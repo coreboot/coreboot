@@ -133,7 +133,7 @@ DECLARE_SPIN_LOCK(bus_lock)
  * Allocate a new downstream bus structure below a device and attach it
  * to the device tree if the device doesn't already have a downstream bus.
  *
- * @param parent Parent device the to be created bus should be attached to.
+ * @param parent Parent device the to-be-created bus should be attached to.
  * @return Pointer to the newly created bus structure or the existing bus.
  *
  */

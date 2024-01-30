@@ -200,6 +200,11 @@ void amd_pci_domain_read_resources(struct device *domain)
 	add_data_fabric_mmio_regions(domain, &idx);
 
 	read_non_pci_resources(domain, &idx);
+
+	/* Only add the SoC's DRAM memory map and fixed resources once */
+	if (domain->path.domain.domain == 0) {
+		read_soc_memmap_resources(domain, &idx);
+	}
 }
 
 static void write_ssdt_domain_io_producer_range_helper(const char *domain_name,

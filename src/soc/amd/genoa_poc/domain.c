@@ -13,16 +13,9 @@
 
 #define IOHC_IOAPIC_BASE_ADDR_LO 0x2f0
 
-static void genoa_domain_read_resources(struct device *domain)
+void read_soc_memmap_resources(struct device *domain, unsigned long *idx)
 {
-	amd_pci_domain_read_resources(domain);
-
-	// We only want to add the DRAM memory map once
-	if (domain->path.domain.domain == 0) {
-		/* 0x1000 is a large enough first index to be sure to not overlap with the
-		   resources added by amd_pci_domain_read_resources */
-		add_opensil_memmap(domain, 0x1000);
-	}
+	*idx = add_opensil_memmap(domain, *idx);
 }
 
 static void genoa_domain_set_resources(struct device *domain)
@@ -74,7 +67,7 @@ static const char *genoa_domain_acpi_name(const struct device *domain)
 }
 
 struct device_operations genoa_pci_domain_ops = {
-	.read_resources	= genoa_domain_read_resources,
+	.read_resources	= amd_pci_domain_read_resources,
 	.set_resources	= genoa_domain_set_resources,
 	.scan_bus	= amd_pci_domain_scan_bus,
 	.init		= genoa_domain_init,

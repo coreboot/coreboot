@@ -22,6 +22,8 @@ struct non_pci_mmio_reg {
 
 void read_non_pci_resources(struct device *domain, unsigned long *idx);
 
+void read_soc_memmap_resources(struct device *domain, unsigned long *idx);
+
 uint32_t get_iohc_misc_smn_base(struct device *domain);
 const struct non_pci_mmio_reg *get_iohc_non_pci_mmio_regs(size_t *count);
 

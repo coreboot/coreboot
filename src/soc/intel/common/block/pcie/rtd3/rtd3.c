@@ -567,6 +567,6 @@ static void pcie_rtd3_acpi_enable(struct device *dev)
 }
 
 struct chip_operations soc_intel_common_block_pcie_rtd3_ops = {
-	CHIP_NAME("Intel PCIe Runtime D3")
+	.name = "Intel PCIe Runtime D3",
 	.enable_dev = pcie_rtd3_acpi_enable
 };

@@ -41,6 +41,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations drivers_i2c_at24rf08c_ops = {
-	CHIP_NAME("AT24RF08C")
+	.name = "AT24RF08C",
 	.enable_dev = enable_dev,
 };

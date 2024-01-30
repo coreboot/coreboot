@@ -174,6 +174,6 @@ static void soundwire_alc5682_enable(struct device *dev)
 }
 
 struct chip_operations drivers_soundwire_alc5682_ops = {
-	CHIP_NAME("Realtek ALC5682 SoundWire Codec")
+	.name = "Realtek ALC5682 SoundWire Codec",
 	.enable_dev = soundwire_alc5682_enable
 };

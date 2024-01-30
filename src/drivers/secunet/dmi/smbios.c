@@ -91,6 +91,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations drivers_secunet_dmi_ops = {
-	CHIP_NAME("secunet DMI")
+	.name = "secunet DMI",
 	.enable_dev = enable_dev,
 };

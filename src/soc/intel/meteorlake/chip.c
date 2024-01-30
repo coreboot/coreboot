@@ -276,7 +276,7 @@ static void soc_init_final_device(void *chip_info)
 }
 
 struct chip_operations soc_intel_meteorlake_ops = {
-	CHIP_NAME("Intel Meteorlake")
+	.name = "Intel Meteorlake",
 	.enable_dev	= &soc_enable,
 	.init		= &soc_init_pre_device,
 	.final		= &soc_init_final_device,

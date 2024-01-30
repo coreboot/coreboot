@@ -251,6 +251,6 @@ static void rtc_enable(struct device *dev)
 }
 
 struct chip_operations drivers_i2c_rv3028c7_ops = {
-	CHIP_NAME("RV-3028-C7")
+	.name = "RV-3028-C7",
 	.enable_dev = rtc_enable
 };

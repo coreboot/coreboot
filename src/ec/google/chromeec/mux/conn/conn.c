@@ -52,6 +52,6 @@ static void conn_enable(struct device *dev)
 }
 
 struct chip_operations ec_google_chromeec_mux_conn_ops = {
-	CHIP_NAME("CrosEC Type C Mux device")
+	.name = "CrosEC Type C Mux device",
 	.enable_dev	= conn_enable,
 };

@@ -460,6 +460,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations superio_nuvoton_npcd378_ops = {
-	CHIP_NAME("NUVOTON NPCD378 Super I/O")
+	.name = "NUVOTON NPCD378 Super I/O",
 	.enable_dev = enable_dev,
 };

@@ -230,6 +230,6 @@ static void wilco_ec_enable_dev(struct device *dev)
 }
 
 struct chip_operations ec_google_wilco_ops = {
-	CHIP_NAME("Google Wilco EC")
+	.name = "Google Wilco EC",
 	.enable_dev = wilco_ec_enable_dev,
 };

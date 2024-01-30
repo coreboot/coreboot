@@ -325,6 +325,6 @@ static void h8_enable(struct device *dev)
 }
 
 struct chip_operations ec_lenovo_h8_ops = {
-	CHIP_NAME("Lenovo H8 EC")
+	.name = "Lenovo H8 EC",
 	.enable_dev = h8_enable,
 };

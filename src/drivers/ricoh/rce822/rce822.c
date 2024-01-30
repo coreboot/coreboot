@@ -58,5 +58,5 @@ static const struct pci_driver rce822 __pci_driver = {
 };
 
 struct chip_operations drivers_ricoh_rce822_ops = {
-	CHIP_NAME("RICOH RCE822")
+	.name = "RICOH RCE822",
 };

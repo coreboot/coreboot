@@ -294,7 +294,7 @@ static void soc_init(void *chip_info)
 }
 
 struct chip_operations soc_intel_braswell_ops = {
-	CHIP_NAME("Intel Braswell SoC")
+	.name = "Intel Braswell SoC",
 	.enable_dev = enable_dev,
 	.init       = soc_init,
 };

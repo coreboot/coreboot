@@ -34,8 +34,6 @@ struct chip_operations {
 	const char *name;
 };
 
-#define CHIP_NAME(X) .name = X,
-
 struct bus;
 
 struct acpi_rsdp;

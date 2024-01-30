@@ -93,6 +93,6 @@ static void max98357a_enable(struct device *dev)
 }
 
 struct chip_operations drivers_generic_max98357a_ops = {
-	CHIP_NAME("Maxim Integrated 98357A Amplifier")
+	.name = "Maxim Integrated 98357A Amplifier",
 	.enable_dev = max98357a_enable
 };

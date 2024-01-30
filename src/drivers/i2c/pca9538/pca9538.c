@@ -49,6 +49,6 @@ static void pca9538_enable(struct device *dev)
 }
 
 struct chip_operations drivers_i2c_pca9538_ops = {
-	CHIP_NAME("PCA9538")
+	.name = "PCA9538",
 	.enable_dev = pca9538_enable
 };

@@ -10,7 +10,7 @@
 #include "../opensil.h"
 
 struct chip_operations vendorcode_amd_opensil_genoa_poc_mpio_ops = {
-	CHIP_NAME("AMD GENOA MPIO")
+	.name = "AMD GENOA MPIO",
 };
 
 static void nbio_config(void)

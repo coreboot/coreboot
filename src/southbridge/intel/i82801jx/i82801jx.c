@@ -194,7 +194,7 @@ static void i82801jx_init(void *chip_info)
 }
 
 struct chip_operations southbridge_intel_i82801jx_ops = {
-	CHIP_NAME("Intel ICH10 (82801Jx) Series Southbridge")
+	.name = "Intel ICH10 (82801Jx) Series Southbridge",
 	.enable_dev	= i82801jx_enable_device,
 	.init		= i82801jx_init,
 };

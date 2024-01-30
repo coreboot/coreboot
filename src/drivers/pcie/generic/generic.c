@@ -68,6 +68,6 @@ static void pcie_generic_enable(struct device *dev)
 }
 
 struct chip_operations drivers_pcie_generic_ops = {
-	CHIP_NAME("PCIe Device")
+	.name = "PCIe Device",
 	.enable_dev = pcie_generic_enable
 };

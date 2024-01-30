@@ -145,6 +145,6 @@ static void cs35l53_enable(struct device *dev)
 }
 
 struct chip_operations drivers_i2c_cs35l53_ops = {
-	CHIP_NAME("Cirrus Logic CS35L53 Audio Codec")
+	.name = "Cirrus Logic CS35L53 Audio Codec",
 	.enable_dev = cs35l53_enable
 };

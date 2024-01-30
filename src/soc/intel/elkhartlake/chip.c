@@ -159,7 +159,7 @@ static void soc_enable(struct device *dev)
 }
 
 struct chip_operations soc_intel_elkhartlake_ops = {
-	CHIP_NAME("Intel Elkhartlake")
+	.name = "Intel Elkhartlake",
 	.enable_dev	= &soc_enable,
 	.init		= &soc_init_pre_device,
 };

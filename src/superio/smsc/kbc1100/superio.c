@@ -14,7 +14,7 @@ static void enable_dev(struct device *dev);
 static void kbc1100_init(struct device *dev);
 
 struct chip_operations superio_smsc_kbc1100_ops = {
-	CHIP_NAME("SMSC KBC1100 Super I/O")
+	.name = "SMSC KBC1100 Super I/O",
 	.enable_dev = enable_dev
 };
 

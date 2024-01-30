@@ -215,6 +215,6 @@ static void lm96000_enable(struct device *const dev)
 }
 
 struct chip_operations drivers_i2c_lm96000_ops = {
-	CHIP_NAME("LM96000")
+	.name = "LM96000",
 	.enable_dev = lm96000_enable
 };

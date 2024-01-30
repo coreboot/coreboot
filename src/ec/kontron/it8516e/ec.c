@@ -239,6 +239,6 @@ static void it8516e_enable(struct device *dev)
 }
 
 const struct chip_operations ec_kontron_it8516e_ops = {
-	CHIP_NAME("Kontron (Fintec/ITE) IT8516E EC")
+	.name = "Kontron (Fintec/ITE) IT8516E EC",
 	.enable_dev = it8516e_enable
 };

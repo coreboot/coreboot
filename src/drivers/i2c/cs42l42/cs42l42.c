@@ -118,6 +118,6 @@ static void cs42l42_enable(struct device *dev)
 }
 
 struct chip_operations drivers_i2c_cs42l42_ops = {
-	CHIP_NAME("Cirrus Logic CS42l42 Audio Codec")
+	.name = "Cirrus Logic CS42l42 Audio Codec",
 	.enable_dev = cs42l42_enable
 };

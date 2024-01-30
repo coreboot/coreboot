@@ -392,6 +392,6 @@ static void wwan_fm350gl_acpi_enable(struct device *dev)
 }
 
 struct chip_operations drivers_wwan_fm_ops = {
-	 CHIP_NAME("Fibocom FM-350-GL")
+	 .name = "Fibocom FM-350-GL",
 	.enable_dev = wwan_fm350gl_acpi_enable
 };

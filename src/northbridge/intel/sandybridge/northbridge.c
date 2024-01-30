@@ -407,5 +407,5 @@ struct device_operations sandybridge_cpu_bus_ops = {
 };
 
 struct chip_operations northbridge_intel_sandybridge_ops = {
-	CHIP_NAME("Intel SandyBridge/IvyBridge integrated Northbridge")
+	.name = "Intel SandyBridge/IvyBridge integrated Northbridge",
 };

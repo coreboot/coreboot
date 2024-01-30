@@ -127,7 +127,7 @@ static void usb_acpi_enable(struct device *dev)
 }
 
 struct chip_operations drivers_usb_acpi_ops = {
-	CHIP_NAME("USB ACPI Device")
+	.name = "USB ACPI Device",
 	.enable_dev = usb_acpi_enable
 };
 

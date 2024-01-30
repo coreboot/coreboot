@@ -49,6 +49,6 @@ static void enable_soc_dev(struct device *dev)
 }
 
 struct chip_operations soc_qualcomm_ipq40xx_ops = {
-	CHIP_NAME("SOC QCA 40xx")
+	.name = "SOC QCA 40xx",
 	.enable_dev = enable_soc_dev,
 };

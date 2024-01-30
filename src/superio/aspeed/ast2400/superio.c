@@ -103,6 +103,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations superio_aspeed_ast2400_ops = {
-	CHIP_NAME("ASpeed AST2400/AST2500 Super I/O")
+	.name = "ASpeed AST2400/AST2500 Super I/O",
 	.enable_dev = enable_dev,
 };

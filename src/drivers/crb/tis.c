@@ -206,6 +206,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations drivers_crb_ops = {
-	CHIP_NAME("CRB TPM")
+	.name = "CRB TPM",
 	.enable_dev = enable_dev
 };

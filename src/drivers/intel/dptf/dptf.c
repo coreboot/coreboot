@@ -636,6 +636,6 @@ static void dptf_enable_dev(struct device *dev)
 }
 
 struct chip_operations drivers_intel_dptf_ops = {
-	CHIP_NAME("Intel DPTF")
+	.name = "Intel DPTF",
 	.enable_dev = dptf_enable_dev,
 };

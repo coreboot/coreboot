@@ -148,7 +148,7 @@ static void ptn3460_enable(struct device *dev)
 }
 
 struct chip_operations drivers_i2c_ptn3460_ops = {
-	CHIP_NAME("PTN3460")
+	.name = "PTN3460",
 	.enable_dev = ptn3460_enable
 };
 

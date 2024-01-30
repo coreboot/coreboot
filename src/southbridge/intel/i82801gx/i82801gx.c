@@ -83,7 +83,7 @@ static void i82801gx_init(void *chip_info)
 }
 
 struct chip_operations southbridge_intel_i82801gx_ops = {
-	CHIP_NAME("Intel ICH7/ICH7-M (82801Gx) Series Southbridge")
+	.name = "Intel ICH7/ICH7-M (82801Gx) Series Southbridge",
 	.enable_dev =	i82801gx_enable,
 	.init =		i82801gx_init,
 };

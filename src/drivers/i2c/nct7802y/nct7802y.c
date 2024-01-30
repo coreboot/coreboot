@@ -45,6 +45,6 @@ static void nct7802y_enable(struct device *const dev)
 }
 
 struct chip_operations drivers_i2c_nct7802y_ops = {
-	CHIP_NAME("NCT7802Y")
+	.name = "NCT7802Y",
 	.enable_dev = nct7802y_enable
 };

@@ -103,6 +103,6 @@ static void rt1011_enable(struct device *dev)
 }
 
 struct chip_operations drivers_i2c_rt1011_ops = {
-	CHIP_NAME("Realtek RT1011 Codec")
+	.name = "Realtek RT1011 Codec",
 	.enable_dev = rt1011_enable
 };

@@ -160,6 +160,6 @@ static void gfx_enable(struct device *dev)
 }
 
 struct chip_operations drivers_gfx_generic_ops = {
-	CHIP_NAME("Generic Graphics Device")
+	.name = "Generic Graphics Device",
 	.enable_dev = gfx_enable
 };

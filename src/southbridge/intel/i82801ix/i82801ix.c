@@ -203,7 +203,7 @@ static void i82801ix_init(void *chip_info)
 }
 
 struct chip_operations southbridge_intel_i82801ix_ops = {
-	CHIP_NAME("Intel ICH9/ICH9-M (82801Ix) Series Southbridge")
+	.name = "Intel ICH9/ICH9-M (82801Ix) Series Southbridge",
 	.enable_dev	= i82801ix_enable_device,
 	.init		= i82801ix_init,
 };

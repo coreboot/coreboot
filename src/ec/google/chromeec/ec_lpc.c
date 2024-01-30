@@ -451,7 +451,7 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations ec_google_chromeec_ops = {
-	CHIP_NAME("Google Chrome EC")
+	.name = "Google Chrome EC",
 	.enable_dev = enable_dev,
 };
 

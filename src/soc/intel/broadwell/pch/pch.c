@@ -196,7 +196,7 @@ static void broadwell_pch_enable_dev(struct device *dev)
 }
 
 struct chip_operations soc_intel_broadwell_pch_ops = {
-	CHIP_NAME("Intel Broadwell PCH")
+	.name = "Intel Broadwell PCH",
 	.enable_dev = &broadwell_pch_enable_dev,
 };
 

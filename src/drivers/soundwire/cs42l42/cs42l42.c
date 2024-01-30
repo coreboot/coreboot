@@ -226,6 +226,6 @@ static void soundwire_cs42l42_enable(struct device *dev)
 }
 
 struct chip_operations drivers_soundwire_cs42l42_ops = {
-	CHIP_NAME("Cirrus Logic CS42L42 SoundWire Codec")
+	.name = "Cirrus Logic CS42L42 SoundWire Codec",
 	.enable_dev = soundwire_cs42l42_enable
 };

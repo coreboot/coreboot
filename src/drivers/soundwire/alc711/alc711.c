@@ -151,6 +151,6 @@ static void soundwire_alc711_enable(struct device *dev)
 }
 
 struct chip_operations drivers_soundwire_alc711_ops = {
-	CHIP_NAME("Realtek ALC711 SoundWire Codec")
+	.name = "Realtek ALC711 SoundWire Codec",
 	.enable_dev = soundwire_alc711_enable
 };

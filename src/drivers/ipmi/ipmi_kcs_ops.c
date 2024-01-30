@@ -360,6 +360,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations drivers_ipmi_ops = {
-	CHIP_NAME("IPMI KCS")
+	.name = "IPMI KCS",
 	.enable_dev = enable_dev,
 };

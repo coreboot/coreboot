@@ -47,6 +47,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations superio_smsc_mec1308_ops = {
-	CHIP_NAME("SMSC MEC1308 EC SuperIO Interface")
+	.name = "SMSC MEC1308 EC SuperIO Interface",
 	.enable_dev = enable_dev
 };

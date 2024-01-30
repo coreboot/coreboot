@@ -297,6 +297,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations ec_starlabs_merlin_ops = {
-	CHIP_NAME("NUVOTON EC")
+	.name = "NUVOTON EC",
 	.enable_dev = enable_dev
 };

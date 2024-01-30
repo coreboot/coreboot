@@ -85,6 +85,6 @@ static void usb_hub_acpi_enable(struct device *dev)
 }
 
 struct chip_operations drivers_usb_hub_ops = {
-	 CHIP_NAME("USB Hub")
+	 .name = "USB Hub",
 	.enable_dev = usb_hub_acpi_enable
 };

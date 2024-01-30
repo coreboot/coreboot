@@ -75,6 +75,6 @@ static void tas5825m_enable_dev(struct device *dev)
 }
 
 struct chip_operations drivers_i2c_tas5825m_ops = {
-	CHIP_NAME("TI TAS5825M Amplifier")
+	.name = "TI TAS5825M Amplifier",
 	.enable_dev = tas5825m_enable_dev,
 };

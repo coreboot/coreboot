@@ -222,7 +222,7 @@ static void soc_enable(struct device *dev)
 }
 
 struct chip_operations soc_intel_tigerlake_ops = {
-	CHIP_NAME("Intel Tigerlake")
+	.name = "Intel Tigerlake",
 	.enable_dev	= &soc_enable,
 	.init		= &soc_init_pre_device,
 };

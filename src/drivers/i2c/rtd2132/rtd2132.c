@@ -235,6 +235,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations drivers_i2c_rtd2132_ops = {
-	CHIP_NAME("Realtek RTD2132 LVDS Bridge")
+	.name = "Realtek RTD2132 LVDS Bridge",
 	.enable_dev = enable_dev,
 };

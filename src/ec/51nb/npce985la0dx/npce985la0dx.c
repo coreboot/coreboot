@@ -17,6 +17,6 @@ static void ec_51nb_npce985la0dx_ops_enable(struct device *dev)
 }
 
 struct chip_operations ec_51nb_npce985la0dx_ops = {
-	CHIP_NAME("51NB EC")
+	.name = "51NB EC",
 	.enable_dev = ec_51nb_npce985la0dx_ops_enable,
 };

@@ -153,7 +153,7 @@ static void conn_enable(struct device *dev)
 }
 
 struct chip_operations drivers_intel_pmc_mux_conn_ops = {
-	CHIP_NAME("Intel PMC MUX CONN Driver")
+	.name = "Intel PMC MUX CONN Driver",
 	.enable_dev	= conn_enable,
 };
 

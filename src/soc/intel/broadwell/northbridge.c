@@ -419,6 +419,6 @@ static void broadwell_init_pre_device(void *chip_info)
 }
 
 struct chip_operations soc_intel_broadwell_ops = {
-	CHIP_NAME("Intel Broadwell")
+	.name = "Intel Broadwell",
 	.init       = &broadwell_init_pre_device,
 };

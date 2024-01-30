@@ -692,7 +692,7 @@ struct device_operations amd_fam16_mod30_cpu_bus_ops = {
 };
 
 struct chip_operations northbridge_amd_pi_00730F01_ops = {
-	CHIP_NAME("AMD FAM16 Root Complex")
+	.name = "AMD FAM16 Root Complex",
 	.final = fam16_finalize,
 };
 

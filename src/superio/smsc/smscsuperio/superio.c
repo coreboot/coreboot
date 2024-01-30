@@ -281,6 +281,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations superio_smsc_smscsuperio_ops = {
-	CHIP_NAME("Various SMSC Super I/Os")
+	.name = "Various SMSC Super I/Os",
 	.enable_dev = enable_dev
 };

@@ -38,5 +38,5 @@ static const struct pci_driver pcix_driver __pci_driver = {
 };
 
 struct chip_operations southbridge_intel_i82870_ops = {
-	CHIP_NAME("Intel 82870")
+	.name = "Intel 82870",
 };

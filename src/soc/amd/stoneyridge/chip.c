@@ -100,7 +100,7 @@ static void soc_final(void *chip_info)
 }
 
 struct chip_operations soc_amd_stoneyridge_ops = {
-	CHIP_NAME("AMD StoneyRidge SOC")
+	.name = "AMD StoneyRidge SOC",
 	.init = soc_init,
 	.final = soc_final
 };

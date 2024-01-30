@@ -126,6 +126,6 @@ static void thermal_zone_enable_dev(struct device *dev)
 }
 
 struct chip_operations drivers_acpi_thermal_zone_ops = {
-	CHIP_NAME("ACPI Thermal Zone")
+	.name = "ACPI Thermal Zone",
 	.enable_dev = thermal_zone_enable_dev,
 };

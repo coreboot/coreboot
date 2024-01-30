@@ -229,6 +229,6 @@ static void i2c_generic_enable(struct device *dev)
 }
 
 struct chip_operations drivers_i2c_generic_ops = {
-	CHIP_NAME("I2C Device")
+	.name = "I2C Device",
 	.enable_dev = i2c_generic_enable
 };

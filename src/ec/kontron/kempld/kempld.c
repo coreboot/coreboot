@@ -105,6 +105,6 @@ static void kempld_enable_dev(struct device *const dev)
 }
 
 struct chip_operations ec_kontron_kempld_ops = {
-	CHIP_NAME("Kontron KEMPLD")
+	.name = "Kontron KEMPLD",
 	.enable_dev = kempld_enable_dev,
 };

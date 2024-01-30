@@ -169,6 +169,6 @@ static void uart_acpi_enable(struct device *dev)
 }
 
 struct chip_operations drivers_uart_acpi_ops = {
-	CHIP_NAME("ACPI UART Device")
+	.name = "ACPI UART Device",
 	.enable_dev = uart_acpi_enable
 };

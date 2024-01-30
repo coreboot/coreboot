@@ -52,7 +52,7 @@ static void soc_final(void *chip_info)
 }
 
 struct chip_operations soc_amd_phoenix_ops = {
-	CHIP_NAME("AMD Phoenix SoC")
+	.name = "AMD Phoenix SoC",
 	.init = soc_init,
 	.final = soc_final
 };

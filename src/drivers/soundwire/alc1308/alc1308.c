@@ -146,6 +146,6 @@ static void soundwire_alc1308_enable(struct device *dev)
 }
 
 struct chip_operations drivers_soundwire_alc1308_ops = {
-	CHIP_NAME("Realtek ALC1308 SoundWire Codec")
+	.name = "Realtek ALC1308 SoundWire Codec",
 	.enable_dev = soundwire_alc1308_enable
 };

@@ -441,5 +441,5 @@ static const struct pci_driver r8168_driver __pci_driver = {
 };
 
 struct chip_operations drivers_net_ops = {
-	CHIP_NAME("Realtek r8168")
+	.name = "Realtek r8168",
 };

@@ -141,6 +141,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations ec_quanta_ene_kb3940q_ops = {
-	CHIP_NAME("QUANTA EnE KB3940Q EC")
+	.name = "QUANTA EnE KB3940Q EC",
 	.enable_dev = enable_dev
 };

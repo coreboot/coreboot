@@ -215,6 +215,6 @@ static void southbridge_init(struct device *dev)
 }
 
 struct chip_operations southbridge_ricoh_rl5c476_ops = {
-	CHIP_NAME("Ricoh RL5C476 CardBus Controller")
+	.name = "Ricoh RL5C476 CardBus Controller",
 	.enable_dev    = southbridge_init,
 };

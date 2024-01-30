@@ -128,7 +128,7 @@ static void enable_exynos5250_dev(struct device *dev)
 }
 
 struct chip_operations soc_samsung_exynos5250_ops = {
-	CHIP_NAME("SOC Samsung Exynos 5250")
+	.name = "SOC Samsung Exynos 5250",
 	.enable_dev = enable_exynos5250_dev,
 };
 

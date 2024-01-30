@@ -126,6 +126,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations ec_lenovo_pmh7_ops = {
-	CHIP_NAME("Lenovo Power Management Hardware Hub 7")
+	.name = "Lenovo Power Management Hardware Hub 7",
 	.enable_dev = enable_dev,
 };

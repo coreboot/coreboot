@@ -200,6 +200,6 @@ static void spi_acpi_enable(struct device *dev)
 }
 
 struct chip_operations drivers_spi_acpi_ops = {
-	CHIP_NAME("SPI Device")
+	.name = "SPI Device",
 	.enable_dev = spi_acpi_enable
 };

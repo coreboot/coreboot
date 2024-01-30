@@ -154,7 +154,7 @@ static void x4x_init(void *const chip_info)
 }
 
 struct chip_operations northbridge_intel_x4x_ops = {
-	CHIP_NAME("Intel 4-Series Northbridge")
+	.name = "Intel 4-Series Northbridge",
 	.init = x4x_init,
 };
 

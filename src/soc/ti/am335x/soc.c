@@ -10,6 +10,6 @@ static void soc_enable(struct device *dev)
 }
 
 struct chip_operations soc_ti_am335x_ops = {
-	CHIP_NAME("TI AM335X")
+	.name = "TI AM335X",
 	.enable_dev = soc_enable,
 };

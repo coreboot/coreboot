@@ -131,6 +131,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations ec_compal_ene932_ops = {
-	CHIP_NAME("COMPAL ENE932 EC")
+	.name = "COMPAL ENE932 EC",
 	.enable_dev = enable_dev
 };

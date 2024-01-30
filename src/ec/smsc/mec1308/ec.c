@@ -112,6 +112,6 @@ static void mec1308_enable(struct device *dev)
 }
 
 struct chip_operations ec_smsc_mec1308_ops = {
-	CHIP_NAME("SMSC MEC1308 EC Mailbox Interface")
+	.name = "SMSC MEC1308 EC Mailbox Interface",
 	.enable_dev = mec1308_enable
 };

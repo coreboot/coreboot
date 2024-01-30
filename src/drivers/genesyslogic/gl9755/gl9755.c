@@ -58,5 +58,5 @@ static const struct pci_driver genesyslogic_gl9755 __pci_driver = {
 };
 
 struct chip_operations drivers_generic_genesyslogic_gl9755_ops = {
-	CHIP_NAME("Genesys Logic GL9755")
+	.name = "Genesys Logic GL9755",
 };

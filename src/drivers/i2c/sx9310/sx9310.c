@@ -131,6 +131,6 @@ static void i2c_sx9310_enable(struct device *dev)
 }
 
 struct chip_operations drivers_i2c_sx9310_ops = {
-	CHIP_NAME(I2C_SX9310_ACPI_NAME)
+	.name = I2C_SX9310_ACPI_NAME,
 	.enable_dev = i2c_sx9310_enable
 };

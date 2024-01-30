@@ -105,6 +105,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations northbridge_intel_i440bx_ops = {
-	CHIP_NAME("Intel 82443BX (440BX) Northbridge")
+	.name = "Intel 82443BX (440BX) Northbridge",
 	.enable_dev = enable_dev,
 };

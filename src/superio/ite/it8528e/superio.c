@@ -49,6 +49,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations superio_ite_it8528e_ops = {
-	CHIP_NAME("ITE IT8528E Super I/O")
+	.name = "ITE IT8528E Super I/O",
 	.enable_dev = enable_dev,
 };

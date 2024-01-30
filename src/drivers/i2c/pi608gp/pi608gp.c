@@ -188,5 +188,5 @@ struct device_operations pi608gp_ops = {
 };
 
 struct chip_operations drivers_i2c_pi608gp_ops = {
-	CHIP_NAME("PI7C9X2G608GP")
+	.name = "PI7C9X2G608GP",
 };

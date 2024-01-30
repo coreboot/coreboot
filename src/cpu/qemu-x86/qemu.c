@@ -22,5 +22,5 @@ static const struct cpu_driver driver __cpu_driver = {
 };
 
 struct chip_operations cpu_qemu_x86_ops = {
-	CHIP_NAME("QEMU x86 CPU")
+	.name = "QEMU x86 CPU",
 };

@@ -94,6 +94,6 @@ static void intel_soundwire_enable(struct device *dev)
 }
 
 struct chip_operations drivers_intel_soundwire_ops = {
-	CHIP_NAME("Intel SoundWire Controller")
+	.name = "Intel SoundWire Controller",
 	.enable_dev = intel_soundwire_enable
 };

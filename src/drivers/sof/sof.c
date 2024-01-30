@@ -85,6 +85,6 @@ static void sof_enable(struct device *dev)
 }
 
 struct chip_operations drivers_sof_ops = {
-	CHIP_NAME("SOF")
+	.name = "SOF",
 	.enable_dev = sof_enable
 };

@@ -48,6 +48,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations ec_roda_it8518_ops = {
-	CHIP_NAME("Roda IT8518 EC")
+	.name = "Roda IT8518 EC",
 	.enable_dev = enable_dev
 };

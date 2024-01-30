@@ -35,6 +35,6 @@ static void mainboard_enable(struct device *dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("X10SLM+-F")
+	.name = "X10SLM+-F",
 	.enable_dev = mainboard_enable,
 };

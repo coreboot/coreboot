@@ -35,5 +35,5 @@
 #include <device/device.h>
 
 const struct chip_operations southbridge_intel_i82371eb_ops = {
-	CHIP_NAME("Intel 82371FB/SB/MX/AB/EB/MB Southbridge")
+	.name = "Intel 82371FB/SB/MX/AB/EB/MB Southbridge",
 };

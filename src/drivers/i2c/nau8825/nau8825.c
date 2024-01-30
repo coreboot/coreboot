@@ -103,6 +103,6 @@ static void nau8825_enable(struct device *dev)
 }
 
 struct chip_operations drivers_i2c_nau8825_ops = {
-	CHIP_NAME("Nuvoton NAU8825 Codec")
+	.name = "Nuvoton NAU8825 Codec",
 	.enable_dev = nau8825_enable
 };

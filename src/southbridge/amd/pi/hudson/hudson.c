@@ -92,7 +92,7 @@ static void hudson_final(void *chip_info)
 }
 
 struct chip_operations southbridge_amd_pi_hudson_ops = {
-	CHIP_NAME("ATI HUDSON")
+	.name = "ATI HUDSON",
 	.enable_dev = hudson_enable,
 	.init = hudson_init,
 	.final = hudson_final

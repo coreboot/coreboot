@@ -233,7 +233,7 @@ static void gm45_init(void *const chip_info)
 }
 
 struct chip_operations northbridge_intel_gm45_ops = {
-	CHIP_NAME("Intel GM45 Northbridge")
+	.name = "Intel GM45 Northbridge",
 	.init = gm45_init,
 };
 

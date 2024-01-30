@@ -90,6 +90,6 @@ static void i2c_hid_enable(struct device *dev)
 }
 
 struct chip_operations drivers_i2c_hid_ops = {
-	CHIP_NAME("I2C HID Device")
+	.name = "I2C HID Device",
 	.enable_dev = i2c_hid_enable
 };

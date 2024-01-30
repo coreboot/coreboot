@@ -70,5 +70,5 @@ struct device_operations e7505_cpu_bus_ops = {
 };
 
 struct chip_operations northbridge_intel_e7505_ops = {
-	CHIP_NAME("Intel E7505 Northbridge")
+	.name = "Intel E7505 Northbridge",
 };

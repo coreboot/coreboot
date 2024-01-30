@@ -36,6 +36,6 @@ static void enable_soc_dev(struct device *dev)
 }
 
 struct chip_operations soc_qualcomm_sc7180_ops = {
-	CHIP_NAME("SOC Qualcomm SC7180")
+	.name = "SOC Qualcomm SC7180",
 	.enable_dev = enable_soc_dev,
 };

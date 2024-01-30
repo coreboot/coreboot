@@ -95,6 +95,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations drivers_ipmi_ocp_ops = {
-	CHIP_NAME("IPMI OCP")
+	.name = "IPMI OCP",
 	.enable_dev = enable_dev,
 };

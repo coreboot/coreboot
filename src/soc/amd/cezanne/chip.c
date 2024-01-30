@@ -50,7 +50,7 @@ static void soc_final(void *chip_info)
 }
 
 struct chip_operations soc_amd_cezanne_ops = {
-	CHIP_NAME("AMD Cezanne SoC")
+	.name = "AMD Cezanne SoC",
 	.init = soc_init,
 	.final = soc_final
 };

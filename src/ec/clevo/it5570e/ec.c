@@ -123,6 +123,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations ec_clevo_it5570e_ops = {
-	CHIP_NAME("Clevo IT5570E EC")
+	.name = "Clevo IT5570E EC",
 	.enable_dev = enable_dev,
 };

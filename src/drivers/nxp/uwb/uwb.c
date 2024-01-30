@@ -133,6 +133,6 @@ static void nxb_uwb_enable(struct device *dev)
 }
 
 struct chip_operations drivers_nxp_uwb_ops = {
-	CHIP_NAME("NXP UWB Device")
+	.name = "NXP UWB Device",
 	.enable_dev = nxb_uwb_enable
 };

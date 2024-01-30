@@ -131,6 +131,6 @@ static void mec5035_enable(struct device *dev)
 }
 
 struct chip_operations ec_dell_mec5035_ops = {
-	CHIP_NAME("MEC5035 EC")
+	.name = "MEC5035 EC",
 	.enable_dev = mec5035_enable,
 };

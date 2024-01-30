@@ -80,7 +80,7 @@ static void tegra210_init(void *chip_info)
 }
 
 struct chip_operations soc_nvidia_tegra210_ops = {
-	CHIP_NAME("SOC Nvidia Tegra210")
+	.name = "SOC Nvidia Tegra210",
 	.init = tegra210_init,
 	.enable_dev = enable_tegra210_dev,
 };

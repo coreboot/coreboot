@@ -47,6 +47,6 @@ static void enable_tegra124_dev(struct device *dev)
 }
 
 struct chip_operations soc_nvidia_tegra124_ops = {
-	CHIP_NAME("SOC Nvidia Tegra124")
+	.name = "SOC Nvidia Tegra124",
 	.enable_dev = enable_tegra124_dev,
 };

@@ -43,7 +43,7 @@ static void soc_init(void *chip_info)
 }
 
 struct chip_operations soc_intel_baytrail_ops = {
-	CHIP_NAME("Intel BayTrail SoC")
+	.name = "Intel BayTrail SoC",
 	.enable_dev = enable_dev,
 	.init = soc_init,
 };

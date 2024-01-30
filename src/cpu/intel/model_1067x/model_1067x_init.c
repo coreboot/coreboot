@@ -277,5 +277,5 @@ static const struct cpu_driver driver __cpu_driver = {
 };
 
 struct chip_operations cpu_intel_model_1067x_ops = {
-	CHIP_NAME("Intel Penryn CPU")
+	.name = "Intel Penryn CPU",
 };

@@ -217,6 +217,6 @@ struct device_operations ironlake_cpu_bus_ops = {
 };
 
 struct chip_operations northbridge_intel_ironlake_ops = {
-	CHIP_NAME("Intel Ironlake integrated Northbridge")
+	.name = "Intel Ironlake integrated Northbridge",
 	.init = ironlake_init,
 };

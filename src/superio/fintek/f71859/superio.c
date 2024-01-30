@@ -33,6 +33,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations superio_fintek_f71859_ops = {
-	CHIP_NAME("Fintek F71859 Super I/O")
+	.name = "Fintek F71859 Super I/O",
 	.enable_dev = enable_dev
 };

@@ -97,5 +97,5 @@ struct device_operations m88e1512_ops = {
 };
 
 struct chip_operations drivers_net_phy_m88e1512_ops = {
-	CHIP_NAME("88E1512")
+	.name = "88E1512",
 };

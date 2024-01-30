@@ -55,6 +55,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations drivers_i2c_ck505_ops = {
-	CHIP_NAME("CK505 Clock generator")
+	.name = "CK505 Clock generator",
 	.enable_dev = enable_dev,
 };

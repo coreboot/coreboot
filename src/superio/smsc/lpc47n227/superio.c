@@ -24,7 +24,7 @@ void lpc47n227_pnp_set_irq(struct device *dev, u8 irq);
 void lpc47n227_pnp_set_enable(struct device *dev, int enable);
 
 struct chip_operations superio_smsc_lpc47n227_ops = {
-	CHIP_NAME("SMSC LPC47N227 Super I/O")
+	.name = "SMSC LPC47N227 Super I/O",
 	.enable_dev = enable_dev,
 };
 

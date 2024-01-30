@@ -460,7 +460,7 @@ static void usb4_retimer_enable(struct device *dev)
 }
 
 struct chip_operations drivers_intel_usb4_retimer_ops = {
-	CHIP_NAME("Intel USB4 Retimer")
+	.name = "Intel USB4 Retimer",
 	.enable_dev = usb4_retimer_enable
 };
 

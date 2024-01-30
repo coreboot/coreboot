@@ -71,6 +71,6 @@ static void nau8315_enable(struct device *dev)
 }
 
 struct chip_operations drivers_generic_nau8315_ops = {
-	CHIP_NAME("Nuvoton NAU8315 Amplifier")
+	.name = "Nuvoton NAU8315 Amplifier",
 	.enable_dev = nau8315_enable
 };

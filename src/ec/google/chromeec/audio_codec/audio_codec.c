@@ -59,6 +59,6 @@ static void crosec_audio_codec_enable(struct device *dev)
 }
 
 struct chip_operations ec_google_chromeec_audio_codec_ops = {
-	CHIP_NAME("CrosEC Audio Codec Device")
+	.name = "CrosEC Audio Codec Device",
 	.enable_dev = crosec_audio_codec_enable
 };

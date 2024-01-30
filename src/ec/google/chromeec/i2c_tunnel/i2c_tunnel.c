@@ -65,6 +65,6 @@ static void crosec_i2c_tunnel_enable(struct device *dev)
 }
 
 struct chip_operations ec_google_chromeec_i2c_tunnel_ops = {
-	CHIP_NAME("CrosEC I2C Tunnel Device")
+	.name = "CrosEC I2C Tunnel Device",
 	.enable_dev = crosec_i2c_tunnel_enable
 };

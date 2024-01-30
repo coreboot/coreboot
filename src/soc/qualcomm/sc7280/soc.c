@@ -53,6 +53,6 @@ static void enable_soc_dev(struct device *dev)
 }
 
 struct chip_operations soc_qualcomm_sc7280_ops = {
-	CHIP_NAME("SOC Qualcomm SC7280")
+	.name = "SOC Qualcomm SC7280",
 	.enable_dev = enable_soc_dev,
 };

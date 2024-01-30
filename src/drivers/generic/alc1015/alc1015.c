@@ -70,6 +70,6 @@ static void alc1015_enable(struct device *dev)
 }
 
 struct chip_operations drivers_generic_alc1015_ops = {
-	CHIP_NAME("ASoC RT1015P Amplifier driver")
+	.name = "ASoC RT1015P Amplifier driver",
 	.enable_dev = alc1015_enable
 };

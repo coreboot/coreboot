@@ -84,6 +84,6 @@ void pch_enable(struct device *dev)
 }
 
 struct chip_operations southbridge_intel_ibexpeak_ops = {
-	CHIP_NAME("Intel Series 5 (Ibexpeak) Southbridge")
+	.name = "Intel Series 5 (Ibexpeak) Southbridge",
 	.enable_dev = pch_enable,
 };

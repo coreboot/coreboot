@@ -120,6 +120,6 @@ static void kbc1126_enable(struct device *dev)
 }
 
 struct chip_operations ec_hp_kbc1126_ops = {
-	CHIP_NAME("SMSC KBC1126 for HP laptops")
+	.name = "SMSC KBC1126 for HP laptops",
 	.enable_dev = kbc1126_enable
 };

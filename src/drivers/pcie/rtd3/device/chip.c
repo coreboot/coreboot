@@ -150,6 +150,6 @@ static void pcie_rtd3_device_enable(struct device *dev)
 }
 
 struct chip_operations drivers_pcie_rtd3_device_ops = {
-	CHIP_NAME("PCIe Device w/ Runtime D3")
+	.name = "PCIe Device w/ Runtime D3",
 	.enable_dev = pcie_rtd3_device_enable
 };

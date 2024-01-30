@@ -394,6 +394,6 @@ static void enable_soc_dev(struct device *dev)
 }
 
 struct chip_operations soc_cavium_cn81xx_ops = {
-	CHIP_NAME("SOC Cavium CN81XX")
+	.name = "SOC Cavium CN81XX",
 	.enable_dev = enable_soc_dev,
 };

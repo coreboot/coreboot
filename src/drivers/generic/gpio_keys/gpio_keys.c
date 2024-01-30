@@ -120,6 +120,6 @@ static void gpio_keys_enable(struct device *dev)
 }
 
 struct chip_operations drivers_generic_gpio_keys_ops = {
-	CHIP_NAME("GPIO Keys")
+	.name = "GPIO Keys",
 	.enable_dev = gpio_keys_enable
 };

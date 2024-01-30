@@ -97,6 +97,6 @@ static const struct pci_driver ish_intel_driver __pci_driver = {
 };
 
 struct chip_operations drivers_intel_ish_ops = {
-	CHIP_NAME("Intel ISH Chip")
+	.name = "Intel ISH Chip",
 	.enable_dev	= intel_ish_enable,
 };

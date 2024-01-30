@@ -239,6 +239,6 @@ static void rx6110sa_enable(struct device *dev)
 }
 
 struct chip_operations drivers_i2c_rx6110sa_ops = {
-	CHIP_NAME("RX6110 SA")
+	.name = "RX6110 SA",
 	.enable_dev = rx6110sa_enable
 };

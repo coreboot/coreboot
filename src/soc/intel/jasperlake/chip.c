@@ -170,7 +170,7 @@ static void soc_enable(struct device *dev)
 }
 
 struct chip_operations soc_intel_jasperlake_ops = {
-	CHIP_NAME("Intel Jasperlake")
+	.name = "Intel Jasperlake",
 	.enable_dev	= &soc_enable,
 	.init		= &soc_init_pre_device,
 };

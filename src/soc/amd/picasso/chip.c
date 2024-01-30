@@ -50,7 +50,7 @@ static void soc_final(void *chip_info)
 }
 
 struct chip_operations soc_amd_picasso_ops = {
-	CHIP_NAME("AMD Picasso SOC")
+	.name = "AMD Picasso SOC",
 	.init = soc_init,
 	.final = soc_final
 };

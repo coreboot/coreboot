@@ -433,7 +433,7 @@ static void uart_enable(struct device *dev)
 }
 
 struct chip_operations soc_intel_common_block_uart_ops = {
-	CHIP_NAME("LPSS UART in ACPI mode")
+	.name = "LPSS UART in ACPI mode",
 	.enable_dev = uart_enable
 };
 

@@ -136,6 +136,6 @@ static void sch555x_enable_dev(struct device *dev)
 }
 
 struct chip_operations superio_smsc_sch555x_ops = {
-	CHIP_NAME("SMSC SCH555x Super I/O")
+	.name = "SMSC SCH555x Super I/O",
 	.enable_dev = sch555x_enable_dev,
 };

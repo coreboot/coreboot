@@ -364,5 +364,5 @@ void generate_cpu_entries(const struct device *device)
 }
 
 struct chip_operations cpu_intel_haswell_ops = {
-	CHIP_NAME("Intel Haswell CPU")
+	.name = "Intel Haswell CPU",
 };

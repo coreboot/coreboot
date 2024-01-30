@@ -1033,6 +1033,6 @@ static void camera_enable(struct device *dev)
 }
 
 struct chip_operations drivers_intel_mipi_camera_ops = {
-	CHIP_NAME("Intel MIPI Camera Device")
+	.name = "Intel MIPI Camera Device",
 	.enable_dev = camera_enable
 };

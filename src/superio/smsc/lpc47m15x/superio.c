@@ -14,7 +14,7 @@ static void enable_dev(struct device *dev);
 static void lpc47m15x_init(struct device *dev);
 
 struct chip_operations superio_smsc_lpc47m15x_ops = {
-	CHIP_NAME("SMSC LPC47M15x/192/997 Super I/O")
+	.name = "SMSC LPC47M15x/192/997 Super I/O",
 	.enable_dev = enable_dev
 };
 

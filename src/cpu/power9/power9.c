@@ -16,5 +16,5 @@ static const struct cpu_driver driver __cpu_driver = {
 };
 
 struct chip_operations cpu_power8_qemu_ops = {
-	CHIP_NAME("POWER9 CPU")
+	.name = "POWER9 CPU",
 };

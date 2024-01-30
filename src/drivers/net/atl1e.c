@@ -153,5 +153,5 @@ static const struct pci_driver atl1e_driver __pci_driver = {
 };
 
 struct chip_operations drivers_net_ops = {
-	CHIP_NAME("Atheros AR8121/AR8113/AR8114")
+	.name = "Atheros AR8121/AR8113/AR8114",
 };

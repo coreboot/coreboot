@@ -232,6 +232,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations superio_nuvoton_nct5104d_ops = {
-	CHIP_NAME("Nuvoton NCT5104D Super I/O")
+	.name = "Nuvoton NCT5104D Super I/O",
 	.enable_dev = enable_dev,
 };

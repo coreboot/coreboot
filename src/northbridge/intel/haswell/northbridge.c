@@ -542,5 +542,5 @@ struct device_operations haswell_cpu_bus_ops = {
 };
 
 struct chip_operations northbridge_intel_haswell_ops = {
-	CHIP_NAME("Intel Haswell integrated Northbridge")
+	.name = "Intel Haswell integrated Northbridge",
 };

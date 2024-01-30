@@ -154,6 +154,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations ec_quanta_it8518_ops = {
-	CHIP_NAME("QUANTA IT8518 EC")
+	.name = "QUANTA IT8518 EC",
 	.enable_dev = enable_dev
 };

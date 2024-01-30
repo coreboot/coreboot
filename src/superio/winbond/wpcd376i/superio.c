@@ -61,6 +61,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations superio_winbond_wpcd376i_ops = {
-	CHIP_NAME("Winbond WPCD376I Super I/O")
+	.name = "Winbond WPCD376I Super I/O",
 	.enable_dev = enable_dev,
 };

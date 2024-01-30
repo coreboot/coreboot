@@ -129,6 +129,6 @@ static void pcf8523_enable(struct device *dev)
 }
 
 struct chip_operations drivers_i2c_pcf8523_ops = {
-	CHIP_NAME("PCF8523")
+	.name = "PCF8523",
 	.enable_dev = pcf8523_enable
 };

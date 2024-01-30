@@ -166,5 +166,5 @@ static const struct pci_driver bayhub_bh720 __pci_driver = {
 };
 
 struct chip_operations drivers_generic_bayhub_ops = {
-	CHIP_NAME("BayHub Technology BH720 PCI to eMMC 5.0 HS200 bridge")
+	.name = "BayHub Technology BH720 PCI to eMMC 5.0 HS200 bridge",
 };

@@ -129,6 +129,6 @@ static void max98390_enable(struct device *dev)
 }
 
 struct chip_operations drivers_i2c_max98390_ops = {
-	CHIP_NAME("Maxim MAX98390 Codec")
+	.name = "Maxim MAX98390 Codec",
 	.enable_dev = max98390_enable
 };

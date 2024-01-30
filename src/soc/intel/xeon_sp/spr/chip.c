@@ -159,7 +159,8 @@ static void chip_init(void *data)
 }
 
 struct chip_operations soc_intel_xeon_sp_spr_ops = {
-	CHIP_NAME("Intel SapphireRapids-SP").enable_dev = chip_enable_dev,
+	.name = "Intel SapphireRapids-SP",
+	.enable_dev = chip_enable_dev,
 	.init = chip_init,
 	.final = chip_final,
 };

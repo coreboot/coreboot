@@ -52,7 +52,7 @@ static void soc_final(void *chip_info)
 }
 
 struct chip_operations soc_amd_glinda_ops = {
-	CHIP_NAME("AMD Glinda SoC")
+	.name = "AMD Glinda SoC",
 	.init = soc_init,
 	.final = soc_final
 };

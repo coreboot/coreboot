@@ -199,7 +199,7 @@ void pch_enable(struct device *dev)
 }
 
 struct chip_operations southbridge_intel_lynxpoint_ops = {
-	CHIP_NAME("Intel Series 8 (Lynx Point) Southbridge")
+	.name = "Intel Series 8 (Lynx Point) Southbridge",
 	.enable_dev = pch_enable,
 };
 

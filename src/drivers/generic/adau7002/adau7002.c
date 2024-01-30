@@ -67,6 +67,6 @@ static void adau7002_enable(struct device *dev)
 }
 
 struct chip_operations drivers_generic_adau7002_ops = {
-	CHIP_NAME("Analog Digital DMIC")
+	.name = "Analog Digital DMIC",
 	.enable_dev = adau7002_enable
 };

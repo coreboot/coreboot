@@ -67,7 +67,7 @@ static void wifi_generic_enable(struct device *dev)
 }
 
 struct chip_operations drivers_wifi_generic_ops = {
-	CHIP_NAME("WIFI Device")
+	.name = "WIFI Device",
 	.enable_dev = wifi_generic_enable
 };
 

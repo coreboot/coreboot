@@ -81,6 +81,6 @@ static void usb4_pcie_acpi_enable(struct device *dev)
 }
 
 struct chip_operations soc_intel_common_block_usb4_ops = {
-	CHIP_NAME("Intel USB4 PCIe Root Port")
+	.name = "Intel USB4 PCIe Root Port",
 	.enable_dev = usb4_pcie_acpi_enable
 };

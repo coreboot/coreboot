@@ -46,6 +46,6 @@ static void enable_soc_dev(struct device *dev)
 }
 
 struct chip_operations soc_rockchip_rk3399_ops = {
-	CHIP_NAME("SOC Rockchip RK3399")
-	    .enable_dev = enable_soc_dev,
+	.name = "SOC Rockchip RK3399",
+	.enable_dev = enable_soc_dev,
 };

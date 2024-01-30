@@ -43,6 +43,6 @@ static void mux_enable(struct device *dev)
 }
 
 struct chip_operations drivers_intel_pmc_mux_ops = {
-	CHIP_NAME("Intel PMC MUX Driver")
+	.name = "Intel PMC MUX Driver",
 	.enable_dev	= mux_enable,
 };

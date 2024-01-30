@@ -39,6 +39,6 @@ static void enable_soc_dev(struct device *dev)
 }
 
 struct chip_operations soc_qualcomm_ipq806x_ops = {
-	CHIP_NAME("SOC Qualcomm 8064")
+	.name = "SOC Qualcomm 8064",
 	.enable_dev = enable_soc_dev,
 };

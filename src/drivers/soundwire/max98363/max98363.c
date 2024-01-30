@@ -136,6 +136,6 @@ static void soundwire_max98363_enable(struct device *dev)
 }
 
 struct chip_operations drivers_soundwire_max98363_ops = {
-	CHIP_NAME("Maxim MAX98363 SoundWire Codec")
+	.name = "Maxim MAX98363 SoundWire Codec",
 	.enable_dev = soundwire_max98363_enable
 };

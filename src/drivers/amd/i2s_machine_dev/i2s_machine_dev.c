@@ -95,6 +95,6 @@ static void i2s_machine_dev_enable(struct device *dev)
 }
 
 struct chip_operations drivers_amd_i2s_machine_dev_ops = {
-	CHIP_NAME("AMD I2S Machine Device")
+	.name = "AMD I2S Machine Device",
 	.enable_dev = i2s_machine_dev_enable
 };

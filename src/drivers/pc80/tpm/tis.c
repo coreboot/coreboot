@@ -854,6 +854,6 @@ static void enable_dev(struct device *dev)
 }
 
 struct chip_operations drivers_pc80_tpm_ops = {
-	CHIP_NAME("LPC TPM")
+	.name = "LPC TPM",
 	.enable_dev = enable_dev
 };

@@ -27,6 +27,6 @@ static void enable_soc_dev(struct device *dev)
 }
 
 struct chip_operations soc_qualcomm_qcs405_ops = {
-	CHIP_NAME("SOC Qualcomm QCS405")
+	.name = "SOC Qualcomm QCS405",
 	.enable_dev = enable_soc_dev,
 };

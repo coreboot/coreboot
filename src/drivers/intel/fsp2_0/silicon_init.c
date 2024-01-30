@@ -21,11 +21,6 @@
 
 struct fsp_header fsps_hdr;
 
-struct fsp_multi_phase_get_number_of_phases_params {
-	uint32_t number_of_phases;
-	uint32_t phases_executed;
-};
-
 /* Callbacks for SoC/Mainboard specific overrides */
 void __weak platform_fsp_silicon_multi_phase_init_cb(uint32_t phase_index)
 {
@@ -84,7 +79,7 @@ bool fsp_is_multi_phase_init_enabled(void)
 static void fsp_fill_common_arch_params(FSPS_UPD *supd)
 {
 #if CONFIG(FSPS_HAS_ARCH_UPD)
-	FSPS_ARCH_UPD *s_arch_cfg = &supd->FspsArchUpd;
+	FSPS_ARCHx_UPD *s_arch_cfg = &supd->FspsArchUpd;
 	s_arch_cfg->EnableMultiPhaseSiliconInit = fsp_is_multi_phase_init_enabled();
 #endif
 }
@@ -94,7 +89,7 @@ static void do_silicon_init(struct fsp_header *hdr)
 	FSPS_UPD *upd, *supd;
 	fsp_silicon_init_fn silicon_init;
 	uint32_t status;
-	fsp_multi_phase_si_init_fn multi_phase_si_init;
+	fsp_multi_phase_init_fn multi_phase_si_init;
 	struct fsp_multi_phase_params multi_phase_params;
 	struct fsp_multi_phase_get_number_of_phases_params multi_phase_get_number;
 

@@ -39,6 +39,18 @@ config PLATFORM_USES_FSP2_3
 	  1. Added ExtendedImageRevision field in FSP_INFO_HEADER
 	  2. Added FSP_NON_VOLATILE_STORAGE_HOB2
 
+config PLATFORM_USES_FSP2_4
+	bool
+	default n
+	select PLATFORM_USES_FSP2_3
+	help
+	  Include FSP 2.4 wrappers and functionality.
+	  Features added into FSP 2.4 specification that impact coreboot are:
+	  1. FSP-M multi phase init support
+	  2. FSPM_ARCH2_UPD and FSPS_ARCH2_UPD data structures must be
+	     used in place of FSPM_ARCH_UPD and FSPS_ARCH_UPD respectively
+	  3. 64-bits support
+
 if PLATFORM_USES_FSP2_0
 
 config PLATFORM_USES_FSP2_X86_32

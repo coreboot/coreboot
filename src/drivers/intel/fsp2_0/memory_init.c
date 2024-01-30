@@ -28,6 +28,12 @@
 #include <intelbasecode/ramtop.h>
 #endif
 
+/* Callbacks for SoC/Mainboard specific overrides */
+void __weak platform_fsp_memory_multi_phase_init_cb(uint32_t phase_index)
+{
+	/* Leave for the SoC/Mainboard to implement if necessary. */
+}
+
 static uint8_t temp_ram[CONFIG_FSP_TEMP_RAM_SIZE] __aligned(sizeof(uint64_t));
 
 /*
@@ -84,7 +90,7 @@ static void do_fsp_post_memory_init(bool s3wake, uint32_t version)
 	romstage_handoff_init(s3wake);
 }
 
-static void fsp_fill_mrc_cache(FSPM_ARCH_UPD *arch_upd, uint32_t version)
+static void fsp_fill_mrc_cache(FSPM_ARCHx_UPD *arch_upd, uint32_t version)
 {
 	void *data;
 	size_t mrc_size;
@@ -127,7 +133,7 @@ static enum cb_err check_region_overlap(const struct memranges *ranges,
 	return CB_SUCCESS;
 }
 
-static enum cb_err setup_fsp_stack_frame(FSPM_ARCH_UPD *arch_upd,
+static enum cb_err setup_fsp_stack_frame(FSPM_ARCHx_UPD *arch_upd,
 		const struct memranges *memmap)
 {
 	uintptr_t stack_begin;
@@ -148,7 +154,7 @@ static enum cb_err setup_fsp_stack_frame(FSPM_ARCH_UPD *arch_upd,
 	return CB_SUCCESS;
 }
 
-static enum cb_err fsp_fill_common_arch_params(FSPM_ARCH_UPD *arch_upd,
+static enum cb_err fsp_fill_common_arch_params(FSPM_ARCHx_UPD *arch_upd,
 					bool s3wake, uint32_t version,
 					const struct memranges *memmap)
 {
@@ -275,12 +281,68 @@ static uint32_t fsp_mrc_version(void)
 	return ver;
 }
 
+static void fspm_return_value_handler(const char *context, uint32_t status, bool die_on_error)
+{
+	if (status == FSP_SUCCESS)
+		return;
+
+	fsp_handle_reset(status);
+	if (die_on_error)
+		die_with_post_code(POSTCODE_RAM_FAILURE, "%s returned with error 0x%zx!\n",
+				   context, (size_t)status);
+
+	printk(BIOS_SPEW, "%s returned 0x%zx\n", context, (size_t)status);
+}
+
+static void fspm_multi_phase_init(const struct fsp_header *hdr)
+{
+	uint32_t status;
+	fsp_multi_phase_init_fn fsp_multi_phase_init;
+	struct fsp_multi_phase_params multi_phase_params;
+	struct fsp_multi_phase_get_number_of_phases_params multi_phase_get_number;
+
+	if (!hdr->fsp_multi_phase_mem_init_entry_offset)
+		return;
+
+	fsp_multi_phase_init = (fsp_multi_phase_init_fn)(uintptr_t)
+		(hdr->image_base + hdr->fsp_multi_phase_mem_init_entry_offset);
+
+	post_code(POSTCODE_FSP_MULTI_PHASE_MEM_INIT_ENTRY);
+	timestamp_add_now(TS_FSP_MULTI_PHASE_MEM_INIT_START);
+
+	/* Get number of phases */
+	multi_phase_params.multi_phase_action = GET_NUMBER_OF_PHASES;
+	multi_phase_params.phase_index = 0;
+	multi_phase_params.multi_phase_param_ptr = &multi_phase_get_number;
+	status = fsp_multi_phase_init(&multi_phase_params);
+	fspm_return_value_handler("FspMultiPhaseMemInit NumberOfPhases", status, false);
+
+	/* Execute all phases */
+	for (uint32_t i = 1; i <= multi_phase_get_number.number_of_phases; i++) {
+		printk(BIOS_SPEW, "Executing Phase %u of FspMultiPhaseMemInit\n", i);
+		/*
+		 * Give SoC/mainboard a chance to perform any operation before
+		 * Multi Phase Execution
+		 */
+		platform_fsp_memory_multi_phase_init_cb(i);
+
+		multi_phase_params.multi_phase_action = EXECUTE_PHASE;
+		multi_phase_params.phase_index = i;
+		multi_phase_params.multi_phase_param_ptr = NULL;
+		status = fsp_multi_phase_init(&multi_phase_params);
+		fspm_return_value_handler("FspMultiPhaseMemInit Execute", status, false);
+	}
+
+	post_code(POSTCODE_FSP_MULTI_PHASE_MEM_INIT_EXIT);
+	timestamp_add_now(TS_FSP_MULTI_PHASE_MEM_INIT_END);
+}
+
 static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 {
 	uint32_t status;
 	fsp_memory_init_fn fsp_raminit;
 	FSPM_UPD fspm_upd, *upd;
-	FSPM_ARCH_UPD *arch_upd;
+	FSPM_ARCHx_UPD *arch_upd;
 	uint32_t version;
 	const struct fsp_header *hdr = &context->header;
 	const struct memranges *memmap = &context->memmap;
@@ -371,11 +433,10 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 	timestamp_add_now(TS_FSP_MEMORY_INIT_END);
 
 	/* Handle any errors returned by FspMemoryInit */
-	fsp_handle_reset(status);
-	if (status != FSP_SUCCESS) {
-		die_with_post_code(POSTCODE_RAM_FAILURE,
-			"FspMemoryInit returned with error 0x%08x!\n", status);
-	}
+	fspm_return_value_handler("FspMemoryInit", status, true);
+
+	if (CONFIG(PLATFORM_USES_FSP2_4))
+		fspm_multi_phase_init(hdr);
 
 	do_fsp_post_memory_init(s3wake, version);
 

@@ -138,6 +138,8 @@ enum timestamp_id {
 	TS_FSP_END_OF_FIRMWARE_END = 961,
 	TS_FSP_MULTI_PHASE_SI_INIT_START = 962,
 	TS_FSP_MULTI_PHASE_SI_INIT_END = 963,
+	TS_FSP_MULTI_PHASE_MEM_INIT_START = 964,
+	TS_FSP_MULTI_PHASE_MEM_INIT_END = 965,
 	TS_FSP_MEMORY_INIT_LOAD = 970,
 	TS_FSP_SILICON_INIT_LOAD = 971,
 
@@ -319,6 +321,9 @@ static const struct timestamp_id_to_name {
 	TS_NAME_DEF(TS_FSP_MULTI_PHASE_SI_INIT_START, TS_FSP_MULTI_PHASE_SI_INIT_END,
 		    "calling FspMultiPhaseSiInit"),
 	TS_NAME_DEF(TS_FSP_MULTI_PHASE_SI_INIT_END, 0, "returning from FspMultiPhaseSiInit"),
+	TS_NAME_DEF(TS_FSP_MULTI_PHASE_MEM_INIT_START, TS_FSP_MULTI_PHASE_MEM_INIT_END,
+		    "calling FspMultiPhaseMemInit"),
+	TS_NAME_DEF(TS_FSP_MULTI_PHASE_MEM_INIT_END, 0, "returning from FspMultiPhaseMemInit"),
 	TS_NAME_DEF(TS_FSP_ENUMERATE_START, TS_FSP_ENUMERATE_END,
 		    "calling FspNotify(AfterPciEnumeration)"),
 	TS_NAME_DEF(TS_FSP_ENUMERATE_END, 0, "returning from FspNotify(AfterPciEnumeration)"),

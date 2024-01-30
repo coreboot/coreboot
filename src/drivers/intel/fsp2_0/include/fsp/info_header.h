@@ -37,6 +37,8 @@ struct fsp_header {
 	uint32_t  fsp_multi_phase_si_init_entry_offset;
 	uint16_t  extended_image_revision;
 	uint16_t  res4;
+	uint32_t  fsp_multi_phase_mem_init_entry_offset;
+	uint32_t  res5;
 }  __packed;
 #else
 #error You need to implement this struct for x86_64 FSP

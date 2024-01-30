@@ -411,6 +411,8 @@ static int eventlog_print_data(const struct event_header *event)
 		{POSTCODE_FSP_MULTI_PHASE_SI_INIT_EXIT, "FPS-S Init Exit"},
 		{POSTCODE_FSP_NOTIFY_AFTER_ENUMERATE, "FSP Notify After Enumerate"},
 		{POSTCODE_FSP_NOTIFY_AFTER_FINALIZE, "FSP Notify After Finalize"},
+		{POSTCODE_FSP_MULTI_PHASE_MEM_INIT_ENTRY, "FSP-M Init Enter"},
+		{POSTCODE_FSP_MULTI_PHASE_MEM_INIT_EXIT, "FPS-M Init Exit"},
 		{POSTCODE_INVALID_ROM, "Invalid ROM"},
 		{POSTCODE_INVALID_CBFS, "Invalid CBFS"},
 		{POSTCODE_INVALID_VENDOR_BINARY, "Invalid Vendor Binary"},

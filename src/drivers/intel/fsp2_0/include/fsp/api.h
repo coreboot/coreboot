@@ -48,6 +48,7 @@ void fsps_load(void);
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version);
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd);
 /* Callbacks for SoC/Mainboard specific overrides */
+void platform_fsp_memory_multi_phase_init_cb(uint32_t phase_index);
 void platform_fsp_silicon_multi_phase_init_cb(uint32_t phase_index);
 /* Check if MultiPhase Si Init is enabled */
 bool fsp_is_multi_phase_init_enabled(void);

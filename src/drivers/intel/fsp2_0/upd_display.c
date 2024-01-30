@@ -16,8 +16,8 @@ void fsp_display_upd_value(const char *name, size_t size, uint64_t old,
 	}
 }
 
-static void fspm_display_arch_params(const FSPM_ARCH_UPD *old,
-	const FSPM_ARCH_UPD *new)
+static void fspm_display_arch_params(const FSPM_ARCHx_UPD *old,
+	const FSPM_ARCHx_UPD *new)
 {
 	/* Display the architectural parameters for MemoryInit */
 	printk(BIOS_SPEW, "Architectural UPD values for MemoryInit at: %p\n",

@@ -16,6 +16,14 @@
 
 #define FSP_VER_LEN	30
 
+#if CONFIG(PLATFORM_USES_FSP2_4)
+#define FSPM_ARCHx_UPD FSPM_ARCH2_UPD
+#define FSPS_ARCHx_UPD FSPS_ARCH2_UPD
+#else
+#define FSPM_ARCHx_UPD FSPM_ARCH_UPD
+#define FSPS_ARCHx_UPD FSPS_ARCH_UPD
+#endif
+
 /* Macro for checking and loading array type configs into array type UPDs */
 #define FSP_ARRAY_LOAD(dst, src) \
 do { \
@@ -46,6 +54,11 @@ struct fsp_multi_phase_params {
 	enum fsp_multi_phase_action multi_phase_action;
 	uint32_t phase_index;
 	void *multi_phase_param_ptr;
+};
+
+struct fsp_multi_phase_get_number_of_phases_params {
+	uint32_t number_of_phases;
+	uint32_t phases_executed;
 };
 
 struct hob_resource {
@@ -198,7 +211,7 @@ typedef asmlinkage uint32_t (*temp_ram_exit_fn)(void *param);
 typedef asmlinkage uint32_t (*fsp_memory_init_fn)
 				   (void *raminit_upd, void **hob_list);
 typedef asmlinkage uint32_t (*fsp_silicon_init_fn)(void *silicon_upd);
-typedef asmlinkage uint32_t (*fsp_multi_phase_si_init_fn)(struct fsp_multi_phase_params *);
+typedef asmlinkage uint32_t (*fsp_multi_phase_init_fn)(struct fsp_multi_phase_params *);
 typedef asmlinkage uint32_t (*fsp_notify_fn)(struct fsp_notify_params *);
 #include <fsp/debug.h>
 

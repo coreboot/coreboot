@@ -362,6 +362,20 @@
 #define POSTCODE_FSP_NOTIFY_AFTER_FINALIZE	        0xa3
 
 /**
+ * \brief Before calling FSP Multiphase MemoryInit
+ *
+ * Going to call into FSP binary for Multiple phase MEM Init
+ */
+#define POSTCODE_FSP_MULTI_PHASE_MEM_INIT_ENTRY		0xa4
+
+/**
+ * \brief After calling FSP Multiphase MemoryInit
+ *
+ * FSP binary returned from Multiple phase MEM Init
+ */
+#define POSTCODE_FSP_MULTI_PHASE_MEM_INIT_EXIT		0xa5
+
+/**
  * \brief Invalid or corrupt ROM
  *
  * Set if firmware failed to find or validate a resource that is stored in ROM.

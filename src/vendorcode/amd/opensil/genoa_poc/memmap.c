@@ -114,8 +114,6 @@ void add_opensil_memmap(struct device *dev, unsigned long *idx)
 	if (mem_usable != top_mem)
 		reserved_ram_from_to(dev, (*idx)++, mem_usable, top_mem);
 
-	mmconf_resource(dev, (*idx)++);
-
 	// Check if we're done
 	if (top_of_mem <= 0x100000000)
 		return;

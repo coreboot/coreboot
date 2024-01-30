@@ -191,6 +191,12 @@ static void add_data_fabric_io_regions(struct device *domain, unsigned long *idx
 	}
 }
 
+static void add_pci_cfg_resources(struct device *domain, unsigned long *idx)
+{
+	fixed_io_range_reserved(domain, (*idx)++, PCI_IO_CONFIG_INDEX, PCI_IO_CONFIG_PORT_COUNT);
+	mmconf_resource(domain, (*idx)++);
+}
+
 void amd_pci_domain_read_resources(struct device *domain)
 {
 	unsigned long idx = 0;
@@ -203,6 +209,8 @@ void amd_pci_domain_read_resources(struct device *domain)
 
 	/* Only add the SoC's DRAM memory map and fixed resources once */
 	if (domain->path.domain.domain == 0) {
+		add_pci_cfg_resources(domain, &idx);
+
 		read_soc_memmap_resources(domain, &idx);
 	}
 }

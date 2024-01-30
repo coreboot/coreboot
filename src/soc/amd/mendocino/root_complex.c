@@ -154,8 +154,6 @@ void read_soc_memmap_resources(struct device *dev, unsigned long *idx)
 	early_reserved_dram_start = e->base;
 	early_reserved_dram_end = e->base + e->size;
 
-	fixed_io_range_reserved(dev, (*idx)++, PCI_IO_CONFIG_INDEX, PCI_IO_CONFIG_PORT_COUNT);
-
 	/* 0x0 - 0x9ffff */
 	ram_range(dev, (*idx)++, 0, 0xa0000);
 
@@ -176,8 +174,6 @@ void read_soc_memmap_resources(struct device *dev, unsigned long *idx)
 	 * cbmem_top() accounts for low UMA and TSEG if they are used.
 	 */
 	ram_from_to(dev, (*idx)++, early_reserved_dram_end, mem_usable);
-
-	mmconf_resource(dev, (*idx)++);
 
 	/* Reserve fixed IOMMU MMIO region */
 	mmio_range(dev, (*idx)++, IOMMU_RESERVED_MMIO_BASE, IOMMU_RESERVED_MMIO_SIZE);

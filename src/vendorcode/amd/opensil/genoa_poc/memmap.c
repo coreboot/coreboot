@@ -84,7 +84,7 @@ static void print_memory_holes(void *unused)
 BOOT_STATE_INIT_ENTRY(BS_DEV_RESOURCES, BS_ON_ENTRY, print_memory_holes, NULL);
 
 // This assumes holes are allocated
-int add_opensil_memmap(struct device *dev, int idx)
+unsigned long add_opensil_memmap(struct device *dev, unsigned long idx)
 {
 	ram_from_to(dev, idx++, 0, 0xa0000);
 	mmio_from_to(dev, idx++, 0xa0000, 0xc0000); // legacy VGA

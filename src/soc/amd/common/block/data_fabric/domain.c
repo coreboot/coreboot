@@ -78,7 +78,7 @@ static bool is_mmio_region_valid(unsigned int reg, resource_t mmio_base, resourc
 	return true;
 }
 
-static void report_data_fabric_mmio(struct device *domain, unsigned int idx,
+static void report_data_fabric_mmio(struct device *domain, unsigned long idx,
 				    resource_t mmio_base, resource_t mmio_limit)
 {
 	struct resource *res;
@@ -89,7 +89,7 @@ static void report_data_fabric_mmio(struct device *domain, unsigned int idx,
 }
 
 /* Tell the resource allocator about the usable MMIO ranges configured in the data fabric */
-static void add_data_fabric_mmio_regions(struct device *domain, unsigned int *idx)
+static void add_data_fabric_mmio_regions(struct device *domain, unsigned long *idx)
 {
 	const signed int iohc_dest_fabric_id = get_iohc_fabric_id(domain);
 	union df_mmio_control ctrl;
@@ -140,7 +140,7 @@ static void add_data_fabric_mmio_regions(struct device *domain, unsigned int *id
 	}
 }
 
-static void report_data_fabric_io(struct device *domain, unsigned int idx,
+static void report_data_fabric_io(struct device *domain, unsigned long idx,
 				  resource_t io_base, resource_t io_limit)
 {
 	struct resource *res;
@@ -151,7 +151,7 @@ static void report_data_fabric_io(struct device *domain, unsigned int idx,
 }
 
 /* Tell the resource allocator about the usable I/O space */
-static void add_data_fabric_io_regions(struct device *domain, unsigned int *idx)
+static void add_data_fabric_io_regions(struct device *domain, unsigned long *idx)
 {
 	const signed int iohc_dest_fabric_id = get_iohc_fabric_id(domain);
 	union df_io_base base_reg;
@@ -193,7 +193,7 @@ static void add_data_fabric_io_regions(struct device *domain, unsigned int *idx)
 
 void amd_pci_domain_read_resources(struct device *domain)
 {
-	unsigned int idx = 0;
+	unsigned long idx = 0;
 
 	add_data_fabric_io_regions(domain, &idx);
 

@@ -15,7 +15,7 @@
 
 void read_soc_memmap_resources(struct device *domain, unsigned long *idx)
 {
-	*idx = add_opensil_memmap(domain, *idx);
+	add_opensil_memmap(domain, idx);
 }
 
 static void genoa_domain_set_resources(struct device *domain)

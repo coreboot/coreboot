@@ -84,11 +84,11 @@ static void print_memory_holes(void *unused)
 BOOT_STATE_INIT_ENTRY(BS_DEV_RESOURCES, BS_ON_ENTRY, print_memory_holes, NULL);
 
 // This assumes holes are allocated
-unsigned long add_opensil_memmap(struct device *dev, unsigned long idx)
+void add_opensil_memmap(struct device *dev, unsigned long *idx)
 {
-	ram_from_to(dev, idx++, 0, 0xa0000);
-	mmio_from_to(dev, idx++, 0xa0000, 0xc0000); // legacy VGA
-	reserved_ram_from_to(dev, idx++, 0xc0000, 1 * MiB); // Option ROM
+	ram_from_to(dev, (*idx)++, 0, 0xa0000);
+	mmio_from_to(dev, (*idx)++, 0xa0000, 0xc0000); // legacy VGA
+	reserved_ram_from_to(dev, (*idx)++, 0xc0000, 1 * MiB); // Option ROM
 
 	uint32_t mem_usable = (uintptr_t)cbmem_top();
 	uintptr_t early_reserved_dram_start, early_reserved_dram_end;
@@ -98,33 +98,33 @@ unsigned long add_opensil_memmap(struct device *dev, unsigned long idx)
 	early_reserved_dram_end = e->base + e->size;
 
 	// 1MB - bottom of DRAM reserved for early coreboot usage
-	ram_from_to(dev, idx++, 1 * MiB, early_reserved_dram_start);
+	ram_from_to(dev, (*idx)++, 1 * MiB, early_reserved_dram_start);
 
 	// DRAM reserved for early coreboot usage
-	reserved_ram_from_to(dev, idx++, early_reserved_dram_start,
+	reserved_ram_from_to(dev, (*idx)++, early_reserved_dram_start,
 			     early_reserved_dram_end);
 
 	// top of DRAM consumed early - low top usable RAM
 	// cbmem_top() accounts for low UMA and TSEG if they are used.
-	ram_from_to(dev, idx++, early_reserved_dram_end,
+	ram_from_to(dev, (*idx)++, early_reserved_dram_end,
 		    mem_usable);
 
 	// Account for UMA and TSEG
 	const uint32_t top_mem = ALIGN_DOWN(rdmsr(TOP_MEM).lo, 1 * MiB);
 	if (mem_usable != top_mem)
-		reserved_ram_from_to(dev, idx++, mem_usable, top_mem);
+		reserved_ram_from_to(dev, (*idx)++, mem_usable, top_mem);
 
-	mmconf_resource(dev, idx++);
+	mmconf_resource(dev, (*idx)++);
 
 	// Check if we're done
 	if (top_of_mem <= 0x100000000)
-		return idx;
+		return;
 
 	// Holes in upper DRAM
 	// This assumes all the holes in upper DRAM are continuous
 	get_hole_info();
 	if (hole_info == NULL)
-		return idx;
+		return;
 	uint64_t lowest_upper_hole_base = top_of_mem;
 	uint64_t highest_upper_hole_end = 0x100000000;
 	for (int hole = 0; hole < n_holes; hole++) {
@@ -135,16 +135,14 @@ unsigned long add_opensil_memmap(struct device *dev, unsigned long idx)
 		lowest_upper_hole_base = MIN(lowest_upper_hole_base, hole_info[hole].Base);
 		highest_upper_hole_end = MAX(highest_upper_hole_end, hole_info[hole].Base + hole_info[hole].Size);
 		if (hole_info[hole].Type == UMA)
-			mmio_range(dev, idx++, hole_info[hole].Base, hole_info[hole].Size);
+			mmio_range(dev, (*idx)++, hole_info[hole].Base, hole_info[hole].Size);
 		else
-			reserved_ram_range(dev, idx++, hole_info[hole].Base, hole_info[hole].Size);
+			reserved_ram_range(dev, (*idx)++, hole_info[hole].Base, hole_info[hole].Size);
 	}
 
-	ram_from_to(dev, idx++, 0x100000000, lowest_upper_hole_base);
+	ram_from_to(dev, (*idx)++, 0x100000000, lowest_upper_hole_base);
 
 	// Do we need this?
 	if (top_of_mem > highest_upper_hole_end)
-		ram_from_to(dev, idx++, highest_upper_hole_end, top_of_mem);
-
-	return idx;
+		ram_from_to(dev, (*idx)++, highest_upper_hole_end, top_of_mem);
 }

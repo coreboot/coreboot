@@ -150,7 +150,8 @@ void read_soc_memmap_resources(struct device *dev, unsigned long *idx)
 	/* Reserve fixed IOMMU MMIO region */
 	mmio_range(dev, (*idx)++, IOMMU_RESERVED_MMIO_BASE, IOMMU_RESERVED_MMIO_SIZE);
 
-	read_fsp_resources(dev, idx);
+	if (CONFIG(PLATFORM_USES_FSP2_0))
+		read_fsp_resources(dev, idx);
 }
 
 static void root_complex_init(struct device *dev)

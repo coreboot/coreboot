@@ -28,7 +28,7 @@ Index: kconfig/lexer.l
 +++ kconfig/lexer.l
 @@ -8,6 +8,7 @@
  %{
-
+ 
  #include <assert.h>
 +#include <glob.h>
  #include <limits.h>
@@ -37,7 +37,7 @@ Index: kconfig/lexer.l
 @@ -439,6 +440,32 @@ void zconf_nextfile(const char *name)
  	current_file = file;
  }
-
+ 
 +void zconf_nextfiles(const char *wildcard)
 +{
 +	glob_t g;
@@ -78,7 +78,7 @@ Index: kconfig/lkc.h
 +void zconf_nextfiles(const char *name);
  int zconf_lineno(void);
  const char *zconf_curname(void);
-
+ 
 Index: kconfig/parser.y
 ===================================================================
 --- kconfig.orig/parser.y
@@ -91,4 +91,4 @@ Index: kconfig/parser.y
 +	zconf_nextfiles($2);
  	free($2);
  };
-
+ 

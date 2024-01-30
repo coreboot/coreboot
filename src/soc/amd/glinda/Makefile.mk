@@ -29,6 +29,7 @@ ramstage-y	+= cpu.c
 ramstage-y	+= fch.c
 ramstage-y	+= fsp_s_params.c
 ramstage-y	+= mca.c
+ramstage-y	+= memmap.c
 ramstage-y	+= root_complex.c
 ramstage-y	+= xhci.c
 

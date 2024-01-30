@@ -206,8 +206,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E06, NONE),
 	/* GPP_E07 : net NC is not present in the given design */
 	PAD_NC(GPP_E07, NONE),
-	/* GPP_E08 : [] ==> SOC_GPP_E08 */
-	PAD_NC(GPP_E08, NONE),
+	/* GPP_E08 : [] ==> USB_C0_AUX_DC_N */
+	PAD_CFG_NF(GPP_E08, NONE, DEEP, NF6),
 	/* GPP_E09 : [] ==> USB_C_OC_ODL */
 	PAD_CFG_NF_LOCK(GPP_E09, NONE, NF1, LOCK_CONFIG),
 	/* GPP_E10 : net NC is not present in the given design */
@@ -226,8 +226,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E16, NONE),
 	/* GPP_E17 : net NC is not present in the given design */
 	PAD_NC(GPP_E17, NONE),
-	/* GPP_E22 : net NC is not present in the given design */
-	PAD_NC(GPP_E22, NONE),
+	/* GPP_E22 : [] ==> USB_C0_AUX_DC_P */
+	PAD_CFG_NF(GPP_E22, NONE, DEEP, NF6),
 
 	/* GPP_F00 : [] ==> CNV_BRI_DT_R */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_F00, NONE, DEEP, NF1),

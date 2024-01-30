@@ -27,6 +27,6 @@ const struct non_pci_mmio_reg *get_iohc_non_pci_mmio_regs(size_t *count);
 
 signed int get_iohc_fabric_id(struct device *domain);
 
-void read_fsp_resources(struct device *dev, unsigned int *idx);
+void read_fsp_resources(struct device *dev, unsigned long *idx);
 
 #endif /* AMD_BLOCK_ROOT_COMPLEX_H */

@@ -104,7 +104,7 @@ struct dptc_input {
 static void read_resources(struct device *dev)
 {
 	uint32_t mem_usable = (uintptr_t)cbmem_top();
-	unsigned int idx = 0;
+	unsigned long idx = 0;
 
 	uintptr_t early_reserved_dram_start, early_reserved_dram_end;
 	const struct memmap_early_dram *e = memmap_get_early_dram_usage();

@@ -1782,7 +1782,7 @@ int acpi_create_srat_mem(acpi_srat_mem_t *mem, u8 node, u32 basek, u32 sizek,
  * and flag, create Generic Initiator Affinity structure in SRAT.
  */
 int acpi_create_srat_gia_pci(acpi_srat_gia_t *gia, u32 proximity_domain,
-		u16 seg, u8 bus, u8 dev, u8 func, u32 flags);
+			     struct device *dev, u32 flags);
 unsigned long acpi_create_srat_lapics(unsigned long current);
 void acpi_create_srat(acpi_srat_t *srat,
 		      unsigned long (*acpi_fill_srat)(unsigned long current));

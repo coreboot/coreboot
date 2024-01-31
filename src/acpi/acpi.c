@@ -352,17 +352,22 @@ int acpi_create_srat_mem(acpi_srat_mem_t *mem, u8 node, u32 basek, u32 sizek,
 }
 
 int acpi_create_srat_gia_pci(acpi_srat_gia_t *gia, u32 proximity_domain,
-				u16 seg, u8 bus, u8 dev, u8 func, u32 flags)
+			     struct device *dev, u32 flags)
 {
+	/* Only handle PCI devices. */
+	if (dev->path.type != DEVICE_PATH_PCI)
+		return 0;
+
 	gia->type = ACPI_SRAT_STRUCTURE_GIA;
 	gia->length = sizeof(acpi_srat_gia_t);
 	gia->proximity_domain = proximity_domain;
 	gia->dev_handle_type = ACPI_SRAT_GIA_DEV_HANDLE_PCI;
 	/* First two bytes has segment number */
-	memcpy(gia->dev_handle, &seg, 2);
-	gia->dev_handle[2] = bus; /* Byte 2 has bus number */
+	gia->dev_handle[0] = dev->upstream->segment_group;
+	gia->dev_handle[1] = 0;
+	gia->dev_handle[2] = dev->upstream->secondary; /* Byte 2 has bus number */
 	/* Byte 3 has bits 7:3 for dev, bits 2:0 for func */
-	gia->dev_handle[3] = PCI_SLOT(dev) | PCI_FUNC(func);
+	gia->dev_handle[3] = dev->path.pci.devfn;
 	gia->flags = flags;
 
 	return gia->length;

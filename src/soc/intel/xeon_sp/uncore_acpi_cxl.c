@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <device/pci_ops.h>
 #include <soc/acpi.h>
 #include <soc/numa.h>
 #include <soc/util.h>
@@ -13,19 +12,14 @@ unsigned long cxl_fill_srat(unsigned long current)
 	 * In the pds (Proximity Domains structure), Generic Initiator domains
 	 * are after processor domains.
 	 */
-	uint16_t seg = 0;
-	uint8_t bus, dev, func;
 	uint32_t base, size;
 	for (uint8_t i = soc_get_num_cpus(); i < pds.num_pds; i++) {
-		bus = PCI_BDF(pds.pds[i].dev) >> 20;
-		dev = (PCI_BDF(pds.pds[i].dev) >> 15) & 0x1f;
-		func = (PCI_BDF(pds.pds[i].dev) >> 12) & 0x07;
-		printk(BIOS_DEBUG,
-		       "adding srat GIA ID: %d, seg: 0x%x, bus: 0x%x, dev: 0x%x, func: 0x%x\n",
-		       i, seg, bus, dev, func);
+		if (!pds.pds[i].dev)
+			continue;
+
+		printk(BIOS_DEBUG, "adding srat GIA ID: %d, dev: %s\n", i, dev_path(pds.pds[i].dev));
 		/* flags: 1 (enabled) */
-		current += acpi_create_srat_gia_pci((acpi_srat_gia_t *)current, i, seg, bus,
-						    dev, func, 1);
+		current += acpi_create_srat_gia_pci((acpi_srat_gia_t *)current, i, pds.pds[i].dev, 1);
 		base = pds.pds[i].base << 16;
 		size = pds.pds[i].size << 16;
 		printk(BIOS_DEBUG,

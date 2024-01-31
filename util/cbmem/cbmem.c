@@ -19,6 +19,7 @@
 #include <assert.h>
 #include <regex.h>
 #include <commonlib/bsd/cbmem_id.h>
+#include <commonlib/bsd/ipchksum.h>
 #include <commonlib/bsd/tpm_log_defs.h>
 #include <commonlib/loglevel.h>
 #include <commonlib/timestamp_serialized.h>
@@ -197,25 +198,6 @@ static void *aligned_memcpy(void *dest, const void *src, size_t n)
 		*d++ = *s++;
 
 	return dest;
-}
-
-/*
- * calculate ip checksum (16 bit quantities) on a passed in buffer. In case
- * the buffer length is odd last byte is excluded from the calculation
- */
-static u16 ipchcksum(const void *addr, unsigned size)
-{
-	const u16 *p = addr;
-	unsigned i, n = size / 2; /* don't expect odd sized blocks */
-	u32 sum = 0;
-
-	for (i = 0; i < n; i++)
-		sum += p[i];
-
-	sum = (sum >> 16) + (sum & 0xffff);
-	sum += (sum >> 16);
-	sum = ~sum & 0xffff;
-	return (u16) sum;
 }
 
 /* Find the first cbmem entry filling in the details. */
@@ -400,7 +382,7 @@ static int parse_cbtable(u64 address, size_t table_size)
 		lbh = buf + i;
 		if (memcmp(lbh->signature, "LBIO", sizeof(lbh->signature)) ||
 		    !lbh->header_bytes ||
-		    ipchcksum(lbh, sizeof(*lbh))) {
+		    ipchksum(lbh, sizeof(*lbh))) {
 			continue;
 		}
 
@@ -411,7 +393,7 @@ static int parse_cbtable(u64 address, size_t table_size)
 			continue;
 		}
 
-		if (ipchcksum(mapping_virt(&table_mapping), lbh->table_bytes) !=
+		if (ipchksum(mapping_virt(&table_mapping), lbh->table_bytes) !=
 		    lbh->table_checksum) {
 			debug("Signature found, but wrong checksum.\n");
 			unmap_memory(&table_mapping);

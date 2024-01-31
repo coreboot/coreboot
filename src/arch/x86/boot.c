@@ -5,7 +5,6 @@
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <program_loading.h>
-#include <ip_checksum.h>
 #include <symbols.h>
 #include <assert.h>
 

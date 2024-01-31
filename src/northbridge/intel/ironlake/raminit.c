@@ -11,7 +11,6 @@
 #include <cpu/x86/cache.h>
 #include <cbmem.h>
 #include <cf9_reset.h>
-#include <ip_checksum.h>
 #include <option.h>
 #include <device/pci_def.h>
 #include <device/device.h>

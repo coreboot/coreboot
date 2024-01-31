@@ -7,7 +7,6 @@
 #include <cbmem.h>
 #include <cbfs.h>
 #include <cf9_reset.h>
-#include <ip_checksum.h>
 #include <memory_info.h>
 #include <mrc_cache.h>
 #include <device/device.h>

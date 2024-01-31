@@ -22,7 +22,6 @@ tests-y += memcpy-test
 tests-y += malloc-test
 tests-y += memmove-test
 tests-y += crc_byte-test
-tests-y += compute_ip_checksum-test
 tests-y += memrange-test
 tests-y += uuid-test
 tests-y += bootmem-test
@@ -123,9 +122,6 @@ memmove-test-srcs += tests/lib/memmove-test.c
 crc_byte-test-srcs += tests/lib/crc_byte-test.c
 crc_byte-test-srcs += src/lib/crc_byte.c
 
-compute_ip_checksum-test-srcs += tests/lib/compute_ip_checksum-test.c
-compute_ip_checksum-test-srcs += src/lib/compute_ip_checksum.c
-
 memrange-test-srcs += tests/lib/memrange-test.c
 memrange-test-srcs += src/lib/memrange.c
 memrange-test-srcs += tests/stubs/console.c
@@ -148,7 +144,7 @@ dimm_info_util-test-srcs += tests/stubs/console.c
 
 coreboot_table-test-srcs += tests/lib/coreboot_table-test.c
 coreboot_table-test-srcs += tests/stubs/console.c
-coreboot_table-test-srcs += src/lib/compute_ip_checksum.c
+coreboot_table-test-srcs += src/commonlib/bsd/ipchksum.c
 coreboot_table-test-srcs += src/lib/coreboot_table.c
 coreboot_table-test-srcs += src/lib/imd_cbmem.c
 coreboot_table-test-srcs += src/lib/imd.c

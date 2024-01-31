@@ -6,7 +6,6 @@
 #include <commonlib/bsd/mem_chip_info.h>
 #include <console/console.h>
 #include <soc/dramc_common.h>
-#include <ip_checksum.h>
 #include <mrc_cache.h>
 #include <soc/dramc_param.h>
 #include <soc/emi.h>

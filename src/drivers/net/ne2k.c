@@ -28,11 +28,11 @@ SMC8416 PIO support added by Andrew Bettison (andrewb@zip.com.au) on 4/3/02
 */
 
 #include <arch/io.h>
+#include <commonlib/bsd/ipchksum.h>
 #include <console/ne2k.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
-#include <ip_checksum.h>
 
 #include "ns8390.h"
 
@@ -184,7 +184,7 @@ static void ns8390_tx_header(unsigned int eth_nic_base, int pktlen)
 	hdr[38] = (8 + pktlen) >> 8;
 	hdr[39] = 8 + pktlen;
 
-	chksum = compute_ip_checksum(&hdr[14], 20);
+	chksum = ipchksum(&hdr[14], 20);
 
 	hdr[25] = chksum >> 8;
 	hdr[24] = chksum;

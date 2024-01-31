@@ -116,8 +116,6 @@ ramstage-y += rtc.c
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 romstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 
-bootblock-y += compute_ip_checksum.c
-romstage-y += compute_ip_checksum.c
 romstage-y += dimm_info_util.c
 ifeq ($(CONFIG_COMPILER_GCC),y)
 bootblock-$(CONFIG_ARCH_BOOTBLOCK_X86_32) += gcc.c
@@ -145,7 +143,6 @@ ramstage-y += malloc.c
 ramstage-y += dimm_info_util.c
 ramstage-y += delay.c
 ramstage-y += fallback_boot.c
-ramstage-y += compute_ip_checksum.c
 ramstage-y += cbfs.c
 ramstage-y += lzma.c lzmadecode.c
 ramstage-y += stack.c

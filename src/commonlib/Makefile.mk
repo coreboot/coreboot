@@ -61,3 +61,5 @@ smm-y += bsd/elog.c
 
 decompressor-y += bsd/gcd.c
 all-y += bsd/gcd.c
+
+all-y += bsd/ipchksum.c

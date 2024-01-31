@@ -2,10 +2,10 @@
 
 #include <acpi/acpi.h>
 #include <arch/cbconfig.h>
+#include <commonlib/bsd/ipchksum.h>
 #include <console/console.h>
 #include <console/uart.h>
 #include <identity.h>
-#include <ip_checksum.h>
 #include <boot/coreboot_tables.h>
 #include <boot/tables.h>
 #include <boot_device.h>
@@ -432,10 +432,9 @@ static unsigned long lb_table_fini(struct lb_header *head)
 	}
 
 	first_rec = lb_first_record(head);
-	head->table_checksum = compute_ip_checksum(first_rec,
-		head->table_bytes);
+	head->table_checksum = ipchksum(first_rec, head->table_bytes);
 	head->header_checksum = 0;
-	head->header_checksum = compute_ip_checksum(head, sizeof(*head));
+	head->header_checksum = ipchksum(head, sizeof(*head));
 	printk(BIOS_DEBUG,
 	       "Wrote coreboot table at: %p, 0x%x bytes, checksum %x\n",
 	       head, head->table_bytes, head->table_checksum);

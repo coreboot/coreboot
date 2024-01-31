@@ -3,8 +3,8 @@
 #include <assert.h>
 #include <bootmode.h>
 #include <cbfs.h>
+#include <commonlib/bsd/ipchksum.h>
 #include <console/console.h>
-#include <ip_checksum.h>
 #include <security/vboot/vboot_common.h>
 #include <soc/dramc_param.h>
 #include <soc/dramc_pi_api.h>
@@ -63,8 +63,7 @@ static void dump_param_header(const struct dramc_param *dparam)
 
 static u32 compute_checksum(const struct dramc_param *dparam)
 {
-	return (u32)compute_ip_checksum(dparam->freq_params,
-					sizeof(dparam->freq_params));
+	return (u32)ipchksum(dparam->freq_params, sizeof(dparam->freq_params));
 }
 
 static int dram_run_fast_calibration(const struct dramc_param *dparam,

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <commonlib/bsd/ipchksum.h>
 #include <console/console.h>
-#include <ip_checksum.h>
 #include <pc80/mc146818rtc.h>
 
 #include "cse_lite_cmos.h"
@@ -66,7 +66,7 @@ static int psr_backup_status_cmos_read(struct psr_backup_status *psr)
 	}
 
 	/* Verify checksum over signature and backup_status only */
-	uint16_t csum = compute_ip_checksum(psr, offsetof(struct psr_backup_status, checksum));
+	uint16_t csum = ipchksum(psr, offsetof(struct psr_backup_status, checksum));
 
 	if (csum != psr->checksum) {
 		printk(BIOS_ERR, "PSR backup status checksum mismatch\n");
@@ -80,8 +80,7 @@ static int psr_backup_status_cmos_read(struct psr_backup_status *psr)
 static void psr_backup_status_cmos_write(struct psr_backup_status *psr)
 {
 	/* Checksum over signature and backup_status only */
-	psr->checksum = compute_ip_checksum(
-		psr, offsetof(struct psr_backup_status, checksum));
+	psr->checksum = ipchksum(psr, offsetof(struct psr_backup_status, checksum));
 
 	for (uint8_t *p = (uint8_t *)psr, i = 0; i < sizeof(*psr); i++, p++)
 		cmos_write(*p, PARTITION_FW_CMOS_OFFSET + sizeof(struct cse_specific_info) + i);

@@ -11,7 +11,7 @@
 #include <arch/cpu.h>
 #include <cbmem.h>
 #include <cbfs.h>
-#include <ip_checksum.h>
+#include <commonlib/bsd/ipchksum.h>
 #include <pc80/mc146818rtc.h>
 #include <device/pci_def.h>
 #include <lib.h>
@@ -73,9 +73,9 @@ static void save_mrc_data(struct pei_data *pei_data)
 	       pei_data->scrambler_seed_s3, CMOS_OFFSET_MRC_SEED_S3);
 
 	/* Save a simple checksum of the seed values */
-	c1 = compute_ip_checksum((u8 *)&pei_data->scrambler_seed,    sizeof(u32));
-	c2 = compute_ip_checksum((u8 *)&pei_data->scrambler_seed_s3, sizeof(u32));
-	checksum = add_ip_checksums(sizeof(u32), c1, c2);
+	c1 = ipchksum((u8 *)&pei_data->scrambler_seed,    sizeof(u32));
+	c2 = ipchksum((u8 *)&pei_data->scrambler_seed_s3, sizeof(u32));
+	checksum = ipchksum_add(sizeof(u32), c1, c2);
 
 	cmos_write((checksum >> 0) & 0xff, CMOS_OFFSET_MRC_SEED_CHK);
 	cmos_write((checksum >> 8) & 0xff, CMOS_OFFSET_MRC_SEED_CHK + 1);
@@ -100,9 +100,9 @@ static void prepare_mrc_cache(struct pei_data *pei_data)
 	       pei_data->scrambler_seed_s3, CMOS_OFFSET_MRC_SEED_S3);
 
 	/* Compute seed checksum and compare */
-	c1 = compute_ip_checksum((u8 *)&pei_data->scrambler_seed,    sizeof(u32));
-	c2 = compute_ip_checksum((u8 *)&pei_data->scrambler_seed_s3, sizeof(u32));
-	checksum = add_ip_checksums(sizeof(u32), c1, c2);
+	c1 = ipchksum((u8 *)&pei_data->scrambler_seed,    sizeof(u32));
+	c2 = ipchksum((u8 *)&pei_data->scrambler_seed_s3, sizeof(u32));
+	checksum = ipchksum_add(sizeof(u32), c1, c2);
 
 	seed_checksum  = cmos_read(CMOS_OFFSET_MRC_SEED_CHK);
 	seed_checksum |= cmos_read(CMOS_OFFSET_MRC_SEED_CHK + 1) << 8;

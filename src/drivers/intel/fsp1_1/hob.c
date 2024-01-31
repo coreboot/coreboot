@@ -3,7 +3,6 @@
 #include <arch/hlt.h>
 #include <console/console.h>
 #include <fsp/util.h>
-#include <ip_checksum.h>
 #include <string.h>
 
 /* Compares two EFI GUIDs. Returns true of the GUIDs match, false otherwise. */

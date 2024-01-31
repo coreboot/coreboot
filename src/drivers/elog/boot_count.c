@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <commonlib/bsd/ipchksum.h>
 #include <console/console.h>
-#include <ip_checksum.h>
 #include <pc80/mc146818rtc.h>
 #include <stdint.h>
 #include <elog.h>
@@ -47,7 +47,7 @@ static int boot_count_cmos_read(struct boot_count *bc)
 	}
 
 	/* Verify checksum over signature and counter only */
-	csum = compute_ip_checksum(bc, offsetof(struct boot_count, checksum));
+	csum = ipchksum(bc, offsetof(struct boot_count, checksum));
 
 	if (csum != bc->checksum) {
 		printk(BIOS_DEBUG, "Boot Count checksum mismatch\n");
@@ -63,7 +63,7 @@ static void boot_count_cmos_write(struct boot_count *bc)
 	u8 i, *p;
 
 	/* Checksum over signature and counter only */
-	bc->checksum = compute_ip_checksum(
+	bc->checksum = ipchksum(
 		bc, offsetof(struct boot_count, checksum));
 
 	for (p = (u8 *)bc, i = 0; i < sizeof(*bc); i++, p++)

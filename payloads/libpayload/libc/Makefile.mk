@@ -28,7 +28,7 @@
 ##
 
 libc-$(CONFIG_LP_LIBC) += malloc.c printf.c console.c string.c
-libc-$(CONFIG_LP_LIBC) += memory.c ctype.c ipchecksum.c lib.c libgcc.c
+libc-$(CONFIG_LP_LIBC) += memory.c ctype.c lib.c libgcc.c
 libc-$(CONFIG_LP_LIBC) += rand.c time.c exec.c
 libc-$(CONFIG_LP_LIBC) += readline.c getopt_long.c sysinfo.c
 libc-$(CONFIG_LP_LIBC) += args.c
@@ -47,4 +47,5 @@ endif
 ifeq ($(CONFIG_LP_LIBC),y)
 libc-srcs += $(coreboottop)/src/commonlib/bsd/elog.c
 libc-srcs += $(coreboottop)/src/commonlib/bsd/gcd.c
+libc-srcs += $(coreboottop)/src/commonlib/bsd/ipchksum.c
 endif

@@ -48,12 +48,12 @@
 #include <commonlib/bsd/elog.h>
 #include <commonlib/bsd/fmap_serialized.h>
 #include <commonlib/bsd/helpers.h>
+#include <commonlib/bsd/ipchksum.h>
 #include <commonlib/bsd/mem_chip_info.h>
 #include <ctype.h>
 #include <die.h>
 #include <endian.h>
 #include <fmap.h>
-#include <ipchksum.h>
 #include <kconfig.h>
 #include <stddef.h>
 #include <stdio.h>

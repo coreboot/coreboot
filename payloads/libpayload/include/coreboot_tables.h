@@ -30,7 +30,7 @@
 #define _COREBOOT_TABLES_H
 
 #include <arch/types.h>
-#include <ipchksum.h>
+#include <commonlib/bsd/ipchksum.h>
 #include <stdint.h>
 
 enum {

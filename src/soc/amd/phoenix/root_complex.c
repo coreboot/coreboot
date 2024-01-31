@@ -57,11 +57,6 @@ struct dptc_input {
 		},								\
 	}
 
-static void root_complex_init(struct device *dev)
-{
-	register_new_ioapic((u8 *)GNB_IO_APIC_ADDR);
-}
-
 static void acipgen_dptci(void)
 {
 	const struct soc_amd_phoenix_config *config = config_of_soc();
@@ -106,7 +101,6 @@ struct device_operations phoenix_root_complex_operations = {
 	.read_resources		= noop_read_resources,
 	.set_resources		= noop_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
-	.init			= root_complex_init,
 	.acpi_name		= gnb_acpi_name,
 	.acpi_fill_ssdt		= root_complex_fill_ssdt,
 };

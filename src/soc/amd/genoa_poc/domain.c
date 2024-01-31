@@ -42,15 +42,6 @@ static void genoa_domain_set_resources(struct device *domain)
 	}
 }
 
-static void genoa_domain_init(struct device *domain)
-{
-	struct resource *res = probe_resource(domain, IOMMU_IOAPIC_IDX);
-	if (!res)
-		return;
-
-	register_new_ioapic((void *)(uintptr_t)res->base);
-}
-
 static const char *genoa_domain_acpi_name(const struct device *domain)
 {
 	const char *domain_acpi_names[4] = {
@@ -70,7 +61,7 @@ struct device_operations genoa_pci_domain_ops = {
 	.read_resources	= amd_pci_domain_read_resources,
 	.set_resources	= genoa_domain_set_resources,
 	.scan_bus	= amd_pci_domain_scan_bus,
-	.init		= genoa_domain_init,
+	.init		= amd_pci_domain_init,
 	.acpi_name	= genoa_domain_acpi_name,
 	.acpi_fill_ssdt	= amd_pci_domain_fill_ssdt,
 };

@@ -31,4 +31,6 @@ signed int get_iohc_fabric_id(struct device *domain);
 
 void read_fsp_resources(struct device *dev, unsigned long *idx);
 
+void amd_pci_domain_init(struct device *domain);
+
 #endif /* AMD_BLOCK_ROOT_COMPLEX_H */

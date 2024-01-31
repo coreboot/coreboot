@@ -5,6 +5,7 @@
 #include <amdblocks/acpi.h>
 #include <amdblocks/data_fabric.h>
 #include <amdblocks/fsp.h>
+#include <amdblocks/root_complex.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -31,6 +32,7 @@ struct device_operations glinda_pci_domain_ops = {
 	.read_resources	= amd_pci_domain_read_resources,
 	.set_resources	= pci_domain_set_resources,
 	.scan_bus	= amd_pci_domain_scan_bus,
+	.init		= amd_pci_domain_init,
 	.acpi_name	= soc_acpi_name,
 	.acpi_fill_ssdt	= amd_pci_domain_fill_ssdt,
 };

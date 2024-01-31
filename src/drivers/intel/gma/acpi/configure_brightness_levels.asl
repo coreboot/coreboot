@@ -46,7 +46,7 @@
 			{
 				Return (Ones)
 			}
-			If (MBOX & 4 == 0)
+			If ((MBOX & 4) == 0)
 			{
 				Return (Ones)
 			}
@@ -74,7 +74,7 @@
 			While (Local0 > 0)
 			{
 				Sleep (1)
-				If (ASLC & 2 == 0) {
+				If ((ASLC & 2) == 0) {
 					/* Request has been processed, check status: */
 					Local1 = (ASLC >> 12) & 3
 					If (Local1 == 0) {

@@ -199,7 +199,7 @@ static void rcec_init(struct device *dev)
 	for (i = 0; i < pds.num_pds; i++) {
 		if (pds.pds[i].pd_type == PD_TYPE_PROCESSOR)
 			continue;
-		ep_bus = pds.pds[i].device_handle >> 20;
+		ep_bus = PCI_BDF(pds.pds[i].dev) >> 20;
 		if (ep_bus == ecrc_bus + 1)
 			break;
 	}

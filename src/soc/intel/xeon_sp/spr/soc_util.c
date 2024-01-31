@@ -91,7 +91,7 @@ bool is_iio_cxl_stack_res(const STACK_RES *res)
 		if (pds.pds[i].pd_type == PD_TYPE_PROCESSOR)
 			continue;
 
-		uint32_t bus = pds.pds[i].device_handle >> 20;
+		uint32_t bus = PCI_BDF(pds.pds[i].dev) >> 20;
 		if (bus >= res->BusBase && bus <= res->BusLimit)
 			return true;
 	}

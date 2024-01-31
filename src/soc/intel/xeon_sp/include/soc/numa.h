@@ -41,7 +41,7 @@ struct proximity_domain {
 	/*
 	 * Below fields are set to 0 for processor domains.
 	 */
-	uint32_t device_handle; /* This holds PCIe device segment, BDF info */
+	struct device *dev;
 	uint32_t base; /* Memory region base address in the unit of 64MB */
 	uint32_t size; /* Memory region size in the unit of 64MB */
 };

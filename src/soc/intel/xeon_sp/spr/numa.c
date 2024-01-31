@@ -19,7 +19,7 @@ void dump_pds(void)
 		printk(BIOS_DEBUG, "\tproximity domain %d:\n", i);
 		printk(BIOS_DEBUG, "\t\ttype:%d\n", pds.pds[i].pd_type);
 		printk(BIOS_DEBUG, "\t\tsocket_bitmap:0x%x\n", pds.pds[i].socket_bitmap);
-		printk(BIOS_DEBUG, "\t\tdevice_handle:0x%x\n", pds.pds[i].device_handle);
+		printk(BIOS_DEBUG, "\t\tdevice:%s\n", pds.pds[i].dev ? dev_path(pds.pds[i].dev) : "");
 		printk(BIOS_DEBUG, "\t\tbase(64MB):0x%x\n", pds.pds[i].base);
 		printk(BIOS_DEBUG, "\t\tsize(64MB):0x%x\n", pds.pds[i].size);
 	}
@@ -85,7 +85,7 @@ enum cb_err fill_pds(void)
 			pds.pds[i].base = node.Address;
 			pds.pds[i].size = node.Size;
 			dev = pcie_find_dsn(node.SerialNumber, node.VendorId, 0);
-			pds.pds[i].device_handle = PCI_BDF(dev);
+			pds.pds[i].dev = dev;
 			pds.pds[i].distances = malloc(sizeof(uint8_t) * pds.num_pds);
 			if (!pds.pds[i].distances)
 				die("%s %d out of memory.", __FILE__, __LINE__);

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <device/pci_ops.h>
 #include <soc/acpi.h>
 #include <soc/numa.h>
 #include <soc/util.h>
@@ -16,9 +17,9 @@ unsigned long cxl_fill_srat(unsigned long current)
 	uint8_t bus, dev, func;
 	uint32_t base, size;
 	for (uint8_t i = soc_get_num_cpus(); i < pds.num_pds; i++) {
-		bus = pds.pds[i].device_handle >> 20;
-		dev = (pds.pds[i].device_handle >> 15) & 0x1f;
-		func = (pds.pds[i].device_handle >> 12) & 0x07;
+		bus = PCI_BDF(pds.pds[i].dev) >> 20;
+		dev = (PCI_BDF(pds.pds[i].dev) >> 15) & 0x1f;
+		func = (PCI_BDF(pds.pds[i].dev) >> 12) & 0x07;
 		printk(BIOS_DEBUG,
 		       "adding srat GIA ID: %d, seg: 0x%x, bus: 0x%x, dev: 0x%x, func: 0x%x\n",
 		       i, seg, bus, dev, func);

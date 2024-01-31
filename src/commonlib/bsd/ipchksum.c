@@ -34,7 +34,30 @@ uint16_t ipchksum(const void *data, size_t size)
 		:: "cc"
 		);
 	}
-#endif
+#elif defined(__i386__) || defined(__x86_64__)
+	size_t size8 = size / 8;
+	const uint64_t *p8 = data;
+	i = size8 * 8;
+	asm (
+		"clc\n\t"
+		"1:\n\t"
+		"jecxz	2f\n\t"		/* technically RCX on 64, but not gonna be that big */
+		"adc	(%[p8]), %[wsum]\n\t"
+#if defined(__i386__)
+		"adc	4(%[p8]), %[wsum]\n\t"
+#endif	/* __i386__ */
+		"lea	-1(%[size8]), %[size8]\n\t"	/* Use LEA as a makeshift ADD that */
+		"lea	8(%[p8]), %[p8]\n\t"		/* doesn't modify the carry flag. */
+		"jmp	1b\n\t"
+		"2:\n\t"
+		"setc	%b[size8]\n\t"	/* reuse size register to save last carry */
+		"add	%[size8], %[wsum]\n\t"
+	: [wsum] "+r" (wide_sum),
+	  [p8] "+r" (p8),
+	  [size8] "+c" (size8)		/* put size in ECX so we can JECXZ */
+	:: "cc"
+	);
+#endif	/* __i386__ || __x86_64__ */
 
 	while (wide_sum) {
 		sum += wide_sum & 0xFFFF;

@@ -11,6 +11,31 @@ uint16_t ipchksum(const void *data, size_t size)
 	uint32_t sum = 0;
 	size_t i = 0;
 
+#if defined(__aarch64__)
+	size_t size16 = size / 16;
+	const uint64_t *p8 = data;
+	if (size16) {
+		unsigned long tmp1, tmp2;
+		i = size16 * 16;
+		asm (
+			"adds	xzr, xzr, xzr\n\t"	/* init carry flag for addition */
+			"1:\n\t"
+			"ldp	%[v1], %[v2], [%[p8]], #16\n\t"
+			"adcs	%[wsum], %[wsum], %[v1]\n\t"
+			"adcs	%[wsum], %[wsum], %[v2]\n\t"
+			"sub	%[size16], %[size16], #1\n\t"
+			"cbnz	%[size16], 1b\n\t"
+			"adcs	%[wsum], %[wsum], xzr\n\t"	/* use up last carry */
+		: [v1] "=r" (tmp1),
+		  [v2] "=r" (tmp2),
+		  [wsum] "+r" (wide_sum),
+		  [p8] "+r" (p8),
+		  [size16] "+r" (size16)
+		:: "cc"
+		);
+	}
+#endif
+
 	while (wide_sum) {
 		sum += wide_sum & 0xFFFF;
 		wide_sum >>= 16;

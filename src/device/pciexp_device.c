@@ -144,6 +144,35 @@ struct device *pcie_find_dsn(const uint64_t serial, const uint16_t vid,
 	return from;
 }
 
+static bool pcie_is_root_port(struct device *dev)
+{
+	unsigned int pcie_pos, pcie_type;
+
+	pcie_pos = pci_find_capability(dev, PCI_CAP_ID_PCIE);
+	if (!pcie_pos)
+		return false;
+
+	pcie_type = pci_read_config16(dev, pcie_pos + PCI_EXP_FLAGS) & PCI_EXP_FLAGS_TYPE;
+	pcie_type >>= 4;
+
+	return (pcie_type == PCI_EXP_TYPE_ROOT_PORT);
+}
+
+static bool pcie_is_endpoint(struct device *dev)
+{
+	unsigned int pcie_pos, pcie_type;
+
+	pcie_pos = pci_find_capability(dev, PCI_CAP_ID_PCIE);
+	if (!pcie_pos)
+		return false;
+
+	pcie_type = pci_read_config16(dev, pcie_pos + PCI_EXP_FLAGS) & PCI_EXP_FLAGS_TYPE;
+	pcie_type >>= 4;
+
+	return ((pcie_type == PCI_EXP_TYPE_ENDPOINT) || (pcie_type == PCI_EXP_TYPE_LEG_END));
+}
+
+
 /*
  * Re-train a PCIe link
  */
@@ -561,26 +590,63 @@ static void pciexp_enable_aspm(struct device *root, unsigned int root_cap,
 	printk(BIOS_INFO, "ASPM: Enabled %s\n", aspm_type_str[apmc]);
 }
 
-/*
- * Set max payload size of endpoint in accordance with max payload size of root port.
- */
-static void pciexp_set_max_payload_size(struct device *root, unsigned int root_cap,
-					struct device *endp, unsigned int endp_cap)
+static void pciexp_dev_set_max_payload_size(struct device *dev, unsigned int max_payload)
 {
-	unsigned int endp_max_payload, root_max_payload, max_payload;
-	u16 endp_devctl, root_devctl;
-	u32 endp_devcap, root_devcap;
+	u16 devctl;
+	unsigned int pcie_cap = pci_find_capability(dev, PCI_CAP_ID_PCIE);
 
-	/* Get max payload size supported by endpoint */
-	endp_devcap = pci_read_config32(endp, endp_cap + PCI_EXP_DEVCAP);
-	endp_max_payload = endp_devcap & PCI_EXP_DEVCAP_PAYLOAD;
+	if (!pcie_cap)
+		return;
 
-	/* Get max payload size supported by root port */
-	root_devcap = pci_read_config32(root, root_cap + PCI_EXP_DEVCAP);
-	root_max_payload = root_devcap & PCI_EXP_DEVCAP_PAYLOAD;
+	devctl = pci_read_config16(dev, pcie_cap + PCI_EXP_DEVCTL);
+	devctl &= ~PCI_EXP_DEVCTL_PAYLOAD;
+	/*
+	 * Should never overflow to higher bits, due to how max_payload is
+	 * guarded in this file.
+	 */
+	devctl |= max_payload << 5;
+	pci_write_config16(dev, pcie_cap + PCI_EXP_DEVCTL, devctl);
+}
 
-	/* Set max payload to smaller of the reported device capability. */
-	max_payload = MIN(endp_max_payload, root_max_payload);
+static unsigned int pciexp_dev_get_current_max_payload_size(struct device *dev)
+{
+	u16 devctl;
+	unsigned int pcie_cap = pci_find_capability(dev, PCI_CAP_ID_PCIE);
+
+	if (!pcie_cap)
+		return 0;
+
+	devctl = pci_read_config16(dev, pcie_cap + PCI_EXP_DEVCTL);
+	devctl &= PCI_EXP_DEVCTL_PAYLOAD;
+	return (devctl >> 5);
+}
+
+static unsigned int pciexp_dev_get_max_payload_size_cap(struct device *dev)
+{
+	u16 devcap;
+	unsigned int pcie_cap = pci_find_capability(dev, PCI_CAP_ID_PCIE);
+
+	if (!pcie_cap)
+		return 0;
+
+	devcap = pci_read_config16(dev, pcie_cap + PCI_EXP_DEVCAP);
+	return (devcap & PCI_EXP_DEVCAP_PAYLOAD);
+}
+
+/*
+ * Set max payload size of a parent based on max payload size capability of the child.
+ */
+static void pciexp_configure_max_payload_size(struct device *parent, struct device *child)
+{
+	unsigned int child_max_payload, parent_max_payload, max_payload;
+
+	/* Get max payload size supported by child */
+	child_max_payload = pciexp_dev_get_current_max_payload_size(child);
+	/* Get max payload size configured by parent */
+	parent_max_payload = pciexp_dev_get_current_max_payload_size(parent);
+	/* Set max payload to smaller of the reported device capability or parent config. */
+	max_payload = MIN(child_max_payload, parent_max_payload);
+
 	if (max_payload > 5) {
 		/* Values 6 and 7 are reserved in PCIe 3.0 specs. */
 		printk(BIOS_ERR, "PCIe: Max_Payload_Size field restricted from %d to 5\n",
@@ -588,17 +654,11 @@ static void pciexp_set_max_payload_size(struct device *root, unsigned int root_c
 		max_payload = 5;
 	}
 
-	endp_devctl = pci_read_config16(endp, endp_cap + PCI_EXP_DEVCTL);
-	endp_devctl &= ~PCI_EXP_DEVCTL_PAYLOAD;
-	endp_devctl |= max_payload << 5;
-	pci_write_config16(endp, endp_cap + PCI_EXP_DEVCTL, endp_devctl);
-
-	root_devctl = pci_read_config16(root, root_cap + PCI_EXP_DEVCTL);
-	root_devctl &= ~PCI_EXP_DEVCTL_PAYLOAD;
-	root_devctl |= max_payload << 5;
-	pci_write_config16(root, root_cap + PCI_EXP_DEVCTL, root_devctl);
-
-	printk(BIOS_INFO, "PCIe: Max_Payload_Size adjusted to %d\n", (1 << (max_payload + 7)));
+	if (max_payload != parent_max_payload) {
+		pciexp_dev_set_max_payload_size(parent, max_payload);
+		printk(BIOS_INFO, "%s: Max_Payload_Size adjusted to %d\n", dev_path(parent),
+		       (1 << (max_payload + 7)));
+	}
 }
 
 /*
@@ -658,18 +718,46 @@ static void pciexp_tune_dev(struct device *dev)
 	if (CONFIG(PCIEXP_LANE_ERR_STAT_CLEAR))
 		clear_lane_error_status(root);
 
-	/* Adjust Max_Payload_Size of link ends. */
-	pciexp_set_max_payload_size(root, root_cap, dev, cap);
+	/* Set the Max Payload Size to the maximum supported capability for this device */
+	if (pcie_is_endpoint(dev))
+		pciexp_dev_set_max_payload_size(dev, pciexp_dev_get_max_payload_size_cap(dev));
+
+	/* Limit the parent's Max Payload Size if needed */
+	pciexp_configure_max_payload_size(root, dev);
 
 	pciexp_configure_ltr(root, root_cap, dev, cap);
+}
+
+static void pciexp_sync_max_payload_size(struct bus *bus, unsigned int max_payload)
+{
+	struct device *child;
+
+	/* Set the max payload for children on the bus and their children, etc. */
+	for (child = bus->children; child; child = child->sibling) {
+		if (!is_pci(child))
+			continue;
+
+		pciexp_dev_set_max_payload_size(child, max_payload);
+
+		if (child->downstream)
+			pciexp_sync_max_payload_size(child->downstream, max_payload);
+	}
 }
 
 void pciexp_scan_bus(struct bus *bus, unsigned int min_devfn,
 			     unsigned int max_devfn)
 {
 	struct device *child;
+	unsigned int max_payload;
 
 	pciexp_enable_ltr(bus->dev);
+
+	/*
+	 * Set the Max Payload Size to the maximum supported capability for this bridge.
+	 * This value will be used in pciexp_tune_dev to limit the Max Payload size if needed.
+	 */
+	max_payload = pciexp_dev_get_max_payload_size_cap(bus->dev);
+	pciexp_dev_set_max_payload_size(bus->dev, max_payload);
 
 	pci_scan_bus(bus, min_devfn, max_devfn);
 
@@ -681,6 +769,23 @@ void pciexp_scan_bus(struct bus *bus, unsigned int min_devfn,
 			continue;
 		}
 		pciexp_tune_dev(child);
+	}
+
+	/*
+	 * Now the root port's Max Payload Size should be set to the highest
+	 * possible value supported by all devices under a given root port.
+	 * Propagate that value down from root port to all devices, so the Max
+	 * Payload Size is equal on all devices, as some devices may have
+	 * different capabilities and the programmed value depends on the
+	 * order of device population the in the subtree.
+	 */
+	if (pcie_is_root_port(bus->dev)) {
+		max_payload = pciexp_dev_get_current_max_payload_size(bus->dev);
+
+		printk(BIOS_INFO, "%s: Setting Max_Payload_Size to %d for devices under this"
+				  " root port\n", dev_path(bus->dev), 1 << (max_payload + 7));
+
+		pciexp_sync_max_payload_size(bus, max_payload);
 	}
 }
 

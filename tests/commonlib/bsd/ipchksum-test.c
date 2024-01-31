@@ -63,6 +63,23 @@ static void test_ipchksum_simple_data(void **state)
 	free(helper_buffer);
 }
 
+static void test_ipchksum_80kff(void **state)
+{
+	/* 64K is an important boundary since naive 32-bit sum implementations that accumulate
+	   carries may run over after that point. */
+	size_t buffer_sz = 80 * 1024;
+	char *buffer = malloc(buffer_sz);
+
+	memset(buffer, 0xff, buffer_sz);
+	assert_int_equal(ipchksum(buffer, buffer_sz), 0);
+
+	/* Make things a bit more interesting... */
+	memcpy(buffer + 0x6789, test_data_simple, test_data_simple_sz);
+	assert_int_equal(ipchksum(buffer, buffer_sz), 0x6742);
+
+	free(buffer);
+}
+
 static void test_ipchksum_add_empty_values(void **state)
 {
 	uint16_t res;
@@ -81,7 +98,19 @@ static void test_ipchksum_add(void **state)
 						  test_data_simple_sz / 2);
 	uint16_t res_sum = ipchksum_add(test_data_simple_sz / 2, res_1, res_2);
 
+	assert_int_equal(0xb62e, res_1);
+	assert_int_equal(0x8c38, res_2);
 	assert_int_equal(test_data_simple_checksum, res_sum);
+
+	/* Test some unaligned sums */
+	res_1 = ipchksum(test_data_simple, 17);
+	res_2 = ipchksum(test_data_simple + 17, test_data_simple_sz - 17);
+	res_sum = ipchksum_add(17, res_1, res_2);
+
+	assert_int_equal(0x2198, res_1);
+	assert_int_equal(0xcf20, res_2);
+	assert_int_equal(test_data_simple_checksum, res_sum);
+
 }
 
 int main(void)
@@ -90,6 +119,7 @@ int main(void)
 		cmocka_unit_test(test_ipchksum_zero_length),
 		cmocka_unit_test(test_ipchksum_zero_buffer),
 		cmocka_unit_test(test_ipchksum_simple_data),
+		cmocka_unit_test(test_ipchksum_80kff),
 
 		cmocka_unit_test(test_ipchksum_add_empty_values),
 		cmocka_unit_test(test_ipchksum_add),

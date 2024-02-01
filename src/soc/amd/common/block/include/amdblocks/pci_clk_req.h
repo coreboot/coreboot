@@ -3,7 +3,7 @@
 #ifndef AMD_BLOCK_PCI_GPP_H
 #define AMD_BLOCK_PCI_GPP_H
 
-#include <soc/platform_descriptors.h>
+#include <types.h>
 
 enum gpp_clk_req {
 	GPP_CLK_ON,  /* GPP clock always on; default */

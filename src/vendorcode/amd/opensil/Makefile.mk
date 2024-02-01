@@ -2,6 +2,12 @@
 
 ifeq ($(CONFIG_SOC_AMD_OPENSIL),y)
 
+ifeq ($(CONFIG_SOC_AMD_OPENSIL_STUB),y)
+
+subdirs-y += stub
+
+else # CONFIG_SOC_AMD_OPENSIL_STUB
+
 ifneq ($(CONFIG_ARCH_RAMSTAGE_X86_32)$(CONFIG_ARCH_RAMSTAGE_X86_64),y)
     $(error OpenSIL can only be built for either x86 or x86_64)
 endif
@@ -90,4 +96,6 @@ $(OBJPATH)/opensil.a: $(OBJPATH)/opensil/lib$(opensil_target_name).a
 romstage-libs += $(OBJPATH)/opensil.a
 ramstage-libs += $(OBJPATH)/opensil.a
 
-endif
+endif # CONFIG_SOC_AMD_OPENSIL_STUB
+
+endif # CONFIG_SOC_AMD_OPENSIL

@@ -200,7 +200,9 @@ void fch_init(void *chip_info)
 	acpi_pm_gpe_add_events_print_events();
 	gpio_add_events();
 
-	gpp_clk_setup();
+	if (CONFIG(PLATFORM_USES_FSP2_0))
+		gpp_clk_setup();
+
 	fch_clk_output_48Mhz();
 	cgpll_clock_gate_init();
 }

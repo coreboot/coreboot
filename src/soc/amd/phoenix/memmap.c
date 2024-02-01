@@ -7,6 +7,7 @@
 #include <cbmem.h>
 #include <device/device.h>
 #include <stdint.h>
+#include <vendorcode/amd/opensil/stub/opensil.h>
 
 /*
  *                     +--------------------------------+
@@ -96,4 +97,6 @@ void read_soc_memmap_resources(struct device *dev, unsigned long *idx)
 
 	if (CONFIG(PLATFORM_USES_FSP2_0))
 		read_fsp_resources(dev, idx);
+	else
+		add_opensil_memmap(dev, idx);
 }

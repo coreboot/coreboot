@@ -19,6 +19,7 @@
 #include <device/device.h>
 #include <soc/iomap.h>
 #include <types.h>
+#include <vendorcode/amd/opensil/genoa_poc/opensil.h>
 #include "chip.h"
 
 /*
@@ -29,12 +30,17 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
 	const struct soc_amd_phoenix_config *cfg = config_of_soc();
 
-	printk(BIOS_DEBUG, "pm_base: 0x%04x\n", ACPI_IO_BASE);
+	if (CONFIG(PLATFORM_USES_FSP2_0)) {
+		printk(BIOS_DEBUG, "pm_base: 0x%04x\n", ACPI_IO_BASE);
 
-	fadt->pm1a_evt_blk = ACPI_PM_EVT_BLK;
-	fadt->pm1a_cnt_blk = ACPI_PM1_CNT_BLK;
-	fadt->pm_tmr_blk = ACPI_PM_TMR_BLK;
-	fadt->gpe0_blk = ACPI_GPE0_BLK;
+		fadt->pm1a_evt_blk = ACPI_PM_EVT_BLK;
+		fadt->pm1a_cnt_blk = ACPI_PM1_CNT_BLK;
+		fadt->pm_tmr_blk = ACPI_PM_TMR_BLK;
+		fadt->gpe0_blk = ACPI_GPE0_BLK;
+	} else {
+		/* Fill in pm1_evt, pm1_cnt, pm_tmr, gpe0_blk from openSIL input structure */
+		opensil_fill_fadt_io_ports(fadt);
+	}
 
 	fadt->pm1_evt_len = 4;	/* 32 bits */
 	fadt->pm1_cnt_len = 2;	/* 16 bits */

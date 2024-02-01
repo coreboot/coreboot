@@ -12,6 +12,7 @@
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 #include <types.h>
+#include <vendorcode/amd/opensil/stub/opensil.h>
 #include "chip.h"
 
 static const char *soc_acpi_name(const struct device *dev)
@@ -39,8 +40,12 @@ static void soc_init(void *chip_info)
 {
 	default_dev_ops_root.write_acpi_tables = soc_acpi_write_tables;
 
-	if (CONFIG(PLATFORM_USES_FSP2_0))
+	if (CONFIG(PLATFORM_USES_FSP2_0)) {
 		amd_fsp_silicon_init();
+	} else {
+		setup_opensil();
+		opensil_xSIM_timepoint_1();
+	}
 
 	data_fabric_set_mmio_np();
 

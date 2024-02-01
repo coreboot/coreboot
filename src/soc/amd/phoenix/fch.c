@@ -89,10 +89,12 @@ static void fch_init_acpi_ports(void)
 	 * ACPI tables are generated. Enable these ports indiscriminately.
 	 */
 
-	pm_write16(PM_EVT_BLK, ACPI_PM_EVT_BLK);
-	pm_write16(PM1_CNT_BLK, ACPI_PM1_CNT_BLK);
-	pm_write16(PM_TMR_BLK, ACPI_PM_TMR_BLK);
-	pm_write16(PM_GPE0_BLK, ACPI_GPE0_BLK);
+	if (CONFIG(PLATFORM_USES_FSP2_0)) {
+		pm_write16(PM_EVT_BLK, ACPI_PM_EVT_BLK);
+		pm_write16(PM1_CNT_BLK, ACPI_PM1_CNT_BLK);
+		pm_write16(PM_TMR_BLK, ACPI_PM_TMR_BLK);
+		pm_write16(PM_GPE0_BLK, ACPI_GPE0_BLK);
+	}
 
 	if (CONFIG(HAVE_SMI_HANDLER)) {
 		/* APMC - SMI Command Port */

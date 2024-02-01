@@ -29,7 +29,7 @@ config SOC_AMD_PHOENIX_BASE
 	select SOC_AMD_COMMON_BLOCK_ACPI		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_ACPIMMIO		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_ACPI_ALIB		# TODO: Check if this is still correct
-	select SOC_AMD_COMMON_BLOCK_ACPI_CPPC
+	select SOC_AMD_COMMON_BLOCK_ACPI_CPPC if !SOC_AMD_PHOENIX_OPENSIL # TODO: add support for openSIL case
 	select SOC_AMD_COMMON_BLOCK_ACPI_CPU_POWER_STATE
 	select SOC_AMD_COMMON_BLOCK_ACPI_GPIO		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_ACPI_IVRS		# TODO: Check if this is still correct
@@ -99,6 +99,12 @@ config SOC_AMD_PHOENIX_FSP
 	select USE_FSP_NOTIFY_PHASE_END_OF_FIRMWARE
 	help
 	  AMD Phoenix support using FSP
+
+config SOC_AMD_PHOENIX_OPENSIL
+	bool
+	select SOC_AMD_PHOENIX_BASE
+	select SOC_AMD_OPENSIL
+	select SOC_AMD_OPENSIL_STUB
 
 if SOC_AMD_PHOENIX_BASE
 

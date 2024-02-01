@@ -15,7 +15,7 @@ config BOARD_AMD_BIRMAN_COMMON
 	select SOC_AMD_COMMON_BLOCK_SIMNOW_SUPPORTED
 	select SPI_FLASH_EXIT_4_BYTE_ADDR_MODE
 
-config BOARD_AMD_BIRMAN_PHOENIX
+config BOARD_AMD_BIRMAN_PHOENIX_FSP
 	select BOARD_AMD_BIRMAN_COMMON
 	select SOC_AMD_PHOENIX_FSP
 
@@ -27,7 +27,7 @@ if BOARD_AMD_BIRMAN_COMMON
 
 config FMDFILE
 	default "src/mainboard/amd/birman/chromeos_glinda.fmd" if CHROMEOS && BOARD_AMD_BIRMAN_GLINDA
-	default "src/mainboard/amd/birman/chromeos_phoenix.fmd" if CHROMEOS && BOARD_AMD_BIRMAN_PHOENIX
+	default "src/mainboard/amd/birman/chromeos_phoenix.fmd" if CHROMEOS && BOARD_AMD_BIRMAN_PHOENIX_FSP
 	default "src/mainboard/amd/birman/board_glinda.fmd" if BOARD_AMD_BIRMAN_GLINDA
 	default "src/mainboard/amd/birman/board_phoenix.fmd"
 
@@ -36,7 +36,7 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	default "Birman_Glinda" if BOARD_AMD_BIRMAN_GLINDA
-	default "Birman_Phoenix"
+	default "Birman_Phoenix_FSP" if BOARD_AMD_BIRMAN_PHOENIX_FSP
 
 config DEVICETREE
 	default "devicetree_glinda.cb" if BOARD_AMD_BIRMAN_GLINDA

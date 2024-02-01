@@ -7,12 +7,6 @@
 #include <fsp/debug.h>
 #include <fsp/util.h>
 
-asmlinkage size_t fsp_write_line(uint8_t *buffer, size_t number_of_bytes)
-{
-	console_write_line(buffer, number_of_bytes);
-	return number_of_bytes;
-}
-
 enum fsp_call_phase {
 	BEFORE_FSP_CALL,
 	AFTER_FSP_CALL,

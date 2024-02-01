@@ -58,15 +58,6 @@ const char *fsp_get_hob_type_name(const struct hob_header *hob);
 const char *fsp_get_guid_name(const uint8_t *guid);
 void fsp_print_guid_extension_hob(const struct hob_header *hob);
 
-/*
- * Writes number_of_bytes data bytes from buffer to the console.
- * The number of bytes actually written to the console is returned.
- *
- * If number_of_bytes is zero, don't output any data but instead wait until
- * the console has output all data, then return 0.
- */
-asmlinkage size_t fsp_write_line(uint8_t *buffer, size_t number_of_bytes);
-
 /* Callback to snapshot all GPIO configurations. */
 void gpio_snapshot(void);
 /* Callback to verify that current GPIO configuration matches the saved snapshot */

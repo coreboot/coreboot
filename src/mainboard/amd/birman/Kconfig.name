@@ -3,5 +3,8 @@ comment "Birman"
 config BOARD_AMD_BIRMAN_PHOENIX_FSP
 	bool "->  Birman for Phoenix SoC using FSP"
 
+config BOARD_AMD_BIRMAN_PHOENIX_OPENSIL
+	bool "->  Birman for Phoenix SoC using openSIL"
+
 config BOARD_AMD_BIRMAN_GLINDA
 	bool "->  Birman for Glinda SoC"

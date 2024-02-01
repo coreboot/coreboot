@@ -29,6 +29,10 @@
 QEMU-$(CONFIG_BOARD_EMULATION_QEMU_AARCH64)	?= qemu-system-aarch64 \
 	-M virt,secure=on,virtualization=on -cpu cortex-a53 -m 1G
 
+QEMU-$(CONFIG_BOARD_EMULATION_QEMU_RISCV_RV64)	?= qemu-system-riscv64 -M virt
+
+QEMU-$(CONFIG_BOARD_EMULATION_QEMU_RISCV_RV32)	?= qemu-system-riscv32 -M virt
+
 QEMU-$(CONFIG_BOARD_EMULATION_QEMU_X86_I440FX)	?= qemu-system-x86_64 -M pc
 
 QEMU-$(CONFIG_BOARD_EMULATION_QEMU_X86_Q35)	?= qemu-system-x86_64 -M q35

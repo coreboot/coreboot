@@ -13,7 +13,9 @@
 #include <soc/southbridge.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <types.h>
+#if CONFIG(PLATFORM_USES_FSP2_0)
 #include <vendorcode/amd/fsp/phoenix/FspUsb.h>
+#endif
 
 struct soc_amd_phoenix_config {
 	struct soc_amd_common_config common_config;
@@ -103,8 +105,10 @@ struct soc_amd_phoenix_config {
 		DXIO_PSPP_POWERSAVE,
 	} pspp_policy;
 
+#if CONFIG(PLATFORM_USES_FSP2_0)
 	uint8_t usb_phy_custom;
 	struct usb_phy_config usb_phy;
+#endif
 };
 
 #endif /* PHOENIX_CHIP_H */

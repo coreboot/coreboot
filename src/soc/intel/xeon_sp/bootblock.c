@@ -1,18 +1,18 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <bootblock_common.h>
-#include <device/pci.h>
-#include <FsptUpd.h>
-#include <intelblocks/fast_spi.h>
-#include <intelblocks/tco.h>
-#include <soc/iomap.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
-#include <intelblocks/lpc_lib.h>
-#include <security/intel/cbnt/cbnt.h>
-#include <soc/pci_devs.h>
-#include <soc/bootblock.h>
+#include <device/pci.h>
 #include <fsp/util.h>
+#include <FsptUpd.h>
+#include <intelblocks/fast_spi.h>
+#include <intelblocks/lpc_lib.h>
+#include <intelblocks/tco.h>
+#include <security/intel/cbnt/cbnt.h>
+#include <soc/bootblock.h>
+#include <soc/iomap.h>
+#include <soc/pci_devs.h>
 
 const FSPT_UPD temp_ram_init_params = {
 	.FspUpdHeader = {

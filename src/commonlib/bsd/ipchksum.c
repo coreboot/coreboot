@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later */
 
+#include <commonlib/bsd/helpers.h>
 #include <commonlib/bsd/ipchksum.h>
 
 /* See RFC 1071 for mathematical explanations of why we can first sum in a larger register and
@@ -34,7 +35,7 @@ uint16_t ipchksum(const void *data, size_t size)
 		:: "cc"
 		);
 	}
-#elif defined(__i386__) || defined(__x86_64__)
+#elif defined(__i386__) || defined(__x86_64__)	/* __aarch64__ */
 	size_t size8 = size / 8;
 	const uint64_t *p8 = data;
 	i = size8 * 8;
@@ -57,7 +58,18 @@ uint16_t ipchksum(const void *data, size_t size)
 	  [size8] "+c" (size8)		/* put size in ECX so we can JECXZ */
 	:: "cc"
 	);
-#endif	/* __i386__ || __x86_64__ */
+#else	/* __i386__ || __x86_64__ */
+	size_t aligned_size = ALIGN_DOWN(size, sizeof(unsigned long));
+	const unsigned long *p_long = data;
+	for (; i < aligned_size; i += sizeof(unsigned long)) {
+		unsigned long new_sum = wide_sum + *p_long++;
+		/* Overflow check to emulate a manual "add with carry" in C. The compiler seems
+		   to be clever enough to find ways to elide the branch on most archs. */
+		if (new_sum < wide_sum)
+			new_sum++;
+		wide_sum = new_sum;
+	}
+#endif
 
 	while (wide_sum) {
 		sum += wide_sum & 0xFFFF;

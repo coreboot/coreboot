@@ -129,7 +129,7 @@ void setup_opensil(void)
 	configure_mpio();
 }
 
-void opensil_entry(SIL_TIMEPOINT timepoint)
+static void opensil_entry(SIL_TIMEPOINT timepoint)
 {
 	SIL_STATUS ret;
 	SIL_TIMEPOINT tp = (uintptr_t)timepoint;
@@ -158,6 +158,21 @@ void opensil_entry(SIL_TIMEPOINT timepoint)
 		printk(BIOS_INFO, "openSIL requested a warm reset");
 		do_warm_reset();
 	}
+}
+
+void opensil_xSIM_timepoint_1(void)
+{
+	opensil_entry(SIL_TP1);
+}
+
+void opensil_xSIM_timepoint_2(void)
+{
+	opensil_entry(SIL_TP2);
+}
+
+void opensil_xSIM_timepoint_3(void)
+{
+	opensil_entry(SIL_TP3);
 }
 
 /* TODO: also call timepoints 2 and 3 from coreboot. Are they NOOP? */

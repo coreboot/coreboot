@@ -11,7 +11,7 @@ static void soc_init(void *chip_info)
 	default_dev_ops_root.write_acpi_tables = soc_acpi_write_tables;
 
 	setup_opensil();
-	opensil_entry(SIL_TP1);
+	opensil_xSIM_timepoint_1();
 
 	fch_init(chip_info);
 }

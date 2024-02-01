@@ -4,7 +4,6 @@
 #define _OPENSIL_H_
 
 #include <acpi/acpi.h>
-#include <xSIM-api.h>
 
 void SIL_STATUS_report(const char *function, const int status);
 // Add the memory map to dev, starting at index idx, returns last use idx
@@ -15,6 +14,8 @@ void opensil_fill_fadt_io_ports(acpi_fadt_t *fadt);
 void configure_mpio(void);
 
 void setup_opensil(void);
-void opensil_entry(SIL_TIMEPOINT timepoint);
+void opensil_xSIM_timepoint_1(void);
+void opensil_xSIM_timepoint_2(void);
+void opensil_xSIM_timepoint_3(void);
 
 #endif

@@ -18,6 +18,8 @@
 #define   HDA_ICII_BUSY		(1 << 0)
 #define   HDA_ICII_VALID	(1 << 1)
 
+#define AZALIA_MAX_CODECS	15
+
 int azalia_set_bits(void *port, u32 mask, u32 val);
 int azalia_enter_reset(u8 *base);
 int azalia_exit_reset(u8 *base);

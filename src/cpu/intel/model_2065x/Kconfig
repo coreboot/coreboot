@@ -2,7 +2,7 @@
 
 config CPU_INTEL_MODEL_2065X
 	bool
-	select HAVE_EXP_X86_64_SUPPORT
+	select HAVE_X86_64_SUPPORT
 	select ARCH_X86
 	select SSE2
 	select UDELAY_TSC

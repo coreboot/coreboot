@@ -21,7 +21,7 @@ long_mode_call_3arg:
 	mov	%esp, %ebp
 
 	/* Enter long mode, preserves ebx */
-	setup_longmode $(CONFIG_ARCH_X86_64_PGTBL_LOC)
+	setup_longmode $PM4LE
 
 	/* Align stack */
 	movabs	$0xfffffffffffffff0, %rax

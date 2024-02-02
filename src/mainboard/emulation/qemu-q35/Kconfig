@@ -32,6 +32,11 @@ config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwab-16M.fmd" if VBOOT_SLOTS_RW_AB
 
 if ARCH_BOOTBLOCK_X86_64
+
+config PAGE_TABLES_IN_CBFS
+	bool
+	default y
+
 # Need to install page tables in DRAM as the virtual MMU has problems translating paging
 # request when the page table resides in emulated ROM. This causes undefined behaviour
 # when handling data requests, as well as fetching and decoding instructions

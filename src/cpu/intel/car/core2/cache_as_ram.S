@@ -163,7 +163,7 @@ addrsize_set_high:
 	subl	$4, %esp
 
 #if ENV_X86_64
-	setup_longmode $(CONFIG_ARCH_X86_64_PGTBL_LOC)
+	setup_longmode $PM4LE
 
 	movd	%mm2, %rdi
 	shlq	$32, %rdi

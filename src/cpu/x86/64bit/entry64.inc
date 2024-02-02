@@ -11,8 +11,10 @@
 
 #if ENV_X86_64
 	.code32
+#if CONFIG(PAGE_TABLES_IN_CBFS)
 #if (CONFIG_ARCH_X86_64_PGTBL_LOC & 0xfff) > 0
 #error pagetables must be 4KiB aligned!
+#endif
 #endif
 
 #include <cpu/x86/msr.h>

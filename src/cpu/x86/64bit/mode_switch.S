@@ -44,7 +44,7 @@ protected_mode_call_wrapper:
 	movl	%eax, %ebx
 
 	/* Preserves ebx */
-	setup_longmode $(CONFIG_ARCH_X86_64_PGTBL_LOC)
+	setup_longmode $PM4LE
 
 	/* Place return value in rax */
 	movl	%ebx, %eax

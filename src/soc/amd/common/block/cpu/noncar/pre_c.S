@@ -28,7 +28,7 @@ bootblock_pre_c_entry:
 	post_code(POSTCODE_BOOTBLOCK_PRE_C_ENTRY)
 
 #if ENV_X86_64
-	setup_longmode $(CONFIG_ARCH_X86_64_PGTBL_LOC)
+	setup_longmode $PM4LE
 #endif
 
 	/* Clear .bss section */

@@ -18,7 +18,7 @@
 #define _GEN_PAGE(a) (_PRES + _RW + _US + _PS + _A +  _D + (a))
 
 .global PM4LE
-.align 32
+.align 4096
 PM4LE:
 .quad _GEN_DIR(PDPE_table)
 

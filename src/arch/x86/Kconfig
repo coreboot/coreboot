@@ -83,9 +83,13 @@ config USE_EXP_X86_64_SUPPORT
 	  is an experimental option: do not enable unless one wants to test it
 	  and has the means to recover a system when coreboot fails to boot.
 
+config PAGE_TABLES_IN_CBFS
+	bool
+	default n
+
 config ARCH_X86_64_PGTBL_LOC
 	hex "x86_64 page table location in CBFS"
-	depends on ARCH_BOOTBLOCK_X86_64
+	depends on ARCH_BOOTBLOCK_X86_64 && PAGE_TABLES_IN_CBFS
 	default 0xfffe9000
 	help
 	  The position where to place pagetables. Needs to be known at

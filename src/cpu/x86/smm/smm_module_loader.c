@@ -8,7 +8,9 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/smm.h>
 #include <device/device.h>
+#include <device/mmio.h>
 #include <rmodule.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <types.h>
@@ -259,6 +261,7 @@ static int smm_module_setup_stub(const uintptr_t smbase, const size_t smm_size,
 	stub_params->stack_top = stack_top;
 	stub_params->stack_size = g_stack_size;
 	stub_params->c_handler = (uintptr_t)params->handler;
+	stub_params->cr3 = params->cr3;
 
 	/* This runs on the BSP. All the APs are its siblings */
 	struct cpu_info *info = cpu_info();
@@ -353,8 +356,8 @@ static void print_region(const char *name, const struct region region)
 	       region_end(&region));
 }
 
-/* STM + Handler + (Stub + Save state) * CONFIG_MAX_CPUS + stacks */
-#define SMM_REGIONS_ARRAY_SIZE (1  + 1 + CONFIG_MAX_CPUS * 2 + 1)
+/* STM + Handler + (Stub + Save state) * CONFIG_MAX_CPUS + stacks + page tables*/
+#define SMM_REGIONS_ARRAY_SIZE (1  + 1 + CONFIG_MAX_CPUS * 2 + 1 + 1)
 
 static int append_and_check_region(const struct region smram,
 				   const struct region region,
@@ -389,6 +392,39 @@ static int append_and_check_region(const struct region smram,
 	return 0;
 }
 
+#define _PRES (1ULL << 0)
+#define _RW   (1ULL << 1)
+#define _US   (1ULL << 2)
+#define _A    (1ULL << 5)
+#define _D    (1ULL << 6)
+#define _PS   (1ULL << 7)
+#define _GEN_DIR(a) (_PRES + _RW + _US + _A + (a))
+#define _GEN_PAGE(a) (_PRES + _RW + _US + _PS + _A +  _D + (a))
+#define PAGE_SIZE 8
+
+/* Return the PM4LE */
+static uintptr_t install_page_table(const uintptr_t handler_base)
+{
+	const bool one_g_pages = !!(cpuid_edx(0x80000001) & (1 << 26));
+	/* 4 1G pages or 4 PDPE entries with 512 * 2M pages */
+	const size_t pages_needed = one_g_pages ? 4 : 2048 + 4;
+	const uintptr_t pages_base = ALIGN_DOWN(handler_base - pages_needed * PAGE_SIZE, 4096);
+	const uintptr_t pm4le = ALIGN_DOWN(pages_base - 8, 4096);
+
+	if (one_g_pages) {
+		for (size_t i = 0; i < 4; i++)
+			write64p(pages_base + i * PAGE_SIZE, _GEN_PAGE(1ull * GiB * i));
+		write64p(pm4le, _GEN_DIR(pages_base));
+	} else {
+		for (size_t i = 0; i < 2048; i++)
+			write64p(pages_base + i * PAGE_SIZE, _GEN_PAGE(2ull * MiB * i));
+		write64p(pm4le, _GEN_DIR(pages_base + 2048 * PAGE_SIZE));
+		for (size_t i = 0; i < 4; i++)
+			write64p(pages_base + (2048 + i) * PAGE_SIZE, _GEN_DIR(pages_base + 4096 * i));
+	}
+	return pm4le;
+}
+
 /*
  *The SMM module is placed within the provided region in the following
  * manner:
@@ -398,6 +434,8 @@ static int append_and_check_region(const struct region smram,
  * +-----------------+
  * |  smi handler    |
  * |      ...        |
+ * +-----------------+
+ * |  page tables    |
  * +-----------------+ <- cpu0
  * |    stub code    | <- cpu1
  * |    stub code    | <- cpu2
@@ -453,7 +491,20 @@ int smm_load_module(const uintptr_t smram_base, const size_t smram_size,
 	if (append_and_check_region(smram, handler, region_list, "HANDLER"))
 		return -1;
 
-	uintptr_t stub_segment_base = handler_base - SMM_CODE_SEGMENT_SIZE;
+	uintptr_t stub_segment_base;
+	if (ENV_X86_64) {
+		uintptr_t pt_base = install_page_table(handler_base);
+		struct region page_tables = {
+			.offset = pt_base,
+			.size = handler_base - pt_base,
+		};
+		if (append_and_check_region(smram, page_tables, region_list, "PAGE TABLES"))
+			return -1;
+		params->cr3 = pt_base;
+		stub_segment_base = pt_base - SMM_CODE_SEGMENT_SIZE;
+	} else {
+		stub_segment_base = handler_base - SMM_CODE_SEGMENT_SIZE;
+	}
 
 	if (!smm_create_map(stub_segment_base, params->num_concurrent_save_states, params)) {
 		printk(BIOS_ERR, "%s: Error creating CPU map\n", __func__);

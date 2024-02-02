@@ -790,7 +790,6 @@ static enum cb_err install_permanent_handler(int num_cpus, uintptr_t smbase,
 		.num_cpus = num_cpus,
 		.cpu_save_state_size = save_state_size,
 		.num_concurrent_save_states = num_cpus,
-		.cr3 = read_cr3(),
 	};
 
 	printk(BIOS_DEBUG, "Installing permanent SMM handler to 0x%08lx\n", smbase);

@@ -23,11 +23,10 @@ config DRIVERS_MTK_WIFI
 	  When enabled, add identifiers in ACPI tables to make OS
 	  drivers work with certain MediaTek PCI-e WiFi chipsets.
 
-if DRIVERS_WIFI_GENERIC
-
 config USE_SAR
 	bool
 	default n
+	depends on DRIVERS_WIFI_GENERIC
 	help
 	  Enable it when wifi driver uses SAR configuration feature.
 
@@ -57,8 +56,6 @@ config DSAR_SET_NUM
 	depends on USE_SAR
 	help
 	  There can be up to 3 optional SAR table sets.
-
-endif # DRIVERS_WIFI_GENERIC
 
 config USE_MTCL
 	bool

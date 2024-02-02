@@ -109,6 +109,7 @@ struct smm_stub_params {
 	u32 stack_size;
 	u32 stack_top;
 	u32 c_handler;
+	u32 cr3;
 	/* The apic_id_to_cpu provides a mapping from APIC id to CPU number.
 	 * The CPU number is indicated by the index into the array by matching
 	 * the default APIC id and value at the index. The stub loader
@@ -165,6 +166,7 @@ struct smm_loader_params {
 	size_t num_concurrent_save_states;
 
 	smm_handler_t handler;
+	uint32_t cr3;
 };
 
 /* All of these return 0 on success, < 0 on failure. */

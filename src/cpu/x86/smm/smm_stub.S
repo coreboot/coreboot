@@ -23,6 +23,8 @@ stack_top:
 .long 0
 c_handler:
 .long 0
+cr3:
+.long 0
 /* apic_to_cpu_num is a table mapping the default APIC id to CPU num. If the
  * APIC id is found at the given index, the contiguous CPU number is index
  * into the table. */
@@ -196,7 +198,7 @@ align_stack:
 #if ENV_X86_64
 	mov	%ecx, %edi
 	/* entry64.inc preserves ebx, esi, edi, ebp */
-	setup_longmode $(CONFIG_ARCH_X86_64_PGTBL_LOC)
+	setup_longmode cr3
 	mov	%edi, %ecx
 
 

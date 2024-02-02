@@ -38,6 +38,8 @@ msr_count:
 .long 0
 c_handler:
 .long 0
+cr3:
+.long 0
 ap_count:
 .long 0
 
@@ -224,7 +226,7 @@ load_msr:
 
 #if ENV_X86_64
 	/* entry64.inc preserves ebx, esi, edi, ebp */
-	setup_longmode $(CONFIG_ARCH_X86_64_PGTBL_LOC)
+	setup_longmode cr3
 
 	movabs	c_handler, %eax
 	call	*%rax

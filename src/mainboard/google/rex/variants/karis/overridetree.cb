@@ -24,6 +24,7 @@ fw_config
 	end
 	field KB_TYPE 12
 		option KB_TYPE_DEFAULT		0
+		option KB_TYPE_CA			1
 	end
 	field WIFI_TYPE 13
 		option WIFI_CNVI		0

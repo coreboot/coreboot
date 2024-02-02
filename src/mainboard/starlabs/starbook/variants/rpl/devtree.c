@@ -58,6 +58,14 @@ void devtree_update(void)
 	if (get_uint_option("webcam", 1) == 0)
 		cfg->usb2_ports[CONFIG_CCD_PORT].enable = 0;
 
+	/* Enable/Disable Fingerprint Reader based on CMOS Settings */
+	if (get_uint_option("fingerprint_reader", 1) == 0)
+		cfg->usb2_ports[5].enable = 0;
+
+	/* Enable/Disable Card Reader based on CMOS Settings */
+	if (get_uint_option("card_reader", 1) == 0)
+		cfg->usb2_ports[3].enable = 0;
+
 	/* Enable/Disable Thunderbolt based on CMOS settings */
 	if (get_uint_option("thunderbolt", 1) == 0) {
 		tbt_pci_dev->enabled = 0;

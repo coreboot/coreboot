@@ -42,4 +42,8 @@ void devtree_update(void)
 
 	/* Enable/Disable Webcam based on CMOS settings */
 	cfg->usb2_ports[CONFIG_CCD_PORT].enable = get_uint_option("webcam", 1);
+
+	/* Enable/Disable Card Reader based on CMOS Settings */
+	if (get_uint_option("card_reader", 1) == 0)
+		cfg->usb2_ports[3].enable = 0;
 }

@@ -131,12 +131,8 @@ static void set_ioapic_id(void *ioapic_base, u8 ioapic_id)
 	       ioapic_base);
 	printk(BIOS_DEBUG, "IOAPIC: ID = 0x%02x\n", ioapic_id);
 
-	if (ioapic_id) {
-		/* Set IOAPIC ID if it has been specified. */
-		io_apic_write(ioapic_base, 0x00,
-			(io_apic_read(ioapic_base, 0x00) & 0xf0ffffff) |
-			(ioapic_id << 24));
-	}
+	io_apic_write(ioapic_base, 0x00,
+		      (io_apic_read(ioapic_base, 0x00) & 0xf0ffffff) | (ioapic_id << 24));
 
 	printk(BIOS_SPEW, "IOAPIC: Dumping registers\n");
 	for (i = 0; i < 3; i++)

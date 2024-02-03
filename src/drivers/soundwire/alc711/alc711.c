@@ -11,10 +11,18 @@
 #include "chip.h"
 
 static struct soundwire_address alc711_address = {
+#if CONFIG(DRIVERS_SOUNDWIRE_ALC722)
+	.version = SOUNDWIRE_VERSION_1_2,
+	.part_id = MIPI_DEV_ID_REALTEK_ALC722,
+	.class = MIPI_CLASS_SDCA,
+#elif CONFIG(DRIVERS_SOUNDWIRE_ALC711)
 	.version = SOUNDWIRE_VERSION_1_1,
-	.manufacturer_id = MIPI_MFG_ID_REALTEK,
 	.part_id = MIPI_DEV_ID_REALTEK_ALC711,
-	.class = MIPI_CLASS_NONE
+	.class = MIPI_CLASS_NONE,
+#else
+#error "No Realtek SoundWire codec selected"
+#endif
+	.manufacturer_id = MIPI_MFG_ID_REALTEK,
 };
 
 static struct soundwire_slave alc711_slave = {
@@ -150,6 +158,12 @@ static void soundwire_alc711_enable(struct device *dev)
 }
 
 struct chip_operations drivers_soundwire_alc711_ops = {
+#if CONFIG(DRIVERS_SOUNDWIRE_ALC711)
 	.name = "Realtek ALC711 SoundWire Codec",
+#elif CONFIG(DRIVERS_SOUNDWIRE_ALC722)
+	.name = "Realtek ALC722 SoundWire Codec",
+#else
+	.name = "Unknown",
+#endif
 	.enable_dev = soundwire_alc711_enable
 };

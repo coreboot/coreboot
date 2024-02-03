@@ -1,4 +1,18 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
+config DRIVERS_SOUNDWIRE_ALC_BASE_7XX
+	bool
+	help
+	  Base code for Realtek ALC7xxx Codec SoundWire driver.
+
 config DRIVERS_SOUNDWIRE_ALC711
 	bool
+	select DRIVERS_SOUNDWIRE_ALC_BASE_7XX
+	help
+	  SoundWire driver for Realtek ALC711 device
+
+config DRIVERS_SOUNDWIRE_ALC722
+	bool
+	select DRIVERS_SOUNDWIRE_ALC_BASE_7XX
+	help
+	  SoundWire driver for Realtek ALC722 device

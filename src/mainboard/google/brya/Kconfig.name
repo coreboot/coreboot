@@ -169,3 +169,6 @@ config BOARD_GOOGLE_NOVA
 
 config BOARD_GOOGLE_BUJIA
 	bool "->  Bujia"
+
+config BOARD_GOOGLE_YAVISTA
+	bool "->  Yavista"

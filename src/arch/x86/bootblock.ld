@@ -17,19 +17,16 @@ SECTIONS {
 	. = _ebootblock - CONFIG_C_ENV_BOOTBLOCK_SIZE;
 #else
 	. = BOOTBLOCK_TOP - PROGRAM_SZ;
-	. = ALIGN(64);
+	/* Page tables need to be at a 4K boundary so align the bootblock downwards */
+	. = ALIGN(4096);
+	. -= 4096;
 #endif
 
 	_bootblock = .;
 
 	INCLUDE "bootblock/lib/program.ld"
 
-	/*
-	 * Allocation reserves extra space here. Alignment requirements
-	 * may cause the total size of a section to change when the start
-	 * address gets applied.
-	 */
-	PROGRAM_SZ = SIZEOF(.text) + 512;
+	PROGRAM_SZ = SIZEOF(.text);
 
 	. = MIN(_ECFW_PTR, MIN(_ID_SECTION, _FIT_POINTER)) - EARLYASM_SZ;
 	. = CONFIG(SIPI_VECTOR_IN_ROM) ? ALIGN(4096) : ALIGN(16);

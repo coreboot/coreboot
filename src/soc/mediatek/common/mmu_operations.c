@@ -19,11 +19,11 @@ void mtk_mmu_init(void)
 	mmu_init();
 
 	/*
-	 * Set 0x0 to 8GB address as device memory. We want to config IO_PHYS
+	 * Set 0x0 to 16GB address as device memory. We want to config IO_PHYS
 	 * address to DEV_MEM, and map a proper range of dram for the memory
 	 * test during calibration.
 	 */
-	mmu_config_range((void *)0, (uintptr_t)8U * GiB, DEV_MEM);
+	mmu_config_range((void *)0, (uintptr_t)16U * GiB, DEV_MEM);
 
 	/* SRAM is cached */
 	mmu_config_range(_sram, REGION_SIZE(sram), SECURE_CACHED_MEM);

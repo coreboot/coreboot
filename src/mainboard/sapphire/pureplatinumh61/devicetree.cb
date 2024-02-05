@@ -9,6 +9,23 @@ chip northbridge/intel/sandybridge
 			register "pcie_port_coalesce" = "true"
 			register "sata_interface_speed_support" = "0x3"
 			register "sata_port_map" = "0x33"
+			register "usb_port_config" = "{
+				{ 1, 0, 0 },
+				{ 1, 0, 0 },
+				{ 1, 0, 1 },
+				{ 1, 0, 1 },
+				{ 1, 0, 2 },
+				{ 1, 0, 2 },
+				{ 1, 0, 3 },
+				{ 1, 0, 3 },
+				{ 1, 0, 4 },
+				{ 1, 0, 4 },
+				{ 1, 0, 6 },
+				{ 1, 0, 5 },
+				{ 1, 0, 5 },
+				{ 1, 0, 6 }
+			}"
+
 			register "spi.opprefixes" = "{ 0x50, 0x06 }"
 			register "spi.ops" = "{{0x01, WRITE_NO_ADDR},
 						{0x02, WRITE_WITH_ADDR},

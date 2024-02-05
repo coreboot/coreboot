@@ -20,6 +20,23 @@ chip northbridge/intel/sandybridge
 			# FIXME: ports 3, 5 are untested
 			register "sata_port_map" = "0x3b"
 
+			register "usb_port_config" = "{
+				{1, 1, 0}, /* left front */
+				{1, 1, 0}, /* left rear, debug */
+				{1, 1, 1}, /* eSATA */
+				{1, 1, 1}, /* webcam */
+				{1, 0, 2},
+				{1, 0, 2}, /* bluetooth */
+				{0, 0, 3},
+				{0, 0, 3},
+				{1, 1, 4}, /* fingerprint reader */
+				{1, 1, 4}, /* WWAN */
+				{1, 0, 5}, /* right */
+				{1, 0, 5},
+				{1, 0, 6},
+				{1, 0, 6}
+			}"
+
 			device ref pcie_rp1 on  end
 			device ref pcie_rp2 on
 				smbios_slot_desc "SlotTypePcmcia" "SlotLengthShort"

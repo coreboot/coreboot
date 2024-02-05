@@ -43,6 +43,18 @@ chip northbridge/intel/sandybridge
 			register "xhci_switchable_ports" = "0xf"
 			register "superspeed_capable_ports" = "0xf"
 			register "xhci_overcurrent_mapping" = "0x00000c03"
+			register "usb_port_config" = "{
+				{1, 1, 0},	/* P0: USB 3.0 1 (OC0) */
+				{1, 1, 0},	/* P1: USB 3.0 2 (OC0) */
+				{0, 0, 0},
+				{1, 1, -1},	/* P3: Camera (no OC) */
+				{1, 0, -1},	/* P4: WLAN (no OC) */
+				{1, 0, -1},	/* P5: WWAN (no OC) */
+				{0, 0, 0}, {0, 0, 0}, {0, 0, 0},
+				{1, 1, 4},	/* P9: USB 2.0 (AUO4) (OC4) */
+				{0, 0, 0}, {0, 0, 0}, {0, 0, 0},
+				{1, 0, -1}	/* P13: Bluetooth (no OC) */
+				}"
 
 			# Enable zero-based linear PCIe root port functions
 			register "pcie_port_coalesce" = "true"

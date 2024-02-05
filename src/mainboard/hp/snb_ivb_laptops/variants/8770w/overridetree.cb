@@ -24,6 +24,22 @@ chip northbridge/intel/sandybridge
 			register "superspeed_capable_ports" = "0x0000000f"
 			register "xhci_overcurrent_mapping" = "0x00000c03"
 			register "xhci_switchable_ports"    = "0x0000000f"
+			register "usb_port_config" = "{
+				{1, 1, 0}, /* Dock USB3.0 */
+				{1, 1, 0}, /* Conn */
+				{1, 1, 1}, /* USB 3.0 */
+				{1, 1, 1}, /* USB 3.0 */
+				{1, 0, 2}, /* Express Card */
+				{1, 0, 2}, /* Bluetooth */
+				{0, 0, 3},
+				{1, 0, 3}, /* Smart Card */
+				{1, 1, 4}, /* Fingerprint Reader */
+				{1, 1, 4}, /* Conn (Charger) */
+				{1, 0, 5}, /* Camera */
+				{1, 0, 5}, /* Dock */
+				{1, 0, 6}, /* WWAN */
+				{1, 0, 6}  /* Conn (eSATA Combo) */
+			}"
 
 			device ref xhci on  end
 			device ref pcie_rp1 on  end

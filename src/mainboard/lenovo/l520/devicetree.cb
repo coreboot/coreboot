@@ -43,6 +43,23 @@ chip northbridge/intel/sandybridge
 			register "spi_uvscc" = "0"
 			register "spi_lvscc" = "0x2005"
 
+			register "usb_port_config" = "{
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 }
+			}"
+
 			device ref mei1 on end # Management Engine Interface 1
 			device ref mei2 off end # Management Engine Interface 2
 			device ref me_ide_r off end # Management Engine IDE-R

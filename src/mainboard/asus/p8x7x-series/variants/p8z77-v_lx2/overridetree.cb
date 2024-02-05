@@ -4,6 +4,23 @@ chip northbridge/intel/sandybridge
 	device domain 0 on
 		subsystemid 0x1043 0x84ca inherit
 		chip southbridge/intel/bd82x6x
+			register "usb_port_config" = "{
+				{ 1, 0, 0 },
+				{ 1, 0, 0 },
+				{ 1, 0, 1 },
+				{ 1, 0, 1 },
+				{ 1, 0, 2 },
+				{ 1, 0, 2 },
+				{ 1, 0, 3 },
+				{ 1, 0, 3 },
+				{ 1, 0, 4 },
+				{ 1, 0, 4 },
+				{ 1, 0, 6 },
+				{ 1, 0, 5 },
+				{ 1, 0, 5 },
+				{ 1, 0, 6 }
+}"
+
 			register "gen1_dec" = "0x000c0291"
 
 			device ref pcie_rp1 on  end	# PCIEX16_2 (electrical x4)

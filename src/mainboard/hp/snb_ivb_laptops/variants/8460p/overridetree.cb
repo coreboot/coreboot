@@ -21,6 +21,23 @@ chip northbridge/intel/sandybridge
 			# HDD(0), ODD(1), docking(3,5), eSATA(4)
 			register "sata_port_map" = "0x3b"
 
+			register "usb_port_config" = "{
+				{1, 1, 0}, /* USB0, eSATA */
+				{1, 0, 0}, /* USB charger */
+				{0, 1, 1},
+				{1, 1, 1}, /* camera */
+				{1, 0, 2}, /* USB4 expresscard */
+				{1, 0, 2}, /* bluetooth */
+				{0, 0, 3},
+				{1, 0, 3}, /* smartcard */
+				{1, 1, 4}, /* fingerprint */
+				{1, 1, 4}, /* WWAN */
+				{1, 0, 5}, /* CONN */
+				{1, 0, 5}, /* docking */
+				{1, 0, 6}, /* CONN */
+				{1, 0, 6}  /* docking */
+			}"
+
 			device ref me_kt on  end
 			device ref pcie_rp1 on  end
 			device ref pcie_rp2 on

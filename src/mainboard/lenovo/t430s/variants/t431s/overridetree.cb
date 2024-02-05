@@ -23,6 +23,23 @@ chip northbridge/intel/sandybridge
 			# T431s has no Express Card slot.
 			register "pcie_hotplug_map" = "{ 0, 0, 0, 0, 0, 0, 0, 0 }"
 
+			register "usb_port_config" = "{
+				{ 1, 0, 0 },  /* SSP1: right */
+				{ 1, 0, 1 },  /* SSP2: left, EHCI Debug */
+				{ 1, 1, 3 },  /* SSP3: dock USB3 */
+				{ 1, 1, -1 }, /* B0P4: wwan USB */
+				{ 1, 1, 2 },  /* B0P5: dock USB2 */
+				{ 0, 0, -1 }, /* B0P6 */
+				{ 0, 0, -1 }, /* B0P7 */
+				{ 1, 2, -1 }, /* B0P8: unknown */
+				{ 1, 0, -1 }, /* B1P1: smart card reader */
+				{ 0, 2, 5 },  /* B1P2 */
+				{ 1, 1, -1 }, /* B1P3: fingerprint reader */
+				{ 0, 0, -1 }, /* B1P4 */
+				{ 1, 1, -1 }, /* B1P5: wlan USB */
+				{ 1, 1, -1 }, /* B1P6: Camera */
+			}"
+
 			device ref pcie_rp1 on
 				chip drivers/ricoh/rce822 # Ricoh cardreader
 					register "disable_mask" = "0x87"

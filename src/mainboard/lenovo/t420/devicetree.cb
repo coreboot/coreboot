@@ -58,6 +58,24 @@ chip northbridge/intel/sandybridge
 			register "spi_uvscc" = "0x2005"
 			register "spi_lvscc" = "0x2005"
 
+			# OC3 set in BIOS to port 2-7, OC7 set in BIOS to port 10-13
+			register "usb_port_config" = "{
+				{1, 1,  0}, /* P0: system port 4, OC0 */
+				{1, 1,  1}, /* P1: system port 2 (EHCI debug), OC 1 */
+				{1, 1, -1}, /* P2: HALF MINICARD (WLAN) no oc */
+				{1, 0, -1}, /* P3: WWAN, no OC */
+				{1, 0, -1}, /* P4: smartcard, no OC */
+				{1, 1, -1}, /* P5: ExpressCard, no OC */
+				{0, 0, -1}, /* P6: empty */
+				{0, 0, -1}, /* P7: empty */
+				{1, 1,  4}, /* P8: system port 3, OC4*/
+				{1, 1,  5}, /* P9: system port 1 (EHCI debug), OC 5 */
+				{1, 0, -1}, /* P10: fingerprint reader, no OC */
+				{1, 0, -1}, /* P11: bluetooth, no OC. */
+				{1, 1, -1}, /* P12: docking, no OC */
+				{1, 1, -1}  /* P13: camera (LCD), no OC */
+				}"
+
 			device ref mei1 on  end # Management Engine Interface 1
 			device ref mei2 off end # Management Engine Interface 2
 			device ref me_ide_r off end # Management Engine IDE-R

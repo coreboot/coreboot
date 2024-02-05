@@ -20,6 +20,23 @@ chip northbridge/intel/sandybridge
 			register "pcie_hotplug_map" = "{ 0, 1, 1, 0, 0, 0, 0, 0 }"
 			register "sata_port_map" = "0x21"
 
+			register "usb_port_config" = "{
+				{ 1, 1, 0 },
+				{ 1, 1, 0 },
+				{ 1, 1, 1 },
+				{ 1, 1, 1 },
+				{ 1, 0, 2 },
+				{ 1, 1, 2 },
+				{ 0, 0, 3 },
+				{ 1, 0, 3 },
+				{ 1, 1, 4 },
+				{ 1, 0, 4 },
+				{ 0, 0, 5 },
+				{ 1, 1, 5 },
+				{ 0, 0, 6 },
+				{ 1, 1, 6 }
+			}"
+
 			device ref pcie_rp1 on  end
 			device ref pcie_rp2 on
 				smbios_slot_desc "SlotTypePcmcia" "SlotLengthShort"

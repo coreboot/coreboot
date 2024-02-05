@@ -23,6 +23,22 @@ chip northbridge/intel/sandybridge
 			register "superspeed_capable_ports" = "0x0000000f"
 			register "xhci_overcurrent_mapping" = "0x00000c03"
 			register "xhci_switchable_ports"    = "0x0000000f"
+			register "usb_port_config" = "{
+				{1, 1, 0}, /* SSP1: dock */
+				{1, 1, 0}, /* SSP2: left, EHCI Debug */
+				{0, 1, 1}, /* SSP3 */
+				{1, 1, 1}, /* SSP4: right */
+				{0, 0, 2}, /* B0P5 */
+				{0, 0, 2}, /* B0P6 */
+				{0, 0, 3}, /* B0P7 */
+				{1, 0, 3}, /* B0P8: smart card reader */
+				{1, 0, 4}, /* B1P1: fingerprint reader */
+				{1, 0, 4}, /* B1P2: (EHCI Debug) wlan usb */
+				{1, 1, 5}, /* B1P3: Camera */
+				{1, 0, 5}, /* B1P4 */
+				{1, 0, 6}, /* B1P5: wwan USB */
+				{0, 0, 6}
+			}"
 
 			device ref xhci on  end
 			device ref mei1 on  end

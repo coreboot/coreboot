@@ -14,6 +14,22 @@ chip northbridge/intel/sandybridge
 			register "sata_port_map" = "0x3f"
 			register "spi_lvscc" = "0x2005"
 			register "spi_uvscc" = "0x2005"
+			register "usb_port_config" = "{
+				{ 1, 1, 0 },
+				{ 1, 1, 0 },
+				{ 1, 1, 1 },
+				{ 1, 1, 1 },
+				{ 1, 0, 2 },
+				{ 1, 0, 2 },
+				{ 1, 0, 3 },
+				{ 1, 0, 3 },
+				{ 1, 1, 4 },
+				{ 1, 1, 4 },
+				{ 0, 0, 5 },
+				{ 0, 0, 5 },
+				{ 1, 0, 6 },
+				{ 1, 0, 6 }
+			}"
 			device ref mei1 on end		# Management Engine Interface 1
 			device ref me_ide_r on end	# Management Engine IDE-R
 			device ref me_kt on end		# Management Engine KT

@@ -30,6 +30,22 @@ chip northbridge/intel/sandybridge
 			register "superspeed_capable_ports" = "0x0000000f"
 			register "xhci_overcurrent_mapping" = "0x08040201"
 			register "xhci_switchable_ports" = "0x0000000f"
+			register "usb_port_config" = "{
+				{ 1, 6, 0 },
+				{ 1, 6, 0 },
+				{ 1, 1, 1 },
+				{ 1, 1, 1 },
+				{ 1, 1, 2 },
+				{ 1, 1, 2 },
+				{ 1, 6, 3 },
+				{ 1, 6, 3 },
+				{ 1, 6, 4 },
+				{ 1, 6, 4 },
+				{ 1, 6, 5 },
+				{ 1, 1, 5 },
+				{ 1, 1, 6 },
+				{ 1, 6, 6 }
+			}"
 			device ref xhci on  end
 			device ref mei1 off end
 			device ref mei2 off end

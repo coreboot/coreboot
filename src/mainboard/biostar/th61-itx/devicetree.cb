@@ -15,6 +15,22 @@ chip northbridge/intel/sandybridge
 			register "sata_port_map" = "0x33"
 			register "spi_lvscc" = "0x2005"
 			register "spi_uvscc" = "0x2005"
+			register "usb_port_config" = "{
+				{ 1, 0, 0 },
+				{ 1, 0, 0 },
+				{ 1, 0, 1 },
+				{ 1, 0, 1 },
+				{ 1, 0, 2 },
+				{ 1, 0, 2 },
+				{ 1, 0, 3 },
+				{ 1, 0, 3 },
+				{ 1, 0, 4 },
+				{ 1, 0, 4 },
+				{ 1, 0, 6 },
+				{ 1, 0, 5 },
+				{ 1, 0, 5 },
+				{ 1, 0, 6 }
+			}"
 
 			device ref mei1 on  end	# MEI #1
 			device ref ehci2 on  end	# EHCI #2

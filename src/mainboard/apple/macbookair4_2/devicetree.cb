@@ -26,6 +26,14 @@ chip northbridge/intel/sandybridge
 			register "pcie_port_coalesce" = "true"
 			register "sata_interface_speed_support" = "0x3"
 			register "sata_port_map" = "0x1"
+			register "usb_port_config" = "{
+				{1, 0, -1}, /* USB HUB 1 */
+				{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, /* Unused x7 */
+				{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1},
+				{1, 0, -1}, /* USB HUB 2 */
+				{1, 0, -1}, /* Camera */
+				{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1} /* Unused x4 */
+				}"
 			device ref mei1 on # Management Engine Interface 1
 				subsystemid 0x8086 0x7270
 			end

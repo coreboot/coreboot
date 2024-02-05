@@ -35,6 +35,22 @@ chip northbridge/intel/sandybridge
 			register "superspeed_capable_ports" = "0x7"
 			register "xhci_switchable_ports" = "0x7"
 			register "xhci_overcurrent_mapping" = "0x04000201"
+			register "usb_port_config" = "{
+				{ 1, 1,  0 },
+				{ 1, 1,  1 },
+				{ 1, 2,  3 },
+				{ 1, 1, -1 },
+				{ 1, 1,  2 },
+				{ 1, 0, -1 },
+				{ 0, 0, -1 },
+				{ 1, 2, -1 },
+				{ 1, 0, -1 },
+				{ 1, 1,  5 },
+				{ 1, 0, -1 },
+				{ 1, 0, -1 },
+				{ 1, 3, -1 },
+				{ 1, 1, -1 }
+			}"
 
 			# device specific SPI configuration
 			register "spi_uvscc" = "0x2005"

@@ -16,6 +16,22 @@ chip northbridge/intel/sandybridge
 		subsystemid 0x17aa 0x21e8 inherit
 
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+			register "usb_port_config" = "{
+				{ 1, 1, 0 },
+				{ 1, 1, 1 },
+				{ 1, 1, 3 },
+				{ 1, 0, 3 },
+				{ 1, 0, 3 },
+				{ 1, 1, 3 },
+				{ 0, 0, 3 },
+				{ 0, 0, 3 },
+				{ 1, 1, 4 },
+				{ 1, 1, 5 },
+				{ 1, 0, 7 },
+				{ 1, 1, 7 },
+				{ 1, 1, 7 },
+				{ 1, 0, 7 }
+			}"
 			# Enable SATA ports 0 (HDD bay) & 2 (msata) & 3 (esatap)
 			register "sata_port_map" = "0x1d"
 			# X1 does not have ExpressCard slot

@@ -1,4 +1,4 @@
-FROM alpine:3.18.3
+FROM alpine:3.19.1
 
 COPY makeSphinx.sh /makeSphinx.sh
 
@@ -13,12 +13,13 @@ RUN python3 -m venv $VIRTUAL_ENV && \
  echo "source ${VIRTUAL_ENV}/bin/activate"  >> /home/coreboot/.bashrc && \
  pip3 install --upgrade --no-cache-dir pip && \
  pip3 install --no-cache-dir \
-  jinja2==3.1.2 \
-  recommonmark===0.7.1\
-  sphinx===6.2.1 \
+  jinja2==3.1.3 \
+  recommonmark===0.7.1 \
+  myst-parser==2.0.0 \
+  sphinx===7.2.6 \
   sphinxcontrib-ditaa===1.0.2 \
-  sphinx_autobuild===2021.3.14 \
-  sphinx_rtd_theme===1.2.2
+  sphinx_autobuild===2024.2.4 \
+  sphinx_rtd_theme===2.0.0
 
 ADD https://github.com/stathissideris/ditaa/releases/download/v0.11.0/ditaa-0.11.0-standalone.jar \
     /usr/lib/ditaa-0.11.0-standalone.jar

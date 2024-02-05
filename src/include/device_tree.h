@@ -129,6 +129,12 @@ u32 fdt_find_node_by_alias(const void *blob, const char *alias_name,
  */
 int fdt_next_node_name(const void *blob, uint32_t node_offset, const char **name);
 
+ /* Read memory regions from a flat device-tree. */
+size_t fdt_read_memory_regions(const void *blob, struct device_tree_region regions[],
+			       size_t regions_count);
+ /* Find top of memory from a flat device-tree. */
+uint64_t fdt_get_memory_top(const void *blob);
+
 /* Read a flattened device tree into a hierarchical structure which refers to
    the contents of the flattened tree in place. Modifying the flat tree
    invalidates the unflattened one. */

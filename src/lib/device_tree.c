@@ -12,9 +12,12 @@
 #include <string.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <limits.h>
 
 #define FDT_PATH_MAX_DEPTH 10 // should be a good enough upper bound
 #define FDT_PATH_MAX_LEN 128 // should be a good enough upper bound
+#define FDT_MAX_MEMORY_NODES 4 // should be a good enough upper bound
+#define FDT_MAX_MEMORY_REGIONS 16 // should be a good enough upper bound
 
 /*
  * Functions for picking apart flattened trees.
@@ -501,6 +504,96 @@ static int print_flat_node(const void *blob, uint32_t start_offset, int depth)
 void fdt_print_node(const void *blob, uint32_t offset)
 {
 	print_flat_node(blob, offset, 0);
+}
+
+/*
+ * fdt_read_memory_regions finds memory ranges from a flat device-tree
+ *
+ * @params blob	          address of FDT
+ * @params regions        all regions that are read inside the reg property of
+ *                        memory nodes are saved inside this array
+ * @params regions_count  maximum number of entries that can be saved inside
+ *                        the regions array.
+ *
+ * Returns: Either 0 on error or returns the number of regions put into the regions array.
+ */
+size_t fdt_read_memory_regions(const void *blob,
+			       struct device_tree_region regions[],
+			       size_t regions_count)
+{
+	u32 node, root, addrcp, sizecp;
+	u32 nodes[FDT_MAX_MEMORY_NODES] = {0};
+	size_t region_idx = 0;
+	size_t node_count = 0;
+
+	if (!fdt_is_valid(blob))
+		return 0;
+
+	node = fdt_find_node_by_path(blob, "/memory",  &addrcp, &sizecp);
+	if (node) {
+		region_idx += fdt_read_reg_prop(blob, node, addrcp, sizecp,
+						regions, regions_count);
+		if (region_idx >= regions_count) {
+			printk(BIOS_WARNING, "FDT: Too many memory regions\n");
+			goto out;
+		}
+	}
+
+	root = fdt_find_node_by_path(blob, "/",  &addrcp, &sizecp);
+	node_count = fdt_find_subnodes_by_prefix(blob, root, "memory@",
+						 &addrcp, &sizecp, nodes,
+						 FDT_MAX_MEMORY_NODES);
+	if (node_count >= FDT_MAX_MEMORY_NODES) {
+		printk(BIOS_WARNING, "FDT: Too many memory nodes\n");
+		/* Can still reading the regions for those we got */
+	}
+
+	for (size_t i = 0; i < MIN(node_count, FDT_MAX_MEMORY_NODES); i++) {
+		region_idx += fdt_read_reg_prop(blob, nodes[i], addrcp, sizecp,
+						&regions[region_idx],
+						regions_count - region_idx);
+		if (region_idx >= regions_count) {
+			printk(BIOS_WARNING, "FDT: Too many memory regions\n");
+			goto out;
+		}
+	}
+
+out:
+	for (size_t i = 0; i < MIN(region_idx, regions_count); i++) {
+		printk(BIOS_DEBUG, "FDT: Memory region [%#llx - %#llx]\n",
+		       regions[i].addr, regions[i].addr + regions[i].size);
+	}
+
+	return region_idx;
+}
+
+/*
+ * fdt_get_memory_top finds top of memory from a flat device-tree
+ *
+ * @params blob	          address of FDT
+ *
+ * Returns: Either 0 on error or returns the maximum memory address
+ */
+uint64_t fdt_get_memory_top(const void *blob)
+{
+	struct device_tree_region regions[FDT_MAX_MEMORY_REGIONS] = {0};
+	uint64_t top = 0;
+	uint64_t total = 0;
+	size_t count;
+
+	if (!fdt_is_valid(blob))
+		return 0;
+
+	count = fdt_read_memory_regions(blob, regions, FDT_MAX_MEMORY_REGIONS);
+	for (size_t i = 0; i < MIN(count, FDT_MAX_MEMORY_REGIONS); i++) {
+		top = MAX(top, regions[i].addr + regions[i].size);
+		total += regions[i].size;
+	}
+
+	printk(BIOS_DEBUG, "FDT: Found %u MiB of RAM\n",
+	       (uint32_t)(total / MiB));
+
+	return top;
 }
 
 /*

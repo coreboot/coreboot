@@ -14,7 +14,6 @@ RUN python3 -m venv $VIRTUAL_ENV && \
  pip3 install --upgrade --no-cache-dir pip && \
  pip3 install --no-cache-dir \
   jinja2==3.1.3 \
-  recommonmark===0.7.1 \
   myst-parser==2.0.0 \
   sphinx===7.2.6 \
   sphinxcontrib-ditaa===1.0.2 \

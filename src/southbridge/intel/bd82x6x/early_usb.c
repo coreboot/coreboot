@@ -8,8 +8,9 @@
 #include <southbridge/intel/common/pmbase.h>
 
 #include "pch.h"
+#include "chip.h"
 
-void early_usb_init(const struct southbridge_usb_port *portmap)
+void early_usb_init(void)
 {
 	u32 reg32;
 	const u32 rcba_dump[8] = {
@@ -23,6 +24,9 @@ void early_usb_init(const struct southbridge_usb_port *portmap)
 				 USBIR_TXRX_GAIN_DESKTOP6_LOW, USBIR_TXRX_GAIN_DESKTOP6_HIGH,
 				 USBIR_TXRX_GAIN_DESKTOP7_LOW, USBIR_TXRX_GAIN_DESKTOP7_MED,
 				 0x20000053, 0x2000055f, 0x20000f5f};
+	const struct device *dev = pcidev_on_root(0x1d, 0);
+	const struct southbridge_intel_bd82x6x_config *config = dev->chip_info;
+	const struct southbridge_usb_port *portmap = config->usb_port_config;
 	int i;
 
 	/* Unlock registers.  */

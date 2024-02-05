@@ -64,7 +64,7 @@ struct southbridge_usb_port
 void pch_enable(struct device *dev);
 extern const struct southbridge_usb_port mainboard_usb_ports[14];
 
-void early_usb_init(const struct southbridge_usb_port *portmap);
+void early_usb_init(void);
 
 /* PCI Configuration Space (D30:F0): PCI2PCI */
 #define PSTS	0x06

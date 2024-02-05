@@ -116,4 +116,5 @@ struct pei_data
 	int ddr_refresh_rate_config;
 } __packed;
 
+void southbridge_fill_pei_data(struct pei_data *pei_data);
 #endif

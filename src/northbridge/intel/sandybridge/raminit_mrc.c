@@ -252,11 +252,6 @@ static bool do_pcie_init(void)
 	}
 }
 
-static void southbridge_fill_pei_data(struct pei_data *pei_data)
-{
-	/* This will move to southbridge later. */
-}
-
 static void devicetree_fill_pei_data(struct pei_data *pei_data)
 {
 	const struct northbridge_intel_sandybridge_config *cfg = config_of_soc();
@@ -290,9 +285,6 @@ static void devicetree_fill_pei_data(struct pei_data *pei_data)
 		}
 	}
 	memcpy(pei_data->ts_addresses,  cfg->ts_addresses,  sizeof(pei_data->ts_addresses));
-
-	memcpy(pei_data->usb_port_config, cfg->usb_port_config,
-	       sizeof(pei_data->usb_port_config));
 }
 
 static void spd_fill_pei_data(struct pei_data *pei_data)
@@ -374,7 +366,7 @@ void perform_raminit(int s3resume)
 		.nmode          = cfg->nmode,
 		.ddr_refresh_rate_config  = cfg->ddr_refresh_rate_config,
 		.usb3.mode                = cfg->usb3.mode,
-		.usb3.hs_port_switch_mask = cfg->usb3.hs_port_switch_mask,
+		/* .usb3.hs_port_switch_mask = native config->xhci_switchable_ports */
 		.usb3.preboot_support     = cfg->usb3.preboot_support,
 		.usb3.xhci_streams        = cfg->usb3.xhci_streams,
 	};

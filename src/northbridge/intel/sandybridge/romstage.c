@@ -58,7 +58,7 @@ void mainboard_romstage_entry(void)
 
 	/* When using MRC, USB is initialized by MRC */
 	if (CONFIG(USE_NATIVE_RAMINIT)) {
-		early_usb_init(mainboard_usb_ports);
+		early_usb_init();
 	}
 
 	/* Perform some early chipset init needed before RAM initialization can work */

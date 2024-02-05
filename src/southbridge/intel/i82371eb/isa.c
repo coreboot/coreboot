@@ -53,7 +53,7 @@ static void isa_init(struct device *dev)
 	 */
 	if (CONFIG(IOAPIC)) {
 		u16 reg16;
-		u8 ioapic_id = 2;
+		const u8 ioapic_id = 2;
 
 		/* Enable IOAPIC. */
 		reg16 = pci_read_config16(dev, XBCS);

@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_LENOVO_THINKCENTRE_M710S
+	bool "ThinkCentre M710s"

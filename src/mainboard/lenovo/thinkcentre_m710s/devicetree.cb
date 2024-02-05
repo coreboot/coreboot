@@ -1,0 +1,194 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/intel/skylake
+	register "eist_enable" = "true"
+
+	device cpu_cluster 0 on  end
+	device domain 0 on
+		device ref peg0         on	# PCIE16X
+			# These configurations are technically for PCIe root
+			# ports. However, they are used as there is no
+			# equivalent for PEG devices.
+			register "PcieRpClkReqSupport[0]" = "true"
+			register "PcieRpClkReqNumber[0]"  = "2"
+			register "PcieRpClkSrcNumber[0]"  = "0"
+		end
+		device ref igpu		on  end
+		device ref south_xhci	on
+			register "usb2_ports" = "{
+				[0]  = USB2_PORT_MID(OC1),	// USB30A
+				[1]  = USB2_PORT_MID(OC1),	// USB30B
+				[2]  = USB2_PORT_MID(OC2),	// F_USB30_1A
+				[3]  = USB2_PORT_MID(OC2),	// F_USB30_1B
+				[4]  = USB2_PORT_MID(OC3),	// F_USB30_2A
+				[5]  = USB2_PORT_MID(OC3),	// F_USB30_2B
+				[6]  = USB2_PORT_MID(OC_SKIP),	// M.2 Bluetooth
+				[7]  = USB2_PORT_MID(OC5),	// USB_LANA
+				[8]  = USB2_PORT_MID(OC5),	// USB_LANB
+				[9]  = USB2_PORT_MID(OC_SKIP),	// F_USB1 (Pins 5, 7)
+				[10] = USB2_PORT_MID(OC_SKIP),	// F_USB1 (Pins 6, 8)
+				// Used by the SD/MMC reader.
+				[11] = USB2_PORT_MID(OC_SKIP),	// F_USB2 (Pins 5, 7)
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC1),	// USB30A
+				[1] = USB3_PORT_DEFAULT(OC1),	// USB30B
+				[2] = USB3_PORT_DEFAULT(OC2),	// F_USB30_1A
+				[3] = USB3_PORT_DEFAULT(OC2),	// F_USB30_1B
+				[4] = USB3_PORT_DEFAULT(OC3),	// F_USB30_2A
+				[5] = USB3_PORT_DEFAULT(OC3),	// F_USB30_2B
+			}"
+		end
+		device ref thermal	on  end
+		device ref heci1	on  end
+		device ref sata		on
+			register "SataSalpSupport" = "true"
+			register "SataPortsEnable" = "{
+				[0] = true,	// SATA1
+				[1] = true,	// SATA2
+				[2] = true,	// SATA3
+			}"
+		end
+		device ref pcie_rp5	on	# USB_LAN
+			register "PcieRpEnable[4]"                 = "true"
+			register "PcieRpLtrEnable[4]"              = "true"
+			register "PcieRpClkReqSupport[4]"          = "true"
+			register "PcieRpClkReqNumber[4]"           = "5"
+			register "PcieRpClkSrcNumber[4]"           = "5"
+			register "PcieRpAdvancedErrorReporting[4]" = "true"
+		end
+		device ref pcie_rp7	on	# PCIE1X_2
+			register "PcieRpEnable[6]"                 = "true"
+			register "PcieRpLtrEnable[6]"              = "true"
+			register "PcieRpClkReqSupport[6]"          = "true"
+			register "PcieRpClkReqNumber[6]"           = "7"
+			register "PcieRpClkSrcNumber[6]"           = "7"
+			register "PcieRpAdvancedErrorReporting[6]" = "true"
+		end
+		device ref pcie_rp8	on	# PCIE1X_1
+			register "PcieRpEnable[7]"                 = "true"
+			register "PcieRpLtrEnable[7]"              = "true"
+			register "PcieRpClkReqSupport[7]"          = "true"
+			register "PcieRpClkReqNumber[7]"           = "8"
+			register "PcieRpClkSrcNumber[7]"           = "8"
+			register "PcieRpAdvancedErrorReporting[7]" = "true"
+		end
+		device ref pcie_rp11	on	# M2_WIFI
+			register "PcieRpEnable[10]"                 = "true"
+			register "PcieRpLtrEnable[10]"              = "true"
+			register "PcieRpClkReqSupport[10]"          = "true"
+			register "PcieRpClkReqNumber[10]"           = "1"
+			register "PcieRpClkSrcNumber[10]"           = "1"
+			register "PcieRpAdvancedErrorReporting[10]" = "true"
+		end
+		device ref pcie_rp21	on	# M2_SSD
+			register "PcieRpEnable[20]"                 = "true"
+			register "PcieRpLtrEnable[20]"              = "true"
+			register "PcieRpClkReqSupport[20]"          = "true"
+			register "PcieRpClkReqNumber[20]"           = "6"
+			register "PcieRpClkSrcNumber[20]"           = "2"
+			register "PcieRpAdvancedErrorReporting[20]" = "true"
+		end
+		device ref lpc_espi	on
+			register "serirq_mode" = "SERIRQ_CONTINUOUS"
+
+			chip superio/ite/it8629e
+				register "TMPIN1.mode" = "THERMAL_DIODE"	# THER_HD
+				register "TMPIN2.mode" = "THERMAL_MODE_DISABLED"
+				# Located close to VR MOSFET.
+				register "TMPIN3.mode" = "THERMAL_DIODE"
+
+				# CPU_FAN
+				register "FAN1" = "{
+					.mode  = FAN_SMART_AUTOMATIC,
+					.smart = {
+						.tmpin     = 3,
+						.tmp_off   = 35,
+						.tmp_start = 60,
+						.tmp_full  = 85,
+						.tmp_delta = 2,
+						.pwm_start = 20,
+						.slope     = 24,
+					},
+				}"
+
+				register "FAN2.mode" = "FAN_MODE_OFF"	# SYS_FAN
+				register "FAN3.mode" = "FAN_MODE_OFF"	# AUX1_FAN
+				# TODO: Add support for 6 fans.
+				#register "FAN6.mode" = "FAN_MODE_OFF"	# AUX2_FAN
+
+				register "ec.vin_mask" = "VIN_ALL"
+
+				# Vendor values dumped using util/superiotool.
+				device pnp 2e.0 off end
+				device pnp 2e.1 on	# VGA_COM1A
+					io  0x60 = 0x03f8
+					irq 0x70 = 0x04
+					irq 0xf1 = 0x50
+				end
+				device pnp 2e.2 off end
+				device pnp 2e.3 off end
+				device pnp 2e.4 on
+					io  0x60 = 0x0a30
+					io  0x62 = 0x0230
+					irq 0x70 = 0x09
+					irq 0xf0 = 0x40
+				end
+				device pnp 2e.5 on	# KB_MS (PS/2 Keyboard)
+					io  0x60 = 0x0060
+					io  0x62 = 0x0064
+					irq 0x70 = 0x01
+					irq 0x71 = 0x02
+					irq 0xf0 = 0x48
+				end
+				device pnp 2e.6 on	# KB_MS (PS/2 Mouse)
+					irq 0x70 = 0x0c
+					irq 0x71 = 0x02
+				end
+				device pnp 2e.7 on
+					irq 0x25 = 0x11
+					irq 0x26 = 0x04
+					irq 0x28 = 0x81
+					irq 0x2a = 0x0d
+					irq 0x2c = 0x01
+					io  0x60 = 0x0000
+					io  0x62 = 0x0a00
+					io  0x64 = 0x0000
+					irq 0x70 = 0x00
+					irq 0x71 = 0x09
+					irq 0x72 = 0x20
+					irq 0x73 = 0x38
+					irq 0xb8 = 0x11
+					irq 0xbc = 0xc0
+					irq 0xbd = 0x03
+					irq 0xc0 = 0x01
+					irq 0xc1 = 0x04
+					irq 0xc3 = 0x41
+					irq 0xc8 = 0x01
+					irq 0xc9 = 0x04
+					irq 0xcb = 0x01
+					irq 0xe9 = 0x07
+					irq 0xf0 = 0x10
+					irq 0xf4 = 0x0c
+					irq 0xf6 = 0x0e
+					irq 0xf8 = 0x08
+					irq 0xf9 = 0x02
+					irq 0xfc = 0x7c
+				end
+				device pnp 2e.8 on
+					io  0x60 = 0x0270
+					irq 0x70 = 0x08
+				end
+				device pnp 2e.a off end
+			end
+			chip drivers/pc80/tpm
+				device pnp c31.0 on  end
+			end
+		end
+		device ref pmc		on  end
+		device ref hda		on  end
+		device ref smbus	on  end
+		device ref gbe		on  end	# USB_LAN (maps to PCIe RP5)
+	end
+end

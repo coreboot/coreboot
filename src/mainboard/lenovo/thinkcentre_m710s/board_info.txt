@@ -1,0 +1,8 @@
+Category: desktop
+Board URL: https://psref.lenovo.com/syspool/Sys/PDF/ThinkCentre/ThinkCentre_M710_SFF/ThinkCentre_M710_SFF_Spec.pdf
+Board model: IB250MH
+ROM package: SOIC-8
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y
+Release year: 2017

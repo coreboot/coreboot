@@ -195,7 +195,7 @@ config CBFS_MCACHE_SIZE
 
 config C_ENV_BOOTBLOCK_SIZE
 	hex
-	default 0x10000
+	default 0x20000
 	help
 	  Sets the size of the bootblock stage that should be loaded in DRAM.
 	  This variable controls the DRAM allocation size in linker script
@@ -203,13 +203,13 @@ config C_ENV_BOOTBLOCK_SIZE
 
 config ROMSTAGE_ADDR
 	hex
-	default 0x2040000
+	default 0x2050000
 	help
 	  Sets the address in DRAM where romstage should be loaded.
 
 config ROMSTAGE_SIZE
 	hex
-	default 0x80000
+	default 0x70000
 	help
 	  Sets the size of DRAM allocation for romstage in linker script.
 

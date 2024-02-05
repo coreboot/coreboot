@@ -69,10 +69,25 @@ chip northbridge/intel/sandybridge
 			register "pcie_port_coalesce" = "false"
 			register "pcie_hotplug_map" = "{ 0, 0, 0, 1, 0, 0, 0, 0 }"
 
-
 			register "xhci_overcurrent_mapping"	= "0x00080401"
 			register "xhci_switchable_ports"	= "0x0f"
 			register "superspeed_capable_ports"	= "0x0f"
+			register "usb_port_config" = "{
+				{ 1, 0, 0 }, /* P00: 1st            USB3 (OC #0) */
+				{ 1, 0, 4 }, /* P01: 2nd            USB3 (OC #4) */
+				{ 1, 1, 1 }, /* P02: 1st Multibay   USB3 (OC #1) */
+				{ 1, 1, 2 }, /* P03: 2nd Multibay   USB3 (OC #2) */
+				{ 1, 0, 8 }, /* P04: MiniPCIe 1     USB2 (no OC) */
+				{ 1, 0, 8 }, /* P05: MiniPCIe 2     USB2 (no OC) */
+				{ 1, 0, 8 }, /* P06: MiniPCIe 3     USB2 (no OC) */
+				{ 1, 0, 8 }, /* P07: GPS            USB2 (no OC) */
+				{ 1, 0, 8 }, /* P08: MiniPCIe 4     USB2 (no OC) */
+				{ 1, 0, 3 }, /* P09: Express Card   USB2 (OC #3) */
+				{ 1, 0, 8 }, /* P10: SD card reader USB2 (no OC) */
+				{ 1, 0, 8 }, /* P11: Sensors Hub?   USB2 (no OC) */
+				{ 1, 0, 8 }, /* P12: Touch Screen   USB2 (no OC) */
+				{ 1, 0, 5 }, /* P13: reserved?      USB2 (OC #5) */
+				}"
 
 			register "spi_uvscc" = "0x2005"
 			register "spi_lvscc" = "0x2005"

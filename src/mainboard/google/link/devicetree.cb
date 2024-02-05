@@ -65,6 +65,23 @@ chip northbridge/intel/sandybridge
 			# Enable zero-based linear PCIe root port functions
 			register "pcie_port_coalesce" = "true"
 
+			register "usb_port_config" = "{
+				{ 0, 0, -1 }, /* P0: Empty */
+				{ 1, 0, 0 }, /* P1: Left USB 1  (OC0) */
+				{ 1, 0, 1 }, /* P2: Left USB 2  (OC1) */
+				{ 1, 0, -1 }, /* P3: SDCARD      (no OC) */
+				{ 0, 0, -1 }, /* P4: Empty */
+				{ 1, 0, -1 }, /* P5: WWAN        (no OC) */
+				{ 0, 0, -1 }, /* P6: Empty */
+				{ 0, 0, -1 }, /* P7: Empty */
+				{ 1, 0, -1 }, /* P8: Camera      (no OC) */
+				{ 1, 0, -1 }, /* P9: Bluetooth   (no OC) */
+				{ 0, 0, -1 }, /* P10: Empty */
+				{ 0, 0, -1 }, /* P11: Empty */
+				{ 0, 0, -1 }, /* P12: Empty */
+				{ 0, 0, -1 }, /* P13: Empty */
+			}"
+
 			device ref mei1 on end # Management Engine Interface 1
 			device ref mei2 off end # Management Engine Interface 2
 			device ref me_ide_r off end # Management Engine IDE-R

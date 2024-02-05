@@ -69,6 +69,19 @@ chip northbridge/intel/sandybridge
 			# Enable zero-based linear PCIe root port functions
 			register "pcie_port_coalesce" = "true"
 
+			register "usb_port_config" = "{
+				{1, 0, -1}, /* P0: Right USB 3.0 #1 (no OC) */
+				{1, 0, -1}, /* P1: Right USB 3.0 #2 (no OC) */
+				{1, 0, -1}, /* P2: Camera (no OC) */
+				/* P3-P8: Empty */
+				{0, 0, -1}, {0, 0, -1}, {0, 0, -1},
+				{0, 0, -1}, {0, 0, -1}, {0, 0, -1},
+				{1, 1, -1}, /* P9: Left USB 1 (no OC) */
+				{1, 0, -1}, /* P10: Mini PCIe - WLAN / BT (no OC) */
+				/* P11-P13: Empty */
+				{0, 0, -1}, {0, 0, -1},	{0, 0, -1}
+				}"
+
 			device ref xhci on end # USB 3.0 Controller
 			device ref mei1 on end # Management Engine Interface 1
 			device ref mei2 off end # Management Engine Interface 2

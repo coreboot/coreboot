@@ -56,6 +56,22 @@ chip northbridge/intel/sandybridge
 
 			register "sata_port_map" = "0x1"
 
+			register "usb_port_config" = "{
+				{0, 0, -1}, /* P0: Empty */
+				{1, 0, 0}, /* P1: Left USB 1  (OC0) */
+				{1, 0, 1}, /* P2: Left USB 2  (OC1) */
+				{1, 0, 1}, /* P3: Left USB 3  (OC1) */
+				{0, 0, -1}, /* P4-P7: Empty */
+				{0, 0, -1},
+				{0, 0, -1},
+				{0, 0, -1},
+				/* Empty and onboard Ports 8-13, set to un-used pin OC4 */
+				{1, 0, -1}, /* P8: MiniPCIe (WLAN) (no OC) */
+				{0, 0, -1}, /* P9: Empty */
+				{1, 0, -1}, /* P10: Camera (no OC) */
+				{0, 0, -1}, {0, 0, -1}, {0, 0, -1}
+			}"
+
 			# EC range is 0xFD60 (EC_IO) and 0x68/0x6C
 			register "gen1_dec" = "0x0004fd61"
 			register "gen2_dec" = "0x00040069"

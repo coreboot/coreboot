@@ -12,6 +12,22 @@ chip northbridge/intel/sandybridge
 			register "gen1_dec" = "0x000c0291"
 			register "gen4_dec" = "0x0000ff29"
 			register "pcie_port_coalesce" = "true"
+			register "usb_port_config" = "{
+				{1, 2, 0},
+				{1, 2, 0},
+				{1, 2, 1},
+				{1, 2, 1},
+				{1, 2, 2},
+				{1, 2, 2},
+				{1, 2, 3},
+				{1, 2, 3},
+				{1, 2, 4},
+				{1, 2, 4},
+				{1, 2, 6},
+				{1, 2, 5},
+				{0, 2, 5},
+				{0, 2, 6}
+			}"
 
 			device ref pcie_rp1 on  end	# PCIEX_16_3
 			device ref pcie_rp2 on  end	# RTL8111F

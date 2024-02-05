@@ -54,6 +54,23 @@ chip northbridge/intel/sandybridge
 			# SuperIO range is 0x700-0x73f
 			register "gen2_dec" = "0x003c0701"
 
+			register "usb_port_config" = "{
+				{ 1, 1, 0 }, /* P0: Front port  (OC0) */
+				{ 1, 0, 1 }, /* P1: Back port   (OC1) */
+				{ 1, 0, -1 }, /* P2: MINIPCIE1   (no OC) */
+				{ 1, 0, -1 }, /* P3: MMC         (no OC) */
+				{ 1, 1, 2 }, /* P4: Front port  (OC2) */
+				{ 0, 0, -1 }, /* P5: Empty */
+				{ 0, 0, -1 }, /* P6: Empty */
+				{ 0, 0, -1 }, /* P7: Empty */
+				{ 1, 0, 4 }, /* P8: Back port   (OC4) */
+				{ 1, 0, -1 }, /* P9: MINIPCIE3   (no OC) */
+				{ 1, 0, -1 }, /* P10: BLUETOOTH  (no OC) */
+				{ 0, 0, -1 }, /* P11: Empty */
+				{ 1, 0, 6 }, /* P12: Back port  (OC6) */
+				{ 1, 0, 5 }, /* P13: Back port  (OC5) */
+			}"
+
 			device ref mei1 on end # Management Engine Interface 1
 			device ref mei2 off end # Management Engine Interface 2
 			device ref me_ide_r off end # Management Engine IDE-R

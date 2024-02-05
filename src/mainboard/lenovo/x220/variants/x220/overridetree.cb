@@ -1,6 +1,23 @@
 chip northbridge/intel/sandybridge
 	device domain 0 on
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+			register "usb_port_config" = "{
+				{1, 0, 0 },
+				{1, 1, 1 },
+				{1, 1, 3 },
+				{1, 1, 3 },
+				{1, 1, -1},
+				{1, 1, -1},
+				{1, 0, 2 },
+				{1, 0, 2 },
+				{1, 1, 6 },
+				{1, 1, 5 },
+				{1, 1, 6 },
+				{1, 1, 6 },
+				{1, 1, 7 },
+				{1, 1, 6 },
+			}"
+
 			device ref lpc on
 				chip ec/lenovo/h8
 					device pnp ff.2 on end # dummy

@@ -6,6 +6,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <assert.h>
+#include <types.h>
 #include "82870.h"
 
 static void p64h2_ioapic_enable(struct device *dev)
@@ -27,17 +28,17 @@ static void p64h2_ioapic_enable(struct device *dev)
  */
 static void p64h2_ioapic_init(struct device *dev)
 {
-	uint32_t memoryBase;
+	uintptr_t memoryBase;
 
 	// Read the MBAR address for setting up the IOAPIC in memory space
 	// NOTE: this address was assigned during enumeration of the bus
 
-	memoryBase = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
+	memoryBase = (uintptr_t)pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 
-	register_new_ioapic((void *)memoryBase);
+	register_new_ioapic(memoryBase);
 
 	// Use Processor System Bus to deliver interrupts
-	ioapic_set_boot_config((void *)memoryBase, true);
+	ioapic_set_boot_config(memoryBase, true);
 }
 
 static struct device_operations ioapic_ops = {

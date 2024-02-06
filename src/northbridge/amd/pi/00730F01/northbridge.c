@@ -87,7 +87,7 @@ static void nb_read_resources(struct device *dev)
 
 static void northbridge_init(struct device *dev)
 {
-	register_new_ioapic((u8 *)IO_APIC2_ADDR);
+	register_new_ioapic(IO_APIC2_ADDR);
 }
 
 static unsigned long acpi_fill_hest(acpi_hest_t *hest)
@@ -119,7 +119,7 @@ static unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long curr
 	ivhd_ioapic->dte_setting = IVHD_DTE_LINT_1_PASS | IVHD_DTE_LINT_0_PASS |
 				   IVHD_DTE_SYS_MGT_NO_TRANS | IVHD_DTE_NMI_PASS |
 				   IVHD_DTE_EXT_INT_PASS | IVHD_DTE_INIT_PASS;
-	ivhd_ioapic->handle = get_ioapic_id(VIO_APIC_VADDR);
+	ivhd_ioapic->handle = get_ioapic_id(IO_APIC_ADDR);
 	ivhd_ioapic->source_dev_id = PCI_DEVFN(SMBUS_DEV, SMBUS_FUNC);
 	ivhd_ioapic->variety = IVHD_SPECIAL_DEV_IOAPIC;
 	current += sizeof(ivrs_ivhd_special_t);
@@ -128,7 +128,7 @@ static unsigned long acpi_fill_ivrs_ioapic(acpi_ivrs_t *ivrs, unsigned long curr
 	ivhd_ioapic->type = IVHD_DEV_8_BYTE_EXT_SPECIAL_DEV;
 	ivhd_ioapic->reserved = 0x0000;
 	ivhd_ioapic->dte_setting = 0x00;
-	ivhd_ioapic->handle = get_ioapic_id((u8 *)IO_APIC2_ADDR);
+	ivhd_ioapic->handle = get_ioapic_id(IO_APIC2_ADDR);
 	ivhd_ioapic->source_dev_id = PCI_DEVFN(0, 1);
 	ivhd_ioapic->variety = IVHD_SPECIAL_DEV_IOAPIC;
 	current += sizeof(ivrs_ivhd_special_t);

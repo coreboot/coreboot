@@ -18,7 +18,7 @@ static void *smp_write_config_table(void *v)
 	mptable_write_buses(mc, NULL, &isa_bus);
 
 	/* I/O APICs:	APIC ID	Version	State		Address */
-	u8 ioapic_id = smp_write_ioapic_from_hw(mc, VIO_APIC_VADDR);
+	u8 ioapic_id = smp_write_ioapic_from_hw(mc, IO_APIC_ADDR);
 
 	/* Legacy Interrupts */
 	mptable_add_isa_interrupts(mc, isa_bus, ioapic_id, 0);

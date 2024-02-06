@@ -183,7 +183,7 @@ unsigned long acpi_create_dmar_ds_ioapic(unsigned long current,
 unsigned long acpi_create_dmar_ds_ioapic_from_hw(unsigned long current,
 						 u32 addr, u8 bus, u8 dev, u8 fn)
 {
-	u8 enumeration_id = get_ioapic_id((void *)(uintptr_t)addr);
+	u8 enumeration_id = get_ioapic_id((uintptr_t)addr);
 	return acpi_create_dmar_ds(current,
 			SCOPE_IOAPIC, enumeration_id, bus, dev, fn);
 }

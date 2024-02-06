@@ -35,9 +35,9 @@ static void i82801jx_enable_apic(struct device *dev)
 	RCBA8(0x31ff);
 
 	/* Lock maximum redirection entries (MRE), R/WO register. */
-	ioapic_lock_max_vectors(VIO_APIC_VADDR);
+	ioapic_lock_max_vectors(IO_APIC_ADDR);
 
-	register_new_ioapic_gsi0(VIO_APIC_VADDR);
+	register_new_ioapic_gsi0(IO_APIC_ADDR);
 }
 
 static void i82801jx_enable_serial_irqs(struct device *dev)

@@ -5,6 +5,8 @@
 #include <arch/ioapic.h>
 #include <console/console.h>
 #include <cpu/x86/lapic.h>
+#include <inttypes.h>
+#include <types.h>
 
 #define ALL		(0xff << 24)
 #define NONE		(0)
@@ -21,19 +23,19 @@
 #define SMI		(2 << 8)
 #define INT		(1 << 8)
 
-static u32 io_apic_read(void *ioapic_base, u32 reg)
+static u32 io_apic_read(uintptr_t ioapic_base, u32 reg)
 {
-	write32(ioapic_base, reg);
-	return read32(ioapic_base + 0x10);
+	write32p(ioapic_base, reg);
+	return read32p(ioapic_base + 0x10);
 }
 
-static void io_apic_write(void *ioapic_base, u32 reg, u32 value)
+static void io_apic_write(uintptr_t ioapic_base, u32 reg, u32 value)
 {
-	write32(ioapic_base, reg);
-	write32(ioapic_base + 0x10, value);
+	write32p(ioapic_base, reg);
+	write32p(ioapic_base + 0x10, value);
 }
 
-static void write_vector(void *ioapic_base, u8 vector, u32 high, u32 low)
+static void write_vector(uintptr_t ioapic_base, u8 vector, u32 high, u32 low)
 {
 	io_apic_write(ioapic_base, vector * 2 + 0x10, low);
 	io_apic_write(ioapic_base, vector * 2 + 0x11, high);
@@ -44,7 +46,7 @@ static void write_vector(void *ioapic_base, u8 vector, u32 high, u32 low)
 
 /* Bits 23-16 of register 0x01 specify the maximum redirection entry, which
  * is the number of interrupts minus 1. */
-unsigned int ioapic_get_max_vectors(void *ioapic_base)
+unsigned int ioapic_get_max_vectors(uintptr_t ioapic_base)
 {
 	u32 reg;
 	u8 count;
@@ -63,7 +65,7 @@ unsigned int ioapic_get_max_vectors(void *ioapic_base)
 /* Set maximum number of redirection entries (MRE). It is write-once register
  * for some chipsets, and a negative mre_count will lock it to the number
  * of vectors read from the register. */
-void ioapic_set_max_vectors(void *ioapic_base, int mre_count)
+void ioapic_set_max_vectors(uintptr_t ioapic_base, int mre_count)
 {
 	u32 reg;
 	u8 count;
@@ -77,17 +79,17 @@ void ioapic_set_max_vectors(void *ioapic_base, int mre_count)
 	io_apic_write(ioapic_base, 0x01, reg);
 }
 
-void ioapic_lock_max_vectors(void *ioapic_base)
+void ioapic_lock_max_vectors(uintptr_t ioapic_base)
 {
 	ioapic_set_max_vectors(ioapic_base, -1);
 }
 
-static void clear_vectors(void *ioapic_base, u8 first, u8 last)
+static void clear_vectors(uintptr_t ioapic_base, u8 first, u8 last)
 {
 	u32 low, high;
 	u8 i;
 
-	printk(BIOS_DEBUG, "IOAPIC: Clearing IOAPIC at %p\n", ioapic_base);
+	printk(BIOS_DEBUG, "IOAPIC: Clearing IOAPIC at %" PRIxPTR "\n", ioapic_base);
 
 	low = INT_DISABLED;
 	high = NONE;
@@ -101,7 +103,7 @@ static void clear_vectors(void *ioapic_base, u8 first, u8 last)
 	}
 }
 
-static void route_i8259_irq0(void *ioapic_base)
+static void route_i8259_irq0(uintptr_t ioapic_base)
 {
 	u32 bsp_lapicid = lapicid();
 	u32 low, high;
@@ -123,11 +125,11 @@ static void route_i8259_irq0(void *ioapic_base)
 	}
 }
 
-static void set_ioapic_id(void *ioapic_base, u8 ioapic_id)
+static void set_ioapic_id(uintptr_t ioapic_base, u8 ioapic_id)
 {
 	int i;
 
-	printk(BIOS_DEBUG, "IOAPIC: Initializing IOAPIC at %p\n",
+	printk(BIOS_DEBUG, "IOAPIC: Initializing IOAPIC at %" PRIxPTR "\n",
 	       ioapic_base);
 	printk(BIOS_DEBUG, "IOAPIC: ID = 0x%02x\n", ioapic_id);
 
@@ -141,7 +143,7 @@ static void set_ioapic_id(void *ioapic_base, u8 ioapic_id)
 
 }
 
-u8 get_ioapic_id(void *ioapic_base)
+u8 get_ioapic_id(uintptr_t ioapic_base)
 {
 	/*
 	 * According to 82093AA I/O ADVANCED PROGRAMMABLE INTERRUPT CONTROLLER (IOAPIC)
@@ -151,12 +153,12 @@ u8 get_ioapic_id(void *ioapic_base)
 	return (io_apic_read(ioapic_base, 0x00) >> 24) & 0xff;
 }
 
-u8 get_ioapic_version(void *ioapic_base)
+u8 get_ioapic_version(uintptr_t ioapic_base)
 {
 	return io_apic_read(ioapic_base, 0x01) & 0xff;
 }
 
-void ioapic_set_boot_config(void *ioapic_base, bool irq_on_fsb)
+void ioapic_set_boot_config(uintptr_t ioapic_base, bool irq_on_fsb)
 {
 	if (irq_on_fsb) {
 		/*
@@ -173,19 +175,19 @@ void ioapic_set_boot_config(void *ioapic_base, bool irq_on_fsb)
 	}
 }
 
-void setup_ioapic(void *ioapic_base, u8 ioapic_id)
+void setup_ioapic(uintptr_t ioapic_base, u8 ioapic_id)
 {
 	set_ioapic_id(ioapic_base, ioapic_id);
 	clear_vectors(ioapic_base, 0, ioapic_get_max_vectors(ioapic_base) - 1);
 	route_i8259_irq0(ioapic_base);
 }
 
-void register_new_ioapic_gsi0(void *ioapic_base)
+void register_new_ioapic_gsi0(uintptr_t ioapic_base)
 {
 	setup_ioapic(ioapic_base, 0);
 }
 
-void register_new_ioapic(void *ioapic_base)
+void register_new_ioapic(uintptr_t ioapic_base)
 {
 	static u8 ioapic_id;
 	ioapic_id++;

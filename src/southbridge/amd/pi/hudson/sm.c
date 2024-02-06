@@ -28,7 +28,7 @@ void ioapic_get_sci_pin(u8 *gsi, u8 *irq, u8 *flags)
 
 static void sm_init(struct device *dev)
 {
-	register_new_ioapic_gsi0(VIO_APIC_VADDR);
+	register_new_ioapic_gsi0(IO_APIC_ADDR);
 }
 
 static int lsmbus_recv_byte(struct device *dev)

@@ -31,9 +31,9 @@ static void pch_enable_ioapic(struct device *dev)
 
 	/* affirm full set of redirection table entries ("write once") */
 	/* PCH-LP has 40 redirection entries */
-	ioapic_set_max_vectors(VIO_APIC_VADDR, 40);
+	ioapic_set_max_vectors(IO_APIC_ADDR, 40);
 
-	register_new_ioapic_gsi0(VIO_APIC_VADDR);
+	register_new_ioapic_gsi0(IO_APIC_ADDR);
 }
 
 #define ACPI_SCI_IRQ	9

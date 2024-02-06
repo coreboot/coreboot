@@ -6,6 +6,7 @@
 #include <acpi/acpi.h>
 #include <device/device.h>
 #include <cpu/x86/lapic_def.h>
+#include <types.h>
 
 /*
  * Structure definitions for SMP machines following the
@@ -227,7 +228,7 @@ void smp_write_processor(struct mp_config_table *mc,
 void smp_write_processors(struct mp_config_table *mc);
 
 /* Call smp_write_ioapic() and return IOAPIC ID field. */
-u8 smp_write_ioapic_from_hw(struct mp_config_table *mc, void *apicaddr);
+u8 smp_write_ioapic_from_hw(struct mp_config_table *mc, uintptr_t apicaddr);
 
 void smp_write_intsrc(struct mp_config_table *mc,
 	u8 irqtype, u16 irqflag, u8 srcbus, u8 srcbusirq,

@@ -41,9 +41,9 @@ static void pch_enable_ioapic(struct device *dev)
 		PCH_IOAPIC_PCI_BUS << 8 | PCH_IOAPIC_PCI_SLOT << 3);
 
 	/* affirm full set of redirection table entries ("write once") */
-	ioapic_lock_max_vectors(VIO_APIC_VADDR);
+	ioapic_lock_max_vectors(IO_APIC_ADDR);
 
-	register_new_ioapic_gsi0(VIO_APIC_VADDR);
+	register_new_ioapic_gsi0(IO_APIC_ADDR);
 }
 
 static void pch_enable_serial_irqs(struct device *dev)

@@ -11,8 +11,8 @@
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <identity.h>
-#include <stdint.h>
 #include <string.h>
+#include <types.h>
 
 /* Initialize the specified "mc" struct with initial values. */
 void mptable_init(struct mp_config_table *mc)
@@ -207,7 +207,7 @@ static void smp_write_bus(struct mp_config_table *mc,
  * APIC Flags:EN, Address
  */
 static void smp_write_ioapic(struct mp_config_table *mc,
-	u8 id, u8 ver, void *apicaddr)
+	u8 id, u8 ver, uintptr_t apicaddr)
 {
 	struct mpc_config_ioapic *mpc;
 	mpc = smp_next_mpc_entry(mc);
@@ -216,11 +216,11 @@ static void smp_write_ioapic(struct mp_config_table *mc,
 	mpc->mpc_apicid = id;
 	mpc->mpc_apicver = ver;
 	mpc->mpc_flags = MPC_APIC_USABLE;
-	mpc->mpc_apicaddr = apicaddr;
+	mpc->mpc_apicaddr = (void *)apicaddr;
 	smp_add_mpc_entry(mc, sizeof(*mpc));
 }
 
-u8 smp_write_ioapic_from_hw(struct mp_config_table *mc, void *apicaddr)
+u8 smp_write_ioapic_from_hw(struct mp_config_table *mc, uintptr_t apicaddr)
 {
 	u8 id = get_ioapic_id(apicaddr);
 	u8 ver = get_ioapic_version(apicaddr);

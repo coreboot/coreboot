@@ -13,5 +13,5 @@ void amd_pci_domain_init(struct device *domain)
 	if (!res)
 		return;
 
-	register_new_ioapic((void *)(uintptr_t)res->base);
+	register_new_ioapic((uintptr_t)res->base);
 }

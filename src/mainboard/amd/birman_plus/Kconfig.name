@@ -1,0 +1,4 @@
+comment "BirmanPlus"
+
+config BOARD_AMD_BIRMANPLUS_PHOENIX
+	bool "->  BirmanPlus for Phoenix SoC"

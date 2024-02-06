@@ -1,0 +1,148 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_AMD_BIRMANPLUS_COMMON
+	def_bool n
+	select BOARD_ROMSIZE_KB_16384	# Birman actually has a 32MiB ROM
+	select EC_ACPI
+	select SOC_AMD_COMMON_BLOCK_USE_ESPI if !SOC_AMD_COMMON_BLOCK_SIMNOW_BUILD
+	select DRIVERS_PCIE_RTD3_DEVICE
+	select MAINBOARD_HAS_CHROMEOS
+	select PCIEXP_ASPM
+	select PCIEXP_CLK_PM
+	select PCIEXP_COMMON_CLOCK
+	select PCIEXP_L1_SUB_STATE
+	select SOC_AMD_COMMON_BLOCK_ESPI_RETAIN_PORT80_EN if !SOC_AMD_COMMON_BLOCK_SIMNOW_BUILD
+	select SOC_AMD_COMMON_BLOCK_SIMNOW_SUPPORTED
+	select SPI_FLASH_EXIT_4_BYTE_ADDR_MODE
+
+
+config BOARD_AMD_BIRMANPLUS_PHOENIX
+	select BOARD_AMD_BIRMANPLUS_COMMON
+	select SOC_AMD_PHOENIX_FSP
+
+if BOARD_AMD_BIRMANPLUS_COMMON
+
+config FMDFILE
+	default "src/mainboard/amd/birman_plus/chromeos_phoenix.fmd" if CHROMEOS && BOARD_AMD_BIRMANPLUS_PHOENIX
+	default "src/mainboard/amd/birman_plus/board_phoenix.fmd" if BOARD_AMD_BIRMANPLUS_PHOENIX
+
+config MAINBOARD_DIR
+	default "amd/birman_plus" if BOARD_AMD_BIRMANPLUS_PHOENIX
+
+config MAINBOARD_PART_NUMBER
+	default "Birmanplus_Phoenix" if BOARD_AMD_BIRMANPLUS_PHOENIX
+
+config DEVICETREE
+	default "devicetree_phoenix.cb"
+
+config BIRMANPLUS_HAVE_MCHP_FW
+	bool "Have Microchip EC firmware?"
+	default n
+
+config BIRMANPLUS_MCHP_SIG_FILE
+	string "Microchip EC signature file"
+	depends on BIRMAN_HAVE_MCHP_FW
+	default "3rdparty/blobs/mainboard/amd/birman_plus/EC_birmanplus_sig.bin"
+	help
+	  The EC sig blob is the first 4kBytes of the firmware image.
+	  The first 4 bytes form a pointer (with CRC) to where the EC firmware
+	  is located
+
+config AMD_SOC_CONSOLE_UART
+	default y if !SOC_AMD_COMMON_BLOCK_SIMNOW_BUILD
+
+config BIRMANPLUS_MCHP_FW_FILE
+	string "Microchip EC firmware file"
+	depends on BIRMAN_HAVE_MCHP_FW
+	default "3rdparty/blobs/mainboard/amd/birman_plus/EC_birmanplus.bin"
+	help
+	  The EC firmware blob is at the EC_BODY FMAP region of the firmware image.
+
+config VBOOT
+	select VBOOT_NO_BOARD_SUPPORT
+	select VBOOT_SEPARATE_VERSTAGE
+	select VBOOT_STARTS_IN_BOOTBLOCK
+
+config VBOOT_VBNV_OFFSET
+	hex
+	default 0x2A
+
+config RO_REGION_ONLY
+	string
+	depends on VBOOT_SLOTS_RW_AB || VBOOT_SLOTS_RW_A
+	# Add the EFS and EC to the RO region only
+	# This is a birman-specific override of soc/amd/(phoenix | glinda)/Kconfig
+	default "apu/amdfw apu/ecfw"
+
+config CHROMEOS
+	# Use default libpayload config
+	select LP_DEFCONFIG_OVERRIDE if PAYLOAD_DEPTHCHARGE
+	# We don't have recovery buttons, so we can't manually enable devmode.
+	select GBB_FLAG_FORCE_DEV_SWITCH_ON
+
+config ENABLE_EVAL_CARD
+	bool "Enable Eval Card"
+	help
+	  Enable the Eval Card PCIe slot
+
+config ENABLE_EVAL_19V
+	bool "Enable 19V rail for Eval Card"
+	depends on ENABLE_EVAL_CARD
+	help
+	  Enable the 19V rail for Eval Card PCIe slot
+
+choice
+	prompt "DT SLOT/M.2 SSD1 ENABLE"
+	default ENABLE_DT_SLOT_BIRMANPLUS
+	help
+	  Either DT slot or M.2 SSD1 can be used, as they are sharing PCIe lanes.
+
+config ENABLE_DT_SLOT_BIRMANPLUS
+	bool "Enable DT slot"
+
+config ENABLE_M2_SSD1_BIRMANPLUS
+	bool "Enable M.2 SSD1"
+
+config DISABLE_DT_M2_BIRMANPLUS
+	bool "Disable both DT and M.2 slot"
+
+endchoice
+
+choice
+	prompt "WLAN/WWAN Selection"
+	default WLAN0_WWAN0_BIRMANPLUS
+	help
+	  WLAN and WWAN lane configuration
+
+config WLAN0_WWAN0_BIRMANPLUS
+	bool "Both WLAN and WWAN Enabled (1 lane each)"
+
+config WLAN01_BIRMANPLUS
+	bool "Only WLAN Enabled (2 lanes WLAN, 0 lanes WWAN)"
+
+config WWAN01_BIRMANPLUS
+	bool "Only WWAN Enabled (2 lanes WWAN, 0 lanes WLAN)"
+
+endchoice
+if !EM100	# EM100 defaults in soc/amd/common/blocks/spi/Kconfig
+config EFS_SPI_READ_MODE
+	default 3	# Quad IO (1-1-4)
+
+config EFS_SPI_SPEED
+	default 0	# 66MHz
+
+config EFS_SPI_MICRON_FLAG
+	default 0
+
+config NORMAL_READ_SPI_SPEED
+	default 1	# 33MHz
+
+config ALT_SPI_SPEED
+	default 1	# 33MHz
+
+config TPM_SPI_SPEED
+	default 1	# 33MHz
+
+endif # !EM100
+
+endif # BOARD_AMD_BIRMANPLUS_COMMON

@@ -77,11 +77,11 @@ pages_done:
 	/* Align the stack and keep aligned for call to bootblock_c_entry() */
 	and	$0xfffffff0, %esp
 
+#if ENV_X86_64
 	/* entry64.inc preserves ebx. */
 #include <cpu/x86/64bit/entry64.inc>
 
 	/* Restore the BIST result and timestamps. */
-#if ENV_X86_64
 	movd	%mm2, %rdi
 	shlq	$32, %rdi
 	movd	%mm1, %rsi

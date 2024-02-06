@@ -44,7 +44,10 @@ static int fw_cfg_present(void)
 
 static void fw_cfg_select(uint16_t entry)
 {
-	outw(entry, FW_CFG_PORT_CTL);
+	if (fw_ver & FW_CFG_VERSION_DMA)
+		fw_cfg_dma(FW_CFG_DMA_CTL_SELECT | entry << 16, NULL, 0);
+	else
+		outw(entry, FW_CFG_PORT_CTL);
 }
 
 static void fw_cfg_read(void *dst, int dstlen)

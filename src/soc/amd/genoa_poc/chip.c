@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/acpi.h>
+#include <amdblocks/data_fabric.h>
 #include <device/device.h>
 #include <soc/southbridge.h>
 #include <soc/southbridge.h>
@@ -12,6 +13,8 @@ static void soc_init(void *chip_info)
 
 	setup_opensil();
 	opensil_xSIM_timepoint_1();
+
+	data_fabric_print_mmio_conf();
 
 	fch_init(chip_info);
 }

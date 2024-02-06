@@ -341,6 +341,7 @@ err:
 /* ---------------------------------------------------------------------- */
 /* pick up smbios information from fw_cfg                                 */
 
+#if CONFIG(GENERATE_SMBIOS_TABLES)
 static const char *type1_manufacturer;
 static const char *type1_product_name;
 static const char *type1_version;
@@ -504,6 +505,7 @@ void smbios_system_set_uuid(u8 *uuid)
 	fw_cfg_smbios_init();
 	memcpy(uuid, type1_uuid, 16);
 }
+#endif /* CONFIG(GENERATE_SMBIOS_TABLES) */
 
 /*
  * Configure DMA setup

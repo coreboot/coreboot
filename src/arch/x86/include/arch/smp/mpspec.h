@@ -225,8 +225,6 @@ void smp_write_processor(struct mp_config_table *mc,
 	u8 cpuflag, u32 cpufeature,
 	u32 featureflag);
 void smp_write_processors(struct mp_config_table *mc);
-void smp_write_ioapic(struct mp_config_table *mc,
-	u8 id, u8 ver, void *apicaddr);
 
 /* Call smp_write_ioapic() and return IOAPIC ID field. */
 u8 smp_write_ioapic_from_hw(struct mp_config_table *mc, void *apicaddr);

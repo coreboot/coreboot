@@ -147,8 +147,6 @@ chip soc/amd/glinda
 		},
 		.ComboPhyStaticConfig[0] = USB_COMBO_PHY_MODE_USB_C,
 		.ComboPhyStaticConfig[1] = USB_COMBO_PHY_MODE_USB_C,
-		.BatteryChargerEnable = 0,
-		.PhyP3CpmP4Support = 0,
 	}"
 
 	register "gpp_clk_config[0]" = "GPP_CLK_REQ"

@@ -49,7 +49,7 @@ static void soc_init(void *chip_info)
 		opensil_xSIM_timepoint_1();
 	}
 
-	data_fabric_set_mmio_np();
+	data_fabric_print_mmio_conf();
 
 	fch_init(chip_info);
 }

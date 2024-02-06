@@ -41,7 +41,7 @@ static void soc_init(void *chip_info)
 
 	amd_fsp_silicon_init();
 
-	data_fabric_set_mmio_np();
+	data_fabric_print_mmio_conf();
 
 	fch_init(chip_info);
 }

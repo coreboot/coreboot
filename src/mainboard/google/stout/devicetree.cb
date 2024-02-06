@@ -22,22 +22,6 @@ chip northbridge/intel/sandybridge
 	# FIXME: Native raminit requires reduced max clock
 	register "max_mem_clock_mhz" = "CONFIG(USE_NATIVE_RAMINIT) ? 666 : 800"
 
-	register "usb_port_config" = "{
-		{ 1, 0, 0x0040 },
-		{ 1, 0, 0x0040 },
-		{ 0, 1, 0x0000 },
-		{ 1, 1, 0x0040 },
-		{ 1, 1, 0x0040 },
-		{ 1, 1, 0x0040 },
-		{ 0, 1, 0x0000 },
-		{ 0, 1, 0x0000 },
-		{ 0, 5, 0x0000 },
-		{ 1, 4, 0x0040 },
-		{ 0, 5, 0x0000 },
-		{ 0, 5, 0x0000 },
-		{ 0, 5, 0x0000 },
-		{ 1, 5, 0x0040 },}"
-
 	register "usb3.mode" = "2" # Auto
 	register "usb3.hs_port_switch_mask" = "3" # Ports 0 & 1
 	register "usb3.preboot_support" = "0" # No PreOS boot support

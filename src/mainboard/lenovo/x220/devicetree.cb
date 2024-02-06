@@ -19,22 +19,6 @@ chip northbridge/intel/sandybridge
 	register "ec_present" = "1"		# I have an embedded controller
 	register "max_mem_clock_mhz" = "666"	# So DDR3 freq = 1333
 
-	register "usb_port_config" = "{
-		{ 1, 0, 0x0040 },
-		{ 1, 1, 0x0080 },
-		{ 1, 3, 0x0080 },
-		{ 1, 3, 0x0080 },
-		{ 1, 0, 0x0080 },
-		{ 1, 0, 0x0080 },
-		{ 1, 2, 0x0040 },
-		{ 1, 2, 0x0040 },
-		{ 1, 6, 0x0080 },
-		{ 1, 5, 0x0080 },
-		{ 1, 6, 0x0080 },
-		{ 1, 6, 0x0080 },
-		{ 1, 7, 0x0080 },
-		{ 1, 6, 0x0080 },}"
-
 	chip cpu/intel/model_206ax
 		# Values obtained from vendor BIOS v1.46
 		# schematics say 33Amps for 17W TDP, 53Amps for 35W TDP

@@ -9,23 +9,6 @@
 #define SUPERIO_GPIO PNP_DEV(0x2e, IT8728F_GPIO)
 #define SERIAL_DEV PNP_DEV(0x2e, 0x01)
 
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-	{ 1, 0, 0 },
-	{ 1, 0, 0 },
-	{ 1, 0, 1 },
-	{ 1, 0, 1 },
-	{ 1, 0, 2 },
-	{ 1, 0, 2 },
-	{ 1, 0, 3 },
-	{ 1, 0, 3 },
-	{ 1, 0, 4 },
-	{ 1, 0, 4 },
-	{ 1, 0, 6 },
-	{ 1, 0, 5 },
-	{ 1, 0, 5 },
-	{ 1, 0, 6 },
-};
-
 void bootblock_mainboard_early_init(void)
 {
 	if (!CONFIG(NO_UART_ON_SUPERIO)) {

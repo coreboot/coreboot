@@ -63,24 +63,6 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 	/* TODO: Confirm if nortbridge_fill_pei_data() gets .system_type right (should be 0) */
 }
 
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-	/* enabled power  USB oc pin  */
-	{ 0, 0, -1 }, /* P0: Empty */
-	{ 1, 0, 0 }, /* P1: Left USB 1  (OC0) */
-	{ 1, 0, 1 }, /* P2: Left USB 2  (OC1) */
-	{ 1, 0, -1 }, /* P3: SDCARD      (no OC) */
-	{ 0, 0, -1 }, /* P4: Empty */
-	{ 1, 0, -1 }, /* P5: WWAN        (no OC) */
-	{ 0, 0, -1 }, /* P6: Empty */
-	{ 0, 0, -1 }, /* P7: Empty */
-	{ 1, 0, -1 }, /* P8: Camera      (no OC) */
-	{ 1, 0, -1 }, /* P9: Bluetooth   (no OC) */
-	{ 0, 0, -1 }, /* P10: Empty */
-	{ 0, 0, -1 }, /* P11: Empty */
-	{ 0, 0, -1 }, /* P12: Empty */
-	{ 0, 0, -1 }, /* P13: Empty */
-};
-
 void mb_get_spd_map(struct spd_info *spdi)
 {
 	/* LINK has 2 channels of memory down */

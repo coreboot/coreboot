@@ -26,22 +26,6 @@ chip northbridge/intel/sandybridge
 	register "ec_present" = "1"
 	register "max_mem_clock_mhz" = "800"
 
-	register "usb_port_config" = "{
-		{ 1, 0, 0x0040 },
-		{ 1, 4, 0x0040 },
-		{ 1, 1, 0x0080 },
-		{ 1, 2, 0x0080 },
-		{ 1, 8, 0x0040 },
-		{ 1, 8, 0x0040 },
-		{ 1, 8, 0x0040 },
-		{ 1, 8, 0x0040 },
-		{ 1, 8, 0x0040 },
-		{ 1, 3, 0x0040 },
-		{ 1, 8, 0x0040 },
-		{ 1, 8, 0x0040 },
-		{ 1, 8, 0x0040 },
-		{ 1, 5, 0x0040 }, }"
-
 	chip cpu/intel/model_206ax
 		device cpu_cluster 0 on end
 

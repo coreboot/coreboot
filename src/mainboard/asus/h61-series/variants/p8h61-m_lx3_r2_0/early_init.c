@@ -9,23 +9,6 @@
 #define GLOBAL_DEV PNP_DEV(0x2e, 0)
 #define ACPI_DEV PNP_DEV(0x2e, NCT6779D_ACPI)
 
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-	{ 1, 0, 0 },
-	{ 1, 0, 0 },
-	{ 1, 0, 1 },
-	{ 1, 0, 1 },
-	{ 1, 0, 2 },
-	{ 1, 0, 2 },
-	{ 1, 0, 3 },
-	{ 1, 0, 3 },
-	{ 1, 0, 4 },
-	{ 1, 0, 4 },
-	{ 1, 0, 6 },
-	{ 1, 0, 5 },
-	{ 1, 0, 5 },
-	{ 1, 0, 6 },
-};
-
 void bootblock_mainboard_early_init(void)
 {
 	nuvoton_pnp_enter_conf_state(GLOBAL_DEV);

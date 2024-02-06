@@ -8,23 +8,6 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, NCT6776_SP1)
 
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-	{ 1, 0, 0 },
-	{ 1, 0, 0 },
-	{ 1, 1, 1 },
-	{ 1, 1, 1 },
-	{ 1, 1, 2 },
-	{ 1, 1, 2 },
-	{ 1, 0, 3 },
-	{ 1, 0, 3 },
-	{ 1, 0, 4 },
-	{ 1, 0, 4 },
-	{ 1, 0, 6 },
-	{ 1, 1, 5 },
-	{ 1, 1, 5 },
-	{ 1, 0, 6 },
-};
-
 void bootblock_mainboard_early_init(void)
 {
 	/* Set GPIOs on superio, enable UART */

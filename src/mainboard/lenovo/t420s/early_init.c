@@ -31,23 +31,6 @@ static void hybrid_graphics_init(void)
 	pci_write_config32(PCI_DEV(0, 0, 0), DEVEN, reg32);
 }
 
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-	{ 0, 1, -1 }, /* P0: empty */
-	{ 1, 1,  1 }, /* P1: system port 2 (To system port) (EHCI debug), OC 1 */
-	{ 1, 1, -1 }, /* P2: HALF MINICARD (WLAN) no oc */
-	{ 1, 0, -1 }, /* P3: WWAN, no OC */
-	{ 1, 1, -1 }, /* P4: smartcard, no OC */
-	{ 1, 1, -1 }, /* P5: ExpressCard, no OC */
-	{ 0, 0, -1 }, /* P6: empty */
-	{ 0, 0, -1 }, /* P7: empty */
-	{ 0, 1, -1 }, /* P8: empty (touch panel) */
-	{ 1, 0,  5 }, /* P9: system port 1 (To USBAO) (EHCI debug), OC 5 */
-	{ 1, 0, -1 }, /* P10: fingerprint reader, no OC */
-	{ 1, 1, -1 }, /* P11: bluetooth, no OC. */
-	{ 1, 1, -1 }, /* P12: docking, no OC */
-	{ 1, 1, -1 }, /* P13: camera (LCD), no OC */
-};
-
 void mainboard_early_init(int s3resume)
 {
 	hybrid_graphics_init();

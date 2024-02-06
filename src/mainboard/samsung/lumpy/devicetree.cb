@@ -20,22 +20,6 @@ chip northbridge/intel/sandybridge
 	register "ec_present" = "1"
 	register "max_mem_clock_mhz" = "666"
 
-	register "usb_port_config" = "{
-		{ 1, 0, 0x0080 },
-		{ 1, 1, 0x0080 },
-		{ 1, 0, 0x0040 },
-		{ 1, 0, 0x0040 },
-		{ 0, 0, 0x0000 },
-		{ 0, 0, 0x0000 },
-		{ 0, 0, 0x0000 },
-		{ 0, 0, 0x0000 },
-		{ 1, 4, 0x0040 },
-		{ 0, 4, 0x0000 },
-		{ 0, 4, 0x0000 },
-		{ 1, 4, 0x0040 },
-		{ 0, 4, 0x0000 },
-		{ 0, 4, 0x0000 },}"
-
 	device domain 0 on
 		subsystemid 0x1ae0 0xc000 inherit
 		device ref host_bridge on end # host bridge

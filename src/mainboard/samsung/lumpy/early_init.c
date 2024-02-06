@@ -108,24 +108,6 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 	memcpy(pei_data->ts_addresses, &tsaddr, sizeof(pei_data->ts_addresses));
 }
 
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-	/* enabled power  USB oc pin  */
-	{ 1, 1, 0 }, /* P0: Port 0      (OC0) */
-	{ 1, 1, 1 }, /* P1: Port 1      (OC1) */
-	{ 1, 0, -1 }, /* P2: MINIPCIE1   (no OC) */
-	{ 1, 0, -1 }, /* P3: MMC         (no OC) */
-	{ 0, 0, -1 }, /* P4: Empty */
-	{ 0, 0, -1 }, /* P5: Empty */
-	{ 0, 0, -1 }, /* P6: Empty */
-	{ 0, 0, -1 }, /* P7: Empty */
-	{ 1, 0, -1 }, /* P8: MINIPCIE2   (no OC) */
-	{ 0, 0, -1 }, /* P9: Empty */
-	{ 0, 0, -1 }, /* P10: Empty */
-	{ 1, 0, -1 }, /* P11: Camera     (no OC) */
-	{ 0, 0, -1 }, /* P12: Empty */
-	{ 0, 0, -1 }, /* P13: Empty */
-};
-
 void mb_get_spd_map(struct spd_info *spdi)
 {
 	spdi->addresses[0] = 0x50;

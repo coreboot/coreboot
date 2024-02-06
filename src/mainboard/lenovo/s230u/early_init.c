@@ -20,23 +20,6 @@ void mainboard_pch_lpc_setup(void)
 		ec_mm_set_bit(0x3b, 4);
 }
 
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-	{ 1, 1, 0 },
-	{ 1, 0, 0 },
-	{ 1, 1, 1 },
-	{ 1, 0, 1 },
-	{ 1, 1, 2 },
-	{ 1, 0, 2 },
-	{ 0, 0, 3 },
-	{ 0, 1, 3 },
-	{ 1, 0, 4 },
-	{ 1, 1, 4 },
-	{ 1, 1, 5 },
-	{ 1, 1, 5 },
-	{ 1, 1, 6 },
-	{ 1, 1, 6 },
-};
-
 static const char *mainboard_spd_names[9] = {
 	"ELPIDA 4GB",
 	"SAMSUNG 4GB",

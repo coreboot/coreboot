@@ -6,23 +6,6 @@
 #include <superio/nuvoton/common/nuvoton.h>
 #include <superio/nuvoton/nct6776/nct6776.h>
 
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-	{ 1, 0, 0 },
-	{ 1, 0, 0 },
-	{ 1, 0, 1 },
-	{ 1, 0, 1 },
-	{ 1, 0, 2 },
-	{ 1, 0, 2 },
-	{ 1, 0, 3 },
-	{ 1, 0, 3 },
-	{ 1, 0, 4 },
-	{ 1, 0, 4 },
-	{ 1, 0, 5 },
-	{ 1, 0, 5 },
-	{ 1, 0, 6 },
-	{ 1, 0, 6 },
-};
-
 void bootblock_mainboard_early_init(void)
 {
 	static const pnp_devfn_t GLOBAL_PSEUDO_DEV = PNP_DEV(0x2e, 0);

@@ -22,22 +22,6 @@ chip northbridge/intel/sandybridge
 	# FIXME: Native raminit requires reduced max clock
 	register "max_mem_clock_mhz" = "CONFIG(USE_NATIVE_RAMINIT) ? 666 : 800"
 
-	register "usb_port_config" = "{
-		{ 0, 3, 0x0000 },
-		{ 1, 0, 0x0040 },
-		{ 1, 1, 0x0040 },
-		{ 1, 1, 0x0040 },
-		{ 0, 3, 0x0000 },
-		{ 0, 3, 0x0000 },
-		{ 0, 3, 0x0000 },
-		{ 0, 3, 0x0000 },
-		{ 1, 4, 0x0040 },
-		{ 0, 4, 0x0000 },
-		{ 1, 4, 0x0040 },
-		{ 0, 4, 0x0000 },
-		{ 0, 4, 0x0000 },
-		{ 0, 4, 0x0000 },}"
-
 	device domain 0 on
 		device ref host_bridge on end # host bridge
 		device ref igd on end # vga controller

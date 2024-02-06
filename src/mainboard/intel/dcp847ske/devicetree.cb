@@ -15,22 +15,6 @@ chip northbridge/intel/sandybridge
 	register "max_mem_clock_mhz" = "666"
 	register "spd_addresses" = "{0x50, 0, 0x51, 0}"
 
-	register "usb_port_config" = "{
-		{1, 0, 0x0040},
-		{1, 0, 0x0040},
-		{1, 1, 0x0040},
-		{1, 1, 0x0040},
-		{1, 2, 0x0040},
-		{1, 2, 0x0040},
-		{1, 3, 0x0040},
-		{0, 3, 0x0040},
-		{0, 4, 0x0040},
-		{0, 4, 0x0040},
-		{0, 5, 0x0040},
-		{0, 5, 0x0040},
-		{0, 6, 0x0040},
-		{0, 6, 0x0040},	}"
-
 	device domain 0 on
 		device ref host_bridge on  end	# Host bridge
 		device ref peg10 off end	# PCIe Bridge for discrete graphics

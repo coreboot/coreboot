@@ -10,21 +10,6 @@ chip northbridge/intel/sandybridge
 	register "usb3.mode" = "3"
 	register "usb3.preboot_support" = "1"
 	register "usb3.xhci_streams" = "1"
-	register "usb_port_config" = "{
-		{ 1, 0, 0x0040 },
-		{ 1, 0, 0x0040 },
-		{ 1, 0, 0x0040 },
-		{ 1, 0, 0x0040 },
-		{ 1, 0, 0x0040 },
-		{ 1, 0, 0x0040 },
-		{ 1, 0, 0x0040 },
-		{ 1, 0, 0x0040 },
-		{ 1, 4, 0x0040 },
-		{ 1, 4, 0x0040 },
-		{ 1, 4, 0x0040 },
-		{ 1, 4, 0x0040 },
-		{ 1, 4, 0x0040 },
-		{ 1, 4, 0x0040 }, }"
 
 	chip cpu/intel/model_206ax
 		device cpu_cluster 0 on end

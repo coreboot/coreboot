@@ -44,24 +44,6 @@ void mainboard_late_rcba_config(void)
 	DIR_ROUTE(D22IR, PIRQA, PIRQB, PIRQC, PIRQD);
 }
 
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-	/* enabled power  USB oc pin  */
-	{ 1, 0, -1 }, /* P0: Right USB 3.0 #1 (no OC) */
-	{ 1, 0, -1 }, /* P1: Right USB 3.0 #2 (no OC) */
-	{ 1, 0, -1 }, /* P2: Camera (no OC) */
-	{ 0, 0, -1 }, /* P3: Empty */
-	{ 0, 0, -1 }, /* P4: Empty */
-	{ 0, 0, -1 }, /* P5: Empty */
-	{ 0, 0, -1 }, /* P6: Empty */
-	{ 0, 0, -1 }, /* P7: Empty */
-	{ 0, 0, -1 }, /* P8: Empty */
-	{ 1, 1, -1 }, /* P9: Left USB 1 (no OC) */
-	{ 1, 0, -1 }, /* P10: Mini PCIe - WLAN / BT (no OC) */
-	{ 0, 0, -1 }, /* P11: Empty */
-	{ 0, 0, -1 }, /* P12: Empty */
-	{ 0, 0, -1 }, /* P13: Empty */
-};
-
 void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
 	/* TODO: Confirm if nortbridge_fill_pei_data() gets .system_type right (should be 0) */

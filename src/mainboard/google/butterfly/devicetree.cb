@@ -25,22 +25,6 @@ chip northbridge/intel/sandybridge
 	# Force double refresh rate
 	register "ddr_refresh_rate_config" = "DDR_REFRESH_RATE_DOUBLE"
 
-	register "usb_port_config" = "{
-		{ 1, 0, 0x0040 },
-		{ 1, 0, 0x0040 },
-		{ 1, 0, 0x0040 },
-		{ 0, 0, 0x0000 },
-		{ 0, 0, 0x0000 },
-		{ 0, 0, 0x0000 },
-		{ 0, 0, 0x0000 },
-		{ 0, 0, 0x0000 },
-		{ 0, 4, 0x0000 },
-		{ 1, 4, 0x0080 },
-		{ 1, 4, 0x0040 },
-		{ 0, 4, 0x0000 },
-		{ 0, 4, 0x0000 },
-		{ 0, 4, 0x0000 },}"
-
 	device domain 0 on
 		device ref host_bridge on end # host bridge
 		device ref peg10 off end # PCIe Bridge for discrete graphics

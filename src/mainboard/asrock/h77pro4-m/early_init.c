@@ -21,23 +21,6 @@ enum cpu_fan_tach_src {
 	CPU_FAN_HEADER_BOTH
 };
 
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-	{ 1, 0, 0 },
-	{ 1, 0, 0 },
-	{ 1, 1, 1 },
-	{ 1, 1, 1 },
-	{ 1, 1, 2 },
-	{ 1, 1, 2 },
-	{ 1, 0, 3 },
-	{ 1, 0, 3 },
-	{ 1, 0, 4 },
-	{ 1, 0, 4 },
-	{ 1, 0, 6 },
-	{ 1, 1, 5 },
-	{ 1, 1, 5 },
-	{ 1, 0, 6 },
-};
-
 /*
  * The tachometer signal that goes to CPUFANIN of the Super I/O is set via
  * GPIOs.

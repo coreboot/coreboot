@@ -1,11 +1,6 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
 chip northbridge/intel/sandybridge
-	register "usb_port_config" = "{
-		{1, 0, 0x0040}, {1, 0, 0x0040}, {1, 1, 0x0130}, {1, 1, 0x0130}, {1, 2, 0x0130},
-		{1, 2, 0x0130}, {1, 3, 0x0130}, {1, 3, 0x0130}, {1, 4, 0x0080}, {1, 4, 0x0080},
-		{1, 6, 0x0130}, {1, 5, 0x0130}, {1, 5, 0x0130}, {1, 6, 0x0130}
-		}"
 	device domain 0 on
 		subsystemid 0x1043 0x84ca inherit
 		chip southbridge/intel/bd82x6x # Intel Series 7 Panther Point PCH

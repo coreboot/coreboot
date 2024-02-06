@@ -124,8 +124,3 @@ void bootblock_mainboard_early_init(void)
 	superio_init();
 	hwm_init();
 }
-
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-#define USB_CONFIG(enabled, current, ocpin) { enabled, current, ocpin }
-#include "usb.h"
-};

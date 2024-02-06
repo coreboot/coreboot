@@ -40,21 +40,3 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 	/* TODO: Confirm if need to enable peg10 in devicetree */
 	pei_data->pcie_init = 1;
 }
-
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-	/* Enabled / Power / OC PIN */
-	{ 1, 1, 0 }, /* P00: 1st (left)     USB3 (OC #0) */
-	{ 1, 1, 0 }, /* P01: 2nd (left)     USB3 (OC #0) */
-	{ 1, 1, 1 }, /* P02: 1st Multibay   USB3 (OC #1) */
-	{ 1, 1, 1 }, /* P03: 2nd Multibay   USB3 (OC #1) */
-	{ 1, 0, 8 }, /* P04: MiniPCIe 1     USB2 (no OC) */
-	{ 1, 0, 8 }, /* P05: MiniPCIe 2     USB2 (no OC) */
-	{ 1, 0, 8 }, /* P06: USB Hub x4     USB2 (no OC) */
-	{ 1, 0, 8 }, /* P07: MiniPCIe 4     USB2 (no OC) */
-	{ 1, 1, 8 }, /* P08: SD card reader USB2 (no OC) */
-	{ 1, 1, 4 }, /* P09: 3rd (right)    USB2 (OC #4) */
-	{ 1, 0, 5 }, /* P10: 4th (right)    USB2 (OC #5) */
-	{ 1, 0, 8 }, /* P11: 3rd Multibay   USB2 (no OC) */
-	{ 1, 1, 8 }, /* P12: misc internal  USB2 (no OC) */
-	{ 1, 1, 6 }, /* P13: misc internal  USB2 (OC #6) */
-};

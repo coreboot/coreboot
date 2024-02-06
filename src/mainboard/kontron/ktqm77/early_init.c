@@ -54,24 +54,6 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
 }
 
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-	/* enabled power  USB oc pin  */
-	{ 1, 0, 0 }, /* P0: lower left USB 3.0 (OC0) */
-	{ 1, 0, 0 }, /* P1: upper left USB 3.0 (OC0) */
-	{ 1, 0, 0 }, /* P2: lower right USB 3.0 (OC0) */
-	{ 1, 0, 0 }, /* P3: upper right USB 3.0 (OC0) */
-	{ 1, 0, 0 }, /* P4: lower USB 2.0 (OC0) */
-	{ 1, 0, 0 }, /* P5: upper USB 2.0 (OC0) */
-	{ 1, 0, 0 }, /* P6: front panel USB 2.0 (OC0) */
-	{ 1, 0, 0 }, /* P7: front panel USB 2.0 (OC0) */
-	{ 1, 0, 4 }, /* P8: internal USB 2.0 (OC4) */
-	{ 1, 0, 4 }, /* P9: internal USB 2.0 (OC4) */
-	{ 1, 0, 4 }, /* P10: internal USB 2.0 (OC4) */
-	{ 1, 0, 4 }, /* P11: internal USB 2.0 (OC4) */
-	{ 1, 0, 4 }, /* P12: internal USB 2.0 (OC4) */
-	{ 1, 0, 4 }, /* P13: internal USB 2.0 (OC4) */
-};
-
 void mainboard_early_init(int s3resume)
 {
 	/* Enable PEG10 (1x16) */

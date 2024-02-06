@@ -39,20 +39,3 @@ void bootblock_mainboard_early_init(void)
 	ite_reg_write(IT8728F_EC, 0x63, 0x20);
 	ite_reg_write(IT8728F_EC, 0x30, 0x01);
 }
-
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-	{ 1, 5, 0 },
-	{ 1, 5, 0 },
-	{ 1, 5, 1 },
-	{ 1, 5, 1 },
-	{ 1, 5, 2 },
-	{ 1, 5, 2 },
-	{ 1, 5, 3 },
-	{ 1, 5, 3 },
-	{ 1, 5, 4 },
-	{ 1, 5, 4 },
-	{ 1, 5, 6 },
-	{ 1, 5, 5 },
-	{ 1, 5, 5 },
-	{ 1, 5, 6 },
-};

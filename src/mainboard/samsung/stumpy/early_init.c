@@ -91,24 +91,6 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 	/* TODO: Confirm if nortbridge_fill_pei_data() gets .system_type right (should be 0) */
 }
 
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-	/* enabled power  USB oc pin  */
-	{ 1, 1, 0 }, /* P0: Front port  (OC0) */
-	{ 1, 0, 1 }, /* P1: Back port   (OC1) */
-	{ 1, 0, -1 }, /* P2: MINIPCIE1   (no OC) */
-	{ 1, 0, -1 }, /* P3: MMC         (no OC) */
-	{ 1, 1, 2 }, /* P4: Front port  (OC2) */
-	{ 0, 0, -1 }, /* P5: Empty */
-	{ 0, 0, -1 }, /* P6: Empty */
-	{ 0, 0, -1 }, /* P7: Empty */
-	{ 1, 0, 4 }, /* P8: Back port   (OC4) */
-	{ 1, 0, -1 }, /* P9: MINIPCIE3   (no OC) */
-	{ 1, 0, -1 }, /* P10: BLUETOOTH  (no OC) */
-	{ 0, 0, -1 }, /* P11: Empty */
-	{ 1, 0, 6 }, /* P12: Back port  (OC6) */
-	{ 1, 0, 5 }, /* P13: Back port  (OC5) */
-};
-
 void bootblock_mainboard_early_init(void)
 {
 	if (CONFIG(DRIVERS_UART_8250IO))

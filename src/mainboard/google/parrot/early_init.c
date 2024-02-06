@@ -50,22 +50,3 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
 	/* TODO: Confirm if nortbridge_fill_pei_data() gets .system_type right (should be 0) */
 }
-
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-	/* enabled power  USB oc pin  */
-	{ 0, 0, -1 }, /* P0: Empty */
-	{ 1, 0, 0 }, /* P1: Left USB 1  (OC0) */
-	{ 1, 0, 1 }, /* P2: Left USB 2  (OC1) */
-	{ 1, 0, 1 }, /* P3: Left USB 3  (OC1) */
-	{ 0, 0, -1 }, /* P4: Empty */
-	{ 0, 0, -1 }, /* P5: Empty */
-	{ 0, 0, -1 }, /* P6: Empty */
-	{ 0, 0, -1 }, /* P7: Empty */
-	/* Empty and onboard Ports 8-13, set to un-used pin OC4 */
-	{ 1, 0, -1 }, /* P8: MiniPCIe (WLAN) (no OC) */
-	{ 0, 0, -1 }, /* P9: Empty */
-	{ 1, 0, -1 }, /* P10: Camera (no OC) */
-	{ 0, 0, -1 }, /* P11: Empty */
-	{ 0, 0, -1 }, /* P12: Empty */
-	{ 0, 0, -1 }, /* P13: Empty */
-};

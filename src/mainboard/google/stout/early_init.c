@@ -90,21 +90,3 @@ void mainboard_early_init(int s3resume)
 		early_ec_init();
 	}
 }
-
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-	/* enabled   USB oc pin    length */
-	{1, 0, 0},  /* P0: USB 3.0 1  (OC0) */
-	{1, 0, 0},  /* P1: USB 3.0 2  (OC0) */
-	{0, 0, 0},  /* P2: Empty */
-	{1, 0, -1}, /* P3: Camera (no OC) */
-	{1, 0, -1}, /* P4: WLAN   (no OC) */
-	{1, 0, -1}, /* P5: WWAN   (no OC) */
-	{0, 0, 0},  /* P6: Empty */
-	{0, 0, 0},  /* P7: Empty */
-	{0, 0, 0},  /* P8: Empty */
-	{1, 0, 4},  /* P9: USB 2.0 (AUO4) (OC4) */
-	{0, 0, 0},  /* P10: Empty */
-	{0, 0, 0},  /* P11: Empty */
-	{0, 0, 0},  /* P12: Empty */
-	{1, 0, -1}, /* P13: Bluetooth (no OC) */
-};

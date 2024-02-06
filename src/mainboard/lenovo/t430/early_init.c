@@ -33,24 +33,6 @@ static void hybrid_graphics_init(void)
 	pci_write_config32(PCI_DEV(0, 0, 0), DEVEN, reg32);
 }
 
-/* FIXME: used T530 values here */
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-	{ 1, 1,  0 },
-	{ 1, 1,  1 },
-	{ 1, 2,  3 },
-	{ 1, 1, -1 },
-	{ 1, 1,  2 },
-	{ 1, 0, -1 },
-	{ 0, 0, -1 },
-	{ 1, 2, -1 },
-	{ 1, 0, -1 },
-	{ 1, 1,  5 },
-	{ 1, 0, -1 },
-	{ 1, 0, -1 },
-	{ 1, 3, -1 },
-	{ 1, 1, -1 },
-};
-
 void mainboard_early_init(int s3resume)
 {
 	hybrid_graphics_init();

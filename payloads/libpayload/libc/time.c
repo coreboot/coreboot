@@ -171,14 +171,15 @@ void arch_ndelay(uint64_t ns)
 
 u64 timer_us(u64 base)
 {
-	static u32 hz, mult = USECS_PER_SEC;
+	static u64 hz;
+	static u32 mult = USECS_PER_SEC;
 	u32 div;
 
 	// Only check timer_hz once. Assume it doesn't change.
 	if (hz == 0) {
 		hz = timer_hz();
 		if (hz < mult) {
-			printf("Timer frequency %" PRIu32 " is too low, "
+			printf("Timer frequency %" PRIu64 " is too low, "
 			       "must be at least 1MHz.\n", hz);
 			halt();
 		}

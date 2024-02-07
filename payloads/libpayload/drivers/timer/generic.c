@@ -33,10 +33,8 @@
 #include <assert.h>
 #include <libpayload.h>
 
-uint32_t timer_hz(void)
+uint64_t timer_hz(void)
 {
-	/* libc/time.c currently requires all timers to be at least 1MHz. */
-	assert(CONFIG_LP_TIMER_GENERIC_HZ >= 1000000);
 	return CONFIG_LP_TIMER_GENERIC_HZ;
 }
 

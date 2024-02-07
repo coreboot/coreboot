@@ -35,10 +35,9 @@
 #include <arch/rdtsc.h>
 #include <assert.h>
 
-uint32_t timer_hz(void)
+uint64_t timer_hz(void)
 {
-	assert(UINT32_MAX / 1000 >= lib_sysinfo.cpu_khz);
-	return lib_sysinfo.cpu_khz * 1000;
+	return (uint64_t)lib_sysinfo.cpu_khz * 1000;
 }
 
 uint64_t timer_raw_value(void)

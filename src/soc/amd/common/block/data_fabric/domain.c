@@ -281,6 +281,9 @@ void amd_pci_domain_fill_ssdt(const struct device *domain)
 		   devices */
 		if ((res->flags & IORESOURCE_RESERVE))
 			continue;
+		/* Don't add MMIO producer ranges for DRAM regions */
+		if (res->flags & IORESOURCE_STORED)
+			continue;
 		switch (res->flags & IORESOURCE_TYPE_MASK) {
 		case IORESOURCE_IO:
 			write_ssdt_domain_io_producer_range(acpi_device_name(domain),

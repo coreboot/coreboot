@@ -279,7 +279,7 @@ void amd_pci_domain_fill_ssdt(const struct device *domain)
 			continue;
 		/* Don't add MMIO producer ranges for reserved MMIO regions from non-PCI
 		   devices */
-		if ((res->flags & IORESOURCE_RESERVE))
+		if (res->flags & IORESOURCE_RESERVE)
 			continue;
 		/* Don't add MMIO producer ranges for DRAM regions */
 		if (res->flags & IORESOURCE_STORED)

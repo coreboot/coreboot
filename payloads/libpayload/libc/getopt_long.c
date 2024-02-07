@@ -122,7 +122,7 @@ permute_args(int panonopt_start, int panonopt_end, int opt_end,
 	 */
 	nnonopts = panonopt_end - panonopt_start;
 	nopts = opt_end - panonopt_end;
-	ncycle = gcd32(nnonopts, nopts);
+	ncycle = gcd(nnonopts, nopts);
 	cyclelen = (opt_end - panonopt_start) / ncycle;
 
 	for (i = 0; i < ncycle; i++) {

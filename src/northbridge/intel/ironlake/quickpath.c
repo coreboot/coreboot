@@ -19,7 +19,7 @@ static inline int div_roundup(int a, int b)
 
 static u32 lcm(u32 a, u32 b)
 {
-	return (a * b) / gcd32(a, b);
+	return (a * b) / gcd(a, b);
 }
 
 struct stru1 {
@@ -49,7 +49,7 @@ compute_frequence_ratios(struct raminfo *info, u16 freq1, u16 freq2,
 	int freq_max_reduced;
 	int freq3, freq4;
 
-	g = gcd32(freq1, freq2);
+	g = gcd(freq1, freq2);
 	freq1_reduced = freq1 / g;
 	freq2_reduced = freq2 / g;
 	freq_min_reduced = MIN(freq1_reduced, freq2_reduced);

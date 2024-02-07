@@ -19,7 +19,7 @@ void timer_monotonic_get(struct mono_time *mt)
 	if (tfreq == 0) {
 		tfreq = raw_read_cntfrq_el0();
 		mult = USECS_PER_SEC;
-		div = gcd32(tfreq, mult);
+		div = gcd(tfreq, mult);
 		tfreq /= div;
 		mult /= div;
 	}

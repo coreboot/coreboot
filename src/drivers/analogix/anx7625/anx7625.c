@@ -160,7 +160,7 @@ static void anx7625_reduction_of_a_fraction(u32 *_a, u32 *_b)
 	u32 a = *_a, b = *_b, old_a, old_b;
 	u32 denom = 1;
 
-	gcd_num = gcd32(a, b);
+	gcd_num = gcd(a, b);
 	a /= gcd_num;
 	b /= gcd_num;
 

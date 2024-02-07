@@ -5,6 +5,6 @@
 
 #include <stdint.h>
 
-uint32_t gcd32(uint32_t a, uint32_t b);
+uint64_t gcd(uint64_t a, uint64_t b);
 
 #endif /* _COMMONLIB_BSD_GCD_H_ */

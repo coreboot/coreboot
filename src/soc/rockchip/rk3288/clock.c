@@ -453,7 +453,7 @@ void rkclk_configure_i2s(unsigned int hz)
 			      1 << 15 | 0 << 12 | 1 << 8 | 0 << 0));
 
 	/* set frac divider */
-	v = gcd32(GPLL_HZ, hz);
+	v = gcd(GPLL_HZ, hz);
 	n = (GPLL_HZ / v) & (0xffff);
 	d = (hz / v) & (0xffff);
 	assert(hz == GPLL_HZ / n * d);

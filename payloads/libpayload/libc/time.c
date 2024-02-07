@@ -182,7 +182,7 @@ u64 timer_us(u64 base)
 			       "must be at least 1MHz.\n", hz);
 			halt();
 		}
-		div = gcd32(hz, mult);
+		div = gcd(hz, mult);
 		hz /= div;
 		mult /= div;
 	}

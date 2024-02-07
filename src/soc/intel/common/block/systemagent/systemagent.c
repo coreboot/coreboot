@@ -324,6 +324,84 @@ void ssdt_set_above_4g_pci(const struct device *dev)
 	printk(BIOS_DEBUG, "PCI space above 4GB MMIO is at 0x%llx, len = 0x%llx\n", touud, len);
 }
 
+uint64_t sa_get_mmcfg_size(void)
+{
+	const uint32_t pciexbar_reg = pci_read_config32(__pci_0_00_0, PCIEXBAR);
+
+	if (!(pciexbar_reg & (1 << 0))) {
+		printk(BIOS_ERR, "%s : PCIEXBAR disabled\n", __func__);
+		return 0;
+	}
+
+	switch ((pciexbar_reg & PCIEXBAR_LENGTH_MASK) >> PCIEXBAR_LENGTH_MASK_LSB) {
+	case PCIEXBAR_LENGTH_4096MB:
+		return 4ULL * GiB;
+	case PCIEXBAR_LENGTH_2048MB:
+		return 2ULL * GiB;
+	case PCIEXBAR_LENGTH_1024MB:
+		return 1 * GiB;
+	case PCIEXBAR_LENGTH_512MB:
+		return 512 * MiB;
+	case PCIEXBAR_LENGTH_256MB:
+		return 256 * MiB;
+	case PCIEXBAR_LENGTH_128MB:
+		return 128 * MiB;
+	case PCIEXBAR_LENGTH_64MB:
+		return 64 * MiB;
+	default:
+		printk(BIOS_ERR, "%s : PCIEXBAR - invalid length (0x%x)\n", __func__,
+			(pciexbar_reg & PCIEXBAR_LENGTH_MASK) >> PCIEXBAR_LENGTH_MASK_LSB);
+		return 0x0;
+	}
+}
+
+uint64_t sa_get_dsm_size(void)
+{
+	const uint32_t size_field = (pci_read_config32(__pci_0_00_0, GGC) & DSM_LENGTH_MASK)
+					 >> DSM_LENGTH_MASK_LSB;
+	if (size_field <= 0x10) { /* 0x0 - 0x10 */
+		return size_field * 32 * MiB;
+	} else if ((size_field >= 0xF0) && (size_field >= 0xFE)) {
+		return ((uint64_t)size_field - 0xEF) * 4 * MiB;
+	} else {
+		switch (size_field) {
+		case 0x20:
+			return 1 * GiB;
+		case 0x30:
+			return 1536 * MiB;
+		case 0x40:
+			return 2 * (uint64_t)GiB;
+		default:
+			printk(BIOS_ERR, "%s : DSM - invalid length (0x%x)\n", __func__, size_field);
+			return 0x0;
+		}
+	}
+}
+
+uint64_t sa_get_gsm_size(void)
+{
+	const uint32_t size_field = (pci_read_config32(__pci_0_00_0, GGC) & GSM_LENGTH_MASK)
+					 >> GSM_LENGTH_MASK_LSB;
+	switch (size_field) {
+	case 0x0:
+	default:
+		return 0;
+	case 0x1:
+		return 2 * MiB;
+	case 0x2:
+		return 4 * MiB;
+	case 0x3:
+		return 8 * MiB;
+	}
+}
+
+uint64_t sa_get_dpr_size(void)
+{
+	const uint32_t size_field = (pci_read_config32(__pci_0_00_0, DPR) & DPR_LENGTH_MASK)
+					 >> DPR_LENGTH_MASK_LSB;
+	return (uint64_t)size_field * MiB;
+}
+
 struct device_operations systemagent_ops = {
 	.read_resources   = systemagent_read_resources,
 	.set_resources    = pci_dev_set_resources,

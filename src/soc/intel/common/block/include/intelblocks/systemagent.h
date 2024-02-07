@@ -95,6 +95,14 @@ uintptr_t sa_get_tseg_base(void);
 size_t sa_get_tseg_size(void);
 /* API to lock PAM registers */
 void sa_lock_pam(void);
+/* API to get MMIO config size */
+uint64_t sa_get_mmcfg_size(void);
+/* API to get DSM size */
+uint64_t sa_get_dsm_size(void);
+/* API to get GSM size */
+uint64_t sa_get_gsm_size(void);
+/* API to get DPR size */
+uint64_t sa_get_dpr_size(void);
 
 /*
  * SoC overrides

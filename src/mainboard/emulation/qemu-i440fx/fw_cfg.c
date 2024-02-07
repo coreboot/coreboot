@@ -362,9 +362,9 @@ static void fw_cfg_smbios_init(void)
 
 	fw_cfg_get(FW_CFG_SMBIOS_ENTRIES, &count, sizeof(count));
 	for (i = 0; i < count; i++) {
-		insb(FW_CFG_PORT_DATA, &entry, sizeof(entry));
+		fw_cfg_read(&entry, sizeof(entry));
 		buf = malloc(entry.length - sizeof(entry));
-		insb(FW_CFG_PORT_DATA, buf, entry.length - sizeof(entry));
+		fw_cfg_read(buf, entry.length - sizeof(entry));
 		if (entry.headertype == SMBIOS_FIELD_ENTRY &&
 		    entry.tabletype == 1) {
 			switch (entry.fieldoffset) {

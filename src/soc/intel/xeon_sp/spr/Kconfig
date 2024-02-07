@@ -16,6 +16,7 @@ config SOC_INTEL_SAPPHIRERAPIDS_SP
 	select UDK_202005_BINDING
 	select SOC_INTEL_HAS_CXL
 	select HAVE_X86_64_SUPPORT
+	select HAVE_INTEL_FSP_REPO
 	help
 	  Intel Sapphire Rapids-SP support
 
@@ -26,8 +27,10 @@ config CHIPSET_DEVICETREE
 	default "soc/intel/xeon_sp/spr/chipset.cb"
 
 config FSP_HEADER_PATH
-	string "Location of FSP headers"
-	default "src/vendorcode/intel/fsp/fsp2_0/sapphirerapids_sp"
+	default "3rdparty/fsp/EagleStreamFspBinPkg/Include"
+
+config FSP_FD_PATH
+	default "3rdparty/fsp/EagleStreamFspBinPkg/Fsp.fd"
 
 config MAX_CPUS
 	int

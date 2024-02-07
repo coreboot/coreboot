@@ -23,6 +23,7 @@
 #include <soc/soc_util.h>
 #include <soc/util.h>
 #include <soc/ddr.h>
+#include <IioPcieConfigUpd.h>
 
 #include "chip.h"
 

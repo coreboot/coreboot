@@ -5,6 +5,7 @@
 #include <defs_iio.h>
 #include <sprsp_bd_iio.h>
 #include <stdint.h>
+#include <IioPcieConfigUpd.h>
 
 static void mainboard_config_iio(FSPM_UPD *mupd)
 {

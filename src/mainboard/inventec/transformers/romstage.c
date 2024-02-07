@@ -12,6 +12,7 @@
 #include <defs_iio.h>
 #include <sprsp_ac_iio.h>
 #include <stdint.h>
+#include <IioPcieConfigUpd.h>
 
 #include "ipmi.h"
 

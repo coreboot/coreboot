@@ -24,6 +24,7 @@ ramstage-y += ../pcu3.c
 ramstage-y += ../pcu6.c
 
 CPPFLAGS_common += -I$(src)/soc/intel/xeon_sp/spr/include -I$(src)/soc/intel/xeon_sp/spr
+CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp2_0/sapphirerapids_sp
 
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-8f-08
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-cf-02

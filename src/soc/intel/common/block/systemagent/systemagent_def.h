@@ -5,9 +5,7 @@
 
 /* Device 0:0.0 PCI configuration space */
 
-
 /* DPR register in case CONFIG_SA_ENABLE_DPR is selected by SoC */
-#define DPR		0x5c
 #define  DPR_EPM	(1 << 2)
 #define  DPR_PRS	(1 << 1)
 #define  DPR_SIZE_MASK	0xff0

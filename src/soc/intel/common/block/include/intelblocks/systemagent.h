@@ -10,12 +10,18 @@
 
 /* Device 0:0.0 PCI configuration space */
 #define MCHBAR		0x48
-#define PCIEXBAR		0x60
-#define TOUUD	0xa8 /* Top of Upper Usable DRAM */
-#define BDSM	0xb0 /* Base Data Stolen Memory */
-#define BGSM	0xb4 /* Base GTT Stolen Memory */
-#define TSEG	0xb8 /* TSEG base */
-#define TOLUD	0xbc /* Top of Low Used Memory */
+#define GGC		0x50 /* GMCH Graphics Control Register */
+#define  G_GMS_OFFSET	0x8
+#define  G_GMS_MASK	0xff00
+#define  G_GGMS_OFFSET	0x6
+#define  G_GGMS_MASK	0xc0
+#define DPR		0x5C /* DMA Protected Range Register */
+#define PCIEXBAR	0x60
+#define TOUUD		0xa8 /* Top of Upper Usable DRAM */
+#define BDSM		0xb0 /* Base Data Stolen Memory */
+#define BGSM		0xb4 /* Base GTT Stolen Memory */
+#define TSEG		0xb8 /* TSEG base */
+#define TOLUD		0xbc /* Top of Low Used Memory */
 
 /* PCIEXBAR register fields */
 #define PCIEXBAR_LENGTH_4096MB	6
@@ -26,13 +32,6 @@
 #define PCIEXBAR_LENGTH_128MB	1
 #define PCIEXBAR_LENGTH_256MB	0
 #define  PCIEXBAR_PCIEXBAREN	(1 << 0)
-
-/* GMCH Graphics Control Register */
-#define GGC		0x50
-#define  G_GMS_OFFSET	0x8
-#define  G_GMS_MASK	0xff00
-#define  G_GGMS_OFFSET	0x6
-#define  G_GGMS_MASK	0xc0
 
 /* MCHBAR */
 #define MCHBAR8(x)	(*(volatile u8 *)(uintptr_t)(MCH_BASE_ADDRESS + x))

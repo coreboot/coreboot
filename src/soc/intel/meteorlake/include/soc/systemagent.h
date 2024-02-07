@@ -50,17 +50,14 @@ static const struct sa_mmio_descriptor soc_vtd_resources[] = {
 #define LT_SECURITY_SIZE	(384 * KiB)
 #define APIC_SIZE		(1 * MiB)
 
-#define MASK_PCIEXBAR_LENGTH	0x0000000E // bits [3:1]
-#define PCIEXBAR_LENGTH_LSB	1 // used to shift right
-
-#define DSM_BASE_ADDR_REG	0xB0
-#define  MASK_DSM_LENGTH	0xFF00 // [15:8]
-#define  MASK_DSM_LENGTH_LSB	8 // used to shift right
-#define  MASK_GSM_LENGTH	0xC0 // [7:6]
-#define  MASK_GSM_LENGTH_LSB	6 // used to shift right
-#define DPR_REG			0x5C
-#define  MASK_DPR_LENGTH	0xFF0 // [11:4]
-#define  MASK_DPR_LENGTH_LSB	4 // used to shift right
+#define MASK_PCIEXBAR_LENGTH	0x0000000E /* bits [3:1] */
+#define PCIEXBAR_LENGTH_LSB	1 /* used to shift right */
+#define MASK_DSM_LENGTH		0xFF00 /* bits [15:8] */
+#define MASK_DSM_LENGTH_LSB	8 /* used to shift right */
+#define MASK_GSM_LENGTH		0xC0 /* bits [7:6] */
+#define MASK_GSM_LENGTH_LSB	6 /* used to shift right */
+#define MASK_DPR_LENGTH		0xFF0 /* bits [11:4] */
+#define MASK_DPR_LENGTH_LSB	4 /* used to shift right */
 
 uint64_t get_mmcfg_size(const struct device *dev);
 uint64_t get_dsm_size(const struct device *dev);

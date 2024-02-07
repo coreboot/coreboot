@@ -103,7 +103,7 @@ void soc_add_configurable_mmio_resources(struct device *dev, int *resource_cnt)
 	/* DSM */
 	size = get_dsm_size(dev);
 	if (size > 0) {
-		base = pci_read_config32(dev, DSM_BASE_ADDR_REG) & 0xFFF00000;
+		base = pci_read_config32(dev, BDSM) & 0xFFF00000;
 		set_mmio_resource(&(cfg_rsrc[count++]), base, size, "DSM");
 	}
 
@@ -325,7 +325,7 @@ uint64_t get_gsm_size(const struct device *dev)
 uint64_t get_dpr_size(const struct device *dev)
 {
 	uint64_t size;
-	uint32_t dpr_reg = pci_read_config32(dev, DPR_REG);
+	uint32_t dpr_reg = pci_read_config32(dev, DPR);
 	uint32_t size_field = (dpr_reg & MASK_DPR_LENGTH) >> MASK_DPR_LENGTH_LSB;
 	size = (uint64_t)size_field * MiB;
 	return size;

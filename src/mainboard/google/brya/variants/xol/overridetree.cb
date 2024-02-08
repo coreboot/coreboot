@@ -12,6 +12,8 @@ chip soc/intel/alderlake
 	# display flickering issue.
 	register "disable_dynamic_tccold_handshake" = "true"
 
+	register "tcc_offset" = "6"	# TCC of 94
+
 	register "platform_pmax" = "145"
 
 	register "usb2_ports[0]" = "{
@@ -200,7 +202,7 @@ chip soc/intel/alderlake
 
 				## Critical Policy
 				register "policies.critical" = "{
-					[0] = DPTF_CRITICAL(CPU,               105, SHUTDOWN),
+					[0] = DPTF_CRITICAL(CPU,                99, SHUTDOWN),
 					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,      85, SHUTDOWN),
 					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,      85, SHUTDOWN),
 					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,      85, SHUTDOWN),

@@ -2188,7 +2188,7 @@ int main(int argc, char *argv[])
 		{"gpr0-enable", 0, NULL, 'E'},
 		{"version", 0, NULL, 'v'},
 		{"help", 0, NULL, 'h'},
-		{"platform", 0, NULL, 'p'},
+		{"platform", 1, NULL, 'p'},
 		{"validate", 0, NULL, 't'},
 		{"setpchstrap", 1, NULL, 'S'},
 		{"newvalue", 1, NULL, 'V'},

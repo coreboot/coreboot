@@ -85,21 +85,6 @@
 
 #define FCH_LEGACY_UART_DECODE		(ALINK_AHB_ADDRESS + 0x20) /* 0xfedc0020 */
 
-/* FCH MISC Registers 0xfed80e00 */
-#define GPP_CLK_CNTRL			0x00
-#define   GPP_CLK0_REQ_SHIFT		0
-#define   GPP_CLK1_REQ_SHIFT		2
-#define   GPP_CLK4_REQ_SHIFT		4
-#define   GPP_CLK2_REQ_SHIFT		6
-#define   GPP_CLK3_REQ_SHIFT		8
-#define   GPP_CLK5_REQ_SHIFT		10
-#define   GPP_CLK6_REQ_SHIFT		12
-#define     GPP_CLK_OUTPUT_COUNT	7
-#define   GPP_CLK_REQ_MASK(clk_shift)	(0x3 << (clk_shift))
-#define   GPP_CLK_REQ_ON(clk_shift)	(0x3 << (clk_shift))
-#define   GPP_CLK_REQ_EXT(clk_shift)	(0x1 << (clk_shift))
-#define   GPP_CLK_REQ_OFF(clk_shift)	(0x0 << (clk_shift))
-
 #define MISC_CLKGATEDCNTL		0x2c
 #define   ALINKCLK_GATEOFFEN		BIT(16)
 #define   BLINKCLK_GATEOFFEN		BIT(17)

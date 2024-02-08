@@ -363,9 +363,6 @@ $(foreach class,$(classes),$(eval $(class)-alis:=$(call src-to-ali,$(class),$($(
 # For Ada includes
 $(foreach class,$(classes),$(eval $(class)-ada-dirs:=$(sort $(dir $(filter %.ads %.adb,$($(class)-srcs)) $($(class)-extra-specs)))))
 
-# Save all objs before processing them (for dependency inclusion)
-originalobjs:=$(foreach var, $(addsuffix -objs,$(classes)), $($(var)))
-
 # Call post-processors if they're defined
 $(foreach class,$(classes),\
 	$(if $(value $(class)-postprocess),$(eval $(call $(class)-postprocess,$($(class)-objs)))))

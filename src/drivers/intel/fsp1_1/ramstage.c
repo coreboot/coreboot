@@ -6,7 +6,6 @@
 #include <fsp/ramstage.h>
 #include <fsp/util.h>
 #include <framebuffer_info.h>
-#include <lib.h>
 #include <stage_cache.h>
 #include <string.h>
 #include <timestamp.h>

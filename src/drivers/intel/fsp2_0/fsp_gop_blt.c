@@ -4,7 +4,6 @@
 #include <console/console.h>
 #include <fsp/api.h>
 #include <fsp/fsp_gop_blt.h>
-#include <lib.h>
 #include <stdlib.h>
 
 static bool is_bmp_image_valid(efi_bmp_image_header *header)

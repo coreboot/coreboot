@@ -5,7 +5,6 @@
 #include <spi_flash.h>
 #include <spi-generic.h>
 #include <delay.h>
-#include <lib.h>
 
 #include "spi_flash_internal.h"
 

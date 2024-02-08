@@ -4,7 +4,6 @@
 #include <delay.h>
 #include <device/mmio.h>
 #include <edid.h>
-#include <lib.h>
 #include <soc/clock.h>
 #include <soc/display/edp_reg.h>
 #include <soc/display/edp_phy.h>

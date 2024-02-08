@@ -13,7 +13,6 @@
 #include <device/pci_ids.h>
 #include <string.h>
 #include <stdlib.h>
-#include <lib.h>
 #include <cpu/x86/mp.h>
 #include <Porting.h>
 #include <Topology.h>

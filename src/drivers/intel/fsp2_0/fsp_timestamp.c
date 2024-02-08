@@ -2,7 +2,6 @@
 
 #include <console/console.h>
 #include <fsp/util.h>
-#include <lib.h>
 
 #define TIMESTAMP_TO_MICRO(x) ((x) / 1000ull)
 

@@ -44,7 +44,7 @@ typedef enum {
 } dxio_sata_channel_type;
 
 /* CLKREQ for PCIe type descriptors */
-typedef enum {
+enum cpm_clk_req {
 	CLK_DISABLE = 0x00,
 	CLK_REQ0,
 	CLK_REQ1,
@@ -56,7 +56,8 @@ typedef enum {
 	CLK_REQ7,
 	CLK_REQ8,
 	CLK_REQGFX = 0x0c,
-} cpm_clk_req;
+	CLK_ENABLE = 0xff,
+};
 
 /* PCIe link ASPM initialization */
 typedef enum {

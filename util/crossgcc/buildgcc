@@ -847,10 +847,11 @@ build_IASL() {
 	cd ../$IASL_DIR/generate/unix || exit 1
 	CFLAGS="$HOSTCFLAGS"
 	HOST="_LINUX"
-	test "$UNAME" = "Darwin" && HOST="_APPLE"
+	test "$UNAME" = "Darwin" && HOST="_APPLE" && OPT_LDFLAGS="-Wl,-no_fixup_chains"
 	test "$UNAME" = "FreeBSD" && HOST="_FreeBSD"
 	test "$UNAME" = "Cygwin" && HOST="_CYGWIN"
 	HOST="$HOST" CFLAGS="$CFLAGS" \
+	OPT_LDFLAGS="$OPT_LDFLAGS" \
 	OPT_CFLAGS="-O -D_FORTIFY_SOURCE=2 -D COREBOOT_TOOLCHAIN_VERSION='\"coreboot toolchain v$CROSSGCC_VERSION\"' " \
 	$MAKE $JOBS CC="$(hostcc host)" iasl acpibin acpidump acpiexec acpihelp acpisrc acpixtract
 	mkdir -p "$DESTDIR$TARGETDIR/bin/"
@@ -1142,6 +1143,8 @@ if [ "$UNAME" = "Darwin" ]; then
 	# For some weird reason, 10.5 autodetects an ABI=64 though
 	# so we're setting the ABI explicitly here.
 	if [ "$(sysctl -n hw.optional.x86_64 2>/dev/null)" -eq 1 ] 2>/dev/null; then
+		OPTIONS="ABI=64"
+	elif [ "$(sysctl -n hw.optional.arm64 2>/dev/null)" -eq 1 ] 2>/dev/null; then
 		OPTIONS="ABI=64"
 	else
 		OPTIONS="ABI=32"

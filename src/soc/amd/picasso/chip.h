@@ -4,6 +4,7 @@
 #define __PICASSO_CHIP_H__
 
 #include <amdblocks/chip.h>
+#include <amdblocks/pci_clk_req.h>
 #include <commonlib/helpers.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <gpio.h>
@@ -258,11 +259,7 @@ struct soc_amd_picasso_config {
 
 	/* The array index is the general purpose PCIe clock output number. Values in here
 	   aren't the values written to the register to have the default to be always on. */
-	enum {
-		GPP_CLK_ON,	/* GPP clock always on; default */
-		GPP_CLK_REQ,	/* GPP clock controlled by corresponding #CLK_REQx pin */
-		GPP_CLK_OFF,	/* GPP clk off */
-	} gpp_clk_config[GPP_CLK_OUTPUT_COUNT];
+	enum gpp_clk_req gpp_clk_config[GPP_CLK_OUTPUT_COUNT];
 
 	/* performance policy for the PCIe links: power consumption vs. link speed */
 	enum {

@@ -29,7 +29,14 @@ junit_write () {
 	fi
 }
 
-if ! cmd_args="$(getopt -l help,junit,invert -o hIJ -- "$@")"; then
+# Look if we have getopt. If not, build it.
+if [ $(uname) == Darwin ]; then
+  GETOPT="getopt hIJ"
+else
+  GETOPT="getopt -l help,junit,invert -o hIJ"
+fi
+
+if ! cmd_args="$($GETOPT -- "$@")"; then
 	usage
 	exit 0
 fi

@@ -14,4 +14,6 @@ void acpigen_write_PRT_GSI_entry(unsigned int pci_dev, unsigned int acpi_pin, un
 void acpigen_write_PRT_source_entry(unsigned int pci_dev, unsigned int acpi_pin,
 				    const char *source_path, unsigned int index);
 
+void pci_domain_fill_ssdt(const struct device *domain);
+
 #endif /* ACPIGEN_PCI_H */

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpigen_pci.h>
 #include <amdblocks/acpi.h>
 #include <amdblocks/data_fabric.h>
 #include <amdblocks/fsp.h>
@@ -32,7 +33,7 @@ struct device_operations cezanne_pci_domain_ops = {
 	.scan_bus	= amd_pci_domain_scan_bus,
 	.init		= amd_pci_domain_init,
 	.acpi_name	= soc_acpi_name,
-	.acpi_fill_ssdt	= amd_pci_domain_fill_ssdt,
+	.acpi_fill_ssdt	= pci_domain_fill_ssdt,
 };
 
 static void soc_init(void *chip_info)

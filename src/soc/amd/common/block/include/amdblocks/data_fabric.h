@@ -55,6 +55,4 @@ void data_fabric_get_mmio_base_size(unsigned int reg, resource_t *mmio_base,
 void amd_pci_domain_read_resources(struct device *domain);
 void amd_pci_domain_scan_bus(struct device *domain);
 
-void amd_pci_domain_fill_ssdt(const struct device *domain);
-
 #endif /* AMD_BLOCK_DATA_FABRIC_H */

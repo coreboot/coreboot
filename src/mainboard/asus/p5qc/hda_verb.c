@@ -27,5 +27,4 @@ const u32 cim_verb_data[] = {
 
 const u32 pc_beep_verbs[0] = {};
 
-const u32 pc_beep_verbs_size = ARRAY_SIZE(pc_beep_verbs);
-const u32 cim_verb_data_size = ARRAY_SIZE(cim_verb_data);
+AZALIA_ARRAY_SIZES;

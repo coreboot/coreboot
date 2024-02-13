@@ -18,7 +18,7 @@ const u32 cim_verb_data[] = {
 			MIC_IN,
 			OTHER_DIGITAL,
 			COLOR_UNKNOWN,
-			1,			/* no presence detect */
+			NO_JACK_PRESENCE_DETECT,
 			3, 0)
 	),
 
@@ -30,7 +30,7 @@ const u32 cim_verb_data[] = {
 			SPEAKER,
 			OTHER_ANALOG,
 			COLOR_UNKNOWN,
-			1,			/* no presence detect */
+			NO_JACK_PRESENCE_DETECT,
 			1, 0)
 	),
 
@@ -42,7 +42,7 @@ const u32 cim_verb_data[] = {
 			HP_OUT,
 			STEREO_MONO_1_8,
 			BLACK,
-			0,			/* has presence detect */
+			JACK_PRESENCE_DETECT,
 			2, 0)
 	),
 
@@ -54,19 +54,19 @@ const u32 cim_verb_data[] = {
 			MIC_IN,
 			STEREO_MONO_1_8,
 			BLACK,			/* vendor: PINK */
-			1,			/* no separate presence detect */
+			NO_JACK_PRESENCE_DETECT,
 			3, 12)
 	),
 
 	/* PCBEEP, vendor value: 0x41748245 */
 	AZALIA_PIN_CFG(0, 0x1d, AZALIA_PIN_DESC(
-			INTEGRATED,		/* vendor: NC */
-			INTERNAL,		/* vendor: EXTERNAL_PRIMARY_CHASSIS */
-			NA,			/* vendor: REAR */
-			DEVICE_OTHER,		/* vendor: MODEM_HANDSET_SIDE */
-			OTHER_ANALOG,		/* vendor: RCA */
-			COLOR_UNKNOWN,		/* vendor: PURPLE */
-			1,			/* no presence detect, vendor: 2 */
+			INTEGRATED,			/* vendor: NC */
+			INTERNAL,			/* vendor: EXTERNAL_PRIMARY_CHASSIS */
+			NA,				/* vendor: REAR */
+			DEVICE_OTHER,			/* vendor: MODEM_HANDSET_SIDE */
+			OTHER_ANALOG,			/* vendor: RCA */
+			COLOR_UNKNOWN,			/* vendor: PURPLE */
+			NO_JACK_PRESENCE_DETECT,	/* vendor: 2 */
 			4, 5)
 	),
 

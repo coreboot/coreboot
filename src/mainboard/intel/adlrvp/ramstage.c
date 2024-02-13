@@ -25,6 +25,7 @@ const struct cpu_power_limits limits[] = {
 	{ PCI_DID_INTEL_ADL_N_ID_2,  6, 3000,  6000,  25000,  25000,  78000 },
 	{ PCI_DID_INTEL_ADL_N_ID_3,  6, 3000,  6000,  25000,  25000,  78000 },
 	{ PCI_DID_INTEL_ADL_N_ID_4,  6, 3000,  6000,  25000,  25000,  78000 },
+	{ PCI_DID_INTEL_ADL_N_ID_5,  6, 3000,  6000,  25000,  25000,  78000 },
 };
 
 WEAK_DEV_PTR(dptf_policy);

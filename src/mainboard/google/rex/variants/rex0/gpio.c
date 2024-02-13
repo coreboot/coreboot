@@ -76,7 +76,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_B10 : [] ==> WIFI_DISABLE_L */
 	PAD_CFG_GPO(GPP_B10, 1, DEEP),
 	/* GPP_B11 : [] ==> EN_FP_PWR */
-	PAD_CFG_GPO_LOCK(GPP_B11, 1, LOCK_CONFIG),
+	PAD_CFG_GPO_LOCK(GPP_B11, 0, LOCK_CONFIG),
 	/* GPP_B12 : [] ==> SLP_SO_R_L */
 	PAD_CFG_NF(GPP_B12, NONE, DEEP, NF1),
 	/* GPP_B13 : [] ==> PLT_RST_L */
@@ -145,7 +145,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_C22 : [] ==> SOC_FP_BOOT0 */
 	PAD_CFG_GPO_LOCK(GPP_C22, 0, LOCK_CONFIG),
 	/* GPP_C23 : [] ==> FP_RST_ODL */
-	PAD_CFG_GPO_LOCK(GPP_C23, 1, LOCK_CONFIG),
+	PAD_CFG_GPO_LOCK(GPP_C23, 0, LOCK_CONFIG),
 
 	/* GPP_D00 : WCAM_MCLK_R */
 	PAD_CFG_NF(GPP_D00, NONE, DEEP, NF1),

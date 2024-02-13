@@ -64,7 +64,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_B07 : [] ==> EN_SPKR */
 	PAD_CFG_GPO(GPP_B07, 1, DEEP),
 	/* GPP_B08 : [] ==> EN_FP_PWR */
-	PAD_CFG_GPO_LOCK(GPP_B08, 1, LOCK_CONFIG),
+	PAD_CFG_GPO_LOCK(GPP_B08, 0, LOCK_CONFIG),
 	/* GPP_B09 : net NC is not present in the given design */
 	PAD_NC(GPP_B09, NONE),
 	/* GPP_B10 : [] ==> WIFI_DISABLE_L */
@@ -138,7 +138,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_C20 : [] ==> SOC_FP_BOOT0 */
 	PAD_CFG_GPO_LOCK(GPP_C20, 0, LOCK_CONFIG),
 	/* GPP_C21 : [] ==> FP_RST_ODL */
-	PAD_CFG_GPO_LOCK(GPP_C21, 1, LOCK_CONFIG),
+	PAD_CFG_GPO_LOCK(GPP_C21, 0, LOCK_CONFIG),
 	/* GPP_C22 : [] ==> USB_C1_LSX_TX */
 	PAD_CFG_NF(GPP_C22, NONE, DEEP, NF1),
 	/* GPP_C23 : [] ==> USB_C1_LSX_RX */

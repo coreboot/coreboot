@@ -241,6 +241,9 @@ chip soc/intel/alderlake
 				device pnp 4e.e off end		# TACH/PWM assignment
 				device pnp 4e.f off end		# Function register
 			end
+			chip drivers/pc80/tpm
+				device pnp 0.0 on end	# TPM
+			end
 		end
 		device ref p2sb on end
 		device ref hda on

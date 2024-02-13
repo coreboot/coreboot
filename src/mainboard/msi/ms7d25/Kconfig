@@ -16,6 +16,7 @@ config BOARD_MSI_MS7D25
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
 	select INTEL_GMA_HAVE_VBT
+	select MEMORY_MAPPED_TPM
 	select CRB_TPM
 	select HAVE_INTEL_PTT
 	select USE_LEGACY_8254_TIMER
@@ -52,6 +53,9 @@ config USE_PM_ACPI_TIMER
 config CBFS_SIZE
 	hex
 	default 0x1000000
+
+config TPM_PIRQ
+	default 0x3f # GPP_E7_IRQ
 
 config VBOOT
 	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC

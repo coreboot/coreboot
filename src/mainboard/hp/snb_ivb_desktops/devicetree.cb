@@ -9,8 +9,6 @@ chip northbridge/intel/sandybridge
 	register "spd_addresses" = "{0x53, 0x52, 0x51, 0x50}"
 
 	device domain 0 on
-		subsystemid 0x103c 0x1791 inherit
-
 		device ref host_bridge on  end
 		device ref peg10 on  end
 		device ref igd on  end
@@ -25,11 +23,7 @@ chip northbridge/intel/sandybridge
 			register "sata_interface_speed_support" = "0x3"
 			register "spi_lvscc" = "0x2005"
 			register "spi_uvscc" = "0x2005"
-			register "superspeed_capable_ports" = "0x0000000f"
-			register "xhci_switchable_ports"    = "0x0000000f"
-			register "xhci_overcurrent_mapping" = "0x0000000f"
 
-			device ref xhci on  end
 			device ref mei1 on  end
 			device ref mei2 off end
 			device ref me_ide_r off end

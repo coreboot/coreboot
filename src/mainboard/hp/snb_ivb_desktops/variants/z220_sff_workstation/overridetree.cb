@@ -6,7 +6,11 @@ chip northbridge/intel/sandybridge
 
 		chip southbridge/intel/bd82x6x
 			register "sata_port_map" = "0xf"
-			device ref pcie_rp5 on  end	# dummy setting
+			register "superspeed_capable_ports" = "0x0000000f"
+			register "xhci_switchable_ports"    = "0x0000000f"
+			register "xhci_overcurrent_mapping" = "0x0000000f"
+
+			device ref xhci on  end
 		end
 	end
 end

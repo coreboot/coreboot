@@ -1,0 +1,7 @@
+Category: desktop
+Board URL: https://www.asrock.com/mb/intel/z87e-itx/
+ROM protocol: SPI
+Flashrom support: y
+ROM package: DIP-8
+ROM socketed: y
+Release year: 2013

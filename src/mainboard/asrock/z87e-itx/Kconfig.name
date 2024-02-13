@@ -1,0 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+config BOARD_ASROCK_Z87E_ITX
+	bool "Z87E-ITX"

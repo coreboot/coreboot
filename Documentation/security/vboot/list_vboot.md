@@ -1,7 +1,8 @@
 # vboot-enabled devices
 
 ## AMD
-- Birman for Phoenix SoC
+- Birman for Phoenix SoC using FSP
+- Birman for Phoenix SoC using openSIL
 - Birman for Glinda SoC
 - Chausie
 - Majolica
@@ -37,6 +38,7 @@
 - Agah
 - Anahera
 - Anahera4ES
+- Anraggar
 - Aurash
 - Banshee
 - Brask
@@ -45,6 +47,7 @@
 - Craaskov
 - Constitution
 - Crota
+- Dochi
 - Felwinter
 - Gaelin
 - Gimble
@@ -62,6 +65,7 @@
 - Moli
 - Nivviks
 - Nereid
+- Nokris
 - Omnigul
 - Osiris
 - Pirrha
@@ -82,9 +86,7 @@
 - Yaviks
 - Yavilla
 - Zydron
-- Nokris
-- Dochi
-- Anraggar
+- Xol
 - Butterfly (HP Pavilion Chromebook 14)
 - Cherry
 - Dojo
@@ -219,18 +221,18 @@
 - Sand (Acer Chromebook 15 CB515-1HT/1H)
 - Snappy (HP Chromebook x360 11 G1 EE)
 - Coral
-- Rex 0
-- Screebo
-- Screebo4ES
-- Karis
-- Karis4ES
-- Rex EC ISH
-- Ovis
-- Ovis4ES
 - Deku
 - Deku4ES
+- Karis
+- Karis4ES
+- Ovis
+- Ovis4ES
+- Rex 0
+- Rex EC ISH
 - Rex4ES
 - Rex4ES EC ISH
+- Screebo
+- Screebo4ES
 - Arcada (Latitude 5300 2-in-1 Chromebook Enterprise)
 - Sarien (Dell Latitude 5400 Chromebook Enterprise)
 - Crystaldrift

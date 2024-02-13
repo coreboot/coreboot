@@ -12,7 +12,7 @@ const struct southbridge_usb_port mainboard_usb_ports[] = {
 	{ 1, 1, -1 }, /* P5: Expresscard, no OC */
 	{ 0, 0, -1 }, /* P6: Empty */
 	{ 1, 2, -1 }, /* P7: dock, no OC */
-	{ 1, 0, -1 },
+	{ 0, 0, -1 }, /* P8: Empty */
 	{ 1, 2, 5 }, /* P9: Right (EHCI debug), OC 5 */
 	{ 1, 1, -1 }, /* P10: fingerprint reader, no OC */
 	{ 1, 1, -1 }, /* P11: bluetooth, no OC. */

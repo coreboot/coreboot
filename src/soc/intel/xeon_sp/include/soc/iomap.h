@@ -9,9 +9,9 @@
 		.mask_bits = mask_bits_, .description = desc_,            \
 	}
 
-#define MAP_ENTRY_BASE_64(reg_, desc_) MAP_ENTRY(reg_, 1, 0, 0, desc_)
+#define MAP_ENTRY_BASE_64(reg_, desc_) MAP_ENTRY(reg_, 1, 0, 12, desc_)
 #define MAP_ENTRY_LIMIT_64(reg_, mask_bits_, desc_) MAP_ENTRY(reg_, 1, 1, mask_bits_, desc_)
-#define MAP_ENTRY_BASE_32(reg_, desc_) MAP_ENTRY(reg_, 0, 0, 0, desc_)
+#define MAP_ENTRY_BASE_32(reg_, desc_) MAP_ENTRY(reg_, 0, 0, 12, desc_)
 #define MAP_ENTRY_LIMIT_32(reg_, mask_bits_, desc_) MAP_ENTRY(reg_, 0, 1, mask_bits_, desc_)
 
 // SPI BAR0 MMIO base address

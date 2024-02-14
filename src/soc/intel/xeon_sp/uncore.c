@@ -77,7 +77,6 @@ static void read_map_entry(struct device *dev, struct map_entry *entry,
 		return;
 	}
 
-	/* All registers are on a 1MiB granularity. */
 	mask = ((1ULL << entry->mask_bits) - 1);
 	mask = ~mask;
 

@@ -1,0 +1,324 @@
+chip soc/intel/alderlake
+	# FSP configuration
+
+	register "eist_enable" = "1"
+
+	# Sagv Configuration
+	register "sagv" = "SaGv_Enabled"
+	register "RMT" = "0"
+	register "enable_c6dram" = "1"
+
+	register "common_soc_config" = "{
+		// Type-C PD I2C bus
+		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 80,
+			.fall_time_ns = 110,
+		},
+	}"
+
+	register "tcc_offset" = "20" # TCC of 80C
+
+	device domain 0 on
+		subsystemid 0x8086 0x7270 inherit
+
+		device ref pcie4_0 on
+			register "cpu_pcie_rp[CPU_RP(1)]" = "{
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_UNUSED,
+				.pcie_rp_aspm = ASPM_L0S_L1,
+				.PcieRpL1Substates = L1_SS_DISABLED,
+				.clk_src = 3,
+			}"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther"
+					 "M.2/M 2280 (M2_SSD1)" "SlotDataBusWidth4X"
+		end
+		device ref igpu on
+			subsystemid 0x8086 0x2212
+			register "ddi_portA_config" = "1" # HDMI on port A
+			register "ddi_portB_config" = "1" # DP on port B
+			register "ddi_ports_config" = "{
+				[DDI_PORT_A] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_3] = DDI_ENABLE_HPD,
+			}"
+		end
+		device ref tcss_xhci on
+			register "tcss_ports" = "{
+				[0] = TCSS_PORT_DEFAULT(OC_SKIP), // 5G module
+				[1] = TCSS_PORT_DEFAULT(OC_SKIP), // USB2.0 + USB 3.0 column with RJ45
+				[2] = TCSS_PORT_DEFAULT(OC_SKIP), // USB Type-C no TBT
+				[3] = TCSS_PORT_DEFAULT(OC_SKIP), // USB-A 3.0
+			}"
+
+			# SOC Aux orientation override:
+			# This is a bitfield that corresponds to up to 4 TCSS ports.
+			# Bits (0,1) allocated for TCSS Port1 configuration and Bits (2,3)for TCSS Port2.
+			# Bits (4,5) allocated for TCSS Port3 configuration and Bits (6,7)for TCSS Port4.
+			# Bit0,Bit2,Bit4,Bit6 set to "1" indicates no retimer on USBC Ports
+			# Bit1,Bit3,Bit5,Bit7 set to "0" indicates Aux lines are not swapped on the
+			# motherboard to USBC connector
+			register "tcss_aux_ori" = "0x10"
+			register "typec_aux_bias_pads[2]" = "{.pad_auxp_dc = GPP_A21, .pad_auxn_dc = GPP_A22}"
+
+			chip drivers/usb/acpi
+				device ref tcss_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 5G (MKB_4G1)""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref tcss_usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port 1 (USB1)""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(FRONT, RIGHT, ACPI_PLD_GROUP(1, 2))"
+						register "custom_pld.vertical_position" = "PLD_VERTICAL_POSITION_UPPER"
+						device ref tcss_usb3_port2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 TBT Type-C""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(FRONT, RIGHT, ACPI_PLD_GROUP(2, 1))"
+						device ref tcss_usb3_port3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Internal""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref tcss_usb3_port4 on end
+					end
+				end
+			end
+		end
+		device ref xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_SHORT(OC_SKIP),  // USB-A 2.0 USB1
+				[1] = USB2_PORT_SHORT(OC_SKIP),  // USB-A 3.0 USB1
+				[2] = USB2_PORT_SHORT(OC_SKIP),  // 5G
+				[3] = USB2_PORT_SHORT(OC_SKIP),  // USB-A 3.0 internal
+				[5] = USB2_PORT_SHORT(OC_SKIP),  // USB-A 2.0 USB2
+				[7] = USB2_PORT_TYPE_C(OC_SKIP), // USB Type-C no TBT
+				[8] = USB2_PORT_SHORT(OC_SKIP),  // USB-A 2.0 USB2
+				[9] = USB2_PORT_SHORT(OC_SKIP),  // WiFi slot
+			}"
+
+			# PCH USB3.x ports not used
+
+			chip drivers/usb/acpi
+				device ref xhci_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port 2 (USB1)""
+						register "type" = "UPC_TYPE_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(FRONT, RIGHT, ACPI_PLD_GROUP(1, 1))"
+						register "custom_pld.vertical_position" = "PLD_VERTICAL_POSITION_LOWER"
+						device ref usb2_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port 1 (USB1)""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(FRONT, RIGHT, ACPI_PLD_GROUP(1, 2))"
+						register "custom_pld.vertical_position" = "PLD_VERTICAL_POSITION_UPPER"
+						device ref usb2_port2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 5G (MKB_4G1)""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Internal""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port 4 (USB2)""
+						register "type" = "UPC_TYPE_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(FRONT, LEFT, ACPI_PLD_GROUP(3, 1))"
+						register "custom_pld.vertical_position" = "PLD_VERTICAL_POSITION_LOWER"
+						device ref usb2_port6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(FRONT, RIGHT, ACPI_PLD_GROUP(2, 1))"
+						device ref usb2_port8 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port 3 (USB2)""
+						register "type" = "UPC_TYPE_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(FRONT, LEFT, ACPI_PLD_GROUP(3, 2))"
+						register "custom_pld.vertical_position" = "PLD_VERTICAL_POSITION_UPPER"
+						device ref usb2_port9 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 WiFi/Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port10 on end
+					end
+				end
+			end
+		end
+		device ref i2c1 on
+			register "serial_io_i2c_mode[PchSerialIoIndexI2C1]" = "PchSerialIoPci"
+			chip drivers/i2c/generic
+				register "hid" = ""INT3515""
+				register "uid" = "1"
+				register "name" = ""PD01""
+				register "desc" = ""TPS65994 USB-C PD Controller""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_E2)"
+				device i2c 23 on end
+			end
+		end
+		device ref sata on
+			register "sata_salp_support" = "1"
+
+			register "sata_ports_enable" = "{
+				[0] = 1,
+				[1] = 1,
+			}"
+		end
+		# x4 link to Intel XL710 2xSFP
+		device ref pcie_rp1 on
+			register "pch_pcie_rp[PCH_RP(1)]" = "{
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_UNUSED,
+				.pcie_rp_aspm = ASPM_L0S_L1,
+				.PcieRpL1Substates = L1_SS_DISABLED,
+				.clk_src = 1,
+			}"
+		end
+		# RP5-RP8 i226 LAN
+		device ref pcie_rp5 on
+			register "pch_pcie_rp[PCH_RP(5)]" = "{
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+				.pcie_rp_aspm = ASPM_L0S_L1,
+				.PcieRpL1Substates = L1_SS_DISABLED,
+				.clk_src = 2,
+				.clk_req = 2,
+			}"
+		end
+		device ref pcie_rp6 on
+			register "pch_pcie_rp[PCH_RP(6)]" = "{
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+				.pcie_rp_aspm = ASPM_L0S_L1,
+				.PcieRpL1Substates = L1_SS_DISABLED,
+				.clk_src = 0,
+				.clk_req = 0,
+			}"
+		end
+		device ref pcie_rp7 on
+			register "pch_pcie_rp[PCH_RP(7)]" = "{
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_UNUSED,
+				.pcie_rp_aspm = ASPM_L0S_L1,
+				.PcieRpL1Substates = L1_SS_DISABLED,
+				.clk_src = 6,
+			}"
+		end
+		device ref pcie_rp8 on
+			register "pch_pcie_rp[PCH_RP(8)]" = "{
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_UNUSED,
+				.pcie_rp_aspm = ASPM_L0S_L1,
+				.PcieRpL1Substates = L1_SS_DISABLED,
+				.clk_src = 5,
+			}"
+		end
+		device ref pcie_rp10 on
+			register "pch_pcie_rp[PCH_RP(10)]" = "{
+				.flags = PCIE_RP_LTR | PCIE_RP_CLK_REQ_UNUSED,
+				.pcie_rp_aspm = ASPM_L0S_L1,
+				.PcieRpL1Substates = L1_SS_DISABLED,
+				.clk_src = 4,
+			}"
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				device pci 00.0 on end
+			end
+			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther"
+					 "M.2/E 2230 (M2_WIFI1)" "SlotDataBusWidth1X"
+		end
+		device ref pch_espi on
+			# LPC generic I/O ranges
+			register "gen1_dec" = "0x00fc0201"
+			register "gen2_dec" = "0x003c0a01"
+			register "gen3_dec" = "0x000c0081"
+
+			chip superio/ite/it8659e
+				register "TMPIN1.mode"    = "THERMAL_PECI"
+				register "TMPIN1.offset"  = "0x56"
+				register "ec.vin_mask"    = "VIN0 | VIN2 | VIN3 | VIN7"
+
+				# FAN1 is CPU fan (connector on board)
+				register "FAN1.mode" = "FAN_SMART_AUTOMATIC"
+				register "FAN1.smart.tmpin"     = " 1"
+				register "FAN1.smart.tmp_off"   = "40"
+				register "FAN1.smart.tmp_start" = "50"
+				register "FAN1.smart.tmp_full"  = "85"
+				register "FAN1.smart.pwm_start" = "20"
+				register "FAN1.smart.slope"     = "32"
+				# FAN2 is CPU fan (connector on board)
+				register "FAN2.mode" = "FAN_SMART_AUTOMATIC"
+				register "FAN2.smart.tmpin"     = " 1"
+				register "FAN2.smart.tmp_off"   = "40"
+				register "FAN2.smart.tmp_start" = "50"
+				register "FAN2.smart.tmp_full"  = "85"
+				register "FAN2.smart.pwm_start" = "20"
+				register "FAN2.smart.slope"     = "32"
+
+				device pnp 2e.1 on	# COM 1
+					io 0x60 = 0x3f8
+					irq 0x70 = 4
+					irq 0xf1 = 0x52 # IRQ low level
+				end
+				device pnp 2e.2 on	# COM 2
+					io 0x60 = 0x2f8
+					irq 0x70 = 3
+					irq 0xf1 = 0x52 # IRQ low level
+				end
+				device pnp 2e.4 on	# Environment Controller
+					io 0x60 = 0xa20
+					io 0x62 = 0xa10
+					irq 0x70 = 0	# Don't use IRQ
+					irq 0xf4 = 0x20 # PSON_N is inverted SUSB_N
+					irq 0xfa = 0x20 # Enable WDT output through PWRGD
+				end
+				device pnp 2e.5 off end	# Keyboard
+				device pnp 2e.6 off end	# Mouse
+				device pnp 2e.7 on	# GPIO
+					io 0x60 = 0xa08
+					io 0x62 = 0xa00
+				end
+				device pnp 2e.a off end	# CIR
+			end
+			chip drivers/pc80/tpm
+				device pnp 0.0 on end
+			end
+
+		end
+		device ref pmc hidden
+			register "pmc_gpe0_dw0" = "PMC_GPP_A"
+			register "pmc_gpe0_dw1" = "PMC_GPP_R"
+			register "pmc_gpe0_dw2" = "PMC_GPD"
+
+			chip drivers/intel/pmc_mux
+				device generic 0 on
+					chip drivers/intel/pmc_mux/conn
+						use usb2_port8 as usb2_port
+						use tcss_usb3_port3 as usb3_port
+						device generic 0 alias conn0 on end
+					end
+				end
+			end
+		end
+		device ref hda on
+			register "pch_hda_audio_link_hda_enable" = "1"
+			register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
+			register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
+			register "pch_hda_idisp_codec_enable" = "true"
+		end
+		device ref smbus on end
+	end
+end

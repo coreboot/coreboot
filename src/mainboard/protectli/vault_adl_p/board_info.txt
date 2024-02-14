@@ -1,0 +1,7 @@
+Category: sbc
+Board URL: TBD
+ROM IC: Macronix KH25L12835F
+ROM package: SOIC8-8
+ROM socketed: no
+Flashrom support: yes
+Release year: 2024

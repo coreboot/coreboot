@@ -1,0 +1,81 @@
+if BOARD_PROTECTLI_VP66XX
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_16384
+	select SOC_INTEL_ALDERLAKE_PCH_P
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
+	select SUPERIO_ITE_IT8659E
+	select DRIVERS_UART_8250IO
+	select DRIVERS_I2C_GENERIC
+	select DRIVERS_INTEL_PMC
+	select FSP_TYPE_IOT	# Needed for PchPcieClockGating W/A
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select INTEL_GMA_HAVE_VBT
+	select MEMORY_MAPPED_TPM
+	select USE_DDR5
+
+config MAINBOARD_DIR
+	default "protectli/vault_adl_p"
+
+config MAINBOARD_PART_NUMBER
+	default "VP66XX"
+
+config MAINBOARD_VENDOR
+	default "Protectli"
+
+config MAINBOARD_FAMILY
+	default "Vault Pro"
+
+config DIMM_SPD_SIZE
+	default 1024
+
+config DIMM_MAX
+	default 2
+
+config USE_PM_ACPI_TIMER
+	default n
+
+config CBFS_SIZE
+	default 0xa80000
+
+config TPM_PIRQ
+	default 0x39	# GPP_E13_IRQ
+
+# CLKREQ pins not connected, so disable L1 and CPM
+config PCIEXP_L1_SUB_STATE
+	default n
+
+config PCIEXP_CLK_PM
+	default n
+
+config VBOOT
+	select GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC
+	select GBB_FLAG_DISABLE_FWMP
+	select GBB_FLAG_DISABLE_LID_SHUTDOWN
+	select GBB_FLAG_DISABLE_PD_SOFTWARE_SYNC
+	select VBOOT_ALWAYS_ENABLE_DISPLAY
+	select VBOOT_NO_BOARD_SUPPORT
+	select HAS_RECOVERY_MRC_CACHE
+	select VBOOT_CLEAR_RECOVERY_IN_RAMSTAGE
+
+config VBOOT_SLOTS_RW_A
+	default y if VBOOT
+
+config SOC_INTEL_CSE_SEND_EOP_EARLY
+	default n
+
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwa.fmd" if VBOOT && VBOOT_SLOTS_RW_A
+
+config BEEP_ON_BOOT
+	bool "Beep on successful boot"
+	default y
+	help
+	  Make the platform beep using the PC speaker in final coreboot phase.
+	  May serve as a useful indicator in headless mode that platform is
+	  properly booting.
+
+endif

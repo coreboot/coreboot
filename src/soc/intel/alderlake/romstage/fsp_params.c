@@ -271,6 +271,11 @@ static void fill_fspm_tcss_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->TcssDma0En = is_devfn_enabled(SA_DEVFN_TCSS_DMA0);
 	m_cfg->TcssDma1En = is_devfn_enabled(SA_DEVFN_TCSS_DMA1);
 
+	m_cfg->UsbTcPortEnPreMem = 0;
+	for (int i = 0; i < MAX_TYPE_C_PORTS; i++)
+		if (config->tcss_ports[i].enable)
+			m_cfg->UsbTcPortEnPreMem |= BIT(i);
+
 #if (CONFIG(SOC_INTEL_RAPTORLAKE) && !CONFIG(FSP_USE_REPO)) || \
 	(!CONFIG(SOC_INTEL_ALDERLAKE_PCH_N) && CONFIG(FSP_USE_REPO))
 	m_cfg->DisableDynamicTccoldHandshake =

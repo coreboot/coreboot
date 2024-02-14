@@ -13,6 +13,7 @@
  *			chip for this device (required)
  * SUPERIO_PNP_DDN	A string literal that identifies the dos device
  *			name (DDN) of this device (e.g. "COM1", optional)
+ * SUPERIO_PNP_NO_DIS	If defined, the PNP device has no Enable/Disable methods
  * SUPERIO_PNP_PM_REG	Identifier of a 1-bit register to power down
  *			the logical device (optional)
  * SUPERIO_PNP_PM_VAL	The value for SUPERIO_PNP_PM_REG to power the logical
@@ -54,6 +55,13 @@ Device (SUPERIO_ID(PN, SUPERIO_PNP_LDN)) {
 	Name (_DDN, SUPERIO_PNP_DDN)
 	#endif
 
+
+#ifdef SUPERIO_PNP_NO_DIS
+	Method (_STA)
+	{
+		Return (DEVICE_PRESENT_ACTIVE)
+	}
+#else
 	Method (_STA)
 	{
 		PNP_GENERIC_STA(SUPERIO_PNP_LDN)
@@ -63,6 +71,7 @@ Device (SUPERIO_ID(PN, SUPERIO_PNP_LDN)) {
 	{
 		PNP_GENERIC_DIS(SUPERIO_PNP_LDN)
 	}
+#endif
 
 #ifdef SUPERIO_PNP_PM_REG
 	Method (_PSC) {

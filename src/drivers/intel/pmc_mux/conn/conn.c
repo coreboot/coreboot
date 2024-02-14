@@ -1,9 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <acpi/acpi_pld.h>
 #include <acpi/acpigen.h>
 #include <boot/coreboot_tables.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <drivers/usb/acpi/chip.h>
 #include <intelblocks/acpi.h>
 
 #include "chip.h"
@@ -94,12 +96,31 @@ static const char *orientation_to_str(enum type_c_orientation ori)
 	}
 }
 
+static void get_pld_from_usb_ports(struct acpi_pld *pld,
+	struct device *usb2_port, struct device *usb3_port)
+{
+	struct drivers_usb_acpi_config *config = NULL;
+
+	if (usb3_port)
+		config = usb3_port->chip_info;
+	else if (usb2_port)
+		config = usb2_port->chip_info;
+
+	if (config) {
+		if (config->use_custom_pld)
+			*pld = config->custom_pld;
+		else
+			acpi_pld_fill_usb(pld, config->type, &config->group);
+	}
+}
+
 static void conn_fill_ssdt(const struct device *dev)
 {
 	struct drivers_intel_pmc_mux_conn_config *config = dev->chip_info;
 	struct acpi_dp *dsd;
 	const char *scope;
 	const char *name;
+	struct acpi_pld pld = {0};
 
 	/* Reference the existing scope and write CONx device */
 	scope = acpi_device_scope(dev);
@@ -130,6 +151,10 @@ static void conn_fill_ssdt(const struct device *dev)
 				   orientation_to_str(config->hsl_orientation));
 
 	acpi_dp_write(dsd);
+
+	/* Copy _PLD from USB ports */
+	get_pld_from_usb_ports(&pld, config->usb2_port, config->usb3_port);
+	acpigen_write_pld(&pld);
 
 	acpigen_pop_len(); /* CONx Device */
 	acpigen_pop_len(); /* Scope */

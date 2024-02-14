@@ -136,6 +136,7 @@
 #define VTD_MMIOL_CSR 0xd8
 #define VTD_NCMEM_BASE_CSR 0xe0
 #define VTD_NCMEM_LIMIT_CSR 0xe8
+#define VTD_BAR_CSR 0x180
 #define VTD_LTDPR 0x290
 
 #define VMD_DEV_NUM 0x00

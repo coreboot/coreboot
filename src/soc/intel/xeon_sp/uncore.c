@@ -45,6 +45,7 @@ enum {
 	ME_LIMIT_REG,
 	TSEG_BASE_REG,
 	TSEG_LIMIT_REG,
+	VTDBAR_REG,
 	/* Must be last. */
 	NUM_MAP_ENTRIES
 };
@@ -64,6 +65,7 @@ static struct map_entry memory_map[NUM_MAP_ENTRIES] = {
 #endif
 		[TSEG_BASE_REG] = MAP_ENTRY_BASE_32(VTD_TSEG_BASE_CSR, "TSEGMB_BASE"),
 		[TSEG_LIMIT_REG] = MAP_ENTRY_LIMIT_32(VTD_TSEG_LIMIT_CSR, 20, "TSEGMB_LIMIT"),
+		[VTDBAR_REG] = MAP_ENTRY_BASE_32(VTD_BAR_CSR, "VTD_BAR"),
 };
 
 static void read_map_entry(struct device *dev, struct map_entry *entry,
@@ -73,6 +75,11 @@ static void read_map_entry(struct device *dev, struct map_entry *entry,
 	uint64_t mask;
 
 	if (!entry->reg) {
+		*result = 0;
+		return;
+	}
+	if (entry->reg == VTD_BAR_CSR && !(pci_read_config32(dev, entry->reg) & 1)) {
+		/* VTDBAR is not enabled */
 		*result = 0;
 		return;
 	}
@@ -198,13 +205,18 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 	int index = *res_count;
 	struct range_entry fsp_mem;
 
-	/* Only add dram resources once. */
-	if (dev->upstream->secondary != 0 || dev->upstream->segment_group != 0)
-		return;
-
 	/* Read in the MAP registers and report their values. */
 	mc_read_map_entries(dev, &mc_values[0]);
 	mc_report_map_entries(dev, &mc_values[0]);
+
+	if (mc_values[VTDBAR_REG]) {
+		res = mmio_range(dev, VTD_BAR_CSR, mc_values[VTDBAR_REG], 8 * KiB);
+		LOG_RESOURCE("vtd_bar", dev, res);
+	}
+
+	/* Only add dram resources once. */
+	if (dev->upstream->secondary != 0 || dev->upstream->segment_group != 0)
+		return;
 
 	/* Conventional Memory (DOS region, 0x0 to 0x9FFFF) */
 	res = ram_from_to(dev, index++, 0, 0xa0000);

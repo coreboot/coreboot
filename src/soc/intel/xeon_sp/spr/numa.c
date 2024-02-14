@@ -25,7 +25,7 @@ void dump_pds(void)
 	}
 }
 
-enum cb_err fill_pds(void)
+void fill_pds(void)
 {
 	uint8_t num_sockets = soc_get_num_cpus();
 	uint8_t num_cxlnodes = get_cxl_node_count();
@@ -72,7 +72,7 @@ enum cb_err fill_pds(void)
 
 	/* If there are no CXL nodes, we are done */
 	if (num_cxlnodes == 0)
-		return CB_SUCCESS;
+		return;
 
 	/* There are CXL nodes, fill in generic initiator domain after the processors pds */
 	uint8_t skt_id, cxl_id;
@@ -98,8 +98,6 @@ enum cb_err fill_pds(void)
 			}
 		}
 	}
-
-	return CB_SUCCESS;
 }
 
 /*

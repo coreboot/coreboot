@@ -72,6 +72,11 @@ static void read_map_entry(struct device *dev, struct map_entry *entry,
 	uint64_t value;
 	uint64_t mask;
 
+	if (!entry->reg) {
+		*result = 0;
+		return;
+	}
+
 	/* All registers are on a 1MiB granularity. */
 	mask = ((1ULL << entry->mask_bits) - 1);
 	mask = ~mask;
@@ -103,6 +108,9 @@ static void mc_report_map_entries(struct device *dev, uint64_t *values)
 {
 	int i;
 	for (i = 0; i < NUM_MAP_ENTRIES; i++) {
+		if (!memory_map[i].description)
+			continue;
+
 		printk(BIOS_DEBUG, "MC MAP: %s: 0x%llx\n",
 		       memory_map[i].description, values[i]);
 	}

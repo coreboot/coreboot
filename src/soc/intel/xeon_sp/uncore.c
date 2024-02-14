@@ -110,8 +110,8 @@ static void mc_report_map_entries(struct device *dev, uint64_t *values)
 		if (!memory_map[i].description)
 			continue;
 
-		printk(BIOS_DEBUG, "MC MAP: %s: 0x%llx\n",
-		       memory_map[i].description, values[i]);
+		printk(BIOS_DEBUG, "%s: MC MAP: %s: 0x%llx\n",
+		       dev_path(dev), memory_map[i].description, values[i]);
 	}
 }
 

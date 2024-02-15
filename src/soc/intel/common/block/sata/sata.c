@@ -9,7 +9,7 @@
 
 static void sata_acpi_fill_ssdt(const struct device *dev)
 {
-	const char *scope = acpi_device_path(dev);
+	const char *scope = acpi_device_scope(dev);
 
 	if (!scope)
 		return;

@@ -10,7 +10,9 @@
 #include <device/mmio.h>
 #include <device/pci.h>
 #include <device/pciexp.h>
+#include <device/pci_ids.h>
 #include <soc/acpi.h>
+#include <soc/chip_common.h>
 #include <soc/hest.h>
 #include <soc/iomap.h>
 #include <soc/numa.h>
@@ -18,7 +20,6 @@
 #include <soc/soc_util.h>
 #include <soc/util.h>
 #include <intelblocks/p2sb.h>
-
 #include "chip.h"
 
 /* NUMA related ACPI table generation. SRAT, SLIT, etc */
@@ -382,26 +383,39 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket,
 
 static unsigned long acpi_create_atsr(unsigned long current, const IIO_UDS *hob)
 {
+	struct device *child, *dev;
+	struct resource *resource;
+
+	/*
+	 * The assumption made here is that the host bridges on a socket share the
+	 * PCI segment group and thus only one ATSR header needs to be emitted for
+	 * a single socket.
+	 * This is easier than to sort the host bridges by PCI segment group first
+	 * and then generate one ATSR header for every new segment.
+	 */
 	for (int socket = 0, iio = 0; iio < hob->PlatformData.numofIIO; ++socket) {
 		if (!soc_cpu_is_enabled(socket))
 			continue;
 		iio++;
-
-		uint32_t pcie_seg = hob->PlatformData.CpuQpiInfo[socket].PcieSegment;
 		unsigned long tmp = current;
 		bool first = true;
-		IIO_RESOURCE_INSTANCE iio_resource =
-			hob->PlatformData.IIO_resource[socket];
 
-		for (int stack = 0; stack < MAX_LOGIC_IIO_STACK; ++stack) {
-			uint32_t bus = iio_resource.StackRes[stack].BusBase;
-			uint32_t vtd_base = iio_resource.StackRes[stack].VtdBarAddress;
-			if (!vtd_base)
+		dev = NULL;
+		while ((dev = dev_find_device(PCI_VID_INTEL, MMAP_VTD_CFG_REG_DEVID, dev))) {
+			/* Only add devices for the current socket */
+			if (iio_pci_domain_socket_from_dev(dev) != socket)
 				continue;
-			uint64_t vtd_mmio_cap = read64p(vtd_base + VTD_EXT_CAP_LOW);
-			printk(BIOS_SPEW, "%s socket: %d, stack: %d, bus: 0x%x, vtd_base: 0x%x, "
+			/* See if there is a resource with the appropriate index. */
+			resource = probe_resource(dev, VTD_BAR_CSR);
+			if (!resource)
+				continue;
+			int stack = iio_pci_domain_stack_from_dev(dev);
+
+			uint64_t vtd_mmio_cap = read64(res2mmio(resource, VTD_EXT_CAP_LOW, 0));
+			printk(BIOS_SPEW, "%s socket: %d, stack: %d, bus: 0x%x, vtd_base: %p, "
 				"vtd_mmio_cap: 0x%llx\n",
-				__func__, socket, stack, bus, vtd_base, vtd_mmio_cap);
+				__func__, socket, stack, dev->upstream->secondary,
+				res2mmio(resource, 0, 0), vtd_mmio_cap);
 
 			// ATSR is applicable only for platform supporting device IOTLBs
 			// through the VT-d extended capability register
@@ -409,17 +423,15 @@ static unsigned long acpi_create_atsr(unsigned long current, const IIO_UDS *hob)
 			if ((vtd_mmio_cap & 0x4) == 0) // BIT 2
 				continue;
 
-			if (bus == 0)
+			if (dev->upstream->secondary == 0 && dev->upstream->segment_group == 0)
 				continue;
 
-			struct device *dev = pcidev_path_on_bus(bus, PCI_DEVFN(0, 0));
-			while (dev) {
-				if ((dev->hdr_type & 0x7f) == PCI_HEADER_TYPE_BRIDGE)
-					current +=
+			for (child = dev->upstream->children; child; child = child->sibling) {
+				if ((child->hdr_type & 0x7f) != PCI_HEADER_TYPE_BRIDGE)
+					continue;
+				current +=
 					acpi_create_dmar_ds_pci_br_for_port(
-					current, dev, pcie_seg, true, &first);
-
-				dev = dev->sibling;
+					current, child, child->upstream->segment_group, true, &first);
 			}
 		}
 		if (tmp != current)
@@ -463,24 +475,21 @@ static unsigned long acpi_create_rmrr(unsigned long current)
 
 static unsigned long acpi_create_rhsa(unsigned long current)
 {
-	const IIO_UDS *hob = get_iio_uds();
+	struct device *dev = NULL;
+	struct resource *resource;
+	int socket;
 
-	for (int socket = 0, iio = 0; iio < hob->PlatformData.numofIIO; ++socket) {
-		if (!soc_cpu_is_enabled(socket))
+	while ((dev = dev_find_device(PCI_VID_INTEL, MMAP_VTD_CFG_REG_DEVID, dev))) {
+		/* See if there is a resource with the appropriate index. */
+		resource = probe_resource(dev, VTD_BAR_CSR);
+		if (!resource)
 			continue;
-		iio++;
 
-		IIO_RESOURCE_INSTANCE iio_resource =
-			hob->PlatformData.IIO_resource[socket];
-		for (int stack = 0; stack < MAX_LOGIC_IIO_STACK; ++stack) {
-			uint32_t vtd_base = iio_resource.StackRes[stack].VtdBarAddress;
-			if (!vtd_base)
-				continue;
+		socket = iio_pci_domain_socket_from_dev(dev);
 
-			printk(BIOS_DEBUG, "[Remapping Hardware Static Affinity] Base Address: 0x%x, "
-				"Proximity Domain: 0x%x\n", vtd_base, socket);
-			current += acpi_create_dmar_rhsa(current, vtd_base, socket);
-		}
+		printk(BIOS_DEBUG, "[Remapping Hardware Static Affinity] Base Address: %p, "
+			"Proximity Domain: 0x%x\n", res2mmio(resource, 0, 0), socket);
+		current += acpi_create_dmar_rhsa(current, (uintptr_t)res2mmio(resource, 0, 0), socket);
 	}
 
 	return current;

@@ -134,6 +134,7 @@
 		iotools
 		jfsutils
 		jq
+		lm_sensors
 		mdadm
 		minicom
 		mkpasswd

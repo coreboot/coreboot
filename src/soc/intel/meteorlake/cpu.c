@@ -4,6 +4,7 @@
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/intel/common/common.h>
+#include <cpu/intel/microcode.h>
 #include <cpu/intel/smm_reloc.h>
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/lapic.h>
@@ -213,4 +214,25 @@ void mp_init_cpus(struct bus *cpu_bus)
 
 	/* Thermal throttle activation offset */
 	configure_tcc_thermal_target();
+}
+
+int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)
+{
+	if (!CONFIG(CHROMEOS))
+		return 0;
+	/*
+	 * Locked RO Descriptor Implications:
+	 *
+	 * - A locked descriptor signals the RO binary is fixed; the FIT will load the
+	 *   RO's microcode during system reset.
+	 * - Attempts to load newer microcode from the RW CBFS will cause a boot-time
+	 *   delay (~60ms, core-dependent), as the microcode must be reloaded on BSP+APs.
+	 * - The kernel can load microcode updates without impacting AP FW boot time.
+	 * - Skipping RW CBFS microcode loading is low-risk when the RO is locked,
+	 *   prioritizing fast boot times.
+	 */
+	if (CONFIG(LOCK_MANAGEMENT_ENGINE) && current_patch_id)
+		return 1;
+
+	return 0;
 }

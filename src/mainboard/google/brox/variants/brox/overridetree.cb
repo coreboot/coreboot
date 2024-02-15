@@ -9,9 +9,9 @@ fw_config
 		option STORAGE_UFS			1
 		option STORAGE_NVME			2
 	end
-	field WIFI 4 4
-		option WIFI_CNVI			0
-		option WIFI_PCIE			1
+	field WIFI_BT 4 4
+		option WIFI_BT_CNVI			0
+		option WIFI_BT_PCIE			1
 	end
 	field AUDIO 5 7
 		option AUDIO_UNKNOWN			0
@@ -194,7 +194,7 @@ chip soc/intel/alderlake
 				register "srcclk_pin" = "1"
 				device generic 0 on end
 			end
-			probe WIFI WIFI_PCIE
+			probe WIFI_BT WIFI_BT_PCIE
 		end
 		device ref cnvi_wifi on
 			chip drivers/wifi/generic
@@ -203,7 +203,7 @@ chip soc/intel/alderlake
 				register "enable_cnvi_ddr_rfim" = "true"
 				device generic 0 on end
 			end
-			probe WIFI WIFI_CNVI
+			probe WIFI_BT WIFI_BT_CNVI
 		end
 		device ref ish on
 			chip drivers/intel/ish

@@ -1,2 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_ASROCK_B75M_ITX
 	bool "B75M-ITX"

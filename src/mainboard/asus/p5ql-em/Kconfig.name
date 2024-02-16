@@ -1,2 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_ASUS_P5QL_EM
 	bool "P5QL-EM"

@@ -1,2 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_ASROCK_H110M_DVS
 	bool "H110M-DVS"

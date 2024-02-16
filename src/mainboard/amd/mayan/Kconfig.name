@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 comment "Mayan"
 
 config BOARD_AMD_MAYAN_PHOENIX

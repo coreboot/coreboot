@@ -1,2 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_ASUS_P5GC_MX
 	bool "P5GC-MX"

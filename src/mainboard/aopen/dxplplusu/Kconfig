@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 if BOARD_AOPEN_DXPLPLUSU
 
 config BOARD_SPECIFIC_OPTIONS

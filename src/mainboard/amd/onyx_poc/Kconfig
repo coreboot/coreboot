@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 if BOARD_AMD_ONYX_POC
 
 config BOARD_SPECIFIC_OPTIONS

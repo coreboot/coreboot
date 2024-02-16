@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_ASROCK_G41C_GS_R2_0
 	bool "G41C-GS R2.0"
 

@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 if BOARD_BOSTENTECH_GBYT4
 
 config BOARD_SPECIFIC_OPTIONS

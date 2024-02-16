@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_ASUS_P8C_WS
 	bool "P8C_WS"
 

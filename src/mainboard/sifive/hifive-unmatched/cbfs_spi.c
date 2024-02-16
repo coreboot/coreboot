@@ -116,15 +116,34 @@ void boot_device_init(void)
 	if (spi_flash_init_done == true)
 		return;
 
-	uint32_t m = read32((uint32_t *)FU740_MSEL);
+	uint32_t m = read32((uint32_t *)FU740_MSEL) & 0xf;
+	printk(BIOS_DEBUG, "%s MSEL %#x\n", __func__, m);
+
+	// We have not yet found a way to reliably program the
+	// on-board SPI part (sifive neglected to put a diode on vcc ...)
+	// Once we work that out, we can test this code.
+	// It is left here as a hint of what needs to be done.
 	// Pass the information of the flash read operation to the spi controller
-	//.pad_cnt = 6,
-	if (MSEL_SPI0x4(m) || MSEL_SPI1x4(m)) {
+	if (MSEL_SPI0x4(m)) {
+		die("SPI0x4 is not supported yet");
 		//config.ffmt_config.data_proto = FU740_SPI_PROTO_Q;
 		//config.ffmt_config.cmd_code = 0x6B; // Quad output read
 		//.cmd_code = 0xec,
+		//.pad_cnt = 6,
 	}
-	if (MSEL_SPI1x1(m)) {
+	if (MSEL_SPI1x4(m)) {
+		printk(BIOS_DEBUG, "%s SPI1x4 1\n", __func__);
+		fu740_spi_configs[1].ffmt_config.data_proto = FU740_SPI_PROTO_Q;
+		fu740_spi_configs[1].ffmt_config.cmd_code = 0x6b; // quad
+		if (spi_flash_probe(1, 0, &spi_flash)) {
+			printk(BIOS_EMERG, "SPI1x4 failed to init SPI flash\n");
+			return;
+		}
+		if (fu740_spi_setup(&spi_flash.spi) == -1) {
+			printk(BIOS_EMERG, "SPI1x4 failed to configure mmap for SPI flash\n");
+		}
+		printk(BIOS_DEBUG, "%s SPI1x4 2\n", __func__);
+	} else if (MSEL_SPI1x1(m)) {
 		printk(BIOS_DEBUG, "%s 1\n", __func__);
 		fu740_spi_configs[1].ffmt_config.data_proto = FU740_SPI_PROTO_S;
 		fu740_spi_configs[1].ffmt_config.cmd_code = 0x03; // Normal read
@@ -133,17 +152,12 @@ void boot_device_init(void)
 			printk(BIOS_EMERG, "failed to init SPI flash\n");
 			return;
 		}
-		// initialize soc spi controller
-		//if (fu740_spi_setup(&spi1_flash.spi) == -1) {
-		//	printk(BIOS_EMERG, "failed to configure mmap for SPI flash\n");
-		//}
-		//hexdump((void*)0x10041000, 0x100);
-		//hexdump((void*)0x30000000, 0x100);
 		printk(BIOS_DEBUG, "%s 2\n", __func__);
 	} else if (MSEL_SPI2SD(m)) {
 		spi_sdcard_init(&spi2_sdcard, 2, 0);
 	} else {
-		die("Wrong configuration of MSEL\n");
+		printk(BIOS_EMERG, "MSEL: %#02x: ", m);
+		die("unsupported configuration of MSEL\n");
 	}
 
 	spi_flash_init_done = true;

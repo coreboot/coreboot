@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 if ARCH_X86
 
 config DISPLAY_MTRRS

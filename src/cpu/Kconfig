@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 # Warning: This file is included whether or not the if is here.
 # The if controls how the evaluation occurs.
 # (See also src/Kconfig)

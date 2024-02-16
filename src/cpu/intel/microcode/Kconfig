@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config MICROCODE_UPDATE_PRE_RAM
 	bool
 	depends on SUPPORT_CPU_UCODE_IN_CBFS

@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config CPU_INTEL_MODEL_2065X
 	bool
 	select HAVE_EXP_X86_64_SUPPORT

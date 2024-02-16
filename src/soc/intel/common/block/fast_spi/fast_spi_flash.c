@@ -54,22 +54,22 @@ static void fast_spi_flash_ctrlr_reg_write(struct fast_spi_flash_ctx *ctx,
 }
 
 /*
- * The hardware datasheet is not clear on what HORD values actually do. It
- * seems that HORD_SFDP provides access to the first 8 bytes of the SFDP, which
- * is the signature and revision fields. HORD_JEDEC provides access to the
- * actual flash parameters, and is most likely what you want to use when
- * probing the flash from software.
+ * Via component field (bits 15-14) we can select either 1st or 2nd flash
+ * (in dual flash setups).
+ * Via HORD - Header or Data (bits 13-12) - we can select either:
+ *   - SFDP Header
+ *   - Param Table Header
+ *   - Data (JEDEC params, including density)
+ *
  * It's okay to rely on SFDP, since the SPI flash controller requires an SFDP
  * 1.5 or newer compliant FAST_SPI flash chip.
  * NOTE: Due to the register layout of the hardware, all accesses will be
  * aligned to a 4 byte boundary.
  */
-static uint32_t fast_spi_flash_read_sfdp_param(struct fast_spi_flash_ctx *ctx,
-					  uint16_t sfdp_reg)
+static uint32_t fast_spi_flash_read_sfdp(struct fast_spi_flash_ctx *ctx,
+						uint32_t ptinx_reg)
 {
-	uint32_t ptinx_index = sfdp_reg & SPIBAR_PTINX_IDX_MASK;
-	fast_spi_flash_ctrlr_reg_write(ctx, SPIBAR_PTINX,
-				   ptinx_index | SPIBAR_PTINX_HORD_JEDEC);
+	fast_spi_flash_ctrlr_reg_write(ctx, SPIBAR_PTINX, ptinx_reg);
 	return fast_spi_flash_ctrlr_reg_read(ctx, SPIBAR_PTDATA);
 }
 
@@ -312,14 +312,29 @@ static int fast_spi_flash_probe(const struct spi_slave *dev,
 {
 	BOILERPLATE_CREATE_CTX(ctx);
 	uint32_t flash_bits;
+	uint32_t ptinx_reg;
 
 	/*
 	 * bytes = (bits + 1) / 8;
 	 * But we need to do the addition in a way which doesn't overflow for
 	 * 4 Gbit devices (flash_bits == 0xffffffff).
 	 */
-	flash_bits = fast_spi_flash_read_sfdp_param(ctx, 0x04);
+	ptinx_reg = SPIBAR_PTINX_COMP_0 | SPIBAR_PTINX_HORD_JEDEC | SFDP_PARAM_DENSITY;
+	flash_bits = fast_spi_flash_read_sfdp(ctx, ptinx_reg);
 	flash->size = (flash_bits >> 3) + 1;
+
+	/*
+	 * Now check if we have a second flash component.
+	 * Check SFDP header for the SFDP signature. If valid, then 2nd component is present.
+	 * Increase the flash size if 2nd component is found, analogically like the 1st
+	 * component.
+	 */
+	ptinx_reg = SPIBAR_PTINX_COMP_1 | SPIBAR_PTINX_HORD_SFDP | SFDP_HDR_SIG;
+	if (fast_spi_flash_read_sfdp(ctx, ptinx_reg) == SFDP_SIGNATURE) {
+		ptinx_reg = SPIBAR_PTINX_COMP_1 | SPIBAR_PTINX_HORD_JEDEC | SFDP_PARAM_DENSITY;
+		flash_bits = fast_spi_flash_read_sfdp(ctx, ptinx_reg);
+		flash->size += ((flash_bits >> 3) + 1);
+	}
 
 	memcpy(&flash->spi, dev, sizeof(*dev));
 

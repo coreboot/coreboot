@@ -3,6 +3,11 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_FAST_SPI_DEF_H
 #define SOC_INTEL_COMMON_BLOCK_FAST_SPI_DEF_H
 
+/* From JEDEC SFDP JESD216F.02 */
+#define SFDP_HDR_SIG		0x00 /* 1st DWORD of SFDP header */
+#define SFDP_PARAM_DENSITY	0x04 /* 2nd DWORD of SFDP params */
+#define SFDP_SIGNATURE		0x50444653 /* Valid sig in 1st DWORD of SFDP header */
+
 /* PCI configuration registers */
 #define SPI_BIOS_DECODE_EN		0xd8
 #define  SPI_BIOS_DECODE_LOCK		BIT(31)
@@ -153,7 +158,6 @@
 #define SPIBAR_PTINX_HORD_SFDP		(0 << 12)
 #define SPIBAR_PTINX_HORD_PARAM		(1 << 12)
 #define SPIBAR_PTINX_HORD_JEDEC		(2 << 12)
-#define SPIBAR_PTINX_IDX_MASK		0xffc
 
 /* Register Offsets of BIOS Flash Program Registers */
 #define SPIBAR_RESET_LOCK		0xf0

@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 comment "Hatch"
 
 config BOARD_GOOGLE_AKEMI

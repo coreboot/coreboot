@@ -1,2 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_INTEL_DQ67SW
 	bool "DQ67SW"

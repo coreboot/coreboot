@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_GIGABYTE_GA_945GCM_S2L
 	bool "GA-945GCM-S2L"
 

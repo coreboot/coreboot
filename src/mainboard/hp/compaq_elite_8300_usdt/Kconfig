@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 if BOARD_HP_COMPAQ_ELITE_8300_USDT
 
 config BOARD_SPECIFIC_OPTIONS

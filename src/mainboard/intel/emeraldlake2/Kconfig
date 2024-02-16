@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 if BOARD_INTEL_EMERALDLAKE2
 
 config BOARD_SPECIFIC_OPTIONS

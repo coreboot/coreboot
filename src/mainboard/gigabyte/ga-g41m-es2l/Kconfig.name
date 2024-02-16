@@ -1,2 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_GIGABYTE_GA_G41M_ES2L
 	bool "GA-G41M-ES2L"

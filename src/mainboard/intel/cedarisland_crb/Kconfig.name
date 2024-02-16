@@ -1,2 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_INTEL_CEDARISLAND_CRB
 	bool "Cedar Island CRB"

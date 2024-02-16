@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 
 config BOARD_GOOGLE_MISTRAL_COMMON  # Umbrella option to be selected by variants
 	def_bool n

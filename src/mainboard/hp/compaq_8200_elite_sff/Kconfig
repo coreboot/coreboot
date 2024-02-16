@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 if BOARD_HP_COMPAQ_8200_ELITE_SFF_PC
 
 config BOARD_SPECIFIC_OPTIONS

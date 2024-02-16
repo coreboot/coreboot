@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 comment "Nyan Blaze"
 
 config BOARD_GOOGLE_NYAN_BLAZE

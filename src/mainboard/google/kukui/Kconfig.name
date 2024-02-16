@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 comment "Kukui"
 
 config BOARD_GOOGLE_KUKUI

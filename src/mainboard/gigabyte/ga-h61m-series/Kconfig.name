@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_GIGABYTE_GA_H61M_S2PV
 	bool "GA-H61M-S2PV"
 

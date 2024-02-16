@@ -1,2 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_HP_FOLIO_9480M
 	bool "EliteBook Folio 9480m"

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0.-only */
+/* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <libpayload-config.h>
 #include <cbfs.h>

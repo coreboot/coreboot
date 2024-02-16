@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 if BOARD_LENOVO_X200 || BOARD_LENOVO_X301
 
 config BOARD_SPECIFIC_OPTIONS

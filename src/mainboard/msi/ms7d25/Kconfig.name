@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_MSI_Z690_A_PRO_WIFI_DDR4
 	bool "PRO Z690-A (WIFI) DDR4"
 

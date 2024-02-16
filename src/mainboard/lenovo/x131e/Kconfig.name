@@ -1,2 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_LENOVO_X131E
 	bool "ThinkPad X131e"

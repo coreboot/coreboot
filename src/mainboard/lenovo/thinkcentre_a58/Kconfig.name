@@ -1,2 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_LENOVO_THINKCENTRE_A58
 	bool "ThinkCentre A58 (L-IG41M)"

@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 if BOARD_LENOVO_X1_CARBON_GEN1
 
 config BOARD_SPECIFIC_OPTIONS

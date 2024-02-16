@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 comment "MC APLx"
 
 config BOARD_SIEMENS_MC_APL1

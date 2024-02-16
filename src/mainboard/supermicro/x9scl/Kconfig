@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 if BOARD_SUPERMICRO_X9SCL
 
 config BOARD_SPECIFIC_OPTIONS

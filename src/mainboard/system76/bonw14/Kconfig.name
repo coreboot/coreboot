@@ -1,2 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_SYSTEM76_BONW14
 	bool "bonw14"

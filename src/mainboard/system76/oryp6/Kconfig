@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 if BOARD_SYSTEM76_ORYP6 || BOARD_SYSTEM76_ORYP7
 
 config BOARD_SPECIFIC_OPTIONS

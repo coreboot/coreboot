@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 if BOARD_SYSTEM76_GALP3_C || BOARD_SYSTEM76_DARP5
 
 config BOARD_SPECIFIC_OPTIONS

@@ -1,3 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
 
 config BOARD_SIEMENS_BASEBOARD_MC_APL1
 	def_bool n

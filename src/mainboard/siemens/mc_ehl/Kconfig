@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_SIEMENS_BASEBOARD_MC_EHL
 	def_bool n
 	select SOC_INTEL_ELKHARTLAKE

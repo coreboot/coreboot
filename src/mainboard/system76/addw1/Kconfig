@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 if BOARD_SYSTEM76_ADDW1 || BOARD_SYSTEM76_ADDW2
 
 config BOARD_SPECIFIC_OPTIONS

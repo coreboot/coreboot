@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_SYSTEM76_RPL_COMMON
 	def_bool n
 	select BOARD_ROMSIZE_KB_32768

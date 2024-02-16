@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config PAYLOAD_SEABIOS
 	bool "SeaBIOS"
 	depends on ARCH_X86

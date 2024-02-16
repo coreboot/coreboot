@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 menu "Payload"
 
 config PAYLOAD_NONE

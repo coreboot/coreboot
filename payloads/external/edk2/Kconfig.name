@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config PAYLOAD_EDK2
 	bool "edk2 payload"
 	depends on ARCH_X86 || ARCH_ARM64

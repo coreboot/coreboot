@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 if PAYLOAD_UBOOT
 
 config PAYLOAD_SPECIFIC_OPTIONS

@@ -264,9 +264,9 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_F18 : net NC is not present in the given design */
 	PAD_NC(GPP_F18, NONE),
 	/* GPP_F19 : [GPP_F19_STRAP] ==> Component NC */
-	PAD_CFG_NF(GPP_F19, NONE, DEEP, NF1),
+	PAD_NC(GPP_F19, NONE),
 	/* GPP_F20 : [GPP_F20_STRAP] ==> Component NC */
-	PAD_CFG_NF(GPP_F20, NONE, DEEP, NF1),
+	PAD_NC(GPP_F20, NONE),
 	/* GPP_F21 : [GPP_F21_STRAP] ==> Component NC */
 	PAD_NC(GPP_F21, NONE),
 	/* GPP_F22 : [] ==> GPP_F22_ISH_GP8A */

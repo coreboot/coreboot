@@ -48,6 +48,3 @@
 
 /* GbE 0:1f.6 */
 #include <soc/intel/common/block/acpi/acpi/pch_glan.asl>
-
-/* PCH SATA */
-#include "sata.asl"

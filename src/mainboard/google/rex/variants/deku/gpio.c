@@ -55,8 +55,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B05, NONE),
 	/* GPP_B06 : net NC is not present in the given design */
 	PAD_NC(GPP_B06, NONE),
-	/* GPP_B07 : IOEX_INT_ODL */
-	PAD_CFG_GPI(GPP_B07, NONE, DEEP),
+	/* GPP_B07 : net NC is not present in the given design */
+	PAD_NC(GPP_B07, NONE),
 	/* GPP_B08 : [] ==> PWM_BUZZER */
 	PAD_CFG_GPO(GPP_B08, 0, DEEP),
 	/* GPP_B09 : net NC is not present in the given design */
@@ -247,22 +247,22 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F09, NONE),
 	/* GPP_F10 : net NC is not present in the given design */
 	PAD_NC(GPP_F10, NONE),
-	/* GPP_F11 : net NC is not present in the given design */
-	PAD_NC(GPP_F11, NONE),
-	/* GPP_F12 : net NC is not present in the given design */
-	PAD_NC(GPP_F12, NONE),
-	/* GPP_F13 : net NC is not present in the given design */
-	PAD_NC(GPP_F13, NONE),
-	/* GPP_F14 : net NC is not present in the given design */
-	PAD_NC(GPP_F14, NONE),
-	/* GPP_F15 : net NC is not present in the given design */
-	PAD_NC(GPP_F15, NONE),
-	/* GPP_F16 : net NC is not present in the given design */
-	PAD_NC(GPP_F16, NONE),
-	/* GPP_F17 : net NC is not present in the given design */
-	PAD_NC(GPP_F17, NONE),
-	/* GPP_F18 : net NC is not present in the given design */
-	PAD_NC(GPP_F18, NONE),
+	/* GPP_F11 : [] ==> AV_GPIO_P0 */
+	PAD_CFG_GPO(GPP_F11, 0, DEEP),
+	/* GPP_F12 : [] ==> AV_GPIO_P1 */
+	PAD_CFG_GPO(GPP_F12, 0, DEEP),
+	/* GPP_F13 : [] ==> AV_GPIO_P2 */
+	PAD_CFG_GPO(GPP_F13, 0, DEEP),
+	/* GPP_F14 : [] ==> AV_GPIO_P3 */
+	PAD_CFG_GPO(GPP_F14, 0, DEEP),
+	/* GPP_F15 : [] ==> AV_GPIO_P4 */
+	PAD_CFG_GPO(GPP_F15, 0, DEEP),
+	/* GPP_F16 : [] ==> AV_GPIO_P5 */
+	PAD_CFG_GPO(GPP_F16, 0, DEEP),
+	/* GPP_F17 : [] ==> AV_GPIO_P6 */
+	PAD_CFG_GPO(GPP_F17, 0, DEEP),
+	/* GPP_F18 : [] ==> AV_GPIO_P7 */
+	PAD_CFG_GPO(GPP_F18, 0, DEEP),
 	/* GPP_F19 : [GPP_F19_STRAP] ==> Component NC */
 	PAD_NC(GPP_F19, NONE),
 	/* GPP_F20 : [GPP_F20_STRAP] ==> Component NC */
@@ -271,7 +271,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F21, NONE),
 	/* GPP_F22 : [] ==> GPP_F22_ISH_GP8A */
 	PAD_NC(GPP_F22, NONE),
-	/* GPP_F23 : [] ==> TP_SOC_ISH_MCF_INT_L */
+	/* GPP_F23 : [] ==> GPP_F23_ISH_GP9A */
 	PAD_NC(GPP_F23, NONE),
 
 	/* GPP_H00 : GPP_H00_STRAP ==> Component NC */
@@ -306,10 +306,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_H16, NONE),
 	/* GPP_H17 : net NC is not present in the given design */
 	PAD_NC(GPP_H17, NONE),
-	/* GPP_H19 : [] ==> I2C_IOEX_SDA */
-	PAD_CFG_NF_LOCK(GPP_H19, NONE, NF1, LOCK_CONFIG),
-	/* GPP_H20 : [] ==> I2C_IOEX_SCL */
-	PAD_CFG_NF_LOCK(GPP_H20, NONE, NF1, LOCK_CONFIG),
+	/* GPP_H19 : net NC is not present in the given design */
+	PAD_NC(GPP_H19, NONE),
+	/* GPP_H20 : net NC is not present in the given design */
+	PAD_NC(GPP_H20, NONE),
 	/* GPP_H21 : net NC is not present in the given design */
 	PAD_NC(GPP_H21, NONE),
 	/* GPP_H22 : net NC is not present in the given design */

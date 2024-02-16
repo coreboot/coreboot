@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 if BOARD_PACKARDBELL_MS2290
 
 config BOARD_SPECIFIC_OPTIONS

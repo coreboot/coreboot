@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_PURISM_BASEBOARD_LIBREM_SKL
 	def_bool n
 	select BOARD_ROMSIZE_KB_16384

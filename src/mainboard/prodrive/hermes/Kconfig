@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_PRODRIVE_HERMES_BASEBOARD
 	def_bool n
 	select SOC_INTEL_COFFEELAKE

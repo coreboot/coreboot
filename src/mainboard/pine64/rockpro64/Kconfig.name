@@ -1,2 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_PINE64_ROCKPRO64
 	bool "ROCKPro64"

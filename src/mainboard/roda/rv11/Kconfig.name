@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_RODA_RV11
 	bool "Lizard RV11"
 

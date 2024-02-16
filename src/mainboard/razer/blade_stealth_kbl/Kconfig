@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 if BOARD_RAZER_BLADE_STEALTH_KBL
 
 config BOARD_SPECIFIC_OPTIONS

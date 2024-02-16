@@ -1,2 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_PURISM_LIBREM_L1UM_V2
 	bool "Librem L1UM v2"

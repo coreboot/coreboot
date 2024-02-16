@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 if BOARD_PROTECTLI_FW2B || BOARD_PROTECTLI_FW4B
 
 config BOARD_SPECIFIC_OPTIONS

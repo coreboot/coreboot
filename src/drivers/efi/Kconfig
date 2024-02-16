@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config DRIVERS_EFI_VARIABLE_STORE
 	bool "Include EFI variable store driver"
 	depends on UDK_BASE

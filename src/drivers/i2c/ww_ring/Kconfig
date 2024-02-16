@@ -1,2 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config DRIVERS_I2C_WW_RING
 	bool

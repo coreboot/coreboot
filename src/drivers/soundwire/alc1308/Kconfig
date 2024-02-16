@@ -1,2 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config DRIVERS_SOUNDWIRE_ALC1308
 	bool

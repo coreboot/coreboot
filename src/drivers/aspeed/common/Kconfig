@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config DRIVERS_ASPEED_AST_COMMON
 	bool
 	select HAVE_LINEAR_FRAMEBUFFER if MAINBOARD_DO_NATIVE_VGA_INIT

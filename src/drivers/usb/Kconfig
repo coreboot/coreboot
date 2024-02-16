@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 	# Use "select HAVE_USBDEBUG" on southbridges which have Debug Port code.
 config HAVE_USBDEBUG
 	bool

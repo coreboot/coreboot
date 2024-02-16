@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config DRIVERS_I2C_LM96000
 	depends on HAVE_MONOTONIC_TIMER
 	bool

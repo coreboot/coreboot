@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config DRIVERS_ETH_PHY_M88E1512
 	bool
 	default n

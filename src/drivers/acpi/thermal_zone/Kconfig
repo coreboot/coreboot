@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config DRIVERS_ACPI_THERMAL_ZONE
 	bool
 	default n

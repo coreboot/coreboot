@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config DRIVERS_AUDIO_SOF
 	bool
 	depends on HAVE_ACPI_TABLES

@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config DRIVERS_GENERIC_CBFS_UUID
 	bool "System UUID in CBFS"
 	default n

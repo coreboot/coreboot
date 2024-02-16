@@ -12,6 +12,7 @@ set -u
 scratch_file=''
 coreboot_top=''
 pname=''
+SPDX_ID_STRING="SPDX-License-Identifier"
 
 cleanup()
 {
@@ -41,7 +42,7 @@ usage()
 
 update_copyright()
 {
-	local spdx='/* SPDX-License-Identifier: BSD-3-Clause */'
+	local spdx="/* ${SPDX_ID_STRING}: BSD-3-Clause */"
 	local f=$1
 
 	# replace existing copyright with empty lines

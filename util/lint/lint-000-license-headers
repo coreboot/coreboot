@@ -84,13 +84,15 @@ fi
 #make a copy to check for the old style header later.
 headerlist=$(${FIND_FILES} $HEADER_DIRS | grep -E -v "($HEADER_EXCLUDED)")
 
+LICENSE_ID_STRING="SPDX-License-Identifier"
+
 #update headerlist by removing files that match the license string
 check_for_license() {
 	if [ -n "$headerlist" ] && [ -z "$2" ]; then
-		headerlist="$(grep -iL "$1" $headerlist 2>/dev/null)"
+		headerlist="$(grep -iL "${LICENSE_ID_STRING}: $1" $headerlist 2>/dev/null)"
 	elif [ -n "$headerlist" ]; then
-		p1list="$(grep -il "$1" $headerlist 2>/dev/null)"
-		p2list="$(grep -il "$2" $headerlist 2>/dev/null)"
+		p1list="$(grep -il "${LICENSE_ID_STRING}: $1" $headerlist 2>/dev/null)"
+		p2list="$(grep -il "${LICENSE_ID_STRING}: $2" $headerlist 2>/dev/null)"
 
 		# Make list of files that were in both previous lists
 		pbothlist="$(echo $p1list $p2list | tr ' ' "\n" | \
@@ -105,33 +107,33 @@ check_for_license() {
 }
 
 #search the files for license headers
-check_for_license 'SPDX-License-Identifier: Apache-2.0'
-check_for_license 'SPDX-License-Identifier: BSD-2-Clause'
-check_for_license 'SPDX-License-Identifier: BSD-3-Clause'
-check_for_license 'SPDX-License-Identifier: GPL-2.0-only'
-check_for_license 'SPDX-License-Identifier: GPL-2.0-or-later'
-check_for_license 'SPDX-License-Identifier: GPL-2.0-only WITH Linux-syscall-note'
-check_for_license 'SPDX-License-Identifier: GPL-3.0-only'
-check_for_license 'SPDX-License-Identifier: GPL-3.0-only WITH GCC-exception-3.1'
-check_for_license 'SPDX-License-Identifier: GPL-3.0-or-later'
-check_for_license 'SPDX-License-Identifier: HPND'
-check_for_license 'SPDX-License-Identifier: HPND-sell-variant'
-check_for_license 'SPDX-License-Identifier: ISC'
-check_for_license 'SPDX-License-Identifier: MIT'
-check_for_license 'SPDX-License-Identifier: X11'
+check_for_license 'Apache-2.0'
+check_for_license 'BSD-2-Clause'
+check_for_license 'BSD-3-Clause'
+check_for_license 'GPL-2.0-only'
+check_for_license 'GPL-2.0-or-later'
+check_for_license 'GPL-2.0-only WITH Linux-syscall-note'
+check_for_license 'GPL-3.0-only'
+check_for_license 'GPL-3.0-only WITH GCC-exception-3.1'
+check_for_license 'GPL-3.0-or-later'
+check_for_license 'HPND'
+check_for_license 'HPND-sell-variant'
+check_for_license 'ISC'
+check_for_license 'MIT'
+check_for_license 'X11'
 
 # This is 4 clause ("with advertising") but the University of Berkeley
 # declared that 4th clause void, see
 # ftp://ftp.cs.berkeley.edu/pub/4bsd/README.Impt.License.Change
 # With this, BSD-4-Clause-UC becomes GPLv2 compatible, and so SPDX doesn't
 # differentiate between this license with or without advertising.
-check_for_license 'SPDX-License-Identifier: BSD-4-Clause-UC'
+check_for_license 'BSD-4-Clause-UC'
 
 # This is the Creative Commons Public Domain Dedication and Certification
 # for files that are already in the public domain.  This includes files
 # that cannot be licensed such as blank files or files with no "creative"
 # content.
-check_for_license 'SPDX-License-Identifier: CC-PDDC'
+check_for_license 'CC-PDDC'
 
 for file in $headerlist; do
 	# Verify the file actually exists

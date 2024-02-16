@@ -6,14 +6,14 @@
 
 typedef EFI_PEI_MP_SERVICES_PPI efi_pei_mp_services_ppi;
 
-static efi_return_status_t mps1_get_number_of_processors(const
+static __efiapi efi_return_status_t mps1_get_number_of_processors(const
 	efi_pei_services **ignored1, efi_pei_mp_services_ppi *ignored2,
 	efi_uintn_t *number_of_processors, efi_uintn_t *number_of_enabled_processors)
 {
 	return mp_get_number_of_processors(number_of_processors, number_of_enabled_processors);
 }
 
-static efi_return_status_t mps1_get_processor_info(const
+static __efiapi efi_return_status_t mps1_get_processor_info(const
 	efi_pei_services **ignored1, efi_pei_mp_services_ppi *ignored2,
 	efi_uintn_t processor_number,
 	efi_processor_information *processor_info_buffer)
@@ -21,7 +21,7 @@ static efi_return_status_t mps1_get_processor_info(const
 	return mp_get_processor_info(processor_number, processor_info_buffer);
 }
 
-static efi_return_status_t mps1_startup_all_aps(const
+static __efiapi efi_return_status_t mps1_startup_all_aps(const
 	efi_pei_services **ignored1, efi_pei_mp_services_ppi *ignored2,
 	efi_ap_procedure procedure, efi_boolean_t run_serial,
 	efi_uintn_t timeout_usec, void *argument)
@@ -29,7 +29,7 @@ static efi_return_status_t mps1_startup_all_aps(const
 	return mp_startup_all_aps(procedure, run_serial, timeout_usec, argument);
 }
 
-static efi_return_status_t mps1_startup_this_ap(const
+static __efiapi efi_return_status_t mps1_startup_this_ap(const
 	efi_pei_services **ignored1, efi_pei_mp_services_ppi *ignored2,
 	efi_ap_procedure procedure, efi_uintn_t processor_number,
 	efi_uintn_t timeout_usec, void *argument)
@@ -37,21 +37,21 @@ static efi_return_status_t mps1_startup_this_ap(const
 	return mp_startup_this_ap(procedure, processor_number, timeout_usec, argument);
 }
 
-static efi_return_status_t mps1_switch_bsp(const efi_pei_services **ignored1,
+static __efiapi efi_return_status_t mps1_switch_bsp(const efi_pei_services **ignored1,
 	efi_pei_mp_services_ppi *ignored2, efi_uintn_t ignored3,
 	efi_boolean_t ignored4)
 {
 	return mp_api_unsupported();
 }
 
-static efi_return_status_t mps1_enable_disable_ap(const
+static __efiapi efi_return_status_t mps1_enable_disable_ap(const
 	efi_pei_services **ignored1, efi_pei_mp_services_ppi *ignored2,
 	efi_uintn_t ignored3, efi_boolean_t ignored4, efi_uint32_t *ignored5)
 {
 	return mp_api_unsupported();
 }
 
-static efi_return_status_t mps1_identify_processor(const
+static __efiapi efi_return_status_t mps1_identify_processor(const
 	efi_pei_services **ignored1, efi_pei_mp_services_ppi *ignored2,
 	efi_uintn_t *processor_number)
 {

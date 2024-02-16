@@ -218,12 +218,12 @@ static inline const char *soc_select_fsp_s_cbfs(void)
 }
 #endif
 
-typedef asmlinkage uint32_t (*temp_ram_exit_fn)(void *param);
-typedef asmlinkage uint32_t (*fsp_memory_init_fn)
+typedef __efiapi efi_return_status_t (*temp_ram_exit_fn)(void *param);
+typedef __efiapi efi_return_status_t (*fsp_memory_init_fn)
 				   (void *raminit_upd, void **hob_list);
-typedef asmlinkage uint32_t (*fsp_silicon_init_fn)(void *silicon_upd);
-typedef asmlinkage uint32_t (*fsp_multi_phase_init_fn)(struct fsp_multi_phase_params *);
-typedef asmlinkage uint32_t (*fsp_notify_fn)(struct fsp_notify_params *);
+typedef __efiapi efi_return_status_t (*fsp_silicon_init_fn)(void *silicon_upd);
+typedef __efiapi efi_return_status_t (*fsp_multi_phase_init_fn)(struct fsp_multi_phase_params *);
+typedef __efiapi efi_return_status_t (*fsp_notify_fn)(struct fsp_notify_params *);
 #include <fsp/debug.h>
 
 #endif /* _FSP2_0_UTIL_H_ */

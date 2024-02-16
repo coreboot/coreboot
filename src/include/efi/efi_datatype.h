@@ -81,6 +81,6 @@ typedef EFI_GUID efi_guid_t;
  */
 typedef
 void
-(EFIAPI *efi_ap_procedure)(void *buffer);
+(__efiapi *efi_ap_procedure)(void *buffer);
 
 #endif

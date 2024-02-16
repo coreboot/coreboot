@@ -6,7 +6,7 @@
 
 typedef EDKII_PEI_MP_SERVICES2_PPI efi_pei_mp_services_ppi;
 
-static efi_return_status_t mps2_get_number_of_processors(
+static __efiapi efi_return_status_t mps2_get_number_of_processors(
 	efi_pei_mp_services_ppi *ignored1,
 	efi_uintn_t *number_of_processors,
 	efi_uintn_t *number_of_enabled_processors)
@@ -14,7 +14,7 @@ static efi_return_status_t mps2_get_number_of_processors(
 	return mp_get_number_of_processors(number_of_processors, number_of_enabled_processors);
 }
 
-static efi_return_status_t mps2_get_processor_info(
+static __efiapi efi_return_status_t mps2_get_processor_info(
 	efi_pei_mp_services_ppi *ignored1,
 	efi_uintn_t processor_number,
 	efi_processor_information *processor_info_buffer)
@@ -22,7 +22,7 @@ static efi_return_status_t mps2_get_processor_info(
 	return mp_get_processor_info(processor_number, processor_info_buffer);
 }
 
-static efi_return_status_t mps2_startup_all_aps(
+static __efiapi efi_return_status_t mps2_startup_all_aps(
 	efi_pei_mp_services_ppi *ignored1,
 	efi_ap_procedure procedure, efi_boolean_t run_serial,
 	efi_uintn_t timeout_usec, void *argument)
@@ -30,7 +30,7 @@ static efi_return_status_t mps2_startup_all_aps(
 	return mp_startup_all_aps(procedure, run_serial, timeout_usec, argument);
 }
 
-static efi_return_status_t mps2_startup_all_cpus(
+static __efiapi efi_return_status_t mps2_startup_all_cpus(
 	efi_pei_mp_services_ppi *ignored1,
 	efi_ap_procedure procedure,
 	efi_uintn_t timeout_usec, void *argument)
@@ -38,7 +38,7 @@ static efi_return_status_t mps2_startup_all_cpus(
 	return mp_startup_all_cpus(procedure, timeout_usec, argument);
 }
 
-static efi_return_status_t mps2_startup_this_ap(
+static __efiapi efi_return_status_t mps2_startup_this_ap(
 	efi_pei_mp_services_ppi *ignored1,
 	efi_ap_procedure procedure, efi_uintn_t processor_number,
 	efi_uintn_t timeout_usec, void *argument)
@@ -46,21 +46,21 @@ static efi_return_status_t mps2_startup_this_ap(
 	return mp_startup_this_ap(procedure, processor_number, timeout_usec, argument);
 }
 
-static efi_return_status_t mps2_switch_bsp(
+static __efiapi efi_return_status_t mps2_switch_bsp(
 	efi_pei_mp_services_ppi *ignored1, efi_uintn_t ignored2,
 	efi_boolean_t ignored3)
 {
 	return mp_api_unsupported();
 }
 
-static efi_return_status_t mps2_enable_disable_ap(
+static __efiapi efi_return_status_t mps2_enable_disable_ap(
 	efi_pei_mp_services_ppi *ignored1,
 	efi_uintn_t ignored2, efi_boolean_t ignored3, efi_uint32_t *ignored4)
 {
 	return mp_api_unsupported();
 }
 
-static efi_return_status_t mps2_identify_processor(
+static __efiapi efi_return_status_t mps2_identify_processor(
 	efi_pei_mp_services_ppi *ignored1,
 	efi_uintn_t *processor_number)
 {

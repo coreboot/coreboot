@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config SOC_QUALCOMM_SC7280
 	bool
 	default n

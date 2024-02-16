@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config SOC_INTEL_BROADWELL
 	bool
 	select CACHE_MRC_SETTINGS

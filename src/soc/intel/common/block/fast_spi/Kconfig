@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config SOC_INTEL_COMMON_BLOCK_FAST_SPI
 	bool
 	select SPI_FLASH_DONT_INCLUDE_ALL_DRIVERS

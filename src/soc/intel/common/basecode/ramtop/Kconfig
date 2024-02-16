@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config SOC_INTEL_COMMON_BASECODE_RAMTOP
 	bool
 	default n

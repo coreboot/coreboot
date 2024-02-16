@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config SOC_AMD_COMMON_BLOCK_ROOT_COMPLEX
 	bool
 	select SOC_AMD_COMMON_BLOCK_SMN

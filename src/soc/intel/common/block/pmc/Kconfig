@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config SOC_INTEL_COMMON_BLOCK_PMC
 	depends on SOC_INTEL_COMMON_BLOCK_GPIO
 	depends on ACPI_INTEL_HARDWARE_SLEEP_VALUES

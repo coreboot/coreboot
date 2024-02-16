@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config DISABLE_HECI1_AT_PRE_BOOT
 	bool "Disable HECI1 at the end of boot"
 	depends on SOC_INTEL_COMMON_BLOCK_CSE

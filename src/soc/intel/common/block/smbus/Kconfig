@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config SOC_INTEL_COMMON_BLOCK_SMBUS
 	bool
 	select SOUTHBRIDGE_INTEL_COMMON_SMBUS

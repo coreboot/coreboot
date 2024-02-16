@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config SOC_INTEL_ELKHARTLAKE
 	bool
 	select ACPI_INTEL_HARDWARE_SLEEP_VALUES

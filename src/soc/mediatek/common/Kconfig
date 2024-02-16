@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config SOC_MEDIATEK_COMMON
 	bool
 	select NO_ECAM_MMCONF_SUPPORT if PCI

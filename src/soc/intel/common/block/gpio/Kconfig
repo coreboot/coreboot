@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config SOC_INTEL_COMMON_BLOCK_GPIO
 	bool
 	select HAVE_DEBUG_GPIO

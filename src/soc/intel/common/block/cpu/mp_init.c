@@ -147,7 +147,7 @@ void get_microcode_info(const void **microcode, int *parallel)
  * creation of the new node will be skipped. This node will have the APIC ID defined
  * in devicetree.
  */
-static void init_cpus(void)
+void init_cpus(void)
 {
 	struct device *dev = dev_find_path(NULL, DEVICE_PATH_CPU_CLUSTER);
 	assert(dev != NULL);

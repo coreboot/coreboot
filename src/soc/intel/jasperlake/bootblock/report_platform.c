@@ -29,6 +29,7 @@ static struct {
 	{ PCI_DID_INTEL_JSL_ID_3, "Jasperlake SKU2-1" },
 	{ PCI_DID_INTEL_JSL_ID_4, "Jasperlake SKU2-2" },
 	{ PCI_DID_INTEL_JSL_ID_5, "Jasperlake SKU4-3" },
+	{ PCI_DID_INTEL_JSL_ID_6, "Jasperlake SKU4-3" },
 };
 
 static struct {

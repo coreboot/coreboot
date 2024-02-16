@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config SOUTHBRIDGE_INTEL_COMMON_RESET
 	def_bool n
 	select HAVE_CF9_RESET

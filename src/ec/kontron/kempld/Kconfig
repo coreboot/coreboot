@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config EC_KONTRON_KEMPLD
 	bool
 	select DRIVERS_UART_8250IO

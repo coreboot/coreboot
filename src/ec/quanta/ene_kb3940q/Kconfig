@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config EC_QUANTA_ENE_KB3940Q
 	bool
 	help

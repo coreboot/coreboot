@@ -1,2 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config SOUTHBRIDGE_TI_PCI1X2X
 	bool

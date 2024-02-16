@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_DELL_SNB_IVB_WORKSTATIONS
 	def_bool n
 	select BOARD_ROMSIZE_KB_12288

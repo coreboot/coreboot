@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 comment "Tiger Lake U"
 
 config BOARD_CLEVO_L140MU

@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_EXAMPLE_MIN86
 	bool "Minimal x86 fake board"
 	help

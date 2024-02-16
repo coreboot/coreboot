@@ -1,2 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_CAVIUM_CN8100_SFF_EVB
 	bool "CN8100 SFF EVB"

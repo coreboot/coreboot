@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_DELL_OPTIPLEX_9010
 	bool "OptiPlex 9010 SFF"
 

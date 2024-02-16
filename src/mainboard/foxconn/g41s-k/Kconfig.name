@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_FOXCONN_G41S_K
 	bool "G41S-K"
 config BOARD_FOXCONN_G41M

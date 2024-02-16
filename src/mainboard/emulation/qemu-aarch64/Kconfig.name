@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 config BOARD_EMULATION_QEMU_AARCH64
 	bool "QEMU AArch64 (virt)"
 	help

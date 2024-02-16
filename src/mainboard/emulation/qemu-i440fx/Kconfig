@@ -1,3 +1,5 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
 if BOARD_EMULATION_QEMU_X86_I440FX
 
 config BOARD_SPECIFIC_OPTIONS

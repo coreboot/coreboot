@@ -60,15 +60,6 @@ chip soc/intel/cannonlake
 						device usb 2.5 on end
 					end
 					chip drivers/usb/acpi
-						device usb 2.6 off end
-					end
-					chip drivers/usb/acpi
-						device usb 2.7 off end
-					end
-					chip drivers/usb/acpi
-						device usb 2.8 off end
-					end
-					chip drivers/usb/acpi
 						register "desc" = ""USB2 Type-A Rear Lower""
 						register "type" = "UPC_TYPE_A"
 						register "group" = "ACPI_PLD_GROUP(1, 1)"
@@ -85,9 +76,6 @@ chip soc/intel/cannonlake
 						register "type" = "UPC_TYPE_USB3_A"
 						register "group" = "ACPI_PLD_GROUP(0, 1)"
 						device usb 3.1 on end
-					end
-					chip drivers/usb/acpi
-						device usb 3.2 off end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB3 Type-C Rear""

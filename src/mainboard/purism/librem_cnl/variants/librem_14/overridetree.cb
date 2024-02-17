@@ -55,21 +55,6 @@ chip soc/intel/cannonlake
 						device usb 2.2 on end
 					end
 					chip drivers/usb/acpi
-						device usb 2.3 off end
-					end
-					chip drivers/usb/acpi
-						device usb 2.4 off end
-					end
-					chip drivers/usb/acpi
-						device usb 2.5 off end
-					end
-					chip drivers/usb/acpi
-						register "desc" = ""Left Type-A Port""
-						register "type" = "UPC_TYPE_A"
-						register "group" = "ACPI_PLD_GROUP(1, 0)"
-						device usb 2.6 off end
-					end
-					chip drivers/usb/acpi
 						register "desc" = ""Right Type-C Port""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "group" = "ACPI_PLD_GROUP(0, 1)"
@@ -82,9 +67,6 @@ chip soc/intel/cannonlake
 						device usb 2.8 on end
 					end
 					chip drivers/usb/acpi
-						device usb 2.9 off end
-					end
-					chip drivers/usb/acpi
 						register "desc" = ""Right Type-A Port""
 						register "type" = "UPC_TYPE_A"
 						register "group" = "ACPI_PLD_GROUP(0, 0)"
@@ -95,15 +77,6 @@ chip soc/intel/cannonlake
 						register "type" = "UPC_TYPE_A"
 						register "group" = "ACPI_PLD_GROUP(1, 0)"
 						device usb 3.1 on end
-					end
-					chip drivers/usb/acpi
-						register "desc" = ""Right Type-C Port""
-						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
-						register "group" = "ACPI_PLD_GROUP(0, 1)"
-						device usb 3.2 off end
-					end
-					chip drivers/usb/acpi
-						device usb 3.3 off end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""Left Type-C Port""
@@ -131,7 +104,6 @@ chip soc/intel/cannonlake
 			register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC2)"	# Type-C left
 			register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Card Reader
 		end
-		device ref xdci off end
 		device ref i2c0 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""HTIX5288""

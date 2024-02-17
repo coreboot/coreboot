@@ -230,8 +230,8 @@ out:
 
 int parse_flat_binary_to_payload(const struct buffer *input,
 				 struct buffer *output,
-				 uint32_t loadaddress,
-				 uint32_t entrypoint,
+				 uint64_t loadaddress,
+				 uint64_t entrypoint,
 				 enum cbfs_compression algo)
 {
 	comp_func_ptr compress;

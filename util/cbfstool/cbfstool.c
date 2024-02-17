@@ -57,7 +57,7 @@ static struct param {
 	 */
 	long long int baseaddress_input;
 	uint32_t baseaddress_assigned;
-	uint32_t loadaddress;
+	uint64_t loadaddress;
 	uint32_t headeroffset;
 	/*
 	 * Input can be negative. It will be transformed to offset from start of region (if
@@ -65,7 +65,7 @@ static struct param {
 	 */
 	long long int headeroffset_input;
 	uint32_t headeroffset_assigned;
-	uint32_t entrypoint;
+	uint64_t entrypoint;
 	uint32_t size;
 	uint32_t alignment;
 	uint32_t pagesize;
@@ -2157,7 +2157,7 @@ int main(int argc, char **argv)
 				param.baseaddress_assigned = 1;
 				break;
 			case 'l':
-				param.loadaddress = strtoul(optarg, &suffix, 0);
+				param.loadaddress = strtoull(optarg, &suffix, 0);
 				if (!*optarg || (suffix && *suffix)) {
 					ERROR("Invalid load address '%s'.\n",
 						optarg);
@@ -2165,7 +2165,7 @@ int main(int argc, char **argv)
 				}
 				break;
 			case 'e':
-				param.entrypoint = strtoul(optarg, &suffix, 0);
+				param.entrypoint = strtoull(optarg, &suffix, 0);
 				if (!*optarg || (suffix && *suffix)) {
 					ERROR("Invalid entry point '%s'.\n",
 						optarg);

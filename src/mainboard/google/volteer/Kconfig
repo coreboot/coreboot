@@ -243,4 +243,7 @@ config VARIANT_HAS_MIPI_CAMERA
 	bool
 	default n
 
+config USE_PM_ACPI_TIMER
+	default n
+
 endif # BOARD_GOOGLE_BASEBOARD_VOLTEER

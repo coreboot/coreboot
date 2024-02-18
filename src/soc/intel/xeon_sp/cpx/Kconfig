@@ -7,6 +7,7 @@ config SOC_INTEL_COOPERLAKE_SP
 	select CACHE_MRC_SETTINGS
 	select NO_FSP_TEMP_RAM_EXIT
 	select HAVE_INTEL_FSP_REPO
+	select FSP_SPEC_VIOLATION_XEON_SP_HEAP_WORKAROUND
 	help
 	  Intel Cooper Lake-SP support
 

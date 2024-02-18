@@ -221,6 +221,17 @@ config FSP_USES_CB_STACK
 	  without reinitializing stack pointer. This feature is
 	  supported Icelake onwards.
 
+config FSP_SPEC_VIOLATION_XEON_SP_HEAP_WORKAROUND
+	bool
+	help
+	 Starting with Intel CPX there is a bug in there reference code during
+	 the pipe init. This code synchronises the CAR between sockets in FSP-M.
+	 This code implicitly assumes that the FSP heap is right above the
+	 RC heap, where both of them are located at the bottom part of CAR.
+	 Select this to have an explicit handling of the FSP StackBase to work
+	 around this issue. This is needed on multi-socket Xeon-SP systems.
+	 This will place the FSP heap right above the FSP-M RC heap.
+
 config FSP_TEMP_RAM_SIZE
 	hex
 	help

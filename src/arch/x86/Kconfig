@@ -251,8 +251,9 @@ config BOOTBLOCK_SIMPLE
 	bool "Always load fallback"
 
 config BOOTBLOCK_NORMAL
-	select CONFIGURABLE_CBFS_PREFIX
 	bool "Switch to normal if CMOS says so"
+	select CONFIGURABLE_CBFS_PREFIX
+	select SEPARATE_ROMSTAGE
 
 endchoice
 

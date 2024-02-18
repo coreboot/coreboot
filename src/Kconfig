@@ -245,7 +245,6 @@ config COMPRESS_BOOTBLOCK
 
 config SEPARATE_ROMSTAGE
 	bool "Build a separate romstage"
-	default y
 	help
 	  Build a separate romstage that is loaded by bootblock. With this
 	  option disabled the romstage sources are linked inside the bootblock
@@ -1537,4 +1536,7 @@ config HAVE_ROMSTAGE
 config HAVE_RAMSTAGE
 	bool
 	default n if RAMPAYLOAD
+	default y
+
+config SEPARATE_ROMSTAGE
 	default y

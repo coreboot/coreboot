@@ -19,6 +19,10 @@ bool soc_cpu_is_enabled(const size_t idx);
 void set_bios_init_completion(void);
 uint8_t soc_get_iio_ioapicid(int socket, int stack);
 
+bool is_memtype_non_volatile(uint16_t mem_type);
+bool is_memtype_reserved(uint16_t mem_type);
+bool is_memtype_processor_attached(uint16_t mem_type);
+
 struct iiostack_resource {
 	uint8_t     no_of_stacks;
 	STACK_RES   res[CONFIG_MAX_SOCKET * MAX_IIO_STACK];

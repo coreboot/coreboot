@@ -195,3 +195,18 @@ uint8_t soc_get_iio_ioapicid(int socket, int stack)
 	}
 	return ioapic_id;
 }
+
+bool is_memtype_reserved(uint16_t mem_type)
+{
+	return !!(mem_type & MEM_TYPE_RESERVED);
+}
+
+bool is_memtype_non_volatile(uint16_t mem_type)
+{
+	return !(mem_type & MEMTYPE_VOLATILE_MASK);
+}
+
+bool is_memtype_processor_attached(uint16_t mem_type)
+{
+	return true;
+}

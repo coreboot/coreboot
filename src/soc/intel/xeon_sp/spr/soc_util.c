@@ -167,3 +167,24 @@ void soc_set_mrc_cold_boot_flag(bool cold_boot_required)
 		cmos_write(new_mrc_status, CMOS_OFFSET_MRC_STATUS);
 
 }
+
+bool is_memtype_reserved(uint16_t mem_type)
+{
+	return !!(mem_type & MEM_TYPE_RESERVED);
+}
+
+bool is_memtype_non_volatile(uint16_t mem_type)
+{
+	return !(mem_type & MEMTYPE_VOLATILE_MASK);
+}
+
+bool is_memtype_processor_attached(uint16_t mem_type)
+{
+	/*
+	 * Refer to the definition of MEM_TYPE enum type in
+	 * vendorcode/intel/fsp/fsp2_0/sapphirerapids_sp/MemoryMapDataHob.h,
+	 * values less than MemTypeCxlAccVolatileMem represents
+	 * processor attached memory
+	 */
+	return (mem_type < MemTypeCxlAccVolatileMem);
+}

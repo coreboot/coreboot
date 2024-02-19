@@ -99,19 +99,17 @@ static unsigned int get_srat_memory_entries(acpi_srat_mem_t *srat_mem)
 			"ElementSize: 0x%x, type: %d, reserved: %d\n",
 			e, addr, mem_element->BaseAddress, size,
 			mem_element->ElementSize, mem_element->Type,
-			(mem_element->Type & MEM_TYPE_RESERVED));
+			is_memtype_reserved(mem_element->Type));
 
 		assert(mmap_index < MAX_ACPI_MEMORY_AFFINITY_COUNT);
 
 		/* skip reserved memory region */
-		if (mem_element->Type & MEM_TYPE_RESERVED)
+		if (is_memtype_reserved(mem_element->Type))
 			continue;
-#if CONFIG(SOC_INTEL_SAPPHIRERAPIDS_SP)
-		/* Skip all non processor attached memory regions */
-		/* In other words, skip all the types >= MemTypeCxlAccVolatileMem */
-		if (mem_element->Type >= MemTypeCxlAccVolatileMem)
+		/* skip all non processor attached memory regions */
+		if (CONFIG(SOC_INTEL_HAS_CXL) &&
+			(!is_memtype_processor_attached(mem_element->Type)))
 			continue;
-#endif
 
 		/* skip if this address is already added */
 		bool skip = false;
@@ -134,7 +132,7 @@ static unsigned int get_srat_memory_entries(acpi_srat_mem_t *srat_mem)
 		srat_mem[mmap_index].length_high = (uint32_t)(size >> 32);
 		srat_mem[mmap_index].proximity_domain = mem_element->SocketId;
 		srat_mem[mmap_index].flags = ACPI_SRAT_MEMORY_ENABLED;
-		if ((mem_element->Type & MEMTYPE_VOLATILE_MASK) == 0)
+		if (is_memtype_non_volatile(mem_element->Type))
 			srat_mem[mmap_index].flags |= ACPI_SRAT_MEMORY_NONVOLATILE;
 		++mmap_index;
 	}

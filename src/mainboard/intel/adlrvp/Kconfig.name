@@ -9,12 +9,6 @@ config BOARD_INTEL_ADLRVP_P_EXT_EC
 config BOARD_INTEL_ADLRVP_P_MCHP
 	bool "Alderlake-P RVP with Microchip EC"
 
-config BOARD_INTEL_ADLRVP_M
-	bool "Alderlake-M RVP"
-
-config BOARD_INTEL_ADLRVP_M_EXT_EC
-	bool "Alderlake-M RVP with Chrome EC"
-
 config BOARD_INTEL_ADLRVP_N
 	bool "Alderlake-N RVP"
 

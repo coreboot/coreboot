@@ -39,7 +39,7 @@ void __weak variant_devtree_update(void)
 	/* Override dev tree settings per board */
 }
 
-#if CONFIG(BOARD_INTEL_ADLRVP_M_EXT_EC) || CONFIG(BOARD_INTEL_ADLRVP_N_EXT_EC)
+#if CONFIG(BOARD_INTEL_ADLRVP_N_EXT_EC)
 static void add_fw_config_oem_string(const struct fw_config *config, void *arg)
 {
 	struct smbios_type11 *t;
@@ -59,7 +59,7 @@ static void mainboard_smbios_strings(struct device *dev, struct smbios_type11 *t
 
 static void mainboard_enable(struct device *dev)
 {
-#if CONFIG(BOARD_INTEL_ADLRVP_M_EXT_EC) || CONFIG(BOARD_INTEL_ADLRVP_N_EXT_EC)
+#if CONFIG(BOARD_INTEL_ADLRVP_N_EXT_EC)
 	dev->ops->get_smbios_strings = mainboard_smbios_strings;
 #endif
 }
@@ -82,13 +82,9 @@ const char *mainboard_vbt_filename(void)
 		if (cpu_id == CPUID_RAPTORLAKE_J0)
 			return "vbt_adlrvp_rpl_lp5.bin";
 		return "vbt_adlrvp_lp5.bin";
-	case ADL_M_LP5:
-		return "vbt_adlrvp_m_lp5.bin";
 	case ADL_P_DDR5_1:
 	case ADL_P_DDR5_2:
 		return "vbt_adlrvp_ddr5.bin";
-	case ADL_M_LP4:
-		return "vbt_adlrvp_m_lp4.bin";
 	default:
 		return "vbt.bin";
 	}

@@ -28,3 +28,7 @@ pragma Assertion_Policy
    Refined_Post         => Disable);
 pragma Overflow_Mode (General => Strict, Assertions => Eliminated);
 pragma SPARK_Mode (On);
+
+pragma Warnings
+  (GNAT, Off, """Side_Effects"" is not a valid aspect identifier",
+   Reason => """Side_Effects"" is new and needed for toolchain transition.");

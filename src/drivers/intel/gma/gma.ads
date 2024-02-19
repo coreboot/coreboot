@@ -11,6 +11,6 @@ package GMA is
       port     : in     Interfaces.C.int)
       return Interfaces.C.int
    with
-      Export, Convention => C, External_Name => "gma_read_edid";
+      Side_Effects, Export, Convention => C, External_Name => "gma_read_edid";
 
 end GMA;

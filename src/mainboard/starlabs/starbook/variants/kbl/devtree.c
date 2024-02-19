@@ -22,14 +22,17 @@ void devtree_update(void)
 		disable_turbo();
 		soc_conf->tdp_pl1_override	= 15;
 		soc_conf->tdp_pl2_override	= 15;
+		cfg->tcc_offset			= 20;
 		break;
 	case PP_BALANCED:
 		soc_conf->tdp_pl1_override	= 17;
 		soc_conf->tdp_pl2_override	= 20;
+		cfg->tcc_offset			= 15;
 		break;
 	case PP_PERFORMANCE:
 		soc_conf->tdp_pl1_override	= 20;
 		soc_conf->tdp_pl2_override	= 25;
+		cfg->tcc_offset			= 10;
 		break;
 	}
 

@@ -6,6 +6,8 @@
 #include <cpu/x86/msr.h>
 #include <hob_iiouds.h>
 
+#define MEM_ADDR_64MB_SHIFT_BITS 26
+
 void lock_pam0123(void);
 void unlock_pam_regions(void);
 

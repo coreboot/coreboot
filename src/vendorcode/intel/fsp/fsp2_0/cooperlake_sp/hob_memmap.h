@@ -57,7 +57,6 @@ are permitted provided that the following conditions are met:
 #define MAX_IMC_PER_SOCKET                2
 
 #define MEM_TYPE_RESERVED (1 << 8)
-#define MEM_ADDR_64MB_SHIFT_BITS 26
 
 #define NGN_MAX_SERIALNUMBER_STRLEN 4
 #define NGN_MAX_PARTNUMBER_STRLEN 20

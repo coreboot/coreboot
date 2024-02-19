@@ -56,6 +56,9 @@ config BOARD_GOOGLE_GIMBLE4ES
 config BOARD_GOOGLE_GLADIOS
 	bool "->  Gladios"
 
+config BOARD_GOOGLE_GLASSWAY
+	bool "->  Glassway"
+
 config BOARD_GOOGLE_GOTHRAX
 	bool "->  Gothrax"
 

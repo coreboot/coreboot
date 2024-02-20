@@ -45,10 +45,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_IRQ_WAKE(GPP_A17, NONE, PLTRST, LEVEL, INVERT),
 	/* GPP_A18 : [] ==> CAM_PSW_L */
 	PAD_NC(GPP_A18, NONE),
-	/* GPP_A19 : [] ==> EN_PP3300_SSD */
-	PAD_CFG_GPO(GPP_A19, 1, DEEP),
-	/* GPP_A20 : [] ==> SSD_PERST_L */
-	PAD_CFG_GPO_LOCK(GPP_A20, 1, LOCK_CONFIG),
 	/* GPP_A21 : [] ==> WWAN_CONFIG2 */
 	PAD_NC(GPP_A21, NONE),
 
@@ -377,6 +373,9 @@ static const struct pad_config gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
+	/* GPP_A20 : [] ==> SSD_PERST_L */
+	PAD_CFG_GPO(GPP_A20, 0, DEEP),
+
 	/* GPP_B18 : [] ==> I2C4_SDA */
 	PAD_CFG_NF(GPP_B18, NONE, DEEP, NF2),
 	/* GPP_B19 : [] ==> I2C4_SCL */
@@ -395,9 +394,6 @@ static const struct pad_config early_gpio_table[] = {
 	/* GPP_E13 :  [] ==> MEM_CH_SEL */
 	PAD_CFG_GPI(GPP_E13, NONE, DEEP),
 
-	/* GPP_A20 : [] ==> SSD_PERST_L */
-	PAD_CFG_GPO(GPP_A20, 0, DEEP),
-
 	/* GPP_C13 : [] ==> LAN_PERST_L */
 	PAD_CFG_GPO(GPP_C13, 0, DEEP),
 
@@ -406,15 +402,18 @@ static const struct pad_config early_gpio_table[] = {
 
 	/* GPP_D02 : [] ==> SD_PERST_L */
 	PAD_CFG_GPO(GPP_D02, 0, DEEP),
+
+	/* GPP_A19 : [] ==> EN_PP3300_SSD */
+	PAD_CFG_GPO(GPP_A19, 1, DEEP),
 };
 
 static const struct pad_config romstage_gpio_table[] = {
 	/* GPP_C13 : [] ==> LAN_PERST_L */
 	PAD_CFG_GPO(GPP_C13, 0, DEEP),
-	/* A20 : [] ==> SSD_PERST_L */
-	PAD_CFG_GPO(GPP_A20, 0, DEEP),
 	/* GPP_D02 : [] ==> SD_PERST_L */
 	PAD_CFG_GPO(GPP_D02, 0, DEEP),
+	/* GPP_A20 : [] ==> SSD_PERST_L */
+	PAD_CFG_GPO(GPP_A20, 1, DEEP),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

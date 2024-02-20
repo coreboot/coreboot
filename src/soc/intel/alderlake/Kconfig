@@ -549,4 +549,9 @@ config HSPHY_FW_MAX_SIZE
 config HAVE_BMP_LOGO_COMPRESS_LZMA
 	default n
 
+config SOC_INTEL_COMMON_BLOCK_ACPI_SLP_S0_FREQ_HZ
+	default 0x2005
+	help
+	  slp_s0_residency granularity in 122us ticks (i.e. ~8.2KHz).
+
 endif

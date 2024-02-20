@@ -367,10 +367,8 @@ static const struct pad_config gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
-	/* GPP_A19 : [] ==> EN_PP3300_SSD */
-	PAD_CFG_GPO(GPP_A19, 0, DEEP),
 	/* GPP_A20 : [] ==> SSD_PERST_L */
-	PAD_CFG_GPO(GPP_A20, 1, DEEP),
+	PAD_CFG_GPO(GPP_A20, 0, DEEP),
 
 	/* GPP_B16 : [] ==> SOC_HDMI_HPD_L */
 	PAD_CFG_NF(GPP_B16, NONE, DEEP, NF2),
@@ -405,16 +403,14 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPP_C00, 1, DEEP),
 	/* GPP_C01 : [] ==> SOC_TCHSCR_RST_R_L */
 	PAD_CFG_GPO(GPP_C01, 0, DEEP),
+
+	/* GPP_A19 : [] ==> EN_PP3300_SSD */
+	PAD_CFG_GPO(GPP_A19, 1, DEEP),
 };
 
 static const struct pad_config romstage_gpio_table[] = {
-	/* GPP_A19 : [] ==> EN_PP3300_SSD */
-	PAD_CFG_GPO(GPP_A19, 1, DEEP),
-
 	/* GPP_B11 : [] ==> EN_FP_PWR */
 	PAD_CFG_GPO(GPP_B11, 0, DEEP),
-	/* A20 : [] ==> SSD_PERST_L */
-	PAD_CFG_GPO(GPP_A20, 0, DEEP),
 	/* GPP_C23 : [] ==> FP_RST_ODL */
 	PAD_CFG_GPO(GPP_C23, 0, DEEP),
 	/* GPP_C00 : [] ==> EN_TCHSCR_PWR */
@@ -423,6 +419,8 @@ static const struct pad_config romstage_gpio_table[] = {
 	PAD_CFG_GPO(GPP_C01, 0, DEEP),
 	/* GPP_D02 : Not Connected */
 	PAD_NC(GPP_D02, NONE),
+	/* GPP_A20 : [] ==> SSD_PERST_L */
+	PAD_CFG_GPO(GPP_A20, 1, DEEP),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

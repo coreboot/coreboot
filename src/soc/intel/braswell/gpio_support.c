@@ -143,8 +143,3 @@ int gpio_get(gpio_t gpio_num)
 
 	return pad_value & PAD_RX_BIT;
 }
-
-int get_gpio(int community_base, int pad0_offset)
-{
-	return (read32p(community_base + pad0_offset)) & PAD_RX_BIT;
-}

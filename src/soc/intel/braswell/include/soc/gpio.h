@@ -466,7 +466,6 @@ struct soc_gpio_config *mainboard_get_gpios(void);
 
 typedef int gpio_t;
 
-int get_gpio(int community_base, int pad0_offset);
 uint16_t gpio_family_number(uint8_t community, uint8_t pad);
 uint32_t *gpio_pad_config_reg(uint8_t community, uint8_t pad);
 

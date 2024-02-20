@@ -139,8 +139,4 @@ static inline bool cbfs_ro_file_exists(const char *name)
 	return _cbfs_boot_lookup(name, true, &mdata) >= 0;
 }
 
-
-/* Legacy API. Designated for removal in the future. */
-#include <cbfs_legacy.h>
-
 #endif

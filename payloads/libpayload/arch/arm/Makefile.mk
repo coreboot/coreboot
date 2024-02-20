@@ -43,8 +43,6 @@ libc-$(CONFIG_LP_GPL) += memcpy.S memset.S memmove.S
 
 libgdb-y += gdb.c
 
-libcbfs-$(CONFIG_LP_CBFS) += dummy_media.c
-
 # Add other classes here when you put assembly files into them!
 head.o-S-ccopts += $(arm_asm_flags)
 libc-S-ccopts += $(arm_asm_flags)

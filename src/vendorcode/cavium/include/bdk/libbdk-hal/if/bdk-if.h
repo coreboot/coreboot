@@ -113,8 +113,8 @@ typedef union
         uint64_t    reserved2   : 32;
         unsigned    speed       : 24;
         unsigned    lanes       : 6;
-        int         full_duplex : 1;
-        int         up          : 1;
+        unsigned    full_duplex : 1;
+        unsigned    up          : 1;
     } s;
 } bdk_if_link_t;
 

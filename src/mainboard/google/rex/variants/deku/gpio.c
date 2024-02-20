@@ -38,10 +38,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC_LOCK(GPP_A17, NONE, LEVEL, INVERT, LOCK_CONFIG),
 	/* GPP_A18 : net NC is not present in the given design */
 	PAD_NC(GPP_A18, NONE),
-	/* GPP_A19 : [] ==> EN_PWR_SSD_OD */
-	PAD_CFG_GPO(GPP_A19, 1, DEEP),
-	/* GPP_A20 : [] ==> SSD_PERST_L */
-	PAD_CFG_GPO_LOCK(GPP_A20, 1, LOCK_CONFIG),
 	/* GPP_A21 : [] ==> SOC_GPP_A21 */
 	PAD_NC(GPP_A21, NONE),
 
@@ -395,17 +391,20 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_H09, NONE, DEEP, NF1),
 	/* GPP_H10 : [] ==> SOC_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER_LOCK(GPP_H10, NONE, LOCK_CONFIG),
+
+	/* GPP_A19 : [] ==> EN_PP3300_SSD */
+	PAD_CFG_GPO(GPP_A19, 1, DEEP),
 };
 
 static const struct pad_config romstage_gpio_table[] = {
-	/* GPP_A20 : [] ==> SSD_PERST_L */
-	PAD_CFG_GPO(GPP_A20, 0, DEEP),
-
 	/* GPP_C13 : [] ==> LAN0_PERST_L */
 	PAD_CFG_GPO(GPP_C13, 0, DEEP),
 
 	/* GPP_D02 : [] ==> LAN1_PERST_L */
 	PAD_CFG_GPO(GPP_D02, 0, DEEP),
+
+	/* GPP_A20 : [] ==> SSD_PERST_L */
+	PAD_CFG_GPO(GPP_A20, 1, DEEP),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

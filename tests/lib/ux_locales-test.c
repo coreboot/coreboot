@@ -184,65 +184,39 @@ static void test_ux_locales_null_terminated(void **state)
  * If `_expect` is NULL, then the function should not find anything.
  * Otherwise, the function should find the corresponding expect value.
  */
-#define _UX_LOCALES_GET_TEXT_TEST(_test_name, _name, _lang_id, _expect)                        \
+#define UX_LOCALES_GET_TEXT_TEST(_name, _lang_id, _expect)                                     \
 	((struct CMUnitTest) {                                                                 \
-		.name = _test_name,                                                            \
+		.name = "test_ux_locales_get_text(name=" _name ", lang_id=" #_lang_id          \
+			", expect=" #_expect ")",                                              \
 		.test_func = test_ux_locales_get_text,                                         \
 		.setup_func = setup_default,                                                   \
 		.teardown_func = teardown_unmap,                                               \
-		.initial_state = &(struct ux_locales_test_state)                               \
-			{                                                                      \
-				.name = _name,                                                 \
-				.lang_id = _lang_id,                                           \
-				.expect = _expect,                                             \
-			},                                                                     \
+		.initial_state = &(struct ux_locales_test_state) {                             \
+			.name = _name,                                                         \
+			.lang_id = _lang_id,                                                   \
+			.expect = _expect,                                                     \
+		},                                                                             \
 	})
-
-/*
- * When exporting test results to xml files, cmocka doesn't escape double quotes for test names.
- * Therefore, double quotes in CMUnitTest.name will lead to invalid xml files, causing build
- * failure (with JUNIT_OUTPUT=y). As a result, we can only use _expect for CMUnitTest.name in
- * the macro, but not #_expect.
- */
-#define UX_LOCALES_GET_TEXT_FOUND_TEST(_name, _lang_id, _expect)                               \
-	(_UX_LOCALES_GET_TEXT_TEST                                                             \
-		(                                                                              \
-			(                                                                      \
-				"test_ux_locales_get_text_found(name=" _name                   \
-				", lang_id=" #_lang_id ", expect=" _expect ")"                 \
-			),                                                                     \
-			_name, _lang_id, _expect                                               \
-		))
-
-#define UX_LOCALES_GET_TEXT_NOT_FOUND_TEST(_name, _lang_id)                                    \
-	(_UX_LOCALES_GET_TEXT_TEST                                                             \
-		(                                                                              \
-			(                                                                      \
-				"test_ux_locales_get_text_not_found(name=" _name               \
-				", lang_id=" #_lang_id ")"                                     \
-			),                                                                     \
-			_name, _lang_id, NULL                                                  \
-		))
 
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
 		/* Get text successfully. */
-		UX_LOCALES_GET_TEXT_FOUND_TEST("name_1", 0, "translation_1_0"),
+		UX_LOCALES_GET_TEXT_TEST("name_1", 0, "translation_1_0"),
 		/* Get text with name and id both in the middle. */
-		UX_LOCALES_GET_TEXT_FOUND_TEST("name_15", 25, "translation_15_25"),
+		UX_LOCALES_GET_TEXT_TEST("name_15", 25, "translation_15_25"),
 		/* Ensure we check the whole string of 'name'.
 		   ('name_2' is the prefix of 'name_20') */
-		UX_LOCALES_GET_TEXT_NOT_FOUND_TEST("name_2", 3),
+		UX_LOCALES_GET_TEXT_TEST("name_2", 3, NULL),
 		/* Ensure we check the whole string of 'lang_id'.
 		   (id:'2' is the prefix of id:'25' in 'name_15') */
-		UX_LOCALES_GET_TEXT_NOT_FOUND_TEST("name_15", 2),
+		UX_LOCALES_GET_TEXT_TEST("name_15", 2, NULL),
 		/* Ensure we will fallback to 0. */
-		UX_LOCALES_GET_TEXT_FOUND_TEST("name_1", 7, "translation_1_0"),
+		UX_LOCALES_GET_TEXT_TEST("name_1", 7, "translation_1_0"),
 		/* Do not search for locale id with unmatched name. */
-		UX_LOCALES_GET_TEXT_NOT_FOUND_TEST("name_15", 8),
+		UX_LOCALES_GET_TEXT_TEST("name_15", 8, NULL),
 		/* Validity check of lang_id > 100. We will fallback to 0. */
-		UX_LOCALES_GET_TEXT_FOUND_TEST("name_1", 100, "translation_1_0"),
+		UX_LOCALES_GET_TEXT_TEST("name_1", 100, "translation_1_0"),
 		/* cbfs not found. */
 		cmocka_unit_test_setup_teardown(test_ux_locales_bad_cbfs, setup_default,
 						teardown_unmap),

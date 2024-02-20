@@ -130,7 +130,7 @@ static void pnp_set_resource(struct device *dev, struct resource *resource)
 			       resource->index, resource_type(resource),
 			       resource->size);
 		else
-			printk(BIOS_ERR, "%s %02lx %s size: 0x%010llx "
+			printk(BIOS_NOTICE, "%s %02lx %s size: 0x%010llx "
 			       "not assigned in devicetree\n", dev_path(dev), resource->index,
 			       resource_type(resource), resource->size);
 		return;

@@ -336,7 +336,7 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket,
 	}
 
 	// Add IOAT End Points (with memory resources. We don't report every End Point device.)
-	if (is_ioat_iio_stack_res(ri)) {
+	if (CONFIG(HAVE_IOAT_DOMAINS) && is_ioat_iio_stack_res(ri)) {
 		for (int b = ri->BusBase; b <= ri->BusLimit; ++b) {
 			struct device *dev = pcidev_path_on_bus(b, PCI_DEVFN(0, 0));
 			while (dev) {
@@ -520,7 +520,7 @@ static unsigned long acpi_create_satc(unsigned long current, const IIO_UDS *hob)
 		for (int stack = (MAX_LOGIC_IIO_STACK - 1); stack >= 0; --stack) {
 			const STACK_RES *ri = &hob->PlatformData.IIO_resource[socket].StackRes[stack];
 			// Add the IOAT ATS devices to the SATC
-			if (is_ioat_iio_stack_res(ri))
+			if (CONFIG(HAVE_IOAT_DOMAINS) && is_ioat_iio_stack_res(ri))
 				current = xeonsp_create_satc_ioat(current, ri);
 		}
 	}

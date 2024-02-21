@@ -101,4 +101,6 @@ struct ddr_base_info {
 	u32 data_rate;
 };
 
+const struct sdram_info *get_sdram_config(void);
+
 #endif

@@ -313,7 +313,13 @@ static void mt_mem_init_run(struct dramc_param *dparam,
 
 void mt_mem_init(struct dramc_param *dparam)
 {
-	const struct sdram_info *sdram_param = get_sdram_config();
+	const struct sdram_info *sdram_param = NULL;
+	static struct sdram_info fake_sdram_param;
+
+	if (CONFIG(MEDIATEK_DRAM_ADAPTIVE))
+		sdram_param = &fake_sdram_param;
+	else
+		sdram_param = get_sdram_config();
 
 	mt_mem_init_run(dparam, sdram_param);
 }

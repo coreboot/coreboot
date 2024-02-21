@@ -8,6 +8,21 @@ config SOC_MEDIATEK_COMMON
 
 if SOC_MEDIATEK_COMMON
 
+config MEDIATEK_DRAM_ADAPTIVE
+	bool
+	default n if SOC_MEDIATEK_MT8173
+	default n if SOC_MEDIATEK_MT8183
+	default n if SOC_MEDIATEK_MT8192
+	default y
+	help
+	  Starting from MT8195, MediaTek platform supports "dram adaptive" to
+	  automatically detect dram information, including channel, rank, die
+	  size..., and can automatically configure EMI settings. So we can just
+	  pass a placeholder param blob to `mt_mem_init_run` by enabling this
+	  option.
+	  Platforms (MT8173, MT8183, MT8192) which do not support "dram adaptive"
+	  need to implement `get_sdram_config` to get the DRAM configuration info.
+
 config MEDIATEK_DRAM_DVFS
 	bool
 	default n

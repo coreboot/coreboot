@@ -320,12 +320,15 @@ int smm_setup_relocation_handler(struct smm_loader_params *params)
 }
 
 static void setup_smihandler_params(struct smm_runtime *mod_params,
-				    uintptr_t smram_base,
-				    uintptr_t smram_size,
 				    struct smm_loader_params *loader_params)
 {
-	mod_params->smbase = smram_base;
-	mod_params->smm_size = smram_size;
+	uintptr_t tseg_base;
+	size_t tseg_size;
+
+	smm_region(&tseg_base, &tseg_size);
+
+	mod_params->smbase = tseg_base;
+	mod_params->smm_size = tseg_size;
 	mod_params->save_state_size = loader_params->cpu_save_state_size;
 	mod_params->num_cpus = loader_params->num_cpus;
 	mod_params->gnvs_ptr = (uint32_t)(uintptr_t)acpi_get_gnvs();
@@ -534,7 +537,7 @@ int smm_load_module(const uintptr_t smram_base, const size_t smram_size,
 
 	struct smm_runtime *smihandler_params = rmodule_parameters(&smi_handler);
 	params->handler = rmodule_entry(&smi_handler);
-	setup_smihandler_params(smihandler_params, smram_base, smram_size, params);
+	setup_smihandler_params(smihandler_params, params);
 
 	return smm_module_setup_stub(stub_segment_base, smram_size, params);
 }

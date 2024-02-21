@@ -113,7 +113,6 @@ config VARIANT_DIR
 	default "brox" if BOARD_GOOGLE_BROX
 
 config VBOOT
-	select VBOOT_EARLY_EC_SYNC
 	select VBOOT_LID_SWITCH
 
 config DIMM_SPD_SIZE

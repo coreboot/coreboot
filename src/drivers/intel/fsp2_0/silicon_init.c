@@ -151,7 +151,7 @@ static void do_silicon_init(struct fsp_header *hdr)
 	fsps_return_value_handler(FSP_SILICON_INIT_API, status);
 
 	/* Reinitialize CPUs if FSP-S has done MP Init */
-	if (CONFIG(USE_INTEL_FSP_MP_INIT))
+	if (CONFIG(USE_INTEL_FSP_MP_INIT) && !fsp_is_multi_phase_init_enabled())
 		do_mpinit_after_fsp();
 
 	if (!CONFIG(PLATFORM_USES_FSP2_2))
@@ -197,6 +197,10 @@ static void do_silicon_init(struct fsp_header *hdr)
 	}
 	timestamp_add_now(TS_FSP_MULTI_PHASE_SI_INIT_END);
 	post_code(POSTCODE_FSP_MULTI_PHASE_SI_INIT_EXIT);
+
+	/* Reinitialize CPUs if FSP-S has done MP Init */
+	if (CONFIG(USE_INTEL_FSP_MP_INIT))
+		do_mpinit_after_fsp();
 }
 
 static void *fsps_allocator(void *arg_unused, size_t size, const union cbfs_mdata *mdata_unused)

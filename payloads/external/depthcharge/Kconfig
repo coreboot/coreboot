@@ -26,6 +26,18 @@ config DEPTHCHARGE_REVISION
 
 endchoice
 
+config DEPTHCHARGE_REPO
+	string "depthcharge repo site"
+	default "https://chromium.googlesource.com/chromiumos/platform/depthcharge"
+	help
+	  repo site
+
+config DEPTHCHARGE_BRANCH
+	string "branch from the depthcharge repo"
+	default "origin/main"
+	help
+	  repo branch name
+
 config DEPTHCHARGE_REVISION_ID
 	string "Insert a commit's SHA-1 or a branch name"
 	depends on DEPTHCHARGE_REVISION

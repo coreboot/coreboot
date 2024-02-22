@@ -3,7 +3,7 @@ STABLE_COMMIT_ID=c48613a71c1ee29295b184c51fe5dadf71b543c4
 
 project_name=depthcharge
 project_dir=$(CURDIR)/depthcharge
-project_git_repo=https://chromium.googlesource.com/chromiumos/platform/depthcharge
+project_git_repo=$(DEPTHCHARGE_REPO)
 project_config_file=$(project_dir)/.config
 output_dir=$(project_dir)/build
 libpayload_dir=$(abspath $(CURDIR)/../../libpayload)
@@ -13,7 +13,7 @@ coreboot_build_dir=$(abspath $(CURDIR)/../../../build)
 VBOOT_SOURCE ?= $(abspath $(CURDIR)/../../../3rdparty/vboot)
 EC_HEADERS ?= $(abspath $(CURDIR)/../../../3rdparty/chromeec/include)
 
-TAG-$(DEPTHCHARGE_MASTER)=origin/main
+TAG-$(DEPTHCHARGE_MASTER)=$(DEPTHCHARGE_BRANCH)
 TAG-$(DEPTHCHARGE_STABLE)=$(STABLE_COMMIT_ID)
 TAG-$(DEPTHCHARGE_REVISION)=$(DEPTHCHARGE_REVISION_ID)
 

@@ -310,14 +310,13 @@ RMODULE_LDFLAGS  := -z defs -Bsymbolic
 # rmodule_link_rules is a function that should be called with:
 # (1) the object name to link
 # (2) the dependencies
-# (3) heap size of the relocatable module
-# (4) arch for which the rmodules are to be linked
+# (3) arch for which the rmodules are to be linked
 # It will create the necessary Make rules to create a rmodule. The resulting
 # rmdoule is named $(1).rmod
 define rmodule_link
-$(strip $(1)): $(strip $(2)) $$(COMPILER_RT_rmodules_$(4)) $(call src-to-obj,rmodules_$(4),src/lib/rmodule.ld) | $$(RMODTOOL)
-	$$(LD_rmodules_$(4)) $$(LDFLAGS_rmodules_$(4)) $(RMODULE_LDFLAGS) $($(1)-ldflags) -T $(call src-to-obj,rmodules_$(4),src/lib/rmodule.ld) --defsym=__heap_size=$(strip $(3)) -o $$@ --whole-archive --start-group $(filter-out %.ld,$(2)) --end-group
-	$$(NM_rmodules_$(4)) -n $$@ > $$(basename $$@).map
+$(strip $(1)): $(strip $(2)) $$(COMPILER_RT_rmodules_$(3)) $(call src-to-obj,rmodules_$(3),src/lib/rmodule.ld) | $$(RMODTOOL)
+	$$(LD_rmodules_$(3)) $$(LDFLAGS_rmodules_$(3)) $(RMODULE_LDFLAGS) $($(1)-ldflags) -T $(call src-to-obj,rmodules_$(3),src/lib/rmodule.ld) -o $$@ --whole-archive --start-group $(filter-out %.ld,$(2)) --end-group
+	$$(NM_rmodules_$(3)) -n $$@ > $$(basename $$@).map
 endef
 
 endif

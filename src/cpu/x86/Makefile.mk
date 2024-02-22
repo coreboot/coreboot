@@ -59,7 +59,7 @@ rmodules_$(ARCH-$(TARGET_STAGE)-y)-$(CONFIG_PARALLEL_MP) += sipi_vector.S
 $(SIPI_DOTO): $(call src-to-obj,rmodules_$(ARCH-$(TARGET_STAGE)-y),src/cpu/x86/sipi_vector.S)
 	$(LD_rmodules_$(ARCH-$(TARGET_STAGE)-y)) -nostdlib -r -o $@ $^
 
-$(eval $(call rmodule_link,$(SIPI_ELF), $(SIPI_DOTO), 0,$(ARCH-$(TARGET_STAGE)-y)))
+$(eval $(call rmodule_link,$(SIPI_ELF), $(SIPI_DOTO),$(ARCH-$(TARGET_STAGE)-y)))
 
 $(SIPI_BIN): $(SIPI_RMOD)
 	$(OBJCOPY_$(TARGET_STAGE)) -O binary $< $@

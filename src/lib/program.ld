@@ -134,7 +134,7 @@
 .heap . : {
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_heap = .;
-	. += (ENV_RMODULE ? __heap_size : CONFIG_HEAP_SIZE);
+	. += CONFIG_HEAP_SIZE;
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_eheap = .;
 	RECORD_SIZE(heap)

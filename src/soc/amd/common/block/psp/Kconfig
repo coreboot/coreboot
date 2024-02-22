@@ -162,3 +162,9 @@ config AMD_FWM_POSITION
 	default 0xe20000 if AMD_FWM_POSITION_E20000
 	default 0xf20000 if AMD_FWM_POSITION_F20000
 	default 0xfa0000 if AMD_FWM_POSITION_FA0000
+
+config USE_AMDFWTOOL
+	bool
+	default y if SOC_AMD_COMMON_BLOCK_PSP
+	help
+	  Select this if AMDFWTOOL needs to be built

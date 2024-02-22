@@ -141,6 +141,12 @@ NOCOMPILE:=
 endif
 endif
 
+# When building the "tools" target, the BUILD_ALL_TOOLS variable needs
+# to be set before reading the tools' Makefiles
+ifneq ($(filter tools, $(MAKECMDGOALS)), )
+BUILD_ALL_TOOLS:=1
+endif
+
 $(xcompile): util/xcompile/xcompile
 	rm -f $@
 	$< $(XGCCPATH) > $@.tmp

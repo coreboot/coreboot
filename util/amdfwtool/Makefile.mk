@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
+ifneq ($(BUILD_ALL_TOOLS)$(CONFIG_USE_AMDFWTOOL),)
+
 amdfwtoolobj = amdfwtool.o data_parse.o signed_psp.o handle_file.o
 amdfwreadobj = amdfwread.o
 
@@ -25,3 +27,5 @@ $(objutil)/amdfwtool/amdfwtool: $(addprefix $(objutil)/amdfwtool/,$(amdfwtoolobj
 $(objutil)/amdfwtool/amdfwread: $(addprefix $(objutil)/amdfwtool/,$(amdfwreadobj))
 	printf "   AMDFWREAD\n"
 	$(HOSTCC) $(addprefix $(objutil)/amdfwtool/,$(amdfwreadobj)) $(LDFLAGS) -o $@
+
+endif # ifneq ($(BUILD_ALL_TOOLS)$(CONFIG_USE_AMDFWTOOL),)

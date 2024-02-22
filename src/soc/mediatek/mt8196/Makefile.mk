@@ -29,6 +29,7 @@ romstage-y += ../common/memory.c memory.c
 romstage-y += ../common/memory_test.c
 romstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 
+ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += ../common/bl31.c
 ramstage-y += ../common/dpm_v2.c
 ramstage-y += dramc_info.c
 ramstage-y += ../common/early_init.c
@@ -39,6 +40,8 @@ ramstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 ramstage-$(CONFIG_PCI) += ../common/pcie.c pcie.c
 ramstage-y += soc.c
 ramstage-y += ../common/usb.c usb.c
+
+BL31_MAKEARGS += PLAT=mt8196
 
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8196/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/include

@@ -1,0 +1,67 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+# -----------------------------------------------------------------
+entries
+
+# Bank: 1
+# -----------------------------------------------------------------
+0	120	r	0	reserved_memory
+
+# -----------------------------------------------------------------
+# coreboot config options: ramtop
+304	80	h	0	ramtop
+
+# RTC_BOOT_BYTE (coreboot hardcoded)
+384	1	e	2	boot_option
+388	4	h	0	reboot_counter
+
+# -----------------------------------------------------------------
+# coreboot config options: console
+395	4	e	3	debug_level
+# coreboot config options: cpu
+#400	8	r	0	reserved for century byte
+408	1	e	1	vtd
+416	2	e	5	power_profile
+424	1	e	4	me_state
+432	4	h	0	me_state_counter
+
+# coreboot config options: Devices
+504	1	e	1	wireless
+
+# coreboot config options: check sums
+984	16	h	0	check_sum
+
+# Bank: 2
+# embedded controller settings (outside the checksummed area)
+# -----------------------------------------------------------------
+
+enumerations
+
+#ID	value	text
+1	0	Disable
+1	1	Enable
+
+2	0	Fallback
+2	1	Normal
+
+3	0	Emergency
+3	1	Alert
+3	2	Critical
+3	3	Error
+3	4	Warning
+3	5	Notice
+3	6	Info
+3	7	Debug
+3	8	Spew
+
+4	0	Enable
+4	1	Disable
+
+5	0	Power Saver
+5	1	Balanced
+5	2	Performance
+
+# -----------------------------------------------------------------
+checksums
+
+checksum 392 983 984

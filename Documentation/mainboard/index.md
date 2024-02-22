@@ -333,6 +333,8 @@ StarLite Mk IV <starlabs/lite_glkr.md>
 StarLite Mk V <starlabs/lite_adl.md>
 StarBook Mk V <starlabs/starbook_tgl.md>
 StarBook Mk VI <starlabs/starbook_adl.md>
+Byte Mk II <starlabs/byte_adl.md>
+
 Flashing devices <starlabs/common/flashing.md>
 ```
 

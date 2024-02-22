@@ -1,0 +1,219 @@
+chip soc/intel/alderlake
+	# FSP UPDs
+	register "enable_c6dram"		= "true"
+	register "eist_enable"			= "true"
+	register "cnvi_bt_audio_offload"	= "true"
+	register "cnvi_bt_core"			= "true"
+	register "sagv"				= "SaGv_Enabled"
+
+	# Serial I/O
+	register "serial_io_uart_mode" = "{
+		[PchSerialIoIndexUART0]		= PchSerialIoSkipInit,
+	}"
+
+	# Power
+	register "pch_slp_s3_min_assertion_width"	= "2"			# 50ms
+	register "pch_slp_s4_min_assertion_width"	= "3"			# 1s
+	register "pch_slp_sus_min_assertion_width"	= "3"			# 500ms
+	register "pch_slp_a_min_assertion_width"	= "3"			# 2s
+
+	device domain 0 on
+		device ref igpu		on
+			register "ddi_ports_config" = "{
+				[DDI_PORT_A]			= DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_B]			= DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_1]			= DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_2]			= DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+			}"
+		end
+		device ref tcss_xhci	on
+			chip drivers/usb/acpi
+				device ref tcss_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB Type-C""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						device ref tcss_usb3_port1 on end
+					end
+				end
+			end
+		end
+		device ref gna		on  end
+		device ref xhci		on
+			# Front panel USB Type C
+			register "usb2_ports[0]"		= "USB2_PORT_MID(OC_SKIP)"
+			register "tcss_ports[0]"		= "TCSS_PORT_DEFAULT(OC_SKIP)"
+
+			# Back Top USB Type A [5]
+			register "usb2_ports[1]"		= "USB2_PORT_MID(OC_SKIP)"
+			register "usb3_ports[2]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
+
+			# Back Bottom USB Type A [6]
+			register "usb2_ports[2]"		= "USB2_PORT_MID(OC_SKIP)"
+			register "usb3_ports[3]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
+
+			# Front Left USB Type A [3]
+			register "usb2_ports[5]"		= "USB2_PORT_MID(OC_SKIP)"
+			register "usb3_ports[1]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
+
+			# Front Right USB Type A [2]
+			register "usb2_ports[6]"		= "USB2_PORT_MID(OC_SKIP)"
+			register "usb3_ports[0]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
+
+			# Internal Bluetooth
+			register "usb2_ports[9]"		= "USB2_PORT_MID(OC_SKIP)"
+
+			chip drivers/usb/acpi
+				device ref xhci_root_hub on
+					chip drivers/usb/acpi
+						register "desc"		= ""USB Type-C""
+						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
+						device ref usb2_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc"		= ""Back Top USB Type-A""
+						register "type"		= "UPC_TYPE_USB3_A"
+						device ref usb2_port2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc"		= ""Back Top USB Type-C""
+						register "type"		= "UPC_TYPE_USB3_A"
+						device ref usb3_port3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc"		= ""Back Bottom USB Type-A""
+						register "type"		= "UPC_TYPE_USB3_A"
+						device ref usb2_port3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc"		= ""Back Bottom USB Type-C""
+						register "type"		= "UPC_TYPE_USB3_A"
+						device ref usb3_port4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc"		= ""Front Left USB Type-A""
+						register "type"		= "UPC_TYPE_USB3_A"
+						device ref usb2_port6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc"		= ""Front Left USB Type-C""
+						register "type"		= "UPC_TYPE_USB3_A"
+						device ref usb3_port2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc"		= ""Front Right USB Type-A""
+						register "type"		= "UPC_TYPE_USB3_A"
+						device ref usb2_port7 on end
+					end
+					chip drivers/usb/acpi
+						register "desc"		= ""Front Right USB Type-C""
+						register "type"		= "UPC_TYPE_USB3_A"
+						device ref usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc"		= ""Internal Bluetooth""
+						register "type"		= "UPC_TYPE_INTERNAL"
+						device ref usb2_port10 on end
+					end
+				end
+			end
+		end
+		device ref shared_sram	on  end
+		device ref cnvi_wifi	on  end
+		device ref sata		on
+			register "sata_salp_support"		= "1"
+			register "sata_ports_enable[0]"		= "1"
+			register "sata_ports_dev_slp[0]"	= "1"
+			register "sata_ports_enable[1]"		= "1"
+			register "sata_ports_dev_slp[1]"	= "1"
+		end
+		device ref pcie_rp9	on				# RLT8111 (LAN 1)
+			register "pch_pcie_rp[PCH_RP(9)]" = "{
+				.clk_src			= 2,
+				.clk_req			= 2,
+				.flags				= PCIE_RP_LTR | PCIE_RP_AER,
+
+			}"
+			smbios_slot_desc			"SlotTypePciExpressGen4x1"
+								"SlotLengthShort"
+								"SlotTypePci"
+								"SlotDataBusWidth4X"
+		end
+		device ref pcie_rp10	on				# RLT8125B (LAN 2)
+			register "pch_pcie_rp[PCH_RP(10)]" = "{
+				.clk_src			= 3,
+				.clk_req			= 3,
+				.flags				= PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc			"SlotTypePciExpressGen3X4"
+								"SlotLengthShort"
+								"SlotTypePci"
+								"SlotDataBusWidth4X"
+		end
+		device ref pcie_rp12	on				# SSD x4
+			register "pch_pcie_rp[PCH_RP(12)]" = "{
+				.clk_src			= 0,
+				.clk_req			= 0,
+				.flags				= PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc			"SlotTypePciExpressGen3X4"
+								"SlotLengthLong"
+								"M.2/M 2280"
+								"SlotDataBusWidth4X"
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio"		= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D16)"
+				register "reset_gpio"		= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H0)"
+				register "srcclk_pin"		= "0"
+				device generic 0 on end
+			end
+		end
+		device ref uart0	on  end
+		device ref pch_espi	on
+			register "gen1_dec"			= "0x00040069"
+			register "gen2_dec"			= "0x00fc0201"
+			register "gen3_dec"			= "0x000c0081"
+
+			chip ec/starlabs/merlin
+				# Port pair 4Eh/4Fh
+				device pnp 4e.00 on  end			# IO Interface
+				device pnp 4e.01 off end			# Com 1
+				device pnp 4e.02 off end			# Com 2
+				device pnp 4e.04 off end			# System Wake-Up
+				device pnp 4e.05 off end			# PS/2 Mouse
+				device pnp 4e.06 off end			# PS/2 Keyboard
+				device pnp 4e.0a off end			# Consumer IR
+				device pnp 4e.0f off end			# Shared Memory/Flash Interface
+				device pnp 4e.10 off end			# RTC-like Timer
+				device pnp 4e.11 off end			# Power Management Channel 1
+				device pnp 4e.12 off end			# Power Management Channel 2
+				device pnp 4e.13 off end			# Serial Peripheral Interface
+				device pnp 4e.14 off end			# Platform EC Interface
+				device pnp 4e.17 off end			# Power Management Channel 3
+				device pnp 4e.18 off end			# Power Management Channel 4
+				device pnp 4e.19 off end			# Power Management Channel 5
+			end
+		end
+		device ref pmc		hidden
+			chip drivers/intel/pmc_mux
+				device generic 0 on
+					chip drivers/intel/pmc_mux/conn
+						use usb2_port1 as usb2_port
+						use tcss_usb3_port1 as usb3_port
+						device generic 0 alias conn0 on end
+					end
+				end
+			end
+		end
+		device ref hda		on
+			subsystemid 0x14f1 0x035e
+			register "pch_hda_sdi_enable[0]"		= "1"
+			register "pch_hda_audio_link_hda_enable"	= "1"
+			register "pch_hda_idisp_codec_enable"		= "1"
+			register "pch_hda_idisp_link_frequency"		= "HDA_LINKFREQ_96MHZ"
+			register "pch_hda_idisp_link_tmode"		= "HDA_TMODE_8T"
+		end
+		device ref smbus	on  end
+	end
+	chip drivers/crb
+		device mmio 0xfed40000 on end
+	end
+end

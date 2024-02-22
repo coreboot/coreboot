@@ -1,0 +1,104 @@
+config BOARD_STARLABS_BYTE_SERIES
+	def_bool n
+	select EC_STARLABS_ITE
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_CMOS_DEFAULT
+	select HAVE_OPTION_TABLE
+	select INTEL_GMA_HAVE_VBT
+	select INTEL_LPSS_UART_FOR_CONSOLE
+	select MAINBOARD_HAS_TPM2
+	select NO_UART_ON_SUPERIO
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select VALIDATE_INTEL_DESCRIPTOR
+
+config BOARD_STARLABS_BYTE_ADL
+	select BOARD_ROMSIZE_KB_16384
+	select BOARD_STARLABS_BYTE_SERIES
+	select CRB_TPM
+	select DRIVERS_INTEL_PMC
+	select EC_STARLABS_MERLIN
+	select EC_STARLABS_NEED_ITE_BIN
+	select HAVE_INTEL_PTT
+	select SOC_INTEL_ALDERLAKE
+	select SOC_INTEL_ALDERLAKE_PCH_N
+	select SOC_INTEL_COMMON_BLOCK_TCSS
+	select SOC_INTEL_CRASHLOG
+	select SPI_FLASH_WINBOND
+
+if BOARD_STARLABS_BYTE_SERIES
+
+config CONSOLE_SERIAL
+	default n if !EDK2_DEBUG
+
+config D3COLD_SUPPORT
+	default n
+
+config DEVICETREE
+	default "variants/\$(CONFIG_VARIANT_DIR)/devicetree.cb"
+
+config DIMM_SPD_SIZE
+	default 512
+
+config EC_GPE_SCI
+	default 0x6e
+
+config EC_STARLABS_ADD_ITE_BIN
+	default n
+
+config EC_STARLABS_ITE_BIN_PATH
+	string
+	depends on EC_STARLABS_NEED_ITE_BIN
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/ec.bin"
+
+config EC_VARIANT_DIR
+	default "merlin"
+
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/\$(CONFIG_VARIANT_DIR)/vboot.fmd" if VBOOT
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/\$(CONFIG_VARIANT_DIR)/board.fmd"
+
+config IFD_BIN_PATH
+	string
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/flashdescriptor.bin"
+
+config MAINBOARD_DIR
+	default "starlabs/byte_adl"
+
+config MAINBOARD_FAMILY
+	string
+	default "Y2"
+
+config MAINBOARD_PART_NUMBER
+	default "Byte Mk II"
+
+config MAINBOARD_SMBIOS_PRODUCT_NAME
+	default "Byte"
+
+config ME_BIN_PATH
+	string
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/intel_me.bin"
+
+config POWER_STATE_DEFAULT_ON_AFTER_FAILURE
+	default n
+
+config EDK2_BOOTSPLASH_FILE
+	string
+	default "3rdparty/blobs/mainboard/starlabs/Logo.bmp"
+
+config SOC_INTEL_CSE_SEND_EOP_EARLY
+	default n
+
+config UART_FOR_CONSOLE
+	default 0
+
+config USE_PM_ACPI_TIMER
+	default n
+
+config VBOOT
+	select VBOOT_VBNV_FLASH
+
+config VARIANT_DIR
+	default "mk_ii"
+
+endif

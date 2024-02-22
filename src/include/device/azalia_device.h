@@ -4,8 +4,8 @@
 #define DEVICE_AZALIA_H
 
 #include <acpi/acpi.h>
-#include <device/mmio.h>
 #include <device/device.h>
+#include <device/mmio.h>
 #include <stdint.h>
 
 #define HDA_GCAP_REG		0x00
@@ -36,98 +36,104 @@ extern const u32 cim_verb_data_size;
 extern const u32 pc_beep_verbs[];
 extern const u32 pc_beep_verbs_size;
 
+/*
+ * The tables found in this file are derived from the Intel High Definition
+ * Audio Specification Revision 1.0a, published 17 June 2010
+ *
+ * 7.3.3.31 Configuration Default (page 177)
+ */
 enum azalia_pin_connection {
-	JACK = 0,
-	NC,
-	INTEGRATED,
-	JACK_AND_INTEGRATED,
+	AZALIA_JACK                = 0x0,
+	AZALIA_NC                  = 0x1,
+	AZALIA_INTEGRATED          = 0x2,
+	AZALIA_JACK_AND_INTEGRATED = 0x3,
 };
 
-enum azalia_pin_color {
-	COLOR_UNKNOWN = 0,
-	BLACK,
-	GREY,
-	BLUE,
-	GREEN,
-	RED,
-	ORANGE,
-	YELLOW,
-	PURPLE,
-	PINK,
-	WHITE = 0xe,
-	COLOR_OTHER = 0xf,
+enum azalia_pin_location_gross {
+	AZALIA_EXTERNAL_PRIMARY_CHASSIS = 0x0,
+	AZALIA_INTERNAL                 = 0x1,
+	AZALIA_SEPARATE_CHASSIS         = 0x2,
+	AZALIA_LOCATION_OTHER           = 0x3,
 };
 
-enum azalia_pin_type {
-	TYPE_UNKNOWN = 0,
-	STEREO_MONO_1_8,
-	STEREO_MONO_1_4,
-	ATAPI,
-	RCA,
-	OPTICAL,
-	OTHER_DIGITAL,
-	OTHER_ANALOG,
-	MULTICHANNEL_ANALOG,
-	XLR,
-	RJ_11,
-	COMBINATION,
-	TYPE_OTHER = 0xf
+enum azalia_pin_location_geometric {
+	AZALIA_GEOLOCATION_NA = 0x0,
+	AZALIA_REAR           = 0x1,
+	AZALIA_FRONT          = 0x2,
+	AZALIA_LEFT           = 0x3,
+	AZALIA_RIGHT          = 0x4,
+	AZALIA_TOP            = 0x5,
+	AZALIA_BOTTOM         = 0x6,
+	AZALIA_SPECIAL7       = 0x7,
+	AZALIA_SPECIAL8       = 0x8,
+	AZALIA_SPECIAL9       = 0x9,
 };
 
 enum azalia_pin_device {
-	LINE_OUT = 0,
-	SPEAKER,
-	HP_OUT,
-	CD,
-	SPDIF_OUT,
-	DIGITAL_OTHER_OUT,
-	MODEM_LINE_SIDE,
-	MODEM_HANDSET_SIDE,
-	LINE_IN,
-	AUX,
-	MIC_IN,
-	TELEPHONY,
-	SPDIF_IN,
-	DIGITAL_OTHER_IN,
-	DEVICE_OTHER = 0xf,
+	AZALIA_LINE_OUT           = 0x0,
+	AZALIA_SPEAKER            = 0x1,
+	AZALIA_HP_OUT             = 0x2,
+	AZALIA_CD                 = 0x3,
+	AZALIA_SPDIF_OUT          = 0x4,
+	AZALIA_DIGITAL_OTHER_OUT  = 0x5,
+	AZALIA_MODEM_LINE_SIDE    = 0x6,
+	AZALIA_MODEM_HANDSET_SIDE = 0x7,
+	AZALIA_LINE_IN            = 0x8,
+	AZALIA_AUX                = 0x9,
+	AZALIA_MIC_IN             = 0xa,
+	AZALIA_TELEPHONY          = 0xb,
+	AZALIA_SPDIF_IN           = 0xc,
+	AZALIA_DIGITAL_OTHER_IN   = 0xd,
+	AZALIA_DEVICE_OTHER       = 0xf,
 };
 
-enum azalia_pin_location_1 {
-	NA = 0,
-	REAR,
-	FRONT,
-	LEFT,
-	RIGHT,
-	TOP,
-	BOTTOM,
-	SPECIAL7,
-	SPECIAL8,
-	SPECIAL9,
+enum azalia_pin_type {
+	AZALIA_TYPE_UNKNOWN        = 0x0,
+	AZALIA_STEREO_MONO_1_8     = 0x1,
+	AZALIA_STEREO_MONO_1_4     = 0x2,
+	AZALIA_ATAPI_INTERNAL      = 0x3,
+	AZALIA_RCA                 = 0x4,
+	AZALIA_OPTICAL             = 0x5,
+	AZALIA_OTHER_DIGITAL       = 0x6,
+	AZALIA_OTHER_ANALOG        = 0x7,
+	AZALIA_MULTICHANNEL_ANALOG = 0x8,
+	AZALIA_XLR                 = 0x9,
+	AZALIA_RJ_11               = 0xa,
+	AZALIA_COMBINATION         = 0xb,
+	AZALIA_TYPE_OTHER          = 0xf,
 };
 
-enum azalia_pin_location_2 {
-	EXTERNAL_PRIMARY_CHASSIS = 0,
-	INTERNAL,
-	SEPARATE_CHASSIS,
-	LOCATION_OTHER
+enum azalia_pin_color {
+	AZALIA_COLOR_UNKNOWN = 0x0,
+	AZALIA_BLACK         = 0x1,
+	AZALIA_GREY          = 0x2,
+	AZALIA_BLUE          = 0x3,
+	AZALIA_GREEN         = 0x4,
+	AZALIA_RED           = 0x5,
+	AZALIA_ORANGE        = 0x6,
+	AZALIA_YELLOW        = 0x7,
+	AZALIA_PURPLE        = 0x8,
+	AZALIA_PINK          = 0x9,
+	AZALIA_WHITE         = 0xe,
+	AZALIA_COLOR_OTHER   = 0xf,
 };
 
 enum azalia_pin_misc {
-	JACK_PRESENCE_DETECT = 0,
-	NO_JACK_PRESENCE_DETECT,
+	AZALIA_JACK_PRESENCE_DETECT    = 0x0,
+	AZALIA_NO_JACK_PRESENCE_DETECT = 0x1,
 };
 
-#define AZALIA_PIN_DESC(conn, location2, location1, dev, type, color, misc, \
-			association, sequence) \
-	(((conn) << 30) | \
-	 ((location2) << 28) | \
-	 ((location1) << 24) | \
-	 ((dev) << 20) | \
-	 ((type) << 16) | \
-	 ((color) << 12) | \
-	 ((misc) << 8) | \
-	 ((association) << 4) | \
-	 ((sequence) << 0))
+#define AZALIA_PIN_DESC(conn, location2, location1, dev, type, color, misc,	\
+	                association, sequence)					\
+	((((conn)        << 30) & 0xc0000000) |					\
+	 (((location2)   << 28) & 0x30000000) |					\
+	 (((location1)   << 24) & 0x0f000000) |					\
+	 (((dev)         << 20) & 0x00f00000) |					\
+	 (((type)        << 16) & 0x000f0000) |					\
+	 (((color)       << 12) & 0x0000f000) |					\
+	 (((misc)        <<  8) & 0x00000f00) |					\
+	 (((association) <<  4) & 0x000000f0) |					\
+	 (((sequence)    <<  0) & 0x0000000f))
 
 #define AZALIA_ARRAY_SIZES const u32 pc_beep_verbs_size =	\
 	ARRAY_SIZE(pc_beep_verbs);				\

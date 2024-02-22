@@ -17,7 +17,7 @@
 
 static void acp_update32(uintptr_t bar, uint32_t reg, uint32_t clear, uint32_t set)
 {
-	clrsetbits32((void *)(bar + reg), clear, set);
+	clrsetbits32p(bar + reg, clear, set);
 }
 
 void acp_init(struct device *dev)

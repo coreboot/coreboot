@@ -75,6 +75,7 @@ config SOC_AMD_GLINDA
 	select SOC_AMD_COMMON_BLOCK_UCODE		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_FSP_CCX_CPPC_HOB		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_FSP_DMI_TABLES		# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_FSP_PCIE_CLK_REQ
 	select SOC_AMD_COMMON_FSP_PCI			# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_FSP_PRELOAD_FSPS
 	select SOC_AMD_COMMON_ROMSTAGE_LEGACY_DMA_FIXUP

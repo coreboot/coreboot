@@ -43,7 +43,7 @@ enum pcie_link_speed {
 };
 
 /* Sync with PCIE_ASPM_TYPE */
-enum pcie_asmp {
+enum pcie_aspm {
 	aspm_disabled,
 	L0s,
 	L1,
@@ -57,7 +57,7 @@ struct vendorcode_amd_opensil_genoa_poc_mpio_config {
 	uint8_t gpio_group;
 	enum mpio_hotplug hotplug;
 	enum pcie_link_speed speed;
-	enum pcie_asmp aspm;
+	enum pcie_aspm aspm;
 	uint8_t aspm_l1_1 : 1;
 	uint8_t aspm_l1_2 : 1;
 	uint8_t clock_pm : 1;

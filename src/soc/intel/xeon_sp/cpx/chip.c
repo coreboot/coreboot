@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
-
+#include <acpi/acpigen_pci.h>
 #include <arch/ioapic.h>
 #include <console/console.h>
 #include <console/debug.h>

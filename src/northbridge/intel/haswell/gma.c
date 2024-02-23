@@ -461,12 +461,19 @@ static void gma_generate_ssdt(const struct device *dev)
 	drivers_intel_gma_displays_ssdt_generate(&chip->gfx);
 }
 
+static void gma_func0_disable(struct device *dev)
+{
+	/* Disable VGA decode */
+	pci_or_config16(pcidev_on_root(0, 0), GGC, 1 << 1);
+}
+
 static struct device_operations gma_func0_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= gma_func0_init,
 	.acpi_fill_ssdt		= gma_generate_ssdt,
+	.vga_disable            = gma_func0_disable,
 	.ops_pci		= &pci_dev_ops_pci,
 };
 

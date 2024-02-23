@@ -23,8 +23,6 @@ RUN apt-get -y update && \
 		liblua5.4-dev \
 		linkchecker \
 		lua5.4 \
-		meson \
-		ninja-build \
 		openssh-server \
 		parallel \
 		ruby-full \

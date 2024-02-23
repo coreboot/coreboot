@@ -64,8 +64,10 @@ RUN \
 		libyaml-dev \
 		m4 \
 		make \
+		meson \
 		msitools \
 		neovim \
+		ninja-build \
 		openssh-client \
 		openssl \
 		parted \

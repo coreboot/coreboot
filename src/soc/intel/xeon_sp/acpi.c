@@ -1,7 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <assert.h>
+#include <commonlib/stdlib.h>
 #include <intelblocks/acpi.h>
+#include <soc/chip_common.h>
 #include <soc/pci_devs.h>
 #include <soc/util.h>
 #include <stdint.h>
@@ -124,4 +126,33 @@ size_t soc_get_ioapic_info(const uintptr_t *ioapic_bases[])
 	}
 
 	return index;
+}
+
+void iio_domain_set_acpi_name(struct device *dev, const char *prefix)
+{
+	const union xeon_domain_path dn = {
+		.domain_path = dev->path.domain.domain
+	};
+
+	assert(dn.socket < CONFIG_MAX_SOCKET);
+	assert(dn.stack < 16);
+	assert(prefix != NULL && strlen(prefix) == 2);
+
+	if (dn.socket >= CONFIG_MAX_SOCKET || dn.stack >= 16 ||
+	    !prefix || strlen(prefix) != 2)
+		return;
+
+	char *name = xmalloc(ACPI_NAME_BUFFER_SIZE);
+	snprintf(name, ACPI_NAME_BUFFER_SIZE, "%s%1X%1X", prefix, dn.socket, dn.stack);
+	dev->name = name;
+}
+
+const char *soc_acpi_name(const struct device *dev)
+{
+	if (dev->path.type == DEVICE_PATH_DOMAIN)
+		return dev->name;
+
+	/* FIXME: Add SoC specific device names here */
+
+	return NULL;
 }

@@ -2,8 +2,10 @@
 
 #include <assert.h>
 #include <console/console.h>
-#include <post.h>
 #include <device/pci.h>
+#include <intelblocks/acpi.h>
+#include <post.h>
+#include <soc/acpi.h>
 #include <soc/chip_common.h>
 #include <soc/soc_util.h>
 #include <soc/util.h>
@@ -170,6 +172,9 @@ static struct device_operations iio_pcie_domain_ops = {
 	.read_resources = iio_pci_domain_read_resources,
 	.set_resources = pci_domain_set_resources,
 	.scan_bus = iio_pci_domain_scan_bus,
+#if CONFIG(HAVE_ACPI_TABLES)
+	.acpi_name        = soc_acpi_name,
+#endif
 };
 
 /*
@@ -180,6 +185,9 @@ static struct device_operations ubox_pcie_domain_ops = {
 	.read_resources = noop_read_resources,
 	.set_resources = noop_set_resources,
 	.scan_bus = pci_host_bridge_scan_bus,
+#if CONFIG(HAVE_ACPI_TABLES)
+	.acpi_name        = soc_acpi_name,
+#endif
 };
 
 /*
@@ -194,6 +202,8 @@ static void soc_create_ubox_domains(const union xeon_domain_path dp, struct bus 
 		.domain_path = dp.domain_path
 	};
 
+	/* Only expect 2 UBOX buses here */
+	assert(bus_base + 1 == bus_limit);
 	for (int i = bus_base; i <= bus_limit; i++) {
 		new_path.bus = i;
 
@@ -208,6 +218,8 @@ static void soc_create_ubox_domains(const union xeon_domain_path dp, struct bus 
 			die("%s: out of memory.\n", __func__);
 
 		domain->ops = &ubox_pcie_domain_ops;
+		const char *prefix = (i == bus_base) ? DOMAIN_TYPE_UBX0 : DOMAIN_TYPE_UBX1;
+		iio_domain_set_acpi_name(domain, prefix);
 
 		struct bus *const bus = alloc_bus(domain);
 		bus->secondary = i;
@@ -226,9 +238,10 @@ void attach_iio_stacks(struct device *dev)
 
 	for (int s = 0; s < hob->PlatformData.numofIIO; ++s) {
 		for (int x = 0; x < MAX_LOGIC_IIO_STACK; ++x) {
-			if (s == 0 && x == 0)
+			if (s == 0 && x == 0) {
+				iio_domain_set_acpi_name(dev, DOMAIN_TYPE_PCIE);
 				continue;
-
+			}
 			const STACK_RES *ri = &hob->PlatformData.IIO_resource[s].StackRes[x];
 			if (ri->BusBase > ri->BusLimit)
 				continue;
@@ -249,6 +262,7 @@ void attach_iio_stacks(struct device *dev)
 					die("%s: out of memory.\n", __func__);
 
 				iio_domain->ops = &iio_pcie_domain_ops;
+				iio_domain_set_acpi_name(iio_domain, DOMAIN_TYPE_PCIE);
 			} else if (CONFIG(HAVE_IOAT_DOMAINS))
 				soc_create_ioat_domains(dn, dev->upstream, ri);
 		}

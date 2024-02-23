@@ -8,6 +8,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_def.h>
 #include <device/pciexp.h>
+#include <intelblocks/acpi.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/p2sb.h>
@@ -37,15 +38,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	mainboard_silicon_init_params(silupd);
 }
 
-#if CONFIG(HAVE_ACPI_TABLES)
-const char *soc_acpi_name(const struct device *dev);
-const char *soc_acpi_name(const struct device *dev)
-{
-	if (dev->path.type == DEVICE_PATH_DOMAIN)
-		return "PC00";
-	return NULL;
-}
-#endif
 
 static struct device_operations pci_domain_ops = {
 	.read_resources = iio_pci_domain_read_resources,
@@ -53,7 +45,7 @@ static struct device_operations pci_domain_ops = {
 	.scan_bus = iio_pci_domain_scan_bus,
 #if CONFIG(HAVE_ACPI_TABLES)
 	.write_acpi_tables = &northbridge_write_acpi_tables,
-	.acpi_name = soc_acpi_name
+	.acpi_name         = soc_acpi_name,
 #endif
 };
 

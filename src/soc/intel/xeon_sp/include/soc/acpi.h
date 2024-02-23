@@ -29,4 +29,6 @@ unsigned long acpi_fill_cedt(unsigned long current);
 unsigned long acpi_fill_hmat(unsigned long current);
 unsigned long cxl_fill_srat(unsigned long current);
 
+void iio_domain_set_acpi_name(struct device *dev, const char *prefix);
+
 #endif /* _SOC_ACPI_H_ */

@@ -15,6 +15,20 @@ union xeon_domain_path {
 	};
 };
 
+/*
+ * Every STACK can have multiple PCI domains with an unique domain type.
+ * This is only of cosmetic nature and generates more readable ACPI code,
+ * but isn't technical necessary.
+ */
+#define DOMAIN_TYPE_CPM0       "PM"
+#define DOMAIN_TYPE_CPM1       "PN"
+#define DOMAIN_TYPE_DINO       "DI"
+#define DOMAIN_TYPE_HQM0       "HQ"
+#define DOMAIN_TYPE_HQM1       "HR"
+#define DOMAIN_TYPE_PCIE       "PC"
+#define DOMAIN_TYPE_UBX0       "UC"
+#define DOMAIN_TYPE_UBX1       "UD"
+
 void iio_pci_domain_read_resources(struct device *dev);
 void iio_pci_domain_scan_bus(struct device *dev);
 void attach_iio_stacks(struct device *dev);

@@ -120,7 +120,7 @@ enum azalia_pin_misc {
 #define AZALIA_PIN_DESC(conn, location2, location1, dev, type, color, misc, \
 			association, sequence) \
 	(((conn) << 30) | \
-	 ((location2) << 27) | \
+	 ((location2) << 28) | \
 	 ((location1) << 24) | \
 	 ((dev) << 20) | \
 	 ((type) << 16) | \

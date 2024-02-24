@@ -1,5 +1,9 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
+# ugly to put it in here, but unavoidable
+config SEPARATE_ROMSTAGE
+	default n if BOARD_EMULATION_QEMU_RISCV
+
 if VENDOR_EMULATION
 
 choice

@@ -1,8 +1,8 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
 # To execute, do:
-# qemu-system-riscv64 -M virt -m 1024M -nographic -bios build/coreboot.rom
-
+# qemu-system-riscv64 -M virt -m 1024M -nographic -bios build/coreboot.rom \
+#                     -drive if=pflash,file=build/coreboot.rom,format=raw
 
 if BOARD_EMULATION_QEMU_RISCV_RV64
 
@@ -22,12 +22,18 @@ if BOARD_EMULATION_QEMU_RISCV
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
-	select SOC_UCB_RISCV
-	select BOARD_ROMSIZE_KB_16384
-	select BOOT_DEVICE_NOT_SPI_FLASH
+	select BOARD_ROMSIZE_KB_32768
 	select MISSING_BOARD_RESET
 	select DRIVERS_UART_8250MEM
 	select RISCV_HAS_OPENSBI
+	select ARCH_RISCV_S
+	select ARCH_RISCV_U
+	select ARCH_RISCV_PMP
+	select ARCH_BOOTBLOCK_RISCV
+	select ARCH_VERSTAGE_RISCV
+	select ARCH_ROMSTAGE_RISCV
+	select ARCH_RAMSTAGE_RISCV
+	select RISCV_USE_ARCH_TIMER
 
 config MEMLAYOUT_LD_FILE
 	string
@@ -43,6 +49,25 @@ config MAX_CPUS
 	int
 	default 1
 
+config RISCV_ARCH
+	string
+	default "rv64imafd" if ARCH_RISCV_RV64
+	default "rv32im" if ARCH_RISCV_RV32
+
+config RISCV_ABI
+	string
+	default "lp64d" if ARCH_RISCV_RV64
+	default "ilp32" if ARCH_RISCV_RV32
+
+config RISCV_CODEMODEL
+	string
+	default "medany" if ARCH_RISCV_RV64
+	default "medany" if ARCH_RISCV_RV32
+
+config RISCV_WORKING_HARTID
+	int
+	default 0
+
 config DRAM_SIZE_MB
 	int
 	default 16383
@@ -54,20 +79,8 @@ config OPENSBI_PLATFORM
 	string
 	default "generic"
 
-# ugly, but CBFS is placed in DRAM...
 config OPENSBI_TEXT_START
 	hex
-	default 0x80040000 if COREBOOT_ROMSIZE_KB_256
-	default 0x80080000 if COREBOOT_ROMSIZE_KB_512
-	default 0x80100000 if COREBOOT_ROMSIZE_KB_1024
-	default 0x80200000 if COREBOOT_ROMSIZE_KB_2048
-	default 0x80400000 if COREBOOT_ROMSIZE_KB_4096
-	default 0x80600000 if COREBOOT_ROMSIZE_KB_6144
-	default 0x80800000 if COREBOOT_ROMSIZE_KB_8192
-	default 0x80a00000 if COREBOOT_ROMSIZE_KB_10240
-	default 0x80c00000 if COREBOOT_ROMSIZE_KB_12288
-	default 0x81000000 if COREBOOT_ROMSIZE_KB_16384
-	default 0x82000000 if COREBOOT_ROMSIZE_KB_32768
-	default 0x84000000 if COREBOOT_ROMSIZE_KB_65536
+	default 0x80020000
 
 endif #  BOARD_EMULATION_QEMU_RISCV

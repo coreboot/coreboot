@@ -91,7 +91,7 @@ static void pch_lpc_loop_resources(struct device *dev)
 		return;
 
 	for (res = dev->resource_list; res; res = res->next) {
-		if (res->flags & IORESOURCE_IO)
+		if ((res->flags & IORESOURCE_IO) && (res->flags & IORESOURCE_ASSIGNED))
 			lpc_open_pmio_window(res->base, res->size);
 	}
 	pch_lpc_set_child_resources(dev);

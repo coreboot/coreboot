@@ -50,10 +50,10 @@ enum azalia_pin_connection {
 };
 
 enum azalia_pin_location_gross {
-	AZALIA_EXTERNAL_PRIMARY_CHASSIS = 0x0,
-	AZALIA_INTERNAL                 = 0x1,
-	AZALIA_SEPARATE_CHASSIS         = 0x2,
-	AZALIA_LOCATION_OTHER           = 0x3,
+	AZALIA_EXTERNAL_PRIMARY_CHASSIS = 0x00,
+	AZALIA_INTERNAL                 = 0x10,
+	AZALIA_SEPARATE_CHASSIS         = 0x20,
+	AZALIA_LOCATION_OTHER           = 0x30,
 };
 
 enum azalia_pin_location_geometric {
@@ -67,6 +67,16 @@ enum azalia_pin_location_geometric {
 	AZALIA_SPECIAL7       = 0x7,
 	AZALIA_SPECIAL8       = 0x8,
 	AZALIA_SPECIAL9       = 0x9,
+};
+
+enum azalia_pin_location_special {
+	AZALIA_REAR_PANEL         = AZALIA_EXTERNAL_PRIMARY_CHASSIS | AZALIA_SPECIAL7,
+	AZALIA_DRIVE_BAY          = AZALIA_EXTERNAL_PRIMARY_CHASSIS | AZALIA_SPECIAL8,
+	AZALIA_RISER              = AZALIA_INTERNAL                 | AZALIA_SPECIAL7,
+	AZALIA_DIGITAL_DISPLAY    = AZALIA_INTERNAL                 | AZALIA_SPECIAL8,
+	AZALIA_ATAPI              = AZALIA_INTERNAL                 | AZALIA_SPECIAL9,
+	AZALIA_MOBILE_LID_INSIDE  = AZALIA_LOCATION_OTHER           | AZALIA_SPECIAL7,
+	AZALIA_MOBILE_LID_OUTSIDE = AZALIA_LOCATION_OTHER           | AZALIA_SPECIAL8,
 };
 
 enum azalia_pin_device {
@@ -123,16 +133,14 @@ enum azalia_pin_misc {
 	AZALIA_NO_JACK_PRESENCE_DETECT = 0x1,
 };
 
-#define AZALIA_PIN_DESC(conn, location2, location1, dev, type, color, misc,	\
-	                association, sequence)					\
-	((((conn)        << 30) & 0xc0000000) |					\
-	 (((location2)   << 28) & 0x30000000) |					\
-	 (((location1)   << 24) & 0x0f000000) |					\
-	 (((dev)         << 20) & 0x00f00000) |					\
-	 (((type)        << 16) & 0x000f0000) |					\
-	 (((color)       << 12) & 0x0000f000) |					\
-	 (((misc)        <<  8) & 0x00000f00) |					\
-	 (((association) <<  4) & 0x000000f0) |					\
+#define AZALIA_PIN_DESC(conn, location, dev, type, color, misc, association, sequence)	\
+	((((conn)        << 30) & 0xc0000000) |						\
+	 (((location)    << 24) & 0x3f000000) |						\
+	 (((dev)         << 20) & 0x00f00000) |						\
+	 (((type)        << 16) & 0x000f0000) |						\
+	 (((color)       << 12) & 0x0000f000) |						\
+	 (((misc)        <<  8) & 0x00000f00) |						\
+	 (((association) <<  4) & 0x000000f0) |						\
 	 (((sequence)    <<  0) & 0x0000000f))
 
 #define AZALIA_ARRAY_SIZES const u32 pc_beep_verbs_size =	\

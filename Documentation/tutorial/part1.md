@@ -36,8 +36,8 @@ Arch based distros:
 `sudo pacman -S base-devel curl git gcc-ada ncurses zlib`
 
 Redhat based distros:
-`sudo dnf install git make gcc-gnat flex bison xz bzip2 gcc g++`
-`ncurses-devel wget zlib-devel patch`
+`sudo dnf install git make gcc-gnat flex bison xz bzip2 gcc g++
+ncurses-devel wget zlib-devel patch`
 
 
 ### Step 2 - Download coreboot source tree

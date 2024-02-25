@@ -29,8 +29,8 @@ Download, configure, and build coreboot
 ### Step 1 - Install tools and libraries needed for coreboot
 
 Debian based distros:
-`sudo apt-get install -y bison build-essential curl flex git gnat`
-`libncurses5-dev m4 zlib1g-dev`
+`sudo apt-get install -y bison build-essential curl flex git gnat
+libncurses5-dev libssl-dev m4 zlib1g-dev pkg-config`
 
 Arch based distros:
 `sudo pacman -S base-devel curl git gcc-ada ncurses zlib`
@@ -206,6 +206,8 @@ of the installed packages:
 * `m4, bison, curl, flex, zlib1g-dev, gcc, gnat` and `g++` or `clang`
 are needed to build the coreboot toolchain. `gcc` and `gnat` have to be
 of the same version.
+* `libssl-dev, pkg-config` are needed to build coreboot image (Step 6).
+In particular, `libcrypto` provided by `libssl-dev` package.
 
 If you started with a different distribution or package management
 system you might need to install other packages. Most likely they are

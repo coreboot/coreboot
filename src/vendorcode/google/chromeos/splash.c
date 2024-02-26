@@ -5,7 +5,9 @@
 
 const char *bmp_logo_filename(void)
 {
-	if (chromeos_device_branded_plus())
+	if (chromeos_device_branded_plus_hard())
+		return "cb_plus_logo.bmp";
+	else if (chromeos_device_branded_plus_soft())
 		return "cb_plus_logo.bmp";
 	else
 		return "cb_logo.bmp";

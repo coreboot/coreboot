@@ -59,4 +59,9 @@ bool vpd_get_bool(const char *key, enum vpd_region region,
  */
 bool vpd_get_int(const char *key, enum vpd_region region, int *val);
 
+/*
+ * Return the value after reading the VPD key named "feature_device_info".
+ */
+const char *vpd_get_feature_device_info(void);
+
 #endif  /* __VPD_H__ */

@@ -1,16 +1,15 @@
-Upcoming release - coreboot 24.02
+coreboot 24.02 release
 ========================================================================
 
-The 24.02 release is scheduled for February 19, 2024. The next release,
-which will be 24.05, is scheduled for mid-May.
-
-The coreboot project is happy to announce our next release for February
+The coreboot project is happy to announce our release for February
 2024. Over the past three months, our contributors have focused on
 refining the coreboot codebase, generally prioritizing cleanup and
 quality enhancements. We extend our gratitude to all the contributors
 who have dedicated their time and expertise. Thank you for your
 invaluable contributions to this vital phase of maintenance and
 optimization.
+
+The next release is scheduled for mid-May.
 
 
 ### Release number format update
@@ -127,9 +126,9 @@ Changes to external resources
 
 ### Toolchain updates
 * Add buildgcc support for Apple M1/M2 devices
-* crossgcc: Upgrade GCC from 11.4.0 to 13.2.0
-* util/crossgcc: Update CMake from 3.26.4 to 3.27.7
-* util/kconfig: Uprev to Linux 6.7 kconfig
+* Upgrade GCC from 11.4.0 to 13.2.0
+* Update CMake from 3.26.4 to 3.27.7
+* Uprev to Kconfig from Linux 6.7
 
 
 ### Git submodule pointers
@@ -140,9 +139,9 @@ Changes to external resources
   17bef2248d (701 commits)
 * /3rdparty/fsp: Update from commit id 481ea7cf0b to 507ef01cce (16 commits)
 * /3rdparty/intel-microcode: Update from commit id 6788bb07eb to
-  ece0d294a2 (1 commits)
-* /3rdparty/vboot: Update from commit id 24cb127a5e to 3d37d2aafe (121
-  commits)
+  ece0d294a2 (1 commit)
+* /3rdparty/vboot: Update from commit id 24cb127a5e to 3d37d2aafe
+  (121 commits)
 
 
 ### External payloads
@@ -168,15 +167,15 @@ Platform Updates
 Statistics from the 4.22 to the 24.02 release
 --------------------------------------------
 
-* Total Commits: 814
-* Average Commits per day: 8.65
-* Total lines added: 105203
-* Average lines added per commit: 129.24
-* Number of patches adding more than 100 lines: 46
+* Total Commits: 815
+* Average Commits per day: 8.63
+* Total lines added: 105433
+* Average lines added per commit: 129.37
+* Number of patches adding more than 100 lines: 47
 * Average lines added per small commit: 41.34
-* Total lines removed: 16505
-* Average lines removed per commit: 20.28
-* Total difference between added and removed: 88698
+* Total lines removed: 16534
+* Average lines removed per commit: 20.29
+* Total difference between added and removed: 88899
 * Total authors: 111
 * New authors: 19
 
@@ -185,7 +184,8 @@ Statistics from the 4.22 to the 24.02 release
 Significant Known and Open Issues
 ---------------------------------
 
-* AMD chromebooks will not currently work with the signed vboot image.
+* AMD chromebooks will not work with the signed PSP_verstage images and
+  the version of verstage used in coreboot 24.02.
 
 
 ## Issues from the coreboot bugtracker: https://ticket.coreboot.org/

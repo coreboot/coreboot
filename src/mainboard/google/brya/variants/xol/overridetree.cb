@@ -261,10 +261,10 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref pcie4_0 on
-		# Enable CPU PCIE RP 1 using CLK 1
+		# Enable CPU PCIE RP 1 using CLK 0
 			register "cpu_pcie_rp[CPU_RP(1)]" = "{
 				.clk_req = 1,
-				.clk_src = 1,
+				.clk_src = 0,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 			probe STORAGE STORAGE_NVME

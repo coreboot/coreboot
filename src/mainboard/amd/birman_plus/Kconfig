@@ -20,20 +20,28 @@ config BOARD_AMD_BIRMANPLUS_PHOENIX
 	select BOARD_AMD_BIRMANPLUS_COMMON
 	select SOC_AMD_PHOENIX_FSP
 
+config BOARD_AMD_BIRMANPLUS_GLINDA
+	select BOARD_AMD_BIRMANPLUS_COMMON
+	select SOC_AMD_GLINDA
+
 if BOARD_AMD_BIRMANPLUS_COMMON
 
 config FMDFILE
 	default "src/mainboard/amd/birman_plus/chromeos_phoenix.fmd" if CHROMEOS && BOARD_AMD_BIRMANPLUS_PHOENIX
+	default "src/mainboard/amd/birman_plus/chromeos_glinda.fmd" if CHROMEOS && BOARD_AMD_BIRMANPLUS_GLINDA
 	default "src/mainboard/amd/birman_plus/board_phoenix.fmd" if BOARD_AMD_BIRMANPLUS_PHOENIX
+	default "src/mainboard/amd/birman_plus/board_glinda.fmd" if BOARD_AMD_BIRMANPLUS_GLINDA
 
 config MAINBOARD_DIR
-	default "amd/birman_plus" if BOARD_AMD_BIRMANPLUS_PHOENIX
+	default "amd/birman_plus" if BOARD_AMD_BIRMANPLUS_PHOENIX || BOARD_AMD_BIRMANPLUS_GLINDA
 
 config MAINBOARD_PART_NUMBER
 	default "Birmanplus_Phoenix" if BOARD_AMD_BIRMANPLUS_PHOENIX
+	default "Birmanplus_Glinda"  if BOARD_AMD_BIRMANPLUS_GLINDA
 
 config DEVICETREE
-	default "devicetree_phoenix.cb"
+	default "devicetree_phoenix.cb" if BOARD_AMD_BIRMANPLUS_PHOENIX
+	default "devicetree_glinda.cb"  if BOARD_AMD_BIRMANPLUS_GLINDA
 
 config BIRMANPLUS_HAVE_MCHP_FW
 	bool "Have Microchip EC firmware?"
@@ -71,7 +79,7 @@ config RO_REGION_ONLY
 	string
 	depends on VBOOT_SLOTS_RW_AB || VBOOT_SLOTS_RW_A
 	# Add the EFS and EC to the RO region only
-	# This is a birman-specific override of soc/amd/(phoenix | glinda)/Kconfig
+	# This is a birmanplus specific override of soc/amd/(phoenix | glinda)/Kconfig
 	default "apu/amdfw apu/ecfw"
 
 config CHROMEOS

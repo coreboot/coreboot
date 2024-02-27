@@ -4,7 +4,6 @@
 #include <device/i2c_simple.h>
 #include <gpio.h>
 #include <soc/platform_descriptors.h>
-#include <soc/soc_util.h>
 #include <types.h>
 
 #define phx_mxm_dxio_descriptor {			\

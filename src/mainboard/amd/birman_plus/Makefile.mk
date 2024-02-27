@@ -4,12 +4,13 @@ bootblock-y += bootblock.c
 bootblock-y += early_gpio.c
 bootblock-y += ec.c
 
-romstage-$(CONFIG_BOARD_AMD_BIRMANPLUS_PHOENIX) += port_descriptors.c
+romstage-$(CONFIG_BOARD_AMD_BIRMANPLUS_PHOENIX) += port_descriptors_phoenix.c
+romstage-$(CONFIG_BOARD_AMD_BIRMANPLUS_GLINDA) += port_descriptors_glinda.c
 
 ramstage-y += chromeos.c
 ramstage-y += gpio.c
-ramstage-$(CONFIG_BOARD_AMD_BIRMANPLUS_PHOENIX) += port_descriptors.c
-
+ramstage-$(CONFIG_BOARD_AMD_BIRMANPLUS_PHOENIX) += port_descriptors_phoenix.c
+ramstage-$(CONFIG_BOARD_AMD_BIRMANPLUS_GLINDA) += port_descriptors_glinda.c
 
 ifneq ($(wildcard $(MAINBOARD_BLOBS_DIR)/APCB_FP8_LPDDR5.bin),)
 APCB_SOURCES = $(MAINBOARD_BLOBS_DIR)/APCB_FP8_LPDDR5.bin

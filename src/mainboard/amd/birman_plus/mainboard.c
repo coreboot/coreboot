@@ -7,7 +7,7 @@
 #include <types.h>
 #include "gpio.h"
 
-/* TODO: Update for birman */
+/* TODO: Update for birmanplus */
 
 /* The IRQ mapping in fch_irq_map ends up getting written to the indirect address space that is
    accessed via I/O ports 0xc00/0xc01. */

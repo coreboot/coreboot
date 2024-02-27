@@ -2,7 +2,7 @@
 
 # TODO: Update for birmanplus
 
-chip soc/amd/phoenix
+chip soc/amd/glinda
 	register "common_config.espi_config" = "{
 		.std_io_decode_bitmap = ESPI_DECODE_IO_0x80_EN | ESPI_DECODE_IO_0X2E_0X2F_EN | ESPI_DECODE_IO_0X60_0X64_EN,
 		.generic_io_range[0] = {
@@ -44,13 +44,13 @@ chip soc/amd/phoenix
 	register "usb_phy_custom" = "1"
 	register "usb_phy" = "{
 		.Usb2PhyPort[0] = {
-			.compdistune = 0x1,
+			.compdistune = 0x3,
 			.pllbtune = 0x1,
 			.pllitune = 0x0,
-			.pllptune = 0xc,
-			.sqrxtune = 0x2,
-			.txfslstune = 0x1,
-			.txpreempamptune = 0x3,
+			.pllptune = 0xe,
+			.sqrxtune = 0x3,
+			.txfslstune = 0x3,
+			.txpreempamptune = 0x2,
 			.txpreemppulsetune = 0x0,
 			.txrisetune = 0x1,
 			.txvreftune = 0x3,
@@ -58,13 +58,13 @@ chip soc/amd/phoenix
 			.txrestune = 0x2,
 		},
 		.Usb2PhyPort[1] = {
-			.compdistune = 0x1,
+			.compdistune = 0x3,
 			.pllbtune = 0x1,
 			.pllitune = 0x0,
-			.pllptune = 0xc,
-			.sqrxtune = 0x2,
-			.txfslstune = 0x1,
-			.txpreempamptune = 0x3,
+			.pllptune = 0xe,
+			.sqrxtune = 0x3,
+			.txfslstune = 0x3,
+			.txpreempamptune = 0x2,
 			.txpreemppulsetune = 0x0,
 			.txrisetune = 0x1,
 			.txvreftune = 0x3,
@@ -72,13 +72,13 @@ chip soc/amd/phoenix
 			.txrestune = 0x2,
 		},
 		.Usb2PhyPort[2] = {
-			.compdistune = 0x1,
+			.compdistune = 0x3,
 			.pllbtune = 0x1,
 			.pllitune = 0x0,
-			.pllptune = 0xc,
-			.sqrxtune = 0x2,
-			.txfslstune = 0x1,
-			.txpreempamptune = 0x3,
+			.pllptune = 0xe,
+			.sqrxtune = 0x3,
+			.txfslstune = 0x3,
+			.txpreempamptune = 0x2,
 			.txpreemppulsetune = 0x0,
 			.txrisetune = 0x1,
 			.txvreftune = 0x3,
@@ -86,13 +86,13 @@ chip soc/amd/phoenix
 			.txrestune = 0x2,
 		},
 		.Usb2PhyPort[3] = {
-			.compdistune = 0x1,
+			.compdistune = 0x3,
 			.pllbtune = 0x1,
 			.pllitune = 0x0,
-			.pllptune = 0xc,
-			.sqrxtune = 0x2,
-			.txfslstune = 0x1,
-			.txpreempamptune = 0x3,
+			.pllptune = 0xe,
+			.sqrxtune = 0x3,
+			.txfslstune = 0x3,
+			.txpreempamptune = 0x2,
 			.txpreemppulsetune = 0x0,
 			.txrisetune = 0x1,
 			.txvreftune = 0x3,
@@ -100,13 +100,13 @@ chip soc/amd/phoenix
 			.txrestune = 0x2,
 		},
 		.Usb2PhyPort[4] = {
-			.compdistune = 0x1,
+			.compdistune = 0x3,
 			.pllbtune = 0x1,
 			.pllitune = 0x0,
-			.pllptune = 0xc,
-			.sqrxtune = 0x2,
-			.txfslstune = 0x1,
-			.txpreempamptune = 0x3,
+			.pllptune = 0xe,
+			.sqrxtune = 0x3,
+			.txfslstune = 0x3,
+			.txpreempamptune = 0x2,
 			.txpreemppulsetune = 0x0,
 			.txrisetune = 0x1,
 			.txvreftune = 0x3,
@@ -114,44 +114,16 @@ chip soc/amd/phoenix
 			.txrestune = 0x2,
 		},
 		.Usb2PhyPort[5] = {
-			.compdistune = 0x1,
+			.compdistune = 0x3,
 			.pllbtune = 0x1,
 			.pllitune = 0x0,
-			.pllptune = 0xc,
-			.sqrxtune = 0x2,
-			.txfslstune = 0x1,
-			.txpreempamptune = 0x3,
+			.pllptune = 0xe,
+			.sqrxtune = 0x3,
+			.txfslstune = 0x3,
+			.txpreempamptune = 0x2,
 			.txpreemppulsetune = 0x0,
 			.txrisetune = 0x1,
 			.txvreftune = 0x3,
-			.txhsxvtune = 0x3,
-			.txrestune = 0x2,
-		},
-		.Usb2PhyPort[6] = {
-			.compdistune = 0x3,
-			.pllbtune = 0x1,
-			.pllitune = 0x0,
-			.pllptune = 0xc,
-			.sqrxtune = 0x2,
-			.txfslstune = 0x1,
-			.txpreempamptune = 0x3,
-			.txpreemppulsetune = 0x0,
-			.txrisetune = 0x1,
-			.txvreftune = 0x6,
-			.txhsxvtune = 0x3,
-			.txrestune = 0x2,
-		},
-		.Usb2PhyPort[7] = {
-			.compdistune = 0x3,
-			.pllbtune = 0x1,
-			.pllitune = 0x0,
-			.pllptune = 0xc,
-			.sqrxtune = 0x2,
-			.txfslstune = 0x1,
-			.txpreempamptune = 0x3,
-			.txpreemppulsetune = 0x0,
-			.txrisetune = 0x1,
-			.txvreftune = 0x6,
 			.txhsxvtune = 0x3,
 			.txrestune = 0x2,
 		},
@@ -175,40 +147,20 @@ chip soc/amd/phoenix
 		},
 		.ComboPhyStaticConfig[0] = USB_COMBO_PHY_MODE_USB_C,
 		.ComboPhyStaticConfig[1] = USB_COMBO_PHY_MODE_USB_C,
-		.ComboPhyStaticConfig[2] = USB_COMBO_PHY_MODE_USB_C,
 		.BatteryChargerEnable = 0,
 		.PhyP3CpmP4Support = 0,
 	}"
 
-	register "gpp_clk_config[0]" = "GPP_CLK_REQ" # MXM
-	register "gpp_clk_config[1]" = "GPP_CLK_REQ" # NVMe SSD1
-	register "gpp_clk_config[2]" = "GPP_CLK_REQ" # NVMe SSD0
-	register "gpp_clk_config[3]" = "GPP_CLK_REQ" # WLAN
-	register "gpp_clk_config[4]" = "GPP_CLK_REQ" # WWAN
-	register "gpp_clk_config[5]" = "GPP_CLK_REQ" # SD
-	register "gpp_clk_config[6]" = "GPP_CLK_REQ" # GBE
+	register "gpp_clk_config[0]" = "GPP_CLK_REQ"
+	register "gpp_clk_config[1]" = "GPP_CLK_REQ"
+	register "gpp_clk_config[2]" = "GPP_CLK_OFF"
+	register "gpp_clk_config[3]" = "GPP_CLK_REQ"
 
 	device domain 0 on
 		device ref iommu on end
-		device ref gpp_bridge_1_1 on end # MXM
-		device ref gpp_bridge_1_2 on
-			# Required so the NVMe gets placed into D3 when entering S0i3.
-			chip drivers/pcie/rtd3/device
-				register "name" = ""NVME""
-				device pci 00.0 on end
-			end
-		end # NVMe SSD1
-		device ref gpp_bridge_1_3 on end # GBE
-		device ref gpp_bridge_2_1 on end # SD
-		device ref gpp_bridge_2_2 on end # WWAN
-		device ref gpp_bridge_2_3 on end # WIFI
-		device ref gpp_bridge_2_4 on
-			# Required so the NVMe gets placed into D3 when entering S0i3.
-			chip drivers/pcie/rtd3/device
-				register "name" = ""NVME""
-				device pci 00.0 on end
-			end
-		end # NVMe SSD0
+		device ref gpp_bridge_0 on end # GBE
+		device ref gpp_bridge_1 on end # WIFI
+		device ref gpp_bridge_2 on end # NVMe SSD
 		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
 			device ref gfx on end # Internal GPU (GFX)
 			device ref gfx_hda on end # Display HD Audio Controller (GFXAZ)
@@ -216,6 +168,21 @@ chip soc/amd/phoenix
 			device ref xhci_0 on # USB 3.1 (USB0)
 				chip drivers/usb/acpi
 					device ref xhci_0_root_hub on
+						chip drivers/usb/acpi
+							device ref usb3_port0 on end
+						end
+						chip drivers/usb/acpi
+							device ref usb2_port0 on end
+						end
+						chip drivers/usb/acpi
+							device ref usb2_port1 on end
+						end
+					end
+				end
+			end
+			device ref xhci_1 on # USB 3.1 (USB1)
+				chip drivers/usb/acpi
+					device ref xhci_1_root_hub on
 						chip drivers/usb/acpi
 							device ref usb3_port2 on end
 						end
@@ -231,50 +198,19 @@ chip soc/amd/phoenix
 						chip drivers/usb/acpi
 							device ref usb2_port4 on end
 						end
-						chip drivers/usb/acpi
-							device ref usb2_port5 on end
-						end
-						chip drivers/usb/acpi
-							device ref usb2_port6 on end
-						end
-					end
-				end
-			end
-			device ref xhci_1 on # USB 3.1 (USB1)
-				chip drivers/usb/acpi
-					device ref xhci_1_root_hub on
-						chip drivers/usb/acpi
-							device ref usb3_port7 on end
-						end
-						chip drivers/usb/acpi
-							device ref usb2_port7 on end
-						end
 					end
 				end
 			end
 			device ref acp on end # Audio Processor (ACP)
 		end
 		device ref gpp_bridge_c on  # Internal GPP Bridge 2 to Bus C
-			device ref usb4_xhci_0 on
+			device ref xhci_2 on
+				ops xhci_pci_ops
 				chip drivers/usb/acpi
-					device ref usb4_xhci_0_root_hub on
+					register "type" = "UPC_TYPE_HUB"
+					device usb 0.0 alias xhci_2_root_hub on
 						chip drivers/usb/acpi
-							device ref usb3_port0 on end
-						end
-						chip drivers/usb/acpi
-							device ref usb2_port0 on end
-						end
-					end
-				end
-			end
-			device ref usb4_xhci_1 on
-				chip drivers/usb/acpi
-					device ref usb4_xhci_1_root_hub on
-						chip drivers/usb/acpi
-							device ref usb3_port1 on end
-						end
-						chip drivers/usb/acpi
-							device ref usb2_port1 on end
+							device usb 2.0 alias usb2_port5 on end
 						end
 					end
 				end

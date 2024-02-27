@@ -15,7 +15,6 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	};
 	const bool half_populated = false;
 
-	mupd->FspmConfig.PchHdaAudioLinkHdaEnable = 1;
 	mupd->FspmConfig.DmiMaxLinkSpeed = 4;
 	mupd->FspmConfig.GpioOverride = 0;
 

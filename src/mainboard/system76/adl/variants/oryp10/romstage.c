@@ -23,7 +23,6 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	// Set primary display to internal graphics
 	mupd->FspmConfig.PrimaryDisplay = 0;
 
-	mupd->FspmConfig.PchHdaAudioLinkHdaEnable = 1;
 	mupd->FspmConfig.DmiMaxLinkSpeed = 4;
 	mupd->FspmConfig.GpioOverride = 0;
 

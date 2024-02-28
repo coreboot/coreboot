@@ -131,7 +131,7 @@
 #endif
 
 #if ENV_HAS_HEAP_SECTION
-.heap . (NOLOAD) : {
+.heap . : {
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_heap = .;
 	. += CONFIG_HEAP_SIZE;

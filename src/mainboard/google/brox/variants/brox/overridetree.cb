@@ -21,6 +21,10 @@ fw_config
 		option UFC_NONE				0
 		option UFC_OV2740			1
 	end
+	field ISH 21
+		option ISH_DISABLE			0
+		option ISH_ENABLE			1
+	end
 end
 
 chip soc/intel/alderlake
@@ -296,9 +300,11 @@ chip soc/intel/alderlake
 		end
 		device ref ish on
 			chip drivers/intel/ish
+				register "firmware_name" = ""brox_ish.bin""
 				register "add_acpi_dma_property" = "true"
 				device generic 0 on end
 			end
+			probe ISH ISH_ENABLE
 			probe STORAGE STORAGE_UFS
 		end
 		device ref ufs on

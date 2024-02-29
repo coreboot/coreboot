@@ -101,7 +101,7 @@ void soc_create_ioat_domains(const union xeon_domain_path path, struct bus *cons
 	mem64_limit = mem64_base + CPM_MMIO_SIZE - 1;
 	bus_base = sr->BusBase + CPM_BUS_OFFSET;
 	bus_limit = bus_base + CPM_RESERVED_BUS;
-	create_ioat_domain(path, bus, bus_base, bus_limit, 0, -1, mem64_base, mem64_limit,
+	create_ioat_domain(path, bus, bus_base, bus_limit, -1, 0, mem64_base, mem64_limit,
 			   DOMAIN_TYPE_CPM0);
 
 	/* HQM0 */
@@ -109,7 +109,7 @@ void soc_create_ioat_domains(const union xeon_domain_path path, struct bus *cons
 	mem64_limit = mem64_base + HQM_MMIO_SIZE - 1;
 	bus_base = sr->BusBase + HQM_BUS_OFFSET;
 	bus_limit = bus_base + HQM_RESERVED_BUS;
-	create_ioat_domain(path, bus, bus_base, bus_limit, 0, -1, mem64_base, mem64_limit,
+	create_ioat_domain(path, bus, bus_base, bus_limit, -1, 0, mem64_base, mem64_limit,
 			   DOMAIN_TYPE_HQM0);
 
 	/* CPM1 (optional) */
@@ -118,7 +118,7 @@ void soc_create_ioat_domains(const union xeon_domain_path path, struct bus *cons
 	bus_base = sr->BusBase + CPM1_BUS_OFFSET;
 	bus_limit = bus_base + CPM_RESERVED_BUS;
 	if (bus_limit <= sr->BusLimit)
-		create_ioat_domain(path, bus, bus_base, bus_limit, 0, -1, mem64_base, mem64_limit,
+		create_ioat_domain(path, bus, bus_base, bus_limit, -1, 0, mem64_base, mem64_limit,
 				   DOMAIN_TYPE_CPM1);
 
 	/* HQM1 (optional) */
@@ -127,7 +127,7 @@ void soc_create_ioat_domains(const union xeon_domain_path path, struct bus *cons
 	bus_base = sr->BusBase + HQM1_BUS_OFFSET;
 	bus_limit = bus_base + HQM_RESERVED_BUS;
 	if (bus_limit <= sr->BusLimit)
-		create_ioat_domain(path, bus, bus_base, bus_limit, 0, -1, mem64_base, mem64_limit,
+		create_ioat_domain(path, bus, bus_base, bus_limit, -1, 0, mem64_base, mem64_limit,
 				   DOMAIN_TYPE_HQM1);
 
 	/* DINO */

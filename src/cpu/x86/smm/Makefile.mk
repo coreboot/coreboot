@@ -35,6 +35,7 @@ endif
 smm-y += save_state.c
 
 ramstage-y += tseg_region.c
+smm-y += tseg_region.c
 romstage-y += tseg_region.c
 postcar-y += tseg_region.c
 

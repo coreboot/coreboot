@@ -88,6 +88,12 @@ void smm_get_cbmemc_buffer(void **buffer_out, size_t *size_out)
 	*size_out = smm_runtime.cbmemc_size;
 }
 
+void smm_region(uintptr_t *start, size_t *size)
+{
+	*start = smm_runtime.smbase;
+	*size = smm_runtime.smm_size;
+}
+
 void io_trap_handler(int smif)
 {
 	/* If a handler function handled a given IO trap, it

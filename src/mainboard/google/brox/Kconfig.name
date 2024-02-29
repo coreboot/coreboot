@@ -4,3 +4,6 @@ comment "Brox"
 
 config BOARD_GOOGLE_BROX
 	bool "->  Brox"
+
+config BOARD_GOOGLE_BROX_EC_ISH
+	bool "->  Brox EC ISH"

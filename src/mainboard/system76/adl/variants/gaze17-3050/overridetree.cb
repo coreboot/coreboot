@@ -98,6 +98,7 @@ chip soc/intel/alderlake
 				.clk_src = 1,
 				.clk_req = 1,
 				.flags = PCIE_RP_LTR,
+				.pcie_rp_detect_timeout_ms = 50,
 			}"
 		end
 		device ref pcie_rp9 on

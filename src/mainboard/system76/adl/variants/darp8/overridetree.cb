@@ -152,6 +152,7 @@ chip soc/intel/alderlake
 				.clk_src = 4,
 				.clk_req = 4,
 				.flags = PCIE_RP_LTR,
+				.pcie_rp_detect_timeout_ms = 50,
 			}"
 			# FIXME: Drives do not exit D3cold on S3 exit
 			#chip soc/intel/common/block/pcie/rtd3

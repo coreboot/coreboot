@@ -31,6 +31,15 @@ completely. Please make sure any scripts you're using that reference the
 'master' branch have been switched to 'main'.
 
 
+Release 24.02.1
+---------------
+
+### lib/rtc: Fix off-by-one error in February day count in leap year
+
+The month argument passed to rtc\_month\_days is 0-based, not 1-based.
+This results in the RTC being reverted to the build date constantly
+on 29th February 2024.
+
 
 Significant or interesting changes
 ----------------------------------

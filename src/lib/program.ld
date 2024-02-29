@@ -68,7 +68,7 @@
 	LONG(0);
 	LONG(0);
 	__CTOR_END__ = .;
-}
+} : to_load
 #endif
 
 /* Include data, bss, and heap in that order. Not defined for all stages. */
@@ -113,11 +113,11 @@
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_edata = .;
 	RECORD_SIZE(data)
-}
+} : to_load
 #endif
 
 #if !ENV_SEPARATE_DATA_AND_BSS
-.bss . : {
+.bss . (NOLOAD) : {
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_bss = .;
 	*(.bss)
@@ -127,18 +127,18 @@
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_ebss = .;
 	RECORD_SIZE(bss)
-}
+} : to_load
 #endif
 
 #if ENV_HAS_HEAP_SECTION
-.heap . : {
+.heap . (NOLOAD) : {
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_heap = .;
 	. += CONFIG_HEAP_SIZE;
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
 	_eheap = .;
 	RECORD_SIZE(heap)
-}
+} : to_load
 #endif
 
 #if ENV_RAMSTAGE && CONFIG(ASAN_IN_RAMSTAGE)

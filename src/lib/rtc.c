@@ -126,7 +126,7 @@ static int rtc_month_days(unsigned int month, unsigned int year)
 {
 	int month_days[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
-	return month_days[month] + (LEAP_YEAR(year) && month == 2);
+	return month_days[month] + (LEAP_YEAR(year) && month == 1);
 }
 
 int rtc_invalid(const struct rtc_time *tm)

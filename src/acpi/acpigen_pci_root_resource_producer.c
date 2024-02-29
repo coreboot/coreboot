@@ -11,7 +11,7 @@
 static void write_ssdt_domain_io_producer_range_helper(const char *domain_name,
 						       resource_t base, resource_t limit)
 {
-	printk(BIOS_DEBUG, "%s _CRS: adding IO range [%llx-%llx]\n", domain_name, base, limit);
+	printk(BIOS_DEBUG, "%s _CRS: adding IO range [%04llx-%04llx]\n", domain_name, base, limit);
 	acpigen_resource_producer_io(base, limit);
 }
 
@@ -38,7 +38,7 @@ static void write_ssdt_domain_io_producer_range(const char *domain_name,
 static void write_ssdt_domain_mmio_producer_range(const char *domain_name,
 						  resource_t base, resource_t limit)
 {
-	printk(BIOS_DEBUG, "%s _CRS: adding MMIO range [%llx-%llx]\n",
+	printk(BIOS_DEBUG, "%s _CRS: adding MMIO range [%016llx-%016llx]\n",
 	       domain_name, base, limit);
 	acpigen_resource_producer_mmio(base, limit,
 		MEM_RSRC_FLAG_MEM_READ_WRITE | MEM_RSRC_FLAG_MEM_ATTR_NON_CACHE);
@@ -54,7 +54,7 @@ void pci_domain_fill_ssdt(const struct device *domain)
 	acpigen_write_resourcetemplate_header();
 
 	/* PCI bus number range in domain */
-	printk(BIOS_DEBUG, "%s _CRS: adding busses [%x-%x] in segment group %x\n",
+	printk(BIOS_DEBUG, "%s _CRS: adding busses [%02x-%02x] in segment group %x\n",
 	       acpi_device_name(domain), domain->downstream->secondary,
 	       domain->downstream->max_subordinate, domain->downstream->segment_group);
 	acpigen_resource_producer_bus_number(domain->downstream->secondary,

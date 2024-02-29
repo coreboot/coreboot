@@ -60,8 +60,9 @@ bool vpd_get_bool(const char *key, enum vpd_region region,
 bool vpd_get_int(const char *key, enum vpd_region region, int *val);
 
 /*
- * Return the value after reading the VPD key named "feature_device_info".
+ * Extracts the "feature_level" from the "feature_device_info" VPD key.
+ * This key holds a base64-encoded protobuf where "feature_level" is the first entry.
  */
-const char *vpd_get_feature_device_info(void);
+uint8_t vpd_get_feature_level(void);
 
 #endif  /* __VPD_H__ */

@@ -32,6 +32,7 @@ romstage-$(CONFIG_PLATFORM_USES_FSP2_0) += fsp_relocate.c
 endif
 ramstage-$(CONFIG_PLATFORM_USES_FSP2_0) += fsp_relocate.c
 
+bootblock-$(CONFIG_FLATTENED_DEVICE_TREE) += device_tree.c
 romstage-$(CONFIG_FLATTENED_DEVICE_TREE) += device_tree.c
 ramstage-$(CONFIG_FLATTENED_DEVICE_TREE) += device_tree.c
 

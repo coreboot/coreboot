@@ -26,6 +26,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select FLATTENED_DEVICE_TREE
 	select MISSING_BOARD_RESET
 	select DRIVERS_UART_8250MEM
+	select RISCV_GET_HART_COUNT_AT_RUNTIME
 	select RISCV_HAS_OPENSBI
 	select ARCH_RISCV_S
 	select ARCH_RISCV_U
@@ -35,6 +36,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select ARCH_ROMSTAGE_RISCV
 	select ARCH_RAMSTAGE_RISCV
 	select RISCV_USE_ARCH_TIMER
+	select FLATTENED_DEVICE_TREE
 
 config MEMLAYOUT_LD_FILE
 	string
@@ -48,7 +50,7 @@ config MAINBOARD_PART_NUMBER
 
 config MAX_CPUS
 	int
-	default 1
+	default 512 # QEMUs current limit for the virt target
 
 config RISCV_ARCH
 	string

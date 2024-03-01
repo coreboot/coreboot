@@ -1,0 +1,205 @@
+chip soc/intel/tigerlake
+
+	# Power limits/thermals - adjust according to your needs, but beware of VRM cooling!
+	# H_6_CORE means Core i5, H_8_CORE means Core i7 or i9. Stock PL1/PL2: 45/109W.
+	register "power_limits_config[POWER_LIMITS_H_6_CORE]" = "{
+		.tdp_pl1_override = 45,
+		.tdp_pl2_override = 109,
+	}"
+
+	register "power_limits_config[POWER_LIMITS_H_8_CORE]" = "{
+		.tdp_pl1_override = 45,
+		.tdp_pl2_override = 109,
+	}"
+	register "tcc_offset" = "8"
+
+	# FSP configuration
+	register "eist_enable" = "1"
+	register "enable_c6dram" = "1"
+
+	register "deep_s3_enable_ac" = "1"
+	register "deep_s3_enable_dc" = "1"
+	register "deep_s5_enable_ac" = "1"
+	register "deep_s5_enable_dc" = "1"
+
+	# PME routing
+	register "pmc_gpe0_dw0" = "PMC_GPP_R"
+	register "pmc_gpe0_dw1" = "PMC_GPP_B"
+	register "pmc_gpe0_dw2" = "PMC_GPP_D"
+
+	# FiVR External Rails
+	register "ext_fivr_settings" = "{
+		.configure_ext_fivr = 1,
+		.v1p05_enable_bitmap = 0,
+		.vnn_enable_bitmap = 0,
+		.v1p05_supported_voltage_bitmap = 0,
+		.vnn_supported_voltage_bitmap = 0,
+		.v1p05_icc_max_ma = 500,
+		.vnn_sx_voltage_mv = 1050,
+        }"
+
+	device cpu_cluster 0 on end
+	device domain 0 on
+		device ref igpu on
+			register "DdiPortBConfig" = "DDI_PORT_CFG_NO_LFP" # DP
+			register "DdiPortBHpd" = "1"
+			register "DdiPortBDdc" = "1"
+
+			register "DdiPortCHpd" = "1" # HDMI
+			register "DdiPortCDdc" = "1"
+
+			register "DdiPort1Hpd" = "1" # HDMI
+			register "DdiPort1Ddc" = "1"
+		end
+
+		device ref peg0 on	# SoC M.2 (Gen4)
+			register "PcieClkSrcUsage[2]" = "0x40"
+			register "PcieClkSrcClkReq[2]" = "PCIE_CLK_NOTUSED"
+		end
+
+		device ref peg1 on 	# SoC x16 (Gen4)
+			register "PcieClkSrcUsage[0]" = "0x41"
+			register "PcieClkSrcClkReq[0]" = "PCIE_CLK_NOTUSED"
+		end
+
+		device ref north_xhci on
+			 register "TcssXhciEn" = "1"
+		end
+
+		device ref south_xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC_SKIP),		/* Rear, bottom right */
+				[1] = USB2_PORT_MID(OC_SKIP),		/* Rear, bottom left */
+				[2] = USB2_PORT_MID(OC_SKIP),		/* NIC left */
+				[3] = USB2_PORT_MID(OC_SKIP),		/* NIC right */
+				[4] = USB2_PORT_MID(OC_SKIP),		/* Front Panel 1 */
+				[5] = USB2_PORT_MID(OC_SKIP),		/* Front Panel 2 */
+				[8] = USB2_PORT_MID(OC_SKIP),		/* Front Panel 1 (USB3) */
+				[9] = USB2_PORT_MID(OC_SKIP),		/* Front Panel 2 (USB3) */
+				[10] = USB2_PORT_MID(OC_SKIP),		/* Rear, top left */
+				[11] = USB2_PORT_MID(OC_SKIP),		/* Rear, top right */
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* Rear, bottom right */
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* Rear, bottom left */
+				[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* Front Panel 1 */
+				[3] = USB3_PORT_DEFAULT(OC_SKIP),	/* Front Panel 2 */
+				[4] = USB3_PORT_DEFAULT(OC_SKIP),	/* Rear, top left */
+				[5] = USB3_PORT_DEFAULT(OC_SKIP),	/* Rear, top right */
+			}"
+		end
+
+		device ref shared_ram on end
+
+		device ref sata on
+			register "SataPortsEnable" = "{
+				[0] = 1,
+				[1] = 1,
+				[2] = 1,
+				[3] = 1,
+			}"
+			register "SataPortsDevSlp" = "{
+				[0] = 1,
+				[1] = 1,
+				[2] = 1,
+				[3] = 1,
+			}"
+			register "SataSalpSupport" = "1"
+		end
+
+		device ref pcie_rp5 on		# PCH M.2 (Gen3)
+			register "PcieRpSlotImplemented[4]" = "1"
+			register "PcieClkSrcUsage[4]" = "4"
+			register "PcieClkSrcClkReq[4]" = "PCIE_CLK_NOTUSED"
+		end
+
+		device ref pcie_rp9 on		# PCH NGFF (WiFi)
+			register "PcieRpSlotImplemented[8]" = "1"
+			register "PcieClkSrcUsage[5]" = "8"
+			register "PcieClkSrcClkReq[5]" = "PCIE_CLK_NOTUSED"
+
+		end
+
+		device ref pcie_rp11 on		# RTL8111 GbE
+			register "PcieClkSrcUsage[3]" = "10"
+			register "PcieClkSrcClkReq[3]" = "PCIE_CLK_NOTUSED"
+		end
+
+		device ref pcie_rp12 on		# PCH x1 (Gen3)
+			register "PcieRpSlotImplemented[11]" = "1"
+			register "PcieClkSrcUsage[1]" = "11"
+			register "PcieClkSrcClkReq[1]" = "PCIE_CLK_NOTUSED"
+		end
+
+		device ref pch_espi on
+			chip superio/ite/it8613e
+				device pnp 2e.0 off end
+				device pnp 2e.1 on      # COM 1
+					io 0x60 = 0x3f8
+					irq 0x70 = 4
+					irq 0xf0 = 1
+				end
+
+				device pnp 2e.4 on 	# Environment Controller
+					io 0x60 = 0xa30
+					io 0x62 = 0xa20
+					irq 0x70 = 0x00
+					irq 0xf4 = 0xe0
+					irq 0xf5 = 0x00
+					irq 0xf6 = 0xf0
+
+					register "TMPIN1.mode"    = "THERMAL_DIODE"
+					register "TMPIN2.mode"    = "THERMAL_DIODE"
+
+					register "FAN2.mode" = "FAN_SMART_AUTOMATIC" # CPU_FAN
+					register "FAN3.mode" = "FAN_SMART_AUTOMATIC" # SYS_FAN
+
+					register "FAN2.smart.tmpin"     = "1"
+					register "FAN2.smart.tmp_off"   = "35"
+					register "FAN2.smart.tmp_start" = "42"
+					register "FAN2.smart.tmp_full"  = "72"
+					register "FAN2.smart.tmp_delta" = "2"
+					register "FAN2.smart.pwm_start" = "26"
+					register "FAN2.smart.slope"     = "24"
+
+					register "FAN3.smart.tmpin"     = "1"
+					register "FAN3.smart.tmp_off"   = "35"
+					register "FAN3.smart.tmp_start" = "42"
+					register "FAN3.smart.tmp_full"  = "72"
+					register "FAN3.smart.tmp_delta" = "2"
+					register "FAN3.smart.pwm_start" = "26"
+					register "FAN3.smart.slope"     = "24"
+				end
+
+				device pnp 2e.5 off end
+				device pnp 2e.6 off end
+
+				device pnp 2e.7 on	# GPIO
+					irq 0x2d = 0x02
+					io 0x60  = 0xa10
+					io 0x62  = 0xa00
+					irq 0x70 = 0x00
+					irq 0x71 = 0x01
+					irq 0xbc = 0xc0
+					irq 0xbd = 0x03
+					irq 0xc1 = 0x02
+					irq 0xc8 = 0x00
+					irq 0xc9 = 0x02
+					irq 0xda = 0xb0
+					irq 0xdb = 0x44
+				end
+				device pnp 2e.a off end # CIR
+			end
+		end
+		device ref p2sb hidden end
+		device ref hda on
+			subsystemid 0x10ec 0x3000
+			register "PchHdaAudioLinkHdaEnable" = "1"
+		end
+		device ref smbus on end
+	end
+        chip drivers/crb
+                device mmio 0xfed40000 on end
+        end
+end

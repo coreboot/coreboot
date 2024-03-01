@@ -1,0 +1,48 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_ERYING_POLESTAR_G613_PRO
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_16384
+	select SOC_INTEL_TIGERLAKE
+	select SOC_INTEL_TIGERLAKE_PCH_H
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select SOC_INTEL_COMMON_BLOCK_MEMINIT
+	select INTEL_GMA_HAVE_VBT
+	select HAVE_ACPI_TABLES
+	select SUPERIO_ITE_IT8613E
+	select DRIVERS_UART_8250IO
+	select HAVE_CMOS_DEFAULT
+	select HAVE_OPTION_TABLE
+	select HAVE_INTEL_PTT
+	select CRB_TPM
+
+config MAINBOARD_SMBIOS_PRODUCT_NAME
+	default "POLESTAR G613 Pro"
+
+config MAINBOARD_DIR
+	default "erying/tgl"
+
+config MAINBOARD_PART_NUMBER
+	default "TigerLake (mATX)"
+
+config CBFS_SIZE
+	default 0xA00000
+
+config USE_PM_ACPI_TIMER
+	default n
+
+config USE_LEGACY_8254_TIMER
+	default y
+
+config PCIEXP_ASPM
+	default n
+
+config PCIEXP_CLK_PM
+	default n
+
+config PCIEXP_L1_SUB_STATE
+	default n
+
+endif

@@ -24,6 +24,10 @@ fw_config
 		option WFC_PRESENT	0
 		option WFC_ABSENT	1
 	end
+	field TOUCH_PANEL 9
+		option TOUCH_PANEL_ENABLE	0
+		option TOUCH_PANEL_DISABLE	1
+	end
 end
 
 chip soc/intel/alderlake
@@ -226,7 +230,9 @@ chip soc/intel/alderlake
 				register "generic.enable_delay_ms" = "6"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x01"
-				device i2c 0x10 on end
+				device i2c 0x10 on
+					probe TOUCH_PANEL TOUCH_PANEL_ENABLE
+				end
 			end
 		end
 		device ref i2c2 on

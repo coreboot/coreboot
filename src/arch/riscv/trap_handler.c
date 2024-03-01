@@ -33,10 +33,14 @@ static const char *const exception_names[] = {
 static const char *mstatus_to_previous_mode(uintptr_t ms)
 {
 	switch (ms & MSTATUS_MPP) {
-	case 0x00000000: return "user";
-	case 0x00000800: return "supervisor";
-	case 0x00001000: return "hypervisor";
-	case 0x00001800: return "machine";
+	case 0x00000000:
+		return "user";
+	case 0x00000800:
+		return "supervisor";
+	case 0x00001000:
+		return "hypervisor";
+	case 0x00001800:
+		return "machine";
 	}
 
 	return "unknown";
@@ -52,16 +56,13 @@ static void print_trap_information(const trapframe *tf)
 	printk(BIOS_DEBUG, "\n");
 
 	if (tf->cause < ARRAY_SIZE(exception_names))
-		printk(BIOS_DEBUG, "Exception:          %s\n",
-				exception_names[tf->cause]);
+		printk(BIOS_DEBUG, "Exception:          %s\n", exception_names[tf->cause]);
 	else
-		printk(BIOS_DEBUG, "Trap:               Unknown cause %p\n",
-				(void *)tf->cause);
+		printk(BIOS_DEBUG, "Trap:               Unknown cause %p\n", (void *)tf->cause);
 
 	previous_mode = mstatus_to_previous_mode(read_csr(mstatus));
 	printk(BIOS_DEBUG, "Hart ID:            %d\n", hart_id);
-	printk(BIOS_DEBUG, "Previous mode:      %s%s\n",
-			previous_mode, mprv? " (MPRV)":"");
+	printk(BIOS_DEBUG, "Previous mode:      %s%s\n", previous_mode, mprv ? " (MPRV)" : "");
 	printk(BIOS_DEBUG, "Bad instruction pc: %p\n", (void *)tf->epc);
 	printk(BIOS_DEBUG, "Bad address:        %p\n", (void *)tf->badvaddr);
 	printk(BIOS_DEBUG, "Stored ra:          %p\n", (void *)tf->gpr[1]);
@@ -101,16 +102,17 @@ static void interrupt_handler(trapframe *tf)
 		break;
 	default:
 		printk(BIOS_EMERG, "======================================\n");
-		printk(BIOS_EMERG, "coreboot: Unknown machine interrupt: 0x%llx\n",
-		       cause);
+		printk(BIOS_EMERG, "coreboot: Unknown machine interrupt: 0x%llx\n", cause);
 		printk(BIOS_EMERG, "======================================\n");
 		print_trap_information(tf);
 		break;
 	}
 }
-void trap_handler(trapframe *tf)
+
+void (*trap_handler)(trapframe *tf) = default_trap_handler;
+
+void default_trap_handler(trapframe *tf)
 {
-	write_csr(mscratch, tf);
 	if (tf->cause & 0x8000000000000000ULL) {
 		interrupt_handler(tf);
 		return;

@@ -121,7 +121,12 @@ trap_entry:
 
   save_tf
   move  a0,sp
-  jal trap_handler
+
+  # store pointer to stack frame (moved out from trap_handler)
+  csrw  mscratch, sp
+
+  LOAD	t0, trap_handler
+  jalr	t0
 
 trap_return:
 	csrr	a0, mscratch

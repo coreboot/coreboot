@@ -37,6 +37,8 @@ BUILD_STR += -s
 endif
 endif
 
+BUILD_STR += -D BUILD_ARCH=X64
+
 #
 # EDK II (edk2/master) has the following build options relevant to coreboot:
 #

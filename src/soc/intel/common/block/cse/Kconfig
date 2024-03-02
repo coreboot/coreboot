@@ -226,12 +226,16 @@ config SOC_INTEL_CSE_RW_FILE
 	 Intel CSE CBFS RW blob path and file name
 
 config SOC_INTEL_CSE_RW_VERSION
-	string "Intel CSE RW firmware version" if SOC_INTEL_CSE_RW_UPDATE
+	string "Intel CSE RW firmware version (deprecated)" if SOC_INTEL_CSE_RW_UPDATE
 	default ""
 	help
 	 This config contains the Intel CSE RW version of the blob that is provided by
 	 SOC_INTEL_CSE_RW_FILE config and the version must be set in the format
 	 major.minor.hotfix.build (ex: 14.0.40.1209).
+
+	 This config may be deprecated in the future. Consider not providing the CSE RW
+	 firmware version here and let the CSE version be automatically queried from the CSE
+	 binary at build time (available with Meteor Lake and following platforms).
 
 config SOC_INTEL_CSE_SET_EOP
 	bool

@@ -4,13 +4,20 @@ Offline SMMSTORE variable modification tool.
 
 ## Operation
 
+### File formats
+
+To discover SMMSTORE, the tool first looks for FMAP header and, if found, for
+SMMSTORE region.  If FMAP is found but it has no SMMSTORE region, that's an
+error.  If there is no FMAP, the whole file is assumed to be SMMSTORE
+region (e.g., extracted via `cbfstool`).
+
 ### Storage initialization
 
 If SMMSTORE presence isn't detected and an update operation is requested, the
-store spanning the whole file is created automatically.  Size of the store file
-must be a multiple of 64 KiB (block size in version 2 of SMMSTORE protocol),
-the variable storage itself will be 64 KiB in size.  That's the way EDK2 makes
-use of it.
+store spanning the whole region is created automatically.  Size of the store
+region must be a multiple of 64 KiB (block size in version 2 of SMMSTORE
+protocol), the variable storage itself will be 64 KiB in size.  That's the way
+EDK2 makes use of it.
 
 Unlike online editing which mostly appends new variable entries each storage
 update with this tool drops all deleted or incomplete entries.
@@ -28,7 +35,7 @@ Start with:
 
 ```
 $ smmstoretool -h
-Usage: smmstoretool smm-store-file sub-command
+Usage: smmstoretool smm-store-file|rom sub-command
        smmstoretool -h|--help
 
 Sub-commands:
@@ -58,7 +65,8 @@ to typical configuration values are supported:
 
 ## Examples
 
-`SMMSTORE` is the name of a file containing SMMSTORE data.
+`SMMSTORE` is the name of a file containing SMMSTORE data or a full ROM image
+with FMAP that includes SMMSTORE region.
 
 ### Variable listing
 
@@ -111,9 +119,13 @@ $ smmstoretool SMMSTORE remove -g dasharo -n NetworkBoot
 If one edits a newly generated Dasharo `coreboot.rom`:
 
 ```bash
+# editing exported storage
 cbfstool coreboot.rom read -r SMMSTORE -f SMMSTORE
 smmstoretool SMMSTORE set -g dasharo -n NetworkBoot -t bool -v true
 cbfstool coreboot.rom write -r SMMSTORE -f SMMSTORE
+
+# editing in-place storage
+smmstoretool coreboot.rom set -g dasharo -n NetworkBoot -t bool -v true
 ```
 
 On the first boot, "Network Boot" setting will already be enabled.

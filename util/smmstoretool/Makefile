@@ -14,6 +14,7 @@ HOSTCFLAGS ?= $(CFLAGS)
 HOSTCFLAGS += -Wall -Wextra -MMD -MP -O3
 HOSTCFLAGS += -I $(ROOT)/commonlib/bsd/include
 HOSTCFLAGS += -I $(ROOT)/vendorcode/intel/edk2/
+HOSTCFLAGS += -I $(TOP)/util/cbfstool/flashmap/
 HOSTCFLAGS += -I $(MDE)
 
 HOSTLDFLAGS ?= $(LDFLAGS)
@@ -27,7 +28,10 @@ else
     $(error Unsupported machine: '$(MACHINE)')
 endif
 
+# there files are in this directory
 SRC := data.c fv.c guids.c main.c storage.c utils.c vs.c
+# and these are in $(TOP)/util/cbfstool/flashmap/
+SRC += fmap.c kv_pair.c valstr.c
 
 OBJ := $(SRC:.c=.o)
 DEP := $(SRC:.c=.o.d)
@@ -51,6 +55,9 @@ $(PRG): $(OBJ)
 	$(HOSTCC) -o $@ $^ $(HOSTLDFLAGS)
 
 %.o: %.c
+	$(HOSTCC) $(HOSTCFLAGS) -c -o $@ -MF $@.d $<
+
+%.o: $(TOP)/util/cbfstool/flashmap/%.c
 	$(HOSTCC) $(HOSTCFLAGS) -c -o $@ -MF $@.d $<
 
 -include $(DEP)

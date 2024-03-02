@@ -5,6 +5,9 @@
 #include <assert.h>
 #include <stdio.h>
 
+#include "commonlib/bsd/compiler.h"
+#include "fmap.h"
+
 #include "fv.h"
 #include "utils.h"
 
@@ -19,8 +22,27 @@ bool storage_open(const char store_file[], struct storage_t *storage, bool rw)
 		return false;
 	}
 
+	/* If we won't find FMAP with SMMSTORE, use the whole file, but fail if
+	 * FMAP is there without SMMSTORE. */
+	storage->region = storage->file;
+
+	long fmap_offset = fmap_find(storage->file.start, storage->file.length);
+	if (fmap_offset >= 0) {
+		struct fmap *fmap = (void *)(storage->file.start + fmap_offset);
+		const struct fmap_area *area = fmap_find_area(fmap, "SMMSTORE");
+		if (area == NULL) {
+			fprintf(stderr,
+				"Found FMAP without SMMSTORE in \"%s\"\n",
+				store_file);
+			return false;
+		}
+
+		storage->region.start += area->offset;
+		storage->region.length = area->size;
+	}
+
 	bool auth_vars;
-	if (!fv_parse(storage->file, &storage->store_area, &auth_vars)) {
+	if (!fv_parse(storage->region, &storage->store_area, &auth_vars)) {
 		if (!rw) {
 			fprintf(stderr,
 				"Failed to find variable store in \"%s\"\n",
@@ -28,14 +50,14 @@ bool storage_open(const char store_file[], struct storage_t *storage, bool rw)
 			goto error;
 		}
 
-		if (!fv_init(storage->file)) {
+		if (!fv_init(storage->region)) {
 			fprintf(stderr,
 				"Failed to create variable store in \"%s\"\n",
 				store_file);
 			goto error;
 		}
 
-		if (!fv_parse(storage->file, &storage->store_area, &auth_vars)) {
+		if (!fv_parse(storage->region, &storage->store_area, &auth_vars)) {
 			fprintf(stderr,
 				"Failed to parse newly formatted store in \"%s\"\n",
 				store_file);

@@ -9,6 +9,7 @@
 struct storage_t {
 	bool rw;
 	struct mem_range_t file;
+	struct mem_range_t region;
 	struct mem_range_t store_area;
 	struct var_store_t vs;
 };

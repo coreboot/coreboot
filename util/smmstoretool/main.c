@@ -77,7 +77,7 @@ static const struct subcommand_t sub_commands[] = {
 
 static const int sub_command_count = ARRAY_SIZE(sub_commands);
 
-static const char *USAGE_FMT = "Usage: %s smm-store-file sub-command\n"
+static const char *USAGE_FMT = "Usage: %s smm-store-file|rom sub-command\n"
 			       "       %s -h|--help\n";
 
 static const char *program_name;
@@ -131,7 +131,7 @@ static void print_types(FILE *f)
 static void help_set(FILE *f, const struct subcommand_t *info)
 {
 	fprintf(f, "Create or update a variable:\n");
-	fprintf(f, "  %s smm-store-file %s \\\n", program_name, info->name);
+	fprintf(f, "  %s smm-store-file|rom %s \\\n", program_name, info->name);
 	fprintf(f, "      -g vendor-guid \\\n");
 	fprintf(f, "      -n variable-name \\\n");
 	fprintf(f, "      -t variable-type \\\n");
@@ -229,7 +229,7 @@ static int process_set(int argc, char *argv[], const char store_file[])
 static void help_list(FILE *f, const struct subcommand_t *info)
 {
 	fprintf(f, "List variables in the store:\n");
-	fprintf(f, "  %s smm-store-file %s\n", program_name, info->name);
+	fprintf(f, "  %s smm-store-file|rom %s\n", program_name, info->name);
 }
 
 static int process_list(int argc, char *argv[], const char store_file[])
@@ -261,7 +261,7 @@ static int process_list(int argc, char *argv[], const char store_file[])
 static void help_get(FILE *f, const struct subcommand_t *info)
 {
 	fprintf(f, "Read variable's value:\n");
-	fprintf(f, "  %s smm-store-file %s \\\n", program_name, info->name);
+	fprintf(f, "  %s smm-store-file|rom %s \\\n", program_name, info->name);
 	fprintf(f, "      -g vendor-guid \\\n");
 	fprintf(f, "      -n variable-name \\\n");
 	fprintf(f, "      -t variable-type\n");
@@ -334,10 +334,10 @@ static int process_get(int argc, char *argv[], const char store_file[])
 static void help_help(FILE *f, const struct subcommand_t *info)
 {
 	fprintf(f, "Display generic help:\n");
-	fprintf(f, "  %s smm-store-file %s\n", program_name, info->name);
+	fprintf(f, "  %s smm-store-file|rom %s\n", program_name, info->name);
 	fprintf(f, "\n");
 	fprintf(f, "Display sub-command help:\n");
-	fprintf(f, "  %s smm-store-file %s sub-command\n",
+	fprintf(f, "  %s smm-store-file|rom %s sub-command\n",
 		program_name, info->name);
 }
 
@@ -375,7 +375,7 @@ static int process_help(int argc, char *argv[], const char store_file[])
 static void help_remove(FILE *f, const struct subcommand_t *info)
 {
 	fprintf(f, "Remove a variable:\n");
-	fprintf(f, "  %s smm-store-file %s \\\n", program_name, info->name);
+	fprintf(f, "  %s smm-store-file|rom %s \\\n", program_name, info->name);
 	fprintf(f, "      -g vendor-guid \\\n");
 	fprintf(f, "      -n variable-name\n");
 }
@@ -432,7 +432,7 @@ static int process_remove(int argc, char *argv[], const char store_file[])
 static void help_guids(FILE *f, const struct subcommand_t *info)
 {
 	fprintf(f, "List recognized GUIDS:\n");
-	fprintf(f, "  %s smm-store-file %s\n", program_name, info->name);
+	fprintf(f, "  %s smm-store-file|rom %s\n", program_name, info->name);
 }
 
 static int process_guids(int argc, char *argv[], const char store_file[])

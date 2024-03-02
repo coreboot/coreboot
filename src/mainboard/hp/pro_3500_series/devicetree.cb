@@ -1,0 +1,95 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+chip northbridge/intel/sandybridge
+	# XMM1: CH0S0 0x50
+	# XMM3: CH1S0 0x52
+	register "spd_addresses" = "{0x50, 0, 0x52, 0}"
+
+	device domain 0x0 on
+		subsystemid 0x103c 0x2abf inherit
+
+		device ref peg10 on end
+		device ref igd on end
+
+		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+			register "gen1_dec" = "0x003c0a01"
+			register "pcie_port_coalesce" = "1"
+			register "sata_interface_speed_support" = "0x3"
+			# SATA0: ata1 0x01
+			# SATA1: ata2 0x02
+			# SATA2: ata5 0x10
+			# SATA3: ata6 0x20
+			register "sata_port_map" = "0x33"
+			register "spi_lvscc" = "0x2005"
+			register "spi_uvscc" = "0x2005"
+			device ref ehci2 on end
+			device ref hda on end
+			device ref pcie_rp2 on end # MINI_PCIE
+			device ref pcie_rp3 on end # PCIEx1_1
+			device ref pcie_rp4 on end # PCIEx1_2
+			device ref pcie_rp5 on end # PCIEx1_3
+			device ref pcie_rp6 on end # RTL8171EH
+			device ref ehci1 on end
+			device ref lpc on
+				chip superio/ite/it8772f
+					# GPIO registers all zero or written by LED code
+
+					register "ec.smbus_en"		= "1"
+
+					register "TMPIN1.mode"		= "THERMAL_MODE_DISABLED"
+					register "TMPIN2.mode"		= "THERMAL_DIODE" # Near ATX_CPU connector
+					register "TMPIN3.mode"		= "THERMAL_PECI"
+					# TMPIN3.offset is set to TJ_MAX at runtime
+
+					# CPU fan
+					register "FAN2.mode"		= "FAN_SMART_AUTOMATIC"
+					register "FAN2.smart.tmpin"	= "3"
+					register "FAN2.smart.tmp_off"	= "-127"
+					register "FAN2.smart.tmp_start"	= "40"
+					register "FAN2.smart.tmp_full"	= "86"
+					register "FAN2.smart.tmp_delta"	= "5"
+					register "FAN2.smart.pwm_start"	= "25"
+					register "FAN2.smart.slope"	= "6"
+					# System fan
+					register "FAN3.mode"		= "FAN_SMART_AUTOMATIC"
+					register "FAN3.smart.tmpin"	= "3"
+					register "FAN3.smart.tmp_off"	= "-127"
+					register "FAN3.smart.tmp_start"	= "40"
+					register "FAN3.smart.tmp_full"	= "86"
+					register "FAN3.smart.tmp_delta"	= "5"
+					register "FAN3.smart.pwm_start"	= "34"
+					register "FAN3.smart.slope"	= "11"
+
+					register "FAN_VECA.tmpin"	= "2"
+					register "FAN_VECA.fanout"	= "2"
+					register "FAN_VECA.tmp_start"	= "57"
+					register "FAN_VECA.tmp_delta"	= "5"
+					register "FAN_VECA.slope"	= "26"
+
+					register "FAN_VECB.tmpin"	= "2"
+					register "FAN_VECB.fanout"	= "3"
+					register "FAN_VECB.tmp_start"	= "48"
+					register "FAN_VECB.tmp_delta"	= "5"
+					register "FAN_VECB.slope"	= "5"
+
+					register "ec.vin_mask"		= "VIN_ALL"
+
+					device pnp 2e.0 off end # FDC
+					device pnp 2e.1 off end # Serial Port 1
+					device pnp 2e.4 on # Environment Controller
+						io 0x60 = 0xa30
+						io 0x62 = 0xa20
+					end
+					device pnp 2e.7 on # GPIO
+						io 0x60 = 0x0
+						io 0x62 = 0xa00
+					end
+					device pnp 2e.5 off end # Keyboard, enabled in vendor firmware but missing connector
+					device pnp 2e.6 off end # Mouse   , enabled in vendor firmware but missing connector
+					device pnp 2e.a off end # IR
+				end
+			end
+			device ref sata1 on end
+		end
+	end
+end

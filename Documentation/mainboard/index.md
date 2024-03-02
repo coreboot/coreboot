@@ -127,6 +127,7 @@ GA-H61M-S2PV <gigabyte/ga-h61m-s2pv.md>
 
 Compaq 8200 Elite SFF <hp/compaq_8200_sff.md>
 Compaq Elite 8300 USDT <hp/compaq_8300_usdt.md>
+Pro 3500 Series <hp/pro_3500_series.md>
 Z220 Workstation SFF <hp/z220_sff.md>
 ```
 

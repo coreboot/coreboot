@@ -989,7 +989,6 @@ COREINFO PAYLOAD
 F:	payloads/coreinfo/
 
 EXTERNAL PAYLOADS INTEGRATION
-M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
 M:	Martin Roth <gaumless@gmail.com>
 F:	payloads/external/
 
@@ -1058,11 +1057,9 @@ S:	Supported
 F:	util/lint/
 
 IFDTOOL
-M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
 F:	util/ifdtool/
 
 INTELTOOL
-M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
 M:	Pratik Prajapati <pratikkumar.v.prajapati@intel.com>
 F:	util/inteltool/
 
@@ -1222,34 +1219,33 @@ MISSING: SPI
 # *** Infrastructure Owners ***
 # This is intended to let people know who they should contact for issues with various infrastructure pieces.
 # Hardware
-#	Owners: Stefan, Patrick
+#	Owners: Patrick
 #	Backups:
 
 # Web Server
-#	Owners: Stefan, Patrick
+#	Owners: Patrick
 #	Backups:
 
 # Website
 #	Owners: Martin
-#	Backups: Patrick, Stefan
+#	Backups: Patrick
 
 # Documentation Website
 #	Owners: Patrick
 #	Backups:
 
 CODE OF CONDUCT
-M:	Stefan Reinauer <stefan.reinauer@coreboot.org>
 M:	Ronald Minnich <rminnich@gmail.com>
 M:	Martin Roth <martin@coreboot.org>
 S:	Maintained
 F:	Documentation/community/code_of_conduct.md
 
 # Wiki
-#	Owners: Stefan, Patrick
+#	Owners: Patrick
 #	Backups:
 
 # Gerrit
-#	Owners: Stefan, Patrick
+#	Owners: Patrick
 #	Backups: Martin
 
 # Jenkins
@@ -1261,9 +1257,9 @@ F:	Documentation/community/code_of_conduct.md
 #	Backups: Martin,
 
 # Mailing List
-#	Owners: Stefan, Patrick
-#	Backups: Martin,
+#	Owners: Patrick
+#	Backups: Martin
 
 # Software Freedom Conservancy
 #	Main contact: Martin
-#	“Official” contact: Stefan
+#	“Official” contact: David, Matt, Werner

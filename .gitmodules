@@ -13,9 +13,6 @@
 [submodule "arm-trusted-firmware"]
 	path = 3rdparty/arm-trusted-firmware
 	url = https://review.coreboot.org/arm-trusted-firmware.git
-[submodule "3rdparty/chromeec"]
-	path = 3rdparty/chromeec
-	url = https://review.coreboot.org/chrome-ec.git
 [submodule "libhwbase"]
 	path = 3rdparty/libhwbase
 	url = https://review.coreboot.org/libhwbase.git

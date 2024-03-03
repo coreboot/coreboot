@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_SIFIVE_HIFIVE_UNMATCHED
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_SIFIVE_FU740
+	select BOARD_ROMSIZE_KB_32768
+	select MISSING_BOARD_RESET
+	select FLATTENED_DEVICE_TREE
+	select SPI_FLASH
+	select SPI_FLASH_ISSI
+	select SPI_SDCARD
+
+config HEAP_SIZE
+	default 0x10000 #TODO
+
+config MAINBOARD_DIR
+	default "sifive/hifive-unmatched"
+
+config MAINBOARD_PART_NUMBER
+	default "HiFive Unmatched"
+
+endif

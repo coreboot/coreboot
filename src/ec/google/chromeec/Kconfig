@@ -6,6 +6,8 @@ config EC_GOOGLE_CHROMEEC
 	help
 	  Google's Chrome EC
 
+if EC_GOOGLE_CHROMEEC
+
 config EC_GOOGLE_CHROMEEC_ACPI_MEMMAP
 	depends on EC_GOOGLE_CHROMEEC_LPC
 	def_bool n
@@ -15,20 +17,17 @@ config EC_GOOGLE_CHROMEEC_ACPI_MEMMAP
 	  the LPC bus.
 
 config EC_GOOGLE_CHROMEEC_ACPI_USB_PORT_POWER
-	depends on EC_GOOGLE_CHROMEEC
 	def_bool n
 	help
 	  Expose methods for enabling and disabling port power on individual USB
 	  ports through the EC.
 
 config EC_GOOGLE_CHROMEEC_BOARDID
-	depends on EC_GOOGLE_CHROMEEC
 	def_bool n
 	help
 	  Provides common routine for reading boardid from Chrome EC.
 
 config EC_GOOGLE_CHROMEEC_I2C
-	depends on EC_GOOGLE_CHROMEEC
 	bool
 	default n
 	help
@@ -51,7 +50,7 @@ config EC_GOOGLE_CHROMEEC_I2C_PROTO3
 	  Use only proto3 for i2c EC communication.
 
 config EC_GOOGLE_CHROMEEC_ESPI
-	depends on EC_GOOGLE_CHROMEEC && ARCH_X86  # Needs Plug-and-play.
+	depends on ARCH_X86  # Needs Plug-and-play.
 	def_bool n
 	select EC_GOOGLE_CHROMEEC_LPC
 	help
@@ -62,7 +61,7 @@ config EC_GOOGLE_CHROMEEC_ESPI
 	  still needs to correctly configure the bus transactions.
 
 config EC_GOOGLE_CHROMEEC_LPC
-	depends on EC_GOOGLE_CHROMEEC && ARCH_X86  # Needs Plug-and-play.
+	depends on ARCH_X86  # Needs Plug-and-play.
 	def_bool n
 	help
 	  Google Chrome EC via LPC bus.
@@ -75,13 +74,11 @@ config EC_GOOGLE_CHROMEEC_MEC
 	  Microchip EC variant for LPC register access.
 
 config EC_GOOGLE_CHROMEEC_PD
-	depends on EC_GOOGLE_CHROMEEC
 	def_bool n
 	help
 	  Indicates that Google's Chrome USB PD chip is present.
 
 config EC_GOOGLE_CHROMEEC_SPI
-	depends on EC_GOOGLE_CHROMEEC
 	def_bool n
 	help
 	  Google's Chrome EC via SPI bus.
@@ -108,7 +105,6 @@ config EC_GOOGLE_CHROMEEC_SKUID
 	  Provides common routine for reporting the skuid to ChromeOS.
 
 config EC_GOOGLE_CHROMEEC_BOARDNAME
-	depends on EC_GOOGLE_CHROMEEC
 	string "Chrome EC board name for EC"
 	default ""
 	help
@@ -126,7 +122,6 @@ config EC_GOOGLE_CHROMEEC_PD_BOARDNAME
 	  build the EC firmware and add it to the image.
 
 config EC_GOOGLE_CHROMEEC_RTC
-	depends on EC_GOOGLE_CHROMEEC
 	bool "Enable ChromeOS EC RTC"
 	help
 	  Enable support for the real-time clock on the ChromeOS EC. This
@@ -134,7 +129,6 @@ config EC_GOOGLE_CHROMEEC_RTC
 
 choice
 	prompt "Chrome EC firmware source"
-	depends on EC_GOOGLE_CHROMEEC
 	default EC_GOOGLE_CHROMEEC_FIRMWARE_BUILTIN if EC_GOOGLE_CHROMEEC_BOARDNAME != ""
 	default EC_GOOGLE_CHROMEEC_FIRMWARE_NONE
 
@@ -193,7 +187,7 @@ config EC_GOOGLE_CHROMEEC_PD_FIRMWARE_FILE
 	  The path and filename of the PD firmware file to use.
 
 config EC_GOOGLE_CHROMEEC_SWITCHES
-	depends on EC_GOOGLE_CHROMEEC && VBOOT
+	depends on VBOOT
 	bool
 	help
 	  Enable support for ChromeOS mode switches provided by the ChromeOS
@@ -207,9 +201,10 @@ config EC_GOOGLE_CHROMEEC_INCLUDE_SSFC_IN_FW_CONFIG
 	  32 bits of firmware configuration.
 
 config EC_GOOGLE_CHROMEEC_AUTO_FAN_CTRL
-	depends on EC_GOOGLE_CHROMEEC
 	bool "Enable automatic fan control"
 	help
 	  Put the fan in auto mode at boot.
+
+endif # EC_GOOGLE_CHROMEEC
 
 source "src/ec/google/chromeec/*/Kconfig"

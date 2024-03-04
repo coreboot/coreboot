@@ -8,6 +8,7 @@ config SOC_INTEL_COOPERLAKE_SP
 	select NO_FSP_TEMP_RAM_EXIT
 	select HAVE_INTEL_FSP_REPO
 	select FSP_SPEC_VIOLATION_XEON_SP_HEAP_WORKAROUND
+	select UDK_202005_BINDING
 	help
 	  Intel Cooper Lake-SP support
 

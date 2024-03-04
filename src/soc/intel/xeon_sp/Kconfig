@@ -47,7 +47,6 @@ config MAINBOARD_USES_FSP2_0
 	  bool
 	  default y
 	  select PLATFORM_USES_FSP2_0
-	  select UDK_202005_BINDING
 	  select POSTCAR_STAGE
 
 config MAX_SOCKET

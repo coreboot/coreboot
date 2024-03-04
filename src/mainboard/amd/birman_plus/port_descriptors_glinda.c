@@ -6,52 +6,97 @@
 #include <soc/platform_descriptors.h>
 #include <types.h>
 
-/* TODO: Update for birmanplus */
 
-static const fsp_dxio_descriptor birman_dxio_descriptors[] = {
-	{
-		.engine_type = PCIE_ENGINE,
-		.port_present = true,
-		.start_logical_lane = 0,
-		.end_logical_lane = 0,
-		.device_number = 2,
-		.function_number = 1,
-		.link_speed_capability = GEN3,
-		.turn_off_unused_lanes = true,
-		.link_aspm = 2,
-		.link_hotplug = HOTPLUG_ENHANCED,
-		.clk_req = CLK_REQ3,
-	},
-	{
-		.engine_type = PCIE_ENGINE,
-		.port_present = true,
-		.start_logical_lane = 1,
-		.end_logical_lane = 1,
-		.device_number = 2,
-		.function_number = 2,
-		.link_speed_capability = GEN3,
-		.turn_off_unused_lanes = true,
-		.link_aspm = 2,
-		.link_hotplug = HOTPLUG_ENHANCED,
-		.clk_req = CLK_REQ1,
-	},
-	{
-		.engine_type = PCIE_ENGINE,
-		.port_present = true,
-		.start_logical_lane = 2,
-		.end_logical_lane = 3,
-		.device_number = 2,
-		.function_number = 3,
-		.link_speed_capability = GEN3,
-		.turn_off_unused_lanes = true,
-		.link_aspm = 2,
-		.link_hotplug = HOTPLUG_ENHANCED,
-		.gpio_group_id = GPIO_27,
-		.clk_req = CLK_REQ0,
-	},
-};
+#define glinda_mxm_dxio_descriptor {			\
+	.engine_type = PCIE_ENGINE,			\
+	.port_present = CONFIG(ENABLE_EVAL_CARD),	\
+	.start_logical_lane = 0,				\
+	.end_logical_lane = 7,					\
+	.device_number = 3,				\
+	.function_number = 1,				\
+	.link_speed_capability = GEN_MAX,			\
+	.turn_off_unused_lanes = true,			\
+	.link_aspm = ASPM_L1,				\
+	.link_hotplug = HOTPLUG_DISABLED,		\
+	.clk_req = CLK_REQ0,				\
+	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}, \
+}
 
-static fsp_ddi_descriptor birman_ddi_descriptors[] = {
+#define glinda_ssd0_dxio_descriptor {				\
+	.engine_type = PCIE_ENGINE,			\
+	.port_present = true,				\
+	.start_logical_lane = 16,				\
+	.end_logical_lane = 19,					\
+	.device_number = 2,				\
+	.function_number = 1,				\
+	.link_speed_capability = GEN_MAX,			\
+	.turn_off_unused_lanes = true,			\
+	.link_aspm = ASPM_L1,				\
+	.link_hotplug = HOTPLUG_DISABLED,		\
+	.clk_req = CLK_REQ2, \
+	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}, \
+}
+
+#define glinda_wlan_dxio_descriptor {				\
+	.engine_type = PCIE_ENGINE,			\
+	.port_present = true,				\
+	.start_logical_lane = 15,				\
+	.end_logical_lane = 15,		\
+	.device_number = 2,				\
+	.function_number = 2,				\
+	.link_speed_capability = GEN_MAX,			\
+	.turn_off_unused_lanes = true,			\
+	.link_aspm = ASPM_L1,				\
+	.link_hotplug = HOTPLUG_DISABLED,		\
+	.clk_req = CLK_REQ3,				\
+}
+
+#define glinda_wwan_dxio_descriptor {				\
+	.engine_type = PCIE_ENGINE,			\
+	.port_present = true,				\
+	.start_logical_lane = 12,				\
+	.end_logical_lane = 12,		\
+	.device_number = 2,				\
+	.function_number = 5,				\
+	.link_speed_capability = GEN_MAX,			\
+	.turn_off_unused_lanes = true,			\
+	.link_aspm = ASPM_L1,				\
+	.link_hotplug = HOTPLUG_DISABLED,		\
+	.clk_req = CLK_REQ4,				\
+	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}, \
+}
+
+#define glinda_gbe_dxio_descriptor {				\
+	.engine_type = PCIE_ENGINE,			\
+	.port_present = true,				\
+	.start_logical_lane = 13,				\
+	.end_logical_lane = 13,					\
+	.device_number = 2,				\
+	.function_number = 4,				\
+	.link_speed_capability = GEN_MAX,			\
+	.turn_off_unused_lanes = true,			\
+	.link_aspm = ASPM_L1,				\
+	.link_hotplug = HOTPLUG_DISABLED,		\
+	.clk_req = CLK_REQ6,				\
+	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}, \
+}
+
+#define glinda_sd_dxio_descriptor {				\
+	.engine_type = PCIE_ENGINE,			\
+	.port_present = true,				\
+	.start_logical_lane = 14,				\
+	.end_logical_lane = 14,					\
+	.device_number = 2,				\
+	.function_number = 2,				\
+	.link_speed_capability = GEN_MAX,			\
+	.turn_off_unused_lanes = true,			\
+	.link_aspm = ASPM_L1,				\
+	.link_hotplug = HOTPLUG_DISABLED,		\
+	.clk_req = CLK_REQ5,				\
+	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}, \
+}
+
+static fsp_ddi_descriptor birmanplus_glinda_ddi_descriptors[] = {
 	{ /* DDI0 - eDP */
 		.connector_type = DDI_EDP,
 		.aux_index = DDI_AUX1,
@@ -121,10 +166,19 @@ void mainboard_get_dxio_ddi_descriptors(
 		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
 		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
-	birman_ddi_descriptors[1].connector_type = get_ddi1_type();
+	birmanplus_glinda_ddi_descriptors[1].connector_type = get_ddi1_type();
 
-	*dxio_descs = birman_dxio_descriptors;
-	*dxio_num = ARRAY_SIZE(birman_dxio_descriptors);
-	*ddi_descs = birman_ddi_descriptors;
-	*ddi_num = ARRAY_SIZE(birman_ddi_descriptors);
+	static const fsp_dxio_descriptor birmanplus_glinda_dxio_descriptors[] = {
+		glinda_mxm_dxio_descriptor,
+		glinda_ssd0_dxio_descriptor,
+		glinda_wlan_dxio_descriptor,
+		glinda_wwan_dxio_descriptor,
+		glinda_gbe_dxio_descriptor,
+		glinda_sd_dxio_descriptor,
+	};
+
+	*dxio_descs = birmanplus_glinda_dxio_descriptors;
+	*dxio_num = ARRAY_SIZE(birmanplus_glinda_dxio_descriptors);
+	*ddi_descs = birmanplus_glinda_ddi_descriptors;
+	*ddi_num = ARRAY_SIZE(birmanplus_glinda_ddi_descriptors);
 }

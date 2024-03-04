@@ -29,6 +29,7 @@ HEADER_EXCLUDED="\
 ^src/lib/stack.c\$|\
 ^src/sbom/TAGS|\
 ^src/vendorcode/|\
+^tests/data/|\
 ^util/amdtools/example_input/|\
 ^util/cbfstool/lzma/|\
 ^util/cbfstool/lz4/|\

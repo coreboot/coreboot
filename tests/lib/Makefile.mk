@@ -39,8 +39,14 @@ tests-y += cbfs-lookup-no-mcache-test
 tests-y += cbfs-lookup-has-mcache-test
 tests-y += lzma-test
 tests-y += ux_locales-test
+tests-y += device_tree-test
 
 lib-test-srcs += tests/lib/lib-test.c
+
+device_tree-test-srcs += tests/lib/device_tree-test.c
+device_tree-test-srcs += tests/stubs/console.c
+device_tree-test-srcs += src/lib/device_tree.c
+device_tree-test-syssrcs += tests/helpers/file.c
 
 string-test-srcs += tests/lib/string-test.c
 string-test-srcs += src/lib/string.c

@@ -4,6 +4,7 @@
 #ifndef __DEVICE_TREE_H__
 #define __DEVICE_TREE_H__
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <commonlib/list.h>
@@ -33,6 +34,7 @@ struct fdt_header {
 #define FDT_TOKEN_BEGIN_NODE	1
 #define FDT_TOKEN_END_NODE	2
 #define FDT_TOKEN_PROPERTY	3
+#define FDT_TOKEN_NOP		4
 #define FDT_TOKEN_END		9
 #define FDT_PHANDLE_ILLEGAL	0xdeadbeef
 
@@ -46,6 +48,11 @@ struct fdt_property
 /*
  * Unflattened device tree structures.
  */
+
+struct device_tree_region {
+	u64 addr;
+	u64 size;
+};
 
 struct device_tree_property
 {
@@ -91,6 +98,8 @@ struct device_tree
  * which were consumed reading the requested value.
  */
 
+/* Checks if blob points to a valid FDT */
+bool fdt_is_valid(const void *blob);
 /* Read the property at offset, if any exists. */
 int fdt_next_property(const void *blob, uint32_t offset,
 		      struct fdt_property *prop);
@@ -99,6 +108,26 @@ int fdt_node_name(const void *blob, uint32_t offset, const char **name);
 
 void fdt_print_node(const void *blob, uint32_t offset);
 int fdt_skip_node(const void *blob, uint32_t offset);
+
+/* Read property and put into fdt_prop. Returns offset to property */
+u32 fdt_read_prop(const void *blob, u32 node_offset, const char *prop_name,
+		  struct fdt_property *fdt_prop);
+/* Read reg property and save regions inside 'regions'. Returns number of regions read */
+u32 fdt_read_reg_prop(const void *blob, u32 node_offset, u32 addr_cells, u32 size_cells,
+		      struct device_tree_region regions[], size_t regions_count);
+/* Find a node by a given path and return the offset */
+u32 fdt_find_node_by_path(const void *blob, const char *path, u32 *addrcp, u32 *sizecp);
+/* Find multiple nodes matching a given pattern. Returns number of nodes found */
+size_t fdt_find_subnodes_by_prefix(const void *blob, u32 node_offset, const char *prefix,
+				   u32 *addrcp, u32 *sizecp, u32 results[], size_t results_len);
+/* Find a node by a given alias and return its offset */
+u32 fdt_find_node_by_alias(const void *blob, const char *alias_name,
+			   u32 *addr_cells, u32 *size_cells);
+/*
+ * Read the node name into 'name' of the node behind 'node_offset'
+ * and return total bytes used for name
+ */
+int fdt_next_node_name(const void *blob, uint32_t node_offset, const char **name);
 
 /* Read a flattened device tree into a hierarchical structure which refers to
    the contents of the flattened tree in place. Modifying the flat tree

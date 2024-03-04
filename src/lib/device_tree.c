@@ -6,20 +6,38 @@
 #include <ctype.h>
 #include <device_tree.h>
 #include <endian.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
 #include <stddef.h>
 #include <stdlib.h>
 
+#define FDT_PATH_MAX_DEPTH 10 // should be a good enough upper bound
+#define FDT_PATH_MAX_LEN 128 // should be a good enough upper bound
+
 /*
  * Functions for picking apart flattened trees.
  */
+
+static int fdt_skip_nops(const void *blob, uint32_t offset)
+{
+	uint32_t *ptr = (uint32_t *)(((uint8_t *)blob) + offset);
+
+	int index = 0;
+	while (be32toh(ptr[index]) == FDT_TOKEN_NOP)
+		index++;
+
+	return index * sizeof(uint32_t);
+}
 
 int fdt_next_property(const void *blob, uint32_t offset,
 		      struct fdt_property *prop)
 {
 	struct fdt_header *header = (struct fdt_header *)blob;
 	uint32_t *ptr = (uint32_t *)(((uint8_t *)blob) + offset);
+
+	// skip NOP tokens
+	offset += fdt_skip_nops(blob, offset);
 
 	int index = 0;
 	if (be32toh(ptr[index++]) != FDT_TOKEN_PROPERTY)
@@ -40,24 +58,369 @@ int fdt_next_property(const void *blob, uint32_t offset,
 	return index * sizeof(uint32_t);
 }
 
-int fdt_node_name(const void *blob, uint32_t offset, const char **name)
+/*
+ * fdt_next_node_name  reads a node name
+ *
+ * @params blob    address of FDT
+ * @params offset  offset to the node to read the name from
+ * @params name    parameter to hold the name that has been read or NULL
+ *
+ * @returns  Either 0 on error or offset to the properties that come after the node name
+ */
+int fdt_next_node_name(const void *blob, uint32_t offset, const char **name)
 {
-	uint8_t *ptr = ((uint8_t *)blob) + offset;
+	// skip NOP tokens
+	offset += fdt_skip_nops(blob, offset);
+
+	char *ptr = ((char *)blob) + offset;
 	if (be32dec(ptr) != FDT_TOKEN_BEGIN_NODE)
 		return 0;
 
 	ptr += 4;
 	if (name)
-		*name = (char *)ptr;
-	return ALIGN_UP(strlen((char *)ptr) + 1, sizeof(uint32_t)) + 4;
+		*name = ptr;
+
+	return ALIGN_UP(strlen(ptr) + 1, 4) + 4;
 }
 
-static int dt_prop_is_phandle(struct device_tree_property *prop)
+/*
+ * A utility function to skip past nodes in flattened trees.
+ */
+int fdt_skip_node(const void *blob, uint32_t start_offset)
 {
-	return !(strcmp("phandle", prop->prop.name) &&
-		 strcmp("linux,phandle", prop->prop.name));
+	uint32_t offset = start_offset;
+
+	const char *name;
+	int size = fdt_next_node_name(blob, offset, &name);
+	if (!size)
+		return 0;
+	offset += size;
+
+	while ((size = fdt_next_property(blob, offset, NULL)))
+		offset += size;
+
+	while ((size = fdt_skip_node(blob, offset)))
+		offset += size;
+
+	// skip NOP tokens
+	offset += fdt_skip_nops(blob, offset);
+
+	return offset - start_offset + sizeof(uint32_t);
 }
 
+/*
+ * fdt_read_prop reads a property inside a node
+ *
+ * @params blob         address of FDT
+ * @params node_offset  offset to the node to read the property from
+ * @params prop_name    name of the property to read
+ * @params fdt_prop     property is saved inside this parameter
+ *
+ * @returns  Either 0 if no property has been found or an offset that points to the location
+ *           of the property
+ */
+u32 fdt_read_prop(const void *blob, u32 node_offset, const char *prop_name,
+		  struct fdt_property *fdt_prop)
+{
+	u32 offset = node_offset;
+
+	offset += fdt_next_node_name(blob, offset, NULL); // skip node name
+
+	size_t size;
+	while ((size = fdt_next_property(blob, offset, fdt_prop))) {
+		if (strcmp(fdt_prop->name, prop_name) == 0)
+			return offset;
+		offset += size;
+	}
+	return 0; // property not found
+}
+
+/*
+ * fdt_read_reg_prop reads the reg property inside a node
+ *
+ * @params blob           address of FDT
+ * @params node_offset    offset to the node to read the reg property from
+ * @params addr_cells     number of cells used for one address
+ * @params size_cells     number of cells used for one size
+ * @params regions        all regions that are read inside the reg property are saved inside
+ *                        this array
+ * @params regions_count  maximum number of entries that can be saved inside the regions array.
+ *
+ * Returns: Either 0 on error or returns the number of regions put into the regions array.
+ */
+u32 fdt_read_reg_prop(const void *blob, u32 node_offset, u32 addr_cells, u32 size_cells,
+		      struct device_tree_region regions[], size_t regions_count)
+{
+	struct fdt_property prop;
+	u32 offset = fdt_read_prop(blob, node_offset, "reg", &prop);
+
+	if (!offset) {
+		printk(BIOS_DEBUG, "no reg property found in node_offset: %x\n", node_offset);
+		return 0;
+	}
+
+	// we found the reg property, now need to parse all regions in 'reg'
+	size_t count = prop.size / (4 * addr_cells + 4 * size_cells);
+	if (count > regions_count) {
+		printk(BIOS_ERR, "reg property at node_offset: %x has more entries (%zd) than regions array can hold (%zd)\n", node_offset, count, regions_count);
+		count = regions_count;
+	}
+	if (addr_cells > 2 || size_cells > 2) {
+		printk(BIOS_ERR, "addr_cells (%d) or size_cells (%d) bigger than 2\n",
+				  addr_cells, size_cells);
+		return 0;
+	}
+	uint32_t *ptr = prop.data;
+	for (int i = 0; i < count; i++) {
+		if (addr_cells == 1)
+			regions[i].addr = be32dec(ptr);
+		else if (addr_cells == 2)
+			regions[i].addr = be64dec(ptr);
+		ptr += addr_cells;
+		if (size_cells == 1)
+			regions[i].size = be32dec(ptr);
+		else if (size_cells == 2)
+			regions[i].size = be64dec(ptr);
+		ptr += size_cells;
+	}
+
+	return count; // return the number of regions found in the reg property
+}
+
+static u32 fdt_read_cell_props(const void *blob, u32 node_offset, u32 *addrcp, u32 *sizecp)
+{
+	struct fdt_property prop;
+	u32 offset = node_offset;
+	size_t size;
+	while ((size = fdt_next_property(blob, offset, &prop))) {
+		if (addrcp && !strcmp(prop.name, "#address-cells"))
+			*addrcp = be32dec(prop.data);
+		if (sizecp && !strcmp(prop.name, "#size-cells"))
+			*sizecp = be32dec(prop.data);
+		offset += size;
+	}
+	return offset;
+}
+
+/*
+ * fdt_find_node searches for a node relative to another node
+ *
+ * @params blob  address of FDT
+ *
+ * @params parent_node_offset  offset to node from which to traverse the tree
+ *
+ * @params path  null terminated array of node names specifying a
+ *               relative path (e.g: { "cpus", "cpu0", NULL })
+ *
+ * @params addrcp/sizecp  If any address-cells and size-cells properties are found that are
+ *                        part of the parent node of the node we are looking, addrcp and sizecp
+ *                        are set to these respectively.
+ *
+ * @returns: Either 0 if no node has been found or the offset to the node found
+ */
+static u32 fdt_find_node(const void *blob, u32 parent_node_offset, char **path,
+			 u32 *addrcp, u32 *sizecp)
+{
+	if (*path == NULL)
+		return parent_node_offset; // node found
+
+	size_t size = fdt_next_node_name(blob, parent_node_offset, NULL); // skip node name
+
+	/*
+	 * get address-cells and size-cells properties while skipping the others.
+	 * According to spec address-cells and size-cells are not inherited, but we
+	 * intentionally follow the Linux implementation here and treat them as inheritable.
+	 */
+	u32 node_offset = fdt_read_cell_props(blob, parent_node_offset + size, addrcp, sizecp);
+
+	const char *node_name;
+	// walk all children nodes
+	while ((size = fdt_next_node_name(blob, node_offset, &node_name))) {
+		if (!strcmp(*path, node_name)) {
+			// traverse one level deeper into the path
+			return fdt_find_node(blob, node_offset, path + 1, addrcp, sizecp);
+		}
+		// node is not the correct one. skip current node
+		node_offset += fdt_skip_node(blob, node_offset);
+	}
+
+	// we have searched everything and could not find a fitting node
+	return 0;
+}
+
+/*
+ * fdt_find_node_by_path finds a node behind a given node path
+ *
+ * @params blob  address of FDT
+ * @params path  absolute path to the node that should be searched for
+ *
+ * @params addrcp/sizecp  Pointer that will be updated with any #address-cells and #size-cells
+ *                        value found in the node of the node specified by node_offset. Either
+ *                        may be NULL to ignore. If no #address-cells and #size-cells is found
+ *                        default values of #address-cells=2 and #size-cells=1 are returned.
+ *
+ * @returns Either 0 on error or the offset to the node found behind the path
+ */
+u32 fdt_find_node_by_path(const void *blob, const char *path, u32 *addrcp, u32 *sizecp)
+{
+	// sanity check
+	if (path[0] != '/') {
+		printk(BIOS_ERR, "devicetree path must start with a /\n");
+		return 0;
+	}
+	if (!blob) {
+		printk(BIOS_ERR, "devicetree blob is NULL\n");
+		return 0;
+	}
+
+	if (addrcp)
+		*addrcp = 2;
+	if (sizecp)
+		*sizecp = 1;
+
+	struct fdt_header *fdt_hdr = (struct fdt_header *)blob;
+
+	/*
+	 * split path into separate nodes
+	 * e.g: "/cpus/cpu0" -> { "cpus", "cpu0" }
+	 */
+	char *path_array[FDT_PATH_MAX_DEPTH];
+	size_t path_size = strlen(path);
+	assert(path_size < FDT_PATH_MAX_LEN);
+	char path_copy[FDT_PATH_MAX_LEN];
+	memcpy(path_copy, path, path_size + 1);
+	char *cur = path_copy;
+	int i;
+	for (i = 0; i < FDT_PATH_MAX_DEPTH; i++) {
+		path_array[i] = strtok_r(NULL, "/", &cur);
+		if (!path_array[i])
+			break;
+	}
+	assert(i < FDT_PATH_MAX_DEPTH);
+
+	return fdt_find_node(blob, be32toh(fdt_hdr->structure_offset), path_array, addrcp, sizecp);
+}
+
+/*
+ * fdt_find_subnodes_by_prefix finds a node with a given prefix relative to a parent node
+ *
+ * @params blob  The FDT to search.
+ *
+ * @params node_offset  offset to the node of which the children should be searched
+ *
+ * @params prefix  A string to search for a node with a given prefix. This can for example
+ *                 be 'cpu' to look for all nodes matching this prefix. Only children of
+ *                 node_offset are searched. Therefore in order to search all nodes matching
+ *                 the 'cpu' prefix, node_offset should probably point to the 'cpus' node.
+ *                 An empty prefix ("") searches for all children nodes of node_offset.
+ *
+ * @params addrcp/sizecp  Pointer that will be updated with any #address-cells and #size-cells
+ *                        value found in the node of the node specified by node_offset. Either
+ *                        may be NULL to ignore. If no #address-cells and #size-cells is found
+ *                        addrcp and sizecp are left untouched.
+ *
+ * @params results      Array of offsets pointing to each node matching the given prefix.
+ * @params results_len  Number of entries allocated for the 'results' array
+ *
+ * @returns  offset to last node found behind path or 0 if no node has been found
+ */
+size_t fdt_find_subnodes_by_prefix(const void *blob, u32 node_offset, const char *prefix,
+				   u32 *addrcp, u32 *sizecp, u32 *results, size_t results_len)
+{
+	// sanity checks
+	if (!blob || !results || !prefix) {
+		printk(BIOS_ERR, "%s: input parameter cannot be null/\n", __func__);
+		return 0;
+	}
+
+	u32 offset = node_offset;
+
+	// we don't care about the name of the current node
+	u32 size = fdt_next_node_name(blob, offset, NULL);
+	if (!size) {
+		printk(BIOS_ERR, "%s: node_offset: %x does not point to a node\n",
+		       __func__, node_offset);
+		return 0;
+	}
+	offset += size;
+
+	/*
+	 * update addrcp and sizecp if the node contains an address-cells and size-cells
+	 * property. Otherwise use addrcp and sizecp provided by caller.
+	 */
+	offset = fdt_read_cell_props(blob, offset, addrcp, sizecp);
+
+	size_t count_results = 0;
+	int prefix_len = strlen(prefix);
+	const char *node_name;
+	// walk all children nodes of offset
+	while ((size = fdt_next_node_name(blob, offset, &node_name))) {
+
+		if (count_results >= results_len) {
+			printk(BIOS_WARNING,
+				"%s: results_len (%zd) smaller than count_results (%zd)\n",
+				__func__, results_len, count_results);
+			break;
+		}
+
+		if (!strncmp(prefix, node_name, prefix_len)) {
+			// we found a node that matches the prefix
+			results[count_results++] = offset;
+		}
+
+		// node does not match the prefix. skip current node
+		offset += fdt_skip_node(blob, offset);
+	}
+
+	// return last occurrence
+	return count_results;
+}
+
+static const char *fdt_read_alias_prop(const void *blob, const char *alias_name)
+{
+	u32 node_offset =  fdt_find_node_by_path(blob, "/aliases", NULL, NULL);
+	if (!node_offset) {
+		printk(BIOS_DEBUG, "no /aliases node found\n");
+		return NULL;
+	}
+	struct fdt_property alias_prop;
+	if (!fdt_read_prop(blob, node_offset, alias_name, &alias_prop)) {
+		printk(BIOS_DEBUG, "property %s in /aliases node not found\n", alias_name);
+		return NULL;
+	}
+	return (const char *)alias_prop.data;
+}
+
+/*
+ * Find a node in the tree from a string device tree path.
+ *
+ * @params blob           Address to the FDT
+ * @params alias_name     node name alias that should be searched for.
+ * @params addrcp/sizecp  Pointer that will be updated with any #address-cells and #size-cells
+ *                        value found in the node of the node specified by node_offset. Either
+ *                        may be NULL to ignore. If no #address-cells and #size-cells is found
+ *                        default values of #address-cells=2 and #size-cells=1 are returned.
+ *
+ * @returns  offset to last node found behind path or 0 if no node has been found
+ */
+u32 fdt_find_node_by_alias(const void *blob, const char *alias_name, u32 *addrcp, u32 *sizecp)
+{
+	const char *node_name = fdt_read_alias_prop(blob, alias_name);
+	if (!node_name)  {
+		printk(BIOS_DEBUG, "alias %s not found\n", alias_name);
+		return 0;
+	}
+
+	u32 node_offset = fdt_find_node_by_path(blob, node_name, addrcp, sizecp);
+	if (!node_offset) {
+		// This should not happen (invalid devicetree)
+		printk(BIOS_WARNING,
+		       "Could not find node '%s', which alias was referring to '%s'\n",
+		       node_name, alias_name);
+		return 0;
+	}
+	return node_offset;
+}
 
 
 /*
@@ -108,7 +471,7 @@ static int print_flat_node(const void *blob, uint32_t start_offset, int depth)
 	const char *name;
 	int size;
 
-	size = fdt_node_name(blob, offset, &name);
+	size = fdt_next_node_name(blob, offset, &name);
 	if (!size)
 		return 0;
 	offset += size;
@@ -139,37 +502,15 @@ void fdt_print_node(const void *blob, uint32_t offset)
 	print_flat_node(blob, offset, 0);
 }
 
-
-
-/*
- * A utility function to skip past nodes in flattened trees.
- */
-
-int fdt_skip_node(const void *blob, uint32_t start_offset)
-{
-	int offset = start_offset;
-	int size;
-
-	const char *name;
-	size = fdt_node_name(blob, offset, &name);
-	if (!size)
-		return 0;
-	offset += size;
-
-	while ((size = fdt_next_property(blob, offset, NULL)))
-		offset += size;
-
-	while ((size = fdt_skip_node(blob, offset)))
-		offset += size;
-
-	return offset - start_offset + sizeof(uint32_t);
-}
-
-
-
 /*
  * Functions to turn a flattened tree into an unflattened one.
  */
+
+static int dt_prop_is_phandle(struct device_tree_property *prop)
+{
+	return !(strcmp("phandle", prop->prop.name) &&
+		 strcmp("linux,phandle", prop->prop.name));
+}
 
 static int fdt_unflatten_node(const void *blob, uint32_t start_offset,
 			      struct device_tree *tree,
@@ -180,7 +521,7 @@ static int fdt_unflatten_node(const void *blob, uint32_t start_offset,
 	const char *name;
 	int size;
 
-	size = fdt_node_name(blob, offset, &name);
+	size = fdt_next_node_name(blob, offset, &name);
 	if (!size)
 		return 0;
 	offset += size;
@@ -237,30 +578,37 @@ static int fdt_unflatten_map_entry(const void *blob, uint32_t offset,
 	return sizeof(uint64_t) * 2;
 }
 
-struct device_tree *fdt_unflatten(const void *blob)
+bool fdt_is_valid(const void *blob)
 {
-	struct device_tree *tree = xzalloc(sizeof(*tree));
 	const struct fdt_header *header = (const struct fdt_header *)blob;
-	tree->header = header;
 
 	uint32_t magic = be32toh(header->magic);
 	uint32_t version = be32toh(header->version);
 	uint32_t last_comp_version = be32toh(header->last_comp_version);
 
 	if (magic != FDT_HEADER_MAGIC) {
-		printk(BIOS_DEBUG, "Invalid device tree magic %#.8x!\n", magic);
-		free(tree);
-		return NULL;
+		printk(BIOS_ERR, "Invalid device tree magic %#.8x!\n", magic);
+		return false;
 	}
 	if (last_comp_version > FDT_SUPPORTED_VERSION) {
-		printk(BIOS_DEBUG, "Unsupported device tree version %u(>=%u)\n",
+		printk(BIOS_ERR, "Unsupported device tree version %u(>=%u)\n",
 		       version, last_comp_version);
-		free(tree);
-		return NULL;
+		return false;
 	}
 	if (version > FDT_SUPPORTED_VERSION)
 		printk(BIOS_NOTICE, "FDT version %u too new, should add support!\n",
 		       version);
+	return true;
+}
+
+struct device_tree *fdt_unflatten(const void *blob)
+{
+	struct device_tree *tree = xzalloc(sizeof(*tree));
+	const struct fdt_header *header = (const struct fdt_header *)blob;
+	tree->header = header;
+
+	if (fdt_is_valid(blob))
+		return NULL;
 
 	uint32_t struct_offset = be32toh(header->structure_offset);
 	uint32_t strings_offset = be32toh(header->strings_offset);
@@ -981,7 +1329,7 @@ void dt_add_u64_prop(struct device_tree_node *node, const char *name, u64 val)
  * Add a 'reg' address list property to a node, or update it if it exists.
  *
  * @param node		The device tree node to add to.
- * @param addrs		Array of address values to be stored in the property.
+ * @param regions       Array of address values to be stored in the property.
  * @param sizes		Array of corresponding size values to 'addrs'.
  * @param count		Number of values in 'addrs' and 'sizes' (must be equal).
  * @param addr_cells	Value of #address-cells property valid for this node.

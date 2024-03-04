@@ -1,0 +1,11 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_DELL_OPTIPLEX_9020_SFF
+	bool "OptiPlex 7020/9020 SFF"
+	help
+	  The 7020 SFF and 9020 SFF mainboards are physically identical.
+
+config BOARD_DELL_OPTIPLEX_9020_MT
+	bool "OptiPlex 7020/9020 MT"
+	help
+	  The 7020 MT and 9020 MT mainboards are physically identical.

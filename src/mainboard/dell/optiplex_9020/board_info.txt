@@ -1,0 +1,8 @@
+Vendor name: Dell Inc.
+Board name: OptiPlex 7020/9020
+Release year: 2013
+Category: desktop
+ROM package: SOIC-8
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

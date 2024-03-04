@@ -1,0 +1,80 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip northbridge/intel/haswell
+	# This mainboard has VGA
+	register "gpu_ddi_e_connected" = "1"
+
+	chip cpu/intel/haswell
+		device cpu_cluster 0 on ops haswell_cpu_bus_ops end
+	end
+
+	device domain 0 on
+		ops haswell_pci_domain_ops
+
+		subsystemid 0x1028 0x05a5 inherit
+
+		device pci 00.0 on  end					# Host bridge
+		device pci 01.0 on  end					# PCIe graphics
+		device pci 02.0 on  end					# VGA controller
+		device pci 03.0 on  end					# Mini-HD audio
+
+		chip southbridge/intel/lynxpoint
+			register "gen1_dec" = "0x007c0a01"
+			register "gen2_dec" = "0x007c0901"
+			register "gen3_dec" = "0x003c07e1"
+			register "gen4_dec" = "0x001c0901"
+			register "sata_port_map" = "0x33"
+
+			device pci 14.0 on  end				# xHCI controller
+			device pci 16.0 on  end				# Management Engine interface 1
+			device pci 16.1 off end				# Management Engine interface 2
+			device pci 16.2 off end				# Management Engine IDE-R
+			device pci 16.3 on  end				# Management Engine KT
+			device pci 19.0 on      			# Intel Gigabit Ethernet
+				subsystemid 0x1028 0x05a4
+			end
+			device pci 1a.0 on  end				# EHCI controller #2
+			device pci 1b.0 on  end				# HD audio controller
+			device pci 1c.0 off end
+			device pci 1c.1 off end
+			device pci 1c.2 off end
+			device pci 1c.3 off end
+			device pci 1c.4 on  end				# PCIe 4x slot
+			device pci 1c.5 off end
+			device pci 1c.6 off end
+			device pci 1c.7 off end
+			device pci 1d.0 on  end				# EHCI controller #1
+			device pci 1f.0 on				# LPC bridge
+				chip superio/smsc/sch555x
+					device pnp 2e.0 on		# EMI
+						io 0x60 = 0xa00
+					end
+					device pnp 2e.1 on		# 8042
+						io 0x60 = 0x60
+						irq 0x0f = 0
+						irq 0x70 = 1
+						irq 0x72 = 12
+					end
+					device pnp 2e.7 on		# UART1
+						io 0x60 = 0x3f8
+						irq 0x0f = 2
+						irq 0x70 = 4
+					end
+					device pnp 2e.8 off end 	# UART2
+					device pnp 2e.c on		# LPC interface
+						io 0x60 = 0x2e
+					end
+					device pnp 2e.a on		# Runtime registers
+						io 0x60 = 0xa40
+					end
+					device pnp 2e.b  off end	# Floppy Controller
+					device pnp 2e.11 off end	# Parallel Port
+				end
+			end
+			device pci 1f.2 on  end				# SATA controller 1
+			device pci 1f.3 on  end				# SMBus
+			device pci 1f.5 off end				# SATA controller 2
+			device pci 1f.6 off end				# Thermal
+		end
+	end
+end

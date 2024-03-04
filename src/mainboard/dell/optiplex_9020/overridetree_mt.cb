@@ -1,0 +1,10 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip northbridge/intel/haswell
+	device domain 0 on
+		chip southbridge/intel/lynxpoint
+			device pci 1c.1 on  end	# PCI (via XIO2001 bridge)
+			device pci 1c.2 on  end	# PCIe 1x slot
+		end
+	end
+end

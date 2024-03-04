@@ -16,6 +16,10 @@ union xeon_domain_path {
 	};
 };
 
+#define XEONSP_STACK_MAX	UINT8_MAX
+#define XEONSP_SOCKET_MAX	UINT8_MAX
+#define XEONSP_DEVICE_MAX	UINT16_MAX
+#define XEONSP_VENDOR_MAX	UINT16_MAX
 
 static inline void init_xeon_domain_path(struct device_path *path, int socket,
 	int stack, int bus)
@@ -50,7 +54,15 @@ void attach_iio_stacks(void);
 
 void soc_create_ioat_domains(union xeon_domain_path path, struct bus *bus, const STACK_RES *sr);
 void soc_create_cxl_domains(const union xeon_domain_path dp, struct bus *bus, const STACK_RES *sr);
+
 struct device *dev_find_device_on_socket(uint8_t socket, u16 vendor, u16 device);
+struct device *dev_find_all_devices_on_socket(uint8_t socket,
+						u16 vendor, u16 device, struct device *from);
+struct device *dev_find_all_devices_on_stack(uint8_t socket, uint8_t stack,
+						u16 vendor, u16 device, struct device *from);
+struct device *dev_find_all_devices_on_domain(struct device *domain,
+						u16 vendor, u16 device, struct device *from);
+
 int iio_pci_domain_socket_from_dev(struct device *dev);
 int iio_pci_domain_stack_from_dev(struct device *dev);
 

@@ -25,31 +25,115 @@ static const STACK_RES *domain_to_stack_res(const struct device *dev)
 }
 
 /**
- * Find a device of a given vendor and type for the specified socket.
+ * Find all device of a given vendor and type for the specified socket.
  * The function iterates over all PCI domains of the specified socket
  * and matches the PCI vendor and device ID.
  *
  * @param socket The socket where to search for the device.
  * @param vendor A PCI vendor ID (e.g. 0x8086 for Intel).
  * @param device A PCI device ID.
- * @return Pointer to the device struct.
+ * @param from The device pointer to start search from.
+ *
+ * @return Pointer to the device struct. When there are multiple device
+ * instances, the caller should continue search upon a non-NULL match.
+ */
+struct device *dev_find_all_devices_on_socket(uint8_t socket, u16 vendor, u16 device,
+	struct device *from)
+{
+	return dev_find_all_devices_on_stack(socket, XEONSP_STACK_MAX, vendor, device, from);
+}
+
+/*
+ * Find device of a given vendor and type for the specified socket.
+ * The function will return at the 1st match.
  */
 struct device *dev_find_device_on_socket(uint8_t socket, u16 vendor, u16 device)
 {
-	struct device *domain, *dev = NULL;
-	union xeon_domain_path dn;
+	return dev_find_all_devices_on_socket(socket, vendor, device, NULL);
+}
 
-	while ((dev = dev_find_device(vendor, device, dev))) {
-		domain = dev_get_pci_domain(dev);
-		if (!domain)
+static int filter_device_on_stack(struct device *dev, uint8_t socket, uint8_t stack,
+	u16 vendor, u16 device)
+{
+	struct device *domain = dev_get_pci_domain(dev);
+	if (!domain)
+		return 0;
+	if (dev->path.type != DEVICE_PATH_PCI)
+		return 0;
+
+	union xeon_domain_path dn;
+	dn.domain_path = domain->path.domain.domain;
+
+	if (socket != XEONSP_SOCKET_MAX && dn.socket != socket)
+		return 0;
+	if (stack != XEONSP_STACK_MAX && dn.stack != stack)
+		return 0;
+	if (vendor != XEONSP_VENDOR_MAX && dev->vendor != vendor)
+		return 0;
+	if (device != XEONSP_DEVICE_MAX && dev->device != device)
+		return 0;
+
+	return 1;
+};
+
+/**
+ * Find all device of a given vendor and type for the specified socket and stack.
+ *
+ * @param socket The socket where to search for the device.
+ *              XEONSP_SOCKET_MAX indicates any socket.
+ * @param stack The stack where to search for the device.
+ *              XEONSP_STACK_MAX indicates any stack.
+ * @param vendor A PCI vendor ID (e.g. 0x8086 for Intel).
+ *              XEONSP_VENDOR_MAX indicates any vendor.
+ * @param device A PCI device ID.
+ *              XEONSP_DEVICE_MAX indicates any device.
+ * @param from The device pointer to start search from.
+ *
+ * @return Pointer to the device struct. When there are multiple device
+ * instances, the caller should continue search upon a non-NULL match.
+ */
+struct device *dev_find_all_devices_on_stack(uint8_t socket, uint8_t stack,
+	u16 vendor, u16 device, struct device *from)
+{
+	if (!from)
+		from = all_devices;
+	else
+		from = from->next;
+
+	while (from && (!filter_device_on_stack(from, socket, stack,
+		vendor, device)))
+		from = from->next;
+
+	return from;
+}
+
+/**
+ * Find all device of a given vendor and type for the specific domain
+ * Only the direct child of the input domain is iterated
+ *
+ * @param domain Pointer to the input domain
+ * @param vendor A PCI vendor ID
+ *              XEONSP_VENDOR_MAX indicates any vendor
+ * @param vendor A PCI device ID
+ *              XEONSP_DEVICE_MAX indicates any vendor
+ * @param from The device pointer to start search from.
+ *
+ * @return Pointer to the device struct. When there are multiple device
+ * instances, the caller should continue search upon a non-NULL match.
+ */
+struct device *dev_find_all_devices_on_domain(struct device *domain, u16 vendor,
+	u16 device, struct device *from)
+{
+	struct device *dev = from;
+	while ((dev = dev_bus_each_child(domain->downstream, dev))) {
+		if (vendor != XEONSP_VENDOR_MAX && dev->vendor != vendor)
 			continue;
-		dn.domain_path = domain->path.domain.domain;
-		if (dn.socket != socket)
+		if (device != XEONSP_DEVICE_MAX && dev->device != device)
 			continue;
-		return dev;
+		break;
 	}
 
-	return NULL;
+	return dev;
 }
 
 /**

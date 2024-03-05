@@ -110,7 +110,7 @@ void add_opensil_memmap(struct device *dev, unsigned long *idx)
 		    mem_usable);
 
 	// Account for UMA and TSEG
-	const uint32_t top_mem = ALIGN_DOWN(rdmsr(TOP_MEM).lo, 1 * MiB);
+	const uint32_t top_mem = ALIGN_DOWN(get_top_of_mem_below_4gb(), 1 * MiB);
 	if (mem_usable != top_mem)
 		reserved_ram_from_to(dev, (*idx)++, mem_usable, top_mem);
 

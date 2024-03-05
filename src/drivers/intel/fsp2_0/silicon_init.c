@@ -27,7 +27,7 @@ struct fsp_multi_phase_get_number_of_phases_params {
 };
 
 /* Callbacks for SoC/Mainboard specific overrides */
-void __weak platform_fsp_multi_phase_init_cb(uint32_t phase_index)
+void __weak platform_fsp_silicon_multi_phase_init_cb(uint32_t phase_index)
 {
 	/* Leave for the SoC/Mainboard to implement if necessary. */
 }
@@ -190,7 +190,7 @@ static void do_silicon_init(struct fsp_header *hdr)
 		 * Give SoC/mainboard a chance to perform any operation before
 		 * Multi Phase Execution
 		 */
-		platform_fsp_multi_phase_init_cb(i);
+		platform_fsp_silicon_multi_phase_init_cb(i);
 
 		multi_phase_params.multi_phase_action = EXECUTE_PHASE;
 		multi_phase_params.phase_index = i;

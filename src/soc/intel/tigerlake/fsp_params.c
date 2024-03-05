@@ -659,7 +659,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
  * ------- + ------------------------------------------------ + -------------------------------
  *   1     |  After TCSS initialization completed             |  for TCSS specific init
  */
-void platform_fsp_multi_phase_init_cb(uint32_t phase_index)
+void platform_fsp_silicon_multi_phase_init_cb(uint32_t phase_index)
 {
 	switch (phase_index) {
 	case 1:

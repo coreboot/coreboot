@@ -3,6 +3,8 @@
 #ifndef _RISCV_SMP_H
 #define _RISCV_SMP_H
 
+unsigned int smp_get_hart_count(void);
+
 /*
  * This function is used to pause smp. Only the hart with hartid equal
  * to working_hartid can be returned from smp_pause, other harts will

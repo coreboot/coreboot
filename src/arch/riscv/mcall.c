@@ -9,6 +9,7 @@ void hls_init(uint32_t hart_id, void *fdt)
 	memset(HLS(), 0, sizeof(*HLS()));
 	HLS()->fdt = fdt;
 	HLS()->hart_id = hart_id;
+	HLS()->enabled = 1;
 
 	mtime_init();
 }

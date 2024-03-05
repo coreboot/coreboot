@@ -134,4 +134,14 @@ config RISCV_SOC_HAS_MENVCFG
 	bool
 	default y
 
+config RISCV_GET_HART_COUNT_AT_RUNTIME
+	bool
+	default n
+	help
+	  Usually RISC-V SOCs have a specific amount of harts (CONFIG_MAX_CPUS).
+	  It is however possible that the amount of harts can only be known at runtime.
+	  This is for example the case for socketed and for emulation systems.
+	  SOC/Mainboards select this option in case the number of harts is not known at
+	  build time. In this case the SOC must have a scheme in place to discover all harts.
+
 endif # if ARCH_RISCV

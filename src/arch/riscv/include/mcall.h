@@ -6,11 +6,11 @@
 // NOTE: this is the size of struct hls below. A static_assert would be
 // nice to have.
 #if __riscv_xlen == 64
-#define HLS_SIZE 88
+#define HLS_SIZE 96
 #endif
 
 #if __riscv_xlen == 32
-#define HLS_SIZE 52
+#define HLS_SIZE 56
 #endif
 
 /* We save 37 registers, currently. */
@@ -42,6 +42,7 @@ struct hls {
 	struct sbi_device_message *device_response_queue_head;
 	struct sbi_device_message *device_response_queue_tail;
 
+	int enabled;
 	int hart_id;
 	int ipi_pending;
 	uint64_t *timecmp;

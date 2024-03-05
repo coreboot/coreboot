@@ -115,7 +115,7 @@ void add_opensil_memmap(struct device *dev, unsigned long *idx)
 		reserved_ram_from_to(dev, (*idx)++, mem_usable, top_mem);
 
 	// Check if we're done
-	if (top_of_mem <= 0x100000000)
+	if (top_of_mem <= 4ULL * GiB)
 		return;
 
 	// Holes in upper DRAM
@@ -124,11 +124,11 @@ void add_opensil_memmap(struct device *dev, unsigned long *idx)
 	if (hole_info == NULL)
 		return;
 	uint64_t lowest_upper_hole_base = top_of_mem;
-	uint64_t highest_upper_hole_end = 0x100000000;
+	uint64_t highest_upper_hole_end = 4ULL * GiB;
 	for (int hole = 0; hole < n_holes; hole++) {
 		if (hole_info[hole].Type == MMIO)
 			continue;
-		if (hole_info[hole].Base < 0x100000000)
+		if (hole_info[hole].Base < 4ULL * GiB)
 			continue;
 		lowest_upper_hole_base = MIN(lowest_upper_hole_base, hole_info[hole].Base);
 		highest_upper_hole_end = MAX(highest_upper_hole_end, hole_info[hole].Base + hole_info[hole].Size);
@@ -138,7 +138,7 @@ void add_opensil_memmap(struct device *dev, unsigned long *idx)
 			reserved_ram_range(dev, (*idx)++, hole_info[hole].Base, hole_info[hole].Size);
 	}
 
-	ram_from_to(dev, (*idx)++, 0x100000000, lowest_upper_hole_base);
+	ram_from_to(dev, (*idx)++, 4ULL * GiB, lowest_upper_hole_base);
 
 	// Do we need this?
 	if (top_of_mem > highest_upper_hole_end)

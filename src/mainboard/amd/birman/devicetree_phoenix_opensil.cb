@@ -43,25 +43,75 @@ chip soc/amd/phoenix
 
 	device domain 0 on
 		device ref iommu on end
-		device ref gpp_bridge_1_1 on end # MXM
-		device ref gpp_bridge_1_2 on
-			# Required so the NVMe gets placed into D3 when entering S0i3.
-			chip drivers/pcie/rtd3/device
-				register "name" = ""NVME""
-				device pci 00.0 on end
+		chip vendorcode/amd/opensil/chip/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "0"
+			register "end_lane" = "7"
+			register "aspm" = "ASPM_L1"
+			register "clk_req" = "CLK_REQ0"
+			# register "gpio_group" is currently not used
+			device ref gpp_bridge_1_1 on end # MXM
+		end
+		chip vendorcode/amd/opensil/chip/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "8"
+			register "end_lane" = "11"
+			register "aspm" = "ASPM_L1"
+			register "clk_req" = "CLK_REQ1"
+			device ref gpp_bridge_1_2 on # NVMe SSD1
+				# Required so the NVMe gets placed into D3 when entering S0i3.
+				chip drivers/pcie/rtd3/device
+					register "name" = ""NVME""
+					device pci 00.0 on end
+				end
 			end
-		end # NVMe SSD1
-		device ref gpp_bridge_1_3 on end # GBE
-		device ref gpp_bridge_2_1 on end # SD
-		device ref gpp_bridge_2_2 on end # WWAN
-		device ref gpp_bridge_2_3 on end # WIFI
-		device ref gpp_bridge_2_4 on
-			# Required so the NVMe gets placed into D3 when entering S0i3.
-			chip drivers/pcie/rtd3/device
-				register "name" = ""NVME""
-				device pci 00.0 on end
+		end
+		chip vendorcode/amd/opensil/chip/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "12"
+			register "end_lane" = "12"
+			register "aspm" = "ASPM_DISABLED"
+			register "clk_req" = "CLK_REQ6"
+			device ref gpp_bridge_1_3 on end # GBE
+		end
+		chip vendorcode/amd/opensil/chip/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "13"
+			register "end_lane" = "13"
+			register "aspm" = "ASPM_DISABLED"
+			register "clk_req" = "CLK_REQ5"
+			device ref gpp_bridge_2_1 on end # SD
+		end
+		chip vendorcode/amd/opensil/chip/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "14"
+			register "end_lane" = "14"
+			register "aspm" = "ASPM_DISABLED"
+			register "clk_req" = "CLK_REQ4"
+			device ref gpp_bridge_2_2 on end # WWAN
+		end
+		chip vendorcode/amd/opensil/chip/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "15"
+			register "end_lane" = "15"
+			register "aspm" = "ASPM_DISABLED"
+			register "clk_req" = "CLK_REQ3"
+			device ref gpp_bridge_2_3 on end # WIFI
+		end
+		chip vendorcode/amd/opensil/chip/mpio
+			register "type" = "IFTYPE_PCIE"
+			register "start_lane" = "16"
+			register "end_lane" = "19"
+			register "aspm" = "ASPM_DISABLED"
+			register "clk_req" = "CLK_REQ2"
+			device ref gpp_bridge_2_4 on # NVMe SSD0
+				# Required so the NVMe gets placed into D3 when entering S0i3.
+				chip drivers/pcie/rtd3/device
+					register "name" = ""NVME""
+					device pci 00.0 on end
+				end
 			end
-		end # NVMe SSD0
+		end
 		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
 			device ref gfx on end # Internal GPU (GFX)
 			device ref gfx_hda on end # Display HD Audio Controller (GFXAZ)

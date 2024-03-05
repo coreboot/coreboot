@@ -109,7 +109,8 @@ if SOC_AMD_PHOENIX_BASE
 
 config CHIPSET_DEVICETREE
 	string
-	default "soc/amd/phoenix/chipset.cb"
+	default "soc/amd/phoenix/chipset_fsp.cb" if SOC_AMD_PHOENIX_FSP
+	default "soc/amd/phoenix/chipset_opensil.cb"
 
 config EARLY_RESERVED_DRAM_BASE
 	hex

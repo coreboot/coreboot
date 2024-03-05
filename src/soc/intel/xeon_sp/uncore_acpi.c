@@ -493,44 +493,34 @@ static unsigned long acpi_create_rhsa(unsigned long current)
 	return current;
 }
 
-static unsigned long xeonsp_create_satc_ioat(unsigned long current, const STACK_RES *ri)
+static unsigned long xeonsp_create_satc(unsigned long current, struct device *domain)
 {
-	for (int b = ri->BusBase; b <= ri->BusLimit; ++b) {
-		struct device *dev = pcidev_path_on_bus(b, PCI_DEVFN(0, 0));
-		while (dev) {
-			if (pciexp_find_extended_cap(dev, PCIE_EXT_CAP_ID_ATS, 0)) {
-				const uint32_t d = PCI_SLOT(dev->path.pci.devfn);
-				const uint32_t f = PCI_FUNC(dev->path.pci.devfn);
-				printk(BIOS_DEBUG, "    [SATC Endpoint Device] "
-					"Enumeration ID: 0x%x, PCI Bus Number: 0x%x, "
-					" PCI Path: 0x%x, 0x%x\n", 0, b, d, f);
-					current += acpi_create_dmar_ds_pci(current, b, d, f);
-			}
-			dev = dev->sibling;
+	struct device *dev = NULL;
+	while ((dev = dev_bus_each_child(domain->downstream, dev))) {
+		if (pciexp_find_extended_cap(dev, PCIE_EXT_CAP_ID_ATS, 0)) {
+			const uint32_t b = domain->downstream->secondary;
+			const uint32_t d = PCI_SLOT(dev->path.pci.devfn);
+			const uint32_t f = PCI_FUNC(dev->path.pci.devfn);
+			printk(BIOS_DEBUG, "    [SATC Endpoint Device] "
+				"Enumeration ID: 0x%x, PCI Bus Number: 0x%x, "
+				" PCI Path: 0x%x, 0x%x\n", 0, b, d, f);
+			current += acpi_create_dmar_ds_pci(current, b, d, f);
 		}
 	}
 	return current;
 }
 
 /* SoC Integrated Address Translation Cache */
-static unsigned long acpi_create_satc(unsigned long current, const IIO_UDS *hob)
+static unsigned long acpi_create_satc(unsigned long current)
 {
 	const unsigned long tmp = current;
 
 	// Add the SATC header
 	current += acpi_create_dmar_satc(current, 0, 0);
 
-	// Find the IOAT devices on each socket
-	for (int socket = CONFIG_MAX_SOCKET - 1; socket >= 0; --socket) {
-		if (!soc_cpu_is_enabled(socket))
-			continue;
-		for (int stack = (MAX_LOGIC_IIO_STACK - 1); stack >= 0; --stack) {
-			const STACK_RES *ri = &hob->PlatformData.IIO_resource[socket].StackRes[stack];
-			// Add the IOAT ATS devices to the SATC
-			if (CONFIG(HAVE_IOAT_DOMAINS) && is_ioat_iio_stack_res(ri))
-				current = xeonsp_create_satc_ioat(current, ri);
-		}
-	}
+	struct device *dev = NULL;
+	while ((dev = dev_find_path(dev, DEVICE_PATH_DOMAIN)))
+		current = xeonsp_create_satc(current, dev);
 
 	acpi_dmar_satc_fixup(tmp, current);
 	return current;
@@ -558,8 +548,7 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 	current = acpi_create_rhsa(current);
 
 	// SATC
-	if (CONFIG(HAVE_IOAT_DOMAINS))
-		current = acpi_create_satc(current, hob);
+	current = acpi_create_satc(current);
 
 	return current;
 }

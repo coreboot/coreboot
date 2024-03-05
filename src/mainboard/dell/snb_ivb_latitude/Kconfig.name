@@ -1,5 +1,8 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
+config BOARD_DELL_LATITUDE_E5420
+	bool "Latitude E5420"
+
 config BOARD_DELL_LATITUDE_E5520
 	bool "Latitude E5520"
 

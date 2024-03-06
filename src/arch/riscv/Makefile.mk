@@ -59,7 +59,7 @@ all-y += virtual_memory.c
 all-y += boot.c
 all-y += smp.c
 all-y += misc.c
-all-$(ARCH_RISCV_PMP) += pmp.c
+all-$(CONFIG_ARCH_RISCV_PMP) += pmp.c
 all-y += \
 	$(top)/src/lib/memchr.c \
 	$(top)/src/lib/memcmp.c \

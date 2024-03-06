@@ -47,7 +47,13 @@ TEST_CFLAGS += -Wwrite-strings -Wno-trigraphs -Wimplicit-fallthrough
 TEST_CFLAGS += -Wstrict-aliasing -Wshadow -Werror
 TEST_CFLAGS += -Wno-unknown-warning-option -Wno-source-mgr -Wno-main-return-type
 
-TEST_CFLAGS += -std=gnu11 -Os -ffunction-sections -fdata-sections -fno-builtin
+TEST_CFLAGS += -std=gnu11 -ffunction-sections -fdata-sections -fno-builtin
+
+ifneq ($(filter-out 0,$(DEBUG)),)
+TEST_CFLAGS += -Og -ggdb3
+else
+TEST_CFLAGS += -Os
+endif
 
 # Make unit-tests detectable by the code
 TEST_CFLAGS += -D__TEST__

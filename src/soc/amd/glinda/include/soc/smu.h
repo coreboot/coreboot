@@ -6,8 +6,8 @@
 #define AMD_GLINDA_SMU_H
 
 /* SMU mailbox register offsets in SMN */
-#define SMN_SMU_MESG_ID		0x3b10528
-#define SMN_SMU_MESG_RESP	0x3b10578
+#define SMN_SMU_MESG_ID		0x3b10928
+#define SMN_SMU_MESG_RESP	0x3b10978
 #define SMN_SMU_MESG_ARGS_BASE	0x3b10998
 
 #define SMU_NUM_ARGS		6

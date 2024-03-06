@@ -185,6 +185,7 @@ chip soc/intel/alderlake
 			    .backlight_off_delay_ms = 200,
 			    .backlight_pwm_hz = 200,
 			}"
+			register "gfx" = "GMA_DEFAULT_PANEL(0)"
 		end
 		device ref dtt on end
 		device ref tcss_xhci on end

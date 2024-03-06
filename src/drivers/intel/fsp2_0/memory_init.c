@@ -178,10 +178,9 @@ static enum cb_err fsp_fill_common_arch_params(FSPM_ARCHx_UPD *arch_upd,
 
 	if (CONFIG(FSP_USES_CB_STACK) && ENV_RAMINIT
 	    && CONFIG(FSP_SPEC_VIOLATION_XEON_SP_HEAP_WORKAROUND)) {
-		extern char _fspm_heap[];
-		extern char _efspm_heap[];
+		DECLARE_REGION(fspm_heap);
 		arch_upd->StackBase = (uintptr_t)_fspm_heap;
-		arch_upd->StackSize = (size_t)(_efspm_heap - _fspm_heap);
+		arch_upd->StackSize = (size_t)REGION_SIZE(fspm_heap);
 	} else if (CONFIG(FSP_USES_CB_STACK) || !ENV_CACHE_AS_RAM) {
 		arch_upd->StackBase = (uintptr_t)temp_ram;
 		arch_upd->StackSize = sizeof(temp_ram);

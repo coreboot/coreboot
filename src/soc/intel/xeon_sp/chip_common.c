@@ -176,32 +176,32 @@ static struct device_operations ubox_pcie_domain_ops = {
 #endif
 };
 
-static void soc_create_pcie_domains(const union xeon_domain_path dp, struct bus *upstream,
-				const STACK_RES *sr)
+static void soc_create_domains(const union xeon_domain_path dp, struct bus *upstream,
+				int bus_base, int bus_limit, const char *type,
+				struct device_operations *ops)
 {
-	union xeon_domain_path new_path = {
-		.domain_path = dp.domain_path
-	};
-	new_path.bus = sr->BusBase;
-
-	struct device_path path = {
-		.type = DEVICE_PATH_DOMAIN,
-		.domain = {
-			.domain = new_path.domain_path,
-		},
-	};
+	struct device_path path;
+	init_xeon_domain_path(&path, dp.socket, dp.stack, bus_base);
 
 	struct device *const domain = alloc_find_dev(upstream, &path);
 	if (!domain)
 		die("%s: out of memory.\n", __func__);
 
-	domain->ops = &iio_pcie_domain_ops;
-	iio_domain_set_acpi_name(domain, DOMAIN_TYPE_PCIE);
+	domain->ops = ops;
+	iio_domain_set_acpi_name(domain, type);
 
 	struct bus *const bus = alloc_bus(domain);
-	bus->secondary = sr->BusBase;
-	bus->subordinate = sr->BusBase;
-	bus->max_subordinate = sr->BusLimit;
+	bus->secondary = bus_base;
+	bus->subordinate = bus_base;
+	bus->max_subordinate = bus_limit;
+}
+
+
+static void soc_create_pcie_domains(const union xeon_domain_path dp, struct bus *upstream,
+				const STACK_RES *sr)
+{
+	soc_create_domains(dp, upstream, sr->BusBase, sr->BusLimit, DOMAIN_TYPE_PCIE,
+				&iio_pcie_domain_ops);
 }
 
 /*
@@ -212,37 +212,73 @@ static void soc_create_pcie_domains(const union xeon_domain_path dp, struct bus 
 static void soc_create_ubox_domains(const union xeon_domain_path dp, struct bus *upstream,
 				const STACK_RES *sr)
 {
-	union xeon_domain_path new_path = {
-		.domain_path = dp.domain_path
-	};
-
 	/* Only expect 2 UBOX buses here */
-	int bus_base = sr->BusBase;
-	int bus_limit = sr->BusLimit;
-	assert(bus_base + 1 == bus_limit);
-	for (int i = bus_base; i <= bus_limit; i++) {
-		new_path.bus = i;
+	assert(sr->BusBase + 1 == sr->BusLimit);
 
-		struct device_path path = {
-			.type = DEVICE_PATH_DOMAIN,
-			.domain = {
-				.domain = new_path.domain_path,
-			},
-		};
-		struct device *const domain = alloc_find_dev(upstream, &path);
-		if (!domain)
-			die("%s: out of memory.\n", __func__);
+	soc_create_domains(dp, upstream, sr->BusBase, sr->BusBase, DOMAIN_TYPE_UBX0,
+				&ubox_pcie_domain_ops);
+	soc_create_domains(dp, upstream, sr->BusLimit, sr->BusLimit, DOMAIN_TYPE_UBX1,
+				&ubox_pcie_domain_ops);
+}
 
-		domain->ops = &ubox_pcie_domain_ops;
-		const char *prefix = (i == bus_base) ? DOMAIN_TYPE_UBX0 : DOMAIN_TYPE_UBX1;
-		iio_domain_set_acpi_name(domain, prefix);
+#if CONFIG(SOC_INTEL_HAS_CXL)
+void iio_cxl_domain_read_resources(struct device *dev)
+{
+	struct resource *res;
+	const STACK_RES *sr = domain_to_stack_res(dev);
 
-		struct bus *const bus = alloc_bus(domain);
-		bus->secondary = i;
-		bus->subordinate = bus->secondary;
-		bus->max_subordinate = bus->secondary;
+	if (!sr)
+		return;
+
+	int index = 0;
+
+	if (sr->IoBase < sr->PciResourceIoBase) {
+		res = new_resource(dev, index++);
+		res->base = sr->IoBase;
+		res->limit = sr->PciResourceIoBase - 1;
+		res->size = res->limit - res->base + 1;
+		res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED;
+	}
+
+	if (sr->Mmio32Base < sr->PciResourceMem32Base) {
+		res = new_resource(dev, index++);
+		res->base = sr->Mmio32Base;
+		res->limit = sr->PciResourceMem32Base - 1;
+		res->size = res->limit - res->base + 1;
+		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED;
+	}
+
+	if (sr->Mmio64Base < sr->PciResourceMem64Base) {
+		res = new_resource(dev, index++);
+		res->base = sr->Mmio64Base;
+		res->limit = sr->PciResourceMem64Base - 1;
+		res->size = res->limit - res->base + 1;
+		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED;
 	}
 }
+
+static struct device_operations iio_cxl_domain_ops = {
+	.read_resources = iio_cxl_domain_read_resources,
+	.set_resources = pci_domain_set_resources,
+	.scan_bus = pci_host_bridge_scan_bus,
+#if CONFIG(HAVE_ACPI_TABLES)
+	.acpi_name        = soc_acpi_name,
+	.write_acpi_tables = northbridge_write_acpi_tables,
+#endif
+};
+
+void soc_create_cxl_domains(const union xeon_domain_path dp, struct bus *bus,
+				const STACK_RES *sr)
+{
+	assert(sr->BusBase + 1 <= sr->BusLimit);
+	/* 1st domain contains PCIe RCiEPs */
+	soc_create_domains(dp, bus, sr->BusBase, sr->BusBase, DOMAIN_TYPE_PCIE,
+				&iio_pcie_domain_ops);
+	/* 2nd domain contains CXL 1.1 end-points */
+	soc_create_domains(dp, bus, sr->BusBase + 1, sr->BusLimit, DOMAIN_TYPE_CXL,
+				&iio_cxl_domain_ops);
+}
+#endif //CONFIG(SOC_INTEL_HAS_CXL)
 
 /* Attach stack as domains */
 void attach_iio_stacks(void)
@@ -265,6 +301,8 @@ void attach_iio_stacks(void)
 
 			if (is_ubox_stack_res(ri))
 				soc_create_ubox_domains(dn, root_bus, ri);
+			else if (CONFIG(SOC_INTEL_HAS_CXL) && is_iio_cxl_stack_res(ri))
+				soc_create_cxl_domains(dn, root_bus, ri);
 			else if (is_pcie_iio_stack_res(ri))
 				soc_create_pcie_domains(dn, root_bus, ri);
 			else if (CONFIG(HAVE_IOAT_DOMAINS) && is_ioat_iio_stack_res(ri))

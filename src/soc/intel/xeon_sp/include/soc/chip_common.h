@@ -3,6 +3,7 @@
 #ifndef _CHIP_COMMON_H_
 #define _CHIP_COMMON_H_
 
+#include <device/path.h>
 #include <hob_iiouds.h>
 
 union xeon_domain_path {
@@ -13,6 +14,19 @@ union xeon_domain_path {
 		u8 socket;
 		u8 unused;
 	};
+};
+
+
+static inline void init_xeon_domain_path(struct device_path *path, int socket,
+	int stack, int bus)
+{
+	union xeon_domain_path dp = {
+		.socket = socket,
+		.stack = stack,
+		.bus = bus,
+	};
+	path->type = DEVICE_PATH_DOMAIN;
+	path->domain.domain = dp.domain_path;
 };
 
 /*
@@ -28,11 +42,14 @@ union xeon_domain_path {
 #define DOMAIN_TYPE_PCIE       "PC"
 #define DOMAIN_TYPE_UBX0       "UC"
 #define DOMAIN_TYPE_UBX1       "UD"
+#define DOMAIN_TYPE_CXL        "CX"
 
 void iio_pci_domain_read_resources(struct device *dev);
+void iio_cxl_domain_read_resources(struct device *dev);
 void attach_iio_stacks(void);
 
 void soc_create_ioat_domains(union xeon_domain_path path, struct bus *bus, const STACK_RES *sr);
+void soc_create_cxl_domains(const union xeon_domain_path dp, struct bus *bus, const STACK_RES *sr);
 struct device *dev_find_device_on_socket(uint8_t socket, u16 vendor, u16 device);
 int iio_pci_domain_socket_from_dev(struct device *dev);
 int iio_pci_domain_stack_from_dev(struct device *dev);

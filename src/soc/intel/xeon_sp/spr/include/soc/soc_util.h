@@ -31,8 +31,6 @@
 const struct SystemMemoryMapHob *get_system_memory_map(void);
 const struct SystemMemoryMapElement *get_system_memory_map_elment(uint8_t *num);
 
-bool is_iio_cxl_stack_res(const STACK_RES *res);
-
 void soc_display_iio_universal_data_hob(const IIO_UDS *hob);
 void soc_display_memmap_hob(const struct SystemMemoryMapHob **hob_addr);
 

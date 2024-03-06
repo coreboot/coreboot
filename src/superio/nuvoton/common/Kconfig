@@ -11,3 +11,13 @@ config SUPERIO_NUVOTON_COMMON_COM_A
 	help
 	  When enabled, the 'nuvoton_enable_serial()' function will unset
 	  global CR 0x2a bit 7 to route COM A to the GPIO8 pin group.
+
+config HAVE_SHARED_PS2_PORT
+	bool
+	depends on SUPERIO_NUVOTON_COMMON_PRE_RAM
+	help
+	  Select this option if your mainboard has a single PS/2 port for both keyboard and
+	  mouse, and where a Y-cable cannot allow both keyboard and mouse to work off the same
+	  port. This one port usually works for keyboards only. Add the nvram option
+	  "swap_keyboard_and_mouse" to cmos.layout to allow changing this port into a
+	  mouse port.

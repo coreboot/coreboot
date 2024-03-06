@@ -864,7 +864,7 @@ static int cbfs_payload_decompress(struct cbfs_payload_segment *segments,
 		if (segments[i].type == PAYLOAD_SEGMENT_BSS ||
 				segments[i].type == PAYLOAD_SEGMENT_ENTRY) {
 			continue;
-		} else if (segments[i].type == PAYLOAD_SEGMENT_PARAMS) {
+		} else if (segments[i].type == PAYLOAD_SEGMENT_DEPRECATED_PARAMS) {
 			memcpy(out_ptr, in_ptr, segments[i].len);
 			segments[i].offset = new_offset;
 			new_offset += segments[i].len;
@@ -1090,7 +1090,7 @@ static int cbfs_payload_make_elf(struct buffer *buff, uint32_t arch,
 			segments++;
 		} else if (payload_type == PAYLOAD_SEGMENT_BSS) {
 			segments++;
-		} else if (payload_type == PAYLOAD_SEGMENT_PARAMS) {
+		} else if (payload_type == PAYLOAD_SEGMENT_DEPRECATED_PARAMS) {
 			segments++;
 		} else if (payload_type == PAYLOAD_SEGMENT_ENTRY) {
 			/* The last segment in a payload is always ENTRY as
@@ -1162,7 +1162,7 @@ static int cbfs_payload_make_elf(struct buffer *buff, uint32_t arch,
 			shdr.sh_size = segs[i].len;
 			name = strdup(".bss");
 			buffer_splice(&tbuff, buff, 0, 0);
-		} else if (segs[i].type == PAYLOAD_SEGMENT_PARAMS) {
+		} else if (segs[i].type == PAYLOAD_SEGMENT_DEPRECATED_PARAMS) {
 			shdr.sh_type = SHT_NOTE;
 			shdr.sh_flags = 0;
 			shdr.sh_size = segs[i].len;
@@ -1398,8 +1398,8 @@ static int cbfs_print_decoded_payload_segment_info(
 			seg->load_addr, seg->len);
 		break;
 
-	case PAYLOAD_SEGMENT_PARAMS:
-		fprintf(fp, "    parameters\n");
+	case PAYLOAD_SEGMENT_DEPRECATED_PARAMS:
+		fprintf(fp, "    parameters (deprecated)\n");
 		break;
 
 	default:

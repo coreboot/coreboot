@@ -55,9 +55,7 @@ int parse_elf_to_payload(const struct buffer *input, struct buffer *output,
 {
 	Elf64_Phdr *phdr;
 	Elf64_Ehdr ehdr;
-	Elf64_Shdr *shdr;
 	char *header;
-	char *strtab;
 	int headers;
 	int segments = 1;
 	int isize = 0, osize = 0;
@@ -70,39 +68,15 @@ int parse_elf_to_payload(const struct buffer *input, struct buffer *output,
 	if (!compress)
 		return -1;
 
-	if (elf_headers(input, &ehdr, &phdr, &shdr) < 0)
+	if (elf_headers(input, &ehdr, &phdr, NULL) < 0)
 		return -1;
 
 	DEBUG("start: parse_elf_to_payload\n");
 	headers = ehdr.e_phnum;
 	header = input->data;
 
-	strtab = &header[shdr[ehdr.e_shstrndx].sh_offset];
-
-	/* Count the number of headers - look for the .notes.pinfo
-	 * section */
-
-	for (i = 0; i < ehdr.e_shnum; i++) {
-		char *name;
-
-		if (i == ehdr.e_shstrndx)
-			continue;
-
-		if (shdr[i].sh_size == 0)
-			continue;
-
-		name = (char *)(strtab + shdr[i].sh_name);
-
-		if (!strcmp(name, ".note.pinfo")) {
-			segments++;
-			isize += (unsigned int)shdr[i].sh_size;
-		}
-	}
-
-	/* Now, regular headers - we only care about PT_LOAD headers,
-	 * because that's what we're actually going to load
-	 */
-
+	/* Count the number of segment headers - we only care about PT_LOAD
+	   headers, because that's what we're actually going to load */
 	for (i = 0; i < headers; i++) {
 		if (phdr[i].p_type != PT_LOAD)
 			continue;
@@ -143,30 +117,6 @@ int parse_elf_to_payload(const struct buffer *input, struct buffer *output,
 	 * then marshal them all at once to the output.
 	 */
 	segments = 0;
-
-	for (i = 0; i < ehdr.e_shnum; i++) {
-		char *name;
-		if (i == ehdr.e_shstrndx)
-			continue;
-
-		if (shdr[i].sh_size == 0)
-			continue;
-		name = (char *)(strtab + shdr[i].sh_name);
-		if (!strcmp(name, ".note.pinfo")) {
-			segs[segments].type = PAYLOAD_SEGMENT_PARAMS;
-			segs[segments].load_addr = 0;
-			segs[segments].len = (unsigned int)shdr[i].sh_size;
-			segs[segments].offset = doffset;
-
-			memcpy((unsigned long *)(output->data + doffset),
-			       &header[shdr[i].sh_offset], shdr[i].sh_size);
-
-			doffset += segs[segments].len;
-			osize += segs[segments].len;
-
-			segments++;
-		}
-	}
 
 	for (i = 0; i < headers; i++) {
 		if (phdr[i].p_type != PT_LOAD)
@@ -223,7 +173,6 @@ int parse_elf_to_payload(const struct buffer *input, struct buffer *output,
 
 out:
 	if (segs) free(segs);
-	if (shdr) free(shdr);
 	if (phdr) free(phdr);
 	return ret;
 }

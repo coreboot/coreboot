@@ -229,7 +229,7 @@ static void loop(void)
 {
 	int key;
 
-	center(0, CONFIG_PAYLOAD_INFO_NAME " " CONFIG_PAYLOAD_INFO_VERSION);
+	center(0, CONFIG_COREINFO_NAME " " CONFIG_COREINFO_VERSION);
 	print_no_modules_selected();
 	refresh();
 
@@ -319,7 +319,3 @@ int main(int argc, char **argv)
 	halt();
 	return 0;
 }
-
-PAYLOAD_INFO(name, CONFIG_PAYLOAD_INFO_NAME);
-PAYLOAD_INFO(listname, CONFIG_PAYLOAD_INFO_LISTNAME);
-PAYLOAD_INFO(desc, CONFIG_PAYLOAD_INFO_DESC);

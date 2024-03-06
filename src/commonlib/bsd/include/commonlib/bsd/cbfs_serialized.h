@@ -198,8 +198,10 @@ enum cbfs_payload_segment_type {
 	PAYLOAD_SEGMENT_CODE   = 0x434F4445,	/* BE: 'CODE' */
 	PAYLOAD_SEGMENT_DATA   = 0x44415441,	/* BE: 'DATA' */
 	PAYLOAD_SEGMENT_BSS    = 0x42535320,	/* BE: 'BSS ' */
-	PAYLOAD_SEGMENT_PARAMS = 0x50415241,	/* BE: 'PARA' */
 	PAYLOAD_SEGMENT_ENTRY  = 0x454E5452,	/* BE: 'ENTR' */
+
+	/* PARAMS for PAYLOAD_INFO feature. Broken since 2012, removed 2024. */
+	PAYLOAD_SEGMENT_DEPRECATED_PARAMS = 0x50415241, /* BE: 'PARA' */
 };
 
 struct cbfs_optionrom {

@@ -27,7 +27,7 @@ chip soc/intel/alderlake
 
 	register "tcc_offset" = "6"	# TCC of 94
 
-	register "platform_pmax" = "145"
+	register "platform_pmax" = "122"
 
 	register "usb2_ports[0]" = "{
 		.enable = 1,

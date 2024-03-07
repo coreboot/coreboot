@@ -10,6 +10,13 @@ chip soc/intel/alderlake
 		.enable_fast_vmode = 1,
 	}"
 
+	# Acoustic settings
+	register "acoustic_noise_mitigation" = "1"
+	register "slow_slew_rate[VR_DOMAIN_IA]" = "SLEW_FAST_4"
+	register "slow_slew_rate[VR_DOMAIN_GT]" = "SLEW_FAST_4"
+	register "fast_pkg_c_ramp_disable[VR_DOMAIN_IA]" = "1"
+	register "fast_pkg_c_ramp_disable[VR_DOMAIN_GT]" = "1"
+
 	register "sagv" = "SaGv_Enabled"
 
 	register "pch_slp_a_min_assertion_width" = "SLP_A_ASSERTION_DEFAULT"

@@ -400,3 +400,41 @@ void attach_iio_stacks(void)
 		}
 	}
 }
+
+bool is_pcie_domain(struct device *dev)
+{
+	if ((!dev) || (dev->path.type != DEVICE_PATH_DOMAIN))
+		return false;
+
+	return strstr(dev->name, DOMAIN_TYPE_PCIE);
+}
+
+bool is_ioat_domain(struct device *dev)
+{
+	if ((!dev) || (dev->path.type != DEVICE_PATH_DOMAIN))
+		return false;
+
+	return (strstr(dev->name, DOMAIN_TYPE_CPM0) ||
+		strstr(dev->name, DOMAIN_TYPE_CPM1) ||
+		strstr(dev->name, DOMAIN_TYPE_DINO) ||
+		strstr(dev->name, DOMAIN_TYPE_HQM0) ||
+		strstr(dev->name, DOMAIN_TYPE_HQM1));
+}
+
+bool is_ubox_domain(struct device *dev)
+{
+	if ((!dev) || (dev->path.type != DEVICE_PATH_DOMAIN))
+		return false;
+
+	return (strstr(dev->name, DOMAIN_TYPE_UBX0) ||
+		strstr(dev->name, DOMAIN_TYPE_UBX1));
+
+}
+
+bool is_cxl_domain(struct device *dev)
+{
+	if ((!dev) || (dev->path.type != DEVICE_PATH_DOMAIN))
+		return false;
+
+	return strstr(dev->name, DOMAIN_TYPE_CXL);
+}

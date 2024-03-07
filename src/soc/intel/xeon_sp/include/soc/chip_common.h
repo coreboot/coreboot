@@ -3,6 +3,7 @@
 #ifndef _CHIP_COMMON_H_
 #define _CHIP_COMMON_H_
 
+#include <device/device.h>
 #include <device/path.h>
 #include <hob_iiouds.h>
 
@@ -65,5 +66,15 @@ struct device *dev_find_all_devices_on_domain(struct device *domain,
 
 int iio_pci_domain_socket_from_dev(struct device *dev);
 int iio_pci_domain_stack_from_dev(struct device *dev);
+
+bool is_pcie_domain(struct device *dev);
+bool is_ioat_domain(struct device *dev);
+bool is_ubox_domain(struct device *dev);
+bool is_cxl_domain(struct device *dev);
+
+#define is_dev_on_pcie_domain(dev) is_pcie_domain(dev_get_pci_domain(dev))
+#define is_dev_on_ioat_domain(dev) is_ioat_domain(dev_get_pci_domain(dev))
+#define is_dev_on_ubox_domain(dev) is_ubox_domain(dev_get_pci_domain(dev))
+#define is_dev_on_cxl_domain(dev) is_cxl_domain(dev_get_pci_domain(dev))
 
 #endif /* _CHIP_COMMON_H_ */

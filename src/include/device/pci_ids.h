@@ -4285,6 +4285,9 @@
 #define PCI_DID_INTEL_RPL_P_ID_3		0xa708
 #define PCI_DID_INTEL_RPL_P_ID_4		0xa71b
 #define PCI_DID_INTEL_RPL_P_ID_5		0xa71c
+#define PCI_DID_INTEL_RPL_P_ID_6		0xa709
+#define PCI_DID_INTEL_RPL_P_ID_7		0xa70a
+#define PCI_DID_INTEL_RPL_P_ID_8		0xa716
 #define PCI_DID_INTEL_LNL_M_ID			0x6400
 
 /* Intel SMBUS device Ids */

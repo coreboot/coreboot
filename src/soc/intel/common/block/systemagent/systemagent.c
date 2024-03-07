@@ -535,6 +535,9 @@ static const unsigned short systemagent_ids[] = {
 	PCI_DID_INTEL_RPL_P_ID_3,
 	PCI_DID_INTEL_RPL_P_ID_4,
 	PCI_DID_INTEL_RPL_P_ID_5,
+	PCI_DID_INTEL_RPL_P_ID_6,
+	PCI_DID_INTEL_RPL_P_ID_7,
+	PCI_DID_INTEL_RPL_P_ID_8,
 	0
 };
 

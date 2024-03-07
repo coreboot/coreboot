@@ -55,7 +55,7 @@ static uintptr_t sbi_clear_ipi(void)
  * function  : register a7
  * return    : register a0
  */
-void handle_sbi(trapframe *tf)
+void handle_sbi(struct trapframe *tf)
 {
 	uintptr_t ret = 0;
 	uintptr_t arg0 = tf->gpr[10];

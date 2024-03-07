@@ -21,6 +21,6 @@
 #define IPI_SFENCE_VMA_ASID 8
 #define IPI_SHUTDOWN        16
 
-void handle_sbi(trapframe *tf);
+void handle_sbi(struct trapframe *tf);
 
 #endif /* RISCV_SBI_H */

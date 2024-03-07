@@ -3,7 +3,7 @@
 #ifndef _MCALL_H
 #define _MCALL_H
 
-// NOTE: this is the size of hls_t below. A static_assert would be
+// NOTE: this is the size of struct hls below. A static_assert would be
 // nice to have.
 #if __riscv_xlen == 64
 #define HLS_SIZE 88
@@ -22,12 +22,12 @@
 #include <arch/smp/atomic.h>
 #include <stdint.h>
 
-typedef struct {
+struct sbi_device_message {
 	unsigned long dev;
 	unsigned long cmd;
 	unsigned long data;
 	unsigned long sbi_private_data;
-} sbi_device_message;
+};
 
 struct blocker {
 	void *arg;
@@ -36,11 +36,11 @@ struct blocker {
 	atomic_t sync_b;
 };
 
-typedef struct {
-	sbi_device_message *device_request_queue_head;
+struct hls {
+	struct sbi_device_message *device_request_queue_head;
 	unsigned long device_request_queue_size;
-	sbi_device_message *device_response_queue_head;
-	sbi_device_message *device_response_queue_tail;
+	struct sbi_device_message *device_response_queue_head;
+	struct sbi_device_message *device_response_queue_tail;
 
 	int hart_id;
 	int ipi_pending;
@@ -48,11 +48,11 @@ typedef struct {
 	uint64_t *time;
 	void *fdt;
 	struct blocker entry;
-} hls_t;
+};
 
 _Static_assert(
-	sizeof(hls_t) == HLS_SIZE,
-	"HLS_SIZE must equal to sizeof(hls_t)");
+	sizeof(struct hls) == HLS_SIZE,
+	"HLS_SIZE must equal to sizeof(struct hls)");
 
 register uintptr_t current_stack_pointer asm("sp");
 
@@ -60,8 +60,8 @@ register uintptr_t current_stack_pointer asm("sp");
 	(void *)((current_stack_pointer + RISCV_PGSIZE) & -RISCV_PGSIZE); })
 
 // hart-local storage, at top of stack
-#define HLS() ((hls_t*)(MACHINE_STACK_TOP() - HLS_SIZE))
-#define OTHER_HLS(id) ((hls_t*)((void*)HLS() + RISCV_PGSIZE * ((id) - HLS()->hart_id)))
+#define HLS() ((struct hls *)(MACHINE_STACK_TOP() - HLS_SIZE))
+#define OTHER_HLS(id) ((struct hls *)((void *)HLS() + RISCV_PGSIZE * ((id) - HLS()->hart_id)))
 
 #define MACHINE_STACK_SIZE RISCV_PGSIZE
 

@@ -156,7 +156,7 @@ static enum cb_err fetch_32bit_instruction(uintptr_t vaddr, uintptr_t *insn, int
 	return CB_ERR;
 }
 
-void handle_misaligned(trapframe *tf)
+void handle_misaligned(struct trapframe *tf)
 {
 	uintptr_t insn = 0;
 	union endian_buf buff;

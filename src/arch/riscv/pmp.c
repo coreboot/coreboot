@@ -12,7 +12,7 @@
  * This structure is used to temporarily record PMP
  * configuration information.
  */
-typedef struct {
+struct pmpcfg {
 	/* used to record the value of pmpcfg[i] */
 	uintptr_t cfg;
 	/*
@@ -23,7 +23,7 @@ typedef struct {
 	uintptr_t previous_address;
 	/* used to record the value of pmpaddr[i] */
 	uintptr_t address;
-} pmpcfg_t;
+};
 
 /* This variable is used to record which entries have been used. */
 static uintptr_t pmp_entry_used_mask;
@@ -207,10 +207,10 @@ static void write_pmpaddr(int idx, uintptr_t val)
 }
 
 /* Generate a PMP configuration of type NA4/NAPOT */
-static pmpcfg_t generate_pmp_napot(
+static struct pmpcfg generate_pmp_napot(
 		uintptr_t base, uintptr_t size, uintptr_t flags)
 {
-	pmpcfg_t p;
+	struct pmpcfg p;
 	flags = flags & (PMP_R | PMP_W | PMP_X | PMP_L);
 	p.cfg = flags | (size > GRANULE ? PMP_NAPOT : PMP_NA4);
 	p.previous_address = 0;
@@ -219,10 +219,10 @@ static pmpcfg_t generate_pmp_napot(
 }
 
 /* Generate a PMP configuration of type TOR */
-static pmpcfg_t generate_pmp_range(
+static struct pmpcfg generate_pmp_range(
 		uintptr_t base, uintptr_t size, uintptr_t flags)
 {
-	pmpcfg_t p;
+	struct pmpcfg p;
 	flags = flags & (PMP_R | PMP_W | PMP_X | PMP_L);
 	p.cfg = flags | PMP_TOR;
 	p.previous_address = base >> PMP_SHIFT;
@@ -231,7 +231,7 @@ static pmpcfg_t generate_pmp_range(
 }
 
 /* Generate a PMP configuration */
-static pmpcfg_t generate_pmp(uintptr_t base, uintptr_t size, uintptr_t flags)
+static struct pmpcfg generate_pmp(uintptr_t base, uintptr_t size, uintptr_t flags)
 {
 	if (IS_POWER_OF_2(size) && (size >= 4) && ((base & (size - 1)) == 0))
 		return generate_pmp_napot(base, size, flags);
@@ -289,7 +289,7 @@ void reset_pmp(void)
 /* set up PMP record */
 void setup_pmp(uintptr_t base, uintptr_t size, uintptr_t flags)
 {
-	pmpcfg_t p;
+	struct pmpcfg p;
 	int is_range, n;
 
 	p = generate_pmp(base, size, flags);

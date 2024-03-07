@@ -13,7 +13,7 @@ static enum {
 	ABORT_CHECKER_TRIGGERED,
 } abort_state = ABORT_CHECKER_NOT_TRIGGERED;
 
-extern void (*trap_handler)(trapframe *tf);
+extern void (*trap_handler)(struct trapframe *tf);
 
 static int get_instruction_len(uintptr_t addr)
 {
@@ -31,7 +31,7 @@ static int get_instruction_len(uintptr_t addr)
 	die("Not a 16bit or 32bit instruction 0x%x\n", ins);
 }
 
-static void ramcheck_trap_handler(trapframe *tf)
+static void ramcheck_trap_handler(struct trapframe *tf)
 {
 	abort_state = ABORT_CHECKER_TRIGGERED;
 

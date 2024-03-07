@@ -5,29 +5,29 @@
 
 #include <stdint.h>
 
-typedef struct {
+struct trapframe {
 	uintptr_t gpr[32];
 	uintptr_t status;
 	uintptr_t epc;
 	uintptr_t badvaddr;
 	uintptr_t cause;
 	uintptr_t insn;
-} trapframe;
+};
 
 typedef uint32_t insn_t;
 
-typedef struct {
+struct insn_fetch {
 	uintptr_t error;
 	insn_t insn;
-} insn_fetch_t;
+};
 
 static inline void exception_init(void)
 {
 }
 
 void redirect_trap(void);
-void default_trap_handler(trapframe *tf);
-void handle_supervisor_call(trapframe *tf);
-void handle_misaligned(trapframe *tf);
+void default_trap_handler(struct trapframe *tf);
+void handle_supervisor_call(struct trapframe *tf);
+void handle_misaligned(struct trapframe *tf);
 
 #endif

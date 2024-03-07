@@ -46,7 +46,7 @@ static const char *mstatus_to_previous_mode(uintptr_t ms)
 	return "unknown";
 }
 
-static void print_trap_information(const trapframe *tf)
+static void print_trap_information(const struct trapframe *tf)
 {
 	const char *previous_mode;
 	bool mprv = !!(tf->status & MSTATUS_MPRV);
@@ -69,7 +69,7 @@ static void print_trap_information(const trapframe *tf)
 	printk(BIOS_DEBUG, "Stored sp:          %p\n", (void *)tf->gpr[2]);
 }
 
-static void interrupt_handler(trapframe *tf)
+static void interrupt_handler(struct trapframe *tf)
 {
 	uint64_t cause = tf->cause & ~0x8000000000000000ULL;
 
@@ -109,9 +109,9 @@ static void interrupt_handler(trapframe *tf)
 	}
 }
 
-void (*trap_handler)(trapframe *tf) = default_trap_handler;
+void (*trap_handler)(struct trapframe *tf) = default_trap_handler;
 
-void default_trap_handler(trapframe *tf)
+void default_trap_handler(struct trapframe *tf)
 {
 	if (tf->cause & 0x8000000000000000ULL) {
 		interrupt_handler(tf);

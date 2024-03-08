@@ -100,6 +100,8 @@ static const struct pad_config romstage_gpio_table[] = {
 	PAD_CFG_GPO(GPP_C0, 1, DEEP),
 	/* C1  : SMBDATA ==> USI_RST_L */
 	PAD_CFG_GPO(GPP_C1, 0, DEEP),
+	/* C6  : SML1CLK ==> TCHSCR_REPORT_EN */
+	PAD_CFG_GPO(GPP_C6, 0, DEEP),
 	/* H12 : UART0_RTS# ==> SD_PERST_L */
 	PAD_CFG_GPO(GPP_H12, 1, DEEP),
 };

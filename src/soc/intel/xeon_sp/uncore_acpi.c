@@ -509,16 +509,49 @@ static unsigned long xeonsp_create_satc(unsigned long current, struct device *do
 /* SoC Integrated Address Translation Cache */
 static unsigned long acpi_create_satc(unsigned long current)
 {
-	const unsigned long tmp = current;
+	unsigned long tmp = current, seg = ~0;
+	struct device *dev;
 
-	// Add the SATC header
-	current += acpi_create_dmar_satc(current, 0, 0);
+	/*
+	 * Best case only PCI segment group count SATC headers are emitted, worst
+	 * case for every SATC entry a new SATC header is being generated.
+	 *
+	 * The assumption made here is that the host bridges on a socket share the
+	 * PCI segment group and thus only one SATC header needs to be emitted for
+	 * a single socket.
+	 * This is easier than to sort the host bridges by PCI segment group first
+	 * and then generate one SATC header for every new segment.
+	 *
+	 * With this assumption the best case scenario should always be used.
+	 */
+	for (int socket = 0; socket < CONFIG_MAX_SOCKET; ++socket) {
+		if (!soc_cpu_is_enabled(socket))
+			continue;
 
-	struct device *dev = NULL;
-	while ((dev = dev_find_path(dev, DEVICE_PATH_DOMAIN)))
-		current = xeonsp_create_satc(current, dev);
+		dev = NULL;
+		while ((dev = dev_find_path(dev, DEVICE_PATH_DOMAIN))) {
+			/* Only add devices for the current socket */
+			if (iio_pci_domain_socket_from_dev(dev) != socket)
+				continue;
 
-	acpi_dmar_satc_fixup(tmp, current);
+			if (seg != dev->downstream->segment_group) {
+				// Close previous header
+				if (tmp != current)
+					acpi_dmar_satc_fixup(tmp, current);
+
+				seg = dev->downstream->segment_group;
+				tmp = current;
+				printk(BIOS_DEBUG, "[SATC Segment Header] "
+				       "Flags: 0x%x, PCI segment group: %lx\n", 0, seg);
+				// Add the SATC header
+				current += acpi_create_dmar_satc(current, 0, seg);
+			}
+			current = xeonsp_create_satc(current, dev);
+		}
+	}
+	if (tmp != current)
+		acpi_dmar_satc_fixup(tmp, current);
+
 	return current;
 }
 

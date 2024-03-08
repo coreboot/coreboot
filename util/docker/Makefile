@@ -177,6 +177,7 @@ docker-jenkins-attach: test-docker
 
 docker-build-docs: test-docker
 docker-build-docs:
+	mkdir -p $(top)/Documentation/_build
 	$(DOCKER) run -it --rm \
 		--user $(UID):$(GID) \
 		-v "$(top)/:/data-in/:ro" \

@@ -215,6 +215,12 @@ static unsigned long acpi_fill_slit(unsigned long current)
 }
 #endif
 
+static struct device *dev_find_iommu_on_stack(uint8_t socket, uint8_t stack)
+{
+	return dev_find_all_devices_on_stack(socket, stack, PCI_VID_INTEL,
+		MMAP_VTD_CFG_REG_DEVID, NULL);
+}
+
 /*
  * This function adds PCIe bridge device entry in DMAR table. If it is called
  * in the context of ATSR subtable, it adds ATSR subtable when it is first called.
@@ -252,20 +258,29 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket,
 	int stack, const IIO_UDS *hob)
 {
 	unsigned long tmp = current;
-	const STACK_RES *ri = &hob->PlatformData.IIO_resource[socket].StackRes[stack];
-	const uint32_t bus = ri->BusBase;
-	const uint32_t pcie_seg = hob->PlatformData.CpuQpiInfo[socket].PcieSegment;
-	const uint32_t reg_base = ri->VtdBarAddress;
-	printk(BIOS_SPEW, "%s socket: %d, stack: %d, bus: 0x%x, pcie_seg: 0x%x, reg_base: 0x%x\n",
-		__func__, socket, stack, bus, pcie_seg, reg_base);
 
-	/* Do not generate DRHD for non-PCIe stack */
+	struct device *iommu = dev_find_iommu_on_stack(socket, stack);
+	if (!iommu)
+		return current;
+
+	struct resource *resource;
+	resource = probe_resource(iommu, VTD_BAR_CSR);
+	if (!resource)
+		return current;
+
+	uint32_t reg_base = resource->base;
 	if (!reg_base)
 		return current;
 
+	const uint32_t bus = iommu->upstream->secondary;
+	uint32_t pcie_seg = iommu->upstream->segment_group;
+
+	printk(BIOS_SPEW, "%s socket: %d, stack: %d, bus: 0x%x, pcie_seg: 0x%x, reg_base: 0x%x\n",
+		__func__, socket, stack, bus, pcie_seg, reg_base);
+
 	// Add DRHD Hardware Unit
 
-	if (socket == 0 && stack == IioStack0) {
+	if (is_stack0(socket, stack)) {
 		printk(BIOS_DEBUG, "[Hardware Unit Definition] Flags: 0x%x, PCI Segment Number: 0x%x, "
 			"Register Base Address: 0x%x\n",
 			DRHD_INCLUDE_PCI_ALL, pcie_seg, reg_base);
@@ -278,7 +293,7 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket,
 	}
 
 	// Add PCH IOAPIC
-	if (socket == 0 && stack == IioStack0) {
+	if (is_stack0(socket, stack)) {
 		union p2sb_bdf ioapic_bdf = p2sb_get_ioapic_bdf();
 		printk(BIOS_DEBUG, "    [IOAPIC Device] Enumeration ID: 0x%x, PCI Bus Number: 0x%x, "
 		       "PCI Path: 0x%x, 0x%x\n", get_ioapic_id(IO_APIC_ADDR), ioapic_bdf.bus,
@@ -310,16 +325,14 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket,
 #endif
 
 	// Add PCIe Ports
-	if (socket != 0 || stack != IioStack0) {
-		struct device *dev = pcidev_path_on_bus(bus, PCI_DEVFN(0, 0));
-		while (dev) {
+	if (!is_stack0(socket, stack)) {
+		struct device *domain = dev_get_pci_domain(iommu);
+		struct device *dev = NULL;
+		while ((dev = dev_bus_each_child(domain->downstream, dev)))
 			if ((dev->hdr_type & 0x7f) == PCI_HEADER_TYPE_BRIDGE)
 				current +=
 				acpi_create_dmar_ds_pci_br_for_port(
 				current, dev, pcie_seg, false, NULL);
-
-			dev = dev->sibling;
-		}
 
 #if CONFIG(SOC_INTEL_SKYLAKE_SP) || CONFIG(SOC_INTEL_COOPERLAKE_SP)
 		// Add VMD
@@ -335,29 +348,27 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket,
 	}
 
 	// Add IOAT End Points (with memory resources. We don't report every End Point device.)
-	if (CONFIG(HAVE_IOAT_DOMAINS) && is_ioat_iio_stack_res(ri)) {
-		for (int b = ri->BusBase; b <= ri->BusLimit; ++b) {
-			struct device *dev = pcidev_path_on_bus(b, PCI_DEVFN(0, 0));
-			while (dev) {
-				/* This may also require a check for IORESOURCE_PREFETCH,
-				 * but that would not include the FPU (4942/0) */
-				if ((dev->resource_list->flags &
-				 (IORESOURCE_MEM | IORESOURCE_PCI64 | IORESOURCE_ASSIGNED)) ==
-				 (IORESOURCE_MEM | IORESOURCE_PCI64 | IORESOURCE_ASSIGNED)) {
-					const uint32_t d = PCI_SLOT(dev->path.pci.devfn);
-					const uint32_t f = PCI_FUNC(dev->path.pci.devfn);
-					printk(BIOS_DEBUG, "    [PCIE Endpoint Device] "
-						"Enumeration ID: 0x%x, PCI Bus Number: 0x%x, "
-						" PCI Path: 0x%x, 0x%x\n", 0, b, d, f);
-					current += acpi_create_dmar_ds_pci(current, b, d, f);
-				}
-				dev = dev->sibling;
+	if (CONFIG(HAVE_IOAT_DOMAINS) && is_dev_on_ioat_domain(iommu)) {
+		struct device *dev = NULL;
+		while ((dev = dev_find_all_devices_on_stack(socket, stack,
+			XEONSP_VENDOR_MAX, XEONSP_DEVICE_MAX, dev)))
+			/* This may also require a check for IORESOURCE_PREFETCH,
+			 * but that would not include the FPU (4942/0) */
+			if ((dev->resource_list->flags &
+				(IORESOURCE_MEM | IORESOURCE_PCI64 | IORESOURCE_ASSIGNED)) ==
+				(IORESOURCE_MEM | IORESOURCE_PCI64 | IORESOURCE_ASSIGNED)) {
+				const uint32_t b = dev->upstream->secondary;
+				const uint32_t d = PCI_SLOT(dev->path.pci.devfn);
+				const uint32_t f = PCI_FUNC(dev->path.pci.devfn);
+				printk(BIOS_DEBUG, "    [PCIE Endpoint Device] "
+					"Enumeration ID: 0x%x, PCI Bus Number: 0x%x, "
+					" PCI Path: 0x%x, 0x%x\n", 0, b, d, f);
+				current += acpi_create_dmar_ds_pci(current, b, d, f);
 			}
-		}
 	}
 
 	// Add HPET
-	if (socket == 0 && stack == IioStack0) {
+	if (is_stack0(socket, stack)) {
 		uint16_t hpet_capid = read16p(HPET_BASE_ADDRESS);
 		uint16_t num_hpets = (hpet_capid >> 0x08) & 0x1F;  // Bits [8:12] has hpet count
 		printk(BIOS_SPEW, "%s hpet_capid: 0x%x, num_hpets: 0x%x\n",

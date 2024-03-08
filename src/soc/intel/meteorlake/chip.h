@@ -4,6 +4,7 @@
 #define _SOC_CHIP_H_
 
 #include <drivers/i2c/designware/dw_i2c.h>
+#include <drivers/intel/gma/gma.h>
 #include <device/pci_ids.h>
 #include <gpio.h>
 #include <intelblocks/cfg.h>
@@ -528,6 +529,9 @@ struct soc_intel_meteorlake_config {
 	 * as per `enum slew_rate` data type.
 	 */
 	uint8_t slow_slew_rate_config[NUM_VR_DOMAINS];
+
+	/* i915 struct for GMA backlight control */
+	struct i915_gpu_controller_info gfx;
 };
 
 typedef struct soc_intel_meteorlake_config config_t;

@@ -160,3 +160,6 @@ config BOARD_GOOGLE_ZYDRON
 
 config BOARD_GOOGLE_XOL
 	bool "->  Xol"
+
+config BOARD_GOOGLE_NOVA
+	bool "->  Nova"

@@ -1,0 +1,37 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+chip northbridge/intel/sandybridge
+	device domain 0 on
+		subsystemid 0x1028 0x0533 inherit
+
+		device ref igd on
+			register "gpu_cpu_backlight" = "0x00001312"
+			register "gpu_pch_backlight" = "0x13121312"
+		end
+
+		chip southbridge/intel/bd82x6x
+			register "usb_port_config" = "{
+				{ 1, 2, 0 },
+				{ 1, 0, 0 },
+				{ 1, 0, 1 },
+				{ 1, 1, 1 },
+				{ 1, 1, 2 },
+				{ 1, 1, 2 },
+				{ 1, 2, 3 },
+				{ 1, 2, 3 },
+				{ 1, 2, 4 },
+				{ 1, 1, 4 },
+				{ 1, 1, 5 },
+				{ 1, 1, 5 },
+				{ 1, 2, 6 },
+				{ 1, 0, 6 },
+			}"
+
+			device ref xhci on
+				register "superspeed_capable_ports" = "0x0000000f"
+				register "xhci_overcurrent_mapping" = "0x00000c03"
+				register "xhci_switchable_ports" = "0x0000000f"
+			end
+		end
+	end
+end

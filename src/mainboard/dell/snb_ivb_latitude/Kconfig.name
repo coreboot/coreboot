@@ -6,6 +6,9 @@ config BOARD_DELL_LATITUDE_E5420
 config BOARD_DELL_LATITUDE_E5520
 	bool "Latitude E5520"
 
+config BOARD_DELL_LATITUDE_E6220
+	bool "Latitude E6220"
+
 config BOARD_DELL_LATITUDE_E6320
 	bool "Latitude E6320"
 

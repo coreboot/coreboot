@@ -137,6 +137,10 @@ endif
 ifeq ($(CONFIG_EDK2_DISABLE_TPM),y)
 BUILD_STR += -D TPM_ENABLE=FALSE
 endif
+# UFS_ENABLE			= FALSE
+ifeq ($(CONFIG_EDK2_UFS_ENABLE),y)
+BUILD_STR += -D UFS_ENABLE=TRUE
+endif
 
 endif
 

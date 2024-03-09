@@ -60,5 +60,4 @@ smm-y += xhci.c
 CPPFLAGS_common += -I$(src)/soc/intel/meteorlake
 CPPFLAGS_common += -I$(src)/soc/intel/meteorlake/include
 
-CFLAGS_common += -fshort-wchar
 endif

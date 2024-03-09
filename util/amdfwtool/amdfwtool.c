@@ -1469,7 +1469,7 @@ static int set_efs_table(uint8_t soc_id, amd_cb_config *cb_config,
 	return 0;
 }
 
-void open_process_config(char *config, amd_cb_config *cb_config, int debug)
+void open_process_config(char *config, amd_cb_config *cb_config)
 {
 	FILE *config_handle;
 
@@ -1490,7 +1490,7 @@ void open_process_config(char *config, amd_cb_config *cb_config, int debug)
 	}
 
 	/* For debug. */
-	if (debug) {
+	if (cb_config->debug) {
 		dump_psp_firmwares(amd_psp_fw_table);
 		dump_bdt_firmwares(amd_bios_table);
 	}
@@ -1539,7 +1539,7 @@ int main(int argc, char **argv)
 		memcpy(ctx.amd_bios_table_clean, amd_bios_table, sizeof(amd_bios_table));
 	}
 
-	open_process_config(cb_config.config, &cb_config, cb_config.debug);
+	open_process_config(cb_config.config, &cb_config);
 
 	ctx.rom = malloc(ctx.rom_size);
 	if (!ctx.rom) {
@@ -1625,8 +1625,7 @@ int main(int argc, char **argv)
 			memcpy(amd_bios_table, ctx.amd_bios_table_clean,
 				sizeof(amd_bios_table));
 			assert_fw_entry(combo_index, MAX_COMBO_ENTRIES, &ctx);
-			open_process_config(cb_config.combo_config[combo_index], &cb_config,
-				cb_config.debug);
+			open_process_config(cb_config.combo_config[combo_index], &cb_config);
 
 			/* In most cases, the address modes are same. */
 			if (cb_config.need_ish)

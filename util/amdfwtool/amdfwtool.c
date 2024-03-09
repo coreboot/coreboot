@@ -1600,7 +1600,8 @@ int main(int argc, char **argv)
 
 		adjust_current_pointer(&ctx, 0, 0x1000U);
 
-		bhd_combo_dir = new_combo_dir(&ctx);
+		if (!cb_config.recovery_ab)
+			bhd_combo_dir = new_combo_dir(&ctx);
 	}
 
 	combo_index = 0;
@@ -1723,7 +1724,10 @@ int main(int argc, char **argv)
 			if (!cb_config.use_combo) {
 				fill_bios_directory_to_efs(amd_romsig, biosdir,
 					&ctx, &cb_config);
-			} else {
+			} else if (bhd_combo_dir != NULL) {
+				/* In recovery A/B mode, there isn't a BHD combo directory.
+				 * Instead, the BIOS tables level 2 are linked by PSP tables.
+				 */
 				fill_bios_directory_to_efs(amd_romsig, bhd_combo_dir,
 					&ctx, &cb_config);
 				assert_fw_entry(combo_index, MAX_COMBO_ENTRIES, &ctx);

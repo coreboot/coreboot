@@ -75,3 +75,36 @@ config PCH_SPECIFIC_CLIENT_OPTIONS
 	select SOC_INTEL_COMMON_BLOCK_XDCI
 
 endif # SOC_INTEL_COMMON_PCH_BASE
+
+config SOC_INTEL_COMMON_IBL_BASE
+	bool
+	depends on SOC_INTEL_COMMON_BLOCK
+	depends on !SOC_INTEL_COMMON_PCH_BASE
+	help
+	  Common code blocks for integrated boot logic known as IBL. IBL is still
+	  compatible with PCH interfaces, but with limited features/registers
+	  exposed and certain revises.
+
+if SOC_INTEL_COMMON_IBL_BASE
+
+source "src/soc/intel/common/pch/*/Kconfig"
+
+config IBL_SPECIFIC_BASE_OPTIONS
+	def_bool y
+	select SOC_INTEL_COMMON_BLOCK_CHIP_CONFIG
+	select SOC_INTEL_COMMON_BLOCK_FAST_SPI
+	select SOC_INTEL_COMMON_BLOCK_GPIO
+	select SOC_INTEL_COMMON_BLOCK_GPIO_ITSS_POL_CFG
+	select SOC_INTEL_COMMON_BLOCK_ITSS
+	select SOC_INTEL_COMMON_BLOCK_LPC
+	select SOC_INTEL_COMMON_BLOCK_P2SB
+	select SOC_INTEL_COMMON_BLOCK_PCR
+	select SOC_INTEL_COMMON_BLOCK_PMC
+	select SOC_INTEL_COMMON_BLOCK_RTC
+	select SOC_INTEL_COMMON_BLOCK_SMBUS
+	select SOC_INTEL_COMMON_BLOCK_SPI
+	select SOC_INTEL_COMMON_BLOCK_TIMER
+	select SOC_INTEL_COMMON_PCH_LOCKDOWN
+	select SOUTHBRIDGE_INTEL_COMMON_SMBUS
+
+endif # SOC_INTEL_COMMON_IBL_BASE

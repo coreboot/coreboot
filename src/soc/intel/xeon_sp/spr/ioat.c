@@ -79,10 +79,10 @@ static void create_ioat_domain(const union xeon_domain_path dp, struct bus *cons
 	}
 }
 
-void soc_create_ioat_domains(const union xeon_domain_path path,
-			     struct bus *const bus,
-			     const STACK_RES *const sr,
-			     const size_t pci_segment_group)
+void create_ioat_domains(const union xeon_domain_path path,
+			struct bus *const bus,
+			const STACK_RES *const sr,
+			const size_t pci_segment_group)
 {
 	if (sr->BusLimit < sr->BusBase + HQM_BUS_OFFSET + HQM_RESERVED_BUS) {
 		printk(BIOS_WARNING,

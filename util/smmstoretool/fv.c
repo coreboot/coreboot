@@ -11,7 +11,7 @@
 #include "udk2017.h"
 
 // The same as in `smmstore.h` header, which isn't in `commonlib`.
-#define SMM_BLOCK_SIZE (64*1024)
+#define SMM_BLOCK_SIZE (64 * 1024)
 
 static const EFI_GUID EfiVariableGuid = EFI_VARIABLE_GUID;
 
@@ -33,8 +33,7 @@ static uint16_t calc_checksum(const uint16_t *hdr, size_t size)
 	return checksum;
 }
 
-bool
-fv_init(struct mem_range_t fv)
+bool fv_init(struct mem_range_t fv)
 {
 	if (fv.length % SMM_BLOCK_SIZE != 0) {
 		fprintf(stderr,
@@ -152,8 +151,8 @@ static bool check_var_store_hdr(const VARIABLE_STORE_HEADER *hdr,
 	return true;
 }
 
-bool
-fv_parse(struct mem_range_t fv, struct mem_range_t *var_store, bool *auth_vars)
+bool fv_parse(struct mem_range_t fv, struct mem_range_t *var_store,
+	      bool *auth_vars)
 {
 	const EFI_FIRMWARE_VOLUME_HEADER *vol_hdr = (void *)fv.start;
 	if (!check_fw_vol_hdr(vol_hdr, fv.length)) {

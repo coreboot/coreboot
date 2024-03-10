@@ -16,7 +16,7 @@
 #define DEFAULT_TC2	5
 #define DEFAULT_TSP	10
 
-#define CELSIUS_TO_DECI_KELVIN(temp_c)	((temp_c) * 10 + 2731)
+#define CELSIUS_TO_DECI_KELVIN(temp_c)	((temp_c) * 10 + 2732)
 #define SECONDS_TO_DECI_SECONDS(s)	((s) * 10)
 
 static const char *thermal_zone_acpi_name(const struct device *dev)

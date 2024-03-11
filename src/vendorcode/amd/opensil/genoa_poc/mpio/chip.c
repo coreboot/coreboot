@@ -157,7 +157,8 @@ static void per_device_config(MPIOCLASS_INPUT_BLK *mpio_data, struct device *dev
 						     config->gpio_group);
 		port.EngineData = engine_data;
 		const MPIO_PORT_DATA port_data =
-			MPIO_PORT_DATA_INITIALIZER_PCIE(MpioPortEnabled,
+			MPIO_PORT_DATA_INITIALIZER_PCIE(is_dev_enabled(dev) ?
+								MpioPortEnabled : MpioPortDisabled,
 							PCI_SLOT(devfn),
 							PCI_FUNC(devfn),
 							config->hotplug,

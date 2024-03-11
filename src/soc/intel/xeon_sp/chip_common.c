@@ -199,7 +199,7 @@ void iio_pci_domain_read_resources(struct device *dev)
 
 	int index = 0;
 
-	if (dev->path.domain.domain == 0) {
+	if (is_domain0(dev)) {
 		/* The 0 - 0xfff IO range is not reported by the HOB but still gets decoded */
 		res = new_resource(dev, index++);
 		res->base = 0;

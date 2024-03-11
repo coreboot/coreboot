@@ -1,93 +1,41 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <arch/io.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <delay.h>
+#include <ec/acpi/ec.h>
 
-#include "ec.h"
 #include "chip.h"
 
-static u16 ec_data_port;
-static u16 ec_cmd_port;
-
-#define   KBD_IBF	(1 << 1) /* 1: input buffer full (data ready for ec) */
-#define   KBD_OBF	(1 << 0) /* 1: output buffer full (data ready for host) */
-
-static void ec_setports(u16 data, u16 cmd)
-{
-	ec_data_port = data;
-	ec_cmd_port = cmd;
-}
-
-static int send_kbd_command(u8 command)
-{
-	int timeout;
-
-	timeout = 100000; /* 1 second */
-	while ((inb(ec_cmd_port) & KBD_IBF) && --timeout) {
-		udelay(10);
-		if ((timeout & 0xff) == 0)
-			printk(BIOS_SPEW, ".");
-	}
-	if (!timeout) {
-		printk(BIOS_DEBUG, "Timeout while sending command 0x%02x to EC!\n",
-				command);
-		return -1;
-	}
-
-	outb(command, ec_cmd_port);
-	return 0;
-}
-
-static int send_kbd_data(u8 data)
-{
-	int timeout;
-
-	timeout = 100000; /* 1 second */
-	while ((inb(ec_cmd_port) & KBD_IBF) && --timeout) { /* wait for IBF = 0 */
-		udelay(10);
-		if ((timeout & 0xff) == 0)
-			printk(BIOS_SPEW, ".");
-	}
-	if (!timeout) {
-		printk(BIOS_DEBUG, "Timeout while sending data 0x%02x to EC!\n",
-				data);
-		return -1;
-	}
-
-	outb(data, ec_data_port);
-	return 0;
-}
+#define KBC_TIMEOUT_US 1000000 // 1s
 
 /*
- * kbc1126_thermalinit: initialize fan control
+ * kbc1126_thermal_init: initialize fan control
  * The code is found in EcThermalInit of the vendor firmware.
  */
-static int kbc1126_thermalinit(u8 cmd, u8 value)
+static int kbc1126_thermal_init(u8 cmd, u8 value)
 {
-	printk(BIOS_DEBUG, "KBC1126: initialize fan control.");
+	printk(BIOS_DEBUG, "KBC1126: initialize fan control.\n");
 
-	if (send_kbd_command(cmd) < 0)
+	if (send_ec_command_timeout(cmd, KBC_TIMEOUT_US) < 0)
 		return -1;
 
-	if (send_kbd_data(0x27) < 0)
+	if (send_ec_data_timeout(0x27, KBC_TIMEOUT_US) < 0)
 		return -1;
 
-	if (send_kbd_data(0x01) < 0)
+	if (send_ec_data_timeout(0x01, KBC_TIMEOUT_US) < 0)
 		return -1;
 
 	/*
 	 * The following code is needed for fan control when AC is plugged in.
 	 */
 
-	if (send_kbd_command(cmd) < 0)
+	if (send_ec_command_timeout(cmd, KBC_TIMEOUT_US) < 0)
 		return -1;
 
-	if (send_kbd_data(0xd5) < 0)
+	if (send_ec_data_timeout(0xd5, KBC_TIMEOUT_US) < 0)
 		return -1;
 
-	if (send_kbd_data(value) < 0)
+	if (send_ec_data_timeout(value, KBC_TIMEOUT_US) < 0)
 		return -1;
 
 	printk(BIOS_DEBUG, "KBC1126: fan control initialized.\n");
@@ -95,27 +43,28 @@ static int kbc1126_thermalinit(u8 cmd, u8 value)
 }
 
 /*
- * kbc1126_kbdled: set CapsLock and NumLock LEDs
+ * kbc1126_kbd_led: set CapsLock and NumLock LEDs
  * This is used in MemoryErrorReport of the vendor firmware.
  */
-static void kbc1126_kbdled(u8 cmd, u8 val)
+static void kbc1126_kbd_led(u8 cmd, u8 val)
 {
-	if (send_kbd_command(cmd) < 0)
+	if (send_ec_command_timeout(cmd, KBC_TIMEOUT_US) < 0)
 		return;
 
-	if (send_kbd_data(0xf0) < 0)
+	if (send_ec_data_timeout(0xf0, KBC_TIMEOUT_US) < 0)
 		return;
 
-	if (send_kbd_data(val) < 0)
+	if (send_ec_data_timeout(val, KBC_TIMEOUT_US) < 0)
 		return;
 }
 
 static void kbc1126_enable(struct device *dev)
 {
 	struct ec_hp_kbc1126_config *conf = dev->chip_info;
-	ec_setports(conf->ec_data_port, conf->ec_cmd_port);
-	kbc1126_kbdled(conf->ec_ctrl_reg, 0);
-	if (kbc1126_thermalinit(conf->ec_ctrl_reg, conf->ec_fan_ctrl_value) < 0)
+
+	ec_set_ports(conf->ec_cmd_port, conf->ec_data_port);
+	kbc1126_kbd_led(conf->ec_ctrl_reg, 0);
+	if (kbc1126_thermal_init(conf->ec_ctrl_reg, conf->ec_fan_ctrl_value) < 0)
 		printk(BIOS_DEBUG, "KBC1126: error when initializing fan control.\n");
 }
 

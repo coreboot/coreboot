@@ -1,0 +1,50 @@
+# Type this in coreboot root directory to get a working .config:
+#   make defconfig KBUILD_DEFCONFIG=configs/builder/config.intel.crb.bnc
+
+#
+# [RO] Board Configurations
+#
+CONFIG_VENDOR_INTEL=y
+CONFIG_BOARD_INTEL_BEECHNUTCITY_CRB=y
+
+CONFIG_HAVE_CONFIGURABLE_RAMSTAGE=y
+CONFIG_CONFIGURABLE_RAMSTAGE=y
+
+CONFIG_NO_GFX_INIT=y
+
+CONFIG_HAVE_IFD_BIN=y
+CONFIG_DO_NOT_TOUCH_DESCRIPTOR_REGION=y
+CONFIG_CPU_MICROCODE_CBFS_EXTERNAL_BINS=y
+CONFIG_ADD_FSP_BINARIES=y
+CONFIG_PAYLOAD_LINUX=y
+
+CONFIG_UART_FOR_CONSOLE=0
+CONFIG_CONSOLE_SERIAL_115200=y
+
+#
+# [RW] IFWI Ingredients
+#
+CONFIG_IFD_BIN_PATH="site-local/beechnutcity/descriptor.bin"
+CONFIG_CPU_UCODE_BINARIES="site-local/beechnutcity/ucode.mcb"
+CONFIG_FSP_T_FILE="site-local/beechnutcity/Server_T.fd"
+CONFIG_FSP_M_FILE="site-local/beechnutcity/Server_M.fd"
+CONFIG_FSP_S_FILE="site-local/beechnutcity/Server_S.fd"
+CONFIG_FSP_HEADER_PATH="src/vendorcode/intel/fsp/fsp2_0/graniterapids/sp/"
+
+CONFIG_PAYLOAD_FILE="site-local/beechnutcity/linuxboot_bzImage"
+CONFIG_LINUX_COMMAND_LINE="loglevel=7 earlyprintk=serial,ttyS0,115200 console=ttyS0,115200"
+
+#
+# [RW] Debug Settings
+#
+CONFIG_CONSOLE_POST=y
+CONFIG_DEFAULT_CONSOLE_LOGLEVEL_8=y
+
+CONFIG_VERIFY_HOBS=y
+CONFIG_DISPLAY_MTRRS=y
+
+CONFIG_DISPLAY_FSP_CALLS_AND_STATUS=y
+CONFIG_DISPLAY_FSP_HEADER=y
+
+CONFIG_HAVE_DEBUG_GPIO=y
+CONFIG_DEBUG_GPIO=y

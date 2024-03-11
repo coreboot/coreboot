@@ -1,0 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_INTEL_BEECHNUTCITY_CRB
+	bool "Beechnut City CRB"

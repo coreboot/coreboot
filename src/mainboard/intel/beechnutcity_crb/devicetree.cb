@@ -1,0 +1,37 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+chip soc/intel/xeon_sp/gnr
+
+	# configure LPC generic IO decode ranges
+	# 	[bits 31..24: reserved]
+	# 	[bits 23..18: io decode address mask <7..2>]
+	# 	[bits 17..16: reserved]
+	# 	[bits 15..2 : io decode dword aligned address <15..2>]
+	#	[bit 1      : reserved]
+	#	[bit 0      : enabled]
+	register "gen1_dec" = "0x00000CA1" # IPMI KCS
+
+	# configure FSP debug settings
+	register "serial_io_uart_debug_io_base" = CONFIG_TTYS0_BASE
+
+	device domain 0 on
+		device pci 1f.0 on
+			chip superio/common
+				device pnp 2e.0 on
+					chip superio/aspeed/ast2400
+						register "use_espi" = "1"
+						device pnp 2e.2 on # SUART1
+							io 0x60 = 0x3f8 # PNP_IDX_IO0
+							irq 0x70 = 4 # PNP_IDX_IRQ0
+						end
+					end
+				end
+			end
+			chip drivers/ipmi
+				device pnp ca2.0 on end # BMC KCS
+				register "wait_for_bmc" = "1"
+				register "bmc_boot_timeout" = "60"
+			end
+		end
+	end
+end

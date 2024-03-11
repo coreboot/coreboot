@@ -395,8 +395,8 @@ Gerrit user roles
 There are a few relevant roles a user can have on Gerrit:
 
 - The anonymous user can check out source code.
-- A registered user can also comment and give "+1" and "-1" code reviews.
-- A reviewer can also give "+2" code reviews.
+- A registered user can also comment and give "+1" code reviews.
+- A reviewer can give "-1" and "+2" code reviews.
 - A core developer can also give "-2" (that is, blocking) code reviews
   and submit changes.
 

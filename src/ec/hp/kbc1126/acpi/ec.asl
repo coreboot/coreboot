@@ -12,11 +12,6 @@ Device (EC0)
 		IO (Decode16, 0x66, 0x66, 1, 1)
 	})
 
-	Method (_STA)
-	{
-		Return (0x0F)
-	}
-
 	OperationRegion (ECRM, EmbeddedControl, 0x00, 0xFF)
 	Field (ECRM, ByteAcc, NoLock, Preserve)
 	{

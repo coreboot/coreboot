@@ -47,11 +47,6 @@ Device (AC)
 	Name (_HID, "ACPI0003")
 	Name (_PCL, Package () { \_SB })
 
-	Method (_STA)
-	{
-		Return (0x0F)
-	}
-
 	Method (_PSR)
 	{
 		Local0 = GACS ()

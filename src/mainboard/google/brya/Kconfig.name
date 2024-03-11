@@ -163,3 +163,6 @@ config BOARD_GOOGLE_XOL
 
 config BOARD_GOOGLE_NOVA
 	bool "->  Nova"
+
+config BOARD_GOOGLE_BUJIA
+	bool "->  Bujia"

@@ -12,7 +12,7 @@ Device (EC0)
 		IO (Decode16, 0x66, 0x66, 1, 1)
 	})
 
-	Method (_STA, 0, NotSerialized)
+	Method (_STA)
 	{
 		Return (0x0F)
 	}
@@ -200,28 +200,28 @@ Device (EC0)
 	/* The following are _Qxx methods in vendor DSDT whose function
 	   is unknown. Just leave a debug message here. */
 
-	Method (_Q04, 0, NotSerialized)
+	Method (_Q04)
 	{
 		Printf ("EC: _Q04")
 		PNOT()
 	}
 
-	Method (_Q05, 0, NotSerialized)
+	Method (_Q05)
 	{
 		Printf ("EC: _Q05")
 	}
 
-	Method (_Q0B, 0, NotSerialized)
+	Method (_Q0B)
 	{
 		Printf ("EC: _Q0B")
 	}
 
-	Method (_Q0C, 0, NotSerialized)
+	Method (_Q0C)
 	{
 		Printf ("EC: _Q0C")
 	}
 
-	Method (_Q0D, 0, NotSerialized)
+	Method (_Q0D)
 	{
 		Printf ("EC: _Q0D")
 	}

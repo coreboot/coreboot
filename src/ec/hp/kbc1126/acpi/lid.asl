@@ -3,14 +3,15 @@
 Device (LID)
 {
 	Name (_HID, EisaId ("PNP0C0D"))
-	Method (_LID, 0, NotSerialized)
+
+	Method (_LID)
 	{
 		Local0 = CLID
 		Return (Local0)
 	}
 }
 
-Method (_Q0A, 0, NotSerialized)
+Method (_Q0A)
 {
 	Printf ("EC: LID STATUS")
 	Notify (LID, 0x80)

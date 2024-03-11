@@ -40,7 +40,7 @@ Mutex (BTMX, 0x00)
 #define NLB1 0xC8 /* design capacity of warning */
 #define NLB2 0x64 /* design capacity of low */
 
-Method (ITLB, 0, NotSerialized)
+Method (ITLB)
 {
 	Local0 = (NLB1 + 9) % 0x0a
 	Local1 = (NLB1 + 9) / 0x0a
@@ -127,17 +127,17 @@ Device (BAT0)
 	Name (_HID, EisaId ("PNP0C0A"))
 	Name (_UID, 0x01)
 
-	Method (_STA, 0, NotSerialized)
+	Method (_STA)
 	{
 		Return (BSTA (0x01))
 	}
 
-	Method (_BIF, 0, NotSerialized)
+	Method (_BIF)
 	{
 		Return (BTIF (0x00))
 	}
 
-	Method (_BST, 0, NotSerialized)
+	Method (_BST)
 	{
 		Return (BTSZ (0x00))
 	}
@@ -153,17 +153,17 @@ Device (BAT1)
 	Name (_HID, EisaId ("PNP0C0A"))
 	Name (_UID, 0x02)
 
-	Method (_STA, 0, NotSerialized)
+	Method (_STA)
 	{
 		Return (BSTA (0x02))
 	}
 
-	Method (_BIF, 0, NotSerialized)
+	Method (_BIF)
 	{
 		Return (BTIF (0x01))
 	}
 
-	Method (_BST, 0, NotSerialized)
+	Method (_BST)
 	{
 		Return (BTSZ (0x01))
 	}
@@ -440,7 +440,7 @@ Method (SBTN, 2, Serialized)
 	}
 }
 
-Method (_Q03, 0, NotSerialized)
+Method (_Q03)
 {
 	Printf ("EC: _Q03")
 	Acquire (BTMX, 0xFFFF)
@@ -450,7 +450,7 @@ Method (_Q03, 0, NotSerialized)
 	SBTN (Local0, 0x80)
 }
 
-Method (_Q08, 0, NotSerialized)
+Method (_Q08)
 {
 	Printf ("EC: PRIMARY BATTERY ATTACHED/DETACHED")
 	PWUP (0x06, 0x01)
@@ -470,7 +470,7 @@ Method (_Q08, 0, NotSerialized)
 	}
 }
 
-Method (_Q09, 0, NotSerialized)
+Method (_Q09)
 {
 	Printf ("EC: PRIMARY BATTERY STATUS")
 	PWUP (0x04, 0x01)
@@ -480,7 +480,7 @@ Method (_Q09, 0, NotSerialized)
 	}
 }
 
-Method (_Q18, 0, NotSerialized)
+Method (_Q18)
 {
 	Printf ("EC: SECONDARY BATTERY ATTACHED/DETACHED")
 	PWUP (0x06, 0x02)
@@ -500,7 +500,7 @@ Method (_Q18, 0, NotSerialized)
 	}
 }
 
-Method (_Q19, 0, NotSerialized)
+Method (_Q19)
 {
 	Printf ("EC: SECONDARY BATTERY STATUS")
 	PWUP (0x04, 0x02)

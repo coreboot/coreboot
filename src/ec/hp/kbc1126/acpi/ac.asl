@@ -52,7 +52,7 @@ Device (AC)
 		Return (0x0F)
 	}
 
-	Method (_PSR, 0, NotSerialized)
+	Method (_PSR)
 	{
 		Local0 = GACS ()
 		PWRS = Local0 /* GNVS.PWRS */
@@ -63,7 +63,7 @@ Device (AC)
 	}
 }
 
-Method (_Q06, 0, NotSerialized)
+Method (_Q06)
 {
 	Printf ("EC: AC STATUS")
 	PWUP (0x05, (0x02 | 0x01))

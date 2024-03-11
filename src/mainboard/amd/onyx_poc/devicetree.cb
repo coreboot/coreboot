@@ -57,7 +57,7 @@ chip soc/amd/genoa_poc
 		device ref rcec_0 on end
 		device ref gpp_bridge_0_0_a on
 			chip vendorcode/amd/opensil/genoa_poc/mpio # P2
-				register "type" = "PCIE"
+				register "type" = "IFTYPE_PCIE"
 				register "start_lane" = "48"
 				register "end_lane" = "63"
 				register "gpio_group" = "1"
@@ -67,7 +67,7 @@ chip soc/amd/genoa_poc
 		end
 		device ref gpp_bridge_0_0_b on
 			chip vendorcode/amd/opensil/genoa_poc/mpio # G2
-				register "type" = "PCIE"
+				register "type" = "IFTYPE_PCIE"
 				register "start_lane" = "112"
 				register "end_lane" = "127"
 				register "gpio_group" = "1"
@@ -78,7 +78,7 @@ chip soc/amd/genoa_poc
 		end
 		device ref gpp_bridge_0_0_c on
 			chip vendorcode/amd/opensil/genoa_poc/mpio
-				register "type" = "PCIE"
+				register "type" = "IFTYPE_PCIE"
 				register "start_lane" = "128"
 				register "end_lane" = "131"
 				register "gpio_group" = "1"
@@ -101,7 +101,7 @@ chip soc/amd/genoa_poc
 		device ref rcec_1 on end
 		device ref gpp_bridge_1_0_a on
 			chip vendorcode/amd/opensil/genoa_poc/mpio # P3
-				register "type" = "PCIE"
+				register "type" = "IFTYPE_PCIE"
 				register "start_lane" = "16"
 				register "end_lane" = "31"
 				register "gpio_group" = "1"
@@ -111,7 +111,7 @@ chip soc/amd/genoa_poc
 		end
 		device ref gpp_bridge_1_0_b on
 			chip vendorcode/amd/opensil/genoa_poc/mpio # G3
-				register "type" = "PCIE"
+				register "type" = "IFTYPE_PCIE"
 				register "start_lane" = "80"
 				register "end_lane" = "95"
 				register "gpio_group" = "1"
@@ -126,7 +126,7 @@ chip soc/amd/genoa_poc
 		device ref rcec_2 on end
 		device ref gpp_bridge_2_0_a on
 			chip vendorcode/amd/opensil/genoa_poc/mpio # P1
-				register "type" = "PCIE"
+				register "type" = "IFTYPE_PCIE"
 				register "start_lane" = "32"
 				register "end_lane" = "47"
 				register "gpio_group" = "1"
@@ -137,7 +137,7 @@ chip soc/amd/genoa_poc
 		end
 		device ref gpp_bridge_2_0_b on
 			chip vendorcode/amd/opensil/genoa_poc/mpio # G1
-				register "type" = "PCIE"
+				register "type" = "IFTYPE_PCIE"
 				register "start_lane" = "64"
 				register "end_lane" = "79"
 				register "gpio_group" = "1"
@@ -153,7 +153,7 @@ chip soc/amd/genoa_poc
 		device ref rcec_3 on end
 		device ref gpp_bridge_3_0_a on
 			chip vendorcode/amd/opensil/genoa_poc/mpio # P0
-				register "type" = "PCIE"
+				register "type" = "IFTYPE_PCIE"
 				register "start_lane" = "0"
 				register "end_lane" = "15"
 				register "gpio_group" = "1"
@@ -163,7 +163,7 @@ chip soc/amd/genoa_poc
 		end
 		device ref gpp_bridge_3_0_b on
 			chip vendorcode/amd/opensil/genoa_poc/mpio # G0
-				register "type" = "PCIE"
+				register "type" = "IFTYPE_PCIE"
 				register "start_lane" = "96"
 				register "end_lane" = "111"
 				register "gpio_group" = "1"
@@ -173,7 +173,7 @@ chip soc/amd/genoa_poc
 		end
 		device ref gpp_bridge_3_0_c on # WAFL
 			chip vendorcode/amd/opensil/genoa_poc/mpio
-				register "type" = "PCIE"
+				register "type" = "IFTYPE_PCIE"
 				register "start_lane" = "132"
 				register "end_lane" = "133"
 				register "gpio_group" = "1"
@@ -183,7 +183,7 @@ chip soc/amd/genoa_poc
 		end
 		device ref gpp_bridge_3_1_c on # BMC
 			chip vendorcode/amd/opensil/genoa_poc/mpio
-				register "type" = "PCIE"
+				register "type" = "IFTYPE_PCIE"
 				register "start_lane" = "134"
 				register "end_lane" = "134"
 				register "gpio_group" = "1"
@@ -194,7 +194,7 @@ chip soc/amd/genoa_poc
 		end
 		device ref gpp_bridge_3_2_c on # BMC
 			chip vendorcode/amd/opensil/genoa_poc/mpio
-				register "type" = "PCIE"
+				register "type" = "IFTYPE_PCIE"
 				register "start_lane" = "135"
 				register "end_lane" = "135"
 				register "gpio_group" = "1"

@@ -141,7 +141,7 @@ static void per_device_config(MPIOCLASS_INPUT_BLK *mpio_data, struct device *dev
 
 	static int mpio_port = 0;
 	MPIO_PORT_DESCRIPTOR port = { .Flags = DESCRIPTOR_TERMINATE_LIST };
-	if (config->type == PCIE) {
+	if (config->type == IFTYPE_PCIE) {
 		const MPIO_ENGINE_DATA engine_data =
 			MPIO_ENGINE_DATA_INITIALIZER(MpioPcieEngine,
 						     config->start_lane, config->end_lane,
@@ -160,7 +160,7 @@ static void per_device_config(MPIOCLASS_INPUT_BLK *mpio_data, struct device *dev
 							config->aspm_l1_2,
 							config->clock_pm);
 		port.Port = port_data;
-	} else if (config->type == SATA) {
+	} else if (config->type == IFTYPE_SATA) {
 		const MPIO_ENGINE_DATA engine_data =
 			MPIO_ENGINE_DATA_INITIALIZER(MpioSATAEngine,
 						     config->start_lane, config->end_lane,

@@ -17,8 +17,8 @@
  */
 
 enum mpio_type {
-	PCIE,
-	SATA,
+	IFTYPE_PCIE,
+	IFTYPE_SATA,
 };
 
 /* Sync with PCIE_HOTPLUG_TYPE */

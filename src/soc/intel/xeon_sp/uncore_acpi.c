@@ -240,9 +240,7 @@ static unsigned long acpi_create_dmar_ds_pci_br_for_port(unsigned long current,
 		*first = false;
 	}
 
-	printk(BIOS_DEBUG, "    [PCI Bridge Device] Enumeration ID: 0x%x, "
-		"PCI Bus Number: 0x%x, PCI Path: 0x%x, 0x%x\n",
-		0, bus, dev, func);
+	printk(BIOS_DEBUG, "    [PCI Bridge Device] %s\n", dev_path(bridge_dev));
 	pci_br_size = acpi_create_dmar_ds_pci_br(current + atsr_size, bus, dev, func);
 
 	return (atsr_size + pci_br_size);
@@ -307,9 +305,9 @@ static unsigned long acpi_create_drhd(unsigned long current, struct device *iomm
 	// Add CBDMA devices for CSTACK
 	if (socket != 0 && stack == CSTACK) {
 		for (int cbdma_func_id = 0; cbdma_func_id < 8; ++cbdma_func_id) {
-			printk(BIOS_DEBUG, "    [PCI Endpoint Device] Enumeration ID: 0x%x, "
+			printk(BIOS_DEBUG, "    [PCI Endpoint Device] "
 				"PCI Bus Number: 0x%x, PCI Path: 0x%x, 0x%x\n",
-				0, bus, CBDMA_DEV_NUM, cbdma_func_id);
+				bus, CBDMA_DEV_NUM, cbdma_func_id);
 			current += acpi_create_dmar_ds_pci(current,
 				bus, CBDMA_DEV_NUM, cbdma_func_id);
 		}
@@ -330,9 +328,9 @@ static unsigned long acpi_create_drhd(unsigned long current, struct device *iomm
 		// Add VMD
 		if (hob->PlatformData.VMDStackEnable[socket][stack] &&
 			stack >= PSTACK0 && stack <= PSTACK2) {
-			printk(BIOS_DEBUG, "    [PCI Endpoint Device] Enumeration ID: 0x%x, "
+			printk(BIOS_DEBUG, "    [PCI Endpoint Device] "
 				"PCI Bus Number: 0x%x, PCI Path: 0x%x, 0x%x\n",
-				 0, bus, VMD_DEV_NUM, VMD_FUNC_NUM);
+				 bus, VMD_DEV_NUM, VMD_FUNC_NUM);
 			current += acpi_create_dmar_ds_pci(current,
 				bus, VMD_DEV_NUM, VMD_FUNC_NUM);
 		}
@@ -352,9 +350,7 @@ static unsigned long acpi_create_drhd(unsigned long current, struct device *iomm
 				const uint32_t b = dev->upstream->secondary;
 				const uint32_t d = PCI_SLOT(dev->path.pci.devfn);
 				const uint32_t f = PCI_FUNC(dev->path.pci.devfn);
-				printk(BIOS_DEBUG, "    [PCIE Endpoint Device] "
-					"Enumeration ID: 0x%x, PCI Bus Number: 0x%x, "
-					" PCI Path: 0x%x, 0x%x\n", 0, b, d, f);
+				printk(BIOS_DEBUG, "    [PCIE Endpoint Device] %s\n", dev_path(dev));
 				current += acpi_create_dmar_ds_pci(current, b, d, f);
 			}
 	}
@@ -462,9 +458,9 @@ static unsigned long acpi_create_rmrr(unsigned long current)
 	current += acpi_create_dmar_rmrr(current, 0, (uint32_t)ptr,
 		(uint32_t)((uint32_t)ptr + size - 1));
 
-	printk(BIOS_DEBUG, "    [PCI Endpoint Device] Enumeration ID: 0x%x, PCI Bus Number: 0x%x, "
+	printk(BIOS_DEBUG, "    [PCI Endpoint Device] PCI Bus Number: 0x%x, "
 		"PCI Path: 0x%x, 0x%x\n",
-		 0, XHCI_BUS_NUMBER, PCH_DEV_SLOT_XHCI, XHCI_FUNC_NUM);
+		 XHCI_BUS_NUMBER, PCH_DEV_SLOT_XHCI, XHCI_FUNC_NUM);
 	current += acpi_create_dmar_ds_pci(current, XHCI_BUS_NUMBER,
 		PCH_DEV_SLOT_XHCI, XHCI_FUNC_NUM);
 
@@ -503,9 +499,7 @@ static unsigned long xeonsp_create_satc(unsigned long current, struct device *do
 			const uint32_t b = domain->downstream->secondary;
 			const uint32_t d = PCI_SLOT(dev->path.pci.devfn);
 			const uint32_t f = PCI_FUNC(dev->path.pci.devfn);
-			printk(BIOS_DEBUG, "    [SATC Endpoint Device] "
-				"Enumeration ID: 0x%x, PCI Bus Number: 0x%x, "
-				" PCI Path: 0x%x, 0x%x\n", 0, b, d, f);
+			printk(BIOS_DEBUG, "    [SATC Endpoint Device] %s\n", dev_path(dev));
 			current += acpi_create_dmar_ds_pci(current, b, d, f);
 		}
 	}

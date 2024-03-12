@@ -59,7 +59,7 @@ source "payloads/external/*/Kconfig"
 
 config PAYLOAD_FILE
 	string "Payload path and filename"
-	depends on PAYLOAD_ELF || PAYLOAD_FIT
+	depends on PAYLOAD_ELF || PAYLOAD_FIT || PAYLOAD_FLAT_BINARY
 	default "payload.elf" if PAYLOAD_ELF
 	default "uImage" if PAYLOAD_FIT
 	help

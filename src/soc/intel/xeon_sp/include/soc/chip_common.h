@@ -53,8 +53,12 @@ void iio_pci_domain_read_resources(struct device *dev);
 void iio_cxl_domain_read_resources(struct device *dev);
 void attach_iio_stacks(void);
 
-void soc_create_ioat_domains(union xeon_domain_path path, struct bus *bus, const STACK_RES *sr);
-void soc_create_cxl_domains(const union xeon_domain_path dp, struct bus *bus, const STACK_RES *sr);
+void soc_create_cxl_domains(const union xeon_domain_path dp, struct bus *bus,
+			    const STACK_RES *sr, const size_t pci_segment_group);
+void soc_create_ioat_domains(union xeon_domain_path path,
+			     struct bus *bus,
+			     const STACK_RES *sr,
+			     const size_t pci_segment_group);
 
 struct device *dev_find_device_on_socket(uint8_t socket, u16 vendor, u16 device);
 struct device *dev_find_all_devices_on_socket(uint8_t socket,

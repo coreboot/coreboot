@@ -264,8 +264,9 @@ static struct device_operations ubox_pcie_domain_ops = {
 };
 
 static void soc_create_domains(const union xeon_domain_path dp, struct bus *upstream,
-				int bus_base, int bus_limit, const char *type,
-				struct device_operations *ops)
+			       int bus_base, int bus_limit, const char *type,
+			       struct device_operations *ops,
+			       const size_t pci_segment_group)
 {
 	struct device_path path;
 	init_xeon_domain_path(&path, dp.socket, dp.stack, bus_base);
@@ -281,14 +282,15 @@ static void soc_create_domains(const union xeon_domain_path dp, struct bus *upst
 	bus->secondary = bus_base;
 	bus->subordinate = bus_base;
 	bus->max_subordinate = bus_limit;
+	bus->segment_group = pci_segment_group;
 }
 
 
 static void soc_create_pcie_domains(const union xeon_domain_path dp, struct bus *upstream,
-				const STACK_RES *sr)
+				    const STACK_RES *sr, const size_t pci_segment_group)
 {
 	soc_create_domains(dp, upstream, sr->BusBase, sr->BusLimit, DOMAIN_TYPE_PCIE,
-				&iio_pcie_domain_ops);
+			   &iio_pcie_domain_ops, pci_segment_group);
 }
 
 /*
@@ -297,15 +299,15 @@ static void soc_create_pcie_domains(const union xeon_domain_path dp, struct bus 
  * with 3rd gen Xeon-SP the UBOX devices are located on their own IIO.
  */
 static void soc_create_ubox_domains(const union xeon_domain_path dp, struct bus *upstream,
-				const STACK_RES *sr)
+				    const STACK_RES *sr, const size_t pci_segment_group)
 {
 	/* Only expect 2 UBOX buses here */
 	assert(sr->BusBase + 1 == sr->BusLimit);
 
 	soc_create_domains(dp, upstream, sr->BusBase, sr->BusBase, DOMAIN_TYPE_UBX0,
-				&ubox_pcie_domain_ops);
+			   &ubox_pcie_domain_ops, pci_segment_group);
 	soc_create_domains(dp, upstream, sr->BusLimit, sr->BusLimit, DOMAIN_TYPE_UBX1,
-				&ubox_pcie_domain_ops);
+			   &ubox_pcie_domain_ops, pci_segment_group);
 }
 
 #if CONFIG(SOC_INTEL_HAS_CXL)
@@ -356,15 +358,16 @@ static struct device_operations iio_cxl_domain_ops = {
 };
 
 void soc_create_cxl_domains(const union xeon_domain_path dp, struct bus *bus,
-				const STACK_RES *sr)
+			    const STACK_RES *sr, const size_t pci_segment_group)
 {
 	assert(sr->BusBase + 1 <= sr->BusLimit);
+
 	/* 1st domain contains PCIe RCiEPs */
 	soc_create_domains(dp, bus, sr->BusBase, sr->BusBase, DOMAIN_TYPE_PCIE,
-				&iio_pcie_domain_ops);
+			   &iio_pcie_domain_ops, pci_segment_group);
 	/* 2nd domain contains CXL 1.1 end-points */
 	soc_create_domains(dp, bus, sr->BusBase + 1, sr->BusLimit, DOMAIN_TYPE_CXL,
-				&iio_cxl_domain_ops);
+			   &iio_cxl_domain_ops, pci_segment_group);
 }
 #endif //CONFIG(SOC_INTEL_HAS_CXL)
 
@@ -382,6 +385,8 @@ void attach_iio_stacks(void)
 			continue;
 		for (int x = 0; x < MAX_LOGIC_IIO_STACK; ++x) {
 			const STACK_RES *ri = &hob->PlatformData.IIO_resource[s].StackRes[x];
+			const size_t seg = hob->PlatformData.CpuQpiInfo[s].PcieSegment;
+
 			if (ri->BusBase > ri->BusLimit)
 				continue;
 
@@ -390,13 +395,13 @@ void attach_iio_stacks(void)
 			dn.stack = x;
 
 			if (is_ubox_stack_res(ri))
-				soc_create_ubox_domains(dn, root_bus, ri);
+				soc_create_ubox_domains(dn, root_bus, ri, seg);
 			else if (CONFIG(SOC_INTEL_HAS_CXL) && is_iio_cxl_stack_res(ri))
-				soc_create_cxl_domains(dn, root_bus, ri);
+				soc_create_cxl_domains(dn, root_bus, ri, seg);
 			else if (is_pcie_iio_stack_res(ri))
-				soc_create_pcie_domains(dn, root_bus, ri);
+				soc_create_pcie_domains(dn, root_bus, ri, seg);
 			else if (CONFIG(HAVE_IOAT_DOMAINS) && is_ioat_iio_stack_res(ri))
-				soc_create_ioat_domains(dn, root_bus, ri);
+				soc_create_ioat_domains(dn, root_bus, ri, seg);
 		}
 	}
 }

@@ -34,7 +34,7 @@ static void create_ioat_domain(const union xeon_domain_path dp, struct bus *cons
 				const unsigned int bus_base, const unsigned int bus_limit,
 				const resource_t mem32_base, const resource_t mem32_limit,
 				const resource_t mem64_base, const resource_t mem64_limit,
-				const char *prefix)
+				const char *prefix, const size_t pci_segment_group)
 {
 	union xeon_domain_path new_path = {
 		.domain_path = dp.domain_path
@@ -58,6 +58,7 @@ static void create_ioat_domain(const union xeon_domain_path dp, struct bus *cons
 	bus->secondary = bus_base;
 	bus->subordinate = bus->secondary;
 	bus->max_subordinate = bus_limit;
+	bus->segment_group = pci_segment_group;
 
 	unsigned int index = 0;
 
@@ -78,7 +79,10 @@ static void create_ioat_domain(const union xeon_domain_path dp, struct bus *cons
 	}
 }
 
-void soc_create_ioat_domains(const union xeon_domain_path path, struct bus *const bus, const STACK_RES *const sr)
+void soc_create_ioat_domains(const union xeon_domain_path path,
+			     struct bus *const bus,
+			     const STACK_RES *const sr,
+			     const size_t pci_segment_group)
 {
 	if (sr->BusLimit < sr->BusBase + HQM_BUS_OFFSET + HQM_RESERVED_BUS) {
 		printk(BIOS_WARNING,
@@ -104,7 +108,7 @@ void soc_create_ioat_domains(const union xeon_domain_path path, struct bus *cons
 	bus_base = sr->BusBase + CPM_BUS_OFFSET;
 	bus_limit = bus_base + CPM_RESERVED_BUS;
 	create_ioat_domain(path, bus, bus_base, bus_limit, -1, 0, mem64_base, mem64_limit,
-			   DOMAIN_TYPE_CPM0);
+			   DOMAIN_TYPE_CPM0, pci_segment_group);
 
 	/* HQM0 */
 	mem64_base = mem64_limit + 1;
@@ -112,7 +116,7 @@ void soc_create_ioat_domains(const union xeon_domain_path path, struct bus *cons
 	bus_base = sr->BusBase + HQM_BUS_OFFSET;
 	bus_limit = bus_base + HQM_RESERVED_BUS;
 	create_ioat_domain(path, bus, bus_base, bus_limit, -1, 0, mem64_base, mem64_limit,
-			   DOMAIN_TYPE_HQM0);
+			   DOMAIN_TYPE_HQM0, pci_segment_group);
 
 	/* CPM1 (optional) */
 	mem64_base = mem64_limit + 1;
@@ -121,7 +125,7 @@ void soc_create_ioat_domains(const union xeon_domain_path path, struct bus *cons
 	bus_limit = bus_base + CPM_RESERVED_BUS;
 	if (bus_limit <= sr->BusLimit)
 		create_ioat_domain(path, bus, bus_base, bus_limit, -1, 0, mem64_base, mem64_limit,
-				   DOMAIN_TYPE_CPM1);
+				   DOMAIN_TYPE_CPM1, pci_segment_group);
 
 	/* HQM1 (optional) */
 	mem64_base = mem64_limit + 1;
@@ -130,7 +134,7 @@ void soc_create_ioat_domains(const union xeon_domain_path path, struct bus *cons
 	bus_limit = bus_base + HQM_RESERVED_BUS;
 	if (bus_limit <= sr->BusLimit)
 		create_ioat_domain(path, bus, bus_base, bus_limit, -1, 0, mem64_base, mem64_limit,
-				   DOMAIN_TYPE_HQM1);
+				   DOMAIN_TYPE_HQM1, pci_segment_group);
 
 	/* DINO */
 	mem64_base = mem64_limit + 1;
@@ -138,5 +142,5 @@ void soc_create_ioat_domains(const union xeon_domain_path path, struct bus *cons
 	bus_base = sr->BusBase;
 	bus_limit = bus_base;
 	create_ioat_domain(path, bus, bus_base, bus_limit, sr->PciResourceMem32Base, sr->PciResourceMem32Limit,
-			   mem64_base, mem64_limit, DOMAIN_TYPE_DINO);
+			   mem64_base, mem64_limit, DOMAIN_TYPE_DINO, pci_segment_group);
 }

@@ -10,9 +10,9 @@ extern u8 _dram[];
 #define REGION_SIZE(name) ((size_t)_##name##_size)
 
 #define DECLARE_REGION(name)	\
-	extern u8 _##name[];	\
-	extern u8 _e##name[];	\
-	extern u8 _##name##_size[];
+	__maybe_unused extern u8 _##name[];	\
+	__maybe_unused extern u8 _e##name[];	\
+	__maybe_unused extern u8 _##name##_size[];
 
 /*
  * Regions can be declared optional if not all configurations provide them in
@@ -23,9 +23,9 @@ extern u8 _dram[];
  * should then check (REGION_SIZE(name) != 0) before accessing it.
  */
 #define DECLARE_OPTIONAL_REGION(name)	\
-	__weak extern u8 _##name[];	\
-	__weak extern u8 _e##name[];	\
-	__weak extern u8 _##name##_size[];
+	__maybe_unused __weak extern u8 _##name[];	\
+	__maybe_unused __weak extern u8 _e##name[];	\
+	__maybe_unused __weak extern u8 _##name##_size[];
 
 DECLARE_REGION(sram)
 DECLARE_OPTIONAL_REGION(timestamp)

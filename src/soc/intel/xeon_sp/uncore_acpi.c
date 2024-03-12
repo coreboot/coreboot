@@ -379,7 +379,7 @@ static unsigned long acpi_create_drhd(unsigned long current, int socket,
 	return current;
 }
 
-static unsigned long acpi_create_atsr(unsigned long current, const IIO_UDS *hob)
+static unsigned long acpi_create_atsr(unsigned long current)
 {
 	struct device *child, *dev;
 	struct resource *resource;
@@ -391,10 +391,9 @@ static unsigned long acpi_create_atsr(unsigned long current, const IIO_UDS *hob)
 	 * This is easier than to sort the host bridges by PCI segment group first
 	 * and then generate one ATSR header for every new segment.
 	 */
-	for (int socket = 0, iio = 0; iio < hob->PlatformData.numofIIO; ++socket) {
+	for (int socket = 0; socket < CONFIG_MAX_SOCKET; ++socket) {
 		if (!soc_cpu_is_enabled(socket))
 			continue;
-		iio++;
 		unsigned long tmp = current;
 		bool first = true;
 
@@ -542,7 +541,7 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 	current = acpi_create_rmrr(current);
 
 	// Root Port ATS Capability
-	current = acpi_create_atsr(current, hob);
+	current = acpi_create_atsr(current);
 
 	// RHSA
 	current = acpi_create_rhsa(current);

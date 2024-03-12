@@ -373,7 +373,9 @@ void attach_iio_stacks(void)
 		return;
 
 	struct bus *root_bus = dev_root.downstream;
-	for (int s = 0; s < hob->PlatformData.numofIIO; ++s) {
+	for (int s = 0; s < CONFIG_MAX_SOCKET; ++s) {
+		if (!soc_cpu_is_enabled(s))
+			continue;
 		for (int x = 0; x < MAX_LOGIC_IIO_STACK; ++x) {
 			const STACK_RES *ri = &hob->PlatformData.IIO_resource[s].StackRes[x];
 			if (ri->BusBase > ri->BusLimit)

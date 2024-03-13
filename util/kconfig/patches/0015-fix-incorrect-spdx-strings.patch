@@ -1,0 +1,394 @@
+commit be08c1d6dca1b6dbaf3e0f3f8d953120c6ee02f9
+Author: Martin Roth <gaumless@gmail.com>
+Date:   Fri Feb 16 09:12:33 2024 -0700
+
+    Treewide: Fix incorrect SPDX license strings
+
+    These strings didn't match the license names exactly, so update them
+    to match.
+
+    Change-Id: Ib946eb15ca5fa64cbd6b657350b989b4a4c1b7b7
+    Signed-off-by: Martin Roth <gaumless@gmail.com>
+    Reviewed-on: https://review.coreboot.org/c/coreboot/+/80583
+    Tested-by: build bot (Jenkins) <no-reply@coreboot.org>
+    Reviewed-by: Felix Singer <service+coreboot-gerrit@felixsinger.de>
+
+Index: kconfig/Makefile
+===================================================================
+--- kconfig.orig/Makefile
++++ kconfig/Makefile
+@@ -1,4 +1,4 @@
+-# SPDX-License-Identifier: GPL-2.0
++# SPDX-License-Identifier: GPL-2.0-only
+ # ===========================================================================
+ # Kernel configuration targets
+ # These targets are used from top-level makefile
+Index: kconfig/conf.c
+===================================================================
+--- kconfig.orig/conf.c
++++ kconfig/conf.c
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++// SPDX-License-Identifier: GPL-2.0-only
+ /*
+  * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
+  */
+Index: kconfig/confdata.c
+===================================================================
+--- kconfig.orig/confdata.c
++++ kconfig/confdata.c
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++// SPDX-License-Identifier: GPL-2.0-only
+ /*
+  * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
+  */
+Index: kconfig/expr.c
+===================================================================
+--- kconfig.orig/expr.c
++++ kconfig/expr.c
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++// SPDX-License-Identifier: GPL-2.0-only
+ /*
+  * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
+  */
+Index: kconfig/expr.h
+===================================================================
+--- kconfig.orig/expr.h
++++ kconfig/expr.h
+@@ -1,4 +1,4 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
++/* SPDX-License-Identifier: GPL-2.0-only */
+ /*
+  * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
+  */
+Index: kconfig/gconf-cfg.sh
+===================================================================
+--- kconfig.orig/gconf-cfg.sh
++++ kconfig/gconf-cfg.sh
+@@ -1,5 +1,5 @@
+ #!/bin/sh
+-# SPDX-License-Identifier: GPL-2.0
++# SPDX-License-Identifier: GPL-2.0-only
+ 
+ cflags=$1
+ libs=$2
+Index: kconfig/gconf.c
+===================================================================
+--- kconfig.orig/gconf.c
++++ kconfig/gconf.c
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++// SPDX-License-Identifier: GPL-2.0-only
+ /*
+  * Copyright (C) 2002-2003 Romain Lievin <roms@tilp.info>
+  */
+Index: kconfig/images.c
+===================================================================
+--- kconfig.orig/images.c
++++ kconfig/images.c
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++// SPDX-License-Identifier: GPL-2.0-only
+ /*
+  * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
+  */
+Index: kconfig/images.h
+===================================================================
+--- kconfig.orig/images.h
++++ kconfig/images.h
+@@ -1,4 +1,4 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
++/* SPDX-License-Identifier: GPL-2.0-only */
+ /*
+  * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
+  */
+Index: kconfig/lexer.l
+===================================================================
+--- kconfig.orig/lexer.l
++++ kconfig/lexer.l
+@@ -1,4 +1,4 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
++/* SPDX-License-Identifier: GPL-2.0-only */
+ /*
+  * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
+  */
+Index: kconfig/lexer.lex.c_shipped
+===================================================================
+--- kconfig.orig/lexer.lex.c_shipped
++++ kconfig/lexer.lex.c_shipped
+@@ -2221,7 +2221,7 @@ int yy_flex_debug = 0;
+ #define YY_MORE_ADJ 0
+ #define YY_RESTORE_YY_MORE_OFFSET
+ char *yytext;
+-/* SPDX-License-Identifier: GPL-2.0 */
++/* SPDX-License-Identifier: GPL-2.0-only */
+ /*
+  * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
+  */
+Index: kconfig/list.h
+===================================================================
+--- kconfig.orig/list.h
++++ kconfig/list.h
+@@ -1,4 +1,4 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
++/* SPDX-License-Identifier: GPL-2.0-only */
+ #ifndef LIST_H
+ #define LIST_H
+ 
+Index: kconfig/lkc.h
+===================================================================
+--- kconfig.orig/lkc.h
++++ kconfig/lkc.h
+@@ -1,4 +1,4 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
++/* SPDX-License-Identifier: GPL-2.0-only */
+ /*
+  * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
+  */
+Index: kconfig/lkc_proto.h
+===================================================================
+--- kconfig.orig/lkc_proto.h
++++ kconfig/lkc_proto.h
+@@ -1,4 +1,4 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
++/* SPDX-License-Identifier: GPL-2.0-only */
+ #ifndef LKC_PROTO_H
+ #define LKC_PROTO_H
+ 
+Index: kconfig/lxdialog/checklist.c
+===================================================================
+--- kconfig.orig/lxdialog/checklist.c
++++ kconfig/lxdialog/checklist.c
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0+
++// SPDX-License-Identifier: GPL-2.0-or-later
+ /*
+  *  checklist.c -- implements the checklist box
+  *
+Index: kconfig/lxdialog/dialog.h
+===================================================================
+--- kconfig.orig/lxdialog/dialog.h
++++ kconfig/lxdialog/dialog.h
+@@ -1,4 +1,4 @@
+-/* SPDX-License-Identifier: GPL-2.0+ */
++/* SPDX-License-Identifier: GPL-2.0-or-later */
+ /*
+  *  dialog.h -- common declarations for all dialog modules
+  *
+Index: kconfig/lxdialog/inputbox.c
+===================================================================
+--- kconfig.orig/lxdialog/inputbox.c
++++ kconfig/lxdialog/inputbox.c
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0+
++// SPDX-License-Identifier: GPL-2.0-or-later
+ /*
+  *  inputbox.c -- implements the input box
+  *
+Index: kconfig/lxdialog/menubox.c
+===================================================================
+--- kconfig.orig/lxdialog/menubox.c
++++ kconfig/lxdialog/menubox.c
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0+
++// SPDX-License-Identifier: GPL-2.0-or-later
+ /*
+  *  menubox.c -- implements the menu box
+  *
+Index: kconfig/lxdialog/textbox.c
+===================================================================
+--- kconfig.orig/lxdialog/textbox.c
++++ kconfig/lxdialog/textbox.c
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0+
++// SPDX-License-Identifier: GPL-2.0-or-later
+ /*
+  *  textbox.c -- implements the text box
+  *
+Index: kconfig/lxdialog/util.c
+===================================================================
+--- kconfig.orig/lxdialog/util.c
++++ kconfig/lxdialog/util.c
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0+
++// SPDX-License-Identifier: GPL-2.0-or-later
+ /*
+  *  util.c
+  *
+Index: kconfig/lxdialog/yesno.c
+===================================================================
+--- kconfig.orig/lxdialog/yesno.c
++++ kconfig/lxdialog/yesno.c
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0+
++// SPDX-License-Identifier: GPL-2.0-or-later
+ /*
+  *  yesno.c -- implements the yes/no box
+  *
+Index: kconfig/mconf-cfg.sh
+===================================================================
+--- kconfig.orig/mconf-cfg.sh
++++ kconfig/mconf-cfg.sh
+@@ -1,5 +1,5 @@
+ #!/bin/sh
+-# SPDX-License-Identifier: GPL-2.0
++# SPDX-License-Identifier: GPL-2.0-only
+ 
+ cflags=$1
+ libs=$2
+Index: kconfig/mconf.c
+===================================================================
+--- kconfig.orig/mconf.c
++++ kconfig/mconf.c
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++// SPDX-License-Identifier: GPL-2.0-only
+ /*
+  * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
+  *
+Index: kconfig/menu.c
+===================================================================
+--- kconfig.orig/menu.c
++++ kconfig/menu.c
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++// SPDX-License-Identifier: GPL-2.0-only
+ /*
+  * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
+  */
+Index: kconfig/merge_config.sh
+===================================================================
+--- kconfig.orig/merge_config.sh
++++ kconfig/merge_config.sh
+@@ -1,5 +1,5 @@
+ #!/bin/sh
+-# SPDX-License-Identifier: GPL-2.0
++# SPDX-License-Identifier: GPL-2.0-only
+ #
+ #  merge_config.sh - Takes a list of config fragment values, and merges
+ #  them one by one. Provides warnings on overridden values, and specified
+Index: kconfig/nconf-cfg.sh
+===================================================================
+--- kconfig.orig/nconf-cfg.sh
++++ kconfig/nconf-cfg.sh
+@@ -1,5 +1,5 @@
+ #!/bin/sh
+-# SPDX-License-Identifier: GPL-2.0
++# SPDX-License-Identifier: GPL-2.0-only
+ 
+ cflags=$1
+ libs=$2
+Index: kconfig/nconf.c
+===================================================================
+--- kconfig.orig/nconf.c
++++ kconfig/nconf.c
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++// SPDX-License-Identifier: GPL-2.0-only
+ /*
+  * Copyright (C) 2008 Nir Tzachar <nir.tzachar@gmail.com>
+  *
+Index: kconfig/nconf.gui.c
+===================================================================
+--- kconfig.orig/nconf.gui.c
++++ kconfig/nconf.gui.c
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++// SPDX-License-Identifier: GPL-2.0-only
+ /*
+  * Copyright (C) 2008 Nir Tzachar <nir.tzachar@gmail.com>
+  *
+Index: kconfig/nconf.h
+===================================================================
+--- kconfig.orig/nconf.h
++++ kconfig/nconf.h
+@@ -1,4 +1,4 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
++/* SPDX-License-Identifier: GPL-2.0-only */
+ /*
+  * Copyright (C) 2008 Nir Tzachar <nir.tzachar@gmail.com>
+  *
+Index: kconfig/parser.y
+===================================================================
+--- kconfig.orig/parser.y
++++ kconfig/parser.y
+@@ -1,4 +1,4 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
++/* SPDX-License-Identifier: GPL-2.0-only */
+ /*
+  * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
+  */
+Index: kconfig/preprocess.c
+===================================================================
+--- kconfig.orig/preprocess.c
++++ kconfig/preprocess.c
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++// SPDX-License-Identifier: GPL-2.0-only
+ //
+ // Copyright (C) 2018 Masahiro Yamada <yamada.masahiro@socionext.com>
+ 
+Index: kconfig/qconf-cfg.sh
+===================================================================
+--- kconfig.orig/qconf-cfg.sh
++++ kconfig/qconf-cfg.sh
+@@ -1,5 +1,5 @@
+ #!/bin/sh
+-# SPDX-License-Identifier: GPL-2.0
++# SPDX-License-Identifier: GPL-2.0-only
+ 
+ cflags=$1
+ libs=$2
+Index: kconfig/qconf.cc
+===================================================================
+--- kconfig.orig/qconf.cc
++++ kconfig/qconf.cc
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++// SPDX-License-Identifier: GPL-2.0-only
+ /*
+  * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
+  * Copyright (C) 2015 Boris Barbulovski <bbarbulovski@gmail.com>
+Index: kconfig/qconf.h
+===================================================================
+--- kconfig.orig/qconf.h
++++ kconfig/qconf.h
+@@ -1,4 +1,4 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
++/* SPDX-License-Identifier: GPL-2.0-only */
+ /*
+  * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
+  */
+Index: kconfig/streamline_config.pl
+===================================================================
+--- kconfig.orig/streamline_config.pl
++++ kconfig/streamline_config.pl
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env perl
+-# SPDX-License-Identifier: GPL-2.0
++# SPDX-License-Identifier: GPL-2.0-only
+ #
+ # Copyright 2005-2009 - Steven Rostedt
+ #
+Index: kconfig/symbol.c
+===================================================================
+--- kconfig.orig/symbol.c
++++ kconfig/symbol.c
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++// SPDX-License-Identifier: GPL-2.0-only
+ /*
+  * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
+  */
+Index: kconfig/util.c
+===================================================================
+--- kconfig.orig/util.c
++++ kconfig/util.c
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++// SPDX-License-Identifier: GPL-2.0-only
+ /*
+  * Copyright (C) 2002-2005 Roman Zippel <zippel@linux-m68k.org>
+  * Copyright (C) 2002-2005 Sam Ravnborg <sam@ravnborg.org>

@@ -7,7 +7,7 @@ subdirs-$(CONFIG_SOC_INTEL_COOPERLAKE_SP) += cpx lbg
 subdirs-$(CONFIG_SOC_INTEL_SAPPHIRERAPIDS_SP) += spr ebg
 
 bootblock-y += bootblock.c spi.c lpc.c pch.c report_platform.c
-romstage-y += romstage.c reset.c util.c spi.c pmutil.c memmap.c
+romstage-y += romstage.c reset.c util.c spi.c pmutil.c memmap.c ddr.c
 romstage-y += ../../../cpu/intel/car/romstage.c
 ramstage-y += uncore.c reset.c util.c lpc.c spi.c ramstage.c chip_common.c
 ramstage-y += memmap.c pch.c lockdown.c finalize.c

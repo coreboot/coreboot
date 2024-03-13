@@ -32,11 +32,6 @@ void __weak mainboard_memory_init_params(FSPM_UPD *mupd)
 	/* Default weak implementation */
 }
 
-bool __weak mainboard_dimm_slot_exists(uint8_t socket, uint8_t channel, uint8_t dimm)
-{
-	return false;
-}
-
 /*
  * Search from VPD_RW first then VPD_RO for UPD config variables,
  * overwrites them from VPD if it's found.

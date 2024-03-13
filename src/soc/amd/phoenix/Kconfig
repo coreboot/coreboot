@@ -104,7 +104,6 @@ config SOC_AMD_PHOENIX_OPENSIL
 	bool
 	select SOC_AMD_PHOENIX_BASE
 	select SOC_AMD_OPENSIL
-	select SOC_AMD_OPENSIL_STUB
 
 if SOC_AMD_PHOENIX_BASE
 
@@ -468,3 +467,11 @@ config FSP_TEMP_RAM_SIZE
 	  The amount of coreboot-allocated heap and stack usage by the FSP.
 
 endif # SOC_AMD_PHOENIX_FSP
+
+if SOC_AMD_PHOENIX_OPENSIL
+
+config SOC_AMD_OPENSIL_STUB
+	prompt "Build with openSIL stub"
+	default y
+
+endif # SOC_AMD_PHOENIX_OPENSIL

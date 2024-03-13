@@ -259,23 +259,17 @@ struct fspm_context {
  * MRC version is by reading the FSP_PRODUCDER_DATA_TABLES
  * from the FSP-M binary (by parsing the FSP header).
  */
-static uint32_t fsp_mrc_version(void)
+static uint32_t fsp_mrc_version(const struct fsp_header *hdr)
 {
 	uint32_t ver = 0;
 #if CONFIG(MRC_CACHE_USING_MRC_VERSION)
-	size_t fspm_blob_size;
-	const char *fspm_cbfs = soc_select_fsp_m_cbfs();
-	void *fspm_blob_file = cbfs_map(fspm_cbfs, &fspm_blob_size);
-	if (!fspm_blob_file)
-		return 0;
-
+	void *fspm_blob_file = (void *)(uintptr_t)hdr->image_base;
 	FSP_PRODUCER_DATA_TABLES *ft = fspm_blob_file + FSP_HDR_OFFSET;
 	FSP_PRODUCER_DATA_TYPE2 *table2 = &ft->FspProduceDataType2;
 	size_t mrc_version_size = sizeof(table2->MrcVersion);
 	for (size_t i = 0; i < mrc_version_size; i++) {
 		ver |= (table2->MrcVersion[i] << ((mrc_version_size - 1) - i) * 8);
 	}
-	cbfs_unmap(fspm_blob_file);
 #endif
 	return ver;
 }
@@ -349,7 +343,7 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 	post_code(POSTCODE_MEM_PREINIT_PREP_START);
 
 	if (CONFIG(MRC_CACHE_USING_MRC_VERSION))
-		version = fsp_mrc_version();
+		version = fsp_mrc_version(hdr);
 	else
 		version = fsp_memory_settings_version(hdr);
 

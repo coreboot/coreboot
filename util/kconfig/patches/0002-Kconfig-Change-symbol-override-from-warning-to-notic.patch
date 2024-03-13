@@ -23,7 +23,7 @@ Index: kconfig/confdata.c
 ===================================================================
 --- kconfig.orig/confdata.c
 +++ kconfig/confdata.c
-@@ -166,6 +166,16 @@ static void conf_warning(const char *fmt
+@@ -173,6 +173,16 @@ static void conf_warning(const char *fmt
  	conf_warnings++;
  }
  
@@ -40,25 +40,16 @@ Index: kconfig/confdata.c
  static void conf_default_message_callback(const char *s)
  {
  	printf("#\n# ");
-@@ -454,7 +464,7 @@ load:
- 					sym->type = S_BOOLEAN;
- 			}
- 			if (sym->flags & def_flags) {
--				conf_warning("override: reassigning to symbol %s", sym->name);
-+				conf_notice("override: reassigning to symbol %s", sym->name);
- 			}
- 			switch (sym->type) {
- 			case S_BOOLEAN:
-@@ -498,7 +508,7 @@ load:
- 			}
+@@ -503,7 +513,7 @@ load:
+ 		}
  
- 			if (sym->flags & def_flags) {
--				conf_warning("override: reassigning to symbol %s", sym->name);
-+				conf_notice("override: reassigning to symbol %s", sym->name);
- 			}
- 			if (conf_set_sym_val(sym, def, def_flags, p))
- 				continue;
-@@ -523,7 +533,7 @@ load:
+ 		if (sym->flags & def_flags)
+-			conf_warning("override: reassigning to symbol %s", sym->name);
++			conf_notice("override: reassigning to symbol %s", sym->name);
+ 
+ 		if (conf_set_sym_val(sym, def, def_flags, val))
+ 			continue;
+@@ -521,7 +531,7 @@ load:
  				break;
  			case yes:
  				if (cs->def[def].tri != no)

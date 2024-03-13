@@ -29,12 +29,6 @@ struct symbol symbol_no = {
 	.flags = SYMBOL_CONST|SYMBOL_VALID,
 };
 
-static struct symbol symbol_empty = {
-	.name = "",
-	.curr = { "", no },
-	.flags = SYMBOL_VALID,
-};
-
 struct symbol *modules_sym;
 static tristate modules_val;
 static int sym_warnings;
@@ -321,11 +315,17 @@ static void sym_warn_unmet_dep(struct symbol *sym)
 	sym_warnings++;
 }
 
+bool sym_dep_errors(void)
+{
+	if (sym_warnings)
+		return getenv("KCONFIG_WERROR");
+	return false;
+}
+
 void sym_calc_value(struct symbol *sym)
 {
 	struct symbol_value newval, oldval;
 	struct property *prop;
-	const char *werror;
 	struct expr *e;
 
 	if (!sym)
@@ -341,20 +341,25 @@ void sym_calc_value(struct symbol *sym)
 		sym_calc_value(prop_get_symbol(prop));
 	}
 
-	werror = getenv("KCONFIG_WERROR");
-	sym_warnings = 0;
 	sym->flags |= SYMBOL_VALID;
+
 	oldval = sym->curr;
+
+	newval.tri = no;
 
 	switch (sym->type) {
 	case S_INT:
+		newval.val = "0";
+		break;
 	case S_HEX:
+		newval.val = "0x0";
+		break;
 	case S_STRING:
-		newval = symbol_empty.curr;
+		newval.val = "";
 		break;
 	case S_BOOLEAN:
 	case S_TRISTATE:
-		newval = symbol_no.curr;
+		newval.val = "n";
 		break;
 	default:
 		sym->curr.val = sym->name;
@@ -433,9 +438,6 @@ void sym_calc_value(struct symbol *sym)
 	default:
 		;
 	}
-
-	if (sym_warnings && werror)
-		exit(1);
 
 	sym->curr = newval;
 	if (sym_is_choice(sym) && newval.tri == yes)
@@ -704,13 +706,12 @@ const char *sym_get_string_default(struct symbol *sym)
 {
 	struct property *prop;
 	struct symbol *ds;
-	const char *str;
+	const char *str = "";
 	tristate val;
 
 	sym_calc_visibility(sym);
 	sym_calc_value(modules_sym);
 	val = symbol_no.curr.tri;
-	str = symbol_empty.curr.val;
 
 	/* If symbol has a default value look it up */
 	prop = sym_get_default_prop(sym);
@@ -760,14 +761,17 @@ const char *sym_get_string_default(struct symbol *sym)
 		case yes: return "y";
 		}
 	case S_INT:
+		if (!str[0])
+			str = "0";
+		break;
 	case S_HEX:
-		return str;
-	case S_STRING:
-		return str;
-	case S_UNKNOWN:
+		if (!str[0])
+			str = "0x0";
+		break;
+	default:
 		break;
 	}
-	return "";
+	return str;
 }
 
 const char *sym_get_string_value(struct symbol *sym)

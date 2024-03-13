@@ -452,6 +452,11 @@ typedef struct _context {
 		uint8_t ins;
 		uint8_t sub;
 	} combo_apcb[MAX_COMBO_ENTRIES], combo_apcb_bk[MAX_COMBO_ENTRIES];
+	embedded_firmware *amd_romsig_ptr;
+	psp_directory_table *pspdir, *pspdir2, *pspdir2_b;
+	bios_directory_table *biosdir, *biosdir2, *biosdir2_b;
+	psp_combo_directory *psp_combo_dir, *bhd_combo_dir;
+	ish_directory_table *ish_a_dir, *ish_b_dir;
 } context;
 
 uint8_t process_config(FILE *config, amd_cb_config *cb_config);

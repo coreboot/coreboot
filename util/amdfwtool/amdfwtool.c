@@ -813,6 +813,30 @@ static void dump_bdt_firmwares(amd_bios_entry *fw_table)
 	}
 }
 
+static void dump_image_addresses(context *ctx)
+{
+	printf("romsig offset:%lx\n", BUFF_TO_RUN(*ctx, ctx->amd_romsig_ptr));
+	printf("PSP L1 offset:%lx\n", BUFF_TO_RUN(*ctx, ctx->pspdir));
+	if (ctx->pspdir2 != NULL)
+		printf("PSP L2(A) offset:%lx\n", BUFF_TO_RUN(*ctx, ctx->pspdir2));
+	if (ctx->ish_a_dir != NULL)
+		printf("ISHA offset:%lx\n", BUFF_TO_RUN(*ctx, ctx->ish_a_dir));
+	if (ctx->ish_b_dir != NULL)
+		printf("ISHB offset:%lx\n", BUFF_TO_RUN(*ctx, ctx->ish_b_dir));
+	if (ctx->pspdir2_b != NULL)
+		printf("PSP L2B offset:%lx\n", BUFF_TO_RUN(*ctx, ctx->pspdir2_b));
+	if (ctx->biosdir != NULL)
+		printf("BHD offset:%lx\n", BUFF_TO_RUN(*ctx, ctx->biosdir));
+	if (ctx->biosdir2 != NULL)
+		printf("BHD L2(A) offset:%lx\n", BUFF_TO_RUN(*ctx, ctx->biosdir2));
+	if (ctx->biosdir2_b != NULL)
+		printf("BHD L2B offset:%lx\n", BUFF_TO_RUN(*ctx, ctx->biosdir2_b));
+	if (ctx->psp_combo_dir != NULL)
+		printf("PSP combo offset:%lx\n", BUFF_TO_RUN(*ctx, ctx->psp_combo_dir));
+	if (ctx->bhd_combo_dir != NULL)
+		printf("BHD combo offset:%lx\n", BUFF_TO_RUN(*ctx, ctx->bhd_combo_dir));
+}
+
 static void integrate_psp_ab(context *ctx, psp_directory_table *pspdir,
 		psp_directory_table *pspdir2, ish_directory_table *ish,
 		amd_fw_type ab, enum platform soc_id)
@@ -871,7 +895,6 @@ static void integrate_psp_firmwares(context *ctx,
 	uint64_t addr;
 	uint32_t current_table_save;
 	bool recovery_ab = cb_config->recovery_ab;
-	ish_directory_table *ish_a_dir = NULL, *ish_b_dir = NULL;
 	bool use_only_a = (cb_config->soc_id == PLATFORM_PHOENIX); /* TODO: b:285390041 */
 
 	/* This function can create a primary table, a secondary table, or a
@@ -999,19 +1022,19 @@ static void integrate_psp_firmwares(context *ctx,
 
 	if (recovery_ab && (pspdir2 != NULL)) {
 		if (cb_config->need_ish) {	/* Need ISH */
-			ish_a_dir = new_ish_dir(ctx);
+			ctx->ish_a_dir = new_ish_dir(ctx);
 			if (pspdir2_b != NULL)
-				ish_b_dir = new_ish_dir(ctx);
+				ctx->ish_b_dir = new_ish_dir(ctx);
 		}
 		pspdir->header.num_entries = count;
-		integrate_psp_ab(ctx, pspdir, pspdir2, ish_a_dir,
+		integrate_psp_ab(ctx, pspdir, pspdir2, ctx->ish_a_dir,
 			AMD_FW_RECOVERYAB_A, cb_config->soc_id);
 		if (pspdir2_b != NULL)
-			integrate_psp_ab(ctx, pspdir, pspdir2_b, ish_b_dir,
+			integrate_psp_ab(ctx, pspdir, pspdir2_b, ctx->ish_b_dir,
 				use_only_a ? AMD_FW_RECOVERYAB_A : AMD_FW_RECOVERYAB_B,
 				cb_config->soc_id);
 		else
-			integrate_psp_ab(ctx, pspdir, pspdir2, ish_a_dir,
+			integrate_psp_ab(ctx, pspdir, pspdir2, ctx->ish_a_dir,
 				use_only_a ? AMD_FW_RECOVERYAB_A : AMD_FW_RECOVERYAB_B,
 				cb_config->soc_id);
 
@@ -1511,11 +1534,6 @@ static bool is_initial_alignment_required(enum platform soc_id)
 int main(int argc, char **argv)
 {
 	int retval = 0;
-	embedded_firmware *amd_romsig;
-	psp_directory_table *pspdir = NULL;
-	psp_directory_table *pspdir2 = NULL;
-	psp_directory_table *pspdir2_b = NULL;
-	psp_combo_directory *psp_combo_dir = NULL, *bhd_combo_dir = NULL;
 	int combo_index = 0;
 	int targetfd;
 	context ctx = { 0 };
@@ -1551,14 +1569,14 @@ int main(int argc, char **argv)
 	romsig_offset = cb_config.efs_location ? cb_config.efs_location : AMD_ROMSIG_OFFSET;
 	set_current_pointer(&ctx, romsig_offset);
 
-	amd_romsig = BUFF_OFFSET(ctx, romsig_offset);
-	amd_romsig->signature = EMBEDDED_FW_SIGNATURE;
-	amd_romsig->imc_entry = 0;
-	amd_romsig->gec_entry = 0;
-	amd_romsig->xhci_entry = 0;
+	ctx.amd_romsig_ptr = BUFF_OFFSET(ctx, romsig_offset);
+	ctx.amd_romsig_ptr->signature = EMBEDDED_FW_SIGNATURE;
+	ctx.amd_romsig_ptr->imc_entry = 0;
+	ctx.amd_romsig_ptr->gec_entry = 0;
+	ctx.amd_romsig_ptr->xhci_entry = 0;
 
 	if (cb_config.soc_id != PLATFORM_UNKNOWN) {
-		retval = set_efs_table(cb_config.soc_id, &cb_config, amd_romsig);
+		retval = set_efs_table(cb_config.soc_id, &cb_config, ctx.amd_romsig_ptr);
 		if (retval) {
 			fprintf(stderr, "ERROR: Failed to initialize EFS table!\n");
 			return retval;
@@ -1579,7 +1597,7 @@ int main(int argc, char **argv)
 	else
 		set_current_pointer(&ctx, romsig_offset + sizeof(embedded_firmware));
 
-	integrate_firmwares(&ctx, amd_romsig, amd_fw_table);
+	integrate_firmwares(&ctx, ctx.amd_romsig_ptr, amd_fw_table);
 
 	if (is_initial_alignment_required(cb_config.soc_id)) {
 		/* TODO: Check for older platforms. */
@@ -1596,12 +1614,12 @@ int main(int argc, char **argv)
 				cb_config.soc_id);
 
 	if (cb_config.use_combo) {
-		psp_combo_dir = new_combo_dir(&ctx);
+		ctx.psp_combo_dir = new_combo_dir(&ctx);
 
 		adjust_current_pointer(&ctx, 0, 0x1000U);
 
 		if (!cb_config.recovery_ab)
-			bhd_combo_dir = new_combo_dir(&ctx);
+			ctx.bhd_combo_dir = new_combo_dir(&ctx);
 	}
 
 	combo_index = 0;
@@ -1612,6 +1630,14 @@ int main(int argc, char **argv)
 		if (cb_config.use_combo && cb_config.debug)
 			printf("Processing %dth combo entry\n", combo_index);
 
+		ctx.pspdir = NULL;
+		ctx.pspdir2 = NULL;
+		ctx.pspdir2_b = NULL;
+		ctx.biosdir = NULL;
+		ctx.biosdir2 = NULL;
+		ctx.biosdir2_b = NULL;
+		ctx.ish_a_dir = NULL;
+		ctx.ish_b_dir = NULL;
 		/* for non-combo image, combo_config[0] == config, and
 		 *  it already is processed.  Actually "combo_index >
 		 *  0" is enough. Put both of them here to make sure
@@ -1640,14 +1666,14 @@ int main(int argc, char **argv)
 
 		if (cb_config.multi_level) {
 			/* Do 2nd PSP directory followed by 1st */
-			pspdir2 = new_psp_dir(&ctx, cb_config.multi_level);
-			integrate_psp_firmwares(&ctx, pspdir2, NULL, NULL,
+			ctx.pspdir2 = new_psp_dir(&ctx, cb_config.multi_level);
+			integrate_psp_firmwares(&ctx, ctx.pspdir2, NULL, NULL,
 						amd_psp_fw_table, PSPL2_COOKIE, &cb_config);
 			if (cb_config.recovery_ab && !cb_config.recovery_ab_single_copy) {
 				/* Create a copy of PSP Directory 2 in the backup slot B.
 				   Related biosdir2_b copy will be created later. */
-				pspdir2_b = new_psp_dir(&ctx, cb_config.multi_level);
-				integrate_psp_firmwares(&ctx, pspdir2_b, NULL, NULL,
+				ctx.pspdir2_b = new_psp_dir(&ctx, cb_config.multi_level);
+				integrate_psp_firmwares(&ctx, ctx.pspdir2_b, NULL, NULL,
 						amd_psp_fw_table, PSPL2_COOKIE, &cb_config);
 			} else {
 				/*
@@ -1658,88 +1684,87 @@ int main(int argc, char **argv)
 				 * Related biosdir2_b will be skipped
 				 * automatically.
 				 */
-				pspdir2_b = NULL; /* More explicitly */
+				ctx.pspdir2_b = NULL; /* More explicitly */
 			}
-			pspdir = new_psp_dir(&ctx, cb_config.multi_level);
-			integrate_psp_firmwares(&ctx, pspdir, pspdir2, pspdir2_b,
+			ctx.pspdir = new_psp_dir(&ctx, cb_config.multi_level);
+			integrate_psp_firmwares(&ctx, ctx.pspdir, ctx.pspdir2, ctx.pspdir2_b,
 					amd_psp_fw_table, PSP_COOKIE, &cb_config);
 		} else {
 			/* flat: PSP 1 cookie and no pointer to 2nd table */
-			pspdir = new_psp_dir(&ctx, cb_config.multi_level);
-			integrate_psp_firmwares(&ctx, pspdir, NULL, NULL,
+			ctx.pspdir = new_psp_dir(&ctx, cb_config.multi_level);
+			integrate_psp_firmwares(&ctx, ctx.pspdir, NULL, NULL,
 					amd_psp_fw_table, PSP_COOKIE, &cb_config);
 		}
 
 		if (!cb_config.use_combo) {
-			fill_psp_directory_to_efs(amd_romsig, pspdir, &ctx, &cb_config);
+			fill_psp_directory_to_efs(ctx.amd_romsig_ptr, ctx.pspdir, &ctx, &cb_config);
 		} else {
-			fill_psp_directory_to_efs(amd_romsig, psp_combo_dir, &ctx, &cb_config);
+			fill_psp_directory_to_efs(ctx.amd_romsig_ptr, ctx.psp_combo_dir, &ctx, &cb_config);
 			/* 0 -Compare PSP ID, 1 -Compare chip family ID */
 			assert_fw_entry(combo_index, MAX_COMBO_ENTRIES, &ctx);
-			psp_combo_dir->entries[combo_index].id_sel = 0;
-			psp_combo_dir->entries[combo_index].id = get_psp_id(cb_config.soc_id);
-			psp_combo_dir->entries[combo_index].lvl2_addr =
-				BUFF_TO_RUN_MODE(ctx, pspdir, AMD_ADDR_REL_BIOS);
+			ctx.psp_combo_dir->entries[combo_index].id_sel = 0;
+			ctx.psp_combo_dir->entries[combo_index].id = get_psp_id(cb_config.soc_id);
+			ctx.psp_combo_dir->entries[combo_index].lvl2_addr =
+				BUFF_TO_RUN_MODE(ctx, ctx.pspdir, AMD_ADDR_REL_BIOS);
 
-			fill_dir_header(psp_combo_dir, combo_index + 1, PSP2_COOKIE, &ctx);
+			fill_dir_header(ctx.psp_combo_dir, combo_index + 1, PSP2_COOKIE, &ctx);
 		}
 
 		if (have_bios_tables(amd_bios_table)) {
-			bios_directory_table *biosdir = NULL;
 			if (cb_config.multi_level) {
 				/* Do 2nd level BIOS directory followed by 1st */
-				bios_directory_table *biosdir2 = NULL;
-				bios_directory_table *biosdir2_b = NULL;
+				ctx.biosdir2 = new_bios_dir(&ctx, cb_config.multi_level);
 
-				biosdir2 = new_bios_dir(&ctx, cb_config.multi_level);
-
-				integrate_bios_firmwares(&ctx, biosdir2, NULL,
+				integrate_bios_firmwares(&ctx, ctx.biosdir2, NULL,
 						amd_bios_table, BHDL2_COOKIE, &cb_config);
 				if (cb_config.recovery_ab) {
-					if (pspdir2_b != NULL) {
-						biosdir2_b = new_bios_dir(&ctx,
+					if (ctx.pspdir2_b != NULL) {
+						ctx.biosdir2_b = new_bios_dir(&ctx,
 							cb_config.multi_level);
-						integrate_bios_firmwares(&ctx, biosdir2_b, NULL,
+						integrate_bios_firmwares(&ctx, ctx.biosdir2_b, NULL,
 								amd_bios_table, BHDL2_COOKIE,
 								&cb_config);
 					}
-					add_psp_firmware_entry(&ctx, pspdir2, biosdir2,
+					add_psp_firmware_entry(&ctx, ctx.pspdir2, ctx.biosdir2,
 						AMD_FW_BIOS_TABLE, TABLE_ALIGNMENT);
-					if (pspdir2_b != NULL)
-						add_psp_firmware_entry(&ctx, pspdir2_b,
-								biosdir2_b, AMD_FW_BIOS_TABLE,
+					if (ctx.pspdir2_b != NULL)
+						add_psp_firmware_entry(&ctx, ctx.pspdir2_b,
+								ctx.biosdir2_b, AMD_FW_BIOS_TABLE,
 								TABLE_ALIGNMENT);
 				} else {
-					biosdir = new_bios_dir(&ctx, cb_config.multi_level);
-					integrate_bios_firmwares(&ctx, biosdir, biosdir2,
+					ctx.biosdir = new_bios_dir(&ctx, cb_config.multi_level);
+					integrate_bios_firmwares(&ctx, ctx.biosdir, ctx.biosdir2,
 							amd_bios_table, BHD_COOKIE, &cb_config);
 				}
 			} else {
 				/* flat: BHD1 cookie and no pointer to 2nd table */
-				biosdir = new_bios_dir(&ctx, cb_config.multi_level);
-				integrate_bios_firmwares(&ctx, biosdir, NULL,
+				ctx.biosdir = new_bios_dir(&ctx, cb_config.multi_level);
+				integrate_bios_firmwares(&ctx, ctx.biosdir, NULL,
 							amd_bios_table, BHD_COOKIE, &cb_config);
 			}
 			if (!cb_config.use_combo) {
-				fill_bios_directory_to_efs(amd_romsig, biosdir,
+				fill_bios_directory_to_efs(ctx.amd_romsig_ptr, ctx.biosdir,
 					&ctx, &cb_config);
-			} else if (bhd_combo_dir != NULL) {
+			} else if (ctx.bhd_combo_dir != NULL) {
 				/* In recovery A/B mode, there isn't a BHD combo directory.
 				 * Instead, the BIOS tables level 2 are linked by PSP tables.
 				 */
-				fill_bios_directory_to_efs(amd_romsig, bhd_combo_dir,
+				fill_bios_directory_to_efs(ctx.amd_romsig_ptr, ctx.bhd_combo_dir,
 					&ctx, &cb_config);
 				assert_fw_entry(combo_index, MAX_COMBO_ENTRIES, &ctx);
-				bhd_combo_dir->entries[combo_index].id_sel = 0;
-				bhd_combo_dir->entries[combo_index].id =
+				ctx.bhd_combo_dir->entries[combo_index].id_sel = 0;
+				ctx.bhd_combo_dir->entries[combo_index].id =
 					get_psp_id(cb_config.soc_id);
-				bhd_combo_dir->entries[combo_index].lvl2_addr =
-					BUFF_TO_RUN_MODE(ctx, biosdir, AMD_ADDR_REL_BIOS);
+				ctx.bhd_combo_dir->entries[combo_index].lvl2_addr =
+					BUFF_TO_RUN_MODE(ctx, ctx.biosdir, AMD_ADDR_REL_BIOS);
 
-				fill_dir_header(bhd_combo_dir, combo_index + 1,
+				fill_dir_header(ctx.bhd_combo_dir, combo_index + 1,
 					BHD2_COOKIE, &ctx);
+
 			}
 		}
+		if (cb_config.debug)
+			dump_image_addresses(&ctx);
 	} while (cb_config.use_combo && ++combo_index < MAX_COMBO_ENTRIES &&
 					cb_config.combo_config[combo_index] != NULL);
 
@@ -1747,7 +1772,7 @@ int main(int argc, char **argv)
 	if (targetfd >= 0) {
 		uint32_t offset = cb_config.efs_location;
 		uint32_t bytes = cb_config.efs_location == cb_config.body_location ?
-				ctx.current - offset : sizeof(*amd_romsig);
+				ctx.current - offset : sizeof(embedded_firmware);
 		uint32_t ret_bytes;
 
 		ret_bytes = write_from_buf_to_file(targetfd, BUFF_OFFSET(ctx, offset), bytes);

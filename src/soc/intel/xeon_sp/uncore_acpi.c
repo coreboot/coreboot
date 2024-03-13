@@ -215,6 +215,12 @@ static unsigned long acpi_fill_slit(unsigned long current)
 }
 #endif
 
+static struct device *dev_find_iommu_on_stack(uint8_t socket, uint8_t stack)
+{
+	return dev_find_all_devices_on_stack(socket, stack, PCI_VID_INTEL,
+		MMAP_VTD_CFG_REG_DEVID, NULL);
+}
+
 /*
  * This function adds PCIe bridge device entry in DMAR table. If it is called
  * in the context of ATSR subtable, it adds ATSR subtable when it is first called.
@@ -248,10 +254,14 @@ static unsigned long acpi_create_dmar_ds_pci_br_for_port(unsigned long current,
 	return (atsr_size + pci_br_size);
 }
 
-static unsigned long acpi_create_drhd(unsigned long current, struct device *iommu,
-	const IIO_UDS *hob)
+static unsigned long acpi_create_drhd(unsigned long current, int socket,
+	int stack, const IIO_UDS *hob)
 {
 	unsigned long tmp = current;
+
+	struct device *iommu = dev_find_iommu_on_stack(socket, stack);
+	if (!iommu)
+		return current;
 
 	struct resource *resource;
 	resource = probe_resource(iommu, VTD_BAR_CSR);
@@ -264,15 +274,13 @@ static unsigned long acpi_create_drhd(unsigned long current, struct device *iomm
 
 	const uint32_t bus = iommu->upstream->secondary;
 	uint32_t pcie_seg = iommu->upstream->segment_group;
-	int socket = iio_pci_domain_socket_from_dev(iommu);
-	int stack = iio_pci_domain_stack_from_dev(iommu);
 
 	printk(BIOS_SPEW, "%s socket: %d, stack: %d, bus: 0x%x, pcie_seg: 0x%x, reg_base: 0x%x\n",
 		__func__, socket, stack, bus, pcie_seg, reg_base);
 
 	// Add DRHD Hardware Unit
 
-	if (is_dev_on_domain0(iommu)) {
+	if (is_stack0(socket, stack)) {
 		printk(BIOS_DEBUG, "[Hardware Unit Definition] Flags: 0x%x, PCI Segment Number: 0x%x, "
 			"Register Base Address: 0x%x\n",
 			DRHD_INCLUDE_PCI_ALL, pcie_seg, reg_base);
@@ -285,7 +293,7 @@ static unsigned long acpi_create_drhd(unsigned long current, struct device *iomm
 	}
 
 	// Add PCH IOAPIC
-	if (is_dev_on_domain0(iommu)) {
+	if (is_stack0(socket, stack)) {
 		union p2sb_bdf ioapic_bdf = p2sb_get_ioapic_bdf();
 		printk(BIOS_DEBUG, "    [IOAPIC Device] Enumeration ID: 0x%x, PCI Bus Number: 0x%x, "
 		       "PCI Path: 0x%x, 0x%x\n", get_ioapic_id(IO_APIC_ADDR), ioapic_bdf.bus,
@@ -317,7 +325,7 @@ static unsigned long acpi_create_drhd(unsigned long current, struct device *iomm
 #endif
 
 	// Add PCIe Ports
-	if (!is_dev_on_domain0(iommu)) {
+	if (!is_stack0(socket, stack)) {
 		struct device *domain = dev_get_pci_domain(iommu);
 		struct device *dev = NULL;
 		while ((dev = dev_bus_each_child(domain->downstream, dev)))
@@ -360,7 +368,7 @@ static unsigned long acpi_create_drhd(unsigned long current, struct device *iomm
 	}
 
 	// Add HPET
-	if (is_dev_on_domain0(iommu)) {
+	if (is_stack0(socket, stack)) {
 		uint16_t hpet_capid = read16p(HPET_BASE_ADDRESS);
 		uint16_t num_hpets = (hpet_capid >> 0x08) & 0x1F;  // Bits [8:12] has hpet count
 		printk(BIOS_SPEW, "%s hpet_capid: 0x%x, num_hpets: 0x%x\n",
@@ -533,18 +541,13 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 {
 	const IIO_UDS *hob = get_iio_uds();
 
-	// DRHD - iommu0 must be the last DRHD entry.
-	struct device *dev = NULL;
-	struct device *iommu0 = NULL;
-	while ((dev = dev_find_device(PCI_VID_INTEL, MMAP_VTD_CFG_REG_DEVID, dev))) {
-		if (is_domain0(dev_get_pci_domain(dev))) {
-			iommu0 = dev;
+	// DRHD - socket 0 stack 0 must be the last DRHD entry.
+	for (int socket = (CONFIG_MAX_SOCKET - 1); socket >= 0; --socket) {
+		if (!soc_cpu_is_enabled(socket))
 			continue;
-		}
-		current = acpi_create_drhd(current, dev, hob);
+		for (int stack = (MAX_LOGIC_IIO_STACK - 1); stack >= 0; --stack)
+			current = acpi_create_drhd(current, socket, stack, hob);
 	}
-	assert(iommu0);
-	current = acpi_create_drhd(current, iommu0, hob);
 
 	// RMRR
 	current = acpi_create_rmrr(current);

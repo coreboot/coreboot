@@ -16,7 +16,8 @@ config SOC_AMD_OPENSIL_GENOA_POC
 	  openSIL.
 
 config AMD_OPENSIL_PATH
-	string
+	string "Path to openSIL source"
+	depends on !SOC_AMD_OPENSIL_STUB
 	default "$(top)/src/vendorcode/amd/opensil/genoa_poc/opensil" if SOC_AMD_OPENSIL_GENOA_POC
 	help
 	  Set to the path of the openSIL directory containing meson.build.

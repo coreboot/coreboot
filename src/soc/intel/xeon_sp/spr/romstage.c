@@ -211,6 +211,35 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	m_cfg->mmiohBase = 0x2000;
 	m_cfg->mmiohSize = 0x3;
 
+	/*
+	 * By default FSP will set MMCFG size to 256 buses on 1S and 2S platforms
+	 * and 512 buses on 4S platforms. 512 buses are implemented by using multiple
+	 * PCI segment groups and is likely incompatible with legacy software stacks.
+	 */
+	switch (CONFIG_ECAM_MMCONF_BUS_NUMBER) {
+	case 2048:
+		m_cfg->mmCfgSize = 5;
+		break;
+	case 1024:
+		m_cfg->mmCfgSize = 4;
+		break;
+	case  512:
+		m_cfg->mmCfgSize = 3;
+		break;
+	case  256:
+		m_cfg->mmCfgSize = 2;
+		break;
+	case  128:
+		m_cfg->mmCfgSize = 1;
+		break;
+	case   64:
+		m_cfg->mmCfgSize = 0;
+		break;
+	default:
+		printk(BIOS_ERR, "%s: Unsupported ECAM_MMCONF_BUS_NUMBER = %d\n",
+			__func__, CONFIG_ECAM_MMCONF_BUS_NUMBER);
+	}
+
 	m_cfg->BoardTypeBitmask = 0x11111133;
 
 	/*

@@ -270,8 +270,6 @@ static const UINT8 sbp1_socket_config_iou[CONFIG_MAX_SOCKET][5] = {
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
-	UINT32 *sktbmp;
-
 	/* Set Rank Margin Tool to disable. */
 	mupd->FspmConfig.EnableRMT = 0x0;
 
@@ -287,25 +285,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	else
 		mupd->FspmConfig.serialDebugMsgLvl = 0;
 
-	/* Force 256MiB MMCONF (Segment0) only */
-	mupd->FspmConfig.mmCfgSize = 0x2;
 	mupd->FspmConfig.PcieHotPlugEnable = 1;
-
-	/*
-	 * Disable unused IIO stack:
-	 * Socket 0 : IIO1, IIO4
-	 * Socket 1 : IIO1, IIO2
-	 * Socket 2 : IIO1, IIO5
-	 * Socket 3 : IIO1, IIO5
-	 * Stack Disable bit mapping is:
-	 * IIO stack number:  1 2 3 4 5
-	 * Stack Disable Bit: 1 5 3 2 4
-	 */
-	sktbmp = (UINT32 *)&mupd->FspmConfig.StackDisableBitMap[0];
-	sktbmp[0] = BIT(1) | BIT(2);
-	sktbmp[1] = BIT(1) | BIT(5);
-	sktbmp[2] = BIT(1) | BIT(4);
-	sktbmp[3] = BIT(1) | BIT(4);
 	soc_config_iio(mupd, sbp1_socket_config, sbp1_socket_config_iou);
 }
 

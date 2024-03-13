@@ -878,14 +878,13 @@ static void integrate_psp_firmwares(context *ctx,
 	 * flattened table which contains all applicable types.  These if-else
 	 * statements infer what the caller intended.  If a 2nd-level cookie
 	 * is passed, clearly a 2nd-level table is intended.  However, a
-	 * 1st-level cookie may indicate level 1 or flattened.  If the caller
-	 * passes a pointer to a 2nd-level table, then assume not flat.
+	 * 1st-level cookie may indicate level 1 or flattened.
 	 */
 	if (!cb_config->multi_level)
 		level = PSP_BOTH;
 	else if (cookie == PSPL2_COOKIE)
 		level = PSP_LVL2;
-	else if (pspdir2)
+	else if (cookie == PSP_COOKIE)
 		level = PSP_LVL1;
 	else
 		level = PSP_BOTH;
@@ -893,7 +892,7 @@ static void integrate_psp_firmwares(context *ctx,
 	if (recovery_ab) {
 		if (cookie == PSPL2_COOKIE)
 			level = PSP_LVL2_AB;
-		else if (pspdir2)
+		else if (cookie == PSP_COOKIE)
 			level = PSP_LVL1_AB;
 		else
 			level = PSP_BOTH_AB;
@@ -1180,14 +1179,13 @@ static void integrate_bios_firmwares(context *ctx,
 	 * flattened table which contains all applicable types.  These if-else
 	 * statements infer what the caller intended.  If a 2nd-level cookie
 	 * is passed, clearly a 2nd-level table is intended.  However, a
-	 * 1st-level cookie may indicate level 1 or flattened.  If the caller
-	 * passes a pointer to a 2nd-level table, then assume not flat.
+	 * 1st-level cookie may indicate level 1 or flattened.
 	 */
 	if (!cb_config->multi_level)
 		level = BDT_BOTH;
 	else if (cookie == BHDL2_COOKIE)
 		level = BDT_LVL2;
-	else if (biosdir2)
+	else if (cookie == BHD_COOKIE)
 		level = BDT_LVL1;
 	else
 		level = BDT_BOTH;

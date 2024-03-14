@@ -880,6 +880,60 @@ static void integrate_psp_ab(context *ctx, psp_directory_table *pspdir,
 	ctx->current_table = current_table_save;
 }
 
+static void integrate_psp_levels(context *ctx,
+				amd_cb_config *cb_config)
+{
+	uint32_t current_table_save;
+	bool recovery_ab = cb_config->recovery_ab;
+	unsigned int count;
+	psp_directory_table *pspdir, *pspdir2, *pspdir2_b;
+	bool use_only_a = (cb_config->soc_id == PLATFORM_PHOENIX); /* TODO: b:285390041 */
+
+	pspdir = ctx->pspdir;
+	pspdir2 = ctx->pspdir2;
+	pspdir2_b = ctx->pspdir2_b;
+	count = pspdir->header.num_entries;
+
+	current_table_save = ctx->current_table;
+	ctx->current_table = BUFF_TO_RUN_MODE(*ctx, pspdir, AMD_ADDR_REL_BIOS);
+	if (recovery_ab && (pspdir2 != NULL)) {
+		if (cb_config->need_ish) {	/* Need ISH */
+			ctx->ish_a_dir = new_ish_dir(ctx);
+			if (pspdir2_b != NULL)
+				ctx->ish_b_dir = new_ish_dir(ctx);
+		}
+		pspdir->header.num_entries = count;
+		integrate_psp_ab(ctx, pspdir, pspdir2, ctx->ish_a_dir,
+			AMD_FW_RECOVERYAB_A, cb_config->soc_id);
+		if (pspdir2_b != NULL)
+			integrate_psp_ab(ctx, pspdir, pspdir2_b, ctx->ish_b_dir,
+				use_only_a ? AMD_FW_RECOVERYAB_A : AMD_FW_RECOVERYAB_B,
+				cb_config->soc_id);
+		else
+			integrate_psp_ab(ctx, pspdir, pspdir2, ctx->ish_a_dir,
+				use_only_a ? AMD_FW_RECOVERYAB_A : AMD_FW_RECOVERYAB_B,
+				cb_config->soc_id);
+
+		count = pspdir->header.num_entries;
+	} else if (pspdir2 != NULL) {
+		assert_fw_entry(count, MAX_PSP_ENTRIES, ctx);
+		pspdir->entries[count].type = AMD_FW_L2_PTR;
+		pspdir->entries[count].subprog = 0;
+		pspdir->entries[count].rsvd = 0;
+		pspdir->entries[count].size = sizeof(pspdir2->header)
+					+ pspdir2->header.num_entries
+					* sizeof(psp_directory_entry);
+
+		pspdir->entries[count].addr =
+				BUFF_TO_RUN_MODE(*ctx, pspdir2, AMD_ADDR_REL_BIOS);
+		pspdir->entries[count].address_mode =
+				SET_ADDR_MODE(pspdir, AMD_ADDR_REL_BIOS);
+		count++;
+	}
+	fill_dir_header(pspdir, count, PSP_COOKIE, ctx);
+	ctx->current_table = current_table_save;
+}
+
 static void integrate_psp_firmwares(context *ctx,
 					psp_directory_table *pspdir,
 					psp_directory_table *pspdir2,
@@ -895,7 +949,6 @@ static void integrate_psp_firmwares(context *ctx,
 	uint64_t addr;
 	uint32_t current_table_save;
 	bool recovery_ab = cb_config->recovery_ab;
-	bool use_only_a = (cb_config->soc_id == PLATFORM_PHOENIX); /* TODO: b:285390041 */
 
 	/* This function can create a primary table, a secondary table, or a
 	 * flattened table which contains all applicable types.  These if-else
@@ -1018,43 +1071,8 @@ static void integrate_psp_firmwares(context *ctx,
 		}
 	}
 
-	fill_dir_header(pspdir, count, cookie, ctx);
-
-	if (recovery_ab && (pspdir2 != NULL)) {
-		if (cb_config->need_ish) {	/* Need ISH */
-			ctx->ish_a_dir = new_ish_dir(ctx);
-			if (pspdir2_b != NULL)
-				ctx->ish_b_dir = new_ish_dir(ctx);
-		}
-		pspdir->header.num_entries = count;
-		integrate_psp_ab(ctx, pspdir, pspdir2, ctx->ish_a_dir,
-			AMD_FW_RECOVERYAB_A, cb_config->soc_id);
-		if (pspdir2_b != NULL)
-			integrate_psp_ab(ctx, pspdir, pspdir2_b, ctx->ish_b_dir,
-				use_only_a ? AMD_FW_RECOVERYAB_A : AMD_FW_RECOVERYAB_B,
-				cb_config->soc_id);
-		else
-			integrate_psp_ab(ctx, pspdir, pspdir2, ctx->ish_a_dir,
-				use_only_a ? AMD_FW_RECOVERYAB_A : AMD_FW_RECOVERYAB_B,
-				cb_config->soc_id);
-
-		count = pspdir->header.num_entries;
-	} else if (pspdir2 != NULL) {
-		assert_fw_entry(count, MAX_PSP_ENTRIES, ctx);
-		pspdir->entries[count].type = AMD_FW_L2_PTR;
-		pspdir->entries[count].subprog = 0;
-		pspdir->entries[count].rsvd = 0;
-		pspdir->entries[count].size = sizeof(pspdir2->header)
-					+ pspdir2->header.num_entries
-					* sizeof(psp_directory_entry);
-
-		pspdir->entries[count].addr =
-				BUFF_TO_RUN_MODE(*ctx, pspdir2, AMD_ADDR_REL_BIOS);
-		pspdir->entries[count].address_mode =
-				SET_ADDR_MODE(pspdir, AMD_ADDR_REL_BIOS);
-		count++;
-	}
-
+	(void) (pspdir2);	/* TODO: To be removed in next CLs */
+	(void) (pspdir2_b);
 	fill_dir_header(pspdir, count, cookie, ctx);
 	ctx->current_table = current_table_save;
 }
@@ -1183,6 +1201,37 @@ static void add_bios_apcb_bk_entry(bios_directory_table *biosdir, unsigned int i
 	biosdir->entries[idx].address_mode = SET_ADDR_MODE_BY_TABLE(biosdir);
 }
 
+static void integrate_bios_levels(context *ctx)
+{
+	unsigned int count = ctx->biosdir->header.num_entries;
+	uint32_t current_table_save;
+
+	current_table_save = ctx->current_table;
+	ctx->current_table = (char *)ctx->biosdir - ctx->rom;
+
+	if (ctx->biosdir2) {
+		assert_fw_entry(count, MAX_BIOS_ENTRIES, ctx);
+		ctx->biosdir->entries[count].type = AMD_BIOS_L2_PTR;
+		ctx->biosdir->entries[count].region_type = 0;
+		ctx->biosdir->entries[count].size =
+					+ MAX_BIOS_ENTRIES
+					* sizeof(bios_directory_entry);
+		ctx->biosdir->entries[count].source =
+					BUFF_TO_RUN(*ctx, ctx->biosdir2);
+		ctx->biosdir->entries[count].address_mode =
+					SET_ADDR_MODE(ctx->biosdir, AMD_ADDR_REL_BIOS);
+		ctx->biosdir->entries[count].subprog = 0;
+		ctx->biosdir->entries[count].inst = 0;
+		ctx->biosdir->entries[count].copy = 0;
+		ctx->biosdir->entries[count].compressed = 0;
+		ctx->biosdir->entries[count].dest = -1;
+		ctx->biosdir->entries[count].reset = 0;
+		ctx->biosdir->entries[count].ro = 0;
+		count++;
+	}
+	fill_dir_header(ctx->biosdir, count, BHD_COOKIE, ctx);
+	ctx->current_table = current_table_save;
+}
 static void integrate_bios_firmwares(context *ctx,
 					bios_directory_table *biosdir,
 					bios_directory_table *biosdir2,
@@ -1390,29 +1439,6 @@ static void integrate_bios_firmwares(context *ctx,
 			break;
 		}
 
-		count++;
-	}
-
-	fill_dir_header(biosdir, count, cookie, ctx);
-
-	if (biosdir2) {
-		assert_fw_entry(count, MAX_BIOS_ENTRIES, ctx);
-		biosdir->entries[count].type = AMD_BIOS_L2_PTR;
-		biosdir->entries[count].region_type = 0;
-		biosdir->entries[count].size =
-					+ MAX_BIOS_ENTRIES
-					* sizeof(bios_directory_entry);
-		biosdir->entries[count].source =
-					BUFF_TO_RUN(*ctx, biosdir2);
-		biosdir->entries[count].address_mode =
-					SET_ADDR_MODE(biosdir, AMD_ADDR_REL_BIOS);
-		biosdir->entries[count].subprog = 0;
-		biosdir->entries[count].inst = 0;
-		biosdir->entries[count].copy = 0;
-		biosdir->entries[count].compressed = 0;
-		biosdir->entries[count].dest = -1;
-		biosdir->entries[count].reset = 0;
-		biosdir->entries[count].ro = 0;
 		count++;
 	}
 
@@ -1689,6 +1715,7 @@ int main(int argc, char **argv)
 			ctx.pspdir = new_psp_dir(&ctx, cb_config.multi_level);
 			integrate_psp_firmwares(&ctx, ctx.pspdir, ctx.pspdir2, ctx.pspdir2_b,
 					amd_psp_fw_table, PSP_COOKIE, &cb_config);
+			integrate_psp_levels(&ctx, &cb_config);
 		} else {
 			/* flat: PSP 1 cookie and no pointer to 2nd table */
 			ctx.pspdir = new_psp_dir(&ctx, cb_config.multi_level);
@@ -1735,6 +1762,7 @@ int main(int argc, char **argv)
 					ctx.biosdir = new_bios_dir(&ctx, cb_config.multi_level);
 					integrate_bios_firmwares(&ctx, ctx.biosdir, ctx.biosdir2,
 							amd_bios_table, BHD_COOKIE, &cb_config);
+					integrate_bios_levels(&ctx);
 				}
 			} else {
 				/* flat: BHD1 cookie and no pointer to 2nd table */

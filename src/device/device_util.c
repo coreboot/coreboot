@@ -248,7 +248,7 @@ const char *dev_name(const struct device *dev)
 }
 
 /* Returns the PCI domain for the given PCI device */
-struct device *dev_get_pci_domain(struct device *dev)
+const struct device *dev_get_pci_domain(const struct device *dev)
 {
 	/* Walk up the tree up to the PCI domain */
 	while (dev && dev->upstream && !is_root_device(dev)) {

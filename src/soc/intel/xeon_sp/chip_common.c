@@ -41,10 +41,11 @@ struct device *dev_find_device_on_socket(uint8_t socket, u16 vendor, u16 device)
 static int filter_device_on_stack(struct device *dev, uint8_t socket, uint8_t stack,
 	u16 vendor, u16 device)
 {
-	struct device *domain = dev_get_pci_domain(dev);
-	if (!domain)
-		return 0;
 	if (dev->path.type != DEVICE_PATH_PCI)
+		return 0;
+
+	const struct device *domain = dev_get_pci_domain(dev);
+	if (!domain)
 		return 0;
 
 	union xeon_domain_path dn;
@@ -130,9 +131,9 @@ struct device *dev_find_all_devices_on_domain(struct device *domain, u16 vendor,
  *
  * @return Socket ID the device is attached to, negative number on error.
  */
-int iio_pci_domain_socket_from_dev(struct device *dev)
+int iio_pci_domain_socket_from_dev(const struct device *dev)
 {
-	struct device *domain;
+	const struct device *domain;
 	union xeon_domain_path dn;
 
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
@@ -156,9 +157,9 @@ int iio_pci_domain_socket_from_dev(struct device *dev)
  *
  * @return Stack ID the device is attached to, negative number on error.
  */
-int iio_pci_domain_stack_from_dev(struct device *dev)
+int iio_pci_domain_stack_from_dev(const struct device *dev)
 {
-	struct device *domain;
+	const struct device *domain;
 	union xeon_domain_path dn;
 
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
@@ -224,7 +225,7 @@ void attach_iio_stacks(void)
 	}
 }
 
-bool is_pcie_domain(struct device *dev)
+bool is_pcie_domain(const struct device *dev)
 {
 	if ((!dev) || (dev->path.type != DEVICE_PATH_DOMAIN))
 		return false;
@@ -232,7 +233,7 @@ bool is_pcie_domain(struct device *dev)
 	return strstr(dev->name, DOMAIN_TYPE_PCIE);
 }
 
-bool is_ioat_domain(struct device *dev)
+bool is_ioat_domain(const struct device *dev)
 {
 	if ((!dev) || (dev->path.type != DEVICE_PATH_DOMAIN))
 		return false;
@@ -244,7 +245,7 @@ bool is_ioat_domain(struct device *dev)
 		strstr(dev->name, DOMAIN_TYPE_HQM1));
 }
 
-bool is_ubox_domain(struct device *dev)
+bool is_ubox_domain(const struct device *dev)
 {
 	if ((!dev) || (dev->path.type != DEVICE_PATH_DOMAIN))
 		return false;
@@ -253,7 +254,7 @@ bool is_ubox_domain(struct device *dev)
 		strstr(dev->name, DOMAIN_TYPE_UBX1));
 }
 
-bool is_cxl_domain(struct device *dev)
+bool is_cxl_domain(const struct device *dev)
 {
 	if ((!dev) || (dev->path.type != DEVICE_PATH_DOMAIN))
 		return false;

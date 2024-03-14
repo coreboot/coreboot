@@ -70,13 +70,13 @@ struct device *dev_find_all_devices_on_stack(uint8_t socket, uint8_t stack,
 struct device *dev_find_all_devices_on_domain(struct device *domain,
 						u16 vendor, u16 device, struct device *from);
 
-int iio_pci_domain_socket_from_dev(struct device *dev);
-int iio_pci_domain_stack_from_dev(struct device *dev);
+int iio_pci_domain_socket_from_dev(const struct device *dev);
+int iio_pci_domain_stack_from_dev(const struct device *dev);
 
-bool is_pcie_domain(struct device *dev);
-bool is_ioat_domain(struct device *dev);
-bool is_ubox_domain(struct device *dev);
-bool is_cxl_domain(struct device *dev);
+bool is_pcie_domain(const struct device *dev);
+bool is_ioat_domain(const struct device *dev);
+bool is_ubox_domain(const struct device *dev);
+bool is_cxl_domain(const struct device *dev);
 
 #define is_dev_on_pcie_domain(dev) is_pcie_domain(dev_get_pci_domain(dev))
 #define is_dev_on_ioat_domain(dev) is_ioat_domain(dev_get_pci_domain(dev))

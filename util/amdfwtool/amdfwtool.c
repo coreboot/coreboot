@@ -935,9 +935,6 @@ static void integrate_psp_levels(context *ctx,
 }
 
 static void integrate_psp_firmwares(context *ctx,
-					psp_directory_table *pspdir,
-					psp_directory_table *pspdir2,
-					psp_directory_table *pspdir2_b,
 					amd_fw_entry *fw_table,
 					uint32_t cookie,
 					amd_cb_config *cb_config)
@@ -946,6 +943,7 @@ static void integrate_psp_firmwares(context *ctx,
 	unsigned int i, count;
 	int level;
 	uint32_t size;
+	psp_directory_table *pspdir;
 	uint64_t addr;
 	uint32_t current_table_save;
 	bool recovery_ab = cb_config->recovery_ab;
@@ -956,6 +954,17 @@ static void integrate_psp_firmwares(context *ctx,
 	 * is passed, clearly a 2nd-level table is intended.  However, a
 	 * 1st-level cookie may indicate level 1 or flattened.
 	 */
+	pspdir = new_psp_dir(ctx, cb_config->multi_level);
+
+	if (cookie == PSP_COOKIE)
+		ctx->pspdir = pspdir;
+	else if (cookie == PSPL2_COOKIE) {
+		if (ctx->pspdir2 == NULL)
+			ctx->pspdir2 = pspdir;
+		else if (ctx->pspdir2_b == NULL)
+			ctx->pspdir2_b = pspdir;
+	}
+
 	if (!cb_config->multi_level)
 		level = PSP_BOTH;
 	else if (cookie == PSPL2_COOKIE)
@@ -1071,8 +1080,6 @@ static void integrate_psp_firmwares(context *ctx,
 		}
 	}
 
-	(void) (pspdir2);	/* TODO: To be removed in next CLs */
-	(void) (pspdir2_b);
 	fill_dir_header(pspdir, count, cookie, ctx);
 	ctx->current_table = current_table_save;
 }
@@ -1233,8 +1240,6 @@ static void integrate_bios_levels(context *ctx)
 	ctx->current_table = current_table_save;
 }
 static void integrate_bios_firmwares(context *ctx,
-					bios_directory_table *biosdir,
-					bios_directory_table *biosdir2,
 					amd_bios_entry *fw_table,
 					uint32_t cookie,
 					amd_cb_config *cb_config)
@@ -1246,6 +1251,18 @@ static void integrate_bios_firmwares(context *ctx,
 	uint32_t size;
 	uint64_t source;
 	uint32_t current_table_save;
+	bios_directory_table *biosdir;
+
+	biosdir = new_bios_dir(ctx, cb_config->multi_level);
+
+	if (cookie == BHD_COOKIE)
+		ctx->biosdir = biosdir;
+	else if (cookie == BHDL2_COOKIE) {
+		if (ctx->biosdir2 == NULL)
+			ctx->biosdir2 = biosdir;
+		else if (ctx->biosdir2_b == NULL)
+			ctx->biosdir2_b = biosdir;
+	}
 
 	/* This function can create a primary table, a secondary table, or a
 	 * flattened table which contains all applicable types.  These if-else
@@ -1377,7 +1394,7 @@ static void integrate_bios_firmwares(context *ctx,
 			break;
 		case AMD_BIOS_BIN:
 			/* Don't make a 2nd copy, point to the same one */
-			if (level == BDT_LVL1 && locate_bdt2_bios(biosdir2, &source, &size)) {
+			if (level == BDT_LVL1 && locate_bdt2_bios(ctx->biosdir2, &source, &size)) {
 				biosdir->entries[count].source = source;
 				biosdir->entries[count].address_mode =
 						SET_ADDR_MODE(biosdir, AMD_ADDR_REL_BIOS);
@@ -1692,14 +1709,12 @@ int main(int argc, char **argv)
 
 		if (cb_config.multi_level) {
 			/* Do 2nd PSP directory followed by 1st */
-			ctx.pspdir2 = new_psp_dir(&ctx, cb_config.multi_level);
-			integrate_psp_firmwares(&ctx, ctx.pspdir2, NULL, NULL,
+			integrate_psp_firmwares(&ctx,
 						amd_psp_fw_table, PSPL2_COOKIE, &cb_config);
 			if (cb_config.recovery_ab && !cb_config.recovery_ab_single_copy) {
 				/* Create a copy of PSP Directory 2 in the backup slot B.
 				   Related biosdir2_b copy will be created later. */
-				ctx.pspdir2_b = new_psp_dir(&ctx, cb_config.multi_level);
-				integrate_psp_firmwares(&ctx, ctx.pspdir2_b, NULL, NULL,
+				integrate_psp_firmwares(&ctx,
 						amd_psp_fw_table, PSPL2_COOKIE, &cb_config);
 			} else {
 				/*
@@ -1712,14 +1727,12 @@ int main(int argc, char **argv)
 				 */
 				ctx.pspdir2_b = NULL; /* More explicitly */
 			}
-			ctx.pspdir = new_psp_dir(&ctx, cb_config.multi_level);
-			integrate_psp_firmwares(&ctx, ctx.pspdir, ctx.pspdir2, ctx.pspdir2_b,
+			integrate_psp_firmwares(&ctx,
 					amd_psp_fw_table, PSP_COOKIE, &cb_config);
 			integrate_psp_levels(&ctx, &cb_config);
 		} else {
 			/* flat: PSP 1 cookie and no pointer to 2nd table */
-			ctx.pspdir = new_psp_dir(&ctx, cb_config.multi_level);
-			integrate_psp_firmwares(&ctx, ctx.pspdir, NULL, NULL,
+			integrate_psp_firmwares(&ctx,
 					amd_psp_fw_table, PSP_COOKIE, &cb_config);
 		}
 
@@ -1740,15 +1753,11 @@ int main(int argc, char **argv)
 		if (have_bios_tables(amd_bios_table)) {
 			if (cb_config.multi_level) {
 				/* Do 2nd level BIOS directory followed by 1st */
-				ctx.biosdir2 = new_bios_dir(&ctx, cb_config.multi_level);
-
-				integrate_bios_firmwares(&ctx, ctx.biosdir2, NULL,
+				integrate_bios_firmwares(&ctx,
 						amd_bios_table, BHDL2_COOKIE, &cb_config);
 				if (cb_config.recovery_ab) {
 					if (ctx.pspdir2_b != NULL) {
-						ctx.biosdir2_b = new_bios_dir(&ctx,
-							cb_config.multi_level);
-						integrate_bios_firmwares(&ctx, ctx.biosdir2_b, NULL,
+						integrate_bios_firmwares(&ctx,
 								amd_bios_table, BHDL2_COOKIE,
 								&cb_config);
 					}
@@ -1759,15 +1768,13 @@ int main(int argc, char **argv)
 								ctx.biosdir2_b, AMD_FW_BIOS_TABLE,
 								TABLE_ALIGNMENT);
 				} else {
-					ctx.biosdir = new_bios_dir(&ctx, cb_config.multi_level);
-					integrate_bios_firmwares(&ctx, ctx.biosdir, ctx.biosdir2,
+					integrate_bios_firmwares(&ctx,
 							amd_bios_table, BHD_COOKIE, &cb_config);
 					integrate_bios_levels(&ctx);
 				}
 			} else {
 				/* flat: BHD1 cookie and no pointer to 2nd table */
-				ctx.biosdir = new_bios_dir(&ctx, cb_config.multi_level);
-				integrate_bios_firmwares(&ctx, ctx.biosdir, NULL,
+				integrate_bios_firmwares(&ctx,
 							amd_bios_table, BHD_COOKIE, &cb_config);
 			}
 			if (!cb_config.use_combo) {

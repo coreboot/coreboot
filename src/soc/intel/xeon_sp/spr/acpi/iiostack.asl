@@ -3,8 +3,6 @@
 /* ***** PCI Stacks **** */
 #undef DEVPREFIX
 #define DEVPREFIX  PC
-#undef STPREFIX
-#define STPREFIX   ST
 
 #undef PRTID
 #define PRTID      AR00

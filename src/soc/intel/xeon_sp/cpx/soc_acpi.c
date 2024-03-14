@@ -41,10 +41,6 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 	fadt->flags &=  ~(ACPI_FADT_SEALED_CASE | ACPI_FADT_S4_RTC_WAKE);
 }
 
-void uncore_fill_ssdt(const struct device *device)
-{
-}
-
 /* TODO: See if we can use the common generate_p_state_entries */
 void soc_power_states_generation(int core, int cores_per_package)
 {

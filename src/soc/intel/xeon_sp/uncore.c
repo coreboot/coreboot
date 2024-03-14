@@ -369,9 +369,6 @@ static struct device_operations mmapvtd_ops = {
 	.enable_resources  = pci_dev_enable_resources,
 	.init              = mmapvtd_init,
 	.ops_pci           = &soc_pci_ops,
-#if CONFIG(HAVE_ACPI_TABLES)
-	.acpi_fill_ssdt  = uncore_fill_ssdt,
-#endif
 };
 
 static const unsigned short mmapvtd_ids[] = {

@@ -23,7 +23,6 @@ typedef struct {
 
 unsigned long northbridge_write_acpi_tables(const struct device *device,
 	unsigned long current, struct acpi_rsdp *rsdp);
-void uncore_fill_ssdt(const struct device *device);
 unsigned long xeonsp_acpi_create_madt_lapics(unsigned long current);
 unsigned long acpi_fill_cedt(unsigned long current);
 unsigned long acpi_fill_hmat(unsigned long current);

@@ -54,10 +54,6 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 	fill_fadt_extended_pm_io(fadt);
 }
 
-void uncore_fill_ssdt(const struct device *device)
-{
-}
-
 void soc_power_states_generation(int core, int cores_per_package)
 {
 }

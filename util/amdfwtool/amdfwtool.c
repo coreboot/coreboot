@@ -473,7 +473,7 @@ static void adjust_current_pointer(context *ctx, uint32_t add, uint32_t align)
 	set_current_pointer(ctx, ALIGN_UP(ctx->current + add, align));
 }
 
-static void *new_psp_dir(context *ctx, int multi)
+static void *new_psp_dir(context *ctx, int multi, uint32_t cookie)
 {
 	void *ptr;
 
@@ -488,6 +488,7 @@ static void *new_psp_dir(context *ctx, int multi)
 		adjust_current_pointer(ctx, 0, TABLE_ALIGNMENT);
 
 	ptr = BUFF_CURRENT(*ctx);
+	((psp_directory_header *)ptr)->cookie = cookie;
 	((psp_directory_header *)ptr)->num_entries = 0;
 	((psp_directory_header *)ptr)->additional_info = 0;
 	((psp_directory_header *)ptr)->additional_info_fields.address_mode = ctx->address_mode;
@@ -507,23 +508,26 @@ static void *new_ish_dir(context *ctx)
 	return ptr;
 }
 
-static void *new_combo_dir(context *ctx)
+static void *new_combo_dir(context *ctx, uint32_t cookie)
 {
 	void *ptr;
 
 	adjust_current_pointer(ctx, 0, TABLE_ALIGNMENT);
 	ptr = BUFF_CURRENT(*ctx);
+	((psp_combo_header *)ptr)->cookie = cookie;
 	adjust_current_pointer(ctx,
 		sizeof(psp_combo_header) + MAX_COMBO_ENTRIES * sizeof(psp_combo_entry),
 		1);
 	return ptr;
 }
 
-static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie, context *ctx)
+static void fill_dir_header(void *directory, uint32_t count, context *ctx)
 {
 	psp_combo_directory *cdir = directory;
 	psp_directory_table *dir = directory;
 	bios_directory_table *bdir = directory;
+	/* The cookies have same offsets. */
+	uint32_t cookie = ((psp_directory_table *)directory)->header.cookie;
 	uint32_t table_size = 0;
 
 	if (ctx == NULL || directory == NULL) {
@@ -537,7 +541,6 @@ static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie, co
 	switch (cookie) {
 	case PSP2_COOKIE:
 	case BHD2_COOKIE:
-		cdir->header.cookie = cookie;
 		/* lookup mode is hardcoded for now. */
 		cdir->header.lookup = 1;
 		cdir->header.num_entries = count;
@@ -565,7 +568,6 @@ static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie, co
 			dir->header.additional_info_fields.dir_size =
 					table_size / TABLE_ALIGNMENT;
 		}
-		dir->header.cookie = cookie;
 		dir->header.num_entries = count;
 		dir->header.additional_info_fields.spi_block_size = 1;
 		dir->header.additional_info_fields.base_addr = 0;
@@ -588,7 +590,6 @@ static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie, co
 			bdir->header.additional_info_fields.dir_size =
 				table_size / TABLE_ALIGNMENT;
 		}
-		bdir->header.cookie = cookie;
 		bdir->header.num_entries = count;
 		bdir->header.additional_info_fields.spi_block_size = 1;
 		bdir->header.additional_info_fields.base_addr = 0;
@@ -930,7 +931,7 @@ static void integrate_psp_levels(context *ctx,
 				SET_ADDR_MODE(pspdir, AMD_ADDR_REL_BIOS);
 		count++;
 	}
-	fill_dir_header(pspdir, count, PSP_COOKIE, ctx);
+	fill_dir_header(pspdir, count, ctx);
 	ctx->current_table = current_table_save;
 }
 
@@ -954,7 +955,7 @@ static void integrate_psp_firmwares(context *ctx,
 	 * is passed, clearly a 2nd-level table is intended.  However, a
 	 * 1st-level cookie may indicate level 1 or flattened.
 	 */
-	pspdir = new_psp_dir(ctx, cb_config->multi_level);
+	pspdir = new_psp_dir(ctx, cb_config->multi_level, cookie);
 
 	if (cookie == PSP_COOKIE)
 		ctx->pspdir = pspdir;
@@ -1080,7 +1081,7 @@ static void integrate_psp_firmwares(context *ctx,
 		}
 	}
 
-	fill_dir_header(pspdir, count, cookie, ctx);
+	fill_dir_header(pspdir, count, ctx);
 	ctx->current_table = current_table_save;
 }
 
@@ -1111,11 +1112,11 @@ static void add_psp_firmware_entry(context *ctx,
 	if (index == count)
 		count++;
 
-	fill_dir_header(pspdir, count, pspdir->header.cookie, ctx);
+	fill_dir_header(pspdir, count, ctx);
 	ctx->current_table = current_table_save;
 }
 
-static void *new_bios_dir(context *ctx, bool multi)
+static void *new_bios_dir(context *ctx, bool multi, uint32_t cookie)
 {
 	void *ptr;
 
@@ -1129,6 +1130,7 @@ static void *new_bios_dir(context *ctx, bool multi)
 	else
 		adjust_current_pointer(ctx, 0, TABLE_ALIGNMENT);
 	ptr = BUFF_CURRENT(*ctx);
+	((bios_directory_hdr *) ptr)->cookie = cookie;
 	((bios_directory_hdr *) ptr)->additional_info = 0;
 	((bios_directory_hdr *) ptr)->additional_info_fields.address_mode = ctx->address_mode;
 	adjust_current_pointer(ctx,
@@ -1236,7 +1238,7 @@ static void integrate_bios_levels(context *ctx)
 		ctx->biosdir->entries[count].ro = 0;
 		count++;
 	}
-	fill_dir_header(ctx->biosdir, count, BHD_COOKIE, ctx);
+	fill_dir_header(ctx->biosdir, count, ctx);
 	ctx->current_table = current_table_save;
 }
 static void integrate_bios_firmwares(context *ctx,
@@ -1253,7 +1255,7 @@ static void integrate_bios_firmwares(context *ctx,
 	uint32_t current_table_save;
 	bios_directory_table *biosdir;
 
-	biosdir = new_bios_dir(ctx, cb_config->multi_level);
+	biosdir = new_bios_dir(ctx, cb_config->multi_level, cookie);
 
 	if (cookie == BHD_COOKIE)
 		ctx->biosdir = biosdir;
@@ -1459,7 +1461,7 @@ static void integrate_bios_firmwares(context *ctx,
 		count++;
 	}
 
-	fill_dir_header(biosdir, count, cookie, ctx);
+	fill_dir_header(biosdir, count, ctx);
 	ctx->current_table = current_table_save;
 }
 
@@ -1657,12 +1659,12 @@ int main(int argc, char **argv)
 				cb_config.soc_id);
 
 	if (cb_config.use_combo) {
-		ctx.psp_combo_dir = new_combo_dir(&ctx);
+		ctx.psp_combo_dir = new_combo_dir(&ctx, PSP2_COOKIE);
 
 		adjust_current_pointer(&ctx, 0, 0x1000U);
 
 		if (!cb_config.recovery_ab)
-			ctx.bhd_combo_dir = new_combo_dir(&ctx);
+			ctx.bhd_combo_dir = new_combo_dir(&ctx, BHD2_COOKIE);
 	}
 
 	combo_index = 0;
@@ -1747,7 +1749,7 @@ int main(int argc, char **argv)
 			ctx.psp_combo_dir->entries[combo_index].lvl2_addr =
 				BUFF_TO_RUN_MODE(ctx, ctx.pspdir, AMD_ADDR_REL_BIOS);
 
-			fill_dir_header(ctx.psp_combo_dir, combo_index + 1, PSP2_COOKIE, &ctx);
+			fill_dir_header(ctx.psp_combo_dir, combo_index + 1, &ctx);
 		}
 
 		if (have_bios_tables(amd_bios_table)) {
@@ -1793,9 +1795,7 @@ int main(int argc, char **argv)
 				ctx.bhd_combo_dir->entries[combo_index].lvl2_addr =
 					BUFF_TO_RUN_MODE(ctx, ctx.biosdir, AMD_ADDR_REL_BIOS);
 
-				fill_dir_header(ctx.bhd_combo_dir, combo_index + 1,
-					BHD2_COOKIE, &ctx);
-
+				fill_dir_header(ctx.bhd_combo_dir, combo_index + 1, &ctx);
 			}
 		}
 		if (cb_config.debug)

@@ -43,6 +43,7 @@ endchoice
 
 choice
 	prompt "Tianocore's EDK II payload"
+	default EDK2_REPO_CUSTOM if EDK2_UNIVERSAL_PAYLOAD
 	default EDK2_REPO_MRCHROMEBOX
 	help
 	  Select which type of payload edk2 will build (default is UefiPayload)

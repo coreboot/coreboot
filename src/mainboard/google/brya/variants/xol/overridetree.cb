@@ -268,10 +268,13 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref pcie4_0 on
-		# Enable CPU PCIE RP 1 using CLK 0
+			# Enable NVMe SSD using clk_src0 and clk_req1 mapping to hardware
+			# design. Due to inconsistency between PMC firmware and FSP, we need
+			# to set clk_src to clk_req number, not same as hardware mapping in
+			# coreboot. Then swap correct setting clksrc, clkreq in mFIT.
 			register "cpu_pcie_rp[CPU_RP(1)]" = "{
 				.clk_req = 1,
-				.clk_src = 0,
+				.clk_src = 1,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 			probe STORAGE STORAGE_NVME

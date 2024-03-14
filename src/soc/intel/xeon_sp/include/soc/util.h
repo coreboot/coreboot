@@ -4,7 +4,7 @@
 #define _XEON_SP_SOC_UTIL_H_
 
 #include <cpu/x86/msr.h>
-#include <hob_iiouds.h>
+#include <soc/soc_util.h>
 
 #define MEM_ADDR_64MB_SHIFT_BITS 26
 

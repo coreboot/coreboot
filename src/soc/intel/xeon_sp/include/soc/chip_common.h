@@ -5,7 +5,7 @@
 
 #include <device/device.h>
 #include <device/path.h>
-#include <hob_iiouds.h>
+#include <soc/soc_util.h>
 
 union xeon_domain_path {
 	unsigned int domain_path;

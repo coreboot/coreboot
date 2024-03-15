@@ -170,6 +170,9 @@ if [ $_LIBDIR = $_OBJ ]; then
 
     _CFLAGS="$_CFLAGS -include $BASE/../../../src/commonlib/bsd/include/commonlib/bsd/compiler.h"
     _CFLAGS="$_CFLAGS -I$BASE/../../../src/commonlib/bsd/include"
+    if [ "$CONFIG_LP_GPL" = y ]; then
+    _CFLAGS="$_CFLAGS -I$BASE/../../../src/commonlib/include"
+    fi
     _CFLAGS="$_CFLAGS -I$BASE/../../../3rdparty/vboot/firmware/include"
 else
     _CFLAGS="$_CFLAGS -include $BASE/../include/commonlib/bsd/compiler.h"

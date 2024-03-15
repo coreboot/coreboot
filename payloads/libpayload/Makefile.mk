@@ -133,6 +133,10 @@ install: real-target
 	find include -type f -exec install -m644 {} $(DESTDIR)/libpayload/{} \;
 	cd $(coreboottop)/src/commonlib/bsd && find include -type d -exec install -m755 -d $(abspath $(DESTDIR))/libpayload/{} \;
 	cd $(coreboottop)/src/commonlib/bsd && find include -type f -exec install -m644 {} $(abspath $(DESTDIR))/libpayload/{} \;
+ifeq ($(CONFIG_LP_GPL),y)
+	cd $(coreboottop)/src/commonlib && find include -type d -exec install -m755 -d $(abspath $(DESTDIR))/libpayload/{} \;
+	cd $(coreboottop)/src/commonlib && find include -type f -exec install -m644 {} $(abspath $(DESTDIR))/libpayload/{} \;
+endif
 	install -m 644 $(obj)/libpayload-config.h $(DESTDIR)/libpayload/include
 	$(foreach item,$(includes), \
 		install -m 755 -d $(DESTDIR)/libpayload/include/$(call extract_nth,2,$(item)); \

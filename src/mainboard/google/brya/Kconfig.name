@@ -137,6 +137,9 @@ config BOARD_GOOGLE_TAEKO4ES
 config BOARD_GOOGLE_TANIKS
 	bool "->  Taniks"
 
+config BOARD_GOOGLE_TIVVIKS
+	bool "-> Tivviks"
+
 config BOARD_GOOGLE_ULDREN
 	bool "->  Uldren"
 

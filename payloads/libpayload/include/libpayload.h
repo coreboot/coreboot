@@ -45,9 +45,13 @@
 #include <stdbool.h>
 #include <libpayload-config.h>
 #include <cbgfx.h>
+#if CONFIG(LP_GPL)
+#include <commonlib/helpers.h>
+#else
+#include <commonlib/bsd/helpers.h>
+#endif
 #include <commonlib/bsd/elog.h>
 #include <commonlib/bsd/fmap_serialized.h>
-#include <commonlib/bsd/helpers.h>
 #include <commonlib/bsd/ipchksum.h>
 #include <commonlib/bsd/mem_chip_info.h>
 #include <ctype.h>

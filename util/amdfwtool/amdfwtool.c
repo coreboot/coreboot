@@ -473,17 +473,16 @@ static void adjust_current_pointer(context *ctx, uint32_t add, uint32_t align)
 	set_current_pointer(ctx, ALIGN_UP(ctx->current + add, align));
 }
 
-static void *new_psp_dir(context *ctx, amd_cb_config *cb_config)
+static void *new_psp_dir(context *ctx, int multi)
 {
 	void *ptr;
-	uint32_t align_end = cb_config->need_ish ? TABLE_ALIGNMENT : 1;
 
 	/*
 	 * Force both onto boundary when multi.  Primary table is after
 	 * updatable table, so alignment ensures primary can stay intact
 	 * if secondary is reprogrammed.
 	 */
-	if (cb_config->multi_level)
+	if (multi)
 		adjust_current_pointer(ctx, 0, TABLE_ERASE_ALIGNMENT);
 	else
 		adjust_current_pointer(ctx, 0, TABLE_ALIGNMENT);
@@ -494,7 +493,7 @@ static void *new_psp_dir(context *ctx, amd_cb_config *cb_config)
 	((psp_directory_header *)ptr)->additional_info_fields.address_mode = ctx->address_mode;
 	adjust_current_pointer(ctx,
 		sizeof(psp_directory_header) + MAX_PSP_ENTRIES * sizeof(psp_directory_entry),
-		align_end);
+		1);
 	return ptr;
 }
 
@@ -520,16 +519,13 @@ static void *new_combo_dir(context *ctx)
 	return ptr;
 }
 
-static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie,
-	context *ctx, amd_cb_config *cb_config)
+static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie, context *ctx)
 {
 	psp_combo_directory *cdir = directory;
 	psp_directory_table *dir = directory;
 	bios_directory_table *bdir = directory;
 	uint32_t table_size = 0;
 
-	if (!count)
-		return;
 	if (ctx == NULL || directory == NULL) {
 		fprintf(stderr, "Calling %s with NULL pointers\n", __func__);
 		return;
@@ -556,22 +552,21 @@ static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie,
 		break;
 	case PSP_COOKIE:
 	case PSPL2_COOKIE:
-		if (cookie == PSP_COOKIE && cb_config->need_ish)
-			/* The ISH header can not be in the space defined by L1 table size.
-			 * The space is allocated when the L1 header is created. */
-			table_size = TABLE_ALIGNMENT;
-		else
-			/* Generally table size not just constains the header,
-			 * but all the FWs. */
+		/* The table size is only set once. Later calls only update
+		 * the count and fletcher. So does the BIOS table. */
+		if (dir->header.additional_info_fields.dir_size == 0) {
 			table_size = ctx->current - ctx->current_table;
-		if ((table_size % TABLE_ALIGNMENT) != 0) {
-			fprintf(stderr, "The PSP table size should be 4K aligned\n");
-			amdfwtool_cleanup(ctx);
-			exit(1);
+			if ((table_size % TABLE_ALIGNMENT) != 0 &&
+				(table_size / TABLE_ALIGNMENT) != 0) {
+				fprintf(stderr, "The PSP table size should be 4K aligned\n");
+				amdfwtool_cleanup(ctx);
+				exit(1);
+			}
+			dir->header.additional_info_fields.dir_size =
+					table_size / TABLE_ALIGNMENT;
 		}
 		dir->header.cookie = cookie;
 		dir->header.num_entries = count;
-		dir->header.additional_info_fields.dir_size = table_size / TABLE_ALIGNMENT;
 		dir->header.additional_info_fields.spi_block_size = 1;
 		dir->header.additional_info_fields.base_addr = 0;
 		/* checksum everything that comes after the Checksum field */
@@ -582,15 +577,19 @@ static void fill_dir_header(void *directory, uint32_t count, uint32_t cookie,
 		break;
 	case BHD_COOKIE:
 	case BHDL2_COOKIE:
-		table_size = ctx->current - ctx->current_table;
-		if ((table_size % TABLE_ALIGNMENT) != 0) {
-			fprintf(stderr, "The BIOS table size should be 4K aligned\n");
-			amdfwtool_cleanup(ctx);
-			exit(1);
+		if (bdir->header.additional_info_fields.dir_size == 0) {
+			table_size = ctx->current - ctx->current_table;
+			if ((table_size % TABLE_ALIGNMENT) != 0 &&
+				table_size / TABLE_ALIGNMENT != 0) {
+				fprintf(stderr, "The BIOS table size should be 4K aligned\n");
+				amdfwtool_cleanup(ctx);
+				exit(1);
+			}
+			bdir->header.additional_info_fields.dir_size =
+				table_size / TABLE_ALIGNMENT;
 		}
 		bdir->header.cookie = cookie;
 		bdir->header.num_entries = count;
-		bdir->header.additional_info_fields.dir_size = table_size / TABLE_ALIGNMENT;
 		bdir->header.additional_info_fields.spi_block_size = 1;
 		bdir->header.additional_info_fields.base_addr = 0;
 		/* checksum everything that comes after the Checksum field */
@@ -997,6 +996,8 @@ static void integrate_psp_firmwares(context *ctx,
 		}
 	}
 
+	fill_dir_header(pspdir, count, cookie, ctx);
+
 	if (recovery_ab && (pspdir2 != NULL)) {
 		if (cb_config->need_ish) {	/* Need ISH */
 			ish_a_dir = new_ish_dir(ctx);
@@ -1032,7 +1033,7 @@ static void integrate_psp_firmwares(context *ctx,
 		count++;
 	}
 
-	fill_dir_header(pspdir, count, cookie, ctx, cb_config);
+	fill_dir_header(pspdir, count, cookie, ctx);
 	ctx->current_table = current_table_save;
 }
 
@@ -1063,12 +1064,7 @@ static void add_psp_firmware_entry(context *ctx,
 	if (index == count)
 		count++;
 
-	pspdir->header.num_entries = count;
-	pspdir->header.checksum = fletcher32(&pspdir->header.num_entries,
-					count * sizeof(psp_directory_entry)
-					+ sizeof(pspdir->header.num_entries)
-					+ sizeof(pspdir->header.additional_info));
-
+	fill_dir_header(pspdir, count, pspdir->header.cookie, ctx);
 	ctx->current_table = current_table_save;
 }
 
@@ -1376,6 +1372,8 @@ static void integrate_bios_firmwares(context *ctx,
 		count++;
 	}
 
+	fill_dir_header(biosdir, count, cookie, ctx);
+
 	if (biosdir2) {
 		assert_fw_entry(count, MAX_BIOS_ENTRIES, ctx);
 		biosdir->entries[count].type = AMD_BIOS_L2_PTR;
@@ -1397,7 +1395,7 @@ static void integrate_bios_firmwares(context *ctx,
 		count++;
 	}
 
-	fill_dir_header(biosdir, count, cookie, ctx, cb_config);
+	fill_dir_header(biosdir, count, cookie, ctx);
 	ctx->current_table = current_table_save;
 }
 
@@ -1644,13 +1642,13 @@ int main(int argc, char **argv)
 
 		if (cb_config.multi_level) {
 			/* Do 2nd PSP directory followed by 1st */
-			pspdir2 = new_psp_dir(&ctx, &cb_config);
+			pspdir2 = new_psp_dir(&ctx, cb_config.multi_level);
 			integrate_psp_firmwares(&ctx, pspdir2, NULL, NULL,
 						amd_psp_fw_table, PSPL2_COOKIE, &cb_config);
 			if (cb_config.recovery_ab && !cb_config.recovery_ab_single_copy) {
 				/* Create a copy of PSP Directory 2 in the backup slot B.
 				   Related biosdir2_b copy will be created later. */
-				pspdir2_b = new_psp_dir(&ctx, &cb_config);
+				pspdir2_b = new_psp_dir(&ctx, cb_config.multi_level);
 				integrate_psp_firmwares(&ctx, pspdir2_b, NULL, NULL,
 						amd_psp_fw_table, PSPL2_COOKIE, &cb_config);
 			} else {
@@ -1664,12 +1662,12 @@ int main(int argc, char **argv)
 				 */
 				pspdir2_b = NULL; /* More explicitly */
 			}
-			pspdir = new_psp_dir(&ctx, &cb_config);
+			pspdir = new_psp_dir(&ctx, cb_config.multi_level);
 			integrate_psp_firmwares(&ctx, pspdir, pspdir2, pspdir2_b,
 					amd_psp_fw_table, PSP_COOKIE, &cb_config);
 		} else {
 			/* flat: PSP 1 cookie and no pointer to 2nd table */
-			pspdir = new_psp_dir(&ctx, &cb_config);
+			pspdir = new_psp_dir(&ctx, cb_config.multi_level);
 			integrate_psp_firmwares(&ctx, pspdir, NULL, NULL,
 					amd_psp_fw_table, PSP_COOKIE, &cb_config);
 		}
@@ -1685,8 +1683,7 @@ int main(int argc, char **argv)
 			psp_combo_dir->entries[combo_index].lvl2_addr =
 				BUFF_TO_RUN_MODE(ctx, pspdir, AMD_ADDR_REL_BIOS);
 
-			fill_dir_header(psp_combo_dir, combo_index + 1,
-				PSP2_COOKIE, &ctx, &cb_config);
+			fill_dir_header(psp_combo_dir, combo_index + 1, PSP2_COOKIE, &ctx);
 		}
 
 		if (have_bios_tables(amd_bios_table)) {
@@ -1739,7 +1736,7 @@ int main(int argc, char **argv)
 					BUFF_TO_RUN_MODE(ctx, biosdir, AMD_ADDR_REL_BIOS);
 
 				fill_dir_header(bhd_combo_dir, combo_index + 1,
-					BHD2_COOKIE, &ctx, &cb_config);
+					BHD2_COOKIE, &ctx);
 			}
 		}
 	} while (cb_config.use_combo && ++combo_index < MAX_COMBO_ENTRIES &&

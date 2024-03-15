@@ -7,7 +7,7 @@
 bool intel_ht_supported(void)
 {
 	/* Is HyperThreading supported? */
-	return !!(cpuid_edx(1) & CPUID_FEAURE_HTT);
+	return !!(cpuid_edx(1) & CPUID_FEATURE_HTT);
 }
 
 /*

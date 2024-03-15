@@ -49,7 +49,7 @@ static inline unsigned int cpuid_get_max_func(void)
 
 #define CPUID_FEATURE_PAE (1 << 6)
 #define CPUID_FEATURE_PSE36 (1 << 17)
-#define CPUID_FEAURE_HTT (1 << 28)
+#define CPUID_FEATURE_HTT (1 << 28)
 
 /* Structured Extended Feature Flags */
 #define CPUID_STRUCT_EXTENDED_FEATURE_FLAGS 0x7

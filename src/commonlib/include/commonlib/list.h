@@ -5,6 +5,7 @@
 #define __COMMONLIB_LIST_H__
 
 #include <commonlib/helpers.h>
+#include <stdint.h>
 
 struct list_node {
 	struct list_node *next;

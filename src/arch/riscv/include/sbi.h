@@ -13,6 +13,19 @@
 #define SBI_REMOTE_SFENCE_VMA_ASID 7
 #define SBI_SHUTDOWN               8
 
+// Here begins the complex set of things added by
+// later SBI. Unlike the original design, these
+// require bits of state to be maintained in SBI.
+// Disappointing!
+#define SBI_BASE_EXTENSION 0x10
+#  define SBI_GET_SBI_SPEC_VERSION    0
+#  define SBI_GET_SBI_IMPL_ID         1
+#  define SBI_GET_SBI_IMPL_VERSION    2
+#  define SBI_PROBE_EXTENSION         3
+#  define SBI_GET_MVENDORID           4
+#  define SBI_GET_MARCHID             5
+#  define SBI_GET_MIMPID              6
+
 #define SBI_ENOSYS 38
 
 #define IPI_SOFT            1

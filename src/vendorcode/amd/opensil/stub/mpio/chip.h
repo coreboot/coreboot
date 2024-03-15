@@ -3,6 +3,7 @@
 #include <types.h>
 
 enum mpio_engine_type {
+	IFTYPE_UNUSED,
 	IFTYPE_PCIE,
 	IFTYPE_SATA,
 };

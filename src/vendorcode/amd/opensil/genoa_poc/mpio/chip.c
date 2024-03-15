@@ -134,6 +134,14 @@ static void per_device_config(MPIOCLASS_INPUT_BLK *mpio_data, struct device *dev
 	printk(BIOS_DEBUG, "Setting MPIO port for domain 0x%x, PCI %d:%d\n",
 	       domain, PCI_SLOT(devfn), PCI_FUNC(devfn));
 
+	if (config->type == IFTYPE_UNUSED) {
+		if (is_dev_enabled(dev)) {
+			printk(BIOS_WARNING, "Unused MPIO engine, disabling PCI device.\n");
+			dev->enabled = false;
+		}
+		return;
+	}
+
 	if (config->bmc) {
 		setup_bmc_lanes(config->start_lane, 0); // TODO support multiple sockets
 		return;

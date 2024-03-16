@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <commonlib/helpers.h>
 #include <cpu/cpu.h>
 #include <types.h>
 
@@ -233,4 +234,19 @@ bool fill_cpu_cache_info(uint8_t level, struct cpu_cache_info *info)
 	info->size = get_cache_size(info);
 
 	return true;
+}
+
+bool is_cache_sets_power_of_two(void)
+{
+	struct cpu_cache_info info;
+
+	if (!fill_cpu_cache_info(CACHE_L3, &info))
+		return false;
+
+	size_t cache_sets = cpu_get_cache_sets(&info);
+
+	if (IS_POWER_OF_2(cache_sets))
+		return true;
+
+	return false;
 }

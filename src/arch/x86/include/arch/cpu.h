@@ -329,6 +329,15 @@ uint8_t cpu_get_c_substate_support(const int state);
  */
 bool fill_cpu_cache_info(uint8_t level, struct cpu_cache_info *info);
 
+/*
+ * Determines whether the number of cache sets is a power of two.
+ *
+ * Cache designs often favor power-of-two set counts for efficient indexing
+ * and addressing. This function checks if the provided cache configuration
+ * adheres to this practice.
+ */
+bool is_cache_sets_power_of_two(void);
+
 #if CONFIG(RESERVED_PHYSICAL_ADDRESS_BITS_SUPPORT)
 unsigned int get_reserved_phys_addr_bits(void);
 #else

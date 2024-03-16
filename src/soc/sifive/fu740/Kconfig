@@ -60,4 +60,8 @@ config OPENSBI_FW_DYNAMIC_BOOT_HART
 	  Choose the first U74 core as boot hart since
 	  hart 0 is the S7 which does not support Supervisor mode
 
+config RISCV_SOC_HAS_MENVCFG
+	bool
+	default n
+
 endif

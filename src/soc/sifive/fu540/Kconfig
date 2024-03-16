@@ -48,4 +48,9 @@ config OPENSBI_PLATFORM
 config OPENSBI_TEXT_START
 	hex
 	default 0x80000000
+
+config RISCV_SOC_HAS_MENVCFG
+	bool
+	default n
+
 endif

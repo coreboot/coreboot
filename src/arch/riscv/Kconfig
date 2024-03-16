@@ -110,4 +110,13 @@ config RISCV_USE_ARCH_TIMER
 config RISCV_WORKING_HARTID
 	int
 
+# Newer SoC have the menvconfig register.
+# Very few SOC do not have this.
+# Older SoC, such as the SiFive FU[57]40, that
+# do not have this register, should set this
+# to n.
+config RISCV_SOC_HAS_MENVCFG
+	bool
+	default y
+
 endif # if ARCH_RISCV

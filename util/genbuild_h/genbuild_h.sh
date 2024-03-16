@@ -6,8 +6,8 @@ DATE=""
 GITREV=""
 TIMESOURCE=""
 XGCCPATH="${XGCCPATH:-util/crossgcc/xgcc/bin/}"
-MAJOR_VER="0"
-MINOR_VER="0"
+MAJOR_VER=""
+MINOR_VER=""
 COREBOOT_VERSION_FILE=".coreboot-version"
 
 export LANG=C
@@ -36,19 +36,15 @@ elif [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]; then
 	TIMESOURCE=git
 	DATE="$(get_git_head_data %ct)"
 	VERSION="$(git describe)"
-	# Only use the `git describe` output if the tag is in the expected <major>.<minor>
-	# format, e.g. 4.18. Forks of coreboot may have other tags in different formats.
-	if echo "${VERSION}" | grep -q "^[0-9]\.[0-9][0-9]*"; then
-		MAJOR_VER="$(echo "${VERSION}" | sed 's/\([0-9]\)\.\([0-9][0-9]*\).*/\1/')"
-		MINOR_VER="$(echo "${VERSION}" | sed 's/\([0-9]\)\.\([0-9][0-9]*\).*/\2/')"
-	fi
+	MAJOR_VER="$(echo "${VERSION}" | sed -n 's/^0*\([0-9]*\)\.0*\([0-9]*\).*/\1/p')"
+	MINOR_VER="$(echo "${VERSION}" | sed -n 's/^0*\([0-9]*\)\.0*\([0-9]*\).*/\2/p')"
 else
 	GITREV=Unknown
 	TIMESOURCE="date"
 	DATE=$(LANG="" LC_ALL=C TZ=UTC0 date +%s)
 	if [ -f "${COREBOOT_VERSION_FILE}" ]; then
-		MAJOR_VER="$(sed 's/\([0-9]\)\.\([0-9][0-9]*\).*/\1/' "${COREBOOT_VERSION_FILE}")"
-		MINOR_VER="$(sed 's/\([0-9]\)\.\([0-9][0-9]*\).*/\2/' "${COREBOOT_VERSION_FILE}")"
+		MAJOR_VER="$(sed -n 's/^0*\([0-9]*\)\.0*\([0-9]*\).*/\1/p' "${COREBOOT_VERSION_FILE}")"
+		MINOR_VER="$(sed -n 's/^0*\([0-9]*\)\.0*\([0-9]*\).*/\2/p' "${COREBOOT_VERSION_FILE}")"
 	fi
 fi
 
@@ -84,8 +80,8 @@ printf "#define COREBOOT_VERSION_TIMESTAMP %s\n" "${DATE}"
 printf "#define COREBOOT_ORIGIN_GIT_REVISION \"%s\"\n" "${GITREV}"
 
 printf "#define COREBOOT_EXTRA_VERSION \"%s\"\n" "${COREBOOT_EXTRA_VERSION}"
-printf "#define COREBOOT_MAJOR_VERSION %s\n" "${MAJOR_VER}"
-printf "#define COREBOOT_MINOR_VERSION %s\n" "${MINOR_VER}"
+printf "#define COREBOOT_MAJOR_VERSION %s\n" "${MAJOR_VER:-0}"
+printf "#define COREBOOT_MINOR_VERSION %s\n" "${MINOR_VER:-0}"
 printf "#define COREBOOT_BUILD \"%s\"\n" "$(our_date "${DATE}" "+%a %b %d %H:%M:%S %Z %Y")"
 printf "#define COREBOOT_BUILD_YEAR_BCD 0x%s\n" "$(our_date "${DATE}" "+%y")"
 printf "#define COREBOOT_BUILD_MONTH_BCD 0x%s\n" "$(our_date "${DATE}" "+%m")"

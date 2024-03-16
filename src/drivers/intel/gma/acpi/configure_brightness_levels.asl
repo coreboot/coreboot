@@ -10,8 +10,11 @@
 	Device (BOX3)
 	{
 		Name (_ADR, 0)
-
-		OperationRegion (OPRG, SystemMemory, ASLS, 0x2000)
+		/*
+		 * Only cover MBOX3 since Windows 10/11 doesn't like
+		 * when the full (MBOX4/MBOX5 as well) OpRegion is covered.
+		 */
+		OperationRegion (OPRG, SystemMemory, ASLS, 0x400)
 		Field (OPRG, DWordAcc, NoLock, Preserve)
 		{
 			// OpRegion Header

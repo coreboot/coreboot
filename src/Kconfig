@@ -109,7 +109,6 @@ config ANY_TOOLCHAIN
 
 config CCACHE
 	bool "Use ccache to speed up (re)compilation"
-	default n
 	help
 	  Enables the use of ccache for faster builds.
 

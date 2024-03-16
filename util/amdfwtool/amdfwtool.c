@@ -1210,15 +1210,22 @@ static void add_bios_apcb_bk_entry(bios_directory_table *biosdir, unsigned int i
 	biosdir->entries[idx].address_mode = SET_ADDR_MODE_BY_TABLE(biosdir);
 }
 
-static void integrate_bios_levels(context *ctx)
+static void integrate_bios_levels(context *ctx, amd_cb_config *cb_config)
 {
-	unsigned int count = ctx->biosdir->header.num_entries;
+	unsigned int count;
 	uint32_t current_table_save;
 
-	current_table_save = ctx->current_table;
-	ctx->current_table = (char *)ctx->biosdir - ctx->rom;
-
-	if (ctx->biosdir2) {
+	if (cb_config->recovery_ab) {
+		add_psp_firmware_entry(ctx, ctx->pspdir2, ctx->biosdir2,
+			AMD_FW_BIOS_TABLE, TABLE_ALIGNMENT);
+		if (ctx->pspdir2_b != NULL)
+			add_psp_firmware_entry(ctx, ctx->pspdir2_b,
+				ctx->biosdir2_b, AMD_FW_BIOS_TABLE,
+				TABLE_ALIGNMENT);
+	} else if (ctx->biosdir2) {
+		current_table_save = ctx->current_table;
+		ctx->current_table = (char *)ctx->biosdir - ctx->rom;
+		count = ctx->biosdir->header.num_entries;
 		assert_fw_entry(count, MAX_BIOS_ENTRIES, ctx);
 		ctx->biosdir->entries[count].type = AMD_BIOS_L2_PTR;
 		ctx->biosdir->entries[count].region_type = 0;
@@ -1237,9 +1244,9 @@ static void integrate_bios_levels(context *ctx)
 		ctx->biosdir->entries[count].reset = 0;
 		ctx->biosdir->entries[count].ro = 0;
 		count++;
+		fill_dir_header(ctx->biosdir, count, ctx);
+		ctx->current_table = current_table_save;
 	}
-	fill_dir_header(ctx->biosdir, count, ctx);
-	ctx->current_table = current_table_save;
 }
 static void integrate_bios_firmwares(context *ctx,
 					amd_bios_entry *fw_table,
@@ -1763,17 +1770,11 @@ int main(int argc, char **argv)
 								amd_bios_table, BHDL2_COOKIE,
 								&cb_config);
 					}
-					add_psp_firmware_entry(&ctx, ctx.pspdir2, ctx.biosdir2,
-						AMD_FW_BIOS_TABLE, TABLE_ALIGNMENT);
-					if (ctx.pspdir2_b != NULL)
-						add_psp_firmware_entry(&ctx, ctx.pspdir2_b,
-								ctx.biosdir2_b, AMD_FW_BIOS_TABLE,
-								TABLE_ALIGNMENT);
 				} else {
 					integrate_bios_firmwares(&ctx,
 							amd_bios_table, BHD_COOKIE, &cb_config);
-					integrate_bios_levels(&ctx);
 				}
+				integrate_bios_levels(&ctx, &cb_config);
 			} else {
 				/* flat: BHD1 cookie and no pointer to 2nd table */
 				integrate_bios_firmwares(&ctx,

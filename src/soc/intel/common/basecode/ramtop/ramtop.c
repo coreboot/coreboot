@@ -2,6 +2,7 @@
 
 #include <commonlib/bsd/ipchksum.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>
 #include <intelbasecode/ramtop.h>
 #include <pc80/mc146818rtc.h>
@@ -125,9 +126,24 @@ void early_ramtop_enable_cache_range(void)
 		printk(BIOS_WARNING, "ramtop_table update failure due to no free MTRR available!\n");
 		return;
 	}
+
+	/*
+	 * Background: Some SoCs have a critical bug inside the NEM logic which is responsible
+	 *             for mapping cached memory to physical memory during tear down and
+	 *             eventually malfunctions if the number of cache sets is not a power of two.
+	 *             This can lead to runtime hangs.
+	 *
+	 * Workaround: To mitigate this issue on affected SoCs, we force the MTRR type to
+	 *             WC (Write Combining) unless the cache set count is a power of two.
+	 *             This change alters caching behavior but prevents the runtime failures.
+	 */
+	unsigned int mtrr_type = MTRR_TYPE_WRCOMB;
 	/*
 	 * We need to make sure late romstage (including FSP-M post mem) will be run
 	 * cached. Caching 16MB below ramtop is a safe to cover late romstage.
 	 */
-	set_var_mtrr(mtrr, ramtop - 16 * MiB, 16 * MiB, MTRR_TYPE_WRBACK);
+	if (is_cache_sets_power_of_two())
+		mtrr_type = MTRR_TYPE_WRBACK;
+
+	set_var_mtrr(mtrr, ramtop - 16 * MiB, 16 * MiB, mtrr_type);
 }

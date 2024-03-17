@@ -5,6 +5,8 @@ ifeq ($(CONFIG_XEON_SP_COMMON_BASE),y)
 subdirs-$(CONFIG_SOC_INTEL_SKYLAKE_SP) += skx lbg
 subdirs-$(CONFIG_SOC_INTEL_COOPERLAKE_SP) += cpx lbg
 subdirs-$(CONFIG_SOC_INTEL_SAPPHIRERAPIDS_SP) += spr ebg
+## TODO: GNR IBL codes are initially reused from EBG, will update later.
+subdirs-$(CONFIG_SOC_INTEL_GRANITERAPIDS) += gnr ebg
 
 bootblock-y += bootblock.c spi.c lpc.c pch.c report_platform.c
 romstage-y += romstage.c reset.c util.c spi.c pmutil.c memmap.c ddr.c

@@ -1,0 +1,130 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_INTEL_GRANITERAPIDS
+	bool
+	select MICROCODE_BLOB_NOT_HOOKED_UP
+	select FSP_NVS_DATA_POST_SILICON_INIT
+	select SOC_INTEL_MEM_MAPPED_PM_CONFIGURATION
+	select XEON_SP_COMMON_BASE
+	select PLATFORM_USES_FSP2_4
+	select CACHE_MRC_SETTINGS
+	select CPU_INTEL_TURBO_NOT_PACKAGE_SCOPED
+	select XEON_SP_IBL
+	select DEFAULT_X2APIC_RUNTIME
+	select UDK_202302_BINDING
+	select PLATFORM_USES_FSP2_X86_32
+	select HAVE_IOAT_DOMAINS
+	select FSP_SPEC_VIOLATION_XEON_SP_HEAP_WORKAROUND
+	select VPD
+	help
+	  Intel Granite Rapids support
+
+if SOC_INTEL_GRANITERAPIDS
+
+config CHIPSET_DEVICETREE
+	string
+	default "soc/intel/xeon_sp/gnr/chipset.cb"
+
+config FSP_HEADER_PATH
+	string "Location of FSP headers"
+	default "src/vendorcode/intel/fsp/fsp2_0/graniterapids/ap"
+
+config MAX_CPUS
+	int
+	default 255
+
+config PCR_BASE_ADDRESS
+	hex
+	default 0xf7000000
+	help
+	  This option allows you to select MMIO Base Address of sideband bus.
+
+config INTEL_PCH_PWRM_BASE_ADDRESS
+	hex
+	default 0xf6800000
+	help
+	  PCH PWRM Base address.
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xfe800000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x1fff00
+	help
+	  The size of the cache-as-ram region required during bootblock
+	  and/or romstage. FSP-T reserves the upper 0x100 for
+	  FspReservedBuffer.
+
+config DCACHE_BSP_STACK_SIZE
+	hex
+	default 0x60000
+	help
+	  The amount of anticipated stack usage in CAR by bootblock and
+	  other stages. It needs to include FSP-M stack requirement and
+	  CB romstage stack requirement. The integration documentation
+	  says this needs to be 256KiB.
+
+config FSP_M_RC_HEAP_SIZE
+	hex
+	default 0x142000
+	help
+	  On xeon_sp/gnr FSP-M has two separate heap managers, one regular
+	  whose size and base are controllable via the StackBase and
+	  StackSize UPDs and a 'rc' heap manager that is statically
+	  allocated at 0xfe800000 (the CAR base) and consumes about 0x142000
+	  bytes of memory.
+
+config HEAP_SIZE
+	hex
+	default 0x80000
+
+config STACK_SIZE
+	hex
+	default 0x4000
+
+config FSP_TEMP_RAM_SIZE
+	hex
+	depends on FSP_USES_CB_STACK
+	default 0x58000
+	help
+	  The amount of anticipated heap usage in CAR by FSP.
+	  Refer to Platform FSP integration guide document to know
+	  the exact FSP requirement for Heap setup. The FSP integration
+	  documentation says this needs to be at least 128KiB, but practice
+	  show this needs to be 256KiB or more.
+
+config IED_REGION_SIZE
+	hex
+	default 0x400000
+
+config CPU_BCLK_MHZ
+	int
+	default 100
+
+# DDR4
+config DIMM_SPD_SIZE
+	int
+	default 1024
+
+config MAX_ACPI_TABLE_SIZE_KB
+	int
+	default 224
+
+config SOC_INTEL_HAS_NCMEM
+	def_bool y
+
+config SOC_INTEL_MMAPVTD_ONLY_FOR_DPR
+	def_bool y
+
+config SOC_INTEL_HAS_CXL
+	def_bool n
+
+config INTEL_SPI_BASE_ADDRESS
+	hex
+	default 0xf6830000
+	help
+	  SPI BAR0 Base address.
+
+endif

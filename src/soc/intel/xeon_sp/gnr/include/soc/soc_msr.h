@@ -1,0 +1,64 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+
+/* TEMPORARY PLACE HOLDER! DO NOT USE! */
+/* FORMED FROM src/soc/intel/xeon_sp/spr/include/soc/soc_msr.h */
+
+#ifndef _SOC_MSR_SPR_H_
+#define _SOC_MSR_SPR_H_
+
+#define MSR_CPU_BUSNO 0x128
+#define BUSNO_VALID   (1 << 31)	/* used as msr.hi */
+
+/* IA32_ERR_CTRL */
+#define CMCI_DISABLE (1 << 4)
+
+/* MSR_PKG_CST_CONFIG_CONTROL */
+#define PKG_CSTATE_NO_LIMIT (0x8 << PKG_CSTATE_LIMIT_SHIFT)
+
+/* MSR_POWER_CTL */
+#define RESERVED1_SHIFT		     2
+#define PWR_PERF_PLTFRM_OVR_SHIFT    18
+#define PWR_PERF_PLTFRM_OVR	     (1 << PWR_PERF_PLTFRM_OVR_SHIFT)
+#define EE_TURBO_DISABLE_SHIFT	     19
+#define EE_TURBO_DISABLE	     (1 << EE_TURBO_DISABLE_SHIFT)
+#define RTH_DISABLE_SHIFT	     20
+#define RTH_DISABLE		     (1 << RTH_DISABLE_SHIFT)
+#define PROCHOT_OUTPUT_DISABLE_SHIFT 21
+#define PROCHOT_OUTPUT_DISABLE	     (1 << PROCHOT_OUTPUT_DISABLE_SHIFT)
+#define PROCHOT_RESPONSE_SHIFT	     22
+#define PROCHOT_RESPONSE	     (1 << PROCHOT_RESPONSE_SHIFT)
+#define PROCHOT_LOCK_SHIFT	     23
+#define PROCHOT_LOCK		     (1 << PROCHOT_LOCK_SHIFT)
+#define VR_THERM_ALERT_DISABLE_SHIFT 24
+#define VR_THERM_ALERT_DISABLE	     (1 << VR_THERM_ALERT_DISABLE_SHIFT)
+#define DISABLE_RING_EE_SHIFT	     25
+#define DISABLE_RING_EE		     (1 << DISABLE_RING_EE_SHIFT)
+#define RESERVED2_SHIFT		     26
+#define DISABLE_AUTONOMOUS_SHIFT     28
+#define DISABLE_AUTONOMOUS	     (1 << DISABLE_AUTONOMOUS_SHIFT)
+#define RESERVED3_SHIFT		     29
+#define CSTATE_PREWAKE_DISABLE_SHIFT 30
+#define CSTATE_PREWAKE_DISABLE	     (1 << CSTATE_PREWAKE_DISABLE_SHIFT)
+
+/* SPR has banks 0-20 and 29-31 */
+#define IA32_MC20_CTL2	   0x294
+#define IA32_MC29_CTL2	   0x29D
+#define IA32_MC30_CTL2	   0x29E
+#define IA32_MC31_CTL2	   0x29F
+
+#define MSR_PERRINJ_AT_IP	 0x107
+#define MSR_PERRINJ_AT_IP_ENABLE BIT(31)
+
+#define MSR_BIOS_DONE		    0x151
+#define XEON_SP_ENABLE_IA_UNTRUSTED BIT(0)
+
+#define MSR_FLEX_RATIO	       0x194
+#define MSR_FLEX_RATIO_OC_LOCK BIT(20)
+
+/* B1:D30:F0 offset 0xe8 on previous generations */
+#define PACKAGE_RAPL_LIMIT 0x610
+
+#define MSR_DRAM_PLANE_POWER_LIMIT 0x618
+#define MSR_HI_PP_PWR_LIM_LOCK	   BIT(31)	/* used as msr.hi */
+
+#endif /* _SOC_MSR_SPR_H_ */

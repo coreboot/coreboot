@@ -1,0 +1,21 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+chip soc/intel/xeon_sp/gnr
+
+	# configure VT-d
+	register "vtd_support" = "1"
+
+	# configure BIOS lockdown
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_FSP,
+	}"
+
+	# configure devices
+	device cpu_cluster 0 on ops cpu_bus_ops end
+
+	device domain 0 on
+		device pci 00.0 mandatory end # MMAP/VT-d
+		device gpio 0 alias ibl_gpio_communities on end # GPIO
+		device mmio 0xfed00000 on ops hpet_device_ops end # HPET
+	end
+end

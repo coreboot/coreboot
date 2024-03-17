@@ -16,11 +16,6 @@ enum acpi_cstate_mode {
 	CSTATES_C1C6
 };
 
-#define MEM_BLK_COUNT      0x140
-typedef struct {
-	uint8_t   buf[32];
-} MEM_BLK;
-
 unsigned long northbridge_write_acpi_tables(const struct device *device,
 	unsigned long current, struct acpi_rsdp *rsdp);
 unsigned long xeonsp_acpi_create_madt_lapics(unsigned long current);

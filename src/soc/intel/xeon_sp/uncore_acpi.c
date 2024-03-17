@@ -439,33 +439,6 @@ static unsigned long acpi_create_atsr(unsigned long current)
 
 static unsigned long acpi_create_rmrr(unsigned long current)
 {
-	uint32_t size = ALIGN_UP(MEM_BLK_COUNT * sizeof(MEM_BLK), 0x1000);
-
-	uint32_t *ptr;
-
-	// reserve memory
-	ptr = cbmem_find(CBMEM_ID_STORAGE_DATA);
-	if (!ptr) {
-		ptr = cbmem_add(CBMEM_ID_STORAGE_DATA, size);
-		assert(ptr);
-		memset(ptr, 0, size);
-	}
-
-	unsigned long tmp = current;
-	printk(BIOS_DEBUG, "[Reserved Memory Region] PCI Segment Number: 0x%x, Base Address: 0x%x, "
-		"End Address (limit): 0x%x\n",
-		0, (uint32_t)ptr, (uint32_t)((uint32_t)ptr + size - 1));
-	current += acpi_create_dmar_rmrr(current, 0, (uint32_t)ptr,
-		(uint32_t)((uint32_t)ptr + size - 1));
-
-	printk(BIOS_DEBUG, "    [PCI Endpoint Device] PCI Bus Number: 0x%x, "
-		"PCI Path: 0x%x, 0x%x\n",
-		 XHCI_BUS_NUMBER, PCH_DEV_SLOT_XHCI, XHCI_FUNC_NUM);
-	current += acpi_create_dmar_ds_pci(current, XHCI_BUS_NUMBER,
-		PCH_DEV_SLOT_XHCI, XHCI_FUNC_NUM);
-
-	acpi_dmar_rmrr_fixup(tmp, current);
-
 	return current;
 }
 

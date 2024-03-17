@@ -61,7 +61,7 @@
 #define CBMEM_ID_STAGEx_META	0x57a9e000
 #define CBMEM_ID_STAGEx_CACHE	0x57a9e100
 #define CBMEM_ID_STAGEx_RAW	0x57a9e200
-#define CBMEM_ID_STORAGE_DATA	0x53746f72
+#define CBMEM_ID_STORAGE_DATA	0x53746f72 /* deprecated */
 #define CBMEM_ID_TPM_CB_LOG	0x54435041 /* TPM log in coreboot-specific format */
 #define CBMEM_ID_TCPA_TCG_LOG	0x54445041 /* TPM log per TPM 1.2 specification */
 #define CBMEM_ID_TIMESTAMP	0x54494d45

@@ -245,8 +245,5 @@ bool is_cache_sets_power_of_two(void)
 
 	size_t cache_sets = cpu_get_cache_sets(&info);
 
-	if (IS_POWER_OF_2(cache_sets))
-		return true;
-
-	return false;
+	return IS_POWER_OF_2(cache_sets);
 }

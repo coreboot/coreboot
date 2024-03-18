@@ -15,41 +15,90 @@ Device (BAT0)
 		}
 		Return (0x0F)
 	}
-	Name (BPKG, Package (13)
+
+	Name (SBIF, Package (13)
 	{
-		1,		//  0: Power Unit
-		0xFFFFFFFF,	//  1: Design Capacity
-		0xFFFFFFFF,	//  2: Last Full Charge Capacity
-		1,		//  3: Battery Technology(Rechargeable)
-		0xFFFFFFFF,	//  4: Design Voltage 10.8V
-		0,		//  5: Design capacity of warning
-		0,		//  6: Design capacity of low
-		100,		//  7: Battery capacity granularity 1
-		0,		//  8: Battery capacity granularity 2
-		"597077-3S",	//  9: Model Number
-		"3ICP6/70/77",	// 10: Serial Number
-		"Real",		// 11: Battery Type
-		"DGFGE"		// 12: OEM Information
+		1,					//  0: Power Unit			0:	mWh
+							//					1:	mA
+		0xffffffff,				//  1: Design Capacity
+		0xffffffff,				//  2: Last Full Charge Capacity
+		1,					//  3: Battery Technology		0:	Primary (non-rechargeable)
+							//					1:	Secondary (rechargeable)
+		0xffffffff,				//  4: Design Voltage
+		0,					//  5: Design capacity of Warning
+		0,					//  6: Design capacity of Low
+		0xffffffff,				//  7: Battery capacity Decrement Granularity
+		0xffffffff,				//  8: Battery capacity Increment Granularity
+		CONFIG_EC_STARLABS_BATTERY_MODEL,	//  9: Model Number
+		"Unknown",				// 10: Serial Number
+		CONFIG_EC_STARLABS_BATTERY_TYPE,	// 11: Battery Type
+		CONFIG_EC_STARLABS_BATTERY_OEM		// 12: OEM Information
 	})
-	Method (_BIF, 0, Serialized)
+	Method (_BIF, 0, NotSerialized)
 	{
-		BPKG[1] = B1DC
-		BPKG[2] = B1FC
-		BPKG[4] = B1DV
-		If (B1FC)
-		{
-			BPKG[5] = B1FC / 10
-			BPKG[6] = B1FC / 100
-			BPKG[7] = B1DC / 100
+		If (B1DC) {
+			SBIF  [1] = B1DC
+			SBIF  [2] = B1FC
+			SBIF  [4] = B1DV
+			SBIF  [5] = B1DC / 5	// 20%
+			SBIF  [6] = B1DC / 20	// 5%
+			SBIF  [7] = B1DC / 500	// 0.2%
+			SBIF  [8] = B1DC / 500	// 0.2%
+			SBIF [10] = B1SN
 		}
-		Return (BPKG)
+		Return (SBIF)
 	}
+
+	Name (XBIF, Package (21)
+	{
+		1,					//  0: Revision				0:	3.0
+							//					1:	4.0
+		1,					//  1: Power Unit			0:	mWh
+							//					1:	mA
+		0xffffffff,				//  2: Design Capacity
+		0xffffffff,				//  3: Last Full Charge Capacity
+		1,					//  4: Battery Technology		0:	Primary (non-rechargeable)
+							//					1:	Secondary (rechargeable)
+		0xffffffff,				//  5: Design Voltage
+		0xffffffff,				//  6: Design Capacity of Warning
+		0xffffffff,				//  7: Design Capacity of Low
+		0xffffffff,				//  8: Cycle Count
+		2,					//  9: Measurement Accuracy
+		5000,					// 10: Max Sampling Time (ms)
+		1000,					// 11: Min Sampling Time (ms)
+		5000,					// 12: Max Averaging Interval
+		1000,					// 13: Min Averaging Interval
+		0xffffffff,				// 14: Battery Capacity Decrement Granularity
+		0xffffffff,				// 15: Battery Capacity Increment Granularity
+		CONFIG_EC_STARLABS_BATTERY_MODEL,	// 16: Model Number
+		"Unknown",				// 17: Serial Number
+		CONFIG_EC_STARLABS_BATTERY_TYPE,	// 18: Battery Type
+		CONFIG_EC_STARLABS_BATTERY_OEM,		// 19: OEM Information
+		1,					// 20: Swapping Capability		0:	Non swappable
+							//					1:	Cold swappable
+							//					16:	Hot swappable
+	})
+	Method (_BIX, 0, NotSerialized)
+	{
+		If (B1DC) {
+			XBIF  [2] = B1DC
+			XBIF  [3] = B1FC
+			XBIF  [5] = B1DV
+			XBIF  [6] = B1DC / 5	// 20%
+			XBIF  [7] = B1DC / 20	// 5%
+			XBIF [14] = B1DC / 500	// 0.2%
+			XBIF [15] = B1DC / 500	// 0.2%
+			XBIF [17] = B1SN
+		}
+		Return (XBIF)
+	}
+
 	Name (PKG1, Package (4)
 	{
-		0xFFFFFFFF,	// Battery State
-		0xFFFFFFFF,	// Battery Present Rate
-		0xFFFFFFFF,	// Battery Remaining Capacity
-		0xFFFFFFFF,	// Battery Present Voltage
+		0xffffffff,	//  0: Battery State
+		0xffffffff,	//  1: Battery Present Rate
+		0xffffffff,	//  2: Battery Remaining Capacity
+		0xffffffff,	//  3: Battery Present Voltage
 	})
 	Method (_BST, 0, NotSerialized)
 	{

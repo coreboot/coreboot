@@ -86,6 +86,7 @@ Device (BAT0)
 			XBIF  [5] = B1DV
 			XBIF  [6] = B1DC / 5	// 20%
 			XBIF  [7] = B1DC / 20	// 5%
+			XBIF  [8] = B1CC
 			XBIF [14] = B1DC / 500	// 0.2%
 			XBIF [15] = B1DC / 500	// 0.2%
 			XBIF [17] = B1SN

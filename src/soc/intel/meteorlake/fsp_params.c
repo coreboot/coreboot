@@ -476,6 +476,8 @@ static void fill_fsps_xhci_params(FSP_S_CONFIG *s_cfg,
 			s_cfg->Usb2OverCurrentPin[i] = config->usb2_ports[i].ocpin;
 		else
 			s_cfg->Usb2OverCurrentPin[i] = OC_SKIP;
+
+		s_cfg->PortResetMessageEnable[i] = config->usb2_ports[i].type_c;
 	}
 
 	max_port = get_max_usb30_port();

@@ -18,7 +18,6 @@
 #include <soc/pci_devs.h>
 #include <soc/soc_util.h>
 #include <soc/util.h>
-#include <intelblocks/p2sb.h>
 #include "chip.h"
 
 /* NUMA related ACPI table generation. SRAT, SLIT, etc */
@@ -283,7 +282,7 @@ static unsigned long acpi_create_drhd(unsigned long current, struct device *iomm
 
 	// Add PCH IOAPIC
 	if (is_dev_on_domain0(iommu)) {
-		union p2sb_bdf ioapic_bdf = p2sb_get_ioapic_bdf();
+		union p2sb_bdf ioapic_bdf = soc_get_ioapic_bdf();
 		printk(BIOS_DEBUG, "    [IOAPIC Device] Enumeration ID: 0x%x, PCI Bus Number: 0x%x, "
 		       "PCI Path: 0x%x, 0x%x\n", get_ioapic_id(IO_APIC_ADDR), ioapic_bdf.bus,
 		       ioapic_bdf.dev, ioapic_bdf.fn);
@@ -363,7 +362,7 @@ static unsigned long acpi_create_drhd(unsigned long current, struct device *iomm
 		//BIT 15
 		if (num_hpets && (num_hpets != 0x1f) &&
 			(read32p(HPET_BASE_ADDRESS + 0x100) & (0x00008000))) {
-			union p2sb_bdf hpet_bdf = p2sb_get_hpet_bdf();
+			union p2sb_bdf hpet_bdf = soc_get_hpet_bdf();
 			printk(BIOS_DEBUG, "    [Message-capable HPET Device] Enumeration ID: 0x%x, "
 				"PCI Bus Number: 0x%x, PCI Path: 0x%x, 0x%x\n",
 				0, hpet_bdf.bus, hpet_bdf.dev, hpet_bdf.fn);

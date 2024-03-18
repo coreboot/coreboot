@@ -4,6 +4,7 @@
 #define _XEON_SP_SOC_UTIL_H_
 
 #include <cpu/x86/msr.h>
+#include <intelblocks/p2sb.h>
 #include <soc/soc_util.h>
 
 #define MEM_ADDR_64MB_SHIFT_BITS 26
@@ -27,6 +28,8 @@ bool is_ubox_stack_res(const xSTACK_RES *res);
 bool is_ioat_iio_stack_res(const xSTACK_RES *res);
 bool is_iio_cxl_stack_res(const xSTACK_RES *res);
 void bios_done_msr(void *unused);
+union p2sb_bdf soc_get_hpet_bdf(void);
+union p2sb_bdf soc_get_ioapic_bdf(void);
 
 enum xeonsp_cxl_mode get_cxl_mode(void);
 

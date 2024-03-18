@@ -9,8 +9,10 @@
 #include <device/pci_ids.h>
 #include <intelblocks/cfg.h>
 #include <intelblocks/cpulib.h>
+#include <intelblocks/p2sb.h>
 #include <intelpch/lockdown.h>
 #include <soc/chip_common.h>
+#include <soc/pch_pci_devs.h>
 #include <soc/pci_devs.h>
 #include <soc/msr.h>
 #include <soc/soc_util.h>
@@ -86,6 +88,32 @@ bool soc_cpu_is_enabled(const size_t idx)
 unsigned int soc_get_num_cpus(void)
 {
 	return get_iio_uds()->SystemStatus.numCpus;
+}
+
+union p2sb_bdf soc_get_hpet_bdf(void)
+{
+	if (CONFIG(SOC_INTEL_COMMON_IBL_BASE)) {
+		union p2sb_bdf bdf = {
+			.bus = HPET_BUS_NUM,
+			.dev = HPET_DEV_NUM,
+			.fn = HPET0_FUNC_NUM
+		};
+		return bdf;
+	}
+	return p2sb_get_hpet_bdf();
+}
+
+union p2sb_bdf soc_get_ioapic_bdf(void)
+{
+	if (CONFIG(SOC_INTEL_COMMON_IBL_BASE)) {
+		union p2sb_bdf bdf = {
+			.bus = PCH_IOAPIC_BUS_NUMBER,
+			.dev = PCH_IOAPIC_DEV_NUM,
+			.fn = PCH_IOAPIC_FUNC_NUM
+		};
+		return bdf;
+	}
+	return p2sb_get_ioapic_bdf();
 }
 
 #if ENV_RAMSTAGE /* Setting devtree variables is only allowed in ramstage. */

@@ -198,5 +198,5 @@ void configure_mpio(void)
 	for (struct device *dev = &dev_root; dev; dev = dev->next)
 		if (dev->chip_ops == &vendorcode_amd_opensil_genoa_poc_mpio_ops &&
 		    dev->chip_info != dev->upstream->dev->chip_info)
-			per_device_config(mpio_data, dev->upstream->dev, dev->chip_info);
+			per_device_config(mpio_data, dev, dev->chip_info);
 }

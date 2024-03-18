@@ -3,7 +3,7 @@
 all_x86-y += mode_switch.S
 all_x86-y += mode_switch2.S
 
-ifeq ($(CONFIG_USE_1G_PAGETABLES),y)
+ifeq ($(CONFIG_USE_1G_PAGES_TLB),y)
 PAGETABLE_SRC := pt1G.S
 else
 PAGETABLE_SRC := pt.S

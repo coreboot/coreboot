@@ -40,6 +40,8 @@ Device (BAT0)
 			SBIF  [1] = B1DC
 			If (B1FC != 0xffff) {
 				SBIF  [2] = B1FC
+			} Else {
+				SBIF  [2] = B1DC
 			}
 			SBIF  [4] = B1DV
 			SBIF  [5] = B1DC / 5	// 20%
@@ -88,6 +90,8 @@ Device (BAT0)
 			XBIF  [2] = B1DC
 			If (B1FC != 0xffff) {
 				XBIF  [3] = B1FC
+			} Else {
+				XBIF  [3] = B1DC
 			}
 			XBIF  [5] = B1DV
 			XBIF  [6] = B1DC / 5	// 20%
@@ -117,6 +121,8 @@ Device (BAT0)
 		PKG1[1] = B1PR
 		If (B1RC != 0xffff) {
 			PKG1[2] = B1RC
+		} Else {
+			PKG1[2] = B1RP * (B1DC / 100)
 		}
 		PKG1[3] = B1PV
 		Return (PKG1)

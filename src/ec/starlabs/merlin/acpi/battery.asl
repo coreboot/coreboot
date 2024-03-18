@@ -38,13 +38,17 @@ Device (BAT0)
 	{
 		If (B1DC) {
 			SBIF  [1] = B1DC
-			SBIF  [2] = B1FC
+			If (B1FC != 0xffff) {
+				SBIF  [2] = B1FC
+			}
 			SBIF  [4] = B1DV
 			SBIF  [5] = B1DC / 5	// 20%
 			SBIF  [6] = B1DC / 20	// 5%
 			SBIF  [7] = B1DC / 500	// 0.2%
 			SBIF  [8] = B1DC / 500	// 0.2%
-			SBIF [10] = B1SN
+			If (B1SN != 0xffff) {
+				SBIF [10] = B1SN
+			}
 		}
 		Return (SBIF)
 	}
@@ -82,14 +86,20 @@ Device (BAT0)
 	{
 		If (B1DC) {
 			XBIF  [2] = B1DC
-			XBIF  [3] = B1FC
+			If (B1FC != 0xffff) {
+				XBIF  [3] = B1FC
+			}
 			XBIF  [5] = B1DV
 			XBIF  [6] = B1DC / 5	// 20%
 			XBIF  [7] = B1DC / 20	// 5%
-			XBIF  [8] = B1CC
+			If (B1CC != 0xffff) {
+				XBIF  [8] = B1CC
+			}
 			XBIF [14] = B1DC / 500	// 0.2%
 			XBIF [15] = B1DC / 500	// 0.2%
-			XBIF [17] = B1SN
+			If (B1SN != 0xffff) {
+				XBIF [17] = B1SN
+			}
 		}
 		Return (XBIF)
 	}
@@ -105,7 +115,9 @@ Device (BAT0)
 	{
 		PKG1[0] = (B1ST & 0x07)
 		PKG1[1] = B1PR
-		PKG1[2] = B1RC
+		If (B1RC != 0xffff) {
+			PKG1[2] = B1RC
+		}
 		PKG1[3] = B1PV
 		Return (PKG1)
 	}

@@ -49,6 +49,15 @@ config DEVICETREE
 config EC_GPE_SCI
 	default 0x26
 
+config EC_STARLABS_BATTERY_MODEL
+	default "3172120X2-I116CG"
+
+config EC_STARLABS_BATTERY_TYPE
+	default "LiP"
+
+config EC_STARLABS_BATTERY_OEM
+	default "Apower Electronics"
+
 config EC_VARIANT_DIR
 	default "glk"  if BOARD_STARLABS_LITE_GLK
 	default "glkr" if BOARD_STARLABS_LITE_GLKR

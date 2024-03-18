@@ -93,3 +93,15 @@ config EC_VARIANT_DIR
 config EC_GPE_SCI
 	hex
 	default 0x50
+
+config EC_STARLABS_BATTERY_MODEL
+	string
+	default "Unknown"
+
+config EC_STARLABS_BATTERY_TYPE
+	string
+	default "LION"
+
+config EC_STARLABS_BATTERY_OEM
+	string
+	default "Unknown"

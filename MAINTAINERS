@@ -938,7 +938,7 @@ S:	Maintained
 F:	src/soc/intel/tigerlake/
 
 INTEL Xeon Sacalable Processor Family
-M:	Jonathan Zhang <jonzhang@fb.com>
+M:	Jonathan Zhang <jon.zhixiong.zhang@gmail.com>
 M:	Johnny Lin <Johnny_Lin@wiwynn.com>
 M:	Tim Chu <Tim.Chu@quantatw.com>
 M:	Arthur Heymans <arthur@aheymans.xyz>

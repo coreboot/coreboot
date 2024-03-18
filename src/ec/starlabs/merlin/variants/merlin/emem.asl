@@ -48,5 +48,5 @@ Field (ECF2, ByteAcc, Lock, Preserve)
 	B1PR, 16,	// Battery Present Rate
 	B1RC, 16,	// Battery Remaining Capacity
 	B1PV, 16,	// Battery Present Voltage
-	BPRP, 8,	// Battery Remaining percentage
+	BPRP, 16,	// Battery Remaining percentage
 }

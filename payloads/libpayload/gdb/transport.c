@@ -16,12 +16,12 @@
 #include <gdb.h>
 #include <libpayload.h>
 
+#define OUTPUT_OVERRUN_MSG "GDB output buffer overrun (try increasing reply.size)!\n"
+
 /* MMIO word size is not standardized, but *usually* 32 (even on ARM64) */
 typedef u32 mmio_word_t;
 
 static const int timeout_us = 100 * 1000;
-static const char output_overrun[] = "GDB output buffer overrun (try "
-				     "increasing reply.size)!\n";
 
 /* Serial-specific glue code... add more transport layers here when desired. */
 
@@ -77,7 +77,7 @@ static char to_hex(u8 v)
 void gdb_message_encode_bytes(struct gdb_message *message, const void *data,
 			      int length)
 {
-	die_if(message->used + length * 2 > message->size, output_overrun);
+	die_if(message->used + length * 2 > message->size, OUTPUT_OVERRUN_MSG);
 	const mmio_word_t *aligned =
 		(mmio_word_t *)ALIGN_DOWN((uintptr_t)data, sizeof(*aligned));
 	mmio_word_t word = be32toh(readl(aligned++));
@@ -114,7 +114,7 @@ void gdb_message_decode_bytes(const struct gdb_message *message, int offset,
 
 void gdb_message_encode_zero_bytes(struct gdb_message *message, int length)
 {
-	die_if(message->used + length * 2 > message->size, output_overrun);
+	die_if(message->used + length * 2 > message->size, OUTPUT_OVERRUN_MSG);
 	memset(message->buf + message->used, '0', length * 2);
 	message->used += length * 2;
 }
@@ -125,13 +125,13 @@ void gdb_message_add_string(struct gdb_message *message, const char *string)
 			     string, message->size - message->used);
 
 	/* Check >= instead of > to account for strlcpy's trailing '\0'. */
-	die_if(message->used >= message->size, output_overrun);
+	die_if(message->used >= message->size, OUTPUT_OVERRUN_MSG);
 }
 
 void gdb_message_encode_int(struct gdb_message *message, uintptr_t val)
 {
 	int length = sizeof(uintptr_t) * 2 - __builtin_clz(val) / 4;
-	die_if(message->used + length > message->size, output_overrun);
+	die_if(message->used + length > message->size, OUTPUT_OVERRUN_MSG);
 	while (length--)
 		message->buf[message->used++] =
 			to_hex((val >> length * 4) & 0xf);

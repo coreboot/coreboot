@@ -3,8 +3,8 @@
 #include <types.h>
 
 enum mpio_engine_type {
-	ENGINE_PCIE,
-	ENGINE_SATA,
+	IFTYPE_PCIE,
+	IFTYPE_SATA,
 };
 
 /* Sync with PCIE_HOTPLUG_TYPE */

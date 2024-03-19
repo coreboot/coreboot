@@ -165,6 +165,13 @@ void i2c_generic_fill_ssdt(const struct device *dev,
 		acpigen_pop_len();
 	}
 
+	/* Chip Direct Mapping */
+	if (config->cdm_index != CDM_NOT_PRESENT) {
+		acpigen_write_method("_CDM", 1);
+		acpigen_write_return_integer(0xabcd00 | config->cdm_index);
+		acpigen_pop_len();
+	}
+
 	/* Callback if any. */
 	if (callback)
 		callback(dev);

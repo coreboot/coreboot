@@ -14,6 +14,14 @@ config ACPI_CPU_STRING
 	  Specifies the ACPI name format string used by the acpigen
 	  function to generate the processor scope. Default is CPxx.
 
+config ACPI_FNKEY_GEN_SCANCODE
+	int
+	default 0
+	help
+	  Specifies the scancode, if any, which is generated when the Fn key is
+	  pressed. A value of 0 is ignored, which is the default since most
+	  keyboards do not emit a scancode for the Fn key.
+
 config ACPI_HAVE_PCAT_8259
 	def_bool y if !ACPI_NO_PCAT_8259
 

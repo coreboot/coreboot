@@ -244,6 +244,13 @@ static void ssdt_generate_keymap(struct acpi_dp *dp, uint8_t num_top_row_keys,
 			acpi_dp_add_integer(dp_array, NULL, keymap);
 		}
 
+		/* Add the Fn-key */
+		if (CONFIG_ACPI_FNKEY_GEN_SCANCODE != 0) {
+			acpi_dp_add_integer(dp_array, NULL, KEYMAP(CONFIG_ACPI_FNKEY_GEN_SCANCODE,
+								   KEY_FN));
+			total++;
+		}
+
 		total += num_top_row_keys;
 	}
 

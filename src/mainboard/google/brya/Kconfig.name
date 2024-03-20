@@ -172,3 +172,6 @@ config BOARD_GOOGLE_BUJIA
 
 config BOARD_GOOGLE_YAVISTA
 	bool "->  Yavista"
+
+config BOARD_GOOGLE_SUNDANCE
+	bool "->  Sundance"

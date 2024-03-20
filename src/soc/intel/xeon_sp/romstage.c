@@ -24,8 +24,6 @@ void mainboard_romstage_entry(void)
 		}
 	}
 
-	unlock_pam_regions();
-
 	save_dimm_info();
 }
 

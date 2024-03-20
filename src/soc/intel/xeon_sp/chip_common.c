@@ -211,7 +211,7 @@ void attach_iio_stacks(void)
 		if (!soc_cpu_is_enabled(s))
 			continue;
 		for (int x = 0; x < MAX_LOGIC_IIO_STACK; ++x) {
-			const STACK_RES *ri = &hob->PlatformData.IIO_resource[s].StackRes[x];
+			const xSTACK_RES *ri = &hob->PlatformData.IIO_resource[s].StackRes[x];
 			const size_t seg = hob->PlatformData.CpuQpiInfo[s].PcieSegment;
 
 			if (ri->BusBase > ri->BusLimit)

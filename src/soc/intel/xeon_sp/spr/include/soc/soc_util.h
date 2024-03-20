@@ -9,6 +9,9 @@
 #include <hob_systeminfo.h>
 #include <hob_enhancedwarningloglib.h>
 
+#define xSTACK_RES STACK_RES
+#define xIIO_RESOURCE_INSTANCE IIO_RESOURCE_INSTANCE
+
 /*
  * Address of the MRC status byte in CMOS. Should be reserved
  * in mainboards' cmos.layout and not covered by checksum.

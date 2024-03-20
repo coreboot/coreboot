@@ -53,11 +53,11 @@ void attach_iio_stacks(void);
 
 void create_ioat_domains(union xeon_domain_path path,
 				struct bus *bus,
-				const STACK_RES *sr,
+				const xSTACK_RES *sr,
 				const size_t pci_segment_group);
 
 void create_xeonsp_domains(const union xeon_domain_path dp, struct bus *bus,
-				const STACK_RES *sr, const size_t pci_segment_group);
+				const xSTACK_RES *sr, const size_t pci_segment_group);
 
 void create_domain(const union xeon_domain_path dp, struct bus *upstream,
 			int bus_base, int bus_limit, const char *type,

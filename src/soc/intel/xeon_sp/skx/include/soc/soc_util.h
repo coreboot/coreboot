@@ -6,6 +6,9 @@
 #include <hob_iiouds.h>
 #include <hob_memmap.h>
 
+#define xSTACK_RES STACK_RES
+#define xIIO_RESOURCE_INSTANCE IIO_RESOURCE_INSTANCE
+
 void config_reset_cpl3_csrs(void);
 
 const struct SystemMemoryMapHob *get_system_memory_map(void);

@@ -6,6 +6,9 @@
 #include <hob_iiouds.h>
 #include <hob_memmap.h>
 
+#define xSTACK_RES STACK_RES
+#define xIIO_RESOURCE_INSTANCE IIO_RESOURCE_INSTANCE
+
 /*
  * Address of the MRC status byte in CMOS. Should be reserved
  * in mainboards' cmos.layout and not covered by checksum.
@@ -21,6 +24,13 @@
 #error "CMOS length for CPX-SP MRC status byte is not correct, check your cmos.layout"
 #endif
 #endif
+
+struct iiostack_resource {
+	uint8_t     no_of_stacks;
+	STACK_RES   res[CONFIG_MAX_SOCKET * MAX_IIO_STACK];
+};
+
+void get_iiostack_info(struct iiostack_resource *info);
 
 const struct SystemMemoryMapHob *get_system_memory_map(void);
 

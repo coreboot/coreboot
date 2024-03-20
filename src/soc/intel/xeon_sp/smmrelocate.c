@@ -7,6 +7,7 @@
 #include <cpu/intel/em64t101_save_state.h>
 #include <cpu/intel/smm_reloc.h>
 #include <console/console.h>
+#include <device/device.h>
 #include <device/pci_ids.h>
 #include <smp/node.h>
 #include <soc/msr.h>

@@ -3,12 +3,6 @@
 #ifndef _SOC_MSR_SPR_H_
 #define _SOC_MSR_SPR_H_
 
-#define MSR_CPU_BUSNO 0x128
-#define BUSNO_VALID   (1 << 31)	/* used as msr.hi */
-
-/* IA32_ERR_CTRL */
-#define CMCI_DISABLE (1 << 4)
-
 /* MSR_PKG_CST_CONFIG_CONTROL */
 #define PKG_CSTATE_NO_LIMIT (0x8 << PKG_CSTATE_LIMIT_SHIFT)
 
@@ -36,15 +30,6 @@
 #define RESERVED3_SHIFT		     29
 #define CSTATE_PREWAKE_DISABLE_SHIFT 30
 #define CSTATE_PREWAKE_DISABLE	     (1 << CSTATE_PREWAKE_DISABLE_SHIFT)
-
-/* SPR has banks 0-20 and 29-31 */
-#define IA32_MC20_CTL2	   0x294
-#define IA32_MC29_CTL2	   0x29D
-#define IA32_MC30_CTL2	   0x29E
-#define IA32_MC31_CTL2	   0x29F
-
-#define MSR_PERRINJ_AT_IP	 0x107
-#define MSR_PERRINJ_AT_IP_ENABLE BIT(31)
 
 #define MSR_BIOS_DONE		    0x151
 #define XEON_SP_ENABLE_IA_UNTRUSTED BIT(0)

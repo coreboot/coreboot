@@ -61,6 +61,12 @@ static void iio_pci_domain_read_resources(struct device *dev)
 			pr->Mmio64Base, pr->Mmio64Limit + 1);
 }
 
+static void iio_pci_domain_fill_ssdt(const struct device *domain)
+{
+	soc_pci_domain_fill_ssdt(domain);
+	pci_domain_fill_ssdt(domain);
+}
+
 static struct device_operations iio_pcie_domain_ops = {
 	.read_resources = iio_pci_domain_read_resources,
 	.set_resources = pci_domain_set_resources,
@@ -68,7 +74,7 @@ static struct device_operations iio_pcie_domain_ops = {
 #if CONFIG(HAVE_ACPI_TABLES)
 	.acpi_name = soc_acpi_name,
 	.write_acpi_tables = northbridge_write_acpi_tables,
-	.acpi_fill_ssdt	= pci_domain_fill_ssdt,
+	.acpi_fill_ssdt	= iio_pci_domain_fill_ssdt,
 #endif
 };
 

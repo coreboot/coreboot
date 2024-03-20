@@ -1,10 +1,14 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpigen.h>
+#include <acpi/acpigen_pci.h>
 #include <assert.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/itss.h>
 #include <soc/acpi.h>
+#include <soc/chip_common.h>
+#include <soc/numa.h>
 #include <soc/soc_util.h>
 #include <soc/util.h>
 #include <soc/itss.h>
@@ -38,4 +42,56 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 void soc_power_states_generation(int core, int cores_per_package)
 {
 	generate_p_state_entries(core, cores_per_package);
+}
+
+static uint32_t get_granted_pcie_features(void)
+{
+	return PCIE_NATIVE_HOTPLUG_CONTROL | PCIE_PME_CONTROL |
+		PCIE_CAP_STRUCTURE_CONTROL | PCIE_LTR_CONTROL |
+		PCIE_AER_CONTROL;
+}
+
+static uint32_t get_granted_cxl_features(void)
+{
+	return CXL_ERROR_REPORTING_CONTROL;
+}
+
+void soc_pci_domain_fill_ssdt(const struct device *domain)
+{
+	const char *name = acpi_device_name(domain);
+	if (!name)
+		return;
+
+	acpigen_write_scope(acpi_device_scope(domain));
+	acpigen_write_device(name);
+
+	if (is_cxl_domain(domain)) {
+		acpigen_write_name("_HID");
+		acpigen_emit_eisaid("ACPI0016");
+		acpigen_write_name("_CID");
+		acpigen_write_package(2);
+		acpigen_emit_eisaid("PNP0A08");
+		acpigen_emit_eisaid("PNP0A03");
+		acpigen_pop_len();
+	} else {
+		acpigen_write_name("_HID");
+		acpigen_emit_eisaid("PNP0A08");
+		acpigen_write_name("_CID");
+		acpigen_emit_eisaid("PNP0A03");
+	}
+	acpigen_write_name("_UID");
+	acpigen_write_string(name);
+
+	acpigen_write_name("_PXM");
+	acpigen_write_integer(device_to_pd(domain));
+
+	/* _OSC */
+	acpigen_write_OSC_pci_domain_fixed_caps(domain,
+		get_granted_pcie_features(),
+		is_cxl_domain(domain),
+		get_granted_cxl_features()
+		);
+
+	acpigen_pop_len();
+	acpigen_pop_len();
 }

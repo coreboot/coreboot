@@ -92,4 +92,6 @@ void unlock_pam_regions(void);
 
 size_t vtd_probe_bar_size(struct device *dev);
 
+void soc_pci_domain_fill_ssdt(const struct device *domain);
+
 #endif /* _CHIP_COMMON_H_ */

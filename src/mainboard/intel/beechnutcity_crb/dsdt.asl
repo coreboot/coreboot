@@ -13,6 +13,7 @@ DefinitionBlock(
 {
 	#include <acpi/dsdt_top.asl>
 	#include <soc/intel/common/block/acpi/acpi/globalnvs.asl>
+	#include <soc/intel/xeon_sp/gnr/acpi/uncore.asl>
 	#include <soc/intel/xeon_sp/gnr/acpi/gpe.asl>
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
 	#include <commonlib/include/commonlib/console/post_codes.h>

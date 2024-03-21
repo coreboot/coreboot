@@ -122,9 +122,6 @@
 #define IIO_DFX_TSWCTL0 0x30c
 #define IIO_DFX_LCK_CTL 0x504
 
-// XHCI register
-#define SYS_BUS_CFG2 0x44
-
 /* MSM registers */
 #define MSM_BUS 0xF2
 #define MSM_DEV 3

@@ -2,9 +2,12 @@
 
 #include <console/console.h>
 #include <device/pci.h>
-#include <soc/pci_devs.h>
+#include <soc/pch_pci_devs.h>
 #include <soc/xhci.h>
 #include <types.h>
+
+// XHCI register
+#define SYS_BUS_CFG2 0x44
 
 static uint8_t *get_xhci_bar(void)
 {

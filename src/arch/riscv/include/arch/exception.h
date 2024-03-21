@@ -28,6 +28,5 @@ static inline void exception_init(void)
 void redirect_trap(void);
 void default_trap_handler(struct trapframe *tf);
 void handle_supervisor_call(struct trapframe *tf);
-void handle_misaligned(struct trapframe *tf);
 
 #endif

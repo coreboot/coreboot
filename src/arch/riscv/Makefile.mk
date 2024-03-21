@@ -52,7 +52,6 @@ COMPILER_RT_ramstage  = $(shell  $(GCC_ramstage) $(simple_riscv_flags) -print-li
 all-y += trap_util.S
 all-y += trap_handler.c
 all-y += fp_asm.S
-all-y += misaligned.c
 all-y += sbi.c
 all-y += mcall.c
 all-y += virtual_memory.c

@@ -13,8 +13,10 @@
  * to M-mode). In practice, this variable has been a lifesaver.  It is
  * still not quite determined which delegation might by unallowed by
  * the spec so for now we enumerate and set them all. */
-static int delegate = 0
+static u32 delegate = 0
 	| (1 << CAUSE_MISALIGNED_FETCH)
+	| (1 << CAUSE_MISALIGNED_STORE)
+	| (1 << CAUSE_MISALIGNED_LOAD)
 	| (1 << CAUSE_FETCH_ACCESS)
 	| (1 << CAUSE_ILLEGAL_INSTRUCTION)
 	| (1 << CAUSE_BREAKPOINT)

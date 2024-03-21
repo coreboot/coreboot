@@ -119,7 +119,6 @@ void default_trap_handler(struct trapframe *tf)
 	}
 
 	switch (tf->cause) {
-	case CAUSE_MISALIGNED_FETCH:
 	case CAUSE_FETCH_ACCESS:
 	case CAUSE_ILLEGAL_INSTRUCTION:
 	case CAUSE_BREAKPOINT:
@@ -133,10 +132,10 @@ void default_trap_handler(struct trapframe *tf)
 	case CAUSE_SUPERVISOR_ECALL:
 		handle_sbi(tf);
 		return;
+	case CAUSE_MISALIGNED_FETCH:
 	case CAUSE_MISALIGNED_LOAD:
 	case CAUSE_MISALIGNED_STORE:
 		print_trap_information(tf);
-		handle_misaligned(tf);
 		return;
 	default:
 		printk(BIOS_EMERG, "================================\n");

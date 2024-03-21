@@ -118,6 +118,14 @@ else
 verstage-y += secdata_tpm.c
 romstage-y += secdata_tpm.c
 ramstage-y += secdata_tpm.c
+
+verstage-$(CONFIG_TPM1) += secdata_tpm1.c
+romstage-$(CONFIG_TPM1) += secdata_tpm1.c
+ramstage-$(CONFIG_TPM1) += secdata_tpm1.c
+
+verstage-$(CONFIG_TPM2) += secdata_tpm2.c
+romstage-$(CONFIG_TPM2) += secdata_tpm2.c
+ramstage-$(CONFIG_TPM2) += secdata_tpm2.c
 endif
 
 verstage-$(CONFIG_TPM) += tpm_common.c

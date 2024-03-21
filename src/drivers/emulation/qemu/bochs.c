@@ -39,8 +39,8 @@
 #define VBE_DISPI_LFB_ENABLED           0x40
 #define VBE_DISPI_NOCLEARMEM            0x80
 
-static int width  = CONFIG_DRIVERS_EMULATION_QEMU_BOCHS_XRES;
-static int height = CONFIG_DRIVERS_EMULATION_QEMU_BOCHS_YRES;
+static int width  = CONFIG_DRIVERS_EMULATION_QEMU_XRES;
+static int height = CONFIG_DRIVERS_EMULATION_QEMU_YRES;
 
 static void bochs_write(struct resource *res, int index, int val)
 {

@@ -9,8 +9,8 @@
 #include <pc80/vga_io.h>
 #include <framebuffer_info.h>
 
-static int width  = CONFIG_DRIVERS_EMULATION_QEMU_BOCHS_XRES;
-static int height = CONFIG_DRIVERS_EMULATION_QEMU_BOCHS_YRES;
+static int width  = CONFIG_DRIVERS_EMULATION_QEMU_XRES;
+static int height = CONFIG_DRIVERS_EMULATION_QEMU_YRES;
 static u32 addr   = 0;
 
 enum

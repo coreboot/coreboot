@@ -3,6 +3,8 @@
 #ifndef __DRIVERS_INTEL_ISH_CHIP_H__
 #define __DRIVERS_INTEL_ISH_CHIP_H__
 
+#include <stdbool.h>
+
 /*
  * Intel Integrated Sensor Hub (ISH)
  */

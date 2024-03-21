@@ -129,8 +129,9 @@ _start:
 gdb_stub_breakpoint:
 #if ENV_X86_64
 	pop	%rax	/* Return address */
-	pushfl
-	push	%cs
+	pushfq
+	mov	%cs, %rbx
+	push	%rbx
 	push	%rax	/* Return address */
 	push	$0	/* No error code */
 	push	$32	/* vector 32 is user defined */

@@ -1,5 +1,8 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
+config ACPI_FNKEY_GEN_SCANCODE
+	default 94 if BOARD_GOOGLE_XOL
+
 config BOARD_GOOGLE_BRYA_COMMON
 	def_bool n
 	select DRIVERS_GENERIC_ALC1015

@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef __BASEBOARD_PORT_DESCRIPTORS_H__
 #define __BASEBOARD_PORT_DESCRIPTORS_H__
 

@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef _SOC_SIFIVE_FU740_GPIO_H_
 #define _SOC_SIFIVE_FU740_GPIO_H_
 

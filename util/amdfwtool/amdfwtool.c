@@ -877,7 +877,7 @@ static void integrate_psp_ab(context *ctx, psp_directory_table *pspdir,
 	}
 
 	count++;
-	pspdir->header.num_entries = count;
+	fill_dir_header(pspdir, count, ctx);
 	ctx->current_table = current_table_save;
 }
 
@@ -903,7 +903,6 @@ static void integrate_psp_levels(context *ctx,
 			if (pspdir2_b != NULL)
 				ctx->ish_b_dir = new_ish_dir(ctx);
 		}
-		pspdir->header.num_entries = count;
 		integrate_psp_ab(ctx, pspdir, pspdir2, ctx->ish_a_dir,
 			AMD_FW_RECOVERYAB_A, cb_config->soc_id);
 		if (pspdir2_b != NULL)
@@ -915,7 +914,6 @@ static void integrate_psp_levels(context *ctx,
 				use_only_a ? AMD_FW_RECOVERYAB_A : AMD_FW_RECOVERYAB_B,
 				cb_config->soc_id);
 
-		count = pspdir->header.num_entries;
 	} else if (pspdir2 != NULL) {
 		assert_fw_entry(count, MAX_PSP_ENTRIES, ctx);
 		pspdir->entries[count].type = AMD_FW_L2_PTR;
@@ -930,8 +928,8 @@ static void integrate_psp_levels(context *ctx,
 		pspdir->entries[count].address_mode =
 				SET_ADDR_MODE(pspdir, AMD_ADDR_REL_BIOS);
 		count++;
+		fill_dir_header(pspdir, count, ctx);
 	}
-	fill_dir_header(pspdir, count, ctx);
 	ctx->current_table = current_table_save;
 }
 

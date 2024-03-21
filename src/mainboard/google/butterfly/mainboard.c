@@ -49,7 +49,7 @@ static unsigned char get_hex_digit(char *offset)
 }
 
 static int get_mac_address(u32 *high_dword, u32 *low_dword,
-			   u32 search_address, u32 search_length)
+			   uintptr_t search_address, u32 search_length)
 {
 	char key[] = "ethernet_mac";
 	unsigned int offset;
@@ -118,7 +118,7 @@ static void program_mac_address(u16 io_base, u32 search_address,
 	}
 }
 
-static void program_keyboard_type(u32 search_address, u32 search_length)
+static void program_keyboard_type(uintptr_t search_address, u32 search_length)
 {
 	char key[] = "keyboard_layout";
 	char kbd_jpn[] = "xkb:jp::jpn";
@@ -160,7 +160,7 @@ static void program_keyboard_type(u32 search_address, u32 search_length)
 
 static void mainboard_init(struct device *dev)
 {
-	u32 search_address = 0x0;
+	uintptr_t search_address = 0x0;
 	size_t search_length = -1;
 	u16 io_base = 0;
 	struct device *ethernet_dev = NULL;
@@ -180,7 +180,7 @@ static void mainboard_init(struct device *dev)
 	} else {
 		vpd_file = cbfs_map("vpd.bin", &search_length);
 		if (vpd_file) {
-			search_address = (unsigned long)vpd_file;
+			search_address = (uintptr_t)vpd_file;
 		} else {
 			search_length = -1;
 			search_address = 0;

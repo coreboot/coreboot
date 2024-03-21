@@ -206,7 +206,7 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D3, NONE),
 	/* D4:		Not Connected					*/
 	PAD_NC(GPP_D4, NONE),
-	/* D5:		Not Connected					*/
+	/* D5:		Clock Request 0					*/
 	PAD_NC(GPP_D5, NONE),
 	/* D6:		Clock Request 1		PCH M.2 SSD		*/
 	PAD_CFG_NF(GPP_D6, NONE, DEEP, NF1),
@@ -381,7 +381,7 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_H21, NONE),
 	/* H22:		Not Connected					*/
 	PAD_NC(GPP_H22, NONE),
-	/* H23:		Not Connected					*/
+	/* H23:		Clock Request 5					*/
 	PAD_NC(GPP_H23, NONE),
 
 	/* S0:		Not Connected					*/

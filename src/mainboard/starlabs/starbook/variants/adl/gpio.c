@@ -374,7 +374,7 @@ const struct pad_config gpio_table[] = {
 	/* H18:		CPI C10 Gate					*/
 	PAD_CFG_NF(GPP_H18, NONE, DEEP, NF1),
 	/* H19:		Clock Request 4		CPU M.2 SSD		*/
-	PAD_CFG_NF(GPP_H19, NONE, DEEP, NF1),
+	PAD_NC(GPP_H19, NONE),
 	/* H20:		Not Connected					*/
 	PAD_NC(GPP_H20, NONE),
 	/* H21:		Not Connected					*/

@@ -138,6 +138,8 @@ static void per_device_config(MPIOCLASS_INPUT_BLK *mpio_data, struct device *dev
 		if (is_dev_enabled(dev)) {
 			printk(BIOS_WARNING, "Unused MPIO chip, disabling PCI device.\n");
 			dev->enabled = false;
+		} else {
+			printk(BIOS_DEBUG, "Unused MPIO chip, skipping.\n");
 		}
 		return;
 	}

@@ -127,6 +127,10 @@ config EC_VARIANT_DIR
 	default "cml" if !EC_STARLABS_MERLIN && BOARD_STARLABS_LABTOP_CML
 	default "merlin"
 
+config EDK2_BOOTSPLASH_FILE
+	string
+	default "3rdparty/blobs/mainboard/starlabs/Logo.bmp"
+
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/\$(CONFIG_VARIANT_DIR)/vboot.fmd" if VBOOT
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/variants/\$(CONFIG_VARIANT_DIR)/board.fmd"
@@ -160,13 +164,8 @@ config ME_BIN_PATH
 	string
 	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/intel_me.bin"
 
-
 config POWER_STATE_DEFAULT_ON_AFTER_FAILURE
 	default n
-
-config EDK2_BOOTSPLASH_FILE
-	string
-	default "3rdparty/blobs/mainboard/starlabs/Logo.bmp"
 
 config SOC_INTEL_CSE_SEND_EOP_EARLY
 	default n if BOARD_STARLABS_STARBOOK_ADL || BOARD_STARLABS_STARBOOK_RPL

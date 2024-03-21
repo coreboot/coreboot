@@ -136,7 +136,7 @@ static void per_device_config(MPIOCLASS_INPUT_BLK *mpio_data, struct device *dev
 
 	if (config->type == IFTYPE_UNUSED) {
 		if (is_dev_enabled(dev)) {
-			printk(BIOS_WARNING, "Unused MPIO engine, disabling PCI device.\n");
+			printk(BIOS_WARNING, "Unused MPIO chip, disabling PCI device.\n");
 			dev->enabled = false;
 		}
 		return;

@@ -300,9 +300,7 @@ chip soc/intel/alderlake
 		end
 		device ref ish on
 			chip drivers/intel/ish
-				register "firmware_name" = ""brox_ish.bin""
-				register "add_acpi_dma_property" = "true"
-				device generic 0 on end
+				device generic 0 alias ish_conf on end
 			end
 			probe ISH ISH_ENABLE
 			probe STORAGE STORAGE_UFS

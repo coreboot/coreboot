@@ -1,10 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootstate.h>
+#include <drivers/intel/ish/chip.h>
 #include <fw_config.h>
 #include <gpio.h>
 
 #define GPIO_PADBASED_OVERRIDE(b, a) gpio_padbased_override(b, a, ARRAY_SIZE(a))
+#define ISH_FIRMWARE_NAME "brox_ish.bin"
 
 static const struct pad_config ish_enable_pads[] = {
 	/* GPP_B5 : ISH I2C0_SDA */
@@ -27,9 +29,19 @@ static const struct pad_config ish_enable_pads[] = {
 
 static void fw_config_handle(void *unused)
 {
+	struct device *ish_config_device = DEV_PTR(ish_conf);
+	struct drivers_intel_ish_config *config = config_of(ish_config_device);
+
 	if (fw_config_probe(FW_CONFIG(ISH, ISH_ENABLE))) {
-		printk(BIOS_INFO, "Configure GPIOs for ISH.\n");
+		printk(BIOS_INFO, "Configure GPIOs, device config for ISH.\n");
 		gpio_configure_pads(ish_enable_pads, ARRAY_SIZE(ish_enable_pads));
+
+		config->firmware_name = ISH_FIRMWARE_NAME;
+	}
+
+	if (fw_config_probe(FW_CONFIG(STORAGE, STORAGE_UFS))) {
+		printk(BIOS_INFO, "Configure GPIOs, device config for UFS.\n");
+		config->add_acpi_dma_property = true;
 	}
 }
 BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, fw_config_handle, NULL);

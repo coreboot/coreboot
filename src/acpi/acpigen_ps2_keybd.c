@@ -211,6 +211,7 @@ static void ssdt_generate_keymap(struct acpi_dp *dp, uint8_t num_top_row_keys,
 				 bool can_send_function_keys,
 				 bool has_numeric_keypad,
 				 bool has_scrnlock_key,
+				 bool has_assistant_key,
 				 bool has_alpha_num_punct_keys)
 {
 	struct acpi_dp *dp_array;
@@ -270,6 +271,12 @@ static void ssdt_generate_keymap(struct acpi_dp *dp, uint8_t num_top_row_keys,
 		total++;
 	}
 
+	/* Add the keymap for the assistant key if present */
+	if (has_assistant_key) {
+		acpi_dp_add_integer(dp_array, NULL, KEYMAP(0x5c, KEY_ASSISTANT));
+		total++;
+	}
+
 	/* Provide alphanumeric and punctuation keys (rest of the keyboard) if
 	 * present
 	 */
@@ -291,6 +298,7 @@ void acpigen_ps2_keyboard_dsd(const char *scope, uint8_t num_top_row_keys,
 			      bool can_send_function_keys,
 			      bool has_numeric_keypad,
 			      bool has_scrnlock_key,
+			      bool has_assistant_key,
 			      bool has_alpha_num_punct_keys)
 {
 	struct acpi_dp *dsd;
@@ -312,7 +320,8 @@ void acpigen_ps2_keyboard_dsd(const char *scope, uint8_t num_top_row_keys,
 	ssdt_generate_physmap(dsd, num_top_row_keys, action_keys);
 	ssdt_generate_keymap(dsd, num_top_row_keys, action_keys,
 			     can_send_function_keys, has_numeric_keypad,
-			     has_scrnlock_key, has_alpha_num_punct_keys);
+			     has_scrnlock_key, has_assistant_key,
+			     has_alpha_num_punct_keys);
 	acpi_dp_write(dsd);
 	acpigen_pop_len(); /* Scope */
 }

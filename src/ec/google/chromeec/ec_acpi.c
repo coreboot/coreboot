@@ -257,6 +257,7 @@ static void fill_ssdt_ps2_keyboard(const struct device *dev)
 				 !!(keybd.capabilities & KEYBD_CAP_FUNCTION_KEYS),
 				 !!(keybd.capabilities & KEYBD_CAP_NUMERIC_KEYPAD),
 				 !!(keybd.capabilities & KEYBD_CAP_SCRNLOCK_KEY),
+				 !!(keybd.capabilities & KEYBD_CAP_ASSISTANT_KEY),
 				 true);
 }
 

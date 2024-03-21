@@ -19,7 +19,7 @@ static void mainboard_fill_ssdt(const struct device *dev)
 		PS2_KEY_VOL_UP
 	};
 	acpigen_ps2_keyboard_dsd("_SB.PCI0.PS2K", ARRAY_SIZE(ps2_action_keys),
-		ps2_action_keys, false, false, false, false);
+		ps2_action_keys, false, false, false, false, false);
 }
 
 static void mainboard_init(void *chip_info)

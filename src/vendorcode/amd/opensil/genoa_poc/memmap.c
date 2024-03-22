@@ -86,30 +86,8 @@ BOOT_STATE_INIT_ENTRY(BS_DEV_RESOURCES, BS_ON_ENTRY, print_memory_holes, NULL);
 // This assumes holes are allocated
 void add_opensil_memmap(struct device *dev, unsigned long *idx)
 {
-	ram_from_to(dev, (*idx)++, 0, 0xa0000);
-	mmio_from_to(dev, (*idx)++, 0xa0000, 0xc0000); // legacy VGA
-	reserved_ram_from_to(dev, (*idx)++, 0xc0000, 1 * MiB); // Option ROM
-
-	uint32_t mem_usable = (uintptr_t)cbmem_top();
-	uintptr_t early_reserved_dram_start, early_reserved_dram_end;
-	const struct memmap_early_dram *e = memmap_get_early_dram_usage();
-
-	early_reserved_dram_start = e->base;
-	early_reserved_dram_end = e->base + e->size;
-
-	// 1MB - bottom of DRAM reserved for early coreboot usage
-	ram_from_to(dev, (*idx)++, 1 * MiB, early_reserved_dram_start);
-
-	// DRAM reserved for early coreboot usage
-	reserved_ram_from_to(dev, (*idx)++, early_reserved_dram_start,
-			     early_reserved_dram_end);
-
-	// top of DRAM consumed early - low top usable RAM
-	// cbmem_top() accounts for low UMA and TSEG if they are used.
-	ram_from_to(dev, (*idx)++, early_reserved_dram_end,
-		    mem_usable);
-
 	// Account for UMA and TSEG
+	const uint32_t mem_usable = (uintptr_t)cbmem_top();
 	const uint32_t top_mem = ALIGN_DOWN(get_top_of_mem_below_4gb(), 1 * MiB);
 	if (mem_usable != top_mem)
 		reserved_ram_from_to(dev, (*idx)++, mem_usable, top_mem);

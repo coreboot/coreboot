@@ -3,6 +3,7 @@
 #include <console/console.h>
 #include <intelblocks/early_graphics.h>
 #include <pc80/vga.h>
+#include <timestamp.h>
 #include <ux_locales.h>
 
 #include "ux.h"
@@ -11,9 +12,13 @@
 
 bool ux_inform_user_of_update_operation(const char *name)
 {
+	timestamp_add_now(TS_ESOL_START);
+
 	if (!CONFIG(MAINBOARD_HAS_EARLY_LIBGFXINIT) ||
-	    !early_graphics_init())
+	    !early_graphics_init()) {
+		timestamp_add_now(TS_ESOL_END);
 		return false;
+	}
 
 	printk(BIOS_INFO, "Informing user on-display of %s.\n", name);
 
@@ -26,5 +31,6 @@ bool ux_inform_user_of_update_operation(const char *name)
 	vga_write_text(VGA_TEXT_CENTER, VGA_TEXT_HORIZONTAL_MIDDLE,
 		       (const unsigned char *)text);
 	ux_locales_unmap();
+	timestamp_add_now(TS_ESOL_END);
 	return true;
 }

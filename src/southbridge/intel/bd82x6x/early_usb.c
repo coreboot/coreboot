@@ -18,7 +18,8 @@ void early_usb_init(const struct southbridge_usb_port *portmap)
 	};
 	const u32 currents[] = { USBIR_TXRX_GAIN_MOBILE_LOW, USBIR_TXRX_GAIN_DEFAULT,
 				 USBIR_TXRX_GAIN_HIGH, 0x20000f51, 0x2000094a, 0x2000035f,
-				 USBIR_TXRX_GAIN_DESKTOP_LOW, 0x20000357, 0x20000353 };
+				 USBIR_TXRX_GAIN_DESKTOP_LOW, 0x20000357, 0x20000353,
+				 0x20000253, 0x20000053, 0x2000055f, 0x20000f5f};
 	int i;
 
 	/* Unlock registers.  */

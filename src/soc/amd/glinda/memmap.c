@@ -3,8 +3,6 @@
 #include <amdblocks/iomap.h>
 #include <amdblocks/memmap.h>
 #include <amdblocks/root_complex.h>
-#include <arch/vga.h>
-#include <cbmem.h>
 #include <device/device.h>
 #include <stdint.h>
 
@@ -62,34 +60,7 @@
  */
 void read_soc_memmap_resources(struct device *dev, unsigned long *idx)
 {
-	uint32_t mem_usable = (uintptr_t)cbmem_top();
-
-	uintptr_t early_reserved_dram_start, early_reserved_dram_end;
-	const struct memmap_early_dram *e = memmap_get_early_dram_usage();
-
-	early_reserved_dram_start = e->base;
-	early_reserved_dram_end = e->base + e->size;
-
-	/* 0x0 - 0x9ffff */
-	ram_range(dev, (*idx)++, 0, 0xa0000);
-
-	/* 0xa0000 - 0xbffff: legacy VGA */
-	mmio_range(dev, (*idx)++, VGA_MMIO_BASE, VGA_MMIO_SIZE);
-
-	/* 0xc0000 - 0xfffff: Option ROM */
-	reserved_ram_from_to(dev, (*idx)++, 0xc0000, 1 * MiB);
-
-	/* 1MiB - bottom of DRAM reserved for early coreboot usage */
-	ram_from_to(dev, (*idx)++, 1 * MiB, early_reserved_dram_start);
-
-	/* DRAM reserved for early coreboot usage */
-	reserved_ram_from_to(dev, (*idx)++, early_reserved_dram_start, early_reserved_dram_end);
-
-	/*
-	 * top of DRAM consumed early - low top usable RAM
-	 * cbmem_top() accounts for low UMA and TSEG if they are used.
-	 */
-	ram_from_to(dev, (*idx)++, early_reserved_dram_end, mem_usable);
+	read_lower_soc_memmap_resources(dev, idx);
 
 	/* Reserve fixed IOMMU MMIO region */
 	mmio_range(dev, (*idx)++, IOMMU_RESERVED_MMIO_BASE, IOMMU_RESERVED_MMIO_SIZE);

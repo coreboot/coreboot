@@ -7,7 +7,6 @@
 #include <amdblocks/root_complex.h>
 #include <amdblocks/smn.h>
 #include <arch/ioapic.h>
-#include <cbmem.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <types.h>
@@ -18,28 +17,7 @@
 
 void read_soc_memmap_resources(struct device *domain, unsigned long *idx)
 {
-	ram_from_to(domain, (*idx)++, 0, 0xa0000);
-	mmio_from_to(domain, (*idx)++, 0xa0000, 0xc0000); // legacy VGA
-	reserved_ram_from_to(domain, (*idx)++, 0xc0000, 1 * MiB); // Option ROM
-
-	uint32_t mem_usable = (uintptr_t)cbmem_top();
-	uintptr_t early_reserved_dram_start, early_reserved_dram_end;
-	const struct memmap_early_dram *e = memmap_get_early_dram_usage();
-
-	early_reserved_dram_start = e->base;
-	early_reserved_dram_end = e->base + e->size;
-
-	// 1MB - bottom of DRAM reserved for early coreboot usage
-	ram_from_to(domain, (*idx)++, 1 * MiB, early_reserved_dram_start);
-
-	// DRAM reserved for early coreboot usage
-	reserved_ram_from_to(domain, (*idx)++, early_reserved_dram_start,
-			     early_reserved_dram_end);
-
-	// top of DRAM consumed early - low top usable RAM
-	// cbmem_top() accounts for low UMA and TSEG if they are used.
-	ram_from_to(domain, (*idx)++, early_reserved_dram_end,
-		    mem_usable);
+	read_lower_soc_memmap_resources(domain, idx);
 
 	add_opensil_memmap(domain, idx);
 }

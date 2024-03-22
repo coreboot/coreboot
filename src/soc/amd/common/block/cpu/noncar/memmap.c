@@ -42,13 +42,13 @@ void read_lower_soc_memmap_resources(struct device *dev, unsigned long *idx)
 	const uintptr_t early_reserved_dram_end = e->base + e->size;
 
 	/* 0x0 - 0x9ffff */
-	ram_range(dev, (*idx)++, 0, 0xa0000);
+	ram_range(dev, (*idx)++, 0, VGA_MMIO_BASE);
 
 	/* 0xa0000 - 0xbffff: legacy VGA */
 	mmio_range(dev, (*idx)++, VGA_MMIO_BASE, VGA_MMIO_SIZE);
 
 	/* 0xc0000 - 0xfffff: Option ROM */
-	reserved_ram_from_to(dev, (*idx)++, 0xc0000, 1 * MiB);
+	reserved_ram_from_to(dev, (*idx)++, VGA_MMIO_BASE + VGA_MMIO_SIZE, 1 * MiB);
 
 	/* 1MiB - bottom of DRAM reserved for early coreboot usage */
 	ram_from_to(dev, (*idx)++, 1 * MiB, early_reserved_dram_start);

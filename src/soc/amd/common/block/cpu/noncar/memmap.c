@@ -36,13 +36,10 @@ static const struct memmap_early_dram *memmap_get_early_dram_usage(void)
 /* report SoC memory map up to cbmem_top */
 void read_lower_soc_memmap_resources(struct device *dev, unsigned long *idx)
 {
-	uint32_t mem_usable = (uintptr_t)cbmem_top();
-
-	uintptr_t early_reserved_dram_start, early_reserved_dram_end;
+	const uint32_t mem_usable = (uintptr_t)cbmem_top();
 	const struct memmap_early_dram *e = memmap_get_early_dram_usage();
-
-	early_reserved_dram_start = e->base;
-	early_reserved_dram_end = e->base + e->size;
+	const uintptr_t early_reserved_dram_start = e->base;
+	const uintptr_t early_reserved_dram_end = e->base + e->size;
 
 	/* 0x0 - 0x9ffff */
 	ram_range(dev, (*idx)++, 0, 0xa0000);

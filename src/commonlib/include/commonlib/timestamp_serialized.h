@@ -84,6 +84,8 @@ enum timestamp_id {
 	TS_COPYVPD_RW_END = 552,
 	TS_TPM_ENABLE_UPDATE_START = 553,
 	TS_TPM_ENABLE_UPDATE_END = 554,
+	TS_ESOL_START = 555,
+	TS_ESOL_END = 556,
 
 	/* 900-940 reserved for vendorcode extensions (900-940: AMD) */
 	TS_AGESA_INIT_RESET_START = 900,
@@ -265,6 +267,8 @@ static const struct timestamp_id_to_name {
 	TS_NAME_DEF(TS_TPM_ENABLE_UPDATE_START, TS_TPM_ENABLE_UPDATE_END,
 		    "started TPM enable update"),
 	TS_NAME_DEF(TS_TPM_ENABLE_UPDATE_END, 0, "finished TPM enable update"),
+	TS_NAME_DEF(TS_ESOL_START, 0, "started early sign-off life (eSOL) notification"),
+	TS_NAME_DEF(TS_ESOL_END, 0, "finished early sign-off life (eSOL) notification"),
 
 	/* AMD related timestamps */
 	TS_NAME_DEF(TS_AGESA_INIT_RESET_START, TS_AGESA_INIT_RESET_END, "calling AmdInitReset"),

@@ -393,7 +393,6 @@ static int spi_ctrlr_xfer_vector(const struct spi_slave *slave,
 	return 0;
 }
 static const struct spi_ctrlr spi_ctrlr = {
-
 	.xfer_vector = spi_ctrlr_xfer_vector,
 	.max_xfer_size = SPI_CTRLR_DEFAULT_MAX_XFER_SIZE,
 };

@@ -66,7 +66,6 @@ static void program_display_sel_gpios(void)
 		else if (port_type == DP)
 			gpio_output(display_sel[idx], 1);
 	}
-
 }
 
 static void mainboard_init(void *chip_info)

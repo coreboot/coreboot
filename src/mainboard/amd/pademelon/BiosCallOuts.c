@@ -4,5 +4,4 @@
 
 void platform_FchParams_env(FCH_DATA_BLOCK *FchParams_env)
 {
-
 }

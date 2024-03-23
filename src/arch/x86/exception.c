@@ -369,7 +369,6 @@ static void put_packet(char *buffer)
 		stub_flush();
 
 	} while ((stub_getc() & 0x7f) != '+');
-
 }
 #endif /* CONFIG_GDB_STUB */
 

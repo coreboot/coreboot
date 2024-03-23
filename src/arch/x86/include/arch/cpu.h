@@ -213,7 +213,6 @@ static inline void get_fms(struct cpuinfo_x86 *c, uint32_t tfms)
 		c->x86 += (tfms >> 20) & 0xff;
 	if (c->x86 >= 0x6)
 		c->x86_model += ((tfms >> 16) & 0xF) << 4;
-
 }
 
 /* REP NOP (PAUSE) is a good thing to insert into busy-wait loops. */

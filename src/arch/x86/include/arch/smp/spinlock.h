@@ -55,7 +55,6 @@ static __always_inline void spin_lock(spinlock_t *lock)
 
 	/* Switching contexts while holding a spinlock will lead to deadlocks */
 	thread_coop_disable();
-
 }
 
 static __always_inline void spin_unlock(spinlock_t *lock)

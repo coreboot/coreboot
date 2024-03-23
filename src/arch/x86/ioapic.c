@@ -140,7 +140,6 @@ static void set_ioapic_id(uintptr_t ioapic_base, u8 ioapic_id)
 	for (i = 0; i < 3; i++)
 		printk(BIOS_SPEW, "  reg 0x%04x: 0x%08x\n", i,
 		       io_apic_read(ioapic_base, i));
-
 }
 
 u8 get_ioapic_id(uintptr_t ioapic_base)

@@ -125,7 +125,6 @@ static void pirq_route_irqs(unsigned long addr)
 
 	/* Set PCI IRQs. */
 	for (i = 0; i < num_entries; i++) {
-
 		u8 bus = pirq_tbl->slots[i].bus;
 		u8 devfn = pirq_tbl->slots[i].devfn;
 
@@ -133,7 +132,6 @@ static void pirq_route_irqs(unsigned long addr)
 			devfn >> 3, pirq_tbl->slots[i].slot);
 
 		for (intx = 0; intx < MAX_INTX_ENTRIES; intx++) {
-
 			int link = pirq_tbl->slots[i].irq[intx].link;
 			int bitmap = pirq_tbl->slots[i].irq[intx].bitmap;
 			int irq = 0;
@@ -142,7 +140,6 @@ static void pirq_route_irqs(unsigned long addr)
 				'A' + intx, link, bitmap);
 
 			if (!bitmap || !link || link > CONFIG_MAX_PIRQ_LINKS) {
-
 				printk(BIOS_DEBUG, "not routed\n");
 				irq_slot[intx] = irq;
 				continue;

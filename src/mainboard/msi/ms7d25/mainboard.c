@@ -16,7 +16,6 @@ void mainboard_fill_fadt(acpi_fadt_t *fadt)
 
 static void mainboard_init(void *chip_info)
 {
-
 }
 
 u8 smbios_mainboard_feature_flags(void)

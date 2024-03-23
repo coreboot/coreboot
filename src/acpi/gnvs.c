@@ -30,7 +30,6 @@ static void acpi_create_gnvs(void *unused)
 
 	if (dnvs_size)
 		dnvs = (char *)gnvs + gnvs_size;
-
 }
 
 BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_EXIT, acpi_create_gnvs, NULL);

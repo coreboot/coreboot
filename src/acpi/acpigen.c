@@ -1880,7 +1880,6 @@ static void acpigen_write_dsm_uuid(struct dsm_uuid *id)
 	acpigen_write_return_singleton_buffer(0x0);
 
 	acpigen_write_if_end(); /* If (LEqual (Local0, ToUUID(uuid))) */
-
 }
 
 /*

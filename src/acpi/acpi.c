@@ -1506,7 +1506,6 @@ unsigned long write_acpi_tables(const unsigned long start)
 			 */
 			for (int i = 0; existing_rsdt->entry[i]; i++)
 				acpi_add_table(rsdp, (void *)(uintptr_t)existing_rsdt->entry[i]);
-
 		}
 
 		/* Add BOOT0000 for Linux google firmware driver */

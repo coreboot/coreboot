@@ -1158,7 +1158,6 @@ struct acpi_dp *acpi_dp_add_gpio_array(struct acpi_dp *dp, const char *name,
 	acpi_dp_add_array(dp, gpio);
 
 	return gpio;
-
 }
 
 

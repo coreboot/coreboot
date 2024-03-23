@@ -144,7 +144,6 @@ static int mmc_switch(struct storage_media *media, uint8_t index, uint8_t value)
 	/* Waiting for the ready status */
 	sd_mmc_send_status(media, SD_MMC_IO_RETRIES);
 	return ret;
-
 }
 
 static void mmc_recalculate_clock(struct storage_media *media)

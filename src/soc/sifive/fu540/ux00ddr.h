@@ -110,7 +110,6 @@ static inline void ux00ddr_setuprangeprotection(size_t ahbregaddr, size_t end_ad
   _REG32(225<<2, ahbregaddr) = 0xFFFFFFFF;
   _REG32(208<<2, ahbregaddr) |= (1 << AXI0_ADDRESS_RANGE_ENABLE);
   _REG32(208<<2, ahbregaddr) |= (1 << PORT_ADDR_PROTECTION_EN_OFFSET);
-
 }
 
 static inline void ux00ddr_disableaxireadinterleave(size_t ahbregaddr) {

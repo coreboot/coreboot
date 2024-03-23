@@ -30,7 +30,6 @@ enum {
  * currently the I2C is 0-based and SPI is 1-based in its indexing.
  */
 enum {
-
 	I2C1_BUS = 0,
 	I2C2_BUS = 1,
 	I2C3_BUS = 2,

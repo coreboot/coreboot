@@ -38,7 +38,6 @@ int sdram_size_mb(void)
 static void carveout_from_regs(uintptr_t *base_mib, size_t *size_mib,
 				uint32_t bom, uint32_t bom_hi, uint32_t size)
 {
-
 	/* All size regs of carveouts are in MiB. */
 	if (size == 0)
 		return;

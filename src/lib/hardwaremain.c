@@ -316,7 +316,6 @@ static struct state_tracker {
 
 static void bs_walk_state_machine(void)
 {
-
 	while (1) {
 		struct boot_state *state;
 		boot_state_t next_id;

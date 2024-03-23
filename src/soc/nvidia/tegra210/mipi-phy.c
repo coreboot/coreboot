@@ -13,7 +13,6 @@
 
 int mipi_dphy_set_timing(struct tegra_dsi *dsi)
 {
-
 	u32 freq = (dsi->clk_rate * 2) / 1000000;
 
 	u32 thsdexit = (DSI_PHY_TIMING_DIV(120, (freq)));

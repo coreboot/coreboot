@@ -247,7 +247,6 @@ enum dc_winc_filter_p {
 
 /* Window A/B/C register 0x500 ~ 0x628 */
 struct dc_winc_reg {
-
 	/* Address 0x500 */
 	u32 color_palette;		/* _WINC_COLOR_PALETTE_0 */
 

@@ -6,7 +6,6 @@
 #include <soc/romstage.h>
 
 static const struct mb_cfg fa_ehl_lpddr4x_memcfg_cfg = {
-
 	.dq_map[DDR_CH0] = {
 		{0xf, 0xf0},
 		{0xf, 0xf0},

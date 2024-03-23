@@ -8,7 +8,6 @@
 #include <soc/romstage.h>
 
 static const struct mb_cfg jslrvp_ddr4_memcfg_cfg = {
-
 	.dq_map[DDR_CH0] = {
 		{0xf, 0xf0},
 		{0xf, 0xf0},
@@ -51,7 +50,6 @@ static const struct mb_cfg jslrvp_ddr4_memcfg_cfg = {
 };
 
 static const struct mb_cfg jslrvp_lpddr4_memcfg_cfg = {
-
 	.dq_map[DDR_CH0] = {
 		{0xf, 0xf0},
 		{0xf, 0xf0},

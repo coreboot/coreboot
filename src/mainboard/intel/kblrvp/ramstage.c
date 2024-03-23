@@ -48,7 +48,6 @@ static void ioexpander_init(void *unused)
 	/* Port 0 Configuration */
 	i2c_writeb(IO_EXPANDER_BUS, IO_EXPANDER_1_ADDR, IO_EXPANDER_P0CONF,
 		0x00);
-
 }
 
 BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_EXIT, ioexpander_init, NULL);

@@ -722,7 +722,6 @@ void tegra_dc_sor_enable_dp(struct tegra_dc_sor_data *sor)
 	tegra_dc_sor_power_dplanes(sor, link_cfg->lane_count, 1);
 
 	tegra_dc_sor_set_dp_mode(sor, link_cfg);
-
 }
 
 void tegra_dc_sor_attach(struct tegra_dc_sor_data *sor)

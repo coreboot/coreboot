@@ -6,7 +6,6 @@
 #include <device/azalia_device.h>
 
 const u32 cim_verb_data[] = {
-
 	0x8086280B,
 	0x00000000,
 	0x00000005,

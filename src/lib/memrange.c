@@ -183,7 +183,6 @@ static void merge_add_memranges(struct memranges *ranges,
 		/* The new entry starts after this one. */
 		if (begin > cur->end)
 			continue;
-
 	}
 
 	/* Add new entry and merge with neighbors. */
@@ -389,7 +388,6 @@ memranges_find_entry(struct memranges *ranges, resource_t limit, resource_t size
 		return NULL;
 
 	memranges_each_entry(r, ranges) {
-
 		if (r->tag != tag)
 			continue;
 

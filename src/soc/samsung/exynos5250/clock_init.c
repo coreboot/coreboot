@@ -411,7 +411,6 @@ void clock_gate(void)
 	clrbits32(&exynos_clock->gate_ip_cdrex, CLK_DPHY0_MASK |
 						CLK_DPHY1_MASK |
 						CLK_TZASC_DRBXR_MASK);
-
 }
 
 void clock_init_dp_clock(void)

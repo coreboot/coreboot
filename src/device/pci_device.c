@@ -1491,7 +1491,6 @@ void pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 
 	prev = &bus->children;
 	for (dev = bus->children; dev; dev = dev->sibling) {
-
 		/*
 		 * If static device is not PCI then enable it here and don't
 		 * treat it as a leftover device.
@@ -1851,7 +1850,6 @@ void pci_assign_irqs(struct device *dev, const unsigned char pIntAtoD[4])
 	slot = dev->path.pci.devfn >> 3;
 
 	for (; dev ; dev = dev->sibling) {
-
 		if (dev->path.pci.devfn >> 3 != slot)
 			break;
 

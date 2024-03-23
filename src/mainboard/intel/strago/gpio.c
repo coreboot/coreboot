@@ -241,6 +241,5 @@ static struct soc_gpio_config gpio_config = {
 
 struct soc_gpio_config *mainboard_get_gpios(void)
 {
-
 	return &gpio_config;
 }

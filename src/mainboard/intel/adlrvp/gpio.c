@@ -7,7 +7,6 @@
 
 /* Pad configuration in ramstage */
 static const struct pad_config gpio_table[] = {
-
 	/* GPIO A0-A6, A9-A10 default function is NF1 for eSPI interface when
 	  eSPI is enabled */
 

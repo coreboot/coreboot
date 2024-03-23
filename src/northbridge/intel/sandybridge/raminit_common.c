@@ -64,7 +64,6 @@ void dram_find_common_params(ramctr_timing *ctrl)
 	valid_dimms = 0;
 
 	FOR_ALL_CHANNELS for (slot = 0; slot < 2; slot++) {
-
 		const struct dimm_attr_ddr3_st *dimm = &dimms->dimm[channel][slot];
 		if (dimm->dram_type != SPD_MEMORY_TYPE_SDRAM_DDR3)
 			continue;
@@ -1138,7 +1137,6 @@ static void fine_tune_rcven_pi(ramctr_timing *ctrl, int channel, int slotrank, i
 	int lane, i;
 
 	for (rcven_delta = -25; rcven_delta <= 25; rcven_delta++) {
-
 		FOR_ALL_LANES {
 			ctrl->timings[channel][slotrank].lanes[lane].rcven
 				= upperA[lane] + rcven_delta + QCLK_PI;
@@ -1358,7 +1356,6 @@ int receive_enable_calibration(ramctr_timing *ctrl)
 			FOR_ALL_LANES {
 				ctrl->timings[channel][slotrank].lanes[lane].rcven -= QCLK_PI;
 				upperA[lane] -= QCLK_PI;
-
 			}
 		} else if (some_high) {
 			ctrl->timings[channel][slotrank].roundtrip_latency++;
@@ -1657,7 +1654,6 @@ static void train_write_flyby(ramctr_timing *ctrl)
 		fill_pattern1(ctrl, channel);
 	}
 	FOR_ALL_POPULATED_CHANNELS FOR_ALL_POPULATED_RANKS {
-
 		/* Reset read and write WDB pointers */
 		mchbar_write32(IOSAV_DATA_CTL_ch(channel), 0x10001);
 
@@ -2501,7 +2497,6 @@ int aggressive_write_training(ramctr_timing *ctrl)
 						upper[channel][slotrank][lane] =
 							MIN(rn.end - ctrl->tx_dq_offset[i],
 							    upper[channel][slotrank][lane]);
-
 					}
 				}
 			}
@@ -2621,7 +2616,6 @@ void channel_scrub(ramctr_timing *ctrl)
 		rowsize = 1 << ctrl->info.dimm[channel][slotrank >> 1].row_bits;
 		for (bank = 0; bank < 8; bank++) {
 			for (row = 0; row < rowsize; row += 16) {
-
 				u8 gap = MAX((ctrl->tFAW >> 2) + 1, ctrl->tRRD);
 				const struct iosav_ssq sequence[] = {
 					/*

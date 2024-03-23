@@ -55,7 +55,6 @@ void mainboard_fill_rcomp_strength_data(void *rcomp_strength_ptr)
 	} else {
 		memcpy(rcomp_strength_ptr, RcompTarget, sizeof(RcompTarget));
 	}
-
 }
 
 uintptr_t mainboard_get_spd_data(void)

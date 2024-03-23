@@ -52,7 +52,6 @@ static void pci_init(struct device *dev)
 
 	/* Enable expresscard hotplug events.  */
 	if (config->pcie_hotplug_map[PCI_FUNC(dev->path.pci.devfn)]) {
-
 		pci_or_config32(dev, 0xd8, 1 << 30);
 		pci_write_config16(dev, 0x42, 0x142);
 	}

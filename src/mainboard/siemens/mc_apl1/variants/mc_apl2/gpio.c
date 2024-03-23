@@ -7,7 +7,6 @@
    EDS vol 1, but some pins aren't grouped functionally in the table so those were moved for
    more logical grouping. */
 static const struct pad_config gpio_table[] = {
-
 	/* Southwest Community */
 
 	/* EXT_WAKE0_1V8# */

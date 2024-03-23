@@ -245,7 +245,6 @@ void print_hob_type_structure(u16 hob_type, void *hob_list_ptr)
 	printk(BIOS_DEBUG, "%p: hob_list_ptr\n", hob_list_ptr);
 	for (current_hob = hob_list_ptr; !END_OF_HOB_LIST(current_hob);
 	    current_hob = GET_NEXT_HOB(current_hob)) {
-
 		EFI_HOB_GENERIC_HEADER *current_header_ptr =
 			(EFI_HOB_GENERIC_HEADER *)current_hob;
 

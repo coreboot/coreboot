@@ -76,7 +76,6 @@ static uintptr_t northbridge_get_tseg_base(void)
 uintptr_t cbmem_top_chipset(void)
 {
 	return ALIGN_DOWN(northbridge_get_tseg_base(), 4 * MiB);
-
 }
 
 void smm_region(uintptr_t *start, size_t *size)

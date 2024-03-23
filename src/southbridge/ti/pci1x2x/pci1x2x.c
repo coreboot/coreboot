@@ -10,7 +10,6 @@
 
 static void ti_pci1x2y_init(struct device *dev)
 {
-
 	printk(BIOS_INFO, "Init of Texas Instruments PCI1x2x PCMCIA/CardBus controller\n");
 	struct southbridge_ti_pci1x2x_config *conf = dev->chip_info;
 

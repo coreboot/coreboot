@@ -340,7 +340,6 @@ static struct dimm_size sdram_spd_get_page_size(uint16_t dimm_socket_address)
 	if (value > 2)
 		die("Bad SPD value\n");
 	if (value == 2) {
-
 		pgsz.side2 = pgsz.side1;	// Assume symmetric banks until we know differently
 		value = smbus_read_byte(dimm_socket_address, SPD_NUM_COLUMNS);
 		if (value < 0)
@@ -413,14 +412,12 @@ static struct dimm_size spd_get_dimm_size(unsigned int dimm_socket_address)
 	struct dimm_size sz = sdram_spd_get_page_size(dimm_socket_address);
 
 	if (sz.side1 > 0) {
-
 		value = smbus_read_byte(dimm_socket_address, SPD_NUM_ROWS);
 		die_on_spd_error(value);
 
 		sz.side1 += value & 0xf;
 
 		if (sz.side2 > 0) {
-
 			// Double-sided DIMM
 			if (value & 0xF0)
 				sz.side2 += value >> 4;	// Asymmetric
@@ -496,7 +493,6 @@ static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
 	// since we only support dual-channel.
 
 	for (i = 0; i < MAX_DIMM_SOCKETS_PER_CHANNEL; i++) {
-
 		uint16_t channel0_dimm = ctrl->channel0[i];
 		uint16_t channel1_dimm = ctrl->channel1[i];
 		uint8_t bDualChannel = 1;
@@ -565,7 +561,6 @@ static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
 		// NOTE: unpopulated DIMMs cause read to fail
 		spd_value = smbus_read_byte(channel1_dimm, SPD_MODULE_ATTRIBUTES);
 		if (!(spd_value & MODULE_REGISTERED) || (spd_value < 0)) {
-
 			printk(BIOS_DEBUG, "Skipping un-matched DIMMs - only dual-channel operation supported\n");
 			continue;
 		}
@@ -580,7 +575,6 @@ static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
 			if (!are_spd_values_equal
 			    (dual_channel_parameters[j], channel0_dimm,
 			     channel1_dimm)) {
-
 				bDualChannel = 0;
 				break;
 			}
@@ -653,7 +647,6 @@ static void do_ram_command(uint8_t command, uint16_t jedec_mode_bits)
 	 * Seems like rows 4-7 overlap with 0-3.
 	 */
 	for (i = 0; i < (MAX_NUM_CHANNELS * MAX_DIMM_SOCKETS_PER_CHANNEL); ++i) {
-
 		uint8_t dimm_end_64M_multiple = pci_read_config8(MCHDEV, DRB_ROW_0 + i);
 
 		if (dimm_end_64M_multiple > dimm_start_64M_multiple) {
@@ -800,7 +793,6 @@ static void configure_e7501_ram_addresses(const struct mem_controller
 	pci_write_config32(MCHDEV, DRB_ROW_4, 0);
 
 	for (i = 0; i < MAX_DIMM_SOCKETS_PER_CHANNEL; i++) {
-
 		uint16_t dimm_socket_address = ctrl->channel0[i];
 		struct dimm_size sz;
 
@@ -1020,7 +1012,6 @@ static void configure_e7501_cas_latency(const struct mem_controller *ctrl,
 	uint32_t dimm_compatible_cas_latencies;
 
 	for (i = 0; i < MAX_DIMM_SOCKETS; i++) {
-
 		uint16_t dimm_socket_address;
 
 		if (!(dimm_mask & (1 << i)))
@@ -1098,7 +1089,6 @@ static void configure_e7501_cas_latency(const struct mem_controller *ctrl,
 		dram_timing |= DRT_CAS_2_0;
 		dram_read_timing |= 0x0222;
 	} else if (system_compatible_cas_latencies & SPD_CAS_LATENCY_2_5) {
-
 		uint32_t dram_row_attributes =
 		    pci_read_config32(MCHDEV, DRA);
 
@@ -1111,7 +1101,6 @@ static void configure_e7501_cas_latency(const struct mem_controller *ctrl,
 		    && (dram_row_attributes & 0xff00)
 		    && (dram_row_attributes & 0xff0000)
 		    && (dram_row_attributes & 0xff000000)) {
-
 			// All slots populated
 			dram_read_timing |= 0x0882;
 		} else {
@@ -1179,7 +1168,6 @@ static void configure_e7501_dram_controller_mode(const struct mem_controller *ct
 	 */
 
 	for (i = 0; i < MAX_DIMM_SOCKETS; i++) {
-
 		uint32_t dimm_refresh_mode;
 		int value;
 		uint16_t dimm_socket_address;
@@ -1250,7 +1238,6 @@ static void configure_e7501_row_attributes(const struct mem_controller
 	uint32_t row_attributes = 0;
 
 	for (i = 0; i < MAX_DIMM_SOCKETS_PER_CHANNEL; i++) {
-
 		uint16_t dimm_socket_address = ctrl->channel0[i];
 		struct dimm_size page_size;
 		struct dimm_size sdram_width;
@@ -1300,7 +1287,6 @@ static void enable_e7501_clocks(uint8_t dimm_mask)
 	pci_write_config8(MCHDEV, 0x8e, 0xb0);
 
 	for (i = 0; i < MAX_DIMM_SOCKETS_PER_CHANNEL; i++) {
-
 		uint8_t socket_mask = 1 << i;
 
 		if (dimm_mask & socket_mask)
@@ -1702,7 +1688,6 @@ void sdram_initialize(void)
 
 	/* If this is a warm boot, some initialisation can be skipped */
 	if (!e7505_mch_is_ready()) {
-
 		/* The real MCH initialisation. */
 		timestamp_add_now(TS_INITRAM_START);
 

@@ -97,7 +97,6 @@ int smmstore_lookup_region(struct region_device *rstore)
 	static struct region_device rdev;
 
 	if (!done) {
-
 		done = 1;
 
 		if (fmap_locate_area_as_rdev_rw(SMMSTORE_REGION, &rdev)) {

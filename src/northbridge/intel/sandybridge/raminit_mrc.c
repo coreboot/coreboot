@@ -295,7 +295,6 @@ static void devicetree_fill_pei_data(struct pei_data *pei_data)
 	case 800:
 		pei_data->max_ddr3_freq = 1600;
 		break;
-
 	}
 
 	/*

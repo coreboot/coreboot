@@ -57,5 +57,4 @@ int checkstack(void *top_of_stack, int core)
 	}
 
 	return 0;
-
 }

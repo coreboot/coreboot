@@ -387,7 +387,6 @@ static void lb_strings(struct lb_header *header)
 		rec->size = ALIGN_UP(sizeof(*rec) + len + 1, LB_ENTRY_ALIGN);
 		memcpy(rec->string, strings[i].string, len+1);
 	}
-
 }
 
 static void lb_record_version_timestamp(struct lb_header *header)

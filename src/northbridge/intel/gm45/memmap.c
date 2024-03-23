@@ -127,5 +127,4 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 			       MTRR_TYPE_WRBACK);
 	postcar_frame_add_mtrr(pcf, northbridge_get_tseg_base(),
 			       northbridge_get_tseg_size(), MTRR_TYPE_WRBACK);
-
 }

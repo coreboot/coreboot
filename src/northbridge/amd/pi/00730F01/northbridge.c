@@ -241,7 +241,6 @@ static void add_ivhd_device_entries(struct device *parent, struct device *dev,
 	}
 
 	if (dev->path.type == DEVICE_PATH_PCI) {
-
 		if ((dev->upstream->secondary == 0x0) &&
 		    (dev->path.pci.devfn == 0x0))
 			*root_level = depth;

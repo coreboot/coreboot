@@ -186,7 +186,6 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, int interleave_size, int reset)
 	}
 
 	if (mem->gate_leveling_enable) {
-
 		write32(&exynos_phy0_control->phy_con0, PHY_CON0_RESET_VAL);
 		write32(&exynos_phy1_control->phy_con0, PHY_CON0_RESET_VAL);
 

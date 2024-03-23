@@ -242,7 +242,6 @@ int region_file_init(struct region_file *f, const struct region_device *p)
 
 int region_file_data(const struct region_file *f, struct region_device *rdev)
 {
-
 	size_t offset;
 	size_t size;
 

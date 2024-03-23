@@ -320,7 +320,6 @@ static int block_cmd_loop(uintptr_t base, u8 *buf, size_t max_bytes, int flags)
 					host_and_or(base, SMBHSTCTL, 0xff,
 						    SMBHSTCNT_LAST_BYTE);
 				}
-
 			}
 
 			/* Engine internally completes the transaction

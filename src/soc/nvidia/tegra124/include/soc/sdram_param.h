@@ -51,7 +51,6 @@ enum {
  * Defines the SDRAM parameter structure
  */
 struct sdram_params {
-
 	/* Specifies the type of memory device */
 	uint32_t MemoryType;
 

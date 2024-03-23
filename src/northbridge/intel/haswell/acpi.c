@@ -36,7 +36,6 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 
 	/* VTVC0BAR has to be set, enabled, and in 32-bit space */
 	if (vtvc0bar && vtvc0en && !mchbar_read32(VTVC0BAR + 4)) {
-
 		const unsigned long tmp = current;
 		current += acpi_create_dmar_drhd(current, DRHD_INCLUDE_PCI_ALL, 0, vtvc0bar);
 		current += acpi_create_dmar_ds_ioapic_from_hw(current, IO_APIC_ADDR,

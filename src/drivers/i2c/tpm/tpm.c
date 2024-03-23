@@ -117,7 +117,6 @@ static int iic_tpm_read(uint8_t addr, uint8_t *buffer, size_t len)
 					  buffer, len);
 			if (rc == 0)
 				break;  /* success, break to skip sleep */
-
 		}
 		break;
 

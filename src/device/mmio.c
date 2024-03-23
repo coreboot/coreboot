@@ -40,5 +40,4 @@ void buffer_to_fifo32_prefix(const void *buffer, u32 prefix, int prefsz, size_t 
 		val = 0;
 		j = 0;
 	}
-
 }

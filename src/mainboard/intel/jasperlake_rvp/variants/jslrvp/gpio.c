@@ -7,7 +7,6 @@
 
 /* Pad configuration in ramstage */
 static const struct pad_config gpio_table[] = {
-
 	/* WWAN_WAKE_N */
 	PAD_CFG_GPI_SCI(GPP_A10, NONE, DEEP, LEVEL, INVERT),
 

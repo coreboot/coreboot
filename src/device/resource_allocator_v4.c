@@ -140,7 +140,6 @@ static void update_bridge_resource(const struct device *bridge, struct resource 
 	print_bridge_res(bridge, bridge_res, print_depth, "");
 
 	while ((child = largest_resource(bus, &child_res, type_mask, type_match))) {
-
 		/* Size 0 resources can be skipped. */
 		if (!child_res->size)
 			continue;
@@ -260,7 +259,6 @@ static void compute_domain_resources(const struct device *domain)
 		return;
 
 	for (child = domain->downstream->children; child; child = child->sibling) {
-
 		/* Skip if this is not a bridge or has no children under it. */
 		if (!dev_has_children(child))
 			continue;
@@ -400,7 +398,6 @@ static void allocate_toplevel_resources(const struct device *const domain,
 	setup_resource_ranges(domain, type, &ranges);
 
 	while ((dev = largest_resource(domain->downstream, &res, type_mask, type))) {
-
 		if (!res->size)
 			continue;
 
@@ -557,7 +554,6 @@ void allocate_resources(const struct device *root)
 		return;
 
 	for (child = root->downstream->children; child; child = child->sibling) {
-
 		if (child->path.type != DEVICE_PATH_DOMAIN)
 			continue;
 

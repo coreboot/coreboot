@@ -290,7 +290,6 @@ static void i945_setup_egress_port(void)
 		printk(BIOS_DEBUG, "timeout!\n");
 	else
 		printk(BIOS_DEBUG, "ok\n");
-
 }
 
 static void ich7_setup_dmi_rcrb(void)

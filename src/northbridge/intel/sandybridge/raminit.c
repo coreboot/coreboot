@@ -377,7 +377,6 @@ static void init_dram_ddr3(int s3resume, const u32 cpuid)
 
 	/* Before reusing training data, assert that the CPU has not been replaced */
 	if (ctrl_cached && cpuid != ctrl_cached->cpu) {
-
 		/* It is not really worrying on a cold boot, but fatal when resuming from S3 */
 		printk(s3resume ? BIOS_ALERT : BIOS_NOTICE,
 				"CPUID %x differs from stored CPUID %x, CPU was replaced!\n",

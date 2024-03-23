@@ -446,7 +446,6 @@ static tpm_result_t cr50_i2c_probe(uint32_t *did_vid)
 	printk(BIOS_INFO, "Probing TPM I2C: ");
 
 	for (retries = 100; retries > 0; retries--) {
-
 		rc = cr50_i2c_read(TPM_DID_VID(0), (uint8_t *)did_vid, 4);
 
 		/* Exit once DID and VID verified */

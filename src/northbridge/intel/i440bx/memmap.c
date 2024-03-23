@@ -59,5 +59,4 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 	top_of_ram = (uintptr_t)cbmem_top();
 	postcar_frame_add_mtrr(pcf, top_of_ram - 8*MiB, 8*MiB,
 		MTRR_TYPE_WRBACK);
-
 }

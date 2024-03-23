@@ -755,7 +755,6 @@ static void set_dram_row_attributes(void)
 		/* This is 440BX! We do EDO too! */
 		if (value == SPD_MEMORY_TYPE_EDO
 			|| value == SPD_MEMORY_TYPE_SDRAM) {
-
 			if (value == SPD_MEMORY_TYPE_EDO) {
 				edo = 1;
 			} else if (value == SPD_MEMORY_TYPE_SDRAM) {

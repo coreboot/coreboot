@@ -3,7 +3,6 @@
 #include <device/azalia_device.h>
 
 const u32 cim_verb_data[] = {
-
 	/*
 	 * VerbTable: CFL Display Audio Codec
 	 * Revision ID = 0xFF

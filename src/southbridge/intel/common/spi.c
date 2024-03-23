@@ -913,7 +913,6 @@ static const struct spi_flash_ops spi_flash_ops = {
 static int spi_flash_programmer_probe(const struct spi_slave *spi,
 					struct spi_flash *flash)
 {
-
 	if (CONFIG(SOUTHBRIDGE_INTEL_I82801GX))
 		return spi_flash_generic_probe(spi, flash);
 

@@ -168,7 +168,6 @@ static void ironlake_init(void *const chip_info)
 	const struct device *const d0f0 = pcidev_on_root(0, 0);
 	if (d0f0)
 		pci_update_config32(d0f0, DEVEN, deven_mask, 0);
-
 }
 
 static struct device_operations mc_ops = {

@@ -83,7 +83,6 @@ static void set_receive_enable(int channel_offset, u8 medium, u8 coarse)
 		reg32 |= medium;
 	}
 	mchbar_write32(RCVENMT, reg32);
-
 }
 
 static int normalize(int channel_offset, u8 *mediumcoarse, u8 *fine)
@@ -190,7 +189,6 @@ static int find_strobes_low(int channel_offset, u8 *mediumcoarse, u8 *fine,
 			continue;
 
 		break;
-
 	}
 
 	printk(BIOS_DEBUG, "Could not find low strobe\n");
@@ -200,7 +198,6 @@ static int find_strobes_low(int channel_offset, u8 *mediumcoarse, u8 *fine,
 static int find_strobes_edge(int channel_offset, u8 *mediumcoarse, u8 *fine,
 			     struct sys_info *sysinfo)
 {
-
 	int counter;
 	u32 rcvenmt;
 

@@ -5,7 +5,6 @@
 
 /* Pad configuration in ramstage */
 static const struct pad_config gpio_table[] = {
-
 	/* Community 0 - GpioGroup GPP_B */
 	PAD_CFG_NF(GPP_B2, NONE, PLTRST, NF1),		/* PMC_VRALERT_N */
 	PAD_CFG_NF(GPP_B3, NONE, PLTRST, NF4),		/* ESPI_ALERT0_N */

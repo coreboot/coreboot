@@ -49,7 +49,6 @@ static int get_dimm_spd_address(struct sys_info *sysinfo, int device)
 		return sysinfo->spd_addresses[device];
 	else
 		return 0x50 + device;
-
 }
 
 static __attribute__((noinline)) void do_ram_command(u32 command)
@@ -226,7 +225,6 @@ static void sdram_detect_errors(struct sys_info *sysinfo)
 			/* Write back clears bit 2 */
 			pci_write_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_2, reg8);
 			do_reset = true;
-
 		}
 
 		if (reg8 & (1 << 7)) {
@@ -289,7 +287,6 @@ struct timings {
  */
 static void gather_common_timing(struct sys_info *sysinfo, struct timings *saved_timings)
 {
-
 	int i, j;
 	u8 raw_spd[SPD_SIZE_MAX_DDR2];
 	u8 dimm_mask = 0;
@@ -2313,7 +2310,6 @@ static void sdram_power_management(struct sys_info *sysinfo)
 
 static void sdram_thermal_management(void)
 {
-
 	mchbar_write8(TCO1, 0);
 	mchbar_write8(TCO0, 0);
 

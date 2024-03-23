@@ -452,7 +452,6 @@ static void tegra_dc_dp_dump_link_cfg(struct tegra_dc_dp_data *dp,
 static int _tegra_dp_lower_link_config(struct tegra_dc_dp_data *dp,
 	struct tegra_dc_dp_link_config *link_cfg)
 {
-
 	switch (link_cfg->link_bw) {
 	case SOR_LINK_SPEED_G1_62:
 		if (link_cfg->max_link_bw > SOR_LINK_SPEED_G1_62)
@@ -1457,7 +1456,6 @@ static int tegra_dc_dp_sink_out_of_sync(struct tegra_dc_dp_data *dp,
 static void tegra_dc_dp_check_sink(struct tegra_dc_dp_data *dp,
 				struct soc_nvidia_tegra210_config *config)
 {
-
 	u8 max_retry = 3;
 	int delay_frame;
 

@@ -142,7 +142,6 @@ static unsigned int exynos_dp_read_edid(void)
 			exynos_dp_write_byte_to_dpcd(DPCD_TEST_RESPONSE,
 				DPCD_TEST_EDID_CHECKSUM_WRITE);
 		}
-
 	}
 
 	return 0;
@@ -338,7 +337,6 @@ static unsigned int exynos_dp_enable_rx_to_enhanced_mode(unsigned char enable)
 	if (ret != EXYNOS_DP_SUCCESS) {
 		printk(BIOS_ERR, "DP write_to_dpcd failed\n");
 		return -1;
-
 	}
 
 	return ret;

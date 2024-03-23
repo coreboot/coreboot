@@ -537,7 +537,6 @@ static int intel_gma_init_vga(struct northbridge_intel_i945_config *conf,
 	vga_sr_write(1, vga_sr_read(1) & ~0x20);
 
 	return 0;
-
 }
 
 /* compare the header of the vga edid header */

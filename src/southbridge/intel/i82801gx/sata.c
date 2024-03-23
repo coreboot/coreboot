@@ -54,7 +54,6 @@ void sata_enable(struct device *dev)
 			config->sata_mode = SATA_MODE_IDE_PLAIN;
 			printk(BIOS_DEBUG, "AHCI not supported, falling back to plain mode.\n");
 		}
-
 	}
 
 	if (config->sata_mode == SATA_MODE_AHCI) {

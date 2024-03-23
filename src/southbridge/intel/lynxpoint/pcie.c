@@ -231,7 +231,6 @@ static void pcie_enable_clock_gating(void)
 		rp = root_port_number(dev);
 
 		if (!is_rp_enabled(rp)) {
-
 			/* Configure shared resource clock gating. */
 			if (rp == 1 || rp == 5 || (rp == 6 && is_lp))
 				pci_or_config8(dev, 0xe1, 0x3c);

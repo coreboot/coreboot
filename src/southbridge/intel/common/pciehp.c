@@ -114,5 +114,4 @@ void intel_acpi_pcie_hotplug_generator(bool *hotplug_map, int port_number)
 	}
 	acpigen_pop_len();
 	acpigen_pop_len();
-
 }

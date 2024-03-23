@@ -798,7 +798,6 @@ static void sdram_set_clock_enable_signal(const struct sdram_params *param,
 	uint32_t val = 0;
 
 	if (param->MemoryType == NvBootMemoryType_LpDdr4) {
-
 		val = (param->EmcPinGpioEn << EMC_PIN_GPIOEN_SHIFT) |
 		      (param->EmcPinGpio << EMC_PIN_GPIO_SHIFT);
 		write32(&regs->pin, val);
@@ -835,7 +834,6 @@ static void sdram_set_clock_enable_signal(const struct sdram_params *param,
 		die("Failed to program EMC pin.");
 
 	if (param->MemoryType != NvBootMemoryType_LpDdr4) {
-
 		/* Send NOP (trigger just needs to be non-zero) */
 		writebits(((1 << EMC_NOP_CMD_SHIFT) |
 			  (param->EmcDevSelect << EMC_NOP_DEV_SELECTN_SHIFT)),

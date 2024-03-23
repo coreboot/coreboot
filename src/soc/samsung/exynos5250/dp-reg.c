@@ -115,7 +115,6 @@ int s5p_dp_init_analog_func(struct s5p_dp_device *dp)
 
 	/* Power up PLL */
 	if (s5p_dp_get_pll_lock_status(dp) == PLL_UNLOCKED) {
-
 		clrbits32(&base->dp_pll_ctl, DP_PLL_PD);
 
 		stopwatch_init_msecs_expire(&sw, PLL_LOCK_TIMEOUT);

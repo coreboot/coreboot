@@ -147,7 +147,6 @@ static enum cb_err ddr2_save_dimminfo(u8 dimm_idx, u8 *raw_spd,
 		dram_print_spd_ddr2(&decoded_dimm);
 
 	if (!(decoded_dimm.width & (0x08 | 0x10))) {
-
 		printk(BIOS_ERR, "DIMM%d Unsupported width: x%d. Disabling dimm\n",
 			dimm_idx, s->dimms[dimm_idx].width);
 		return CB_ERR;
@@ -523,7 +522,6 @@ static void find_dimm_config(struct sysinfo *s)
 		}
 		printk(BIOS_DEBUG, "  Config[CH%d] : %d\n", chan, s->dimm_config[chan]);
 	}
-
 }
 
 static void checkreset_ddr2(int boot_path)

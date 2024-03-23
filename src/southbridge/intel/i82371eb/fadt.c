@@ -16,7 +16,6 @@
  */
 void acpi_fill_fadt(acpi_fadt_t *fadt)
 {
-
 	fadt->pm1a_evt_blk = DEFAULT_PMBASE;
 	fadt->pm1a_cnt_blk = DEFAULT_PMBASE + PMCNTRL;
 

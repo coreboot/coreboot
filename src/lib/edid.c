@@ -1389,7 +1389,6 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 					out->mode_is_supported[j] = 1;
 			}
 		}
-
 	}
 
 	printk(BIOS_SPEW, "Standard timings supported:\n");

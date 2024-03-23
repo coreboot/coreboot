@@ -37,7 +37,6 @@ void mb_pre_raminit_setup(sysinfo_t *sysinfo)
 	} else {
 		hybrid_graphics_init(sysinfo);
 	}
-
 }
 
 void mb_post_raminit_setup(void)

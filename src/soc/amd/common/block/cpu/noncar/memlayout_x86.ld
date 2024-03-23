@@ -95,7 +95,6 @@ SECTIONS
 	PSP_SHAREDMEM_DRAM_END(CONFIG_PSP_SHAREDMEM_BASE + CONFIG_PSP_SHAREDMEM_SIZE)
 #endif
 	_ = ASSERT(BOOTBLOCK_END == ((BOOTBLOCK_END + 0xFFFF) & 0xFFFF0000), "Bootblock end must be 16 bit aligned");
-	BOOTBLOCK(BOOTBLOCK_ADDR, CONFIG_C_ENV_BOOTBLOCK_SIZE)
 	ROMSTAGE(CONFIG_ROMSTAGE_ADDR, CONFIG_ROMSTAGE_SIZE)
 
 #if CONFIG(PLATFORM_USES_FSP2_0)
@@ -124,19 +123,29 @@ SECTIONS
 gdtptr_offset = gdtptr & 0xffff;
 nullidt_offset = nullidt & 0xffff;
 
+MEMORY
+{
+	/* Make sure all the 16bit code is in the same 64K segment as the reset vector */
+	resetsection (rwx) : ORIGIN = BOOTBLOCK_END - 64K, LENGTH = 64K
+}
+
 SECTIONS {
-	/* Trigger an error if I have an unusable start address */
-	_TOO_LOW = _X86_RESET_VECTOR - 0xfff0;
-	_bogus = ASSERT(_start16bit >= _TOO_LOW, "_start16bit too low. Please report.");
+	/* Page tables need to be at a 4K boundary so align the bootblock downwards */
+	. = (BOOTBLOCK_TOP - PROGRAM_SZ) & ~(4096 - 1);
+	_bootblock = .;
+
+	INCLUDE "bootblock/lib/program.ld"
+
+	PROGRAM_SZ = SIZEOF(.text) + SIZEOF(.bss) + SIZEOF(.data);
 
 	. = _X86_RESET_VECTOR - EARLYASM_SZ;
 	. = ALIGN(16);
 	BOOTBLOCK_TOP = .;
-	.init (.) : {
+	.init BOOTBLOCK_TOP : {
 		*(.init._start);
 		*(.init);
 		*(.init.*);
-	}
+	} >resetsection
 
 	/*
 	 * Allocation reserves extra space here. Alignment requirements
@@ -145,13 +154,14 @@ SECTIONS {
 	 */
 	EARLYASM_SZ = SIZEOF(.init) + 16;
 
-	. = BOOTBLOCK_END - 0x10;
-	_X86_RESET_VECTOR = .;
+	_X86_RESET_VECTOR = BOOTBLOCK_END - 0x10;
 	_bogus = ASSERT((_X86_RESET_VECTOR & 0xffff) == 0xfff0, "IP needs to be 0xfff0");
-	.reset . : {
+	.reset (_X86_RESET_VECTOR) : {
 		*(.reset);
-		. = 15;
-		BYTE(0x00);
-	}
+	} >resetsection
+	.last_byte (BOOTBLOCK_END - 1) : {
+		BYTE(0xff);
+	} >resetsection
+	_ebootblock = BOOTBLOCK_END;
 }
 #endif  /* ENV_BOOTBLOCK */

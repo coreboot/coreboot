@@ -26,7 +26,7 @@ SECTIONS {
 
 	INCLUDE "bootblock/lib/program.ld"
 
-	PROGRAM_SZ = SIZEOF(.text);
+	PROGRAM_SZ = SIZEOF(.text) + SIZEOF(.data);
 
 	. = MIN(_ECFW_PTR, MIN(_ID_SECTION, _FIT_POINTER)) - EARLYASM_SZ;
 	. = CONFIG(SIPI_VECTOR_IN_ROM) ? ALIGN(4096) : ALIGN(16);

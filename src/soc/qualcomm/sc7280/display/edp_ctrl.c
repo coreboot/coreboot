@@ -762,7 +762,6 @@ static bool edp_clock_recovery_reduced_lanes(
 
 static int edp_link_lane_down_shift(struct edp_ctrl *ctrl, uint8_t *dpcd)
 {
-
 	if (ctrl->lane_cnt <= 1)
 		return -1;
 
@@ -1275,7 +1274,6 @@ static void edp_ctrl_timing_cfg(struct edid *edid)
 	write32(&edp_lclk->active_hor_ver,
 		(edid->mode.ha) |
 		((edid->mode.va << 16) & 0xffff0000));
-
 }
 
 static void edp_mainlink_ctrl(int enable)

@@ -468,5 +468,4 @@ void qcom_setup_pcie_host(struct device *dev)
 		printk(BIOS_NOTICE, "PCIe enumerated succussfully..\n");
 	else
 		printk(BIOS_EMERG, "Failed to enable PCIe\n");
-
 }

@@ -483,7 +483,6 @@ static void dsi_phy_pll_bias_enable(bool enable)
 
 	/* pll system muxes */
 	write32(&phy_pll_qlink->pll_system_muxes, reg_val);
-
 }
 
 static void dsi_phy_mnd_divider(struct dsi_phy_configtype *phy_cfg)
@@ -598,7 +597,6 @@ static unsigned long dsi_phy_calc_clk_divider(struct dsi_phy_configtype *phy_cfg
 
 		/* VCO output freq*/
 		vco_freq_hz = pll_output_freq_hz * pll_post_div;
-
 	}
 
 	return (unsigned long)vco_freq_hz;

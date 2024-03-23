@@ -124,10 +124,8 @@ static void write_qclib_log_to_cbmemc(struct qclib_cb_if_table_entry *te)
 
 static void write_table_entry(struct qclib_cb_if_table_entry *te)
 {
-
 	if (!strncmp(QCLIB_TE_DDR_INFORMATION, te->name,
 			sizeof(te->name))) {
-
 		write_ddr_information(te);
 
 	} else if (!strncmp(QCLIB_TE_DDR_TRAINING_DATA, te->name,
@@ -137,13 +135,11 @@ static void write_table_entry(struct qclib_cb_if_table_entry *te)
 
 	} else if (!strncmp(QCLIB_TE_LIMITS_CFG_DATA, te->name,
 			sizeof(te->name))) {
-
 		assert(fmap_overwrite_area(QCLIB_FR_LIMITS_CFG_DATA,
 			(const void *)te->blob_address, te->size));
 
 	} else if (!strncmp(QCLIB_TE_QCLIB_LOG_BUFFER, te->name,
 			sizeof(te->name))) {
-
 		write_qclib_log_to_cbmemc(te);
 
 	} else if (!strncmp(QCLIB_TE_MEM_CHIP_INFO, te->name,
@@ -151,11 +147,9 @@ static void write_table_entry(struct qclib_cb_if_table_entry *te)
 		write_mem_chip_information(te);
 
 	} else {
-
 		printk(BIOS_WARNING, "%s write not implemented\n", te->name);
 		printk(BIOS_WARNING, "  blob_address[%llx]..size[%x]\n",
 			te->blob_address, te->size);
-
 	}
 }
 

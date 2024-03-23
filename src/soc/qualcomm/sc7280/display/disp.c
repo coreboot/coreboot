@@ -58,5 +58,4 @@ void mdss_ctrl_config(void)
 
 	/* PPB0 to INTF1 */
 	write32(&mdp_ctl->ctl_intf_active, INTF_ACTIVE_5);
-
 }

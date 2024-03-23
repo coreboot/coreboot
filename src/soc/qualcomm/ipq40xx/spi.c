@@ -74,10 +74,8 @@ static int check_bit_state(void *reg_addr, int mask,
  */
 static int check_qup_state_valid(struct ipq_spi_slave *ds)
 {
-
 	return check_bit_state(ds->regs->qup_state, QUP_STATE_VALID_MASK,
 				QUP_STATE_VALID, 1);
-
 }
 
 /*
@@ -297,7 +295,6 @@ static void write_force_cs(const struct spi_slave *slave, int assert)
 	else
 		clrsetbits32(ds->regs->io_control,
 			SPI_IO_CTRL_FORCE_CS_MSK, SPI_IO_CTRL_FORCE_CS_DIS);
-
 }
 
 /*
@@ -354,7 +351,6 @@ static int check_fifo_status(void *reg_addr)
 static void enable_io_config(struct ipq_spi_slave *ds,
 				uint32_t write_cnt, uint32_t read_cnt)
 {
-
 	if (write_cnt) {
 		clrsetbits32(ds->regs->qup_config,
 				QUP_CONF_OUTPUT_MSK, QUP_CONF_OUTPUT_ENA);
@@ -370,7 +366,6 @@ static void enable_io_config(struct ipq_spi_slave *ds,
 		clrsetbits32(ds->regs->qup_config,
 				QUP_CONF_INPUT_MSK, QUP_CONF_NO_INPUT);
 	}
-
 }
 
 /*
@@ -486,7 +481,6 @@ static int __blsp_spi_write(struct ipq_spi_slave *ds, const u8 *cmd_buffer,
 	 * to get the actual data on the subsequent read cycle that happens
 	 */
 	while (write_len || read_len) {
-
 		ret = check_fifo_status(ds->regs->qup_operational);
 		if (ret != SUCCESS)
 			goto out;

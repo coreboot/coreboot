@@ -235,7 +235,6 @@ static qup_return_t qup_i2c_write_fifo(blsp_qup_id_t id, qup_data_t *p_tx_obj,
 
 	stopwatch_init_usecs_expire(&timeout, CONFIG_I2C_TRANSFER_TIMEOUT_US);
 	while (data_len) {
-
 		tag = qup_i2c_create_output_tag(data_len == 1 && stop_seq,
 						data_ptr[idx]);
 		data_len--;

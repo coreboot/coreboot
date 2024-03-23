@@ -161,10 +161,8 @@ static int check_bit_state(uint32_t reg_addr, int bit_num, int val, int us_delay
  */
 static int check_qup_state_valid(struct ipq_spi_slave *ds)
 {
-
 	return check_bit_state(ds->regs->qup_state, QUP_STATE_VALID_BIT,
 				QUP_STATE_VALID, 1);
-
 }
 
 /*

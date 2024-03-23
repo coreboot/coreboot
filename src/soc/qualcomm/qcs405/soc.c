@@ -13,7 +13,6 @@ static void soc_read_resources(struct device *dev)
 
 static void soc_init(struct device *dev)
 {
-
 }
 
 static struct device_operations soc_ops = {

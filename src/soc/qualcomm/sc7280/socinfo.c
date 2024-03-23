@@ -80,5 +80,4 @@ uint16_t socinfo_pro_part(void)
 		return chipinfolut[ret].pro;
 
 	die("could not match jtagid\n");
-
 }

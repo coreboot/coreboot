@@ -403,7 +403,6 @@ static int check_fifo_status(void *reg_addr)
 static void enable_io_config(struct qcs_spi_slave *ds,
 				uint32_t write_cnt, uint32_t read_cnt)
 {
-
 	if (write_cnt) {
 		clrsetbits32(ds->regs->qup_config,
 				QUP_CONF_OUTPUT_MSK, QUP_CONF_OUTPUT_ENA);

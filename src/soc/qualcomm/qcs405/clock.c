@@ -144,7 +144,6 @@ static bool clock_is_off(void *cbcr_addr)
 static int clock_enable_vote(void *cbcr_addr, void *vote_addr,
 				uint32_t vote_bit)
 {
-
 	/* Set clock vote bit */
 	setbits32(vote_addr, BIT(vote_bit));
 
@@ -156,7 +155,6 @@ static int clock_enable_vote(void *cbcr_addr, void *vote_addr,
 
 static int clock_enable(void *cbcr_addr)
 {
-
 	/* Set clock enable bit */
 	setbits32(cbcr_addr, BIT(CLK_CTL_CBC_CLK_EN_SHFT));
 
@@ -169,7 +167,6 @@ static int clock_enable(void *cbcr_addr)
 
 static int clock_disable(void *cbcr_addr)
 {
-
 	/* Set clock enable bit */
 	clrbits32(cbcr_addr, BIT(CLK_CTL_CBC_CLK_EN_SHFT));
 	return 0;
@@ -303,7 +300,6 @@ void clock_disable_spi(int blsp, int qup)
 		clock_enable(&gcc->blsp2_qup0_spi_apps_cbcr);
 	else
 		printk(BIOS_ERR, "BLSP%d not supported\n", blsp);
-
 }
 
 void clock_enable_i2c(void)

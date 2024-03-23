@@ -113,5 +113,4 @@ void start_tzbsp(void)
 	printk(BIOS_INFO, "Starting TZBSP\n");
 
 	tz_init_wrapper(0, 0, tzbsp);
-
 }

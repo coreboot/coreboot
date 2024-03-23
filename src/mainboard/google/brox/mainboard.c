@@ -191,7 +191,6 @@ static void mainboard_fill_ssdt(const struct device *dev)
 	mainboard_generate_s0ix_hook();
 	acpigen_write_method_end(); /* Method */
 	acpigen_write_scope_end(); /* Scope */
-
 }
 
 void __weak variant_fill_ssdt(const struct device *dev)

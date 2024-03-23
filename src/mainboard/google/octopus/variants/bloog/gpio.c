@@ -5,7 +5,6 @@
 #include <gpio.h>
 
 static const struct pad_config default_override_table[] = {
-
 	PAD_NC(GPIO_50, UP_20K), /* PCH_I2C_PEN_SDA -- unused */
 	PAD_NC(GPIO_51, UP_20K), /* PCH_I2C_PEN_SCL -- unused */
 	PAD_NC(GPIO_52, UP_20K), /* PCH_I2C_P_SENSOR_SDA -- unused */

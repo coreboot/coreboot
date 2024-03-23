@@ -13,7 +13,6 @@ void variant_memory_init_params(MEMORY_INIT_UPD *memory_params)
 	 *  RAMID = 5 - 2GiB Micron MT52L256M32D1PF-107
 	 */
 	if (ram_id == 4 || ram_id == 5) {
-
 		/*
 		 * For new micron part, it requires read/receive
 		 * enable training before sending cmds to get MR8.

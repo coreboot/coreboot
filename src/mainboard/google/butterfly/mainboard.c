@@ -126,7 +126,6 @@ static void program_keyboard_type(uintptr_t search_address, u32 search_length)
 	char kbd_type = EC_KBD_EN;	/* Default keyboard type is English */
 
 	if (search_length != -1) {
-
 		/*
 		 * Search for keyboard_layout identifier
 		 * The only options in the EC are Japanese or English.

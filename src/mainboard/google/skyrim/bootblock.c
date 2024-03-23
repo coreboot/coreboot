@@ -27,11 +27,9 @@ static void hynix_dram_cmos_check(void)
 	cmos_bit_set = (byte_value & CMOS_BITMAP_SKIP_RESET_TOGGLE) != 0;
 
 	if (CONFIG(BOARD_GOOGLE_FROSTFLOW)) {
-
 		printk(BIOS_SPEW, "Checking DRAM part #\n");
 		if (google_chromeec_cbi_get_dram_part_num(
 				cbi_part_number, sizeof(cbi_part_number)) == 0) {
-
 			skip_reset_toggle = strncmp(cbi_part_number, HYNIX_PART_NAME, HYNIX_PART_LEN) == 0;
 			if (skip_reset_toggle) {
 				printk(BIOS_SPEW, "SKIP_RESET_TOGGLE needed, checking CMOS bit is set\n");

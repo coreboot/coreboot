@@ -5,7 +5,6 @@
 
 /* Pad configuration in ramstage */
 static const struct pad_config gpio_table[] = {
-
 	/* A11 : TOUCH_RPT_EN */
 	PAD_NC(GPP_A11, NONE),
 

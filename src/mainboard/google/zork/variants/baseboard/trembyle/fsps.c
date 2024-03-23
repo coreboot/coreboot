@@ -119,7 +119,6 @@ const fsp_dxio_descriptor *baseboard_get_dxio_descriptors(size_t *num)
 		*num = ARRAY_SIZE(pco_dxio_descriptors);
 		return pco_dxio_descriptors;
 	}
-
 }
 
 static const fsp_ddi_descriptor pco_ddi_descriptors[] = {

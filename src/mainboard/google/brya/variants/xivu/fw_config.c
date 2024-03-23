@@ -24,5 +24,4 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		gpio_padbased_override(padbased_table, wfc_disable_pads,
 						ARRAY_SIZE(wfc_disable_pads));
 	}
-
 }

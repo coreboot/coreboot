@@ -39,7 +39,6 @@ void bootblock_mainboard_init(void)
 	/* Is maskrom parameter address set to a sensible value? */
 	if ((maskrom_param->start_magic != UBER_SBL_SHARED_INFO_START_MAGIC) ||
 	    (maskrom_param->end_magic != UBER_SBL_SHARED_INFO_END_MAGIC)) {
-
 		printk(BIOS_INFO, "Uber-sbl: invalid magic!\n");
 	} else {
 		printk(BIOS_INFO, "Uber-sbl version: %s\n",

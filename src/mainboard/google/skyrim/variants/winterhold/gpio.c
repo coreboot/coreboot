@@ -6,7 +6,6 @@
 
 /* GPIO configuration in ramstage */
 static const struct soc_amd_gpio override_gpio_table[] = {
-
 	/* SOC_PEN_DETECT_ODL */
 	PAD_NC(GPIO_3),
 

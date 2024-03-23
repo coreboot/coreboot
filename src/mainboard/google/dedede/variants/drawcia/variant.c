@@ -19,7 +19,6 @@ const char *get_wifi_sar_cbfs_filename(void)
 	uint32_t sku_id = google_chromeec_get_board_sku();
 
 	if (fw_config_probe(FW_CONFIG(TABLETMODE, TABLETMODE_ENABLED))) {
-
 		if (sku_id >= OSCINO_SKU_START && sku_id <= OSCINO_SKU_END)
 			return "wifi_sar-oscino.hex";
 		else

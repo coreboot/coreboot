@@ -21,7 +21,6 @@ void setup_chromeos_gpios(void)
 		gpio_output(GPIO_BEEP_ON, 0);
 	else if (CONFIG(CHERRY_USE_RT1011))
 		gpio_output(GPIO_RST_RT1011, 0);
-
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)

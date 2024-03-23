@@ -14,5 +14,4 @@ void mb_pre_fspm(void)
 
 	gpio_configure_pads_with_override(base_gpios, base_num_gpios,
 			override_gpios, override_num_gpios);
-
 }

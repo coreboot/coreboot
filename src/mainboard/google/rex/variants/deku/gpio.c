@@ -409,7 +409,6 @@ static const struct pad_config romstage_gpio_table[] = {
 
 const struct pad_config *variant_gpio_table(size_t *num)
 {
-
 	*num = ARRAY_SIZE(gpio_table);
 	return gpio_table;
 }

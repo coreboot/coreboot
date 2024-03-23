@@ -5,7 +5,6 @@
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
-
 }
 
 int get_ec_is_trusted(void)

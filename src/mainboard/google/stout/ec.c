@@ -11,7 +11,6 @@
 
 void stout_ec_init(void)
 {
-
 	printk(BIOS_DEBUG,"%s: EC FW version %x%x\n", __func__,
 			ec_read(EC_FW_VER), ec_read(EC_FW_VER + 1));
 

@@ -62,7 +62,6 @@ void __weak variant_smi_sleep(u8 slp_typ)
 
 void power_off_lte_module(void)
 {
-
 	const struct gpio_with_delay lte_power_off_gpios[] = {
 		{
 			GPIO_161, /* AVS_I2S1_MCLK -- PLT_RST_LTE_L */

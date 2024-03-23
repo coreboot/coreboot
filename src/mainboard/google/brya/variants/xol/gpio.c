@@ -221,7 +221,6 @@ const struct pad_config *variant_gpio_override_table(size_t *num)
 {
 	*num = ARRAY_SIZE(gpio_overrides);
 	return gpio_overrides;
-
 }
 
 const struct pad_config *variant_early_gpio_table(size_t *num)

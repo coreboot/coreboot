@@ -12,5 +12,4 @@ void bootblock_mainboard_init(void)
 		     2);
 	gpio_set_spi_driving(CONFIG_BOOT_DEVICE_SPI_FLASH_BUS, SPI_PAD0_MASK,
 			     10);
-
 }

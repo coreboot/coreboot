@@ -18,7 +18,6 @@ void variant_nhlt_init(struct nhlt *nhlt)
 	/* MAXIM Smart Amps for left and right speakers. */
 	if (nhlt_soc_add_max98357(nhlt, AUDIO_LINK_SSP0))
 		printk(BIOS_ERR, "Couldn't add  Maxim_98357 codec.\n");
-
 }
 
 void variant_nhlt_oem_overrides(const char **oem_id, const char **oem_table_id,

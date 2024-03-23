@@ -193,7 +193,6 @@ static void wifi_power_reset_configure_active_low_power(void)
 		PAD_GPO(GPIO_42, LOW),
 	};
 	gpio_configure_pads(v3_wifi_table, ARRAY_SIZE(v3_wifi_table));
-
 }
 
 static void wifi_power_reset_configure_active_high_power(void)
@@ -283,7 +282,6 @@ void baseboard_pcie_gpio_configure(void)
 __weak void finalize_gpios(int slp_typ)
 {
 	if (variant_has_fingerprint() && slp_typ != ACPI_S3) {
-
 		if (fpmcu_needs_delay())
 			mdelay(550);
 

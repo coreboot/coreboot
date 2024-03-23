@@ -50,7 +50,6 @@ static void set_clock_sources(void)
 	clrsetbits32(&clk_rst->clk_src_disp1,
 		     CLK_SOURCE_MASK | CLK_DIVISOR_MASK,
 		     2 /*PLLD_OUT0 */ << CLK_SOURCE_SHIFT);
-
 }
 
 static void setup_pinmux(void)

@@ -174,7 +174,6 @@ bool mainboard_regulator_is_enabled(enum mtk_regulator regulator)
 			}
 			return !!enabled;
 		}
-
 	}
 
 	printk(BIOS_ERR, "Invalid regulator ID: %d\n; assuming disabled", regulator);

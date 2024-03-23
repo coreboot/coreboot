@@ -153,7 +153,6 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
  * See https://review.coreboot.org/c/coreboot/+/32111 .
  */
 static const struct pad_config default_sleep_gpio_table[] = {
-
 };
 
 /*
@@ -161,7 +160,6 @@ static const struct pad_config default_sleep_gpio_table[] = {
  * default_sleep_gpio_table but also, turn off FPMCU.
  */
 static const struct pad_config s5_sleep_gpio_table[] = {
-
 };
 
 const struct pad_config *variant_sleep_gpio_table(u8 slp_typ, size_t *num)

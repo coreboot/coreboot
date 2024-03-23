@@ -35,7 +35,6 @@ void variant_get_dxio_ddi_descriptors(const fsp_dxio_descriptor **dxio_descs,
 				      const fsp_ddi_descriptor **ddi_descs,
 				      size_t *ddi_num)
 {
-
 	*dxio_descs = baseboard_get_dxio_descriptors(dxio_num);
 	*ddi_descs = &non_hdmi_ddi_descriptors[0];
 	*ddi_num = ARRAY_SIZE(non_hdmi_ddi_descriptors);

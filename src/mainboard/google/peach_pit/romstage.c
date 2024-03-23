@@ -194,7 +194,6 @@ static void simple_spi_test(void)
 			printk(BIOS_SPEW, "RTRY at %d(%p):\nRAM %08lx\nSPI %08lx\n",
 			       i, &data[i/4], (unsigned long)data[i/4], (unsigned long)in);
 		}
-
 	}
 	printk(BIOS_SPEW, "%d errors\n", errors);
 }
@@ -219,7 +218,6 @@ void main(void)
 
 void __noreturn romstage_main(void)
 {
-
 	extern struct mem_timings mem_timings;
 	int is_resume = (get_wakeup_state() != IS_NOT_WAKEUP);
 	int power_init_failed;

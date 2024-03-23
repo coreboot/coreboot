@@ -4,5 +4,4 @@
 
 void bootblock_mainboard_init(void)
 {
-
 }

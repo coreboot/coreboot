@@ -135,7 +135,6 @@ static void mainboard_enable(struct device *dev)
 {
 	/* Initialize the PIRQ data structures for consumption */
 	pirq_setup();
-
 }
 
 int mainboard_get_xhci_oc_map(uint16_t *map)

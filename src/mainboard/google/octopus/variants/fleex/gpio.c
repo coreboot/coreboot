@@ -5,7 +5,6 @@
 #include <gpio.h>
 
 static const struct pad_config default_override_table[] = {
-
 	PAD_NC(GPIO_52, UP_20K),
 	PAD_NC(GPIO_53, UP_20K),
 	/* UART2-CTS_B -- EN_PP3300_DX_LTE_SOC */

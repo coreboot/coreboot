@@ -40,6 +40,5 @@ static void fw_config_handle(void *unused)
 		printk(BIOS_INFO, "BT offload enabled over I2S with MAX98360+RT5682VS\n");
 		gpio_configure_pads(bt_i2s_enable_pads, ARRAY_SIZE(bt_i2s_enable_pads));
 	}
-
 }
 BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, fw_config_handle, NULL);

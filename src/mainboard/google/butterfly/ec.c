@@ -18,5 +18,4 @@ void butterfly_ec_init(void)
 	/* Disable wake on USB, LAN & RTC */
 	/* Enable Wake from Keyboard */
 	ec_mem_write(EC_EC_PSW, EC_PSW_IKB);
-
 }

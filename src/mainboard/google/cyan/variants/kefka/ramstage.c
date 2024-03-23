@@ -5,7 +5,6 @@
 void board_silicon_USB2_override(SILICON_INIT_UPD *params)
 {
 	if (SocStepping() >= SocD0) {
-
 		//Follow Intel recommendation to set
 		//BSW D-stepping PERPORTRXISET 2 (low strength)
 		params->D0Usb2Port0PerPortRXISet = 2;

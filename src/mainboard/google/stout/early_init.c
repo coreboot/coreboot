@@ -63,7 +63,6 @@ static void early_ec_init(void)
 
 	if (((ec_status & 0x3) == EC_IN_RO_MODE) ||
 	    ((ec_status & 0x3) == EC_IN_RECOVERY_MODE)) {
-
 		printk(BIOS_DEBUG, "EC Cold Boot Detected\n");
 		if (!rec_mode) {
 			/*

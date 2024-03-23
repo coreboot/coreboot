@@ -30,5 +30,4 @@ void fch_pre_init(void)
 /* After console init */
 void fch_early_init(void)
 {
-
 }

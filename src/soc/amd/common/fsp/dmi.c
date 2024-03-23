@@ -23,7 +23,6 @@
  */
 static uint16_t ddr_speed_mhz_to_reported_mts(uint16_t ddr_type, uint16_t speed)
 {
-
 	if (CONFIG(USE_DDR4) && ddr_type == MEMORY_TYPE_DDR4)
 		return ddr4_speed_mhz_to_reported_mts(speed);
 	else if (CONFIG(USE_LPDDR4) && ddr_type == MEMORY_TYPE_LPDDR4)

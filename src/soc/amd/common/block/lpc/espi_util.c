@@ -317,7 +317,6 @@ static int espi_get_unused_mmio_window(void)
 	}
 
 	return -1;
-
 }
 
 static size_t espi_get_mmio_window_size(int idx)
@@ -824,7 +823,6 @@ static enum cb_err espi_wait_channel_ready(uint16_t slave_reg_addr)
 	printk(BIOS_ERR, "Channel is not ready after %d usec (slave addr: 0x%x)\n",
 	       ESPI_CH_READY_TIMEOUT_US, slave_reg_addr);
 	return CB_ERR;
-
 }
 
 static void espi_enable_ctrlr_channel(uint32_t channel_en)

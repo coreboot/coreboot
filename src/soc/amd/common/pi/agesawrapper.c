@@ -387,7 +387,6 @@ static AGESA_STATUS ramstage_dispatch(AMD_CONFIG_PARAMS *StdHeader)
 	default:
 		return AGESA_UNSUPPORTED;
 	}
-
 }
 
 AGESA_STATUS agesa_execute_state(AGESA_STRUCT_NAME func)

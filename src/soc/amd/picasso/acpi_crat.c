@@ -372,7 +372,6 @@ static unsigned long gen_crat_tlb_entry(struct acpi_crat_header *crat, unsigned 
 
 	new_entries = 0;
 	for (thread = 0; thread < total_num_threads; thread++) {
-
 		/* L1 data TLB */
 		if (thread % num_threads_sharing0 == 0) {
 			current = add_crat_tlb_entry(&tlb_affinity, current);

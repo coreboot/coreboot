@@ -131,7 +131,6 @@ static void ivrs_add_device_or_bridge(struct device *parent, struct device *dev,
 	} else if ((header_type == PCI_HEADER_TYPE_NORMAL) && !is_pcie) {
 		/* Device is legacy PCI or PCI-X */
 		add_ivhd_dev_entry(parent, dev, current, IVHD_DEV_8_BYTE_ALIAS_SELECT, 0x0);
-
 	}
 }
 
@@ -316,7 +315,6 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 	ivhd = &ivrs->ivhd;
 
 	while ((dev = dev_find_path(dev, DEVICE_PATH_DOMAIN)) != NULL) {
-
 		nb_dev = pcidev_path_behind(dev->downstream, PCI_DEVFN(0, 0));
 		iommu_dev = pcidev_path_behind(dev->downstream, PCI_DEVFN(0, 2));
 		if (!nb_dev) {

@@ -19,7 +19,6 @@ static void fsp_assign_vbios_upds(FSP_S_CONFIG *scfg)
 		scfg->vbios_buffer = 0;
 		printk(BIOS_SPEW, "%s: using VBIOS cache; skipping GOP driver.\n", __func__);
 		return;
-
 	}
 	printk(BIOS_SPEW, "%s: not using VBIOS cache; running GOP driver.\n", __func__);
 	scfg->vbios_buffer = CONFIG(RUN_FSP_GOP) ? PCI_VGA_RAM_IMAGE_START : 0;

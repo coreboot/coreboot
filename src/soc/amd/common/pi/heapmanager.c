@@ -236,7 +236,6 @@ AGESA_STATUS agesa_AllocateBuffer(uint32_t Func, uintptr_t Data,
 					 * betterfit than the previous nodes
 					 */
 					if (BestFitNodeSize > FreedNodeSize) {
-
 						BestFitNodeOffset =
 							FreedNodeOffset;
 						BestFitPrevNodeOffset =
@@ -308,7 +307,6 @@ AGESA_STATUS agesa_AllocateBuffer(uint32_t Func, uintptr_t Data,
 AGESA_STATUS agesa_DeallocateBuffer(uint32_t Func, uintptr_t Data,
 							void *ConfigPtr)
 {
-
 	uint8_t             *BiosHeapBaseAddr;
 	uint32_t            AllocNodeOffset;
 	uint32_t            PrevNodeOffset;
@@ -436,5 +434,4 @@ AGESA_STATUS agesa_LocateBuffer(uint32_t Func, uintptr_t Data, void *ConfigPtr)
 	}
 
 	return Status;
-
 }

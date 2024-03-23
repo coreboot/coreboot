@@ -3,7 +3,6 @@
 #include <device/azalia_device.h>
 
 const u32 cim_verb_data[] = {
-
 	/* Realtek, ALC298 */
 	0x10ec0298, /* Vendor ID */
 	0x1a586752, /* Subsystem ID */

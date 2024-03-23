@@ -149,7 +149,6 @@ void soc_config_iio(FSPM_UPD *mupd, const UPD_IIO_PCIE_PORT_CONFIG_ENTRY
 	mupd->FspmConfig.IioPcieConfigTableNumber = CONFIG_MAX_SOCKET; /* Set by mainboard */
 
 	for (socket = 0; socket < CONFIG_MAX_SOCKET; socket++) {
-
 		/* Configures DMI, IOU0 ~ IOU4 */
 		for (port = 0; port < IIO_PORT_SETTINGS; port++) {
 			const UPD_IIO_PCIE_PORT_CONFIG_ENTRY *port_cfg =

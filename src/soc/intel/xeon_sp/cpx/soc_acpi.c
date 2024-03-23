@@ -130,7 +130,6 @@ void soc_power_states_generation(int core, int cores_per_package)
 	/* Generate the remaining entries */
 	for (ratio = ratio_min + ((num_entries - 1) * ratio_step);
 	     ratio >= ratio_min; ratio -= ratio_step) {
-
 		/* Calculate power at this ratio */
 		power = common_calculate_power_ratio(power_max, ratio_max, ratio);
 		clock = ratio * CONFIG_CPU_BCLK_MHZ;

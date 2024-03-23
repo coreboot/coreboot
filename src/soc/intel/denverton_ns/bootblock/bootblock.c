@@ -80,7 +80,6 @@ static void sanity_check_pci_mmconf(void)
 
 void bootblock_soc_early_init(void)
 {
-
 #if (CONFIG(CONSOLE_SERIAL))
 	early_uart_init();
 #endif

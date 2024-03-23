@@ -253,7 +253,6 @@ u32 gtt_read(u32 reg)
 	u32 val;
 	val = read32(res2mmio(gtt_res, reg, 0));
 	return val;
-
 }
 
 void gtt_write(u32 reg, u32 data)

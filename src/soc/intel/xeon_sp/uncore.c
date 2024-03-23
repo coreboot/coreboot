@@ -253,7 +253,6 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 		res = reserved_ram_from_to(dev, index++, (dpr.top - dpr.size) * MiB,
 					   dpr.top * MiB);
 		LOG_RESOURCE("dpr", dev, res);
-
 	}
 
 	/* Mark TSEG/SMM region as reserved */

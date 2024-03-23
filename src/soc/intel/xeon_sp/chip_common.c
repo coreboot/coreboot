@@ -433,7 +433,6 @@ bool is_ubox_domain(struct device *dev)
 
 	return (strstr(dev->name, DOMAIN_TYPE_UBX0) ||
 		strstr(dev->name, DOMAIN_TYPE_UBX1));
-
 }
 
 bool is_cxl_domain(struct device *dev)

@@ -150,5 +150,4 @@ void mainboard_romstage_entry(void)
 
 		save_dimm_info();
 	}
-
 }

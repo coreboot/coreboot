@@ -82,7 +82,6 @@ static void bios_done_finalize(void *unused)
 	/* bios_done_msr() only defined for some Xeon-SP, such as SPR-SP */
 	if (mp_run_on_all_cpus(&bios_done_msr, NULL) != CB_SUCCESS)
 		printk(BIOS_ERR, "Fail to set BIOS_DONE MSR\n");
-
 }
 
 BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_ENTRY, soc_finalize, NULL);

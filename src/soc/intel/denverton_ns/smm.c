@@ -32,7 +32,6 @@ void smm_southbridge_clear_state(void)
 
 static void smm_southbridge_enable(uint16_t pm1_events)
 {
-
 	printk(BIOS_DEBUG, "Enabling SMIs.\n");
 	/* Configure events Disable PCIe wake. */
 	enable_pm1(pm1_events | PCIEXPWAK_DIS);

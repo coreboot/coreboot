@@ -89,7 +89,6 @@ static void setup_gpio_route(const struct soc_gpio_map *sw_gpios,
 
 	for (sw_config = sw_gpios, n_config = n_gpios;
 		(!north_done || !south_done); sw_config++, n_config++, gpio++) {
-
 		/* When north config is done */
 		if ((gpio > GP_NORTH_COUNT) || (n_config->pad_conf0 == GPIO_LIST_END))
 			north_done = 1;
@@ -228,7 +227,6 @@ static void setup_gpios(const struct soc_gpio_map *gpios, const struct gpio_bank
 void setup_soc_gpios(struct soc_gpio_config *config, u8 enable_xdp_tap)
 {
 	if (config) {
-
 		/*
 		 * Write the default value 0xffffff to the SW write_access_policy_interrupt_reg
 		 * to allow the SW interrupt mask register to be set

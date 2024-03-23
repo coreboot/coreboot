@@ -83,7 +83,6 @@ enum bp_status {
  * The flags are returned in response to MKHI_BUP_COMMON_GET_BOOT_PARTITION_INFO cmd.
  */
 enum bp_info_flags {
-
 	/* Redundancy Enabled: It indicates CSE supports RO(BP1) and RW(BP2) regions */
 	BP_INFO_REDUNDANCY_EN = 1 << 0,
 
@@ -715,7 +714,6 @@ static void cse_get_bp_entry_range(enum boot_partition_id bp, uint32_t *start_of
 
 	if (end_offset)
 		*end_offset = cse_bp->end_offset;
-
 }
 
 static bool cse_is_rw_bp_status_valid(void)

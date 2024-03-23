@@ -32,7 +32,6 @@ static const struct reset_mapping rst_map_com0[] = {
  * linux/drivers/pinctrl/intel/pinctrl-jasperlake.c
  */
 static const struct pad_group jsl_community0_groups[] = {
-
 	INTEL_GPP_BASE(GPP_F0, GPP_F0, GPP_F19, 320),		/* GPP_F */
 	INTEL_GPP(GPP_F0, GPIO_SPI0_IO_2, GPIO_SPI0_CLK_LOOPBK),/* SPI0 */
 	INTEL_GPP_BASE(GPP_F0, GPP_B0, GPIO_GSPI1_CLK_LOOPBK, 32),/* GPP_B */

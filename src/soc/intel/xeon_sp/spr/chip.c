@@ -29,7 +29,6 @@
 
 __weak void mainboard_silicon_init_params(FSPS_UPD *params)
 {
-
 }
 
 /* UPD parameters to be initialized before SiliconInit */

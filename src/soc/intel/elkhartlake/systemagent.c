@@ -60,5 +60,4 @@ void soc_systemagent_init(struct device *dev)
 	config = config_of_soc();
 	soc_config = &config->power_limits_config;
 	set_power_limits(MOBILE_SKU_PL1_TIME_SEC, soc_config);
-
 }

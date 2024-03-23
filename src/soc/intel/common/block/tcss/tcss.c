@@ -41,7 +41,6 @@ static uint32_t tcss_make_alt_mode_cmd_buf_0(int u, int u3, int m)
 	return TCSS_ALT_FIELD(USAGE, u) |
 		TCSS_ALT_FIELD(USB3, u3) |
 		TCSS_ALT_FIELD(MODE, m);
-
 }
 
 static uint32_t tcss_make_alt_mode_cmd_buf_1(int p, int c, int ufp, int dp)
@@ -65,7 +64,6 @@ static uint32_t tcss_make_hpd_mode_cmd(int u, int u3, int hpd_lvl, int hpd_irq)
 		TCSS_HPD_FIELD(USB3, u3) |
 		TCSS_HPD_FIELD(LVL, hpd_lvl) |
 		TCSS_HPD_FIELD(IRQ, hpd_irq);
-
 }
 
 static int send_pmc_req(int cmd_type, const struct pmc_ipc_buffer *req,

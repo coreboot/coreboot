@@ -111,7 +111,6 @@ static void write_pci_config_irqs(void)
 	 */
 	printk(BIOS_DEBUG, "PCI_CFG IRQ: Write PIRQ assignments\n");
 	for (irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {
-
 		if ((irq_dev->path.type != DEVICE_PATH_PCI) ||
 			(!irq_dev->enabled))
 			continue;
@@ -288,7 +287,6 @@ static void sc_init(struct device *dev)
 	setup_i8254();
 
 	sc_set_serial_irqs_mode(dev, config->serirq_mode);
-
 }
 
 /*

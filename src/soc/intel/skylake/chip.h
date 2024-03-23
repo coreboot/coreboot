@@ -31,7 +31,6 @@ enum skylake_i2c_voltage {
 };
 
 struct soc_intel_skylake_config {
-
 	/* Common struct containing soc config data required by common code */
 	struct soc_intel_common_config common_soc_config;
 

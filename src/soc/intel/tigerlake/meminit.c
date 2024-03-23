@@ -176,5 +176,4 @@ void memcfg_init(FSPM_UPD *memupd, const struct mb_cfg *mb_cfg,
 	default:
 		die("Unsupported memory type(%d)\n", mb_cfg->type);
 	}
-
 }

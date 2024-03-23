@@ -58,7 +58,6 @@ static const struct {
 };
 
 struct soc_intel_jasperlake_config {
-
 	/* Common struct containing soc config data required by common code */
 	struct soc_intel_common_config common_soc_config;
 

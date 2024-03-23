@@ -88,7 +88,6 @@ static void meminit_channels(FSP_M_CONFIG *mem_cfg, const struct mb_cfg *board_c
 void memcfg_init(FSP_M_CONFIG *mem_cfg, const struct mb_cfg *board_cfg,
 			const struct spd_info *spd_info, bool half_populated)
 {
-
 	if (spd_info->read_type == READ_SMBUS) {
 		for (int i = 0; i < NUM_DIMM_SLOT; i++)
 			mem_cfg->SpdAddressTable[i] = spd_info->spd_spec.spd_smbus_address[i];

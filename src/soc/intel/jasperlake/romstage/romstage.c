@@ -139,7 +139,6 @@ void mainboard_romstage_entry(void)
 	fsp_memory_init(s3wake);
 	pmc_set_disb();
 	if (!s3wake) {
-
 		/*
 		 * cse_fw_sync() must be called after DRAM initialization as
 		 * HMRFPO_ENABLE HECI command (which is used by cse_fw_sync())

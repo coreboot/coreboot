@@ -110,7 +110,6 @@ void cl_get_pmc_sram_data(cl_node_t *head)
 
 	/* process crashlog records */
 	for (int i = 0; i < descriptor_table.numb_regions + 1; i++) {
-
 		u32 sram_base = 0;
 		bool pmc_sram = true;
 		printk(BIOS_DEBUG, "Region[0x%x].Tag=0x%x offset=0x%x, size=0x%x\n",

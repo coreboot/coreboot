@@ -229,7 +229,6 @@ static void generate_p_state_entries(int core)
 	/* Generate the remaining entries */
 	for (ratio = ratio_min + ((num_entries - 1) * ratio_step);
 	     ratio >= ratio_min; ratio -= ratio_step) {
-
 		/* Calculate VID for this ratio */
 		vid = ((ratio - ratio_min) * vid_range_2) / ratio_range_2 + vid_min;
 

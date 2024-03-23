@@ -810,7 +810,6 @@ void gpi_clear_get_smi_status(struct gpi_status *sts)
 
 	if (CONFIG(DEBUG_SMI))
 		print_gpi_status(sts);
-
 }
 
 int gpi_status_get(const struct gpi_status *sts, gpio_t pad)

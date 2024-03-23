@@ -8,7 +8,6 @@
 #include <fsp/api.h>
 
 struct vr_config {
-
 	/*
 	 * The below settings will take effect when this is set to 1
 	 * for that domain.

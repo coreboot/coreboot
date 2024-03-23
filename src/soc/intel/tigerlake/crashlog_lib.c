@@ -116,7 +116,6 @@ u32 cl_get_cpu_tmp_bar(void)
 
 bool  cl_pmc_sram_has_mmio_access(void)
 {
-
 	if (pci_read_config16(PCH_DEV_SRAM, PCI_VENDOR_ID) == 0xFFFF) {
 		printk(BIOS_ERR, "PMC SSRAM PCI device is disabled.\n");
 		return false;

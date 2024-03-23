@@ -28,7 +28,6 @@ static void process_cse_telemetry_data(void)
 	current_time = timestamp_get();
 
 	for (unsigned int i = 0; i < NUM_CSE_BOOT_PERF_DATA; i++) {
-
 		if (cse_perf_data.timestamp[i] == 0xffffffff) {
 			printk(BIOS_ERR, "%s: CSME timestamps invalid\n", __func__);
 			return;
@@ -48,7 +47,6 @@ static void process_cse_telemetry_data(void)
 
 	/* Normalize TS values to zero-point */
 	for (unsigned int i = zero_point_idx + 1; i < NUM_CSE_BOOT_PERF_DATA; i++) {
-
 		if (ts[i] && ts[i] < ts[zero_point_idx]) {
 			printk(BIOS_ERR, "%s: CSME timestamps invalid,"
 					" wraparound detected\n", __func__);

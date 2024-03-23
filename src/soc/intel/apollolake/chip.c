@@ -846,7 +846,6 @@ static void disable_xhci_lfps_pm(void)
 void platform_fsp_notify_status(enum fsp_notify_phase phase)
 {
 	if (phase == END_OF_FIRMWARE) {
-
 		/*
 		 * Before hiding P2SB device and dropping privilege level,
 		 * dump CSE status and disable HECI1 interface.

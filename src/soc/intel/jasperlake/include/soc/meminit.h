@@ -52,7 +52,6 @@ struct spd_info {
 
 /* Board-specific memory dq mapping information */
 struct mb_cfg {
-
 	/*
 	 * For each channel, there are 6 sets of DQ byte mappings,
 	 * where each set has a package 0 and a package 1 value (package 0

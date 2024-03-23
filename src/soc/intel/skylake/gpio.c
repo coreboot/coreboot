@@ -181,5 +181,4 @@ uint32_t soc_gpio_pad_config_fixup(const struct pad_config *cfg,
 	if (cfg->pad >= GPP_F4 && cfg->pad <= GPP_F11 && dw_reg == 1)
 		reg_val = reg_val & ~(PAD_CFG1_TOL_1V8);
 	return reg_val;
-
 }

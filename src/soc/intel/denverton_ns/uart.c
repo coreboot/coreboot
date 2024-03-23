@@ -32,7 +32,6 @@ static void dnv_ns_uart_read_resources(struct device *dev)
 	if (res != NULL)
 		res->flags = 0;
 	compact_resources(dev);
-
 }
 
 static struct device_operations uart_ops = {

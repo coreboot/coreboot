@@ -170,7 +170,6 @@ uint32_t spi_flash_get_mmap_windows(struct flash_mmap_window *table)
 	bios_mmap_init();
 
 	for (i = 0; i < TOTAL_DECODE_WINDOWS; i++) {
-
 		if (region_sz(&real_dev_windows[i].sub_region) == 0)
 			continue;
 

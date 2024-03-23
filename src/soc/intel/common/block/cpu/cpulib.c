@@ -154,7 +154,6 @@ void cpu_set_p_state_to_min_clock_ratio(void)
  */
 int cpu_get_burst_mode_state(void)
 {
-
 	msr_t msr;
 	unsigned int eax;
 	int burst_en, burst_cap, burst_state = BURST_MODE_UNKNOWN;

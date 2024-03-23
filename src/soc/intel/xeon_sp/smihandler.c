@@ -83,7 +83,6 @@ void smihandler_soc_at_finalize(void)
  */
 void cpu_smi_handler(void)
 {
-
 }
 
 /* This is needed by common SMM code */

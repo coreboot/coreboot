@@ -164,7 +164,6 @@ static void pre_mp_init(void)
 	}
 	x86_setup_mtrrs_with_detect();
 	x86_mtrr_check();
-
 }
 
 #if !CONFIG(SOC_INTEL_COMMON_BLOCK_CPU_MPINIT)

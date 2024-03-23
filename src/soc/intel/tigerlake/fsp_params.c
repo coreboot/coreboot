@@ -563,7 +563,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 		params->PchFivrExtV1p05RailIccMaximum =
 			config->ext_fivr_settings.v1p05_icc_max_ma;
-
 	}
 
 	/* Apply minimum assertion width settings if non-zero */

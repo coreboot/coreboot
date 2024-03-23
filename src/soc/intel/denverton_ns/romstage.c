@@ -146,7 +146,6 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg)
 
 	/* if ME HECI communication is disabled, apply default one*/
 	if (mupd->FspmConfig.PcdMeHeciCommunication == 0) {
-
 		/* Configure FIA MUX PCD */
 		/* Assume the validating silicon has max lanes. */
 		supported_hsio_lanes = BL_ME_FIA_MUX_LANE_NUM_MAX;

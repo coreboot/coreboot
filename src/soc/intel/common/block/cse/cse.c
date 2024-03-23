@@ -1258,7 +1258,6 @@ static void me_reset_with_count(void)
 			 */
 			printk(BIOS_ERR, "Failed to change ME state in %u attempts!\n",
 									 ME_DISABLE_ATTEMPTS);
-
 		}
 	} else {
 		printk(BIOS_DEBUG, "ME: Resetting");
@@ -1268,7 +1267,6 @@ static void me_reset_with_count(void)
 
 static void cse_set_state(struct device *dev)
 {
-
 	/* (CS)ME Disable Command */
 	struct me_disable_command {
 		struct mkhi_hdr hdr;

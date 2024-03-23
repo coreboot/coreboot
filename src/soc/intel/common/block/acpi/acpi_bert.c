@@ -54,7 +54,6 @@ static enum cb_err record_crashlog_into_bert(void **region, size_t *length)
 	bool multi_entry = false;
 	cl_node_t *cl_node = cl_list_head.next;
 	while (cl_node) {
-
 		if ((cl_node->size <= 0) || (!(cl_node->data))) {
 			cl_node = cl_node->next;
 			continue;

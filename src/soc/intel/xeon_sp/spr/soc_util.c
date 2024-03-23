@@ -165,7 +165,6 @@ void soc_set_mrc_cold_boot_flag(bool cold_boot_required)
 	printk(BIOS_SPEW, "MRC status: 0x%02x want 0x%02x\n", mrc_status, new_mrc_status);
 	if (new_mrc_status != mrc_status)
 		cmos_write(new_mrc_status, CMOS_OFFSET_MRC_STATUS);
-
 }
 
 bool is_memtype_reserved(uint16_t mem_type)

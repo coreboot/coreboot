@@ -159,7 +159,6 @@ void gpio_configure_dnv_pads(const struct dnv_pad_config *gpio, size_t num)
 	NumberOfGroups = V_PCH_GPIO_GROUP_MAX;
 
 	for (Index = 0; Index < (uint32_t)num; Index++) {
-
 		Dw0RegMask = 0;
 		Dw0Reg = 0;
 		Dw1RegMask = 0;

@@ -69,7 +69,6 @@ static void smm_southcluster_route_gpios(void)
 
 static void smm_southbridge_enable(uint16_t pm1_events)
 {
-
 	printk(BIOS_DEBUG, "Enabling SMIs.\n");
 	if (!smm_save_params[SMM_SAVE_PARAM_PCIE_WAKE_ENABLE])
 		pm1_events |= PCIEXPWAK_DIS;

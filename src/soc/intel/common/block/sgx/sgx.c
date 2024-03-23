@@ -163,7 +163,6 @@ static int is_prmrr_approved(void)
  */
 void sgx_configure(void *unused)
 {
-
 	if (!is_sgx_supported() || !is_prmrr_set()) {
 		printk(BIOS_ERR, "SGX: not supported or pre-conditions not met\n");
 		return;

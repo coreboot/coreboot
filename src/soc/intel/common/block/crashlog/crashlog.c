@@ -200,7 +200,6 @@ bool __weak cpu_cl_discovery(void)
 
 int cl_pmc_re_arm_after_reset(void)
 {
-
 	const struct pmc_ipc_buffer req = { 0 };
 	struct pmc_ipc_buffer res;
 	uint32_t cmd_reg;
@@ -400,7 +399,6 @@ void __weak cl_get_pmc_sram_data(cl_node_t *head)
 
 	if (discovery_buf.bits.discov_mechanism == 1) {
 		for (int i = 0; i < descriptor_table.numb_regions; i++) {
-
 			cl_node_t *cl_node = malloc_cl_node(descriptor_table.regions[i].bits.size);
 			if (!cl_node) {
 				printk(BIOS_DEBUG, "failed to allocate cl_node [region = %d]\n", i);
@@ -425,7 +423,6 @@ void __weak cl_get_pmc_sram_data(cl_node_t *head)
 			}
 		}
 	} else {
-
 		cl_node_t *cl_node = malloc_cl_node(discovery_buf.bits.size);
 		if (!cl_node) {
 			printk(BIOS_DEBUG, "failed to allocate cl_node\n");
@@ -458,7 +455,6 @@ pmc_send_re_arm_after_reset:
 
 	/* Clear the SSRAM region after copying the error log */
 	cl_pmc_clear();
-
 }
 
 void cl_get_cpu_sram_data(cl_node_t *head)
@@ -481,7 +477,6 @@ void cl_get_cpu_sram_data(cl_node_t *head)
 	}
 
 	for (int i = 0 ; i < cpu_cl_disc_tab.header.fields.count ; i++) {
-
 		u32 cpu_bar_addr = cl_get_cpu_bar_addr();
 		bool pmc_sram = false;
 

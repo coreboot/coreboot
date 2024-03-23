@@ -323,7 +323,6 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
 
 	fsp_version = version;
-
 }
 
 __weak

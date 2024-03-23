@@ -33,7 +33,6 @@ enum sata_speed_limit {
 };
 
 struct soc_intel_apollolake_config {
-
 	/* Common structure containing soc config data required by common code*/
 	struct soc_intel_common_config common_soc_config;
 

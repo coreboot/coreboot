@@ -27,7 +27,6 @@
 
 static void pch_handle_sideband(config_t *config)
 {
-
 }
 
 static void pch_finalize(void)

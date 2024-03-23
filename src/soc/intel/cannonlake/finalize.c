@@ -79,7 +79,6 @@ static void pch_finalize(void)
 	 */
 	if (!CONFIG(USE_INTEL_FSP_MP_INIT))
 		cpu_lt_lock_memory();
-
 }
 
 static void soc_finalize(void *unused)

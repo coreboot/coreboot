@@ -29,5 +29,4 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 			ACPI_FADT_SLEEP_BUTTON |
 			ACPI_FADT_SEALED_CASE | ACPI_FADT_S4_RTC_WAKE |
 			ACPI_FADT_PLATFORM_CLOCK;
-
 }

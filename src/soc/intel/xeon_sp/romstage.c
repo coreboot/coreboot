@@ -36,7 +36,6 @@ __weak void mainboard_memory_init_params(FSPM_UPD *mupd)
 
 __weak void mainboard_rtc_failed(void)
 {
-
 }
 __weak void save_dimm_info(void) { }
 __weak void mainboard_ewl_check(void) { }

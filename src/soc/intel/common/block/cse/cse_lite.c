@@ -1111,7 +1111,6 @@ update_and_exit:
 	 * We cannot do much if CSE fails to backup the PSR data, except create an event log.
 	 */
 	update_psr_backup_status(PSR_BACKUP_DONE);
-	return;
 }
 
 static void initiate_psr_data_backup(void)

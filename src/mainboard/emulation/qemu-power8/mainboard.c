@@ -5,7 +5,6 @@
 
 static void mainboard_enable(struct device *dev)
 {
-
 	if (!dev) {
 		die("No dev0; die\n");
 	}

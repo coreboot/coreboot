@@ -43,7 +43,6 @@ static void enable_dev(struct device *dev)
 
 static void lpc47m15x_init(struct device *dev)
 {
-
 	if (!dev->enabled)
 		return;
 

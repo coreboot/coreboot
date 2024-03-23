@@ -29,7 +29,6 @@ static void f81803a_init(struct device *dev)
 		f81803a_pme_init(dev);
 		break;
 	}
-
 }
 
 static struct device_operations ops = {

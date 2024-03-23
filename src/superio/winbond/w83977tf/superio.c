@@ -9,7 +9,6 @@
 
 static void w83977tf_init(struct device *dev)
 {
-
 	if (!dev->enabled)
 		return;
 

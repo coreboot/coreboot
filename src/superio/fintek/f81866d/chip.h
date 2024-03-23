@@ -6,7 +6,6 @@
 #include <stdint.h>
 
 struct superio_fintek_f81866d_config {
-
 	/* AMD TSI */
 	uint8_t hwm_amd_tsi_addr;
 	uint8_t hwm_amd_tsi_control;

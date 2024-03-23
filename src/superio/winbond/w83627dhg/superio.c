@@ -20,7 +20,6 @@ static void w83627dhg_enable_UR2(struct device *dev)
 
 static void w83627dhg_init(struct device *dev)
 {
-
 	if (!dev->enabled)
 		return;
 

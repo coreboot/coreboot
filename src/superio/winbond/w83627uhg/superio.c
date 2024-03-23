@@ -38,7 +38,6 @@ static void set_uart_clock_source(struct device *dev, u8 uart_clock)
 
 static void w83627uhg_init(struct device *dev)
 {
-
 	if (!dev->enabled)
 		return;
 

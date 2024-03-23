@@ -115,7 +115,6 @@ static void pnp_ssdt_enter_conf_mode_a0a0(struct device *dev, const char *idx, c
 	acpigen_write_store();
 	acpigen_write_byte(0xa0);
 	acpigen_emit_namestring(idx);
-
 }
 
 static void pnp_ssdt_enter_conf_mode_a5a5(struct device *dev, const char *idx, const char *data)
@@ -161,7 +160,6 @@ static void pnp_ssdt_exit_conf_mode_aa(struct device *dev, const char *idx, cons
 
 static void pnp_ssdt_exit_conf_mode_0202(struct device *dev, const char *idx, const char *data)
 {
-
 	acpigen_write_store();
 	acpigen_write_byte(0x02);
 	acpigen_emit_namestring(idx);

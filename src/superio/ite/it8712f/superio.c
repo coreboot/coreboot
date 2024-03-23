@@ -9,7 +9,6 @@
 
 static void it8712f_init(struct device *dev)
 {
-
 	if (!dev->enabled)
 		return;
 

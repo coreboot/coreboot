@@ -6,7 +6,6 @@
 #include <stdint.h>
 
 struct superio_fintek_f71808a_config {
-
 	uint8_t hwm_vt1_boundary_1_temperature;
 	uint8_t hwm_vt1_boundary_2_temperature;
 	uint8_t hwm_vt1_boundary_3_temperature;

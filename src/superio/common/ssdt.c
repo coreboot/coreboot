@@ -103,7 +103,6 @@ static void ldn_gen_resources(const struct device *dev)
 	}
 	if (irq)
 		acpigen_write_irq(irq);
-
 }
 
 /* Add resource base and size for additional SuperIO code */
@@ -225,7 +224,6 @@ void superio_common_fill_ssdt_generator(const struct device *dev)
 
 		acpigen_emit_byte(RETURN_OP);
 		acpigen_emit_byte(LOCAL0_OP);
-
 	}
 	acpigen_pop_len(); /* Method */
 

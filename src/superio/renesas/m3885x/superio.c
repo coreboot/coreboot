@@ -9,7 +9,6 @@ void m3885_configure_multikey(void);
 
 static void m3885x_init(struct device *dev)
 {
-
 	if (!dev->enabled)
 		return;
 

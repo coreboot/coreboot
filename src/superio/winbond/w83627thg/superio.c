@@ -8,7 +8,6 @@
 
 static void w83627thg_init(struct device *dev)
 {
-
 	if (!dev->enabled)
 		return;
 

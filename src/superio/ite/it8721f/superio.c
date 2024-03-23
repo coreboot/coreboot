@@ -9,7 +9,6 @@
 
 static void init(struct device *dev)
 {
-
 	if (!dev->enabled)
 		return;
 

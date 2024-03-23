@@ -11,7 +11,6 @@
 
 static void mec1308_init(struct device *dev)
 {
-
 	if (!dev->enabled)
 		return;
 

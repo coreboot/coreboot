@@ -106,7 +106,6 @@ void lpc47n227_pnp_enable(struct device *dev)
  */
 static void lpc47n227_init(struct device *dev)
 {
-
 	if (!dev->enabled)
 		return;
 

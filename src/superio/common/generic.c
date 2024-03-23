@@ -320,7 +320,6 @@ static void enable_dev(struct device *dev)
 		printk(BIOS_ERR, "%s: Base address not set\n", dev_path(dev));
 	else
 		dev->ops = &ops;
-
 }
 
 struct chip_operations superio_common_ops = {

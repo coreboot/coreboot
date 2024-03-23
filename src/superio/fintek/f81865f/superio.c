@@ -9,7 +9,6 @@
 
 static void f81865f_init(struct device *dev)
 {
-
 	if (!dev->enabled)
 		return;
 

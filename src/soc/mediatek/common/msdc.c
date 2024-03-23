@@ -388,7 +388,6 @@ static void msdc_set_ios(struct sd_mmc_ctrlr *ctrlr)
 		msdc_set_clock(host, ctrlr->request_hz);
 
 	msdc_set_buswidth(host, ctrlr->bus_width);
-
 }
 
 static void msdc_update_pointers(struct msdc_ctrlr *host)

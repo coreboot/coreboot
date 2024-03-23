@@ -1492,7 +1492,6 @@ static void set_infra_ao_apc(uintptr_t base)
 		for (j = 0; j < ARRAY_SIZE(infra_ao_sys2_devices[i].d_permission); j++)
 			set_module_apc(base + SYS2_D0_APC_0, i, domain_map[j],
 				       infra_ao_sys2_devices[i].d_permission[j]);
-
 }
 
 static void set_peri_ao_apc(uintptr_t base)
@@ -1516,7 +1515,6 @@ static void set_peri_ao_apc(uintptr_t base)
 		for (j = 0; j < ARRAY_SIZE(peri_ao_sys1_devices[i].d_permission); j++)
 			set_module_apc(base + SYS1_D0_APC_0, i, domain_map[j],
 				       peri_ao_sys1_devices[i].d_permission[j]);
-
 }
 
 static void set_peri2_ao_apc(uintptr_t base)
@@ -1527,7 +1525,6 @@ static void set_peri2_ao_apc(uintptr_t base)
 		for (j = 0; j < ARRAY_SIZE(peri2_ao_sys0_devices[i].d_permission); j++)
 			set_module_apc(base + SYS0_D0_APC_0, i, domain_map[j],
 				       peri2_ao_sys0_devices[i].d_permission[j]);
-
 }
 
 static void set_peri_par_ao_apc(uintptr_t base)
@@ -1538,7 +1535,6 @@ static void set_peri_par_ao_apc(uintptr_t base)
 		for (j = 0; j < ARRAY_SIZE(peri_par_ao_sys0_devices[i].d_permission); j++)
 			set_module_apc(base + SYS0_D0_APC_0, i, domain_map[j],
 				       peri_par_ao_sys0_devices[i].d_permission[j]);
-
 }
 
 static void dump_infra_ao_apc(uintptr_t base)
@@ -1599,7 +1595,6 @@ static void dump_peri2_ao_apc(uintptr_t base)
 		for (i = 0; i < reg_max; i++)
 			printk(BIOS_DEBUG, "[DEVAPC] (PERI2_AO_SYS0)D%d_APC_%d: %#x\n", d,
 			       i, read32(getreg_domain(base, SYS0_D0_APC_0, d, i)));
-
 }
 
 static void dump_peri_par_ao_apc(uintptr_t base)
@@ -1716,7 +1711,6 @@ static void peri_par_init(uintptr_t base)
 	/* Master Domain */
 	SET32_BITFIELDS(getreg_domain(base, MAS_DOM_0, 0, 4),
 			PCIE0_DOM, DOMAIN_2);
-
 }
 
 static void fmem_master_init(uintptr_t base)

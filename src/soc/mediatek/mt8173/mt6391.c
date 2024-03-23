@@ -78,7 +78,6 @@ void mt6391_configure_ldo(enum ldo_power ldo, enum ldo_voltage vsel)
 
 	pwrap_write_field(addr, vsel, 0x7, 5);
 	pwrap_write_field(PMIC_RG_DIGLDO_CON5 + ldo * 2, 1, 1, 15);
-
 }
 
 void mt6391_enable_reset_when_ap_resets(void)
@@ -362,7 +361,6 @@ static void mt6391_init_setting(void)
 	pwrap_write_field(PMIC_RG_ANALDO_CON0, 0x3, 0x3, 3);
 	/* For low power, VIO18 set sleep_en to HW mode */
 	pwrap_write_field(PMIC_RG_VIO18_CON18, 0x1, 0x1, 8);
-
 }
 
 static void mt6391_default_buck_voltage(void)

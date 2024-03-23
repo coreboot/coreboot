@@ -47,7 +47,6 @@ static void da9212_hw_init(uint8_t i2c_num, unsigned char variant_id)
 
 	if (ret)
 		printk(BIOS_ERR, "%s failed\n", __func__);
-
 }
 
 void da9212_probe(uint8_t i2c_num)

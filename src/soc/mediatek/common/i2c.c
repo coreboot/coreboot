@@ -472,7 +472,6 @@ int mtk_i2c_calculate_speed(uint8_t bus, uint32_t clk_src,
 		base_step_cnt = step_cnt;
 		if (best_mul == opt_div + clock_div_constraint)
 			break;
-
 	}
 
 	if (!success)

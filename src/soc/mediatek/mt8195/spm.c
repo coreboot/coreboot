@@ -467,7 +467,6 @@ void spm_register_init(void)
 			SPM_DVFSRC_ENABLE_LSB, 1);
 	write32(&mtk_spm->spm_dvfs_level, SPM_DVFS_LEVEL_DEF);
 	write32(&mtk_spm->spm_dvs_dfs_level, SPM_DVS_DFS_LEVEL_DEF);
-
 }
 
 void spm_reset_and_init_pcm(void)

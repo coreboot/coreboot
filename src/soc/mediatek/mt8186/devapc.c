@@ -370,7 +370,6 @@ static const struct apc_infra_peri_dom_8 infra_ao_sys0_devices[] = {
 
 /* module, AP permission, N/A, SSPM permission, N/A */
 static const struct apc_infra_peri_dom_4 mm_ao_sys0_devices[] = {
-
 	/* 0 */
 	DAPC_MM_AO_SYS0_ATTR("IP",
 			     NO_PROTECTION, FORBIDDEN, FORBIDDEN, NO_PROTECTION),

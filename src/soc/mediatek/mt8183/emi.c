@@ -537,7 +537,6 @@ static void dramc_save_result_to_shuffle(u32 src_shuffle, u32 dst_shuffle)
 				dst_addr = (u8 *)&ch[chn].ao.shu[dst_shuffle] +
 					offset;
 				write32(dst_addr, read32(src_addr));
-
 			}
 		}
 
@@ -569,7 +568,6 @@ static void dramc_save_result_to_shuffle(u32 src_shuffle, u32 dst_shuffle)
 				dst_addr = (u8 *)&ch[chn].phy.shu[dst_shuffle] +
 					offset;
 				write32(dst_addr, read32(src_addr));
-
 			}
 		}
 	}

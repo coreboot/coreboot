@@ -46,7 +46,6 @@ static void infra_master_init(uintptr_t base)
 			TWO_BIT_DOM_REMAP_2, MAS_DOMAIN_1,
 			TWO_BIT_DOM_REMAP_3, MAS_DOMAIN_3,
 			TWO_BIT_DOM_REMAP_4, MAS_DOMAIN_1);
-
 }
 
 static void peri_master_init(uintptr_t base)

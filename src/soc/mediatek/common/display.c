@@ -81,7 +81,6 @@ int mtk_display_init(void)
 			return -1;
 		}
 	} else {
-
 		struct panel_serializable_data *mipi_data = NULL;
 
 		if (panel->get_edid) {

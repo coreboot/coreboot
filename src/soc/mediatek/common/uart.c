@@ -111,7 +111,6 @@ static void mtk_uart_init(void)
 	write8(&uart_ptr->fcr,
 	       UART8250_FCR_FIFO_EN | UART8250_FCR_CLEAR_RCVR |
 	       UART8250_FCR_CLEAR_XMIT);
-
 }
 
 static void mtk_uart_tx_byte(unsigned char data)

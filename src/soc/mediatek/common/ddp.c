@@ -46,7 +46,6 @@ void rdma_config(u32 width, u32 height, u32 pixel_clk, u32 fifo_size)
 
 void color_start(u32 width, u32 height)
 {
-
 	write32(&disp_color0->width, width);
 	write32(&disp_color0->height, height);
 	write32(&disp_color0->cfg_main, COLOR_BYPASS_ALL | COLOR_SEQ_SEL);

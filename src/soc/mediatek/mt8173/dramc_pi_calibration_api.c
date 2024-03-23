@@ -751,7 +751,6 @@ void tx_delay_for_wrleveling(u32 channel,
 	max_taps = MAX_DQDLY_TAPS - 1;
 
 	for (i = 0; i < DATA_WIDTH_32BIT; i++) {
-
 		index = i / DQS_BIT_NUMBER;
 
 		if (i % DQS_BIT_NUMBER == 0)
@@ -823,7 +822,6 @@ static void set_tx_dly_factor(u32 channel, u32 curr_val, u8 type)
 		value += (curr_val << (4 * i));
 
 	switch (type) {
-
 	case TX_DQS:
 		write32(&ch[channel].ddrphy_regs->padctl3, value);
 		break;
@@ -979,7 +977,6 @@ void perbit_window_cal(u32 channel, u8 type)
 
 	/* delay DQ from 0 to 15 to get the setup time */
 	for (dly = FIRST_DQ_DELAY; dly < MAX_DQDLY_TAPS; dly++) {
-
 		set_dly_factor(channel, STAGE_SETUP, type, dly);
 		err_value = dram_k_perbit(channel);
 
@@ -1015,7 +1012,6 @@ void perbit_window_cal(u32 channel, u8 type)
 	/* delay DQS to get the hold time, dq_dly = dqs_dly = 0 is counted */
 	/* when we delay dq, so we set first dqs delay to 1 */
 	for (dly = (FIRST_DQS_DELAY + 1); dly < max_dqs_taps; dly++) {
-
 		set_dly_factor(channel, STAGE_HOLD, type, dly);
 		err_value = dram_k_perbit(channel);
 

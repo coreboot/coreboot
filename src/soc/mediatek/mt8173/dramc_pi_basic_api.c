@@ -154,7 +154,6 @@ static void mem_pll_init_phase_sync(u32 channel)
 static void pll_phase_adjust(u32 channel, struct mem_pll *mempll, int reg_offs)
 {
 	switch (mempll->phase) {
-
 	case MEMPLL_INIT:
 		/* initial phase: zero out RG_MEPLL(2,3,4)_(REF_DL,FB)_DL */
 		clrbits32(&ch[channel].ddrphy_regs->mempll[reg_offs],
@@ -189,7 +188,6 @@ static void pll_phase_check(u32 channel, struct mem_pll *mempll, int idx)
 		      (idx + 2), mempll->phase, one_count, zero_count);
 
 	switch (mempll->phase) {
-
 	case MEMPLL_INIT:
 		if ((one_count - zero_count) > JMETER_COUNT_N) {
 			/* REF lag FBK */
@@ -243,7 +241,6 @@ static void mem_pll_phase_cali(u32 channel)
 			     JMETER_COUNT << JMETER_COUNTER_SHIFT);
 
 	while (1) {
-
 		for (i = 0; i < 3; i++) {
 			if (!mempll[i].done) {
 				pll_phase_adjust(channel, &mempll[i], (i + 2) * 3);
@@ -317,7 +314,6 @@ void mem_pll_init(const struct mt8173_sdram_params *sdram_params)
 	udelay(100);
 
 	for (channel = 0; channel < CHANNEL_NUM; channel++) {
-
 		/* mempll_bias_en */
 		write32(&ch[channel].ddrphy_regs->mempll[3], 0xd << 28 |
 							     0x1 << 6);

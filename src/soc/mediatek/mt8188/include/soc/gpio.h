@@ -44,7 +44,6 @@ enum {
 	})
 
 enum {
-
 	PIN(0, GPIO00, 0, 6, 0x31, 0xe0,
 	    TP_GPIO0_AO, SPIM5_CSB, UTXD1, DMIC3_CLK,
 	    I2SIN_MCK, I2SO2_MCK, DBG_MON_A0),

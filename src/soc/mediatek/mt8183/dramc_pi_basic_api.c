@@ -289,7 +289,6 @@ static void dramc_rx_input_delay_tracking(u8 chn)
 			clrsetbits32(&ch[chn].phy.r[rank].b[b].rxdvs[2],
 				(0x3 << 30) | (0x1 << 28) | (0x1 << 23),
 				(0x2 << 30) | (0x1 << 28) | (0x1 << 23));
-
 }
 
 static void dramc_hw_dqs_gating_tracking(u8 chn)

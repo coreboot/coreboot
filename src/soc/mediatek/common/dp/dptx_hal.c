@@ -324,7 +324,6 @@ void dptx_hal_settu_sramrd_start(struct mtk_dp *mtk_dp, u16 value)
 void dptx_hal_setsdp_downcnt_init_inhblanking(struct mtk_dp *mtk_dp, u16 value)
 {
 	mtk_dp_mask(mtk_dp, REG_3364_DP_ENCODER1_P0, value, 0xfff);
-
 }
 
 void dptx_hal_setsdp_downcnt_init(struct mtk_dp *mtk_dp, u16 value)

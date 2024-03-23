@@ -94,7 +94,6 @@ void rkvop_mode_set(u32 vop_id, const struct edid *edid, u32 mode)
 	struct rockchip_vop_regs *preg = vop_regs[vop_id];
 
 	switch (mode) {
-
 	case VOP_MODE_HDMI:
 		clrsetbits32(&preg->sys_ctrl,
 			     M_ALL_OUT_EN, V_HDMI_OUT_EN(1));

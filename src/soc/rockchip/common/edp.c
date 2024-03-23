@@ -147,7 +147,6 @@ static int rk_edp_aux_enable(struct rk_edp *edp)
 	} while (!stopwatch_expired(&sw));
 
 	return -1;
-
 }
 
 static int rk_edp_is_aux_reply(struct rk_edp *edp)
@@ -213,7 +212,6 @@ static int rk_edp_dpcd_transfer(struct rk_edp *edp,
 	while (length) {
 		len = MIN(length, 16);
 		for (try_times = 0; try_times < 10; try_times++) {
-
 			/* Clear AUX CH data buffer */
 			val = BUF_CLR;
 			write32(&edp->regs->buf_data_ctl, val);
@@ -251,7 +249,6 @@ static int rk_edp_dpcd_transfer(struct rk_edp *edp,
 				break;
 			else
 				printk(BIOS_WARNING, "read dpcd Aux Transaction fail!\n");
-
 		}
 
 		if (retval)
@@ -629,7 +626,6 @@ static int rk_edp_hw_link_training(struct rk_edp *edp)
 		return -1;
 	}
 	return 0;
-
 }
 
 static int rk_edp_select_i2c_device(struct rk_edp *edp,

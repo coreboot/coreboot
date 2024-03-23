@@ -683,7 +683,6 @@ static void phy_cfg(u32 channel, const struct rk3288_sdram_params *sdram_params)
 		for (i = 0; i < 4; i++)
 			clrbits32(&ddr_publ_regs->datx8[i].dxgcr,
 				DQSRTT | DQRTT);
-
 	}
 }
 
@@ -798,7 +797,6 @@ static void set_bandwidth_ratio(u32 channel, u32 n)
 			DXDLLCR_DLLSRST);
 	}
 	setbits32(&ddr_pctl_regs->dfistcfg0, 1 << 2);
-
 }
 
 static int data_training(u32 channel,
@@ -1074,7 +1072,6 @@ size_t sdram_size_mb(void)
 	u32 ch;
 
 	if (!size_mb) {
-
 		u32 sys_reg = read32(&rk3288_pmu->sys_reg[2]);
 		u32 ch_num = SYS_REG_DEC_NUM_CH(sys_reg);
 

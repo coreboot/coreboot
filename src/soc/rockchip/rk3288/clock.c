@@ -304,7 +304,6 @@ void rkclk_init(void)
 	write32(&cru_ptr->cru_mode_con,
 		RK_CLRSETBITS(GPLL_MODE_MSK, GPLL_MODE_NORM) |
 		RK_CLRSETBITS(CPLL_MODE_MSK, CPLL_MODE_NORM));
-
 }
 
 void rkclk_configure_cpu(enum apll_frequencies apll_freq)
@@ -665,5 +664,4 @@ unsigned int rkclk_i2c_clock_for_bus(unsigned int bus)
 	default:
 		return -1; /* Should never happen. */
 	}
-
 }

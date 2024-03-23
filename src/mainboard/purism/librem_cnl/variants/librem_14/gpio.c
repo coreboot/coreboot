@@ -4,7 +4,6 @@
 
 /* Pad configuration was generated automatically using intelp2m utility */
 static const struct pad_config gpio_table[] = {
-
 	/* ------- GPIO Group GPP_A ------- */
 
 	/* GPP_A0 - RCIN# */

@@ -6,7 +6,6 @@
 #include <gpio.h>
 
 static const struct pad_config gpio_table[] = {
-
 	/* ------- GPIO Community 1 ------- */
 
 	/* ------- GPIO Group GPP_G ------- */

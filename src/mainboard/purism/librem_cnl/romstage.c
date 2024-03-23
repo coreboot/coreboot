@@ -12,7 +12,6 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	FSP_M_CONFIG *mem_cfg = &memupd->FspmConfig;
 
 	struct cnl_mb_cfg memcfg = {
-
 		/*
 		* Rcomp resistor values.  These values represent the resistance in
 		* ohms of the three rcomp resistors attached to the DDR_COMP_0,

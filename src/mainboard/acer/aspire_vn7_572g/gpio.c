@@ -20,7 +20,6 @@
 
 /* Pad configuration was generated automatically using intelp2m utility */
 static const struct pad_config gpio_table[] = {
-
 	/* ------- GPIO Community 0 ------- */
 
 	/* ------- GPIO Group GPP_A ------- */

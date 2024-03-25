@@ -4,6 +4,8 @@
 #include <device/device.h>
 #include <cpu/x86/topology.h>
 
+#define CPUID_EXTENDED_CPU_TOPOLOGY2 0x1f
+
 #define CPUID_EXTENDED_CPU_TOPOLOGY 0x0b
 #define LEVEL_TYPE_CORE 2
 #define LEVEL_TYPE_SMT 1
@@ -20,6 +22,64 @@
 #define CPUID_CPU_TOPOLOGY_THREAD_BITS(res) CPUID_CPU_TOPOLOGY(LEVEL_BITS, (res).eax)
 #define CPUID_CPU_TOPOLOGY_CORE_BITS(res, threadbits) \
 	((CPUID_CPU_TOPOLOGY(LEVEL_BITS, (res).eax)) - threadbits)
+
+/* Return the level shift for the highest supported level (the package) */
+static enum cb_err get_cpu_package_bits(uint32_t *package_bits)
+{
+	struct cpuid_result cpuid_regs;
+	int level_num, cpu_id_op = 0;
+	const uint32_t cpuid_max_func = cpuid_get_max_func();
+
+	/*
+	 * Not all CPUs support this, those won't get topology filled in here.
+	 * CPU specific code can do this however.
+	 */
+	if (cpuid_max_func >= CPUID_EXTENDED_CPU_TOPOLOGY2)
+		cpu_id_op = CPUID_EXTENDED_CPU_TOPOLOGY2;
+	else if (cpuid_max_func >= CPUID_EXTENDED_CPU_TOPOLOGY)
+		cpu_id_op = CPUID_EXTENDED_CPU_TOPOLOGY;
+	else
+		return CB_ERR;
+
+	*package_bits = level_num = 0;
+	cpuid_regs = cpuid_ext(cpu_id_op, level_num);
+
+	/*
+	 * Sub-leaf index 0 enumerates SMT level, some AMD CPUs leave this CPUID leaf
+	 * reserved so bail out. Cpu specific code can fill in the topology later.
+	 */
+	if (CPUID_CPU_TOPOLOGY_LEVEL(cpuid_regs) != LEVEL_TYPE_SMT)
+		return CB_ERR;
+
+	do {
+		*package_bits = (CPUID_CPU_TOPOLOGY(LEVEL_BITS, (cpuid_regs).eax));
+		level_num++;
+		cpuid_regs = cpuid_ext(cpu_id_op, level_num);
+	/* Stop when level type is invalid i.e 0. */
+	} while (CPUID_CPU_TOPOLOGY_LEVEL(cpuid_regs));
+
+	return CB_SUCCESS;
+}
+
+void set_cpu_node_id_leaf_1f_b(struct device *cpu)
+{
+	static uint32_t package_bits;
+	static enum cb_err package_bits_ret;
+	static bool done = false;
+
+	if (!done) {
+		package_bits_ret = get_cpu_package_bits(&package_bits);
+		done = true;
+	}
+
+	const uint32_t apicid = cpu->path.apic.initial_lapicid;
+
+	/*
+	 *  If leaf_1f or leaf_b does not exist don't update the node_id.
+	 */
+	if (package_bits_ret == CB_SUCCESS)
+		cpu->path.apic.node_id = (apicid >> package_bits);
+}
 
 /* Get number of bits for core ID and SMT ID */
 static enum cb_err get_cpu_core_thread_bits(uint32_t *core_bits, uint32_t *thread_bits)

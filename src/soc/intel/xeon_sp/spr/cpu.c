@@ -14,6 +14,7 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/topology.h>
 #include <device/pci_mmio_cfg.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/mp_init.h>
@@ -81,6 +82,10 @@ static void each_cpu_init(struct device *cpu)
 	printk(BIOS_SPEW, "%s dev: %s, cpu: %lu, apic_id: 0x%x, package_id: 0x%x\n",
 	       __func__, dev_path(cpu), cpu_index(), cpu->path.apic.apic_id,
 	       cpu->path.apic.package_id);
+
+	/* Populate the node ID. It will be used as proximity ID. */
+	set_cpu_node_id_leaf_1f_b(cpu);
+	assert (cpu->path.apic.node_id < CONFIG_MAX_SOCKET);
 
 	/*
 	 * Enable PWR_PERF_PLTFRM_OVR and PROCHOT_LOCK.

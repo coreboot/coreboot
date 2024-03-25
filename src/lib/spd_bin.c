@@ -35,6 +35,7 @@ static bool use_ddr4_params(int dram_type)
 	case SPD_DRAM_DDR4:
 	case SPD_DRAM_DDR5:
 	case SPD_DRAM_LPDDR5:
+	case SPD_DRAM_LPDDR5X:
 	case SPD_DRAM_LPDDR4:
 	case SPD_DRAM_LPDDR4X:
 		return true;

@@ -91,6 +91,7 @@ chip northbridge/intel/sandybridge
 					register "TMPIN3.mode" = "THERMAL_PECI"
 					# Enable FAN3
 					register "FAN3.mode" = "FAN_SMART_SOFTWARE"
+					register "FAN3.smart.pwm_start" = "30"
 
 					device pnp 2e.0 off end # FDC
 					device pnp 2e.1 on # Serial Port 1

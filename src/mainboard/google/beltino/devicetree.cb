@@ -84,6 +84,7 @@ chip northbridge/intel/haswell
 					register "TMPIN3.mode" = "THERMAL_PECI"
 					# Enable FAN2
 					register "FAN2.mode" = "FAN_SMART_SOFTWARE"
+					register "FAN2.smart.pwm_start" = "30"
 
 					device pnp 2e.0 off end # FDC
 					device pnp 2e.1 on # Serial Port 1

@@ -74,7 +74,6 @@
 #define SIO_EC_HOST_ENABLE       /* EC Host Interface Resources */
 #define SIO_EC_ENABLE_PS2K       /* Enable PS/2 Keyboard */
 
-#define EC_ENABLE_SYNC_IRQ      /* Enable tight timestamp / wake support */
-#define EC_SYNC_IRQ_WAKE_CAPABLE /* Let the OS know ec_sync is wake capable */
+#define EC_ENABLE_SYNC_IRQ      /* Enable EC Sync IRQ defined in baseboard/gpio.h */
 
 #endif /* __BASEBOARD_EC_H__ */

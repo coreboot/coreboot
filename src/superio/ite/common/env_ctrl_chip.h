@@ -11,6 +11,8 @@
 #define ITE_EC_FAN_CNT		3
 #endif
 
+#define ITE_EC_FAN_VECTOR_CNT	2 /* A, B */
+
 /* Supported thermal mode on TMPINx */
 enum ite_ec_thermal_mode {
 	THERMAL_MODE_DISABLED = 0,
@@ -69,6 +71,17 @@ struct ite_ec_fan_config {
 	struct ite_ec_fan_smartconfig smart;
 };
 
+/* Special fan control modes that will assist smart control */
+struct ite_ec_fan_vector_config {
+	u8 tmpin;	/* select TMPINx (1, 2 or 3)			*/
+	u8 fanout;	/* select FANx (1, 2 or 3)			*/
+	u8 tmp_start;
+	u8 tmp_delta;
+	u8 tmp_range;	/* restrict the range of the vector function,
+			   0x00 to disable				*/
+	s8 slope;
+};
+
 struct ite_ec_config {
 	/*
 	 * Enable reading of voltage pins VINx.
@@ -84,6 +97,11 @@ struct ite_ec_config {
 	 * Enable a FAN in given mode.
 	 */
 	struct ite_ec_fan_config fan[ITE_EC_FAN_CNT];
+
+	/*
+	 * Enable special FAN vector control.
+	 */
+	struct ite_ec_fan_vector_config fan_vector[ITE_EC_FAN_VECTOR_CNT];
 
 	bool tmpin_beep;
 	bool fan_beep;
@@ -110,5 +128,8 @@ struct ite_ec_config {
 #define FAN3	ec.fan[2]
 #define FAN4	ec.fan[3]
 #define FAN5	ec.fan[4]
+
+#define FAN_VECA ec.fan_vector[0]
+#define FAN_VECB ec.fan_vector[1]
 
 #endif /* SUPERIO_ITE_ENV_CTRL_CHIP_H */

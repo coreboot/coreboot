@@ -253,6 +253,49 @@ static void enable_fan(const u16 base, const u8 fan,
 	}
 }
 
+static void enable_fan_vector(const u16 base, const u8 fan_vector,
+			      const struct ite_ec_fan_vector_config *const conf)
+{
+	u8 reg;
+
+	u8 start = conf->tmp_start;
+	if (!start) {
+		/* When tmp_start is not configured we would set the
+		 * register to it's default of 0xFF here, which would
+		 * effectively disable the vector functionality of the
+		 * SuperIO altogether since that temperature will never
+		 * be reached. We can therefore return here and don't
+		 * need to set any other registers.
+		 */
+		return;
+	}
+	pnp_write_hwm5_index(base, ITE_EC_FAN_VEC_CTL_LIMIT_START(fan_vector), start);
+
+	const s8 slope = conf->slope;
+	const bool slope_neg = slope < 0;
+	if (slope <= -128)
+		reg = 127;
+	else if (slope_neg)
+		reg = -slope;
+	else
+		reg = slope;
+	reg |= ITE_EC_FAN_VEC_CTL_SLOPE_TMPIN0(conf->tmpin);
+	pnp_write_hwm5_index(base, ITE_EC_FAN_VEC_CTL_SLOPE(fan_vector), reg);
+
+	reg = ITE_EC_FAN_VEC_CTL_DELTA_TEMP_INTRVL(conf->tmp_delta);
+	reg |= ITE_EC_FAN_VEC_CTL_DELTA_FANOUT(conf->fanout);
+	reg |= ITE_EC_FAN_VEC_CTL_DELTA_TMPIN1(conf->tmpin);
+	pnp_write_hwm5_index(base, ITE_EC_FAN_VEC_CTL_DELTA(fan_vector), reg);
+
+	if (CONFIG(SUPERIO_ITE_ENV_CTRL_FAN_VECTOR_RANGED)) {
+		reg = conf->tmp_range & 0x7f;
+		reg |= ITE_EC_FAN_VEC_CTL_RANGE_SLOPESIGN(slope_neg);
+		pnp_write_hwm5_index(base, ITE_EC_FAN_VEC_CTL_RANGE(fan_vector), reg);
+	} else if (slope_neg) {
+		printk(BIOS_WARNING, "Unsupported negative slope on fan vector control\n");
+	}
+}
+
 static void enable_beeps(const u16 base, const struct ite_ec_config *const conf)
 {
 	u8 reg = 0;
@@ -312,6 +355,12 @@ void ite_ec_init(const u16 base, const struct ite_ec_config *const conf)
 	/* Enable FANx if configured */
 	for (i = 0; i < ITE_EC_FAN_CNT; ++i)
 		enable_fan(base, i + 1, &conf->fan[i]);
+
+	if (CONFIG(SUPERIO_ITE_ENV_CTRL_FAN_VECTOR)) {
+		/* Enable Special FAN Vector X if configured */
+		for (i = 0; i < ITE_EC_FAN_VECTOR_CNT; ++i)
+			enable_fan_vector(base, i, &conf->fan_vector[i]);
+	}
 
 	/* Enable beeps if configured */
 	enable_beeps(base, conf);

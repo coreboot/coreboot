@@ -54,4 +54,15 @@ config SUPERIO_ITE_ENV_CTRL_NO_FULLSPEED_SETTING
 	  Fan controller does not support running at full speed when limit
 	  temperature is reached.
 
+config SUPERIO_ITE_ENV_CTRL_FAN_VECTOR
+	bool
+	help
+	  Special fan control that will assist the smart control
+
+config SUPERIO_ITE_ENV_CTRL_FAN_VECTOR_RANGED
+	bool
+	depends on SUPERIO_ITE_ENV_CTRL_FAN_VECTOR
+	help
+	  Range and negative slope support
+
 endif

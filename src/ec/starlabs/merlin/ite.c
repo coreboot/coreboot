@@ -9,6 +9,9 @@
 #include "ec.h"
 #include "ecdefs.h"
 
+#define ITE_IT5570	0x5570
+#define ITE_IT8987	0x8987
+
 uint16_t ec_get_version(void)
 {
 	return (ec_read(ECRAM_MAJOR_VERSION) << 8) | ec_read(ECRAM_MINOR_VERSION);
@@ -50,9 +53,8 @@ static void merlin_init(struct device *dev)
 
 	const uint16_t chip_id = ec_get_chip_id(dev->path.pnp.port);
 
-	if (chip_id != ITE_CHIPID_VAL) {
-		printk(BIOS_ERR, "ITE: Expected chip ID 0x%04x, but got 0x%04x instead.\n",
-			ITE_CHIPID_VAL, chip_id);
+	if (chip_id != ITE_IT5570 && chip_id != ITE_IT8987) {
+		printk(BIOS_ERR, "ITE: Unsupported chip ID 0x%04x.\n", chip_id);
 		return;
 	}
 

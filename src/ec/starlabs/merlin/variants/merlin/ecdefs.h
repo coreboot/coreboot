@@ -10,9 +10,6 @@
 #ifndef _EC_STARLABS_MERLIN_EC_DEFS_H
 #define _EC_STARLABS_MERLIN_EC_DEFS_H
 
-/* IT5570 chip ID byte values */
-#define ITE_CHIPID_VAL		0x5570
-
 /* EC RAM offsets */
 #define ECRAM_KBL_BRIGHTNESS	0x09
 #define ECRAM_KBL_TIMEOUT	0x10

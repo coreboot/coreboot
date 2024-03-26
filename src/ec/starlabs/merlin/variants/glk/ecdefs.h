@@ -10,9 +10,6 @@
 #ifndef _EC_STARLABS_GLK_EC_DEFS_H
 #define _EC_STARLABS_GLK_EC_DEFS_H
 
-/* IT8987 chip ID byte values. */
-#define ITE_CHIPID_VAL		0x8987
-
 /* EC RAM offsets. */
 #define ECRAM_TRACKPAD_STATE	0x14
 #define ECRAM_KBL_STATE		0x19

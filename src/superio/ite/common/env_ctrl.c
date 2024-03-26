@@ -67,6 +67,8 @@ static void enable_tmpin(const u16 base, const u8 tmpin,
 	reg_extra = pnp_read_hwm5_index(base, ITE_EC_ADC_TEMP_EXTRA_CHANNEL_ENABLE);
 
 	switch (conf->mode) {
+	case THERMAL_MODE_DISABLED:
+		return;
 	case THERMAL_PECI:
 		/* Some chips can set any TMPIN as the target for PECI readings
 		   while others can only read to TMPIN3. In the latter case a
@@ -78,12 +80,15 @@ static void enable_tmpin(const u16 base, const u8 tmpin,
 				       "PECI to TMPIN2 not supported on IT8721F\n");
 				return;
 			}
-			if (reg & ITE_EC_ADC_TEMP_EXT_REPORTS_TO_MASK) {
+			u8 reg_new = (reg & ~ITE_EC_ADC_TEMP_EXT_REPORTS_TO_MASK)
+					   | ITE_EC_ADC_TEMP_EXT_REPORTS_TO(tmpin);
+			/* Registers stick on reboot and resume,
+			   don't warn for correct reg values */
+			if (reg & ITE_EC_ADC_TEMP_EXT_REPORTS_TO_MASK && reg != reg_new) {
 				printk(BIOS_WARNING,
-				       "PECI specified for multiple TMPIN\n");
-				return;
+				       "PECI specified for another TMPIN, overwriting\n");
 			}
-			reg |= ITE_EC_ADC_TEMP_EXT_REPORTS_TO(tmpin);
+			reg = reg_new;
 		} else if (tmpin == 3) {
 			reg_extra |= ITE_EC_ADC_TEMP_EXTRA_TMPIN3_EXT;
 			pnp_write_hwm5_index(base, ITE_EC_ADC_TEMP_EXTRA_CHANNEL_ENABLE,

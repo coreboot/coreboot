@@ -209,3 +209,8 @@ bool is_memtype_processor_attached(uint16_t mem_type)
 {
 	return true;
 }
+
+uint8_t get_cxl_node_count(void)
+{
+	return 0;
+}

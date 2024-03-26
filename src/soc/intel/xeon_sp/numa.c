@@ -50,7 +50,6 @@ void fill_pds(void)
 
 	/* Fill in processor domains */
 	uint8_t i, j, socket;
-	struct device *dev;
 	for (socket = 0, i = 0; i < num_sockets; socket++) {
 		if (!soc_cpu_is_enabled(socket))
 			continue;
@@ -73,6 +72,7 @@ void fill_pds(void)
 	if (num_cxlnodes == 0)
 		return;
 
+#if CONFIG(SOC_INTEL_HAS_CXL)
 	/* There are CXL nodes, fill in generic initiator domain after the processors pds */
 	uint8_t skt_id, cxl_id;
 	const CXL_NODE_SOCKET *cxl_hob = get_cxl_node();
@@ -83,7 +83,7 @@ void fill_pds(void)
 			pds.pds[i].socket_bitmap = node.SocketBitmap;
 			pds.pds[i].base = node.Address;
 			pds.pds[i].size = node.Size;
-			dev = pcie_find_dsn(node.SerialNumber, node.VendorId, 0);
+			struct device *dev = pcie_find_dsn(node.SerialNumber, node.VendorId, 0);
 			pds.pds[i].dev = dev;
 			pds.pds[i].distances = malloc(sizeof(uint8_t) * pds.num_pds);
 			if (!pds.pds[i].distances)
@@ -97,6 +97,7 @@ void fill_pds(void)
 			}
 		}
 	}
+#endif
 }
 
 /*

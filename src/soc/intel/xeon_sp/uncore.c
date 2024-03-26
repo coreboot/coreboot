@@ -338,14 +338,12 @@ static void mmapvtd_read_resources(struct device *dev)
 {
 	int index = 0;
 
-	if (CONFIG(SOC_INTEL_HAS_CXL)) {
-		static bool once;
-		if (!once) {
-			/* Construct NUMA data structure. This is needed for CXL. */
-			fill_pds();
-			dump_pds();
-			once = true;
-		}
+	static bool once;
+	if (!once) {
+		/* Construct NUMA data structure. This is needed for CXL. */
+		fill_pds();
+		dump_pds();
+		once = true;
 	}
 
 	/* Read standard PCI resources. */

@@ -50,8 +50,8 @@ void fill_pds(void)
 	memset(pds.pds, 0, sizeof(struct proximity_domain) * pds.num_pds);
 
 	/* Fill in processor domains */
-	uint8_t i, j, socket;
-	for (socket = 0, i = 0; i < num_sockets; socket++) {
+	uint8_t i = 0;
+	for (uint8_t socket = 0; socket < num_sockets; socket++) {
 		if (!soc_cpu_is_enabled(socket))
 			continue;
 		pds.pds[i].pd_type = PD_TYPE_PROCESSOR;
@@ -59,13 +59,6 @@ void fill_pds(void)
 		pds.pds[i].distances = malloc(sizeof(uint8_t) * pds.num_pds);
 		if (!pds.pds[i].distances)
 			die("%s %d out of memory.", __FILE__, __LINE__);
-		/* hard code the distances for now, till we know how to calculate them. */
-		for (j = 0; j < pds.num_pds; j++) {
-			if (j == i)
-				pds.pds[i].distances[j] = 0x0a;
-			else
-				pds.pds[i].distances[j] = 0x0e;
-		}
 		i++;
 	}
 
@@ -75,10 +68,9 @@ void fill_pds(void)
 
 #if CONFIG(SOC_INTEL_HAS_CXL)
 	/* There are CXL nodes, fill in generic initiator domain after the processors pds */
-	uint8_t skt_id, cxl_id;
 	const CXL_NODE_SOCKET *cxl_hob = get_cxl_node();
-	for (skt_id = 0, i = num_sockets; skt_id < MAX_SOCKET; skt_id++, i++) {
-		for (cxl_id = 0; cxl_id < cxl_hob[skt_id].CxlNodeCount; ++cxl_id) {
+	for (uint8_t skt_id = 0; skt_id < MAX_SOCKET; skt_id++) {
+		for (uint8_t cxl_id = 0; cxl_id < cxl_hob[skt_id].CxlNodeCount; ++cxl_id) {
 			const CXL_NODE_INFO node = cxl_hob[skt_id].CxlNodeInfo[cxl_id];
 			pds.pds[i].pd_type = PD_TYPE_GENERIC_INITIATOR;
 			pds.pds[i].socket_bitmap = node.SocketBitmap;
@@ -89,13 +81,7 @@ void fill_pds(void)
 			pds.pds[i].distances = malloc(sizeof(uint8_t) * pds.num_pds);
 			if (!pds.pds[i].distances)
 				die("%s %d out of memory.", __FILE__, __LINE__);
-			/* hard code the distances until we know how to calculate them */
-			for (j = 0; j < pds.num_pds; j++) {
-				if (j == i)
-					pds.pds[i].distances[j] = 0x0a;
-				else
-					pds.pds[i].distances[j] = 0x0e;
-			}
+			i++;
 		}
 	}
 #endif
@@ -157,4 +143,33 @@ uint32_t device_to_pd(const struct device *dev)
 uint32_t memory_to_pd(const struct SystemMemoryMapElement *mem)
 {
 	return socket_to_pd(mem->SocketId);
+}
+
+#define PD_DISTANCE_SELF                0x0A
+#define PD_DISTANCE_SAME_SOCKET         0x0C
+#define PD_DISTANCE_CROSS_SOCKET        0x14
+#define PD_DISTANCE_MAX                 0xFF
+#define PD_DISTANCE_IO_EXTRA            0x01
+
+void fill_pd_distances(void)
+{
+	for (int i = 0; i < pds.num_pds; i++) {
+		for (int j = 0; j < pds.num_pds; j++) {
+			if (i == j) {
+				pds.pds[i].distances[j] = PD_DISTANCE_SELF;
+				continue;
+			}
+
+			if (pds.pds[i].socket_bitmap == pds.pds[j].socket_bitmap)
+				pds.pds[i].distances[j] = PD_DISTANCE_SAME_SOCKET;
+			else
+				pds.pds[i].distances[j] = PD_DISTANCE_CROSS_SOCKET;
+
+			if (pds.pds[i].pd_type == PD_TYPE_GENERIC_INITIATOR)
+				pds.pds[i].distances[j] += PD_DISTANCE_IO_EXTRA;
+
+			if (pds.pds[j].pd_type == PD_TYPE_GENERIC_INITIATOR)
+				pds.pds[i].distances[j] += PD_DISTANCE_IO_EXTRA;
+		}
+	}
 }

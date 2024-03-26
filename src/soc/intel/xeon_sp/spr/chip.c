@@ -176,7 +176,7 @@ static void rcec_init(struct device *dev)
 	uint32_t ep_bus;
 	uint8_t i;
 	for (i = 0; i < pds.num_pds; i++) {
-		if (pds.pds[i].pd_type == PD_TYPE_PROCESSOR)
+		if (pds.pds[i].pd_type != PD_TYPE_GENERIC_INITIATOR)
 			continue;
 		ep_bus = PCI_BDF(pds.pds[i].dev) >> 20;
 		if (ep_bus == ecrc_bus + 1)

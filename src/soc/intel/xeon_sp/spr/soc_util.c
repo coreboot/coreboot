@@ -94,7 +94,7 @@ bool is_iio_cxl_stack_res(const STACK_RES *res)
 	assert(pds.num_pds);
 
 	for (uint8_t i = 0; i < pds.num_pds; i++) {
-		if (pds.pds[i].pd_type == PD_TYPE_PROCESSOR)
+		if (pds.pds[i].pd_type != PD_TYPE_GENERIC_INITIATOR)
 			continue;
 
 		uint32_t bus = PCI_BDF(pds.pds[i].dev) >> 20;

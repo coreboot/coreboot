@@ -284,7 +284,7 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 		/* CXL Memory */
 		uint8_t i;
 		for (i = 0; i < pds.num_pds; i++) {
-			if (pds.pds[i].pd_type == PD_TYPE_PROCESSOR)
+			if (pds.pds[i].pd_type != PD_TYPE_GENERIC_INITIATOR)
 				continue;
 
 			unsigned long flags = IORESOURCE_CACHEABLE;

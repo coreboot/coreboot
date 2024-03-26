@@ -19,6 +19,17 @@ enum proximity_domain_type {
 	 * Generic Initiator domain is a CXL memory device.
 	 */
 	PD_TYPE_GENERIC_INITIATOR,
+	/*
+	 * PD_TYPE_CLUSTER is for Sub-NUMA cluster (SNC). SNC is localization
+	 * domain within a socket, composed of a set of CPU cores, last-level
+	 * cache pieces and memory controllers, which are close to each other.
+	 * SNC will be reported as NUMA nodes to OS so that the performance
+	 * proximity could be fully exploited for task assignment and scheduling.
+	 *
+	 * For more, please refer to
+	 * https://www.intel.com/content/www/us/en/developer/articles/technical/xeon-processor-scalable-family-technical-overview.html
+	 */
+	PD_TYPE_CLUSTER,
 	PD_TYPE_MAX
 };
 
@@ -40,6 +51,7 @@ struct proximity_domain {
 	 * sockets, so we need a bitmap.
 	 */
 	uint8_t socket_bitmap;
+	uint8_t cluster_bitmap;
 	/* Relative distances (memory latency) from all domains */
 	uint8_t *distances;
 	/*
@@ -67,5 +79,8 @@ uint32_t get_generic_initiator_mem_size(void);
 
 uint32_t memory_to_pd(const struct SystemMemoryMapElement *mem);
 uint32_t device_to_pd(const struct device *dev);
+
+uint8_t soc_get_cluster_count(void);
+void soc_set_cpu_node_id(struct device *cpu);
 
 #endif /* NUMA_H */

@@ -13,7 +13,9 @@ unsigned long cxl_fill_srat(unsigned long current)
 	 * are after processor domains.
 	 */
 	uint32_t base, size;
-	for (uint8_t i = soc_get_num_cpus(); i < pds.num_pds; i++) {
+	for (uint8_t i = 0; i < pds.num_pds; i++) {
+		if (pds.pds[i].pd_type != PD_TYPE_GENERIC_INITIATOR)
+			continue;
 		if (!pds.pds[i].dev)
 			continue;
 

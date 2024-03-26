@@ -60,16 +60,16 @@ unsigned long acpi_create_srat_lapics(unsigned long current)
 
 		if (is_x2apic_mode()) {
 			printk(BIOS_DEBUG, "SRAT: x2apic cpu_index=%04x, node_id=%02x, apic_id=%08x\n",
-			       i, cpu->path.apic.node_id, cpu->path.apic.apic_id);
+			       i, device_to_pd(cpu), cpu->path.apic.apic_id);
 
 			current += acpi_create_srat_x2apic((acpi_srat_x2apic_t *)current,
-				cpu->path.apic.node_id, cpu->path.apic.apic_id);
+				device_to_pd(cpu), cpu->path.apic.apic_id);
 		} else {
 			printk(BIOS_DEBUG, "SRAT: lapic cpu_index=%02x, node_id=%02x, apic_id=%02x\n",
-			       i, cpu->path.apic.node_id, cpu->path.apic.apic_id);
+			       i, device_to_pd(cpu), cpu->path.apic.apic_id);
 
 			current += acpi_create_srat_lapic((acpi_srat_lapic_t *)current,
-				cpu->path.apic.node_id, cpu->path.apic.apic_id);
+				device_to_pd(cpu), cpu->path.apic.apic_id);
 		}
 	}
 	return current;
@@ -129,7 +129,7 @@ static unsigned int get_srat_memory_entries(acpi_srat_mem_t *srat_mem)
 		srat_mem[mmap_index].base_address_high = (uint32_t)(addr >> 32);
 		srat_mem[mmap_index].length_low = (uint32_t)(size & 0xffffffff);
 		srat_mem[mmap_index].length_high = (uint32_t)(size >> 32);
-		srat_mem[mmap_index].proximity_domain = mem_element->SocketId;
+		srat_mem[mmap_index].proximity_domain = memory_to_pd(mem_element);
 		srat_mem[mmap_index].flags = ACPI_SRAT_MEMORY_ENABLED;
 		if (is_memtype_non_volatile(mem_element->Type))
 			srat_mem[mmap_index].flags |= ACPI_SRAT_MEMORY_NONVOLATILE;
@@ -445,7 +445,6 @@ static unsigned long acpi_create_rhsa(unsigned long current)
 {
 	struct device *dev = NULL;
 	struct resource *resource;
-	int socket;
 
 	while ((dev = dev_find_device(PCI_VID_INTEL, MMAP_VTD_CFG_REG_DEVID, dev))) {
 		/* See if there is a resource with the appropriate index. */
@@ -453,11 +452,9 @@ static unsigned long acpi_create_rhsa(unsigned long current)
 		if (!resource)
 			continue;
 
-		socket = iio_pci_domain_socket_from_dev(dev);
-
 		printk(BIOS_DEBUG, "[Remapping Hardware Static Affinity] Base Address: %p, "
-			"Proximity Domain: 0x%x\n", res2mmio(resource, 0, 0), socket);
-		current += acpi_create_dmar_rhsa(current, (uintptr_t)res2mmio(resource, 0, 0), socket);
+			"Proximity Domain: 0x%x\n", res2mmio(resource, 0, 0), device_to_pd(dev));
+		current += acpi_create_dmar_rhsa(current, (uintptr_t)res2mmio(resource, 0, 0), device_to_pd(dev));
 	}
 
 	return current;

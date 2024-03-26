@@ -12,6 +12,7 @@
 #include <intelblocks/pmclib.h>
 #include <soc/acpi.h>
 #include <soc/iomap.h>
+#include <soc/numa.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>

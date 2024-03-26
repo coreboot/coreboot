@@ -7,7 +7,10 @@
 #ifndef NUMA_H
 #define NUMA_H
 
+#include <soc/soc_util.h>
 #include <types.h>
+
+#define XEONSP_INVALID_PD_INDEX	UINT32_MAX
 
 enum proximity_domain_type {
 	PD_TYPE_PROCESSOR,
@@ -16,6 +19,7 @@ enum proximity_domain_type {
 	 * Generic Initiator domain is a CXL memory device.
 	 */
 	PD_TYPE_GENERIC_INITIATOR,
+	PD_TYPE_MAX
 };
 
 /*
@@ -61,5 +65,8 @@ void fill_pds(void);
  * domains.  The size is in unit of 64MB.
  */
 uint32_t get_generic_initiator_mem_size(void);
+
+uint32_t memory_to_pd(const struct SystemMemoryMapElement *mem);
+uint32_t device_to_pd(const struct device *dev);
 
 #endif /* NUMA_H */

@@ -5,6 +5,7 @@
 #include <device/pci_ops.h>
 #include <device/pci.h>
 #include <device/pciexp.h>
+#include <soc/chip_common.h>
 #include <soc/numa.h>
 #include <soc/soc_util.h>
 #include <soc/util.h>
@@ -116,4 +117,44 @@ uint32_t get_generic_initiator_mem_size(void)
 	}
 
 	return size;
+}
+
+static uint32_t socket_to_pd(uint8_t socket)
+{
+	for (uint8_t i = 0; i < pds.num_pds; i++) {
+		if (pds.pds[i].pd_type != PD_TYPE_PROCESSOR)
+			continue;
+		if (pds.pds[i].socket_bitmap == (1 << socket))
+			return i;
+	}
+
+	printk(BIOS_ERR, "%s: could not find proximity domain for socket %d.\n",
+		__func__, socket);
+
+	return XEONSP_INVALID_PD_INDEX;
+}
+
+uint32_t device_to_pd(const struct device *dev)
+{
+	/* first to see if the dev is bound to specific pd */
+	for (int i = 0; i < pds.num_pds; i++)
+		if (pds.pds[i].dev == dev)
+			return i;
+
+	if (dev->path.type == DEVICE_PATH_APIC)
+		return socket_to_pd(dev->path.apic.package_id);
+
+	if ((dev->path.type == DEVICE_PATH_DOMAIN) ||
+		(dev->path.type == DEVICE_PATH_PCI))
+		return socket_to_pd(iio_pci_domain_socket_from_dev(dev));
+
+	printk(BIOS_ERR, "%s: could not find proximity domain for device %s.\n",
+		__func__, dev_path(dev));
+
+	return XEONSP_INVALID_PD_INDEX;
+}
+
+uint32_t memory_to_pd(const struct SystemMemoryMapElement *mem)
+{
+	return socket_to_pd(mem->SocketId);
 }

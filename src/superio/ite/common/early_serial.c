@@ -75,6 +75,7 @@ void ite_enable_serial(pnp_devfn_t dev, u16 iobase)
  *
  * LDN 7, reg 0x2a - needed for S3, or memory power will be cut off
  * this was documented only in IT8712F_V0.9.2!
+ * Also documented in IT8728F_V0.4.2 and IT8772E_V0.4
  *
  * Enable 3VSBSW#. (For System Suspend-to-RAM)
  * 0: 3VSBSW# will be always inactive.
@@ -85,13 +86,16 @@ void ite_enable_serial(pnp_devfn_t dev, u16 iobase)
  * and pass: GPIO_DEV
  */
 
-void ite_enable_3vsbsw(pnp_devfn_t dev)
+void ite_set_3vsbsw(pnp_devfn_t dev, bool enable)
 {
 	u8 tmp;
 	pnp_enter_conf_state(dev);
 	pnp_set_logical_device(dev);
 	tmp = pnp_read_config(dev, ITE_CONFIG_REG_MFC);
-	tmp |= 0x80;
+	if (enable)
+		tmp |= 0x80;
+	else
+		tmp &= ~0x80;
 	pnp_write_config(dev, ITE_CONFIG_REG_MFC, tmp);
 	pnp_exit_conf_state(dev);
 }

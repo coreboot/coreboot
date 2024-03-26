@@ -15,6 +15,7 @@
 #define ITE_CONFIG_REG_WATCHDOG		0x72 /* watchdog config */
 #define ITE_CONFIG_REG_WDT_TIMEOUT_LSB	0x73 /* watchdog timeout (LSB) */
 #define ITE_CONFIG_REG_WDT_TIMEOUT_MSB	0x74 /* watchdog timeout (MSB) */
+#define ITE_CONFIG_REG_APC_PME_CTL1	0xf2 /* APC_PME Control 1 */
 #define ITE_CONFIG_REG_APC_PME_CTL2	0xf4 /* APC_PME Control 2 */
 
 /* Helper procedure */
@@ -139,6 +140,21 @@ void ite_kill_watchdog(pnp_devfn_t dev)
 	ite_sio_write(dev, ITE_CONFIG_REG_WATCHDOG, 0x00);
 	ite_sio_write(dev, ITE_CONFIG_REG_WDT_TIMEOUT_LSB, 0x00);
 	ite_sio_write(dev, ITE_CONFIG_REG_WDT_TIMEOUT_MSB, 0x00);
+	pnp_exit_conf_state(dev);
+}
+
+/*
+ * Disable PME# Output
+ * pass EC_DEV
+ */
+void ite_disable_pme_out(pnp_devfn_t dev)
+{
+	u8 tmp;
+	pnp_enter_conf_state(dev);
+	pnp_set_logical_device(dev);
+	tmp = pnp_read_config(dev, ITE_CONFIG_REG_APC_PME_CTL1);
+	tmp |= 0x40;
+	pnp_write_config(dev, ITE_CONFIG_REG_APC_PME_CTL1, tmp);
 	pnp_exit_conf_state(dev);
 }
 

@@ -18,6 +18,7 @@ void ite_reg_write(pnp_devfn_t dev, u8 reg, u8 value);
 void ite_set_3vsbsw(pnp_devfn_t dev, bool enable);
 void ite_delay_pwrgd3(pnp_devfn_t dev);
 void ite_kill_watchdog(pnp_devfn_t dev);
+void ite_disable_pme_out(pnp_devfn_t dev);
 void ite_ac_resume_southbridge(pnp_devfn_t dev);
 
 /* Alias for backwards compatibility */

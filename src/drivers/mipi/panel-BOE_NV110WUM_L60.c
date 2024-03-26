@@ -9,10 +9,10 @@ struct panel_serializable_data BOE_NV110WUM_L60 = {
 		.panel_bits_per_color = 8,
 		.panel_bits_per_pixel = 24,
 		.mode = {
-			.pixel_clock = 162760,
+			.pixel_clock = 166400,
 			.lvds_dual_channel = 0,
 			.refresh = 60,
-			.ha = 1200, .hbl = 120, .hso = 50, .hspw = 20,
+			.ha = 1200, .hbl = 150, .hso = 65, .hspw = 20,
 			.va = 1920, .vbl = 135, .vso = 115, .vspw = 8,
 			.phsync = '-', .pvsync = '-',
 			.x_mm = 147, .y_mm = 235,

@@ -1388,7 +1388,7 @@ $(call add_intermediate, check-ramstage-overlaps)
 	        if [ -z $$rstart ]; then rstart=$$(($$y)) ; continue ; fi ; \
 	        rend=$$(($$y)) ; \
 	        if [ $$pstart -lt $$rend -a $$rstart -lt $$pend ]; then \
-	            echo "ERROR: Ramstage region _$$rname overlapped by:" \
+	            echo "ERROR: Ramstage region _$$rname@($$rstart,$$rend) overlapped by($$pstart,$$pend):" \
 	                 $(check-ramstage-overlap-files) ; \
 	            exit 1 ; \
 	        fi ; \

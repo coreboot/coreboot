@@ -168,6 +168,7 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref hda		on
+			subsystemid 0x1e50 0x7007
 			register "pch_hda_sdi_enable[0]"		= "1"
 			register "pch_hda_audio_link_hda_enable"	= "1"
 			register "pch_hda_idisp_codec_enable"		= "1"

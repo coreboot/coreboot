@@ -141,6 +141,7 @@ chip soc/intel/cannonlake
 			end
 		end
 		device ref hda on
+			subsystemid 0x10ec 0x1200
 			register "PchHdaAudioLinkHda"		= "1"
 		end
 		device ref smbus on  end

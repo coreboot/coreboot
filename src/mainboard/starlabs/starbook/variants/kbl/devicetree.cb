@@ -139,7 +139,9 @@ chip soc/intel/skylake
 				device pnp 4e.19 off end			# Power Management Channel 5
 			end
 		end
-		device ref hda		on  end
+		device ref hda		on
+			subsystemid 0x10ec 0x10d0
+		end
 		device ref smbus	on  end
 		device ref fast_spi	on  end
 	end

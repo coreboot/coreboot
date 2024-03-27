@@ -151,13 +151,23 @@ static const struct pad_config gpio_overrides[] = {
 	/* H23 : SRCCLKREQ5# ==> PU 100K 3.3V */
 	PAD_CFG_GPI(GPP_H23, NONE, DEEP),
 
+	/* R4 : HDA_RST# ==> DMIC_CLK0 */
+	PAD_CFG_NF(GPP_R4, NONE, DEEP, NF3),
+	/* R5 : HDA_SDI1 ==> DMIC_DATA0 */
+	PAD_CFG_NF(GPP_R5, NONE, DEEP, NF3),
+	/* R6 : I2S2_TXD ==> NC */
+	PAD_NC(GPP_R6, NONE),
 	/* R7 : I2S2_RXD ==> NC */
 	PAD_NC(GPP_R7, NONE),
 
-	/* S0 : SNDW0_CLK ==> NC */
-	PAD_NC(GPP_S0, NONE),
-	/* S1 : SNDW0_DATA ==> NC */
-	PAD_NC(GPP_S1, NONE),
+	/* S0 : SNDW0_CLK ==> SDW_HP_CLK_R */
+	PAD_CFG_NF(GPP_S0, NONE, DEEP, NF4),
+	/* S1 : SNDW0_DATA ==> SDW_HP_DATA_R */
+	PAD_CFG_NF(GPP_S1, NONE, DEEP, NF4),
+	/* S2 : SNDW1_CLK ==> DMIC_CLK0_R */
+	PAD_CFG_NF(GPP_S2, NONE, DEEP, NF4),
+	/* S3 : SNDW1_DATA ==> NC */
+	PAD_NC(GPP_S3, NONE),
 	/* S4 : SNDW2_CLK ==> NC */
 	PAD_NC(GPP_S4, NONE),
 	/* S5 : SNDW2_DATA ==> NC */

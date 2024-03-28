@@ -1,16 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <cpu/x86/64bit/entry64.inc>
-#include <cpu/x86/cr.h>
 #include <cpu/x86/post_code.h>
-#include <device/pci_def.h>
-#include <intelblocks/post_codes.h>
-
-#define CBFS_FILE_MAGIC 0
-#define CBFS_FILE_LEN (CBFS_FILE_MAGIC + 8)
-#define CBFS_FILE_TYPE (CBFS_FILE_LEN + 4)
-#define CBFS_FILE_CHECKSUM (CBFS_FILE_TYPE + 4)
-#define CBFS_FILE_OFFSET (CBFS_FILE_CHECKSUM + 4)
 
 .section .init, "ax", @progbits
 

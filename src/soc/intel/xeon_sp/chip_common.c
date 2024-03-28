@@ -44,7 +44,7 @@ static int filter_device_on_stack(struct device *dev, uint8_t socket, uint8_t st
 	if (dev->path.type != DEVICE_PATH_PCI)
 		return 0;
 
-	const struct device *domain = dev_get_pci_domain(dev);
+	const struct device *domain = dev_get_domain(dev);
 	if (!domain)
 		return 0;
 
@@ -139,7 +139,7 @@ int iio_pci_domain_socket_from_dev(const struct device *dev)
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
 		domain = dev;
 	else
-		domain = dev_get_pci_domain(dev);
+		domain = dev_get_domain(dev);
 
 	if (!domain)
 		return -1;
@@ -165,7 +165,7 @@ int iio_pci_domain_stack_from_dev(const struct device *dev)
 	if (dev->path.type == DEVICE_PATH_DOMAIN)
 		domain = dev;
 	else
-		domain = dev_get_pci_domain(dev);
+		domain = dev_get_domain(dev);
 
 	if (!domain)
 		return -1;

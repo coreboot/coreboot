@@ -78,14 +78,14 @@ bool is_ioat_domain(const struct device *dev);
 bool is_ubox_domain(const struct device *dev);
 bool is_cxl_domain(const struct device *dev);
 
-#define is_dev_on_pcie_domain(dev) is_pcie_domain(dev_get_pci_domain(dev))
-#define is_dev_on_ioat_domain(dev) is_ioat_domain(dev_get_pci_domain(dev))
-#define is_dev_on_ubox_domain(dev) is_ubox_domain(dev_get_pci_domain(dev))
-#define is_dev_on_cxl_domain(dev) is_cxl_domain(dev_get_pci_domain(dev))
+#define is_dev_on_pcie_domain(dev) is_pcie_domain(dev_get_domain(dev))
+#define is_dev_on_ioat_domain(dev) is_ioat_domain(dev_get_domain(dev))
+#define is_dev_on_ubox_domain(dev) is_ubox_domain(dev_get_domain(dev))
+#define is_dev_on_cxl_domain(dev) is_cxl_domain(dev_get_domain(dev))
 
 #define is_domain0(dev) (dev && dev->path.type == DEVICE_PATH_DOMAIN &&\
 		dev->path.domain.domain == 0)
-#define is_dev_on_domain0(dev) (is_domain0(dev_get_pci_domain(dev)))
+#define is_dev_on_domain0(dev) (is_domain0(dev_get_domain(dev)))
 #define is_stack0(socket, stack) (socket == 0 && stack == IioStack0)
 
 void unlock_pam_regions(void);

@@ -315,7 +315,7 @@ static unsigned long acpi_create_drhd(unsigned long current, struct device *iomm
 
 	// Add PCIe Ports
 	if (!is_dev_on_domain0(iommu)) {
-		const struct device *domain = dev_get_pci_domain(iommu);
+		const struct device *domain = dev_get_domain(iommu);
 		struct device *dev = NULL;
 		while ((dev = dev_bus_each_child(domain->downstream, dev)))
 			if ((dev->hdr_type & 0x7f) == PCI_HEADER_TYPE_BRIDGE)
@@ -535,7 +535,7 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 	struct device *dev = NULL;
 	struct device *iommu0 = NULL;
 	while ((dev = dev_find_device(PCI_VID_INTEL, MMAP_VTD_CFG_REG_DEVID, dev))) {
-		if (is_domain0(dev_get_pci_domain(dev))) {
+		if (is_domain0(dev_get_domain(dev))) {
 			iommu0 = dev;
 			continue;
 		}

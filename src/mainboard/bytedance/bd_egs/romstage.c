@@ -5,13 +5,14 @@
 #include <defs_cxl.h>
 #include <defs_iio.h>
 #include <sprsp_bd_iio.h>
+#include <stdint.h>
 
 static void mainboard_config_iio(FSPM_UPD *mupd)
 {
 	int port;
 
 	UPD_IIO_PCIE_PORT_CONFIG *PciePortConfig =
-		(UPD_IIO_PCIE_PORT_CONFIG *)mupd->FspmConfig.IioPcieConfigTablePtr;
+		(UPD_IIO_PCIE_PORT_CONFIG *)(uintptr_t)mupd->FspmConfig.IioPcieConfigTablePtr;
 
 	/* Socket0: Array bd_iio_pci_port_skt0 only configures DMI, IOU0 ~ IOU4, the rest will be left zero */
 	for (port = 0; port < ARRAY_SIZE(bd_iio_pci_port_skt0); port++) {

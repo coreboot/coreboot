@@ -384,6 +384,15 @@ chip soc/intel/alderlake
 				register "detect" = "1"
 				device i2c 15 on end
 			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""PNP0C50""
+				register "generic.desc" = ""PIXART Touchpad""
+				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F14_IRQ)"
+				register "generic.wake" = "GPE0_DW2_14"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x20"
+				device i2c 2c on end
+			end
 		end #I2C5
 		device ref pcie_rp4 on
 			# Enable wlan PCIe 4 using clk 2

@@ -35,3 +35,6 @@ comment "Staryu"
 
 config BOARD_GOOGLE_STARMIE
 	bool "->  Starmie"
+
+config BOARD_GOOGLE_WUGTRIO
+	bool "->  Wugtrio"

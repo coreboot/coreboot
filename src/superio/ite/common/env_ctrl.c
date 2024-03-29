@@ -182,7 +182,8 @@ static void fan_smartconfig(const u16 base, const u8 fan,
 			conf->tmp_full ? conf->tmp_full : 127);
 
 		delta_temp = ITE_EC_FAN_CTL_DELTA_TEMP_INTRVL(conf->tmp_delta);
-		delta_temp |= ITE_EC_FAN_CTL_FULL_AT_THRML_LMT(conf->full_lmt);
+		if (!CONFIG(SUPERIO_ITE_ENV_CTRL_NO_FULLSPEED_SETTING))
+			delta_temp |= ITE_EC_FAN_CTL_FULL_AT_THRML_LMT(conf->full_lmt);
 		pnp_write_hwm5_index(base, ITE_EC_FAN_CTL_DELTA_TEMP(fan),
 			delta_temp);
 	}

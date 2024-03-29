@@ -48,4 +48,10 @@ config SUPERIO_ITE_ENV_CTRL_EXT_ANY_TMPIN
 	  Temperature can be read to any TMPIN from an external sensor via SST/PECI
 	  (instead of TMPIN3 only).
 
+config SUPERIO_ITE_ENV_CTRL_NO_FULLSPEED_SETTING
+	bool
+	help
+	  Fan controller does not support running at full speed when limit
+	  temperature is reached.
+
 endif

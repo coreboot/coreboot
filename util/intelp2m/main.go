@@ -70,6 +70,7 @@ func main() {
 		"\tlbg - Lewisburg PCH with Xeon SP\n"+
 		"\tapl - Apollo Lake SoC\n"+
 		"\tcnl - CannonLake-LP or Whiskeylake/Coffeelake/Cometlake-U SoC\n"+
+		"\ttgl - TigerLake-H SoC\n"+
 		"\tadl - AlderLake PCH\n"+
 		"\tjsl - Jasper Lake SoC\n")
 

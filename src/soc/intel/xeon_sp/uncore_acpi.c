@@ -317,7 +317,7 @@ static unsigned long acpi_create_drhd(unsigned long current, struct device *iomm
 		const struct device *domain = dev_get_domain(iommu);
 		struct device *dev = NULL;
 		while ((dev = dev_bus_each_child(domain->downstream, dev)))
-			if ((dev->hdr_type & 0x7f) == PCI_HEADER_TYPE_BRIDGE)
+			if (is_pci_bridge(dev))
 				current +=
 				acpi_create_dmar_ds_pci_br_for_port(
 				current, dev, pcie_seg, false, NULL);
@@ -421,7 +421,7 @@ static unsigned long acpi_create_atsr(unsigned long current)
 				continue;
 
 			for (child = dev->upstream->children; child; child = child->sibling) {
-				if ((child->hdr_type & 0x7f) != PCI_HEADER_TYPE_BRIDGE)
+				if (!is_pci_bridge(child))
 					continue;
 				current +=
 					acpi_create_dmar_ds_pci_br_for_port(

@@ -930,3 +930,8 @@ bool is_pci_dev_on_bus(const struct device *pci, unsigned int bus)
 	return is_pci(pci) && pci->upstream->segment_group == 0
 		&& pci->upstream->secondary == bus;
 }
+
+bool is_pci_bridge(const struct device *pci)
+{
+	return is_pci(pci) && ((pci->hdr_type & 0x7f) == PCI_HEADER_TYPE_BRIDGE);
+}

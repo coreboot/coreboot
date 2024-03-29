@@ -81,9 +81,9 @@ chip northbridge/intel/haswell
 					# Skip keyboard init
 					register "skip_keyboard" = "true"
 					# Enable PECI on TMPIN3
-					register "peci_tmpin" = "3"
+					register "TMPIN3.mode" = "THERMAL_PECI"
 					# Enable FAN2
-					register "fan2_enable" = "true"
+					register "FAN2.mode" = "FAN_SMART_SOFTWARE"
 
 					device pnp 2e.0 off end # FDC
 					device pnp 2e.1 on # Serial Port 1

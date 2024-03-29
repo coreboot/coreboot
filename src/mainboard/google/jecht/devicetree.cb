@@ -75,15 +75,13 @@ chip soc/intel/broadwell
 					# Skip keyboard init
 					register "skip_keyboard" = "true"
 					# Enable PECI on TMPIN3
-					register "peci_tmpin" = "3"
-					# Disable use of TMPIN1
-					register "tmpin1_mode" = "0"
+					register "TMPIN3.mode" = "THERMAL_PECI"
 					# Enable Thermal Diode on TMPIN2
-					register "tmpin2_mode" = "1"
+					register "TMPIN2.mode" = "THERMAL_DIODE"
 					# Enable FAN2
-					register "fan2_enable" = "true"
+					register "FAN2.mode" = "FAN_SMART_SOFTWARE"
 					# Default FAN2 speed
-					register "fan2_speed" = "0x4d"
+					register "FAN2.smart.pwm_start" = "30"
 
 					device pnp 2e.0 off end # FDC
 					device pnp 2e.1 on # Serial Port 1

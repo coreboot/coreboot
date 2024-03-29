@@ -4,6 +4,7 @@
 #include <device/pnp.h>
 #include <console/console.h>
 #include <pc80/keyboard.h>
+#include <superio/ite/common/env_ctrl.h>
 #include <arch/io.h>
 #include <delay.h>
 #include <superio/conf_mode.h>
@@ -11,155 +12,6 @@
 
 #include "chip.h" /* FIXME */
 #include "it8772f.h"
-
-/* FIXME: see if the common ITE environment controller code can be used here */
-
-static void it8772f_extemp_force_idle_status(struct resource *res)
-{
-	u8 reg;
-	int retries = 10;
-
-	/* Wait up to 10ms for non-busy state. */
-	while (retries > 0) {
-		reg = pnp_read_hwm5_index(res->base, IT8772F_EXTEMP_STATUS);
-
-		if ((reg & IT8772F_EXTEMP_STATUS_HOST_BUSY) == 0x0)
-			break;
-
-		retries--;
-
-		mdelay(1);
-	}
-
-	if (retries == 0 && (reg & IT8772F_EXTEMP_STATUS_HOST_BUSY) == 0x1) {
-		/*
-		 * SIO is busy due to unfinished peci transaction.
-		 * Re-configure Register 0x8E to terminate processes.
-		 */
-		pnp_write_hwm5_index(res->base, IT8772F_EXTEMP_CONTROL,
-			IT8772F_EXTEMP_CONTROL_AUTO_4HZ |
-			IT8772F_EXTEMP_CONTROL_AUTO_START);
-	}
-}
-
-/*
- * Setup External Temperature to read via PECI into TMPINx register
- */
-static void it8772f_enable_peci(struct resource *res, int tmpin)
-{
-	if (tmpin < 1 || tmpin > 3)
-		return;
-
-	/* Enable PECI interface */
-	pnp_write_hwm5_index(res->base, IT8772F_INTERFACE_SELECT,
-			   IT8772F_INTERFACE_SEL_PECI |
-			   IT8772F_INTERFACE_SPEED_TOLERANCE);
-
-	/* Setup External Temperature using PECI GetTemp */
-	pnp_write_hwm5_index(res->base, IT8772F_EXTEMP_ADDRESS,
-			   PECI_CLIENT_ADDRESS);
-	pnp_write_hwm5_index(res->base, IT8772F_EXTEMP_COMMAND,
-			   PECI_GETTEMP_COMMAND);
-	pnp_write_hwm5_index(res->base, IT8772F_EXTEMP_WRITE_LENGTH,
-			   PECI_GETTEMP_WRITE_LENGTH);
-	pnp_write_hwm5_index(res->base, IT8772F_EXTEMP_READ_LENGTH,
-			   PECI_GETTEMP_READ_LENGTH);
-	pnp_write_hwm5_index(res->base, IT8772F_EXTEMP_CONTROL,
-			   IT8772F_EXTEMP_CONTROL_AUTO_4HZ |
-			   IT8772F_EXTEMP_CONTROL_AUTO_START);
-
-	/* External Temperature reported in TMPINx register */
-	pnp_write_hwm5_index(res->base, IT8772F_ADC_TEMP_CHANNEL_ENABLE,
-			   (tmpin & 3) << 6);
-}
-
-/*
- * Set up External Temperature to read via thermal diode/resistor
- * into TMPINx register
- */
-static void it8772f_enable_tmpin(struct resource *res, int tmpin,
-				enum thermal_mode mode)
-{
-	u8 reg;
-
-	if (tmpin != 1 && tmpin != 2)
-		return;
-
-	reg = pnp_read_hwm5_index(res->base, IT8772F_ADC_TEMP_CHANNEL_ENABLE);
-
-	switch (mode) {
-	case THERMAL_DIODE:
-		/* Thermal Diode Mode */
-		pnp_write_hwm5_index(res->base, IT8772F_ADC_TEMP_CHANNEL_ENABLE,
-				   reg | tmpin);
-		break;
-	case THERMAL_RESISTOR:
-		/* Thermal Resistor Mode */
-		pnp_write_hwm5_index(res->base, IT8772F_ADC_TEMP_CHANNEL_ENABLE,
-				   reg | (tmpin << 3));
-		break;
-	default:
-		printk(BIOS_ERR, "Unsupported thermal mode 0x%x on TMPIN%d\n",
-			mode, tmpin);
-		return;
-	}
-
-	reg = pnp_read_hwm5_index(res->base, IT8772F_CONFIGURATION);
-
-	/* Enable the startup of monitoring operation */
-	pnp_write_hwm5_index(res->base, IT8772F_CONFIGURATION, reg | 0x01);
-}
-
-/*
- * Setup a FAN PWM interface for software control
- */
-static void it8772f_enable_fan(struct resource *res, int fan, u8 fan_speed)
-{
-	u8 reg;
-
-	if (fan < 1 || fan > 3)
-		return;
-
-	/* Enable 6MHz (23.43kHz PWM) active high output */
-	reg = pnp_read_hwm5_index(res->base, IT8772F_FAN_CTL_MODE);
-	reg |= IT8772F_FAN_CTL_ON(fan) |
-		IT8772F_FAN_PWM_CLOCK_6MHZ |
-		IT8772F_FAN_CTL_POLARITY_HIGH;
-	pnp_write_hwm5_index(res->base, IT8772F_FAN_CTL_MODE, reg);
-
-	/* Enable output in smart mode */
-	reg = pnp_read_hwm5_index(res->base, IT8772F_FAN_MAIN_CTL);
-	reg |= IT8772F_FAN_MAIN_CTL_TAC_SMART(fan);
-	reg |= IT8772F_FAN_MAIN_CTL_TAC_EN(fan);
-	pnp_write_hwm5_index(res->base, IT8772F_FAN_MAIN_CTL, reg);
-
-	switch (fan) {
-	case 2:
-		/* Enable software operation */
-		pnp_write_hwm5_index(res->base, IT8772F_FAN_CTL2_PWM_MODE,
-				   IT8772F_FAN_CTL_PWM_MODE_SOFTWARE);
-		/* Disable Smoothing */
-		pnp_write_hwm5_index(res->base, IT8772F_FAN_CTL2_AUTO_MODE,
-				   IT8772F_FAN_CTL_AUTO_SMOOTHING_DIS);
-		/* Set a default fan speed */
-		if (fan_speed)
-			pnp_write_hwm5_index(res->base, IT8772F_FAN_CTL2_PWM_START,
-				   fan_speed);
-		break;
-	case 3:
-		/* Enable software operation */
-		pnp_write_hwm5_index(res->base, IT8772F_FAN_CTL3_PWM_MODE,
-				   IT8772F_FAN_CTL_PWM_MODE_SOFTWARE);
-		/* Disable Smoothing */
-		pnp_write_hwm5_index(res->base, IT8772F_FAN_CTL3_AUTO_MODE,
-				   IT8772F_FAN_CTL_AUTO_SMOOTHING_DIS);
-		/* Set a default fan speed */
-		if (fan_speed)
-			pnp_write_hwm5_index(res->base, IT8772F_FAN_CTL3_PWM_START,
-				   fan_speed);
-		break;
-	}
-}
 
 static void it8772f_init(struct device *dev)
 {
@@ -172,34 +24,9 @@ static void it8772f_init(struct device *dev)
 	switch (dev->path.pnp.device) {
 	case IT8772F_EC:
 		res = probe_resource(dev, PNP_IDX_IO0);
-		if (!res)
+		if (!conf || !res)
 			break;
-
-		/* Enable PECI if configured */
-		it8772f_enable_peci(res, conf->peci_tmpin);
-
-		/* Enable HWM if configured */
-		if (conf->tmpin1_mode != THERMAL_MODE_DISABLED)
-			it8772f_enable_tmpin(res, 1, conf->tmpin1_mode);
-		if (conf->tmpin2_mode != THERMAL_MODE_DISABLED)
-			it8772f_enable_tmpin(res, 2, conf->tmpin2_mode);
-
-		/* Enable FANx if configured */
-		if (conf->fan1_enable)
-			it8772f_enable_fan(res, 1, 0);
-		if (conf->fan2_enable)
-			it8772f_enable_fan(res, 2,
-				conf->fan2_speed ? conf->fan2_speed : 0x80);
-		if (conf->fan3_enable)
-			it8772f_enable_fan(res, 3,
-				conf->fan3_speed ? conf->fan3_speed : 0x80);
-
-		/*
-		 * System may get wrong temperature data when SIO is in
-		 * busy state. Therefore, check the status and terminate
-		 * processes if needed.
-		 */
-		it8772f_extemp_force_idle_status(res);
+		ite_ec_init(res->base, &conf->ec);
 		break;
 	case IT8772F_GPIO:
 		/* Set GPIO output levels */

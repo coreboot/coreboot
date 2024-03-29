@@ -12,9 +12,9 @@
 #include <southbridge/intel/common/gpio.h>
 #include <superio/smsc/lpc47n207/lpc47n207.h>
 
-#define SUPERIO_DEV PNP_DEV(0x2e, 0)
 #define SERIAL_DEV PNP_DEV(0x2e, IT8772F_SP1)
-#define GPIO_DEV PNP_DEV(0x2e, IT8772F_GPIO)
+#define GPIO_DEV   PNP_DEV(0x2e, IT8772F_GPIO)
+#define EC_DEV     PNP_DEV(0x2e, IT8772F_EC)
 
 void mainboard_late_rcba_config(void)
 {
@@ -58,17 +58,17 @@ static void setup_sio_gpios(void)
 	 * GPIO10 as USBPWRON12#
 	 * GPIO12 as USBPWRON13#
 	 */
-	it8772f_gpio_setup(SUPERIO_DEV, 1, 0x05, 0x05, 0x00, 0x05, 0x05);
+	it8772f_gpio_setup(GPIO_DEV, 1, 0x05, 0x05, 0x00, 0x05, 0x05);
 
 	/*
 	 * GPIO22 as wake SCI#
 	 */
-	it8772f_gpio_setup(SUPERIO_DEV, 2, 0x04, 0x04, 0x00, 0x04, 0x04);
+	it8772f_gpio_setup(GPIO_DEV, 2, 0x04, 0x04, 0x00, 0x04, 0x04);
 
 	/*
 	 * GPIO32 as EXTSMI#
 	 */
-	it8772f_gpio_setup(SUPERIO_DEV, 3, 0x04, 0x04, 0x00, 0x04, 0x04);
+	it8772f_gpio_setup(GPIO_DEV, 3, 0x04, 0x04, 0x00, 0x04, 0x04);
 
 	/*
 	 * GPIO45 as LED_POWER#
@@ -82,8 +82,8 @@ static void setup_sio_gpios(void)
 	 * GPIO51 as USBPWRON8#
 	 * GPIO52 as USBPWRON1#
 	 */
-	it8772f_gpio_setup(SUPERIO_DEV, 5, 0x06, 0x06, 0x00, 0x06, 0x06);
-	it8772f_gpio_setup(SUPERIO_DEV, 6, 0x00, 0x00, 0x00, 0x00, 0x00);
+	it8772f_gpio_setup(GPIO_DEV, 5, 0x06, 0x06, 0x00, 0x06, 0x06);
+	it8772f_gpio_setup(GPIO_DEV, 6, 0x00, 0x00, 0x00, 0x00, 0x00);
 }
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)
@@ -117,7 +117,7 @@ void bootblock_mainboard_early_init(void)
 	setup_sio_gpios();
 
 	/* Early SuperIO setup */
-	it8772f_ac_resume_southbridge(SUPERIO_DEV);
+	ite_ac_resume_southbridge(EC_DEV);
 	ite_kill_watchdog(GPIO_DEV);
 	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }

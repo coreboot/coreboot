@@ -209,9 +209,9 @@ chip soc/intel/skylake
 		end
 		device ref lpc_espi	on
 			chip superio/ite/it8772f
-				register "peci_tmpin" = "3"
-				register "tmpin1_mode" = "THERMAL_RESISTOR"
-				register "tmpin2_mode" = "THERMAL_RESISTOR"
+				register "TMPIN1.mode" = "THERMAL_RESISTOR"
+				register "TMPIN2.mode" = "THERMAL_RESISTOR"
+				register "TMPIN3.mode" = "THERMAL_PECI"
 				# FAN2 available on fan header but unused
 				device pnp 2e.0 off end # FDC
 				device pnp 2e.1 on # Serial Port 1

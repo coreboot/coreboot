@@ -15,6 +15,7 @@
 #define ITE_CONFIG_REG_WATCHDOG		0x72 /* watchdog config */
 #define ITE_CONFIG_REG_WDT_TIMEOUT_LSB	0x73 /* watchdog timeout (LSB) */
 #define ITE_CONFIG_REG_WDT_TIMEOUT_MSB	0x74 /* watchdog timeout (MSB) */
+#define ITE_CONFIG_REG_APC_PME_CTL2	0xf4 /* APC_PME Control 2 */
 
 /* Helper procedure */
 static void ite_sio_write(pnp_devfn_t dev, u8 reg, u8 value)
@@ -134,5 +135,25 @@ void ite_kill_watchdog(pnp_devfn_t dev)
 	ite_sio_write(dev, ITE_CONFIG_REG_WATCHDOG, 0x00);
 	ite_sio_write(dev, ITE_CONFIG_REG_WDT_TIMEOUT_LSB, 0x00);
 	ite_sio_write(dev, ITE_CONFIG_REG_WDT_TIMEOUT_MSB, 0x00);
+	pnp_exit_conf_state(dev);
+}
+
+/*
+ * Set AC resume to be up to the Southbridge
+ * pass EC_DEV
+ */
+void ite_ac_resume_southbridge(pnp_devfn_t dev)
+{
+	u8 tmp;
+	pnp_enter_conf_state(dev);
+	pnp_set_logical_device(dev);
+	tmp = pnp_read_config(dev, ITE_CONFIG_REG_APC_PME_CTL2);
+	/*
+	 * Set both
+	 * 6: Gate Extra PWRON# Pulse
+	 * 5: PSON# state when 3VSB switched to on
+	 */
+	tmp |= 0x60;
+	pnp_write_config(dev, ITE_CONFIG_REG_APC_PME_CTL2, tmp);
 	pnp_exit_conf_state(dev);
 }

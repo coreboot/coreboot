@@ -571,7 +571,7 @@ void tpm_ppi_acpi_fill_ssdt(const struct device *dev)
 
 	enum tpm_family family = tlcl_get_family();
 	if (family == TPM_UNKNOWN) {
-		printk(BIOS_WARN, "PPI: %s: aborting, because no TPM detected\n", __func__);
+		printk(BIOS_WARNING, "PPI: %s: aborting, because no TPM detected\n", __func__);
 		return;
 	}
 
@@ -726,7 +726,7 @@ void lb_tpm_ppi(struct lb_header *header)
 
 	family = tlcl_get_family();
 	if (family == TPM_UNKNOWN) {
-		printk(BIOS_WARN, "PPI: %s: aborting, because no TPM detected\n", __func__);
+		printk(BIOS_WARNING, "PPI: %s: aborting, because no TPM detected\n", __func__);
 		return;
 	}
 

@@ -64,14 +64,14 @@ volatile struct exynos5420_cpu_states
  * switching), we are not sure if the destination is Thumb or ARM mode.
  * So a BX command is required.
  */
-inline static void jump_bx(void *address)
+static inline void jump_bx(void *address)
 {
 	asm volatile ("bx %0" : : "r"(address));
 	/* never returns. */
 }
 
 /* Extracts arbitrary bits from a 32-bit unsigned int. */
-inline static uint32_t get_bits(uint32_t value, uint32_t start, uint32_t len)
+static inline uint32_t get_bits(uint32_t value, uint32_t start, uint32_t len)
 {
 	return ((value << (sizeof(value) * 8 - len - start)) >>
 		(sizeof(value) * 8 - len));

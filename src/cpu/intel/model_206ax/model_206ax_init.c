@@ -156,8 +156,9 @@ void set_power_limits(u8 power_limit_1_time)
 	}
 }
 
-static void configure_c_states(void)
+static void configure_c_states(struct device *dev)
 {
+	struct cpu_intel_model_206ax_config *conf = dev->upstream->dev->chip_info;
 	msr_t msr;
 
 	msr = rdmsr(MSR_PKG_CST_CONFIG_CONTROL);
@@ -202,20 +203,70 @@ static void configure_c_states(void)
 		msr.lo = IRTL_VALID | IRTL_1024_NS | 0x6D;
 		wrmsr(MSR_PKGC7_IRTL, msr);
 
-		/* Primary Plane Current Limit */
+		/* Primary Plane Current Limit (Icc) */
 		msr = rdmsr(MSR_PP0_CURRENT_CONFIG);
 		msr.lo &= ~0x1fff;
-		msr.lo |= PP0_CURRENT_LIMIT;
+		if (conf->pp0_current_limit) {
+			/* Fill in board specific maximum current supported by VR */
+			msr.lo |= conf->pp0_current_limit * 8;
+		} else {
+			printk(BIOS_INFO, "%s: PP0 current limit not set in devicetree\n", dev_path(dev));
+			/*
+			 * The default value might over-stress the voltage regulator or
+			 * prevent OC on boards with regulators that can handle currents
+			 * above the Intel recommendation.
+			 */
+			msr.lo |= PP0_CURRENT_LIMIT;
+		}
+		for (int i = 0; i < VR12_PSI_MAX; i++) {
+			/*
+			 * Light load optimization. Depending on the VR output filter the
+			 * number of phases can be reduced at light load. This is a board
+			 * specific setting.
+			 */
+			if (conf->pp0_psi[i].phases != VR12_KEEP_DEFAULT) {
+				msr.hi &= ~(0x3ff << (i * 10));
+				msr.hi |= (conf->pp0_psi[i].phases - 1) << (i * 10 + 7);
+				msr.hi |= conf->pp0_psi[i].current << (i * 10);
+			} else {
+				printk(BIOS_INFO, "%s: PP0 PSI%d not set in devicetree\n", dev_path(dev), i);
+			}
+		}
 		msr.lo |= PP0_CURRENT_LIMIT_LOCK;
 		wrmsr(MSR_PP0_CURRENT_CONFIG, msr);
 
-		/* Secondary Plane Current Limit */
+		/* Secondary Plane Current Limit (IAXG) */
 		msr = rdmsr(MSR_PP1_CURRENT_CONFIG);
 		msr.lo &= ~0x1fff;
-		if (IS_IVY_CPU(cpu_get_cpuid()))
-			msr.lo |= PP1_CURRENT_LIMIT_IVB;
-		else
-			msr.lo |= PP1_CURRENT_LIMIT_SNB;
+		if (conf->pp1_current_limit) {
+			/* Fill in board specific maximum current supported by VR */
+			msr.lo |= conf->pp1_current_limit * 8;
+		} else {
+			printk(BIOS_INFO, "%s: PP1 current limit not set in devicetree\n", dev_path(dev));
+			/*
+			 * The default value might over-stress the voltage regulator or
+			 * prevent OC on boards with regulators that can handle currents
+			 * above the Intel recommendation.
+			 */
+			if (IS_IVY_CPU(cpu_get_cpuid()))
+				msr.lo |= PP1_CURRENT_LIMIT_IVB;
+			else
+				msr.lo |= PP1_CURRENT_LIMIT_SNB;
+		}
+		for (int i = 0; i < VR12_PSI_MAX; i++) {
+			/*
+			 * Light load optimization. Depending on the VR output filter the
+			 * number of phases can be reduced at light load. This is a board
+			 * specific setting.
+			 */
+			if (conf->pp1_psi[i].phases != VR12_KEEP_DEFAULT) {
+				msr.hi &= ~(0x3ff << (i * 10));
+				msr.hi |= (conf->pp1_psi[i].phases - 1) << (i * 10 + 7);
+				msr.hi |= conf->pp1_psi[i].current << (i * 10);
+			} else {
+				printk(BIOS_INFO, "%s: PP1 PSI%d not set in devicetree\n", dev_path(dev), i);
+			}
+		}
 		msr.lo |= PP1_CURRENT_LIMIT_LOCK;
 		wrmsr(MSR_PP1_CURRENT_CONFIG, msr);
 	}
@@ -354,7 +405,7 @@ static void model_206ax_init(struct device *cpu)
 	set_vmx_and_lock();
 
 	/* Configure C States */
-	configure_c_states();
+	configure_c_states(cpu);
 
 	/* Configure Enhanced SpeedStep and Thermal Sensors */
 	configure_misc();

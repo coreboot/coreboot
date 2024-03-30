@@ -35,6 +35,20 @@ chip northbridge/intel/sandybridge
 		{ 1, 7, 0x0080 },
 		{ 1, 6, 0x0080 },}"
 
+	chip cpu/intel/model_206ax
+		# Values obtained from vendor BIOS v1.46
+		# schematics say 33Amps for 17W TDP, 53Amps for 35W TDP
+		register "pp0_current_limit" = "98"
+		# schematics say 33Amps for GFX
+		register "pp1_current_limit" = "33"
+		register "pp0_psi[VR12_PSI1]" = "{VR12_2_PHASES, 20}"
+		register "pp0_psi[VR12_PSI2]" = "{VR12_ALL_PHASES, 5}"
+		register "pp0_psi[VR12_PSI3]" = "{VR12_ALL_PHASES, 1}"
+		register "pp1_psi[VR12_PSI1]" = "{VR12_2_PHASES, 20}"
+		register "pp1_psi[VR12_PSI2]" = "{VR12_ALL_PHASES, 5}"
+		register "pp1_psi[VR12_PSI3]" = "{VR12_ALL_PHASES, 1}"
+		device cpu_cluster 0 on end
+	end
 	device domain 0 on
 		subsystemid 0x17aa 0x21db inherit
 

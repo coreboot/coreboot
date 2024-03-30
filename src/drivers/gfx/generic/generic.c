@@ -119,8 +119,8 @@ static void gfx_fill_ssdt_generator(const struct device *dev)
 		if (!config->device[i].addr && config->device[i].type)
 			/* Though not strictly necessary, set the display index and
 			   port attachment to the device index, to ensure uniqueness */
-			config->device[i].addr = DOD_DID_STD | DOD_FW_DETECT | \
-						(config->device[i].type << 8) | \
+			config->device[i].addr = DOD_DID_STD | DOD_FW_DETECT |
+						(config->device[i].type << 8) |
 						(i << 4) | (i);
 		acpigen_write_dword(config->device[i].addr);
 	}

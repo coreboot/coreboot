@@ -11,7 +11,7 @@
 
 WEAK_DEV_PTR(dptf_policy);
 
-static struct soc_power_limits_config *get_soc_power_limit_config(void)
+struct soc_power_limits_config *variant_get_soc_power_limit_config(void)
 {
 	config_t *config = config_of_soc();
 	size_t i;
@@ -44,7 +44,7 @@ void variant_update_power_limits(const struct cpu_power_limits *limits, size_t n
 	if (!num_entries)
 		return;
 
-	struct soc_power_limits_config *soc_config = get_soc_power_limit_config();
+	struct soc_power_limits_config *soc_config = variant_get_soc_power_limit_config();
 	if (!soc_config)
 		return;
 

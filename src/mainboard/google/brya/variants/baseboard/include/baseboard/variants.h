@@ -4,6 +4,7 @@
 #define __BASEBOARD_VARIANTS_H__
 
 #include <chip.h>
+#include <intelblocks/power_limit.h>
 #include <soc/gpio.h>
 #include <soc/meminit.h>
 #include <stdint.h>
@@ -69,6 +70,9 @@ struct psys_config {
 	/* The voltage of barrel jack */
 	unsigned int bj_volts_mv;
 };
+
+/* Get soc power limit config struct for current CPU sku */
+struct soc_power_limits_config *variant_get_soc_power_limit_config(void);
 
 /* Modify Power Limit devictree settings during ramstage */
 void variant_update_power_limits(const struct cpu_power_limits *limits,

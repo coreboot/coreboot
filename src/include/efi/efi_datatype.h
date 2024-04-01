@@ -34,6 +34,9 @@ typedef BMP_IMAGE_HEADER efi_bmp_image_header;
 typedef BMP_COLOR_MAP efi_bmp_color_map;
 #endif
 
+/* EFIAPI calling convention */
+#define __efiapi EFIAPI
+
 /* Basic Data types */
 /* 8-byte unsigned value. */
 typedef UINT64 efi_uint64_t;

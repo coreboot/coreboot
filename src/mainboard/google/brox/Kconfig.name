@@ -7,3 +7,6 @@ config BOARD_GOOGLE_BROX
 
 config BOARD_GOOGLE_BROX_EC_ISH
 	bool "->  Brox EC ISH"
+
+config BOARD_GOOGLE_GREENBAYUPOC
+	bool "->  Greenbayupoc"

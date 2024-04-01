@@ -32,6 +32,8 @@
 #define FSP_IA32                               0
 #define FSP_X64                                1
 
+#define FSP_SIG         0x48505346      /* 'FSPH' */
+
   #pragma pack(1)
 
 ///

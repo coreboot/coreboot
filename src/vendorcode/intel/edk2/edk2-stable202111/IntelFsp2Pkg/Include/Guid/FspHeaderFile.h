@@ -24,6 +24,8 @@
 
 #define FSP_INFO_HEADER_SIGNATURE  SIGNATURE_32 ('F', 'S', 'P', 'H')
 
+#define FSP_SIG         0x48505346      /* 'FSPH' */
+
 #pragma pack(1)
 
 ///

@@ -3,9 +3,6 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
-#include <device/pci_def.h>
-#include <soc/pci_devs.h>
 #include <gpio.h>
 #include <intelblocks/acpi.h>
 #include <soc/acpi.h>
@@ -36,28 +33,6 @@ static void soc_enable_dev(struct device *dev)
 	} else if (dev->path.type == DEVICE_PATH_GPIO) {
 		block_gpio_enable(dev);
 	}
-}
-
-/* Only call this code from socket0! */
-static void unlock_pam_regions(void)
-{
-	uint32_t pam0123_unlock_dram = 0x33333330;
-	uint32_t pam456_unlock_dram = 0x00333333;
-	/* Get UBOX(1) for socket0 */
-	uint32_t bus1 = socket0_get_ubox_busno(PCU_IIO_STACK);
-
-	/* Assume socket0 owns PCI segment 0 */
-	pci_io_write_config32(PCI_DEV(bus1, SAD_ALL_DEV, SAD_ALL_FUNC),
-		SAD_ALL_PAM0123_CSR, pam0123_unlock_dram);
-	pci_io_write_config32(PCI_DEV(bus1, SAD_ALL_DEV, SAD_ALL_FUNC),
-		SAD_ALL_PAM456_CSR, pam456_unlock_dram);
-
-	uint32_t reg1 = pci_io_read_config32(PCI_DEV(bus1, SAD_ALL_DEV,
-		SAD_ALL_FUNC), SAD_ALL_PAM0123_CSR);
-	uint32_t reg2 = pci_io_read_config32(PCI_DEV(bus1, SAD_ALL_DEV,
-		SAD_ALL_FUNC), SAD_ALL_PAM456_CSR);
-	printk(BIOS_DEBUG, "%s:%s pam0123_csr: 0x%x, pam456_csr: 0x%x\n",
-		__FILE__, __func__, reg1, reg2);
 }
 
 static void soc_init(void *data)

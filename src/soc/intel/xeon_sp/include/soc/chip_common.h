@@ -89,4 +89,6 @@ bool is_cxl_domain(struct device *dev);
 #define is_dev_on_domain0(dev) (is_domain0(dev_get_pci_domain(dev)))
 #define is_stack0(socket, stack) (socket == 0 && stack == IioStack0)
 
+void unlock_pam_regions(void);
+
 #endif /* _CHIP_COMMON_H_ */

@@ -12,7 +12,7 @@
 #include <fsp/soc_binding.h>
 
 /* fsp debug event handler */
-efi_return_status_t fsp_debug_event_handler(efi_status_code_type_t ignored1,
+__efiapi efi_return_status_t fsp_debug_event_handler(efi_status_code_type_t ignored1,
 	efi_status_code_value_t ignored2, efi_uint32_t ignored3, efi_guid_t *ignored4,
 	efi_status_code_data_t *data);
 

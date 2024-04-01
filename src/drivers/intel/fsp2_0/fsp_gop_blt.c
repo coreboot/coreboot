@@ -151,7 +151,7 @@ static void *fill_blt_buffer(efi_bmp_image_header *header,
 		die("%s: out of memory. Consider increasing the `CONFIG_HEAP_SIZE`\n",
 			 __func__);
 
-	bmp_image = ((UINT8 *)logo_ptr) + header->ImageOffset;
+	bmp_image = ((uint8_t *)logo_ptr) + header->ImageOffset;
 	bmp_image_header = bmp_image;
 	gop_blt_buffer = gop_blt_ptr;
 	bmp_color_map = (efi_bmp_color_map *)(logo_ptr + sizeof(efi_bmp_image_header));

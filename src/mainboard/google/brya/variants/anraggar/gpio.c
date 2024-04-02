@@ -11,6 +11,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_GPI(GPP_A7, NONE, DEEP),
 	/* A8  : GPP_A8 ==> WWAN_RF_DISABLE_ODL */
 	PAD_CFG_GPO(GPP_A8, 1, DEEP),
+	/* A11 : GPP_A11 ==> EN_SPK_PA */
+	PAD_CFG_GPO(GPP_A11, 0, DEEP),
 	/* A18 : NC ==> HDMI_HPD_SRC*/
 	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),
 

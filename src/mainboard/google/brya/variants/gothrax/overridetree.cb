@@ -234,6 +234,24 @@ chip soc/intel/alderlake
 					probe TOUCH_PANEL TOUCH_PANEL_ENABLE
 				end
 			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ILI2901""
+				register "generic.desc" = ""ILI Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
+				register "generic.detect" = "1"
+				register "generic.reset_gpio" =
+					"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
+				register "generic.reset_delay_ms" = "200"
+				register "generic.reset_off_delay_ms" = "2"
+				register "generic.enable_gpio" =
+					"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
+				register "generic.enable_delay_ms" = "6"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 0x41 on
+					probe TOUCH_PANEL TOUCH_PANEL_ENABLE
+				end
+			end
 		end
 		device ref i2c2 on
 			chip drivers/i2c/sx9324

@@ -90,6 +90,7 @@ const acpi_cstate_t *soc_get_cstate_map(size_t *entries)
 	return map;
 }
 
+#if CONFIG(XEON_SP_HAVE_IIO_IOAPIC)
 static uintptr_t xeonsp_ioapic_bases[CONFIG(XEON_SP_HAVE_IIO_IOAPIC) * 8 + 1];
 
 size_t soc_get_ioapic_info(const uintptr_t *ioapic_bases[])
@@ -126,6 +127,7 @@ size_t soc_get_ioapic_info(const uintptr_t *ioapic_bases[])
 
 	return index;
 }
+#endif
 
 void iio_domain_set_acpi_name(struct device *dev, const char *prefix)
 {

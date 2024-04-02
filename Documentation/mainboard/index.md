@@ -97,6 +97,14 @@ QEMU x86 PC <emulation/qemu-i440fx.md>
 QEMU POWER9 <emulation/qemu-power9.md>
 ```
 
+## Erying
+
+```{toctree}
+:maxdepth: 1
+
+Polestar G613 Pro <erying/tgl/tgl_matx.md>
+```
+
 ## Facebook
 
 ```{toctree}

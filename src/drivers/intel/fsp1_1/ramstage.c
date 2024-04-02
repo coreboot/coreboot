@@ -76,9 +76,11 @@ static void fsp_run_silicon_init(FSP_INFO_HEADER *fsp_info_header)
 		load_vbt(&silicon_init_params);
 	mainboard_silicon_init_params(&silicon_init_params);
 
-	if (CONFIG(BMP_LOGO))
-		bmp_load_logo(&silicon_init_params.PcdLogoPtr,
-			      &silicon_init_params.PcdLogoSize);
+	if (CONFIG(BMP_LOGO)) {
+		size_t logo_size;
+		silicon_init_params.PcdLogoPtr = (uint32_t)(uintptr_t)bmp_load_logo(&logo_size);
+		silicon_init_params.PcdLogoSize = (uint32_t)logo_size;
+	}
 
 	/* Display the UPD data */
 	if (CONFIG(DISPLAY_UPD_DATA))

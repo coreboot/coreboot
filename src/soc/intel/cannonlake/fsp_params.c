@@ -754,5 +754,7 @@ __weak void mainboard_silicon_init_params(FSPS_UPD *supd)
 /* Handle FSP logo params */
 void soc_load_logo(FSPS_UPD *supd)
 {
-	bmp_load_logo(&supd->FspsConfig.LogoPtr, &supd->FspsConfig.LogoSize);
+	size_t logo_size;
+	supd->FspsConfig.LogoPtr = (uintptr_t)bmp_load_logo(&logo_size);
+	supd->FspsConfig.LogoSize = (uint32_t)logo_size;
 }

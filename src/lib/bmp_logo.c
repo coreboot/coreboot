@@ -16,25 +16,27 @@ const char *bmp_logo_filename(void)
 }
 #endif
 
-void bmp_load_logo(uint32_t *logo_ptr, uint32_t *logo_size)
+void *bmp_load_logo(size_t *logo_size)
 {
 	void *logo_buffer;
 
 	/* CBMEM is locked for S3 resume path. */
 	if (acpi_is_wakeup_s3())
-		return;
+		return NULL;
 
 	logo_entry = cbmem_entry_add(CBMEM_ID_FSP_LOGO, 1 * MiB);
 	if (!logo_entry)
-		return;
+		return NULL;
 
 	logo_buffer = cbmem_entry_start(logo_entry);
 	if (!logo_buffer)
-		return;
+		return NULL;
 
 	*logo_size = cbfs_load(bmp_logo_filename(), logo_buffer, 1 * MiB);
-	if (*logo_size)
-		*logo_ptr = (uintptr_t)logo_buffer;
+	if (*logo_size == 0)
+		return NULL;
+
+	return logo_buffer;
 }
 
 void bmp_release_logo(void)

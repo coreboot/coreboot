@@ -55,6 +55,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 void soc_load_logo(FSPS_UPD *supd)
 {
-	uint32_t logo_size;
-	bmp_load_logo(&supd->FspsConfig.logo_bmp_buffer, &logo_size);
+	size_t logo_size;
+	supd->FspsConfig.logo_bmp_buffer = (uint32_t)(uintptr_t)bmp_load_logo(&logo_size);
 }

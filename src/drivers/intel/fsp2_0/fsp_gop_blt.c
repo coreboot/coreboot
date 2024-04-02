@@ -237,13 +237,15 @@ void fsp_convert_bmp_to_gop_blt(uint32_t *logo, uint32_t *logo_size,
 	uint32_t *blt_ptr, uint32_t *blt_size,
 	uint32_t *pixel_height, uint32_t *pixel_width)
 {
-	uint32_t logo_ptr, logo_ptr_size, blt_buffer_size;
+	uint32_t logo_ptr;
+	size_t logo_ptr_size, blt_buffer_size;
 	efi_bmp_image_header *bmp_header;
 
 	if (!logo || !logo_size || !blt_ptr || !blt_size || !pixel_height || !pixel_width)
 		return;
 
-	bmp_load_logo(&logo_ptr, &logo_ptr_size);
+	logo_ptr = (uint32_t)(uintptr_t)bmp_load_logo(&logo_ptr_size);
+
 	if (!logo_ptr || logo_ptr_size < sizeof(efi_bmp_image_header)) {
 		printk(BIOS_ERR, "%s: BMP Image size is too small.\n", __func__);
 		return;

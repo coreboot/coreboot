@@ -274,22 +274,22 @@ static uint32_t fsp_mrc_version(const struct fsp_header *hdr)
 	return ver;
 }
 
-static void fspm_return_value_handler(const char *context, uint32_t status, bool die_on_error)
+static void fspm_return_value_handler(const char *context, efi_return_status_t status,
+		 bool die_on_error)
 {
 	if (status == FSP_SUCCESS)
 		return;
 
 	fsp_handle_reset(status);
 	if (die_on_error)
-		die_with_post_code(POSTCODE_RAM_FAILURE, "%s returned with error 0x%zx!\n",
-				   context, (size_t)status);
+		fsp_die_with_post_code(status, POSTCODE_RAM_FAILURE, "%s error", context);
 
-	printk(BIOS_SPEW, "%s returned 0x%zx\n", context, (size_t)status);
+	fsp_printk(status, BIOS_SPEW, "%s", context);
 }
 
 static void fspm_multi_phase_init(const struct fsp_header *hdr)
 {
-	uint32_t status;
+	efi_return_status_t status;
 	fsp_multi_phase_init_fn fsp_multi_phase_init;
 	struct fsp_multi_phase_params multi_phase_params;
 	struct fsp_multi_phase_get_number_of_phases_params multi_phase_get_number;
@@ -332,7 +332,7 @@ static void fspm_multi_phase_init(const struct fsp_header *hdr)
 
 static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 {
-	uint32_t status;
+	efi_return_status_t status;
 	fsp_memory_init_fn fsp_raminit;
 	FSPM_UPD fspm_upd, *upd;
 	FSPM_ARCHx_UPD *arch_upd;

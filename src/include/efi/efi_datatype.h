@@ -65,7 +65,11 @@ typedef UINTN efi_uintn_t;
 /* Signed value of native width. */
 typedef INTN efi_intn_t;
 /* Status codes common to all execution phases */
-typedef EFI_STATUS efi_return_status_t;
+#if CONFIG(PLATFORM_USES_FSP2_X86_32)
+typedef UINT32 efi_return_status_t;
+#else
+typedef UINT64 efi_return_status_t;
+#endif
 /* Data structure for EFI_PHYSICAL_ADDRESS */
 typedef EFI_PHYSICAL_ADDRESS efi_physical_address;
 /* 128-bit buffer containing a unique identifier value */

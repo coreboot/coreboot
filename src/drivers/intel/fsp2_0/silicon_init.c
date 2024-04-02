@@ -36,7 +36,8 @@ enum fsp_silicon_init_phases {
 	FSP_MULTI_PHASE_SI_INIT_EXECUTE_PHASE_API
 };
 
-static void fsps_return_value_handler(enum fsp_silicon_init_phases phases, uint32_t status)
+static void fsps_return_value_handler(enum fsp_silicon_init_phases phases,
+				      efi_return_status_t status)
 {
 	uint8_t postcode;
 
@@ -54,16 +55,13 @@ static void fsps_return_value_handler(enum fsp_silicon_init_phases phases, uint3
 
 	switch (phases) {
 	case FSP_SILICON_INIT_API:
-		die_with_post_code(postcode, "FspSiliconInit returned with error 0x%08x\n",
-				status);
+		fsp_die_with_post_code(status, postcode, "FspSiliconInit error");
 		break;
 	case FSP_MULTI_PHASE_SI_INIT_GET_NUMBER_OF_PHASES_API:
-		printk(BIOS_SPEW, "FspMultiPhaseSiInit NumberOfPhases returned 0x%08x\n",
-				status);
+		fsp_printk(status, BIOS_SPEW, "FspMultiPhaseSiInit NumberOfPhases");
 		break;
 	case FSP_MULTI_PHASE_SI_INIT_EXECUTE_PHASE_API:
-		printk(BIOS_SPEW, "FspMultiPhaseSiInit ExecutePhase returned 0x%08x\n",
-				status);
+		fsp_printk(status, BIOS_SPEW, "FspMultiPhaseSiInit ExecutePhase");
 		break;
 	default:
 		break;
@@ -88,7 +86,7 @@ static void do_silicon_init(struct fsp_header *hdr)
 {
 	FSPS_UPD *upd, *supd;
 	fsp_silicon_init_fn silicon_init;
-	uint32_t status;
+	efi_return_status_t status;
 	fsp_multi_phase_init_fn multi_phase_si_init;
 	struct fsp_multi_phase_params multi_phase_params;
 	struct fsp_multi_phase_get_number_of_phases_params multi_phase_get_number;
@@ -139,7 +137,7 @@ static void do_silicon_init(struct fsp_header *hdr)
 		status = silicon_init(upd);
 	null_breakpoint_init();
 
-	printk(BIOS_INFO, "FSPS returned %x\n", status);
+	fsp_printk(status, BIOS_INFO, "FSPS");
 
 	timestamp_add_now(TS_FSP_SILICON_INIT_END);
 	post_code(POSTCODE_FSP_SILICON_EXIT);

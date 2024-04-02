@@ -19,14 +19,14 @@ enum fsp_log_level fsp_map_console_log_level(void);
 void fsp_debug_before_memory_init(fsp_memory_init_fn memory_init,
 	const FSPM_UPD *fspm_old_upd,
 	const FSPM_UPD *fspm_new_upd);
-void fsp_debug_after_memory_init(uint32_t status);
+void fsp_debug_after_memory_init(efi_return_status_t status);
 void fsp_debug_before_silicon_init(fsp_silicon_init_fn silicon_init,
 	const FSPS_UPD *fsps_old_upd,
 	const FSPS_UPD *fsps_new_upd);
-void fsp_debug_after_silicon_init(uint32_t status);
+void fsp_debug_after_silicon_init(efi_return_status_t status);
 void fsp_before_debug_notify(fsp_notify_fn notify,
 	const struct fsp_notify_params *notify_params);
-void fsp_debug_after_notify(uint32_t status);
+void fsp_debug_after_notify(efi_return_status_t status);
 void fspm_display_upd_values(const FSPM_UPD *old,
 	const FSPM_UPD *new);
 void fsp_display_hobs(void);

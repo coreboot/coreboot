@@ -30,20 +30,20 @@ struct fsp_reset_hob {
 	struct pch_reset_data   reset_data;
 };
 
-void chipset_handle_reset(uint32_t status)
+void chipset_handle_reset(efi_return_status_t status)
 {
 	if (status == CONFIG_FSP_STATUS_GLOBAL_RESET) {
 		printk(BIOS_DEBUG, "GLOBAL RESET!\n");
 		global_reset();
 	}
 
-	printk(BIOS_ERR, "unhandled reset type %x\n", status);
+	fsp_printk(status, BIOS_ERR, "unhandled reset type");
 	die("unknown reset type");
 }
 
 static uint32_t fsp_reset_type_to_status(EFI_RESET_TYPE reset_type)
 {
-	uint32_t status;
+	efi_return_status_t status;
 
 	switch (reset_type) {
 	case EfiResetCold:

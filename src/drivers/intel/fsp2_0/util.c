@@ -83,18 +83,18 @@ enum cb_err fsp_validate_component(struct fsp_header *hdr, void *fsp_file, size_
 	return CB_SUCCESS;
 }
 
-static bool fsp_reset_requested(uint32_t status)
+static bool fsp_reset_requested(efi_return_status_t status)
 {
 	return (status >= FSP_STATUS_RESET_REQUIRED_COLD &&
 		status <= FSP_STATUS_RESET_REQUIRED_8);
 }
 
-void fsp_handle_reset(uint32_t status)
+void fsp_handle_reset(efi_return_status_t status)
 {
 	if (!fsp_reset_requested(status))
 		return;
 
-	printk(BIOS_SPEW, "FSP: handling reset type %x\n", status);
+	fsp_printk(status, BIOS_SPEW, "FSP: handling reset type");
 
 	switch (status) {
 	case FSP_STATUS_RESET_REQUIRED_COLD:

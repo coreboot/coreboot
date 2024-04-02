@@ -85,10 +85,10 @@ void fsp_debug_before_memory_init(fsp_memory_init_fn memory_init,
 	printk(BIOS_SPEW, "\t%p: &hob_list_ptr\n", fsp_get_hob_list_ptr());
 }
 
-void fsp_debug_after_memory_init(uint32_t status)
+void fsp_debug_after_memory_init(efi_return_status_t status)
 {
 	if (CONFIG(DISPLAY_FSP_CALLS_AND_STATUS))
-		printk(BIOS_SPEW, "FspMemoryInit returned 0x%08x\n", status);
+		fsp_printk(status, BIOS_SPEW, "FspMemoryInit");
 
 	if (status != FSP_SUCCESS)
 		return;
@@ -130,13 +130,13 @@ void fsp_debug_before_silicon_init(fsp_silicon_init_fn silicon_init,
 	printk(BIOS_SPEW, "\t%p: upd\n", fsps_new_upd);
 }
 
-void fsp_debug_after_silicon_init(uint32_t status)
+void fsp_debug_after_silicon_init(efi_return_status_t status)
 {
 	if (CONFIG(CHECK_GPIO_CONFIG_CHANGES))
 		fsp_gpio_config_check(AFTER_FSP_CALL, "FSP Silicon Init");
 
 	if (CONFIG(DISPLAY_FSP_CALLS_AND_STATUS))
-		printk(BIOS_SPEW, "FspSiliconInit returned 0x%08x\n", status);
+		fsp_printk(status, BIOS_SPEW, "FspSiliconInit");
 
 	/* Display the HOBs */
 	if (CONFIG(DISPLAY_HOBS))
@@ -164,13 +164,13 @@ void fsp_before_debug_notify(fsp_notify_fn notify,
 	printk(BIOS_SPEW, "\t%p: notify_params\n", notify_params);
 }
 
-void fsp_debug_after_notify(uint32_t status)
+void fsp_debug_after_notify(efi_return_status_t status)
 {
 	if (CONFIG(CHECK_GPIO_CONFIG_CHANGES))
 		fsp_gpio_config_check(AFTER_FSP_CALL, "FSP Notify");
 
 	if (CONFIG(DISPLAY_FSP_CALLS_AND_STATUS))
-		printk(BIOS_SPEW, "FspNotify returned 0x%08x\n", status);
+		fsp_printk(status, BIOS_SPEW, "FspNotify");
 
 	/* Display the HOBs */
 	if (CONFIG(DISPLAY_HOBS))

@@ -6,10 +6,9 @@
 #include <fsp/util.h>
 #include <stdint.h>
 
-void chipset_handle_reset(uint32_t status)
+void chipset_handle_reset(efi_return_status_t status)
 {
-	printk(BIOS_ERR, "unexpected call to %s(0x%08x).  Doing cold reset.\n",
-			__func__, status);
+	fsp_printk(status, BIOS_ERR, "Doing cold reset due to unexpected call to %s", __func__);
 	BUG();
 	do_cold_reset();
 }

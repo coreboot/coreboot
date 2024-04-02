@@ -140,6 +140,9 @@ config BOARD_GOOGLE_TANIKS
 config BOARD_GOOGLE_TIVVIKS
 	bool "-> Tivviks"
 
+config BOARD_GOOGLE_TRULO
+	bool "->  Trulo"
+
 config BOARD_GOOGLE_ULDREN
 	bool "->  Uldren"
 

@@ -12,6 +12,18 @@
 
 #define BSP_CPU_SLOT 0
 
+struct efi_ap_procedure_caller_params {
+	efi_ap_procedure procedure;
+	void *argument;
+};
+
+static void efi_ap_procedure_caller(void *arg)
+{
+	struct efi_ap_procedure_caller_params *params =
+		(struct efi_ap_procedure_caller_params *)arg;
+	params->procedure(params->argument);
+}
+
 efi_return_status_t mp_get_number_of_processors(efi_uintn_t *number_of_processors,
 	efi_uintn_t *number_of_enabled_processors)
 {
@@ -58,14 +70,19 @@ efi_return_status_t mp_get_processor_info(efi_uintn_t processor_number,
 efi_return_status_t mp_startup_all_aps(efi_ap_procedure procedure,
 	bool run_serial, efi_uintn_t timeout_usec, void *argument)
 {
+	struct efi_ap_procedure_caller_params params = {
+		.procedure = procedure,
+		.argument = argument
+	};
+
 	if (!cpu_info())
 		return FSP_DEVICE_ERROR;
 
 	if (procedure == NULL)
 		return FSP_INVALID_PARAMETER;
 
-	if (mp_run_on_all_aps((void *)procedure, argument, timeout_usec, !run_serial) !=
-				CB_SUCCESS) {
+	if (mp_run_on_all_aps((void *)efi_ap_procedure_caller, &params,
+			      timeout_usec, !run_serial) != CB_SUCCESS) {
 		printk(BIOS_DEBUG, "%s: Exit with Failure\n", __func__);
 		return FSP_NOT_STARTED;
 	}
@@ -76,6 +93,11 @@ efi_return_status_t mp_startup_all_aps(efi_ap_procedure procedure,
 efi_return_status_t mp_startup_all_cpus(efi_ap_procedure procedure,
 	efi_uintn_t timeout_usec, void *argument)
 {
+	struct efi_ap_procedure_caller_params params = {
+		.procedure = procedure,
+		.argument = argument
+	};
+
 	if (!cpu_info())
 		return FSP_DEVICE_ERROR;
 
@@ -99,8 +121,8 @@ efi_return_status_t mp_startup_all_cpus(efi_ap_procedure procedure,
 	 * due to lack of acquiring a spin lock while accessing common data structure in
 	 * multiprocessor environment.
 	 */
-	if (mp_run_on_all_aps((void *)procedure, argument, timeout_usec, false) !=
-				CB_SUCCESS) {
+	if (mp_run_on_all_aps((void *)efi_ap_procedure_caller,
+			      &params, timeout_usec, false) != CB_SUCCESS) {
 		printk(BIOS_DEBUG, "%s: Exit with Failure\n", __func__);
 		return FSP_NOT_STARTED;
 	}
@@ -111,6 +133,11 @@ efi_return_status_t mp_startup_all_cpus(efi_ap_procedure procedure,
 efi_return_status_t mp_startup_this_ap(efi_ap_procedure procedure,
 	efi_uintn_t processor_number, efi_uintn_t timeout_usec, void *argument)
 {
+	struct efi_ap_procedure_caller_params params = {
+		.procedure = procedure,
+		.argument = argument
+	};
+
 	if (!cpu_info())
 		return FSP_DEVICE_ERROR;
 
@@ -123,7 +150,7 @@ efi_return_status_t mp_startup_this_ap(efi_ap_procedure procedure,
 	if (procedure == NULL)
 		return FSP_INVALID_PARAMETER;
 
-	if (mp_run_on_aps((void *)procedure, argument,
+	if (mp_run_on_aps((void *)efi_ap_procedure_caller, &params,
 			processor_number, timeout_usec) != CB_SUCCESS) {
 		printk(BIOS_DEBUG, "%s: Exit with Failure\n", __func__);
 		return FSP_NOT_STARTED;

@@ -158,6 +158,11 @@ endif
 ifeq ($(CONFIG_EDK2_LOAD_OPTION_ROMS),y)
 BUILD_STR += -D LOAD_OPTION_ROMS=TRUE
 endif
+# NETWORK_IPXE                  = FALSE
+ifeq ($(CONFIG_EDK2_IPXE),y)
+BUILD_STR += -D NETWORK_IPXE=TRUE
+BUILD_STR += --pcd gUefiPayloadPkgTokenSpaceGuid.PcdiPXEOptionName=L"$(CONFIG_EDK2_IPXE_OPTION_NAME)"
+endif
 
 endif # !CONFIG_EDK2_REPO_OFFICIAL
 
@@ -248,6 +253,14 @@ gop_driver: $(EDK2_PATH)
 		cp $(top)/$(CONFIG_INTEL_GMA_VBT_FILE) $(EDK2_PATH)/UefiPayloadPkg/vbt.bin; \
 	fi; \
 
+ipxe_rom: $(EDK2_PATH)
+	if [ "$(CONFIG_EDK2_IPXE)" == "y" ]; then \
+		echo "    Including externally built iPXE"; \
+		mkdir -p $(EDK2_PATH)/UefiPayloadPkg/NetworkDrivers/; \
+		cp $(top)/payloads/external/iPXE/ipxe/ipxe.rom \
+			$(EDK2_PATH)/UefiPayloadPkg/NetworkDrivers/ipxe.efi; \
+	fi \
+
 checktools:
 	echo -n "EDK2: Checking uuid-dev:"
 	echo "#include <uuid/uuid.h>" > libtest.c
@@ -285,7 +298,7 @@ print:
 		-e 's/s /Build:          Silent/' \
 		-e 's/t /Toolchain:      /'
 
-prep: $(EDK2_PATH) $(EDK2_PLATFORMS_PATH) clean checktools logo gop_driver
+prep: $(EDK2_PATH) $(EDK2_PLATFORMS_PATH) clean checktools logo gop_driver ipxe_rom
 	cd $(WORKSPACE); \
 		source $(EDK2_PATH)/edksetup.sh; \
 		unset CC; $(MAKE) -C $(EDK2_PATH)/BaseTools 2>&1; \

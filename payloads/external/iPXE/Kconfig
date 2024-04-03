@@ -10,6 +10,7 @@ menu "PXE Options"
 
 choice
 	prompt "PXE ROM to use"
+	default BUILD_IPXE if EDK2_ENABLE_IPXE
 	default PXE_ROM
 
 config PXE_ROM
@@ -120,6 +121,7 @@ config IPXE_TRUST_CMD
 config IPXE_BUILD_EFI
 	bool "Build iPXE for EFI target"
 	depends on PAYLOAD_EDK2
+	default y if EDK2_ENABLE_IPXE
 	default n
 	help
 	  Build iPXE for EFI target, enabling it to be executed from EDK2. If not

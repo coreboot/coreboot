@@ -156,7 +156,11 @@ payloads/external/depthcharge/depthcharge/build/depthcharge.elf depthcharge: $(D
 
 # edk2
 
-$(obj)/UEFIPAYLOAD.fd: $(DOTCONFIG)
+ifeq ($(CONFIG_EDK2_ENABLE_IPXE),y)
+IPXE_EFI := payloads/external/iPXE/ipxe/ipxe.rom
+endif
+
+$(obj)/UEFIPAYLOAD.fd: $(DOTCONFIG) $(IPXE_EFI)
 	$(MAKE) -C payloads/external/edk2 UefiPayloadPkg \
 		HOSTCC="$(HOSTCC)" \
 		CC="$(HOSTCC)" \
@@ -208,7 +212,9 @@ $(obj)/UEFIPAYLOAD.fd: $(DOTCONFIG)
 		OBJCOPY_x86_64=$(OBJCOPY_x86_64) \
 		OBJCOPY_arm=$(OBJCOPY_arm) \
 		OBJCOPY_arm64=$(OBJCOPY_arm64) \
-		MFLAGS= MAKEFLAGS=
+		MFLAGS= MAKEFLAGS= \
+		CONFIG_EDK2_IPXE=$(CONFIG_EDK2_ENABLE_IPXE) \
+		CONFIG_EDK2_IPXE_OPTION_NAME=$(CONFIG_EDK2_IPXE_OPTION_NAME)
 
 $(obj)/ShimmedUniversalPayload.elf: $(DOTCONFIG)
 	$(MAKE) -C payloads/external/edk2 UniversalPayload \
@@ -367,13 +373,18 @@ else
 IPXE_SERIAL_CONSOLE = n
 endif
 
+ifneq ($(CONFIG_EDK2_ENABLE_IPXE),y)
 cbfs-files-$(CONFIG_PXE_ROM)$(CONFIG_BUILD_IPXE) += pci$(CONFIG_PXE_ROM_ID).rom
 pci$(CONFIG_PXE_ROM_ID).rom-file := $(PXE_ROM_FILE)
 pci$(CONFIG_PXE_ROM_ID).rom-type := raw
+IPXE_CROSS_COMPILE:="$(CROSS_COMPILE_$(ARCH-ramstage-y))"
+else
+IPXE_CROSS_COMPILE:=$(CROSS_COMPILE_x86_64)
+endif
 
 payloads/external/iPXE/ipxe/ipxe.rom ipxe: $(DOTCONFIG) $(IPXE_CONFIG_SCRIPT)
 	$(MAKE) -C payloads/external/iPXE all \
-	CROSS_COMPILE="$(CROSS_COMPILE_$(ARCH-ramstage-y))" \
+	CROSS_COMPILE=$(IPXE_CROSS_COMPILE) \
 	PXE_ROM_PCI_ID=$(PXE_ROM_PCI_ID) \
 	CONFIG_IPXE_MASTER=$(CONFIG_IPXE_MASTER) \
 	CONFIG_IPXE_STABLE=$(CONFIG_IPXE_STABLE) \
@@ -384,7 +395,9 @@ payloads/external/iPXE/ipxe/ipxe.rom ipxe: $(DOTCONFIG) $(IPXE_CONFIG_SCRIPT)
 	CONFIG_HAS_SCRIPT=$(CONFIG_IPXE_ADD_SCRIPT) \
 	CONFIG_IPXE_NO_PROMPT=$(CONFIG_IPXE_NO_PROMPT) \
 	CONFIG_IPXE_HAS_HTTPS=$(CONFIG_IPXE_HAS_HTTPS) \
-	CONFIG_IPXE_TRUST_CMD=$(CONFIG_IPXE_TRUST_CMD)
+	CONFIG_IPXE_TRUST_CMD=$(CONFIG_IPXE_TRUST_CMD) \
+	CFLAGS_x86_64="$(CFLAGS_x86_64)" \
+	CONFIG_IPXE_BUILD_EFI=$(CONFIG_EDK2_ENABLE_IPXE) \
 
 # LinuxBoot
 LINUXBOOT_CROSS_COMPILE_ARCH-$(CONFIG_LINUXBOOT_X86)        = x86_32

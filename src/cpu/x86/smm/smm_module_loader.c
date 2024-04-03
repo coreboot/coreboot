@@ -10,7 +10,6 @@
 #include <device/device.h>
 #include <device/mmio.h>
 #include <rmodule.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <types.h>

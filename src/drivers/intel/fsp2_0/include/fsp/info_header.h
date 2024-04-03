@@ -12,7 +12,6 @@
 #define FSP_HDR_ATTRIB_FSPS		3
 #define FSP_IMAGE_ID_LENGTH		8
 
-#if CONFIG(PLATFORM_USES_FSP2_X86_32)
 struct fsp_header {
 	uint32_t  signature; //FSPH
 	uint32_t  header_length;
@@ -40,9 +39,6 @@ struct fsp_header {
 	uint32_t  fsp_multi_phase_mem_init_entry_offset;
 	uint32_t  res5;
 }  __packed;
-#else
-#error You need to implement this struct for x86_64 FSP
-#endif
 
 
 enum cb_err fsp_identify(struct fsp_header *hdr, const void *fsp_blob);

@@ -34,7 +34,7 @@ void __weak platform_fsp_memory_multi_phase_init_cb(uint32_t phase_index)
 	/* Leave for the SoC/Mainboard to implement if necessary. */
 }
 
-static uint8_t temp_ram[CONFIG_FSP_TEMP_RAM_SIZE] __aligned(sizeof(uint64_t));
+static uint8_t temp_ram[CONFIG_FSP_TEMP_RAM_SIZE] __aligned(16);
 
 /*
  * Helper function to store the MRC cache version into CBMEM

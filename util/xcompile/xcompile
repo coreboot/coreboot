@@ -256,6 +256,11 @@ detect_special_flags() {
 		testld "$GCC" "$FLAGS_GCC" "${GCCPREFIX}ld${LINKER_SUFFIX}" \
 		  "$LDFLAGS --fix-cortex-a53-843419" && \
 		  LDFLAGS_ARM64_A53_ERRATUM_843419+=" --fix-cortex-a53-843419"
+		  # https://bugs.llvm.org/show_bug.cgi?id=30792
+		  # LLVM/clang runs into problems when encountering SIMD registers in assembly
+		  # with -mgeneral-regs-only. -mno-implicit-float achieves the same though.
+		  CFLAGS_GCC="$CFLAGS_GCC -mgeneral-regs-only" &&
+		  CFLAGS_CLANG="$CFLAGS_CLANG -mno-implicit-float"
 		;;
 	riscv)
 		testcc "$GCC" "$FLAGS_GCC -march=rv64iadc_zicsr_zifencei" &&

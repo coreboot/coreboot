@@ -60,7 +60,7 @@ ARCHDIR-riscv	:= riscv
 ARCHDIR-ppc64	:= ppc64
 
 CFLAGS_arm	+=
-CFLAGS_arm64	+= -mgeneral-regs-only
+CFLAGS_arm64	+=
 CFLAGS_riscv	+=
 CFLAGS_x86_32	+=
 CFLAGS_x86_64	+= -mcmodel=large -mno-red-zone

@@ -75,13 +75,6 @@ config FSP_M_RC_HEAP_SIZE
 	  allocated at 0xfe800000 (the CAR base) and consumes about 0x150000
 	  bytes of memory.
 
-config CPU_MICROCODE_CBFS_LOC
-	hex
-	default 0xffe0fdc0
-
-config CPU_MICROCODE_CBFS_LEN
-	hex
-	default 0x8c00
 
 config STACK_SIZE
 	hex

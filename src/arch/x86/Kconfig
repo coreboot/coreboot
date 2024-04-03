@@ -5,7 +5,6 @@ config ARCH_X86
 	select PCI
 	select RELOCATABLE_MODULES
 	select HAVE_ASAN_IN_RAMSTAGE
-	select ARCH_SUPPORTS_CLANG
 
 if ARCH_X86
 

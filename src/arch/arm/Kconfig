@@ -2,6 +2,7 @@
 
 config ARCH_ARM
 	bool
+	select CLANG_UNSUPPORTED
 
 config ARCH_BOOTBLOCK_ARM
 	bool

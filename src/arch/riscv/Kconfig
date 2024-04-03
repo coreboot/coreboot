@@ -10,7 +10,6 @@ config ARCH_RISCV_RV32
 
 config ARCH_RISCV
 	bool
-	select ARCH_SUPPORTS_CLANG
 
 if ARCH_RISCV
 

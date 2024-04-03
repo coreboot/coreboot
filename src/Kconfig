@@ -74,7 +74,7 @@ config COMPILER_GCC
 
 config COMPILER_LLVM_CLANG
 	bool "LLVM/clang"
-	depends on ALLOW_EXPERIMENTAL_CLANG || ARCH_SUPPORTS_CLANG
+	depends on ALLOW_EXPERIMENTAL_CLANG || !CLANG_UNSUPPORTED
 	help
 	  Use LLVM/clang to build coreboot.  To use this, you must build the
 	  coreboot version of the clang compiler.  Run the command
@@ -85,15 +85,15 @@ config COMPILER_LLVM_CLANG
 
 endchoice
 
-config ARCH_SUPPORTS_CLANG
+config CLANG_UNSUPPORTED
 	bool
 	help
-	  Opt-in flag for architectures that generally work well with CLANG.
-	  By default the option would be hidden.
+	  Set this flag on platforms that do not support building with the
+	  clang compiler.
 
 config ALLOW_EXPERIMENTAL_CLANG
 	bool "Allow experimental LLVM/Clang"
-	depends on !ARCH_SUPPORTS_CLANG
+	depends on CLANG_UNSUPPORTED
 	help
 	  On some architectures CLANG does not work that well.
 	  Use this only to try to get CLANG working.

@@ -37,6 +37,9 @@ enum pcie_clk_src_flags {
 	PCIE_CLK_LAN = (1 << 1),
 };
 
+/* coreboot enums are off-by-1 to allow for no config in devicetree */
+#define UPD_INDEX(upd)	(upd - 1)
+
 /* This enum is for passing into an FSP UPD, typically PcieRpL1Substates */
 enum L1_substates_control {
 	L1_SS_FSP_DEFAULT,

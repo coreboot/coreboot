@@ -465,44 +465,97 @@ static const SI_PCH_DEVICE_INTERRUPT_CONFIG *pci_irq_to_fsp(size_t *out_count)
 }
 
 /*
- * Chip config parameter PcieRpL1Substates uses (UPD value + 1)
- * because UPD value of 0 for PcieRpL1Substates means disabled for FSP.
- * In order to ensure that mainboard setting does not disable L1 substates
- * incorrectly, chip config parameter values are offset by 1 with 0 meaning
- * use FSP UPD default. get_l1_substate_control() ensures that the right UPD
- * value is set in fsp_params.
- * 0: Use FSP UPD default
- * 1: Disable L1 substates
- * 2: Use L1.1
- * 3: Use L1.2 (FSP UPD default)
+ * The PCIe RP ASPM and PCIe L1 Substate UPDs follow the PCI Express Base
+ * Specification 1.1. The UPDs and their default values are consistent
+ * from Skylake through Meteor Lake. However, the default for CPU ports
+ * differs from PCH ports. Use auto and maximum unless overwritten
+ * to make the behaviour consistent.
+ *
+ * +-------------------+--------------------------+-----------+-----------+
+ * | Setting           | Option                   | PCH Ports | CPU Ports |
+ * |-------------------|--------------------------|-----------|-----------|
+ * | PcieRpEnableCpm   | Disabled                 | [Default] | [Default] |
+ * |                   | Enabled                  |           |           |
+ * |-------------------|--------------------------|-----------|-----------|
+ * | PcieRpAspm        | PchPcieAspmDisabled      |           |           |
+ * |                   | PchPcieAspmL0s           |           |           |
+ * |                   | PchPcieAspmL1            |           |           |
+ * |                   | PchPcieAspmL0sL1         |           | [Default] |
+ * |                   | PchPcieAspmAutoConfig    | [Default] |           |
+ * |                   | PchPcieAspmMax           |           |           |
+ * |-------------------|--------------------------|-----------|-----------|
+ * | PcieRpL1Substates | Disabled                 |           |           |
+ * |                   | PchPcieL1SubstatesL1_1   |           |           |
+ * |                   | PchPcieL1SubstatesL1_1_2 |           | [Default] |
+ * |                   | PchPcieL1SubstatesMax    | [Default] |           |
+ * +-------------------+--------------------------+-----------+-----------+
  */
-static int get_l1_substate_control(enum L1_substates_control ctl)
+
+static unsigned int adl_aspm_control_to_upd(enum ASPM_control aspm_control)
 {
+	/* Disable without Kconfig selected */
+	if (!CONFIG(PCIEXP_ASPM))
+		return UPD_INDEX(ASPM_DISABLE);
+
+	/* Use auto unless overwritten */
+	if (!aspm_control)
+		return UPD_INDEX(ASPM_AUTO);
+
+	return UPD_INDEX(aspm_control);
+}
+
+static unsigned int adl_l1ss_control_to_upd(enum L1_substates_control l1_substates_control)
+{
+	/* Disable without Kconfig selected */
+	if (!CONFIG(PCIEXP_ASPM))
+		return UPD_INDEX(L1_SS_DISABLED);
+
+	/* Don't enable UPD if Kconfig not set */
+	if (!CONFIG(PCIEXP_L1_SUB_STATE))
+		return UPD_INDEX(L1_SS_DISABLED);
+
+	/* L1 Substate should be disabled in compliance mode */
 	if (CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE))
-		ctl = L1_SS_DISABLED;
-	else if ((ctl > L1_SS_L1_2) || (ctl == L1_SS_FSP_DEFAULT))
-		ctl = L1_SS_L1_2;
-	return ctl - 1;
+		return UPD_INDEX(L1_SS_DISABLED);
+
+	/* Use maximum unless overwritten */
+	if (!l1_substates_control)
+		return UPD_INDEX(L1_SS_L1_2);
+
+	return UPD_INDEX(l1_substates_control);
+}
+
+static void configure_pch_rp_power_management(FSP_S_CONFIG *s_cfg,
+					      const struct pcie_rp_config *rp_cfg,
+					      unsigned int index)
+{
+	s_cfg->PcieRpEnableCpm[index] = CONFIG(PCIEXP_CLK_PM);
+	s_cfg->PcieRpAspm[index] = adl_aspm_control_to_upd(rp_cfg->pcie_rp_aspm);
+	s_cfg->PcieRpL1Substates[index] = adl_l1ss_control_to_upd(rp_cfg->PcieRpL1Substates);
 }
 
 /*
- * Chip config parameter pcie_rp_aspm uses (UPD value + 1) because
- * a UPD value of 0 for pcie_rp_aspm means disabled. In order to ensure
- * that the mainboard setting does not disable ASPM incorrectly, chip
- * config parameter values are offset by 1 with 0 meaning use FSP UPD default.
- * get_aspm_control() ensures that the right UPD value is set in fsp_params.
- * 0: Use FSP UPD default
- * 1: Disable ASPM
- * 2: L0s only
- * 3: L1 only
- * 4: L0s and L1
- * 5: Auto configuration
+ * Starting with Alder Lake, UPDs for Clock Power Management were
+ * introduced for the CPU root ports.
+ *
+ * CpuPcieClockGating:
+ *	Disabled
+ *	Enabled		[Default]
+ *
+ * CpuPciePowerGating
+ *	Disabled
+ *	Enabled		[Default]
+ *
  */
-static unsigned int get_aspm_control(enum ASPM_control ctl)
+static void configure_cpu_rp_power_management(FSP_S_CONFIG *s_cfg,
+					      const struct pcie_rp_config *rp_cfg,
+					      unsigned int index)
 {
-	if ((ctl > ASPM_AUTO) || (ctl == ASPM_DEFAULT))
-		ctl = ASPM_AUTO;
-	return ctl - 1;
+	s_cfg->CpuPcieRpEnableCpm[index] = CONFIG(PCIEXP_CLK_PM);
+	s_cfg->CpuPcieClockGating[index] = CONFIG(PCIEXP_CLK_PM);
+	s_cfg->CpuPciePowerGating[index] = CONFIG(PCIEXP_CLK_PM);
+	s_cfg->CpuPcieRpAspm[index] = adl_aspm_control_to_upd(rp_cfg->pcie_rp_aspm);
+	s_cfg->CpuPcieRpL1Substates[index] = adl_l1ss_control_to_upd(rp_cfg->PcieRpL1Substates);
 }
 
 /* This function returns the VccIn Aux Imon IccMax values for ADL and RPL
@@ -912,19 +965,16 @@ static void fill_fsps_pcie_params(FSP_S_CONFIG *s_cfg,
 		if (!(enable_mask & BIT(i)))
 			continue;
 		const struct pcie_rp_config *rp_cfg = &config->pch_pcie_rp[i];
-		s_cfg->PcieRpL1Substates[i] =
-				get_l1_substate_control(rp_cfg->PcieRpL1Substates);
 		s_cfg->PcieRpLtrEnable[i] = !!(rp_cfg->flags & PCIE_RP_LTR);
 		s_cfg->PcieRpAdvancedErrorReporting[i] = !!(rp_cfg->flags & PCIE_RP_AER);
 		s_cfg->PcieRpHotPlug[i] = !!(rp_cfg->flags & PCIE_RP_HOTPLUG)
 				|| CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE);
 		s_cfg->PcieRpClkReqDetect[i] = !!(rp_cfg->flags & PCIE_RP_CLK_REQ_DETECT);
-		if (rp_cfg->pcie_rp_aspm)
-			s_cfg->PcieRpAspm[i] = get_aspm_control(rp_cfg->pcie_rp_aspm);
 		/* PcieRpSlotImplemented default to 1 (slot implemented) in FSP; 0: built-in */
 		if (!!(rp_cfg->flags & PCIE_RP_BUILT_IN))
 			s_cfg->PcieRpSlotImplemented[i] = 0;
 		s_cfg->PcieRpDetectTimeoutMs[i] = rp_cfg->pcie_rp_detect_timeout_ms;
+		configure_pch_rp_power_management(s_cfg, rp_cfg, i);
 	}
 	s_cfg->PcieComplianceTestMode = CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE);
 
@@ -976,19 +1026,16 @@ static void fill_fsps_cpu_pcie_params(FSP_S_CONFIG *s_cfg,
 			continue;
 
 		const struct pcie_rp_config *rp_cfg = &config->cpu_pcie_rp[i];
-		s_cfg->CpuPcieRpL1Substates[i] =
-			get_l1_substate_control(rp_cfg->PcieRpL1Substates);
 		s_cfg->CpuPcieRpLtrEnable[i] = !!(rp_cfg->flags & PCIE_RP_LTR);
 		s_cfg->CpuPcieRpAdvancedErrorReporting[i] = !!(rp_cfg->flags & PCIE_RP_AER);
 		s_cfg->CpuPcieRpHotPlug[i] = !!(rp_cfg->flags & PCIE_RP_HOTPLUG)
 				|| CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE);
 		s_cfg->CpuPcieRpDetectTimeoutMs[i] = rp_cfg->pcie_rp_detect_timeout_ms;
 		s_cfg->PtmEnabled[i] = 0;
-		if (rp_cfg->pcie_rp_aspm)
-			s_cfg->CpuPcieRpAspm[i] = get_aspm_control(rp_cfg->pcie_rp_aspm);
 
 		if (!!(rp_cfg->flags & PCIE_RP_BUILT_IN))
 			s_cfg->CpuPcieRpSlotImplemented[i] = 0;
+		configure_cpu_rp_power_management(s_cfg, rp_cfg, i);
 	}
 	s_cfg->CpuPcieComplianceTestMode = CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE);
 }

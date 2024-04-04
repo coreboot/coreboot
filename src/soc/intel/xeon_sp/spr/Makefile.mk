@@ -19,4 +19,7 @@ ramstage-$(CONFIG_DISPLAY_HOBS) += hob_display.c
 ramstage-$(CONFIG_DISPLAY_UPD_DATA) += upd_display.c
 CPPFLAGS_common += -I$(src)/soc/intel/xeon_sp/spr/include -I$(src)/soc/intel/xeon_sp/spr
 
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-8f-08
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-cf-02
+
 endif ## CONFIG_SOC_INTEL_SAPPHIRERAPIDS_SP

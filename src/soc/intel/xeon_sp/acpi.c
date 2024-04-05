@@ -90,45 +90,6 @@ const acpi_cstate_t *soc_get_cstate_map(size_t *entries)
 	return map;
 }
 
-#if CONFIG(XEON_SP_HAVE_IIO_IOAPIC)
-static uintptr_t xeonsp_ioapic_bases[CONFIG(XEON_SP_HAVE_IIO_IOAPIC) * 8 + 1];
-
-size_t soc_get_ioapic_info(const uintptr_t *ioapic_bases[])
-{
-	int index = 0;
-	const IIO_UDS *hob = get_iio_uds();
-
-	*ioapic_bases = xeonsp_ioapic_bases;
-
-	for (int socket = 0; socket < CONFIG_MAX_SOCKET; socket++) {
-		if (!soc_cpu_is_enabled(socket))
-			continue;
-		for (int stack = 0; stack < MAX_IIO_STACK; ++stack) {
-			const STACK_RES *ri =
-				&hob->PlatformData.IIO_resource[socket].StackRes[stack];
-			uint32_t ioapic_base = ri->IoApicBase;
-			if (ioapic_base == 0 || ioapic_base == 0xFFFFFFFF)
-				continue;
-			assert(index < ARRAY_SIZE(xeonsp_ioapic_bases));
-			xeonsp_ioapic_bases[index++] = ioapic_base;
-			if (!CONFIG(XEON_SP_HAVE_IIO_IOAPIC))
-				return index;
-			/*
-			 * Stack 0 has non-PCH IOAPIC and PCH IOAPIC.
-			 * The IIO IOAPIC is placed at 0x1000 from the reported base.
-			 */
-			if (socket == 0 && stack == 0) {
-				ioapic_base += 0x1000;
-				assert(index < ARRAY_SIZE(xeonsp_ioapic_bases));
-				xeonsp_ioapic_bases[index++] = ioapic_base;
-			}
-		}
-	}
-
-	return index;
-}
-#endif
-
 void iio_domain_set_acpi_name(struct device *dev, const char *prefix)
 {
 	const union xeon_domain_path dn = {

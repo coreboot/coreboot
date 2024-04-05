@@ -492,6 +492,8 @@ static void *new_psp_dir(context *ctx, int multi, uint32_t cookie)
 	((psp_directory_header *)ptr)->num_entries = 0;
 	((psp_directory_header *)ptr)->additional_info = 0;
 	((psp_directory_header *)ptr)->additional_info_fields.address_mode = ctx->address_mode;
+	((psp_directory_header *)ptr)->additional_info_fields.spi_block_size = 1;
+	((psp_directory_header *)ptr)->additional_info_fields.base_addr = 0;
 	adjust_current_pointer(ctx,
 		sizeof(psp_directory_header) + MAX_PSP_ENTRIES * sizeof(psp_directory_entry),
 		1);
@@ -515,6 +517,11 @@ static void *new_combo_dir(context *ctx, uint32_t cookie)
 	adjust_current_pointer(ctx, 0, TABLE_ALIGNMENT);
 	ptr = BUFF_CURRENT(*ctx);
 	((psp_combo_header *)ptr)->cookie = cookie;
+	/* lookup mode is hardcoded for now. */
+	((psp_combo_header *)ptr)->lookup = 1;
+	((psp_combo_header *)ptr)->reserved[0] = 0;
+	((psp_combo_header *)ptr)->reserved[1] = 0;
+
 	adjust_current_pointer(ctx,
 		sizeof(psp_combo_header) + MAX_COMBO_ENTRIES * sizeof(psp_combo_entry),
 		1);
@@ -541,11 +548,7 @@ static void fill_dir_header(void *directory, uint32_t count, context *ctx)
 	switch (cookie) {
 	case PSP2_COOKIE:
 	case BHD2_COOKIE:
-		/* lookup mode is hardcoded for now. */
-		cdir->header.lookup = 1;
 		cdir->header.num_entries = count;
-		cdir->header.reserved[0] = 0;
-		cdir->header.reserved[1] = 0;
 		/* checksum everything that comes after the Checksum field */
 		cdir->header.checksum = fletcher32(&cdir->header.num_entries,
 					count * sizeof(psp_combo_entry)
@@ -569,8 +572,6 @@ static void fill_dir_header(void *directory, uint32_t count, context *ctx)
 					table_size / TABLE_ALIGNMENT;
 		}
 		dir->header.num_entries = count;
-		dir->header.additional_info_fields.spi_block_size = 1;
-		dir->header.additional_info_fields.base_addr = 0;
 		/* checksum everything that comes after the Checksum field */
 		dir->header.checksum = fletcher32(&dir->header.num_entries,
 					count * sizeof(psp_directory_entry)
@@ -591,8 +592,6 @@ static void fill_dir_header(void *directory, uint32_t count, context *ctx)
 				table_size / TABLE_ALIGNMENT;
 		}
 		bdir->header.num_entries = count;
-		bdir->header.additional_info_fields.spi_block_size = 1;
-		bdir->header.additional_info_fields.base_addr = 0;
 		/* checksum everything that comes after the Checksum field */
 		bdir->header.checksum = fletcher32(&bdir->header.num_entries,
 					count * sizeof(bios_directory_entry)
@@ -600,7 +599,6 @@ static void fill_dir_header(void *directory, uint32_t count, context *ctx)
 					+ sizeof(bdir->header.additional_info));
 		break;
 	}
-
 }
 
 static void fill_psp_directory_to_efs(embedded_firmware *amd_romsig, void *pspdir,
@@ -1132,6 +1130,8 @@ static void *new_bios_dir(context *ctx, bool multi, uint32_t cookie)
 	((bios_directory_hdr *) ptr)->cookie = cookie;
 	((bios_directory_hdr *) ptr)->additional_info = 0;
 	((bios_directory_hdr *) ptr)->additional_info_fields.address_mode = ctx->address_mode;
+	((bios_directory_hdr *) ptr)->additional_info_fields.spi_block_size = 1;
+	((bios_directory_hdr *) ptr)->additional_info_fields.base_addr = 0;
 	adjust_current_pointer(ctx,
 		sizeof(bios_directory_hdr) + MAX_BIOS_ENTRIES * sizeof(bios_directory_entry),
 		1);

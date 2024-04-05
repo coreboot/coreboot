@@ -884,16 +884,6 @@ L:	amd_coreboot_org_changes@googlegroups.com
 S:	Odd Fixes
 F:	src/soc/amd/stoneyridge/
 
-INTEL METEORLAKE SOC
-M:	Subrata Banik <subratabanik@google.com>
-M:	Tarun Tuli <tstuli@gmail.com>
-M:	Kapil Porwal <kapilporwal@google.com>
-M:	Jakub Czapiga <czapiga@google.com>
-M:	Eran Mitrani <mitrani@google.com>
-M:	Dinesh Gehlot <digehlot@google.com>
-S:	Maintained
-F:	src/soc/intel/meteorlake/
-
 INTEL ALDERLAKE SOC
 M:	Subrata Banik <subratabanik@google.com>
 M:	Nick Vaccaro <nvaccaro@chromium.org>
@@ -930,6 +920,16 @@ M:	Lean Sheng Tan <sheng.tan@9elements.com>
 M:	Werner Zeh <werner.zeh@siemens.com>
 S:	Maintained
 F:	src/soc/intel/elkhartlake/
+
+INTEL METEORLAKE SOC
+M:	Subrata Banik <subratabanik@google.com>
+M:	Tarun Tuli <tstuli@gmail.com>
+M:	Kapil Porwal <kapilporwal@google.com>
+M:	Jakub Czapiga <czapiga@google.com>
+M:	Eran Mitrani <mitrani@google.com>
+M:	Dinesh Gehlot <digehlot@google.com>
+S:	Maintained
+F:	src/soc/intel/meteorlake/
 
 INTEL TIGERLAKE SOC
 M:	Subrata Banik <subratabanik@google.com>

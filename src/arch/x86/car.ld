@@ -72,6 +72,8 @@
 	/* Allow global uninitialized variables for stages without CAR teardown. */
 	*(.bss)
 	*(.bss.*)
+	*(.lbss)
+	*(.lbss.*)
 	*(.sbss)
 	*(.sbss.*)
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
@@ -97,6 +99,8 @@ _bogus = ASSERT(_etext == ALIGN(_etext, ARCH_POINTER_ALIGN_SIZE), "Cache-As-RAM 
 	_data = .;
 	*(.data);
 	*(.data.*);
+	*(.ldata);
+	*(.ldata.*);
 	*(.sdata);
 	*(.sdata.*);
 	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);

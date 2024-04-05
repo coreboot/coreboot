@@ -12,7 +12,10 @@ entries
 400	8	r	0	century
 
 412	4	e	6	debug_level
-904	80	h	0	ramtop
+
+# CMOS_VSTART_ramtop
+800	80	r	0	ramtop
+
 984	16	h	0	check_sum
 
 enumerations
@@ -32,4 +35,4 @@ enumerations
 
 checksums
 
-checksum 408 983 984
+checksum 408 799 984

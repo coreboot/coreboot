@@ -23,26 +23,19 @@ included first.
  
  /* glibc versions earlier than 2.7 do not define the routines to handle
     dynamically allocated CPU sets. For these targets, we use the static
---- gcc-13.2.0/gcc/ada/argv.c
-+++ gcc-13.2.0.musl/gcc/ada/argv.c
-@@ -42,6 +42,8 @@
-    main program, and these routines are accessed from the
-    Ada.Command_Line.Environment package.  */
- 
-+#include "adaint.h"
-+
- #ifdef IN_RTS
- #include "runtime.h"
- #include <stdlib.h>
-@@ -50,8 +52,6 @@
- #include "config.h"
+--- gcc-14-20240211/gcc/ada/argv.c
++++ gcc-14-20240211.musl/gcc/ada/argv.c
+@@ -51,10 +51,6 @@
  #include "system.h"
  #endif
--
--#include "adaint.h"
  
+-#ifndef LIGHT_RUNTIME
+-#include "adaint.h"
+-#endif
+-
  #ifdef __cplusplus
  extern "C" {
+ #endif
 --- gcc-13.2.0/gcc/ada/cio.c
 +++ gcc-13.2.0.musl/gcc/ada/cio.c
 @@ -29,6 +29,8 @@

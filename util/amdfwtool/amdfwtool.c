@@ -1471,6 +1471,20 @@ static void integrate_bios_firmwares(context *ctx,
 	ctx->current_table = current_table_save;
 }
 
+static void add_combo_entry(void *combo_dir, void *dir, uint32_t combo_index,
+			context *ctx, amd_cb_config *cb_config)
+{
+	psp_combo_directory *cdir = combo_dir;
+	assert_fw_entry(combo_index, MAX_COMBO_ENTRIES, ctx);
+	/* 0 -Compare PSP ID, 1 -Compare chip family ID */
+	cdir->entries[combo_index].id_sel = 0;
+	cdir->entries[combo_index].id = get_psp_id(cb_config->soc_id);
+	cdir->entries[combo_index].lvl2_addr =
+		BUFF_TO_RUN_MODE(*ctx, dir, AMD_ADDR_REL_BIOS);
+
+	fill_dir_header(combo_dir, combo_index + 1, ctx);
+}
+
 static int set_efs_table(uint8_t soc_id, amd_cb_config *cb_config,
 			 embedded_firmware *amd_romsig)
 {
@@ -1761,14 +1775,7 @@ int main(int argc, char **argv)
 			fill_psp_directory_to_efs(ctx.amd_romsig_ptr, ctx.pspdir, &ctx, &cb_config);
 		} else if (cb_config.use_combo && !cb_config.combo_new_rab) {
 			fill_psp_directory_to_efs(ctx.amd_romsig_ptr, ctx.psp_combo_dir, &ctx, &cb_config);
-			/* 0 -Compare PSP ID, 1 -Compare chip family ID */
-			assert_fw_entry(combo_index, MAX_COMBO_ENTRIES, &ctx);
-			ctx.psp_combo_dir->entries[combo_index].id_sel = 0;
-			ctx.psp_combo_dir->entries[combo_index].id = get_psp_id(cb_config.soc_id);
-			ctx.psp_combo_dir->entries[combo_index].lvl2_addr =
-				BUFF_TO_RUN_MODE(ctx, ctx.pspdir, AMD_ADDR_REL_BIOS);
-
-			fill_dir_header(ctx.psp_combo_dir, combo_index + 1, &ctx);
+			add_combo_entry(ctx.psp_combo_dir, ctx.pspdir, combo_index, &ctx, &cb_config);
 		}
 
 		if (have_bios_tables(amd_bios_table)) {
@@ -1801,14 +1808,7 @@ int main(int argc, char **argv)
 				 */
 				fill_bios_directory_to_efs(ctx.amd_romsig_ptr, ctx.bhd_combo_dir,
 					&ctx, &cb_config);
-				assert_fw_entry(combo_index, MAX_COMBO_ENTRIES, &ctx);
-				ctx.bhd_combo_dir->entries[combo_index].id_sel = 0;
-				ctx.bhd_combo_dir->entries[combo_index].id =
-					get_psp_id(cb_config.soc_id);
-				ctx.bhd_combo_dir->entries[combo_index].lvl2_addr =
-					BUFF_TO_RUN_MODE(ctx, ctx.biosdir, AMD_ADDR_REL_BIOS);
-
-				fill_dir_header(ctx.bhd_combo_dir, combo_index + 1, &ctx);
+				add_combo_entry(ctx.bhd_combo_dir, ctx.biosdir, combo_index, &ctx, &cb_config);
 			}
 		}
 		if (cb_config.debug)

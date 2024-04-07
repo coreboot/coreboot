@@ -3,6 +3,7 @@
 #ifndef MTK_COMMON_I2C_H
 #define MTK_COMMON_I2C_H
 
+#include <commonlib/bsd/helpers.h>
 #include <device/i2c.h>
 
 /* I2C DMA Registers */

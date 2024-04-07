@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/console.h>
 #include <delay.h>
 #include <gpio.h>
 #include <soc/regulator.h>

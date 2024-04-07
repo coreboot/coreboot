@@ -31,7 +31,7 @@ static struct panel_description wugtrio_panels[] = {
 		.power_on = mipi_panel_power_on,
 		.name = "KD_KD101NE3_40TI",
 		.disp_path = DISP_PATH_MIPI,
-		.orientation = LB_FB_ORIENTATION_LEFT_UP,
+		.orientation = LB_FB_ORIENTATION_RIGHT_UP,
 	},
 };
 

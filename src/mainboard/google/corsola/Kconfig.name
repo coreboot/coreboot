@@ -31,6 +31,9 @@ config BOARD_GOOGLE_MAGIKARP
 config BOARD_GOOGLE_CHINCHOU
 	bool "->  Chinchou"
 
+config BOARD_GOOGLE_SKITTY
+	bool "->  Skitty"
+
 comment "Staryu"
 
 config BOARD_GOOGLE_STARMIE

@@ -10,6 +10,7 @@ void setup_chromeos_gpios(void)
 {
 	gpio_input(GPIO_EC_AP_INT_ODL);
 	gpio_input(GPIO_GSC_AP_INT_ODL);
+	gpio_input(GPIO_SD_CD_AP_ODL);
 	gpio_output(GPIO_AP_EC_WARM_RST_REQ, 0);
 	gpio_output(GPIO_AP_FP_FW_UP_STRAP, 0);
 	gpio_output(GPIO_BEEP_ON_OD, 0);
@@ -29,6 +30,13 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{ GPIO_GSC_AP_INT_ODL.id, ACTIVE_HIGH, -1, "TPM interrupt" },
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
+
+	if (CONFIG(RAURU_SDCARD_INIT)) {
+		struct lb_gpio sd_card_gpios[] = {
+			{ GPIO_SD_CD_AP_ODL.id, ACTIVE_LOW, -1, "SD card detect" },
+		};
+		lb_add_gpios(gpios, sd_card_gpios, ARRAY_SIZE(sd_card_gpios));
+	}
 }
 
 int cr50_plat_irq_status(void)

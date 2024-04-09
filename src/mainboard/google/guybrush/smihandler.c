@@ -5,7 +5,6 @@
 #include <cpu/x86/smm.h>
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/smm.h>
-#include <elog.h>
 #include <variant/ec.h>
 
 void mainboard_smi_gpi(u32 gpi_sts)

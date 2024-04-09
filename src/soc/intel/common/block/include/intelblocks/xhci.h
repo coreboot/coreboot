@@ -26,7 +26,6 @@
 #if !defined(__ACPI__)
 #include <device/device.h>
 #include <device/xhci.h>
-#include <elog.h>
 #include <stdint.h>
 
 /*

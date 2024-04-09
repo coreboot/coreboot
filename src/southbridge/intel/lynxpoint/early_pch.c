@@ -6,7 +6,7 @@
 #include <device/pci_def.h>
 #include <device/smbus_host.h>
 #include <southbridge/intel/common/pmbase.h>
-#include <elog.h>
+
 #include "pch.h"
 #include "chip.h"
 

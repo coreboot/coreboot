@@ -115,7 +115,7 @@ static const struct pad_config gpio_table[] = {
 	/* b/316421831: GPP_B16/17 need to be enabled when ISH is enabled later on */
 	/* GPP_B16 : [NF2: I2C5_SDA NF4: ISH_I2C2_SDA NF6: USB_C_GPP_B16] ==> ISH_I2C_EC_SDA (NC) */
 	PAD_NC(GPP_B16, NONE),
-	/* GPP_B17 : [NF2: I2C5_SCL NF4: ISH_I2C2_SCL NF6: USB_C_GPP_B17] ==> NOTE_BOOK_MODE (NC initially) */
+	/* GPP_B17 : [NF2: I2C5_SCL NF4: ISH_I2C2_SCL NF6: USB_C_GPP_B17] ==> ISH_I2C_EC_SCL (NC) */
 	PAD_NC(GPP_B17, NONE),
 	/* GPP_B18 : GPP_B18 ==> GPP_B18_STRAP */
 	PAD_NC(GPP_B18, NONE),
@@ -198,7 +198,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E7, NONE),
 	/* GPP_E8 : GPP_E8 ==> PCH_WP_OD */
 	PAD_CFG_GPI_LOCK(GPP_E8, NONE, LOCK_CONFIG),
-	/* GPP_E9 : [NF1: USB_OC0# NF2: ISH_GP4 NF6: USB_C_GPP_E9] ==> SOC_GPP_E9 (NC) */
+	/* GPP_E9 : [NF1: USB_OC0# NF2: ISH_GP4 NF6: USB_C_GPP_E9] ==> NOTE_BOOK_MODE */
 	PAD_NC(GPP_E9, NONE),
 	/* GPP_E10 : THC0_SPI1_CS_L/GSPI0_CS0_L ==> MEM_STRAP_3 */
 	PAD_CFG_GPI(GPP_E10, NONE, PLTRST),

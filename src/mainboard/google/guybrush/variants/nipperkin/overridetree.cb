@@ -351,7 +351,7 @@ chip soc/amd/cezanne
 			register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPIO_11)"
 			register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_3)"
 			register "enable_delay_ms" = "3"
-			device generic 0 alias fpmcu on
+			device generic 0 alias fpmcu hidden
 				probe FP FP_PRESENT
 			end
 		end

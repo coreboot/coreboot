@@ -2,7 +2,6 @@
 
 #include <bl_uapp/bl_syscall_public.h>
 #include <console/console.h>
-#include <post.h>
 
 void arch_post_code(u8 value)
 {

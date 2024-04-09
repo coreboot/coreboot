@@ -5,7 +5,6 @@
 #include <console/console.h>
 #include <device/pci.h>
 #include <intelblocks/acpi.h>
-#include <post.h>
 #include <soc/acpi.h>
 #include <soc/chip_common.h>
 #include <soc/soc_util.h>

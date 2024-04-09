@@ -8,7 +8,6 @@
 #include <device/pci_def.h>
 #include <soc/pci_devs.h>
 #include <intelblocks/acpi.h>
-#include <post.h>
 #include <soc/acpi.h>
 #include <soc/chip_common.h>
 #include <soc/soc_util.h>

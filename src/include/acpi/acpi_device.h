@@ -313,6 +313,9 @@ struct acpi_i2c {
 /* Write I2cSerialBus() descriptor to SSDT AML output */
 void acpi_device_write_i2c(const struct acpi_i2c *i2c);
 
+/* Write GPIO descriptor of DSD property */
+int acpi_device_write_dsd_gpio(struct acpi_gpio *gpio, int *curr_index);
+
 /*
  * ACPI SPI Bus
  */

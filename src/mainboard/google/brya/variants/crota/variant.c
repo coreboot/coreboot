@@ -7,7 +7,6 @@
 #include <acpi/acpi.h>
 #include <acpi/acpigen.h>
 #include <drivers/vpd/vpd.h>
-#include <stdio.h>
 
 const char *get_wifi_sar_cbfs_filename(void)
 {

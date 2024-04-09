@@ -22,7 +22,6 @@
 #include <security/vboot/vboot_common.h>
 #include <arch/stages.h>
 #include <stdarg.h>
-#include <stdio.h>
 #include <timestamp.h>
 
 extern char _bss_start, _bss_end;

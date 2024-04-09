@@ -11,6 +11,14 @@ project_name=iPXE
 project_dir=ipxe
 project_git_repo=https://git.ipxe.org/ipxe.git
 
+ifeq ($(CONFIG_IPXE_BUILD_EFI),y)
+IPXE_BUILD_TARGET := bin-x86_64-efi-sb/ipxe.efi
+# Workaround problems with unrecognized ipxe/util/elf2efi relocations
+PXE_MAKE_OPTS += EXTRA_CFLAGS="$(CFLAGS_x86_64) -fno-pic"
+else
+IPXE_BUILD_TARGET := bin/$(PXE_ROM_PCI_ID).rom
+endif
+
 all: build
 
 $(project_dir):
@@ -59,12 +67,12 @@ endif
 build: config $(CONFIG_SCRIPT)
 ifeq ($(CONFIG_HAS_SCRIPT),y)
 	echo "    MAKE       $(project_name) $(TAG-y) EMBED=$(CONFIG_SCRIPT)"
-	$(MAKE) -C $(project_dir)/src bin/$(PXE_ROM_PCI_ID).rom EMBED=$(CONFIG_SCRIPT)
+	$(MAKE) -C $(project_dir)/src $(IPXE_BUILD_TARGET) EMBED=$(CONFIG_SCRIPT) $(PXE_MAKE_OPTS)
 else
 	echo "    MAKE       $(project_name) $(TAG-y)"
-	$(MAKE) -C $(project_dir)/src bin/$(PXE_ROM_PCI_ID).rom
+	$(MAKE) -C $(project_dir)/src $(IPXE_BUILD_TARGET) $(PXE_MAKE_OPTS)
 endif
-	cp $(project_dir)/src/bin/$(PXE_ROM_PCI_ID).rom $(project_dir)/ipxe.rom
+	cp $(project_dir)/src/$(IPXE_BUILD_TARGET) $(project_dir)/ipxe.rom
 ifeq ($(CONSOLE_SERIAL),yy)
 	cp "$(project_dir)/src/config/console.h.cb" "$(project_dir)/src/config/console.h"
 	cp "$(project_dir)/src/config/serial.h.cb" "$(project_dir)/src/config/serial.h"

@@ -116,6 +116,14 @@ config IPXE_TRUST_CMD
 	  digital signature of file prior loading it, and restrict to loading
 	  trusted files only.
 
+config IPXE_BUILD_EFI
+	bool "Build iPXE for EFI target"
+	depends on PAYLOAD_EDK2
+	default n
+	help
+	  Build iPXE for EFI target, enabling it to be executed from EDK2. If not
+	  selected, iPXE will be built for use with legacy BIOS.
+
 endif # BUILD_IPXE
 
 endmenu

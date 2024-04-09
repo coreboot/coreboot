@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootblock_common.h>
-#include <console/console.h>
 #include <delay.h>
 #include <device/pci_ops.h>
 #include <ec/acpi/ec.h>

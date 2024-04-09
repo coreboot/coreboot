@@ -2,7 +2,6 @@
 
 #include <acpi/acpi.h>
 #include <device/mmio.h>
-#include <console/console.h>
 #include <cpu/x86/smm.h>
 #include "ec.h"
 #include <ec/google/chromeec/smm.h>

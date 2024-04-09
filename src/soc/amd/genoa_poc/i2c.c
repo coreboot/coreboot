@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/i2c.h>
-#include <console/console.h>
 #include <soc/i2c.h>
 #include <soc/southbridge.h>
 #include "chip.h"

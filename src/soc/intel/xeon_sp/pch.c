@@ -9,7 +9,6 @@
 #include <soc/bootblock.h>
 #include <soc/pch.h>
 #include <soc/pmc.h>
-#include <console/console.h>
 
 void override_hpet_ioapic_bdf(void)
 {

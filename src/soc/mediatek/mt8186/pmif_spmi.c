@@ -3,7 +3,6 @@
 #include <device/mmio.h>
 #include <soc/pll.h>
 #include <soc/pmif_spmi.h>
-#include <console/console.h>
 
 /* IOCFG_LT, DRV_CFG2 */
 DEFINE_BITFIELD(SPMI_SCL, 14, 12)

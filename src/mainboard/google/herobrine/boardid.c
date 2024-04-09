@@ -4,7 +4,6 @@
 #include <ec/google/chromeec/ec.h>
 #include "board.h"
 #include <commonlib/bsd/cb_err.h>
-#include <console/console.h>
 #include <gpio.h>
 #include <soc/socinfo.h>
 

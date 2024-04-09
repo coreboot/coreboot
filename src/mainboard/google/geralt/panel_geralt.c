@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/console.h>
 #include <soc/i2c.h>
 
 #include "gpio.h"

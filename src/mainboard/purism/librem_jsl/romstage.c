@@ -5,7 +5,6 @@
 #include <soc/meminit.h>
 #include <soc/romstage.h>
 #include <device/pci_ops.h>
-#include <console/console.h>
 
 static const struct mb_cfg board_mem_cfg = {
 	.dq_map[DDR_CH0] = {

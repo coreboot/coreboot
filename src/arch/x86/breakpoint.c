@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 #include <arch/registers.h>
 #include <arch/breakpoint.h>
-#include <console/console.h>
 #include <types.h>
 
 #define DEBUG_REGISTER_COUNT 4

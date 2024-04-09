@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootblock_common.h>
-#include <console/console.h>
 #include <cpu/x86/tsc.h>
 #include <psp_verstage/psp_transfer.h>
 #include <symbols.h>

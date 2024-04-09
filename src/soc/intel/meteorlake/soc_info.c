@@ -5,7 +5,6 @@
 #include <device/pci_ops.h>
 #include <soc/soc_info.h>
 #include <intelblocks/tcss.h>
-#include <console/console.h>
 
 uint8_t get_max_usb20_port(void)
 {

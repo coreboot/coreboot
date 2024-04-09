@@ -4,7 +4,6 @@
 #include <cpu/x86/smm.h>
 #include <commonlib/helpers.h>
 #include <commonlib/region.h>
-#include <console/console.h>
 #include <smm_call.h>
 #include <smmstore.h>
 #include <types.h>

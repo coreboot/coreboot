@@ -7,7 +7,6 @@
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/cpu.h>
 #include <arch/ioapic.h>
-#include <console/console.h>
 #include <device/device.h>
 #include <vendorcode/amd/opensil/genoa_poc/opensil.h>
 

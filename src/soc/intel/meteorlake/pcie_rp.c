@@ -4,7 +4,6 @@
 #include <soc/pci_devs.h>
 #include <soc/pcie.h>
 #include <soc/soc_info.h>
-#include <console/console.h>
 
 static const struct pcie_rp_group mtlp_rp_groups[] = {
 	{ .slot = PCI_DEV_SLOT_PCIE_1, .start = 0, .count = 8, .lcap_port_base = 1 },

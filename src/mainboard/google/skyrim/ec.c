@@ -2,7 +2,6 @@
 
 #include <acpi/acpi.h>
 #include <amdblocks/smi.h>
-#include <console/console.h>
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
 #include <soc/smi.h>

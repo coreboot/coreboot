@@ -3,7 +3,6 @@
 // This file is used for setting up clocks and get devices out of reset
 // For more Information see FU740-C000 Manual Chapter 7 Clocking and Reset
 
-#include <console/console.h>
 #include <delay.h>
 #include <device/mmio.h>
 #include <soc/addressmap.h>

@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/console.h>
 #include <option.h>
 #include <soc/romstage.h>
 #include <spd_bin.h>

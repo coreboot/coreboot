@@ -2,7 +2,6 @@
 
 #define __SIMPLE_DEVICE__
 
-#include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <intelblocks/p2sb.h>

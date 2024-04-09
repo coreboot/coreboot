@@ -8,7 +8,6 @@
 #include <amdblocks/psp.h>
 #include <amdblocks/xhci.h>
 #include <baseboard/variants.h>
-#include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <drivers/i2c/tpm/chip.h>

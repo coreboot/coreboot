@@ -10,7 +10,6 @@
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
 #include <soc/gpio.h>
-#include <console/console.h>
 #include <boardid.h>
 
 /* Pad configuration in ramstage */

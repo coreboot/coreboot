@@ -7,7 +7,6 @@
 
 #define __SIMPLE_DEVICE__
 
-#include <console/console.h>
 #include <device/pci.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/rtc.h>

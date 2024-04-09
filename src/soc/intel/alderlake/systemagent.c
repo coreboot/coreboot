@@ -19,7 +19,7 @@
 #include <soc/soc_chip.h>
 #include <soc/systemagent.h>
 #include <spi_flash.h>
-#include "stddef.h"
+#include <stddef.h>
 
 /*
  * SoC implementation

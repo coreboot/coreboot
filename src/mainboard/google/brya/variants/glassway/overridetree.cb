@@ -13,6 +13,9 @@ fw_config
 		option SD_ABSENT		 0
 		option SD_GL9750S		 1
 	end
+	field WIFI_SAR_ID 10 12
+		option WIFI_SAR_ID_0		 0
+	end
 	field TOUCHSCREEN_SOURCE 32 33
 		option TOUCHSCREEN_UNPROVISIONED 0
 		option TOUCHSCREEN_ELAN0001      1

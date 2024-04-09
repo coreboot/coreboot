@@ -4,7 +4,6 @@
 #include <bootstate.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
-#include <delay.h>
 #include <device/pci.h>
 #include <gpio.h>
 #include <intelblocks/cse.h>

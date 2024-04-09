@@ -2,7 +2,6 @@
 
 #include <device/mmio.h>
 #include <console/console.h>
-#include <delay.h>
 #include <edid.h>
 #include <soc/clock.h>
 #include <soc/display/mdssreg.h>

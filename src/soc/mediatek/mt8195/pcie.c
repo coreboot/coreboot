@@ -2,7 +2,6 @@
 
 #include <device/mmio.h>
 #include <device/resource.h>
-#include <delay.h>
 #include <gpio.h>
 #include <soc/addressmap.h>
 #include <soc/early_init.h>

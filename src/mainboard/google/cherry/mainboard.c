@@ -3,7 +3,6 @@
 #include <boardid.h>
 #include <bootmode.h>
 #include <console/console.h>
-#include <delay.h>
 #include <device/device.h>
 #include <device/mmio.h>
 #include <ec/google/chromeec/ec.h>

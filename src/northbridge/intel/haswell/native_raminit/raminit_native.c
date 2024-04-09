@@ -6,7 +6,6 @@
 #include <cf9_reset.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
-#include <delay.h>
 #include <device/pci_ops.h>
 #include <mrc_cache.h>
 #include <northbridge/intel/haswell/haswell.h>

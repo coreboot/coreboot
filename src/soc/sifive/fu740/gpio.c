@@ -4,7 +4,6 @@
 #include <soc/gpio.h>
 #include <stdint.h>
 #include <arch/mmio.h>
-#include <delay.h>
 #include <assert.h>
 #include <device/mmio.h>
 #include <gpio.h>

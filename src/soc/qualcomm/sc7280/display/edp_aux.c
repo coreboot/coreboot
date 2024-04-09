@@ -3,7 +3,6 @@
 #include <device/mmio.h>
 #include <console/console.h>
 #include <edid.h>
-#include <delay.h>
 #include <timer.h>
 #include <types.h>
 #include <string.h>

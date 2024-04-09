@@ -4,7 +4,6 @@
 #include <device/pci_def.h>
 #include <spd.h>
 
-#include "delay.h"
 #include "gm45.h"
 
 void raminit_thermal(const sysinfo_t *sysinfo)

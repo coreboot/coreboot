@@ -16,7 +16,6 @@
 #include <spi_sdcard.h>
 #include <stdint.h>
 #include <symbols.h>
-#include <timer.h>
 
 // There are two different means of accessing the SPI flash.
 // They are controlled by the fctrl register.

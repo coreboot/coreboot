@@ -22,7 +22,6 @@
 #include <soc/smbus.h>
 #include <soc/soc_chip.h>
 #include <soc/systemagent.h>
-#include <timer.h>
 
 static void pch_handle_sideband(config_t *config)
 {

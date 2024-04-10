@@ -5,9 +5,9 @@
 #define DEVICE_H
 
 #include <console/console.h>
-#include <device/path.h>
+#include <device/path.h> /* IWYU pragma: export */
 #include <device/pci_type.h>
-#include <device/resource.h>
+#include <device/resource.h> /* IWYU pragma: export */
 #include <smbios.h>
 #include <static.h>
 #include <stdlib.h>

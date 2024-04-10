@@ -3,7 +3,7 @@
 #ifndef __TIMESTAMP_H__
 #define __TIMESTAMP_H__
 
-#include <commonlib/timestamp_serialized.h>
+#include <commonlib/timestamp_serialized.h> /* IWYU pragma: export */
 #include <stdint.h>
 
 #if CONFIG(COLLECT_TIMESTAMPS)

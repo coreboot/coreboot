@@ -8,7 +8,6 @@
 #include <soc/pcie.h>
 #include <soc/pcie_common.h>
 #include <stdlib.h>
-#include <string.h>
 
 #define PCIE_REG_BASE_PORT0	0x112f0000
 #define PCIE_RST_CTRL_REG	(PCIE_REG_BASE_PORT0 + 0x148)

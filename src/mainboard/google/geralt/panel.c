@@ -11,7 +11,6 @@
 #include <soc/i2c.h>
 #include <soc/pmif.h>
 #include <soc/regulator.h>
-#include <string.h>
 
 #include "gpio.h"
 #include "panel.h"

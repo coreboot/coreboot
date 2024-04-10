@@ -5,7 +5,6 @@
 #include <edid.h>
 #include <timer.h>
 #include <types.h>
-#include <string.h>
 #include <soc/display/edp_aux.h>
 #include <soc/display/edp_reg.h>
 

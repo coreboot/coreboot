@@ -6,7 +6,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/x86/cache.h>
-#include <string.h>
 #include <northbridge/amd/agesa/agesa_helper.h>
 
 /* TODO: Do we want MTRR_DEF_TYPE_MSR too? */

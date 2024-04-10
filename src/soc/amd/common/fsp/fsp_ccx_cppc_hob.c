@@ -5,7 +5,6 @@
 #include <console/console.h>
 #include <FspGuids.h>
 #include <fsp/util.h>
-#include <string.h>
 #include <types.h>
 
 

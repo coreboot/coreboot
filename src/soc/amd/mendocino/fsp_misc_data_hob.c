@@ -5,7 +5,6 @@
 #include <fsp/amd_misc_data.h>
 #include <fsp/amd_misc_data_hob.h>
 #include <fsp/util.h>
-#include <string.h>
 #include <types.h>
 
 static enum cb_err get_amd_misc_data_hob(const struct amd_misc_data **fsp_misc_data, int min_revision)

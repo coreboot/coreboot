@@ -3,7 +3,6 @@
 #include <gpio.h>
 #include <soc/meminit.h>
 #include <soc/romstage.h>
-#include <string.h>
 #include <variants.h>
 #include <types.h>
 

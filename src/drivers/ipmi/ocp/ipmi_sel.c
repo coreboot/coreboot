@@ -2,7 +2,6 @@
 
 #include <console/console.h>
 #include <drivers/ipmi/ipmi_if.h>
-#include <string.h>
 
 #include "ipmi_ocp.h"
 

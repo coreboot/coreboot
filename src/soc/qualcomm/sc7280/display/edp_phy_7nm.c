@@ -6,7 +6,6 @@
 #include <soc/clock.h>
 #include <soc/display/edp_reg.h>
 #include <soc/display/edp_phy.h>
-#include <string.h>
 #include <timer.h>
 
 static void edp_phy_ssc_en(bool en)

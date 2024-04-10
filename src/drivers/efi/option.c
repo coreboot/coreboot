@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <stdlib.h>
-#include <string.h>
 #include <option.h>
 #include <smmstore.h>
 

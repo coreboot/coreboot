@@ -4,7 +4,6 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <stdint.h>
-#include <string.h>
 
 #include "sd_mmc.h"
 #include "storage.h"

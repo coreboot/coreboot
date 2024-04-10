@@ -5,7 +5,6 @@
 #include <option.h>
 #include <soc/cnl_memcfg_init.h>
 #include <soc/romstage.h>
-#include <string.h>
 #include <types.h>
 
 static unsigned int get_memory_config_straps(void)

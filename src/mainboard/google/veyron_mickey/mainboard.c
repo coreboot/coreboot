@@ -4,7 +4,6 @@
 #include <boot/coreboot_tables.h>
 #include <device/device.h>
 #include <device/i2c_simple.h>
-#include <edid.h>
 #include <gpio.h>
 #include <soc/display.h>
 #include <soc/grf.h>

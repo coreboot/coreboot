@@ -4,7 +4,6 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <delay.h>
-#include <edid.h>
 #include <gpio.h>
 #include <identity.h>
 #include <soc/gpio_common.h>

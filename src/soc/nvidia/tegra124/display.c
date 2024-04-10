@@ -5,7 +5,6 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
-#include <edid.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/display.h>

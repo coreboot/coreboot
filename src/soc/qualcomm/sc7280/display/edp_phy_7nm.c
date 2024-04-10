@@ -2,7 +2,6 @@
 
 #include <console/console.h>
 #include <device/mmio.h>
-#include <edid.h>
 #include <soc/clock.h>
 #include <soc/display/edp_reg.h>
 #include <soc/display/edp_phy.h>

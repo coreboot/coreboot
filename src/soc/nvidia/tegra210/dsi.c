@@ -8,7 +8,6 @@
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <device/device.h>
-#include <edid.h>
 #include <soc/nvidia/tegra/types.h>
 #include <soc/nvidia/tegra/dc.h>
 #include <soc/display.h>

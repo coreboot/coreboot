@@ -15,7 +15,6 @@
 #include <soc/pm.h>
 #include <soc/romstage.h>
 #include <soc/soc_chip.h>
-#include <timestamp.h>
 #include <string.h>
 
 #define FSP_SMBIOS_MEMORY_INFO_GUID	\

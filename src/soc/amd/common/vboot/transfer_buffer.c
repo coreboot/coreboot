@@ -7,7 +7,6 @@
 #include <psp_verstage/psp_transfer.h>
 #include <security/vboot/vbnv.h>
 #include <security/vboot/symbols.h>
-#include <timestamp.h>
 #include <2struct.h>
 
 DECLARE_REGION(cbmemc_transfer)

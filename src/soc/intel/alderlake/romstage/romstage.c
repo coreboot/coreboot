@@ -23,7 +23,6 @@
 #include <soc/romstage.h>
 #include <soc/soc_chip.h>
 #include <cpu/intel/cpu_ids.h>
-#include <timestamp.h>
 #include <string.h>
 #include <security/intel/txt/txt.h>
 #include <soc/pcr_ids.h>

@@ -18,7 +18,6 @@
 #include <device/pci_ids.h>
 #include <string.h>
 #include <elog.h>
-#include <halt.h>
 #include <option.h>
 #include <southbridge/intel/common/me.h>
 

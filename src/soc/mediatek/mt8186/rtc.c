@@ -6,7 +6,6 @@
  */
 
 #include <delay.h>
-#include <halt.h>
 #include <soc/rtc.h>
 #include <soc/rtc_common.h>
 #include <soc/mt6366.h>

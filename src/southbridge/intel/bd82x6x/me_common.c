@@ -8,7 +8,6 @@
 #include <device/pci_ids.h>
 #include <string.h>
 #include <delay.h>
-#include <halt.h>
 #include <timer.h>
 
 #include "me.h"

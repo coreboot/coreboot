@@ -6,7 +6,6 @@
 #include <ec/acpi/ec.h>
 #include <option.h>
 #include <pc80/keyboard.h>
-#include <halt.h>
 
 #include "ec.h"
 #include "ecdefs.h"

@@ -114,14 +114,14 @@ static const struct apc_infra_peri_dom_16 infra_ao_sys0_devices[] = {
 	DAPC_INFRA_AO_SYS0_ATTR("MFG_S_S-1",
 				NO_PROTECTION, FORBIDDEN15),
 	DAPC_INFRA_AO_SYS0_ATTR("MFG_S_S-2",
-				NO_PROTECTION, FORBIDDEN15),
+				SEC_RW_ONLY, FORBIDDEN15),
 	DAPC_INFRA_AO_SYS0_ATTR("MFG_S_S-3",
 				NO_PROTECTION, FORBIDDEN15),
 	/* 50 */
 	DAPC_INFRA_AO_SYS0_ATTR("MFG_S_S-4",
 				NO_PROTECTION, FORBIDDEN15),
 	DAPC_INFRA_AO_SYS0_ATTR("MFG_S_S-5",
-				NO_PROTECTION, FORBIDDEN15),
+				SEC_RW_ONLY, FORBIDDEN15),
 	DAPC_INFRA_AO_SYS0_ATTR("MFG_S_S-6",
 				NO_PROTECTION, FORBIDDEN15),
 	DAPC_INFRA_AO_SYS0_ATTR("MFG_S_S-7",
@@ -1616,6 +1616,8 @@ static void dump_fmem_ao(uintptr_t base)
 {
 	printk(BIOS_DEBUG, "[DEVAPC] (DEVAPC_FMEM_AO_BASE %#lx)DOM_REMAP_0_0:%#x\n",
 	       base, read32(getreg(base, DOM_REMAP_0_0)));
+	printk(BIOS_DEBUG, "[DEVAPC] (DEVAPC_FMEM_AO_BASE %#lx)MAS_DOM_1:%#x\n",
+	       base, read32(getreg(base, MAS_DOM_1)));
 }
 
 static void dump_infra2_ao(uintptr_t base)
@@ -1631,6 +1633,12 @@ static void dump_scp_master(uintptr_t base)
 	       read32(getreg(base, SCP_DOM1)),
 	       read32(getreg(base, SCP_DOM2)),
 	       read32(getreg(base, ONETIME_LOCK)));
+}
+
+static void dump_sec_mfg_hyp(uintptr_t base)
+{
+	printk(BIOS_DEBUG, "[DEVAPC] (DEVAPC_INFRA_BASE %#lx)INFRA_AO_SEC_MFG_HYP:%#x\n",
+	       base, read32(getreg(base, 0)));
 }
 
 static void infra_init(uintptr_t base)
@@ -1715,6 +1723,10 @@ static void peri_par_init(uintptr_t base)
 
 static void fmem_master_init(uintptr_t base)
 {
+	/* Master Domain */
+	SET32_BITFIELDS(getreg(base, MAS_DOM_1),
+			MFG_M0_DOM, DOMAIN_6);
+
 	/*
 	 * Domain Remap: TINYSYS to EMI (3-bit to 4-bit)
 	 *     1. DSP from 0 to 4
@@ -1770,6 +1782,18 @@ static void scp_master_init(uintptr_t base)
 	write32(getreg(base, ONETIME_LOCK), 0x5);
 }
 
+static void infra_sec_mfg_hyp_init(uintptr_t base)
+{
+	/* Set GPU protection mode */
+	SET32_BITFIELDS(getreg(base, MFG_HPY_OFT), OSID0, MFG_NS_D6);
+	SET32_BITFIELDS(getreg(base, MFG_HPY_OFT), OSID1, MFG_NS_D6);
+	SET32_BITFIELDS(getreg(base, MFG_HPY_OFT), OSID2, MFG_NS_D6);
+	SET32_BITFIELDS(getreg(base, MFG_HPY_OFT), OSID3, MFG_NS_D6);
+	SET32_BITFIELDS(getreg(base, MFG_HPY_OFT), FM_EN, MFG_NS_D6);
+	SET32_BITFIELDS(getreg(base, MFG_HPY_OFT), SEC_EN, MFG_S_D6);
+	SET32_BITFIELDS(getreg(base, MFG_HPY_OFT), REMAP_EN, 1);
+}
+
 const struct devapc_init_ops devapc_init[] = {
 	{ DEVAPC_INFRA_AO_BASE, infra_init, dump_infra_ao_apc },
 	{ DEVAPC_PERI_AO_BASE, peri_init, dump_peri_ao_apc },
@@ -1778,6 +1802,10 @@ const struct devapc_init_ops devapc_init[] = {
 	{ DEVAPC_FMEM_AO_BASE, fmem_master_init, dump_fmem_ao },
 	{ DEVAPC_INFRA2_AO_BASE, infra2_master_init, dump_infra2_ao },
 	{ SCP_CFG_BASE, scp_master_init, dump_scp_master },
+	{ INFRACFG_AO_BASE + INFRA_AO_SEC_MFG_HYP,
+	  infra_sec_mfg_hyp_init, dump_sec_mfg_hyp },
+	{ SUB_INFRACFG_AO_BASE + INFRA_AO_SEC_MFG_HYP2,
+	  infra_sec_mfg_hyp_init, dump_sec_mfg_hyp },
 };
 
 const size_t devapc_init_cnt = ARRAY_SIZE(devapc_init);

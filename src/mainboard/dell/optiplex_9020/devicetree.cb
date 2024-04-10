@@ -70,6 +70,9 @@ chip northbridge/intel/haswell
 					device pnp 2e.b  off end	# Floppy Controller
 					device pnp 2e.11 off end	# Parallel Port
 				end
+				chip drivers/pc80/tpm
+					device pnp 0c31.0 on end
+				end
 			end
 			device pci 1f.2 on  end				# SATA controller 1
 			device pci 1f.3 on  end				# SMBus

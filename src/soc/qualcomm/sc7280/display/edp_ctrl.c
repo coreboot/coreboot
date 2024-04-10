@@ -7,7 +7,6 @@
 #include <delay.h>
 #include <types.h>
 #include <string.h>
-#include <stdlib.h>
 #include <soc/clock.h>
 #include <gpio.h>
 #include <soc/display/edp_reg.h>

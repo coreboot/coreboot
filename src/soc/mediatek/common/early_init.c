@@ -2,7 +2,6 @@
 
 #include <assert.h>
 #include <soc/early_init.h>
-#include <stdlib.h>
 #include <string.h>
 
 static struct early_init_data *find_early_init(void)

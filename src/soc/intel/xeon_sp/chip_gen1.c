@@ -12,7 +12,6 @@
 #include <soc/chip_common.h>
 #include <soc/soc_util.h>
 #include <soc/util.h>
-#include <stdlib.h>
 
 static const STACK_RES *domain_to_stack_res(const struct device *dev)
 {

@@ -10,7 +10,6 @@
 #include <soc/pci_devs.h>
 #include <soc/soc_util.h>
 #include <soc/util.h>
-#include <stdlib.h>
 #include <pc80/mc146818rtc.h>
 
 const EWL_PRIVATE_DATA *get_ewl_hob(void)

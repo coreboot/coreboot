@@ -5,7 +5,6 @@
 #include <console/console.h>
 #include <endian.h>
 #include <bootsplash.h>
-#include <stdlib.h>
 
 #include "jpeg.h"
 

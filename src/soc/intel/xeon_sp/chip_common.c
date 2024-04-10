@@ -9,7 +9,6 @@
 #include <soc/chip_common.h>
 #include <soc/soc_util.h>
 #include <soc/util.h>
-#include <stdlib.h>
 
 /**
  * Find all device of a given vendor and type for the specified socket.

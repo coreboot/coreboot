@@ -5,7 +5,6 @@
 #include <soc/chip_common.h>
 #include <soc/util.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 static uintptr_t xeonsp_ioapic_bases[CONFIG_MAX_SOCKET * MAX_IIO_STACK + 1];
 

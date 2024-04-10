@@ -10,7 +10,6 @@
 #include <acpi/acpi.h>
 #include <acpi/acpigen.h>
 #include <superio/common/ssdt.h>
-#include <stdlib.h>
 
 #include "npcd378.h"
 

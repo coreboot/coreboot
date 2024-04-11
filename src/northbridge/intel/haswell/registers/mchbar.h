@@ -13,6 +13,8 @@
 #define MC_INIT_STATE_G		0x5030
 #define MRC_REVISION		0x5034 /* MRC Revision */
 
+#define RCOMP_TIMER		0x5084
+
 #define MC_LOCK			0x50fc /* Memory Controller Lock register */
 
 #define GFXVTBAR		0x5400 /* Base address for IGD */
@@ -61,6 +63,7 @@
 
 #define BIOS_RESET_CPL		0x5da8 /* 8-bit */
 
+#define MC_BIOS_REQ		0x5e00 /* Memory frequency request register */
 #define MC_BIOS_DATA		0x5e04 /* Miscellaneous information for BIOS */
 #define SAPMCTL			0x5f00
 

@@ -20,7 +20,8 @@ struct task_entry {
 };
 
 static const struct task_entry cold_boot[] = {
-	{ collect_spd_info,           true, "PROCSPD",    },
+	{ collect_spd_info,                                       true, "PROCSPD",    },
+	{ initialise_mpll,                                        true, "INITMPLL",   },
 };
 
 /* Return a generic stepping value to make stepping checks simpler */

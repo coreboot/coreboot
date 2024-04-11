@@ -24,6 +24,8 @@ enum raminit_status {
 	RAMINIT_STATUS_SUCCESS = 0,
 	RAMINIT_STATUS_NO_MEMORY_INSTALLED,
 	RAMINIT_STATUS_UNSUPPORTED_MEMORY,
+	RAMINIT_STATUS_MPLL_INIT_FAILURE,
+	RAMINIT_STATUS_POLL_TIMEOUT,
 	RAMINIT_STATUS_UNSPECIFIED_ERROR, /** TODO: Deprecated in favor of specific values **/
 };
 
@@ -83,10 +85,19 @@ struct sysinfo {
 	uint8_t rankmap[NUM_CHANNELS];
 	uint8_t rank_mirrored[NUM_CHANNELS];
 	uint32_t channel_size_mb[NUM_CHANNELS];
+
+	uint8_t base_freq;		/* Memory base frequency, either 100 or 133 MHz */
+	uint32_t multiplier;
+	uint32_t mem_clock_mhz;
+	uint32_t mem_clock_fs;		/* Memory clock period in femtoseconds */
+	uint32_t qclkps;		/* Quadrature clock period in picoseconds */
 };
 
 void raminit_main(enum raminit_boot_mode bootmode);
 
 enum raminit_status collect_spd_info(struct sysinfo *ctrl);
+enum raminit_status initialise_mpll(struct sysinfo *ctrl);
+
+enum raminit_status wait_for_first_rcomp(void);
 
 #endif

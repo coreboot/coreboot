@@ -240,7 +240,6 @@ void show_all_devs_resources(int debug_level, const char *msg);
 
 /* Debug macros */
 #if CONFIG(DEBUG_FUNC)
-#include <console/console.h>
 #define DEV_FUNC_ENTER(dev) \
 	printk(BIOS_SPEW, "%s:%s:%d: ENTER (dev: %s)\n", \
 		__FILE__, __func__, __LINE__, dev_path(dev))

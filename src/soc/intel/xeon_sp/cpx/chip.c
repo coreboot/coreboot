@@ -6,7 +6,6 @@
 #include <cpu/x86/mp.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/pci_def.h>
 #include <gpio.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/lpc_lib.h>

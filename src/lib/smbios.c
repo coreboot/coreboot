@@ -15,7 +15,6 @@
 #include <commonlib/helpers.h>
 #include <device/pci_ids.h>
 #include <device/pci.h>
-#include <device/pci_def.h>
 #include <drivers/vpd/vpd.h>
 #include <stdlib.h>
 

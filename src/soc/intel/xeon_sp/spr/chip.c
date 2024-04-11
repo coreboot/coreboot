@@ -6,7 +6,6 @@
 #include <cpu/x86/lapic.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <device/pci_def.h>
 #include <device/pciexp.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/gpio.h>

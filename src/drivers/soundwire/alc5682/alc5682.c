@@ -4,7 +4,6 @@
 #include <acpi/acpi_device.h>
 #include <acpi/acpi_soundwire.h>
 #include <device/device.h>
-#include <device/path.h>
 #include <device/soundwire.h>
 #include <mipi/ids.h>
 #include <stdio.h>

@@ -4,7 +4,6 @@
 #include <acpi/acpigen.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <device/path.h>
 #include "chip.h"
 
 static void alc1015_fill_ssdt(const struct device *dev)

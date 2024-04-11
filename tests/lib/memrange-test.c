@@ -3,7 +3,6 @@
 #include <tests/test.h>
 
 #include <device/device.h>
-#include <device/resource.h>
 #include <commonlib/helpers.h>
 #include <memrange.h>
 

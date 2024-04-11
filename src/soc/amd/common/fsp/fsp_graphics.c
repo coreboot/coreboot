@@ -4,7 +4,6 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/resource.h>
 #include <fsp/graphics.h>
 
 void fsp_graphics_init(struct device *const dev)

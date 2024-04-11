@@ -5,7 +5,6 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/device.h>
-#include <device/resource.h>
 #include <device/pci.h>
 #include <stdint.h>
 #include <reg_script.h>

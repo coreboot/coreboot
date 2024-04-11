@@ -9,7 +9,6 @@
 #include <device/device.h>
 #include <delay.h>
 #include <device/pci_def.h>
-#include <device/resource.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>

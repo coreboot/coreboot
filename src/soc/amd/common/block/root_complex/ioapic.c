@@ -4,7 +4,6 @@
 #include <amdblocks/root_complex.h>
 #include <arch/ioapic.h>
 #include <device/device.h>
-#include <device/resource.h>
 #include <types.h>
 
 void amd_pci_domain_init(struct device *domain)

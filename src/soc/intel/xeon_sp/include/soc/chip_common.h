@@ -4,7 +4,6 @@
 #define _CHIP_COMMON_H_
 
 #include <device/device.h>
-#include <device/path.h>
 #include <soc/soc_util.h>
 
 union xeon_domain_path {

@@ -3,7 +3,6 @@
 #include <bootmem.h>
 #include <commonlib/coreboot_tables.h>
 #include <device/device.h>
-#include <device/resource.h>
 #include <memrange.h>
 #include <stdlib.h>
 #include <string.h>

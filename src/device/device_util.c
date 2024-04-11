@@ -3,9 +3,7 @@
 #include <commonlib/bsd/helpers.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <device/path.h>
 #include <device/pci_def.h>
-#include <device/resource.h>
 #include <stdlib.h>
 #include <string.h>
 #include <types.h>

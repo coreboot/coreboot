@@ -6,7 +6,6 @@
 #include <stdint.h>
 #include <device/device.h>
 #include <device/pci_type.h>
-#include <device/resource.h>
 
 /*
  * The reg script library is a way to provide data-driven I/O accesses for

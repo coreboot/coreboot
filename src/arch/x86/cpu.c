@@ -10,7 +10,6 @@
 #include <cpu/x86/mp.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/tsc.h>
-#include <device/path.h>
 #include <device/device.h>
 #include <smp/spinlock.h>
 

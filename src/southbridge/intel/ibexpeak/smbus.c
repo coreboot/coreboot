@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/device.h>
-#include <device/path.h>
 #include <device/smbus.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

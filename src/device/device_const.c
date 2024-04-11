@@ -3,7 +3,6 @@
 #include <assert.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <device/path.h>
 #include <device/pci_def.h>
 #include <device/pci_type.h>
 #include <fw_config.h>

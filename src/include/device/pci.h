@@ -25,7 +25,6 @@
 #include <device/pci_ops.h>
 #include <device/pci_rom.h>
 #include <device/pci_type.h> /* IWYU pragma: export */
-#include <device/resource.h>
 #include <stddef.h>
 #include <stdint.h>
 

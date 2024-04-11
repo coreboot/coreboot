@@ -11,7 +11,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
-#include <device/resource.h>
 
 /* the device we are working with... */
 biosemu_device_t bios_device;

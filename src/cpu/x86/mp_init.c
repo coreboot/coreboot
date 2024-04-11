@@ -17,7 +17,6 @@
 #include <cpu/x86/mp.h>
 #include <delay.h>
 #include <device/device.h>
-#include <device/path.h>
 #include <smp/atomic.h>
 #include <smp/spinlock.h>
 #include <symbols.h>

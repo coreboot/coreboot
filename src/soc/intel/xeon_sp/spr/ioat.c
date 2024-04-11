@@ -4,7 +4,6 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <device/resource.h>
 
 #include <defs_iio.h>
 #include <hob_iiouds.h>

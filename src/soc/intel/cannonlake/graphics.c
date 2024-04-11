@@ -4,7 +4,6 @@
 #include <device/device.h>
 #include <device/mmio.h>
 #include <device/pci_def.h>
-#include <device/resource.h>
 #include <drivers/intel/gma/i915_reg.h>
 #include <intelblocks/graphics.h>
 #include <soc/ramstage.h>

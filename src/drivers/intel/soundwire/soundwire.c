@@ -5,7 +5,6 @@
 #include <acpi/acpi_soundwire.h>
 #include <commonlib/helpers.h>
 #include <device/device.h>
-#include <device/path.h>
 #include <device/soundwire.h>
 #include <stdbool.h>
 

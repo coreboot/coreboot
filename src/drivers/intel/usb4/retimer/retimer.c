@@ -5,7 +5,6 @@
 #include <acpi/acpi_pld.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <device/path.h>
 #include <drivers/usb/acpi/chip.h>
 #include <gpio.h>
 #include <string.h>

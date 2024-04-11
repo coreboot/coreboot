@@ -7,7 +7,6 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/lapic.h>
 #include <device/device.h>
-#include <device/path.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <identity.h>

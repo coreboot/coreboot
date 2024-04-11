@@ -5,7 +5,6 @@
 #include <console/console.h>
 #include <device/i2c.h>
 #include <device/device.h>
-#include <device/path.h>
 #include "chip.h"
 
 #define RT5663_ACPI_NAME	"RT53"

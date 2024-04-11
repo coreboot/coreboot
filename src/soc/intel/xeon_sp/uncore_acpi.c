@@ -4,7 +4,6 @@
 #include <arch/hpet.h>
 #include <arch/ioapic.h>
 #include <assert.h>
-#include <cbmem.h>
 #include <cpu/x86/lapic.h>
 #include <commonlib/sort.h>
 #include <device/mmio.h>

@@ -11,7 +11,6 @@
 #include <device/mmio.h>
 #include <rmodule.h>
 #include <smmstore.h>
-#include <stdio.h>
 #include <string.h>
 #include <types.h>
 

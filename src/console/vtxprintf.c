@@ -6,7 +6,6 @@
 
 #include <console/vtxprintf.h>
 #include <ctype.h>
-#include <stdarg.h>
 #include <string.h>
 #include <types.h>
 

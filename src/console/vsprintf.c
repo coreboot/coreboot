@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/vtxprintf.h>
-#include <stdarg.h>
 #include <string.h>
 
 struct vsnprintf_context {

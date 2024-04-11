@@ -6,7 +6,6 @@
 #include <delay.h>
 #include <cpu/x86/mp.h>
 #include <timer.h>
-#include <stdio.h>
 #include <string.h>
 #include <soc/soc_util.h>
 #include <soc/util.h>

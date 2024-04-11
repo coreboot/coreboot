@@ -5,7 +5,6 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <tests/test.h>
-#include <stdio.h>
 
 /*
  * Important note: In every particular test, don't use any string-related

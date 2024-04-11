@@ -9,9 +9,10 @@
 #define MAX_DENYLIST_ENTRY	16
 #define MAX_DSAR_SET_COUNT	3
 #define MAX_GEO_OFFSET_REVISION	3
-#define MAX_PROFILE_COUNT	6
+#define MAX_PROFILE_COUNT	7
 #define MAX_SAR_REVISION	2
 #define BSAR_REVISION		1
+#define WBEM_REVISION		0
 #define REVISION_SIZE		1
 #define SAR_REV0_CHAINS_COUNT	2
 #define SAR_REV0_SUBBANDS_COUNT	5
@@ -73,6 +74,11 @@ struct bsar_profile {
 	uint8_t le_lr_modulation;
 } __packed;
 
+struct wbem_profile {
+	uint8_t revision;
+	uint32_t bandwidth_320mhz_country_enablement;
+} __packed;
+
 struct sar_header {
 	char marker[SAR_STR_PREFIX_SIZE];
 	uint8_t version;
@@ -88,6 +94,7 @@ union wifi_sar_limits {
 		struct avg_profile *wtas;
 		struct dsm_profile *dsm;
 		struct bsar_profile *bsar;
+		struct wbem_profile *wbem;
 	};
 	void *profile[MAX_PROFILE_COUNT];
 };

@@ -539,6 +539,43 @@ static void sar_emit_brds(const struct bsar_profile *bsar)
 	acpigen_write_package_end();
 }
 
+static void sar_emit_wbem(const struct wbem_profile *wbem)
+{
+	if (wbem == NULL)
+		return;
+
+	/*
+	 * Name ("WBEM", Package() {
+	 * {
+	 *   Revision,
+	 *   Package()
+	 *   {
+	 *     DomainType,				// 0x7:WiFi
+	 *     bandwidth_320mhz_country_enablement	// 0 Disabled
+	 *						// 1 Japan Enabled
+	 *						// 2 South Korea Enabled
+	 *						// 3 Japan + South Korea Enabled
+	 *   }
+	 } })
+	 */
+	if (wbem->revision != WBEM_REVISION) {
+		printk(BIOS_ERR, "Unsupported WBEM table revision: %d\n",
+		       wbem->revision);
+		return;
+	}
+
+	acpigen_write_name("WBEM");
+	acpigen_write_package(2);
+	acpigen_write_dword(wbem->revision);
+
+	acpigen_write_package(2);
+	acpigen_write_dword(DOMAIN_TYPE_WIFI);
+	acpigen_write_dword(wbem->bandwidth_320mhz_country_enablement);
+
+	acpigen_write_package_end();
+	acpigen_write_package_end();
+}
+
 static void emit_sar_acpi_structures(const struct device *dev, struct dsm_profile *dsm,
 				     struct bsar_profile *bsar, bool *bsar_loaded)
 {
@@ -562,6 +599,7 @@ static void emit_sar_acpi_structures(const struct device *dev, struct dsm_profil
 	sar_emit_wgds(sar_limits.wgds);
 	sar_emit_ppag(sar_limits.ppag);
 	sar_emit_wtas(sar_limits.wtas);
+	sar_emit_wbem(sar_limits.wbem);
 
 	/* copy the dsm data to be later used for creating _DSM function */
 	if (sar_limits.dsm != NULL)

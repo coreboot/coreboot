@@ -102,6 +102,14 @@ static int bsar_table_size(const struct bsar_profile *bsar)
 	return sizeof(struct bsar_profile);
 }
 
+static int wbem_table_size(const struct wbem_profile *wbem)
+{
+	if (wbem == NULL)
+		return 0;
+
+	return sizeof(struct wbem_profile);
+}
+
 static bool valid_legacy_length(size_t bin_len)
 {
 	if (bin_len == LEGACY_SAR_WGDS_BIN_SIZE)
@@ -154,6 +162,7 @@ static int fill_wifi_sar_limits(union wifi_sar_limits *sar_limits, const uint8_t
 	expected_sar_bin_size += sar_avg_table_size(sar_limits->wtas);
 	expected_sar_bin_size += dsm_table_size(sar_limits->dsm);
 	expected_sar_bin_size += bsar_table_size(sar_limits->bsar);
+	expected_sar_bin_size += wbem_table_size(sar_limits->wbem);
 
 	if (sar_bin_size != expected_sar_bin_size) {
 		printk(BIOS_ERR, "Invalid SAR size, expected: %zu, obtained: %zu\n",
@@ -220,6 +229,7 @@ static int fill_wifi_sar_limits_legacy(union wifi_sar_limits *sar_limits,
  * [WTAS_REVISION, WTAS_DATA]
  * [DSM_RETURN_VALUES]
  * [BSAR_REVISION,IPML,LB,BR,EDR2,EDR3,LE,LE2,LE_LR]
+ * [WBEM_REVISION, WBEM_DATA]
  *
  * The configuration data will always have the revision added in the file for each of the
  * block, based on the revision number and validity, size of the specific block will be
@@ -259,6 +269,8 @@ static int fill_wifi_sar_limits_legacy(union wifi_sar_limits *sar_limits,
  *      [Enable/disable the TAS feature]
  *      [Number of blocked countries that are not approved by the OEM to support this feature]
  *      [deny_list_entry_<1-16>: ISO country code to block]
+ * [WBEM_DATA] =
+ *      [Enable or disable 320MHZ Bandwidth for Japan, SouthKorea]
  */
 int get_wifi_sar_limits(union wifi_sar_limits *sar_limits)
 {

@@ -299,6 +299,15 @@ config EDK2_UFS_ENABLE
 	  It is needed for boards with UFS storage, but can cause issues with other boards,
 	  so should only be enabled when needed.
 
+config EDK2_PCO_MMIO_EMMC
+	bool "Enable MMIO eMMC driver for AMD Picasso boards in edk2"
+	depends on EDK2_REPO_MRCHROMEBOX
+	default n
+	help
+	  Select this option to enable the MMIO eMMC DXE driver in MrChromebox's fork of edk2.
+	  It is needed for AMD Picasso boards with eMMC storage, but will conflict with the
+	  PCI-based eMMC driver, so should only be enabled for AMD Picasso boards.
+
 config EDK2_CUSTOM_BUILD_PARAMS
 	string "edk2 additional custom build parameters"
 	default "-D VARIABLE_SUPPORT=SMMSTORE" if EDK2_REPO_MRCHROMEBOX && SMMSTORE_V2

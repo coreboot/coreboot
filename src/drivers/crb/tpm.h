@@ -53,15 +53,15 @@
 /* START Register related */
 #define CRB_REG_START_START			0x01
 
-/* TPM Info Struct */
-struct tpm2_info {
+/* CRB TPM Info Struct */
+struct crb_tpm_info {
 	uint16_t vendor_id;
 	uint16_t device_id;
 	uint16_t revision;
 };
 
-tpm_result_t tpm2_init(void);
-void tpm2_get_info(struct tpm2_info *tpm2_info);
-size_t tpm2_process_command(const void *tpm2_command, size_t command_size,
-			    void *tpm2_response, size_t max_response);
-bool tpm2_has_crb_active(void);
+tpm_result_t crb_tpm_init(void);
+void crb_tpm_get_info(struct crb_tpm_info *crb_tpm_info);
+size_t crb_tpm_process_command(const void *tpm2_command, size_t command_size,
+			       void *tpm2_response, size_t max_response);
+bool crb_tpm_is_active(void);

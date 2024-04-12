@@ -273,7 +273,7 @@ static void acpi_create_tpm2(acpi_header_t *header, void *unused)
 
 	/* Hard to detect for coreboot. Just set it to 0 */
 	tpm2->platform_class = 0;
-	if (CONFIG(CRB_TPM) && tpm2_has_crb_active()) {
+	if (CONFIG(CRB_TPM) && crb_tpm_is_active()) {
 		/* Must be set to 7 for CRB Support */
 		tpm2->control_area = CONFIG_CRB_TPM_BASE_ADDRESS + 0x40;
 		tpm2->start_method = 7;

@@ -54,7 +54,7 @@ static void crb_readControlArea(void)
 	 * register before each command submission otherwise the control area
 	 * is all zeroed. This has been observed on Alder Lake S CPU and may be
 	 * applicable to other new microarchitectures. Update the local control
-	 * area data to make tpm2_process_command not fail on buffer checks.
+	 * area data to make crb_tpm_process_command() not fail on buffer checks.
 	 * PTT command/response buffer is fixed to be at offset 0x80 and spans
 	 * up to the end of 4KB region for the current locality.
 	 */
@@ -181,14 +181,14 @@ static tpm_result_t crb_switch_to_ready(void)
 }
 
 /*
- * tpm2_init
+ * crb_tpm_init
  *
  * Even though the TPM does not need an initialization we check
  * if the TPM responds and is in IDLE mode, which should be the
  * normal bring up mode.
  *
  */
-tpm_result_t tpm2_init(void)
+tpm_result_t crb_tpm_init(void)
 {
 	tpm_result_t rc = crb_probe();
 	if (rc) {
@@ -227,10 +227,10 @@ static void set_ptt_cmd_resp_buffers(void)
 }
 
 /*
- * tpm2_process_command
+ * crb_tpm_process_command
  */
-size_t tpm2_process_command(const void *tpm2_command, size_t command_size, void *tpm2_response,
-			    size_t max_response)
+size_t crb_tpm_process_command(const void *tpm2_command, size_t command_size,
+			       void *tpm2_response, size_t max_response)
 {
 	tpm_result_t rc;
 
@@ -312,24 +312,24 @@ size_t tpm2_process_command(const void *tpm2_command, size_t command_size, void 
  * Returns information about the TPM
  *
  */
-void tpm2_get_info(struct tpm2_info *tpm2_info)
+void crb_tpm_get_info(struct crb_tpm_info *crb_tpm_info)
 {
 	uint64_t interfaceReg = read64(CRB_REG(cur_loc, CRB_REG_INTF_ID));
 
-	tpm2_info->vendor_id = (interfaceReg >> 48) & 0xFFFF;
-	tpm2_info->device_id = (interfaceReg >> 32) & 0xFFFF;
-	tpm2_info->revision = (interfaceReg >> 24) & 0xFF;
+	crb_tpm_info->vendor_id = (interfaceReg >> 48) & 0xFFFF;
+	crb_tpm_info->device_id = (interfaceReg >> 32) & 0xFFFF;
+	crb_tpm_info->revision = (interfaceReg >> 24) & 0xFF;
 }
 
 /*
- * tpm2_has_crb_active
+ * crb_tpm_is_active
  *
  * Checks that CRB interface is available and active.
  *
  * The body was derived from crb_probe() which unlike this function can also
  * write to registers.
  */
-bool tpm2_has_crb_active(void)
+bool crb_tpm_is_active(void)
 {
 	uint64_t tpmStatus = read64(CRB_REG(0, CRB_REG_INTF_ID));
 	printk(BIOS_SPEW, "Interface ID Reg. %llx\n", tpmStatus);

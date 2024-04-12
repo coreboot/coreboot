@@ -21,6 +21,10 @@ static struct device_operations cnvi_wifi_ops = {
 };
 
 static const unsigned short wifi_pci_device_ids[] = {
+	PCI_DID_INTEL_LNL_CNVI_WIFI_0,
+	PCI_DID_INTEL_LNL_CNVI_WIFI_1,
+	PCI_DID_INTEL_LNL_CNVI_WIFI_2,
+	PCI_DID_INTEL_LNL_CNVI_WIFI_3,
 	PCI_DID_INTEL_MTL_CNVI_WIFI_0,
 	PCI_DID_INTEL_MTL_CNVI_WIFI_1,
 	PCI_DID_INTEL_MTL_CNVI_WIFI_2,

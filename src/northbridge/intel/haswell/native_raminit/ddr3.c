@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <console/console.h>
+#include <delay.h>
 #include <northbridge/intel/haswell/haswell.h>
 #include <types.h>
 
@@ -214,4 +215,44 @@ enum raminit_status ddr3_jedec_init(struct sysinfo *ctrl)
 	ddr3_program_mr1(ctrl, 0, 0);
 	ddr3_program_mr0(ctrl, 1);
 	return reut_issue_zq(ctrl, ctrl->chanmap, ZQ_INIT);
+}
+
+enum raminit_status exit_selfrefresh(struct sysinfo *ctrl)
+{
+	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
+		if (!does_ch_exist(ctrl, channel))
+			continue;
+
+		/* Fields in ctrl aren't populated on a warm boot */
+		union ddr_data_control_0_reg data_control_0 = {
+			.raw = mchbar_read32(DQ_CONTROL_0(channel, 0)),
+		};
+		data_control_0.read_rf_rd = 1;
+		for (uint8_t rank = 0; rank < NUM_SLOTRANKS; rank++) {
+			if (!rank_in_ch(ctrl, rank, channel))
+				continue;
+
+			data_control_0.read_rf_rank = rank;
+			mchbar_write32(DDR_DATA_ch_CONTROL_0(channel), data_control_0.raw);
+		}
+	}
+
+	/* Time needed to stabilize the DCLK (~6 us) */
+	udelay(6);
+
+	/* Pull the DIMMs out of self refresh by asserting CKE high */
+	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
+		const union reut_misc_cke_ctrl_reg reut_misc_cke_ctrl = {
+			.cke_on = ctrl->rankmap[channel],
+		};
+		mchbar_write32(REUT_ch_MISC_CKE_CTRL(channel), reut_misc_cke_ctrl.raw);
+	}
+	mchbar_write32(REUT_MISC_ODT_CTRL, 0);
+
+	const enum raminit_status status = reut_issue_zq(ctrl, ctrl->chanmap, ZQ_LONG);
+	if (status) {
+		/* ZQCL errors don't seem to be a fatal problem here */
+		printk(BIOS_ERR, "ZQ Long failed during S3 resume or warm reset flow\n");
+	}
+	return RAMINIT_STATUS_SUCCESS;
 }

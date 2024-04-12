@@ -170,6 +170,8 @@ enum regfile_mode {
 	REG_FILE_USE_CURRENT,	/* Used when changing parameters after the test */
 };
 
+struct register_save_frame;
+
 struct wdb_pat {
 	uint32_t start_ptr;	/* Starting pointer in WDB */
 	uint32_t stop_ptr;	/* Stopping pointer in WDB */
@@ -220,6 +222,7 @@ enum raminit_status {
 	RAMINIT_STATUS_RCVEN_FAILURE,
 	RAMINIT_STATUS_RMPR_FAILURE,
 	RAMINIT_STATUS_JWRL_FAILURE,
+	RAMINIT_STATUS_INVALID_CACHE,
 	RAMINIT_STATUS_UNSPECIFIED_ERROR, /** TODO: Deprecated in favor of specific values **/
 };
 
@@ -227,6 +230,11 @@ enum generic_stepping {
 	STEPPING_A0 = 1,
 	STEPPING_B0 = 2,
 	STEPPING_C0 = 3,
+};
+
+struct mrc_data {
+	const void *buffer;
+	size_t buffer_len;
 };
 
 struct raminit_dimm_info {
@@ -448,11 +456,21 @@ enum raminit_status do_jedec_init(struct sysinfo *ctrl);
 enum raminit_status train_receive_enable(struct sysinfo *ctrl);
 enum raminit_status train_read_mpr(struct sysinfo *ctrl);
 enum raminit_status train_jedec_write_leveling(struct sysinfo *ctrl);
+enum raminit_status save_training_values(struct sysinfo *ctrl);
+enum raminit_status restore_training_values(struct sysinfo *ctrl);
+enum raminit_status save_non_training(struct sysinfo *ctrl);
+enum raminit_status restore_non_training(struct sysinfo *ctrl);
+enum raminit_status exit_selfrefresh(struct sysinfo *ctrl);
+enum raminit_status normal_state(struct sysinfo *ctrl);
 enum raminit_status activate_mc(struct sysinfo *ctrl);
 enum raminit_status raminit_done(struct sysinfo *ctrl);
 
 void configure_timings(struct sysinfo *ctrl);
 void configure_refresh(struct sysinfo *ctrl);
+
+struct register_save_frame *reg_frame_ptr(void);
+size_t reg_frame_size(void);
+uint32_t reg_frame_rev(void);
 
 uint32_t get_tCKE(uint32_t mem_clock_mhz, bool lpddr);
 uint32_t get_tXPDLL(uint32_t mem_clock_mhz);

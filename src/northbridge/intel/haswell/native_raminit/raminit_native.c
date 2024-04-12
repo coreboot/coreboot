@@ -54,23 +54,17 @@ static bool early_init_native(enum raminit_boot_mode bootmode)
 	return cpu_replaced;
 }
 
-#define MRC_CACHE_VERSION 1
-
-struct mrc_data {
-	const void *buffer;
-	size_t buffer_len;
-};
-
-static void save_mrc_data(struct mrc_data *md)
+static void save_mrc_data(void)
 {
-	mrc_cache_stash_data(MRC_TRAINING_DATA, MRC_CACHE_VERSION, md->buffer, md->buffer_len);
+	mrc_cache_stash_data(MRC_TRAINING_DATA, reg_frame_rev(),
+			     reg_frame_ptr(), reg_frame_size());
 }
 
 static struct mrc_data prepare_mrc_cache(void)
 {
 	struct mrc_data md = {0};
 	md.buffer = mrc_cache_current_mmap_leak(MRC_TRAINING_DATA,
-						MRC_CACHE_VERSION,
+						reg_frame_rev(),
 						&md.buffer_len);
 	return md;
 }
@@ -94,14 +88,15 @@ static void raminit_reset(void)
 }
 
 static enum raminit_boot_mode do_actual_raminit(
-	struct mrc_data *md,
 	const bool s3resume,
 	const bool cpu_replaced,
 	const enum raminit_boot_mode orig_bootmode)
 {
+	struct mrc_data md = prepare_mrc_cache();
+
 	enum raminit_boot_mode bootmode = orig_bootmode;
 
-	bool save_data_valid = md->buffer && md->buffer_len == USHRT_MAX; /** TODO: sizeof() **/
+	bool save_data_valid = md.buffer && md.buffer_len == reg_frame_size();
 
 	if (s3resume) {
 		if (bootmode == BOOTMODE_COLD) {
@@ -154,7 +149,7 @@ static enum raminit_boot_mode do_actual_raminit(
 	assert(save_data_valid != (bootmode == BOOTMODE_COLD));
 	if (save_data_valid) {
 		printk(BIOS_INFO, "Using cached memory parameters\n");
-		die("RAMINIT: Fast boot is not yet implemented\n");
+		memcpy(reg_frame_ptr(), md.buffer, reg_frame_size());
 	}
 	printk(RAM_DEBUG, "Initial bootmode: %s\n", bm_names[orig_bootmode]);
 	printk(RAM_DEBUG, "Current bootmode: %s\n", bm_names[bootmode]);
@@ -181,10 +176,8 @@ void perform_raminit(const int s3resume)
 	wait_txt_clear();
 	wrmsr(0x2e6, (msr_t) {.lo = 0, .hi = 0});
 
-	struct mrc_data md = prepare_mrc_cache();
-
 	const enum raminit_boot_mode bootmode =
-			do_actual_raminit(&md, s3resume, cpu_replaced, orig_bootmode);
+			do_actual_raminit(s3resume, cpu_replaced, orig_bootmode);
 
 	/** TODO: report_memory_config **/
 
@@ -212,9 +205,8 @@ void perform_raminit(const int s3resume)
 	}
 
 	/* Save training data on non-S3 resumes */
-	/** TODO: Enable this once training data is populated **/
-	if (0 && !s3resume)
-		save_mrc_data(&md);
+	if (!s3resume)
+		save_mrc_data();
 
 	/** TODO: setup_sdram_meminfo **/
 }

@@ -333,6 +333,23 @@ enum raminit_status activate_mc(struct sysinfo *ctrl)
 	return RAMINIT_STATUS_SUCCESS;
 }
 
+enum raminit_status normal_state(struct sysinfo *ctrl)
+{
+	/* Enable periodic COMP */
+	mchbar_write32(M_COMP, (union pcu_comp_reg) {
+		.comp_interval = COMP_INT,
+	}.raw);
+	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
+		if (!does_ch_exist(ctrl, channel))
+			continue;
+
+		/* Set MC to normal mode and clean the ODT and CKE */
+		mchbar_write32(REUT_ch_SEQ_CFG(channel), REUT_MODE_NOP << 12);
+	}
+	power_down_config(ctrl);
+	return RAMINIT_STATUS_SUCCESS;
+}
+
 static void mc_lockdown(void)
 {
 	/* Lock memory controller registers */

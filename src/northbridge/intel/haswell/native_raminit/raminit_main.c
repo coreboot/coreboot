@@ -65,6 +65,22 @@ static const struct task_entry cold_boot[] = {
 	{ train_read_mpr,                                         true, "RDMPRT",     },
 	{ train_jedec_write_leveling,                             true, "JWRL",       },
 	{ activate_mc,                                            true, "ACTIVATE",   },
+	{ save_training_values,                                   true, "SAVE_TRAIN", },
+	{ save_non_training,                                      true, "SAVE_NONT",  },
+	{ raminit_done,                                           true, "RAMINITEND", },
+};
+
+static const struct task_entry fast_boot[] = {
+	{ collect_spd_info,                                       true, "PROCSPD",    },
+	{ restore_non_training,                                   true, "RST_NONT",   },
+	{ initialise_mpll,                                        true, "INITMPLL",   },
+	{ configure_mc,                                           true, "CONFMC",     },
+	{ configure_memory_map,                                   true, "MEMMAP",     },
+	{ do_jedec_init,                                          true, "JEDECINIT",  },
+	{ pre_training,                                           true, "PRETRAIN",   },
+	{ restore_training_values,                                true, "RST_TRAIN",  },
+	{ exit_selfrefresh,                                       true, "EXIT_SR",    },
+	{ normal_state,                                           true, "NORMALMODE", },
 	{ raminit_done,                                           true, "RAMINITEND", },
 };
 
@@ -103,11 +119,11 @@ static void initialize_ctrl(struct sysinfo *ctrl)
 	ctrl->bootmode = bootmode;
 }
 
-static enum raminit_status try_raminit(struct sysinfo *ctrl)
+static enum raminit_status try_raminit(
+	struct sysinfo *ctrl,
+	const struct task_entry *const schedule,
+	const size_t length)
 {
-	const struct task_entry *const schedule = cold_boot;
-	const size_t length = ARRAY_SIZE(cold_boot);
-
 	enum raminit_status status = RAMINIT_STATUS_UNSPECIFIED_ERROR;
 
 	for (size_t i = 0; i < length; i++) {
@@ -141,8 +157,16 @@ void raminit_main(const enum raminit_boot_mode bootmode)
 	mighty_ctrl.bootmode = bootmode;
 	initialize_ctrl(&mighty_ctrl);
 
+	enum raminit_status status = RAMINIT_STATUS_UNSPECIFIED_ERROR;
+
+	if (bootmode != BOOTMODE_COLD) {
+		status = try_raminit(&mighty_ctrl, fast_boot, ARRAY_SIZE(fast_boot));
+		if (status == RAMINIT_STATUS_SUCCESS)
+			return;
+	}
+
 	/** TODO: Try more than once **/
-	enum raminit_status status = try_raminit(&mighty_ctrl);
+	status = try_raminit(&mighty_ctrl, cold_boot, ARRAY_SIZE(cold_boot));
 
 	if (status != RAMINIT_STATUS_SUCCESS)
 		die("Memory initialization was met with utmost failure and misery\n");

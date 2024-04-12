@@ -111,6 +111,7 @@ struct device_operations pmc_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
+	PCI_DID_INTEL_PTL_PMC,
 	PCI_DID_INTEL_LNL_PMC,
 	PCI_DID_INTEL_MTL_SOC_PMC,
 	PCI_DID_INTEL_MTL_IOE_M_PMC,

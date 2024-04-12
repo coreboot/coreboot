@@ -12,6 +12,7 @@ struct device_operations ipu_pci_ops = {
 };
 
 static const uint16_t pci_device_ids[] = {
+	PCI_DID_INTEL_PTL_IPU,
 	PCI_DID_INTEL_LNL_IPU,
 	PCI_DID_INTEL_RPL_IPU,
 	PCI_DID_INTEL_MTL_IPU,

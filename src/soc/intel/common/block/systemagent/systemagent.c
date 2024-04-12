@@ -414,6 +414,7 @@ struct device_operations systemagent_ops = {
 };
 
 static const unsigned short systemagent_ids[] = {
+	PCI_DID_INTEL_PTL_ID,
 	PCI_DID_INTEL_LNL_M_ID,
 	PCI_DID_INTEL_LNL_M_ID_1,
 	PCI_DID_INTEL_MTL_M_ID,

@@ -92,6 +92,15 @@ Device (MMC0)
 	{
 		Return (STAT)
 	}
+
+	Device (CARD)
+	{
+		Name (_ADR, 0x00000008)
+		Method (_RMV, 0, NotSerialized)
+		{
+			Return (0)
+		}
+	}
 }
 
 Device (FUR0)

@@ -6,5 +6,6 @@
 #include <intelblocks/pcie_rp.h>
 
 const struct pcie_rp_group *get_pcie_rp_table(void);
+const struct pcie_rp_group *get_tbt_pcie_rp_table(void);
 
 #endif /* __SOC_METEORLAKE_PCIE_H__ */

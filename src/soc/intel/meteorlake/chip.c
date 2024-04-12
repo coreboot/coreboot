@@ -185,6 +185,9 @@ void soc_init_pre_device(void *chip_info)
 	/* Swap enabled PCI ports in device tree if needed. */
 	pcie_rp_update_devicetree(get_pcie_rp_table());
 
+	/* Swap enabled TBT root ports in device tree if needed. */
+	pcie_rp_update_devicetree(get_tbt_pcie_rp_table());
+
 	/*
 	 * Earlier when coreboot used to send EOP at late as possible caused
 	 * issue of delayed response from CSE since CSE was busy loading payload.

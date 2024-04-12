@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+# DESCR: Verify that Makefiles are not named Makefile.inc
+#
+
+LINTDIR="$(
+  cd -- "$(dirname "$0")" > /dev/null 2>&1 || return
+  pwd -P
+)"
+
+# shellcheck source=helper_functions.sh
+. "${LINTDIR}/helper_functions.sh"
+
+# Exit if the code isn't in a git repo
+if [ "${IN_GIT_TREE}" -eq 0 ]; then
+  exit 0
+fi
+
+MAKELIST="$(${FIND_FILES} | grep Makefile.inc)"
+if [ -n "${MAKELIST}" ]; then
+  echo "Error: Makefiles should be Makefile.mk not Makefile.inc"
+  echo "${MAKELIST}"
+fi

@@ -4599,6 +4599,7 @@
 #define PCI_DID_INTEL_LNL_TBT_RP0		0xa84e
 #define PCI_DID_INTEL_LNL_TBT_RP1		0xa84f
 #define PCI_DID_INTEL_LNL_TBT_RP2		0xa860
+#define PCI_DID_INTEL_LNL_TBT_RP3		0xa837
 #define PCI_DID_INTEL_LNL_TBT_DMA0		0xa833
 #define PCI_DID_INTEL_LNL_TBT_DMA1		0xa834
 
@@ -4705,6 +4706,9 @@
 #define PCI_DID_INTEL_LNL_PSE0			0xa862
 #define PCI_DID_INTEL_LNL_PSE1			0xa863
 #define PCI_DID_INTEL_LNL_PSE2			0xa864
+
+/* In-memory Analytics Accelerator device IDs */
+#define PCI_DID_INTEL_LNL_IAA			0x642d
 
 /* Intel Crashlog */
 #define PCI_DID_INTEL_TGL_CPU_CRASHLOG_SRAM		0x9a0d

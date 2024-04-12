@@ -25,6 +25,7 @@
 #include "gpio_names/alderlake_p.h"
 #include "gpio_names/elkhartlake.h"
 #include "gpio_names/jasperlake.h"
+#include "gpio_names/meteorlake.h"
 
 #define SBBAR_SIZE	(16 * MiB)
 #define PCR_PORT_SIZE	(64 * KiB)
@@ -254,7 +255,17 @@ const struct gpio_community *const *get_gpio_communities(struct pci_dev *const s
 		*community_count = ARRAY_SIZE(elkhartlake_pch_communities);
 		*pad_stepping = 16;
 		return elkhartlake_pch_communities;
-
+	case PCI_DEVICE_ID_INTEL_MTL_0:
+	case PCI_DEVICE_ID_INTEL_MTL_1:
+	case PCI_DEVICE_ID_INTEL_MTL_2:
+	case PCI_DEVICE_ID_INTEL_MTL_3:
+	case PCI_DEVICE_ID_INTEL_MTL_4:
+	case PCI_DEVICE_ID_INTEL_MTL_5:
+	case PCI_DEVICE_ID_INTEL_MTL_6:
+	case PCI_DEVICE_ID_INTEL_MTL_7:
+		*community_count = ARRAY_SIZE(meteorlake_pch_communities);
+		*pad_stepping = 16;
+		return meteorlake_pch_communities;
 	default:
 		return NULL;
 	}

@@ -188,7 +188,18 @@ static const struct {
 	  "12th generation (Alder Lake N family) Intel Processor"},
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_RPL_ID_H_8_6,
 	  "13th generation (Raptor Lake H family) Core Processor"},
-
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_MTL_ID_M,
+	  "14th generation (Meteor Lake M family) Core Processor"},
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_MTL_ID_P_1,
+	  "14th generation (Meteor Lake P family) Core Processor"},
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_MTL_ID_P_2,
+	  "14th generation (Meteor Lake P family) Core Processor"},
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_MTL_ID_P_3,
+	  "14th generation (Meteor Lake P family) Core Processor"},
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_MTL_ID_P_4,
+	  "14th generation (Meteor Lake P family) Core Processor"},
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_MTL_ID_P_5,
+	  "14th generation (Meteor Lake P family) Core Processor"},
 	/* Southbridges (LPC controllers) */
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82371XX, "371AB/EB/MB" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH10, "ICH10" },
@@ -588,6 +599,16 @@ static const struct {
 	  "Intel(R) UHD Graphics" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_RPL_H_IRIS_XE,
 	  "Intel(R) Iris Xe Graphics [RPL-P]" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_MTL_M_GT2,
+	  "Intel(R) MeteorLake-M GT2" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_MTL_P_GT2_1,
+	  "Intel(R) MeteorLake-P GT2" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_MTL_P_GT2_2,
+	  "Intel(R) MeteorLake-P GT2" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_MTL_P_GT2_3,
+	  "Intel(R) MeteorLake-P GT2" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_MTL_P_GT2_4,
+	  "Intel(R) MeteorLake-P GT2" },
 };
 
 #ifndef __DARWIN__

@@ -331,7 +331,7 @@ void perform_raminit(const int s3resume)
 
 	struct pei_data pei_data = {
 		.pei_version		= PEI_VERSION,
-		.board_type		= get_pch_platform_type(),
+		.board_type		= (enum board_type)get_pch_platform_type(),
 		.usbdebug		= CONFIG(USBDEBUG),
 		.pciexbar		= CONFIG_ECAM_MMCONF_BASE_ADDRESS,
 		.smbusbar		= CONFIG_FIXED_SMBUS_IO_BASE,

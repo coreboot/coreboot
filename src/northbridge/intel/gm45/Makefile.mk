@@ -10,6 +10,7 @@ romstage-y += raminit.c
 romstage-y += raminit_rcomp_calibration.c
 romstage-y += raminit_receive_enable_calibration.c
 romstage-y += raminit_read_write_training.c
+romstage-y += raminit_meminfo.c
 romstage-y += pcie.c
 romstage-y += thermal.c
 romstage-y += igd.c

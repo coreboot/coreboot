@@ -412,6 +412,7 @@ void enter_raminit_or_reset(void);
 void get_gmch_info(sysinfo_t *);
 void raminit(sysinfo_t *, int s3resume);
 void raminit_thermal(const sysinfo_t *);
+void setup_sdram_meminfo(const sysinfo_t *);
 void init_igd(const sysinfo_t *const);
 void init_pm(const sysinfo_t *, int do_freq_scaling_cfg);
 void igd_compute_ggc(sysinfo_t *const sysinfo);

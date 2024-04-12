@@ -91,6 +91,8 @@ void mainboard_romstage_entry(void)
 
 	cbmem_initted = !cbmem_recovery(s3resume);
 
+	setup_sdram_meminfo(&sysinfo);
+
 	romstage_handoff_init(cbmem_initted && s3resume);
 
 	printk(BIOS_SPEW, "exit main()\n");

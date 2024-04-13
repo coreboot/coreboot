@@ -412,4 +412,15 @@ config SOC_PHYSICAL_ADDRESS_WIDTH
 	  If not set, both CPU and SoC physical address width are
 	  assume to be the same.
 
+config X86_BOOTBLOCK_EXTRA_PROGRAM_SZ
+	int
+	default 1024 if CHROMEOS
+	default 0
+	help
+	  Add extra space to prevent overlap between .text and .init sections.
+	  This is necessary for older linkers (pre-binutils 2.4x) like those used
+	  on ChromeOS platforms.
+
+	  The default value is 1024 bytes (1 KiB) for ChromeOS and 0 for other platforms.
+
 endif

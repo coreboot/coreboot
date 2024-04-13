@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef SOUTHBRIDGE_INTEL_BD82X6X_PCH_H
-#define SOUTHBRIDGE_INTEL_BD82X6X_PCH_H
+#ifndef SOUTHBRIDGE_INTEL_IBEXPEAK_PCH_H
+#define SOUTHBRIDGE_INTEL_IBEXPEAK_PCH_H
 
 #include <acpi/acpi.h>
 #include <southbridge/intel/common/rcba.h> /* IWYU pragma: export */

@@ -2,7 +2,7 @@
 
 #include <device/device.h>
 #include <northbridge/intel/ironlake/ironlake.h>
-#include <southbridge/intel/bd82x6x/pch.h>
+#include <southbridge/intel/ibexpeak/pch.h>
 #include <ec/acpi/ec.h>
 #include <drivers/intel/gma/int15.h>
 #include <pc80/keyboard.h>

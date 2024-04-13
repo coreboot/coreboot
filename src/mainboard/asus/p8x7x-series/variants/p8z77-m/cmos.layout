@@ -55,6 +55,7 @@ entries
 # HD Audio or AC'97
 #
 425          1       e       9        audio_panel_type
+426          2       e       10       ps2_port_role
 
 # -----------------------------------------------------------------
 # Sandy/Ivy Bridge MRC Scrambler Seed values
@@ -118,6 +119,11 @@ enumerations
 7     13    448M
 7     14    480M
 7     15    512M
+
+# ps2_port_role
+10	0	Keyboard
+10	1	Mouse
+10	2	Auto
 
 # usb3_mode
 # Disable = Use the port always as USB 2.0 for compatibility

@@ -28,6 +28,7 @@ entries
 425	1	e	9	audio_panel_type
 426	1	e	10	spdif_dest
 427	1	e	11	pciex16_3_bandwidth
+428	1	e	12	ps2_port_role
 # coreboot config options: check sums
 984	16	h	0	check_sum
 
@@ -94,6 +95,11 @@ enumerations
 # pciex16_3_bandwidth
 11	0	x2
 11	1	x4
+
+# ps2_port_role
+12	0	Keyboard
+12	1	Mouse
+12	2	Auto
 
 # -----------------------------------------------------------------
 checksums

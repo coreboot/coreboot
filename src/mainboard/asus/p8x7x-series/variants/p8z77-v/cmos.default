@@ -6,3 +6,4 @@ nmi=Disable
 power_on_after_fail=Disable
 sata_mode=AHCI
 gfx_uma_size=64M
+ps2_port_role=Keyboard

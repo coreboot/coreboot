@@ -5,6 +5,7 @@
 #include <console/cfr.h>
 #include <northbridge/intel/sandybridge/cfr.h>
 #include <southbridge/intel/bd82x6x/cfr.h>
+#include <superio/nuvoton/common/nuvoton.h>
 
 #if CONFIG(USE_NATIVE_RAMINIT)
 static struct sm_obj_form sysagent = {
@@ -74,6 +75,20 @@ static const struct sm_object spdif_dest = SM_DECLARE_ENUM({
 				SM_ENUM_VALUE_END	},
 });
 #endif
+#if CONFIG(HAVE_SHARED_PS2_PORT)
+static const struct sm_object ps2_port_role = SM_DECLARE_ENUM({
+	.opt_name	= "ps2_port_role",
+	.ui_name	= "PS/2 Port Role",
+	.default_value	= 0,
+	.values		= (const struct sm_enum_value[]) {
+				{ "Keyboard",	PS2_PORT_ROLE_KEYBOARD },
+				{ "Mouse",	PS2_PORT_ROLE_MOUSE },
+#if CONFIG(DRIVERS_PS2_KEYBOARD)
+				{ "Auto",	PS2_PORT_ROLE_AUTO },
+#endif
+				SM_ENUM_VALUE_END },
+});
+#endif
 
 static struct sm_obj_form onboard_devices = {
 	.ui_name = "Onboard Devices Configuration",
@@ -82,6 +97,9 @@ static struct sm_obj_form onboard_devices = {
 		&audio_panel_type,
 #if CONFIG(BOARD_ASUS_P8Z77_V_LE_PLUS)
 		&spdif_dest,
+#endif
+#if CONFIG(HAVE_SHARED_PS2_PORT)
+		&ps2_port_role,
 #endif
 		NULL
 	},

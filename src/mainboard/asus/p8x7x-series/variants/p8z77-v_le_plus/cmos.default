@@ -10,3 +10,4 @@ gfx_uma_size=64M
 audio_panel_type=HDA
 spdif_dest=SPDIF_OUT
 pciex16_3_bandwidth=x2
+ps2_port_role=Keyboard

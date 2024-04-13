@@ -10,3 +10,4 @@ usb3_mode=Enable
 usb3_drv=Enable
 usb3_streams=Enable
 audio_panel_type=HDA
+ps2_port_role=Keyboard

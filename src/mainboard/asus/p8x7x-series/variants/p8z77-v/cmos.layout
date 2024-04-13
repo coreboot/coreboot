@@ -24,6 +24,8 @@ entries
 # coreboot config options: northbridge
 416	5	e	6	gfx_uma_size
 
+428	1	e	12	ps2_port_role
+
 # coreboot config options: check sums
 984	16	h	0	check_sum
 
@@ -79,7 +81,12 @@ enumerations
 6	14	480M
 6	15	512M
 
+# ps2_port_role
+12	0	Keyboard
+12	1	Mouse
+12	2	Auto
+
 # -----------------------------------------------------------------
 checksums
 
-checksum 392 423 984
+checksum 392 431 984

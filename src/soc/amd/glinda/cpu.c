@@ -25,7 +25,8 @@ static struct device_operations cpu_dev_ops = {
 };
 
 static struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_AMD, GLINDA_A0_CPUID, CPUID_ALL_STEPPINGS_MASK }, /* TODO: Update for Glinda */
+	{ X86_VENDOR_AMD, GLINDA_A0_CPUID, CPUID_ALL_STEPPINGS_MASK },
+	{ X86_VENDOR_AMD, GLINDA_B0_CPUID, CPUID_ALL_STEPPINGS_MASK },
 	CPU_TABLE_END
 };
 

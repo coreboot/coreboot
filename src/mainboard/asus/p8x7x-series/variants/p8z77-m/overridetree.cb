@@ -59,6 +59,9 @@ chip northbridge/intel/sandybridge
 					end
 					device pnp 2e.6 off end		# CIR
 					device pnp 2e.8 off end		# WDT1
+					device pnp 2e.108 on		# GPIO 0
+						drq 0xe1 = 0x80		# GP07 high turns DRAM_LED off
+					end
 					device pnp 2e.a on		# ACPI
 						drq 0xe4 = 0x10 	# Enable 3VSBSW#, needed for S3 suspend
 						drq 0xe7 = 0x11		# HWM reset by LRESET#, 0.5s S3 delay for compatibility
@@ -78,7 +81,6 @@ chip northbridge/intel/sandybridge
 					end
 					device pnp 2e.9 off end		# GPIO 8
 					device pnp 2e.308 on end	# GPIO by I/O
-					device pnp 2e.108 on end	# GPIO 0
 					device pnp 2e.109 on end	# GPIO 1
 					device pnp 2e.209 on		# GPIO 2
 						drq 0xe0 = 0xbf		# GP26 output

@@ -178,3 +178,6 @@ config BOARD_GOOGLE_YAVISTA
 
 config BOARD_GOOGLE_SUNDANCE
 	bool "->  Sundance"
+
+config BOARD_GOOGLE_PUJJOGA
+	bool "->  Pujjoga"

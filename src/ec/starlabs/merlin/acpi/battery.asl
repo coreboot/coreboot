@@ -48,9 +48,6 @@ Device (BAT0)
 			SBIF  [6] = B1DC / 20	// 5%
 			SBIF  [7] = B1DC / 500	// 0.2%
 			SBIF  [8] = B1DC / 500	// 0.2%
-			If (B1SN != 0xffff) {
-				SBIF [10] = B1SN
-			}
 		}
 		Return (SBIF)
 	}
@@ -101,9 +98,6 @@ Device (BAT0)
 			}
 			XBIF [14] = B1DC / 500	// 0.2%
 			XBIF [15] = B1DC / 500	// 0.2%
-			If (B1SN != 0xffff) {
-				XBIF [17] = B1SN
-			}
 		}
 		Return (XBIF)
 	}

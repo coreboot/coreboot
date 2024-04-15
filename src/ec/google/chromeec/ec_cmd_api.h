@@ -107,6 +107,20 @@ ec_cmd_usb_pd_set_amode(CROS_EC_COMMAND_INFO *h,
 			       NULL, 0);
 }
 
+static inline int ec_cmd_fp_frame(CROS_EC_COMMAND_INFO *h,
+				  const struct ec_params_fp_frame *p,
+				  uint8_t *r)
+{
+	return CROS_EC_COMMAND(h, EC_CMD_FP_FRAME, 0, p, sizeof(*p), r,
+			       p->size);
+}
+
+static inline int ec_cmd_fp_template(CROS_EC_COMMAND_INFO *h,
+				     const struct ec_params_fp_template *p,
+				     int size)
+{
+	return CROS_EC_COMMAND(h, EC_CMD_FP_TEMPLATE, 0, p, size, NULL, 0);
+}
 /*
  * Section 2: EC interface functions that can be generated with the help
  * of template macros.
@@ -280,9 +294,13 @@ _CROS_EC_CV_F_P_R(EC_CMD_FLASH_REGION_INFO, 1, flash_region_info_v1,
 		  flash_region_info, flash_region_info);
 _CROS_EC_C0_F_RF(EC_CMD_FLASH_SPI_INFO, flash_spi_info);
 _CROS_EC_C0_F_PF(EC_CMD_FORCE_LID_OPEN, force_lid_open);
-_CROS_EC_C0_F_PF_RF(EC_CMD_FP_MODE, fp_mode);
 _CROS_EC_C0_F_PF(EC_CMD_FP_SEED, fp_seed);
+_CROS_EC_C0_F_PF_RF(EC_CMD_FP_MODE, fp_mode);
+_CROS_EC_C0_F_PF_RF(EC_CMD_FP_READ_MATCH_SECRET, fp_read_match_secret);
+_CROS_EC_C0_F_RF(EC_CMD_FP_ENC_STATUS, fp_encryption_status);
 _CROS_EC_C0_F_RF(EC_CMD_FP_STATS, fp_stats);
+_CROS_EC_C1_F_PF(EC_CMD_FP_CONTEXT, fp_context);
+_CROS_EC_CV_F_R(EC_CMD_FP_INFO, 1, fp_info, fp_info);
 _CROS_EC_CV_F_R(EC_CMD_GET_BOARD_VERSION, 0, get_board_version, board_version);
 _CROS_EC_C0_F_RF(EC_CMD_GET_BOOT_TIME, get_boot_time);
 _CROS_EC_C0_F_RF(EC_CMD_GET_CHIP_INFO, get_chip_info);
@@ -292,8 +310,9 @@ _CROS_EC_C0_F_PF_RF(EC_CMD_GET_CMD_VERSIONS, get_cmd_versions);
 _CROS_EC_C0_F_RF(EC_CMD_GET_COMMS_STATUS, get_comms_status);
 _CROS_EC_C0_F_RF(EC_CMD_GET_FEATURES, get_features);
 _CROS_EC_CV_F_R(EC_CMD_GET_KEYBD_CONFIG, 0, get_keybd_config, keybd_config);
-_CROS_EC_CV_F_R(EC_CMD_GET_NEXT_EVENT, 2, get_next_event_v2, get_next_event);
 _CROS_EC_C0_F_RF(EC_CMD_GET_NEXT_EVENT, get_next_event);
+_CROS_EC_C1_F_RF(EC_CMD_GET_NEXT_EVENT, get_next_event);
+_CROS_EC_CV_F_R(EC_CMD_GET_NEXT_EVENT, 2, get_next_event_v2, get_next_event_v1);
 _CROS_EC_C0_F_PF_RF(EC_CMD_GET_PD_PORT_CAPS, get_pd_port_caps);
 _CROS_EC_C0_F_RF(EC_CMD_GET_PROTOCOL_INFO, get_protocol_info);
 _CROS_EC_CV_F_R(EC_CMD_GET_UPTIME_INFO, 0, get_uptime_info, uptime_info);
@@ -304,7 +323,7 @@ _CROS_EC_C1_F_PF_RF(EC_CMD_GPIO_GET, gpio_get);
 _CROS_EC_C0_F_PF(EC_CMD_GPIO_SET, gpio_set);
 _CROS_EC_CV_F_P_R(EC_CMD_GSV_PAUSE_IN_S5, 0, gsv_pause_in_s5, get_set_value,
 		  get_set_value);
-_CROS_EC_C0_F_PF(EC_CMD_HANG_DETECT, hang_detect);
+_CROS_EC_C0_F_PF_RF(EC_CMD_HANG_DETECT, hang_detect);
 _CROS_EC_C0_F_PF_RF(EC_CMD_HELLO, hello);
 _CROS_EC_C0_F_PF_RF(EC_CMD_HIBERNATION_DELAY, hibernation_delay);
 _CROS_EC_C0_F_PF_RF(EC_CMD_HOST_EVENT, host_event);

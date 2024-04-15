@@ -5,15 +5,29 @@
 #include <commonlib/bsd/sysincludes.h>
 #include <stdint.h>
 #include <string.h>
+#include <endian.h>
 
-/* LZ4 comes with its own supposedly portable memory access functions, but they
- * seem to be very inefficient in practice (at least on ARM64). Since coreboot
- * knows about endianness and allows some basic assumptions (such as unaligned
- * access support), we can easily write the ones we need ourselves. */
+/*
+ * RISC-V and older ARM architectures do not mandate support for misaligned access.
+ * Our le16toh and friends functions assume misaligned access support. Writing the access
+ * like this causes the compiler to generate instructions using misaligned access (or not)
+ * depending on the architecture. So there is no performance penalty for platforms supporting
+ * misaligned access.
+ */
 static uint16_t LZ4_readLE16(const void *src)
 {
-	return le16toh(*(const uint16_t *)src);
+	return *((const uint8_t *)src + 1) << 8
+	      | *(const uint8_t *)src;
 }
+
+static uint32_t LZ4_readLE32(const void *src)
+{
+	return *((const uint8_t *)src + 3) << 24
+	     | *((const uint8_t *)src + 2) << 16
+	     | *((const uint8_t *)src + 1) << 8
+	     |  *(const uint8_t *)src;
+}
+
 static void LZ4_copy8(void *dst, const void *src)
 {
 /* ARM32 needs to be a special snowflake to prevent GCC from coalescing the
@@ -107,7 +121,7 @@ size_t ulz4fn(const void *src, size_t srcn, void *dst, size_t dstn)
 			return 0;	/* input overrun */
 
 		/* We assume there's always only a single, standard frame. */
-		if (le32toh(h->magic) != LZ4F_MAGICNUMBER
+		if (LZ4_readLE32(&h->magic) != LZ4F_MAGICNUMBER
 		    || (h->flags & VERSION) != (1 << VERSION_SHIFT))
 			return 0;	/* unknown format */
 		if ((h->flags & RESERVED0) || (h->block_descriptor & RESERVED1_2))
@@ -127,7 +141,7 @@ size_t ulz4fn(const void *src, size_t srcn, void *dst, size_t dstn)
 			break;          /* input overrun */
 
 		struct lz4_block_header b = {
-			.raw = le32toh(*(const uint32_t *)in)
+			.raw = LZ4_readLE32((const uint32_t *)in)
 		};
 		in += sizeof(struct lz4_block_header);
 

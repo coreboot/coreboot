@@ -529,9 +529,12 @@ static void configure_pch_rp_power_management(FSP_S_CONFIG *s_cfg,
 					      const struct pcie_rp_config *rp_cfg,
 					      unsigned int index)
 {
-	s_cfg->PcieRpEnableCpm[index] = CONFIG(PCIEXP_CLK_PM);
-	s_cfg->PcieRpAspm[index] = adl_aspm_control_to_upd(rp_cfg->pcie_rp_aspm);
-	s_cfg->PcieRpL1Substates[index] = adl_l1ss_control_to_upd(rp_cfg->PcieRpL1Substates);
+	s_cfg->PcieRpEnableCpm[index] =
+		get_uint_option("pciexp_clk_pm", CONFIG(PCIEXP_CLK_PM));
+	s_cfg->PcieRpAspm[index] =
+		adl_aspm_control_to_upd(get_uint_option("pciexp_aspm", rp_cfg->pcie_rp_aspm));
+	s_cfg->PcieRpL1Substates[index] =
+		adl_l1ss_control_to_upd(get_uint_option("pciexp_l1ss", rp_cfg->PcieRpL1Substates));
 }
 
 /*
@@ -551,11 +554,14 @@ static void configure_cpu_rp_power_management(FSP_S_CONFIG *s_cfg,
 					      const struct pcie_rp_config *rp_cfg,
 					      unsigned int index)
 {
-	s_cfg->CpuPcieRpEnableCpm[index] = CONFIG(PCIEXP_CLK_PM);
-	s_cfg->CpuPcieClockGating[index] = CONFIG(PCIEXP_CLK_PM);
-	s_cfg->CpuPciePowerGating[index] = CONFIG(PCIEXP_CLK_PM);
-	s_cfg->CpuPcieRpAspm[index] = adl_aspm_control_to_upd(rp_cfg->pcie_rp_aspm);
-	s_cfg->CpuPcieRpL1Substates[index] = adl_l1ss_control_to_upd(rp_cfg->PcieRpL1Substates);
+	bool pciexp_clk_pm = get_uint_option("pciexp_clk_pm", CONFIG(PCIEXP_CLK_PM));
+	s_cfg->CpuPcieRpEnableCpm[index] = pciexp_clk_pm;
+	s_cfg->CpuPcieClockGating[index] = pciexp_clk_pm;
+	s_cfg->CpuPciePowerGating[index] = pciexp_clk_pm;
+	s_cfg->CpuPcieRpAspm[index] =
+		adl_aspm_control_to_upd(get_uint_option("pciexp_aspm", rp_cfg->pcie_rp_aspm));
+	s_cfg->CpuPcieRpL1Substates[index] =
+		adl_l1ss_control_to_upd(get_uint_option("pciexp_l1ss", rp_cfg->PcieRpL1Substates));
 }
 
 /* This function returns the VccIn Aux Imon IccMax values for ADL and RPL

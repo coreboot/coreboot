@@ -15,8 +15,8 @@
 #define F81866D_SP2	0x11	/* UART2 */
 #define F81866D_SP3	0x12	/* UART3 */
 #define F81866D_SP4	0x13	/* UART4 */
-#define F81866D_SP5	0x14	/* UART3 */
-#define F81866D_SP6	0x15	/* UART4 */
+#define F81866D_SP5	0x14	/* UART5 */
+#define F81866D_SP6	0x15	/* UART6 */
 #define F81866D_PP	0x03	/* Parallel Port */
 #define F81866D_HWM	0x04	/* Hardware Monitor */
 #define F81866D_KBC	0x05	/* Keyboard/Mouse */

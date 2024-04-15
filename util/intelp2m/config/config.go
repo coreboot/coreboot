@@ -31,6 +31,7 @@ const (
 	TigerType     uint8  = 4
 	AlderType     uint8  = 5
 	JasperType    uint8  = 6
+	MeteorType    uint8  = 7
 )
 
 var key uint8 = SunriseType
@@ -43,6 +44,7 @@ var platform = map[string]uint8{
 	"tgl": TigerType,
 	"adl": AlderType,
 	"jsl": JasperType,
+	"mtl": MeteorType,
 }
 func PlatformSet(name string) int {
 	if platformType, valid := platform[name]; valid {
@@ -74,6 +76,9 @@ func IsPlatformTigerLake() bool {
 }
 func IsPlatformAlderLakeH() bool {
 	return IsPlatform(AlderType)
+}
+func IsPlatformMeteorLake() bool {
+	return IsPlatform(MeteorType)
 }
 
 var InputRegDumpFile *os.File = nil

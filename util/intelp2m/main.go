@@ -72,7 +72,8 @@ func main() {
 		"\tcnl - CannonLake-LP or Whiskeylake/Coffeelake/Cometlake-U SoC\n"+
 		"\ttgl - TigerLake-H SoC\n"+
 		"\tadl - AlderLake PCH\n"+
-		"\tjsl - Jasper Lake SoC\n")
+		"\tjsl - Jasper Lake SoC\n"+
+		"\tmtl - MeteorLake SoC\n")
 
 	fieldstyle :=  flag.String("fld", "none", "set fields macros style:\n"+
 		"\tcb  - use coreboot style for bit fields macros\n"+

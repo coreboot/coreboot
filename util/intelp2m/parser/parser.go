@@ -14,6 +14,7 @@ import (
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/tgl"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/adl"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/jsl"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/mtl"
 	"review.coreboot.org/coreboot.git/util/intelp2m/config"
 )
 
@@ -154,6 +155,7 @@ func (parser *ParserData) PlatformSpecificInterfaceSet() {
 		config.TigerType     : tgl.PlatformSpecific{},
 		config.AlderType     : adl.PlatformSpecific{},
 		config.JasperType    : jsl.PlatformSpecific{},
+		config.MeteorType    : mtl.PlatformSpecific{},
 	}
 	parser.platform = platform[config.PlatformGet()]
 }

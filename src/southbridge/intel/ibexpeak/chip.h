@@ -68,12 +68,6 @@ struct southbridge_intel_ibexpeak_config {
 
 	bool pcie_hotplug_map[8];
 
-	/* These USB3 fields, copied from bd82x6x, don't apply here,
-	 * as Ibex Peak doesn't have USB3. */
-	uint32_t xhci_switchable_ports;
-	uint32_t superspeed_capable_ports;
-	uint32_t xhci_overcurrent_mapping;
-
 	uint32_t spi_uvscc;
 	uint32_t spi_lvscc;
 	struct intel_swseq_spi_config spi;

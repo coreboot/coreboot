@@ -4,6 +4,7 @@
 #define SUPERIO_NUVOTON_COMMON_H
 
 #ifndef __ACPI__
+#include <device/device.h>
 #include <device/pnp_type.h>
 #include <stdint.h>
 
@@ -31,10 +32,26 @@ static __always_inline void nuvoton_pnp_exit_conf_state(pnp_devfn_t dev)
 	outb(NUVOTON_EXIT_KEY, port);
 }
 
+void nuvoton_enable_serial(pnp_devfn_t dev, u16 iobase);
 #endif /* SIMPLE_DEVICE */
 
-void nuvoton_enable_serial(pnp_devfn_t dev, u16 iobase);
+#if ENV_RAMSTAGE
+extern struct device_operations nuvoton_common_ops;
+
+void nuvoton_common_init(struct device *dev);
 #endif
+
+#if ENV_SMM
+void nuvoton_smi_sleep(u8 slp_typ);
+#endif
+
+enum e_ps2role {
+	PS2_PORT_ROLE_KEYBOARD	= 0,
+	PS2_PORT_ROLE_MOUSE	= 1,
+	PS2_PORT_ROLE_AUTO	= 2
+};
+
+#endif /* __ACPI__ */
 
 /*
  * Logical Device Numbers (LDN) common to all Nuvoton SIOs.

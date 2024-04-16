@@ -18,9 +18,8 @@ config HAVE_SHARED_PS2_PORT
 	help
 	  Select this option if your mainboard has a single PS/2 port for both keyboard and
 	  mouse, and where a Y-cable cannot allow both keyboard and mouse to work off the same
-	  port. This one port usually works for keyboards only. Add the nvram option
-	  "swap_keyboard_and_mouse" to cmos.layout to allow changing this port into a
-	  mouse port.
+	  port. This one port usually works for keyboards only. Add the nvram/CFR option
+	  "ps2_port_role" to allow changing this port into a mouse port.
 
 config SUPERIO_NUVOTON_PNP_BASE
 	hex

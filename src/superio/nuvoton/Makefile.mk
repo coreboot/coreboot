@@ -3,6 +3,8 @@
 ## include generic nuvoton pre-ram stage driver
 bootblock-$(CONFIG_SUPERIO_NUVOTON_COMMON_PRE_RAM) += common/early_serial.c
 romstage-$(CONFIG_SUPERIO_NUVOTON_COMMON_PRE_RAM) += common/early_serial.c
+## include generic nuvoton helper
+ramstage-$(CONFIG_SUPERIO_NUVOTON_COMMON_PRE_RAM) += common/common.c
 
 subdirs-$(CONFIG_SUPERIO_NUVOTON_WPCM450) += wpcm450
 subdirs-$(CONFIG_SUPERIO_NUVOTON_NCT5104D) += nct5104d

@@ -1746,6 +1746,22 @@ static int calculate_gpr0_range(char *image, int size,
 	return 0;
 }
 
+static union gprd get_enabled_gprd(char *image, int size)
+{
+	union gprd enabled_gprd_reg;
+	uint32_t gpr0_range_start, gpr0_range_end;
+	enabled_gprd_reg.value = 0;
+	if (calculate_gpr0_range(image, size, &gpr0_range_start, &gpr0_range_end))
+		exit(EXIT_FAILURE);
+
+	enabled_gprd_reg.data.start = (gpr0_range_start >> 12) & 0x7fff;
+	enabled_gprd_reg.data.end = (gpr0_range_end >> 12) & 0x7fff;
+	enabled_gprd_reg.data.read_protect_en = 0;
+	enabled_gprd_reg.data.write_protect_en = 1;
+
+	return enabled_gprd_reg;
+}
+
 static void enable_gpr0(const char *filename, char *image, int size)
 {
 	struct fpsba *fpsba = find_fpsba(image, size);
@@ -1767,21 +1783,39 @@ static void enable_gpr0(const char *filename, char *image, int size)
 		return;
 	}
 
-	uint32_t gpr0_range_start, gpr0_range_end;
+	union gprd enabled_gprd = get_enabled_gprd(image, size);
 
-	if (calculate_gpr0_range(image, size, &gpr0_range_start, &gpr0_range_end))
-		exit(EXIT_FAILURE);
-
-	reg.data.start = (gpr0_range_start >> 12) & 0x7fff;
-	reg.data.end = (gpr0_range_end >> 12) & 0x7fff;
-	reg.data.read_protect_en = 0;
-	reg.data.write_protect_en = 1;
-
-	fpsba->pchstrp[gpr0_offset] = reg.value;
-	printf("Value at GPRD offset (%d) is 0x%08x\n", gpr0_offset, reg.value);
-	print_gpr0_range(reg);
+	fpsba->pchstrp[gpr0_offset] = enabled_gprd.value;
+	printf("Value at GPRD offset (%d) is 0x%08x\n", gpr0_offset, enabled_gprd.value);
+	print_gpr0_range(enabled_gprd);
 	write_image(filename, image, size);
 	printf("GPR0 protection is now enabled\n");
+}
+
+static void is_gpr0_protected(char *image, int size)
+{
+	struct fpsba *fpsba = find_fpsba(image, size);
+	if (!fpsba)
+		exit(EXIT_FAILURE);
+
+	uint32_t gpr0_offset = get_gpr0_offset();
+	if (gpr0_offset == 0xffffffff) {
+		fprintf(stderr, "Checking GPR0 not supported on this platform\n");
+		exit(EXIT_FAILURE);
+	}
+	union gprd reg;
+	union gprd enabled_gprd = get_enabled_gprd(image, size);
+	reg.value = fpsba->pchstrp[gpr0_offset];
+
+	if (fpsba->pchstrp[gpr0_offset] == enabled_gprd.value)
+		printf("GPR0 status: Enabled\n\n");
+	else if (fpsba->pchstrp[gpr0_offset] == 0)
+		printf("GPR0 status: Disabled\n\n");
+	else
+		printf("ERROR: GPR0 setting is not expected\n\n");
+
+	printf("Value at GPRD offset (%d) is 0x%08x\n", gpr0_offset, fpsba->pchstrp[gpr0_offset]);
+	print_gpr0_range(reg);
 }
 
 static void set_pchstrap(struct fpsba *fpsba, const struct fdbar *fdb, const int strap,
@@ -2125,6 +2159,7 @@ static void print_usage(const char *name)
 	       "   -u | --unlock                         Unlock firmware descriptor and ME region\n"
 	       "   -g | --gpr0-disable                   Disable GPR0 (Global Protected Range) register\n"
 	       "   -E | --gpr0-enable                    Enable GPR0 (Global Protected Range) register\n"
+	       "   -c | --gpr0-status                    Checking GPR0 (Global Protected Range) register status\n"
 	       "   -M | --altmedisable <0|1>             Set the MeDisable and AltMeDisable (or HAP for skylake or newer platform)\n"
 	       "                                         bits to disable ME\n"
 	       "   -p | --platform                       Add platform-specific quirks\n"
@@ -2158,7 +2193,7 @@ int main(int argc, char *argv[])
 	int mode_em100 = 0, mode_locked = 0, mode_unlocked = 0, mode_validate = 0;
 	int mode_layout = 0, mode_newlayout = 0, mode_density = 0, mode_setstrap = 0;
 	int mode_read = 0, mode_altmedisable = 0, altmedisable = 0, mode_fmap_template = 0;
-	int mode_gpr0_disable = 0, mode_gpr0_enable = 0;
+	int mode_gpr0_disable = 0, mode_gpr0_enable = 0, mode_gpr0_status = 0;
 	char *region_type_string = NULL, *region_fname = NULL;
 	const char *layout_fname = NULL;
 	char *new_filename = NULL;
@@ -2186,6 +2221,7 @@ int main(int argc, char *argv[])
 		{"unlock", 0, NULL, 'u'},
 		{"gpr0-disable", 0, NULL, 'g'},
 		{"gpr0-enable", 0, NULL, 'E'},
+		{"gpr0-status", 0, NULL, 'c'},
 		{"version", 0, NULL, 'v'},
 		{"help", 0, NULL, 'h'},
 		{"platform", 1, NULL, 'p'},
@@ -2195,7 +2231,7 @@ int main(int argc, char *argv[])
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "S:V:df:F:D:C:M:xi:n:O:s:p:elrugEvth?",
+	while ((opt = getopt_long(argc, argv, "S:V:df:F:D:C:M:xi:n:O:s:p:elrugEcvth?",
 					long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'd':
@@ -2404,6 +2440,9 @@ int main(int argc, char *argv[])
 		case 'E':
 			mode_gpr0_enable = 1;
 			break;
+		case 'c':
+			mode_gpr0_status = 1;
+			break;
 		case 'p':
 			if (!strcmp(optarg, "aplk")) {
 				platform = PLATFORM_APL;
@@ -2457,7 +2496,7 @@ int main(int argc, char *argv[])
 	if ((mode_dump + mode_layout + mode_fmap_template + mode_extract + mode_inject +
 			mode_setstrap + mode_newlayout + (mode_spifreq | mode_em100 |
 			mode_unlocked | mode_locked) + mode_altmedisable + mode_validate +
-			(mode_gpr0_disable | mode_gpr0_enable)) > 1) {
+			(mode_gpr0_disable | mode_gpr0_enable) + mode_gpr0_status) > 1) {
 		fprintf(stderr, "You may not specify more than one mode.\n\n");
 		fprintf(stderr, "run '%s -h' for usage\n", argv[0]);
 		exit(EXIT_FAILURE);
@@ -2466,7 +2505,7 @@ int main(int argc, char *argv[])
 	if ((mode_dump + mode_layout + mode_fmap_template + mode_extract + mode_inject +
 			mode_setstrap + mode_newlayout + mode_spifreq + mode_em100 +
 			mode_locked + mode_unlocked + mode_density + mode_altmedisable +
-			mode_validate + (mode_gpr0_disable | mode_gpr0_enable)) == 0) {
+			mode_validate + (mode_gpr0_disable | mode_gpr0_enable) + mode_gpr0_status) == 0) {
 		fprintf(stderr, "You need to specify a mode.\n\n");
 		fprintf(stderr, "run '%s -h' for usage\n", argv[0]);
 		exit(EXIT_FAILURE);
@@ -2568,6 +2607,9 @@ int main(int argc, char *argv[])
 
 	if (mode_gpr0_enable)
 		enable_gpr0(new_filename, image, size);
+
+	if (mode_gpr0_status)
+		is_gpr0_protected(image, size);
 
 	if (mode_setstrap) {
 		struct fpsba *fpsba = find_fpsba(image, size);

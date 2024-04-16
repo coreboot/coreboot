@@ -74,8 +74,6 @@ void mainboard_romstage_entry(void)
 
 	raminit(&sysinfo, s3resume);
 
-	mb_post_raminit_setup();
-
 	/* Disable D4F0 (unknown signal controller). */
 	pci_and_config32(MCH_DEV, D0F0_DEVEN, ~0x4000);
 
@@ -92,6 +90,8 @@ void mainboard_romstage_entry(void)
 	cbmem_initted = !cbmem_recovery(s3resume);
 
 	setup_sdram_meminfo(&sysinfo);
+
+	mb_post_raminit_setup();
 
 	romstage_handoff_init(cbmem_initted && s3resume);
 

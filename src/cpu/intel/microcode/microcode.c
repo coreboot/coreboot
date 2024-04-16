@@ -241,6 +241,12 @@ const void *intel_microcode_find(void)
 	static bool microcode_checked;
 	static const void *ucode_update;
 
+	if (ENV_CACHE_AS_RAM) {
+		printk(BIOS_ERR, "Microcode Error: Early microcode patching is not supported due"
+				"to NEM limitation\n");
+		return NULL;
+	}
+
 	if (microcode_checked)
 		return ucode_update;
 

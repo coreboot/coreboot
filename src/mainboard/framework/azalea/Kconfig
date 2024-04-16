@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_FRAMEWORK_AZALEA
+	select BOARD_ROMSIZE_KB_32768
+	select SOC_AMD_PHOENIX_FSP
+
+if BOARD_FRAMEWORK_AZALEA
+
+config MAINBOARD_DIR
+	default "framework/azalea"
+
+config MAINBOARD_PART_NUMBER
+	default "Azalea"
+
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/coreboot.fmd"
+
+endif

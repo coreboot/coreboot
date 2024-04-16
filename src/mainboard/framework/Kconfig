@@ -1,0 +1,17 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+if VENDOR_FRAMEWORK
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/framework/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/framework/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	default "Framework"
+
+endif # VENDOR_FRAMEWORK

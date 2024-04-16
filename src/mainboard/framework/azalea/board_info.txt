@@ -1,0 +1,6 @@
+Vendor name: Framework
+Board name: Azalea (13" AMD Ryzen 7040)
+Category: laptop
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: n

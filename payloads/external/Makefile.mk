@@ -344,7 +344,7 @@ payloads/external/Memtest86Plus/$(memtest_dir)/memtest: $(DOTCONFIG)
 PXE_ROM_PCI_ID:=$(subst $(comma),,$(CONFIG_PXE_ROM_ID))
 
 ifeq ($(CONFIG_PXE_ROM),y)
-PXE_ROM_FILE:=$(CONFIG_PXE_ROM_FILE)
+PXE_ROM_FILE:=$(call strip_quotes,$(CONFIG_PXE_ROM_FILE))
 endif
 ifeq ($(CONFIG_BUILD_IPXE),y)
 PXE_ROM_FILE:=payloads/external/iPXE/ipxe/ipxe.rom

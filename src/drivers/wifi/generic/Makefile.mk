@@ -20,12 +20,12 @@ wifi_sar_defaults.hex-type := raw
 
 endif
 
-CONFIG_MTCL_CBFS_FILEPATH := $(call strip_quotes,$(CONFIG_MTCL_CBFS_FILEPATH))
+CONFIG_WIFI_MTCL_CBFS_FILEPATH := $(call strip_quotes,$(CONFIG_WIFI_MTCL_CBFS_FILEPATH))
 
-ifneq ($(CONFIG_MTCL_CBFS_FILEPATH),)
+ifneq ($(CONFIG_WIFI_MTCL_CBFS_FILEPATH),)
 
 cbfs-files-$(CONFIG_USE_MTCL) += wifi_mtcl.bin
-wifi_mtcl.bin-file := $(CONFIG_MTCL_CBFS_FILEPATH)
+wifi_mtcl.bin-file := $(CONFIG_WIFI_MTCL_CBFS_FILEPATH)
 wifi_mtcl.bin-type := raw
 
 endif

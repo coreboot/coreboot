@@ -10,7 +10,9 @@ all-y += timer.c timer_prepare.c
 all-y += ../common/uart.c
 
 bootblock-y += bootblock.c
+bootblock-y += ../common/early_init.c
 bootblock-y += ../common/mmu_operations.c
+bootblock-$(CONFIG_PCI) += ../common/pcie.c pcie.c
 bootblock-y += ../common/wdt.c ../common/wdt_req.c wdt.c
 
 romstage-y += ../common/cbmem.c
@@ -18,9 +20,11 @@ romstage-y += emi.c
 romstage-y += l2c_ops.c
 romstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 
+ramstage-y += ../common/early_init.c
 ramstage-y += emi.c
 ramstage-y += l2c_ops.c
 ramstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
+ramstage-$(CONFIG_PCI) += ../common/pcie.c pcie.c
 ramstage-y += soc.c
 ramstage-y += ../common/usb.c usb.c
 

@@ -11,7 +11,8 @@ SECTIONS
 	DMA_COHERENT(0x00107000, 4K)
 	STACK(0x00108000, 15K)
 	WATCHDOG_TOMBSTONE(0x0010bc00, 4)
-	/* EMPTY(0x0010bc04, 29K - 4) */
+	EARLY_INIT(0x0010bc10, 128)
+	/* EMPTY(0x0010bc90, 29K - 144) */
 	/*
 	 * MCUPM exchanges data with kernel driver using SRAM 0x00113000 ~
 	 * 0x0011ffff. The address is hardcoded in MCUPM image.

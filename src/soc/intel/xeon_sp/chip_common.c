@@ -136,11 +136,7 @@ int iio_pci_domain_socket_from_dev(const struct device *dev)
 	const struct device *domain;
 	union xeon_domain_path dn;
 
-	if (dev->path.type == DEVICE_PATH_DOMAIN)
-		domain = dev;
-	else
-		domain = dev_get_domain(dev);
-
+	domain = dev_get_domain(dev);
 	if (!domain)
 		return -1;
 
@@ -162,11 +158,7 @@ int iio_pci_domain_stack_from_dev(const struct device *dev)
 	const struct device *domain;
 	union xeon_domain_path dn;
 
-	if (dev->path.type == DEVICE_PATH_DOMAIN)
-		domain = dev;
-	else
-		domain = dev_get_domain(dev);
-
+	domain = dev_get_domain(dev);
 	if (!domain)
 		return -1;
 

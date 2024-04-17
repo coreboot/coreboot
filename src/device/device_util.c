@@ -252,9 +252,9 @@ const struct device *dev_get_domain(const struct device *dev)
 {
 	/* Walk up the tree up to the domain */
 	while (dev && dev->upstream && !is_root_device(dev)) {
-		dev = dev->upstream->dev;
 		if (dev->path.type == DEVICE_PATH_DOMAIN)
 			return dev;
+		dev = dev->upstream->dev;
 	}
 
 	return NULL;

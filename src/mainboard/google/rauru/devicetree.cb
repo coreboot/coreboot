@@ -2,4 +2,23 @@
 
 chip soc/mediatek/mt8196
 	device cpu_cluster 0 on end
+
+	device domain 0 on
+		register "pcie_config" = "{
+			.base = 0x16940000,
+			.mmio_res_io = {
+				.cpu_addr = 0x58000000,
+				.pci_addr = 0x58000000,
+				.size = 16 * MiB,
+				.type = IORESOURCE_IO,
+			},
+			.mmio_res_mem = {
+				.cpu_addr = 0x59000000,
+				.pci_addr = 0x59000000,
+				.size = 64 * MiB,
+				.type = IORESOURCE_MEM,
+			},
+		}"
+		device pci 00.0 on end # - Host Bridge
+	end
 end

@@ -21,3 +21,4 @@ romstage-y += timings_refresh.c
 romstage-y += train_jedec_write_leveling.c
 romstage-y += train_read_mpr.c
 romstage-y += train_receive_enable.c
+romstage-y += train_sense_amp_offset.c

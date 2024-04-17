@@ -23,6 +23,8 @@
 #define NUM_LANES		9
 #define NUM_LANES_NO_ECC	8
 
+#define NUM_BITS		8
+
 #define COMP_INT		10
 
 /* Always use 12 legs for emphasis (not trained) */
@@ -219,6 +221,7 @@ enum raminit_status {
 	RAMINIT_STATUS_MPLL_INIT_FAILURE,
 	RAMINIT_STATUS_POLL_TIMEOUT,
 	RAMINIT_STATUS_REUT_ERROR,
+	RAMINIT_STATUS_SAMP_OFFSET_FAILURE,
 	RAMINIT_STATUS_RCVEN_FAILURE,
 	RAMINIT_STATUS_RMPR_FAILURE,
 	RAMINIT_STATUS_JWRL_FAILURE,
@@ -242,6 +245,12 @@ struct raminit_dimm_info {
 	struct dimm_attr_ddr3_st data;
 	uint8_t spd_addr;
 	bool valid;
+};
+
+struct vref_margin {
+	uint8_t low;
+	uint8_t center;
+	uint8_t high;
 };
 
 struct sysinfo {
@@ -330,6 +339,8 @@ struct sysinfo {
 	uint8_t rxdqsp[NUM_CHANNELS][NUM_SLOTRANKS][NUM_LANES];
 	uint8_t rxdqsn[NUM_CHANNELS][NUM_SLOTRANKS][NUM_LANES];
 	int8_t  rxvref[NUM_CHANNELS][NUM_SLOTRANKS][NUM_LANES];
+
+	struct vref_margin rxdqvrefpb[NUM_CHANNELS][NUM_SLOTRANKS][NUM_LANES][NUM_BITS];
 
 	uint8_t clk_pi_code[NUM_CHANNELS][NUM_SLOTRANKS];
 	uint8_t ctl_pi_code[NUM_CHANNELS][NUM_SLOTRANKS];
@@ -453,6 +464,7 @@ enum raminit_status convert_timings(struct sysinfo *ctrl);
 enum raminit_status configure_mc(struct sysinfo *ctrl);
 enum raminit_status configure_memory_map(struct sysinfo *ctrl);
 enum raminit_status do_jedec_init(struct sysinfo *ctrl);
+enum raminit_status train_sense_amp_offset(struct sysinfo *ctrl);
 enum raminit_status train_receive_enable(struct sysinfo *ctrl);
 enum raminit_status train_read_mpr(struct sysinfo *ctrl);
 enum raminit_status train_jedec_write_leveling(struct sysinfo *ctrl);

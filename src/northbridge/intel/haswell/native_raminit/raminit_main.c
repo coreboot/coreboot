@@ -61,6 +61,7 @@ static const struct task_entry cold_boot[] = {
 	{ configure_memory_map,                                   true, "MEMMAP",     },
 	{ do_jedec_init,                                          true, "JEDECINIT",  },
 	{ pre_training,                                           true, "PRETRAIN",   },
+	{ train_sense_amp_offset,                                 true, "SOT",        },
 	{ train_receive_enable,                                   true, "RCVET",      },
 	{ train_read_mpr,                                         true, "RDMPRT",     },
 	{ train_jedec_write_leveling,                             true, "JWRL",       },

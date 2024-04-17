@@ -18,6 +18,8 @@
 #define RX_TRAIN_ch_r_b(ch, rank, byte)		_DDRIO_C_R_B(0x0000, ch, rank, byte)
 #define TX_TRAIN_ch_r_b(ch, rank, byte)		_DDRIO_C_R_B(0x0020, ch, rank, byte)
 
+#define RX_OFFSET_VDQ(ch, byte)			_DDRIO_C_R_B(0x004c, ch, 0, byte)
+
 #define DDR_DATA_TRAIN_FEEDBACK(ch, byte)	_DDRIO_C_R_B(0x0054, ch, 0, byte)
 
 #define DQ_CONTROL_1(ch, byte)			_DDRIO_C_R_B(0x0060, ch, 0, byte)

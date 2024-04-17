@@ -195,29 +195,11 @@ config SOC_INTEL_CSE_FMAP_NAME
 	help
 	 Name of CSE region in FMAP
 
-config SOC_INTEL_CSE_RW_A_FMAP_NAME
-	string "Location of CSE RW A in FMAP" if SOC_INTEL_CSE_RW_UPDATE
-	default "ME_RW_A"
-	help
-	 Name of CSE RW A region in FMAP
-
-config SOC_INTEL_CSE_RW_B_FMAP_NAME
-	string "Location of CSE RW B in FMAP" if SOC_INTEL_CSE_RW_UPDATE
-	default "ME_RW_B"
-	help
-	 Name of CSE RW B region in FMAP
-
 config SOC_INTEL_CSE_RW_CBFS_NAME
 	string "CBFS entry name for CSE RW blob" if SOC_INTEL_CSE_RW_UPDATE
 	default "me_rw"
 	help
 	 CBFS entry name for Intel CSE CBFS RW blob
-
-config SOC_INTEL_CSE_RW_HASH_CBFS_NAME
-	string "CBFS name for CSE RW hash file" if SOC_INTEL_CSE_RW_UPDATE
-	default "me_rw.hash"
-	help
-	 CBFS name for Intel CSE CBFS RW hash file
 
 config SOC_INTEL_CSE_RW_VERSION_CBFS_NAME
 	string "CBFS name for CSE RW version file" if SOC_INTEL_CSE_RW_UPDATE

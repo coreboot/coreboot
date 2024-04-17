@@ -107,9 +107,6 @@ config SOC_INTEL_HAS_BIOS_DONE_MSR
 config SOC_INTEL_HAS_NCMEM
 	def_bool y
 
-config SOC_INTEL_PCIE_64BIT_ALLOC
-	def_bool y
-
 config SOC_INTEL_MMAPVTD_ONLY_FOR_DPR
 	def_bool y
 

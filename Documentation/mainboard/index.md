@@ -136,6 +136,15 @@ Laptop 13 Intel Core Ultra Series 3 (Sakura) <framework/sakura.md>
 D41S <foxconn/d41s.md>
 ```
 
+## Framework
+
+```{toctree}
+:maxdepth: 1
+
+Azalea (Framework 13 Ryzen 7040 series) <framework/azalea/azalea.md>
+```
+
+
 ## Gigabyte
 
 ```{toctree}

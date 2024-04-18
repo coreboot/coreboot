@@ -157,6 +157,11 @@ static void fill_ssdt_typec_device(const struct device *dev)
 	struct acpi_pld pld = {0};
 	uint32_t pcap_mask = 0;
 
+	/* UCSI implementations do not require an ACPI device with mux info since the
+	   linux kernel doesn't set the muxes. */
+	if (google_chromeec_get_ucsi_enabled())
+		return;
+
 	rv = google_chromeec_get_num_pd_ports(&num_ports);
 	if (rv || num_ports == 0)
 		return;

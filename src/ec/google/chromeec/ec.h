@@ -424,6 +424,13 @@ void google_chromeec_clear_ec_ap_idle(void);
  */
 bool google_chromeec_is_battery_present_and_above_critical_threshold(void);
 
+/**
+ * Determine if the UCSI stack is currently active.
+ *
+ * @return true if EC implements the UCSI stack
+ */
+bool google_chromeec_get_ucsi_enabled(void);
+
 #if CONFIG(HAVE_ACPI_TABLES)
 /**
  * Writes USB Type-C PD related information to the SSDT

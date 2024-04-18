@@ -723,6 +723,31 @@ int google_chromeec_cbi_get_ssfc(uint32_t *ssfc)
 	return cbi_get_uint32(ssfc, CBI_TAG_SSFC);
 }
 
+bool google_chromeec_get_ucsi_enabled(void)
+{
+	int rv;
+	union ec_common_control cc;
+
+	rv = google_chromeec_check_feature(EC_FEATURE_UCSI_PPM);
+	if (rv < 0) {
+		printk(BIOS_INFO, "Cannot check if EC_FEATURE_UCSI_PPM is available: status = %d\n", rv);
+		return false;
+	}
+
+	if (rv == 0)
+		return false;
+
+	/* Check if PPM is enabled at runtime. */
+	cc.ucsi_enabled = 0;
+	rv = cbi_get_uint32(&cc.raw_value, CBI_TAG_COMMON_CONTROL);
+	if (rv < 0) {
+		printk(BIOS_DEBUG, "Cannot get tag CBI_TAG_COMMON_CONTROL from CBI: status = %d\n", rv);
+		return false;
+	}
+
+	return (cc.ucsi_enabled != 0);
+}
+
 static int cbi_get_string(char *buf, size_t bufsize, uint32_t tag)
 {
 	struct ec_params_get_cbi params = {

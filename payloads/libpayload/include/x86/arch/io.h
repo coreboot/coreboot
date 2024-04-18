@@ -90,7 +90,7 @@ static inline __attribute__((always_inline)) void write64(volatile void *addr, u
 
 static inline unsigned int inl(int port)
 {
-	unsigned long val;
+	unsigned int val;
 	__asm__ __volatile__("inl %w1, %0" : "=a"(val) : "Nd"(port));
 	return val;
 }

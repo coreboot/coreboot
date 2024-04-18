@@ -163,7 +163,7 @@ typedef struct _embedded_firmware {
 	uint32_t bios2_entry;
 	struct second_gen_efs efs_gen;
 	uint32_t bios3_entry;
-	uint32_t reserved_2Ch;
+	uint32_t psp_bak_directory;
 	uint32_t promontory_fw_ptr;
 	uint32_t lp_promontory_fw_ptr;
 	uint32_t reserved_38h;
@@ -455,7 +455,7 @@ typedef struct _context {
 		uint8_t sub;
 	} combo_apcb[MAX_COMBO_ENTRIES], combo_apcb_bk[MAX_COMBO_ENTRIES];
 	embedded_firmware *amd_romsig_ptr;
-	psp_directory_table *pspdir, *pspdir2, *pspdir2_b;
+	psp_directory_table *pspdir, *pspdir_bak, *pspdir2, *pspdir2_b;
 	bios_directory_table *biosdir, *biosdir2, *biosdir2_b;
 	psp_combo_directory *psp_combo_dir, *bhd_combo_dir;
 	ish_directory_table *ish_a_dir, *ish_b_dir;

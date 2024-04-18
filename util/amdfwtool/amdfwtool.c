@@ -528,6 +528,12 @@ static void *new_combo_dir(context *ctx, uint32_t cookie)
 	return ptr;
 }
 
+static void copy_psp_header(void *bak, void *orig)
+{
+	uint32_t count = ((psp_directory_header *)orig)->num_entries;
+	memcpy(bak, orig, count * sizeof(bios_directory_entry) + sizeof(psp_directory_table));
+}
+
 static void fill_dir_header(void *directory, uint32_t count, context *ctx)
 {
 	psp_combo_directory *cdir = directory;
@@ -626,6 +632,14 @@ static void fill_psp_directory_to_efs(embedded_firmware *amd_romsig, void *pspdi
 			BUFF_TO_RUN_MODE(*ctx, pspdir, AMD_ADDR_REL_BIOS);
 		break;
 	}
+}
+
+static void fill_psp_bak_directory_to_efs(embedded_firmware *amd_romsig, void *pspdir_bak,
+	context *ctx, amd_cb_config *cb_config)
+{
+	if (cb_config->recovery_ab)
+		amd_romsig->psp_bak_directory =
+			BUFF_TO_RUN_MODE(*ctx, pspdir_bak, AMD_ADDR_REL_BIOS);
 }
 
 static void fill_bios_directory_to_efs(embedded_firmware *amd_romsig, void *biosdir,
@@ -816,6 +830,8 @@ static void dump_image_addresses(context *ctx)
 {
 	printf("romsig offset:%lx\n", BUFF_TO_RUN(*ctx, ctx->amd_romsig_ptr));
 	printf("PSP L1 offset:%lx\n", BUFF_TO_RUN(*ctx, ctx->pspdir));
+	if (ctx->pspdir_bak != NULL)
+		printf("PSP L1 backup offset:%lx\n", BUFF_TO_RUN(*ctx, ctx->pspdir_bak));
 	if (ctx->pspdir2 != NULL)
 		printf("PSP L2(A) offset:%lx\n", BUFF_TO_RUN(*ctx, ctx->pspdir2));
 	if (ctx->ish_a_dir != NULL)
@@ -912,6 +928,7 @@ static void integrate_psp_levels(context *ctx,
 				use_only_a ? AMD_FW_RECOVERYAB_A : AMD_FW_RECOVERYAB_B,
 				cb_config->soc_id);
 
+		copy_psp_header(ctx->pspdir_bak, ctx->pspdir);
 	} else if (pspdir2 != NULL) {
 		assert_fw_entry(count, MAX_PSP_ENTRIES, ctx);
 		pspdir->entries[count].type = AMD_FW_L2_PTR;
@@ -953,9 +970,11 @@ static void integrate_psp_firmwares(context *ctx,
 	 */
 	pspdir = new_psp_dir(ctx, cb_config->multi_level, cookie);
 
-	if (cookie == PSP_COOKIE)
+	if (cookie == PSP_COOKIE) {
 		ctx->pspdir = pspdir;
-	else if (cookie == PSPL2_COOKIE) {
+		if (recovery_ab)
+			ctx->pspdir_bak = new_psp_dir(ctx, cb_config->multi_level, cookie);
+	} else if (cookie == PSPL2_COOKIE) {
 		if (ctx->pspdir2 == NULL)
 			ctx->pspdir2 = pspdir;
 		else if (ctx->pspdir2_b == NULL)
@@ -1705,8 +1724,10 @@ int main(int argc, char **argv)
 
 		/* The pspdir level 1 is special. For new combo layout, all the combo entries
 		   share one pspdir L1. It should not be cleared at each iteration. */
-		if (!cb_config.combo_new_rab || combo_index == 0)
+		if (!cb_config.combo_new_rab || combo_index == 0) {
 			ctx.pspdir = NULL;
+			ctx.pspdir_bak = NULL;
+		}
 		ctx.pspdir2 = NULL;
 		ctx.pspdir2_b = NULL;
 		ctx.biosdir = NULL;
@@ -1773,6 +1794,7 @@ int main(int argc, char **argv)
 		if (!cb_config.use_combo || (cb_config.combo_new_rab && combo_index == 0)) {
 			/* For new combo layout, there is only 1 PSP level 1 directory. */
 			fill_psp_directory_to_efs(ctx.amd_romsig_ptr, ctx.pspdir, &ctx, &cb_config);
+			fill_psp_bak_directory_to_efs(ctx.amd_romsig_ptr, ctx.pspdir_bak, &ctx, &cb_config);
 		} else if (cb_config.use_combo && !cb_config.combo_new_rab) {
 			fill_psp_directory_to_efs(ctx.amd_romsig_ptr, ctx.psp_combo_dir, &ctx, &cb_config);
 			add_combo_entry(ctx.psp_combo_dir, ctx.pspdir, combo_index, &ctx, &cb_config);

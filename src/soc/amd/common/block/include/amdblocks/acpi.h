@@ -56,6 +56,7 @@ unsigned long soc_acpi_write_tables(const struct device *device, unsigned long c
 				    acpi_rsdp_t *rsdp);
 
 unsigned long acpi_add_fsp_tables(unsigned long current, acpi_rsdp_t *rsdp);
+unsigned long acpi_add_opensil_tables(unsigned long current, acpi_rsdp_t *rsdp);
 
 unsigned long southbridge_write_acpi_tables(const struct device *device, unsigned long current,
 					    struct acpi_rsdp *rsdp);

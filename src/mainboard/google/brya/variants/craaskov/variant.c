@@ -3,6 +3,7 @@
 #include <baseboard/variants.h>
 #include <boardid.h>
 #include <device/device.h>
+#include <fw_config.h>
 #include <sar.h>
 
 const char *get_wifi_sar_cbfs_filename(void)
@@ -56,4 +57,10 @@ void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config)
 		config->ext_fivr_settings.vnn_icc_max_ma = 500;
 		printk(BIOS_INFO, "Configured external FIVR\n");
 	}
+
+	if (fw_config_probe(FW_CONFIG(THERMAL_SOLUTION, THERMAL_SOLUTION_6W)))
+		config->tcc_offset = 15;
+	if (fw_config_probe(FW_CONFIG(THERMAL_SOLUTION, THERMAL_SOLUTION_15W)))
+		config->tcc_offset = 8;
+
 }

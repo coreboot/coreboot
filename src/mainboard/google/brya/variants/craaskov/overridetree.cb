@@ -126,8 +126,6 @@ chip soc/intel/alderlake
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for CNVi WLAN
 	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for CNVi WLAN
 
-	register "tcc_offset" = "8"
-
 	register "power_limits_config[ADL_N_041_6W_CORE]" = "{
 		.tdp_pl1_override = 20,
 		.tdp_pl2_override = 25,
@@ -153,56 +151,56 @@ chip soc/intel/alderlake
 					[0] = {
 						.target = DPTF_CPU,
 						.thresholds = {
-								TEMP_PCT(70, 100),
-								TEMP_PCT(60, 65),
-								TEMP_PCT(42, 60),
-								TEMP_PCT(39, 55),
-								TEMP_PCT(38, 50),
-								TEMP_PCT(35, 43),
-								TEMP_PCT(31, 30),
+								TEMP_PCT(95, 100),
+								TEMP_PCT(83, 64),
+								TEMP_PCT(72, 59),
+								TEMP_PCT(65, 54),
+								TEMP_PCT(52, 49),
+								TEMP_PCT(42, 43),
+								TEMP_PCT(38, 29),
 						}
 					},
 					[1] = {
 						.target = DPTF_TEMP_SENSOR_0,
 						.thresholds = {
 								TEMP_PCT(60, 100),
-								TEMP_PCT(55, 65),
-								TEMP_PCT(52, 60),
-								TEMP_PCT(50, 55),
-								TEMP_PCT(48, 50),
+								TEMP_PCT(55, 64),
+								TEMP_PCT(52, 59),
+								TEMP_PCT(50, 54),
+								TEMP_PCT(48, 49),
 								TEMP_PCT(45, 43),
-								TEMP_PCT(41, 30),
+								TEMP_PCT(41, 29),
 						}
 					}
 				}"
 
 				## Passive Policy
 				register "policies.passive" = "{
-					[0] = DPTF_PASSIVE(CPU,         CPU,           95, 5000),
-					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 70, 5000),
-					[2] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_1, 70, 5000),
-					[3] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_2, 70, 5000),
+					[0] = DPTF_PASSIVE(CPU,         CPU,           85, 5000),
+					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 65, 5000),
+					[2] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_1, 65, 5000),
+					[3] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_2, 65, 5000),
 				}"
 
 				## Critical Policy
 				register "policies.critical" = "{
-					[0] = DPTF_CRITICAL(CPU,               100, SHUTDOWN),
-					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,     95, SHUTDOWN),
-					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,     95, SHUTDOWN),
-					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,     95, SHUTDOWN),
+					[0] = DPTF_CRITICAL(CPU,               110, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,     75, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,     75, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,     75, SHUTDOWN),
 				}"
 
 				register "controls.power_limits" = "{
 					.pl1 = {
 						.min_power = 6000,
-						.max_power = 20000,
+						.max_power = 6000,
 						.time_window_min = 28 * MSECS_PER_SEC,
 						.time_window_max = 28 * MSECS_PER_SEC,
 						.granularity = 500
 					},
 					.pl2 = {
-						.min_power = 25000,
-						.max_power = 25000,
+						.min_power = 6000,
+						.max_power = 6000,
 						.time_window_min = 32 * MSECS_PER_SEC,
 						.time_window_max = 32 * MSECS_PER_SEC,
 						.granularity = 500
@@ -275,7 +273,7 @@ chip soc/intel/alderlake
 
 				## Passive Policy
 				register "policies.passive" = "{
-					[0] = DPTF_PASSIVE(CPU,         CPU,           95, 5000),
+					[0] = DPTF_PASSIVE(CPU,         CPU,           90, 5000),
 					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 70, 5000),
 					[2] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_1, 70, 5000),
 					[3] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_2, 70, 5000),
@@ -283,23 +281,23 @@ chip soc/intel/alderlake
 
 				## Critical Policy
 				register "policies.critical" = "{
-					[0] = DPTF_CRITICAL(CPU,               100, SHUTDOWN),
-					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,     95, SHUTDOWN),
-					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,     95, SHUTDOWN),
-					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,     95, SHUTDOWN),
+					[0] = DPTF_CRITICAL(CPU,               105, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,     80, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,     80, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,     80, SHUTDOWN),
 				}"
 
 				register "controls.power_limits" = "{
 					.pl1 = {
 						.min_power = 15000,
-						.max_power = 20000,
+						.max_power = 15000,
 						.time_window_min = 28 * MSECS_PER_SEC,
 						.time_window_max = 28 * MSECS_PER_SEC,
 						.granularity = 500
 					},
 					.pl2 = {
-						.min_power = 35000,
-						.max_power = 35000,
+						.min_power = 15000,
+						.max_power = 15000,
 						.time_window_min = 32 * MSECS_PER_SEC,
 						.time_window_max = 32 * MSECS_PER_SEC,
 						.granularity = 500

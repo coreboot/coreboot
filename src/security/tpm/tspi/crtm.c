@@ -67,7 +67,7 @@ static tpm_result_t tspi_init_crtm(void)
 			if (rc)
 				return rc;
 		}
-	} else if (CONFIG(BOOTBLOCK_IN_CBFS)){
+	} else if (CONFIG(BOOTBLOCK_IN_CBFS)) {
 		/* Mapping measures the file. We know we can safely map here because
 		   bootblock-as-a-file is only used on x86, where we don't need cache to map. */
 		enum cbfs_type type = CBFS_TYPE_BOOTBLOCK;

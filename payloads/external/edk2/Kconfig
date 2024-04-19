@@ -308,6 +308,15 @@ config EDK2_PCO_MMIO_EMMC
 	  It is needed for AMD Picasso boards with eMMC storage, but will conflict with the
 	  PCI-based eMMC driver, so should only be enabled for AMD Picasso boards.
 
+config EDK2_USE_LAPIC_TIMER
+	bool "Use LAPIC timer instead of HPET"
+	default n
+	help
+	  Select this option to use the LAPIC timer instead of HPET in edk2. The LAPIC is closer
+	  to the CPU than the HPET (on the PCH), resulting in lower latency / higher resolution.
+	  This setting is at least needed for platforms with Core 2 processors, which are reported
+	  to have issues with HPET.
+
 config EDK2_CUSTOM_BUILD_PARAMS
 	string "edk2 additional custom build parameters"
 	default "-D VARIABLE_SUPPORT=SMMSTORE" if EDK2_REPO_MRCHROMEBOX && SMMSTORE_V2

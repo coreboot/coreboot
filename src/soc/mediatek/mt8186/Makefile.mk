@@ -51,7 +51,7 @@ ramstage-y += soc.c
 ramstage-y += ../common/spm.c spm.c
 ramstage-y += ../common/sspm.c
 ramstage-y += ../common/tps65132s.c
-ramstage-y += ../common/usb.c usb.c
+ramstage-y += ../common/usb.c ../common/usb_secondary.c usb.c
 
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8186/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/dp/include

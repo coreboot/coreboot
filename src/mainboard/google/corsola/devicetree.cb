@@ -1,5 +1,9 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 fw_config
+	field SECONDARY_USB 27
+		option DISABLED 0
+		option ENABLED 1
+	end
 	field AUDIO_AMP 28 29
 		option AMP_ALC1019 0
 		option AMP_ALC5645 1

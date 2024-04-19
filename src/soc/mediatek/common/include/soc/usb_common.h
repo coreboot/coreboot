@@ -4,6 +4,7 @@
 #define SOC_MEDIATEK_USB_COMMON_H
 
 #include <stddef.h>
+#include <stdint.h>
 
 /* ip_pw_ctrl0 */
 #define CTRL0_IP_SW_RST			(0x1 << 0)
@@ -162,5 +163,7 @@ void mtk_usb_prepare(void);
 void mtk_usb_adjust_phy_shift(void);
 
 void setup_usb_host(void);
-
+void update_usb_base_regs(uintptr_t ippc_base, uintptr_t sif_base);
+void setup_usb_secondary_host(void);
+void setup_usb_host_controller(void);
 #endif

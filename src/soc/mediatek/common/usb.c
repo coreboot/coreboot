@@ -13,6 +13,12 @@
 static struct ssusb_ippc_regs *ippc_regs = (void *)(SSUSB_IPPC_BASE);
 static struct ssusb_sif_port *phy_ports = (void *)(SSUSB_SIF_BASE);
 
+void update_usb_base_regs(uintptr_t ippc_base, uintptr_t sif_base)
+{
+	ippc_regs = (void *)ippc_base;
+	phy_ports = (void *)sif_base;
+}
+
 static void phy_index_power_on(int index)
 {
 	struct ssusb_sif_port *phy = phy_ports + index;
@@ -150,7 +156,7 @@ __weak void mtk_usb_adjust_phy_shift(void)
 	/* do nothing */
 }
 
-void setup_usb_host(void)
+void setup_usb_host_controller(void)
 {
 	u3p_msg("Setting up USB HOST controller...\n");
 
@@ -163,4 +169,10 @@ void setup_usb_host(void)
 	u3phy_power_on();
 	mtk_usb_adjust_phy_shift();
 	u3p_msg("phy power-on done.\n");
+}
+
+void setup_usb_host(void)
+{
+	update_usb_base_regs(SSUSB_IPPC_BASE, SSUSB_SIF_BASE);
+	setup_usb_host_controller();
 }

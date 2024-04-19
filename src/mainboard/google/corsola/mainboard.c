@@ -53,6 +53,11 @@ static void mainboard_init(struct device *dev)
 
 	setup_usb_host();
 
+	if (fw_config_probe(FW_CONFIG(SECONDARY_USB, ENABLED))) {
+		/* Change host to USB2 port0 for initialization */
+		setup_usb_secondary_host();
+	}
+
 	if (!fw_config_is_provisioned() ||
 	    fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_ALC1019)))
 		configure_alc1019();

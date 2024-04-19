@@ -11,7 +11,8 @@
 
 void mainboard_ewl_check(void)
 {
-	get_ewl();
+	if (CONFIG(OCP_EWL))
+		get_ewl();
 }
 
 static void mainboard_config_iio(FSPM_UPD *mupd)
@@ -36,21 +37,23 @@ static void mainboard_config_iio(FSPM_UPD *mupd)
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	/* Setup FSP log */
-	mupd->FspmConfig.SerialIoUartDebugEnable = get_bool_from_vpd(FSP_LOG,
-		FSP_LOG_DEFAULT);
-	if (mupd->FspmConfig.SerialIoUartDebugEnable) {
-		mupd->FspmConfig.serialDebugMsgLvl = get_int_from_vpd_range(
-			FSP_MEM_LOG_LEVEL, FSP_MEM_LOG_LEVEL_DEFAULT, 0, 4);
-		/* If serialDebugMsgLvl less than 1, disable FSP memory train results */
-		if (mupd->FspmConfig.serialDebugMsgLvl <= 1) {
-			printk(BIOS_DEBUG, "Setting serialDebugMsgLvlTrainResults to 0\n");
-			mupd->FspmConfig.serialDebugMsgLvlTrainResults = 0x0;
+	if (CONFIG(OCP_VPD)) {
+		mupd->FspmConfig.SerialIoUartDebugEnable = get_bool_from_vpd(FSP_LOG,
+			FSP_LOG_DEFAULT);
+		if (mupd->FspmConfig.SerialIoUartDebugEnable) {
+			mupd->FspmConfig.serialDebugMsgLvl = get_int_from_vpd_range(
+				FSP_MEM_LOG_LEVEL, FSP_MEM_LOG_LEVEL_DEFAULT, 0, 4);
+			/* If serialDebugMsgLvl less than 1, disable FSP memory train results */
+			if (mupd->FspmConfig.serialDebugMsgLvl <= 1) {
+				printk(BIOS_DEBUG, "Setting serialDebugMsgLvlTrainResults to 0\n");
+				mupd->FspmConfig.serialDebugMsgLvlTrainResults = 0x0;
+			}
 		}
-	}
 
-	/* FSP Dfx PMIC Secure mode */
-	mupd->FspmConfig.DfxPmicSecureMode = get_int_from_vpd_range(
-		FSP_PMIC_SECURE_MODE, FSP_PMIC_SECURE_MODE_DEFAULT, 0, 2);
+		/* FSP Dfx PMIC Secure mode */
+		mupd->FspmConfig.DfxPmicSecureMode = get_int_from_vpd_range(
+			FSP_PMIC_SECURE_MODE, FSP_PMIC_SECURE_MODE_DEFAULT, 0, 2);
+	}
 
 	/* Set Rank Margin Tool to disable. */
 	mupd->FspmConfig.EnableRMT = 0x0;

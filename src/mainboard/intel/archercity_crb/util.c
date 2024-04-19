@@ -4,7 +4,7 @@
 #include <soc/chip_common.h>
 #include <soc/util.h>
 
-#if CONFIG(SOC_INTEL_HAS_CXL)
+#if CONFIG(SOC_INTEL_HAS_CXL) && CONFIG(OCP_VPD)
 enum xeonsp_cxl_mode get_cxl_mode(void)
 {
 	int ocp_cxl_mode = get_cxl_mode_from_vpd();

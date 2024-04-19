@@ -7,7 +7,7 @@
 #include <types.h>
 
 enum pcie_swizzle_pin {
-	PIN_A,
+	PIN_A = 0,
 	PIN_B,
 	PIN_C,
 	PIN_D,

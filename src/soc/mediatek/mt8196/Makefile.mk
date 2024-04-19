@@ -10,6 +10,7 @@ all-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 all-y += timer.c timer_prepare.c
 all-y += ../common/uart.c
 
+bootblock-y += booker.c
 bootblock-y += bootblock.c
 bootblock-y += ../common/bootblock.c bootblock.c
 bootblock-y += ../common/early_init.c

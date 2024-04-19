@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <soc/booker.h>
 #include <bootblock_common.h>
 #include <soc/early_init.h>
 #include <soc/lastbus_v2.h>
@@ -9,6 +10,7 @@
 
 void bootblock_soc_init(void)
 {
+	booker_init();
 	mtk_mmu_init();
 	lastbus_init();
 	mtk_wdt_init();

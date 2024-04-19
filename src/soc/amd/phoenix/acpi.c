@@ -72,6 +72,8 @@ unsigned long soc_acpi_write_tables(const struct device *device, unsigned long c
 
 	if (CONFIG(PLATFORM_USES_FSP2_0))
 		current = acpi_add_fsp_tables(current, rsdp);
+	else
+		current = acpi_add_opensil_tables(current, rsdp);
 
 	return current;
 }

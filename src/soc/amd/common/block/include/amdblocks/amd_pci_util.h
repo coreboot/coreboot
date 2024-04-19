@@ -57,7 +57,7 @@ struct pci_routing_info {
 	uint8_t devfn;
 	uint8_t group;
 	uint8_t swizzle;
-	uint8_t irq;
+	uint8_t bridge_irq; /* also called 'map' */
 } __packed;
 
 void populate_pirq_data(void);

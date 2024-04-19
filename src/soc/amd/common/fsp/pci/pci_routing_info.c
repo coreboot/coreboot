@@ -34,9 +34,9 @@ const struct pci_routing_info *get_pci_routing_table(size_t *entries)
 	routing_table_entries = routing_hob->num_of_entries;
 
 	for (size_t i = 0; i < routing_table_entries; ++i) {
-		printk(BIOS_DEBUG, "%02x.%x: group: %u, swizzle: %u, irq: %u\n",
+		printk(BIOS_DEBUG, "%02x.%x: group: %u, swizzle: %u, bridge irq: %u\n",
 		       PCI_SLOT(routing_table[i].devfn), PCI_FUNC(routing_table[i].devfn),
-		       routing_table[i].group, routing_table[i].swizzle, routing_table[i].irq);
+		       routing_table[i].group, routing_table[i].swizzle, routing_table[i].bridge_irq);
 	}
 
 	*entries = routing_table_entries;

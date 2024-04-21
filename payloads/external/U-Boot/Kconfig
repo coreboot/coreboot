@@ -9,14 +9,14 @@ config PAYLOAD_SPECIFIC_OPTIONS
 
 config UBOOT_STABLE_COMMIT_ID
 	string
-	default "v2023.07"
+	default "v2024.04"
 
 choice
 	prompt "U-Boot version"
 	default UBOOT_STABLE
 
 config UBOOT_STABLE
-	bool "v2023.07"
+	bool "v2024.04"
 	help
 	  Stable U-Boot version
 

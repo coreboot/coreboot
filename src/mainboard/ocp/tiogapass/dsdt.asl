@@ -15,9 +15,9 @@ DefinitionBlock(
 	#include "acpi/platform.asl"
 	#include <soc/intel/common/block/acpi/acpi/globalnvs.asl>
 	#include <cpu/intel/common/acpi/cpu.asl>
-	#include <soc/intel/xeon_sp/acpi/uncore.asl>
+	#include <soc/intel/xeon_sp/acpi/gen1/uncore.asl>
 	Scope (\_SB.PC00)
 	{
-		#include <soc/intel/xeon_sp/acpi/pch.asl>
+		#include <soc/intel/xeon_sp/acpi/gen1/pch.asl>
 	}
 }

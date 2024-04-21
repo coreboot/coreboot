@@ -20,11 +20,11 @@ DefinitionBlock(
 	#include <cpu/intel/common/acpi/cpu.asl>
 
 	// CPX-SP ACPI tables
-	#include <soc/intel/xeon_sp/acpi/uncore.asl>
+	#include <soc/intel/xeon_sp/acpi/gen1/uncore.asl>
 
 	// LPC related entries
 	Scope (\_SB.PC00)
 	{
-		#include <soc/intel/xeon_sp/acpi/pch.asl>
+		#include <soc/intel/xeon_sp/acpi/gen1/pch.asl>
 	}
 }

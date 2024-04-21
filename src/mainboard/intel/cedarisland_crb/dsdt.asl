@@ -22,7 +22,7 @@ DefinitionBlock(
 	{
 		Device (PCI0)
 		{
-			#include <soc/intel/xeon_sp/acpi/southcluster.asl>
+			#include <soc/intel/xeon_sp/acpi/gen1/southcluster.asl>
 			#include <soc/intel/common/block/acpi/acpi/lpc.asl>
 
 		}

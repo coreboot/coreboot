@@ -1,0 +1,18 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if VENDOR_AOOSTAR
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/aoostar/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/aoostar/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "AOOSTAR"
+
+endif # VENDOR_AOOSTAR

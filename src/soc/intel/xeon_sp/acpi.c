@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <acpi/acpigen.h>
 #include <assert.h>
 #include <intelblocks/acpi.h>
 #include <soc/chip_common.h>
@@ -118,4 +119,23 @@ const char *soc_acpi_name(const struct device *dev)
 	/* FIXME: Add SoC specific device names here */
 
 	return NULL;
+}
+
+void acpigen_write_OSC_pci_domain_fixed_caps(const struct device *domain,
+				const uint32_t granted_pcie_features,
+				const bool is_cxl_domain,
+				const uint32_t granted_cxl_features)
+{
+	acpigen_write_method("_OSC", 4);
+
+	acpigen_write_return_namestr("\\_SB.POSC");
+	acpigen_emit_byte(ARG0_OP);
+	acpigen_emit_byte(ARG1_OP);
+	acpigen_emit_byte(ARG2_OP);
+	acpigen_emit_byte(ARG3_OP);
+	acpigen_write_integer(granted_pcie_features);
+	acpigen_write_integer(is_cxl_domain);
+	acpigen_write_integer(granted_cxl_features);
+
+	acpigen_pop_len();
 }

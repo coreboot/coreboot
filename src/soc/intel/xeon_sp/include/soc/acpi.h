@@ -24,4 +24,19 @@ unsigned long cxl_fill_srat(unsigned long current);
 
 void iio_domain_set_acpi_name(struct device *dev, const char *prefix);
 
+#define PCIE_NATIVE_HOTPLUG_CONTROL  0x01
+#define SHPC_NATIVE_HOTPLUG_CONTROL  0x02
+#define PCIE_PME_CONTROL             0x04
+#define PCIE_AER_CONTROL             0x08
+#define PCIE_CAP_STRUCTURE_CONTROL   0x10
+#define PCIE_LTR_CONTROL             0x20
+#define PCIE_DPC_COTROL              0x80
+
+#define CXL_ERROR_REPORTING_CONTROL  0x01
+
+void acpigen_write_OSC_pci_domain_fixed_caps(const struct device *domain,
+				const uint32_t granted_pcie_features,
+				const bool is_cxl_domain,
+				const uint32_t granted_cxl_features);
+
 #endif /* _SOC_ACPI_H_ */

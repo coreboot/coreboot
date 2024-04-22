@@ -236,7 +236,9 @@ static struct {
 	{ PCI_DID_INTEL_RPL_S_GT0, "Raptorlake S GT0" },
 	{ PCI_DID_INTEL_RPL_S_GT1_1, "Raptorlake S GT1" },
 	{ PCI_DID_INTEL_RPL_S_GT1_2, "Raptorlake S GT1" },
-	{ PCI_DID_INTEL_RPL_S_GT1_3, "Raptorlake S GT1" }
+	{ PCI_DID_INTEL_RPL_S_GT1_3, "Raptorlake S GT1" },
+	{ PCI_DID_INTEL_TWL_GT1_1, "Twinlake GT1" },
+	{ PCI_DID_INTEL_TWL_GT1_2, "Twinlake GT1" },
 };
 
 static inline uint8_t get_dev_revision(pci_devfn_t dev)

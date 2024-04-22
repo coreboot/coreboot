@@ -1,0 +1,22 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SELF_TEST
+	bool "Execute built-in self tests"
+	help
+	  Run diagnostic tests during the boot sequence to ensure system stability.
+
+if SELF_TEST
+
+config SELF_TEST_DEBUG
+	bool "Enable self test verbose debugging"
+	help
+	  Print detailed log messages from the self test routines to the AP console.
+
+config SELF_TEST_OUTPUT_BUFFER_SIZE
+	int "Self test log buffer size (bytes)"
+	default 4096
+	help
+	  Amount of dedicated memory (CBMEM) allocated to capture and store
+	  the self test output logs.
+
+endif

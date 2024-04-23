@@ -5,16 +5,16 @@
 #include <arch/exception.h>
 #include <console/console.h>
 
-uint8_t exception_stack[0x100] __attribute__((aligned(8)));
+uint8_t exception_stack[0x100] __aligned(8);
 extern void *exception_stack_end;
 
-void exception_undefined_instruction(uint32_t *);
-void exception_software_interrupt(uint32_t *);
-void exception_prefetch_abort(uint32_t *);
-void exception_data_abort(uint32_t *);
-void exception_not_used(uint32_t *);
-void exception_irq(uint32_t *);
-void exception_fiq(uint32_t *);
+void exception_undefined_instruction(uint32_t *regs);
+void exception_software_interrupt(uint32_t *regs);
+void exception_prefetch_abort(uint32_t *regs);
+void exception_data_abort(uint32_t *regs);
+void exception_not_used(uint32_t *regs);
+void exception_irq(uint32_t *regs);
+void exception_fiq(uint32_t *regs);
 
 static void dump_stack(uintptr_t addr, size_t bytes)
 {

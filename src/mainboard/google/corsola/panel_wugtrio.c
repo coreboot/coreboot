@@ -25,6 +25,14 @@ static void mipi_panel_power_on(void)
 }
 
 static struct panel_description wugtrio_panels[] = {
+	/* STA Technology panel with bias IC on it */
+	[0] = {
+		.configure_backlight = backlight_control,
+		.power_on = mipi_panel_power_on,
+		.name = "STA_ER88577",
+		.disp_path = DISP_PATH_MIPI,
+		.orientation = LB_FB_ORIENTATION_RIGHT_UP,
+	},
 	/* K&D Technology panel with bias IC on it */
 	[4] = {
 		.configure_backlight = backlight_control,

@@ -7,6 +7,8 @@ config SELF_TEST
 
 if SELF_TEST
 
+source "src/drivers/self_test/modules/*/Kconfig"
+
 config SELF_TEST_DEBUG
 	bool "Enable self test verbose debugging"
 	help

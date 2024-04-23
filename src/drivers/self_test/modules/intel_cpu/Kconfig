@@ -1,0 +1,15 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SELF_TEST_INTEL_CPU
+	bool
+	default y if CPU_INTEL_COMMON
+	depends on SELF_TEST
+	help
+	  Run diagnostic self tests specific to Intel processors.
+
+config SELF_TEST_INTEL_CPU_UCODE
+	bool
+	default y if SOC_INTEL_COMMON_BLOCK_CPU_MPINIT
+	depends on SELF_TEST_INTEL_CPU
+	help
+	  Validate the microcode (uCode) patch loading status on Intel processors.

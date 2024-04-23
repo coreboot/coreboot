@@ -4,29 +4,14 @@
 #include <device/pnp_ops.h>
 #include <superio/smsc/sch555x/sch555x.h>
 #include <southbridge/intel/lynxpoint/pch.h>
-
-static void ec_write(uint8_t addr1, uint16_t addr2, uint8_t val)
-{
-	// Clear EC-to-Host mailbox
-	uint8_t tmp = inb(SCH555x_EMI_IOBASE + 1);
-	outb(tmp, SCH555x_EMI_IOBASE + 1);
-
-	// Send address and value to the EC
-	sch555x_emi_write16(0, (addr1 * 2) | 0x101);
-	sch555x_emi_write32(4, val | (addr2 << 16));
-
-	// Wait for acknowledgement message from EC
-	outb(1, SCH555x_EMI_IOBASE);
-	size_t timeout = 0;
-	do {} while (++timeout < 0xfff && (inb(SCH555x_EMI_IOBASE + 1) & 1) == 0);
-}
+#include "sch5555_ec.h"
 
 struct ec_init_entry {
 	uint16_t addr;
 	uint8_t val;
 };
 
-static void ec_init(void)
+static void bootblock_ec_init(void)
 {
 	/*
 	 * Tables from CORE_PEI
@@ -42,7 +27,7 @@ static void ec_init(void)
 	};
 
 	for (size_t i = 0; i < ARRAY_SIZE(init_table1); ++i)
-		ec_write(2, init_table1[i].addr, init_table1[i].val);
+		sch5555_mbox_write(2, init_table1[i].addr, init_table1[i].val);
 
 	static const struct ec_init_entry init_table2[] = {
 		{0x0005, 0x33}, {0x0018, 0x2f}, {0x0019, 0x2f}, {0x001a, 0x2f},
@@ -60,7 +45,7 @@ static void ec_init(void)
 	};
 
 	for (size_t i = 0; i < ARRAY_SIZE(init_table2); ++i)
-		ec_write(1, init_table2[i].addr, init_table2[i].val);
+		sch5555_mbox_write(1, init_table2[i].addr, init_table2[i].val);
 
 	/*
 	 * Table from PeiHwmInit
@@ -89,7 +74,7 @@ static void ec_init(void)
 	};
 
 	for (size_t i = 0; i < ARRAY_SIZE(hwm_init_table); ++i)
-		ec_write(1, hwm_init_table[i].addr, hwm_init_table[i].val);
+		sch5555_mbox_write(1, hwm_init_table[i].addr, hwm_init_table[i].val);
 }
 
 #define SCH555x_IOBASE	0x2e
@@ -108,9 +93,9 @@ void mainboard_config_superio(void)
 	outb(0x01, SCH555x_RUNTIME_IOBASE + SCH555x_RUNTIME_UNK1);
 	outb(0x0f, SCH555x_RUNTIME_IOBASE + SCH555x_RUNTIME_LED);
 
-	// Magic EC init
-	ec_init();
+	// Perform bootblock EC initialization
+	bootblock_ec_init();
 
-	// Magic EC init is needed for UART1 initialization to work
+	// Bootblock EC initialization is required for UART1 to work
 	sch555x_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 }

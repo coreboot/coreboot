@@ -2,4 +2,5 @@
 
 romstage-y += gpio.c
 ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads
-bootblock-y += bootblock.c
+ramstage-y += sch5555_ec.c
+bootblock-y += bootblock.c sch5555_ec.c

@@ -27,7 +27,7 @@ static void ramoops_alloc(void *arg)
 		chromeos_set_ramoops(ram_oops, size);
 }
 
-BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY, ramoops_alloc, NULL);
+BOOT_STATE_INIT_ENTRY(BS_DEV_INIT_CHIPS, BS_ON_ENTRY, ramoops_alloc, NULL);
 
 void lb_ramoops(struct lb_header *header)
 {

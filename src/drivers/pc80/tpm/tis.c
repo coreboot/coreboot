@@ -779,8 +779,10 @@ static void lpc_tpm_read_resources(struct device *dev)
 
 static void lpc_tpm_set_resources(struct device *dev)
 {
-	tpm_config_t *config = (tpm_config_t *)dev->chip_info;
+	struct drivers_pc80_tpm_config *config;
 	DEVTREE_CONST struct resource *res;
+
+	config = (struct drivers_pc80_tpm_config *)dev->chip_info;
 
 	for (res = dev->resource_list; res; res = res->next) {
 		if (!(res->flags & IORESOURCE_ASSIGNED))

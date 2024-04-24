@@ -3,7 +3,7 @@
 #ifndef DRIVERS_CRB_CHIP_H
 #define DRIVERS_CRB_CHIP_H
 
-typedef struct drivers_crb_config {
-} tpm_config_t;
+struct drivers_crb_config {
+};
 
 #endif /* DRIVERS_CRB_CHIP_H */

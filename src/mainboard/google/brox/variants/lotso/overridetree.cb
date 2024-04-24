@@ -1,3 +1,11 @@
+fw_config
+	field STORAGE 0 1
+		option STORAGE_UNKNOWN			0
+		option STORAGE_UFS			1
+		option STORAGE_NVME			2
+	end
+end
+
 chip soc/intel/alderlake
 
         device domain 0 on

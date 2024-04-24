@@ -75,18 +75,28 @@ static uint32_t fast_spi_flash_read_sfdp(struct fast_spi_flash_ctx *ctx,
 
 /* Fill FDATAn FIFO in preparation for a write transaction. */
 static void fill_xfer_fifo(struct fast_spi_flash_ctx *ctx, const void *data,
-			   size_t len)
+				size_t len)
 {
-	/* YES! memcpy() works. FDATAn does not require 32-bit accesses. */
-	memcpy((void *)(ctx->mmio_base + SPIBAR_FDATA(0)), data, len);
+	const uint32_t *data32 = (const uint32_t *)data;
+	for (size_t i = 0; i < len / sizeof(uint32_t); i++)
+		write32p(ctx->mmio_base + SPIBAR_FDATA(i), *data32++);
+
+	const uint8_t *data8 = (const uint8_t *)data32;
+	for (size_t i = 0; i < len % sizeof(uint32_t); i++)
+		write8p(ctx->mmio_base + SPIBAR_FDATA(len / sizeof(uint32_t)) + i, *data8++);
 }
 
 /* Drain FDATAn FIFO after a read transaction populates data. */
-static void drain_xfer_fifo(struct fast_spi_flash_ctx *ctx, void *dest,
+static void drain_xfer_fifo(struct fast_spi_flash_ctx *ctx, void *data,
 				size_t len)
 {
-	/* YES! memcpy() works. FDATAn does not require 32-bit accesses. */
-	memcpy(dest, (void *)(ctx->mmio_base + SPIBAR_FDATA(0)), len);
+	uint32_t *data32 = (uint32_t *)data;
+	for (size_t i = 0; i < len / sizeof(uint32_t); i++)
+		*data32++ = read32p(ctx->mmio_base + SPIBAR_FDATA(i));
+
+	uint8_t *data8 = (uint8_t *)data32;
+	for (size_t i = 0; i < len % sizeof(uint32_t); i++)
+		*data8++ = read8p(ctx->mmio_base + SPIBAR_FDATA(len / sizeof(uint32_t)) + i);
 }
 
 /* Fire up a transfer using the hardware sequencer. */

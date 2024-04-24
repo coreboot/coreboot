@@ -6,10 +6,18 @@ config SOC_INTEL_COMMON_BLOCK_TCSS
 	help
 	  Sets up USB2/3 port mapping in TCSS MUX
 
+config SOC_INTEL_TCSS_USE_PDC_PMC_USBC_MUX_CONFIGURATION
+	def_bool n
+	help
+	  TCSS uses PDC<->PMC communication to perform mux configuration. When this config is
+	  enabled, communication happens directly between PDC and PMC. Avoid sending PMC
+	  commands from AP/EC.
+
 config TCSS_HAS_USBC_OPS
 	bool "Enable USB-C MUX operations via the EC"
 	default y if EC_GOOGLE_CHROMEEC
-	depends on SOC_INTEL_COMMON_BLOCK_TCSS
+	depends on SOC_INTEL_COMMON_BLOCK_TCSS && \
+			!SOC_INTEL_TCSS_USE_PDC_PMC_USBC_MUX_CONFIGURATION
 	help
 	  Enable USB-C operations via the EC. Requires `usbc_get_ops` to control features
 	  such as HPD and DP Mode entry. Currently, only the ChromeEC implements this, see

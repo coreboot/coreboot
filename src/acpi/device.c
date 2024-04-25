@@ -51,7 +51,7 @@ int acpi_device_write_dsd_gpio(struct acpi_gpio *gpio, int *curr_index)
 		return ret;
 
 	acpi_device_write_gpio(gpio);
-	ret = *curr_index++;
+	ret = (*curr_index)++;
 
 	return ret;
 }

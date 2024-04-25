@@ -42,7 +42,6 @@ RUN \
 		less \
 		libcapture-tiny-perl \
 		libcrypto++-dev \
-		libcurl4 \
 		libcurl4-openssl-dev \
 		libdatetime-perl \
 		libelf-dev \

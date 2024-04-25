@@ -9,6 +9,7 @@ end
 chip soc/intel/alderlake
 
 	device domain 0 on
+		device ref smbus on end
 	end
 
 end

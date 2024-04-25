@@ -57,7 +57,6 @@ struct soc_usb_config {
 	struct usb31_phy_settings usb31_phy[8];
 	bool s1_usb31_phy_enable;
 	struct usb31_phy_settings s1_usb31_phy[8];
-
 };
 
 struct soc_amd_genoa_poc_config {

@@ -139,6 +139,45 @@ Every now and then, coreboot is present in one way or another at
 [conferences](community/conferences.md). If you're around, come and
 say hello!
 
+## Blob policy in the coreboot project
+
+The goal of the coreboot project is to provide a FOSS firmware solution across
+multiple CPU architectures, such as ARM, x86, and RISC-V. While fully open
+source implementations for these architectures are encouraged and preferred,
+we understand that a fully open implementation whereby every firmware component
+is available as source code for modern platforms is not always feasible.
+Different reasons inhibit the availability of fully open implementations,
+including limited development resources, 3rd party license constraints of
+IP blocks, or a legacy mindset of the silicon vendors.
+
+It is important for the coreboot project to have support for modern CPU
+platforms in order to provide a viable alternative for proprietary firmware
+implementations. We do not have direct control over how hardware vendors design
+their products, however we can provide an attractive alternative to the
+expensive and complicated proprietary firmware model that exists today.
+For modern platforms, we are largely dependent on the silicon
+vendor to provide additional information on how to properly initialize the
+hardware, as the required datasheets are often only available with an NDA.
+Therefore, one possible way to have coreboot support for the latest platforms
+is binary code (aka, a blob) provided by the silicon vendor. While we do
+discourage this solution, it can be a door opener for coreboot’s support of a
+given platform and thus keep coreboot functional on modern platforms. It is
+clearly not the goal of the project to accept every blob a silicon vendor wishes
+to use without question. On the contrary, each new blob needs to be examined
+critically by the community, evaluating the need, risk, and alternative options.
+
+Wherever possible, introducing new blobs should be avoided. That said, there
+can be situations where a piece of code provided as a blob will enable the rest
+of the fully open source firmware stack on a brand new platform. If blocking
+this blob would lead to no support at all for the platform in question in
+coreboot, this situation needs to be examined carefully. While these kinds
+of discussion will be coordinated closely with the community (e.g. on the
+mailing list or dedicated meetings), ultimately it is up to the leadership to
+decide if there is no agreement between the community and the vendor pushing for
+the new blob. This decision will be communicated on the mailing list.
+Please see additionally
+[coreboot binary policy](https://github.com/coreboot/blobs/blob/master/README.md).
+
 ## Getting the source code
 
 coreboot is primarily developed in the

@@ -79,7 +79,9 @@ config GBB_HWID
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "mtlrvp"
+	default "Mtlrvp_P_Ext_Ec" if BOARD_INTEL_MTLRVP_P_EXT_EC || BOARD_INTEL_MTLRVP4ES_P_EXT_EC
+	default "Mtlrvp_P_Mchp" if BOARD_INTEL_MTLRVP_P_MCHP
+	default "Mtlrvp" if BOARD_INTEL_MTLRVP_P
 
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-debug-fsp.fmd" if CHROMEOS && BUILDING_WITH_DEBUG_FSP

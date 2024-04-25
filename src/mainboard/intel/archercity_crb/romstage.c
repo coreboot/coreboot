@@ -35,16 +35,22 @@ static void mainboard_config_iio(FSPM_UPD *mupd)
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
-	uint8_t val;
-
-	/* Send FSP log message to SOL */
-	if (CONFIG(VPD) && vpd_get_bool(FSP_LOG, VPD_RW_THEN_RO, &val))
-		mupd->FspmConfig.SerialIoUartDebugEnable = val;
-	else {
-		printk(BIOS_INFO, "Not able to get VPD %s, default set SerialIoUartDebugEnable to %d\n",
-				FSP_LOG, FSP_LOG_DEFAULT);
-		mupd->FspmConfig.SerialIoUartDebugEnable = FSP_LOG_DEFAULT;
+	/* Setup FSP log */
+	mupd->FspmConfig.SerialIoUartDebugEnable = get_bool_from_vpd(FSP_LOG,
+		FSP_LOG_DEFAULT);
+	if (mupd->FspmConfig.SerialIoUartDebugEnable) {
+		mupd->FspmConfig.serialDebugMsgLvl = get_int_from_vpd_range(
+			FSP_MEM_LOG_LEVEL, FSP_MEM_LOG_LEVEL_DEFAULT, 0, 4);
+		/* If serialDebugMsgLvl less than 1, disable FSP memory train results */
+		if (mupd->FspmConfig.serialDebugMsgLvl <= 1) {
+			printk(BIOS_DEBUG, "Setting serialDebugMsgLvlTrainResults to 0\n");
+			mupd->FspmConfig.serialDebugMsgLvlTrainResults = 0x0;
+		}
 	}
+
+	/* FSP Dfx PMIC Secure mode */
+	mupd->FspmConfig.DfxPmicSecureMode = get_int_from_vpd_range(
+		FSP_PMIC_SECURE_MODE, FSP_PMIC_SECURE_MODE_DEFAULT, 0, 2);
 
 	/* Set Rank Margin Tool to disable. */
 	mupd->FspmConfig.EnableRMT = 0x0;

@@ -34,71 +34,8 @@ void __weak mainboard_memory_init_params(FSPM_UPD *mupd)
 	/* Default weak implementation */
 }
 
-/*
- * Search from VPD_RW first then VPD_RO for UPD config variables,
- * overwrites them from VPD if it's found.
- */
-static void config_upd_from_vpd(FSPM_UPD *mupd)
+static void config_upd(FSPM_UPD *mupd)
 {
-	uint8_t val;
-	int val_int;
-
-	/* Send FSP log message to SOL */
-	if (vpd_get_bool(FSP_LOG, VPD_RW_THEN_RO, &val))
-		mupd->FspmConfig.SerialIoUartDebugEnable = val;
-	else {
-		printk(BIOS_INFO,
-		       "Not able to get VPD %s, default set "
-		       "SerialIoUartDebugEnable to %d\n",
-		       FSP_LOG, FSP_LOG_DEFAULT);
-		mupd->FspmConfig.SerialIoUartDebugEnable = FSP_LOG_DEFAULT;
-	}
-
-	if (mupd->FspmConfig.SerialIoUartDebugEnable) {
-		/* FSP memory debug log level */
-		if (vpd_get_int(FSP_MEM_LOG_LEVEL, VPD_RW_THEN_RO, &val_int)) {
-			if (val_int < 0 || val_int > 4) {
-				printk(BIOS_DEBUG,
-				       "Invalid serialDebugMsgLvl value from VPD: "
-				       "%d\n",
-				       val_int);
-				val_int = FSP_MEM_LOG_LEVEL_DEFAULT;
-			}
-			printk(BIOS_DEBUG, "Setting serialDebugMsgLvl to %d\n", val_int);
-			mupd->FspmConfig.serialDebugMsgLvl = (uint8_t)val_int;
-		} else {
-			printk(BIOS_INFO,
-			       "Not able to get VPD %s, default set "
-			       "DebugPrintLevel to %d\n",
-			       FSP_MEM_LOG_LEVEL, FSP_MEM_LOG_LEVEL_DEFAULT);
-			mupd->FspmConfig.serialDebugMsgLvl = FSP_MEM_LOG_LEVEL_DEFAULT;
-		}
-		/* If serialDebugMsgLvl less than 1, disable FSP memory train results */
-		if (mupd->FspmConfig.serialDebugMsgLvl <= 1) {
-			printk(BIOS_DEBUG, "Setting serialDebugMsgLvlTrainResults to 0\n");
-			mupd->FspmConfig.serialDebugMsgLvlTrainResults = 0x0;
-		}
-	}
-
-	/* FSP Dfx PMIC Secure mode */
-	if (vpd_get_int(FSP_PMIC_SECURE_MODE, VPD_RW_THEN_RO, &val_int)) {
-		if (val_int < 0 || val_int > 2) {
-			printk(BIOS_DEBUG,
-			       "Invalid PMIC secure mode value from VPD: "
-			       "%d\n",
-			       val_int);
-			val_int = FSP_PMIC_SECURE_MODE_DEFAULT;
-		}
-		printk(BIOS_DEBUG, "Setting PMIC secure mode to %d\n", val_int);
-		mupd->FspmConfig.DfxPmicSecureMode = (uint8_t)val_int;
-	} else {
-		printk(BIOS_INFO,
-		       "Not able to get VPD %s, default set "
-		       "PMIC secure mode to %d\n",
-		       FSP_PMIC_SECURE_MODE, FSP_PMIC_SECURE_MODE_DEFAULT);
-		mupd->FspmConfig.DfxPmicSecureMode = FSP_PMIC_SECURE_MODE_DEFAULT;
-	}
-
 	int cxl_mode = get_cxl_mode();
 	if (cxl_mode == XEONSP_CXL_SYS_MEM || cxl_mode == XEONSP_CXL_SP_MEM)
 		mupd->FspmConfig.DfxCxlType3LegacyEn = 1;
@@ -274,9 +211,8 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 		printk(BIOS_DEBUG, "CPU is D stepping, setting package C state to C0/C1\n");
 		mupd->FspmConfig.CpuPmPackageCState = 0;
 	}
-	/* Set some common UPDs from VPD, mainboard can still override them if needed */
-	if (CONFIG(VPD))
-		config_upd_from_vpd(mupd);
+
+	config_upd(mupd);
 	initialize_iio_upd(mupd);
 	mainboard_memory_init_params(mupd);
 

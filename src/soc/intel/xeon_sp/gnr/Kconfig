@@ -30,7 +30,7 @@ config FSP_HEADER_PATH
 
 config MAX_CPUS
 	int
-	default 255
+	default 512
 
 config PCR_BASE_ADDRESS
 	hex

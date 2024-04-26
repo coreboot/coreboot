@@ -6,8 +6,8 @@
 #include <cpu/x86/lapic_def.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <drivers/ocp/include/vpd.h>
 #include <soc/acpi.h>
+#include <soc/chip_common.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
@@ -286,22 +286,20 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 			if (pds.pds[i].pd_type == PD_TYPE_PROCESSOR)
 				continue;
 
-			if (CONFIG(OCP_VPD)) {
-				unsigned long flags = IORESOURCE_CACHEABLE;
-				int cxl_mode = get_cxl_mode_from_vpd();
-				if (cxl_mode == CXL_SPM)
-					flags |= IORESOURCE_SOFT_RESERVE;
-				else
-					flags |= IORESOURCE_STORED;
+			unsigned long flags = IORESOURCE_CACHEABLE;
+			int cxl_mode = get_cxl_mode();
+			if (cxl_mode == XEONSP_CXL_SP_MEM)
+				flags |= IORESOURCE_SOFT_RESERVE;
+			else
+				flags |= IORESOURCE_STORED;
 
-				res = fixed_mem_range_flags(dev, index++,
-					(uint64_t)pds.pds[i].base << 26,
-					(uint64_t)pds.pds[i].size << 26, flags);
-				if (cxl_mode == CXL_SPM)
-					LOG_RESOURCE("specific_purpose_memory", dev, res);
-				else
-					LOG_RESOURCE("CXL_memory", dev, res);
-			}
+			res = fixed_mem_range_flags(dev, index++,
+				(uint64_t)pds.pds[i].base << 26,
+				(uint64_t)pds.pds[i].size << 26, flags);
+			if (cxl_mode == XEONSP_CXL_SP_MEM)
+				LOG_RESOURCE("specific_purpose_memory", dev, res);
+			else
+				LOG_RESOURCE("CXL_memory", dev, res);
 		}
 	} else {
 		/* 4GiB -> TOHM */

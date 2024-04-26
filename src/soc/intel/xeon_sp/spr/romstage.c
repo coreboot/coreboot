@@ -13,12 +13,14 @@
 #include <fsp/util.h>
 #include <hob_iiouds.h>
 #include <hob_memmap.h>
+#include <soc/chip_common.h>
 #include <soc/romstage.h>
 #include <soc/pci_devs.h>
 #include <soc/soc_pch.h>
 #include <soc/intel/common/smbios.h>
 #include <string.h>
 #include <soc/soc_util.h>
+#include <soc/util.h>
 #include <soc/ddr.h>
 
 #include "chip.h"
@@ -39,7 +41,7 @@ void __weak mainboard_memory_init_params(FSPM_UPD *mupd)
 static void config_upd_from_vpd(FSPM_UPD *mupd)
 {
 	uint8_t val;
-	int val_int, cxl_mode;
+	int val_int;
 
 	/* Send FSP log message to SOL */
 	if (vpd_get_bool(FSP_LOG, VPD_RW_THEN_RO, &val))
@@ -97,8 +99,8 @@ static void config_upd_from_vpd(FSPM_UPD *mupd)
 		mupd->FspmConfig.DfxPmicSecureMode = FSP_PMIC_SECURE_MODE_DEFAULT;
 	}
 
-	cxl_mode = get_cxl_mode_from_vpd();
-	if (cxl_mode == CXL_SYSTEM_MEMORY || cxl_mode == CXL_SPM)
+	int cxl_mode = get_cxl_mode();
+	if (cxl_mode == XEONSP_CXL_SYS_MEM || cxl_mode == XEONSP_CXL_SP_MEM)
 		mupd->FspmConfig.DfxCxlType3LegacyEn = 1;
 	else /* Disable CXL */
 		mupd->FspmConfig.DfxCxlType3LegacyEn = 0;

@@ -3,6 +3,8 @@
 #ifndef OCP_VPD_H
 #define OCP_VPD_H
 
+#include <include/types.h>
+
 /* VPD variable for enabling/disabling FRB2 timer. 1/0: Enable/disable */
 #define FRB2_TIMER "frb2_timer_enable"
 #define FRB2_TIMER_DEFAULT 1 /* Default value when the VPD variable is not found */

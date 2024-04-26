@@ -28,4 +28,6 @@ bool is_ioat_iio_stack_res(const xSTACK_RES *res);
 bool is_iio_cxl_stack_res(const xSTACK_RES *res);
 void bios_done_msr(void *unused);
 
+enum xeonsp_cxl_mode get_cxl_mode(void);
+
 #endif

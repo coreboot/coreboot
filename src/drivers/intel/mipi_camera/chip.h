@@ -5,6 +5,7 @@
 
 #include <stdint.h>
 #include <acpi/acpi_pld.h>
+#include <uuid.h>
 
 #define DEFAULT_LINK_FREQ	450000000
 #define MAX_PWDB_ENTRIES	12
@@ -143,7 +144,7 @@ struct operation_seq {
 struct intel_ssdb {
 	uint8_t version;			/* Current version */
 	uint8_t sensor_card_sku;		/* CRD Board type */
-	uint8_t csi2_data_stream_interface[16];	/* CSI2 data stream GUID */
+	guid_t csi2_data_stream_interface;	/* CSI2 data stream GUID */
 	uint16_t bdf_value;			/* Bus number of the host
 						controller */
 	uint32_t dphy_link_en_fuses;		/* Host controller's fuses

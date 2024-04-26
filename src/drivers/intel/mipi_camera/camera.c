@@ -11,6 +11,10 @@
 #include <device/pci_def.h>
 #include "chip.h"
 
+#define CSI2_DATA_STREAM_INTERFACE_GUID \
+	GUID_INIT(0x8A395669, 0x11F7, 0x4EA9, \
+	0x9C, 0x7D, 0x20, 0xEE, 0x0A, 0xB5, 0xCA, 0x40)
+
 #define SENSOR_NAME_UUID	"822ace8f-2814-4174-a56b-5f029fe079ee"
 #define SENSOR_TYPE_UUID	"26257549-9271-4ca4-bb43-c4899d5a4881"
 #define DEFAULT_ENDPOINT	0
@@ -284,6 +288,8 @@ static void camera_fill_ssdb_defaults(struct drivers_intel_mipi_camera_config *c
 
 	if (config->disable_ssdb_defaults)
 		return;
+
+	guidcpy(&config->ssdb.csi2_data_stream_interface, &CSI2_DATA_STREAM_INTERFACE_GUID);
 
 	if (!config->ssdb.bdf_value)
 		config->ssdb.bdf_value = PCI_DEVFN(CIO2_PCI_DEV, CIO2_PCI_FN);

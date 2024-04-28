@@ -8,10 +8,20 @@ config SOC_INTEL_COMMON_BLOCK_GRAPHICS
 
 if SOC_INTEL_COMMON_BLOCK_GRAPHICS
 
-config SOC_INTEL_CONFIGURE_DDI_A_4_LANES
+config SOC_INTEL_GFX_HAVE_DDI_A_BIFURCATION
 	bool
 	help
-	  Selected by platforms that require DDI-A bifurcation setup.
+	  Skylake, Kaby Lake and Coffee Lake desktop CPUs support eDP
+	  bifurcation, i.e. 4 eDP lanes get split between DDI-A (eDP)
+	  and DDI-E (DP, used for VGA). Selected from SoC Kconfig, if
+	  applicable.
+
+config SOC_INTEL_GFX_ENABLE_DDI_E_BIFURCATION
+	bool
+	depends on SOC_INTEL_GFX_HAVE_DDI_A_BIFURCATION
+	help
+	  Selected by mainboards that use DDI-E, which is most commonly
+	  used to drive a DP-to-VGA adapter to provide a VGA connector.
 
 config SOC_INTEL_DISABLE_IGD
 	bool "Disable Integrated GFX Controller (0:2:0)"

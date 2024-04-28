@@ -124,6 +124,21 @@ int fsp_soc_report_external_display(void)
 	return graphics_get_framebuffer_address() && get_external_display_status();
 }
 
+static void configure_ddi_a_bifurcation(void)
+{
+	u32 ddi_buf_ctl = graphics_gtt_read(DDI_BUF_CTL_A);
+	/* Only program if the buffer is not enabled yet. */
+	if (ddi_buf_ctl & DDI_BUF_CTL_ENABLE)
+		return;
+
+	if (CONFIG(SOC_INTEL_GFX_ENABLE_DDI_E_BIFURCATION))
+		ddi_buf_ctl &= ~DDI_A_4_LANES;
+	else
+		ddi_buf_ctl |= DDI_A_4_LANES;
+
+	graphics_gtt_write(DDI_BUF_CTL_A, ddi_buf_ctl);
+}
+
 static void gma_init(struct device *const dev)
 {
 	intel_gma_init_igd_opregion();
@@ -135,12 +150,8 @@ static void gma_init(struct device *const dev)
 	if (!CONFIG(RUN_FSP_GOP))
 		graphics_soc_panel_init(dev);
 
-	if (CONFIG(SOC_INTEL_CONFIGURE_DDI_A_4_LANES) && !acpi_is_wakeup_s3()) {
-		const u32 ddi_buf_ctl = graphics_gtt_read(DDI_BUF_CTL_A);
-		/* Only program if the buffer is not enabled yet. */
-		if (!(ddi_buf_ctl & DDI_BUF_CTL_ENABLE))
-			graphics_gtt_write(DDI_BUF_CTL_A, ddi_buf_ctl | DDI_A_4_LANES);
-	}
+	if (CONFIG(SOC_INTEL_GFX_HAVE_DDI_A_BIFURCATION) && !acpi_is_wakeup_s3())
+		configure_ddi_a_bifurcation();
 
 	/*
 	 * GFX PEIM module inside FSP binary is taking care of graphics

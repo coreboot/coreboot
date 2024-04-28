@@ -270,6 +270,7 @@ void mp_init_cpus(struct bus *bus)
 	microcode_patch = intel_microcode_find();
 	intel_microcode_load_unlocked(microcode_patch);
 
-	if (mp_init_with_smm(bus, &mp_ops) < 0)
-		printk(BIOS_ERR, "MP initialization failure.\n");
+	enum cb_err ret = mp_init_with_smm(bus, &mp_ops);
+	if (ret < 0)
+		printk(BIOS_ERR, "MP initialization failure %d.\n", ret);
 }

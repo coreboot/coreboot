@@ -103,9 +103,6 @@ config CONSOLE_POST
 config D3COLD_SUPPORT
 	default n
 
-config DIMM_SPD_SIZE
-	default 512
-
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"
 

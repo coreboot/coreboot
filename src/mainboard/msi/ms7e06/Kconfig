@@ -34,9 +34,6 @@ config MAINBOARD_VENDOR
 config MAINBOARD_FAMILY
 	default "Default string"
 
-config DIMM_SPD_SIZE
-	default 512
-
 config UART_FOR_CONSOLE
 	default 0
 

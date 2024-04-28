@@ -42,9 +42,6 @@ config VBOOT
 	select HAS_RECOVERY_MRC_CACHE
 	select VBOOT_EARLY_EC_SYNC
 
-config DIMM_SPD_SIZE
-	default 512
-
 config DEVICETREE
 	default "variants/baseboard/devicetree.cb"
 

@@ -131,9 +131,6 @@ config VARIANT_DIR
 config VBOOT
 	select VBOOT_LID_SWITCH
 
-config DIMM_SPD_SIZE
-	default 512
-
 config UART_FOR_CONSOLE
 	int
 	default 0

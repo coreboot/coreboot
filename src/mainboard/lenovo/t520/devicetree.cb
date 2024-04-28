@@ -15,6 +15,14 @@ chip northbridge/intel/sandybridge
 	register "gpu_cpu_backlight" = "0x1155"
 	register "gpu_pch_backlight" = "0x06100610"
 
+	chip cpu/intel/model_206ax
+		# Values obtained from vendor BIOS
+		register "pp0_psi[VR12_PSI2]" = "{VR12_ALL_PHASES, 5}"
+		register "pp0_psi[VR12_PSI3]" = "{VR12_ALL_PHASES, 1}"
+		register "pp1_psi[VR12_PSI2]" = "{VR12_ALL_PHASES, 5}"
+		register "pp1_psi[VR12_PSI3]" = "{VR12_ALL_PHASES, 1}"
+		device cpu_cluster 0 on end
+	end
 	device domain 0 on
 		subsystemid 0x17aa 0x21cf inherit
 

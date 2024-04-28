@@ -224,6 +224,12 @@ static int get_thread_count(void)
 {
 	unsigned int num_phys = 0, num_virts = 0;
 
+	/*
+	 * This call calculates the thread count which is corresponding to num_virts
+	 * (logical cores), while num_phys is corresponding to physical cores (in SMT
+	 * system, one physical core has multiple threads, a.k.a. logical cores).
+	 * Hence num_phys is not actually used.
+	 */
 	cpu_read_topology(&num_phys, &num_virts);
 	printk(BIOS_SPEW, "Detected %u cores and %u threads\n", num_phys, num_virts);
 	return num_virts * soc_get_num_cpus();

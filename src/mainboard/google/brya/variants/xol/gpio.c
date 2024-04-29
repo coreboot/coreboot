@@ -195,6 +195,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI(GPP_E13, NONE, DEEP),
 	/* E15 : RSVD_TP ==> PCH_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E15, NONE, DEEP),
+	/* F18 : EC_IN_RW_OD ==> EC_IN_RW_OD */
+	PAD_CFG_GPI(GPP_F18, NONE, DEEP),
 	/* H6  : I2C1_SDA ==> PCH_I2C_TPM_SDA */
 	PAD_CFG_NF(GPP_H6, NONE, DEEP, NF1),
 	/* H7  : I2C1_SCL ==> PCH_I2C_TPM_SCL */

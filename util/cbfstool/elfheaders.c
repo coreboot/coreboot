@@ -1434,12 +1434,13 @@ int elf_writer_add_rel(struct elf_writer *ew, const char *sym, Elf64_Addr addr)
 	return add_rel(rel_sec, &rel);
 }
 
-int elf_program_file_size(const struct buffer *input, size_t *file_size)
+int elf_program_file_size_align(const struct buffer *input, size_t *file_size, size_t *align)
 {
 	Elf64_Ehdr ehdr;
 	Elf64_Phdr *phdr;
 	int i;
 	size_t loadable_file_size = 0;
+	size_t align_size = 0;
 
 	if (elf_headers(input, &ehdr, &phdr, NULL))
 		return -1;
@@ -1448,9 +1449,11 @@ int elf_program_file_size(const struct buffer *input, size_t *file_size)
 		if (phdr[i].p_type != PT_LOAD)
 			continue;
 		loadable_file_size += phdr[i].p_filesz;
+		align_size = MAX(align_size, phdr[i].p_align);
 	}
 
 	*file_size = loadable_file_size;
+	*align = align_size;
 
 	free(phdr);
 

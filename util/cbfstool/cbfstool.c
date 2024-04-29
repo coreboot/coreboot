@@ -1156,23 +1156,26 @@ static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset,
 	struct cbfs_file *header)
 {
 	struct buffer output;
-	size_t data_size;
 	int ret;
-
-	if (elf_program_file_size(buffer, &data_size) < 0) {
-		ERROR("Could not obtain ELF size\n");
-		return 1;
-	}
 
 	/*
 	 * We need a final location for XIP parsing, so we need to call do_cbfs_locate() early
 	 * here. That is okay because XIP stages may not be compressed, so their size cannot
 	 * change anymore at a later point.
 	 */
-	if (param.stage_xip &&
-	    do_cbfs_locate(offset, data_size))  {
-		ERROR("Could not find location for stage.\n");
-		return 1;
+	if (param.stage_xip) {
+		size_t data_size, alignment;
+		if (elf_program_file_size_align(buffer, &data_size, &alignment) < 0) {
+			ERROR("Could not obtain ELF size & alignment\n");
+			return 1;
+		}
+
+		param.alignment = MAX(alignment, param.alignment);
+
+		if (do_cbfs_locate(offset, data_size)) {
+			ERROR("Could not find location for stage.\n");
+			return 1;
+		}
 	}
 
 	struct cbfs_file_attr_stageheader *stageheader = (void *)

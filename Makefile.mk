@@ -1276,15 +1276,6 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM),y)
 $(CONFIG_CBFS_PREFIX)/romstage-options := -b 0
 endif
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32)$(CONFIG_ARCH_ROMSTAGE_X86_64),y)
-# Use a 64 byte alignment to provide a minimum alignment
-# requirement for the overall romstage. While the first object within
-# romstage could have a 4 byte minimum alignment that doesn't mean the linker
-# won't decide the entire section should be aligned to a larger value. In the
-# future cbfstool should add XIP files proper and honor the alignment
-# requirements of the program segment.
-#
-# Make sure that segment for .car.data is ignored while adding romstage.
-$(CONFIG_CBFS_PREFIX)/romstage-align := 64
 ifeq ($(CONFIG_NO_XIP_EARLY_STAGES),y)
 $(CONFIG_CBFS_PREFIX)/romstage-options := -S ".car.data"
 else

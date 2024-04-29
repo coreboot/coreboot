@@ -43,6 +43,12 @@ Changes to external resources
 
 ### Git submodule pointers
 
+- 3rdparty/amd_blobs: Update from commit id 64cdd7c8ef to ae5fc7d277 (1 commits)
+- 3rdparty/arm-trusted-firmware: Update from commit id 17bef2248d to 48f1bc9f52 (517 commits)
+- 3rdparty/cmocka: Update from commit id 8931845c35 to 8be3737209 (32 commits)
+- 3rdparty/fsp: Update from commit id 507ef01cce to cc6399e8c7 (14 commits)
+- 3rdparty/intel-microcode: Update from commit id ece0d294a2 to 41af345005 (1 commit)
+- 3rdparty/vboot: Update from commit id 3d37d2aafe to 09fcd2184f (27 commits)
 
 ### External payloads
 

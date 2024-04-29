@@ -21,6 +21,9 @@ chip soc/intel/alderlake
 	# seen on J0 and Q0 SKUs
 	register "disable_package_c_state_demotion" = "1"
 
+	# Disable C1 state auto-demotion for all brox baseboards
+	register "disable_c1_state_auto_demotion" = "1"
+
 	# DPTF enable
 	register "dptf_enable" = "1"
 

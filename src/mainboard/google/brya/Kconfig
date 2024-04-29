@@ -443,6 +443,10 @@ config BOARD_GOOGLE_REDRIX4ES
 	select GOOGLE_DSM_PARAM_FILE_NAME if VPD
 	select SOC_INTEL_COMMON_BLOCK_IPU
 
+config BOARD_GOOGLE_RIVEN
+	select BOARD_GOOGLE_BASEBOARD_NISSA
+	select SOC_INTEL_TWINLAKE
+
 config BOARD_GOOGLE_SKOLAS
 	select BOARD_GOOGLE_BASEBOARD_BRYA
 	select DRIVERS_GENERIC_NAU8315
@@ -645,6 +649,7 @@ config DRIVER_TPM_I2C_BUS
 	default 0x0 if BOARD_GOOGLE_QUANDISO
 	default 0x1 if BOARD_GOOGLE_REDRIX
 	default 0x3 if BOARD_GOOGLE_REDRIX4ES
+	default 0x0 if BOARD_GOOGLE_RIVEN
 	default 0x1 if BOARD_GOOGLE_SKOLAS
 	default 0x1 if BOARD_GOOGLE_SKOLAS4ES
 	default 0x1 if BOARD_GOOGLE_TAEKO
@@ -733,6 +738,7 @@ config MAINBOARD_PART_NUMBER
 	default "Quandiso" if BOARD_GOOGLE_QUANDISO
 	default "Redrix" if BOARD_GOOGLE_REDRIX
 	default "Redrix4ES" if BOARD_GOOGLE_REDRIX4ES
+	default "Riven" if BOARD_GOOGLE_RIVEN
 	default "Skolas" if BOARD_GOOGLE_SKOLAS
 	default "Skolas4ES" if BOARD_GOOGLE_SKOLAS4ES
 	default "Sundance" if BOARD_GOOGLE_SUNDANCE
@@ -796,6 +802,7 @@ config VARIANT_DIR
 	default "quandiso" if BOARD_GOOGLE_QUANDISO
 	default "redrix" if BOARD_GOOGLE_REDRIX
 	default "redrix4es" if BOARD_GOOGLE_REDRIX4ES
+	default "riven" if BOARD_GOOGLE_RIVEN
 	default "skolas" if BOARD_GOOGLE_SKOLAS
 	default "skolas4es" if BOARD_GOOGLE_SKOLAS4ES
 	default "sundance" if BOARD_GOOGLE_SUNDANCE

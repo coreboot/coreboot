@@ -35,20 +35,16 @@ static const UDS_PCIROOT_RES *domain_to_pciroot_res(const struct device *dev)
 static void iio_pci_domain_read_resources(struct device *dev)
 {
 	int index = 0;
-	struct resource *res;
 	const UDS_PCIROOT_RES *pr = domain_to_pciroot_res(dev);
 
 	/* Initialize the system-wide I/O space constraints. */
-	if (pr->IoBase <= pr->IoLimit) {
-		res = new_resource(dev, index++);
-		res->base = pr->IoBase;
-		res->limit = pr->IoLimit;
-		res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED;
-	}
+	if (pr->IoBase <= pr->IoLimit)
+		domain_io_window_from_to(dev, index++,
+			pr->IoBase, pr->IoLimit + 1);
 
 	/* The 0 - 0xfff IO range is not reported by the HOB but still gets decoded */
 	if (is_domain0(dev)) {
-		res = new_resource(dev, index++);
+		struct resource *res = new_resource(dev, index++);
 		res->base = 0;
 		res->limit = 0xfff;
 		res->size = 0x1000;
@@ -56,20 +52,14 @@ static void iio_pci_domain_read_resources(struct device *dev)
 	}
 
 	/* Initialize the system-wide memory resources constraints. */
-	if (pr->Mmio32Base <= pr->Mmio32Limit) {
-		res = new_resource(dev, index++);
-		res->base = pr->Mmio32Base;
-		res->limit = pr->Mmio32Limit;
-		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED;
-	}
+	if (pr->Mmio32Base <= pr->Mmio32Limit)
+		domain_mem_window_from_to(dev, index++,
+			pr->Mmio32Base, pr->Mmio32Limit + 1);
 
 	/* Initialize the system-wide memory resources constraints. */
-	if (pr->Mmio64Base <= pr->Mmio64Limit) {
-		res = new_resource(dev, index++);
-		res->base = pr->Mmio64Base;
-		res->limit = pr->Mmio64Limit;
-		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED;
-	}
+	if (pr->Mmio64Base <= pr->Mmio64Limit)
+		domain_mem_window_from_to(dev, index++,
+			pr->Mmio64Base, pr->Mmio64Limit + 1);
 }
 
 static struct device_operations iio_pcie_domain_ops = {

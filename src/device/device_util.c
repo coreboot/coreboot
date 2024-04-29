@@ -776,7 +776,7 @@ void show_all_devs_resources(int debug_level, const char *msg)
 	}
 }
 
-const struct resource *fixed_resource_range_idx(struct device *dev, unsigned long index,
+const struct resource *resource_range_idx(struct device *dev, unsigned long index,
 				uint64_t base, uint64_t size, unsigned long flags)
 {
 	struct resource *resource;
@@ -785,8 +785,13 @@ const struct resource *fixed_resource_range_idx(struct device *dev, unsigned lon
 
 	resource = new_resource(dev, index);
 	resource->base = base;
-	resource->size = size;
-	resource->flags = IORESOURCE_FIXED | IORESOURCE_ASSIGNED;
+
+	if (flags & IORESOURCE_FIXED)
+		resource->size = size;
+	if (flags & IORESOURCE_BRIDGE)
+		resource->limit = base + size - 1;
+
+	resource->flags = IORESOURCE_ASSIGNED;
 	resource->flags |= flags;
 
 	printk(BIOS_SPEW, "dev: %s, index: 0x%lx, base: 0x%llx, size: 0x%llx\n",

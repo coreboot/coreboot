@@ -263,7 +263,7 @@ void mmconf_resource(struct device *dev, unsigned long index);
 /* These are temporary resource constructors to get us through the
    migration away from open-coding all the IORESOURCE_FLAGS. */
 
-const struct resource *fixed_resource_range_idx(struct device *dev, unsigned long index,
+const struct resource *resource_range_idx(struct device *dev, unsigned long index,
 					    uint64_t base, uint64_t size,
 					    unsigned long flags);
 
@@ -272,7 +272,8 @@ const struct resource *fixed_mem_range_flags(struct device *dev, unsigned long i
 					    uint64_t base, uint64_t size,
 					    unsigned long flags)
 {
-	return fixed_resource_range_idx(dev, index, base, size, IORESOURCE_MEM | flags);
+	return resource_range_idx(dev, index, base, size,
+				IORESOURCE_FIXED | IORESOURCE_MEM | flags);
 }
 
 static inline
@@ -283,6 +284,24 @@ const struct resource *fixed_mem_from_to_flags(struct device *dev, unsigned long
 		return NULL;
 	return fixed_mem_range_flags(dev, index, base, end - base, flags);
 }
+
+static inline
+const struct resource *domain_mem_window_range(struct device *dev, unsigned long index,
+					uint64_t base, uint64_t size)
+{
+	return resource_range_idx(dev, index, base, size,
+				IORESOURCE_MEM | IORESOURCE_BRIDGE);
+}
+
+static inline
+const struct resource *domain_mem_window_from_to(struct device *dev, unsigned long index,
+					uint64_t base, uint64_t end)
+{
+	if (end <= base)
+		return NULL;
+	return domain_mem_window_range(dev, index, base, end - base);
+}
+
 
 static inline
 const struct resource *ram_range(struct device *dev, unsigned long index, uint64_t base,
@@ -344,7 +363,8 @@ static inline
 const struct resource *fixed_io_range_flags(struct device *dev, unsigned long index,
 			uint16_t base, uint16_t size, unsigned long flags)
 {
-	return fixed_resource_range_idx(dev, index, base, size, IORESOURCE_IO | flags);
+	return resource_range_idx(dev, index, base, size,
+				IORESOURCE_FIXED | IORESOURCE_IO | flags);
 }
 
 static inline
@@ -361,6 +381,23 @@ const struct resource *fixed_io_range_reserved(struct device *dev, unsigned long
 				      uint16_t base, uint16_t size)
 {
 	return fixed_io_range_flags(dev, index, base, size, IORESOURCE_RESERVE);
+}
+
+static inline
+const struct resource *domain_io_window_range(struct device *dev, unsigned long index,
+			uint16_t base, uint16_t size)
+{
+	return resource_range_idx(dev, index, base, size,
+				IORESOURCE_IO | IORESOURCE_BRIDGE);
+}
+
+static inline
+const struct resource *domain_io_window_from_to(struct device *dev, unsigned long index,
+				      uint16_t base, uint16_t end)
+{
+	if (end <= base)
+		return NULL;
+	return domain_io_window_range(dev, index, base, end - base);
 }
 
 /* Compatibility code */

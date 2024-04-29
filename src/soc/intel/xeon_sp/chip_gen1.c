@@ -27,7 +27,6 @@ static const STACK_RES *domain_to_stack_res(const struct device *dev)
 
 static void iio_pci_domain_read_resources(struct device *dev)
 {
-	struct resource *res;
 	const STACK_RES *sr = domain_to_stack_res(dev);
 
 	if (!sr)
@@ -37,36 +36,24 @@ static void iio_pci_domain_read_resources(struct device *dev)
 
 	if (is_domain0(dev)) {
 		/* The 0 - 0xfff IO range is not reported by the HOB but still gets decoded */
-		res = new_resource(dev, index++);
+		struct resource *res = new_resource(dev, index++);
 		res->base = 0;
 		res->size = 0x1000;
 		res->limit = 0xfff;
 		res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 	}
 
-	if (sr->PciResourceIoBase < sr->PciResourceIoLimit) {
-		res = new_resource(dev, index++);
-		res->base = sr->PciResourceIoBase;
-		res->limit = sr->PciResourceIoLimit;
-		res->size = res->limit - res->base + 1;
-		res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED;
-	}
+	if (sr->PciResourceIoBase < sr->PciResourceIoLimit)
+		domain_io_window_from_to(dev, index++,
+				sr->PciResourceIoBase, sr->PciResourceIoLimit + 1);
 
-	if (sr->PciResourceMem32Base < sr->PciResourceMem32Limit) {
-		res = new_resource(dev, index++);
-		res->base = sr->PciResourceMem32Base;
-		res->limit = sr->PciResourceMem32Limit;
-		res->size = res->limit - res->base + 1;
-		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED;
-	}
+	if (sr->PciResourceMem32Base < sr->PciResourceMem32Limit)
+		domain_mem_window_from_to(dev, index++,
+				sr->PciResourceMem32Base, sr->PciResourceMem32Limit + 1);
 
-	if (sr->PciResourceMem64Base < sr->PciResourceMem64Limit) {
-		res = new_resource(dev, index++);
-		res->base = sr->PciResourceMem64Base;
-		res->limit = sr->PciResourceMem64Limit;
-		res->size = res->limit - res->base + 1;
-		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED;
-	}
+	if (sr->PciResourceMem64Base < sr->PciResourceMem64Limit)
+		domain_mem_window_from_to(dev, index++,
+				sr->PciResourceMem64Base, sr->PciResourceMem64Limit + 1);
 }
 
 /*
@@ -129,7 +116,6 @@ void create_cxl_domains(const union xeon_domain_path dp, struct bus *bus,
 #if CONFIG(SOC_INTEL_HAS_CXL)
 static void iio_cxl_domain_read_resources(struct device *dev)
 {
-	struct resource *res;
 	const STACK_RES *sr = domain_to_stack_res(dev);
 
 	if (!sr)
@@ -137,29 +123,17 @@ static void iio_cxl_domain_read_resources(struct device *dev)
 
 	int index = 0;
 
-	if (sr->IoBase < sr->PciResourceIoBase) {
-		res = new_resource(dev, index++);
-		res->base = sr->IoBase;
-		res->limit = sr->PciResourceIoBase - 1;
-		res->size = res->limit - res->base + 1;
-		res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED;
-	}
+	if (sr->IoBase < sr->PciResourceIoBase)
+		domain_io_window_from_to(dev, index++,
+				sr->IoBase, sr->PciResourceIoBase);
 
-	if (sr->Mmio32Base < sr->PciResourceMem32Base) {
-		res = new_resource(dev, index++);
-		res->base = sr->Mmio32Base;
-		res->limit = sr->PciResourceMem32Base - 1;
-		res->size = res->limit - res->base + 1;
-		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED;
-	}
+	if (sr->Mmio32Base < sr->PciResourceMem32Base)
+		domain_mem_window_from_to(dev, index++,
+				sr->Mmio32Base, sr->PciResourceMem32Base);
 
-	if (sr->Mmio64Base < sr->PciResourceMem64Base) {
-		res = new_resource(dev, index++);
-		res->base = sr->Mmio64Base;
-		res->limit = sr->PciResourceMem64Base - 1;
-		res->size = res->limit - res->base + 1;
-		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED;
-	}
+	if (sr->Mmio64Base < sr->PciResourceMem64Base)
+		domain_mem_window_from_to(dev, index++,
+				sr->Mmio64Base, sr->PciResourceMem64Base);
 }
 
 static struct device_operations iio_cxl_domain_ops = {

@@ -61,21 +61,11 @@ static void create_ioat_domain(const union xeon_domain_path dp, struct bus *cons
 
 	unsigned int index = 0;
 
-	if (mem32_base <= mem32_limit) {
-		struct resource *const res = new_resource(domain, index++);
-		res->base = mem32_base;
-		res->limit = mem32_limit;
-		res->size = res->limit - res->base + 1;
-		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED;
-	}
+	if (mem32_base <= mem32_limit)
+		domain_mem_window_from_to(domain, index++, mem32_base, mem32_limit + 1);
 
-	if (mem64_base <= mem64_limit) {
-		struct resource *const res = new_resource(domain, index++);
-		res->base = mem64_base;
-		res->limit = mem64_limit;
-		res->size = res->limit - res->base + 1;
-		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED;
-	}
+	if (mem64_base <= mem64_limit)
+		domain_mem_window_from_to(domain, index++, mem64_base, mem64_limit + 1);
 }
 
 void create_ioat_domains(const union xeon_domain_path path,

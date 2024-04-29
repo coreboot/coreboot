@@ -9,6 +9,7 @@ romstage-$(CONFIG_BOARD_AMD_BIRMAN_GLINDA) += port_descriptors_glinda.c
 
 ramstage-y += chromeos.c
 ramstage-y += gpio.c
+ramstage-$(CONFIG_BOARD_AMD_BIRMAN_PHOENIX_OPENSIL) += update_devicetree_phoenix_opensil.c
 ramstage-$(CONFIG_BOARD_AMD_BIRMAN_PHOENIX_FSP) += port_descriptors_phoenix.c
 ramstage-$(CONFIG_BOARD_AMD_BIRMAN_GLINDA) += port_descriptors_glinda.c
 

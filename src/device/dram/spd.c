@@ -2,6 +2,7 @@
 
 #include <device/dram/ddr2.h>
 #include <device/dram/ddr3.h>
+#include <device/dram/ddr5.h>
 #include <device/dram/spd.h>
 #include <spd.h>
 #include <stddef.h>

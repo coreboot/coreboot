@@ -32,8 +32,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	 * Probe for no IGD and disable InternalGfx and panel power to prevent a
 	 * crash in FSP-M.
 	 */
-	dev = pcidev_path_on_root(SA_DEVFN_IGD);
-	const bool igd_on = !CONFIG(SOC_INTEL_DISABLE_IGD) && dev && dev->enabled;
+	const bool igd_on = !CONFIG(SOC_INTEL_DISABLE_IGD) && is_devfn_enabled(SA_DEVFN_IGD);
 	if (igd_on && pci_read_config16(SA_DEV_IGD, PCI_VENDOR_ID) != 0xffff) {
 		/* Set IGD stolen size to 64MB. */
 		m_cfg->InternalGfx = 1;
@@ -90,25 +89,11 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 		m_cfg->CpuRatio = (flex_ratio.lo >> 8) & 0xff;
 	}
 
-	dev = pcidev_path_on_root(PCH_DEVFN_ISH);
-	/* If ISH is enabled, enable ISH elements */
-	if (!dev)
-		m_cfg->PchIshEnable = 0;
-	else
-		m_cfg->PchIshEnable = dev->enabled;
+	m_cfg->PchIshEnable = is_devfn_enabled(PCH_DEVFN_ISH);
 
-	/* If HDA is enabled, enable HDA elements */
-	dev = pcidev_path_on_root(PCH_DEVFN_HDA);
-	if (!dev)
-		m_cfg->PchHdaEnable = 0;
-	else
-		m_cfg->PchHdaEnable = dev->enabled;
+	m_cfg->PchHdaEnable = is_devfn_enabled(PCH_DEVFN_HDA);
 
-	/* Enable IPU only if the device is enabled */
-	m_cfg->SaIpuEnable = 0;
-	dev = pcidev_path_on_root(SA_DEVFN_IPU);
-	if (dev)
-		m_cfg->SaIpuEnable = dev->enabled;
+	m_cfg->SaIpuEnable = is_devfn_enabled(SA_DEVFN_IPU);
 
 	/* SATA Gen3 strength */
 	for (i = 0; i < SOC_INTEL_CML_SATA_DEV_MAX; i++) {
@@ -136,12 +121,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 		tconfig->DisableHeciRetry = config->DisableHeciRetry;
 #endif
 
-	/* Enable SMBus controller based on config */
-	dev = pcidev_path_on_root(PCH_DEVFN_SMBUS);
-	if (!dev)
-		m_cfg->SmbusEnable = 0;
-	else
-		m_cfg->SmbusEnable = dev->enabled;
+	m_cfg->SmbusEnable = is_devfn_enabled(PCH_DEVFN_SMBUS);
 
 	/* Set debug probe type */
 	m_cfg->PlatformDebugConsent =

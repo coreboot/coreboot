@@ -255,10 +255,9 @@ int soc_madt_sci_irq_polarity(int sci)
 
 static unsigned long soc_fill_dmar(unsigned long current)
 {
-	struct device *const igfx_dev = pcidev_path_on_root(SA_DEVFN_IGD);
 	uint64_t gfxvtbar = MCHBAR64(GFXVTBAR) & VTBAR_MASK;
 	bool gfxvten = MCHBAR32(GFXVTBAR) & VTBAR_ENABLED;
-	const bool emit_igd = igfx_dev && igfx_dev->enabled && gfxvtbar && gfxvten;
+	const bool emit_igd = is_devfn_enabled(SA_DEVFN_IGD) && gfxvtbar && gfxvten;
 	if (emit_igd) {
 		unsigned long tmp = current;
 
@@ -268,11 +267,10 @@ static unsigned long soc_fill_dmar(unsigned long current)
 		acpi_dmar_drhd_fixup(tmp, current);
 	}
 
-	struct device *const ipu_dev = pcidev_path_on_root(SA_DEVFN_IPU);
 	uint64_t ipuvtbar = MCHBAR64(IPUVTBAR) & VTBAR_MASK;
 	bool ipuvten = MCHBAR32(IPUVTBAR) & VTBAR_ENABLED;
 
-	if (ipu_dev && ipu_dev->enabled && ipuvtbar && ipuvten) {
+	if (is_devfn_enabled(SA_DEVFN_IPU) && ipuvtbar && ipuvten) {
 		unsigned long tmp = current;
 
 		current += acpi_create_dmar_drhd(current, 0, 0, ipuvtbar);

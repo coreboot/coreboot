@@ -8,31 +8,31 @@ config BOARD_GOOGLE_KINGLER
 config BOARD_GOOGLE_KYOGRE
 	bool "->  Kyogre"
 
+config BOARD_GOOGLE_PONYTA
+	bool "->  Ponyta"
+
 config BOARD_GOOGLE_STEELIX
 	bool "->  Steelix"
 
 config BOARD_GOOGLE_VOLTORB
 	bool "->  Voltorb"
 
-config BOARD_GOOGLE_PONYTA
-	bool "->  Ponyta"
-
 comment "Krabby"
-
-config BOARD_GOOGLE_KRABBY
-	bool "->  Krabby"
-
-config BOARD_GOOGLE_TENTACRUEL
-	bool "->  Tentacruel"
-
-config BOARD_GOOGLE_MAGIKARP
-	bool "->  Magikarp"
 
 config BOARD_GOOGLE_CHINCHOU
 	bool "->  Chinchou"
 
+config BOARD_GOOGLE_KRABBY
+	bool "->  Krabby"
+
+config BOARD_GOOGLE_MAGIKARP
+	bool "->  Magikarp"
+
 config BOARD_GOOGLE_SKITTY
 	bool "->  Skitty"
+
+config BOARD_GOOGLE_TENTACRUEL
+	bool "->  Tentacruel"
 
 config BOARD_GOOGLE_VELUZA
 	bool "->  Veluza"

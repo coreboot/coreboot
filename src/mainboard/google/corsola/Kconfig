@@ -27,9 +27,9 @@ config BOARD_GOOGLE_STARYU_COMMON
 if BOARD_GOOGLE_CORSOLA_COMMON
 
 config CORSOLA_SDCARD_INIT
-	def_bool BOARD_GOOGLE_MAGIKARP || \
+	def_bool BOARD_GOOGLE_KINGLER_COMMON || \
+		 BOARD_GOOGLE_MAGIKARP || \
 		 BOARD_GOOGLE_TENTACRUEL || \
-		 BOARD_GOOGLE_KINGLER_COMMON || \
 		 BOARD_GOOGLE_WUGTRIO
 
 config BOARD_SPECIFIC_OPTIONS
@@ -82,19 +82,19 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
+	default "Chinchou" if BOARD_GOOGLE_CHINCHOU
 	default "Kingler" if BOARD_GOOGLE_KINGLER
 	default "Krabby" if BOARD_GOOGLE_KRABBY
 	default "Kyogre" if BOARD_GOOGLE_KYOGRE
+	default "Magikarp" if BOARD_GOOGLE_MAGIKARP
+	default "Ponyta" if BOARD_GOOGLE_PONYTA
+	default "Skitty" if BOARD_GOOGLE_SKITTY
+	default "Starmie" if BOARD_GOOGLE_STARMIE
 	default "Steelix" if BOARD_GOOGLE_STEELIX
 	default "Tentacruel" if BOARD_GOOGLE_TENTACRUEL
-	default "Magikarp" if BOARD_GOOGLE_MAGIKARP
-	default "Voltorb" if BOARD_GOOGLE_VOLTORB
-	default "Starmie" if BOARD_GOOGLE_STARMIE
-	default "Ponyta" if BOARD_GOOGLE_PONYTA
-	default "Chinchou" if BOARD_GOOGLE_CHINCHOU
-	default "Wugtrio" if BOARD_GOOGLE_WUGTRIO
-	default "Skitty" if BOARD_GOOGLE_SKITTY
 	default "Veluza" if BOARD_GOOGLE_VELUZA
+	default "Voltorb" if BOARD_GOOGLE_VOLTORB
+	default "Wugtrio" if BOARD_GOOGLE_WUGTRIO
 
 config BOOT_DEVICE_SPI_FLASH_BUS
 	int

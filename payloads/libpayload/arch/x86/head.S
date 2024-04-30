@@ -63,9 +63,11 @@ _init:
 	/* No interrupts, please. */
 	cli
 
+#if CONFIG(LP_MULTIBOOT)
 	/* Store EAX and EBX */
 	movl %eax, loader_eax
 	movl %ebx, loader_ebx
+#endif
 
 	/* save pointer to coreboot tables */
 	movl 4(%esp), %eax

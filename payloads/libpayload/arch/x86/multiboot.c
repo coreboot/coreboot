@@ -30,8 +30,8 @@
 #include <libpayload.h>
 #include <multiboot_tables.h>
 
-extern unsigned long loader_eax;
-extern unsigned long loader_ebx;
+unsigned long loader_eax;  /* The value of EAX passed from the loader */
+unsigned long loader_ebx;  /* The value of EBX passed from the loader */
 
 static int mb_add_memrange(struct sysinfo_t *info, unsigned long long base,
 			   unsigned long long size, unsigned int type)

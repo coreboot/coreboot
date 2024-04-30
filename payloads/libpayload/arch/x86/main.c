@@ -30,9 +30,6 @@
 #include <libpayload.h>
 #include <arch/apic.h>
 
-unsigned long loader_eax;  /**< The value of EAX passed from the loader */
-unsigned long loader_ebx;  /**< The value of EBX passed from the loader */
-
 int main_argc;    /**< The argc value to pass to main() */
 
 /** The argv value to pass to main() */

@@ -11,6 +11,9 @@ config BOARD_GOOGLE_KYOGRE
 config BOARD_GOOGLE_PONYTA
 	bool "->  Ponyta"
 
+config BOARD_GOOGLE_SQUIRTLE
+	bool "->  Squirtle"
+
 config BOARD_GOOGLE_STEELIX
 	bool "->  Steelix"
 

@@ -156,25 +156,6 @@ void soc_power_states_generation(int core, int cores_per_package)
 	acpigen_pop_len();
 }
 
-unsigned long xeonsp_acpi_create_madt_lapics(unsigned long current)
-{
-	struct device *cpu;
-	uint8_t num_cpus = 0;
-
-	for (cpu = all_devices; cpu; cpu = cpu->next) {
-		if ((cpu->path.type != DEVICE_PATH_APIC)
-		    || (cpu->upstream->dev->path.type != DEVICE_PATH_CPU_CLUSTER)) {
-			continue;
-		}
-		if (!cpu->enabled)
-			continue;
-		current = acpi_create_madt_one_lapic(current, num_cpus, cpu->path.apic.apic_id);
-		num_cpus++;
-	}
-
-	return current;
-}
-
 unsigned long acpi_fill_cedt(unsigned long current)
 {
 	const IIO_UDS *hob = get_iio_uds();

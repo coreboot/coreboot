@@ -123,7 +123,6 @@ void save_dimm_info(void)
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
-	const struct device *dev;
 	const config_t *config = config_of_soc();
 
 	/* ErrorLevel - 0 (disable) to 8 (verbose) */
@@ -175,8 +174,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	/* Enable PCH thermal device in FSP, the definition of ThermalDeviceEnable is
 	   0: Disable, 1: Enabled in PCI mode, 2: Enabled in ACPI mode */
-	dev = pcidev_path_on_root(PCH_DEVFN_THERMAL);
-	m_cfg->ThermalDeviceEnable = dev && dev->enabled;
+	m_cfg->ThermalDeviceEnable = is_devfn_enabled(PCH_DEVFN_THERMAL);
 
 	/* Enable VT-d according to DTB */
 	m_cfg->VtdSupport = config->vtd_support;

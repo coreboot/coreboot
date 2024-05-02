@@ -217,7 +217,7 @@ chip soc/intel/cannonlake
 	register "gpio_pm[COMM_4]" = "0"
 
 	device domain 0 on
-		device pci 02.0 on
+		device ref igpu on
 			chip drivers/gfx/generic
 				register "device_count" = "1"
 				register "device[0].name" = ""LCD0""
@@ -231,16 +231,16 @@ chip soc/intel/cannonlake
 				register "device[0].privacy.disable_function" = ""\\_SB.PCI0.LPCB.EC0.DPVX""
 				device generic 0 on end
 			end
-		end # Integrated Graphics Device
-		device pci 04.0 on  end # SA Thermal device
-		device pci 12.0 on  end # Thermal Subsystem
-		device pci 13.0 on	# Integrated Sensor Hub
+		end
+		device ref dptf on  end
+		device ref thermal on  end
+		device ref ish on
 			chip drivers/intel/ish
 				register "firmware_name" = ""drallion_ish.bin""
 				device generic 0 on end
 			end
 		end
-		device pci 14.0 on
+		device ref xhci on
 			chip drivers/usb/acpi
 				register "desc" = ""Root Hub""
 				register "type" = "UPC_TYPE_HUB"
@@ -316,14 +316,14 @@ chip soc/intel/cannonlake
 					end
 				end
 			end
-		end # USB xHCI
-		device pci 14.3 on
+		end
+		device ref cnvi_wifi on
 			chip drivers/wifi/generic
 				register "wake" = "PME_B0_EN_BIT"
 				device generic 0 on end
 			end
-		end # CNVi wifi
-		device pci 15.0 on
+		end
+		device ref i2c0 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""WCOM48E2""
 				register "generic.desc" = ""Wacom Touchscreen""
@@ -383,8 +383,8 @@ chip soc/intel/cannonlake
 				register "device_present_gpio_invert" = "1"
 				device i2c 34 on end
 			end
-		end # I2C #0
-		device pci 15.1 on
+		end
+		device ref i2c1 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
@@ -399,29 +399,29 @@ chip soc/intel/cannonlake
 				register "detect" = "1"
 				device i2c 15 on end
 			end
-		end # I2C #1
-		device pci 19.0 on
+		end
+		device ref i2c4 on
 			chip drivers/i2c/tpm
 				register "hid" = ""GOOG0005""
 				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_D18_IRQ)"
 				device i2c 50 on end
 			end
-		end # I2C #4
-		device pci 1d.0 on
+		end
+		device ref pcie_rp9 on
 			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "2230" "SlotDataBusWidth1X"
 			register "PcieRpSlotImplemented[8]" = "1"
-		end # PCI Express Port 9
-		device pci 1d.4 on
+		end
+		device ref pcie_rp13 on
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "2280" "SlotDataBusWidth4X"
 			register "PcieRpSlotImplemented[12]" = "1"
-		end # PCI Express Port 13 (x4)
-		device pci 1e.0 on end # UART #0
-		device pci 1f.0 on
+		end
+		device ref uart0 on end
+		device ref lpc_espi on
 			chip ec/google/wilco
 				device pnp 0c09.0 on end
 			end
-		end # LPC/eSPI
-		device pci 1f.3 on  end # Intel HDA
-		device pci 1f.4 on  end # SMBus
+		end
+		device ref hda on  end
+		device ref smbus on  end
 	end
 end

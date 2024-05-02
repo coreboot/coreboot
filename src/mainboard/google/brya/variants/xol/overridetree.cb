@@ -25,6 +25,12 @@ chip soc/intel/alderlake
 	# display flickering issue.
 	register "disable_dynamic_tccold_handshake" = "true"
 
+	register "power_limits_config[RPL_P_282_242_142_15W_CORE]" = "{
+		.tdp_pl1_override = 18,
+		.tdp_pl2_override = 55,
+		.tdp_pl4 = 114,
+	}"
+
 	register "tcc_offset" = "6"	# TCC of 94
 
 	register "platform_pmax" = "122"

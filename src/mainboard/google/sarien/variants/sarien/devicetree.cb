@@ -214,10 +214,10 @@ chip soc/intel/cannonlake
 	register "gpio_pm[COMM_4]" = "MISCCFG_GPIO_PM_CONFIG_BITS"
 
 	device domain 0 on
-		device pci 02.0 on  end # Integrated Graphics Device
-		device pci 04.0 on  end # SA Thermal device
-		device pci 12.0 on  end # Thermal Subsystem
-		device pci 14.0 on
+		device ref igpu on  end
+		device ref dptf on  end
+		device ref thermal on  end
+		device ref xhci on
 			chip drivers/usb/acpi
 				register "desc" = ""Root Hub""
 				register "type" = "UPC_TYPE_HUB"
@@ -303,14 +303,14 @@ chip soc/intel/cannonlake
 					end
 				end
 			end
-		end # USB xHCI
-		device pci 14.3 on
+		end
+		device ref cnvi_wifi on
 			chip drivers/wifi/generic
 				register "wake" = "PME_B0_EN_BIT"
 				device generic 0 on end
 			end
-		end # CNVi wifi
-		device pci 15.0 on
+		end
+		device ref i2c0 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""ELAN900C""
 				register "generic.desc" = ""ELAN Touchscreen""
@@ -342,8 +342,8 @@ chip soc/intel/cannonlake
 				register "device_present_gpio_invert" = "1"
 				device i2c 34 on end
 			end
-		end # I2C #0
-		device pci 15.1 on
+		end
+		device ref i2c1 on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
@@ -351,48 +351,50 @@ chip soc/intel/cannonlake
 				register "detect" = "1"
 				device i2c 2c on end
 			end
-		end # I2C #1
-		device pci 17.0 on  end # SATA
-		device pci 19.0 on
+		end
+		device ref sata on  end
+		device ref i2c4 on
 			chip drivers/i2c/tpm
 				register "hid" = ""GOOG0005""
 				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_D18_IRQ)"
 				device i2c 50 on end
 			end
-		end # I2C #4
-		device pci 19.2 on  end # UART #2
-		device pci 1c.0 on	# PCI Express Port 1 (USB)
+		end
+		device ref uart2 on  end
+		device ref pcie_rp1 on
+			# USB
 			register "PcieRpSlotImplemented[0]" = "1"
 		end
-		device pci 1c.7 on	# PCI Express Port 8
+		device ref pcie_rp8 on
 			register "PcieRpSlotImplemented[7]" = "1"
 		end
-		device pci 1d.0 on
+		device ref pcie_rp9 on
 			chip drivers/generic/bayhub
 				register "power_saving" = "1"
 				device pci 00.0 on end
 			end
 			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "2230" "SlotDataBusWidth1X"
 			register "PcieRpSlotImplemented[8]" = "1"
-		end # PCI Express Port 9
-		device pci 1d.1 on	# PCI Express Port 10
+		end
+		device ref pcie_rp10 on
 			register "PcieRpSlotImplemented[9]" = "1"
 		end
-		device pci 1d.4 on
+		device ref pcie_rp13 on
+			# x4 lanes
 			chip drivers/generic/bayhub
 				register "power_saving" = "1"
 				device pci 00.0 on end
 			end
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "2280" "SlotDataBusWidth4X"
 			register "PcieRpSlotImplemented[12]" = "1"
-		end # PCI Express Port 13 (x4)
-		device pci 1f.0 on
+		end
+		device ref lpc_espi on
 			chip ec/google/wilco
 				device pnp 0c09.0 on end
 			end
-		end # LPC/eSPI
-		device pci 1f.3 on  end # Intel HDA
-		device pci 1f.4 on  end # SMBus
-		device pci 1f.6 on  end # GbE
+		end
+		device ref hda on  end
+		device ref smbus on  end
+		device ref gbe on  end
 	end
 end

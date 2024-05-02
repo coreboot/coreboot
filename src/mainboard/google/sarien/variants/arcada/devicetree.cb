@@ -208,14 +208,10 @@ chip soc/intel/cannonlake
 	register "gpio_pm[COMM_3]" = "MISCCFG_GPIO_PM_CONFIG_BITS"
 	register "gpio_pm[COMM_4]" = "MISCCFG_GPIO_PM_CONFIG_BITS"
 
-	device cpu_cluster 0 on end
 	device domain 0 on
-		device pci 00.0 on  end # Host Bridge
 		device pci 02.0 on  end # Integrated Graphics Device
 		device pci 04.0 on  end # SA Thermal device
 		device pci 12.0 on  end # Thermal Subsystem
-		device pci 12.5 off end # UFS SCS
-		device pci 12.6 off end # GSPI #2
 		device pci 13.0 on	# Integrated Sensor Hub
 			chip drivers/intel/ish
 				register "firmware_name" = ""arcada_ish.bin""
@@ -297,14 +293,12 @@ chip soc/intel/cannonlake
 				end
 			end
 		end # USB xHCI
-		device pci 14.1 off end # USB xDCI (OTG)
 		device pci 14.3 on
 			chip drivers/wifi/generic
 				register "wake" = "PME_B0_EN_BIT"
 				device generic 0 on end
 			end
 		end # CNVi wifi
-		device pci 14.5 off end # SDCard
 		device pci 15.0 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""WCOM48E2""
@@ -337,14 +331,6 @@ chip soc/intel/cannonlake
 				device i2c 2a on end
 			end
 		end # I2C #1
-		device pci 15.2 off end # I2C #2
-		device pci 15.3 off end # I2C #3
-		device pci 16.0 on  end # Management Engine Interface 1
-		device pci 16.1 off end # Management Engine Interface 2
-		device pci 16.2 off end # Management Engine IDE-R
-		device pci 16.3 off end # Management Engine KT Redirection
-		device pci 16.4 off end # Management Engine Interface 3
-		device pci 16.5 off end # Management Engine Interface 4
 		device pci 17.0 on  end # SATA
 		device pci 19.0 on
 			chip drivers/i2c/tpm
@@ -353,18 +339,7 @@ chip soc/intel/cannonlake
 				device i2c 50 on end
 			end
 		end # I2C #4
-		device pci 19.1 off end # I2C #5
 		device pci 19.2 on  end # UART #2
-		device pci 1a.0 off end # eMMC
-		device pci 1c.0 off end # PCI Express Port 1 (USB)
-		device pci 1c.1 off end # PCI Express Port 2 (USB)
-		device pci 1c.2 off end # PCI Express Port 3 (USB)
-		device pci 1c.3 off end # PCI Express Port 4 (USB)
-		device pci 1c.4 off end # PCI Express Port 5 (USB)
-		device pci 1c.5 off end # PCI Express Port 6
-		device pci 1c.6 off end # PCI Express Port 7
-		device pci 1c.7 off end # PCI Express Port 8
-		device pci 1d.0 off end # PCI Express Port 9
 		device pci 1d.1 on
 			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "2230" "SlotDataBusWidth1X"
 			register "PcieRpSlotImplemented[9]" = "1"
@@ -372,7 +347,6 @@ chip soc/intel/cannonlake
 		device pci 1d.2 on	# PCI Express Port 11
 			register "PcieRpSlotImplemented[10]" = "1"
 		end
-		device pci 1d.3 off end # PCI Express Port 12
 		device pci 1d.4 on
 			chip drivers/generic/bayhub
 				register "power_saving" = "1"
@@ -381,20 +355,12 @@ chip soc/intel/cannonlake
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "2280" "SlotDataBusWidth4X"
 			register "PcieRpSlotImplemented[12]" = "1"
 		end # PCI Express Port 13 (x4)
-		device pci 1e.0 off end # UART #0
-		device pci 1e.1 off end # UART #1
-		device pci 1e.2 off end # GSPI #0
-		device pci 1e.3 off end # GSPI #1
 		device pci 1f.0 on
 			chip ec/google/wilco
 				device pnp 0c09.0 on end
 			end
 		end # LPC/eSPI
-		device pci 1f.1 on  end # P2SB
-		device pci 1f.2 hidden end # Power Management Controller
 		device pci 1f.3 on  end # Intel HDA
 		device pci 1f.4 on  end # SMBus
-		device pci 1f.5 on  end # PCH SPI
-		device pci 1f.6 off end # GbE
 	end
 end

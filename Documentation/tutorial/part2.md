@@ -30,7 +30,7 @@ often.
 
 Copy the content of `.ssh/id_ed25519.pub` (notice the ".pub" suffix
 as you need to send the public key) into the textbox "New SSH Key" at
-https://review.coreboot.org/settings/#SSHKeys and save it.
+<https://review.coreboot.org/settings/#SSHKeys> and save it.
 
 ## Step 2b: Set up an HTTP Password
 

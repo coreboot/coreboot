@@ -29,7 +29,7 @@ sealings are sent via encrypted email.
 
 ### NovaCustom laptops
 
-[NovaCustom](https://configurelaptop.eu/) sells configurable laptops with
+[NovaCustom](https://novacustom.com) sells configurable laptops with
 [Dasharo](https://dasharo.com/) coreboot based firmware on board, maintained by
 [3mdeb](https://3mdeb.com/). NovaCustom offers full GNU/Linux and Microsoft
 Windows compatibility. NovaCustom ensures security updates via fwupd for 5 years

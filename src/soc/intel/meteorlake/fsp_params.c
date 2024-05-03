@@ -703,7 +703,7 @@ static void fill_fsps_irq_params(FSP_S_CONFIG *s_cfg,
 	printk(BIOS_INFO, "IRQ: Using dynamically assigned PCI IO-APIC IRQs\n");
 }
 
-static void arch_silicon_init_params(FSPS_ARCH_UPD *s_arch_cfg)
+static void arch_silicon_init_params(FSPS_ARCHx_UPD *s_arch_cfg)
 {
 	/*
 	 * EnableMultiPhaseSiliconInit for running MultiPhaseSiInit
@@ -713,8 +713,14 @@ static void arch_silicon_init_params(FSPS_ARCH_UPD *s_arch_cfg)
 	/* Assign FspEventHandler arch Upd to use coreboot debug event handler */
 	if (CONFIG(FSP_USES_CB_DEBUG_EVENT_HANDLER) && CONFIG(CONSOLE_SERIAL) &&
 			 CONFIG(FSP_ENABLE_SERIAL_DEBUG))
+
+#if CONFIG(PLATFORM_USES_FSP2_X86_32)
 		s_arch_cfg->FspEventHandler = (FSP_EVENT_HANDLER)
 				fsp_debug_event_handler;
+#else
+		s_arch_cfg->FspEventHandler = (EFI_PHYSICAL_ADDRESS)
+				fsp_debug_event_handler;
+#endif
 }
 
 static void evaluate_ssid(const struct device *dev, uint16_t *svid, uint16_t *ssid)
@@ -822,7 +828,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 {
 	struct soc_intel_meteorlake_config *config;
 	FSP_S_CONFIG *s_cfg = &supd->FspsConfig;
-	FSPS_ARCH_UPD *s_arch_cfg = &supd->FspsArchUpd;
+	FSPS_ARCHx_UPD *s_arch_cfg = &supd->FspsArchUpd;
 
 	config = config_of_soc();
 	arch_silicon_init_params(s_arch_cfg);

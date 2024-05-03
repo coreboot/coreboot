@@ -77,7 +77,7 @@ static const struct soc_mem_cfg soc_mem_cfg[] = {
 
 static void mem_init_spd_upds(FSP_M_CONFIG *mem_cfg, const struct mem_channel_data *data)
 {
-	uint32_t *spd_upds[MRC_CHANNELS][CONFIG_DIMMS_PER_CHANNEL] = {
+	efi_uintn_t *spd_upds[MRC_CHANNELS][CONFIG_DIMMS_PER_CHANNEL] = {
 		[0] = { &mem_cfg->MemorySpdPtr000, &mem_cfg->MemorySpdPtr001, },
 		[1] = { &mem_cfg->MemorySpdPtr010, &mem_cfg->MemorySpdPtr011, },
 		[2] = { &mem_cfg->MemorySpdPtr020, &mem_cfg->MemorySpdPtr021, },
@@ -106,7 +106,7 @@ static void mem_init_spd_upds(FSP_M_CONFIG *mem_cfg, const struct mem_channel_da
 		bool enable_channel = 0;
 
 		for (dimm = 0; dimm < CONFIG_DIMMS_PER_CHANNEL; dimm++) {
-			uint32_t *spd_ptr = spd_upds[ch][dimm];
+			efi_uintn_t *spd_ptr = spd_upds[ch][dimm];
 
 			*spd_ptr = data->spd[ch][dimm];
 			if (*spd_ptr)

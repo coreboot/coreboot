@@ -446,7 +446,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 #define VGA_INIT_CONTROL_TEAR_DOWN	BIT(1)
 
 static void fill_fspm_sign_of_life(FSP_M_CONFIG *m_cfg,
-				   FSPM_ARCH_UPD *arch_upd)
+				   FSPM_ARCHx_UPD *arch_upd)
 {
 	void *vbt;
 	size_t vbt_size;
@@ -485,22 +485,22 @@ static void fill_fspm_sign_of_life(FSP_M_CONFIG *m_cfg,
 	elog_add_event_byte(ELOG_TYPE_FW_EARLY_SOL, sol_type);
 
 	m_cfg->VgaInitControl = vga_init_control;
-	m_cfg->VbtPtr = (UINT32)vbt;
+	m_cfg->VbtPtr = (efi_uintn_t)vbt;
 	m_cfg->VbtSize = vbt_size;
 	m_cfg->LidStatus = CONFIG(VBOOT_LID_SWITCH) ? get_lid_switch() : CONFIG(RUN_FSP_GOP);
-	m_cfg->VgaMessage = (UINT32)text;
+	m_cfg->VgaMessage = (efi_uintn_t)text;
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	const struct soc_intel_meteorlake_config *config;
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
-	FSPM_ARCH_UPD *arch_upd = &mupd->FspmArchUpd;
+	FSPM_ARCHx_UPD *arch_upd = &mupd->FspmArchUpd;
 
 	if (CONFIG(FSP_USES_CB_DEBUG_EVENT_HANDLER)) {
 		if (CONFIG(CONSOLE_SERIAL) && CONFIG(FSP_ENABLE_SERIAL_DEBUG)) {
 			enum fsp_log_level log_level = fsp_map_console_log_level();
-			arch_upd->FspEventHandler = (UINT32)((FSP_EVENT_HANDLER *)
+			arch_upd->FspEventHandler = (efi_uintn_t)((FSP_EVENT_HANDLER *)
 					fsp_debug_event_handler);
 			/* Set Serial debug message level */
 			m_cfg->PcdSerialDebugLevel = log_level;

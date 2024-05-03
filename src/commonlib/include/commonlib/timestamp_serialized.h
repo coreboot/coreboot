@@ -165,6 +165,7 @@ enum timestamp_id {
 	TS_VB_EC_VBOOT_DONE = 1030,
 	TS_VB_STORAGE_INIT_DONE = 1040,
 	TS_VB_READ_KERNEL_DONE = 1050,
+	TS_VB_AUXFW_SYNC_DONE = 1060,
 	TS_VB_VBOOT_DONE = 1100,
 
 	TS_KERNEL_START = 1101,
@@ -358,6 +359,7 @@ static const struct timestamp_id_to_name {
 	TS_NAME_DEF(TS_VB_EC_VBOOT_DONE, 0, "finished EC verification"),
 	TS_NAME_DEF(TS_VB_STORAGE_INIT_DONE, 0, "finished storage device initialization"),
 	TS_NAME_DEF(TS_VB_READ_KERNEL_DONE, 0, "finished reading kernel from disk"),
+	TS_NAME_DEF(TS_VB_AUXFW_SYNC_DONE, 0, "finished AuxFW Sync"),
 	TS_NAME_DEF(TS_VB_VBOOT_DONE, 0, "finished vboot kernel verification"),
 
 	TS_NAME_DEF(TS_KERNEL_START, 0, "jumping to kernel"),

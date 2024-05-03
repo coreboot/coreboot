@@ -1,10 +1,14 @@
 ## In depth documentation
 
-* [abuild](util/abuild/index.md)
-* [cbfstool](util/cbfstool/index.md)
-* [ifdtool](util/ifdtool/index.md)
-* [intelp2m](util/intelp2m/index.md)
-* [smmstoretool](util/smmstoretool/index.md)
+```{toctree}
+:maxdepth: 1
+
+abuild <util/abuild/index.md>
+cbfstool <util/cbfstool/index.md>
+ifdtool <util/ifdtool/index.md>
+intelp2m <util/intelp2m/index.md>
+smmstoretool <util/smmstoretool/index.md>
+```
 
 ## Generated documentation
 

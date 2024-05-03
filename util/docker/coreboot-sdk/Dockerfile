@@ -72,7 +72,7 @@ RUN \
 		parted \
 		patch \
 		pbzip2 \
-		pkg-config \
+		pkgconf \
 		python3 \
 		python-is-python3 \
 		qemu-system-arm \

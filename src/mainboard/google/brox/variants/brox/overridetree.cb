@@ -28,6 +28,7 @@ fw_config
 end
 
 chip soc/intel/alderlake
+	register "platform_pmax" = "208"
 	device domain 0 on
 		device ref dtt on
 			chip drivers/intel/dptf

@@ -6,7 +6,11 @@ Device (CREC)
 	Name (_UID, 1)
 	Name (_DDN, "EC Command Device")
 #ifdef EC_ENABLE_WAKE_PIN
+#ifndef EC_ENABLE_SYNC_IRQ_GPIO
 	Name (_PRW, Package () { EC_ENABLE_WAKE_PIN, 0x5 })
+#else
+#define EC_SYNC_IRQ_WAKE_CAPABLE
+#endif
 #endif
 
 #ifdef EC_SYNC_IRQ_WAKE_CAPABLE

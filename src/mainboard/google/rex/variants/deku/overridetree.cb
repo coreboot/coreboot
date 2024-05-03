@@ -54,6 +54,8 @@ chip soc/intel/meteorlake
 		},
 	}"
 
+	register "psys_pmax_watts" = "180"
+
 	# As per doc 640982, Intel MTL-U 28W CPU supports FVM on GT and SA
 	# The ICC Limit is represented in 1/4 A increments, i.e., a value of 400 = 100A
 	# For GT VR configuration

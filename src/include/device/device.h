@@ -369,9 +369,11 @@ const struct resource *fixed_io_range_flags(struct device *dev, unsigned long in
 
 static inline
 const struct resource *fixed_io_from_to_flags(struct device *dev, unsigned long index,
-				      uint16_t base, uint16_t end, unsigned long flags)
+				      uint16_t base, uint32_t end, unsigned long flags)
 {
 	if (end <= base)
+		return NULL;
+	if (end > UINT16_MAX + 1)
 		return NULL;
 	return fixed_io_range_flags(dev, index, base, end - base, flags);
 }
@@ -393,9 +395,11 @@ const struct resource *domain_io_window_range(struct device *dev, unsigned long 
 
 static inline
 const struct resource *domain_io_window_from_to(struct device *dev, unsigned long index,
-				      uint16_t base, uint16_t end)
+				      uint16_t base, uint32_t end)
 {
 	if (end <= base)
+		return NULL;
+	if (end > UINT16_MAX + 1)
 		return NULL;
 	return domain_io_window_range(dev, index, base, end - base);
 }

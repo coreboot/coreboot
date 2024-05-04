@@ -1,28 +1,17 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <acpi/acpigen.h>
-#include <acpi/acpi.h>
-#include <console/console.h>
 #include <console/debug.h>
-#include <cpu/cpu.h>
-#include <cpu/intel/cpu_ids.h>
 #include <cpu/intel/common/common.h>
-#include <cpu/intel/em64t101_save_state.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/smm_reloc.h>
 #include <cpu/intel/turbo.h>
-#include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
-#include <cpu/x86/mtrr.h>
 #include <cpu/x86/topology.h>
-#include <device/pci_mmio_cfg.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/mp_init.h>
 #include <intelpch/lockdown.h>
 #include <soc/msr.h>
-#include <soc/pci_devs.h>
 #include <soc/pm.h>
-#include <soc/soc_util.h>
 #include <soc/smmrelocate.h>
 #include <soc/util.h>
 

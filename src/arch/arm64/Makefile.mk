@@ -179,7 +179,9 @@ BL31 := $(obj)/bl31.elf
 
 $(BL31): $(obj)/build.h
 	printf "    MAKE       $(subst $(obj)/,,$(@))\n"
-	+CROSS_COMPILE="$(CROSS_COMPILE_arm64)" \
+	+unset AS AR CC CPP OC OD; \
+	LD=$(word 1, $(LD_arm64)) \
+	CROSS_COMPILE="$(CROSS_COMPILE_arm64)" \
 	CFLAGS="$(BL31_CFLAGS)" \
 	LDFLAGS="$(BL31_LDFLAGS)" \
 	$(MAKE) -C $(BL31_SOURCE) $(BL31_MAKEARGS) $(BL31_TARGET) DISABLE_PEDANTIC=1

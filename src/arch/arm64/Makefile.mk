@@ -173,14 +173,13 @@ BL31_MAKEARGS += IS_ANYTHING_TO_BUILD=1
 BL31_MAKEARGS += BUILD_MESSAGE_TIMESTAMP='"$(shell sed -n 's/^.define COREBOOT_BUILD\>.*"\(.*\)".*/\1/p' $(obj)/build.h)"'
 
 BL31_CFLAGS := -fno-pic -fno-stack-protector -Wno-deprecated-declarations -Wno-unused-function
-BL31_LDFLAGS := --emit-relocs
+BL31_LDFLAGS := -Wl,--emit-relocs
 
 BL31 := $(obj)/bl31.elf
 
 $(BL31): $(obj)/build.h
 	printf "    MAKE       $(subst $(obj)/,,$(@))\n"
-	+unset AS AR CC CPP OC OD; \
-	LD=$(word 1, $(LD_arm64)) \
+	+unset AS AR CC CPP OC OD LD; \
 	CROSS_COMPILE="$(CROSS_COMPILE_arm64)" \
 	CFLAGS="$(BL31_CFLAGS)" \
 	LDFLAGS="$(BL31_LDFLAGS)" \

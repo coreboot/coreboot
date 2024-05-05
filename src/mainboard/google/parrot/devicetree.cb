@@ -89,7 +89,7 @@ chip northbridge/intel/sandybridge
 			end # LPC bridge
 			device ref sata1 on end # SATA Controller 1
 			device ref smbus on
-				subsystemid 0x04B4 0x18D1
+				subsystemid 0x18D1 0x04B4
 			end # SMBus
 			device ref sata2 off end # SATA Controller 2
 			device ref thermal on end # Thermal

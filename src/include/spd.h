@@ -159,6 +159,8 @@ enum spd_memory_type {
 	SPD_MEMORY_TYPE_LPDDR5_SDRAM		= 0x13,
 	SPD_MEMORY_TYPE_DDR5_NVDIMM_P		= 0x14,
 	SPD_MEMORY_TYPE_LPDDR5X_SDRAM		= 0x15,
+	/* This is not a JEDEC module type ID */
+	SPD_MEMORY_TYPE_LPDDR3_INTEL		= 0xf1,
 };
 
 /* SPD_MODULE_VOLTAGE values. */

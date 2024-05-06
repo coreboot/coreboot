@@ -543,6 +543,10 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 	/* Add board-specific table entries, if any. */
 	lb_board(head);
 
+	/* Possibly add UEFI capsules. */
+	if (CONFIG(DRIVERS_EFI_UPDATE_CAPSULES))
+		lb_efi_capsules(head);
+
 	if (CONFIG(CHROMEOS_RAMOOPS))
 		lb_ramoops(head);
 

@@ -4,6 +4,7 @@
 #include <bootmem.h>
 #include <cbmem.h>
 #include <device/resource.h>
+#include <drivers/efi/capsules.h>
 #include <symbols.h>
 #include <assert.h>
 #include <types.h>
@@ -79,6 +80,8 @@ static void bootmem_init(void)
 
 	/* Add memory used by CBMEM. */
 	cbmem_add_bootmem();
+
+	efi_add_capsules_to_bootmem();
 
 	bootmem_add_range((uintptr_t)_stack, REGION_SIZE(stack),
 			  BM_MEM_RAMSTAGE);

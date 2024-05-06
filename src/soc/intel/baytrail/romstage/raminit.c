@@ -59,7 +59,7 @@ static void populate_smbios_tables(void *dram_data, int speed, int num_channels)
 	enum spd_status status;
 
 	/* Decode into dimm_attr struct */
-	status = spd_decode_ddr3(&dimm, *(spd_raw_data *)dram_data);
+	status = spd_decode_ddr3(&dimm, *(spd_ddr3_raw_data *)dram_data);
 
 	/* Some SPDs have bad CRCs, nothing we can do about it */
 	if (status == SPD_STATUS_OK || status == SPD_STATUS_CRC_ERROR) {

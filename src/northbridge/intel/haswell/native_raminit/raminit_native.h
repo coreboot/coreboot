@@ -33,7 +33,7 @@ enum generic_stepping {
 };
 
 struct raminit_dimm_info {
-	spd_raw_data raw_spd;
+	spd_ddr3_raw_data raw_spd;
 	struct dimm_attr_ddr3_st data;
 	uint8_t spd_addr;
 	bool valid;

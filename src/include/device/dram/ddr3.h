@@ -153,15 +153,15 @@ enum ddr3_xmp_profile {
 	DDR3_XMP_PROFILE_2 = 1,
 };
 
-typedef u8 spd_raw_data[256];
+typedef u8 spd_ddr3_raw_data[SPD_SIZE_MAX_DDR3];
 
 u16 spd_ddr3_calc_crc(u8 *spd, int len);
 u16 spd_ddr3_calc_unique_crc(u8 *spd, int len);
-int spd_decode_ddr3(struct dimm_attr_ddr3_st *dimm, spd_raw_data spd_data);
+int spd_decode_ddr3(struct dimm_attr_ddr3_st *dimm, spd_ddr3_raw_data spd_data);
 int spd_dimm_is_registered_ddr3(enum spd_dimm_type_ddr3 type);
 void dram_print_spd_ddr3(const struct dimm_attr_ddr3_st *dimm);
 int spd_xmp_decode_ddr3(struct dimm_attr_ddr3_st *dimm,
-			spd_raw_data spd,
+			spd_ddr3_raw_data spd,
 			enum ddr3_xmp_profile profile);
 enum cb_err spd_add_smbios17(const u8 channel, const u8 slot,
 			     const u16 selected_freq,

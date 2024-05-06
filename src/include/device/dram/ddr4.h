@@ -64,9 +64,9 @@ struct dimm_attr_ddr4_st {
 	bool ecc_extension;
 };
 
-typedef u8 spd_raw_data[512];
+typedef u8 spd_ddr4_raw_data[SPD_SIZE_MAX_DDR4];
 
-int spd_decode_ddr4(struct dimm_attr_ddr4_st *dimm, spd_raw_data spd);
+int spd_decode_ddr4(struct dimm_attr_ddr4_st *dimm, spd_ddr4_raw_data spd);
 
 enum cb_err spd_add_smbios17_ddr4(const u8 channel, const u8 slot,
 				const u16 selected_freq,

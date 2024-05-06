@@ -70,7 +70,7 @@ const spd_block spd_blocks[] = {
 	{.type = BLOCK_3, 384, 128, 0}
 };
 
-static bool verify_block(const spd_block *block, spd_raw_data spd)
+static bool verify_block(const spd_block *block, spd_ddr4_raw_data spd)
 {
 	uint16_t crc, spd_crc;
 
@@ -136,7 +136,7 @@ uint16_t ddr4_speed_mhz_to_reported_mts(uint16_t speed_mhz)
  *		SPD_STATUS_INVALID -- invalid SPD or not a DDR4 SPD
  *		SPD_STATUS_CRC_ERROR -- checksum mismatch
  */
-int spd_decode_ddr4(struct dimm_attr_ddr4_st *dimm, spd_raw_data spd)
+int spd_decode_ddr4(struct dimm_attr_ddr4_st *dimm, spd_ddr4_raw_data spd)
 {
 	u8 reg8;
 	u8 bus_width, sdram_width;

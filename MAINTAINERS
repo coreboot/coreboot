@@ -937,7 +937,7 @@ M:	Nick Vaccaro <nvaccaro@chromium.org>
 S:	Maintained
 F:	src/soc/intel/tigerlake/
 
-INTEL Xeon Sacalable Processor Family
+INTEL Xeon Scalable Processor Family
 M:	Jonathan Zhang <jon.zhixiong.zhang@gmail.com>
 M:	Johnny Lin <Johnny_Lin@wiwynn.com>
 M:	Tim Chu <Tim.Chu@quantatw.com>

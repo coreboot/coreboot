@@ -143,6 +143,28 @@ static void wifi_dsm_unii4_control_enable(void *args)
 	acpigen_write_return_integer(dsm_config->unii_4);
 }
 
+/*
+ * Function 12: Control Enablement 802.11be on certificated modules
+ * Bit 0
+ * 0 - 11BE disabled for China Mainland
+ * 1 - 11BE enabled for China Mainland
+ *
+ * Bit 1
+ * 0 - 11BE disabled for South Korea
+ * 1 - 11BE enabled for South Korea
+ *
+ * Bit 2:27 - Reserved (shall be set to zeroes)
+ *
+ * Bit 28:31 - 11BE enablement revision
+ *
+ */
+static void wifi_dsm_11be_country_enablement(void *args)
+{
+	struct dsm_profile *dsm_config = (struct dsm_profile *)args;
+
+	acpigen_write_return_integer(dsm_config->enablement_11be);
+}
+
 static void wifi_dsm_ddrrfim_func3_cb(void *ptr)
 {
 	const bool is_cnvi_ddr_rfim_enabled = *(bool *)ptr;
@@ -158,6 +180,11 @@ static void (*wifi_dsm_callbacks[])(void *) = {
 	wifi_dsm_uart_configurations,		/* Function 5 */
 	wifi_dsm_ukrane_russia_11ax_enable,	/* Function 6 */
 	wifi_dsm_unii4_control_enable,		/* Function 7 */
+	NULL,					/* Function 8 */
+	NULL,					/* Function 9 */
+	NULL,					/* Function 10 */
+	NULL,					/* Function 11 */
+	wifi_dsm_11be_country_enablement,	/* Function 12 */
 };
 
 /*

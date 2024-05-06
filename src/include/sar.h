@@ -57,6 +57,7 @@ struct dsm_profile {
 	uint32_t uart_configurations;
 	uint32_t enablement_11ax;
 	uint32_t unii_4;
+	uint32_t enablement_11be;
 };
 
 struct sar_header {

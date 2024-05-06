@@ -73,7 +73,8 @@ func main() {
 		"\ttgl - TigerLake-H SoC\n"+
 		"\tadl - AlderLake PCH\n"+
 		"\tjsl - Jasper Lake SoC\n"+
-		"\tmtl - MeteorLake SoC\n")
+		"\tmtl - MeteorLake SoC\n"+
+		"\tebg - Emmitsburg PCH with Xeon SP\n")
 
 	fieldstyle :=  flag.String("fld", "none", "set fields macros style:\n"+
 		"\tcb  - use coreboot style for bit fields macros\n"+

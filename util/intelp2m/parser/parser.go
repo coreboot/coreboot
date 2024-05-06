@@ -15,6 +15,7 @@ import (
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/adl"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/jsl"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/mtl"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/ebg"
 	"review.coreboot.org/coreboot.git/util/intelp2m/config"
 )
 
@@ -156,6 +157,12 @@ func (parser *ParserData) PlatformSpecificInterfaceSet() {
 		config.AlderType     : adl.PlatformSpecific{},
 		config.JasperType    : jsl.PlatformSpecific{},
 		config.MeteorType    : mtl.PlatformSpecific{},
+		// See platforms/ebg/macro.go
+		config.EmmitsburgType : ebg.PlatformSpecific{
+			InheritanceTemplate : cnl.PlatformSpecific{
+				InheritanceTemplate : snr.PlatformSpecific{},
+			},
+		},
 	}
 	parser.platform = platform[config.PlatformGet()]
 }

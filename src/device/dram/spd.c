@@ -135,26 +135,26 @@ static void convert_ddr4_module_type_to_spd_info(enum spd_dimm_type_ddr4 module_
 	}
 }
 
-static void convert_ddr5_module_type_to_spd_info(enum ddr5_module_type module_type,
+static void convert_ddr5_module_type_to_spd_info(enum spd_dimm_type_ddr5 module_type,
 						 struct spd_info *info)
 {
 	switch (module_type) {
-	case DDR5_SPD_RDIMM:
-	case DDR5_SPD_MINI_RDIMM:
+	case SPD_DDR5_DIMM_TYPE_RDIMM:
+	case SPD_DDR5_DIMM_TYPE_MINI_RDIMM:
 		info->form_factor = MEMORY_FORMFACTOR_DIMM;
 		info->type_detail = MEMORY_TYPE_DETAIL_REGISTERED;
 		break;
-	case DDR5_SPD_UDIMM:
-	case DDR5_SPD_MINI_UDIMM:
+	case SPD_DDR5_DIMM_TYPE_UDIMM:
+	case SPD_DDR5_DIMM_TYPE_MINI_UDIMM:
 		info->form_factor = MEMORY_FORMFACTOR_DIMM;
 		info->type_detail = MEMORY_TYPE_DETAIL_UNBUFFERED;
 		break;
-	case DDR5_SPD_SODIMM:
-	case DDR5_SPD_72B_SO_UDIMM:
+	case SPD_DDR5_DIMM_TYPE_SODIMM:
+	case SPD_DDR5_DIMM_TYPE_72B_SO_UDIMM:
 		info->form_factor = MEMORY_FORMFACTOR_SODIMM;
 		info->type_detail = MEMORY_TYPE_DETAIL_UNKNOWN;
 		break;
-	case DDR5_SPD_2DPC:
+	case SPD_DDR5_DIMM_TYPE_2DPC:
 		info->form_factor = MEMORY_FORMFACTOR_PROPRIETARY_CARD;
 		info->type_detail = MEMORY_TYPE_DETAIL_UNKNOWN;
 		break;

@@ -165,9 +165,9 @@ static void test_smbios_form_factor_to_spd_mod_type(void **state)
 			.expected_module_type = SPD_DDR4_DIMM_TYPE_SO_DIMM,
 		},
 		{.memory_type = MEMORY_TYPE_DDR5,
-		 .udimm_allowed = {DDR5_SPD_UDIMM, DDR5_SPD_MINI_UDIMM},
-		 .rdimm_allowed = {DDR5_SPD_RDIMM, DDR5_SPD_MINI_RDIMM},
-		 .expected_module_type = DDR5_SPD_SODIMM},
+		 .udimm_allowed = {SPD_DDR5_DIMM_TYPE_UDIMM, SPD_DDR5_DIMM_TYPE_MINI_UDIMM},
+		 .rdimm_allowed = {SPD_DDR5_DIMM_TYPE_RDIMM, SPD_DDR5_DIMM_TYPE_MINI_RDIMM},
+		 .expected_module_type = SPD_DDR5_DIMM_TYPE_SODIMM},
 	};
 
 	/* Test for DDRx DIMM Modules */

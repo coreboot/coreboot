@@ -3,7 +3,6 @@
 #include <drivers/ocp/include/vpd.h>
 #include <soc/config.h>
 
-#if CONFIG(SOC_INTEL_HAS_CXL) && CONFIG(OCP_VPD)
 enum xeonsp_cxl_mode get_cxl_mode(void)
 {
 	int ocp_cxl_mode = get_cxl_mode_from_vpd();
@@ -16,4 +15,3 @@ enum xeonsp_cxl_mode get_cxl_mode(void)
 		return XEONSP_CXL_DISABLED;
 	}
 }
-#endif

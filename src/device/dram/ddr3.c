@@ -365,7 +365,7 @@ int spd_decode_ddr3(struct dimm_attr_ddr3_st *dimm, spd_ddr3_raw_data spd)
 	memcpy(dimm->part_number, &spd[128], 16);
 	printram("  Part number        : %s\n", dimm->part_number);
 
-	memcpy(dimm->serial, &spd[SPD_DIMM_SERIAL_NUM], SPD_DIMM_SERIAL_LEN);
+	memcpy(dimm->serial, &spd[SPD_DDR3_SERIAL_NUM], SPD_DDR3_SERIAL_LEN);
 
 	return ret;
 }

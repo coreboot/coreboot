@@ -27,12 +27,12 @@
  *
  * @{
  */
-#define SPD_DIMM_MOD_ID1	117
-#define SPD_DIMM_MOD_ID2	118
-#define SPD_DIMM_SERIAL_NUM	122
-#define SPD_DIMM_SERIAL_LEN	4
-#define SPD_DIMM_PART_NUM	128
-#define SPD_DIMM_PART_LEN	18
+#define SPD_DDR3_MOD_ID1	117
+#define SPD_DDR3_MOD_ID2	118
+#define SPD_DDR3_SERIAL_NUM	122
+#define SPD_DDR3_SERIAL_LEN	4
+#define SPD_DDR3_PART_NUM	128
+#define SPD_DDR3_PART_LEN	18
 /** @} */
 
 /* Byte 3 [3:0]: DDR3 Module type information */
@@ -145,7 +145,7 @@ struct dimm_attr_ddr3_st {
 	/* ASCII part number - NULL terminated */
 	u8 part_number[17];
 	/* Serial number */
-	u8 serial[SPD_DIMM_SERIAL_LEN];
+	u8 serial[SPD_DDR3_SERIAL_LEN];
 };
 
 enum ddr3_xmp_profile {

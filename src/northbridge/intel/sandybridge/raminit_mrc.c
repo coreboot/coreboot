@@ -467,14 +467,14 @@ static void setup_sdram_meminfo(struct pei_data *pei_data)
 			dimm->dimm_num = 0;
 			dimm->bank_locator = i * 2;
 			memcpy(dimm->serial,				/* bytes 122-125 */
-				&pei_data->spd_data[0][SPD_DIMM_SERIAL_NUM],
-				sizeof(uint8_t) * SPD_DIMM_SERIAL_LEN);
+				&pei_data->spd_data[0][SPD_DDR3_SERIAL_NUM],
+				sizeof(uint8_t) * SPD_DDR3_SERIAL_LEN);
 			memcpy(dimm->module_part_number,		/* bytes 128-145 */
-				&pei_data->spd_data[0][SPD_DIMM_PART_NUM],
-				sizeof(uint8_t) * SPD_DIMM_PART_LEN);
+				&pei_data->spd_data[0][SPD_DDR3_PART_NUM],
+				sizeof(uint8_t) * SPD_DDR3_PART_LEN);
 			dimm->mod_id =					/* bytes 117/118 */
-				(pei_data->spd_data[0][SPD_DIMM_MOD_ID2] << 8) |
-				(pei_data->spd_data[0][SPD_DIMM_MOD_ID1] & 0xFF);
+				(pei_data->spd_data[0][SPD_DDR3_MOD_ID2] << 8) |
+				(pei_data->spd_data[0][SPD_DDR3_MOD_ID1] & 0xFF);
 			dimm->mod_type = SPD_DDR3_DIMM_TYPE_SO_DIMM;
 			dimm->bus_width = MEMORY_BUS_WIDTH_64;
 			dimm_cnt++;
@@ -491,14 +491,14 @@ static void setup_sdram_meminfo(struct pei_data *pei_data)
 			dimm->dimm_num = 1;
 			dimm->bank_locator = i * 2;
 			memcpy(dimm->serial,				/* bytes 122-125 */
-				&pei_data->spd_data[0][SPD_DIMM_SERIAL_NUM],
-				sizeof(uint8_t) * SPD_DIMM_SERIAL_LEN);
+				&pei_data->spd_data[0][SPD_DDR3_SERIAL_NUM],
+				sizeof(uint8_t) * SPD_DDR3_SERIAL_LEN);
 			memcpy(dimm->module_part_number,		/* bytes 128-145 */
-				&pei_data->spd_data[0][SPD_DIMM_PART_NUM],
-				sizeof(uint8_t) * SPD_DIMM_PART_LEN);
+				&pei_data->spd_data[0][SPD_DDR3_PART_NUM],
+				sizeof(uint8_t) * SPD_DDR3_PART_LEN);
 			dimm->mod_id =					/* bytes 117/118 */
-				(pei_data->spd_data[0][SPD_DIMM_MOD_ID2] << 8) |
-				(pei_data->spd_data[0][SPD_DIMM_MOD_ID1] & 0xFF);
+				(pei_data->spd_data[0][SPD_DDR3_MOD_ID2] << 8) |
+				(pei_data->spd_data[0][SPD_DDR3_MOD_ID1] & 0xFF);
 			dimm->mod_type = SPD_DDR3_DIMM_TYPE_SO_DIMM;
 			dimm->bus_width = MEMORY_BUS_WIDTH_64;
 			dimm_cnt++;

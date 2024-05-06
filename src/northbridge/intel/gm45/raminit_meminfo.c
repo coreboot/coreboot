@@ -24,14 +24,14 @@ static u8 get_dimm_mod_type(const sysinfo_t *sysinfo, const int idx)
 static void ddr3_read_ids(const sysinfo_t *sysinfo, struct dimm_info *dimm, const int idx)
 {
 	const u8 addr = sysinfo->spd_map[idx];
-	for (int k = 0; k < SPD_DIMM_SERIAL_LEN; k++) {
-		dimm->serial[k] = smbus_read_byte(addr, SPD_DIMM_SERIAL_NUM + k);
+	for (int k = 0; k < SPD_DDR3_SERIAL_LEN; k++) {
+		dimm->serial[k] = smbus_read_byte(addr, SPD_DDR3_SERIAL_NUM + k);
 	}
-	for (int k = 0; k < SPD_DIMM_PART_LEN; k++) {
-		dimm->module_part_number[k] = smbus_read_byte(addr, SPD_DIMM_PART_NUM + k);
+	for (int k = 0; k < SPD_DDR3_PART_LEN; k++) {
+		dimm->module_part_number[k] = smbus_read_byte(addr, SPD_DDR3_PART_NUM + k);
 	}
-	dimm->mod_id = (smbus_read_byte(addr, SPD_DIMM_MOD_ID2) << 8) |
-		       (smbus_read_byte(addr, SPD_DIMM_MOD_ID1) << 0);
+	dimm->mod_id = (smbus_read_byte(addr, SPD_DDR3_MOD_ID2) << 8) |
+		       (smbus_read_byte(addr, SPD_DDR3_MOD_ID1) << 0);
 }
 
 static u32 get_mem_clock_mt(const int clock_index)

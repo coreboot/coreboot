@@ -142,7 +142,7 @@ static void read_spd(spd_ddr3_raw_data *spd, u8 addr, bool id_only)
 {
 	int j;
 	if (id_only) {
-		for (j = SPD_DIMM_MOD_ID1; j < 128; j++)
+		for (j = SPD_DDR3_MOD_ID1; j < 128; j++)
 			(*spd)[j] = smbus_read_byte(addr, j);
 	} else {
 		for (j = 0; j < SPD_SIZE_MAX_DDR3; j++)

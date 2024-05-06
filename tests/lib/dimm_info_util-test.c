@@ -2,6 +2,7 @@
 
 #include <device/dram/ddr2.h>
 #include <device/dram/ddr3.h>
+#include <device/dram/ddr4.h>
 #include <device/dram/ddr5.h>
 #include <dimm_info_util.h>
 #include <spd.h>
@@ -157,9 +158,11 @@ static void test_smbios_form_factor_to_spd_mod_type(void **state)
 		},
 		{
 			.memory_type = MEMORY_TYPE_DDR4,
-			.udimm_allowed = {DDR4_SPD_UDIMM, DDR4_SPD_MINI_UDIMM},
-			.rdimm_allowed = {DDR4_SPD_RDIMM, DDR4_SPD_MINI_RDIMM},
-			.expected_module_type = DDR4_SPD_SODIMM,
+			.udimm_allowed = {SPD_DDR4_DIMM_TYPE_UDIMM,
+					  SPD_DDR4_DIMM_TYPE_MINI_UDIMM},
+			.rdimm_allowed = {SPD_DDR4_DIMM_TYPE_RDIMM,
+					  SPD_DDR4_DIMM_TYPE_MINI_RDIMM},
+			.expected_module_type = SPD_DDR4_DIMM_TYPE_SO_DIMM,
 		},
 		{.memory_type = MEMORY_TYPE_DDR5,
 		 .udimm_allowed = {DDR5_SPD_UDIMM, DDR5_SPD_MINI_UDIMM},

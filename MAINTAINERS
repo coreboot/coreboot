@@ -130,12 +130,6 @@ F:	src/mainboard/acer/
 
 
 
-ADLINK MAINBOARDS
-S:	Orphan
-F:	src/mainboard/adlink/
-
-
-
 AMD non-server family 17h and 19h reference boards
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Jason Glenesk <jason.glenesk@gmail.com>
@@ -160,14 +154,7 @@ AMD reference boards outside of family 17h and 19h
 S:	Odd Fixes
 L:	amd_coreboot_org_changes@googlegroups.com
 F:	src/mainboard/amd/gardenia/
-F:	src/mainboard/amd/inagua/
-F:	src/mainboard/amd/olivehill/
 F:	src/mainboard/amd/pademelon/
-F:	src/mainboard/amd/parmer/
-F:	src/mainboard/amd/persimmon/
-F:	src/mainboard/amd/south_station/
-F:	src/mainboard/amd/thatcher/
-F:	src/mainboard/amd/union_station/
 
 
 
@@ -235,12 +222,6 @@ F:	src/mainboard/asus/p8z77-series/
 
 
 
-BAP MAINBOARDS
-S:	Orphan
-F:	src/mainboard/bap/
-
-
-
 BIOSTAR MAINBOARDS
 S:	Orphan
 F:	src/mainboard/biostar/
@@ -281,11 +262,6 @@ DELL E6400 MAINBOARD
 M:	Nicholas Chin <nic.c3.14@gmail.com>
 S:	Maintained
 F:	src/mainboard/dell/e6400/
-
-
-ELMEX MAINBOARDS
-S:	Orphan
-F:	src/mainboard/elmex/
 
 
 
@@ -336,12 +312,6 @@ GIGABYTE GA-H61M SERIES MAINBOARDS
 M:	Angel Pons <th3fanbus@gmail.com>
 S:	Maintained
 F:	src/mainboard/gigabyte/ga-h61m-series/
-
-
-
-GIZMOSPHERE MAINBOARDS
-S:	Orphan
-F:	src/mainboard/gizmosphere/
 
 
 
@@ -432,14 +402,12 @@ M:	Vanessa Eusebio <vanessa.f.eusebio@intel.com>
 S:	Maintained
 F:	src/mainboard/intel/harcuvar/
 
+
+
 INVENTEC MAINBOARDS
 M:	Annie Chen <Chen.AnnieET@inventec.com>
 S:	Maintained
 F:	src/mainboard/inventec/
-
-JETWAY MAINBOARDS
-S:	Orphan
-F:	src/mainboard/jetway/
 
 
 
@@ -485,12 +453,6 @@ M:	Piotr Król <piotr.krol@3mdeb.com>
 M:	Michał Żygowski <michal.zygowski@3mdeb.com>
 S:	Maintained
 F:	src/mainboard/libretrend/lt1000/
-
-
-
-LIPPERT MAINBOARDS (acquired by Adlink)
-S:	Orphan
-F:	src/mainboard/lippert/
 
 
 
@@ -611,12 +573,6 @@ F:	src/mainboard/samsung/stumpy/
 SAPPHIRE MAINBOARDS
 S:	Orphan
 F:	src/mainboard/sapphire/
-
-
-
-SCALEWAY MAINBOARDS
-S:	Orphan
-F:	src/mainboard/scaleway/
 
 
 

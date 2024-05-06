@@ -573,6 +573,7 @@ S:	Supported
 F:	src/mainboard/prodrive/atlas/
 
 PRODRIVE HERMES MAINBOARD
+M:	Angel Pons <th3fanbus@gmail.com>
 M:	Christian Walter <christian.walter@9elements.com>
 M:	Patrick Rudolph <patrick.rudolph@9elements.com>
 S:	Supported

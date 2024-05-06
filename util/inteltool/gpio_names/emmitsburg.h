@@ -283,22 +283,22 @@ static const struct gpio_group emmitsburg_group_h = {
 };
 
 static const char *const emmitsburg_group_j_names[] = {
-	"GPPC_J0",	"CPUPWRGD",
-	"GPPC_J1",	"CPU_THRMTRIP_N",
-	"GPPC_J2",	"PLTRST_CPU_N",
-	"GPPC_J3",	"TRIGGER0_N",
-	"GPPC_J4",	"TRIGGER1_N",
-	"GPPC_J5",	"CPU_PWER_DEBUG_N",
-	"GPPC_J6",	"CPU_MEMTRIP_N",
-	"GPPC_J7",	"CPU_MSMI_N",
-	"GPPC_J8",	"ME_PECI",
-	"GPPC_J9",	"n/a", // Not described in EDS, add here to take space
-	"GPPC_J10",	"n/a", // Not described in EDS, add here to take space
-	"GPPC_J11",	"n/a", // Not described in EDS, add here to take space
-	"GPPC_J12",	"CPU_ERR0_N",
-	"GPPC_J13",	"CPU_CATERR_N",
-	"GPPC_J14",	"CPU_ERR1_N",
-	"GPPC_J15",	"CPU_ERR2_N",
+	"GPP_J0",	"CPUPWRGD",
+	"GPP_J1",	"CPU_THRMTRIP_N",
+	"GPP_J2",	"PLTRST_CPU_N",
+	"GPP_J3",	"TRIGGER0_N",
+	"GPP_J4",	"TRIGGER1_N",
+	"GPP_J5",	"CPU_PWER_DEBUG_N",
+	"GPP_J6",	"CPU_MEMTRIP_N",
+	"GPP_J7",	"CPU_MSMI_N",
+	"GPP_J8",	"ME_PECI",
+	"GPP_J9",	"n/a", // Not described in EDS, add here to take space
+	"GPP_J10",	"n/a", // Not described in EDS, add here to take space
+	"GPP_J11",	"n/a", // Not described in EDS, add here to take space
+	"GPP_J12",	"CPU_ERR0_N",
+	"GPP_J13",	"CPU_CATERR_N",
+	"GPP_J14",	"CPU_ERR1_N",
+	"GPP_J15",	"CPU_ERR2_N",
 };
 
 static const struct gpio_group emmitsburg_group_j = {

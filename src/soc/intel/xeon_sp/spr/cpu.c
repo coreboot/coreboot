@@ -268,10 +268,6 @@ void mp_init_cpus(struct bus *bus)
 	chip_config = bus->dev->chip_info;
 
 	microcode_patch = intel_microcode_find();
-
-	if (!microcode_patch)
-		printk(BIOS_ERR, "microcode not found in CBFS!\n");
-
 	intel_microcode_load_unlocked(microcode_patch);
 
 	if (mp_init_with_smm(bus, &mp_ops) < 0)

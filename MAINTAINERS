@@ -569,13 +569,13 @@ PRODRIVE ATLAS MAINBOARD
 M:	Angel Pons <th3fanbus@gmail.com>
 M:	Christian Walter <christian.walter@9elements.com>
 M:	Lean Sheng Tan <sheng.tan@9elements.com>
-S:	Maintained
+S:	Supported
 F:	src/mainboard/prodrive/atlas/
 
 PRODRIVE HERMES MAINBOARD
 M:	Christian Walter <christian.walter@9elements.com>
 M:	Patrick Rudolph <patrick.rudolph@9elements.com>
-S:	Maintained
+S:	Supported
 F:	src/mainboard/prodrive/hermes/
 
 

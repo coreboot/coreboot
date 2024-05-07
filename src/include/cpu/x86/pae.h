@@ -40,9 +40,6 @@ int paging_enable_for_car(const char *pdpt_name, const char *pt_name);
  * PAT defines above. 0 is returned on success, < 0 on failure. */
 int paging_identity_map_addr(uintptr_t base, size_t size, int pat);
 
-#define MAPPING_ERROR ((void *)0xffffffffUL)
-void *map_2M_page(unsigned long page);
-
 /* To be used with memset_pae */
 #define MEMSET_PAE_VMEM_ALIGN (2 * MiB)
 #define MEMSET_PAE_VMEM_SIZE (2 * MiB)

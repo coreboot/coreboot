@@ -213,69 +213,6 @@ int memset_pae(uint64_t dest, unsigned char pat, uint64_t length, void *pgtbl,
 	return 0;
 }
 
-#if ENV_RAMSTAGE
-void *map_2M_page(unsigned long page)
-{
-	struct pde {
-		uint32_t addr_lo;
-		uint32_t addr_hi;
-	} __packed;
-	struct pg_table {
-		struct pde pd[2048];
-		struct pde pdp[512];
-	} __packed;
-
-	static struct pg_table pgtbl[CONFIG_MAX_CPUS]
-		__attribute__((aligned(4096)));
-	static unsigned long mapped_window[CONFIG_MAX_CPUS];
-	int index;
-	unsigned long window;
-	void *result;
-	int i;
-	index = cpu_index();
-	if (index < 0)
-		return MAPPING_ERROR;
-	window = page >> 10;
-	if (window != mapped_window[index]) {
-		paging_disable_pae();
-		if (window > 1) {
-			struct pde *pd, *pdp;
-			/* Point the page directory pointers at the page
-			 * directories
-			 */
-			memset(&pgtbl[index].pdp, 0, sizeof(pgtbl[index].pdp));
-			pd = pgtbl[index].pd;
-			pdp = pgtbl[index].pdp;
-			pdp[0].addr_lo = ((uintptr_t)&pd[512*0])|1;
-			pdp[1].addr_lo = ((uintptr_t)&pd[512*1])|1;
-			pdp[2].addr_lo = ((uintptr_t)&pd[512*2])|1;
-			pdp[3].addr_lo = ((uintptr_t)&pd[512*3])|1;
-			/* The first half of the page table is identity mapped
-			 */
-			for (i = 0; i < 1024; i++) {
-				pd[i].addr_lo = ((i & 0x3ff) << 21) | 0xE3;
-				pd[i].addr_hi = 0;
-			}
-			/* The second half of the page table holds the mapped
-			 * page
-			 */
-			for (i = 1024; i < 2048; i++) {
-				pd[i].addr_lo = ((window & 1) << 31)
-					| ((i & 0x3ff) << 21) | 0xE3;
-				pd[i].addr_hi = (window >> 1);
-			}
-			paging_enable_pae_cr3((uintptr_t)pdp);
-		}
-		mapped_window[index] = window;
-	}
-	if (window == 0)
-		result = (void *)(page << 21);
-	else
-		result = (void *)(0x80000000 | ((page & 0x3ff) << 21));
-	return result;
-}
-#endif
-
 void paging_set_nxe(int enable)
 {
 	msr_t msr = rdmsr(IA32_EFER);

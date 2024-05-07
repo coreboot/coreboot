@@ -1,7 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <acpi/acpigen.h>
+#include <acpi/acpigen_pci.h>
 #include <assert.h>
+#include <device/pci_ops.h>
 #include <intelblocks/acpi.h>
 #include <soc/chip_common.h>
 #include <soc/pci_devs.h>
@@ -137,5 +139,57 @@ void acpigen_write_OSC_pci_domain_fixed_caps(const struct device *domain,
 	acpigen_write_integer(is_cxl_domain);
 	acpigen_write_integer(granted_cxl_features);
 
+	acpigen_pop_len();
+}
+
+static bool read_physical_slot_number(const struct device *dev, uint8_t *psn)
+{
+	if (!is_pci(dev))
+		return false;
+
+	const size_t pos = pci_find_capability(dev, PCI_CAP_ID_PCIE);
+	if (!pos)
+		return false;
+
+	u32 sltcap = pci_read_config32(dev, pos + PCI_EXP_SLTCAP);
+	*psn = ((sltcap >> 19) & 0x1FF);
+	return true;
+}
+
+static void acpigen_write_pci_root_port_devices(const struct device *rp)
+{
+	uint8_t psn;
+	bool have_psn = read_physical_slot_number(rp, &psn);
+
+	struct device *dev = NULL;
+	while ((dev = dev_bus_each_child(rp->downstream, dev))) {
+		if (!is_pci(dev))
+			continue;
+		const char *name = acpi_device_name(dev);
+		if (!name)
+			continue;
+		acpigen_write_device(name);
+		acpigen_write_ADR_pci_device(dev);
+		if (have_psn)
+			acpigen_write_name_integer("_SUN", psn);
+		acpigen_pop_len();
+	}
+}
+
+void acpigen_write_pci_root_port(const struct device *rp)
+{
+	const char *acpi_scope = acpi_device_scope(rp);
+	if (!acpi_scope)
+		return;
+	acpigen_write_scope(acpi_scope);
+
+	const char *acpi_name = acpi_device_name(rp);
+	if (!acpi_name)
+		return;
+	acpigen_write_device(acpi_name);
+	acpigen_write_ADR_pci_device(rp);
+	acpigen_write_pci_root_port_devices(rp);
+
+	acpigen_pop_len();
 	acpigen_pop_len();
 }

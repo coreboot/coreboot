@@ -18,6 +18,11 @@ chip northbridge/intel/sandybridge
 	register "spd_addresses" = "{0x50, 0, 0x51, 0}"
 	chip cpu/intel/model_206ax
 		# Values obtained from vendor BIOS
+		register "tcc_offset" = "3"
+		register "pl1_mw" = "35000"
+		register "pl2_mw" = "43750"
+		register "pp0_current_limit" = "97"
+		register "pp1_current_limit" = "32"
 		register "pp0_psi[VR12_PSI2]" = "{VR12_ALL_PHASES, 5}"
 		register "pp0_psi[VR12_PSI3]" = "{VR12_ALL_PHASES, 1}"
 		register "pp1_psi[VR12_PSI2]" = "{VR12_ALL_PHASES, 5}"

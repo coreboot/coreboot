@@ -137,7 +137,7 @@ do_one_board() {
 # Main
 #
 
-BOARD=$1
+BOARD=${1,,}
 
 exit_if_dependencies_are_missing
 

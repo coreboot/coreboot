@@ -42,6 +42,10 @@ struct cpu_intel_model_206ax_config {
 	enum cpu_acpi_level acpi_c3;
 
 	int tcc_offset;		/* TCC Activation Offset */
+
+	unsigned int pl1_mw; /* Long-term power limit in milliwatts */
+	unsigned int pl2_mw; /* Short-term power limit in milliwatts */
+
 	int pp0_current_limit;	/* Primary Plane Current Limit (Icc) in Amps */
 	int pp1_current_limit;	/* Secondary Plane Current Limit (IAXG) in Amps */
 

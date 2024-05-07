@@ -96,6 +96,7 @@ int cpu_config_tdp_levels(void)
  */
 void set_power_limits(u8 power_limit_1_time)
 {
+	struct cpu_intel_model_206ax_config *conf = DEV_PTR(cpu_bus)->chip_info;
 	msr_t msr = rdmsr(MSR_PLATFORM_INFO);
 	msr_t limit;
 	unsigned int power_unit;
@@ -132,16 +133,26 @@ void set_power_limits(u8 power_limit_1_time)
 
 	power_limit_1_val = power_limit_time_sec_to_msr[power_limit_1_time];
 
-	/* Set long term power limit to TDP */
 	limit.lo = 0;
-	limit.lo |= tdp & PKG_POWER_LIMIT_MASK;
+	if (conf->pl1_mw) {
+		printk(BIOS_DEBUG, "Setting PL1 to %u milliwatts\n", conf->pl1_mw);
+		limit.lo |= ((conf->pl1_mw * power_unit) / 1000) & PKG_POWER_LIMIT_MASK;
+	} else {
+		/* Set long term power limit to TDP */
+		limit.lo |= tdp & PKG_POWER_LIMIT_MASK;
+	}
 	limit.lo |= PKG_POWER_LIMIT_EN;
 	limit.lo |= (power_limit_1_val & PKG_POWER_LIMIT_TIME_MASK) <<
 		PKG_POWER_LIMIT_TIME_SHIFT;
 
-	/* Set short term power limit to 1.25 * TDP */
 	limit.hi = 0;
-	limit.hi |= ((tdp * 125) / 100) & PKG_POWER_LIMIT_MASK;
+	if (conf->pl2_mw) {
+		printk(BIOS_DEBUG, "Setting PL2 to %u milliwatts\n", conf->pl2_mw);
+		limit.hi |= ((conf->pl2_mw * power_unit) / 1000) & PKG_POWER_LIMIT_MASK;
+	} else {
+		/* Set short term power limit to 1.25 * TDP */
+		limit.hi |= ((tdp * 125) / 100) & PKG_POWER_LIMIT_MASK;
+	}
 	limit.hi |= PKG_POWER_LIMIT_EN;
 	/* Power limit 2 time is only programmable on SNB EP/EX */
 

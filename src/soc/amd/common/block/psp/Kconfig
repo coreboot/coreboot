@@ -96,6 +96,7 @@ config PSP_INCLUDES_HSP
 	  Select this config to indicate SoC includes Hardware Security Processor(HSP).
 
 config AMD_FWM_POSITION_20000_DEFAULT
+	# This is the default if nothing else is selected
 	bool
 
 config AMD_FWM_POSITION_420000_DEFAULT

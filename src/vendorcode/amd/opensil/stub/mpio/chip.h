@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#ifndef OPENSIL_STUB_MPIO_CHIP_H
+#define OPENSIL_STUB_MPIO_CHIP_H
+
 #include <types.h>
 
 enum mpio_engine_type {
@@ -73,3 +76,5 @@ struct vendorcode_amd_opensil_stub_mpio_config {
 	enum pcie_slot_power_limit_scale slot_power_limit_scale;
 	bool bmc;
 };
+
+#endif /* OPENSIL_STUB_MPIO_CHIP_H */

@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#ifndef OPENSIL_GENOA_POC_MPIO_CHIP_H
+#define OPENSIL_GENOA_POC_MPIO_CHIP_H
+
 #include <stdint.h>
 
 /*
@@ -64,3 +67,5 @@ struct vendorcode_amd_opensil_genoa_poc_mpio_config {
 	uint8_t clock_pm : 1;
 	uint8_t bmc : 1;
 };
+
+#endif /* OPENSIL_GENOA_POC_MPIO_CHIP_H */

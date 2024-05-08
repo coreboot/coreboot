@@ -4,10 +4,10 @@
 #include <cpu/x86/pae.h>
 #else
 #define memset_pae(a, b, c, d, e) 0
-#define MEMSET_PAE_PGTL_ALIGN 0
-#define MEMSET_PAE_PGTL_SIZE 0
-#define MEMSET_PAE_VMEM_ALIGN 0
-#define MEMSET_PAE_VMEM_SIZE 0
+#define PAE_PGTL_ALIGN 0
+#define PAE_PGTL_SIZE 0
+#define PAE_VMEM_ALIGN 0
+#define PAE_VMEM_SIZE 0
 #endif
 
 #include <memrange.h>
@@ -84,15 +84,12 @@ static void clear_memory(void *unused)
 
 	if (ENV_X86) {
 		/* Find space for PAE enabled memset */
-		pgtbl = get_free_memory_range(&mem, MEMSET_PAE_PGTL_ALIGN,
-					MEMSET_PAE_PGTL_SIZE);
+		pgtbl = get_free_memory_range(&mem, PAE_PGTL_ALIGN, PAE_PGTL_SIZE);
 
 		/* Don't touch page tables while clearing */
-		memranges_insert(&mem, pgtbl, MEMSET_PAE_PGTL_SIZE,
-					BM_MEM_TABLE);
+		memranges_insert(&mem, pgtbl, PAE_PGTL_SIZE, BM_MEM_TABLE);
 
-		vmem_addr = get_free_memory_range(&mem, MEMSET_PAE_VMEM_ALIGN,
-						MEMSET_PAE_VMEM_SIZE);
+		vmem_addr = get_free_memory_range(&mem, PAE_VMEM_ALIGN, PAE_VMEM_SIZE);
 
 		printk(BIOS_SPEW, "%s: pgtbl at %p, virt memory at %p\n",
 		__func__, (void *)pgtbl, (void *)vmem_addr);
@@ -128,9 +125,9 @@ static void clear_memory(void *unused)
 	if (ENV_X86) {
 		/* Clear previously skipped memory reserved for pagetables */
 		printk(BIOS_DEBUG, "%s: Clearing DRAM %016lx-%016lx\n",
-		__func__, pgtbl, pgtbl + MEMSET_PAE_PGTL_SIZE);
+		__func__, pgtbl, pgtbl + PAE_PGTL_SIZE);
 
-		memset((void *)pgtbl, 0, MEMSET_PAE_PGTL_SIZE);
+		memset((void *)pgtbl, 0, PAE_PGTL_SIZE);
 	}
 
 	memranges_teardown(&mem);

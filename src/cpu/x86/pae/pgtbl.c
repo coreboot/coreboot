@@ -101,6 +101,97 @@ void paging_disable_pae(void)
 }
 
 /*
+ * Prepare PAE pagetables that identity map the whole 32-bit address space using
+ * 2 MiB pages. The PAT are set to all cacheable, but MTRRs still apply. CR3 is
+ * loaded and PAE is enabled by this function.
+ *
+ * Requires a scratch memory for pagetables.
+ *
+ * @param pgtbl     Where pagetables reside, must be 4 KiB aligned and 20 KiB in
+ *                  size.
+ *                  Content at physical address isn't preserved.
+ * @return 0 on success, 1 on error
+ */
+int init_pae_pagetables(void *pgtbl)
+{
+	struct pg_table *pgtbl_buf = (struct pg_table *)pgtbl;
+	struct pde *pd = pgtbl_buf->pd, *pdp = pgtbl_buf->pdp;
+
+	printk(BIOS_DEBUG, "%s: Using address %p for page tables\n",
+	       __func__, pgtbl_buf);
+
+	/* Cover some basic error conditions */
+	if (!IS_ALIGNED((uintptr_t)pgtbl_buf, s4KiB)) {
+		printk(BIOS_ERR, "%s: Invalid alignment\n", __func__);
+		return 1;
+	}
+
+	paging_disable_pae();
+
+	/* Point the page directory pointers at the page directories. */
+	memset(pgtbl_buf->pdp, 0, sizeof(pgtbl_buf->pdp));
+
+	pdp[0].addr_lo = ((uintptr_t)&pd[512*0]) | PDPTE_PRES;
+	pdp[1].addr_lo = ((uintptr_t)&pd[512*1]) | PDPTE_PRES;
+	pdp[2].addr_lo = ((uintptr_t)&pd[512*2]) | PDPTE_PRES;
+	pdp[3].addr_lo = ((uintptr_t)&pd[512*3]) | PDPTE_PRES;
+
+	/* Identity map the whole 32-bit address space */
+	for (size_t i = 0; i < 2048; i++) {
+		pd[i].addr_lo = (i << PDE_IDX_SHIFT) | PDE_PS | PDE_PRES | PDE_RW;
+		pd[i].addr_hi = 0;
+	}
+
+	paging_enable_pae_cr3((uintptr_t)pdp);
+
+	return 0;
+}
+
+/*
+ * Map single 2 MiB page in pagetables created by init_pae_pagetables().
+ *
+ * The function does not check if the page was already non identity mapped,
+ * this allows callers to reuse one page without having to explicitly unmap it
+ * between calls.
+ *
+ * @param pgtbl     Where pagetables created by init_pae_pagetables() reside.
+ *                  Content at physical address is preserved except for single
+ *                  entry corresponding to vmem_addr.
+ * @param paddr     Physical memory address to map. Function prints a warning if
+ *                  it isn't aligned to 2 MiB.
+ * @param vmem_addr Where the virtual non identity mapped page resides, must
+ *                  be at least 2 MiB in size. Function prints a warning if it
+ *                  isn't aligned to 2 MiB.
+ *                  Content at physical address is preserved.
+ * @return 0 on success, 1 on error
+ */
+void pae_map_2M_page(void *pgtbl, uint64_t paddr, void *vmem_addr)
+{
+	struct pg_table *pgtbl_buf = (struct pg_table *)pgtbl;
+	struct pde *pd;
+
+	if (!IS_ALIGNED(paddr, s2MiB)) {
+		printk(BIOS_WARNING, "%s: Aligning physical address to 2MiB\n",
+		       __func__);
+		paddr = ALIGN_DOWN(paddr, s2MiB);
+	}
+
+	if (!IS_ALIGNED((uintptr_t)vmem_addr, s2MiB)) {
+		printk(BIOS_WARNING, "%s: Aligning virtual address to 2MiB\n",
+		       __func__);
+		vmem_addr = (void *)ALIGN_DOWN((uintptr_t)vmem_addr, s2MiB);
+	}
+
+	/* Map a page using PAE at virtual address vmem_addr. */
+	pd = &pgtbl_buf->pd[((uintptr_t)vmem_addr) >> PDE_IDX_SHIFT];
+	pd->addr_lo = paddr | PDE_PS | PDE_PRES | PDE_RW;
+	pd->addr_hi = paddr >> 32;
+
+	/* Update page tables */
+	asm volatile ("invlpg (%0)" :: "b"(vmem_addr) : "memory");
+}
+
+/*
  * Use PAE to map a page and then memset it with the pattern specified.
  * In order to use PAE pagetables for virtual addressing are set up and reloaded
  * on a 2MiB boundary. After the function is done, virtual addressing mode is
@@ -130,22 +221,18 @@ void paging_disable_pae(void)
 int memset_pae(uint64_t dest, unsigned char pat, uint64_t length, void *pgtbl,
 	       void *vmem_addr)
 {
-	struct pg_table *pgtbl_buf = (struct pg_table *)pgtbl;
 	ssize_t offset;
+	const uintptr_t pgtbl_s = (uintptr_t)pgtbl;
+	const uintptr_t pgtbl_e = pgtbl_s + sizeof(struct pg_table);
 
 	printk(BIOS_DEBUG, "%s: Using virtual address %p as scratchpad\n",
 	       __func__, vmem_addr);
-	printk(BIOS_DEBUG, "%s: Using address %p for page tables\n",
-	       __func__, pgtbl_buf);
 
 	/* Cover some basic error conditions */
-	if (!IS_ALIGNED((uintptr_t)pgtbl_buf, s4KiB) ||
-	    !IS_ALIGNED((uintptr_t)vmem_addr, s2MiB)) {
+	if (!IS_ALIGNED((uintptr_t)vmem_addr, s2MiB)) {
 		printk(BIOS_ERR, "%s: Invalid alignment\n", __func__);
 		return 1;
 	}
-	const uintptr_t pgtbl_s = (uintptr_t)pgtbl_buf;
-	const uintptr_t pgtbl_e = pgtbl_s + sizeof(struct pg_table);
 
 	if (OVERLAP(dest, dest + length, pgtbl_s, pgtbl_e)) {
 		printk(BIOS_ERR, "%s: destination overlaps page tables\n",
@@ -160,30 +247,11 @@ int memset_pae(uint64_t dest, unsigned char pat, uint64_t length, void *pgtbl,
 		return 1;
 	}
 
-	paging_disable_pae();
-
-	struct pde *pd = pgtbl_buf->pd, *pdp = pgtbl_buf->pdp;
-	/* Point the page directory pointers at the page directories. */
-	memset(pgtbl_buf->pdp, 0, sizeof(pgtbl_buf->pdp));
-
-	pdp[0].addr_lo = ((uintptr_t)&pd[512*0]) | PDPTE_PRES;
-	pdp[1].addr_lo = ((uintptr_t)&pd[512*1]) | PDPTE_PRES;
-	pdp[2].addr_lo = ((uintptr_t)&pd[512*2]) | PDPTE_PRES;
-	pdp[3].addr_lo = ((uintptr_t)&pd[512*3]) | PDPTE_PRES;
+	if (init_pae_pagetables(pgtbl))
+		return 1;
 
 	offset = dest - ALIGN_DOWN(dest, s2MiB);
 	dest = ALIGN_DOWN(dest, s2MiB);
-
-	/* Identity map the whole 32-bit address space */
-	for (size_t i = 0; i < 2048; i++) {
-		pd[i].addr_lo = (i << PDE_IDX_SHIFT) | PDE_PS | PDE_PRES | PDE_RW;
-		pd[i].addr_hi = 0;
-	}
-
-	/* Get pointer to PD that's not identity mapped */
-	pd = &pgtbl_buf->pd[((uintptr_t)vmem_addr) >> PDE_IDX_SHIFT];
-
-	paging_enable_pae_cr3((uintptr_t)pdp);
 
 	do {
 		const size_t len = MIN(length, s2MiB - offset);
@@ -192,11 +260,7 @@ int memset_pae(uint64_t dest, unsigned char pat, uint64_t length, void *pgtbl,
 		 * Map a page using PAE at virtual address vmem_addr.
 		 * dest is already 2 MiB aligned.
 		 */
-		pd->addr_lo = dest | PDE_PS | PDE_PRES | PDE_RW;
-		pd->addr_hi = dest >> 32;
-
-		/* Update page tables */
-		asm volatile ("invlpg (%0)" :: "b"(vmem_addr) : "memory");
+		pae_map_2M_page(pgtbl, dest, vmem_addr);
 
 		printk(BIOS_SPEW, "%s: Clearing %llx[%lx] - %zx\n", __func__,
 		       dest + offset, (uintptr_t)vmem_addr + offset, len);

@@ -60,7 +60,7 @@ enum pcie_slot_power_limit_scale {
 	SLOT_POWER_LIMIT_DIVISOR_1000 = 3,	/* Scale factor 0.001 */
 };
 
-struct vendorcode_amd_opensil_stub_mpio_config {
+struct vendorcode_amd_opensil_chip_mpio_config {
 	enum mpio_engine_type type;
 	uint8_t start_lane;
 	uint8_t end_lane;

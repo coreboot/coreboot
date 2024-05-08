@@ -54,7 +54,7 @@ enum pcie_aspm {
 	L0sL1,
 };
 
-struct vendorcode_amd_opensil_genoa_poc_mpio_config {
+struct vendorcode_amd_opensil_chip_mpio_config {
 	enum mpio_type type;
 	uint8_t start_lane;
 	uint8_t end_lane;

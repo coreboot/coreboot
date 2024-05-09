@@ -57,9 +57,7 @@ struct proximity_domains {
 
 extern struct proximity_domains pds;
 
-void dump_pds(void);
-void fill_pds(void);
-void fill_pd_distances(void);
+void setup_pds(void);
 
 /*
  * Return the total size of memory regions in generic initiator affinity

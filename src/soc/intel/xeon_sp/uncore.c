@@ -336,15 +336,6 @@ static void mmapvtd_read_resources(struct device *dev)
 {
 	int index = 0;
 
-	static bool once;
-	if (!once) {
-		/* Construct NUMA data structure. This is needed for CXL. */
-		fill_pds();
-		fill_pd_distances();
-		dump_pds();
-		once = true;
-	}
-
 	/* Read standard PCI resources. */
 	pci_dev_read_resources(dev);
 

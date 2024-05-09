@@ -12,6 +12,7 @@
 #include <intelblocks/p2sb.h>
 #include <soc/acpi.h>
 #include <soc/chip_common.h>
+#include <soc/numa.h>
 #include <soc/pch.h>
 #include <soc/soc_pch.h>
 #include <soc/ramstage.h>
@@ -167,6 +168,7 @@ static void chip_init(void *data)
 	printk(BIOS_DEBUG, "coreboot: calling fsp_silicon_init\n");
 	fsp_silicon_init();
 
+	setup_pds();
 	attach_iio_stacks();
 
 	override_hpet_ioapic_bdf();

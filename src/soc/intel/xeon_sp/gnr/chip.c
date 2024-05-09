@@ -4,6 +4,7 @@
 #include <intelblocks/pmclib.h>
 #include <soc/pm.h>
 #include <soc/chip_common.h>
+#include <soc/numa.h>
 #include <soc/ramstage.h>
 
 #include "chip.h"
@@ -38,6 +39,7 @@ static void chip_init(void *data)
 	printk(BIOS_DEBUG, "coreboot: calling fsp_silicon_init\n");
 	fsp_silicon_init();
 
+	setup_pds();
 	attach_iio_stacks();
 	pch_enable_ioapic();
 

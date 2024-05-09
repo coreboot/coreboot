@@ -125,6 +125,7 @@ static void chip_init(void *data)
 	printk(BIOS_DEBUG, "coreboot: calling fsp_silicon_init\n");
 	fsp_silicon_init();
 
+	setup_pds();
 	attach_iio_stacks();
 
 	override_hpet_ioapic_bdf();

@@ -11,7 +11,7 @@
 #include <soc/util.h>
 #include <types.h>
 
-void dump_pds(void)
+static void dump_pds(void)
 {
 	printk(BIOS_DEBUG, "====== Proximity Domain Dump ======\n");
 	printk(BIOS_DEBUG, "number of proximity domains: %d\n", pds.num_pds);
@@ -25,7 +25,7 @@ void dump_pds(void)
 	}
 }
 
-void fill_pds(void)
+static void fill_pds(void)
 {
 	uint8_t num_sockets = soc_get_num_cpus();
 	uint8_t num_cxlnodes = get_cxl_node_count();
@@ -151,7 +151,7 @@ uint32_t memory_to_pd(const struct SystemMemoryMapElement *mem)
 #define PD_DISTANCE_MAX                 0xFF
 #define PD_DISTANCE_IO_EXTRA            0x01
 
-void fill_pd_distances(void)
+static void fill_pd_distances(void)
 {
 	for (int i = 0; i < pds.num_pds; i++) {
 		for (int j = 0; j < pds.num_pds; j++) {
@@ -172,4 +172,11 @@ void fill_pd_distances(void)
 				pds.pds[i].distances[j] += PD_DISTANCE_IO_EXTRA;
 		}
 	}
+}
+
+void setup_pds(void)
+{
+	fill_pds();
+	fill_pd_distances();
+	dump_pds();
 }

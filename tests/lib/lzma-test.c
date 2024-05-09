@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <fcntl.h>
+#include <helpers/file.h>
 #include <lib.h>
 #include <lib/lzmadecode.h>
 #include <stdlib.h>
@@ -10,21 +11,12 @@
 #include <tests/test.h>
 #include <unistd.h>
 
-
 struct lzma_test_state {
 	char *raw_filename;
 	size_t raw_file_sz;
 	char *comp_filename;
 	size_t comp_file_sz;
 };
-
-static int get_file_size(const char *fname)
-{
-	struct stat st;
-	if (stat(fname, &st) == -1)
-		return -1;
-	return st.st_size;
-}
 
 static int teardown_ulzman_file(void **state)
 {
@@ -42,7 +34,7 @@ static int setup_ulzman_file(void **state)
 {
 	int ret = 0;
 	const char *fname_base = *state;
-	const char path_prefix[] = __TEST_DATA_DIR__ "/lib/lzma-test/%s%s";
+	const char path_prefix[] = "lib/lzma-test/%s%s";
 	const char raw_file_suffix[] = ".bin";
 	const char comp_file_suffix[] = ".lzma.bin";
 	struct lzma_test_state *s = test_malloc(sizeof(*s));
@@ -69,8 +61,8 @@ static int setup_ulzman_file(void **state)
 	snprintf(s->comp_filename, comp_filename_size, path_prefix, fname_base,
 		 comp_file_suffix);
 
-	s->raw_file_sz = get_file_size(s->raw_filename);
-	s->comp_file_sz = get_file_size(s->comp_filename);
+	s->raw_file_sz = test_get_file_size(s->raw_filename);
+	s->comp_file_sz = test_get_file_size(s->comp_filename);
 
 	if (s->raw_file_sz == -1) {
 		print_error("Unable to open file: %s\n", s->raw_filename);
@@ -91,20 +83,6 @@ error:
 	return ret;
 }
 
-static int read_file(const char *fname, uint8_t *buf, size_t sz)
-{
-	int f = open(fname, O_RDONLY);
-	int read_sz = 0;
-
-	if (f == -1)
-		return -1;
-
-	read_sz = read(f, buf, sz);
-
-	close(f);
-	return read_sz;
-}
-
 static void test_ulzman_correct_file(void **state)
 {
 	struct lzma_test_state *s = *state;
@@ -115,9 +93,10 @@ static void test_ulzman_correct_file(void **state)
 	assert_non_null(raw_buf);
 	assert_non_null(decomp_buf);
 	assert_non_null(comp_buf);
-	assert_int_equal(s->raw_file_sz, read_file(s->raw_filename, raw_buf, s->raw_file_sz));
+	assert_int_equal(s->raw_file_sz,
+			 test_read_file(s->raw_filename, raw_buf, s->raw_file_sz));
 	assert_int_equal(s->comp_file_sz,
-			 read_file(s->comp_filename, comp_buf, s->comp_file_sz));
+			 test_read_file(s->comp_filename, comp_buf, s->comp_file_sz));
 
 	assert_int_equal(s->raw_file_sz,
 			 ulzman(comp_buf, s->comp_file_sz, decomp_buf, s->raw_file_sz));

@@ -234,6 +234,7 @@ lzma-test-srcs += tests/lib/lzma-test.c
 lzma-test-srcs += tests/stubs/console.c
 lzma-test-srcs += src/lib/lzma.c
 lzma-test-srcs += src/lib/lzmadecode.c
+lzma-test-syssrcs += tests/helpers/file.c
 
 ux_locales-test-srcs += tests/lib/ux_locales-test.c
 ux_locales-test-srcs += tests/stubs/console.c

@@ -1,5 +1,3 @@
-# TODO: Update for Phoenix
-
 chip soc/amd/phoenix
 	device cpu_cluster 0 on
 		ops amd_cpu_bus_ops

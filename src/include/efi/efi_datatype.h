@@ -3,6 +3,22 @@
 /* Create EFI equivalent datatype in coreboot based on UEFI specification */
 #ifndef __EFI_DATATYPE_H__
 #define __EFI_DATATYPE_H__
+
+/*
+ * EDK2 EFIAPI macro definition relies on compiler flags such as __GNUC__ which
+ * is not working well when included by coreboot. While it has no side-effect on
+ * i386 because the C calling convention used by coreboot and FSP are the same,
+ * it breaks on x86_64 because FSP/UEFI uses the Microsoft x64 calling
+ * convention while coreboot uses the System V AMD64 ABI.
+ *
+ * Fortunately, EDK2 header allows to override EFIAPI.
+ */
+#if CONFIG(PLATFORM_USES_FSP2_X86_32)
+#define EFIAPI __attribute__((regparm(0)))
+#else
+#define EFIAPI __attribute__((__ms_abi__))
+#endif
+
 #include <Base.h>
 #include <Uefi/UefiBaseType.h>
 

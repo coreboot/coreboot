@@ -5,6 +5,7 @@
 #include <device/dram/ddr4.h>
 #include <device/dram/ddr5.h>
 #include <device/dram/spd.h>
+#include <smbios.h>
 #include <spd.h>
 #include <stddef.h>
 

@@ -7,6 +7,8 @@
 
 #pragma pack(push)
 
+#include <efi/efi_datatype.h>
+
 /**
  * These includes are required to include headers that are missing in
  * the FSP headers. Import order matter for the correct PiHob definition
@@ -24,7 +26,6 @@
  * This file is a implementation specific header. i.e. different
  * FSP implementations for different chipsets.
  */
-#include <Base.h>
 #include <FspmUpd.h>
 #include <FspsUpd.h>
 #if CONFIG(MRC_CACHE_USING_MRC_VERSION)

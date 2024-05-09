@@ -4,7 +4,6 @@
 #include <device/device.h>
 #include <device/dram/lpddr4.h>
 #include <memory_info.h>
-#include <smbios.h>
 #include <types.h>
 
 enum lpddr4_speed_grade {

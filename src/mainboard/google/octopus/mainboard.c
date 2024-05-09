@@ -14,7 +14,6 @@
 #include <ec/ec.h>
 #include <intelblocks/xhci.h>
 #include <nhlt.h>
-#include <smbios.h>
 #include <soc/cpu.h>
 #include <soc/gpio.h>
 #include <soc/nhlt.h>

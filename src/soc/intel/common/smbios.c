@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <smbios.h>
 #include "smbios.h"
 #include <string.h>
 #include <commonlib/helpers.h>

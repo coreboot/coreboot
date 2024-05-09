@@ -11,7 +11,6 @@
 #include <baseboard/variants.h>
 #include <boardid.h>
 #include <gpio.h>
-#include <smbios.h>
 #include <soc/cpu.h>
 #include <soc/pci_devs.h>
 #include <soc/platform_descriptors.h>

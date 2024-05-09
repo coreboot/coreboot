@@ -4,7 +4,6 @@
 #include <device/device.h>
 #include <device/dram/ddr5.h>
 #include <memory_info.h>
-#include <smbios.h>
 #include <types.h>
 
 enum ddr5_speed_grade {

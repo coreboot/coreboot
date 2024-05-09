@@ -134,6 +134,15 @@ chip soc/intel/jasperlake
 						end
 					end
 					chip drivers/usb/acpi
+						register "desc" = ""Right Type-C Port""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(2, 1)"
+						device usb 2.1 on
+							probe DB_PORTS DB_PORTS_1C_1A
+							probe DB_PORTS DB_PORTS_1C_LTE
+						end
+					end
+					chip drivers/usb/acpi
 						register "desc" = ""Right Type-A Port""
 						register "type" = "UPC_TYPE_A"
 						register "group" = "ACPI_PLD_GROUP(2, 2)"
@@ -150,6 +159,15 @@ chip soc/intel/jasperlake
 						register "desc" = ""WFCamera""
 						register "type" = "UPC_TYPE_INTERNAL"
 						device usb 2.6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Right Type-C Port""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group" = "ACPI_PLD_GROUP(2, 1)"
+						device usb 3.1 on
+							probe DB_PORTS DB_PORTS_1C_1A
+							probe DB_PORTS DB_PORTS_1C_LTE
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""LTE""

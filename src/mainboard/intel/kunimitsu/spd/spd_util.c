@@ -1,8 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 #include <cbfs.h>
 #include <console/console.h>
+#include <device/dram/ddr3.h>
+#include <spd.h>
 #include <stdint.h>
 #include <string.h>
+
 #include "boardid.h"
 #include "spd.h"
 
@@ -72,16 +75,16 @@ uintptr_t mainboard_get_spd_data(void)
 		die("SPD data not found.");
 
 	/* make sure we have at least one SPD in the file. */
-	if (spd_file_len < SPD_LEN)
+	if (spd_file_len < SPD_SIZE_MAX_DDR3)
 		die("Missing SPD data.");
 
 	/* Make sure we did not overrun the buffer */
-	if (spd_file_len < ((spd_index + 1) * SPD_LEN)) {
+	if (spd_file_len < ((spd_index + 1) * SPD_SIZE_MAX_DDR3)) {
 		printk(BIOS_ERR, "SPD index override to 0 - old hardware?\n");
 		spd_index = 0;
 	}
 
-	spd_span = spd_index * SPD_LEN;
+	spd_span = spd_index * SPD_SIZE_MAX_DDR3;
 	return (uintptr_t)(spd_file + spd_span);
 }
 

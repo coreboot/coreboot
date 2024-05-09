@@ -4,6 +4,9 @@
 #include <gpio.h>
 #include "gpio.h"
 #include <soc/romstage.h>
+#include <device/dram/ddr3.h>
+#include <spd.h>
+
 #include "spd/spd.h"
 
 void mainboard_memory_init_params(FSPM_UPD *mupd)
@@ -20,5 +23,5 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	mem_cfg->MemorySpdPtr00 = mainboard_get_spd_data();
 	if (mainboard_has_dual_channel_mem())
 		mem_cfg->MemorySpdPtr10 = mem_cfg->MemorySpdPtr00;
-	mem_cfg->MemorySpdDataLen = SPD_LEN;
+	mem_cfg->MemorySpdDataLen = SPD_SIZE_MAX_DDR3;
 }

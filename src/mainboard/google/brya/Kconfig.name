@@ -184,3 +184,6 @@ config BOARD_GOOGLE_SUNDANCE
 
 config BOARD_GOOGLE_PUJJOGA
 	bool "->  Pujjoga"
+
+config BOARD_GOOGLE_ORISA
+	bool "->  Orisa"

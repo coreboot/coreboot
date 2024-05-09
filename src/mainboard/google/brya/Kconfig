@@ -370,6 +370,9 @@ config BOARD_GOOGLE_OMNIGUL
 	select SOC_INTEL_RAPTORLAKE
 	select USE_UNIFIED_AP_FIRMWARE_FOR_UFS_AND_NON_UFS
 
+config BOARD_GOOGLE_ORISA
+	select BOARD_GOOGLE_BASEBOARD_TRULO
+
 config BOARD_GOOGLE_OSIRIS
 	select BOARD_GOOGLE_BASEBOARD_BRYA
 	select CHROMEOS_WIFI_SAR if CHROMEOS
@@ -644,6 +647,7 @@ config DRIVER_TPM_I2C_BUS
 	default 0x0 if BOARD_GOOGLE_NIVVIKS
 	default 0x1 if BOARD_GOOGLE_NOVA
 	default 0x1 if BOARD_GOOGLE_OMNIGUL
+	default 0x0 if BOARD_GOOGLE_ORISA
 	default 0x1 if BOARD_GOOGLE_OSIRIS
 	default 0x0 if BOARD_GOOGLE_PIRRHA
 	default 0x1 if BOARD_GOOGLE_PRIMUS
@@ -733,6 +737,7 @@ config MAINBOARD_PART_NUMBER
 	default "Nokris" if BOARD_GOOGLE_NOKRIS
 	default "Nova" if BOARD_GOOGLE_NOVA
 	default "Omnigul" if BOARD_GOOGLE_OMNIGUL
+	default "Orisa" if BOARD_GOOGLE_ORISA
 	default "Osiris" if BOARD_GOOGLE_OSIRIS
 	default "Pirrha" if BOARD_GOOGLE_PIRRHA
 	default "Primus" if BOARD_GOOGLE_PRIMUS
@@ -797,6 +802,7 @@ config VARIANT_DIR
 	default "nokris" if BOARD_GOOGLE_NOKRIS
 	default "nova" if BOARD_GOOGLE_NOVA
 	default "omnigul" if BOARD_GOOGLE_OMNIGUL
+	default "orisa" if BOARD_GOOGLE_ORISA
 	default "osiris" if BOARD_GOOGLE_OSIRIS
 	default "pirrha" if BOARD_GOOGLE_PIRRHA
 	default "primus" if BOARD_GOOGLE_PRIMUS

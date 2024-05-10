@@ -19,9 +19,12 @@ static void dump_pds(void)
 		printk(BIOS_DEBUG, "\tproximity domain %d:\n", i);
 		printk(BIOS_DEBUG, "\t\ttype:%d\n", pds.pds[i].pd_type);
 		printk(BIOS_DEBUG, "\t\tsocket_bitmap:0x%x\n", pds.pds[i].socket_bitmap);
-		printk(BIOS_DEBUG, "\t\tdevice:%s\n", pds.pds[i].dev ? dev_path(pds.pds[i].dev) : "");
-		printk(BIOS_DEBUG, "\t\tbase(64MB):0x%x\n", pds.pds[i].base);
-		printk(BIOS_DEBUG, "\t\tsize(64MB):0x%x\n", pds.pds[i].size);
+		if (pds.pds[i].pd_type == PD_TYPE_GENERIC_INITIATOR) {
+			printk(BIOS_DEBUG, "\t\tdevice:%s\n",
+				pds.pds[i].dev ? dev_path(pds.pds[i].dev) : "");
+			printk(BIOS_DEBUG, "\t\tbase(64MB):0x%x\n", pds.pds[i].base);
+			printk(BIOS_DEBUG, "\t\tsize(64MB):0x%x\n", pds.pds[i].size);
+		}
 	}
 }
 

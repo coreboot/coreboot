@@ -110,9 +110,9 @@ const u32 cim_verb_data[] = {
 	 * To set LDO1/LDO2 as default (used for headset)
 	 */
 	0x02050008,
-	0x0204EA0C,
+	0x02046A0C,
 	0x02050008,
-	0x0204EA0C,
+	0x02046A0C,
 };
 
 const u32 pc_beep_verbs[] = {

@@ -233,6 +233,7 @@ static const enum ps2_action_key ps2_enum_val[] = {
 	[TK_KBD_BKLIGHT_TOGGLE] = PS2_KEY_KBD_BKLIGHT_TOGGLE,
 	[TK_MICMUTE] = PS2_KEY_MICMUTE,
 	[TK_MENU] = PS2_KEY_MENU,
+	[TK_DICTATE] = PS2_KEY_DICTATE,
 };
 
 static void fill_ssdt_ps2_keyboard(const struct device *dev)

@@ -60,7 +60,7 @@ chip soc/intel/meteorlake
 	# The ICC Limit is represented in 1/4 A increments, i.e., a value of 400 = 100A
 	# For GT VR configuration
 	register "enable_fast_vmode[VR_DOMAIN_GT]" = "1"
-	register "cep_enable[VR_DOMAIN_IA]" = "1"
+	register "cep_enable[VR_DOMAIN_GT]" = "1"
 	register "fast_vmode_i_trip[VR_DOMAIN_GT]" = "216" # 54A
 	# For SA VR configuration
 	register "enable_fast_vmode[VR_DOMAIN_SA]" = "1"

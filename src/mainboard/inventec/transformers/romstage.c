@@ -6,6 +6,7 @@
 #include <drivers/ipmi/ipmi_if.h>
 #include <drivers/ipmi/ocp/ipmi_ocp.h>
 #include <drivers/ocp/ewl/ocp_ewl.h>
+#include <soc/config.h>
 #include <soc/romstage.h>
 #include <defs_cxl.h>
 #include <defs_iio.h>

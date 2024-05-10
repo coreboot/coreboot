@@ -15,6 +15,7 @@
 #include <fsp/util.h>
 #include <security/intel/txt/txt_platform.h>
 #include <security/intel/txt/txt.h>
+#include <soc/config.h>
 #include <soc/numa.h>
 #include <soc/soc_util.h>
 #include <stdint.h>

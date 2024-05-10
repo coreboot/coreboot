@@ -1,8 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <drivers/ocp/include/vpd.h>
-#include <soc/chip_common.h>
-#include <soc/util.h>
+#include <soc/config.h>
 
 #if CONFIG(SOC_INTEL_HAS_CXL) && CONFIG(OCP_VPD)
 enum xeonsp_cxl_mode get_cxl_mode(void)

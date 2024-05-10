@@ -31,6 +31,4 @@ void bios_done_msr(void *unused);
 union p2sb_bdf soc_get_hpet_bdf(void);
 union p2sb_bdf soc_get_ioapic_bdf(void);
 
-enum xeonsp_cxl_mode get_cxl_mode(void);
-
 #endif

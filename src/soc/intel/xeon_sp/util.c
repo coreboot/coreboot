@@ -265,8 +265,3 @@ void set_bios_init_completion(void)
 	set_bios_init_completion_for_package(sbsp_socket_id);
 }
 #endif
-
-__weak enum xeonsp_cxl_mode get_cxl_mode(void)
-{
-	return XEONSP_CXL_DISABLED;
-}

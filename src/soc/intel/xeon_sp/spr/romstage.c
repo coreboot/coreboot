@@ -20,6 +20,7 @@
 #include <soc/soc_pch.h>
 #include <soc/intel/common/smbios.h>
 #include <string.h>
+#include <soc/config.h>
 #include <soc/soc_util.h>
 #include <soc/util.h>
 #include <soc/ddr.h>

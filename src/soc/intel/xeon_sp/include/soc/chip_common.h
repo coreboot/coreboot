@@ -33,12 +33,6 @@ static inline void init_xeon_domain_path(struct device_path *path, int socket,
 	path->domain.domain = dp.domain_path;
 };
 
-enum xeonsp_cxl_mode {
-	XEONSP_CXL_DISABLED = 0,
-	XEONSP_CXL_SYS_MEM,
-	XEONSP_CXL_SP_MEM,
-};
-
 /*
  * Every STACK can have multiple PCI domains with an unique domain type.
  * This is only of cosmetic nature and generates more readable ACPI code,

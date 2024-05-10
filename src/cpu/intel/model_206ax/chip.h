@@ -38,6 +38,17 @@ struct psi_state {
 	int current;			/* In Amps */
 };
 
+union turbo_ratio_limits {
+		/* Limit for 1, 2, 3 and 4 active cores respectively */
+		struct {
+			int limit_1c;
+			int limit_2c;
+			int limit_3c;
+			int limit_4c;
+		};
+		int raw[4];
+};
+
 struct cpu_intel_model_206ax_config {
 	enum cpu_acpi_level acpi_c1;
 	enum cpu_acpi_level acpi_c2;
@@ -56,6 +67,8 @@ struct cpu_intel_model_206ax_config {
 	/* PSI states only have an effect when in Package C3 or higher */
 	struct psi_state pp0_psi[3];	/* Power states for Primary Plane (Icc) */
 	struct psi_state pp1_psi[3];	/* Power states for Secondary Plane (IAXG) */
+
+	union turbo_ratio_limits turbo_limits; /* Turbo ratio limits depending on the number of active cores */
 };
 
 #endif /* __CPU_INTEL_MODEL_206AX_CHIP_H__ */

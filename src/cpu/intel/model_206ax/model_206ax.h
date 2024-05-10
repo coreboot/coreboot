@@ -46,6 +46,7 @@
 #define MSR_LT_LOCK_MEMORY		0x2e7
 #define MSR_PLATFORM_INFO		0xce
 #define  PLATFORM_INFO_SET_TDP		(1 << 29)
+#define  PLATFORM_INFO_SET_TURBO_LIMIT	(1 << 28)
 
 #define MSR_MISC_PWR_MGMT		0x1aa
 #define  MISC_PWR_MGMT_EIST_HW_DIS	(1 << 0)

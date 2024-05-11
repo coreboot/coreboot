@@ -2,6 +2,7 @@
 
 #include <acpi/acpi.h>
 #include <baseboard/variant.h>
+#include <device/dram/ddr3.h>
 #include <ec/google/chromeec/ec.h>
 #include <gpio.h>
 #include <soc/romstage.h>
@@ -30,7 +31,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	};
 	const int spd_idx = gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
 
-	mem_cfg->MemorySpdDataLen = SPD_LEN;
+	mem_cfg->MemorySpdDataLen = SPD_SIZE_MAX_DDR3;
 	mem_cfg->DqPinsInterleaved = FALSE;
 
 	spd_memory_init_params(mupd, spd_idx);

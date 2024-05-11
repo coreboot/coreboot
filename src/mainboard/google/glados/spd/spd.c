@@ -2,8 +2,10 @@
 
 #include <cbfs.h>
 #include <console/console.h>
+#include <device/dram/ddr3.h>
 #include <gpio.h>
 #include <soc/romstage.h>
+#include <spd.h>
 #include <string.h>
 #include <baseboard/variant.h>
 
@@ -19,7 +21,7 @@ static void mainboard_print_spd_info(uint8_t spd[])
 	const int spd_ranks[8] = {  1,  2,  3,  4, -1, -1, -1, -1 };
 	const int spd_devw[8]  = {  4,  8, 16, 32, -1, -1, -1, -1 };
 	const int spd_busw[8]  = {  8, 16, 32, 64, -1, -1, -1, -1 };
-	char spd_name[SPD_PART_LEN+1] = { 0 };
+	char spd_name[SPD_DDR3_PART_LEN + 1] = { 0 };
 
 	int banks = spd_banks[(spd[SPD_DENSITY_BANKS] >> 4) & 7];
 	int capmb = spd_capmb[spd[SPD_DENSITY_BANKS] & 7] * 256;
@@ -31,21 +33,21 @@ static void mainboard_print_spd_info(uint8_t spd[])
 
 	/* Module type */
 	printk(BIOS_INFO, "SPD: module type is ");
-	switch (spd[SPD_DRAM_TYPE]) {
-	case SPD_DRAM_DDR3:
+	switch (spd[SPD_MEMORY_TYPE]) {
+	case SPD_MEMORY_TYPE_SDRAM_DDR3:
 		printk(BIOS_INFO, "DDR3\n");
 		break;
-	case SPD_DRAM_LPDDR3:
+	case SPD_MEMORY_TYPE_LPDDR3_INTEL:
 		printk(BIOS_INFO, "LPDDR3\n");
 		break;
 	default:
-		printk(BIOS_INFO, "Unknown (%02x)\n", spd[SPD_DRAM_TYPE]);
+		printk(BIOS_INFO, "Unknown (%02x)\n", spd[SPD_MEMORY_TYPE]);
 		break;
 	}
 
 	/* Module Part Number */
-	memcpy(spd_name, &spd[SPD_PART_OFF], SPD_PART_LEN);
-	spd_name[SPD_PART_LEN] = 0;
+	memcpy(spd_name, &spd[SPD_DDR3_PART_NUM], SPD_DDR3_PART_LEN);
+	spd_name[SPD_DDR3_PART_LEN] = 0;
 	printk(BIOS_INFO, "SPD: module part is %s\n", spd_name);
 
 	printk(BIOS_INFO,
@@ -83,16 +85,16 @@ void spd_memory_init_params(FSPM_UPD *mupd, int spd_index)
 		die("SPD data not found.");
 
 	/* make sure we have at least one SPD in the file. */
-	if (spd_file_len < SPD_LEN)
+	if (spd_file_len < SPD_SIZE_MAX_DDR3)
 		die("Missing SPD data.");
 
 	/* Make sure we did not overrun the buffer */
-	if (spd_file_len < ((spd_index + 1) * SPD_LEN)) {
+	if (spd_file_len < ((spd_index + 1) * SPD_SIZE_MAX_DDR3)) {
 		printk(BIOS_ERR, "SPD index override to 1 - old hardware?\n");
 		spd_index = 1;
 	}
 
-	const size_t spd_offset = spd_index * SPD_LEN;
+	const size_t spd_offset = spd_index * SPD_SIZE_MAX_DDR3;
 	/* Make sure a valid SPD was found */
 	if (spd_file[spd_offset] == 0)
 		die("Invalid SPD data.");

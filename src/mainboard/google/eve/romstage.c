@@ -2,6 +2,7 @@
 
 #include <acpi/acpi.h>
 #include <boardid.h>
+#include <device/dram/ddr3.h>
 #include <string.h>
 #include <ec/google/chromeec/ec.h>
 #include <fsp/soc_binding.h>
@@ -37,7 +38,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 
 	mem_cfg->MemorySpdPtr00 = mainboard_get_spd_data();
 	mem_cfg->MemorySpdPtr10 = mem_cfg->MemorySpdPtr00;
-	mem_cfg->MemorySpdDataLen = SPD_LEN;
+	mem_cfg->MemorySpdDataLen = SPD_SIZE_MAX_DDR3;
 
 	/* Limit K4EBE304EB-EGCF memory to 1600MHz for stability */
 	if (board_id() < 6 && mainboard_get_spd_index() == 5) {

@@ -2,22 +2,17 @@
 
 #include <cbfs.h>
 #include <console/console.h>
+#include <device/dram/ddr3.h>
 #include <soc/pei_data.h>
 #include <soc/pei_wrapper.h>
+#include <spd.h>
 #include <string.h>
 #include <types.h>
 
-#define SPD_DRAM_TYPE		2
-#define SPD_DRAM_DDR3		0x0b
-#define SPD_DRAM_LPDDR3		0xf1
 #define SPD_DENSITY_BANKS	4
 #define SPD_ADDRESSING		5
 #define SPD_ORGANIZATION	7
 #define SPD_BUS_DEV_WIDTH	8
-#define SPD_PART_OFF		128
-#define SPD_PART_LEN		18
-
-#define SPD_LEN			256
 
 static void print_spd_info(uint8_t spd[])
 {
@@ -28,7 +23,7 @@ static void print_spd_info(uint8_t spd[])
 	const int spd_ranks[8] = {  1,  2,  3,  4, -1, -1, -1, -1 };
 	const int spd_devw[8]  = {  4,  8, 16, 32, -1, -1, -1, -1 };
 	const int spd_busw[8]  = {  8, 16, 32, 64, -1, -1, -1, -1 };
-	char spd_name[SPD_PART_LEN+1] = { 0 };
+	char spd_name[SPD_DDR3_PART_LEN + 1] = { 0 };
 
 	int banks = spd_banks[(spd[SPD_DENSITY_BANKS] >> 4) & 7];
 	int capmb = spd_capmb[spd[SPD_DENSITY_BANKS] & 7] * 256;
@@ -40,21 +35,21 @@ static void print_spd_info(uint8_t spd[])
 
 	/* Module type */
 	printk(BIOS_INFO, "SPD: module type is ");
-	switch (spd[SPD_DRAM_TYPE]) {
-	case SPD_DRAM_DDR3:
+	switch (spd[SPD_MEMORY_TYPE]) {
+	case SPD_MEMORY_TYPE_SDRAM_DDR3:
 		printk(BIOS_INFO, "DDR3\n");
 		break;
-	case SPD_DRAM_LPDDR3:
+	case SPD_MEMORY_TYPE_LPDDR3_INTEL:
 		printk(BIOS_INFO, "LPDDR3\n");
 		break;
 	default:
-		printk(BIOS_INFO, "Unknown (%02x)\n", spd[SPD_DRAM_TYPE]);
+		printk(BIOS_INFO, "Unknown (%02x)\n", spd[SPD_MEMORY_TYPE]);
 		break;
 	}
 
 	/* Module Part Number */
-	memcpy(spd_name, &spd[SPD_PART_OFF], SPD_PART_LEN);
-	spd_name[SPD_PART_LEN] = 0;
+	memcpy(spd_name, &spd[SPD_DDR3_PART_NUM], SPD_DDR3_PART_LEN);
+	spd_name[SPD_DDR3_PART_LEN] = 0;
 	printk(BIOS_INFO, "SPD: module part is %s\n", spd_name);
 
 	printk(BIOS_INFO, "SPD: banks %d, ranks %d, rows %d, columns %d, "
@@ -79,15 +74,15 @@ void copy_spd(struct pei_data *pei_data, struct spd_info *spdi)
 	if (!spd_file)
 		die("SPD data not found.");
 
-	if (spd_file_len < SPD_LEN)
+	if (spd_file_len < SPD_SIZE_MAX_DDR3)
 		die("Missing SPD data.");
 
-	if (spd_file_len < ((spdi->spd_index + 1) * SPD_LEN)) {
+	if (spd_file_len < ((spdi->spd_index + 1) * SPD_SIZE_MAX_DDR3)) {
 		printk(BIOS_ERR, "SPD index override to 0 - old hardware?\n");
 		spdi->spd_index = 0;
 	}
 
-	uint8_t *const spd = spd_file + (spdi->spd_index * SPD_LEN);
+	uint8_t *const spd = spd_file + (spdi->spd_index * SPD_SIZE_MAX_DDR3);
 
 	/* Make sure a valid SPD was found */
 	if (spd[0] == 0)
@@ -97,6 +92,6 @@ void copy_spd(struct pei_data *pei_data, struct spd_info *spdi)
 
 	for (size_t i = 0; i < ARRAY_SIZE(spdi->addresses); i++) {
 		if (spdi->addresses[i] == SPD_MEMORY_DOWN)
-			memcpy(pei_data->spd_data[i / 2][i % 2], spd, SPD_LEN);
+			memcpy(pei_data->spd_data[i / 2][i % 2], spd, SPD_SIZE_MAX_DDR3);
 	}
 }

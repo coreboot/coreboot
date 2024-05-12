@@ -3,24 +3,11 @@
 #ifndef SPD_BIN_H
 #define SPD_BIN_H
 
-#include <device/dram/ddr3.h>
 #include <stdint.h>
 #include <commonlib/region.h>
 
-#define SPD_PAGE_LEN		256
-#define SPD_PAGE_LEN_DDR4	512
 #define SPD_PAGE_0		(0x6C >> 1)
 #define SPD_PAGE_1		(0x6E >> 1)
-#define SPD_DRAM_TYPE		2
-#define  SPD_DRAM_DDR3		0x0B
-#define  SPD_DRAM_LPDDR3_INTEL	0xF1
-#define  SPD_DRAM_LPDDR3_JEDEC	0x0F
-#define  SPD_DRAM_DDR4		0x0C
-#define  SPD_DRAM_LPDDR4	0x10
-#define  SPD_DRAM_LPDDR4X	0x11
-#define  SPD_DRAM_DDR5		0x12
-#define  SPD_DRAM_LPDDR5	0x13
-#define  SPD_DRAM_LPDDR5X	0x15
 #define SPD_DENSITY_BANKS	4
 #define SPD_ADDRESSING		5
 #define SPD_SN_LEN		4
@@ -28,13 +15,6 @@
 #define DDR3_BUS_DEV_WIDTH	8
 #define DDR4_ORGANIZATION	12
 #define DDR4_BUS_DEV_WIDTH	13
-#define DDR3_SPD_PART_OFF	SPD_DDR3_PART_NUM
-#define DDR3_SPD_PART_LEN	SPD_DDR3_PART_LEN
-#define DDR3_SPD_SN_OFF		122
-#define LPDDR3_SPD_PART_OFF	SPD_DDR3_PART_NUM
-#define LPDDR3_SPD_PART_LEN	SPD_DDR3_PART_LEN
-#define DDR4_SPD_PART_OFF	329
-#define DDR4_SPD_PART_LEN	20
 #define DDR4_SPD_SN_OFF		325
 
 struct spd_block {

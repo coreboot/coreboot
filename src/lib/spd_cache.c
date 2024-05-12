@@ -3,8 +3,11 @@
 #include <assert.h>
 #include <console/console.h>
 #include <crc_byte.h>
+#include <device/dram/ddr3.h>
+#include <device/dram/ddr4.h>
 #include <fmap.h>
 #include <spd_cache.h>
+#include <spd.h>
 #include <spd_bin.h>
 #include <string.h>
 
@@ -207,12 +210,12 @@ enum cb_err spd_fill_from_cache(uint8_t *spd_cache, struct spd_block *blk)
 		return CB_ERR;
 	}
 
-	dram_type = *(spd_cache + SC_SPD_OFFSET(i) + SPD_DRAM_TYPE);
+	dram_type = *(spd_cache + SC_SPD_OFFSET(i) + SPD_MEMORY_TYPE);
 
-	if (dram_type == SPD_DRAM_DDR4)
-		blk->len = SPD_PAGE_LEN_DDR4;
+	if (dram_type == SPD_MEMORY_TYPE_DDR4_SDRAM)
+		blk->len = SPD_SIZE_MAX_DDR4;
 	else
-		blk->len = SPD_PAGE_LEN;
+		blk->len = SPD_SIZE_MAX_DDR3;
 
 	for (i = 0; i < SC_SPD_NUMS; i++)
 		if (get_cached_dimm_present(spd_cache, i))

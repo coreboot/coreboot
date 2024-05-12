@@ -2,10 +2,12 @@
 
 #include <cbfs.h>
 #include <console/console.h>
+#include <device/dram/ddr3.h>
+#include <device/dram/ddr4.h>
 #include <memory_info.h>
+#include <spd.h>
 #include <spd_bin.h>
 #include <string.h>
-#include <device/dram/ddr3.h>
 
 void dump_spd_info(struct spd_block *blk)
 {
@@ -27,17 +29,17 @@ const char * __weak mainboard_get_dram_part_num(void)
 static bool use_ddr4_params(int dram_type)
 {
 	switch (dram_type) {
-	case SPD_DRAM_DDR3:
-	case SPD_DRAM_LPDDR3_INTEL:
+	case SPD_MEMORY_TYPE_SDRAM_DDR3:
+	case SPD_MEMORY_TYPE_LPDDR3_INTEL:
 		return false;
 	/* Below DDR type share the same attributes */
-	case SPD_DRAM_LPDDR3_JEDEC:
-	case SPD_DRAM_DDR4:
-	case SPD_DRAM_DDR5:
-	case SPD_DRAM_LPDDR5:
-	case SPD_DRAM_LPDDR5X:
-	case SPD_DRAM_LPDDR4:
-	case SPD_DRAM_LPDDR4X:
+	case SPD_MEMORY_TYPE_LPDDR3_SDRAM:
+	case SPD_MEMORY_TYPE_DDR4_SDRAM:
+	case SPD_MEMORY_TYPE_DDR5_SDRAM:
+	case SPD_MEMORY_TYPE_LPDDR5_SDRAM:
+	case SPD_MEMORY_TYPE_LPDDR5X_SDRAM:
+	case SPD_MEMORY_TYPE_LPDDR4_SDRAM:
+	case SPD_MEMORY_TYPE_LPDDR4X_SDRAM:
 		return true;
 	default:
 		printk(BIOS_NOTICE, "Defaulting to using DDR4 params. Please add dram_type check for %d to %s\n",
@@ -49,22 +51,22 @@ static bool use_ddr4_params(int dram_type)
 static const char *spd_get_module_type_string(int dram_type)
 {
 	switch (dram_type) {
-	case SPD_DRAM_DDR3:
+	case SPD_MEMORY_TYPE_SDRAM_DDR3:
 		return "DDR3";
-	case SPD_DRAM_LPDDR3_INTEL:
-	case SPD_DRAM_LPDDR3_JEDEC:
+	case SPD_MEMORY_TYPE_LPDDR3_INTEL:
+	case SPD_MEMORY_TYPE_LPDDR3_SDRAM:
 		return "LPDDR3";
-	case SPD_DRAM_DDR4:
+	case SPD_MEMORY_TYPE_DDR4_SDRAM:
 		return "DDR4";
-	case SPD_DRAM_LPDDR4:
+	case SPD_MEMORY_TYPE_LPDDR4_SDRAM:
 		return "LPDDR4";
-	case SPD_DRAM_LPDDR4X:
+	case SPD_MEMORY_TYPE_LPDDR4X_SDRAM:
 		return "LPDDR4X";
-	case SPD_DRAM_DDR5:
+	case SPD_MEMORY_TYPE_DDR5_SDRAM:
 		return "DDR5";
-	case SPD_DRAM_LPDDR5:
+	case SPD_MEMORY_TYPE_LPDDR5_SDRAM:
 		return "LPDDR5";
-	case SPD_DRAM_LPDDR5X:
+	case SPD_MEMORY_TYPE_LPDDR5X_SDRAM:
 		return "LPDDR5X";
 	}
 	return "UNKNOWN";
@@ -157,24 +159,21 @@ static void spd_get_name(const uint8_t spd[], int type, const char **spd_name, s
 	}
 
 	switch (type) {
-	case SPD_DRAM_DDR3:
-		*spd_name = (const char *) &spd[DDR3_SPD_PART_OFF];
-		*len = DDR3_SPD_PART_LEN;
-		break;
-	case SPD_DRAM_LPDDR3_INTEL:
-		*spd_name = (const char *) &spd[LPDDR3_SPD_PART_OFF];
-		*len = LPDDR3_SPD_PART_LEN;
+	case SPD_MEMORY_TYPE_SDRAM_DDR3:
+	case SPD_MEMORY_TYPE_LPDDR3_INTEL:
+		*spd_name = (const char *) &spd[SPD_DDR3_PART_NUM];
+		*len = SPD_DDR3_PART_LEN;
 		break;
 	/* LPDDR3, LPDDR4 and DDR4 have same part number offset and length */
-	case SPD_DRAM_LPDDR3_JEDEC:
-	case SPD_DRAM_DDR4:
-	case SPD_DRAM_DDR5:
-	case SPD_DRAM_LPDDR5:
-	case SPD_DRAM_LPDDR4:
-	case SPD_DRAM_LPDDR4X:
-		if (spd[DDR4_SPD_PART_OFF]) {
-			*spd_name = (const char *) &spd[DDR4_SPD_PART_OFF];
-			*len = DDR4_SPD_PART_LEN;
+	case SPD_MEMORY_TYPE_LPDDR3_SDRAM:
+	case SPD_MEMORY_TYPE_DDR4_SDRAM:
+	case SPD_MEMORY_TYPE_DDR5_SDRAM:
+	case SPD_MEMORY_TYPE_LPDDR5_SDRAM:
+	case SPD_MEMORY_TYPE_LPDDR4_SDRAM:
+	case SPD_MEMORY_TYPE_LPDDR4X_SDRAM:
+		if (spd[SPD_DDR4_PART_OFF]) {
+			*spd_name = (const char *) &spd[SPD_DDR4_PART_OFF];
+			*len = SPD_DDR4_PART_LEN;
 		}
 		break;
 	default:
@@ -187,7 +186,7 @@ void print_spd_info(uint8_t spd[])
 {
 	const char *nameptr = NULL;
 	size_t len;
-	int type  = spd[SPD_DRAM_TYPE];
+	int type  = spd[SPD_MEMORY_TYPE];
 	int banks = spd_get_banks(spd, type);
 	int capmb = spd_get_capmb(spd);
 	int rows  = spd_get_rows(spd);

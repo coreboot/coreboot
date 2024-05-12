@@ -1,6 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <device/dram/ddr3.h>
+#include <device/dram/ddr4.h>
+#include <spd.h>
 #include <spd_bin.h>
 #include <device/smbus_def.h>
 #include <device/smbus_host.h>
@@ -11,13 +14,13 @@ static void update_spd_len(struct spd_block *blk)
 	u8 i, j = 0;
 	for (i = 0 ; i < CONFIG_DIMM_MAX; i++)
 		if (blk->spd_array[i] != NULL)
-			j |= blk->spd_array[i][SPD_DRAM_TYPE];
+			j |= blk->spd_array[i][SPD_MEMORY_TYPE];
 
 	/* If spd used is DDR4, then its length is 512 byte. */
-	if (j == SPD_DRAM_DDR4)
-		blk->len = SPD_PAGE_LEN_DDR4;
+	if (j == SPD_MEMORY_TYPE_DDR4_SDRAM)
+		blk->len = SPD_SIZE_MAX_DDR4;
 	else
-		blk->len = SPD_PAGE_LEN;
+		blk->len = SPD_SIZE_MAX_DDR3;
 }
 
 static void spd_read(u8 *spd, u8 addr)
@@ -28,7 +31,7 @@ static void spd_read(u8 *spd, u8 addr)
 	if (CONFIG(SPD_READ_BY_WORD))
 		step = sizeof(uint16_t);
 
-	for (i = 0; i < SPD_PAGE_LEN; i += step) {
+	for (i = 0; i < SPD_SIZE_MAX_DDR3; i += step) {
 		if (CONFIG(SPD_READ_BY_WORD))
 			((u16*)spd)[i / sizeof(uint16_t)] =
 				 spd_read_word(addr, i);
@@ -40,7 +43,7 @@ static void spd_read(u8 *spd, u8 addr)
 /* return -1 if SMBus errors otherwise return 0 */
 static int get_spd(u8 *spd, u8 addr)
 {
-	if (CONFIG_DIMM_SPD_SIZE > SPD_PAGE_LEN) {
+	if (CONFIG_DIMM_SPD_SIZE > SPD_SIZE_MAX_DDR3) {
 		/* Restore to page 0 before reading */
 		spd_write_byte(SPD_PAGE_0, 0, 0);
 	}
@@ -54,21 +57,21 @@ static int get_spd(u8 *spd, u8 addr)
 
 	/* IMC doesn't support i2c eeprom read. */
 	if (CONFIG(SOC_INTEL_COMMON_BLOCK_IMC) ||
-	    i2c_eeprom_read(addr, 0, SPD_PAGE_LEN, spd) < 0) {
+	    i2c_eeprom_read(addr, 0, SPD_SIZE_MAX_DDR3, spd) < 0) {
 		printk(BIOS_INFO, "do_i2c_eeprom_read failed, using fallback\n");
 		spd_read(spd, addr);
 	}
 
 	/* Check if module is DDR4, DDR4 spd is 512 byte. */
-	if (spd[SPD_DRAM_TYPE] == SPD_DRAM_DDR4 && CONFIG_DIMM_SPD_SIZE > SPD_PAGE_LEN) {
+	if (spd[SPD_MEMORY_TYPE] == SPD_MEMORY_TYPE_DDR4_SDRAM && CONFIG_DIMM_SPD_SIZE > SPD_SIZE_MAX_DDR3) {
 		/* Switch to page 1 */
 		spd_write_byte(SPD_PAGE_1, 0, 0);
 
 		/* IMC doesn't support i2c eeprom read. */
 		if (CONFIG(SOC_INTEL_COMMON_BLOCK_IMC) ||
-		    i2c_eeprom_read(addr, 0, SPD_PAGE_LEN, spd + SPD_PAGE_LEN) < 0) {
+		    i2c_eeprom_read(addr, 0, SPD_SIZE_MAX_DDR3, spd + SPD_SIZE_MAX_DDR3) < 0) {
 			printk(BIOS_INFO, "do_i2c_eeprom_read failed, using fallback\n");
-			spd_read(spd + SPD_PAGE_LEN, addr);
+			spd_read(spd + SPD_SIZE_MAX_DDR3, addr);
 		}
 		/* Restore to page 0 */
 		spd_write_byte(SPD_PAGE_0, 0, 0);
@@ -114,13 +117,13 @@ enum cb_err get_spd_sn(u8 addr, u32 *sn)
 	if (addr == 0x0)
 		return CB_ERR;
 
-	if (CONFIG_DIMM_SPD_SIZE > SPD_PAGE_LEN) {
+	if (CONFIG_DIMM_SPD_SIZE > SPD_SIZE_MAX_DDR3) {
 		/* Restore to page 0 before reading */
 		spd_write_byte(SPD_PAGE_0, 0, 0);
 	}
 
 	/* If dimm is not present, set sn to 0xff. */
-	smbus_ret = spd_read_byte(addr, SPD_DRAM_TYPE);
+	smbus_ret = spd_read_byte(addr, SPD_MEMORY_TYPE);
 	if (smbus_ret < 0) {
 		printk(BIOS_INFO, "No memory dimm at address %02X\n", addr << 1);
 		*sn = 0xffffffff;
@@ -130,7 +133,7 @@ enum cb_err get_spd_sn(u8 addr, u32 *sn)
 	dram_type = smbus_ret & 0xff;
 
 	/* Check if module is DDR4, DDR4 spd is 512 byte. */
-	if (dram_type == SPD_DRAM_DDR4 && CONFIG_DIMM_SPD_SIZE > SPD_PAGE_LEN) {
+	if (dram_type == SPD_MEMORY_TYPE_DDR4_SDRAM && CONFIG_DIMM_SPD_SIZE > SPD_SIZE_MAX_DDR3) {
 		/* Switch to page 1 */
 		spd_write_byte(SPD_PAGE_1, 0, 0);
 
@@ -140,10 +143,10 @@ enum cb_err get_spd_sn(u8 addr, u32 *sn)
 
 		/* Restore to page 0 */
 		spd_write_byte(SPD_PAGE_0, 0, 0);
-	} else if (dram_type == SPD_DRAM_DDR3) {
+	} else if (dram_type == SPD_MEMORY_TYPE_SDRAM_DDR3) {
 		for (i = 0; i < SPD_SN_LEN; i++)
 			*((u8 *)sn + i) = spd_read_byte(addr,
-							i + DDR3_SPD_SN_OFF);
+							i + SPD_DDR3_SERIAL_NUM);
 	} else {
 		printk(BIOS_ERR, "Unsupported dram_type\n");
 		return CB_ERR;

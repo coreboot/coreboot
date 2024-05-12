@@ -4,6 +4,7 @@
 #include <arch/cpu.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
+#include <mode_switch.h>
 #include <program_loading.h>
 #include <symbols.h>
 #include <assert.h>
@@ -26,7 +27,7 @@ void arch_prog_run(struct prog *prog)
 	const uint32_t entry = pointer_to_uint32_safe(prog_entry(prog));
 
 	/* On x86 coreboot payloads expect to be called in protected mode */
-	protected_mode_jump(entry, arg);
+	protected_mode_call_1arg((void *)(uintptr_t)entry, arg);
 #else
 #if ENV_X86_64
 	void (*doit)(void *arg);

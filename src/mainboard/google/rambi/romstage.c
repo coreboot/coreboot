@@ -2,6 +2,7 @@
 
 #include <cbfs.h>
 #include <console/console.h>
+#include <device/dram/ddr3.h>
 #include <soc/gpio.h>
 #include <soc/mrc_wrapper.h>
 #include <soc/romstage.h>
@@ -38,7 +39,7 @@ static void *get_spd_pointer(char *spd_file_content, int total_spds, int *dual)
 	if (dual_channel_config & (1 << ram_id))
 		*dual = 1;
 
-	return &spd_file_content[SPD_SIZE * ram_id];
+	return &spd_file_content[SPD_SIZE_MAX_DDR3 * ram_id];
 }
 
 void mainboard_fill_mrc_params(struct mrc_params *mp)
@@ -52,7 +53,7 @@ void mainboard_fill_mrc_params(struct mrc_params *mp)
 	if (!spd_file)
 		die("SPD data not found.");
 
-	spd_content = get_spd_pointer(spd_file, spd_fsize / SPD_SIZE,
+	spd_content = get_spd_pointer(spd_file, spd_fsize / SPD_SIZE_MAX_DDR3,
 	                              &dual_channel);
 
 	mp->mainboard.dram_type = DRAM_DDR3L;

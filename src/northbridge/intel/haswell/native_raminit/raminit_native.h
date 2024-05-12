@@ -6,7 +6,8 @@
 #include <device/dram/ddr3.h>
 #include <northbridge/intel/haswell/haswell.h>
 
-#define SPD_LEN 256
+/** TODO (Angel): Remove this after in-review patches are submitted **/
+#define SPD_LEN SPD_SIZE_MAX_DDR3
 
 /* 8 data lanes + 1 ECC lane */
 #define NUM_LANES		9

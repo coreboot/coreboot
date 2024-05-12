@@ -8,6 +8,7 @@
 #include <cbmem.h>
 #include <cbfs.h>
 #include <cf9_reset.h>
+#include <device/dram/ddr3.h>
 #include <memory_info.h>
 #include <mrc_cache.h>
 #include <device/device.h>
@@ -245,7 +246,6 @@ static void setup_sdram_meminfo(struct pei_data *pei_data)
 }
 
 #include <device/smbus_host.h>
-#define SPD_LEN 256
 
 /* Copy SPD data for on-board memory */
 static void copy_spd(struct pei_data *pei_data, struct spd_info *spdi)
@@ -261,20 +261,21 @@ static void copy_spd(struct pei_data *pei_data, struct spd_info *spdi)
 	if (!spd_file)
 		die("SPD data not found.");
 
-	if (spd_file_len < ((spdi->spd_index + 1) * SPD_LEN)) {
+	if (spd_file_len < ((spdi->spd_index + 1) * SPD_SIZE_MAX_DDR3)) {
 		printk(BIOS_ERR, "SPD index override to 0 - old hardware?\n");
 		spdi->spd_index = 0;
 	}
 
-	if (spd_file_len < SPD_LEN)
+	if (spd_file_len < SPD_SIZE_MAX_DDR3)
 		die("Missing SPD data.");
 
 	/* MRC only uses index 0, but coreboot uses the other indices */
-	memcpy(pei_data->spd_data[0], spd_file + (spdi->spd_index * SPD_LEN), SPD_LEN);
+	memcpy(pei_data->spd_data[0], spd_file + (spdi->spd_index * SPD_SIZE_MAX_DDR3),
+		SPD_SIZE_MAX_DDR3);
 
 	for (size_t i = 1; i < ARRAY_SIZE(spdi->addresses); i++) {
 		if (spdi->addresses[i] == SPD_MEMORY_DOWN)
-			memcpy(pei_data->spd_data[i], pei_data->spd_data[0], SPD_LEN);
+			memcpy(pei_data->spd_data[i], pei_data->spd_data[0], SPD_SIZE_MAX_DDR3);
 	}
 }
 

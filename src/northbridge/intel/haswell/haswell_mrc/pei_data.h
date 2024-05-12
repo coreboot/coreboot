@@ -8,8 +8,6 @@
 typedef void (*tx_byte_func)(unsigned char byte);
 #define PEI_VERSION 15
 
-#define SPD_LEN 256
-
 #define PEI_USB_OC_PIN_SKIP 8
 
 enum pei_usb2_port_location {
@@ -82,7 +80,7 @@ struct pei_data
 	int usb_xhci_on_resume;
 	struct pei_usb2_port_setting usb2_ports[16];
 	struct pei_usb3_port_setting usb3_ports[16];
-	uint8_t spd_data[4][SPD_LEN];
+	uint8_t spd_data[4][SPD_SIZE_MAX_DDR3];
 	tx_byte_func tx_byte;
 } __packed;
 

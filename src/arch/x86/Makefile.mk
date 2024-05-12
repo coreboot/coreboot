@@ -253,7 +253,6 @@ ramstage-$(CONFIG_ACPI_BERT) += acpi_bert_storage.c
 ramstage-y += boot.c
 ramstage-y += post.c
 ramstage-y += c_start.S
-ramstage-y += c_exit.S
 ramstage-y += cpu.c
 ramstage-y += cpu_common.c
 ramstage-$(CONFIG_DEBUG_HW_BREAKPOINTS) += breakpoint.c

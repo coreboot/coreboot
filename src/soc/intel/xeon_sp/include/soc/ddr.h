@@ -9,7 +9,6 @@
  * currently DDR4 only supports 1.2V, DDR5 only supports 1.1V. */
 #define SPD_VDD_DDR4 3
 #define SPD_VDD_DDR5 0
-#define SPD_TYPE_DDR5 0x12
 
 /* DDR_*_TCK_MIN are in picoseconds */
 #define DDR_800_TCK_MIN                2500

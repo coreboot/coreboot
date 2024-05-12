@@ -13,6 +13,7 @@
 #include <fsp/util.h>
 #include <hob_iiouds.h>
 #include <hob_memmap.h>
+#include <spd.h>
 #include <soc/chip_common.h>
 #include <soc/romstage.h>
 #include <soc/pci_devs.h>
@@ -330,7 +331,7 @@ void save_dimm_info(void)
 
 				dest_dimm->soc_num = soc;
 
-				if (hob->DramType == SPD_TYPE_DDR5) {
+				if (hob->DramType == SPD_MEMORY_TYPE_DDR5_SDRAM) {
 					/* hard-coded memory device type as DDR5 */
 					mem_dev_type = 0x22;
 					data_width = 64;

@@ -4,6 +4,8 @@
 - Birman for Phoenix SoC using FSP
 - Birman for Phoenix SoC using openSIL
 - Birman for Glinda SoC
+- BirmanPlus for Phoenix SoC
+- BirmanPlus for Glinda SoC
 - Chausie
 - Majolica
 - Mayan for Phoenix SoC
@@ -35,6 +37,9 @@
 - Tricky (Dell Chromebox 3010)
 - Zako (HP Chromebox G1)
 - Brox
+- Brox EC ISH
+- Lotso
+- Greenbayupoc
 - Agah
 - Anahera
 - Anahera4ES
@@ -53,6 +58,7 @@
 - Gimble
 - Gimble4ES
 - Gladios
+- Glassway
 - Gothrax
 - Hades
 - Kano
@@ -74,11 +80,14 @@
 - Quandiso
 - Redrix
 - Redrix4ES
+- Riven
 - Skolas
 - Skolas4ES
 - Taeko
 - Taeko4ES
 - Taniks
+- Tivviks
+- Trulo
 - Uldren
 - Vell
 - Volmar
@@ -87,19 +96,29 @@
 - Yavilla
 - Zydron
 - Xol
+- Nova
+- Bujia
+- Yavista
+- Sundance
+- Pujjoga
 - Butterfly (HP Pavilion Chromebook 14)
 - Cherry
 - Dojo
 - Tomato
 - Kingler
+- Kyogre
+- Ponyta
+- Squirtle
 - Steelix
 - Voltorb
-- Ponyta
-- Krabby
-- Tentacruel
-- Magikarp
 - Chinchou
+- Krabby
+- Magikarp
+- Skitty
+- Tentacruel
+- Veluza
 - Starmie
+- Wugtrio
 - Banon (Acer Chromebook 15 (CB3-532))
 - Celes (Samsung Chromebook 3)
 - Cyan (Acer Chromebook R11 (C738T))
@@ -305,8 +324,6 @@
 - Alderlake-P RVP
 - Alderlake-P RVP with Chrome EC
 - Alderlake-P RVP with Microchip EC
-- Alderlake-M RVP
-- Alderlake-M RVP with Chrome EC
 - Alderlake-N RVP
 - Alderlake-N RVP with Chrome EC
 - Raptorlake silicon with Alderlake-P RVP
@@ -365,6 +382,7 @@
 - ThinkPad X230
 - ThinkPad X230t
 - ThinkPad X230s
+- ThinkPad X230 eDP Mod (2K/FHD)
 - ThinkPad X60 / X60s / X60t
 
 ## MSI

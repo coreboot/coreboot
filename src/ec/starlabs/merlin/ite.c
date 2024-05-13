@@ -5,7 +5,6 @@
 #include <device/pnp.h>
 #include <ec/acpi/ec.h>
 #include <option.h>
-#include <pc80/keyboard.h>
 
 #include "ec.h"
 #include "ecdefs.h"

@@ -846,7 +846,7 @@ DefinitionBlock(
 	ACPI_DSDT_REV_2,
 	OEM_ID,
 	ACPI_TABLE_CREATOR,
-	0x20141018	/* OEM revision */
+	0x20141018
 )
 {
 	#include <acpi/dsdt_top.asl>

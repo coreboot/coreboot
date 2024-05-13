@@ -6,7 +6,7 @@ Please add to the release notes as changes are added:
 ```{toctree}
 :maxdepth: 1
 
-24.05 - May 2024 <coreboot-24.05-relnotes.md>
+24.08 - August 2024 <coreboot-24.08-relnotes.md>
 ```
 
 The [checklist] contains instructions to ensure that a release covers all
@@ -22,6 +22,7 @@ important is taken care of.
 ```{toctree}
 :maxdepth: 1
 
+24.05  - May 2024 <coreboot-24.05-relnotes.md>
 24.02  - February 2024 <coreboot-24.02-relnotes.md>
 4.22   - November 2023 <coreboot-4.22-relnotes.md>
 4.21   - August 2023 <coreboot-4.21-relnotes.md>

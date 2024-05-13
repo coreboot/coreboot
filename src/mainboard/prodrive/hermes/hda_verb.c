@@ -95,15 +95,15 @@ static u32 get_port_b_vref_cfg(uint8_t pink_rear_vref)
 	switch (pink_rear_vref) {
 	default:
 	case 0:
-		return 0x411110f0; /* Disabled (Hi-Z) */
+		return 0; /* Disabled (Hi-Z) */
 	case 1:
-		return 0x411111f0; /* 50% of LDO out */
+		return 1; /* 50% of LDO out */
 	case 2:
-		return 0x411114f0; /* 80% of LDO out */
+		return 4; /* 80% of LDO out */
 	case 3:
-		return 0x411115f0; /* 100% of LDO out */
+		return 5; /* 100% of LDO out */
 	case 4:
-		return 0x411112f0; /* Ground */
+		return 2; /* Ground */
 	}
 }
 
@@ -145,7 +145,7 @@ static void mainboard_r0x_configure_alc888(u8 *base, u32 viddid)
 		 * persist after codec resets, a custom Realtek driver (ab)uses NID 0x12
 		 * to restore port B Vref after resetting the codec.
 		 */
-		AZALIA_PIN_CFG(0, 0x12, port_b_vref_cfg),
+		AZALIA_PIN_CFG(0, 0x12, 0x411110f0 | port_b_vref_cfg << 8),
 		AZALIA_PIN_CFG(0, 0x19, front_mic_cfg),
 		AZALIA_PIN_CFG(0, 0x1b, front_panel_cfg),
 		0x0205000d, /* Pin 37 vrefo hidden register - used as port C vref */

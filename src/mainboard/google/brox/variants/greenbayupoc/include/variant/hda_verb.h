@@ -7,13 +7,13 @@
 
 const u32 cim_verb_data[] = {
 	/* coreboot specific header */
-	0x10ec0256,	// Codec Vendor / Device ID: Realtek ALC256
-	0x10ec12ac,	// Subsystem ID
+	0x10ec0236,	// Codec Vendor / Device ID: Realtek ALC236
+	0x103C8C60,	// Subsystem ID
 	0x00000013,	// Number of jacks (NID entries)
 
 	AZALIA_RESET(0x1),
 	/* NID 0x01, HDA Codec Subsystem ID Verb table */
-	AZALIA_SUBVENDOR(0, 0x10ec12ac),
+	AZALIA_SUBVENDOR(0, 0x103C8C60),
 
 	/* Pin Widget Verb Table */
 
@@ -30,41 +30,56 @@ const u32 cim_verb_data[] = {
 	/* Pin widget 0x18 - NPC */
 	AZALIA_PIN_CFG(0, 0x18, 0x411111F0),
 	/* Pin widget 0x19 - MIC2 (Port-F) */
-	AZALIA_PIN_CFG(0, 0x19, 0x04A11040),
+	AZALIA_PIN_CFG(0, 0x19, 0x03A11020),
 	/* Pin widget 0x1A - LINE1 (Port-C) */
 	AZALIA_PIN_CFG(0, 0x1a, 0x411111F0),
 	/* Pin widget 0x1B - NPC */
 	AZALIA_PIN_CFG(0, 0x1b, 0x411111F0),
 	/* Pin widget 0x1D - BEEP-IN */
-	AZALIA_PIN_CFG(0, 0x1d, 0x40610041),
+	AZALIA_PIN_CFG(0, 0x1d, 0x40600001),
 	/* Pin widget 0x1E - NPC */
 	AZALIA_PIN_CFG(0, 0x1e, 0x411111F0),
 	/* Pin widget 0x21 - HP1-OUT (Port-I) */
-	AZALIA_PIN_CFG(0, 0x21, 0x04211020),
+	AZALIA_PIN_CFG(0, 0x21, 0x03211040),
+
+	/*
+	 * ;Pin widget 0x19 - MIC2 (Port-F)
+	 */
+	0x01971C20,
+	0x01971D10,
+	0x01971EA1,
+	0x01971F03,
+	/*
+	 * Pin widget 0x21 - HP1-OUT (Port-I)
+	 */
+	0x02171C40,
+	0x02171D10,
+	0x02171E21,
+	0x02171F03,
 	/*
 	 * Widget node 0x20 - 1
 	 * Codec hidden reset and speaker power 2W/4ohm
-	 */
-	0x0205001A,
-	0x0204C003,
-	0x02050038,
-	0x02047901,
-	/*
-	 * Widget node 0x20 - 2
-	 * Class D power on Reset
 	 */
 	0x0205003C,
 	0x02040354,
 	0x0205003C,
 	0x02040314,
 	/*
+	 * Widget node 0x20 - 2
+	 * Class D power on Reset
+	 */
+	0x0205001B,
+	0x02040A4B,
+	0x0205000B,
+	0x02047778,
+	/*
 	 * Widget node 0x20 - 3
 	 * Disable AGC and set AGC limit to -1.5dB
 	 */
-	0x02050016,
-	0x02040C50,
-	0x02050012,
-	0x0204EBC1,
+	0x02050046,
+	0x02040004,
+	0x05750003,
+	0x057409A3,
 	/*
 	 * Widget node 0x20 - 4
 	 * Set AGC Post gain +1.5dB then Enable AGC

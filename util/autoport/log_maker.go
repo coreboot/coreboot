@@ -75,6 +75,31 @@ func PromptUser(prompt string, opts []string) (match string, err error) {
 	return
 }
 
+func AppendYesNo(yesFirst bool, yeah []string, nope []string) []string {
+	if yesFirst {
+		return append(yeah, nope...)
+	} else {
+		return append(nope, yeah...)
+	}
+}
+
+func PromptUserBool(prompt string, fallback bool) bool {
+	yeah := []string{"y", "yes"}
+	nope := []string{"n", "no"}
+
+	opt, err := PromptUser(prompt, AppendYesNo(fallback, yeah, nope))
+	if err != nil {
+		// Continue even if there is an error
+		return fallback
+	}
+	for _, val := range yeah {
+		if opt == val {
+			return true
+		}
+	}
+	return false
+}
+
 func MakeHDALogs(outDir string, cardName string) {
 	SysDir := "/sys/class/sound/" + cardName + "/"
 	files, _ := ioutil.ReadDir(SysDir)
@@ -119,16 +144,13 @@ func MakeLogs(outDir string) {
 	RunAndSave(outDir+"/dmidecode.log", "dmidecode")
 	RunAndSave(outDir+"/acpidump.log", "acpidump")
 
-	inteltoolArgs := "-a"
-	opt, err := PromptUser("WARNING: The following tool MAY cause your system to hang when it attempts "+
+	probeGFX := PromptUserBool("WARNING: The following tool MAY cause your system to hang when it attempts "+
 		"to probe for graphics registers.  Having the graphics registers will help create a better port. "+
 		"Should autoport probe these registers?",
-		[]string{"y", "yes", "n", "no"})
+		true)
 
-	// Continue even if there is an error
-
-	switch opt {
-	case "y", "yes":
+	inteltoolArgs := "-a"
+	if probeGFX {
 		inteltoolArgs += "f"
 	}
 

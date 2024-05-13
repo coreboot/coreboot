@@ -43,6 +43,7 @@ static struct device_operations dev_ops = {
 
 static const unsigned short pci_device_ids[] = {
 	PCI_DID_INTEL_MTL_TRACEHUB,
+	PCI_DID_INTEL_RPL_TRACEHUB,
 	0
 };
 

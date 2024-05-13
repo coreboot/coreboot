@@ -4789,6 +4789,7 @@
 
 /* Intel Trace Hub */
 #define PCI_DID_INTEL_MTL_TRACEHUB			0x7e24
+#define PCI_DID_INTEL_RPL_TRACEHUB			0xa76f
 
 /* Intel Ethernet Controller device Ids */
 #define PCI_DID_INTEL_EHL_GBE_HOST		0x4B32

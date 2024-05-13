@@ -277,34 +277,6 @@ func MatchDev(dev *DevTreeNode) {
 	}
 
 	for _, slot := range dev.PCISlots {
-		slotChip, ok := unmatchedPCIChips[slot.PCIAddr]
-
-		if !ok {
-			continue
-		}
-
-		if slot.additionalComment != "" && slotChip.Comment != "" {
-			slotChip.Comment = slot.additionalComment + " " + slotChip.Comment
-		} else {
-			slotChip.Comment = slot.additionalComment + slotChip.Comment
-		}
-
-		delete(unmatchedPCIChips, slot.PCIAddr)
-		MatchDev(&slotChip)
-		dev.Children = append(dev.Children, slotChip)
-	}
-
-	if dev.PCIController {
-		for slot, slotDev := range unmatchedPCIChips {
-			if slot.Bus == dev.ChildPCIBus {
-				delete(unmatchedPCIChips, slot)
-				MatchDev(&slotDev)
-				dev.Children = append(dev.Children, slotDev)
-			}
-		}
-	}
-
-	for _, slot := range dev.PCISlots {
 		slotDev, ok := unmatchedPCIDevices[slot.PCIAddr]
 		if !ok {
 			if slot.writeEmpty {
@@ -332,6 +304,34 @@ func MatchDev(dev *DevTreeNode) {
 		MatchDev(&slotDev)
 		dev.Children = append(dev.Children, slotDev)
 		delete(unmatchedPCIDevices, slot.PCIAddr)
+	}
+
+	for _, slot := range dev.PCISlots {
+		slotChip, ok := unmatchedPCIChips[slot.PCIAddr]
+
+		if !ok {
+			continue
+		}
+
+		if slot.additionalComment != "" && slotChip.Comment != "" {
+			slotChip.Comment = slot.additionalComment + " " + slotChip.Comment
+		} else {
+			slotChip.Comment = slot.additionalComment + slotChip.Comment
+		}
+
+		delete(unmatchedPCIChips, slot.PCIAddr)
+		MatchDev(&slotChip)
+		dev.Children = append(dev.Children, slotChip)
+	}
+
+	if dev.PCIController {
+		for slot, slotDev := range unmatchedPCIChips {
+			if slot.Bus == dev.ChildPCIBus {
+				delete(unmatchedPCIChips, slot)
+				MatchDev(&slotDev)
+				dev.Children = append(dev.Children, slotDev)
+			}
+		}
 	}
 
 	if dev.MissingParent != "" {

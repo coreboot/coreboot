@@ -6,8 +6,8 @@
 #define memset_pae(a, b, c, d, e) 0
 #define MEMSET_PAE_PGTL_ALIGN 0
 #define MEMSET_PAE_PGTL_SIZE 0
-#define MEMSET_PAE_PGTL_SIZE 0
 #define MEMSET_PAE_VMEM_ALIGN 0
+#define MEMSET_PAE_VMEM_SIZE 0
 #endif
 
 #include <memrange.h>
@@ -92,7 +92,7 @@ static void clear_memory(void *unused)
 					BM_MEM_TABLE);
 
 		vmem_addr = get_free_memory_range(&mem, MEMSET_PAE_VMEM_ALIGN,
-						MEMSET_PAE_PGTL_SIZE);
+						MEMSET_PAE_VMEM_SIZE);
 
 		printk(BIOS_SPEW, "%s: pgtbl at %p, virt memory at %p\n",
 		__func__, (void *)pgtbl, (void *)vmem_addr);

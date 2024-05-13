@@ -109,15 +109,19 @@ Refer to Rookie Guide, Lesson 2 for instructions on how to submit a patch.
 
 ## Manual fixes
 ### SPD
-In order to initialize the RAM memory, coreboot needs to know its timings, which vary between
+In order to initialize the RAM (memory), coreboot needs to know its timings, which vary between
 modules. Socketed RAM has a small EEPROM chip, which is accessible via SMBus and contains the
 timing data. This data is usually known as SPD. Unfortunately, the SMBus addresses may not
 correlate with the RAM slots and cannot always be detected automatically. The address map is
-encoded in function `mainboard_get_spd` in `romstage.c`. By default, autoport uses the most
-common map `0x50, 0x51, 0x52, 0x53` on everything except for Lenovo systems, which are known
-to use `0x50, 0x52, 0x51, 0x53`. To detect the correct memory map, the easiest way is to boot
-on the vendor firmware with just one module in channel 0, slot 0, and check the SMBus address
-the EEPROM has. Under Linux, you can use these commands to see what is on SMBus:
+usually in the devicetree, `register "spd_addresses"`. For mainboards with memory-down (where
+the RAM chips are soldered directly to the mainboard), there is no EEPROM to get SPD data from,
+so function `mb_get_spd_map` in `early_init.c` has to populate the SPD data from a file in CBFS.
+
+By default, autoport uses the most common map `0x50, 0x51, 0x52, 0x53` on everything except for
+Lenovo systems, which are known to use `0x50, 0x52, 0x51, 0x53`. To detect the correct memory
+map, the easiest way is to boot on the vendor firmware with just one module in channel 0, slot
+0, and check the SMBus address the EEPROM has. Under Linux, you can use these commands to see
+which devices appear on SMBus:
 
 	$ sudo modprobe i2c-dev
 	$ sudo modprobe i2c-i801
@@ -148,23 +152,20 @@ the EEPROM has. Under Linux, you can use these commands to see what is on SMBus:
 	60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 	70: -- -- -- -- -- -- -- --
 
+Note: if some devices appear as `UU`, it means a kernel module is loaded for this device, like
+`at24` or `ee1004`. You can use the `decode-dimms` command to get more information about SPDs.
+
 Make sure to replace the `9` on the last command with the bus number for SMBus on
 your system. Here, there is a module at address `0x50`. Since only one module was
 installed on the first slot of the first channel, we know the first position of
-the SPD array must be `0x50`. After testing all the slots, your `mainboard_get_spd`
+the SPD array must be `0x50`. After testing all the slots, your `spd_addresses`
 should look similar to this:
 
-	void mainboard_get_spd(spd_raw_data *spd) {
-		read_spd(&spd[0], 0x50);
-		read_spd(&spd[1], 0x51);
-		read_spd(&spd[2], 0x52);
-		read_spd(&spd[3], 0x53);
-	}
+	register "spd_addresses" = "{0x50,    0, 0x52,    0}" # 2-slot mainboard / laptop
+	register "spd_addresses" = "{0x53, 0x52, 0x51, 0x50}" # 4-slot BTX mainboard
 
-Note that there should be one line per memory slot on the mainboard.
-
-Note: slot labelling may be missing or unreliable. Use `inteltool` to see
-which slots have modules in them.
+Note: slot labelling may be missing or unreliable. Use `inteltool` to see which slots have
+modules in them.
 
 This procedure is ideal, if your RAM is socketed. If you have soldered RAM,
 remove any socketed memory modules and check if any EEPROM appears on SMBus.
@@ -212,12 +213,11 @@ should be something like this:
 	e0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 	f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 
-This is not a full-fledged SPD dump, as it only lists
-the currently-used speed configuration, and lacks info
-such as a serial number, vendor and model. Use `xxd`
-to create a binary file with this SPD data:
+This is not a full-fledged SPD dump, as it only lists the currently-used speed configuration,
+and lacks info such as a serial number, vendor and model. To create a SPD hex file, one has to
+trim the offset numbers from the leftmost column:
 
-	$ cat | xxd -r > spd.bin  <<EOF
+	$ cat | cut -d ' ' -f 2- > data.spd.hex
 	00: 92 11 0b 03 04 00 00 09 03 52 01 08 0a 00 80 00
 	10: 6e 78 6e 32 6e 11 18 81 20 08 3c 3c 00 f0 00 00
 	20: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
@@ -236,37 +236,25 @@ to create a binary file with this SPD data:
 	f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 	EOF (press Ctrl + D)
 
-Then, move the generated file into your mainboard's directory
-and hook it up to the build system by adding the following
-lines to `Makefile.mk`:
+Then, move the generated file into your mainboard's directory and hook it up to the build
+system. It is recommended to check what other mainboards with soldered memory do. The main
+switch to use SPD files is `select HAVE_SPD_IN_CBFS` in Kconfig.
 
-	cbfs-files-y += spd.bin
-	spd.bin-file := spd.bin
-	spd.bin-type := raw
+Now we need coreboot to use this SPD file. The following example shows a hybrid configuration,
+in which one module is soldered down and the other one is socketed:
 
-Now we need coreboot to use this SPD file. The following example
-shows a hybrid configuration, in which one module is soldered and
-the other one is socketed:
-
-	void mainboard_get_spd(spd_raw_data *spd)
+	void mb_get_spd_map(struct spd_info *spdi)
 	{
-		void *spd_file;
-		size_t spd_file_len = 0;
-		/* C0S0 is a soldered RAM with no real SPD. Use stored SPD. */
-		spd_file = cbfs_boot_map_with_leak("spd.bin", CBFS_TYPE_RAW,
-						 &spd_file_len);
-		if (spd_file && spd_file_len >= 128)
-			memcpy(&spd[0], spd_file, 128);
-
-		/* C1S0 is a physical slot. */
-		read_spd(&spd[2], 0x52);
+		spdi->spd_index = 0;
+		/* C0S0 is soldered RAM, use stored SPD */
+		spdi->addresses[0] = SPD_MEMORY_DOWN;
+		/* C1S0 is a physical slot, use SPD address on SMBus */
+		spdi->addresses[2] = 0x52;
 	}
 
-If several slots are soldered there are two ways to handle them:
-
-* If all use the same SPD data, use the same file for all the slots. Do
-  not forget to copy the data on all the array elements that need it.
-* If they use different data, use several files.
+If several slots are soldered, the system only accounts for a single set of SPD data. So all
+slots would need to use the same SPD data, if possible. If not possible, the API needs to be
+adapted accordingly, which is significantly more involved.
 
 If memory initialization is not working, in particular write training (timB)
 on DIMM's second rank fails, try enabling rank 1 mirroring, which can't be

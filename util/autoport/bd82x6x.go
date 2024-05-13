@@ -297,7 +297,6 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 	sb.WriteString(`
 #include <bootblock_common.h>
 #include <device/pci_ops.h>
-#include <northbridge/intel/sandybridge/raminit_native.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 
 `)
@@ -344,8 +343,6 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 	}
 	sb.WriteString("};\n")
 
-	guessedMap := GuessSPDMap(ctx)
-
 	sb.WriteString(`
 void bootblock_mainboard_early_init(void)
 {
@@ -354,15 +351,6 @@ void bootblock_mainboard_early_init(void)
 
 	RestorePCI16Simple(sb, addr, 0x80)
 
-	sb.WriteString(`}
-
-/* FIXME: Put proper SPD map here. */
-void mainboard_get_spd(spd_raw_data *spd, bool id_only)
-{
-`)
-	for i, spd := range guessedMap {
-		fmt.Fprintf(sb, "\tread_spd(&spd[%d], 0x%02x, id_only);\n", i, spd)
-	}
 	sb.WriteString("}\n")
 
 	gnvs := Create(ctx, "acpi_tables.c")

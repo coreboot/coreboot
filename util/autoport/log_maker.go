@@ -18,14 +18,22 @@ type LogMakingProgram struct {
 	args []string
 }
 
-func (prog LogMakingProgram) TryRunAndSave(output string, prefix string) error {
+func ExecCommand(sudo bool, name string, arg []string) *exec.Cmd {
+	if sudo {
+		return exec.Command("sudo", append([]string{name}, arg...)...)
+	} else {
+		return exec.Command(name, arg...)
+	}
+}
+
+func (prog LogMakingProgram) TryRunAndSave(output string, sudo bool, prefix string) error {
 	f, err := os.Create(output)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer f.Close()
 
-	cmd := exec.Command(prefix+prog.name, prog.args...)
+	cmd := ExecCommand(sudo, prefix+prog.name, prog.args)
 	cmd.Stdout = f
 	cmd.Stderr = f
 
@@ -36,7 +44,7 @@ func (prog LogMakingProgram) TryRunAndSave(output string, prefix string) error {
 	return cmd.Wait()
 }
 
-func (prog LogMakingProgram) RunAndSave(outDir string) {
+func (prog LogMakingProgram) RunAndSave(outDir string, sudo bool) {
 	output := fmt.Sprintf("%s/%s.log", outDir, prog.name)
 	cmdline := strings.Join(append([]string{prog.name}, prog.args...), " ")
 
@@ -44,7 +52,7 @@ func (prog LogMakingProgram) RunAndSave(outDir string) {
 
 	var sb strings.Builder
 	for _, prefix := range prog.prefixes {
-		err := prog.TryRunAndSave(output, prefix)
+		err := prog.TryRunAndSave(output, sudo, prefix)
 		if err == nil {
 			return
 		}
@@ -157,6 +165,12 @@ func MakeHDALogs(outDir string, cardName string) {
 func MakeLogs(outDir string) {
 	os.MkdirAll(outDir, 0700)
 
+	sudo := PromptUserBool("Should autoport use sudo to run the commands to make the logs? "+
+		"This is recommended over running autoport as root, since the generated files "+
+		"won't be owned by root. If running as root already because sudo isn't available, "+
+		"choose 'no'. Otherwise, run autoport as a regular (non-root) user and choose 'yes'.",
+		true)
+
 	probeGFX := PromptUserBool("WARNING: Running inteltool MAY cause your system to hang when it attempts "+
 		"to probe for graphics registers.  Having the graphics registers will help create a better port. "+
 		"Should autoport probe these registers?",
@@ -202,7 +216,7 @@ func MakeLogs(outDir string) {
 
 	fmt.Println("Making logs...")
 	for _, prog := range programs {
-		prog.RunAndSave(outDir)
+		prog.RunAndSave(outDir, sudo)
 	}
 
 	SysSound := "/sys/class/sound/"

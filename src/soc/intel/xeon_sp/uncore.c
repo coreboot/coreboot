@@ -51,6 +51,20 @@ enum {
 	NUM_MAP_ENTRIES
 };
 
+size_t vtd_probe_bar_size(struct device *dev)
+{
+	uint32_t id = pci_read_config32(dev, PCI_VENDOR_ID);
+	assert(id == (PCI_VID_INTEL | (MMAP_VTD_CFG_REG_DEVID << 16)));
+
+	uint32_t val = pci_read_config32(dev, VTD_BAR_CSR);
+	pci_write_config32(dev, VTD_BAR_CSR, (uint32_t)(-4 * KiB));
+	size_t size = (~(pci_read_config32(dev, VTD_BAR_CSR) & ((uint32_t)(-4 * KiB)))) + 1;
+	assert(size != 0);
+	pci_write_config32(dev, VTD_BAR_CSR, val);
+
+	return size;
+}
+
 static struct map_entry memory_map[NUM_MAP_ENTRIES] = {
 		[TOHM_REG] = MAP_ENTRY_LIMIT_64(VTD_TOHM_CSR, 26, "TOHM"),
 		[MMIOL_REG] = MAP_ENTRY_BASE_32(VTD_MMIOL_CSR, "MMIOL"),
@@ -211,7 +225,8 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 	mc_report_map_entries(dev, &mc_values[0]);
 
 	if (mc_values[VTDBAR_REG]) {
-		res = mmio_range(dev, VTD_BAR_CSR, mc_values[VTDBAR_REG], 8 * KiB);
+		res = mmio_range(dev, VTD_BAR_CSR, mc_values[VTDBAR_REG],
+				vtd_probe_bar_size(dev));
 		LOG_RESOURCE("vtd_bar", dev, res);
 	}
 

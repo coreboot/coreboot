@@ -90,4 +90,6 @@ bool is_cxl_domain(const struct device *dev);
 
 void unlock_pam_regions(void);
 
+size_t vtd_probe_bar_size(struct device *dev);
+
 #endif /* _CHIP_COMMON_H_ */

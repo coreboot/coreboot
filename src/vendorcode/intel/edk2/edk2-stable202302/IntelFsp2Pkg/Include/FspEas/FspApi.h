@@ -155,8 +155,6 @@ typedef struct {
   UINT8                   Reserved1[16];
 } FSPT_ARCH2_UPD;
 
-#if CONFIG(PLATFORM_USES_FSP2_X86_32)
-
 ///
 /// FSPM_ARCH_UPD Configuration.
 ///
@@ -203,8 +201,6 @@ typedef struct {
   UINT32                      FspEventHandler;
   UINT8                       Reserved1[4];
 } FSPM_ARCH_UPD;
-
-#endif
 
 ///
 /// FSPM_ARCH2_UPD Configuration for FSP 2.4 and above.

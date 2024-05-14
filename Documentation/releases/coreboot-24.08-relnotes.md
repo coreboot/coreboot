@@ -40,6 +40,11 @@ Changes to external resources
 
 ### Toolchain updates
 
+* Upgrade ACPICA from 20230628 to 20240321
+* Upgrade CMake from 3.28.3 to 3.29.3
+* Upgrade nasm from 2.16.01 to 2.16.03
+* Upgrade LLVM from 17.0.6 to 18.1.5
+* Upgrade GCC from 13.2 to 14.1.0
 
 ### Git submodule pointers
 

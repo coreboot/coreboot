@@ -14,7 +14,7 @@ tpm_result_t tlcl_cr50_enable_nvcommits(void)
 	uint16_t sub_command = TPM2_CR50_SUB_CMD_NVMEM_ENABLE_COMMITS;
 	struct tpm2_response *response;
 
-	printk(BIOS_INFO, "Enabling cr50 nvmem commits\n");
+	printk(BIOS_INFO, "Enabling GSC nvmem commits\n");
 
 	response = tlcl2_process_command(TPM2_CR50_VENDOR_COMMAND, &sub_command);
 
@@ -37,7 +37,7 @@ tpm_result_t tlcl_cr50_enable_update(uint16_t timeout_ms,
 		TPM2_CR50_SUB_CMD_TURN_UPDATE_ON, timeout_ms
 	};
 
-	printk(BIOS_INFO, "Checking cr50 for pending updates\n");
+	printk(BIOS_INFO, "Checking GSC for pending updates\n");
 
 	response = tlcl2_process_command(TPM2_CR50_VENDOR_COMMAND, command_body);
 
@@ -53,7 +53,7 @@ tpm_result_t tlcl_cr50_get_recovery_button(uint8_t *recovery_button_state)
 	struct tpm2_response *response;
 	uint16_t sub_command = TPM2_CR50_SUB_CMD_GET_REC_BTN;
 
-	printk(BIOS_INFO, "Checking cr50 for recovery request\n");
+	printk(BIOS_INFO, "Checking GSC for recovery request\n");
 
 	response = tlcl2_process_command(TPM2_CR50_VENDOR_COMMAND, &sub_command);
 
@@ -70,7 +70,7 @@ tpm_result_t tlcl_cr50_get_tpm_mode(uint8_t *tpm_mode)
 	uint16_t mode_command = TPM2_CR50_SUB_CMD_TPM_MODE;
 	*tpm_mode = TPM_MODE_INVALID;
 
-	printk(BIOS_INFO, "Reading cr50 TPM mode\n");
+	printk(BIOS_INFO, "Reading GSC TPM mode\n");
 
 	response = tlcl2_process_command(TPM2_CR50_VENDOR_COMMAND, &mode_command);
 
@@ -110,7 +110,7 @@ tpm_result_t tlcl_cr50_get_boot_mode(uint8_t *boot_mode)
 	struct tpm2_response *response;
 	uint16_t mode_command = TPM2_CR50_SUB_CMD_GET_BOOT_MODE;
 
-	printk(BIOS_DEBUG, "Reading cr50 boot mode\n");
+	printk(BIOS_DEBUG, "Reading GSC boot mode\n");
 
 	response = tlcl2_process_command(TPM2_CR50_VENDOR_COMMAND, &mode_command);
 
@@ -140,7 +140,7 @@ tpm_result_t tlcl_cr50_immediate_reset(uint16_t timeout_ms)
 	/*
 	 * Issue an immediate reset to the Cr50.
 	 */
-	printk(BIOS_INFO, "Issuing cr50 reset\n");
+	printk(BIOS_INFO, "Issuing GSC reset\n");
 	response = tlcl2_process_command(TPM2_CR50_VENDOR_COMMAND, &reset_command_body);
 
 	if (!response)

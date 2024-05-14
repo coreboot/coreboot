@@ -498,7 +498,7 @@ tpm_result_t tpm_vendor_init(struct tpm_chip *chip, unsigned int bus, uint32_t d
 	if (rc)
 		return rc;
 
-	printk(BIOS_DEBUG, "cr50 TPM 2.0 (i2c %u:0x%02x id %#x)\n",
+	printk(BIOS_DEBUG, "GSC TPM 2.0 (i2c %u:0x%02x id %#x)\n",
 	       bus, dev_addr, did_vid >> 16);
 
 	if (tpm_first_access_this_boot()) {

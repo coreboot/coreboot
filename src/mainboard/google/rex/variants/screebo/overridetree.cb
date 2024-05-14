@@ -30,10 +30,6 @@ fw_config
 		option WIFI_SAR_ID_0		0
 		option WIFI_SAR_ID_1		1
 	end
-	field VPU 22
-		option VPU_DIS			0
-		option VPU_EN			1
-	end
 end
 
 chip soc/intel/meteorlake
@@ -601,9 +597,6 @@ chip soc/intel/meteorlake
 					probe AUDIO ALC1019_ALC5682I_I2S
 				end
 			end
-		end
-		device ref vpu on
-			probe VPU VPU_EN
 		end
 	end
 end

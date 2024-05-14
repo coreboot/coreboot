@@ -34,10 +34,6 @@ fw_config
 		option DISABLE			0
 		option ENABLE			1
 	end
-	field VPU 22
-		option VPU_DIS			0
-		option VPU_EN			1
-	end
 end
 
 chip soc/intel/meteorlake
@@ -585,8 +581,5 @@ chip soc/intel/meteorlake
 			end
 		end
 		device ref hda on end
-		device ref vpu on
-			probe VPU VPU_EN
-		end
 	end
 end

@@ -52,10 +52,6 @@ fw_config
 		option ISH_DISABLE		0
 		option ISH_ENABLE		1
 	end
-	field VPU 22
-		option VPU_DIS			0
-		option VPU_EN			1
-	end
 end
 
 chip soc/intel/meteorlake
@@ -323,9 +319,6 @@ chip soc/intel/meteorlake
 		end
 		device ref tbt_pcie_rp0 on end
 		device ref tbt_pcie_rp2 on end
-		device ref vpu on
-			probe VPU VPU_EN
-		end
 		device ref tcss_xhci on
 			chip drivers/usb/acpi
 				device ref tcss_root_hub on

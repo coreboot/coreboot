@@ -70,6 +70,40 @@ chip soc/intel/meteorlake
 	device domain 0 on
 		device ref dtt on
 			chip drivers/intel/dptf
+				## sensor information
+				register "options.tsr[0].desc" = ""DDR_SOC""
+				register "options.tsr[1].desc" = ""Ambient""
+				register "options.tsr[2].desc" = ""IMVP_SOC""
+				register "options.tsr[3].desc" = ""NVME""
+
+				## Passive Policy
+				register "policies.passive" = "{
+						[0] = DPTF_PASSIVE(CPU, CPU, 65, 1000),
+				}"
+
+				## Critical Policy
+				register "policies.critical" = "{
+						[0] = DPTF_CRITICAL(CPU, 105, SHUTDOWN),
+				}"
+
+				## Power Limits Control
+				register "controls.power_limits" = "{
+						.pl1 = {
+							.min_power = 28000,
+							.max_power = 28000,
+							.time_window_min = 28 * MSECS_PER_SEC,
+							.time_window_max = 32 * MSECS_PER_SEC,
+							.granularity = 200,
+						},
+						.pl2 = {
+							.min_power = 64000,
+							.max_power = 64000,
+							.time_window_min = 28 * MSECS_PER_SEC,
+							.time_window_max = 32 * MSECS_PER_SEC,
+							.granularity = 1000,
+						}
+				}"
+
 				device generic 0 alias dptf_policy on end
 			end
 		end

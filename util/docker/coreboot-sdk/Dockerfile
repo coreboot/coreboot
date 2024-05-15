@@ -2,7 +2,7 @@
 #
 #   make coreboot-sdk
 
-FROM debian:sid AS coreboot-sdk
+FROM debian:stable AS coreboot-sdk
 
 # The coreboot Commit-ID to build the toolchain from.
 ARG DOCKER_COMMIT
@@ -14,7 +14,7 @@ ARG CROSSGCC_PARAM
 RUN \
 	useradd -p locked -m coreboot && \
 	apt-get -qq update && \
-	apt-get -qqy install --no-install-recommends \
+	apt-get -y install --no-install-recommends \
 		bash-completion \
 		bc \
 		bison \
@@ -34,7 +34,7 @@ RUN \
 		gawk \
 		gcc \
 		git \
-		gnat-13 \
+		gnat \
 		golang \
 		graphicsmagick-imagemagick-compat \
 		graphviz \

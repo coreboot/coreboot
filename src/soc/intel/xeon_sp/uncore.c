@@ -284,21 +284,25 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 				   mc_values[TOLM_REG]);
 	LOG_RESOURCE("mmio_tolm", dev, res);
 
-	if (CONFIG(SOC_INTEL_HAS_CXL)) {
-		/* 4GiB -> CXL Memory */
-		uint32_t gi_mem_size;
-		gi_mem_size = get_generic_initiator_mem_size(); /* unit: 64MB */
-		/*
-		 * Memory layout when there is CXL HDM (Host-managed Device Memory):
-		 * --------------  <- TOHM
-		 * CXL memory regions (pds global variable records the base/size of them)
-		 * Processor attached high memory
-		 * --------------  <- 0x100000000 (4GB)
-		 */
-		res = upper_ram_end(dev, index++,
-			mc_values[TOHM_REG] - ((uint64_t)gi_mem_size << 26) + 1);
-		LOG_RESOURCE("high_ram", dev, res);
+	/* Add high RAM */
+	const struct SystemMemoryMapHob *mm = get_system_memory_map();
 
+	for (int i = 0; i < mm->numberEntries; i++) {
+		const struct SystemMemoryMapElement *e = &mm->Element[i];
+		uint64_t addr = ((uint64_t)e->BaseAddress << MEM_ADDR_64MB_SHIFT_BITS);
+		uint64_t size = ((uint64_t)e->ElementSize << MEM_ADDR_64MB_SHIFT_BITS);
+		if (addr < 4ULL * GiB)
+			continue;
+		if (!is_memtype_processor_attached(e->Type))
+			continue;
+		if (is_memtype_reserved(e->Type))
+			continue;
+
+		res = ram_range(dev, index++, addr, size);
+		LOG_RESOURCE("high_ram", dev, res);
+	}
+
+	if (CONFIG(SOC_INTEL_HAS_CXL)) {
 		/* CXL Memory */
 		uint8_t i;
 		for (i = 0; i < pds.num_pds; i++) {
@@ -320,10 +324,6 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 			else
 				LOG_RESOURCE("CXL_memory", dev, res);
 		}
-	} else {
-		/* 4GiB -> TOHM */
-		res = upper_ram_end(dev, index++, mc_values[TOHM_REG] + 1);
-		LOG_RESOURCE("high_ram", dev, res);
 	}
 
 	/* add MMIO CFG resource */

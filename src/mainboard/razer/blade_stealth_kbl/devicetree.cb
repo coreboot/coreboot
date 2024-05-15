@@ -152,7 +152,18 @@ chip soc/intel/skylake
 
 	device cpu_cluster 0 on end
 	device domain 0 on
-		device ref igpu		on  end
+		device ref igpu		on
+			register "gfx" = "GMA_STATIC_DISPLAYS(0)"
+
+			register "panel_cfg" = "{
+				.up_delay_ms		= 200,
+				.down_delay_ms		= 50,
+				.cycle_delay_ms		= 500,
+				.backlight_on_delay_ms	= 1,
+				.backlight_off_delay_ms	= 200,
+				.backlight_pwm_hz	= 200,
+			}"
+		end
 		device ref sa_thermal	on  end
 		device ref south_xhci	on  end
 		device ref thermal	on  end

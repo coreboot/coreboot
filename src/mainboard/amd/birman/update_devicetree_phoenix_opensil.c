@@ -2,7 +2,7 @@
 
 #include <device/device.h>
 #include <soc/soc_util.h>
-#include <vendorcode/amd/opensil/stub/mpio/chip.h>
+#include <vendorcode/amd/opensil/chip/mpio/chip.h>
 #include "update_devicetree.h"
 
 static void mainboard_update_mpio(void)

@@ -30,7 +30,7 @@ ifneq ($(CONFIG_LP_COMPILER_LLVM_CLANG),y)
 CFLAGS += -mpreferred-stack-boundary=2
 endif
 
-head.o-y += head.S
+libc-y += head.S
 libc-y += main.c sysinfo.c
 libc-y += timer.c coreboot.c util.S
 libc-y += exec.S virtual.c

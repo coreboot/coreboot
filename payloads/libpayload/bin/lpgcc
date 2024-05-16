@@ -201,14 +201,6 @@ if [ $DOLINK -eq 0 ]; then
     $DEFAULT_CC $CMDLINE $_CFLAGS
 else
     _LIBGCC=`$DEFAULT_CC $_ARCHEXTRA -print-libgcc-file-name`
-    if [ -f $_ARCHLIBDIR/head.o ]; then
-	    HEAD_O=$_ARCHLIBDIR/head.o
-    elif [ -f $_OBJ/head.o ]; then
-	    HEAD_O=$_OBJ/head.o
-    else
-	    echo "Could not find head.o"
-	    exit 1
-    fi
 
     if [ "$CONFIG_LP_ARM64_A53_ERRATUM_843419" = y ] &&
        grep -q fix-cortex-a53-843419 $_XCOMPILE; then
@@ -220,13 +212,8 @@ else
     _LDFLAGS="$_LDFLAGS -Wl,--defsym=CONFIG_LP_STACK_SIZE=$CONFIG_LP_STACK_SIZE"
 
     if [ $DEBUGME -eq 1 ]; then
-	echo "$DEFAULT_CC $_LDFLAGS $HEAD_O $CMDLINE $_CFLAGS -lpayload $_LIBGCC"
+	echo "$DEFAULT_CC $_LDFLAGS $CMDLINE $_CFLAGS -lpayload $_LIBGCC"
     fi
 
-    # Note: $_ARCHLIBDIR/head.o must be the first object being linked, because it
-    # contains a Multiboot header.  The Multiboot standard requires this
-    # header to be placed below 0x2000 in the resulting image.  See:
-    # http://www.gnu.org/software/grub/manual/multiboot/html_node/OS-image-format.html
-
-    $DEFAULT_CC $_LDFLAGS $HEAD_O $CMDLINE $_CFLAGS -lpayload -xnone $_LIBGCC
+    $DEFAULT_CC $_LDFLAGS $CMDLINE $_CFLAGS -lpayload -xnone $_LIBGCC
 fi

@@ -29,7 +29,7 @@
 
 	.code32
 	.global _entry
-	.text
+	.section .text._entry
 	.align 4
 
 /*

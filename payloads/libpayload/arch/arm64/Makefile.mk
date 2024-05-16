@@ -29,7 +29,7 @@
 CFLAGS += -march=armv8-a
 arm64_asm_flags =
 
-head.o-y += head.S
+libc-y += head.S
 libc-y += main.c sysinfo.c
 libc-y += timer.c coreboot.c util.S
 libc-y += virtual.c
@@ -42,5 +42,4 @@ libc-y += mmu.c
 libgdb-y += gdb.c
 
 # Add other classes here when you put assembly files into them!
- head.o-S-ccopts += $(arm64_asm_flags)
- libc-S-ccopts += $(arm64_asm_flags)
+libc-S-ccopts += $(arm64_asm_flags)

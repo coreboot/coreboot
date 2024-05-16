@@ -12,6 +12,7 @@
 #include <cbmem.h>
 #include <cbfs.h>
 #include <commonlib/bsd/ipchksum.h>
+#include <cpu/intel/model_206ax/model_206ax.h>
 #include <pc80/mc146818rtc.h>
 #include <device/pci_def.h>
 #include <lib.h>
@@ -242,36 +243,18 @@ struct mrc_var_data {
 	u32 reserved[4];
 } __packed;
 
-static void northbridge_fill_pei_data(struct pei_data *pei_data)
+static bool do_pcie_init(void)
 {
-	pei_data->mchbar       = CONFIG_FIXED_MCHBAR_MMIO_BASE;
-	pei_data->dmibar       = CONFIG_FIXED_DMIBAR_MMIO_BASE;
-	pei_data->epbar        = CONFIG_FIXED_EPBAR_MMIO_BASE;
-	pei_data->pciexbar     = CONFIG_ECAM_MMCONF_BASE_ADDRESS;
-	pei_data->hpet_address = HPET_BASE_ADDRESS;
-	pei_data->thermalbase  = 0xfed08000;
-	pei_data->system_type  = !(get_platform_type() == PLATFORM_MOBILE);
-	pei_data->tseg_size    = CONFIG_SMM_TSEG_SIZE;
-
-	if ((cpu_get_cpuid() & 0xffff0) == 0x306a0) {
-		const struct device *dev = pcidev_on_root(1, 0);
-		pei_data->pcie_init = dev && dev->enabled;
+	if (IS_IVY_CPU(cpu_get_cpuid())) {
+		return is_devfn_enabled(PCI_DEVFN(1, 0));
 	} else {
-		pei_data->pcie_init = 0;
+		return false;
 	}
 }
 
 static void southbridge_fill_pei_data(struct pei_data *pei_data)
 {
-	const struct device *dev = pcidev_on_root(0x19, 0);
-
-	pei_data->smbusbar   = CONFIG_FIXED_SMBUS_IO_BASE;
-	pei_data->wdbbar     = 0x04000000;
-	pei_data->wdbsize    = 0x1000;
-	pei_data->rcba       = (uintptr_t)DEFAULT_RCBA;
-	pei_data->pmbase     = DEFAULT_PMBASE;
-	pei_data->gpiobase   = DEFAULT_GPIOBASE;
-	pei_data->gbe_enable = dev && dev->enabled;
+	/* This will move to southbridge later. */
 }
 
 static void devicetree_fill_pei_data(struct pei_data *pei_data)
@@ -308,19 +291,8 @@ static void devicetree_fill_pei_data(struct pei_data *pei_data)
 	}
 	memcpy(pei_data->ts_addresses,  cfg->ts_addresses,  sizeof(pei_data->ts_addresses));
 
-	pei_data->ec_present     = cfg->ec_present;
-	pei_data->ddr3lv_support = cfg->ddr3lv_support;
-
-	pei_data->nmode = cfg->nmode;
-	pei_data->ddr_refresh_rate_config = cfg->ddr_refresh_rate_config;
-
 	memcpy(pei_data->usb_port_config, cfg->usb_port_config,
 	       sizeof(pei_data->usb_port_config));
-
-	pei_data->usb3.mode                = cfg->usb3.mode;
-	pei_data->usb3.hs_port_switch_mask = cfg->usb3.hs_port_switch_mask;
-	pei_data->usb3.preboot_support     = cfg->usb3.preboot_support;
-	pei_data->usb3.xhci_streams        = cfg->usb3.xhci_streams;
 }
 
 static void spd_fill_pei_data(struct pei_data *pei_data)
@@ -377,17 +349,42 @@ static void setup_sdram_meminfo(struct pei_data *pei_data);
 
 void perform_raminit(int s3resume)
 {
-	struct pei_data pei_data;
+	const struct northbridge_intel_sandybridge_config *cfg = config_of_soc();
+	struct pei_data pei_data = {
+		.pei_version = PEI_VERSION,
+		.mchbar = CONFIG_FIXED_MCHBAR_MMIO_BASE,
+		.dmibar = CONFIG_FIXED_DMIBAR_MMIO_BASE,
+		.epbar = CONFIG_FIXED_EPBAR_MMIO_BASE,
+		.pciexbar = CONFIG_ECAM_MMCONF_BASE_ADDRESS,
+		.smbusbar = CONFIG_FIXED_SMBUS_IO_BASE,
+		.wdbbar = 0x4000000,
+		.wdbsize = 0x1000,
+		.hpet_address = HPET_BASE_ADDRESS,
+		.rcba = (uintptr_t)DEFAULT_RCBA,
+		.pmbase = DEFAULT_PMBASE,
+		.gpiobase = DEFAULT_GPIOBASE,
+		.thermalbase = 0xfed08000,
+		.tseg_size = CONFIG_SMM_TSEG_SIZE,
+		.system_type = !(get_platform_type() == PLATFORM_MOBILE),
+		.pcie_init = do_pcie_init(),
+		.gbe_enable = is_devfn_enabled(PCI_DEVFN(0x19, 0)),
+		.boot_mode = s3resume ? BOOT_PATH_RESUME : BOOT_PATH_NORMAL,
+		.ec_present     = cfg->ec_present,
+		.ddr3lv_support = cfg->ddr3lv_support,
+		.nmode          = cfg->nmode,
+		.ddr_refresh_rate_config  = cfg->ddr_refresh_rate_config,
+		.usb3.mode                = cfg->usb3.mode,
+		.usb3.hs_port_switch_mask = cfg->usb3.hs_port_switch_mask,
+		.usb3.preboot_support     = cfg->usb3.preboot_support,
+		.usb3.xhci_streams        = cfg->usb3.xhci_streams,
+	};
+
 	struct mrc_var_data *mrc_var;
 
 	/* Prepare USB controller early in S3 resume */
 	if (s3resume)
 		enable_usb_bar();
 
-	memset(&pei_data, 0, sizeof(pei_data));
-	pei_data.pei_version = PEI_VERSION;
-
-	northbridge_fill_pei_data(&pei_data);
 	southbridge_fill_pei_data(&pei_data);
 	devicetree_fill_pei_data(&pei_data);
 	if (CONFIG(HAVE_SPD_IN_CBFS))
@@ -407,7 +404,6 @@ void perform_raminit(int s3resume)
 
 	disable_p2p();
 
-	pei_data.boot_mode = s3resume ? 2 : 0;
 	timestamp_add_now(TS_INITRAM_START);
 	sdram_initialize(&pei_data);
 	timestamp_add_now(TS_INITRAM_END);

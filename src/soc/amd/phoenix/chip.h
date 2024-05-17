@@ -107,10 +107,10 @@ struct soc_amd_phoenix_config {
 		DXIO_PSPP_POWERSAVE,
 	} pspp_policy;
 
-#if CONFIG(PLATFORM_USES_FSP2_0)
 	uint8_t usb_phy_custom;
 	struct usb_phy_config usb_phy;
-#else
+
+#if !CONFIG(PLATFORM_USES_FSP2_0)
 	struct ddi_descriptor ddi[DDI_DESCRIPTOR_COUNT];
 #endif
 };

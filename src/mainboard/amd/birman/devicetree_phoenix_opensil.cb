@@ -41,6 +41,32 @@ chip soc/amd/phoenix
 
 	register "pspp_policy" = "DXIO_PSPP_DISABLED" # TODO: reenable when PSPP works
 
+	register "ddi[0]" = "{
+		.connector_type = DDI_EDP,
+		.aux_index = 0,
+		.hdp_index = 0,
+	}"
+	register "ddi[1]" = "{
+		.connector_type = DDI_HDMI,
+		.aux_index = 1,
+		.hdp_index = 1,
+	}"
+	register "ddi[2]" = "{
+		.connector_type = DDI_DP_W_TYPEC,
+		.aux_index = 2,
+		.hdp_index = 2,
+	}"
+	register "ddi[3]" = "{
+		.connector_type = DDI_DP_W_TYPEC,
+		.aux_index = 3,
+		.hdp_index = 3,
+	}"
+	register "ddi[4]" = "{
+		.connector_type = DDI_DP_W_TYPEC,
+		.aux_index = 4,
+		.hdp_index = 4,
+	}"
+
 	device domain 0 on
 		device ref iommu on end
 		chip vendorcode/amd/opensil/chip/mpio

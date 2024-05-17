@@ -34,7 +34,7 @@ static u32 disc_tab_addr;
 
 static u64 get_disc_tab_header(void)
 {
-	return read64((void *)disc_tab_addr);
+	return read64((void *)(uintptr_t)disc_tab_addr);
 }
 
 /* Get the SRAM BAR. */
@@ -338,7 +338,7 @@ static bool cpu_cl_gen_discovery_table(void)
 
 	disc_tab_addr = bar_addr + get_disc_table_offset();
 
-	u32 dw0 = read32((u32 *)disc_tab_addr);
+	u32 dw0 = read32((u32 *)(uintptr_t)disc_tab_addr);
 	if (!is_crashlog_data_valid(dw0))
 		return false;
 
@@ -351,7 +351,7 @@ static bool cpu_cl_gen_discovery_table(void)
 	for (int i = 0; i < cpu_cl_disc_tab.header.fields.count; i++) {
 		cur_offset = 8 + 24 * i;
 
-		dw0 = read32((u32 *)disc_tab_addr + cur_offset);
+		dw0 = read32((u32 *)(uintptr_t)disc_tab_addr + cur_offset);
 		if (!is_crashlog_data_valid(dw0))
 			continue;
 
@@ -361,7 +361,7 @@ static bool cpu_cl_gen_discovery_table(void)
 			break;
 		}
 
-		cpu_cl_disc_tab.buffers[i].data = read64((void *)(disc_tab_addr + cur_offset));
+		cpu_cl_disc_tab.buffers[i].data = read64((void *)(uintptr_t)(disc_tab_addr + cur_offset));
 		printk(BIOS_DEBUG, "cpu_crashlog_discovery_table buffer: 0x%x size: "
 			"0x%x offset: 0x%x\n", i,  cpu_cl_disc_tab.buffers[i].fields.size,
 			cpu_cl_disc_tab.buffers[i].fields.offset);
@@ -450,7 +450,7 @@ void cpu_cl_rearm(void)
 	cl_punit_control_interface_t punit_ctrl_intfc;
 	memset(&punit_ctrl_intfc, 0, sizeof(cl_punit_control_interface_t));
 	punit_ctrl_intfc.fields.set_re_arm = 1;
-	write32((u32 *)(ctrl_sts_intfc_addr), punit_ctrl_intfc.data);
+	write32((u32 *)(uintptr_t)(ctrl_sts_intfc_addr), punit_ctrl_intfc.data);
 
 	if (!wait_and_check(CRASHLOG_RE_ARM_STATUS_MASK))
 		printk(BIOS_ERR, "CPU crashlog re_arm not asserted\n");
@@ -480,7 +480,7 @@ void cpu_cl_cleanup(void)
 	cl_punit_control_interface_t punit_ctrl_intfc;
 	memset(&punit_ctrl_intfc, 0, sizeof(cl_punit_control_interface_t));
 	punit_ctrl_intfc.fields.set_storage_off = 1;
-	write32((u32 *)(ctrl_sts_intfc_addr), punit_ctrl_intfc.data);
+	write32((u32 *)(uintptr_t)(ctrl_sts_intfc_addr), punit_ctrl_intfc.data);
 
 	if (!wait_and_check(CRASHLOG_PUNIT_STORAGE_OFF_MASK))
 		printk(BIOS_ERR, "CPU crashlog storage_off not asserted\n");

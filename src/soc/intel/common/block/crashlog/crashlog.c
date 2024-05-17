@@ -112,7 +112,7 @@ int cpu_cl_poll_mailbox_ready(u32 cl_mailbox_addr)
 	u16 stall_cnt = 0;
 
 	do {
-		cl_mailbox_interface.data = read32((u32 *)cl_mailbox_addr);
+		cl_mailbox_interface.data = read32((u32 *)(uintptr_t)cl_mailbox_addr);
 		udelay(CPU_CRASHLOG_WAIT_STALL);
 		stall_cnt++;
 	} while ((cl_mailbox_interface.fields.busy == 1)
@@ -140,7 +140,7 @@ int cpu_cl_mailbox_cmd(u8 cmd, u8 param)
 	cl_mailbox_intf.fields.param = param;
 	cl_mailbox_intf.fields.busy = 1;
 
-	write32((u32 *)(cl_base_addr + cl_get_cpu_mb_int_addr()),
+	write32((u32 *)(uintptr_t)(cl_base_addr + cl_get_cpu_mb_int_addr()),
 		cl_mailbox_intf.data);
 
 	cpu_cl_poll_mailbox_ready(cl_base_addr + cl_get_cpu_mb_int_addr());
@@ -167,7 +167,7 @@ int pmc_cl_gen_descriptor_table(u32 desc_table_addr,
 				pmc_crashlog_desc_table_t *descriptor_table)
 {
 	int total_data_size = 0;
-	descriptor_table->numb_regions = read32((u32 *)desc_table_addr);
+	descriptor_table->numb_regions = read32((u32 *)(uintptr_t)desc_table_addr);
 	printk(BIOS_DEBUG, "CL PMC desc table: numb of regions is 0x%x at addr 0x%x\n",
 	       descriptor_table->numb_regions, desc_table_addr);
 	for (int i = 0; i < descriptor_table->numb_regions; i++) {
@@ -178,7 +178,7 @@ int pmc_cl_gen_descriptor_table(u32 desc_table_addr,
 			break;
 		}
 		desc_table_addr += 4;
-		descriptor_table->regions[i].data = read32((u32 *)(desc_table_addr));
+		descriptor_table->regions[i].data = read32((u32 *)(uintptr_t)(desc_table_addr));
 		total_data_size += descriptor_table->regions[i].bits.size * sizeof(u32);
 		printk(BIOS_DEBUG, "CL PMC desc table: region 0x%x has size 0x%x at offset 0x%x\n",
 			i, descriptor_table->regions[i].bits.size,
@@ -295,7 +295,7 @@ bool cl_copy_data_from_sram(u32 src_bar,
 
 	u32 src_addr = src_bar + offset;
 
-	u32 data =  read32((u32 *)src_addr);
+	u32 data =  read32((u32 *)(uintptr_t)src_addr);
 
 	/* First 32bits of the record must not be 0xdeadbeef */
 	if (data == INVALID_CRASHLOG_RECORD) {
@@ -320,7 +320,7 @@ bool cl_copy_data_from_sram(u32 src_bar,
 	u32 copied = 0;
 	while (copied < size) {
 		/* DW by DW copy: byte access to PMC SRAM not allowed */
-		*dest_addr = read32((u32 *)src_addr);
+		*dest_addr = read32((u32 *)(uintptr_t)src_addr);
 		dest_addr++;
 		src_addr += 4;
 		copied++;

@@ -4,10 +4,12 @@ bootblock-y += bootblock.c
 bootblock-y += early_gpio.c
 bootblock-y += ec.c
 
+romstage-y += display_card_type.c
 romstage-$(CONFIG_BOARD_AMD_BIRMAN_PHOENIX_FSP) += port_descriptors_phoenix.c
 romstage-$(CONFIG_BOARD_AMD_BIRMAN_GLINDA) += port_descriptors_glinda.c
 
 ramstage-y += chromeos.c
+ramstage-y += display_card_type.c
 ramstage-y += gpio.c
 ramstage-$(CONFIG_BOARD_AMD_BIRMAN_PHOENIX_OPENSIL) += update_devicetree_phoenix_opensil.c
 ramstage-$(CONFIG_BOARD_AMD_BIRMAN_PHOENIX_FSP) += port_descriptors_phoenix.c

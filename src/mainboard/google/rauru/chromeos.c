@@ -7,6 +7,9 @@
 
 void setup_chromeos_gpios(void)
 {
+	gpio_output(GPIO_AP_FP_FW_UP_STRAP, 0);
+	gpio_output(GPIO_EN_PWR_FP, 0);
+	gpio_output(GPIO_FP_RST_1V8_S3_L, 0);
 	gpio_output(GPIO_XHCI_INIT_DONE, 0);
 }
 

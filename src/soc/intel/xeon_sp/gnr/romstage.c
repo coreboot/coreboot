@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <console/console.h>
+#include <soc/config.h>
 #include <soc/romstage.h>
 
 static uint8_t get_mmcfg_base_upd_index(const uint64_t base_addr)
@@ -47,6 +49,19 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
 	m_cfg->mmCfgBase = get_mmcfg_base_upd_index(CONFIG_ECAM_MMCONF_BASE_ADDRESS);
 	m_cfg->mmCfgSize = get_mmcfg_size_upd_index(CONFIG_ECAM_MMCONF_LENGTH);
+
+	/* fast boot setting */
+	int fast_boot_mode = get_fast_boot_mode();
+	m_cfg->AttemptFastBoot = !!(fast_boot_mode & XEONSP_FAST_BOOT_WARM);
+	m_cfg->AttemptFastBootCold = !!(fast_boot_mode & XEONSP_FAST_BOOT_COLD);
+
+	FSPM_ARCH2_UPD *arch_upd = &mupd->FspmArchUpd;
+	if (fast_boot_mode == XEONSP_FAST_BOOT_DISABLED) {
+		arch_upd->BootMode =
+			FSP_BOOT_WITH_FULL_CONFIGURATION;
+		printk(BIOS_NOTICE, "Reset BootMode as "
+				"FSP_BOOT_WITH_FULL_CONFIGURATION.\n");
+	}
 
 	/* Board level settings */
 	mainboard_memory_init_params(mupd);

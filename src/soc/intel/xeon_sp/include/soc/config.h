@@ -11,4 +11,12 @@ enum xeonsp_cxl_mode {
 
 enum xeonsp_cxl_mode get_cxl_mode(void);
 
+enum xeonsp_fast_boot_mode {
+	XEONSP_FAST_BOOT_DISABLED = 0x0,
+	XEONSP_FAST_BOOT_COLD     = 0x1,
+	XEONSP_FAST_BOOT_WARM     = 0x2,
+};
+
+enum xeonsp_fast_boot_mode get_fast_boot_mode(void);
+
 #endif

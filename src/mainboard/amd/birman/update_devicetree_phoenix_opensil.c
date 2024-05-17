@@ -1,8 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/device.h>
+#include <soc/amd/phoenix/chip.h>
 #include <soc/soc_util.h>
 #include <vendorcode/amd/opensil/chip/mpio/chip.h>
+#include "display_card_type.h"
 #include "update_devicetree.h"
 
 static void mainboard_update_mpio(void)
@@ -39,7 +41,14 @@ static void mainboard_update_mpio(void)
 	}
 }
 
+static void mainboard_update_ddi(void)
+{
+	struct soc_amd_phoenix_config *cfg = config_of_soc();
+	cfg->ddi[1].connector_type =  get_ddi1_type();
+}
+
 void mainboard_update_devicetree_opensil(void)
 {
 	mainboard_update_mpio();
+	mainboard_update_ddi();
 }

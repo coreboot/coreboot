@@ -74,34 +74,30 @@ else
 fi
 
 if [ "$CONFIG_LP_ARCH_ARM" = "y" ]; then
-  _ARCHINCDIR=$_INCDIR/arm
-  _ARCHLIBDIR=$_LIBDIR/arm
+  _ARCHDIR=arm
   _ARCHEXTRA=""
-  _ARCH=arm
+
 fi
 if [ "$CONFIG_LP_ARCH_ARM64" = "y" ]; then
-  _ARCHINCDIR=$_INCDIR/arm64
-  _ARCHLIBDIR=$_LIBDIR/arm64
+  _ARCHDIR=arm64
   _ARCHEXTRA=""
-  _ARCH=arm64
 fi
 if [ "$CONFIG_LP_ARCH_X86" = "y" ]; then
-  _ARCHINCDIR=$_INCDIR/x86
-  _ARCHLIBDIR=$_LIBDIR/x86
+  _ARCHDIR=x86
   _ARCHEXTRA="-m32 "
-  _ARCH=x86
 fi
 if [ "$CONFIG_LP_ARCH_MOCK" = "y" ]; then
-  _ARCHINCDIR=$_INCDIR/mock
-  _ARCHLIBDIR=$_LIBDIR/mock
+  _ARCHDIR=mock
   _ARCHEXTRA=""
-  _ARCH=mock
 fi
+
+_ARCHINCDIR=$_INCDIR/$_ARCHDIR
+_ARCHLIBDIR=$_LIBDIR/$_ARCHDIR
 
 if [ -f $_LIBDIR/libpayload.ldscript ]; then
 	_LDDIR=$_LIBDIR
-elif [ -f $BASE/../arch/$_ARCH/libpayload.ldscript ]; then
-	_LDDIR=$BASE/../arch/$_ARCH
+elif [ -f $BASE/../arch/$_ARCHDIR/libpayload.ldscript ]; then
+	_LDDIR=$BASE/../arch/$_ARCHDIR
 fi
 # Host arch should youse default linker script
 if [ "$CONFIG_LP_ARCH_MOCK" = "y" ]; then

@@ -84,7 +84,11 @@ if [ "$CONFIG_LP_ARCH_ARM64" = "y" ]; then
 fi
 if [ "$CONFIG_LP_ARCH_X86" = "y" ]; then
   _ARCHDIR=x86
-  _ARCHEXTRA="-m32 "
+  if [ "$CONFIG_LP_ARCH_X86_32" = "y" ]; then
+    _ARCHEXTRA="-m32 "
+  else
+    _ARCHEXTRA="-m64 "
+  fi
 fi
 if [ "$CONFIG_LP_ARCH_MOCK" = "y" ]; then
   _ARCHDIR=mock
@@ -122,12 +126,9 @@ CMDLINE=
 
 while [ $# -gt 0 ]; do
 	case $1 in
-	    -m32|-fno-stack-protector)
+	    -m32|-fno-stack-protector|-m64)
 		shift
 		continue
-		;;
-	    -m64)
-		error "Invalid option --64 - only 32 bit architectures are supported"
 		;;
 	    -c)
 		DOLINK=0

@@ -81,6 +81,16 @@ void *memcpy(void *dest, const void *src, size_t n)
 {
 	unsigned long d0, d1, d2;
 
+#if CONFIG(LP_ARCH_X86_64)
+	asm volatile(
+		"rep ; movsq\n\t"
+		"mov %4,%%rcx\n\t"
+		"rep ; movsb\n\t"
+		: "=&c" (d0), "=&D" (d1), "=&S" (d2)
+		: "0" (n >> 3), "g" (n & 7), "1" (dest), "2" (src)
+		: "memory"
+	);
+#else
 	asm volatile(
 		"rep ; movsl\n\t"
 		"movl %4,%%ecx\n\t"
@@ -89,6 +99,7 @@ void *memcpy(void *dest, const void *src, size_t n)
 		: "0" (n >> 2), "g" (n & 3), "1" (dest), "2" (src)
 		: "memory"
 	);
+#endif
 
 	return dest;
 }

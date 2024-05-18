@@ -15,6 +15,7 @@
 #include <exception.h>
 #include <gdb.h>
 #include <libpayload.h>
+#include <stddef.h>
 
 static const u8 type_to_signal[] = {
 	[EXC_DE]  = GDB_SIGFPE,
@@ -53,12 +54,15 @@ void gdb_arch_init(void)
 
 void gdb_arch_enter(void)
 {
-	u32 *esp;
-
-	asm volatile ("mov %%esp, %0" : "=r"(esp) );
+	u8 *stack_pointer;
+#if CONFIG(LP_ARCH_X86_64)
+	asm volatile ("movq %%rsp, %0" : "=r"(stack_pointer));
+#else
+	asm volatile ("mov %%esp, %0" : "=r"(stack_pointer));
+#endif
 
 	/* Avoid reentrant exceptions, just call the hook if in one already. */
-	if (esp >= exception_stack && esp <= exception_stack_end)
+	if (stack_pointer >= exception_stack && stack_pointer <= exception_stack_end)
 		gdb_exception_hook(EXC_BP);
 	else
 		asm volatile ("int3");
@@ -66,12 +70,12 @@ void gdb_arch_enter(void)
 
 int gdb_arch_set_single_step(int on)
 {
-	const u32 tf_bit = 1 << 8;
+	const size_t tf_bit = 1 << 8;
 
 	if (on)
-		exception_state->regs.eflags |= tf_bit;
+		exception_state->regs.reg_flags |= tf_bit;
 	else
-		exception_state->regs.eflags &= ~tf_bit;
+		exception_state->regs.reg_flags &= ~tf_bit;
 
 	return 0;
 }

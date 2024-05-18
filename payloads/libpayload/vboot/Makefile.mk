@@ -15,7 +15,8 @@ vboot-fixup-includes = $(filter -I$(coreboottop)/%, $(1)) \
 		       $(filter-out -I$(coreboottop)/%,$(1)))))
 
 VBOOT_FIRMWARE_ARCH-$(CONFIG_LP_ARCH_ARM) := arm
-VBOOT_FIRMWARE_ARCH-$(CONFIG_LP_ARCH_X86) := x86
+VBOOT_FIRMWARE_ARCH-$(CONFIG_LP_ARCH_X86_32) := x86
+VBOOT_FIRMWARE_ARCH-$(CONFIG_LP_ARCH_X86_64) := x86_64
 VBOOT_FIRMWARE_ARCH-$(CONFIG_LP_ARCH_ARM64) := arm64
 
 ifneq ($(CONFIG_LP_ARCH_MOCK),)

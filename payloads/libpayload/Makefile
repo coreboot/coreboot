@@ -118,7 +118,8 @@ ARCH-y := $(ARCHDIR-y)
 # override here.
 ARCH-$(CONFIG_LP_ARCH_ARM)     := arm
 ARCH-$(CONFIG_LP_ARCH_ARM64)   := arm64
-ARCH-$(CONFIG_LP_ARCH_X86)     := x86_32
+ARCH-$(CONFIG_LP_ARCH_X86_32)  := x86_32
+ARCH-$(CONFIG_LP_ARCH_X86_64)  := x86_64
 ARCH-$(CONFIG_LP_ARCH_MOCK)    := mock
 
 # Five cases where we don't need fully populated $(obj) lists:

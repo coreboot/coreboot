@@ -274,7 +274,7 @@ uhci_stop(hci_t *controller)
 
 #define UHCI_SLEEP_TIME_US 30
 #define UHCI_TIMEOUT (USB_MAX_PROCESSING_TIME_US / UHCI_SLEEP_TIME_US)
-#define GET_TD(x) ((void*)(((unsigned int)(x))&~0xf))
+#define GET_TD(x) ((void *)(((unsigned long)(x))&~0xf))
 
 static td_t *
 wait_for_completed_qh(hci_t *controller, qh_t *qh)

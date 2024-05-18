@@ -27,16 +27,26 @@
 ##
 
 ifneq ($(CONFIG_LP_COMPILER_LLVM_CLANG),y)
+ifeq ($(CONFIG_LP_ARCH_X86_64),y)
+CFLAGS += -mpreferred-stack-boundary=4
+else
 CFLAGS += -mpreferred-stack-boundary=2
 endif
+endif
 
-libc-y += head.S
+libc-$(CONFIG_LP_ARCH_X86_32)  += head.S
+libc-$(CONFIG_LP_ARCH_X86_64)  += head_64.S
+libc-$(CONFIG_LP_ARCH_X86_64) += pt.S
 libc-y += main.c sysinfo.c
 libc-y += timer.c coreboot.c util.S
-libc-y += exec.S virtual.c
+libc-y += virtual.c
 libc-y += selfboot.c cache.c
-libc-y += exception_asm.S exception.c
+libc-y += exception.c
 libc-y += delay.c
+libc-$(CONFIG_LP_ARCH_X86_32) += exec.c
+libc-$(CONFIG_LP_ARCH_X86_32) += exec.S
+libc-$(CONFIG_LP_ARCH_X86_32) += exception_asm.S
+libc-$(CONFIG_LP_ARCH_X86_64) += exception_asm_64.S
 
 # Will fall back to default_memXXX() in libc/memory.c if GPL not allowed.
 libc-$(CONFIG_LP_GPL) += string.c

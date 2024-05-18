@@ -96,7 +96,7 @@ $(obj)/libpayload-config.h: $(KCONFIG_AUTOHEADER) $(obj)/libpayload.config
 	cmp $@ $< 2>/dev/null || cp $< $@
 
 library-targets = $(addsuffix .a,$(addprefix $(obj)/,$(libraries))) $(obj)/libpayload.a
-lib: $$(library-targets)
+lib: $$(library-targets) $(obj)/libpayload.ldscript
 
 extract_nth=$(word $(1), $(subst |, ,$(2)))
 
@@ -115,11 +115,15 @@ $(obj)/%.a: $$(%-objs)
 	printf "    AR         $(subst $(CURDIR)/,,$(@))\n"
 	printf "create $@\n$(foreach objc,$(filter-out %.a,$^),addmod $(objc)\n)$(foreach lib,$(filter %.a,$^),addlib $(lib)\n)save\nend\n" | $(AR) -M
 
+$(obj)/libpayload.ldscript: arch/$(ARCHDIR-y)/libpayload.ldscript
+	@printf "  LDSCRIPT  $@\n"
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -E -P -x assembler-with-cpp -undef -o $@ $<
+
 install: real-target
 	printf "    INSTALL    $(DESTDIR)/libpayload/lib\n"
 	install -m 755 -d $(DESTDIR)/libpayload/lib
 	install -m 644 $(library-targets) $(DESTDIR)/libpayload/lib/
-	install -m 644 arch/$(ARCHDIR-y)/libpayload.ldscript $(DESTDIR)/libpayload/lib/
+	install -m 644 $(obj)/libpayload.ldscript $(DESTDIR)/libpayload/lib/
 	install -m 755 -d $(DESTDIR)/libpayload/lib/$(ARCHDIR-y)
 	printf "    INSTALL    $(DESTDIR)/libpayload/include\n"
 	install -m 755 -d $(DESTDIR)/libpayload/include

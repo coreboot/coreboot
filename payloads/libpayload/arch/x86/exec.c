@@ -29,8 +29,10 @@
 #include <libpayload-config.h>
 #include <libpayload.h>
 
-#if CONFIG(LP_ARCH_X86)
+#if CONFIG(LP_ARCH_X86_32)
 extern void i386_do_exec(long addr, int argc, char **argv, int *ret);
+#else
+#error "exec does not currently support x86_64."
 #endif
 
 /**
@@ -45,7 +47,7 @@ int exec(long addr, int argc, char **argv)
 {
 	int val = -1;
 
-#if CONFIG(LP_ARCH_X86)
+#if CONFIG(LP_ARCH_X86_32)
 	i386_do_exec(addr, argc, argv, &val);
 #endif
 	return val;

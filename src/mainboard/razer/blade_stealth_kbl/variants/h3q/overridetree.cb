@@ -1,0 +1,23 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/intel/skylake
+	device domain 0 on
+		device ref south_xhci on
+			# NOTE: TYPE-C port is controlled by Intel Thunderbolt
+
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC0),	/* Type-A Port (right) */
+				[1] = USB2_PORT_MID(OC0),	/* Type-A Port (left) */
+				[5] = USB2_PORT_SHORT(OC2),	/* M.2 Slot (Bluetooth) */
+				[6] = USB2_PORT_FLEX(OC3),	/* Camera */
+				[7] = USB2_PORT_FLEX(OC3),	/* Keyboard */
+				[8] = USB2_PORT_FLEX(OC_SKIP),	/* Touchscreen */
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC0),	/* Type-A Port (left) */
+				[1] = USB3_PORT_DEFAULT(OC0),	/* Type-A Port (right) */
+			}"
+		end
+	end
+end

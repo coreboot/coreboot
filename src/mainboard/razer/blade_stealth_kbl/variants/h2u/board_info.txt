@@ -1,5 +1,6 @@
 Vendor name: RAZER
-Board name: Blade Stealth KabyLake
+Board name: Blade Stealth KabyLake (H2U: RZ09-01962)
+Board URL: https://mysupport.razer.com/app/answers/detail/a_id/3698/
 Category: laptop
 ROM package: SOIC8
 ROM protocol: SPI

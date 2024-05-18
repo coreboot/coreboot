@@ -1,0 +1,31 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/intel/skylake
+	device domain 0 on
+		device ref south_xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC1),	/* Type-A Port (right) */
+				[1] = USB2_PORT_MID(OC1),	/* Type-A Port (left) */
+				[2] = USB2_PORT_MID(OC1),	/* TODO Unknown. Maybe USBC? */
+				[3] = USB2_PORT_MID(OC1),	/* TODO Unknown. Maybe USBC? */
+				[4] = USB2_PORT_MID(OC1),	/* TODO Unknown. Maybe USBC? */
+				[5] = USB2_PORT_MID(OC1),	/* TODO Unknown. Maybe USBC? */
+				[6] = USB2_PORT_FLEX(OC2),	/* Camera */
+				[7] = USB2_PORT_FLEX(OC2),	/* Keyboard */
+				[8] = USB2_PORT_FLEX(OC2),	/* Touchscreen */
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC1),	/* Type-A Port (left) */
+				[1] = USB3_PORT_DEFAULT(OC1),	/* Type-A Port (right) */
+				[5] = USB3_PORT_DEFAULT(OC1),	/* TODO Unknown. Maybe USBC? */
+			}"
+		end
+
+		device ref lpc_espi on
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end
+			end
+		end
+	end
+end

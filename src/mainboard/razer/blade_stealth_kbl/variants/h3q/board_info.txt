@@ -1,0 +1,9 @@
+Vendor name: RAZER
+Board name: Blade Stealth KabyLake (H3Q: RZ09-01963 / RZ09-01964)
+Board URL: https://mysupport.razer.com/app/answers/detail/a_id/3694/
+Category: laptop
+ROM package: SOIC8
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y
+Release year: 2017

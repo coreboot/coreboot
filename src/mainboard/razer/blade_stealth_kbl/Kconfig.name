@@ -1,4 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-config BOARD_RAZER_BLADE_STEALTH_KBL
-	bool "Razer Blade Stealth KabyLake (2016)"
+config BOARD_RAZER_BLADE_H2U
+	bool "Razer Blade Stealth KabyLake (2016, RZ09-01962, 12.5\")"
+
+config BOARD_RAZER_BLADE_H3Q
+	bool "Razer Blade Stealth KabyLake (Mid 2017, RZ09-01963/RZ09-10964, 13.3\")"

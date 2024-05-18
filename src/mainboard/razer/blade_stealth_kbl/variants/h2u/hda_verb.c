@@ -20,7 +20,7 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x1f, 0x411111f0),
 	AZALIA_PIN_CFG(0, 0x21, 0x03211020),
 
-	/* Intel, KabylakeHDMI */
+	/* Intel, Kaby Lake HDMI */
 	0x8086280b, /* Vendor ID */
 	0x80860101, /* Subsystem ID */
 	4, /* Number of entries */

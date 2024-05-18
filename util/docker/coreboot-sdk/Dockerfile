@@ -61,7 +61,6 @@ RUN \
 		libusb-1.0-0-dev \
 		libxml2-dev \
 		libyaml-dev \
-		m4 \
 		make \
 		meson \
 		msitools \

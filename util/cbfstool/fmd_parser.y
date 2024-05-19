@@ -41,9 +41,11 @@ struct descriptor_list {
 
 extern struct flashmap_descriptor *res;
 
-struct flashmap_descriptor *parse_descriptor(
-	char *name, union flashmap_flags flags, struct unsigned_option offset,
-	struct unsigned_option size, struct descriptor_list children);
+struct flashmap_descriptor *parse_descriptor(char *name, union flashmap_flags flags,
+					     struct unsigned_option offset,
+					     struct unsigned_option size,
+					     struct descriptor_list children);
+
 void yyerror(const char *s);
 }
 
@@ -52,6 +54,7 @@ void yyerror(const char *s);
 %token <strval> STRING
 %token FLAG_CBFS
 %token FLAG_PRESERVE
+%token FLAG_EXT
 
 %type <region_ptr> flash_region
 %type <strval> region_name
@@ -100,6 +103,7 @@ region_flags_opt: { $$ = (union flashmap_flags){ .v=0 }; }
 region_flags: region_flag | region_flag region_flags { $$.v = $1.v | $2.v; };
 region_flag: FLAG_CBFS { $$.v = 0; $$.f.cbfs = 1; };
 region_flag: FLAG_PRESERVE { $$.v = 0; $$.f.preserve = 1; };
+region_flag: FLAG_EXT { $$.v = 0; $$.f.ext = 1; };
 region_offset_opt: { $$ = (struct unsigned_option){false, 0}; }
 	| region_offset;
 region_offset: '@' INTEGER { $$ = (struct unsigned_option){true, $2}; };
@@ -141,10 +145,21 @@ region_list_entries: flash_region
 
 %%
 
-struct flashmap_descriptor *parse_descriptor(
-	char *name, union flashmap_flags flags, struct unsigned_option offset,
-	struct unsigned_option size, struct descriptor_list children)
+struct flashmap_descriptor *parse_descriptor(char *name, union flashmap_flags flags,
+					     struct unsigned_option offset,
+					     struct unsigned_option size,
+					     struct descriptor_list children)
 {
+	if (strncmp(name, "ECBFS_", sizeof("ECBFS_") - 1) == 0) {
+		ERROR("Region name '%s' cannot start with 'ECBFS_'\n", name);
+		return NULL;
+	}
+
+	if (!flags.f.cbfs && flags.f.ext) {
+		ERROR("E: Cannot extend non CBFS region %s", name);
+		return NULL;
+	}
+
 	struct flashmap_descriptor *region = malloc(sizeof(*region));
 	if (!region) {
 		perror("E: While allocating descriptor section");
@@ -174,6 +189,7 @@ struct flashmap_descriptor *parse_descriptor(
 	} else {
 		region->list = NULL;
 	}
+
 	return region;
 }
 

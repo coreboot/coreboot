@@ -35,8 +35,8 @@
    especially those whose name start with YY_ or yy_.  They are
    private implementation details that can be changed or removed.  */
 
-#ifndef YY_YY_V_CROS_COREBOOT_UTIL_CBFSTOOL_FMD_PARSER_H_SHIPPED_INCLUDED
-# define YY_YY_V_CROS_COREBOOT_UTIL_CBFSTOOL_FMD_PARSER_H_SHIPPED_INCLUDED
+#ifndef YY_YY_FMD_PARSER_H_SHIPPED_INCLUDED
+# define YY_YY_FMD_PARSER_H_SHIPPED_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -64,9 +64,11 @@ struct descriptor_list {
 
 extern struct flashmap_descriptor *res;
 
-struct flashmap_descriptor *parse_descriptor(
-	char *name, union flashmap_flags flags, struct unsigned_option offset,
-	struct unsigned_option size, struct descriptor_list children);
+struct flashmap_descriptor *parse_descriptor(char *name, union flashmap_flags flags,
+					     struct unsigned_option offset,
+					     struct unsigned_option size,
+					     struct descriptor_list children);
+
 void yyerror(const char *s);
 
 
@@ -83,7 +85,8 @@ void yyerror(const char *s);
     OCTAL = 259,                   /* OCTAL  */
     STRING = 260,                  /* STRING  */
     FLAG_CBFS = 261,               /* FLAG_CBFS  */
-    FLAG_PRESERVE = 262            /* FLAG_PRESERVE  */
+    FLAG_PRESERVE = 262,           /* FLAG_PRESERVE  */
+    FLAG_EXT = 263                 /* FLAG_EXT  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -114,4 +117,4 @@ extern YYSTYPE yylval;
 int yyparse (void);
 
 
-#endif /* !YY_YY_V_CROS_COREBOOT_UTIL_CBFSTOOL_FMD_PARSER_H_SHIPPED_INCLUDED  */
+#endif /* !YY_YY_FMD_PARSER_H_SHIPPED_INCLUDED  */

@@ -44,6 +44,7 @@ MULTIPLIER [KMG]
 <FLAGS>\)                   BEGIN(INITIAL); return *yytext;
 <FLAGS>CBFS                 return FLAG_CBFS;
 <FLAGS>PRESERVE             return FLAG_PRESERVE;
+<FLAGS>EXT                  return FLAG_EXT;
 0{MULTIPLIER}?              |
 [1-9][0-9]*{MULTIPLIER}?    return parse_integer(yytext, 10);
 0[0-9]+{MULTIPLIER}?        return OCTAL;

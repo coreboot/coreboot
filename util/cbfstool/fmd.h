@@ -21,6 +21,7 @@ union flashmap_flags {
 	struct {
 		unsigned int cbfs: 1;  /* The section contains a CBFS area. */
 		unsigned int preserve: 1;  /* Preserve the section before update. */
+		unsigned int ext: 1;  /* The section has extension. */
 	} f;
 	int v;
 };

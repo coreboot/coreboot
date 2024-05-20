@@ -515,6 +515,9 @@ struct soc_intel_meteorlake_config {
 	/* Platform Power Pmax in Watts. Zero means automatic. */
 	uint16_t psys_pmax_watts;
 
+	/* Platform Power Limit 2 in Watts. */
+	uint16_t psys_pl2_watts;
+
 	/* Enable or Disable Acoustic Noise Mitigation feature */
 	uint8_t enable_acoustic_noise_mitigation;
 	/* Disable Fast Slew Rate for Deep Package C States for VR domains */

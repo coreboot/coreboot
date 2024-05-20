@@ -97,7 +97,7 @@ je .endScan
 cmp $12, 16(%edi) /* type */
 jng .next_e820_entry
 /* Fixup the type to 2, reserved memory */
-mov $2, 16(%edi)
+movl $2, 16(%edi)
 .next_e820_entry:
 dec %eax
 add $20, %edi

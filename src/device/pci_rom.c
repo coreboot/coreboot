@@ -12,7 +12,6 @@
 #include <acpi/acpigen.h>
 
 /* Rmodules don't like weak symbols. */
-void __weak map_oprom_vendev_rev(u32 *vendev, u8 *rev) { return; }
 u32 __weak map_oprom_vendev(u32 vendev) { return vendev; }
 
 void vga_oprom_preload(void)
@@ -39,35 +38,16 @@ static void *cbfs_boot_map_optionrom(uint16_t vendor, uint16_t device)
 	return cbfs_map(name, NULL);
 }
 
-static void *cbfs_boot_map_optionrom_revision(uint16_t vendor, uint16_t device, uint8_t rev)
-{
-	char name[20] = "pciXXXX,XXXX,XX.rom";
-
-	snprintf(name, sizeof(name), "pci%04hx,%04hx,%02hhx.rom", vendor, device, rev);
-
-	return cbfs_map(name, NULL);
-}
-
 struct rom_header *pci_rom_probe(const struct device *dev)
 {
 	struct rom_header *rom_header = NULL;
 	struct pci_data *rom_data;
-	u8 rev = pci_read_config8(dev, PCI_REVISION_ID);
-	u8 mapped_rev = rev;
 	u32 vendev = (dev->vendor << 16) | dev->device;
 	u32 mapped_vendev = vendev;
 
 	/* If the ROM is in flash, then don't check the PCI device for it. */
-	if (CONFIG(CHECK_REV_IN_OPROM_NAME)) {
-		map_oprom_vendev_rev(&mapped_vendev, &mapped_rev);
-		rom_header = cbfs_boot_map_optionrom_revision(mapped_vendev >> 16,
-							      mapped_vendev & 0xffff,
-							      mapped_rev);
-	} else {
-		mapped_vendev = map_oprom_vendev(vendev);
-		rom_header = cbfs_boot_map_optionrom(mapped_vendev >> 16,
-						     mapped_vendev & 0xffff);
-	}
+	mapped_vendev = map_oprom_vendev(vendev);
+	rom_header = cbfs_boot_map_optionrom(mapped_vendev >> 16, mapped_vendev & 0xffff);
 
 	if (rom_header) {
 		printk(BIOS_DEBUG, "In CBFS, ROM address for %s = %p\n",

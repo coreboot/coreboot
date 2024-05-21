@@ -106,19 +106,6 @@ config MANDOLIN_LPC
 	  Picasso's LPC bus signals are MUXed with some of the EMMC signals.
 	  Select this option if LPC signals are required.
 
-#TODO: remove this hack to not break graphics in combination with SeaBIOS
-config VGA_BIOS_DGPU_ID
-	string
-	default "1002,15d8"
-	help
-	  The default VGA BIOS PCI vendor/device ID should be set to the
-	  result of the map_oprom_vendev() function in northbridge.c.
-
-config VGA_BIOS_DGPU_FILE
-	string
-	default "3rdparty/amd_blobs/picasso/PicassoGenericVbios.bin" if BOARD_AMD_MANDOLIN
-	default "3rdparty/amd_blobs/picasso/Raven2GenericVbios.bin" if BOARD_AMD_CEREME
-
 if !EM100	# EM100 defaults in soc/amd/common/blocks/spi/Kconfig
 config EFS_SPI_READ_MODE
 	default 3	# Quad IO (1-1-4)

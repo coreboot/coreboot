@@ -55,7 +55,6 @@ pci_rom_write_acpi_tables(const struct device *device,
 
 void pci_rom_ssdt(const struct device *device);
 
-void map_oprom_vendev_rev(u32 *vendev, u8 *rev);
 u32 map_oprom_vendev(u32 vendev);
 
 int verified_boot_should_run_oprom(struct rom_header *rom_header);

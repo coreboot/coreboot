@@ -230,10 +230,10 @@ config MAX_CPUS
 
 config VGA_BIOS_ID
 	string
-	default "1002,15d8,c1"
+	default "1002,15d8"
 	help
 	  The default VGA BIOS PCI vendor/device ID should be set to the
-	  result of the map_oprom_vendev_rev() function in graphics.c.
+	  result of the map_oprom_vendev() function in graphics.c.
 
 config VGA_BIOS_FILE
 	string
@@ -244,24 +244,17 @@ config VGA_BIOS_SECOND
 
 config VGA_BIOS_SECOND_ID
 	string
-	default "1002,15dd,c4"
+	default "1002,15dd"
 	help
 	  Some Dali and all Pollock APUs need a different VBIOS than some other
 	  Dali and all Picasso APUs, but don't always have a different PCI
 	  vendor/device IDs, so we need an alternate method to determine the
-	  correct video BIOS. In map_oprom_vendev_rev(), we look at the return
+	  correct video BIOS. In map_oprom_vendev(), we look at the return
 	  value of soc_is_raven2() and decide which rom to load.
 
 config VGA_BIOS_SECOND_FILE
 	string
 	default "3rdparty/amd_blobs/picasso/Raven2GenericVbios.bin"
-
-config CHECK_REV_IN_OPROM_NAME
-	bool
-	default y
-	help
-	  Select this in the platform BIOS or chipset if the option rom has a
-	  revision that needs to be checked when searching CBFS.
 
 config S3_VGA_ROM_RUN
 	bool

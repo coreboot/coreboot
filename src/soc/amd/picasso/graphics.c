@@ -6,20 +6,19 @@
 #include <soc/soc_util.h>
 #include <stdint.h>
 
-void map_oprom_vendev_rev(u32 *vendev, u8 *rev)
+u32 map_oprom_vendev(u32 vendev)
 {
-	if (*vendev == PICASSO_VBIOS_VID_DID) {
+	if (vendev == PICASSO_VBIOS_VID_DID) {
 		/* Check if the RV2 video bios needs to be used instead of the RV1/PCO one */
 		if (soc_is_raven2()) {
 			printk(BIOS_NOTICE, "Using RV2 VBIOS.\n");
-			*vendev = RAVEN2_VBIOS_VID_DID;
-			*rev = RAVEN2_VBIOS_REV;
+			return RAVEN2_VBIOS_VID_DID;
 		} else {
 			printk(BIOS_NOTICE, "Using RV1/PCO VBIOS.\n");
-			*rev = PICASSO_VBIOS_REV;
 		}
-	} else if (*vendev == RAVEN2_VBIOS_VID_DID) {
+	} else if (vendev == RAVEN2_VBIOS_VID_DID) {
 		printk(BIOS_NOTICE, "Using RV2 VBIOS.\n");
-		*rev = RAVEN2_VBIOS_REV;
 	}
+
+	return vendev;
 }

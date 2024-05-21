@@ -6,7 +6,7 @@ Scope (\_SB) {
 	#include "buttons.asl"
 	#include "hid.asl"
 	#include "lid.asl"
-	#include "s76.asl"
+	#include "dasharo.asl"
 }
 
 Device (\_SB.PCI0.LPCB.EC0)
@@ -36,7 +36,7 @@ Device (\_SB.PCI0.LPCB.EC0)
 	{
 		Printf ("EC: _REG %o %o", ToHexString(Arg0), ToHexString(Arg1))
 		If ((Arg0 == 0x03) && (Arg1 == 1)) {
-			// Enable hardware touchpad lock, airplane mode, and keyboard backlight keys
+			// Enable hardware touchpad lock and airplane mode keys
 			ECOS = 1
 
 			// Enable software display brightness keys
@@ -56,9 +56,6 @@ Device (\_SB.PCI0.LPCB.EC0)
 
 			// EC is now available
 			ECOK = Arg1
-
-			// Reset Dasharo Device
-			^^^^S76D.RSET()
 		}
 	}
 
@@ -93,6 +90,20 @@ Device (\_SB.PCI0.LPCB.EC0)
 		}
 	}
 
+	Method (S0IX, 1, Serialized) {
+		Printf ("EC: S0ix hook")
+		If (ECOK) {
+			S0XH = Arg0
+		}
+	}
+
+	Method (EDSX, 1, Serialized) {
+		Printf ("EC: Display hook")
+		If (ECOK) {
+			DSPH = Arg0
+		}
+	}
+
 	Method (_Q0A, 0, NotSerialized) // Touchpad Toggle
 	{
 		Printf ("EC: Touchpad Toggle")
@@ -101,19 +112,11 @@ Device (\_SB.PCI0.LPCB.EC0)
 	Method (_Q0B, 0, NotSerialized) // Screen Toggle
 	{
 		Printf ("EC: Screen Toggle")
-#if CONFIG(EC_DASHARO_EC_OLED)
-		Notify (^^^^S76D, 0x85)
-#endif // CONFIG(EC_DASHARO_EC_OLED)
 	}
 
 	Method (_Q0C, 0, NotSerialized)  // Mute
 	{
 		Printf ("EC: Mute")
-	}
-
-	Method (_Q0D, 0, NotSerialized) // Keyboard Backlight
-	{
-		Printf ("EC: Keyboard Backlight")
 	}
 
 	Method (_Q0E, 0, NotSerialized) // Volume Down
@@ -209,30 +212,12 @@ Device (\_SB.PCI0.LPCB.EC0)
 	Method (_Q1D, 0, NotSerialized) // Power Button
 	{
 		Printf ("EC: Power Button")
-		Notify (PWRB, 0x80)
 	}
 
 	Method (_Q50, 0, NotSerialized) // Other Events
 	{
 		Local0 = OEM4
-		If (Local0 == 0x8A) {
-			Printf ("EC: White Keyboard Backlight")
-			Notify (^^^^S76D, 0x80)
-		} ElseIf (Local0 == 0x9F) {
-			Printf ("EC: Color Keyboard Toggle")
-			Notify (^^^^S76D, 0x81)
-		} ElseIf (Local0 == 0x81) {
-			Printf ("EC: Color Keyboard Down")
-			Notify (^^^^S76D, 0x82)
-		} ElseIf (Local0 == 0x82) {
-			Printf ("EC: Color Keyboard Up")
-			Notify (^^^^S76D, 0x83)
-		} ElseIf (Local0 == 0x80) {
-			Printf ("EC: Color Keyboard Color Change")
-			Notify (^^^^S76D, 0x84)
-		} Else {
-			Printf ("EC: Other: %o", ToHexString(Local0))
-		}
+		Printf ("EC: Other: %o", ToHexString(Local0))
 	}
 
 	#if CONFIG(EC_DASHARO_EC_BAT_THRESHOLDS)

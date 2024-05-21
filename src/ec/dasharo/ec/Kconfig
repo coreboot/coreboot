@@ -1,6 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
 config EC_DASHARO_EC
+	select EC_ACPI
 	bool
 	help
 	  Dasharo EC
@@ -15,7 +16,16 @@ config EC_DASHARO_EC_DGPU
 	bool
 	default n
 
-config EC_DASHARO_EC_OLED
+config EC_DASHARO_EC_UPDATE
 	depends on EC_DASHARO_EC
-	bool
+	bool "Update the embedded controller firmware"
 	default n
+
+config EC_DASHARO_EC_UPDATE_FILE
+	depends on EC_DASHARO_EC_UPDATE
+	string "Path to the EC update file"
+	default "ec.rom"
+
+config EC_DASHARO_EC_FLASH_SIZE
+	hex
+	default 0x20000

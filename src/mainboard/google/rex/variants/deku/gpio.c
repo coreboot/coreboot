@@ -27,99 +27,99 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_A12 : [] ==> LAN1_ISOLATE_R_ODL */
 	PAD_CFG_GPO(GPP_A12, 1, DEEP),
 	/* GPP_A13 : net NC is not present in the given design */
-	PAD_NC(GPP_A13, UP_20K),
+	PAD_NC(GPP_A13, NONE),
 	/* GPP_A14 : net NC is not present in the given design */
-	PAD_NC(GPP_A14, UP_20K),
+	PAD_NC(GPP_A14, NONE),
 	/* GPP_A15 : net NC is not present in the given design */
-	PAD_NC(GPP_A15, UP_20K),
+	PAD_NC(GPP_A15, NONE),
 	/* GPP_A16 : [] ==> ESPI_SOC_ALERT_L */
 	 PAD_CFG_NF_IOSSTATE(GPP_A16, UP_20K, DEEP, NF1, IGNORE),
 	/* GPP_A17 : [] ==> EC_SOC_INT_ODL */
 	PAD_CFG_GPI_APIC_LOCK(GPP_A17, NONE, LEVEL, INVERT, LOCK_CONFIG),
 	/* GPP_A18 : net NC is not present in the given design */
-	PAD_NC(GPP_A18, UP_20K),
+	PAD_NC(GPP_A18, NONE),
 	/* GPP_A21 : [] ==> SOC_GPP_A21 */
-	PAD_NC(GPP_A21, UP_20K),
+	PAD_NC(GPP_A21, NONE),
 
 	/* GPP_B00 : net NC is not present in the given design */
-	PAD_NC(GPP_B00, UP_20K),
+	PAD_NC(GPP_B00, NONE),
 	/* GPP_B01 : [] ==> BT_DISABLE_L */
 	PAD_CFG_GPO(GPP_B01, 1, DEEP),
 	/* GPP_B02 : net NC is not present in the given design */
-	PAD_NC(GPP_B02, UP_20K),
+	PAD_NC(GPP_B02, NONE),
 	/* GPP_B03 : net NC is not present in the given design */
-	PAD_NC(GPP_B03, UP_20K),
+	PAD_NC(GPP_B03, NONE),
 	/* GPP_B04 : [GPP_B04_STRAP] ==> Component NC */
-	PAD_NC(GPP_B04, UP_20K),
+	PAD_NC(GPP_B04, NONE),
 	/* GPP_B05 : net NC is not present in the given design */
-	PAD_NC(GPP_B05, UP_20K),
+	PAD_NC(GPP_B05, NONE),
 	/* GPP_B06 : net NC is not present in the given design */
-	PAD_NC(GPP_B06, UP_20K),
+	PAD_NC(GPP_B06, NONE),
 	/* GPP_B07 : net NC is not present in the given design */
-	PAD_NC(GPP_B07, UP_20K),
+	PAD_NC(GPP_B07, NONE),
 	/* GPP_B08 : [] ==> PWM_BUZZER */
 	PAD_CFG_GPO(GPP_B08, 0, DEEP),
 	/* GPP_B09 : net NC is not present in the given design */
-	PAD_NC(GPP_B09, UP_20K),
+	PAD_NC(GPP_B09, NONE),
 	/* GPP_B10 : [] ==> WIFI_DISABLE_L */
 	PAD_CFG_GPO(GPP_B10, 1, DEEP),
 	/* GPP_B11 : net NC is not present in the given design */
-	PAD_NC(GPP_B11, UP_20K),
+	PAD_NC(GPP_B11, NONE),
 	/* GPP_B12 : [] ==> SLP_S0_R_L */
 	PAD_CFG_NF(GPP_B12, NONE, DEEP, NF1),
 	/* GPP_B13 : [] ==> PLT_PCIE_RST_L */
 	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),
 	/* GPP_B14 : [GPP_B14_STRAP] ==> Component NC */
-	PAD_NC(GPP_B14, UP_20K),
+	PAD_NC(GPP_B14, NONE),
 	/* GPP_B15 : [] ==> USB_A_OC_ODL */
 	PAD_CFG_NF_LOCK(GPP_B15, NONE, NF1, LOCK_CONFIG),
 	/* GPP_B16 : net NC is not present in the given design */
-	PAD_NC(GPP_B16, UP_20K),
+	PAD_NC(GPP_B16, NONE),
 	/* GPP_B17 : net NC is not present in the given design */
-	PAD_NC(GPP_B17, UP_20K),
+	PAD_NC(GPP_B17, NONE),
 	/* GPP_B18 : [] ==> SOC_I2C_TPM_SDA */
 	PAD_CFG_NF_LOCK(GPP_B18, NONE, NF2, LOCK_CONFIG),
 	/* GPP_B19 : [] ==> SOC_I2C_TPM_SCL */
 	PAD_CFG_NF_LOCK(GPP_B19, NONE, NF2, LOCK_CONFIG),
 	/* GPP_B20 : net NC is not present in the given design */
-	PAD_NC(GPP_B20, UP_20K),
+	PAD_NC(GPP_B20, NONE),
 	/* GPP_B21 : net NC is not present in the given design */
-	PAD_NC(GPP_B21, UP_20K),
+	PAD_NC(GPP_B21, NONE),
 	/* GPP_B22 : [] ==> USB_C_FORCE_PWR */
 	PAD_CFG_GPO(GPP_B22, 0, DEEP),
 	/* GPP_B23 : net NC is not present in the given design */
-	PAD_NC(GPP_B23, UP_20K),
+	PAD_NC(GPP_B23, NONE),
 
 	/* GPP_C00 : net NC is not present in the given design */
-	PAD_NC(GPP_C00, UP_20K),
+	PAD_NC(GPP_C00, NONE),
 	/* GPP_C01 : net NC is not present in the given design */
-	PAD_NC(GPP_C01, UP_20K),
+	PAD_NC(GPP_C01, NONE),
 	/* GPP_C02 : [GPP_C02_STRAP] ==> Component NC */
-	PAD_NC(GPP_C02, UP_20K),
+	PAD_NC(GPP_C02, NONE),
 	/* GPP_C03 : net NC is not present in the given design */
-	PAD_NC(GPP_C03, UP_20K),
+	PAD_NC(GPP_C03, NONE),
 	/* GPP_C04 : net NC is not present in the given design */
-	PAD_NC(GPP_C04, UP_20K),
+	PAD_NC(GPP_C04, NONE),
 	/* GPP_C05 : [GPP_C05_STRAP] ==> Component NC */
-	PAD_NC(GPP_C05, UP_20K),
+	PAD_NC(GPP_C05, NONE),
 	/* GPP_C06 : net NC is not present in the given design */
-	PAD_NC(GPP_C06, UP_20K),
+	PAD_NC(GPP_C06, NONE),
 	/* GPP_C07 : net NC is not present in the given design */
-	PAD_NC(GPP_C07, UP_20K),
+	PAD_NC(GPP_C07, NONE),
 	/* GPP_C08 : [] ==> SOCHOT_ODL */
 	PAD_CFG_NF(GPP_C08, NONE, DEEP, NF2),
 	/* GPP_C09 : [] ==> MISC_SYNC_OD */
 	PAD_CFG_GPI(GPP_C09, NONE, DEEP),
 	/* GPP_C10 : net NC is not present in the given design*/
-	PAD_NC(GPP_C10, UP_20K),
+	PAD_NC(GPP_C10, NONE),
 	/* GPP_C11 : [] ==> LAN1_PCIE_CLKREQ_ODL */
 	PAD_CFG_NF(GPP_C11, NONE, DEEP, NF1),
 	/* GPP_C12 : net NC is not present in the given design */
-	PAD_NC(GPP_C12, UP_20K),
+	PAD_NC(GPP_C12, NONE),
 	/* GPP_C13 : [] ==> LAN0_PERST_L */
 	PAD_CFG_GPO_LOCK(GPP_C13, 1, LOCK_CONFIG),
 	/* GPP_C15 : [GPP_C15_STRAP] ==> Component NC */
-	PAD_NC(GPP_C15, UP_20K),
+	PAD_NC(GPP_C15, NONE),
 	/* GPP_C16 : [] ==> USB_C0_LSX_TX */
 	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),
 	/* GPP_C17 : [] ==> USB_C0_LSX_RX */
@@ -138,43 +138,43 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C23, NONE, DEEP, NF1),
 
 	/* GPP_D00 : net NC is not present in the given design */
-	PAD_NC(GPP_D00, UP_20K),
+	PAD_NC(GPP_D00, NONE),
 	/* GPP_D01 : [] ==> LAN1_PCIE_WAKE_ODL */
 	PAD_CFG_GPI_SCI_LOW(GPP_D01, NONE, DEEP, EDGE_SINGLE),
 	/* GPP_D02 : [] ==> LAN1_PERST_L */
 	PAD_CFG_GPO_LOCK(GPP_D02, 1, LOCK_CONFIG),
 	/* GPP_D03 : net NC is not present in the given design */
-	PAD_NC(GPP_D03, UP_20K),
+	PAD_NC(GPP_D03, NONE),
 	/* GPP_D04 : net NC is not present in the given design */
-	PAD_NC(GPP_D04, UP_20K),
+	PAD_NC(GPP_D04, NONE),
 	/* GPP_D05 : [] ==> UART_DBG_TX_ISH_RX */
-	PAD_NC(GPP_D05, UP_20K),
+	PAD_NC(GPP_D05, NONE),
 	/* GPP_D06 : [] ==> UART_ISH_TX_DBG_RX */
-	PAD_NC(GPP_D06, UP_20K),
+	PAD_NC(GPP_D06, NONE),
 	/* GPP_D07 : [] ==> SOC_GPP_D07 */
-	PAD_NC(GPP_D07, UP_20K),
+	PAD_NC(GPP_D07, NONE),
 	/* GPP_D08 : net NC is not present in the given design */
-	PAD_NC(GPP_D08, UP_20K),
+	PAD_NC(GPP_D08, NONE),
 	/* GPP_D09 : net NC is not present in the given design */
-	PAD_NC(GPP_D09, UP_20K),
+	PAD_NC(GPP_D09, NONE),
 	/* GPP_D10 : net NC is not present in the given design */
-	PAD_NC(GPP_D10, UP_20K),
+	PAD_NC(GPP_D10, NONE),
 	/* GPP_D11 : net NC is not present in the given design */
-	PAD_NC(GPP_D11, UP_20K),
+	PAD_NC(GPP_D11, NONE),
 	/* GPP_D12 : [GPP_D12_STRAP] ==> Component NC */
-	PAD_NC(GPP_D12, UP_20K),
+	PAD_NC(GPP_D12, NONE),
 	/* GPP_D13 : net NC is not present in the given design */
-	PAD_NC(GPP_D13, UP_20K),
+	PAD_NC(GPP_D13, NONE),
 	/* GPP_D14 : net NC is not present in the given design */
-	PAD_NC(GPP_D14, UP_20K),
+	PAD_NC(GPP_D14, NONE),
 	/* GPP_D15 : net NC is not present in the given design */
-	PAD_NC(GPP_D15, UP_20K),
+	PAD_NC(GPP_D15, NONE),
 	/* GPP_D16 : net NC is not present in the given design */
-	PAD_NC(GPP_D16, UP_20K),
+	PAD_NC(GPP_D16, NONE),
 	/* GPP_D17 : net NC is not present in the given design */
-	PAD_NC(GPP_D17, UP_20K),
+	PAD_NC(GPP_D17, NONE),
 	/* GPP_D18 : net NC is not present in the given design */
-	PAD_NC(GPP_D18, UP_20K),
+	PAD_NC(GPP_D18, NONE),
 	/* GPP_D19 : [] ==> SSD_PCIE_CLKREQ_ODL */
 	 PAD_CFG_NF(GPP_D19, NONE, DEEP, NF1),
 	/* GPP_D20 : [] ==> LAN0_PCIE_CLKREQ_ODL */
@@ -182,12 +182,12 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_D21 : [] ==> WLAN_PCIE_CLKREQ_ODL */
 	PAD_CFG_NF(GPP_D21, NONE, DEEP, NF2),
 	/* GPP_D22 : [] ==> SOC_DBG_BPKI3C_SDA */
-	PAD_NC(GPP_D22, UP_20K),
+	PAD_NC(GPP_D22, NONE),
 	/* GPP_D23 : [] ==> SOC_DBG_BPKI3C_SCL */
-	PAD_NC(GPP_D23, UP_20K),
+	PAD_NC(GPP_D23, NONE),
 
 	/* GPP_E00 : net NC is not present in the given design */
-	PAD_NC(GPP_E00, UP_20K),
+	PAD_NC(GPP_E00, NONE),
 	/* GPP_E01 : [] ==> MEM_STRAP_2 */
 	PAD_CFG_GPI_LOCK(GPP_E01, NONE, LOCK_CONFIG),
 	/* GPP_E02 : [] ==> MEM_STRAP_1 */
@@ -199,15 +199,15 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_E05 : [] ==> WLAN_PCIE_WAKE_ODL */
 	PAD_CFG_GPI_IRQ_WAKE(GPP_E05, NONE, PLTRST, LEVEL, INVERT),
 	/* GPP_E06 : GPP_E06_STRAP ==> Component NC */
-	PAD_NC(GPP_E06, UP_20K),
+	PAD_NC(GPP_E06, NONE),
 	/* GPP_E07 : net NC is not present in the given design */
-	PAD_NC(GPP_E07, UP_20K),
+	PAD_NC(GPP_E07, NONE),
 	/* GPP_E08 : [] ==> USB_C0_AUX_DC_N */
 	PAD_CFG_NF(GPP_E08, NONE, DEEP, NF6),
 	/* GPP_E09 : [] ==> USB_C_OC_ODL */
 	PAD_CFG_NF_LOCK(GPP_E09, NONE, NF1, LOCK_CONFIG),
 	/* GPP_E10 : net NC is not present in the given design */
-	PAD_NC(GPP_E10, UP_20K),
+	PAD_NC(GPP_E10, NONE),
 	/* GPP_E11 : [] ==> MEM_STRAP_0 */
 	PAD_CFG_GPI_LOCK(GPP_E11, NONE, LOCK_CONFIG),
 	/* GPP_E12 : [] ==> MEM_STRAP_3 */
@@ -215,13 +215,13 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_E13 : [] ==> MEM_CH_SEL */
 	PAD_CFG_GPI_LOCK(GPP_E13, NONE, LOCK_CONFIG),
 	/* GPP_E14 : net NC is not present in the given design */
-	PAD_NC(GPP_E14, UP_20K),
+	PAD_NC(GPP_E14, NONE),
 	/* GPP_E15 : [] ==> SOC_GPP_E15 */
-	PAD_NC(GPP_E15, UP_20K),
+	PAD_NC(GPP_E15, NONE),
 	/* GPP_E16 : [] ==> GPP_E16_ISH_GP10 */
-	PAD_NC(GPP_E16, UP_20K),
+	PAD_NC(GPP_E16, NONE),
 	/* GPP_E17 : net NC is not present in the given design */
-	PAD_NC(GPP_E17, UP_20K),
+	PAD_NC(GPP_E17, NONE),
 	/* GPP_E22 : [] ==> USB_C0_AUX_DC_P */
 	PAD_CFG_NF(GPP_E22, NONE, DEEP, NF6),
 
@@ -240,13 +240,13 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_F06 : [] ==> WLAN_COEX3 */
 	PAD_CFG_NF(GPP_F06, NONE, DEEP, NF1),
 	/* GPP_F07 : net NC is not present in the given design */
-	PAD_NC(GPP_F07, UP_20K),
+	PAD_NC(GPP_F07, NONE),
 	/* GPP_F08 : [] ==> WLAN_PERST_L */
 	PAD_CFG_GPO(GPP_F08, 1, DEEP),
 	/* GPP_F09 : net NC is not present in the given design */
-	PAD_NC(GPP_F09, UP_20K),
+	PAD_NC(GPP_F09, NONE),
 	/* GPP_F10 : net NC is not present in the given design */
-	PAD_NC(GPP_F10, UP_20K),
+	PAD_NC(GPP_F10, NONE),
 	/* GPP_F11 : [] ==> AV_GPIO_P0 */
 	PAD_CFG_GPO(GPP_F11, 0, DEEP),
 	/* GPP_F12 : [] ==> AV_GPIO_P1 */
@@ -264,30 +264,30 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_F18 : [] ==> AV_GPIO_P7 */
 	PAD_CFG_GPO(GPP_F18, 0, DEEP),
 	/* GPP_F19 : [GPP_F19_STRAP] ==> Component NC */
-	PAD_NC(GPP_F19, UP_20K),
+	PAD_NC(GPP_F19, NONE),
 	/* GPP_F20 : [GPP_F20_STRAP] ==> Component NC */
-	PAD_NC(GPP_F20, UP_20K),
+	PAD_NC(GPP_F20, NONE),
 	/* GPP_F21 : [GPP_F21_STRAP] ==> Component NC */
-	PAD_NC(GPP_F21, UP_20K),
+	PAD_NC(GPP_F21, NONE),
 	/* GPP_F22 : [] ==> GPP_F22_ISH_GP8A */
-	PAD_NC(GPP_F22, UP_20K),
+	PAD_NC(GPP_F22, NONE),
 	/* GPP_F23 : [] ==> GPP_F23_ISH_GP9A */
-	PAD_NC(GPP_F23, UP_20K),
+	PAD_NC(GPP_F23, NONE),
 
 	/* GPP_H00 : GPP_H00_STRAP ==> Component NC */
-	PAD_NC(GPP_H00, UP_20K),
+	PAD_NC(GPP_H00, NONE),
 	/* GPP_H01 : GPP_H01_STRAP ==> Component NC */
-	PAD_NC(GPP_H01, UP_20K),
+	PAD_NC(GPP_H01, NONE),
 	/* GPP_H02 : GPP_H02_STRAP ==> Component NC */
-	PAD_NC(GPP_H02, UP_20K),
+	PAD_NC(GPP_H02, NONE),
 	/* GPP_H04 : [] ==> WLAN_COEX1 */
 	PAD_CFG_NF(GPP_H04, NONE, DEEP, NF2),
 	/* GPP_H05 : [] ==> WLAN_COEX2 */
 	PAD_CFG_NF(GPP_H05, NONE, DEEP, NF2),
 	/* GPP_H06 : net NC is not present in the given design */
-	PAD_NC(GPP_H06, UP_20K),
+	PAD_NC(GPP_H06, NONE),
 	/* GPP_H07 : net NC is not present in the given design */
-	PAD_NC(GPP_H07, UP_20K),
+	PAD_NC(GPP_H07, NONE),
 	/* GPP_H08 : [] ==> UART_DBG_TX_SOC_RX_R */
 	PAD_CFG_NF(GPP_H08, NONE, DEEP, NF1),
 	/* GPP_H09 : [] ==> UART_SOC_TX_DBG_RX_R */
@@ -295,42 +295,42 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_H10 : [] ==> SOC_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER_LOCK(GPP_H10, NONE, LOCK_CONFIG),
 	/* GPP_H11 : net NC is not present in the given design */
-	PAD_NC(GPP_H11, UP_20K),
+	PAD_NC(GPP_H11, NONE),
 	/* GPP_H13 : [] ==> CPU_C10_GATE_L */
 	PAD_CFG_NF(GPP_H13, NONE, DEEP, NF1),
 	/* GPP_H14 : [] ==> SLP_S0_GATE_R */
 	PAD_CFG_GPO(GPP_H14, 1, PLTRST),
 	/* GPP_H15 : net NC is not present in the given design */
-	PAD_NC(GPP_H15, UP_20K),
+	PAD_NC(GPP_H15, NONE),
 	/* GPP_H16 : net NC is not present in the given design */
-	PAD_NC(GPP_H16, UP_20K),
+	PAD_NC(GPP_H16, NONE),
 	/* GPP_H17 : net NC is not present in the given design */
-	PAD_NC(GPP_H17, UP_20K),
+	PAD_NC(GPP_H17, NONE),
 	/* GPP_H19 : net NC is not present in the given design */
-	PAD_NC(GPP_H19, UP_20K),
+	PAD_NC(GPP_H19, NONE),
 	/* GPP_H20 : net NC is not present in the given design */
-	PAD_NC(GPP_H20, UP_20K),
+	PAD_NC(GPP_H20, NONE),
 	/* GPP_H21 : net NC is not present in the given design */
-	PAD_NC(GPP_H21, UP_20K),
+	PAD_NC(GPP_H21, NONE),
 	/* GPP_H22 : net NC is not present in the given design */
-	PAD_NC(GPP_H22, UP_20K),
+	PAD_NC(GPP_H22, NONE),
 
 	/* GPP_S00 : net NC is not present in the given design */
-	PAD_NC(GPP_S00, UP_20K),
+	PAD_NC(GPP_S00, NONE),
 	/* GPP_S01 : net NC is not present in the given design */
-	PAD_NC(GPP_S01, UP_20K),
+	PAD_NC(GPP_S01, NONE),
 	/* GPP_S02 : net NC is not present in the given design */
-	PAD_NC(GPP_S02, UP_20K),
+	PAD_NC(GPP_S02, NONE),
 	/* GPP_S03 : net NC is not present in the given design */
-	PAD_NC(GPP_S03, UP_20K),
+	PAD_NC(GPP_S03, NONE),
 	/* GPP_S04 : net NC is not present in the given design */
-	PAD_NC(GPP_S04, UP_20K),
+	PAD_NC(GPP_S04, NONE),
 	/* GPP_S05 : net NC is not present in the given design */
-	PAD_NC(GPP_S05, UP_20K),
+	PAD_NC(GPP_S05, NONE),
 	/* GPP_S06 : net NC is not present in the given design */
-	PAD_NC(GPP_S06, UP_20K),
+	PAD_NC(GPP_S06, NONE),
 	/* GPP_S07 : net NC is not present in the given design */
-	PAD_NC(GPP_S07, UP_20K),
+	PAD_NC(GPP_S07, NONE),
 
 	/* GPP_V00 : [] ==> BATLOW_L */
 	PAD_CFG_NF(GPP_V00, NONE, DEEP, NF1),
@@ -359,9 +359,9 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_V14 : [] ==> SOC_WAKE_L */
 	PAD_CFG_NF(GPP_V14, NONE, DEEP, NF1),
 	/* GPP_V22 : net NC is not present in the given design */
-	PAD_NC(GPP_V22, UP_20K),
+	PAD_NC(GPP_V22, NONE),
 	/* GPP_V23 : net NC is not present in the given design */
-	PAD_NC(GPP_V23, UP_20K),
+	PAD_NC(GPP_V23, NONE),
 };
 
 /* Early pad configuration in bootblock */

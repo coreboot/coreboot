@@ -6,6 +6,7 @@
 #include <soc/dramc_info.h>
 #include <soc/emi.h>
 #include <soc/gpueb.h>
+#include <soc/mcupm.h>
 #include <soc/mmu_operations.h>
 #include <soc/pcie.h>
 #include <soc/sspm.h>
@@ -35,6 +36,7 @@ static void soc_init(struct device *dev)
 	mtk_mmu_disable_l2c_sram();
 	sspm_init();
 	gpueb_init();
+	mcupm_init();
 }
 
 static struct device_operations soc_ops = {

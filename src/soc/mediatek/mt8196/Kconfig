@@ -57,4 +57,10 @@ config GPUEB_FIRMWARE
 	help
 	  The file name of the MediaTek GPUEB firmware.
 
+config MCUPM_FIRMWARE
+	string
+	default "mcupm.bin"
+	help
+	  The file name of the MediaTek MCUPM firmware.
+
 endif

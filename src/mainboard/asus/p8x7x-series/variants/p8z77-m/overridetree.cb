@@ -3,6 +3,7 @@
 chip northbridge/intel/sandybridge
 	device domain 0 on
 		subsystemid 0x1043 0x84ca inherit
+		device ref peg11 hidden end # These don't exist on this board
 		chip southbridge/intel/bd82x6x # Intel Series 7 Panther Point PCH
 			register "gen1_dec" = "0x000c0291"
 			register "usb_port_config" = "{

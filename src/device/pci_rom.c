@@ -49,6 +49,17 @@ struct rom_header *pci_rom_probe(const struct device *dev)
 	mapped_vendev = map_oprom_vendev(vendev);
 	rom_header = cbfs_boot_map_optionrom(mapped_vendev >> 16, mapped_vendev & 0xffff);
 
+	/* Handle the case of VGA_BIOS_ID not being set to the remapped PCI ID. This is a
+	   workaround that should be removed once the underlying issue is fixed. */
+	if (!rom_header && vendev != mapped_vendev) {
+		rom_header = cbfs_boot_map_optionrom(vendev >> 16, vendev & 0xffff);
+		if (rom_header) {
+			printk(BIOS_NOTICE, "VGA_BIOS_ID should be the remapped PCI ID "
+					    "%04hx,%04hx in the VBIOS file\n",
+			       mapped_vendev >> 16, mapped_vendev & 0xffff);
+		}
+	}
+
 	if (rom_header) {
 		printk(BIOS_DEBUG, "In CBFS, ROM address for %s = %p\n",
 		       dev_path(dev), rom_header);

@@ -14,6 +14,11 @@ chip soc/intel/alderlake
 				.clk_req = 0,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F20)" # M2_SSD2_RST#
+				register "srcclk_pin" = "0" # SSD2_CLKREQ#
+				device generic 0 on end
+			end
 		end
 		device ref pcie4_1 on
 			# CPU RP#3 x4, Clock 4 (SSD1)
@@ -22,6 +27,11 @@ chip soc/intel/alderlake
 				.clk_req = 4,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B16)" # M2_SSD1_RST#
+				register "srcclk_pin" = "4" # SSD1_CLKREQ#
+				device generic 0 on end
+			end
 		end
 		device ref tbt_pcie_rp0 on end
 		device ref tcss_xhci on

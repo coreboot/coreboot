@@ -1,0 +1,103 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/intel/alderlake
+	# Support 5600 MT/s memory
+	register "max_dram_speed_mts" = "5600"
+
+	device domain 0 on
+		subsystemid 0x1558 0x0353 inherit
+
+		device ref xhci on
+			register "usb2_ports" = "{
+				/* Port reset messaging cannot be used,
+				 * so do not use USB2_PORT_TYPE_C for these */
+				[0] = USB2_PORT_MID(OC_SKIP), /* J_TYPEC1 */
+				[1] = USB2_PORT_MID(OC_SKIP), /* J_TYPEC2 */
+				[2] = USB2_PORT_MID(OC_SKIP), /* J_USB2 */
+				[3] = USB2_PORT_MID(OC_SKIP), /* J_USB1 (Audio board) */
+				[6] = USB2_PORT_MID(OC_SKIP), /* Fingerprint */
+				[7] = USB2_PORT_MID(OC_SKIP), /* Camera */
+				[13] = USB2_PORT_MID(OC_SKIP), /* Bluetooth */
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP), /* Type-C */
+				[1] = USB3_PORT_DEFAULT(OC_SKIP), /* Type-C */
+				[2] = USB3_PORT_DEFAULT(OC_SKIP), /* J_USB2 */
+				[3] = USB3_PORT_DEFAULT(OC_SKIP), /* J_USB1 (Audio board) */
+			}"
+		end
+
+		device ref i2c0 on
+			# Touchpad I2C bus
+			register "serial_io_i2c_mode[PchSerialIoIndexI2C0]" = "PchSerialIoPci"
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN0412""
+				register "generic.desc" = ""ELAN Touchpad""
+				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_E7)"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 15 on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""FTCS1000""
+				register "generic.desc" = ""FocalTech Touchpad""
+				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_E7)"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 38 on end
+			end
+		end
+
+		device ref pcie5_0 on
+			# DGPU
+			register "cpu_pcie_rp[CPU_RP(2)]" = "{
+				.clk_src = 14,
+				.clk_req = 14,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+
+		device ref pcie_rp3 on
+			# GLAN
+			register "pch_pcie_rp[PCH_RP(3)]" = "{
+				.clk_src = 13,
+				.clk_req = 13,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			device pci 00.0 on end # Realtek RTL8111H
+		end
+		device ref pcie_rp8 on
+                        # WLAN
+			register "pch_pcie_rp[PCH_RP(8)]" = "{
+				.clk_src = 11,
+				.clk_req = 11,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+		device ref pcie_rp13 on
+			# J_SSD1
+			register "pch_pcie_rp[PCH_RP(13)]" = "{
+				.clk_src = 10,
+				.clk_req = 10,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+		device ref pcie_rp21 on
+			# J_SSD2
+			register "pch_pcie_rp[PCH_RP(21)]" = "{
+				.clk_src = 5,
+				.clk_req = 5,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+		device ref pcie_rp25 on
+			# J_SSD3
+			register "pch_pcie_rp[PCH_RP(25)]" = "{
+				.clk_src = 15,
+				.clk_req = 15,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+	end
+end

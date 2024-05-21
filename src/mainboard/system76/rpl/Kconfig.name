@@ -3,6 +3,9 @@
 config BOARD_SYSTEM76_ADDW3
 	bool "addw3"
 
+config BOARD_SYSTEM76_ADDW4
+	bool "addw3"
+
 config BOARD_SYSTEM76_BONW15
 	bool "bonw15"
 

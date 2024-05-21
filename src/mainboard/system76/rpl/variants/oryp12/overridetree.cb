@@ -1,0 +1,121 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/intel/alderlake
+	# Support 5600 MT/s memory
+	register "max_dram_speed_mts" = "5600"
+
+	device domain 0 on
+		subsystemid 0x1558 0x66a6 inherit
+
+		device ref xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC_SKIP),		// J_AUD1
+				[2] = USB2_PORT_MID(OC_SKIP),		// J_TYPEC2
+				[5] = USB2_PORT_MID(OC_SKIP),		// J_USB1
+				[7] = USB2_PORT_MID(OC_SKIP),		// Camera
+				[8] = USB2_PORT_MID(OC_SKIP),		// J_TYPEC1 (TBT)
+				[13] = USB2_PORT_MID(OC_SKIP),		// Bluetooth
+			}"
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	// J_AUD1
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),	// J_USB1
+				[3] = USB3_PORT_DEFAULT(OC_SKIP),	// J_TYPEC2
+			}"
+		end
+
+		device ref i2c0 on
+			# Touchpad I2C bus
+			register "serial_io_i2c_mode[PchSerialIoIndexI2C0]" = "PchSerialIoPci"
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN0412""
+				register "generic.desc" = ""ELAN Touchpad""
+				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_E7)"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 15 on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""FTCS1000""
+				register "generic.desc" = ""FocalTech Touchpad""
+				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_E7)"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 38 on end
+			end
+		end
+		device ref i2c1 on
+			# Thunderbolt
+			register "serial_io_i2c_mode[PchSerialIoIndexI2C1]" = "PchSerialIoPci"
+		end
+		device ref i2c2 on
+			# Pantone
+			register "serial_io_i2c_mode[PchSerialIoIndexI2C2]" = "PchSerialIoPci"
+		end
+		device ref i2c3 on
+			# TAS5825M smart amp
+			register "serial_io_i2c_mode[PchSerialIoIndexI2C3]" = "PchSerialIoPci"
+			chip drivers/i2c/tas5825m
+				register "id" = "0"
+				device i2c 4e on end # (8bit address: 0x9c)
+			end
+		end
+
+		device ref pcie5_0 on
+			# GPU
+			register "cpu_pcie_rp[CPU_RP(2)]" = "{
+				.clk_src = 14,
+				.clk_req = 14,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+		device ref pcie_rp3 on
+			# GLAN
+			register "pch_pcie_rp[PCH_RP(3)]" = "{
+				.clk_src = 13,
+				.clk_req = 13,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+		device ref pcie_rp5 on
+			# CARD
+			register "pch_pcie_rp[PCH_RP(5)]" = "{
+				.clk_src = 12,
+				.clk_req = 12,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_HOTPLUG,
+			}"
+		end
+		device ref pcie_rp8 on
+			# WLAN
+			register "pch_pcie_rp[PCH_RP(8)]" = "{
+				.clk_src = 11,
+				.clk_req = 11,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+		device ref pcie_rp9 on
+			# SSD1
+			register "pch_pcie_rp[PCH_RP(9)]" = "{
+				.clk_src = 10,
+				.clk_req = 10,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+		device ref pcie_rp13 on
+			# SSD2
+			register "pch_pcie_rp[PCH_RP(13)]" = "{
+				.clk_src = 9,
+				.clk_req = 9,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+		device ref pcie_rp25 on
+			# TBT
+			# XXX: AER causes UnsupReq warnings
+			register "pch_pcie_rp[PCH_RP(25)]" = "{
+				.clk_src = 15,
+				.clk_req = 15,
+				.flags = PCIE_RP_LTR | PCIE_RP_HOTPLUG,
+			}"
+		end
+	end
+end

@@ -1,5 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#ifndef PHOENIX_CHIP_OPENSIL_H
+#define PHOENIX_CHIP_OPENSIL_H
+
 #include <types.h>
 
 #define DDI_DESCRIPTOR_COUNT	5
@@ -78,3 +81,5 @@ struct usb_phy_config {
 	uint8_t			PhyP3CpmP4Support;                 ///< bit[1:0]-Usb0 Port[1:0], bit[3:2]-Usb1 Port[1:0]
 	uint8_t			ComboPhyStaticConfig[USBC_COMBO_PHY_COUNT]; ///< 0-Type C, 1- USB only mode, 2- DP only mode, 3- USB + DP
 };
+
+#endif /* PHOENIX_CHIP_OPENSIL_H */

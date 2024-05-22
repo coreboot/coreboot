@@ -21,3 +21,4 @@ CONFIG_IFD_BIN_PATH="site-local/archercity/descriptor.bin"
 CONFIG_ME_BIN_PATH="site-local/archercity/me.bin"
 CONFIG_CPU_UCODE_BINARIES="site-local/archercity/mbf806f8.mcb"
 CONFIG_VALIDATE_INTEL_DESCRIPTOR=y
+CONFIG_NO_GFX_INIT=y

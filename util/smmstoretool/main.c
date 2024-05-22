@@ -123,6 +123,8 @@ static void print_types(FILE *f)
 	fprintf(f, "Types and their values:\n");
 	fprintf(f, " * bool (true, false)\n");
 	fprintf(f, " * uint8 (0-255)\n");
+	fprintf(f, " * uint16 (0-65535)\n");
+	fprintf(f, " * uint32 (0-4294967295)\n");
 	fprintf(f, " * ascii (NUL-terminated)\n");
 	fprintf(f, " * unicode (widened and NUL-terminated)\n");
 	fprintf(f, " * raw (output only; raw bytes on output)\n");

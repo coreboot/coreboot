@@ -194,9 +194,6 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 			Value: "\\_SB.PCI0.GFX0.DECB",
 		})
 
-	/* SPI init */
-	MainboardIncludes = append(MainboardIncludes, "southbridge/intel/bd82x6x/pch.h")
-
 	FADT := ctx.InfoSource.GetACPI()["FACP"]
 
 	pcieHotplugMap := "{ "

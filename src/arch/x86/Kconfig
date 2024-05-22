@@ -422,4 +422,21 @@ config X86_BOOTBLOCK_EXTRA_PROGRAM_SZ
 
 	  The default value is 1024 bytes (1 KiB) for ChromeOS and 0 for other platforms.
 
+config DEFAULT_EBDA_LOWMEM
+	hex
+	default 0x100000
+	help
+	  The default value of EBDA low memory is (1024 << 10).
+
+config DEFAULT_EBDA_SEGMENT
+	hex
+	default 0xF600
+	help
+	  The default value of EBDA segment is 0xF600.
+
+config DEFAULT_EBDA_SIZE
+	hex
+	default 0x400
+	help
+	  The default value of EBDA size is 0x400.
 endif

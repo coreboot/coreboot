@@ -10,14 +10,9 @@
 #define X86_EBDA_SEGMENT	((void *)0x40e)
 #define X86_EBDA_LOWMEM		((void *)0x413)
 
-#define DEFAULT_EBDA_LOWMEM	(1024 << 10)
-#define DEFAULT_EBDA_SEGMENT	0xF600
-#define DEFAULT_EBDA_SIZE	0x400
-
-
 static void *get_ebda_start(void)
 {
-	return (void *)((uintptr_t)DEFAULT_EBDA_SEGMENT << 4);
+	return (void *)((uintptr_t)CONFIG_DEFAULT_EBDA_SEGMENT << 4);
 }
 
 /*
@@ -55,9 +50,9 @@ static void setup_default_ebda(void *unused)
 	if (acpi_is_wakeup_s3())
 		return;
 
-	setup_ebda(DEFAULT_EBDA_LOWMEM,
-		   DEFAULT_EBDA_SEGMENT,
-		   DEFAULT_EBDA_SIZE);
+	setup_ebda(CONFIG_DEFAULT_EBDA_LOWMEM,
+		   CONFIG_DEFAULT_EBDA_SEGMENT,
+		   CONFIG_DEFAULT_EBDA_SIZE);
 }
 
 /* Ensure EBDA is prepared before Option ROMs. */

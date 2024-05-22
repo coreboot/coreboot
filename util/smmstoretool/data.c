@@ -57,6 +57,16 @@ void print_data(const uint8_t data[], size_t data_size, enum data_type type)
 		if (data_size >= 4)
 			printf("%u\n", *(uint32_t *)data);
 		break;
+	case DATA_TYPE_UINT64:
+		if (data_size != 8) {
+			fprintf(stderr,
+				"warning: expected size of 8, got %zu\n",
+				data_size);
+		}
+
+		if (data_size >= 8)
+			printf("%llu\n", (unsigned long long)*(uint64_t *)data);
+		break;
 	case DATA_TYPE_ASCII:
 		for (size_t i = 0; i < data_size; ++i) {
 			char c = data[i];
@@ -78,20 +88,24 @@ void print_data(const uint8_t data[], size_t data_size, enum data_type type)
 
 static uint64_t parse_uint(const char source[],
 			   const char type[],
-			   unsigned long long max)
+			   unsigned long long max,
+			   bool *failed)
 {
 	char *end;
 	unsigned long long uint = strtoull(source, &end, /*base=*/0);
 	if (*end != '\0') {
 		fprintf(stderr, "Trailing characters in \"%s\": %s\n",
 			source, end);
-		return UINT64_MAX;
+		*failed = true;
+		return 0;
 	}
 	if (uint > max) {
 		fprintf(stderr, "Invalid %s value: %llu\n", type, uint);
-		return UINT64_MAX;
+		*failed = true;
+		return 0;
 	}
 
+	*failed = false;
 	return uint;
 }
 
@@ -100,7 +114,8 @@ void *make_data(const char source[], size_t *data_size, enum data_type type)
 	switch (type) {
 	void *data;
 	bool boolean;
-	unsigned long long uint;
+	uint64_t uint;
+	bool failed;
 
 	case DATA_TYPE_BOOL:
 		if (str_eq(source, "true")) {
@@ -118,8 +133,8 @@ void *make_data(const char source[], size_t *data_size, enum data_type type)
 		*(uint8_t *)data = boolean;
 		return data;
 	case DATA_TYPE_UINT8:
-		uint = parse_uint(source, "uint8", UINT8_MAX);
-		if (uint == UINT64_MAX)
+		uint = parse_uint(source, "uint8", UINT8_MAX, &failed);
+		if (failed)
 			return NULL;
 
 		*data_size = 1;
@@ -127,8 +142,8 @@ void *make_data(const char source[], size_t *data_size, enum data_type type)
 		*(uint8_t *)data = uint;
 		return data;
 	case DATA_TYPE_UINT16:
-		uint = parse_uint(source, "uint16", UINT16_MAX);
-		if (uint == UINT64_MAX)
+		uint = parse_uint(source, "uint16", UINT16_MAX, &failed);
+		if (failed)
 			return NULL;
 
 		*data_size = 2;
@@ -136,13 +151,22 @@ void *make_data(const char source[], size_t *data_size, enum data_type type)
 		*(uint16_t *)data = uint;
 		return data;
 	case DATA_TYPE_UINT32:
-		uint = parse_uint(source, "uint32", UINT32_MAX);
-		if (uint == UINT64_MAX)
+		uint = parse_uint(source, "uint32", UINT32_MAX, &failed);
+		if (failed)
 			return NULL;
 
 		*data_size = 4;
 		data = xmalloc(*data_size);
 		*(uint32_t *)data = uint;
+		return data;
+	case DATA_TYPE_UINT64:
+		uint = parse_uint(source, "uint64", UINT64_MAX, &failed);
+		if (failed)
+			return NULL;
+
+		*data_size = 8;
+		data = xmalloc(*data_size);
+		*(uint64_t *)data = uint;
 		return data;
 	case DATA_TYPE_ASCII:
 		*data_size = strlen(source) + 1;
@@ -167,6 +191,8 @@ bool parse_data_type(const char str[], enum data_type *type)
 		*type = DATA_TYPE_UINT16;
 	else if (str_eq(str, "uint32"))
 		*type = DATA_TYPE_UINT32;
+	else if (str_eq(str, "uint64"))
+		*type = DATA_TYPE_UINT64;
 	else if (str_eq(str, "ascii"))
 		*type = DATA_TYPE_ASCII;
 	else if (str_eq(str, "unicode"))

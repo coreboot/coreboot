@@ -30,6 +30,12 @@ chip soc/intel/meteorlake
 	# Temporary setting TCC of 105C = Tj max (110) - TCC_Offset (5)
 	register "tcc_offset" = "5"
 
+	register "power_limits_config[MTL_P_682_482_CORE]" = "{
+		.tdp_pl1_override = 33,
+		.tdp_pl2_override = 64,
+		.tdp_pl4 = 120,
+	}"
+
 	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C1] = PchSerialIoDisabled,

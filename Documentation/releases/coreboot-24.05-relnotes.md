@@ -149,6 +149,7 @@ Platform Updates
 ### Updated SoCs
 
 * Added src/soc/ibm/power9
+* Added src/soc/intel/xeon_sp/gnr
 * Added src/soc/sifive/fu740
 
 
@@ -156,15 +157,15 @@ Platform Updates
 Statistics from the 24.02 to the 24.05 release
 --------------------------------------------
 
-* Total Commits: 722
-* Average Commits per day: 8.55
-* Total lines added: 302523
-* Average lines added per commit: 419.01
-* Number of patches adding more than 100 lines: 57
-* Average lines added per small commit: 37.80
-* Total lines removed: 16089
-* Average lines removed per commit: 22.28
-* Total difference between added and removed: 286434
+* Total Commits: 739
+* Average Commits per day: 8.64
+* Total lines added: 304721
+* Average lines added per commit: 412.34
+* Number of patches adding more than 100 lines: 60
+* Average lines added per small commit: 37.74
+* Total lines removed: 16195
+* Average lines removed per commit: 21.91
+* Total difference between added and removed: 288526
 * Total authors: 131
 * New authors: 23
 

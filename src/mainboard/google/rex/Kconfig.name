@@ -32,6 +32,9 @@ config BOARD_GOOGLE_REX4ES
 config BOARD_GOOGLE_REX4ES_EC_ISH
 	bool "-> Rex4ES EC ISH"
 
+config BOARD_GOOGLE_REX64
+	bool "-> Rex 64"
+
 config BOARD_GOOGLE_SCREEBO
 	bool "->  Screebo"
 

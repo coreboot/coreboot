@@ -16,19 +16,24 @@ static const struct pad_config early_gpio_table[] = {
 	/* TODO */
 };
 
-const struct pad_config *__weak variant_gpio_table(size_t *num)
+/* Fill romstage gpio configuration */
+static const struct pad_config romstage_gpio_table[] = {
+	/* TODO */
+};
+
+const struct pad_config *variant_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(gpio_table);
 	return gpio_table;
 }
 
-const struct pad_config *__weak variant_gpio_override_table(size_t *num)
+const struct pad_config *variant_gpio_override_table(size_t *num)
 {
 	*num = 0;
 	return NULL;
 }
 
-const struct pad_config *__weak variant_early_gpio_table(size_t *num)
+const struct pad_config *variant_early_gpio_table(size_t *num)
 {
 	*num = ARRAY_SIZE(early_gpio_table);
 	return early_gpio_table;
@@ -39,8 +44,8 @@ static const struct cros_gpio cros_gpios[] = {
 };
 DECLARE_CROS_GPIOS(cros_gpios);
 
-const struct pad_config *__weak variant_romstage_gpio_table(size_t *num)
+const struct pad_config *variant_romstage_gpio_table(size_t *num)
 {
-	*num = 0;
-	return NULL;
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
 }

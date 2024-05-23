@@ -27,6 +27,9 @@ chip soc/intel/meteorlake
 		[DDI_PORT_4] = DDI_ENABLE_HPD,
 	}"
 
+	# Temporary setting TCC of 105C = Tj max (110) - TCC_Offset (5)
+	register "tcc_offset" = "5"
+
 	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C1] = PchSerialIoDisabled,

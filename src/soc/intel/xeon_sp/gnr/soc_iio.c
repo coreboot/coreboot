@@ -1,7 +1,6 @@
  /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <soc/iio.h>
-#include <string.h>
 
 #include <fsp/util.h>
 #include <IioPcieConfigUpd.h>

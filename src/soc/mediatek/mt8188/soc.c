@@ -15,7 +15,7 @@
 #include <symbols.h>
 
 #define OPTEE_ADDRESS		0x43000000
-#define OPTEE_SIZE		(80 * MiB)
+#define OPTEE_SIZE		(70 * MiB)
 
 void bootmem_platform_add_ranges(void)
 {

@@ -11,7 +11,7 @@ LINTDIR="$(
 # shellcheck source=helper_functions.sh
 . "${LINTDIR}/helper_functions.sh"
 
-EXCLUDELIST='^src/vendorcode/|^util/kconfig/|^util/nvidia/cbootimage|^util/goswid|__pycache__|COPYING|LICENSE|README|_shipped$|\.patch$|\.bin$|\.hex$|\.jpg$|\.gif$|\.ttf$|\.woff$|\.png$|\.eot$|\.vbt$|\.ico$|\.md$|\.apcb$'
+EXCLUDELIST='^src/vendorcode/|^util/kconfig/|^util/nvidia/cbootimage|^util/goswid|__pycache__|COPYING|LICENSE|README|_shipped$|\.patch$|\.bin$|\.hex$|\.jpg$|\.gif$|\.ttf$|\.woff$|\.png$|\.eot$|\.vbt$|\.ico$|\.md$|\.apcb$|\.dtb$'
 INCLUDELIST="src util payloads Makefile* toolchain.mk tests"
 
 # shellcheck disable=SC2086,SC2046

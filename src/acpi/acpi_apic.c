@@ -11,7 +11,7 @@ static int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic)
 {
 	lapic->type = LOCAL_APIC; /* Local APIC structure */
 	lapic->length = sizeof(acpi_madt_lapic_t);
-	lapic->flags = (1 << 0); /* Processor/LAPIC enabled */
+	lapic->flags = ACPI_MADT_LAPIC_ENABLED;
 	lapic->processor_id = cpu;
 	lapic->apic_id = apic;
 
@@ -23,7 +23,7 @@ static int acpi_create_madt_lx2apic(acpi_madt_lx2apic_t *lapic, u32 cpu, u32 api
 	lapic->type = LOCAL_X2APIC; /* Local APIC structure */
 	lapic->reserved = 0;
 	lapic->length = sizeof(acpi_madt_lx2apic_t);
-	lapic->flags = (1 << 0); /* Processor/LAPIC enabled */
+	lapic->flags = ACPI_MADT_LAPIC_ENABLED;
 	lapic->processor_id = cpu;
 	lapic->x2apic_id = apic;
 

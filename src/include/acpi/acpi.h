@@ -726,6 +726,10 @@ typedef struct acpi_madt_lapic {
 
 #define ACPI_MADT_MAX_LAPIC_ID		0xfe
 
+/* MADT Local APIC Feature Flags */
+#define ACPI_MADT_LAPIC_ENABLED		(1 << 0)
+#define ACPI_MADT_LAPIC_ONLINE_CAPABLE	(1 << 1)
+
 /* MADT: Local APIC NMI Structure */
 typedef struct acpi_madt_lapic_nmi {
 	u8 type;			/* Type (4) */

@@ -12,7 +12,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_PIRQ_TABLE
 	select HAVE_ACPI_TABLES
 	select BOARD_ROMSIZE_KB_4096 if !VBOOT
-	select BOARD_ROMSIZE_KB_16384 if VBOOT
+	select BOARD_ROMSIZE_KB_8192 if VBOOT
 	select MAINBOARD_HAS_NATIVE_VGA_INIT
 	select MAINBOARD_FORCE_NATIVE_VGA_INIT
 	select HAVE_ASAN_IN_ROMSTAGE
@@ -52,7 +52,7 @@ config VBOOT_SLOTS_RW_A
 endif
 
 config FMDFILE
-	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwa-16M.fmd" if VBOOT_SLOTS_RW_A
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwa-8M.fmd" if VBOOT_SLOTS_RW_A
 
 config VBOOT_VBNV_OFFSET
 	hex

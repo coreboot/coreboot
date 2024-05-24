@@ -10,7 +10,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select HAVE_OPTION_TABLE
 #	select HAVE_PIRQ_TABLE
 	select HAVE_ACPI_TABLES
-	select BOARD_ROMSIZE_KB_16384
+	select BOARD_ROMSIZE_KB_8192
 	select MAINBOARD_HAS_NATIVE_VGA_INIT
 	select MAINBOARD_FORCE_NATIVE_VGA_INIT if !CHROMEOS
 	select MEMORY_MAPPED_TPM
@@ -29,8 +29,8 @@ config VBOOT
 	select GBB_FLAG_DISABLE_FWMP
 
 config FMDFILE
-	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwa-16M.fmd" if VBOOT_SLOTS_RW_A && !VBOOT_SLOTS_RW_AB
-	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwab-16M.fmd" if VBOOT_SLOTS_RW_AB
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwa-8M.fmd" if VBOOT_SLOTS_RW_A && !VBOOT_SLOTS_RW_AB
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwab-8M.fmd" if VBOOT_SLOTS_RW_AB
 
 if ARCH_BOOTBLOCK_X86_64
 

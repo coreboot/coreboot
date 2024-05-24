@@ -130,14 +130,7 @@ static int acpi_create_madt_sci_override(acpi_madt_irqoverride_t *irqoverride)
 	if (!CONFIG(ACPI_HAVE_PCAT_8259))
 		irq = gsi;
 
-	irqoverride->type = IRQ_SOURCE_OVERRIDE; /* Interrupt source override */
-	irqoverride->length = sizeof(acpi_madt_irqoverride_t);
-	irqoverride->bus = MP_BUS_ISA;
-	irqoverride->source = irq;
-	irqoverride->gsirq = gsi;
-	irqoverride->flags = flags;
-
-	return irqoverride->length;
+	return acpi_create_madt_irqoverride(irqoverride, MP_BUS_ISA, irq, gsi, flags);
 }
 
 static unsigned long acpi_create_madt_ioapic_gsi0_default(unsigned long current)

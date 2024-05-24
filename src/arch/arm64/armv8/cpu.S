@@ -16,6 +16,9 @@
 	mov	w10, #0				// w10 = 2 * cache level
 	mov	w8, #1				// w8 = constant 0b1
 
+	mrs	x12, id_aa64mmfr2_el1		// read ID_AA64MMFR2_EL1
+	ubfx	x12, x12, #20, #4		// [23:20] - CCIDX support
+
 1:	//next_level
 	add	w2, w10, w10, lsr #1		// calculate 3 * cache level
 	lsr	w1, w0, w2			// extract 3-bit cache type for this level
@@ -27,8 +30,14 @@
 	mrs	x1, ccsidr_el1			// w1 = read ccsidr
 	and	w2, w1, #7			// w2 = log2(linelen_bytes) - 4
 	add	w2, w2, #4			// w2 = log2(linelen_bytes)
-	ubfx	w4, w1, #3, #10			// w4 = associativity - 1 (also
-						// max way number)
+
+	cbz	x12, 11f			// check FEAT_CCIDX for associativity
+						// branch to 11 if FEAT_CCIDX is not implemented
+	ubfx	x4, x1, #3, #21			// x4 = associativity CCSIDR_EL1[23:3]
+	b	12f
+11:
+	ubfx	x4, x1, #3, #10			// x4 = associativity CCSIDR_EL1[12:3]
+12:
 	clz	w5, w4				// w5 = 32 - log2(ways)
 						// (bit position of way in DC)
 	lsl	w9, w4, w5			// w9 = max way number
@@ -36,7 +45,13 @@
 	lsl	w16, w8, w5			// w16 = amount to decrement (way
 						// number per iteration)
 2:	//next_way
-	ubfx	w7, w1, #13, #15		// w7 = max set #, right aligned
+	cbz	x12, 21f			// check FEAT_CCIDX for numsets
+						// branch to 21 if FEAT_CCIDX is not implemented
+	ubfx	x7, x1, #32, #24		// x7(w7) = numsets CCSIDR_EL1[55:32]
+	b	22f
+21:
+	ubfx	w7, w1, #13, #15		// w7 = numsets CCSIDR_EL1[27:13]
+22:
 	lsl	w7, w7, w2			// w7 = max set #, DC aligned
 	lsl	w17, w8, w2			// w17 = amount to decrement (set
 						// number per iteration)

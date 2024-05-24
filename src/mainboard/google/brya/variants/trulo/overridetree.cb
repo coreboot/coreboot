@@ -1,4 +1,8 @@
 chip soc/intel/alderlake
-        device domain 0 on
-        end
+
+    register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC1)"	# USB3/2 Type A port A0
+    register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC2)"	# USB3/2 Type A port A1
+
+    device domain 0 on
+    end
 end

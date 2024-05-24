@@ -8,7 +8,10 @@
 
 /* Pad configuration in ramstage */
 static const struct pad_config gpio_table[] = {
-	/* TODO */
+	/* A14 : USB_OC1# ==> USB_A0_FAULT_ODL */
+	PAD_CFG_NF_LOCK(GPP_A14, NONE, NF1, LOCK_CONFIG),
+	/* A15 : USB_OC2# ==> USB_A1_FAULT_ODL */
+	PAD_CFG_NF_LOCK(GPP_A15, NONE, NF1, LOCK_CONFIG),
 };
 
 /* Early pad configuration in bootblock */

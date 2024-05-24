@@ -234,7 +234,7 @@ unsigned long acpi_arch_fill_madt(acpi_madt_t *madt, unsigned long current)
 	madt->lapic_addr = cpu_get_lapic_addr();
 
 	if (CONFIG(ACPI_HAVE_PCAT_8259))
-		madt->flags |= 1;
+		madt->flags |= ACPI_MADT_PCAT_COMPAT;
 
 	if (CONFIG(ACPI_COMMON_MADT_LAPIC))
 		current = acpi_create_madt_lapics_with_nmis(current);

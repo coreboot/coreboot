@@ -458,6 +458,9 @@ typedef struct acpi_madt {
 	u32 flags;			/* Multiple APIC flags */
 } __packed acpi_madt_t;
 
+/* MADT Feature Flags */
+#define ACPI_MADT_PCAT_COMPAT	(1 << 0)
+
 /*
  * LPIT (Low Power Idle Table)
  * Conforms to "Intel Low Power S0 Idle" specification, rev 002 from July 2017.

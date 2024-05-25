@@ -294,13 +294,12 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 	defer sb.Close()
 	Add_gpl(sb)
 
-	sb.WriteString(`
-#include <bootblock_common.h>
+	sb.WriteString(`#include <bootblock_common.h>
 #include <device/pci_ops.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 
 `)
-	sb.WriteString("const struct southbridge_usb_port mainboard_usb_ports[] = {\n")
+	usbPortConfig := "{\n"
 
 	currentMap := map[uint32]int{
 		0x20000153: 0,
@@ -331,17 +330,20 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 			}
 		}
 		current, ok := currentMap[inteltool.RCBA[uint16(0x3500+4*port)]]
-		comment := ""
 		if !ok {
-			comment = fmt.Sprintf("// FIXME: Unknown current: RCBA(0x%x)=0x%x", 0x3500+4*port, uint16(0x3500+4*port))
+			usbPortConfig += fmt.Sprintf("\t\t\t\t{%d, 0x%x, %d},\n",
+				((inteltool.RCBA[0x359c]>>port)&1)^1,
+				inteltool.RCBA[uint16(0x3500+4*port)] & 0xfff,
+				OCPin)
+		} else {
+			usbPortConfig += fmt.Sprintf("\t\t\t\t{%d, %d, %d},\n",
+				((inteltool.RCBA[0x359c]>>port)&1)^1,
+				current,
+				OCPin)
 		}
-		fmt.Fprintf(sb, "\t{ %d, %d, %d }, %s\n",
-			((inteltool.RCBA[0x359c]>>port)&1)^1,
-			current,
-			OCPin,
-			comment)
 	}
-	sb.WriteString("};\n")
+	usbPortConfig += "\t\t\t}"
+	cur.Registers["usb_port_config"] = usbPortConfig
 
 	sb.WriteString(`
 void bootblock_mainboard_early_init(void)

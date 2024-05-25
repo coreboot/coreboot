@@ -6,6 +6,40 @@ chip soc/intel/alderlake
 	# EC memory map range is 0x900-0x9ff
 	register "gen3_dec" = "0x00fc0901"
 
+	register "usb2_ports[0]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 0
+	register "usb2_ports[1]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 1
+	register "usb2_ports[2]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 2
+	register "usb2_ports[3]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 3
+	register "usb2_ports[4]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 4
+	register "usb2_ports[5]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 5
+	register "usb2_ports[6]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 6
+	register "usb2_ports[7]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 7
+	register "usb2_ports[8]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 8
+	register "usb2_ports[9]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 9
+	register "usb2_ports[10]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 10
+	register "usb2_ports[11]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 11
+	register "usb2_ports[12]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 12
+	register "usb2_ports[13]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 13
+	register "usb2_ports[14]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 14
+	register "usb2_ports[15]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 15
+
+	register "usb3_ports[0]" = "USB3_PORT_EMPTY"	# Disable USB3.0 Port 0
+	register "usb3_ports[1]" = "USB3_PORT_EMPTY"	# Disable USB3.0 Port 2
+	register "usb3_ports[2]" = "USB3_PORT_EMPTY"	# Disable USB3.0 Port 3
+	register "usb3_ports[3]" = "USB3_PORT_EMPTY"	# Disable USB3.0 Port 4
+	register "usb3_ports[4]" = "USB3_PORT_EMPTY"	# Disable USB3.0 Port 5
+	register "usb3_ports[5]" = "USB3_PORT_EMPTY"	# Disable USB3.0 Port 6
+	register "usb3_ports[6]" = "USB3_PORT_EMPTY"	# Disable USB3.0 Port 7
+	register "usb3_ports[7]" = "USB3_PORT_EMPTY"	# Disable USB3.0 Port 8
+	register "usb3_ports[8]" = "USB3_PORT_EMPTY"	# Disable USB3.0 Port 9
+	register "usb3_ports[9]" = "USB3_PORT_EMPTY"	# Disable USB3.0 Port 10
+
+	register "tcss_ports[0]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 0
+	register "tcss_ports[1]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 1
+	register "tcss_ports[2]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 2
+	register "tcss_ports[3]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 3
+
+
 	device domain 0 on
 	end
 end

@@ -584,7 +584,13 @@ enum smbios_processor_upgrade_field {
 /* defines for processor family */
 #define SMBIOS_PROCESSOR_FAMILY_OTHER			0x01
 #define SMBIOS_PROCESSOR_FAMILY_UNKNOWN			0x02
+#define SMBIOS_PROCESSOR_FAMILY_INTEL486		0x06
+#define SMBIOS_PROCESSOR_FAMILY_PENTIUM_PRO		0x0c
 #define SMBIOS_PROCESSOR_FAMILY_XEON			0xb3
+#define SMBIOS_PROCESSOR_FAMILY_FROM_FAMILY2		0xfe
+
+/* defines for processor family 2 */
+#define SMBIOS_PROCESSOR_FAMILY2_ARMV8			0x101
 
 /* defines for processor characteristics */
 #define PROCESSOR_64BIT_CAPABLE				(1 << 2)

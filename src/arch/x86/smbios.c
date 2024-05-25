@@ -68,7 +68,7 @@ static int get_socket_type(void)
 
 unsigned int __weak smbios_processor_family(struct cpuid_result res)
 {
-	return (res.eax > 0) ? 0x0c : 0x6;
+	return (res.eax > 0) ? SMBIOS_PROCESSOR_FAMILY_PENTIUM_PRO : SMBIOS_PROCESSOR_FAMILY_INTEL486;
 }
 
 static size_t get_number_of_caches(size_t max_logical_cpus_sharing_cache)

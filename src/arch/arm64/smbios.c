@@ -66,8 +66,8 @@ int smbios_write_type4(unsigned long *current, int handle)
 	smbios_processor_id(t->processor_id);
 	t->processor_manufacturer = smbios_processor_manufacturer(t->eos);
 	t->processor_version = smbios_processor_name(t->eos);
-	t->processor_family = 0xfe; /* Use processor_family2 field */
-	t->processor_family2 = 0x101; /* ARMv8 */
+	t->processor_family = SMBIOS_PROCESSOR_FAMILY_FROM_FAMILY2;
+	t->processor_family2 = SMBIOS_PROCESSOR_FAMILY2_ARMV8;
 	t->processor_type = SMBIOS_PROCESSOR_TYPE_CENTRAL;
 
 	smbios_cpu_get_core_counts(&t->core_count2, &t->thread_count2);

@@ -126,7 +126,7 @@ int smbios_write_type4(unsigned long *current, int handle)
 	t->processor_manufacturer = smbios_cpu_vendor(t->eos);
 	t->processor_version = smbios_processor_name(t->eos);
 	t->processor_family = smbios_processor_family(res);
-	t->processor_type = 3; /* System Processor */
+	t->processor_type = SMBIOS_PROCESSOR_TYPE_CENTRAL;
 	/*
 	 * If CPUID leaf 11 is available, calculate "core count" by dividing
 	 * SMT_ID (logical processors in a core) by Core_ID (number of cores).

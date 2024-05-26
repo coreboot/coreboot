@@ -923,6 +923,9 @@ static bool is_cse_fw_update_enabled(void)
 	if (!CONFIG(SOC_INTEL_CSE_RW_UPDATE))
 		return false;
 
+	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_BY_PAYLOAD))
+		return false;
+
 	if (CONFIG(SOC_INTEL_COMMON_BASECODE_DEBUG_FEATURE))
 		return !is_debug_cse_fw_update_disable();
 
@@ -1499,6 +1502,9 @@ static void do_cse_fw_sync(void)
 
 void cse_fw_sync(void)
 {
+	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_BY_PAYLOAD))
+		return;
+
 	timestamp_add_now(TS_CSE_FW_SYNC_START);
 	do_cse_fw_sync();
 	timestamp_add_now(TS_CSE_FW_SYNC_END);

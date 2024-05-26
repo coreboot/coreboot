@@ -150,6 +150,16 @@ config SOC_INTEL_CSE_SEND_EOP_BY_PAYLOAD
 	  In this case, the HECI interface needs to stay visible and the payload must support
 	  sending commands to CSE.
 
+config SOC_INTEL_CSE_LITE_SYNC_BY_PAYLOAD
+	bool
+	depends on SOC_INTEL_COMMON_BLOCK_CSE
+	help
+	  Use this config to specify that the payload will update the CSE RW partition instead
+	  of coreboot.
+
+	  In this case, CSE shall not switch to RW partition and the payload must support
+	  CSE RW update.
+
 config SOC_INTEL_CSE_LITE_SKU
 	bool
 	default n

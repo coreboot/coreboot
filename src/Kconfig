@@ -506,42 +506,38 @@ config BOOTSPLASH_CONVERT_COLORSWAP
 	  If your colors seem all wrong, try this option.
 
 config FW_CONFIG
-	bool "Firmware Configuration Probing"
-	default n
+	bool
 	help
 	  Enable support for probing devices with fw_config.  This is a simple
 	  bitmask broken into fields and options for probing.
+	  Select this option in the Mainboard Kconfig.
 
 config FW_CONFIG_SOURCE_CHROMEEC_CBI
-	bool "Obtain Firmware Configuration value from Google Chrome EC CBI"
+	bool
 	depends on FW_CONFIG && EC_GOOGLE_CHROMEEC
-	default n
 	help
 	  This option tells coreboot to read the firmware configuration value
 	  from the Google Chrome Embedded Controller CBI interface.  This source
 	  is not tried if FW_CONFIG_SOURCE_CBFS is enabled and the value was
 	  found in CBFS.
+	  Select this option in the Mainboard Kconfig.
 
 config FW_CONFIG_SOURCE_CBFS
 	bool "Obtain Firmware Configuration value from CBFS"
 	depends on FW_CONFIG
-	default n
 	help
 	  With this option enabled coreboot will look for the 32bit firmware
 	  configuration value in CBFS at the selected prefix with the file name
-	  "fw_config".  This option will override other sources and allow the
-	  local image to preempt the mainboard selected source and can be used as
-	  FW_CONFIG_SOURCE_CHROMEEC_CBI fallback option.
+	  "fw_config".  This option gets run if no value is found with CBI, so acts
+	  as a FW_CONFIG_SOURCE_CHROMEEC_CBI fallback option.
 
 config FW_CONFIG_SOURCE_VPD
 	bool "Obtain Firmware Configuration value from VPD"
 	depends on FW_CONFIG && VPD
-	default n
 	help
 	  With this option enabled coreboot will look for the 32bit firmware
-	  configuration value in VPD key name "fw_config".  This option will
-	  override other sources and allow the local image to preempt the mainboard
-	  selected source and can be used for other FW_CONFIG_SOURCEs fallback option.
+	  configuration value in VPD key name "fw_config".  This option runs if no
+	  FW_CONFIG value is set by either CBI or CBFS.
 
 config HAVE_RAMPAYLOAD
 	bool

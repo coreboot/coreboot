@@ -2,7 +2,6 @@
 
 #include <console/vtxprintf.h>
 #include <stdio.h>
-#include <string.h>
 
 struct vsnprintf_context {
 	char *str_buf;

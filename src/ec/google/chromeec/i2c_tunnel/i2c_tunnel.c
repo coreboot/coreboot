@@ -6,7 +6,7 @@
 #include <device/device.h>
 #include <device/path.h>
 #include <stdio.h>
-#include <string.h>
+
 #include "chip.h"
 
 #define CROS_EC_I2C_TUNNEL_HID		"GOOG0012"

@@ -2,7 +2,7 @@
 
 #include <acpi/acpigen.h>
 #include <stdio.h>
-#include <string.h>
+
 #include "i915.h"
 
 void

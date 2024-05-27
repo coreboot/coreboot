@@ -11,7 +11,6 @@
 #include <soc/dsi.h>
 #include <soc/mtcmos.h>
 #include <stdio.h>
-#include <string.h>
 
 static struct panel_serializable_data *get_mipi_cmd_from_cbfs(struct panel_description *desc)
 {

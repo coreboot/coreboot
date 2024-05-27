@@ -6,7 +6,6 @@
 #include <console/console.h>
 #include <smbios.h>
 #include <stdio.h>
-#include <string.h>
 
 static void smbios_processor_id(u32 *processor_id)
 {

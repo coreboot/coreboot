@@ -12,7 +12,6 @@
 #include <soc/gpio.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <string.h>
 
 #include "board_id.h"
 

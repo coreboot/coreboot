@@ -4,7 +4,6 @@
 #include <ec/google/chromeec/ec.h>
 #include <smbios.h>
 #include <stdio.h>
-#include <string.h>
 #include <sar.h>
 
 #define SKU_UNKNOWN     0xFFFFFFFF

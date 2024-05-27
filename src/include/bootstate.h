@@ -3,7 +3,6 @@
 #define BOOTSTATE_H
 
 #include <assert.h>
-#include <string.h>
 #include <stddef.h>
 /* Only declare main() when in ramstage. */
 #if ENV_RAMSTAGE

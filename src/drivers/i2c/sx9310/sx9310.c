@@ -6,7 +6,7 @@
 #include <device/i2c_simple.h>
 #include <device/device.h>
 #include <stdio.h>
-#include <string.h>
+
 #include "chip.h"
 
 #define I2C_SX9310_ACPI_ID	"STH9310"

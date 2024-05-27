@@ -4,7 +4,7 @@
 #include <acpi/acpigen.h>
 #include <console/console.h>
 #include <stdio.h>
-#include <string.h>
+
 #include "chip.h"
 
 static bool uart_acpi_add_gpios_to_crs(struct drivers_uart_acpi_config *config)

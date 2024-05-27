@@ -7,7 +7,7 @@
 #include <device/spi.h>
 #include <spi-generic.h>
 #include <stdio.h>
-#include <string.h>
+
 #include "chip.h"
 
 static int spi_acpi_get_bus(const struct device *dev)

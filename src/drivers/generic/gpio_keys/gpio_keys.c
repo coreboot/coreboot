@@ -4,7 +4,6 @@
 #include <acpi/acpigen.h>
 #include <device/device.h>
 #include <stdio.h>
-#include <string.h>
 
 #include "chip.h"
 

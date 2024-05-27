@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <device/device.h>
 #include <stdio.h>
-#include <string.h>
+
 #include "chip.h"
 #include <gpio.h>
 #include <console/console.h>

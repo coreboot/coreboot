@@ -6,7 +6,6 @@
 #include <gpio.h>
 #include <soc/sdram.h>
 #include <stdio.h>
-#include <string.h>
 #include <types.h>
 
 static const char *sdram_configs[] = {

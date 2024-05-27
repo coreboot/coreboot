@@ -8,7 +8,7 @@
 #include <device/device.h>
 #include <gpio.h>
 #include <stdio.h>
-#include <string.h>
+
 #include "chip.h"
 
 #if CONFIG(HAVE_ACPI_TABLES)

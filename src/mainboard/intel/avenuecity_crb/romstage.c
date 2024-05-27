@@ -9,7 +9,6 @@
 #include <soc/ddr.h>
 #include <soc/iio.h>
 #include <soc/romstage.h>
-#include <string.h>
 
 #include "chip.h"
 

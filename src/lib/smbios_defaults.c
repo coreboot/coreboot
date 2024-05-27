@@ -4,7 +4,6 @@
 #include <smbios.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <string.h>
 
 /* this function will fill the corresponding locator */
 __weak void smbios_fill_dimm_locator(const struct dimm_info *dimm, struct smbios_type17 *t)

@@ -20,7 +20,6 @@
 #include <soc/spm.h>
 #include <soc/usb.h>
 #include <stdio.h>
-#include <string.h>
 
 #include "gpio.h"
 #include "panel.h"

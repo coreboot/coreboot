@@ -7,7 +7,6 @@
 #include <device/pci_ops.h>
 #include <smbios.h>
 #include <stdio.h>
-#include <string.h>
 #include <variant/sku.h>
 
 #define R_PCH_OC_WDT_CTL		0x54

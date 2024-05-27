@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <stddef.h>
 #include <ec/google/chromeec/ec.h>
 #include <console/console.h>
 #include <string.h>

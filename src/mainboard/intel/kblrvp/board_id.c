@@ -2,7 +2,6 @@
 #include "board_id.h"
 #include <ec/acpi/ec.h>
 #include <stdint.h>
-#include <stddef.h>
 
 /*
  * Get Board info via EC I/O port write/read

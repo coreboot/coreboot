@@ -2,7 +2,6 @@
 
 #include <baseboard/variants.h>
 #include <boardid.h>
-#include <stddef.h>
 #include <ec/acpi/ec.h>
 
 #define BOARD_ID_GLK_RVP1_DDR4	0x5 /* RVP1 - DDR4 */

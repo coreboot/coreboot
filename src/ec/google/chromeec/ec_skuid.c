@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <stddef.h>
 #include <ec/google/chromeec/ec.h>
 
 uint32_t google_chromeec_get_board_sku(void)

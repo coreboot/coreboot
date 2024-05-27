@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <commonlib/bsd/helpers.h>
 #include "librem_ec.h"
 #include "../../system76/ec/system76_ec.h"
-#include <stddef.h>
 
 #define CMD_PROBE 1
 

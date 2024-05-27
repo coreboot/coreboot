@@ -3,6 +3,7 @@
 #include <acpi/acpi.h>
 #include <acpi/acpi_gnvs.h>
 #include <acpi/acpigen.h>
+#include <stdio.h>
 #include <string.h>
 #include <version.h>
 #include <soc/nvs.h>

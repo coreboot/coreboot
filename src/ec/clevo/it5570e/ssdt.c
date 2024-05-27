@@ -4,6 +4,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/mmio.h>
+#include <stdio.h>
 
 #include "chip.h"
 #include "ec.h"

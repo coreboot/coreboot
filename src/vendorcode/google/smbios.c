@@ -2,6 +2,7 @@
 
 #include <boardid.h>
 #include <smbios.h>
+#include <stdio.h>
 #include <string.h>
 
 const char *smbios_mainboard_version(void)

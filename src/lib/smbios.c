@@ -16,6 +16,7 @@
 #include <device/pci_ids.h>
 #include <device/pci.h>
 #include <drivers/vpd/vpd.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 static u8 smbios_checksum(u8 *p, u32 length)

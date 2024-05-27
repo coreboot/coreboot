@@ -37,6 +37,7 @@
 * ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE LIES WITH YOU.
 ***********************license end**************************************/
 #include <bdk.h>
+#include <stdio.h>
 #include <string.h>
 #include <libbdk-hal/bdk-config.h>
 #include <libbdk-hal/bdk-l2c.h>

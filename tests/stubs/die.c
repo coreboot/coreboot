@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <stdarg.h>
-#include <stdio.h>
 #include <tests/test.h>
 
 void die(const char *msg, ...)

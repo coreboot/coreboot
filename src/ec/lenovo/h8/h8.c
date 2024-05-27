@@ -5,6 +5,7 @@
 #include <device/device.h>
 #include <device/pnp.h>
 #include <ec/acpi/ec.h>
+#include <stdio.h>
 #include <string.h>
 #include <smbios.h>
 #include <option.h>

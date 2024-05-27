@@ -7,6 +7,7 @@
 #include <console/console.h>
 #include <drivers/usb/acpi/chip.h>
 #include <intelblocks/acpi.h>
+#include <stdio.h>
 
 #include "chip.h"
 

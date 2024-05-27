@@ -14,6 +14,7 @@
 #include <string.h>
 #include <assert.h>
 #include <lame_string.h>
+#include <stdio.h>
 
 static struct bdk_devicetree_key_value *config_fdt;
 

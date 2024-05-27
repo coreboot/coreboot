@@ -7,6 +7,7 @@
 #include <device/device.h>
 #include <identity.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <vendorcode/google/dsm_calib.h>
 #include "chip.h"
 

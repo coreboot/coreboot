@@ -5,6 +5,8 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/path.h>
+#include <stdio.h>
+
 #include "chip.h"
 
 #define CROS_EC_AUDIO_CODEC_HID		"GOOG0013"

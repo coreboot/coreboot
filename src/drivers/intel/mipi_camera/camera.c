@@ -9,6 +9,8 @@
 #include <device/i2c_simple.h>
 #include <device/device.h>
 #include <device/pci_def.h>
+#include <stdio.h>
+
 #include "chip.h"
 
 #define CSI2_DATA_STREAM_INTERFACE_GUID \

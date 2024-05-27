@@ -4,6 +4,8 @@
 #include <acpi/acpigen.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <stdio.h>
+
 #include "chip.h"
 
 #define RT5645_ACPI_NAME	"RT58"

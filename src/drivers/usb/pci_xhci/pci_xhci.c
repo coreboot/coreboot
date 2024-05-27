@@ -7,6 +7,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/xhci.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #define PCI_XHCI_CLASSCODE	0x0c0330 /* USB3.0 xHCI controller */

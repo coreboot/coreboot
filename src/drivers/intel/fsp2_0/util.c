@@ -8,6 +8,7 @@
 #include <commonlib/fsp.h>
 #include <console/console.h>
 #include <fsp/util.h>
+#include <stdio.h>
 #include <string.h>
 #include <types.h>
 #include <assert.h>

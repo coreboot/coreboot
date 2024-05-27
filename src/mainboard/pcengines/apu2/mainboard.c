@@ -16,6 +16,7 @@
 #include <southbridge/amd/common/amd_pci_util.h>
 #include <superio/nuvoton/nct5104d/nct5104d.h>
 #include <smbios.h>
+#include <stdio.h>
 #include <string.h>
 #include <AGESA.h>
 #include "gpio_ftns.h"

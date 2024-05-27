@@ -4,6 +4,7 @@
 #include <acpi/acpigen_dptf.h>
 #include <ec/google/common/dptf.h>
 #include <drivers/intel/dptf/chip.h>
+#include <stdio.h>
 
 #include "chip.h"
 /*

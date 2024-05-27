@@ -5,6 +5,7 @@
 #include <drivers/intel/gma/int15.h>
 #include <ec/acpi/ec.h>
 #include <southbridge/intel/common/gpio.h>
+#include <stdio.h>
 #include <string.h>
 #include <smbios.h>
 #include "ec.h"

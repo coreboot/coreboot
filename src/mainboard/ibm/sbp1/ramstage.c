@@ -2,6 +2,7 @@
 #include <cpu/x86/smm.h>
 #include <soc/ramstage.h>
 #include <soc/smmrelocate.h>
+#include <stdio.h>
 
 #include "include/spr_sbp1_gpio.h"
 #include <bootstate.h>

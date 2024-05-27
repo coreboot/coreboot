@@ -5,6 +5,7 @@
 #include <acpi/acpigen.h>
 #include <acpi/acpigen_usb.h>
 #include <device/device.h>
+#include <stdio.h>
 
 static const char *power_role_to_str(enum usb_typec_power_role power_role)
 {

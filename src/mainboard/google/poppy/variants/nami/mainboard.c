@@ -13,6 +13,7 @@
 #include <intelblocks/power_limit.h>
 #include <smbios.h>
 #include <soc/ramstage.h>
+#include <stdio.h>
 #include <string.h>
 #include <variant/sku.h>
 #include <gpio.h>

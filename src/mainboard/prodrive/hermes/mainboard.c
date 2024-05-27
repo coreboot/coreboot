@@ -16,6 +16,7 @@
 #include <intelblocks/pmclib.h>
 #include <smbios.h>
 #include <soc/pm.h>
+#include <stdio.h>
 #include <string.h>
 #include <types.h>
 

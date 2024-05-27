@@ -5,6 +5,7 @@
 #include <console/console.h>
 #include <arch/cpu.h>
 #include <cpu/x86/name.h>
+#include <stdio.h>
 
 static int smbios_cpu_vendor(u8 *start)
 {

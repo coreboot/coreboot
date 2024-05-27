@@ -5,6 +5,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/path.h>
+#include <stdio.h>
 #include <string.h>
 #include "chip.h"
 

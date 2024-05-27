@@ -6,6 +6,7 @@
 #include <device/device.h>
 #include <device/spi.h>
 #include <spi-generic.h>
+#include <stdio.h>
 #include <string.h>
 #include "chip.h"
 

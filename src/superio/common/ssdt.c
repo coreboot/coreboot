@@ -8,6 +8,7 @@
 #include <acpi/acpi.h>
 #include <console/console.h>
 #include <types.h>
+#include <stdio.h>
 #include <string.h>
 
 struct superio_dev {

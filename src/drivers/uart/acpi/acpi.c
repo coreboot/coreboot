@@ -3,6 +3,7 @@
 #include <acpi/acpi_device.h>
 #include <acpi/acpigen.h>
 #include <console/console.h>
+#include <stdio.h>
 #include <string.h>
 #include "chip.h"
 

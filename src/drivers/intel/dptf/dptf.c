@@ -5,6 +5,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <intelblocks/pmc_ipc.h>
+#include <stdio.h>
 #include <soc/dptf.h>
 #include <soc/pci_devs.h>
 #include "chip.h"

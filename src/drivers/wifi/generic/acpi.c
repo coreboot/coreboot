@@ -7,6 +7,7 @@
 #include <device/pci_ids.h>
 #include <mtcl.h>
 #include <sar.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <wrdd.h>
 

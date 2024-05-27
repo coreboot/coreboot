@@ -16,6 +16,7 @@
 #include <soc/acpi.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
+#include <stdio.h>
 #include <amdblocks/acpimmio.h>
 #include <variant/ec.h>
 #include <variant/thermal.h>

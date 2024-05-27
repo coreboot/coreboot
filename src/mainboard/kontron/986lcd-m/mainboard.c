@@ -6,6 +6,7 @@
 #include <console/console.h>
 #include <drivers/intel/gma/int15.h>
 #include <option.h>
+#include <stdio.h>
 #include <superio/hwm5_conf.h>
 #include <superio/nuvoton/common/hwm.h>
 

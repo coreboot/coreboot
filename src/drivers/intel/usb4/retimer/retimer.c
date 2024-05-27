@@ -7,6 +7,7 @@
 #include <device/device.h>
 #include <drivers/usb/acpi/chip.h>
 #include <gpio.h>
+#include <stdio.h>
 #include <string.h>
 #include "chip.h"
 #include "retimer.h"

@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <acpi/acpigen.h>
+#include <stdio.h>
 #include <string.h>
 #include "i915.h"
 

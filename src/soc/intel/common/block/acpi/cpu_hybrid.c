@@ -9,6 +9,7 @@
 #include <device/path.h>
 #include <intelblocks/acpi.h>
 #include <soc/cpu.h>
+#include <stdio.h>
 #include <types.h>
 
 #define CPPC_NOM_FREQ_IDX	22

@@ -20,6 +20,7 @@
 #include <soc/smmrelocate.h>
 #include <soc/soc_util.h>
 #include <soc/util.h>
+#include <stdio.h>
 #include <string.h>
 #include <types.h>
 

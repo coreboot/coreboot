@@ -14,6 +14,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/soundwire.h>
+#include <stdio.h>
 #include <types.h>
 
 static char *gencurrent;

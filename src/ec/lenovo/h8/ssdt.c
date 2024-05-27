@@ -2,6 +2,7 @@
 
 #include <console/console.h>
 #include <acpi/acpigen.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "h8.h"

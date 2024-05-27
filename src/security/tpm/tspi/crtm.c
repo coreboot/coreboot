@@ -6,6 +6,7 @@
 #include <cbfs.h>
 #include <symbols.h>
 #include "crtm.h"
+#include <stdio.h>
 #include <string.h>
 
 static int tpm_log_initialized;

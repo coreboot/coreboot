@@ -6,6 +6,7 @@
 #include <device/device.h>
 #include <device/pci_ops.h>
 #include <smbios.h>
+#include <stdio.h>
 #include <string.h>
 #include <variant/sku.h>
 

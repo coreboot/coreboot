@@ -9,6 +9,7 @@
 #include <ec/ec.h>
 #include <fw_config.h>
 #include <soc/ramstage.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 

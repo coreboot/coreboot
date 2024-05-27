@@ -3,6 +3,7 @@
 #include <memory_info.h>
 #include <smbios.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
 /* this function will fill the corresponding locator */

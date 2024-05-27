@@ -6,6 +6,7 @@
 #include <soc/pci_devs.h>
 #include <soc/util.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "chip.h"

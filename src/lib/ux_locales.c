@@ -4,6 +4,7 @@
 #include <console/console.h>
 #include <security/vboot/misc.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <string.h>
 #include <ux_locales.h>
 #include <vb2_api.h>

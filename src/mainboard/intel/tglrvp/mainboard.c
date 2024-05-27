@@ -6,6 +6,7 @@
 #include <ec/ec.h>
 #include <soc/gpio.h>
 #include <smbios.h>
+#include <stdio.h>
 #include <string.h>
 
 const char *smbios_system_sku(void)

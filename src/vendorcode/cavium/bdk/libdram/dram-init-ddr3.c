@@ -43,6 +43,7 @@
 #include "dram-internal.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <libbdk-hal/bdk-config.h>
 #include <libbdk-hal/bdk-l2c.h>

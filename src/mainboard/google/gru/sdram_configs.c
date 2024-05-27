@@ -5,6 +5,7 @@
 #include <console/console.h>
 #include <gpio.h>
 #include <soc/sdram.h>
+#include <stdio.h>
 #include <string.h>
 #include <types.h>
 

@@ -48,6 +48,7 @@
 #include <libbdk-hal/bdk-utils.h>
 #include <libbdk-os/bdk-init.h>
 #include <libbdk-os/bdk-thread.h>
+#include <stdio.h>
 
 /* This code is an optional part of the BDK. It is only linked in
     if BDK_REQUIRE() needs it */

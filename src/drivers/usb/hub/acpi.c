@@ -2,6 +2,7 @@
 
 #include <acpi/acpigen.h>
 #include <acpi/acpi_device.h>
+#include <stdio.h>
 
 #include "chip.h"
 

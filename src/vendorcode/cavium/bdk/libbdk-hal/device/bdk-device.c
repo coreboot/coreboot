@@ -38,6 +38,7 @@
 ***********************license end**************************************/
 #include <bdk.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "libbdk-arch/bdk-csrs-ap.h"
 #include "libbdk-arch/bdk-csrs-pccpf.h"

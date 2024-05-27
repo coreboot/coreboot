@@ -4,6 +4,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
 #include <southbridge/intel/common/rcba_pirq.h>

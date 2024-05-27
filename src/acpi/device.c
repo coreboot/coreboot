@@ -8,6 +8,7 @@
 #include <acpi/acpigen_pci.h>
 #include <device/device.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <types.h>
 #include <crc_byte.h>
 

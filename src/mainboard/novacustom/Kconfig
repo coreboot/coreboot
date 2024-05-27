@@ -1,0 +1,17 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if VENDOR_NOVACUSTOM
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/novacustom/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/novacustom/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	default "NovaCustom"
+
+endif # VENDOR_NOVACUSTOM

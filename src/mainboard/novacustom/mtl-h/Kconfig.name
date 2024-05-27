@@ -1,0 +1,7 @@
+comment "Meteor Lake H"
+
+config BOARD_NOVACUSTOM_V540TU
+	bool "V540TU (14\")"
+
+config BOARD_NOVACUSTOM_V560TU
+	bool "V560TU (16\")"

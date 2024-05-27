@@ -1,0 +1,316 @@
+chip soc/intel/meteorlake
+	# Common SoC configuration
+	register "common_soc_config" = "{
+		// Touchpad I2C bus
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 80,
+			.fall_time_ns = 110,
+		},
+	}"
+
+	# Enable Enhanced Intel SpeedStep
+	register "eist_enable" = "1"
+
+	# Enable S0ix / Modern Standby
+	register "s0ix_enable" = "1"
+
+	# SaGv configuration
+	register "sagv" = "SAGV_ENABLED"
+
+	# Disable C1 and Package C-state auto-demotion
+	register "disable_c1_state_auto_demotion" = "1"
+	register "disable_package_c_state_demotion" = "1"
+
+	# Enable Energy Reporting
+	register "pch_pm_energy_report_enable" = "1"
+
+	# Thermal
+	register "tcc_offset" = "10" # TCC of 100C
+
+	register "usb2_ports" = "{
+		[0] = USB2_PORT_LONG(OC_SKIP),	 /* USB Type-A Port 1 (Left) */
+		[1] = USB2_PORT_TYPE_C(OC_SKIP), /* USB Type-C Port 1 (Non-TBT) */
+		[2] = USB2_PORT_MID(OC_SKIP),	 /* USB Type-A Port 2 (Right) */
+		[5] = USB2_PORT_TYPE_C(OC_SKIP), /* USB Type-C Port 2 (TBT) */
+		[6] = USB2_PORT_LONG(OC_SKIP),	 /* Integrated Camera */
+		[9] = USB2_PORT_MID(OC_SKIP),	 /* Bluetooth on M.2 2230 */
+	}"
+
+	register "usb3_ports" = "{
+		[0] = USB3_PORT_DEFAULT(OC_SKIP), /* USB Type-A Port 1 (Left) */
+		[1] = USB3_PORT_DEFAULT(OC_SKIP), /* USB Type-A Port 2 (Right) */
+	}"
+
+	register "tcss_ports" = "{
+		[0] = TCSS_PORT_DEFAULT(OC_SKIP), /* USB Type-C Port 1 (TBT) */
+		[1] = TCSS_PORT_DEFAULT(OC_SKIP), /* USB Type-C Port 2 (Non-TBT) */
+	}"
+
+	device cpu_cluster 0 on end
+	device domain 0 on
+		subsystemid 0x1558 0xa743 inherit
+		device ref system_agent on end
+		device ref igpu on
+			register "ddi_port_A_config" = "1"
+			register "ddi_ports_config" = "{
+				[DDI_PORT_A] = DDI_ENABLE_HPD, 			/* eDP */
+				[DDI_PORT_2] = DDI_ENABLE_DDC | DDI_ENABLE_HPD,	/* HDMI 2.1 */
+			}"
+			chip drivers/gfx/generic
+				register "device_count" = "6"
+				# DDIA for eDP
+				register "device[0].name" = ""LCD0""
+				register "device[0].type" = "panel"
+				# DDIB unused
+				register "device[1].name" = ""DD01""
+				# TCP0 for Thunderbolt 4
+				register "device[2].name" = ""DD02""
+				register "device[2].use_pld" = "true"
+				register "device[2].pld" = "ACPI_PLD_TYPE_C(RIGHT, CENTER, ACPI_PLD_GROUP(1, 1))"
+				# TCP1 unused
+				register "device[3].name" = ""DD03""
+				# TCP2 for HDMI 2.1
+				register "device[4].name" = ""DD04""
+				# TCP3 unused
+				register "device[5].name" = ""DD05""
+				device generic 0 on end
+			end
+		end
+		device ref dtt on end
+		device ref pcie_rp10 on # M.2 2280 #2
+			register "pcie_rp[PCH_RP(10)]" = "{
+				.clk_src = 8,
+				.clk_req = 8,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_DETECT,
+			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "is_storage" = "true"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D01)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A13)"
+				register "srcclk_pin" = "8"
+				device generic 0 on end
+			end
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD2)" "SlotDataBusWidth4X"
+		end
+		device ref pcie_rp11 on # M.2 2280 #1
+			register "pcie_rp[PCH_RP(11)]" = "{
+				.clk_src = 7,
+				.clk_req = 7,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_DETECT,
+			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "is_storage" = "true"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D05)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D02)"
+				register "srcclk_pin" = "7"
+				device generic 0 on end
+			end
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD1)" "SlotDataBusWidth4X"
+		end
+		device ref tbt_pcie_rp0 on end
+		device ref gna on end
+		device ref crashlog on end
+		device ref vpu on end
+		device ref tcss_xhci on
+			chip drivers/usb/acpi
+				device ref tcss_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Port 1 (TBT)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, CENTER, ACPI_PLD_GROUP(1, 1))"
+						device ref tcss_usb3_port0 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Port 2""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(1, 2))"
+						device ref tcss_usb3_port1 on end
+					end
+				end
+			end
+		end
+		device ref tcss_dma0 on
+			chip drivers/intel/usb4/retimer
+				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B21)"
+				use tcss_usb3_port0 as dfp[0].typec_port
+				device generic 0 on end
+			end
+		end
+		device ref ioe_shared_sram on end
+		device ref xhci on
+			chip drivers/usb/acpi
+				device ref xhci_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Left""
+						register "type" = "UPC_TYPE_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(LEFT, CENTER, ACPI_PLD_GROUP(2, 1))"
+						device ref usb2_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port 2""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(1, 2))"
+						device ref usb2_port2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Right""
+						register "type" = "UPC_TYPE_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, RIGHT, ACPI_PLD_GROUP(1, 3))"
+						device ref usb2_port3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port 1 (TBT)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, CENTER, ACPI_PLD_GROUP(1, 2))"
+						device ref usb2_port6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Camera""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port7 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port10 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Left""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(LEFT, CENTER, ACPI_PLD_GROUP(2, 1))"
+						device ref usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Right""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, RIGHT, ACPI_PLD_GROUP(1, 3))"
+						device ref usb3_port2 on end
+					end
+				end
+			end
+		end
+		device ref pmc_shared_sram on end
+		device ref cnvi_wifi on
+			register "cnvi_wifi_core" = "true"
+			register "cnvi_bt_core" = "true"
+			register "cnvi_bt_audio_offload" = "true"
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				register "add_acpi_dma_property" = "true"
+				register "enable_cnvi_ddr_rfim" = "true"
+				device generic 0 on end
+			end
+		end
+		device ref i2c0 on # Touchpad
+			register "serial_io_i2c_mode[PchSerialIoIndexI2C0]" = "PchSerialIoPci"
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN0412""
+				register "generic.desc" = ""ELAN Touchpad""
+				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_B00)"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 15 on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""FTCS1000""
+				register "generic.desc" = ""FocalTech Touchpad""
+				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_B00)"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 38 on end
+			end
+		end
+		device ref i2c1 on # USB-PD EEPROM
+			register "serial_io_i2c_mode[PchSerialIoIndexI2C1]" = "PchSerialIoPci"
+		end
+		device ref i2c3 on # Pantone ROM
+			register "serial_io_i2c_mode[PchSerialIoIndexI2C3]" = "PchSerialIoPci"
+		end
+		device ref pcie_rp5 on # GLAN
+			register "pcie_rp[PCH_RP(5)]" = "{
+				.clk_src = 2,
+				.clk_req = 2,
+				.flags = PCIE_RP_LTR | PCIE_RP_CLK_SRC_UNUSED,
+			}"
+			register "pcie_clk_config_flag[2]" = "PCIE_CLK_LAN"
+		end
+		device ref pcie_rp6 on # SD Card Reader
+			register "pcie_rp[PCH_RP(6)]" = "{
+				.clk_src = 3,
+				.clk_req = 3,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			chip drivers/generic/bayhub_lv2
+				register "enable_power_saving" = "1"
+				device pci 00.0 on end
+			end
+		end
+		device ref pcie_rp8 on # M.2 2230
+			register "pcie_rp[PCH_RP(8)]" = "{
+				.clk_src = 5,
+				.clk_req = 5,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_DW2_09"
+				register "add_acpi_dma_property" = "true"
+				device pci 00.0 on end
+			end
+			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/E 2230 (J_WLAN1)" "SlotDataBusWidth1X"
+		end
+		device ref uart0 on # BIOS Debug Port
+			register "serial_io_uart_mode[PchSerialIoIndexUART0]" = "PchSerialIoPci"
+		end
+		device ref soc_espi on
+			register "gen1_dec" = "0x00040069" # EC PM channel
+			register "gen2_dec" = "0x00fc0e01" # AP/EC command
+			register "gen3_dec" = "0x00fc0f01" # AP/EC debug
+			chip drivers/pc80/tpm # SLB 9672 TPM 2.0
+				device pnp 0c31.0 on end
+			end
+		end
+		device ref pmc hidden
+			register "pmc_gpe0_dw0" = "PMC_GPP_V"
+			register "pmc_gpe0_dw1" = "PMC_GPP_B"
+			register "pmc_gpe0_dw2" = "PMC_GPP_S"
+			chip drivers/intel/pmc_mux
+				device generic 0 on
+					chip drivers/intel/pmc_mux/conn
+						# USB Type-C Port 1 (TBT)
+						use usb2_port6 as usb2_port
+						use tcss_usb3_port0 as usb3_port
+						device generic 0 alias conn0 on end
+					end
+					chip drivers/intel/pmc_mux/conn
+						# USB Type-C Port 2 (Non-TBT)
+						use usb2_port2 as usb2_port
+						use tcss_usb3_port1 as usb3_port
+						device generic 1 alias conn1 on end
+					end
+				end
+			end
+		end
+		device ref hda on
+			subsystemid 0x1558 0xa763
+			#register "pch_hda_audio_link_hda_enable" = "1"
+			register "pch_hda_sdi_enable[0]" = "1"
+			register "pch_hda_dsp_enable" = "1"
+			register "pch_hda_idisp_codec_enable" = "1"
+			register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
+			register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
+
+		end
+		device ref smbus on end
+		device ref fast_spi on end
+		device ref gbe on end
+	end
+end

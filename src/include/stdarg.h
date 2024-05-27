@@ -1,8 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 /**
- * Note: This file is only for POSIX compatibility, and is meant to be
- * chain-included via string.h.
+ * Note: This file is only for POSIX compatibility.
  */
 
 #ifndef STDARG_H

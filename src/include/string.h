@@ -3,7 +3,6 @@
 #ifndef STRING_H
 #define STRING_H
 
-#include <stdarg.h> /* IWYU pragma: export */
 #include <stddef.h>
 #include <stdio.h> /* IWYU pragma: export */
 

@@ -5,4 +5,7 @@
 
 #include <baseboard/gpio.h>
 
+/* WP signal to PCH */
+#define GPIO_PCH_WP		GPP_E3
+
 #endif

@@ -103,9 +103,6 @@ chip soc/intel/elkhartlake
 	register "pse_tsn_phy_irq_edge[0]" = "RISING_EDGE"
 	register "pse_tsn_phy_irq_edge[1]" = "RISING_EDGE"
 
-	register "DdiPortAHpd" = "1"
-	register "DdiPortADdc" = "1"
-
 	register "common_soc_config" = "{
 		.i2c[1] = {
 			.speed = I2C_SPEED_STANDARD,

@@ -247,6 +247,7 @@ struct soc_intel_meteorlake_config {
 	uint16_t sata_ports_dito_val[8];
 
 	/* Audio related */
+	uint8_t pch_hda_audio_link_hda_enable;
 	uint8_t pch_hda_dsp_enable;
 
 	bool pch_hda_sdi_enable[MAX_HD_AUDIO_SDI_LINKS];

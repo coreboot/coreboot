@@ -66,17 +66,17 @@ static enum cb_err write_mailbox_regs(const u8 *data, u8 start, u8 count)
 	return CB_SUCCESS;
 }
 
-static void ec_command(u8 cmd)
+static void ec_command(enum mec5035_cmd cmd)
 {
 	outb(0, MAILBOX_INDEX);
-	outb(cmd, MAILBOX_DATA);
+	outb((u8)cmd, MAILBOX_DATA);
 	wait_ec();
 }
 
-u8 mec5035_mouse_touchpad(u8 setting)
+u8 mec5035_mouse_touchpad(enum ec_mouse_setting setting)
 {
-	u8 buf[15] = {0};
-	write_mailbox_regs(&setting, 2, 1);
+	u8 buf[15] = {(u8)setting};
+	write_mailbox_regs(buf, 2, 1);
 	ec_command(CMD_MOUSE_TP);
 	/* The vendor firmware reads 15 bytes starting at index 1, presumably
 	   to get some sort of return code. Though I don't know for sure if

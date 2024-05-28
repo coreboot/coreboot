@@ -777,6 +777,16 @@ struct soc_intel_alderlake_config {
 	 * Set this to 0 in order to disable hwp scalability tracking.
 	 */
 	bool enable_hwp_scalability_tracking;
+
+	/*
+	 * (ADL-N/TWL only) Vccin Aux Imon Iccmax
+	 * Defaults to 27000 (27A), the value has to align with HW design.
+	 * Recommended value: 25000 (PD_TIER_PREMIUM) or 27000 (PD_TIER_VOLUME)
+	 */
+	enum {
+		PD_TIER_PREMIUM = 25000,
+		PD_TIER_VOLUME  = 27000
+	} vccin_aux_imon_iccmax;
 };
 
 typedef struct soc_intel_alderlake_config config_t;

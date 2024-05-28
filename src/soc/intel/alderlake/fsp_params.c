@@ -560,7 +560,7 @@ static void configure_cpu_rp_power_management(FSP_S_CONFIG *s_cfg,
 
 /* This function returns the VccIn Aux Imon IccMax values for ADL and RPL
    SKU's */
-static uint16_t get_vccin_aux_imon_iccmax(void)
+static uint16_t get_vccin_aux_imon_iccmax(const struct soc_intel_alderlake_config *config)
 {
 	struct device *dev = pcidev_path_on_root(SA_DEVFN_ROOT);
 	uint16_t mch_id = dev ? pci_read_config16(dev, PCI_DEVICE_ID) : 0xffff;
@@ -596,7 +596,8 @@ static uint16_t get_vccin_aux_imon_iccmax(void)
 	case PCI_DID_INTEL_ADL_N_ID_3:
 	case PCI_DID_INTEL_ADL_N_ID_4:
 	case PCI_DID_INTEL_ADL_N_ID_5:
-		return ICC_MAX_ID_ADL_N_MA;
+		return config->vccin_aux_imon_iccmax
+			? config->vccin_aux_imon_iccmax : ICC_MAX_ID_ADL_N_MA;
 	case PCI_DID_INTEL_ADL_S_ID_1:
 	case PCI_DID_INTEL_ADL_S_ID_3:
 	case PCI_DID_INTEL_ADL_S_ID_8:
@@ -1063,7 +1064,8 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->EnergyEfficientTurbo = 0;
 
 	/* VccIn Aux Imon IccMax. Values are in 1/4 Amp increments and range is 0-512. */
-	s_cfg->VccInAuxImonIccImax = get_vccin_aux_imon_iccmax() * 4 / MILLIAMPS_TO_AMPS;
+	s_cfg->VccInAuxImonIccImax =
+		get_vccin_aux_imon_iccmax(config) * 4 / MILLIAMPS_TO_AMPS;
 
 	/* VrConfig Settings for IA and GT domains */
 	for (size_t i = 0; i < ARRAY_SIZE(config->domain_vr_config); i++)

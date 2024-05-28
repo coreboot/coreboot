@@ -115,7 +115,7 @@ $(obj)/%.a: $$(%-objs)
 	printf "    AR         $(subst $(CURDIR)/,,$(@))\n"
 	printf "create $@\n$(foreach objc,$(filter-out %.a,$^),addmod $(objc)\n)$(foreach lib,$(filter %.a,$^),addlib $(lib)\n)save\nend\n" | $(AR) -M
 
-$(obj)/libpayload.ldscript: arch/$(ARCHDIR-y)/libpayload.ldscript
+$(obj)/libpayload.ldscript: arch/$(ARCHDIR-y)/libpayload.ldscript $(obj)/libpayload-config.h
 	@printf "  LDSCRIPT  $@\n"
 	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -E -P -x assembler-with-cpp -undef -o $@ $<
 

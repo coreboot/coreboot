@@ -12,7 +12,7 @@ PREFIX  ?= /usr/local
 VERSION := -D'SUPERIOTOOL_VERSION="$(shell git describe 2>/dev/null)"'
 
 CFLAGS += -O2 -Wall -Wstrict-prototypes -Wundef -Wstrict-aliasing \
-         -Werror-implicit-function-declaration -std=c99 -pedantic $(VERSION) \
+         -Werror-implicit-function-declaration -std=c11 -pedantic $(VERSION) \
          -Wno-variadic-macros -I $(TOP)/src/commonlib/bsd/include
 LDFLAGS += -lz
 
@@ -25,7 +25,7 @@ LIBS = -framework IOKit -framework DirectHW -lpci -lz
 endif
 ifeq ($(OS_ARCH), FreeBSD)
 CFLAGS = -O2 -Wall -Werror -Wstrict-prototypes -Wundef -Wstrict-aliasing \
-         -Werror-implicit-function-declaration -std=c99 $(VERSION) \
+         -Werror-implicit-function-declaration -std=c11 $(VERSION) \
          -I/usr/local/include
 LDFLAGS += -L/usr/local/lib
 LIBS = -lz

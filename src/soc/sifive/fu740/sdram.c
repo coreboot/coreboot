@@ -5,7 +5,6 @@
 #ifndef _SIFIVE_SDRAM_H
 #define _SIFIVE_SDRAM_H
 
-#include <arch/mmio.h>
 #include <console/console.h>
 #include <device/mmio.h>
 #include <soc/addressmap.h>

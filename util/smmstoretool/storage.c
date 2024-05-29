@@ -50,6 +50,12 @@ bool storage_open(const char store_file[], struct storage_t *storage, bool rw)
 			goto error;
 		}
 
+		fprintf(stderr,
+			"\nThe variable store has not been found in the ROM image\n"
+			"and is about to be initialized. This situation is normal\n"
+			"for a release image, as the variable store is usually\n"
+			"initialized on the first boot of the platform.\n\n");
+
 		if (!fv_init(storage->region)) {
 			fprintf(stderr,
 				"Failed to create variable store in \"%s\"\n",

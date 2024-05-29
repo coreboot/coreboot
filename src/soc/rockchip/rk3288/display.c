@@ -13,7 +13,6 @@
 #include <soc/display.h>
 #include <soc/edp.h>
 #include <soc/hdmi.h>
-#include <soc/gpio.h>
 #include <soc/grf.h>
 #include <soc/soc.h>
 #include <soc/vop.h>

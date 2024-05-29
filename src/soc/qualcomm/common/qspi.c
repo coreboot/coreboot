@@ -6,7 +6,6 @@
 #include <device/mmio.h>
 #include <soc/addressmap.h>
 #include <soc/qspi_common.h>
-#include <soc/gpio.h>
 #include <soc/clock.h>
 #include <symbols.h>
 #include <assert.h>

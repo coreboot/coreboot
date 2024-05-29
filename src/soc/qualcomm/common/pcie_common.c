@@ -9,7 +9,6 @@
 #include <device/pci_ids.h>
 #include <gpio.h>
 #include <soc/clock.h>
-#include <soc/gpio.h>
 #include <soc/qcom_qmp_phy.h>
 #include <soc/pcie.h>
 #include <timer.h>

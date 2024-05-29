@@ -7,7 +7,6 @@
 #include <device/mmio.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
-#include <soc/gpio.h>
 #include <gpio.h>
 #include <stdint.h>
 

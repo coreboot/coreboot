@@ -3,7 +3,6 @@
 #include <device/mmio.h>
 #include <assert.h>
 #include <gpio.h>
-#include <soc/gpio.h>
 #include <soc/grf.h>
 #include <soc/soc.h>
 #include <types.h>

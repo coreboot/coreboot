@@ -12,7 +12,6 @@
 #include <soc/clock.h>
 #include <soc/display.h>
 #include <soc/edp.h>
-#include <soc/gpio.h>
 #include <soc/grf.h>
 #include <soc/mmu_operations.h>
 #include <soc/mipi.h>

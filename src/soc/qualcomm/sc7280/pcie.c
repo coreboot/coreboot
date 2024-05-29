@@ -7,7 +7,6 @@
 #include <gpio.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
-#include <soc/gpio.h>
 #include <soc/qcom_qmp_phy.h>
 #include <soc/pcie.h>
 

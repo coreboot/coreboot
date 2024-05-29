@@ -2,7 +2,6 @@
 
 #include <gpio.h>
 #include <soc/addressmap.h>
-#include <soc/gpio.h>
 #include <soc/grf.h>
 #include <soc/soc.h>
 

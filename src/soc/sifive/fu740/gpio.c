@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <soc/addressmap.h>
-#include <soc/gpio.h>
 #include <stdint.h>
 #include <arch/mmio.h>
 #include <assert.h>

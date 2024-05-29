@@ -5,7 +5,6 @@
 #include <drivers/intel/gma/int15.h>
 #include <gpio.h>
 #include <mainboard/gpio.h>
-#include <soc/gpio.h>
 #include <soc/ramstage.h>
 
 static void print_board_id(void)

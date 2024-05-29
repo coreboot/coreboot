@@ -1,0 +1,35 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_DELL_XPS_8300
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_4096
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select INTEL_INT15
+	select NORTHBRIDGE_INTEL_SANDYBRIDGE
+	select SERIRQ_CONTINUOUS_MODE
+	select SOUTHBRIDGE_INTEL_BD82X6X
+	select USE_NATIVE_RAMINIT
+	select SUPERIO_ITE_IT8772F
+
+config MAINBOARD_DIR
+	default "dell/xps_8300"
+
+config MAINBOARD_PART_NUMBER
+	default "XPS 8300"
+
+config DRAM_RESET_GATE_GPIO # FIXME: check this
+	default 60
+
+config USBDEBUG_HCD_INDEX
+	default 2
+
+config VGA_BIOS_DGPU_ID
+	default "10de,1082"
+
+config CBFS_SIZE
+	default 0x26F000
+
+endif

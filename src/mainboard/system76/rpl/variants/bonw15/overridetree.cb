@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
 chip soc/intel/alderlake
 	# Support 5600 MT/s memory
 	register "max_dram_speed_mts" = "5600"

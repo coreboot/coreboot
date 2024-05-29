@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
 chip soc/intel/cannonlake
 	device domain 0 on
 		subsystemid 0x1558 0x1404 inherit

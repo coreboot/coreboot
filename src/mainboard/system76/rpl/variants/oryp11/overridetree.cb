@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
 chip soc/intel/alderlake
 	device domain 0 on
 		subsystemid 0x1558 0x66a2 inherit

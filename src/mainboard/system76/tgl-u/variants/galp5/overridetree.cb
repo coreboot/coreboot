@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
 chip soc/intel/tigerlake
 	# Power limits
 	register "power_limits_config[POWER_LIMITS_U_4_CORE]" = "{

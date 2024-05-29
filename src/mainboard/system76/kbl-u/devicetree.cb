@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
 chip soc/intel/skylake
 	# Send an extra VR mailbox command for the PS4 exit issue
 	register "SendVrMbxCmd" = "2"

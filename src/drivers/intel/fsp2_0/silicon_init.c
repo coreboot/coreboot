@@ -77,7 +77,7 @@ bool fsp_is_multi_phase_init_enabled(void)
 
 static void fsp_fill_common_arch_params(FSPS_UPD *supd)
 {
-#if CONFIG(FSPS_HAS_ARCH_UPD)
+#if (CONFIG(FSPS_HAS_ARCH_UPD) && !CONFIG(PLATFORM_USES_FSP2_4))
 	FSPS_ARCHx_UPD *s_arch_cfg = &supd->FspsArchUpd;
 	s_arch_cfg->EnableMultiPhaseSiliconInit = fsp_is_multi_phase_init_enabled();
 #endif

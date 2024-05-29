@@ -705,10 +705,13 @@ static void fill_fsps_irq_params(FSP_S_CONFIG *s_cfg,
 
 static void arch_silicon_init_params(FSPS_ARCHx_UPD *s_arch_cfg)
 {
+
+#if !CONFIG(PLATFORM_USES_FSP2_4)
 	/*
 	 * EnableMultiPhaseSiliconInit for running MultiPhaseSiInit
 	 */
 	s_arch_cfg->EnableMultiPhaseSiliconInit = 1;
+#endif
 
 	/* Assign FspEventHandler arch Upd to use coreboot debug event handler */
 	if (CONFIG(FSP_USES_CB_DEBUG_EVENT_HANDLER) && CONFIG(CONSOLE_SERIAL) &&

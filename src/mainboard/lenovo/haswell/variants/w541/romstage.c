@@ -4,7 +4,6 @@
 #include <northbridge/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/raminit.h>
 #include <southbridge/intel/lynxpoint/pch.h>
-#include <option.h>
 #include <ec/lenovo/pmh7/pmh7.h>
 #include <device/pci_ops.h>
 

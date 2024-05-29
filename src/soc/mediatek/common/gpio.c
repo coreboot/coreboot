@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
 #include <device/mmio.h>
 #include <gpio.h>
 
@@ -113,23 +114,16 @@ void gpio_output(gpio_t gpio, int value)
 	gpio_set_mode(gpio, GPIO_MODE);
 }
 
-enum {
-	MAX_EINT_REG_BITS = 32,
-};
-
-static void pos_bit_calc_for_eint(gpio_t gpio, u32 *pos, u32 *bit)
-{
-	*pos = gpio.id / MAX_EINT_REG_BITS;
-	*bit = gpio.id % MAX_EINT_REG_BITS;
-}
-
 int gpio_eint_poll(gpio_t gpio)
 {
 	u32 pos;
 	u32 bit;
 	u32 status;
+	struct eint_regs *mtk_eint;
 
-	pos_bit_calc_for_eint(gpio, &pos, &bit);
+	gpio_calc_eint_pos_bit(gpio, &pos, &bit);
+	mtk_eint = gpio_get_eint_reg(gpio);
+	assert(mtk_eint);
 
 	status = (read32(&mtk_eint->sta.regs[pos]) >> bit) & 0x1;
 
@@ -143,8 +137,12 @@ void gpio_eint_configure(gpio_t gpio, enum gpio_irq_type type)
 {
 	u32 pos;
 	u32 bit, mask;
+	struct eint_regs *mtk_eint;
 
-	pos_bit_calc_for_eint(gpio, &pos, &bit);
+	gpio_calc_eint_pos_bit(gpio, &pos, &bit);
+	mtk_eint = gpio_get_eint_reg(gpio);
+	assert(mtk_eint);
+
 	mask = 1 << bit;
 
 	/* Make it an input first. */

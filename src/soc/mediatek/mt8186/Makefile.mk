@@ -4,7 +4,7 @@ ifeq ($(CONFIG_SOC_MEDIATEK_MT8186),y)
 # for bootblock, verstage, romstage, ramstage
 all-y += ../common/cpu_id.c
 all-y += ../common/flash_controller.c
-all-y += ../common/gpio.c ../common/gpio_op.c  gpio.c
+all-y += ../common/gpio_eint_v1.c ../common/gpio.c ../common/gpio_op.c  gpio.c
 all-y += ../common/i2c.c i2c.c
 all-y += ../common/pll.c pll.c
 all-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c

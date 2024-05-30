@@ -1,6 +1,531 @@
+fw_config
+	field THERMAL_SOLUTION 0 0
+		option THERMAL_SOLUTION_6W 0
+		option THERMAL_SOLUTION_15W 1
+	end
+end
+
 chip soc/intel/alderlake
+	register "sagv" = "SaGv_Enabled"
 
-        device domain 0 on
-        end
+	# GPE configuration
+	register "pmc_gpe0_dw1" = "GPP_B"
 
+	# S0ix enable
+	register "s0ix_enable" = "1"
+
+	# DPTF enable
+	register "dptf_enable" = "1"
+
+	register "tcc_offset" = "10"     # TCC of 90
+
+	# Enable CNVi BT
+	register "cnvi_bt_core" = "true"
+
+	# eMMC HS400
+	register "emmc_enable_hs400_mode" = "1"
+
+	#eMMC DLL tuning parameters
+	# EMMC Tx CMD Delay
+	# Refer to EDS-Vol2-42.3.7.
+	# [14:8] steps of delay for DDR mode, each 125ps, range: 0 - 39.
+	# [6:0] steps of delay for SDR mode, each 125ps, range: 0 - 39.
+	register "common_soc_config.emmc_dll.emmc_tx_cmd_cntl" = "0x505"
+
+	# EMMC TX DATA Delay 1
+	# Refer to EDS-Vol2-42.3.8.
+	# [14:8] steps of delay for HS400, each 125ps, range: 0 - 78.
+	# [6:0] steps of delay for SDR104/HS200, each 125ps, range: 0 - 79.
+	register "common_soc_config.emmc_dll.emmc_tx_data_cntl1" = "0x909"
+
+	# EMMC TX DATA Delay 2
+	# Refer to EDS-Vol2-42.3.9.
+	# [30:24] steps of delay for SDR50, each 125ps, range: 0 - 79.
+	# [22:16] steps of delay for DDR50, each 125ps, range: 0 - 78.
+	# [14:8] steps of delay for SDR25/HS50, each 125ps, range: 0 -79.
+	# [6:0] steps of delay for SDR12, each 125ps. Range: 0 - 79.
+	register "common_soc_config.emmc_dll.emmc_tx_data_cntl2" = "0x1C2A2828"
+
+	# EMMC RX CMD/DATA Delay 1
+	# Refer to EDS-Vol2-42.3.10.
+	# [30:24] steps of delay for SDR50, each 125ps, range: 0 - 119.
+	# [22:16] steps of delay for DDR50, each 125ps, range: 0 - 78.
+	# [14:8] steps of delay for SDR25/HS50, each 125ps, range: 0 - 119.
+	# [6:0] steps of delay for SDR12, each 125ps, range: 0 - 119.
+	register "common_soc_config.emmc_dll.emmc_rx_cmd_data_cntl1" = "0x1C1B4F1B"
+
+	# EMMC RX CMD/DATA Delay 2
+	# Refer to EDS-Vol2-42.3.12.
+	# [17:16] stands for Rx Clock before Output Buffer,
+	#         00: Rx clock after output buffer,
+	#         01: Rx clock before output buffer,
+	#         10: Automatic selection based on working mode.
+	#         11: Reserved
+	# [14:8] steps of delay for Auto Tuning Mode, each 125ps, range: 0 - 39.
+	# [6:0] steps of delay for HS200, each 125ps, range: 0 - 79.
+	register "common_soc_config.emmc_dll.emmc_rx_cmd_data_cntl2" = "0x1004E"
+
+	# EMMC Rx Strobe Delay
+	# Refer to EDS-Vol2-42.3.11.
+	# [14:8] Rx Strobe Delay DLL 1(HS400 Mode), each 125ps, range: 0 - 39.
+	# [6:0] Rx Strobe Delay DLL 2(HS400 Mode), each 125ps, range: 0 - 39.
+	register "common_soc_config.emmc_dll.emmc_rx_strobe_cntl" = "0x01515"
+
+	register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"     # USB2_A0
+	register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"     # USB2_A1
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"     # M.2 Camera
+	register "usb2_ports[3]" = "USB2_PORT_EMPTY"            # Disable USB2 Port 4
+	register "usb2_ports[4]" = "USB2_PORT_TYPE_C(OC_SKIP)"  # USB2_C0
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"     # Bluetooth port for CNVi WLAN
+	register "usb2_ports[6]" = "USB2_PORT_EMPTY"            # Disable USB2 Port 7
+	register "usb2_ports[7]" = "USB2_PORT_EMPTY"            # Disable USB2 Port 8
+	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"     # Bluetooth port for CNVi WLAN
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type A port A0
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type A port A1
+
+	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
+
+	# Bit 0 - C0 has no redriver, so enable SBU muxing in the SoC.
+	# Bit 2 - C1 has a redriver which does SBU muxing.
+	# Bit 1,3 - AUX lines are not swapped on the motherboard for either C0 or C1.
+	register "tcss_aux_ori" = "0"
+
+	# Configure external V1P05/Vnn/VnnSx Rails
+	register "ext_fivr_settings" = "{
+		.configure_ext_fivr = 1,
+		.v1p05_enable_bitmap = FIVR_ENABLE_ALL_SX & ~FIVR_ENABLE_S0,
+		.vnn_enable_bitmap = FIVR_ENABLE_ALL_SX,
+		.vnn_sx_enable_bitmap = FIVR_ENABLE_ALL_SX,
+		.v1p05_supported_voltage_bitmap = FIVR_VOLTAGE_NORMAL,
+		.vnn_supported_voltage_bitmap = FIVR_VOLTAGE_MIN_ACTIVE,
+		.v1p05_voltage_mv = 1050,
+		.vnn_voltage_mv = 780,
+		.vnn_sx_voltage_mv = 1050,
+		.v1p05_icc_max_ma = 500,
+		.vnn_icc_max_ma = 500,
+	}"
+
+
+	register "serial_io_i2c_mode" = "{
+		[PchSerialIoIndexI2C0] = PchSerialIoPci,
+		[PchSerialIoIndexI2C1] = PchSerialIoPci,
+		[PchSerialIoIndexI2C2] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C3] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C4] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C5] = PchSerialIoPci,
+	}"
+
+	register "serial_io_gspi_mode" = "{
+		[PchSerialIoIndexGSPI0] = PchSerialIoDisabled,
+		[PchSerialIoIndexGSPI1] = PchSerialIoDisabled,
+	}"
+
+	register "serial_io_uart_mode" = "{
+		[PchSerialIoIndexUART0] = PchSerialIoPci,
+		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
+		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
+	}"
+
+	# FIXME: To be enabled in future based on PNP impact data.
+	# Disable Package C-state demotion for nissa baseboard.
+	register "disable_package_c_state_demotion" = "1"
+
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| I2C0              | TPM. Early init is        |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#| I2C1              | Trackpad                  |
+	#| I2C5              | Touchscreen               |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.early_init = 1,
+			.speed = I2C_SPEED_FAST_PLUS,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST_PLUS,
+				.scl_lcnt = 55,
+				.scl_hcnt = 30,
+				.sda_hold = 7,
+			}
+		},
+		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 158,
+				.scl_hcnt = 79,
+				.sda_hold = 7,
+			}
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 158,
+				.scl_hcnt = 79,
+				.sda_hold = 7,
+			}
+		},
+	}"
+
+	register "power_limits_config[ADL_N_041_6W_CORE]" = "{
+		.tdp_pl1_override = 20,
+		.tdp_pl2_override = 25,
+		.tdp_pl4 = 78,
+	}"
+
+	register "power_limits_config[ADL_N_081_15W_CORE]" = "{
+		.tdp_pl1_override = 20,
+		.tdp_pl2_override = 35,
+		.tdp_pl4 = 83,
+	}"
+
+	device domain 0 on
+		device ref igpu on end
+		device ref dtt on
+			chip drivers/intel/dptf
+				## sensor information
+				register "options.tsr[0].desc" = ""DDR""
+				register "options.tsr[1].desc" = ""charger""
+				register "options.tsr[2].desc" = ""ambient""
+
+				## Active Policy
+				register "policies.active" = "{
+					[0] = {
+						.target = DPTF_CPU,
+						.thresholds = {
+								TEMP_PCT(70, 100),
+								TEMP_PCT(60, 65),
+								TEMP_PCT(42, 60),
+								TEMP_PCT(39, 55),
+								TEMP_PCT(38, 50),
+								TEMP_PCT(35, 43),
+								TEMP_PCT(31, 30),
+						}
+					},
+					[1] = {
+						.target = DPTF_TEMP_SENSOR_0,
+						.thresholds = {
+								TEMP_PCT(60, 100),
+								TEMP_PCT(55, 65),
+								TEMP_PCT(52, 60),
+								TEMP_PCT(50, 55),
+								TEMP_PCT(48, 50),
+								TEMP_PCT(45, 43),
+								TEMP_PCT(41, 30),
+						}
+					}
+				}"
+
+				## Passive Policy
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU,         CPU,           95, 5000),
+					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 70, 5000),
+					[2] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_1, 70, 5000),
+					[3] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_2, 70, 5000),
+				}"
+
+				## Critical Policy
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,               100, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,     95, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,     95, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,     95, SHUTDOWN),
+				}"
+
+				register "controls.power_limits" = "{
+					.pl1 = {
+						.min_power = 6000,
+						.max_power = 20000,
+						.time_window_min = 28 * MSECS_PER_SEC,
+						.time_window_max = 28 * MSECS_PER_SEC,
+						.granularity = 500
+					},
+					.pl2 = {
+						.min_power = 25000,
+						.max_power = 25000,
+						.time_window_min = 32 * MSECS_PER_SEC,
+						.time_window_max = 32 * MSECS_PER_SEC,
+						.granularity = 500
+					}
+				}"
+
+				## Charger Performance Control (Control, mA)
+				register "controls.charger_perf" = "{
+					[0] = { 255, 1700 },
+					[1] = {  24, 1500 },
+					[2] = {  16, 1000 },
+					[3] = {   8,  500 }
+				}"
+
+				## Fan Performance Control (Percent, Speed, Noise, Power)
+				register "controls.fan_perf" = "{
+					[0] = { 100, 6000, 220, 2200, },
+					[1] = {  92, 5500, 180, 1800, },
+					[2] = {  85, 5000, 145, 1450, },
+					[3] = {  70, 4400, 115, 1150, },
+					[4] = {  56, 3900,  90,  900, },
+					[5] = {  45, 3300,  55,  550, },
+					[6] = {  38, 3000,  30,  300, },
+					[7] = {  33, 2900,  15,  150, },
+					[8] = {  10,  800,  10,  100, },
+					[9] = {   0,    0,   0,   50, }
+				}"
+
+				## Fan options
+				register "options.fan.fine_grained_control" = "1"
+				register "options.fan.step_size" = "2"
+
+				device generic 0 on
+					probe THERMAL_SOLUTION THERMAL_SOLUTION_6W
+				end
+			end
+			chip drivers/intel/dptf
+				## sensor information
+				register "options.tsr[0].desc" = ""DDR""
+				register "options.tsr[1].desc" = ""charger""
+				register "options.tsr[2].desc" = ""ambient""
+
+				## Active Policy
+				register "policies.active" = "{
+					[0] = {
+						.target = DPTF_CPU,
+						.thresholds = {
+								TEMP_PCT(70, 100),
+								TEMP_PCT(60, 65),
+								TEMP_PCT(42, 58),
+								TEMP_PCT(39, 53),
+								TEMP_PCT(38, 47),
+								TEMP_PCT(35, 43),
+								TEMP_PCT(31, 30),
+						}
+					},
+					[1] = {
+						.target = DPTF_TEMP_SENSOR_0,
+						.thresholds = {
+								TEMP_PCT(60, 100),
+								TEMP_PCT(55, 65),
+								TEMP_PCT(52, 58),
+								TEMP_PCT(50, 53),
+								TEMP_PCT(48, 47),
+								TEMP_PCT(45, 43),
+								TEMP_PCT(41, 30),
+						}
+					}
+				}"
+
+				## Passive Policy
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU,         CPU,           95, 5000),
+					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 70, 5000),
+					[2] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_1, 70, 5000),
+					[3] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_2, 70, 5000),
+				}"
+
+				## Critical Policy
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,               100, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,     95, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,     95, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,     95, SHUTDOWN),
+				}"
+
+				register "controls.power_limits" = "{
+					.pl1 = {
+						.min_power = 15000,
+						.max_power = 20000,
+						.time_window_min = 28 * MSECS_PER_SEC,
+						.time_window_max = 28 * MSECS_PER_SEC,
+						.granularity = 500
+					},
+					.pl2 = {
+						.min_power = 35000,
+						.max_power = 35000,
+						.time_window_min = 32 * MSECS_PER_SEC,
+						.time_window_max = 32 * MSECS_PER_SEC,
+						.granularity = 500
+					}
+				}"
+
+				## Charger Performance Control (Control, mA)
+				register "controls.charger_perf" = "{
+					[0] = { 255, 1700 },
+					[1] = {  24, 1500 },
+					[2] = {  16, 1000 },
+					[3] = {   8,  500 }
+				}"
+
+				## Fan Performance Control (Percent, Speed, Noise, Power)
+				register "controls.fan_perf" = "{
+					[0] = { 100, 6000, 220, 2200, },
+					[1] = {  92, 5500, 180, 1800, },
+					[2] = {  85, 5000, 145, 1450, },
+					[3] = {  70, 4400, 115, 1150, },
+					[4] = {  56, 3900,  90,  900, },
+					[5] = {  45, 3300,  55,  550, },
+					[6] = {  38, 3000,  30,  300, },
+					[7] = {  33, 2900,  15,  150, },
+					[8] = {  10,  800,  10,  100, },
+					[9] = {   0,    0,   0,   50, }
+				}"
+
+				## Fan options
+				register "options.fan.fine_grained_control" = "1"
+				register "options.fan.step_size" = "2"
+
+				device generic 1 on
+					probe THERMAL_SOLUTION THERMAL_SOLUTION_15W
+				end
+			end
+		end
+		device ref tcss_xhci on
+			chip drivers/usb/acpi
+				device ref tcss_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Port C0 (MLB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(1, 1))"
+						device ref tcss_usb3_port1 on end
+					end
+				end
+			end
+		end
+		device ref xhci on
+			chip drivers/usb/acpi
+				device ref xhci_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port C0 (MLB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(1, 1))"
+						device ref usb2_port5 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port A0 (DB)""
+						register "type" = "UPC_TYPE_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(LEFT, RIGHT, ACPI_PLD_GROUP(3, 1))"
+						device ref usb2_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port A1 (DB)""
+						register "type" = "UPC_TYPE_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, LEFT, ACPI_PLD_GROUP(4, 1))"
+						device ref usb2_port2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Camera""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "reset_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A13)"
+						device ref usb2_port6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "reset_gpio" =	"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A13)"
+						device ref usb2_port10 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port A0 (MLB)""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(LEFT, RIGHT, ACPI_PLD_GROUP(3, 1))"
+						device ref usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port A1 (DB)""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, LEFT, ACPI_PLD_GROUP(4, 1))"
+						device ref usb3_port2 on end
+					end
+				end
+			end
+		end
+		device ref shared_sram on end
+		device ref cnvi_wifi on
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				register "enable_cnvi_ddr_rfim" = "true"
+				register "add_acpi_dma_property" = "true"
+				device generic 0 on end
+			end
+		end
+		device ref i2c0 on
+			chip drivers/i2c/tpm
+				register "hid" = ""GOOG0005""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_A17_IRQ)"
+				device i2c 50 on end
+			end
+		end #I2C0
+		device ref i2c1 on
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0000""
+				register "desc" = ""ELAN Touchpad""
+				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_B3_IRQ)"
+				register "wake" = "GPE0_DW1_03"
+				register "detect" = "1"
+				device i2c 15 on end
+			end
+		end #I2C1
+		device ref i2c5 on
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN9004""
+				register "generic.desc" = ""ELAN Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D16_IRQ)"
+				register "generic.detect" = "1"
+				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D15)"
+				register "generic.reset_delay_ms" = "20"
+				register "generic.reset_off_delay_ms" = "2"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E17)"
+				register "generic.enable_delay_ms" = "1"
+				register "generic.stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A21)"
+				register "generic.stop_delay_ms" = "150"
+				register "generic.stop_off_delay_ms" = "2"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 10 on end
+			end
+		end #I2C5
+		device ref heci1 on end
+		device ref pcie_rp7 off end
+		device ref emmc on end
+		device ref ish on
+			chip drivers/intel/ish
+				register "add_acpi_dma_property" = "true"
+				device generic 0 on end
+			end
+		end
+		device ref ufs on end
+		device ref uart0 on end
+		device ref pch_espi on
+			chip ec/google/chromeec
+				use conn0 as mux_conn[0]
+				device pnp 0c09.0 on end
+			end
+		end
+		device ref pmc hidden
+			chip drivers/intel/pmc_mux
+				device generic 0 on
+					chip drivers/intel/pmc_mux/conn
+						use usb2_port5 as usb2_port
+						use tcss_usb3_port1 as usb3_port
+						device generic 0 alias conn0 on end
+					end
+				end
+			end
+		end
+	end
 end

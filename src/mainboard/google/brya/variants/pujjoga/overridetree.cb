@@ -4,6 +4,10 @@ fw_config
 		option LTE_PRESENT		1
 		option 5G_PRESENT		2
 	end
+	field WIFI_SAR_ID 13 16
+		option WIFI_SAR_TABLE_AX211	0
+		option WIFI_SAR_TABLE_AX203	1
+	end
 end
 
 chip soc/intel/alderlake

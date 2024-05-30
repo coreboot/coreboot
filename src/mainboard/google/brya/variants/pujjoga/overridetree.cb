@@ -1,3 +1,11 @@
+fw_config
+	field WWAN 3 4
+		option WWAN_ABSENT		0
+		option LTE_PRESENT		1
+		option 5G_PRESENT		2
+	end
+end
+
 chip soc/intel/alderlake
 	# Acoustic settings
 	register "acoustic_noise_mitigation" = "1"
@@ -298,7 +306,9 @@ chip soc/intel/alderlake
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 WWAN""
 						register "type" = "UPC_TYPE_INTERNAL"
-						device ref usb2_port5 on end
+						device ref usb2_port5 on
+							probe WWAN LTE_PRESENT
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 UFC""
@@ -334,7 +344,9 @@ chip soc/intel/alderlake
 					chip drivers/usb/acpi
 						register "desc" = ""USB3 WWAN""
 						register "type" = "UPC_TYPE_INTERNAL"
-						device ref usb3_port3 on end
+						device ref usb3_port3 on
+							probe WWAN LTE_PRESENT
+						end
 					end
 				end
 			end

@@ -100,6 +100,7 @@ Device (EC0)
 		USPP, 8,	// USB Port Power
 		RFWU, 8,	// Retimer Firmware Update
 		PBOK, 8,	// Power source change count from dptf
+		BSRF, 8,	// Battery string readout FIFO
 	}
 
 #if CONFIG(EC_GOOGLE_CHROMEEC_ACPI_MEMMAP)

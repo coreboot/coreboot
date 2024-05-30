@@ -54,6 +54,91 @@ Method (BSTA, 1, Serialized)
 	Return (Local0)
 }
 
+// Cached flag for BSRF FIFO readout support from EC.
+Name(BRSS, 0xff)
+
+// Read extended battery strings from the selected battery.
+//   Arg0 = string index
+//
+// If supported by the EC, strings of arbitrary length are read using the
+// FIFO readout method. Otherwise short (no more than 8 bytes) strings are
+// read from the EC shared memory map. The desired battery index should be
+// selected with BTSW before calling this method.
+//
+// Currently supported string indexes:
+//  * 1 = EC_ACPI_MEM_STRINGS_FIFO_ID_BATTERY_MODEL: battery model name,
+//        equivalent to BMOD.
+//  * 2 = EC_ACPI_MEM_STRINGS_FIFO_ID_BATTERY_SERIAL: battery serial number,
+//        equivalent to BSER.
+//  * 3 = EC_ACPI_MEM_STRINGS_FIFO_ID_BATTERY_MANUFACTURER: battery
+//        manufacturer's name, equivalent to BMFG.
+//
+// These are assumed to be supported if the EC reports at least version 1 of
+// string readout (it returns an integer greater than 0 and less than 255 when
+// reading FIFO index 0). Future strings may require higher FIFO versions.
+Method(BRSX, 1, Serialized)
+{
+	// It doesn't make sense to read the FIFO support indicator.
+	if (Arg0 == 0)
+	{
+		Return ("")
+	}
+
+	If (BRSS == 0xff)
+	{
+		// Write 0 to BSRF to read back a support indicator; nonzero and
+		// non-0xFF if FIFO readout is supported, assuming minimum v1 support
+		// for strings 1 through 3.
+		BSRF = 0
+		BRSS = BSRF
+
+		// 0xff readback also means no support for FIFO readout, when the EC
+		// doesn't even know what this command is.
+		if (BRSS == 0xff)
+		{
+			BRSS = 0
+		}
+	}
+
+	// If FIFO readout through BSRF is not supported, fall back to reading
+	// the short strings in EMEM.
+	If (BRSS == 0)
+	{
+		If (Arg0 == 1)
+		{
+			Return (ToString (Concatenate (BMOD, 0)))
+		}
+		ElseIf (Arg0 == 2)
+		{
+			Return (ToString (Concatenate (BSER, 0)))
+		}
+		ElseIf (Arg0 == 3)
+		{
+			Return (ToString (Concatenate (BMFG, 0)))
+		}
+		Else
+		{
+			Return ("")
+		}
+	}
+
+	// Select requested parameter to read
+	BSRF = Arg0
+
+	// Read to end of string, or up to a reasonable maximum length. Reads of
+	// BSRF consume bytes from the FIFO, so take care to read it only once
+	// per byte of data.
+	Local0 = ""
+	Local1 = BSRF
+	While (Local1 != 0 && SizeOf (Local0) < 32)
+	{
+		Local0 = Concatenate (Local0, ToString (Local1))
+		Local1 = BSRF
+	}
+
+	Return (Local0)
+}
+
 // _BIF implementation.
 //   Arg0 = battery index
 //   Arg1 = PBIF
@@ -86,9 +171,9 @@ Method (BBIF, 2, Serialized)
 	Arg1[6] = Local2
 
 	// Get battery info from mainboard
-	Arg1[9] = ToString(Concatenate(BMOD, 0x00))
-	Arg1[10] = ToString(Concatenate(BSER, 0x00))
-	Arg1[12] = ToString(Concatenate(BMFG, 0x00))
+	Arg1[9] = BRSX (1)
+	Arg1[10] = BRSX (2)
+	Arg1[12] = BRSX (3)
 
 	Release (^BATM)
 	Return (Arg1)
@@ -129,9 +214,9 @@ Method (BBIX, 2, Serialized)
 	Arg1[8] = BTCC
 
 	// Get battery info from mainboard
-	Arg1[16] = ToString(Concatenate(BMOD, 0x00))
-	Arg1[17] = ToString(Concatenate(BSER, 0x00))
-	Arg1[19] = ToString(Concatenate(BMFG, 0x00))
+	Arg1[16] = BRSX (1)
+	Arg1[17] = BRSX (2)
+	Arg1[19] = BRSX (3)
 
 	Release (^BATM)
 	Return (Arg1)

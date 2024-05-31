@@ -4,3 +4,6 @@ comment "Rauru"
 
 config BOARD_GOOGLE_RAURU
 	bool "->  Rauru"
+
+config BOARD_GOOGLE_NAVI
+	bool "->  Navi"

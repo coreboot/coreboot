@@ -91,6 +91,15 @@ chip soc/intel/alderlake
 	# Bit 1,3 - AUX lines are not swapped on the motherboard for either C0 or C1.
 	register "tcss_aux_ori" = "0"
 
+	# HD Audio
+	register "pch_hda_dsp_enable" = "1"
+	register "pch_hda_sdi_enable[0]" = "1"
+	register "pch_hda_sdi_enable[1]" = "1"
+	register "pch_hda_audio_link_hda_enable" = "1"
+	register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
+	register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
+	register "pch_hda_idisp_codec_enable" = "1"
+
 	# Configure external V1P05/Vnn/VnnSx Rails
 	register "ext_fivr_settings" = "{
 		.configure_ext_fivr = 1,
@@ -525,6 +534,14 @@ chip soc/intel/alderlake
 						device generic 0 alias conn0 on end
 					end
 				end
+			end
+		end
+		device ref hda on
+			chip drivers/sof
+				register "spkr_tplg" = "max98360a"
+				register "jack_tplg" = "rt5682"
+				register "mic_tplg" = "_2ch_pdm0"
+				device generic 0 on end
 			end
 		end
 	end

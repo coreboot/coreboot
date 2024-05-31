@@ -10,5 +10,6 @@ romstage-y += variants/$(VARIANT_DIR)/romstage.c
 ramstage-y += ramstage.c
 ramstage-y += variants/$(VARIANT_DIR)/hda_verb.c
 ramstage-y += variants/$(VARIANT_DIR)/gpio.c
+ramstage-$(CONFIG_DRIVERS_I2C_TAS5825M) += variants/$(VARIANT_DIR)/tas5825m.c
 
 SPD_SOURCES = samsung-M425R1GB4BB0-CQKOD

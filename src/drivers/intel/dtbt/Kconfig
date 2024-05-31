@@ -1,0 +1,9 @@
+config DRIVERS_INTEL_DTBT
+	def_bool n
+	help
+	  Enable support for discrete Thunderbolt controllers (Alpine Ridge,
+	  Titan Ridge, and Maple Ridge). Provides device initialization and ACPI
+	  _DSD/opregion for S3 sleep support. Mainboards must call \TBTS from
+	  their MPTS so TBT is prepared before sleep.
+
+	  Note: Only a single TBT bridge device is currently supported.

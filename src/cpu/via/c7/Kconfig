@@ -14,4 +14,10 @@ if CPU_VIA_C7
 config DCACHE_BSP_STACK_SIZE
 	default 0x1000
 
+config DCACHE_RAM_BASE
+	default 0xffef0000
+
+config DCACHE_RAM_SIZE
+	default 0x10000
+
 endif

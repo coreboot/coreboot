@@ -1,0 +1,18 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_VIA_EPIA_EX
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select CPU_VIA_C7
+	select NORTHBRIDGE_VIA_CX700
+	select BOARD_ROMSIZE_KB_512
+	select NO_UART_ON_SUPERIO
+
+config MAINBOARD_DIR
+	default "via/epia-ex"
+
+config MAINBOARD_PART_NUMBER
+	default "EPIA-EX"
+
+endif

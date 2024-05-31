@@ -1,0 +1,14 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config NORTHBRIDGE_VIA_CX700
+	bool
+	select PCI
+	select NO_ECAM_MMCONF_SUPPORT
+	select HAVE_CF9_RESET
+
+if NORTHBRIDGE_VIA_CX700
+
+config CHIPSET_DEVICETREE
+	default "northbridge/via/cx700/chipset.cb"
+
+endif

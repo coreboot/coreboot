@@ -1,0 +1,8 @@
+Board name: EPIA-EX
+Category: mini
+Board URL: https://web.archive.org/web/20211129175218/https://www.viatech.com/en/support/eol/epia-ex-eol/
+ROM package: PLCC
+ROM protocol: LPC
+ROM socketed: y
+Flashrom support: y
+Release year: 2006

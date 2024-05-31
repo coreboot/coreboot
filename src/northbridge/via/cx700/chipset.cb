@@ -1,0 +1,17 @@
+chip northbridge/via/cx700
+
+	device domain 0 on
+
+		device pci 00.0 alias host_ctrl	on  end
+		device pci 00.1 alias host_err	on  end
+		device pci 00.2 alias host_if	on  end
+		device pci 00.3 alias dram_ctrl	on  end
+		device pci 00.4 alias pm_ctrl	on  end
+		device pci 00.7 alias north_end	on  end
+		device pci 01.0 alias north_pci	off
+			device pci 00.0 alias vga off end
+		end
+
+	end
+
+end

@@ -259,7 +259,7 @@ void domain_read_resources(struct device *dev)
 {
 	uint64_t uma_base = get_uma_base();
 	uint32_t uma_size = get_uma_size();
-	uint32_t mem_useable = (uintptr_t)cbmem_top();
+	uint32_t mem_useable = cbmem_top();
 	uint32_t tom = get_top_of_mem_below_4gb();
 	uint64_t high_tom = get_top_of_mem_above_4gb();
 	uint64_t high_mem_useable;

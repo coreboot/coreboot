@@ -139,7 +139,7 @@ static void mc_report_map_entries(struct device *dev, uint64_t *values)
 
 static void configure_dpr(struct device *dev)
 {
-	const uintptr_t cbmem_top_mb = ALIGN_UP((uintptr_t)cbmem_top(), MiB) / MiB;
+	const uintptr_t cbmem_top_mb = ALIGN_UP(cbmem_top(), MiB) / MiB;
 	union dpr_register dpr = { .raw = pci_read_config32(dev, VTD_LTDPR) };
 
 	/* The DPR lock bit has to be set sufficiently early. It looks like
@@ -245,7 +245,7 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 	LOG_RESOURCE("low_ram", dev, res);
 
 	/* top_of_ram -> cbmem_top */
-	res = ram_from_to(dev, index++, top_of_ram, (uintptr_t)cbmem_top());
+	res = ram_from_to(dev, index++, top_of_ram, cbmem_top());
 	LOG_RESOURCE("cbmem_ram", dev, res);
 
 	/* Mark TSEG/SMM region as reserved */
@@ -261,7 +261,7 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 		 * DPR has a 1M granularity so it's possible if cbmem_top is not 1M
 		 * aligned that some memory does not get marked as assigned.
 		 */
-		res = reserved_ram_from_to(dev, index++, (uintptr_t)cbmem_top(),
+		res = reserved_ram_from_to(dev, index++, cbmem_top(),
 			(dpr.top - dpr.size) * MiB);
 		LOG_RESOURCE("unused_dram", dev, res);
 

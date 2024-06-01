@@ -56,7 +56,7 @@ static const acpi_cstate_t cstate_map[] = {
 void soc_fill_gnvs(struct global_nvs *gnvs)
 {
 	/* Top of Low Memory (start of resource allocation) */
-	gnvs->tolm = (uintptr_t)cbmem_top();
+	gnvs->tolm = cbmem_top();
 
 	/* MMIO Low/High & TSEG base and length */
 	gnvs->mmiob = (u32)get_top_of_low_memory();

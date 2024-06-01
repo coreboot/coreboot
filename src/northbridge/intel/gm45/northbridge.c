@@ -81,7 +81,7 @@ static void mch_domain_read_resources(struct device *dev)
 	reserved_ram_from_to(dev, idx++, 0xc0000, 1*MiB);
 
 	/* Report < 4GB memory */
-	ram_range(dev, idx++, 1*MiB, (uintptr_t)cbmem_top());
+	ram_range(dev, idx++, 1*MiB, cbmem_top());
 
 	/* TSEG */
 	uintptr_t tseg_base;
@@ -91,10 +91,10 @@ static void mch_domain_read_resources(struct device *dev)
 
 	/* cbmem_top can be shifted downwards due to alignment.
 	   Mark the region between cbmem_top and tseg_base as unusable */
-	if ((uintptr_t)cbmem_top() < tseg_base) {
+	if (cbmem_top() < tseg_base) {
 		printk(BIOS_DEBUG, "Unused RAM between cbmem_top and TOM: 0x%lx\n",
-		       tseg_base - (uintptr_t)cbmem_top());
-		mmio_from_to(dev, idx++, (uintptr_t)cbmem_top(), tseg_base);
+		       tseg_base - cbmem_top());
+		mmio_from_to(dev, idx++, cbmem_top(), tseg_base);
 	}
 
 	/* graphic memory above TSEG */

@@ -41,14 +41,12 @@ void smm_region(uintptr_t *start, size_t *size)
 
 void fill_postcar_frame(struct postcar_frame *pcf)
 {
-	uintptr_t top_of_ram;
-
 	/*
 	 * We need to make sure ramstage will be run cached. At this point exact
 	 * location of ramstage in cbmem is not known. Instruct postcar to cache
 	 * 16 megs under cbmem top which is a safe bet to cover ramstage.
 	 */
-	top_of_ram = (uintptr_t)cbmem_top();
+	const uintptr_t top_of_ram = cbmem_top();
 	postcar_frame_add_mtrr(pcf, top_of_ram - 16 * MiB, 16 * MiB,
 			       MTRR_TYPE_WRBACK);
 

@@ -57,7 +57,7 @@ void cbmem_initialize_empty_id_size(u32 id, u64 size);
 /* The assumption is made that the result of cbmem_top_romstage fits in the size
    of uintptr_t in the ramstage. */
 extern uintptr_t _cbmem_top_ptr;
-void *cbmem_top(void);
+uintptr_t cbmem_top(void);
 /* With CONFIG_RAMSTAGE_CBMEM_TOP_ARG set, the result of cbmem_top is passed via
  * calling arguments to the next stage and saved in the global _cbmem_top_ptr
  * global variable. Only a romstage callback needs to be implemented by the

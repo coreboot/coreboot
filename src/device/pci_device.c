@@ -570,7 +570,7 @@ void pci_domain_read_resources(struct device *dev)
 	 * one big range from cbmem_top to the configured limit.
 	 */
 	res = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
-	res->base  = (uintptr_t)cbmem_top();
+	res->base  = cbmem_top();
 	res->limit = CONFIG_DOMAIN_RESOURCE_32BIT_LIMIT - 1;
 	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
 		     IORESOURCE_ASSIGNED;

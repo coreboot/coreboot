@@ -60,7 +60,7 @@ void smm_region(uintptr_t *start, size_t *size)
 void fill_postcar_frame(struct postcar_frame *pcf)
 {
 	/* FSP does not seem to bother w.r.t. alignment when asked to place cbmem_top() */
-	uintptr_t top_of_ram = ALIGN_UP((uintptr_t)cbmem_top(), 8 * MiB);
+	const uintptr_t top_of_ram = ALIGN_UP(cbmem_top(), 8 * MiB);
 
 	/*
 	 * We need to make sure ramstage will be run cached. At this

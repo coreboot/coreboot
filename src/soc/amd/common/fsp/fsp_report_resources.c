@@ -9,7 +9,7 @@
 
 void read_fsp_resources(struct device *dev, unsigned long *idx)
 {
-	const uint32_t mem_usable = (uintptr_t)cbmem_top();
+	const uint32_t mem_usable = cbmem_top();
 	const struct hob_header *hob_iterator;
 	const struct hob_resource *res;
 

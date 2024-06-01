@@ -8,7 +8,7 @@
 static void fu740_init(struct device *dev)
 {
 	int index = 0;
-	ram_from_to(dev, index++, FU740_DRAM, (uintptr_t)cbmem_top());
+	ram_from_to(dev, index++, FU740_DRAM, cbmem_top());
 }
 
 struct chip_operations soc_sifive_fu740_ops = {

@@ -43,7 +43,7 @@ static void qemu_aarch64_domain_read_resources(struct device *dev)
 
 	mmio_range(dev, index++, VIRT_PCIE_ECAM_BASE, VIRT_PCIE_ECAM_SIZE);
 
-	ram_from_to(dev, index++, (uintptr_t)_dram, (uintptr_t)cbmem_top());
+	ram_from_to(dev, index++, (uintptr_t)_dram, cbmem_top());
 }
 
 struct device_operations qemu_aarch64_pci_domain_ops = {

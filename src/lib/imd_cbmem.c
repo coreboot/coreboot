@@ -15,17 +15,17 @@ uintptr_t _cbmem_top_ptr;
 
 static struct imd imd;
 
-void *cbmem_top(void)
+uintptr_t cbmem_top(void)
 {
 	if (ENV_CREATES_CBMEM) {
 		static uintptr_t top;
 		if (top)
-			return (void *)top;
+			return top;
 		top = cbmem_top_chipset();
-		return (void *)top;
+		return top;
 	}
 	if (ENV_POSTCAR || ENV_RAMSTAGE)
-		return (void *)_cbmem_top_ptr;
+		return _cbmem_top_ptr;
 
 	dead_code();
 }
@@ -55,7 +55,7 @@ static void cbmem_top_init_once(void)
 
 	/* The test is only effective on X86 and when address hits UC memory. */
 	if (ENV_X86)
-		quick_ram_check_or_die((uintptr_t)cbmem_top() - sizeof(u32));
+		quick_ram_check_or_die(cbmem_top() - sizeof(u32));
 }
 
 void cbmem_initialize_empty_id_size(u32 id, u64 size)
@@ -64,7 +64,7 @@ void cbmem_initialize_empty_id_size(u32 id, u64 size)
 
 	cbmem_top_init_once();
 
-	imd_handle_init(&imd, cbmem_top());
+	imd_handle_init(&imd, (void *)cbmem_top());
 
 	printk(BIOS_DEBUG, "CBMEM:\n");
 
@@ -95,7 +95,7 @@ int cbmem_initialize_id_size(u32 id, u64 size)
 
 	cbmem_top_init_once();
 
-	imd_handle_init(&imd, cbmem_top());
+	imd_handle_init(&imd, (void *)cbmem_top());
 
 	if (imd_recover(&imd))
 		return 1;

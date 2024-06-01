@@ -67,7 +67,7 @@ void smm_region(uintptr_t *start, size_t *size)
 
 void fill_postcar_frame(struct postcar_frame *pcf)
 {
-	uintptr_t top_of_ram = (uintptr_t)cbmem_top();
+	const uintptr_t top_of_ram = cbmem_top();
 
 	/*
 	 * Cache 8MiB below the top of ram. On sandybridge systems the top of

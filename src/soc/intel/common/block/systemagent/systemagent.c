@@ -188,10 +188,9 @@ static void sa_get_mem_map(struct device *dev, uint64_t *values)
 static void sa_add_dram_resources(struct device *dev, int *resource_count)
 {
 	uint64_t sa_map_values[MAX_MAP_ENTRIES];
-	uintptr_t top_of_ram;
 	int index = *resource_count;
 
-	top_of_ram = (uintptr_t)cbmem_top();
+	const uintptr_t top_of_ram = cbmem_top();
 
 	/* 0 - > 0xa0000 */
 	ram_from_to(dev, index++, 0, 0xa0000);

@@ -42,7 +42,7 @@ static const struct memmap_early_dram *memmap_get_early_dram_usage(void)
 /* report SoC memory map up to cbmem_top */
 void read_lower_soc_memmap_resources(struct device *dev, unsigned long *idx)
 {
-	const uint32_t mem_usable = (uintptr_t)cbmem_top();
+	const uint32_t mem_usable = cbmem_top();
 	const struct memmap_early_dram *e = memmap_get_early_dram_usage();
 	const uintptr_t early_reserved_dram_start = e->base;
 	const uintptr_t early_reserved_dram_end = e->base + e->size;
@@ -76,7 +76,7 @@ void smm_region(uintptr_t *start, size_t *size)
 	if (CONFIG(PLATFORM_USES_FSP2_0)) {
 		fsp_get_smm_region(start, size);
 	} else {
-		*start = (uintptr_t)cbmem_top();
+		*start = cbmem_top();
 		*size = CONFIG_SMM_TSEG_SIZE;
 	}
 

@@ -45,7 +45,7 @@ static void mch_domain_read_resources(struct device *dev)
 	ram_from_to(dev, index++, 0, 0xa0000);
 	mmio_from_to(dev, index++, 0xa0000, 0xc0000);
 	reserved_ram_from_to(dev, index++, 0xc0000, 1 * MiB);
-	ram_from_to(dev, index++, 1 * MiB, (uintptr_t)cbmem_top());
+	ram_from_to(dev, index++, 1 * MiB, cbmem_top());
 
 	/*
 	 * If >= 4GB installed then memory from TOLUD to 4GB
@@ -57,7 +57,7 @@ static void mch_domain_read_resources(struct device *dev)
 	size_t tseg_size;
 	smm_region(&tseg_base, &tseg_size);
 	mmio_from_to(dev, index++, tseg_base, tolud);
-	reserved_ram_from_to(dev, index++, (uintptr_t)cbmem_top(), tseg_base);
+	reserved_ram_from_to(dev, index++, cbmem_top(), tseg_base);
 
 	/* Reserve high memory where the NB BARs are up to 4GiB */
 	mmio_from_to(dev, index++, DEFAULT_HECIBAR, 4ull * GiB);

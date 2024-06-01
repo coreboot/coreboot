@@ -30,7 +30,7 @@ void smm_region(uintptr_t *start, size_t *size)
 
 void fill_postcar_frame(struct postcar_frame *pcf)
 {
-	const uintptr_t top_of_ram = (uintptr_t)cbmem_top();
+	const uintptr_t top_of_ram = cbmem_top();
 	uintptr_t cbmem_base;
 	size_t cbmem_size;
 

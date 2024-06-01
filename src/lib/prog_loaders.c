@@ -60,7 +60,7 @@ static void run_ramstage_from_resume(struct prog *ramstage)
 	stage_cache_load_stage(STAGE_RAMSTAGE, ramstage);
 
 	ramstage->cbfs_type = CBFS_TYPE_STAGE;
-	prog_set_arg(ramstage, cbmem_top());
+	prog_set_arg(ramstage, (void *)cbmem_top());
 
 	if (prog_entry(ramstage) != NULL) {
 		printk(BIOS_DEBUG, "Jumping to image.\n");
@@ -126,7 +126,7 @@ void __noreturn run_ramstage(void)
 	console_time_report();
 
 	/* This overrides the arg fetched from the relocatable module */
-	prog_set_arg(&ramstage, cbmem_top());
+	prog_set_arg(&ramstage, (void *)cbmem_top());
 
 	prog_run(&ramstage);
 

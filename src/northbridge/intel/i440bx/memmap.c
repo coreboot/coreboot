@@ -53,10 +53,8 @@ uintptr_t cbmem_top_chipset(void)
 
 void fill_postcar_frame(struct postcar_frame *pcf)
 {
-	uintptr_t top_of_ram;
-
 	/* Cache CBMEM region as WB. */
-	top_of_ram = (uintptr_t)cbmem_top();
+	const uintptr_t top_of_ram = cbmem_top();
 	postcar_frame_add_mtrr(pcf, top_of_ram - 8*MiB, 8*MiB,
 		MTRR_TYPE_WRBACK);
 }

@@ -22,7 +22,7 @@ uintptr_t cbmem_top_chipset(void)
 
 static uintptr_t smm_region_start(void)
 {
-	return (uintptr_t)cbmem_top();
+	return cbmem_top();
 }
 
 static size_t smm_region_size(void)

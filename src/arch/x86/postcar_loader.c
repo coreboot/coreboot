@@ -181,7 +181,7 @@ static void run_postcar_phase(struct postcar_frame *pcf)
 
 	postcar_flush_cache();
 
-	prog_set_arg(&prog, cbmem_top());
+	prog_set_arg(&prog, (void *)cbmem_top());
 
 	prog_run(&prog);
 }

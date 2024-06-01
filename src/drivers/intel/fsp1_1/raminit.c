@@ -138,7 +138,7 @@ void raminit(struct romstage_params *params)
 	}
 
 	/* Migrate CAR data */
-	printk(BIOS_DEBUG, "%p: cbmem_top\n", cbmem_top());
+	printk(BIOS_DEBUG, "%lx: cbmem_top\n", cbmem_top());
 	if (!s3wake) {
 		cbmem_initialize_empty_id_size(CBMEM_ID_FSP_RESERVED_MEMORY,
 			fsp_reserved_bytes);

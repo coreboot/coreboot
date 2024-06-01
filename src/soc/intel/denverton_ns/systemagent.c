@@ -240,10 +240,10 @@ static void mc_add_dram_resources(struct device *dev)
 	reserved_ram_from_to(dev, index++, 0xc0000, 1 * MiB);
 
 	/* 0x100000 -> cbmem_top() */
-	ram_from_to(dev, index++, 1 * MiB, (uintptr_t)cbmem_top());
+	ram_from_to(dev, index++, 1 * MiB, cbmem_top());
 
 	/* cbmem_top() -> TSEG */
-	mmio_from_to(dev, index++, (uintptr_t)cbmem_top(), mc_values[TSEG_REG]);
+	mmio_from_to(dev, index++, cbmem_top(), mc_values[TSEG_REG]);
 
 	/* TSEG -> TOLUD */
 	reserved_ram_from_to(dev, index++, mc_values[TSEG_REG], mc_values[TOLUD_REG]);

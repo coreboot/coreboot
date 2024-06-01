@@ -11,7 +11,7 @@ static void mainboard_enable(struct device *dev)
 		die("No dev0; die\n");
 	}
 
-	ram_from_to(dev, 0, (uintptr_t)_dram, (uintptr_t)cbmem_top());
+	ram_from_to(dev, 0, (uintptr_t)_dram, cbmem_top());
 }
 
 struct chip_operations mainboard_ops = {

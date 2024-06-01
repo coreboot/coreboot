@@ -69,12 +69,10 @@ void smm_region(uintptr_t *start, size_t *size)
 
 void fill_postcar_frame(struct postcar_frame *pcf)
 {
-	uintptr_t top_of_ram;
-
 	/* Cache at least 8 MiB below the top of ram, and at most 8 MiB
 	 * above top of the ram. This satisfies MTRR alignment requirement
 	 * with different TSEG size configurations.
 	 */
-	top_of_ram = ALIGN_DOWN((uintptr_t)cbmem_top(), 8 * MiB);
+	const uintptr_t top_of_ram = ALIGN_DOWN(cbmem_top(), 8 * MiB);
 	postcar_frame_add_mtrr(pcf, top_of_ram - 8 * MiB, 16 * MiB, MTRR_TYPE_WRBACK);
 }

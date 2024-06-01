@@ -16,6 +16,18 @@
 #define DDR4_ORGANIZATION	12
 #define DDR4_BUS_DEV_WIDTH	13
 #define DDR4_SPD_SN_OFF		325
+#define MAX_SPD_PAGE_SIZE_SPD5	128
+#define MAX_SPD_SIZE		(256 * 4)
+#define SPD_HUB_MEMREG(addr)	((u8)(0x80 | (addr)))
+#define SPD5_MR11		0x0B
+#define SPD5_MR0		0x00
+#define SPD5_MEMREG_REG(addr)	((u8)((~0x80) & (addr)))
+#define SPD5_MR0_SPD5_HUB_DEV	0x51
+
+struct spd_offset_table {
+	u16 start;		/* Offset 0 */
+	u16 end;		/* Offset 2 */
+};
 
 struct spd_block {
 	u8 addr_map[CONFIG_DIMM_MAX]; /* 7 bit I2C addresses */

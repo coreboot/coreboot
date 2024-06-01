@@ -16,8 +16,11 @@ static void update_spd_len(struct spd_block *blk)
 		if (blk->spd_array[i] != NULL)
 			j |= blk->spd_array[i][SPD_MEMORY_TYPE];
 
+	/* If spd used is DDR5, then its length is 1024 byte. */
+	if (j == SPD_MEMORY_TYPE_DDR5_SDRAM)
+		blk->len = CONFIG_DIMM_SPD_SIZE;
 	/* If spd used is DDR4, then its length is 512 byte. */
-	if (j == SPD_MEMORY_TYPE_DDR4_SDRAM)
+	else if (j == SPD_MEMORY_TYPE_DDR4_SDRAM)
 		blk->len = SPD_SIZE_MAX_DDR4;
 	else
 		blk->len = SPD_SIZE_MAX_DDR3;
@@ -40,6 +43,59 @@ static void spd_read(u8 *spd, u8 addr)
 	}
 }
 
+static void switch_page(u8 spd_addr, u8 new_page)
+{
+	/*
+	 *  By default,an SPD5 hub accepts 1 byte addressing pointing
+	 *  to the first 128 bytes of memory. MR11[2:0] selects the page
+	 *  pointer to address the entire 1024 bytes of non-volatile memory.
+	 */
+	smbus_write_byte(spd_addr, SPD5_MEMREG_REG(SPD5_MR11), new_page);
+}
+
+/*
+ * Read the SPD data over the SMBus, at the specified SPD address,
+ * starting at the specified starting offset and read the given amount of data.
+ */
+static void smbus_read_spd5(u8 *spd, u8 spd_addr, u16 size)
+{
+	u8 page = ~0;
+	u32 max_page_size = MAX_SPD_PAGE_SIZE_SPD5;
+
+	if (size > MAX_SPD_SIZE) {
+		printk(BIOS_ERR, "Maximum SPD size reached\n");
+		return;
+	}
+	for (int i = 0; i < size; i++) {
+		u8 next_page = (u8) (i / max_page_size);
+		if (next_page != page) {
+			switch_page(spd_addr, next_page);
+			page = next_page;
+		}
+		unsigned int byte_addr = SPD_HUB_MEMREG(i % max_page_size);
+		spd[i] = smbus_read_byte(spd_addr, byte_addr);
+	}
+}
+
+/* Read SPD5 MR0 and check if SPD Byte 0 matches the SPD5 HUB MR0 identifier.*/
+static int is_spd5_hub(u8 spd_addr)
+{
+	u8 spd_hub_byte;
+
+	spd_hub_byte = smbus_read_byte(spd_addr, SPD5_MEMREG_REG(SPD5_MR0));
+	return spd_hub_byte == SPD5_MR0_SPD5_HUB_DEV;
+}
+
+/*
+ * Reset the SPD page back to page 0 on an SPD5 Hub device at the
+ * input SPD SMbus address.
+ */
+static void reset_page_spd5(u8 spd_addr)
+{
+	/* Set SPD5 MR11[2:0] = 0 (Page 0) */
+	switch_page(spd_addr, 0);
+}
+
 /* return -1 if SMBus errors otherwise return 0 */
 static int get_spd(u8 *spd, u8 addr)
 {
@@ -55,27 +111,36 @@ static int get_spd(u8 *spd, u8 addr)
 		return -1;
 	}
 
-	/* IMC doesn't support i2c eeprom read. */
-	if (CONFIG(SOC_INTEL_COMMON_BLOCK_IMC) ||
-	    i2c_eeprom_read(addr, 0, SPD_SIZE_MAX_DDR3, spd) < 0) {
-		printk(BIOS_INFO, "do_i2c_eeprom_read failed, using fallback\n");
-		spd_read(spd, addr);
-	}
+	if (CONFIG(DRAM_SUPPORT_DDR5) && is_spd5_hub(addr)) {
+		smbus_read_spd5(spd, addr, CONFIG_DIMM_SPD_SIZE);
 
-	/* Check if module is DDR4, DDR4 spd is 512 byte. */
-	if (spd[SPD_MEMORY_TYPE] == SPD_MEMORY_TYPE_DDR4_SDRAM && CONFIG_DIMM_SPD_SIZE > SPD_SIZE_MAX_DDR3) {
-		/* Switch to page 1 */
-		spd_write_byte(SPD_PAGE_1, 0, 0);
-
+		/* Reset the page for the next loop iteration */
+		reset_page_spd5(addr);
+	} else {
 		/* IMC doesn't support i2c eeprom read. */
 		if (CONFIG(SOC_INTEL_COMMON_BLOCK_IMC) ||
-		    i2c_eeprom_read(addr, 0, SPD_SIZE_MAX_DDR3, spd + SPD_SIZE_MAX_DDR3) < 0) {
+		    i2c_eeprom_read(addr, 0, SPD_SIZE_MAX_DDR3, spd) < 0) {
 			printk(BIOS_INFO, "do_i2c_eeprom_read failed, using fallback\n");
-			spd_read(spd + SPD_SIZE_MAX_DDR3, addr);
+			spd_read(spd, addr);
 		}
-		/* Restore to page 0 */
-		spd_write_byte(SPD_PAGE_0, 0, 0);
+
+		/* Check if module is DDR4, DDR4 spd is 512 byte. */
+		if (spd[SPD_MEMORY_TYPE] == SPD_MEMORY_TYPE_DDR4_SDRAM &&
+		    CONFIG_DIMM_SPD_SIZE > SPD_SIZE_MAX_DDR3) {
+			/* Switch to page 1 */
+			spd_write_byte(SPD_PAGE_1, 0, 0);
+
+			/* IMC doesn't support i2c eeprom read. */
+			if (CONFIG(SOC_INTEL_COMMON_BLOCK_IMC) ||
+			    i2c_eeprom_read(addr, 0, SPD_SIZE_MAX_DDR3, spd + SPD_SIZE_MAX_DDR3) < 0) {
+				printk(BIOS_INFO, "do_i2c_eeprom_read failed, using fallback\n");
+				spd_read(spd + SPD_SIZE_MAX_DDR3, addr);
+			}
+			/* Restore to page 0 */
+			spd_write_byte(SPD_PAGE_0, 0, 0);
+		}
 	}
+
 	return 0;
 }
 

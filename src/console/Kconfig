@@ -318,8 +318,16 @@ config CONSOLE_I2C_SMBUS_SLAVE_ADDRESS
 	help
 	  I2C address of the device which logs the data.
 
+config CONSOLE_I2C_SMBUS_HAVE_DATA_REGISTER
+	bool "Write to a specific data register"
+	default y if SC16IS7XX_INIT
+	help
+	  Select this to provide a register address that will
+	  be sent before every data byte.
+
 config CONSOLE_I2C_SMBUS_SLAVE_DATA_REGISTER
 	hex "Data register address of the I2C logging device"
+	depends on CONSOLE_I2C_SMBUS_HAVE_DATA_REGISTER
 	default 0x00 if SC16IS7XX_INIT
 	help
 	  This an 8-bit data register.

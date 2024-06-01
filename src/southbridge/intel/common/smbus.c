@@ -253,7 +253,8 @@ static int smbus_write_cmd(uintptr_t base, u8 ctrl, u8 device, u8 address, u16 d
 	host_outb(base, SMBHSTCMD, address);
 
 	/* Set the data bytes... */
-	host_outb(base, SMBHSTDAT0, data & 0xff);
+	if (ctrl >= I801_BYTE_DATA)
+		host_outb(base, SMBHSTDAT0, data & 0xff);
 	if (ctrl == I801_WORD_DATA)
 		host_outb(base, SMBHSTDAT1, data >> 8);
 
@@ -352,6 +353,11 @@ int do_smbus_read_byte(uintptr_t base, u8 device, u8 address)
 int do_smbus_read_word(uintptr_t base, u8 device, u8 address)
 {
 	return smbus_read_cmd(base, I801_WORD_DATA, device, address);
+}
+
+int do_smbus_send_byte(uintptr_t base, u8 device, u8 data)
+{
+	return smbus_write_cmd(base, I801_BYTE, device, data, 0x00);
 }
 
 int do_smbus_write_byte(uintptr_t base, u8 device, u8 address, u8 data)

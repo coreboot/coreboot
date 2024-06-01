@@ -390,9 +390,22 @@ void early_usb_init(const struct southbridge_usb_port *portmap);
 
 /* Up to 14" onboard trace length, up to 8" on wires */
 #define USBIR_TXRX_GAIN_DEFAULT		0x20000f57
+#define USBIR_TXRX_GAIN_MOBILE_HIGH	USBIR_TXRX_GAIN_DEFAULT
 
 /* Up to 10" onboard trace length, up to 15" on wires */
 #define USBIR_TXRX_GAIN_HIGH		0x2000055B
+
+/* Desktop 6-series PCHs */
+/* In order: up to and not including 8"/13"/15" on wires */
+#define USBIR_TXRX_GAIN_DESKTOP6_LOW	USBIR_TXRX_GAIN_DESKTOP_LOW
+#define USBIR_TXRX_GAIN_DESKTOP6_MED	USBIR_TXRX_GAIN_DEFAULT
+#define USBIR_TXRX_GAIN_DESKTOP6_HIGH	0x20000f5b
+
+/* Desktop 7-series PCHs */
+/* In order: up to and not including 8"/10"/15" on wires */
+#define USBIR_TXRX_GAIN_DESKTOP7_LOW	USBIR_TXRX_GAIN_DEFAULT
+#define USBIR_TXRX_GAIN_DESKTOP7_MED	0x20000553
+#define USBIR_TXRX_GAIN_DESKTOP7_HIGH	USBIR_TXRX_GAIN_HIGH
 
 /* Miscellaneous Control Register */
 #define MISCCTL		0x3590	/* 32bit */

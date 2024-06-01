@@ -311,8 +311,8 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 		0x2000094a: 4,
 		0x2000035f: 5,
 		0x20000f53: 6,
-		0x20000357: 7,
-		0x20000353: 8,
+		0x20000f5b: 7,
+		0x20000553: 9,
 	}
 
 	for port := uint(0); port < 14; port++ {

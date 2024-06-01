@@ -5,6 +5,22 @@ chip northbridge/intel/sandybridge
 		subsystemid 0x1043 0x84ca inherit
 		device ref peg11 on  end # PCIEX_16_2
 		chip southbridge/intel/bd82x6x
+			register "usb_port_config" = "{
+				{ 1, 2, 0 },
+				{ 1, 2, 0 },
+				{ 1, 2, 1 },
+				{ 1, 9, 1 },
+				{ 1, 9, 2 },
+				{ 1, 2, 2 },
+				{ 1, 2, 3 },
+				{ 1, 2, 3 },
+				{ 1, 2, 4 },
+				{ 1, 9, 4 },
+				{ 1, 2, 6 },
+				{ 1, 2, 5 },
+				{ 1, 2, 5 },
+				{ 1, 2, 6 }
+			}"
 			register "gen1_dec" = "0x000c0291"
 
 			device ref gbe on  end

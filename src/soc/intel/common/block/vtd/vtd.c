@@ -12,19 +12,6 @@
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 
-/* VT-d specification: https://cdrdv2.intel.com/v1/dl/getContent/671081 */
-#define VER_REG		0x0
-#define CAP_REG		0x8
-#define  CAP_PMR_LO	BIT(5)
-#define  CAP_PMR_HI	BIT(6)
-#define PMEN_REG	0x64
-#define   PMEN_EPM	BIT(31)
-#define   PMEN_PRS	BIT(0)
-#define PLMBASE_REG	0x68
-#define PLMLIMIT_REG	0x6C
-#define PHMBASE_REG	0x70
-#define PHMLIMIT_REG	0x78
-
 /* FSP 2.x VT-d HOB from edk2-platforms */
 static const uint8_t vtd_pmr_info_data_hob_guid[16] = {
 	0x45, 0x16, 0xb6, 0x6f, 0x68, 0xf1, 0xbe, 0x46,
@@ -39,26 +26,6 @@ struct vtd_pmr_info_hob {
 } __packed;
 
 static struct vtd_pmr_info_hob *pmr_hob;
-
-static __always_inline uint32_t vtd_read32(uintptr_t vtd_base, uint32_t reg)
-{
-	return read32p(vtd_base + reg);
-}
-
-static __always_inline void vtd_write32(uintptr_t vtd_base, uint32_t reg, uint32_t value)
-{
-	return write32p(vtd_base + reg, value);
-}
-
-static __always_inline uint64_t vtd_read64(uintptr_t vtd_base, uint32_t reg)
-{
-	return read64p(vtd_base + reg);
-}
-
-static __always_inline void vtd_write64(uintptr_t vtd_base, uint32_t reg, uint64_t value)
-{
-	return write64p(vtd_base + reg, value);
-}
 
 static bool is_vtd_enabled(uintptr_t vtd_base)
 {

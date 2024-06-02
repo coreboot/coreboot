@@ -1,0 +1,27 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+if BOARD_ASROCK_Z97E_ITX_AC
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_8192
+	select GFX_GMA_ANALOG_I2C_HDMI_B
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select INTEL_GMA_HAVE_VBT
+	select MAINBOARD_HAS_LIBGFXINIT
+	select MAINBOARD_USES_IFD_GBE_REGION
+	select NORTHBRIDGE_INTEL_HASWELL
+	select SERIRQ_CONTINUOUS_MODE
+	select SOUTHBRIDGE_INTEL_LYNXPOINT
+	select SUPERIO_NUVOTON_NCT6776
+	select USE_BROADWELL_MRC if !USE_NATIVE_RAMINIT
+
+config MAINBOARD_DIR
+	default "asrock/z97e-itx_ac"
+
+config MAINBOARD_PART_NUMBER
+	default "Z97E-ITX/ac"
+
+config USBDEBUG_HCD_INDEX # This is the top-most of the USB-2.0-Ports above the PS/2 port.
+	default 1
+endif

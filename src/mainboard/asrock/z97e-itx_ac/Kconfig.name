@@ -1,0 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+config BOARD_ASROCK_Z97E_ITX_AC
+	bool "Z97E-ITX/ac"

@@ -12,6 +12,19 @@ chip northbridge/via/cx700
 			device pci 00.0 alias vga off end
 		end
 
+		device pci 0f.0 alias ata	off end
+		device pci 10.0 alias uhci0	off end
+		device pci 10.1 alias uhci1	off end
+		device pci 10.2 alias uhci2	off end
+		device pci 10.4 alias ehci	off end
+		device pci 11.0 alias lpc	on  end
+		device pci 11.6 alias mc97	off end
+		device pci 11.7 alias south_end	on  end
+		device pci 13.0 alias pcie	off
+			device pci 01.0 alias hda off end
+		end
+		device pci 13.1 alias south_pci	off end
+
 	end
 
 end

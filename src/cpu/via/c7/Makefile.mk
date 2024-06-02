@@ -5,4 +5,4 @@ bootblock-y	+= ../../intel/car/bootblock.c
 
 romstage-y	+= ../../intel/car/romstage.c
 
-postcar-y	+= ../car/exit_car.S
+postcar-y	+= ../../intel/car/p4-netburst/exit_car.S

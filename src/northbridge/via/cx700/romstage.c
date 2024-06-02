@@ -3,10 +3,14 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <commonlib/bsd/helpers.h>
+#include <device/device.h>
 #include <device/pci_ops.h>
 #include <static_devices.h>
-#include <romstage_common.h>
-#include <halt.h>
+#include <arch/romstage.h>
+#include <cbmem.h>
+
+#include "chip.h"
+#include "raminit.h"
 
 static void tune_fsb(void)
 {
@@ -41,13 +45,18 @@ static void tune_fsb(void)
 		pci_write_config8(_sdev_host_if, fsb_settings[i].reg, fsb_settings[i].val);
 }
 
-void __noreturn romstage_main(void)
+void mainboard_romstage_entry(void)
 {
+	const struct northbridge_via_cx700_config *config = config_of_soc();
+
 	/* Allows access to all northbridge PCI devfn's */
 	pci_write_config8(_sdev_host_ctrl, 0x4f, 0x01);
 
 	tune_fsb();
 
-	/* Needed for __noreturn */
-	halt();
+	sdram_enable(&config->dram_cfg);
+
+	cbmem_recovery(/* s3resume => */0);
+
+	prepare_and_run_postcar();
 }

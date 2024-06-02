@@ -1,6 +1,14 @@
 chip northbridge/via/cx700
 
 	device domain 0 on
+
+		device ref dram_ctrl on
+			register "dram_cfg" = "{
+				.spd_addr = { 0x50, },
+				.mem_clocks = ALL_MCLKO,
+			 }"
+		end
+
 	end
 
 end

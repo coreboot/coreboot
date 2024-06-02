@@ -59,7 +59,7 @@ void intel_acpi_gen_def_acpi_pirq(const struct device *lpc)
 
 	printk(BIOS_DEBUG, "Generating ACPI PIRQ entries\n");
 
-	pin_irq_map = calloc(MAX_SLOTS * PCI_INT_MAX, sizeof(struct slot_pin_irq_map));
+	pin_irq_map = calloc(sizeof(struct slot_pin_irq_map), MAX_SLOTS * PCI_INT_MAX);
 	pirq_map.type = PIRQ_SOURCE_PATH;
 	for (i = 0; i < PIRQ_COUNT; i++)
 		snprintf(pirq_map.source_path[i], sizeof(pirq_map.source_path[i]),

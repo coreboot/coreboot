@@ -1288,6 +1288,10 @@ static void expose_device_names(FILE *fil, FILE *head, struct device *ptr, struc
 
 	/* Only devices on root bus here. */
 	if (ptr->bustype == PCI && ptr->parent->dev->bustype == DOMAIN) {
+		if (ptr->alias) {
+			fprintf(head, "static const pci_devfn_t _sdev_%s = PCI_DEV(%d, %d, %d);\n",
+				ptr->alias, ptr->parent->dev->path_a, ptr->path_a, ptr->path_b);
+		}
 		fprintf(head, "extern DEVTREE_CONST struct device *const __pci_%d_%02x_%d;\n",
 			ptr->parent->dev->path_a, ptr->path_a, ptr->path_b);
 		fprintf(fil, "DEVTREE_CONST struct device *const __pci_%d_%02x_%d = &%s;\n",
@@ -1303,6 +1307,10 @@ static void expose_device_names(FILE *fil, FILE *head, struct device *ptr, struc
 	}
 
 	if (ptr->bustype == PNP) {
+		if (ptr->alias) {
+			fprintf(head, "static const pnp_devfn_t _sdev_%s = PNP_DEV(0x%02x, 0x%04x);\n",
+				ptr->alias, ptr->path_a, ptr->path_b);
+		}
 		fprintf(head, "extern DEVTREE_CONST struct device *const __pnp_%04x_%02x;\n",
 			ptr->path_a, ptr->path_b);
 		fprintf(fil, "DEVTREE_CONST struct device *const __pnp_%04x_%02x = &%s;\n",
@@ -1917,6 +1925,8 @@ static void generate_outputd(FILE *gen, FILE *dev)
 {
 	fprintf(dev, "#ifndef __STATIC_DEVICES_H\n");
 	fprintf(dev, "#define __STATIC_DEVICES_H\n\n");
+	fprintf(dev, "#include <device/pci_type.h>\n");
+	fprintf(dev, "#include <device/pnp_type.h>\n");
 	fprintf(dev, "#include <device/device.h>\n\n");
 	fprintf(dev, "/* expose_device_names */\n");
 	walk_device_tree(gen, dev, &base_root_dev, expose_device_names);

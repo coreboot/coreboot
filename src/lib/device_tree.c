@@ -608,7 +608,7 @@ struct device_tree *fdt_unflatten(const void *blob)
 	const struct fdt_header *header = (const struct fdt_header *)blob;
 	tree->header = header;
 
-	if (fdt_is_valid(blob))
+	if (!fdt_is_valid(blob))
 		return NULL;
 
 	uint32_t struct_offset = be32toh(header->structure_offset);

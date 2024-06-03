@@ -399,6 +399,18 @@
                 "ranksPerChannel": 1,
                 "speedMbps": 4267
             }
+	},
+	{
+            "name": "SDVB8D8A34XGCL3N3T",
+            "attribs": {
+                "densityPerChannelGb": 8,
+                "banks": 8,
+                "channelsPerDie": 2,
+                "diesPerPackage": 2,
+                "bitWidthPerChannel": 16,
+                "ranksPerChannel": 1,
+                "speedMbps": 4267
+            }
 	}
     ]
 }

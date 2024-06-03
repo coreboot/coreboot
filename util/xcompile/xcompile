@@ -201,6 +201,13 @@ detect_special_flags() {
 		CFLAGS_GCC="$CFLAGS_GCC -Wno-address-of-packed-member"
 	testcc "$GCC"      "$CFLAGS_GCC --param=min-pagesize=1024 $FLAGS_GCC" &&
 		CFLAGS_GCC="$CFLAGS_GCC --param=min-pagesize=1024"
+
+	testcc "$GCC"      "$CFLAGS_GCC -Wflex-array-member-not-at-end" &&
+		CFLAGS_GCC="$CFLAGS_GCC -Wflex-array-member-not-at-end"
+
+	testcc "$GCC"      "$CFLAGS_GCC -Wcalloc-transposed-args" &&
+		CFLAGS_GCC="$CFLAGS_GCC -Wcalloc-transposed-args"
+
 	case "$architecture" in
 	x86)
 		;;

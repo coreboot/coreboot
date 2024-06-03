@@ -1,66 +1,68 @@
 [submodule "3rdparty/blobs"]
 	path = 3rdparty/blobs
-	url = https://review.coreboot.org/blobs.git
-	update = none
-	ignore = dirty
+	url = ../blobs.git
+	branch = main
 [submodule "util/nvidia-cbootimage"]
 	path = util/nvidia/cbootimage
-	url = https://review.coreboot.org/nvidia-cbootimage.git
+	url = ../../coreboot/nvidia-cbootimage.git
 [submodule "vboot"]
 	path = 3rdparty/vboot
-	url = https://review.coreboot.org/vboot.git
+	url = ../../coreboot/vboot.git
 	branch = main
 [submodule "arm-trusted-firmware"]
 	path = 3rdparty/arm-trusted-firmware
-	url = https://review.coreboot.org/arm-trusted-firmware.git
+	url = ../../coreboot/arm-trusted-firmware.git
+[submodule "3rdparty/chromeec"]
+	path = 3rdparty/chromeec
+	url = ../../coreboot/chrome-ec.git
 [submodule "libhwbase"]
 	path = 3rdparty/libhwbase
-	url = https://review.coreboot.org/libhwbase.git
+	url = ../../coreboot/libhwbase.git
 [submodule "libgfxinit"]
 	path = 3rdparty/libgfxinit
-	url = https://review.coreboot.org/libgfxinit.git
+	url = ../../coreboot/libgfxinit.git
 [submodule "3rdparty/fsp"]
 	path = 3rdparty/fsp
-	url = https://review.coreboot.org/fsp.git
+	url = ../../coreboot/fsp.git
 	update = none
 	ignore = dirty
 [submodule "opensbi"]
 	path = 3rdparty/opensbi
-	url = https://review.coreboot.org/opensbi.git
+	url = ../../coreboot/opensbi.git
 [submodule "intel-microcode"]
 	path = 3rdparty/intel-microcode
-	url = https://review.coreboot.org/intel-microcode.git
+	url = ../../coreboot/intel-microcode.git
 	update = none
 	ignore = dirty
 	branch = main
 [submodule "3rdparty/ffs"]
 	path = 3rdparty/ffs
-	url = https://review.coreboot.org/ffs.git
+	url = ../../coreboot/ffs.git
 [submodule "3rdparty/amd_blobs"]
 	path = 3rdparty/amd_blobs
-	url = https://review.coreboot.org/amd_blobs
+	url = ../../coreboot/amd_blobs
 	update = none
 	ignore = dirty
 [submodule "3rdparty/cmocka"]
 	path = 3rdparty/cmocka
-	url = https://review.coreboot.org/cmocka.git
+	url = ../../coreboot/cmocka.git
 	update = none
 	branch = stable-1.1
 [submodule "3rdparty/qc_blobs"]
 	path = 3rdparty/qc_blobs
-	url = https://review.coreboot.org/qc_blobs.git
+	url = ../../coreboot/qc_blobs.git
 	update = none
 	ignore = dirty
 [submodule "3rdparty/intel-sec-tools"]
 	path = 3rdparty/intel-sec-tools
-	url = https://review.coreboot.org/9esec-security-tooling.git
+	url = ../../coreboot/9esec-security-tooling.git
 [submodule "3rdparty/stm"]
 	path = 3rdparty/stm
-	url = https://review.coreboot.org/STM
+	url = ../../coreboot/STM
 	branch = stmpe
 [submodule "util/goswid"]
 	path = util/goswid
-	url = https://review.coreboot.org/goswid
+	url = ../../coreboot/goswid
 	branch = trunk
 [submodule "src/vendorcode/amd/opensil/genoa_poc/opensil"]
 	path = src/vendorcode/amd/opensil/genoa_poc/opensil

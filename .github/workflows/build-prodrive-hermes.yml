@@ -1,0 +1,34 @@
+name: Build Prodrive Hermes
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-hermes:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.ACCESS_TOKEN }}
+        submodules: recursive
+    - name: Build Prodrive Hermes Board
+      uses: ./.github/actions/buildx86
+      with:
+        config: firmwareci/config.prodrive_hermes.edk2
+        token: ${{ secrets.ACCESS_TOKEN }}
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: coreboot.rom
+        path: ./build/coreboot.rom
+    - uses: docker://firmwareci/uploader:v2.0
+      with:
+        EMAIL: ${{ secrets.EMAIL }}
+        PASSWORD: ${{ secrets.PASSWORD }}
+        PROJECT_ID:   01J0MXWP8B1NQVMATY60JSWW4B
+        COMMIT_HASH: ${{ github.sha }}
+        BINARY_PATH: ./build/coreboot.rom
+        PROTOCOL: local
+        API: https://api.firmwareci.9esec.dev:8443  

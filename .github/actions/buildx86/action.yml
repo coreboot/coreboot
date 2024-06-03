@@ -1,0 +1,62 @@
+# action.yml
+name: 'Build coreboot'
+description: 'Build coreboot for x86'
+inputs:
+
+  config: 
+    description: 'Config to use for building'
+    required: true
+  artifact-path: 
+    description: 'The key used to retrieve the uploaded artifact. The binary will be called coreboot.rom'
+    required: false
+  upload-artifacts: 
+    description: 'Whether or not to upload the artifacts'
+    required: false
+    default: false
+  token:
+    description: 'The token used to authenticate with the blobs repository'
+    required: false
+runs:
+  using: 'composite'
+  steps:
+    - name: Restore cached toolchain
+      id: cache-toolchain
+      uses: actions/cache@v3
+      with:
+          path: ./util/crossgcc/xgcc/*
+          key: X86-crossgcc
+    - name: Install Tools
+      shell: bash
+      run: sudo apt-get install -y bison build-essential curl flex git gnat libncurses5-dev m4 zlib1g-dev libelf-dev nasm
+    - name: Build Toolchain Action
+      if: steps.cache-toolchain.outputs.cache-hit != 'true'
+      uses: ./.github/actions/buildx86-toolchain
+
+    - name: Install Tools
+      shell: bash
+      run: sudo apt-get install -y bison build-essential curl flex git gnat libncurses5-dev m4 zlib1g-dev libelf-dev
+
+    - name: Copy .config file
+      shell: bash
+      run: cp configs/${{ inputs.config }} ./.config
+
+    - name: Set default options
+      shell: bash
+      run: make olddefconfig
+
+    - name: Remove old blods folder
+      uses: JesseTG/rm@v1.0.3
+      with:
+        path: ./3rdparty/blobs
+
+    - name: Clone new blobs folder
+      uses: actions/checkout@v4
+      with:
+        repository: BlindspotSoftware/blobs
+        path: ./3rdparty/blobs
+        ref: main
+        token: ${{ inputs.token }}
+
+    - name: Build coreboot
+      shell: bash
+      run: make -j$(nproc)

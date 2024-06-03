@@ -116,7 +116,7 @@ config SOC_INTEL_TWINLAKE
 
 config SOC_INTEL_ALDERLAKE_PCH_N
 	bool
-	select HAVE_INTEL_FSP_REPO if !SOC_INTEL_TWINLAKE
+	select HAVE_INTEL_FSP_REPO if FSP_TYPE_IOT
 	select SOC_INTEL_ALDERLAKE
 	help
 	  Choose this option if your mainboard has a PCH-N chipset.
@@ -408,7 +408,7 @@ config FSP_HEADER_PATH
 	default "3rdparty/fsp/AlderLakeFspBinPkg/Client/AlderLakeP/Include/" if SOC_INTEL_ALDERLAKE_PCH_P && !SOC_INTEL_RAPTORLAKE
 	default "3rdparty/fsp/RaptorLakeFspBinPkg/Client/RaptorLakeP/Include/" if SOC_INTEL_ALDERLAKE_PCH_P && SOC_INTEL_RAPTORLAKE
 	default "3rdparty/fsp/AlderLakeFspBinPkg/Client/AlderLakeS/Include/" if SOC_INTEL_ALDERLAKE_PCH_S
-	default "3rdparty/fsp/AlderLakeFspBinPkg/IoT/AlderLakeN/Include/" if SOC_INTEL_ALDERLAKE_PCH_N
+	default "3rdparty/fsp/AlderLakeFspBinPkg/IoT/AlderLakeN/Include/" if SOC_INTEL_ALDERLAKE_PCH_N && FSP_TYPE_IOT
 	default "src/vendorcode/intel/fsp/fsp2_0/alderlake/" if !FSP_USE_REPO
 
 config FSP_FD_PATH
@@ -422,7 +422,7 @@ config FSP_FD_PATH
 	default "3rdparty/fsp/AlderLakeFspBinPkg/Client/AlderLakeP/Fsp.fd" if SOC_INTEL_ALDERLAKE_PCH_P && !SOC_INTEL_RAPTORLAKE
 	default "3rdparty/fsp/RaptorLakeFspBinPkg/Client/RaptorLakeP/Fsp.fd" if SOC_INTEL_ALDERLAKE_PCH_P && SOC_INTEL_RAPTORLAKE
 	default "3rdparty/fsp/AlderLakeFspBinPkg/Client/AlderLakeS/Fsp.fd" if SOC_INTEL_ALDERLAKE_PCH_S
-	default "3rdparty/fsp/AlderLakeFspBinPkg/IoT/AlderLakeN/Fsp.fd" if SOC_INTEL_ALDERLAKE_PCH_N
+	default "3rdparty/fsp/AlderLakeFspBinPkg/IoT/AlderLakeN/Fsp.fd" if SOC_INTEL_ALDERLAKE_PCH_N && FSP_TYPE_IOT
 
 config SOC_INTEL_ALDERLAKE_DEBUG_CONSENT
 	int "Debug Consent for ADL"

@@ -373,7 +373,7 @@ bool generate_pin_irq_map(void)
 	if (!cached_entries)
 		return false;
 
-	pin_irq_map = calloc(MAX_SLOTS, sizeof(struct slot_pin_irq_map) * PCI_INT_MAX);
+	pin_irq_map = calloc(MAX_SLOTS * PCI_INT_MAX, sizeof(struct slot_pin_irq_map));
 
 	pirq_map.type = PIRQ_GSI;
 	legacy_pirq_routing = lpc_get_pic_pirq_routing(&pirq_routes);

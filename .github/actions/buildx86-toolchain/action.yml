@@ -1,0 +1,19 @@
+name: 'Build x86 coreboot Toolchain'
+description: 'Build the tools needed to build coreboot on x86'
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    - name: Cache Toolchain
+      id: cache-toolchain
+      uses: actions/cache@v3
+      with:
+          path: ./util/crossgcc/xgcc/*
+          key: X86-crossgcc
+
+    - name: Build Toolchain
+      shell: bash
+      if: steps.cache-toolchain.outputs.cache-hit != 'true'
+      run: make crossgcc-i386 CPUS=$(nproc)

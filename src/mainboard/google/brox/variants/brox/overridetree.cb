@@ -36,18 +36,42 @@ chip soc/intel/alderlake
 				register "options.tsr[0].desc" = ""DRAM_SOC""
 				register "options.tsr[1].desc" = ""Fan-Inlet""
 
-				# TODO: below values are initial reference values only
 				## Active Policy
 				register "policies.active" = "{
 						[0] = {
+								.target = DPTF_CPU,
+								.thresholds = {
+												TEMP_PCT(95, 90),
+												TEMP_PCT(92, 80),
+												TEMP_PCT(89, 60),
+												TEMP_PCT(85, 40),
+												TEMP_PCT(80, 30),
+								}
+						},
+						[1] = {
+								.target = DPTF_TEMP_SENSOR_0,
+								.thresholds = {
+												TEMP_PCT(54, 95),
+												TEMP_PCT(52, 90),
+												TEMP_PCT(50, 80),
+												TEMP_PCT(48, 50),
+												TEMP_PCT(46, 30),
+												TEMP_PCT(44, 25),
+												TEMP_PCT(42, 20),
+												TEMP_PCT(40, 15),
+								}
+						},
+						[2] = {
 								.target = DPTF_TEMP_SENSOR_1,
 								.thresholds = {
-												TEMP_PCT(85, 90),
-												TEMP_PCT(80, 80),
-												TEMP_PCT(75, 70),
-												TEMP_PCT(70, 60),
-												TEMP_PCT(65, 50),
-												TEMP_PCT(60, 40),
+												TEMP_PCT(54, 95),
+												TEMP_PCT(52, 90),
+												TEMP_PCT(50, 80),
+												TEMP_PCT(48, 50),
+												TEMP_PCT(46, 30),
+												TEMP_PCT(44, 25),
+												TEMP_PCT(42, 20),
+												TEMP_PCT(40, 15),
 								}
 						}
 				}"

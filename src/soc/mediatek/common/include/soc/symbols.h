@@ -6,5 +6,6 @@
 #include <symbols.h>
 
 DECLARE_REGION(dram_dma)
+DECLARE_REGION(resv_mem_optee)
 
 #endif /* _SOC_MEDIATEK_COMMON_SYMBOLS_H_ */

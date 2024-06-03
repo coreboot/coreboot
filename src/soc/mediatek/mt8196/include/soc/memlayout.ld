@@ -2,6 +2,9 @@
 
 #include <soc/memlayout.h>
 
+#define OPTEE_BUF(addr, size) \
+	REGION(resv_mem_optee, addr, size, 4K)
+
 SECTIONS
 {
 	/* MT8196 has 256KB SRAM. */
@@ -54,6 +57,7 @@ SECTIONS
 	DRAM_DMA(0x80000000, 1M)
 	POSTRAM_CBFS_CACHE(0x80100000, 2M)
 	RAMSTAGE(0x80300000, 2M)
+	OPTEE_BUF(0x80500000, 70M)
 
 	BL31(0x94600000, 0x200000)
 }

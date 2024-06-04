@@ -6,6 +6,36 @@
 
 #define MSEC_TO_USEC(x) (x * 1000)
 
+enum cb_err cse_get_boot_performance_data(struct cse_boot_perf_rsp *boot_perf_rsp)
+{
+	struct cse_boot_perf_req {
+		struct mkhi_hdr hdr;
+		uint32_t reserved;
+	} __packed;
+
+	struct cse_boot_perf_req req = {
+		.hdr.group_id = MKHI_GROUP_ID_BUP_COMMON,
+		.hdr.command = MKHI_BUP_COMMON_GET_BOOT_PERF_DATA,
+		.reserved = 0,
+	};
+
+	size_t resp_size = sizeof(struct cse_boot_perf_rsp);
+
+	if (heci_send_receive(&req, sizeof(req), boot_perf_rsp, &resp_size,
+									HECI_MKHI_ADDR)) {
+		printk(BIOS_ERR, "cse: Could not get boot performance data\n");
+		return CB_ERR;
+	}
+
+	if (boot_perf_rsp->hdr.result) {
+		printk(BIOS_ERR, "cse: Get boot performance data resp failed: %d\n",
+				boot_perf_rsp->hdr.result);
+		return CB_ERR;
+	}
+
+	return CB_SUCCESS;
+}
+
 static void process_cse_telemetry_data(void)
 {
 	struct cse_boot_perf_rsp cse_perf_data;

@@ -294,7 +294,7 @@ config SOC_INTEL_CSE_LITE_COMPRESS_ME_RW
 
 config SOC_INTEL_CSE_PRE_CPU_RESET_TELEMETRY
 	def_bool n
-	depends on SOC_INTEL_CSE_LITE_SKU && !SOC_INTEL_CSE_LITE_SYNC_BY_PAYLOAD
+	depends on !SOC_INTEL_CSE_LITE_SYNC_BY_PAYLOAD
 	help
 	  Mainboard user to select this Kconfig in order to capture pre-cpu
 	  reset boot performance telemetry data.

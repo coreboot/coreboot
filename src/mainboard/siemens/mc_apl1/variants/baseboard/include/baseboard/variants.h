@@ -3,7 +3,7 @@
 #ifndef _BASEBOARD_VARIANTS_H_
 #define _BASEBOARD_VARIANTS_H_
 
-#include <soc/gpio.h>
+#include <gpio.h>
 
 /*
  * The next set of functions return the gpio table and fill in the number of

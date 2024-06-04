@@ -3,10 +3,10 @@
 all_x86-y += mode_switch.S
 all_x86-y += mode_switch2.S
 
-ifeq ($(CONFIG_USE_1G_PAGES_TLB),y)
-PAGETABLE_SRC := pt1G.S
-else
+ifeq ($(CONFIG_NEED_SMALL_2MB_PAGE_TABLES),y)
 PAGETABLE_SRC := pt.S
+else
+PAGETABLE_SRC := pt1G.S
 endif
 
 all_x86-y += $(PAGETABLE_SRC)

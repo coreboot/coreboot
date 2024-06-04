@@ -3,7 +3,7 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/i2c_simple.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 #include <soc/i2c.h>
 #include <soc/tps65132s.h>
 

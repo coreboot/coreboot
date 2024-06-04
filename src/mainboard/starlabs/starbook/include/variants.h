@@ -3,7 +3,7 @@
 #ifndef _BASEBOARD_VARIANTS_H_
 #define _BASEBOARD_VARIANTS_H_
 
-#include <soc/gpio.h>
+#include <gpio.h>
 
 enum cmos_power_profile {
 	PP_POWER_SAVER = 0,

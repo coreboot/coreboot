@@ -4,7 +4,7 @@
 #include <baseboard/variants.h>
 #include <device/device.h>
 #include <nhlt.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 #include <soc/nhlt.h>
 
 static void mainboard_init(void *chip_info)

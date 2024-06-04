@@ -4,7 +4,7 @@
 #define __BASEBOARD_VARIANTS_H__
 
 #include <soc/cnl_memcfg_init.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 
 /* The next set of functions return the gpio table and fill in the number of
  * entries for each table. */

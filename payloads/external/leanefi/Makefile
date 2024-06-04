@@ -17,6 +17,6 @@ distclean:
 	rm -rf leanefi
 
 clean:
-	$(MAKE) -C leanefi clean
+	rm -rf leanefi/build
 
 .PHONY: build clean distclean

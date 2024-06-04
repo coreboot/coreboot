@@ -29,6 +29,7 @@ chip soc/intel/alderlake
 		},
 	}"
 
+	register "usb2_ports[0]" = "USB2_PORT_MAX_TYPE_C(OC2)"  # set to Max for USB2_C0
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A2
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A3
 	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# USB2 Port 3 - Port 5 for OPS interface

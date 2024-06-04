@@ -9,7 +9,7 @@ const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x10ec0256,	// Codec Vendor / Device ID: Realtek ALC256
 	0x10ec12ac,	// Subsystem ID
-	0x00000013,	// Number of jacks (NID entries)
+	0x00000014,	// Number of jacks (NID entries)
 
 	AZALIA_RESET(0x1),
 	/* NID 0x01, HDA Codec Subsystem ID Verb table */
@@ -113,6 +113,11 @@ const u32 cim_verb_data[] = {
 	0x02046A0C,
 	0x02050008,
 	0x02046A0C,
+	/* Class-D calibration */
+	0x05850000,
+	0x0584F880,
+	0x05850000,
+	0x0584F880,
 };
 
 const u32 pc_beep_verbs[] = {

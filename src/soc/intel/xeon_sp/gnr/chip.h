@@ -5,7 +5,7 @@
 
 #include <intelblocks/cfg.h>
 #include <soc/acpi.h>
-#include <soc/gpio.h>
+#include <gpio.h>
 #include <soc/irq.h>
 #include <stdint.h>
 

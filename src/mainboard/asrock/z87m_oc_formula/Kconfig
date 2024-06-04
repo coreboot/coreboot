@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+if BOARD_ASROCK_Z87M_OC_FORMULA
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_8192
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select INTEL_GMA_HAVE_VBT
+	select MAINBOARD_HAS_LIBGFXINIT
+	select MAINBOARD_USES_IFD_GBE_REGION
+	select NORTHBRIDGE_INTEL_HASWELL
+	select SERIRQ_CONTINUOUS_MODE
+	select SOUTHBRIDGE_INTEL_LYNXPOINT
+	select SUPERIO_NUVOTON_NCT6776
+
+config MAINBOARD_DIR
+	default "asrock/z87m_oc_formula"
+
+config MAINBOARD_PART_NUMBER
+	default "Z87M OC Formula"
+
+config USBDEBUG_HCD_INDEX
+	default 1 # This is the top-most of the two USB-3.0-Ports beneath the RJ45 jack.
+endif

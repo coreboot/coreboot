@@ -125,15 +125,6 @@ int strncmp(const char *s1, const char *s2, int maxlen)
 	return 0;
 }
 
-unsigned int skip_atoi(char **s)
-{
-	unsigned int i = 0;
-
-	while (isdigit(**s))
-		i = i*10 + *((*s)++) - '0';
-	return i;
-}
-
 int strspn(const char *str, const char *spn)
 {
 	int ret = 0;

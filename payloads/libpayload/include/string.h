@@ -29,6 +29,7 @@
 #ifndef _STRING_H
 #define _STRING_H
 
+#include <commonlib/bsd/string.h>
 #include <stddef.h>
 
 /**

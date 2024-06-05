@@ -65,3 +65,7 @@ decompressor-y += bsd/gcd.c
 all-y += bsd/gcd.c
 
 all-y += bsd/ipchksum.c
+
+decompressor-y += bsd/string.c
+smm-y += bsd/string.c
+all-y += bsd/string.c

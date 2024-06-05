@@ -3,6 +3,7 @@
 #ifndef STRING_H
 #define STRING_H
 
+#include <commonlib/bsd/string.h>
 #include <stddef.h>
 
 void *memcpy(void *dest, const void *src, size_t n);
@@ -35,12 +36,5 @@ long atol(const char *str);
  * string, or NULL if the character was not encountered within the string.
  */
 char *strrchr(const char *s, int c);
-
-/*
- * Parses an unsigned integer and moves the input pointer forward to the first
- * character that's not a valid digit. s and *s must not be NULL. Result
- * undefined if it overruns the return type size.
- */
-unsigned int skip_atoi(char **s);
 
 #endif /* STRING_H */

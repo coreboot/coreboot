@@ -45,6 +45,8 @@ static const struct pad_config gpio_table[] = {
 
 	/* GPP_A18 : [] ==> CAM_PSW_L */
 	PAD_CFG_GPI_INT_LOCK(GPP_A18, NONE, EDGE_BOTH, LOCK_CONFIG),
+	/* GPP_A19 : [] ==> EN_PP3300_SSD */
+	PAD_CFG_GPO_LOCK(GPP_A19, 1, LOCK_CONFIG),
 	/* GPP_A21 : [] ==> WWAN_CONFIG2 */
 	PAD_CFG_GPI(GPP_A21, NONE, DEEP),
 

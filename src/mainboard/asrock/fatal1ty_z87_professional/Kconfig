@@ -1,0 +1,26 @@
+## SPDX-License-Identifier: GPL-2.0-only
+if BOARD_ASROCK_FATAL1TY_Z87_PROFESSIONAL
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_8192
+	select DRIVERS_ASMEDIA_ASPM_BLACKLIST
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select INTEL_GMA_HAVE_VBT
+	select MAINBOARD_HAS_LIBGFXINIT
+	select MAINBOARD_USES_IFD_GBE_REGION
+	select NORTHBRIDGE_INTEL_HASWELL
+	select SERIRQ_CONTINUOUS_MODE
+	select SOUTHBRIDGE_INTEL_LYNXPOINT
+	select SUPERIO_NUVOTON_NCT6776
+
+config MAINBOARD_DIR
+	default "asrock/fatal1ty_z87_professional"
+
+config MAINBOARD_PART_NUMBER
+	default "Fatal1ty Z87 Professional"
+
+config USBDEBUG_HCD_INDEX
+	default 2 # USB-2.0-Header with the designation USB4_5
+endif

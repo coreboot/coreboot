@@ -1,0 +1,3 @@
+## SPDX-License-Identifier: GPL-2.0-only
+config BOARD_ASROCK_FATAL1TY_Z87_PROFESSIONAL
+	bool "Fatal1ty Z87 Professional"

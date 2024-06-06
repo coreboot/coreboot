@@ -1,0 +1,133 @@
+chip northbridge/intel/haswell
+	chip cpu/intel/haswell
+		device cpu_cluster 0 on
+			ops haswell_cpu_bus_ops
+		end
+	end
+	device domain 0 on
+		ops haswell_pci_domain_ops
+
+		device pci 00.0 on # Desktop Host bridge
+			subsystemid 0x1849 0x0c00
+		end
+		device pci 01.0 on # PEG
+			subsystemid 0x1849 0x0c01
+		end
+		device pci 01.1 on end
+		device pci 01.2 on end
+		device pci 02.0 on # iGPU
+			subsystemid 0x1849 0x0412
+		end
+		device pci 03.0 on # Mini-HD audio
+			subsystemid 0x1849 0x0c0c
+		end
+
+		chip southbridge/intel/lynxpoint # Intel 8 Series Lynx Point PCH
+			register "gen1_dec" = "0x000c0291"
+			register "gen2_dec" = "0x000c0241"
+			register "gen3_dec" = "0x000c0251"
+			register "sata_port_map" = "0x3f"
+			device pci 14.0 on # xHCI Controller
+				subsystemid 0x1849 0x8c31
+			end
+			device pci 16.0 on	# MEI #1
+				subsystemid 0x1849 0x8c3a
+			end
+			device pci 16.1 off end	# MEI #2
+			device pci 19.0 on # Intel Gigabit Ethernet
+				subsystemid 0x1849 0x153b
+			end
+			device pci 1a.0 on # USB2 EHCI #2
+				subsystemid 0x1849 0x8c2d
+			end
+			device pci 1b.0 on # High Definition Audio
+				subsystemid 0x1849 0x1020
+			end
+			device pci 1c.0 off end	# RP #1
+			device pci 1c.1 on	# RP #2: mPCIe slot
+				subsystemid 0x1849 0x8c12
+			end
+			device pci 1c.2 on	# RP #3: ASM1061 SATA controller
+				subsystemid 0x1849 0x8c14
+			end
+			device pci 1c.3 on	# RP #4: Intel I211 GbE
+				subsystemid 0x1849 0x8c16
+				device pci 00.0 on end
+			end
+			device pci 1c.4 on	# RP #5: ASM1061 SATA controller
+				subsystemid 0x1849 0x8c18
+			end
+			device pci 1c.5 on	# RP #6: PCIe x1 slot
+				subsystemid 0x1849 0x8c1a
+			end
+			device pci 1c.6 on	# RP #7: ASM1083 PCIe-to-PCI bridge
+				subsystemid 0x1849 0x8c1c
+			end
+			device pci 1c.7 off end	# RP #8
+			device pci 1d.0 on # USB2 EHCI #1
+				subsystemid 0x1849 0x8c26
+			end
+			device pci 1f.0 on # LPC bridge
+				subsystemid 0x1849 0x8c44
+				chip superio/nuvoton/nct6776
+					device pnp 2e.0   off end	# Floppy
+					device pnp 2e.1   off end	# Parallel
+					device pnp 2e.2   on		# UART A
+						io  0x60 = 0x03f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.3   off end	# UART B, IR
+					device pnp 2e.5   on		# PS/2 Keyboard/Mouse
+						io  0x60 = 0x0060
+						io  0x62 = 0x0064
+						irq 0x70 = 1		# + Keyboard IRQ
+						irq 0x72 = 12		# + Mouse IRQ (unused)
+					end
+					device pnp 2e.6   off end	# CIR
+					device pnp 2e.7   off end	# GPIO8
+					device pnp 2e.107 off end	# GPIO9
+					device pnp 2e.8   off end	# WDT
+					device pnp 2e.108 on		# GPIO0
+						irq 0xe0 = 0xf9		# + GPIO0 direction
+						irq 0xe1 = 0xfd		# + GPIO0 value
+					end
+					device pnp 2e.208 off end	# GPIOA
+					device pnp 2e.308 off end	# GPIO base
+					device pnp 2e.109 on		# GPIO1
+						irq 0xf0 = 0xf1		# + GPIO1 direction
+						irq 0xf1 = 0xf1		# + GPIO1 value
+					end
+					device pnp 2e.209 off end	# GPIO2
+					device pnp 2e.309 off end	# GPIO3
+					device pnp 2e.409 off end	# GPIO4
+					device pnp 2e.509 off end	# GPIO5
+					device pnp 2e.609 off end	# GPIO6
+					device pnp 2e.709 on		# GPIO7
+						irq 0xe0 = 0xff		# + GPIO7 direction
+					end
+					device pnp 2e.a   on		# ACPI
+						irq 0xe4 = 0x10		# + Power RAM in S3
+						irq 0xf0 = 0x20
+					end
+					device pnp 2e.b   on		# HWM, LED
+						irq 0x30 = 0xe1		# + Fan RPM sense pins
+						io  0x60 = 0x0290	# + HWM base address
+						irq 0x70 = 0
+					end
+					device pnp 2e.d   off end	# VID
+					device pnp 2e.e   off end	# CIR wake-up
+					device pnp 2e.f   off end	# GPIO PP/OD
+					device pnp 2e.14  off end	# SVID
+					device pnp 2e.16  off end	# Deep sleep
+					device pnp 2e.17  off end	# GPIOA
+				end
+			end
+			device pci 1f.2 on  end	# SATA Controller (AHCI)
+			device pci 1f.3 on	# SMBus
+				subsystemid 0x1849 0x8c22
+			end
+			device pci 1f.5 off end	# SATA Controller (Legacy)
+			device pci 1f.6 off end	# Thermal
+		end
+	end
+end

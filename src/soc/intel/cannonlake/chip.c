@@ -2,6 +2,7 @@
 
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_ids.h>
 #include <fsp/api.h>
 #include <fsp/util.h>
 #include <gpio.h>
@@ -153,10 +154,20 @@ void soc_init_pre_device(void *chip_info)
 	soc_gpio_pm_configuration();
 
 	/* swap enabled PCI ports in device tree if needed */
-	if (CONFIG(SOC_INTEL_CANNONLAKE_PCH_H))
+	if (CONFIG(SOC_INTEL_CANNONLAKE_PCH_H)) {
 		pcie_rp_update_devicetree(pch_h_rp_groups);
-	else
+
+		/*
+		 * Fix up device ID of hidden PCI device in devicetree.
+		 * This is used by soc/intel/common/block/uart.c to generate ACPI
+		 */
+		struct device *uart2 = PCH_DEV_UART2;
+		if (uart2->hidden)
+			uart2->device = PCI_DID_INTEL_CNP_H_UART2;
+
+	} else {
 		pcie_rp_update_devicetree(pch_lp_rp_groups);
+	}
 }
 
 static void cpu_fill_ssdt(const struct device *dev)

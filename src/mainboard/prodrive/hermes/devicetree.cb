@@ -170,12 +170,7 @@ chip soc/intel/cannonlake
 		# This device does not have any function on CNP-H, but it needs
 		# to be here so that the resource allocator is aware of UART 2.
 		device ref i2c4 hidden end
-		device ref uart2 hidden # in ACPI mode
-			chip soc/intel/common/block/uart
-				register "devid" = "PCI_DID_INTEL_CNP_H_UART2"
-				device generic 0 hidden end
-			end
-		end
+		device ref uart2 hidden end # in ACPI mode
 		device ref pcie_rp21 on
 			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthOther" "SLOT1" "SlotDataBusWidth4X"
 			register "PcieRpEnable[20]" = "1"

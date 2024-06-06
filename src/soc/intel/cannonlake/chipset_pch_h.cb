@@ -92,7 +92,9 @@ chip soc/intel/cannonlake
 		device pci 17.0 alias sata         off	end	# SATA
 		device pci 19.0 alias i2c4         off	end	# I2C #4
 		device pci 19.1 alias i2c5         off	end	# I2C #5
-		device pci 19.2 alias uart2        off	end	# UART #2
+		device pci 19.2 alias uart2        off		# UART #2
+			ops uart_ops
+		end
 		device pci 1a.0 alias emmc         off	end	# eMMC
 		device pci 1b.0 alias pcie_rp17    off	end	# PCI Express Port 17
 		device pci 1b.1 alias pcie_rp18    off	end	# PCI Express Port 18

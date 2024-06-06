@@ -14,7 +14,6 @@
 #include <soc/pci_devs.h>
 #include <soc/iomap.h>
 #include <soc/nvs.h>
-#include "chip.h"
 
 #define UART_PCI_ENABLE	(PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER)
 
@@ -430,17 +429,4 @@ static const struct pci_driver pch_uart __pci_driver = {
 	.vendor		= PCI_VID_INTEL,
 	.devices	= pci_device_ids,
 };
-
-static void uart_enable(struct device *dev)
-{
-	struct soc_intel_common_block_uart_config *conf = dev->chip_info;
-	dev->ops = &uart_ops;
-	dev->device = conf ? conf->devid : 0;
-}
-
-struct chip_operations soc_intel_common_block_uart_ops = {
-	.name = "LPSS UART in ACPI mode",
-	.enable_dev = uart_enable
-};
-
 #endif /* ENV_RAMSTAGE */

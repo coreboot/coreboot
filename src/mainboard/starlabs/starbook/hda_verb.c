@@ -9,7 +9,7 @@
 #define AZALIA_CODEC_ALC269 0x10ec0269
 
 static const u32 override_verb[] = {
-	AZALIA_PIN_CFG(0, 0x12, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x12, AZALIA_PIN_CFG_NC(0)),
 };
 
 static void disable_microphone(u8 *base)

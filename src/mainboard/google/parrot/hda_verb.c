@@ -29,7 +29,7 @@ const u32 cim_verb_data[] = {
 	/* Pin Widget Verb Table */
 
 	/* Pin Complex (NID 0x12) DMIC */
-	AZALIA_PIN_CFG(0, 0x12, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x12, AZALIA_PIN_CFG_NC(0)),
 
 	/* Pin Complex (NID 0x14) SPKR-OUT PORTD */
 	// group 1, front left/right
@@ -39,10 +39,10 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x14, 0x90170110),
 
 	/* Pin Complex (NID 0x17)  */
-	AZALIA_PIN_CFG(0, 0x17, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x17, AZALIA_PIN_CFG_NC(0)),
 
 	/* Pin Complex (NID 0x18)  MIC1 PORTB */
-	AZALIA_PIN_CFG(0, 0x18, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x18, AZALIA_PIN_CFG_NC(0)),
 
 	/* Pin Complex (NID 0x19)  MIC2 PORTF */
 	// group 2, cap 1
@@ -52,7 +52,7 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x19, 0x04a71021),
 
 	/* Pin Complex (NID 0x1A)  LINE1 PORTC */
-	AZALIA_PIN_CFG(0, 0x1a, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1a, AZALIA_PIN_CFG_NC(0)),
 
 	/* Pin Complex (NID 0x1B)  LINE2 PORTE */
 	// group 2, cap 0
@@ -69,7 +69,7 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x1d, 0x4015812d),
 
 	/* Pin Complex (NID 0x1E)  SPDIF-OUT */
-	AZALIA_PIN_CFG(0, 0x1e, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1e, AZALIA_PIN_CFG_NC(0)),
 
 	/* Pin Complex (NID 0x21) HPOUT PORTA? */
 	// group1,

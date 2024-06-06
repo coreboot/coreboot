@@ -56,25 +56,25 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x15, 0x03211020),
 
 	/* Unknown:	(Unconnected) */
-	AZALIA_PIN_CFG(0, 0x17, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x17, AZALIA_PIN_CFG_NC(0)),
 
 	/* MIC1 in:	Location left, mic in, 1/8" jack, black */
 	AZALIA_PIN_CFG(0, 0x18, 0x03a11830),
 
 	/* MIC2 in:	(Unconnected) */
-	AZALIA_PIN_CFG(0, 0x19, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x19, AZALIA_PIN_CFG_NC(0)),
 
 	/* Line1 in:	(Unconnected) */
-	AZALIA_PIN_CFG(0, 0x1a, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1a, AZALIA_PIN_CFG_NC(0)),
 
 	/* Line2 in:	(Unconnected) */
-	AZALIA_PIN_CFG(0, 0x1b, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1b, AZALIA_PIN_CFG_NC(0)),
 
 	/* PCBEEP */
 	AZALIA_PIN_CFG(0, 0x1d, 0x40148605),
 
 	/* S/PDIF out:	(Unconnected) */
-	AZALIA_PIN_CFG(0, 0x1e, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1e, AZALIA_PIN_CFG_NC(0)),
 
 	0x01470740,	/* Enable output for NID 0x14 (Speaker out) */
 	0x015707C0,	/* Enable output & HP amp for NID 0x15 (HP out) */

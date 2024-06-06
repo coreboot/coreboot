@@ -14,18 +14,18 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x12, 0xb7a60140), // Pin widget 0x12 - DMIC
 	AZALIA_PIN_CFG(0, 0x13, 0x40000000), // Pin widget 0x13 - DMIC
 	AZALIA_PIN_CFG(0, 0x14, 0x90170110), // Pin widget 0x14 - FRONT (Port-D)
-	AZALIA_PIN_CFG(0, 0x15, 0x411111f0), // Pin widget 0x15 - I2S-OUT
-	AZALIA_PIN_CFG(0, 0x16, 0x411111f0), // Pin widget 0x16 - LINE3 (Port-B)
-	AZALIA_PIN_CFG(0, 0x17, 0x411111f0), // Pin widget 0x17 - I2S-OUT
-	AZALIA_PIN_CFG(0, 0x18, 0x411111f0), // Pin widget 0x18 - I2S-IN
-	AZALIA_PIN_CFG(0, 0x19, 0x411111f0), // Pin widget 0x19 - MIC2 (Port-F)
-	AZALIA_PIN_CFG(0, 0x1a, 0x411111f0), // Pin widget 0x1A - LINE1 (Port-C)
+	AZALIA_PIN_CFG(0, 0x15, AZALIA_PIN_CFG_NC(0)), // Pin widget 0x15 - I2S-OUT
+	AZALIA_PIN_CFG(0, 0x16, AZALIA_PIN_CFG_NC(0)), // Pin widget 0x16 - LINE3 (Port-B)
+	AZALIA_PIN_CFG(0, 0x17, AZALIA_PIN_CFG_NC(0)), // Pin widget 0x17 - I2S-OUT
+	AZALIA_PIN_CFG(0, 0x18, AZALIA_PIN_CFG_NC(0)), // Pin widget 0x18 - I2S-IN
+	AZALIA_PIN_CFG(0, 0x19, AZALIA_PIN_CFG_NC(0)), // Pin widget 0x19 - MIC2 (Port-F)
+	AZALIA_PIN_CFG(0, 0x1a, AZALIA_PIN_CFG_NC(0)), // Pin widget 0x1A - LINE1 (Port-C)
 	AZALIA_PIN_CFG(0, 0x1b, 0x04a11050), // Pin widget 0x1B - LINE2 (Port-E)
 	AZALIA_PIN_CFG(0, 0x1d, 0x40600001), // Pin widget 0x1D - PC-BEEP
 	AZALIA_PIN_CFG(0, 0x1e, 0x04451130), // Pin widget 0x1E - S/PDIF-OUT
-	AZALIA_PIN_CFG(0, 0x1f, 0x411111f0), // Pin widget 0x1F - S/PDIF-IN
+	AZALIA_PIN_CFG(0, 0x1f, AZALIA_PIN_CFG_NC(0)), // Pin widget 0x1F - S/PDIF-IN
 	AZALIA_PIN_CFG(0, 0x21, 0x04211020), // Pin widget 0x21 - HP-OUT (Port-I)
-	AZALIA_PIN_CFG(0, 0x29, 0x411111f0), // Pin widget 0x29 - I2S-IN
+	AZALIA_PIN_CFG(0, 0x29, AZALIA_PIN_CFG_NC(0)), // Pin widget 0x29 - I2S-IN
 	0x02050038, 0x02047901, 0x0205006b, 0x02040260, // NID 0x20 -0 Set Class-D output
 							//  power as 2.2W@4 Ohm, and
 							//  MIC2-VREFO-R is controlled by
@@ -46,14 +46,14 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x12, 0xb7a60140), // Pin widget 0x12 - DMIC
 	AZALIA_PIN_CFG(0, 0x13, 0x40000000), // Pin widget 0x13 - DMIC
 	AZALIA_PIN_CFG(0, 0x14, 0x90170110), // Pin widget 0x14 - Front (Port-D)
-	AZALIA_PIN_CFG(0, 0x16, 0x411111f0), // Pin widget 0x16 - NPC
-	AZALIA_PIN_CFG(0, 0x17, 0x411111f0), // Pin widget 0x17 - I2S OUT
-	AZALIA_PIN_CFG(0, 0x18, 0x411111f0), // Pin widget 0x18 - I2S IN
-	AZALIA_PIN_CFG(0, 0x19, 0x411111f0), // Pin widget 0x19 - MIC2 (Port-F)
-	AZALIA_PIN_CFG(0, 0x1a, 0x411111f0), // Pin widget 0x1A - NPC
+	AZALIA_PIN_CFG(0, 0x16, AZALIA_PIN_CFG_NC(0)), // Pin widget 0x16 - NPC
+	AZALIA_PIN_CFG(0, 0x17, AZALIA_PIN_CFG_NC(0)), // Pin widget 0x17 - I2S OUT
+	AZALIA_PIN_CFG(0, 0x18, AZALIA_PIN_CFG_NC(0)), // Pin widget 0x18 - I2S IN
+	AZALIA_PIN_CFG(0, 0x19, AZALIA_PIN_CFG_NC(0)), // Pin widget 0x19 - MIC2 (Port-F)
+	AZALIA_PIN_CFG(0, 0x1a, AZALIA_PIN_CFG_NC(0)), // Pin widget 0x1A - NPC
 	AZALIA_PIN_CFG(0, 0x1b, 0x04a19030), // Pin widget 0x1B - LINE2 (Port-E)
 	AZALIA_PIN_CFG(0, 0x1d, 0x4066192d), // Pin widget 0x1D - BEEP-IN
-	AZALIA_PIN_CFG(0, 0x1e, 0x411111f0), // Pin widget 0x1E - S/PDIF-OUT
+	AZALIA_PIN_CFG(0, 0x1e, AZALIA_PIN_CFG_NC(0)), // Pin widget 0x1E - S/PDIF-OUT
 	AZALIA_PIN_CFG(0, 0x21, 0x04211020), // Pin widget 0x21 - HP1-OUT (Port-I)
 	0x05c50011, 0x05c40003, 0x05c50011, 0x05c40003, // dis. Silence detect delay turn off
 	0x0205003c, 0x0204f254, 0x0205003c, 0x0204f214, // Class-D power on reset

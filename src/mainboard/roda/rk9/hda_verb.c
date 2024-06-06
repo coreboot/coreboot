@@ -11,17 +11,17 @@ const u32 cim_verb_data[] = {
 	/* Pin Widget Verb Table */
 
 	/* Pin Complex (NID 0x11), S/PDIF-OUT2: not connected */
-	AZALIA_PIN_CFG(0, 0x11, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x11, AZALIA_PIN_CFG_NC(0)),
 	/* Pin Complex (NID 0x14), LINE_OUT (port D): Speakers */
 	AZALIA_PIN_CFG(0, 0x14, 0x99130110),
 	/* Pin Complex (NID 0x15), HP_OUT (port A): Head phones */
 	AZALIA_PIN_CFG(0, 0x15, 0x0121411f),
 	/* Pin Complex (NID 0x16), MONO-OUT: not connected */
-	AZALIA_PIN_CFG(0, 0x16, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x16, AZALIA_PIN_CFG_NC(0)),
 	/* Pin Complex (NID 0x18), MIC1 (port B): Microphone */
 	AZALIA_PIN_CFG(0, 0x18, 0x01a19920),
 	/* Pin Complex (NID 0x19), MIC2 (port F): not connected */
-	AZALIA_PIN_CFG(0, 0x19, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x19, AZALIA_PIN_CFG_NC(0)),
 	/* Pin Complex (NID 0x1a), LINE1 (port C): Line-In */
 	AZALIA_PIN_CFG(0, 0x1a, 0x01813121),
 	/* Pin Complex (NID 0x1b), LINE2 (port E): MDC */
@@ -31,9 +31,9 @@ const u32 cim_verb_data[] = {
 	/* Pin Complex (NID 0x1d), PCBEEP */
 	AZALIA_PIN_CFG(0, 0x1d, 0x4014022d),
 	/* Pin Complex (NID 0x1e), S/PDIF-OUT: not connected */
-	AZALIA_PIN_CFG(0, 0x1e, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1e, AZALIA_PIN_CFG_NC(0)),
 	/* Pin Complex (NID 0x1f), S/PDIF-IN: not connected */
-	AZALIA_PIN_CFG(0, 0x1f, 0x411111f0)
+	AZALIA_PIN_CFG(0, 0x1f, AZALIA_PIN_CFG_NC(0))
 };
 
 const u32 pc_beep_verbs[] = {

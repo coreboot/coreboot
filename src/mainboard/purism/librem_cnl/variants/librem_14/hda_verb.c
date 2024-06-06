@@ -14,14 +14,14 @@ const u32 cim_verb_data[] = {
 
 	AZALIA_SUBVENDOR(0, 0x10ec0256),
 	AZALIA_PIN_CFG(0, 0x12, 0x90a60140), /* Front digital mic */
-	AZALIA_PIN_CFG(0, 0x13, 0x411111f0), /* NC */
+	AZALIA_PIN_CFG(0, 0x13, AZALIA_PIN_CFG_NC(0)), /* NC */
 	AZALIA_PIN_CFG(0, 0x14, 0x90170110), /* Internal speakers */
-	AZALIA_PIN_CFG(0, 0x18, 0x411111f0), /* NC */
+	AZALIA_PIN_CFG(0, 0x18, AZALIA_PIN_CFG_NC(0)), /* NC */
 	AZALIA_PIN_CFG(0, 0x19, 0x02a11030), /* Jack analog mic */
-	AZALIA_PIN_CFG(0, 0x1a, 0x411111f0), /* NC */
-	AZALIA_PIN_CFG(0, 0x1b, 0x411111f0), /* NC */
-	AZALIA_PIN_CFG(0, 0x1d, 0x411111f0), /* NC */
-	AZALIA_PIN_CFG(0, 0x1e, 0x411111f0), /* NC */
+	AZALIA_PIN_CFG(0, 0x1a, AZALIA_PIN_CFG_NC(0)), /* NC */
+	AZALIA_PIN_CFG(0, 0x1b, AZALIA_PIN_CFG_NC(0)), /* NC */
+	AZALIA_PIN_CFG(0, 0x1d, AZALIA_PIN_CFG_NC(0)), /* NC */
+	AZALIA_PIN_CFG(0, 0x1e, AZALIA_PIN_CFG_NC(0)), /* NC */
 	AZALIA_PIN_CFG(0, 0x21, 0x02211020), /* Jack analog out */
 
 	/* Hidden SW reset */

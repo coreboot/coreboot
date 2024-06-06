@@ -37,7 +37,7 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x17, 0x40000008),
 
 	/* Pin Complex (NID 0x18) Disabled */
-	AZALIA_PIN_CFG(0, 0x18, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x18, AZALIA_PIN_CFG_NC(0)),
 
 	/* Pin Complex (NID 0x19)  MIC2 - 3.5mm Jack */
 	// group2, cap 0
@@ -47,10 +47,10 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x19, 0x03a11020),
 
 	/* Pin Complex (NID 0x1A)  LINE1 - Disabled */
-	AZALIA_PIN_CFG(0, 0x1A, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1A, AZALIA_PIN_CFG_NC(0)),
 
 	/* Pin Complex (NID 0x1B)  LINE2 - Disabled */
-	AZALIA_PIN_CFG(0, 0x1B, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1B, AZALIA_PIN_CFG_NC(0)),
 
 	/* Pin Complex (NID 0x1D)  PCBeep */
 	// eapd low on ex-amp, laptop, custom enable
@@ -60,7 +60,7 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x1D, 0x4015812d),
 
 	/* Pin Complex (NID 0x1E)  SPDIF-OUT - Disabled*/
-	AZALIA_PIN_CFG(0, 0x1E, 0x411111f0),
+	AZALIA_PIN_CFG(0, 0x1E, AZALIA_PIN_CFG_NC(0)),
 
 	/* Pin Complex (NID 0x21) HP-OUT - 3.5mm Jack*/
 	// group1

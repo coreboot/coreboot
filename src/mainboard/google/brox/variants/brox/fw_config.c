@@ -5,7 +5,6 @@
 #include <fw_config.h>
 #include <gpio.h>
 
-#define GPIO_PADBASED_OVERRIDE(b, a) gpio_padbased_override(b, a, ARRAY_SIZE(a))
 #define ISH_FIRMWARE_NAME "brox_ish.bin"
 
 static const struct pad_config ish_enable_pads[] = {

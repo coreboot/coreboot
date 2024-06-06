@@ -3,6 +3,10 @@ fw_config
 		option STORAGE_UFS			0
 		option STORAGE_NVME			1
 	end
+	field WIFI_SAR_ID 31
+		option WIFI_SAR_ID_0			0
+		option WIFI_SAR_ID_1			1
+	end
 end
 
 chip soc/intel/alderlake

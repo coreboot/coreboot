@@ -60,8 +60,6 @@ _Static_assert(ARRAY_SIZE(mtk_i2c_bus_controller) == I2C_BUS_NUMBER,
 #define I2CLOG(fmt, arg...)
 #endif /* CONFIG_DEBUG_I2C */
 
-#define I2CERR(fmt, arg...)   printk(BIOS_ERR, I2CTAG fmt, ##arg)
-
 void mtk_i2c_bus_init(uint8_t bus)
 {
 	uint8_t step_div;

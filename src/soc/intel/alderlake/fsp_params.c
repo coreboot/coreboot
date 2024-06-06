@@ -932,7 +932,7 @@ static void fill_fsps_pcie_params(FSP_S_CONFIG *s_cfg,
 	}
 	s_cfg->PcieComplianceTestMode = CONFIG(SOC_INTEL_COMPLIANCE_TEST_MODE);
 
-#if CONFIG(FSP_TYPE_IOT)
+#if CONFIG(FSP_TYPE_IOT) && !CONFIG(SOC_INTEL_ALDERLAKE_PCH_N)
 	/*
 	 * Intel requires that all enabled PCH PCIe ports have a CLK_REQ signal connected.
 	 * The CLK_REQ is used to wake the silicon when link entered L1 link-state. L1

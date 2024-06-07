@@ -100,16 +100,16 @@ void iio_domain_set_acpi_name(struct device *dev, const char *prefix)
 		.domain_path = dev_get_domain_id(dev)
 	};
 
-	assert(dn.socket < CONFIG_MAX_SOCKET);
-	assert(dn.stack < 16);
+	assert(dn.socket < 8);
+	assert(dn.stack < 32);
 	assert(prefix != NULL && strlen(prefix) == 2);
 
-	if (dn.socket >= CONFIG_MAX_SOCKET || dn.stack >= 16 ||
+	if (dn.socket >= 8 || dn.stack >= 32 ||
 	    !prefix || strlen(prefix) != 2)
 		return;
 
 	char *name = xmalloc(ACPI_NAME_BUFFER_SIZE);
-	snprintf(name, ACPI_NAME_BUFFER_SIZE, "%s%1X%1X", prefix, dn.socket, dn.stack);
+	snprintf(name, ACPI_NAME_BUFFER_SIZE, "%s%02X", prefix, ((dn.socket << 5) + dn.stack));
 	dev->name = name;
 }
 

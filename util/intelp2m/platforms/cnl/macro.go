@@ -208,7 +208,7 @@ func (PlatformSpecific) GenMacro(id string, dw0 uint32, dw1 uint32, ownership ui
 		fields.InterfaceGet())
 	macro.Clear()
 	macro.Register(PAD_CFG_DW0).CntrMaskFieldsClear(common.AllFields)
-	macro.Register(PAD_CFG_DW0).CntrMaskFieldsClear(common.AllFields)
+	macro.Register(PAD_CFG_DW1).CntrMaskFieldsClear(common.AllFields)
 	macro.PadIdSet(id).SetPadOwnership(ownership)
 	macro.Register(PAD_CFG_DW0).ValueSet(dw0).ReadOnlyFieldsSet(PAD_CFG_DW0_RO_FIELDS)
 	macro.Register(PAD_CFG_DW1).ValueSet(dw1).ReadOnlyFieldsSet(PAD_CFG_DW1_RO_FIELDS)

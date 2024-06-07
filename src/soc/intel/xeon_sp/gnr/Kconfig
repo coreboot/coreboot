@@ -15,7 +15,6 @@ config SOC_INTEL_GRANITERAPIDS
 	select PLATFORM_USES_FSP2_X86_32
 	select HAVE_IOAT_DOMAINS
 	select FSP_SPEC_VIOLATION_XEON_SP_HEAP_WORKAROUND
-	select VPD
 	help
 	  Intel Granite Rapids support
 

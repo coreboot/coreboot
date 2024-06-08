@@ -237,6 +237,12 @@ static inline int ec_cmd_fp_template(CROS_EC_COMMAND_INFO *h,
 #define _CROS_EC_C1_F_RF(_cmd, _fn) _CROS_EC_CV_F_R(_cmd, 1, _fn##_v1, _fn##_v1)
 
 /*
+ * Shorthand for host command version 3 where response name is derived
+ * from the function name and there is no param.
+ */
+#define _CROS_EC_C3_F_RF(_cmd, _fn) _CROS_EC_CV_F_R(_cmd, 3, _fn##_v3, _fn##_v3)
+
+/*
  * Shorthand for host command version 0 where response and there are no
  * params or response.
  */
@@ -312,6 +318,7 @@ _CROS_EC_C0_F_RF(EC_CMD_GET_FEATURES, get_features);
 _CROS_EC_CV_F_R(EC_CMD_GET_KEYBD_CONFIG, 0, get_keybd_config, keybd_config);
 _CROS_EC_C0_F_RF(EC_CMD_GET_NEXT_EVENT, get_next_event);
 _CROS_EC_C1_F_RF(EC_CMD_GET_NEXT_EVENT, get_next_event);
+_CROS_EC_C3_F_RF(EC_CMD_GET_NEXT_EVENT, get_next_event);
 _CROS_EC_CV_F_R(EC_CMD_GET_NEXT_EVENT, 2, get_next_event_v2, get_next_event_v1);
 _CROS_EC_C0_F_PF_RF(EC_CMD_GET_PD_PORT_CAPS, get_pd_port_caps);
 _CROS_EC_C0_F_RF(EC_CMD_GET_PROTOCOL_INFO, get_protocol_info);
@@ -368,6 +375,8 @@ _CROS_EC_CV_F_P(EC_CMD_OVERRIDE_DEDICATED_CHARGER_LIMIT, 0,
 _CROS_EC_C0_F_RF(EC_CMD_PCHG_COUNT, pchg_count);
 _CROS_EC_CV_F_P(EC_CMD_PD_CHARGE_PORT_OVERRIDE, 0, pd_charge_port_override,
 		charge_port_override);
+_CROS_EC_CV_F_P_R(EC_CMD_PD_CHIP_INFO, 2, pd_chip_info_v2, pd_chip_info,
+		  pd_chip_info_v2);
 _CROS_EC_CV_F_P_R(EC_CMD_PD_CHIP_INFO, 1, pd_chip_info_v1, pd_chip_info,
 		  pd_chip_info_v1);
 _CROS_EC_C0_F_PF_RF(EC_CMD_PD_CHIP_INFO, pd_chip_info);
@@ -403,6 +412,7 @@ _CROS_EC_CV_F_P(EC_CMD_RTC_SET_VALUE, 0, rtc_set_value, rtc);
 _CROS_EC_C0_F_PF(EC_CMD_RWSIG_ACTION, rwsig_action);
 _CROS_EC_C0_F_RF(EC_CMD_RWSIG_CHECK_STATUS, rwsig_check_status);
 _CROS_EC_C0_F_RF(EC_CMD_RWSIG_INFO, rwsig_info);
+_CROS_EC_C0_F_PF(EC_CMD_SET_ALARM_SLP_S0_DBG, set_alarm_slp_s0_dbg);
 _CROS_EC_C0_F_PF(EC_CMD_SET_BASE_STATE, set_base_state);
 _CROS_EC_C0_F_PF(EC_CMD_SET_TABLET_MODE, set_tablet_mode);
 _CROS_EC_C0_F_PF_RF(EC_CMD_SMART_DISCHARGE, smart_discharge);

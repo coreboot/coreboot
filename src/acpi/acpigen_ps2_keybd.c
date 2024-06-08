@@ -57,6 +57,7 @@ static const uint32_t action_keymaps[] = {
 	[PS2_KEY_KBD_BKLIGHT_TOGGLE] = KEYMAP(0x9e, KEY_KBDILLUMTOGGLE),	/* e01e */
 	[PS2_KEY_MENU] = KEYMAP(0xdd, KEY_CONTROLPANEL),	/* e0d5 */
 	[PS2_KEY_DICTATE] = KEYMAP(0xa7, KEY_DICTATE),		/* e027*/
+	[PS2_KEY_ACCESSIBILITY] = KEYMAP(0xa9, KEY_ACCESSIBILITY),	/* e029 */
 };
 
 /* Keymap for numeric keypad keys */

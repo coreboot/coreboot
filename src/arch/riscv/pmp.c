@@ -314,6 +314,52 @@ static void mask_pmp_entry_used(int idx)
 	pmp_entry_used_mask |= 1 << idx;
 }
 
+/* prints the pmp regions by reading the PMP address and configuration registers */
+void print_pmp_regions(void)
+{
+	uintptr_t prev_pmpaddr = 0;
+	uintptr_t base = 0;
+	uintptr_t size = 0;
+	const char *mode;
+	for (int i = 0; i < pmp_entries_num(); i++) {
+		uintptr_t pmpcfg = read_pmpcfg(i);
+		uintptr_t pmpaddr = read_pmpaddr(i);
+		if ((pmpcfg & PMP_A) == 0) {
+			continue; // PMP entry is disabled
+		} else if (pmpcfg & PMP_NA4) {
+			base = pmpaddr << PMP_SHIFT;
+			size = 4;
+			mode = "NA4";
+		} else if (pmpcfg & PMP_NAPOT) {
+			unsigned int count_trailing_ones = 0;
+			base = pmpaddr;
+			while (base) {
+				if ((base & 1) == 0)
+					break; // we got a zero
+				count_trailing_ones++;
+				base >>= 1;
+			}
+			size = 8 << count_trailing_ones;
+			base = (pmpaddr & ~((2 << count_trailing_ones) - 1)) >> PMP_SHIFT;
+			mode = "NAPOT";
+		} else if (pmpcfg & PMP_TOR) {
+			base = pmpaddr;
+			size = pmpaddr - prev_pmpaddr;
+			mode = "TOR";
+		}
+
+		printk(BIOS_DEBUG, "base: 0x%lx, size: 0x%lx, perm: %c%c%c, mode: %s, locked: %d\n",
+			base, size,
+			(pmpcfg & PMP_R) ? 'r' : ' ',
+			(pmpcfg & PMP_W) ? 'w' : ' ',
+			(pmpcfg & PMP_X) ? 'x' : ' ',
+			mode,
+			(pmpcfg & PMP_L) ? 1 : 0);
+
+		prev_pmpaddr = pmpaddr;
+	}
+}
+
 /* reset PMP setting */
 void reset_pmp(void)
 {

@@ -11,6 +11,8 @@
  */
 int pmp_entries_num(void);
 
+void print_pmp_regions(void);
+
 /* reset PMP setting */
 void reset_pmp(void);
 

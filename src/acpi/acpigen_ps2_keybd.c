@@ -58,6 +58,7 @@ static const uint32_t action_keymaps[] = {
 	[PS2_KEY_MENU] = KEYMAP(0xdd, KEY_CONTROLPANEL),	/* e0d5 */
 	[PS2_KEY_DICTATE] = KEYMAP(0xa7, KEY_DICTATE),		/* e027*/
 	[PS2_KEY_ACCESSIBILITY] = KEYMAP(0xa9, KEY_ACCESSIBILITY),	/* e029 */
+	[PS2_KEY_DO_NOT_DISTURB] = KEYMAP(0xa8, KEY_DO_NOT_DISTURB),	/* e028 */
 };
 
 /* Keymap for numeric keypad keys */

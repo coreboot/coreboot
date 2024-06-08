@@ -263,11 +263,12 @@ DELL MAINBOARDS
 S:	Orphan
 F:	src/mainboard/dell/
 
-DELL E6400 MAINBOARD
+DELL LATITUDE MAINBOARDS
 M:	Nicholas Chin <nic.c3.14@gmail.com>
 S:	Maintained
 F:	src/mainboard/dell/e6400/
-
+F:	src/mainboard/dell/snb_ivb_latitude/
+F:	src/mainboard/dell/e7240/
 
 
 EMULATION MAINBOARDS

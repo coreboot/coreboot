@@ -68,9 +68,9 @@ config ARCH_ALL_STAGES_X86_64
 config HAVE_X86_64_SUPPORT
 	bool
 	help
-	  Enable experimental support to build and run coreboot in 64-bit mode.
-	  When selecting this option for a new platform, it is highly advisable
-	  to provide a config file for Jenkins to build-test the 64-bit option.
+	  Enable support to build and run coreboot in 64-bit mode.
+	  When enabling this option for a new platform, it is recommended to
+	  provide a config file for Jenkins to build-test the 64-bit option.
 
 config USE_X86_64_SUPPORT
 	bool "Run coreboot in long (64-bit) mode"

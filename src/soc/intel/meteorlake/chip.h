@@ -346,7 +346,6 @@ struct soc_intel_meteorlake_config {
 	 */
 	uint16_t ps_cur_3_threshold[NUM_VR_DOMAINS];
 
-	uint8_t PmTimerDisabled;
 	/*
 	 * SerialIO device mode selection:
 	 * PchSerialIoDisabled,

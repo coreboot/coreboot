@@ -40,12 +40,9 @@ chip northbridge/intel/sandybridge
 						io 0x60 = 0x3f8		# COM1 address
 						irq 0x70 = 4
 					# Below are global config settings to replicate OEM
-						drq 0x26 = 0x10		# Before accessing CR10/11/13/14, CR26:4 must be set to 1
-						drq 0x13 = 0xff		# IRQs 0-15 active low
-						drq 0x14 = 0xff
 						drq 0x1a = 0x02
 						drq 0x1b = 0x60
-						drq 0x2c = 0x00		# GP27, 3VSBSW#, No TSI
+						drq 0x2c = 0x00		# PECI
 					end
 					device pnp 2e.3 off end		# UART B, IR
 					device pnp 2e.5 on		# PS2 KBC

@@ -8,7 +8,6 @@ subdirs-y += f71808a
 subdirs-y += f71859
 subdirs-y += f71863fg
 subdirs-y += f71869ad
-subdirs-y += f71872
 subdirs-y += f81865f
 subdirs-y += f81866d
 subdirs-y += f81803a

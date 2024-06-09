@@ -7,7 +7,7 @@ CFLAGS_romstage  += --param=min-pagesize=0
 
 bootblock-y	+= early_smbus.c bootblock.c
 romstage-y	+= early_smbus.c memmap.c romstage.c raminit.c
-ramstage-y	+= memmap.c chip.c
+ramstage-y	+= memmap.c chip.c northbridge.c
 all-y		+= clock.c reset.c
 
 endif

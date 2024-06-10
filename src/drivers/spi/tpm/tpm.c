@@ -391,6 +391,7 @@ static enum cb_err tpm2_claim_locality(void)
 static const uint32_t supported_did_vids[] = {
 	0x00281ae0,  /* H1 based Cr50 security chip. */
 	0x504a6666,  /* H1D3C based Ti50 security chip. */
+	0x50666666,  /* OpenTitan based Ti50 security chip. */
 	0x0000104a   /* ST33HTPH2E32 */
 };
 

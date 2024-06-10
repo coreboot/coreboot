@@ -21,8 +21,6 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	else
 		fadt->gpe0_blk = pmbase + GPE0_STS;
 
-	fill_fadt_extended_pm_io(fadt);
-
 	/*
 	 * Some of the lengths here are doubled. This is because they describe
 	 * blocks containing two registers, where the size of each register
@@ -37,6 +35,8 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 		fadt->gpe0_blk_len = 2 * 16;
 	else
 		fadt->gpe0_blk_len = 2 * 8;
+
+	fill_fadt_extended_pm_io(fadt);
 
 	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042;
 

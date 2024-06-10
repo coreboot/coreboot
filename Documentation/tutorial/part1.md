@@ -30,7 +30,7 @@ Download, configure, and build coreboot
 
 Debian based distros:
 `sudo apt-get install -y bison build-essential curl flex git gnat
-libncurses5-dev libssl-dev m4 zlib1g-dev pkg-config`
+libncurses-dev libssl-dev m4 zlib1g-dev pkg-config`
 
 Arch based distros:
 `sudo pacman -S base-devel curl git gcc-ada ncurses zlib`
@@ -202,7 +202,7 @@ of the installed packages:
 
 * `build-essential` or `base-devel` are the basic tools for building software.
 * `git` is needed to download coreboot from the coreboot git repository.
-* `libncurses5-dev` or `ncurses` is needed to build the menu for 'make menuconfig'
+* `libncurses-dev` or `ncurses` is needed to build the menu for 'make menuconfig'
 * `m4, bison, curl, flex, zlib1g-dev, gcc, gnat` and `g++` or `clang`
 are needed to build the coreboot toolchain. `gcc` and `gnat` have to be
 of the same version.

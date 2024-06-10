@@ -5,4 +5,6 @@
 
 #include <baseboard/gpio.h>
 
+#define CAM_PWR GPP_A17
+
 #endif

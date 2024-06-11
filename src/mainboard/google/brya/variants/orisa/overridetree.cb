@@ -3,6 +3,10 @@ fw_config
 		option THERMAL_SOLUTION_6W 0
 		option THERMAL_SOLUTION_15W 1
 	end
+	field STORAGE 30 31
+		option STORAGE_EMMC		0
+		option STORAGE_UFS		1
+	end
 end
 
 chip soc/intel/alderlake

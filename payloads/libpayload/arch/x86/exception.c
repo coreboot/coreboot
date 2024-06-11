@@ -162,12 +162,12 @@ static void dump_exception_state(void)
 #if CONFIG(LP_ARCH_X86_64)
 	printf("REG_R8:    0x%016zx\n", exception_state->regs.reg_r8);
 	printf("REG_R9:    0x%016zx\n", exception_state->regs.reg_r9);
-	printf("REG_R10:    0x%016zx\n", exception_state->regs.reg_r10);
-	printf("REG_R11:    0x%016zx\n", exception_state->regs.reg_r11);
-	printf("REG_R12:    0x%016zx\n", exception_state->regs.reg_r12);
-	printf("REG_R13:    0x%016zx\n", exception_state->regs.reg_r13);
-	printf("REG_R14:    0x%016zx\n", exception_state->regs.reg_r14);
-	printf("REG_R15:    0x%016zx\n", exception_state->regs.reg_r15);
+	printf("REG_R10:   0x%016zx\n", exception_state->regs.reg_r10);
+	printf("REG_R11:   0x%016zx\n", exception_state->regs.reg_r11);
+	printf("REG_R12:   0x%016zx\n", exception_state->regs.reg_r12);
+	printf("REG_R13:   0x%016zx\n", exception_state->regs.reg_r13);
+	printf("REG_R14:   0x%016zx\n", exception_state->regs.reg_r14);
+	printf("REG_R15:   0x%016zx\n", exception_state->regs.reg_r15);
 #endif
 	printf("CS:     0x%04x\n", exception_state->regs.cs);
 	printf("DS:     0x%04x\n", exception_state->regs.ds);

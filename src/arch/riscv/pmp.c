@@ -6,6 +6,17 @@
 #include <console/console.h>
 #include <commonlib/helpers.h>
 
+/*
+ * PMP stuff is often execute on multiple harts, which screws up the debug output.
+ * Therefore define a small wrapper which makes sure we only print on one hart.
+ * All PMP registers are usually set the same on all harts, so it shouldn't matter much.
+ */
+#define PMP_PRINTK(level, fmt, ...) \
+	do { \
+		if (read_csr(mhartid) == CONFIG_RISCV_WORKING_HARTID) \
+			printk(level, fmt, __VA_ARGS__); \
+	} while (0)
+
 #define GRANULE		(1 << PMP_SHIFT)
 
 /*
@@ -107,19 +118,19 @@ static void write_pmpcfg(int idx, uintptr_t cfg)
 		new = (old & ~((uintptr_t)0xff << shift))
 			| ((cfg & 0xff) << shift);
 		write_csr(pmpcfg0, new);
-		printk(BIOS_INFO, "%s(%d, %lx) = %lx\n", __func__, idx, cfg, read_csr(pmpcfg0));
+		PMP_PRINTK(BIOS_INFO, "%s(%d, %lx) = %lx\n", __func__, idx, cfg, read_csr(pmpcfg0));
 		break;
 	case 1:
 		old = read_csr(pmpcfg2);
 		new = (old & ~((uintptr_t)0xff << shift))
 			| ((cfg & 0xff) << shift);
 		write_csr(pmpcfg2, new);
-		printk(BIOS_INFO, "%s(%d, %lx) = %lx\n", __func__, idx, cfg, read_csr(pmpcfg2));
+		PMP_PRINTK(BIOS_INFO, "%s(%d, %lx) = %lx\n", __func__, idx, cfg, read_csr(pmpcfg2));
 		break;
 	}
 #endif
 	if (read_pmpcfg(idx) != cfg) {
-		printk(BIOS_WARNING, "%s: PMPcfg%d: Wrote %lx, read %lx\n", __func__, idx, cfg, read_pmpcfg(idx));
+		PMP_PRINTK(BIOS_WARNING, "%s: PMPcfg%d: Wrote %lx, read %lx\n", __func__, idx, cfg, read_pmpcfg(idx));
 		die("PMPcfg write failed");
 	}
 }
@@ -218,10 +229,10 @@ static void write_pmpaddr(int idx, uintptr_t val)
 		break;
 	}
 
-	printk(BIOS_INFO, "%s(%d, %lx) = %lx\n", __func__, idx, val, read_pmpaddr(idx));
+	PMP_PRINTK(BIOS_INFO, "%s(%d, %lx) = %lx\n", __func__, idx, val, read_pmpaddr(idx));
 	/* The PMP is not required to return what we wrote. On some SoC, many bits are cleared. */
 	if (read_pmpaddr(idx) != val) {
-		printk(BIOS_WARNING, "%s: PMPaddr%d: Wrote %lx, read %lx\n", __func__,
+		PMP_PRINTK(BIOS_WARNING, "%s: PMPaddr%d: Wrote %lx, read %lx\n", __func__,
 				idx, val, read_pmpaddr(idx));
 	}
 }
@@ -263,7 +274,7 @@ static int generate_pmp(struct pmpcfg *p, u64 base, u64 size, u8 flags)
 #if __riscv_xlen == 32
 	/* verify that base + size fits in 34 bits */
 	if ((base + size - 1) >> 34) {
-		printk(BIOS_EMERG, "%s: base (%llx) + size (%llx) - 1 is more than 34 bits\n",
+		PMP_PRINTK(BIOS_EMERG, "%s: base (%llx) + size (%llx) - 1 is more than 34 bits\n",
 				__func__, base, size);
 		return 1;
 	}

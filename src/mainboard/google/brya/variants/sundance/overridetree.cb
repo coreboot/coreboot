@@ -3,6 +3,9 @@ fw_config
 		option LTE_ABSENT		0
 		option LTE_PRESENT		1
 	end
+	field WIFI_SAR_ID 12 15
+		option WIFI_SAR_TABLE_AX211	0
+	end
 end
 
 chip soc/intel/alderlake

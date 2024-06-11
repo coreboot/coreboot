@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/io.h>
-#include <commonlib/bsd/compiler.h>
 #include <commonlib/region.h>
 #include <console/cbmem_console.h>
 #include <console/console.h>

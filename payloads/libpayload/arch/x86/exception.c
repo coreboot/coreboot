@@ -113,13 +113,15 @@ static void dump_stack(uintptr_t addr, size_t bytes)
 {
 	int i, j;
 	const int line = 8;
-	uint32_t *ptr = (uint32_t *)(addr & ~(line * sizeof(*ptr) - 1));
+	uint32_t *ptr = (uint32_t *)((uintptr_t)addr & ~(line * sizeof(*ptr) - 1));
 
 	printf("Dumping stack:\n");
 	for (i = bytes / sizeof(*ptr); i >= 0; i -= line) {
 		printf("%p: ", ptr + i);
-		for (j = i; j < i + line; j++)
-			printf("%08x ", *(ptr + j));
+		for (j = i; j < i + line; j++) {
+			if ((uintptr_t)(ptr + j) >= addr && (uintptr_t)(ptr + j) < addr + bytes)
+				printf("%08x ", *(ptr + j));
+		}
 		printf("\n");
 	}
 }
@@ -213,10 +215,6 @@ success:
 
 void exception_init(void)
 {
-	/* TODO: Add exception init code for x64, currently only supporting 32-bit code */
-	if (CONFIG(LP_ARCH_X86_64))
-		return;
-
 	exception_stack_end = exception_stack + ARRAY_SIZE(exception_stack);
 	exception_init_asm();
 }

@@ -24,6 +24,12 @@ static void usb_port_update(void)
 		cfg->usb2_ports[3].enable = 0;
 		cfg->usb3_ports[3].enable = 0;
 	}
+	if (fw_config_is_provisioned() &&
+	   fw_config_probe(FW_CONFIG(DB_PORTS, DB_PORTS_LTE))) {
+		/* Disable USB C1 port */
+		cfg->usb2_ports[1].enable = 0;
+		cfg->usb3_ports[1].enable = 0;
+	}
 }
 
 void variant_devtree_update(void)

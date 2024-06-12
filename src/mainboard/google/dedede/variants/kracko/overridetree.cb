@@ -131,6 +131,7 @@ chip soc/intel/jasperlake
 						register "enable_delay_ms" = "20"
 						device usb 2.3 on
 							probe DB_PORTS DB_PORTS_1C_LTE
+							probe DB_PORTS DB_PORTS_LTE
 						end
 					end
 					chip drivers/usb/acpi
@@ -175,6 +176,7 @@ chip soc/intel/jasperlake
 						register "group" = "ACPI_PLD_GROUP(2, 2)"
 						device usb 3.3 on
 							probe DB_PORTS DB_PORTS_1C_LTE
+							probe DB_PORTS DB_PORTS_LTE
 						end
 					end
 					chip drivers/usb/acpi

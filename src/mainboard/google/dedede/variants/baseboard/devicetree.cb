@@ -9,6 +9,7 @@ fw_config
 		option DB_PORTS_1C_1A_LTE 6
 		option DB_PORTS_1C 7
 		option DB_PORTS_1A_HDMI_LTE 8
+		option DB_PORTS_LTE 9
 	end
 	field STYLUS 4
 		option STYLUS_ABSENT 0

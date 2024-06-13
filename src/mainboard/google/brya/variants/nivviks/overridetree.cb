@@ -20,6 +20,10 @@ fw_config
 		option STYLUS_PRESENT		0
 		option STYLUS_ABSENT		1
 	end
+	field WIFI_CATEGORY 7
+		option WIFI_6			0	# CNVi
+		option WIFI_7			1	# PCIe
+	end
 end
 
 chip soc/intel/alderlake
@@ -289,6 +293,7 @@ chip soc/intel/alderlake
 				register "enable_cnvi_ddr_rfim" = "true"
 				device generic 0 on end
 			end
+			probe WIFI_CATEGORY WIFI_6
 		end
 		device ref i2c1 on
 			chip drivers/i2c/hid
@@ -628,7 +633,9 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_INTERNAL"
 						register "reset_gpio" =
 							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D4)"
-						device ref usb2_port10 on end
+						device ref usb2_port10 on
+							probe WIFI_CATEGORY WIFI_6
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB3 Type-A Port A0 (MLB)""

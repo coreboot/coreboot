@@ -41,7 +41,8 @@ chip soc/intel/alderlake
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E22, .pad_auxn_dc = GPP_E23}"
 	register "typec_aux_bias_pads[1]" = "{.pad_auxp_dc = GPP_A21, .pad_auxn_dc = GPP_A22}"
 
-	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for CNVi WLAN
+	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for CNVi WLAN (WIFI6)
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for WIFI PCIE (WIFI7)
 
 	# Configure external V1P05/Vnn/VnnSx Rails
 	register "ext_fivr_settings" = "{
@@ -659,6 +660,9 @@ chip soc/intel/alderlake
 							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D4)"
 						device ref usb2_port10 on
 							probe WIFI_CATEGORY WIFI_6
+						end
+						device ref usb2_port8 on
+							probe WIFI_CATEGORY WIFI_7
 						end
 					end
 					chip drivers/usb/acpi

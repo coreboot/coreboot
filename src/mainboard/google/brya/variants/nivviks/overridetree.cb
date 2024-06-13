@@ -503,6 +503,30 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 		end
+		device ref pcie_rp4 on
+			probe WIFI_CATEGORY WIFI_7
+			# Enable WLAN Card PCIE 4 using clk 2
+			register "pch_pcie_rp[PCH_RP(4)]" = "{
+				.clk_src = 2,
+				.clk_req = 2,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_DW1_03"
+				register "add_acpi_dma_property" = "true"
+				device pci 00.0 on
+					probe WIFI_CATEGORY WIFI_7
+				end
+			end
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B11)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H20)"
+				register "srcclk_pin" = "2"
+				device generic 0 on
+					probe WIFI_CATEGORY WIFI_7
+				end
+			end
+		end  #PCIE4 WLAN card
 		device ref pcie_rp7 on
 			# Enable SD Card PCIe 7 using clk 3
 			register "pch_pcie_rp[PCH_RP(7)]" = "{

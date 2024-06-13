@@ -414,18 +414,14 @@ size_t fdt_find_subnodes_by_prefix(const void *blob, u32 node_offset, const char
 	// walk all children nodes of offset
 	while ((size = fdt_next_node_name(blob, offset, &node_name))) {
 
-		if (count_results >= results_len) {
-			printk(BIOS_WARNING,
-				"%s: results_len (%zd) smaller than count_results (%zd)\n",
-				__func__, results_len, count_results);
+		// check if there is space left in the results array
+		if (count_results >= results_len)
 			break;
-		}
 
 		if (!strncmp(prefix, node_name, prefix_len)) {
 			// we found a node that matches the prefix
 			results[count_results++] = offset;
 		}
-
 		// node does not match the prefix. skip current node
 		offset += fdt_skip_node(blob, offset);
 	}

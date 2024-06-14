@@ -4,6 +4,7 @@
 #define _OPENSIL_H_
 
 #include <acpi/acpi.h>
+#include <device/device.h>
 
 // Add the memory map to dev, starting at index idx, returns last use idx
 void add_opensil_memmap(struct device *dev, unsigned long *idx);

@@ -4,6 +4,7 @@
 #define _OPENSIL_H_
 
 #include <acpi/acpi.h>
+#include <device/device.h>
 
 void SIL_STATUS_report(const char *function, const int status);
 // Add the memory map to dev, starting at index idx, returns last use idx

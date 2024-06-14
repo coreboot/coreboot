@@ -103,8 +103,11 @@ bool fdt_is_valid(const void *blob);
 /* Read the property at offset, if any exists. */
 int fdt_next_property(const void *blob, uint32_t offset,
 		      struct fdt_property *prop);
-/* Read the name of the node at offset, if any exists. */
-int fdt_node_name(const void *blob, uint32_t offset, const char **name);
+/*
+ * Read the node name into 'name' of the node behind 'node_offset'
+ * and return total bytes used for name
+ */
+int fdt_next_node_name(const void *blob, uint32_t node_offset, const char **name);
 
 void fdt_print_node(const void *blob, uint32_t offset);
 int fdt_skip_node(const void *blob, uint32_t offset);
@@ -123,11 +126,6 @@ size_t fdt_find_subnodes_by_prefix(const void *blob, u32 node_offset, const char
 /* Find a node by a given alias and return its offset */
 u32 fdt_find_node_by_alias(const void *blob, const char *alias_name,
 			   u32 *addr_cells, u32 *size_cells);
-/*
- * Read the node name into 'name' of the node behind 'node_offset'
- * and return total bytes used for name
- */
-int fdt_next_node_name(const void *blob, uint32_t node_offset, const char **name);
 
  /* Read memory regions from a flat device-tree. */
 size_t fdt_read_memory_regions(const void *blob, struct device_tree_region regions[],

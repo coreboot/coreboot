@@ -178,7 +178,7 @@ static int fdt_find_compat(const void *blob, uint32_t start_offset,
 	int offset = start_offset;
 	int size;
 
-	size = fdt_node_name(blob, offset, NULL);
+	size = fdt_next_node_name(blob, offset, NULL);
 	if (!size)
 		return -1;
 	offset += size;

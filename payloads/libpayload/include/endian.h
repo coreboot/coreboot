@@ -96,6 +96,16 @@ static inline uint32_t be32dec(const void *pp)
 		(uint32_t)(p[2] << 8) | p[3]);
 }
 
+static inline uint64_t be64dec(const void *pp)
+{
+	uint8_t const *p = (uint8_t const *)pp;
+
+	return (((uint64_t)p[0] << 56) | ((uint64_t)p[1] << 48) |
+		((uint64_t)p[2] << 40) | ((uint64_t)p[3] << 32) |
+		((uint64_t)p[4] << 24) | ((uint64_t)p[5] << 16) |
+		((uint64_t)p[6] <<  8) | p[7]);
+}
+
 static inline uint16_t le16dec(const void *pp)
 {
 	uint8_t const *p = (uint8_t const *)pp;
@@ -109,6 +119,16 @@ static inline uint32_t le32dec(const void *pp)
 
 	return ((uint32_t)(p[3] << 24) | (uint32_t)(p[2] << 16) |
 		(uint32_t)(p[1] << 8) | p[0]);
+}
+
+static inline uint64_t le64dec(const void *pp)
+{
+	uint8_t const *p = (uint8_t const *)pp;
+
+	return (((uint64_t)p[7] << 56) | ((uint64_t)p[6] << 48) |
+		((uint64_t)p[5] << 40) | ((uint64_t)p[4] << 32) |
+		((uint64_t)p[3] << 24) | ((uint64_t)p[2] << 16) |
+		((uint64_t)p[1] <<  8) | p[0]);
 }
 
 static inline void bebitenc(void *pp, uint32_t u, uint8_t b)
@@ -130,6 +150,11 @@ static inline void be32enc(void *pp, uint32_t u)
 	bebitenc(pp, u, 4);
 }
 
+static inline void be64enc(void *pp, uint32_t u)
+{
+	bebitenc(pp, u, 8);
+}
+
 static inline void lebitenc(void *pp, uint32_t u, uint8_t b)
 {
 	uint8_t *p = (uint8_t *)pp;
@@ -147,6 +172,11 @@ static inline void le16enc(void *pp, uint16_t u)
 static inline void le32enc(void *pp, uint32_t u)
 {
 	lebitenc(pp, u, 4);
+}
+
+static inline void le64enc(void *pp, uint32_t u)
+{
+	lebitenc(pp, u, 8);
 }
 
 /* Deprecated names (not in glibc / BSD) */

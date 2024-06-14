@@ -31,6 +31,11 @@ config CPU_QEMU_X86_TSEG_SMM
 
 endchoice
 
+config SMM_TSEG_SIZE
+	hex
+	depends on SMM_TSEG
+	default 0x100000
+
 config MAX_CPUS
 	int
 	default 32 if SMM_TSEG

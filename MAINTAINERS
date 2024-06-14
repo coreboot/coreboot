@@ -780,6 +780,11 @@ M:	Ronak Kanabar <ronak.kanabar@intel.com>
 S:	Maintained
 F:	src/drivers/intel/fsp2_0/
 
+INTEL DPTF
+M:	Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
+S:	Maintained
+F:	src/drivers/intel/dptf/
+
 ################################################################################
 # Systems on a Chip
 ################################################################################

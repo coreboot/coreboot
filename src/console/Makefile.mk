@@ -24,8 +24,8 @@ verstage-y += die.c
 verstage-y += init.c
 verstage-y += vtxprintf.c vsprintf.c
 
-romstage-y += vtxprintf.c printk.c vsprintf.c
-romstage-y += init.c console.c
+romstage-$(CONFIG_SEPARATE_ROMSTAGE) += vtxprintf.c printk.c vsprintf.c
+romstage-$(CONFIG_SEPARATE_ROMSTAGE) += init.c console.c
 romstage-y += post.c
 romstage-y += die.c
 

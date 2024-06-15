@@ -4,8 +4,8 @@ chip northbridge/intel/sandybridge
 	register "spd_addresses" = "{0x50, 0x51, 0x52, 0x53}"
 	device domain 0 on
 		subsystemid 0x103c 0x1631 inherit
-		device pci 01.0 on end # PCIe Bridge for discrete graphics
-		device pci 02.0 off end # Internal graphics
+		device ref peg10 on end
+		device ref igd off end
 
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
 			register "docking_supported" = "0"
@@ -35,15 +35,15 @@ chip northbridge/intel/sandybridge
 				{ 1, 0, 6 },
 			}"
 
-			device pci 1c.0 on  end # PCIe Port #1, WWAN
-			device pci 1c.1 on  end # PCIe Port #2, ExpressCard
-			device pci 1c.2 on  end # PCIe Port #3, SD/MMC
-			device pci 1c.3 on  end # PCIe Port #4, WLAN
-			device pci 1c.4 off end # PCIe Port #5
-			device pci 1c.5 off end # PCIe Port #6
-			device pci 1c.6 off end # PCIe Port #7
-			device pci 1c.7 on  end # PCIe Port #8, NEC USB 3.0 Host Controller
-			device pci 1f.0 on	# LPC bridge
+			device ref pcie_rp1 on  end # WWAN
+			device ref pcie_rp2 on  end # ExpressCard
+			device ref pcie_rp3 on  end # SD/MMC
+			device ref pcie_rp4 on  end # WLAN
+			device ref pcie_rp5 off end
+			device ref pcie_rp6 off end
+			device ref pcie_rp7 off end
+			device ref pcie_rp8 on  end # NEC USB 3.0 Host Controller
+			device ref lpc on
 				chip ec/hp/kbc1126
 					register "ec_data_port" = "0x60"
 					register "ec_cmd_port"  = "0x64"

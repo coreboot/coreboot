@@ -9,10 +9,6 @@ chip northbridge/intel/sandybridge
 
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
 			register "docking_supported" = "0"
-			register "gen1_dec" = "0x007c0201"
-			register "gen2_dec" = "0x000c0101"
-			register "gen3_dec" = "0x00fcfe01"
-			register "gen4_dec" = "0x000402e9"
 			register "gpi6_routing" = "2"
 			register "pcie_hotplug_map" = "{ 0, 1, 1, 0, 0, 0, 0, 0 }"
 			# HDD(0), ODD(1), eSATA(4)
@@ -44,6 +40,10 @@ chip northbridge/intel/sandybridge
 			device ref pcie_rp7 off end
 			device ref pcie_rp8 on  end # NEC USB 3.0 Host Controller
 			device ref lpc on
+				register "gen1_dec" = "0x007c0201"
+				register "gen2_dec" = "0x000c0101"
+				register "gen3_dec" = "0x00fcfe01"
+				register "gen4_dec" = "0x000402e9"
 				chip ec/hp/kbc1126
 					register "ec_data_port" = "0x60"
 					register "ec_cmd_port"  = "0x64"

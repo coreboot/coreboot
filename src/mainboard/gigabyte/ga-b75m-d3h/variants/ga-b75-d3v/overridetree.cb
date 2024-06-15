@@ -1,17 +1,17 @@
 chip northbridge/intel/sandybridge
 	device domain 0 on
 		chip southbridge/intel/bd82x6x	# Intel Series 7 Panther Point PCH
-			device pci 16.0 off end	# Management Engine Interface 1
+			device ref mei1 off end
 			register "xhci_overcurrent_mapping" = "0x00000c03"
-			device pci 1c.1 on  end	# PCIe Port #2
-			device pci 1c.2 on
+			device ref pcie_rp2 on  end
+			device ref pcie_rp3 on
 				device pci 00.0 on	# PCI 1969:1091
 					subsystemid 0x1458 0xe000
 				end
-			end # PCIe Port #3
-			device pci 1c.3 on  end	# PCIe Port #4
-			device pci 1c.4 on  end	# PCIe Port #5
-			device pci 1f.0 on	# ISA/LPC bridge
+			end
+			device ref pcie_rp4 on  end
+			device ref pcie_rp5 on  end
+			device ref lpc on
 				subsystemid 0x1458 0x5001
 				chip superio/ite/it8728f
 					device pnp 2e.2 off end	# COM2

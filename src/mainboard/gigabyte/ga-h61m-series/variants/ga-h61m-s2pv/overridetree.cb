@@ -5,14 +5,14 @@ chip northbridge/intel/sandybridge
 
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
 
-			device pci 1c.0 on  end	# RP #1: PCIe x1 Port (PCIEX1)
-			device pci 1c.1 off end	# RP #2:
-			device pci 1c.2 off end	# RP #3:
-			device pci 1c.3 off end	# RP #4:
-			device pci 1c.4 on  end	# RP #5: Realtek RTL8111F GbE NIC
-			device pci 1c.5 on  end	# RP #6: ITE IT8892F PCIe to PCI bridge
+			device ref pcie_rp1 on  end	# PCIe x1 Port (PCIEX1)
+			device ref pcie_rp2 off end
+			device ref pcie_rp3 off end
+			device ref pcie_rp4 off end
+			device ref pcie_rp5 on  end	# Realtek RTL8111F GbE NIC
+			device ref pcie_rp6 on  end	# ITE IT8892F PCIe to PCI bridge
 
-			device pci 1f.0 on	# LPC bridge
+			device ref lpc on
 				chip superio/ite/it8728f
 					device pnp 2e.0 off end		# Floppy
 					device pnp 2e.1 on		# COM1

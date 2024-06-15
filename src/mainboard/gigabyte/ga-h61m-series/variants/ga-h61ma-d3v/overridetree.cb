@@ -5,14 +5,14 @@ chip northbridge/intel/sandybridge
 
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
 
-			device pci 1c.0 on  end	# RP #1: PCIe x1 Port (PCIEX1_3)
-			device pci 1c.1 on  end	# RP #2: PCIe x1 Port (PCIEX1_1)
-			device pci 1c.2 on  end	# RP #3: Etron EJ168 USB 3.0
-			device pci 1c.3 on  end	# RP #4: Marvell 88SE9172 SATA
-			device pci 1c.4 on  end	# RP #5: Realtek RTL8111F GbE NIC
-			device pci 1c.5 on  end	# RP #6: PCIe x1 Port (PCIEX1_2)
+			device ref pcie_rp1 on  end	# PCIe x1 Port (PCIEX1_3)
+			device ref pcie_rp2 on  end	# PCIe x1 Port (PCIEX1_1)
+			device ref pcie_rp3 on  end	# Etron EJ168 USB 3.0
+			device ref pcie_rp4 on  end	# Marvell 88SE9172 SATA
+			device ref pcie_rp5 on  end	# Realtek RTL8111F GbE NIC
+			device ref pcie_rp6 on  end	# PCIe x1 Port (PCIEX1_2)
 
-			device pci 1f.0 on	# LPC bridge
+			device ref lpc on
 				chip superio/ite/it8728f
 					device pnp 2e.0 off end	# Floppy
 					device pnp 2e.1 off end	# COM1

@@ -3,6 +3,9 @@
 #ifndef _SOC_LBG_PM_H_
 #define _SOC_LBG_PM_H_
 
+#define GPE_CNTL                0x42
+#define  SWGPE_CTRL             (1 << 1)
+
 #define GPE0_STS(x)		(0x80 + ((x) * 4))
 #define GPE0_EN(x)		(0x90 + ((x) * 4))
 

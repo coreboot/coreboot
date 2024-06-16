@@ -36,7 +36,7 @@
 #define GBLRST_CAUSE0		0x1924
 #define GBLRST_CAUSE1		0x1928
 #define ACTL			0x1BD8
-#define PMC_ACPI_CNT		0x1BD8
+#define PMC_ACPI_CNT		0x44
 #define  PWRM_EN		(1 << 8)
 #define  ACPI_EN		(1 << 7)
 #define  SCI_IRQ_SEL		(7 << 0)

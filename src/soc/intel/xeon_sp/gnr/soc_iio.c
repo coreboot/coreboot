@@ -36,10 +36,20 @@ void soc_config_iio_pe_ports(FSPM_UPD *mupd, const struct iio_pe_config *config_
 			upd_pe_config->Bifurcation = board_pe_config->bifurcation;
 			upd_pe_config->CxlSupportInUba = board_pe_config->cxl_support;
 
+			upd_port_config->VppEnabled = board_port_config->vpp_enabled;
+			upd_port_config->VppExpType = board_port_config->vpp_exp_type;
+
 			upd_port_config->Vpp.Address = board_port_config->vpp_address;
 			upd_port_config->Vpp.Port = board_port_config->vpp_port;
 			upd_port_config->Vpp.MuxAddress	= board_port_config->vpp_mux_address;
 			upd_port_config->Vpp.MuxChannel	= board_port_config->vpp_mux_channel;
+
+			upd_port_config->NpemSupported = board_port_config->npem_supported;
+
+			upd_port_config->Npem.Address = board_port_config->npem_address;
+			upd_port_config->Npem.Bank = board_port_config->npem_bank;
+			upd_port_config->Npem.MuxAddress = board_port_config->npem_mux_address;
+			upd_port_config->Npem.MuxChannel = board_port_config->npem_mux_channel;
 
 			upd_port_config->Slot.Eip = board_port_config->slot_eip;
 			upd_port_config->Slot.HotPlugSurprise = board_port_config->slot_hps;
@@ -48,15 +58,16 @@ void soc_config_iio_pe_ports(FSPM_UPD *mupd, const struct iio_pe_config *config_
 			upd_port_config->Slot.PowerCtrl = board_port_config->slot_pctl;
 			upd_port_config->Slot.AttentionBtn = board_port_config->slot_abtn;
 
-			upd_port_config->VppEnabled = board_port_config->vpp_enabled;
-			upd_port_config->VppExpType = board_port_config->vpp_exp_type;
-
 			upd_port_config->SlotImplemented = board_port_config->slot_implemented;
 			upd_port_config->HotPlug = board_port_config->hot_plug;
 			upd_port_config->MrlSensorPresent = board_port_config->mrl_sensor_present;
 			upd_port_config->SlotPowerLimitScale = board_port_config->slot_power_limit_scale;
 			upd_port_config->SlotPowerLimitValue = board_port_config->slot_power_limit_value;
 			upd_port_config->PhysicalSlotNumber = board_port_config->physical_slot_number;
+			upd_port_config->Retimer1Present = board_port_config->retimer_1_present;
+			upd_port_config->Retimer2Present = board_port_config->retimer_2_present;
+			upd_port_config->CommonClock = board_port_config->common_clock;
+			upd_port_config->SRIS = board_port_config->sris;
 		}
 	}
 

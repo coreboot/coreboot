@@ -1,0 +1,9 @@
+Vendor name: Asrock Industrial
+Board name: IMB-1222
+Category: desktop
+Board URL: https://web.archive.org/web/20220924171403/https://www.asrockind.com/en-gb/IMB-1222
+Release year: 2020
+ROM package: WSON-8
+ROM protocol: SPI
+ROM socketed: y
+Flashrom support: y

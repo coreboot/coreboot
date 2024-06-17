@@ -1,0 +1,61 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+if BOARD_ASROCK_IMB_1222
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_32768
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_CMOS_DEFAULT
+	select HAVE_OPTION_TABLE
+	select MAINBOARD_HAS_LIBGFXINIT
+	select MAINBOARD_USES_IFD_GBE_REGION
+	select MEMORY_MAPPED_TPM
+	select INTEL_GMA_HAVE_VBT
+	select INTEL_INT15
+	select SOC_INTEL_CANNONLAKE_PCH_H
+	select SOC_INTEL_COMETLAKE_S
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select SPD_READ_BY_WORD
+	select SUPERIO_FINTEK_COMMON_PRE_RAM
+
+config MAINBOARD_DIR
+	default "asrock/imb-1222"
+
+config MAINBOARD_PART_NUMBER
+	default "imb-1222"
+
+config MAINBOARD_SMBIOS_PRODUCT_NAME
+	default "Asrock"
+
+config MAINBOARD_VERSION
+	default "imb-1222"
+
+config CBFS_SIZE
+	default 0xc00000
+
+config CONSOLE_POST
+	default y
+
+config DIMM_MAX
+	default 2
+
+config POST_DEVICE
+	default n
+
+config BEEP_ON_BOOT
+	bool "Beep on successful boot"
+	default y
+	help
+	  Make the platform beep using the PC speaker in final coreboot phase.
+	  May serve as a useful indicator in headless mode that platform is
+	  properly booting.
+
+config BEEP_ON_PANIC
+	bool "Beep on panic"
+	default y
+	help
+	  Beep when encountered a fatal error.
+
+endif

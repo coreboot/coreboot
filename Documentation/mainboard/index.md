@@ -33,6 +33,7 @@ pademelon <amd/pademelon/pademelon.md>
 H77 Pro4-M <asrock/h77pro4-m.md>
 H81M-HDS <asrock/h81m-hds.md>
 H110M-DVS <asrock/h110m-dvs.md>
+IMB-1222 <asrock/imb-1222.md>
 ```
 
 ## ASUS

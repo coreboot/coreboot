@@ -20,16 +20,16 @@
 .global PM4LE
 .align 4096
 PM4LE:
-.quad _GEN_DIR(PDPE_table)
+.quad _GEN_DIR(PDPT)
 
 .align 4096
-PDE_tables: /* identity map 2MiB pages */
+PDT: /* identity map 2MiB pages */
 .rept 2048
-.quad _GEN_PAGE(0x200000 * ((. - PDE_tables) >> 3))
+.quad _GEN_PAGE(0x200000 * ((. - PDT) >> 3))
 .endr
 
 .align 4096
-PDPE_table: /* Point to PDE */
+PDPT: /* Point to PDT */
 .rept 4
-.quad _GEN_DIR(PDE_tables + 4096 * ((. - PDPE_table) >> 3))
+.quad _GEN_DIR(PDT + 4096 * ((. - PDPT) >> 3))
 .endr

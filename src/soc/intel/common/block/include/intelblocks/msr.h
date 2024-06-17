@@ -55,6 +55,7 @@
 #define  PWR_PERF_PLATFORM_OVR		(1 << 18)
 #define  VR_THERM_ALERT_DISABLE_LOCK	(1 << 23)
 #define MSR_PRMRR_BASE_0		0x2a0
+#define MSR_PRMRR_BASE(reg)		(MSR_PRMRR_BASE_0 + (reg))
 #define MSR_EVICT_CTL			0x2e0
 #define MSR_LT_CONTROL			0x2e7
 #define  LT_CONTROL_LOCK		(1 << 0)

@@ -134,6 +134,20 @@ uint8_t get_cxl_node_count(void)
 	return count;
 }
 
+unsigned int get_prmrr_count(void)
+{
+	uint32_t cpu_id = cpu_get_cpuid();
+
+	switch (cpu_id & CPUID_ALL_STEPPINGS_MASK) {
+	case CPUID_GRANITERAPIDS:
+		return 0x7;
+	case CPUID_SIERRAFOREST:
+		return 0x4;
+	default:
+		return 0;
+	}
+}
+
 bool is_memtype_reserved(uint16_t mem_type)
 {
 	return false;

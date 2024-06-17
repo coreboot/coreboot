@@ -97,22 +97,6 @@ static void enable_var_mtrr(unsigned char deftype)
 	wrmsr(MTRR_DEF_TYPE_MSR, msr);
 }
 
-#define MTRR_VERBOSE_LEVEL BIOS_NEVER
-
-/* MTRRs are at a 4KiB granularity. */
-#define RANGE_SHIFT 12
-#define ADDR_SHIFT_TO_RANGE_SHIFT(x) \
-	(((x) > RANGE_SHIFT) ? ((x) - RANGE_SHIFT) : RANGE_SHIFT)
-#define PHYS_TO_RANGE_ADDR(x) ((x) >> RANGE_SHIFT)
-#define RANGE_TO_PHYS_ADDR(x) (((resource_t)(x)) << RANGE_SHIFT)
-
-/* Helpful constants. */
-#define RANGE_1MB PHYS_TO_RANGE_ADDR(1ULL << 20)
-#define RANGE_4GB (1ULL << (ADDR_SHIFT_TO_RANGE_SHIFT(32)))
-
-#define MTRR_ALGO_SHIFT (8)
-#define MTRR_TAG_MASK ((1 << MTRR_ALGO_SHIFT) - 1)
-
 static inline uint64_t range_entry_base_mtrr_addr(struct range_entry *r)
 {
 	return PHYS_TO_RANGE_ADDR(range_entry_base(r));

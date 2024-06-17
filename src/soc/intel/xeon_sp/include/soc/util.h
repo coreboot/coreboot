@@ -28,6 +28,7 @@ bool is_iio_cxl_stack_res(const xSTACK_RES *res);
 void bios_done_msr(void *unused);
 union p2sb_bdf soc_get_hpet_bdf(void);
 union p2sb_bdf soc_get_ioapic_bdf(void);
+unsigned int get_prmrr_count(void);
 
 bool get_mmio_high_base_size(resource_t *base, resource_t *size);
 

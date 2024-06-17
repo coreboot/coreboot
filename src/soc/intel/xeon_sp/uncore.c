@@ -4,8 +4,10 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <cpu/x86/lapic_def.h>
+#include <cpu/x86/mtrr.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <intelblocks/msr.h>
 #include <soc/acpi.h>
 #include <soc/chip_common.h>
 #include <soc/iomap.h>
@@ -154,6 +156,29 @@ static void configure_dpr(struct device *dev)
 #define MC_DRAM_RESOURCE_MMIO_HIGH	0x1000
 #define MC_DRAM_RESOURCE_ANON_START	0x1001
 
+__weak unsigned int get_prmrr_count(void)
+{
+	return 0x0;
+}
+
+static bool get_prmrr_region(unsigned int msr_addr, uint64_t *base, uint64_t *size)
+{
+	/* Check if processor supports PRMRR */
+	msr_t msr1 = rdmsr(MTRR_CAP_MSR);
+	if (!(msr1.lo & MTRR_CAP_PRMRR)) {
+		printk(BIOS_ERR, "%s(): PRMRR is not supported.\n", __func__);
+		return false;
+	}
+
+	/* Mask out bits 0-11 to get the base address */
+	*base = msr_read(msr_addr) & ~((1 << RANGE_SHIFT) - 1);
+
+	uint64_t mask = msr_read(MSR_PRMRR_PHYS_MASK);
+	*size = calculate_var_mtrr_size(mask);
+
+	return (*base && *size);
+}
+
 /*
  * Host Memory Map:
  *
@@ -300,6 +325,14 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 
 		res = ram_range(dev, index++, addr, size);
 		LOG_RESOURCE("high_ram", dev, res);
+	}
+
+	uint64_t prmrr_base, prmrr_size;
+	for (unsigned int i = 0; i < get_prmrr_count(); i++) {
+		if (get_prmrr_region(MSR_PRMRR_BASE(i), &prmrr_base, &prmrr_size)) {
+			res = reserved_ram_range(dev, index++, prmrr_base, prmrr_size);
+			LOG_RESOURCE("prmrr", dev, res);
+		}
 	}
 
 	if (CONFIG(SOC_INTEL_HAS_CXL)) {

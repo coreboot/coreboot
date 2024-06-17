@@ -1,6 +1,9 @@
 /* BPDT version 1.7 support */
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#ifndef SOC_INTEL_COMMON_CSE_LAYOUT_H
+#define SOC_INTEL_COMMON_CSE_LAYOUT_H
+
 #include <sys/types.h>
 
 enum bpdt_entry_type {
@@ -103,3 +106,11 @@ struct subpart_entry_manifest_header {
 		uint16_t hotfix;
 	} binary_version;
 } __packed;
+
+#define BPDT_HEADER_SZ		sizeof(struct bpdt_header)
+#define BPDT_ENTRY_SZ		sizeof(struct bpdt_entry)
+#define SUBPART_HEADER_SZ	sizeof(struct subpart_hdr)
+#define SUBPART_ENTRY_SZ	sizeof(struct subpart_entry)
+#define SUBPART_MANIFEST_HDR_SZ	sizeof(struct subpart_entry_manifest_header)
+
+#endif // SOC_INTEL_COMMON_CSE_LAYOUT_H

@@ -5,9 +5,9 @@
 #include <superio/nuvoton/common/nuvoton.h>
 #include <superio/nuvoton/nct6776/nct6776.h>
 
-#define GLOBAL_DEV PNP_DEV(0x2e, 0)
-#define SERIAL_DEV PNP_DEV(0x2e, NCT6776_SP1)
-#define ACPI_DEV   PNP_DEV(0x2e, NCT6776_ACPI)
+#define GLOBAL_DEV PNP_DEV(CONFIG_SUPERIO_PNP_BASE, 0)
+#define SERIAL_DEV PNP_DEV(CONFIG_SUPERIO_PNP_BASE, NCT6776_SP1)
+#define ACPI_DEV   PNP_DEV(CONFIG_SUPERIO_PNP_BASE, NCT6776_ACPI)
 
 void bootblock_mainboard_early_init(void)
 {

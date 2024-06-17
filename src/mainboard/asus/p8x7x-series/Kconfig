@@ -104,4 +104,8 @@ config CMOS_DEFAULT_FILE
 config CMOS_LAYOUT_FILE
 	default "src/mainboard/\$(MAINBOARDDIR)/variants/\$(CONFIG_VARIANT_DIR)/cmos.layout"
 
+config SUPERIO_PNP_BASE
+	hex
+	default 0x2e
+
 endif

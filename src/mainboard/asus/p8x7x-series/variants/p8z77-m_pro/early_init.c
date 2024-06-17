@@ -11,7 +11,7 @@
 #include <northbridge/intel/sandybridge/raminit.h>
 #include <northbridge/intel/sandybridge/pei_data.h>
 
-#define SERIAL_DEV PNP_DEV(0x2e, NCT6779D_SP2)
+#define SERIAL_DEV PNP_DEV(CONFIG_SUPERIO_PNP_BASE, NCT6779D_SP2)
 
 void bootblock_mainboard_early_init(void)
 {

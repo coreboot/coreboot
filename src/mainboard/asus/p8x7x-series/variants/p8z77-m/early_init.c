@@ -10,8 +10,8 @@
 
 #include <option.h>
 
-#define SERIAL_DEV PNP_DEV(0x2e, NCT6779D_SP1)
-#define GPIO0_DEV  PNP_DEV(0x2e, NCT6779D_WDT1_GPIO01_V)
+#define SERIAL_DEV PNP_DEV(CONFIG_SUPERIO_PNP_BASE, NCT6779D_SP1)
+#define GPIO0_DEV  PNP_DEV(CONFIG_SUPERIO_PNP_BASE, NCT6779D_WDT1_GPIO01_V)
 
 void bootblock_mainboard_early_init(void)
 {

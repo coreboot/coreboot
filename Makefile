@@ -519,11 +519,35 @@ symlink:
 	done
 
 clean-symlink:
-	@echo "Deleting symbolic link";\
-	EXISTING_SYMLINKS=`find -L ./src -xtype l | grep -v 3rdparty`; \
-	for link in $$EXISTING_SYMLINKS; do \
-		echo -e "\tUNLINK $$link"; \
-		rm "$$link"; \
+	if [ -z "$(SYMLINK_LIST)" ]; then \
+		echo "No site-local symbolic links to clean."; \
+		exit 0; \
+	fi; \
+	echo "Removing site-local symbolic links from tree.."; \
+	for link in $(SYMLINK_LIST); do \
+		SYMLINK="$(top)/$$(head -n 1 "$${link}")"; \
+		if [ "$${SYMLINK}" = "$$(echo "$${SYMLINK}" | sed "s|^$(top)||")" ]; then \
+			echo "  FAILED: $${SYMLINK} is outside of current directory." >&2; \
+			continue; \
+		elif [ ! -L "$${SYMLINK}" ]; then \
+			echo "  $${SYMLINK} does not exist - skipping"; \
+			continue; \
+		fi; \
+		if [ -L "$${SYMLINK}" ]; then \
+			REALDIR="$$(realpath "$${link}")"; \
+			echo "  UNLINK $${link} (linked from $${REALDIR})"; \
+			rm "$${SYMLINK}"; \
+		fi; \
+	done; \
+	EXISTING_SYMLINKS="$$(find $(top) -type l | grep -v "3rdparty\|crossgcc" )"; \
+	if [ -z "$${EXISTING_SYMLINKS}" ]; then \
+		echo "  No remaining symbolic links found in tree."; \
+	else \
+		echo "  Remaining symbolic links found:"; \
+		for link in $${EXISTING_SYMLINKS}; do \
+			echo "    $${link}"; \
+		done; \
+	fi
 
 cleanall-symlink:
 	echo "Deleting all symbolic links in the coreboot tree (excluding 3rdparty & crossgcc)"; \

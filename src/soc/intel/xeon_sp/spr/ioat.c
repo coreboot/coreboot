@@ -8,6 +8,7 @@
 #include <defs_iio.h>
 #include <hob_iiouds.h>
 #include <intelblocks/acpi.h>
+#include <intelblocks/vtd.h>
 #include <soc/acpi.h>
 #include <IioPcieConfigUpd.h>
 
@@ -29,7 +30,7 @@ static struct device_operations ioat_domain_ops = {
 #endif
 };
 
-static void create_ioat_domain(const union xeon_domain_path dp, struct bus *const upstream,
+static struct device *const create_ioat_domain(const union xeon_domain_path dp, struct bus *const upstream,
 				const unsigned int bus_base, const unsigned int bus_limit,
 				const resource_t mem32_base, const resource_t mem32_limit,
 				const resource_t mem64_base, const resource_t mem64_limit,
@@ -66,6 +67,8 @@ static void create_ioat_domain(const union xeon_domain_path dp, struct bus *cons
 
 	if (mem64_base <= mem64_limit)
 		domain_mem_window_from_to(domain, index++, mem64_base, mem64_limit + 1);
+
+	return domain;
 }
 
 void create_ioat_domains(const union xeon_domain_path path,
@@ -130,6 +133,18 @@ void create_ioat_domains(const union xeon_domain_path path,
 	mem64_limit = sr->PciResourceMem64Limit;
 	bus_base = sr->BusBase;
 	bus_limit = bus_base;
-	create_ioat_domain(path, bus, bus_base, bus_limit, sr->PciResourceMem32Base, sr->PciResourceMem32Limit,
-			   mem64_base, mem64_limit, DOMAIN_TYPE_DINO, pci_segment_group);
+	struct device *const dev = create_ioat_domain(path, bus, bus_base, bus_limit,
+				sr->PciResourceMem32Base, sr->PciResourceMem32Limit,
+				mem64_base, mem64_limit, DOMAIN_TYPE_DINO, pci_segment_group);
+
+	/* Declare domain reserved MMIO */
+	uint64_t reserved_mmio = sr->VtdBarAddress + vtd_probe_bar_size(pcidev_on_root(0, 0));
+	if ((reserved_mmio >= sr->PciResourceMem32Base) &&
+	    (reserved_mmio <= sr->PciResourceMem32Limit)) {
+		int index = 0;
+		for (struct resource *res = dev->resource_list; res; res = res->next)
+			index++;
+		mmio_range(dev, index, reserved_mmio,
+			sr->PciResourceMem32Limit - reserved_mmio + 1);
+	}
 }

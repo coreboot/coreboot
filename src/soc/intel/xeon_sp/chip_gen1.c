@@ -7,6 +7,7 @@
 #include <device/pci_ids.h>
 #include <soc/pci_devs.h>
 #include <intelblocks/acpi.h>
+#include <intelblocks/vtd.h>
 #include <soc/acpi.h>
 #include <soc/chip_common.h>
 #include <soc/soc_util.h>
@@ -54,6 +55,13 @@ static void iio_pci_domain_read_resources(struct device *dev)
 	if (sr->PciResourceMem64Base < sr->PciResourceMem64Limit)
 		domain_mem_window_from_to(dev, index++,
 				sr->PciResourceMem64Base, sr->PciResourceMem64Limit + 1);
+
+	/* Declare domain reserved MMIO */
+	uint64_t reserved_mmio = sr->VtdBarAddress + vtd_probe_bar_size(pcidev_on_root(0, 0));
+	if ((reserved_mmio >= sr->PciResourceMem32Base) &&
+	    (reserved_mmio <= sr->PciResourceMem32Limit))
+		mmio_range(dev, index++, reserved_mmio,
+			sr->PciResourceMem32Limit - reserved_mmio + 1);
 }
 
 /*

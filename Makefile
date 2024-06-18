@@ -487,19 +487,35 @@ sphinx:
 sphinx-lint:
 	$(MAKE) SPHINXOPTS=-W -C Documentation sphinx
 
+# Look at all of the files in the SYMLINK_LIST and create the symbolic links
+# into the coreboot tree. Each symlink.txt file in site-local should be in the
+# directory linked from and have a single line with the path to the location to
+# link to. The path must be relative to the top of the coreboot directory.
 symlink:
-	@echo "Creating Symbolic Links.."; \
+	if [ -z "$(SYMLINK_LIST)" ]; then \
+		echo "No site-local symbolic links to create."; \
+		exit 0; \
+	fi; \
+	echo "Creating symbolic links.."; \
 	for link in $(SYMLINK_LIST); do \
-		SYMLINK=`cat $$link`; \
-		REALPATH=`realpath $$link`; \
-		if [ -L "$$SYMLINK" ]; then \
+		LINKTO="$(top)/$$(head -n 1 "$${link}")"; \
+		LINKFROM=$$(dirname "$$(realpath "$${link}")"); \
+		if [ -L "$${LINKTO}" ]; then \
+			echo "  $${LINKTO} exists - skipping"; \
 			continue; \
-		elif [ ! -e "$$SYMLINK" ]; then \
-			echo -e "\tLINK $$SYMLINK -> $$(dirname $$REALPATH)"; \
-			ln -s $$(dirname $$REALPATH) $$SYMLINK; \
+		fi; \
+		LINKTO="$$(realpath -m "$${LINKTO}")" 2>/dev/null; \
+		if [ "$${LINKTO}" = "$$(echo "$${LINKTO}" | sed "s|^$(top)||" )" ]; then \
+			echo "  FAILED: $${LINKTO} is outside of current directory." >&2; \
+			continue; \
+		fi; \
+		if [ ! -e "$${LINKTO}" ]; then \
+			echo "  LINK $${LINKTO} -> $${LINKFROM}"; \
+			ln -s "$${LINKFROM}" "$${LINKTO}" || \
+				echo "FAILED: Could not create link." >&2; \
 		else \
-			echo -e "\tFAILED: $$SYMLINK exists"; \
-		fi \
+			echo  "  FAILED: $${LINKTO} exists as a file or directory." >&2; \
+		fi; \
 	done
 
 clean-symlink:

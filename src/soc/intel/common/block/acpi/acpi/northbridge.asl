@@ -166,7 +166,12 @@ Method (_CRS, 0, Serialized)
 				0x00000000, 0x10000, 0x1ffff, 0x00000000,
 				0x10000,,, PM02)
 
-#if !((CONFIG_PCR_BASE_ADDRESS >= PCH_PRESERVED_BASE_ADDRESS) && \
+#if (CONFIG_PCR_BASE_ADDRESS >= (4ULL * GiB))
+		QWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
+				NonCacheable, ReadWrite,
+				0x00000000, 0x000000000, 0x00000000, 0x00000000,
+				0x00000000,,, SM01)
+#elif !((CONFIG_PCR_BASE_ADDRESS >= PCH_PRESERVED_BASE_ADDRESS) && \
       (CONFIG_PCR_BASE_ADDRESS < PCH_PRESERVED_BASE_ADDRESS + PCH_PRESERVED_BASE_SIZE))
 		/* SBREG BAR if outside of PCH reserved resource */
 		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
@@ -202,13 +207,19 @@ Method (_CRS, 0, Serialized)
 	PMIN = \_SB.PCI0.MCHC.TLUD & (0xfff << 20)
 	PLEN = PMAX - PMIN + 1
 
-#if !((CONFIG_PCR_BASE_ADDRESS >= PCH_PRESERVED_BASE_ADDRESS) && \
+#if (CONFIG_PCR_BASE_ADDRESS >= (4ULL * GiB))
+	CreateQwordField (MCRS, SM01._MIN, SMIN)
+	CreateQwordField (MCRS, SM01._MAX, SMAX)
+	CreateQwordField (MCRS, SM01._LEN, SLEN)
+	SMIN = P2SB_BAR
+	SLEN = P2SB_SIZE
+	SMAX = SMIN + SLEN - 1
+#elif !((CONFIG_PCR_BASE_ADDRESS >= PCH_PRESERVED_BASE_ADDRESS) && \
       (CONFIG_PCR_BASE_ADDRESS < PCH_PRESERVED_BASE_ADDRESS + PCH_PRESERVED_BASE_SIZE))
 	/* Fix up SBREG BAR memory region if outside PCH reserved resource */
 	CreateDwordField (MCRS, SM01._MIN, SMIN)
 	CreateDwordField (MCRS, SM01._MAX, SMAX)
 	CreateDwordField (MCRS, SM01._LEN, SLEN)
-
 	SMIN = P2SB_BAR
 	SLEN = P2SB_SIZE
 	SMAX = SMIN + SLEN - 1

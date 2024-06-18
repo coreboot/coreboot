@@ -14,7 +14,7 @@ therefore the automatic fan control will not increase the fan speed.
 
 ## Flashing coreboot
 
-```{eval_rst}
+```{eval-rst}
 +---------------------+-------------------------+
 | Type                | Value                   |
 +=====================+=========================+
@@ -82,7 +82,7 @@ until cleanly power cycled.
 
 ## Technology
 
-```{eval_rst}
+```{eval-rst}
 +------------------+--------------------------------------------------+
 | Northbridge      | :doc:`../../northbridge/intel/sandybridge/index` |
 +------------------+--------------------------------------------------+

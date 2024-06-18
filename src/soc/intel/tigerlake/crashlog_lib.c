@@ -21,7 +21,7 @@ static pmc_crashlog_desc_table_t descriptor_table;
 static tel_crashlog_devsc_cap_t cpu_cl_devsc_cap;
 static cpu_crashlog_discovery_table_t cpu_cl_disc_tab;
 
-u32 __weak cl_get_cpu_mb_int_addr(void)
+uintptr_t __weak cl_get_cpu_mb_int_addr(void)
 {
 	return CRASHLOG_MAILBOX_INTF_ADDRESS;
 }
@@ -91,7 +91,7 @@ bool pmc_cl_discovery(void)
 	return true;
 }
 
-u32 cl_get_cpu_bar_addr(void)
+uintptr_t cl_get_cpu_bar_addr(void)
 {
 	u32 base_addr = 0;
 	if (cpu_cl_devsc_cap.discovery_data.fields.t_bir_q == TEL_DVSEC_TBIR_BAR0) {
@@ -109,7 +109,7 @@ u32 cl_get_cpu_bar_addr(void)
 }
 
 
-u32 cl_get_cpu_tmp_bar(void)
+uintptr_t cl_get_cpu_tmp_bar(void)
 {
 	return SPI_BASE_ADDRESS;
 }
@@ -161,8 +161,12 @@ static bool cpu_cl_get_capability(tel_crashlog_devsc_cap_t *cl_devsc_cap)
 
 static bool cpu_cl_gen_discovery_table(void)
 {
-	u32 bar_addr = 0, disc_tab_addr = 0;
+	uintptr_t bar_addr = 0, disc_tab_addr = 0;
 	bar_addr = cl_get_cpu_bar_addr();
+
+	if (!bar_addr)
+		return false;
+
 	disc_tab_addr = bar_addr +
 			cpu_cl_devsc_cap.discovery_data.fields.discovery_table_offset;
 	memset(&cpu_cl_disc_tab, 0, sizeof(cpu_crashlog_discovery_table_t));

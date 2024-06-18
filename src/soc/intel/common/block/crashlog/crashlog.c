@@ -17,7 +17,7 @@ int __weak cl_get_pmc_record_size(void)
 	return 0;
 }
 
-u32 __weak cl_get_cpu_bar_addr(void)
+uintptr_t __weak cl_get_cpu_bar_addr(void)
 {
 	return 0;
 }
@@ -27,12 +27,12 @@ int __weak cl_get_ioe_record_size(void)
 	return 0;
 }
 
-u32 __weak cl_get_cpu_tmp_bar(void)
+uintptr_t __weak cl_get_cpu_tmp_bar(void)
 {
 	return 0;
 }
 
-u32 __weak cl_get_cpu_mb_int_addr(void)
+uintptr_t __weak cl_get_cpu_mb_int_addr(void)
 {
 	return 0;
 }
@@ -106,13 +106,13 @@ cpu_crashlog_discovery_table_t __weak cl_get_cpu_discovery_table(void)
 	return cpu_disc_tab;
 }
 
-int cpu_cl_poll_mailbox_ready(u32 cl_mailbox_addr)
+int cpu_cl_poll_mailbox_ready(uintptr_t cl_mailbox_addr)
 {
 	cpu_crashlog_mailbox_t cl_mailbox_interface;
 	u16 stall_cnt = 0;
 
 	do {
-		cl_mailbox_interface.data = read32((u32 *)(uintptr_t)cl_mailbox_addr);
+		cl_mailbox_interface.data = read32p(cl_mailbox_addr);
 		udelay(CPU_CRASHLOG_WAIT_STALL);
 		stall_cnt++;
 	} while ((cl_mailbox_interface.fields.busy == 1)
@@ -130,7 +130,7 @@ int cpu_cl_poll_mailbox_ready(u32 cl_mailbox_addr)
 int cpu_cl_mailbox_cmd(u8 cmd, u8 param)
 {
 	cpu_crashlog_mailbox_t cl_mailbox_intf;
-	u32 cl_base_addr;
+	uintptr_t cl_base_addr;
 
 	memset(&cl_mailbox_intf, 0, sizeof(cpu_crashlog_mailbox_t));
 
@@ -140,7 +140,7 @@ int cpu_cl_mailbox_cmd(u8 cmd, u8 param)
 	cl_mailbox_intf.fields.param = param;
 	cl_mailbox_intf.fields.busy = 1;
 
-	write32((u32 *)(uintptr_t)(cl_base_addr + cl_get_cpu_mb_int_addr()),
+	write32p((cl_base_addr + cl_get_cpu_mb_int_addr()),
 		cl_mailbox_intf.data);
 
 	cpu_cl_poll_mailbox_ready(cl_base_addr + cl_get_cpu_mb_int_addr());
@@ -163,12 +163,12 @@ void __weak cpu_cl_cleanup(void)
 	/* empty implementation */
 }
 
-int pmc_cl_gen_descriptor_table(u32 desc_table_addr,
+int pmc_cl_gen_descriptor_table(uintptr_t desc_table_addr,
 				pmc_crashlog_desc_table_t *descriptor_table)
 {
 	int total_data_size = 0;
-	descriptor_table->numb_regions = read32((u32 *)(uintptr_t)desc_table_addr);
-	printk(BIOS_DEBUG, "CL PMC desc table: numb of regions is 0x%x at addr 0x%x\n",
+	descriptor_table->numb_regions = read32p(desc_table_addr);
+	printk(BIOS_DEBUG, "CL PMC desc table: numb of regions is 0x%x at addr 0x%lx\n",
 	       descriptor_table->numb_regions, desc_table_addr);
 	for (int i = 0; i < descriptor_table->numb_regions; i++) {
 		if (i >= ARRAY_SIZE(descriptor_table->regions)) {
@@ -177,8 +177,8 @@ int pmc_cl_gen_descriptor_table(u32 desc_table_addr,
 			ARRAY_SIZE(descriptor_table->regions));
 			break;
 		}
-		desc_table_addr += 4;
-		descriptor_table->regions[i].data = read32((u32 *)(uintptr_t)(desc_table_addr));
+		desc_table_addr += sizeof(u32);
+		descriptor_table->regions[i].data = read32p(desc_table_addr);
 		total_data_size += descriptor_table->regions[i].bits.size * sizeof(u32);
 		printk(BIOS_DEBUG, "CL PMC desc table: region 0x%x has size 0x%x at offset 0x%x\n",
 			i, descriptor_table->regions[i].bits.size,
@@ -280,49 +280,45 @@ bool discover_crashlog(void)
 	return (cpu_cl_discovered || pmc_cl_discovered);
 }
 
-bool cl_copy_data_from_sram(u32 src_bar,
-				u32 offset,
-				u32 size,
-				u32 *dest_addr,
-				u32 buffer_index,
-				bool pmc_sram)
+bool cl_copy_data_from_sram(uintptr_t src_bar, u32 offset, size_t size, u32 *dest_addr,
+							u32 buffer_index, bool pmc_sram)
 {
 	if (src_bar == 0) {
-		printk(BIOS_ERR, "Invalid bar 0x%x and offset 0x%x for %s\n",
+		printk(BIOS_ERR, "Invalid bar 0x%lx and offset 0x%x for %s\n",
 		       src_bar, offset, __func__);
 		return false;
 	}
 
-	u32 src_addr = src_bar + offset;
+	uintptr_t src_addr = src_bar + offset;
 
-	u32 data =  read32((u32 *)(uintptr_t)src_addr);
+	u32 data =  read32p(src_addr);
 
 	/* First 32bits of the record must not be 0xdeadbeef */
 	if (data == INVALID_CRASHLOG_RECORD) {
-		printk(BIOS_DEBUG, "Invalid data 0x%x at offset 0x%x from addr 0x%x\n",
+		printk(BIOS_DEBUG, "Invalid data 0x%x at offset 0x%x from addr 0x%lx\n",
 				data, offset, src_bar);
 		return false;
 	}
 
 	/* PMC: copy if 1st DWORD in buffer is not zero and its 31st bit is not set */
 	if (pmc_sram && !(data && !(data & BIT(31)))) {
-		printk(BIOS_DEBUG, "Invalid data 0x%x at offset 0x%x from addr 0x%x"
+		printk(BIOS_DEBUG, "Invalid data 0x%x at offset 0x%x from addr 0x%lx"
 			" of PMC SRAM.\n", data, offset, src_bar);
 		return false;
 	}
 	/*CPU: don't copy if 1st DWORD in first buffer is zero */
 	if (!pmc_sram && !data && (buffer_index == 0)) {
-		printk(BIOS_DEBUG, "Invalid data 0x%x at offset 0x%x from addr 0x%x"
+		printk(BIOS_DEBUG, "Invalid data 0x%x at offset 0x%x from addr 0x%lx"
 			" of telemetry SRAM.\n", data, offset, src_bar);
 		return false;
 	}
 
-	u32 copied = 0;
+	size_t copied = 0;
 	while (copied < size) {
 		/* DW by DW copy: byte access to PMC SRAM not allowed */
-		*dest_addr = read32((u32 *)(uintptr_t)src_addr);
+		*dest_addr = read32p(src_addr);
 		dest_addr++;
-		src_addr += 4;
+		src_addr += sizeof(u32);
 		copied++;
 	}
 	return true;
@@ -355,7 +351,7 @@ void free_cl_node(cl_node_t *node)
 
 void __weak cl_get_pmc_sram_data(cl_node_t *head)
 {
-	u32 tmp_bar_addr = cl_get_cpu_tmp_bar();
+	uintptr_t tmp_bar_addr = cl_get_cpu_tmp_bar();
 	u32 pmc_crashLog_size = cl_get_pmc_record_size();
 	cl_node_t *cl_cur = head;
 
@@ -476,9 +472,8 @@ void cl_get_cpu_sram_data(cl_node_t *head)
 	}
 
 	for (int i = 0 ; i < cpu_cl_disc_tab.header.fields.count ; i++) {
-		u32 cpu_bar_addr = cl_get_cpu_bar_addr();
+		uintptr_t cpu_bar_addr = cl_get_cpu_bar_addr();
 		bool pmc_sram = false;
-
 		if (!cpu_cl_disc_tab.buffers[i].fields.size) {
 			continue;
 		}

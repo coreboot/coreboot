@@ -14,6 +14,7 @@
 #include <string.h>
 
 #define CONTROL_INTERFACE_OFFSET	0x5
+#define CRASHLOG_NODES_COUNT		0x2  /* Crashlog record of PUNIT & Uncore of SoC-N Die */
 #define CRASHLOG_PUNIT_STORAGE_OFF_MASK	BIT(24)
 #define CRASHLOG_RE_ARM_STATUS_MASK	BIT(25)
 #define CRASHLOG_CONSUMED_MASK		BIT(31)
@@ -30,11 +31,11 @@ static pmc_ipc_discovery_buf_t discovery_buf;
 static pmc_crashlog_desc_table_t descriptor_table;
 static tel_crashlog_devsc_cap_t cpu_cl_devsc_cap;
 static cpu_crashlog_discovery_table_t cpu_cl_disc_tab;
-static u32 disc_tab_addr;
+static uintptr_t disc_tab_addr;
 
 static u64 get_disc_tab_header(void)
 {
-	return read64((void *)(uintptr_t)disc_tab_addr);
+	return read64p(disc_tab_addr);
 }
 
 /* Get the SRAM BAR. */
@@ -62,7 +63,7 @@ static uintptr_t get_sram_bar(pci_devfn_t sram_devfn)
 	return sram_bar;
 }
 
-static void configure_sram(const struct device *sram_dev, u32 base_addr)
+static void configure_sram(const struct device *sram_dev, uintptr_t base_addr)
 {
 	pci_update_config16(sram_dev, PCI_COMMAND, ~(PCI_COMMAND_IO | PCI_COMMAND_MEMORY), 0);
 
@@ -73,8 +74,8 @@ static void configure_sram(const struct device *sram_dev, u32 base_addr)
 
 void cl_get_pmc_sram_data(cl_node_t *head)
 {
-	u32 pmc_sram_base = cl_get_cpu_tmp_bar();
-	u32 ioe_sram_base = get_sram_bar(PCI_DEVFN_IOE_SRAM);
+	uintptr_t pmc_sram_base = cl_get_cpu_tmp_bar();
+	uintptr_t ioe_sram_base = get_sram_bar(PCI_DEVFN_IOE_SRAM);
 	u32 pmc_crashLog_size = cl_get_pmc_record_size();
 	cl_node_t *cl_cur = head;
 
@@ -110,7 +111,7 @@ void cl_get_pmc_sram_data(cl_node_t *head)
 
 	/* process crashlog records */
 	for (int i = 0; i < descriptor_table.numb_regions + 1; i++) {
-		u32 sram_base = 0;
+		uintptr_t sram_base = 0;
 		bool pmc_sram = true;
 		printk(BIOS_DEBUG, "Region[0x%x].Tag=0x%x offset=0x%x, size=0x%x\n",
 				i,
@@ -183,7 +184,7 @@ pmc_send_re_arm_after_reset:
 
 bool pmc_cl_discovery(void)
 {
-	u32 bar_addr = 0, desc_table_addr = 0;
+	uintptr_t bar_addr = 0, desc_table_addr = 0;
 
 	const struct pmc_ipc_buffer req = { 0 };
 	struct pmc_ipc_buffer res;
@@ -238,9 +239,9 @@ bool pmc_cl_discovery(void)
 	return true;
 }
 
-u32 cl_get_cpu_bar_addr(void)
+uintptr_t cl_get_cpu_bar_addr(void)
 {
-	u32 base_addr = 0;
+	uintptr_t base_addr = 0;
 	if (cpu_cl_devsc_cap.discovery_data.fields.t_bir_q == TEL_DVSEC_TBIR_BAR0) {
 		base_addr = pci_read_config32(PCI_DEV_TELEMETRY, PCI_BASE_ADDRESS_0) &
 				~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
@@ -255,7 +256,7 @@ u32 cl_get_cpu_bar_addr(void)
 	return base_addr;
 }
 
-u32 cl_get_cpu_tmp_bar(void)
+uintptr_t cl_get_cpu_tmp_bar(void)
 {
 	return get_sram_bar(PCI_DEVFN_SRAM);
 }
@@ -331,37 +332,38 @@ static bool is_crashlog_data_valid(u32 dw0)
 
 static bool cpu_cl_gen_discovery_table(void)
 {
-	u32 bar_addr = cl_get_cpu_bar_addr();
+	uintptr_t bar_addr = cl_get_cpu_bar_addr();
 
 	if (!bar_addr)
 		return false;
 
 	disc_tab_addr = bar_addr + get_disc_table_offset();
-
-	u32 dw0 = read32((u32 *)(uintptr_t)disc_tab_addr);
-	if (!is_crashlog_data_valid(dw0))
-		return false;
-
 	memset(&cpu_cl_disc_tab, 0, sizeof(cpu_crashlog_discovery_table_t));
 	cpu_cl_disc_tab.header.data = get_disc_tab_header();
-	printk(BIOS_DEBUG, "cpu_crashlog_discovery_table buffer count: 0x%x\n",
-		cpu_cl_disc_tab.header.fields.count);
+	/* Check both 32 bit header data and status register for non-zero values */
+	if ((!is_crashlog_data_valid(cpu_cl_disc_tab.header.data & 0xFFFFFFFF)) &&
+		(!is_crashlog_data_valid((cpu_cl_disc_tab.header.data) >> 32)))
+		return false;
 
-	int cur_offset = 0;
+	u32 cur_offset = 0;
+	cpu_cl_disc_tab.header.fields.count = CRASHLOG_NODES_COUNT;
+	printk(BIOS_DEBUG, "cpu_crashlog_discovery_table buffer count: 0x%x\n",
+			cpu_cl_disc_tab.header.fields.count);
 	for (int i = 0; i < cpu_cl_disc_tab.header.fields.count; i++) {
 		cur_offset = 8 + 24 * i;
-
-		dw0 = read32((u32 *)(uintptr_t)disc_tab_addr + cur_offset);
-		if (!is_crashlog_data_valid(dw0))
+		u32 cl_buffer_size = read32p(disc_tab_addr + cur_offset + 4);
+		/* Check for buffer size */
+		if (!(is_crashlog_data_valid(cl_buffer_size)))
 			continue;
 
+		u32 dw0 = read32p(disc_tab_addr + cur_offset);
 		if (dw0 & CRASHLOG_CONSUMED_MASK) {
 			printk(BIOS_DEBUG, "cpu crashlog records already consumed."
 						"id: 0x%x dw0: 0x%x\n", i, dw0);
 			break;
 		}
 
-		cpu_cl_disc_tab.buffers[i].data = read64((void *)(uintptr_t)(disc_tab_addr + cur_offset));
+		cpu_cl_disc_tab.buffers[i].data = read64p(disc_tab_addr + cur_offset);
 		printk(BIOS_DEBUG, "cpu_crashlog_discovery_table buffer: 0x%x size: "
 			"0x%x offset: 0x%x\n", i,  cpu_cl_disc_tab.buffers[i].fields.size,
 			cpu_cl_disc_tab.buffers[i].fields.offset);
@@ -411,7 +413,7 @@ int cl_get_total_data_size(void)
 	return m_pmc_crashLog_size + m_cpu_crashLog_size;
 }
 
-static u32 get_control_status_interface(void)
+static uintptr_t get_control_status_interface(void)
 {
 	if (disc_tab_addr)
 		return (disc_tab_addr + CONTROL_INTERFACE_OFFSET * sizeof(u32));
@@ -439,7 +441,7 @@ static bool wait_and_check(u32 bit_mask)
 
 void cpu_cl_rearm(void)
 {
-	u32 ctrl_sts_intfc_addr = get_control_status_interface();
+	uintptr_t ctrl_sts_intfc_addr = get_control_status_interface();
 
 	if (!ctrl_sts_intfc_addr) {
 		printk(BIOS_ERR, "CPU crashlog control and status interface address not valid\n");
@@ -450,7 +452,7 @@ void cpu_cl_rearm(void)
 	cl_punit_control_interface_t punit_ctrl_intfc;
 	memset(&punit_ctrl_intfc, 0, sizeof(cl_punit_control_interface_t));
 	punit_ctrl_intfc.fields.set_re_arm = 1;
-	write32((u32 *)(uintptr_t)(ctrl_sts_intfc_addr), punit_ctrl_intfc.data);
+	write32p(ctrl_sts_intfc_addr, punit_ctrl_intfc.data);
 
 	if (!wait_and_check(CRASHLOG_RE_ARM_STATUS_MASK))
 		printk(BIOS_ERR, "CPU crashlog re_arm not asserted\n");
@@ -461,7 +463,7 @@ void cpu_cl_rearm(void)
 void cpu_cl_cleanup(void)
 {
 	/* Perform any SOC specific cleanup after reading the crashlog data from SRAM */
-	u32 ctrl_sts_intfc_addr = get_control_status_interface();
+	uintptr_t ctrl_sts_intfc_addr = get_control_status_interface();
 
 	if (!ctrl_sts_intfc_addr) {
 		printk(BIOS_ERR, "CPU crashlog control and status interface address not valid\n");
@@ -480,7 +482,7 @@ void cpu_cl_cleanup(void)
 	cl_punit_control_interface_t punit_ctrl_intfc;
 	memset(&punit_ctrl_intfc, 0, sizeof(cl_punit_control_interface_t));
 	punit_ctrl_intfc.fields.set_storage_off = 1;
-	write32((u32 *)(uintptr_t)(ctrl_sts_intfc_addr), punit_ctrl_intfc.data);
+	write32p(ctrl_sts_intfc_addr, punit_ctrl_intfc.data);
 
 	if (!wait_and_check(CRASHLOG_PUNIT_STORAGE_OFF_MASK))
 		printk(BIOS_ERR, "CPU crashlog storage_off not asserted\n");

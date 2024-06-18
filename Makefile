@@ -524,6 +524,16 @@ clean-symlink:
 	for link in $$EXISTING_SYMLINKS; do \
 		echo -e "\tUNLINK $$link"; \
 		rm "$$link"; \
+
+cleanall-symlink:
+	echo "Deleting all symbolic links in the coreboot tree (excluding 3rdparty & crossgcc)"; \
+	EXISTING_SYMLINKS="$$(find $(top) -type l | grep -v "3rdparty\|crossgcc" )"; \
+	for link in $${EXISTING_SYMLINKS}; do \
+		if [ -L "$${link}" ]; then \
+			REALDIR="$$(realpath "$${link}")"; \
+			echo "  UNLINK $${link} (linked from $${REALDIR})"; \
+			rm "$${link}"; \
+		fi; \
 	done
 
 clean-for-update:
@@ -553,4 +563,5 @@ distclean: clean clean-ctags clean-cscope distclean-payloads distclean-utils
 	rm -f abuild*.xml junit.xml* util/lint/junit.xml
 
 .PHONY: $(PHONY) clean clean-for-update clean-cscope cscope distclean sphinx sphinx-lint
-.PHONY: ctags-project cscope-project clean-ctags symlink clean-symlink
+.PHONY: ctags-project cscope-project clean-ctags
+.PHONY: symlink clean-symlink cleanall-symlink

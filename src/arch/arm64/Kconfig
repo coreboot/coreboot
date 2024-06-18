@@ -46,6 +46,15 @@ config ARM64_USE_ARM_TRUSTED_FIRMWARE
 	default n
 	depends on ARCH_RAMSTAGE_ARM64 && ARM64_CURRENT_EL = 3
 
+config ARM64_BL31_OPTEE_WITH_SMC
+	bool "Build OP-TEE dispatcher for BL31 and allow loading via an SMC"
+	default n
+	depends on ARM64_USE_ARM_TRUSTED_FIRMWARE
+	help
+	  This option adds support for building the OP-TEE Secure Payload Dispatcher
+	  (SPD) for BL31, and allows loading the OP-TEE image via a Secure Monitor Call
+	  (SMC).
+
 config ARM64_BL31_EXTERNAL_FILE
 	string "Path to external BL31.ELF (leave empty to build from source)"
 	depends on ARM64_USE_ARM_TRUSTED_FIRMWARE

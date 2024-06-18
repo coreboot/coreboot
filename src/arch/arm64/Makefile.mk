@@ -185,6 +185,15 @@ BL31_MAKEARGS += IS_ANYTHING_TO_BUILD=1
 # Set a consistent build timestamp: the same coreboot has
 BL31_MAKEARGS += BUILD_MESSAGE_TIMESTAMP='"$(shell sed -n 's/^.define COREBOOT_BUILD\>.*"\(.*\)".*/\1/p' $(obj)/build.h)"'
 
+ifeq ($(CONFIG_ARM64_BL31_OPTEE_WITH_SMC),y)
+BL31_MAKEARGS += SPD=opteed
+BL31_MAKEARGS += OPTEE_ALLOW_SMC_LOAD=1
+BL31_MAKEARGS += PLAT_XLAT_TABLES_DYNAMIC=1
+ifeq ($(CONFIG_CHROMEOS),y)
+BL31_MAKEARGS += CROS_WIDEVINE_SMC=1
+endif
+endif # CONFIG_ARM64_BL31_OPTEE_WITH_SMC
+
 BL31_CFLAGS := -fno-pic -fno-stack-protector -Wno-deprecated-declarations -Wno-unused-function
 BL31_LDFLAGS := -Wl,--emit-relocs
 

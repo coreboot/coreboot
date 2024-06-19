@@ -59,9 +59,7 @@ ramstage-y += ../common/sspm.c
 ramstage-y += ../common/tps65132s.c
 ramstage-y += ../common/usb.c usb.c
 
-BL31_MAKEARGS += PLAT=mt8188 SPD=opteed
-BL31_MAKEARGS += OPTEE_ALLOW_SMC_LOAD=1 PLAT_XLAT_TABLES_DYNAMIC=1
-BL31_MAKEARGS += CROS_WIDEVINE_SMC=1
+BL31_MAKEARGS += PLAT=mt8188
 
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8188/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/dp/include

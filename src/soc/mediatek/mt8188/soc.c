@@ -21,7 +21,8 @@ void bootmem_platform_add_ranges(void)
 {
 	if (CONFIG(MTK_DFD))
 		bootmem_add_range(DFD_DUMP_ADDRESS, DFD_DUMP_SIZE, BM_MEM_RESERVED);
-	bootmem_add_range(OPTEE_ADDRESS, OPTEE_SIZE, BM_MEM_RESERVED);
+	if (CONFIG(ARM64_BL31_OPTEE_WITH_SMC))
+		bootmem_add_range(OPTEE_ADDRESS, OPTEE_SIZE, BM_MEM_RESERVED);
 }
 
 static void soc_read_resources(struct device *dev)

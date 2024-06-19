@@ -94,6 +94,13 @@ void mec5035_control_radio(enum ec_radio_dev dev, enum ec_radio_state state)
 	ec_command(CMD_RADIO_CTRL);
 }
 
+static void mec5035_power_button_route(enum ec_power_button_route target)
+{
+	u8 buf = (u8)target;
+	write_mailbox_regs(&buf, 2, 1);
+	ec_command(CMD_POWER_BUTTON_TO_HOST);
+}
+
 void mec5035_early_init(void)
 {
 	/* If this isn't sent the EC shuts down the system after about 15
@@ -107,6 +114,7 @@ static void mec5035_init(struct device *dev)
 	/* Unconditionally use this argument for now as this setting
 	   is probably the most sensible default out of the 3 choices. */
 	mec5035_mouse_touchpad(TP_PS2_MOUSE);
+	mec5035_power_button_route(HOST);
 
 	pc_keyboard_init(NO_AUX_DEVICE);
 

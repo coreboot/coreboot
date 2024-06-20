@@ -271,6 +271,8 @@ static enum ich_chipset ifd2_platform_to_chipset(const int pindex)
 		return CHIPSET_500_600_SERIES_TIGER_ALDER_POINT;
 	case PLATFORM_MTL:
 		return CHIPSET_800_SERIES_METEOR_LAKE;
+	case PLATFORM_PTL:
+		return CHIPSET_900_SERIES_PANTHER_LAKE;
 	case PLATFORM_ICL:
 		return CHIPSET_400_SERIES_ICE_POINT;
 	case PLATFORM_LBG:
@@ -306,6 +308,7 @@ static int is_platform_ifd_2(void)
 		PLATFORM_SKLKBL,
 		PLATFORM_IFD2,
 		PLATFORM_MTL,
+		PLATFORM_PTL,
 		PLATFORM_WBG,
 	};
 	unsigned int i;
@@ -562,6 +565,7 @@ static void decode_spi_frequency(unsigned int freq)
 	switch (chipset) {
 	case CHIPSET_500_600_SERIES_TIGER_ALDER_POINT:
 	case CHIPSET_800_SERIES_METEOR_LAKE:
+	case CHIPSET_900_SERIES_PANTHER_LAKE:
 		_decode_spi_frequency_500_series(freq);
 		break;
 	default:
@@ -640,12 +644,17 @@ static void _decode_espi_frequency_800_series(unsigned int freq)
 
 static void decode_espi_frequency(unsigned int freq)
 {
-	if (chipset == CHIPSET_500_600_SERIES_TIGER_ALDER_POINT)
+	switch (chipset) {
+	case CHIPSET_500_600_SERIES_TIGER_ALDER_POINT:
 		_decode_espi_frequency_500_series(freq);
-	else if (chipset == CHIPSET_800_SERIES_METEOR_LAKE)
+		break;
+	case CHIPSET_800_SERIES_METEOR_LAKE:
+	case CHIPSET_900_SERIES_PANTHER_LAKE:
 		_decode_espi_frequency_800_series(freq);
-	else
+		break;
+	default:
 		_decode_espi_frequency(freq);
+	}
 }
 
 static void decode_component_density(unsigned int density)
@@ -695,7 +704,7 @@ static int is_platform_with_pch(void)
 static int is_platform_with_100x_series_pch(void)
 {
 	if (chipset >= CHIPSET_100_200_SERIES_SUNRISE_POINT &&
-			chipset <= CHIPSET_800_SERIES_METEOR_LAKE)
+			chipset <= CHIPSET_900_SERIES_PANTHER_LAKE)
 		return 1;
 
 	return 0;
@@ -724,6 +733,8 @@ static void dump_fcba(const struct fcba *fcba, const struct fpsba *fpsba)
 			freq = (fpsba->pchstrp[22] & 0x38) >> 3;
 		else if (chipset == CHIPSET_800_SERIES_METEOR_LAKE)
 			freq = (fpsba->pchstrp[65] & 0x38) >> 3;
+		else if (chipset == CHIPSET_900_SERIES_PANTHER_LAKE)
+			freq = (fpsba->pchstrp[119] & 0x38) >> 3;
 		else
 			freq = (fcba->flcomp >> 17) & 7;
 		decode_espi_frequency(freq);
@@ -1021,7 +1032,8 @@ static void dump_fd(char *image, int size)
 	}
 
 	if (chipset == CHIPSET_500_600_SERIES_TIGER_ALDER_POINT ||
-		 chipset == CHIPSET_800_SERIES_METEOR_LAKE) {
+		 chipset == CHIPSET_800_SERIES_METEOR_LAKE ||
+		 chipset == CHIPSET_900_SERIES_PANTHER_LAKE) {
 		printf("FLMAP3:    0x%08x\n", fdb->flmap3);
 		printf("  Minor Revision ID:     0x%04x\n", (fdb->flmap3 >> 14) & 0x7f);
 		printf("  Major Revision ID:     0x%04x\n", (fdb->flmap3 >> 21) & 0x7ff);
@@ -1379,6 +1391,7 @@ static bool platform_has_extended_regions(void)
 	case PLATFORM_TGL:
 	case PLATFORM_ADL:
 	case PLATFORM_MTL:
+	case PLATFORM_PTL:
 		return true;
 	default:
 		return false;
@@ -1443,6 +1456,7 @@ static void lock_descriptor(const char *filename, char *image, int size)
 	case PLATFORM_ADL:
 	case PLATFORM_IFD2:
 	case PLATFORM_MTL:
+	case PLATFORM_PTL:
 		/* CPU/BIOS can read descriptor and BIOS. */
 		fmba->flmstr1 |= (1 << REGION_DESC) << rd_shift;
 		fmba->flmstr1 |= (1 << REGION_BIOS) << rd_shift;
@@ -1596,6 +1610,7 @@ static uint8_t get_cse_data_partition_offset(void)
 	case PLATFORM_TGL:
 	case PLATFORM_ADL:
 	case PLATFORM_MTL:
+	case PLATFORM_PTL:
 		data_offset = 0x18;
 		break;
 	default:
@@ -1623,6 +1638,9 @@ static uint32_t get_gpr0_offset(void)
 		break;
 	case PLATFORM_MTL:
 		gpr0_offset = 0x40;
+		break;
+	case PLATFORM_PTL:
+		gpr0_offset = 0x76;
 		break;
 	default:
 		break;
@@ -2470,6 +2488,8 @@ int main(int argc, char *argv[])
 				platform = PLATFORM_IFD2;
 			} else if (!strcmp(optarg, "mtl")) {
 				platform = PLATFORM_MTL;
+			} else if (!strcmp(optarg, "ptl")) {
+				platform = PLATFORM_PTL;
 			} else if (!strcmp(optarg, "wbg")) {
 				platform = PLATFORM_WBG;
 			} else {

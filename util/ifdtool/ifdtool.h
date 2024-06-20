@@ -39,6 +39,7 @@ enum ich_chipset {
 	CHIPSET_500_600_SERIES_TIGER_ALDER_POINT, /* 11th-12th gen Core i/o (LP)
 						   * variants onwards */
 	CHIPSET_800_SERIES_METEOR_LAKE, /* 14th gen Core i/o (LP) variants onwards */
+	CHIPSET_900_SERIES_PANTHER_LAKE, /* 16th gen Core i/o (LP) variants onwards */
 	CHIPSET_C620_SERIES_LEWISBURG,
 	CHIPSET_DENVERTON,
 };
@@ -57,6 +58,7 @@ enum platform {
 	PLATFORM_IFD2,
 	PLATFORM_DNV,
 	PLATFORM_MTL,
+	PLATFORM_PTL,
 	PLATFORM_WBG
 };
 

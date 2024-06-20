@@ -131,7 +131,7 @@ static void spi_acpi_fill_ssdt_generator(const struct device *dev)
 
 	/* Write device properties if needed */
 	if (config->compat_string || irq_gpio_index >= 0 ||
-	    reset_gpio_index >= 0 || enable_gpio_index >= 0) {
+	    reset_gpio_index >= 0 || enable_gpio_index >= 0 || config->property_count) {
 		struct acpi_dp *dsd = acpi_dp_new_table("_DSD");
 		if (config->compat_string)
 			acpi_dp_add_string(dsd, "compatible",
@@ -148,6 +148,9 @@ static void spi_acpi_fill_ssdt_generator(const struct device *dev)
 			acpi_dp_add_gpio(dsd, "enable-gpios", path,
 					 enable_gpio_index, 0,
 					 config->enable_gpio.active_low);
+		/* Add generic property list */
+		acpi_dp_add_property_list(dsd, config->property_list,
+					 config->property_count);
 		acpi_dp_write(dsd);
 	}
 

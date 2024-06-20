@@ -5,6 +5,8 @@
 
 #include <acpi/acpi_device.h>
 
+#define MAX_GENERIC_PROPERTY_LIST 10
+
 struct drivers_spi_acpi_config {
 	const char *hid;		/* ACPI _HID (required) */
 	const char *cid;		/* ACPI _CID */
@@ -42,6 +44,9 @@ struct drivers_spi_acpi_config {
 	unsigned int stop_delay_ms;
 	/* Delay to be inserted after enabling stop. */
 	unsigned int stop_off_delay_ms;
+	/* Generic properties for exporting device-specific data to the OS */
+	struct acpi_dp property_list[MAX_GENERIC_PROPERTY_LIST];
+	unsigned int property_count;
 };
 
 #endif /* __SPI_ACPI_CHIP_H__ */

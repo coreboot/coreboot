@@ -7,6 +7,9 @@
 
 /* Pad configuration in ramstage */
 static const struct pad_config override_gpio_table[] = {
+	/* GPP_B14 : [NF1: SPKR NF2: TIME_SYNC1 NF4: SATA_LED# NF5: ISH_GP6
+	 * NF6: USB_C_GPP_B14] ==> ACZ_SPKR */
+	PAD_CFG_NF(GPP_B14, NONE, DEEP, NF1),
 	/* GPP_D5 : SRCCLKREQ0_L ==> PCIE_REFCLK_SSD1_REQ_N */
 	PAD_CFG_NF(GPP_D5, NONE, DEEP, NF1),
 	/* GPP_D6 : [NF1: SRCCLKREQ1# NF6: USB_C_GPP_D6] ==> SOC_GPP_E10 (NC) */

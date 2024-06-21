@@ -110,6 +110,16 @@ static const struct pad_config stylus_disable_pads[] = {
 	PAD_NC_LOCK(GPP_F15, NONE, LOCK_CONFIG),
 };
 
+void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config)
+{
+	if (!fw_config_probe(FW_CONFIG(WIFI_CATEGORY, WIFI_6))) {
+		printk(BIOS_INFO, "CNVi bluetooth disabled by fw_config\n");
+		config->cnvi_bt_core = false;
+		printk(BIOS_INFO, "CNVi bluetooth audio offload disabled by fw_config\n");
+		config->cnvi_bt_audio_offload = false;
+	}
+}
+
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 {
 	if (!fw_config_probe(FW_CONFIG(DB_USB, DB_1C_LTE))) {

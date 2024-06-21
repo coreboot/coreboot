@@ -1,13 +1,13 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <assert.h>
+#include <cpu/intel/cpu_ids.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <fsp/util.h>
 #include <soc/util.h>
 #include <soc/acpi.h>
 #include <soc/chip_common.h>
-#include <soc/cpu.h>
 #include <soc/pci_devs.h>
 #include <soc/soc_util.h>
 #include <stdlib.h>

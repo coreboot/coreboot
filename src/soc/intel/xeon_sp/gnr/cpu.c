@@ -6,7 +6,6 @@
 #include <cpu/x86/mtrr.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/mp_init.h>
-#include <soc/cpu.h>
 #include <soc/soc_util.h>
 #include <soc/util.h>
 

@@ -63,8 +63,6 @@ chip soc/intel/skylake
 	# Send an extra VR mailbox command for the PS4 exit issue
 	register "SendVrMbxCmd" = "2"
 
-	device cpu_cluster 0 on end
-
 	device domain 0 on
 		device ref igpu		on  end
 		device ref gmm		on  end

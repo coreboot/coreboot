@@ -46,8 +46,6 @@ chip soc/intel/skylake
 						   LPC_IOE_EC_62_66"
 
 # Actual device tree.
-	device cpu_cluster 0 on end
-
 	device domain 0 on
 		device ref igpu		on  end
 		device ref sa_thermal	on  end

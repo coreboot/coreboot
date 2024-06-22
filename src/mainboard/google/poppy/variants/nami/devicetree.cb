@@ -273,7 +273,6 @@ chip soc/intel/skylake
 		.psys_pmax = 101,
 	}"
 
-	device cpu_cluster 0 on end
 	device domain 0 on
 		device ref system_agent		on  end
 		device ref igpu			on  end

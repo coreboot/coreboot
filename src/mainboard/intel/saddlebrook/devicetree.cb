@@ -196,7 +196,6 @@ chip soc/intel/skylake
 	# Use default SD card detect GPIO configuration
 	#register "sdcard_cd_gpio" = "GPP_A7"
 
-	device cpu_cluster 0 on end
 	device domain 0 on
 		device ref igpu		on end
 		device ref south_xhci	on end

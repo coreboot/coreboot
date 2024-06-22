@@ -153,7 +153,6 @@ chip soc/intel/skylake
 	# Use default SD card detect GPIO configuration
 	register "sdcard_cd_gpio" = "GPP_G5"
 
-	device cpu_cluster 0 on end
 	device domain 0 on
 		device ref i2c2		off end
 		device ref i2c3		off end

@@ -32,7 +32,6 @@ chip soc/intel/skylake
 		[PchSerialIoIndexUart2]	= PchSerialIoSkipInit,
 	}"
 
-	device cpu_cluster 0 on end
 	device domain 0 on
 		subsystemid 0x1025 0x1037 inherit
 		device ref system_agent	on

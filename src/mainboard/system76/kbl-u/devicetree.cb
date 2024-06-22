@@ -105,8 +105,6 @@ chip soc/intel/skylake
 		.dc_loadline = 310,
 	}"
 
-	device cpu_cluster 0 on end
-
 	device domain 0 on
 		device ref system_agent on end
 		device ref igpu on end

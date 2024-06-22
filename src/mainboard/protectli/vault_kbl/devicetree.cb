@@ -189,7 +189,6 @@ chip soc/intel/skylake
 		[PchSerialIoIndexUart2] = PchSerialIoDisabled,
 	}"
 
-	device cpu_cluster 0 on end
 	device domain 0 on
 		device ref igpu		on  end
 		device ref south_xhci	on  end

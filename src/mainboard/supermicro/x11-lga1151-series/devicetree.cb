@@ -26,7 +26,6 @@ chip soc/intel/skylake
 	register "PmConfigSlpSusMinAssert"	= "SLP_SUS_MIN_ASSERT_4S"
 	register "PmConfigSlpAMinAssert"	= "SLP_A_MIN_ASSERT_2S"
 
-	device cpu_cluster 0 on end
 	device domain 0 on
 		device ref sa_thermal on end
 		device ref south_xhci on end

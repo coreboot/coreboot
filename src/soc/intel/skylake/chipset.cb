@@ -1,4 +1,5 @@
 chip soc/intel/skylake
+	device cpu_cluster 0 on end
 	device domain 0 on
 		ops pci_domain_ops
 		device gpio 0 alias pch_gpio       on  ops block_gpio_ops  end

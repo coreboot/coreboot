@@ -3,7 +3,6 @@
 chip soc/intel/skylake
 	register "eist_enable" = "true"
 
-	device cpu_cluster 0 on  end
 	device domain 0 on
 		device ref peg0         on	# PCIE16X
 			# These configurations are technically for PCIe root

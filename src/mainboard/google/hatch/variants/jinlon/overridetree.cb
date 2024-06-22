@@ -85,7 +85,7 @@ chip soc/intel/cannonlake
 				register "device_count" = "1"
 				register "device[0].name" = ""LCD0""
 				# Internal panel on the first port of the graphics chip
-				register "device[0].addr" = "0x80010400"
+				register "device[0].type" = "panel"
 				device generic 1 alias no_eps on end
 			end
 		end

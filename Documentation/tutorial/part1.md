@@ -30,7 +30,7 @@ Download, configure, and build coreboot
 
 Debian based distros:
 `sudo apt-get install -y bison build-essential curl flex git gnat
-libncurses-dev libssl-dev m4 zlib1g-dev pkg-config`
+libncurses-dev libssl-dev zlib1g-dev pkg-config`
 
 Arch based distros:
 `sudo pacman -S base-devel curl git gcc-ada ncurses zlib`

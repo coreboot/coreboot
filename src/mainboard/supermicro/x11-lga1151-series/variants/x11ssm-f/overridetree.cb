@@ -11,31 +11,32 @@ chip soc/intel/skylake
 	register "gen1_dec" = "0x007c0a01"	# Super IO SWC
 	register "gen2_dec" = "0x000c0ca1"	# IPMI KCS
 
-	register "usb2_ports" = "{
-		[0] = USB2_PORT_MID(OC3),	/* USB 9 (3.0) */
-		[1] = USB2_PORT_MID(OC3),	/* USB 8 (3.0) */
-		[2] = USB2_PORT_MID(OC1),	/* USB 3 */
-		[3] = USB2_PORT_MID(OC1),	/* USB 2 */
-		[4] = USB2_PORT_MID(OC2),	/* USB 1 */
-		[5] = USB2_PORT_MID(OC2),	/* USB 0 */
-		[6] = USB2_PORT_MID(OC0),	/* USB 5 */
-		[7] = USB2_PORT_MID(OC0),	/* USB 4 */
-		[8] = USB2_PORT_MID(OC_SKIP),	/* IPMI USB HUB */
-		[9] = USB2_PORT_MID(OC5),	/* USB 10 (3.0) */
-		[10] = USB2_PORT_MID(OC4),	/* USB 7 (3.0) */
-		[11] = USB2_PORT_MID(OC4),	/* USB 6 (3.0) */
-	}"
-
-	register "usb3_ports" = "{
-		[0] = USB3_PORT_DEFAULT(OC4),	/* USB 7 */
-		[1] = USB3_PORT_DEFAULT(OC4),	/* USB 6 */
-		[2] = USB3_PORT_DEFAULT(OC5),	/* USB 10 */
-		[3] = USB3_PORT_DEFAULT(OC3),	/* USB 9 */
-		[4] = USB3_PORT_DEFAULT(OC3),	/* USB 8 */
-	}"
-
 	device domain 0 on
 		subsystemid 0x15d9 0x0896 inherit
+		device ref south_xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC3),	/* USB 9 (3.0) */
+				[1] = USB2_PORT_MID(OC3),	/* USB 8 (3.0) */
+				[2] = USB2_PORT_MID(OC1),	/* USB 3 */
+				[3] = USB2_PORT_MID(OC1),	/* USB 2 */
+				[4] = USB2_PORT_MID(OC2),	/* USB 1 */
+				[5] = USB2_PORT_MID(OC2),	/* USB 0 */
+				[6] = USB2_PORT_MID(OC0),	/* USB 5 */
+				[7] = USB2_PORT_MID(OC0),	/* USB 4 */
+				[8] = USB2_PORT_MID(OC_SKIP),	/* IPMI USB HUB */
+				[9] = USB2_PORT_MID(OC5),	/* USB 10 (3.0) */
+				[10] = USB2_PORT_MID(OC4),	/* USB 7 (3.0) */
+				[11] = USB2_PORT_MID(OC4),	/* USB 6 (3.0) */
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC4),	/* USB 7 */
+				[1] = USB3_PORT_DEFAULT(OC4),	/* USB 6 */
+				[2] = USB3_PORT_DEFAULT(OC5),	/* USB 10 */
+				[3] = USB3_PORT_DEFAULT(OC3),	/* USB 9 */
+				[4] = USB3_PORT_DEFAULT(OC3),	/* USB 8 */
+			}"
+		end
 		device ref peg0 on
 			# Slot JPCIE6
 			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthLong" "CPU SLOT6 PCI-E 3.0 X8(IN X16)" "SlotDataBusWidth8X"

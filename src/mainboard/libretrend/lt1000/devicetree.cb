@@ -125,24 +125,6 @@ chip soc/intel/skylake
 	register "PcieRpClkSrcNumber[10]" = "3"
 	register "PcieRpClkSrcNumber[11]" = "3"
 
-	register "usb2_ports" = "{
-		[0] = USB2_PORT_MID(OC_SKIP),	/* Type-A Port (right) */
-		[1] = USB2_PORT_MID(OC_SKIP),	/* Type-A Port (right) */
-		[2] = USB2_PORT_MID(OC_SKIP),	/* WiFi */
-		[3] = USB2_PORT_MID(OC_SKIP),	/* F_USB3 header */
-		[4] = USB2_PORT_MID(OC_SKIP),	/* F_USB3 header */
-		[5] = USB2_PORT_MID(OC_SKIP),	/* Type-A Port (left) */
-		[6] = USB2_PORT_MID(OC_SKIP),	/* Type-A Port (left) */
-		[7] = USB2_PORT_MID(OC_SKIP),	/* GL850G for F_USB1 and F_USB2 headers */
-	}"
-
-	register "usb3_ports" = "{
-		[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* Type-A Port (right) */
-		[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* Type-A Port (right) */
-		[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* F_USB3 header */
-		[3] = USB3_PORT_DEFAULT(OC_SKIP),	/* F_USB3 header */
-	}"
-
 	# PL2 override 25W
 	register "power_limits_config" = "{
 		.tdp_pl2_override = 25,
@@ -154,7 +136,25 @@ chip soc/intel/skylake
 	device domain 0 on
 		device ref igpu		on  end
 		device ref sa_thermal	on  end
-		device ref south_xhci	on  end
+		device ref south_xhci	on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC_SKIP),	/* Type-A Port (right) */
+				[1] = USB2_PORT_MID(OC_SKIP),	/* Type-A Port (right) */
+				[2] = USB2_PORT_MID(OC_SKIP),	/* WiFi */
+				[3] = USB2_PORT_MID(OC_SKIP),	/* F_USB3 header */
+				[4] = USB2_PORT_MID(OC_SKIP),	/* F_USB3 header */
+				[5] = USB2_PORT_MID(OC_SKIP),	/* Type-A Port (left) */
+				[6] = USB2_PORT_MID(OC_SKIP),	/* Type-A Port (left) */
+				[7] = USB2_PORT_MID(OC_SKIP),	/* GL850G for F_USB1 and F_USB2 headers */
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* Type-A Port (right) */
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* Type-A Port (right) */
+				[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* F_USB3 header */
+				[3] = USB3_PORT_DEFAULT(OC_SKIP),	/* F_USB3 header */
+			}"
+		end
 		device ref south_xdci	on  end
 		device ref thermal	on  end
 		device ref heci1	on  end

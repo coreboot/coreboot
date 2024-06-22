@@ -5,23 +5,28 @@ chip soc/intel/skylake
 	# SRCCLKREQ2# for NVMe per schematic
 	register "PcieRpClkReqNumber[8]" = "2"
 
-	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Type-C Port
-	register "usb2_ports[1]" = "USB2_PORT_MID(OC1)"		# Type-A Port (right)
-	register "usb2_ports[2]" = "USB2_PORT_MID(OC1)"		# Type-A Port (right)
-	register "usb2_ports[3]" = "USB2_PORT_FLEX(OC2)"	# Type-A Port (left)
-	register "usb2_ports[4]" = "USB2_PORT_FLEX(OC2)"	# Type-A Port (left)
-	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth
-	register "usb2_ports[6]" = "USB2_PORT_FLEX(OC_SKIP)"	# Camera
-	register "usb2_ports[7]" = "USB2_PORT_FLEX(OC_SKIP)"	# SD
-
-	# OC0 should be for Type-C but it seems to not have been wired, according to
-	# the available schematics, even though it is labeled as USB_OC_TYPEC.
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Type-C Port
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A Port (right)
-	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A Port (right)
-	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Type-C Port
-
 	device domain 0 on
+		device ref south_xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_TYPE_C(OC_SKIP),	// Type-C Port
+				[1] = USB2_PORT_MID(OC1),		// Type-A Port (right)
+				[2] = USB2_PORT_MID(OC1),		// Type-A Port (right)
+				[3] = USB2_PORT_FLEX(OC2),		// Type-A Port (left)
+				[4] = USB2_PORT_FLEX(OC2),		// Type-A Port (left)
+				[5] = USB2_PORT_MID(OC_SKIP),		// Bluetooth
+				[6] = USB2_PORT_FLEX(OC_SKIP),		// Camera
+				[7] = USB2_PORT_FLEX(OC_SKIP),		// SD
+			}"
+
+			# OC0 should be for Type-C but it seems to not have been wired, according to
+			# the available schematics, even though it is labeled as USB_OC_TYPEC.
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	// Type-C Port
+				[1] = USB3_PORT_DEFAULT(OC1),		// Type-A Port (right)
+				[2] = USB3_PORT_DEFAULT(OC1),		// Type-A Port (right)
+				[3] = USB3_PORT_DEFAULT(OC_SKIP),	// Type-C Port
+			}"
+		end
 		device ref pcie_rp5 on  end
 	end
 end

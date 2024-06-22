@@ -46,35 +46,6 @@ chip soc/intel/skylake
 	# USB related
 	register "SsicPortEnable" = "1"
 
-	register "usb2_ports" = "{
-		[0] = USB2_PORT_MID(OC_SKIP),	/* OTG */
-		[1] = USB2_PORT_MID(OC3),	/* Touch Pad */
-		[2] = USB2_PORT_MID(OC_SKIP),	/* M.2 BT */
-		[3] = USB2_PORT_MID(OC_SKIP),	/* Touch Panel */
-		[4] = USB2_PORT_MID(OC_SKIP),	/* M.2 WWAN */
-		[5] = USB2_PORT_MID(OC0),	/* Front Panel */
-		[6] = USB2_PORT_MID(OC0),	/* Front Panel */
-		[7] = USB2_PORT_MID(OC2),	/* Stacked conn (lan + usb) */
-		[8] = USB2_PORT_MID(OC2),	/* Stacked conn (lan + usb) */
-		[9] = USB2_PORT_MID(OC1),	/* LAN MAGJACK */
-		[10] = USB2_PORT_MID(OC1),	/* LAN MAGJACK */
-		[11] = USB2_PORT_MID(OC_SKIP),	/* Finger print sensor */
-		[12] = USB2_PORT_MID(OC4),	/* USB 2 stack conn */
-		[13] = USB2_PORT_MID(OC4),	/* USB 2 stack conn */
-	}"
-
-	register "usb3_ports" = "{
-		[0] = USB3_PORT_DEFAULT(OC5),		/* OTG */
-		[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* M.2 WWAN */
-		[2] = USB3_PORT_DEFAULT(OC3),		/* Flex */
-		[3] = USB3_PORT_DEFAULT(OC_SKIP),	/* IVCAM */
-		[4] = USB3_PORT_DEFAULT(OC1),		/* LAN MAGJACK */
-		[5] = USB3_PORT_DEFAULT(OC0),		/* Front Panel */
-		[6] = USB3_PORT_DEFAULT(OC0),		/* Front Panel */
-		[7] = USB3_PORT_DEFAULT(OC2),		/* Stack Conn */
-		[8] = USB3_PORT_DEFAULT(OC2),		/* Stack Conn */
-		[9] = USB3_PORT_DEFAULT(OC1),		/* LAN MAGJACK */
-	}"
 
 	register "SataSalpSupport" = "1"
 	register "SataPortsEnable" = "{
@@ -107,6 +78,37 @@ chip soc/intel/skylake
 	}"
 
 	device domain 0 on
+		device ref south_xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC_SKIP),	/* OTG */
+				[1] = USB2_PORT_MID(OC3),	/* Touch Pad */
+				[2] = USB2_PORT_MID(OC_SKIP),	/* M.2 BT */
+				[3] = USB2_PORT_MID(OC_SKIP),	/* Touch Panel */
+				[4] = USB2_PORT_MID(OC_SKIP),	/* M.2 WWAN */
+				[5] = USB2_PORT_MID(OC0),	/* Front Panel */
+				[6] = USB2_PORT_MID(OC0),	/* Front Panel */
+				[7] = USB2_PORT_MID(OC2),	/* Stacked conn (lan + usb) */
+				[8] = USB2_PORT_MID(OC2),	/* Stacked conn (lan + usb) */
+				[9] = USB2_PORT_MID(OC1),	/* LAN MAGJACK */
+				[10] = USB2_PORT_MID(OC1),	/* LAN MAGJACK */
+				[11] = USB2_PORT_MID(OC_SKIP),	/* Finger print sensor */
+				[12] = USB2_PORT_MID(OC4),	/* USB 2 stack conn */
+				[13] = USB2_PORT_MID(OC4),	/* USB 2 stack conn */
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC5),		/* OTG */
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* M.2 WWAN */
+				[2] = USB3_PORT_DEFAULT(OC3),		/* Flex */
+				[3] = USB3_PORT_DEFAULT(OC_SKIP),	/* IVCAM */
+				[4] = USB3_PORT_DEFAULT(OC1),		/* LAN MAGJACK */
+				[5] = USB3_PORT_DEFAULT(OC0),		/* Front Panel */
+				[6] = USB3_PORT_DEFAULT(OC0),		/* Front Panel */
+				[7] = USB3_PORT_DEFAULT(OC2),		/* Stack Conn */
+				[8] = USB3_PORT_DEFAULT(OC2),		/* Stack Conn */
+				[9] = USB3_PORT_DEFAULT(OC1),		/* LAN MAGJACK */
+			}"
+		end
 		device ref sa_thermal	off end
 		device ref i2c2		off end
 		device ref i2c3		off end

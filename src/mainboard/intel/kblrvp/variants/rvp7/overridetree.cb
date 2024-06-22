@@ -113,28 +113,6 @@ chip soc/intel/skylake
 	# RP 9 uses CLK SRC 1#
 	register "PcieRpClkSrcNumber[8]" = "1"
 
-	register "usb2_ports" = "{
-		[0] = USB2_PORT_MAX(OC0),	/* TYPE-A Port */
-		[1] = USB2_PORT_MAX(OC2),	/* TYPE-A Port */
-		[2] = USB2_PORT_MAX(OC_SKIP),	/* Bluetooth */
-		[4] = USB2_PORT_MAX(OC1),	/* Type-A Port */
-		[5] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
-		[6] = USB2_PORT_MAX(OC2),	/* TYPE-A Port */
-		[7] = USB2_PORT_MAX(OC2),	/* TYPE-A Port */
-		[8] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
-		[9] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
-		[10] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
-		[11] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
-	}"
-
-	register "usb3_ports" = "{
-		[0] = USB3_PORT_DEFAULT(OC0),		/* TYPE-A Port */
-		[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* TYPE-A Port */
-		[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* TYPE-A Port */
-		[3] = USB3_PORT_DEFAULT(OC1),		/* TYPE-A Port */
-		[4] = USB3_PORT_DEFAULT(OC2),		/* TYPE-A Port */
-		[5] = USB3_PORT_DEFAULT(OC_SKIP),	/* TYPE-A Port */
-	}"
 
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
@@ -154,6 +132,30 @@ chip soc/intel/skylake
 	register "sdcard_cd_gpio" = "GPP_G5"
 
 	device domain 0 on
+		device ref south_xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MAX(OC0),	/* TYPE-A Port */
+				[1] = USB2_PORT_MAX(OC2),	/* TYPE-A Port */
+				[2] = USB2_PORT_MAX(OC_SKIP),	/* Bluetooth */
+				[4] = USB2_PORT_MAX(OC1),	/* Type-A Port */
+				[5] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
+				[6] = USB2_PORT_MAX(OC2),	/* TYPE-A Port */
+				[7] = USB2_PORT_MAX(OC2),	/* TYPE-A Port */
+				[8] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
+				[9] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
+				[10] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
+				[11] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC0),		/* TYPE-A Port */
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* TYPE-A Port */
+				[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* TYPE-A Port */
+				[3] = USB3_PORT_DEFAULT(OC1),		/* TYPE-A Port */
+				[4] = USB3_PORT_DEFAULT(OC2),		/* TYPE-A Port */
+				[5] = USB3_PORT_DEFAULT(OC_SKIP),	/* TYPE-A Port */
+			}"
+		end
 		device ref i2c2		off end
 		device ref i2c3		off end
 		device ref sata		on  end

@@ -1,18 +1,23 @@
 chip soc/intel/skylake
 
-	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"	# Type-C Port 1
-	register "usb2_ports[1]" = "USB2_PORT_FLEX(OC_SKIP)"	# Camera
-	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth
-	register "usb2_ports[4]" = "USB2_PORT_MID(OC2)"		# Type-A Port (card)
-	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# SD
-	register "usb2_ports[8]" = "USB2_PORT_LONG(OC3)"	# Type-A Port (board)
-
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# Type-C Port 1
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # SD
-	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC2)"	# Type-A Port (card)
-	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC3)"	# Type-A Port (board)
-
 	device domain 0 on
+		device ref south_xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_TYPE_C(OC0),	// Type-C Port 1
+				[1] = USB2_PORT_FLEX(OC_SKIP),	// Camera
+				[2] = USB2_PORT_MID(OC_SKIP),	// Bluetooth
+				[4] = USB2_PORT_MID(OC2),	// Type-A Port (card)
+				[5] = USB2_PORT_MID(OC_SKIP),	// SD
+				[8] = USB2_PORT_LONG(OC3),	// Type-A Port (board)
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC0),		// Type-C Port 1
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),	// SD
+				[2] = USB3_PORT_DEFAULT(OC2),		// Type-A Port (card)
+				[3] = USB3_PORT_DEFAULT(OC3),		// Type-A Port (board)
+			}"
+		end
 		device ref i2c0		on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0001""

@@ -3,14 +3,6 @@ chip soc/intel/skylake
 	register "PmConfigSlpS4MinAssert" = "1"		# 1s
 	register "PmConfigSlpSusMinAssert" = "1"	# 500ms
 
-	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Type-C Port (board)
-	register "usb2_ports[1]" = "USB2_PORT_MAX(OC_SKIP)"	# Type-C Port (flex)
-	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth
-	register "usb2_ports[6]" = "USB2_PORT_FLEX(OC_SKIP)"	# Camera
-
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Type-C Port (board)
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Type-C Port (flex)
-
 	# PL2 override 15W
 	register "power_limits_config" = "{
 		.tdp_pl2_override = 15,
@@ -26,6 +18,19 @@ chip soc/intel/skylake
 	register "sdcard_cd_gpio" = "GPP_A7"
 
 	device domain 0 on
+		device ref south_xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_TYPE_C(OC_SKIP),	// Type-C Port (board)
+				[1] = USB2_PORT_MAX(OC_SKIP),		// Type-C Port (flex)
+				[2] = USB2_PORT_MID(OC_SKIP),		// Bluetooth
+				[6] = USB2_PORT_FLEX(OC_SKIP),		// Camera
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	// Type-C Port (board)
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),	// Type-C Port (flex)
+			}"
+		end
 		device ref i2c0		on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0001""

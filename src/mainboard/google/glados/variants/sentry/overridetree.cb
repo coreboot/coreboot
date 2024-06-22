@@ -1,17 +1,5 @@
 chip soc/intel/skylake
 
-	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"	# Type-C Port 1
-	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC1)"	# Type-C Port 2
-	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth
-	register "usb2_ports[4]" = "USB2_PORT_MID(OC2)"		# Type-A Port (card)
-	register "usb2_ports[6]" = "USB2_PORT_FLEX(OC_SKIP)"	# Camera
-	register "usb2_ports[8]" = "USB2_PORT_LONG(OC3)"	# Type-A Port (board)
-
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)" # Type-C Port 1
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)" # Type-C Port 2
-	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC2)" # Type-A Port (card)
-	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC3)" # Type-A Port (board)
-
 	# I2C0 is 3.3V
 	register "i2c_voltage[0]" = "I2C_VOLTAGE_3V3"
 
@@ -19,6 +7,23 @@ chip soc/intel/skylake
 	register "sdcard_cd_gpio" = "GPP_A7"
 
 	device domain 0 on
+		device ref south_xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_TYPE_C(OC0),	// Type-C Port 1
+				[1] = USB2_PORT_TYPE_C(OC1),	// Type-C Port 2
+				[2] = USB2_PORT_MID(OC_SKIP),	// Bluetooth
+				[4] = USB2_PORT_MID(OC2),	// Type-A Port (card)
+				[6] = USB2_PORT_FLEX(OC_SKIP),	// Camera
+				[8] = USB2_PORT_LONG(OC3),	// Type-A Port (board)
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC0),	// Type-C Port 1
+				[1] = USB3_PORT_DEFAULT(OC1),	// Type-C Port 2
+				[2] = USB3_PORT_DEFAULT(OC2),	// Type-A Port (card)
+				[3] = USB3_PORT_DEFAULT(OC3),	// Type-A Port (board)
+			}"
+		end
 		device ref i2c0		on
 			chip drivers/i2c/generic
 				register "hid" = ""RAYD0001""

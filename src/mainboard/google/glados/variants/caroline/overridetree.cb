@@ -9,14 +9,6 @@ chip soc/intel/skylake
 	register "SlowSlewRateForGt" = "3"	# Fast/16
 	register "SlowSlewRateForSa" = "0"	# Fast/2
 
-	register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"	# Type-C Port (main)
-	register "usb2_ports[1]" = "USB2_PORT_MAX(OC_SKIP)"	# Type-C Port (sub)
-	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth
-	register "usb2_ports[6]" = "USB2_PORT_FLEX(OC_SKIP)"	# Camera
-
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-C Port (main)
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Type-C Port (sub)
-
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,	// touchpad
 		[PchSerialIoIndexI2C1]  = PchSerialIoPci,	// touchscreen
@@ -38,6 +30,19 @@ chip soc/intel/skylake
 	register "tcc_offset" = "10"
 
 	device domain 0 on
+		device ref south_xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC_SKIP),	// Type-C Port (main)
+				[1] = USB2_PORT_MAX(OC_SKIP),	// Type-C Port (sub)
+				[2] = USB2_PORT_MID(OC_SKIP),	// Bluetooth
+				[6] = USB2_PORT_FLEX(OC_SKIP),	// Camera
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP), // Type-C Port (main)
+				[1] = USB3_PORT_DEFAULT(OC_SKIP), // Type-C Port (sub)
+			}"
+		end
 		device ref i2c0		on
 			chip drivers/i2c/generic
 				register "hid" = ""ATML0001""

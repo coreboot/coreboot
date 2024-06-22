@@ -152,23 +152,6 @@ chip soc/intel/skylake
 	# RP 9 shares CLKSRC5# with RP 6
 	register "PcieRpClkSrcNumber[8]" = "5"
 
-
-	# USB 2.0 enable ports 1-8, disable ports 9-12
-	register "usb2_ports[0]"  = "USB2_PORT_SHORT(OC_SKIP)"	# TYPE-A Port
-	register "usb2_ports[1]"  = "USB2_PORT_SHORT(OC_SKIP)"	# TYPE-A Port
-	register "usb2_ports[2]"  = "USB2_PORT_SHORT(OC_SKIP)"	# TYPE-A Port
-	register "usb2_ports[3]"  = "USB2_PORT_SHORT(OC_SKIP)"	# TYPE-A Port
-	register "usb2_ports[4]"  = "USB2_PORT_SHORT(OC_SKIP)"	# Type-A Port
-	register "usb2_ports[5]"  = "USB2_PORT_SHORT(OC_SKIP)"	# TYPE-A Port
-	register "usb2_ports[6]"  = "USB2_PORT_SHORT(OC_SKIP)"	# TYPE-A Port
-	register "usb2_ports[7]"  = "USB2_PORT_SHORT(OC_SKIP)"	# mPCIe slot
-
-	# USB 3.0 enable ports 1-4, disable ports 5-6
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# TYPE-A Port
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# TYPE-A Port
-	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# TYPE-A Port
-	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# TYPE-A Port
-
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C1]  = PchSerialIoDisabled,
@@ -185,7 +168,25 @@ chip soc/intel/skylake
 
 	device domain 0 on
 		device ref igpu		on  end
-		device ref south_xhci	on  end
+		device ref south_xhci	on
+			register "usb2_ports" = "{
+				[0]  = USB2_PORT_SHORT(OC_SKIP),	// TYPE-A Port
+				[1]  = USB2_PORT_SHORT(OC_SKIP),	// TYPE-A Port
+				[2]  = USB2_PORT_SHORT(OC_SKIP),	// TYPE-A Port
+				[3]  = USB2_PORT_SHORT(OC_SKIP),	// TYPE-A Port
+				[4]  = USB2_PORT_SHORT(OC_SKIP),	// Type-A Port
+				[5]  = USB2_PORT_SHORT(OC_SKIP),	// TYPE-A Port
+				[6]  = USB2_PORT_SHORT(OC_SKIP),	// TYPE-A Port
+				[7]  = USB2_PORT_SHORT(OC_SKIP),	// mPCIe slot
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	// TYPE-A Port
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),	// TYPE-A Port
+				[2] = USB3_PORT_DEFAULT(OC_SKIP),	// TYPE-A Port
+				[3] = USB3_PORT_DEFAULT(OC_SKIP),	// TYPE-A Port
+			}"
+		end
 		device ref heci1	on  end
 		device ref sata		on  end
 		device ref pcie_rp1	on  end

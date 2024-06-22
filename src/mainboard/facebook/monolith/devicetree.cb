@@ -174,21 +174,6 @@ chip soc/intel/skylake
 	# Disable Aspm
 	register "pcie_rp_aspm[8]" = "AspmDisabled"
 
-	register "usb2_ports" = "{
-		[0] = USB2_PORT_TYPE_C(OC_SKIP),	/* USB-C Port 2 */
-		[1] = USB2_PORT_MID(OC1),		/* USB3_TYPE-A Port 1 */
-		[2] = USB2_PORT_MID(OC1),		/* USB3_TYPE-A Port 2 */
-		[3] = USB2_PORT_TYPE_C(OC_SKIP),	/* USB-C Port 1 */
-		[4] = USB2_PORT_SHORT(OC_SKIP),		/* M2 Port */
-		[6] = USB2_PORT_SHORT(OC_SKIP),		/* Audio board */
-	}"
-
-	register "usb3_ports" = "{
-		[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB-C Port 2 */
-		[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB3_TYPE-A Port 1 */
-		[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB3_TYPE-A Port 2 */
-		[3] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB-C Port 1 */
-	}"
 
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
 	register "SerialIoDevMode" = "{
@@ -209,7 +194,23 @@ chip soc/intel/skylake
 		device ref igpu		on  end
 		device ref sa_thermal	on  end
 		device ref gmm		on  end
-		device ref south_xhci	on  end
+		device ref south_xhci	on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_TYPE_C(OC_SKIP),	/* USB-C Port 2 */
+				[1] = USB2_PORT_MID(OC1),		/* USB3_TYPE-A Port 1 */
+				[2] = USB2_PORT_MID(OC1),		/* USB3_TYPE-A Port 2 */
+				[3] = USB2_PORT_TYPE_C(OC_SKIP),	/* USB-C Port 1 */
+				[4] = USB2_PORT_SHORT(OC_SKIP),		/* M2 Port */
+				[6] = USB2_PORT_SHORT(OC_SKIP),		/* Audio board */
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB-C Port 2 */
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB3_TYPE-A Port 1 */
+				[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB3_TYPE-A Port 2 */
+				[3] = USB3_PORT_DEFAULT(OC_SKIP),	/* USB-C Port 1 */
+			}"
+		end
 		device ref south_xdci	on  end
 		device ref thermal	on  end
 		device ref heci1	on  end

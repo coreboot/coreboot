@@ -140,15 +140,6 @@ chip soc/intel/skylake
 	register "PcieRpAdvancedErrorReporting[0]" = "1"
 	register "PcieRpLtrEnable[0]" = "1"
 
-	# USB 2.0
-	register "usb2_ports[0]" = "USB2_PORT_LONG(OC0)"	# Type-C Port 1
-	register "usb2_ports[2]" = "USB2_PORT_SHORT(OC_SKIP)"	# Bluetooth
-	register "usb2_ports[4]" = "USB2_PORT_LONG(OC1)"	# Type-C Port 2
-
-	# USB 3.0
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# Type-C Port 1
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)"	# Type-C Port 2
-
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
@@ -231,6 +222,17 @@ chip soc/intel/skylake
 		device ref imgu			on  end
 		device ref ish			off end
 		device ref south_xhci		on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_LONG(OC0),	// Type-C Port 1
+				[2] = USB2_PORT_SHORT(OC_SKIP),	// Bluetooth
+				[4] = USB2_PORT_LONG(OC1),	// Type-C Port 2
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC0),	// Type-C Port 1
+				[1] = USB3_PORT_DEFAULT(OC1),	// Type-C Port 2
+			}"
+
 			chip drivers/usb/acpi
 				register "desc" = ""Root Hub""
 				register "type" = "UPC_TYPE_HUB"

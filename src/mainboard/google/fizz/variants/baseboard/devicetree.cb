@@ -233,22 +233,6 @@ chip soc/intel/skylake
 	# RP 12 uses CLK SRC 2
 	register "PcieRpClkSrcNumber[11]" = "2"
 
-	register "usb2_ports[0]" = "USB2_PORT_LONG(OC0)"	# Type-C
-	register "usb2_ports[1]" = "USB2_PORT_MID(OC3)"		# Type-A Rear
-	register "usb2_ports[2]" = "USB2_PORT_MID(OC2)"		# Type-A Front
-	register "usb2_ports[3]" = "USB2_PORT_MID(OC2)"		# Type-A Front
-	register "usb2_ports[4]" = "USB2_PORT_MID(OC1)"		# Type-A Rear
-	register "usb2_ports[5]" = "USB2_PORT_MID(OC1)"		# Type-A Rear
-	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth
-	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"     # Type-A 2.0 / Debug
-
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# Type-C
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC3)"	# Type-A Rear
-	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC2)"	# Type-A Front
-	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC2)"	# Type-A Front
-	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A Rear
-	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A Rear
-
 	register "i2c_voltage[0]" = "I2C_VOLTAGE_3V3"		# HDMI CEC
 	register "i2c_voltage[1]" = "I2C_VOLTAGE_3V3"		# TPM
 	register "i2c_voltage[2]" = "I2C_VOLTAGE_3V3"		# Debug
@@ -306,6 +290,25 @@ chip soc/intel/skylake
 		device ref igpu		on  end
 		device ref sa_thermal	on  end
 		device ref south_xhci		on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_LONG(OC0),	// Type-C
+				[1] = USB2_PORT_MID(OC3),	// Type-A Rear
+				[2] = USB2_PORT_MID(OC2),	// Type-A Front
+				[3] = USB2_PORT_MID(OC2),	// Type-A Front
+				[4] = USB2_PORT_MID(OC1),	// Type-A Rear
+				[5] = USB2_PORT_MID(OC1),	// Type-A Rear
+				[6] = USB2_PORT_MID(OC_SKIP),	// Bluetooth
+				[7] = USB2_PORT_MID(OC_SKIP),	// Type-A 2.0 / Debug
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC0),	// Type-C
+				[1] = USB3_PORT_DEFAULT(OC3),	// Type-A Rear
+				[2] = USB3_PORT_DEFAULT(OC2),	// Type-A Front
+				[3] = USB3_PORT_DEFAULT(OC2),	// Type-A Front
+				[4] = USB3_PORT_DEFAULT(OC1),	// Type-A Rear
+				[5] = USB3_PORT_DEFAULT(OC1),	// Type-A Rear
+			}"
 			chip drivers/usb/acpi
 				register "desc" = ""Root Hub""
 				register "type" = "UPC_TYPE_HUB"

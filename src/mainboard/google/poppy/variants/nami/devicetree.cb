@@ -167,19 +167,6 @@ chip soc/intel/skylake
 	register "PcieRpAdvancedErrorReporting[8]" = "1"
 	register "PcieRpLtrEnable[8]" = "1"
 
-	register "usb2_ports[0]" = "USB2_PORT_LONG(OC0)"	# Type-C Port 0
-	register "usb2_ports[1]" = "USB2_PORT_LONG(OC1)"	# Type-C Port 1
-	register "usb2_ports[2]" = "USB2_PORT_MID(OC2)"	# Type-A Port
-	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# Card reader
-	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# WiFi
-	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# Rear camera
-	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"	# Front camera
-
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# Type-C Port 0
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)"	# Type-C Port 1
-	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC2)"	# Type-A Port
-	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)" # Card reader
-
 	# Touchscreen
 	register "i2c_voltage[0]" = "I2C_VOLTAGE_3V3"
 
@@ -276,7 +263,24 @@ chip soc/intel/skylake
 		device ref igpu			on  end
 		device ref sa_thermal		on  end
 		device ref imgu			off end
-		device ref south_xhci		on  end
+		device ref south_xhci		on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_LONG(OC0),	// Type-C Port 0
+				[1] = USB2_PORT_LONG(OC1),	// Type-C Port 1
+				[2] = USB2_PORT_MID(OC2),	// Type-A Port
+				[3] = USB2_PORT_MID(OC_SKIP),	// Card reader
+				[4] = USB2_PORT_MID(OC_SKIP),	// WiFi
+				[5] = USB2_PORT_MID(OC_SKIP),	// Rear camera
+				[6] = USB2_PORT_MID(OC_SKIP),	// Front camera
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC0),	// Type-C Port 0
+				[1] = USB3_PORT_DEFAULT(OC1),	// Type-C Port 1
+				[2] = USB3_PORT_DEFAULT(OC2),	// Type-A Port
+				[3] = USB3_PORT_DEFAULT(OC_SKIP), // Card reader
+			}"
+		end
 		device ref south_xdci		on  end
 		device ref thermal		on  end
 		device ref cio			off end

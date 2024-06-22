@@ -15,33 +15,34 @@ chip soc/intel/skylake
 	# This board has an IGD with no output.
 	register "PrimaryDisplay" = "Display_Auto"
 
-	# NB: Overcurrent OCx values untested
-	register "usb2_ports" = "{
-		[0] = USB2_PORT_MID(OC3),	/* USB 6 (3.0) */
-		[1] = USB2_PORT_MID(OC3),	/* USB 7 (3.0) */
-		[2] = USB2_PORT_MID(OC2),	/* USB 0 */
-		[3] = USB2_PORT_MID(OC2),	/* USB 1 */
-		[4] = USB2_PORT_MID(OC1),	/* USB 4 */
-		[5] = USB2_PORT_MID(OC1),	/* USB 5 */
-		[8] = USB2_PORT_MID(OC0),	/* USB 2 */
-		[9] = USB2_PORT_MID(OC0),	/* USB 3 */
-		[10] = USB2_PORT_MID(OC5),	/* USB 9 (3.0) */
-		[11] = USB2_PORT_MID(OC5),	/* USB 10 (3.0) */
-		[12] = USB2_PORT_MID(OC4),	/* USB 8 (3.0) */
-		[13] = USB2_PORT_MID(OC_SKIP),	/* IPMI USB hub */
-		[14] = USB2_PORT_MID(OC0),	/* Unknown */
-		[15] = USB2_PORT_MID(OC0),	/* Unknown */
-	}"
-
-	register "usb3_ports" = "{
-		[0] = USB3_PORT_DEFAULT(OC3),	/* USB 6 */
-		[1] = USB3_PORT_DEFAULT(OC3),	/* USB 7 */
-		[2] = USB3_PORT_DEFAULT(OC4),	/* USB 8 */
-		[3] = USB3_PORT_DEFAULT(OC5),	/* USB 9 */
-		[4] = USB3_PORT_DEFAULT(OC5),	/* USB 10 */
-	}"
-
 	device domain 0 on
+		device ref south_xhci on
+			# NB: Overcurrent OCx values untested
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC3),	/* USB 6 (3.0) */
+				[1] = USB2_PORT_MID(OC3),	/* USB 7 (3.0) */
+				[2] = USB2_PORT_MID(OC2),	/* USB 0 */
+				[3] = USB2_PORT_MID(OC2),	/* USB 1 */
+				[4] = USB2_PORT_MID(OC1),	/* USB 4 */
+				[5] = USB2_PORT_MID(OC1),	/* USB 5 */
+				[8] = USB2_PORT_MID(OC0),	/* USB 2 */
+				[9] = USB2_PORT_MID(OC0),	/* USB 3 */
+				[10] = USB2_PORT_MID(OC5),	/* USB 9 (3.0) */
+				[11] = USB2_PORT_MID(OC5),	/* USB 10 (3.0) */
+				[12] = USB2_PORT_MID(OC4),	/* USB 8 (3.0) */
+				[13] = USB2_PORT_MID(OC_SKIP),	/* IPMI USB hub */
+				[14] = USB2_PORT_MID(OC0),	/* Unknown */
+				[15] = USB2_PORT_MID(OC0),	/* Unknown */
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC3),	/* USB 6 */
+				[1] = USB3_PORT_DEFAULT(OC3),	/* USB 7 */
+				[2] = USB3_PORT_DEFAULT(OC4),	/* USB 8 */
+				[3] = USB3_PORT_DEFAULT(OC5),	/* USB 9 */
+				[4] = USB3_PORT_DEFAULT(OC5),	/* USB 10 */
+			}"
+		end
 		device ref peg0 on
 			# Slot JSXB1B
 			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthLong" "CPU SLOT1 PCI-E 3.0 X16" "SlotDataBusWidth16X"

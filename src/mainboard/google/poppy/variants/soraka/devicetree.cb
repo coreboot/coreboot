@@ -139,17 +139,6 @@ chip soc/intel/skylake
 	# RP 1 uses CLK SRC 1
 	register "PcieRpClkSrcNumber[0]" = "1"
 
-	register "usb2_ports[0]" = "USB2_PORT_LONG(OC0)"	# Type-C Port 1
-	register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port
-	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth
-	register "usb2_ports[4]" = "USB2_PORT_MAX(OC1)"		# Type-C Port 2
-	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port
-	register "usb2_ports[8]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port
-
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# Type-C Port 1
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)"	# Type-C Port 2
-	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Type-A Port
-
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
@@ -261,7 +250,22 @@ chip soc/intel/skylake
 		device ref igpu			on  end
 		device ref sa_thermal		on  end
 		device ref imgu			on  end
-		device ref south_xhci		on  end
+		device ref south_xhci		on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_LONG(OC0),	// Type-C Port 1
+				[1] = USB2_PORT_MID(OC_SKIP),	// Type-A Port
+				[2] = USB2_PORT_MID(OC_SKIP),	// Bluetooth
+				[4] = USB2_PORT_MAX(OC1),	// Type-C Port 2
+				[6] = USB2_PORT_MID(OC_SKIP),	// Type-A Port
+				[8] = USB2_PORT_MID(OC_SKIP),	// Type-A Port
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC0),	// Type-C Port 1
+				[1] = USB3_PORT_DEFAULT(OC1),	// Type-C Port 2
+				[2] = USB3_PORT_DEFAULT(OC_SKIP),	// Type-A Port
+			}"
+		end
 		device ref south_xdci		on  end
 		device ref thermal		on  end
 		device ref cio			on  end

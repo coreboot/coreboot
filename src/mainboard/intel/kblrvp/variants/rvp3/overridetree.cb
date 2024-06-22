@@ -74,26 +74,6 @@ chip soc/intel/skylake
 	# RP10, uses CLK SRC 4
 	register "PcieRpClkSrcNumber[9]" = "4"
 
-	register "usb2_ports" = "{
-		[0] = USB2_PORT_MAX(OC0),	/* TYPE-A Port */
-		[1] = USB2_PORT_MAX(OC2),	/* TYPE-A Port */
-		[2] = USB2_PORT_MAX(OC_SKIP),	/* Bluetooth */
-		[4] = USB2_PORT_MAX(OC_SKIP),	/* Type-A Port */
-		[5] = USB2_PORT_MAX(OC2),	/* TYPE-A Port */
-		[6] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
-		[7] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
-		[8] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
-		[9] = USB2_PORT_MAX(OC1),	/* TYPE-A Port */
-		[10] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
-		[11] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
-	}"
-
-	register "usb3_ports" = "{
-		[0] = USB3_PORT_DEFAULT(OC0),		/* TYPE-A Port */
-		[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* TYPE-A Port */
-		[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* TYPE-A Port */
-		[3] = USB3_PORT_DEFAULT(OC1),		/* TYPE-A Port */
-	}"
 
 	register "SsicPortEnable" = "1" # Enable SSIC for WWAN
 
@@ -113,6 +93,28 @@ chip soc/intel/skylake
 	}"
 
 	device domain 0 on
+		device ref south_xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MAX(OC0),	/* TYPE-A Port */
+				[1] = USB2_PORT_MAX(OC2),	/* TYPE-A Port */
+				[2] = USB2_PORT_MAX(OC_SKIP),	/* Bluetooth */
+				[4] = USB2_PORT_MAX(OC_SKIP),	/* Type-A Port */
+				[5] = USB2_PORT_MAX(OC2),	/* TYPE-A Port */
+				[6] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
+				[7] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
+				[8] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
+				[9] = USB2_PORT_MAX(OC1),	/* TYPE-A Port */
+				[10] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
+				[11] = USB2_PORT_MAX(OC_SKIP),	/* TYPE-A Port */
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC0),		/* TYPE-A Port */
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* TYPE-A Port */
+				[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* TYPE-A Port */
+				[3] = USB3_PORT_DEFAULT(OC1),		/* TYPE-A Port */
+			}"
+		end
 		device ref imgu		on  end
 		device ref cio		on  end
 		device ref pcie_rp1	on  end # x4 SLOT1

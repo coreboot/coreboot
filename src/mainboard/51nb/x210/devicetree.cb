@@ -75,18 +75,6 @@ chip soc/intel/skylake
 	register "PcieRpAdvancedErrorReporting[8]" = "1"
 	register "PcieRpLtrEnable[8]" = "1"
 
-	register "usb2_ports[0]" = "USB2_PORT_MID(OC1)"		# Type-A Port (left)
-	register "usb2_ports[1]" = "USB2_PORT_MID(OC1)"		# Type-A Port (left)
-	register "usb2_ports[2]" = "USB2_PORT_FLEX(OC_SKIP)"	# FPR
-	register "usb2_ports[3]" = "USB2_PORT_FLEX(OC_SKIP)"	# SD
-	register "usb2_ports[4]" = "USB2_PORT_FLEX(OC_SKIP)"	# INT
-	register "usb2_ports[5]" = "USB2_PORT_MID(OC1)"		# Type-A Port (right)
-	register "usb2_ports[6]" = "USB2_PORT_FLEX(OC_SKIP)"	# Webcam
-	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# mPCIe / WiFi Port
-	register "usb2_ports[8]" = "USB2_PORT_MID(OC_SKIP)"	# mSATA / WWAN Port
-
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A Port (left)
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A Port (left)
 
 	# PL1 override 25W
 	# PL2 override 44W
@@ -101,7 +89,24 @@ chip soc/intel/skylake
 	device domain 0 on
 		device ref igpu		on  end
 		device ref sa_thermal	on  end
-		device ref south_xhci	on  end
+		device ref south_xhci	on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC1),	// Type-A Port (left)
+				[1] = USB2_PORT_MID(OC1),	// Type-A Port (left)
+				[2] = USB2_PORT_FLEX(OC_SKIP),	// FPR
+				[3] = USB2_PORT_FLEX(OC_SKIP),	// SD
+				[4] = USB2_PORT_FLEX(OC_SKIP),	// INT
+				[5] = USB2_PORT_MID(OC1),	// Type-A Port (right)
+				[6] = USB2_PORT_FLEX(OC_SKIP),	// Webcam
+				[7] = USB2_PORT_MID(OC_SKIP),	// mPCIe / WiFi Port
+				[8] = USB2_PORT_MID(OC_SKIP),	// mSATA / WWAN Port
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC1),	// Type-A Port (left)
+				[1] = USB3_PORT_DEFAULT(OC1),	// Type-A Port (left)
+			}"
+		end
 		device ref thermal	on  end
 		device ref heci1	on  end
 		device ref sata		on  end

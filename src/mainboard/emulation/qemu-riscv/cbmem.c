@@ -3,7 +3,7 @@
 #include <cbmem.h>
 #include <symbols.h>
 #include <ramdetect.h>
-#include <device_tree.h>
+#include <commonlib/device_tree.h>
 #include <mcall.h>
 
 uintptr_t cbmem_top_chipset(void)

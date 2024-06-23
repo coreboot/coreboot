@@ -3,18 +3,6 @@ chip soc/intel/skylake
 	# FSP Configuration
 	register "SkipExtGfxScan" = "1"
 
-	# SATA configuration
-	register "SataSalpSupport" = "1"
-	register "SataPortsEnable" = "{
-		[0] = 1,
-		[1] = 1,
-		[2] = 1,
-		[3] = 1,
-		[4] = 1,
-		[5] = 1,
-		[6] = 1,
-		[7] = 1,
-	}"
 
 	# LPC
 	register "serirq_mode" = "SERIRQ_CONTINUOUS"
@@ -31,7 +19,19 @@ chip soc/intel/skylake
 		device ref south_xhci on end
 		device ref thermal on end
 		device ref heci1 on end
-		device ref sata on end
+		device ref sata on
+			register "SataSalpSupport" = "1"
+			register "SataPortsEnable" = "{
+				[0] = 1,
+				[1] = 1,
+				[2] = 1,
+				[3] = 1,
+				[4] = 1,
+				[5] = 1,
+				[6] = 1,
+				[7] = 1,
+			}"
+		end
 		device ref lpc_espi on
 			chip superio/common
 				device pnp 2e.0 on  end

@@ -59,9 +59,6 @@ chip soc/intel/skylake
 	register "s0ix_enable" = true
 
 	# FSP Configuration
-	register "SataPortsEnable[0]" = "1"
-	register "SataPortsEnable[1]" = "1"
-	register "SataPortsDevSlp[1]" = "1"
 	register "DspEnable" = "1"
 	register "IoBufferOwnership" = "3"
 	register "SkipExtGfxScan" = "1"
@@ -359,7 +356,13 @@ chip soc/intel/skylake
 		device ref i2c0		on  end
 		device ref i2c2		on  end
 		device ref heci1	on  end
-		device ref sata		on  end
+		device ref sata		on
+			register "SataPortsEnable" = "{
+				[0] = 1,
+				[1] = 1,
+			}"
+			register "SataPortsDevSlp[1]" = "1"
+		end
 		device ref uart2	on  end
 		device ref i2c5		on  end
 		device ref pcie_rp1	on  end

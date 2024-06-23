@@ -98,18 +98,6 @@ chip soc/intel/skylake
 
 	register "SsicPortEnable" = "1" # Enable SSIC for WWAN
 
-	register "SataSalpSupport" = "1"
-	register "SataPortsEnable" = "{
-		[0] = 1,
-		[1] = 1,
-		[2] = 1,
-		[3] = 1,
-		[4] = 1,
-		[5] = 1,
-		[6] = 1,
-		[7] = 1,
-	}"
-
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
@@ -164,7 +152,19 @@ chip soc/intel/skylake
 		end
 		device ref i2c2		off end
 		device ref i2c3		off end
-		device ref sata		on  end
+		device ref sata		on
+			register "SataSalpSupport" = "1"
+			register "SataPortsEnable" = "{
+				[0] = 1,
+				[1] = 1,
+				[2] = 1,
+				[3] = 1,
+				[4] = 1,
+				[5] = 1,
+				[6] = 1,
+				[7] = 1,
+			}"
+		end
 		device ref i2c4		off end
 		device ref pcie_rp1	off end
 		device ref pcie_rp3	on  end

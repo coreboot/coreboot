@@ -1,11 +1,5 @@
 chip soc/intel/skylake
 
-	register "SataPortsEnable" = "{
-		[0] = 1,
-		[1] = 1,
-		[2] = 1,
-	}"
-
 	# Enable deep Sx states
 	register "deep_s5_enable_ac" = "1"
 	register "deep_s5_enable_dc" = "1"
@@ -155,7 +149,13 @@ chip soc/intel/skylake
 		end
 		device ref i2c2		off end
 		device ref i2c3		off end
-		device ref sata		on  end
+		device ref sata		on
+			register "SataPortsEnable" = "{
+				[0] = 1,
+				[1] = 1,
+				[2] = 1,
+			}"
+		end
 		device ref pcie_rp3	on  end
 		device ref pcie_rp4	on  end
 		device ref pcie_rp5	on  end

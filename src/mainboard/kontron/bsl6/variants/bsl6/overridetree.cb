@@ -8,8 +8,6 @@ chip soc/intel/skylake
 	register "PcieRpEnable[ 3]" = "1"
 	register "PcieRpEnable[11]" = "1"
 
-	register "SataPortsEnable[3]"	= "1"
-
 	device domain 0 on
 		device ref south_xhci on
 			register "usb2_ports" = "{
@@ -25,6 +23,9 @@ chip soc/intel/skylake
 				[2] = USB3_PORT_DEFAULT(OC1),
 				[3] = USB3_PORT_DEFAULT(OC1),
 			}"
+		end
+		device ref sata		on
+			register "SataPortsEnable[3]"	= "1"
 		end
 		device ref pcie_rp1	on  end
 		device ref pcie_rp2	on  end

@@ -130,17 +130,6 @@ chip soc/intel/skylake
 
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
 
-	register "SataSalpSupport" = "1"
-	register "SataPortsEnable" = "{
-		[0] = 1,
-		[1] = 1,
-		[2] = 1,
-		[3] = 1,
-		[4] = 1,
-		[5] = 1,
-		[6] = 1,
-		[7] = 1,
-	}"
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]	= PchSerialIoPci,
 		[PchSerialIoIndexI2C1]	= PchSerialIoPci,
@@ -205,7 +194,19 @@ chip soc/intel/skylake
 		device ref i2c2		on end
 		device ref i2c3		on end
 		device ref heci1	on end
-		device ref sata		on end
+		device ref sata		on
+			register "SataSalpSupport" = "1"
+			register "SataPortsEnable" = "{
+				[0] = 1,
+				[1] = 1,
+				[2] = 1,
+				[3] = 1,
+				[4] = 1,
+				[5] = 1,
+				[6] = 1,
+				[7] = 1,
+			}"
+		end
 		device ref uart2	on end
 		device ref i2c5		on end
 		device ref i2c4		on end

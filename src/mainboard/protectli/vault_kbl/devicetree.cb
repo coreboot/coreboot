@@ -101,10 +101,6 @@ chip soc/intel/skylake
 	# Send an extra VR mailbox command for the PS4 exit issue
 	register "SendVrMbxCmd" = "2"
 
-	# Enable SATA ports 1,2
-	register "SataPortsEnable[0]" = "1"
-	register "SataPortsEnable[1]" = "1"
-
 	# Enable Root ports. 1-6 for LAN and Root Port 9
 	register "PcieRpEnable[0]" = "1"
 	register "PcieRpEnable[1]" = "1"
@@ -183,7 +179,12 @@ chip soc/intel/skylake
 			}"
 		end
 		device ref heci1	on  end
-		device ref sata		on  end
+		device ref sata		on
+			register "SataPortsEnable" = "{
+				[0] = 1,
+				[1] = 1,
+			}"
+		end
 		device ref pcie_rp1	on  end
 		device ref pcie_rp2	on  end
 		device ref pcie_rp3	on  end

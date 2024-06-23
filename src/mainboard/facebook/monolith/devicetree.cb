@@ -32,11 +32,6 @@ chip soc/intel/skylake
 	register "SkipExtGfxScan" = "1"
 	register "SaGv" = "SaGv_Enabled"
 
-	register "SataSalpSupport" = "1"
-	register "SataPortsEnable" = "{
-		[0] = 1,
-	}"
-
 	# Enabling SLP_S3#, SLP_S4#, SLP_SUS and SLP_A Stretch
 	# SLP_S3 Minimum Assertion Width. Values 0: 60us, 1: 1ms, 2: 50ms, 3: 2s
 	register "PmConfigSlpS3MinAssert" = "2"
@@ -209,7 +204,10 @@ chip soc/intel/skylake
 		device ref south_xdci	on  end
 		device ref thermal	on  end
 		device ref heci1	on  end
-		device ref sata		on  end
+		device ref sata		on
+			register "SataSalpSupport" = "1"
+			register "SataPortsEnable[0]" = "1"
+		end
 		device ref pcie_rp3	on  end # x1 baseboard WWAN
 		device ref pcie_rp6	on  end # x1 baseboard i210
 		device ref pcie_rp9	on  end # x4 FPGA

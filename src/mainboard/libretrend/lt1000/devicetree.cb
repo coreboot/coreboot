@@ -29,12 +29,6 @@ chip soc/intel/skylake
 	register "dptf_enable" = "0"
 
 	# FSP Configuration
-	register "SataPortsEnable" = "{
-		[0] = 1,
-		[1] = 1,
-		[2] = 1,
-	}"
-	register "SataSpeedLimit" = "2"
 	register "DspEnable" = "1"
 	register "IoBufferOwnership" = "0"
 	register "SkipExtGfxScan" = "1"
@@ -154,7 +148,14 @@ chip soc/intel/skylake
 		device ref south_xdci	on  end
 		device ref thermal	on  end
 		device ref heci1	on  end
-		device ref sata		on  end
+		device ref sata		on
+			register "SataPortsEnable" = "{
+				[0] = 1,
+				[1] = 1,
+				[2] = 1,
+			}"
+			register "SataSpeedLimit" = "2"
+		end
 		device ref pcie_rp3	on  end
 		device ref pcie_rp5	on
 			smbios_slot_desc "SlotTypePciExpressMini52pinWithoutBSKO"

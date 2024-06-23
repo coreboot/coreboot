@@ -109,8 +109,6 @@ chip soc/intel/skylake
 	# Enable SATA ports 1,2
 	register "SataPortsEnable[0]" = "1"
 	register "SataPortsEnable[1]" = "1"
-	register "SataPortsDevSlp[0]" = "0"
-	register "SataPortsDevSlp[1]" = "0"
 
 	# Enable Root ports. 1-6 for LAN and Root Port 9
 	register "PcieRpEnable[0]" = "1"

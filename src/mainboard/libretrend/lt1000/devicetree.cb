@@ -38,11 +38,6 @@ chip soc/intel/skylake
 		[1] = 1,
 		[2] = 1,
 	}"
-	register "SataPortsDevSlp" = "{
-		[0] = 0,
-		[1] = 0,
-		[2] = 0,
-	}"
 	register "SataSpeedLimit" = "2"
 	register "DspEnable" = "1"
 	register "IoBufferOwnership" = "0"

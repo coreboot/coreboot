@@ -17,7 +17,6 @@ chip soc/intel/skylake
 	# FSP Configuration
 	register "DspEnable" = "1"
 	register "IoBufferOwnership" = "3"
-	register "ScsEmmcHs400Enabled" = "0"
 	register "SkipExtGfxScan" = "1"
 
 	# Enabling SLP_S3#, SLP_S4#, SLP_SUS and SLP_A Stretch

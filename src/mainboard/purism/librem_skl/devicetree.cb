@@ -49,7 +49,6 @@ chip soc/intel/skylake
 	register "SataPortsDevSlp[2]" = "0"
 	register "DspEnable" = "0"
 	register "IoBufferOwnership" = "0"
-	register "ScsEmmcHs400Enabled" = "0"
 	register "SkipExtGfxScan" = "1"
 	register "SaGv" = "SaGv_Enabled"
 	register "PmConfigSlpS3MinAssert" = "2"		# 50ms

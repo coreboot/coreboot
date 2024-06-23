@@ -837,8 +837,7 @@ func main() {
 
 	Add_gpl(dsdt)
 	dsdt.WriteString(
-		`
-#include <acpi/acpi.h>
+`#include <acpi/acpi.h>
 
 DefinitionBlock(
 	"dsdt.aml",

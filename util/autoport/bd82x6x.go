@@ -294,7 +294,6 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 	sb.WriteString(`#include <bootblock_common.h>
 #include <device/pci_ops.h>
 #include <southbridge/intel/bd82x6x/pch.h>
-
 `)
 	usbPortConfig := "{\n"
 

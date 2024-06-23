@@ -243,7 +243,6 @@ chip soc/intel/skylake
 		end
 		device ref heci1	on	end
 		device ref sata		on
-			register "SataMode" = "SATA_AHCI"
 			register "SataSalpSupport" = "1"
 			register "SataPortsEnable[1]" = "1"	# HDD; BIT1 in 92h-93h
 			register "SataPortsEnable[2]" = "1"	# ODD; BIT2 in 92h-93h

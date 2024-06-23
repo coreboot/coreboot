@@ -41,7 +41,7 @@ func GPIO(ctx Context, inteltool InteltoolData) {
 	AddBootBlockFile("gpio.c", "")
 	AddROMStageFile("gpio.c", "")
 
-	Add_gpl(gpio)
+	Add_SPDX(gpio, C, GPL2_only)
 	gpio.WriteString("#include <southbridge/intel/common/gpio.h>\n\n")
 
 	addresses := [3][6]int{

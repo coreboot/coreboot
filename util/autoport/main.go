@@ -99,6 +99,31 @@ type Context struct {
 	SaneVendor    string
 }
 
+type Filetype int
+
+const (
+	Ada Filetype = iota
+	ASL
+	C
+	Kconfig
+	Makefile
+)
+
+var CommentFormatStrings map[Filetype]string = map[Filetype]string {
+	Ada: "-- %s\n",
+	ASL: "/* %s */\n",
+	C: "/* %s */\n",
+	Kconfig: "## %s\n",
+	Makefile: "## %s\n",
+}
+
+type License string
+
+const (
+    GPL2_only License = "GPL-2.0-only"
+    GPL2_or_later     = "GPL-2.0-or-later"
+)
+
 var KconfigBool map[string]bool = map[string]bool{}
 var KconfigComment map[string]string = map[string]string{}
 var KconfigString map[string]string = map[string]string{}
@@ -209,9 +234,13 @@ func Create(ctx Context, name string) *os.File {
 	return mf
 }
 
-func Add_gpl(f *os.File) {
-	fmt.Fprintln(f, "/* SPDX-License-Identifier: GPL-2.0-only */")
+func Add_SPDX(f *os.File, filetype Filetype, license License) {
+	Add_Comment(f, filetype, "SPDX-License-Identifier: " + string(license))
 	fmt.Fprintln(f)
+}
+
+func Add_Comment(f *os.File, filetype Filetype, comment string) {
+	fmt.Fprintf(f, CommentFormatStrings[filetype], comment)
 }
 
 func RestorePCI16Simple(f *os.File, pcidev PCIDevData, addr uint16) {
@@ -522,6 +551,7 @@ func (g GenericVGA) Scan(ctx Context, addr PCIDevData) {
 func makeKconfigName(ctx Context) {
 	kn := Create(ctx, "Kconfig.name")
 	defer kn.Close()
+	Add_SPDX(kn, Kconfig, GPL2_only)
 
 	fmt.Fprintf(kn, "config %s\n\tbool \"%s\"\n", ctx.KconfigName, ctx.Model)
 }
@@ -537,6 +567,7 @@ func makeComment(name string) string {
 func makeKconfig(ctx Context) {
 	kc := Create(ctx, "Kconfig")
 	defer kc.Close()
+	Add_SPDX(kc, Kconfig, GPL2_only)
 
 	fmt.Fprintf(kc, "if %s\n\n", ctx.KconfigName)
 
@@ -633,6 +664,7 @@ func makeVendor(ctx Context) {
 			log.Fatal(err)
 		}
 		defer f.Close()
+		Add_SPDX(f, Kconfig, GPL2_only)
 		f.WriteString(`if VENDOR_` + vendorUpper + `
 
 choice
@@ -657,6 +689,7 @@ endif # VENDOR_` + vendorUpper + "\n")
 			log.Fatal(err)
 		}
 		defer f.Close()
+		Add_SPDX(f, Kconfig, GPL2_only)
 		f.WriteString(`config VENDOR_` + vendorUpper + `
 	bool "` + vendor + `"
 `)
@@ -734,6 +767,7 @@ func main() {
 	if len(BootBlockFiles) > 0 || len(ROMStageFiles) > 0 || len(RAMStageFiles) > 0 || len(SMMFiles) > 0 {
 		mf := Create(ctx, "Makefile.mk")
 		defer mf.Close()
+		Add_SPDX(mf, Makefile, GPL2_only)
 		writeMF(mf, BootBlockFiles, "bootblock")
 		writeMF(mf, ROMStageFiles, "romstage")
 		writeMF(mf, RAMStageFiles, "ramstage")
@@ -749,7 +783,7 @@ func main() {
 	if MainboardInit != "" || MainboardEnable != "" || MainboardIncludes != nil {
 		mainboard := Create(ctx, "mainboard.c")
 		defer mainboard.Close()
-		Add_gpl(mainboard)
+		Add_SPDX(mainboard, C, GPL2_only)
 		mainboard.WriteString("#include <device/device.h>\n")
 		for _, include := range MainboardIncludes {
 			mainboard.WriteString("#include <" + include + ">\n")
@@ -820,7 +854,7 @@ func main() {
 
 	dsdt := Create(ctx, "dsdt.asl")
 	defer dsdt.Close()
-	Add_gpl(dsdt)
+	Add_SPDX(dsdt, ASL, GPL2_only)
 
 	for _, define := range DSDTDefines {
 		if define.Comment != "" {
@@ -870,10 +904,9 @@ DefinitionBlock(
 	if IGDEnabled {
 		gma := Create(ctx, "gma-mainboard.ads")
 		defer gma.Close()
+		Add_SPDX(gma, Ada, GPL2_or_later)
 
-		gma.WriteString(`-- SPDX-License-Identifier: GPL-2.0-or-later
-
-with HW.GFX.GMA;
+		gma.WriteString(`with HW.GFX.GMA;
 with HW.GFX.GMA.Display_Probing;
 
 use HW.GFX.GMA;

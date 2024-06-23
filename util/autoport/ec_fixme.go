@@ -19,7 +19,7 @@ func FIXMEEC(ctx Context) {
 		SouthBridge.EnableGPE(SouthBridge.DecodeGPE(sbGPE))
 	}
 
-	Add_gpl(ap)
+	Add_SPDX(ap, ASL, GPL2_only)
 	ap.WriteString(
 		`Method(_WAK, 1)
 {
@@ -65,7 +65,7 @@ Method(_PTS,1)
 	defer si.Close()
 
 	if hasKeyboard {
-		Add_gpl(si)
+		Add_SPDX(si, ASL, GPL2_only)
 		si.WriteString("#include <drivers/pc80/pc/ps2_controller.asl>\n")
 		MainboardInit += fmt.Sprintf("\tpc_keyboard_init(NO_AUX_DEVICE);\n")
 		MainboardIncludes = append(MainboardIncludes, "pc80/keyboard.h")
@@ -74,7 +74,7 @@ Method(_PTS,1)
 	ec := Create(ctx, "acpi/ec.asl")
 	defer ec.Close()
 
-	Add_gpl(ec)
+	Add_SPDX(ec, ASL, GPL2_only)
 	ec.WriteString(`Device(EC)
 {
 	Name (_HID, EISAID("PNP0C09"))

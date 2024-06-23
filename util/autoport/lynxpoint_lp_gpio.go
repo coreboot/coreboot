@@ -230,7 +230,7 @@ func Lynxpoint_LP_GPIO(ctx Context, inteltool InteltoolData) {
 
 	AddROMStageFile("gpio.c", "")
 
-	Add_gpl(gpio)
+	Add_SPDX(gpio, C, GPL2_only)
 	gpio.WriteString(`#include <southbridge/intel/lynxpoint/lp_gpio.h>
 
 const struct pch_lp_gpio_map mainboard_lp_gpio_map[] = {

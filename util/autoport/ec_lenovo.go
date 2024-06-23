@@ -39,7 +39,7 @@ func LenovoEC(ctx Context) {
 			Value: "1",
 		}, GPEDefine)
 
-	Add_gpl(ap)
+	Add_SPDX(ap, ASL, GPL2_only)
 	ap.WriteString(
 		`Method(_WAK, 1)
 {
@@ -58,7 +58,7 @@ Method(_PTS,1)
 	si := Create(ctx, "acpi/superio.asl")
 	defer si.Close()
 
-	Add_gpl(si)
+	Add_SPDX(si, ASL, GPL2_only)
 	si.WriteString("#include <drivers/pc80/pc/ps2_controller.asl>\n")
 
 	/* FIXME:XX Move this to ec/lenovo.  */
@@ -67,7 +67,7 @@ Method(_PTS,1)
 
 	AddSMMFile("smihandler.c", "")
 
-	Add_gpl(smi)
+	Add_SPDX(smi, C, GPL2_only)
 	smi.WriteString(
 		`#include <arch/io.h>
 #include <console/console.h>
@@ -146,7 +146,7 @@ void mainboard_smi_sleep(u8 slp_typ)
 	ec := Create(ctx, "acpi/ec.asl")
 	defer ec.Close()
 
-	Add_gpl(ec)
+	Add_SPDX(ec, ASL, GPL2_only)
 	ec.WriteString("#include <ec/lenovo/h8/acpi/ec.asl>\n")
 
 	KconfigBool["EC_LENOVO_PMH7"] = true

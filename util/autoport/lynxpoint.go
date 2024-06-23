@@ -258,7 +258,7 @@ func (b lynxpoint) Scan(ctx Context, addr PCIDevData) {
 	AddBootBlockFile("bootblock.c", "")
 	bb := Create(ctx, "bootblock.c")
 	defer bb.Close()
-	Add_gpl(bb)
+	Add_SPDX(bb, C, GPL2_only)
 	bb.WriteString(`#include <southbridge/intel/lynxpoint/pch.h>
 
 /* FIXME: remove this if not needed */
@@ -269,7 +269,7 @@ void mainboard_config_superio(void)
 
 	sb := Create(ctx, "romstage.c")
 	defer sb.Close()
-	Add_gpl(sb)
+	Add_SPDX(sb, C, GPL2_only)
 	sb.WriteString(`#include <stdint.h>
 #include <northbridge/intel/haswell/haswell.h>
 #include <southbridge/intel/lynxpoint/pch.h>

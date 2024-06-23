@@ -181,7 +181,7 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 
 	sb := Create(ctx, "early_init.c")
 	defer sb.Close()
-	Add_gpl(sb)
+	Add_SPDX(sb, C, GPL2_only)
 
 	sb.WriteString(`#include <bootblock_common.h>
 #include <device/pci_ops.h>
@@ -246,7 +246,7 @@ void bootblock_mainboard_early_init(void)
 	gnvs := Create(ctx, "acpi_tables.c")
 	defer gnvs.Close()
 
-	Add_gpl(gnvs)
+	Add_SPDX(gnvs, C, GPL2_only)
 	gnvs.WriteString(`#include <acpi/acpi_gnvs.h>
 #include <soc/nvs.h>
 

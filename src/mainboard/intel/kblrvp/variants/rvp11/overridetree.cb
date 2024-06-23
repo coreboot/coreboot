@@ -4,8 +4,6 @@ chip soc/intel/skylake
 	register "DspEnable" = "0"
 	register "ScsEmmcHs400Enabled" = "0"
 
-	register "serirq_mode" = "SERIRQ_CONTINUOUS"
-
 	# Enable PCIE slot
 	register "PcieRpEnable[5]" = "1"
 	register "PcieRpClkReqSupport[5]" = "1"
@@ -119,5 +117,8 @@ chip soc/intel/skylake
 		device ref sdxc		off end
 		device ref hda		on  end
 		device ref gbe		on  end
+		device ref lpc_espi on
+			register "serirq_mode" = "SERIRQ_CONTINUOUS"
+		end
 	end
 end

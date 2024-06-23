@@ -17,9 +17,6 @@ chip soc/intel/skylake
 	# Disable DPTF
 	register "dptf_enable" = "0"
 
-	# Enable SERIRQ continuous
-	register "serirq_mode" = "SERIRQ_CONTINUOUS"
-
 	register "tcc_offset" = "5" # TCC of 95C
 
 	# FSP Configuration
@@ -198,6 +195,8 @@ chip soc/intel/skylake
 				"SlotLengthShort" "WIFI1" "SlotDataBusWidth1X"
 		end
 		device ref lpc_espi	on
+			register "serirq_mode" = "SERIRQ_CONTINUOUS"
+
 			register "gen1_dec" = "0x00fc0201"
 			register "gen2_dec" = "0x007c0a01"
 			register "gen3_dec" = "0x000c03e1"

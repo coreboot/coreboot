@@ -7,8 +7,6 @@ chip soc/intel/skylake
 	# FSP Configuration
 	register "ScsEmmcHs400Enabled" = "0"
 
-	register "serirq_mode" = "SERIRQ_CONTINUOUS"
-
 	# VR Settings Configuration for 5 Domains
 	#+----------------+-------+-------+-------------+-------------+-------+
 	#| Domain/Setting |  SA   |  IA   | Ring Sliced | GT Unsliced |  GT   |
@@ -173,6 +171,8 @@ chip soc/intel/skylake
 		device ref emmc		off end
 		device ref sdxc		off end
 		device ref lpc_espi	on
+			register "serirq_mode" = "SERIRQ_CONTINUOUS"
+
 			#chip drivers/pc80/tpm
 			#	device pnp 0c31.0 on end
 			#end

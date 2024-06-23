@@ -47,9 +47,6 @@ chip soc/intel/skylake
 	register "PmConfigSlpSusMinAssert" = "3"	# 500ms
 	register "PmConfigSlpAMinAssert" = "3"		# 2s
 
-	# EC/KBC requires continuous mode
-	register "serirq_mode" = "SERIRQ_CONTINUOUS"
-
 	# VR Settings Configuration for 4 Domains
 	#+----------------+-----------+-----------+-------------+----------+
 	#| Domain/Setting |     SA    |    IA     | GT Unsliced |    GT    |
@@ -153,6 +150,9 @@ chip soc/intel/skylake
 		device ref pcie_rp5	on  end
 		device ref pcie_rp9	on  end
 		device ref lpc_espi	on
+			# EC/KBC requires continuous mode
+			register "serirq_mode" = "SERIRQ_CONTINUOUS"
+
 			# EC host command ranges are in 0x380-0x383 & 0x80-0x8f
 			register "gen1_dec" = "0x00000381"
 			chip drivers/pc80/tpm

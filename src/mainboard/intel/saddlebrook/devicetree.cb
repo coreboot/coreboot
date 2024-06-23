@@ -32,8 +32,6 @@ chip soc/intel/skylake
 	# SLP_A Minimum Assertion Width. Values 0: 0ms, 1: 4s, 2: 98ms, 3: 2s
 	register "PmConfigSlpAMinAssert" = "0x03"
 
-	register "serirq_mode" = "SERIRQ_CONTINUOUS"
-
 	# VR Settings Configuration for 4 Domains
 	#+----------------+-----------+-----------+-------------+----------+
 	#| Domain/Setting |     SA    |    IA     | GT Unsliced |    GT    |
@@ -217,6 +215,9 @@ chip soc/intel/skylake
 		device ref gspi1	on end
 		device ref hda		on end
 		device ref smbus	on end
+		device ref lpc_espi	on
+			register "serirq_mode" = "SERIRQ_CONTINUOUS"
+		end
 		device ref fast_spi	on end
 		device ref gbe		on end
 	end

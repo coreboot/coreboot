@@ -9,8 +9,6 @@ chip soc/intel/skylake
 
 	register "eist_enable" = "1"
 
-	register "serirq_mode" = "SERIRQ_CONTINUOUS"
-
 	# Set the Thermal Control Circuit (TCC) activation value to 95C
 	# even though FSP integration guide says to set it to 100C for SKL-U
 	# (offset at 0), because when the TCC activates at 100C, the CPU
@@ -170,6 +168,8 @@ chip soc/intel/skylake
 		device ref pcie_rp11	on  end
 		device ref pcie_rp12	on  end
 		device ref lpc_espi	on
+			register "serirq_mode" = "SERIRQ_CONTINUOUS"
+
 			register "gen1_dec" = "0x007c0a01" # EC 0xa00-0xa7f
 			register "gen2_dec" = "0x000c03e1" # COM3 port 0x3e0 - 0x3ef
 			register "gen3_dec" = "0x00fc02e1" # COM2/4/5/6 ports 0x2e0 - 0x2ff

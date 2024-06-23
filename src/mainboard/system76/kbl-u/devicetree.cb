@@ -18,9 +18,6 @@ chip soc/intel/skylake
 		[PchSerialIoIndexUart2] = PchSerialIoSkipInit, // LPSS UART
 	}"
 
-	# Serial IRQ
-	register "serirq_mode" = "SERIRQ_CONTINUOUS"
-
 	# Power
 	register "PmConfigSlpS3MinAssert" = "2"		# 50ms
 	register "PmConfigSlpS4MinAssert" = "1"		# 1s
@@ -172,6 +169,8 @@ chip soc/intel/skylake
 			register "PcieRpLtrEnable[8]" = "1"
 		end
 		device ref lpc_espi on
+			register "serirq_mode" = "SERIRQ_CONTINUOUS"
+
 			register "gen1_dec" = "0x000c0681"
 			register "gen2_dec" = "0x000c1641"
 			register "gen3_dec" = "0x00040069"

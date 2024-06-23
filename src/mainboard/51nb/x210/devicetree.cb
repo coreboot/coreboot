@@ -39,8 +39,6 @@ chip soc/intel/skylake
 	register "PmConfigSlpSusMinAssert" = "3"	# 500ms
 	register "PmConfigSlpAMinAssert" = "3"		# 2s
 
-	register "serirq_mode" = "SERIRQ_CONTINUOUS"
-
 	# Enable Root Ports 3, 4 and 9
 	register "PcieRpEnable[2]" = "1" # Ethernet controller
 	register "PcieRpClkReqSupport[2]" = "1"
@@ -116,6 +114,8 @@ chip soc/intel/skylake
 		device ref pcie_rp4	on  end
 		device ref pcie_rp9	on  end
 		device ref lpc_espi	on
+			register "serirq_mode" = "SERIRQ_CONTINUOUS"
+
 			register "gen1_dec" = "0x000c0681"
 			register "gen2_dec" = "0x000c1641"
 

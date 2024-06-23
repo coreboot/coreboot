@@ -13,9 +13,6 @@ chip soc/intel/skylake
 	register "gpe0_dw1" = "GPP_D"
 	register "gpe0_dw2" = "GPP_E"
 
-	# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
-	register "gen1_dec" = "0x00fc0801"
-
 	# Enable DPTF
 	register "dptf_enable" = "1"
 
@@ -127,6 +124,10 @@ chip soc/intel/skylake
 		device ref emmc		on  end
 		device ref sdxc		on  end
 		device ref smbus	on  end
+		device ref lpc_espi	on
+			# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
+			register "gen1_dec" = "0x00fc0801"
+		end
 		device ref fast_spi	on  end
 	end
 end

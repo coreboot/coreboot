@@ -29,12 +29,6 @@ chip soc/intel/skylake
 	register "gpe0_dw1" = "GPP_D"
 	register "gpe0_dw2" = "GPP_E"
 
-	# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
-	register "gen1_dec" = "0x00fc0801"
-	register "gen2_dec" = "0x000c0201"
-	# EC memory map range is 0x900-0x9ff
-	register "gen3_dec" = "0x00fc0901"
-
 	# FSP Configuration
 	register "DspEnable" = "1"
 	register "IoBufferOwnership" = "3"
@@ -379,6 +373,12 @@ chip soc/intel/skylake
 		end
 		device ref emmc		on  end
 		device ref lpc_espi	on
+			# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
+			register "gen1_dec" = "0x00fc0801"
+			register "gen2_dec" = "0x000c0201"
+			# EC memory map range is 0x900-0x9ff
+			register "gen3_dec" = "0x00fc0901"
+
 			chip ec/google/chromeec
 				device pnp 0c09.0 on end
 			end

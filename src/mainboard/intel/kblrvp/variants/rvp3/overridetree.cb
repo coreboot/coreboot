@@ -3,9 +3,6 @@ chip soc/intel/skylake
 	# GPE configuration
 	register "gpe0_dw0" = "GPP_C"
 
-	# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
-	register "gen2_dec" = "0x000c0201"
-
 	# FSP Configuration
 	register "DspEnable" = "1"
 
@@ -123,6 +120,9 @@ chip soc/intel/skylake
 		device ref pcie_rp9	on  end # x1 WLAN
 		device ref pcie_rp10	on  end # x1 WIGIG
 		device ref lpc_espi	on
+			# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
+			register "gen2_dec" = "0x000c0201"
+
 			chip drivers/pc80/tpm
 				device pnp 0c31.0 on end
 			end

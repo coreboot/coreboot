@@ -8,9 +8,6 @@ chip soc/intel/skylake
 	register "gpe0_dw1" = "GPP_D"
 	register "gpe0_dw2" = "GPP_E"
 
-	register "gen1_dec" = "0x007c0a01"	# Super IO SWC
-	register "gen2_dec" = "0x000c0ca1"	# IPMI KCS
-
 	# Additional FSP Configuration
 	# This board has an IGD with no output.
 	register "PrimaryDisplay" = "Display_Auto"
@@ -83,6 +80,9 @@ chip soc/intel/skylake
 			smbios_slot_desc "SlotTypePciExpressGen3X4" "SlotLengthLong" "PCH SLOT4 PCI-E 3.0 X4(IN X8)" "SlotDataBusWidth4X"
 		end
 		device ref lpc_espi on
+			register "gen1_dec" = "0x007c0a01"	# Super IO SWC
+			register "gen2_dec" = "0x000c0ca1"	# IPMI KCS
+
 			chip drivers/ipmi
 				# On cold boot it takes a while for the BMC to start the IPMI service
 				register "wait_for_bmc" = "1"

@@ -15,9 +15,6 @@ chip soc/intel/skylake
 	register "gpe0_dw1" = "GPP_D"
 	register "gpe0_dw2" = "GPP_E"
 
-	register "gen1_dec" = "0x000c0681"
-	register "gen2_dec" = "0x000c1641"
-
 	# Disable DPTF
 	register "dptf_enable" = "0"
 
@@ -175,6 +172,9 @@ chip soc/intel/skylake
 		device ref pcie_rp5	on  end
 		device ref pcie_rp9	on  end
 		device ref lpc_espi	on
+			register "gen1_dec" = "0x000c0681"
+			register "gen2_dec" = "0x000c1641"
+
 			chip superio/ite/it8528e
 				device pnp 6e.1 off end
 				device pnp 6e.2 off end

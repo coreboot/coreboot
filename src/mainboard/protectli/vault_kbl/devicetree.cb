@@ -12,11 +12,6 @@ chip soc/intel/skylake
 	register "gpe0_dw1" = "GPP_D"
 	register "gpe0_dw2" = "GPP_E"
 
-	register "gen1_dec" = "0x00fc0201"
-	register "gen2_dec" = "0x007c0a01"
-	register "gen3_dec" = "0x000c03e1"
-	register "gen4_dec" = "0x001c02e1"
-
 	register "eist_enable" = "1"
 
 	# Disable DPTF
@@ -202,6 +197,10 @@ chip soc/intel/skylake
 				"SlotLengthShort" "WIFI1" "SlotDataBusWidth1X"
 		end
 		device ref lpc_espi	on
+			register "gen1_dec" = "0x00fc0201"
+			register "gen2_dec" = "0x007c0a01"
+			register "gen3_dec" = "0x000c03e1"
+			register "gen4_dec" = "0x001c02e1"
 			chip superio/ite/it8772f
 				register "TMPIN1.mode" = "THERMAL_RESISTOR"
 				register "TMPIN2.mode" = "THERMAL_RESISTOR"

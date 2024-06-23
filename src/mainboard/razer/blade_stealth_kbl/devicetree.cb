@@ -22,11 +22,6 @@ chip soc/intel/skylake
 	register "dptf_enable" = "0"
 
 	# FSP Configuration
-	register "SataPortsEnable" = "{
-		[0] = 0,
-		[1] = 0,
-		[2] = 0,
-	}"
 	register "DspEnable" = "0"
 	register "IoBufferOwnership" = "0"
 	register "SkipExtGfxScan" = "1"

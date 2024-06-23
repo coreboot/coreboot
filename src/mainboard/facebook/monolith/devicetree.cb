@@ -40,13 +40,6 @@ chip soc/intel/skylake
 	register "SataSalpSupport" = "1"
 	register "SataPortsEnable" = "{
 		[0] = 1,
-		[1] = 0,
-		[2] = 0,
-		[3] = 0,
-		[4] = 0,
-		[5] = 0,
-		[6] = 0,
-		[7] = 0,
 	}"
 
 	# Enabling SLP_S3#, SLP_S4#, SLP_SUS and SLP_A Stretch

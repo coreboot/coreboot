@@ -31,7 +31,6 @@ chip soc/intel/skylake
 	register "s0ix_enable" = true
 
 	# FSP Configuration
-	register "SataPortsEnable[0]" = "0"
 	register "DspEnable" = "1"
 	register "IoBufferOwnership" = "3"
 	register "ScsEmmcHs400Enabled" = "1"

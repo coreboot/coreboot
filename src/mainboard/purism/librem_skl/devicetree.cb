@@ -42,7 +42,6 @@ chip soc/intel/skylake
 
 	# FSP Configuration
 	register "SataPortsEnable[0]" = "1"
-	register "SataPortsEnable[1]" = "0"
 	register "SataPortsEnable[2]" = "1"
 	register "SataPortsDevSlp[0]" = "0"
 	register "SataPortsDevSlp[2]" = "0"

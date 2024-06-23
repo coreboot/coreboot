@@ -827,6 +827,7 @@ func main() {
 
 	dsdt := Create(ctx, "dsdt.asl")
 	defer dsdt.Close()
+	Add_gpl(dsdt)
 
 	for _, define := range DSDTDefines {
 		if define.Comment != "" {
@@ -835,7 +836,6 @@ func main() {
 		dsdt.WriteString("#define " + define.Key + " " + define.Value + "\n")
 	}
 
-	Add_gpl(dsdt)
 	dsdt.WriteString(
 `#include <acpi/acpi.h>
 

@@ -58,7 +58,6 @@ chip soc/intel/skylake
 		device ref thermal	on	end
 		device ref heci1	on	end
 		device ref sata		on
-			register "SataSalpSupport" = "0"
 			# Ports
 			register "SataPortsEnable[0]" = "1"
 			register "SataPortsEnable[2]" = "1"

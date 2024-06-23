@@ -43,7 +43,6 @@ chip soc/intel/skylake
 	register "CmdTriStateDis" = "1"
 
 	# FSP Configuration
-	register "SataSalpSupport" = "0"
 	register "SataPortsEnable[0]" = "0"
 	register "DspEnable" = "1"
 	register "IoBufferOwnership" = "3"

@@ -41,7 +41,6 @@ chip soc/intel/skylake
 	register "dptf_enable" = "0"
 
 	# FSP Configuration
-	register "SataSalpSupport" = "0"
 	register "SataPortsEnable[0]" = "1"
 	register "SataPortsEnable[1]" = "0"
 	register "SataPortsEnable[2]" = "1"

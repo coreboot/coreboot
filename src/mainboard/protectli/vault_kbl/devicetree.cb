@@ -28,7 +28,6 @@ chip soc/intel/skylake
 	register "tcc_offset" = "5" # TCC of 95C
 
 	# FSP Configuration
-	register "SataSalpSupport" = "0"
 	register "DspEnable" = "0"
 	register "IoBufferOwnership" = "0"
 	register "SkipExtGfxScan" = "1"

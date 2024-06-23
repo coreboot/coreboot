@@ -128,7 +128,6 @@ chip soc/intel/skylake
 		end
 		device ref thermal on end
 		device ref sata on
-			register "SataSalpSupport" = "0"
 			register "SataSpeedLimit" = "2"
 			register "SataPortsEnable" = "{
 				[0] = 1,

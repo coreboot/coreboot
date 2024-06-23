@@ -93,9 +93,6 @@ chip soc/intel/skylake
 	register "PcieRpClkReqNumber[8]" = "6"
 	register "PcieRpClkReqNumber[16]" = "7"
 
-
-	register "SsicPortEnable" = "1" # Enable SSIC for WWAN
-
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
@@ -118,6 +115,8 @@ chip soc/intel/skylake
 
 	device domain 0 on
 		device ref south_xhci on
+			register "SsicPortEnable" = "1" # Enable SSIC for WWAN
+
 			register "usb2_ports" = "{
 				[0] = USB2_PORT_MAX(OC2),	/* Type-C Port */
 				[1] = USB2_PORT_MAX(OC5),	/* Front panel */

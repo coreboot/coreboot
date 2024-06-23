@@ -41,10 +41,6 @@ chip soc/intel/skylake
 	# RP17, uses CLK SRC 7
 	register "PcieRpClkSrcNumber[16]" = "7"
 
-	# USB related
-	register "SsicPortEnable" = "1"
-
-
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
@@ -66,6 +62,8 @@ chip soc/intel/skylake
 
 	device domain 0 on
 		device ref south_xhci on
+			register "SsicPortEnable" = "1"
+
 			register "usb2_ports" = "{
 				[0] = USB2_PORT_MID(OC_SKIP),	/* OTG */
 				[1] = USB2_PORT_MID(OC3),	/* Touch Pad */

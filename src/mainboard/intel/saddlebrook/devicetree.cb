@@ -120,10 +120,6 @@ chip soc/intel/skylake
 	register "PcieRpClkReqNumber[5]" = "0"
 	register "PcieRpClkReqNumber[12]" = "1"
 
-	# USB related
-	register "SsicPortEnable" = "1"
-
-
 	register "i2c_voltage[4]" = "I2C_VOLTAGE_1V8"  # I2C4 is 1.8V
 
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
@@ -156,6 +152,8 @@ chip soc/intel/skylake
 	device domain 0 on
 		device ref igpu		on end
 		device ref south_xhci	on
+			register "SsicPortEnable" = "1"
+
 			register "usb2_ports" = "{
 				[0] = USB2_PORT_MID(OC_SKIP),	/* OTG */
 				[1] = USB2_PORT_MID(OC3),	/* Touch Pad */

@@ -47,7 +47,6 @@ chip soc/intel/skylake
 	register "SataPortsEnable[0]" = "0"
 	register "DspEnable" = "1"
 	register "IoBufferOwnership" = "3"
-	register "SsicPortEnable" = "0"
 	register "ScsEmmcHs400Enabled" = "1"
 	register "SkipExtGfxScan" = "1"
 	register "SaGv" = "SaGv_Enabled"

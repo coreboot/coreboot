@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <baseboard/variants.h>
+#include <boardid.h>
 #include <device/pci_ids.h>
 #include <ec/google/chromeec/ec.h>
 #include <intelblocks/power_limit.h>
@@ -44,6 +45,7 @@ const struct psys_config psys_config = {
 
 void __weak variant_devtree_update(void)
 {
+	uint32_t board_version = board_id();
 	printk(BIOS_DEBUG, "WEAK: %s/%s called\n", __FILE__, __func__);
 
 	const struct cpu_power_limits *limits = performance_efficient_limits;
@@ -51,4 +53,12 @@ void __weak variant_devtree_update(void)
 
 	variant_update_power_limits(limits, limits_size);
 	variant_update_psys_power_limits(limits, sys_limits, limits_size, &psys_config);
+
+	/* Disable I2C bus device for Touchscreen */
+	if (board_version >= 1) {
+		struct device *i2c1_dev = DEV_PTR(i2c1);
+
+		if (i2c1_dev)
+			i2c1_dev->enabled = false;
+	}
 }

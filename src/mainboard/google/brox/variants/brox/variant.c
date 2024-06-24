@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <assert.h>
+#include <boardid.h>
 #include <baseboard/variants.h>
 #include <chip.h>
 #include <fw_config.h>
@@ -8,10 +9,16 @@
 
 void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config)
 {
+	uint32_t board_version = board_id();
+
 	if (fw_config_probe(FW_CONFIG(WIFI_BT, WIFI_BT_CNVI))) {
 		printk(BIOS_INFO, "CNVi bluetooth enabled by fw_config\n");
 		config->cnvi_bt_core = true;
 	}
+
+	/* Disable I2C bus device for Touchscreen for board version 1*/
+	if (board_version >= 1)
+		config->serial_io_i2c_mode[PchSerialIoIndexI2C1] = PchSerialIoDisabled;
 }
 
 const char *get_wifi_sar_cbfs_filename(void)

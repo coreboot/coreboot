@@ -15,8 +15,9 @@
 #include "wifi.h"
 #include "wifi_private.h"
 
-/* WIFI Domain type */
+/* Domain type */
 #define DOMAIN_TYPE_WIFI 0x7
+#define DOMAIN_TYPE_BLUETOOTH 0x12
 
 /* Maximum number DSM UUID bifurcations in _DSM */
 #define MAX_DSM_FUNCS 2
@@ -489,9 +490,59 @@ static void sar_emit_wtas(struct avg_profile *wtas)
 	acpigen_write_package_end();
 }
 
-static void emit_sar_acpi_structures(const struct device *dev, struct dsm_profile *dsm)
+static void sar_emit_brds(const struct bsar_profile *bsar)
 {
-	union wifi_sar_limits sar_limits = {{NULL, NULL, NULL, NULL, NULL} };
+	size_t package_size, table_size;
+	const uint8_t *set;
+
+	/*
+	 * Name ("BRDS", Package () {
+	 *   Revision,
+	 *   Package () {
+	 *     Domain Type,			// 0x12:Bluetooth
+	 *     Bluetooth SAR BIOS,		// BIOS SAR Enable/disable
+	 *     Bluetooth Increase Power Mode	// SAR Limitation Enable/disable
+	 *     Bluetooth SAR Power Restriction,	// 00000000 - 0dBm
+	 *					// 11111111 - 31.875dBm
+	 *					// (Step 0.125dBm)
+	 *     Bluetooth SAR Table		// SAR Tx power limit table
+	 *   }
+	 * })
+	 */
+	if (bsar->revision != BSAR_REVISION) {
+		printk(BIOS_ERR, "Unsupported BSAR table revision: %d\n",
+		       bsar->revision);
+		return;
+	}
+
+	acpigen_write_name("BRDS");
+	acpigen_write_package(2);
+	acpigen_write_dword(bsar->revision);
+
+	table_size = sizeof(*bsar) -
+		offsetof(struct bsar_profile, sar_lb_power_restriction);
+	/*
+	 * Emit 'Domain Type' + 'Dynamic SAR Enable' + 'Increase Power Mode'
+	 * + ('SAR Power Restriction' + SAR table).
+	 */
+	package_size = 1 + 1 + 1 + table_size;
+	acpigen_write_package(package_size);
+	acpigen_write_dword(DOMAIN_TYPE_BLUETOOTH);
+	acpigen_write_dword(1);
+	acpigen_write_dword(bsar->increased_power_mode_limitation);
+
+	set = (const uint8_t *)&bsar->sar_lb_power_restriction;
+	for (int i = 0; i < table_size; i++)
+		acpigen_write_byte(set[i]);
+
+	acpigen_write_package_end();
+	acpigen_write_package_end();
+}
+
+static void emit_sar_acpi_structures(const struct device *dev, struct dsm_profile *dsm,
+				     struct bsar_profile *bsar, bool *bsar_loaded)
+{
+	union wifi_sar_limits sar_limits = {0};
 
 	/*
 	 * If device type is PCI, ensure that the device has Intel vendor ID. CBFS SAR and SAR
@@ -515,6 +566,12 @@ static void emit_sar_acpi_structures(const struct device *dev, struct dsm_profil
 	/* copy the dsm data to be later used for creating _DSM function */
 	if (sar_limits.dsm != NULL)
 		memcpy(dsm, sar_limits.dsm, sizeof(struct dsm_profile));
+
+	/* copy the bsar data to be later used for creating Bluetooth BRDS method */
+	if (sar_limits.bsar != NULL) {
+		memcpy(bsar, sar_limits.bsar, sizeof(struct bsar_profile));
+		*bsar_loaded = true;
+	}
 
 	free(sar_limits.sar);
 }
@@ -576,11 +633,14 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 	struct dsm_uuid dsm_ids[MAX_DSM_FUNCS];
 	/* We will need a copy dsm data to be used later for creating _DSM function */
 	struct dsm_profile dsm = {0};
+	/* We will need a copy of bsar data to be used later for creating BRDS function */
+	struct bsar_profile bsar = {0};
+	bool bsar_loaded = false;
 	uint8_t dsm_count = 0;
 
 	/* Fill Wifi SAR related ACPI structures */
 	if (CONFIG(USE_SAR)) {
-		emit_sar_acpi_structures(dev, &dsm);
+		emit_sar_acpi_structures(dev, &dsm, &bsar, &bsar_loaded);
 
 		if (dsm.supported_functions != 0) {
 			for (int i = 1; i < ARRAY_SIZE(wifi_dsm_callbacks); i++)
@@ -617,6 +677,19 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 	}
 
 	acpigen_write_scope_end(); /* Scope */
+
+	/* Fill Bluetooth companion SAR related ACPI structures */
+	if (bsar_loaded && is_dev_enabled(config->bluetooth_companion)) {
+		const char *path = acpi_device_path(config->bluetooth_companion);
+		if (path) {	/* Bluetooth device under USB Hub scope or PCIe root port */
+			acpigen_write_scope(path);
+			sar_emit_brds(&bsar);
+			acpigen_write_scope_end();
+		} else {
+			printk(BIOS_ERR, "Failed to get %s Bluetooth companion ACPI path\n",
+			       dev_path(dev));
+		}
+	}
 
 	printk(BIOS_INFO, "%s: %s %s\n", scope, dev->chip_ops ? dev->chip_ops->name : "",
 	       dev_path(dev));

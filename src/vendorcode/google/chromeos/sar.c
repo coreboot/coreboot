@@ -94,6 +94,14 @@ static int dsm_table_size(const struct dsm_profile *dsm)
 	return sizeof(struct dsm_profile);
 }
 
+static int bsar_table_size(const struct bsar_profile *bsar)
+{
+	if (bsar == NULL)
+		return 0;
+
+	return sizeof(struct bsar_profile);
+}
+
 static bool valid_legacy_length(size_t bin_len)
 {
 	if (bin_len == LEGACY_SAR_WGDS_BIN_SIZE)
@@ -145,6 +153,7 @@ static int fill_wifi_sar_limits(union wifi_sar_limits *sar_limits, const uint8_t
 	expected_sar_bin_size += gain_table_size(sar_limits->ppag);
 	expected_sar_bin_size += sar_avg_table_size(sar_limits->wtas);
 	expected_sar_bin_size += dsm_table_size(sar_limits->dsm);
+	expected_sar_bin_size += bsar_table_size(sar_limits->bsar);
 
 	if (sar_bin_size != expected_sar_bin_size) {
 		printk(BIOS_ERR, "Invalid SAR size, expected: %zu, obtained: %zu\n",
@@ -210,6 +219,7 @@ static int fill_wifi_sar_limits_legacy(union wifi_sar_limits *sar_limits,
  * [PPAG_REVISION,MODE,CHAINS_COUNT,SUBBANDS_COUNT<PPAG_DATA>]
  * [WTAS_REVISION, WTAS_DATA]
  * [DSM_RETURN_VALUES]
+ * [BSAR_REVISION,IPML,LB,BR,EDR2,EDR3,LE,LE2,LE_LR]
  *
  * The configuration data will always have the revision added in the file for each of the
  * block, based on the revision number and validity, size of the specific block will be

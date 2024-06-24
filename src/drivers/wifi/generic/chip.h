@@ -19,6 +19,9 @@ struct drivers_wifi_generic_config {
 	 * SoC code propagates this value the applicable FSP UPD.
 	 */
 	bool enable_cnvi_ddr_rfim;
+
+	/* Pointer to the Bluetooth companion device */
+	DEVTREE_CONST struct device *bluetooth_companion;
 };
 
 #endif /* _GENERIC_WIFI_H_ */

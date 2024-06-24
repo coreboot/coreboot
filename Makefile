@@ -222,8 +222,7 @@ endif
 
 # The primary target needs to be here before we include the
 # other files
-
-real-all: real-target
+real-all: site-local-target real-target
 
 # must come rather early
 .SECONDARY:

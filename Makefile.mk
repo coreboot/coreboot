@@ -90,6 +90,13 @@ show_coreboot: | files_added
 .PHONY: show_notices
 show_notices:: | show_coreboot
 
+# This rule allows the site-local makefile to run before starting the actual
+# coreboot build. It should not be used in the regular coreboot makefiles.
+# Note: This gets run after the immediate makefile code like updating the
+# submodules, but before any other targets.
+.PHONY: site-local-target
+site-local-target::
+
 #######################################################################
 # our phony targets
 PHONY+= clean-abuild coreboot check-style build_complete

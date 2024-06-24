@@ -6,3 +6,35 @@ config DRIVERS_EFI_VARIABLE_STORE
 	help
 	  Adds a driver that is able to read and write an EFI formatted
 	  VariableStore as used by tianocore.
+
+config DRIVERS_EFI_FW_INFO
+	bool "Expose firmware version in a EFI-friendly form"
+	depends on UDK_BASE
+	help
+	  Adds firmware version information to coreboot table in a form similar to
+	  EFI System Resource Table (ESRT) that can be used for firmware updates.
+
+config DRIVERS_EFI_MAIN_FW_GUID
+	string "GUID of the firmware"
+	default "00112233-4455-6677-8899-aabbccddeeff"
+	depends on DRIVERS_EFI_FW_INFO
+	help
+	  GUID used to identify firmware kind for the purposes of updates.
+
+config DRIVERS_EFI_MAIN_FW_VERSION
+	hex "Version of the firmware"
+	range 0x00000000 0xFFFFFFFF
+	default 0x00000000
+	depends on DRIVERS_EFI_FW_INFO
+	help
+	  32-bit unsigned integer representing current firmware's version.
+
+config DRIVERS_EFI_MAIN_FW_LSV
+	hex "Lowest supported firmware version"
+	range 0x00000000 0xFFFFFFFF
+	default 0x00000000
+	depends on DRIVERS_EFI_FW_INFO
+	help
+	  32-bit unsigned integer representing lowest firmware version number
+	  that is allowed to replace the current one.  Can be used to forbid
+	  bugged versions.

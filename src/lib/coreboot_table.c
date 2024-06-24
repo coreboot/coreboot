@@ -536,6 +536,10 @@ static uintptr_t write_coreboot_table(uintptr_t rom_table_end)
 	if (CONFIG(SMMSTORE_V2))
 		lb_smmstorev2(head);
 
+	/* Add information about firmware in form suitable for EFI updates. */
+	if (CONFIG(DRIVERS_EFI_FW_INFO))
+		lb_efi_fw_info(head);
+
 	/* Add board-specific table entries, if any. */
 	lb_board(head);
 

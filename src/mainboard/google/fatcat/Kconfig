@@ -1,0 +1,108 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_GOOGLE_FATCAT_COMMON
+	def_bool n
+	select BOARD_ROMSIZE_KB_32768
+	select DRIVERS_SPI_ACPI
+	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_BOARDID
+	select EC_GOOGLE_CHROMEEC_ESPI
+	select EC_GOOGLE_CHROMEEC_SKUID
+	select GOOGLE_SMBIOS_MAINBOARD_VERSION
+	select HAVE_ACPI_TABLES
+	select I2C_TPM
+	select INTEL_LPSS_UART_FOR_CONSOLE
+	select MAINBOARD_DISABLE_STAGE_CACHE
+	select MAINBOARD_HAS_TPM2
+	select MB_COMPRESS_RAMSTAGE_LZ4
+	select PMC_IPC_ACPI_INTERFACE
+	select SOC_INTEL_COMMON_BLOCK_VARIANT_POWER_LIMIT
+	select SOC_INTEL_CSE_LITE_SKU
+	select SOC_INTEL_CSE_PRE_CPU_RESET_TELEMETRY_V2
+	select SOC_INTEL_CSE_SEND_EOP_ASYNC
+
+config BOARD_GOOGLE_BASEBOARD_FATCAT
+	def_bool n
+	select BOARD_GOOGLE_FATCAT_COMMON
+	select HAVE_SLP_S0_GATE
+	select MAINBOARD_HAS_CHROMEOS
+	select SOC_INTEL_IOE_DIE_SUPPORT
+	select SOC_INTEL_METEORLAKE_U_H
+	select SYSTEM_TYPE_LAPTOP
+	select TPM_GOOGLE_TI50
+
+config BOARD_GOOGLE_MODEL_FATCAT
+	def_bool n
+	select BOARD_GOOGLE_BASEBOARD_FATCAT
+
+config BOARD_GOOGLE_FATCAT
+	select BOARD_GOOGLE_MODEL_FATCAT
+	select HAVE_X86_64_SUPPORT
+	select USE_X86_64_SUPPORT
+
+if BOARD_GOOGLE_FATCAT_COMMON
+
+config BASEBOARD_DIR
+	string
+	default "fatcat"
+
+config CHROMEOS
+	select EC_GOOGLE_CHROMEEC_SWITCHES
+	select GBB_FLAG_FORCE_DEV_BOOT_USB
+	select GBB_FLAG_FORCE_DEV_SWITCH_ON
+	select GBB_FLAG_FORCE_MANUAL_RECOVERY
+	select HAS_RECOVERY_MRC_CACHE
+
+config DEVICETREE
+	default "variants/baseboard/\$(CONFIG_BASEBOARD_DIR)/devicetree.cb"
+
+config DIMM_SPD_SIZE
+	default 512
+
+# FIXME: update below code as per board schematics
+config DRIVER_TPM_I2C_ADDR
+	hex
+	default 0x0
+
+config DRIVER_TPM_I2C_BUS
+	hex
+	default 0x0
+
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-debug-fsp.fmd" if CHROMEOS && BUILDING_WITH_DEBUG_FSP
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if CHROMEOS
+
+config HAVE_SLP_S0_GATE
+	def_bool n
+
+config MAINBOARD_DIR
+	default "google/fatcat"
+
+config MAINBOARD_FAMILY
+	string
+	default "Google_Fatcat"
+
+config MAINBOARD_PART_NUMBER
+	default "Fatcat" if BOARD_GOOGLE_FATCAT
+
+# FIXME: update as per board schematics
+config TPM_TIS_ACPI_INTERRUPT
+	int
+	default 0
+
+# FIXME: update as per board schematics
+config UART_FOR_CONSOLE
+	int
+	default 0
+
+config USE_PM_ACPI_TIMER
+	default n
+
+config VARIANT_DIR
+	string
+	default "fatcat" if BOARD_GOOGLE_MODEL_FATCAT
+
+config VBOOT
+	select VBOOT_LID_SWITCH
+
+endif # BOARD_GOOGLE_FATCAT_COMMON

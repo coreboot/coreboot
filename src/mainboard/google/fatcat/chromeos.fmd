@@ -1,0 +1,49 @@
+FLASH 32M {
+	SI_ALL 8M {
+		SI_DESC 16K
+		SI_ME
+	}
+	SI_BIOS 24M {
+		RW_SECTION_A 7M {
+			VBLOCK_A 8K
+			FW_MAIN_A(CBFS)
+			RW_FWID_A 64
+		}
+		RW_MISC 1M {
+			UNIFIED_MRC_CACHE(PRESERVE) 128K {
+				RECOVERY_MRC_CACHE 64K
+				RW_MRC_CACHE 64K
+			}
+			RW_ELOG(PRESERVE) 16K
+			RW_SHARED 16K {
+				SHARED_DATA 8K
+				VBLOCK_DEV 8K
+			}
+			RW_VPD(PRESERVE) 8K
+			RW_NVRAM(PRESERVE) 24K
+		}
+		# This section starts at the 16M boundary in SPI flash.
+		# MTL does not support a region crossing this boundary,
+		# because the SPI flash is memory-mapped into two non-
+		# contiguous windows.
+		RW_SECTION_B 7M {
+			VBLOCK_B 8K
+			FW_MAIN_B(CBFS)
+			RW_FWID_B 64
+		}
+		RW_LEGACY(CBFS) 1M
+		RW_UNUSED 4M
+		# Make WP_RO region align with SPI vendor
+		# memory protected range specification.
+		WP_RO 4M {
+			RO_VPD(PRESERVE) 16K
+			RO_GSCVD 8K
+			RO_SECTION {
+				FMAP 2K
+				RO_FRID 64
+				GBB@4K 12K
+				COREBOOT(CBFS)
+			}
+		}
+	}
+}

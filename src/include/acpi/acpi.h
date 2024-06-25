@@ -638,7 +638,7 @@ typedef struct dmar_entry {
 	u16 type;
 	u16 length;
 	u8 flags;
-	u8 reserved;
+	u8 size;
 	u16 segment;
 	u64 bar;
 } __packed dmar_entry_t;
@@ -1851,6 +1851,8 @@ void acpi_create_dmar(acpi_dmar_t *dmar, enum dmar_flags flags,
 		      unsigned long (*acpi_fill_dmar)(unsigned long));
 unsigned long acpi_create_dmar_drhd_4k(unsigned long current, u8 flags,
 				    u16 segment, u64 bar);
+unsigned long acpi_create_dmar_drhd(unsigned long current, u8 flags,
+				    u16 segment, u64 bar, size_t size);
 unsigned long acpi_create_dmar_rmrr(unsigned long current, u16 segment,
 				    u64 bar, u64 limit);
 unsigned long acpi_create_dmar_atsr(unsigned long current, u8 flags,

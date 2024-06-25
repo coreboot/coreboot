@@ -2,7 +2,9 @@
 
 #include <acpi/acpi.h>
 #include <arch/ioapic.h>
+#include <assert.h>
 #include <cpu/cpu.h>
+#include <lib.h>
 #include <version.h>
 
 void acpi_create_dmar(acpi_dmar_t *dmar, enum dmar_flags flags,
@@ -37,8 +39,23 @@ void acpi_create_dmar(acpi_dmar_t *dmar, enum dmar_flags flags,
 }
 
 unsigned long acpi_create_dmar_drhd_4k(unsigned long current, u8 flags,
-	u16 segment, u64 bar)
+				       u16 segment, u64 bar)
 {
+	return acpi_create_dmar_drhd(current, flags, segment, bar, 4 * KiB);
+}
+
+unsigned long acpi_create_dmar_drhd(unsigned long current, u8 flags,
+	u16 segment, u64 bar, size_t size)
+{
+	/*
+	 * Refer to Intel® Virtualization Technology for Directed I/O
+	 * Architecture Specification Revision 4.1,
+	 * size is at least 1 page and max 2^15 pages, 4 KiB each, and the bar
+	 * should be aligned with size.
+	 */
+	assert(4 * KiB <= size && size <= (1 << 15) * 4 * KiB && IS_POWER_OF_2(size));
+	assert(IS_ALIGNED(bar, size));
+
 	dmar_entry_t *drhd = (dmar_entry_t *)current;
 	memset(drhd, 0, sizeof(*drhd));
 	drhd->type = DMAR_DRHD;
@@ -46,6 +63,7 @@ unsigned long acpi_create_dmar_drhd_4k(unsigned long current, u8 flags,
 	drhd->flags = flags;
 	drhd->segment = segment;
 	drhd->bar = bar;
+	drhd->size = log2_64(size) - 12;
 
 	return drhd->length;
 }

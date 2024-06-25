@@ -1,5 +1,8 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
+config ACPI_FNKEY_GEN_SCANCODE
+	default 94 if BOARD_GOOGLE_LOTSO
+
 config BOARD_GOOGLE_BROX_COMMON
 	def_bool n
 	select DRIVERS_GENERIC_GPIO_KEYS

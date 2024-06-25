@@ -25,6 +25,41 @@
 #define FDT_MAX_MEMORY_REGIONS 16 // should be a good enough upper bound
 
 /*
+ * libpayload's malloc() has a linear allocation complexity, which means that it
+ * degrades massively if we make a few thousand small allocations. Preventing
+ * that problem with a custom scratchpad is well-worth some increase in BSS
+ * size (64 * 2000 + 40 * 10000 = ~1/2 MB).
+ */
+
+/* Try to give these a healthy margin above what the average kernel DT needs. */
+#define LP_ALLOC_NODE_SCRATCH_COUNT 2000
+#define LP_ALLOC_PROP_SCRATCH_COUNT 10000
+
+static struct device_tree_node *alloc_node(void)
+{
+#ifndef __COREBOOT__
+	static struct device_tree_node scratch[LP_ALLOC_NODE_SCRATCH_COUNT];
+	static int counter = 0;
+
+	if (counter < ARRAY_SIZE(scratch))
+		return &scratch[counter++];
+#endif
+	return xzalloc(sizeof(struct device_tree_node));
+}
+
+static struct device_tree_property *alloc_prop(void)
+{
+#ifndef __COREBOOT__
+	static struct device_tree_property scratch[LP_ALLOC_PROP_SCRATCH_COUNT];
+	static int counter = 0;
+
+	if (counter < ARRAY_SIZE(scratch))
+		return &scratch[counter++];
+#endif
+	return xzalloc(sizeof(struct device_tree_property));
+}
+
+/*
  * Functions for picking apart flattened trees.
  */
 
@@ -625,14 +660,14 @@ static int fdt_unflatten_node(const void *blob, uint32_t start_offset,
 		return 0;
 	offset += size;
 
-	struct device_tree_node *node = xzalloc(sizeof(*node));
+	struct device_tree_node *node = alloc_node();
 	*new_node = node;
 	node->name = name;
 
 	struct fdt_property fprop;
 	last = &node->properties;
 	while ((size = fdt_next_property(blob, offset, &fprop))) {
-		struct device_tree_property *prop = xzalloc(sizeof(*prop));
+		struct device_tree_property *prop = alloc_prop();
 		prop->prop = fprop;
 
 		if (dt_prop_is_phandle(prop)) {
@@ -1003,9 +1038,7 @@ struct device_tree_node *dt_find_node(struct device_tree_node *parent,
 		if (!create)
 			return NULL;
 
-		found = calloc(1, sizeof(*found));
-		if (!found)
-			return NULL;
+		found = alloc_node();
 		found->name = strdup(*path);
 		if (!found->name)
 			return NULL;
@@ -1333,7 +1366,7 @@ void dt_add_bin_prop(struct device_tree_node *node, const char *name,
 		}
 	}
 
-	prop = xzalloc(sizeof(*prop));
+	prop = alloc_prop();
 	list_insert_after(&prop->list_node, &node->properties);
 	prop->prop.name = name;
 	prop->prop.data = data;
@@ -1847,7 +1880,7 @@ static void dt_copy_subtree(struct device_tree_node *dst,
 				continue;
 			}
 		} else {
-			dst_prop = xzalloc(sizeof(*dst_prop));
+			dst_prop = alloc_prop();
 			list_insert_after(&dst_prop->list_node,
 					  &dst->properties);
 		}
@@ -1866,7 +1899,7 @@ static void dt_copy_subtree(struct device_tree_node *dst,
 			}
 
 		if (!dst_node) {
-			dst_node = xzalloc(sizeof(*dst_node));
+			dst_node = alloc_node();
 			*dst_node = *src_node;
 			list_insert_after(&dst_node->list_node, &dst->children);
 		} else {

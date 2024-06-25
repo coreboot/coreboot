@@ -121,7 +121,8 @@ struct pad_community {
 	Number of pads bit mapped in each GPI status/en and Host Own Reg */
 	gpio_t		first_pad;   /* first pad in community */
 	gpio_t		last_pad;    /* last pad in community */
-	uint16_t	host_own_reg_0; /* offset to Host Ownership Reg 0 */
+	uint16_t	pad_own_reg_0; /* offset to Pad Ownership (host or CSME) Reg 0 */
+	uint16_t	host_own_reg_0; /* offset to Host Ownership (ACPI or driver) Reg 0 */
 	uint16_t	gpi_int_sts_reg_0; /* offset to GPI Int STS Reg 0 */
 	uint16_t	gpi_int_en_reg_0; /* offset to GPI Int Enable Reg 0 */
 	uint16_t	gpi_smi_sts_reg_0; /* offset to GPI SMI STS Reg 0 */

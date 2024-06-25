@@ -167,6 +167,12 @@ static void gpio_configure_owner(const struct pad_config *cfg,
 		hostsw_own &= ~gpio_bitmask_within_group(comm, pin);
 
 	pcr_write32(comm->port, hostsw_own_offset, hostsw_own);
+
+	if (CONFIG(DEBUG_GPIO)) {
+		printk(BIOS_DEBUG, "HOST_OWN[0x%02x, %02zu]: Reg: 0x%x, Value = 0x%08x\n",
+			comm->port, relative_pad_in_comm(comm, cfg->pad), hostsw_own_offset,
+			pcr_read32(comm->port, hostsw_own_offset));
+	}
 }
 
 static void gpi_enable_gpe(const struct pad_config *cfg,
@@ -187,7 +193,7 @@ static void gpi_enable_gpe(const struct pad_config *cfg,
 	pcr_or32(comm->port, en_reg, en_value);
 
 	if (CONFIG(DEBUG_GPIO)) {
-		printk(BIOS_DEBUG, "GPE_EN[0x%02x, %02zd]: Reg: 0x%x, Value = 0x%x\n",
+		printk(BIOS_DEBUG, "GPE_EN[0x%02x, %02zu]: Reg: 0x%x, Value = 0x%08x\n",
 			comm->port, relative_pad_in_comm(comm, cfg->pad), en_reg,
 			pcr_read32(comm->port, en_reg));
 	}
@@ -212,6 +218,12 @@ static void gpi_enable_smi(const struct pad_config *cfg,
 
 	/* Set enable bits */
 	pcr_or32(comm->port, en_reg, en_value);
+
+	if (CONFIG(DEBUG_GPIO)) {
+		printk(BIOS_DEBUG, "SMI_EN[0x%02x, %02zu]: Reg: 0x%x, Value = 0x%08x\n",
+			comm->port, relative_pad_in_comm(comm, cfg->pad), en_reg,
+			pcr_read32(comm->port, en_reg));
+	}
 }
 
 static void gpi_enable_nmi(const struct pad_config *cfg,
@@ -237,6 +249,12 @@ static void gpi_enable_nmi(const struct pad_config *cfg,
 
 	/* Set enable bits */
 	pcr_or32(comm->port, en_reg, en_value);
+
+	if (CONFIG(DEBUG_GPIO)) {
+		printk(BIOS_DEBUG, "NMI_EN[0x%02x, %02zu]: Reg: 0x%x, Value = 0x%08x\n",
+			comm->port, relative_pad_in_comm(comm, cfg->pad), en_reg,
+			pcr_read32(comm->port, en_reg));
+	}
 }
 
 /* 120 GSIs is the default for IOxAPIC */
@@ -368,16 +386,17 @@ static void gpio_configure_pad(const struct pad_config *cfg)
 		/* Patch GPIO settings for SoC specifically */
 		soc_pad_conf = soc_gpio_pad_config_fixup(cfg, i, soc_pad_conf);
 
-		if (CONFIG(DEBUG_GPIO))
-			printk(BIOS_DEBUG,
-			"gpio_padcfg [0x%02x, %02d] DW%d [0x%08x : 0x%08x"
-			" : 0x%08x]\n",
-			comm->port, pin, i,
-			pad_conf,/* old value */
-			cfg->pad_config[i],/* value passed from gpio table */
-			soc_pad_conf);/*new value*/
 		pcr_write32(comm->port, PAD_CFG_OFFSET(config_offset, i),
 			soc_pad_conf);
+
+		if (CONFIG(DEBUG_GPIO))
+			printk(BIOS_DEBUG,
+			       "gpio_padcfg [0x%02x, %02d] DW%d [0x%08x : 0x%08x : 0x%08x : 0x%08x]\n",
+			       comm->port, pin, i,
+			       pad_conf,           /* old value */
+			       cfg->pad_config[i], /* value passed from gpio table */
+			       soc_pad_conf,       /* new value */
+			       pcr_read32(comm->port, PAD_CFG_OFFSET(config_offset, i))); /* updated value */
 	}
 
 	gpio_configure_itss(cfg, comm->port, config_offset);

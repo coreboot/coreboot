@@ -14,17 +14,12 @@ coreboot uses [Sphinx] documentation tool. We prefer the markdown format
 over reStructuredText so only embedded ReST is supported. Checkout the
 [Markdown Guide] for more information.
 
-### option 1: Use the docker image
+### Option 1: Use the docker image
 
 The easiest way to build the documentation is using a docker image.
 To build the image run the following in the base directory:
 
 	make -C util/docker/ doc.coreboot.org
-
-Before building the documentation make sure the output directory is given
-the correct permissions before running docker.
-
-	mkdir -p Documentation/_build
 
 To build the documentation:
 
@@ -36,30 +31,29 @@ To have the documentation build and served over a web server live run:
 
 On the host machine, open a browser to the address <http://0.0.0.0:8000>.
 
-### option 2: Install Sphinx
+### Option 2: Install Sphinx
 
-Please follow this official [guide] to install sphinx.
-You will also need python-recommonmark for sphinx to be able to handle
-markdown documentation.
+Please follow this official [guide] to install sphinx. You will also need
+myst-parser for sphinx to be able to handle markdown documentation.
 
 Since some Linux distributions don't package every needed sphinx extension,
 the installation via pip in a venv is recommended. You'll need these python3
 modules:
 
 * sphinx
-* recommonmark
-* sphinx_rtd_theme
+* myst-parser
+* sphinx-rtd-theme
 
-The following combination of versions has been tested: sphinx 2.3.1,
-recommonmark 0.6.0, and sphinx_rtd_theme 0.4.3.
+The following combination of versions has been tested: sphinx 8.1.3,
+myst-parser 4.0.0, and sphinx-rtd-theme 2.0.0.
 
 Now change into the `Documentation` folder in the coreboot directory and run
 this command in there
 
-	make sphinx
+	make
 
 If no error occurs, you can find the generated HTML documentation in
-`Documentation/_build` now.
+`Documentation/_build/html` now.
 
 ### Optional
 
@@ -88,15 +82,17 @@ Documentation:
 12.  Shouldn't cover implementation details; for details, the code is the
      reference.
 
-## Referencing markdown documents
-
-Starting with Sphinx 1.6 recommonmark's *auto_doc_ref* feature is broken.
-To reference documents use the TOC tree or inline RST code.
-
 ## Markdown and Tables
 
-Under Sphinx markdown tables are not supported. Therefore you can use following
-code block to write tables in reStructuredText and embed them into the markdown:
+Markdown tables are supported:
+
+    | Header 1   | Header 2  | Header 3  |
+    |------------|-----------|-----------|
+    | body row 1 | column 2  | column 3  |
+    | body row 2 | column 2  | column 3  |
+
+Tables can also be written using embedded reStructured Text, which provides
+additional features like the ability to merge cells:
 
     ```{eval-rst}
     +------------+------------+-----------+
@@ -117,22 +113,20 @@ code block to write tables in reStructuredText and embed them into the markdown:
 To make sure that all documents are included into the final documentation, you
 must reference each document from at least one *toctree*. The *toctree* must
 only reference files in the same folder or in subfolders !
-To create a toctree, simply use a bullet list or numbered list with a single
-reference. References in regular text aren't considered as *toctree* .
-This feature is enabled by recommonmark's *enable_auto_toc_tree* .
+To create a toctree, you must use the following syntax to invoke the
+Sphinx toctree directive:
 
 **Example toctree:**
 
-```
-* [Chapter 1](chapter1.md)
-* [Chapter 2](chapter2.md)
-* [Subchapter](sub/index.md)
-```
+    ```{toctree}
+    :maxdepth: 1
 
-```
-1. [Chapter 1](chapter1.md)
-2. [Chapter 2](chapter2.md)
-```
+    Chapter 1 <chapter1.md>
+    Chapter 2 <chapter2.md>
+    Subchapter <sub/index.md>
+    ```
+
+References in regular text aren't considered as *toctree* .
 
 If you do only reference the document, but do not include it in any toctree,
 you'll see the following warning:
@@ -152,11 +146,9 @@ readable tables, using the following reStructuredText snipped:
 Of course this can only be done from a markdown file that is included in the
 TOC tree.
 
-[coreboot]: https://coreboot.org
-[Documentation]: https://review.coreboot.org/cgit/coreboot.git/tree/Documentation
-[sphinx-autobuild]: https://github.com/GaretJax/sphinx-autobuild
-[guide]: http://www.sphinx-doc.org/en/stable/install.html
-[Sphinx]: http://www.sphinx-doc.org/en/master/
+[sphinx-autobuild]: https://github.com/sphinx-doc/sphinx-autobuild
+[guide]: https://www.sphinx-doc.org/en/master/usage/installation.html
+[Sphinx]: https://www.sphinx-doc.org/en/master/
 [Markdown Guide]: https://www.markdownguide.org/
 [Gerrit Guidelines]: ../contributing/gerrit_guidelines.md
 [review.coreboot.org]: https://review.coreboot.org

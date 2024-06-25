@@ -3232,6 +3232,7 @@
 #define PCI_DID_INTEL_PTL_U_H_ESPI_29			0xe31d
 #define PCI_DID_INTEL_PTL_U_H_ESPI_30			0xe31e
 #define PCI_DID_INTEL_PTL_U_H_ESPI_31			0xe31f
+#define PCI_DID_INTEL_SNR_LPC					0x18dc
 
 /* Intel PCIE device ids  */
 #define PCI_DID_INTEL_LPT_H_PCIE_RP1			0x8c10
@@ -4425,6 +4426,7 @@
 #define PCI_DID_INTEL_PTL_U_ID_1		0xb000
 #define PCI_DID_INTEL_PTL_H_ID_1		0xb001
 #define PCI_DID_INTEL_PTL_H_ID_2		0xb002
+#define PCI_DID_INTEL_SNR_ID			0x09a2
 
 /* Intel SMBUS device Ids */
 #define PCI_DID_INTEL_LPT_H_SMBUS			0x8c22
@@ -4502,6 +4504,7 @@
 #define PCI_DID_INTEL_PTL_H_TCSS_XHCI		0xe431
 #define PCI_DID_INTEL_PTL_U_H_XHCI		0xe37d
 #define PCI_DID_INTEL_PTL_U_H_TCSS_XHCI		0xe331
+#define PCI_DID_INTEL_SNR_XHCI			0x18d0
 
 /* Intel P2SB device Ids */
 #define PCI_DID_INTEL_APL_P2SB			0x5a92
@@ -4534,6 +4537,7 @@
 #define PCI_DID_INTEL_PTL_H_P2SB2		0xe44c
 #define PCI_DID_INTEL_PTL_U_H_P2SB		0xe320
 #define PCI_DID_INTEL_PTL_U_H_P2SB2		0xe34c
+#define PCI_DID_INTEL_SNR_P2SB			0x18dd
 
 /* Intel SRAM device Ids */
 #define PCI_DID_INTEL_APL_SRAM			0x5aec

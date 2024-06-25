@@ -478,6 +478,7 @@
 #define  PCIE_EXT_CAP_LTR_ID		 0x0018
 #define  PCIE_EXT_CAP_RESIZABLE_BAR	 0x0015
 #define  PCIE_EXT_CAP_RCECEA_ID	0x0007
+#define  PCIE_EXT_CAP_SRIOV_ID	0x0010
 
 /* Secondary PCI Express Extended Capability Structure */
 #define PCI_EXP_SEC_CAP_ID	0x19
@@ -578,6 +579,16 @@
 /* Root Complex Event Collector Endpoint Association */
 #define PCI_RCECEA_BITMAP 4
 #define PCI_RCECEA_BUSNUM 8
+
+/*
+ * Single Root IO Virtualization
+ * Section 9.3 of PCI Express Base Specification Revision 6.2.
+ */
+#define PCIE_EXT_CAP_SRIOV_TOTAL_VFS	0x0e
+#define PCIE_EXT_CAP_SRIOV_SUPPORTED_PAGE_SIZE	0x1c
+#define PCIE_EXT_CAP_SRIOV_SYSTEM_PAGE_SIZE	0x20
+#define PCIE_EXT_CAP_SRIOV_VF_BAR0	0x24
+#define PCIE_EXT_CAP_SRIOV_VF_BAR5	0x38
 
 /*
  * The PCI interface treats multi-function devices as independent

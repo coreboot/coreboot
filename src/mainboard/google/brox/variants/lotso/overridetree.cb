@@ -387,6 +387,10 @@ chip soc/intel/alderlake
 				register "speed" = "10 * MHz"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F17)"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_F7)"
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""goodix,hid-report-addr""
+				register "property_list[0].integer" = "0x22c8c"
  				device spi 0 on end
 			end # touchscreen
 		end

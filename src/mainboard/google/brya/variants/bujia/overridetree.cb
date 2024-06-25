@@ -46,6 +46,12 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexGSPI1] = PchSerialIoDisabled,
 	}"
 
+	register "serial_io_uart_mode" = "{
+		[PchSerialIoIndexUART0] = PchSerialIoPci,
+		[PchSerialIoIndexUART1] = PchSerialIoPci,
+		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
+	}"
+
 	register "ddi_ports_config" = "{
 		[DDI_PORT_A] = DDI_ENABLE_HPD,
 		[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,

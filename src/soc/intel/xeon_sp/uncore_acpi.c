@@ -272,12 +272,12 @@ static unsigned long acpi_create_drhd(unsigned long current, struct device *iomm
 		printk(BIOS_DEBUG, "[Hardware Unit Definition] Flags: 0x%x, PCI Segment Number: 0x%x, "
 			"Register Base Address: 0x%x\n",
 			DRHD_INCLUDE_PCI_ALL, pcie_seg, reg_base);
-		current += acpi_create_dmar_drhd(current, DRHD_INCLUDE_PCI_ALL,
+		current += acpi_create_dmar_drhd_4k(current, DRHD_INCLUDE_PCI_ALL,
 			pcie_seg, reg_base);
 	} else {
 		printk(BIOS_DEBUG, "[Hardware Unit Definition] Flags: 0x%x, PCI Segment Number: 0x%x, "
 			"Register Base Address: 0x%x\n", 0, pcie_seg, reg_base);
-		current += acpi_create_dmar_drhd(current, 0, pcie_seg, reg_base);
+		current += acpi_create_dmar_drhd_4k(current, 0, pcie_seg, reg_base);
 	}
 
 	// Add PCH IOAPIC

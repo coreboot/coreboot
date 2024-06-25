@@ -173,7 +173,7 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 	if (!vtbar)
 		return current;
 
-	current += acpi_create_dmar_drhd(current,
+	current += acpi_create_dmar_drhd_4k(current,
 			DRHD_INCLUDE_PCI_ALL, 0, vtbar);
 
 	current += acpi_create_dmar_ds_ioapic_from_hw(current,

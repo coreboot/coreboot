@@ -235,14 +235,14 @@ static unsigned long soc_fill_dmar(unsigned long current)
 		__func__, gfxvtbar, MCHBAR32(GFXVTBAR));
 	if (is_devfn_enabled(PCI_DEVFN_IGD) && gfxvtbar && gfxvten) {
 		tmp = current;
-		current += acpi_create_dmar_drhd(current, 0, 0, gfxvtbar);
+		current += acpi_create_dmar_drhd_4k(current, 0, 0, gfxvtbar);
 		current += acpi_create_dmar_ds_pci(current, 0, PCI_DEV_SLOT_IGD, 0);
 
 		acpi_dmar_drhd_fixup(tmp, current);
 	}
 
 	tmp = current;
-	current += acpi_create_dmar_drhd(current,
+	current += acpi_create_dmar_drhd_4k(current,
 			DRHD_INCLUDE_PCI_ALL, 0, VTVC0_BASE_ADDRESS);
 	current += acpi_create_dmar_ds_ioapic_from_hw(current,
 			IO_APIC_ADDR, V_P2SB_CFG_IBDF_BUS, V_P2SB_CFG_IBDF_DEV,

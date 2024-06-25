@@ -34,14 +34,14 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 	if (igfx && igfx->enabled) {
 		const unsigned long tmp = current;
 
-		current += acpi_create_dmar_drhd(current, 0, 0, GFXVT_BASE);
+		current += acpi_create_dmar_drhd_4k(current, 0, 0, GFXVT_BASE);
 		current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
 		acpi_dmar_drhd_fixup(tmp, current);
 	}
 
 	{
 		const unsigned long tmp = current;
-		current += acpi_create_dmar_drhd(current, DRHD_INCLUDE_PCI_ALL, 0, VTVC0_BASE);
+		current += acpi_create_dmar_drhd_4k(current, DRHD_INCLUDE_PCI_ALL, 0, VTVC0_BASE);
 
 		current += acpi_create_dmar_ds_ioapic_from_hw(current, IO_APIC_ADDR,
 							      PCH_IOAPIC_PCI_BUS,

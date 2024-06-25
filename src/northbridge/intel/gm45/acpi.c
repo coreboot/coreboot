@@ -25,13 +25,13 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 							   PCI_CLASS_REVISION);
 
 	unsigned long tmp = current;
-	current += acpi_create_dmar_drhd(current, 0, 0, IOMMU_BASE1);
+	current += acpi_create_dmar_drhd_4k(current, 0, 0, IOMMU_BASE1);
 	current += acpi_create_dmar_ds_pci(current, 0, 0x1b, 0);
 	acpi_dmar_drhd_fixup(tmp, current);
 
 	if (stepping != STEPPING_B2 && igd_active) {
 		tmp = current;
-		current += acpi_create_dmar_drhd(current, 0, 0, IOMMU_BASE2);
+		current += acpi_create_dmar_drhd_4k(current, 0, 0, IOMMU_BASE2);
 		current += acpi_create_dmar_ds_pci(current, 0, 0x2, 0);
 		current += acpi_create_dmar_ds_pci(current, 0, 0x2, 1);
 		acpi_dmar_drhd_fixup(tmp, current);
@@ -39,7 +39,7 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 
 	if (me_active) {
 		tmp = current;
-		current += acpi_create_dmar_drhd(current, 0, 0, IOMMU_BASE3);
+		current += acpi_create_dmar_drhd_4k(current, 0, 0, IOMMU_BASE3);
 		current += acpi_create_dmar_ds_pci(current, 0, 0x3, 0);
 		current += acpi_create_dmar_ds_pci(current, 0, 0x3, 1);
 		current += acpi_create_dmar_ds_pci(current, 0, 0x3, 2);
@@ -47,7 +47,7 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 		acpi_dmar_drhd_fixup(tmp, current);
 	}
 
-	current += acpi_create_dmar_drhd(current, DRHD_INCLUDE_PCI_ALL, 0, IOMMU_BASE4);
+	current += acpi_create_dmar_drhd_4k(current, DRHD_INCLUDE_PCI_ALL, 0, IOMMU_BASE4);
 
 	/* TODO: reserve GTT for 0.2.0 and 0.2.1? */
 	return current;

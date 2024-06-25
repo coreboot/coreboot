@@ -36,7 +36,7 @@ void acpi_create_dmar(acpi_dmar_t *dmar, enum dmar_flags flags,
 	header->checksum = acpi_checksum((void *)dmar, header->length);
 }
 
-unsigned long acpi_create_dmar_drhd(unsigned long current, u8 flags,
+unsigned long acpi_create_dmar_drhd_4k(unsigned long current, u8 flags,
 	u16 segment, u64 bar)
 {
 	dmar_entry_t *drhd = (dmar_entry_t *)current;

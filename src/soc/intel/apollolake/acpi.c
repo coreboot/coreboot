@@ -126,7 +126,7 @@ static unsigned long soc_fill_dmar(unsigned long current)
 	if (emit_igd) {
 		tmp = current;
 
-		current += acpi_create_dmar_drhd(current, 0, 0, gfxvtbar);
+		current += acpi_create_dmar_drhd_4k(current, 0, 0, gfxvtbar);
 		current += acpi_create_dmar_ds_pci(current, 0, 2, 0);
 		acpi_dmar_drhd_fixup(tmp, current);
 	}
@@ -138,7 +138,7 @@ static unsigned long soc_fill_dmar(unsigned long current)
 		union p2sb_bdf hbdf = p2sb_get_hpet_bdf();
 		p2sb_hide();
 
-		current += acpi_create_dmar_drhd(current,
+		current += acpi_create_dmar_drhd_4k(current,
 				DRHD_INCLUDE_PCI_ALL, 0, defvtbar);
 		current += acpi_create_dmar_ds_ioapic_from_hw(current,
 				IO_APIC_ADDR, ibdf.bus, ibdf.dev, ibdf.fn);

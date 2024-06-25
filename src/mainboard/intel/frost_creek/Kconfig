@@ -1,0 +1,30 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_INTEL_FROST_CREEK
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_INTEL_SNOWRIDGE
+	select BOARD_ROMSIZE_KB_32768
+	select HAVE_ACPI_TABLES
+	select NO_UART_ON_SUPERIO
+
+config MAINBOARD_DIR
+	default "intel/frost_creek"
+
+config MAINBOARD_PART_NUMBER
+	default "Frost Creek"
+
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"
+
+config CBFS_SIZE
+	default 0xc00000
+
+config DIMM_MAX
+	default 4
+
+config DIMM_SPD_SIZE
+	default 512
+
+endif # BOARD_INTEL_FROST_CREEK

@@ -1,0 +1,8 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+#ifndef _MAINBOARD_FROST_CREEK_BOARD_ID_H_
+#define _MAINBOARD_FROST_CREEK_BOARD_ID_H_
+
+#define BOARD_ID_FROST_CREEK 0x52
+
+#endif // _MAINBOARD_FROST_CREEK_BOARD_ID_H_

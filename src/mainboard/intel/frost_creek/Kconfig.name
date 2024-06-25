@@ -1,0 +1,2 @@
+config BOARD_INTEL_FROST_CREEK
+	bool "Frost Creek"

@@ -3,6 +3,10 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_PCR_GPMR_H
 #define SOC_INTEL_COMMON_BLOCK_PCR_GPMR_H
 
+#if CONFIG(USE_SOC_GPMR_DEFS)
+#include <soc/pcr_gpmr.h>
+#else
+
 #define GPMR_LPCLGIR1		0x2730
 #define GPMR_DMICTL		0x2234
 #define  GPMR_DMICTL_SRLOCK	(1 << 31)
@@ -23,5 +27,7 @@
 
 #define GPMR_DID_OFFSET(x)	(0x2780 + (x) * 8)
 #define  GPMR_EN		BIT(31)
+
+#endif
 
 #endif /* SOC_INTEL_COMMON_BLOCK_PCR_GPMR_H */

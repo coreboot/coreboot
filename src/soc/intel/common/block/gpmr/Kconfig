@@ -5,3 +5,13 @@ config SOC_INTEL_COMMON_BLOCK_GPMR
 	select SOC_INTEL_COMMON_BLOCK_PCR
 	help
 	  Intel Processor common GPMR support
+
+if SOC_INTEL_COMMON_BLOCK_GPMR
+
+config USE_SOC_GPMR_DEFS
+	bool
+	default n
+	help
+	  Specify if the SoC have specific GPMR register definitions.
+
+endif

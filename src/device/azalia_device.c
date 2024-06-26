@@ -96,8 +96,7 @@ static u16 codec_detect(u8 *base)
 
 no_codec:
 	/* Codec Not found */
-	/* Put HDA back in reset (BAR + 0x8) [0] */
-	azalia_set_bits(base + HDA_GCTL_REG, 1, 0);
+	azalia_enter_reset(base);
 	printk(BIOS_DEBUG, "azalia_audio: no codec!\n");
 	return 0;
 }

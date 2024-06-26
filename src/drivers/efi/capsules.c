@@ -10,9 +10,10 @@
 #include <drivers/efi/efivars.h>
 #include <drivers/efi/capsules.h>
 #include <memrange.h>
+#include <smm_call.h>
+#include <smmstore.h>
 #include <string.h>
 #include <stdio.h>
-#include <smmstore.h>
 #include <types.h>
 
 #include <Uefi/UefiSpec.h>
@@ -786,3 +787,16 @@ static void parse_capsules(void *unused)
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT, parse_capsules, NULL);
 
 #endif
+
+static void enable_capsule_smi(void *unused)
+{
+	uint32_t ret;
+
+	ret = call_smm(APM_CNT_SMMSTORE, SMMSTORE_CMD_USE_FULL_FLASH,
+		       (void *)(uintptr_t)uefi_capsule_count);
+
+	printk(BIOS_INFO, "%sabled capsule update SMI handler\n",
+	       ret == SMMSTORE_RET_SUCCESS ? "En" : "Dis");
+}
+
+BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_ENTRY, enable_capsule_smi, NULL);

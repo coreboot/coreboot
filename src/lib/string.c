@@ -125,9 +125,9 @@ int strncmp(const char *s1, const char *s2, size_t maxlen)
 	return 0;
 }
 
-int strspn(const char *str, const char *spn)
+size_t strspn(const char *str, const char *spn)
 {
-	int ret = 0;
+	size_t ret = 0;
 
 	while (*str != 0) {
 		const char *p;
@@ -140,9 +140,9 @@ int strspn(const char *str, const char *spn)
 	return ret;
 }
 
-int strcspn(const char *str, const char *spn)
+size_t strcspn(const char *str, const char *spn)
 {
-	int ret = 0;
+	size_t ret = 0;
 
 	while (*str != 0) {
 		const char *p;

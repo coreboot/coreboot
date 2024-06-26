@@ -71,7 +71,7 @@ char *strrchr(const char *s, int c)
 	return p;
 }
 
-char *strncpy(char *to, const char *from, int count)
+char *strncpy(char *to, const char *from, size_t count)
 {
 	char *ret = to;
 	char data;
@@ -113,7 +113,7 @@ int strcmp(const char *s1, const char *s2)
 	return r;
 }
 
-int strncmp(const char *s1, const char *s2, int maxlen)
+int strncmp(const char *s1, const char *s2, size_t maxlen)
 {
 	int i;
 

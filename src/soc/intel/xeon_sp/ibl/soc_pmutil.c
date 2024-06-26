@@ -47,23 +47,6 @@ int soc_get_rtc_failed(void)
 	return rtc_fail;
 }
 
-void soc_fill_power_state(struct chipset_power_state *ps)
-{
-	uint8_t *pmc;
-
-	pmc = pmc_mmio_regs();
-
-	ps->gen_pmcon_a = read32(pmc + GEN_PMCON_A);
-	ps->gen_pmcon_b = read32(pmc + GEN_PMCON_B);
-	ps->gblrst_cause[0] = read32(pmc + GBLRST_CAUSE0);
-	ps->gblrst_cause[1] = read32(pmc + GBLRST_CAUSE1);
-
-	printk(BIOS_DEBUG, "GEN_PMCON: %08x %08x\n", ps->gen_pmcon_a, ps->gen_pmcon_b);
-
-	printk(BIOS_DEBUG, "GBLRST_CAUSE: %08x %08x\n", ps->gblrst_cause[0],
-	       ps->gblrst_cause[1]);
-}
-
 /*
  * Set which power state system will be after reapplying
  * the power (from G3 State)
@@ -81,22 +64,12 @@ void pmc_soc_set_afterg3_en(const bool on)
 	write8(pmcbase + GEN_PMCON_A, reg8);
 }
 
-void pmc_lock_smi(void)
-{
-	printk(BIOS_DEBUG, "Locking SMM enable.\n");
-	pmc_or_mmio32(GEN_PMCON_B, SMI_LOCK);
-}
-
 void pmc_lockdown_config(void)
 {
-	/* PMSYNC */
-	pmc_or_mmio32(PMSYNC_MISC_CFG, PMSYNC_LOCK);
-
 	/* Make sure payload/OS can't trigger global reset */
 	pmc_global_reset_disable_and_lock();
 
 	/* Lock PMC stretch policy */
 	pmc_or_mmio32(GEN_PMCON_B, SLP_STR_POL_LOCK);
-	pmc_or_mmio32(ST_PG_FDIS1, ST_FDIS_LK);
 	pmc_or_mmio32(PM_CFG, PMC_LOCK);
 }

@@ -102,7 +102,7 @@ struct mpc_config_ioapic {
 	u8 mpc_apicver;
 	u8 mpc_flags;
 #define MPC_APIC_USABLE		0x01
-	void *mpc_apicaddr;
+	uintptr_t mpc_apicaddr;
 } __packed;
 
 struct mpc_config_intsrc {

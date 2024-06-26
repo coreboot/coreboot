@@ -215,7 +215,7 @@ static void smp_write_ioapic(struct mp_config_table *mc,
 	mpc->mpc_apicid = id;
 	mpc->mpc_apicver = ver;
 	mpc->mpc_flags = MPC_APIC_USABLE;
-	mpc->mpc_apicaddr = (void *)apicaddr;
+	mpc->mpc_apicaddr = apicaddr;
 	smp_add_mpc_entry(mc, sizeof(*mpc));
 }
 

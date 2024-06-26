@@ -13,3 +13,6 @@ config BOARD_GOOGLE_LOTSO
 
 config BOARD_GOOGLE_GREENBAYUPOC
 	bool "->  Greenbayupoc"
+
+config BOARD_GOOGLE_JUBILANT
+	bool "->  Jubilant"

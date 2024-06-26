@@ -13,7 +13,61 @@ chip soc/intel/skylake
 		device pci 07.0 alias chap         off                     end
 		device pci 08.0 alias gmm          off                     end # Gaussian Mixture Model
 		device pci 13.0 alias ish          off                     end # SensorHub
-		device pci 14.0 alias south_xhci   off ops usb_xhci_ops    end
+		device pci 14.0 alias south_xhci   off ops usb_xhci_ops
+			chip drivers/usb/acpi
+				register "type" = "UPC_TYPE_HUB"
+				device usb 0.0 alias xhci_root_hub off
+					chip drivers/usb/acpi
+						device usb 2.0 alias usb2_port1 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.1 alias usb2_port2 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.2 alias usb2_port3 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.3 alias usb2_port4 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.4 alias usb2_port5 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.5 alias usb2_port6 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.6 alias usb2_port7 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.7 alias usb2_port8 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.8 alias usb2_port9 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.9 alias usb2_port10 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.0 alias usb3_port1 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.1 alias usb3_port2 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.2 alias usb3_port3 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.3 alias usb3_port4 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.4 alias usb3_port5 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.5 alias usb3_port6 off end
+					end
+				end
+			end
+		end
 		device pci 14.1 alias south_xdci   off ops usb_xdci_ops    end
 		device pci 14.2 alias thermal      off                     end
 		device pci 14.3 alias cio          off                     end

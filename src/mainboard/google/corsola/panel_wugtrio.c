@@ -41,6 +41,14 @@ static struct panel_description wugtrio_panels[] = {
 		.disp_path = DISP_PATH_MIPI,
 		.orientation = LB_FB_ORIENTATION_RIGHT_UP,
 	},
+	/* LCE Corporation panel with bias IC on it */
+	[7] = {
+		.configure_backlight = backlight_control,
+		.power_on = mipi_panel_power_on,
+		.name = "LCE_LMFBX101117480",
+		.disp_path = DISP_PATH_MIPI,
+		.orientation = LB_FB_ORIENTATION_RIGHT_UP,
+	},
 };
 
 struct panel_description *get_panel_description(void)

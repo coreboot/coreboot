@@ -56,10 +56,19 @@ static u16 codec_detect(u8 *base)
 	if (azalia_exit_reset(base) < 0)
 		goto no_codec;
 
-	if (CONFIG(AZALIA_LOCK_DOWN_R_WO_GCAP)) {
-		/* If GCAP is R/WO, lock it down after deasserting controller reset */
-		write16(base + HDA_GCAP_REG, read16(base + HDA_GCAP_REG));
-	}
+	/*
+	 * In the HD Audio Specification Rev. 1.0a, every bitfield in the GCAP
+	 * register is RO (Read Only). However, it is known that in some Intel
+	 * PCHs (e.g 6-series and 7-series, documents 324645 and 326776), some
+	 * of the bitfields in the GCAP register are R/WO (Read / Write Once).
+	 * GCAP is RO on 5-series PCHs; 8-series and 9-series PCHs have a lock
+	 * bit for GCAP elsewhere.
+	 *
+	 * Lock GCAP by reading GCAP and writing back the same value. This has
+	 * no effect on platforms that implement GCAP as a RO register or lock
+	 * GCAP through a different mechanism.
+	 */
+	write16(base + HDA_GCAP_REG, read16(base + HDA_GCAP_REG));
 
 	/* clear STATESTS bits (BAR + 0x0e)[14:0] */
 	reg16 = read16(base + HDA_STATESTS_REG);

@@ -575,15 +575,6 @@ config AZALIA_HDA_CODEC_SUPPORT
 	  mainboard directory to the build which contain the board-specific HD
 	  audio codec configuration.
 
-config AZALIA_LOCK_DOWN_R_WO_GCAP
-	def_bool n
-	depends on AZALIA_HDA_CODEC_SUPPORT
-	help
-	  The GCAP register is implemented as R/WO (Read / Write Once) on some
-	  HD Audio controllers, such as Intel 6-series PCHs. Select this option
-	  to lock down the GCAP register after deasserting the controller reset
-	  bit. Locking is done by reading GCAP and writing back the read value.
-
 config PCIEXP_PLUGIN_SUPPORT
 	bool
 	default y

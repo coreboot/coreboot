@@ -20,5 +20,6 @@
 #define ECRAM_FN_CTRL_REVERSE	0x43
 #define ECRAM_MAX_CHARGE	dead_code_t(uint8_t)
 #define ECRAM_FAST_CHARGE	dead_code_t(uint8_t)
+#define ECRAM_CHARGING_SPEED	dead_code_t(uint8_t)
 
 #endif

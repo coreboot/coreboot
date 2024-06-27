@@ -69,6 +69,7 @@ static void merlin_init(struct device *dev)
 	 * trackpad_state
 	 * kbl_brightness
 	 * kbl_state
+	 * charging_speed
 	 */
 
 	/*
@@ -240,6 +241,28 @@ static void merlin_init(struct device *dev)
 	 */
 
 	ec_write(ECRAM_KBL_STATE, KBL_ENABLED);
+
+	/*
+	 * Charging Speed
+	 *
+	 * Setting:	charging_speed
+	 *
+	 * Values:	1.0C, 0.5C, 0.2C
+	 * Default:	0.5C
+	 *
+	 */
+	const uint8_t charging_speed[] = {
+		SPEED_1_0C,
+		SPEED_0_5C,
+		SPEED_0_2C
+	};
+
+	if (CONFIG(EC_STARLABS_CHARGING_SPEED))
+		ec_write(ECRAM_CHARGING_SPEED,
+			get_ec_value_from_option("charging_speed",
+				SPEED_0_5C,
+				charging_speed,
+				ARRAY_SIZE(charging_speed)));
 }
 
 static struct device_operations ops = {

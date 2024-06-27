@@ -64,6 +64,12 @@ config EC_STARLABS_MAX_CHARGE
 	help
 	  Select if the mainboard supports limiting the maximum charge of the battery.
 
+config EC_STARLABS_CHARGING_SPEED
+	bool "Enable setting the charging speed"
+	depends on EC_STARLABS_MERLIN
+	help
+	  Select if the mainboard supports configuring the charging speed.
+
 config EC_STARLABS_MERLIN
 	bool "Use open-source Merlin EC Firmware"
 	default n

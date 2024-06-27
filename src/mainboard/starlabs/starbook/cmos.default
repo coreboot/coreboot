@@ -20,6 +20,7 @@ card_reader=Enable
 # EC
 kbl_timeout=30 seconds
 fn_ctrl_swap=Disable
+charging_speed=0.5C
 # Functions
 fn_lock_state=0x1
 trackpad_state=0x1

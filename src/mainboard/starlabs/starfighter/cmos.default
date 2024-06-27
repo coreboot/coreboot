@@ -16,6 +16,7 @@ pci_hot_plug=Disable
 # EC
 kbl_timeout=30 seconds
 fn_ctrl_swap=Disable
+charging_speed=0.5C
 # southbridge
 power_on_after_fail=Disable
 # Functions

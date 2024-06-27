@@ -33,6 +33,7 @@ entries
 
 # coreboot config options: EC
 600	2	e	6	max_charge
+608	2	e	11	charging_speed
 
 # coreboot config options: check sums
 984	16	h	0	check_sum
@@ -71,6 +72,10 @@ enumerations
 6	0	100%
 6	1	80%
 6	2	60%
+
+7	0	1.0C
+7	1	0.5C
+7	2	0.2C
 
 # -----------------------------------------------------------------
 checksums

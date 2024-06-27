@@ -40,6 +40,7 @@ entries
 608	1	e	1	fn_ctrl_swap
 616	2	e	8	max_charge
 624	2	e	9	fan_mode
+632	2	e	11	charging_speed
 
 # coreboot config options: check sums
 984	16	h	0	check_sum
@@ -101,6 +102,10 @@ enumerations
 10	1	Low
 10	2	High
 10	3	On
+
+11	0	1.0C
+11	1	0.5C
+11	2	0.2C
 
 # -----------------------------------------------------------------
 checksums

@@ -98,6 +98,11 @@
 #define KBL_DISABLED		0x00
 #define KBL_ENABLED		0xdd
 
+/* Charging Speed */
+#define SPEED_1_0C		0x00
+#define SPEED_0_5C		0x01
+#define SPEED_0_2C		0x02
+
 uint16_t ec_get_version(void);
 
 #endif

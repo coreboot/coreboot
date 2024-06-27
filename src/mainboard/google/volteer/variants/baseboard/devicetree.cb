@@ -213,13 +213,6 @@ chip soc/intel/tigerlake
 
 	# HD Audio
 	register "PchHdaDspEnable" = "1"
-	register "PchHdaAudioLinkHdaEnable" = "0"
-	register "PchHdaAudioLinkDmicEnable[0]" = "0"
-	register "PchHdaAudioLinkDmicEnable[1]" = "0"
-	register "PchHdaAudioLinkSspEnable[0]" = "0"
-	register "PchHdaAudioLinkSspEnable[1]" = "0"
-	register "PchHdaAudioLinkSndwEnable[0]" = "0"
-	register "PchHdaAudioLinkSndwEnable[1]" = "0"
 
 	# TCSS USB3
 	register "UsbTcPortEn" = "0x3"

@@ -126,11 +126,9 @@ chip soc/intel/tigerlake
 
 	#HD Audio
 	register "PchHdaDspEnable" = "1"
-	register "PchHdaAudioLinkHdaEnable" = "0"
 	register "PchHdaAudioLinkDmicEnable[0]" = "1"
 	register "PchHdaAudioLinkDmicEnable[1]" = "1"
 	register "PchHdaAudioLinkSspEnable[0]" = "1"
-	register "PchHdaAudioLinkSspEnable[1]" = "0"
 	register "PchHdaAudioLinkSspEnable[2]" = "1"
 	register "PchHdaAudioLinkSndwEnable[0]" = "1"
 

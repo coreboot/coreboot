@@ -5,15 +5,6 @@ chip soc/intel/tigerlake
 	# and controller 1 channel 0 and 1.
 	register "CmdMirror" = "0x00000033"
 
-	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC0)"	# Type-A / Type-C Port 0
-	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC1)"	# Type-A / Type-C Port 1
-	register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC1)"	# Type-A / Type-C Port 1
-	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# Front Camera
-	register "usb2_ports[4]" = "USB2_PORT_TYPE_C(OC0)"	# Type-A / Type-C Port 0
-
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# Type-A / Type-C Port 0
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC1)"	# Type-A / Type-C Port 1
-
 	# Disable SRCCLKREQ1#
 	register "PcieClkSrcUsage[1]" = "PCIE_CLK_NOTUSED"
 
@@ -195,6 +186,19 @@ chip soc/intel/tigerlake
 			end
 		end
 		device ref south_xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_TYPE_C(OC0),	// Type-A / Type-C Port 0
+				[1] = USB2_PORT_TYPE_C(OC1),	// Type-A / Type-C Port 1
+				[2] = USB2_PORT_TYPE_C(OC1),	// Type-A / Type-C Port 1
+				[3] = USB2_PORT_MID(OC_SKIP),	// Front Camera
+				[4] = USB2_PORT_TYPE_C(OC0),	// Type-A / Type-C Port 0
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC0),	// Type-A / Type-C Port 0
+				[1] = USB3_PORT_DEFAULT(OC1),	// Type-A / Type-C Port 1
+			}"
+
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
 					chip drivers/usb/acpi

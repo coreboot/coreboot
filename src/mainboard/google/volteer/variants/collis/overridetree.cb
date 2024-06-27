@@ -15,15 +15,6 @@ chip soc/intel/tigerlake
 	register "DdiPort1Hpd" = "0"
 	register "DdiPort2Hpd" = "0"
 
-	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC1)"	# Type-A Port A0
-	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC2)"	# Type-A Port A1
-	register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC0)"	# Type-C Port C1
-	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# Front Camera
-	register "usb2_ports[4]" = "USB2_PORT_TYPE_C(OC3)"	# Type-C Port C0
-	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# WFC Camera
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC1)"	# USB3/2 Type-A Port A0
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC2)"	# USB3/2 Type-A Port A1
-
 	# Disable SRCCLKREQ1#
 	register "PcieClkSrcUsage[1]" = "PCIE_CLK_NOTUSED"
 
@@ -248,6 +239,20 @@ chip soc/intel/tigerlake
 			end
 		end
 		device ref south_xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_TYPE_C(OC1),	// Type-A Port A0
+				[1] = USB2_PORT_TYPE_C(OC2),	// Type-A Port A1
+				[2] = USB2_PORT_TYPE_C(OC0),	// Type-C Port C1
+				[3] = USB2_PORT_MID(OC_SKIP),	// Front Camera
+				[4] = USB2_PORT_TYPE_C(OC3),	// Type-C Port C0
+				[5] = USB2_PORT_MID(OC_SKIP),	// WFC Camera
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC1),	// USB3/2 Type-A Port A0
+				[1] = USB3_PORT_DEFAULT(OC2),	// USB3/2 Type-A Port A1
+			}"
+
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
 					chip drivers/usb/acpi

@@ -14,21 +14,6 @@ chip soc/intel/tigerlake
 	# CNVi BT enable/disable
 	register "CnviBtCore" = "true"
 
-	register "usb2_ports[0]" = "USB2_PORT_MID(OC3)"		# Type-C Port1
-	register "usb2_ports[1]" = "USB2_PORT_EMPTY"		# M.2 WWAN
-	register "usb2_ports[2]" = "USB2_PORT_MID(OC0)"		# M.2 Bluetooth, USB3/2 Type A Port1
-	register "usb2_ports[3]" = "USB2_PORT_MID(OC3)"		# USB3/2 Type A Port 1
-	register "usb2_ports[4]" = "USB2_PORT_MID(OC3)"		# Type-C Port2
-	register "usb2_ports[5]" = "USB2_PORT_MID(OC3)"		# Type-C Port3 / MECC
-	register "usb2_ports[6]" = "USB2_PORT_EMPTY"		# Not used
-	register "usb2_ports[7]" = "USB2_PORT_EMPTY"		# Not used
-	register "usb2_ports[8]" = "USB2_PORT_EMPTY"		# Not used
-	register "usb2_ports[9]" = "USB2_PORT_MID(OC3)"		# CNVi/BT
-
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)"	# USB3/2 Type A port1
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)"	# USB3/2 Type A port2
-	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC3)"	# USB3/USB2 Flex Connector
-
 	# CPU replacement check
 	register "CpuReplacementCheck" = "1"
 
@@ -215,7 +200,26 @@ chip soc/intel/tigerlake
 		end
 		device ref gspi2 off end
 		device ref gspi3 off end
-		device ref south_xhci on  end
+		device ref south_xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC3),	// Type-C Port1
+				[1] = USB2_PORT_EMPTY,		// M.2 WWAN
+				[2] = USB2_PORT_MID(OC0),	// M.2 Bluetooth, USB3/2 Type A Port1
+				[3] = USB2_PORT_MID(OC3),	// USB3/2 Type A Port 1
+				[4] = USB2_PORT_MID(OC3),	// Type-C Port2
+				[5] = USB2_PORT_MID(OC3),	// Type-C Port3 / MECC
+				[6] = USB2_PORT_EMPTY,		// Not used
+				[7] = USB2_PORT_EMPTY,		// Not used
+				[8] = USB2_PORT_EMPTY,		// Not used
+				[9] = USB2_PORT_MID(OC3),	// CNVi/BT
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC0),	// USB3/2 Type A port1
+				[1] = USB3_PORT_DEFAULT(OC0),	// USB3/2 Type A port2
+				[3] = USB3_PORT_DEFAULT(OC3),	// USB3/USB2 Flex Connector
+			}"
+		end
 		device ref south_xdci on  end
 		device ref shared_ram on  end
 		device ref cnvi_wifi on

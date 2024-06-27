@@ -1,10 +1,4 @@
 chip soc/intel/tigerlake
-	register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A / Type-C Port 0
-	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A / Type-C Port 1
-	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# Front Camera
-	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A / Type-C Port 2
-	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# Reserve for CNVi BT
-
 	register "SaGv" = "SaGv_Disabled"
 
 	device domain 0 on
@@ -128,6 +122,14 @@ chip soc/intel/tigerlake
 			end
 		end
 		device ref south_xhci on
+			register "usb2_ports" = "{
+				[1] = USB2_PORT_MID(OC_SKIP),	// Type-A / Type-C Port 0
+				[3] = USB2_PORT_MID(OC_SKIP),	// Type-A / Type-C Port 1
+				[4] = USB2_PORT_MID(OC_SKIP),	// Front Camera
+				[5] = USB2_PORT_MID(OC_SKIP),	// Type-A / Type-C Port 2
+				[9] = USB2_PORT_MID(OC_SKIP),	// Reserve for CNVi BT
+			}"
+
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
 					chip drivers/usb/acpi

@@ -66,15 +66,6 @@ chip soc/intel/tigerlake
 		},
 	}"
 
-	# Disable M.2 WWAN
-	register "usb2_ports[2]" = "USB2_PORT_EMPTY"
-
-	# Type-A / Type-C C1
-	register "usb2_ports[3]" = "USB2_PORT_TYPE_C(OC_SKIP)"
-
-	# Type-A / Type-C C0
-	register "usb2_ports[8]" = "USB2_PORT_TYPE_C(OC_SKIP)"
-
 	device domain 0 on
 		device ref dptf on
 			chip drivers/intel/dptf
@@ -146,6 +137,12 @@ chip soc/intel/tigerlake
 			end
 		end
 		device ref south_xhci on
+			register "usb2_ports" = "{
+				[2] = USB2_PORT_EMPTY,			// Disable M.2 WWAN
+				[3] = USB2_PORT_TYPE_C(OC_SKIP),	// Type-A / Type-C C1
+				[8] = USB2_PORT_TYPE_C(OC_SKIP),	// Type-A / Type-C C0
+			}"
+
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
 					chip drivers/usb/acpi

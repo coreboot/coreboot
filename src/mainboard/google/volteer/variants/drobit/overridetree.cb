@@ -17,9 +17,6 @@ chip soc/intel/tigerlake
 		.tdp_pl4 = 105,
 	}"
 
-	register "usb2_ports[3]" = "USB2_PORT_TYPE_C(OC0)"     # Type-C port 1
-	register "usb2_ports[8]" = "USB2_PORT_TYPE_C(OC3)"     # Type-C port 0
-
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
 	#+-------------------+---------------------------+
@@ -260,6 +257,11 @@ chip soc/intel/tigerlake
 			end
 		end
 		device ref south_xhci on
+			register "usb2_ports" = "{
+				[3] = USB2_PORT_TYPE_C(OC0),	// Type-C port 1
+				[8] = USB2_PORT_TYPE_C(OC3),	// Type-C port 0
+			}"
+
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
 					chip drivers/usb/acpi

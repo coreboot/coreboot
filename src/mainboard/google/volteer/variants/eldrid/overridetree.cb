@@ -59,36 +59,6 @@ chip soc/intel/tigerlake
 		},
 	}"
 
-	#Disable Type-A Port A1
-	register "usb2_ports[1]" = "USB2_PORT_EMPTY"
-
-	#Disable M.2 WWAN
-	register "usb2_ports[2]" = "USB2_PORT_EMPTY"
-
-	#improve the USB2 Port1 eye diagram
-	register "usb2_ports[3]" = "{
-		.enable = 1,
-		.ocpin = OC_SKIP,
-		.tx_bias = USB2_BIAS_39P35MV,
-		.tx_emp_enable = USB2_DE_EMP_ON_PRE_EMP_ON,
-		.pre_emp_bias = USB2_BIAS_39P35MV,
-		.pre_emp_bit = USB2_FULL_BIT_PRE_EMP,
-		.type_c = 1,
-	}"
-
-	#lower camera driving
-	register "usb2_ports[4]" = "{
-		.enable = 1,
-		.ocpin = OC_SKIP,
-		.tx_bias = USB2_BIAS_0MV,
-		.tx_emp_enable = USB2_EMP_OFF,
-		.pre_emp_bias = USB2_BIAS_0MV,
-		.pre_emp_bit = USB2_FULL_BIT_PRE_EMP,
-	}"
-
-	#Type-A / Type-C C0
-	register "usb2_ports[8]" = "USB2_PORT_TYPE_C(OC_SKIP)"
-
 	device domain 0 on
 		device ref dptf on
 			# DPTF Policy for Eldrid board
@@ -252,6 +222,35 @@ chip soc/intel/tigerlake
 			end
 		end
 		device ref south_xhci on
+			register "usb2_ports" = "{
+				[1] = USB2_PORT_EMPTY,	// Disable Type-A Port A1
+				[2] = USB2_PORT_EMPTY,	// Disable M.2 WWAN
+
+				// improve the USB2 Port1 eye diagram
+				[3] = {
+					.enable = 1,
+					.ocpin = OC_SKIP,
+					.tx_bias = USB2_BIAS_39P35MV,
+					.tx_emp_enable = USB2_DE_EMP_ON_PRE_EMP_ON,
+					.pre_emp_bias = USB2_BIAS_39P35MV,
+					.pre_emp_bit = USB2_FULL_BIT_PRE_EMP,
+					.type_c = 1,
+				},
+
+				// lower camera driving
+				[4] = {
+					.enable = 1,
+					.ocpin = OC_SKIP,
+					.tx_bias = USB2_BIAS_0MV,
+					.tx_emp_enable = USB2_EMP_OFF,
+					.pre_emp_bias = USB2_BIAS_0MV,
+					.pre_emp_bit = USB2_FULL_BIT_PRE_EMP,
+				},
+
+				// Type-A / Type-C C0
+				[8] = USB2_PORT_TYPE_C(OC_SKIP),
+			}"
+
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
 					chip drivers/usb/acpi

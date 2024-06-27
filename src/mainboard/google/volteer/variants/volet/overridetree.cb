@@ -2,9 +2,6 @@ chip soc/intel/tigerlake
 	register "DdiPort1Hpd" = "0"
 	register "DdiPort2Hpd" = "0"
 
-	register "usb2_ports[3]" = "USB2_PORT_TYPE_C(OC_SKIP)"     # Type-A / Type-C Cl
-	register "usb2_ports[8]" = "USB2_PORT_TYPE_C(OC_SKIP)"     # Type-A / Type-C C0
-
 	register "TcssAuxOri" = "1"
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E10, .pad_auxn_dc = GPP_E13}"
 
@@ -185,6 +182,11 @@ chip soc/intel/tigerlake
 			end
 		end
 		device ref south_xhci on
+			register "usb2_ports" = "{
+				[3] = USB2_PORT_TYPE_C(OC_SKIP),	// Type-A / Type-C Cl
+				[8] = USB2_PORT_TYPE_C(OC_SKIP),	// Type-A / Type-C C0
+			}"
+
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
 					chip drivers/usb/acpi

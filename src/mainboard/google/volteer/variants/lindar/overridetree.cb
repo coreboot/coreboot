@@ -4,15 +4,6 @@ chip soc/intel/tigerlake
 	register "TcssAuxOri" = "1"
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E10, .pad_auxn_dc = GPP_E13}"
 
-	# USB Port Config
-	register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A0
-	register "usb2_ports[3]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Type-A / Type-C C1
-	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 Camera
-	register "usb2_ports[8]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Type-A / Type-C C0
-	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 Bluetooth
-
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC1)"	# USB3/2 Type A port A0
-
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
 	#+-------------------+---------------------------+
@@ -327,6 +318,16 @@ chip soc/intel/tigerlake
 			end
 		end
 		device ref south_xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC_SKIP),		// Type-A Port A0
+				[3] = USB2_PORT_TYPE_C(OC_SKIP),	// Type-A / Type-C C1
+				[4] = USB2_PORT_MID(OC_SKIP),		// M.2 Camera
+				[8] = USB2_PORT_TYPE_C(OC_SKIP),	// Type-A / Type-C C0
+				[9] = USB2_PORT_MID(OC_SKIP),		// M.2 Bluetooth
+			}"
+
+			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC1)"	# USB3/2 Type A port A0
+
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
 					chip drivers/usb/acpi

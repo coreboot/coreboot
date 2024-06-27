@@ -141,12 +141,6 @@ chip soc/intel/tigerlake
 	register "PcieClkSrcUsage[5]" = "PCIE_CLK_NOTUSED"
 	register "PcieClkSrcUsage[6]" = "PCIE_CLK_NOTUSED"
 
-	# Enable SATA
-	register "SataSalpSupport" = "1"
-	register "SataPortsEnable[1]" = "1"
-	register "SataPortsDevSlp[1]" = "1"
-	register "SataPortsEnableDitoConfig[1]" = "1"
-
 	register "SerialIoI2cMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
@@ -462,7 +456,12 @@ chip soc/intel/tigerlake
 		device ref i2c2 on end
 		device ref i2c3 on end
 		device ref heci1 on end
-		device ref sata on end
+		device ref sata on
+			register "SataSalpSupport" = "1"
+			register "SataPortsEnable[1]" = "1"
+			register "SataPortsDevSlp[1]" = "1"
+			register "SataPortsEnableDitoConfig[1]" = "1"
+		end
 		device ref pcie_rp7 on end
 		device ref pcie_rp8 on
 			probe DB_SD SD_GL9755S

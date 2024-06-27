@@ -59,10 +59,6 @@ chip soc/intel/tigerlake
 	register "PcieClkSrcUsage[2]" = "0x3"
 	register "PcieClkSrcUsage[3]" = "0x8"
 
-	register "SataSalpSupport" = "1"
-	register "SataPortsEnable[0]" = "1"
-	register "SataPortsEnable[1]" = "1"
-
 	# enabling EDP in PortA
 	register "DdiPortAConfig" = "DDI_PORT_CFG_EDP"
 
@@ -267,7 +263,11 @@ chip soc/intel/tigerlake
 		device ref csme2 off end
 		device ref heci3 off end
 		device ref heci4 off end
-		device ref sata on  end
+		device ref sata on
+			register "SataSalpSupport" = "1"
+			register "SataPortsEnable[0]" = "1"
+			register "SataPortsEnable[1]" = "1"
+		end
 		device ref i2c4 off end
 		device ref i2c5 on  end
 		device ref uart2 on  end

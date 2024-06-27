@@ -97,7 +97,7 @@ config SOC_INTEL_STORE_ISH_FW_VERSION
 
 config SOC_INTEL_CSE_SEND_EOP_EARLY
 	bool "CSE send EOP early"
-	depends on SOC_INTEL_COMMON_BLOCK_CSE
+	depends on SOC_INTEL_COMMON_BLOCK_CSE && !SOC_INTEL_CSE_SEND_EOP_BY_PAYLOAD
 	help
 	  Use this config to send End Of Post (EOP) earlier through SoC code in order to
 	  reduce time required to send EOP and getting CSE response.
@@ -106,7 +106,7 @@ config SOC_INTEL_CSE_SEND_EOP_EARLY
 
 config SOC_INTEL_CSE_SEND_EOP_LATE
 	bool
-	depends on SOC_INTEL_COMMON_BLOCK_CSE
+	depends on SOC_INTEL_COMMON_BLOCK_CSE && !SOC_INTEL_CSE_SEND_EOP_BY_PAYLOAD
 	help
 	  Use this config to send End Of Post (EOP) late (even after CSE `final` operation)
 	  using boot state either `BS_PAYLOAD_BOOT` or `BS_PAYLOAD_LOAD` from common code
@@ -119,7 +119,7 @@ config SOC_INTEL_CSE_SEND_EOP_LATE
 
 config SOC_INTEL_CSE_SEND_EOP_ASYNC
 	bool
-	depends on SOC_INTEL_COMMON_BLOCK_CSE
+	depends on SOC_INTEL_COMMON_BLOCK_CSE && !SOC_INTEL_CSE_SEND_EOP_BY_PAYLOAD
 	depends on !SOC_INTEL_CSE_SEND_EOP_LATE
 	depends on !SOC_INTEL_CSE_SEND_EOP_EARLY
 	help
@@ -139,10 +139,6 @@ config SOC_INTEL_CSE_SEND_EOP_ASYNC
 config SOC_INTEL_CSE_SEND_EOP_BY_PAYLOAD
 	bool
 	depends on SOC_INTEL_COMMON_BLOCK_CSE
-	depends on !SOC_INTEL_CSE_SEND_EOP_LATE
-	depends on !SOC_INTEL_CSE_SEND_EOP_EARLY
-	depends on !SOC_INTEL_CSE_SEND_EOP_ASYNC
-	depends on !DISABLE_HECI1_AT_PRE_BOOT
 	help
 	  Use this config to specify that the payload will send the End Of Post (EOP) instead
 	  of coreboot.

@@ -17,5 +17,10 @@ subdirs-$(CONFIG_CPU_INTEL_MODEL_206AX) += model_206ax
 subdirs-$(CONFIG_CPU_INTEL_HASWELL) += haswell
 subdirs-$(CONFIG_CPU_INTEL_SLOT_1) += slot_1
 subdirs-$(CONFIG_CPU_INTEL_SOCKET_LGA775) += socket_LGA775
+subdirs-$(CONFIG_CPU_INTEL_SOCKET_LGA1700) += socket_LGA1700
+subdirs-$(CONFIG_CPU_INTEL_SOCKET_LGA3647_1) += socket_LGA3647_1
+subdirs-$(CONFIG_CPU_INTEL_SOCKET_LGA4189) += socket_LGA4189
+subdirs-$(CONFIG_CPU_INTEL_SOCKET_LGA4677) += socket_LGA4677
+subdirs-$(CONFIG_CPU_INTEL_SOCKET_OTHER) += socket_OTHER
 
 subdirs-y += common

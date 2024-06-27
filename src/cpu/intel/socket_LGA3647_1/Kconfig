@@ -1,0 +1,2 @@
+config CPU_INTEL_SOCKET_LGA3647_1
+	bool

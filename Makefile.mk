@@ -475,7 +475,11 @@ COREBOOT_EXTRA_VERSION := -$(call strip_quotes,$(CONFIG_LOCALVERSION))
 COREBOOT_EXPORTS += COREBOOT_EXTRA_VERSION
 endif
 
-CPPFLAGS_common := -Isrc -Isrc/include -Isrc/commonlib/include -Isrc/commonlib/bsd/include -I$(obj)
+CPPFLAGS_common := -Isrc
+CPPFLAGS_common += -Isrc/include
+CPPFLAGS_common += -Isrc/commonlib/include
+CPPFLAGS_common += -Isrc/commonlib/bsd/include
+CPPFLAGS_common += -I$(obj)
 VBOOT_SOURCE ?= 3rdparty/vboot
 CPPFLAGS_common += -I$(VBOOT_SOURCE)/firmware/include
 CPPFLAGS_common += -include $(src)/include/kconfig.h
@@ -493,13 +497,34 @@ ifeq ($(CONFIG_PCI_OPTION_ROM_RUN_YABEL)$(CONFIG_PCI_OPTION_ROM_RUN_REALMODE),y)
 CPPFLAGS_ramstage += -Isrc/device/oprom/include
 endif
 
-CFLAGS_common += -pipe -g -nostdinc -std=gnu11
-CFLAGS_common += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
-CFLAGS_common += -Wwrite-strings -Wredundant-decls -Wno-trigraphs -Wimplicit-fallthrough
-CFLAGS_common += -Wshadow -Wdate-time -Wtype-limits -Wvla -Wold-style-definition
-CFLAGS_common += -Wdangling-else -Wmissing-include-dirs
-CFLAGS_common += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
-CFLAGS_common += -fstrict-aliasing -ffunction-sections -fdata-sections -fno-pie
+CFLAGS_common += -pipe
+CFLAGS_common += -g
+CFLAGS_common += -nostdinc
+CFLAGS_common += -std=gnu11
+CFLAGS_common += -nostdlib
+CFLAGS_common += -Wall
+CFLAGS_common += -Wundef
+CFLAGS_common += -Wstrict-prototypes
+CFLAGS_common += -Wmissing-prototypes
+CFLAGS_common += -Wwrite-strings
+CFLAGS_common += -Wredundant-decls
+CFLAGS_common += -Wno-trigraphs
+CFLAGS_common += -Wimplicit-fallthrough
+CFLAGS_common += -Wshadow
+CFLAGS_common += -Wdate-time
+CFLAGS_common += -Wtype-limits
+CFLAGS_common += -Wvla
+CFLAGS_common += -Wold-style-definition
+CFLAGS_common += -Wdangling-else
+CFLAGS_common += -Wmissing-include-dirs
+CFLAGS_common += -fno-common
+CFLAGS_common += -ffreestanding
+CFLAGS_common += -fno-builtin
+CFLAGS_common += -fomit-frame-pointer
+CFLAGS_common += -fstrict-aliasing
+CFLAGS_common += -ffunction-sections
+CFLAGS_common += -fdata-sections
+CFLAGS_common += -fno-pie
 CFLAGS_common += -Wstring-compare
 ifeq ($(CONFIG_COMPILER_GCC),y)
 CFLAGS_common += -Wold-style-declaration
@@ -508,16 +533,25 @@ ifeq ($(CCC_ANALYZER_OUTPUT_FORMAT),)
 CFLAGS_common += -Wno-packed-not-aligned
 CFLAGS_common += -fconserve-stack
 CFLAGS_common += -Wnull-dereference
-CFLAGS_common += -Wlogical-op -Wduplicated-cond -Wno-array-compare
+CFLAGS_common += -Wlogical-op
+CFLAGS_common += -Wduplicated-cond
+CFLAGS_common += -Wno-array-compare
 endif
 endif
 
 ADAFLAGS_common += -gnatp
-ADAFLAGS_common += -Wuninitialized -Wall -Werror
-ADAFLAGS_common += -pipe -g -nostdinc
-ADAFLAGS_common += -Wstrict-aliasing -Wshadow
-ADAFLAGS_common += -fno-common -fomit-frame-pointer
-ADAFLAGS_common += -ffunction-sections -fdata-sections
+ADAFLAGS_common += -Wuninitialized
+ADAFLAGS_common += -Wall
+ADAFLAGS_common += -Werror
+ADAFLAGS_common += -pipe
+ADAFLAGS_common += -g
+ADAFLAGS_common += -nostdinc
+ADAFLAGS_common += -Wstrict-aliasing
+ADAFLAGS_common += -Wshadow
+ADAFLAGS_common += -fno-common
+ADAFLAGS_common += -fomit-frame-pointer
+ADAFLAGS_common += -ffunction-sections
+ADAFLAGS_common += -fdata-sections
 ADAFLAGS_common += -fno-pie
 # Ada warning options:
 #
@@ -557,7 +591,10 @@ ADAFLAGS_common += -gnatwa.eeD.HHTU.U.W.Y
 # Disable style checks for now
 ADAFLAGS_common += -gnatyN
 
-LDFLAGS_common := --gc-sections -nostdlib --nmagic -static
+LDFLAGS_common := --gc-sections
+LDFLAGS_common += -nostdlib
+LDFLAGS_common += --nmagic
+LDFLAGS_common += -static
 
 # Workaround for RISC-V linker bug, merge back into above line when fixed.
 # https://sourceware.org/bugzilla/show_bug.cgi?id=27180

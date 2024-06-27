@@ -17,6 +17,7 @@ legacy_8254_timer=Disable
 pci_hot_plug=Disable
 fingerprint_reader=Enable
 card_reader=Enable
+lid_switch=Enable
 # EC
 kbl_timeout=30 seconds
 fn_ctrl_swap=Disable

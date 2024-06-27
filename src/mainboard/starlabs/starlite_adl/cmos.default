@@ -13,5 +13,6 @@ wireless=Enable
 webcam=Enable
 camera=Enable
 microphone=Enable
+lid_switch=Disable
 # EC
 charging_speed=0.5C

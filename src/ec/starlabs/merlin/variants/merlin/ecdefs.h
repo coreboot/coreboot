@@ -21,5 +21,6 @@
 #define ECRAM_FAN_MODE		0x1b
 #define ECRAM_FAST_CHARGE	dead_code_t(uint8_t)
 #define ECRAM_CHARGING_SPEED	0x1d
+#define ECRAM_LID_SWITCH	0x1e
 
 #endif

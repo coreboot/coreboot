@@ -70,6 +70,12 @@ config EC_STARLABS_CHARGING_SPEED
 	help
 	  Select if the mainboard supports configuring the charging speed.
 
+config EC_STARLABS_LID_SWITCH
+	bool "Enable disabling the lid switch"
+	depends on EC_STARLABS_ITE
+	help
+	  Select if the mainboard supports disabling the lid switch
+
 config EC_STARLABS_MERLIN
 	bool "Use open-source Merlin EC Firmware"
 	default n

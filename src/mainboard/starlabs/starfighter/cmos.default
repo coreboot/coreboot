@@ -13,6 +13,7 @@ wireless=Enable
 webcam=Enable
 microphone=Enable
 pci_hot_plug=Disable
+lid_switch=Enable
 # EC
 kbl_timeout=30 seconds
 fn_ctrl_swap=Disable

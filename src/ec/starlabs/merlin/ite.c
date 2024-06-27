@@ -70,6 +70,7 @@ static void merlin_init(struct device *dev)
 	 * kbl_brightness
 	 * kbl_state
 	 * charging_speed
+	 * lid_switch
 	 */
 
 	/*
@@ -263,6 +264,27 @@ static void merlin_init(struct device *dev)
 				SPEED_0_5C,
 				charging_speed,
 				ARRAY_SIZE(charging_speed)));
+
+	/*
+	 * Lid Switch
+	 *
+	 * Setting:	lid_switch
+	 *
+	 * Values:	0, 1
+	 * Default:	0
+	 *
+	 */
+	const uint8_t lid_switch[] = {
+		SWITCH_ENABLED,
+		SWITCH_DISABLED
+	};
+
+	if (CONFIG(EC_STARLABS_LID_SWITCH))
+		ec_write(ECRAM_LID_SWITCH,
+			get_ec_value_from_option("lid_switch",
+				0,
+				lid_switch,
+				ARRAY_SIZE(lid_switch)));
 }
 
 static struct device_operations ops = {

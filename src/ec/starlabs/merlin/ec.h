@@ -103,6 +103,10 @@
 #define SPEED_0_5C		0x01
 #define SPEED_0_2C		0x02
 
+/* Lid Switch */
+#define SWITCH_ENABLED		0x00
+#define SWITCH_DISABLED		0x01
+
 uint16_t ec_get_version(void);
 
 #endif

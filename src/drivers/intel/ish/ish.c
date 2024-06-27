@@ -50,6 +50,9 @@ static void intel_ish_enable(struct device *dev)
 
 static void intel_ish_get_version(void)
 {
+	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_BY_PAYLOAD))
+		return;
+
 	struct cse_specific_info *info = cbmem_find(CBMEM_ID_CSE_INFO);
 	if (info == NULL)
 		return;

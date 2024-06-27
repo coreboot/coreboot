@@ -863,6 +863,9 @@ int cse_hmrfpo_get_status(void)
 
 void print_me_fw_version(void *unused)
 {
+	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_BY_PAYLOAD))
+		return;
+
 	struct me_fw_ver_resp resp = {0};
 
 	/* Ignore if UART debugging is disabled */

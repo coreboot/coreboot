@@ -28,6 +28,9 @@ static bool is_manufacturing_mode(union me_hfsts1 hfsts1, union me_hfsts6 hfsts6
 
 static void dump_me_status(void *unused)
 {
+	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_BY_PAYLOAD))
+		return;
+
 	union me_hfsts1 hfsts1;
 	union me_hfsts2 hfsts2;
 	union me_hfsts3 hfsts3;

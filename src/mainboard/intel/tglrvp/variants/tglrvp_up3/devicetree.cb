@@ -104,14 +104,6 @@ chip soc/intel/tigerlake
 		.tdp_pl4 = 105,
 	}"
 
-	#HD Audio
-	register "PchHdaDspEnable" = "1"
-	register "PchHdaAudioLinkDmicEnable[0]" = "1"
-	register "PchHdaAudioLinkDmicEnable[1]" = "1"
-	register "PchHdaAudioLinkSspEnable[0]" = "1"
-	register "PchHdaAudioLinkSspEnable[2]" = "1"
-	register "PchHdaAudioLinkSndwEnable[0]" = "1"
-
 	# Intel Common SoC Config
 	register "common_soc_config" = "{
 		.gspi[1] = {
@@ -332,7 +324,18 @@ chip soc/intel/tigerlake
 				end
 			end
 		end
-		device ref hda on  end
+		device ref hda on
+			register "PchHdaDspEnable" = "1"
+			register "PchHdaAudioLinkDmicEnable" = "{
+				[0] = 1,
+				[1] = 1,
+			}"
+			register "PchHdaAudioLinkSspEnable" = "{
+				[0] = 1,
+				[2] = 1,
+			}"
+			register "PchHdaAudioLinkSndwEnable[0]" = "1"
+		end
 		device ref smbus on  end
 		device ref fast_spi on  end
 		device ref gbe off end

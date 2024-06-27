@@ -192,9 +192,6 @@ chip soc/intel/tigerlake
 	#	- PM_CFG.SLP_LAN_MIN_ASST_WDTH
 	register "PchPmPwrCycDur" = "1"       # 1s
 
-	# HD Audio
-	register "PchHdaDspEnable" = "1"
-
 	# TCSS USB3
 	register "UsbTcPortEn" = "0x3"
 	register "TcssXhciEn" = "1"
@@ -513,6 +510,8 @@ chip soc/intel/tigerlake
 			end
 		end
 		device ref hda on
+			register "PchHdaDspEnable" = "1"
+
 			chip drivers/sof
 				register "spkr_tplg" = "max98373"
 				register "jack_tplg" = "rt5682"

@@ -861,26 +861,8 @@ int cse_hmrfpo_get_status(void)
 	return resp.status;
 }
 
-void print_me_fw_version(void *unused)
-{
-	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_BY_PAYLOAD))
-		return;
-
-	struct me_fw_ver_resp resp = {0};
-
-	/* Ignore if UART debugging is disabled */
-	if (!CONFIG(CONSOLE_SERIAL))
-		return;
-
-	if (get_me_fw_version(&resp) == CB_SUCCESS) {
-		printk(BIOS_DEBUG, "ME: Version: %d.%d.%d.%d\n", resp.code.major,
-			resp.code.minor, resp.code.hotfix, resp.code.build);
-		return;
-	}
-	printk(BIOS_DEBUG, "ME: Version: Unavailable\n");
-}
-
-enum cb_err get_me_fw_version(struct me_fw_ver_resp *resp)
+/* Queries and gets ME firmware version */
+static enum cb_err get_me_fw_version(struct me_fw_ver_resp *resp)
 {
 	const struct mkhi_hdr fw_ver_msg = {
 		.group_id = MKHI_GROUP_ID_GEN,
@@ -925,6 +907,22 @@ enum cb_err get_me_fw_version(struct me_fw_ver_resp *resp)
 
 
 	return CB_SUCCESS;
+}
+
+void print_me_fw_version(void *unused)
+{
+	struct me_fw_ver_resp resp = {0};
+
+	/* Ignore if UART debugging is disabled */
+	if (!CONFIG(CONSOLE_SERIAL))
+		return;
+
+	if (get_me_fw_version(&resp) == CB_SUCCESS) {
+		printk(BIOS_DEBUG, "ME: Version: %d.%d.%d.%d\n", resp.code.major,
+			resp.code.minor, resp.code.hotfix, resp.code.build);
+		return;
+	}
+	printk(BIOS_DEBUG, "ME: Version: Unavailable\n");
 }
 
 void cse_trigger_vboot_recovery(enum csme_failure_reason reason)

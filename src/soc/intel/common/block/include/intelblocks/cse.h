@@ -444,11 +444,6 @@ int cse_hmrfpo_get_status(void);
 void print_me_fw_version(void *unused);
 
 /*
- * Queries and gets ME firmware version
- */
-enum cb_err get_me_fw_version(struct me_fw_ver_resp *resp);
-
-/*
  * Checks current working operation state is normal or not.
  * Returns true if CSE's current working state is normal, otherwise false.
  */

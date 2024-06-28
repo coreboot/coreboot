@@ -5,12 +5,6 @@ chip soc/intel/tigerlake
 	register "DdiPort2Hpd" = "0"
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E10, .pad_auxn_dc = GPP_E13}"
 
-        # EMMC PCIE 5 using clk 5
-        register "PcieRpLtrEnable[4]" = "1"
-        register "PcieRpHotPlug[4]" = "1"
-        register "PcieClkSrcUsage[5]" = "4"
-        register "PcieClkSrcClkReq[5]" = "5"
-
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
 	#+-------------------+---------------------------+
@@ -275,7 +269,13 @@ chip soc/intel/tigerlake
 				device generic 0 on end
 			end
 		end
-		device ref pcie_rp5 on end
+		device ref pcie_rp5 on
+			# EMMC PCIE 5 using clk 5
+			register "PcieRpLtrEnable[4]" = "1"
+			register "PcieRpHotPlug[4]" = "1"
+			register "PcieClkSrcUsage[5]" = "4"
+			register "PcieClkSrcClkReq[5]" = "5"
+		end
 		device ref pmc hidden
 			# The pmc_mux chip driver is a placeholder for the
 			# PMC.MUX device in the ACPI hierarchy.

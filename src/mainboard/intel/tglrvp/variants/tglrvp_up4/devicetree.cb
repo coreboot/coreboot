@@ -17,27 +17,8 @@ chip soc/intel/tigerlake
 	# CPU replacement check
 	register "CpuReplacementCheck" = "1"
 
-	register "PcieRpSlotImplemented[2]" = "1"
-	register "PcieRpSlotImplemented[3]" = "1"
-	register "PcieRpSlotImplemented[8]" = "1"
-	register "PcieRpSlotImplemented[10]" = "1"
-
-	# Enable PR LTR
-	register "PcieRpLtrEnable[2]" = "1"
-	register "PcieRpLtrEnable[3]" = "1"
-	register "PcieRpLtrEnable[8]" = "1"
-	register "PcieRpLtrEnable[10]" = "1"
-
 	# Hybrid storage mode
 	register "HybridStorageMode" = "1"
-
-	register "PcieClkSrcClkReq[1]" = "1"
-	register "PcieClkSrcClkReq[2]" = "2"
-	register "PcieClkSrcClkReq[3]" = "3"
-
-	register "PcieClkSrcUsage[1]" = "0x2"
-	register "PcieClkSrcUsage[2]" = "0x3"
-	register "PcieClkSrcUsage[3]" = "0x8"
 
 	# enabling EDP in PortA
 	register "DdiPortAConfig" = "DDI_PORT_CFG_EDP"
@@ -262,8 +243,18 @@ chip soc/intel/tigerlake
 		device ref uart2 on  end
 		device ref pcie_rp1 off end
 		device ref pcie_rp2 off end
-		device ref pcie_rp3 on  end
+		device ref pcie_rp3 on
+			register "PcieRpSlotImplemented[2]" = "1"
+			register "PcieRpLtrEnable[2]" = "1"
+			register "PcieClkSrcUsage[1]" = "0x2"
+			register "PcieClkSrcClkReq[1]" = "1"
+		end
+
 		device ref pcie_rp4 on
+			register "PcieRpSlotImplemented[3]" = "1"
+			register "PcieRpLtrEnable[3]" = "1"
+			register "PcieClkSrcUsage[2]" = "0x3"
+			register "PcieClkSrcClkReq[2]" = "2"
 			chip soc/intel/common/block/pcie/rtd3
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B17)"
 				register "srcclk_pin" = "2"
@@ -274,9 +265,17 @@ chip soc/intel/tigerlake
 		device ref pcie_rp6 off end
 		device ref pcie_rp7 off end
 		device ref pcie_rp8 off end
-		device ref pcie_rp9 on  end
+		device ref pcie_rp9 on
+			register "PcieRpSlotImplemented[8]" = "1"
+			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieClkSrcUsage[3]" = "0x8"
+			register "PcieClkSrcClkReq[3]" = "3"
+		end
 		device ref pcie_rp10 off end
-		device ref pcie_rp11 on  end
+		device ref pcie_rp11 on
+			register "PcieRpSlotImplemented[10]" = "1"
+			register "PcieRpLtrEnable[10]" = "1"
+		end
 		device ref pcie_rp12 off end
 		device ref uart0 off end
 		device ref uart1 off end

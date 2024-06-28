@@ -93,29 +93,6 @@ chip soc/intel/tigerlake
 	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC3)"
 	register "tcss_ports[1]" = "TCSS_PORT_DEFAULT(OC0)"
 
-	# NVMe PCIE 9 using clk 0
-	register "PcieRpLtrEnable[8]" = "1"
-	register "PcieClkSrcUsage[0]" = "8"
-	register "PcieClkSrcClkReq[0]" = "0"
-	register "PcieRpSlotImplemented[8]" = "1"
-
-	# Optane PCIE 11 using clk 0
-	register "PcieRpLtrEnable[10]" = "1"
-	register "HybridStorageMode" = "0"
-	register "PcieRpSlotImplemented[10]" = "1"
-
-	# SD Card PCIE 8 using clk 3
-	register "PcieRpLtrEnable[7]" = "1"
-	register "PcieRpHotPlug[7]" = "1"
-	register "PcieClkSrcUsage[3]" = "7"
-	register "PcieClkSrcClkReq[3]" = "3"
-
-	# WLAN PCIE 7 using clk 1
-	register "PcieRpLtrEnable[6]" = "1"
-	register "PcieClkSrcUsage[1]" = "6"
-	register "PcieClkSrcClkReq[1]" = "1"
-	register "PcieRpSlotImplemented[6]" = "1"
-
 	# Mark SRCCLKREQ pins as unused that are routed for a Non-Clkreq functionality
 	register "PcieClkSrcUsage[2]" = "PCIE_CLK_NOTUSED"
 	register "PcieClkSrcUsage[4]" = "PCIE_CLK_NOTUSED"
@@ -450,8 +427,20 @@ chip soc/intel/tigerlake
 			register "SataPortsDevSlp[1]" = "1"
 			register "SataPortsEnableDitoConfig[1]" = "1"
 		end
-		device ref pcie_rp7 on end
+		device ref pcie_rp7 on
+			# WLAN PCIE 7 using clk 1
+			register "PcieRpLtrEnable[6]" = "1"
+			register "PcieClkSrcUsage[1]" = "6"
+			register "PcieClkSrcClkReq[1]" = "1"
+			register "PcieRpSlotImplemented[6]" = "1"
+		end
 		device ref pcie_rp8 on
+			# SD Card PCIE 8 using clk 3
+			register "PcieRpLtrEnable[7]" = "1"
+			register "PcieRpHotPlug[7]" = "1"
+			register "PcieClkSrcUsage[3]" = "7"
+			register "PcieClkSrcClkReq[3]" = "3"
+
 			probe DB_SD SD_GL9755S
 			probe DB_SD SD_RTS5261
 			probe DB_SD SD_RTS5227S
@@ -477,8 +466,19 @@ chip soc/intel/tigerlake
 				end
 			end
 		end
-		device ref pcie_rp9 on end
-		device ref pcie_rp11 on end
+		device ref pcie_rp9 on
+			# NVMe PCIE 9 using clk 0
+			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieClkSrcUsage[0]" = "8"
+			register "PcieClkSrcClkReq[0]" = "0"
+			register "PcieRpSlotImplemented[8]" = "1"
+		end
+		device ref pcie_rp11 on
+			# Optane PCIE 11 using clk 0
+			register "PcieRpLtrEnable[10]" = "1"
+			register "HybridStorageMode" = "0"
+			register "PcieRpSlotImplemented[10]" = "1"
+		end
 		device ref uart0 on end
 		device ref gspi0 on
 			chip drivers/spi/acpi

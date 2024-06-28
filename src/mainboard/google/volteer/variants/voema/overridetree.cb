@@ -8,16 +8,6 @@ chip soc/intel/tigerlake
 	register "TcssAuxOri" = "1"
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_E10, .pad_auxn_dc = GPP_E13}"
 
-	# Disable WLAN PCIE 7
-	register "PcieRpLtrEnable[6]" = "0"
-	register "PcieClkSrcUsage[1]" = "PCIE_CLK_NOTUSED"
-	register "PcieRpSlotImplemented[6]" = "1"
-
-	# Disable SD Card PCIE 8
-	register "PcieRpLtrEnable[7]" = "0"
-	register "PcieRpHotPlug[7]" = "0"
-	register "PcieClkSrcUsage[3]" = "PCIE_CLK_NOTUSED"
-
 	device domain 0 on
 		device ref ipu on end # IPU
 		device ref i2c0 on
@@ -97,8 +87,18 @@ chip soc/intel/tigerlake
 			probe AUDIO MAX98360_ALC5682I_I2S
 			probe AUDIO RT1011_ALC5682I_I2S
 		end
-		device ref pcie_rp7 off end
+
+		device ref pcie_rp7 off
+			# Disable WLAN PCIE 7
+			register "PcieRpLtrEnable[6]" = "0"
+			register "PcieClkSrcUsage[1]" = "PCIE_CLK_NOTUSED"
+			register "PcieRpSlotImplemented[6]" = "1"
+		end
 		device ref pcie_rp8 off
+			# Disable SD Card PCIE 8
+			register "PcieRpLtrEnable[7]" = "0"
+			register "PcieRpHotPlug[7]" = "0"
+			register "PcieClkSrcUsage[3]" = "PCIE_CLK_NOTUSED"
 			# override-devicetree rules say it's only
 			# the same device if it has the same probes:
 			probe DB_SD SD_GL9755S

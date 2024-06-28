@@ -55,15 +55,29 @@ config RISCV_OPENSBI
 	  Load OpenSBI after payload has been loaded and use it to
 	  provide the SBI and to handover control to payload.
 
+if RISCV_OPENSBI
+
+config OPENSBI_BLOB
+	bool "Include OpenSBI ELF binary blob"
+	depends on RISCV_OPENSBI
+	help
+	  If enabled it allows to specify a file path to an already compiled OpenSBI binary.
+	  If disabled the OpenSBI binary will be compiled from upstream OpenSBI repository.
+	  This option is discouraged as compatibility with out-of-tree blobs may break anytime.
+
+config OPENSBI_BLOB_PATH
+	string "Path to external opensbi.elf"
+	depends on OPENSBI_BLOB
+	help
+	  Absolute (or relative to coreboot directory) path to the OpenSBI ELF file.
+
 config OPENSBI_PLATFORM
 	string
-	depends on RISCV_HAS_OPENSBI
 	help
 	  The OpenSBI platform to build for.
 
 config OPENSBI_TEXT_START
 	hex
-	depends on RISCV_HAS_OPENSBI
 	help
 	  The linking address used to build opensbi.
 
@@ -76,6 +90,8 @@ config OPENSBI_FW_DYNAMIC_BOOT_HART
 	  This hart must be able to execute in the Supervisor priviledged mode, since
 	  that is the mode usually used for the payload. If the hart does not support
 	  Supervisor mode OpenSBI will again look for a hart that does support it.
+
+endif # RISCV_OPENSBI
 
 config ARCH_RISCV_U
 	# U (user) mode is for programs.

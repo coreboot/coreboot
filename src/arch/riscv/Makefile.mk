@@ -159,7 +159,12 @@ $(OPENSBI_TARGET): $(obj)/config.h | $(OPENSBI_SOURCE)
 		FW_PAYLOAD=n \
 		FW_TEXT_START=$(CONFIG_OPENSBI_TEXT_START)
 
-$(OPENSBI): $(OPENSBI_TARGET)
+# build upstream OpenSBI source tree
+opensbi-source-y = $(OPENSBI_TARGET)
+# get OpenSBI from specified binary
+opensbi-source-$(CONFIG_OPENSBI_BLOB) = $(call strip_quotes,$(CONFIG_OPENSBI_BLOB_PATH))
+
+$(OPENSBI): $(opensbi-source-y)
 	cp $< $@
 
 OPENSBI_CBFS := $(CONFIG_CBFS_PREFIX)/opensbi

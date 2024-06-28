@@ -156,6 +156,7 @@ config VBOOT_MUST_REQUEST_DISPLAY
 
 config VBOOT_ALWAYS_ENABLE_DISPLAY
 	bool "Force to always enable display"
+	default y if BMP_LOGO
 	default n
 	help
 	  Set this option to indicate to vboot that display should always be enabled.

@@ -529,6 +529,7 @@ CFLAGS_common += -Wstring-compare
 ifeq ($(CONFIG_COMPILER_GCC),y)
 CFLAGS_common += -Wold-style-declaration
 CFLAGS_common += -Walloc-size
+CFLAGS_common += -Wcast-function-type
 # Don't add these GCC specific flags when running scan-build
 ifeq ($(CCC_ANALYZER_OUTPUT_FORMAT),)
 CFLAGS_common += -Wno-packed-not-aligned

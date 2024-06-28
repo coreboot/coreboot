@@ -7,7 +7,7 @@
 #include <soc/pmc.h>
 #include <soc/power.h>
 
-static struct tegra_pmc_regs * const pmc = (void *)TEGRA_PMC_BASE;
+static struct tegra_pmc_regs *const pmc = (void *)TEGRA_PMC_BASE;
 
 enum {
 	POWER_GATE = 0,

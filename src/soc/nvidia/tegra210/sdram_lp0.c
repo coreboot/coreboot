@@ -12,7 +12,7 @@
  */
 void sdram_lp0_save_params(const struct sdram_params *sdram)
 {
-	struct tegra_pmc_regs * pmc = (void *)TEGRA_PMC_BASE;
+	struct tegra_pmc_regs *pmc = (void *)TEGRA_PMC_BASE;
 
 #define pack(src, src_bits, dst, dst_bits) { \
 	_Static_assert((1 ? src_bits) >= (0 ? src_bits) && (1 ? dst_bits) >= \

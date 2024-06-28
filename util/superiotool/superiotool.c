@@ -84,6 +84,28 @@ const char *get_superio_name(const struct superio_registers reg_table[],
 	return "<unknown>";
 }
 
+static void set_extra_selector(uint16_t port, const struct extra_selector *esel)
+{
+	if (esel->idx == 0) /* entry without extra selector */
+		return;
+
+	uint8_t reg_val = regval(port, esel->idx);
+	reg_val &= ~esel->mask;
+	reg_val |= esel->val;
+	regwrite(port, esel->idx, reg_val);
+
+	reg_val = regval(port, esel->idx) & esel->mask;
+
+	printf(" -- ESEL[%02xh] 0x%02x", esel->idx, reg_val);
+	if (esel->name != NULL)
+		printf(" (%s)", esel->name);
+	printf(" --");
+
+	if (verbose)
+		printf(" config: idx=%02xh, mask=%02xh, val=%02xh --", esel->idx, esel->mask,
+			esel->val);
+}
+
 static void dump_regs(const struct superio_registers reg_table[],
 		      int i, int j, uint16_t port, uint8_t ldn_sel)
 {
@@ -101,6 +123,8 @@ static void dump_regs(const struct superio_registers reg_table[],
 		else
 			printf("(%s)", reg_table[i].ldn[j].name);
 	}
+
+	set_extra_selector(port, &reg_table[i].ldn[j].esel);
 
 	idx = reg_table[i].ldn[j].idx;
 	def = reg_table[i].ldn[j].def;

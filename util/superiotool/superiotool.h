@@ -136,6 +136,14 @@ extern int dump, verbose, extra_dump;
 
 extern int chip_found;
 
+/* Extra selector structure (see fintek.c) */
+struct extra_selector {
+	const char *name;
+	uint8_t idx;
+	uint8_t mask;
+	uint8_t val;
+};
+
 struct superio_registers {
 	int32_t superio_id;		/* Signed, as we need EOT. */
 	const char *name;		/* Super I/O name */
@@ -144,6 +152,7 @@ struct superio_registers {
 		const char *name;	/* LDN name */
 		int16_t idx[IDXSIZE];
 		int16_t def[IDXSIZE];
+		struct extra_selector esel;
 	} ldn[LDNSIZE];
 };
 

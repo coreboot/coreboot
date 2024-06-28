@@ -880,13 +880,6 @@ static enum cb_err get_me_fw_version(struct me_fw_ver_resp *resp)
 		return CB_ERR;
 
 	/*
-	 * Ignore if ME Firmware SKU type is Lite since
-	 * print_boot_partition_info() logs RO(BP1) and RW(BP2) versions.
-	 */
-	if (cse_is_hfs3_fw_sku_lite())
-		return CB_ERR;
-
-	/*
 	 * Prerequisites:
 	 * 1) HFSTS1 Current Working State is Normal
 	 * 2) HFSTS1 Current Operation Mode is Normal
@@ -915,6 +908,13 @@ void print_me_fw_version(void *unused)
 
 	/* Ignore if UART debugging is disabled */
 	if (!CONFIG(CONSOLE_SERIAL))
+		return;
+
+	/*
+	 * Skip if ME firmware is Lite SKU, as RO/RW versions are
+	 * already logged by `cse_print_boot_partition_info()`
+	 */
+	if (cse_is_hfs3_fw_sku_lite())
 		return;
 
 	if (get_me_fw_version(&resp) == CB_SUCCESS) {

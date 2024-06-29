@@ -141,6 +141,10 @@ void set_power_limits(u8 power_limit_1_time)
 		/* Set long term power limit to TDP */
 		limit.lo |= tdp & PKG_POWER_LIMIT_MASK;
 	}
+	if (conf->pl2_clamp) {
+		printk(BIOS_DEBUG, "Enabling PL1 clamping limitation\n");
+		limit.lo |= PKG_POWER_LIMIT_CLAMP;
+	}
 	limit.lo |= PKG_POWER_LIMIT_EN;
 	limit.lo |= (power_limit_1_val & PKG_POWER_LIMIT_TIME_MASK) <<
 		PKG_POWER_LIMIT_TIME_SHIFT;
@@ -152,6 +156,10 @@ void set_power_limits(u8 power_limit_1_time)
 	} else {
 		/* Set short term power limit to 1.25 * TDP */
 		limit.hi |= ((tdp * 125) / 100) & PKG_POWER_LIMIT_MASK;
+	}
+	if (conf->pl2_clamp) {
+		printk(BIOS_DEBUG, "Enabling PL2 clamping limitation\n");
+		limit.hi |= PKG_POWER_LIMIT_CLAMP;
 	}
 	limit.hi |= PKG_POWER_LIMIT_EN;
 	/* Power limit 2 time is only programmable on SNB EP/EX */

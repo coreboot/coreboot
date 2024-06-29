@@ -3,6 +3,8 @@
 #ifndef __CPU_INTEL_MODEL_206AX_CHIP_H__
 #define __CPU_INTEL_MODEL_206AX_CHIP_H__
 
+#include "stdbool.h"
+
 /* Keep this in sync with acpi.c */
 enum cpu_acpi_level {
 	CPU_ACPI_DISABLED = 0,
@@ -44,7 +46,9 @@ struct cpu_intel_model_206ax_config {
 	int tcc_offset;		/* TCC Activation Offset */
 
 	unsigned int pl1_mw; /* Long-term power limit in milliwatts */
+	bool pl1_clamp; /* Long-term power limit clamping limitation */
 	unsigned int pl2_mw; /* Short-term power limit in milliwatts */
+	bool pl2_clamp; /* Short-term power limit clamping limitation */
 
 	int pp0_current_limit;	/* Primary Plane Current Limit (Icc) in Amps */
 	int pp1_current_limit;	/* Secondary Plane Current Limit (IAXG) in Amps */

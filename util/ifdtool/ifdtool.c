@@ -737,6 +737,15 @@ static void dump_fcba(const struct fcba *fcba, const struct fpsba *fpsba)
 		else
 			freq = (fcba->flcomp >> 17) & 7;
 		decode_espi_frequency(freq);
+
+		printf("\n  Quad I/O Read:                       %s",
+			(fcba->flcomp & (1 << 15)) ? "enabled" : "disabled");
+		printf("\n  Quad Output Read:                    %s",
+			(fcba->flcomp & (1 << 14)) ? "enabled" : "disabled");
+		printf("\n  Dual I/O Read:                       %s",
+			(fcba->flcomp & (1 << 13)) ? "enabled" : "disabled");
+		printf("\n  Dual Output Read:                    %s",
+			(fcba->flcomp & (1 << 12)) ? "enabled" : "disabled");
 	} else {
 		printf("\n  Read Clock Frequency:                ");
 		decode_spi_frequency((fcba->flcomp >> 17) & 7);

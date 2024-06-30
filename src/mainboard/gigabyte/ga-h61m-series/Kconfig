@@ -30,29 +30,34 @@ config BOARD_GIGABYTE_GA_H61MA_D3V
 	select BOARD_GIGABYTE_GA_H61M_SERIES
 	select NO_UART_ON_SUPERIO
 
+config BOARD_GIGABYTE_GA_H61M_S2P_R3
+	select BOARD_GIGABYTE_GA_H61M_SERIES
+
 if BOARD_GIGABYTE_GA_H61M_SERIES
 
 config MAINBOARD_DIR
 	default "gigabyte/ga-h61m-series"
 
 config VARIANT_DIR
-	default "ga-h61m-s2pv" if BOARD_GIGABYTE_GA_H61M_S2PV
-	default "ga-h61m-ds2v" if BOARD_GIGABYTE_GA_H61M_DS2V
-	default "ga-h61ma-d3v" if BOARD_GIGABYTE_GA_H61MA_D3V
-	default "ga-h61m-ds2"  if BOARD_GIGABYTE_GA_H61M_DS2
+	default "ga-h61m-s2pv"   if BOARD_GIGABYTE_GA_H61M_S2PV
+	default "ga-h61m-ds2v"   if BOARD_GIGABYTE_GA_H61M_DS2V
+	default "ga-h61ma-d3v"   if BOARD_GIGABYTE_GA_H61MA_D3V
+	default "ga-h61m-ds2"    if BOARD_GIGABYTE_GA_H61M_DS2
+	default "ga-h61m-s2p-r3" if BOARD_GIGABYTE_GA_H61M_S2P_R3
 
 config MAINBOARD_PART_NUMBER
-	default "GA-H61M-S2PV" if BOARD_GIGABYTE_GA_H61M_S2PV
-	default "GA-H61M-DS2V" if BOARD_GIGABYTE_GA_H61M_DS2V
-	default "GA-H61MA-D3V" if BOARD_GIGABYTE_GA_H61MA_D3V
-	default "GA-H61M-DS2"  if BOARD_GIGABYTE_GA_H61M_DS2
+	default "GA-H61M-S2PV"   if BOARD_GIGABYTE_GA_H61M_S2PV
+	default "GA-H61M-DS2V"   if BOARD_GIGABYTE_GA_H61M_DS2V
+	default "GA-H61MA-D3V"   if BOARD_GIGABYTE_GA_H61MA_D3V
+	default "GA-H61M-DS2"    if BOARD_GIGABYTE_GA_H61M_DS2
+	default "GA-H61M-S2P-R3" if BOARD_GIGABYTE_GA_H61M_S2P_R3
 
 config OVERRIDE_DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
 # Override the default variant behavior, since the data.vbt is the same
 config INTEL_GMA_VBT_FILE
-	default "src/mainboard/\$(MAINBOARDDIR)/data.vbt"
+	default "src/mainboard/\$(MAINBOARDDIR)/data.vbt" if !BOARD_GIGABYTE_GA_H61M_S2P_R3
 
 config USBDEBUG_HCD_INDEX # Bottom left port seen from rear
 	int

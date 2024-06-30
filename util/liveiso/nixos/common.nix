@@ -8,7 +8,7 @@
 		<nixpkgs/nixos/modules/installer/cd-dvd/iso-image.nix>
 	];
 
-	system.stateVersion = "23.11";
+	system.stateVersion = "24.05";
 
 	isoImage = {
 		makeEfiBootable = true;

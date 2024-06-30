@@ -51,20 +51,20 @@ union gprd {
 		 * protected region start address, where bit 0-11 of
 		 * the start address are assumed to be zero.
 		 */
-		uint32_t start:15;
+		uint32_t start : 15;
 
 		/* Specifies read protection is enabled */
-		uint32_t read_protect_en:1;
+		uint32_t read_protect_en : 1;
 
 		/*
 		 * End Address: bit 16-30 of the GPRD represents the
 		 * protected region end address, where bit 0-11 of
 		 * the end address are assumed to be 0xfff.
 		 */
-		uint32_t end:15;
+		uint32_t end : 15;
 
 		/* Specifies write protection is enabled */
-		uint32_t write_protect_en:1;
+		uint32_t write_protect_en : 1;
 	} __packed data;
 
 	uint32_t value;
@@ -133,9 +133,9 @@ static struct fdbar *find_fd(char *image, int size)
 
 	/* Scan for FD signature */
 	for (i = 0; i < (size - 4); i += 4) {
-		if (*(uint32_t *) (image + i) == 0x0FF0A55A) {
+		if (*(uint32_t *)(image + i) == 0x0FF0A55A) {
 			found = 1;
-			break;	// signature found.
+			break; // signature found.
 		}
 	}
 
@@ -144,7 +144,7 @@ static struct fdbar *find_fd(char *image, int size)
 		return NULL;
 	}
 
-	struct fdbar *fdb = (struct fdbar *) (image + i);
+	struct fdbar *fdb = (struct fdbar *)(image + i);
 	return PTR_IN_RANGE(fdb, image, size) ? fdb : NULL;
 }
 
@@ -168,9 +168,8 @@ static struct fcba *find_fcba(char *image, int size)
 	struct fdbar *fdb = find_fd(image, size);
 	if (!fdb)
 		return NULL;
-	struct fcba *fcba = (struct fcba *) (image + ((fdb->flmap0 & 0xff) << 4));
+	struct fcba *fcba = (struct fcba *)(image + ((fdb->flmap0 & 0xff) << 4));
 	return PTR_IN_RANGE(fcba, image, size) ? fcba : NULL;
-
 }
 
 static struct fmba *find_fmba(char *image, int size)
@@ -178,7 +177,7 @@ static struct fmba *find_fmba(char *image, int size)
 	struct fdbar *fdb = find_fd(image, size);
 	if (!fdb)
 		return NULL;
-	struct fmba *fmba = (struct fmba *) (image + ((fdb->flmap1 & 0xff) << 4));
+	struct fmba *fmba = (struct fmba *)(image + ((fdb->flmap1 & 0xff) << 4));
 	return PTR_IN_RANGE(fmba, image, size) ? fmba : NULL;
 }
 
@@ -211,7 +210,7 @@ static struct fmsba *find_fmsba(char *image, int size)
 	struct fdbar *fdb = find_fd(image, size);
 	if (!fdb)
 		return NULL;
-	struct fmsba *fmsba = (struct fmsba *) (image + ((fdb->flmap2 & 0xff) << 4));
+	struct fmsba *fmsba = (struct fmsba *)(image + ((fdb->flmap2 & 0xff) << 4));
 	return PTR_IN_RANGE(fmsba, image, size) ? fmsba : NULL;
 }
 
@@ -355,7 +354,7 @@ static struct region get_region(const struct frba *frba, unsigned int region_typ
 
 	if (region_type >= max_regions) {
 		fprintf(stderr, "Invalid region type %d.\n", region_type);
-		exit (EXIT_FAILURE);
+		exit(EXIT_FAILURE);
 	}
 
 	flreg = frba->flreg[region_type];
@@ -387,7 +386,7 @@ static const char *region_name(unsigned int region_type)
 {
 	if (region_type >= max_regions) {
 		fprintf(stderr, "Invalid region type.\n");
-		exit (EXIT_FAILURE);
+		exit(EXIT_FAILURE);
 	}
 
 	return region_names[region_type].pretty;
@@ -452,7 +451,7 @@ static int max_regions_from_fdbar(const struct fdbar *fdb)
 		 * 4 bytes of space.
 		 */
 		if (sorted[i] == frba)
-			return MIN((sorted[i+1] - sorted[i])/4, MAX_REGIONS);
+			return MIN((sorted[i + 1] - sorted[i]) / 4, MAX_REGIONS);
 	}
 	/* Never reaches this point */
 	return 0;
@@ -717,7 +716,7 @@ static void dump_fcba(const struct fcba *fcba, const struct fpsba *fpsba)
 	printf("\nFound Component Section\n");
 	printf("FLCOMP     0x%08x\n", fcba->flcomp);
 	printf("  Dual Output Fast Read Support:       %ssupported\n",
-		(fcba->flcomp & (1 << 30))?"":"not ");
+		(fcba->flcomp & (1 << 30)) ? "" : "not ");
 	printf("  Read ID/Read Status Clock Frequency: ");
 	decode_spi_frequency((fcba->flcomp >> 27) & 7);
 	printf("\n  Write/Erase Clock Frequency:         ");
@@ -725,7 +724,7 @@ static void dump_fcba(const struct fcba *fcba, const struct fpsba *fpsba)
 	printf("\n  Fast Read Clock Frequency:           ");
 	decode_spi_frequency((fcba->flcomp >> 21) & 7);
 	printf("\n  Fast Read Support:                   %ssupported",
-		(fcba->flcomp & (1 << 20))?"":"not ");
+		(fcba->flcomp & (1 << 20)) ? "" : "not ");
 	if (is_platform_with_100x_series_pch() &&
 			chipset != CHIPSET_100_200_SERIES_SUNRISE_POINT) {
 		printf("\n  Read eSPI/EC Bus Frequency:          ");
@@ -977,7 +976,7 @@ static void dump_vscc(uint32_t vscc)
 static void dump_vtba(const struct vtba *vtba, int vtl)
 {
 	int i;
-	int max_len = sizeof(struct vtba)/sizeof(struct vscc);
+	int max_len = sizeof(struct vtba) / sizeof(struct vscc);
 	int num = (vtl >> 1) < max_len ? (vtl >> 1) : max_len;
 
 	printf("ME VSCC table:\n");
@@ -997,10 +996,10 @@ static void dump_oem(const uint8_t *oem)
 	for (i = 0; i < 4; i++) {
 		printf("%02x:", i << 4);
 		for (j = 0; j < 16; j++)
-			printf(" %02x", oem[(i<<4)+j]);
-		printf ("\n");
+			printf(" %02x", oem[(i << 4) + j]);
+		printf("\n");
 	}
-	printf ("\n");
+	printf("\n");
 }
 
 static void dump_fd(char *image, int size)
@@ -1124,11 +1123,11 @@ static void create_fmap_template(char *image, int size, const char *layout_fname
 
 		sorted_regions[count_regions] = region;
 		// basically insertion sort
-		for (int i = count_regions-1; i >= 0 ; i--) {
-			if (sorted_regions[i].base > sorted_regions[i+1].base) {
+		for (int i = count_regions - 1; i >= 0; i--) {
+			if (sorted_regions[i].base > sorted_regions[i + 1].base) {
 				struct region tmp = sorted_regions[i];
-				sorted_regions[i] = sorted_regions[i+1];
-				sorted_regions[i+1] = tmp;
+				sorted_regions[i] = sorted_regions[i + 1];
+				sorted_regions[i + 1] = tmp;
 			}
 		}
 		count_regions++;
@@ -1858,8 +1857,8 @@ static void fpsba_set_altmedisable(struct fpsba *fpsba, struct fmsba *fmsba, boo
 {
 	if (ifd_version >= IFD_VERSION_2) {
 		printf("%sting the HAP bit to %s Intel ME...\n",
-			altmedisable?"Set":"Unset",
-			altmedisable?"disable":"enable");
+			altmedisable ? "Set" : "Unset",
+			altmedisable ? "disable" : "enable");
 		if (altmedisable)
 			fpsba->pchstrp[0] |= (1 << 16);
 		else
@@ -1868,8 +1867,8 @@ static void fpsba_set_altmedisable(struct fpsba *fpsba, struct fmsba *fmsba, boo
 		if (chipset >= CHIPSET_ICH8 && chipset <= CHIPSET_ICH10) {
 			printf("%sting the ICH_MeDisable, MCH_MeDisable, "
 			       "and MCH_AltMeDisable to %s Intel ME...\n",
-			       altmedisable?"Set":"Unset",
-			       altmedisable?"disable":"enable");
+			       altmedisable ? "Set" : "Unset",
+			       altmedisable ? "disable" : "enable");
 			if (altmedisable) {
 				/* MCH_MeDisable */
 				fmsba->data[0] |= 1;
@@ -1884,8 +1883,8 @@ static void fpsba_set_altmedisable(struct fpsba *fpsba, struct fmsba *fmsba, boo
 			}
 		} else {
 			printf("%sting the AltMeDisable to %s Intel ME...\n",
-				altmedisable?"Set":"Unset",
-				altmedisable?"disable":"enable");
+				altmedisable ? "Set" : "Unset",
+				altmedisable ? "disable" : "enable");
 			if (altmedisable)
 				fpsba->pchstrp[10] |= (1 << 7);
 			else
@@ -2570,7 +2569,7 @@ int main(int argc, char *argv[])
 
 	// generate new filename
 	if (new_filename == NULL) {
-		new_filename = (char *) malloc((strlen(filename) + 5) * sizeof(char));
+		new_filename = (char *)malloc((strlen(filename) + 5) * sizeof(char));
 		if (!new_filename) {
 			printf("Out of memory.\n");
 			exit(EXIT_FAILURE);

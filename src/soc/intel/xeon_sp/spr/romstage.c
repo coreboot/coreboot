@@ -18,7 +18,6 @@
 #include <soc/romstage.h>
 #include <soc/pci_devs.h>
 #include <soc/soc_pch.h>
-#include <soc/intel/common/smbios.h>
 #include <string.h>
 #include <soc/config.h>
 #include <soc/soc_util.h>
@@ -251,7 +250,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 		pch_disable_hda();
 }
 
-static uint8_t get_error_correction_type(const uint8_t RasModesEnabled)
+uint8_t get_error_correction_type(const uint8_t RasModesEnabled)
 {
 	switch (RasModesEnabled) {
 	case CH_INDEPENDENT:
@@ -270,94 +269,21 @@ static uint8_t get_error_correction_type(const uint8_t RasModesEnabled)
 	}
 }
 
-/* Save the DIMM information for SMBIOS table 17 */
-void save_dimm_info(void)
+uint8_t get_max_dimm_count(void)
 {
-	struct dimm_info *dest_dimm;
-	struct memory_info *mem_info;
-	const struct SystemMemoryMapHob *hob;
-	MEMMAP_DIMM_DEVICE_INFO_STRUCT src_dimm;
-	int dimm_max, dimm_num = 0;
-	int index = 0;
-	uint8_t mem_dev_type;
-	uint16_t data_width;
-	uint32_t vdd_voltage;
+	return MAX_DIMM;
+}
 
-	hob = get_system_memory_map();
-	assert(hob != NULL);
+uint8_t get_dram_type(const struct SystemMemoryMapHob *hob)
+{
+	if (hob->DramType == SPD_MEMORY_TYPE_DDR5_SDRAM)
+		return MEMORY_TYPE_DDR5;
 
-	/*
-	 * Allocate CBMEM area for DIMM information used to populate SMBIOS
-	 * table 17
-	 */
-	mem_info = cbmem_add(CBMEM_ID_MEMINFO, sizeof(*mem_info));
-	if (mem_info == NULL) {
-		printk(BIOS_ERR, "CBMEM entry for DIMM info missing\n");
-		return;
-	}
-	memset(mem_info, 0, sizeof(*mem_info));
+	return MEMORY_TYPE_DDR4;
+}
+
+uint32_t get_max_capacity_mib(void)
+{
 	/* According to EDS doc#611488, it's 4 TB per processor. */
-	mem_info->max_capacity_mib = 4 * MiB * CONFIG_MAX_SOCKET;
-	mem_info->number_of_devices = CONFIG_DIMM_MAX;
-	mem_info->ecc_type = get_error_correction_type(hob->RasModesEnabled);
-	dimm_max = ARRAY_SIZE(mem_info->dimm);
-	vdd_voltage = get_ddr_millivolt(hob->DdrVoltage);
-	for (int soc = 0; soc < CONFIG_MAX_SOCKET; soc++) {
-		for (int ch = 0; ch < MAX_CH; ch++) {
-			for (int dimm = 0; dimm < MAX_DIMM; dimm++) {
-				if (index >= dimm_max) {
-					printk(BIOS_WARNING, "Too many DIMMs info for %s.\n",
-					       __func__);
-					return;
-				}
-
-				src_dimm = hob->Socket[soc].ChannelInfo[ch].DimmInfo[dimm];
-				if (src_dimm.Present) {
-					dest_dimm = &mem_info->dimm[index];
-					index++;
-				} else if (mainboard_dimm_slot_exists(soc, ch, dimm)) {
-					dest_dimm = &mem_info->dimm[index];
-					index++;
-					/* Save DIMM Locator information for SMBIOS Type 17 */
-					dest_dimm->dimm_size = 0;
-					dest_dimm->soc_num = soc;
-					dest_dimm->channel_num = ch;
-					dest_dimm->dimm_num = dimm;
-					continue;
-				} else {
-					/* Ignore DIMM that isn't present and doesn't exist on
-					   the board. */
-					continue;
-				}
-
-				dest_dimm->soc_num = soc;
-
-				if (hob->DramType == SPD_MEMORY_TYPE_DDR5_SDRAM) {
-					/* hard-coded memory device type as DDR5 */
-					mem_dev_type = 0x22;
-					data_width = 64;
-				} else {
-					/* hard-coded memory device type as DDR4 */
-					mem_dev_type = 0x1A;
-					data_width = 64;
-				}
-				dimm_info_fill(
-					dest_dimm, src_dimm.DimmSize << 6, mem_dev_type,
-					hob->memFreq, /* replaced by configured_speed_mts */
-					src_dimm.NumRanks,
-					ch,   /* for mainboard locator string override */
-					dimm, /* for mainboard locator string override */
-					(const char *)&src_dimm.PartNumber[0],
-					sizeof(src_dimm.PartNumber),
-					(const uint8_t *)&src_dimm.serialNumber[0], data_width,
-					vdd_voltage, true, /* hard-coded as ECC supported */
-					src_dimm.VendorID, src_dimm.actKeyByte2, 0,
-					get_max_memory_speed(src_dimm.commonTck));
-				dimm_num++;
-			}
-		}
-	}
-
-	mem_info->dimm_cnt = index; /* Number of DIMM slots found */
-	printk(BIOS_DEBUG, "%d Installed DIMMs found\n", dimm_num);
+	return 4 * MiB * CONFIG_MAX_SOCKET;
 }

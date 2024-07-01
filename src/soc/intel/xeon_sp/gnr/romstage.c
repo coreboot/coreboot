@@ -2,7 +2,10 @@
 
 #include <console/console.h>
 #include <soc/config.h>
+#include <smbios.h>
+#include <spd.h>
 #include <soc/romstage.h>
+#include <soc/soc_util.h>
 
 static uint8_t get_mmcfg_base_upd_index(const uint64_t base_addr)
 {
@@ -65,4 +68,29 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	/* Board level settings */
 	mainboard_memory_init_params(mupd);
+}
+
+uint8_t get_error_correction_type(const uint8_t RasModesEnabled)
+{
+	//TODO: to update later
+	return MEMORY_ARRAY_ECC_UNKNOWN;
+}
+
+uint32_t get_max_capacity_mib(void)
+{
+	//TODO: to update later.
+	return 4 * MiB * CONFIG_MAX_SOCKET;
+}
+
+uint8_t get_max_dimm_count(void)
+{
+	return MAX_DIMM;
+}
+
+uint8_t get_dram_type(const struct SystemMemoryMapHob *hob)
+{
+	if (hob->DramType == SPD_MEMORY_TYPE_DDR5_SDRAM)
+		return MEMORY_TYPE_DDR5;
+
+	return MEMORY_TYPE_DDR4;
 }

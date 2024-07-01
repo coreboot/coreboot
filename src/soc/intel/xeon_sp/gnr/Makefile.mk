@@ -12,6 +12,7 @@ subdirs-y += ../../../../cpu/intel/microcode
 romstage-y += romstage.c
 romstage-y += soc_util.c
 romstage-y += soc_iio.c
+romstage-y += ../dimm.c
 romstage-$(CONFIG_DISPLAY_UPD_DATA) += upd_display.c
 
 ramstage-y += chip.c

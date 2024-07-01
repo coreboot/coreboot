@@ -24,3 +24,5 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	m_cfg->VTdConfig.CoherencySupport = config->coherency_support;
 	m_cfg->VTdConfig.ATS = config->ats_support;
 }
+
+void save_dimm_info(void) {}

@@ -4,8 +4,12 @@
 #include <intelblocks/rtc.h>
 #include <console/console.h>
 #include <fsp/util.h>
+#include <smbios.h>
+#include <soc/ddr.h>
+#include <soc/intel/common/smbios.h>
 #include <soc/romstage.h>
 #include <soc/util.h>
+#include <spd.h>
 
 void mainboard_romstage_entry(void)
 {
@@ -35,7 +39,7 @@ __weak void mainboard_memory_init_params(FSPM_UPD *mupd)
 __weak void mainboard_rtc_failed(void)
 {
 }
-__weak void save_dimm_info(void) { }
+
 __weak void mainboard_ewl_check(void) { }
 
 /* mainboard can override this function for their own handling, such as writing a BMC SEL. */

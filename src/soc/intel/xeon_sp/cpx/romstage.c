@@ -22,7 +22,7 @@ void __weak mainboard_memory_init_params(FSPM_UPD *mupd)
 	/* Default weak implementation */
 }
 
-static uint8_t get_error_correction_type(const uint8_t RasModesEnabled)
+uint8_t get_error_correction_type(const uint8_t RasModesEnabled)
 {
 	switch (RasModesEnabled) {
 	case CH_INDEPENDENT:
@@ -39,85 +39,6 @@ static uint8_t get_error_correction_type(const uint8_t RasModesEnabled)
 	default:
 		return MEMORY_ARRAY_ECC_MULTI_BIT;
 	}
-}
-
-/* Save the DIMM information for SMBIOS table 17 */
-void save_dimm_info(void)
-{
-	struct dimm_info *dest_dimm;
-	struct memory_info *mem_info;
-	const struct SystemMemoryMapHob *hob;
-	MEMMAP_DIMM_DEVICE_INFO_STRUCT src_dimm;
-	int dimm_max, index = 0, num_dimms = 0;
-	uint32_t vdd_voltage;
-
-	hob = get_system_memory_map();
-	assert(hob);
-
-	/*
-	 * Allocate CBMEM area for DIMM information used to populate SMBIOS
-	 * table 17
-	 */
-	mem_info = cbmem_add(CBMEM_ID_MEMINFO, sizeof(*mem_info));
-	if (!mem_info) {
-		printk(BIOS_ERR, "CBMEM entry for DIMM info missing\n");
-		return;
-	}
-	memset(mem_info, 0, sizeof(*mem_info));
-	/* According to Dear Customer Letter it's 1.12 TB per processor. */
-	mem_info->max_capacity_mib = 1.12 * MiB * CONFIG_MAX_SOCKET;
-	mem_info->number_of_devices = CONFIG_DIMM_MAX;
-	mem_info->ecc_type = get_error_correction_type(hob->RasModesEnabled);
-	dimm_max = ARRAY_SIZE(mem_info->dimm);
-	vdd_voltage = get_ddr_voltage(hob->DdrVoltage);
-	/* For now only implement for one socket and hard-coded for DDR4 */
-	for (int ch = 0; ch < MAX_CH; ch++) {
-		for (int dimm = 0; dimm < MAX_IMC; dimm++) {
-			src_dimm = hob->Socket[0].ChannelInfo[ch].DimmInfo[dimm];
-			if (src_dimm.Present) {
-				if (index >= dimm_max) {
-					printk(BIOS_WARNING, "Too many DIMMs info for %s.\n",
-						__func__);
-					return;
-				}
-				dest_dimm = &mem_info->dimm[index];
-				dimm_info_fill(dest_dimm,
-					src_dimm.DimmSize << 6,
-					0x1a, /* hard-coded memory device type as DDR4 */
-					hob->memFreq, /* replaced by configured_speed_mts */
-					src_dimm.NumRanks,
-					ch, /* for mainboard locator string override */
-					dimm, /* for mainboard locator string override */
-					(const char *)&src_dimm.PartNumber[0],
-					sizeof(src_dimm.PartNumber),
-					(const uint8_t *)&src_dimm.serialNumber[0],
-					64, /* hard-coded for DDR4 data width */
-					vdd_voltage,
-					true, /* hard-coded as ECC supported */
-					src_dimm.VendorID,
-					src_dimm.actKeyByte2,
-					0,
-					get_max_memory_speed(src_dimm.commonTck));
-				index++;
-				num_dimms++;
-			} else if (mainboard_dimm_slot_exists(0, ch, dimm)) {
-				if (index >= dimm_max) {
-					printk(BIOS_WARNING, "Too many DIMMs info for %s.\n",
-						__func__);
-					return;
-				}
-				dest_dimm = &mem_info->dimm[index];
-				dest_dimm->dimm_size = 0;
-				dest_dimm->channel_num = ch;
-				dest_dimm->dimm_num = dimm;
-				index++;
-			}
-		}
-	}
-
-	/* Save available DIMM slot information */
-	mem_info->dimm_cnt = index;
-	printk(BIOS_DEBUG, "%d out of %d DIMMs found\n", num_dimms, mem_info->dimm_cnt);
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
@@ -187,4 +108,20 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	/* Adjust the "cold boot required" flag in CMOS. */
 	soc_set_mrc_cold_boot_flag(!mupd->FspmArchUpd.NvsBufferPtr);
+}
+
+uint32_t get_max_capacity_mib(void)
+{
+	/* According to Dear Customer Letter it's 1.12 TB per processor. */
+	return 1.12 * MiB * CONFIG_MAX_SOCKET;
+}
+
+uint8_t get_max_dimm_count(void)
+{
+	return MAX_IMC;
+}
+
+uint8_t get_dram_type(const struct SystemMemoryMapHob *hob)
+{
+	return MEMORY_TYPE_DDR4;
 }

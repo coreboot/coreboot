@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/mmio.h>
-#include <console/console.h>
 
 /* USB3PHY_PCIE_USB3_PCS_PCS_STATUS bit */
 #define USB3_PCS_PHYSTATUS		BIT(6)

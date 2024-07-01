@@ -2,7 +2,6 @@
 
 #include <device/device.h>
 #include <device/pnp.h>
-#include <console/console.h>
 #include <pc80/keyboard.h>
 #include <superio/ite/common/env_ctrl.h>
 #include <arch/io.h>

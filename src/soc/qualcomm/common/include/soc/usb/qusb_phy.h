@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/mmio.h>
-#include <console/console.h>
 
 #define PORT_TUNE1_MASK				0xf0
 

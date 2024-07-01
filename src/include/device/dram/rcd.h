@@ -5,7 +5,6 @@
 
 #include <types.h>
 #include <device/i2c_simple.h>
-#include <console/console.h>
 
 enum rcw_idx {
 	VEN_ID_L,

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <console/console.h>
 #include <soc/usb/snps_usb_phy.h>
 #include <soc/addressmap.h>
 #include <commonlib/helpers.h>

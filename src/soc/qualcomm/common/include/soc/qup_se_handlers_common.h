@@ -3,7 +3,6 @@
 #ifndef __SOC_COMMON_QCOM_QUP_SE_H__
 #define __SOC_COMMON_QCOM_QUP_SE_H__
 
-#include <console/console.h>
 #include <device/mmio.h>
 #include <gpio.h>
 #include <soc/addressmap.h>

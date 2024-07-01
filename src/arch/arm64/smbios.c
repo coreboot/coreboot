@@ -3,7 +3,6 @@
 #include <arch/cache.h>
 #include <arch/lib_helpers.h>
 #include <arch/smc.h>
-#include <console/console.h>
 #include <smbios.h>
 #include <stdio.h>
 

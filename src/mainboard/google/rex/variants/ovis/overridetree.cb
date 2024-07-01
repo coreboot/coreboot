@@ -295,6 +295,7 @@ chip soc/intel/meteorlake
 				register "wake" = "GPE0_PME_B0"
 				register "add_acpi_dma_property" = "true"
 				register "enable_cnvi_ddr_rfim" = "true"
+				use usb2_port10 as bluetooth_companion
 				device generic 0 on end
 			end
 		end

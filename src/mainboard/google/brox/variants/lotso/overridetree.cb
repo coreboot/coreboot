@@ -48,6 +48,22 @@ chip soc/intel/alderlake
 	register "tcss_ports[0]" = "TCSS_PORT_EMPTY"	# Disable TCP0
 	register "tcss_ports[2]" = "TCSS_PORT_EMPTY" 	# Disable TCP2
 
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 650,
+			.fall_time_ns = 350,
+			.data_hold_time_ns = 400,
+		},
+		.i2c[4] = {
+			.early_init = 1,
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 600,
+			.fall_time_ns = 110,
+			.data_hold_time_ns = 100,
+		},
+	}"
+
 	register "serial_io_gspi_mode" = "{
 		[PchSerialIoIndexGSPI0] = PchSerialIoPci,
 		[PchSerialIoIndexGSPI1] = PchSerialIoPci,

@@ -41,6 +41,9 @@ config BOARD_GOOGLE_CROTA
 config BOARD_GOOGLE_DOCHI
 	bool "->  Dochi"
 
+config BOARD_GOOGLE_DOMIKA
+	bool "->  Domika"
+
 config BOARD_GOOGLE_FELWINTER
 	bool "->  Felwinter"
 

@@ -2,6 +2,7 @@
 
 #include <bootmode.h>
 #include <device/device.h>
+#include <fw_config.h>
 #include <soc/bl31.h>
 #include <soc/display.h>
 #include <soc/i2c.h>
@@ -31,8 +32,11 @@ static void configure_i2s(void)
 
 static void configure_audio(void)
 {
-	if (CONFIG(GERALT_USE_MAX98390)) {
-		printk(BIOS_DEBUG, "Configure MAX98390 audio\n");
+	if (CONFIG(GERALT_USE_NAU8318))
+		return;
+
+	if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_MAX98390)) ||
+	    fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_TAS2563))) {
 
 		mtk_i2c_bus_init(I2C0, I2C_SPEED_FAST);
 		configure_i2s();

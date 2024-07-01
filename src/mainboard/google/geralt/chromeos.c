@@ -3,6 +3,7 @@
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
 #include <drivers/tpm/cr50.h>
+#include <fw_config.h>
 #include <gpio.h>
 
 #include "gpio.h"
@@ -53,17 +54,18 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		lb_add_gpios(gpios, sd_card_gpios, ARRAY_SIZE(sd_card_gpios));
 	}
 
-	if (CONFIG(GERALT_USE_MAX98390)) {
-		struct lb_gpio max98390_gpios[] = {
-			{GPIO_RST_SPKR_L.id, ACTIVE_LOW, -1, "speaker reset"},
-		};
-		lb_add_gpios(gpios, max98390_gpios, ARRAY_SIZE(max98390_gpios));
-	} else if (CONFIG(GERALT_USE_NAU8318)) {
+	if (CONFIG(GERALT_USE_NAU8318)) {
 		struct lb_gpio nau8318_gpios[] = {
 			{GPIO_EN_SPKR.id, ACTIVE_HIGH, -1, "speaker enable"},
 			{GPIO_BEEP_ON_OD.id, ACTIVE_HIGH, -1, "beep enable"},
 		};
 		lb_add_gpios(gpios, nau8318_gpios, ARRAY_SIZE(nau8318_gpios));
+	} else if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_MAX98390)) ||
+		   fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_TAS2563))) {
+		struct lb_gpio smartamp_gpios[] = {
+			{GPIO_RST_SPKR_L.id, ACTIVE_LOW, -1, "speaker reset"},
+		};
+		lb_add_gpios(gpios, smartamp_gpios, ARRAY_SIZE(smartamp_gpios));
 	}
 }
 

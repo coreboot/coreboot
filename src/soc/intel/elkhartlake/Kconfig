@@ -192,7 +192,7 @@ config FSP_HEADER_PATH
 config FSP_FD_PATH
 	string
 	depends on FSP_USE_REPO
-	default "3rdparty/fsp/ElkhartLakeFspBinPkg/FspBin/FSP.fd"
+	default "3rdparty/fsp/ElkhartLakeFspBinPkg/FspBin/FSPRel.bin"
 
 config PSE_ENABLE
 	bool "Enable PSE ARM controller"

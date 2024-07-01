@@ -40,7 +40,7 @@ MPFR_VERSION=4.2.1
 MPC_VERSION=1.3.1
 GCC_VERSION=14.1.0
 BINUTILS_VERSION=2.42
-IASL_VERSION=20240321
+IASL_VERSION="20230628"
 # CLANG version number
 CLANG_VERSION=18.1.6
 CMAKE_VERSION=3.29.3
@@ -74,7 +74,7 @@ MPFR_BASE_URL="https://ftpmirror.gnu.org/mpfr"
 MPC_BASE_URL="https://ftpmirror.gnu.org/mpc"
 GCC_BASE_URL="https://ftpmirror.gnu.org/gcc/gcc-${GCC_VERSION}"
 BINUTILS_BASE_URL="https://ftpmirror.gnu.org/binutils"
-IASL_BASE_URL="https://downloadmirror.intel.com/819451"
+IASL_BASE_URL="https://downloadmirror.intel.com/783534"
 # CLANG toolchain archive locations
 LLVM_BASE_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}"
 CLANG_BASE_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}"

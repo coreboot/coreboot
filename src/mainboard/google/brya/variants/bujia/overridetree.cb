@@ -65,6 +65,8 @@ chip soc/intel/alderlake
 				## sensor information
 				register "options.tsr[0].desc" = ""DRAM""
 				register "options.tsr[1].desc" = ""Charger""
+				register "options.tsr[2].desc" = ""Wireless""
+				register "options.tsr[3].desc" = ""Memory""
 
 				# TODO: below values are initial reference values only
 				## Active Policy
@@ -84,6 +86,8 @@ chip soc/intel/alderlake
 					[0] = DPTF_PASSIVE(CPU,		CPU,	       95, 5000),
 					[1] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_0, 75, 5000),
 					[2] = DPTF_PASSIVE(CHARGER,	TEMP_SENSOR_1, 75, 5000),
+					[3] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_2, 75, 5000),
+					[4] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_3, 75, 5000),
 				}"
 
 				## Critical Policy

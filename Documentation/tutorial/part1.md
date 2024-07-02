@@ -149,7 +149,7 @@ CONFIG_PAYLOAD_FILE="payloads/coreinfo/build/coreinfo.elf"
 
 Note that this may differ depending on the revision of the coreboot
 source you are building from and should not be taken as the required
-contents of defconfig. 
+contents of defconfig.
 
 ### Step 6 - Build coreboot
 

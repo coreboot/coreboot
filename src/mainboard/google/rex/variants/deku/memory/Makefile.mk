@@ -4,4 +4,4 @@
 # ./util/spd_tools/bin/part_id_gen MTL lp5 src/mainboard/google/rex/variants/deku/memory src/mainboard/google/rex/variants/deku/memory/mem_parts_used.txt
 
 SPD_SOURCES =
-SPD_SOURCES += spd/lp5/set-0/spd-8.hex      # ID = 0(0b0000)  Parts = MT62F2G32D4DS-026 WT:B, H58G66BK7BX067
+SPD_SOURCES += spd/lp5/set-0/spd-8.hex      # ID = 0(0b0000)  Parts = MT62F2G32D4DS-026 WT:B, H58G66BK7BX067, K3KL9L90CM-MGCT

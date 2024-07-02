@@ -149,7 +149,8 @@ static void spi_acpi_fill_ssdt_generator(const struct device *dev)
 					 enable_gpio_index, 0,
 					 config->enable_gpio.active_low);
 		/* Add generic property list */
-		acpi_dp_add_property_list(dsd, config->property_list,
+		if (config->property_count > 0)
+			acpi_dp_add_property_list(dsd, config->property_list,
 					 config->property_count);
 		acpi_dp_write(dsd);
 	}

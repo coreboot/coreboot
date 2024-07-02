@@ -146,10 +146,6 @@ Device (S76D) {
 				Local1 = ^^PCI0.LPCB.EC0.RPM2
 			}
 		}
-		If (Local1 != 0) {
-			// 60 * (EC frequency / 120) / 2
-			Local1 = 2156250 / Local1
-		}
 		Return ((Local1 << 8) | Local0)
 	}
 

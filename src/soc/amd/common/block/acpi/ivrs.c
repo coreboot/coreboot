@@ -332,7 +332,7 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 		ivhd->length = sizeof(struct acpi_ivrs_ivhd);
 
 		/* BDF <bus>:00.2 */
-		ivhd->device_id = 0x02 | (nb_dev->upstream->secondary << 8);
+		ivhd->device_id = PCI_DEVFN(0, 2) | (nb_dev->upstream->secondary << 8);
 		ivhd->capability_offset = pci_find_capability(iommu_dev, IOMMU_CAP_ID);
 		ivhd->iommu_base_low = pci_read_config32(iommu_dev, IOMMU_CAP_BASE_LO) & 0xffffc000;
 		ivhd->iommu_base_high = pci_read_config32(iommu_dev, IOMMU_CAP_BASE_HI);

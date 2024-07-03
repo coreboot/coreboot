@@ -208,6 +208,39 @@ detect_special_flags() {
 	testcc "$GCC"      "$CFLAGS_GCC -Wcalloc-transposed-args" &&
 		CFLAGS_GCC="$CFLAGS_GCC -Wcalloc-transposed-args"
 
+	testcc "$GCC"      "$CFLAGS_GCC -Wno-unused-parameter" &&
+		CFLAGS_GCC="$CFLAGS_GCC -Wno-unused-parameter"
+
+	testcc "$GCC"      "$CFLAGS_GCC -Wno-sign-compare" &&
+		CFLAGS_GCC="$CFLAGS_GCC -Wno-sign-compare"
+
+	testcc "$GCC"      "$CFLAGS_GCC -Wno-empty-body" &&
+		CFLAGS_GCC="$CFLAGS_GCC -Wno-empty-body"
+
+	testcc "$GCC"      "$CFLAGS_GCC -Wno-missing-field-initializers" &&
+		CFLAGS_GCC="$CFLAGS_GCC -Wno-missing-field-initializers"
+
+	testcc "$GCC"      "$CFLAGS_GCC -Wno-override-init" &&
+		CFLAGS_GCC="$CFLAGS_GCC -Wno-override-init"
+
+	testcc "$GCC"      "$CFLAGS_GCC -Wno-ignored-qualifiers" &&
+		CFLAGS_GCC="$CFLAGS_GCC -Wno-ignored-qualifiers"
+
+	testcc "$GCC"      "$CFLAGS_GCC -Wno-shift-negative-value" &&
+		CFLAGS_GCC="$CFLAGS_GCC -Wno-shift-negative-value"
+
+	testcc "$GCC"      "$CFLAGS_GCC -Wno-unused-but-set-parameter" &&
+		CFLAGS_GCC="$CFLAGS_GCC -Wno-unused-but-set-parameter"
+
+	testcc "$GCC"      "$CFLAGS_GCC -Wno-type-limits" &&
+		CFLAGS_GCC="$CFLAGS_GCC -Wno-type-limits"
+
+	testcc "$GCC"      "$CFLAGS_GCC -Wno-cast-function-type" &&
+		CFLAGS_GCC="$CFLAGS_GCC -Wno-cast-function-type"
+
+	testcc "$GCC"      "$CFLAGS_GCC -Wextra" &&
+		CFLAGS_GCC="$CFLAGS_GCC -Wextra"
+
 	case "$architecture" in
 	x86)
 		;;

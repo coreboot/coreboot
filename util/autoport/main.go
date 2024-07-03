@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 )
@@ -903,4 +904,6 @@ private package GMA.Mainboard is
 end GMA.Mainboard;
 `)
 	}
+	outputPath, _ := filepath.Abs(ctx.BaseDirectory)
+	fmt.Printf("Done! Generated sources are in %s\n", outputPath)
 }

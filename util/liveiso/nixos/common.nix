@@ -118,6 +118,7 @@
 		efivar
 		exfat
 		f2fs-tools
+		flashprog
 		fuse
 		fuse3
 		fwts

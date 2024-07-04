@@ -7,6 +7,10 @@
 #define IOM_CSME_IMR_TBT_STATUS			0x14
 #define TBT_VALID_AUTHENTICATION		(1 << 30)
 
+/* TCSS IP status */
+#define IOM_TYPEC_STATUS_1			0x50
+#define IOM_READY				(1 << 30)
+
 /* IOM aux bias control registers in REGBAR MMIO space */
 #define IOM_AUX_BIAS_CTRL_PULLUP_OFFSET_0	0x1070
 #define IOM_AUX_BIAS_CTRL_PULLUP_OFFSET(x)	(IOM_AUX_BIAS_CTRL_PULLUP_OFFSET_0 + (x) * 4)

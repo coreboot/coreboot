@@ -1,7 +1,12 @@
 fw_config
 	field THERMAL_SOLUTION 0 0
-		option THERMAL_SOLUTION_6W 0
-		option THERMAL_SOLUTION_15W 1
+		option THERMAL_SOLUTION_6W		0
+		option THERMAL_SOLUTION_15W		1
+	end
+	field PDC_CONTROL 1 2
+		option PDC_CONTROL_UNKNOWN		0
+		option PDC_RTS_BYPASS		1
+		option PDC_TI_BYPASS		2
 	end
 	field STORAGE 30 31
 		option STORAGE_EMMC		0

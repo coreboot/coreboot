@@ -23,12 +23,19 @@ romstage-$(CONFIG_CHROMEOS_DRAM_PART_NUMBER_IN_CBI) += dram_part_num_override.c
 ramstage-$(CONFIG_CHROMEOS_FW_SPLASH_SCREEN) += splash.c
 
 # Add logo to the cbfs image
+BMP_LOGO_COMPRESS_FLAG := $(CBFS_COMPRESS_FLAG)
+ifeq ($(CONFIG_BMP_LOGO_COMPRESS_LZMA),y)
+	BMP_LOGO_COMPRESS_FLAG := LZMA
+else ifeq ($(CONFIG_BMP_LOGO_COMPRESS_LZ4),y)
+	BMP_LOGO_COMPRESS_FLAG := LZ4
+endif
+
 cbfs-files-$(CONFIG_CHROMEOS_FW_SPLASH_SCREEN) += cb_logo.bmp
 cb_logo.bmp-file := $(call strip_quotes,$(CONFIG_CHROMEOS_LOGO_PATH))
 cb_logo.bmp-type := raw
-cb_logo.bmp-compression := $(CBFS_COMPRESS_FLAG)
+cb_logo.bmp-compression := $(BMP_LOGO_COMPRESS_FLAG)
 
 cbfs-files-$(CONFIG_CHROMEOS_FW_SPLASH_SCREEN) += cb_plus_logo.bmp
 cb_plus_logo.bmp-file := $(call strip_quotes,$(CONFIG_CHROMEBOOK_PLUS_LOGO_PATH))
 cb_plus_logo.bmp-type := raw
-cb_plus_logo.bmp-compression := $(CBFS_COMPRESS_FLAG)
+cb_plus_logo.bmp-compression := $(BMP_LOGO_COMPRESS_FLAG)

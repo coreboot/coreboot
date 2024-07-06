@@ -96,12 +96,6 @@ type Context struct {
 	SaneVendor    string
 }
 
-type IOAPICIRQ struct {
-	APICID int
-	IRQNO  [4]int
-}
-
-var IOAPICIRQs map[PCIAddr]IOAPICIRQ = map[PCIAddr]IOAPICIRQ{}
 var KconfigBool map[string]bool = map[string]bool{}
 var KconfigComment map[string]string = map[string]string{}
 var KconfigString map[string]string = map[string]string{}
@@ -366,7 +360,7 @@ func writeOn(dt *os.File, dev DevTreeNode) {
 func WriteDev(dt *os.File, offset int, alias string, dev DevTreeNode) {
 	Offset(dt, offset)
 	switch dev.Chip {
-	case "cpu_cluster", "lapic", "domain", "ioapic":
+	case "cpu_cluster", "domain":
 		fmt.Fprintf(dt, "device %s 0x%x ", dev.Chip, dev.Dev)
 		writeOn(dt, dev)
 	case "pci", "pnp":
@@ -389,16 +383,6 @@ func WriteDev(dt *os.File, offset int, alias string, dev DevTreeNode) {
 	if dev.Chip == "pci" && dev.SubSystem != 0 && dev.SubVendor != 0 {
 		Offset(dt, offset+1)
 		fmt.Fprintf(dt, "subsystemid 0x%04x 0x%04x\n", dev.SubVendor, dev.SubSystem)
-	}
-
-	ioapic, ok := IOAPICIRQs[PCIAddr{Bus: dev.Bus, Dev: dev.Dev, Func: dev.Func}]
-	if dev.Chip == "pci" && ok {
-		for pin, irq := range ioapic.IRQNO {
-			if irq != 0 {
-				Offset(dt, offset+1)
-				fmt.Fprintf(dt, "ioapic_irq %d INT%c 0x%x\n", ioapic.APICID, 'A'+pin, irq)
-			}
-		}
 	}
 
 	keys := []string{}

@@ -52,7 +52,7 @@ endif
 ifeq ($(CONFIG_IPXE_HAS_HTTPS),y)
 	sed -i'' 's|.*DOWNLOAD_PROTO_HTTPS|#define DOWNLOAD_PROTO_HTTPS|g' "$(project_dir)/src/config/general.h"
 endif
-ifeq ($(CONFIG_PXE_TRUST_CMD),y)
+ifeq ($(CONFIG_IPXE_TRUST_CMD),y)
 	sed -i'' 's|.*IMAGE_TRUST_CMD|#define IMAGE_TRUST_CMD|g' "$(project_dir)/src/config/general.h"
 endif
 

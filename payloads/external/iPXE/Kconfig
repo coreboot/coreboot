@@ -108,7 +108,7 @@ config IPXE_HAS_HTTPS
 	  Enable HTTPS protocol, which allows you to encrypt all communication
 	  with a web server and to verify the server's identity
 
-config PXE_TRUST_CMD
+config IPXE_TRUST_CMD
 	bool "Enable TRUST commands"
 	default y
 	help

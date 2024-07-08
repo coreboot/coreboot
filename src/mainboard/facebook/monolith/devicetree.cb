@@ -111,57 +111,6 @@ chip soc/intel/skylake
 	# Send an extra VR mailbox command for the PS4 exit issue
 	register "SendVrMbxCmd" = "2"
 
-	# Enable Root ports.
-	# PCIE Port 1 disabled
-	# PCIE Port 2 disabled
-
-	# PCIE Port 3 x1 -> Module x1 : Mapped to PCIe 2 on the baseboard
-	register "PcieRpEnable[2]" = "1"
-	# Disable CLKREQ#
-	register "PcieRpClkReqSupport[2]" = "0"
-	# Set MaxPayload to 256 bytes
-	register "PcieRpMaxPayload[2]" = "RpMaxPayload_256"
-	# Enable Latency Tolerance Reporting Mechanism
-	register "PcieRpLtrEnable[2]" = "1"
-	# Enable Advanced Error Reporting
-	register "PcieRpAdvancedErrorReporting[2]" = "1"
-	# Disable Aspm
-	register "pcie_rp_aspm[2]" = "AspmDisabled"
-
-	# PCIE Port 4 disabled
-	# PCIE Port 5 x1 -> MODULE i219
-
-	# PCIE Port 6 x1 -> BASEBOARD x1 i210 : Mapped to PCIe 4 on the baseboard
-	register "PcieRpEnable[5]" = "1"
-	register "PcieRpClkReqSupport[5]" = "0"
-	# Set MaxPayload to 256 bytes
-	register "PcieRpMaxPayload[5]" = "RpMaxPayload_256"
-	# Enable Latency Tolerance Reporting Mechanism
-	register "PcieRpLtrEnable[5]" = "1"
-	# Enable Advanced Error Reporting
-	register "PcieRpAdvancedErrorReporting[5]" = "1"
-	# Disable Aspm
-	register "pcie_rp_aspm[5]" = "AspmDisabled"
-
-	# PCIE Port 7 Disabled
-	# PCIE Port 8 Disabled
-
-	# PCIE Port 9 x4 -> BASEBOARD PEG0-3 FPGA
-	register "PcieRpEnable[8]" = "1"
-	# Disable CLKREQ#
-	register "PcieRpClkReqSupport[8]" = "0"
-	# Use Hot Plug subsystem
-	register "PcieRpHotPlug[8]" = "1"
-	# Set MaxPayload to 256 bytes
-	register "PcieRpMaxPayload[8]" = "RpMaxPayload_256"
-	# Enable Latency Tolerance Reporting Mechanism
-	register "PcieRpLtrEnable[8]" = "1"
-	# Enable Advanced Error Reporting
-	register "PcieRpAdvancedErrorReporting[8]" = "1"
-	# Disable Aspm
-	register "pcie_rp_aspm[8]" = "AspmDisabled"
-
-
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoDisabled,
@@ -205,9 +154,37 @@ chip soc/intel/skylake
 			register "SataSalpSupport" = "1"
 			register "SataPortsEnable[0]" = "1"
 		end
-		device ref pcie_rp3	on  end # x1 baseboard WWAN
-		device ref pcie_rp6	on  end # x1 baseboard i210
-		device ref pcie_rp9	on  end # x4 FPGA
+		device ref pcie_rp3	on
+			# x1 baseboard WWAN
+			# PCIE Port 3 x1 -> Module x1 : Mapped to PCIe 2 on the baseboard
+			register "PcieRpEnable[2]" = "1"
+			register "PcieRpClkReqSupport[2]" = "0"
+			register "PcieRpMaxPayload[2]" = "RpMaxPayload_256"
+			register "PcieRpLtrEnable[2]" = "1"
+			register "PcieRpAdvancedErrorReporting[2]" = "1"
+			register "pcie_rp_aspm[2]" = "AspmDisabled"
+		end
+		device ref pcie_rp6	on
+			# x1 baseboard i210
+			# PCIE Port 6 x1 -> BASEBOARD x1 i210 : Mapped to PCIe 4 on the baseboard
+			register "PcieRpEnable[5]" = "1"
+			register "PcieRpClkReqSupport[5]" = "0"
+			register "PcieRpMaxPayload[5]" = "RpMaxPayload_256"
+			register "PcieRpLtrEnable[5]" = "1"
+			register "PcieRpAdvancedErrorReporting[5]" = "1"
+			register "pcie_rp_aspm[5]" = "AspmDisabled"
+		end
+		device ref pcie_rp9	on
+			# x4 FPGA
+			# PCIE Port 9 x4 -> BASEBOARD PEG0-3 FPGA
+			register "PcieRpEnable[8]" = "1"
+			register "PcieRpClkReqSupport[8]" = "0"
+			register "PcieRpHotPlug[8]" = "1"
+			register "PcieRpMaxPayload[8]" = "RpMaxPayload_256"
+			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieRpAdvancedErrorReporting[8]" = "1"
+			register "pcie_rp_aspm[8]" = "AspmDisabled"
+		end
 		device ref uart0	on  end
 		device ref emmc		on  end
 		device ref lpc_espi	on

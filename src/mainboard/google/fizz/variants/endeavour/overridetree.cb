@@ -1,47 +1,5 @@
 chip soc/intel/skylake
 
-	# Enable Root port 7(x1) for TPU1
-	register "PcieRpEnable[6]" = "1"
-	# Enable CLKREQ#
-	register "PcieRpClkReqSupport[6]" = "1"
-	# RP 7 uses SRCCLKREQ4#
-	register "PcieRpClkReqNumber[6]" = "4"
-	# RP 7, Enable Advanced Error Reporting
-	register "PcieRpAdvancedErrorReporting[6]" = "1"
-	# RP 7, Enable Latency Tolerance Reporting Mechanism
-	register "PcieRpLtrEnable[6]" = "1"
-	# RP 7 uses CLK SRC 4
-	register "PcieRpClkSrcNumber[6]" = "4"
-
-	# Enable Root port 8(x1) for TPU0
-	register "PcieRpEnable[7]" = "1"
-	# Enable CLKREQ#
-	register "PcieRpClkReqSupport[7]" = "1"
-	# RP 8 uses SRCCLKREQ2#
-	register "PcieRpClkReqNumber[7]" = "2"
-	# RP 8, Enable Advanced Error Reporting
-	register "PcieRpAdvancedErrorReporting[7]" = "1"
-	# RP 8, Enable Latency Tolerance Reporting Mechanism
-	register "PcieRpLtrEnable[7]" = "1"
-	# RP 8 uses CLK SRC 2
-	register "PcieRpClkSrcNumber[7]" = "2"
-
-	# Enable Root port 9(x4) for i350 LAN
-	register "PcieRpEnable[8]" = "1"
-	# Disable CLKREQ#
-	register "PcieRpClkReqSupport[8]" = "0"
-	# RP 9, Enable Advanced Error Reporting
-	register "PcieRpAdvancedErrorReporting[8]" = "1"
-	# RP 9, Enable Latency Tolerance Reporting Mechanism
-	register "PcieRpLtrEnable[8]" = "1"
-	# RP 9 uses CLK SRC 2
-	register "PcieRpClkSrcNumber[8]" = "2"
-
-	# These are part of Root port 9(x4)
-	register "PcieRpEnable[9]" = "0"
-	register "PcieRpEnable[10]" = "0"
-	register "PcieRpEnable[11]" = "0"
-
 	register "i2c_voltage[0]" = "I2C_VOLTAGE_3V3"		# TPU
 	register "i2c_voltage[1]" = "I2C_VOLTAGE_3V3"		# TPM
 	register "i2c_voltage[2]" = "I2C_VOLTAGE_1V8"		# None
@@ -159,11 +117,40 @@ chip soc/intel/skylake
 				device i2c 13 on end
 			end
 		end
-		device ref pcie_rp7 on end # TPU1
-		device ref pcie_rp8 on end # TPU0
-		device ref pcie_rp9 on end # POE LAN
-		device ref pcie_rp10 off end
-		device ref pcie_rp11 off end
-		device ref pcie_rp12 off end
+		device ref pcie_rp7 on
+			# x1 TPU1
+			register "PcieRpEnable[6]" = "1"
+			register "PcieRpClkReqSupport[6]" = "1"
+			register "PcieRpClkReqNumber[6]" = "4"
+			register "PcieRpAdvancedErrorReporting[6]" = "1"
+			register "PcieRpLtrEnable[6]" = "1"
+			register "PcieRpClkSrcNumber[6]" = "4"
+		end
+		device ref pcie_rp8 on
+			# x1 TPU0
+			register "PcieRpEnable[7]" = "1"
+			register "PcieRpClkReqSupport[7]" = "1"
+			register "PcieRpClkReqNumber[7]" = "2"
+			register "PcieRpAdvancedErrorReporting[7]" = "1"
+			register "PcieRpLtrEnable[7]" = "1"
+			register "PcieRpClkSrcNumber[7]" = "2"
+		end
+		device ref pcie_rp9 on
+			# x4 i350 LAN
+			register "PcieRpEnable[8]" = "1"
+			register "PcieRpClkReqSupport[8]" = "0"
+			register "PcieRpAdvancedErrorReporting[8]" = "1"
+			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieRpClkSrcNumber[8]" = "2"
+		end
+		device ref pcie_rp10 off
+			register "PcieRpEnable[9]" = "0"
+		end
+		device ref pcie_rp11 off
+			register "PcieRpEnable[10]" = "0"
+		end
+		device ref pcie_rp12 off
+			register "PcieRpEnable[11]" = "0"
+		end
 	end
 end

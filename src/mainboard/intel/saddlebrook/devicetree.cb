@@ -98,28 +98,6 @@ chip soc/intel/skylake
 		.voltage_limit = 1520,
 	}"
 
-	# Enable x1 slot
-	register "PcieRpEnable[7]" = "1"
-	register "PcieRpClkReqSupport[7]" = "1"
-	register "PcieRpClkReqNumber[7]" = "3" #uses SRCCLKREQ3
-
-	# Enable x4 slot
-	register "PcieRpEnable[8]" = "1"
-	register "PcieRpClkReqSupport[8]" = "1"
-	register "PcieRpClkReqNumber[8]" = "4" #uses SRCCLKREQ4
-
-	# Enable Root port 6 and 13.
-	register "PcieRpEnable[5]" = "1"
-	register "PcieRpEnable[12]" = "1"
-
-	# Enable CLKREQ#
-	register "PcieRpClkReqSupport[5]" = "1"
-	register "PcieRpClkReqSupport[12]" = "1"
-
-	# RP 6 uses SRCCLKREQ1# while RP `3 uses SRCCLKREQ2#
-	register "PcieRpClkReqNumber[5]" = "0"
-	register "PcieRpClkReqNumber[12]" = "1"
-
 	register "i2c_voltage[4]" = "I2C_VOLTAGE_1V8"  # I2C4 is 1.8V
 
 	# Must leave UART0 enabled or SD/eMMC will not work as PCI
@@ -207,6 +185,28 @@ chip soc/intel/skylake
 		device ref i2c5		on end
 		device ref i2c4		on end
 		device ref pcie_rp1	on end
+		device ref pcie_rp6	on
+			register "PcieRpEnable[5]" = "1"
+			register "PcieRpClkReqSupport[5]" = "1"
+			register "PcieRpClkReqNumber[5]" = "0"
+		end
+		device ref pcie_rp8	on
+			# x1
+			register "PcieRpEnable[7]" = "1"
+			register "PcieRpClkReqSupport[7]" = "1"
+			register "PcieRpClkReqNumber[7]" = "3"
+		end
+		device ref pcie_rp9	on
+			# x4
+			register "PcieRpEnable[8]" = "1"
+			register "PcieRpClkReqSupport[8]" = "1"
+			register "PcieRpClkReqNumber[8]" = "4"
+		end
+		device ref pcie_rp13	on
+			register "PcieRpEnable[12]" = "1"
+			register "PcieRpClkReqSupport[12]" = "1"
+			register "PcieRpClkReqNumber[12]" = "1"
+		end
 		device ref uart0	on end
 		device ref uart1	on end
 		device ref gspi0	on end

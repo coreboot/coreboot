@@ -146,83 +146,6 @@ chip soc/intel/skylake
 		.dc_loadline = 310,
 	}"
 
-	# Enable Root port 3(x1) for LAN.
-	register "PcieRpEnable[2]" = "1"
-	# Enable CLKREQ#
-	register "PcieRpClkReqSupport[2]" = "1"
-	# RP 3 uses SRCCLKREQ0#
-	register "PcieRpClkReqNumber[2]" = "0"
-	# RP 3, Enable Advanced Error Reporting
-	register "PcieRpAdvancedErrorReporting[2]" = "1"
-	# RP 3, Enable Latency Tolerance Reporting Mechanism
-	register "PcieRpLtrEnable[2]" = "1"
-	# RP 3 uses CLK SRC 0
-	register "PcieRpClkSrcNumber[2]" = "0"
-
-	# Enable Root port 4(x1) for WLAN.
-	register "PcieRpEnable[3]" = "1"
-	# Enable CLKREQ#
-	register "PcieRpClkReqSupport[3]" = "1"
-	# RP 4 uses SRCCLKREQ5#
-	register "PcieRpClkReqNumber[3]" = "5"
-	# RP 4, Enable Advanced Error Reporting
-	register "PcieRpAdvancedErrorReporting[3]" = "1"
-	# RP 4, Enable Latency Tolerance Reporting Mechanism
-	register "PcieRpLtrEnable[3]" = "1"
-	# RP 4 uses CLK SRC 5
-	register "PcieRpClkSrcNumber[3]" = "5"
-
-	# Enable Root port 5(x4) for NVMe.
-	register "PcieRpEnable[4]" = "1"
-	# Enable CLKREQ#
-	register "PcieRpClkReqSupport[4]" = "1"
-	# RP 5 uses SRCCLKREQ1#
-	register "PcieRpClkReqNumber[4]" = "1"
-	# RP 5, Enable Advanced Error Reporting
-	register "PcieRpAdvancedErrorReporting[4]" = "1"
-	# RP 5, Enable Latency Tolerance Reporting Mechanism
-	register "PcieRpLtrEnable[4]" = "1"
-	# RP 5 uses CLK SRC 1
-	register "PcieRpClkSrcNumber[4]" = "1"
-
-	# Enable Root port 9 for BtoB.
-	register "PcieRpEnable[8]" = "1"
-	# Enable CLKREQ#
-	register "PcieRpClkReqSupport[8]" = "1"
-	# RP 9 uses SRCCLKREQ2#
-	register "PcieRpClkReqNumber[8]" = "2"
-	# RP 9, Enable Advanced Error Reporting
-	register "PcieRpAdvancedErrorReporting[8]" = "1"
-	# RP 9, Enable Latency Tolerance Reporting Mechanism
-	register "PcieRpLtrEnable[8]" = "1"
-	# RP 9 uses CLK SRC 2
-	register "PcieRpClkSrcNumber[8]" = "2"
-
-	# Enable Root port 11 for BtoB.
-	register "PcieRpEnable[10]" = "1"
-	# Enable CLKREQ#
-	register "PcieRpClkReqSupport[10]" = "1"
-	# RP 11 uses SRCCLKREQ2#
-	register "PcieRpClkReqNumber[10]" = "2"
-	# RP 11, Enable Advanced Error Reporting
-	register "PcieRpAdvancedErrorReporting[10]" = "1"
-	# RP 11, Enable Latency Tolerance Reporting Mechanism
-	register "PcieRpLtrEnable[10]" = "1"
-	# RP 11 uses CLK SRC 2
-	register "PcieRpClkSrcNumber[10]" = "2"
-
-	# Enable Root port 12 for BtoB.
-	register "PcieRpEnable[11]" = "1"
-	# Enable CLKREQ#
-	register "PcieRpClkReqSupport[11]" = "1"
-	# RP 12 uses SRCCLKREQ2#
-	register "PcieRpClkReqNumber[11]" = "2"
-	# RP 12, Enable Advanced Error Reporting
-	register "PcieRpAdvancedErrorReporting[11]" = "1"
-	# RP 12, Enable Latency Tolerance Reporting Mechanism
-	register "PcieRpLtrEnable[11]" = "1"
-	# RP 12 uses CLK SRC 2
-	register "PcieRpClkSrcNumber[11]" = "2"
 
 	register "i2c_voltage[0]" = "I2C_VOLTAGE_3V3"		# HDMI CEC
 	register "i2c_voltage[1]" = "I2C_VOLTAGE_3V3"		# TPM
@@ -368,6 +291,13 @@ chip soc/intel/skylake
 		device ref pcie_rp1	on  end
 		device ref pcie_rp3	on
 			# LAN, will be swapped to port 1 by FSP
+			# x1
+			register "PcieRpEnable[2]" = "1"
+			register "PcieRpClkReqSupport[2]" = "1"
+			register "PcieRpClkReqNumber[2]" = "0"
+			register "PcieRpAdvancedErrorReporting[2]" = "1"
+			register "PcieRpLtrEnable[2]" = "1"
+			register "PcieRpClkSrcNumber[2]" = "0"
 			chip drivers/net
 				register "customized_leds" = "0x0fa5"
 				register "wake" = "GPE0_PCI_EXP"
@@ -376,23 +306,57 @@ chip soc/intel/skylake
 			end
 		end
 		device ref pcie_rp4	on
-			# WLAN
+			# x1 WLAN
+			register "PcieRpEnable[3]" = "1"
+			register "PcieRpClkReqSupport[3]" = "1"
+			register "PcieRpClkReqNumber[3]" = "5"
+			register "PcieRpAdvancedErrorReporting[3]" = "1"
+			register "PcieRpLtrEnable[3]" = "1"
+			register "PcieRpClkSrcNumber[3]" = "5"
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_PCI_EXP"
 				device pci 00.0 on end
 			end
 		end
-		device ref pcie_rp5	on end # NVMe
+		device ref pcie_rp5	on
+			# x4 NVMe
+			register "PcieRpEnable[4]" = "1"
+			register "PcieRpClkReqSupport[4]" = "1"
+			register "PcieRpClkReqNumber[4]" = "1"
+			register "PcieRpAdvancedErrorReporting[4]" = "1"
+			register "PcieRpLtrEnable[4]" = "1"
+			register "PcieRpClkSrcNumber[4]" = "1"
+		end
 		device ref pcie_rp9	on
 			# 2nd LAN
+			register "PcieRpEnable[8]" = "1"
+			register "PcieRpClkReqSupport[8]" = "1"
+			register "PcieRpClkReqNumber[8]" = "2"
+			register "PcieRpAdvancedErrorReporting[8]" = "1"
+			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieRpClkSrcNumber[8]" = "2"
 			chip drivers/net
 				register "customized_leds" = "0x0fa5"
 				register "device_index" = "1"
 				device pci 00.0 on end
 			end
 		end
-		device ref pcie_rp11	on  end
-		device ref pcie_rp12	on  end
+		device ref pcie_rp11	on
+			register "PcieRpEnable[10]" = "1"
+			register "PcieRpClkReqSupport[10]" = "1"
+			register "PcieRpClkReqNumber[10]" = "2"
+			register "PcieRpAdvancedErrorReporting[10]" = "1"
+			register "PcieRpLtrEnable[10]" = "1"
+			register "PcieRpClkSrcNumber[10]" = "2"
+		end
+		device ref pcie_rp12	on
+			register "PcieRpEnable[11]" = "1"
+			register "PcieRpClkReqSupport[11]" = "1"
+			register "PcieRpClkReqNumber[11]" = "2"
+			register "PcieRpAdvancedErrorReporting[11]" = "1"
+			register "PcieRpLtrEnable[11]" = "1"
+			register "PcieRpClkSrcNumber[11]" = "2"
+		end
 		device ref uart0	on  end
 		device ref gspi0	on
 			chip drivers/spi/acpi

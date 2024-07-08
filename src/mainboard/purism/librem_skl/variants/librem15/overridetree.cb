@@ -1,10 +1,5 @@
 chip soc/intel/skylake
 
-	# Disable CLKREQ# for RP9
-	register "PcieRpClkReqSupport[8]" = "0"
-	# SRCCLKREQ2# for NVMe per schematic
-	register "PcieRpClkReqNumber[8]" = "2"
-
 	device domain 0 on
 		device ref south_xhci on
 			register "usb2_ports" = "{
@@ -28,5 +23,9 @@ chip soc/intel/skylake
 			}"
 		end
 		device ref pcie_rp5 on  end
+		device ref pcie_rp9 on
+			register "PcieRpClkReqSupport[8]" = "0"
+			register "PcieRpClkReqNumber[8]" = "2"
+		end
 	end
 end

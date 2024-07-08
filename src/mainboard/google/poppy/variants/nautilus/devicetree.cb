@@ -129,19 +129,6 @@ chip soc/intel/skylake
 		.dc_loadline = 420,
 	}"
 
-	# Enable Root port 1.
-	register "PcieRpEnable[0]" = "1"
-	# Enable CLKREQ#
-	register "PcieRpClkReqSupport[0]" = "1"
-	# RP 1 uses SRCCLKREQ1#
-	register "PcieRpClkReqNumber[0]" = "1"
-	# RP 1 uses CLK SRC 1
-	register "PcieRpClkSrcNumber[0]" = "1"
-	# RP 1, Enable Advanced Error Reporting
-	register "PcieRpAdvancedErrorReporting[0]" = "1"
-	# RP 1, Enable Latency Tolerance Reporting Mechanism
-	register "PcieRpLtrEnable[0]" = "1"
-
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
@@ -380,6 +367,12 @@ chip soc/intel/skylake
 			end
 		end
 		device ref pcie_rp1		on
+			register "PcieRpEnable[0]" = "1"
+			register "PcieRpClkReqSupport[0]" = "1"
+			register "PcieRpClkReqNumber[0]" = "1"
+			register "PcieRpClkSrcNumber[0]" = "1"
+			register "PcieRpAdvancedErrorReporting[0]" = "1"
+			register "PcieRpLtrEnable[0]" = "1"
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_DW0_00"
 				device pci 00.0 on end

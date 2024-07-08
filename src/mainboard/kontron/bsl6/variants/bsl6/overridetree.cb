@@ -1,13 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
 chip soc/intel/skylake
-	# Enable Root port 1..4 (COMe 4..7), 12 (COMe 3)
-	register "PcieRpEnable[ 0]" = "1"
-	register "PcieRpEnable[ 1]" = "1"
-	register "PcieRpEnable[ 2]" = "1"
-	register "PcieRpEnable[ 3]" = "1"
-	register "PcieRpEnable[11]" = "1"
-
 	device domain 0 on
 		device ref south_xhci on
 			register "usb2_ports" = "{
@@ -27,11 +20,26 @@ chip soc/intel/skylake
 		device ref sata		on
 			register "SataPortsEnable[3]"	= "1"
 		end
-		device ref pcie_rp1	on  end
-		device ref pcie_rp2	on  end
-		device ref pcie_rp3	on  end
-		device ref pcie_rp4	on  end
-		device ref pcie_rp12	on  end
+		device ref pcie_rp1	on
+			# COMe 4
+			register "PcieRpEnable[0]" = "1"
+		end
+		device ref pcie_rp2	on
+			# COMe 5
+			register "PcieRpEnable[1]" = "1"
+		end
+		device ref pcie_rp3	on
+			# COMe 6
+			register "PcieRpEnable[2]" = "1"
+		end
+		device ref pcie_rp4	on
+			# COMe 7
+			register "PcieRpEnable[3]" = "1"
+		end
+		device ref pcie_rp12	on
+			# COMe 3
+			register "PcieRpEnable[11]" = "1"
+		end
 		device ref smbus	on
 			chip drivers/i2c/nct7802y
 				register "peci[0]" = "{ PECI_DOMAIN_0, 100 }"

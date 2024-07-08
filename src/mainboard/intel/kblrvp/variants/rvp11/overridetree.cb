@@ -4,43 +4,6 @@ chip soc/intel/skylake
 	register "DspEnable" = "0"
 	register "ScsEmmcHs400Enabled" = "0"
 
-	# Enable PCIE slot
-	register "PcieRpEnable[5]" = "1"
-	register "PcieRpClkReqSupport[5]" = "1"
-	register "PcieRpClkReqNumber[5]" = "1" #uses SRCCLKREQ1
-	# RP6, uses CLK SRC 1
-	register "PcieRpClkSrcNumber[5]" = "1"
-
-	register "PcieRpEnable[6]" = "1"
-	register "PcieRpClkReqSupport[6]" = "1"
-	register "PcieRpClkReqNumber[6]" = "2" #uses SRCCLKREQ2
-	# RP7, uses CLK SRC 2
-	register "PcieRpClkSrcNumber[6]" = "2"
-
-	register "PcieRpEnable[7]" = "1"
-	register "PcieRpClkReqSupport[7]" = "1"
-	register "PcieRpClkReqNumber[7]" = "3" #uses SRCCLKREQ3
-	# RP8, uses CLK SRC 3
-	register "PcieRpClkSrcNumber[7]" = "3"
-
-	register "PcieRpEnable[8]" = "1"
-	register "PcieRpClkReqSupport[8]" = "1"
-	register "PcieRpClkReqNumber[8]" = "4" #uses SRCCLKREQ4
-	# RP9, uses CLK SRC 4
-	register "PcieRpClkSrcNumber[8]" = "4"
-
-	register "PcieRpEnable[13]" = "1"
-	register "PcieRpClkReqSupport[13]" = "1"
-	register "PcieRpClkReqNumber[13]" = "5" #uses SRCCLKREQ5
-	# RP14, uses CLK SRC 5
-	register "PcieRpClkSrcNumber[13]" = "5"
-
-	register "PcieRpEnable[16]" = "1"
-	register "PcieRpClkReqSupport[16]" = "1"
-	register "PcieRpClkReqNumber[16]" = "7" #uses SRCCLKREQ7
-	# RP17, uses CLK SRC 7
-	register "PcieRpClkSrcNumber[16]" = "7"
-
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
@@ -111,6 +74,42 @@ chip soc/intel/skylake
 			}"
 		end
 		device ref i2c4		off end
+		device ref pcie_rp6	on
+			register "PcieRpEnable[5]" = "1"
+			register "PcieRpClkReqSupport[5]" = "1"
+			register "PcieRpClkReqNumber[5]" = "1"
+			register "PcieRpClkSrcNumber[5]" = "1"
+		end
+		device ref pcie_rp7	on
+			register "PcieRpEnable[6]" = "1"
+			register "PcieRpClkReqSupport[6]" = "1"
+			register "PcieRpClkReqNumber[6]" = "2"
+			register "PcieRpClkSrcNumber[6]" = "2"
+		end
+		device ref pcie_rp8	on
+			register "PcieRpEnable[7]" = "1"
+			register "PcieRpClkReqSupport[7]" = "1"
+			register "PcieRpClkReqNumber[7]" = "3"
+			register "PcieRpClkSrcNumber[7]" = "3"
+		end
+		device ref pcie_rp9	on
+			register "PcieRpEnable[8]" = "1"
+			register "PcieRpClkReqSupport[8]" = "1"
+			register "PcieRpClkReqNumber[8]" = "4"
+			register "PcieRpClkSrcNumber[8]" = "4"
+		end
+		device ref pcie_rp14	on
+			register "PcieRpEnable[13]" = "1"
+			register "PcieRpClkReqSupport[13]" = "1"
+			register "PcieRpClkReqNumber[13]" = "5"
+			register "PcieRpClkSrcNumber[13]" = "5"
+		end
+		device ref pcie_rp17	on
+			register "PcieRpEnable[16]" = "1"
+			register "PcieRpClkReqSupport[16]" = "1"
+			register "PcieRpClkReqNumber[16]" = "7"
+			register "PcieRpClkSrcNumber[16]" = "7"
+		end
 		device ref emmc		off end
 		device ref sdxc		off end
 		device ref hda		on  end

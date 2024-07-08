@@ -98,48 +98,6 @@ chip soc/intel/skylake
 	# Send an extra VR mailbox command for the PS4 exit issue
 	register "SendVrMbxCmd" = "2"
 
-	# Enable Root ports. 1-6 for LAN and Root Port 9
-	register "PcieRpEnable[0]" = "1"
-	register "PcieRpEnable[1]" = "1"
-	register "PcieRpEnable[2]" = "1"
-	register "PcieRpEnable[3]" = "1"
-	register "PcieRpEnable[4]" = "1"
-	register "PcieRpEnable[5]" = "1"
-	register "PcieRpEnable[8]" = "1" # mPCIe WiFi
-
-	# Enable Advanced Error Reporting for RP 1-6, 9
-	register "PcieRpAdvancedErrorReporting[0]" = "1"
-	register "PcieRpAdvancedErrorReporting[1]" = "1"
-	register "PcieRpAdvancedErrorReporting[2]" = "1"
-	register "PcieRpAdvancedErrorReporting[3]" = "1"
-	register "PcieRpAdvancedErrorReporting[4]" = "1"
-	register "PcieRpAdvancedErrorReporting[5]" = "1"
-	register "PcieRpAdvancedErrorReporting[8]" = "1"
-
-	# Enable Latency Tolerance Reporting Mechanism RP 1-6, 9
-	register "PcieRpLtrEnable[0]" = "1"
-	register "PcieRpLtrEnable[1]" = "1"
-	register "PcieRpLtrEnable[2]" = "1"
-	register "PcieRpLtrEnable[3]" = "1"
-	register "PcieRpLtrEnable[4]" = "1"
-	register "PcieRpLtrEnable[5]" = "1"
-	register "PcieRpLtrEnable[8]" = "1"
-
-	# Enable RP 9 CLKREQ# support
-	register "PcieRpClkReqSupport[8]" = "1"
-	# RP 9 uses CLKREQ0#
-	register "PcieRpClkReqNumber[8]" = "0"
-
-	# Clocks 0-5 for RP 1-6
-	register "PcieRpClkSrcNumber[0]" = "0"
-	register "PcieRpClkSrcNumber[1]" = "1"
-	register "PcieRpClkSrcNumber[2]" = "2"
-	register "PcieRpClkSrcNumber[3]" = "3"
-	register "PcieRpClkSrcNumber[4]" = "4"
-	register "PcieRpClkSrcNumber[5]" = "5"
-	# RP 9 shares CLKSRC5# with RP 6
-	register "PcieRpClkSrcNumber[8]" = "5"
-
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C1]  = PchSerialIoDisabled,
@@ -182,14 +140,56 @@ chip soc/intel/skylake
 				[1] = 1,
 			}"
 		end
-		device ref pcie_rp1	on  end
-		device ref pcie_rp2	on  end
-		device ref pcie_rp3	on  end
-		device ref pcie_rp4	on  end
-		device ref pcie_rp5	on  end
-		device ref pcie_rp6	on  end
+		device ref pcie_rp1	on
+			# LAN
+			register "PcieRpEnable[0]" = "1"
+			register "PcieRpAdvancedErrorReporting[0]" = "1"
+			register "PcieRpLtrEnable[0]" = "1"
+			register "PcieRpClkSrcNumber[0]" = "0"
+		end
+		device ref pcie_rp2	on
+			# LAN
+			register "PcieRpEnable[1]" = "1"
+			register "PcieRpAdvancedErrorReporting[1]" = "1"
+			register "PcieRpLtrEnable[1]" = "1"
+			register "PcieRpClkSrcNumber[1]" = "1"
+		end
+		device ref pcie_rp3	on
+			# LAN
+			register "PcieRpEnable[2]" = "1"
+			register "PcieRpAdvancedErrorReporting[2]" = "1"
+			register "PcieRpLtrEnable[2]" = "1"
+			register "PcieRpClkSrcNumber[2]" = "2"
+		end
+		device ref pcie_rp4	on
+			# LAN
+			register "PcieRpEnable[3]" = "1"
+			register "PcieRpAdvancedErrorReporting[3]" = "1"
+			register "PcieRpLtrEnable[3]" = "1"
+			register "PcieRpClkSrcNumber[3]" = "3"
+		end
+		device ref pcie_rp5	on
+			# LAN
+			register "PcieRpEnable[4]" = "1"
+			register "PcieRpAdvancedErrorReporting[4]" = "1"
+			register "PcieRpLtrEnable[4]" = "1"
+			register "PcieRpClkSrcNumber[4]" = "4"
+		end
+		device ref pcie_rp6	on
+			# LAN
+			register "PcieRpEnable[5]" = "1"
+			register "PcieRpAdvancedErrorReporting[5]" = "1"
+			register "PcieRpLtrEnable[5]" = "1"
+			register "PcieRpClkSrcNumber[5]" = "5"
+		end
 		device ref pcie_rp9	on
-			# WIFI
+			# mPCIe WIFI
+			register "PcieRpEnable[8]" = "1"
+			register "PcieRpAdvancedErrorReporting[8]" = "1"
+			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieRpClkSrcNumber[8]" = "5"
+			register "PcieRpClkReqSupport[8]" = "1"
+			register "PcieRpClkReqNumber[8]" = "0"
 			smbios_slot_desc
 				"SlotTypePciExpressMini52pinWithoutBSKO"
 				"SlotLengthShort" "WIFI1" "SlotDataBusWidth1X"

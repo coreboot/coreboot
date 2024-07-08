@@ -99,3 +99,6 @@ config BOARD_GOOGLE_WADDLEDEE
 
 config BOARD_GOOGLE_WADDLEDOO
 	bool "->  Waddledoo"
+
+config BOARD_GOOGLE_AWASUKI
+	bool "->  Awasuki"

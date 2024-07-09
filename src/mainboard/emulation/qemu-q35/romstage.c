@@ -7,8 +7,6 @@
 
 #include "q35.h"
 
-#define TSEG_SZ_MASK	(3 << 1)
-
 void mainboard_romstage_entry(void)
 {
 	i82801ix_early_init();

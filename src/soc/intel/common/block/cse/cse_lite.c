@@ -271,18 +271,22 @@ static void cse_print_boot_partition_info(void)
 
 	/* Log version info of RO & RW partitions */
 	cse_bp = cse_get_bp_entry(RO);
-	printk(BIOS_DEBUG, "cse_lite: %s version = %d.%d.%d.%d (Status=0x%x, Start=0x%x, End=0x%x)\n",
+	if (cse_bp->status == BP_STATUS_SUCCESS)
+		printk(BIOS_DEBUG, "cse_lite: %s version = %d.%d.%d.%d (Start=0x%x, End=0x%x)\n",
 			GET_BP_STR(RO), cse_bp->fw_ver.major, cse_bp->fw_ver.minor,
 			cse_bp->fw_ver.hotfix, cse_bp->fw_ver.build,
-			cse_bp->status, cse_bp->start_offset,
-			cse_bp->end_offset);
+			cse_bp->start_offset, cse_bp->end_offset);
+	else
+		printk(BIOS_ERR, "cse_lite: %s status=0x%x\n", GET_BP_STR(RO), cse_bp->status);
 
 	cse_bp = cse_get_bp_entry(RW);
-	printk(BIOS_DEBUG, "cse_lite: %s version = %d.%d.%d.%d (Status=0x%x, Start=0x%x, End=0x%x)\n",
+	if (cse_bp->status == BP_STATUS_SUCCESS)
+		printk(BIOS_DEBUG, "cse_lite: %s version = %d.%d.%d.%d (Start=0x%x, End=0x%x)\n",
 			GET_BP_STR(RW), cse_bp->fw_ver.major, cse_bp->fw_ver.minor,
 			cse_bp->fw_ver.hotfix, cse_bp->fw_ver.build,
-			cse_bp->status, cse_bp->start_offset,
-			cse_bp->end_offset);
+			cse_bp->start_offset, cse_bp->end_offset);
+	else
+		printk(BIOS_ERR, "cse_lite: %s status=0x%x\n", GET_BP_STR(RW), cse_bp->status);
 }
 
 /*

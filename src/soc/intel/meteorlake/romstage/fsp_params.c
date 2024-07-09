@@ -454,7 +454,7 @@ static void fill_fspm_sign_of_life(FSP_M_CONFIG *m_cfg,
 		sol_type = ELOG_FW_EARLY_SOL_MRC;
 	}
 
-	if (is_cse_fw_update_required()) {
+	if (CONFIG(SOC_INTEL_CSE_LITE_SKU) && is_cse_fw_update_required()) {
 		vga_init_control = VGA_INIT_CONTROL_ENABLE;
 		sol_type = ELOG_FW_EARLY_SOL_CSE_SYNC;
 	}

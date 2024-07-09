@@ -13,7 +13,7 @@ about the coreboot project. There have been a number of new companies
 starting to use coreboot recently, and we appreciate all of the
 contributions and support.
 
-### Upcoming switch from master branch to main branch
+## Upcoming switch from master branch to main branch
 
 Historically, the initial branch that was created in a new git
 repository was named ‘master’. In line with many other projects,

@@ -11,7 +11,7 @@ make
 ./intelp2m -file /path/to/inteltool.log
 ```
 
-### Platforms
+## Platforms
 
 It is possible to use templates for parsing inteltool.log files.
 To specify such a pattern, use the option `-t <template number>`.
@@ -51,13 +51,13 @@ platform type is set using the -p option (Sunrise by default):
 ./intelp2m -p <platform> -file path/to/inteltool.log
 ```
 
-### Packages
+## Packages
 
 ![][pckgs]
 
 [pckgs]: gopackages.png
 
-### Bit fields in macros
+## Bit fields in macros
 
 Use the `-fld=cb` option to only generate a sequence of bit fields in
 a new macro:
@@ -71,7 +71,7 @@ _PAD_CFG_STRUCT(GPIO_37, PAD_FUNC(NF1) | PAD_TRIG(OFF) | PAD_TRIG(OFF), \
     PAD_PULL(DN_20K)), /* LPSS_UART0_TXD */
 ```
 
-### Raw DW0, DW1 register value
+## Raw DW0, DW1 register value
 
 To generate the gpio.c with raw PAD_CFG_DW0 and PAD_CFG_DW1 register
 values you need to use the -fld=raw option:
@@ -96,7 +96,7 @@ _PAD_CFG_STRUCT(GPP_A10, 0x44000500, 0x00000000),
 _PAD_CFG_STRUCT(GPP_A10, 0x44000500, 0x00000000),
 ```
 
-### Macro Check
+## Macro Check
 
 After generating the macro, the utility checks all used
 fields of the configuration registers. If some field has been
@@ -115,7 +115,7 @@ PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_38, UP_20K, DEEP, NF1, HIZCRx1, DISPUPD),
 PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_39, UP_20K, DEEP, NF1, TxLASTRxE, DISPUPD),
 ```
 
-### Information level
+## Information level
 
 The utility can generate additional information about the bit
 fields of the DW0 and DW1 configuration registers. Using the
@@ -158,7 +158,7 @@ PAD_CFG_NF_IOSSTATE_IOSTERM(GPIO_39, UP_20K, DEEP, NF1, TxLASTRxE, \
     DISPUPD),
 ```
 
-### Ignoring Fields
+## Ignoring Fields
 
 Utilities can generate the _PAD_CFG_STRUCT macro and exclude fields
 from it that are not in the corresponding PAD_CFG_*() macro:
@@ -177,7 +177,7 @@ _PAD_CFG_STRUCT(GPIO_39, PAD_FUNC(NF1) | PAD_RESET(DEEP), \
     PAD_PULL(UP_20K) | PAD_IOSTERM(DISPUPD)),
 ```
 
-### FSP-style macro
+## FSP-style macro
 
 The utility allows one to generate macros that include fsp/edk2-platform
 style bitfields:
@@ -205,6 +205,6 @@ style bitfields:
   GpioPadConfigLock },
 ```
 
-### Supported Chipsets
+## Supported Chipsets
 
   Sunrise PCH, Lewisburg PCH, Apollo Lake SoC, CannonLake-LP SoCs

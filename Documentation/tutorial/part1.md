@@ -86,7 +86,7 @@ make -C payloads/coreinfo
 
 ### Step 5 - Configure the build
 
-##### Configure your mainboard
+#### Configure your mainboard
 
 ```Bash
 make menuconfig
@@ -104,7 +104,7 @@ select < Exit >
 These should be the default selections, so if anything else was set, run
 `make distclean` to remove your old config file and start over.
 
-##### Optionally use your system toolchain (Again, not recommended)
+#### Optionally use your system toolchain (Again, not recommended)
 
 ```Text
 select 'General Setup' menu
@@ -112,7 +112,7 @@ select 'Allow building with any toolchain'
 select < Exit >
 ```
 
-##### Select the payload
+#### Select the payload
 
 ```Text
 select 'Payload' menu
@@ -125,7 +125,7 @@ select < Exit >
 select < Yes >
 ```
 
-##### Check your configuration (optional step):
+#### Check your configuration (optional step):
 
 ```Bash
 make savedefconfig

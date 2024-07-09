@@ -1,4 +1,4 @@
-CSE FW update mechanism for devices in field
+# CSE FW update mechanism for devices in field
 
 ## Introduction
 

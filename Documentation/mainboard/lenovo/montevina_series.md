@@ -46,7 +46,7 @@ Now you need to patch the flash descriptor. You can either [modify the one from
 your backup with **ifdtool**](#modifying-flash-descriptor-using-ifdtool), or
 [use one from the coreboot repository](#using-checked-in-flash-descriptor-via-bincfg).
 
-#### Modifying flash descriptor using ifdtool
+### Modifying flash descriptor using ifdtool
 
 Pick the layout according to your chip size from the table below and save it to
 the `new_layout.txt` file:
@@ -88,7 +88,7 @@ $ mv flashregion_0_flashdescriptor.bin.new.new flashregion_0_flashdescriptor.bin
 
 Continue to the [Configuring coreboot](#configuring-coreboot) section.
 
-#### Using checked-in flash descriptor via bincfg
+### Using checked-in flash descriptor via bincfg
 
 There is a copy of an X200's flash descriptor checked into the coreboot
 repository. It is supposed to work for the T400/T500 as well. The descriptor
@@ -119,7 +119,7 @@ $ make gen-ifd-x200
 
 It will be saved to the `flashregion_0_fd.bin` file.
 
-#### Configuring coreboot
+### Configuring coreboot
 
 Now configure coreboot. You need to select correct chip size and specify paths
 to flash descriptor and gbe dump.

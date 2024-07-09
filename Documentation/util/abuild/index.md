@@ -14,7 +14,7 @@ to make sure your patch compiles cleanly for all.
 Note that abuild is a tool to do a simple build test, and binaries it
 produces may well not boot if flashed to a system.
 
-### Basic usage
+## Basic usage
 
 abuild needs to be run from the coreboot directory. If you cd into the
 coreboot/util/abuild directory and try to run it from there, it will
@@ -30,7 +30,7 @@ example, to build the Lenovo X230 target, run:
 $ util/abuild/abuild -t lenovo/x230
 ```
 
-### Where builds and logs are stored
+## Where builds and logs are stored
 
 The resulting images and logs are stored in directory coreboot-builds/
 under your current directory. This can be overridden with --outdir:
@@ -53,7 +53,7 @@ coreboot-builds/passing_boards and coreboot-builds/failing_boards.
 **These logs are overwritten with each abuild run.** Save them elsewhere
 if you feel a need to reference the results later.
 
-### Payloads
+## Payloads
 
 You can also specify a payload directory with -p:
 
@@ -81,7 +81,7 @@ You can also tell abuild not to use a payload:
 util/abuild/abuild -t lenovo/x230 -p none
 ```
 
-### Build non-default configurations
+## Build non-default configurations
 
 Sometimes you do need to build test a custom, non-default configuration.
 This can be accomplished by placing a config file in configs/.
@@ -142,7 +142,7 @@ a file named `myconfig` with this line:
 and run `abuild -K myconfig` to build everything with a silent postcar
 stage.
 
-### Selectively build certain targets only (also config file naming caveats)
+## Selectively build certain targets only (also config file naming caveats)
 
 The P8Z77-M PRO example above would fail for P8Z77-M, because the
 config file name is ambiguous. `abuild` would pick up this config when
@@ -166,7 +166,7 @@ util/abuild/abuild --skip_unset USE_NATIVE_RAMINIT
 This example skips building configs not using (Sandy/Ivy Bridge) native
 RAM init.
 
-### Additional Examples
+## Additional Examples
 
 Many boards have multiple variants. You can build for a specific
 variant of a board:
@@ -203,7 +203,7 @@ Of course, the real power of abuild is in testing multiple boards.
 util/abuild/abuild -B -y -c 8 -p none
 ```
 
-### Full options list
+## Full options list
 
 ```text
 coreboot autobuild v0.11.01 (Feb 3, 2023)

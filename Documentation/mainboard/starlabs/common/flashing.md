@@ -1,6 +1,6 @@
 # Flashing with fwupd
 
-#### **Requirements:**
+## **Requirements:**
 
 * fwupd version 1.5.6 or later
 * The battery must be charged to at least 30%
@@ -44,7 +44,7 @@ BIOS Lock must be disabled when switching from the standard AMI (American Megatr
 
 4\. Next, press the `F10` key to **Save & Exit** and then `Enter` to confirm.
 
-#### **Switching Branch**
+## **Switching Branch**
 
 Switching branch refers to changing from AMI firmware to coreboot, or vice versa.
 

@@ -12,7 +12,7 @@ optimization.
 The next release is scheduled for mid-May.
 
 
-### Release number format update
+## Release number format update
 
 The previous release was the last to use the incrementing 4.xx release
 name scheme. For this and future releases, coreboot has switched to a
@@ -22,7 +22,7 @@ of 00 implied. If we need to do a fix or incremental release, we'll
 append the values .01, .02 and so on to the initial release value.
 
 
-### The master branch is being deleted
+## The master branch is being deleted
 
 The coreboot project changed from master to main roughly 6 months ago,
 and has been keeping the two branches in sync since then to ease the
@@ -197,8 +197,7 @@ Significant Known and Open Issues
   the version of verstage used in coreboot 24.02.
 
 
-## Issues from the coreboot bugtracker: https://ticket.coreboot.org/
-
+Issues from the coreboot bugtracker: https://ticket.coreboot.org/
 
 ### coreboot-wide or architecture-wide issues
 

@@ -11,7 +11,7 @@ releases, this one reflects a commitment to open source innovation,
 security enhancements, and expanding hardware support.
 
 
-### 4.22.01 release
+## 4.22.01 release
 
 The week between tagging a release and announcing it publicly is used
 to test the tagged version and make sure everything is working as we
@@ -22,7 +22,7 @@ For the 4.22 release cycle we found an uninitialized variable error on
 the sandybridge/ivybridge platforms and rolled that into the 4.22.01
 release package.
 
-### coreboot version naming update
+## coreboot version naming update
 
 This release is the last release to use the incrementing 4.xx release
 name scheme. For future releases, coreboot is switching to a
@@ -33,7 +33,7 @@ the 24.02 release, we'll append the values .01, .02 and so on to the
 initial release value.
 
 
-### coreboot default branch update
+## coreboot default branch update
 
 Immediately after the 4.21 release, the coreboot project changed the
 default git branch from 'master' to 'main'. For the first couple of

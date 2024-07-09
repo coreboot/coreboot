@@ -6,8 +6,8 @@ fw_config
 	end
 	field STORAGE 2 3
 		option STORAGE_UNKNOWN		0
-		option STORAGE_UFS			1
-		option STORAGE_NVME			2
+		option STORAGE_UFS		1
+		option STORAGE_NVME		2
 	end
 	field WIFI_BT 4 4
 		option WIFI_CNVI_WIFI6E		0
@@ -15,16 +15,20 @@ fw_config
 	end
 	field AUDIO 5 7
 		option AUDIO_UNKNOWN		0
-		option AUDIO_REALTEK_ALC256		1
+		option AUDIO_REALTEK_ALC256	1
 		option AUDIO_REALTEK_ALC3287	2
 	end
 	field UFC 8 9
-		option UFC_NONE		0
-		option UFC_USB		1
+		option UFC_NONE			0
+		option UFC_USB			1
 	end
 	field KB_BL 10 10
-		option KB_BL_ABSENT			0
+		option KB_BL_ABSENT		0
 		option KB_BL_PRESENT		1
+	end
+	field FP 11 12
+		option FP_PRESENT		0
+		option FP_ABSENT		1
 	end
 	field ISH 21
 		option ISH_DISABLE		0

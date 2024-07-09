@@ -184,7 +184,7 @@ config SOC_INTEL_CSE_SERVER_SKU
 config SOC_INTEL_CSE_RW_UPDATE
 	bool "Enable the CSE RW Update Feature"
 	default n
-	depends on SOC_INTEL_CSE_LITE_SKU
+	depends on SOC_INTEL_CSE_LITE_SKU || SOC_INTEL_CSE_LITE_SYNC_BY_PAYLOAD
 	help
 	 This config will enable CSE RW firmware update feature and also will be used ensure
 	 all the required configs are provided by mainboard.

@@ -1542,31 +1542,6 @@ static void store_ish_version(void)
 	}
 }
 
-static void preram_create_cbmem_cse_info(int is_recovery)
-{
-	if (!CONFIG(SOC_INTEL_CSE_LITE_SYNC_BY_PAYLOAD))
-		return;
-
-	/*
-	 * CBMEM_ID_CSE_INFO will be used by the payload to -
-	 * 1. Avoid reading ISH firmware version on consecutive boots.
-	 * 2. Track state of PSR data during CSE downgrade operation.
-	 */
-	void *temp = cbmem_add(CBMEM_ID_CSE_INFO, sizeof(struct cse_specific_info));
-	if (!temp)
-		printk(BIOS_ERR, "cse_lite: Couldn't create CBMEM_ID_CSE_INFO\n");
-
-	/*
-	 * CBMEM_ID_CSE_BP_INFO will be used by the payload to avoid reading CSE
-	 * boot partition information on consecutive boots.
-	 */
-	temp = cbmem_add(CBMEM_ID_CSE_BP_INFO, sizeof(struct get_bp_info_rsp));
-	if (!temp)
-		printk(BIOS_ERR, "cse_lite: Couldn't create CBMEM_ID_CSE_BP_INFO\n");
-}
-
-CBMEM_CREATION_HOOK(preram_create_cbmem_cse_info);
-
 static void ramstage_cse_misc_ops(void *unused)
 {
 	if (acpi_get_sleep_type() == ACPI_S3)

@@ -11,6 +11,8 @@ smm-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CSE) += disable_heci.c
 ramstage-$(CONFIG_SOC_INTEL_CSE_SET_EOP) += cse_eop.c
 romstage-$(CONFIG_SOC_INTEL_CSE_PRE_CPU_RESET_TELEMETRY) += telemetry.c
 
+romstage-$(CONFIG_SOC_INTEL_CSE_LITE_SYNC_BY_PAYLOAD) += cse_sync_payload.c
+
 ifeq ($(CONFIG_STITCH_ME_BIN),y)
 
 CSE_BP1_BIN := $(objcse)/cse_bp1.bin

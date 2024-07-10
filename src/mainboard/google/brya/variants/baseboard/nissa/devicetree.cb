@@ -11,6 +11,7 @@ fw_config
 		option STORAGE_EMMC		0
 		option STORAGE_NVME		1
 		option STORAGE_UFS		2
+		option STORAGE_UNKNOWN		3
 	end
 end
 

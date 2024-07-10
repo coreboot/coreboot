@@ -478,14 +478,22 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref pcie_rp7 off end # PCIE7 no SD card
-		device ref emmc on end
+		device ref emmc on
+			probe STORAGE STORAGE_UNKNOWN
+			probe STORAGE STORAGE_EMMC
+		end
 		device ref ish on
 			chip drivers/intel/ish
 				register "add_acpi_dma_property" = "true"
 				device generic 0 on end
 			end
+			probe STORAGE STORAGE_UNKNOWN
+			probe STORAGE STORAGE_UFS
 		end
-		device ref ufs on end
+		device ref ufs on
+			probe STORAGE STORAGE_UNKNOWN
+			probe STORAGE STORAGE_UFS
+		end
 		device ref pch_espi on
 			chip ec/google/chromeec
 				use conn0 as mux_conn[0]

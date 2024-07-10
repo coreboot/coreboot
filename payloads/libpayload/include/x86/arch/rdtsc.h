@@ -33,9 +33,9 @@
 
 static u64 rdtsc(void)
 {
-	u64 val;
-	__asm__ __volatile__ ("rdtsc" : "=A" (val));
-	return val;
+	u32 lo, hi;
+	__asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));
+	return (u64)hi << 32 | lo;
 }
 
 #endif

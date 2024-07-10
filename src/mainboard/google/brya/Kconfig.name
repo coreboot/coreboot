@@ -143,6 +143,9 @@ config BOARD_GOOGLE_TAEKO4ES
 config BOARD_GOOGLE_TANIKS
 	bool "->  Taniks"
 
+config BOARD_GOOGLE_TELIKS
+	bool "->  Teliks"
+
 config BOARD_GOOGLE_TEREID
 	bool "->  Tereid"
 

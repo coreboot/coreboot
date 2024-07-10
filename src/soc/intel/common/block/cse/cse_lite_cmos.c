@@ -16,11 +16,11 @@
 # include "option_table.h"
 
 #ifndef CMOS_VSTART_partition_fw
-#error "The `ramtop` CMOS entry is missing, please add it to your cmos.layout."
+#error "The `CSE partition firmware` CMOS entry is missing, please add it to your cmos.layout."
 #endif
 
 #if CMOS_VSTART_partition_fw % 8 != 0
-#error "The `partition firmware` CMOS entry needs to be byte aligned, check your cmos.layout."
+#error "The `CSE partition firmware` CMOS entry needs to be byte aligned, check your cmos.layout."
 #endif	// CMOS_VSTART_partition_fw % 8 != 0
 
 #if CMOS_VLEN_partition_fw != (32 * 8)

@@ -108,6 +108,8 @@ struct mbox_cmd_dtpm_config_buffer {
 #define PSP_INIT_TIMEOUT 10000 /* 10 seconds */
 #define PSP_CMD_TIMEOUT 1000 /* 1 second */
 
+uintptr_t get_psp_mmio_base(void);
+
 void psp_print_cmd_status(int cmd_status, struct mbox_buffer_header *header);
 
 /* This command needs to be implemented by the generation specific code. */

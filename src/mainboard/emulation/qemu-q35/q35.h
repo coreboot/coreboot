@@ -8,6 +8,9 @@
 
 #define HOST_BRIDGE	PCI_DEV(0, 0, 0)
 
+#define EXT_TSEG_MBYTES		0x50
+#define C_BASE_SEG		((0 << 2) | (1 << 1) | (0 << 0))
+
 #define D0F0_PCIEXBAR_LO	0x60
 #define D0F0_PCIEXBAR_HI	0x64
 

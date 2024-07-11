@@ -34,10 +34,6 @@ void mainboard_machine_check(void)
 		die("You must run qemu for machine Q35 (-M q35)");
 }
 
-/* QEMU-specific register */
-#define EXT_TSEG_MBYTES	0x50
-#define C_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0))
-
 /* Decodes TSEG region size to bytes. */
 static size_t decode_tseg_size(u8 esmramc)
 {

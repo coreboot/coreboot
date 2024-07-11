@@ -212,6 +212,26 @@ static void wifi_dsm_energy_detection_threshold(void *args)
 }
 
 /*
+ * Function 11: RFI mitigation
+ * Bit 0:
+ * 0 - DLVR RFIm enabled (default)
+ * 1 - DLVR RFIm disabled
+ *
+ * Bit 1:
+ * 0 - DDR RFIm enabled (default)
+ * 1 - DDR RFIm disabled
+ *
+ * Bits 2-31: Reserved - Should be 0
+ */
+
+static void wifi_dsm_rfi_mitigation(void *args)
+{
+	struct dsm_profile *dsm_config = (struct dsm_profile *)args;
+
+	acpigen_write_return_integer(dsm_config->rfi_mitigation);
+}
+
+/*
  * Function 12: Control Enablement 802.11be on certificated modules
  * Bit 0
  * 0 - 11BE disabled for China Mainland
@@ -251,7 +271,7 @@ static void (*wifi_dsm_callbacks[])(void *) = {
 	NULL,					/* Function 8 */
 	NULL,					/* Function 9 */
 	wifi_dsm_energy_detection_threshold,	/* Function 10 */
-	NULL,					/* Function 11 */
+	wifi_dsm_rfi_mitigation,		/* Function 11 */
 	wifi_dsm_11be_country_enablement,	/* Function 12 */
 };
 

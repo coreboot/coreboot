@@ -145,6 +145,73 @@ static void wifi_dsm_unii4_control_enable(void *args)
 }
 
 /*
+ * Function 10: Energy Detection Threshold (EDT)
+ * Bits 0-3: EDT revision - Default 0
+ *
+ * Bits 4-5: Reserved - Should be 0
+ *
+ * Bit 6: HB EDT Level. 5 GHz ETSI - EDT Level change - Default 0
+ * 0 - Disable EDT optimization for ETSI HB
+ * 1 - Enable EDT optimization for ETSI HB
+ *
+ * Bits 7-8: Reserved - Should be 0
+ *
+ * Bit 9: UHB EDT Level. 6 GHz FCC - EDT Level change - Default 0
+ * 0 - Disable EDT optimization for FCC UHB
+ * 1 - Enable EDT optimization for FCC UHB
+ *
+ * Bit 10-12: Reserved - Default 0
+ *
+ * Bit 13: EDT_En_HB_5G2/3 - Default 0
+ * 0 - Disable EDT optimization for HB_5G2/3
+ * 1 - Enable EDT optimization for HB_5G2/3
+ *
+ * Bit 14: EDT_En_HB_5G4 - Default 0
+ * 0 - Disable EDT optimization for HB_5G4
+ * 1 - Enable EDT optimization for HB_5G4
+ *
+ * Bit 15: EDT_En_HB_5G6 - Default 0
+ * 0 - Disable EDT optimization for HB_5G6
+ * 1 - Enable EDT optimization for HB_5G6
+ *
+ * Bit 16: EDT_En_HB_5G8/9 - Default 0
+ * 0 - Disable EDT optimization for HB_5G8/9
+ * 1 - Enable EDT optimization for HB_5G8/9
+ *
+ * Bit 17: EDT_En_UHB_6G1 - Default 0
+ * 0 - Disable EDT optimization for UHB_6G1
+ * 1 - Enable EDT optimization for UHB_6G1
+ *
+ * Bit 18: EDT_En_UHB_6G3 - Default 0
+ * 0 - Disable EDT optimization for UHB_6G3
+ * 1 - Enable EDT optimization for UHB_6G3
+ *
+ * Bit 19: EDT_En_UHB_6G5 - Default 0
+ * 0 - Disable EDT optimization for UHB_6G5
+ * 1 - Enable EDT optimization for UHB_6G5
+ *
+ * Bit 20: EDT_En_UHB_6G6 - Default 0
+ * 0 - Disable EDT optimization for UHB_6G6
+ * 1 - Enable EDT optimization for UHB_6G6
+ *
+ * Bit 21: EDT_En_UHB_6G8 - Default 0
+ * 0 - Disable EDT optimization for UHB_6G8
+ * 1 - Enable EDT optimization for UHB_6G8
+ *
+ * Bit 22: EDT_En_UHB_7G0 - Default 0
+ * 0 - Disable EDT optimization for UHB_7G0
+ * 1 - Enable EDT optimization for UHB_7G0
+ *
+ * Bits 23-31: Reserved - Should be 0
+ */
+static void wifi_dsm_energy_detection_threshold(void *args)
+{
+	struct dsm_profile *dsm_config = (struct dsm_profile *)args;
+
+	acpigen_write_return_integer(dsm_config->energy_detection_threshold);
+}
+
+/*
  * Function 12: Control Enablement 802.11be on certificated modules
  * Bit 0
  * 0 - 11BE disabled for China Mainland
@@ -183,7 +250,7 @@ static void (*wifi_dsm_callbacks[])(void *) = {
 	wifi_dsm_unii4_control_enable,		/* Function 7 */
 	NULL,					/* Function 8 */
 	NULL,					/* Function 9 */
-	NULL,					/* Function 10 */
+	wifi_dsm_energy_detection_threshold,	/* Function 10 */
 	NULL,					/* Function 11 */
 	wifi_dsm_11be_country_enablement,	/* Function 12 */
 };

@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Update for Glinda */
-
 #include <amdblocks/gpio.h>
 #include <gpio.h>
 #include <types.h>

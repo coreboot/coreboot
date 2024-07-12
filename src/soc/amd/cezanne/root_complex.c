@@ -75,9 +75,17 @@ struct device_operations cezanne_root_complex_operations = {
 	.acpi_fill_ssdt		= root_complex_fill_ssdt,
 };
 
-uint32_t get_iohc_misc_smn_base(struct device *domain)
+static const struct domain_iohc_info iohc_info[] = {
+	[0] = {
+		.fabric_id = IOMS0_FABRIC_ID,
+		.misc_smn_base = SMN_IOHC_MISC_BASE_13B1,
+	},
+};
+
+const struct domain_iohc_info *get_iohc_info(size_t *count)
 {
-	return SMN_IOHC_MISC_BASE_13B1;
+	*count = ARRAY_SIZE(iohc_info);
+	return iohc_info;
 }
 
 static const struct non_pci_mmio_reg non_pci_mmio[] = {
@@ -98,14 +106,4 @@ const struct non_pci_mmio_reg *get_iohc_non_pci_mmio_regs(size_t *count)
 {
 	*count = ARRAY_SIZE(non_pci_mmio);
 	return non_pci_mmio;
-}
-
-signed int get_iohc_fabric_id(struct device *domain)
-{
-	switch (domain->path.domain.domain) {
-	case 0:
-		return IOMS0_FABRIC_ID;
-	default:
-		return -1;
-	}
 }

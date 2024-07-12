@@ -11,6 +11,8 @@
 #define SMN_IOHC_MISC_BASE_13D1	0x13d10000
 #define SMN_IOHC_MISC_BASE_13E1	0x13e10000
 
+#define IOHC_MMIO_EN	BIT(0)
+
 #define NON_PCI_RES_IDX_AUTO	0
 
 struct non_pci_mmio_reg {

@@ -5,8 +5,6 @@
 #include <device/device.h>
 #include <types.h>
 
-#define IOHC_MMIO_EN	BIT(0)
-
 void read_non_pci_resources(struct device *domain, unsigned long *idx)
 {
 	const uint32_t iohc_misc_base = get_iohc_misc_smn_base(domain);

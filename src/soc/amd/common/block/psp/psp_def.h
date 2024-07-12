@@ -115,6 +115,6 @@ void psp_print_cmd_status(int cmd_status, struct mbox_buffer_header *header);
 /* This command needs to be implemented by the generation specific code. */
 int send_psp_command(u32 command, void *buffer);
 
-uint32_t soc_read_c2p38(void);
+enum cb_err soc_read_c2p38(uint32_t *msg_38_value);
 
 #endif /* __AMD_PSP_DEF_H__ */

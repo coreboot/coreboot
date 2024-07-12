@@ -110,7 +110,11 @@ static enum cb_err psb_enable(void)
 		return CB_SUCCESS;
 	}
 
-	status = soc_read_c2p38();
+	if (soc_read_c2p38(&status) != CB_SUCCESS) {
+		printk(BIOS_ERR, "PSP: Failed to get base address.\n");
+		return CB_ERR;
+	}
+
 	printk(BIOS_INFO, "PSB: HSTI = %x\n", status);
 
 	const u32 psb_test_status = status & PSB_TEST_STATUS_MASK;

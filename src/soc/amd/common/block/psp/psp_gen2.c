@@ -176,7 +176,8 @@ int send_psp_command(u32 command, void *buffer)
 	return 0;
 }
 
-uint32_t soc_read_c2p38(void)
+enum cb_err soc_read_c2p38(uint32_t *msg_38_value)
 {
-	return smn_read32(SMN_PSP_PUBLIC_BASE + CORE_2_PSP_MSG_38_OFFSET);
+	*msg_38_value = smn_read32(SMN_PSP_PUBLIC_BASE + CORE_2_PSP_MSG_38_OFFSET);
+	return CB_SUCCESS;
 }

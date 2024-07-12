@@ -8,12 +8,17 @@
 static void psp_set_spl_fuse(void *unused)
 {
 	int cmd_status = 0;
+	uint32_t c2p38 = 0;
 	struct mbox_cmd_late_spl_buffer buffer = {
 		.header = {
 			.size = sizeof(buffer)
 		}
 	};
-	uint32_t c2p38 = soc_read_c2p38();
+
+	if (soc_read_c2p38(&c2p38) != CB_SUCCESS) {
+		printk(BIOS_ERR, "PSP: Failed to get base address.\n");
+		return;
+	}
 
 	if (c2p38 & CORE_2_PSP_MSG_38_FUSE_SPL) {
 		printk(BIOS_DEBUG, "PSP: SPL Fusing may be updated.\n");

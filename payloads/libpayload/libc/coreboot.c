@@ -262,14 +262,12 @@ static void cb_parse_cbmem_entry(void *ptr, struct sysinfo_t *info)
 	case CBMEM_ID_MEM_CHIP_INFO:
 		info->mem_chip_base = cbmem_entry->address;
 		break;
-#if CONFIG(SOC_INTEL_CSE_LITE_SYNC_BY_PAYLOAD)
 	case CBMEM_ID_CSE_BP_INFO:
 		info->cse_bp_info = cbmem_entry->address;
 		break;
 	case CBMEM_ID_CSE_INFO:
 		info->cse_info = cbmem_entry->address;
 		break;
-#endif
 	default:
 		break;
 	}

@@ -136,8 +136,6 @@ chip soc/intel/cannonlake
 
 	register "DisableHeciRetry" = "1"
 
-	device cpu_cluster 0 on end
-
 	device domain 0 on
 		device ref system_agent on  end
 		device ref peg0 on # x8             / Slot 2

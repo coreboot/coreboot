@@ -195,8 +195,6 @@ chip soc/intel/cannonlake
 	register "gpio_pm[COMM_3]" = "0"
 	register "gpio_pm[COMM_4]" = "0"
 
-	device cpu_cluster 0 on end
-
 	device domain 0 on
 		device ref igpu		on end
 		device ref thermal	on end

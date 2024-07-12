@@ -1,7 +1,5 @@
 chip soc/intel/cannonlake
 
-	device cpu_cluster 0 on end
-
 	# Enable eDP device
 	register "DdiPortEdp" = "1"
 	# Enable HPD for DDI ports B/C/D/F

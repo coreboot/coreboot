@@ -54,8 +54,6 @@ chip soc/intel/cannonlake
 	register "gpe0_dw2" = "PMC_GPP_E"
 
 # Actual device tree
-	device cpu_cluster 0 on end
-
 	device domain 0 on
 		device ref peg0		on
 			# PCI Express Graphics #0 x16, Clock 8 (NVIDIA GPU)

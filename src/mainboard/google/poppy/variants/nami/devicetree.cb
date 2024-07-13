@@ -211,10 +211,8 @@ chip soc/intel/skylake
 	}"
 
 	device domain 0 on
-		device ref system_agent		on  end
 		device ref igpu			on  end
 		device ref sa_thermal		on  end
-		device ref imgu			off end
 		device ref south_xhci		on
 			register "usb2_ports" = "{
 				[0] = USB2_PORT_LONG(OC0),	// Type-C Port 0
@@ -235,7 +233,6 @@ chip soc/intel/skylake
 		end
 		device ref south_xdci		on  end
 		device ref thermal		on  end
-		device ref cio			off end
 		device ref i2c0			on
 			chip drivers/i2c/generic
 				register "hid" = ""ELAN0001""
@@ -365,17 +362,8 @@ chip soc/intel/skylake
 			end
 		end
 		device ref heci1		on  end
-		device ref heci2		off end
-		device ref csme_ider		off end
-		device ref csme_ktr		off end
-		device ref heci3		off end
-		device ref sata			off end
 		device ref uart2		on  end
-		device ref i2c5			off end
-		device ref i2c4			off end
 		device ref pcie_rp1		on  end
-		device ref pcie_rp2		off end
-		device ref pcie_rp3		off end
 		device ref pcie_rp4		on
 			# x1
 			register "PcieRpEnable[3]" = "1"
@@ -398,9 +386,6 @@ chip soc/intel/skylake
 			register "PcieRpAdvancedErrorReporting[4]" = "1"
 			register "PcieRpLtrEnable[4]" = "1"
 		end
-		device ref pcie_rp6		off end
-		device ref pcie_rp7		off end
-		device ref pcie_rp8		off end
 		device ref pcie_rp9		on
 			# x2
 			register "PcieRpEnable[8]" = "1"
@@ -410,11 +395,7 @@ chip soc/intel/skylake
 			register "PcieRpAdvancedErrorReporting[8]" = "1"
 			register "PcieRpLtrEnable[8]" = "1"
 		end
-		device ref pcie_rp10		off end
-		device ref pcie_rp11		off end
-		device ref pcie_rp12		off end
 		device ref uart0		on  end
-		device ref uart1		off end
 		device ref gspi0		on
 			chip drivers/spi/acpi
 				register "hid" = "ACPI_DT_NAMESPACE_HID"
@@ -435,8 +416,6 @@ chip soc/intel/skylake
 			end # FPMCU
 		end
 		device ref emmc 		on  end
-		device ref sdio			off end
-		device ref sdxc			off end
 		device ref lpc_espi		on
 			# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
 			register "gen1_dec" = "0x00fc0801"
@@ -448,11 +427,8 @@ chip soc/intel/skylake
 				device pnp 0c09.0 on end
 			end
 		end
-		device ref p2sb			on  end
-		device ref pmc			on  end
 		device ref hda			on  end
 		device ref smbus		on  end
 		device ref fast_spi		on  end
-		device ref gbe			off end
 	end
 end

@@ -217,7 +217,6 @@ chip soc/intel/skylake
 	register "sdcard_cd_gpio" = "GPP_E15"
 
 	device domain 0 on
-		device ref system_agent		on  end
 		device ref igpu			on  end
 		device ref sa_thermal		on  end
 		device ref imgu			on  end
@@ -293,11 +292,6 @@ chip soc/intel/skylake
 			end
 		end
 		device ref heci1		on  end
-		device ref heci2		off end
-		device ref csme_ider		off end
-		device ref csme_ktr		off end
-		device ref heci3		off end
-		device ref sata			off end
 		device ref uart2		on  end
 		device ref i2c5			on
 			chip drivers/i2c/max98927
@@ -340,23 +334,8 @@ chip soc/intel/skylake
 				device pci 00.0 on end
 			end
 		end
-		device ref pcie_rp2		off end
-		device ref pcie_rp3		off end
-		device ref pcie_rp4		off end
-		device ref pcie_rp5		off end
-		device ref pcie_rp6		off end
-		device ref pcie_rp7		off end
-		device ref pcie_rp8		off end
-		device ref pcie_rp9		off end
-		device ref pcie_rp10		off end
-		device ref pcie_rp11		off end
-		device ref pcie_rp12		off end
 		device ref uart0		on  end
-		device ref uart1		off end
-		device ref gspi0		off end
-		device ref gspi1		off end
 		device ref emmc			on  end
-		device ref sdio			off end
 		device ref sdxc			on  end
 		device ref lpc_espi		on
 			# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
@@ -369,11 +348,8 @@ chip soc/intel/skylake
 				device pnp 0c09.0 on end
 			end
 		end
-		device ref p2sb			on  end
-		device ref pmc			on  end
 		device ref hda			on  end
 		device ref smbus		on  end
 		device ref fast_spi		on  end
-		device ref gbe			off end
 	end
 end

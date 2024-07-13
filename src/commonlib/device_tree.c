@@ -59,9 +59,48 @@ static struct device_tree_property *alloc_prop(void)
 	return xzalloc(sizeof(struct device_tree_property));
 }
 
+
+/*
+ * internal functions used by both unflattened and flattened device tree variants
+ */
+
+
+static size_t read_reg_prop(struct fdt_property *prop, u32 addr_cells, u32 size_cells,
+			    struct device_tree_region regions[], size_t regions_count)
+{
+	// we found the reg property, no need to parse all regions in 'reg'
+	size_t count = prop->size / (4 * addr_cells + 4 * size_cells);
+	if (count > regions_count) {
+		printk(BIOS_ERR, "reg property has more entries (%zd) than regions array can hold (%zd)\n", count, regions_count);
+		count = regions_count;
+	}
+	if (addr_cells > 2 || size_cells > 2) {
+		printk(BIOS_ERR, "addr_cells (%d) or size_cells (%d) bigger than 2\n",
+				  addr_cells, size_cells);
+		return 0;
+	}
+	uint32_t *ptr = prop->data;
+	for (int i = 0; i < count; i++) {
+		if (addr_cells == 1)
+			regions[i].addr = be32dec(ptr);
+		else if (addr_cells == 2)
+			regions[i].addr = be64dec(ptr);
+		ptr += addr_cells;
+		if (size_cells == 1)
+			regions[i].size = be32dec(ptr);
+		else if (size_cells == 2)
+			regions[i].size = be64dec(ptr);
+		ptr += size_cells;
+	}
+
+	return count; // return the number of regions found in the reg property
+}
+
+
 /*
  * Functions for picking apart flattened trees.
  */
+
 
 static int fdt_skip_nops(const void *blob, uint32_t offset)
 {
@@ -203,32 +242,7 @@ u32 fdt_read_reg_prop(const void *blob, u32 node_offset, u32 addr_cells, u32 siz
 		return 0;
 	}
 
-	// we found the reg property, now need to parse all regions in 'reg'
-	size_t count = prop.size / (4 * addr_cells + 4 * size_cells);
-	if (count > regions_count) {
-		printk(BIOS_ERR, "reg property at node_offset: %x has more entries (%zd) than regions array can hold (%zd)\n", node_offset, count, regions_count);
-		count = regions_count;
-	}
-	if (addr_cells > 2 || size_cells > 2) {
-		printk(BIOS_ERR, "addr_cells (%d) or size_cells (%d) bigger than 2\n",
-				  addr_cells, size_cells);
-		return 0;
-	}
-	uint32_t *ptr = prop.data;
-	for (int i = 0; i < count; i++) {
-		if (addr_cells == 1)
-			regions[i].addr = be32dec(ptr);
-		else if (addr_cells == 2)
-			regions[i].addr = be64dec(ptr);
-		ptr += addr_cells;
-		if (size_cells == 1)
-			regions[i].size = be32dec(ptr);
-		else if (size_cells == 2)
-			regions[i].size = be64dec(ptr);
-		ptr += size_cells;
-	}
-
-	return count; // return the number of regions found in the reg property
+	return read_reg_prop(&prop, addr_cells, size_cells, regions, regions_count);
 }
 
 static u32 fdt_read_cell_props(const void *blob, u32 node_offset, u32 *addrcp, u32 *sizecp)
@@ -979,6 +993,37 @@ void dt_print_node(const struct device_tree_node *node)
 /*
  * Functions for reading and manipulating an unflattened device tree.
  */
+
+/*
+ * dt_read_reg_prop reads the reg property inside a node
+ *
+ * @params node           device tree node to read reg property from
+ * @params addr_cells     number of cells used for one address
+ * @params size_cells     number of cells used for one size
+ * @params regions        all regions that are read inside the reg property are saved inside
+ *                        this array
+ * @params regions_count  maximum number of entries that can be saved inside the regions array.
+ *
+ * Returns: Either 0 on error or returns the number of regions put into the regions array.
+ */
+size_t dt_read_reg_prop(struct device_tree_node *node, u32 addr_cells, u32 size_cells,
+			struct device_tree_region regions[], size_t regions_count)
+{
+	struct device_tree_property *prop;
+	bool found = false;
+	list_for_each(prop, node->properties, list_node) {
+		if (!strcmp("reg", prop->prop.name)) {
+			found = true;
+			break;
+		}
+	}
+
+	if (!found) {
+		printk(BIOS_DEBUG, "no reg property found\n");
+		return 0;
+	}
+	return read_reg_prop(&prop->prop, addr_cells, size_cells, regions, regions_count);
+}
 
 /*
  * Read #address-cells and #size-cells properties from a node.

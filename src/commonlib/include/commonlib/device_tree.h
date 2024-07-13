@@ -147,6 +147,8 @@ uint32_t dt_flat_size(const struct device_tree *tree);
 /* Flatten a device tree into the buffer pointed to by dest. */
 void dt_flatten(const struct device_tree *tree, void *dest);
 void dt_print_node(const struct device_tree_node *node);
+size_t dt_read_reg_prop(struct device_tree_node *node, u32 addr_cells, u32 size_cells,
+			struct device_tree_region regions[], size_t regions_count);
 /* Read #address-cells and #size-cells properties from a node. */
 void dt_read_cell_props(const struct device_tree_node *node, u32 *addrcp,
 			u32 *sizecp);

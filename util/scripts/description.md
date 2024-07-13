@@ -1,4 +1,6 @@
 __scripts__
+  * capture_commands.sh - Write all commands from the build to a file.
+                          `Shell`
   * _config_ - Manipulate options in a .config file from the command
               line `Bash`
   * _cross-repo-cherrypick_ - Pull in patches from another tree from a

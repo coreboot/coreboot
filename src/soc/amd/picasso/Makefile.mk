@@ -38,6 +38,7 @@ ifeq ($(CONFIG_DEBUG_SMI),y)
 smm-y += uart.c
 endif
 smm-y += gpio.c
+smm-y += root_complex.c
 
 CPPFLAGS_common += -I$(src)/soc/amd/picasso/include
 CPPFLAGS_common += -I$(src)/soc/amd/picasso/acpi

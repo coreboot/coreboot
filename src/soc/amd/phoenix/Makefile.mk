@@ -38,6 +38,7 @@ ramstage-y	+= soc_util.c
 ramstage-y	+= xhci.c
 
 smm-y		+= gpio.c
+smm-y		+= root_complex.c
 smm-y		+= smihandler.c
 smm-$(CONFIG_DEBUG_SMI) += uart.c
 

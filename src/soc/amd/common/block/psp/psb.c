@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/reset.h>
-#include <amdblocks/smn.h>
 #include <bootstate.h>
 #include <console/console.h>
 #include <device/mmio.h>
@@ -83,9 +82,16 @@ static const char *fuse_status_to_string(u32 status)
 	}
 }
 
-static uint32_t get_psb_status(void)
+static enum cb_err get_psb_status(uint32_t *psb_status_value)
 {
-	return smn_read32(SMN_PSP_PUBLIC_BASE + PSB_STATUS_OFFSET);
+	const uintptr_t psp_mmio = get_psp_mmio_base();
+
+	if (!psp_mmio) {
+		printk(BIOS_WARNING, "PSP: PSP_ADDR_MSR uninitialized\n");
+		return CB_ERR;
+	}
+	*psb_status_value = read32p(psp_mmio | PSB_STATUS_OFFSET);
+	return CB_SUCCESS;
 }
 
 /*
@@ -102,7 +108,11 @@ static enum cb_err psb_enable(void)
 		}
 	};
 
-	status = get_psb_status();
+	if (get_psb_status(&status) != CB_SUCCESS) {
+		printk(BIOS_ERR, "PSP: Failed to get base address.\n");
+		return CB_ERR;
+	}
+
 	printk(BIOS_INFO, "PSB: Status = %x\n", status);
 
 	if (status & FUSE_PLATFORM_SECURE_BOOT_EN) {

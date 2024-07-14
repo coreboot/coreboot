@@ -19,7 +19,12 @@ typedef __SIZE_TYPE__ ssize_t;
 typedef __WCHAR_TYPE__ wchar_t;
 typedef __WINT_TYPE__ wint_t;
 
+#if __STDC_VERSION__ >= 202300L
+#define NULL nullptr
+#else
+#define nullptr ((void *)0)
 #define NULL ((void *)0)
+#endif
 
 /* The devicetree data structures are only mutable in ramstage. All other
    stages have a constant devicetree. */

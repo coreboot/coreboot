@@ -51,14 +51,10 @@ chip soc/intel/cannonlake
 
 # Actual device tree.
 	device domain 0 on
-		device ref system_agent on  end
 		device ref igpu on  end
 		device ref dptf on
 			register "Device4Enable"		= "1"
 		end
-		device ref thermal off end
-		device ref ufs off end
-		device ref gspi2 off end
 		device ref xhci on
 			# Motherboard USB Type C
 			register "usb2_ports[0]"		= "USB2_PORT_TYPE_C(OC_SKIP)"
@@ -81,7 +77,6 @@ chip soc/intel/cannonlake
 			# Internal Bluetooth
 			register "usb2_ports[9]"		= "USB2_PORT_MID(OC_SKIP)"
 		end
-		device ref xdci off end
 		device ref shared_sram on  end
 		device ref cnvi_wifi on
 			chip drivers/wifi/generic
@@ -89,7 +84,6 @@ chip soc/intel/cannonlake
 				device generic 0 on end
 			end
 		end
-		device ref sdxc off end
 		device ref i2c0 on
 			chip drivers/i2c/hid
 				register "generic.hid"		= ""STAR0001""
@@ -100,15 +94,6 @@ chip soc/intel/cannonlake
 				device i2c 2c on end
 			end
 		end
-		device ref i2c1 off end
-		device ref i2c2 off end
-		device ref i2c3 off end
-		device ref heci1 on  end
-		device ref heci2 off end
-		device ref csme_ider off end
-		device ref csme_ktr off end
-		device ref heci3 off end
-		device ref heci4 off end
 		device ref sata on
 			register "SataSalpSupport"		= "1"
 			# Port 1
@@ -116,17 +101,7 @@ chip soc/intel/cannonlake
 			register "SataPortsDevSlp[1]"		= "1"
 		end
 		device ref i2c4 on  end
-		device ref i2c5 off end
 		device ref uart2 on  end
-		device ref emmc off end
-		device ref pcie_rp1 off end
-		device ref pcie_rp2 off end
-		device ref pcie_rp3 off end
-		device ref pcie_rp4 off end
-		device ref pcie_rp5 off end
-		device ref pcie_rp6 off end
-		device ref pcie_rp7 off end
-		device ref pcie_rp8 off end
 		device ref pcie_rp9 on						# SSD x4
 			register "PcieRpSlotImplemented[8]"	= "1"
 			register "PcieRpEnable[8]"		= "1"
@@ -135,13 +110,6 @@ chip soc/intel/cannonlake
 			register "PcieClkSrcClkReq[1]"		= "1"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280" "SlotDataBusWidth4X"
 		end
-		device ref pcie_rp10 off end
-		device ref pcie_rp11 off end
-		device ref pcie_rp12 off end
-		device ref uart0 off end
-		device ref uart1 off end
-		device ref gspi0 off end
-		device ref gspi1 off end
 		device ref lpc_espi on
 			register "gen1_dec"			= "0x000c0681"
 			register "gen2_dec"			= "0x000c1641"
@@ -172,14 +140,10 @@ chip soc/intel/cannonlake
 				device pnp 4e.19 off end			# Power Management Channel 5
 			end
 		end
-		device ref p2sb on  end
-		device ref pmc hidden end
 		device ref hda on
 			register "PchHdaAudioLinkHda"		= "1"
 		end
 		device ref smbus on  end
-		device ref fast_spi on  end
-		device ref gbe off end
 	end
 	chip drivers/crb
 		device mmio 0xfed40000 on end

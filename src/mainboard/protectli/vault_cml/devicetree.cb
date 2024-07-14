@@ -140,42 +140,18 @@ chip soc/intel/cannonlake
 	}"
 
 	device domain 0 on
-		device ref system_agent on  end
 		device ref igpu on  end
 		device ref dptf on  end
-		device ref gna off end
 		device ref thermal on  end
-		device ref ufs off end
-		device ref gspi2 off end
 		device ref xhci on  end
-		device ref xdci off end
-		device ref sdxc off end
-		device ref i2c0 off end
-		device ref i2c1 off end
-		device ref i2c2 off end
-		device ref i2c3 off end
-		device ref heci1 on  end
-		device ref heci2 off end
-		device ref csme_ider off end
-		device ref csme_ktr off end
-		device ref heci3 off end
-		device ref heci4 off end
 		device ref sata on  end
-		device ref i2c4 off end
-		device ref i2c5 off end
-		device ref uart2 off end
 		device ref emmc on  end
-		device ref pcie_rp1 off end
-		device ref pcie_rp2 off end
-		device ref pcie_rp3 off end
-		device ref pcie_rp4 off end
 		device ref pcie_rp5 on  end # LAN1
 		device ref pcie_rp6 on  end # LAN2
 		device ref pcie_rp7 on  end # LAN3
 		device ref pcie_rp8 on  end # LAN4
 		device ref pcie_rp9 on  end # LAN5
 		device ref pcie_rp10 on  end # LAN6
-		device ref pcie_rp11 off end
 		device ref pcie_rp12 on  end
 			smbios_slot_desc	"SlotTypeM2Socket1_SD" "SlotLengthOther"
 						"M.2/E 2230 (M2_WIFI2)" "SlotDataBusWidth1X"
@@ -183,13 +159,6 @@ chip soc/intel/cannonlake
 			smbios_slot_desc	"SlotTypeM2Socket3" "SlotLengthOther"
 						"M.2/M 2280 (J1)" "SlotDataBusWidth4X"
 		end
-		device ref pcie_rp14 off end
-		device ref pcie_rp15 off end
-		device ref pcie_rp16 off end
-		device ref uart0 off end
-		device ref uart1 off end
-		device ref gspi0 off end
-		device ref gspi1 off end
 		device ref lpc_espi on
 			chip superio/ite/it8784e
 				register "TMPIN1.mode"    = "THERMAL_RESISTOR"
@@ -231,11 +200,7 @@ chip soc/intel/cannonlake
 				device pnp 0c31.0 on end
 			end
 		end
-		device ref p2sb hidden end
-		device ref pmc hidden end
 		device ref hda on  end
 		device ref smbus on  end
-		device ref fast_spi on  end
-		device ref gbe off end
 	end
 end

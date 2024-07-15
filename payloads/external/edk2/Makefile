@@ -222,7 +222,7 @@ logo: $(EDK2_PATH)
 			BMP3:$(EDK2_PATH)/MdeModulePkg/Logo/Logo.bmp;; \
 	esac \
 
-gop_driver:
+gop_driver: $(EDK2_PATH)
 	if [ -n "$(CONFIG_EDK2_GOP_DRIVER)" ]; then \
 		echo "Using GOP driver $(CONFIG_EDK2_GOP_FILE)"; \
 		cp $(top)/$(CONFIG_EDK2_GOP_FILE) $(EDK2_PATH)/UefiPayloadPkg/IntelGopDriver.efi; \

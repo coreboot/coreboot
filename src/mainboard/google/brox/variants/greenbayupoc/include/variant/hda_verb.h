@@ -9,7 +9,7 @@ const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x10ec0236,	// Codec Vendor / Device ID: Realtek ALC236
 	0x103C8C60,	// Subsystem ID
-	0x00000013,	// Number of jacks (NID entries)
+	0x00000017,	// Number of jacks (NID entries)
 
 	AZALIA_RESET(0x1),
 	/* NID 0x01, HDA Codec Subsystem ID Verb table */
@@ -24,6 +24,15 @@ const u32 cim_verb_data[] = {
 	 * AZALIA_PIN_CFG(0, 0x12, 0x90A60130),
 	 * AZALIA_PIN_CFG(0, 0x13, 0x40000000),
 	 */
+	/* 1 bit reset */
+	0x0205001A,
+	0x0204C003,
+	0x0205001A,
+	0x02048003,
+	0x0205007F,
+	0x02046001,
+	0x0205007F,
+	0x02040001,
 
 	/* Pin widget 0x14 - Front (Port-D) */
 	AZALIA_PIN_CFG(0, 0x14, 0x90170110),
@@ -43,22 +52,7 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x21, 0x03211040),
 
 	/*
-	 * ;Pin widget 0x19 - MIC2 (Port-F)
-	 */
-	0x01971C20,
-	0x01971D10,
-	0x01971EA1,
-	0x01971F03,
-	/*
-	 * Pin widget 0x21 - HP1-OUT (Port-I)
-	 */
-	0x02171C40,
-	0x02171D10,
-	0x02171E21,
-	0x02171F03,
-	/*
 	 * Widget node 0x20 - 1
-	 * Codec hidden reset and speaker power 2W/4ohm
 	 */
 	0x0205003C,
 	0x02040354,
@@ -66,7 +60,7 @@ const u32 cim_verb_data[] = {
 	0x02040314,
 	/*
 	 * Widget node 0x20 - 2
-	 * Class D power on Reset
+	 * Set JD2 pull high
 	 */
 	0x0205001B,
 	0x02040A4B,
@@ -74,71 +68,61 @@ const u32 cim_verb_data[] = {
 	0x02047778,
 	/*
 	 * Widget node 0x20 - 3
-	 * Disable AGC and set AGC limit to -1.5dB
 	 */
 	0x02050046,
 	0x02040004,
 	0x05750003,
 	0x057409A3,
-	/*
-	 * Widget node 0x20 - 4
-	 * Set AGC Post gain +1.5dB then Enable AGC
-	 */
-	0x02050013,
-	0x02044023,
+	/* disable EQ first */
+	0x05350000,
+	0x0534201A,
+	/* Left Channel */
+	0x0535001d,
+	0x05340800,
+	0x0535001e,
+	0x05340800,
+	0x05350003,
+	0x05341F7B,
+	0x05350004,
+	0x05340000,
+	/* Right Channel */
+	0x05450000,
+	0x05442000,
+	0x0545001d,
+	0x05440800,
+	0x0545001e,
+	0x05440800,
+	0x05450003,
+	0x05441F7B,
+	0x05450004,
+	0x05440000,
+	/* enable EQ */
+	0x05350000,
+	0x0534E01A,
+	/* 1.8W/4ohm */
+	0x02050038,
+	0x02047901,
+	/* AGC Enable */
+	0x0205004C,
+	0x0204465C,
 	0x02050016,
-	0x02040E50,
-	/*
-	 * Widget node 0x20 - 5
-	 * Silence detector enabling + Set EAPD to verb control
-	 */
-	0x02050037,
-	0x0204FE15,
-	0x02050010,
-	0x02040020,
-	/*
-	 * Widget node 0x20 - 6
-	 * Silence data mode Threshold (-90dB)
-	 */
-	0x02050030,
-	0x0204A000,
-	0x0205001B,
-	0x02040A4B,
-	/*
-	 * Widget node 0x20 - 7
-	 * Default setting - 1
-	 */
-	0x05750003,
-	0x05740DA3,
-	0x02050046,
-	0x02040004,
-	/*
-	 * Widget node 0x20 - 8
-	 * support 1 pin detect two port
-	 */
-	0x02050009,
-	0x0204E003,
-	0x0205000A,
-	0x02047770,
-	/*
-	 * Widget node 0x20 - 9
-	 * To set LDO1/LDO2 as default (used for headset)
-	 */
-	0x02050008,
-	0x0204EA0C,
-	0x02050008,
-	0x0204EA0C,
+	0x02044E50,
+	0x02050020,
+	0x020451FF,
+	/* Headphone Pop */
+	0x05750007,
+	0x057412B2,
 };
 
 const u32 pc_beep_verbs[] = {
 	/* Dos beep path - 1 */
-	0x01470C00,
 	0x02050036,
 	0x02047151,
-	0x01470740,
+	0x02050010,
+	0x02040020,
 	/* Dos beep path - 2 */
-	0x0143b000,
-	0x01470C02,
+	0x0143B000,
+	0x01470740,
 	0x01470C02,
 	0x01470C02,
 };

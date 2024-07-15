@@ -165,6 +165,8 @@
 		testdisk
 		tmate
 		tmux
+		tpm-tools
+		tpm2-tools
 		uefitool
 		uefitoolPackages.old-engine
 		unzip

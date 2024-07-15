@@ -226,7 +226,7 @@ chip soc/intel/alderlake
 				register "sar_threshold[2]" = "0x38"
 				register "sar_threshold[3]" = "0x60"
 				register "sar_hysteresis" = "1"
-				register "sar_voltage" = "6"
+				register "sar_voltage" = "0"          # VDDA
 				register "sar_compare_time" = "0"     # 500ns
 				register "sar_sampling_time" = "0"    # 2us
 				register "short_key_debounce" = "2"   # 100ms

@@ -9,7 +9,8 @@
 #include <ec/google/chromeec/ec.h>
 #include <intelblocks/power_limit.h>
 
-#define DEFAULT_NO_BATTERY_POWER_LIMIT_WATTS	30
+#define NO_BATTERY_PL2_WATTS_LIMIT	30
+#define NO_BATTERY_PL4_WATTS_LIMIT	40
 
 static bool get_pd_power_watts(u32 *watts)
 {
@@ -32,6 +33,8 @@ void variant_devtree_update(void)
 {
 	struct soc_power_limits_config *soc_config;
 	u32 watts;
+	u32 pl2_watts = NO_BATTERY_PL2_WATTS_LIMIT;
+	u32 pl4_watts = NO_BATTERY_PL4_WATTS_LIMIT;
 
 	soc_config = variant_get_soc_power_limit_config();
 	if (soc_config == NULL)
@@ -43,16 +46,22 @@ void variant_devtree_update(void)
 	 * settings.
 	 */
 	if (!google_chromeec_is_battery_present_and_above_critical_threshold()) {
-		/* Use fixed value when we cannot get the current PD power */
-		if (!get_pd_power_watts(&watts))
-			watts = DEFAULT_NO_BATTERY_POWER_LIMIT_WATTS;
+		/* Adjust PL2/PL4 values according to current PD power */
+		if (get_pd_power_watts(&watts)) {
+			if (watts < NO_BATTERY_PL2_WATTS_LIMIT)
+				pl2_watts = watts;
 
-		printk(BIOS_INFO, "override PL2 and PL4 settings to %d watts\n", watts);
+			if (watts < NO_BATTERY_PL4_WATTS_LIMIT)
+				pl4_watts = watts;
+		}
 
-		if (soc_config->tdp_pl2_override > watts)
-			soc_config->tdp_pl2_override = watts;
+		printk(BIOS_INFO, "override PL2/PL4 settings to %d/%d watts\n",
+					pl2_watts, pl4_watts);
 
-		if (soc_config->tdp_pl4 > watts)
-			soc_config->tdp_pl4 = watts;
+		if (soc_config->tdp_pl2_override > pl2_watts)
+			soc_config->tdp_pl2_override = pl2_watts;
+
+		if (soc_config->tdp_pl4 > pl4_watts)
+			soc_config->tdp_pl4 = pl4_watts;
 	}
 }

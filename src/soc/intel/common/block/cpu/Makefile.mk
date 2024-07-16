@@ -12,6 +12,8 @@ bootblock-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CAR) += ../../../../../cpu/x86/early_r
 postcar-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CAR) += car/exit_car.S
 endif
 
+bootblock-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CAR) += car/car_lib.c
+
 bootblock-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CPU) += cpulib.c
 romstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CPU) += cpulib.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_CPU) += cpulib.c

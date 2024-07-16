@@ -13,7 +13,7 @@
 #include <intelblocks/itss.h>
 #include <intelblocks/lpc_lib.h>
 #include <intelblocks/pcr.h>
-#include <soc/espi.h>
+#include <intelpch/espi.h>
 #include <soc/iomap.h>
 #include <soc/irq.h>
 #include <soc/pci_devs.h>

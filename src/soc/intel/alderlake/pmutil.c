@@ -22,8 +22,8 @@
 #include <intelblocks/pmclib.h>
 #include <intelblocks/rtc.h>
 #include <intelblocks/tco.h>
+#include <intelpch/espi.h>
 #include <security/vboot/vbnv.h>
-#include <soc/espi.h>
 #include <soc/gpe.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>

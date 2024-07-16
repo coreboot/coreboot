@@ -16,7 +16,7 @@
 #include <intelblocks/pmclib.h>
 #include <intelblocks/rtc.h>
 #include <intelblocks/tco.h>
-#include <soc/espi.h>
+#include <intelpch/espi.h>
 #include <soc/gpe.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>

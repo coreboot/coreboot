@@ -12,8 +12,8 @@
 #include <intelblocks/pcr.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/rtc.h>
+#include <intelpch/espi.h>
 #include <soc/bootblock.h>
-#include <soc/espi.h>
 #include <soc/iomap.h>
 #include <soc/p2sb.h>
 #include <soc/pch.h>

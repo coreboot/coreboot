@@ -188,3 +188,12 @@ bool is_memtype_processor_attached(uint16_t mem_type)
 	 */
 	return (mem_type < MemTypeCxlAccVolatileMem);
 }
+
+bool get_mmio_high_base_size(resource_t *base, resource_t *size)
+{
+	const IIO_UDS *hob = get_iio_uds();
+	*base = hob->PlatformData.PlatGlobalMmio64Base;
+	*size = hob->PlatformData.PlatGlobalMmio64Limit - (*base) + 1;
+
+	return true;
+}

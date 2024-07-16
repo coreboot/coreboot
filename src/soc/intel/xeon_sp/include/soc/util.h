@@ -31,4 +31,6 @@ void bios_done_msr(void *unused);
 union p2sb_bdf soc_get_hpet_bdf(void);
 union p2sb_bdf soc_get_ioapic_bdf(void);
 
+bool get_mmio_high_base_size(resource_t *base, resource_t *size);
+
 #endif

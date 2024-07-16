@@ -151,6 +151,9 @@ static void configure_dpr(struct device *dev)
 	pci_write_config32(dev, VTD_LTDPR, dpr.raw);
 }
 
+#define MC_DRAM_RESOURCE_MMIO_HIGH	0x1000
+#define MC_DRAM_RESOURCE_ANON_START	0x1001
+
 /*
  * Host Memory Map:
  *
@@ -350,7 +353,7 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 
 static void mmapvtd_read_resources(struct device *dev)
 {
-	int index = 0;
+	int index = MC_DRAM_RESOURCE_ANON_START;
 
 	/* Read standard PCI resources. */
 	pci_dev_read_resources(dev);
@@ -362,13 +365,33 @@ static void mmapvtd_read_resources(struct device *dev)
 	mc_add_dram_resources(dev, &index);
 }
 
+static void mmapvtd_set_resources(struct device *dev)
+{
+	/*
+	 * The MMIO high window has to be added in set_resources() instead of
+	 * read_resources(). Because adding in read_resources() would cause the
+	 * whole window to be reserved, and it couldn't be used for resource
+	 * allocation.
+	 */
+	if (is_domain0(dev->upstream->dev)) {
+		resource_t mmio64_base, mmio64_size;
+		if (get_mmio_high_base_size(&mmio64_base, &mmio64_size)) {
+			assert(!probe_resource(dev, MC_DRAM_RESOURCE_MMIO_HIGH));
+			fixed_mem_range_flags(dev, MC_DRAM_RESOURCE_MMIO_HIGH,
+					      mmio64_base, mmio64_size, IORESOURCE_STORED);
+		}
+	}
+
+	pci_dev_set_resources(dev);
+}
+
 static void mmapvtd_init(struct device *dev)
 {
 }
 
 static struct device_operations mmapvtd_ops = {
 	.read_resources    = mmapvtd_read_resources,
-	.set_resources     = pci_dev_set_resources,
+	.set_resources     = mmapvtd_set_resources,
 	.enable_resources  = pci_dev_enable_resources,
 	.init              = mmapvtd_init,
 	.ops_pci           = &soc_pci_ops,

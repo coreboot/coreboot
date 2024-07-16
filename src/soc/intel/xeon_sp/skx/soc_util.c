@@ -214,3 +214,8 @@ uint8_t get_cxl_node_count(void)
 {
 	return 0;
 }
+
+bool get_mmio_high_base_size(resource_t *base, resource_t *size)
+{
+	return false;
+}

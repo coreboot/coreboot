@@ -148,3 +148,8 @@ bool is_memtype_processor_attached(uint16_t mem_type)
 {
 	return true;
 }
+
+bool get_mmio_high_base_size(resource_t *base, resource_t *size)
+{
+	return false;
+}

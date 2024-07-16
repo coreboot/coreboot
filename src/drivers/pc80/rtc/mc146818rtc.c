@@ -97,9 +97,9 @@ static bool __cmos_init(bool invalid)
 
 	if (invalid || cmos_invalid || checksum_invalid) {
 		if (!CONFIG(USE_OPTION_TABLE)) {
-			cmos_write(0, 0x01);
-			cmos_write(0, 0x03);
-			cmos_write(0, 0x05);
+			cmos_write(0, RTC_CLK_SECOND_ALARM);
+			cmos_write(0, RTC_CLK_MINUTE_ALARM);
+			cmos_write(0, RTC_CLK_HOUR_ALARM);
 			for (i = 10; i < 128; i++)
 				cmos_write(0, i);
 			cleared_cmos = true;

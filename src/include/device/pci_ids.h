@@ -4192,7 +4192,9 @@
 #define PCI_DID_INTEL_LNL_M_GT2				0x64a0
 #define PCI_DID_INTEL_TWL_GT1_1				0x46d3
 #define PCI_DID_INTEL_TWL_GT1_2				0x46d4
-#define PCI_DID_INTEL_PTL_GT2				0x64a0
+#define PCI_DID_INTEL_PTL_U_GT2_1			0xb090
+#define PCI_DID_INTEL_PTL_H_GT2_1			0xb080
+#define PCI_DID_INTEL_PTL_H_GT2_2			0xb0a0
 
 /* Intel Northbridge Ids */
 #define PCI_DID_INTEL_APL_NB			0x5af0

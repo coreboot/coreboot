@@ -343,7 +343,9 @@ const struct device_operations graphics_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
-	PCI_DID_INTEL_PTL_GT2,
+	PCI_DID_INTEL_PTL_U_GT2_1,
+	PCI_DID_INTEL_PTL_H_GT2_1,
+	PCI_DID_INTEL_PTL_H_GT2_2,
 	PCI_DID_INTEL_LNL_M_GT2,
 	PCI_DID_INTEL_RPL_U_GT1,
 	PCI_DID_INTEL_RPL_U_GT2,

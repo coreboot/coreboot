@@ -18,7 +18,6 @@ bootblock-y += bootblock/ioe_die.c
 bootblock-y += bootblock/report_platform.c
 bootblock-y += bootblock/soc_die.c
 bootblock-y += espi.c
-bootblock-y += p2sb.c
 bootblock-y += soc_info.c
 
 romstage-$(CONFIG_SOC_INTEL_CSE_PRE_CPU_RESET_TELEMETRY) += cse_telemetry.c

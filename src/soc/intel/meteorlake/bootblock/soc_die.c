@@ -13,8 +13,8 @@
 #include <intelblocks/systemagent.h>
 #include <intelblocks/tco.h>
 #include <intelblocks/uart.h>
+#include <intelpch/espi.h>
 #include <soc/bootblock.h>
-#include <soc/espi.h>
 #include <soc/iomap.h>
 #include <soc/p2sb.h>
 #include <soc/pci_devs.h>

@@ -6,9 +6,9 @@
 #include <device/pci_ops.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/lpc_lib.h>
+#include <intelpch/espi.h>
 #include <pc80/isa-dma.h>
 #include <pc80/i8259.h>
-#include <soc/espi.h>
 #include <soc/iomap.h>
 #include <soc/irq.h>
 #include <soc/pci_devs.h>

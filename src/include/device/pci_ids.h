@@ -4498,8 +4498,10 @@
 #define PCI_DID_INTEL_RPP_S_XHCI		0x7a60
 #define PCI_DID_INTEL_LNL_XHCI			0xa87d
 #define PCI_DID_INTEL_LNL_TCSS_XHCI		0xa831
-#define PCI_DID_INTEL_PTL_XHCI                  0xe47d
-#define PCI_DID_INTEL_PTL_TCSS_XHCI             0xe431
+#define PCI_DID_INTEL_PTL_H_XHCI		0xe47d
+#define PCI_DID_INTEL_PTL_H_TCSS_XHCI		0xe431
+#define PCI_DID_INTEL_PTL_U_H_XHCI		0xe37d
+#define PCI_DID_INTEL_PTL_U_H_TCSS_XHCI		0xe331
 
 /* Intel P2SB device Ids */
 #define PCI_DID_INTEL_APL_P2SB			0x5a92

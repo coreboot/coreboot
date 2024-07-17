@@ -23,6 +23,8 @@ void vbnv_reset(uint8_t *vbnv_copy);
 /* Initialize the vbnv CMOS backing store. The vbnv_copy pointer is used for
    optional temporary storage in the init function. */
 void vbnv_init_cmos(uint8_t *vbnv_copy);
+/* Platform-specific CMOS init function, called by vbnv_init_cmos(). */
+void vbnv_platform_init_cmos(void);
 /* Return non-zero if CMOS power was lost. */
 int vbnv_cmos_failed(void);
 void read_vbnv_cmos(uint8_t *vbnv_copy);

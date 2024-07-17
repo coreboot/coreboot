@@ -67,8 +67,14 @@ void save_vbnv_cmos(const uint8_t *vbnv_copy)
 		cmos_write(vbnv_copy[i], CONFIG_VBOOT_VBNV_OFFSET + 14 + i);
 }
 
+void __weak vbnv_platform_init_cmos(void)
+{
+}
+
 void vbnv_init_cmos(uint8_t *vbnv_copy)
 {
+	vbnv_platform_init_cmos();
+
 	/* If no CMOS failure just defer to the normal read path for checking
 	   vbnv contents' integrity. */
 	if (!vbnv_cmos_failed())

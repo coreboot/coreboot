@@ -4549,7 +4549,8 @@
 #define PCI_DID_INTEL_MTL_IOE_M_SRAM		0x7ebf
 #define PCI_DID_INTEL_MTL_IOE_P_SRAM		0x7ecf
 #define PCI_DID_INTEL_LNL_SRAM			0xa87f
-#define PCI_DID_INTEL_PTL_SRAM			0xe47f
+#define PCI_DID_INTEL_PTL_H_SRAM		0xe47f
+#define PCI_DID_INTEL_PTL_U_H_SRAM		0xe37f
 
 /* Intel AUDIO device Ids */
 #define PCI_DID_INTEL_LPT_H_AUDIO		0x8c20

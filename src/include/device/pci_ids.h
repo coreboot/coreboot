@@ -3767,7 +3767,8 @@
 #define PCI_DID_INTEL_RPP_P_PMC			0x51a1
 #define PCI_DID_INTEL_RPP_S_PMC			0x7a21
 #define PCI_DID_INTEL_LNL_PMC			0xa821
-#define PCI_DID_INTEL_PTL_PMC			0xe421
+#define PCI_DID_INTEL_PTL_H_PMC			0xe421
+#define PCI_DID_INTEL_PTL_U_H_PMC		0xe321
 
 /* Intel I2C device Ids */
 #define PCI_DID_INTEL_LPT_LP_I2C0		0x9c61

@@ -60,7 +60,7 @@ chip soc/intel/tigerlake
 	}"
 
 	device domain 0 on
-                device pci 04.0 on
+                device ref dptf on
 			chip drivers/intel/dptf
 				## Active Policy
 				register "policies.active" = "{
@@ -116,7 +116,7 @@ chip soc/intel/tigerlake
 
 				device generic 0 on end
 			end
-		end # DPTF
+		end
 
 		device ref tbt_pcie_rp0 on
 			probe DB_USB USB4_GEN2

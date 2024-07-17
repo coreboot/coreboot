@@ -104,6 +104,7 @@
 		acpica-tools
 		btrfs-progs
 		bzip2
+		cabextract
 		ccrypt
 		chipsec
 		coreboot-utils
@@ -130,6 +131,7 @@
 		hexdump
 		htop
 		i2c-tools
+		innoextract
 		intel-gpu-tools
 		inxi
 		iotools
@@ -169,6 +171,7 @@
 		tpm2-tools
 		uefitool
 		uefitoolPackages.old-engine
+		unshield
 		unzip
 		upterm
 		usbutils

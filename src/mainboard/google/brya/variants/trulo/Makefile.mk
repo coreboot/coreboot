@@ -3,3 +3,5 @@
 bootblock-y += gpio.c
 romstage-y += gpio.c
 ramstage-y += gpio.c
+
+ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_HDA_VERB) += hda_verb.c

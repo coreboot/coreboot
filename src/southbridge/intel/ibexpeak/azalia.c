@@ -8,13 +8,15 @@
 #include <device/mmio.h>
 #include <delay.h>
 #include <device/azalia_device.h>
+#include <types.h>
+
 #include "pch.h"
 
 static int codec_detect(u8 *base)
 {
 	u8 reg8;
 
-	if (azalia_exit_reset(base) < 0)
+	if (azalia_exit_reset(base) != CB_SUCCESS)
 		goto no_codec;
 
 	/* Write back the value once reset bit is set. */

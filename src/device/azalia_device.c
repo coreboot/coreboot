@@ -9,7 +9,7 @@
 #include <timer.h>
 #include <types.h>
 
-int azalia_set_bits(void *port, u32 mask, u32 val)
+static enum cb_err azalia_set_bits(void *port, u32 mask, u32 val)
 {
 	struct stopwatch sw;
 	u32 reg32;
@@ -32,17 +32,17 @@ int azalia_set_bits(void *port, u32 mask, u32 val)
 
 	/* Timeout occurred */
 	if (stopwatch_expired(&sw))
-		return -1;
-	return 0;
+		return CB_ERR;
+	return CB_SUCCESS;
 }
 
-int azalia_enter_reset(u8 *base)
+enum cb_err azalia_enter_reset(u8 *base)
 {
 	/* Set bit 0 to 0 to enter reset state (BAR + 0x8)[0] */
 	return azalia_set_bits(base + HDA_GCTL_REG, HDA_GCTL_CRST, 0);
 }
 
-int azalia_exit_reset(u8 *base)
+enum cb_err azalia_exit_reset(u8 *base)
 {
 	/* Set bit 0 to 1 to exit reset state (BAR + 0x8)[0] */
 	return azalia_set_bits(base + HDA_GCTL_REG, HDA_GCTL_CRST, HDA_GCTL_CRST);
@@ -53,7 +53,7 @@ static u16 codec_detect(u8 *base)
 	struct stopwatch sw;
 	u16 reg16;
 
-	if (azalia_exit_reset(base) < 0)
+	if (azalia_exit_reset(base) != CB_SUCCESS)
 		goto no_codec;
 
 	/*
@@ -89,10 +89,10 @@ static u16 codec_detect(u8 *base)
 	if (stopwatch_expired(&sw))
 		goto no_codec;
 
-	if (azalia_enter_reset(base) < 0)
+	if (azalia_enter_reset(base) != CB_SUCCESS)
 		goto no_codec;
 
-	if (azalia_exit_reset(base) < 0)
+	if (azalia_exit_reset(base) != CB_SUCCESS)
 		goto no_codec;
 
 	/* Read in Codec location (BAR + 0x0e)[14:0] */

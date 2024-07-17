@@ -3,6 +3,7 @@
 #include <console/console.h>
 #include <device/azalia_device.h>
 #include <device/mmio.h>
+#include <types.h>
 
 #include "hda_verb.h"
 
@@ -11,7 +12,7 @@ int hda_codec_detect(u8 *base)
 	u8 reg8;
 
 	/* Set Bit 0 to 1 to exit reset state (BAR + 0x8)[0] */
-	if (azalia_exit_reset(base) < 0)
+	if (azalia_exit_reset(base) != CB_SUCCESS)
 		goto no_codec;
 
 	/* Write back the value once reset bit is set. */
@@ -24,11 +25,11 @@ int hda_codec_detect(u8 *base)
 	write8(base + HDA_STATESTS_REG, 0xf);
 
 	/* Turn off the link and poll RESET# bit until it reads back as 0 */
-	if (azalia_enter_reset(base) < 0)
+	if (azalia_enter_reset(base) != CB_SUCCESS)
 		goto no_codec;
 
 	/* Turn on the link and poll RESET# bit until it reads back as 1 */
-	if (azalia_exit_reset(base) < 0)
+	if (azalia_exit_reset(base) != CB_SUCCESS)
 		goto no_codec;
 
 	/* Read in Codec location (BAR + 0xe)[2..0] */

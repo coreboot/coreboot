@@ -8,7 +8,8 @@
 #include <device/mmio.h>
 #include <delay.h>
 #include <device/azalia_device.h>
-#include <stdint.h>
+#include <types.h>
+
 #include "chip.h"
 #include "i82801gx.h"
 
@@ -16,10 +17,10 @@ static int codec_detect(u8 *base)
 {
 	u32 reg32;
 
-	if (azalia_enter_reset(base) < 0)
+	if (azalia_enter_reset(base) != CB_SUCCESS)
 		goto no_codec;
 
-	if (azalia_exit_reset(base) < 0)
+	if (azalia_exit_reset(base) != CB_SUCCESS)
 		goto no_codec;
 
 	/* Read in Codec location (BAR + 0xe)[2..0] */

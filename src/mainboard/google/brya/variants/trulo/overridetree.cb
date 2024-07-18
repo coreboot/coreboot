@@ -1,3 +1,11 @@
+fw_config
+	field STORAGE 30 31
+		option STORAGE_EMMC		0
+		option STORAGE_NVME		1
+		option STORAGE_UFS		2
+		option STORAGE_UNKNOWN		3
+	end
+end
 chip soc/intel/alderlake
 	register "sagv" = "SaGv_Enabled"
 
@@ -202,14 +210,22 @@ chip soc/intel/alderlake
 			end
 		end #I2C5
 		device ref heci1 on end
-		device ref emmc on end
+		device ref emmc on
+			probe STORAGE STORAGE_UNKNOWN
+			probe STORAGE STORAGE_EMMC
+		end
 		device ref ish on
 			chip drivers/intel/ish
 				register "add_acpi_dma_property" = "true"
 				device generic 0 on end
 			end
+			probe STORAGE STORAGE_UNKNOWN
+			probe STORAGE STORAGE_UFS
 		end
-		device ref ufs on end
+		device ref ufs on
+			probe STORAGE STORAGE_UNKNOWN
+			probe STORAGE STORAGE_UFS
+		end
 		device ref uart0 on end
 		device ref pch_espi on
 			chip ec/google/chromeec

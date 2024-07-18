@@ -6,10 +6,17 @@
 #include <soc/gpe.h>
 #include <soc/gpio.h>
 
-/* TODO: Set the correct values */
-#define EC_SCI_GPI		0
-#define GPIO_PCH_WP		0
-#define GPIO_EC_IN_RW		0
-#define GPIO_SLP_S0_GATE	0
+/* eSPI virtual wire reporting */
+#define EC_SCI_GPI		GPE0_ESPI
+/* EC wake is EC_SOC_WAKE_ODL which is routed to GPP_F17 */
+#define GPE_EC_WAKE		GPE0_DW2_17
+/* WP signal to PCH */
+#define GPIO_PCH_WP		GPP_E3
+/* EC in RW or RO */
+#define GPIO_EC_IN_RW		GPP_F18
+/* GPIO IRQ for tight timestamps, MKBP interrupts */
+#define EC_SYNC_IRQ		GPD2_IRQ
+/* Used to gate SoC's SLP_S0# signal */
+#define GPIO_SLP_S0_GATE	GPP_H18
 
 #endif /* __BASEBOARD_GPIO_H__ */

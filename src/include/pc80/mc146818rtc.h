@@ -33,6 +33,8 @@
 #  define RTC_REF_CLCK_4MHZ	0x00
 #  define RTC_REF_CLCK_1MHZ	0x10
 #  define RTC_REF_CLCK_32KHZ	0x20
+   /* In AMD BKDG, bit 4 is DV0 bank selection. Bits 5 and 6 are reserved. */
+#  define RTC_AMD_BANK_SELECT	0x10
    /* 2 values for divider stage reset, others for "testing purposes only" */
 #  define RTC_DIV_RESET1	0x60
 #  define RTC_DIV_RESET2	0x70

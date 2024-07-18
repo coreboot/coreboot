@@ -65,6 +65,9 @@ int cmos_error(void)
 #define RTC_CONTROL_DEFAULT (RTC_24H)
 #define RTC_FREQ_SELECT_DEFAULT (RTC_REF_CLCK_32KHZ | RTC_RATE_1024HZ)
 
+_Static_assert(!CONFIG(SOC_AMD_COMMON) || !(RTC_FREQ_SELECT_DEFAULT & RTC_AMD_BANK_SELECT),
+	       "Bank 1 should not be selected for AMD");
+
 static bool __cmos_init(bool invalid)
 {
 	bool cmos_invalid;

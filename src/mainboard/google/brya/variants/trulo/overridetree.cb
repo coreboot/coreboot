@@ -8,6 +8,9 @@ chip soc/intel/alderlake
 	# S0ix enable
 	register "s0ix_enable" = "1"
 
+	# Enable CNVi BT
+	register "cnvi_bt_core" = "true"
+
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC1)"         # USB2_A0(MLB)
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"     # USB2_A1 (DB)
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"     # M.2 Camera
@@ -154,6 +157,14 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref shared_sram on end
+		device ref cnvi_wifi on
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				register "enable_cnvi_ddr_rfim" = "true"
+				register "add_acpi_dma_property" = "true"
+				device generic 0 on end
+			end
+		end
 		device ref i2c0 on
 			chip drivers/i2c/tpm
 				register "hid" = ""GOOG0005""

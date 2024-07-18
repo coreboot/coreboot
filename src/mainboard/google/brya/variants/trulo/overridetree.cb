@@ -1,8 +1,32 @@
 chip soc/intel/alderlake
+	register "sagv" = "SaGv_Enabled"
+
+	# GPE configuration
+	register "pmc_gpe0_dw1" = "GPP_B"
+	register "pmc_gpe0_dw2" = "GPP_F"
+
+	# S0ix enable
+	register "s0ix_enable" = "1"
 
     register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC1)"	# USB3/2 Type A port A0
     register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC2)"	# USB3/2 Type A port A1
 
-    device domain 0 on
-    end
+	device domain 0 on
+		device ref igpu on end
+		device ref shared_sram on end
+		device ref heci1 on end
+		device ref emmc on end
+		device ref ish on
+			chip drivers/intel/ish
+				register "add_acpi_dma_property" = "true"
+				device generic 0 on end
+			end
+		end
+		device ref ufs on end
+		device ref pch_espi on
+			chip ec/google/chromeec
+				device pnp 0c09.0 on end
+			end
+		end
+	end
 end

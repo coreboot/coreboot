@@ -32,6 +32,6 @@ mrc_wrapper:
 	 * function do_putchar to print to console.
 	 */
 
-#include <src/cpu/x86/64bit/prot2long.inc>
+#include <cpu/x86/64bit/prot2long.inc>
 
 prot2lm_wrapper do_putchar

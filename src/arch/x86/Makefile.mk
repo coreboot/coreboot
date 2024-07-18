@@ -58,9 +58,6 @@ define x86_stage
 # $1 stage name
 # $2 oformat
 
-# The '.' include path is needed for the generated assembly.inc file.
-$(1)-S-ccopts += -I.
-
 $$(objcbfs)/$(1).debug: $$$$($(1)-libs) $$$$($(1)-objs)
 	@printf "    LINK       $$(subst $$(obj)/,,$$(@))\n"
 	$$(LD_$(1)) $$(LDFLAGS_$(1)) -o $$@ -L$$(obj) $$(COMPILER_RT_FLAGS_$(1)) --whole-archive --start-group $$(filter-out %.ld,$$($(1)-objs)) $$($(1)-libs) --no-whole-archive $$(COMPILER_RT_$(1)) --end-group -T $(call src-to-obj,$(1),$(CONFIG_MEMLAYOUT_LD_FILE)) --oformat $(2)

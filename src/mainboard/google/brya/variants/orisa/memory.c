@@ -78,14 +78,15 @@ int variant_memory_sku(void)
 {
 	/*
 	 * Memory configuration board straps
-	 * GPIO_MEM_CONFIG_0	GPP_E1
-	 * GPIO_MEM_CONFIG_1	GPP_E2
+	 * GPIO_MEM_CONFIG_0	GPP_E2
+	 * GPIO_MEM_CONFIG_1	GPP_E1
 	 * GPIO_MEM_CONFIG_2	GPP_E12
+	 * GPIO_MEM_CONFIG_3    NC
 	 */
 	gpio_t spd_gpios[] = {
-		GPP_E1,
 		GPP_E2,
-		GPP_E12,
+		GPP_E1,
+		GPP_E12
 	};
 
 	return gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));

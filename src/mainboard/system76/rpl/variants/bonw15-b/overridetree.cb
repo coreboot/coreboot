@@ -1,0 +1,164 @@
+chip soc/intel/alderlake
+	# Support 5600 MT/s memory
+	register "max_dram_speed_mts" = "5600"
+
+	device domain 0 on
+		subsystemid 0x1558 0x3702 inherit
+
+		device ref xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC_SKIP),		/* Type-A 3.2 Gen 2 (Left, Front) */
+				[1] = USB2_PORT_MID(OC_SKIP),		/* Type-A 3.2 Gen 2 (Left, Rear) */
+				[5] = USB2_PORT_MID(OC_SKIP),		/* Camera */
+				[6] = USB2_PORT_MID(OC_SKIP),		/* Per-key RGB */
+				/* Port reset messaging cannot be used,
+				 * so do not use USB2_PORT_TYPE_C for these */
+				[8] = USB2_PORT_MID(OC_SKIP),		/* Type-C Thunderbolt (Right, Front) */
+				[9] = USB2_PORT_MID(OC_SKIP),		/* Type-C Thunderbolt with PD (Right, Rear) */
+				[13] = USB2_PORT_MID(OC_SKIP),		/* Bluetooth */
+			}"
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* Type-A 3.2 Gen 2 (Left, Front) */
+				[2] = USB3_PORT_DEFAULT(OC_SKIP),	/* Type-A 3.2 Gen 2 (Left, Rear) */
+			}"
+			chip drivers/usb/acpi
+				device ref xhci_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""Type-A 3.2 Gen 2 (Left, Front)""
+						register "type" = "UPC_TYPE_A"
+						device ref usb2_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Type-A 3.2 Gen 2 (Left, Rear)""
+						register "type" = "UPC_TYPE_A"
+						device ref usb2_port2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Camera""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Per-key RGB""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port7 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Type-C Thunderbolt (Right, Front)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						device ref usb2_port9 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Type-C Thunderbolt with PD (Right, Rear)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						device ref usb2_port10 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port14 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Type-A 3.2 Gen 2 (Left, Front)""
+						register "type" = "UPC_TYPE_USB3_A"
+						device ref usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""Type-A 3.2 Gen 2 (Left, Rear)""
+						register "type" = "UPC_TYPE_USB3_A"
+						device ref usb3_port3 on end
+					end
+				end
+			end
+		end
+
+		device ref i2c0 on
+			# Touchpad I2C bus
+			register "serial_io_i2c_mode[PchSerialIoIndexI2C0]" = "PchSerialIoPci"
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN0412""
+				register "generic.desc" = ""ELAN Touchpad""
+				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_E7)"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 15 on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""FTCS1000""
+				register "generic.desc" = ""FocalTech Touchpad""
+				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_E7)"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 38 on end
+			end
+		end
+
+		device ref pcie5_0 on
+			# CPU PCIe RP#3 x4, CLKOUT 2, CLKREQ 11 (SSD2)
+			register "cpu_pcie_rp[CPU_RP(2)]" = "{
+				.clk_src = 2,
+				.clk_req = 11,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD2)" "SlotDataBusWidth4X"
+		end
+
+		device ref pcie5_1 on
+			# CPU PCIe RP#2 x8, Clock 14 (DGPU)
+			register "cpu_pcie_rp[CPU_RP(3)]" = "{
+				.clk_src = 14,
+				.clk_req = 14,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+
+		device ref pcie4_0 on
+			# CPU PCIe RP#1 x4, Clock 12 (SSD3)
+			register "cpu_pcie_rp[CPU_RP(1)]" = "{
+				.clk_src = 12,
+				.clk_req = 12,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD3)" "SlotDataBusWidth4X"
+		end
+
+		device ref pcie_rp7 on
+			# PCH RP#7 x1, Clock 13 (GLAN)
+			register "pch_pcie_rp[PCH_RP(7)]" = "{
+				.clk_src = 15,
+				.clk_req = 15,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			device pci 00.0 on end
+		end
+
+		device ref pcie_rp8 on
+			# PCH RP#8 x1, Clock 9 (WLAN)
+			register "pch_pcie_rp[PCH_RP(8)]" = "{
+				.clk_src = 9,
+				.clk_req = 9,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/E 2230 (J_WLAN1)" "SlotDataBusWidth1X"
+		end
+
+		device ref pcie_rp9 on
+			# PCH RP#9 x4, Clock 15 (TBT)
+			register "pch_pcie_rp[PCH_RP(9)]" = "{
+				.clk_src = 13,
+				.clk_req = 13,
+				.flags = PCIE_RP_HOTPLUG | PCIE_RP_LTR,
+			}"
+		end
+
+		device ref pcie_rp21 on
+			# PCH RP#21 x4, Clock 10 (SSD1)
+			register "pch_pcie_rp[PCH_RP(21)]" = "{
+				.clk_src = 10,
+				.clk_req = 10,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD1)" "SlotDataBusWidth4X"
+		end
+	end
+end

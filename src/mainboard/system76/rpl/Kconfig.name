@@ -9,6 +9,9 @@ config BOARD_SYSTEM76_ADDW4
 config BOARD_SYSTEM76_BONW15
 	bool "bonw15"
 
+config BOARD_SYSTEM76_BONW15_B
+	bool "bonw15-b"
+
 config BOARD_SYSTEM76_DARP9
 	bool "darp9"
 

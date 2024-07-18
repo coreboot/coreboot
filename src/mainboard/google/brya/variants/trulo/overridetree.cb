@@ -17,8 +17,28 @@ chip soc/intel/alderlake
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC1)"	# USB3/2 Type A port A0 (MLB)
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type A port A1 (DB)
 
+	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
+
+	# Bit 0 - C0 has no redriver, so enable SBU muxing in the SoC.
+	# Bit 2 - C1 has a redriver which does SBU muxing.
+	# Bit 1,3 - AUX lines are not swapped on the motherboard for either C0 or C1.
+	register "tcss_aux_ori" = "0"
+
 	device domain 0 on
 		device ref igpu on end
+		device ref tcss_xhci on
+			chip drivers/usb/acpi
+				device ref tcss_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Port C0 (MLB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(1, 1))"
+						device ref tcss_usb3_port1 on end
+					end
+				end
+			end
+		end
 		device ref xhci on
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
@@ -84,7 +104,19 @@ chip soc/intel/alderlake
 		device ref ufs on end
 		device ref pch_espi on
 			chip ec/google/chromeec
+				use conn0 as mux_conn[0]
 				device pnp 0c09.0 on end
+			end
+		end
+		device ref pmc hidden
+			chip drivers/intel/pmc_mux
+				device generic 0 on
+					chip drivers/intel/pmc_mux/conn
+						use usb2_port5 as usb2_port
+						use tcss_usb3_port1 as usb3_port
+						device generic 0 alias conn0 on end
+					end
+				end
 			end
 		end
 	end

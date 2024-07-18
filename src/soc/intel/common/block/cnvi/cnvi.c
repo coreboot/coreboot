@@ -98,6 +98,195 @@ static void cnvw_fill_ssdt(const struct device *dev)
 	}
 	acpigen_pop_len();
 
+
+/*
+ *	Name (RSTT, Zero)
+ */
+	acpigen_write_name_integer("RSTT", 0);
+
+/*
+ *	PowerResource(WRST, 5, 0)
+ *	{
+ *		Method(_STA)
+ *		{
+ *			Return (0x01)
+ *		}
+ *		Method(_ON, 0)
+ *		{
+ *		}
+ *		Method(_OFF, 0)
+ *		{
+ *		}
+ *		Method(_RST, 0, NotSerialized)
+ *		{
+ *			Local0 = Acquire (\_SB.PCI0.CNMT, 1000)
+ *			If ((Local0 == Zero))
+ *			{
+ *				CFLR ()
+ *				PRRS = One
+ *				If ((RSTT == One))
+ *				{
+ *					If (((PCRR (CNVI_SIDEBAND_ID, CNVI_ABORT_PLDR) & CNVI_ABORT_REQUEST) == Zero))
+ *					{
+ *						Local2 = Zero
+ *						If ((GBTE() == One))
+ *						{
+ *							BTRK (Zero)
+ *							Sleep (105)
+ *							Local2 = One
+ *						}
+ *						PCRO (CNVI_SIDEBAND_ID, CNVI_ABORT_PLDR, CNVI_ABORT_REQUEST | CNVI_ABORT_ENABLE)
+ *						Sleep (10)
+ *						Local1 = PCRR (CNVI_SIDEBAND_ID, CNVI_ABORT_PLDR)
+ *						If ((((Local1 & CNVI_ABORT_REQUEST) == Zero) && (Local1 & CNVI_READY)))
+ *						{
+ *							PRRS = CNVI_PLDR_COMPLETE
+ *							If ((Local2 == One))
+ *							{
+ *								BTRK (One)
+ *								Sleep (105)
+ *							}
+ *						}
+ *						Else
+ *						{
+ *							PRRS = CNVI_PLDR_NOT_COMPLETE
+ *						}
+ *					}
+ *					Else
+ *					{
+ *						PRRS = CNVI_PLDR_TIMEOUT
+ *					}
+ *				}
+ *				Release (\_SB.PCI0.CNMT)
+ *			}
+ *		}
+ *	}
+ *
+ *	Name (_PRR, Package (0x01)
+ *	{
+ *		WRST
+ *	})
+ */
+	acpigen_write_power_res("WRST", 5, 0, NULL, 0);
+	{
+		acpigen_write_method("_STA", 0);
+		{
+			acpigen_write_return_integer(1);
+		}
+		acpigen_pop_len();
+
+		acpigen_write_method("_ON", 0);
+		acpigen_pop_len();
+
+		acpigen_write_method("_OFF", 0);
+		acpigen_pop_len();
+
+		acpigen_write_method("_RST", 0);
+		{
+			acpigen_write_store();
+			acpigen_write_acquire("\\_SB.PCI0.CNMT", 1000);
+			acpigen_emit_byte(LOCAL0_OP);
+
+			acpigen_write_if_lequal_op_int(LOCAL0_OP, 0);
+			{
+				acpigen_emit_namestring("CFLR");
+
+				acpigen_write_store_int_to_namestr(1, "PRRS");
+
+				acpigen_write_if_lequal_namestr_int("RSTT", 1);
+				{
+					acpigen_write_store();
+					acpigen_emit_namestring("\\_SB.PCI0.PCRR");
+					acpigen_write_integer(CNVI_SIDEBAND_ID);
+					acpigen_write_integer(CNVI_ABORT_PLDR);
+					acpigen_emit_byte(LOCAL0_OP);
+
+					acpigen_emit_byte(AND_OP);
+					acpigen_emit_byte(LOCAL0_OP);
+					acpigen_write_integer(CNVI_ABORT_REQUEST);
+					acpigen_emit_byte(LOCAL0_OP);
+
+					acpigen_write_if_lequal_op_int(LOCAL0_OP, 0);
+					{
+						acpigen_write_store_int_to_op(0, LOCAL2_OP);
+						acpigen_write_if_lequal_namestr_int("\\_SB.PCI0.GBTE", 1);
+						{
+							acpigen_emit_namestring("BTRK");
+							acpigen_emit_byte(0);
+
+							acpigen_write_sleep(105);
+
+							acpigen_write_store_ops(1, LOCAL2_OP);
+						}
+						acpigen_pop_len();
+
+						acpigen_emit_namestring("\\_SB.PCI0.PCRO");
+						acpigen_write_integer(CNVI_SIDEBAND_ID);
+						acpigen_write_integer(CNVI_ABORT_PLDR);
+						acpigen_write_integer(CNVI_ABORT_REQUEST | CNVI_ABORT_ENABLE);
+
+						acpigen_write_sleep(10);
+
+						acpigen_write_store();
+						acpigen_emit_namestring("\\_SB.PCI0.PCRR");
+						acpigen_write_integer(CNVI_SIDEBAND_ID);
+						acpigen_write_integer(CNVI_ABORT_PLDR);
+						acpigen_emit_byte(LOCAL0_OP);
+
+						acpigen_emit_byte(AND_OP);
+						acpigen_emit_byte(LOCAL0_OP);
+						acpigen_write_integer(CNVI_ABORT_REQUEST);
+						acpigen_emit_byte(LOCAL1_OP);
+
+						acpigen_emit_byte(AND_OP);
+						acpigen_emit_byte(LOCAL0_OP);
+						acpigen_write_integer(CNVI_READY);
+						acpigen_emit_byte(LOCAL3_OP);
+
+						acpigen_write_if_lequal_op_int(LOCAL1_OP, 0);
+						{
+							acpigen_write_if_lequal_op_int(LOCAL3_OP, 1);
+							{
+								acpigen_write_store_int_to_namestr(CNVI_PLDR_COMPLETE, "PRRS");
+
+								acpigen_write_if_lequal_op_int(LOCAL2_OP, 1);
+								{
+									acpigen_emit_namestring("BTRK");
+									acpigen_emit_byte(1);
+									acpigen_write_sleep(105);
+								}
+								acpigen_pop_len();
+							}
+							acpigen_pop_len();
+						}
+						acpigen_write_else();
+						{
+							acpigen_write_store_int_to_namestr(CNVI_PLDR_NOT_COMPLETE, "PRRS");
+						}
+						acpigen_pop_len();
+					}
+					acpigen_write_else();
+					{
+						acpigen_write_store_int_to_namestr(CNVI_PLDR_TIMEOUT, "PRRS");
+					}
+					acpigen_pop_len();
+				}
+				acpigen_pop_len();
+				acpigen_write_release("\\_SB.PCI0.CNMT");
+			}
+			acpigen_pop_len();
+		}
+		acpigen_pop_len();
+	}
+	acpigen_write_power_res_end();
+
+	acpigen_write_name("_PRR");
+	{
+		acpigen_write_package(1);
+		acpigen_emit_namestring("WRST");
+	}
+	acpigen_pop_len();
+
 	acpigen_write_scope_end();
 }
 

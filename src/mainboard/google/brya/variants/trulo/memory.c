@@ -76,6 +76,9 @@ const struct mb_cfg *variant_memory_params(void)
 
 int variant_memory_sku(void)
 {
+	if (CONFIG(SKIP_RAM_ID_STRAPS))
+		return 0; /* SPD ID: 0 - MT62F512M32D2DR-031 WT:B */
+
 	/*
 	 * Memory configuration board straps
 	 * GPIO_MEM_CONFIG_0	GPP_E2

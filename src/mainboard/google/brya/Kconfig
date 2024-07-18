@@ -550,6 +550,7 @@ config BOARD_GOOGLE_TIVVIKS
 
 config BOARD_GOOGLE_TRULO
 	select BOARD_GOOGLE_BASEBOARD_TRULO
+	select SKIP_RAM_ID_STRAPS
 	select SOC_INTEL_TWINLAKE
 	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
 	select SOC_INTEL_TCSS_USE_PDC_PMC_USBC_MUX_CONFIGURATION
@@ -999,5 +1000,17 @@ config INCLUDE_NVIDIA_GPU_ASL
 config PCIEXP_DEFAULT_MAX_RESIZABLE_BAR_BITS
 	int
 	default 33
+
+config SKIP_RAM_ID_STRAPS
+	bool
+	default n
+	help
+	  Enable this option if the board variant does not rely on MEM Strap GPIOs to determine the SPD ID.
+
+	  This is typically the case when the DRAM part is fixed (only one type is used).
+	  In such board designs, enabling this option will bypass the reading of MEM Strap GPIOs
+	  and instead use a static SPD ID number.
+
+	  If unsure, leave this option disabled.
 
 endif # BOARD_GOOGLE_BRYA_COMMON

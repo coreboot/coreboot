@@ -75,11 +75,7 @@ ifeq ($(CONFIG_ARCH_BOOTBLOCK_RISCV),y)
 
 bootblock-y = bootblock.S
 
-$(objcbfs)/bootblock.debug: $$(bootblock-objs)
-	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_bootblock) $(LDFLAGS_bootblock) -o $@ -L$(obj) \
-		-T $(call src-to-obj,bootblock,$(CONFIG_MEMLAYOUT_LD_FILE)) --whole-archive --start-group $(filter-out %.ld,$(bootblock-objs)) \
-		$(LIBGCC_FILE_NAME_bootblock) --end-group $(COMPILER_RT_bootblock)
+$(eval $(call link_stage,bootblock))
 
 bootblock-c-ccopts += $(riscv_flags)
 bootblock-S-ccopts += $(riscv_asm_flags)
@@ -99,9 +95,7 @@ romstage-$(CONFIG_SEPARATE_ROMSTAGE) += romstage.S
 
 # Build the romstage
 
-$(objcbfs)/romstage.debug: $$(romstage-objs)
-	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(LD_romstage) $(LDFLAGS_romstage) -o $@ -L$(obj) -T $(call src-to-obj,romstage,$(CONFIG_MEMLAYOUT_LD_FILE)) --whole-archive --start-group $(filter-out %.ld,$(romstage-objs)) --end-group $(COMPILER_RT_romstage)
+$(eval $(call link_stage,romstage))
 
 romstage-c-ccopts += $(riscv_flags)
 romstage-S-ccopts += $(riscv_asm_flags)
@@ -129,9 +123,7 @@ ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/mainboard.c
 
 # Build the ramstage
 
-$(objcbfs)/ramstage.debug: $$(ramstage-objs)
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(LD_ramstage) $(LDFLAGS_ramstage) -o $@ -L$(obj) -T $(call src-to-obj,ramstage,$(CONFIG_MEMLAYOUT_LD_FILE)) --whole-archive --start-group $(filter-out %.ld,$(ramstage-objs)) --end-group $(COMPILER_RT_ramstage)
+$(eval $(call link_stage,ramstage))
 
 ramstage-c-ccopts += $(riscv_flags)
 ramstage-S-ccopts += $(riscv_asm_flags)

@@ -1314,6 +1314,15 @@ ifeq ($(CONFIG_CBFS_VERIFICATION),y)
 	fi
 endif # CONFIG_CBFS_VERIFICATION
 
+define link_stage
+# $1 stage name
+
+$$(objcbfs)/$(1).debug: $$$$($(1)-libs) $$$$($(1)-objs)
+	@printf "    LINK       $$(subst $$(obj)/,,$$(@))\n"
+	$$(LD_$(1)) $$(LDFLAGS_$(1)) -o $$@ -L$$(obj) $$(COMPILER_RT_FLAGS_$(1)) --whole-archive --start-group $$(filter-out %.ld,$$($(1)-objs)) $$($(1)-libs) --no-whole-archive $$(COMPILER_RT_$(1)) --end-group -T $(call src-to-obj,$(1),$(CONFIG_MEMLAYOUT_LD_FILE))
+
+endef
+
 ifeq ($(CONFIG_SEPARATE_ROMSTAGE),y)
 cbfs-files-y += $(CONFIG_CBFS_PREFIX)/romstage
 $(CONFIG_CBFS_PREFIX)/romstage-file := $(objcbfs)/romstage.elf

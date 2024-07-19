@@ -51,18 +51,6 @@ pci$(stripped_vgabios_dgpu_id).rom-align := 64
 endif # CONFIG_SOC_AMD_COMMON_BLOCK_LPC_SPI_DMA
 
 ###############################################################################
-# common support for early assembly includes
-###############################################################################
-
-define x86_stage
-# $1 stage name
-
-$$(objcbfs)/$(1).debug: $$$$($(1)-libs) $$$$($(1)-objs)
-	@printf "    LINK       $$(subst $$(obj)/,,$$(@))\n"
-	$$(LD_$(1)) $$(LDFLAGS_$(1)) -o $$@ -L$$(obj) $$(COMPILER_RT_FLAGS_$(1)) --whole-archive --start-group $$(filter-out %.ld,$$($(1)-objs)) $$($(1)-libs) --no-whole-archive $$(COMPILER_RT_$(1)) --end-group -T $(call src-to-obj,$(1),$(CONFIG_MEMLAYOUT_LD_FILE))
-endef
-
-###############################################################################
 # bootblock
 ###############################################################################
 
@@ -90,7 +78,7 @@ bootblock-y += car.ld
 
 $(call src-to-obj,bootblock,$(dir)/id.S): $(obj)/build.h
 
-$(eval $(call x86_stage,bootblock))
+$(eval $(call link_stage,bootblock))
 
 ifeq ($(CONFIG_BOOTBLOCK_IN_CBFS),y)
 add_bootblock = \
@@ -139,7 +127,7 @@ verstage-y += car.ld
 
 verstage-libs ?=
 
-$(eval $(call x86_stage,verstage))
+$(eval $(call link_stage,verstage))
 
 endif # CONFIG_ARCH_VERSTAGE_X86_32 / CONFIG_ARCH_VERSTAGE_X86_64
 
@@ -174,7 +162,7 @@ romstage-y += car.ld
 romstage-srcs += $(wildcard $(src)/mainboard/$(MAINBOARDDIR)/romstage.c)
 romstage-libs ?=
 
-$(eval $(call x86_stage,romstage))
+$(eval $(call link_stage,romstage))
 
 # Compiling crt0 with -g seems to trigger https://sourceware.org/bugzilla/show_bug.cgi?id=6428
 romstage-S-ccopts += -g0
@@ -212,7 +200,7 @@ postcar-$(CONFIG_HAVE_CF9_RESET) += cf9_reset.c
 
 LDFLAGS_postcar += -Map $(objcbfs)/postcar.map
 
-$(eval $(call x86_stage,postcar))
+$(eval $(call link_stage,postcar))
 
 $(objcbfs)/postcar.elf: $(objcbfs)/postcar.debug.rmod
 	cp $< $@
@@ -291,7 +279,7 @@ endif
 
 ramstage-libs ?=
 
-$(eval $(call x86_stage,ramstage))
+$(eval $(call link_stage,ramstage))
 
 $(objcbfs)/ramstage.elf: $(objcbfs)/ramstage.debug.rmod
 	cp $< $@

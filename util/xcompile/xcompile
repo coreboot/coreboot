@@ -415,7 +415,6 @@ arch_config_ppc64() {
 	TWIDTH="64"
 	TSUPP="ppc64"
 	TABI="linux-gnu" # there is no generic ABI on ppc64
-	CC_RT_EXTRA_GCC="-mcpu=power8 -mbig-endian"
 }
 
 # Right now, the clang reference toolchain is not building compiler-rt builtins

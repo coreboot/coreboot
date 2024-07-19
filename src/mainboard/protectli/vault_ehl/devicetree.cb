@@ -8,7 +8,7 @@ chip soc/intel/elkhartlake
 	}"
 
 	register "SaGv" = "SaGv_Enabled"
-	register "eist_enable" = "1"
+	register "eist_enable" = "true"
 
 	# Enable lpss s0ix
 	register "s0ix_enable" = "1"

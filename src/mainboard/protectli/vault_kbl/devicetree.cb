@@ -12,7 +12,7 @@ chip soc/intel/skylake
 	register "gpe0_dw1" = "GPP_D"
 	register "gpe0_dw2" = "GPP_E"
 
-	register "eist_enable" = "1"
+	register "eist_enable" = "true"
 
 	# Disable DPTF
 	register "dptf_enable" = "0"

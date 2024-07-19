@@ -15,7 +15,7 @@ chip soc/intel/alderlake
 	register "sagv"				= "SaGv_Enabled"
 
 	# FSP Silicon
-	register "eist_enable"			= "1"
+	register "eist_enable"			= "true"
 
 	# Serial I/O
 	register "serial_io_i2c_mode" = "{

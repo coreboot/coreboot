@@ -108,7 +108,7 @@ chip soc/intel/cannonlake
 	register "s0ix_enable" = "0"
 
 	# Enable Turbo
-	register "eist_enable" = "1"
+	register "eist_enable" = "true"
 
 	register "common_soc_config" = "{
 		.gspi[0] = {

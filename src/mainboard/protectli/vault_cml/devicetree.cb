@@ -1,6 +1,6 @@
 chip soc/intel/cannonlake
 	# Enable Enhanced Intel SpeedStep
-	register "eist_enable" = "1"
+	register "eist_enable" = "true"
 
 	register "cpu_pl2_4_cfg" = "baseline"
 

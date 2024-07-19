@@ -11,7 +11,7 @@ chip soc/intel/skylake
 	}"
 
 	# Enable Enhanced Intel SpeedStep
-	register "eist_enable" = "1"
+	register "eist_enable" = "true"
 
 	# Serial I/O
 	register "SerialIoDevMode" = "{

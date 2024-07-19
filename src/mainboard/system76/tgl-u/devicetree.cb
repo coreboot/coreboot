@@ -12,7 +12,7 @@ chip soc/intel/tigerlake
 
 # ACPI (soc/intel/tigerlake/acpi.c)
 	# Enable Enhanced Intel SpeedStep
-	register "eist_enable" = "1"
+	register "eist_enable" = "true"
 
 	# Enable s0ix, required for TGL-U
 	register "s0ix_enable" = "1"

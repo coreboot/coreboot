@@ -19,7 +19,7 @@ chip soc/intel/skylake
 	register "lpc_ioe" = "LPC_IOE_COMA_EN | LPC_IOE_COMB_EN | LPC_IOE_EC_62_66"
 
 	# "Intel SpeedStep Technology"
-	register "eist_enable" = "1"
+	register "eist_enable" = "true"
 
 	# DPTF
 	register "dptf_enable" = "1"

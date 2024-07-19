@@ -21,7 +21,7 @@ chip soc/intel/cannonlake
 
 	register "s0ix_enable" = "0"
 
-	register "eist_enable" = "1"
+	register "eist_enable" = "true"
 
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoDisabled,

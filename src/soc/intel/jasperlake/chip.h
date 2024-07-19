@@ -178,7 +178,7 @@ struct soc_intel_jasperlake_config {
 	/* Gfx related */
 	bool SkipExtGfxScan;
 
-	/* Enable/Disable EIST. 1b:Enabled, 0b:Disabled */
+	/* Enable/Disable EIST. true:Enabled, false:Disabled */
 	bool eist_enable;
 
 	/* Enable C6 DRAM */

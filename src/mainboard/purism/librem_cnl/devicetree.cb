@@ -1,7 +1,7 @@
 chip soc/intel/cannonlake
 
 	# Enable Enhanced Intel SpeedStep
-	register "eist_enable" = "1"
+	register "eist_enable" = "true"
 
 # FSP Memory (soc/intel/cannonlake/romstage/fsp_params.c)
 	register "SaGv" = "SaGv_Enabled"

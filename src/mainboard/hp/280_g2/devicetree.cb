@@ -5,7 +5,7 @@ chip soc/intel/skylake
 		[PchSerialIoIndexUart2] = PchSerialIoSkipInit,	/* Routed to debug header */
 	}"
 
-	register "eist_enable" = "1"
+	register "eist_enable" = "true"
 
 	device domain 0 on
 		subsystemid 0x103c 0x2b5e inherit

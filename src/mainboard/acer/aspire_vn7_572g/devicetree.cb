@@ -36,7 +36,7 @@ chip soc/intel/skylake
 		subsystemid 0x1025 0x1037 inherit
 		device ref system_agent	on
 			# Enable "Enhanced Intel SpeedStep"
-			register "eist_enable" = "1"
+			register "eist_enable" = "true"
 
 			# Set the Thermal Control Circuit (TCC) activation value to 97C
 			# even though FSP integration guide says to set it to 100C for SKL-U

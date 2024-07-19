@@ -1,7 +1,7 @@
 chip soc/intel/alderlake
 	# FSP configuration
 
-	register "eist_enable" = "1"
+	register "eist_enable" = "true"
 
 	# Sagv Configuration
 	register "sagv" = "SaGv_Enabled"

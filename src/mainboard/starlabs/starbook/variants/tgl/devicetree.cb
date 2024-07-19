@@ -1,7 +1,7 @@
 chip soc/intel/tigerlake
 # CPU
 	# Enable Enhanced Intel SpeedStep
-	register "eist_enable"			= "1"
+	register "eist_enable"			= "true"
 
 	# Graphics
 	# Not used but timings left for reference

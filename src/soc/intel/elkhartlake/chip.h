@@ -258,8 +258,8 @@ struct soc_intel_elkhartlake_config {
 	uint8_t Heci2Enable;
 	uint8_t Heci3Enable;
 
-	/* Enable/Disable EIST. 1b:Enabled, 0b:Disabled */
-	uint8_t eist_enable;
+	/* Enable/Disable EIST. true:Enabled, false:Disabled */
+	bool eist_enable;
 
 	/*
 	 * SerialIO device mode selection:

@@ -12,7 +12,7 @@ chip soc/intel/tigerlake
 
 # ACPI (soc/intel/tigerlake/acpi.c)
 	# Enable Enhanced Intel SpeedStep
-	register "eist_enable" = "1"
+	register "eist_enable" = "true"
 
 # CPU (soc/intel/tigerlake/cpu.c)
 	# Power limits

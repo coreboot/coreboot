@@ -286,8 +286,8 @@ struct soc_intel_tigerlake_config {
 	/* Gfx related */
 	uint8_t SkipExtGfxScan;
 
-	/* Enable/Disable EIST. 1b:Enabled, 0b:Disabled */
-	uint8_t eist_enable;
+	/* Enable/Disable EIST. true:Enabled, false:Disabled */
+	bool eist_enable;
 
 	/* Enable C6 DRAM */
 	uint8_t enable_c6dram;

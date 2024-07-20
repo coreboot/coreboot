@@ -40,7 +40,13 @@ enum cb_err azalia_enter_reset(u8 *base)
 enum cb_err azalia_exit_reset(u8 *base)
 {
 	/* Set bit 0 to 1 to exit reset state (BAR + 0x8)[0] */
-	return azalia_set_bits(base + HDA_GCTL_REG, HDA_GCTL_CRST, HDA_GCTL_CRST);
+	if (azalia_set_bits(base + HDA_GCTL_REG, HDA_GCTL_CRST, HDA_GCTL_CRST) != CB_SUCCESS)
+		return CB_ERR;
+
+	/* Codecs have up to 25 frames (at 48kHz) to signal an
+	   initialization request (HDA Spec 1.0a "4.3 Codec Discovery"). */
+	udelay(521);
+	return CB_SUCCESS;
 }
 
 static u16 codec_detect(u8 *base)

@@ -48,7 +48,6 @@ enum cb_err azalia_exit_reset(u8 *base)
 
 static u16 codec_detect(u8 *base)
 {
-	struct stopwatch sw;
 	u16 reg16;
 
 	if (azalia_exit_reset(base) != CB_SUCCESS)
@@ -70,20 +69,6 @@ static u16 codec_detect(u8 *base)
 
 	/* clear STATESTS bits (BAR + 0x0e)[14:0] */
 	setbits16(base + HDA_STATESTS_REG, 0x7fff);
-
-	/* Wait for readback of register to
-	 * match what was just written to it
-	 */
-	stopwatch_init_msecs_expire(&sw, 50);
-	do {
-		/* Wait 1ms based on BKDG wait time */
-		mdelay(1);
-		reg16 = read16(base + HDA_STATESTS_REG);
-	} while ((reg16 != 0) && !stopwatch_expired(&sw));
-
-	/* Timeout occurred */
-	if (stopwatch_expired(&sw))
-		goto no_codec;
 
 	if (azalia_enter_reset(base) != CB_SUCCESS)
 		goto no_codec;

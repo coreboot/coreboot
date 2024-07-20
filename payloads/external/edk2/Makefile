@@ -122,6 +122,12 @@ endif
 ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN2), y)
 BUILD_STR += --pcd gPcAtChipsetPkgTokenSpaceGuid.PcdInitialValueRtcRegisterD=0x80
 endif
+# CAPSULE_SUPPORT		= FALSE
+# CAPSULE_MAIN_FW_GUID	=
+ifeq ($(CONFIG_DRIVERS_EFI_UPDATE_CAPSULES),y)
+BUILD_STR += -D CAPSULE_SUPPORT=TRUE
+BUILD_STR += -D CAPSULE_MAIN_FW_GUID=$(CONFIG_DRIVERS_EFI_MAIN_FW_GUID)
+endif
 
 #
 # The MrChromebox repository has the following addition options:
@@ -276,7 +282,7 @@ print:
 	echo "   Branch:         $(CONFIG_EDK2_TAG_OR_REV)"
 	echo "   Packages path:  $(PACKAGES_PATH)"
 	echo " $(BUILD_STR)" | \
-		sed -e 's/--/-/g' -e 's/-/\n   /g' | sort | sed \
+		sed -e 's/ --/ -/g' -e 's/ -/ \n   /g' | sort | sed \
 		-e 's/a /Architecture:   /g' \
 		-e 's/b /Release:        /g' \
 		-e 's/D /Option:         /g' \

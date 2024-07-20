@@ -9,38 +9,35 @@
 #include <timer.h>
 #include <types.h>
 
-static enum cb_err azalia_set_bits(void *port, u32 mask, u32 val)
+static enum cb_err azalia_assert_reset(u8 *base, bool reset)
 {
+	const u32 val = reset ? 0 : HDA_GCTL_CRST; /* active-low CRST# */
 	struct stopwatch sw;
-	u32 reg32;
 
-	clrsetbits32(port, mask, val);
+	clrsetbits32(base + HDA_GCTL_REG, HDA_GCTL_CRST, val);
 
-	/* Wait for readback of register to match what was just written to it */
+	/* Wait for the controller to complete the link-reset sequence */
 	stopwatch_init_msecs_expire(&sw, 50);
+
 	do {
 		/* Wait 1ms based on BKDG wait time */
 		mdelay(1);
-		reg32 = read32(port);
-		reg32 &= mask;
-	} while ((reg32 != val) && !stopwatch_expired(&sw));
+		u32 reg32 = read32(base + HDA_GCTL_REG);
+		if ((reg32 & HDA_GCTL_CRST) == val)
+			return CB_SUCCESS;
+	} while (!stopwatch_expired(&sw));
 
-	/* Timeout occurred */
-	if (stopwatch_expired(&sw))
-		return CB_ERR;
-	return CB_SUCCESS;
+	return CB_ERR;
 }
 
 enum cb_err azalia_enter_reset(u8 *base)
 {
-	/* Set bit 0 to 0 to enter reset state (BAR + 0x8)[0] */
-	return azalia_set_bits(base + HDA_GCTL_REG, HDA_GCTL_CRST, 0);
+	return azalia_assert_reset(base, true);
 }
 
 enum cb_err azalia_exit_reset(u8 *base)
 {
-	/* Set bit 0 to 1 to exit reset state (BAR + 0x8)[0] */
-	if (azalia_set_bits(base + HDA_GCTL_REG, HDA_GCTL_CRST, HDA_GCTL_CRST) != CB_SUCCESS)
+	if (azalia_assert_reset(base, false) != CB_SUCCESS)
 		return CB_ERR;
 
 	/* Codecs have up to 25 frames (at 48kHz) to signal an

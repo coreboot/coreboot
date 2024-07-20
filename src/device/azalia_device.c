@@ -14,12 +14,7 @@ static enum cb_err azalia_set_bits(void *port, u32 mask, u32 val)
 	struct stopwatch sw;
 	u32 reg32;
 
-	/* Write (val & mask) to port */
-	val &= mask;
-	reg32 = read32(port);
-	reg32 &= ~mask;
-	reg32 |= val;
-	write32(port, reg32);
+	clrsetbits32(port, mask, val);
 
 	/* Wait for readback of register to match what was just written to it */
 	stopwatch_init_msecs_expire(&sw, 50);
@@ -71,9 +66,7 @@ static u16 codec_detect(u8 *base)
 	write16(base + HDA_GCAP_REG, read16(base + HDA_GCAP_REG));
 
 	/* clear STATESTS bits (BAR + 0x0e)[14:0] */
-	reg16 = read16(base + HDA_STATESTS_REG);
-	reg16 |= 0x7fff;
-	write16(base + HDA_STATESTS_REG, reg16);
+	setbits16(base + HDA_STATESTS_REG, 0x7fff);
 
 	/* Wait for readback of register to
 	 * match what was just written to it
@@ -183,9 +176,7 @@ static int wait_for_valid(u8 *base)
 	u32 reg32;
 
 	/* Send the verb to the codec */
-	reg32 = read32(base + HDA_ICII_REG);
-	reg32 |= HDA_ICII_BUSY | HDA_ICII_VALID;
-	write32(base + HDA_ICII_REG, reg32);
+	setbits32(base + HDA_ICII_REG, HDA_ICII_BUSY | HDA_ICII_VALID);
 
 	/*
 	 * The timeout is never reached when the codec is functioning properly.

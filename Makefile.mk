@@ -776,6 +776,10 @@ SCONFIG_OPTIONS += --output_d=$(DEVICETREE_DEVICENAMES_H)
 DEVICETREE_FWCONFIG_H := $(obj)/static_fw_config.h
 SCONFIG_OPTIONS += --output_f=$(DEVICETREE_FWCONFIG_H)
 
+# Generated at the same time as static.c
+$(DEVICETREE_STATIC_H): $(DEVICETREE_STATIC_C)
+	true
+
 $(DEVICETREE_STATIC_C): $(DEVICETREE_FILE) $(OVERRIDE_DEVICETREE_FILE) $(CHIPSET_DEVICETREE_FILE) $(objutil)/sconfig/sconfig
 	@printf "    SCONFIG    $(subst $(src)/,,$(<))\n"
 	mkdir -p $(dir $(DEVICETREE_STATIC_C))
@@ -788,13 +792,13 @@ bootblock-y+=$(DEVICETREE_STATIC_C)
 postcar-y+=$(DEVICETREE_STATIC_C)
 smm-y+=$(DEVICETREE_STATIC_C)
 
-# Ensure static.c and static.h are created before any objects are compiled
-ramstage-c-deps+=$(DEVICETREE_STATIC_C)
-romstage-c-deps+=$(DEVICETREE_STATIC_C)
-verstage-c-deps+=$(DEVICETREE_STATIC_C)
-bootblock-c-deps+=$(DEVICETREE_STATIC_C)
-postcar-c-deps+=$(DEVICETREE_STATIC_C)
-smm-c-deps+=$(DEVICETREE_STATIC_C)
+# Ensure static.h is generated before any objects are compiled
+ramstage-c-gen-deps+=$(DEVICETREE_STATIC_H)
+romstage-c-gen-deps+=$(DEVICETREE_STATIC_H)
+verstage-c-gen-deps+=$(DEVICETREE_STATIC_H)
+bootblock-c-gen-deps+=$(DEVICETREE_STATIC_H)
+postcar-c-gen-deps+=$(DEVICETREE_STATIC_H)
+smm-c-gen-deps+=$(DEVICETREE_STATIC_H)
 
 # Ensure fmap_config.h are created before any objects are compiled
 ramstage-c-deps+=$(obj)/fmap_config.h

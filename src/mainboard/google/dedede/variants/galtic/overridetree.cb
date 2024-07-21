@@ -4,9 +4,6 @@ fw_config
 		option TOUCHSCREEN_ELAN1001 1
 		option TOUCHSCREEN_ELAN9008 2
 	end
-end
-
-fw_config
 	field AUDIO_CODEC_SOURCE 41 43
 		option AUDIO_CODEC_UNPROVISIONED 0
 		option AUDIO_CODEC_ALC5682 1

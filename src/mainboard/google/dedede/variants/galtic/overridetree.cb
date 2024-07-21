@@ -9,6 +9,11 @@ fw_config
 		option AUDIO_CODEC_ALC5682 1
 		option AUDIO_CODEC_ALC5682I_VS 2
 	end
+	field TOUCHPAD_SOURCE 62 63
+		option TOUCHPAD_UNPROVISIONED 0
+		option TOUCHPAD_ELAN0000 1
+		option TOUCHPAD_ELAN2702 2
+	end
 end
 
 chip soc/intel/jasperlake
@@ -151,7 +156,10 @@ chip soc/intel/jasperlake
 				register "irq" = "ACPI_IRQ_WAKE_EDGE_LOW(GPP_B3_IRQ)"
 				register "wake" = "GPE0_DW0_03"
 				register "detect" = "1"
-				device i2c 15 on end
+				device i2c 15 on
+					probe TOUCHPAD_SOURCE TOUCHPAD_UNPROVISIONED
+					probe TOUCHPAD_SOURCE TOUCHPAD_ELAN0000
+				end
 			end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""ELAN2702""
@@ -160,7 +168,10 @@ chip soc/intel/jasperlake
 				register "generic.wake" = "GPE0_DW0_03"
 				register "generic.detect" = "1"
 				register "hid_desc_reg_offset" = "0x01"
-				device i2c 15 on end
+				device i2c 15 on
+					probe TOUCHPAD_SOURCE TOUCHPAD_UNPROVISIONED
+					probe TOUCHPAD_SOURCE TOUCHPAD_ELAN2702
+				end
 			end
 		end
 		device ref i2c2 on

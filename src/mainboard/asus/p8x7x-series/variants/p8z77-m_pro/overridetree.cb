@@ -25,13 +25,10 @@ chip northbridge/intel/sandybridge
 			}"
 
 			device ref pcie_rp1 on  end	# PCIEX_16_3
-			device ref pcie_rp2 on  end	# RTL8111F
-			device ref pcie_rp3 off end
-			device ref pcie_rp4 off end
-			device ref pcie_rp5 off end
-			device ref pcie_rp6 on  end	# ASM1042 USB3
-			device ref pcie_rp7 on  end	# ASM1061 eSATA
-			device ref pcie_rp8 off end
+			device ref pcie_rp5 on  end	# PCIEX1_1
+			device ref pcie_rp6 on  end	# RTL8111F
+			device ref pcie_rp7 on  end	# ASM1042 USB3
+			device ref pcie_rp8 on  end	# ASM1061 eSATA
 
 			device ref lpc on
 				chip superio/nuvoton/nct6779d

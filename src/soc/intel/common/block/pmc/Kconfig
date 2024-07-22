@@ -82,3 +82,11 @@ config USE_PM_ACPI_TIMER
 
 	        (Legacy) software requiring `TMR_STS` (for timer overflow
 	        interrupts) will not work with this option disabled.
+
+config SOC_QDF_DYNAMIC_READ_PMC
+	bool
+	default n
+	depends on SOC_INTEL_COMMON_BLOCK_PMC && PMC_IPC_ACPI_INTERFACE
+	help
+	  Enable this option if the platform supports reading SOC QDF
+	  data dynamically at runtime using the PMC IPC interface.

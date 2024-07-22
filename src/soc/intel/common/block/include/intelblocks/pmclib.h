@@ -268,4 +268,10 @@ uint8_t get_pm_pwr_cyc_dur(uint8_t slp_s4_min_assert, uint8_t slp_s3_min_assert,
 /* API to set ACPI mode */
 void pmc_set_acpi_mode(void);
 
+/*
+ * This function reads and prints SoC QDF information using PMC interface
+ * if SOC_QDF_DYNAMIC_READ_PMC config is enabled.
+ */
+void pmc_dump_soc_qdf_info(void);
+
 #endif /* SOC_INTEL_COMMON_BLOCK_PMCLIB_H */

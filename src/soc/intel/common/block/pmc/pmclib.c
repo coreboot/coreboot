@@ -26,6 +26,11 @@
 #define PMC_IPC_BIOS_RST_SUBID_PCI_ENUM_DONE	0
 #define PMC_IPC_BIOS_RST_CMPL_STS_PCI_ENUM	BIT(0)
 
+/* IPC command for accessing SoC registers */
+#define PMC_IPC_CMD_SOC_REG_ACC		0xAA
+#define PMC_IPC_CMD_SUBCMD_SOC_REG_RD	0x00
+#define PMC_IPC_CMD_REGID_SOC_QDF	0x03
+
 static struct chipset_power_state power_state;
 
 /* List of Minimum Assertion durations in microseconds */
@@ -881,4 +886,40 @@ void pmc_send_bios_reset_pci_enum_done(void)
 			 PMC_IPC_BIOS_RST_SUBID_PCI_ENUM_DONE, 0);
 	if (pmc_send_ipc_cmd(cmd, &req, &rsp) != CB_SUCCESS)
 		printk(BIOS_ERR, "PMC: Failed sending PCI Enumeration Done Command\n");
+}
+
+/*
+ * This function reads and prints SoC QDF information using PMC interface
+ * if SOC_QDF_DYNAMIC_READ_PMC config is enabled.
+ */
+void pmc_dump_soc_qdf_info(void)
+{
+	struct pmc_ipc_buffer req = { 0 };
+	struct pmc_ipc_buffer rsp;
+	uint32_t cmd_reg;
+	int r;
+	char qdf_info[5];
+
+	if (!CONFIG(SOC_QDF_DYNAMIC_READ_PMC))
+		return;
+
+	req.buf[0] = PMC_IPC_CMD_REGID_SOC_QDF;
+	cmd_reg = pmc_make_ipc_cmd(PMC_IPC_CMD_SOC_REG_ACC,
+				PMC_IPC_CMD_SUBCMD_SOC_REG_RD,
+				PMC_IPC_BUF_COUNT);
+
+	r = pmc_send_ipc_cmd(cmd_reg, &req, &rsp);
+
+	if (r < 0 || rsp.buf[0] == 0) {
+		printk(BIOS_ERR, "%s: pmc_send_ipc_cmd failed or QDF not available.\n",
+				__func__);
+		return;
+	}
+
+	qdf_info[0] = ((rsp.buf[0] >> 24) & 0xFF);
+	qdf_info[1] = ((rsp.buf[0] >> 16) & 0xFF);
+	qdf_info[2] = ((rsp.buf[0] >> 8) & 0xFF);
+	qdf_info[3] = (rsp.buf[0] & 0xFF);
+	qdf_info[4] = '\0';
+	printk(BIOS_INFO, "SoC QDF: %s\n", qdf_info);
 }

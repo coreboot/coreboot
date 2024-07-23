@@ -53,7 +53,7 @@ const struct pad_config gpio_table[] = {
 	/* A6:		Not Connected					*/
 	PAD_NC(GPP_A6, NONE),
 	/* A7:		Embedded Controller SCI				*/
-	PAD_CFG_GPI_SCI_LOW(GPP_A7, NONE, PLTRST, LEVEL),
+	PAD_NC(GPP_A7, NONE),
 	/* A8:		Not Connected					*/
 	PAD_NC(GPP_A8, NONE),
 	/* A9:		ESPI Clock					*/
@@ -254,7 +254,7 @@ const struct pad_config gpio_table[] = {
 				High:	Enabled				*/
 	PAD_CFG_GPO(GPP_E6, 0, DEEP),
 	/* E7:		Embedded Controller SMI				*/
-	PAD_CFG_GPI_SMI_LOW(GPP_E7, NONE, DEEP, EDGE_SINGLE),
+	PAD_NC(GPP_E7, NONE),
 	/* E8:		DRAM Sleep					*/
 	PAD_CFG_NF(GPP_E8, NONE, DEEP, NF1),
 	/* E9:		USB OverCurrent 0				*/

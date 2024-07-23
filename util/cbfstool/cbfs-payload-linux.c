@@ -34,14 +34,12 @@ struct bzpayload {
 	struct buffer cmdline;
 	struct buffer initrd;
 	/* Output variables. */
-	enum cbfs_compression algo;
-	comp_func_ptr compress;
 	struct buffer output;
 	size_t offset;
 	struct cbfs_payload_segment *out_seg;
 };
 
-static int bzp_init(struct bzpayload *bzp, enum cbfs_compression algo)
+static int bzp_init(struct bzpayload *bzp)
 {
 	memset(bzp, 0, sizeof(*bzp));
 
@@ -49,13 +47,6 @@ static int bzp_init(struct bzpayload *bzp, enum cbfs_compression algo)
 	 * Need at least the terminating entry segment.
 	 */
 	bzp->num_segments = 1;
-
-	bzp->algo = algo;
-	bzp->compress = compression_function(algo);
-	if (bzp->compress == NULL) {
-		ERROR("Invalid compression algorithm specified.\n");
-		return -1;
-	}
 
 	return 0;
 }
@@ -139,7 +130,8 @@ static int bzp_init_output(struct bzpayload *bzp, const char *name)
 }
 
 static void bzp_output_segment(struct bzpayload *bzp, struct buffer *b,
-                               uint32_t type, uint64_t load_addr)
+			       uint32_t type, uint64_t load_addr,
+			       enum cbfs_compression algo)
 {
 	struct buffer out;
 	struct cbfs_payload_segment *seg;
@@ -163,8 +155,11 @@ static void bzp_output_segment(struct bzpayload *bzp, struct buffer *b,
 
 	seg->mem_len = buffer_size(b);
 	seg->offset = bzp->offset;
-	bzp->compress(buffer_get(b), buffer_size(b), buffer_get(&out), &len);
-	seg->compression = bzp->algo;
+
+	comp_func_ptr compress_func = compression_function(algo);
+	compress_func(buffer_get(b), buffer_size(b), buffer_get(&out), &len);
+
+	seg->compression = algo;
 	seg->len = len;
 
 	/* Update output offset. */
@@ -193,7 +188,12 @@ int parse_bzImage_to_payload(const struct buffer *input,
 	struct linux_header *hdr = (struct linux_header *)input->data;
 	unsigned int setup_size = 4 * 512;
 
-	if (bzp_init(&bzp, algo) != 0)
+	if (compression_function(algo) == NULL) {
+		ERROR("Invalid compression algorithm specified.\n");
+		return -1;
+	}
+
+	if (bzp_init(&bzp) != 0)
 		return -1;
 
 	if (bzp_add_trampoline(&bzp) != 0)
@@ -293,26 +293,29 @@ int parse_bzImage_to_payload(const struct buffer *input,
 
 	/* parameter block */
 	bzp_output_segment(&bzp, &bzp.parameters,
-	                   PAYLOAD_SEGMENT_DATA, LINUX_PARAM_LOC);
+			   PAYLOAD_SEGMENT_DATA, LINUX_PARAM_LOC, algo);
 
-	/* code block */
+	/*
+	 * code block
+	 * Note: There is no point in compressing the bzImage (it is already compressed)
+	 */
 	bzp_output_segment(&bzp, &bzp.kernel,
-	                   PAYLOAD_SEGMENT_CODE, kernel_base);
+			   PAYLOAD_SEGMENT_CODE, kernel_base, CBFS_COMPRESS_NONE);
 
 	/* trampoline */
 	bzp_output_segment(&bzp, &bzp.trampoline,
-	                   PAYLOAD_SEGMENT_CODE, TRAMPOLINE_ENTRY_LOC);
+			   PAYLOAD_SEGMENT_CODE, TRAMPOLINE_ENTRY_LOC, algo);
 
 	/* cmdline */
 	bzp_output_segment(&bzp, &bzp.cmdline,
-	                   PAYLOAD_SEGMENT_DATA, COMMAND_LINE_LOC);
+			   PAYLOAD_SEGMENT_DATA, COMMAND_LINE_LOC, algo);
 
 	/* initrd */
 	bzp_output_segment(&bzp, &bzp.initrd,
-	                   PAYLOAD_SEGMENT_DATA, initrd_base);
+			   PAYLOAD_SEGMENT_DATA, initrd_base, algo);
 
 	/* Terminating entry segment. */
-	bzp_output_segment(&bzp, NULL, PAYLOAD_SEGMENT_ENTRY, TRAMPOLINE_ENTRY_LOC);
+	bzp_output_segment(&bzp, NULL, PAYLOAD_SEGMENT_ENTRY, TRAMPOLINE_ENTRY_LOC, algo);
 
 	/* Set size of buffer taking into account potential compression. */
 	buffer_set_size(&bzp.output, bzp.offset);

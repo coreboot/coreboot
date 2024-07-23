@@ -9,6 +9,9 @@ ifeq ($(CONFIG_COMPILER_GCC),y)
 CFLAGS_arm += -Wstack-usage=40960
 else
 CFLAGS_arm += -Wframe-larger-than=40960
+# Cezanne only has 148KB SRAM for PSP verstage.
+# Add -Oz to reduce the verstage size for clang.
+CFLAGS_arm += -Oz
 endif
 
 verstage-y += boot_dev.c

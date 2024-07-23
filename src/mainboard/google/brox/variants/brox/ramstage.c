@@ -16,7 +16,7 @@ const struct cpu_power_limits performance_efficient_limits[] = {
 	{
 		.mchid = PCI_DID_INTEL_RPL_P_ID_3,
 		.cpu_tdp = 15,
-		.pl1_min_power = 6000,
+		.pl1_min_power = 15000,
 		.pl1_max_power = 15000,
 		.pl2_min_power = 55000,
 		.pl2_max_power = 55000,
@@ -25,7 +25,7 @@ const struct cpu_power_limits performance_efficient_limits[] = {
 	{
 		.mchid = PCI_DID_INTEL_RPL_P_ID_4,
 		.cpu_tdp = 15,
-		.pl1_min_power = 6000,
+		.pl1_min_power = 15000,
 		.pl1_max_power = 15000,
 		.pl2_min_power = 55000,
 		.pl2_max_power = 55000,

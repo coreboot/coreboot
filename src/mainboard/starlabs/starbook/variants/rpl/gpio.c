@@ -274,11 +274,11 @@ const struct pad_config gpio_table[] = {
 	/* E16:		Not Connected					*/
 	PAD_NC(GPP_E16, NONE),
 	/* E17:		Not Connected					*/
-	PAD_CFG_GPO(GPP_E17, 1, PLTRST),
+	PAD_NC(GPP_E17, NONE),
 	/* E18:		Thunderbolt LSX TXD				*/
-	PAD_NC(GPP_E18, NATIVE),
+	PAD_NC(GPP_E18, NONE),
 	/* E19:		Thunderbolt LSX RXD				*/
-	PAD_NC(GPP_E19, NATIVE),
+	PAD_NC(GPP_E19, NONE),
 	/* E20:		Not Connected					*/
 	PAD_NC(GPP_E20, NONE),
 	/* E21:		Not Connected					*/
@@ -309,11 +309,11 @@ const struct pad_config gpio_table[] = {
 	/* F8:		Not Connected					*/
 	PAD_NC(GPP_F8, NONE),
 	/* F9:		EC Sleep S0					*/
-	PAD_CFG_GPO(GPP_F9, 1, PLTRST),
+	PAD_NC(GPP_F9, NONE),
 	/* F10:		Weak Internal PD 20K				*/
 	PAD_CFG_GPO(GPP_F10, 1, PLTRST),
 	/* F11:		TPM ID						*/
-	PAD_CFG_GPI_TRIG_OWN(GPP_F11, NONE, DEEP, OFF, ACPI),
+	PAD_NC(GPP_F11, NONE),
 	/* F12:		Not Connected					*/
 	PAD_NC(GPP_F12, NONE),
 	/* F13:		Not Connected					*/
@@ -323,7 +323,7 @@ const struct pad_config gpio_table[] = {
 	/* F15:		Not used		Accelerometer Interrupt 2*/
 	PAD_NC(GPP_F15, NONE),
 	/* F16:		Not Connected					*/
-	PAD_CFG_GPO(GPP_F16, 1, RSMRST),
+	PAD_NC(GPP_F16, NONE),
 	/* F17:		Not used		Touch Panel Reset	*/
 	PAD_NC(GPP_F17, NONE),
 	/* F18:		Not used		Touch Panel Interrupt	*/

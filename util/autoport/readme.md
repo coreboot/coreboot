@@ -3,8 +3,8 @@
 ## Supported platforms
 
 ### Chipset
-For any Sandy Bridge or Ivy Bridge platform the generated result should
-be bootable, possibly with minor fixes.
+For any Sandy Bridge, Ivy Bridge, or Haswell platform the generated result
+should be bootable, possibly with minor fixes.
 
 ### EC / SuperIO
 EC support is likely to work on Intel-based thinkpads. Other laptops are

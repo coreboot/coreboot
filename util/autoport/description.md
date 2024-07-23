@@ -1,1 +1,1 @@
-Automated porting coreboot to Sandy Bridge/Ivy Bridge platforms `Go`
+Automated porting coreboot to Sandy Bridge/Ivy Bridge/Haswell platforms `Go`

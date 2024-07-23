@@ -187,11 +187,6 @@ static int bzp_output_segment(struct bzpayload *bzp, struct buffer *b,
  *   add support for more parameters to trampoline:
  *     alt_mem_k, ext_mem_k (not strictly necessary since e820 takes precedence)
  *     framebuffer/console values
- *
- *  larger work:
- *     is compress() safe to use in a size constrained buffer? ie. do(es) the
- *     compression algorithm(s) stop once the compression result reaches input
- *     size (ie. incompressible data)?
  */
 int parse_bzImage_to_payload(const struct buffer *input,
 			     struct buffer *output, const char *initrd_name,

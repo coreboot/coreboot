@@ -148,14 +148,14 @@ uint32_t string_to_arch(const char *arch_string);
 
 /* Compress in_len bytes from in, storing the result at out, returning the
  * resulting length in out_len.
- * Returns 0 on error,
+ * Returns 0 on success,
  *         != 0 otherwise, depending on the compressing function.
  */
 typedef int (*comp_func_ptr) (char *in, int in_len, char *out, int *out_len);
 
 /* Decompress in_len bytes from in, storing the result at out, up to out_len
  * bytes.
- * Returns 0 on error,
+ * Returns 0 on success,
  *         != 0 otherwise, depending on the decompressing function.
  */
 typedef int (*decomp_func_ptr) (char *in, int in_len, char *out, int out_len,

@@ -122,7 +122,7 @@ Device (BAT0)
 		If (B1RC != 0xffff) {
 			PKG1[2] = B1RC
 		} Else {
-			PKG1[2] = B1RP * (B1DC / 100)
+			PKG1[2] = (B1RP * B1DC) / 100
 		}
 		PKG1[3] = B1PV
 		Return (PKG1)

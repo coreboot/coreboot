@@ -29,10 +29,6 @@ config MAINBOARD_PART_NUMBER
 	default "FW2B" if BOARD_PROTECTLI_FW2B
 	default "FW4B" if BOARD_PROTECTLI_FW4B
 
-config MAINBOARD_VENDOR
-	string
-	default "Protectli"
-
 config DIMM_MAX
 	default 1
 

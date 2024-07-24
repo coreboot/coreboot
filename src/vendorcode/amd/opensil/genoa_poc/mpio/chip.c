@@ -128,7 +128,7 @@ static void setup_bmc_lanes(uint8_t lane, uint8_t socket)
 static void per_device_config(MPIOCLASS_INPUT_BLK *mpio_data, struct device *dev)
 {
 	static uint32_t slot_num;
-	const uint32_t domain = dev->upstream->dev->path.domain.domain;
+	const uint32_t domain = dev_get_domain_id(dev);
 	const uint32_t devfn = dev->path.pci.devfn;
 	const struct vendorcode_amd_opensil_chip_mpio_config *const config = dev->chip_info;
 	printk(BIOS_DEBUG, "Setting MPIO port for domain 0x%x, PCI %d:%d\n",

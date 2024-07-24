@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
 #include <commonlib/bsd/helpers.h>
 #include <console/console.h>
 #include <device/device.h>
@@ -259,6 +260,20 @@ const struct device *dev_get_domain(const struct device *dev)
 	}
 
 	return NULL;
+}
+
+unsigned int dev_get_domain_id(const struct device *dev)
+{
+	const struct device *domain_dev = dev_get_domain(dev);
+
+	assert(domain_dev);
+
+	if (!domain_dev) {
+		printk(BIOS_ERR, "%s: doesn't have a domain device\n", dev_path(dev));
+		return 0;
+	}
+
+	return domain_dev->path.domain.domain;
 }
 
 bool is_domain0(const struct device *dev)

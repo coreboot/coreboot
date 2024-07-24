@@ -183,6 +183,7 @@ const char *dev_name(const struct device *dev);
 const char *dev_path(const struct device *dev);
 u32 dev_path_encode(const struct device *dev);
 const struct device *dev_get_domain(const struct device *dev);
+unsigned int dev_get_domain_id(const struct device *dev);
 void dev_set_enabled(struct device *dev, int enable);
 void disable_children(struct bus *bus);
 bool dev_is_active_bridge(struct device *dev);

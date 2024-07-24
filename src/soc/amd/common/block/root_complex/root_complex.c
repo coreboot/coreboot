@@ -7,7 +7,7 @@
 
 static const struct domain_iohc_info *get_domain_iohc_info(struct device *domain)
 {
-	const unsigned int domain_id = domain->path.domain.domain;
+	const unsigned int domain_id = dev_get_domain_id(domain);
 	const struct domain_iohc_info *iohc;
 	size_t iohc_count;
 

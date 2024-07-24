@@ -29,6 +29,6 @@ enum cb_err data_fabric_get_pci_bus_numbers(struct device *domain, uint8_t *segm
 	}
 
 	printk(BIOS_ERR, "No valid DF PCI CFG register pair found for domain %x.\n",
-	       domain->path.domain.domain);
+	       dev_get_domain_id(domain));
 	return CB_ERR;
 }

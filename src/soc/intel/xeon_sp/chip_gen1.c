@@ -17,7 +17,7 @@ static const STACK_RES *domain_to_stack_res(const struct device *dev)
 {
 	assert(dev->path.type == DEVICE_PATH_DOMAIN);
 	const union xeon_domain_path dn = {
-		.domain_path = dev->path.domain.domain
+		.domain_path = dev_get_domain_id(dev)
 	};
 
 	const IIO_UDS *hob = get_iio_uds();

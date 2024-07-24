@@ -22,7 +22,7 @@ void amd_pci_domain_scan_bus(struct device *domain)
 
 	if (segment_group >= PCI_SEGMENT_GROUP_COUNT) {
 		printk(BIOS_ERR, "Skipping domain %u due to too large segment group %u.\n",
-		       domain->path.domain.domain, segment_group);
+		       dev_get_domain_id(domain), segment_group);
 		return;
 	}
 

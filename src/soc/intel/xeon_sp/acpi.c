@@ -95,7 +95,7 @@ const acpi_cstate_t *soc_get_cstate_map(size_t *entries)
 void iio_domain_set_acpi_name(struct device *dev, const char *prefix)
 {
 	const union xeon_domain_path dn = {
-		.domain_path = dev->path.domain.domain
+		.domain_path = dev_get_domain_id(dev)
 	};
 
 	assert(dn.socket < CONFIG_MAX_SOCKET);

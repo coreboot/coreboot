@@ -28,4 +28,8 @@ config MAINBOARD_PART_NUMBER
 config ENABLE_DDR_2X_REFRESH
 	default y
 
+config SUPERMICRO_BOARDID
+	string
+	default "0811"
+
 endif

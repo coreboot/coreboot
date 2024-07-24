@@ -194,6 +194,8 @@ bool is_pci(const struct device *pci);
 bool is_enabled_pci(const struct device *pci);
 bool is_pci_dev_on_bus(const struct device *pci, unsigned int bus);
 bool is_pci_bridge(const struct device *pci);
+bool is_domain0(const struct device *dev);
+bool is_dev_on_domain0(const struct device *dev);
 
 /* Returns whether there is a hotplug port on the path to the given device. */
 bool dev_path_hotplug(const struct device *);

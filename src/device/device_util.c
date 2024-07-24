@@ -261,6 +261,16 @@ const struct device *dev_get_domain(const struct device *dev)
 	return NULL;
 }
 
+bool is_domain0(const struct device *dev)
+{
+	return dev && dev->path.type == DEVICE_PATH_DOMAIN && dev->path.domain.domain == 0;
+}
+
+bool is_dev_on_domain0(const struct device *dev)
+{
+	return is_domain0(dev_get_domain(dev));
+}
+
 /**
  * Allocate 64 more resources to the free list.
  *

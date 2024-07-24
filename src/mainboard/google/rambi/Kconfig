@@ -143,10 +143,6 @@ config MAINBOARD_PART_NUMBER
 config OVERRIDE_DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
 
-config EC_GOOGLE_CHROMEEC_BOARDNAME
-	string
-	default ""
-
 config MAINBOARD_SMBIOS_MANUFACTURER
 	string
 	default "GOOGLE"

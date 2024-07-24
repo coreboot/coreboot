@@ -74,19 +74,6 @@ CONFIG_EC_GOOGLE_CHROMEEC_FIRMWARE_FILE := $(call strip_quotes,$(CONFIG_EC_GOOGL
 
 $(obj)/mainboard/$(MAINBOARDDIR)/ecrw: $(CONFIG_EC_GOOGLE_CHROMEEC_FIRMWARE_FILE)
 	cp $(CONFIG_EC_GOOGLE_CHROMEEC_FIRMWARE_FILE) $@
-else
-CONFIG_EC_GOOGLE_CHROMEEC_BOARDNAME := $(call strip_quotes,$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDNAME))
-
-$(obj)/mainboard/$(MAINBOARDDIR)/ecrw:
-	$(MAKE) -C $(CHROMEEC_SOURCE) $(if $(CONFIG_CCACHE),,CCACHE=) \
-		out=$(abspath $(obj)/external/chromeec/$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDNAME)) \
-		REPRODUCIBLE_BUILD=1 \
-		CC=$(GCC_CC_arm) \
-		CROSS_COMPILE=$(subst -cpp,-,$(CPP_arm)) \
-		HOST_CROSS_COMPILE= \
-		BOARD=$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDNAME) \
-		rw
-	cp $(obj)/external/chromeec/$(CONFIG_EC_GOOGLE_CHROMEEC_BOARDNAME)/RW/ec.RW.flat $@
 endif
 
 $(obj)/mainboard/$(MAINBOARDDIR)/ecrw.hash: $(obj)/mainboard/$(MAINBOARDDIR)/ecrw
@@ -113,19 +100,6 @@ CONFIG_EC_GOOGLE_CHROMEEC_PD_FIRMWARE_FILE := $(call strip_quotes,$(CONFIG_EC_GO
 
 $(obj)/mainboard/$(MAINBOARDDIR)/pdrw: $(CONFIG_EC_GOOGLE_CHROMEEC_PD_FIRMWARE_FILE)
 	cp $(CONFIG_EC_GOOGLE_CHROMEEC_PD_FIRMWARE_FILE) $@
-else
-CONFIG_EC_GOOGLE_CHROMEEC_PD_BOARDNAME := $(call strip_quotes,$(CONFIG_EC_GOOGLE_CHROMEEC_PD_BOARDNAME))
-
-$(obj)/mainboard/$(MAINBOARDDIR)/pdrw:
-	$(MAKE) -C $(CHROMEEC_SOURCE) $(if $(CONFIG_CCACHE),,CCACHE=) \
-		out=$(abspath $(obj)/external/chromeec/$(CONFIG_EC_GOOGLE_CHROMEEC_PD_BOARDNAME)) \
-		REPRODUCIBLE_BUILD=1 \
-		CC=$(GCC_CC_arm) \
-		CROSS_COMPILE=$(subst -cpp,-,$(CPP_arm)) \
-		HOST_CROSS_COMPILE= \
-		BOARD=$(CONFIG_EC_GOOGLE_CHROMEEC_PD_BOARDNAME) \
-		rw
-	cp $(obj)/external/chromeec/$(CONFIG_EC_GOOGLE_CHROMEEC_PD_BOARDNAME)/RW/ec.RW.flat $@
 endif
 
 $(obj)/mainboard/$(MAINBOARDDIR)/pdrw.hash: $(obj)/mainboard/$(MAINBOARDDIR)/pdrw

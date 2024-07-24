@@ -180,7 +180,6 @@ cbfs-files-y += $(OPENSBI_CBFS)
 
 check-ramstage-overlap-files += $(OPENSBI_CBFS)
 
-CPPFLAGS_common += -I$(OPENSBI_SOURCE)/include
 ramstage-y += opensbi.c
 
 endif #CONFIG_RISCV_OPENSBI

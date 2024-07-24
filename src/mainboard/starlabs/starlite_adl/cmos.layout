@@ -12,39 +12,16 @@ entries
 304	80	h	0	ramtop
 
 # RTC_BOOT_BYTE (coreboot hardcoded)
-384	1	e	2	boot_option
 388	4	h	0	reboot_counter
 
-# -----------------------------------------------------------------
-# coreboot config options: console
-395	4	e	3	debug_level
 # coreboot config options: cpu
 #400	8	r	0	reserved for century byte
-408	1	e	1	vtd
-416	2	e	5	power_profile
-424	1	e	4	me_state
-432	4	h	0	me_state_counter
-440	2	e	8	memory_speed
-
-# coreboot config options: Devices
-504	1	e	1	wireless
-512	1	e	1	webcam
-520	1	e	1	camera
-528	1	e	1	microphone
-536	1	e	1	lid_switch
-542	1	e	9	power_led
-550	1	e	1	gna
-
-# coreboot config options: EC
-600	2	e	6	max_charge
-608	2	e	11	charging_speed
 
 # coreboot config options: check sums
 984	16	h	0	check_sum
 
 # Bank: 2
 # embedded controller settings (outside the checksummed area)
-
 # -----------------------------------------------------------------
 
 enumerations
@@ -52,41 +29,6 @@ enumerations
 #ID	value	text
 1	0	Disable
 1	1	Enable
-
-2	0	Fallback
-2	1	Normal
-
-3	0	Emergency
-3	1	Alert
-3	2	Critical
-3	3	Error
-3	4	Warning
-3	5	Notice
-3	6	Info
-3	7	Debug
-3	8	Spew
-
-4	0	Enable
-4	1	Disable
-
-5	0	Power Saver
-5	1	Balanced
-5	2	Performance
-
-6	0	100%
-6	1	80%
-6	2	60%
-
-7	0	1.0C
-7	1	0.5C
-7	2	0.2C
-
-8	0	5500MT/s
-8	1	6400MT/s
-8	2	7500MT/s
-
-9	0	Normal
-9	1	Reduced
 
 # -----------------------------------------------------------------
 checksums

@@ -386,8 +386,7 @@ static struct device_operations soc_ops = {
 
 static void enable_soc_dev(struct device *dev)
 {
-	if (dev->path.type == DEVICE_PATH_DOMAIN &&
-		dev->path.domain.domain == 0) {
+	if (is_domain0(dev)) {
 		dev->ops = &pci_domain_ops_ecam0;
 	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
 		dev->ops = &soc_ops;

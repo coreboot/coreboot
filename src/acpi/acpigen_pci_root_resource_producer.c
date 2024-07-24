@@ -60,7 +60,7 @@ void pci_domain_fill_ssdt(const struct device *domain)
 	acpigen_resource_producer_bus_number(domain->downstream->secondary,
 					     domain->downstream->max_subordinate);
 
-	if (domain->path.domain.domain == 0) {
+	if (is_domain0(domain)) {
 		/* ACPI 6.4.2.5 I/O Port Descriptor */
 		acpigen_write_io16(PCI_IO_CONFIG_INDEX, PCI_IO_CONFIG_LAST_PORT, 1,
 				   PCI_IO_CONFIG_PORT_COUNT, 1);

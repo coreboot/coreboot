@@ -560,7 +560,7 @@ unsigned long northbridge_write_acpi_tables(const struct device *device, unsigne
 					    struct acpi_rsdp *rsdp)
 {
 	/* Only write uncore ACPI tables for domain0 */
-	if (device->path.domain.domain != 0)
+	if (!is_domain0(device))
 		return current;
 
 	acpi_srat_t *srat;

@@ -15,7 +15,6 @@ legacy_8254_timer=Disable
 kbl_timeout=30 seconds
 fn_ctrl_swap=Disable
 fast_charge=Normal
-mirror_flag=Disable
 # Functions
 fn_lock_state=0x1
 trackpad_state=0x1

@@ -25,34 +25,6 @@ static uint8_t get_ec_value_from_option(const char *name,
 	return lut[index];
 }
 
-void ec_mirror_flag(void)
-{
-	/*
-	 * For the mirror flag to work, the status of the EC pin must be known
-	 * at all times, which means external power. This can be either a DC
-	 * charger, or PD with CCG6. PD with an ANX7447 requires configuration
-	 * from the EC, so the update will interrupt this.
-	 *
-	 * This means we can unconditionally apply the mirror flag to devices
-	 * that have CCG6, present on devices with TBT, but have a manual
-	 * flag for devices without it.
-	 */
-	uint16_t ec_version = ec_get_version();
-
-	/* Full mirror support was added in EC 1.18 (0x0112) */
-	if (ec_version < 0x0112)
-		return;
-
-	if (CONFIG(EC_STARLABS_MIRROR_SUPPORT) &&
-		(CONFIG(DRIVERS_INTEL_USB4_RETIMER) || get_uint_option("mirror_flag", 0)) &&
-		(ec_version != CONFIG_EC_STARLABS_MIRROR_VERSION)) {
-		printk(BIOS_ERR, "ITE: EC version 0x%x doesn't match coreboot version 0x%x.\n",
-			ec_version, CONFIG_EC_STARLABS_MIRROR_VERSION);
-
-		ec_write(ECRAM_MIRROR_FLAG, MIRROR_ENABLED);
-	}
-}
-
 static uint16_t ec_get_chip_id(unsigned int port)
 {
 	return (pnp_read_index(port, ITE_CHIPID1) << 8) |
@@ -83,8 +55,6 @@ static void merlin_init(struct device *dev)
 			ITE_CHIPID_VAL, chip_id);
 		return;
 	}
-
-	ec_mirror_flag();
 
 	/*
 	 * Restore settings from CMOS into EC RAM:

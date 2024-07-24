@@ -64,20 +64,6 @@ config EC_STARLABS_MAX_CHARGE
 	help
 	  Select if the mainboard supports limiting the maximum charge of the battery.
 
-config EC_STARLABS_MIRROR_SUPPORT
-	bool "Enable mirror flag support"
-	default n
-	depends on EC_STARLABS_ITE
-	help
-	  Select if the EC should mirror the EC firmware contained in the coreboot ROM.
-
-config EC_STARLABS_MIRROR_VERSION
-	hex "Version of the EC firmware that should be installed."
-	depends on EC_STARLABS_MIRROR_SUPPORT
-	help
-	  The version of the EC that should be installed. The mirror flag will be activated
-	  if this Kconfig option is set and it does not match the current EC version.
-
 config EC_STARLABS_MERLIN
 	bool "Use open-source Merlin EC Firmware"
 	default n

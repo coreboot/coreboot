@@ -57,7 +57,7 @@ CHROMEEC_SOURCE ?= $(top)/3rdparty/chromeec
 # use to update the EC. ecrw is the main embedded controller's firmware,
 # pdrw is for a USB PD controller.
 
-ifneq ($(CONFIG_EC_GOOGLE_CHROMEEC_FIRMWARE_NONE),y)
+ifeq ($(CONFIG_EC_GOOGLE_CHROMEEC_FIRMWARE_EXTERNAL),y)
 
 cbfs-files-y += ecrw
 ecrw-file := $(obj)/mainboard/$(MAINBOARDDIR)/ecrw
@@ -69,21 +69,17 @@ ecrw.hash-file := $(obj)/mainboard/$(MAINBOARDDIR)/ecrw.hash
 ecrw.hash-name := ecrw.hash
 ecrw.hash-type := raw
 
-ifeq ($(CONFIG_EC_GOOGLE_CHROMEEC_FIRMWARE_EXTERNAL),y)
 CONFIG_EC_GOOGLE_CHROMEEC_FIRMWARE_FILE := $(call strip_quotes,$(CONFIG_EC_GOOGLE_CHROMEEC_FIRMWARE_FILE))
 
 $(obj)/mainboard/$(MAINBOARDDIR)/ecrw: $(CONFIG_EC_GOOGLE_CHROMEEC_FIRMWARE_FILE)
 	cp $(CONFIG_EC_GOOGLE_CHROMEEC_FIRMWARE_FILE) $@
-endif
 
 $(obj)/mainboard/$(MAINBOARDDIR)/ecrw.hash: $(obj)/mainboard/$(MAINBOARDDIR)/ecrw
 	openssl dgst -sha256 -binary $< > $@
 
 endif
 
-ifeq ($(CONFIG_EC_GOOGLE_CHROMEEC_PD),y)
-
-ifneq ($(CONFIG_EC_GOOGLE_CHROMEEC_PD_FIRMWARE_NONE),y)
+ifeq ($(CONFIG_EC_GOOGLE_CHROMEEC_PD_FIRMWARE_EXTERNAL),y)
 
 cbfs-files-y += pdrw
 pdrw-file := $(obj)/mainboard/$(MAINBOARDDIR)/pdrw
@@ -95,17 +91,13 @@ pdrw.hash-file := $(obj)/mainboard/$(MAINBOARDDIR)/pdrw.hash
 pdrw.hash-name := pdrw.hash
 pdrw.hash-type := raw
 
-ifeq ($(CONFIG_EC_GOOGLE_CHROMEEC_PD_FIRMWARE_EXTERNAL),y)
 CONFIG_EC_GOOGLE_CHROMEEC_PD_FIRMWARE_FILE := $(call strip_quotes,$(CONFIG_EC_GOOGLE_CHROMEEC_PD_FIRMWARE_FILE))
 
 $(obj)/mainboard/$(MAINBOARDDIR)/pdrw: $(CONFIG_EC_GOOGLE_CHROMEEC_PD_FIRMWARE_FILE)
 	cp $(CONFIG_EC_GOOGLE_CHROMEEC_PD_FIRMWARE_FILE) $@
-endif
 
 $(obj)/mainboard/$(MAINBOARDDIR)/pdrw.hash: $(obj)/mainboard/$(MAINBOARDDIR)/pdrw
 	openssl dgst -sha256 -binary $< > $@
-
-endif
 
 endif
 

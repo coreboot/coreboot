@@ -40,8 +40,8 @@ SECTIONS
 	 *  aarch64-cros-linux-gnu-objdump -x dram.elf | grep memsz
 	 */
 	DRAM_INIT_CODE(0x02000000, 600K)
-	/* 4K reserved for BOOTROM until BOOTBLOCK is started */
 	#else
+	/* The beginning 4K of SRAM_L2C is reserved for BOOTROM until BOOTBLOCK is started. */
 	BOOTBLOCK(0x02001000, 60K)
 	#endif
 	OVERLAP_DECOMPRESSOR_VERSTAGE_ROMSTAGE(0x02096000, 272K)

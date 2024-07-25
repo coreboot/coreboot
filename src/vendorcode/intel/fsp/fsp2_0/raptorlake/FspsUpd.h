@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2023, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2024, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -1778,11 +1778,17 @@ typedef struct {
 **/
   UINT32                      PsysCriticalThreshold;
 
-/** Offset 0x06E0 - ReservedCpuPostMemProduction
+/** Offset 0x06E0 - CepEnable
+  Enable or Disable Cep (Current Excursion Protection) Support.
+  1: Enable, 0: Disable
+**/
+  UINT8                       CepEnable[5];
+
+/** Offset 0x06E5 - ReservedCpuPostMemProduction
   Reserved for CPU Post-Mem Production
   $EN_DIS
 **/
-  UINT8                       ReservedCpuPostMemProduction[11];
+  UINT8                       ReservedCpuPostMemProduction[6];
 
 /** Offset 0x06EB - Enable Power Optimizer
   Enable DMI Power Optimizer on PCH side.
@@ -4294,7 +4300,8 @@ typedef struct {
 **/
   UINT32                      ThcHidFlags[2];
 
-/** Offset 0x104C
+/** Offset 0x104C - Force LTR Override
+  Force LTR Override.
 **/
   UINT8                       CpuPcieRpTestForceLtrOverride[4];
 

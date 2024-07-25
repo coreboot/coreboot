@@ -1091,9 +1091,12 @@ typedef struct {
 **/
   UINT8                       SaVoltageMode;
 
-/** Offset 0x029B
+/** Offset 0x029B - Internal Graphics Data Stolen Memory GSM2
+  Size of memory preallocated for internal graphics GSM2.
+  0:2GB, 1:4GB, 2:6GB, 3:8GB, 4:10GB, 5:12GB, 6:14GB, 7:16GB, 8:18GB, 9:20GB, 10:22GB,
+  11:24GB, 12:26GB, 13:28GB, 14:30GB, 15:32GB, 0xFF:No Allocation
 **/
-  UINT8                       Rsvd07;
+  UINT8                       IgdGsm2Size;
 
 /** Offset 0x029C - SA/Uncore Voltage Override
   The SA/Uncore voltage override applicable when SA/Uncore voltage mode is in Override
@@ -3794,7 +3797,7 @@ typedef struct {
 **/
   UINT8                       CpuPcieRpSlotImplemented[4];
 
-/** Offset 0x0AB6
+/** Offset 0x0AB6 - Ppr Run Once
   Enable PPR Run Once 0:Disable, <b>1:Enable<b>
   0:Disable, 1:Enable
 **/

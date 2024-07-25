@@ -54,4 +54,20 @@
 	.clk_req = CLK_REQ0,                     \
 }
 
+#define EMMC_DXIO_DESCRIPTOR {                   \
+	.engine_type = PCIE_ENGINE,              \
+	.port_present = true,                    \
+	.start_logical_lane = 1,                 \
+	.end_logical_lane = 1,                   \
+	.device_number = PCI_SLOT(SD_DEVFN),     \
+	.function_number = PCI_FUNC(SD_DEVFN),   \
+	.link_speed_capability = GEN3,           \
+	.turn_off_unused_lanes = true,           \
+	.link_aspm = ASPM_L1,                    \
+	.link_aspm_L1_1 = true,                  \
+	.link_aspm_L1_2 = true,                  \
+	.gpio_group_id = GPIO_6,                 \
+	.clk_req = CLK_REQ1,                     \
+}
+
 #endif //__BASEBOARD_PORT_DESCRIPTORS_H__

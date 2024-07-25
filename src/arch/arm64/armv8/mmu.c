@@ -5,10 +5,11 @@
 #include <string.h>
 #include <symbols.h>
 
-#include <console/console.h>
-#include <arch/mmu.h>
-#include <arch/lib_helpers.h>
+#include <arch/barrier.h>
 #include <arch/cache.h>
+#include <arch/lib_helpers.h>
+#include <arch/mmu.h>
+#include <console/console.h>
 
 /* This just caches the next free table slot (okay to do since they fill up from
  * bottom to top and can never be freed up again). It will reset to its initial

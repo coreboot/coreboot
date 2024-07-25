@@ -29,7 +29,7 @@ SECTIONS
 
 	/*
 	 * The L3 is 2MB in total. The bootROM has configured half of the L3 cache as SRAM
-	 *(SRAM_L2C) so that's 1MB (and the rest to be cache, which is required so you
+	 * (SRAM_L2C) so that's 1MB (and the rest to be cache, which is required so you
 	 * can't reconfigure whole L3 as SRAM).
 	 */
 	SRAM_L2C_START(0x00200000)

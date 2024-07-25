@@ -156,10 +156,6 @@ void variant_update_psys_power_limits(const struct cpu_power_limits *limits,
 	/* Limit PL2 if the adapter is with lower capability */
 	pl2 = (psyspl2 > pl2_default) ? pl2_default : SET_PL2(config_psys->efficiency, watts);
 
-	/* If PL4 > psyspl3, lower it */
-	if (soc_config->tdp_pl4 > psyspl3)
-		soc_config->tdp_pl4 = psyspl3;
-
 	/* now that we're done calculating, set everything */
 	soc_config->tdp_pl2_override = pl2;
 	soc_config->tdp_psyspl2 = psyspl2;

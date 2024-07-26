@@ -34,9 +34,16 @@ static const struct pad_config emmc_disable_pads[] = {
 
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 {
-	if (fw_config_is_provisioned() && !fw_config_probe(FW_CONFIG(STORAGE, STORAGE_EMMC))) {
-		printk(BIOS_INFO, "Disable eMMC GPIO pins.\n");
-		gpio_padbased_override(padbased_table, emmc_disable_pads,
-				       ARRAY_SIZE(emmc_disable_pads));
+	if (!fw_config_is_provisioned()) {
+		printk(BIOS_WARNING, "FW_CONFIG is not provisioned. Exiting...\n");
+		return;
+	}
+
+	if (!fw_config_probe(FW_CONFIG(STORAGE, STORAGE_UNKNOWN))) {
+		if (!fw_config_probe(FW_CONFIG(STORAGE, STORAGE_EMMC))) {
+			printk(BIOS_INFO, "Disable eMMC GPIO pins.\n");
+			gpio_padbased_override(padbased_table, emmc_disable_pads,
+						ARRAY_SIZE(emmc_disable_pads));
+		}
 	}
 }

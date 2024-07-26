@@ -15,7 +15,8 @@ chip soc/intel/alderlake
 	register "usb2_ports[6]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 6
 	register "usb2_ports[7]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 7
 	register "usb2_ports[8]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 8
-	register "usb2_ports[9]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 9
+	# USB 2.0 Port #10 must be used for integrated BT with Intel CNVi
+	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for CNVi WLAN
 	register "usb2_ports[10]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 10
 	register "usb2_ports[11]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 11
 	register "usb2_ports[12]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 12

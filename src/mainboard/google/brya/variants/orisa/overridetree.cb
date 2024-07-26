@@ -91,7 +91,6 @@ chip soc/intel/alderlake
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"     # Bluetooth port for CNVi WLAN
 	register "usb2_ports[6]" = "USB2_PORT_EMPTY"            # Disable USB2 Port 7
 	register "usb2_ports[7]" = "USB2_PORT_EMPTY"            # Disable USB2 Port 8
-	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"     # Bluetooth port for CNVi WLAN
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type A port A0
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type A port A1

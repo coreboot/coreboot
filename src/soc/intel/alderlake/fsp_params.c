@@ -683,9 +683,7 @@ static void fill_fsps_tcss_params(FSP_S_CONFIG *s_cfg,
 			s_cfg->UsbTcPortEn |= BIT(i);
 	}
 
-#if !CONFIG(SOC_INTEL_TWINLAKE)
 	s_cfg->Usb4CmMode = CONFIG(SOFTWARE_CONNECTION_MANAGER);
-#endif
 }
 
 static void fill_fsps_chipset_lockdown_params(FSP_S_CONFIG *s_cfg,
@@ -833,9 +831,7 @@ static void fill_fsps_cnvi_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
 	/* CNVi */
-#if !CONFIG(SOC_INTEL_TWINLAKE)
 	s_cfg->CnviWifiCore = is_devfn_enabled(PCH_DEVFN_CNVI_WIFI);
-#endif
 	s_cfg->CnviMode = is_devfn_enabled(PCH_DEVFN_CNVI_WIFI);
 	s_cfg->CnviBtCore = config->cnvi_bt_core;
 	s_cfg->CnviBtAudioOffload = config->cnvi_bt_audio_offload;

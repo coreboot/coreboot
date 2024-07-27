@@ -47,6 +47,7 @@ chip soc/intel/alderlake
 		device ref tcss_xhci on end
 		device ref ish on
 			chip drivers/intel/ish
+				register "firmware_name" = ""ish_fw.bin""
 				register "add_acpi_dma_property" = "true"
 				device generic 0 on end
 			end

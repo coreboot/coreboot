@@ -151,6 +151,11 @@ config SOC_INTEL_CRASHLOG_ON_RESET
 	  This will result in a BERT table being populated containing a PMC
 	  crashlog record on every boot.
 
+config HAS_INTEL_CPU_ROOT_PORTS
+	def_bool n
+	help
+	  Enables helper functions for CPU root ports alongside PCH root ports.
+
 config SOC_INTEL_IOE_DIE_SUPPORT
 	def_bool n
 	help

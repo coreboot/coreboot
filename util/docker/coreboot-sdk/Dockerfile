@@ -33,6 +33,7 @@ RUN \
 		g++ \
 		gawk \
 		gcc \
+		gettext \
 		git \
 		gnat \
 		golang \
@@ -86,6 +87,7 @@ RUN \
 		uuid-dev \
 		vim-common \
 		wget \
+		xfonts-unifont \
 		xz-utils \
 		zlib1g-dev \
 	&& apt-get clean

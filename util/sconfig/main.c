@@ -859,7 +859,7 @@ static struct device *new_device_with_path(struct bus *parent,
 		break;
 
 	case DOMAIN:
-		new_d->path = ".type=DEVICE_PATH_DOMAIN,{.domain={ .domain = 0x%x }}";
+		new_d->path = ".type=DEVICE_PATH_DOMAIN,{.domain={ .domain_id = 0x%x }}";
 		break;
 
 	case GENERIC:

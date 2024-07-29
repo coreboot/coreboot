@@ -44,7 +44,7 @@ static struct device *const create_ioat_domain(const union xeon_domain_path dp, 
 	struct device_path path = {
 		.type = DEVICE_PATH_DOMAIN,
 		.domain = {
-			.domain = new_path.domain_path,
+			.domain_id = new_path.domain_path,
 		},
 	};
 	struct device *const domain = alloc_find_dev(upstream, &path);

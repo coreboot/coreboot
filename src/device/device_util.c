@@ -109,7 +109,7 @@ u32 dev_path_encode(const struct device *dev)
 		ret |= dev->path.apic.apic_id;
 		break;
 	case DEVICE_PATH_DOMAIN:
-		ret |= dev->path.domain.domain;
+		ret |= dev->path.domain.domain_id;
 		break;
 	case DEVICE_PATH_CPU_CLUSTER:
 		ret |= dev->path.cpu_cluster.cluster;
@@ -193,7 +193,7 @@ const char *dev_path(const struct device *dev)
 			break;
 		case DEVICE_PATH_DOMAIN:
 			snprintf(buffer, sizeof(buffer), "DOMAIN: %08x",
-				dev->path.domain.domain);
+				dev->path.domain.domain_id);
 			break;
 		case DEVICE_PATH_CPU_CLUSTER:
 			snprintf(buffer, sizeof(buffer), "CPU_CLUSTER: %01x",
@@ -273,12 +273,12 @@ unsigned int dev_get_domain_id(const struct device *dev)
 		return 0;
 	}
 
-	return domain_dev->path.domain.domain;
+	return domain_dev->path.domain.domain_id;
 }
 
 bool is_domain0(const struct device *dev)
 {
-	return dev && dev->path.type == DEVICE_PATH_DOMAIN && dev->path.domain.domain == 0;
+	return dev && dev->path.type == DEVICE_PATH_DOMAIN && dev->path.domain.domain_id == 0;
 }
 
 bool is_dev_on_domain0(const struct device *dev)

@@ -118,7 +118,7 @@ static int path_eq(const struct device_path *path1,
 		equal = (path1->apic.apic_id == path2->apic.apic_id);
 		break;
 	case DEVICE_PATH_DOMAIN:
-		equal = (path1->domain.domain == path2->domain.domain);
+		equal = (path1->domain.domain_id == path2->domain.domain_id);
 		break;
 	case DEVICE_PATH_CPU_CLUSTER:
 		equal = (path1->cpu_cluster.cluster

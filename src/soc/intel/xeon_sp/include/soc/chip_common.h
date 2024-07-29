@@ -30,7 +30,7 @@ static inline void init_xeon_domain_path(struct device_path *path, int socket,
 		.bus = bus,
 	};
 	path->type = DEVICE_PATH_DOMAIN;
-	path->domain.domain = dp.domain_path;
+	path->domain.domain_id = dp.domain_path;
 };
 
 /*

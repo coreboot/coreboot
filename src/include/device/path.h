@@ -53,7 +53,7 @@ enum device_path_type {
 }
 
 struct domain_path {
-	unsigned int domain;
+	unsigned int domain_id;
 };
 
 struct pci_path {

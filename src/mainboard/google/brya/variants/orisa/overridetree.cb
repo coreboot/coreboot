@@ -86,10 +86,7 @@ chip soc/intel/alderlake
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"     # USB2_A0
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"     # USB2_A1
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"     # M.2 Camera
-	register "usb2_ports[3]" = "USB2_PORT_EMPTY"            # Disable USB2 Port 4
 	register "usb2_ports[4]" = "USB2_PORT_TYPE_C(OC_SKIP)"  # USB2_C0
-	register "usb2_ports[6]" = "USB2_PORT_EMPTY"            # Disable USB2 Port 7
-	register "usb2_ports[7]" = "USB2_PORT_EMPTY"            # Disable USB2 Port 8
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type A port A0
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type A port A1
@@ -511,7 +508,6 @@ chip soc/intel/alderlake
 			end
 		end #I2C5
 		device ref heci1 on end
-		device ref pcie_rp7 off end
 		device ref emmc on
 			probe STORAGE STORAGE_UNKNOWN
 			probe STORAGE STORAGE_EMMC

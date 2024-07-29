@@ -337,6 +337,7 @@ M:	Nick Vaccaro <nvaccaro@chromium.org>
 M:	Eric Lai <ericllai@google.com>
 M:	Kapil Porwal <kapilporwal@google.com>
 M:	Dinesh Gehlot <digehlot@google.com>
+M:	Rishika Raj <rishikaraj@google.com>
 S:	Maintained
 F:	src/mainboard/google/brya/
 
@@ -857,6 +858,7 @@ M:	Subrata Banik <subratabanik@google.com>
 M:	Nick Vaccaro <nvaccaro@chromium.org>
 M:	Kapil Porwal <kapilporwal@google.com>
 M:	Dinesh Gehlot <digehlot@google.com>
+M:	Rishika Raj <rishikaraj@google.com>
 S:	Maintained
 F:	src/soc/intel/alderlake/
 

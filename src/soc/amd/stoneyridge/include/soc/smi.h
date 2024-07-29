@@ -71,7 +71,7 @@
 #define SMITYPE_ESPI_SYS			26
 #define SMITYPE_ESPI_WAKE_PME			27
 /* 28-32 Reserved */
-#define SMITYPE_FCH_FAKE0			33
+#define SMITYPE_PSP				33
 #define SMITYPE_FCH_FAKE1			34
 #define SMITYPE_FCH_FAKE2			35
 /* 36 Reserved */
@@ -163,6 +163,7 @@
 #define SMI_TIMER_EN				(1 << 15)
 
 #define SMI_REG_SMITRIG0		0x98
+# define SMITRIG0_PSP				BIT(25)
 # define SMITRG0_EOS				BIT(28)
 # define SMI_TIMER_SEL				BIT(29)
 # define SMITRG0_SMIENB				BIT(31)

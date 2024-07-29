@@ -154,3 +154,27 @@ void clear_smi_sci_status(void)
 {
 	smi_write32(SMI_SCI_STATUS, smi_read32(SMI_SCI_STATUS));
 }
+
+static void clear_psp_smi(void)
+{
+	uint32_t reg32;
+	/* SMITYPE_PSP is 33, so it's bit 33 % 32 in the second 32 bit SMI status register */
+	reg32 = smi_read32(SMI_REG_SMISTS1);
+	reg32 |= 1 << (SMITYPE_PSP % 32);
+	smi_write32(SMI_REG_SMISTS1, reg32);
+}
+
+void reset_psp_smi(void)
+{
+	uint32_t reg32;
+	reg32 = smi_read32(SMI_REG_SMITRIG0);
+	reg32 &= ~SMITRIG0_PSP;
+	smi_write32(SMI_REG_SMITRIG0, reg32);
+}
+
+void configure_psp_smi(void)
+{
+	clear_psp_smi();
+	reset_psp_smi();
+	configure_smi(SMITYPE_PSP, SMI_MODE_SMI);
+}

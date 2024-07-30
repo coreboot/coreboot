@@ -265,6 +265,7 @@ GBB_FLAGS := $(call int-add, \
 	$(call bool-to-mask,$(CONFIG_GBB_FLAG_FORCE_MANUAL_RECOVERY),0x4000) \
 	$(call bool-to-mask,$(CONFIG_GBB_FLAG_DISABLE_FWMP),0x8000) \
 	$(call bool-to-mask,$(CONFIG_GBB_FLAG_ENABLE_UDC),0x10000) \
+	$(call bool-to-mask,$(CONFIG_GBB_FLAG_FORCE_CSE_SYNC),0x20000) \
 	)
 
 ifneq ($(CONFIG_GBB_BMPFV_FILE),)

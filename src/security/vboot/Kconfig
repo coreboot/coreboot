@@ -451,6 +451,10 @@ config GBB_FLAG_ENABLE_UDC
 	bool "Enable USB Device Controller"
 	default n
 
+config GBB_FLAG_FORCE_CSE_SYNC
+	bool "Running tests; enforce CSE sync"
+	default n
+
 endmenu # GBB
 
 menu "Vboot Keys"

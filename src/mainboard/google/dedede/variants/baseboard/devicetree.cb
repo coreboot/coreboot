@@ -15,20 +15,24 @@ fw_config
 		option STYLUS_ABSENT 0
 		option STYLUS_PRESENT 1
 	end
+	field TOUCHSCREEN 5
+		option TOUCHSCREEN_ABSENT	0
+		option TOUCHSCREEN_PRESENT	1
+	end
         field TABLETMODE 10
                 option TABLETMODE_DISABLED 0
                 option TABLETMODE_ENABLED 1
         end
+	field LTE 11
+		option LTE_ABSENT 0
+		option LTE_PRESENT 1
+	end
 	field AUDIO_AMP 14 16
 		option UNPROVISIONED 0
 		option MAX98360 1
 		option RT1015_I2C 2
 		option RT1015P_AUTO 3
 		option ALC5650 4
-	end
-	field LTE 11
-		option LTE_ABSENT 0
-		option LTE_PRESENT 1
 	end
 	field EXT_VR 18
 		option EXT_VR_PRESENT 0

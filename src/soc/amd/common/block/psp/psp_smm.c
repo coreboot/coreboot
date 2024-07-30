@@ -47,6 +47,17 @@ static void clear_smm_flag(void)
 	smm_flag = 0;
 }
 
+static int send_psp_command_smm(u32 command, void *buffer)
+{
+	int cmd_status;
+
+	set_smm_flag();
+	cmd_status = send_psp_command(command, buffer);
+	clear_smm_flag();
+
+	return cmd_status;
+}
+
 /*
  * The MBOX_BIOS_CMD_SMM_INFO PSP mailbox command doesn't necessarily need be sent from SMM,
  * but doing so allows the linker to sort out the addresses of c2p_buffer, p2c_buffer and
@@ -83,9 +94,7 @@ int psp_notify_smm(void)
 
 	printk(BIOS_DEBUG, "PSP: Notify SMM info... ");
 
-	set_smm_flag();
-	cmd_status = send_psp_command(MBOX_BIOS_CMD_SMM_INFO, &buffer);
-	clear_smm_flag();
+	cmd_status = send_psp_command_smm(MBOX_BIOS_CMD_SMM_INFO, &buffer);
 
 	/* buffer's status shouldn't change but report it if it does */
 	psp_print_cmd_status(cmd_status, &buffer.header);
@@ -113,9 +122,7 @@ void psp_notify_sx_info(u8 sleep_type)
 
 	buffer->sleep_type = sleep_type;
 
-	set_smm_flag();
-	cmd_status = send_psp_command(MBOX_BIOS_CMD_SX_INFO, buffer);
-	clear_smm_flag();
+	cmd_status = send_psp_command_smm(MBOX_BIOS_CMD_SX_INFO, buffer);
 
 	/* buffer's status shouldn't change but report it if it does */
 	psp_print_cmd_status(cmd_status, &buffer->header);

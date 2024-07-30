@@ -604,7 +604,8 @@ F:	src/mainboard/siemens/mc_ehl/
 
 
 SIFIVE MAINBOARDS
-S:	Orphan
+M:	Maximilian Brune <maximilian.brune@9elements.com>
+S:	Maintained
 F:	src/mainboard/sifive/
 
 
@@ -665,6 +666,7 @@ F:	src/mainboard/emulation/qemu-power8/
 
 RISC-V ARCHITECTURE
 M:	Ronald Minnich <rminnich@gmail.com>
+M:	Maximilian Brune <maximilian.brune@9elements.com>
 R:	Philipp Hug <philipp@hug.cx>
 S:	Maintained
 F:	src/arch/riscv/

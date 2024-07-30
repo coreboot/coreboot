@@ -108,6 +108,9 @@ struct mbox_cmd_dtpm_config_buffer {
 #define PSP_INIT_TIMEOUT 10000 /* 10 seconds */
 #define PSP_CMD_TIMEOUT 1000 /* 1 second */
 
+#define C2P_BUFFER_MAXSIZE 0xc00 /* Core-to-PSP buffer */
+#define P2C_BUFFER_MAXSIZE 0xc00 /* PSP-to-core buffer */
+
 uintptr_t get_psp_mmio_base(void);
 
 void psp_print_cmd_status(int cmd_status, struct mbox_buffer_header *header);

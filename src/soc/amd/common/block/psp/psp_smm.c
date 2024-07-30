@@ -11,9 +11,6 @@
 
 #include "psp_def.h"
 
-#define C2P_BUFFER_MAXSIZE 0xc00 /* Core-to-PSP buffer */
-#define P2C_BUFFER_MAXSIZE 0xc00 /* PSP-to-core buffer */
-
 /*
  * When sending PSP mailbox commands to the PSP from the SMI handler after the boot done
  * command was sent, the corresponding data buffer needs to be placed in this core to PSP (C2P)

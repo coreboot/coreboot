@@ -32,20 +32,16 @@
 #define PIRQ_ASF	0x12	/* ASF */
 /* 0x13-0x15 reserved */
 #define PIRQ_PMON	0x16	/* Performance Monitor */
-#define PIRQ_SD		0x17	/* SD */
-/* 0x18-0x19 reserved */
+/* 0x17-0x19 reserved */
 #define PIRQ_SDIO	0x1a	/* SDIO */
 /* 0x1b-0x1f reserved */
 #define PIRQ_CIR	0x20	/* CIR, no IRQ connected */
 #define PIRQ_GPIOA	0x21	/* GPIOa from PAD_FANIN0 */
 #define PIRQ_GPIOB	0x22	/* GPIOb from PAD_FANOUT0 */
 #define PIRQ_GPIOC	0x23	/* GPIOc no IRQ connected */
-/* 0x24-0x4f reserved */
-#define PIRQ_GPP0	0x50	/* GPPInt0 */
-#define PIRQ_GPP1	0x51	/* GPPInt1 */
-#define PIRQ_GPP2	0x52	/* GPPInt2 */
-#define PIRQ_GPP3	0x53	/* GPPInt3 */
-/* 0x54-0x61 reserved */
+/* 0x24-0x5f reserved */
+#define PIRQ_GSCI	0x60	/* GEventSci Interrupt */
+#define PIRQ_GSMI	0x61	/* GEventSmi Interrupt */
 #define PIRQ_GPIO	0x62	/* GPIO Controller Interrupt */
 /* 0x63-0x6f reserved */
 #define PIRQ_I2C0	0x70	/* I2C0 */

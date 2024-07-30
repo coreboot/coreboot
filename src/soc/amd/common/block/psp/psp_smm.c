@@ -14,15 +14,28 @@
 #define C2P_BUFFER_MAXSIZE 0xc00 /* Core-to-PSP buffer */
 #define P2C_BUFFER_MAXSIZE 0xc00 /* PSP-to-core buffer */
 
+/*
+ * When sending PSP mailbox commands to the PSP from the SMI handler after the boot done
+ * command was sent, the corresponding data buffer needs to be placed in this core to PSP (C2P)
+ * buffer.
+ */
 struct {
 	u8 buffer[C2P_BUFFER_MAXSIZE];
 } __aligned(32) c2p_buffer;
 
+/*
+ * When the PSP sends mailbox commands to the host, it will update the PSP to core (P2C) buffer
+ * and then send an SMI to the host to process the request.
+ */
 struct {
 	u8 buffer[P2C_BUFFER_MAXSIZE];
 } __aligned(32) p2c_buffer;
 
-static uint32_t smm_flag; /* Non-zero for SMM, clear when not */
+/*
+ * When sending PSP mailbox commands to the PSP from the SMI handler, the SMM flag needs to be
+ * set for the PSP to accept it. Otherwise it should be cleared.
+ */
+static uint32_t smm_flag;
 
 static void set_smm_flag(void)
 {

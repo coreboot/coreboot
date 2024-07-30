@@ -287,9 +287,10 @@ static void ssdt_generate_keymap(struct acpi_dp *dp, uint8_t num_top_row_keys,
 			keymap = rest_of_keymaps[i];
 			acpi_dp_add_integer(dp_array, NULL, keymap);
 		}
+
+		total += ARRAY_SIZE(rest_of_keymaps);
 	}
 
-	total += ARRAY_SIZE(rest_of_keymaps);
 	printk(BIOS_INFO, "PS2K: Passing %u keymaps to kernel\n", total);
 
 	acpi_dp_add_array(dp, dp_array);

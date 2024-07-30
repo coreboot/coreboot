@@ -47,6 +47,13 @@ static void clear_smm_flag(void)
 	smm_flag = 0;
 }
 
+/*
+ * The MBOX_BIOS_CMD_SMM_INFO PSP mailbox command doesn't necessarily need be sent from SMM,
+ * but doing so allows the linker to sort out the addresses of c2p_buffer, p2c_buffer and
+ * smm_flag without us needing to pass this info between ramstage and smm. In the PSP gen2 case
+ * this will also make sure that the PSP MMIO base will be cached in SMM before the OS takes
+ * over so no SMN accesses will be needed during OS runtime.
+ */
 int psp_notify_smm(void)
 {
 	msr_t msr;

@@ -241,6 +241,12 @@ detect_special_flags() {
 	testcc "$GCC"      "$CFLAGS_GCC -Wextra" &&
 		CFLAGS_GCC="$CFLAGS_GCC -Wextra"
 
+	# Disable warning on segments with RWX.
+	# All loadable sections are placed in the same segment for simplicity.
+	testld "$GCC" "$FLAGS_GCC" "${GCCPREFIX}ld${LINKER_SUFFIX}" \
+		"$LDFLAGS --no-warn-rwx-segments" && \
+		LDFLAGS="$LDFLAGS --no-warn-rwx-segments"
+
 	case "$architecture" in
 	x86)
 		;;

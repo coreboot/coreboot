@@ -604,9 +604,6 @@ LDFLAGS_common += -nostdlib
 LDFLAGS_common += --nmagic
 LDFLAGS_common += -static
 LDFLAGS_common += -z noexecstack
-# Disable warning on segments with RWX.
-# All loadable sections are placed in the same segment for simplicity.
-LDFLAGS_common += --no-warn-rwx-segments
 
 # Workaround for RISC-V linker bug, merge back into above line when fixed.
 # https://sourceware.org/bugzilla/show_bug.cgi?id=27180

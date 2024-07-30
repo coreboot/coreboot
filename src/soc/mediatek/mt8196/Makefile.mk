@@ -32,6 +32,7 @@ romstage-y += l2c_ops.c
 romstage-y += ../common/memory.c memory.c
 romstage-y += ../common/memory_test.c
 romstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
+romstage-y += ../common/mt6316.c mt6316.c
 romstage-y += ../common/mt6363.c mt6363.c
 romstage-y += ../common/mt6373.c mt6373.c
 romstage-y += ../common/mtk_fsp.c

@@ -69,7 +69,6 @@ static uint32_t numeric_keypad_keymaps[] = {
 	KEYMAP(0xc7, KEY_HOME),
 	KEYMAP(0xcf, KEY_END),
 	/* Row-1 */
-	KEYMAP(0xd3, KEY_DELETE),
 	KEYMAP(0xb5, KEY_KPSLASH),
 	KEYMAP(0x37, KEY_KPASTERISK),
 	KEYMAP(0x4a, KEY_KPMINUS),
@@ -99,6 +98,7 @@ static uint32_t numeric_keypad_keymaps[] = {
 static uint32_t rest_of_keymaps[] = {
 	/* Row-0 */
 	KEYMAP(0x01, KEY_ESC),
+	KEYMAP(0xd3, KEY_DELETE),
 	/* Row-1 */
 	KEYMAP(0x29, KEY_GRAVE),
 	KEYMAP(0x02, KEY_1),

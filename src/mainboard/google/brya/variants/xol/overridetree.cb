@@ -23,8 +23,6 @@ chip soc/intel/alderlake
 
 	register "sagv" = "SaGv_Enabled"
 
-	register "pch_slp_a_min_assertion_width" = "SLP_A_ASSERTION_DEFAULT"
-
 	# As per Intel Advisory doc#723158, the change is required to prevent possible
 	# display flickering issue.
 	register "disable_dynamic_tccold_handshake" = "true"

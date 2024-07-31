@@ -287,6 +287,35 @@ static void cnvw_fill_ssdt(const struct device *dev)
 	}
 	acpigen_pop_len();
 
+/*
+ *	Method (GPEH, 0, NotSerialized)
+ *	{
+ *		If ((VDID == 0xFFFFFFFF))
+ *		{
+ *			Return (Zero)
+ *		}
+ *		If ((PMES == One))
+ *		{
+ *			Notify (CNVW, 0x02) // Device Wake
+ *		}
+ *	}
+ */
+	acpigen_write_method("GPEH", 0);
+	{
+		acpigen_write_if_lequal_namestr_int("VDID", 0xffffffff);
+		{
+			acpigen_write_return_integer(0);
+		}
+		acpigen_pop_len();
+
+		acpigen_write_if_lequal_namestr_int("PMES", 1);
+		{
+			acpigen_notify("CNVW", 2);
+		}
+		acpigen_pop_len();
+	}
+	acpigen_pop_len();
+
 	acpigen_write_scope_end();
 }
 

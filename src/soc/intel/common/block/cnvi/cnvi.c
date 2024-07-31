@@ -68,6 +68,24 @@ static void cnvw_fill_ssdt(const struct device *dev)
 	acpigen_write_field("CWAR", fields, ARRAY_SIZE(fields),
 		FIELD_WORDACC | FIELD_NOLOCK | FIELD_PRESERVE);
 
+/*
+ *	Field (CWAR, ByteAcc, NoLock, Preserve)
+ *	{
+ *		Offset (0xcd),
+ *		PMEE,    1,
+ *		    ,    6,
+ *		PMES,    1
+ *	}
+ */
+	struct fieldlist fields2[] = {
+		FIELDLIST_OFFSET(0xcd),
+		FIELDLIST_NAMESTR("PMEE", 1),
+		FIELDLIST_RESERVED(6),
+		FIELDLIST_NAMESTR("PMES", 1),
+	};
+	acpigen_write_field("CWAR", fields2, ARRAY_SIZE(fields2),
+		FIELD_BYTEACC | FIELD_NOLOCK | FIELD_PRESERVE);
+
 	acpigen_write_scope_end();
 }
 

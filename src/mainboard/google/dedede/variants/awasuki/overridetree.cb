@@ -71,6 +71,10 @@ chip soc/intel/jasperlake
 	# Set xHCI LFPS period sampling off time
 	register "xhci_lfps_sampling_offtime_ms" = "0"
 
+	# Disable SD card
+	register "sdcard_cd_gpio" = "0"
+	register "SdCardPowerEnableActiveHigh" = "0"
+
 	device domain 0 on
 		device pci 04.0 on
 			chip drivers/intel/dptf

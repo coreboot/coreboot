@@ -5,6 +5,7 @@ chip soc/intel/alderlake
 
 	register "sagv" = "SaGv_Enabled"
 
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Type-C Port C0
 	register "usb2_ports[1]" = "USB2_PORT_EMPTY"	# Disable USB2 Port 1
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A3
 	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A2
@@ -29,6 +30,11 @@ chip soc/intel/alderlake
 
 	register "usb3_ports[2]" = "USB3_PORT_EMPTY"	# Disable Type-A port
 	register "usb3_ports[3]" = "USB3_PORT_EMPTY"	# Disable Type-A port
+
+	register "tcss_ports[0]" = "TCSS_PORT_EMPTY"
+	register "tcss_ports[1]" = "TCSS_PORT_EMPTY"
+	register "tcss_ports[2]" = "TCSS_PORT_EMPTY"
+	register "tcss_ports[3]" = "TCSS_PORT_EMPTY"
 
 	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,
@@ -251,27 +257,17 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref pmc hidden end
-		device ref tcss_xhci on
-			chip drivers/usb/acpi
-				device ref tcss_root_hub on
-					chip drivers/usb/acpi
-						register "desc" = ""USB3 Type-C Port C0 (MLB)""
-						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
-						register "use_custom_pld" = "true"
-						register "custom_pld" = "ACPI_PLD_TYPE_C(BACK, CENTER, ACPI_PLD_GROUP(1, 0))"
-						device ref tcss_usb3_port1 on end
-					end
-				end
-			end
-		end
+		device ref tcss_xhci off end
+		device ref tcss_dma0 off end
+		device ref tcss_dma1 off end
 		device ref xhci on
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
 					chip drivers/usb/acpi
-						register "desc" = ""USB2 Type-C Port C0 (MLB)""
-						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "desc" = ""Type-C Charging Port C0 (MLB)""
+						register "type" = "UPC_TYPE_PROPRIETARY"
 						register "use_custom_pld" = "true"
-						register "custom_pld" = "ACPI_PLD_TYPE_C(BACK, CENTER, ACPI_PLD_GROUP(1, 0))"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(FRONT, RIGHT, ACPI_PLD_GROUP(0, 2))"
 						device ref usb2_port1 on end
 					end
 					chip drivers/usb/acpi

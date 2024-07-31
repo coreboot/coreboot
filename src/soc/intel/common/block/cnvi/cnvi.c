@@ -316,6 +316,28 @@ static void cnvw_fill_ssdt(const struct device *dev)
 	}
 	acpigen_pop_len();
 
+/*
+ *	Method (_PS0, 0, Serialized)
+ *	{
+ *	}
+ *
+ *	Method (_PS3, 0, Serialized)
+ *	{
+ *	}
+ *
+ *	Method (_DSW, 3)
+ *	{
+ *	}
+ */
+	acpigen_write_method_serialized("_PS0", 0);
+	acpigen_pop_len();
+
+	acpigen_write_method_serialized("_PS3", 0);
+	acpigen_pop_len();
+
+	acpigen_write_method("_DSW", 3);
+	acpigen_pop_len();
+
 	acpigen_write_scope_end();
 }
 

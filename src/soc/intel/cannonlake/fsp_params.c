@@ -717,6 +717,15 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	 */
 	s_cfg->SpiFlashCfgLockDown = lockdown_by_fsp;
 #endif
+	/*
+	 * IA32_DEBUG_INTERFACE_MSR has to be locked by coreboot,
+	 * because FSP does not do it unless DebugInterfaceEnable is 1.
+	 * But to use Intel TXT, the debug interface has to be disabled,
+	 * so let coreboot handle the IA32_DEBUG_INTERFACE_MSR programming.
+	 */
+	supd->FspsConfig.DebugInterfaceEnable = 0;
+	supd->FspsTestConfig.DebugInterfaceEnable = 0;
+	supd->FspsTestConfig.DebugInterfaceLockEnable = 0;
 
 #if !CONFIG(SOC_INTEL_COMETLAKE)
 	s_cfg->VrPowerDeliveryDesign = config->VrPowerDeliveryDesign;

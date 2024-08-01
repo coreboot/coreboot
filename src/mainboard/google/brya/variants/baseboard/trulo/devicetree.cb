@@ -44,6 +44,9 @@ chip soc/intel/alderlake
 	register "pch_hda_sdi_enable[0]" = "true"
 	register "pch_hda_sdi_enable[1]" = "true"
 
+	# Vccin Aux Imon Iccmax, follow RDC#646929 Power Map requirement
+	register "vccin_aux_imon_iccmax" = "PD_TIER_VOLUME" # 27A
+
 	device domain 0 on
 		# The timing values can be derived from datasheet of display panel
 		# You can use EDID string to identify the type of display on the board

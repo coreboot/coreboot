@@ -94,6 +94,9 @@ chip soc/intel/alderlake
 	# Disable Package C-state demotion for nissa baseboard.
 	register "disable_package_c_state_demotion" = "true"
 
+	# Vccin Aux Imon Iccmax, follow RDC#646929 Power Map requirement
+	register "vccin_aux_imon_iccmax" = "PD_TIER_VOLUME" # 27A
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |

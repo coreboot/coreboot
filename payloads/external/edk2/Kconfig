@@ -319,7 +319,7 @@ config EDK2_USE_LAPIC_TIMER
 
 config EDK2_CUSTOM_BUILD_PARAMS
 	string "edk2 additional custom build parameters"
-	default "-D VARIABLE_SUPPORT=SMMSTORE" if EDK2_REPO_MRCHROMEBOX && SMMSTORE_V2
+	default ""
 	help
 	  edk2 has build options that are not modified by coreboot, and these can be
 	  found in `UefiPayloadPkg/UefiPayloadPkg.dsc`. Forks may also support

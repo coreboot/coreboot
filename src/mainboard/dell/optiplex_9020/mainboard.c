@@ -303,11 +303,9 @@ static uint8_t get_temp_target(void)
 
 static uint16_t get_pkg_power(void)
 {
-	uint8_t rapl_power_unit = rdmsr(0x606).lo & 0xf;
-	if (rapl_power_unit)
-		rapl_power_unit = 2 << (rapl_power_unit - 1);
-	uint16_t pkg_power_info = rdmsr(0x614).lo & 0x7fff;
-	if (pkg_power_info / rapl_power_unit > 0x41)
+	const unsigned int pkg_power = rdmsr(0x614).lo & 0x7fff;
+	const unsigned int power_unit = 1 << (rdmsr(0x606).lo & 0xf);
+	if (pkg_power / power_unit > 65)
 		return 32;
 	else
 		return 16;

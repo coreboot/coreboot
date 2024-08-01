@@ -1,5 +1,8 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
+config ACPI_FNKEY_GEN_SCANCODE
+	default 94 if BOARD_GOOGLE_AWASUKI
+
 config BOARD_GOOGLE_BASEBOARD_DEDEDE
 	def_bool n
 	select BOARD_ROMSIZE_KB_16384 if !BOARD_ROMSIZE_KB_32768

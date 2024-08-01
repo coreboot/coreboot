@@ -1,0 +1,152 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/intel/alderlake
+	# FSP configuration
+	# Sagv Configuration
+	register "sagv" = "SaGv_Enabled"
+
+	# Enable EDP in PortA
+	register "ddi_portA_config" = "1"
+	# Enable HDMI in Port B
+	register "ddi_ports_config" = "{
+		[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+	}"
+
+	register "s0ix_enable" = "1"
+
+	register "serial_io_i2c_mode" = "{
+		[PchSerialIoIndexI2C0] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C1] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C2] = PchSerialIoPci,
+		[PchSerialIoIndexI2C3] = PchSerialIoPci,
+		[PchSerialIoIndexI2C4] = PchSerialIoPci,
+		[PchSerialIoIndexI2C5] = PchSerialIoPci,
+	}"
+
+	register "serial_io_uart_mode" = "{
+		[PchSerialIoIndexUART0] = PchSerialIoSkipInit,
+		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
+		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
+	}"
+
+	# Intel Common SoC Config
+	register "common_soc_config" = "{
+		.i2c[2] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[3] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[4] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+		},
+	}"
+
+	# Configure external V1P05/Vnn/VnnSx Rails
+	register "ext_fivr_settings" = "{
+		.configure_ext_fivr = 1,
+		.v1p05_enable_bitmap = FIVR_ENABLE_ALL_SX & ~FIVR_ENABLE_S0,
+		.vnn_enable_bitmap = FIVR_ENABLE_ALL_SX,
+		.vnn_sx_enable_bitmap = FIVR_ENABLE_ALL_SX,
+		.v1p05_supported_voltage_bitmap = FIVR_VOLTAGE_NORMAL,
+		.vnn_supported_voltage_bitmap = FIVR_VOLTAGE_MIN_ACTIVE,
+		.v1p05_voltage_mv = 1050,
+		.vnn_voltage_mv = 780,
+		.vnn_sx_voltage_mv = 1050,
+		.v1p05_icc_max_ma = 500,
+		.vnn_icc_max_ma = 500,
+	}"
+
+	device domain 0 on
+		device ref igpu on end
+		device ref crashlog off end
+		device ref xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC_SKIP),	// USB3/2 Type A
+				[1] = USB2_PORT_MID(OC_SKIP),	// USB3/2 Type A
+				[2] = USB2_PORT_MID(OC_SKIP),	// USB2 Type A
+				[4] = USB2_PORT_MID(OC_SKIP),	// USB2 Type A
+				[6] = USB2_PORT_MID(OC_SKIP),	// M.2 E 2230
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),// USB3/2 Type A
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),// USB3/2 Type A
+			}"
+		end
+		device ref i2c2 on end
+		device ref i2c3 on end
+		device ref i2c4 on end
+		device ref i2c5 on end
+		device ref pcie_rp3 on
+			register "pcie_clk_config_flag[0]" = "PCIE_CLK_FREE_RUNNING"
+			register "pch_pcie_rp[PCH_RP(3)]" = "{
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_SRC_UNUSED | PCIE_RP_CLK_REQ_UNUSED,
+				.pcie_rp_aspm = ASPM_DISABLE,
+				.PcieRpL1Substates = L1_SS_DISABLED,
+			}"
+			smbios_slot_desc	"SlotTypeM2Socket3" "SlotLengthOther"
+						"M.2/M 2230 (M2_SSD)" "SlotDataBusWidth1X"
+		end
+		device ref pcie_rp4 on
+			register "pcie_clk_config_flag[3]" = "PCIE_CLK_FREE_RUNNING"
+			register "pch_pcie_rp[PCH_RP(4)]" = "{
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_SRC_UNUSED | PCIE_RP_CLK_REQ_UNUSED,
+				.pcie_rp_aspm = ASPM_DISABLE,
+				.PcieRpL1Substates = L1_SS_DISABLED,
+			}"
+			smbios_slot_desc	"SlotTypeM2Socket1_SD" "SlotLengthOther"
+						"M.2/E 2230 (M2_WIFI)" "SlotDataBusWidth1X"
+		end
+		device ref pcie_rp7 on		# RTL8111H Ethernet NIC
+			register "pcie_clk_config_flag[4]" = "PCIE_CLK_FREE_RUNNING"
+			register "pch_pcie_rp[PCH_RP(7)]" = "{
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_SRC_UNUSED | PCIE_RP_CLK_REQ_UNUSED | PCIE_RP_BUILT_IN,
+				.pcie_rp_aspm = ASPM_DISABLE,
+				.PcieRpL1Substates = L1_SS_DISABLED,
+			}"
+			chip drivers/net
+				# register "wake" = "no link"
+				register "device_index" = "0"
+				register "add_acpi_dma_property" = "true"
+				device pci 00.0 on end
+			end
+		end
+		device ref emmc on
+			register "emmc_enable_hs400_mode" = "1"
+		end
+		device ref hda on
+			# HD Audio
+			register "pch_hda_dsp_enable" = "1"
+			register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
+			register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
+			register "pch_hda_idisp_codec_enable" = "1"
+		end
+		device ref pch_espi on
+			register "gen1_dec" = "0x00fc0201"
+			register "gen2_dec" = "0x003c0a01"
+			register "gen3_dec" = "0x000c03f1"
+			register "gen4_dec" = "0x000c0081"
+			chip superio/ite/it8613e
+				device pnp 2e.0 off end
+				device pnp 2e.1 on	# COM 1
+					io 0x60 = 0x3f8
+					irq 0x70 = 4
+					irq 0xf0 = 0x1
+				end
+				device pnp 2e.4 on	# Environment Controller
+					io 0x60 = 0xa40
+					io 0x62 = 0xa30
+					irq 0x70 = 0x00
+				end
+				device pnp 2e.5 off end # Keyboard
+				device pnp 2e.6 off end # Mouse
+				device pnp 2e.7 off end # GPIO
+				device pnp 2e.a off end # CIR
+			end
+		end
+	end
+end

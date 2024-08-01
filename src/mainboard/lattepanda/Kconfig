@@ -1,0 +1,17 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if VENDOR_LATTEPANDA
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/lattepanda/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/lattepanda/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	default "LattePanda"
+
+endif # VENDOR_LATTEPANDA

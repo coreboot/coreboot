@@ -1,0 +1,6 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_LATTEPANDA_MU
+	bool "LattePanda Mu"
+	help
+	  LattePanda Mu with lite carrier board.

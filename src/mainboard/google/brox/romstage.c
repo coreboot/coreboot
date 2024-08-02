@@ -2,6 +2,7 @@
 
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
+#include <ec/google/chromeec/ec.h>
 #include <fsp/api.h>
 #include <gpio.h>
 #include <soc/romstage.h>
@@ -18,6 +19,14 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 
 	const struct pad_config *pads;
 	size_t pads_num;
+
+	/* If battery is not present - Boot with maximum non-turbo frequency */
+	if (CONFIG(EC_GOOGLE_CHROMEEC) &&
+			!google_chromeec_is_battery_present_and_above_critical_threshold()) {
+		FSP_M_CONFIG *mem_cfg = &memupd->FspmConfig;
+		mem_cfg->BootFrequency = MAX_NONTURBO_PERFORMANCE;
+		printk(BIOS_DEBUG, "Boot Frequency is set to %u\n", mem_cfg->BootFrequency);
+	}
 
 	memcfg_init(memupd, mem_config, &spd_info, half_populated);
 

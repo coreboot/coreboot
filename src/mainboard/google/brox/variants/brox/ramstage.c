@@ -33,16 +33,6 @@ const struct cpu_power_limits performance_efficient_limits[] = {
 	},
 };
 
-const struct system_power_limits sys_limits[] = {
-	/* SKU_ID, TDP (Watts), psys_pl2 (Watts) */
-	{ PCI_DID_INTEL_RPL_P_ID_3, 15, 60 },
-	{ PCI_DID_INTEL_RPL_P_ID_4, 15, 60 },
-};
-
-const struct psys_config psys_config = {
-	.efficiency = 86,
-};
-
 void __weak variant_devtree_update(void)
 {
 	uint32_t board_version = board_id();
@@ -52,7 +42,6 @@ void __weak variant_devtree_update(void)
 	size_t limits_size = ARRAY_SIZE(performance_efficient_limits);
 
 	variant_update_power_limits(limits, limits_size);
-	variant_update_psys_power_limits(limits, sys_limits, limits_size, &psys_config);
 
 	/* Disable I2C bus device for Touchscreen */
 	if (board_version >= 1) {

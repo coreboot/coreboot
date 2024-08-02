@@ -117,6 +117,19 @@ config DRIVER_TPM_I2C_BUS
 	hex
 	default 0x4 if BOARD_GOOGLE_BASEBOARD_BROX
 
+config PL4_LIMIT_FOR_CRITICAL_BAT_BOOT
+	int
+	default 9
+	help
+	  Select this if the variant has to boot even with low battery, critical battery
+	  threshold, or when the battery is physically disconnected. PL4, which stands for
+	  Processor Instantaneous Power or Absolute Peak Power, controls the highest power draw
+	  from the processor at any given moment within the Pl1Tau duration. Therefore, PL4
+	  acts as a failsafe mechanism to set an upper threshold limit for the processor's
+	  instantaneous power draw. For a 30W adapter, the maximum peak power is set at 9
+	  watts, which is 30W multiplied by 32% efficiency. This default pl4 value is set for
+	  30W or any higher adapter rating, such as 45W or 65W.
+
 config DRIVER_TPM_I2C_ADDR
 	hex
 	default 0x50

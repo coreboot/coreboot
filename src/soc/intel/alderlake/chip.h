@@ -42,6 +42,13 @@ struct ibecc_config {
 	/* add ECC error injection if needed by a mainboard */
 };
 
+/* FSPM UPD for setting the boot frequency  */
+enum fspm_boot_freq {
+	MAX_BATTERY_PERFORMANCE,
+	MAX_NONTURBO_PERFORMANCE,
+	TURBO_PERFORMANCE
+};
+
 /* Types of different SKUs */
 enum soc_intel_alderlake_power_limits {
 	ADL_P_142_242_282_15W_CORE,

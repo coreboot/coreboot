@@ -42,11 +42,25 @@ static bool get_sku_index(const struct cpu_power_limits *limits, size_t num_entr
 	}
 
 	if (i == num_entries) {
-		printk(BIOS_ERR, "Cannot find correct brox sku index (mchid = %u).\n", mchid);
+		printk(BIOS_ERR, "Cannot find brox sku index (mchid = %u)\n", mchid);
 		return false;
 	}
 
 	return true;
+}
+
+static void variant_pl4_override(struct soc_power_limits_config *config,
+					const struct cpu_power_limits *limits, size_t brox_idx)
+{
+	if (!config->tdp_pl4)
+		return;
+
+	/* limiting PL4 value for battery disconnected or below critical threshold */
+	if (CONFIG_PL4_LIMIT_FOR_CRITICAL_BAT_BOOT &&
+	     (!google_chromeec_is_battery_present_and_above_critical_threshold()))
+		config->tdp_pl4 = CONFIG_PL4_LIMIT_FOR_CRITICAL_BAT_BOOT;
+	else
+		config->tdp_pl4 = DIV_ROUND_UP(limits[brox_idx].pl4_power, MILLIWATTS_TO_WATTS);
 }
 
 void variant_update_power_limits(const struct cpu_power_limits *limits, size_t num_entries)
@@ -61,30 +75,33 @@ void variant_update_power_limits(const struct cpu_power_limits *limits, size_t n
 	if (!num_entries)
 		return;
 
-	policy_dev = DEV_PTR(dptf_policy);
-	if (!policy_dev)
-		return;
-
 	if (!get_sku_index(limits, num_entries, &intel_idx, &brox_idx))
 		return;
 
-	config = policy_dev->chip_info;
-	settings = &config->controls.power_limits;
 	conf = config_of_soc();
 	soc_config = &conf->power_limits_config[intel_idx];
+	variant_pl4_override(soc_config, limits, brox_idx);
+
+	policy_dev = DEV_PTR(dptf_policy);
+	if (!policy_dev) {
+		printk(BIOS_INFO, "DPTF policy not set\n");
+		return;
+	}
+	config = policy_dev->chip_info;
+	settings = &config->controls.power_limits;
 	settings->pl1.min_power = limits[brox_idx].pl1_min_power;
 	settings->pl1.max_power = limits[brox_idx].pl1_max_power;
 	settings->pl2.min_power = limits[brox_idx].pl2_min_power;
 	settings->pl2.max_power = limits[brox_idx].pl2_max_power;
 
 	if (soc_config->tdp_pl2_override != 0) {
-		settings->pl2.max_power = soc_config->tdp_pl2_override * 1000;
+		settings->pl2.max_power = soc_config->tdp_pl2_override * MILLIWATTS_TO_WATTS;
 		settings->pl2.min_power = settings->pl2.max_power;
 	}
 
-	if (soc_config->tdp_pl4 == 0)
-		soc_config->tdp_pl4 = DIV_ROUND_UP(limits[brox_idx].pl4_power,
-						MILLIWATTS_TO_WATTS);
+	printk(BIOS_INFO, "Overriding power limits PL1 (%u, %u) PL2 (%u, %u) PL4 (%u)\n",
+		settings->pl1.min_power, settings->pl1.max_power, settings->pl2.min_power,
+		settings->pl2.max_power, soc_config->tdp_pl4);
 }
 
 /*
@@ -138,7 +155,8 @@ void variant_update_psys_power_limits(const struct cpu_power_limits *limits,
 		watts = ((u32)current_ma * volts_mv) / 1000000;
 	}
 	/* If battery is present and has enough charge, add discharge rate */
-	if (CONFIG(EC_GOOGLE_CHROMEEC) && google_chromeec_is_battery_present_and_above_critical_threshold()) {
+	if (CONFIG(EC_GOOGLE_CHROMEEC) &&
+		google_chromeec_is_battery_present_and_above_critical_threshold()) {
 		watts += 65;
 	}
 

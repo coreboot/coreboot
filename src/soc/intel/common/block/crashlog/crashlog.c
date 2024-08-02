@@ -379,7 +379,7 @@ void __weak cl_get_pmc_sram_data(cl_node_t *head)
 			return;
 		}
 		pmc_crashLog_size = (discovery_buf.bits.size != 0) ?
-					discovery_buf.bits.size : 0xC00;
+					discovery_buf.bits.size * sizeof(u32) : 0xC00;
 		printk(BIOS_DEBUG, "PMC crashLog size in legacy mode : 0x%X\n",
 				pmc_crashLog_size);
 	}

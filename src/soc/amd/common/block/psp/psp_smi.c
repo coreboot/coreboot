@@ -8,6 +8,12 @@
 #include <types.h>
 #include "psp_def.h"
 
+/* PSP to x86 commands */
+#define MBOX_PSP_CMD_SPI_INFO		0x83
+#define MBOX_PSP_CMD_SPI_READ		0x84
+#define MBOX_PSP_CMD_SPI_WRITE		0x85
+#define MBOX_PSP_CMD_SPI_ERASE		0x86
+
 extern struct {
 	u8 buffer[P2C_BUFFER_MAXSIZE];
 }  __aligned(32) p2c_buffer;
@@ -126,6 +132,7 @@ static void handle_psp_command(void)
 {
 	enum mbox_p2c_status status;
 	u32 cmd;
+	struct mbox_default_buffer *const buffer = get_psp_command_buffer();
 
 	status = check_psp_command();
 	if (status != MBOX_PSP_SUCCESS)
@@ -134,6 +141,18 @@ static void handle_psp_command(void)
 	cmd = get_psp_command();
 
 	switch (cmd) {
+	case MBOX_PSP_CMD_SPI_INFO:
+		status = psp_smi_spi_get_info(buffer);
+		break;
+	case MBOX_PSP_CMD_SPI_READ:
+		status = psp_smi_spi_read(buffer);
+		break;
+	case MBOX_PSP_CMD_SPI_WRITE:
+		status = psp_smi_spi_write(buffer);
+		break;
+	case MBOX_PSP_CMD_SPI_ERASE:
+		status = psp_smi_spi_erase(buffer);
+		break;
 	default:
 		printk(BIOS_ERR, "PSP: Unknown command %d\n", cmd);
 		status = MBOX_PSP_UNSUPPORTED;

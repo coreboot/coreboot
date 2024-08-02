@@ -133,4 +133,9 @@ enum cb_err soc_read_c2p38(uint32_t *msg_38_value);
 
 void enable_psp_smi(void);
 
+enum mbox_p2c_status psp_smi_spi_get_info(struct mbox_default_buffer *buffer);
+enum mbox_p2c_status psp_smi_spi_read(struct mbox_default_buffer *buffer);
+enum mbox_p2c_status psp_smi_spi_write(struct mbox_default_buffer *buffer);
+enum mbox_p2c_status psp_smi_spi_erase(struct mbox_default_buffer *buffer);
+
 #endif /* __AMD_PSP_DEF_H__ */

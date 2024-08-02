@@ -72,6 +72,19 @@ static bool is_valid_psp_spi_erase(struct mbox_pspv2_cmd_spi_erase *cmd_buf)
 	return is_valid_psp_spi_id(read64(&cmd_buf->req.target_nv_id));
 }
 
+static u64 get_psp_spi_info_id(struct mbox_pspv2_cmd_spi_info *cmd_buf)
+{
+	return read64(&cmd_buf->req.target_nv_id);
+}
+
+static void set_psp_spi_info(struct mbox_pspv2_cmd_spi_info *cmd_buf,
+			     u64 lba, u64 block_size, u64 num_blocks)
+{
+	write64(&cmd_buf->req.lba, lba);
+	write64(&cmd_buf->req.block_size, block_size);
+	write64(&cmd_buf->req.num_blocks, num_blocks);
+}
+
 static const char *id_to_region_name(u64 target_nv_id)
 {
 	switch (target_nv_id) {
@@ -117,7 +130,7 @@ static int lookup_store(u64 target_nv_id, struct region_device *rstore)
 	return rdev_chain(rstore, rdev, 0, region_device_sz(rdev));
 }
 
-static inline enum mbox_p2c_status find_psp_spi_flash_device_region(u64 target_nv_id,
+static enum mbox_p2c_status find_psp_spi_flash_device_region(u64 target_nv_id,
 							     struct region_device *store,
 							     const struct spi_flash **flash)
 {
@@ -135,7 +148,7 @@ static inline enum mbox_p2c_status find_psp_spi_flash_device_region(u64 target_n
 	return MBOX_PSP_SUCCESS;
 }
 
-static inline bool spi_controller_available(void)
+static bool spi_controller_available(void)
 {
 	return !(spi_read8(SPI_MISC_CNTRL) & SPI_SEMAPHORE_DRIVER_LOCKED);
 }
@@ -144,13 +157,40 @@ enum mbox_p2c_status psp_smi_spi_get_info(struct mbox_default_buffer *buffer)
 {
 	struct mbox_pspv2_cmd_spi_info *const cmd_buf =
 		(struct mbox_pspv2_cmd_spi_info *)buffer;
+	const struct spi_flash *flash;
+	struct region_device store;
+	u64 target_nv_id;
+	u64 block_size;
+	u64 num_blocks;
+	enum mbox_p2c_status ret;
 
 	printk(BIOS_SPEW, "PSP: SPI info request\n");
 
 	if (!is_valid_psp_spi_info(cmd_buf))
 		return MBOX_PSP_COMMAND_PROCESS_ERROR;
 
-	return MBOX_PSP_UNSUPPORTED;
+	if (!spi_controller_available()) {
+		printk(BIOS_NOTICE, "PSP: SPI controller busy\n");
+		return MBOX_PSP_SPI_BUSY;
+	}
+
+	target_nv_id = get_psp_spi_info_id(cmd_buf);
+
+	ret = find_psp_spi_flash_device_region(target_nv_id, &store, &flash);
+
+	if (ret != MBOX_PSP_SUCCESS)
+		return ret;
+
+	block_size = flash->sector_size;
+
+	if (!block_size)
+		return MBOX_PSP_COMMAND_PROCESS_ERROR;
+
+	num_blocks = region_device_sz(&store) / block_size;
+
+	set_psp_spi_info(cmd_buf, 0, block_size, num_blocks);
+
+	return MBOX_PSP_SUCCESS;
 }
 
 enum mbox_p2c_status psp_smi_spi_read(struct mbox_default_buffer *buffer)

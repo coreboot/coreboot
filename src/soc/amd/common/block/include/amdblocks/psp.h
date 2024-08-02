@@ -57,6 +57,12 @@ int psp_notify_dram(void);
 
 int psp_notify_smm(void);
 
+#if (CONFIG(SOC_AMD_COMMON_BLOCK_PSP_SMI))
+void psp_smi_handler(void);
+#else
+static inline void psp_smi_handler(void) {}
+#endif
+
 /*
  * type: identical to the corresponding PSP command, e.g. pass
  *       MBOX_BIOS_CMD_SMU_FW2 to load SMU FW2 blob.

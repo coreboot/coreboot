@@ -4,6 +4,7 @@ ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_PSP),y)
 romstage-y += psp.c
 ramstage-y += psp.c
 smm-y += psp.c
+smm-$(CONFIG_SOC_AMD_COMMON_BLOCK_PSP_SMI) += psp_smi.c
 smm-y += psp_smm.c
 
 bootblock-y += psp_efs.c

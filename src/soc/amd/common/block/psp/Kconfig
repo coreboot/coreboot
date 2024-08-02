@@ -88,6 +88,25 @@ config PSP_PLATFORM_SECURE_BOOT
 	  Refer AMD PSB user guide doc# 56654, Revision# 1.00, this document is
 	  only available with NDA customers.
 
+config SOC_AMD_COMMON_BLOCK_PSP_SMI
+	bool
+	default n
+	select SPI_FLASH_SMM if BOOT_DEVICE_SPI_FLASH_RW_NOMMAP
+	help
+	  Add PSP SMI handler for SPI flash access.
+
+	  When ROM armor isn't enabled, the x86 part owns the SPI controller,
+	  so when the PSP wants to access the SPI flash, it sends an SMI to the
+	  x86 side and the corresponding SMI handler will do the SPI flash
+	  access for the PSP.
+
+	  WARNING: Since the flash access in the SMI handler is a blocking
+	  operation during which all cores stay in SMM, an erase operation may
+	  lock up the system for a long enough time to be noticeable. Reads and
+	  writes with small data sizes are less problematic. This is AMD
+	  specific design and should be enabled when PSP requires to access the
+	  SPI flash after the BOOT_DONE PSP command.
+
 config PSP_INCLUDES_HSP
 	bool
 	depends on SOC_AMD_COMMON_BLOCK_PSP

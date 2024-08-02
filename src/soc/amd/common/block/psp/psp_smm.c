@@ -6,6 +6,7 @@
 #include <region_file.h>
 #include <console/console.h>
 #include <amdblocks/psp.h>
+#include <amdblocks/smi.h>
 #include <soc/iomap.h>
 #include <string.h>
 
@@ -88,6 +89,10 @@ int psp_notify_smm(void)
 #if (CONFIG(SOC_AMD_COMMON_BLOCK_PSP_GEN2))
 	soc_fill_smm_reg_info(&buffer.req.smm_reg_info);
 #endif
+
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_PSP_SMI)) {
+		configure_psp_smi();
+	}
 
 	printk(BIOS_DEBUG, "PSP: Notify SMM info... ");
 

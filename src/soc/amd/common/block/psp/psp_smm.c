@@ -92,6 +92,7 @@ int psp_notify_smm(void)
 
 	if (CONFIG(SOC_AMD_COMMON_BLOCK_PSP_SMI)) {
 		configure_psp_smi();
+		enable_psp_smi();
 	}
 
 	printk(BIOS_DEBUG, "PSP: Notify SMM info... ");

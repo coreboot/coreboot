@@ -111,6 +111,17 @@ struct mbox_cmd_dtpm_config_buffer {
 #define C2P_BUFFER_MAXSIZE 0xc00 /* Core-to-PSP buffer */
 #define P2C_BUFFER_MAXSIZE 0xc00 /* PSP-to-core buffer */
 
+/* PSP to x86 status */
+enum mbox_p2c_status {
+	MBOX_PSP_SUCCESS		= 0x00,
+	MBOX_PSP_INVALID_PARAMETER	= 0x01,
+	MBOX_PSP_CRC_ERROR		= 0x02,
+	MBOX_PSP_COMMAND_PROCESS_ERROR	= 0x04,
+	MBOX_PSP_UNSUPPORTED		= 0x08,
+	MBOX_PSP_SPI_BUSY_ASYNC		= 0x0a,
+	MBOX_PSP_SPI_BUSY		= 0x0b,
+};
+
 uintptr_t get_psp_mmio_base(void);
 
 void psp_print_cmd_status(int cmd_status, struct mbox_buffer_header *header);
@@ -119,5 +130,7 @@ void psp_print_cmd_status(int cmd_status, struct mbox_buffer_header *header);
 int send_psp_command(u32 command, void *buffer);
 
 enum cb_err soc_read_c2p38(uint32_t *msg_38_value);
+
+void enable_psp_smi(void);
 
 #endif /* __AMD_PSP_DEF_H__ */

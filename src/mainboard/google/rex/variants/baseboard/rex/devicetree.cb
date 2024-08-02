@@ -73,7 +73,7 @@ chip soc/intel/meteorlake
 	register "skip_ext_gfx_scan" = "1"
 
 	register "serial_io_uart_mode" = "{
-		[PchSerialIoIndexUART0] = PchSerialIoPci,
+		[PchSerialIoIndexUART0] = PchSerialIoSkipInit,
 		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
 		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
 	}"

@@ -425,6 +425,14 @@ void google_chromeec_clear_ec_ap_idle(void);
 bool google_chromeec_is_battery_present_and_above_critical_threshold(void);
 
 /**
+ * Check if battery is present.
+ *
+ * @return		true: if the battery is present
+ *			false: if the battery is not present
+ */
+bool google_chromeec_is_battery_present(void);
+
+/**
  * Determine if the UCSI stack is currently active.
  *
  * @return true if EC implements the UCSI stack

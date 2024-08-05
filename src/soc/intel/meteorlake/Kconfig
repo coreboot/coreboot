@@ -20,6 +20,7 @@ config SOC_INTEL_METEORLAKE
 	select FAST_SPI_SUPPORTS_EXT_BIOS_WINDOW
 	select FSP_M_XIP
 	select FSP_STATUS_GLOBAL_RESET_REQUIRED_3
+	select FSP_UGOP_EARLY_SIGN_OF_LIFE if !SOC_INTEL_METEORLAKE_PRE_PRODUCTION_SILICON
 	select FSP_USES_CB_DEBUG_EVENT_HANDLER
 	select FSPS_HAS_ARCH_UPD
 	select GENERIC_GPIO_LIB
@@ -456,16 +457,6 @@ config SOC_INTEL_COMMON_BLOCK_ACPI_SLP_S0_FREQ_HZ
 	default 0x2005
 	help
 	  slp_s0_residency granularity in 122us ticks (i.e. ~8.2KHz) in Meteor Lake.
-
-config SOC_INTEL_METEORLAKE_SIGN_OF_LIFE
-	bool
-	default y if !SOC_INTEL_METEORLAKE_PRE_PRODUCTION_SILICON
-	depends on MAINBOARD_HAS_CHROMEOS
-	select VBT_CBFS_COMPRESSION_DEFAULT_LZ4
-	help
-	  Enable the FSP-M Sign-of-Life feature to display a
-	  configurable text message on screen during memory training
-	  and CSME update.
 
 config SOC_PHYSICAL_ADDRESS_WIDTH
 	int

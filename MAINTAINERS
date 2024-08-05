@@ -342,6 +342,11 @@ M:	Jayvik Desai <jayvik@google.com>
 S:	Maintained
 F:	src/mainboard/google/brya/
 
+GOOGLE FATCAT MAINBOARDS
+M:	Subrata Banik <subratabanik@google.com>
+M:	Pranava Y N <pranavayn@google.com>
+F:	src/mainboard/google/fatcat/
+
 GOOGLE HATCH MAINBOARDS
 M:	Subrata Banik <subratabanik@google.com>
 M:	Nick Vaccaro <nvaccaro@chromium.org>

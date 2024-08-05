@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <amdblocks/spi.h>
 #include <boot_device.h>
 #include <commonlib/region.h>
 #include <console/console.h>
@@ -132,6 +133,11 @@ static inline enum mbox_p2c_status find_psp_spi_flash_device_region(u64 target_n
 	}
 
 	return MBOX_PSP_SUCCESS;
+}
+
+static inline bool spi_controller_available(void)
+{
+	return !(spi_read8(SPI_MISC_CNTRL) & SPI_SEMAPHORE_DRIVER_LOCKED);
 }
 
 enum mbox_p2c_status psp_smi_spi_get_info(struct mbox_default_buffer *buffer)

@@ -53,8 +53,6 @@ int strcasecmp(const char *s1, const char *s2);
 int strncasecmp(const char *s1, const char *s2, size_t maxlen);
 char *strncpy(char *d, const char *s, size_t n);
 char *strcpy(char *d, const char *s);
-char *strncat(char *d, const char *s, size_t n);
-char *strcat(char *d, const char *s);
 char *strchr(const char *s, int c);
 char *strrchr(const char *s, int c);
 char *strdup(const char *s);

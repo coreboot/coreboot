@@ -23,6 +23,29 @@ size_t strnlen(const char *str, size_t maxlen)
 	return ptr - str - 1;
 }
 
+char *strcat(char *dst, const char *src)
+{
+	char *ptr = dst + strlen(dst);
+
+	while (*src)
+		*ptr++ = *src++;
+
+	*ptr = '\0';
+	return dst;
+}
+
+char *strncat(char *dst, const char *src, size_t n)
+{
+	char *ptr = dst + strlen(dst);
+
+	/* Not using strncpy() because '\0' may not be appended. */
+	while (n-- > 0 && *src)
+		*ptr++ = *src++;
+
+	*ptr = '\0';
+	return dst;
+}
+
 unsigned int skip_atoi(char **ptr)
 {
 	unsigned int result = 0;

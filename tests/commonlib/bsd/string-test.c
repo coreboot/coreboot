@@ -2,6 +2,7 @@
 
 #include <commonlib/bsd/string.h>
 #include <stddef.h>
+#include <string.h>
 #include <tests/test.h>
 
 static void test_strlen(void **state)
@@ -38,6 +39,77 @@ static void test_strnlen(void **state)
 	assert_int_equal(0, strnlen("", 3));
 }
 
+static void test_strcat(void **state)
+{
+	static const char str[] = "Hello ";
+	size_t len = __builtin_strlen(str);
+	static const char src[] = "World";
+	static const char expected[] = "Hello World";
+	size_t expected_len = __builtin_strlen(expected);
+	char dst[100];
+	char *ret;
+
+	/* Empty src & dst */
+	dst[0] = '\0';
+	memset(dst + 1, 0xee, sizeof(dst) - 1);
+	ret = strcat(dst, "");
+	assert_ptr_equal(dst, ret);
+	assert_int_equal('\0', dst[0]);
+
+	/* Empty src */
+	memcpy(dst, str, len + 1);
+	memset(dst + len + 1, 0xee, sizeof(dst) - len - 1);
+	ret = strcat(dst, "");
+	assert_memory_equal(str, dst, len + 1);
+
+	/* Empty dst */
+	memset(dst, 0x0, sizeof(dst));
+	memset(dst + 1, 0xee, sizeof(dst) - 1);
+	ret = strcat(dst, src);
+	assert_ptr_equal(dst, ret);
+	assert_memory_equal(src, dst, __builtin_strlen(src) + 1);
+
+	/* Non-empty str & dst */
+	memcpy(dst, str, len + 1);
+	memset(dst + len + 1, 0xee, sizeof(dst) - len - 1);
+	ret = strcat(dst, src);
+	assert_ptr_equal(dst, ret);
+	assert_memory_equal(expected, dst, expected_len + 1);
+}
+
+static void test_strncat(void **state)
+{
+	static const char str[] = "Hello ";
+	size_t len = __builtin_strlen(str);
+	static const char src[] = "World";
+	size_t src_len = __builtin_strlen(src);
+	static const char expected[] = "Hello World";
+	size_t expected_len = __builtin_strlen(expected);
+	char dst[100];
+	char *ret;
+
+	/* n larger than src len */
+	memcpy(dst, str, len + 1);
+	memset(dst + len + 1, 0xee, sizeof(dst) - len - 1);
+	ret = strncat(dst, src, src_len + 5);
+	assert_ptr_equal(dst, ret);
+	assert_memory_equal(expected, dst, expected_len + 1);
+
+	/* n smaller than src len */
+	memcpy(dst, str, len + 1);
+	memset(dst + len + 1, 0xee, sizeof(dst) - len - 1);
+	ret = strncat(dst, src, src_len - 2);
+	assert_ptr_equal(dst, ret);
+	assert_memory_equal("Hello Wor", dst, expected_len - 2 + 1);
+
+	/* n is 0 */
+	memcpy(dst, str, len + 1);
+	memset(dst + len + 1, 0xee, sizeof(dst) - len - 1);
+	ret = strncat(dst, src, 0);
+	assert_ptr_equal(dst, ret);
+	assert_memory_equal(str, dst, len + 1);
+}
+
 static void test_skip_atoi(void **state)
 {
 	int i;
@@ -66,6 +138,8 @@ int main(void)
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test(test_strlen),
 		cmocka_unit_test(test_strnlen),
+		cmocka_unit_test(test_strcat),
+		cmocka_unit_test(test_strncat),
 		cmocka_unit_test(test_skip_atoi),
 	};
 

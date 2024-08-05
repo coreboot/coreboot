@@ -8,6 +8,8 @@
 
 size_t strlen(const char *src);
 size_t strnlen(const char *str, size_t maxlen);
+char *strcat(char *dst, const char *src);
+char *strncat(char *dst, const char *src, size_t n);
 
 unsigned int skip_atoi(char **ptr);
 

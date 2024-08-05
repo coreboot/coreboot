@@ -153,46 +153,6 @@ char *strcpy(char *d, const char *s)
 }
 
 /**
- * Concatenates two strings
- *
- * @param d The destination string.
- * @param s The source string.
- * @return A pointer to the destination string.
- */
-char *strcat(char *d, const char *s)
-{
-	char *p = d + strlen(d);
-	size_t sl = strlen(s);
-
-	for (size_t i = 0; i < sl; i++)
-		p[i] = s[i];
-
-	p[sl] = '\0';
-	return d;
-}
-
-/**
- * Concatenates two strings with a maximum length.
- *
- * @param d The destination string.
- * @param s The source string.
- * @param n Not more than n characters from s will be appended to d.
- * @return A pointer to the destination string.
- */
-char *strncat(char *d, const char *s, size_t n)
-{
-	char *p = d + strlen(d);
-	size_t sl = strlen(s);
-	size_t max = n > sl ? sl : n;
-
-	for (size_t i = 0; i < max; i++)
-		p[i] = s[i];
-
-	p[max] = '\0';
-	return d;
-}
-
-/**
  * Concatenates two strings with a maximum length.
  *
  * @param d The destination string.

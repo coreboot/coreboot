@@ -8,7 +8,29 @@
 
 /* Pad configuration in ramstage */
 static const struct pad_config override_gpio_table[] = {
-
+	/* GPP_E11 : [NF2: THC0_SPI1_CLK NF6: USB_C_GPP_E11 NF7: GSPI0_CLK] ==> WWAN_CFG0 */
+	PAD_CFG_GPI(GPP_E11, NONE, PLTRST),
+	/* GPP_E17 : [NF2: THC0_SPI1_INT# NF6: USB_C_GPP_E17] ==> WWAN_CFG02 */
+	PAD_CFG_GPI(GPP_E17, NONE, PLTRST),
+	/* GPP_D7 : SRCCLKREQ2_L ==> WWAN_RF_DISABLE_ODL */
+	PAD_CFG_GPO(GPP_D7, 1, DEEP),
+	/* GPP_D5 : SRCCLKREQ0_L ==> WWAN_SAR_ODL */
+	PAD_CFG_GPO(GPP_D5, 1, DEEP),
+	/* GPP_F21 : [NF1: Reserved NF6: USB_C_GPP_F21] ==> WWAN_FCPO_L */
+	PAD_CFG_GPO(GPP_F21, 0, DEEP),
+	/* GPP_S4 : SNDW2_CLK/DMIC_CLK_B0 ==> WWAN_WLAN_COEX1 */
+	PAD_CFG_GPI(GPP_S4, NONE, DEEP),
+	/* GPP_S5 : SNDW2_DATA/DMIC_CLK_B1 ==> WWAN_WLAN_COEX2 */
+	PAD_CFG_GPI(GPP_S5, NONE, DEEP),
+	/* GPP_F6 : [NF1: CNV_PA_BLANKING NF6: USB_C_GPP_F6] ==>WWAN_WLAN_COEX3 */
+	PAD_CFG_GPI(GPP_F6, NONE, DEEP),
+	/*
+	 * GPP_A12 : [NF1: SATAXPCIE1 NF2: SATAGP1 NF4: SRCCLKREQ9B# NF6: USB_C_GPP_A12]
+	 *  ==> WWAN_PWR_EN
+	 */
+	PAD_CFG_GPO(GPP_A12, 1, DEEP),
+	/* GPP_H23 : SRCCLKREQ5_L ==> WWAN_RST_L */
+	PAD_CFG_GPO_LOCK(GPP_H23, 1, LOCK_CONFIG),
 
 	/* GPP_D2 : [NF1: ISH_GP2 NF2: BK2 NF5: SBK2 NF6: USB_C_GPP_D2] ==> EN_FP_PWR (active high) */
 	PAD_CFG_GPO_LOCK(GPP_D2, 0, LOCK_CONFIG),
@@ -31,6 +53,9 @@ static const struct pad_config override_gpio_table[] = {
 
 	/* GPP_F14 : [NF1: GSXDIN NF3: THC1_SPI2_IO2 NF6: USB_C_GPP_F14] ==> PCH_TCHSCR_REPORT_EN */
 	PAD_CFG_GPO(GPP_F14, 0, DEEP),
+
+	/* GPP_E7 : [NF1: PROC_GP1 NF6: USB_C_GPP_E7] ==> EN_UCAM_PWR */
+	PAD_CFG_GPO(GPP_E7, 1, PLTRST),
 
 	/* GPP_B5 : [NF1: ISH_I2C0_SDA NF2: I2C2_SDA NF6: USB_C_GPP_B5] ==> PCH_I2C_MISC_R_SDA (SAR, HP) */
 	PAD_CFG_NF(GPP_B5, NONE, DEEP, NF2),
@@ -84,6 +109,15 @@ static const struct pad_config override_gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
+
+	/* GPP_H23 : SRCCLKREQ5_L ==> WWAN_RST_L */
+	PAD_CFG_GPO(GPP_H23, 0, DEEP),
+	/*
+	 * GPP_A12 : [NF1: SATAXPCIE1 NF2: SATAGP1 NF4: SRCCLKREQ9B# NF6: USB_C_GPP_A12]
+	 *  ==> WWAN_PWR_EN
+	 */
+	PAD_CFG_GPO(GPP_A12, 1, DEEP),
+
 	/*
 	 * FP_RST_ODL comes out of reset as hi-z and does not have an external pull-down.
 	 * To ensure proper power sequencing for the FPMCU device, reset signal is driven low
@@ -95,22 +129,26 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPP_D15, 0, DEEP),
 	/* D2  : ISH_GP2 ==> EN_FP_PWR */
 	PAD_CFG_GPO(GPP_D2, 1, DEEP),
+
+	/* GPP_F9 : [NF1: BOOTMPC NF6: USB_C_GPP_F9] ==> SSD_PERST_L */
+	PAD_CFG_GPO(GPP_F9, 0, DEEP),
 	/* GPP_D11 : [] ==> EN_PP3300_SSD (NC) */
 	PAD_NC(GPP_D11, NONE),
+
 	/* GPP_E2  : THC0_SPI1_IO3 ==> GSC_PCH_INT_ODL */
 	PAD_CFG_GPI_APIC_LOCK(GPP_E2, NONE, LEVEL, INVERT, LOCK_CONFIG),
 	/* GPP_E8 : GPP_E8 ==> PCH_WP_OD */
 	PAD_CFG_GPI_LOCK(GPP_E8, NONE, LOCK_CONFIG),
-	/* GPP_F9 : [NF1: BOOTMPC NF6: USB_C_GPP_F9] ==> SSD_PERST_L */
-	PAD_CFG_GPO(GPP_F9, 0, DEEP),
 	/* GPP_H8 : [NF1: I2C4_SDA NF2: CNV_MFUART2_RXD NF6: USB_C_GPP_H8] ==> PCH_I2C_GSC_SDA */
 	PAD_CFG_NF(GPP_H8, NONE, DEEP, NF1),
 	/* GPP_H9 : [NF1: I2C4_SCL NF2: CNV_MFUART2_TXD] ==> PCH_I2C_GSC_SCL */
 	PAD_CFG_NF(GPP_H9, NONE, DEEP, NF1),
+
 	/* H10 : UART0_RXD ==> UART_PCH_RX_DBG_TX */
 	PAD_CFG_NF(GPP_H10, NONE, PLTRST, NF2),
 	/* H11 : UART0_TXD ==> UART_PCH_TX_DBG_RX */
 	PAD_CFG_NF(GPP_H11, NONE, PLTRST, NF2),
+
 	/* GPP_S7 : SNDW3_DATA/DMIC_DATA1 ==> MEM_CH_SEL */
 	PAD_CFG_GPI(GPP_S7, NONE, DEEP),
 
@@ -142,6 +180,7 @@ static const struct pad_config romstage_gpio_table[] = {
 	PAD_CFG_GPO(GPP_D15, 0, DEEP),
 	/* D2  : ISH_GP2 ==> EN_FP_PWR */
 	PAD_CFG_GPO(GPP_D2, 0, DEEP),
+
 	/* GPP_E15 : SRCCLK_OE8_L ==> MEM_STRAP_0 */
 	PAD_CFG_GPI(GPP_E15, NONE, PLTRST),
 	/* GPP_E12 : THC0_SPI1_IO1/I2C0A_SDA/GSPI0_MISO ==> MEM_STRAP_1 */
@@ -152,12 +191,14 @@ static const struct pad_config romstage_gpio_table[] = {
 	PAD_CFG_GPI(GPP_E10,  NONE, PLTRST),
 	/* GPP_S7 : SNDW3_DATA/DMIC_DATA1 ==> MEM_CH_SEL */
 	PAD_CFG_GPI(GPP_S7, NONE, DEEP),
+
 	/* GPP_F7 : [NF6: USB_C_GPP_F7] ==> EN_PP3300_TCHSCR */
 	PAD_CFG_GPO(GPP_F7, 1, PLTRST),
-	/* GPP_F9 : [NF1: BOOTMPC NF6: USB_C_GPP_F9] ==> SSD_PERST_L */
-	PAD_CFG_GPO(GPP_F9, 1, DEEP),
 	/* GPP_F17 : [NF3: THC1_SPI2_RST# NF6: USB_C_GPP_F17] ==> TCHSCR_RST_L */
 	PAD_CFG_GPO(GPP_F17, 0, DEEP),
+
+	/* GPP_F9 : [NF1: BOOTMPC NF6: USB_C_GPP_F9] ==> SSD_PERST_L */
+	PAD_CFG_GPO(GPP_F9, 1, DEEP),
 };
 
 const struct pad_config *variant_gpio_override_table(size_t *num)

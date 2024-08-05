@@ -104,6 +104,16 @@ static void get_psp_spi_erase(struct mbox_pspv2_cmd_spi_erase *cmd_buf,
 	*num_blocks = read64(&cmd_buf->req.num_blocks);
 }
 
+static bool is_valid_rw_byte_count(struct mbox_pspv2_cmd_spi_read_write *cmd_buf,
+				   u64 num_bytes)
+{
+	const u32 cmd_buf_size = read32(&cmd_buf->header.size);
+	const size_t payload_buffer_offset =
+		offsetof(struct mbox_pspv2_cmd_spi_read_write, req) +
+		offsetof(struct pspv2_spi_read_write_request, buffer);
+	return num_bytes <= cmd_buf_size - payload_buffer_offset;
+}
+
 static const char *id_to_region_name(u64 target_nv_id)
 {
 	switch (target_nv_id) {
@@ -238,6 +248,12 @@ enum mbox_p2c_status psp_smi_spi_read(struct mbox_default_buffer *buffer)
 
 	get_psp_spi_read_write(cmd_buf, &target_nv_id, &lba, &offset, &num_bytes, &data);
 
+	if (!is_valid_rw_byte_count(cmd_buf, num_bytes)) {
+		printk(BIOS_ERR, "PSP: Read command requested more bytes than we have space "
+				 "for in the buffer\n");
+		return MBOX_PSP_COMMAND_PROCESS_ERROR;
+	}
+
 	ret = find_psp_spi_flash_device_region(target_nv_id, &store, &flash);
 
 	if (ret != MBOX_PSP_SUCCESS)
@@ -280,6 +296,12 @@ enum mbox_p2c_status psp_smi_spi_write(struct mbox_default_buffer *buffer)
 	}
 
 	get_psp_spi_read_write(cmd_buf, &target_nv_id, &lba, &offset, &num_bytes, &data);
+
+	if (!is_valid_rw_byte_count(cmd_buf, num_bytes)) {
+		printk(BIOS_ERR, "PSP: Write command contains more bytes than we have space "
+				 "for in the buffer\n");
+		return MBOX_PSP_COMMAND_PROCESS_ERROR;
+	}
 
 	ret = find_psp_spi_flash_device_region(target_nv_id, &store, &flash);
 

@@ -9,12 +9,6 @@
 
 #include "chip.h"
 
-struct device_operations hpet_device_ops = {
-#if CONFIG(HAVE_ACPI_TABLES)
-	.write_acpi_tables  = &acpi_write_hpet,
-#endif
-};
-
 struct device_operations cpu_bus_ops = {
 	.init = mp_cpu_bus_init,
 };

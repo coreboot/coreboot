@@ -16,6 +16,5 @@ chip soc/intel/xeon_sp/gnr
 	device domain 0 on
 		device pci 00.0 mandatory end # MMAP/VT-d
 		device gpio 0 alias ibl_gpio_communities on end # GPIO
-		device mmio 0xfed00000 on ops hpet_device_ops end # HPET
 	end
 end

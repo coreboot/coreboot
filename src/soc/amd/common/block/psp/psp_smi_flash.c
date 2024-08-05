@@ -85,6 +85,25 @@ static void set_psp_spi_info(struct mbox_pspv2_cmd_spi_info *cmd_buf,
 	write64(&cmd_buf->req.num_blocks, num_blocks);
 }
 
+static void get_psp_spi_read_write(struct mbox_pspv2_cmd_spi_read_write *cmd_buf,
+				   u64 *target_nv_id, u64 *lba, u64 *offset,
+				   u64 *num_bytes, u8 **data)
+{
+	*target_nv_id = read64(&cmd_buf->req.target_nv_id);
+	*lba = read64(&cmd_buf->req.lba);
+	*offset = read64(&cmd_buf->req.offset);
+	*num_bytes = read64(&cmd_buf->req.num_bytes);
+	*data = cmd_buf->req.buffer;
+}
+
+static void get_psp_spi_erase(struct mbox_pspv2_cmd_spi_erase *cmd_buf,
+			      u64 *target_nv_id, u64 *lba, u64 *num_blocks)
+{
+	*target_nv_id = read64(&cmd_buf->req.target_nv_id);
+	*lba = read64(&cmd_buf->req.lba);
+	*num_blocks = read64(&cmd_buf->req.num_blocks);
+}
+
 static const char *id_to_region_name(u64 target_nv_id)
 {
 	switch (target_nv_id) {
@@ -197,37 +216,127 @@ enum mbox_p2c_status psp_smi_spi_read(struct mbox_default_buffer *buffer)
 {
 	struct mbox_pspv2_cmd_spi_read_write *const cmd_buf =
 		(struct mbox_pspv2_cmd_spi_read_write *)buffer;
+	enum mbox_p2c_status ret;
+	u64 target_nv_id;
+	u64 lba;
+	u64 offset;
+	u64 num_bytes;
+	u8 *data;
+	size_t addr;
+	const struct spi_flash *flash;
+	struct region_device store;
 
 	printk(BIOS_SPEW, "PSP: SPI read request\n");
 
 	if (!is_valid_psp_spi_read_write(cmd_buf))
 		return MBOX_PSP_COMMAND_PROCESS_ERROR;
 
-	return MBOX_PSP_UNSUPPORTED;
+	if (!spi_controller_available()) {
+		printk(BIOS_NOTICE, "PSP: SPI controller busy\n");
+		return MBOX_PSP_SPI_BUSY;
+	}
+
+	get_psp_spi_read_write(cmd_buf, &target_nv_id, &lba, &offset, &num_bytes, &data);
+
+	ret = find_psp_spi_flash_device_region(target_nv_id, &store, &flash);
+
+	if (ret != MBOX_PSP_SUCCESS)
+		return ret;
+
+	addr = (lba * flash->sector_size) + offset;
+
+	printk(BIOS_SPEW, "PSP: SPI read 0x%llx bytes at 0x%zx\n", num_bytes, addr);
+
+	if (rdev_readat(&store, data, addr, (size_t)num_bytes) != (size_t)num_bytes) {
+		printk(BIOS_ERR, "PSP: Failed to read NVRAM data\n");
+		return MBOX_PSP_COMMAND_PROCESS_ERROR;
+	}
+
+	return MBOX_PSP_SUCCESS;
 }
 
 enum mbox_p2c_status psp_smi_spi_write(struct mbox_default_buffer *buffer)
 {
 	struct mbox_pspv2_cmd_spi_read_write *const cmd_buf =
 		(struct mbox_pspv2_cmd_spi_read_write *)buffer;
+	enum mbox_p2c_status ret;
+	u64 target_nv_id;
+	u64 lba;
+	u64 offset;
+	u64 num_bytes;
+	u8 *data;
+	size_t addr;
+	const struct spi_flash *flash;
+	struct region_device store;
 
 	printk(BIOS_SPEW, "PSP: SPI write request\n");
 
 	if (!is_valid_psp_spi_read_write(cmd_buf))
 		return MBOX_PSP_COMMAND_PROCESS_ERROR;
 
-	return MBOX_PSP_UNSUPPORTED;
+	if (!spi_controller_available()) {
+		printk(BIOS_NOTICE, "PSP: SPI controller busy\n");
+		return MBOX_PSP_SPI_BUSY;
+	}
+
+	get_psp_spi_read_write(cmd_buf, &target_nv_id, &lba, &offset, &num_bytes, &data);
+
+	ret = find_psp_spi_flash_device_region(target_nv_id, &store, &flash);
+
+	if (ret != MBOX_PSP_SUCCESS)
+		return ret;
+
+	addr = (lba * flash->sector_size) + offset;
+
+	printk(BIOS_SPEW, "PSP: SPI write 0x%llx bytes at 0x%zx\n", num_bytes, addr);
+
+	if (rdev_writeat(&store, data, addr, (size_t)num_bytes) != (size_t)num_bytes) {
+		printk(BIOS_ERR, "PSP: Failed to write NVRAM data\n");
+		return MBOX_PSP_COMMAND_PROCESS_ERROR;
+	}
+
+	return MBOX_PSP_SUCCESS;
 }
 
 enum mbox_p2c_status psp_smi_spi_erase(struct mbox_default_buffer *buffer)
 {
 	struct mbox_pspv2_cmd_spi_erase *const cmd_buf =
 		(struct mbox_pspv2_cmd_spi_erase *)buffer;
+	enum mbox_p2c_status ret;
+	u64 target_nv_id;
+	u64 lba;
+	u64 num_blocks;
+	size_t addr;
+	size_t num_bytes;
+	const struct spi_flash *flash;
+	struct region_device store;
 
 	printk(BIOS_SPEW, "PSP: SPI erase request\n");
 
 	if (!is_valid_psp_spi_erase(cmd_buf))
 		return MBOX_PSP_COMMAND_PROCESS_ERROR;
 
-	return MBOX_PSP_UNSUPPORTED;
+	if (!spi_controller_available()) {
+		printk(BIOS_NOTICE, "PSP: SPI controller busy\n");
+		return MBOX_PSP_SPI_BUSY;
+	}
+
+	get_psp_spi_erase(cmd_buf, &target_nv_id, &lba, &num_blocks);
+
+	ret = find_psp_spi_flash_device_region(target_nv_id, &store, &flash);
+
+	if (ret != MBOX_PSP_SUCCESS)
+		return ret;
+
+	addr = lba * flash->sector_size;
+	num_bytes = (size_t)num_blocks * flash->sector_size;
+
+	printk(BIOS_SPEW, "PSP: SPI erase 0x%zx bytes at 0x%zx\n", num_bytes, addr);
+
+	if (rdev_eraseat(&store, addr, num_bytes) != num_bytes) {
+		printk(BIOS_ERR, "PSP: Failed to erase SPI NVRAM data\n");
+		return MBOX_PSP_COMMAND_PROCESS_ERROR;
+	}
+
+	return MBOX_PSP_SUCCESS;
 }

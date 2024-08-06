@@ -16,13 +16,11 @@ chip northbridge/intel/sandybridge
 
 	device domain 0 on
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
-			register "docking_supported" = "0"
 			register "gen1_dec" = "0x000c0681"
 			register "gen2_dec" = "0x000c1641"
 			register "gen3_dec" = "0x001c0301"
 			register "gen4_dec" = "0x00fc0701"
 			register "gpi7_routing" = "2"
-			register "pcie_hotplug_map" = "{ 0, 0, 0, 0, 0, 0, 0, 0 }"
 			register "pcie_port_coalesce" = "true"
 			register "sata_interface_speed_support" = "0x3"
 			register "sata_port_map" = "0x1"
@@ -33,68 +31,42 @@ chip northbridge/intel/sandybridge
 				{1, 0, -1}, /* USB HUB 2 */
 				{1, 0, -1}, /* Camera */
 				{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1} /* Unused x4 */
-				}"
-			device ref mei1 on # Management Engine Interface 1
+			}"
+			device ref mei1 on
 				subsystemid 0x8086 0x7270
 			end
-			device ref mei2 off # Management Engine Interface 2
-			end
-			device ref me_ide_r off # Management Engine IDE-R
-			end
-			device ref me_kt off # Management Engine KT
-			end
-			device ref gbe off # Intel Gigabit Ethernet
-			end
-			device ref ehci2 on # USB2 EHCI #2 Unsupported PCI device 8086:1c2c
+			device ref ehci2 on
 				subsystemid 0x8086 0x7270
 			end
-			device ref hda on # High Definition Audio controller
+			device ref hda on
 				subsystemid 0x8086 0x7270
 			end
-			device ref pcie_rp1 on # PCIe Port #1
+			device ref pcie_rp1 on
 				subsystemid 0x8086 0x7270
 			end
-			device ref pcie_rp2 on # PCIe Port #2
+			device ref pcie_rp2 on
 				subsystemid 0x8086 0x7270
 			end
-			device ref pcie_rp3 off # PCIe Port #3
-			end
-			device ref pcie_rp4 off # PCIe Port #4
-			end
-			device ref pcie_rp5 off # PCIe Port #5
-			end
-			device ref pcie_rp6 off # PCIe Port #6
-			end
-			device ref pcie_rp7 off # PCIe Port #7
-			end
-			device ref pcie_rp8 off # PCIe Port #8
-			end
-			device ref ehci1 on # USB2 EHCI #1 Unsupported PCI device 8086:1c27
+			device ref ehci1 on
 				subsystemid 0x8086 0x7270
 			end
-			device ref pci_bridge off # PCI bridge
-			end
-			device ref lpc on # LPC bridge PCI-LPC bridge
+			device ref lpc on
 				subsystemid 0x8086 0x7270
 			end
-			device ref sata1 on # SATA Controller 1
+			device ref sata1 on
 				subsystemid 0x8086 0x7270
 			end
-			device ref smbus on # SMBus
+			device ref smbus on
 				subsystemid 0x8086 0x7270
-			end
-			device ref sata2 off # SATA Controller 2
-			end
-			device ref thermal off # Thermal
 			end
 		end
-		device ref host_bridge on # Host bridge Host bridge
+		device ref host_bridge on
 			subsystemid 0x106b 0x00eb
 		end
-		device ref peg10 on # PCIe Bridge for discrete graphics Unsupported PCI device 8086:0101
+		device ref peg10 on
 			subsystemid 0x106b 0x00eb
 		end
-		device ref igd on # Internal graphics VGA controller
+		device ref igd on
 			subsystemid 0x106b 0x00eb
 		end
 		device pci 1a.7 on

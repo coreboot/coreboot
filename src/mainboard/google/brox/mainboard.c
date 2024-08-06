@@ -11,9 +11,6 @@
 #include <soc/ramstage.h>
 #include <stdio.h>
 
-WEAK_DEV_PTR(rp6_wwan);
-WEAK_DEV_PTR(dgpu);
-
 static void add_fw_config_oem_string(const struct fw_config *config, void *arg)
 {
 	struct smbios_type11 *t;
@@ -78,65 +75,6 @@ static void mainboard_dev_init(struct device *dev)
 	mainboard_ec_init();
 }
 
-static void mainboard_generate_wwan_shutdown(const struct device *dev)
-{
-	const struct drivers_wwan_fm_config *config = config_of(dev);
-	const struct device *parent = dev->upstream->dev;
-
-	if (!config)
-		return;
-	if (config->rtd3dev) {
-		acpigen_write_store();
-		acpigen_emit_namestring(acpi_device_path_join(parent, "RTD3._STA"));
-		acpigen_emit_byte(LOCAL0_OP);
-		acpigen_write_if_lequal_op_int(LOCAL0_OP, ONE_OP);
-		{
-			acpigen_emit_namestring(acpi_device_path_join(dev, "DPTS"));
-			acpigen_emit_byte(ARG0_OP);
-		}
-		acpigen_write_if_end();
-	}
-}
-
-static void mainboard_generate_dgpu_shutdown(const struct device *dev)
-{
-	/* Call `_OFF` from the Power Resource associated with the dGPU's PEG port. */
-	const struct device *parent = dev->upstream->dev;
-
-	if (parent)
-		acpigen_emit_namestring(acpi_device_path_join(parent, "PGPR._OFF"));
-}
-
-static void mainboard_generate_mpts(void)
-{
-	const struct device *wwan = DEV_PTR(rp6_wwan);
-	const struct device *dgpu = DEV_PTR(dgpu);
-
-	/*
-	 * If HAVE_WWAN_POWER_SEQUENCE is selected, MPTS will be added to the
-	 * DSDT via wwan_power.asl. We can't add MPTS to the SSDT as well,
-	 * since the duplicate definition will result in a kernel error.
-	 *
-	 * This special case can be removed in the future if the power-off
-	 * sequences for all WWAN devices used on brox are moved to the SSDT.
-	 */
-	if (CONFIG(HAVE_WWAN_POWER_SEQUENCE)) {
-		if (wwan || dgpu)
-			printk(BIOS_ERR, "Skip adding duplicate MPTS entry to SSDT\n");
-		return;
-	}
-
-	acpigen_write_scope("\\_SB");
-	acpigen_write_method_serialized("MPTS", 1);
-	if (wwan)
-		mainboard_generate_wwan_shutdown(wwan);
-	if (dgpu)
-		mainboard_generate_dgpu_shutdown(dgpu);
-
-	acpigen_write_method_end(); /* Method */
-	acpigen_write_scope_end(); /* Scope */
-}
-
 static void mainboard_generate_s0ix_hook(void)
 {
 	acpigen_write_if_lequal_op_int(ARG0_OP, 1);
@@ -156,8 +94,6 @@ static void mainboard_generate_s0ix_hook(void)
 
 static void mainboard_fill_ssdt(const struct device *dev)
 {
-	mainboard_generate_mpts();
-
 	/* for variant to fill additional SSDT */
 	variant_fill_ssdt(dev);
 

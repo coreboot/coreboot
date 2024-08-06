@@ -85,7 +85,7 @@
 #define SMITYPE_CIO_FCH_PME_S5_0	37
 #define SMITYPE_CIO_FCH_PME_S5_1	38
 #define SMITYPE_AZPME			39
-#define SMITYPE_USB_PD_I2C4		40
+/* 40 Reserved */
 #define SMITYPE_GPIO_CTL		41
 #define SMITYPE_XHC2_PME		42
 #define SMITYPE_ALT_HPET_ALARM		43
@@ -114,8 +114,7 @@
 /* 67 Reserved */
 #define SMITYPE_NB_GPP_PME_PULSE	68
 #define SMITYPE_NB_GPP_HP_PULSE		69
-#define SMITYPE_USB_PD_I2C4_INTR2	70
-/* 71 Reserved */
+/* 70-71 Reserved */
 #define SMITYPE_GBL_RLS			72
 #define SMITYPE_BIOS_RLS		73
 #define SMITYPE_PWRBUTTON_DOWN		74

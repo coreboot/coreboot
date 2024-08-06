@@ -1,0 +1,31 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+#ifndef _SOC_PANTHERLAKE_GPIO_H_
+#define _SOC_PANTHERLAKE_GPIO_H_
+
+#include <soc/gpio_defs.h>
+#include <intelblocks/gpio.h>
+
+#define CROS_GPIO_NAME           "INTC10BC"
+#define CROS_GPIO_DEVICE0_NAME   "INTC10BC:00"
+#define CROS_GPIO_DEVICE1_NAME   "INTC10BC:01"
+#define CROS_GPIO_DEVICE2_NAME   "INTC10BC:02"
+#define CROS_GPIO_DEVICE3_NAME   "INTC10BC:03"
+#define CROS_GPIO_DEVICE4_NAME   "INTC10BC:04"
+
+#define ACPI_GPIO_CID "INTC105F"
+#define ACPI_GPIO_HID CROS_GPIO_NAME
+
+#define GPP_COMM0_NAME "Community 0"
+#define GPP_COMM1_NAME "Community 1"
+#define GPP_COMM3_NAME "Community 3"
+#define GPP_COMM4_NAME "Community 4"
+#define GPP_COMM5_NAME "Community 5"
+
+/* Enable GPIO community power management configuration */
+#define MISCCFG_GPIO_PM_CONFIG_BITS (MISCCFG_GPVNNREQEN | \
+	MISCCFG_GPPGCBDPCGEN | MISCCFG_GPSIDEDPCGEN | \
+	MISCCFG_GPRCOMPCDLCGEN | MISCCFG_GPRTCDLCGEN | MISCCFG_GSXSLCGEN \
+	| MISCCFG_GPDPCGEN | MISCCFG_GPDLCGEN)
+
+#endif //_SOC_PANTHERLAKE_GPIO_H_

@@ -76,6 +76,8 @@ enum spi100_speed {
 #define SPI_FIFO_LAST_BYTE		0xc6 /* 0xc7 for Cezanne */
 #define SPI_FIFO_DEPTH			(SPI_FIFO_LAST_BYTE - SPI_FIFO + 1)
 
+#define SPI_MISC_CNTRL			0xfc
+
 struct spi_config {
 	/*
 	 * Default values if not overridden by mainboard:

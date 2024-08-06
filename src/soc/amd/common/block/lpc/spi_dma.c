@@ -277,9 +277,9 @@ uint32_t spi_flash_get_mmap_windows(struct flash_mmap_window *table)
 static void spi_dma_fix(void)
 {
 	/* Internal only registers */
-	uint8_t val = spi_read8(0xfc);
+	uint8_t val = spi_read8(SPI_MISC_CNTRL);
 	val |= BIT(6);
-	spi_write8(0xfc, val);
+	spi_write8(SPI_MISC_CNTRL, val);
 }
 
 void boot_device_init(void)

@@ -908,6 +908,13 @@ M:	Dinesh Gehlot <digehlot@google.com>
 S:	Maintained
 F:	src/soc/intel/meteorlake/
 
+INTEL PANTHERLAKE SOC
+M:	Subrata Banik <subratabanik@google.com>
+M:	Kapil Porwal <kapilporwal@google.com>
+M:	Pranava Y N <pranavayn@google.com>
+S:	Maintained
+F:	src/soc/intel/pantherlake/
+
 INTEL TIGERLAKE SOC
 M:	Subrata Banik <subratabanik@google.com>
 M:	Nick Vaccaro <nvaccaro@chromium.org>

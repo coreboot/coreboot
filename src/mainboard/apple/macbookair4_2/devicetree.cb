@@ -1,19 +1,4 @@
 chip northbridge/intel/sandybridge
-	register "gfx.did" = "{ 0x80000410, 0x80000320, 0x80000410, 0x80000410, 0x00000005 }"
-	register "gfx.ndid" = "2"
-	register "gfx.use_spread_spectrum_clock" = "1"
-	register "gpu_cpu_backlight" = "0x00001312"
-	register "gpu_dp_b_hotplug" = "4"
-	register "gpu_dp_c_hotplug" = "4"
-	register "gpu_dp_d_hotplug" = "4"
-	register "gpu_panel_port_select" = "PANEL_PORT_DP_A"
-	register "gpu_panel_power_backlight_off_delay" = "2000"
-	register "gpu_panel_power_backlight_on_delay" = "10"
-	register "gpu_panel_power_cycle_delay" = "6"
-	register "gpu_panel_power_down_delay" = "500"
-	register "gpu_panel_power_up_delay" = "2000"
-	register "gpu_pch_backlight" = "0x13121312"
-
 	device domain 0 on
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
 			register "gen1_dec" = "0x000c0681"
@@ -68,6 +53,20 @@ chip northbridge/intel/sandybridge
 		end
 		device ref igd on
 			subsystemid 0x106b 0x00eb
+			register "gfx.did" = "{ 0x80000410, 0x80000320, 0x80000410, 0x80000410, 0x00000005 }"
+			register "gfx.ndid" = "2"
+			register "gfx.use_spread_spectrum_clock" = "1"
+			register "gpu_cpu_backlight" = "0x00001312"
+			register "gpu_dp_b_hotplug" = "4"
+			register "gpu_dp_c_hotplug" = "4"
+			register "gpu_dp_d_hotplug" = "4"
+			register "gpu_panel_port_select" = "PANEL_PORT_DP_A"
+			register "gpu_panel_power_backlight_off_delay" = "2000"
+			register "gpu_panel_power_backlight_on_delay" = "10"
+			register "gpu_panel_power_cycle_delay" = "6"
+			register "gpu_panel_power_down_delay" = "500"
+			register "gpu_panel_power_up_delay" = "2000"
+			register "gpu_pch_backlight" = "0x13121312"
 		end
 		device pci 1a.7 on
 			subsystemid 0x8086 0x7270

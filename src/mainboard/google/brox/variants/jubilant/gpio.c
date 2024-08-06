@@ -31,6 +31,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_GPO(GPP_A12, 1, DEEP),
 	/* GPP_H23 : SRCCLKREQ5_L ==> WWAN_RST_L */
 	PAD_CFG_GPO_LOCK(GPP_H23, 1, LOCK_CONFIG),
+	/* GPP_H19 : SRCCLKREQ4_L ==> SAR1_INT_L */
+	PAD_CFG_GPI_APIC_LOCK(GPP_H19, NONE, LEVEL, NONE, LOCK_CONFIG),
 
 	/* GPP_D2 : [NF1: ISH_GP2 NF2: BK2 NF5: SBK2 NF6: USB_C_GPP_D2] ==> EN_FP_PWR (active high) */
 	PAD_CFG_GPO_LOCK(GPP_D2, 0, LOCK_CONFIG),

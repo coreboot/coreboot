@@ -303,7 +303,9 @@ chip soc/intel/alderlake
 				register "int_comp_resistor" = ""lowest""
 				register "input_precharge_resistor_ohms" = "4000"
 				register "input_analog_gain" = "1"
-				device i2c 28 on end
+				device i2c 28 on
+					probe WWAN LTE_PRESENT
+				end
 			end
 		end
 		device ref i2c3 on

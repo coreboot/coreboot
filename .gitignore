@@ -3,6 +3,7 @@ abuild*.xml
 .config
 .config.old
 defconfig
+.direnv/
 .coreboot-version
 .xcompile
 .ccwrap

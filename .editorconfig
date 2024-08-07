@@ -1,15 +1,53 @@
-# EditorConfig: https://EditorConfig.org
+# EditorConfig configuration for this repository -- https://EditorConfig.org
 
+# Top-most EditorConfig file
 root = true
 
+# Unix-style newlines with a newline ending every file, utf-8 charset
 [*]
-indent_style = tab
-tab_width = 8
-charset = utf-8
-insert_final_newline = true
 end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+charset = utf-8
+
+# Ignore diffs/patches
+[*.{diff,patch}]
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
+
+# Prefer space-indent for..
+[*.{json,lock,md,pl,pm,py,rb,xml}]
+indent_style = space
+
+# Prefer tab-indent for..
+[*.{nix,sh,bash}]
+indent_style = tab
+
+[*.{json,lock,md,nix,rb,sh}]
+indent_size = 2
+
+[*.lock]
+indent_size = unset
+
+[*.md]
 trim_trailing_whitespace = true
 
-[*.sh]
-indent_style = space
-indent_size = 2
+# binaries
+[*.nib]
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
+charset = unset
+
+[eggs.nix]
+trim_trailing_whitespace = unset
+
+# You can add file-specific configuration using:
+#
+# [path/to/file]
+# end_of_line = unset
+# indent_style = unset
+# insert_final_newline = unset
+# trim_trailing_whitespace = unset
+# other config..

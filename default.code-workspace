@@ -1,0 +1,128 @@
+{
+	"folders": [
+		{ "path": "." },
+	],
+
+	"settings": {
+		// Enable liguratures
+		"editor.fontLigatures": true,
+		"editor.fontFamily": "'Fira Code'",
+		"terminal.integrated.fontFamily": "'Fira Code'",
+
+		"editor.renderWhitespace": "all",
+		"terminal.integrated.scrollback": 20000,
+		"nix.enableLanguageServer": true,
+		"nix.serverPath": "nil",
+		"nix.serverSettings": {
+			// settings for 'nil' Language Server
+			"nil": {
+				"formatting": {
+					"command": ["nixpkgs-fmt"]
+				}
+			}
+		},
+		"bracket-pair-colorizer-2.excludedLanguages": [
+			"nix" // Does weird and confusing coloring, seems not compatible
+		],
+		"editor.wordWrap": "on", // Enforce word-wrapped coding style
+		"terminal.integrated.defaultProfile.linux": "bash", // Use bash by default
+		"terminal.integrated.env.linux": {
+			"EDITOR": "nano", // To open git things in codium
+		},
+
+		// Git
+		"git.autofetch": true,
+
+		// Code-eol
+		"code-eol.highlightExtraWhitespace": true,
+		"code-eol.newlineCharacter": "↵",
+		"code-eol.crlfCharacter": "↓",
+
+		// Task tree
+		"todo-tree.general.tags": [
+			"FIXME",
+			"TODO",
+			"DOCS",
+			"HACK",
+			"REVIEW",
+			"DNM", // Do Not Merge
+			"DNC", // Do Not Contribute
+			"DNR" // Do Not Release
+		],
+		// NOTE: Icons has to be valid octicon (https://primer.style/foundations/icons/)
+		"todo-tree.highlights.customHighlight": {
+			// FIXME(Krey): Test
+			"FIXME": {
+				"foreground": "#ff8000",
+				"icon": "tag",
+				"fontWeight": "bold"
+			},
+			// TODO(Krey): Test
+			"TODO": {
+				"foreground": "#00ffea",
+				"icon": "tasklist",
+				"fontWeight": "bold"
+			},
+			// DOCS(Krey): Test
+			"DOCS": {
+				"foreground": "#ffffff",
+				"background": "#2f00ff",
+				"icon": "repo",
+				"fontWeight": "bold"
+			},
+			// HACK(Krey): Test
+			"HACK": {
+				"foreground": "#ffffff",
+				"background": "#ff4d00",
+				"icon": "repo",
+				"fontWeight": "bold"
+			},
+			// REVIEW(Krey): Test
+			"REVIEW": {
+				"foreground": "#ffffff",
+				"background": "#b300ff",
+				"icon": "code-review",
+				"fontWeight": "bold"
+			},
+			// DNM(Krey): Test
+			"DNM": {
+				"background": "#ff0000",
+				"foreground": "#ffffff",
+				"icon": "shield-x",
+				"fontWeight": "bold"
+			},
+			// DNR(Krey): Test
+			"DNR": {
+				"background": "#ff0000",
+				"foreground": "#ffffff",
+				"icon": "shield-x",
+				"fontWeight": "bold"
+			},
+			// DNC(Krey): Test
+			"DNC": {
+				"background": "#fffb00",
+				"foreground": "#000000",
+				"icon": "shield-x",
+				"fontWeight": "bold"
+			}
+		},
+		"todo-tree.regex.regex": "($TAGS)((\\-.*|)\\(.*\\)):", // ($TAGS)((\\-.*|)\\(.*\\)):
+	},
+
+	"extensions": {
+		"recommendations": [
+			"jnoortheen.nix-ide",
+			"oderwat.indent-rainbow",
+			"arrterian.nix-env-selector",
+			"medo64.render-crlf",
+			"aaron-bond.better-comments",
+			"mkhl.direnv",
+			"coenraads.bracket-pair-colorizer-2",
+			"editorconfig.editorconfig",
+			"pkief.material-icon-theme",
+			"markwylde.vscode-filesize",
+			"plorefice.devicetree",
+			"timonwong.shellcheck"
+		]
+	}
+}

@@ -132,7 +132,6 @@ chip soc/intel/alderlake
 				register "desc"				= ""Accelerometer""
 				register "has_rotation_matrix"		= "1"
 				register "rotation_matrix"		= "{1, 0, 0, 0, -1, 0, 0, 0, 1}"
-				register "has_cdm"			= "1"
 				register "cdm_index"			= "6"
 				device i2c 0f on end
 			end

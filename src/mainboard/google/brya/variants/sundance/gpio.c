@@ -66,8 +66,6 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPO(GPP_D6, 0, DEEP),
 	/* E12 : THC0_SPI1_IO1 ==> SOC_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E12, NONE, DEEP),
-	/* F12 : WWAN_RST_L */
-	PAD_CFG_GPO(GPP_F12, 0, DEEP),
 	/* F18 : THC1_SPI2_INT# ==> EC_IN_RW_OD */
 	PAD_CFG_GPI(GPP_F18, NONE, DEEP),
 	/* H4  : I2C0_SDA ==> SOC_I2C_GSC_SDA */

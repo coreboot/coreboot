@@ -84,8 +84,7 @@ the operating system.
 
 * U-boot, depthcharge, FILO, etc.
 
-There’s [https://doc.coreboot.org/payloads.html](https://doc.coreboot.org/payloads.
-html) with a list, although it’s not complete.
+There’s [https://doc.coreboot.org/payloads.html](https://doc.coreboot.org/payloads.html) with a list, although it’s not complete.
 
 
 ### What does coreboot leave in memory after it's done initializing the hardware?

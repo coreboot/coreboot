@@ -83,6 +83,11 @@ ifeq ($(CONFIG_PSP_LOAD_S0I3_FW),y)
 OPT_PSP_LOAD_S0I3_FW="--load-s0i3"
 endif
 
+# type = 0x04
+# The flashmap section used for this is expected to be named PSP_NVRAM
+PSP_NVRAM_BASE=$(call get_fmap_value,FMAP_SECTION_PSP_NVRAM_START)
+PSP_NVRAM_SIZE=$(call get_fmap_value,FMAP_SECTION_PSP_NVRAM_SIZE)
+
 # type = 0x3a
 ifeq ($(CONFIG_HAVE_PSP_WHITELIST_FILE),y)
 PSP_WHITELIST_FILE=$(CONFIG_PSP_WHITELIST_FILE)
@@ -90,11 +95,6 @@ endif
 #
 # BIOS Directory Table items - proper ordering is managed by amdfwtool
 #
-
-# type = 0x4
-# The flashmap section used for this is expected to be named PSP_NVRAM
-PSP_NVRAM_BASE=$(call get_fmap_value,FMAP_SECTION_PSP_NVRAM_START)
-PSP_NVRAM_SIZE=$(call get_fmap_value,FMAP_SECTION_PSP_NVRAM_SIZE)
 
 # type = 0x7
 # RSA 2048 signature

@@ -68,6 +68,8 @@ enum {
 	LONGOPT_BIOS_SIG	= 259,
 	LONGOPT_NVRAM_BASE	= 260,
 	LONGOPT_NVRAM_SIZE	= 261,
+	LONGOPT_RPMC_NVRAM_BASE	= 262,
+	LONGOPT_RPMC_NVRAM_SIZE	= 263,
 };
 
 static const char optstring[] = {AMDFW_OPT_CONFIG, ':',
@@ -87,6 +89,8 @@ static struct option long_options[] = {
 	{"nvram",            required_argument, 0, AMDFW_OPT_NVRAM },
 	{"nvram-base",       required_argument, 0, LONGOPT_NVRAM_BASE },
 	{"nvram-size",       required_argument, 0, LONGOPT_NVRAM_SIZE },
+	{"rpmc-nvram-base",  required_argument, 0, LONGOPT_RPMC_NVRAM_BASE },
+	{"rpmc-nvram-size",  required_argument, 0, LONGOPT_RPMC_NVRAM_SIZE },
 	{"soft-fuse",        required_argument, 0, AMDFW_OPT_FUSE },
 	{"token-unlock",           no_argument, 0, AMDFW_OPT_UNLOCK },
 	{"whitelist",        required_argument, 0, AMDFW_OPT_WHITELIST },
@@ -150,6 +154,8 @@ static void usage(void)
 	printf("--token-unlock                 Set token unlock\n");
 	printf("--nvram-base <HEX_VAL>         Base address of nvram\n");
 	printf("--nvram-size <HEX_VAL>         Size of nvram\n");
+	printf("--rpmc-nvram-base <HEX_VAL>    Base address of RPMC nvram\n");
+	printf("--rpmc-nvram-size <HEX_VAL>    Size of RPMC nvram\n");
 	printf("--whitelist                    Set if there is a whitelist\n");
 	printf("--use-pspsecureos              Set if psp secure OS is needed\n");
 	printf("--load-mp2-fw                  Set if load MP2 firmware\n");
@@ -575,6 +581,16 @@ int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config, context *
 		case LONGOPT_NVRAM_SIZE:
 			/* PSP NV size */
 			register_amd_psp_fw_addr(AMD_FW_PSP_NVRAM, sub, 0, optarg);
+			sub = instance = 0;
+			break;
+		case LONGOPT_RPMC_NVRAM_BASE:
+			/* PSP RPMC NV base */
+			register_amd_psp_fw_addr(AMD_RPMC_NVRAM, sub, optarg, 0);
+			sub = instance = 0;
+			break;
+		case LONGOPT_RPMC_NVRAM_SIZE:
+			/* PSP RPMC NV size */
+			register_amd_psp_fw_addr(AMD_RPMC_NVRAM, sub, 0, optarg);
 			sub = instance = 0;
 			break;
 		case AMDFW_OPT_CONFIG:

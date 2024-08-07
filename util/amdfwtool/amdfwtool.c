@@ -1011,7 +1011,8 @@ static void integrate_psp_firmwares(context *ctx,
 			pspdir->entries[count].addr = fw_table[i].other;
 			pspdir->entries[count].address_mode = 0;
 			count++;
-		} else if (fw_table[i].type == AMD_FW_PSP_NVRAM) {
+		} else if (fw_table[i].type == AMD_FW_PSP_NVRAM ||
+			   fw_table[i].type == AMD_RPMC_NVRAM) {
 			if (fw_table[i].filename == NULL) {
 				if (fw_table[i].size == 0)
 					continue;

@@ -4,6 +4,7 @@
 	inputs = {
 		# Release inputs
 			nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/*.tar.gz";
+			nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
 
 		# Principle inputs
@@ -23,6 +24,7 @@
 		inputs.flake-parts.lib.mkFlake { inherit inputs; } {
 			imports = [
 				./tasks # Include Tasks
+				./dist/nixpkgs # Include packages
 				inputs.flake-root.flakeModule
 				inputs.mission-control.flakeModule
 			];
@@ -51,8 +53,11 @@
 
 						inputs.nixos-generators.packages.${system}.nixos-generate
 
-						inputs.nixpkgs.legacyPackages.${system}.coreboot-toolchain.x64
-						inputs.nixpkgs.legacyPackages.${system}.clang
+						inputs.nixpkgs-unstable.legacyPackages.${system}.coreboot-toolchain.x64
+						inputs.nixpkgs-unstable.legacyPackages.${system}.coreboot-toolchain.i386
+						inputs.nixpkgs-unstable.legacyPackages.${system}.seabios
+						inputs.nixpkgs.legacyPackages.${system}.pkg-config
+						inputs.nixpkgs.legacyPackages.${system}.openssl
 					];
 					inputsFrom = [
 						config.mission-control.devShell

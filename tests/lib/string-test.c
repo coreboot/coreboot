@@ -23,12 +23,6 @@ struct string_pairs_t {
 	{"", ""},
 };
 
-const char *strings[] = {
-	"coreboot",
-	"is\0very",
-	"nice\n"
-};
-
 /* Used to test atol */
 struct str_with_l_val_t {
 	char *str;
@@ -74,26 +68,6 @@ static void test_strconcat(void **state)
 
 		free(result);
 	}
-}
-
-static void test_strnlen(void **state)
-{
-	int i, n = 5;
-	size_t str_len, limited_len;
-
-	for (i = 0; i < ARRAY_SIZE(strings); i++) {
-		str_len = __builtin_strlen(strings[i]);
-		limited_len = MIN(n, str_len);
-		assert_int_equal(limited_len, strnlen(strings[i], n));
-	}
-}
-
-static void test_strlen(void **state)
-{
-	int i;
-
-	for (i = 0; i < ARRAY_SIZE(strings); i++)
-		assert_int_equal(__builtin_strlen(strings[i]), strlen(strings[i]));
 }
 
 static void test_strchr(void **state)
@@ -227,8 +201,6 @@ int main(void)
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test(test_strdup),
 		cmocka_unit_test(test_strconcat),
-		cmocka_unit_test(test_strnlen),
-		cmocka_unit_test(test_strlen),
 		cmocka_unit_test(test_strchr),
 		cmocka_unit_test(test_strrchr),
 		cmocka_unit_test(test_strncpy),

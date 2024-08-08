@@ -33,22 +33,6 @@ char *strconcat(const char *s1, const char *s2)
 	return d;
 }
 
-size_t strnlen(const char *src, size_t max)
-{
-	size_t i = 0;
-	while ((*src++) && (i < max))
-		i++;
-	return i;
-}
-
-size_t strlen(const char *src)
-{
-	size_t i = 0;
-	while (*src++)
-		i++;
-	return i;
-}
-
 char *strchr(const char *s, int c)
 {
 	do {

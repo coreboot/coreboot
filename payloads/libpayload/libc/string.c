@@ -36,50 +36,6 @@
 #include <errno.h>
 
 /**
- * Calculate the length of a fixed-size string.
- *
- * @param str The input string.
- * @param maxlen Return at most maxlen characters as length of the string.
- * @return The length of the string, not including the final NUL character.
- * 	   The maximum length returned is maxlen.
- */
-size_t strnlen(const char *str, size_t maxlen)
-{
-	size_t len = 0;
-
-	/* NULL and empty strings have length 0. */
-	if (!str)
-		return 0;
-
-	/* Loop until we find a NUL character, or maxlen is reached. */
-	while ((*str++ != '\0') && (len < maxlen))
-		len++;
-
-	return len;
-}
-
-/**
- * Calculate the length of a string.
- *
- * @param str The input string.
- * @return The length of the string, not including the final NUL character.
- */
-size_t strlen(const char *str)
-{
-	size_t len = 0;
-
-	/* NULL and empty strings have length 0. */
-	if (!str)
-		return 0;
-
-	/* Loop until we find a NUL character. */
-	while (*str++ != '\0')
-		len++;
-
-	return len;
-}
-
-/**
  * Compare two strings.
  *
  * @param s1 The first string.

@@ -13,8 +13,6 @@ int memcmp(const void *s1, const void *s2, size_t n);
 void *memchr(const void *s, int c, size_t n);
 char *strdup(const char *s);
 char *strconcat(const char *s1, const char *s2);
-size_t strnlen(const char *src, size_t max);
-size_t strlen(const char *src);
 char *strchr(const char *s, int c);
 char *strncpy(char *to, const char *from, size_t count);
 char *strcpy(char *dst, const char *src);

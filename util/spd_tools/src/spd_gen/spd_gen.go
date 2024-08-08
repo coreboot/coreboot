@@ -75,6 +75,7 @@ const (
 	PlatformMDN
 	PlatformMTL
 	PlatformPHX
+	PlatformPTL
 	PlatformMax
 )
 
@@ -96,6 +97,7 @@ var platformNames = map[int]string{
 	PlatformMDN: "MDN",
 	PlatformMTL: "MTL",
 	PlatformPHX: "PHX",
+	PlatformPTL: "PTL",
 }
 
 var memTechMap = map[string]memTech{

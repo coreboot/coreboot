@@ -17,7 +17,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* B6  : SOC_I2C_SUB_SCL */
 	PAD_CFG_NF(GPP_B6, NONE, DEEP, NF2),
 	/* C1  : SMBDATA ==> USI_RST_L */
-	PAD_CFG_TERM_GPO(GPP_C1, 1, UP_20K, DEEP),
+	PAD_CFG_GPO(GPP_C1, 1, DEEP),
 	/* D3  : test point */
 	PAD_NC_LOCK(GPP_D3, NONE, LOCK_CONFIG),
 	/* D6  : SRCCLKREQ1# ==> WWAN_EN */

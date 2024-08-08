@@ -407,10 +407,8 @@ config FSP_HEADER_PATH
 	default "3rdparty/fsp/AlderLakeFspBinPkg/IoT/AlderLakeP/Include/" if SOC_INTEL_ALDERLAKE_PCH_P && FSP_TYPE_IOT
 	default "3rdparty/fsp/AlderLakeFspBinPkg/IoT/AlderLakeS/Include/" if SOC_INTEL_ALDERLAKE_PCH_S && FSP_TYPE_IOT
 	default "3rdparty/fsp/AlderLakeFspBinPkg/IoT/AlderLakeN/Include/" if SOC_INTEL_ALDERLAKE_PCH_N && FSP_TYPE_IOT
-	default "3rdparty/fsp/RaptorLakeFspBinPkg/Client/RaptorLakeP/Include/" if SOC_INTEL_ALDERLAKE_PCH_P && SOC_INTEL_RAPTORLAKE
-	default "3rdparty/fsp/RaptorLakeFspBinPkg/Client/RaptorLakeS/Include/" if SOC_INTEL_ALDERLAKE_PCH_S && SOC_INTEL_RAPTORLAKE
-	default "3rdparty/fsp/AlderLakeFspBinPkg/Client/AlderLakeP/Include/" if SOC_INTEL_ALDERLAKE_PCH_P && !SOC_INTEL_RAPTORLAKE
-	default "3rdparty/fsp/AlderLakeFspBinPkg/Client/AlderLakeS/Include/" if SOC_INTEL_ALDERLAKE_PCH_S
+	default "3rdparty/fsp/RaptorLakeFspBinPkg/Client/RaptorLakeP/Include/" if SOC_INTEL_ALDERLAKE_PCH_P
+	default "3rdparty/fsp/RaptorLakeFspBinPkg/Client/RaptorLakeS/Include/" if SOC_INTEL_ALDERLAKE_PCH_S
 
 config FSP_FD_PATH
 	string
@@ -420,10 +418,8 @@ config FSP_FD_PATH
 	default "3rdparty/fsp/AlderLakeFspBinPkg/IoT/AlderLakeP/Fsp.fd" if SOC_INTEL_ALDERLAKE_PCH_P && FSP_TYPE_IOT
 	default "3rdparty/fsp/AlderLakeFspBinPkg/IoT/AlderLakeS/Fsp.fd" if SOC_INTEL_ALDERLAKE_PCH_S && FSP_TYPE_IOT
 	default "3rdparty/fsp/AlderLakeFspBinPkg/IoT/AlderLakeN/Fsp.fd" if SOC_INTEL_ALDERLAKE_PCH_N && FSP_TYPE_IOT
-	default "3rdparty/fsp/RaptorLakeFspBinPkg/Client/RaptorLakeP/Fsp.fd" if SOC_INTEL_ALDERLAKE_PCH_P && SOC_INTEL_RAPTORLAKE
-	default "3rdparty/fsp/RaptorLakeFspBinPkg/Client/RaptorLakeS/Fsp.fd" if SOC_INTEL_ALDERLAKE_PCH_S && SOC_INTEL_RAPTORLAKE
-	default "3rdparty/fsp/AlderLakeFspBinPkg/Client/AlderLakeP/Fsp.fd" if SOC_INTEL_ALDERLAKE_PCH_P && !SOC_INTEL_RAPTORLAKE
-	default "3rdparty/fsp/AlderLakeFspBinPkg/Client/AlderLakeS/Fsp.fd" if SOC_INTEL_ALDERLAKE_PCH_S
+	default "3rdparty/fsp/RaptorLakeFspBinPkg/Client/RaptorLakeP/Fsp.fd" if SOC_INTEL_ALDERLAKE_PCH_P
+	default "3rdparty/fsp/RaptorLakeFspBinPkg/Client/RaptorLakeS/Fsp.fd" if SOC_INTEL_ALDERLAKE_PCH_S
 
 # Override platform debug consent value:
 #  0:Disabled, 2:Enabled (All Probes+TraceHub), 6:Enable (Low Power),

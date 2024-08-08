@@ -60,6 +60,26 @@ chip soc/intel/alderlake
 	# [6:0] Rx Strobe Delay DLL 2(HS400 Mode), each 125ps, range: 0 - 39.
 	register "common_soc_config.emmc_dll.emmc_rx_strobe_cntl" = "0x01515"
 
+	# SOC Aux orientation override:
+	# This is a bitfield that corresponds to up to 4 TCSS ports.
+	# Bits (0,1) allocated for TCSS Port1 configuration and Bits (2,3)for TCSS Port2.
+	# TcssAuxOri = 0100b
+	# Bit0 set to "0" indicates has retimer on USBC Port0, on the DB.
+	# Bit2 set to "1" indicates no retimer on USBC Port1, on the MB.
+	# Bit1,Bit3 set to "0" indicates Aux lines are not swapped on the
+	# motherboard to USBC connector
+	register "tcss_aux_ori" = "5"
+
+	register "typec_aux_bias_pads[0]" = "{
+		.pad_auxp_dc = GPP_A19,
+		.pad_auxn_dc = GPP_A20
+	}"
+
+	register "typec_aux_bias_pads[1]" = "{
+		.pad_auxp_dc = GPP_E22,
+		.pad_auxn_dc = GPP_E23
+	}"
+
 	# FIVR configurations for teliks are disabled since the board doesn't have V1p05 and Vnn
 	# bypass rails implemented.
 	register "ext_fivr_settings" = "{

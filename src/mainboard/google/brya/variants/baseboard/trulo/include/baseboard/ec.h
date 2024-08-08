@@ -68,6 +68,9 @@
 /* Enable EC backed PD MCU device in ACPI */
 #define EC_ENABLE_PD_MCU_DEVICE
 
+/* Enable MKBP for buttons and switches */
+#define EC_ENABLE_MKBP_DEVICE
+
 #define SIO_EC_MEMMAP_ENABLE     /* EC Memory Map Resources */
 #define SIO_EC_HOST_ENABLE       /* EC Host Interface Resources */
 #define SIO_EC_ENABLE_PS2K       /* Enable PS/2 Keyboard */

@@ -31,6 +31,7 @@ _shipped$|\
 ^util/lint/lint-000-license-headers|\
 ^util/lint/lint-stable-009-old-licenses|\
 ^util/nvidia/cbootimage|\
+^util/riscv/starfive-jh7110-spl-tool|\
 ^3rdparty|\
 __pycache__|\
 ^payloads/external\

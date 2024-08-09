@@ -24,7 +24,8 @@ build/\|\
 \.git/\|\
 coreboot-builds/\|\
 util/nvidia/cbootimage/\|\
-^util/goswid/vendor"
+^util/goswid/vendor\|\
+^util/riscv/starfive-jh7110-spl-tool"
 EXCLUDED_FILES='\.gif$\|\.jpg$\|\.cksum$\|\.bin$\|\.vbt$\|\.hex$\|\.ico$\|\.o$\|\.bz2$\|\.xz$\|^.tmpconfig\|\.pyc$\|_shipped$\|sha256$\|\.png$\|\.patch$\|\.apcb$'
 
 HAVE_FILE=$(command -v file 1>/dev/null 2>&1; echo $?)

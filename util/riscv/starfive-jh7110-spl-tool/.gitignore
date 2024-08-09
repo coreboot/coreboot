@@ -1,0 +1,10 @@
+_*
+*.swp
+*.o
+*.out
+*.key
+*.diff
+*.patch
+*.out
+tags
+spl_tool

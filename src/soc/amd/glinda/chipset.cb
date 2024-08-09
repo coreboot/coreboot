@@ -10,6 +10,9 @@ chip soc/amd/glinda
 		device pci 00.2 alias iommu off ops amd_iommu_ops end
 
 		device pci 01.0 on end # Dummy device function
+		device pci 01.1 alias usb4_pcie_bridge_0 off end
+		device pci 01.2 alias usb4_pcie_bridge_1 off end
+		device pci 01.3 alias usb4_pcie_bridge_2 off end
 
 		device pci 02.0 on end # Dummy device function, do not disable
 		device pci 02.1 alias gpp_bridge_0 off ops amd_external_pcie_gpp_ops end
@@ -18,6 +21,13 @@ chip soc/amd/glinda
 		device pci 02.4 alias gpp_bridge_3 off ops amd_external_pcie_gpp_ops end
 		device pci 02.5 alias gpp_bridge_4 off ops amd_external_pcie_gpp_ops end
 		device pci 02.6 alias gpp_bridge_5 off ops amd_external_pcie_gpp_ops end
+		device pci 03.0 on end # Dummy device function, do not disable
+		device pci 03.1 alias gpp_bridge_3_1 off ops amd_external_pcie_gpp_ops end
+		device pci 03.2 alias gpp_bridge_3_2 off ops amd_external_pcie_gpp_ops end
+		device pci 03.3 alias gpp_bridge_3_3 off ops amd_external_pcie_gpp_ops end
+		device pci 03.4 alias gpp_bridge_3_4 off ops amd_external_pcie_gpp_ops end
+		device pci 03.5 alias gpp_bridge_3_5 off ops amd_external_pcie_gpp_ops end
+		device pci 03.6 alias gpp_bridge_3_6 off ops amd_external_pcie_gpp_ops end
 
 		device pci 08.0 on end # Dummy device function, do not disable
 		device pci 08.1 alias gpp_bridge_a off  # Internal GPP Bridge 0 to Bus A
@@ -47,6 +57,7 @@ chip soc/amd/glinda
 		device pci 08.2 alias gpp_bridge_b off # Internal GPP Bridge 1 to Bus B
 			ops amd_internal_pcie_gpp_ops
 			device pci 0.0 on end # dummy, do not disable
+			device pci 0.1 alias npu off end # Neural Processing Unit (NPU)
 		end
 
 		device pci 08.3 alias gpp_bridge_c off # Internal GPP Bridge 2 to Bus C
@@ -109,6 +120,8 @@ chip soc/amd/glinda
 					end
 				end
 			end
+			device pci 0.5 alias usb4_router_0 off end
+			device pci 0.6 alias usb4_router_1 off end
 		end
 
 		device pci 14.0 alias smbus on ops amd_smbus_ops end # primary FCH function

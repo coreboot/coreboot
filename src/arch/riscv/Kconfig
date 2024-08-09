@@ -144,4 +144,19 @@ config RISCV_GET_HART_COUNT_AT_RUNTIME
 	  SOC/Mainboards select this option in case the number of harts is not known at
 	  build time. In this case the SOC must have a scheme in place to discover all harts.
 
+config RISCV_DTS
+	bool
+	default n
+	help
+	  This option is selected by mainboards that include a devicetree
+	  source file (not to be confused with the coreboot devicetree.cb files).
+	  The devicetree will be preprocessed and compiled into a FDT (flattened devicetree).
+	  Said FDT will be put into a CBFS file for use in runtime.
+
+config RISCV_DTS_FILE
+	string
+	depends on RISCV_DTS
+	help
+	  Path to the devicetree source file in .dts format.
+
 endif # if ARCH_RISCV

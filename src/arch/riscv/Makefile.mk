@@ -67,6 +67,29 @@ all-y += \
 	$(top)/src/lib/memset.c
 all-$(CONFIG_RISCV_USE_ARCH_TIMER) += arch_timer.c
 
+## FDT (Flattened Devicetree) inclusion
+
+ifeq ($(CONFIG_RISCV_DTS),y)
+
+# at some point dtc may be compiled by our toolchain
+DTC ?= dtc
+CPPFLAGS_dts += -nostdinc -P -x assembler-with-cpp -I src/arch/riscv/include
+
+$(obj)/preprocessed.dts: $(call strip_quotes, $(CONFIG_RISCV_DTS_FILE))
+	$(CPP_riscv) $(CPPFLAGS_dts) -o $@ $<
+
+$(obj)/dtb: $(obj)/preprocessed.dts
+	$(DTC) -I dts -O dtb -o $@ $<
+
+# This may be optimized in the future by letting cbfstool parse our FDT into a unflattened
+# devicetree blob in build time, so that we only need to flatten it in runtime instead of
+# unflatten and flatten it in runtime.
+cbfs-files-y += DTB
+DTB-file := $(obj)/dtb
+DTB-type := raw
+DTB-align := 8 # according to spec device trees needs to be 8 byte aligned
+
+endif # CONFIG_RISCV_DTS
 
 ################################################################################
 ## bootblock

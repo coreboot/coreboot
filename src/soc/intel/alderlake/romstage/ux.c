@@ -14,7 +14,7 @@ bool ux_inform_user_of_update_operation(const char *name)
 {
 	timestamp_add_now(TS_ESOL_START);
 
-	if (!CONFIG(MAINBOARD_HAS_EARLY_LIBGFXINIT) ||
+	if (!CONFIG(CHROMEOS_ENABLE_ESOL) ||
 	    !early_graphics_init()) {
 		timestamp_add_now(TS_ESOL_END);
 		return false;

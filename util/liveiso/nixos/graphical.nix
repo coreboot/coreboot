@@ -7,11 +7,6 @@
 		./common.nix
 	];
 
-	hardware.pulseaudio = {
-		enable = true;
-		package = pkgs.pulseaudioFull;
-	};
-
 	security.polkit = {
 		enable = true;
 		extraConfig = ''
@@ -36,6 +31,13 @@
 			};
 		};
 		desktopManager.gnome.enable = true;
+	};
+
+	hardware.pulseaudio.enable = false;
+	services.pipewire = {
+		enable = true;
+		pulse.enable = true;
+		alsa.enable = true;
 	};
 
 	users.users.user.extraGroups = [ "audio" "video" "input" ];

@@ -18,6 +18,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   initialization that happens from the PSP.  Significantly, Memory
   Initialization.
 * AC - Electricity: [**Alternating Current**](https://en.wikipedia.org/wiki/Alternating_current)
+* ACE - AXI Coherency Extensions
 * Ack - Acknowledgment / Acknowledged
 * ACM – [**Authenticated Code Module**](https://doc.coreboot.org/security/intel/acm.html)
 * ACP - [**Average CPU power**](https://en.wikipedia.org/wiki/Thermal_design_power)
@@ -56,11 +57,14 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * AMT - Intel: [**Active Management Technology**](https://en.wikipedia.org/wiki/Intel_Active_Management_Technology)
 * ANSI - [**American National Standards Institute**](https://en.wikipedia.org/wiki/American_National_Standards_Institute)
 * AOAC - AMD: Always On, Always Connected
+* AON - Always ON: Sometimes used for power domains that are always on (e.g. RTC, GPIOs, Wake on LAN ...)
 * AP - Application processor - The main processor on the board (as
   opposed to the embedded controller or other processors that may be on
   the system), any cores in the processor chip that aren't the BSP (Boot
   Strap Processor).
+* APB - Advanced Peripheral Bus (part of the AMBA bus specification)
 * APCB - AMD: AMD PSP Customization Block
+* AHB - Advanced High-performance Bus (part of the AMBA bus specification)
 * API - [**Application Programming Interface**](https://en.wikipedia.org/wiki/API)
 * APIC - [**Advanced Programmable Interrupt
   Controller**](https://en.wikipedia.org/wiki/Advanced_Programmable_Interrupt_Controller)
@@ -94,7 +98,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * ATAPI - [**ATA Packet Interface**](https://en.wikipedia.org/wiki/Parallel_ATA#ATAPI)
 * ATX - [**Advanced Technology eXtended**](https://en.wikipedia.org/wiki/ATX)
 * AVX -  [**Advanced Vector Extensions**](https://en.wikipedia.org/wiki/Advanced_Vector_Extensions)
-
+* AXI - [Advanced eXtensible Interface](https://en.wikipedia.org/wiki/Advanced_eXtensible_Interface) part of the AMBA bus specification
 
 ## B
 
@@ -169,6 +173,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * CDN - [**Content Delivery Network**](https://en.wikipedia.org/wiki/Content_delivery_network)
 * CEM - PCIe: [**Card ElectroMechanical**](https://members.pcisig.com/wg/PCI-SIG/document/folder/839) specification
 * CFL - [**Coffee Lake**](https://en.wikichip.org/wiki/intel/microarchitectures/coffee_lake)
+* CHI - Coherent Hub Interface
 * CID - [**Coverity ID**](https://en.wikipedia.org/wiki/Coverity)
 * CIM - [**Common Information Model**](https://www.dmtf.org/standards/cim)
 * CISC - [**Complex Instruction Set Computer**](https://en.wikipedia.org/wiki/Complex_instruction_set_computer)
@@ -517,6 +522,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
   processor to help offload data processing from various sensors on a
   mainboard.
 * ISP - Internet Service Provider
+* ISP - Image-Signal-Process
 * IVHD - ACPI: I/O Virtualization Hardware Definition
 * IVMD - ACPI: I/O Virtualization Memory Definition
 * IVRS - I/O Virtualization Reporting Structure
@@ -990,6 +996,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * SSPHY - USB: USB3 Super-Speed PHY
 * STAPM - AMD: Skin Temperature Aware Power Management
 * STB - AMD: Smart Trace Buffer
+* STG - System-Top-Group apparently a term for grouping subsystems in an SOC together?
 * SuperIO - The [**Super I/O**](https://en.wikipedia.org/wiki/Super_I/O)
   (SIO) device provides a system with any of a number of different
   peripherals.  Most common are: A PS/2 Keyboard and mouse port, LPT

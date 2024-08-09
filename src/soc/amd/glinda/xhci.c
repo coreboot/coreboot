@@ -25,7 +25,13 @@ static const struct sci_source xhci_sci_sources[] = {
 		.level = SMI_SCI_EDG
 	},
 	{
-		.scimap = SMITYPE_XHC2_PME,
+		.scimap = SMITYPE_XHC3_PME,
+		.gpe = GEVENT_31,
+		.direction = SMI_SCI_LVL_HIGH,
+		.level = SMI_SCI_EDG
+	},
+	{
+		.scimap = SMITYPE_XHC4_PME,
 		.gpe = GEVENT_31,
 		.direction = SMI_SCI_LVL_HIGH,
 		.level = SMI_SCI_EDG
@@ -41,17 +47,19 @@ enum cb_err pci_xhci_get_wake_gpe(const struct device *dev, int *gpe)
 		return CB_ERR_ARG;
 
 	if (dev->upstream->dev->path.pci.devfn == PCIE_ABC_A_DEVFN) {
-		if (dev->path.pci.devfn == XHCI0_DEVFN) {
-			*gpe = xhci_sci_sources[0].gpe;
-			return CB_SUCCESS;
-		} else if (dev->path.pci.devfn == XHCI1_DEVFN) {
+		if (dev->path.pci.devfn == XHCI1_DEVFN) {
 			*gpe = xhci_sci_sources[1].gpe;
 			return CB_SUCCESS;
 		}
 	} else if (dev->upstream->dev->path.pci.devfn == PCIE_ABC_C_DEVFN) {
-		if (dev->path.pci.devfn == XHCI2_DEVFN
-		    && dev->device == PCI_DID_AMD_FAM17H_MODELA0H_XHCI2) {
+		if (dev->path.pci.devfn == XHCI0_DEVFN) {
+			*gpe = xhci_sci_sources[0].gpe;
+			return CB_SUCCESS;
+		} else if (dev->path.pci.devfn == USB4_XHCI0_DEVFN) {
 			*gpe = xhci_sci_sources[2].gpe;
+			return CB_SUCCESS;
+		} else if (dev->path.pci.devfn == USB4_XHCI1_DEVFN) {
+			*gpe = xhci_sci_sources[3].gpe;
 			return CB_SUCCESS;
 		}
 	}

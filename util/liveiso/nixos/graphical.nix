@@ -18,6 +18,26 @@
 		'';
 	};
 
+	programs.dconf = {
+		enable = true;
+		profiles = {
+			user.databases = [{
+				settings = {
+					"org/gnome/settings-daemon/plugins/power" = {
+						sleep-inactive-ac-type = "nothing";
+					};
+					"org/gnome/desktop/interface" = {
+						show-battery-percentage = true;
+						clock-show-weekday = true;
+					};
+					"org/gnome/desktop/calendar" = {
+						show-weekdate = true;
+					};
+				};
+			}];
+		};
+	};
+
 	services.xserver = {
 		enable = true;
 		displayManager = {

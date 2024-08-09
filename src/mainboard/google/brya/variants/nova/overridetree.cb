@@ -257,7 +257,7 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref pmc hidden end
-		device ref tcss_xhci off end
+		device ref tcss_xhci on end
 		device ref tcss_dma0 off end
 		device ref tcss_dma1 off end
 		device ref xhci on

@@ -40,6 +40,9 @@ chip soc/intel/alderlake
 	register "tcss_ports[2]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 2
 	register "tcss_ports[3]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 3
 
+	# HD Audio
+	register "pch_hda_sdi_enable[0]" = "true"
+	register "pch_hda_sdi_enable[1]" = "true"
 
 	device domain 0 on
 		device ref igpu on end

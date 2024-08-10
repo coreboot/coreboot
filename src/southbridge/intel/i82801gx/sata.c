@@ -76,7 +76,7 @@ static void sata_init(struct device *dev)
 
 	printk(BIOS_DEBUG, "i82801gx_sata: initializing...\n");
 
-	if (config == NULL) {
+	if (config == nullptr) {
 		printk(BIOS_ERR, "i82801gx_sata: error: device not in devicetree.cb!\n");
 		return;
 	}
@@ -130,7 +130,7 @@ static void sata_init(struct device *dev)
 		pci_write_config8(dev, INTR_LN, 0x0a);
 
 		struct resource *ahci_res = probe_resource(dev, PCI_BASE_ADDRESS_5);
-		if (ahci_res != NULL)
+		if (ahci_res != nullptr)
 			/* write AHCI GHC_PI register */
 			write32(res2mmio(ahci_res, 0xc, 0), config->sata_ports_implemented);
 		break;

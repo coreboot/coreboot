@@ -138,7 +138,7 @@ static void root_port_commit_config(struct device *dev)
 	int i;
 	bool coalesce = false;
 
-	if (dev->chip_info != NULL) {
+	if (dev->chip_info != nullptr) {
 		const struct southbridge_intel_i82801gx_config *config = dev->chip_info;
 		coalesce = config->pcie_port_coalesce;
 	}
@@ -151,8 +151,8 @@ static void root_port_commit_config(struct device *dev)
 
 		pcie_dev = rpc.ports[i];
 
-		if (pcie_dev == NULL) {
-			printk(BIOS_ERR, "Root Port %d device is NULL?\n", i + 1);
+		if (pcie_dev == nullptr) {
+			printk(BIOS_ERR, "Root Port %d device is nullptr?\n", i + 1);
 			continue;
 		}
 

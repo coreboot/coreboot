@@ -6,7 +6,10 @@ chip soc/intel/alderlake
 	register "usb2_ports[1]" = "USB2_PORT_SHORT(OC_SKIP)"
 	register "usb2_ports[2]" = "USB2_PORT_SHORT(OC_SKIP)"
 	register "usb2_ports[3]" = "USB2_PORT_SHORT(OC_SKIP)"
+	register "usb2_ports[4]" = "USB2_PORT_SHORT(OC_SKIP)"
+	register "usb2_ports[5]" = "USB2_PORT_SHORT(OC_SKIP)"
 	register "usb2_ports[6]" = "USB2_PORT_SHORT(OC_SKIP)" # microSD card reader
+	register "usb2_ports[7]" = "USB2_PORT_SHORT(OC_SKIP)"
 
 	register "pch_pcie_rp[PCH_RP(1)]" = "{
 		.clk_src = 0,

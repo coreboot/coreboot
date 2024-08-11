@@ -52,10 +52,12 @@ static void pcie_rp_init(FSP_M_CONFIG *m_cfg, uint32_t en_mask,
 			printk(BIOS_WARNING, "Missing root port clock structure definition\n");
 			continue;
 		}
-		if (clk_req_mapping & (1 << cfg[i].clk_req))
-			printk(BIOS_WARNING, "Found overlapped clkreq assignment on clk req %d\n"
-				, cfg[i].clk_req);
+
 		if (!(cfg[i].flags & PCIE_RP_CLK_REQ_UNUSED)) {
+			if (clk_req_mapping & (1 << cfg[i].clk_req))
+				printk(BIOS_WARNING,
+				       "Found overlapped clkreq assignment on clk req %d\n",
+				       cfg[i].clk_req);
 			m_cfg->PcieClkSrcClkReq[cfg[i].clk_src] = cfg[i].clk_req;
 			clk_req_mapping |= 1 << cfg[i].clk_req;
 		}

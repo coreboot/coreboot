@@ -9,6 +9,7 @@
 #include <commonlib/bsd/cb_err.h>
 #include <commonlib/bsd/helpers.h>
 #include <commonlib/mem_pool.h>
+#include <stdint.h>
 
 /*
  * Region support.

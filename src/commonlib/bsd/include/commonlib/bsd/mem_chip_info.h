@@ -6,11 +6,15 @@
 #include <stddef.h>
 
 enum mem_chip_type {
+	MEM_CHIP_UNDEFINED = 0x00,
 	MEM_CHIP_DDR3 = 0x30,
 	MEM_CHIP_LPDDR3 = 0x38,
 	MEM_CHIP_DDR4 = 0x40,
 	MEM_CHIP_LPDDR4 = 0x48,
 	MEM_CHIP_LPDDR4X = 0x49,
+	MEM_CHIP_DDR5 = 0x50,
+	MEM_CHIP_LPDDR5 = 0x58,
+	MEM_CHIP_LPDDR5X = 0x59,
 };
 
 #define MEM_CHIP_STRUCT_VERSION 0	/* Hopefully we'll never have to bump this... */

@@ -120,8 +120,7 @@ trap_entry:
 
 	mv a0,sp # put trapframe as first argument
 
-	LOAD	t0, trap_handler
-	jalr	t0
+	jal trap_handler
 
 trap_return:
 	restore_regs

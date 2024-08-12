@@ -96,7 +96,6 @@ endif #CONFIG_ARCH_BOOTBLOCK_RISCV
 ifeq ($(CONFIG_ARCH_ROMSTAGE_RISCV),y)
 
 romstage-$(CONFIG_SEPARATE_ROMSTAGE) += romstage.S
-romstage-y += ramdetect.c
 
 # Build the romstage
 
@@ -120,7 +119,6 @@ ifeq ($(CONFIG_ARCH_RAMSTAGE_RISCV),y)
 
 ramstage-y =
 ramstage-y += ramstage.S
-ramstage-y += ramdetect.c
 ramstage-y += tables.c
 ramstage-y += payload.c
 ramstage-y += fit_payload.c

@@ -109,9 +109,7 @@ static void interrupt_handler(struct trapframe *tf)
 	}
 }
 
-void (*trap_handler)(struct trapframe *tf) = default_trap_handler;
-
-void default_trap_handler(struct trapframe *tf)
+void trap_handler(struct trapframe *tf)
 {
 	if (tf->cause & 0x8000000000000000ULL) {
 		interrupt_handler(tf);

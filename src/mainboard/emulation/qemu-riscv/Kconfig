@@ -69,13 +69,6 @@ config RISCV_WORKING_HARTID
 	int
 	default 0
 
-config DRAM_SIZE_MB
-	int
-	default 16383
-	help
-	  Qemu maps MMIO at ALIGN_UP(top_of_mem, 16 * GiB)
-	  To avoid confusing the dram probing algorithm, avoid large dram sizes (16G - 1m)
-
 config OPENSBI_PLATFORM
 	string
 	default "generic"

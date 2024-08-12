@@ -8,13 +8,11 @@ chip soc/intel/alderlake
 		},
 	}"
 
-	# FSP Memory
-	register "sagv"				= "SaGv_Enabled"
-
-	# FSP Silicon
-	register "eist_enable"			= "true"
-	register "cnvi_bt_core"			= "true"
+	# FSP UPDs
 	register "cnvi_bt_audio_offload"	= "true"
+	register "cnvi_bt_core"			= "true"
+	register "eist_enable"			= "true"
+	register "sagv"				= "SaGv_Enabled"
 
 	# Serial I/O
 	register "serial_io_i2c_mode" = "{

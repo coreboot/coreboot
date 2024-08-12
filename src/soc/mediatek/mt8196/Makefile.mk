@@ -24,7 +24,7 @@ romstage-$(CONFIG_PCI) += ../common/early_init.c ../common/pcie.c
 romstage-y += ../common/emi.c
 romstage-y += irq2axi.c
 romstage-y += l2c_ops.c
-romstage-y += ../common/memory.c
+romstage-y += ../common/memory.c memory.c
 romstage-y += ../common/memory_test.c
 romstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 

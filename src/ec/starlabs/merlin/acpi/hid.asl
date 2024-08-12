@@ -351,7 +351,7 @@ Device (HIDD)							// HID Device
 					//
 					Case (0x08)
 					{
-						Return (0x00)
+						Return (\_SB.PCI0.LPCB.EC.VBTN.VGBS())
 					}
 					//
 					// Function 9 H2BC. Button implemented state.

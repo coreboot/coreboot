@@ -16,5 +16,6 @@ bool is_dvfs_enabled(void);
 u32 get_ddr_geometry(void);
 u32 get_ddr_type(void);
 void init_dram_by_params(struct dramc_param *dparam);
+enum mem_chip_type map_to_lpddr_dram_type(uint16_t lpddr_type);
 
 #endif /* SOC_MEDIATEK_COMMON_EMI_H */

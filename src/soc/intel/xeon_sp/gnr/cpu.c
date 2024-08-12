@@ -2,10 +2,12 @@
 
 #include <cpu/intel/common/common.h>
 #include <cpu/intel/microcode.h>
+#include <cpu/intel/smm_reloc.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/mtrr.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/mp_init.h>
+#include <soc/smmrelocate.h>
 #include <soc/soc_util.h>
 #include <soc/util.h>
 
@@ -84,6 +86,11 @@ static void post_mp_init(void)
 static const struct mp_ops mp_ops = {
 	.pre_mp_init = pre_mp_init,
 	.get_cpu_count = get_thread_count,
+#if CONFIG(HAVE_SMI_HANDLER)
+	.get_smm_info = get_smm_info,
+	.pre_mp_smm_init = smm_southbridge_clear_state,
+	.relocation_handler = smm_relocation_handler,
+#endif
 	.get_microcode_info = get_microcode_info,
 	.post_mp_init = post_mp_init,
 };

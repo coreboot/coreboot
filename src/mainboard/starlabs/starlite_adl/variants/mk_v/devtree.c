@@ -63,4 +63,10 @@ void devtree_update(void)
 	/* Enable/Disable Accelerometer based on CMOS settings */
 	if (get_uint_option("accelerometer", 1) == 0)
 		accelerometer_dev->enabled = 0;
+
+	/* Set I2C devices speed to fast based on CMOS settings */
+	if (get_uint_option("i2c_speed_fast", 0) == 1) {
+		common_config->i2c[0].speed = I2C_SPEED_FAST;
+		common_config->i2c[2].speed = I2C_SPEED_FAST;
+	}
 }

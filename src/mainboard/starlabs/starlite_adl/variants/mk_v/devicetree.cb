@@ -1,13 +1,4 @@
 chip soc/intel/alderlake
-	register "common_soc_config" = "{
-		.i2c[0] = {
-			.speed = I2C_SPEED_FAST,
-		},
-		.i2c[2] = {
-			.speed = I2C_SPEED_FAST,
-		},
-	}"
-
 	# FSP UPDs
 	register "cnvi_bt_audio_offload"	= "true"
 	register "cnvi_bt_core"			= "true"

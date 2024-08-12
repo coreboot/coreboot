@@ -22,9 +22,9 @@ chip soc/intel/alderlake
 	register "pch_slp_a_min_assertion_width"	= "3"			# 2s
 
 	# PM Util
-	register "pmc_gpe0_dw0"			= "GPP_A"
-	register "pmc_gpe0_dw1"			= "GPP_R"
-	register "pmc_gpe0_dw2"			= "GPD"
+	register "pmc_gpe0_dw0"			= "PMC_GPP_F"
+	register "pmc_gpe0_dw1"			= "GPP_A"
+	register "pmc_gpe0_dw2"			= "GPP_B"
 
 	device domain 0 on
 		device ref igpu		on

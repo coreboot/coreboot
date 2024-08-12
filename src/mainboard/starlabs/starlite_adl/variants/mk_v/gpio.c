@@ -319,7 +319,7 @@ const struct pad_config gpio_table[] = {
 	/* F14:		Not Connected					*/
 	PAD_NC(GPP_F14, NONE),
 	/* F15:		Keyboard Detect					*/
-	PAD_NC(GPP_F15, NONE),
+	PAD_CFG_GPI_SMI_LOW(GPP_F15, NONE, DEEP, EDGE_BOTH),
 	/* F16:		Not Connected					*/
 	PAD_NC(GPP_F16, NONE),
 	/* F17:		Touch Panel Reset				*/

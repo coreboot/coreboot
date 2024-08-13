@@ -167,16 +167,16 @@ const char *soc_acpi_name(const struct device *dev)
 /*
  * SoC override API to identify if ISH Firmware existed inside CSE FPT.
  *
- * SoC with UFS enabled would like to keep ISH enabled as well, hence
- * identifying the UFS enabled device is enough to conclude that the ISH
- * partition also is available.
+ * Identifying the ISH enabled device is required to conclude that the ISH
+ * partition also is available (because ISH may be default enabled for non-UFS
+ * platforms as well starting with Alder Lake).
  */
 bool soc_is_ish_partition_enabled(void)
 {
-	struct device *ufs = pcidev_path_on_root(PCH_DEVFN_UFS);
-	uint16_t ufs_pci_id = ufs ? pci_read_config16(ufs, PCI_DEVICE_ID) : 0xFFFF;
+	struct device *ish = pcidev_path_on_root(PCH_DEVFN_ISH);
+	uint16_t ish_pci_id = ish ? pci_read_config16(ish, PCI_DEVICE_ID) : 0xFFFF;
 
-	if (ufs_pci_id == 0xFFFF)
+	if (ish_pci_id == 0xFFFF)
 		return false;
 
 	return true;

@@ -1,9 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 /*
- * Provide a simple API around the Wuffs JPEG decoder
- * Uses the heap (and lots of it) for the image-size specific
- * work buffer, so ramstage-only.
+ * Provide a simple API around the Wuffs JPEG decoder.
  */
 
 #include <stdint.h>
@@ -85,6 +83,24 @@ int jpeg_decode(unsigned char *filedata, size_t filesize, unsigned char *pic,
 		return JPEG_DECODE_FAILED;
 	}
 
+	/* Opting in to lower quality means that we can pass an empty slice as the
+	 * "work buffer" argument to wuffs_jpeg__decoder__decode_frame below.
+	 *
+	 * Decoding progressive (not sequential) JPEGs would still require dynamic
+	 * memory allocation (and the amount of work buffer required depends on the
+	 * image dimensions), but we choose to just reject progressive JPEGs. It is
+	 * simpler than sometimes calling malloc (which can fail, especially for
+	 * large allocations) and free.
+	 *
+	 * More commentary about these quirks is at
+	 * https://github.com/google/wuffs/blob/beaf45650085a16780b5f708b72daaeb1aa865c8/std/jpeg/decode_quirks.wuffs
+	 */
+	wuffs_jpeg__decoder__set_quirk(
+		&dec, WUFFS_BASE__QUIRK_QUALITY,
+		WUFFS_BASE__QUIRK_QUALITY__VALUE__LOWER_QUALITY);
+	wuffs_jpeg__decoder__set_quirk(
+		&dec, WUFFS_JPEG__QUIRK_REJECT_PROGRESSIVE_JPEGS, 1);
+
 	wuffs_base__image_config imgcfg;
 	wuffs_base__io_buffer src = wuffs_base__ptr_u8__reader(filedata, filesize, true);
 	status = wuffs_jpeg__decoder__decode_image_config(&dec, &imgcfg, &src);
@@ -104,19 +120,9 @@ int jpeg_decode(unsigned char *filedata, size_t filesize, unsigned char *pic,
 		return JPEG_DECODE_FAILED;
 	}
 
-	uint64_t workbuf_len_min_incl = wuffs_jpeg__decoder__workbuf_len(&dec).min_incl;
-	uint8_t *workbuf_array = malloc(workbuf_len_min_incl);
-	if ((workbuf_array == NULL) && workbuf_len_min_incl) {
-		return JPEG_DECODE_FAILED;
-	}
-
-	wuffs_base__slice_u8 workbuf =
-		wuffs_base__make_slice_u8(workbuf_array, workbuf_len_min_incl);
 	status = wuffs_jpeg__decoder__decode_frame(&dec, &pixbuf, &src,
-						   WUFFS_BASE__PIXEL_BLEND__SRC, workbuf, NULL);
-
-	free(workbuf_array);
-
+						   WUFFS_BASE__PIXEL_BLEND__SRC,
+						   wuffs_base__empty_slice_u8(), NULL);
 	if (status.repr) {
 		return JPEG_DECODE_FAILED;
 	}

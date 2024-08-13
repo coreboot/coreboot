@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Update for Glinda */
-
 #ifndef AMD_GLINDA_IOMAP_H
 #define AMD_GLINDA_IOMAP_H
 

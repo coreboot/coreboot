@@ -158,7 +158,7 @@ typedef u8 spd_ddr3_raw_data[SPD_SIZE_MAX_DDR3];
 u16 spd_ddr3_calc_crc(u8 *spd, int len);
 u16 spd_ddr3_calc_unique_crc(u8 *spd, int len);
 int spd_decode_ddr3(struct dimm_attr_ddr3_st *dimm, spd_ddr3_raw_data spd_data);
-int spd_dimm_is_registered_ddr3(enum spd_dimm_type_ddr3 type);
+bool spd_dimm_is_registered_ddr3(enum spd_dimm_type_ddr3 type);
 void dram_print_spd_ddr3(const struct dimm_attr_ddr3_st *dimm);
 int spd_xmp_decode_ddr3(struct dimm_attr_ddr3_st *dimm,
 			spd_ddr3_raw_data spd,

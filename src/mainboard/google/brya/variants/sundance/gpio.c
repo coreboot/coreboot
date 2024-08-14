@@ -17,7 +17,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* B6  : NC */
 	PAD_NC_LOCK(GPP_B6, NONE, LOCK_CONFIG),
 	/* C1  : SMBDATA ==> USI_RST_L */
-	PAD_CFG_TERM_GPO(GPP_C1, 1, UP_20K, DEEP),
+	PAD_CFG_GPO(GPP_C1, 1, DEEP),
 	/* D3  : WCAM_RST_L ==> NC */
 	PAD_NC_LOCK(GPP_D3, NONE, LOCK_CONFIG),
 	/* D6  : SRCCLKREQ1# ==> WWAN_EN */
@@ -84,7 +84,7 @@ static const struct pad_config romstage_gpio_table[] = {
 	/* C0  : SMBCLK ==> EN_PP3300_TCHSCR */
 	PAD_CFG_GPO(GPP_C0, 1, DEEP),
 	/* C1  : SMBDATA ==> USI_RST_L */
-	PAD_CFG_TERM_GPO(GPP_C1, 0, UP_20K, DEEP),
+	PAD_CFG_GPO(GPP_C1, 1, DEEP),
 };
 
 const struct pad_config *variant_gpio_override_table(size_t *num)

@@ -203,7 +203,6 @@ chip soc/intel/jasperlake
 			end
 		end # I2C 2
 		device pci 15.3 off end # I2C 3
-		device pci 16.0 off end # HECI 1
 		device pci 19.0 on
 			chip drivers/i2c/rt5645
 				register "hid" = ""10EC5650""

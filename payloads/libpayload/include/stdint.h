@@ -54,4 +54,12 @@ typedef long ptrdiff_t;
 #define UINT32_MAX	(4294967295U)
 #define UINT64_MAX	(18446744073709551615ULL)
 
+#ifndef SIZE_MAX
+#ifdef __SIZE_MAX__
+#define SIZE_MAX __SIZE_MAX__
+#else
+#define SIZE_MAX (~(size_t)0)
+#endif /* __SIZE_MAX__ */
+#endif /* SIZE_MAX */
+
 #endif

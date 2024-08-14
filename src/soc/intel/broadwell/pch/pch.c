@@ -10,6 +10,7 @@
 #include <soc/serialio.h>
 #include <soc/spi.h>
 #include <southbridge/intel/lynxpoint/iobp.h>
+#include <stdbool.h>
 
 u8 pch_revision(void)
 {
@@ -21,14 +22,14 @@ u16 pch_type(void)
 	return pci_read_config16(PCH_DEV_LPC, PCI_DEVICE_ID);
 }
 
-/* Return 1 if PCH type is WildcatPoint */
-int pch_is_wpt(void)
+/* Return true if PCH type is WildcatPoint */
+bool pch_is_wpt(void)
 {
-	return ((pch_type() & 0xfff0) == 0x9cc0) ? 1 : 0;
+	return ((pch_type() & 0xfff0) == 0x9cc0) ? true : false;
 }
 
-/* Return 1 if PCH type is WildcatPoint ULX */
-int pch_is_wpt_ulx(void)
+/* Return true if PCH type is WildcatPoint ULX */
+bool pch_is_wpt_ulx(void)
 {
 	u16 lpcid = pch_type();
 
@@ -36,10 +37,10 @@ int pch_is_wpt_ulx(void)
 	case PCH_WPT_BDW_Y_SAMPLE:
 	case PCH_WPT_BDW_Y_PREMIUM:
 	case PCH_WPT_BDW_Y_BASE:
-		return 1;
+		return true;
 	}
 
-	return 0;
+	return false;
 }
 
 u32 pch_read_soft_strap(int id)

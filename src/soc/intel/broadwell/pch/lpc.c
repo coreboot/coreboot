@@ -22,6 +22,7 @@
 #include <southbridge/intel/common/rtc.h>
 #include <southbridge/intel/lynxpoint/iobp.h>
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
+#include <stdbool.h>
 
 static void pch_enable_ioapic(struct device *dev)
 {

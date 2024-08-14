@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include <spd.h>
 #include <device/dram/common.h>
+#include <stdbool.h>
 
 /** Maximum SPD size supported */
 #define SPD_SIZE_MAX_DDR2	128
@@ -154,7 +155,7 @@ struct dimm_attr_ddr2_st {
 	u32 serial;
 };
 
-int spd_dimm_is_registered_ddr2(enum spd_dimm_type_ddr2 type);
+bool spd_dimm_is_registered_ddr2(enum spd_dimm_type_ddr2 type);
 u8 spd_ddr2_calc_checksum(u8 *spd, int len);
 u32 spd_decode_spd_size_ddr2(u8 byte0);
 u32 spd_decode_eeprom_size_ddr2(u8 byte1);

@@ -532,7 +532,7 @@ static unsigned long acpi_fill_dmar(unsigned long current)
 	struct device *dev = NULL;
 	struct device *iommu0 = NULL;
 	while ((dev = dev_find_device(PCI_VID_INTEL, MMAP_VTD_CFG_REG_DEVID, dev))) {
-		if (is_domain0(dev_get_domain(dev))) {
+		if (is_dev_on_domain0(dev)) {
 			iommu0 = dev;
 			continue;
 		}

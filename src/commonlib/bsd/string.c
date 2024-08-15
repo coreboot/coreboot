@@ -15,12 +15,10 @@ size_t strlen(const char *str)
 
 size_t strnlen(const char *str, size_t maxlen)
 {
-	const char *ptr = str;
-	const char *end = str + maxlen + 1;
-
-	while (*ptr++ && ptr < end)
-		;
-	return ptr - str - 1;
+	size_t len = 0;
+	while (*str++ && len < maxlen)
+		len++;
+	return len;
 }
 
 char *strcat(char *dst, const char *src)

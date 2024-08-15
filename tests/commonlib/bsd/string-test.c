@@ -23,6 +23,9 @@ static void test_strlen(void **state)
 
 static void test_strnlen(void **state)
 {
+	/* maxlen is SIZE_MAX */
+	assert_int_equal(8, strnlen("coreboot", SIZE_MAX));
+
 	/* maxlen larger than string len */
 	assert_int_equal(8, strnlen("coreboot", 100));
 

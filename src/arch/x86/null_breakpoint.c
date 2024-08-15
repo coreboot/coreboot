@@ -12,7 +12,7 @@ static struct breakpoint_handle null_fetch_bp;
 static int handle_fetch_breakpoint(struct breakpoint_handle handle, struct eregs *regs)
 {
 	printk(BIOS_ERR, "Instruction fetch from address zero\n");
-	return CONFIG(DEBUG_NULL_DEREF_HALT);
+	return 0;
 }
 
 static int handle_deref_breakpoint(struct breakpoint_handle handle, struct eregs *regs)
@@ -22,7 +22,7 @@ static int handle_deref_breakpoint(struct breakpoint_handle handle, struct eregs
 #else
 	printk(BIOS_ERR, "Null dereference at eip: 0x%x\n", regs->eip);
 #endif
-	return CONFIG(DEBUG_NULL_DEREF_HALT);
+	return 0;
 }
 
 static void create_deref_breakpoint(void)

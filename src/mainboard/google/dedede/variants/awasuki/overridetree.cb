@@ -55,18 +55,18 @@ chip soc/intel/jasperlake
 
 	# Power limit config
 	register "power_limits_config[JSL_N4500_6W_CORE]" = "{
-		.tdp_pl1_override = 7,
-		.tdp_pl2_override = 20,
+		.tdp_pl1_override = 5,
+		.tdp_pl2_override = 15,
 	}"
 
 	register "power_limits_config[JSL_N6000_6W_CORE]" = "{
-		.tdp_pl1_override = 7,
-		.tdp_pl2_override = 20,
+		.tdp_pl1_override = 5,
+		.tdp_pl2_override = 15,
 	}"
 
 	register "power_limits_config[JSL_N5100_6W_CORE]" = "{
-		.tdp_pl1_override = 7,
-		.tdp_pl2_override = 20,
+		.tdp_pl1_override = 5,
+		.tdp_pl2_override = 15,
 	}"
 
 	# TCC activation offset
@@ -91,7 +91,7 @@ chip soc/intel/jasperlake
 				## Passive Policy
 				register "policies.passive" = "{
 					[0] = DPTF_PASSIVE(CPU, TEMP_SENSOR_0, 50,  5000),
-					[1] = DPTF_PASSIVE(CPU, TEMP_SENSOR_1, 68,  5000),
+					[1] = DPTF_PASSIVE(CHARGER, TEMP_SENSOR_1, 68,  5000),
 					[2] = DPTF_PASSIVE(CPU, TEMP_SENSOR_2, 68,  5000),
 					[3] = DPTF_PASSIVE(CPU, TEMP_SENSOR_3, 68,  5000),
 				}"
@@ -107,15 +107,15 @@ chip soc/intel/jasperlake
 
 				register "controls.power_limits.pl1" = "{
 					.min_power = 5000,
-					.max_power = 7000,
+					.max_power = 9000,
 					.time_window_min = 28 * MSECS_PER_SEC,
 					.time_window_max = 28 * MSECS_PER_SEC,
 					.granularity = 125,
 				}"
 
 				register "controls.power_limits.pl2" = "{
-					.min_power = 20000,
-					.max_power = 20000,
+					.min_power = 15000,
+					.max_power = 15000,
 					.time_window_min = 28 * MSECS_PER_SEC,
 					.time_window_max = 32 * MSECS_PER_SEC,
 					.granularity = 1000,
@@ -125,9 +125,8 @@ chip soc/intel/jasperlake
 				register "controls.charger_perf" = "{
 					[0] = { 255, 3000 },
 					[1] = {  32, 2000 },
-					[2] = {  24, 1500 },
-					[3] = {  16, 1000 },
-					[4] = {   8,  500 }
+					[2] = {  16, 1000 },
+					[3] = {   8,  500 }
 				}"
 				device generic 0 on end
 			end

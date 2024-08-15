@@ -1,0 +1,30 @@
+## SPDX-License-Identifier: GPL-2.0-only OR MIT
+
+# Umbrella option to be selected by variant boards.
+config BOARD_GOOGLE_SKYWALKER_COMMON
+	def_bool BOARD_GOOGLE_SKYWALKER
+
+if BOARD_GOOGLE_SKYWALKER_COMMON
+
+config VBOOT
+	select VBOOT_VBNV_FLASH
+	select VBOOT_NO_BOARD_SUPPORT
+	select VBOOT_MOCK_SECDATA
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_MEDIATEK_MT8189
+	select BOARD_ROMSIZE_KB_8192
+	select MAINBOARD_HAS_CHROMEOS
+	select COMMON_CBFS_SPI_WRAPPER
+	select SPI_FLASH
+	select SPI_FLASH_INCLUDE_ALL_DRIVERS
+
+config MAINBOARD_DIR
+	string
+	default "google/skywalker"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Skywalker" if BOARD_GOOGLE_SKYWALKER
+endif

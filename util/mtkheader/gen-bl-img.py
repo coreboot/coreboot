@@ -24,6 +24,7 @@ def gen_gfh_info(chip, data):
 	entries = {
 		'mt8173': 0x000C1000,
 		'mt8183': 0x00201000,
+		'mt8189': 0x02001000,
 		'mt8196': 0x02001000,
 	}
 

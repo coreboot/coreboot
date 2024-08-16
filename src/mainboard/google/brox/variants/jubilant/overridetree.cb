@@ -1,8 +1,8 @@
 fw_config
 	field STORAGE 2 3
+		option STORAGE_UNKNOWN			0
 		option STORAGE_UFS			1
 		option STORAGE_NVME			2
-		option STORAGE_UNPROVISIONED		3
 	end
 	field WIFI_BT 4 4
 		option WIFI_BT_CNVI			0
@@ -294,7 +294,7 @@ chip soc/intel/alderlake
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 			probe STORAGE STORAGE_NVME
-			probe STORAGE STORAGE_UNPROVISIONED
+			probe STORAGE STORAGE_UNKNOWN
 		end
 		device ref pcie_rp5 on
 			register "pch_pcie_rp[PCH_RP(5)]" = "{
@@ -332,11 +332,11 @@ chip soc/intel/alderlake
 				device generic 0 alias ish_conf on end
 			end
 			probe STORAGE STORAGE_UFS
-			probe STORAGE STORAGE_UNPROVISIONED
+			probe STORAGE STORAGE_UNKNOWN
 		end
 		device ref ufs on
 			probe STORAGE STORAGE_UFS
-			probe STORAGE STORAGE_UNPROVISIONED
+			probe STORAGE STORAGE_UNKNOWN
 		end
 		device ref i2c0 on
 			chip drivers/i2c/generic

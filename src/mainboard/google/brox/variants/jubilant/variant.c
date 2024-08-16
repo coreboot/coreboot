@@ -31,7 +31,7 @@ void variant_devtree_update(void)
 	struct device *ish = DEV_PTR(ish);
 	struct device *nvme_rp = DEV_PTR(pcie4_0);
 
-	if (fw_config_probe(FW_CONFIG(STORAGE, STORAGE_UNPROVISIONED))) {
+	if (fw_config_probe(FW_CONFIG(STORAGE, STORAGE_UNKNOWN))) {
 		printk(BIOS_INFO, "fw_config storage is unknown so enable all storage devices.\n");
 		return;
 	}

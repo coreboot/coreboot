@@ -3,7 +3,7 @@
 #include <cbmem.h>
 #include <ramdetect.h>
 #include <symbols.h>
-#include <device_tree.h>
+#include <commonlib/device_tree.h>
 
 DECLARE_REGION(fdt)
 uintptr_t cbmem_top_chipset(void)

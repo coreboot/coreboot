@@ -150,6 +150,7 @@ struct device {
 
 	/* Zero-terminated array of fields and options to probe. */
 	DEVTREE_CONST struct fw_config *probe_list;
+	bool enable_on_unprovisioned_fw_config;
 };
 
 /**

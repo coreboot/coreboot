@@ -21,7 +21,7 @@ static struct fw_config_field_bits *cur_bits;
 	uint64_t number;
 }
 
-%token CHIP DEVICE REGISTER ALIAS REFERENCE ASSOCIATION BOOL STATUS MANDATORY BUS RESOURCE END EQUALS HEX STRING PCI PNP I2C CPU_CLUSTER CPU DOMAIN IRQ DRQ SLOT_DESC SMBIOS_DEV_INFO IO NUMBER SUBSYSTEMID INHERIT PCIINT GENERIC SPI USB MMIO GPIO MDIO FW_CONFIG_TABLE FW_CONFIG_FIELD FW_CONFIG_OPTION FW_CONFIG_PROBE PIPE OPS
+%token CHIP DEVICE REGISTER ALIAS REFERENCE ASSOCIATION BOOL STATUS MANDATORY BUS RESOURCE END EQUALS HEX STRING PCI PNP I2C CPU_CLUSTER CPU DOMAIN IRQ DRQ SLOT_DESC SMBIOS_DEV_INFO IO NUMBER SUBSYSTEMID INHERIT PCIINT GENERIC SPI USB MMIO GPIO MDIO FW_CONFIG_TABLE FW_CONFIG_FIELD FW_CONFIG_OPTION FW_CONFIG_PROBE FW_CONFIG_UNPROVISIONED PIPE OPS
 %%
 devtree: { cur_parent = root_parent; } | devtree chip | devtree fw_config_table;
 
@@ -139,6 +139,9 @@ fw_config_option: FW_CONFIG_OPTION STRING NUMBER /* == field value */
 /* probe <field> <option> */
 fw_config_probe: FW_CONFIG_PROBE STRING /* == field */ STRING /* == option */
 	{ add_fw_config_probe(cur_parent, $<string>2, $<string>3); }
+	| /* probe unprovisioned */
+	  FW_CONFIG_PROBE FW_CONFIG_UNPROVISIONED
+	{ probe_unprovisioned_fw_config(cur_parent); };
 
 ops: OPS STRING /* == global identifier */
 	{ add_device_ops(cur_parent, $<string>2); }

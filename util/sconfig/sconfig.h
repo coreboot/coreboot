@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <errno.h>
+#include <stdbool.h>
 
 struct resource;
 struct resource {
@@ -176,6 +177,7 @@ struct device {
 
 	/* List of field+option to probe. */
 	struct fw_config_probe *probe;
+	bool enable_on_unprovisioned_fw_config;
 };
 
 extern struct bus *root_parent;
@@ -225,5 +227,7 @@ void add_fw_config_probe(struct bus *bus, const char *field, const char *option)
 
 void append_fw_config_bits(struct fw_config_field_bits **bits,
 			   unsigned int start_bit, unsigned int end_bit);
+
+void probe_unprovisioned_fw_config(struct bus *bus);
 
 void add_device_ops(struct bus *, char *ops_id);

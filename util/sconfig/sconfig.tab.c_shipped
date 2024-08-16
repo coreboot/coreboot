@@ -153,40 +153,41 @@ enum yysymbol_kind_t
   YYSYMBOL_FW_CONFIG_FIELD = 40,           /* FW_CONFIG_FIELD  */
   YYSYMBOL_FW_CONFIG_OPTION = 41,          /* FW_CONFIG_OPTION  */
   YYSYMBOL_FW_CONFIG_PROBE = 42,           /* FW_CONFIG_PROBE  */
-  YYSYMBOL_PIPE = 43,                      /* PIPE  */
-  YYSYMBOL_OPS = 44,                       /* OPS  */
-  YYSYMBOL_YYACCEPT = 45,                  /* $accept  */
-  YYSYMBOL_devtree = 46,                   /* devtree  */
-  YYSYMBOL_chipchild_nondev = 47,          /* chipchild_nondev  */
-  YYSYMBOL_chipchild = 48,                 /* chipchild  */
-  YYSYMBOL_chipchildren = 49,              /* chipchildren  */
-  YYSYMBOL_chipchildren_dev = 50,          /* chipchildren_dev  */
-  YYSYMBOL_devicechildren = 51,            /* devicechildren  */
-  YYSYMBOL_chip = 52,                      /* chip  */
-  YYSYMBOL_53_1 = 53,                      /* @1  */
-  YYSYMBOL_device = 54,                    /* device  */
-  YYSYMBOL_55_2 = 55,                      /* @2  */
-  YYSYMBOL_56_3 = 56,                      /* @3  */
-  YYSYMBOL_alias = 57,                     /* alias  */
-  YYSYMBOL_status = 58,                    /* status  */
-  YYSYMBOL_resource = 59,                  /* resource  */
-  YYSYMBOL_reference = 60,                 /* reference  */
-  YYSYMBOL_registers = 61,                 /* registers  */
-  YYSYMBOL_subsystemid = 62,               /* subsystemid  */
-  YYSYMBOL_smbios_slot_desc = 63,          /* smbios_slot_desc  */
-  YYSYMBOL_smbios_dev_info = 64,           /* smbios_dev_info  */
-  YYSYMBOL_fw_config_table = 65,           /* fw_config_table  */
-  YYSYMBOL_fw_config_table_children = 66,  /* fw_config_table_children  */
-  YYSYMBOL_fw_config_field_children = 67,  /* fw_config_field_children  */
-  YYSYMBOL_fw_config_field_bits = 68,      /* fw_config_field_bits  */
-  YYSYMBOL_fw_config_field_bits_repeating = 69, /* fw_config_field_bits_repeating  */
-  YYSYMBOL_fw_config_field = 70,           /* fw_config_field  */
-  YYSYMBOL_71_4 = 71,                      /* $@4  */
-  YYSYMBOL_72_5 = 72,                      /* $@5  */
-  YYSYMBOL_73_6 = 73,                      /* $@6  */
-  YYSYMBOL_fw_config_option = 74,          /* fw_config_option  */
-  YYSYMBOL_fw_config_probe = 75,           /* fw_config_probe  */
-  YYSYMBOL_ops = 76                        /* ops  */
+  YYSYMBOL_FW_CONFIG_UNPROVISIONED = 43,   /* FW_CONFIG_UNPROVISIONED  */
+  YYSYMBOL_PIPE = 44,                      /* PIPE  */
+  YYSYMBOL_OPS = 45,                       /* OPS  */
+  YYSYMBOL_YYACCEPT = 46,                  /* $accept  */
+  YYSYMBOL_devtree = 47,                   /* devtree  */
+  YYSYMBOL_chipchild_nondev = 48,          /* chipchild_nondev  */
+  YYSYMBOL_chipchild = 49,                 /* chipchild  */
+  YYSYMBOL_chipchildren = 50,              /* chipchildren  */
+  YYSYMBOL_chipchildren_dev = 51,          /* chipchildren_dev  */
+  YYSYMBOL_devicechildren = 52,            /* devicechildren  */
+  YYSYMBOL_chip = 53,                      /* chip  */
+  YYSYMBOL_54_1 = 54,                      /* @1  */
+  YYSYMBOL_device = 55,                    /* device  */
+  YYSYMBOL_56_2 = 56,                      /* @2  */
+  YYSYMBOL_57_3 = 57,                      /* @3  */
+  YYSYMBOL_alias = 58,                     /* alias  */
+  YYSYMBOL_status = 59,                    /* status  */
+  YYSYMBOL_resource = 60,                  /* resource  */
+  YYSYMBOL_reference = 61,                 /* reference  */
+  YYSYMBOL_registers = 62,                 /* registers  */
+  YYSYMBOL_subsystemid = 63,               /* subsystemid  */
+  YYSYMBOL_smbios_slot_desc = 64,          /* smbios_slot_desc  */
+  YYSYMBOL_smbios_dev_info = 65,           /* smbios_dev_info  */
+  YYSYMBOL_fw_config_table = 66,           /* fw_config_table  */
+  YYSYMBOL_fw_config_table_children = 67,  /* fw_config_table_children  */
+  YYSYMBOL_fw_config_field_children = 68,  /* fw_config_field_children  */
+  YYSYMBOL_fw_config_field_bits = 69,      /* fw_config_field_bits  */
+  YYSYMBOL_fw_config_field_bits_repeating = 70, /* fw_config_field_bits_repeating  */
+  YYSYMBOL_fw_config_field = 71,           /* fw_config_field  */
+  YYSYMBOL_72_4 = 72,                      /* $@4  */
+  YYSYMBOL_73_5 = 73,                      /* $@5  */
+  YYSYMBOL_74_6 = 74,                      /* $@6  */
+  YYSYMBOL_fw_config_option = 75,          /* fw_config_option  */
+  YYSYMBOL_fw_config_probe = 76,           /* fw_config_probe  */
+  YYSYMBOL_ops = 77                        /* ops  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -514,19 +515,19 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  2
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   94
+#define YYLAST   93
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  45
+#define YYNTOKENS  46
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  32
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  60
+#define YYNRULES  61
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  103
+#define YYNSTATES  104
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   299
+#define YYMAXUTOK   300
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -569,7 +570,8 @@ static const yytype_int8 yytranslate[] =
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
-      35,    36,    37,    38,    39,    40,    41,    42,    43,    44
+      35,    36,    37,    38,    39,    40,    41,    42,    43,    44,
+      45
 };
 
 #if YYDEBUG
@@ -582,7 +584,7 @@ static const yytype_uint8 yyrline[] =
       61,    63,    67,    67,    69,    72,    75,    78,    81,    84,
       87,    90,    93,    96,   100,   103,   103,   106,   106,   109,
      115,   115,   118,   117,   122,   122,   130,   130,   136,   140,
-     143
+     143,   146
 };
 #endif
 
@@ -604,15 +606,15 @@ static const char *const yytname[] =
   "PNP", "I2C", "CPU_CLUSTER", "CPU", "DOMAIN", "IRQ", "DRQ", "SLOT_DESC",
   "SMBIOS_DEV_INFO", "IO", "NUMBER", "SUBSYSTEMID", "INHERIT", "PCIINT",
   "GENERIC", "SPI", "USB", "MMIO", "GPIO", "MDIO", "FW_CONFIG_TABLE",
-  "FW_CONFIG_FIELD", "FW_CONFIG_OPTION", "FW_CONFIG_PROBE", "PIPE", "OPS",
-  "$accept", "devtree", "chipchild_nondev", "chipchild", "chipchildren",
-  "chipchildren_dev", "devicechildren", "chip", "@1", "device", "@2", "@3",
-  "alias", "status", "resource", "reference", "registers", "subsystemid",
-  "smbios_slot_desc", "smbios_dev_info", "fw_config_table",
-  "fw_config_table_children", "fw_config_field_children",
-  "fw_config_field_bits", "fw_config_field_bits_repeating",
-  "fw_config_field", "$@4", "$@5", "$@6", "fw_config_option",
-  "fw_config_probe", "ops", YY_NULLPTR
+  "FW_CONFIG_FIELD", "FW_CONFIG_OPTION", "FW_CONFIG_PROBE",
+  "FW_CONFIG_UNPROVISIONED", "PIPE", "OPS", "$accept", "devtree",
+  "chipchild_nondev", "chipchild", "chipchildren", "chipchildren_dev",
+  "devicechildren", "chip", "@1", "device", "@2", "@3", "alias", "status",
+  "resource", "reference", "registers", "subsystemid", "smbios_slot_desc",
+  "smbios_dev_info", "fw_config_table", "fw_config_table_children",
+  "fw_config_field_children", "fw_config_field_bits",
+  "fw_config_field_bits_repeating", "fw_config_field", "$@4", "$@5", "$@6",
+  "fw_config_option", "fw_config_probe", "ops", YY_NULLPTR
 };
 
 static const char *
@@ -636,17 +638,17 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-     -51,    12,   -51,     6,   -51,   -51,   -51,   -51,    -3,    49,
-     -51,     7,   -51,    10,    23,    24,    49,    14,   -51,   -51,
-     -51,   -51,    16,    26,    17,    33,    42,   -51,   -51,    49,
-      28,    18,   -51,    11,    53,    38,    43,   -51,   -51,   -51,
-     -51,   -51,    34,   -51,   -12,   -51,   -51,   -51,    45,    11,
-     -51,   -51,    -8,    28,    18,   -51,   -51,    47,   -51,   -51,
+     -51,    12,   -51,     4,   -51,   -51,   -51,   -51,    -3,    49,
+     -51,    11,   -51,    10,    23,    24,    49,    29,   -51,   -51,
+     -51,   -51,    15,    31,    20,    40,    51,   -51,   -51,    49,
+      28,    16,   -51,    14,    55,    45,    46,   -51,   -51,   -51,
+     -51,   -51,    35,   -51,   -12,   -51,   -51,   -51,    50,    14,
+     -51,   -51,    -8,    28,    16,   -51,   -51,    52,   -51,   -51,
      -51,   -51,   -51,   -51,    -7,    37,     0,   -51,   -51,   -51,
-      39,   -51,    50,    40,    41,    54,    55,   -51,   -51,   -51,
-     -51,   -51,   -51,   -51,   -51,   -51,     5,    58,    57,    59,
-      46,    60,   -51,   -51,    51,    61,   -51,    48,   -51,   -51,
-      64,   -51,   -51
+      39,   -51,    53,    42,    43,     3,    56,   -51,   -51,   -51,
+     -51,   -51,   -51,   -51,   -51,   -51,     5,    59,    58,    60,
+      47,    61,   -51,   -51,   -51,    54,    62,   -51,    57,   -51,
+     -51,    63,   -51,   -51
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -663,16 +665,16 @@ static const yytype_int8 yydefact[] =
       31,    26,    55,    50,     0,     0,     0,    23,    53,    58,
        0,    29,     0,     0,     0,     0,     0,    15,    14,    16,
       20,    17,    18,    19,    21,    22,     0,     0,     0,    43,
-       0,     0,    60,    27,     0,    41,    42,    37,    59,    34,
-      40,    38,    39
+       0,     0,    60,    61,    27,     0,    41,    42,    37,    59,
+      34,    40,    38,    39
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -51,   -51,    62,   -51,   -51,    66,    19,    -1,   -51,   -28,
-     -51,   -51,   -51,    35,   -51,   -51,   -50,   -51,   -51,   -51,
-     -51,   -51,   -16,    52,    29,   -51,   -51,   -51,   -51,   -51,
+     -51,   -51,    64,   -51,   -51,    65,    17,    -1,   -51,   -28,
+     -51,   -51,   -51,    33,   -51,   -51,   -50,   -51,   -51,   -51,
+     -51,   -51,   -16,    44,    36,   -51,   -51,   -51,   -51,   -51,
      -51,   -51
 };
 
@@ -691,58 +693,58 @@ static const yytype_int8 yydefgoto[] =
 static const yytype_int8 yytable[] =
 {
        5,    39,    56,     3,    13,    14,    62,    68,     3,    13,
-      14,    10,     2,    70,    71,     3,    80,    23,    70,    93,
-      45,    46,    24,     7,    22,    52,    72,    73,    28,    57,
+      14,    10,     2,    70,    71,     3,    80,    23,    70,    94,
+      91,     7,    24,    45,    46,    52,    72,    73,    22,    57,
       74,    72,    73,    57,    57,    74,    80,    11,    78,    64,
-      25,    26,    75,    33,    76,    30,    34,    75,    35,    76,
-      36,     4,     3,    13,    14,    50,    15,    40,    78,    48,
-      51,    42,    60,    53,    65,    77,    69,    88,    87,    89,
-      90,    91,    92,    94,    95,    97,    96,    98,   100,   101,
-      99,   102,    27,    63,    61,    77,    86,     0,     0,     0,
-       0,    37,     0,     0,    54
+      25,    26,    75,    28,    30,    76,    92,    75,    33,    34,
+      76,     4,     3,    13,    14,    35,    15,    40,    78,    36,
+      42,    48,    50,    51,    53,    77,    69,    60,    87,    65,
+      88,    89,    90,    93,    95,    96,    98,    97,    99,   101,
+     103,    27,    61,   100,    86,    77,    54,     0,   102,     0,
+      63,     0,     0,    37
 };
 
 static const yytype_int8 yycheck[] =
 {
        1,    29,    14,     3,     4,     5,    14,    14,     3,     4,
        5,    14,     0,    13,    14,     3,    66,     7,    13,    14,
-       9,    10,    12,    17,    17,    41,    26,    27,    14,    41,
+      17,    17,    12,     9,    10,    41,    26,    27,    17,    41,
       30,    26,    27,    41,    41,    30,    86,    40,    66,    55,
-      17,    17,    42,    17,    44,    29,    29,    42,    15,    44,
-       8,    39,     3,     4,     5,    17,     7,    29,    86,     6,
-      17,    43,    17,    29,    17,    66,    29,    17,    29,    29,
-      29,    17,    17,    15,    17,    29,    17,    17,    17,    31,
-      29,    17,    16,    54,    49,    86,    67,    -1,    -1,    -1,
-      -1,    29,    -1,    -1,    42
+      17,    17,    42,    14,    29,    45,    43,    42,    17,    29,
+      45,    39,     3,     4,     5,    15,     7,    29,    86,     8,
+      44,     6,    17,    17,    29,    66,    29,    17,    29,    17,
+      17,    29,    29,    17,    15,    17,    29,    17,    17,    17,
+      17,    16,    49,    29,    67,    86,    42,    -1,    31,    -1,
+      54,    -1,    -1,    29
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,    46,     0,     3,    39,    52,    65,    17,    66,    53,
-      14,    40,    70,     4,     5,     7,    47,    50,    52,    54,
-      60,    61,    17,     7,    12,    17,    17,    50,    14,    49,
-      29,    68,    73,    17,    29,    15,     8,    47,    48,    54,
-      29,    72,    43,    69,    67,     9,    10,    58,     6,    57,
-      17,    17,    67,    29,    68,    71,    14,    41,    74,    56,
-      17,    58,    14,    69,    67,    17,    51,    55,    14,    29,
-      13,    14,    26,    27,    30,    42,    44,    52,    54,    59,
-      61,    62,    63,    64,    75,    76,    51,    29,    17,    29,
-      29,    17,    17,    14,    15,    17,    17,    29,    17,    29,
-      17,    31,    17
+       0,    47,     0,     3,    39,    53,    66,    17,    67,    54,
+      14,    40,    71,     4,     5,     7,    48,    51,    53,    55,
+      61,    62,    17,     7,    12,    17,    17,    51,    14,    50,
+      29,    69,    74,    17,    29,    15,     8,    48,    49,    55,
+      29,    73,    44,    70,    68,     9,    10,    59,     6,    58,
+      17,    17,    68,    29,    69,    72,    14,    41,    75,    57,
+      17,    59,    14,    70,    68,    17,    52,    56,    14,    29,
+      13,    14,    26,    27,    30,    42,    45,    53,    55,    60,
+      62,    63,    64,    65,    76,    77,    52,    29,    17,    29,
+      29,    17,    43,    17,    14,    15,    17,    17,    29,    17,
+      29,    17,    31,    17
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    45,    46,    46,    46,    47,    47,    47,    48,    48,
-      49,    49,    50,    50,    51,    51,    51,    51,    51,    51,
-      51,    51,    51,    51,    53,    52,    55,    54,    56,    54,
-      57,    57,    58,    58,    59,    60,    61,    62,    62,    63,
-      63,    63,    64,    64,    65,    66,    66,    67,    67,    68,
-      69,    69,    71,    70,    72,    70,    73,    70,    74,    75,
-      76
+       0,    46,    47,    47,    47,    48,    48,    48,    49,    49,
+      50,    50,    51,    51,    52,    52,    52,    52,    52,    52,
+      52,    52,    52,    52,    54,    53,    56,    55,    57,    55,
+      58,    58,    59,    59,    60,    61,    62,    63,    63,    64,
+      64,    64,    65,    65,    66,    67,    67,    68,    68,    69,
+      70,    70,    72,    71,    73,    71,    74,    71,    75,    76,
+      76,    77
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
@@ -754,7 +756,7 @@ static const yytype_int8 yyr2[] =
        0,     2,     1,     1,     4,     4,     4,     3,     4,     5,
        4,     3,     3,     2,     3,     2,     0,     2,     0,     2,
        3,     0,     0,     7,     0,     6,     0,     5,     3,     3,
-       2
+       2,     2
 };
 
 
@@ -1361,7 +1363,11 @@ yyreduce:
         { add_fw_config_probe(cur_parent, (yyvsp[-1].string), (yyvsp[0].string)); }
     break;
 
-  case 60: /* ops: OPS STRING  */
+  case 60: /* fw_config_probe: FW_CONFIG_PROBE FW_CONFIG_UNPROVISIONED  */
+        { probe_unprovisioned_fw_config(cur_parent); }
+    break;
+
+  case 61: /* ops: OPS STRING  */
         { add_device_ops(cur_parent, (yyvsp[0].string)); }
     break;
 

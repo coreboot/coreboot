@@ -23,6 +23,7 @@ fw_config		{return(FW_CONFIG_TABLE);}
 field			{return(FW_CONFIG_FIELD);}
 option			{return(FW_CONFIG_OPTION);}
 probe			{return(FW_CONFIG_PROBE);}
+unprovisioned		{return(FW_CONFIG_UNPROVISIONED);}
 on			{yylval.number=1; return(BOOL);}
 off			{yylval.number=0; return(BOOL);}
 hidden			{yylval.number=3; return(STATUS);}

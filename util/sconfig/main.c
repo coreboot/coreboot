@@ -581,6 +581,11 @@ void add_fw_config_probe(struct bus *bus, const char *field, const char *option)
 	append_fw_config_probe_to_dev(bus->dev, probe);
 }
 
+void probe_unprovisioned_fw_config(struct bus *bus)
+{
+	bus->dev->enable_on_unprovisioned_fw_config = true;
+}
+
 static uint64_t compute_fw_config_mask(const struct fw_config_field_bits *bits)
 {
 	uint64_t mask = 0;
@@ -1260,6 +1265,8 @@ static void pass1(FILE *fil, FILE *head, struct device *ptr, struct device *next
 		fprintf(fil, "\t.sibling = NULL,\n");
 	if (ptr->probe)
 		fprintf(fil, "\t.probe_list = %s_probe_list,\n", ptr->name);
+	fprintf(fil, "\t.enable_on_unprovisioned_fw_config = %d,\n",
+		ptr->enable_on_unprovisioned_fw_config);
 	fprintf(fil, "#if !DEVTREE_EARLY\n");
 	fprintf(fil, "\t.chip_ops = &%s_ops,\n",
 		chip_ins->chip->name_underscore);
@@ -1783,6 +1790,8 @@ static void update_device(struct device *base_dev, struct device *override_dev)
 	 * to allow an override to remove a probe from the base device.
 	 */
 	base_dev->probe = override_dev->probe;
+	base_dev->enable_on_unprovisioned_fw_config =
+		override_dev->enable_on_unprovisioned_fw_config;
 
 	/* Copy SMBIOS slot information from base device */
 	base_dev->smbios_slot_type = override_dev->smbios_slot_type;

@@ -81,6 +81,15 @@ config INTEL_CAR_NEM_ENHANCED
 	  ENHANCED NEM guarantees that modified data is always
 	  kept in cache while clean data is replaced.
 
+config INTEL_CAR_ENEM_USE_EFFECTIVE_WAY_SIZE
+	bool
+	depends on INTEL_CAR_NEM_ENHANCED
+	help
+	  On Alder Lake, Meteor Lake and Panther Lake platforms, the
+	  way size to consider for NEM+ computation is the effective
+	  way size. The effective way size is the biggest power of
+	  two of the way size.
+
 config CAR_HAS_SF_MASKS
 	bool
 	depends on INTEL_CAR_NEM_ENHANCED

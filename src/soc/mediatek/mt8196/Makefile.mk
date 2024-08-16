@@ -13,8 +13,12 @@ bootblock-y += ../common/mmu_operations.c
 
 romstage-y += ../common/cbmem.c
 romstage-y += emi.c
+romstage-y += l2c_ops.c
+romstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 
 ramstage-y += emi.c
+ramstage-y += l2c_ops.c
+ramstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 ramstage-y += soc.c
 
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8196/include

@@ -12,6 +12,7 @@
 #include <device/pci_ops.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/acpi.h>
+#include <intelblocks/pmclib.h>
 #include <soc/bootblock.h>
 #include <intelblocks/car_lib.h>
 #include <soc/pci_devs.h>
@@ -153,6 +154,7 @@ static void report_cpu_info(void)
 		mode[aes], mode[txt], mode[vt]);
 
 	car_report_cache_info();
+	pmc_dump_soc_qdf_info();
 }
 
 static void report_mch_info(void)

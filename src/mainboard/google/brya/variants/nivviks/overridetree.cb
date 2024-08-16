@@ -515,6 +515,7 @@ chip soc/intel/alderlake
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_DW1_03"
 				register "add_acpi_dma_property" = "true"
+				use usb2_port10 as bluetooth_companion
 				device pci 00.0 on
 					probe WIFI_CATEGORY WIFI_7
 				end

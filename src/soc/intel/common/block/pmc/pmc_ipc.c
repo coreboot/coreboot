@@ -97,6 +97,7 @@ enum cb_err pmc_send_ipc_cmd(uint32_t cmd, const struct pmc_ipc_buffer *wbuf,
 	return CB_SUCCESS;
 }
 
+#if ENV_RAMSTAGE
 void pmc_ipc_acpi_fill_ssdt(void)
 {
 	const struct fieldlist ipcs_fields[] = {
@@ -244,3 +245,4 @@ void pmc_ipc_acpi_set_pci_clock(unsigned int pcie_rp, unsigned int clock_pin, bo
 	acpigen_write_dword(data[2]);
 	acpigen_write_dword(data[3]);
 }
+#endif

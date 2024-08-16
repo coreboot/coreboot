@@ -7,5 +7,6 @@ ramstage-y += pmclib.c
 smm-y += pmclib.c
 verstage-y += pmclib.c
 postcar-y += pmclib.c
+bootblock-$(CONFIG_PMC_IPC_ACPI_INTERFACE) += pmc_ipc.c
 ramstage-$(CONFIG_PMC_IPC_ACPI_INTERFACE) += pmc_ipc.c
 endif

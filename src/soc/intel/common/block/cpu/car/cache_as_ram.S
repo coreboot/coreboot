@@ -510,6 +510,7 @@ find_llc_subleaf:
 	 * ways to be configured for non-eviction
 	 */
 	mov	$CONFIG_DCACHE_RAM_SIZE, %eax
+	xor	%edx, %edx /* Clear the upper 32-bit of dividend */
 	div	%ecx
 	mov	%eax, %edx /* back up data_ways in edx */
 	mov	%eax, %ecx

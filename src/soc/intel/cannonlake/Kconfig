@@ -321,17 +321,6 @@ config FSP_FD_PATH
 config FSP_FD_PATH_2
 	default "3rdparty/fsp/CometLakeFspBinPkg/CometLake2/Fsp.fd" if SOC_INTEL_COMETLAKE_1_2
 
-config SOC_INTEL_CANNONLAKE_DEBUG_CONSENT
-	int "Debug Consent for CNL"
-	# USB DBC is more common for developers so make this default to 3 if
-	# SOC_INTEL_DEBUG_CONSENT=y
-	default 3 if SOC_INTEL_DEBUG_CONSENT
-	default 0
-	help
-	  This is to control debug interface on SOC.
-	  Setting non-zero value will allow to use DBC or DCI to debug SOC.
-	  PlatformDebugConsent in FspmUpd.h has the details.
-
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
 	default 0xe00

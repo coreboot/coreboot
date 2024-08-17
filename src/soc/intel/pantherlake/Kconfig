@@ -218,25 +218,16 @@ config FSP_HEADER_PATH
 	string "Location of FSP headers"
 	default "src/vendorcode/intel/fsp/fsp2_0/pantherlake/"
 
-config SOC_INTEL_PANTHERLAKE_DEBUG_CONSENT
-	int "Debug Consent"
-	# USB DBC is more common for developers so make this default to 4 if
-	# SOC_INTEL_DEBUG_CONSENT=y
+# Override platform debug consent value:
+#  0: Disabled,
+#  2: Enabled Trace active: TraceHub is enabled and trace is active, blocks s0ix,
+#  4: Enabled Trace ready: TraceHub is enabled and allowed S0ix,
+#  6: Enabled Trace power off: TraceHub is powergated, provide setting close to functional
+#    low power state,
+#  7: User needs to configure Advanced Debug Settings manually.
+config SOC_INTEL_COMMON_DEBUG_CONSENT
+	int
 	default 4 if SOC_INTEL_DEBUG_CONSENT
-	default 0
-	help
-	  This is to control debug interface on SOC.
-	  Setting non-zero value will allow to use DBC or DCI to debug SOC.
-	  PlatformDebugConsent in FspmUpd.h has the details.
-
-	  Desired platform debug type are
-	  0:Disabled,
-	  2:Enabled Trace active: TraceHub is enabled and trace is active,
-	  blocks s0ix,
-	  4:Enabled Trace ready: TraceHub is enabled and allowed S0ix,
-	  6:Enabled Trace power off: TraceHub is powergated, provide setting close to
-	  functional low power state,
-	  7:user needs to configure Advanced Debug Settings manually.
 
 config DATA_BUS_WIDTH
 	int

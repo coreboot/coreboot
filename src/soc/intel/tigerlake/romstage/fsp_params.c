@@ -130,7 +130,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	/* Enable SMBus controller based on config */
 	m_cfg->SmbusEnable = is_devfn_enabled(PCH_DEVFN_SMBUS);
 	/* Set debug probe type */
-	m_cfg->PlatformDebugConsent = CONFIG_SOC_INTEL_TIGERLAKE_DEBUG_CONSENT;
+	m_cfg->PlatformDebugConsent = CONFIG_SOC_INTEL_COMMON_DEBUG_CONSENT;
 
 	/* Audio: HDAUDIO_LINK_MODE I2S/SNDW */
 	m_cfg->PchHdaEnable = is_devfn_enabled(PCH_DEVFN_HDA);

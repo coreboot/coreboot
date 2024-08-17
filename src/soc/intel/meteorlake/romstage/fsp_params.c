@@ -364,7 +364,7 @@ static void fill_fspm_trace_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_meteorlake_config *config)
 {
 	/* Set debug probe type */
-	m_cfg->PlatformDebugOption = CONFIG_SOC_INTEL_METEORLAKE_DEBUG_CONSENT;
+	m_cfg->PlatformDebugOption = CONFIG_SOC_INTEL_COMMON_DEBUG_CONSENT;
 
 	/* CrashLog config */
 	if (CONFIG(SOC_INTEL_CRASHLOG)) {

@@ -357,21 +357,13 @@ config FSP_FD_PATH
 	depends on FSP_USE_REPO
 	default "3rdparty/fsp/MeteorLakeFspBinPkg/Fsp.fd"
 
-config SOC_INTEL_METEORLAKE_DEBUG_CONSENT
-	int "Debug Consent for MTL"
-	# USB DBC is more common for developers so make this default to 6 if
-	# SOC_INTEL_DEBUG_CONSENT=y
+# Override platform debug consent value:
+#  0:Disabled, 2:Enabled Trace Active, 4:Enabled Trace Ready,
+#  6:Enable Trace Power-Off, 7:Manual
+config SOC_INTEL_COMMON_DEBUG_CONSENT
+	int
 	default 6 if SOC_INTEL_DEBUG_CONSENT
 	default 2 if SOC_INTEL_COMMON_BLOCK_TRACEHUB
-	default 0
-	help
-	  This is to control debug interface on SOC.
-	  Setting non-zero value will allow to use DBC or DCI to debug SOC.
-	  PlatformDebugConsent in FspmUpd.h has the details.
-
-	  Desired platform debug type are
-	  0:Disabled, 2:Enabled Trace Active, 4:Enabled Trace Ready,
-	  6:Enable Trace Power-Off, 7:Manual
 
 config DATA_BUS_WIDTH
 	int

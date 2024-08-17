@@ -426,20 +426,12 @@ config FSP_FD_PATH
 	default "3rdparty/fsp/AlderLakeFspBinPkg/Client/AlderLakeS/Fsp.fd" if SOC_INTEL_ALDERLAKE_PCH_S
 	default "3rdparty/fsp/AlderLakeFspBinPkg/IoT/AlderLakeN/Fsp.fd" if SOC_INTEL_ALDERLAKE_PCH_N && FSP_TYPE_IOT
 
-config SOC_INTEL_ALDERLAKE_DEBUG_CONSENT
-	int "Debug Consent for ADL"
-	# USB DBC is more common for developers so make this default to 2 if
-	# SOC_INTEL_DEBUG_CONSENT=y
+# Override platform debug consent value:
+#  0:Disabled, 2:Enabled (All Probes+TraceHub), 6:Enable (Low Power),
+#  7:Manual
+config SOC_INTEL_COMMON_DEBUG_CONSENT
+	int
 	default 2 if SOC_INTEL_DEBUG_CONSENT
-	default 0
-	help
-	  This is to control debug interface on SOC.
-	  Setting non-zero value will allow to use DBC or DCI to debug SOC.
-	  PlatformDebugConsent in FspmUpd.h has the details.
-
-	  Desired platform debug type are
-	  0:Disabled, 2:Enabled (All Probes+TraceHub), 6:Enable (Low Power),
-	  7:Manual
 
 config DATA_BUS_WIDTH
 	int

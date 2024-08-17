@@ -354,7 +354,7 @@ static void fill_fspm_trace_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_alderlake_config *config)
 {
 	/* Set debug probe type */
-	m_cfg->PlatformDebugConsent = CONFIG_SOC_INTEL_ALDERLAKE_DEBUG_CONSENT;
+	m_cfg->PlatformDebugConsent = CONFIG_SOC_INTEL_COMMON_DEBUG_CONSENT;
 
 	/* CrashLog config */
 	m_cfg->CpuCrashLogDevice = CONFIG(SOC_INTEL_CRASHLOG) && is_devfn_enabled(SA_DEVFN_TMT);

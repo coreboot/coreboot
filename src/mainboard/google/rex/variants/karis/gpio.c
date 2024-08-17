@@ -47,7 +47,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_A21, NONE),
 
 	/* GPP_B00 : [] ==> TCHPAD_INT_ODL_LS */
-	PAD_CFG_GPI_IRQ_WAKE_LOCK(GPP_B00, NONE, LEVEL, INVERT, LOCK_CONFIG),
+	PAD_CFG_GPI_IRQ_WAKE(GPP_B00, NONE, PWROK, LEVEL, INVERT),
 	/* GPP_B01 : [] ==> BT_DISABLE_L */
 	PAD_CFG_GPO(GPP_B01, 1, DEEP),
 	/* GPP_B02 : net NC is not present in the given design */
@@ -208,7 +208,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_E09 : SOC_PEN_DETECT */
 	PAD_CFG_GPI_SCI_LOCK(GPP_E09, NONE, EDGE_SINGLE, NONE, LOCK_CONFIG),
 	/* GPP_E10 : [] ==> SOC_FPMCU_INT_L */
-	PAD_CFG_GPI_IRQ_WAKE_LOCK(GPP_E10, NONE, LEVEL, INVERT, LOCK_CONFIG),
+	PAD_CFG_GPI_IRQ_WAKE(GPP_E10, NONE, PWROK, LEVEL, INVERT),
 	/* GPP_E11 : [] ==> MEM_STRAP_0 */
 	PAD_CFG_GPI_LOCK(GPP_E11, NONE, LOCK_CONFIG),
 	/* GPP_E12 : [] ==> MEM_STRAP_3 */

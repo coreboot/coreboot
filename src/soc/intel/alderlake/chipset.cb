@@ -54,6 +54,12 @@ chip soc/intel/alderlake
 		.tdp_pl4 = 78,
 	}"
 
+	register "power_limits_config[ADL_N_081_9W_CORE]" = "{
+		.tdp_pl1_override = 9,
+		.tdp_pl2_override = 35,
+		.tdp_pl4 = 83,
+	}"
+
 	register "power_limits_config[ADL_N_081_15W_CORE]" = "{
 		.tdp_pl1_override = 15,
 		.tdp_pl2_override = 35,
@@ -66,8 +72,26 @@ chip soc/intel/alderlake
 		.tdp_pl4 = 78,
 	}"
 
+	register "power_limits_config[ADL_N_041_12W_CORE]" = "{
+		.tdp_pl1_override = 12,
+		.tdp_pl2_override = 25,
+		.tdp_pl4 = 78,
+	}"
+
+	register "power_limits_config[ADL_N_041_15W_CORE]" = "{
+		.tdp_pl1_override = 15,
+		.tdp_pl2_override = 35,
+		.tdp_pl4 = 83,
+	}"
+
 	register "power_limits_config[ADL_N_021_6W_CORE]" = "{
 		.tdp_pl1_override = 6,
+		.tdp_pl2_override = 25,
+		.tdp_pl4 = 78,
+	}"
+
+	register "power_limits_config[ADL_N_021_10W_CORE]" = "{
+		.tdp_pl1_override = 10,
 		.tdp_pl2_override = 25,
 		.tdp_pl4 = 78,
 	}"

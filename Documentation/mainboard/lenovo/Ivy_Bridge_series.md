@@ -82,7 +82,7 @@ It is possible to reduce the Intel ME firmware size to free additional
 space for the `bios` region. This is usually referred to as *cleaning the ME* or
 *stripping the ME*.
 After reducing the Intel ME firmware size you must modify the original IFD,
-[split the resulting coreboot ROM](#splitting-the-coreboot-rom) and then write
+[split the resulting coreboot ROM](#splitting-the-corebootrom) and then write
 each ROM using an [external programmer].
 Have a look at [me_cleaner] for more information.
 

@@ -78,7 +78,7 @@ Looks like a WDT.
 ### LDN8
 
 Custom HWM space. It exposes 256 byte of IO config space.
-See [HWM](#HWM) for more details.
+See [HWM](#hwm) for more details.
 
 ## HWM
 

@@ -214,7 +214,7 @@ Deprecations
 
 In order to minimize the usage of PCI bus mastering, the options we introduced in
 this release will be dropped in a future release again. For more details, please
-see [Preparations to minimize enabling PCI bus mastering](#preparations-to-minimize-enabling-pci-bus-mastering-in-coreboot).
+see [Preparations to minimize enabling PCI bus mastering](#preparations-to-minimize-enabling-pci-bus-mastering).
 
 ### Resource allocator v3
 

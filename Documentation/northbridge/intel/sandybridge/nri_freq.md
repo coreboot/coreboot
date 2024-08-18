@@ -160,7 +160,7 @@ As you can see, by using DIMMs with different maximum DRAM frequencies, the
 slowest DIMMs' frequency will be selected, to prevent over-clocking it.
 
 The selected frequency gives the PLL multiplier to operate at. In case the PLL
-locks (see Take me to [Hard fuses](#hard_fuses)) the frequency will be used for
+locks (see Take me to [Hard fuses](#hard-fuses)) the frequency will be used for
 all DIMMs. At this point it's not possible to change the multiplier again,
 until the system has been powered off. In case the PLL doesn't lock, the next
 smaller multiplier will be used until a working multiplier will be found.

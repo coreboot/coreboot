@@ -5,6 +5,11 @@ chip soc/intel/skylake
 
 	device domain 0 on
 		device ref peg0         on	# PCIE16X
+			smbios_slot_desc "SlotTypePciExpressGen3X16"
+			                 "SlotLengthLong"
+			                 "PCIE16X"
+			                 "SlotDataBusWidth16X"
+
 			# These configurations are technically for PCIe root
 			# ports. However, they are used as there is no
 			# equivalent for PEG devices.
@@ -58,6 +63,11 @@ chip soc/intel/skylake
 			register "PcieRpAdvancedErrorReporting[4]" = "true"
 		end
 		device ref pcie_rp7	on	# PCIE1X_2
+			smbios_slot_desc "SlotTypePciExpressGen3X1"
+			                 "SlotLengthShort"
+			                 "PCIE1X_2"
+			                 "SlotDataBusWidth1X"
+
 			register "PcieRpEnable[6]"                 = "true"
 			register "PcieRpLtrEnable[6]"              = "true"
 			register "PcieRpClkReqSupport[6]"          = "true"
@@ -66,6 +76,11 @@ chip soc/intel/skylake
 			register "PcieRpAdvancedErrorReporting[6]" = "true"
 		end
 		device ref pcie_rp8	on	# PCIE1X_1
+			smbios_slot_desc "SlotTypePciExpressGen3X1"
+			                 "SlotLengthShort"
+			                 "PCIE1X_1"
+			                 "SlotDataBusWidth1X"
+
 			register "PcieRpEnable[7]"                 = "true"
 			register "PcieRpLtrEnable[7]"              = "true"
 			register "PcieRpClkReqSupport[7]"          = "true"
@@ -74,6 +89,11 @@ chip soc/intel/skylake
 			register "PcieRpAdvancedErrorReporting[7]" = "true"
 		end
 		device ref pcie_rp11	on	# M2_WIFI
+			smbios_slot_desc "SlotTypeM2Socket1_SD"
+			                 "SlotLengthOther"
+			                 "M2_WIFI"
+			                 "SlotDataBusWidth1X"
+
 			register "PcieRpEnable[10]"                 = "true"
 			register "PcieRpLtrEnable[10]"              = "true"
 			register "PcieRpClkReqSupport[10]"          = "true"
@@ -82,6 +102,11 @@ chip soc/intel/skylake
 			register "PcieRpAdvancedErrorReporting[10]" = "true"
 		end
 		device ref pcie_rp21	on	# M2_SSD
+			smbios_slot_desc "SlotTypeM2Socket3"
+			                 "SlotLengthOther"
+			                 "M2_SSD"
+			                 "SlotDataBusWidth1X"
+
 			register "PcieRpEnable[20]"                 = "true"
 			register "PcieRpLtrEnable[20]"              = "true"
 			register "PcieRpClkReqSupport[20]"          = "true"

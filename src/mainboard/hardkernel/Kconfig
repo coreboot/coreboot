@@ -1,0 +1,17 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if VENDOR_HARDKERNEL
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/hardkernel/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/hardkernel/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	default "Hardkernel"
+
+endif # VENDOR_HARDKERNEL

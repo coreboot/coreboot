@@ -18,8 +18,6 @@
 #include <soc/tcss.h>
 #include <drivers/intel/pmc_mux/conn/chip.h>
 
-#define BIAS_CTRL_VW_INDEX_SHIFT		16
-#define BIAS_CTRL_BIT_POS_SHIFT			8
 #define WAIT_FOR_DISPLAYPORT_TIMEOUT_MS		1000
 #define WAIT_FOR_DP_MODE_ENTRY_TIMEOUT_MS	1500
 #define WAIT_FOR_HPD_TIMEOUT_MS			3000

@@ -396,7 +396,9 @@ chip soc/intel/alderlake
 				register "remote_name" = ""IPU0""
 
 				register "has_power_resource" = "1"
-				#Controls
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
+
+				# Controls
 				register "clk_panel.clks[0].clknum" = "IMGCLKOUT_3"
 				register "clk_panel.clks[0].freq" = "FREQ_19_2_MHZ"
 
@@ -404,7 +406,7 @@ chip soc/intel/alderlake
 				register "gpio_panel.gpio[1].gpio_num" = "GPP_D16"  # EN_PP1800_PP1200_WCAM_X
 				register "gpio_panel.gpio[2].gpio_num" = "GPP_D3"   # WCAM_RST_L
 
-				#_ON
+				# _ON
 				register "on_seq.ops_cnt" = "5"
 				register "on_seq.ops[0]" = "SEQ_OPS_CLK_ENABLE(0, 0)"
 				register "on_seq.ops[1]" = "SEQ_OPS_GPIO_ENABLE(0, 5)"
@@ -412,7 +414,7 @@ chip soc/intel/alderlake
 				register "on_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(2, 5)"
 				register "on_seq.ops[4]" = "SEQ_OPS_GPIO_ENABLE(2, 5)"
 
-				#_OFF
+				# _OFF
 				register "off_seq.ops_cnt" = "4"
 				register "off_seq.ops[0]" = "SEQ_OPS_CLK_DISABLE(0, 0)"
 				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(2, 0)"
@@ -429,8 +431,20 @@ chip soc/intel/alderlake
 				register "chip_name" = ""DW AF DAC""
 				register "device_type" = "INTEL_ACPI_CAMERA_VCM"
 
-				register "pr0" = ""\\_SB.PCI0.I2C2.CAM0.PRIC""
 				register "vcm_compat" = ""dongwoon,dw9714""
+				register "has_power_resource" = "1"
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
+
+				# Controls
+				register "gpio_panel.gpio[0].gpio_num" = "GPP_D15"  # EN_PP2800_WCAM_X
+
+				# _ON
+				register "on_seq.ops_cnt" = "1"
+				register "on_seq.ops[0]" = "SEQ_OPS_GPIO_ENABLE(0, 5)"
+
+				# _OFF
+				register "off_seq.ops_cnt" = "1"
+				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
 				device i2c 0C on
 					probe WFC WFC_MIPI_OVTI5675
@@ -442,8 +456,6 @@ chip soc/intel/alderlake
 				register "acpi_name" = ""NVM0""
 				register "chip_name" = ""GT24C08""
 				register "device_type" = "INTEL_ACPI_CAMERA_NVM"
-
-				register "pr0" = ""\\_SB.PCI0.I2C2.CAM0.PRIC""
 
 				register "nvm_size" = "0x2000"
 				register "nvm_pagesize" = "1"

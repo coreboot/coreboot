@@ -63,4 +63,14 @@ config SOC_INTEL_COMMON_BLOCK_GPIO_PMODE_4BITS
 	 SoC user to select this config if Pad Mode (PMODE) width of PAD_CFG_DW0 regiser
 	 is 4 bits to support Native Function 1 to 15.
 
+config SOC_INTEL_COMMON_BLOCK_GPIO_16BIT_CPU_PORTID
+	bool
+	default n
+	help
+	  Enable support for 16-bit CPU Port IDs.
+	  Intel SoCs (starting with Panther Lake) have extended the CPU Port ID field
+	  to 16 bits.
+	  Enable this option if your platform requires the GPIO driver to
+	  accommodate this larger Port ID value.
+
 endif

@@ -136,7 +136,11 @@ struct pad_community {
 	uint8_t		gpi_status_offset;  /* specifies offset in struct
 						gpi_status */
 	uint8_t		port;	/* PCR Port ID */
-	uint8_t		cpu_port; /* CPU Port ID */
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_16BIT_CPU_PORTID)
+	uint16_t	cpu_port; /* Use 16-bit CPU Port ID */
+#else
+	uint8_t	cpu_port; /* Use 8-bit CPU Port ID */
+#endif
 	const struct reset_mapping	*reset_map; /* PADRSTCFG logical to
 			chipset mapping */
 	size_t		num_reset_vals;

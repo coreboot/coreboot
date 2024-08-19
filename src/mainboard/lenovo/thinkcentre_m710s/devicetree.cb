@@ -9,13 +9,6 @@ chip soc/intel/skylake
 			                 "SlotLengthLong"
 			                 "PCIE16X"
 			                 "SlotDataBusWidth16X"
-
-			# These configurations are technically for PCIe root
-			# ports. However, they are used as there is no
-			# equivalent for PEG devices.
-			register "PcieRpClkReqSupport[0]" = "true"
-			register "PcieRpClkReqNumber[0]"  = "2"
-			register "PcieRpClkSrcNumber[0]"  = "0"
 		end
 		device ref igpu		on  end
 		device ref south_xhci	on

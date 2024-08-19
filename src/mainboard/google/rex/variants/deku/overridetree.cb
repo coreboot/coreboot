@@ -27,8 +27,8 @@ chip soc/intel/meteorlake
 		[DDI_PORT_4] = DDI_ENABLE_HPD,
 	}"
 
-	# Temporary setting TCC of 105C = Tj max (110) - TCC_Offset (5)
-	register "tcc_offset" = "5"
+	# Temporary setting TCC of 98C = Tj max (110) - TCC_Offset (12)
+	register "tcc_offset" = "12"
 
 	register "power_limits_config[MTL_P_682_482_CORE]" = "{
 		.tdp_pl1_override = 33,

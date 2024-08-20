@@ -10,4 +10,7 @@
 
 #include <spi-generic.h>
 
+/* Initialize SPI NOR Flash Controller */
+void mtk_snfc_init(void);
+
 #endif

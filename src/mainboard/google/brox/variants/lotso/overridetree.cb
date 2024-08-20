@@ -333,6 +333,7 @@ chip soc/intel/alderlake
 			}"
 			probe STORAGE STORAGE_UNKNOWN
 			probe STORAGE STORAGE_NVME
+			probe unprovisioned
 		end
 		device ref pcie_rp5 on
 			register "pch_pcie_rp[PCH_RP(5)]" = "{
@@ -382,10 +383,12 @@ chip soc/intel/alderlake
 			end
 			probe STORAGE STORAGE_UNKNOWN
 			probe STORAGE STORAGE_UFS
+			probe unprovisioned
 		end
 		device ref ufs on
 			probe STORAGE STORAGE_UNKNOWN
 			probe STORAGE STORAGE_UFS
+			probe unprovisioned
 		end
 		device ref i2c0 on
 			chip drivers/i2c/generic

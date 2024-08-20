@@ -57,8 +57,8 @@ config LINUXBOOT_COMPILE_KERNEL
 
 config LINUXBOOT_KERNEL_PATH
 	string "Path to kernel"
-	default "build/uImage" if LINUXBOOT_KERNEL_UIMAGE
-	default "build/bzImage" if LINUXBOOT_KERNEL_BZIMAGE
+	default ""
+	depends on !LINUXBOOT_COMPILE_KERNEL
 	help
 	  The kernel path is either and absolute path or relative to the
 	  LinuxBoot directory
@@ -142,7 +142,7 @@ config LINUXBOOT_BUILD_INITRAMFS
 
 config LINUXBOOT_INITRAMFS_PATH
 	string "Path to initramfs"
-	default "build/initramfs_u-root.cpio" if LINUXBOOT_UROOT
+	default "payloads/external/LinuxBoot/build/initramfs" if LINUXBOOT_UROOT
 
 if LINUXBOOT_BUILD_INITRAMFS
 
@@ -248,7 +248,7 @@ config LINUXBOOT_UROOT_INITCMD
 
 config LINUXBOOT_UROOT_SHELL
 	string "default shell"
-	default "elvish"
+	default "gosh"
 	help
 	  Default shell.
 	  Can be an absolute path or a u-root command name. (default "elvish")
@@ -264,10 +264,10 @@ if LINUXBOOT_UROOT_MAIN
 
 choice
 	prompt "Choose a specific bootloader"
-	default SPECIFIC_BOOTLOADER_SYSTEMBOOT
+	default SPECIFIC_BOOTLOADER_BOOT
 	help
 	  Specify a bootloader which starts after u-root init. It will be a symlink
-	  to /bin/uinit. Default: systemboot
+	  to /bin/uinit. Default: boot
 
 config SPECIFIC_BOOTLOADER_NONE
 	bool "none"
@@ -275,21 +275,14 @@ config SPECIFIC_BOOTLOADER_NONE
 	  Leave u-root to decide which bootloaders to load first after init, if
 	  any at all. Most likely u-root will start into the defined u-root shell.
 
-config SPECIFIC_BOOTLOADER_SYSTEMBOOT
-	bool "systemboot"
-	help
-	  If systemboot has been used as a bootloader wrapper in the past,
-	  enable this option. It will invoke -uinitcmd=systemboot and result in
-	  a BIOS/UEFI BDS boot behavior.
-
-config SPECIFIC_BOOTLOADER_BOOT2
-	bool "boot2"
+config SPECIFIC_BOOTLOADER_BOOT
+	bool "boot"
 
 config SPECIFIC_BOOTLOADER_PXEBOOT
 	bool "pxeboot"
 
-config SPECIFIC_BOOTLOADER_STBOOT
-	bool "stboot"
+config SPECIFIC_BOOTLOADER_FITBOOT
+	bool "fitboot"
 
 config SPECIFIC_BOOTLOADER_CUSTOM
 	bool "custom"
@@ -307,10 +300,9 @@ config SPECIFIC_BOOTLOADER_CUSTOM_CMD
 config LINUXBOOT_UROOT_UINITCMD
 	string
 	default "" if SPECIFIC_BOOTLOADER_NONE
-	default "systemboot" if SPECIFIC_BOOTLOADER_SYSTEMBOOT
-	default "boot2" if SPECIFIC_BOOTLOADER_BOOT2
+	default "boot" if SPECIFIC_BOOTLOADER_BOOT
 	default "pxeboot" if SPECIFIC_BOOTLOADER_PXEBOOT
-	default "stboot" if SPECIFIC_BOOTLOADER_STBOOT
+	default "fitboot" if SPECIFIC_BOOTLOADER_FITBOOT
 	default SPECIFIC_BOOTLOADER_CUSTOM_CMD if SPECIFIC_BOOTLOADER_CUSTOM
 
 endif #LINUXBOOT_UROOT_MAIN
@@ -328,6 +320,7 @@ config LINUXBOOT_INITRAMFS_COMPRESSION_NONE
 
 config LINUXBOOT_INITRAMFS_COMPRESSION_XZ
 	bool "xz compression"
+	depends on LINUXBOOT_BUILD_INITRAMFS
 
 endchoice
 

@@ -39,12 +39,13 @@ $(uroot_build):
 	git clone https://$(uroot_package) $(uroot_build)
 	git -C $(uroot_build) checkout --quiet $(CONFIG_LINUXBOOT_UROOT_VERSION)
 
-$(uroot_build)/u-root: $(uroot_build)
+$(uroot_build)/u-root: | $(uroot_build)
 	cd $(uroot_build); \
 	go build -o u-root .
 
-#$(CONFIG_LINUXBOOT_INITRAMFS_PATH)
 build/initramfs_u-root.cpio: $(uroot_build)/u-root
-	GOARCH=$(UROOT_ARCH-y) $(uroot_build)/u-root \
-	-uroot-source $(uroot_build) \
-	$(uroot_args) -o build/initramfs_u-root.cpio $(uroot_cmds)
+	cd $(uroot_build); \
+	echo "GOARCH=$(UROOT_ARCH-y) ./u-root $(uroot_args) -o initramfs_u-root.cpio $(uroot_cmds)"
+	cd $(uroot_build); \
+	GOARCH=$(UROOT_ARCH-y) ./u-root $(uroot_args) -o initramfs_u-root.cpio $(uroot_cmds)
+	cp $(uroot_build)/initramfs_u-root.cpio $@

@@ -3,6 +3,7 @@
 #ifndef __SOC_MEDIATEK_COMMON_FLASH_CONTROLLER_COMMON_H__
 #define __SOC_MEDIATEK_COMMON_FLASH_CONTROLLER_COMMON_H__
 
+#include <gpio.h>
 #include <spi-generic.h>
 #include <stdint.h>
 #include <soc/addressmap.h>
@@ -75,6 +76,13 @@ struct mtk_nor_regs {
 };
 check_member(mtk_nor_regs, fdma_end_dadr, 0x724);
 
+struct mtk_snfc_pad_func {
+	gpio_t gpio;
+	u8 func;
+	enum pull_select select;
+};
+
 int mtk_spi_flash_probe(const struct spi_slave *spi, struct spi_flash *flash);
+int mtk_snfc_init_pad_func(const struct mtk_snfc_pad_func *pad_func, enum gpio_drv strength);
 
 #endif /* __SOC_MEDIATEK_COMMON_FLASH_CONTROLLER_COMMON_H__ */

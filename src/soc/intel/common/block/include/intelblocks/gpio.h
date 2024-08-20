@@ -110,6 +110,12 @@ struct vw_entries {
 	gpio_t last_pad;
 };
 
+/* virtual-wire mapping base and the starting bit position for a group */
+struct vw_map {
+	uint8_t base;
+	uint8_t start_pos;
+};
+
 /* This structure will be used to describe a community or each group within a
  * community when multiple groups exist inside a community
  */
@@ -152,6 +158,7 @@ struct pad_community {
 	 * which they map to VW indexes (beginning with VW base)
 	 */
 	const struct vw_entries	*vw_entries;
+	const struct vw_map *vw_map;
 	size_t		num_vw_entries;
 };
 

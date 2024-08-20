@@ -1068,8 +1068,16 @@ bool gpio_get_vw_info(gpio_t pad, unsigned int *vw_index, unsigned int *vw_bit)
 	if (i == comm->num_vw_entries)
 		return false;
 
-	offset += pad - comm->vw_entries[i].first_pad;
-	*vw_index = comm->vw_base + offset / 8;
+	/* Adjust offset and calculate vw_index based on the mapping type */
+	if (comm->vw_map) {
+		offset = pad - comm->vw_entries[i].first_pad;
+		offset += comm->vw_map[i].start_pos;
+		*vw_index = comm->vw_map[i].base + offset / 8;
+	} else {
+		offset += pad - comm->vw_entries[i].first_pad;
+		offset += comm->vw_base;
+		*vw_index = offset / 8;
+	}
 	*vw_bit = offset % 8;
 
 	return true;

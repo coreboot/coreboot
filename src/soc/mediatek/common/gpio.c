@@ -189,8 +189,10 @@ int gpio_set_driving(gpio_t gpio, uint8_t drv)
 	const struct gpio_drv_info *adv_info = get_gpio_driving_adv_info(gpio.id);
 	void *reg, *reg_adv, *reg_addr;
 
-	if (!info)
+	if (!info) {
+		printk(BIOS_ERR, "%s: raw_id %u is out of range\n", __func__, gpio.id);
 		return -1;
+	}
 
 	if (!is_valid_drv(drv))
 		return -1;
@@ -221,8 +223,10 @@ int gpio_get_driving(gpio_t gpio)
 	const struct gpio_drv_info *info = get_gpio_driving_info(gpio.id);
 	void *reg;
 
-	if (!info)
+	if (!info) {
+		printk(BIOS_ERR, "%s: raw_id %u is out of range\n", __func__, gpio.id);
 		return -1;
+	}
 
 	if (info->width == 0)
 		return -1;
@@ -237,8 +241,10 @@ int gpio_set_driving_adv(gpio_t gpio, enum gpio_drv_adv drv)
 	const struct gpio_drv_info *adv_info = get_gpio_driving_adv_info(gpio.id);
 	void *reg_adv;
 
-	if (!adv_info)
+	if (!adv_info) {
+		printk(BIOS_ERR, "%s: raw_id %u is out of range\n", __func__, gpio.id);
 		return -1;
+	}
 
 	if (!is_valid_drv_adv(drv))
 		return -1;
@@ -266,8 +272,10 @@ int gpio_get_driving_adv(gpio_t gpio)
 	void *reg_adv;
 	uint32_t drv;
 
-	if (!adv_info)
+	if (!adv_info) {
+		printk(BIOS_ERR, "%s: raw_id %u is out of range\n", __func__, gpio.id);
 		return -1;
+	}
 
 	if (adv_info->width == 0)
 		return -1;

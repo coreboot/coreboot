@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only OR MIT */
 
-#ifndef SOC_MEDIATEK_MT8195_GPIO_BASE_H
-#define SOC_MEDIATEK_MT8195_GPIO_BASE_H
+#ifndef SOC_MEDIATEK_COMMON_GPIO_BASE_H
+#define SOC_MEDIATEK_COMMON_GPIO_BASE_H
 
 #include <stdint.h>
 

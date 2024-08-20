@@ -23,4 +23,7 @@ config MAINBOARD_DIR
 config MAINBOARD_PART_NUMBER
 	default "ThinkCentre M710s"
 
+config DRIVER_LENOVO_SERIALS
+	default n
+
 endif # BOARD_LENOVO_THINKCENTRE_M710S

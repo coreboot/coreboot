@@ -66,12 +66,23 @@ config LINUXBOOT_KERNEL_PATH
 if LINUXBOOT_COMPILE_KERNEL
 
 config LINUXBOOT_CROSS_COMPILE
+	bool "cross compiler"
+	default n if LINUXBOOT_X86_64 # currently coreboots cross toolchain cannot build Linux
+	default y
+	help
+	  Enable this option if you want to compile Linux using a cross compiler.
+	  The coreboot toolchain also counts as a cross toolchain.
+
+config LINUXBOOT_CROSS_COMPILE_PATH
 	string "cross compiler"
+	depends on LINUXBOOT_CROSS_COMPILE
 	default "" # e.g. "aarch64-linux-gnu-"
 	help
 	  Choose a custom cross compiler toolchain to use.
-	  It can be useful if you don't want to use the coreboot toolchain
-	  or experience problems using it.
+	  The cross toolchain of coreboot will be used if this option is left empty.
+	  If not left empty, it should contain a path to a cross toolchain that is
+	  capable of compiling Linux. It can be useful if you don't want to use the
+	  coreboot toolchain or experience problems using it for building Linux.
 
 config LINUXBOOT_KERNEL_VERSION
 	string "kernel version"

@@ -23,7 +23,7 @@
 #define VENDOR_ID_MACRONIX			0xc2
 #define VENDOR_ID_SPANSION			0x01
 #define VENDOR_ID_SST				0xbf
-#define VENDOR_ID_STMICRO			0x20
+#define VENDOR_ID_STMICRO			0x20 /* also Numonyx and Micron */
 #define VENDOR_ID_WINBOND			0xef
 #define VENDOR_ID_ISSI				0x9d
 

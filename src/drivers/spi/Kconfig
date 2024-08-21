@@ -146,7 +146,8 @@ config SPI_FLASH_STMICRO
 	default y if SPI_FLASH_INCLUDE_ALL_DRIVERS
 	help
 	  Select this option if your chipset driver needs to store certain
-	  data in the SPI flash and your SPI flash is made by ST MICRO.
+	  data in the SPI flash and your SPI flash is made by ST Micro,
+	  Numonyx or Micron.
 
 config SPI_FLASH_WINBOND
 	bool

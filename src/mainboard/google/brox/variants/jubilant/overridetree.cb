@@ -232,6 +232,7 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_INTERNAL"
 						device ref usb2_port4 on
 							probe DB_USB DB_1A_LTE
+							probe unprovisioned
 						end
 					end
 					chip drivers/usb/acpi
@@ -281,6 +282,7 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_INTERNAL"
 						device ref usb3_port4 on
 							probe DB_USB DB_1A_LTE
+							probe unprovisioned
 						end
 					end
 				end
@@ -308,6 +310,7 @@ chip soc/intel/alderlake
 				register "add_acpi_dma_property" = "true"
 				device pci 00.0 on
 					probe WIFI_BT WIFI_BT_PCIE
+					probe unprovisioned
 				end
 			end
 			chip soc/intel/common/block/pcie/rtd3
@@ -317,6 +320,7 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 			probe WIFI_BT WIFI_BT_PCIE
+			probe unprovisioned
 		end
 		device ref cnvi_wifi on
 			chip drivers/wifi/generic
@@ -326,6 +330,7 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 			probe WIFI_BT WIFI_BT_CNVI
+			probe unprovisioned
 		end
 		device ref ish on
 			chip drivers/intel/ish
@@ -441,6 +446,7 @@ chip soc/intel/alderlake
 				register "input_analog_gain" = "1"
 				device i2c 28 on
 					probe DB_USB DB_1A_LTE
+					probe unprovisioned
 				end
 			end
 		end
@@ -458,6 +464,7 @@ chip soc/intel/alderlake
 				register "enable_delay_ms" = "3"
 				device spi 0 on
 					probe FPMCU FPMCU_NUVOTON
+					probe unprovisioned
 				end
 			end # FPMCU
 		end

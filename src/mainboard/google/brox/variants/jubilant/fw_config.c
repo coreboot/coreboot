@@ -60,7 +60,7 @@ static const struct pad_config nvme_disable_pads[] = {
 static void fw_config_handle(void *unused)
 {
 	if (!fw_config_is_provisioned()) {
-		printk(BIOS_WARNING, "FW_CONFIG is not provisioned. Exiting...\n");
+		printk(BIOS_WARNING, "FW_CONFIG is unprovisioned. Skip disable device's pads.\n");
 		return;
 	}
 

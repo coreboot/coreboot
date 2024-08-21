@@ -19,6 +19,10 @@ $(stages_o): $(stages_c) $(obj)/config.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC_arm) -I. $(CPPFLAGS_arm) -c -o $@ $< -marm
 
+# Clang LTO does not like the aliasing in here.
+TARGETS := decompressor bootblock verstage romstage ramstage rmodules_arm
+$(foreach target,$(TARGETS),$(eval $(call src-to-obj,$(target),$(dir)/eabi_compat.c): CFLAGS_$(target) += -fno-lto))
+
 endif # CONFIG_ARCH_ARM
 
 ###############################################################################

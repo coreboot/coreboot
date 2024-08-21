@@ -71,7 +71,7 @@ exception_stub_\num:
 	.macro user_defined_stubs from, to
 	stub \from
 	.if \to-\from
-	user_defined_stubs %(from+1),\to
+	user_defined_stubs %(\from+1),\to
 	.endif
 	.endm
 
@@ -277,7 +277,7 @@ gdt_ptr:
 	.macro	user_defined_gates from, to
 	interrupt_gate	exception_stub_\from
 	.if	\to-\from
-	user_defined_gates	%(from+1),\to
+	user_defined_gates	%(\from+1),\to
 	.endif
 	.endm
 

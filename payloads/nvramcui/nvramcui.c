@@ -159,7 +159,7 @@ static void cmos_walk_options(struct cb_cmos_option_table *opttbl, FIELD **field
 	fields[2 * numopts] = NULL;
 }
 
-int main(void)
+int main(int argc, char **argv)
 {
 	int ch, done;
 	int i;

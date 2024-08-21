@@ -460,8 +460,8 @@ chip soc/intel/alderlake
 			register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"		# Type-A DB (6.2 inch)
 			register "usb2_ports[4]" = "USB2_PORT_SHORT(OC_SKIP)"	# LTE (3.3 inch)
 			register "usb2_ports[5]" = "USB2_PORT_SHORT(OC_SKIP)"	# UFC (3.7 inch)
-			register "usb2_ports[7]" = "USB2_PORT_SHORT(OC_SKIP)"	# Bluetooth port for PCIe WLAN (2.5 inch)
-			register "usb2_ports[9]" = "USB2_PORT_SHORT(OC_SKIP)"	# Bluetooth port for CNVi WLAN
+			register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for PCIe WLAN (2.5 inch)
+			register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for CNVi WLAN
 
 			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3 Type-A port A0(MLB))
 			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3 Type-A port A1(DB)

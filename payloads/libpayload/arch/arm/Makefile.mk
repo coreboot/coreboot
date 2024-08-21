@@ -27,7 +27,10 @@
 ##
 
 CFLAGS += -mthumb -march=armv7-a
-arm_asm_flags = -Wa,-mthumb -Wa,-mimplicit-it=always -Wa,-mno-warn-deprecated
+arm_asm_flags = -Wa,-mthumb -Wa,-mimplicit-it=always
+ifeq ($(CONFIG_COMPILER_GCC),y)
+arm_asm_flags += -Wa,-mno-warn-deprecated
+endif
 
 libc-y += head.S
 libc-y += eabi_compat.c

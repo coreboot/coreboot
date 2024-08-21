@@ -32,14 +32,8 @@ DEFAULT_DEPS += $(PAYLOAD_DEPS)
 
 obj ?= build
 
-ARCH ?=
 OBJS ?=
 CCACHE ?=
-
-CFLAGS  = $(CFLAGS_$(ARCH))
-CFLAGS += -Os -ffreestanding
-CFLAGS += -Wall -Wextra -Wmissing-prototypes -Wvla -Werror
-
 STRIP ?= debug
 
 $(TARGET):
@@ -77,6 +71,20 @@ $(shell rm -f $(XCOMPILE_COMPLETE))
 $(error $(xcompile) deleted because it's invalid. \
         Restarting the build should fix that, or explain the problem.)
 endif
+
+ifeq ($(CONFIG_LP_ARCH_ARM),y)
+ARCH ?= arm
+else ifeq ($(CONFIG_LP_ARCH_X86_64),y)
+ARCH ?= x86_64
+else ifeq ($(CONFIG_LP_ARCH_X86_32),y)
+ARCH ?= x86_32
+else ifeq ($(CONFIG_LP_ARCH_ARM64),y)
+ARCH ?= arm64
+endif
+
+CFLAGS  = $(CFLAGS_$(ARCH))
+CFLAGS += -Os -ffreestanding
+CFLAGS += -Wall -Wextra -Wmissing-prototypes -Wvla -Werror
 
 # `lpgcc` in in-tree mode:
 LPGCC  = CC="$(CCACHE) $(CC_$(ARCH))"

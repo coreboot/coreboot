@@ -1,6 +1,5 @@
 unexport $(COREBOOT_EXPORTS)
 
-ARCH = x86_32
 OBJS = $(obj)/nvramcui.o
 TARGET = $(obj)/nvramcui.elf
 

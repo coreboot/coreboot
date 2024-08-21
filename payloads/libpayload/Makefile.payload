@@ -85,6 +85,9 @@ endif
 CFLAGS  = $(CFLAGS_$(ARCH))
 CFLAGS += -Os -ffreestanding
 CFLAGS += -Wall -Wextra -Wmissing-prototypes -Wvla -Werror
+ifeq ($(CONFIG_LP_LTO),y)
+CFLAGS += -flto
+endif
 
 # `lpgcc` in in-tree mode:
 LPGCC  = CC="$(CCACHE) $(CC_$(ARCH))"

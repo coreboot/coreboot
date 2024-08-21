@@ -97,8 +97,8 @@ setup_2mb:
 	mov $main_page_table, %esi
 
 loop_2mb:
-	mov %eax, (%rsi, %rcx, 8)
-	mov $0, 4(%rsi, %rcx, 8)
+	movl %eax, (%rsi, %rcx, 8)
+	movl $0, 4(%rsi, %rcx, 8)
 	add $0x200000, %eax
 	inc %ecx
 	cmp %edi, %ecx
@@ -111,8 +111,8 @@ loop_2mb:
 	mov $extra_page_table, %esi
 
 fill_extra_page_table:
-	mov %eax, (%rsi, %rcx, 8)
-	mov $0, 4(%rsi, %rcx, 8)
+	movl %eax, (%rsi, %rcx, 8)
+	movl $0, 4(%rsi, %rcx, 8)
 	add $4096, %eax
 	inc %ecx
 	cmp %edi, %ecx

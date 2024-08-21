@@ -373,7 +373,7 @@ endef
 cbfs-files-processor-struct= \
 	$(eval $(2): $(1) $(obj)/build.h $(obj)/fmap_config.h $(KCONFIG_AUTOHEADER); \
 		printf "    CC+STRIP   $(1)\n"; \
-		$(CC_ramstage) -MMD $(CPPFLAGS_ramstage) $(CFLAGS_ramstage) --param asan-globals=0 $$(ramstage-c-ccopts) -include $(KCONFIG_AUTOHEADER) -MT $(2) -o $(2).tmp -c $(1) && \
+		$(CC_ramstage) -MMD $(CPPFLAGS_ramstage) $(CFLAGS_ramstage) -fno-lto --param asan-globals=0 $$(ramstage-c-ccopts) -include $(KCONFIG_AUTOHEADER) -MT $(2) -o $(2).tmp -c $(1) && \
 		$(OBJCOPY_ramstage) -O binary --only-section='.*data*' --only-section='.*bss*' \
 		--set-section-flags .*bss*=alloc,contents,load $(2).tmp $(2); \
 		rm -f $(2).tmp) \
@@ -544,6 +544,14 @@ CFLAGS_common += -Wnull-dereference
 CFLAGS_common += -Wlogical-op
 CFLAGS_common += -Wduplicated-cond
 CFLAGS_common += -Wno-array-compare
+endif
+endif
+
+ifeq ($(CONFIG_LTO),y)
+CFLAGS_common += -flto
+# Clang can not deal with GCC lto objects
+ifeq ($(CONFIG_COMPILER_GCC),y)
+ADAFLAGS_common += -flto
 endif
 endif
 
@@ -1316,11 +1324,15 @@ endif # CONFIG_CBFS_VERIFICATION
 
 define link_stage
 # $1 stage name
-
+ifeq ($(CONFIG_LTO),y)
+$$(objcbfs)/$(1).debug: $$$$($(1)-libs) $$$$($(1)-objs)
+	@printf "    LINK       $$(subst $$(obj)/,,$$(@))\n"
+	$$(CC_$(1)) $$(CPPFLAGS_$(1)) $$(CFLAGS_$(1)) $$(LDFLAGS_$(1):%=-Wl,%) -o $$@ -L$$(obj) $$(COMPILER_RT_FLAGS_$(1):%=-Wl,%) -Wl,--whole-archive -Wl,--start-group $$(filter-out %.ld,$$($(1)-objs)) $$($(1)-libs) -Wl,--no-whole-archive $$(COMPILER_RT_$(1)) -Wl,--end-group -T $(call src-to-obj,$(1),$(CONFIG_MEMLAYOUT_LD_FILE))
+else
 $$(objcbfs)/$(1).debug: $$$$($(1)-libs) $$$$($(1)-objs)
 	@printf "    LINK       $$(subst $$(obj)/,,$$(@))\n"
 	$$(LD_$(1)) $$(LDFLAGS_$(1)) -o $$@ -L$$(obj) $$(COMPILER_RT_FLAGS_$(1)) --whole-archive --start-group $$(filter-out %.ld,$$($(1)-objs)) $$($(1)-libs) --no-whole-archive $$(COMPILER_RT_$(1)) --end-group -T $(call src-to-obj,$(1),$(CONFIG_MEMLAYOUT_LD_FILE))
-
+endif
 endef
 
 ifeq ($(CONFIG_SEPARATE_ROMSTAGE),y)

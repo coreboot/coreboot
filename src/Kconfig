@@ -116,6 +116,13 @@ config CCACHE
 
 	  For details see https://ccache.samba.org.
 
+config LTO
+	bool "Use link time optimization (LTO) (experimental)"
+	default n
+	help
+	  Compile with link time optimization. This can often decrease the
+	  final binary size, but may increase compilation time.
+
 config IWYU
 	bool "Test platform with include-what-you-use"
 	help

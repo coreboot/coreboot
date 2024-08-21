@@ -79,7 +79,7 @@ $(error $(xcompile) deleted because it's invalid. \
 endif
 
 # `lpgcc` in in-tree mode:
-LPGCC  = CC="$(CCACHE) $(GCC_CC_$(ARCH))"
+LPGCC  = CC="$(CCACHE) $(CC_$(ARCH))"
 LPGCC += _OBJ="$(LIBPAYLOAD_OBJ)"
 LPGCC += $(LIBPAYLOAD_SRC)/bin/lpgcc
 

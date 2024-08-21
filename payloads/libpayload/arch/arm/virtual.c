@@ -71,7 +71,7 @@ typedef uint64_t pgd_t;
 #define SECTION_SHIFT	30
 #define BLOCK_SHIFT	21
 #define PAGE_SHIFT	12
-#define PGD_MASK	(~0 << PAGE_SHIFT)
+#define PGD_MASK	(~0u << PAGE_SHIFT)
 
 static pmd_t *ttb_buff = 0;
 static uintptr_t work_block;

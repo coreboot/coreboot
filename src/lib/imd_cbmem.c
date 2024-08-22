@@ -193,16 +193,19 @@ void *cbmem_entry_start(const struct cbmem_entry *entry)
 
 void cbmem_add_bootmem(void)
 {
-	void *baseptr = NULL;
-	size_t size = 0;
+	void *baseptr;
+	size_t size;
 
-	cbmem_get_region(&baseptr, &size);
+	if (cbmem_get_region(&baseptr, &size)) {
+		printk(BIOS_ERR, "CBMEM pointer/size not found!\n");
+		return;
+	}
 	bootmem_add_range((uintptr_t)baseptr, size, BM_MEM_TABLE);
 }
 
-void cbmem_get_region(void **baseptr, size_t *size)
+int cbmem_get_region(void **baseptr, size_t *size)
 {
-	imd_region_used(&imd, baseptr, size);
+	return imd_region_used(&imd, baseptr, size);
 }
 
 #if ENV_PAYLOAD_LOADER || (CONFIG(EARLY_CBMEM_LIST) && ENV_HAS_CBMEM)

@@ -102,7 +102,7 @@ void cbmem_run_init_hooks(int is_recovery);
 /* Add the cbmem memory used to the memory map at boot. */
 void cbmem_add_bootmem(void);
 /* Return the cbmem memory used */
-void cbmem_get_region(void **baseptr, size_t *size);
+int cbmem_get_region(void **baseptr, size_t *size);
 void cbmem_list(void);
 void cbmem_add_records_to_cbtable(struct lb_header *header);
 

@@ -74,12 +74,13 @@ static void clear_memory(void *unused)
 			BM_MEM_RAM);
 
 	/* Add reserved entries */
-	void *baseptr = NULL;
-	size_t size = 0;
+	void *baseptr;
+	size_t size;
 
 	/* Only skip CBMEM, stage program, stack and heap are included there. */
 
-	cbmem_get_region(&baseptr, &size);
+	if (cbmem_get_region(&baseptr, &size))
+		die("Could not find cbmem region");
 	memranges_insert(&mem, (uintptr_t)baseptr, size, BM_MEM_TABLE);
 
 	if (ENV_X86) {

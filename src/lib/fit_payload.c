@@ -110,8 +110,8 @@ static void add_cb_fdt_data(struct device_tree *tree)
 {
 	u32 addr_cells = 1, size_cells = 1;
 	u64 reg_addrs[2], reg_sizes[2];
-	void *baseptr = NULL;
-	size_t size = 0;
+	void *baseptr;
+	size_t size;
 
 	static const char *firmware_path[] = {"firmware", NULL};
 	struct device_tree_node *firmware_node = dt_find_node(tree->root,
@@ -140,8 +140,7 @@ static void add_cb_fdt_data(struct device_tree *tree)
 
 	/* Second is the CBMEM area (which usually includes the coreboot
 	table). */
-	cbmem_get_region(&baseptr, &size);
-	if (!baseptr || size == 0) {
+	if (cbmem_get_region(&baseptr, &size)) {
 		printk(BIOS_WARNING, "FIT: CBMEM pointer/size not found!\n");
 		return;
 	}

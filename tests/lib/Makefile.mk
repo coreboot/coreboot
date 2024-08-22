@@ -55,6 +55,7 @@ hexstrtobin-test-srcs += src/lib/hexstrtobin.c
 imd-test-srcs += tests/lib/imd-test.c
 imd-test-srcs += tests/stubs/console.c
 imd-test-srcs += src/lib/imd.c
+imd-test-srcs += tests/stubs/die.c
 
 timestamp-test-srcs += tests/lib/timestamp-test.c
 timestamp-test-srcs += tests/stubs/timestamp.c
@@ -85,12 +86,14 @@ imd_cbmem-ramstage-test-srcs += tests/lib/imd_cbmem-test.c
 imd_cbmem-ramstage-test-srcs += tests/stubs/console.c
 imd_cbmem-ramstage-test-srcs += src/lib/imd.c
 imd_cbmem-ramstage-test-mocks += cbmem_top_chipset
+imd_cbmem-ramstage-test-srcs += tests/stubs/die.c
 
 imd_cbmem-romstage-test-stage := romstage
 imd_cbmem-romstage-test-srcs += tests/lib/imd_cbmem-test.c
 imd_cbmem-romstage-test-srcs += tests/stubs/console.c
 imd_cbmem-romstage-test-srcs += src/lib/imd.c
 imd_cbmem-romstage-test-mocks += cbmem_top_chipset
+imd_cbmem-romstage-test-srcs += tests/stubs/die.c
 
 region_file-test-srcs += tests/lib/region_file-test.c
 region_file-test-srcs += src/commonlib/region.c

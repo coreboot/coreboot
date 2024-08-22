@@ -38,8 +38,10 @@
 - Zako (HP Chromebox G1)
 - Brox
 - Brox EC ISH
-- Lotso
+- Brox TI PDC
 - Greenbayupoc
+- Jubilant
+- Lotso
 - Agah
 - Anahera
 - Anahera4ES
@@ -53,6 +55,7 @@
 - Constitution
 - Crota
 - Dochi
+- Domika
 - Felwinter
 - Gaelin
 - Gimble
@@ -86,6 +89,8 @@
 - Taeko
 - Taeko4ES
 - Taniks
+- Teliks
+- Tereid
 - Tivviks
 - Trulo
 - Uldren
@@ -101,6 +106,7 @@
 - Yavista
 - Sundance
 - Pujjoga
+- Orisa
 - Butterfly (HP Pavilion Chromebook 14)
 - Cherry
 - Dojo
@@ -132,6 +138,7 @@
 - Wizpig
 - Drallion
 - Eve (Google Pixelbook)
+- Fatcat
 - Fizz
 - Karma
 - Endeavour
@@ -235,6 +242,7 @@
 - Puff
 - Scout
 - Wyvern (CTL Chromebox CBx2)
+- Rauru
 - Reef/Electro (Acer Chromebook Spin 11 R751T)
 - Pyro (Lenovo Thinkpad (Yoga) 11e Chromebook)
 - Sand (Acer Chromebook 15 CB515-1HT/1H)
@@ -250,6 +258,7 @@
 - Rex EC ISH
 - Rex4ES
 - Rex4ES EC ISH
+- Rex 64
 - Screebo
 - Screebo4ES
 - Arcada (Latitude 5300 2-in-1 Chromebook Enterprise)
@@ -317,6 +326,7 @@
 - Woomax (ASUS Chromebook Flip CM5)
 
 ## HP
+- Compaq Elite 8300 USDT
 - Z220 CMT Workstation
 - Z220 SFF Workstation
 
@@ -395,8 +405,8 @@
 - Elgon (GBCv2)
 
 ## Protectli
-- VP4630/VP4650
-- VP4670
+- VP6630/VP6650/VP6670
+- VP4630/VP4650/VP4670
 - VP2420
 
 ## SAMSUNG
@@ -420,6 +430,7 @@
 - Star Labs StarBook Mk V (i3-1115G4 and i7-1165G7)
 - Star Labs StarBook Mk VI (i3-1220P and i7-1260P)
 - Star Labs StarBook Mk VI (i3-1315U and i7-1360P)
+- Star Labs Lite Mk V (N200)
 
 ## Supermicro
 - X11SSH-TF

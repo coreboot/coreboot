@@ -314,7 +314,7 @@ RMODULE_LDFLAGS  := -z defs -Bsymbolic
 # rmdoule is named $(1).rmod
 define rmodule_link
 $(strip $(1)): $(strip $(2)) $$(COMPILER_RT_rmodules_$(3)) $(call src-to-obj,rmodules_$(3),src/lib/rmodule.ld) | $$(RMODTOOL)
-	$$(LD_rmodules_$(3)) $$(LDFLAGS_rmodules_$(3)) $(RMODULE_LDFLAGS) $($(1)-ldflags) -T $(call src-to-obj,rmodules_$(3),src/lib/rmodule.ld) -o $$@ --whole-archive --start-group $(filter-out %.ld,$(2)) --end-group
+	$$(LD_rmodules_$(3)) $$(LDFLAGS_rmodules_$(3)) $(RMODULE_LDFLAGS) $($(1)-ldflags) -T $(call src-to-obj,rmodules_$(3),src/lib/rmodule.ld) -o $$@ --whole-archive --start-group $(filter-out %.ld,$(2)) --no-whole-archive $$(COMPILER_RT_rmodules_$(3)) --end-group
 	$$(NM_rmodules_$(3)) -n $$@ > $$(basename $$@).map
 endef
 

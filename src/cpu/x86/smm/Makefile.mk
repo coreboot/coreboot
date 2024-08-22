@@ -17,8 +17,10 @@ smmstub-generic-ccopts += -D__SMM__
 smm-generic-ccopts += -D__SMM__
 smm-c-deps+=$$(OPTION_TABLE_H)
 
-$(obj)/smm/smm.o: $$(smm-objs) $(COMPILER_RT_smm)
-	$(LD_smm) -nostdlib -r -o $@ $(COMPILER_RT_FLAGS_smm) --whole-archive --start-group $(filter-out %.ld, $(smm-objs)) --no-whole-archive $(COMPILER_RT_smm) --end-group
+$(obj)/smm/smm.a: $$(smm-objs)
+	$(AR_smm) rcsT $@.tmp $(filter-out %.ld, $(smm-objs))
+	mv $@.tmp $@
+
 
 # change to the target path because objcopy will use the path name in its
 # ELF symbol names.
@@ -65,9 +67,9 @@ $(call src-to-obj,ramstage,$(obj)/cpu/x86/smm/smmstub.manual): $(obj)/smmstub/sm
 # C-based SMM handler.
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
-$(eval $(call rmodule_link,$(obj)/smm/smm.elf, $(obj)/smm/smm.o,x86_32))
+$(eval $(call rmodule_link,$(obj)/smm/smm.elf, $(obj)/smm/smm.a,x86_32))
 else
-$(eval $(call rmodule_link,$(obj)/smm/smm.elf, $(obj)/smm/smm.o,x86_64))
+$(eval $(call rmodule_link,$(obj)/smm/smm.elf, $(obj)/smm/smm.a,x86_64))
 endif
 
 $(obj)/smm/smm: $(obj)/smm/smm.elf.rmod

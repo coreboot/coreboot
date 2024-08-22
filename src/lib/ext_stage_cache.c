@@ -16,6 +16,8 @@ static void stage_cache_create_empty(void)
 
 	imd = &imd_stage_cache;
 	stage_cache_external_region(&base, &size);
+	if (base == NULL || size == 0)
+		return;
 	imd_handle_init(imd, (void *)(size + (uintptr_t)base));
 
 	printk(BIOS_DEBUG, "External stage cache:\n");
@@ -32,6 +34,8 @@ static void stage_cache_recover(void)
 
 	imd = &imd_stage_cache;
 	stage_cache_external_region(&base, &size);
+	if (base == NULL || size == 0)
+		return;
 	imd_handle_init(imd, (void *)(size + (uintptr_t)base));
 	if (imd_recover(imd))
 		printk(BIOS_DEBUG, "Unable to recover external stage cache.\n");

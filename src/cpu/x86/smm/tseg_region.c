@@ -53,8 +53,6 @@ int smm_subregion(int sub, uintptr_t *start, size_t *size)
 		sub_size = ied_size;
 		break;
 	default:
-		*start = 0;
-		*size = 0;
 		return -1;
 	}
 
@@ -65,11 +63,10 @@ int smm_subregion(int sub, uintptr_t *start, size_t *size)
 
 void stage_cache_external_region(void **base, size_t *size)
 {
-	if (smm_subregion(SMM_SUBREGION_CACHE, (uintptr_t *)base, size)) {
+	*base = NULL;
+	*size = 0;
+	if (smm_subregion(SMM_SUBREGION_CACHE, (uintptr_t *)base, size))
 		printk(BIOS_ERR, "No cache SMM subregion.\n");
-		*base = NULL;
-		*size = 0;
-	}
 }
 
 void smm_list_regions(void)

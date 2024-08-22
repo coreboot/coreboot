@@ -49,7 +49,7 @@ err:
 	size = 0;
 
 out:
-	if (vbt_size && size)
+	if (vbt_size)
 		*vbt_size = size;
 	return data;
 }

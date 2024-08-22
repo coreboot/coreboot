@@ -1339,12 +1339,14 @@ ifeq ($(CONFIG_CBFS_VERIFICATION),y)
 	fi
 endif # CONFIG_CBFS_VERIFICATION
 
+LTO_LINK_CFLAGS := -Wno-stack-usage
+
 define link_stage
 # $1 stage name
 ifeq ($(CONFIG_LTO),y)
 $$(objcbfs)/$(1).debug: $$$$($(1)-libs) $$$$($(1)-objs)
 	@printf "    LINK       $$(subst $$(obj)/,,$$(@))\n"
-	$$(CC_$(1)) $$(CPPFLAGS_$(1)) $$(CFLAGS_$(1)) $$(LDFLAGS_$(1):%=-Wl,%) -o $$@ -L$$(obj) $$(COMPILER_RT_FLAGS_$(1):%=-Wl,%) -Wl,--whole-archive -Wl,--start-group $$(filter-out %.ld,$$($(1)-objs)) $$($(1)-libs) -Wl,--no-whole-archive $$(COMPILER_RT_$(1)) -Wl,--end-group -T $(call src-to-obj,$(1),$(CONFIG_MEMLAYOUT_LD_FILE))
+	$$(CC_$(1)) $$(CPPFLAGS_$(1)) $$(CFLAGS_$(1)) $$(LDFLAGS_$(1):%=-Wl,%) $(LTO_LINK_CFLAGS) -o $$@ -L$$(obj) $$(COMPILER_RT_FLAGS_$(1):%=-Wl,%) -Wl,--whole-archive -Wl,--start-group $$(filter-out %.ld,$$($(1)-objs)) $$($(1)-libs) -Wl,--no-whole-archive $$(COMPILER_RT_$(1)) -Wl,--end-group -T $(call src-to-obj,$(1),$(CONFIG_MEMLAYOUT_LD_FILE))
 else
 $$(objcbfs)/$(1).debug: $$$$($(1)-libs) $$$$($(1)-objs)
 	@printf "    LINK       $$(subst $$(obj)/,,$$(@))\n"

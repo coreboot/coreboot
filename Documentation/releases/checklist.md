@@ -66,13 +66,23 @@ delayed, the next release will still be 3 months after the last release.
 
 ## Checklist
 
-### ~2 weeks prior to release
+### ~6 weeks prior to release
 - [ ] Announce upcoming release to mailing list, ask people to test and
       to update release notes.
 - [ ] Start marking patches that should to go into the release with a
-      tag "coreboot_release_X.yy"
+      tag "coreboot_release_X.yy".
+
+### ~4 weeks prior to release
+- [ ] Freeze toolchain state. Only relevant fixes are allowed from this point on.
+- [ ] Schedule release meetings.
+
+### ~2 weeks prior to release
+- [ ] Meet with release team.
+- [ ] Send reminder email to mailing list, ask for people to test, and to update the release notes.
+- [ ] Update the topic in the IRC channel with the date of the upcoming release.
 
 ### ~1 week prior to release
+- [ ] Meet with release team.
 - [ ] Send reminder email to mailing list, ask for people to test,
       and to update the release notes.
 - [ ] Update the topic in the IRC channel with the date of the upcoming
@@ -80,21 +90,22 @@ delayed, the next release will still be 3 months after the last release.
 - [ ] If there are any deprecations announced for the following release,
       make sure that a list of currently affected boards and chipsets is
       part of the release notes.
-- [ ] Finalize release notes as much as possible
-- [ ] Prepare release notes template for following release
-- [ ] Update `Documentation/releases/index.md`
+- [ ] Finalize release notes as much as possible.
+- [ ] Prepare release notes template for following release.
+- [ ] Update `Documentation/releases/index.md.
 - [ ] Check which branches need to be released. Any branch with changes
       should get a new release. Announce these branch releases and
       prepare release notes.
 
-### Day before release
+### Day before release tag
 - [ ] Make sure patches with tags for the release are merged.
 - [ ] Announce to IRC that the release will be tomorrow and ask for
       testing.
 - [ ] Run `util/vboot_list/vboot_list.sh` script to update the list of
       boards supported by vboot.
 
-### Day of release
+### Day of release tag
+- [ ] Meet with release team.
 - [ ] Review the full documentation about doing the release below.
 - [ ] Select a commit ID to base the release upon.
 - [ ] Test the commit selected for release.
@@ -120,11 +131,24 @@ delayed, the next release will still be 3 months after the last release.
       can be used as release builders.
 
 ### Week following the release
+- [ ] Do the final release notes - Fill in the release date, remove "Upcoming release"
+      and other filler from the current release notes.
+- [ ] ADMIN: Upload release files & toolchain tarballs to the web server.
+- [ ] ADMIN: Upload the final release notes to the web server.
+- [ ] ADMIN: Upload crossgcc sources to the web server.
+- [ ] Create coreboot-sdk and coreboot-jenkins-node docker images based on the release ID
+      and push them to dockerhub. These can be used as release builders.
 - [ ] Update download page to point to files, push to repo.
-- [ ] Write and publish blog post with release final notes. Branch
-      releases notes should be included in the same post.
 - [ ] Remove code that was announced it was going to be removed.
-- [ ] Update `Documentation/releases/boards_supported_on_branches.md`
+- [ ] Update AUTHORS file with any new authors.
+- [ ] Update Documentation/releases/boards_supported_on_branches.md.
+
+### 7 days after release tag
+- [ ] Meet with release team.
+- [ ] Write and publish blog post with release final notes. Branch releases notes (if any)
+      should be included in the same post.
+- [ ] Set up for next release.
+
 
 ### Creating a branch
 - [ ] Branches are named 4.xx_branch to differentiate from the tags.
@@ -230,6 +254,7 @@ commit db508565d2483394b709654c57533e55eebace51 (HEAD, tag: 4.6, origin/master, 
 ...
 ````
 
+## Push the signed tag
 When you used the script to generate the release, a signed tag was
 generated in the tree that was downloaded. From the coreboot-X.Y tree,
 just run: `git push origin X.Y`. In case you pushed the wrong tag

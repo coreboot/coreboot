@@ -113,11 +113,6 @@ _car_unallocated_start = .;
 _car_region_end = . + CONFIG_DCACHE_RAM_SIZE - (. - _car_region_start)
 		  - CONFIG_FSP_T_RESERVED_SIZE;
 
-. = _car_region_start;
-.car.fspm_rc_heap . (NOLOAD) : {
-	. += CONFIG_FSP_M_RC_HEAP_SIZE;
-}
-
 . = _car_region_end;
 .car.mrc_var . (NOLOAD) : {
 	. += CONFIG_DCACHE_RAM_MRC_VAR_SIZE;

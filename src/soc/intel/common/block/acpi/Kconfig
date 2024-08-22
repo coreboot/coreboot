@@ -76,4 +76,16 @@ config SOC_INTEL_COMMON_BLOCK_ACPI_SLP_S0_FREQ_HZ
 	  Define the slp_s0_residency frequency to be reported in the
 	  LPIT ACPI table.
 
+config SOC_INTEL_COMMON_BLOCK_ACPI_HAVE_GPE1
+	bool "Use GPE1 Event bits"
+	help
+	  Include GPE1 STS and EN registers in FADT. Requires define GPE1_STS(0)
+	  and GPE1_REG_MAX from the SOC header. The SOC needs to have GPE1 block
+	  implemented to select this. This flag will also be used to determine the
+	  standard GPE0/1 event methods to use in the ASL code or devicetree for the
+	  internal wake capable devices. GPE1 Event Bit is an extension of GPE0
+	  (present in all Intel SoC platform). GPE1 Events include the power
+	  management, hot plug, and PCIe events for the internal devices. Select
+	  this Kconfig to support SoCs that publish GPE1 as part of PMC IO register.
+
 endif

@@ -8,6 +8,19 @@
 
 #define PCH_PMC_EPOC			0x18EC
 
+/*
+ * GPE1 support is introduced in PTL. The existing standard GPE
+ * functions will cover GPE1 when SOC_INTEL_COMMON_BLOCK_ACPI_HAVE_GPE1 is
+ * selected. In addition, the following SOC GPE1 defines are required in common
+ * code but not present in older platform headers. Therefore, the dummy entries
+ * are added here for platforms without GPE1 support.
+ */
+#if !CONFIG(SOC_INTEL_COMMON_BLOCK_ACPI_HAVE_GPE1)
+#define GPE1_STS(x) (0x0 + ((x) * 4))
+#define GPE1_EN(x) (0x0 + ((x) * 4))
+#define GPE1_REG_MAX 0
+#endif
+
 /**
  * enum pch_pmc_xtal - External crystal oscillator frequency.
  * @XTAL_24_MHZ: 24 MHz external crystal.

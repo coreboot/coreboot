@@ -107,6 +107,16 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	/* GPE0 STS/EN pairs each 32 bits wide. */
 	fadt->gpe0_blk_len = 2 * GPE0_REG_MAX * sizeof(uint32_t);
 
+	fadt->gpe1_blk = GPE1_STS(0) ? (pmbase + GPE1_STS(0)) : 0;
+	if (fadt->gpe1_blk) {
+		fadt->gpe1_blk_len = 2 * GPE1_REG_MAX * sizeof(uint32_t);
+		/*
+		 * NOTE: gpe1 is after gpe0, which has _STS and _EN register sets.
+		 * gpe1_base is the starting bit offset for GPE1.
+		 */
+		fadt->gpe1_base = fadt->gpe0_blk_len / 2 * 8;
+	}
+
 	fill_fadt_extended_pm_io(fadt);
 
 	fadt->flags |= ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED |

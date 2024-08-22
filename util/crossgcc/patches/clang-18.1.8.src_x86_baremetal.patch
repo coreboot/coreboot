@@ -1,0 +1,29 @@
+diff --git a/lib/Driver/ToolChains/BareMetal.cpp b/lib/Driver/ToolChains/BareMetal.cpp
+index 852e0442..eb84a785 100644
+--- a/lib/Driver/ToolChains/BareMetal.cpp
++++ b/lib/Driver/ToolChains/BareMetal.cpp
+@@ -169,6 +169,12 @@ static bool isPPCBareMetal(const llvm::Triple &Triple) {
+          Triple.getEnvironment() == llvm::Triple::EABI;
+ }
+
++/// Is the triple x86_32 or x86_64 -*-none-elf?
++static bool isX86BareMetal(const llvm::Triple &Triple) {
++  return Triple.isX86() && Triple.getOS() == llvm::Triple::UnknownOS &&
++    Triple.getEnvironmentName() == "elf";
++}
++
+ static void findMultilibsFromYAML(const ToolChain &TC, const Driver &D,
+                                   StringRef MultilibPath, const ArgList &Args,
+                                   DetectedMultilibs &Result) {
+@@ -234,9 +240,10 @@ void BareMetal::findMultilibs(const Driver &D, const llvm::Triple &Triple,
+
+ bool BareMetal::handlesTarget(const llvm::Triple &Triple) {
+   return isARMBareMetal(Triple) || isAArch64BareMetal(Triple) ||
+-         isRISCVBareMetal(Triple) || isPPCBareMetal(Triple);
++    isRISCVBareMetal(Triple) || isPPCBareMetal(Triple) || isX86BareMetal(Triple);
+ }
+
++
+ Tool *BareMetal::buildLinker() const {
+   return new tools::baremetal::Linker(*this);
+ }

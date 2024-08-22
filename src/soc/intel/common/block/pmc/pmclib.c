@@ -94,7 +94,7 @@ static void migrate_power_state(int is_recovery)
 CBMEM_CREATION_HOOK(migrate_power_state);
 
 static void print_num_status_bits(int num_bits, uint32_t status,
-				  const char *const bit_names[])
+				  const char *const *bit_names)
 {
 	int i;
 

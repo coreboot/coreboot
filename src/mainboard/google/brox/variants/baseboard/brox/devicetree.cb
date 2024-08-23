@@ -160,11 +160,11 @@ chip soc/intel/alderlake
 			}"
 		end
 		device ref dtt on end
-		device ref tbt_pcie_rp0 on end
-		device ref tbt_pcie_rp2 on end
+		device ref tbt_pcie_rp0 off end
+		device ref tbt_pcie_rp2 off end
 		device ref tcss_xhci on end
-		device ref tcss_dma0 on end
-		device ref tcss_dma1 on end
+		device ref tcss_dma0 off end
+		device ref tcss_dma1 off end
 		device ref xhci on end
 		device ref shared_sram on end
 		device ref i2c0 on

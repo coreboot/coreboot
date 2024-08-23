@@ -17,7 +17,9 @@ ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN1),y)
 
 romstage-y += psp_gen1.c
 ramstage-y += psp_gen1.c
+
 smm-y += psp_gen1.c
+smm-$(CONFIG_SOC_AMD_COMMON_BLOCK_PSP_SMI) += psp_smi_flash_gen1.c
 
 endif # CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN1
 

@@ -177,6 +177,29 @@ int send_psp_command(u32 command, void *buffer)
 	return 0;
 }
 
+enum cb_err psp_get_psp_capabilities(uint32_t *capabilities)
+{
+	int cmd_status;
+	struct mbox_cmd_capability_query_buffer buffer = {
+		.header = {
+			.size = sizeof(buffer)
+		},
+	};
+
+	printk(BIOS_DEBUG, "PSP: Querying PSP capabilities...");
+
+	cmd_status = send_psp_command(MBOX_BIOS_CMD_PSP_CAPS_QUERY, &buffer);
+
+	/* buffer's status shouldn't change but report it if it does */
+	psp_print_cmd_status(cmd_status, &buffer.header);
+
+	if (!cmd_status)
+		return CB_ERR;
+
+	*capabilities = read32(&buffer.capabilities);
+	return CB_SUCCESS;
+}
+
 enum cb_err soc_read_c2p38(uint32_t *msg_38_value)
 {
 	const uintptr_t psp_mmio = get_psp_mmio_base();

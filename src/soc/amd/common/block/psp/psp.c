@@ -55,6 +55,52 @@ void psp_print_cmd_status(int cmd_status, struct mbox_buffer_header *header)
 		printk(BIOS_DEBUG, "OK\n");
 }
 
+enum cb_err psp_get_ftpm_capabilties(uint32_t *capabilities)
+{
+	int cmd_status;
+	struct mbox_cmd_capability_query_buffer buffer = {
+		.header = {
+			.size = sizeof(buffer)
+		},
+	};
+
+	printk(BIOS_DEBUG, "PSP: Querying fTPM capabilities...");
+
+	cmd_status = send_psp_command(MBOX_BIOS_CMD_PSP_FTPM_QUERY, &buffer);
+
+	/* buffer's status shouldn't change but report it if it does */
+	psp_print_cmd_status(cmd_status, &buffer.header);
+
+	if (!cmd_status)
+		return CB_ERR;
+
+	*capabilities = read32(&buffer.capabilities);
+	return CB_SUCCESS;
+}
+
+enum cb_err psp_get_hsti_state(uint32_t *state)
+{
+	int cmd_status;
+	struct mbox_cmd_hsti_query_buffer buffer = {
+		.header = {
+			.size = sizeof(buffer)
+		},
+	};
+
+	printk(BIOS_DEBUG, "PSP: Querying HSTI state...");
+
+	cmd_status = send_psp_command(MBOX_BIOS_CMD_HSTI_QUERY, &buffer);
+
+	/* buffer's status shouldn't change but report it if it does */
+	psp_print_cmd_status(cmd_status, &buffer.header);
+
+	if (!cmd_status)
+		return CB_ERR;
+
+	*state = read32(&buffer.state);
+	return CB_SUCCESS;
+}
+
 /*
  * Notify the PSP that the system is completing the boot process.  Upon
  * receiving this command, the PSP will only honor commands where the buffer

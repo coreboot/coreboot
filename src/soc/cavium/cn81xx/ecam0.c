@@ -181,7 +181,7 @@ static size_t ecam0_pci_enable_msix(struct device *dev,
 		       dev_path(dev));
 		return -1;
 	}
-	bar = ecam0_get_bar_val(dev, bar_idx);
+	bar = ecam0_get_bar_val(pcidev_bdf(dev), bar_idx);
 	if (!bar) {
 		printk(BIOS_ERR, "%s: Failed to find MSI-X bar\n",
 		       dev_path(dev));

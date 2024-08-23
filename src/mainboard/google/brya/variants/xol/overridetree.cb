@@ -341,11 +341,8 @@ chip soc/intel/alderlake
 			chip drivers/i2c/hid
 				register "generic.hid" = ""ZNT0000""
 				register "generic.desc" = ""Zinitix Touchpad""
-				# FIXME: Change back the interrupt type to IRQxAPIC if possible
-				#        after investigating the reason why Xol shows touchpad
-				#        stuttering issue with IRQxAPIC configuration but not
-				#        GPI_INT.
-				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW_WAKE(GPP_F14)"
+				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F14_IRQ)"
+				register "generic.wake" = "GPE0_DW2_14"
 				register "generic.detect" = "1"
 				register "hid_desc_reg_offset" = "0xE"
 				device i2c 40 on end

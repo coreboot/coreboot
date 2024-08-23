@@ -119,13 +119,6 @@ static const struct pad_config gpio_overrides[] = {
 	PAD_NC(GPP_F12, NONE),
 	/* F13 : GSXDOUT ==> NC */
 	PAD_NC(GPP_F13, NONE),
-	/* F14 : GSXDIN ==> TCHPAD_INT_ODL */
-	/*
-	 * FIXME: Change back the interrupt type to IRQxAPIC if possible after investigating
-	 *        the reason why Xol shows touchpad stuttering issue with IRQxAPIC
-	 *        configuration but not GPI_INT.
-	 */
-	PAD_CFG_GPI_INT(GPP_F14, NONE, PWROK, LEVEL),
 	/* F15 : GSXSRESET# ==> PU 100K 3.3V */
 	PAD_CFG_GPI(GPP_F15, NONE, DEEP),
 	/* F16 : GSXCLK ==> NC */

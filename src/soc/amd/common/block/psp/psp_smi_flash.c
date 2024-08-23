@@ -11,13 +11,13 @@
 #include "psp_def.h"
 #include "psp_smi_flash.h"
 
-static bool is_valid_rw_byte_count(struct mbox_pspv2_cmd_spi_read_write *cmd_buf,
+static bool is_valid_rw_byte_count(struct mbox_psp_cmd_spi_read_write *cmd_buf,
 				   u64 num_bytes)
 {
 	const u32 cmd_buf_size = read32(&cmd_buf->header.size);
 	const size_t payload_buffer_offset =
-		offsetof(struct mbox_pspv2_cmd_spi_read_write, req) +
-		offsetof(struct pspv2_spi_read_write_request, buffer);
+		offsetof(struct mbox_psp_cmd_spi_read_write, req) +
+		offsetof(struct psp_spi_read_write_request, buffer);
 	return num_bytes <= cmd_buf_size - payload_buffer_offset;
 }
 
@@ -91,8 +91,8 @@ static bool spi_controller_available(void)
 
 enum mbox_p2c_status psp_smi_spi_get_info(struct mbox_default_buffer *buffer)
 {
-	struct mbox_pspv2_cmd_spi_info *const cmd_buf =
-		(struct mbox_pspv2_cmd_spi_info *)buffer;
+	struct mbox_psp_cmd_spi_info *const cmd_buf =
+		(struct mbox_psp_cmd_spi_info *)buffer;
 	const struct spi_flash *flash;
 	struct region_device store;
 	u64 target_nv_id;
@@ -131,8 +131,8 @@ enum mbox_p2c_status psp_smi_spi_get_info(struct mbox_default_buffer *buffer)
 
 enum mbox_p2c_status psp_smi_spi_read(struct mbox_default_buffer *buffer)
 {
-	struct mbox_pspv2_cmd_spi_read_write *const cmd_buf =
-		(struct mbox_pspv2_cmd_spi_read_write *)buffer;
+	struct mbox_psp_cmd_spi_read_write *const cmd_buf =
+		(struct mbox_psp_cmd_spi_read_write *)buffer;
 	enum mbox_p2c_status ret;
 	u64 target_nv_id;
 	u64 lba;
@@ -180,8 +180,8 @@ enum mbox_p2c_status psp_smi_spi_read(struct mbox_default_buffer *buffer)
 
 enum mbox_p2c_status psp_smi_spi_write(struct mbox_default_buffer *buffer)
 {
-	struct mbox_pspv2_cmd_spi_read_write *const cmd_buf =
-		(struct mbox_pspv2_cmd_spi_read_write *)buffer;
+	struct mbox_psp_cmd_spi_read_write *const cmd_buf =
+		(struct mbox_psp_cmd_spi_read_write *)buffer;
 	enum mbox_p2c_status ret;
 	u64 target_nv_id;
 	u64 lba;
@@ -229,8 +229,8 @@ enum mbox_p2c_status psp_smi_spi_write(struct mbox_default_buffer *buffer)
 
 enum mbox_p2c_status psp_smi_spi_erase(struct mbox_default_buffer *buffer)
 {
-	struct mbox_pspv2_cmd_spi_erase *const cmd_buf =
-		(struct mbox_pspv2_cmd_spi_erase *)buffer;
+	struct mbox_psp_cmd_spi_erase *const cmd_buf =
+		(struct mbox_psp_cmd_spi_erase *)buffer;
 	enum mbox_p2c_status ret;
 	u64 target_nv_id;
 	u64 lba;

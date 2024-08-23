@@ -11,27 +11,27 @@ static bool is_valid_psp_spi_id(u64 target_nv_id)
 	       target_nv_id == SMI_TARGET_RPMC_NVRAM;
 }
 
-bool is_valid_psp_spi_info(struct mbox_pspv2_cmd_spi_info *cmd_buf)
+bool is_valid_psp_spi_info(struct mbox_psp_cmd_spi_info *cmd_buf)
 {
 	return is_valid_psp_spi_id(read64(&cmd_buf->req.target_nv_id));
 }
 
-bool is_valid_psp_spi_read_write(struct mbox_pspv2_cmd_spi_read_write *cmd_buf)
+bool is_valid_psp_spi_read_write(struct mbox_psp_cmd_spi_read_write *cmd_buf)
 {
 	return is_valid_psp_spi_id(read64(&cmd_buf->req.target_nv_id));
 }
 
-bool is_valid_psp_spi_erase(struct mbox_pspv2_cmd_spi_erase *cmd_buf)
+bool is_valid_psp_spi_erase(struct mbox_psp_cmd_spi_erase *cmd_buf)
 {
 	return is_valid_psp_spi_id(read64(&cmd_buf->req.target_nv_id));
 }
 
-u64 get_psp_spi_info_id(struct mbox_pspv2_cmd_spi_info *cmd_buf)
+u64 get_psp_spi_info_id(struct mbox_psp_cmd_spi_info *cmd_buf)
 {
 	return read64(&cmd_buf->req.target_nv_id);
 }
 
-void set_psp_spi_info(struct mbox_pspv2_cmd_spi_info *cmd_buf, u64 lba, u64 block_size,
+void set_psp_spi_info(struct mbox_psp_cmd_spi_info *cmd_buf, u64 lba, u64 block_size,
 		      u64 num_blocks)
 {
 	write64(&cmd_buf->req.lba, lba);
@@ -39,7 +39,7 @@ void set_psp_spi_info(struct mbox_pspv2_cmd_spi_info *cmd_buf, u64 lba, u64 bloc
 	write64(&cmd_buf->req.num_blocks, num_blocks);
 }
 
-void get_psp_spi_read_write(struct mbox_pspv2_cmd_spi_read_write *cmd_buf, u64 *target_nv_id,
+void get_psp_spi_read_write(struct mbox_psp_cmd_spi_read_write *cmd_buf, u64 *target_nv_id,
 			    u64 *lba, u64 *offset, u64 *num_bytes, u8 **data)
 {
 	*target_nv_id = read64(&cmd_buf->req.target_nv_id);
@@ -49,7 +49,7 @@ void get_psp_spi_read_write(struct mbox_pspv2_cmd_spi_read_write *cmd_buf, u64 *
 	*data = cmd_buf->req.buffer;
 }
 
-void get_psp_spi_erase(struct mbox_pspv2_cmd_spi_erase *cmd_buf, u64 *target_nv_id, u64 *lba,
+void get_psp_spi_erase(struct mbox_psp_cmd_spi_erase *cmd_buf, u64 *target_nv_id, u64 *lba,
 		       u64 *num_blocks)
 {
 	*target_nv_id = read64(&cmd_buf->req.target_nv_id);

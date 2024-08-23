@@ -319,7 +319,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 		mrc_cache_current_mmap_leak(MRC_VARIABLE_DATA, version,
 					    NULL);
 
-	assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED));
+	_Static_assert(CONFIG(BOOT_DEVICE_MEMORY_MAPPED), "Boot device not memory mapped");
 
 	fsp_version = version;
 }

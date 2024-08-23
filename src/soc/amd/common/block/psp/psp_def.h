@@ -48,12 +48,11 @@ struct mbox_buffer_header {
 } __packed;
 
 /*
- * command-specific buffer definitions:  see NDA document #54267
- * The following commands need a buffer definition if they are to be used.
- * All other commands will work with the default buffer.
- * MBOX_BIOS_CMD_SMM_INFO		MBOX_BIOS_CMD_PSP_QUERY
- * MBOX_BIOS_CMD_SX_INFO		MBOX_BIOS_CMD_S3_DATA_INFO
- * MBOX_BIOS_CMD_RSM_INFO
+ * x86 to PSP mailbox commands that don't take any parameter or return any data, use the
+ * mbox_default_buffer, while x86 to PSP commands that either pass data to the PSP or get data
+ * returned from the PSP use command-specific buffer definitions. For details on the specific
+ * buffer definitions for the various commands, see NDA document #54267 for the generations
+ * before family 17h and NDA document #55758 for the generations from family 17h on.
  */
 
 struct mbox_default_buffer {	/* command-response buffer unused by command */
@@ -73,16 +72,19 @@ struct smm_req_buffer {
 	uint64_t psp_mbox_smm_flag_address;
 } __packed;
 
+/* MBOX_BIOS_CMD_SMM_INFO */
 struct mbox_cmd_smm_info_buffer {
 	struct mbox_buffer_header header;
 	struct smm_req_buffer req;
 } __packed __aligned(32);
 
+/* MBOX_BIOS_CMD_SX_INFO */
 struct mbox_cmd_sx_info_buffer {
 	struct mbox_buffer_header header;
 	u8 sleep_type;
 } __packed __aligned(32);
 
+/* MBOX_BIOS_CMD_SET_SPL_FUSE */
 struct mbox_cmd_late_spl_buffer {
 	struct mbox_buffer_header header;
 	uint32_t	spl_value;
@@ -99,6 +101,7 @@ enum dtpm_request_type {
 	DTPM_REQUEST_MAX,
 };
 
+/* MBOX_BIOS_CMD_I2C_TPM_ARBITRATION */
 struct mbox_cmd_dtpm_config_buffer {
 	struct mbox_buffer_header header;
 	uint32_t request_type;

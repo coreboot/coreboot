@@ -45,8 +45,8 @@
  * AMD reference code aligns and pads all buffers to 32 bytes.
  */
 struct mbox_buffer_header {
-	u32 size;	/* total size of buffer */
-	u32 status;	/* command status, filled by PSP if applicable */
+	uint32_t size;		/* total size of buffer */
+	uint32_t status;	/* command status, filled by PSP if applicable */
 } __packed;
 
 /*
@@ -83,7 +83,7 @@ struct mbox_cmd_smm_info_buffer {
 /* MBOX_BIOS_CMD_SX_INFO */
 struct mbox_cmd_sx_info_buffer {
 	struct mbox_buffer_header header;
-	u8 sleep_type;
+	uint8_t sleep_type;
 } __packed __aligned(32);
 
 /* MBOX_BIOS_CMD_PSP_FTPM_QUERY, MBOX_BIOS_CMD_PSP_CAPS_QUERY */
@@ -144,7 +144,7 @@ uintptr_t get_psp_mmio_base(void);
 void psp_print_cmd_status(int cmd_status, struct mbox_buffer_header *header);
 
 /* This command needs to be implemented by the generation specific code. */
-int send_psp_command(u32 command, void *buffer);
+int send_psp_command(uint32_t command, void *buffer);
 
 enum cb_err psp_get_ftpm_capabilties(uint32_t *capabilities);
 enum cb_err psp_get_psp_capabilities(uint32_t *capabilities);

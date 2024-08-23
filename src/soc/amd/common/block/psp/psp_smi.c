@@ -15,7 +15,7 @@
 #define MBOX_PSP_CMD_SPI_ERASE		0x86
 
 extern struct {
-	u8 buffer[P2C_BUFFER_MAXSIZE];
+	uint8_t buffer[P2C_BUFFER_MAXSIZE];
 }  __aligned(32) p2c_buffer;
 
 static const uintptr_t p2c_mbox_base = (uintptr_t)&p2c_buffer.buffer;
@@ -26,15 +26,15 @@ static const uintptr_t p2c_mbox_base = (uintptr_t)&p2c_buffer.buffer;
 
 union p2c_mbox_status {
 	struct {
-		u32 checksum		:  8; /* [ 0.. 7] */
-		u32 checksum_en		:  1; /* [ 8.. 8] */
-		u32 reserved		: 22; /* [ 9..30] */
-		u32 command_ready	:  1; /* [31..31] */
+		uint32_t checksum	:  8; /* [ 0.. 7] */
+		uint32_t checksum_en	:  1; /* [ 8.. 8] */
+		uint32_t reserved	: 22; /* [ 9..30] */
+		uint32_t command_ready	:  1; /* [31..31] */
 	} __packed fields;
-	u32 raw;
+	uint32_t raw;
 };
 
-static u8 rd_bios_mbox_checksum(void)
+static uint8_t rd_bios_mbox_checksum(void)
 {
 	union p2c_mbox_status status;
 
@@ -42,7 +42,7 @@ static u8 rd_bios_mbox_checksum(void)
 	return status.fields.checksum;
 }
 
-static void wr_bios_mbox_checksum(u8 checksum)
+static void wr_bios_mbox_checksum(uint8_t checksum)
 {
 	union p2c_mbox_status status;
 
@@ -83,7 +83,7 @@ static void clear_psp_command(void)
 	write32p(p2c_mbox_base + P2C_MBOX_COMMAND_OFFSET, 0);
 }
 
-static u32 get_psp_command(void)
+static uint32_t get_psp_command(void)
 {
 	return read32p(p2c_mbox_base + P2C_MBOX_COMMAND_OFFSET);
 }
@@ -98,11 +98,11 @@ static uint32_t get_psp_cmd_buffer_length(void)
 	return read32(&get_psp_command_buffer()->header.size);
 }
 
-static u8 calc_psp_buffer_checksum8(void)
+static uint8_t calc_psp_buffer_checksum8(void)
 {
-	const uint8_t *data = (const u8 *)get_psp_command_buffer();
+	const uint8_t *data = (const uint8_t *)get_psp_command_buffer();
 	const size_t size = get_psp_cmd_buffer_length();
-	u8 checksum = 0;
+	uint8_t checksum = 0;
 	size_t i;
 
 	for (i = 0; i < size; i++)
@@ -131,7 +131,7 @@ static enum mbox_p2c_status check_psp_command(void)
 static void handle_psp_command(void)
 {
 	enum mbox_p2c_status status;
-	u32 cmd;
+	uint32_t cmd;
 	struct mbox_default_buffer *const buffer = get_psp_command_buffer();
 
 	status = check_psp_command();

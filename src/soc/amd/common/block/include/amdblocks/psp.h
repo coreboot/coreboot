@@ -77,7 +77,7 @@ enum psp_blob_type {
  * Notify PSP that the system is entering a sleep state.  sleep_state uses the
  * same definition as Pm1Cnt[SlpTyp], typically 0, 1, 3, 4, 5.
  */
-void psp_notify_sx_info(u8 sleep_type);
+void psp_notify_sx_info(uint8_t sleep_type);
 
 int psp_load_named_blob(enum psp_blob_type type, const char *name);
 

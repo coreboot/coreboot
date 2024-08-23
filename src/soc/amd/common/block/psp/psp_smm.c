@@ -18,7 +18,7 @@
  * buffer.
  */
 struct {
-	u8 buffer[C2P_BUFFER_MAXSIZE];
+	uint8_t buffer[C2P_BUFFER_MAXSIZE];
 } __aligned(32) c2p_buffer;
 
 /*
@@ -26,7 +26,7 @@ struct {
  * and then send an SMI to the host to process the request.
  */
 struct {
-	u8 buffer[P2C_BUFFER_MAXSIZE];
+	uint8_t buffer[P2C_BUFFER_MAXSIZE];
 } __aligned(32) p2c_buffer;
 
 /*
@@ -45,7 +45,7 @@ static void clear_smm_flag(void)
 	smm_flag = 0;
 }
 
-static int send_psp_command_smm(u32 command, void *buffer)
+static int send_psp_command_smm(uint32_t command, void *buffer)
 {
 	int cmd_status;
 
@@ -106,7 +106,7 @@ int psp_notify_smm(void)
 }
 
 /* Notify PSP the system is going to a sleep state. */
-void psp_notify_sx_info(u8 sleep_type)
+void psp_notify_sx_info(uint8_t sleep_type)
 {
 	int cmd_status;
 	struct mbox_cmd_sx_info_buffer *buffer;

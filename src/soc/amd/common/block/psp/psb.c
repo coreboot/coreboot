@@ -34,7 +34,7 @@
 #define FUSE_STATUS_FUSING_ERR	0x0a
 #define FUSE_STATUS_BOOT_DONE	0x0b
 
-static const char *psb_test_status_to_string(u32 status)
+static const char *psb_test_status_to_string(uint32_t status)
 {
 	switch (status) {
 	case PSB_TEST_STATUS_PASS:
@@ -66,7 +66,7 @@ static const char *psb_test_status_to_string(u32 status)
 	}
 }
 
-static const char *fuse_status_to_string(u32 status)
+static const char *fuse_status_to_string(uint32_t status)
 {
 	switch (status) {
 	case FUSE_STATUS_SUCCESS:
@@ -101,7 +101,7 @@ static enum cb_err get_psb_status(uint32_t *psb_status_value)
  */
 static enum cb_err psb_enable(void)
 {
-	u32 status;
+	uint32_t status;
 	struct mbox_default_buffer buffer = {
 		.header = {
 			.size = sizeof(buffer)
@@ -127,7 +127,7 @@ static enum cb_err psb_enable(void)
 
 	printk(BIOS_INFO, "PSB: HSTI = %x\n", status);
 
-	const u32 psb_test_status = status & PSB_TEST_STATUS_MASK;
+	const uint32_t psb_test_status = status & PSB_TEST_STATUS_MASK;
 
 	if (psb_test_status != PSB_TEST_STATUS_PASS) {
 		printk(BIOS_ERR, "PSB: %s\n", psb_test_status_to_string(psb_test_status));
@@ -150,7 +150,7 @@ static enum cb_err psb_enable(void)
 		return CB_ERR;
 	}
 
-	const u32 fuse_status = read32(&buffer.header.status);
+	const uint32_t fuse_status = read32(&buffer.header.status);
 	if (fuse_status != FUSE_STATUS_SUCCESS) {
 		printk(BIOS_ERR, "PSB: %s\n", fuse_status_to_string(fuse_status));
 		return CB_ERR;

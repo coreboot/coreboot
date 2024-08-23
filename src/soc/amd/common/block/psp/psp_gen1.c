@@ -32,9 +32,9 @@
  *   cmd_response: pointer to command/response buffer
  */
 struct pspv1_mbox {
-	u32 mbox_command;
-	u32 mbox_status;
-	u64 cmd_response; /* definition conflicts w/BKDG but matches agesa */
+	uint32_t mbox_command;
+	uint32_t mbox_status;
+	uint64_t cmd_response; /* definition conflicts w/BKDG but matches agesa */
 } __packed;
 
 static void *soc_get_mbox_address(void)
@@ -64,17 +64,17 @@ static void *soc_get_mbox_address(void)
 	return (void *)(psp_mmio + PSP_MAILBOX_OFFSET);
 }
 
-static u32 rd_mbox_sts(struct pspv1_mbox *mbox)
+static uint32_t rd_mbox_sts(struct pspv1_mbox *mbox)
 {
 	return read32(&mbox->mbox_status);
 }
 
-static void wr_mbox_cmd(struct pspv1_mbox *mbox, u32 cmd)
+static void wr_mbox_cmd(struct pspv1_mbox *mbox, uint32_t cmd)
 {
 	write32(&mbox->mbox_command, cmd);
 }
 
-static u32 rd_mbox_cmd(struct pspv1_mbox *mbox)
+static uint32_t rd_mbox_cmd(struct pspv1_mbox *mbox)
 {
 	return read32(&mbox->mbox_command);
 }
@@ -112,7 +112,7 @@ static int wait_command(struct pspv1_mbox *mbox)
 	return -PSPSTS_CMD_TIMEOUT;
 }
 
-int send_psp_command(u32 command, void *buffer)
+int send_psp_command(uint32_t command, void *buffer)
 {
 	struct pspv1_mbox *mbox = soc_get_mbox_address();
 	if (!mbox)
@@ -153,7 +153,7 @@ int send_psp_command(u32 command, void *buffer)
 int psp_load_named_blob(enum psp_blob_type type, const char *name)
 {
 	int cmd_status;
-	u32 command;
+	uint32_t command;
 	void *blob;
 
 	switch (type) {

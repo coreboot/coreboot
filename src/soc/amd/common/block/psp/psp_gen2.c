@@ -82,17 +82,17 @@ uintptr_t get_psp_mmio_base(void)
 }
 
 union pspv2_mbox_command {
-	u32 val;
+	uint32_t val;
 	struct pspv2_mbox_cmd_fields {
-		u16 mbox_status;
-		u8 mbox_command;
-		u32 reserved:6;
-		u32 recovery:1;
-		u32 ready:1;
+		uint16_t mbox_status;
+		uint8_t mbox_command;
+		uint32_t reserved:6;
+		uint32_t recovery:1;
+		uint32_t ready:1;
 	} __packed fields;
 };
 
-static u16 rd_mbox_sts(uintptr_t psp_mmio)
+static uint16_t rd_mbox_sts(uintptr_t psp_mmio)
 {
 	union pspv2_mbox_command tmp;
 
@@ -100,7 +100,7 @@ static u16 rd_mbox_sts(uintptr_t psp_mmio)
 	return tmp.fields.mbox_status;
 }
 
-static void wr_mbox_cmd(uintptr_t psp_mmio, u8 cmd)
+static void wr_mbox_cmd(uintptr_t psp_mmio, uint8_t cmd)
 {
 	union pspv2_mbox_command tmp = { .val = 0 };
 
@@ -109,7 +109,7 @@ static void wr_mbox_cmd(uintptr_t psp_mmio, u8 cmd)
 	write32p(psp_mmio | PSP_MAILBOX_COMMAND_OFFSET, tmp.val);
 }
 
-static u8 rd_mbox_recovery(uintptr_t psp_mmio)
+static uint8_t rd_mbox_recovery(uintptr_t psp_mmio)
 {
 	union pspv2_mbox_command tmp;
 
@@ -127,7 +127,7 @@ static int wait_command(uintptr_t psp_mmio, bool wait_for_ready)
 	union pspv2_mbox_command and_mask = { .val = ~0 };
 	union pspv2_mbox_command expected = { .val = 0 };
 	struct stopwatch sw;
-	u32 tmp;
+	uint32_t tmp;
 
 	/* Zero fields from and_mask that should be kept */
 	and_mask.fields.mbox_command = 0;
@@ -149,7 +149,7 @@ static int wait_command(uintptr_t psp_mmio, bool wait_for_ready)
 	return -PSPSTS_CMD_TIMEOUT;
 }
 
-int send_psp_command(u32 command, void *buffer)
+int send_psp_command(uint32_t command, void *buffer)
 {
 	const uintptr_t psp_mmio = get_psp_mmio_base();
 	if (!psp_mmio)

@@ -35,7 +35,7 @@ static const char *status_to_string(int err)
 	}
 }
 
-static u32 rd_resp_sts(struct mbox_buffer_header *header)
+static uint32_t rd_resp_sts(struct mbox_buffer_header *header)
 {
 	return read32(&header->status);
 }

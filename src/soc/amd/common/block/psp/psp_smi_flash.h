@@ -10,11 +10,11 @@ enum psp_spi_id_type {
 
 struct psp_spi_info_request {
 #if CONFIG(SOC_AMD_COMMON_BLOCK_PSP_GEN2)
-	u64 target_nv_id;
+	uint64_t target_nv_id;
 #endif
-	u64 lba;
-	u64 block_size;
-	u64 num_blocks;
+	uint64_t lba;
+	uint64_t block_size;
+	uint64_t num_blocks;
 } __packed;
 
 struct mbox_psp_cmd_spi_info {
@@ -24,12 +24,12 @@ struct mbox_psp_cmd_spi_info {
 
 struct psp_spi_read_write_request {
 #if CONFIG(SOC_AMD_COMMON_BLOCK_PSP_GEN2)
-	u64 target_nv_id;
+	uint64_t target_nv_id;
 #endif
-	u64 lba;
-	u64 offset;
-	u64 num_bytes;
-	u8 buffer[];
+	uint64_t lba;
+	uint64_t offset;
+	uint64_t num_bytes;
+	uint8_t buffer[];
 } __packed;
 
 struct mbox_psp_cmd_spi_read_write {
@@ -39,10 +39,10 @@ struct mbox_psp_cmd_spi_read_write {
 
 struct psp_spi_erase_request {
 #if CONFIG(SOC_AMD_COMMON_BLOCK_PSP_GEN2)
-	u64 target_nv_id;
+	uint64_t target_nv_id;
 #endif
-	u64 lba;
-	u64 num_blocks;
+	uint64_t lba;
+	uint64_t num_blocks;
 } __packed;
 
 struct mbox_psp_cmd_spi_erase {
@@ -53,10 +53,11 @@ struct mbox_psp_cmd_spi_erase {
 bool is_valid_psp_spi_info(struct mbox_psp_cmd_spi_info *cmd_buf);
 bool is_valid_psp_spi_read_write(struct mbox_psp_cmd_spi_read_write *cmd_buf);
 bool is_valid_psp_spi_erase(struct mbox_psp_cmd_spi_erase *cmd_buf);
-u64 get_psp_spi_info_id(struct mbox_psp_cmd_spi_info *cmd_buf);
-void set_psp_spi_info(struct mbox_psp_cmd_spi_info *cmd_buf, u64 lba, u64 block_size,
-		      u64 num_blocks);
-void get_psp_spi_read_write(struct mbox_psp_cmd_spi_read_write *cmd_buf, u64 *target_nv_id,
-			    u64 *lba, u64 *offset, u64 *num_bytes, u8 **data);
-void get_psp_spi_erase(struct mbox_psp_cmd_spi_erase *cmd_buf, u64 *target_nv_id, u64 *lba,
-		       u64 *num_blocks);
+uint64_t get_psp_spi_info_id(struct mbox_psp_cmd_spi_info *cmd_buf);
+void set_psp_spi_info(struct mbox_psp_cmd_spi_info *cmd_buf, uint64_t lba, uint64_t block_size,
+		      uint64_t num_blocks);
+void get_psp_spi_read_write(struct mbox_psp_cmd_spi_read_write *cmd_buf,
+			    uint64_t *target_nv_id, uint64_t *lba, uint64_t *offset,
+			    uint64_t *num_bytes, uint8_t **data);
+void get_psp_spi_erase(struct mbox_psp_cmd_spi_erase *cmd_buf, uint64_t *target_nv_id,
+		       uint64_t *lba, uint64_t *num_blocks);

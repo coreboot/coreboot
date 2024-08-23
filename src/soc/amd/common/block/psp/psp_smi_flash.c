@@ -12,16 +12,16 @@
 #include "psp_smi_flash.h"
 
 static bool is_valid_rw_byte_count(struct mbox_psp_cmd_spi_read_write *cmd_buf,
-				   u64 num_bytes)
+				   uint64_t num_bytes)
 {
-	const u32 cmd_buf_size = read32(&cmd_buf->header.size);
+	const uint32_t cmd_buf_size = read32(&cmd_buf->header.size);
 	const size_t payload_buffer_offset =
 		offsetof(struct mbox_psp_cmd_spi_read_write, req) +
 		offsetof(struct psp_spi_read_write_request, buffer);
 	return num_bytes <= cmd_buf_size - payload_buffer_offset;
 }
 
-static const char *id_to_region_name(u64 target_nv_id)
+static const char *id_to_region_name(uint64_t target_nv_id)
 {
 	switch (target_nv_id) {
 	case SMI_TARGET_NVRAM:
@@ -36,7 +36,7 @@ static const char *id_to_region_name(u64 target_nv_id)
  * Do not cache the location to cope with flash changing underneath (e.g. due
  * to an update)
  */
-static int lookup_store(u64 target_nv_id, struct region_device *rstore)
+static int lookup_store(uint64_t target_nv_id, struct region_device *rstore)
 {
 	/* read_rdev, write_rdev and store_irdev need to be static to not go out of scope when
 	   this function returns */
@@ -66,7 +66,7 @@ static int lookup_store(u64 target_nv_id, struct region_device *rstore)
 	return rdev_chain(rstore, rdev, 0, region_device_sz(rdev));
 }
 
-static enum mbox_p2c_status find_psp_spi_flash_device_region(u64 target_nv_id,
+static enum mbox_p2c_status find_psp_spi_flash_device_region(uint64_t target_nv_id,
 							     struct region_device *store,
 							     const struct spi_flash **flash)
 {
@@ -95,9 +95,9 @@ enum mbox_p2c_status psp_smi_spi_get_info(struct mbox_default_buffer *buffer)
 		(struct mbox_psp_cmd_spi_info *)buffer;
 	const struct spi_flash *flash;
 	struct region_device store;
-	u64 target_nv_id;
-	u64 block_size;
-	u64 num_blocks;
+	uint64_t target_nv_id;
+	uint64_t block_size;
+	uint64_t num_blocks;
 	enum mbox_p2c_status ret;
 
 	printk(BIOS_SPEW, "PSP: SPI info request\n");
@@ -134,11 +134,11 @@ enum mbox_p2c_status psp_smi_spi_read(struct mbox_default_buffer *buffer)
 	struct mbox_psp_cmd_spi_read_write *const cmd_buf =
 		(struct mbox_psp_cmd_spi_read_write *)buffer;
 	enum mbox_p2c_status ret;
-	u64 target_nv_id;
-	u64 lba;
-	u64 offset;
-	u64 num_bytes;
-	u8 *data;
+	uint64_t target_nv_id;
+	uint64_t lba;
+	uint64_t offset;
+	uint64_t num_bytes;
+	uint8_t *data;
 	size_t addr;
 	const struct spi_flash *flash;
 	struct region_device store;
@@ -183,11 +183,11 @@ enum mbox_p2c_status psp_smi_spi_write(struct mbox_default_buffer *buffer)
 	struct mbox_psp_cmd_spi_read_write *const cmd_buf =
 		(struct mbox_psp_cmd_spi_read_write *)buffer;
 	enum mbox_p2c_status ret;
-	u64 target_nv_id;
-	u64 lba;
-	u64 offset;
-	u64 num_bytes;
-	u8 *data;
+	uint64_t target_nv_id;
+	uint64_t lba;
+	uint64_t offset;
+	uint64_t num_bytes;
+	uint8_t *data;
 	size_t addr;
 	const struct spi_flash *flash;
 	struct region_device store;
@@ -232,9 +232,9 @@ enum mbox_p2c_status psp_smi_spi_erase(struct mbox_default_buffer *buffer)
 	struct mbox_psp_cmd_spi_erase *const cmd_buf =
 		(struct mbox_psp_cmd_spi_erase *)buffer;
 	enum mbox_p2c_status ret;
-	u64 target_nv_id;
-	u64 lba;
-	u64 num_blocks;
+	uint64_t target_nv_id;
+	uint64_t lba;
+	uint64_t num_blocks;
 	size_t addr;
 	size_t num_bytes;
 	const struct spi_flash *flash;

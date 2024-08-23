@@ -5,7 +5,6 @@ fw_config
 		option RETIMER_JHL8040		2
 	end
 	field STORAGE 2 3
-		option STORAGE_UNKNOWN		0
 		option STORAGE_UFS		1
 		option STORAGE_NVME		2
 	end
@@ -331,7 +330,6 @@ chip soc/intel/alderlake
 				.clk_src = 0,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
-			probe STORAGE STORAGE_UNKNOWN
 			probe STORAGE STORAGE_NVME
 			probe unprovisioned
 		end
@@ -381,12 +379,10 @@ chip soc/intel/alderlake
 			chip drivers/intel/ish
 				device generic 0 alias ish_conf on end
 			end
-			probe STORAGE STORAGE_UNKNOWN
 			probe STORAGE STORAGE_UFS
 			probe unprovisioned
 		end
 		device ref ufs on
-			probe STORAGE STORAGE_UNKNOWN
 			probe STORAGE STORAGE_UFS
 			probe unprovisioned
 		end

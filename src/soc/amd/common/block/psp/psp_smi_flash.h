@@ -61,3 +61,8 @@ void get_psp_spi_read_write(struct mbox_psp_cmd_spi_read_write *cmd_buf,
 			    uint64_t *num_bytes, uint8_t **data);
 void get_psp_spi_erase(struct mbox_psp_cmd_spi_erase *cmd_buf, uint64_t *target_nv_id,
 		       uint64_t *lba, uint64_t *num_blocks);
+
+enum mbox_p2c_status psp_smi_spi_get_info(struct mbox_default_buffer *buffer);
+enum mbox_p2c_status psp_smi_spi_read(struct mbox_default_buffer *buffer);
+enum mbox_p2c_status psp_smi_spi_write(struct mbox_default_buffer *buffer);
+enum mbox_p2c_status psp_smi_spi_erase(struct mbox_default_buffer *buffer);

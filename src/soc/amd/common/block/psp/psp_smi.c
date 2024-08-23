@@ -7,6 +7,7 @@
 #include <device/mmio.h>
 #include <types.h>
 #include "psp_def.h"
+#include "psp_smi_flash.h"
 
 /* PSP to x86 commands */
 #define MBOX_PSP_CMD_SPI_INFO		0x83

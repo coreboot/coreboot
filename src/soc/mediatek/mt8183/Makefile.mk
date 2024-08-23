@@ -88,9 +88,7 @@ DRAM_CBFS := $(CONFIG_CBFS_PREFIX)/dram
 $(DRAM_CBFS)-file := $(MT8183_BLOB_DIR)/dram.elf
 $(DRAM_CBFS)-type := stage
 $(DRAM_CBFS)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
-ifneq ($(wildcard $($(DRAM_CBFS)-file)),)
-	cbfs-files-y += $(DRAM_CBFS)
-endif
+cbfs-files-y += $(DRAM_CBFS)
 
 BL31_MAKEARGS += PLAT=mt8183
 

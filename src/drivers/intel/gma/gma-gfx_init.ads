@@ -16,14 +16,14 @@ is
 
    ----------------------------------------------------------------------------
 
-   function c_fb_add_framebuffer_info
+   function C_Fb_Add_Framebuffer_Info_Simple
      (fb_addr: Interfaces.C.size_t;
       x_resolution : word32;
       y_resolution : word32;
       bytes_per_line : word32;
       bits_per_pixel : word8)
-      return Interfaces.C.size_t;
+      return Interfaces.C.int;
 
-   pragma import (C, c_fb_add_framebuffer_info, "fb_add_framebuffer_info");
+   pragma import (C, C_Fb_Add_Framebuffer_Info_Simple, "fb_add_framebuffer_info_simple");
 
 end GMA.GFX_Init;

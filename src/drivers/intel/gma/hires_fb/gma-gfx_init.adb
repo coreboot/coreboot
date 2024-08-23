@@ -27,6 +27,7 @@ is
       use type word64;
       use type word32;
       use type Interfaces.C.size_t;
+      use type Interfaces.C.int;
 
       ports : Port_List;
 
@@ -39,7 +40,7 @@ is
       min_h : pos32 := Config.LINEAR_FRAMEBUFFER_MAX_WIDTH;
       min_v : pos32 := Config.LINEAR_FRAMEBUFFER_MAX_HEIGHT;
 
-      fbinfo : Interfaces.C.size_t;
+      fbinfo : Interfaces.C.int;
 
    begin
       lightup_ok := 0;
@@ -82,7 +83,7 @@ is
 
                HW.GFX.GMA.Map_Linear_FB (linear_fb_addr, fb);
                if linear_fb_addr /= 0 then
-                  fbinfo := c_fb_add_framebuffer_info
+                  fbinfo := C_Fb_Add_Framebuffer_Info_Simple
                      (fb_addr        => Interfaces.C.size_t (linear_fb_addr),
                       x_resolution   => word32 (fb.Width),
                       y_resolution   => word32 (fb.Height),

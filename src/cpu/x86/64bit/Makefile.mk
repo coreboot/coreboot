@@ -13,7 +13,7 @@ all_x86-y += $(PAGETABLE_SRC)
 
 # Add --defsym=_start=0 to suppress a linker warning.
 $(objcbfs)/pt: $(dir)/$(PAGETABLE_SRC) $(obj)/config.h
-	$(CC_bootblock) $(CFLAGS_bootblock) $(CPPFLAGS_bootblock) -o $@.tmp $< -Wl,--section-start=.rodata=$(CONFIG_ARCH_X86_64_PGTBL_LOC),--defsym=_start=0
+	$(CC_bootblock) $(CFLAGS_bootblock) $(CPPFLAGS_bootblock) -o $@.tmp $< -Wl,--section-start=.rodata=$(CONFIG_ARCH_X86_64_PGTBL_LOC),--defsym=_start=0 -fuse-ld=bfd
 	$(OBJCOPY_ramstage) -Obinary -j .rodata $@.tmp $@
 	rm $@.tmp
 

@@ -24,26 +24,3 @@ const char *get_wifi_sar_cbfs_filename(void)
 {
 	return get_wifi_sar_fw_config_filename(FW_CONFIG_FIELD(WIFI_BT));
 }
-
-void variant_devtree_update(void)
-{
-	struct device *ufs = DEV_PTR(ufs);
-	struct device *ish = DEV_PTR(ish);
-	struct device *nvme_rp = DEV_PTR(pcie4_0);
-
-	if (fw_config_probe(FW_CONFIG(STORAGE, STORAGE_UNKNOWN)) || (!fw_config_is_provisioned())) {
-		printk(BIOS_INFO, "fw_config is unprovisioned or storage is unknown so enable all storage's configs.\n");
-		return;
-	}
-
-	if (!fw_config_probe(FW_CONFIG(STORAGE, STORAGE_NVME))) {
-		printk(BIOS_INFO, "NVMe disabled by fw_config.\n");
-		nvme_rp->enabled = 0;
-	}
-
-	if (!fw_config_probe(FW_CONFIG(STORAGE, STORAGE_UFS))) {
-		printk(BIOS_INFO, "UFS disabled by fw_config.\n");
-		ufs->enabled = 0;
-		ish->enabled = 0;
-	}
-}

@@ -1,6 +1,5 @@
 fw_config
 	field STORAGE 2 3
-		option STORAGE_UNKNOWN			0
 		option STORAGE_UFS			1
 		option STORAGE_NVME			2
 	end
@@ -278,7 +277,6 @@ chip soc/intel/alderlake
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 			probe STORAGE STORAGE_NVME
-			probe STORAGE STORAGE_UNKNOWN
 			probe unprovisioned
 		end
 		device ref pcie_rp5 on
@@ -320,12 +318,10 @@ chip soc/intel/alderlake
 				device generic 0 alias ish_conf on end
 			end
 			probe STORAGE STORAGE_UFS
-			probe STORAGE STORAGE_UNKNOWN
 			probe unprovisioned
 		end
 		device ref ufs on
 			probe STORAGE STORAGE_UFS
-			probe STORAGE STORAGE_UNKNOWN
 			probe unprovisioned
 		end
 		device ref i2c0 on

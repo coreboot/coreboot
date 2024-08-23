@@ -74,11 +74,9 @@ static void fw_config_handle(void *unused)
 		gpio_configure_pads(lte_disable_pads, ARRAY_SIZE(lte_disable_pads));
 	}
 
-	if (!fw_config_probe(FW_CONFIG(STORAGE, STORAGE_UNKNOWN))) {
-		if (!fw_config_probe(FW_CONFIG(STORAGE, STORAGE_NVME))) {
-			printk(BIOS_INFO, "Disable NVMe GPIO pins by fw_config.\n");
-			gpio_configure_pads(nvme_disable_pads, ARRAY_SIZE(nvme_disable_pads));
-		}
+	if (!fw_config_probe(FW_CONFIG(STORAGE, STORAGE_NVME))) {
+		printk(BIOS_INFO, "Disable NVMe GPIO pins by fw_config.\n");
+		gpio_configure_pads(nvme_disable_pads, ARRAY_SIZE(nvme_disable_pads));
 	}
 }
 BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY, fw_config_handle, NULL);

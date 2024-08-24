@@ -4,7 +4,6 @@
 #include <console/console.h>
 #include <device/pnp_ops.h>
 #include <northbridge/intel/pineview/pineview.h>
-#include <southbridge/intel/i82801gx/i82801gx.h>
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8720f/it8720f.h>
 

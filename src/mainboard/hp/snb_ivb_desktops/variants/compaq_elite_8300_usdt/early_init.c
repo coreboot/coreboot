@@ -4,7 +4,6 @@
 #include <superio/nuvoton/npcd378/npcd378.h>
 #include <superio/nuvoton/common/nuvoton.h>
 #include <device/pci_ops.h>
-#include <southbridge/intel/bd82x6x/pch.h>
 
 void bootblock_mainboard_early_init(void)
 {

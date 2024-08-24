@@ -4,7 +4,6 @@
 #include <device/pnp_ops.h>
 #include <northbridge/intel/sandybridge/raminit.h>
 #include <northbridge/intel/sandybridge/pei_data.h>
-#include <southbridge/intel/bd82x6x/pch.h>
 
 #include <superio/nuvoton/common/nuvoton.h>
 #include <superio/nuvoton/nct6779d/nct6779d.h>

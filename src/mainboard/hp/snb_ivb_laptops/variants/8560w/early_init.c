@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <bootblock_common.h>
-#include <southbridge/intel/bd82x6x/pch.h>
 #include <superio/smsc/lpc47n217/lpc47n217.h>
 #include <ec/hp/kbc1126/ec.h>
 

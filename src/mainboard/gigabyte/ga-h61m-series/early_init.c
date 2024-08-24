@@ -2,7 +2,6 @@
 
 #include <bootblock_common.h>
 #include <northbridge/intel/sandybridge/raminit.h>
-#include <southbridge/intel/bd82x6x/pch.h>
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8728f/it8728f.h>
 

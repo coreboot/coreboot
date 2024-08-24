@@ -3,7 +3,6 @@
 #include <bootblock_common.h>
 #include <device/pci_ops.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
-#include <southbridge/intel/bd82x6x/pch.h>
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8772f/it8772f.h>
 

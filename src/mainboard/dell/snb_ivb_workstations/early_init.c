@@ -3,7 +3,6 @@
 #include <bootblock_common.h>
 #include <device/pci_ops.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
-#include <southbridge/intel/bd82x6x/pch.h>
 #include <superio/smsc/sch5545/sch5545.h>
 #include <superio/smsc/sch5545/sch5545_emi.h>
 

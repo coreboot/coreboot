@@ -6,7 +6,6 @@
 #include <device/pnp_ops.h>
 #include <device/pnp.h>
 #include <northbridge/intel/sandybridge/raminit.h>
-#include <southbridge/intel/bd82x6x/pch.h>
 #include <superio/ite/it8783ef/it8783ef.h>
 #include <superio/ite/common/ite.h>
 

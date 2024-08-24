@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <bootblock_common.h>
-#include <southbridge/intel/i82801jx/i82801jx.h>
 #include <northbridge/intel/x4x/x4x.h>
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8720f/it8720f.h>

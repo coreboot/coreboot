@@ -515,7 +515,6 @@ CFLAGS_common += -Wstrict-prototypes
 CFLAGS_common += -Wmissing-prototypes
 CFLAGS_common += -Wwrite-strings
 CFLAGS_common += -Wredundant-decls
-CFLAGS_common += -Wno-trigraphs
 CFLAGS_common += -Wimplicit-fallthrough
 CFLAGS_common += -Wshadow
 CFLAGS_common += -Wdate-time

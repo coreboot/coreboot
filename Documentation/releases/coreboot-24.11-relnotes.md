@@ -40,6 +40,10 @@ Changes to external resources
 
 ### Toolchain updates
 
+* Upgrade binutils from 2.42 to 2.43.1
+* Upgrade GCC from 14.1.0 to 14.2.0
+* Upgrade CMake from 3.29.3 to 3.30.2
+* Upgrade LLVM from 18.1.6 to 18.1.8
 
 ### Git submodule pointers
 

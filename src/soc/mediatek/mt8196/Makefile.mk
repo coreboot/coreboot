@@ -10,6 +10,7 @@ all-y += timer.c timer_prepare.c
 all-y += ../common/uart.c
 
 bootblock-y += bootblock.c
+bootblock-y += ../common/bootblock.c bootblock.c
 bootblock-y += ../common/early_init.c
 bootblock-y += ../common/mmu_operations.c
 bootblock-$(CONFIG_PCI) += ../common/pcie.c pcie.c

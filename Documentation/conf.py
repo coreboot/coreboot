@@ -23,6 +23,7 @@ version = release.split("-")[0]
 extensions = ["myst_parser"]
 
 myst_heading_anchors = 5
+myst_url_schemes = ["http", "https", "mailto", "ftp", "ircs"]
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']

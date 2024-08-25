@@ -35,6 +35,9 @@ static void test_b64_decode(void **state)
 		res = b64_decode((uint8_t *)messages[i].enc, strlen(messages[i].enc), decoded);
 
 		assert_int_equal(res, (strlen(messages[i].dec)));
+
+		decoded[res] = 0x00;
+
 		assert_string_equal((const char *)decoded, messages[i].dec);
 
 		free(decoded);

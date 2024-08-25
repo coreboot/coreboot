@@ -97,7 +97,8 @@ static ssize_t qemu_eraseat(const struct region_device *rd, size_t offset,
 }
 
 static struct region_device_ops flash_ops;
-static struct mem_region_device boot_dev;
+static const struct mem_region_device boot_dev =
+	MEM_REGION_DEV_INIT(0x100000000ULL - CONFIG_ROM_SIZE, CONFIG_ROM_SIZE, &flash_ops);
 
 /*
  * Depending on how firmware image was passed to QEMU, it may behave as:
@@ -132,10 +133,6 @@ void boot_device_init(void)
 	 * functions may vary.
 	 */
 	flash_ops = mem_rdev_rw_ops;
-
-	boot_dev.base = (void *)(uintptr_t)(0x100000000ULL - CONFIG_ROM_SIZE);
-	boot_dev.rdev.ops = &flash_ops;
-	boot_dev.rdev.region.size = CONFIG_ROM_SIZE;
 
 	/*
 	 * Find first byte different than any of the commands, simplified.

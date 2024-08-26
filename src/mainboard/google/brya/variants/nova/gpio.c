@@ -91,6 +91,10 @@ static const struct pad_config override_gpio_table[] = {
 	/* F16 : GSXCLK ==> MEM_STRAP_0 */
 	PAD_CFG_GPI_LOCK(GPP_F16, NONE, LOCK_CONFIG),
 
+	/* H4  : I2C0_SDA ==> PCH_I2C_SCALER_SDA */
+	PAD_CFG_NF_LOCK(GPP_H4, NONE, NF1, LOCK_CONFIG),
+	/* H5  : I2C0_SCL ==> PCH_I2C_SCALER_SCL */
+	PAD_CFG_NF_LOCK(GPP_H5, NONE, NF1, LOCK_CONFIG),
 	/* H12 : I2C7_SDA ==> NC */
 	PAD_NC_LOCK(GPP_H12, NONE, LOCK_CONFIG),
 	/* H13 : I2C7_SCL ==> NC */

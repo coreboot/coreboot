@@ -870,7 +870,7 @@ static void integrate_psp_ab(context *ctx, psp_directory_table *pspdir,
 				BUFF_TO_RUN_MODE(*ctx, pspdir2, AMD_ADDR_REL_BIOS);
 		pspdir->entries[count].address_mode =
 				SET_ADDR_MODE(pspdir, AMD_ADDR_REL_BIOS);
-		pspdir->entries[count].size = _MAX(TABLE_ALIGNMENT,
+		pspdir->entries[count].size = _MAX(TABLE_L2_SIZE_MAX,
 				pspdir2->header.num_entries *
 				sizeof(psp_directory_entry) +
 				sizeof(psp_directory_header));
@@ -1216,11 +1216,11 @@ static void integrate_bios_levels(context *ctx, amd_cb_config *cb_config)
 
 	if (cb_config->recovery_ab) {
 		add_psp_firmware_entry(ctx, ctx->pspdir2, ctx->biosdir2,
-			AMD_FW_BIOS_TABLE, TABLE_ALIGNMENT);
+			AMD_FW_BIOS_TABLE, TABLE_L2_SIZE_MAX);
 		if (ctx->pspdir2_b != NULL)
 			add_psp_firmware_entry(ctx, ctx->pspdir2_b,
 				ctx->biosdir2_b, AMD_FW_BIOS_TABLE,
-				TABLE_ALIGNMENT);
+				TABLE_L2_SIZE_MAX);
 	} else if (ctx->biosdir2) {
 		current_table_save = ctx->current_table;
 		ctx->current_table = BUFF_TO_RUN_MODE(*ctx, ctx->biosdir, AMD_ADDR_REL_BIOS);

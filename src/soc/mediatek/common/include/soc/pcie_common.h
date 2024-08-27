@@ -22,5 +22,6 @@ struct mtk_pcie_config {
 void mtk_pcie_domain_read_resources(struct device *dev);
 void mtk_pcie_domain_set_resources(struct device *dev);
 void mtk_pcie_domain_enable(struct device *dev);
+void mtk_pcie_reset(uintptr_t base_reg, bool enable);
 
 #endif

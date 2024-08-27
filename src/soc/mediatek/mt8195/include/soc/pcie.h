@@ -6,7 +6,6 @@
 #include <soc/pcie_common.h>
 #include <types.h>
 
-void mtk_pcie_reset(uintptr_t reg, bool enable);
 void mtk_pcie_pre_init(void);
 
 bool mainboard_needs_pcie_init(void);

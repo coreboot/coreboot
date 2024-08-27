@@ -247,6 +247,16 @@ void mtk_pcie_domain_set_resources(struct device *dev)
 	pci_domain_set_resources(dev);
 }
 
+void mtk_pcie_reset(uintptr_t base_reg, bool enable)
+{
+	uint32_t flags = PCIE_MAC_RSTB | PCIE_PHY_RSTB | PCIE_BRG_RSTB | PCIE_PE_RSTB;
+
+	if (enable)
+		setbits32p(base_reg + PCIE_RST_CTRL_REG, flags);
+	else
+		clrbits32p(base_reg + PCIE_RST_CTRL_REG, flags);
+}
+
 enum cb_err fill_lb_pcie(struct lb_pcie *pcie)
 {
 	if (!pci_root_bus())
@@ -291,7 +301,7 @@ void mtk_pcie_domain_enable(struct device *dev)
 			printk(BIOS_WARNING,
 			       "%s: PCIe early init data not found, sleeping 100ms\n",
 			       __func__);
-			mtk_pcie_reset(conf->base + PCIE_RST_CTRL_REG, true);
+			mtk_pcie_reset(conf->base, true);
 		} else {
 			printk(BIOS_WARNING,
 			       "%s: Need an extra %ld us delay to meet PERST# deassertion requirement\n",
@@ -302,7 +312,7 @@ void mtk_pcie_domain_enable(struct device *dev)
 	}
 
 	/* De-assert reset signals */
-	mtk_pcie_reset(conf->base + PCIE_RST_CTRL_REG, false);
+	mtk_pcie_reset(conf->base, false);
 
 	if (!retry(100,
 		   (tries++, read32p(conf->base + PCIE_LINK_STATUS_REG) &

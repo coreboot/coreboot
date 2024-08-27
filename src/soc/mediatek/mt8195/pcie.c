@@ -9,11 +9,6 @@
 #include <soc/pcie_common.h>
 
 #define PCIE_REG_BASE_PORT0	0x112f0000
-#define PCIE_RST_CTRL_REG	(PCIE_REG_BASE_PORT0 + 0x148)
-#define PCIE_MAC_RSTB		BIT(0)
-#define PCIE_PHY_RSTB		BIT(1)
-#define PCIE_BRG_RSTB		BIT(2)
-#define PCIE_PE_RSTB		BIT(3)
 
 struct pad_func {
 	gpio_t gpio;
@@ -46,28 +41,12 @@ static void mtk_pcie_set_pinmux(uint8_t port)
 	}
 }
 
-void mtk_pcie_reset(uintptr_t reg, bool enable)
-{
-	uint32_t val;
-
-	val = read32p(reg);
-
-	if (enable)
-		val |= PCIE_MAC_RSTB | PCIE_PHY_RSTB | PCIE_BRG_RSTB |
-		       PCIE_PE_RSTB;
-	else
-		val &= ~(PCIE_MAC_RSTB | PCIE_PHY_RSTB | PCIE_BRG_RSTB |
-			 PCIE_PE_RSTB);
-
-	write32p(reg, val);
-}
-
 void mtk_pcie_pre_init(void)
 {
 	mtk_pcie_set_pinmux(0);
 
 	/* Assert all reset signals at early stage */
-	mtk_pcie_reset(PCIE_RST_CTRL_REG, true);
+	mtk_pcie_reset(PCIE_REG_BASE_PORT0, true);
 
 	early_init_save_time(EARLY_INIT_PCIE);
 }

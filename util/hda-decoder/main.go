@@ -69,6 +69,11 @@ func decodeFile(path string, codec uint32) {
 
 	for scanner.Scan() {
 		fields := strings.Fields(scanner.Text())
+		if len(fields) != 2 {
+			fmt.Print("// Something went wrong\n")
+			continue
+		}
+
 		pin := stringToUint32(fields[0])
 		config := stringToUint32(fields[1])
 

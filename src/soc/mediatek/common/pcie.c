@@ -266,20 +266,14 @@ void mtk_pcie_domain_enable(struct device *dev)
 	uint32_t val;
 
 	/* Set as RC mode */
-	val = read32p(conf->base + PCIE_SETTING_REG);
-	val |= PCIE_RC_MODE;
-	write32p(conf->base + PCIE_SETTING_REG, val);
+	setbits32p(conf->base + PCIE_SETTING_REG, PCIE_RC_MODE);
 
 	/* Set class code */
-	val = read32p(conf->base + PCIE_PCI_IDS_1);
-	val &= ~GENMASK(31, 8);
-	val |= PCI_CLASS(PCI_CLASS_BRIDGE_PCI << 8);
-	write32p(conf->base + PCIE_PCI_IDS_1, val);
+	clrsetbits32p(conf->base + PCIE_PCI_IDS_1, GENMASK(31, 8),
+		      PCI_CLASS(PCI_CLASS_BRIDGE_PCI << 8));
 
 	/* Mask all INTx interrupts */
-	val = read32p(conf->base + PCIE_INT_ENABLE_REG);
-	val &= ~PCIE_INTX_ENABLE;
-	write32p(conf->base + PCIE_INT_ENABLE_REG, val);
+	clrbits32p(conf->base + PCIE_INT_ENABLE_REG, PCIE_INTX_ENABLE);
 
 	perst_time_us = early_init_get_elapsed_time_us(EARLY_INIT_PCIE);
 	printk(BIOS_DEBUG, "%s: %ld us elapsed since assert PERST#\n",

@@ -266,24 +266,9 @@ enum cb_err fill_lb_pcie(struct lb_pcie *pcie)
 	return CB_SUCCESS;
 }
 
-void mtk_pcie_domain_enable(struct device *dev)
+static void wait_perst_asserted(uintptr_t base)
 {
-	const mtk_soc_config_t *config = config_of(dev);
-	const struct mtk_pcie_config *conf = &config->pcie_config;
-	const char *ltssm_state;
 	long perst_time_us;
-	size_t tries = 0;
-	uint32_t val;
-
-	/* Set as RC mode */
-	setbits32p(conf->base + PCIE_SETTING_REG, PCIE_RC_MODE);
-
-	/* Set class code */
-	clrsetbits32p(conf->base + PCIE_PCI_IDS_1, GENMASK(31, 8),
-		      PCI_CLASS(PCI_CLASS_BRIDGE_PCI << 8));
-
-	/* Mask all INTx interrupts */
-	clrbits32p(conf->base + PCIE_INT_ENABLE_REG, PCIE_INTX_ENABLE);
 
 	perst_time_us = early_init_get_elapsed_time_us(EARLY_INIT_PCIE);
 	printk(BIOS_DEBUG, "%s: %ld us elapsed since assert PERST#\n",
@@ -301,7 +286,7 @@ void mtk_pcie_domain_enable(struct device *dev)
 			printk(BIOS_WARNING,
 			       "%s: PCIe early init data not found, sleeping 100ms\n",
 			       __func__);
-			mtk_pcie_reset(conf->base, true);
+			mtk_pcie_reset(base, true);
 		} else {
 			printk(BIOS_WARNING,
 			       "%s: Need an extra %ld us delay to meet PERST# deassertion requirement\n",
@@ -310,9 +295,59 @@ void mtk_pcie_domain_enable(struct device *dev)
 
 		udelay(min_perst_time_us - perst_time_us);
 	}
+}
 
+static void deassert_perst(uintptr_t base)
+{
+	/* Set as RC mode */
+	setbits32p(base + PCIE_SETTING_REG, PCIE_RC_MODE);
+
+	/* Set class code */
+	clrsetbits32p(base + PCIE_PCI_IDS_1, GENMASK(31, 8),
+		      PCI_CLASS(PCI_CLASS_BRIDGE_PCI << 8));
+
+	/* Mask all INTx interrupts */
+	clrbits32p(base + PCIE_INT_ENABLE_REG, PCIE_INTX_ENABLE);
+
+	/* Above registers must be set before de-asserting PERST# */
 	/* De-assert reset signals */
-	mtk_pcie_reset(conf->base, false);
+	mtk_pcie_reset(base, false);
+}
+
+static void wait_perst_done(uintptr_t base)
+{
+	long perst_time_us;
+
+	wait_perst_asserted(base);
+
+	perst_time_us = early_init_get_elapsed_time_us(EARLY_INIT_PCIE_RESET);
+	printk(BIOS_DEBUG, "%s: %ld us elapsed since de-assert PERST#\n",
+	       __func__, perst_time_us);
+
+	if (!perst_time_us) {
+		printk(BIOS_INFO, "%s: PCIe early PERST# de-assertion is not done, "
+		       "de-assert PERST# now\n", __func__);
+		deassert_perst(base);
+	}
+}
+
+void mtk_pcie_deassert_perst(void)
+{
+	uintptr_t base = mtk_pcie_get_controller_base(0);
+
+	wait_perst_done(base);
+	early_init_save_time(EARLY_INIT_PCIE_RESET);
+}
+
+void mtk_pcie_domain_enable(struct device *dev)
+{
+	const mtk_soc_config_t *config = config_of(dev);
+	const struct mtk_pcie_config *conf = &config->pcie_config;
+	const char *ltssm_state;
+	size_t tries = 0;
+	uint32_t val;
+
+	wait_perst_done(conf->base);
 
 	if (!retry(100,
 		   (tries++, read32p(conf->base + PCIE_LINK_STATUS_REG) &

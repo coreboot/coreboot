@@ -96,7 +96,7 @@ static const char *const ltssm_str[] = {
 
 static uintptr_t mtk_pcie_get_controller_base(pci_devfn_t devfn)
 {
-	struct device *root_dev;
+	DEVTREE_CONST struct device *root_dev;
 	const mtk_soc_config_t *config;
 	static uintptr_t base = 0;
 

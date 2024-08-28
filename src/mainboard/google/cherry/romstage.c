@@ -8,6 +8,7 @@
 #include <soc/mt6315.h>
 #include <soc/mt6359p.h>
 #include <soc/mt6360.h>
+#include <soc/pcie.h>
 #include <soc/pll_common.h>
 #include <soc/pmif.h>
 #include <soc/rtc.h>
@@ -33,6 +34,8 @@ void platform_romstage_main(void)
 		mt6360_init(I2C7);
 	clk_buf_init();
 	rtc_boot();
+	if (CONFIG(PCI))
+		mtk_pcie_deassert_perst();
 	mtk_dram_init();
 	scp_rsi_enable();
 }

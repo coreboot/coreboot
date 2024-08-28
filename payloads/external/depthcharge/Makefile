@@ -30,6 +30,9 @@ BOARD:=$(notdir $(CONFIG_MAINBOARD_DIR))
 ifeq ($(OVERRIDE_DEFCONFIG),y)
 libpayload_config=$(libpayload_dir)/configs/defconfig
 DEPTHCHARGE_LIBPAYLOAD_MSG="Depthcharge: Using default defconfig for libpayload"
+else ifeq ($(OVERRIDE_DEFCONFIG_64),y)
+libpayload_config=$(libpayload_dir)/configs/defconfig_64
+DEPTHCHARGE_LIBPAYLOAD_MSG="Depthcharge: Using default defconfig for 64-bit libpayload"
 else
 libpayload_config=$(libpayload_dir)/configs/config.$(BOARD)
 DEPTHCHARGE_LIBPAYLOAD_MSG="Depthcharge: Using $(libpayload_dir)/configs/config.$(BOARD)"

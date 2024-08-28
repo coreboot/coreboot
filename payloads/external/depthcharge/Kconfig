@@ -62,4 +62,15 @@ config LP_DEFCONFIG_OVERRIDE
 	  instead.  This is can be a convenience for development purposes, or
 	  if the defaults in defconfig are sufficient for your system.
 
+config LP_DEFCONFIG_OVERRIDE_X64
+	bool "Use default 64-bit libpayload config"
+	depends on !LP_DEFCONFIG_OVERRIDE
+	help
+	  The Depthcharge makefile looks for a file config.<boardname> in the
+	  libpayload/configs directory.  Say Y here to use the file defconfig
+	  for 64-bit format instead. This can be convenient for development for
+	  a new board, or if the defaults in 64-bit defconfig file (i.e.
+	  defconfig_64) are sufficient for your system without creating
+	  board.[name] file.
+
 endif

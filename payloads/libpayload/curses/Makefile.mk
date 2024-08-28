@@ -38,7 +38,10 @@ includes-$(CONFIG_LP_TINYCURSES) += curses.h
 
 ifeq ($(CONFIG_LP_PDCURSES),y)
 PDCURSES := PDCurses
-INCLUDES += -D_LP64=0 -Icurses/$(PDCURSES) -Icurses/pdcurses-backend -Icurses/menu -Icurses/form
+ifneq ($(CONFIG_LP_ARCH_X86_64),y)
+INCLUDES += -D_LP64=0
+endif
+INCLUDES += -Icurses/$(PDCURSES) -Icurses/pdcurses-backend -Icurses/menu -Icurses/form
 endif
 
 libcurses-$(CONFIG_LP_PDCURSES) += pdcurses-backend/pdcdisp.c

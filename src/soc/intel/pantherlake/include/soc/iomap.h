@@ -82,7 +82,7 @@
  */
 #define IOM_BASE_ADDR		0x4010800000
 #define IOM_BASE_SIZE		0x10000
-#define IOM_BASE_ADDR_MAX	((IOM_BASE_ADDR + IOM_BASE_SIZE) - 1)
+#define IOM_BASE_ADDR_MAX	0x401080ffff /* ((IOM_BASE_ADDR + IOM_BASE_SIZE) - 1) */
 
 /* I/O port address space */
 #define ACPI_BASE_ADDRESS	0x1800

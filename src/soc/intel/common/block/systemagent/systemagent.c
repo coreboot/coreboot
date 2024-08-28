@@ -273,6 +273,12 @@ static void systemagent_read_resources(struct device *dev)
 {
 	int index = 0;
 
+	/**
+	 * If SoC has multiple PCIe domains, only reading resources from the first one.
+	 */
+	if (!is_dev_on_domain0(dev))
+		return;
+
 	/* Read standard PCI resources. */
 	pci_dev_read_resources(dev);
 

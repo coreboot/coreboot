@@ -12,6 +12,7 @@ DECLARE_REGION(early_init_data);
 
 enum early_init_type {
 	EARLY_INIT_PCIE,
+	EARLY_INIT_PCIE_RESET,
 	EARLY_INIT_MAX,
 };
 

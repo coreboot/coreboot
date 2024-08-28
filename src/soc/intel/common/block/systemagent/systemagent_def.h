@@ -58,7 +58,9 @@
 enum {
 	SA_TOUUD_REG,
 	SA_TOLUD_REG,
+#if CONFIG(HAVE_BDSM_BGSM_REGISTER)
 	SA_BGSM_REG,
+#endif
 	SA_TSEG_REG,
 	/* Must be last. */
 	MAX_MAP_ENTRIES

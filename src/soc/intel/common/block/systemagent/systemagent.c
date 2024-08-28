@@ -78,6 +78,9 @@ static void sa_soc_systemagent_init(struct device *dev)
 	if (m == NULL)
 		return;
 
+	if (!CONFIG(HAVE_CAPID_A_REGISTER))
+		return;
+
 	const uint32_t capid0_a = pci_read_config32(dev, CAPID0_A);
 
 	m->ecc_type = sa_get_ecc_type(capid0_a);
@@ -126,7 +129,9 @@ void sa_add_fixed_mmio_resources(struct device *dev, int *resource_cnt,
 static const struct sa_mem_map_descriptor sa_memory_map[MAX_MAP_ENTRIES] = {
 	{ TOUUD, true, "TOUUD" },
 	{ TOLUD, false, "TOLUD" },
+#if CONFIG(HAVE_BDSM_BGSM_REGISTER)
 	{ BGSM, false, "BGSM" },
+#endif
 	{ TSEG, false, "TSEG" },
 };
 

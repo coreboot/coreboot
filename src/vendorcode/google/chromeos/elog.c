@@ -10,6 +10,13 @@
 
 static void elog_add_vboot_info(void *unused)
 {
+	/*
+	 * Skip logging boot info if CSE sync scheduled at payload.
+	 * The payload should log boot info after CSE sync.
+	 */
+	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_BY_PAYLOAD))
+		return;
+
 	/* Skip logging boot info in ACPI resume path */
 	if (acpi_is_wakeup_s3())
 		return;

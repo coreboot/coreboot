@@ -59,4 +59,8 @@ smm-y += xhci.c
 CPPFLAGS_common += -I$(src)/soc/intel/meteorlake
 CPPFLAGS_common += -I$(src)/soc/intel/meteorlake/include
 
+ifeq ($(CONFIG_SOC_INTEL_METEORLAKE_U_H),y)
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-aa-04
+endif
+
 endif

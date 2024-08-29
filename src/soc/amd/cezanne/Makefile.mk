@@ -182,6 +182,8 @@ OPT_PSP_SOFTFUSE=$(call add_opt_prefix, $(PSP_SOFTFUSE), --soft-fuse)
 OPT_WHITELIST_FILE=$(call add_opt_prefix, $(PSP_WHITELIST_FILE), --whitelist)
 OPT_SPL_TABLE_FILE=$(call add_opt_prefix, $(SPL_TABLE_FILE), --spl-table)
 
+OPT_RECOVERY_AB=$(call add_opt_prefix, $(CONFIG_PSP_RECOVERY_AB), --recovery-ab)
+
 AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 		$(OPT_PSP_NVRAM_BASE) \
 		$(OPT_PSP_NVRAM_SIZE) \
@@ -204,6 +206,7 @@ AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 		$(OPT_EFS_SPI_READ_MODE) \
 		$(OPT_EFS_SPI_SPEED) \
 		$(OPT_EFS_SPI_MICRON_FLAG) \
+		$(OPT_RECOVERY_AB) \
 		--config $(CONFIG_AMDFW_CONFIG_FILE) \
 		--flashsize $(CONFIG_ROM_SIZE)
 

@@ -53,7 +53,7 @@ static void get_feature_flag(void *arg)
 void (*uuid_callbacks1[])(void *) = { check_reset_delay, set_reset_delay };
 void (*uuid_callbacks2[])(void *) = { get_feature_flag };
 
-void acpi_device_intel_bt(unsigned int reset_gpio)
+void acpi_device_intel_bt(unsigned int reset_gpio, bool audio_offload)
 {
 /*
  *	Name (RDLY, 0x69)
@@ -229,6 +229,34 @@ void acpi_device_intel_bt(unsigned int reset_gpio)
 	{
 		acpigen_write_package(1);
 		acpigen_emit_namestring("BTRT");
+	}
+	acpigen_pop_len();
+
+/*
+ *	Method (AOLD, 0, Serialized)
+ *	{
+ *		Name (AODS, Package (0x03)
+ *		{
+ *			Zero,
+ *			0x12,
+ *			Zero	// Audio Offload - 0: Disabled
+ *						   1: Enabled
+ *		})
+ *		Return (AODS)
+ *	}
+ */
+	acpigen_write_method_serialized("AOLD", 0);
+	{
+		acpigen_write_name("AODS");
+		acpigen_write_package(3);
+		{
+			acpigen_write_integer(0);
+			acpigen_write_integer(0x12);
+			acpigen_write_integer(audio_offload);
+		}
+		acpigen_pop_len();
+
+		acpigen_write_return_namestr("AODS");
 	}
 	acpigen_pop_len();
 }

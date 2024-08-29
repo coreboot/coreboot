@@ -45,51 +45,12 @@ chip soc/intel/alderlake
 				register "options.tsr[1].desc" = ""Soc""
 				register "options.tsr[2].desc" = ""Charger""
 
-				## Active Policy
-				register "policies.active" = "{
-						[0] = {
-								.target = DPTF_CPU,
-								.thresholds = {
-												TEMP_PCT(95, 90),
-												TEMP_PCT(92, 80),
-												TEMP_PCT(89, 60),
-												TEMP_PCT(85, 40),
-												TEMP_PCT(80, 30),
-								}
-						},
-						[1] = {
-								.target = DPTF_TEMP_SENSOR_0,
-								.thresholds = {
-												TEMP_PCT(54, 95),
-												TEMP_PCT(52, 90),
-												TEMP_PCT(50, 80),
-												TEMP_PCT(48, 50),
-												TEMP_PCT(46, 30),
-												TEMP_PCT(44, 25),
-												TEMP_PCT(42, 20),
-												TEMP_PCT(40, 15),
-								}
-						},
-						[2] = {
-								.target = DPTF_TEMP_SENSOR_1,
-								.thresholds = {
-												TEMP_PCT(54, 95),
-												TEMP_PCT(52, 90),
-												TEMP_PCT(50, 80),
-												TEMP_PCT(48, 50),
-												TEMP_PCT(46, 30),
-												TEMP_PCT(44, 25),
-												TEMP_PCT(42, 20),
-												TEMP_PCT(40, 15),
-								}
-						}
-				}"
-
 				## Passive Policy
 				register "policies.passive" = "{
-						[0] = DPTF_PASSIVE(CPU,		CPU,		   97, 5000),
-						[1] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_0, 85, 5000),
-						[2] = DPTF_PASSIVE(CHARGER,	TEMP_SENSOR_1, 85, 5000),
+						[0] = DPTF_PASSIVE(CPU,		CPU,		97, 5000),
+						[1] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_0,	85, 5000),
+						[2] = DPTF_PASSIVE(CPU,		TEMP_SENSOR_1,	85, 5000),
+						[3] = DPTF_PASSIVE(CHARGER,	TEMP_SENSOR_2,	85, 5000),
 				}"
 
 				## Critical Policy
@@ -97,23 +58,24 @@ chip soc/intel/alderlake
 						[0] = DPTF_CRITICAL(CPU,               105, SHUTDOWN),
 						[1] = DPTF_CRITICAL(TEMP_SENSOR_0,      95, SHUTDOWN),
 						[2] = DPTF_CRITICAL(TEMP_SENSOR_1,      95, SHUTDOWN),
+						[3] = DPTF_CRITICAL(TEMP_SENSOR_2,      95, SHUTDOWN),
 				}"
 
 				register "controls.power_limits" = "{
 						.pl1 = {
-									.min_power = 15000,
-									.max_power = 18000,
-									.time_window_min = 28 * MSECS_PER_SEC,
-									.time_window_max = 32 * MSECS_PER_SEC,
-									.granularity = 200,
-								},
+							.min_power = 15000,
+							.max_power = 18000,
+							.time_window_min = 28 * MSECS_PER_SEC,
+							.time_window_max = 32 * MSECS_PER_SEC,
+							.granularity = 200,
+							},
 						.pl2 = {
-									.min_power = 55000,
-									.max_power = 55000,
-									.time_window_min = 28 * MSECS_PER_SEC,
-									.time_window_max = 32 * MSECS_PER_SEC,
-									.granularity = 1000,
-								}
+							.min_power = 41000,
+							.max_power = 41000,
+							.time_window_min = 28 * MSECS_PER_SEC,
+							.time_window_max = 32 * MSECS_PER_SEC,
+							.granularity = 1000,
+							}
 				}"
 
 				## Charger Performance Control (Control, mA)
@@ -123,24 +85,6 @@ chip soc/intel/alderlake
 						[2] = {  16, 1000 },
 						[3] = {   8,  500 }
 				}"
-
-				## Fan Performance Control (Percent, Speed, Noise, Power)
-				register "controls.fan_perf" = "{
-						[0] = {  90, 6700, 220, 2200, },
-						[1] = {  80, 5800, 180, 1800, },
-						[2] = {  70, 5000, 145, 1450, },
-						[3] = {  60, 4900, 115, 1150, },
-						[4] = {  50, 3838,  90,  900, },
-						[5] = {  40, 2904,  55,  550, },
-						[6] = {  30, 2337,  30,  300, },
-						[7] = {  20, 1608,  15,  150, },
-						[8] = {  10,  800,  10,  100, },
-						[9] = {   0,    0,   0,   50, }
-				}"
-
-				## Fan options
-				register "options.fan.fine_grained_control" = "1"
-				register "options.fan.step_size" = "2"
 
 				device generic 0 alias dptf_policy on end
 			end

@@ -82,7 +82,7 @@ ifeq ($(CONFIG_SOC_INTEL_ALDERLAKE_PCH_S),y)
 # ADL-S/HX C0/H0 and RPL-S C0/H0
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-97-05
 # RPL-S/HX B0
-cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-b7-01
+cpu_microcode_bins += 3rdparty/blobs/soc/intel/raptorlake/06-b7-01
 else ifeq ($(CONFIG_SOC_INTEL_ALDERLAKE_PCH_N),y)
 cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-be-00
 else

@@ -1582,6 +1582,11 @@ static bool is_initial_alignment_required(enum platform soc_id)
 	}
 }
 
+static bool needs_new_combo_layout(enum platform soc_id)
+{
+	return needs_ish(soc_id);
+}
+
 int main(int argc, char **argv)
 {
 	int retval = 0;
@@ -1609,6 +1614,9 @@ int main(int argc, char **argv)
 	}
 
 	open_process_config(cb_config.config, &cb_config);
+
+	if (cb_config.use_combo && needs_new_combo_layout(cb_config.soc_id))
+		cb_config.combo_new_rab = true;
 
 	ctx.rom = malloc(ctx.rom_size);
 	if (!ctx.rom) {
@@ -1664,7 +1672,7 @@ int main(int argc, char **argv)
 				cb_config.signed_start_addr,
 				cb_config.soc_id);
 
-	if (cb_config.use_combo) {
+	if (cb_config.use_combo && !cb_config.combo_new_rab) {
 		ctx.psp_combo_dir = new_combo_dir(&ctx, PSP2_COOKIE);
 
 		adjust_current_pointer(&ctx, 0, 0x1000U);
@@ -1681,7 +1689,10 @@ int main(int argc, char **argv)
 		if (cb_config.use_combo && cb_config.debug)
 			printf("Processing %dth combo entry\n", combo_index);
 
-		ctx.pspdir = NULL;
+		/* The pspdir level 1 is special. For new combo layout, all the combo entries
+		   share one pspdir L1. It should not be cleared at each iteration. */
+		if (!cb_config.combo_new_rab || combo_index == 0)
+			ctx.pspdir = NULL;
 		ctx.pspdir2 = NULL;
 		ctx.pspdir2_b = NULL;
 		ctx.biosdir = NULL;
@@ -1735,7 +1746,8 @@ int main(int argc, char **argv)
 				 */
 				ctx.pspdir2_b = NULL; /* More explicitly */
 			}
-			integrate_psp_firmwares(&ctx,
+			if (!cb_config.combo_new_rab || combo_index == 0)
+				integrate_psp_firmwares(&ctx,
 					amd_psp_fw_table, PSP_COOKIE, &cb_config);
 			integrate_psp_levels(&ctx, &cb_config);
 		} else {
@@ -1744,9 +1756,10 @@ int main(int argc, char **argv)
 					amd_psp_fw_table, PSP_COOKIE, &cb_config);
 		}
 
-		if (!cb_config.use_combo) {
+		if (!cb_config.use_combo || (cb_config.combo_new_rab && combo_index == 0)) {
+			/* For new combo layout, there is only 1 PSP level 1 directory. */
 			fill_psp_directory_to_efs(ctx.amd_romsig_ptr, ctx.pspdir, &ctx, &cb_config);
-		} else {
+		} else if (cb_config.use_combo && !cb_config.combo_new_rab) {
 			fill_psp_directory_to_efs(ctx.amd_romsig_ptr, ctx.psp_combo_dir, &ctx, &cb_config);
 			/* 0 -Compare PSP ID, 1 -Compare chip family ID */
 			assert_fw_entry(combo_index, MAX_COMBO_ENTRIES, &ctx);

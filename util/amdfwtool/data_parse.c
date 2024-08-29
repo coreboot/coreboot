@@ -723,7 +723,7 @@ static uint8_t process_one_line(char *oneline, regmatch_t *match, char *dir,
 	return 1;
 }
 
-static bool needs_ish(enum platform platform_type)
+bool needs_ish(enum platform platform_type)
 {
 	if (platform_type == PLATFORM_MENDOCINO || platform_type == PLATFORM_PHOENIX || platform_type == PLATFORM_GLINDA)
 		return true;

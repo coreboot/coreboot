@@ -167,6 +167,9 @@ void pmif_spmi_iocfg(void)
 	/* SPMI_P 14mA */
 	gpio_set_driving(GPIO(SPMI_P_SCL), GPIO_DRV_14_MA);
 	gpio_set_driving(GPIO(SPMI_P_SDA), GPIO_DRV_14_MA);
+	/* SPMI-P set Pull-Down mode */
+	gpio_set_pull(GPIO(SPMI_P_SCL), GPIO_PULL_ENABLE, GPIO_PULL_DOWN);
+	gpio_set_pull(GPIO(SPMI_P_SDA), GPIO_PULL_ENABLE, GPIO_PULL_DOWN);
 	printk(BIOS_INFO, "%s done\n", __func__);
 }
 

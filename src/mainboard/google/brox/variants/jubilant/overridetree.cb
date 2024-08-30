@@ -37,6 +37,45 @@ chip soc/intel/alderlake
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC2)"     # Type A port A0(DCI)
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)" # WWAN
 
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| I2C0              | Trackpad                  |
+	#| I2C1              | Touchscreen               |
+	#| I2C2              | Audio codec & Sar sensor  |
+	#| I2C4              | cr50 TPM. Early init is   |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 650,
+			.fall_time_ns = 330,
+			.data_hold_time_ns = 50,
+		},
+		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 600,
+			.fall_time_ns = 350,
+			.data_hold_time_ns = 50,
+		},
+		.i2c[2] = {
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 600,
+			.fall_time_ns = 250,
+			.data_hold_time_ns = 50,
+		},
+		.i2c[4] = {
+			.early_init = 1,
+			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 650,
+			.fall_time_ns = 400,
+			.data_hold_time_ns = 50,
+		},
+	}"
+
 	device domain 0 on
 		device ref dtt on
 			chip drivers/intel/dptf

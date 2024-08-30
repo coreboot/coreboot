@@ -25,10 +25,6 @@ static const struct pad_config wfc_disable_pads[] = {
 	PAD_NC_LOCK(GPP_D16, NONE, LOCK_CONFIG),
 	/* H22 : WCAM_MCLK_R */
 	PAD_NC(GPP_H22, NONE),
-	/* R6 : DMIC_WCAM_CLK_R */
-	PAD_NC(GPP_R6, NONE),
-	/* R7 : DMIC_WCAM_DATA */
-	PAD_NC(GPP_R7, NONE),
 };
 
 static const struct pad_config stylus_disable_pads[] = {

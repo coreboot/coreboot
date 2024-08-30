@@ -53,7 +53,7 @@ static void get_feature_flag(void *arg)
 void (*uuid_callbacks1[])(void *) = { check_reset_delay, set_reset_delay };
 void (*uuid_callbacks2[])(void *) = { get_feature_flag };
 
-void acpi_device_intel_bt(void)
+void acpi_device_intel_bt(unsigned int reset_gpio)
 {
 /*
  *	Name (RDLY, 0x69)
@@ -192,6 +192,45 @@ void acpi_device_intel_bt(void)
 		acpigen_pop_len();
 	}
 	acpigen_write_power_res_end();
+
+/*
+ *	Method (BTRK, 1, Serialized)
+ *	{
+ *		If (Arg0 == 1)
+ *		{
+ *			STXS (reset_gpio)
+ *		} Else {
+ *			CTXS (reset_gpio)
+ *		}
+ *	}
+ */
+	acpigen_write_method_serialized("BTRK", 1);
+	{
+		acpigen_write_if_lequal_op_int(ARG0_OP, 1);
+		{
+			acpigen_soc_set_tx_gpio(reset_gpio);
+		}
+
+		acpigen_write_else();
+		{
+			acpigen_soc_clear_tx_gpio(reset_gpio);
+		}
+		acpigen_pop_len();
+	}
+	acpigen_pop_len();
+
+/*
+ *	Name (_PRR, Package (0x01)
+ *	{
+ *		BTRT
+ *	})
+ */
+	acpigen_write_name("_PRR");
+	{
+		acpigen_write_package(1);
+		acpigen_emit_namestring("BTRT");
+	}
+	acpigen_pop_len();
 }
 
 void acpi_device_intel_bt_common(void)

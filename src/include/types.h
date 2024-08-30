@@ -21,6 +21,15 @@
 #define BIT(x)				(1ul << (x))
 #endif
 
+/*
+ * This macro declares a bit as a 32-bits unsigned integer. The common BIT_32(x)
+ * macro is already used by some external header file. To avoid any conflicts, we
+ * use a different name.
+ */
+#ifndef BIT_FLAG_32
+#define BIT_FLAG_32(x)			(1u << (x))
+#endif
+
 #define BITS_PER_BYTE			8
 
 #endif /* __TYPES_H */

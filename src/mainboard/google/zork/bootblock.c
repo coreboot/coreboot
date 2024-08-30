@@ -3,6 +3,16 @@
 #include <bootblock_common.h>
 #include <baseboard/variants.h>
 #include <acpi/acpi.h>
+#include <amdblocks/espi.h>
+
+void mb_set_up_early_espi(void)
+{
+	size_t num_gpios;
+	const struct soc_amd_gpio *gpios;
+
+	gpios = variant_espi_gpio_table(&num_gpios);
+	gpio_configure_pads(gpios, num_gpios);
+}
 
 void bootblock_mainboard_early_init(void)
 {

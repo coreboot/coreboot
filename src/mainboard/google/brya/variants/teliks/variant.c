@@ -5,6 +5,11 @@
 #include <fw_config.h>
 #include <sar.h>
 #include <soc/gpio_soc_defs.h>
+#include <intelblocks/graphics.h>
+
+/* Per-pipe DDI Function Control 2 */
+#define TRANS_DDI_FUNC_CTL2_A					0x60404
+#define TRANS_DDI_AUDIO_MUTE_OVERRIDE_BITS_FIELDS		(3 << 6)
 
 const char *get_wifi_sar_cbfs_filename(void)
 {
@@ -35,4 +40,17 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		gpio_padbased_override(padbased_table, wifi_pcie_enable_pad,
 						ARRAY_SIZE(wifi_pcie_enable_pad));
 	}
+}
+
+void variant_finalize(void)
+{
+	/*
+	 * Panel CSOT MNB601LS1-3 will flicker once during enter Chrome login screen,
+	 * it is because it inserts 12 blank frames if it receives the unmute in VB-ID.
+	 *
+	 * Always override the mute in VB-ID to avoid Tcon EC detected the
+	 * audiomute_flag change.
+	 */
+	graphics_gtt_rmw(TRANS_DDI_FUNC_CTL2_A, ~TRANS_DDI_AUDIO_MUTE_OVERRIDE_BITS_FIELDS,
+		TRANS_DDI_AUDIO_MUTE_OVERRIDE_BITS_FIELDS);
 }

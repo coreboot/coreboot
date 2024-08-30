@@ -295,10 +295,10 @@ static int rmod_filter(struct reloc_filter *f, const Elf64_Rela *r)
 static Elf64_Phdr **find_loadable_segments(struct parsed_elf *pelf)
 {
 	Elf64_Phdr **phdrs = NULL;
-	Elf64_Phdr *prev = NULL, *cur;
+	Elf64_Phdr *prev = NULL, *cur = NULL;
 	size_t size = 1, i;
 
-	for (i = 0; i < pelf->ehdr.e_phnum; i++, prev = cur) {
+	for (i = 0; i < pelf->ehdr.e_phnum; i++) {
 		cur = &pelf->phdr[i];
 
 		if (cur->p_type != PT_LOAD || cur->p_memsz == 0)
@@ -311,16 +311,14 @@ static Elf64_Phdr **find_loadable_segments(struct parsed_elf *pelf)
 		}
 		phdrs[size - 2] = cur;
 
-		if (!prev)
-			continue;
-
-		if (prev->p_paddr + prev->p_memsz != cur->p_paddr ||
-		    prev->p_filesz != prev->p_memsz) {
+		if (prev && (prev->p_paddr + prev->p_memsz != cur->p_paddr ||
+			     prev->p_filesz != prev->p_memsz)) {
 			ERROR("Loadable segments physical addresses should "
 			      "be consecutive\n");
 			free(phdrs);
 			return NULL;
 		}
+		prev = cur;
 	}
 
 	if (phdrs)

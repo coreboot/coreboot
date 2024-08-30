@@ -35,7 +35,8 @@ void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config)
 
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 {
-	if (fw_config_probe(FW_CONFIG(WIFI, WIFI_6))) {
+	if (fw_config_probe(FW_CONFIG(WIFI, WIFI_6_7921))
+		|| fw_config_probe(FW_CONFIG(WIFI, WIFI_6_8852))) {
 		printk(BIOS_INFO, "Enable PCie based Wifi GPIO pins.\n");
 		gpio_padbased_override(padbased_table, wifi_pcie_enable_pad,
 						ARRAY_SIZE(wifi_pcie_enable_pad));

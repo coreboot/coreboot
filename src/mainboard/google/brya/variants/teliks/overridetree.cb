@@ -1,8 +1,9 @@
 fw_config
 	field WIFI 8 9
 		option UNKNOWN		0
-		option WIFI_6		1
+		option WIFI_6_7921	1
 		option WIFI_6E		2
+		option WIFI_6_8852	3
 	end
 	field CAMERA 10 11
 		option UF_720P_WF		0
@@ -406,7 +407,8 @@ chip soc/intel/alderlake
 				register "wake" = "GPE0_DW1_03"
 				register "add_acpi_dma_property" = "true"
 				device pci 00.0 on
-					probe WIFI WIFI_6
+					probe WIFI WIFI_6_7921
+					probe WIFI WIFI_6_8852
 				end
 			end
 		end
@@ -511,7 +513,8 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_INTERNAL"
 						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D4)"
 						device ref usb2_port8 on
-							probe WIFI WIFI_6
+							probe WIFI WIFI_6_7921
+							probe WIFI WIFI_6_8852
 						end
 					end
 					chip drivers/usb/acpi

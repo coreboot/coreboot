@@ -466,11 +466,7 @@ struct soc_intel_alderlake_config {
 	} igd_dvmt50_pre_alloc;
 
 	bool skip_ext_gfx_scan;
-
-	/* Enable/Disable EIST. true:Enabled, false:Disabled */
 	bool eist_enable;
-
-	/* Enable C6 DRAM */
 	bool enable_c6dram;
 
 	/*

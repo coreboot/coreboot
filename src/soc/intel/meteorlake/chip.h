@@ -209,7 +209,7 @@ struct soc_intel_meteorlake_config {
 		SAGV_POINTS_0_1_2_3 = 0x0f,
 	} sagv_wp_bitmap;
 
-	/* Rank Margin Tool. true:Enable, false:Disable */
+	/* Rank Margin Tool. */
 	bool rmt;
 
 	/* USB related */
@@ -297,8 +297,6 @@ struct soc_intel_meteorlake_config {
 	} igd_dvmt50_pre_alloc;
 
 	bool skip_ext_gfx_scan;
-
-	/* Enable/Disable EIST. true:Enabled, false:Disabled */
 	bool eist_enable;
 
 	/*

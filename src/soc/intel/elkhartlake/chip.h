@@ -258,7 +258,6 @@ struct soc_intel_elkhartlake_config {
 	uint8_t Heci2Enable;
 	uint8_t Heci3Enable;
 
-	/* Enable/Disable EIST. true:Enabled, false:Disabled */
 	bool eist_enable;
 
 	/*

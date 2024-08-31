@@ -22,9 +22,6 @@ static inline int vboot_is_firmware_slot_a(struct vb2_context *ctx)
 
 /*
  * Check if given flag is set in the flags field in GBB header.
- * Return value:
- * true: Flag is set.
- * false: Flag is not set.
  */
 static inline bool vboot_is_gbb_flag_set(enum vb2_gbb_flag flag)
 {

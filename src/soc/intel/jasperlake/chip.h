@@ -108,11 +108,7 @@ struct soc_intel_jasperlake_config {
 		SaGv_Enabled,
 	} SaGv;
 
-	/* Rank Margin Tool
-	 *
-	 * true: Enable
-	 * false: Disable
-	 */
+	/* Rank Margin Tool */
 	bool RMT;
 
 	/* USB related */
@@ -178,7 +174,6 @@ struct soc_intel_jasperlake_config {
 	/* Gfx related */
 	bool SkipExtGfxScan;
 
-	/* Enable/Disable EIST. true:Enabled, false:Disabled */
 	bool eist_enable;
 
 	/* Enable C6 DRAM */
@@ -263,10 +258,8 @@ struct soc_intel_jasperlake_config {
 	uint8_t DdiPortAConfig;
 	uint8_t DdiPortBConfig;
 
-	/* HDP config
-	 *
-	 * true: Enable HDB
-	 * false: Disable HDP
+	/*
+	 * HDP config
 	 */
 	bool DdiPortAHpd;
 	bool DdiPortBHpd;
@@ -276,10 +269,8 @@ struct soc_intel_jasperlake_config {
 	bool DdiPort3Hpd;
 	bool DdiPort4Hpd;
 
-	/* DDC config
-	 *
-	 * true: Enable DDC
-	 * false: Disable DDC
+	/*
+	 * DDC config
 	 */
 	bool DdiPortADdc;
 	bool DdiPortBDdc;
@@ -411,9 +402,6 @@ struct soc_intel_jasperlake_config {
 
 	/*
 	 * Enable or Disable Acoustic Noise Mitigation feature.
-	 *
-	 * false: Disabled
-	 * true: Enabled
 	 */
 	bool AcousticNoiseMitigation;
 

@@ -237,10 +237,7 @@ struct soc_intel_cannonlake_config {
 	/* Enables support for Teton Glacier hybrid storage device */
 	bool TetonGlacierMode;
 
-	/* Enable/Disable EIST. true:Enabled, false:Disabled */
 	bool eist_enable;
-
-	/* Enable C6 DRAM */
 	bool enable_c6dram;
 
 	/*

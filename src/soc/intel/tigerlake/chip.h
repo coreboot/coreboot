@@ -285,8 +285,6 @@ struct soc_intel_tigerlake_config {
 
 	/* Gfx related */
 	uint8_t SkipExtGfxScan;
-
-	/* Enable/Disable EIST. true:Enabled, false:Disabled */
 	bool eist_enable;
 
 	/* Enable C6 DRAM */
@@ -504,29 +502,8 @@ struct soc_intel_tigerlake_config {
 	 *  - PM_CFG.SLP_LAN_MIN_ASST_WDTH
 	 */
 	uint8_t PchPmPwrCycDur;
-
-	/*
-	 * External Clock Gate
-	 * true = Mainboard design uses external clock gating
-	 * false = Mainboard design does not use external clock gating
-	 *
-	 */
 	bool external_clk_gated;
-
-	/*
-	 * External PHY Gate
-	 * true = Mainboard design uses external phy gating
-	 * false = Mainboard design does not use external phy gating
-	 *
-	 */
 	bool external_phy_gated;
-
-	/*
-	 * External Bypass Enable
-	 * true = Mainboard design uses external bypass rail
-	 * false = Mainboard design does not use external bypass rail
-	 *
-	 */
 	bool external_bypass;
 
 	/* i915 struct for GMA backlight control */

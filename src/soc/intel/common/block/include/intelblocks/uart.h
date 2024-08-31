@@ -14,21 +14,10 @@
  * 3. SOC will allow common code to set UART into legacy mode if supported.
  */
 
-/*
- * Check if UART debug controller is initialized
- * Returns:
- * true = If debug controller PCI config space is initialized and device is
- *        out of reset
- * false = otherwise
- */
 bool uart_is_controller_initialized(void);
 
 /*
  * Check if dev corresponds to UART debug port controller.
- *
- * Returns:
- * true: UART dev is debug port
- * false: otherwise
  */
 bool uart_is_debug_controller(struct device *dev);
 

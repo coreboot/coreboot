@@ -19,7 +19,7 @@ chip soc/intel/alderlake
 	register "sagv" = "SaGv_Enabled"
 
 	# S0ix enable
-	register "s0ix_enable" = "1"
+	register "s0ix_enable" = "true"
 
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC1)"		# Type-A Port A0
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC2)"		# Type-A Port A1

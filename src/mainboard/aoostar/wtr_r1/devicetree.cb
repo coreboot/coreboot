@@ -14,7 +14,7 @@ chip soc/intel/alderlake
 
 	register "dptf_enable" = "1"
 
-	register "s0ix_enable" = "1"
+	register "s0ix_enable" = "true"
 
 	register "common_soc_config" = "{
 		.i2c[0] = {

@@ -141,7 +141,7 @@ struct soc_intel_tigerlake_config {
 	uint32_t gen4_dec;
 
 	/* Enable S0iX support */
-	int s0ix_enable;
+	bool s0ix_enable;
 	/* S0iX: Selectively disable individual sub-states, by default all are enabled. */
 	enum lpm_state_mask LpmStateDisableMask;
 

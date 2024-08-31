@@ -15,7 +15,7 @@ chip soc/intel/tigerlake
 	register "eist_enable" = "true"
 
 	# Enable s0ix, required for TGL-U
-	register "s0ix_enable" = "1"
+	register "s0ix_enable" = "true"
 
 # FSP Memory (soc/intel/tigerlake/romstage/fsp_params.c)
 	# Enable C6 DRAM

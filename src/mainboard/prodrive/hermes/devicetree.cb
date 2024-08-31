@@ -105,7 +105,7 @@ chip soc/intel/cannonlake
 	register "tcc_offset" = "1"     # TCC of 99C
 
 	# Disable S0ix
-	register "s0ix_enable" = "0"
+	register "s0ix_enable" = "false"
 
 	# Enable Turbo
 	register "eist_enable" = "true"

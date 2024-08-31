@@ -1,6 +1,6 @@
 chip soc/intel/alderlake
 
-	register "s0ix_enable" = "1"
+	register "s0ix_enable" = "true"
 
 	register "usb2_ports[0]" = "USB2_PORT_SHORT(OC_SKIP)"
 	register "usb2_ports[1]" = "USB2_PORT_SHORT(OC_SKIP)"

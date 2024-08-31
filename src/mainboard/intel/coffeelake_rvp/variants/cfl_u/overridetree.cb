@@ -38,7 +38,7 @@ chip soc/intel/cannonlake
 	register "sdcard_cd_gpio" = "GPP_G5"
 
 	# Enable S0ix
-	register "s0ix_enable" = "1"
+	register "s0ix_enable" = "true"
 
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+

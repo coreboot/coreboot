@@ -1,5 +1,5 @@
 chip soc/intel/cannonlake
-	register "s0ix_enable" = "1"
+	register "s0ix_enable" = "true"
 	register "common_soc_config" = "{
 		/* Touchpad */
 		.i2c[0] = {

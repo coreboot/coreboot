@@ -19,7 +19,7 @@ chip soc/intel/cannonlake
 	register "PcieClkSrcClkReq[14]" = "PCIE_CLK_NOTUSED"
 	register "PcieClkSrcClkReq[15]" = "PCIE_CLK_NOTUSED"
 
-	register "s0ix_enable" = "0"
+	register "s0ix_enable" = "false"
 
 	register "eist_enable" = "true"
 

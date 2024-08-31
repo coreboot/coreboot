@@ -70,7 +70,7 @@ chip soc/intel/alderlake
 	register "tcss_aux_ori" = "4"
 	register "typec_aux_bias_pads[1]" = "{.pad_auxp_dc = GPP_E20, .pad_auxn_dc = GPP_E21}"
 
-	register "s0ix_enable" = "1"
+	register "s0ix_enable" = "true"
 
 	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,

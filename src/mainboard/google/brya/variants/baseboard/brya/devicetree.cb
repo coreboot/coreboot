@@ -12,7 +12,7 @@ chip soc/intel/alderlake
 	register "gen3_dec" = "0x00fc0901"
 
 	# S0ix enable
-	register "s0ix_enable" = "1"
+	register "s0ix_enable" = "true"
 
 	# Disable package C state demotion on Raptorlake as a W/A for S0ix issues
 	# seen on J0 and Q0 SKUs

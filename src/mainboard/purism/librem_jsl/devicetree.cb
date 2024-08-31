@@ -1,7 +1,7 @@
 chip soc/intel/jasperlake
 
 	register "eist_enable" = "true"
-	register "s0ix_enable" = "0"
+	register "s0ix_enable" = "false"
 
 	register "SaGv" = "SaGv_Enabled"
 

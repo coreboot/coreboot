@@ -17,7 +17,7 @@ chip soc/intel/broadwell
 	chip cpu/intel/haswell
 		device cpu_cluster 0 on ops broadwell_cpu_bus_ops end
 
-		register "s0ix_enable" = "1"
+		register "s0ix_enable" = "true"
 	end
 
 	device domain 0 on

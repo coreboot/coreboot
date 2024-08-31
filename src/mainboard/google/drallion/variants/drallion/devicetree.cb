@@ -39,7 +39,7 @@ chip soc/intel/cannonlake
 	# USB2 PHY Power gating
 	register "PchUsb2PhySusPgDisable" = "1"
 
-	register "s0ix_enable" = "1"
+	register "s0ix_enable" = "true"
 	register "dptf_enable" = "1"
 	register "power_limits_config" = "{
 		.tdp_pl1_override = 25,

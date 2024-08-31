@@ -40,7 +40,7 @@ chip soc/intel/cannonlake
 	register "PcieClkSrcClkReq[5]" = "5"
 
 	# Disable S0ix
-	register "s0ix_enable" = "0"
+	register "s0ix_enable" = "false"
 
 	device domain 0 on
 		device pci 00.0 on  end # Host Bridge

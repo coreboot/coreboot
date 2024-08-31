@@ -195,7 +195,7 @@ chip soc/intel/tigerlake
 	register "DdiPort4Ddc" = "0"
 
 	# Enable S0ix
-	register "s0ix_enable" = "1"
+	register "s0ix_enable" = "true"
 
 	# Enable DPTF
 	register "dptf_enable" = "1"

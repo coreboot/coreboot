@@ -53,7 +53,7 @@ chip soc/amd/cezanne
 	}"
 
 	# Enable S0i3 support
-	register "s0ix_enable" = "1"
+	register "s0ix_enable" = "true"
 
 	# Enable STT support
 	register "stt_control" = "1"

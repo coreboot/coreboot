@@ -28,7 +28,7 @@ chip soc/intel/cannonlake
 	# Enable System Agent dynamic frequency
 	register "SaGv" = "SaGv_Enabled"
 	# Enable S0ix
-	register "s0ix_enable" = "1"
+	register "s0ix_enable" = "true"
 	# Enable DPTF
 	register "dptf_enable" = "1"
 	register "power_limits_config" = "{

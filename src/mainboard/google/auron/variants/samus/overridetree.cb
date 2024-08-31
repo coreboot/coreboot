@@ -16,7 +16,7 @@ chip soc/intel/broadwell
 		device cpu_cluster 0 on end
 
 		# Disable S0ix for now
-		register "s0ix_enable" = "0"
+		register "s0ix_enable" = "false"
 
 		register "vr_config" = "{
 			.slow_ramp_rate_set    = 3,

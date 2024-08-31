@@ -31,7 +31,7 @@ chip soc/intel/meteorlake
 	register "tcss_ports[3]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 3
 
 	# S0ix enable
-	register "s0ix_enable" = "1"
+	register "s0ix_enable" = "true"
 
 	# Disable C1 C-state auto-demotion
 	register "disable_c1_state_auto_demotion" = "1"

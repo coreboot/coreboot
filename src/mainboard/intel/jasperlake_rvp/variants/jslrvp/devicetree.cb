@@ -150,7 +150,7 @@ chip soc/intel/jasperlake
 	}"
 
 	# Enable S0ix
-	register "s0ix_enable" = "1"
+	register "s0ix_enable" = "true"
 
 	# GPIO for SD card detect
 	register "sdcard_cd_gpio" = "VGPIO_39"

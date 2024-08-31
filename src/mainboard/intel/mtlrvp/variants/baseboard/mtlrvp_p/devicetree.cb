@@ -50,7 +50,7 @@ chip soc/intel/meteorlake
 	register "cnvi_bt_core" = "true"
 
 	# Enable S0ix
-	register "s0ix_enable" = "1"
+	register "s0ix_enable" = "true"
 
 	# Disable C1 C-state auto-demotion
 	register "disable_c1_state_auto_demotion" = "1"

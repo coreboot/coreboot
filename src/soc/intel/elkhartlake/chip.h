@@ -128,7 +128,7 @@ struct soc_intel_elkhartlake_config {
 	uint32_t gen4_dec;
 
 	/* Enable S0iX support */
-	int s0ix_enable;
+	bool s0ix_enable;
 	/* Enable DPTF support */
 	int dptf_enable;
 

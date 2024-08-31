@@ -24,7 +24,7 @@ chip soc/intel/alderlake
 	register "pmc_gpe0_dw2" = "GPP_F"
 
 	# S0ix enable
-	register "s0ix_enable" = "1"
+	register "s0ix_enable" = "true"
 
 	# DPTF enable
 	register "dptf_enable" = "1"

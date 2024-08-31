@@ -68,7 +68,7 @@ chip soc/intel/meteorlake
 	register "sagv_gear[3]" = "2"
 
 	# Set on-board graphics as primary display
-	register "skip_ext_gfx_scan" = "1"
+	register "skip_ext_gfx_scan" = "true"
 
 	register "serial_io_uart_mode" = "{
 		[PchSerialIoIndexUART0] = PchSerialIoPci,

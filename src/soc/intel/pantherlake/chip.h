@@ -179,7 +179,7 @@ struct soc_intel_pantherlake_config {
 		IGD_SM_56MB = 0xFD,
 		IGD_SM_60MB = 0xFE,
 	} IgdDvmt50PreAlloc;
-	uint8_t skip_ext_gfx_scan;
+	bool skip_ext_gfx_scan;
 
 	/* CNVi WiFi Core Enable/Disable */
 	bool cnvi_wifi_core;

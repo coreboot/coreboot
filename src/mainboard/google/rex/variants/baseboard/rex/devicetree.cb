@@ -70,7 +70,7 @@ chip soc/intel/meteorlake
 	register "energy_perf_pref_value" = "0x73"
 
 	# Set on-board graphics as primary display
-	register "skip_ext_gfx_scan" = "1"
+	register "skip_ext_gfx_scan" = "true"
 
 	register "serial_io_uart_mode" = "{
 		[PchSerialIoIndexUART0] = PchSerialIoSkipInit,

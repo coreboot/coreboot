@@ -13,7 +13,7 @@ chip soc/intel/alderlake
 	register "pmc_gpe0_dw2" = "GPD"
 
 	register "hybrid_storage_mode" = "true"
-	register "dmi_power_optimize_disable" = "1"
+	register "dmi_power_optimize_disable" = "true"
 
 	# FIVR configuration
 	register "fivr_rfi_frequency" = "1394"

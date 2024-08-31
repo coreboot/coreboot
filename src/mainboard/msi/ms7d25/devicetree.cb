@@ -83,7 +83,7 @@ chip soc/intel/alderlake
 	}"
 
 	register "hybrid_storage_mode" = "true"
-	register "dmi_power_optimize_disable" = "1"
+	register "dmi_power_optimize_disable" = "true"
 
 	# FIVR configuration
 	register "fivr_rfi_frequency" = "1394"

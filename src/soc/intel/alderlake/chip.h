@@ -584,8 +584,8 @@ struct soc_intel_alderlake_config {
 	uint8_t cpu_ratio_override;
 
 	/*
-	 * Enable(0)/Disable(1) DMI Power Optimizer on PCH side.
-	 * Default 0. Setting this to 1 disables the DMI Power Optimizer.
+	 * Enable/Disable DMI Power Optimizer on PCH side.
+	 * Default is "false".
 	 */
 	bool dmi_power_optimize_disable;
 

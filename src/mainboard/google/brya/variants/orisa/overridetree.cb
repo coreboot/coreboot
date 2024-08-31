@@ -35,7 +35,7 @@ chip soc/intel/alderlake
 	register "cnvi_bt_core" = "true"
 
 	# eMMC HS400
-	register "emmc_enable_hs400_mode" = "1"
+	register "emmc_enable_hs400_mode" = "true"
 
 	#eMMC DLL tuning parameters
 	# EMMC Tx CMD Delay

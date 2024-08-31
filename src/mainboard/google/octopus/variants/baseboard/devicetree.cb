@@ -52,7 +52,7 @@ chip soc/intel/apollolake
 	register "slp_s3_assertion_width_usecs" = "28000"
 
 	# Enable lpss s0ix
-	register "lpss_s0ix_enable" = "1"
+	register "lpss_s0ix_enable" = "true"
 
 	# Enable DPTF
 	register "dptf_enable" = "1"

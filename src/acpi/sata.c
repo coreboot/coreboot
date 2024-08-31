@@ -24,7 +24,7 @@ void generate_sata_ssdt_ports(const char *scope, uint32_t enable_map)
 {
 	int i;
 	uint32_t bit;
-	char port_name[4] = "PR00";
+	char port_name[5] = "PR00";
 
 	acpigen_write_scope(scope);
 

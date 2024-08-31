@@ -77,7 +77,7 @@ chip soc/intel/alderlake
 	register "fivr_spread_spectrum" = "FIVR_SS_1_5"
 
 	# Disable C state auto-demotion for all brya baseboards
-	register "disable_c1_state_auto_demotion" = "1"
+	register "disable_c1_state_auto_demotion" = "true"
 
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+

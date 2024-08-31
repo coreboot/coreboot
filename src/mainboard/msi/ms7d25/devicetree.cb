@@ -82,7 +82,7 @@ chip soc/intel/alderlake
 		[DDI_PORT_4] = DDI_ENABLE_HPD,
 	}"
 
-	register "hybrid_storage_mode" = "1"
+	register "hybrid_storage_mode" = "true"
 	register "dmi_power_optimize_disable" = "1"
 
 	# FIVR configuration

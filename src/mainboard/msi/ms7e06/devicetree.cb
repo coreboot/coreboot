@@ -12,7 +12,7 @@ chip soc/intel/alderlake
 	register "pmc_gpe0_dw1" = "GPP_VPGIO"
 	register "pmc_gpe0_dw2" = "GPD"
 
-	register "hybrid_storage_mode" = "1"
+	register "hybrid_storage_mode" = "true"
 	register "dmi_power_optimize_disable" = "1"
 
 	# FIVR configuration

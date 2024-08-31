@@ -83,7 +83,7 @@ chip soc/intel/alderlake
 	}"
 
 	# Hybrid storage mode
-	register "hybrid_storage_mode" = "1"
+	register "hybrid_storage_mode" = "true"
 
 	# Enable CPU PCIE RP 1 using CLK 0
 	register "cpu_pcie_rp[CPU_RP(1)]" = "{

@@ -37,7 +37,7 @@ chip soc/intel/meteorlake
 	register "disable_c1_state_auto_demotion" = "true"
 
 	# Disable PKGC-state demotion
-	register "disable_package_c_state_demotion" = "1"
+	register "disable_package_c_state_demotion" = "true"
 
 	# Enable Energy Reporting
 	register "pch_pm_energy_report_enable" = "1"

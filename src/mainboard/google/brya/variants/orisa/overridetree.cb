@@ -142,7 +142,7 @@ chip soc/intel/alderlake
 
 	# FIXME: To be enabled in future based on PNP impact data.
 	# Disable Package C-state demotion for nissa baseboard.
-	register "disable_package_c_state_demotion" = "1"
+	register "disable_package_c_state_demotion" = "true"
 
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+

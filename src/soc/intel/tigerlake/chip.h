@@ -149,7 +149,7 @@ struct soc_intel_tigerlake_config {
 	uint8_t TcssD3HotDisable;
 
 	/* Enable DPTF support */
-	int dptf_enable;
+	bool dptf_enable;
 
 	/* Deep SX enable for both AC and DC */
 	int deep_s3_enable_ac;

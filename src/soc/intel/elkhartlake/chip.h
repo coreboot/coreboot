@@ -130,7 +130,7 @@ struct soc_intel_elkhartlake_config {
 	/* Enable S0iX support */
 	bool s0ix_enable;
 	/* Enable DPTF support */
-	int dptf_enable;
+	bool dptf_enable;
 
 	/* Deep SX enable for both AC and DC */
 	int deep_s3_enable_ac;

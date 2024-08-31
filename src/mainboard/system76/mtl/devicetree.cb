@@ -11,7 +11,7 @@ chip soc/intel/meteorlake
 	}"
 
 	# Enable Enhanced Intel SpeedStep
-	register "eist_enable" = "1"
+	register "eist_enable" = "true"
 
 	# Thermal
 	register "tcc_offset" = "8"

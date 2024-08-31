@@ -13,7 +13,7 @@ chip soc/intel/alderlake
 	register "sagv"				= "SaGv_Enabled"
 
 	# FSP Silicon
-	register "eist_enable"			= "1"
+	register "eist_enable"			= "true"
 	register "cnvi_bt_core"			= "true"
 	register "cnvi_bt_audio_offload"	= "true"
 

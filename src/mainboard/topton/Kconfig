@@ -1,0 +1,17 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+if VENDOR_TOPTON
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/topton/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/topton/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	default "TOPTON"
+
+endif # VENDOR_TOPTON

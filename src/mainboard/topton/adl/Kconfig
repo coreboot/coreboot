@@ -1,0 +1,23 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+if BOARD_TOPTON_X2F_N100
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_16384
+	select FSP_TYPE_IOT
+	select HAVE_ACPI_TABLES
+	select HAVE_ACPI_RESUME
+	select SUPERIO_ITE_IT8625E
+	select DRIVERS_UART_8250IO
+	select SOC_INTEL_ALDERLAKE_PCH_N
+	select INTEL_GMA_HAVE_VBT
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+
+config MAINBOARD_DIR
+	default "topton/adl"
+
+config MAINBOARD_PART_NUMBER
+	default "X2F_N100"
+
+endif # BOARD_TOPTON_X2F_N100

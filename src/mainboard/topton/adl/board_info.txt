@@ -1,0 +1,8 @@
+Vendor name: Topton
+Board name: X2F_N100
+Release year: 2023
+ROM IC: W25Q128FV
+ROM package: SOIC-8
+ROM socketed: no
+Flashrom support: yes
+Category: eval

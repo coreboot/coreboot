@@ -1,0 +1,125 @@
+chip soc/intel/alderlake
+
+	register "sagv" = "SaGv_Enabled"
+	register "tcc_offset" = "10"
+
+	register "pmc_gpe0_dw0" = "GPP_B"
+	register "pmc_gpe0_dw1" = "GPP_D"
+	register "pmc_gpe0_dw2" = "GPP_E"
+
+	device domain 0 on
+		device ref igpu on
+			register "ddi_portA_config" = "1" 	# HDMI
+			register "ddi_portB_config" = "1"	# DP
+			register "ddi_ports_config" = "{
+				[DDI_PORT_A] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC
+			}"
+		end
+
+		device ref xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC_SKIP),
+				[1] = USB2_PORT_MID(OC_SKIP),
+				[2] = USB2_PORT_MID(OC_SKIP),
+				[3] = USB2_PORT_MID(OC_SKIP),
+				[4] = USB2_PORT_MID(OC_SKIP),
+				[5] = USB2_PORT_MID(OC_SKIP),
+				[6] = USB2_PORT_MID(OC_SKIP),
+				[7] = USB2_PORT_MID(OC_SKIP),
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),
+				[2] = USB3_PORT_DEFAULT(OC_SKIP),
+				[3] = USB3_PORT_DEFAULT(OC_SKIP),
+				[4] = USB3_PORT_DEFAULT(OC_SKIP),
+				[5] = USB3_PORT_DEFAULT(OC_SKIP),
+				[6] = USB3_PORT_DEFAULT(OC_SKIP),
+				[7] = USB3_PORT_DEFAULT(OC_SKIP),
+			}"
+		end
+
+		device ref shared_sram on end
+
+		# Not working, resource conflict(?)
+		device ref sata on
+			register "sata_ports_enable" = "{
+				[0] = 1,
+				[1] = 1,
+			}"
+		end
+
+		# Built-in I226-V NICs
+		device ref pcie_rp1 on
+			register "pch_pcie_rp[PCH_RP(1)]" = "{
+				.clk_src = 4,
+				.clk_req = 4,
+				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_BUILT_IN,
+			}"
+		end
+
+		device ref pcie_rp2 on
+			register "pch_pcie_rp[PCH_RP(2)]" = "{
+				.clk_src = 2,
+				.clk_req = 2,
+				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_BUILT_IN,
+			}"
+		end
+
+		device ref pcie_rp3 on
+			register "pch_pcie_rp[PCH_RP(3)]" = "{
+				.clk_src = 1,
+				.clk_req = 1,
+				.flags =  PCIE_RP_CLK_REQ_DETECT | PCIE_RP_BUILT_IN,
+			}"
+		end
+
+		device ref pcie_rp7 on
+			register "pch_pcie_rp[PCH_RP(7)]" = "{
+				.clk_src = 3,
+				.clk_req = 3,
+				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_BUILT_IN,
+			}"
+		end
+
+		# NVME (Gen3 x2)
+		device ref pcie_rp9 on
+			register "pch_pcie_rp[PCH_RP(9)]" = "{
+				.clk_src = 0,
+				.clk_req = 0,
+				.flags = PCIE_RP_CLK_REQ_DETECT,
+			}"
+		end
+
+		# mPCIe (WiFi/modem)
+		device ref pcie_rp11 on
+			register "pch_pcie_rp[PCH_RP(11)]" = "{
+				.clk_src = 5,
+				.clk_req = 5,
+				.flags = PCIE_RP_CLK_REQ_DETECT,
+			}"
+		end
+
+		device ref pch_espi on
+			chip superio/ite/it8625e
+				device pnp 2e.1 on      # Cisco-style serial console
+					io 0x60 = 0x3f8
+					irq 0x70 = 0x4
+					irq 0xf0 = 0x1
+				end
+			end
+		end
+
+		device ref smbus on end
+		device ref fast_spi on end
+
+		device ref hda on
+			register "pch_hda_audio_link_hda_enable"	= "true"
+			register "pch_hda_idisp_codec_enable"		= "true"
+			register "pch_hda_idisp_link_frequency"		= "HDA_LINKFREQ_96MHZ"
+			register "pch_hda_idisp_link_tmode"		= "HDA_TMODE_8T"
+		end
+	end
+end

@@ -50,7 +50,10 @@
 #define  PRMRR_PHYS_MASK_VALID		(1 << 11)
 #define MSR_PRMRR_VALID_CONFIG		0x1fb
 #define MSR_POWER_CTL			0x1fc
+#define  ENABLE_BIDIR_PROCHOT		(1 << 0)
 #define  POWER_CTL_C1E_MASK		(1 << 1)
+#define  PWR_PERF_PLATFORM_OVR		(1 << 18)
+#define  VR_THERM_ALERT_DISABLE_LOCK	(1 << 23)
 #define MSR_PRMRR_BASE_0		0x2a0
 #define MSR_EVICT_CTL			0x2e0
 #define MSR_LT_CONTROL			0x2e7

@@ -5,7 +5,6 @@
 #include <console/console.h>
 #include <intelblocks/itss.h>
 #include <intelblocks/pcr.h>
-#include <soc/itss.h>
 #include <soc/pcr_ids.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
 

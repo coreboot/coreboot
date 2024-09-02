@@ -13,7 +13,6 @@
 #include <intelblocks/systemagent.h>
 #include <intelblocks/xdci.h>
 #include <soc/intel/common/vbt.h>
-#include <soc/itss.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <soc/soc_chip.h>

@@ -11,7 +11,6 @@
 #include <soc/numa.h>
 #include <soc/soc_util.h>
 #include <soc/util.h>
-#include <soc/itss.h>
 #include <soc/pcr_ids.h>
 
 int soc_madt_sci_irq_polarity(int sci)

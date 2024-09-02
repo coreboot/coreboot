@@ -3,6 +3,10 @@
 #ifndef SOC_INTEL_COMMON_BLOCK_ITSS_H
 #define SOC_INTEL_COMMON_BLOCK_ITSS_H
 
+#define ITSS_MAX_IRQ	119
+#define IRQS_PER_IPC	32
+#define NUM_IPC_REGS	((ITSS_MAX_IRQ + IRQS_PER_IPC - 1)/IRQS_PER_IPC)
+
 /* PIRQA Routing Control Register */
 #define PCR_ITSS_PIRQA_ROUT	0x3100
 /* PIRQB Routing Control Register */

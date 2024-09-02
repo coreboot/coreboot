@@ -4,7 +4,6 @@
 #include <intelblocks/pcr.h>
 #include <soc/iomap.h>
 #include <soc/irq.h>
-#include <soc/itss.h>
 #include <soc/gpe.h>
 #include <soc/pcr_ids.h>
 

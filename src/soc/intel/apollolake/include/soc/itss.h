@@ -3,11 +3,9 @@
 #ifndef _SOC_APOLLOLAKE_ITSS_H_
 #define _SOC_APOLLOLAKE_ITSS_H_
 
+#include <intelblocks/itss.h>
+
 #define GPIO_IRQ_START	50
 #define GPIO_IRQ_END	ITSS_MAX_IRQ
-
-#define ITSS_MAX_IRQ	119
-#define IRQS_PER_IPC	32
-#define NUM_IPC_REGS	((ITSS_MAX_IRQ + IRQS_PER_IPC - 1)/IRQS_PER_IPC)
 
 #endif /* _SOC_APOLLOLAKE_ITSS_H_ */

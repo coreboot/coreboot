@@ -2,7 +2,6 @@
 
 #include <intelblocks/itss.h>
 #include <intelblocks/pcr.h>
-#include <soc/itss.h>
 #include <soc/pcr_ids.h>
 
 /* PCR access */

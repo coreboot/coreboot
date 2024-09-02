@@ -242,7 +242,7 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc, const char *dump_s
 		break;
 	default:
 		printf("Error: Dumping MCHBAR on this northbridge is not (yet) supported.\n");
-		printf("Error: Unknown PCI id: %08x/%08x\n", nb->vendor_id, nb->device_id);
+		printf("Error: Unknown PCI id: %04x/%04x\n", nb->vendor_id, nb->device_id);
 		return 1;
 	}
 

@@ -52,7 +52,9 @@ static int get_spd(u8 *spd, u8 addr)
 		return -1;
 	}
 
-	if (i2c_eeprom_read(addr, 0, SPD_PAGE_LEN, spd) < 0) {
+	/* IMC doesn't support i2c eeprom read. */
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_IMC) ||
+	    i2c_eeprom_read(addr, 0, SPD_PAGE_LEN, spd) < 0) {
 		printk(BIOS_INFO, "do_i2c_eeprom_read failed, using fallback\n");
 		spd_read(spd, addr);
 	}
@@ -62,7 +64,9 @@ static int get_spd(u8 *spd, u8 addr)
 		/* Switch to page 1 */
 		spd_write_byte(SPD_PAGE_1, 0, 0);
 
-		if (i2c_eeprom_read(addr, 0, SPD_PAGE_LEN, spd + SPD_PAGE_LEN) < 0) {
+		/* IMC doesn't support i2c eeprom read. */
+		if (CONFIG(SOC_INTEL_COMMON_BLOCK_IMC) ||
+		    i2c_eeprom_read(addr, 0, SPD_PAGE_LEN, spd + SPD_PAGE_LEN) < 0) {
 			printk(BIOS_INFO, "do_i2c_eeprom_read failed, using fallback\n");
 			spd_read(spd + SPD_PAGE_LEN, addr);
 		}
@@ -78,7 +82,10 @@ void get_spd_smbus(struct spd_block *blk)
 {
 	u8 i;
 	for (i = 0 ; i < CONFIG_DIMM_MAX; i++) {
-		if (blk->addr_map[i] == 0) {
+		/**
+		 * Slave address 0 is also available for IMC based SPD SMBus.
+		 */
+		if (!CONFIG(SOC_INTEL_COMMON_BLOCK_IMC) && blk->addr_map[i] == 0) {
 			blk->spd_array[i] = NULL;
 			continue;
 		}

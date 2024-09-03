@@ -165,7 +165,6 @@ void i2c_generic_fill_ssdt(const struct device *dev,
 		acpigen_write_return_namestr("RBUF");
 
 		acpigen_pop_len();
-		acpigen_pop_len();
 	}
 
 	/* Chip Direct Mapping */

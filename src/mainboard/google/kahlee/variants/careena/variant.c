@@ -38,7 +38,8 @@ void variant_romstage_entry(void)
 		}
 	}
 
-	google_chromeec_get_board_version(&bid);
+	if (google_chromeec_get_board_version(&bid))
+		return;
 
 	if (bid == 7)
 		/*

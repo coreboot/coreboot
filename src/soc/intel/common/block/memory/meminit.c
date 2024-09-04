@@ -115,8 +115,9 @@ static bool read_spd_dimm(FSPM_UPD *memupd, const struct soc_mem_cfg *soc_mem_cf
 
 	for (ch = 0; ch < num_phys_ch; ch++) {
 		for (dimm = 0; dimm < CONFIG_DIMMS_PER_CHANNEL; dimm++) {
-			blk.addr_map[CH_DIMM_OFFSET(ch, dimm)] =
-				info->smbus[ch].addr_dimm[dimm];
+			if (CH_DIMM_OFFSET(ch, dimm) < ARRAY_SIZE(blk.addr_map))
+				blk.addr_map[CH_DIMM_OFFSET(ch, dimm)] =
+					info->smbus[ch].addr_dimm[dimm];
 		}
 	}
 
@@ -167,6 +168,8 @@ static bool read_spd_dimm(FSPM_UPD *memupd, const struct soc_mem_cfg *soc_mem_cf
 		size_t mrc_ch = soc_mem_cfg->phys_to_mrc_map[ch];
 
 		for (dimm = 0; dimm < CONFIG_DIMMS_PER_CHANNEL; dimm++) {
+			if (!(CH_DIMM_OFFSET(ch, dimm) < ARRAY_SIZE(blk.spd_array)))
+				continue;
 			uint8_t *spd_data = blk.spd_array[CH_DIMM_OFFSET(ch, dimm)];
 			if (spd_data == NULL)
 				continue;

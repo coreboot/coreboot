@@ -12,6 +12,7 @@ all-y += ../common/uart.c
 bootblock-y += bootblock.c
 bootblock-y += ../common/mmu_operations.c
 bootblock-y += ../common/mtcmos.c mtcmos.c
+bootblock-y += ../common/pll.c pll.c
 bootblock-y += ../common/wdt.c ../common/wdt_req.c wdt.c
 
 romstage-y += ../common/cbmem.c
@@ -20,6 +21,7 @@ romstage-y += ../common/dramc_param.c
 romstage-y += ../common/emi.c
 romstage-y += ../common/memory.c ../common/memory_test.c
 romstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
+romstage-y += ../common/pll.c pll.c
 
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += ../common/bl31.c
 ramstage-y += ../common/dramc_info.c

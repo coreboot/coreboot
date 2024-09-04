@@ -380,14 +380,6 @@ config SOC_INTEL_GFX_FRAMEBUFFER_OFFSET
 	hex
 	default 0x800000
 
-config FSP_PUBLISH_MBP_HOB
-	bool
-	default n if CHROMEOS
-	default y
-	help
-	  This is to control creation of ME_BIOS_PAYLOAD_HOB (MBP HOB) by FSP.
-	  Disabling it for the platforms, which do not use MBP HOB, can improve the boot time.
-
 config BUILDING_WITH_DEBUG_FSP
 	bool "Debug FSP is used for the build"
 	default n

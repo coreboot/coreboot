@@ -522,4 +522,15 @@ config FSP_MULTIPHASE_SI_INIT_RETURN_BROKEN
 	  reported with Alder Lake and Raptor Lake FSP where MultiPhaseSiInit API is unable
 	  to return any ERROR status.
 
+config FSP_PUBLISH_MBP_HOB
+	bool
+	default n if CHROMEOS
+	default y
+	help
+	  This is to control creation of ME_BIOS_PAYLOAD_HOB (MBP HOB) by FSP.
+	  Disabling it for the platforms, which do not use MBP HOB, can improve the boot time.
+
+	  ChromeOS devices typically do not require the MBP information, hence it is disabled
+	  by default on ChromeOS.
+
 endif

@@ -511,18 +511,13 @@ config INTEL_GMA_BCLM_OFFSET
 config INTEL_GMA_BCLM_WIDTH
 	default 32
 
+# Note: It cannot be disabled for ADL-P based platforms because ADL-P FSP relies on
+# MBP HOB for ChipsetInit version for ChipsetInit sync. As ChipsetInit sync doesn't
+# occur if no MBP HOB, so it results S0ix issue. This limitation is addressed in the
+# later platforms so creation of MBP HOB can be skipped for ADL-N based platforms.
 config FSP_PUBLISH_MBP_HOB
 	bool
-	default n if CHROMEOS && (SOC_INTEL_ALDERLAKE_PCH_N)
-	default y
-	help
-	  This is to control creation of ME_BIOS_PAYLOAD_HOB (MBP HOB) by FSP.
-	  Disabling it for the platforms, which do not use MBP HOB, can improve the boot time.
-
-	  Note: It cannot be disabled for ADL-P based platforms because ADL-P FSP relies on
-	  MBP HOB for ChipsetInit version for ChipsetInit sync. As ChipsetInit sync doesn't
-	  occur if no MBP HOB, so it results S0ix issue. This limitation is addressed in the
-	  later platforms so creation of MBP HOB can be skipped for ADL-N based platforms.
+	default y if !SOC_INTEL_ALDERLAKE_PCH_N
 
 config INCLUDE_HSPHY_IN_FMAP
 	bool "Include PCIe 5.0 HSPHY firmware in flash"

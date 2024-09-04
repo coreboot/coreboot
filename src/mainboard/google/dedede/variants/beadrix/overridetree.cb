@@ -141,6 +141,7 @@ chip soc/intel/jasperlake
 						register "enable_delay_ms" = "20"
 						device usb 3.3 on
 							probe DB_PORTS DB_PORTS_1C_LTE
+							probe DB_PORTS DB_PORTS_LTE
 						end
 					end
 				end
@@ -239,6 +240,7 @@ chip soc/intel/jasperlake
 				register "reg_irq_cfg2" = "0x00"
 				device i2c 28 on
 					probe DB_PORTS DB_PORTS_1C_LTE
+					probe DB_PORTS DB_PORTS_LTE
 				end
 			end
 		end # I2C 5

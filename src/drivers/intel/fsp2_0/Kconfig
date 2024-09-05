@@ -533,4 +533,11 @@ config FSP_PUBLISH_MBP_HOB
 	  ChromeOS devices typically do not require the MBP information, hence it is disabled
 	  by default on ChromeOS.
 
+config BUILDING_WITH_DEBUG_FSP
+	bool "Use Debug FSP for Build"
+	default n
+	help
+	  Enable this option if you are using a debug build of the FSP (Firmware Support Package)
+	  in your project.
+
 endif

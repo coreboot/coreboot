@@ -242,10 +242,4 @@ config MRC_CHANNEL_WIDTH
 	int
 	default 16
 
-config BUILDING_WITH_DEBUG_FSP
-	bool "Debug FSP is used for the build"
-	default n
-	help
-	  Set this option if debug build of FSP is used.
-
 endif

@@ -10,40 +10,12 @@
 
 #include <soc/addressmap.h>
 #include <soc/gpio_common.h>
+#include <soc/gpio_defs.h>
 #include <types.h>
 
 #define GPIO_NUM 185
 
-enum {
-	MAX_GPIO_REG_BITS = 32,
-	MAX_GPIO_MODE_PER_REG = 8,
-	GPIO_MODE_BITS = 4,
-};
-
 #define GPIO_ID(name) PAD_##name##_ID
-
-#define PIN(id, name, flag, bit, base, offset, \
-	    func1, func2, func3, func4, func5, func6, func7) \
-	PAD_##name##_ID = id, \
-	PAD_##name##_FLAG = flag, \
-	PAD_##name##_BIT = bit, \
-	PAD_##name##_BASE = base, \
-	PAD_##name##_OFFSET = offset, \
-	PAD_##name##_FUNC_##func1 = 1, \
-	PAD_##name##_FUNC_##func2 = 2, \
-	PAD_##name##_FUNC_##func3 = 3, \
-	PAD_##name##_FUNC_##func4 = 4, \
-	PAD_##name##_FUNC_##func5 = 5, \
-	PAD_##name##_FUNC_##func6 = 6, \
-	PAD_##name##_FUNC_##func7 = 7
-
-#define GPIO(name) ((gpio_t){ \
-		.id = PAD_##name##_ID, \
-		.flag = PAD_##name##_FLAG, \
-		.bit = PAD_##name##_BIT, \
-		.base = PAD_##name##_BASE, \
-		.offset = PAD_##name##_OFFSET \
-	})
 
 enum {
 	PIN(0, EINT0, 0, 13, 0x16, 0x50,
@@ -603,21 +575,14 @@ enum {
 	    RES5, RES6, RES7),
 };
 
-struct val_regs {
-	uint32_t val;
-	uint32_t set;
-	uint32_t rst;
-	uint32_t align;
-};
-
 struct gpio_regs {
-	struct val_regs dir[7];
+	struct gpio_val_regs dir[7];
 	uint8_t rsv00[144];
-	struct val_regs dout[7];
+	struct gpio_val_regs dout[7];
 	uint8_t rsv01[144];
-	struct val_regs din[7];
+	struct gpio_val_regs din[7];
 	uint8_t rsv02[144];
-	struct val_regs mode[28];
+	struct gpio_val_regs mode[28];
 	uint8_t rsv03[560];
 	uint32_t dram_pinmux_trapping;
 };

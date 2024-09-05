@@ -10,53 +10,18 @@
 
 #include <soc/addressmap.h>
 #include <soc/gpio_common.h>
+#include <soc/gpio_defs.h>
 #include <types.h>
 
 #define GPIO_NUM 271
 
-enum {
-	MAX_GPIO_REG_BITS = 32,
-	MAX_GPIO_MODE_PER_REG = 8,
-	GPIO_MODE_BITS = 4,
-};
-
-struct val_regs {
-	uint32_t val;
-	uint32_t set;
-	uint32_t rst;
-	uint32_t align;
-};
-
 struct gpio_regs {
-	struct val_regs dir[16];
-	struct val_regs dout[16];
-	struct val_regs din[16];
-	struct val_regs mode[32];
+	struct gpio_val_regs dir[16];
+	struct gpio_val_regs dout[16];
+	struct gpio_val_regs din[16];
+	struct gpio_val_regs mode[32];
 	uint32_t dram_pinmux_trapping;
 };
-
-#define PIN(id, name, flag, bit, base, offset, \
-		func1, func2, func3, func4, func5, func6, func7) \
-	PAD_##name##_ID = id, \
-	PAD_##name##_FLAG = flag, \
-	PAD_##name##_BIT = bit, \
-	PAD_##name##_BASE = base, \
-	PAD_##name##_OFFSET = offset, \
-	PAD_##name##_FUNC_##func1 = 1, \
-	PAD_##name##_FUNC_##func2 = 2, \
-	PAD_##name##_FUNC_##func3 = 3, \
-	PAD_##name##_FUNC_##func4 = 4, \
-	PAD_##name##_FUNC_##func5 = 5, \
-	PAD_##name##_FUNC_##func6 = 6, \
-	PAD_##name##_FUNC_##func7 = 7
-
-#define GPIO(name) ((gpio_t){ \
-		.id = PAD_##name##_ID, \
-		.flag = PAD_##name##_FLAG, \
-		.bit = PAD_##name##_BIT, \
-		.base = PAD_##name##_BASE, \
-		.offset = PAD_##name##_OFFSET \
-	})
 
 enum {
 	PIN(0, EINT0, 0, 0, 0x18, 0xa0,

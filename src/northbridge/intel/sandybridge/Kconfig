@@ -180,4 +180,32 @@ config FIXED_EPBAR_MMIO_BASE
 config PRERAM_CBFS_CACHE_SIZE
 	default 0x0
 
+choice
+	prompt "Default IGD Memory Allocation"
+	default IGD_DEFAULT_UMA_SIZE_32MB
+	help
+	  The amount of system memory allocated for the integrated GPU if not
+	  set via an option table.
+
+config IGD_DEFAULT_UMA_SIZE_32MB
+	bool "32MB"
+
+config IGD_DEFAULT_UMA_SIZE_64MB
+	bool "64MB"
+
+config IGD_DEFAULT_UMA_SIZE_96MB
+	bool "96MB"
+
+config IGD_DEFAULT_UMA_SIZE_128MB
+	bool "128MB"
+
+endchoice
+
+config IGD_DEFAULT_UMA_INDEX
+	int
+	default 0 if IGD_DEFAULT_UMA_SIZE_32MB
+	default 1 if IGD_DEFAULT_UMA_SIZE_64MB
+	default 2 if IGD_DEFAULT_UMA_SIZE_96MB
+	default 3 if IGD_DEFAULT_UMA_SIZE_128MB
+
 endif

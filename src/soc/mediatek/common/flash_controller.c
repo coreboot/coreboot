@@ -224,20 +224,20 @@ int mtk_spi_flash_probe(const struct spi_slave *spi,
 	return 0;
 }
 
-int mtk_snfc_init_pad_func(const struct mtk_snfc_pad_func *pad_func, enum gpio_drv strength)
+int mtk_snfc_init_pad_func(const struct pad_func *pad, enum gpio_drv strength)
 {
-	gpio_set_pull(pad_func->gpio, GPIO_PULL_ENABLE, pad_func->select);
-	gpio_set_mode(pad_func->gpio, pad_func->func);
+	gpio_set_pull(pad->gpio, GPIO_PULL_ENABLE, pad->select);
+	gpio_set_mode(pad->gpio, pad->func);
 
-	if (gpio_set_driving(pad_func->gpio, strength) < 0) {
+	if (gpio_set_driving(pad->gpio, strength) < 0) {
 		printk(BIOS_ERR,
 		       "%s: failed to set pin drive to %d for %d\n",
-		       __func__, strength, pad_func->gpio.id);
+		       __func__, strength, pad->gpio.id);
 		return -1;
 	}
 
 	printk(BIOS_DEBUG, "%s: got pin drive: %#x\n", __func__,
-	       gpio_get_driving(pad_func->gpio));
+	       gpio_get_driving(pad->gpio));
 
 	return 0;
 }

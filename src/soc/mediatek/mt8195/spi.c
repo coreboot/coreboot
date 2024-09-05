@@ -34,50 +34,42 @@ struct mtk_spi_bus spi_bus[SPI_BUS_NUMBER] = {
 	},
 };
 
-struct pad_func {
-	u8 pin_id;
-	u8 func;
-};
-
-#define PAD_FUNC(name, func) {PAD_##name##_ID, PAD_##name##_FUNC_##func}
-#define PAD_FUNC_GPIO(name) {PAD_##name##_ID, 0}
-
 static const struct pad_func pad0_funcs[SPI_BUS_NUMBER][4] = {
 	{
-		PAD_FUNC(SPIM0_MI, SPIM0_MI),
+		PAD_FUNC_DOWN(SPIM0_MI, SPIM0_MI),
 		PAD_FUNC_GPIO(SPIM0_CSB),
-		PAD_FUNC(SPIM0_MO, SPIM0_MO),
-		PAD_FUNC(SPIM0_CLK, SPIM0_CLK),
+		PAD_FUNC_DOWN(SPIM0_MO, SPIM0_MO),
+		PAD_FUNC_DOWN(SPIM0_CLK, SPIM0_CLK),
 	},
 	{
-		PAD_FUNC(SPIM1_MI, SPIM1_MI),
+		PAD_FUNC_DOWN(SPIM1_MI, SPIM1_MI),
 		PAD_FUNC_GPIO(SPIM1_CSB),
-		PAD_FUNC(SPIM1_MO, SPIM1_MO),
-		PAD_FUNC(SPIM1_CLK, SPIM1_CLK),
+		PAD_FUNC_DOWN(SPIM1_MO, SPIM1_MO),
+		PAD_FUNC_DOWN(SPIM1_CLK, SPIM1_CLK),
 	},
 	{
-		PAD_FUNC(SPIM2_MI, SPIM2_MI),
+		PAD_FUNC_DOWN(SPIM2_MI, SPIM2_MI),
 		PAD_FUNC_GPIO(SPIM2_CSB),
-		PAD_FUNC(SPIM2_MO, SPIM2_MO),
-		PAD_FUNC(SPIM2_CLK, SPIM2_CLK),
+		PAD_FUNC_DOWN(SPIM2_MO, SPIM2_MO),
+		PAD_FUNC_DOWN(SPIM2_CLK, SPIM2_CLK),
 	},
 	{
-		PAD_FUNC(PWRAP_SPI_MI, SPIM3_MI),
+		PAD_FUNC_DOWN(PWRAP_SPI_MI, SPIM3_MI),
 		PAD_FUNC_GPIO(PWRAP_SPI_CSN),
-		PAD_FUNC(PWRAP_SPI_MO, SPIM3_MO),
-		PAD_FUNC(PWRAP_SPI_CK, SPIM3_CLK),
+		PAD_FUNC_DOWN(PWRAP_SPI_MO, SPIM3_MO),
+		PAD_FUNC_DOWN(PWRAP_SPI_CK, SPIM3_CLK),
 	},
 	{
-		PAD_FUNC(DGI_D3, SPIM4_MI),
+		PAD_FUNC_DOWN(DGI_D3, SPIM4_MI),
 		PAD_FUNC_GPIO(DGI_D2),
-		PAD_FUNC(DGI_D1, SPIM4_MO),
-		PAD_FUNC(DGI_D0, SPIM4_CLK),
+		PAD_FUNC_DOWN(DGI_D1, SPIM4_MO),
+		PAD_FUNC_DOWN(DGI_D0, SPIM4_CLK),
 	},
 	{
-		PAD_FUNC(DGI_D7, SPIM5_MI),
+		PAD_FUNC_DOWN(DGI_D7, SPIM5_MI),
 		PAD_FUNC_GPIO(DGI_D6),
-		PAD_FUNC(DGI_D5, SPIM5_MO),
-		PAD_FUNC(DGI_D4, SPIM5_CLK),
+		PAD_FUNC_DOWN(DGI_D5, SPIM5_MO),
+		PAD_FUNC_DOWN(DGI_D4, SPIM5_CLK),
 	},
 };
 
@@ -89,7 +81,7 @@ void mtk_spi_set_gpio_pinmux(unsigned int bus, enum spi_pad_mask pad_select)
 
 	ptr = pad0_funcs[bus];
 	for (int i = 0; i < 4; i++)
-		gpio_set_mode((gpio_t){.id = ptr[i].pin_id}, ptr[i].func);
+		gpio_set_mode(ptr[i].gpio, ptr[i].func);
 }
 
 static const struct spi_ctrlr spi_flash_ctrlr = {

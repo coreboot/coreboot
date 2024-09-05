@@ -50,6 +50,18 @@ struct gpio_drv_info {
 	uint8_t width;
 };
 
+struct pad_func {
+	gpio_t gpio;
+	u8 func;
+	enum pull_select select;
+};
+
+#define GPIO_FUNC(name, func)		PAD_##name##_FUNC_##func
+#define PAD_FUNC(name, func, select)	{ GPIO(name), GPIO_FUNC(name, func), select }
+#define PAD_FUNC_DOWN(name, func)	PAD_FUNC(name, func, GPIO_PULL_DOWN)
+#define PAD_FUNC_UP(name, func)		PAD_FUNC(name, func, GPIO_PULL_UP)
+#define PAD_FUNC_GPIO(name)		{ GPIO(name), 0 }
+
 void gpio_set_pull(gpio_t gpio, enum pull_enable enable,
 		   enum pull_select select);
 void gpio_set_mode(gpio_t gpio, int mode);

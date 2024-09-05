@@ -35,58 +35,50 @@ struct mtk_spi_bus spi_bus[SPI_BUS_NUMBER] = {
 	}
 };
 
-struct pad_func {
-	u8 pin_id;
-	u8 func;
-};
-
-#define PAD_FUNC(name, func) {PAD_##name##_ID, PAD_##name##_FUNC_##func}
-#define PAD_FUNC_GPIO(name) {PAD_##name##_ID, 0}
-
 static const struct pad_func pad0_funcs[SPI_BUS_NUMBER][4] = {
 	{
-		PAD_FUNC(SPI_MI, SPI0_MI),
+		PAD_FUNC_DOWN(SPI_MI, SPI0_MI),
 		PAD_FUNC_GPIO(SPI_CSB),
-		PAD_FUNC(SPI_MO, SPI0_MO),
-		PAD_FUNC(SPI_CLK, SPI0_CLK),
+		PAD_FUNC_DOWN(SPI_MO, SPI0_MO),
+		PAD_FUNC_DOWN(SPI_CLK, SPI0_CLK),
 	},
 	{
-		PAD_FUNC(SPI1_MI, SPI1_A_MI),
+		PAD_FUNC_DOWN(SPI1_MI, SPI1_A_MI),
 		PAD_FUNC_GPIO(SPI1_CSB),
-		PAD_FUNC(SPI1_MO, SPI1_A_MO),
-		PAD_FUNC(SPI1_CLK, SPI1_A_CLK),
+		PAD_FUNC_DOWN(SPI1_MO, SPI1_A_MO),
+		PAD_FUNC_DOWN(SPI1_CLK, SPI1_A_CLK),
 	},
 	{
-		PAD_FUNC(KPCOL1, SPI2_MI),
+		PAD_FUNC_DOWN(KPCOL1, SPI2_MI),
 		PAD_FUNC_GPIO(EINT0),
-		PAD_FUNC(EINT1, SPI2_MO),
-		PAD_FUNC(EINT2, SPI2_CLK),
+		PAD_FUNC_DOWN(EINT1, SPI2_MO),
+		PAD_FUNC_DOWN(EINT2, SPI2_CLK),
 	},
 	{
-		PAD_FUNC(DPI_D8, SPI3_MI),
+		PAD_FUNC_DOWN(DPI_D8, SPI3_MI),
 		PAD_FUNC_GPIO(DPI_D9),
-		PAD_FUNC(DPI_D10, SPI3_MO),
-		PAD_FUNC(DPI_D11, SPI3_CLK),
+		PAD_FUNC_DOWN(DPI_D10, SPI3_MO),
+		PAD_FUNC_DOWN(DPI_D11, SPI3_CLK),
 	},
 	{
-		PAD_FUNC(DPI_D4, SPI4_MI),
+		PAD_FUNC_DOWN(DPI_D4, SPI4_MI),
 		PAD_FUNC_GPIO(DPI_D5),
-		PAD_FUNC(DPI_D6, SPI4_MO),
-		PAD_FUNC(DPI_D7, SPI4_CLK),
+		PAD_FUNC_DOWN(DPI_D6, SPI4_MO),
+		PAD_FUNC_DOWN(DPI_D7, SPI4_CLK),
 	},
 	{
-		PAD_FUNC(DPI_D0, SPI5_MI),
+		PAD_FUNC_DOWN(DPI_D0, SPI5_MI),
 		PAD_FUNC_GPIO(DPI_D1),
-		PAD_FUNC(DPI_D2, SPI5_MO),
-		PAD_FUNC(DPI_D3, SPI5_CLK),
+		PAD_FUNC_DOWN(DPI_D2, SPI5_MO),
+		PAD_FUNC_DOWN(DPI_D3, SPI5_CLK),
 	}
 };
 
 static const struct pad_func bus1_pad1_funcs[4] = {
-	PAD_FUNC(EINT7, SPI1_B_MI),
+	PAD_FUNC_DOWN(EINT7, SPI1_B_MI),
 	PAD_FUNC_GPIO(EINT8),
-	PAD_FUNC(EINT9, SPI1_B_MO),
-	PAD_FUNC(EINT10, SPI1_B_CLK),
+	PAD_FUNC_DOWN(EINT9, SPI1_B_MO),
+	PAD_FUNC_DOWN(EINT10, SPI1_B_CLK),
 };
 
 void mtk_spi_set_gpio_pinmux(unsigned int bus, enum spi_pad_mask pad_select)
@@ -100,7 +92,7 @@ void mtk_spi_set_gpio_pinmux(unsigned int bus, enum spi_pad_mask pad_select)
 		ptr = bus1_pad1_funcs;
 	}
 	for (int i = 0; i < 4; i++)
-		gpio_set_mode((gpio_t){.id = ptr[i].pin_id}, ptr[i].func);
+		gpio_set_mode(ptr[i].gpio, ptr[i].func);
 }
 
 const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {

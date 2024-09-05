@@ -12,13 +12,11 @@
 #include <soc/spi.h>
 #include <spi_flash.h>
 
-#define PAD_FUNC_SEL(name, func, sel) {GPIO(name), PAD_##name##_FUNC_##func, sel}
-
-static const struct mtk_snfc_pad_func nor_pinmux[4] = {
-	PAD_FUNC_SEL(SDA10, SF_CK, GPIO_PULL_DOWN),
-	PAD_FUNC_SEL(SCL10, SF_CS, GPIO_PULL_UP),
-	PAD_FUNC_SEL(PERIPHERAL_EN5, SF_D0, GPIO_PULL_DOWN),
-	PAD_FUNC_SEL(PERIPHERAL_EN6, SF_D1, GPIO_PULL_DOWN),
+static const struct pad_func nor_pinmux[4] = {
+	PAD_FUNC(SDA10, SF_CK, GPIO_PULL_DOWN),
+	PAD_FUNC(SCL10, SF_CS, GPIO_PULL_UP),
+	PAD_FUNC(PERIPHERAL_EN5, SF_D0, GPIO_PULL_DOWN),
+	PAD_FUNC(PERIPHERAL_EN6, SF_D1, GPIO_PULL_DOWN),
 };
 
 void mtk_snfc_init(void)

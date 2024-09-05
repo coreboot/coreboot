@@ -53,45 +53,38 @@ struct mtk_i2c mtk_i2c_bus_controller[] = {
 _Static_assert(ARRAY_SIZE(mtk_i2c_bus_controller) == I2C_BUS_NUMBER,
 	       "Wrong size of mtk_i2c_bus_controller");
 
-struct pad_func {
-	gpio_t gpio;
-	u8 func;
-};
-
-#define PAD_FUNC(name, func) {GPIO(name), PAD_##name##_FUNC_##func}
-
 static const struct pad_func i2c_funcs[I2C_BUS_NUMBER][2] = {
 	[0] = {
-		PAD_FUNC(SDA0, SDA0),
-		PAD_FUNC(SCL0, SCL0),
+		PAD_FUNC_UP(SDA0, SDA0),
+		PAD_FUNC_UP(SCL0, SCL0),
 	},
 	[1] = {
-		PAD_FUNC(SDA1, SDA1),
-		PAD_FUNC(SCL1, SCL1),
+		PAD_FUNC_UP(SDA1, SDA1),
+		PAD_FUNC_UP(SCL1, SCL1),
 	},
 	[2] = {
-		PAD_FUNC(SDA2, SDA2),
-		PAD_FUNC(SCL2, SCL2),
+		PAD_FUNC_UP(SDA2, SDA2),
+		PAD_FUNC_UP(SCL2, SCL2),
 	},
 	[3] = {
-		PAD_FUNC(SDA3, SDA3),
-		PAD_FUNC(SCL3, SCL3),
+		PAD_FUNC_UP(SDA3, SDA3),
+		PAD_FUNC_UP(SCL3, SCL3),
 	},
 	[4] = {
-		PAD_FUNC(SDA4, SDA4),
-		PAD_FUNC(SCL4, SCL4),
+		PAD_FUNC_UP(SDA4, SDA4),
+		PAD_FUNC_UP(SCL4, SCL4),
 	},
 	[5] = {
-		PAD_FUNC(HDMIRX_SCL, SCL5),
-		PAD_FUNC(HDMIRX_SDA, SDA5),
+		PAD_FUNC_DOWN(HDMIRX_SCL, SCL5),
+		PAD_FUNC_DOWN(HDMIRX_SDA, SDA5),
 	},
 	[6] = {
-		PAD_FUNC(HDMITX_SCL, SCL6),
-		PAD_FUNC(HDMITX_SDA, SDA6),
+		PAD_FUNC_DOWN(HDMITX_SCL, SCL6),
+		PAD_FUNC_DOWN(HDMITX_SDA, SDA6),
 	},
 	[7] = {
-		PAD_FUNC(HDMIRX_HTPLG, SCL7),
-		PAD_FUNC(HDMIRX_PWR5V, SDA7),
+		PAD_FUNC_DOWN(HDMIRX_HTPLG, SCL7),
+		PAD_FUNC_DOWN(HDMIRX_PWR5V, SDA7),
 	},
 
 };
@@ -104,7 +97,7 @@ static void mtk_i2c_set_gpio_pinmux(uint8_t bus)
 	for (size_t i = 0; i < 2; i++) {
 		gpio_set_mode(ptr[i].gpio, ptr[i].func);
 		if (bus <= I2C4)
-			gpio_set_pull(ptr[i].gpio, GPIO_PULL_ENABLE, GPIO_PULL_UP);
+			gpio_set_pull(ptr[i].gpio, GPIO_PULL_ENABLE, ptr[i].select);
 	}
 }
 

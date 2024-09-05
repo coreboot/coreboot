@@ -93,73 +93,66 @@ struct mtk_i2c mtk_i2c_bus_controller[] = {
 _Static_assert(ARRAY_SIZE(mtk_i2c_bus_controller) == I2C_BUS_NUMBER,
 	       "Wrong size of mtk_i2c_bus_controller");
 
-struct pad_func {
-	gpio_t gpio;
-	u8 func;
-};
-
-#define PAD_FUNC(name, func) {GPIO(name), PAD_##name##_FUNC_##func}
-
 static const struct pad_func i2c_funcs[I2C_BUS_NUMBER][2] = {
 	[0] = {
-		PAD_FUNC(SDA0, SDA0),
-		PAD_FUNC(SCL0, SCL0),
+		PAD_FUNC_UP(SDA0, SDA0),
+		PAD_FUNC_UP(SCL0, SCL0),
 	},
 	[1] = {
-		PAD_FUNC(SDA1, SDA1),
-		PAD_FUNC(SCL1, SCL1),
+		PAD_FUNC_UP(SDA1, SDA1),
+		PAD_FUNC_UP(SCL1, SCL1),
 	},
 	[2] = {
-		PAD_FUNC(CAM_SDA2, SDA2),
-		PAD_FUNC(CAM_SCL2, SCL2),
+		PAD_FUNC_UP(CAM_SDA2, SDA2),
+		PAD_FUNC_UP(CAM_SCL2, SCL2),
 	},
 	[3] = {
-		PAD_FUNC(SDA3, SDA3),
-		PAD_FUNC(SCL3, SCL3),
+		PAD_FUNC_UP(SDA3, SDA3),
+		PAD_FUNC_UP(SCL3, SCL3),
 	},
 	[4] = {
-		PAD_FUNC(CAM_SDA4, SDA4),
-		PAD_FUNC(CAM_SCL4, SCL4),
+		PAD_FUNC_UP(CAM_SDA4, SDA4),
+		PAD_FUNC_UP(CAM_SCL4, SCL4),
 	},
 	[5] = {
-		PAD_FUNC(SDA5, SDA5),
-		PAD_FUNC(SCL5, SCL5),
+		PAD_FUNC_UP(SDA5, SDA5),
+		PAD_FUNC_UP(SCL5, SCL5),
 	},
 	[6] = {
-		PAD_FUNC(SDA6, SDA6),
-		PAD_FUNC(SCL6, SCL6),
+		PAD_FUNC_UP(SDA6, SDA6),
+		PAD_FUNC_UP(SCL6, SCL6),
 	},
 	[7] = {
-		PAD_FUNC(CAM_SDA7, SDA7),
-		PAD_FUNC(CAM_SCL7, SCL7),
+		PAD_FUNC_UP(CAM_SDA7, SDA7),
+		PAD_FUNC_UP(CAM_SCL7, SCL7),
 	},
 	[8] = {
-		PAD_FUNC(CAM_SDA8, SDA8),
-		PAD_FUNC(CAM_SCL8, SCL8),
+		PAD_FUNC_UP(CAM_SDA8, SDA8),
+		PAD_FUNC_UP(CAM_SCL8, SCL8),
 	},
 	[9] = {
-		PAD_FUNC(CAM_SDA9, SDA9),
-		PAD_FUNC(CAM_SCL9, SCL9),
+		PAD_FUNC_UP(CAM_SDA9, SDA9),
+		PAD_FUNC_UP(CAM_SCL9, SCL9),
 	},
 	[10] = {
-		PAD_FUNC(SDA10, SDA10),
-		PAD_FUNC(SCL10, SCL10),
+		PAD_FUNC_UP(SDA10, SDA10),
+		PAD_FUNC_UP(SCL10, SCL10),
 	},
 	[11] = {
-		PAD_FUNC(CAM_PDN3, SDA11),
-		PAD_FUNC(CAM_PDN2, SCL11),
+		PAD_FUNC_UP(CAM_PDN3, SDA11),
+		PAD_FUNC_UP(CAM_PDN2, SCL11),
 	},
 	[12] = {
-		PAD_FUNC(CAM_PDN5, SDA12),
-		PAD_FUNC(CAM_PDN4, SCL12),
+		PAD_FUNC_UP(CAM_PDN5, SDA12),
+		PAD_FUNC_UP(CAM_PDN4, SCL12),
 	},
 	[13] = {
-		PAD_FUNC(CAM_PDN7, SDA13),
-		PAD_FUNC(CAM_PDN6, SCL13),
+		PAD_FUNC_UP(CAM_PDN7, SDA13),
+		PAD_FUNC_UP(CAM_PDN6, SCL13),
 	},
 	[14] = {
-		PAD_FUNC(SCP_SDA3, SDA14),
-		PAD_FUNC(SCP_SCL3, SCL14),
+		PAD_FUNC_UP(SCP_SDA3, SDA14),
+		PAD_FUNC_UP(SCP_SCL3, SCL14),
 	},
 };
 
@@ -171,7 +164,7 @@ static void mtk_i2c_set_gpio_pinmux(uint8_t bus)
 
 	for (size_t i = 0; i < 2; i++) {
 		gpio_set_mode(ptr[i].gpio, ptr[i].func);
-		gpio_set_pull(ptr[i].gpio, GPIO_PULL_ENABLE, GPIO_PULL_UP);
+		gpio_set_pull(ptr[i].gpio, GPIO_PULL_ENABLE, ptr[i].select);
 	}
 }
 

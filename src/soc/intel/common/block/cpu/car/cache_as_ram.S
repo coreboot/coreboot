@@ -513,13 +513,13 @@ find_llc_subleaf:
 	xor	%edx, %edx /* Clear the upper 32-bit of dividend */
 	div	%ecx
 	/*
-	 * Increment data_ways by 1 if RW data size (CONFIG_DCACHE_RAM_SIZE) is
+	 * Effectively ceiling the result if RW data size (CONFIG_DCACHE_RAM_SIZE) is
 	 * not divisible by way_size (ECX)
 	 */
-	movl	$0x01, %ecx
-	cmp	$0x00, %edx
-	cmovne	%ecx, %edx
-	add	%edx, %eax
+	testl %edx, %edx
+	jz skip_increment
+	incl %eax
+skip_increment:
 	mov	%eax, %edx /* back up data_ways in edx */
 	mov	%eax, %ecx
 	movl	$0x01, %eax

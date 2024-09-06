@@ -8,7 +8,7 @@ chip soc/amd/stoneyridge
 	}"
 	register "dram_clear_on_reset" = "DRAM_CONTENTS_KEEP"
 	register "uma_mode" = "UMAMODE_SPECIFIED_SIZE"
-	register "uma_size" = "32 * MiB"
+	register "uma_size" = "CONFIG_UMA_SIZE_IN_MB * MiB"
 
 	register "i2c_scl_reset" = "GPIO_I2C0_SCL | GPIO_I2C1_SCL |
 				    GPIO_I2C2_SCL | GPIO_I2C3_SCL"

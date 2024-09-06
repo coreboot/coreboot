@@ -172,4 +172,31 @@ config USE_PSPSECUREOS
 	default n if CHROMEOS
 	default y
 
+choice
+	prompt "UMA Memory Allocation"
+	default KAHLEE_UMA_SIZE_32MB
+	help
+	  The amount of system memory allocated for the integrated GPU
+
+config KAHLEE_UMA_SIZE_32MB
+	bool "32MB"
+
+config KAHLEE_UMA_SIZE_64MB
+	bool "64MB"
+
+config KAHLEE_UMA_SIZE_128MB
+	bool "128MB"
+
+config KAHLEE_UMA_SIZE_256MB
+	bool "256MB"
+
+endchoice
+
+config UMA_SIZE_IN_MB
+	int
+	default 32  if KAHLEE_UMA_SIZE_32MB
+	default 64  if KAHLEE_UMA_SIZE_64MB
+	default 128 if KAHLEE_UMA_SIZE_128MB
+	default 256 if KAHLEE_UMA_SIZE_256MB
+
 endif # BOARD_GOOGLE_BASEBOARD_KAHLEE

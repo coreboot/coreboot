@@ -5,7 +5,16 @@ SPD_SOURCES_DIR=$(dir $(word 1, $(SPD_SOURCES)))
 APCB_SOURCES=$(foreach f, $(basename $(notdir $(SPD_SOURCES))), $(obj)/APCB_$(f).gen)
 
 # APCB binary with magic numbers to be replaced by apcb_edit tool
-APCB_NAME=data.apcb
+ifeq ($(CONFIG_ZORK_UMA_SIZE_64MB),y)
+APCB_NAME=uma_64.apcb
+else ifeq ($(CONFIG_ZORK_UMA_SIZE_128MB),y)
+APCB_NAME=uma_128.apcb
+else ifeq ($(CONFIG_ZORK_UMA_SIZE_256MB),y)
+APCB_NAME=uma_256.apcb
+else ifeq ($(CONFIG_ZORK_UMA_SIZE_512MB),y)
+APCB_NAME=uma_512.apcb
+endif
+
 APCB_PATH=$(src)/mainboard/$(MAINBOARDDIR)
 
 $(obj)/APCB_%.gen:	$(SPD_SOURCES_DIR)%.hex \

@@ -15,9 +15,9 @@ done by fixing up all relocation entries in the relocatable module
 based on the location of the binary (which was returned by CBMEM
 at runtime).
 
-# Implementation Details
+## Implementation Details
 
-## build time
+### Build Time
 
 At build time the rmodtool (util/cbfstool/rmodtool.c) is used to
 create relocatable modules. The rmodtool basically takes an ELF
@@ -44,7 +44,7 @@ which are all created by the rmodtool.
 2. program (.program)
 3. relocation entries (.relocs)
 
-## runtime
+### Runtime
 
 Either rmodule\_load (lib/rmodule.c) is used directly or through the
 rmodule\_stage\_load (lib/rmodule.c) wrapper. It is used to load the
@@ -59,7 +59,7 @@ address pointing to a location that needs relocation. The relocation
 itself is just a simple addition, that adds an offset from where the
 image was "supposed" to be at link time, to where it is now relocated.
 
-## module\_parameters
+### module\_parameters
 
 module\_parameters is a section inside the rmodule ELF file. Its
 basically a way to pass runtime information to an rmodule
@@ -73,7 +73,7 @@ volatile __attribute((aligned(4), __section__(".module_parameters")))
 struct smm_runtime smm_runtime;
 ```
 
-# x86 why rmodules
+## x86 why rmodules
 //TODO
 x86: postcar and ramstage cannot conflict with payload regarding
 memory placement. Therefore payload location is usually fixed and

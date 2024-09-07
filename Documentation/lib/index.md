@@ -10,4 +10,5 @@ Flashmap and Flashmap Descriptor <flashmap.md>
 ABI data consumption <abi-data-consumption.md>
 Timestamps <timestamp.md>
 Firmware Configuration Interface <fw_config.md>
+Relocatable Modules <rmodules.md>
 ```

@@ -336,6 +336,7 @@ StarBook Mk VI <starlabs/starbook_adl.md>
 Byte Mk II <starlabs/byte_adl.md>
 StarFighter Mk I <starlabs/starfighter_rpl.md>
 
+Building coreboot <starlabs/common/building.md>
 Flashing devices <starlabs/common/flashing.md>
 ```
 

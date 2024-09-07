@@ -6,6 +6,13 @@ they allow to easily reuse existing code across platforms.
 
 For details on how to connect device drivers to a mainboard, see [Driver Devicetree Entries](dt_entries.md).
 
+```{toctree}
+:maxdepth: 1
+:hidden:
+
+Driver Devicetree Entries <dt_entries.md>
+```
+
 Some of the drivers currently available include:
 
 ```{toctree}

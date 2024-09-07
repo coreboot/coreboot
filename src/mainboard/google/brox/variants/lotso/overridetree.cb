@@ -326,6 +326,7 @@ chip soc/intel/alderlake
 				.clk_req = 0,
 				.clk_src = 0,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+				.pcie_rp_aspm = ASPM_L1,
 			}"
 			probe STORAGE STORAGE_NVME
 			probe unprovisioned

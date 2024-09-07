@@ -41,6 +41,40 @@ are permitted provided that the following conditions are met:
 
 typedef struct {
 
+	/**  WHEA Support
+  Enable/Disable WHEA support.
+  0:Disable, 1:Enable
+**/
+  UINT8                       WheaSupportEn;
+
+/**  Enable/Disable WHEA Error Injection Support.
+  0:Disabled, 1:Enabled
+**/
+  UINT8                       WheaErrorInjSupportEn;
+
+/**  Whea EINJ ACPI 5.0 support for set error type with address and vendor extensions.
+  0:Disabled, 1:Enabled
+**/
+  UINT8                       WheaACPI50ErrInjEn;
+
+/**  Whea PCIE Error Injection Support
+  Enable/Disable Whea PCIE Error Injection Support in FSP.
+  0:Disable, 1:Enable
+**/
+  UINT8                       WheaPcieErrInjEn;
+
+/**  Whea PCIe Error Injection Action Table
+  Use Action Table for Whea PCIe Error Injection in FSP.
+  0:Disable, 1:Enable
+**/
+  UINT8                       PcieErrInjActionTable;
+
+/**  IIO eDPC Support
+  Enable/Disable IIO eDPC Support.
+  0:Disabled, 1:On Fatal Error, 2:On Fatal and Non-Fatal Errors
+**/
+  UINT8                       EdpcEn;
+
 /** N/A
 **/
   UINT8                       ReservedSiliconInitUpd[16];

@@ -235,6 +235,8 @@ typedef enum {
   MemTypeCxlExpPersistentMem,
   MemTypeCxl2lmDdrCacheMem,
   MemTypeCxlHetero,
+  MemTypeCxlAccVolatileMemHdmDb,
+  MemTypeCxlExpVolatileMemDcd,
   MemTypeMax
 } MEM_TYPE;
 

@@ -31,4 +31,10 @@ are permitted provided that the following conditions are met:
 #ifndef _FSP_ACPI_HOBS_H_
 #define _FSP_ACPI_HOBS_H_
 
+//Typecast HOB pointer to ACPI CXL CEDT table structure
+#define FSP_CXL_CEDT_ACPI_HOB_GUID        { 0x5CB7A12A, 0x8B2D, 0x485A, { 0xB7, 0x04, 0xC0, 0x52, 0x49, 0x56, 0x81, 0xE7 } }
+
+//Typecast HOB pointer to RAS_ACPI_PARAM_HOB_DATA;
+#define RAS_ACPI_PARAM_HOB_GUID           {0x594dfe5c, 0x7a87, 0x49dc, { 0x8f, 0x33, 0xea, 0x83, 0x4d, 0x6f, 0x18, 0x90 } }
+
 #endif //#ifndef _FSP_ACPI_HOBS_H_

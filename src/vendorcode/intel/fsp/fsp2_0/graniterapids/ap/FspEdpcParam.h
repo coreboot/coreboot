@@ -28,13 +28,42 @@ are permitted provided that the following conditions are met:
 
 **/
 
-#ifndef _FSP_ACPI_HOBS_H_
-#define _FSP_ACPI_HOBS_H_
+#ifndef __FSP_EDPC_PARAM__
+#define __FSP_EDPC_PARAM__
 
-//Typecast HOB pointer to ACPI CXL CEDT table structure
-#define FSP_CXL_CEDT_ACPI_HOB_GUID        { 0x5CB7A12A, 0x8B2D, 0x485A, { 0xB7, 0x04, 0xC0, 0x52, 0x49, 0x56, 0x81, 0xE7 } }
+#pragma pack(1)
+typedef struct {
+  UINT8         Segment;
+  UINT8         Bus;
+  UINT8         Device;
+  UINT8         Function;
+} EDPC_DEV_INFO;
 
-//Typecast HOB pointer to RAS_ACPI_PARAM_HOB_DATA;
-#define RAS_ACPI_PARAM_HOB_GUID           {0x594dfe5c, 0x7a87, 0x49dc, { 0x8f, 0x33, 0xea, 0x83, 0x4d, 0x6f, 0x18, 0x90 } }
+typedef struct {
+  //
+  // There are three possible statuses of Valid infomation
+  // EPDC_INFO_VALID, EDPC_INFO_NOTIFIED, EDPC_INFO_CLEARED
+  //
+  UINT8           Valid;
+  EDPC_DEV_INFO   EdpcTrigger;
+  EDPC_DEV_INFO   EdpcRootPort;
+  UINT8           NotifyType;
+} EDPC_INFO;
 
-#endif //#ifndef _FSP_ACPI_HOBS_H_
+typedef struct {
+  UINT16          OsNativeAerSupport;
+  UINT16          Reserved;
+  UINT64          Reserved1[400];
+  EDPC_INFO       EdpcInfo;
+  UINT64          EmcaL1DirAddr;
+  UINT8           EmcaEn;
+  UINT8           ElogEn;
+  UINT8           WheaEnabled;
+  UINT8           WheaSupportEn;
+  UINT64          ReadAckAddress;
+  UINT64          OobReadAckAddress;
+  UINT32          SoftwareSmi;
+} RAS_ACPI_PARAM;
+
+#pragma pack()
+#endif  // __FSP_EDPC_PARAM__

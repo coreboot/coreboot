@@ -47,15 +47,38 @@ are permitted provided that the following conditions are met:
 #define MAX_IOU_PER_SOCKET         7
 #endif
 
+#ifndef MAX_IIO_PORTS_PER_STACK
+#define MAX_IIO_PORTS_PER_STACK    1
+#endif
+
+
+#define MAX_IIO_PCIE_PER_SOCKET      1
+
 #define MAX_VMD_STACKS_PER_SOCKET          8  // Max number of stacks per socket supported by VMD
 
 #pragma pack(1)
 
 typedef enum {
   PE0 = 0,
+  PE1,
+  PE2,
+  PE3,
+  PE4,
+  PE5,
+  PEa,
+  PEb,
+  PEc,
+  PEd,
   PE_MAX,
   PE_ = 0xFF   // temporary unknown value
 } IIO_PACKAGE_PE;
+
+typedef struct {
+  UINT8    Address;     // SMBUS address of IO expander which provides NPEM
+  UINT8    Bank;        // Port or bank on IoExpander which provides NPEM
+  UINT8    MuxAddress;  // SMBUS address of MUX used to access NPEM
+  UINT8    MuxChannel;  // Channel of the MUX used to access NPEM
+} IIO_NPEM_CFG;
 
 typedef struct {
   UINT8    SLOTEIP[MAX_IIO_PORTS_PER_SOCKET];          // Electromechanical Interlock Present - Slot Capabilities (D0-10 / F0 / R0xA4 / B17)
@@ -114,13 +137,18 @@ typedef struct {
 typedef struct {
 
   IIO_VPP_CFG             Vpp;
+  IIO_NPEM_CFG            Npem;
   IIO_SLOT_CFG            Slot;
 
   UINT8                   VppEnabled      :1;
   UINT8                   VppExpType      :1;
+  UINT8                   NpemSupported   :1;
 
   UINT8                   SlotImplemented :1;
-  UINT8                   Reserved        :4;
+  UINT8                   Retimer1Present :1;
+  UINT8                   Retimer2Present :1;
+  UINT8                   CommonClock     :1;
+  UINT8                   SRIS            :1;
 
   UINT16                  HotPlug             :  1;  // If hotplug is supported on slot connected to this port
   UINT16                  MrlSensorPresent    :  1;  // If MRL is present on slot connected to this port
@@ -211,6 +239,9 @@ typedef struct {
 #define IIO_BIFURCATE_x4x2x2x2x2x2x2    0x18
 #define IIO_BIFURCATE_x2x2x2x2x2x2x2x2  0x19
 #define IIO_BIFURCATE_AUTO              0xFF
+
+#define C1_UID                              2
+#define C2_UID                              3
 
 typedef enum {
   IioBifurcation_UNKNOWN = IIO_BIFURCATE_xxxxxxxx,

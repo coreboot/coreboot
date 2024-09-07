@@ -74,10 +74,6 @@ are permitted provided that the following conditions are met:
 #define MAX_IIO_PORTS_PER_STACK   8
 #endif
 
-#ifndef MAX_IIO_PCIE_PER_SOCKET
-#define MAX_IIO_PCIE_PER_SOCKET   1
-#endif
-
 #ifndef MAX_IIO_PCIROOTS_PER_STACK
 #define MAX_IIO_PCIROOTS_PER_STACK  1
 #endif
@@ -217,6 +213,7 @@ typedef struct {
   UINT64                  Mmio64Limit;           // Limit of high MMIO configured for this stack in memory map
   UDS_PCIROOT_RES         PciRoot[MAX_IIO_PCIROOTS_PER_STACK];
   UINT64                  VtbarAddress;          // VT-d Base Address
+  UINT64                  ChbcrBarAddress;
 } UDS_STACK_RES;
 
 typedef struct {
@@ -261,6 +258,14 @@ typedef struct {
     UINT64                  PlatGlobalMmio64Limit;  // Global Mmioh Limit [43:0]
     QPI_CPU_DATA            CpuQpiInfo[MAX_SOCKET]; // QPI related info per CPU
     QPI_IIO_DATA            IioQpiInfo[MAX_SOCKET]; // QPI related info per IIO
+    UINT16                  SystemIoBase;           // System IO Base
+    UINT16                  SystemIoLimit;          // System IO Limit
+    UINT32                  SystemMmio32Base;       // System low MMIO base
+    UINT32                  SystemMmio32Limit;
+    UINT32                  Mmio32Granularity;
+    UINT64                  SystemMmio64Base;       // System high MMIO Base
+    UINT64                  SystemMmio64Limit;      // System high MMIO Limit
+    UINT64                  Mmio64Granularity;
     UINT32                  MemTsegSize;
     UINT64                  PciExpressBase;
     UINT32                  PciExpressSize;

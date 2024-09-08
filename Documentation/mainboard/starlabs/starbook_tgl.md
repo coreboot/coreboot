@@ -2,7 +2,7 @@
 
 ## Specs
 
-- CPU (full processor specs available at https://ark.intel.com)
+- CPU (full processor specs available at <https://ark.intel.com>)
     - Intel i7-1165G7 (Tiger Lake)
     - Intel i3-1110G4 (Tiger Lake)
 - EC

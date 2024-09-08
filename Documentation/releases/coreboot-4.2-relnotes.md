@@ -12,7 +12,7 @@ active as reviewers in that period. Thanks go to all contributors who
 helped shape this release.
 
 As with 4.1, the release tarballs are available at
-http://www.coreboot.org/releases/. There's also a 4.2 tag and branch in
+<http://www.coreboot.org/releases/>. There's also a 4.2 tag and branch in
 the git repository.
 
 This marks the first release that features a changelog comparing it to

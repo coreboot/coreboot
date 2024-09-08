@@ -10,7 +10,7 @@ based release schedule. Since the last release, 1030 commits by 114
 authors added a net total of 17500 lines to the source code. Thank you
 to all who contributed!
 
-The release tarballs are available at http://www.coreboot.org/releases/.
+The release tarballs are available at <http://www.coreboot.org/releases/>.
 There's also a 4.3 tag and branch in the git repository.
 
 Besides the usual addition of new mainboards (14) and chipsets

@@ -115,7 +115,7 @@ A few things are lacking in PARALLEL_MP init:
   the BSP CPU.
 - Support SMM in the legacy ASEG (0xa0000 - 0xb0000) region. A POC
   showed that it's not that hard to do with PARALLEL_MP
-  https://review.coreboot.org/c/coreboot/+/58700
+  <https://review.coreboot.org/c/coreboot/+/58700>
 
 No platforms in the tree have any hardware limitations that would block
 migrating to PARALLEL_MP / a simple !CONFIG_SMP codebase.

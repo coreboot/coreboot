@@ -59,7 +59,7 @@ change because doing so breaks other boards.
 
 If you want to use Google Cyan with the release (or if
 you're tracking the master branch), please keep an eye on
-https://review.coreboot.org/c/coreboot/+/34304 where a solution for this
+<https://review.coreboot.org/c/coreboot/+/34304> where a solution for this
 issue is sought.
 
 Deprecations

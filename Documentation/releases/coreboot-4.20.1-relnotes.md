@@ -62,11 +62,11 @@ This patch supports projects to use _DSM to control USB3 U1/U2
 transition per port.
 
 More details can be found in
-https://web.archive.org/web/20230116084819/https://learn.microsoft.com/en-us/windows-hardware/drivers/bringup/usb-device-specific-method---dsm-
+<https://web.archive.org/web/20230116084819/https://learn.microsoft.com/en-us/windows-hardware/drivers/bringup/usb-device-specific-method---dsm->
 
 The ACPI and USB driver of linux kernel need corresponding functions
 to support this feature. Please see
-https://git.kernel.org/pub/scm/linux/kernel/git/mnyman/xhci.git/log/?h=port_check_acpi_dsm
+<https://git.kernel.org/pub/scm/linux/kernel/git/mnyman/xhci.git/log/?h=port_check_acpi_dsm>
 
 
 ### drivers/efi: Add EFI variable store option support
@@ -229,7 +229,7 @@ New authors: ~35
 Significant Known and Open Issues
 ---------------------------------
 
-Issues from the coreboot bugtracker: https://ticket.coreboot.org/
+Issues from the coreboot bugtracker: <https://ticket.coreboot.org/>
 ```{eval-rst}
 +-----+-----------------------------------------------------------------+
 | #   | Subject                                                         |

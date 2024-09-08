@@ -263,7 +263,7 @@ Statistics from the 4.21 to the 4.22 release
 Significant Known and Open Issues
 ---------------------------------
 
-Issues from the coreboot bugtracker: https://ticket.coreboot.org/
+Issues from the coreboot bugtracker: <https://ticket.coreboot.org/>
 
 ### Payload-specific issues
 
@@ -341,9 +341,9 @@ Plans for the next release
 coreboot Links and Contact Information
 --------------------------------------
 
-* Main Website: https://www.coreboot.org
-* Downloads: https://coreboot.org/downloads.html
-* Source control: https://review.coreboot.org
-* Documentation: https://doc.coreboot.org
-* Issue tracker: https://ticket.coreboot.org/projects/coreboot
-* Donations: https://coreboot.org/donate.html
+* Main Website: <https://www.coreboot.org>
+* Downloads: <https://coreboot.org/downloads.html>
+* Source control: <https://review.coreboot.org>
+* Documentation: <https://doc.coreboot.org>
+* Issue tracker: <https://ticket.coreboot.org/projects/coreboot>
+* Donations: <https://coreboot.org/donate.html>

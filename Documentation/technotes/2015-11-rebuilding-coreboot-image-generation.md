@@ -136,8 +136,8 @@ second phase covers the assembly of the final image.
 By having a global picture of the final image’s requirements, we can also
 avoid issues where files added earlier may prevent later additions that have
 stricter constraints - without resorting to hacks like
-https://chromium-review.googlesource.com/289491 that reorder the file addition
-manually.
+<https://chromium-review.googlesource.com/289491> that reorder the file
+addition manually.
 
 Example
 -------

@@ -63,7 +63,7 @@ Fixed Bugs
 * qemu-i440fx: Fix ACPI checksum corruption
 * intelmetool: Fix crash, support ME11+ platforms, fix bootguard
 detection
-* tpm: Fix TPM software stack vulnerability in tlcl_read() for TPM 1.2 (https://github.com/nccgroup/TPMGenie)
+* tpm: Fix TPM software stack vulnerability in tlcl_read() for TPM 1.2 ()<https://github.com/nccgroup/TPMGenie>)
 * asrock/b75pro3-m: Fixed HDMI
 * Intel/ibexpeak: Fix missing ACPI PIRQ entries
 * Intel/nehalem: Fix freeze during chipset lockdown
@@ -86,7 +86,7 @@ Intelmetool
 Documentation
 -------------
 * Switch from Hugo to Sphinx for the Documentation
-* Working on markdown documentation for https://doc.coreboot.org
+* Working on markdown documentation for <https://doc.coreboot.org>
 
 Added 17 mainboards
 -------------------

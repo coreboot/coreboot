@@ -39,4 +39,4 @@ qemu-system-aarch64 -nographic -m 1024 -M sbsa-ref -pflash <path/to/TFA.fd> \
 
 arm and 9elements worked together in order to create a LBBR compliant bootflow
 consisting of ```TF-A```, ```coreboot```, ```leanefi``` and ```LinuxBoot```. A proof of concept
-can be found here https://gitlab.arm.com/systemready/firmware-build/linuxboot/lbbr-coreboot-poc
+can be found here <https://gitlab.arm.com/systemready/firmware-build/linuxboot/lbbr-coreboot-poc>

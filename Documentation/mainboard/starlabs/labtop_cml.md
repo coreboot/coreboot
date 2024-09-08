@@ -2,7 +2,7 @@
 
 ## Specs
 
-- CPU (full processor specs available at https://ark.intel.com)
+- CPU (full processor specs available at <https://ark.intel.com>)
     - Intel i7-10710U (Comet Lake)
     - Intel i3-10110U (Comet Lake)
 - EC

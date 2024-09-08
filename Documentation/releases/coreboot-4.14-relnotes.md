@@ -147,7 +147,7 @@ or the latest generation [2] on market.
 
 With this release, the codebase for multiple generations of Xeon-SP
 were unified and optimized:
-* SKX-SP SoC code is used in OCP TiogaPass mainboard [3]. Support for
+* SKX-SP SoC code is used in [OCP TiogaPass mainboard][3]. Support for
 this board is in Proof Of Concept Status.
 * CPX-SP SoC code is used in OCP DeltaLake mainboard. Support for
 this board is in DVT (Design Validation Test) exit equivalent status.
@@ -155,7 +155,7 @@ Features supported, (performance/stability) test scopes, known issues,
 features gaps are described in [4].
 
 
-[1] https://www.intel.com/content/www/us/en/products/details/processors/xeon/scalable.html
-[2] https://www.intel.com/content/www/us/en/products/docs/processors/xeon/3rd-gen-xeon-scalable-processors-brief.html
-[3] ../mainboard/ocp/tiogapass.md
-[4] ../mainboard/ocp/deltalake.md
+[1]: <https://www.intel.com/content/www/us/en/products/details/processors/xeon/scalable.html>
+[2]: <https://www.intel.com/content/www/us/en/products/docs/processors/xeon/3rd-gen-xeon-scalable-processors-brief.html>
+[3]: <../mainboard/ocp/tiogapass.md>
+[4]: <../mainboard/ocp/deltalake.md>

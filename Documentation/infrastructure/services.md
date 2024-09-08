@@ -41,7 +41,7 @@ stating:
 
 ### Gerrit user avatar
 To setup an avatar to show in Gerrit, clone the avatars repository at
-https://review.coreboot.org/gerrit-avatars.git and add a file named
+<https://review.coreboot.org/gerrit-avatars.git> and add a file named
 $your-user-ID.jpg (the user ID is a number shown on the [settings screen](https://review.coreboot.org/settings)).
 The image must be provided in JPEG format, must be square and have at most 50000
 bytes.

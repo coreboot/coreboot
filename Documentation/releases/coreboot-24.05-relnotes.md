@@ -70,7 +70,7 @@ Additional coreboot changes
 * Numerous fixes for clang support
 * Ongoing code cleanup
 * Docs: Replace Recommonmark with MyST Parser. For changes, see the commit
-  message in https://review.coreboot.org/73158
+  message in <https://review.coreboot.org/73158>
 
 
 
@@ -257,9 +257,9 @@ Significant Known and Open Issues
 coreboot Links and Contact Information
 --------------------------------------
 
-* Main Website: https://www.coreboot.org
-* Downloads: https://coreboot.org/downloads.html
-* Source control: https://review.coreboot.org
-* Documentation: https://doc.coreboot.org
-* Issue tracker: https://ticket.coreboot.org/projects/coreboot
-* Donations: https://coreboot.org/donate.html
+* Main Website: <https://www.coreboot.org>
+* Downloads: <https://coreboot.org/downloads.html>
+* Source control: <https://review.coreboot.org>
+* Documentation: <https://doc.coreboot.org>
+* Issue tracker: <https://ticket.coreboot.org/projects/coreboot>
+* Donations: <https://coreboot.org/donate.html>

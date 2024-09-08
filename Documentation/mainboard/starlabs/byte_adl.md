@@ -2,7 +2,7 @@
 
 ## Specs
 
-- CPU (full processor specs available at https://ark.intel.com)
+- CPU (full processor specs available at <https://ark.intel.com>)
     - Intel N200 (Alder Lake)
 - EC
     - ITE IT5570E

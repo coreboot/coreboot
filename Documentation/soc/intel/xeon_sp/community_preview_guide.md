@@ -4,10 +4,10 @@ Xeon Scalable Processor coreboot Community Preview Guide
 ## Background
 
 Xeon 6 basic boot supports are initially upstreamed at
-https://review.coreboot.org/q/topic:%22Xeon6-Basic-Boot%22.
+<https://review.coreboot.org/q/topic:%22Xeon6-Basic-Boot%22>.
 
 Full feature supports are previewed at
-https://review.coreboot.org/admin/repos/intel-dev-pub,general
+<https://review.coreboot.org/admin/repos/intel-dev-pub,general>
 
 The supported platform status are as below,
 

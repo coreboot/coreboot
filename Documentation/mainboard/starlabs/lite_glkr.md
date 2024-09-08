@@ -1,7 +1,7 @@
 # StarLite Mk III
 
 ## Specs
-- CPU (full processor specs available at https://ark.intel.com)
+- CPU (full processor specs available at <https://ark.intel.com>)
     - Intel N5030 (Gemini Lake Refresh)
 - EC
     - Nuvoton NPCE985P/G

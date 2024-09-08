@@ -7,7 +7,7 @@
 - Chipset
   - Intel HM470
 - EC
-  - ITE IT5570E running https://github.com/system76/ec
+  - ITE IT5570E running <https://github.com/system76/ec>
 - GPU
   - NVIDIA GeForce RTX 2080 Super (Max-Q)
   - or NVIDIA GeForce RTX 2070 (Max-Q)

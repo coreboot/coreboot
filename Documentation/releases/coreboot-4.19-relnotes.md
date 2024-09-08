@@ -220,7 +220,7 @@ Statistics from the 4.18 to the 4.19 release
 Significant Known and Open Issues
 ---------------------------------
 
-Issues from the coreboot bugtracker: https://ticket.coreboot.org/
+Issues from the coreboot bugtracker: <https://ticket.coreboot.org/>
 ```{eval-rst}
 +-----+-----------------------------------------------------------------+
 | #   | Subject                                                         |

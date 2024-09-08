@@ -5,7 +5,7 @@ We are happy to announce the release of coreboot 4.4.  This is our
 fourth quarterly release.  Since the last release, we've had 850 commits
 by 90 authors adding 59000 lines to the codebase.
 
-The release tarballs are available at https://www.coreboot.org/releases/
+The release tarballs are available at <https://www.coreboot.org/releases/>
 There is a 4.4 tag and branch in the git repository.
 
 Log of commit 3141eac900 to commit 588ccaa9a7

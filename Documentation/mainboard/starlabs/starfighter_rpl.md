@@ -2,7 +2,7 @@
 
 ## Specs
 
-- CPU (full processor specs available at https://ark.intel.com)
+- CPU (full processor specs available at <https://ark.intel.com>)
     - Intel i3-1315U (Raptor Lake)
     - Intel i7-13700H (Raptor Lake)
     - Intel i9-13900H (Raptor Lake)

@@ -19,7 +19,7 @@ Historically, the initial branch that was created in a new git
 repository was named ‘master’. In line with many other projects,
 coreboot has decided to switch away from this name and use the name
 ‘main’ instead. You can read about the initial reasoning on the SFC’s
-website: https://sfconservancy.org/news/2020/jun/23/gitbranchname/
+website: <https://sfconservancy.org/news/2020/jun/23/gitbranchname/>
 
 At some point before the 4.22 release, coreboot will be switching from
 the master branch to the main branch. This shouldn’t be a difficult
@@ -355,7 +355,7 @@ Significant Known and Open Issues
 ---------------------------------
 
 
-Issues from the coreboot bugtracker: https://ticket.coreboot.org/
+Issues from the coreboot bugtracker: <https://ticket.coreboot.org/>
 ```{eval-rst}
 +-----+-----------------------------------------------------------------+
 | #   | Subject                                                         |
@@ -398,10 +398,10 @@ Issues from the coreboot bugtracker: https://ticket.coreboot.org/
 coreboot Links and Contact Information
 --------------------------------------
 
-* Main Web site: https://www.coreboot.org
-* IRC: https://web.libera.chat/#coreboot
-* Downloads: https://coreboot.org/downloads.html
-* Source control: https://review.coreboot.org
-* Documentation: https://doc.coreboot.org
-* Issue tracker: https://ticket.coreboot.org/projects/coreboot
-* Donations: https://coreboot.org/donate.html
+* Main Web site: <https://www.coreboot.org>
+* IRC: <https://web.libera.chat/#coreboot>
+* Downloads: <https://coreboot.org/downloads.html>
+* Source control: <https://review.coreboot.org>
+* Documentation: <https://doc.coreboot.org>
+* Issue tracker: <https://ticket.coreboot.org/projects/coreboot>
+* Donations: <https://coreboot.org/donate.html>

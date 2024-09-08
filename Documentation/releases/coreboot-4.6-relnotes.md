@@ -8,7 +8,7 @@ The 4.6 release covers commit e74f5eaa to commit db508565
 
 Since the last release in October 2016, the coreboot project had 1708
 commits by 121 authors. The release tarballs and gpg signatures are
-available in the usual place at https://www.coreboot.org/downloads
+available in the usual place at <https://www.coreboot.org/downloads>
 
 There is a pgp signed 4.6 tag in the git repository, and a branch will
 be created as needed.
@@ -22,7 +22,7 @@ Our cbmem debug console was updated with some nice features. The cbmem
 console now persists between reboots and is able to be used on some
 platforms via late init. Also there is a new Linux kernel driver which
 removes the need for the old cbmem tool to read from the cbmem area. You
-can find the patch here https://patchwork.kernel.org/patch/9641997/ and
+can find the patch here <https://patchwork.kernel.org/patch/9641997/> and
 it can be enabled via GOOGLE_MEMCONSOLE_COREBOOT kconfig option in your
 kernel - Note that this name may change going forward.
 
@@ -51,7 +51,7 @@ replacement for the old nvramcui payload. This new payload is called
 cbui and is based on the nuklear graphics library including keyboard and
 mouse support. The cbui payload is currently expected to be merged into
 the main coreboot tree before the next release.  The upstream repository
-is here: https://github.com/siro20/coreboot/tree/cbui/payloads/cbui
+is here: <https://github.com/siro20/coreboot/tree/cbui/payloads/cbui>
 
 ### UEFI support: A long road to go
 
@@ -65,7 +65,7 @@ integrated into the coreboot build. This has several reasons:
 We started to make progress with the integration into our sources and
 the hope is that by the end of the summer, we finally support the edk2
 payload out-of-the- box. See the current patch state at
-http://review.coreboot.org/#/c/15057/
+<http://review.coreboot.org/#/c/15057/>
 
 ### Fighting blobs and proprietary HW components
 
@@ -76,7 +76,7 @@ PSP and microcode. Recently, a way was discovered to let the Intel ME
 run in a functional error state and reduce it from 1.5/5MB to 80KB. It's
 not perfect but it works from Nehalem up to Skylake based Intel systems.
 The tool is now integrated into the coreboot build system. The upstream
-repository is https://github.com/corna/me_cleaner
+repository is <https://github.com/corna/me_cleaner>
 
 Another ongoing improvement is the new utility blobtool. It is currently
 used for generating the flash descriptor and GbE configuration data on

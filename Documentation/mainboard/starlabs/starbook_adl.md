@@ -2,7 +2,7 @@
 
 ## Specs
 
-- CPU (full processor specs available at https://ark.intel.com)
+- CPU (full processor specs available at <https://ark.intel.com>)
     - Intel i7-1260P (Alder Lake)
     - Intel i3-1220P (Alder Lake)
     - Intel i3-1315U (Raptor Lake)

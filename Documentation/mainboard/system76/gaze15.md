@@ -5,7 +5,7 @@
 - CPU
   - Intel Core i7 10750H
 - EC
-  - ITE5570E running https://github.com/system76/ec
+  - ITE5570E running <https://github.com/system76/ec>
 - Graphics
   - Intel UHD Graphics
   - NVIDIA GeForce GTX 1650/1650 Ti/1660 Ti

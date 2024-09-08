@@ -78,7 +78,7 @@ vulnerability included in one of the software parts (with the specified
 version) of the firmware.
 
 Further reference:
-https://web.archive.org/web/20220310104905/https://blogs.gnome.org/hughsie/2022/03/10/firmware-software-bill-of-materials/
+<https://web.archive.org/web/20220310104905/https://blogs.gnome.org/hughsie/2022/03/10/firmware-software-bill-of-materials/>
 
 - Add Makefile.inc to generate and build coswid tags
 - Add templates for most payloads, coreboot, intel-microcode,

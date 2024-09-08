@@ -31,7 +31,7 @@ months, so the changes between any two release don't become too
 overwhelming.
 
 With the release of coreboot 4.1, you get an announcement (this email),
-a git tag (4.1), and tar archives at http://www.coreboot.org/releases/,
+a git tag (4.1), and tar archives at <http://www.coreboot.org/releases/>,
 for the coreboot sources and the redistributable blobs.
 
 Starting with coreboot 4.1, we will maintain a high level changelog and

@@ -32,7 +32,7 @@ in July, 2021.
 ## How to build
 
 OSF code base is publicly available at
-https://github.com/opencomputeproject/OpenSystemFirmware
+<https://github.com/opencomputeproject/OpenSystemFirmware>
 
 Run following commands to build Delta Lake OSF image from scratch:
     git clone https://github.com/opencomputeproject/OpenSystemFirmware.git
@@ -44,10 +44,11 @@ binary blobs. [osf-builder] also provides the top level build system.
 
 Besides coreboot, the Delta Lake OSF solution includes following components:
 - FSP blob: The blobs (Intel Cooper Lake Scalable Processor Firmware Support Package)
-  is downloaded from https://github.com/intel/FSP/tree/master/CedarIslandFspBinPkg.
-- Microcode: downloaded from github.com/intel/Intel-Linux-Processor-Microcode-Data-Files.
+  is downloaded from <https://github.com/intel/FSP/tree/master/CedarIslandFspBinPkg>.
+- Microcode: downloaded from
+	<https://github.com/intel/Intel-Linux-Processor-Microcode-Data-Files>.
 - ME ignition binary: downloaded from
-	https://github.com/tianocore/edk2-non-osi/tree/master/Silicon/Intel/PurleySiliconBinPkg/MeFirmware
+	<https://github.com/tianocore/edk2-non-osi/tree/master/Silicon/Intel/PurleySiliconBinPkg/MeFirmware>
 - ACM binaries: only required for CBnT enablement. Available under NDA with Intel.
 - Payload: LinuxBoot is necessary when LinuxBoot is used as the coreboot payload.
   U-root as initramfs, is used in the joint development. It is built

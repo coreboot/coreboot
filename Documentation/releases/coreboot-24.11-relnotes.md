@@ -83,7 +83,7 @@ Statistics from the 24.08 to the 24.11 release
 Significant Known and Open Issues
 ---------------------------------
 
-Issues from the coreboot bugtracker: https://ticket.coreboot.org/
+Issues from the coreboot bugtracker: <https://ticket.coreboot.org/>
 * To be filled in immediately before the release by the release team
 
 
@@ -91,9 +91,9 @@ Issues from the coreboot bugtracker: https://ticket.coreboot.org/
 coreboot Links and Contact Information
 --------------------------------------
 
-* Main Web site: https://www.coreboot.org
-* Downloads: https://coreboot.org/downloads.html
-* Source control: https://review.coreboot.org
-* Documentation: https://doc.coreboot.org
-* Issue tracker: https://ticket.coreboot.org/projects/coreboot
-* Donations: https://coreboot.org/donate.html
+* Main Web site: <https://www.coreboot.org>
+* Downloads: <https://coreboot.org/downloads.html>
+* Source control: <https://review.coreboot.org>
+* Documentation: <https://doc.coreboot.org>
+* Issue tracker: <https://ticket.coreboot.org/projects/coreboot>
+* Donations: <https://coreboot.org/donate.html>

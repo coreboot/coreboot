@@ -113,7 +113,7 @@ In terms of code size, a QEmu build's ramstage increases
 from 128060 bytes decompressed (64121 bytes after LZMA)
   to 172304 bytes decompressed (82734 bytes after LZMA).
 
-[0] https://github.com/google/wuffs
+[0] <https://github.com/google/wuffs>
 
 
 
@@ -197,7 +197,7 @@ Significant Known and Open Issues
   the version of verstage used in coreboot 24.02.
 
 
-Issues from the coreboot bugtracker: https://ticket.coreboot.org/
+Issues from the coreboot bugtracker: <https://ticket.coreboot.org/>
 
 ### coreboot-wide or architecture-wide issues
 
@@ -282,9 +282,9 @@ Issues from the coreboot bugtracker: https://ticket.coreboot.org/
 coreboot Links and Contact Information
 --------------------------------------
 
-* Main Web site: https://www.coreboot.org
-* Downloads: https://coreboot.org/downloads.html
-* Source control: https://review.coreboot.org
-* Documentation: https://doc.coreboot.org
-* Issue tracker: https://ticket.coreboot.org/projects/coreboot
-* Donations: https://coreboot.org/donate.html
+* Main Web site: <https://www.coreboot.org>
+* Downloads: <https://coreboot.org/downloads.html>
+* Source control: <https://review.coreboot.org>
+* Documentation: <https://doc.coreboot.org>
+* Issue tracker: <https://ticket.coreboot.org/projects/coreboot>
+* Donations: <https://coreboot.org/donate.html>

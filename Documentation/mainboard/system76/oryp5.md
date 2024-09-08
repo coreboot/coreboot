@@ -6,7 +6,7 @@
   - Intel Core i7-8750H
   - Intel Core i7-9750H
 - EC
-  - ITE8587E running https://github.com/system76/ec
+  - ITE8587E running <https://github.com/system76/ec>
 - Graphics
   - Intel UHD Graphics 630
   - NVIDIA GeForce RTX 2080/2070/2060

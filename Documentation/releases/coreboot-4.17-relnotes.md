@@ -239,7 +239,7 @@ Timestamps collected by coreboot can be processed to resemble
 profiler-like output, and thus can be feed to flame graph generation
 tools.
 
-Generating flame graph using https://github.com/brendangregg/FlameGraph:
+Generating flame graph using <https://github.com/brendangregg/FlameGraph>:
 ```
    cbmem -S > trace.txt
    FlameGraph/flamegraph.pl --flamechart trace.txt > output.svg

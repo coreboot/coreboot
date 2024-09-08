@@ -13,7 +13,7 @@ Since the last release in April, the coreboot project has had 1889
 commits by 119 authors.
 
 The release tarballs and gpg signatures are available in the usual place
-at https://www.coreboot.org/downloads
+at <https://www.coreboot.org/downloads>
 
 There is a 4.5 tag in the git repository, and a branch will be created
 as needed.

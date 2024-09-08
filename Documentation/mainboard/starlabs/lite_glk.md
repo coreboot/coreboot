@@ -1,7 +1,7 @@
 # StarLite Mk III
 
 ## Specs
-- CPU (full processor specs available at https://ark.intel.com)
+- CPU (full processor specs available at <https://ark.intel.com>)
     - Intel N5000 (Gemini Lake)
 - EC
     - ITE IT8987E

@@ -128,11 +128,8 @@ data or modify the currently running kernel.*
 
 ## External links
 
-```{toctree}
-:maxdepth: 1
+* [A Tour Beyond BIOS Implementing UEFI Authenticated Variables in SMM with EDKI](https://software.intel.com/sites/default/files/managed/cf/ea/a_tour_beyond_bios_implementing_uefi_authenticated_variables_in_smm_with_edkii.pdf)
 
-A Tour Beyond BIOS Implementing UEFI Authenticated Variables in SMM with EDKI <https://software.intel.com/sites/default/files/managed/cf/ea/a_tour_beyond_bios_implementing_uefi_authenticated_variables_in_smm_with_edkii.pdf>
-```
 Note, this differs significantly from coreboot's implementation.
 
 [SMM]: ../security/smm.md

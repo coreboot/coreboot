@@ -19,11 +19,7 @@ that was discovered and fixed later.
 
 - USB drive (in case you need to downgrade BIOS)
 - Linux install that (can be) loaded in UEFI mode
-```{toctree}
-:maxdepth: 1
-
-CHIPSEC <https://github.com/chipsec/chipsec>
-```
+- [CHIPSEC](https://github.com/chipsec/chipsec)
 
 ## BIOS versions
 

@@ -126,13 +126,9 @@ ITE IT8786E or IT8784E, but the configuration is the same on this platform.
 
 ## Useful links
 
-```{toctree}
-:maxdepth: 1
-
-VP4600 Hardware Overview <https://protectli.com/kb/vp4600-hardware-overview/>
-VP4630 Product Page <https://protectli.com/product/vp4630/>
-Protectli TPM module <https://protectli.com/product/tpm-module/>
-```
+- [VP4600 Hardware Overview](https://protectli.com/kb/vp4600-hardware-overview/)
+- [VP4630 Product Page](https://protectli.com/product/vp4630/)
+- [Protectli TPM module](https://protectli.com/product/tpm-module/)
 
 [Protectli VP46xx]: https://protectli.com/vault-6-port/
 [MX25L12835F]: https://www.mxic.com.tw/Lists/Datasheet/Attachments/8653/MX25L12835F,%203V,%20128Mb,%20v1.6.pdf

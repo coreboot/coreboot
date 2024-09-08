@@ -17,21 +17,13 @@ Please add any helpful or informational links and sections as you see fit.
   * [Part 1: PCI-based systems](https://resources.infosecinstitute.com/topic/system-address-map-initialization-in-x86x64-architecture-part-1-pci-based-systems/)
   * [Part 2: PCI express-based systems](https://resources.infosecinstitute.com/topic/system-address-map-initialization-x86x64-architecture-part-2-pci-express-based-systems/)
   * [PCIe elastic buffer](https://www.mindshare.com/files/resources/mindshare_pcie_elastic_buffer.pdf)
-```{toctree}
-:maxdepth: 1
-
-Boot Guard and PSB have user-hostile defaults <https://mjg59.dreamwidth.org/58424.html>
-```
+* [Boot Guard and PSB have user-hostile defaults](https://mjg59.dreamwidth.org/58424.html)
 
 
 ## General Information
 
-```{toctree}
-:maxdepth: 1
-
-OS Dev <https://wiki.osdev.org/Categorized_Main_Page>
-Interface BUS <http://www.interfacebus.com/>
-```
+* [OS Dev](https://wiki.osdev.org/Categorized_Main_Page)
+* [Interface BUS](http://www.interfacebus.com/)
 
 ## OpenSecurityTraining2
 
@@ -51,14 +43,10 @@ modified works back to the community.
 Below is a list of currently available courses that can help understand the
 inner workings of coreboot and other firmware-related topics:
 
-```{toctree}
-:maxdepth: 1
-
-coreboot design principles and boot process <https://ost2.fyi/Arch4031>
-x86-64 Assembly <https://ost2.fyi/Arch1001>
-x86-64 OS Internals <https://ost2.fyi/Arch2001>
-x86-64 Intel Firmware Attack & Defense <https://ost2.fyi/Arch4001>
-```
+* [coreboot design principles and boot process](https://ost2.fyi/Arch4031)
+* [x86-64 Assembly](https://ost2.fyi/Arch1001)
+* [x86-64 OS Internals](https://ost2.fyi/Arch2001)
+* [x86-64 Intel Firmware Attack & Defense](https://ost2.fyi/Arch4001)
 
 There are [additional security courses](https://p.ost2.fyi/courses) at the site
 as well (such as
@@ -66,79 +54,47 @@ as well (such as
 
 ## Firmware Specifications & Information
 
-```{toctree}
-:maxdepth: 1
-
-System Management BIOS - SMBIOS <https://www.dmtf.org/standards/smbios>
-Desktop and Mobile Architecture for System Hardware - DASH <https://www.dmtf.org/standards/dash>
-PNP BIOS <https://www.intel.com/content/dam/support/us/en/documents/motherboards/desktop/sb/pnpbiosspecificationv10a.pdf>
-```
+* [System Management BIOS - SMBIOS](https://www.dmtf.org/standards/smbios)
+* [Desktop and Mobile Architecture for System Hardware - DASH](https://www.dmtf.org/standards/dash)
+* [PNP BIOS](https://www.intel.com/content/dam/support/us/en/documents/motherboards/desktop/sb/pnpbiosspecificationv10a.pdf)
 
 
 ### ACPI
 
-```{toctree}
-:maxdepth: 1
-
-ACPI Specs <https://uefi.org/acpi/specs>
-ACPI in Linux <https://www.kernel.org/doc/ols/2005/ols2005v1-pages-59-76.pdf>
-ACPI 5 Linux <https://blog.linuxplumbersconf.org/2012/wp-content/uploads/2012/09/LPC2012-ACPI5.pdf>
-ACPI 6 Linux <https://events.static.linuxfound.org/sites/events/files/slides/ACPI_6_and_Linux_0.pdf>
-```
+* [ACPI Specs](https://uefi.org/acpi/specs)
+* [ACPI in Linux](https://www.kernel.org/doc/ols/2005/ols2005v1-pages-59-76.pdf)
+* [ACPI 5 Linux](https://blog.linuxplumbersconf.org/2012/wp-content/uploads/2012/09/LPC2012-ACPI5.pdf)
+* [ACPI 6 Linux](https://events.static.linuxfound.org/sites/events/files/slides/ACPI_6_and_Linux_0.pdf)
 
 
 ### Security
 
-```{toctree}
-:maxdepth: 1
-
-Intel Boot Guard <https://edk2-docs.gitbook.io/understanding-the-uefi-secure-boot-chain/secure_boot_chain_in_uefi/intel_boot_guard>
-```
+* [Intel Boot Guard](https://edk2-docs.gitbook.io/understanding-the-uefi-secure-boot-chain/secure_boot_chain_in_uefi/intel_boot_guard)
 
 
 ## Hardware information
 
-```{toctree}
-:maxdepth: 1
-
-WikiChip <https://en.wikichip.org/wiki/WikiChip>
-Sandpile <https://www.sandpile.org/>
-CPU-World <https://www.cpu-world.com/index.html>
-CPU-Upgrade <https://www.cpu-upgrade.com/index.html>
-```
+* [WikiChip](https://en.wikichip.org/wiki/WikiChip)
+* [Sandpile](https://www.sandpile.org/)
+* [CPU-World](https://www.cpu-world.com/index.html)
+* [CPU-Upgrade](https://www.cpu-upgrade.com/index.html)
 
 
 ### Hardware Specifications & Standards
 
 * [Bluetooth](https://www.bluetooth.com/specifications/specs/) - Bluetooth SIG
-```{toctree}
-:maxdepth: 1
-
-eMMC <https://www.jedec.org/)  - JEDEC - (LOGIN REQUIRED>
-```
+* [eMMC](https://www.jedec.org/)  - JEDEC - (LOGIN REQUIRED)
 * [eSPI](https://cdrdv2.intel.com/v1/dl/getContent/645987) - Intel
 * [I2c Spec](https://web.archive.org/web/20170704151406/https://www.nxp.com/docs/en/user-guide/UM10204.pdf),
   [Appnote](https://www.nxp.com/docs/en/application-note/AN10216.pdf) - NXP
 * [I2S](https://www.nxp.com/docs/en/user-manual/UM11732.pdf) - NXP
-```{toctree}
-:maxdepth: 1
-
-I3C <https://www.mipi.org/specifications/i3c-sensor-specification) - MIPI Alliance (LOGIN REQUIRED>
-Memory <https://www.jedec.org/)  - JEDEC - (LOGIN REQUIRED>
-```
+* [I3C](https://www.mipi.org/specifications/i3c-sensor-specification) - MIPI Alliance (LOGIN REQUIRED)
+* [Memory](https://www.jedec.org/)  - JEDEC - (LOGIN REQUIRED)
 * [NVMe](https://nvmexpress.org/developers/) - NVMe Specifications
 * [LPC](https://www.intel.com/content/dam/www/program/design/us/en/documents/low-pin-count-interface-specification.pdf) - Intel
-```{toctree}
-:maxdepth: 1
-
-PCI / PCIe / M.2 <https://pcisig.com/specifications) -  PCI-SIG - (LOGIN REQUIRED>
-```
+* [PCI / PCIe / M.2](https://pcisig.com/specifications) -  PCI-SIG - (LOGIN REQUIRED)
 * [Power Delivery](https://www.usb.org/documents) - USB Implementers Forum
-```{toctree}
-:maxdepth: 1
-
-SATA <https://sata-io.org/developers/purchase-specification) - SATA-IO (LOGIN REQUIRED>
-```
+* [SATA](https://sata-io.org/developers/purchase-specification) - SATA-IO (LOGIN REQUIRED)
 * [SMBus](http://www.smbus.org/specs/) - System Management Interface Forum
 * [Smart Battery](http://smartbattery.org/specs/) - Smart Battery System Implementers Forum
 * [USB](https://www.usb.org/documents) - USB Implementers Forum
@@ -177,9 +133,5 @@ SATA <https://sata-io.org/developers/purchase-specification) - SATA-IO (LOGIN RE
 
 ## Infrastructure software
 
-```{toctree}
-:maxdepth: 1
-
-Kconfig <https://www.kernel.org/doc/html/latest/kbuild/kconfig-language.html>
-GNU Make <https://www.gnu.org/software/make/manual/>
-```
+* [Kconfig](https://www.kernel.org/doc/html/latest/kbuild/kconfig-language.html)
+* [GNU Make](https://www.gnu.org/software/make/manual/)

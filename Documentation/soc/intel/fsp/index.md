@@ -65,35 +65,15 @@ those are fixed. If possible a workaround is described here as well.
 
 ## Open Source Intel FSP specification
 
-```{toctree}
-:maxdepth: 1
+* [About Intel FSP](https://firmware.intel.com/learn/fsp/about-intel-fsp)
 
-About Intel FSP <https://firmware.intel.com/learn/fsp/about-intel-fsp>
-```
+* [FSP Specification 1.0](https://www.intel.in/content/dam/www/public/us/en/documents/technical-specifications/fsp-architecture-spec.pdf)
 
-```{toctree}
-:maxdepth: 1
+* [FSP Specification 1.1](https://www.intel.com/content/dam/www/public/us/en/documents/technical-specifications/fsp-architecture-spec-v1-1.pdf)
 
-FSP Specification 1.0 <https://www.intel.in/content/dam/www/public/us/en/documents/technical-specifications/fsp-architecture-spec.pdf>
-```
+* [FSP Specification 2.0](https://www.intel.com/content/dam/www/public/us/en/documents/technical-specifications/fsp-architecture-spec-v2.pdf)
 
-```{toctree}
-:maxdepth: 1
-
-FSP Specification 1.1 <https://www.intel.com/content/dam/www/public/us/en/documents/technical-specifications/fsp-architecture-spec-v1-1.pdf>
-```
-
-```{toctree}
-:maxdepth: 1
-
-FSP Specification 2.0 <https://www.intel.com/content/dam/www/public/us/en/documents/technical-specifications/fsp-architecture-spec-v2.pdf>
-```
-
-```{toctree}
-:maxdepth: 1
-
-FSP Specification 2.1 <https://cdrdv2.intel.com/v1/dl/getContent/611786>
-```
+* [FSP Specification 2.1](https://cdrdv2.intel.com/v1/dl/getContent/611786)
 
 ## Additional Features in FSP 2.1 specification
 
@@ -105,11 +85,7 @@ PPI <ppi/ppi.md>
 
 ## Official bugtracker
 
-```{toctree}
-:maxdepth: 1
-
-IntelFSP/FSP <https://github.com/IntelFsp/FSP/issues>
-```
+- [IntelFSP/FSP](https://github.com/IntelFsp/FSP/issues)
 
 [Issue 10]: https://github.com/IntelFsp/FSP/issues/10
 [Issue 13]: https://github.com/IntelFsp/FSP/issues/13

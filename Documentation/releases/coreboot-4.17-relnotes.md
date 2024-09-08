@@ -12,11 +12,7 @@ work to make the coreboot project successful.
 
 Major Bugfixes in this release
 ------------------------------
-```{toctree}
-:maxdepth: 1
-
-CVE-2022-29264 <https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-29264>
-```
+* [CVE-2022-29264](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-29264)
 
 
 New Mainboards

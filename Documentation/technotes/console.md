@@ -57,18 +57,10 @@ chip, you can enable the `SC16IS7XX_INIT` option to initialize the chip.
 
 If not we can use other I2C slave devices like an Arduino or a
 Beagleboard.
-```{toctree}
-:maxdepth: 1
-
-Linux I2C Slave interface <https://web.archive.org/web/20220926173943/https://www.kernel.org/doc/html/latest/i2c/slave-interface.html>
-BeagleBone Black I2C Slave <https://web.archive.org/web/20220926171211/https://forum.beagleboard.org/t/beaglebone-black-and-arduino-uno-i2c-communication-using-c/29990/8>
-```
+* [Linux I2C Slave interface](https://web.archive.org/web/20220926173943/https://www.kernel.org/doc/html/latest/i2c/slave-interface.html)
+* [BeagleBone Black I2C Slave](https://web.archive.org/web/20220926171211/https://forum.beagleboard.org/t/beaglebone-black-and-arduino-uno-i2c-communication-using-c/29990/8)
 
 This feature was added as part of a GSoC 2022 project. Checkout the
 following blog posts for more details.
-```{toctree}
-:maxdepth: 1
-
-coreboot Console via SMBus — Part I <https://medium.com/@husnifaiz/coreboot-console-via-smbus-introduction-38273691a8ac>
-coreboot Console via SMBus — Part II <https://medium.com/@husnifaiz/coreboot-console-via-smbus-part-ii-bc324fdd2f24>
-```
+* [coreboot Console via SMBus — Part I](https://medium.com/@husnifaiz/coreboot-console-via-smbus-introduction-38273691a8ac)
+* [coreboot Console via SMBus — Part II](https://medium.com/@husnifaiz/coreboot-console-via-smbus-part-ii-bc324fdd2f24)

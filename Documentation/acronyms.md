@@ -1141,8 +1141,4 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 
 
 ## References:
-```{toctree}
-:maxdepth: 1
-
-AMD Glossary of terms <https://www.amd.com/system/files/documents/glossary-of-terms-20220505-for-web.pdf>
-```
+* [AMD Glossary of terms](https://www.amd.com/system/files/documents/glossary-of-terms-20220505-for-web.pdf)

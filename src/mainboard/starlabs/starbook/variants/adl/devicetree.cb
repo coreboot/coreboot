@@ -53,6 +53,61 @@ chip soc/intel/alderlake
 
 			# Internal Bluetooth
 			register "usb2_ports[9]"		= "USB2_PORT_MID(OC_SKIP)"
+
+			chip drivers/usb/acpi
+				device ref xhci_root_hub on
+					chip drivers/usb/acpi
+						register "desc"		= ""USB Type-C""
+						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
+						device ref usb2_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc"		= ""USB Type-C""
+						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
+						device ref usb3_port3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc"		= ""Left USB Type-A""
+						register "type"		= "UPC_TYPE_USB3_A"
+						device ref usb2_port3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc"		= ""Left USB Type-A""
+						register "type"		= "UPC_TYPE_USB3_A"
+						device ref usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc"		= ""Right USB Type-A""
+						register "type"		= "UPC_TYPE_USB3_A"
+						device ref usb2_port7 on end
+					end
+					chip drivers/usb/acpi
+						register "desc"		= ""Right USB Type-A""
+						register "type"		= "UPC_TYPE_USB3_A"
+						device ref usb3_port2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc"		= ""Internal Webcam""
+						register "type"		= "UPC_TYPE_INTERNAL"
+						device ref usb2_port5 on end
+					end
+					chip drivers/usb/acpi
+						register "desc"		= ""Fingerprint Reader""
+						register "type"		= "UPC_TYPE_INTERNAL"
+						device ref usb2_port6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc"		= ""MicroSD Card Reader""
+						register "type"		= "UPC_TYPE_INTERNAL"
+						device ref usb2_port4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc"		= ""Internal Bluetooth""
+						register "type"		= "UPC_TYPE_INTERNAL"
+						device ref usb2_port10 on end
+					end
+				end
+			end
 		end
 		device ref i2c0		on
 			chip drivers/i2c/hid

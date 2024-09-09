@@ -1,7 +1,8 @@
 chip soc/intel/cannonlake
-	# CPU
-	# Enable Enhanced Intel SpeedStep
+	# FSP UPDs
 	register "eist_enable"			= "true"
+	register "enable_c6dram"		= "1"
+	register "SaGv"				= "SaGv_Enabled"
 
 	# Graphics
 	# IGD Displays
@@ -14,11 +15,6 @@ chip soc/intel/cannonlake
 		.backlight_pwm_hz		=  200,				// PWM
 	}"
 
-	# FSP Memory
-	register "enable_c6dram"		= "1"
-	register "SaGv"				= "SaGv_Enabled"
-
-	# FSP Silicon
 	# Serial I/O
 	register "SerialIoDevMode" = "{
 		[PchSerialIoIndexI2C0]		= PchSerialIoPci,

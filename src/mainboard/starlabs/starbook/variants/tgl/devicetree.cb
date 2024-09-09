@@ -51,7 +51,6 @@ chip soc/intel/tigerlake
 # Actual device tree.
 	device domain 0 on
 		device ref igpu		on  end
-		device ref dptf		on  end
 		device ref tbt_pcie_rp0	on  end
 		device ref gna		on  end
 		device ref crashlog	on  end

@@ -26,16 +26,6 @@ chip soc/intel/skylake
 	register "PmConfigSlpSusMinAssert"	= "3"				# 500ms
 	register "PmConfigSlpAMinAssert"	= "3"				# 2s
 
-	# PM Util
-	# GPE configuration
-	# Note that GPE events called out in ASL code rely on this
-	# route. i.e. If this route changes then the affected GPE
-	# offset bits also need to be changed.
-	# sudo devmem2 0xfe001920 (pmc_bar + GPIO_GPE_CFG)
-	register "gpe0_dw0"			= "GPP_B"
-	register "gpe0_dw1"			= "GPP_C"
-	register "gpe0_dw2"			= "GPP_E"
-
 	# Enable the correct decode ranges on the LPC bus.
 	register "lpc_ioe"			= "LPC_IOE_EC_4E_4F |
 						   LPC_IOE_KBC_60_64 |

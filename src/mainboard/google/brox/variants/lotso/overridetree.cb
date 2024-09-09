@@ -360,6 +360,7 @@ chip soc/intel/alderlake
 				.pcie_rp_aspm = ASPM_L1,
 			}"
 			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A17)"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E7)"
 				register "enable_delay_ms" = "1"
 				register "srcclk_pin" = "3"

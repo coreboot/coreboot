@@ -7,6 +7,8 @@
 
 /* Pad configuration in ramstage */
 static const struct pad_config override_gpio_table[] = {
+	/* GPP_D03 : [] ==> EN_PP3300_SD */
+	PAD_CFG_GPO_LOCK(GPP_A17, 1, LOCK_CONFIG),
 	/* GPP_B14 : [NF1: SPKR NF2: TIME_SYNC1 NF4: SATA_LED# NF5: ISH_GP6
 	 * NF6: USB_C_GPP_B14] ==> ACZ_SPKR */
 	PAD_CFG_NF(GPP_B14, NONE, DEEP, NF1),

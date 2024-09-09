@@ -1,7 +1,10 @@
 chip soc/intel/tigerlake
-# CPU
-	# Enable Enhanced Intel SpeedStep
+	# FSP UPDs
 	register "eist_enable"			= "true"
+	register "enable_c6dram"		= "1"
+	register "CnviBtCore"			= "true"
+	register "CnviBtAudioOffload"		= "1"
+	register "SaGv"				= "SaGv_Enabled"
 
 	# Graphics
 	# Not used but timings left for reference
@@ -14,13 +17,6 @@ chip soc/intel/tigerlake
 	#	.backlight_pwm_hz		= 200,				// PWM
 	# }"
 
-	# FSP Memory
-	register "CnviBtCore"			= "true"
-	register "CnviBtAudioOffload"		= "1"
-	register "enable_c6dram"		= "1"
-	register "SaGv"				= "SaGv_Enabled"
-
-	# FSP Silicon
 	# Serial I/O
 	register "SerialIoI2cMode" = "{
 		[PchSerialIoIndexI2C0]		= PchSerialIoPci,

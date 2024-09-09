@@ -53,7 +53,7 @@ chip soc/intel/alderlake
 	#         11: Reserved
 	# [14:8] steps of delay for Auto Tuning Mode, each 125ps, range: 0 - 39.
 	# [6:0] steps of delay for HS200, each 125ps, range: 0 - 79.
-	register "common_soc_config.emmc_dll.emmc_rx_cmd_data_cntl2" = "0x10051"
+	register "common_soc_config.emmc_dll.emmc_rx_cmd_data_cntl2" = "0x1004C"
 
 	# EMMC Rx Strobe Delay
 	# Refer to EDS-Vol2-42.3.11.

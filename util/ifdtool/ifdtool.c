@@ -2514,9 +2514,12 @@ int main(int argc, char *argv[])
 			break;
 		case 'h':
 		case '?':
-		default:
 			print_usage(argv[0]);
 			exit(EXIT_SUCCESS);
+			break;
+		default:
+			print_usage(argv[0]);
+			exit(EXIT_FAILURE);
 			break;
 		}
 	}

@@ -324,13 +324,14 @@ static unsigned long acpi_create_drhd(unsigned long current, struct device *iomm
 
 	// Add HPET
 	if (is_dev_on_domain0(iommu)) {
-		uint16_t hpet_capid = read16p(HPET_BASE_ADDRESS);
-		uint16_t num_hpets = (hpet_capid >> 0x08) & 0x1F;  // Bits [8:12] has hpet count
+		uint16_t hpet_capid = read16p(HPET_BASE_ADDRESS + HPET_GEN_CAP_ID);
+		// Bits [8:12] has hpet count
+		uint16_t num_hpets = (hpet_capid >> HPET_NUM_TIM_CAP_SHIFT) & HPET_NUM_TIM_CAP_MASK;
 		printk(BIOS_SPEW, "%s hpet_capid: 0x%x, num_hpets: 0x%x\n",
 			__func__, hpet_capid, num_hpets);
 		//BIT 15
 		if (num_hpets && (num_hpets != 0x1f) &&
-			(read32p(HPET_BASE_ADDRESS + 0x100) & (0x00008000))) {
+			(read32p(HPET_BASE_ADDRESS + HPET_TMR0_CNF_CAP) & (HPET_TIMER_FSB_EN_CNF_MASK))) {
 			union p2sb_bdf hpet_bdf = soc_get_hpet_bdf();
 			printk(BIOS_DEBUG, "    [Message-capable HPET Device] Enumeration ID: 0x%x, "
 				"PCI Bus Number: 0x%x, PCI Path: 0x%x, 0x%x\n",

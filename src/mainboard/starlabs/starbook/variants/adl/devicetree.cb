@@ -1,21 +1,8 @@
 chip soc/intel/alderlake
-	# Graphics
-	# TODO:
-	# register "panel_cfg" = "{
-	#	.up_delay_ms			= 200,				// T3
-	#	.backlight_on_delay_ms		= 0,				// T7
-	#	.backlight_off_delay_ms		= 50,				// T9
-	#	.down_delay_ms			= 0,				// T10
-	#	.cycle_delay_ms			= 500,				// T12
-	#	.backlight_pwm_hz		= 200,				// PWM
-	# }"
-
-	# FSP Memory
+	# FSP UPDs
+	register "eist_enable"			= "true"
 	register "enable_c6dram"		= "1"
 	register "sagv"				= "SaGv_Enabled"
-
-	# FSP Silicon
-	register "eist_enable"			= "true"
 
 	# Serial I/O
 	register "serial_io_i2c_mode" = "{

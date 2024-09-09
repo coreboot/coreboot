@@ -38,9 +38,6 @@ chip soc/intel/cannonlake
 # Actual device tree.
 	device domain 0 on
 		device ref igpu on  end
-		device ref dptf on
-			register "Device4Enable"		= "1"
-		end
 		device ref xhci on
 			# Motherboard USB Type C
 			register "usb2_ports[0]"		= "USB2_PORT_TYPE_C(OC_SKIP)"

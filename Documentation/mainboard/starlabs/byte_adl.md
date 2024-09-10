@@ -1,4 +1,4 @@
-# StarBook Mk V
+# Byte Mk II
 
 ## Specs
 
@@ -34,7 +34,7 @@
 
 ## Building coreboot
 
-Please follow the [Star Labs build instructions](common/building.md) to build coreboot, using `config.starlabs_starbook_adl` as config file.
+Please follow the [Star Labs build instructions](common/building.md) to build coreboot, using `config.starlabs_byte_adl` as config file.
 
 ### Preliminaries
 

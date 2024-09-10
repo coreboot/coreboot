@@ -179,7 +179,7 @@ $(EDK2_PLATFORMS_PATH): $(WORKSPACE)
 		git clone --recurse-submodules $(CONFIG_EDK2_PLATFORMS_REPOSITORY) $(EDK2_PLATFORMS_PATH) -j5; \
 	fi
 	cd $(EDK2_PLATFORMS_PATH); \
-		if ! git rev-parse --verify -q $(CONFIG_EDK2_PLATFORMS_TAG_OR_REV) >/dev/null; then \
+		if ! git rev-parse --verify -q $(CONFIG_EDK2_PLATFORMS_TAG_OR_REV)^{object} >/dev/null; then \
 			echo "    $(CONFIG_EDK2_PLATFORMS_TAG_OR_REV) is not a valid git reference"; \
 			exit 1; \
 		fi; \
@@ -202,7 +202,7 @@ $(EDK2_PATH): $(WORKSPACE)
 		fi; \
 		echo "    Fetching new commits from $(CONFIG_EDK2_REPOSITORY)"; \
 		git fetch origin 2>/dev/null; \
-		if ! git rev-parse --verify -q $(CONFIG_EDK2_TAG_OR_REV) >/dev/null; then \
+		if ! git rev-parse --verify -q $(CONFIG_EDK2_TAG_OR_REV)^{object} >/dev/null; then \
 			echo "    $(CONFIG_EDK2_TAG_OR_REV) is not a valid git reference"; \
 			exit 1; \
 		fi; \

@@ -15,31 +15,21 @@ const struct cpu_power_limits performance_efficient_limits[] = {
 	{
 		.mchid = PCI_DID_INTEL_RPL_P_ID_3,
 		.cpu_tdp = 15,
-		.pl1_min_power = 6000,
-		.pl1_max_power = 15000,
-		.pl2_min_power = 55000,
-		.pl2_max_power = 55000,
-		.pl4_power = 114000
+		.pl1_min_power = 15000,
+		.pl1_max_power = 18000,
+		.pl2_min_power = 41000,
+		.pl2_max_power = 41000,
+		.pl4_power = 87000
 	},
 	{
 		.mchid = PCI_DID_INTEL_RPL_P_ID_4,
 		.cpu_tdp = 15,
-		.pl1_min_power = 6000,
-		.pl1_max_power = 15000,
-		.pl2_min_power = 55000,
-		.pl2_max_power = 55000,
-		.pl4_power = 114000
+		.pl1_min_power = 15000,
+		.pl1_max_power = 18000,
+		.pl2_min_power = 41000,
+		.pl2_max_power = 41000,
+		.pl4_power = 87000
 	},
-};
-
-const struct system_power_limits sys_limits[] = {
-	/* SKU_ID, TDP (Watts), psys_pl2 (Watts) */
-	{ PCI_DID_INTEL_RPL_P_ID_3, 15, 60 },
-	{ PCI_DID_INTEL_RPL_P_ID_4, 15, 60 },
-};
-
-const struct psys_config psys_config = {
-	.efficiency = 86,
 };
 
 void __weak variant_devtree_update(void)
@@ -50,5 +40,4 @@ void __weak variant_devtree_update(void)
 	size_t limits_size = ARRAY_SIZE(performance_efficient_limits);
 
 	variant_update_power_limits(limits, limits_size);
-	variant_update_psys_power_limits(limits, sys_limits, limits_size, &psys_config);
 }

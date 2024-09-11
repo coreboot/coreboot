@@ -429,7 +429,7 @@ static void msdc_controller_init(struct msdc_ctrlr *host, void *base, void *top_
 	memset(host, 0, sizeof(*host));
 	host->base = base;
 	host->top_base = top_base;
-	host->src_hz = 50 * 1000 * 1000;
+	host->src_hz = 400 * 1000 * 1000;
 
 	add_msdc(host);
 }

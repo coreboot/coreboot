@@ -1,27 +1,25 @@
-Xeon Scalable processor coreboot Community Preview Guide
+Xeon Scalable Processor coreboot Community Preview Guide
 ================================================
 
 ## Background
 
-Sapphire Rapids coreboot was already merged into coreboot mainline.
-Granite Rapids coreboot upstreaming is coming.
+Xeon 6 basic boot supports are initially upstreamed at
+https://review.coreboot.org/q/topic:%22Xeon6-Basic-Boot%22.
 
-For Granite Rapids coreboot, we are going to perform a phased
-upstreaming strategy according to the maturity of the code. A community
-preview branch is opensource at:
-https://review.coreboot.org/plugins/gitiles/intel-dev-pub/.
+Full feature supports are previewed at
+https://review.coreboot.org/admin/repos/intel-dev-pub,general
 
-The community preview branch initially contains codes on legacy feature
-enabling and matured patch set for platform support. More platform
-support code will come with the platform development. The subsequent
-upstreaming work will be based on this branch. It provides 2 board
-targets,
+The supported platform status are as below,
 
-1. Avenue City CRB (Granite Rapids-AP)
-2. Beechnut City CRB (Granite Rapids-SP)
+1. Beechnut City CRB (Sierra Forest-SP)
 
-The above targets can pass build with Granite Rapids n-1 FSP headers,
-which is a set of stub FSP headers used for compilation sanity check.
+- Buildable with n-1 FSP headers
+
+- Bootable with real FSP headers/binaries
+
+2. Avenue City CRB (Granite Rapids-AP)
+
+- Buildable with n-1 FSP headers
 
 ## Build steps
 
@@ -34,11 +32,25 @@ mkdir workspace && cd workspace
 
 # Prepare coreboot codebase
 
-git clone https://review.coreboot.org/intel-dev-pub ln -s intel-dev-pub/
-coreboot
+git clone https://review.coreboot.org/intel-dev-pub
+ln -s intel-dev-pub/ coreboot
+
+# Switch to the branches you would like to use
+
+https://review.coreboot.org/admin/repos/intel-dev-pub,branches
+
+3.0_branch                    - Support of real platform boot
+3.0_feature_cxl               - Support of CXL Type-3 memory expander
+3.0_feature_fsp_smm_ras       - Support of RAS by FSP-SMM
+3.0_feature_gpio_vgpio        - Support of GPIO and virtual GPIO
+3.0_feature_iio_res_rebalance - Support of customized IIO resource (bus/MMIO) window for smart NICs
+3.0_feature_large_cbfs        - Support of 32MB/48MB CBFS for large cloud payloads
+3.0_feature_smbios            - Support of SMBIOS
+3.0_feature_snc               - Support of sub-NUMA clustering
+3.0_feature_var_car_code_sz   - Support of user defined cache-as-RAM code size
 
 # Prepare stub binaries and update their path in
-# configs/builder/config.intel.crb.avc.n-1
+# configs/builder/config.intel.crb.avc
 
 # Granite Rapids coreboot uses FSP 2.4, where FSP-I is newly introduced
 # as an optional module to provide FSP based SMM capability. For FSP 2.4
@@ -50,7 +62,7 @@ CONFIG_CPU_UCODE_BINARIES=<path of ucode>
 CONFIG_FSP_T_FILE=<path of FSP-T binary>
 CONFIG_FSP_M_FILE=<path of FSP-M binary>
 CONFIG_FSP_S_FILE=<path of FSP-S binary>
-CONFIG_FSP_I_FILE=<path of FSP-I binary>
+CONFIG_FSP_I_FILE=<path of FSP-I binary, optional, to comment out if not using>
 CONFIG_PAYLOAD_FILE=<path of payload binary>
 ```
 
@@ -73,11 +85,7 @@ make crossgcc-i386 CPUS=$(nproc)
 ```
 make distclean
 
-make defconfig KBUILD_DEFCONFIG=configs/builder/config.intel.crb.avc.n-1
-
-make olddefconfig
-
-make clean
+make defconfig KBUILD_DEFCONFIG=configs/builder/config.intel.crb.avc
 
 make UPDATED_SUBMODULES=1 -j`nproc`
 ```
@@ -86,11 +94,7 @@ make UPDATED_SUBMODULES=1 -j`nproc`
 ```
 make distclean
 
-make defconfig KBUILD_DEFCONFIG=configs/builder/config.intel.crb.bnc.n-1
-
-make olddefconfig
-
-make clean
+make defconfig KBUILD_DEFCONFIG=configs/builder/config.intel.crb.bnc
 
 make UPDATED_SUBMODULES=1 -j`nproc`
 ```
@@ -104,17 +108,18 @@ make UPDATED_SUBMODULES=1 -j`nproc`
 git format-patch upstream..HEAD
 ```
 
-## About Granite Rapids n-1 FSP Headers
+## About Granite Rapids n-1 FSP headers
 
 This is a set of stub FSP headers for Granite Rapids server, which will
 be forward compatible with the formal Granite Rapids FSP headers which
 will be opensource at a later stage. For the n-1 FSP headers, there are
 no corresponding n-1 FSP binaries. To pass build, users need to use stub
 binaries which could be generated in arbitrary ways.  Granite Rapids n-1
-FSP headers are at: `src/vendorcode/intel/fsp/fsp2_0/graniterapids_n-1`.
+FSP headers are at: `src/vendorcode/intel/fsp/fsp2_0/graniterapids`.
 
-For the formal Granite Rapids FSP headers and binaries, they will be
-published at in
-https://github.com/coreboot/coreboot/tree/main/src/vendorcode/intel/fsp/fsp2_0
-(headers only) and https://github.com/intel/FSP (headers and binaries)
-at a later stage.
+## About Granite Rapids real FSP headers
+
+For the real Granite Rapids FSP headers and binaries, please contact
+intel business interface to obtain. Then please update
+configs/builder/config.intel.crb.avc and configs/builder/config.intel.crb.bnc
+to apply.

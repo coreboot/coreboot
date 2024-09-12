@@ -20,6 +20,9 @@
 #define SAF_BASE_ADDRESS	0x3ffe000000
 #define SAF_BASE_SIZE		0x2000000
 
+/* Add dummy entry to cater common/block/acpi/acpi/northbridge.asl */
+#define DMI_BASE_SIZE		0
+
 #define EP_BASE_ADDRESS		0xfeda1000
 #define EP_BASE_SIZE		0x1000
 

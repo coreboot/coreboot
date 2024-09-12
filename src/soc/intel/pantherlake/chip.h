@@ -3,7 +3,9 @@
 #ifndef _SOC_PANTHERLAKE_CHIP_H_
 #define _SOC_PANTHERLAKE_CHIP_H_
 
+#include <device/pci_ids.h>
 #include <drivers/i2c/designware/dw_i2c.h>
+#include <gpio.h>
 #include <intelblocks/cfg.h>
 #include <intelblocks/gpio.h>
 #include <intelblocks/gspi.h>
@@ -20,11 +22,14 @@
 /* Define config parameters for In-Band ECC (IBECC). */
 #define MAX_IBECC_REGIONS 8
 
+#define MAX_SAGV_POINTS 4
+#define MAX_HD_AUDIO_SDI_LINKS 2
+
 /* In-Band ECC Operation Mode */
 enum ibecc_mode {
 	IBECC_MODE_PER_REGION,
 	IBECC_MODE_NONE,
-	IBECC_MODE_ALL
+	IBECC_MODE_ALL,
 };
 
 struct ibecc_config {
@@ -36,12 +41,30 @@ struct ibecc_config {
 	uint16_t region_mask[MAX_IBECC_REGIONS];
 };
 
-/* Types of different SKUs */
 enum soc_intel_pantherlake_power_limits {
-	PTL_U_15W_POWER_LIMITS,
-	PTL_H_25W_POWER_LIMITS,
-	PTL_H_45W_POWER_LIMITS,
+	PTL_U_1_CORE,
+	PTL_H_1_CORE,
+	PTL_H_2_CORE,
+	PTL_H_3_CORE,
 	PTL_POWER_LIMITS_COUNT,
+};
+
+/* TDP values for different SKUs */
+enum soc_intel_pantherlake_cpu_tdps {
+	TDP_15W = 15,
+	TDP_25W = 25,
+	TDP_45W = 45,
+};
+
+/* Mapping of different SKUs based on CPU ID and TDP values */
+static const struct {
+	unsigned int cpu_id;
+	enum soc_intel_pantherlake_power_limits limits;
+	enum soc_intel_pantherlake_cpu_tdps cpu_tdp;
+} cpuid_to_ptl[] = {
+	{ PCI_DID_INTEL_PTL_U_ID_1, PTL_U_1_CORE, TDP_15W },
+	{ PCI_DID_INTEL_PTL_H_ID_1, PTL_H_1_CORE, TDP_25W },
+	{ PCI_DID_INTEL_PTL_H_ID_2, PTL_H_3_CORE, TDP_45W },
 };
 
 /* Types of display ports */
@@ -61,6 +84,70 @@ enum ddi_port_flags {
 	DDI_ENABLE_HPD = BIT(1), /* Hot Plug Detect */
 };
 
+/*
+ * TODO: Update as per PTL spec
+ * The Max Pkg Cstate
+ * Values 0 - C0/C1, 1 - C2, 2 - C3, 3 - C6, 4 - C7, 5 - C7S, 6 - C8, 7 - C9, 8 - C10,
+ * 254 - CPU Default , 255 - Auto.
+ */
+enum pkgcstate_limit {
+	LIMIT_C0_C1		= 0,
+	LIMIT_C2		= 1,
+	LIMIT_C3		= 2,
+	LIMIT_C6		= 3,
+	LIMIT_C7		= 4,
+	LIMIT_C7S		= 5,
+	LIMIT_C8		= 6,
+	LIMIT_C9		= 7,
+	LIMIT_C10		= 8,
+	LIMIT_CPUDEFAULT	= 254,
+	LIMIT_AUTO		= 255,
+};
+
+/* Bit values for use in LpmStateEnableMask. */
+enum lpm_state_mask {
+	LPM_S0i2_0 = BIT(0),
+	LPM_S0i2_1 = BIT(1),
+	LPM_S0i2_2 = BIT(2),
+	LPM_S0i3_0 = BIT(3),
+	LPM_S0i3_1 = BIT(4),
+	LPM_S0i3_2 = BIT(5),
+	LPM_S0i3_3 = BIT(6),
+	LPM_S0i3_4 = BIT(7),
+	LPM_S0iX_ALL = LPM_S0i2_0 | LPM_S0i2_1 | LPM_S0i2_2
+			| LPM_S0i3_0 | LPM_S0i3_1 | LPM_S0i3_2 | LPM_S0i3_3 | LPM_S0i3_4,
+};
+
+/*
+ * As per definition from FSP header:
+ * - [0] for IA
+ * - [1] for GT
+ * - [2] for SA
+ * - [3] through [5] are reserved
+ */
+enum vr_domain {
+	VR_DOMAIN_IA,
+	VR_DOMAIN_GT,
+	VR_DOMAIN_SA,
+	NUM_VR_DOMAINS,
+};
+
+/*
+ * Slew Rate configuration for Deep Package C States for VR domain.
+ * They are fast time divided by 2.
+ * 0 - Fast/2
+ * 1 - Fast/4
+ * 2 - Fast/8
+ * 3 - Fast/16
+ */
+enum slew_rate {
+	SLEW_FAST_2,
+	SLEW_FAST_4,
+	SLEW_FAST_8,
+	SLEW_FAST_16,
+	SLEW_IGNORE = 0xff,
+};
+
 struct soc_intel_pantherlake_config {
 
 	/* Common struct containing soc config data required by common code */
@@ -70,7 +157,8 @@ struct soc_intel_pantherlake_config {
 	struct soc_power_limits_config power_limits_config[PTL_POWER_LIMITS_COUNT];
 
 	/* Gpio group routed to each dword of the GPE0 block. Values are
-	 * of the form PMC_GPP_[A:U] or GPD. */
+	 * of the form PMC_GPP_[A:U] or GPD.
+	 */
 	uint8_t pmc_gpe0_dw0; /* GPE0_31_0 STS/EN */
 	uint8_t pmc_gpe0_dw1; /* GPE0_63_32 STS/EN */
 	uint8_t pmc_gpe0_dw2; /* GPE0_95_64 STS/EN */
@@ -82,44 +170,54 @@ struct soc_intel_pantherlake_config {
 	uint32_t gen4_dec;
 
 	/* Enable S0iX support */
-	int s0ix_enable;
+	bool s0ix_enable;
 	/* Support for TCSS xhci, xdci, TBT PCIe root ports and DMA controllers */
-	uint8_t tcss_d3_hot_disable;
+	bool tcss_d3_hot_disable;
 	/* Support for TBT PCIe root ports and DMA controllers with D3Hot->D3Cold */
-	uint8_t TcssD3ColdDisable;
+	bool tcss_d3_cold_disable;
 	/* Enable DPTF support */
-	int dptf_enable;
+	bool dptf_enable;
 
 	/* Deep SX enable for both AC and DC */
-	int deep_s3_enable_ac;
-	int deep_s3_enable_dc;
-	int deep_s5_enable_ac;
-	int deep_s5_enable_dc;
+	bool deep_s3_enable_ac;
+	bool deep_s3_enable_dc;
+	bool deep_s5_enable_ac;
+	bool deep_s5_enable_dc;
 
 	/* Deep Sx Configuration
 	 *  DSX_EN_WAKE_PIN       - Enable WAKE# pin
 	 *  DSX_EN_LAN_WAKE_PIN   - Enable LAN_WAKE# pin
-	 *  DSX_DIS_AC_PRESENT_PD - Disable pull-down on AC_PRESENT pin */
+	 *  DSX_DIS_AC_PRESENT_PD - Disable pull-down on AC_PRESENT pin
+	 */
 	uint32_t deep_sx_config;
 
 	/* TCC activation offset */
 	uint32_t tcc_offset;
 
+	/* In-Band ECC (IBECC) configuration */
+	struct ibecc_config ibecc;
+
 	/* System Agent dynamic frequency support. Only effects ULX/ULT CPUs.
 	 * When enabled memory will be training at two different frequencies.
-	 * 0:Disabled, 1:FixedPoint0, 2:FixedPoint1, 3:FixedPoint2,
-	 * 4:FixedPoint3, 5:Enabled */
+	 * 0:Disabled, 1:Enabled
+	 */
 	enum {
-		SaGv_Disabled,
-		SaGv_FixedPoint0,
-		SaGv_FixedPoint1,
-		SaGv_FixedPoint2,
-		SaGv_FixedPoint3,
-		SaGv_Enabled,
+		SAGV_DISABLED,
+		SAGV_ENABLED,
 	} sagv;
 
-	/* Rank Margin Tool. 1:Enable, 0:Disable */
-	uint8_t rmt;
+	/* System Agent dynamic frequency work points that memory will be training
+	 * at the enabled frequencies. Possible work points are:
+	 * 0x3:Points0_1, 0x7:Points0_1_2, 0xF:AllPoints0_1_2_3
+	 */
+	enum {
+		SAGV_POINTS_0_1 = 0x03,
+		SAGV_POINTS_0_1_2 = 0x07,
+		SAGV_POINTS_0_1_2_3 = 0x0f,
+	} sagv_wp_bitmap;
+
+	/* Rank Margin Tool. true:Enable, false:Disable */
+	bool rmt;
 
 	/* USB related */
 	struct usb2_port_config usb2_ports[CONFIG_SOC_INTEL_USB2_DEV_MAX];
@@ -137,7 +235,9 @@ struct soc_intel_pantherlake_config {
 	bool tbt_authentication;
 
 	/* Audio related */
-	uint8_t pch_hda_dsp_enable;
+	bool pch_hda_audio_link_hda_enable;
+	bool pch_hda_dsp_enable;
+	bool pch_hda_sdi_enable[MAX_HD_AUDIO_SDI_LINKS];
 
 	/* iDisp-Link T-Mode 0: 2T, 2: 4T, 3: 8T, 4: 16T */
 	enum {
@@ -178,8 +278,83 @@ struct soc_intel_pantherlake_config {
 		IGD_SM_52MB = 0xFC,
 		IGD_SM_56MB = 0xFD,
 		IGD_SM_60MB = 0xFE,
-	} IgdDvmt50PreAlloc;
+	} igd_dvmt50_pre_alloc;
+
 	bool skip_ext_gfx_scan;
+
+	/* Enable/Disable EIST. true:Enabled, false:Disabled */
+	bool eist_enable;
+
+	/*
+	 * When enabled, this feature makes the SoC throttle when the power
+	 * consumption exceeds the I_TRIP threshold.
+	 *
+	 * FSPs sets a by default I_TRIP threshold adapted to the current SoC
+	 * and assuming a Voltage Regulator error accuracy of 6.5%.
+	 */
+	bool enable_fast_vmode[NUM_VR_DOMAINS];
+
+	/*
+	 * Current Excursion Protection needs to be set for each VR domain
+	 * in order to be able to enable fast Vmode.
+	 */
+	bool cep_enable[NUM_VR_DOMAINS];
+
+	/*
+	 * VR Fast Vmode I_TRIP threshold.
+	 * 0-255A in 1/4 A units. Example: 400 = 100A
+	 * This setting overrides the default value set by FSPs when Fast VMode
+	 * is enabled.
+	 */
+	uint16_t fast_vmode_i_trip[NUM_VR_DOMAINS];
+
+	/*
+	 * Power state current threshold 1.
+	 * Defined in 1/4 A increments. A value of 400 = 100A. Range 0-512,
+	 * which translates to 0-128A. 0 = AUTO. [0] for IA, [1] for GT, [2] for
+	 * SA, [3] through [5] are Reserved.
+	 */
+	uint16_t ps_cur_1_threshold[NUM_VR_DOMAINS];
+
+	/*
+	 * Power state current threshold 2.
+	 * Defined in 1/4 A increments. A value of 400 = 100A. Range 0-512,
+	 * which translates to 0-128A. 0 = AUTO. [0] for IA, [1] for GT, [2] for
+	 * SA, [3] through [5] are Reserved.
+	 */
+	uint16_t ps_cur_2_threshold[NUM_VR_DOMAINS];
+
+	/*
+	 * Power state current threshold 3.
+	 * Defined in 1/4 A increments. A value of 400 = 100A. Range 0-512,
+	 * which translates to 0-128A. 0 = AUTO. [0] for IA, [1] for GT, [2] for
+	 * SA, [3] through [5] are Reserved.
+	 */
+	uint16_t ps_cur_3_threshold[NUM_VR_DOMAINS];
+
+	/*
+	 * SerialIO device mode selection:
+	 * PchSerialIoDisabled,
+	 * PchSerialIoPci,
+	 * PchSerialIoHidden,
+	 * PchSerialIoLegacyUart,
+	 * PchSerialIoSkipInit
+	 */
+	uint8_t serial_io_i2c_mode[CONFIG_SOC_INTEL_I2C_DEV_MAX];
+	uint8_t serial_io_gspi_mode[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
+	uint8_t serial_io_uart_mode[CONFIG_SOC_INTEL_UART_DEV_MAX];
+	/*
+	 * GSPIn Default Chip Select Mode:
+	 * 0:Hardware Mode,
+	 * 1:Software Mode
+	 */
+	uint8_t serial_io_gspi_cs_mode[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
+	/*
+	 * GSPIn Default Chip Select State:
+	 * 0: Low,
+	 * 1: High
+	 */
+	uint8_t serial_io_gspi_cs_state[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
 
 	/* CNVi WiFi Core Enable/Disable */
 	bool cnvi_wifi_core;
@@ -189,43 +364,6 @@ struct soc_intel_pantherlake_config {
 
 	/* CNVi BT Audio Offload: Enable/Disable BT Audio Offload. */
 	bool cnvi_bt_audio_offload;
-
-	/* In-Band ECC (IBECC) configuration */
-	struct ibecc_config ibecc;
-
-	/* HeciEnabled decides the state of Heci1 at end of boot
-	 * Setting to 0 (default) disables Heci1 and hides the device from OS */
-	uint8_t HeciEnabled;
-
-	/* Enable/Disable EIST. 1b:Enabled, 0b:Disabled */
-	uint8_t eist_enable;
-
-	/* Enable C6 DRAM */
-	uint8_t enable_c6dram;
-	uint8_t PmTimerDisabled;
-	/*
-	 * SerialIO device mode selection:
-	 * PchSerialIoDisabled,
-	 * PchSerialIoPci,
-	 * PchSerialIoHidden,
-	 * PchSerialIoLegacyUart,
-	 * PchSerialIoSkipInit
-	 */
-	uint8_t SerialIoI2cMode[CONFIG_SOC_INTEL_I2C_DEV_MAX];
-	uint8_t SerialIoGSpiMode[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
-	uint8_t SerialIoUartMode[CONFIG_SOC_INTEL_UART_DEV_MAX];
-	/*
-	 * GSPIn Default Chip Select Mode:
-	 * 0:Hardware Mode,
-	 * 1:Software Mode
-	 */
-	uint8_t SerialIoGSpiCsMode[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
-	/*
-	 * GSPIn Default Chip Select State:
-	 * 0: Low,
-	 * 1: High
-	 */
-	uint8_t SerialIoGSpiCsState[CONFIG_SOC_INTEL_COMMON_BLOCK_GSPI_MAX];
 
 	/* Debug interface selection */
 	enum {
@@ -288,11 +426,6 @@ struct soc_intel_pantherlake_config {
 	/* Enable(1)/Disable(0) HPD/DDC */
 	uint8_t ddi_ports_config[DDI_PORT_COUNT];
 
-	/* Hybrid storage mode enable (1) / disable (0)
-	 * This mode makes FSP detect Optane and NVME and set PCIe lane mode
-	 * accordingly */
-	uint8_t HybridStorageMode;
-
 	/*
 	 * Override CPU flex ratio value:
 	 * CPU ratio value controls the maximum processor non-turbo ratio.
@@ -307,25 +440,78 @@ struct soc_intel_pantherlake_config {
 	uint8_t cpu_ratio_override;
 
 	/*
-	 * Enable(0)/Disable(1) DMI Power Optimizer on PCH side.
-	 * Default 0. Setting this to 1 disables the DMI Power Optimizer.
+	 * Enable(true)/Disable(false) CPU Replacement check.
+	 * Default false. Setting this to true to check CPU replacement.
 	 */
-	uint8_t DmiPwrOptimizeDisable;
-
-	/*
-	 * Enable(1)/Disable(0) CPU Replacement check.
-	 * Default 0. Setting this to 1 to check CPU replacement.
-	 */
-	uint8_t cpu_replacement_check;
+	bool cpu_replacement_check;
 
 	/* ISA Serial Base selection. */
 	enum {
 		ISA_SERIAL_BASE_ADDR_3F8,
 		ISA_SERIAL_BASE_ADDR_2F8,
-	} IsaSerialUartBase;
+	} isa_serial_uart_base;
 
-	/* USB overcurrent pin mapping */
-	uint8_t pch_usb_oc_enable;
+	/*
+	 * Enable or Disable C1 C-state Auto Demotion & un-demotion
+	 * The algorithm looks at the behavior of the wake up tracker, how
+	 * often it is waking up, and based on that it demote the c-state.
+	 * Default false. Set this to true in order to disable C1-state auto
+	 * demotion.
+	 * NOTE: Un-Demotion from Demoted C1 needs to be disabled when
+	 *       C1 C-state Auto Demotion is disabled.
+	 */
+	bool disable_c1_state_auto_demotion;
+
+	/*
+	 * Enable or Disable Package C-state Demotion.
+	 * Default is set to false.
+	 * Set this to true in order to disable Package C-state demotion.
+	 * NOTE: Un-Demotion from demoted Package C-state needs to be disabled
+	 *       when auto demotion is disabled.
+	 */
+	bool disable_package_c_state_demotion;
+
+	/* Enable PCH to CPU energy report feature. */
+	bool pch_pm_energy_report_enable;
+
+	/* Energy-Performance Preference (HWP feature) */
+	bool enable_energy_perf_pref;
+	uint8_t energy_perf_pref_value;
+
+	bool disable_vmx;
+
+	/*
+	 * SAGV Frequency per point in Mhz. 0 is Auto, otherwise holds the
+	 * frequency value expressed as an integer. For example: 1867
+	 */
+	uint16_t sagv_freq_mhz[MAX_SAGV_POINTS];
+
+	/* Gear Selection for SAGV points. 0: Auto, 1: Gear 1, 2: Gear 2, 4: Gear 4 */
+	uint8_t sagv_gear[MAX_SAGV_POINTS];
+
+	/*
+	 * Enable or Disable Reduced BasicMemoryTest size.
+	 * Default is set to false.
+	 * Set this to true in order to reduce BasicMemoryTest size
+	 */
+	bool lower_basic_mem_test_size;
+
+	/* Platform Power Pmax in Watts. Zero means automatic. */
+	uint16_t psys_pmax_watts;
+
+	/* Platform Power Limit 2 in Watts. */
+	uint16_t psys_pl2_watts;
+
+	/* Enable or Disable Acoustic Noise Mitigation feature */
+	bool enable_acoustic_noise_mitigation;
+	/* Disable Fast Slew Rate for Deep Package C States for VR domains */
+	bool disable_fast_pkgc_ramp[NUM_VR_DOMAINS];
+	/*
+	 * Slew Rate configuration for Deep Package C States for VR domains
+	 * as per `enum slew_rate` data type.
+	 */
+	uint8_t slow_slew_rate_config[NUM_VR_DOMAINS];
+
 };
 
 typedef struct soc_intel_pantherlake_config config_t;

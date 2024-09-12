@@ -2,10 +2,22 @@ chip soc/intel/pantherlake
 
 	device cpu_cluster 0 on end
 
-	register "power_limits_config[PTL_U_15W_POWER_LIMITS]" = "{
+	register "power_limits_config[PTL_U_1_CORE]" = "{
 		.tdp_pl1_override = 15,
 		.tdp_pl2_override = 54,
 		.tdp_pl4 = 142,
+	}"
+
+	register "power_limits_config[PTL_H_1_CORE]" = "{
+		.tdp_pl1_override = 25,
+		.tdp_pl2_override = 64,
+		.tdp_pl4 = 154,
+	}"
+
+	register "power_limits_config[PTL_H_2_CORE]" = "{
+		.tdp_pl1_override = 25,
+		.tdp_pl2_override = 80,
+		.tdp_pl4 = 240,
 	}"
 
 	# NOTE: if any variant wants to override this value, use the same format
@@ -116,7 +128,7 @@ chip soc/intel/pantherlake
 				end
 			end
 		end
-		device pci 14.2 alias shared_sram off end
+		device pci 14.2 alias pmc_shared_sram off end
 		device pci 14.3 alias cnvi_wifi off end
 		device pci 14.7 alias cnvi_bluetooth off end
 		device pci 14.5 alias ieh off end

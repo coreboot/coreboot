@@ -7,37 +7,100 @@ config SOC_INTEL_PANTHERLAKE_BASE
 	select BOOT_DEVICE_SUPPORTS_WRITES
 	select CACHE_MRC_SETTINGS
 	select CPU_INTEL_COMMON
+	select CPU_INTEL_COMMON_VOLTAGE
 	select CPU_INTEL_FIRMWARE_INTERFACE_TABLE
-	select FSP_M_XIP
-	select FSP_USES_CB_DEBUG_EVENT_HANDLER
+	select CPU_SUPPORTS_INTEL_TME
+	select CPU_SUPPORTS_PM_TIMER_EMULATION
+	select DEFAULT_SOFTWARE_CONNECTION_MANAGER if MAINBOARD_HAS_CHROMEOS
+	select DEFAULT_X2APIC_LATE_WORKAROUND
+	select DISPLAY_FSP_VERSION_INFO_2
 	select FAST_SPI_SUPPORTS_EXT_BIOS_WINDOW
+	select FSP_COMPRESS_FSP_S_LZ4
+	select FSP_M_XIP
+	select FSP_STATUS_GLOBAL_RESET_REQUIRED_3
+	select FSP_UGOP_EARLY_SIGN_OF_LIFE
+	select FSP_USES_CB_DEBUG_EVENT_HANDLER
+	select FSPS_HAS_ARCH_UPD
+	select GENERIC_GPIO_LIB
+	select HAVE_DEBUG_RAM_SETUP
+	select HAVE_FSP_GOP
+	select HAVE_FSP_LOGO_SUPPORT if RUN_FSP_GOP
+	select HAVE_HYPERTHREADING
+	select HAVE_INTEL_COMPLIANCE_TEST_MODE
+	select HAVE_SMI_HANDLER
 	select HAVE_X86_64_SUPPORT
 	select IDT_IN_EVERY_STAGE
-	select INTEL_GMA_ADD_VBT if RUN_FSP_GOP
 	select INTEL_DESCRIPTOR_MODE_CAPABLE
+	select INTEL_GMA_ACPI
+	select INTEL_GMA_ADD_VBT if RUN_FSP_GOP
+	select INTEL_GMA_OPREGION_2_1
+	select INTEL_GMA_VERSION_2
+	select INTEL_KEYLOCKER
 	select IOAPIC
 	select MICROCODE_BLOB_UNDISCLOSED
+	select MP_SERVICES_PPI_V2
+	select MRC_CACHE_USING_MRC_VERSION
 	select MRC_SETTINGS_PROTECT
+	select PARALLEL_MP_AP_WORK
+	select PCIE_CLOCK_CONTROL_THROUGH_P2SB
 	select PLATFORM_USES_FSP2_4
+	select PMC_GLOBAL_RESET_ENABLE_LOCK
 	select SOC_INTEL_COMMON
+	select SOC_INTEL_COMMON_ACPI_WAKE_SOURCE
+	select SOC_INTEL_COMMON_BASECODE
+	select SOC_INTEL_COMMON_BASECODE_RAMTOP
 	select SOC_INTEL_COMMON_BLOCK
 	select SOC_INTEL_COMMON_BLOCK_CAR
 	select SOC_INTEL_COMMON_BLOCK_CHIP_CONFIG
+	select SOC_INTEL_COMMON_BLOCK_CNVI
 	select SOC_INTEL_COMMON_BLOCK_CPU
+	select SOC_INTEL_COMMON_BLOCK_CPU_MPINIT
+	select SOC_INTEL_COMMON_BLOCK_CPU_SMMRELOCATE
+	select SOC_INTEL_COMMON_BLOCK_DTT
+	select SOC_INTEL_COMMON_BLOCK_GPIO_DUAL_ROUTE_SUPPORT
+	select SOC_INTEL_COMMON_BLOCK_GPIO_IOSTANDBY
+	select SOC_INTEL_COMMON_BLOCK_GPIO_LOCK_USING_PCR
+	select SOC_INTEL_COMMON_BLOCK_GPIO_PMODE_4BITS
 	select SOC_INTEL_COMMON_BLOCK_GSPI_VERSION_2
+	select SOC_INTEL_COMMON_BLOCK_HDA
+	select SOC_INTEL_COMMON_BLOCK_HECI1_DISABLE_USING_PMC_IPC
+	select SOC_INTEL_COMMON_BLOCK_IOC
 	select SOC_INTEL_COMMON_BLOCK_IOE_P2SB
+	select SOC_INTEL_COMMON_BLOCK_IPU
+	select SOC_INTEL_COMMON_BLOCK_IRQ
+	select SOC_INTEL_COMMON_BLOCK_ME_SPEC_18 # TODO: Update with ME21 Spec
 	select SOC_INTEL_COMMON_BLOCK_MEMINIT
+	select SOC_INTEL_COMMON_BLOCK_PCIE_RTD3
+	select SOC_INTEL_COMMON_BLOCK_PMC_EPOC
+	select SOC_INTEL_COMMON_BLOCK_POWER_LIMIT
 	select SOC_INTEL_COMMON_BLOCK_SA
+	select SOC_INTEL_COMMON_BLOCK_SMM
+	select SOC_INTEL_COMMON_BLOCK_SMM_IO_TRAP
+	select SOC_INTEL_COMMON_BLOCK_SMM_TCO_ENABLE
+	select SOC_INTEL_COMMON_BLOCK_THERMAL_BEHIND_PMC
+	select SOC_INTEL_COMMON_BLOCK_TRACEHUB
+	select SOC_INTEL_COMMON_BLOCK_XHCI
+	select SOC_INTEL_COMMON_BLOCK_XHCI_ELOG
+	select SOC_INTEL_COMMON_FSP_RESET
 	select SOC_INTEL_COMMON_PCH_CLIENT
 	select SOC_INTEL_COMMON_RESET
+	select SOC_INTEL_CRASHLOG
+	select SOC_INTEL_CSE_LITE_PSR if MAINBOARD_HAS_CHROMEOS && SOC_INTEL_CSE_LITE_SKU
+	select SOC_INTEL_CSE_SEND_EOP_LATE if !MAINBOARD_HAS_CHROMEOS
+	select SOC_INTEL_CSE_SET_EOP
+	select SOC_INTEL_GFX_NON_PREFETCHABLE_MMIO
 	select SOC_INTEL_IOE_DIE_SUPPORT
+	select SOC_INTEL_MEM_MAPPED_PM_CONFIGURATION
 	select SOC_QDF_DYNAMIC_READ_PMC
 	select SSE2
 	select SUPPORT_CPU_UCODE_IN_CBFS
+	select TME_KEY_REGENERATION_ON_WARM_BOOT
 	select TSC_MONOTONIC_TIMER
 	select UDELAY_TSC
 	select UDK_202302_BINDING
 	select USE_X86_64_SUPPORT
+	select X86_CLFLUSH_CAR
+	select X86_INIT_NEED_1_SIPI
 	help
 	  Intel Pantherlake support. Mainboards should specify the SoC
 	  type using the `SOC_INTEL_PANTHERLAKE_*` options instead
@@ -49,8 +112,6 @@ config SOC_INTEL_PANTHERLAKE_U_H
 	help
 	  Choose this option if the mainboard is built using either a PTL-U (15W) or
 	  PTL-H 12Xe (25W) system-on-a-chip SoC.
-	  Note, PTL U/H processor line is offered in a single package platform that includes the
-	  Compute tile, the PCD tile, and the GFX tile on the same package.
 
 config SOC_INTEL_PANTHERLAKE_H
 	bool
@@ -58,10 +119,16 @@ config SOC_INTEL_PANTHERLAKE_H
 	select SOC_INTEL_PANTHERLAKE_BASE
 	help
 	  Choose this option if the mainboard is built using PTL-H 4Xe system-on-a-chip (SoC).
-	  Note, PTL-H processor line is offered in a single package platform that includes the
-	  Compute tile, the PCD tile, and the GFX tile on the same package.
 
 if SOC_INTEL_PANTHERLAKE_BASE
+
+config SOC_INTEL_PANTHERLAKE_TCSS_USB4_SUPPORT
+	bool
+	default y
+	select SOC_INTEL_COMMON_BLOCK_TCSS
+	select SOC_INTEL_COMMON_BLOCK_USB4
+	select SOC_INTEL_COMMON_BLOCK_USB4_PCIE
+	select SOC_INTEL_COMMON_BLOCK_USB4_XHCI
 
 config CAR_ENHANCED_NEM
 	bool
@@ -101,6 +168,16 @@ config FSP_TEMP_RAM_SIZE
 	  Refer to Platform FSP integration guide document to know
 	  the exact FSP requirement for Heap setup.
 
+config CHIPSET_DEVICETREE
+	string
+	default "soc/intel/pantherlake/chipset.cb"
+
+config EXT_BIOS_WIN_BASE
+	default 0xf8000000
+
+config EXT_BIOS_WIN_SIZE
+	default 0x2000000
+
 config IFD_CHIPSET
 	string
 	default "ptl"
@@ -108,6 +185,26 @@ config IFD_CHIPSET
 config IED_REGION_SIZE
 	hex
 	default 0x400000
+
+# Intel recommends reserving the PCIe TBT root port resources as below:
+# - 42 buses
+# - 194 MiB Non-prefetchable memory
+# - 448 MiB Prefetchable memory
+if SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
+
+config PCIEXP_HOTPLUG_BUSES
+	int
+	default 42
+
+config PCIEXP_HOTPLUG_MEM
+	hex
+	default 0xc200000
+
+config PCIEXP_HOTPLUG_PREFETCH_MEM
+	hex
+	default 0x1c000000
+
+endif # SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
 
 config MAX_TBT_ROOT_PORTS
 	int
@@ -121,6 +218,14 @@ config MAX_ROOT_PORTS
 config MAX_PCIE_CLOCK_SRC
 	int
 	default 9
+
+config SMM_TSEG_SIZE
+	hex
+	default 0x2000000
+
+config SMM_RESERVED_SIZE
+	hex
+	default 0x200000
 
 config PCR_BASE_ADDRESS
 	hex
@@ -136,6 +241,14 @@ config P2SB_2_PCR_BASE_ADDRESS
 
 config ECAM_MMCONF_BASE_ADDRESS
 	default 0xe0000000
+
+config SOC_INTEL_PERFORMANCE_CORE_SCALE_FACTOR
+	int
+	default 125 # TODO: Update with PTL data
+
+config SOC_INTEL_EFFICIENT_CORE_SCALE_FACTOR
+	int
+	default 100 # TODO: Update with PTL data
 
 config CPU_BCLK_MHZ
 	int
@@ -178,7 +291,7 @@ config CONSOLE_UART_BASE_ADDRESS
 	depends on INTEL_LPSS_UART_FOR_CONSOLE
 
 # Clock divider parameters for 115200 baud rate
-# Baudrate = (UART source clcok * M) /(N *16)
+# Baudrate = (UART source clock * M) /(N *16)
 # PTL UART source clock: 100MHz
 config SOC_INTEL_COMMON_LPSS_UART_CLK_M_VAL
 	hex
@@ -189,12 +302,13 @@ config SOC_INTEL_COMMON_LPSS_UART_CLK_N_VAL
 	default 0x7fff
 
 config VBOOT
-	select VBOOT_SEPARATE_VERSTAGE
 	select VBOOT_MUST_REQUEST_DISPLAY
+	select VBOOT_SEPARATE_VERSTAGE
 	select VBOOT_STARTS_IN_BOOTBLOCK
 	select VBOOT_VBNV_CMOS
 	select VBOOT_VBNV_CMOS_BACKUP_TO_FLASH
 	select VBOOT_X86_SHA256_ACCELERATION
+	select VBOOT_X86_RSA_ACCELERATION
 
 # Default hash block size is 1KiB. Increasing it to 4KiB to improve
 # hashing time as well as read time.
@@ -241,5 +355,63 @@ config DIMMS_PER_CHANNEL
 config MRC_CHANNEL_WIDTH
 	int
 	default 16
+
+config SOC_INTEL_GFX_FRAMEBUFFER_OFFSET
+	hex
+	default 0x800000
+
+config DROP_CPU_FEATURE_PROGRAM_IN_FSP
+	bool
+	default n
+	help
+	  This is to avoid FSP running basic CPU feature programming on BSP
+	  and on APs using the "CpuFeaturesPei.efi" module. The feature programming
+	  includes enabling x2APIC, MCA, MCE and Turbo etc.
+
+	  Most of these feature programming are getting performed today in scope
+	  of coreboot doing MP Init. Running these redundant programming in scope
+	  of FSP (when `USE_FSP_FEATURE_PROGRAM_ON_APS` config is enabled) would
+	  results in CPU exception.
+
+	  SoC users to select this config after dropping "CpuFeaturesPei.ffs" module
+	  from FSP-S Firmware Volume (FV). Upon selection, coreboot runs those additional
+	  feature programming on BSP and APs.
+
+	  This feature is default enabled, in case of "coreboot running MP init"
+	  aka MP_SERVICES_PPI_V2_NOOP config is selected.
+
+config PCIE_LTR_MAX_SNOOP_LATENCY
+	hex
+	default 0x100f
+	help
+	  Latency tolerance reporting, max snoop latency value defaults to 15.73 ms.
+
+config PCIE_LTR_MAX_NO_SNOOP_LATENCY
+	hex
+	default 0x100f
+	help
+	  Latency tolerance reporting, max non-snoop latency value defaults to 15.73 ms.
+
+config HAVE_BMP_LOGO_COMPRESS_LZMA
+	default n
+
+# The default offset to store CSE RW FW version information is at 68.
+# However, in Intel Panther Lake based systems that use PSR, the additional
+# size required to keep CSE RW FW version information and PSR back-up status
+# in adjacent CMOS memory at offset 68 is not available. Therefore, we
+# override the default offset to 161, which has enough space to keep both
+# the CSE related information together.
+config SOC_INTEL_CSE_FW_PARTITION_CMOS_OFFSET
+	int
+	default 161
+
+config SOC_INTEL_COMMON_BLOCK_ACPI_SLP_S0_FREQ_HZ
+	default 0x2005
+	help
+	  slp_s0_residency granularity in 122us ticks (i.e. ~8.2KHz) in Panther Lake.
+
+config SOC_PHYSICAL_ADDRESS_WIDTH
+	int
+	default 42
 
 endif

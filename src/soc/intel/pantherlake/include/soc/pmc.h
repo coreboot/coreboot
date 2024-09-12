@@ -23,7 +23,7 @@ extern struct device_operations pmc_ops;
 #define   MEM_SR			BIT(21)
 #define   ALLOW_SPXB_CG_INC0		BIT(20)
 #define   ALLOW_L1LOW_C0		BIT(19)
-#define   MS4V				BIT(18)
+#define   MS4V				BIT_FLAG_32(18)
 #define   ALLOW_L1LOW_OPI_ON		BIT(17)
 #define   SUS_PWR_FLR			BIT(16)
 #define   PME_B0_S5_DIS			BIT(15)

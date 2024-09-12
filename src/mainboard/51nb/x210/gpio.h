@@ -5,18 +5,6 @@
 
 #include <soc/gpio.h>
 
-/*
- * Bidirectional GPIO port when both RX and TX buffer is enabled
- * todo: move this macros to src/soc/intel/common/block/include/intelblocks/gpio_defs.h
- */
-#ifndef PAD_CFG_GPIO_BIDIRECT
-#define PAD_CFG_GPIO_BIDIRECT(pad, val, pull, rst, trig, own)		\
-	_PAD_CFG_STRUCT(pad,						\
-		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_TRIG(trig) |	\
-		PAD_BUF(NO_DISABLE) | val,				\
-		PAD_PULL(pull) | PAD_CFG_OWN_GPIO(own))
-#endif
-
 #ifndef __ACPI__
 
 /* Pad configuration in ramstage. */

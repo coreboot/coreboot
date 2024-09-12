@@ -5,14 +5,6 @@
 
 #include <gpio.h>
 
-#ifndef PAD_CFG_GPIO_BIDIRECT
-#define PAD_CFG_GPIO_BIDIRECT(pad, val, pull, rst, trig, own)		\
-	_PAD_CFG_STRUCT(pad,						\
-		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_TRIG(trig) |	\
-		PAD_BUF(NO_DISABLE) | val,				\
-		PAD_PULL(pull) | PAD_CFG_OWN_GPIO(own))
-#endif
-
 /* PAD configuration was generated automatically using intelp2m utility */
 static const struct pad_config gpio_table[] = {
 	/* ------- GPIO Community 0 ------- */

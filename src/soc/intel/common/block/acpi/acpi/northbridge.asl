@@ -291,12 +291,12 @@ Device (PDRC)
 			 * B0:D0:F0:Reg.48h
 			 */
 			Memory32Fixed (ReadWrite, 0, MCH_BASE_SIZE, MCHB)
-
+#if DMI_BASE_SIZE
 			/* DMI BAR _BAS will be updated in _CRS below according to
 			 * B0:D0:F0:Reg.68h
 			 */
 			Memory32Fixed (ReadWrite, 0, DMI_BASE_SIZE, DMIB)
-
+#endif
 			/* EP BAR _BAS will be updated in _CRS below according to
 			 * B0:D0:F0:Reg.40h
 			 */
@@ -322,10 +322,10 @@ Device (PDRC)
 
 		CreateDwordField (BUF0, MCHB._BAS, MBR0)
 		MBR0 = \_SB.PCI0.GMHB ()
-
+#if DMI_BASE_SIZE
 		CreateDwordField (BUF0, DMIB._BAS, DBR0)
 		DBR0 = \_SB.PCI0.GDMB ()
-
+#endif
 		CreateDwordField (BUF0, EGPB._BAS, EBR0)
 		EBR0 = \_SB.PCI0.GEPB ()
 

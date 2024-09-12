@@ -8,6 +8,10 @@ fw_config
 		option STYLUS_ABSENT		0
 		option STYLUS_PRESENT		1
 	end
+	field WIFI_SAR_ID 4 6
+		option ID_0			0
+		option ID_1			1
+	end
 	field WIFI_TYPE 7
 		option WIFI_CNVI		0
 		option WIFI_PCIE		1

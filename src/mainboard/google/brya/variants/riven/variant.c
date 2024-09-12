@@ -2,6 +2,28 @@
 
 #include <baseboard/variants.h>
 #include <boardid.h>
+#include <fw_config.h>
+#include <sar.h>
+#include <stdio.h>
+
+const char *get_wifi_sar_cbfs_filename(void)
+{
+	uint64_t type = fw_config_get_field(FW_CONFIG_FIELD(WIFI_TYPE));
+	uint64_t sar_id = fw_config_get_field(FW_CONFIG_FIELD(WIFI_SAR_ID));
+	static char filename[20];
+
+	if (type == UNDEFINED_FW_CONFIG || sar_id == UNDEFINED_FW_CONFIG) {
+		printk(BIOS_WARNING, "fw_config unprovisioned, set sar filename to NULL\n");
+		return NULL;
+	}
+
+	printk(BIOS_INFO, "Use wifi_sar_%lld.hex.\n", type << 3 | sar_id);
+	if (snprintf(filename, sizeof(filename), "wifi_sar_%lld.hex", type << 3 | sar_id) < 0) {
+		printk(BIOS_ERR, "Error occurred with snprintf, set sar filename to NULL\n");
+		return NULL;
+	}
+	return filename;
+}
 
 void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config)
 {

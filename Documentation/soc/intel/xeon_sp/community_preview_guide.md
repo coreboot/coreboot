@@ -123,3 +123,8 @@ For the real Granite Rapids FSP headers and binaries, please contact
 intel business interface to obtain. Then please update
 configs/builder/config.intel.crb.avc and configs/builder/config.intel.crb.bnc
 to apply.
+
+## Test Environment
+
+- LinuxBoot - linux kernel tag v6.10-rc4 (with defconfig located in: `Documentation/soc/intel/xeon_sp/linuxboot_defconfig`)
+- OS - CentOS Stream 9 Linux version 5.14.0-479.el9.x86_64 (mockbuild@x86-05.stream.rdu2.redhat.com)

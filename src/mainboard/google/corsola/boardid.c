@@ -5,12 +5,15 @@
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
 #include <soc/auxadc.h>
+#include <soc/cpu_id.h>
 
 #include "panel.h"
 
 /* board_id is provided by ec/google/chromeec/ec_boardid.c */
 
 #define ADC_LEVELS 12
+
+#define CROS_SKU_UNPROVISIONED_MT8186T 0x7FFFFEFF
 
 enum {
 	/* RAM IDs */
@@ -112,19 +115,18 @@ uint32_t sku_id(void)
 
 	cached_sku_code = google_chromeec_get_board_sku();
 
-	if (CONFIG(BOARD_GOOGLE_STARYU_COMMON)) {
-		if (cached_sku_code == CROS_SKU_UNPROVISIONED ||
-		    cached_sku_code == CROS_SKU_UNKNOWN) {
-			printk(BIOS_WARNING, "SKU code from EC: %s\n",
-			       (cached_sku_code == CROS_SKU_UNKNOWN) ?
-			       "CROS_SKU_UNKNOWN" : "CROS_SKU_UNPROVISIONED");
+	if (cached_sku_code == CROS_SKU_UNPROVISIONED ||
+	    cached_sku_code == CROS_SKU_UNKNOWN) {
+		printk(BIOS_WARNING, "SKU code from EC: 0x%x\n", cached_sku_code);
+		cached_sku_code = CROS_SKU_UNPROVISIONED;
+		if (get_cpu_id() == MTK_CPU_ID_MT8186T)
+			cached_sku_code = CROS_SKU_UNPROVISIONED_MT8186T;
+
+		if (CONFIG(BOARD_GOOGLE_STARYU_COMMON)) {
 			/* Reserve last 4 bits to report PANEL_ID */
-			cached_sku_code = 0x7FFFFFF0UL | panel_id();
+			cached_sku_code &= ~0xF;
+			cached_sku_code |= panel_id();
 		}
-	} else if (cached_sku_code == CROS_SKU_UNKNOWN) {
-		printk(BIOS_WARNING, "Failed to get SKU code from EC\n");
-		cached_sku_code = (get_adc_index(SKU_ID_HIGH_CHANNEL) << 4 |
-				   get_adc_index(SKU_ID_LOW_CHANNEL));
 	}
 
 	printk(BIOS_DEBUG, "SKU Code: %#02x\n", cached_sku_code);

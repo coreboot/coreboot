@@ -393,22 +393,18 @@ chip soc/intel/tigerlake
 		device ref gna on end
 		device ref north_xhci on end
 		device ref south_xhci on
-			register "usb2_ports" = "{
-				[0] = USB2_PORT_MID(OC_SKIP),	// Type-A Port A0
-				[1] = USB2_PORT_MID(OC_SKIP),	// Type-A Port A1
-				[2] = USB2_PORT_MID(OC_SKIP),	// M.2 WWAN
-				[3] = USB2_PORT_MID(OC_SKIP),	// Type-A / Type-C Cl
-				[4] = USB2_PORT_MID(OC_SKIP),	// M.2 Camera
-				[8] = USB2_PORT_MID(OC_SKIP),	// Type-A / Type-C Co
-				[9] = USB2_PORT_MID(OC_SKIP),	// M.2 Bluetooth
-			}"
+			register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A0
+			register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A Port A1
+			register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 WWAN
+			register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A / Type-C Cl
+			register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 Camera
+			register "usb2_ports[8]" = "USB2_PORT_MID(OC_SKIP)"	# Type-A / Type-C Co
+			register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 Bluetooth
 
-			register "usb3_ports" = "{
-				[0] = USB3_PORT_DEFAULT(OC1),	// USB3/2 Type A port A0
-				[1] = USB3_PORT_DEFAULT(OC2),	// USB3/2 Type A port A1
-				[2] = USB3_PORT_DEFAULT(OC_SKIP),	// M.2 WWAN
-				[3] = USB3_PORT_DEFAULT(OC_SKIP),	// M.2 Camera
-			}"
+			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC1)"	# USB3/2 Type A port A0
+			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC2)"	# USB3/2 Type A port A1
+			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# M.2 WWAN
+			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# M.2 Camera
 		end
 		device ref shared_ram on end
 		device ref cnvi_wifi on

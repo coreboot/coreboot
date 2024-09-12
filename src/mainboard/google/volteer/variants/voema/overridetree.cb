@@ -156,10 +156,8 @@ chip soc/intel/tigerlake
 			end
 		end
 		device ref south_xhci on
-			register "usb2_ports" = "{
-				[2] = USB2_PORT_TYPE_C(OC_SKIP),	// Type-A / Type-C Port 1
-				[4] = USB2_PORT_TYPE_C(OC_SKIP),	// Type-A / Type-C Port 0
-			}"
+			register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Type-A / Type-C Port 1
+			register "usb2_ports[4]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Type-A / Type-C Port 0
 
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on

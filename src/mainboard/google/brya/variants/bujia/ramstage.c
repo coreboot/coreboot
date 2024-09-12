@@ -70,9 +70,9 @@ static int32_t get_input_power_voltage(void)
 		.cmd_data_out = &info,
 	};
 	if (!google_chromeec_command(&cmd))
-		return psys_config.bj_volts_mv;
+		return info.adc_value;
 
-	return info.adc_value;
+	return psys_config.bj_volts_mv;
 }
 
 void variant_devtree_update(void)

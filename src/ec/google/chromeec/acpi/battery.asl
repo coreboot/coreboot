@@ -60,6 +60,14 @@ Name(BRSS, 0xff)
 #else
 Name(BRSS, 0x0)
 #endif
+// Cached battery string response indicator
+Name(BRI1, 0)
+Name(BRI2, 0)
+Name(BRI3, 0)
+// Cached battery string response data to save suspend-resume time
+Name(BRS1, Buffer(32) {0})
+Name(BRS2, Buffer(32) {0})
+Name(BRS3, Buffer(32) {0})
 // Read extended battery strings from the selected battery.
 //   Arg0 = string index
 //
@@ -82,9 +90,25 @@ Name(BRSS, 0x0)
 Method(BRSX, 1, Serialized)
 {
 	// It doesn't make sense to read the FIFO support indicator.
-	if (Arg0 == 0)
+	if (Arg0 == 0 || Arg0 > 3)
 	{
 		Return ("")
+	}
+
+	// Check if response is already cached
+	If (Arg0 == 1 && BRI1 == 1)
+	{
+		Return (BRS1) /* battery model name */
+	}
+
+	If (Arg0 == 2 && BRI2 == 1)
+	{
+		Return (BRS2) /* battery serial number */
+	}
+
+	If (Arg0 == 3 && BRI3 == 1)
+	{
+		Return (BRS3) /* battery manufacturer's name */
 	}
 
 	If (BRSS == 0xff)
@@ -109,34 +133,51 @@ Method(BRSX, 1, Serialized)
 	{
 		If (Arg0 == 1)
 		{
-			Return (ToString (Concatenate (BMOD, 0)))
+			Local0 = ToString (Concatenate (BMOD, 0))
 		}
 		ElseIf (Arg0 == 2)
 		{
-			Return (ToString (Concatenate (BSER, 0)))
+			Local0 = ToString (Concatenate (BSER, 0))
 		}
 		ElseIf (Arg0 == 3)
 		{
-			Return (ToString (Concatenate (BMFG, 0)))
+			Local0 = ToString (Concatenate (BMFG, 0))
 		}
-		Else
+	}
+	Else
+	{
+		// Select requested parameter to read
+		BSRF = Arg0
+
+		// Read to end of string, or up to a reasonable maximum length. Reads of
+		// BSRF consume bytes from the FIFO, so take care to read it only once
+		// per byte of data.
+		Local0 = ""
+		Local1 = BSRF
+		While (Local1 != 0 && SizeOf (Local0) < 32)
 		{
-			Return ("")
+			Local0 = Concatenate (Local0, ToString (Local1))
+			Local1 = BSRF
 		}
 	}
 
-	// Select requested parameter to read
-	BSRF = Arg0
-
-	// Read to end of string, or up to a reasonable maximum length. Reads of
-	// BSRF consume bytes from the FIFO, so take care to read it only once
-	// per byte of data.
-	Local0 = ""
-	Local1 = BSRF
-	While (Local1 != 0 && SizeOf (Local0) < 32)
+	// Store the result in the cache
+	If (Arg0 == 1)
 	{
-		Local0 = Concatenate (Local0, ToString (Local1))
-		Local1 = BSRF
+		BRS1 = Local0
+		BRI1 = 1
+	}
+
+	If (Arg0 == 2)
+	{
+		BRS2 = Local0
+		BRI2 = 1
+	}
+
+	If (Arg0 == 3)
+	{
+		BRS3 = Local0
+		BRI3 = 1
 	}
 
 	Return (Local0)

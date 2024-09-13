@@ -139,7 +139,7 @@ static enum cb_err psb_enable(void)
 		return CB_ERR;
 	}
 
-	printk(BIOS_DEBUG, "PSB: Enable... ");
+	printk(BIOS_DEBUG, "PSB: Enable...\n");
 
 	const int cmd_status = send_psp_command(MBOX_BIOS_CMD_PSB_AUTO_FUSING, &buffer);
 

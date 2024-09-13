@@ -54,9 +54,12 @@ Method (BSTA, 1, Serialized)
 	Return (Local0)
 }
 
+#if CONFIG(EC_GOOGLE_CHROMEEC_READ_BATTERY_LONG_STRING)
 // Cached flag for BSRF FIFO readout support from EC.
 Name(BRSS, 0xff)
-
+#else
+Name(BRSS, 0x0)
+#endif
 // Read extended battery strings from the selected battery.
 //   Arg0 = string index
 //

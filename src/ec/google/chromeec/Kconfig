@@ -152,6 +152,21 @@ config EC_GOOGLE_CHROMEEC_AUTO_FAN_CTRL
 	help
 	  Put the fan in auto mode at boot.
 
+config EC_GOOGLE_CHROMEEC_READ_BATTERY_LONG_STRING
+	depends on TPM_GOOGLE
+	bool
+	default y
+	help
+	  The Chrome EC currently supports two ways to read battery strings on
+	  ACPI platforms:
+
+	  * Read up to 8 bytes from EC shared memory BMFG, BMOD, ...
+	  * Send a EC_CMD_BATTERY_GET_STATIC host command and read longer strings as a response.
+
+	  Select this config to support readout of longer battery strings.
+
+	  If unsure, say N.
+
 endif # EC_GOOGLE_CHROMEEC
 
 source "src/ec/google/chromeec/*/Kconfig"

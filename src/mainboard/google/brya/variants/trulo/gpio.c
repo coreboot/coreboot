@@ -122,7 +122,7 @@ static const struct pad_config gpio_table[] = {
 	/* D1  : ISH_GP1 ==> SOC_GSEN2_INT# */
 	PAD_CFG_NF(GPP_D1, NONE, DEEP, NF1),
 	/* D2  : ISH_GP2 ==> SEN_MODE_EC_PCH_INT_ODL */
-	PAD_CFG_GPI_LOCK(GPP_D2, NONE, LOCK_CONFIG),
+	PAD_CFG_NF(GPP_D2, NONE, DEEP, NF1),
 	/* D3  : NC */
 	PAD_NC_LOCK(GPP_D3, NONE, LOCK_CONFIG),
 	/* D4  : NC */

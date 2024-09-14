@@ -28,8 +28,9 @@ void set_bootsplash(unsigned char *framebuffer, unsigned int x_resolution,
 	}
 
 	unsigned int image_width, image_height;
-	if (jpeg_fetch_size(jpeg, filesize, &image_width, &image_height) != 0) {
-		printk(BIOS_ERR, "Could not parse bootsplash.jpg\n");
+	const char *err = jpeg_fetch_size(jpeg, filesize, &image_width, &image_height);
+	if (err != NULL) {
+		printk(BIOS_ERR, "Could not parse bootsplash.jpg: %s\n", err);
 		return;
 	}
 
@@ -45,12 +46,11 @@ void set_bootsplash(unsigned char *framebuffer, unsigned int x_resolution,
 	framebuffer += (yres - image_height) / 2 * bytes_per_line
 		       + (xres - image_width) / 2 * (fb_resolution / 8);
 
-	int ret = jpeg_decode(jpeg, filesize, framebuffer, image_width, image_height,
-			      bytes_per_line, fb_resolution);
+	err = jpeg_decode(jpeg, filesize, framebuffer, image_width, image_height,
+			  bytes_per_line, fb_resolution);
 	cbfs_unmap(jpeg);
-	if (ret != 0) {
-		printk(BIOS_ERR, "Bootsplash could not be decoded. jpeg_decode returned %d.\n",
-		       ret);
+	if (err != NULL) {
+		printk(BIOS_ERR, "Could not decode bootsplash.jpg: %s\n", err);
 		return;
 	}
 	printk(BIOS_INFO, "Bootsplash loaded\n");

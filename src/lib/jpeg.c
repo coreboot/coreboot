@@ -19,38 +19,38 @@
 /* ~16K is big enough to move this off the stack */
 static wuffs_jpeg__decoder dec;
 
-int jpeg_fetch_size(unsigned char *filedata, size_t filesize, unsigned int *width,
-		    unsigned int *height)
+const char *jpeg_fetch_size(unsigned char *filedata, size_t filesize, unsigned int *width,
+			    unsigned int *height)
 {
 	if (!width || !height) {
-		return JPEG_DECODE_FAILED;
+		return "invalid arg";
 	}
 
 	wuffs_base__status status = wuffs_jpeg__decoder__initialize(
 		&dec, sizeof(dec), WUFFS_VERSION, WUFFS_INITIALIZE__DEFAULT_OPTIONS);
 	if (status.repr) {
-		return JPEG_DECODE_FAILED;
+		return status.repr;
 	}
 
 	wuffs_base__image_config imgcfg;
 	wuffs_base__io_buffer src = wuffs_base__ptr_u8__reader(filedata, filesize, true);
 	status = wuffs_jpeg__decoder__decode_image_config(&dec, &imgcfg, &src);
 	if (status.repr) {
-		return JPEG_DECODE_FAILED;
+		return status.repr;
 	}
 
 	*width = wuffs_base__pixel_config__width(&imgcfg.pixcfg);
 	*height = wuffs_base__pixel_config__height(&imgcfg.pixcfg);
 
-	return 0;
+	return NULL;
 }
 
-int jpeg_decode(unsigned char *filedata, size_t filesize, unsigned char *pic,
-		unsigned int width, unsigned int height, unsigned int bytes_per_line,
-		unsigned int depth)
+const char *jpeg_decode(unsigned char *filedata, size_t filesize, unsigned char *pic,
+			unsigned int width, unsigned int height, unsigned int bytes_per_line,
+			unsigned int depth)
 {
 	if (!filedata || !pic) {
-		return JPEG_DECODE_FAILED;
+		return "invalid arg";
 	}
 	/* Relatively arbitrary limit that shouldn't hurt anybody.
 	 * 300M (10k*10k*3bytes/pixel) is already larger than our heap, so
@@ -59,7 +59,7 @@ int jpeg_decode(unsigned char *filedata, size_t filesize, unsigned char *pic,
 	 * calculations in this function.
 	 */
 	if ((width > 10000) || (height > 10000)) {
-		return JPEG_DECODE_FAILED;
+		return "invalid arg";
 	}
 
 	uint32_t pixfmt;
@@ -74,13 +74,13 @@ int jpeg_decode(unsigned char *filedata, size_t filesize, unsigned char *pic,
 		pixfmt = WUFFS_BASE__PIXEL_FORMAT__BGRA_NONPREMUL;
 		break;
 	default:
-		return JPEG_DECODE_FAILED;
+		return "invalid arg";
 	}
 
 	wuffs_base__status status = wuffs_jpeg__decoder__initialize(
 		&dec, sizeof(dec), WUFFS_VERSION, WUFFS_INITIALIZE__DEFAULT_OPTIONS);
 	if (status.repr) {
-		return JPEG_DECODE_FAILED;
+		return status.repr;
 	}
 
 	/* Opting in to lower quality means that we can pass an empty slice as the
@@ -105,7 +105,7 @@ int jpeg_decode(unsigned char *filedata, size_t filesize, unsigned char *pic,
 	wuffs_base__io_buffer src = wuffs_base__ptr_u8__reader(filedata, filesize, true);
 	status = wuffs_jpeg__decoder__decode_image_config(&dec, &imgcfg, &src);
 	if (status.repr) {
-		return JPEG_DECODE_FAILED;
+		return status.repr;
 	}
 
 	wuffs_base__pixel_config pixcfg;
@@ -117,15 +117,11 @@ int jpeg_decode(unsigned char *filedata, size_t filesize, unsigned char *pic,
 		wuffs_base__make_table_u8(pic, width * (depth / 8), height, bytes_per_line),
 		wuffs_base__empty_slice_u8());
 	if (status.repr) {
-		return JPEG_DECODE_FAILED;
+		return status.repr;
 	}
 
 	status = wuffs_jpeg__decoder__decode_frame(&dec, &pixbuf, &src,
 						   WUFFS_BASE__PIXEL_BLEND__SRC,
 						   wuffs_base__empty_slice_u8(), NULL);
-	if (status.repr) {
-		return JPEG_DECODE_FAILED;
-	}
-
-	return 0;
+	return status.repr;
 }

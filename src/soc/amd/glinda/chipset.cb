@@ -25,28 +25,38 @@ chip soc/amd/glinda
 			device pci 0.0 alias gfx off ops amd_graphics_ops end # Internal GPU (GFX)
 			device pci 0.1 alias gfx_hda off end # Display HD Audio Controller (GFXAZ)
 			device pci 0.2 alias crypto off end # Crypto Coprocessor
-			device pci 0.3 alias xhci_0 off
-				ops xhci_pci_ops
-				chip drivers/usb/acpi
-					register "type" = "UPC_TYPE_HUB"
-					device usb 0.0 alias xhci_0_root_hub off
-						chip drivers/usb/acpi
-							device usb 3.0 alias usb3_port0 off end
-						end
-						chip drivers/usb/acpi
-							device usb 2.0 alias usb2_port0 off end
-						end
-						chip drivers/usb/acpi
-							device usb 2.1 alias usb2_port1 off end
-						end
-					end
-				end
-			end
 			device pci 0.4 alias xhci_1 off
 				ops xhci_pci_ops
 				chip drivers/usb/acpi
 					register "type" = "UPC_TYPE_HUB"
 					device usb 0.0 alias xhci_1_root_hub off
+						chip drivers/usb/acpi
+							device usb 3.0 alias usb3_port7 off end
+						end
+						chip drivers/usb/acpi
+							device usb 2.0 alias usb2_port7 off end
+						end
+					end
+				end
+			end
+			device pci 0.5 alias acp off ops amd_acp_ops end # Audio Processor (ACP)
+			device pci 0.6 alias hda off end # Audio Processor HD Audio Controller (main AZ)
+			device pci 0.7 alias mp2 off end # Sensor Fusion Hub (MP2)
+		end
+
+		device pci 08.2 alias gpp_bridge_b off # Internal GPP Bridge 1 to Bus B
+			ops amd_internal_pcie_gpp_ops
+			device pci 0.0 on end # dummy, do not disable
+		end
+
+		device pci 08.3 alias gpp_bridge_c off # Internal GPP Bridge 2 to Bus C
+			ops amd_internal_pcie_gpp_ops
+
+			device pci 0.0 alias xhci_0 off
+				ops xhci_pci_ops
+				chip drivers/usb/acpi
+					register "type" = "UPC_TYPE_HUB"
+					device usb 0.3 alias xhci_0_root_hub off
 						chip drivers/usb/acpi
 							device usb 3.0 alias usb3_port2 off end
 						end
@@ -62,18 +72,43 @@ chip soc/amd/glinda
 						chip drivers/usb/acpi
 							device usb 2.2 alias usb2_port4 off end
 						end
+						chip drivers/usb/acpi
+							device usb 2.3 alias usb2_port5 off end
+						end
+						chip drivers/usb/acpi
+							device usb 2.4 alias usb2_port6 off end
+						end
 					end
 				end
 			end
-			device pci 0.5 alias acp off ops amd_acp_ops end # Audio Processor (ACP)
-			device pci 0.6 alias hda off end # Audio Processor HD Audio Controller (main AZ)
-			device pci 0.7 alias mp2 off end # Sensor Fusion Hub (MP2)
-		end
-		device pci 08.2 alias gpp_bridge_b off ops amd_internal_pcie_gpp_ops end # Internal GPP Bridge 1 to Bus B
-		device pci 08.3 alias gpp_bridge_c off # Internal GPP Bridge 2 to Bus C
-			ops amd_internal_pcie_gpp_ops
-			device pci 0.0 alias xhci_2 off end # Might also be a dummy device with different PCI DID
-			# When using this as XHCI2, the mainboard devicetree needs to add ops xhci_pci_ops
+			device pci 0.3 alias usb4_xhci_0 off
+				ops xhci_pci_ops
+				chip drivers/usb/acpi
+					register "type" = "UPC_TYPE_HUB"
+					device usb 0.0 alias usb4_xhci_0_root_hub off
+						chip drivers/usb/acpi
+							device usb 3.0 alias usb3_port0 off end
+						end
+						chip drivers/usb/acpi
+							device usb 2.0 alias usb2_port0 off end
+						end
+					end
+				end
+			end
+			device pci 0.4 alias usb4_xhci_1 off
+				ops xhci_pci_ops
+				chip drivers/usb/acpi
+					register "type" = "UPC_TYPE_HUB"
+					device usb 0.0 alias usb4_xhci_1_root_hub off
+						chip drivers/usb/acpi
+							device usb 3.0 alias usb3_port1 off end
+						end
+						chip drivers/usb/acpi
+							device usb 2.0 alias usb2_port1 off end
+						end
+					end
+				end
+			end
 		end
 
 		device pci 14.0 alias smbus on ops amd_smbus_ops end # primary FCH function

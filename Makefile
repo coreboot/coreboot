@@ -229,6 +229,12 @@ real-all: site-local-target real-target
 .SECONDEXPANSION:
 .DELETE_ON_ERROR:
 
+# conf is treated as an intermediate target and may be built after config.h
+# during a clean build due to the way GNU Make handles intermediates when the
+# .SECONDARY target is present, forcing config.h and thus every object out of
+# date on a subsequent no-op build. Mark it as not intermediate to prevent this
+.NOTINTERMEDIATE: $(objutil)/kconfig/conf
+
 $(KCONFIG_AUTOHEADER): $(KCONFIG_CONFIG) $(objutil)/kconfig/conf
 	$(MAKE) olddefconfig
 	$(MAKE) syncconfig

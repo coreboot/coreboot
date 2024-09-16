@@ -77,15 +77,30 @@ config SOC_INTEL_COMMON_BLOCK_ACPI_SLP_S0_FREQ_HZ
 	  LPIT ACPI table.
 
 config SOC_INTEL_COMMON_BLOCK_ACPI_HAVE_GPE1
-	bool "Use GPE1 Event bits"
+	bool
 	help
-	  Include GPE1 STS and EN registers in FADT. Requires define GPE1_STS(0)
-	  and GPE1_REG_MAX from the SOC header. The SOC needs to have GPE1 block
-	  implemented to select this. This flag will also be used to determine the
-	  standard GPE0/1 event methods to use in the ASL code or devicetree for the
-	  internal wake capable devices. GPE1 Event Bit is an extension of GPE0
-	  (present in all Intel SoC platform). GPE1 Events include the power
-	  management, hot plug, and PCIe events for the internal devices. Select
-	  this Kconfig to support SoCs that publish GPE1 as part of PMC IO register.
+	  This flag indicates that the SoC implements GPE1. GPE1 Event Bit is an
+	  extension of GPE0 (present in all Intel SoC platform). GPE1 Events is
+	  SoC-specific, which might include the power management, hot plug, and
+	  PCIe events for the internal devices. Select this Kconfig to support SoCs
+	  that publish GPE1 as part of PMC IO register. The dummy GPE1_ macros with
+	  their values set to '0' will be added when this flag is not set for
+	  backward compatibility matter.
+
+config SOC_INTEL_COMMON_BLOCK_ACPI_USE_GPE1
+	bool
+	depends on SOC_INTEL_COMMON_BLOCK_ACPI_HAVE_GPE1
+	help
+	  This flags will expose GPE1 STS and EN registers in FADT. SoC needs to
+	  have GPE1 block implemented to select this.  It is required to define
+	  GPE1_STS(), GPE_EN(), and GPE1_REG_MAX from the SoC header. When selected,
+	  GPE1 functions will be added and GPE1 events will be cleared and disabled
+	  during boot. The SoC is required to provide the overridden GPE1 functions.
+	  In addition, this flag will also be used to determine the standard GPE0/1
+	  event methods to use in the ASL code and devicetree for the internal wake
+	  capable devices. The purpose of this flag is to enable to switch in
+	  between new GPE1 approach and old GPE0 method. The mainboard should decide
+	  to use the GPE1 via this flag; or else
+	  SOC_INTEL_COMMON_BLOCK_ACPI_HAVE_GPE1 exposes a SoC capability using ACPI.
 
 endif

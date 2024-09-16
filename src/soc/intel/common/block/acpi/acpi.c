@@ -107,8 +107,9 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 	/* GPE0 STS/EN pairs each 32 bits wide. */
 	fadt->gpe0_blk_len = 2 * GPE0_REG_MAX * sizeof(uint32_t);
 
-	fadt->gpe1_blk = GPE1_STS(0) ? (pmbase + GPE1_STS(0)) : 0;
-	if (fadt->gpe1_blk) {
+	fadt->gpe1_blk = 0;
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_ACPI_USE_GPE1)) {
+		fadt->gpe1_blk = pmbase + GPE1_STS(0);
 		fadt->gpe1_blk_len = 2 * GPE1_REG_MAX * sizeof(uint32_t);
 		/*
 		 * NOTE: gpe1 is after gpe0, which has _STS and _EN register sets.

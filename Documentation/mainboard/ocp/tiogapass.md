@@ -92,9 +92,9 @@ u-root.
 
 [flashrom]: https://flashrom.org/Flashrom
 [OCP]: https://www.opencompute.org/
-[OCP Tioga Pass]: https://www.opencompute.org/contributions?query=Tioga%20Pass%20v1.0
+[OCP Tioga Pass]: http://files.opencompute.org/oc/public.php?service=files&t=6fc3033e64fb029b0f84be5a8faf47e8
 [OCP Market Place]: https://www.opencompute.org/products/109/wiwynn-tioga-pass-advanced-2u-ocp-server-up-to-768gb-12-dimm-slots-4-ssds-for-io-performance
-[Off-the-shelf Host Firmware]: https://github.com/linuxboot/book/blob/master/case_studies/TiogaPass/README.md
+[Off-the-shelf Host Firmware]: https://book.linuxboot.org/case_studies/TiogaPass.html
 [OCP Tioga Pass POC Blog]: https://www.opencompute.org/blog/linux-firmware-boots-up-server-powered-by-intelr-xeonr-scalable-processor
-[All about u-root]: https://github.com/linuxboot/book/tree/master/u-root
+[All about u-root]: https://book.linuxboot.org/u-root.html
 [CB 40500 patchset]: https://review.coreboot.org/c/coreboot/+/40500

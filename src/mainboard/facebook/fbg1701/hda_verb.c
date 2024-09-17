@@ -6,7 +6,7 @@ const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x10EC0298,	/* Codec Vendor - Device ID: Realtek ALC298 */
 	0x152D1165,	/* Subsystem ID Quanta */
-	0x0000000C,	/* Number of jacks */
+	0x0000000E,	/* Number of jacks */
 
 	/* HDA Codec Subsystem ID Verb Table */
 	AZALIA_SUBVENDOR(0, 0x152D1165),

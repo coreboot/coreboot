@@ -13,7 +13,7 @@
  *
  * Fortunately, EDK2 header allows to override EFIAPI.
  */
-#if CONFIG(PLATFORM_USES_FSP2_X86_32)
+#if CONFIG(PLATFORM_USES_FSP1_1) || CONFIG(PLATFORM_USES_FSP2_X86_32)
 #define EFIAPI __attribute__((regparm(0)))
 #else
 #define EFIAPI __attribute__((__ms_abi__))

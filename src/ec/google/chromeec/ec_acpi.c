@@ -18,6 +18,12 @@
 #define GOOGLE_CHROMEEC_USBC_DEVICE_HID		"GOOG0014"
 #define GOOGLE_CHROMEEC_USBC_DEVICE_NAME	"USBC"
 
+/*
+ * Boards using UCSI need the USB-C ports to match with cros_ec_ucsi, not
+ * cros-ec-typec.
+ */
+#define GOOGLE_CHROMEEC_USBC_UCSI_DEVICE_HID	"GOOG0021"
+
 const char *google_chromeec_acpi_name(const struct device *dev)
 {
 	/*
@@ -157,11 +163,6 @@ static void fill_ssdt_typec_device(const struct device *dev)
 	struct acpi_pld pld = {0};
 	uint32_t pcap_mask = 0;
 
-	/* UCSI implementations do not require an ACPI device with mux info since the
-	   linux kernel doesn't set the muxes. */
-	if (google_chromeec_get_ucsi_enabled())
-		return;
-
 	rv = google_chromeec_get_num_pd_ports(&num_ports);
 	if (rv || num_ports == 0)
 		return;
@@ -173,9 +174,19 @@ static void fill_ssdt_typec_device(const struct device *dev)
 
 	acpigen_write_scope(acpi_device_path(dev));
 	acpigen_write_device(GOOGLE_CHROMEEC_USBC_DEVICE_NAME);
-	acpigen_write_name_string("_HID", GOOGLE_CHROMEEC_USBC_DEVICE_HID);
-	acpigen_write_name_string("_DDN", "ChromeOS EC Embedded Controller "
-				"USB Type-C Control");
+
+	bool ucsi_platform = google_chromeec_get_ucsi_enabled();
+	if (ucsi_platform) {
+		acpigen_write_name_string("_HID",
+					  GOOGLE_CHROMEEC_USBC_UCSI_DEVICE_HID);
+		acpigen_write_name_string("_DDN", "ChromeOS EC UCSI USB Type-C "
+					  "Control");
+	} else {
+		acpigen_write_name_string("_HID",
+					  GOOGLE_CHROMEEC_USBC_DEVICE_HID);
+		acpigen_write_name_string("_DDN", "ChromeOS EC Embedded "
+					  "Controller USB Type-C Control");
+	}
 
 	for (i = 0; i < num_ports; ++i) {
 		rv = google_chromeec_get_pd_port_caps(i, &port_caps);

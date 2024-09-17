@@ -1,3 +1,65 @@
 chip soc/intel/pantherlake
-	device domain 0 on end
+	# GPE configuration
+	register "pmc_gpe0_dw0" = "GPP_A"
+	register "pmc_gpe0_dw1" = "GPP_D"
+	register "pmc_gpe0_dw2" = "GPP_E"
+
+	# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
+	register "gen1_dec" = "0x00fc0801"
+	register "gen2_dec" = "0x000c0201"
+	# EC memory map range is 0x900-0x9ff
+	register "gen3_dec" = "0x00fc0901"
+
+	register "usb2_ports[0]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 0
+	register "usb2_ports[1]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 1
+	register "usb2_ports[2]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 2
+	register "usb2_ports[3]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 3
+	register "usb2_ports[4]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 4
+	register "usb2_ports[5]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 5
+	register "usb2_ports[6]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 6
+	register "usb2_ports[7]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 7
+
+	register "usb3_ports[0]" = "USB3_PORT_EMPTY"	# Disable USB3.0 Port 0
+	register "usb3_ports[1]" = "USB3_PORT_EMPTY"	# Disable USB3.0 Port 1
+
+	register "tcss_ports[0]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 0
+	register "tcss_ports[1]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 1
+	register "tcss_ports[2]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 2
+	register "tcss_ports[3]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 3
+
+	# Enable s0ix
+	register "s0ix_enable" = "false"
+
+	# DPTF enable
+	register "dptf_enable" = "false"
+
+	# Enable CNVi BT
+	register "cnvi_bt_core" = "true"
+
+	register "serial_io_uart_mode" = "{
+		[PchSerialIoIndexUART0] = PchSerialIoSkipInit,
+		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
+		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
+	}"
+
+	register "pch_hda_dsp_enable" = "true"
+	register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
+	register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
+	register "pch_hda_idisp_codec_enable" = "true"
+	register "pch_hda_sdi_enable" = "{ true, false }"
+
+	device domain 0 on
+		device ref igpu on end
+		device ref dtt on end
+		device ref npu on end
+		device ref xhci on end
+		device ref pmc_shared_sram on end
+		device ref heci1 on end
+		device ref uart0 on end
+		device ref soc_espi on
+			chip ec/google/chromeec
+				device pnp 0c09.0 on end
+			end
+		end
+	end
 end

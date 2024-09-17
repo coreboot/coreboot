@@ -21,7 +21,7 @@ void mainboard_update_soc_chip_config(struct soc_intel_pantherlake_config *confi
 	variant_update_soc_chip_config(config);
 }
 
-__weak void variant_update_soc_chip_config(struct soc_intel_pantherlake_config *config)
+void __weak variant_update_soc_chip_config(struct soc_intel_pantherlake_config *config)
 {
 	/* default implementation does nothing */
 }

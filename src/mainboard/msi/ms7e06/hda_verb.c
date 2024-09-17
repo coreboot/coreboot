@@ -26,7 +26,7 @@ const u32 cim_verb_data[] = {
 	/* Alderlake HDMI */
 	0x80862818, /* Vendor ID */
 	0x80860101, /* Subsystem ID */
-	2, /* Number of entries */
+	10, /* Number of entries */
 	AZALIA_SUBVENDOR(2, 0x80860101),
 	AZALIA_PIN_CFG(2, 0x04, 0x18560010),
 	AZALIA_PIN_CFG(2, 0x06, 0x18560010),

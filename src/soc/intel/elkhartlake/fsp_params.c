@@ -333,6 +333,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->D3ColdEnable = 0;
 		params->PmcOsIdleEnable = 0;
 	} else {
+		params->PchPwrOptEnable = 1; /* Enable PCH DMI Power Optimizer */
 		params->PchPostMasterClockGating = 1;
 		params->PchPostMasterPowerGating = 1;
 	}
@@ -471,7 +472,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->Custom1TurboActivationRatio = 0;
 	params->Custom2TurboActivationRatio = 0;
 	params->Custom3TurboActivationRatio = 0;
-	params->PchPwrOptEnable = 0x1;	//Enable PCH DMI Power Optimizer
 	params->TStates = 0x0;	//Disable T state
 	params->PkgCStateLimit = 0x7;	//Set C state limit to C9
 	params->FastPkgCRampDisable[0] = 0x1;

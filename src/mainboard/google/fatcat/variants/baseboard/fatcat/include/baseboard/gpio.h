@@ -8,7 +8,7 @@
 
 /* FIXME: update below code as per board schematics */
 /* eSPI virtual wire reporting */
-#define EC_SCI_GPI	0
+#define EC_SCI_GPI	GPE0_ESPI
 /* GPIO IRQ for tight timestamps / wake support */
 #define EC_SYNC_IRQ	0
 /* WP signal to PCH */

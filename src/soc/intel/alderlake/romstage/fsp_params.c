@@ -445,8 +445,6 @@ static void fill_fspm_sign_of_life(FSP_M_CONFIG *m_cfg,
 			name = "CSE update";
 			esol_required =  true;
 		}
-
-		elog_add_event_byte(ELOG_TYPE_FW_EARLY_SOL, ELOG_FW_EARLY_SOL_CSE_SYNC);
 	}
 
 	if (esol_required)

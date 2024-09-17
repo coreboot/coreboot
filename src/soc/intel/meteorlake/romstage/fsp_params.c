@@ -447,19 +447,16 @@ static void fill_fspm_sign_of_life(FSP_M_CONFIG *m_cfg,
 	void *vbt;
 	size_t vbt_size;
 	uint32_t vga_init_control = 0;
-	uint8_t sol_type;
 
 	/* Memory training.  */
 	if (!arch_upd->NvsBufferPtr) {
 		vga_init_control = VGA_INIT_CONTROL_ENABLE |
 			VGA_INIT_CONTROL_TEAR_DOWN;
-		sol_type = ELOG_FW_EARLY_SOL_MRC;
+		elog_add_event_byte(ELOG_TYPE_FW_EARLY_SOL, ELOG_FW_EARLY_SOL_MRC);
 	}
 
-	if (CONFIG(SOC_INTEL_CSE_LITE_SKU) && is_cse_fw_update_required()) {
+	if (CONFIG(SOC_INTEL_CSE_LITE_SKU) && is_cse_fw_update_required())
 		vga_init_control = VGA_INIT_CONTROL_ENABLE;
-		sol_type = ELOG_FW_EARLY_SOL_CSE_SYNC;
-	}
 
 	if (!vga_init_control)
 		return;
@@ -478,7 +475,6 @@ static void fill_fspm_sign_of_life(FSP_M_CONFIG *m_cfg,
 	}
 
 	printk(BIOS_INFO, "Enabling FSP-M Sign-of-Life\n");
-	elog_add_event_byte(ELOG_TYPE_FW_EARLY_SOL, sol_type);
 
 	m_cfg->VgaInitControl = vga_init_control;
 	m_cfg->VbtPtr = (efi_uintn_t)vbt;

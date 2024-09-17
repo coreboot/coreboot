@@ -6,12 +6,15 @@ const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x10134210,	// Codec Vendor / Device ID: Cirrus Logic CS4210
 	0x152D0924,	// Subsystem ID
-	0x00000007,	// Number of jacks
+	0x00000008,	// Number of jacks
 
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x152D0924 */
 	AZALIA_SUBVENDOR(0, 0x152D0924),
 
 	0x00170500,
+	0x00170500,	/* Padding */
+	0x00170500,	/* Padding */
+	0x00170500,	/* Padding */
 
 	/* Pin Widget Verb Table */
 

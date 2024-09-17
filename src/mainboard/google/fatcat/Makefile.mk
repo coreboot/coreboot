@@ -10,6 +10,7 @@ romstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += mainboard.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += ec.c
+ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_HDA_VERB) += variants/$(VARIANT_DIR)/hda_verb.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 

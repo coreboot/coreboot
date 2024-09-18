@@ -13,11 +13,9 @@ static const struct pad_config override_gpio_table[] = {
 	/* GPP_E17 : [NF2: THC0_SPI1_INT# NF6: USB_C_GPP_E17] ==> WWAN_CFG02 */
 	PAD_CFG_GPI(GPP_E17, NONE, PLTRST),
 	/* GPP_D7 : SRCCLKREQ2_L ==> WWAN_RF_DISABLE_ODL */
-	PAD_CFG_GPO(GPP_D7, 1, DEEP),
+	PAD_CFG_GPO_LOCK(GPP_D7, 1, LOCK_CONFIG),
 	/* GPP_D5 : SRCCLKREQ0_L ==> WWAN_SAR_ODL */
 	PAD_CFG_GPO(GPP_D5, 1, DEEP),
-	/* GPP_F21 : [NF1: Reserved NF6: USB_C_GPP_F21] ==> WWAN_FCPO_L */
-	PAD_CFG_GPO(GPP_F21, 0, DEEP),
 	/* GPP_S4 : SNDW2_CLK/DMIC_CLK_B0 ==> WWAN_WLAN_COEX1 */
 	PAD_CFG_GPI(GPP_S4, NONE, DEEP),
 	/* GPP_S5 : SNDW2_DATA/DMIC_CLK_B1 ==> WWAN_WLAN_COEX2 */
@@ -28,9 +26,11 @@ static const struct pad_config override_gpio_table[] = {
 	 * GPP_A12 : [NF1: SATAXPCIE1 NF2: SATAGP1 NF4: SRCCLKREQ9B# NF6: USB_C_GPP_A12]
 	 *  ==> WWAN_PWR_EN
 	 */
-	PAD_CFG_GPO(GPP_A12, 1, DEEP),
+	PAD_CFG_GPO_LOCK(GPP_A12, 1, LOCK_CONFIG),
 	/* GPP_H23 : SRCCLKREQ5_L ==> WWAN_RST_L */
 	PAD_CFG_GPO_LOCK(GPP_H23, 1, LOCK_CONFIG),
+	/* GPP_F21 : [NF1: Reserved NF6: USB_C_GPP_F21] ==> WWAN_FCPO_L */
+	PAD_CFG_GPO_LOCK(GPP_F21, 1, LOCK_CONFIG),
 	/* GPP_H19 : SRCCLKREQ4_L ==> SAR1_INT_L */
 	PAD_CFG_GPI_APIC_LOCK(GPP_H19, NONE, LEVEL, NONE, LOCK_CONFIG),
 
@@ -112,13 +112,15 @@ static const struct pad_config override_gpio_table[] = {
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
 
-	/* GPP_H23 : SRCCLKREQ5_L ==> WWAN_RST_L */
-	PAD_CFG_GPO(GPP_H23, 0, DEEP),
 	/*
 	 * GPP_A12 : [NF1: SATAXPCIE1 NF2: SATAGP1 NF4: SRCCLKREQ9B# NF6: USB_C_GPP_A12]
 	 *  ==> WWAN_PWR_EN
 	 */
-	PAD_CFG_GPO(GPP_A12, 1, DEEP),
+	PAD_CFG_GPO_LOCK(GPP_A12, 1, LOCK_CONFIG),
+	/* GPP_H23 : SRCCLKREQ5_L ==> WWAN_RST_L */
+	PAD_CFG_GPO_LOCK(GPP_H23, 0, LOCK_CONFIG),
+	/* GPP_F21 : [NF1: Reserved NF6: USB_C_GPP_F21] ==> WWAN_FCPO_L */
+	PAD_CFG_GPO_LOCK(GPP_F21, 0, LOCK_CONFIG),
 
 	/*
 	 * FP_RST_ODL comes out of reset as hi-z and does not have an external pull-down.
@@ -182,6 +184,16 @@ static const struct pad_config romstage_gpio_table[] = {
 	PAD_CFG_GPO(GPP_D15, 0, DEEP),
 	/* D2  : ISH_GP2 ==> EN_FP_PWR */
 	PAD_CFG_GPO(GPP_D2, 0, DEEP),
+
+	/*
+	 * GPP_A12 : [NF1: SATAXPCIE1 NF2: SATAGP1 NF4: SRCCLKREQ9B# NF6: USB_C_GPP_A12]
+	 *  ==> WWAN_PWR_EN
+	 */
+	PAD_CFG_GPO_LOCK(GPP_A12, 1, LOCK_CONFIG),
+	/* GPP_H23 : SRCCLKREQ5_L ==> WWAN_RST_L */
+	PAD_CFG_GPO_LOCK(GPP_H23, 0, LOCK_CONFIG),
+	/* GPP_F21 : [NF1: Reserved NF6: USB_C_GPP_F21] ==> WWAN_FCPO_L */
+	PAD_CFG_GPO_LOCK(GPP_F21, 1, LOCK_CONFIG),
 
 	/* GPP_E15 : SRCCLK_OE8_L ==> MEM_STRAP_0 */
 	PAD_CFG_GPI(GPP_E15, NONE, PLTRST),

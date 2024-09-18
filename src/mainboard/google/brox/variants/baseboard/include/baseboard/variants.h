@@ -25,6 +25,7 @@ bool variant_is_half_populated(void);
 void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config);
 void variant_fill_ssdt(const struct device *dev);
 void variant_configure_pads(void);
+void variant_smi_sleep(u8 slp_typ);
 
 enum s0ix_entry {
 	S0IX_EXIT,

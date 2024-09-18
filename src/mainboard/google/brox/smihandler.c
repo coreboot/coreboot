@@ -4,11 +4,15 @@
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/smm.h>
 #include <elog.h>
+#include <baseboard/variants.h>
 #include <intelblocks/smihandler.h>
 #include <variant/ec.h>
 
+void __weak variant_smi_sleep(u8 slp_typ) {}
+
 void mainboard_smi_sleep(u8 slp_typ)
 {
+	variant_smi_sleep(slp_typ);
 	chromeec_smi_sleep(slp_typ, MAINBOARD_EC_S3_WAKE_EVENTS, MAINBOARD_EC_S5_WAKE_EVENTS);
 }
 

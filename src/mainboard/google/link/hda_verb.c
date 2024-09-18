@@ -6,7 +6,7 @@ const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x11020011,	// Codec Vendor / Device ID: Creative CA0132
 	0x10280550,	// Subsystem ID
-	0x00000014,	// Number of jacks + Number of Malcolm setup blocks.
+	0x00000015,	// Number of jacks + Number of Malcolm setup blocks.
 
 	/* Malcolm Setup */
 
@@ -62,6 +62,9 @@ const u32 cim_verb_data[] = {
 
 	/* Enable and set EAPD pin for headphone jack */
 	AZALIA_VERB_12B(0x0, 0x10, 0x78d, 0x2),
+	AZALIA_VERB_12B(0x0, 0x10, 0x78d, 0x2),	/* Padding */
+	AZALIA_VERB_12B(0x0, 0x10, 0x78d, 0x2),	/* Padding */
+	AZALIA_VERB_12B(0x0, 0x10, 0x78d, 0x2),	/* Padding */
 
 	/* Pin Widget Verb Table */
 

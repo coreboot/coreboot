@@ -6,7 +6,7 @@ const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x10ec0283,	// Codec Vendor / Device ID: Realtek ALC283
 	0x10ec0283,	// Subsystem ID
-	0x0000000e,	// Number of jacks (NID entries)
+	0x00000010,	// Number of jacks (NID entries)
 
 	0x0017ff00,	// Function Reset
 	0x0017ff00,	// Double Function Reset

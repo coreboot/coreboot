@@ -16,6 +16,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pmc.h>
 #include <soc/serialio.h>
+#include <soc/tcss.h>
 #include <soc/usb.h>
 #include <stdint.h>
 

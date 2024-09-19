@@ -14,7 +14,7 @@
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 #include <types.h>
-#include <vendorcode/amd/opensil/stub/opensil.h>
+#include <vendorcode/amd/opensil/opensil.h>
 #include "chip.h"
 
 static const char *soc_acpi_name(const struct device *dev)

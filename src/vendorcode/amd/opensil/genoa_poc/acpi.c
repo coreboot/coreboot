@@ -5,7 +5,7 @@
 #include <SilCommon.h>
 #include <xSIM-api.h>
 #include <FCH/Common/FchCommonCfg.h>
-#include "opensil.h"
+#include "../opensil.h"
 
 void opensil_fill_fadt_io_ports(acpi_fadt_t *fadt)
 {

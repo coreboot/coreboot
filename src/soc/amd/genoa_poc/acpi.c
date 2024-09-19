@@ -8,7 +8,7 @@
 #include <amdblocks/cpu.h>
 #include <arch/ioapic.h>
 #include <device/device.h>
-#include <vendorcode/amd/opensil/genoa_poc/opensil.h>
+#include <vendorcode/amd/opensil/opensil.h>
 
 void acpi_fill_fadt(acpi_fadt_t *fadt)
 {

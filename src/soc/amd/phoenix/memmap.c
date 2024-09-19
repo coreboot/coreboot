@@ -5,7 +5,7 @@
 #include <amdblocks/root_complex.h>
 #include <device/device.h>
 #include <stdint.h>
-#include <vendorcode/amd/opensil/stub/opensil.h>
+#include <vendorcode/amd/opensil/opensil.h>
 
 /*
  *                     +--------------------------------+

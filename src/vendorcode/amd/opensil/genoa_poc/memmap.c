@@ -12,7 +12,7 @@
 #include <cbmem.h>
 #include <amdblocks/memmap.h>
 
-#include "opensil.h"
+#include "../opensil.h"
 
 static const char *hole_info_type(MEMORY_HOLE_TYPES type)
 {

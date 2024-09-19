@@ -7,7 +7,7 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include "chip.h"
-#include "../opensil.h"
+#include "../../opensil.h"
 
 struct chip_operations vendorcode_amd_opensil_chip_mpio_ops = {
 	.name = "AMD GENOA MPIO",

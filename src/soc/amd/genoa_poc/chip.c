@@ -5,7 +5,7 @@
 #include <device/device.h>
 #include <soc/southbridge.h>
 #include <soc/southbridge.h>
-#include <vendorcode/amd/opensil/genoa_poc/opensil.h>
+#include <vendorcode/amd/opensil/opensil.h>
 
 static void soc_init(void *chip_info)
 {

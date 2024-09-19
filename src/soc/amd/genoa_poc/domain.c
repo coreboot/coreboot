@@ -11,7 +11,7 @@
 #include <device/device.h>
 #include <types.h>
 
-#include <vendorcode/amd/opensil/genoa_poc/opensil.h>
+#include <vendorcode/amd/opensil/opensil.h>
 
 #define IOHC_IOAPIC_BASE_ADDR_LO 0x2f0
 

@@ -3,7 +3,7 @@
 #include <acpi/acpi.h>
 #include <amdblocks/acpi.h>
 #include <device/device.h>
-#include "opensil.h"
+#include "../opensil.h"
 
 void add_opensil_memmap(struct device *dev, unsigned long *idx)
 {

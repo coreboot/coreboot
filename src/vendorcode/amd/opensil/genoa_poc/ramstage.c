@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <xSIM-api.h>
 #include "opensil_console.h"
-#include "opensil.h"
+#include "../opensil.h"
 
 void SIL_STATUS_report(const char *function, const int status)
 {

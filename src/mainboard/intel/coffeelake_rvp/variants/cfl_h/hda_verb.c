@@ -47,7 +47,7 @@ const u32 cim_verb_data[] = {
 	/* ALC700 */
 	0x10EC0700,
 	0xFFFFFFFF,
-	0x00000015,
+	22,
 
 	/*
 	 * HDA Codec Subsystem ID Verb-table

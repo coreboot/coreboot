@@ -32,7 +32,7 @@ const u32 cim_verb_data[] = {
 	/* ALC 298 */
 	0x10EC0298,
 	0x00000000,
-	0x00000023,
+	40,
 
 	AZALIA_SUBVENDOR(0, 0x10EC109C),
 	AZALIA_PIN_CFG(0, 0x01, 0x00000000),

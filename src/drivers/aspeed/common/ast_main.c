@@ -111,7 +111,10 @@ static int ast_detect_chip(struct drm_device *dev, bool *need_post)
 		uint32_t data;
 		pci_read_config_dword(ast->dev->pdev, 0x08, &data);
 		uint8_t revision = data & 0xff;
-		if (revision >= 0x40) {
+		if (revision >= 0x50) {
+			ast->chip = AST2600;
+			DRM_INFO("AST 2600 detected\n");
+		} else if (revision >= 0x40) {
 			ast->chip = AST2500;
 			DRM_INFO("AST 2500 detected\n");
 		} else if (revision >= 0x30) {
@@ -171,6 +174,8 @@ static int ast_detect_chip(struct drm_device *dev, bool *need_post)
 			if (ast->chip == AST2500 &&
 			    scu_rev == 0x100)           /* ast2510 */
 				ast->support_wide_screen = true;
+			if (ast->chip == AST2600)
+				ast->support_wide_screen = true;
 		}
 		break;
 	}
@@ -192,9 +197,9 @@ static int ast_detect_chip(struct drm_device *dev, bool *need_post)
 			ast->tx_chip_type = AST_TX_SIL164;
 	}
 
-	if ((ast->chip == AST2300) || (ast->chip == AST2400)) {
+	if ((ast->chip == AST2300) || (ast->chip == AST2400) || (ast->chip == AST2500)) {
 		/*
-		 * On AST2300 and 2400, look the configuration set by the SoC in
+		 * On AST2300, 2400 and 2500, look the configuration set by the SoC in
 		 * the SOC scratch register #1 bits 11:8 (interestingly marked
 		 * as "reserved" in the spec)
 		 */

@@ -1770,11 +1770,17 @@ int main(int argc, char **argv)
 			/* Do 2nd PSP directory followed by 1st */
 			integrate_psp_firmwares(&ctx,
 						amd_psp_fw_table, PSPL2_COOKIE, &cb_config);
+			if (cb_config.recovery_ab)
+				integrate_bios_firmwares(&ctx,
+						amd_bios_table, BHDL2_COOKIE, &cb_config);
+
 			if (cb_config.recovery_ab && !cb_config.recovery_ab_single_copy) {
 				/* Create a copy of PSP Directory 2 in the backup slot B.
 				   Related biosdir2_b copy will be created later. */
 				integrate_psp_firmwares(&ctx,
 						amd_psp_fw_table, PSPL2_COOKIE, &cb_config);
+				integrate_bios_firmwares(&ctx,
+						amd_bios_table, BHDL2_COOKIE, &cb_config);
 			} else {
 				/*
 				 * Either the platform is using only
@@ -1790,6 +1796,8 @@ int main(int argc, char **argv)
 				integrate_psp_firmwares(&ctx,
 					amd_psp_fw_table, PSP_COOKIE, &cb_config);
 			integrate_psp_levels(&ctx, &cb_config);
+			if (cb_config.recovery_ab)
+				integrate_bios_levels(&ctx, &cb_config);
 		} else {
 			/* flat: PSP 1 cookie and no pointer to 2nd table */
 			integrate_psp_firmwares(&ctx,
@@ -1805,21 +1813,13 @@ int main(int argc, char **argv)
 			add_combo_entry(ctx.psp_combo_dir, ctx.pspdir, combo_index, &ctx, &cb_config);
 		}
 
-		if (have_bios_tables(amd_bios_table)) {
+		if (have_bios_tables(amd_bios_table) && !cb_config.recovery_ab) {
 			if (cb_config.multi_level) {
 				/* Do 2nd level BIOS directory followed by 1st */
 				integrate_bios_firmwares(&ctx,
 						amd_bios_table, BHDL2_COOKIE, &cb_config);
-				if (cb_config.recovery_ab) {
-					if (ctx.pspdir2_b != NULL) {
-						integrate_bios_firmwares(&ctx,
-								amd_bios_table, BHDL2_COOKIE,
-								&cb_config);
-					}
-				} else {
-					integrate_bios_firmwares(&ctx,
+				integrate_bios_firmwares(&ctx,
 							amd_bios_table, BHD_COOKIE, &cb_config);
-				}
 				integrate_bios_levels(&ctx, &cb_config);
 			} else {
 				/* flat: BHD1 cookie and no pointer to 2nd table */

@@ -172,8 +172,6 @@ struct soc_intel_pantherlake_config {
 
 	/* Enable S0iX support */
 	bool s0ix_enable;
-	/* Support for TCSS xhci, xdci, TBT PCIe root ports and DMA controllers */
-	bool tcss_d3_hot_disable;
 	/* Support for TBT PCIe root ports and DMA controllers with D3Hot->D3Cold */
 	bool tcss_d3_cold_disable;
 	/* Enable DPTF support */

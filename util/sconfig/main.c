@@ -1905,6 +1905,9 @@ static void generate_outputh(FILE *f, const char *fw_conf_header, const char *de
 	fprintf(f, "#include <%s>\n", fw_conf_header);
 	fprintf(f, "#include <%s>\n\n", device_header);
 
+	fprintf(f, "/* Returns pointer to config structure of root device (B:D:F = 0:00:0) */\n");
+	fprintf(f, "#define config_of_soc() __pci_0_00_0_config\n");
+
 	fprintf(f, "\n#endif /* __STATIC_DEVICE_TREE_H */\n");
 }
 

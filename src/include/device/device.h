@@ -487,12 +487,6 @@ static inline DEVTREE_CONST void *config_of(const struct device *dev)
 	devtree_die();
 }
 
-/*
- * Returns pointer to config structure of root device (B:D:F = 0:00:0) defined by
- * sconfig in static.{h/c}.
- */
-#define config_of_soc()		__pci_0_00_0_config
-
 static inline bool is_root_device(const struct device *dev)
 {
 	if (!dev || !dev->upstream)

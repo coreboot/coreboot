@@ -223,7 +223,6 @@ struct soc_intel_pantherlake_config {
 	/* USB related */
 	struct usb2_port_config usb2_ports[CONFIG_SOC_INTEL_USB2_DEV_MAX];
 	struct usb3_port_config usb3_ports[CONFIG_SOC_INTEL_USB3_DEV_MAX];
-	uint8_t usb2_port_reset_msg_en[CONFIG_SOC_INTEL_USB2_DEV_MAX];
 	/* Wake Enable Bitmap for USB2 ports */
 	uint16_t usb2_wake_enable_bitmap;
 	/* Wake Enable Bitmap for USB3 ports */

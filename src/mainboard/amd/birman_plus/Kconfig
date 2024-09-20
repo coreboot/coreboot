@@ -49,7 +49,7 @@ config BIRMANPLUS_HAVE_MCHP_FW
 
 config BIRMANPLUS_MCHP_SIG_FILE
 	string "Microchip EC signature file"
-	depends on BIRMAN_HAVE_MCHP_FW
+	depends on BIRMANPLUS_HAVE_MCHP_FW
 	default "3rdparty/blobs/mainboard/amd/birman_plus/EC_birmanplus_sig.bin"
 	help
 	  The EC sig blob is the first 4kBytes of the firmware image.
@@ -61,7 +61,7 @@ config AMD_SOC_CONSOLE_UART
 
 config BIRMANPLUS_MCHP_FW_FILE
 	string "Microchip EC firmware file"
-	depends on BIRMAN_HAVE_MCHP_FW
+	depends on BIRMANPLUS_HAVE_MCHP_FW
 	default "3rdparty/blobs/mainboard/amd/birman_plus/EC_birmanplus.bin"
 	help
 	  The EC firmware blob is at the EC_BODY FMAP region of the firmware image.

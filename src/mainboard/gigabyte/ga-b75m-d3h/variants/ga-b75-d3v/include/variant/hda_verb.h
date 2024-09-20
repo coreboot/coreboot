@@ -7,7 +7,7 @@ const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x10ec0887,	// Realtek 887
 	0x1458a002,	// Subsystem ID
-	0x0000000e,	// Number of entries
+	15,		// Number of entries
 
 	/* NID 0x01: Subsystem ID.  */
 	AZALIA_SUBVENDOR(2, 0x1458a002),

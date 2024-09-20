@@ -210,6 +210,9 @@ chip soc/amd/glinda
 					register "type" = "UPC_TYPE_HUB"
 					device ref usb4_xhci_1_root_hub on
 						chip drivers/usb/acpi
+							device ref usb3_port1 on end
+						end
+						chip drivers/usb/acpi
 							device ref usb2_port1 on end
 						end
 					end

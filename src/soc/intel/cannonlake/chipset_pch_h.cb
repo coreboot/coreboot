@@ -55,6 +55,18 @@ chip soc/intel/cannonlake
 						device usb 2.b alias usb2_port12 off end
 					end
 					chip drivers/usb/acpi
+						device usb 2.c alias usb2_port13 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.d alias usb2_port14 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.e alias usb2_port15 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.f alias usb2_port16 off end
+					end
+					chip drivers/usb/acpi
 						device usb 3.0 alias usb3_port1 off end
 					end
 					chip drivers/usb/acpi
@@ -71,6 +83,18 @@ chip soc/intel/cannonlake
 					end
 					chip drivers/usb/acpi
 						device usb 3.5 alias usb3_port6 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.6 alias usb3_port7 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.7 alias usb3_port8 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.8 alias usb3_port9 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.9 alias usb3_port10 off end
 					end
 				end
 			end

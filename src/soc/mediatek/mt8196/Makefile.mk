@@ -30,6 +30,7 @@ romstage-y += ../common/memory_test.c
 romstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 
 ramstage-y += ../common/dpm_v2.c
+ramstage-y += dramc_info.c
 ramstage-y += ../common/early_init.c
 ramstage-y += ../common/emi.c
 ramstage-y += l2c_ops.c

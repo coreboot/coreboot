@@ -40,3 +40,6 @@ config BOARD_GOOGLE_SCREEBO
 
 config BOARD_GOOGLE_SCREEBO4ES
 	bool "->  Screebo4ES"
+
+config BOARD_GOOGLE_KANIX
+	bool "->  Kanix"

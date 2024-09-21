@@ -1,9 +1,9 @@
 FLASH 32M {
-	SI_ALL 8M {
+	SI_ALL 9M {
 		SI_DESC 16K
 		SI_ME
 	}
-	SI_BIOS 24M {
+	SI_BIOS 23M {
 		RW_SECTION_A 7680K {
 			VBLOCK_A 8K
 			FW_MAIN_A(CBFS)
@@ -32,7 +32,7 @@ FLASH 32M {
 			RW_FWID_B 64
 		}
 		RW_LEGACY(CBFS) 1M
-		RW_UNUSED 3M
+		RW_UNUSED 2M
 		# Make WP_RO region align with SPI vendor
 		# memory protected range specification.
 		WP_RO 4M {

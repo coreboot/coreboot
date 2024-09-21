@@ -124,6 +124,11 @@ F:	src/mainboard/51nb/
 
 
 
+ACER G43T-AM3
+R:	Julia Kittlinger <julia.kittlinger@pm.me>
+S:	Orphan
+F:	src/mainboard/acer/g43t-am3/
+
 ACER MAINBOARDS
 S:	Orphan
 F:	src/mainboard/acer/

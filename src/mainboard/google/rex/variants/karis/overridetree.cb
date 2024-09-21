@@ -265,6 +265,13 @@ chip soc/intel/meteorlake
 				.clk_req = 8,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "is_storage" = "true"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A19)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A20)"
+				register "srcclk_pin" = "8"
+				device generic 0 on end
+			end
 		end # PCIE10 SSD card
 		device ref tbt_pcie_rp0 on end
 		device ref tbt_pcie_rp2 on end

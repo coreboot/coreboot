@@ -1162,20 +1162,20 @@ static void *new_bios_dir(context *ctx, bool multi, uint32_t cookie)
 	return ptr;
 }
 
-static int locate_bdt2_bios(bios_directory_table *level2,
+static int locate_bdt_bios(bios_directory_table *level,
 					uint64_t *source, uint32_t *size)
 {
 	uint32_t i;
 
 	*source = 0;
 	*size = 0;
-	if (!level2)
+	if (!level)
 		return 0;
 
-	for (i = 0 ; i < level2->header.num_entries ; i++) {
-		if (level2->entries[i].type == AMD_BIOS_BIN) {
-			*source = level2->entries[i].source;
-			*size = level2->entries[i].size;
+	for (i = 0 ; i < level->header.num_entries ; i++) {
+		if (level->entries[i].type == AMD_BIOS_BIN) {
+			*source = level->entries[i].source;
+			*size = level->entries[i].size;
 			return 1;
 		}
 	}
@@ -1426,7 +1426,8 @@ static void integrate_bios_firmwares(context *ctx,
 			break;
 		case AMD_BIOS_BIN:
 			/* Don't make a 2nd copy, point to the same one */
-			if (level == BDT_LVL1 && locate_bdt2_bios(ctx->biosdir2, &source, &size)) {
+			if ((level == BDT_LVL1 && locate_bdt_bios(ctx->biosdir2, &source, &size)) ||
+				(level == BDT_LVL2 && locate_bdt_bios(ctx->biosdir, &source, &size))) {
 				biosdir->entries[count].source = source;
 				biosdir->entries[count].address_mode =
 						SET_ADDR_MODE(biosdir, AMD_ADDR_REL_BIOS);
@@ -1434,7 +1435,7 @@ static void integrate_bios_firmwares(context *ctx,
 				break;
 			}
 
-			/* level 2, or level 1 and no copy found in level 2 */
+			/* Level 2 and no copy found in level 1, or level 1 and no copy found in level 2 */
 			biosdir->entries[count].source = fw_table[i].src;
 			biosdir->entries[count].address_mode =
 						SET_ADDR_MODE(biosdir, AMD_ADDR_REL_BIOS);
@@ -1766,7 +1767,11 @@ int main(int argc, char **argv)
 		}
 
 		if (cb_config.multi_level) {
-			/* Do 2nd PSP directory followed by 1st */
+			/* PSP L1 */
+			if (!cb_config.combo_new_rab || ctx.combo_index == 0)
+				integrate_psp_firmwares(&ctx,
+					amd_psp_fw_table, PSP_COOKIE, &cb_config);
+			/* PSP L2 & BIOS L2 (if AB recovery) */
 			integrate_psp_firmwares(&ctx,
 						amd_psp_fw_table, PSPL2_COOKIE, &cb_config);
 			if (cb_config.recovery_ab) {
@@ -1780,9 +1785,6 @@ int main(int argc, char **argv)
 				}
 				integrate_bios_levels(&ctx, &cb_config);
 			}
-			if (!cb_config.combo_new_rab || ctx.combo_index == 0)
-				integrate_psp_firmwares(&ctx,
-					amd_psp_fw_table, PSP_COOKIE, &cb_config);
 			integrate_psp_levels(&ctx, &cb_config);
 		} else {
 			/* flat: PSP 1 cookie and no pointer to 2nd table */
@@ -1801,16 +1803,15 @@ int main(int argc, char **argv)
 
 		if (have_bios_tables(amd_bios_table) && !cb_config.recovery_ab) {
 			if (cb_config.multi_level) {
-				/* Do 2nd level BIOS directory followed by 1st */
+				integrate_bios_firmwares(&ctx,
+						amd_bios_table, BHD_COOKIE, &cb_config);
 				integrate_bios_firmwares(&ctx,
 						amd_bios_table, BHDL2_COOKIE, &cb_config);
-				integrate_bios_firmwares(&ctx,
-							amd_bios_table, BHD_COOKIE, &cb_config);
 				integrate_bios_levels(&ctx, &cb_config);
 			} else {
 				/* flat: BHD1 cookie and no pointer to 2nd table */
 				integrate_bios_firmwares(&ctx,
-							amd_bios_table, BHD_COOKIE, &cb_config);
+						amd_bios_table, BHD_COOKIE, &cb_config);
 			}
 			if (!cb_config.use_combo) {
 				fill_bios_directory_to_efs(ctx.amd_romsig_ptr, ctx.biosdir,

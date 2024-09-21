@@ -1770,34 +1770,21 @@ int main(int argc, char **argv)
 			/* Do 2nd PSP directory followed by 1st */
 			integrate_psp_firmwares(&ctx,
 						amd_psp_fw_table, PSPL2_COOKIE, &cb_config);
-			if (cb_config.recovery_ab)
+			if (cb_config.recovery_ab) {
 				integrate_bios_firmwares(&ctx,
 						amd_bios_table, BHDL2_COOKIE, &cb_config);
-
-			if (cb_config.recovery_ab && !cb_config.recovery_ab_single_copy) {
-				/* Create a copy of PSP Directory 2 in the backup slot B.
-				   Related biosdir2_b copy will be created later. */
-				integrate_psp_firmwares(&ctx,
+				if (!cb_config.recovery_ab_single_copy) {
+					integrate_psp_firmwares(&ctx,
 						amd_psp_fw_table, PSPL2_COOKIE, &cb_config);
-				integrate_bios_firmwares(&ctx,
+					integrate_bios_firmwares(&ctx,
 						amd_bios_table, BHDL2_COOKIE, &cb_config);
-			} else {
-				/*
-				 * Either the platform is using only
-				 * one slot or B is same as above
-				 * directories for A. Skip creating
-				 * pspdir2_b here to save flash space.
-				 * Related biosdir2_b will be skipped
-				 * automatically.
-				 */
-				ctx.pspdir2_b = NULL; /* More explicitly */
+				}
+				integrate_bios_levels(&ctx, &cb_config);
 			}
 			if (!cb_config.combo_new_rab || combo_index == 0)
 				integrate_psp_firmwares(&ctx,
 					amd_psp_fw_table, PSP_COOKIE, &cb_config);
 			integrate_psp_levels(&ctx, &cb_config);
-			if (cb_config.recovery_ab)
-				integrate_bios_levels(&ctx, &cb_config);
 		} else {
 			/* flat: PSP 1 cookie and no pointer to 2nd table */
 			integrate_psp_firmwares(&ctx,

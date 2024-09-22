@@ -90,6 +90,7 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexI2C3] = PchSerialIoPci,
 		[PchSerialIoIndexI2C4] = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C5] = PchSerialIoPci,
+		[PchSerialIoIndexI2C6] = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C7] = PchSerialIoPci,
 	}"
 	device domain 0 on

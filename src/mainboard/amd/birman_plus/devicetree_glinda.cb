@@ -1,7 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
-# TODO: Update for birmanplus
-
 chip soc/amd/glinda
 	register "common_config.espi_config" = "{
 		.std_io_decode_bitmap = ESPI_DECODE_IO_0x80_EN | ESPI_DECODE_IO_0X2E_0X2F_EN | ESPI_DECODE_IO_0X60_0X64_EN,
@@ -178,20 +176,40 @@ chip soc/amd/glinda
 		.ComboPhyStaticConfig[2] = USB_COMBO_PHY_MODE_USB_C,
 	}"
 
-	register "gpp_clk_config[0]" = "GPP_CLK_REQ"
-	register "gpp_clk_config[1]" = "GPP_CLK_REQ"
-	register "gpp_clk_config[2]" = "GPP_CLK_OFF"
-	register "gpp_clk_config[3]" = "GPP_CLK_REQ"
+	register "gpp_clk_config[0]" = "GPP_CLK_REQ" # MXM
+	register "gpp_clk_config[1]" = "GPP_CLK_REQ" # NVMe SSD1
+	register "gpp_clk_config[2]" = "GPP_CLK_REQ" # NVMe SSD0
+	register "gpp_clk_config[3]" = "GPP_CLK_REQ" # WLAN
+	register "gpp_clk_config[4]" = "GPP_CLK_REQ" # WWAN
+	register "gpp_clk_config[5]" = "GPP_CLK_REQ" # SD
+	register "gpp_clk_config[6]" = "GPP_CLK_REQ" # GBE
 
 	device domain 0 on
 		device ref iommu on end
-		device ref gpp_bridge_2_1 on end # GBE
-		device ref gpp_bridge_2_2 on end # WIFI
-		device ref gpp_bridge_2_3 on end # NVMe SSD
+		device ref gpp_bridge_2_1 on end # NVME SSD0
+		device ref gpp_bridge_2_2 on end # SD
+		device ref gpp_bridge_2_3 on end # WLAN
+		device ref gpp_bridge_2_4 on end # GBE
+		device ref gpp_bridge_2_5 on end # WWAN
+		device ref gpp_bridge_3_1 on end # PCIe x4/x8 (ENABLE_SSD1_BIRMANPLUS)
+		device ref gpp_bridge_3_2 on end # NVME SSD1 (ENABLE_SSD1_BIRMANPLUS)
+
 		device ref gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
 			device ref gfx on end # Internal GPU (GFX)
 			device ref gfx_hda on end # Display HD Audio Controller (GFXAZ)
 			device ref crypto on end # Crypto Coprocessor
+			device ref xhci_1 on # USB 3.1 (USB1)
+				chip drivers/usb/acpi
+					device ref xhci_1_root_hub on
+						chip drivers/usb/acpi
+							device ref usb3_port7 on end
+						end
+						chip drivers/usb/acpi
+							device ref usb2_port7 on end
+						end
+					end
+				end
+			end
 			device ref acp on end # Audio Processor (ACP)
 		end
 		device ref gpp_bridge_c on  # Internal GPP Bridge 2 to Bus C
@@ -216,9 +234,13 @@ chip soc/amd/glinda
 						chip drivers/usb/acpi
 							device ref usb2_port5 on end
 						end
+						chip drivers/usb/acpi
+							device ref usb2_port6 on end
+						end
 					end
 				end
 			end
+
 			device ref usb4_xhci_0 on
 				chip drivers/usb/acpi
 					device ref usb4_xhci_0_root_hub on
@@ -232,7 +254,6 @@ chip soc/amd/glinda
 				end
 			end
 			device ref usb4_xhci_1 on
-				ops xhci_pci_ops
 				chip drivers/usb/acpi
 					register "type" = "UPC_TYPE_HUB"
 					device ref usb4_xhci_1_root_hub on
@@ -250,8 +271,17 @@ chip soc/amd/glinda
 
 	device ref i2c_0 on end
 	device ref i2c_1 on end
-	device ref i2c_2 on end
+	device ref i2c_2 on
+		chip drivers/i2c/generic
+			register "hid" = "ACPI_DT_NAMESPACE_HID"
+			register "desc" = ""TMP420 3 channel temperature sensor""
+			register "uid" = "1"
+			register "compat_string" = ""ti,tmp432""
+			device i2c 4d on end
+		end
+	end
 	device ref i2c_3 on end
 	device ref uart_0 on end # UART0
-
+	device ref uart_2 on end # UART2
+	device ref uart_4 on end # UART4
 end

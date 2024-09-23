@@ -1584,7 +1584,7 @@ static void ramstage_cse_misc_ops(void *unused)
 	 * Store the ISH RW Firmware Version into CBMEM if ISH partition
 	 * is available
 	 */
-	if (soc_is_ish_partition_enabled())
+	if (!CONFIG(DRIVER_INTEL_ISH_HAS_MAIN_FW) && soc_is_ish_partition_enabled())
 		store_ish_version();
 }
 

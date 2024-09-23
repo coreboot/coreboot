@@ -66,6 +66,9 @@ static void intel_ish_get_version(void)
 
 static void intel_ish_final(struct device *dev)
 {
+	if (CONFIG(DRIVER_INTEL_ISH_HAS_MAIN_FW))
+		return;
+
 	if (CONFIG(SOC_INTEL_STORE_ISH_FW_VERSION))
 		intel_ish_get_version();
 }

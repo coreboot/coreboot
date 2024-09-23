@@ -6,3 +6,15 @@ config DRIVERS_INTEL_ISH
 	help
 	   When enabled, chip driver/intel/ish will publish information to the
 	   SSDT _DSD table for the ISH device.
+
+config DRIVER_INTEL_ISH_HAS_MAIN_FW
+	bool
+	default n
+	depends on DRIVERS_INTEL_ISH
+	help
+	  This config specifies that the Intel Sensor Hub (ISH) is using ISH MAIN firmware. The
+	  ISH MAIN FW resides in the rootfs and is loaded by the kernel. Since there is no dependency
+	  on AP firmware, the ISH BUP version is not fetched from the CSE firmware partition.
+
+	  This setting is platform-specific. Enable it only on platforms where the ISH is
+	  confirmed to be using the MAIN firmware.

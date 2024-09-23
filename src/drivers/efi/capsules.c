@@ -596,6 +596,7 @@ static void coalesce_capsules(struct block_descr block_chain, uint8_t *target)
 {
 	struct block_descr block = block_chain;
 	uint8_t *capsule_start = NULL;
+	uint32_t capsule_size = 0;
 	uint32_t size_left = 0;
 
 	/* No safety checks in this function, as all of them were done earlier. */
@@ -610,8 +611,10 @@ static void coalesce_capsules(struct block_descr block_chain, uint8_t *target)
 		if (size_left == 0) {
 			const EFI_CAPSULE_HEADER *capsule_hdr =
 				map_range(block.addr, sizeof(*capsule_hdr));
-			size_left = capsule_hdr->CapsuleImageSize;
+			capsule_size = capsule_hdr->CapsuleImageSize;
 			capsule_start = target;
+
+			size_left = capsule_size;
 		}
 
 		uint64_t addr = block.addr;
@@ -641,13 +644,14 @@ static void coalesce_capsules(struct block_descr block_chain, uint8_t *target)
 			}
 
 			uefi_capsules[uefi_capsule_count].base = (uintptr_t)capsule_start;
-			uefi_capsules[uefi_capsule_count].len = block.len;
+			uefi_capsules[uefi_capsule_count].len = capsule_size;
 			uefi_capsule_count++;
 
 			/* This is to align start of the next capsule (assumes that
 			   initial value of target was suitably aligned). */
-			if (!IS_ALIGNED(block.len, CAPSULE_ALIGNMENT))
-				target += ALIGN_UP(block.len, CAPSULE_ALIGNMENT) - block.len;
+			if (!IS_ALIGNED(capsule_size, CAPSULE_ALIGNMENT))
+				target += ALIGN_UP(capsule_size, CAPSULE_ALIGNMENT) -
+					  capsule_size;
 		}
 	}
 

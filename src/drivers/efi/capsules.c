@@ -344,7 +344,15 @@ static struct block_descr check_capsule_block(struct block_descr first_block,
 			goto error;
 		}
 
-		data_size += ALIGN_UP(capsule_hdr->CapsuleImageSize, CAPSULE_ALIGNMENT);
+		uint64_t capsule_size =
+			ALIGN_UP((uint64_t)capsule_hdr->CapsuleImageSize, CAPSULE_ALIGNMENT);
+		if (data_size + capsule_size < data_size) { /* overflow detection */
+			printk(BIOS_ERR,
+			       "capsules: capsules block size is too large (%#llx + %#llx) for uint64.\n",
+			       data_size, capsule_size);
+			goto error;
+		}
+		data_size += capsule_size;
 
 		uint32_t size_left = capsule_hdr->CapsuleImageSize;
 		while (size_left != 0) {
@@ -384,6 +392,12 @@ static struct block_descr check_capsule_block(struct block_descr first_block,
 	}
 
 	/* Increase the size only on successful parsing of the capsule block. */
+	if (*total_data_size + data_size < *total_data_size) { /* overflow detection */
+		printk(BIOS_ERR,
+		       "capsules: total capsule's size is too large (%#llx + %#llx) for uint64.\n",
+		       *total_data_size, data_size);
+		goto error;
+	}
 	*total_data_size += data_size;
 
 	return block;

@@ -382,10 +382,15 @@ amd_bios_entry amd_bios_table[] = {
 #define BUFF_TO_RUN_MODE(ctx, ptr, mode) RUN_OFFSET_MODE((ctx), ((char *)(ptr) - (ctx).rom), \
 		(ctx).address_mode < (mode) ? (ctx).address_mode : (mode))
 #define BUFF_ROOM(ctx) ((ctx).rom_size - (ctx).current)
-/* Only set the address mode in entry if the table is mode 2. */
+/* AMD PSP Spec: Only set the address mode in entry if the table is mode 2 or 3. */
+/* For address mode 3, it is not be used in any SOC family yet.
+   For address mode 1, we can use it to store and transfer the address mode.
+   It can reduce the complexity. */
 #define SET_ADDR_MODE(table, mode) \
-		((table)->header.additional_info_fields.address_mode ==	\
-		AMD_ADDR_REL_TAB ? (mode) : 0)
+		((table)->header.additional_info_fields.address_mode == AMD_ADDR_REL_TAB ||  \
+		 (table)->header.additional_info_fields.address_mode == AMD_ADDR_REL_BIOS || \
+		 (table)->header.additional_info_fields.address_mode == AMD_ADDR_REL_SLOT    \
+		 ? (mode) : 0)
 #define SET_ADDR_MODE_BY_TABLE(table) \
 		SET_ADDR_MODE((table), (table)->header.additional_info_fields.address_mode)
 

@@ -22,7 +22,7 @@ const struct mb_cfg *variant_memory_params(void);
 void variant_get_spd_info(struct mem_spd *spd_info);
 int variant_memory_sku(void);
 bool variant_is_half_populated(void);
-void variant_update_soc_chip_config(struct soc_intel_meteorlake_config *config);
+void variant_update_soc_chip_config(struct soc_intel_pantherlake_config *config);
 
 /* Get soc power limit config struct for current CPU sku */
 struct soc_power_limits_config *variant_get_soc_power_limit_config(void);

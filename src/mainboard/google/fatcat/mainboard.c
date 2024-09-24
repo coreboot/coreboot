@@ -16,12 +16,12 @@ void __weak fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	/* default implementation does nothing */
 }
 
-void mainboard_update_soc_chip_config(struct soc_intel_meteorlake_config *config)
+void mainboard_update_soc_chip_config(struct soc_intel_pantherlake_config *config)
 {
 	variant_update_soc_chip_config(config);
 }
 
-__weak void variant_update_soc_chip_config(struct soc_intel_meteorlake_config *config)
+__weak void variant_update_soc_chip_config(struct soc_intel_pantherlake_config *config)
 {
 	/* default implementation does nothing */
 }

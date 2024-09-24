@@ -7,7 +7,7 @@ const uint32_t cim_verb_data[] = {
 	/* coreboot specific header */
 	0x14f11f87,	/* Codec Vendor / Device ID: SoundWire SN6140 */
 	0x14f1035e,	/* Subsystem ID */
-	17,		/* Number of jacks (NID entries) */
+	19,		/* Number of jacks (NID entries) */
 
 	/* Reset Codec First */
 	AZALIA_RESET(0x1),

@@ -8,7 +8,13 @@
 #include <types.h>
 
 enum mem_type {
+	MEM_TYPE_DDR5,
 	MEM_TYPE_LP5X,
+};
+
+struct mem_ddr_config {
+	/* Dqs Pins Interleaved Setting. Enable/Disable Control */
+	bool dq_pins_interleaved;
 };
 
 struct lpx_dq {
@@ -83,7 +89,10 @@ struct mb_cfg {
 		struct lpx_dqs_map lpx_dqs_map;
 	};
 
-	struct mem_lp5x_config lp5x_config;
+	union {
+		struct mem_lp5x_config lp5x_config;
+		struct mem_ddr_config ddr_config;
+	};
 
 	/* Early Command Training Enable/Disable Control */
 	bool ect;

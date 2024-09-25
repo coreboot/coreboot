@@ -13,8 +13,8 @@ static const struct pad_config fp_disable_pads[] = {
 	PAD_NC(GPP_D3, NONE),
 	/* GPP_D15 : FPMCU_RST_J_SUB_L (active low) (NC) */
 	PAD_NC(GPP_D15, NONE),
-	/* GPP_F15 : FP GSPI INT (NC)  */
-	PAD_NC(GPP_F15, NONE),
+	/* GPP_D13 : FP GSPI INT (NC)  */
+	PAD_NC(GPP_D13, NONE),
 	/* GPP_F11 : FP GSPI CLK (NC) */
 	PAD_NC(GPP_F11, NONE),
 	/* GPP_F12 : FP GSPI DO (NC) */

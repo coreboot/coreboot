@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2022, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2024, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -30,1251 +30,467 @@ are permitted provided that the following conditions are met:
 
 **/
 
-#ifndef __FSPMUPD_H__
-#define __FSPMUPD_H__
+#ifndef __FSPM_UPD_H__
+#define __FSPM_UPD_H__
 
 #include <FspUpd.h>
 
 #pragma pack(1)
 
-
-/** FSP-M Configuration
-**/
 typedef struct {
 
-/** Offset 0x0040 - Customer Revision
+/**  Customer Revision
   The Customer can set this revision string for their own purpose.
 **/
   UINT8                       CustomerRevision[32];
 
-/** Offset 0x0060 - Bus Ratio
+/**  Bus Ratio
   Indicates the ratio of Bus/MMIOL/IO resource to be allocated for each CPU's IIO
 **/
   UINT8                       BusRatio[8];
 
-/** Offset 0x0068 - D2K Credit Config
-  Set the D2K Credit Config - 1: Min, <b>2: Med(Default)</b>, 3: Max.
-  1:Min, 2:Med, 3:Max
-**/
-  UINT8                       D2KCreditConfig;
-
-/** Offset 0x0069 - Snoop Throttle Config
-  Set the Snoop Throttle Config - <b>0: DIS(Default)</b>, 1: Min, 2: Med, 3: Max.
-  0:DIS, 1:Min, 2:Med, 3:Max
-**/
-  UINT8                       SnoopThrottleConfig;
-
-/** Offset 0x006A - Legacy VGA Soc
+/**  Legacy VGA Soc
   Socket that claims the legacy VGA range
 **/
   UINT8                       LegacyVgaSoc;
 
-/** Offset 0x006B - Legacy VGA Stack
+/**  Legacy VGA Stack
   Stack that claims the legacy VGA range
 **/
   UINT8                       LegacyVgaStack;
 
-/** Offset 0x006C - Pcie P2P Performance Mode
-  Determine if to enable PCIe P2P Performance Mode - <b>0: Disable(Default)</b>, 1: Enable.
-  0:Disable, 1:Enable
+/**  Pcie P2P Performance Mode
+  Determine if to enable PCIe P2P Performance Mode
+  $EN_DIS
 **/
   UINT8                       P2pRelaxedOrdering;
 
-/** Offset 0x006D - UPI Debug Print Level
-  UPI Debug Print Level Bitmask - 0: Disable, 1: Fatal, 2: Warning, 4: Summary, 8:
-  Detail, <b>0x0F: All(Default)</b>.
+/**  UPI Debug Print Level
+  UPI Debug Print Level Bitmask. 0- Disable, 1- Fatal, 2- Warning, 4- Summary, 8-
+  Detail, <b>0xF- All(Default)</b>
   1:Fatal, 2:Warning, 4:Summary, 8:Detail, 0x0F:All
 **/
   UINT8                       DebugPrintLevel;
 
-/** Offset 0x006E - NumaEn
-  NumaEn - <b>1: Enable Numa(Default)</b>, 0: Disable Numa.
-  0:Disable, 1:Enable
+/**  NumaEn
+  Enable or Disable Numa
+  $EN_DIS
 **/
   UINT8                       NumaEn;
 
-/** Offset 0x006F - SNC
-  Enable or Disable SNC - 0: Disable, 2: Snc2, 4: Snc4, <b>0x0F: Auto(Default)</b>.
-  0: Disable, 2: Snc2, 4: Snc4, 0x0F: Auto
+/**  SNC Enable
+  Enable or Disable SNC
+  0x0:Disable, 0x1:Enable, 0x0F:Auto
 **/
   UINT8                       SncEn;
 
-/** Offset 0x0070 - UMA Clustering
-  Set UMA Clusters - 0: Disable, 2: Two Clusters, <b>4: Four Clusters(Default)</b>.
-  0:Disable, 2:Two Clusters, 4:Four Clusters
-**/
-  UINT8                       UmaClustering;
-
-/** Offset 0x0071 - IODC Mode
-  IODC Mode - 0: Disable, <b>1: Auto(Default)</b>, 2: Push, 3: AllocFlow, 4: NonAlloc,
-  5: WCILF.
+/**  IODC Mode
+  IODC Mode. 0- Disable, <b>1- Auto(Default)</b>, 2- Push, 3- AllocFlow, 4- NonAlloc, 5- WCILF
   0:Disable, 1:Auto, 2:Push, 3:AllocFlow, 4:NonAlloc, 5:WCILF
 **/
   UINT8                       IoDcMode;
 
-/** Offset 0x0072 - Degrade Precedence
-  Setup Degrade Precedence - <b>0: Topology(Default)</b>, 1: Feature.
+/**  Degrade Precedence
+  Setup Degrade Precedence
   0:Topology, 1:Feature
 **/
   UINT8                       DegradePrecedence;
 
-/** Offset 0x0073 - Degrade 4 Socket Preference
-  Setup Degrade 4 Socket Preference - <b>0: Fully Connect(Default)</b>, 1: Dual Link Ring.
+/**  Degrade 4 Socket Preference
+  Setup Degrade 4 Socket Preference
   0:Fully Connect, 1:Dual Link Ring
 **/
   UINT8                       Degrade4SPreference;
 
-/** Offset 0x0074 - Directory Mode
-  Enable or Disable Directory Mode - 0: Disable, 1: Enable, <b>2: Auto(Default)</b>.
+/**  Directory Mode
+  Enable or Disable Directory Mode
   0:Disable, 1:Enable, 2:Auto
 **/
   UINT8                       DirectoryModeEn;
 
-/** Offset 0x0075 - XPT Prefetch Enable
-  Enable or Disable XPT Prefetch - 0: Disable, 1: Enable, <b>2: Auto(Default)</b>.
+/**  XPT Prefetch Enable
+  Enable or Disable XPT Prefetch
   0:Disable, 1:Enable, 2:Auto
 **/
   UINT8                       XptPrefetchEn;
 
-/** Offset 0x0076 - KTI Prefetch Enable
-  Enable or Disable KTI Prefetch - 0: Disable, 1: Enable, <b>2: Auto(Default)</b>.
+/**  KTI Prefetch Enable
+  Enable or Disable KTI Prefetch
   0:Disable, 1:Enable, 2:Auto
 **/
   UINT8                       KtiPrefetchEn;
 
-/** Offset 0x0077 - XPT Remote Prefetch Enable
-  Enable or Disable XPT Remote Prefetch Enable - 0: Disable, 1: Enable, <b>2: Auto(Default)</b>.
+/**  XPT Remote Prefetch Enable
+  Enable or Disable XPT Remote Prefetch Enable
   0:Disable, 1:Enable, 2:Auto
 **/
   UINT8                       XptRemotePrefetchEn;
 
-/** Offset 0x0078 - KTI FPGA
-  Enable or Disable KTI FPGA
+/**  Distress QoS Mode
+  Distress QoS. <b>0- Mode 0(Default)</b>, 2- Mode 2
+  0:Mode 0, 2:Mode 2
 **/
-  UINT8                       KtiFpgaEnable[8];
+  UINT8                       DistressQoS;
 
-/** Offset 0x0080 - DDRT QoS Mode
-  DDRT QoS - <b>0: Mode 0(Default)</b>, 1: Mode 1, 2: Mode 2.
-  0:Mode 0, 1:Mode 1, 2:Mode 2
-**/
-  UINT8                       DdrtQosMode;
-
-/** Offset 0x0081 - KTI Link Speed Mode
-  Choose KTI Link Speed Mode - 0: Slow, <b>1: Full(Default)</b>.
+/**  KTI Link Speed Mode
+  Choose KTI Link Speed Mode
   0:Slow, 1:Full
 **/
   UINT8                       KtiLinkSpeedMode;
 
-/** Offset 0x0082 - KTI Link Speed
-  Setup KTI Link Speed - 0: 128GT, 1: 144GT, 2: 160GT, 3: 200GT, <b>0x7F: Max KTI
-  Link Speed (Default)</b>, 0x8F: Frequency Per Link.
-  0:128GT, 1:144GT, 2:160GT, 3:200GT, 0x7F:Max KTI Link Speed, 0x8F:Frequency Per Link
+/**  KTI Link Speed
+  Setup KTI Link Speed - 2- 160GT, 3- 200GT, 4- 240GT, <b>0x7F- Max KTI Link Speed
+  (Default)</b>, 0x8F- Frequency Per Link
+  2:160GT, 3:200GT, 4:240GT, 0x7F:Max KTI Link Speed, 0x8F:Frequency Per Link
 **/
   UINT8                       KtiLinkSpeed;
 
-/** Offset 0x0083 - KTI Link L0p
-  Enable or Disable KTI Link L0p - 0: Disable, 1: Enable, <b>2: Auto(Default)</b>.
-  0:Disable, 1:Enable, 2: Auto
+/**  KTI Link L0p
+  Enable or Disable KTI Link L0p
+  0:Disable, 1:Enable, 2:Auto
 **/
   UINT8                       KtiLinkL0pEn;
 
-/** Offset 0x0084 - KTI Link L1
-  Enable or Disable KTI Link L1 - 0: Disable, 1: Enable, <b>2: Auto(Default)</b>.
-  0:Disable, 1:Enable, 2: Auto
+/**  KTI Link L1
+  Enable or Disable KTI Link L1
+  0:Disable, 1:Enable, 2:Auto
 **/
   UINT8                       KtiLinkL1En;
 
-/** Offset 0x0085 - Kti Link Speed Per Port
-  Setup KTI Link Speed to be allocated for each port - 0: 128GT, 1: 144GT, 2: 160GT,
-  3: 200GT, <b>0x7f: Max KTI Link Speed(Default)</b>.
-  0:128GT, 1:144GT, 2:160GT, 3:200GT, 0x7f:Max KTI Link Speed
+/**  Kti Link Speed Per Port
+  Setup KTI Link Speed to be allocated for each port, 2:160GT, 2:200GT, 3:240GT, 0X7f:Max
+  KTI Link Speed
 **/
   UINT8                       KtiLinkSpeedPerPort[48];
 
-/** Offset 0x00B5 - DfxL0p Enable
-  Indicates the DfxL0p Enable to be allocated for each port - 0: Disable, <b>1: Enable(Default)</b>.
-  0:Disable, 1:Enable
+/**  DfxL0p Enable
+  Indicates the DfxL0p Enable to be allocated for each port, 0:Disable, 1:Enable
 **/
   UINT8                       DfxL0pEnable[48];
 
-/** Offset 0x00E5 - DfxL1 Enable
-  Indicates the DfxL1 Enable to be allocated for each port - 0: Disable, <b>1: Enable(Default)</b>.
-  0:Disable, 1:Enable
+/**  DfxL1 Enable
+  Indicates the DfxL1 Enable to be allocated for each port, 0:Disable, 1:Enable
 **/
   UINT8                       DfxL1Enable[48];
 
-/** Offset 0x0115 - KTI Failover
-  Enable or Disable KTI Failover - 0: Disable, 1: Enable, <b>2: Auto(Default)</b>.
-  0:Disable, 1:Enable, 2: Auto
+/**  KTI Failover
+  Enable or Disable KTI Failover
+  0:Disable, 1:Enable, 2:Auto
 **/
   UINT8                       KtiFailoverEn;
 
-/** Offset 0x0116 - KTI LB Enable
-  Enable or Disable KTI LB - <b>0:Disable(Default)</b>, 1:Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       KtiLbEn;
-
-/** Offset 0x0117 - KTI CRC Mode
-  Select KTI CRC Mode - <b>0: 16bit(Default)</b>, 1: 32bit, 2: Auto.
+/**  KTI CRC Mode
+  Select KTI CRC Mode
   0:16bit, 1:32bit, 2:Auto
 **/
   UINT8                       KtiCrcMode;
 
-/** Offset 0x0118 - KTI CPU Socket Hotplug
-  Enable or Disable KTI CPU Socket Hotplug - <b>0: Disable(Default)</b>, 1: Enable.
-  0:Disable, 1:Enable
+/**  KTI CPU Socket Hotplug
+  Enable or Disable KTI CPU Socket Hotplug
+  $EN_DIS
 **/
   UINT8                       KtiCpuSktHotPlugEn;
 
-/** Offset 0x0119 - KTI CPU Socket HotPlug Topology
-  Select KTI CPU Socket HotPlug Topology - <b>0: 4Socket(Default)</b>, 1: 8Socket.
+/**  KTI CPU Socket HotPlug Topology
+  Select KTI CPU Socket HotPlug Topology
   0:4Socket, 1:8Socket
 **/
   UINT8                       KtiCpuSktHotPlugTopology;
 
-/** Offset 0x011A - KTI SKU Mismatch Check
-  Enable or Disable KTI SKU Mismatch Check - 0: Disable, <b>1 :Enable(Default)</b>.
-  0:Disable, 1:Enable
+/**  KTI SKU Mismatch Check
+  Enable or Disable KTI SKU Mismatch Check
+  $EN_DIS
 **/
   UINT8                       KtiSkuMismatchCheck;
 
-/** Offset 0x011B - TOR Threshold - Loctorem threshold Normal
-  Select TOR Threshold - Loctorem threshold Normal - 0: Disable, <b>1: Auto(Default)</b>,
-  2: Low, 3: Medium, 4: High.
+/**  Sdsi Contrl Ib Lock
+  Enable or Disable Sdsi Contrl Ib Lock
+  $EN_DIS
+**/
+  UINT8                       SdsiCtrlIbLock;
+
+/**  TOR Threshold - Loctorem threshold Normal
+  Select TOR Threshold - Loctorem threshold Normal
   0:Disable, 1:Auto, 2:Low, 3:Medium, 4:High
 **/
   UINT8                       TorThresLoctoremNorm;
 
-/** Offset 0x011C - TOR threshold - Loctorem threshold empty
-  Select TOR threshold - Loctorem threshold empty - 0: Disable, <b>1: Auto(Default)</b>,
-  2: Low, 3: Medium, 4:High.
+/**  TOR threshold - Loctorem threshold empty
+  Select TOR threshold - Loctorem threshold empty
   0:Disable, 1:Auto, 2:Low, 3:Medium, 4:High
 **/
   UINT8                       TorThresLoctoremEmpty;
 
-/** Offset 0x011D - TSC Sync in Sockets
-  Enable or Disable TSC Sync in Sockets - 0: Disable, <b>1: Enable(Default)</b>, 2: Auto.
-  0:Disable, 1:Enable, 2:Auto
-**/
-  UINT8                       TscSyncEn;
-
-/** Offset 0x011E - HA A to S directory optimization
-  Enable or Disable HA A to S directory optimization - 0: Disable, 1: Enable, <b>2:
-  Auto(Default)</b>.
+/**  HA A to S directory optimization
+  Enable or Disable HA A to S directory optimization
   0:Disable, 1:Enable, 2:Auto
 **/
   UINT8                       StaleAtoSOptEn;
 
-/** Offset 0x011F - LLC Deadline Allocation
-  Enable or Disable LLC Deadline Allocation - 0: Disable, <b>1: Enable(Default)</b>, 2: Auto.
+/**  LLC Deadline Allocation
+  Enable or Disable LLC Deadline Allocation
   0:Disable, 1:Enable, 2:Auto
 **/
   UINT8                       LLCDeadLineAlloc;
 
-/** Offset 0x0120 - MBA BW Calibration Profiles
-  Choice of MBA BW throttling curve - 0: Linear BW shaping, 1: Biased BW shaping,
-  2: Legacy BW shaping, <b>3: Auto(Default)</b>.
+/**  MBA BW Calibration Profiles
+  Choice of MBA BW throttling curve
   0:Linear BW shaping, 1:Biased BW shaping, 2:Legacy BW shaping, 3:Auto
 **/
   UINT8                       MbeBWCalChoice;
 
-/** Offset 0x0121 - Split Lock
-  Enable or Disable Split Lock - <b>0: Disable(Default)</b>, 1: Enable, 2: Auto.
+/**  PMM MBA BW downscale
+  PMM BW downscaling vs the baseline Total memory BW profile. Eg- picking 1/2x results
+  in scaling PMM BW throttling in a 2:1 ratio vs. DDR throttling.
+  0:PMM BW throttling in a 1/1 ratio vs. DDR throttling, 1:2/1 ratio, 2:4/1 ratio,
+  3:8/1 ratio
+**/
+  UINT8                       PmmMbaBWDownscale;
+
+/**  CXL (Type3) MBA BW downscale
+  CXL (Type3) BW downscaling vs the baseline Total memory BW profile. Eg- picking
+  1/2x results in scaling CXL (Type3) BW throttling in a 2:1 ratio vs. DDR throttling.
+  0:CXL BW throttling in a 1/1 ratio vs. DDR throttling, 1:2/1 ratio, 2:4/1 ratio,
+  3:8/1 ratio
+**/
+  UINT8                       CxlMbaBWDownscale;
+
+/**  Remote Target MBA BW downscale
+  Remote Target BW downscaling vs the baseline Total memory BW profile. Eg- picking
+  1/2x results in scaling Remote Target BW throttling in a 2:1 ratio vs. DDR throttling.
+  0:Remote Target BW throttling in a 1/1 ratio vs. DDR throttling, 1:2/1 ratio, 2:4/1
+  ratio, 3:8/1 ratio
+**/
+  UINT8                       RemoteTargetMbaBWDownscale;
+
+/**  Split Lock
+  Enable or Disable Split Lock
   0:Disable, 1:Enable, 2:Auto
 **/
   UINT8                       SplitLock;
 
-/** Offset 0x0122 - Affinitize M2Iosf to Upi for 2-Socket
-  Affinitize M2IOSF traffic to proper UPI links to improve 2-Socket P2P perf - 0:
-  Disable, 1: Enable, <b>2: Auto(Default)</b>.
-  0:Disable, 1:Enable, 2:Auto
+/**  MMCFG Base Address
+  Setup MMCFG Base Address
+  0:1G, 1:1.5G, 2:1.75G, 3:2G, 4:2.25G, 5:3G, 0xFF:Auto
 **/
-  UINT8                       M2iosfToUpiAffinity;
+  UINT32                      mmCfgBase;
 
-/** Offset 0x0123 - MMCFG Base Address
-  Setup MMCFG Base Address - 0: 1G, 1: 1.5G, 2: 1.75G, 3: 2G, 4: 2.25G, 5: 3G, <b>6:
-  Auto(Default)</b>.
-  0:1G, 1:1.5G, 2:1.75G, 3:2G, 4:2.25G, 5:3G, 6:Auto
+/**  MMCFG Size
+  Select MMCFG Size
+  0:64M, 1:128M, 2:256M, 3:512M, 4:1G, 5:2G, 0xFF:Auto
 **/
-  UINT8                       mmCfgBase;
+  UINT32                      mmCfgSize;
 
-/** Offset 0x0124 - MMCFG Size
-  Select MMCFG Size - 0: 64M, 1: 128M, 2: 256M, 3: 512M, 4: 1G, 5: 2G, <b>6: Auto(Default)</b>.
-  0:64M, 1:128M, 2:256M, 3:512M, 4:1G, 5:2G, 6:Auto
-**/
-  UINT8                       mmCfgSize;
-
-/** Offset 0x0125
-**/
-  UINT8                       UnusedUpdSpace0[3];
-
-/** Offset 0x0128 - MMIO High Base Address
-  MMIO High Base Address, a hex number for Bit[51:32]
+/**  MMIO High Base Address
+  MMIO High Base Address
+  0:56T, 1:40T, 2:32T, 3:24T, 4:16T, 5:4T, 6:2T, 7:1T, 8:512G, 9:3584T, 10:30T, 11:60T,
+  12:88T, 13:120T, 14:248T, 255:AUTO
 **/
   UINT32                      mmiohBase;
 
-/** Offset 0x012C - CPU Physical Address Limit
-  CPU Physical Address Limit - <b>0: Disable(Default)</b>, 1: Enable.
-  0:Disable, 1:Enable
+/**  CPU Physical Address Limit
+  CPU Physical Address Limit
+  $EN_DIS
 **/
   UINT8                       CpuPaLimit;
 
-/** Offset 0x012D
+/**  MMIO High Size
+  MMIO High Size, Number of 1GB contiguous regions to be assigned for MMIOH space per CPU.
+  0:1GB, 1:4GB, 2:16GB, 3:64GB, 4:256GB, 5:1024GB, 6:32GB, 255:AUTO
 **/
-  UINT8                       UnusedUpdSpace1;
+  UINT32                      mmiohSize;
 
-/** Offset 0x012E - MMIO High Size
-  MMIO High Size, Number of 1GB contiguous regions to be assigned for MMIOH space
-  per CPU.  Range 1-1024
-**/
-  UINT16                      mmiohSize;
-
-/** Offset 0x0130 - isocEn
-  Enable or Disable isocEn - <b>0: Disable(Default)</b>, 1: Enable, 2: Auto.
-  0:Disable, 1:Enable, 2:Auto
-**/
-  UINT8                       isocEn;
-
-/** Offset 0x0131 - DCA
-  Enable or Disable DCA - <b>0: Disable(Default)</b>, 1: Enable.
-  0:Disable, 1:Enable
+/**  DCA
+  Enable or Disable DCA
+  $EN_DIS
 **/
   UINT8                       dcaEn;
 
-/** Offset 0x0132
-**/
-  UINT8                       UnusedUpdSpace2[2];
-
-/** Offset 0x0134 - BoardTypeBitmask
+/**  BoardTypeBitmask
   BoardTypeBitmask
 **/
   UINT32                      BoardTypeBitmask;
 
-/** Offset 0x0138 - AllLanesPtr
+/**  S3mClkSetupPtr
+  Pointer to clk setup variable data
+**/
+  UINT64                      S3mClkSetupPtr;
+
+/**  AllLanesPtr
   Pointer to array of ALL_LANES_EPARAM_LINK_INFO
 **/
-  UINT32                      AllLanesPtr;
+  UINT64                      AllLanesPtr;
 
-/** Offset 0x013C - PerLanePtr
+/**  PerLanePtr
   Pointer to array of PER_LANE_EPARAM_LINK_INFO
 **/
-  UINT32                      PerLanePtr;
+  UINT64                      PerLanePtr;
 
-/** Offset 0x0140 - AllLanesSizeOfTable
+/**  AllLanesSizeOfTable
   Number of elements in AllLanesPtr array.
 **/
   UINT32                      AllLanesSizeOfTable;
 
-/** Offset 0x0144 - PerLaneSizeOfTable
+/**  PerLaneSizeOfTable
   Number of elements in PerLanePtr array.
 **/
   UINT32                      PerLaneSizeOfTable;
 
-/** Offset 0x0148 - WaitTimeForPSBP
+/**  WaitTimeForPSBP
   Enable or Disable WaitTimeForPSBP
 **/
   UINT32                      WaitTimeForPSBP;
 
-/** Offset 0x014C - WaSerializationEn
-  Enable or Disable WaSerializationEn - <b>0: Disable(Default)</b>, 1: Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       WaSerializationEn;
-
-/** Offset 0x014D - KtiInEnableMktme
-  Enable or Disable KtiInEnableMktme - <b>0: Disable(Default)</b>, 1: Enable.
-  0:Disable, 1:Enable
+/**  KtiInEnableMktme
+  Enable or Disable KtiInEnableMktme
+  $EN_DIS
 **/
   UINT8                       KtiInEnableMktme;
 
-/** Offset 0x014E - HIOP STACK DISABLE
+/**  HIOP STACK DISABLE
   Enables/Disables given HIOP STACK. Default is AUTO no stack is disabled. 1 - The
   stacks indicated by the bit locations are disabled. 0 - The stacks indicated by
   the bit locations are not modified. The stack order is abstracted each bit 0 =
   stack 0 ... bit n = stack n. The bit setting for each stack can be overriden by
-  BIOS based on part-knob compatibility. The array size must be MAX_SOCKET x UINT32.
+  BIOS based on part-knob compatibility. The array size must be MAX_SOCKET(Maximum:8) x UINT32.
 **/
-  UINT8                       StackDisableBitMap[32];
+  UINT32                      StackDisableBitMap[8];
 
-/** Offset 0x016E - CFRS3mProvision
-  Enable or Disable Provision S3M CFR - <b>0: Disable(Default)</b>, 1: Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       CFRS3mProvision;
-
-/** Offset 0x016F - CFRS3mManualCommit
-  Enable or Disable Manual Commit S3M FW CFR - <b>0:Disable(Default)</b>, 1:Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       CFRS3mManualCommit;
-
-/** Offset 0x0170 - CFRPucodeProvision
-  Enable or Disable Provision PUcode CFR - <b>0:Disable(Default)</b>, 1:Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       CFRPucodeProvision;
-
-/** Offset 0x0171 - CFRPucodeManualCommit
-  Enable or Disable Manual Commit PUcode CFR - <b>0:Disable(Default)</b>, 1:Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       CFRPucodeManualCommit;
-
-/** Offset 0x0172
-**/
-  UINT8                       UnusedUpdSpace3[2];
-
-/** Offset 0x0174 - CFRImagePtr
-  Pointer to array of CFR Image
-**/
-  UINT32                      CFRImagePtr;
-
-/** Offset 0x0178 - Processor VmxEnable Function
-  Enable(Default) or Disable Processor VmxEnable Function - 0: Disable, <b>1: Enable(Default)</b>.
-  0:Disable, 1:Enable
+/**  Processor VmxEnable Function
+  Enable(Default) or Disable Processor VmxEnable Function
+  $EN_DIS
 **/
   UINT8                       VmxEnable;
 
-/** Offset 0x0179 - Processor X2apic Function
-  Enable(Default) or Disable Processor X2apic Function - 0: Disable, <b>1: Enable(Default)</b>.
+/**  Smm Relocation
+  Enable(Default)/Disable Smm Relocation
+  $EN_DIS
+**/
+  UINT8                       SmmRelocationEnable;
+
+/**  Processor HyperThreading Function
+  Enables Logical processor, 0- ALL LPs, 1- Single LP, 2- Two LPs
+  0:ALL LPs, 1:Single LP, 2:Two LPs
+**/
+  UINT8                       ProcessorLpEnable;
+
+/**  Processor Safer Mode Extensions Function
+  Enable or Disable(Default) Processor Safer Mode Extensions Function
+  $EN_DIS
+**/
+  UINT8                       ProcessorSmxEnable;
+
+/**  Uncore Freq Ratio Compute
+  0: Set dynamic Uncore frequency range from max and min fused values. Otherwise Uncore
+  will run at a constant frequency ratio, the UFS algorithm will be disabled, but
+  physical limits may still reduce frequency. NOTE: The user input will be clipped
+  to the range accordingly during boot.
+**/
+  UINT8                       UncoreFreqRatio;
+
+/**  Uncore Freq Ratio IO
+  0: Set dynamic Uncore frequency range from max and min fused values. Otherwise Uncore
+  will run at a constant frequency ratio, the UFS algorithm will be disabled, but
+  physical limits may still reduce frequency. NOTE: The user input will be clipped
+  to the range accordingly during boot.
+**/
+  UINT8                       UncoreFreqRatioIo;
+
+/**  DDR frequency limit
+  Select DDR frequency limit, <b>0x00- Auto(Default)</b>, 0x01:DDR_3200, 0x03:DDR_3600,
+  0x05:DDR_4000, 0x07:DDR_4400, 0x08:DDR_4800, 0x09:DDR_5200, 0x0A:DDR_5600, 0x0B:DDR_6000,
+  0x0C:DDR_6400
+**/
+  UINT8                       HostDdrFreqLimit;
+
+/**  DDR Over Clock Enable
+  DDR Over Clock Enable, 0- Disable, 1- Enable
   0:Disable, 1:Enable
 **/
-  UINT8                       X2apic;
+  UINT8                       DdrOverClockEnable;
 
-/** Offset 0x017A - Processor HyperThreading Function
-  Enable(Default) or Disable Processor HyperThreading Function - 1: Disable, <b>0:
-  Enable(Default)</b>.
-  1:Disable, 0:Enable
+/**  Advanced Debug Function
+  Select Advanced Debug Function, 0- Disable, 1- Enable, 2- Auto
+  0:Disable, 1:Enable, 2:Auto
 **/
-  UINT8                       ProcessorHyperThreadingDisable;
+  UINT8                       DfxAdvDebugJumper;
 
-/** Offset 0x017B - Processor Dynamic Intel Speed Select (ISS) Function
-  Enable or Disable(Default) Processor Dynamic Intel Speed Select (ISS) Function -
-  <b>0: Disable(Default)</b>, 1: Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       ProcessorDynamicIssEnable;
-
-/** Offset 0x017C - Enables Intel(R) TXT
-  Enable or Disable(Default) Enables Intel(R) TXT - <b>0: Disable(Default)</b>, 1: Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       ProcessorLtsxEnable;
-
-/** Offset 0x017D - DDR frequency limit
-  Select DDR frequency limit, <b>0x00: Auto(Default)</b>, 0x13:DDR_3200, 0x16:DDR_3600,
-  0x19:DDR_4000, 0x1C:DDR_4400, 0x1D:DDR_4800, 0x1E:DDR_5200, 0x1F:DDR_5600
-**/
-  UINT8                       DdrFreqLimit;
-
-/** Offset 0x017E - Memory Serial Debug Message Level
-  Select Memory Serial Debug Message Level - 0: Disable, 1: Minimum, 2: Normal, <b>3:
-  Maximum(Default)</b>, 4: Auto.
-  0:Disable, 1:Minimum, 2:Normal, 3:Maximum, 4:Auto
+/**  Memory Serial Debug Message Level
+  Select Memory Serial Debug Message Level, 0- Disable, 1- Minimum, 2- Normal, 3-
+  Maximum, <b>4- Auto(Default)</b>, 5- Fixed PCD
+  0:Disable, 1:Minimum, 2:Normal, 3:Maximum, 4:Auto, 5:Fixed PCD
 **/
   UINT8                       serialDebugMsgLvl;
 
-/** Offset 0x017F - IIO ConfigIOU0
-  ConfigIOU[MAX_SOCKET][0]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
+/**  IIO IioPE0Bifurcation
+  IioPE0Bifurcation[MAX_SOCKET]- MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
   0x03:xxx8xxx8, 0x04:xxxxxx16, <b>0xFF:AUTO(Default)</b>
 **/
-  UINT8                       IioConfigIOU0[8];
+  UINT8                       IioPE0Bifurcation[8];
 
-/** Offset 0x0187 - IIO ConfigIOU1
-  ConfigIOU[MAX_SOCKET][1]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
+/**  IIO IioPE1Bifurcation
+  IioPE1Bifurcation[MAX_SOCKET]- MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
   0x03:xxx8xxx8, 0x04:xxxxxx16, <b>0xFF:AUTO(Default)</b>
 **/
-  UINT8                       IioConfigIOU1[8];
+  UINT8                       IioPE1Bifurcation[8];
 
-/** Offset 0x018F - IIO ConfigIOU2
-  ConfigIOU[MAX_SOCKET][2]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
+/**  IIO IioPE2Bifurcation
+  IioPE2Bifurcation[MAX_SOCKET]- MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
   0x03:xxx8xxx8, 0x04:xxxxxx16, <b>0xFF:AUTO(Default)</b>
 **/
-  UINT8                       IioConfigIOU2[8];
+  UINT8                       IioPE2Bifurcation[8];
 
-/** Offset 0x0197 - IIO ConfigIOU3
-  ConfigIOU[MAX_SOCKET][3]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
+/**  IIO IioPE3Bifurcation
+  IioPE3Bifurcation[MAX_SOCKET]- MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
   0x03:xxx8xxx8, 0x04:xxxxxx16, <b>0xFF:AUTO(Default)</b>
 **/
-  UINT8                       IioConfigIOU3[8];
+  UINT8                       IioPE3Bifurcation[8];
 
-/** Offset 0x019F - IIO ConfigIOU4
-  ConfigIOU[MAX_SOCKET][4]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
+/**  IIO IioPE4Bifurcation
+  IioPE4Bifurcation[MAX_SOCKET]- MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
   0x03:xxx8xxx8, 0x04:xxxxxx16, <b>0xFF:AUTO(Default)</b>
 **/
-  UINT8                       IioConfigIOU4[8];
+  UINT8                       IioPE4Bifurcation[8];
 
-/** Offset 0x01A7 - IIO ConfigIOU5
-  ConfigIOU[MAX_SOCKET][5]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
+/**  IIO IioPE5Bifurcation
+  IioPE5Bifurcation[MAX_SOCKET]- MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
   0x03:xxx8xxx8, 0x04:xxxxxx16, <b>0xFF:AUTO(Default)</b>
 **/
-  UINT8                       IioConfigIOU5[8];
+  UINT8                       IioPE5Bifurcation[8];
 
-/** Offset 0x01AF - IIO ConfigIOU6
-  ConfigIOU[MAX_SOCKET][6]: MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
+/**  IIO IioPEaBifurcation
+  IioPEaBifurcation[MAX_SOCKET]- MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
   0x03:xxx8xxx8, 0x04:xxxxxx16, <b>0xFF:AUTO(Default)</b>
 **/
-  UINT8                       IioConfigIOU6[8];
+  UINT8                       IioPEaBifurcation[8];
 
-/** Offset 0x01B7
+/**  IIO IioPEbBifurcation
+  IioPEbBifurcation[MAX_SOCKET]- MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
+  0x03:xxx8xxx8, 0x04:xxxxxx16, <b>0xFF:AUTO(Default)</b>
 **/
-  UINT8                       UnusedUpdSpace4;
+  UINT8                       IioPEbBifurcation[8];
 
-/** Offset 0x01B8 - IIO PCIE Config Table Ptr
-  Pointer to array of UPD_IIO_PCIE_PORT_CONFIG
+/**  IIO IioPEcBifurcation
+  IioPEcBifurcation[MAX_SOCKET]- MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
+  0x03:xxx8xxx8, 0x04:xxxxxx16, <b>0xFF:AUTO(Default)</b>
 **/
-  UINT32                      IioPcieConfigTablePtr;
+  UINT8                       IioPEcBifurcation[8];
 
-/** Offset 0x01BC - IIO PCIE Config Table Number
-  Number of elements in IioPcieConfigTablePtr array, socket number as unit.
+/**  IIO IioPEdBifurcation
+  IioPEdBifurcation[MAX_SOCKET]- MAX_SOCKET=8, 0x00:x4x4x4x4, 0x01:x4x4xxx8, 0x02:xxx8x4x4,
+  0x03:xxx8xxx8, 0x04:xxxxxx16, <b>0xFF:AUTO(Default)</b>
 **/
-  UINT32                      IioPcieConfigTableNumber;
+  UINT8                       IioPEdBifurcation[8];
 
-/** Offset 0x01C0 - IIO DeEmphasis Array Ptr
-  Pointer to array of DeEmphasis
+/**  IIO PCIE MaxPayload Ptr
+  Pointer to array of PCIE MaxPayload settings Per Port
 **/
-  UINT32                      DeEmphasisPtr;
+  UINT32                      IioPcieMaxPayloadPtr;
 
-/** Offset 0x01C4 - IIO DeEmphasis Array Number
-  Number of elements in DeEmphasis array.
+/**  IIO PCIE MaxPayload entry Number
+  Number of elements in PcieMaxPayloadPtr array, port number as unit.
 **/
-  UINT32                      DeEmphasisNumber;
-
-/** Offset 0x01C8 - IIO PCIe Common Clock Array Ptr
-  Pointer to array of PCIe Common Clock
-**/
-  UINT32                      PcieCommonClockPtr;
-
-/** Offset 0x01CC - IIO PCIe Common Clock Array Number
-  Number of elements in PCIe Common Clock array.
-**/
-  UINT32                      PcieCommonClockNumber;
-
-/** Offset 0x01D0 - VT-d Support
-  Enable or Disable VT-d Support - 0: Disable, <b>1: Enable(Default)</b>.
-  0:Disable, 1:Enable
-**/
-  UINT8                       VtdSupport;
-
-/** Offset 0x01D1 - PCIe ACSCTL
-  Enable/Disable overwrite of PCI Access Control Services Control register in PCI
-  root ports - 0: Disable, <b>1: Enable(Default)</b>.
-  0:Disable, 1:Enable
-**/
-  UINT8                       VtdPciAcsCtlWaEn;
-
-/** Offset 0x01D2
-**/
-  UINT8                       UnusedUpdSpace5[2];
-
-/** Offset 0x01D4 - IIO PCIe Port Hide Array Ptr
-  Pointer to array of Hide or visible for IIO Pcie Port.
-**/
-  UINT32                      PEXPHIDEPtr;
-
-/** Offset 0x01D8 - IIO PCIe Port Hide Array Number
-  Number of elements in IIO PCIe Port Hide Array.
-**/
-  UINT32                      PEXPHIDENumber;
-
-/** Offset 0x01DC - PcieHotPlugEnable
-  Enable or disable Pcie hot plug enable feature - <b>0: Disable(Default)</b>, 1: Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       PcieHotPlugEnable;
-
-/** Offset 0x01DD
-**/
-  UINT8                       UnusedUpdSpace6;
-
-/** Offset 0x01DE - DelayAfterPCIeLinkTraining
-  Custom delay after PCI-E link training on IIO ports
-**/
-  UINT16                      DelayAfterPCIeLinkTraining;
-
-/** Offset 0x01E0 - IIO PCI bus resource Ptr
-  Pointer to array of socket PCI bus resource.
-**/
-  UINT32                      PciBusResConfigPtr;
-
-/** Offset 0x01E4 - IIO PCI IO/MMIO base and limits resource Ptr
-  Pointer to array of socket PCI IO/MMIO resource.
-**/
-  UINT32                      PciBaseLimitsResConfigPtr;
-
-/** Offset 0x01E8 - PCH PCIE PLL Ssc
-  Pointer to array of socket PCI IO/MMIO resource.
-**/
-  UINT8                       PchPciePllSsc;
-
-/** Offset 0x01E9 - MeUmaEnable
-  Enable or disable ME UMA feature - <b>0: Disable(Default)</b>, 1: Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       MeUmaEnable;
-
-/** Offset 0x01EA - SerialIoUartDebugEnable
-  Enable or Disable SerialIo Uart debug library in FSP - 0: Disable, <b>1: Enable(Default)</b>.
-  0:Disable, 1:Enable
-**/
-  UINT8                       SerialIoUartDebugEnable;
-
-/** Offset 0x01EB
-**/
-  UINT8                       UnusedUpdSpace7;
-
-/** Offset 0x01EC - ISA Serial Base selection
-  Select ISA Serial Base address could be initialized by boot loader - 0x2F8: 0x2F8,
-  <b>0x3F8: 0x3F8(Default)</b>.
-  0x2F8:0x2F8, 0x3F8:0x3F8
-**/
-  UINT16                      SerialIoUartDebugIoBase;
-
-/** Offset 0x01EE - MemRefreshWaterMark
-  Enable or Disable MemRefreshWaterMark in FSP - <b>0: Auto(Default)</b>, 1: Enable,
-  2: Disable.
-  0:Auto, 1:Enable, 2:Disable
-**/
-  UINT8                       PanicWm;
-
-/** Offset 0x01EF - promoteMrcWarnings
-  Enable or Disable MRC promote warning in FSP - 0: Disable, <b>1: Enable(Default)</b>.
-  0:Disable, 1:Enable
-**/
-  UINT8                       promoteMrcWarnings;
-
-/** Offset 0x01F0 - promoteWarnings
-  <b>Enable(Default)</b> or Disable Promote warning in FSP - 0: Disable, <b>1: Enable(Default)</b>.
-  0:Disable, 1:Enable
-**/
-  UINT8                       promoteWarnings;
-
-/** Offset 0x01F1 - serialDebugMsgLvlTrainResults
-  Enable or Disable Promote warning in FSP - <b>0:Disable(Default)</b>, 8:Enable.
-  0:Disable, 8:Enable
-**/
-  UINT8                       serialDebugMsgLvlTrainResults;
-
-/** Offset 0x01F2 - MemTest
-  <b>Enable(Default)</b> or Disable memory test during normal boot in FSP - 0: Disable,
-  <b>1: Enable(Default)</b>.
-  0:Disable, 1:Enable
-**/
-  UINT8                       HwMemTest;
-
-/** Offset 0x01F3
-**/
-  UINT8                       UnusedUpdSpace8;
-
-/** Offset 0x01F4 - MemTest Loops
-  Number of memory test loops during normal boot, set to 0 to run memtest infinitely
-  in FSP - <b> 1 (Default)</b>.
-  minimum = 0, maximum = 65535
-**/
-  UINT16                      MemTestLoops;
-
-/** Offset 0x01F6
-**/
-  UINT8                       UnusedUpdSpace9[2];
-
-/** Offset 0x01F8 - Adv MemTest Options
-  This option is a bit mask[19:0]: All 0 = disabled: bit-0=XMATS8, bit-1=XMATS16,
-  bit-2=Reserved, bit-3=Reserved, bit-4=WCMATS8, bit-5=WCMCH8, bit-6=Reserved, bit-7=MARCHCM64,
-  bit-8=Reserved, bit-9=Reserved, bit-10=Reserved, bit-11=TWR, bit-12=DATARET, bit-13=MATS8TC1,
-  bit-14=MATS8TC2, bit-15=MATS8TC3, bit-16=SK-HYNIX, bit-17=SAMSUNG, bit-18=MICRON-RMW,
-  bit-19=SCRAM_X2 in FSP.
-**/
-  UINT32                      AdvMemTestOptions;
-
-/** Offset 0x01FC - SmartTestKey
-  Number of SmartTest Key
-**/
-  UINT32                      SmartTestKey;
-
-/** Offset 0x0200 - Adv MemTest Pause
-  Specify a pause delay between 0 to 256000 in units of usec. This is a time period
-  where refresh is disabled between write and read sequences in FSP.
-**/
-  UINT32                      AdvMemTestCondPause;
-
-/** Offset 0x0204 - Adv MemTest tREFI
-  Specify tREFI (refresh rate) timing between 1850 to 7800 in nsec.
-**/
-  UINT16                      AdvMemTestCondTrefi;
-
-/** Offset 0x0206 - Adv MemTest tWR
-  Specify tWR timing between 48 to 96 in units of tCK in FSP.
-**/
-  UINT8                       AdvMemTestCondTwr;
-
-/** Offset 0x0207
-**/
-  UINT8                       UnusedUpdSpace10;
-
-/** Offset 0x0208 - Adv MemTest PMIC VDD Level
-  Specify PMIC VDD level in units of mV in FSP.
-**/
-  UINT16                      AdvMemTestCondPmicVdd;
-
-/** Offset 0x020A - Adv MemTest Conditions
-  Auto = set test conditions based on test type; Manual = specify global test conditions;
-  Disable = Do not apply test conditions in FSP - 0: Disable, <b>1: Auto(Default)</b>,
-  2: Manual.
-  0:Disable, 1:Auto, 2:Manual
-**/
-  UINT8                       AdvMemTestCondition;
-
-/** Offset 0x020B - Adv MemTest Reset Failure Tracking List
-  Enable/disable Reset of the Row Failure Tracking List after each Adv MemTest option.
-  Useful for testing performance of multiple options in FSP - <b>0: Disable(Default)</b>,
-  1: Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       AdvMemTestResetList;
-
-/** Offset 0x020C - MemTest On Cold Fast Boot
-  Enable - Enables memory test during cold fast boot. Disable - Disables this feature.
-  Auto - Sets it to the MRC default setting; current default is Disable in FSP -
-  <b>0:Disable(Default)</b>, 1:Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       MemTestOnColdFastBoot;
-
-/** Offset 0x020D - Attempt Fast Boot
-  Enable - Portions of memory reference code will be skipped when possible to increase
-  boot speed on warm boots. Disable - Disables this feature. Auto - Sets it to the
-  MRC default setting - 0:Disable, <b>1:Enable(Default)</b>.
-  0:Disable, 1:Enable
-**/
-  UINT8                       AttemptFastBoot;
-
-/** Offset 0x020E - MemTest On Cold Fast Boot
-  Enable - Enables memory test during cold fast boot. Disable - Disables this feature.
-  Auto - Sets it to the MRC default setting - 0:Disable, <b>1:Enable(Default)</b>.
-  0:Disable, 1:Enable
-**/
-  UINT8                       AttemptFastBootCold;
-
-/** Offset 0x020F - Multithreaded Memory Training
-  Selects the number of processor sockets to train in parallel. - <b>0: All sockets
-  operate in parallel(Default)</b>. 1: At any time only one socket is executing.
-  2: At any time only two socket are executing. 4: At any time only four socket are
-  executing in FSP.
-  0:All Processor Sockets, 1:One Socket at a Time (No Multithreading), 2:Two Sockets
-  at a Time, 4:Four Sockets at a Time
-**/
-  UINT8                       AllowedSocketsInParallel;
-
-/** Offset 0x0210 - Auto-Reset on mem Training Error
-  Enable/Disable Auto-Reset on mem Training Error in FSP - <b>0:Disable(Default)</b>,
-  1:Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       AutoResetOnMemErr;
-
-/** Offset 0x0211 - Rank Margin Tool
-  Enable/Disable the Rank Margin Tool in FSP - <b>0:Disable(Default)</b>, 1:Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       EnableRMT;
-
-/** Offset 0x0212 - RMT on Fast Cold Boot
-  Enable/Disable the Rank Margin Tool on a Fast Cold Boot in FSP - <b>0:Disable(Default)</b>,
-  1:Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       EnableRMTonFCB;
-
-/** Offset 0x0213 - Execute Jedecinit before RMT
-  Execute Jedecinit before Rank Margin Tool in FSP - <b>0:Disable(Default)</b>, 1:Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       JedecInitBeforeRMT;
-
-/** Offset 0x0214 - Backside Margining
-  Enable/Disable margin test on the register or buffer backside in FSP - <b>0:Disable(Default)</b>,
-  1:Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       RMTBacksideMargining;
-
-/** Offset 0x0215 - CmdAll
-  Step size of CmdAll. Auto: 1. Supported values: 1,2,4,8 in FSP - <b>1:Auto(Default)</b>,
-  2:2, 4:4, 8:8.
-  1:Auto, 2:2, 4:4, 8:8
-**/
-  UINT8                       RMTCmdAll;
-
-/** Offset 0x0216 - RMT Debug Messages
-  Enable/Disable the RMT debug messages in FSP - <b>2:Disable(Default)</b>, 5:Enable.
-  2:Disable, 5:Enable
-**/
-  UINT8                       RMTDebugMessages;
-
-/** Offset 0x0217 - RMT Display Tables
-  Enable/Disable displaying results as tables in FSP - 0:Disable, <b>1:Enable(Default)</b>.
-  0:Disable, 1:Enable
-**/
-  UINT8                       RMTDisplayTables;
-
-/** Offset 0x0218 - RMT Loop Count
-  Exponential loop count for single rank test in FSP.
-**/
-  UINT8                       RMTLoopCount;
-
-/** Offset 0x0219
-**/
-  UINT8                       UnusedUpdSpace11[3];
-
-/** Offset 0x021C - Test Signal Bit Mask For RMT
-  Test signal bit mask for RMT in FSP.
-**/
-  UINT32                      TestSignalBitMaskRMT;
-
-/** Offset 0x0220 - RMT Per Bit Margining
-  Enable/Disable Per Bit Margining in FSP - 0:Disable, <b>1:Enable(Default)</b>.
-  0:Disable, 1:Enable
-**/
-  UINT8                       RMTPerBitMargining;
-
-/** Offset 0x0221 - RMT Per CA Lane Margining
-  Enable/Disable Per CA Lane Margining in FSP - 0:Disable, <b>1:Enable(Default)</b>.
-  0:Disable, 1:Enable
-**/
-  UINT8                       RMTPerCaLaneMargining;
-
-/** Offset 0x0222 - RMT Display Plots
-  Enable/Disable the display of per-bit results as plots in FSP - 0:Disable, <b>1:Enable(Default)</b>.
-  0:Disable, 1:Enable
-**/
-  UINT8                       RMTPerDisplayPlots;
-
-/** Offset 0x0223 - RMT RxDqs
-  Step size of RxDqs. Auto: 1. Supported values: 1,2,4,8 in FSP - <b>1:Auto,(Default)</b>
-  2:2, 4:4, 8:8.
-  1:Auto, 2:2, 4:4, 8:8
-**/
-  UINT8                       RMTRxDqs;
-
-/** Offset 0x0224 - RMT RxVref
-  Step size of RxVref. Auto: 1. Supported values: 1,2,4,8 in FSP - <b>1:Auto,(Default)</b>
-  2:2, 4:4, 8:8.
-  1:Auto, 2:2, 4:4, 8:8
-**/
-  UINT8                       RMTRxVref;
-
-/** Offset 0x0225 - RMT Scrambler
-  Enable or Disable scrambler during RMT test in FSP - 0:Disable, <b>1:Enable(Default)</b>.
-  0:Disable, 1:Enable
-**/
-  UINT8                       RMTScrambler;
-
-/** Offset 0x0226 - RMT Step Size Override
-  Enable or Disable overriding the default step sizes in FSP - <b>0:Disable(Default)</b>,
-  1:Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       RMTStepSizeOverride;
-
-/** Offset 0x0227 - RMT TxDq
-  Step size of TxDq. Auto: 1. Supported values: 1,2,4,8 in FSP - <b>1:Auto(Default)</b>,
-  2:2, 4:4, 8:8.
-  1:Auto, 2:2, 4:4, 8:8
-**/
-  UINT8                       RMTTxDq;
-
-/** Offset 0x0228 - RMT TxVref
-  Step size of TxVref. Auto: 1. Supported values: 1,2,4,8 in FSP - <b>1:Auto(Default)</b>,
-  2:2, 4:4, 8:8.
-  1:Auto, 2:2, 4:4, 8:8
-**/
-  UINT8                       RMTTxVref;
-
-/** Offset 0x0229 - DDR5 ECS
-  Enable/Disable DDR5 Error Check and Scrub (ECS) in FSP - 0:Disable, <b>1:Enable(Default)</b>.
-  0:Disable, 1:Enable
-**/
-  UINT8                       ErrorCheckScrub;
-
-/** Offset 0x022A - Enforce Memory POR
-  0:Enforce POR - Enforces Plan Of Record restrictions for DDR5 frequency and voltage
-  programming. <b>2:Disable  - Disables this feature and user is able to run at higher
-  frequencies, specified in the DDR Frequency Limit field (limited by processor support)(Default)</b>.
-  0:Enforce POR, 2:Disabled
-**/
-  UINT8                       EnforceDdrMemoryFreqPor;
-
-/** Offset 0x022B - Enforce Population POR
-  Enable Memory Population POR Enforcement.  Selecting Enforce Validated Populations
-  will only allow populations that have been validated in FSP - <b>0:Disable(Default)</b>,
-  1:Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       EnforcePopulationPor;
-
-/** Offset 0x022C - DDR PPR Type
-  Selects DDR Post Package Repair Type - 2: Hard PPR, <b>1: Soft PPR (Default)</b>,
-  0: Disabled.
-  0:Disabled, 2:Hard PPR, 1:Soft PPR
-**/
-  UINT8                       pprType;
-
-/** Offset 0x022D - Force PPR On All Dram for UCE
-  Force PPR on all dram for UCE in FSP - <b>0:Disable(Default)</b>, 1:Enable.
-  0:Disabled, 1:Enabled
-**/
-  UINT8                       ForcePprOnAllDramUce;
-
-/** Offset 0x022E
-**/
-  UINT8                       UnusedUpdSpace12[2];
-
-/** Offset 0x0230 - pprAddrVariablePtr
-  Pointer to array of PPR_ADDR_VARIABLE
-**/
-  UINT32                      PprAddrVariablePtr;
-
-/** Offset 0x0234 - Allow Memory Test Correctable Error
-  Enable - Logs error and allows correctable errors during memory test(DIMM Rank not
-  removed). Disable - Logs error and removes DIMM Rank. Auto - Sets it to the MRC
-  default setting; current default is Enable in FSP - 0:Disable, <b>1:Enable(Default)</b>.
-  0:Disable, 1:Enable
-**/
-  UINT8                       allowCorrectableMemTestError;
-
-/** Offset 0x0235 - Memory I/O Health Check
-  Memory I/O Health Check - 0: Auto, 1: Manual, <b>2: Disable (Default)</b>. Select
-  option Auto for default values. Manual for new values. Disable for disabling feature
-  in FSP - 0:Auto, 1:Manual, <b>2:Disable(Default)</b>.
-  0:Auto, 1:Manual, 2:Disable
-**/
-  UINT8                       MemIOHealthCheck;
-
-/** Offset 0x0236 - RxDqsDelay Left Edge
-  Offset for RxDqsDelay Left Edge in FSP.
-**/
-  UINT8                       CriticalRxDqsDelayLeftEdge;
-
-/** Offset 0x0237 - RxDqsDelay Right Edge
-  Offset for RxDqsDelay Right in FSP.
-**/
-  UINT8                       CriticalRxDqsDelayRightEdge;
-
-/** Offset 0x0238 - RxVref Left Edge
-  Offset for RxVref Left Edge in FSP.
-**/
-  UINT8                       CriticalRxVrefLeftEdge;
-
-/** Offset 0x0239 - RxVref Right Edge
-  Offset for RxVref Right Edge in FSP.
-**/
-  UINT8                       CriticalRxVrefRightEdge;
-
-/** Offset 0x023A - TxDqDelay Left Edge
-  Offset for TxDqDelay Left Edge in FSP.
-**/
-  UINT8                       CriticalTxDqDelayLeftEdge;
-
-/** Offset 0x023B - TxDqDelay Right Edge
-  Offset for TxDqDelay Right Edge in FSP.
-**/
-  UINT8                       CriticalTxDqDelayRightEdge;
-
-/** Offset 0x023C - TxVref Left Edge
-  Offset for TxDqDelay Left Edge in FSP.
-**/
-  UINT8                       CriticalTxVrefLeftEdge;
-
-/** Offset 0x023D - TxVref Right Edge
-  Offset for TxDqDelay Right Edge in FSP.
-**/
-  UINT8                       CriticalTxVrefRightEdge;
-
-/** Offset 0x023E - Reboot On Critical Failure
-  Reboot System on Critical failure to do Memory Training in FSP - 0:Disable, <b>1:Enable(Default)</b>.
-  0:Disable, 1:Enable
-**/
-  UINT8                       ResetOnCriticalError;
-
-/** Offset 0x023F - Number of Times to Reboot and Retrain
-  Number of times to Reboot System on Critical failure to do Memory Training in FSP.
-**/
-  UINT8                       CriticalRetries;
-
-/** Offset 0x0240 - Memory I/O Health Check Loop Count
-  CPGC Test Loop Count for Memory IO Health Test
-**/
-  UINT8                       MemIOHealthLoopCount;
-
-/** Offset 0x0241 - Telemetry RxDqsDelay Left Edge
-  Offset for Telemetry RxDqsDelay Left Edge in FSP.
-**/
-  UINT8                       TelemetryRxDqsDelayLeftEdge;
-
-/** Offset 0x0242 - Telemetry RxDqsDelay Right Edge
-  Offset for Telemetry RxDqsDelay Right Edge in FSP.
-**/
-  UINT8                       TelemetryRxDqsDelayRightEdge;
-
-/** Offset 0x0243 - Telemetry RxVref Left Edge
-  Offset for Telemetry RxDqsDelay Left Edge in FSP.
-**/
-  UINT8                       TelemetryRxVrefLeftEdge;
-
-/** Offset 0x0244 - Telemetry RxVref Right Edge
-  Offset for Telemetry RxDqsDelay Right Edge in FSP.
-**/
-  UINT8                       TelemetryRxVrefRightEdge;
-
-/** Offset 0x0245 - Telemetry TxDqDelay Left Edge
-  Offset for Telemetry TxDqDelay Left Edge in FSP.
-**/
-  UINT8                       TelemetryTxDqDelayLeftEdge;
-
-/** Offset 0x0246 - Telemetry TxDqDelay Right Edge
-  Offset for Telemetry TxDqDelay Right Edge in FSP.
-**/
-  UINT8                       TelemetryTxDqDelayRightEdge;
-
-/** Offset 0x0247 - Volatile Memory Mode
-  Selects 1LM or 2LM mode for volatile memory. For 2LM memory mode, system will try
-  to configure 2LM but if system is unable to configure 2LM, volatile memory mode
-  will fall back to 1LM in FSP - <b>0: 1LM(Default)</b>, 1: 2LM, 2: MIX 1LM2LM.
-  0: 1LM, 1: 2LM, 2: MIX 1LM2LM
-**/
-  UINT8                       volMemMode;
-
-/** Offset 0x0248 - Dynamic ECC Mode Selection
-  Enable/Disable Dynamic ECC Mode Selection in FSP - 0:Disable, <b>1:Enable(Default)</b>,
-  2:Enable + Allow 128b ECC.
-  0:Disable, 1:Enable, 2:Enable + Allow 128b ECC
-**/
-  UINT8                       DynamicEccModeSel;
-
-/** Offset 0x0249 - Memory Patrol Scrub
-  Memory Patrol Scrub - 0:Disable, 1:Enable during FspMemoryInit(), <b>2:Enable during
-  NotifyPhase(EnumInitPhaseReadyToBoot) (Default)</b>.
-  0:Disable, 1:Enable during FspMemoryInit(), 2:Enable during EnumInitPhaseReadyToBoot
-**/
-  UINT8                       PatrolScrub;
-
-/** Offset 0x024A - Memory Patrol Scrub
-  Memory Patrol Scrub - <b>0:Disable  (Default)</b>, 1:Enable at ReadyToBootFsp().
-  0:Disable, 1:Enable Enable at ReadyToBootFsp()
-**/
-  UINT8                       PatrolScrubNotify;
-
-/** Offset 0x024B - Patrol Scrub Interval
-  Patrol Scrub Interval in FSP.
-**/
-  UINT8                       PatrolScrubDuration;
-
-/** Offset 0x024C - Patrol Scrub Address Mode
-  Selects the address mode between <b>1: System Physical Address (Default)</b>, 0:Reverse
-  Address in FSP.
-  0:Reverse Address, 1:System Physical Address
-**/
-  UINT8                       PatrolScrubAddrMode;
-
-/** Offset 0x024D - Memory Thermal Throttling Mode
-  Memory Configure Memory Thermal Throttling Mode in FSP - 0:Disable, <b>2:CLTT_ENABLE(Default)</b>,
-  3:CLTT_PECI_ENABLE.
-  0:Disable, 2:CLTT_ENABLE, 3:CLTT_PECI_ENABLE
-**/
-  UINT8                       thermalthrottlingsupport;
-
-/** Offset 0x024E - Memory Correctable Error Threshold
-  Memory Correctable Error Threshold (1 - 32767) used for sparing and leaky bucket in FSP.
-**/
-  UINT16                      spareErrTh;
-
-/** Offset 0x0250 - WR CRC feature Control
-  Enable/Disable Write CRC in FSP - <b>0:Disable(Default)</b>, 1:Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       WrCRC;
-
-/** Offset 0x0251 - Adaptive Refresh Management Level
-  Selects Adaptive Refresh Management(ARFM) Level when refresh management(RFM) is
-  required. <b>0:Default - RAAIMT, RAAMMT, RAADEC(Default)</b>; 1:Level A - RAAIMT-A,
-  RAAMMT-A, RAADEC-A; 2:Level B - RAAIMT-B, RAAMMT-B, RAADEC-B; 3:Level C - RAAIMT-C,
-  RAAMMT-C, RAADEC-C
-  0:Default - RAAIMT; RAAMMT; RAADEC, 1:Level A - RAAIMT-A; RAAMMT-A; RAADEC-A, 2:Level
-  B - RAAIMT-B; RAAMMT-B; RAADEC-B, 3:Level C - RAAIMT-C; RAAMMT-C; RAADEC-C
-**/
-  UINT8                       AdaptiveRefreshMgmtLevel;
-
-/** Offset 0x0252 - MEMHOT INPUT Control
-  Enable/Disable MEMHOT INPUT in FSP - <b>0:Disable(Default)</b>, 1:Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       MemHotIn;
-
-/** Offset 0x0253 - MEMHOT OUTPUT Mode
-  MEMHOT OUTPUT Mode in FSP - 0:Disable, <b>1:Enable only temphi(Default)</b>, 2:Enable
-  temphi & mid, 3:Enable temphi & mid & low.
-  0:Disable, 1:Enable only temphi, 2:Enable temphi & mid, 3:Enable temphi & mid & low
-**/
-  UINT8                       MemhotOutputOnlyOpt;
-
-/** Offset 0x0254 - CxlType3LegacyEn
-  Enable or disable CXL type 3 device using CXL type 2 flow - <b>0:Disable(Default)</b>, 1:Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       DfxCxlType3LegacyEn;
-
-/** Offset 0x0255 - DfxPmicSecureMode
-  0:Disable Pmic Secure Mode, 1:Enable Pmic Secure Mode, <b>2:Auto Pmic Secure Mode(Default)</b>.
-  0:Disable Pmic Secure Mode, 1:Enable Pmic Secure Mode, 2:Auto Pmic Secure Mode
-**/
-  UINT8                       DfxPmicSecureMode;
-
-/** Offset 0x0256 - IIO PcieSubSystemMode0
-  PcieSubSystemMode[MAX_SOCKET][0]: MAX_SOCKET=8, 0x00:IIO_MODE_GEN4_ONLY, 0x01:IIO_MODE_GEN5,
-  0x02:IIO_MODE_CXL, 0x03:IIO_MODE_FORCE_CXL, <b>0x01:IIO_MODE_GEN5(Default)</b>
-**/
-  UINT8                       IioPcieSubSystemMode0[8];
-
-/** Offset 0x025E - IIO PcieSubSystemMode1
-  PcieSubSystemMode[MAX_SOCKET][0]: MAX_SOCKET=8, 0x00:IIO_MODE_GEN4_ONLY, 0x01:IIO_MODE_GEN5,
-  0x02:IIO_MODE_CXL, 0x03:IIO_MODE_FORCE_CXL, <b>0x01:IIO_MODE_GEN5(Default)</b>
-**/
-  UINT8                       IioPcieSubSystemMode1[8];
-
-/** Offset 0x0266 - IIO PcieSubSystemMode2
-  PcieSubSystemMode[MAX_SOCKET][0]: MAX_SOCKET=8, 0x00:IIO_MODE_GEN4_ONLY, 0x01:IIO_MODE_GEN5,
-  0x02:IIO_MODE_CXL, 0x03:IIO_MODE_FORCE_CXL, <b>0x01:IIO_MODE_GEN5(Default)</b>
-**/
-  UINT8                       IioPcieSubSystemMode2[8];
-
-/** Offset 0x026E - IIO PcieSubSystemMode3
-  PcieSubSystemMode[MAX_SOCKET][0]: MAX_SOCKET=8, 0x00:IIO_MODE_GEN4_ONLY, 0x01:IIO_MODE_GEN5,
-  0x02:IIO_MODE_CXL, 0x03:IIO_MODE_FORCE_CXL, <b>0x01:IIO_MODE_GEN5(Default)</b>
-**/
-  UINT8                       IioPcieSubSystemMode3[8];
-
-/** Offset 0x0276 - IIO PcieSubSystemMode4
-  PcieSubSystemMode[MAX_SOCKET][0]: MAX_SOCKET=8, 0x00:IIO_MODE_GEN4_ONLY, 0x01:IIO_MODE_GEN5,
-  0x02:IIO_MODE_CXL, 0x03:IIO_MODE_FORCE_CXL, <b>0x01:IIO_MODE_GEN5(Default)</b>
-**/
-  UINT8                       IioPcieSubSystemMode4[8];
-
-/** Offset 0x027E - IIO PcieSubSystemMode5
-  PcieSubSystemMode[MAX_SOCKET][0]: MAX_SOCKET=8, 0x00:IIO_MODE_GEN4_ONLY, 0x01:IIO_MODE_GEN5,
-  0x02:IIO_MODE_CXL, 0x03:IIO_MODE_FORCE_CXL, <b>0x01:IIO_MODE_GEN5(Default)</b>
-**/
-  UINT8                       IioPcieSubSystemMode5[8];
-
-/** Offset 0x0286 - IIO PcieSubSystemMode6
-  PcieSubSystemMode[MAX_SOCKET][0]: MAX_SOCKET=8, 0x00:IIO_MODE_GEN4_ONLY, 0x01:IIO_MODE_GEN5,
-  0x02:IIO_MODE_CXL, 0x03:IIO_MODE_FORCE_CXL, <b>0x01:IIO_MODE_GEN5(Default)</b>
-**/
-  UINT8                       IioPcieSubSystemMode6[8];
-
-/** Offset 0x028E - CXL Header Bypass
-  Enable/Disable the CXL header bypass in FSP - <b>0:Disabled(Default)</b>, 1:Enabled.
-  0:Disable, 1:Enable
-**/
-  UINT8                       DfxCxlHeaderBypass;
-
-/** Offset 0x028F - CXL Security Level
-  CXL Security Level<br>\n
-  0: Fully Trusted - CXL Device can get access on CXL.$ for host-attached and device
-  attached memory ranges in the WB address space.<br>\n
-  1: Partially Trusted - CXL Device can get access on CXL.$ for device attached memory
-  ranges only;<br>\n
-  2: Untrusted - All requests on CXL.$ will be aborted by the Host.<br>\n
-  <b>3: Auto - Currently identical to Fully Trusted. (Default)</b>
-  0:Fully Trusted, 1:Partially Trusted, 2:Untrusted, 3:Auto
-**/
-  UINT8                       DfxCxlSecLvl;
-
-/** Offset 0x0290
-**/
-  UINT32                      DfxCxlDebugModePtr;
-
-/** Offset 0x0294
-**/
-  UINT32                      DfxCxlDebugModeNumber;
-
-/** Offset 0x0298 - Lock Chipset
-  Lock or Unlock chipset in FSP - <b>0:Disabled(Default)</b>, 1:Enabled.
-  0:Disable, 1:Enable
-**/
-  UINT8                       LockChipset;
-
-/** Offset 0x0299 - MSR Lock Control
-  Enable - MSR 3Ah and CSR 80h will be locked in FSP. Power Good reset is needed to
-  remove lock bits - <b>0:Disabled(Default)</b>, 1:Enabled.
-  0:Disable, 1:Enable
-**/
-  UINT8                       ProcessorMsrLockControl;
-
-/** Offset 0x029A - DFX Enable
-  When Enabled, Expose IIO DFX devices and other CPU devices like PMON in FSP - <b>0:Disabled(Default)</b>,
-  1:Enabled.
-  0:Disable, 1:Enable
-**/
-  UINT8                       DFXEnable;
-
-/** Offset 0x029B - DFX Disable Bios Done
-  When Enabled, suppresses notifying processor via MSR 151h that boot initialization
-  is finished in FSP - <b>0:Disabled(Default)</b>, 1:Enabled.
-  0:Disable, 1:Enable
-**/
-  UINT8                       DfxDisableBiosDone;
-
-/** Offset 0x029C - Processor Package C State
-  Package C State - 0: C0/C1 state, 1: C2 state, 2: C6(non Retention) state, 3: C6(Retention)
-  state, 7: No Limit, <b>0xFF: Auto (Default)</b>
-  0: C0/C1 state, 1: C2 state, 2: C6(non Retention) state, 3: C6(Retention) state,
-  7: No Limit, 0xFF: Auto
-**/
-  UINT8                       CpuPmPackageCState;
-
-/** Offset 0x029D - Enhanced Intel SpeedStep(R) Tech
-  Enhanced Intel SpeedStep(R) Tech - <b>1: Enable(Default)</b>, 0: Disable.
-  0:Disabled, 1:Enabled
-**/
-  UINT8                       CpuPmEistEnable;
-
-/** Offset 0x029E - C1E
-  C1E - <b>1: Enable(Default)</b>, 0: Disable.
-**/
-  UINT8                       CpuPmC1eEnable;
-
-/** Offset 0x029F - Intel SST-PP
-  Intel SST-PP Select allows user to choose level - <b>0xFF: Choose lowest level hardware
-  supported(Default)</b>, 0: Level 0, 3: Level 3, 4: Level 4.
-**/
-  UINT8                       CpuPmIssTdpLevel;
-
-/** Offset 0x02A0 - Activate SST-BF
-  SST-BF - <b>0: Disable (Default)</b>, 1: Enabled.
-  0:Disabled, 1:Enabled
-**/
-  UINT8                       CpuPmProcessorActivePbf;
-
-/** Offset 0x02A1
-**/
-  UINT8                       UnusedUpdSpace13[7];
-
-/** Offset 0x02A8 - Socket 0 Core Disable Bitmask
-  Set bit(s) to Disable or clear bit(s) to Enable core(s) on Socket 0. NOTE: Any core
-  disabled by user will force static SST-PP.
-**/
-  UINT64                      CpuPmCoreDisableBitmask0;
-
-/** Offset 0x02B0 - Socket 1 Core Disable Bitmask
-  Set bit(s) to Disable or clear bit(s) to Enable core(s) on Socket 1. NOTE: Any core
-  disabled by user will force static SST-PP.
-**/
-  UINT64                      CpuPmCoreDisableBitmask1;
-
-/** Offset 0x02B8
-**/
-  UINT8                       ReservedMemoryInitUpd[16];
+  UINT32                      IioPcieMaxPayloadNumber;
 
 /**  IIO Board settings Hob Ptr
   Pointer to array of IIO_BOARD_SETTINGS_HOB
@@ -1286,28 +502,1315 @@ typedef struct {
 **/
   UINT32                      IioBoardSettingsHobLength;
 
+/**  Iio Setup Knobs pointer
+  : Iio Setup Knobs pointer
+**/
+  UINT64                      IioSetupKnobsPtr;
+
+/**  Iio Setup Knobs Size
+  : Iio Setup Knobs Size
+**/
+  UINT64                      IioSetupKnobsSize;
+
+/**  Iio SocketConfig Setup Knobs pointer
+  : Iio SocketConfig Setup Knobs pointer
+**/
+  UINT64                      IioSocketConfigSetupKnobsPtr;
+
+/**  Iio SocketConfig Setup Knobs Size
+  : Iio SocketConfig Setup Knobs Size
+**/
+  UINT64                      IioSocketConfigSetupKnobsSize;
+
+/**  IIO DeEmphasis Array Ptr
+  Pointer to array of DeEmphasis
+**/
+  UINT32                      DeEmphasisPtr;
+
+/**  IIO DeEmphasis Array Number
+  Number of elements in DeEmphasis array.
+**/
+  UINT32                      DeEmphasisNumber;
+
+/**  IIO PCIe Common Clock Array Ptr
+  Pointer to array of PCIe Common Clock
+**/
+  UINT32                      PcieCommonClockPtr;
+
+/**  IIO PCIe Common Clock Array Number
+  Number of elements in PCIe Common Clock array.
+**/
+  UINT32                      PcieCommonClockNumber;
+
+/**  Gen5LinkDegradation
+  Enable or disable Gen5 link degradation.
+  0:Disable, 1:Enable
+**/
+  UINT8                       Gen5LinkDegradation;
+
+/**  PcieHotPlugEnable
+  Enable or disable Pcie hot plug enable feature
+  0:Disable, 1:Enable
+**/
+  UINT8                       PcieHotPlugEnable;
+
+/**  DelayAfterPCIeLinkTraining
+  Custom delay after PCI-E link training on IIO ports
+**/
+  UINT16                      DelayAfterPCIeLinkTraining;
+
+/**  MSR Lock Control
+  Enable - MSR 3Ah and CSR 80h will be locked in FSP. Power Good reset is needed to
+  remove lock bits
+  0:Disable, 1:Enable
+**/
+  UINT8                       ProcessorMsrLockControl;
+
+/**  Lock Chipset
+  Lock or Unlock chipset in FSP
+  0:Disable, 1:Enable
+**/
+  UINT8                       LockChipset;
+
+/**  DFX Ev Mode
+  When Enabled, Expose IIO DFX devices and other CPU devices like PMON in FSP
+  0:Disable, 1:Enable, 2:Auto
+**/
+  UINT8                       DfxEvMode;
+
+/**  DFX Disable Bios Done
+  When Enabled, suppresses notifying processor via MSR 151h that boot initialization
+  is finished in FSP
+  0:Disable, 1:Enable
+**/
+  UINT8                       DfxDisableBiosDone;
+
+/**  PciBusResConfigPtr
+  Pointer to array of socket PCI bus resource.
+**/
+  UINT32                      PciBusResConfigPtr;
+
+/**  PciBaseLimitsResConfigPtr
+  Pointer to array of socket PCI IO/MMIO resource.
+**/
+  UINT32                      PciBaseLimitsResConfigPtr;
+
+/**  PCH PCIE PLL Ssc
+**/
+  UINT8                       PchPciePllSsc;
+
+/**  PchDciEn
+  Enable or <b>Disable(Default)</b> PCH DCI
+  0:Disable, 1:Enable
+**/
+  UINT8                       PchDciEn;
+
+/**  MeUmaEnable
+  Enable or disable ME UMA feature
+  0:Disable, 1:Enable
+**/
+  UINT8                       MeUmaEnable;
+
+/**  SerialIoUartDebugEnable
+  <b>Enable(Default)</b> or Disable SerialIo Uart debug library in FSP.
+  0:Disable, 1:Enable
+**/
+  UINT8                       SerialIoUartDebugEnable;
+
+/**  ISA Serial Base selection
+  Select ISA Serial Base address could be initialized by boot loader. Default is 0x3F8
+  0x2F8:0x2F8, 0x3F8:0x3F8
+**/
+  UINT16                      SerialIoUartDebugIoBase;
+
+/**  promoteMrcWarnings
+  Determines if MRC warnings are promoted to system level in FSP.
+  $EN_DIS
+**/
+  UINT8                       promoteMrcWarnings;
+
+/**  promoteWarnings
+  Determines if warnings are promoted to system level in FSP.
+  $EN_DIS
+**/
+  UINT8                       promoteWarnings;
+
+/**  serialDebugMsgLvlTrainResults
+  Enabled = set to display the training results.  Training results also get displayed
+  if debug messages is set to Maximum in FSP.
+  $EN_DIS
+**/
+  UINT8                       serialDebugMsgLvlTrainResults;
+
+/**  Enhanced Log Parsing
+  Enables additional output in debug log for easier machine parsing in FSP.
+  $EN_DIS
+**/
+  UINT8                       logParsing;
+
+/**  MemTest
+  Enable - Enables memory test during normal boot. Disable - Disables this feature in FSP.
+  $EN_DIS
+**/
+  UINT8                       HwMemTest;
+
+/**  MemTest Loops
+  Number of memory test loops during normal boot, set to 0 to run memtest infinitely in FSP.
+**/
+  UINT16                      MemTestLoops;
+
+/**  Adv MemTest Options
+  This option is a bit mask[19:0]- All 0 = disabled- bit-0=XMATS8, bit-1=XMATS16,
+  bit-2=Reserved, bit-3=Reserved, bit-4=WCMATS8, bit-5=WCMCH8, bit-6=Reserved, bit-7=MARCHCM64,
+  bit-8=Reserved, bit-9=Reserved, bit-10=Reserved, bit-11=TWR, bit-12=DATARET, bit-13=MATS8TC1,
+  bit-14=MATS8TC2, bit-15=MATS8TC3, bit-16=SK-HYNIX, bit-17=SAMSUNG, bit-18=MICRON-RMW,
+  bit-19=SCRAM_X2 in FSP.
+**/
+  UINT32                      AdvMemTestOptions;
+
+/**  SmartTestKey
+  Number of SmartTest Key
+**/
+  UINT32                      SmartTestKey;
+
+/**  Adv MemTest Pause
+  Specify a pause delay between 0 to 255 in units of msec. This is a time period where
+  refresh is disabled between write and read sequences in FSP.
+**/
+  UINT8                       AdvMemTestCondPause;
+
+/**  Adv MemTest tREFI
+  Specify tREFI (refresh rate) timing between 1850 to 7800 in nsec.
+**/
+  UINT16                      AdvMemTestCondTrefi;
+
+/**  Adv MemTest tWR
+  Specify tWR timing  between 48 to 96 in units of tCK in FSP.
+**/
+  UINT8                       AdvMemTestCondTwr;
+
+/**  Adv MemTest PMIC VDD Level
+  Specify PMIC VDD level in units of mV in FSP.
+**/
+  UINT16                      AdvMemTestCondPmicVdd;
+
+/**  Adv MemTest Conditions
+  Auto = set test conditions based on test type; Manual = specify global test conditions;
+  Disable = Do not apply test conditions in FSP.
+  0:Disable, 1:Auto, 2:Manual
+**/
+  UINT8                       AdvMemTestCondition;
+
+/**  Adv MemTest Reset Failure Tracking List
+  Enable/disable Reset of the Row Failure Tracking List after each Adv MemTest option.
+  Useful for testing performance of multiple options in FSP.
+  $EN_DIS
+**/
+  UINT8                       AdvMemTestResetList;
+
+/**  MemTest On Cold Fast Boot
+  Enable - Enables memory test during cold fast boot. Disable - Disables this feature in FSP.
+  $EN_DIS
+**/
+  UINT8                       MemTestOnColdFastBoot;
+
+/**  Attempt Fast Boot
+  Enable - Portions of memory reference code will be skipped when possible to increase
+  boot speed on warm boots. Disable - Disables this feature in FSP.
+  $EN_DIS
+**/
+  UINT8                       AttemptFastBoot;
+
+/**  MemTest On Cold Fast Boot
+  Enable - Enables memory test during cold fast boot. Disable - Disables this feature in FSP.
+  $EN_DIS
+**/
+  UINT8                       AttemptFastBootCold;
+
+/**  Multithreaded Memory Training
+  Selects the number of processor sockets to train in parallel. 0 - All sockets operate
+  in parallel. 1 - At any time only one socket is executing. 2 - At any time only
+  two socket are executing. 4 - At any time only four socket are executing in FSP.
+  0:All Processor Sockets, 1:One Socket at a Time (No Multithreading), 2:Two Sockets
+  at a Time, 4:Four Sockets at a Time
+**/
+  UINT8                       AllowedSocketsInParallel;
+
+/**  Auto-Reset on mem Training Error
+  Enable/Disable Auto-Reset on mem Training Error in FSP.
+  $EN_DIS
+**/
+  UINT8                       AutoResetOnMemErr;
+
+/**  Rank Margin Tool
+  Enable/Disable two types of rank margin in FSP.
+  0:Normal RMT & Turnaround RMT Disabled, 1:Normal RMT Enabled, 2:Turnaround RMT Enabled,
+  3:Normal RMT & Turnaround RMT Enabled, 4:Auto RMT Enable/Disabled
+**/
+  UINT8                       EnableRMT;
+
+/**  RMT on Fast Cold Boot
+  Enable/Disable the Rank Margin Tool on a Fast Cold Boot in FSP.
+  $EN_DIS
+**/
+  UINT8                       EnableRMTonFCB;
+
+/**  Execute Jedecinit before RMT
+  Execute Jedecinit before Rank Margin Tool in FSP.
+  $EN_DIS
+**/
+  UINT8                       JedecInitBeforeRMT;
+
+/**  Backside Margining
+  Enable/Disable margin test on the register or buffer backside in FSP.
+  $EN_DIS
+**/
+  UINT8                       RMTBacksideMargining;
+
+/**  CmdAll
+  Step size of CmdAll. Auto- 1. Supported values- 1,2,4,8 in FSP.
+  1:1, 2:2, 4:4, 8:8
+**/
+  UINT8                       RMTCmdAll;
+
+/**  RMT Debug Messages
+  Enable/Disable the RMT debug messages in FSP.
+  2:Disable, 5:Enable
+**/
+  UINT8                       RMTDebugMessages;
+
+/**  RMT Display Tables
+  Enable/Disable displaying results as tables in FSP.
+  $EN_DIS
+**/
+  UINT8                       RMTDisplayTables;
+
+/**  RMT Loop Count
+  Exponential loop count for single rank test in FSP.
+**/
+  UINT8                       RMTLoopCount;
+
+/**  Test Signal Bit Mask For RMT
+  Test signal bit mask for RMT in FSP.
+**/
+  UINT32                      TestSignalBitMaskRMT;
+
+/**  RMT Per Bit Margining
+  Enable/Disable Per Bit Margining in FSP.
+  $EN_DIS
+**/
+  UINT8                       RMTPerBitMargining;
+
+/**  RMT Per CA Lane Margining
+  Enable/Disable Per CA Lane Margining in FSP.
+  $EN_DIS
+**/
+  UINT8                       RMTPerCaLaneMargining;
+
+/**  RMT Per CS Lane Margining
+  Enable/Disable Per CS Lane Margining in FSP.
+  $EN_DIS
+**/
+  UINT8                       RMTPerCsLaneMargining;
+
+/**  RMT Display Plots
+  Enable/Disable the display of per-bit results as plots in FSP.
+  $EN_DIS
+**/
+  UINT8                       RMTPerDisplayPlots;
+
+/**  RMT RxDqs
+  Step size of RxDqs. Auto- 1. Supported values- 1,2,4,8 in FSP.
+  1:Auto, 2:2, 4:4, 8:8
+**/
+  UINT8                       RMTRxDqs;
+
+/**  RMT RxVref
+  Step size of RxVref. Auto- 1. Supported values- 1,2,4,8 in FSP.
+  1:Auto, 2:2, 4:4, 8:8
+**/
+  UINT8                       RMTRxVref;
+
+/**  Dfx RMT Scrambler
+  Enable or Disable scrambler during RMT test in FSP.
+  $EN_DIS
+**/
+  UINT8                       DfxScrambleEnRMT;
+
+/**  RMT Step Size Override
+  Enable or Disable overriding the default step sizes in FSP.
+  $EN_DIS
+**/
+  UINT8                       RMTStepSizeOverride;
+
+/**  RMT TxDq
+  Step size of TxDq. Auto- 1. Supported values- 1,2,4,8 in FSP.
+  1:Auto, 2:2, 4:4, 8:8
+**/
+  UINT8                       RMTTxDq;
+
+/**  RMT TxVref
+  Step size of TxVref. Auto- 1. Supported values- 1,2,4,8 in FSP.
+  1:Auto, 2:2, 4:4, 8:8
+**/
+  UINT8                       RMTTxVref;
+
+/**  DDR5 ECS
+  Disable: Disable ECS/Result collection. Enable: Enable ECS without Result Collection.
+  Enable ECS with Result Collection: Enable ECS/Result Collection.
+  0:Disable, 1:Enable, 2:Enable ECS with Result Collection
+**/
+  UINT8                       ErrorCheckScrub;
+
+/**  Runtime PPR/Row Sparing
+  Enable/Disable Runtime PPR / Row Sparing.
+  $EN_DIS
+**/
+  UINT8                       RtRowSparing;
+
+/**  Mca Bank Warm Boot Clear Errors
+  Enable/Disable Mca Bank Warm Boot Clear Errors.
+  $EN_DIS
+**/
+  UINT8                       McBankWarmBootClearError;
+
+/**  RasStateVarPtr
+  Pointer to array of RAS_STATE_VARIABLE_DATA
+**/
+  UINT32                      RasStateVarPtr;
+
+/**  Enforce Memory POR
+  Enforce POR (0x0) - Enforces Plan Of Record restrictions for DDR5 frequency and
+  voltage programming. Enforce Stretch Goals (0x1) - Enforce DDR memory frequency
+  stretch goal. <b>Disable (0x2 - Default)</b> - Disables this feature and user is
+  able to run at higher frequencies, specified in the DDR Frequency Limit field (limited
+  by processor support).
+  0:POR, 1:Enforce Stretch Goals, 2:Disabled
+**/
+  UINT8                       EnforceDdrMemoryFreqPor;
+
+/**  Enforce Population POR
+  Enable Memory Population POR Enforcement.  Selecting Enforce Validated Populations
+  will only allow populations that have been validated in FSP.
+  $EN_DIS
+**/
+  UINT8                       EnforcePopulationPor;
+
+/**  DDR PPR Type
+  Selects DDR Post Package Repair Type - 2- Hard PPR, <b>1- Soft PPR (Default)</b>,
+  0- Disabled.
+  0:Disabled, 2:Hard PPR, 1:Soft PPR
+**/
+  UINT8                       pprType;
+
+/**  pprAddrVariablePtr
+  Pointer to array of PPR_ADDR_VARIABLE
+**/
+  UINT32                      PprAddrVariablePtr;
+
+/**  BDAT ACPI Table
+  Enable / Disable publishing BDAT ACPI Table in FSP.
+  $EN_DIS
+**/
+  UINT8                       bdatEn;
+
+/**  Allow Memory Test Correctable Error
+  Enable - Logs error and allows correctable errors during memory test(DIMM Rank not
+  removed). Disable - Logs error and removes DIMM Rank. Auto - Sets it to the MRC
+  default setting; current default is Enable in FSP.
+  $EN_DIS
+**/
+  UINT8                       allowCorrectableMemTestError;
+
+/**  SlotPerChannel
+  Slot number per channel, default value is 2
+  1:Slot1, 2:Slot2
+**/
+  UINT8                       SlotPerChannel;
+
+/**  Memory I/O Health Check
+  Memory I/O Health Check - 0- Auto, 1- Manual, <b>2- Disable (Default)</b>. Select
+  option Auto for default values. Manual for new values. Disable for disabling feature in FSP.
+  0:Auto, 1:Manual, 2:Disable
+**/
+  UINT8                       MemIOHealthCheck;
+
+/**  Memory I/O Health Turnaround Test
+  Memory I/O Health Turnaround Test - 1- Enable, <b>0- Disable (Default)</b>. Select
+  Disable for disabling feature in FSP. Enable for enabling feature in FSP.
+  0:Disable, 1:Enable
+**/
+  UINT8                       MemIOHealthTurnaroundTest;
+
+/**  Memory I/O Health Check Loop Count
+  CPGC Test Loop Count for Memory IO Health Test.
+**/
+  UINT8                       MemIOLoopCount;
+
+/**  RxDqsDelay Left Edge
+  Offset for RxDqsDelay Left Edge in FSP.
+**/
+  UINT8                       CriticalRxDqsDelayLeftEdge;
+
+/**  RxDqsDelay Right Edge
+  Offset for RxDqsDelay Right in FSP.
+**/
+  UINT8                       CriticalRxDqsDelayRightEdge;
+
+/**  RxVref Left Edge
+  Offset for RxVref Left Edge in FSP.
+**/
+  UINT8                       CriticalRxVrefLeftEdge;
+
+/**  RxVref Right Edge
+  Offset for RxVref Right Edge in FSP.
+**/
+  UINT8                       CriticalRxVrefRightEdge;
+
+/**  TxDqDelay Left Edge
+  Offset for TxDqDelay Left Edge in FSP.
+**/
+  UINT8                       CriticalTxDqDelayLeftEdge;
+
+/**  TxDqDelay Right Edge
+  Offset for TxDqDelay Right Edge in FSP.
+**/
+  UINT8                       CriticalTxDqDelayRightEdge;
+
+/**  TxVref Left Edge
+  Offset for TxDqDelay Left Edge in FSP.
+**/
+  UINT8                       CriticalTxVrefLeftEdge;
+
+/**  TxVref Right Edge
+  Offset for TxDqDelay Right Edge in FSP.
+**/
+  UINT8                       CriticalTxVrefRightEdge;
+
+/**  Reboot On Critical Failure
+  Reboot System on Critical failure to do Memory Training in FSP.
+  $EN_DIS
+**/
+  UINT8                       ResetOnCriticalError;
+
+/**  Number of Times to Reboot and Retrain
+  Number of times to Reboot System on Critical failure to do Memory Training in FSP.
+**/
+  UINT8                       CriticalRetries;
+
+/**  Telemetry RxDqsDelay Left Edge
+  Offset for Telemetry RxDqsDelay Left Edge in FSP.
+**/
+  UINT8                       TelemetryRxDqsDelayLeftEdge;
+
+/**  Telemetry RxDqsDelay Right Edge
+  Offset for Telemetry RxDqsDelay Right Edge in FSP.
+**/
+  UINT8                       TelemetryRxDqsDelayRightEdge;
+
+/**  Telemetry RxVref Left Edge
+  Offset for Telemetry RxDqsDelay Left Edge in FSP.
+**/
+  UINT8                       TelemetryRxVrefLeftEdge;
+
+/**  Telemetry RxVref Right Edge
+  Offset for Telemetry RxDqsDelay Right Edge in FSP.
+**/
+  UINT8                       TelemetryRxVrefRightEdge;
+
+/**  Telemetry TxDqDelay Left Edge
+  Offset for Telemetry TxDqDelay Left Edge in FSP.
+**/
+  UINT8                       TelemetryTxDqDelayLeftEdge;
+
+/**  Telemetry TxDqDelay Right Edge
+  Offset for Telemetry TxDqDelay Right Edge in FSP.
+**/
+  UINT8                       TelemetryTxDqDelayRightEdge;
+
+/**  Telemetry TxVref Left Edge
+  Offset for Telemetry TxDqDelay Left Edge in FSP.
+**/
+  UINT8                       TelemetryTxVrefLeftEdge;
+
+/**  Telemetry TxVref Right Edge
+  Offset for Telemetry TxDqDelay Right Edge in FSP.
+**/
+  UINT8                       TelemetryTxVrefRightEdge;
+
+/**  Telemetry CaTiming Left Edge
+  Offset for Telemetry CaTiming Left Edge in FSP.
+**/
+  UINT8                       TelemetryCaTimingLeftEdge;
+
+/**  Telemetry CaTiming Right Edge
+  Offset for Telemetry CaTiming Right Edge in FSP.
+**/
+  UINT8                       TelemetryCaTimingRightEdge;
+
+/**  Telemetry CtlTiming Left Edge
+  Offset for Telemetry CtlTiming Left Edge in FSP.
+**/
+  UINT8                       TelemetryCtlTimingLeftEdge;
+
+/**  Telemetry CtlTiming Right Edge
+  Offset for Telemetry CtlTiming Right Edge in FSP.
+**/
+  UINT8                       TelemetryCtlTimingRightEdge;
+
+/**  Telemetry CaVref Left Edge
+  Offset for Telemetry CaVref Left Edge in FSP.
+**/
+  UINT8                       TelemetryCaVrefLeftEdge;
+
+/**  Telemetry CaVref Right Edge
+  Offset for Telemetry CaVref Right Edge in FSP.
+**/
+  UINT8                       TelemetryCaVrefRightEdge;
+
+/**  Critical CaTiming Left Edge
+  Offset for Critical CaTiming Left Edge in FSP.
+**/
+  UINT8                       CriticalCaTimingLeftEdge;
+
+/**  Critical CaTiming Right Edge
+  Offset for Critical CaTiming Right Edge in FSP.
+**/
+  UINT8                       CriticalCaTimingRightEdge;
+
+/**  Critical CtlTiming Left Edge
+  Offset for Critical CtlTiming Left Edge in FSP.
+**/
+  UINT8                       CriticalCtlTimingLeftEdge;
+
+/**  Critical CtlTiming Right Edge
+  Offset for Critical CtlTiming Right Edge in FSP.
+**/
+  UINT8                       CriticalCtlTimingRightEdge;
+
+/**  Critical CaVref Left Edge
+  Offset for Critical CaVref Left Edge in FSP.
+**/
+  UINT8                       CriticalCaVrefLeftEdge;
+
+/**  Critical CaVref Right Edge
+  Offset for Critical CaVref Right Edge in FSP.
+**/
+  UINT8                       CriticalCaVrefRightEdge;
+
+/**  Intel(R) Flat Memory Mode Support
+  Enable or disable Intel(R) Flat Memory Mode support.
+  0:Disable, 1:Enable
+**/
+  UINT8                       Flat2lmSupport;
+
+/**  Dynamic ECC Mode Selection
+  Enable/Disable Dynamic ECC Mode Selection in FSP.
+  $EN_DIS
+**/
+  UINT8                       DynamicEccModeSel;
+
+/**  Leaky bucket high bit
+  Leaky bucket high bit"  (0x1 - 0x29)
+**/
+  UINT8                       leakyBktHi;
+
+/**  Leaky bucket time window based interface Hour
+  Leaky bucket time window based interface Hour" (0 - 24)
+**/
+  UINT16                      leakyBktHour;
+
+/**  Leaky bucket low bit
+  Leaky bucket low bit" (0x1 - 0x29)
+**/
+  UINT8                       leakyBktLo;
+
+/**  Leaky bucket time window based interface Minute
+  Leaky bucket time window based interface Minute" (0 - 60)
+**/
+  UINT8                       leakyBktMinute;
+
+/**  Leaky bucket time window based interface
+  Enable/Disable leaky bucket time window based interface
+  0:Disable, 1:Enable
+**/
+  UINT8                       leakyBktTimeWindow;
+
+/**  Memory Patrol Scrub
+  Enable/Disable Patrol Scrub
+  0:Disable, 2:Enable at End of POST
+**/
+  UINT8                       PatrolScrub;
+
+/**  Memory Patrol Scrub Notify
+  Memory Patrol Scrub - <b>0:Disable  (Default)</b>, 1:Enable at ReadyToBootFsp().
+  0:Disable, 1:Enable at ReadyToBootFsp()
+**/
+  UINT8                       PatrolScrubNotify;
+
+/**  Patrol Scrub Interval
+  Patrol Scrub Interval in FSP.
+**/
+  UINT8                       PatrolScrubDuration;
+
+/**  Patrol Scrub Address Mode
+  Selects the address mode between <b>System Physical Address (0x1 - Default)</b>
+  or Reverse Address (0x0) in FSP.
+  0:Reverse Address, 1:System Physical Address
+**/
+  UINT8                       PatrolScrubAddrMode;
+
+/**  Memory Thermal Throttling Mode
+  Memory Configure Memory Thermal Throttling Mode in FSP.
+  0:Disable, 2:CLTT, 3:CLTT with PECI
+**/
+  UINT8                       thermalthrottlingsupport;
+
+/**  Memory Correctable Error Threshold
+  Memory Correctable Error Threshold (1 - 32767) used for sparing and leaky bucket in FSP.
+**/
+  UINT16                      spareErrTh;
+
+/**  WR CRC feature Control
+  Enable/Disable Write CRC in FSP.
+  $EN_DIS
+**/
+  UINT8                       WrCRC;
+
+/**  DDR 2x Refresh Enable
+  Enable/Disable 2x Refresh. Auto = dynamically selected.
+  0:Disable, 1:Enable, 2:Auto
+**/
+  UINT8                       RefreshMode;
+
+/**  Adaptive Refresh Management Level
+  Selects Adaptive Refresh Management(ARFM) Level when refresh management(RFM) is
+  required. 0:Default - RAAIMT, RAAMMT, RAADEC; 1:Level A - RAAIMT-A, RAAMMT-A, RAADEC-A;
+  2:Level B - RAAIMT-B, RAAMMT-B, RAADEC-B; 3:Level C - RAAIMT-C, RAAMMT-C, RAADEC-C
+  0:Default - RAAIMT or RAAMMT or RAADEC, 1:Level A - RAAIMT-A or RAAMMT-A or RAADEC-A,
+  2:Level B - RAAIMT-B or RAAMMT-B or RAADEC-B, 3:Level C - RAAIMT-C or RAAMMT-C
+  or RAADEC-C
+**/
+  UINT8                       AdaptiveRefreshMgmtLevel;
+
+/**  CXL Hetero Support
+  Enable/Disable (Default) DDR CXL Heterogeneous Interleave in FSP.
+  $EN_DIS
+**/
+  UINT8                       CxlHeteroSupport;
+
+/**  MEMHOT INPUT Control
+  Enable/Disable MEMHOT INPUT in FSP.
+  $EN_DIS
+**/
+  UINT8                       MemHotIn;
+
+/**  MEMHOT OUTPUT Mode
+  MEMHOT OUTPUT Mode in FSP.
+  0:Disable, 1:Enable only temphi, 2:Enable only temphi and mid, 3:Enable only temphi
+  mid and low
+**/
+  UINT8                       MemhotOutputOnlyOpt;
+
+/**  DfxPmicSecureMode
+  0:Disable Pmic Secure Mode, 1:Enable Pmic Secure Mode, 2:Auto Pmic Secure Mode.
+  0:Disable Pmic Secure Mode, 1:Enable Pmic Secure Mode, 2:Auto Pmic Secure Mode
+**/
+  UINT8                       DfxPmicSecureMode;
+
+/**  SpdPrintEn
+  Enable/Disable SPD Print
+  $EN_DIS
+**/
+  UINT8                       SpdPrintEn;
+
+/**  Force PPR On All Dram For UCE
+  Enable/Disable force PPR on all dram for UCE.
+  0:Disable, 1:Enable
+**/
+  UINT8                       ForcePprOnAllDramUce;
+
+/**  CXL Header Bypass
+  Enable/Disable the CXL header bypass in FSP.
+  0:Disable, 1:Enable
+**/
+  UINT8                       DfxCxlHeaderBypass;
+
+/**  CXL Security Level
+  CXL Security Level<br>\n
+  0- Fully Trusted - CXL Device can get access on CXL.$ for host-attached and device 
+  attached memory ranges in the WB address space.<br>\n
+  1- Partially Trusted - CXL Device can get access on CXL.$ for device attached memory 
+  ranges only;<br>\n
+  2- Untrusted - All requests on CXL.$ will be aborted by the Host.<br>\n
+  <b>3- Auto - Currently identical to Fully Trusted. (Default)</b>
+  0:Fully Trusted, 1:Partially Trusted, 2:Untrusted, 3:Auto
+**/
+  UINT8                       DfxCxlSecLvl;
+
+/**  CXL VID
+  CXL VID on SPR B0. Auto(Default) and Enable is 0x1E98. Disable is 0x8086
+  0:Disable, 1:Enable, 2:Auto
+**/
+  UINT8                       DfxCxlVid;
+
+/**  Warm-Reset Elimination
+  When enabled, BIOS will attempt to skip warm-reset on the cold-reset path. Auto:
+  platform or silicon RC policy determines feature status
+  0:Disable, 1:Enable, 2:Auto
+**/
+  UINT8                       DfxWarmResetEliminationEn;
+
+/**  IIO DFX CxlDebugMode Ptr
+  Pointer to array of CxlDebugMode settings Per Port, 0x00000000 indicates Dfx CXL
+  Debug mode Disable.
+**/
+  UINT32                      DfxCxlDebugModePtr;
+
+/**  IIO DFX CxlDebugMode Number
+  Number of elements in DfxCxlDebugModePtr array, port number as unit, should be set
+  along with DfxCxlDebugModePtr.
+**/
+  UINT32                      DfxCxlDebugModeNumber;
+
+/**  Processor Package C State
+  Package C State 0: C0/C1 state, 1: C2 state, 2: C6(non Retention) state, 3: C6(Retention)
+  state, 7: No Limit, <b>0xFF: Auto (Default)</b>
+  0: C0/C1 state, 1: C2 state, 2: C6(non Retention) state, 3: C6(Retention) state,
+  7: No Limit, 0xFF: Auto
+**/
+  UINT8                       CpuPmPackageCState;
+
+/**  Enhanced Intel SpeedStep(R) Tech
+  Enable(Default)/Disable Enhanced Intel SpeedStep(R) Tech
+  $EN_DIS
+**/
+  UINT8                       CpuPmEistEnable;
+
+/**  C1E
+  Enable(Default)/Disable C1E
+  $EN_DIS
+**/
+  UINT8                       CpuPmC1eEnable;
+
+/**  Intel SST-PP
+  Intel SST-PP Select allows user to choose level.\n
+  AUTO: Choose lowest level hardware supported.
+  0xFF: AUTO (default), 0: Level 0, 1: Level 1, 2: Level 2, 3: Level 3, 4: Level 4
+**/
+  UINT8                       CpuPmSstPpLevel;
+
+/**  Intel SST-BF
+  SST-BF - <b>0: Disable (Default)</b>, 1: Enabled.
+  $EN_DIS
+**/
+  UINT8                       CpuPmProcessorSstBfSetting;
+
+/**  Core Disable Bitmask for Socket 0 - Compute Die 0
+  Set bit(s) to Disable or clear bit(s) to Enable core(s) on Socket 0 - Compute Die
+  0.\n
+  NOTE:\n
+  (1) Any core disabled by user will force static SST-PP.\n
+  (2) Please leave this UPD at default value if CPU SKU does not support the corresponding 
+  number of compute die.
+**/
+  UINT64                      CpuPmCoreDisableBitmaskSkt0Die0;
+
+/**  Core Disable Bitmask for Socket 0 - Compute Die 1
+  Set bit(s) to Disable or clear bit(s) to Enable core(s) on Socket 0 - Compute Die
+  1.\n
+  NOTE:\n
+  (1) Any core disabled by user will force static SST-PP.\n
+  (2) Please leave this UPD at default value if CPU SKU does not support the corresponding 
+  number of compute die.
+**/
+  UINT64                      CpuPmCoreDisableBitmaskSkt0Die1;
+
+/**  Core Disable Bitmask for Socket 0 - Compute Die 2
+  Set bit(s) to Disable or clear bit(s) to Enable core(s) on Socket 0 - Compute Die
+  2.\n
+  NOTE:\n
+  (1) Any core disabled by user will force static SST-PP.\n
+  (2) Please leave this UPD at default value if CPU SKU does not support the corresponding 
+  number of compute die.
+**/
+  UINT64                      CpuPmCoreDisableBitmaskSkt0Die2;
+
+/**  Core Disable Bitmask for Socket 1 - Compute Die 0
+  Set bit(s) to Disable or clear bit(s) to Enable core(s) on Socket 1 - Compute Die
+  0.\n
+  NOTE:\n
+  (1) Any core disabled by user will force static SST-PP.\n
+  (2) Please leave this UPD at default value if CPU SKU does not support the corresponding 
+  number of compute die.
+**/
+  UINT64                      CpuPmCoreDisableBitmaskSkt1Die0;
+
+/**  Core Disable Bitmask for Socket 1 - Compute Die 1
+  Set bit(s) to Disable or clear bit(s) to Enable core(s) on Socket 1 - Compute Die
+  1.\n
+  NOTE:\n
+  (1) Any core disabled by user will force static SST-PP.\n
+  (2) Please leave this UPD at default value if CPU SKU does not support the corresponding 
+  number of compute die.
+**/
+  UINT64                      CpuPmCoreDisableBitmaskSkt1Die1;
+
+/**  Core Disable Bitmask for Socket 1 - Compute Die 2
+  Set bit(s) to Disable or clear bit(s) to Enable core(s) on Socket 1 - Compute Die
+  2.\n
+  NOTE:\n
+  (1) Any core disabled by user will force static SST-PP.\n
+  (2) Please leave this UPD at default value if CPU SKU does not support the corresponding 
+  number of compute die.
+**/
+  UINT64                      CpuPmCoreDisableBitmaskSkt1Die2;
+
+/**  Processor Dynamic Intel Speed Select (ISS) Function
+  Enable or Disable(Default) Processor Dynamic Intel Speed Select (ISS) Function
+  $EN_DIS
+**/
+  UINT8                       CpuPmDynamicIss;
+
 /**  BIOS Region Base
   Pointer to the location of the BIOS Region
 **/
   UINT32                      BiosRegionBase;
-  
+
 /**  BIOS Region Size
   The size of the BIOS Region in bytes
 **/
   UINT32                      BiosRegionSize;
 
+/**  Platform Data Area Base
+  Pointer to the location of the Platform Data Area
+**/
+  UINT32                      PlatformDataAreaBase;
+
+/**  Platform Data Area Size
+  The size of the Platform Data Area in bytes
+**/
+  UINT32                      PlatformDataAreaSize;
+
+/** N/A
+**/
+  UINT8                       ReservedMemoryInitUpd[16];
+
+/**  Enable TME
+  Enable TME
+  $EN_DIS
+**/
+  UINT8                       SecurityCctEnableTme;
+
+/**  Enable TME CR
+  Enable TME CR
+  $EN_DIS
+**/
+  UINT8                       SecurityCctEnableTmeCR;
+
+/**  Enable MKTME
+  Enable MKTME
+  $EN_DIS
+**/
+  UINT8                       SecurityCctEnableMktme;
+
+/**  Enable Global Integrity
+  Enable Global Integrity
+  $EN_DIS
+**/
+  UINT8                       SecurityCctEnableGlobalIntegrity;
+
+/**  Select TME Crypto Algorithm
+  Enable Global Integrity
+  0:Algo1,1:Algo2, 2:Algo3
+**/
+  UINT16                      SecurityCctTmeCryptoAlg;
+
+/**  Enable TDX
+  : Enable TDX
+**/
+  UINT8                       SecurityCctEnableTdx;
+
+/**  Enable TDX Connect
+  : Enable TDX Connect
+**/
+  UINT8                       SecurityCctEnableTdxConnect;
+
+/**  TDX Physical PCIe Port Disable Bitmap
+  TDX Physical PCIe Port Disable Bitmap
+**/
+  UINT16                      SecurityCctTdxPhysicalPciePortDisableBitmap[8];
+
+/**  Key Split
+  : Key Split
+**/
+  UINT8                       SecurityCctKeySplit;
+
+/**  Enable TDX SEAM Loader
+  : Enable TDX SEAM Loader
+  $EN_DIS
+**/
+  UINT8                       SecurityCctEnableTdxSeamldr;
+
+/**  Enabne SGX
+  : Enable SGX
+  $EN_DIS
+**/
+  UINT8                       SecurityCctEnableSgx;
+
+/**  Dfx Sgx CMCS Payload
+  Dfx Sgx CMCS Payload
+**/
+  UINT64                      SecurityCctDfxSgxCmcsPayload[16];
+
+/**  SGX QoS
+  : SGX QoS
+  $EN_DIS
+**/
+  UINT8                       SecurityCctSgxQoS;
+
+/**  SGX Auto Registration Agent
+  : SGX Auto Registration Agent
+  $EN_DIS
+**/
+  UINT8                       SecurityCctSgxAutoRegistrationAgent;
+
+/**  SGX Package Info In Band Access
+  : SGX Package Info In Band Access
+  $EN_DIS
+**/
+  UINT8                       SecurityCctSgxPackageInfoInBandAccess;
+
+/**  EPOCH Update
+  : EPOCH Update
+  3:EpochDeactived, 0:EpochActived, 1:NewRandomEpoch, 2:ManualEpoch
+**/
+  UINT8                       SecurityCctEpochUpdate;
+
+/**  SGX EPOCH 0
+  : SGX EPOCH 0
+**/
+  UINT64                      SecurityCctSgxEpoch0;
+
+/**  SGX EPOCH 1
+  : SGX EPOCH 1
+**/
+  UINT64                      SecurityCctSgxEpoch1;
+
+/**  SGX LeWr
+  : SGX LeWr
+  $EN_DIS
+**/
+  UINT8                       SecurityCctSgxLeWr;
+
+/**  SGX Le Public Key Hash 0
+  : SGX Le Public Key Hash 0
+**/
+  UINT64                      SecurityCctSgxLePubKeyHash0;
+
+/**  SGX Le Public Key Hash 1
+  : SGX Le Public Key Hash 1
+**/
+  UINT64                      SecurityCctSgxLePubKeyHash1;
+
+/**  SGX Le Public Key Hash 2
+  : SGX Le Public Key Hash 2
+**/
+  UINT64                      SecurityCctSgxLePubKeyHash2;
+
+/**  SGX Le Public Key Hash 3
+  : SGX Le Public Key Hash 3
+**/
+  UINT64                      SecurityCctSgxLePubKeyHash3;
+
+/**  SGX Debug Mode
+  : SGX Debug Mode
+  $EN_DIS
+**/
+  UINT8                       SecurityCctSgxDebugMode;
+
+/**  SGX Factory Reset
+  : SGX Factory Reset
+  $EN_DIS
+**/
+  UINT8                       SecurityCctSgxFactoryReset;
+
+/**  Dfx Bios Param Header Override
+  : Dfx Bios Param Header Override
+  2:Auto, 1:Enabled
+**/
+  UINT8                       SecurityCctDfxBiosParamHeaderOverride;
+
+/**  Dfx Bios Param Header Version
+  : Dfx Bios Param Header Version
+**/
+  UINT16                      SecurityCctDfxBiosParamHeaderVersion;
+
+/**  Dfx Disable Actm Launch
+  : Dfx Disable Actm Launch
+  1:Enabled, 0:Disabled, 2:Auto
+**/
+  UINT8                       SecurityCctDfxDisableActmLaunch;
+
+/**  ACTM Flash Base
+  : ACTM Flash Base
+**/
+  UINT32                      SecurityCctActmPcdFlash;
+
+/**  Enable UPI FLE
+  : Enable UPI FLE
+  $EN_DIS
+**/
+  UINT8                       SecurityCctEnableUpiFle;
+
+/**  Enable SAF
+  : Enable SAF
+  $EN_DIS
+**/
+  UINT8                       SecurityCctEnableSaf;
+
+/**  Dfx TDX Disable 1MB CMR Exclude
+  : Dfx TDX Disable 1MB CMR Exclude
+  1:Enabled, 0:Disabled, 2:Auto
+**/
+  UINT8                       SecurityCctDfxTdxDisable1MbCmrExclude;
+
+/**  Dfx Seamldr Source location
+  : Dfx Seamldr Source location
+  2:Auto, 0:ESP, 1:IFWI
+**/
+  UINT8                       SecurityCctDfxSeamldrSrc;
+
+/**  Dfx Tdx module Source location
+  : Dfx Tdx module Source location
+  2:Auto, 0:ESP, 1:IFWI
+**/
+  UINT8                       SecurityCctDfxTdxModuleSrc;
+
+/**  Dfx PRMRR SEAMRR Support
+  : Dfx PRMRR SEAMRR Support
+  1:Enabled, 0:Disabled, 2:Auto
+**/
+  UINT8                       SecurityCctDfxPrmrrSeamrrSupport;
+
+/**  Dfx Simics Environment
+  : Dfx Simics Environment
+  2:Auto, 1:Enabled
+**/
+  UINT8                       SecurityCctDfxSimicsEnvironment;
+
+/**  Dfx Force UPL Unsupported
+  : Dfx Force UPL Unsupported
+  2:Auto, 1:Enabled
+**/
+  UINT8                       SecurityCctDfxForceUplUnsupported;
+
+/**  Dfx TME Key Restore
+  : Dfx TME Key Restore
+  $EN_DIS
+**/
+  UINT8                       SecurityCctDfxTmeKeyRestore;
+
+/**  Dfx TME Exclusion Base
+  : Dfx TME Exclusion Base
+**/
+  UINT64                      SecurityCctDfxTmeExclusionBase;
+
+/**  Dfx TME Exclusion Length
+  : Dfx TME Exclusion Length
+**/
+  UINT64                      SecurityCctDfxTmeExclusionLength;
+
+/**  Dfx MKTME KeyIdBits Override
+  : Dfx MKTME KeyIdBits Override
+  $EN_DIS
+**/
+  UINT8                       SecurityCctDfxMkTmeKeyIdBitsOverride;
+
+/**  Dfx MKTME KeyIdBits Override Value
+  : Dfx MKTME KeyIdBits Override Value
+**/
+  UINT8                       SecurityCctDfxMkTmeKeyIdBitsOverrideValue;
+
+/**  Dfx SGX Debug Print
+  : Dfx SGX Debug Print
+  $EN_DIS
+**/
+  UINT8                       SecurityCctDfxSgxDebugPrint;
+
+/**  Dfx SGX Registration Server Select
+  : Dfx SGX Registration Server Select
+  1:PRX, 0:SBX, 3:LIV, 4:SoftwareDefined, 2:Auto
+**/
+  UINT8                       SecurityCctDfxSgxRegistrationServerSelect;
+
+/**  Dfx SGX Add Package Support
+  : Dfx SGX Add Package Support
+  1:Enabled, 0:Disabled, 2:Auto
+**/
+  UINT8                       SecurityCctDfxSgxAddPackageSupport;
+
+/**  Dfx allow SGX non POR memory population
+  : Dfx SGX Add Package Support
+  1:Enabled, 2:Auto
+**/
+  UINT8                       SecurityCctDfxAllowSgxNonPorMemoryPopulation;
+
+/**  Dfx SGX Hang Before ACTM
+  : Dfx SGX Hang Before ACTM
+  $EN_DIS
+**/
+  UINT8                       SecurityCctDfxSgxHangBeforeActm;
+
+/**  Dfx SGX Hang After ACTM
+  : Dfx SGX Hang After ACTM
+  $EN_DIS
+**/
+  UINT8                       SecurityCctDfxSgxHangAfterActm;
+
+/**  Dfx SGX Hang Before MCHECK
+  : Dfx SGX Hang Before MCHECK
+  $EN_DIS
+**/
+  UINT8                       SecurityCctDfxSgxHangBeforeMcheck;
+
+/**  Dfx SGX Hang After MCHECK
+  : Dfx SGX Hang After MCHECK
+  $EN_DIS
+**/
+  UINT8                       SecurityCctDfxSgxHangAfterMcheck;
+
+/**  Dfx SGX Hang Before MSR 7A
+  : Dfx SGX Hang Before MSR 7A
+  $EN_DIS
+**/
+  UINT8                       SecurityCctDfxSgxHangBeforeMsr7a;
+
+/**  Dfx SGX Hang After MSR 7A
+  : Dfx SGX Hang After MSR 7A
+  $EN_DIS
+**/
+  UINT8                       SecurityCctDfxSgxHangAfterMsr7a;
+
+/**  Dfx disable CCT MSR_BIOS_DONE
+  : Dfx disable CCT MSR_BIOS_DONE
+  $EN_DIS
+**/
+  UINT8                       SecurityCctDfxDisableCctBiosDone;
+
+/**  Dfx Mcheck MSR 72
+  : Dfx Mcheck MSR 72 programming
+  $EN_DIS
+**/
+  UINT8                       SecurityCctDfxMcheckMsr72;
+
+/**  Dfx Skip Warm Reset Promotion
+  : Dfx Skip Warm Reset Promotion
+  2:Auto, 1:Enabled
+**/
+  UINT8                       SecurityCctDfxSkipWarmResetPromotion;
+
+/**  Enable SBFT
+  : Enable SBFT
+  1:Enabled, 0:Disabled, 4:IfsSbftSgxEnabled
+**/
+  UINT8                       SecurityCctEnableSbft;
+
+/**  PRMRR SGX Size
+  : PRMRR SGX Size
+  0x8000000:128MB, 0x10000000:256MB, 0x20000000:512MB, 0x40000000:1GB, 0x80000000:2GB,
+  0x100000000:4GB, 0x200000000:8GB,0x400000000:16GB, 0x800000000:32GB, 0x1000000000:64GB,
+  0x2000000000:128GB, 0x4000000000:256GB, 0x8000000000:512GB
+**/
+  UINT64                      SecurityCctPrmrrSgxSize;
+
+/**  PRMRR SAF Size
+  : PRMRR SAF Size
+  0x0:Invalid, 0x800000:8MB, 0x2000000:32MB, 0x4000000:64MB, 0x8000000:128MB, 0x10000000:256MB
+**/
+  UINT64                      SecurityCctPrmrrSafSize;
+
+/**  PRMRR SBFT Size
+  : PRMRR SBFT Size
+  0x0:Invalid, 0x10000000:256MB, 0x20000000:512MB
+**/
+  UINT64                      SecurityCctPrmrrSbftSize;
+
+/** N/A
+  Pointer to node list which is used to initizalize security variables - CCT_VS_METADATA_NODE
+**/
+  EFI_PHYSICAL_ADDRESS        SecurityCctVarStorageMetadataNodePtr;
+
+/**  SINIT ACM SE SVN default
+  Default value of SINIT ACM SE SVN
+**/
+  UINT8                       SecurityCctSinitAcmSeSvnFspDefault;
+
+/**  SINIT ACM SE SVN override request
+  Override request for SINIT ACM SE SVN
+**/
+  UINT8                       SecurityCctSinitAcmSeSvnOverrideRequest;
+
+/**  SINIT ACM SE SVN value
+  Value of SINIT ACM SE SVN
+**/
+  UINT8                       SecurityCctSinitAcmSeSvnValue;
+
+/**  Setup data pointer
+  : Setup data pointer
+**/
+  UINT64                      SetupDataPtr;
+
+/**  Setup data Size
+  : Setup data Size
+**/
+  UINT64                      SetupDataSize;
+
+/**  Emulation Setting data pointer
+  : Emulation Setting data pointer
+**/
+  UINT64                      EmulationSettingPtr;
+
+/**  Emulation Setting data Size
+  : Emulation Setting data Size
+**/
+  UINT64                      EmulationSettingSize;
+
+/**  Platform info data pointer
+  : Platform info data pointer
+**/
+  UINT64                      PlatformInfoPtr;
+
+/**  Platform info data Size
+  : Platform info data Size
+**/
+  UINT64                      PlatformInfoSize;
+
+/**  FSPM Upd settings support
+  : FSPM Upd settings support
+  $EN_DIS
+**/
+  UINT8                       FspmUpdSupport;
+
+/**  Gen4 RCD Dimm support
+  Gen4 RCD Dimm support, 0- Disable, 1- Enable
+  0:Disable, 1:Enable
+**/
+  UINT8                       Gen4RcdDeviceSupport;
+
 } FSPM_CONFIG;
 
+
 typedef struct {
-  
+
 /** N/A
 **/
   FSP_UPD_HEADER              FspUpdHeader;
-  
+
 /** N/A
 **/
   FSPM_ARCH2_UPD              FspmArchUpd;
-  
+
 /** N/A
 **/
   FSPM_CONFIG                 FspmConfig;

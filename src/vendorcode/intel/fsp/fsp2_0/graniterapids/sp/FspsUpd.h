@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2022, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2024, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -30,69 +30,122 @@ are permitted provided that the following conditions are met:
 
 **/
 
-#ifndef __FSPSUPD_H__
-#define __FSPSUPD_H__
+#ifndef __FSPS_UPD_H__
+#define __FSPS_UPD_H__
 
 #include <FspUpd.h>
 
 #pragma pack(1)
 
-
-/** FSP-S Configuration
-**/
 typedef struct {
 
-/** Offset 0x0020 - Processor VmxEnable Function
-  Processor VmxEnable Function - <b>1: Enable(Default)</b>, 0: Disable Processor VmxEnable Function.
-  0: Disable, 1: Enable
+/**  PCIe Controller 0
+  Enable / Disable PCI Express controller 0
+  $EN_DIS
 **/
-  UINT8                       VmxEnable;
+  UINT8                       EnablePcie0;
 
-/** Offset 0x0021 - Processor TurboMode Function
-  Processor TurboMode Function - <b>1: Enable(Default)</b>, 0: Disable Processor TurboMode Function.
-  0: Disable, 1: Enable
+/**  PCIe Controller 1
+  Enable / Disable PCI Express controller 1
+  $EN_DIS
 **/
-  UINT8                       TurboMode;
+  UINT8                       EnablePcie1;
 
-/** Offset 0x0022 - Processor Safer Mode Extensions Function
-  Processor Safer Mode Extensions Function - <b>0: Disable(Default)</b>, 1: Enable
-  Processor Safer Mode Extensions Function.
-  0: Disable, 1: Enable
+/**  Embedded Multi-Media Controller (eMMC)
+  Enable / Disable Embedded Multi-Media controller
+  $EN_DIS
 **/
-  UINT8                       ProcessorSmxEnable;
+  UINT8                       EnableEmmc;
 
-/** Offset 0x0023 - SstCp
-  SstCp - 1: Enable, <b>0: Disable SstCp(Default)</b>.
-  0: Disable, 1: Enable
+/**  LAN Controllers
+  Enable / Disable LAN controllers, refer to FSP Integration Guide for details.
+  0:Disable LAN 0 & LAN 1, 1:Enable LAN 0 & LAN 1, 2:Disable LAN 1 only
 **/
-  UINT8                       SstCpSetting;
+  UINT8                       EnableGbE;
 
-/** Offset 0x0024 - SstCp Capable Status
-  SST-CP Capable Status in system - <b>0: Disable(Default)</b>, 1: Enable.
-  0: Disable, 1: Enable
+/**  PCIe Root Port 0 DeEmphasis
+  Desired DeEmphasis level for PCIE root port
+  0:6dB, 1:3.5dB
 **/
-  UINT8                       SstCpCapableSystem;
+  UINT8                       PcieRootPort0DeEmphasis;
 
-/** Offset 0x0025
+/**  PCIe Root Port 1 DeEmphasis
+  Desired DeEmphasis level for PCIE root port
+  0:6dB, 1:3.5dB
 **/
-  UINT8                       UnusedUpdSpace0[1];
+  UINT8                       PcieRootPort1DeEmphasis;
 
-/** Offset 0x0026 - PCH Protect Range Limit
+/**  PCIe Root Port 2 DeEmphasis
+  Desired DeEmphasis level for PCIE root port
+  0:6dB, 1:3.5dB
+**/
+  UINT8                       PcieRootPort2DeEmphasis;
+
+/**  PCIe Root Port 3 DeEmphasis
+  Desired DeEmphasis level for PCIE root port
+  0:6dB, 1:3.5dB
+**/
+  UINT8                       PcieRootPort3DeEmphasis;
+
+/**  PCIe Root Port 4 DeEmphasis
+  Desired DeEmphasis level for PCIE root port
+  0:6dB, 1:3.5dB
+**/
+  UINT8                       PcieRootPort4DeEmphasis;
+
+/**  PCIe Root Port 5 DeEmphasis
+  Desired DeEmphasis level for PCIE root port
+  0:6dB, 1:3.5dB
+**/
+  UINT8                       PcieRootPort5DeEmphasis;
+
+/**  PCIe Root Port 6 DeEmphasis
+  Desired DeEmphasis level for PCIE root port
+  0:6dB, 1:3.5dB
+**/
+  UINT8                       PcieRootPort6DeEmphasis;
+
+/**  PCIe Root Port 7 DeEmphasis
+  Desired DeEmphasis level for PCIE root port
+  0:6dB, 1:3.5dB
+**/
+  UINT8                       PcieRootPort7DeEmphasis;
+
+/**  eMMC DLL Configuration Data
+  Pointer to eMMC DLL Configuration Data
+**/
+  UINT32                      EMMCDLLConfigPtr;
+
+/**  PCH Protect Range Limit
   Left shifted address by 12 bits with address bits 11:0 are assumed to be FFFh for
   limit comparison.
 **/
   UINT16                      PchProtectedRangeLimit[5];
 
-/** Offset 0x0030 - PCH Protect Range Base
+/**  PCH Protect Range Base
   Left shifted address by 12 bits with address bits 11:0 are assumed to be 0.
 **/
   UINT16                      PchProtectedRangeBase[5];
 
-/** Offset 0x003A - PchAdrEn
-  PchAdr - <b>0: PLATFORM POR(Default)</b>, 1: FORCE ENABLE, 2:FORCE DISABLE.
-  0: PLATFORM POR, 1: FORCE ENABLE, 2: FORCE DISABLE
+/**  PchAdrEn
+  PchAdr 0:PLATFORM POR, <b>1:FORCE ENABLE(Default)</b>, 2:FORCE DISABLE
+  0:PLATFORM POR, 1:FORCE ENABLE, 2:FORCE DISABLE
 **/
   UINT8                       PchAdrEn;
+
+/**  Enable Timed GPIO0
+  Enable/Disable Timed GPIO0. When disabled, it disables cross time stamp time-synchronization
+  as extension of Hammock Harbor time synchronization
+  $EN_DIS
+**/
+  UINT8                       EnableTimedGpio0;
+
+/**  Enable Timed GPIO1
+  Enable/Disable Timed GPIO0. When disabled, it disables cross time stamp time-synchronization
+  as extension of Hammock Harbor time synchronization
+  $EN_DIS
+**/
+  UINT8                       EnableTimedGpio1;
 
 /**  FSP smm init enable
   Enable / Disable FSP smm init
@@ -100,191 +153,101 @@ typedef struct {
 **/
   UINT8                       FspSmmInitEn;
 
-/** Offset 0x003B - EnableTme
-  EnableTme - <b>0: Disabled(Default)</b>, 1: Enabled, 2:Software Controlled.
-  0: Disabled, 1: Enabled, 2:Software Controlled
+/**  C2C3TT
+  Default = 0, means [AUTO]. C2 to C3 Transition Timer, PPDN_INIT = C2C3TT CSR Bit[11:0]
+  0: Default, Bit[11:0] : C2 to C3 Transition Timer
 **/
-  UINT8                       EnableTme;
+  UINT8                       CpuPmC2c3tt;
 
-/** Offset 0x003C - EnableTmeBypass
-  EnableTmeBypass - <b>0: Disabled(Default)</b>, 1: Enabled.
-  0: Disabled, 1: Enabled
-**/
-  UINT8                       EnableTmeBypass;
-
-/** Offset 0x003D - SgxFactoryReset
-  SgxFactoryReset - <b>0: Disabled(Default)</b>, 1: Enabled.
-  0: Disabled, 1: Enabled
-**/
-  UINT8                       SgxFactoryReset;
-
-/** Offset 0x003E - EnableSgx
-  EnableSgx - <b>0: Disabled(Default)</b>, 1: Enabled.
-  0: Disabled, 1: Enabled
-**/
-  UINT8                       EnableSgx;
-
-/** Offset 0x003F - SgxPackageInfoInBandAccess
-  SgxPackageInfoInBandAccess - <b>0: Disabled(Default)</b>, 1: Enabled.
-  0: Disabled, 1: Enabled
-**/
-  UINT8                       SgxPackageInfoInBandAccess;
-
-/** Offset 0x0040 - SgxQoS
-  SgxQoS - 0: Disabled, <b>1: Enabled(Default)</b>.
-  0: Disabled, 1: Enabled
-**/
-  UINT8                       SgxQoS;
-
-/** Offset 0x0041 - EpochUpdate
-  EpochUpdate - 1: Change to New Random Owner EPOCHs, <b>2: Manual User Defined Owner
-  EPOCHs(Default)</b>.
-  1: Change to New Random Owner EPOCHs, 2: Manual User Defined Owner EPOCHs
-**/
-  UINT8                       EpochUpdate;
-
-/** Offset 0x0042 - SgxLeWr
-  SgxLeWr - <b>0: Disabled(Default)</b>, 1: Enabled.
-  0: Disabled, 1: Enabled
-**/
-  UINT8                       SgxLeWr;
-
-/** Offset 0x0043 - SgxDebugMode
-  SgxDebugMode - <b>0: Disabled(Default)</b>, 1: Enabled.
-  0: Disabled, 1: Enabled
-**/
-  UINT8                       SgxDebugMode;
-
-/** Offset 0x0044 - SgxAutoRegistrationAgent
-  SgxAutoRegistrationAgent - <b>0: Disabled(Default)</b>, 1: Enabled.
-  0: Disabled, 1: Enabled
-**/
-  UINT8                       SgxAutoRegistrationAgent;
-
-/** Offset 0x0045 - DfxSgxRegistrationServerSelect
-  DfxSgxRegistrationServerSelect - <b>0: SBX(Default)</b>, 1: PRX, 2:AUTO, 3:LIV,
-  4:SW Defined Server.
-  0: SBX, 1: PRX, 2:AUTO, 3:LIV, 4:SW Defined Server
-**/
-  UINT8                       DfxSgxRegistrationServerSelect;
-
-/** Offset 0x0046 - Processor Enable Monitor MWAIT
-  Processor Enable Monitor MWAIT - <b>1: Enable(Default)</b>, 0: Disable Processor
-  Monitor MWAIT.
-  0: Disabled, 1: Enabled
+/**  Processor Enable Monitor MWAIT
+  Enable(Default) or Disable Processor Monitor MWAIT
+  $EN_DIS
 **/
   UINT8                       CpuPmMonitorMWait;
 
-/** Offset 0x0047 - Processor C6
-  Processor C6 - <b>1: Enable(Default)</b>, 0: Disable Processor C6 (ACPI C3) report to OS.
-  0: Disabled, 1: Enabled
+/**  Processor TurboMode Function
+  Enable(Default) or Disable Processor TurboMode Function
+  $EN_DIS
 **/
-  UINT8                       CpuPmC6Enable;
+  UINT8                       CpuPmTurboMode;
 
-/** Offset 0x0048 - Hardware P-States
-  Hardware P-States - 0:  Disable: Hardware chooses a P-state based on OS Request
-  (Legacy P-States), <b>1:Native Mode:Hardware chooses a P-state based on OS guidance(Default)</b>,
-  2:Out of Band Mode:Hardware autonomously chooses a P-state (no OS guidance), 3:Native
-  Mode with No Legacy Support.
-  0: Disable, 1: Native Mode, 2: Out of Band Mode, 3: Native Mode with No Legacy Support
+/**  Hardware P-States
+  Disable: Hardware chooses a P-state based on OS Request (Legacy P-States)\n
+  Native Mode:Hardware chooses a P-state based on OS guidance\n
+  Out of Band Mode:Hardware autonomously chooses a P-state (no OS guidance)
+  0:Disable, 1:Native Mode (Default), 2:Out of Band Mode, 3:Native Mode with No Legacy Support
 **/
   UINT8                       CpuPmProcessorHWPMEnable;
 
-/** Offset 0x0049 - Power Performance Tuning
-  Power Performance Tuning - <b>0: OS Controls EPB (Default)</b>, 1: BIOS Controls
-  EPB, 2: PECI Controls EPB.
+/**  HardwarePM Interrupt
+  Enable or Disable (Default) Hardware PM Interrupt
+  $EN_DIS
+**/
+  UINT8                       CpuPmProcessorHWPMInterrupt;
+
+/**  EPP Profile
+  Choose an HWPM Profile, 0: Performance, 128: Balanced Performance, 192: Balanced
+  Power, 255: Power
+  0: Performance, 128: Balanced Performance, 192: Balanced Power, 255: Power
+**/
+  UINT8                       CpuPmProcessorEPPProfile;
+
+/**  Boot Performance Mode
+  Select the performance state that the BIOS will set before OS hand off, 0: Max Performance,
+  1: Max Efficiency
+  0: Max Performance (Default), 1: Max Efficiency
+**/
+  UINT8                       CpuPmBootPstate;
+
+/**  Power Performance Tuning
+  Power Performance Tuning <b>0: OS Controls EPB (Default)</b>, 1: BIOS Controls EPB,
+  2: PECI Controls EPB
   0: OS Controls EPB, 1: BIOS Controls EPB, 2: PECI Controls EPB
 **/
   UINT8                       CpuPmPwrPerfTuning;
 
-/** Offset 0x004A - Configure SST-BF
-  Allow (Default)/Disallow BIOS to configure SST-BF High Priority Cores so that SW
-  does not have to configure - 0:Disable, <b>1:Enable(Default)</b>.
-  0:Disable, 1:Enable
+/**  Enable or Disable Thermal Monitor
+  Enable or Disable Thermal Monitor, 0: Disable, 1: Enable
+  $EN_DIS
 **/
-  UINT8                       CpuPmProcessorConfigurePbf;
+  UINT8                       ThermalMonitor;
 
-/** Offset 0x004B - CF9 Global Reset Promotion
-  CF9 Global Reset Promotion - 1: Enable promoting CF9 reset to global, <b>0: Disable
-  promoting CF9 reset to global(Default)</b>.
-  0: Disabled, 1: Enabled
+/**  FSPS Upd settings support
+  : FSPS Upd settings support
+  $EN_DIS
 **/
-  UINT8                       MeGrPromotionEnabled;
+  UINT8                       FspsUpdSupport;
 
-/** Offset 0x004C - Global Reset Lock
-  Global Reset Lock - <b>1: Enable locking the joint ME and host reset capability(Default)</b>,
-  0: Disable locking the joint ME and host reset capability.
-  0: Disabled, 1: Enabled
+/** N/A
+  Pointer to node list which is used to initizalize security variables - CCT_VS_METADATA_NODE
 **/
-  UINT8                       MeGrLockEnabled;
+  EFI_PHYSICAL_ADDRESS        SecurityCctVarStorageMetadataNodePtr;
 
-/** Offset 0x004D - Delayed Authentication Mode
-  Enable or disable Delayed Authentication Mode - <b>0: Disable(Default)</b>, 1: Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       DelayedAuthenticationMode;
-
-/** Offset 0x004E - Delayed Authentication Mode Override
-  Enable or disable Delayed Authentication Mode Override - <b>0: Disable(Default)</b>,
-  1: Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       DelayedAuthenticationModeOverride;
-
-/** Offset 0x004F - Core Bios Done Message
-  Enable or disable Core Bios Done message sent to ME - 0: Disable, <b>1: Enable(Default)</b>.
-  0:Disable, 1:Enable
-**/
-  UINT8                       CoreBiosDoneEnabled;
-
-/** Offset 0x0050 - End Of Post Message
-  Enable or disable sending END_OF_POST message to ME - 0: Disable, 1: Send in PEI,
-  <b>2: Send in DXE(Default)</b>.
-  0:Disable, 1:Send in PEI, 2:Send in DXE
-**/
-  UINT8                       EndOfPostMessage;
-
-/** Offset 0x0051 - HMRFPO_LOCK Message
-  Enable or disable sending HMRFPO_LOCK message to ME - 0: Disable, <b>1: Enable(Default)</b>.
-  0:Disable, 1:Enable
-**/
-  UINT8                       MeHmrfpoLockEnabled;
-
-/** Offset 0x0052 - HMRFPO_ENABLE Message
-  Enable or disable sending HMRFPO_ENABLE message to ME - <b>0: Disable(Default)</b>,
-  1: Enable.
-  0:Disable, 1:Enable
-**/
-  UINT8                       MeHmrfpoEnableEnabled;
-
-/** Offset 0x0053
-**/
-  UINT8                       UnusedUpdSpace1[1];
-
-/** Offset 0x0054
+/** N/A
 **/
   UINT8                       ReservedSiliconInitUpd[16];
+
 } FSPS_CONFIG;
 
-/** Fsp S UPD Configuration
-**/
+
 typedef struct {
 
-/** Offset 0x0000
+/** N/A
 **/
   FSP_UPD_HEADER              FspUpdHeader;
 
-/** Offset 0x0020
+/** N/A
+**/
+  FSPS_ARCH2_UPD              FspsArchUpd;
+
+/** N/A
 **/
   FSPS_CONFIG                 FspsConfig;
 
-/** Offset 0x0064
-**/
-  UINT8                       UnusedUpdSpace2[2];
-
-/** Offset 0x0066
+/** N/A
 **/
   UINT16                      UpdTerminator;
+
 } FSPS_UPD;
 
 #pragma pack()

@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2022, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2024, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -35,13 +35,27 @@ are permitted provided that the following conditions are met:
 
 #include <FspUpd.h>
 
-#define FSP_RAS_ACPI_HOB_GUID           { 0x826785ee, 0xa8e0, 0x4d8f, { 0x82, 0x6f, 0x54, 0x29, 0x2c, 0xe7, 0x6f, 0xe6 } };
-
 #pragma pack(1)
 
 typedef struct {
 
-	/**  WHEA Support
+/**  RAS Log Level.
+  RAS Log setup options.
+  0:None, 1:MIN (BASIC_FLOW), 2:MID (BASIC_FLOW, FUNC_FLOW), 3:MAX (BASIC_FLOW, FUNC_FLOW, REG)
+**/
+  UINT8                       RasLogLevel;
+
+/**  WHEA FV Base Address
+  The physical memory-mapped base address of the WHEA (FV).
+**/
+  UINT64                      WheaFvBase;
+
+/**  WHEA FV Base Size
+  The size of the WHEA FV region in bytes
+**/
+  UINT64                      WheaFvBaseSize;
+
+/**  WHEA Support
   Enable/Disable WHEA support.
   0:Disable, 1:Enable
 **/
@@ -69,15 +83,216 @@ typedef struct {
 **/
   UINT8                       PcieErrInjActionTable;
 
+/**  SGX Memory Error Injection Support
+  Enable/Disable Error Injection Support in SGX Memory.
+  0:6dB, 1:3.5dB
+**/
+  UINT8                       SgxErrorInjEn;
+
+/**  Os Native AER Support
+  Select FFM or OS native for AER error handling. If select OS native, BIOS also initialize
+  FFM first until handshake, which depends on OS capability in FSP.
+  0:Disable, 1:Enable
+**/
+  UINT8                       OsNativeAerSupport;
+
+/**  IIO MCA Support.
+  Enable/Disable IIO MCA Support.
+  0:Disable, 1:Enable
+**/
+  UINT8                       IoMcaEn;
+
+/**  System Errors
+  System Error Enable/Disable setup options.
+  0:Disabled, 1:Enabled
+**/
+  UINT8                       SystemErrorEn;
+
+/**  CPU CrashLog Feature
+  The feature helps collecting crash data from OOBMSM SSRAM
+  0:Disabled, 1:Enabled,2:Auto
+**/
+  UINT8                       CpuCrashLogFeature;
+
+/**  MCERR Trigger CrashLog Disable
+  The feature helps to disable MCERR to trigger crash log
+  0:No, 1:Yes
+**/
+  UINT8                       McerrTriggerDisable;
+
+/**  Smbus Error Recovery
+  Enable or Disable(Default) Smbus Error Recovery
+  0:Disabled, 1:SMI, 2:Error Pin
+**/
+  UINT8                       SmbusErrorRecovery;
+
+/**  EMCA Error Support
+  Enable/Disable EMCA Error support
+  0:Disable, 1:Enable
+**/
+  UINT8                       EmcaEn;
+
+/**  EMCA Logging Support
+  Enable/Disable EMCA Logging
+  0:Disable, 1:Enable
+**/
+  UINT8                       ElogEn;
+
+/**  LMCE Support
+  Enable/Disable Local MCE firmware support
+  0:Disable, 1:Enable
+**/
+  UINT8                       LmceEn;
+
+/**  EMCA MCE-SMI Enable
+  Enable/Disable EMCA Uncorrected SMI for gen2
+  0:Disable, 2:EMCA gen2 MSMI
+**/
+  UINT8                       EmcaMsmiEn;
+
+/**  EMCA CMCI-SMI Morphing
+  Enable/Disable EMCA CSMI
+  0:Disable, 2:EMCA gen2 CSMI
+**/
+  UINT8                       EmcaCsmiEn;
+
+/**  EMCA CMCI-SMI Threshold
+  Set the threshold of CSMI
+**/
+  UINT16                      EmcaCsmiThreshold;
+
+/**  CSMI Dynamic Disable
+  Enable/Disable CSMI when error threshold reached
+  0:Disable, 1:Enable
+**/
+  UINT8                       CsmiDynamicDisable;
+
+/**  Ignore OS ELOG Opt-in
+  Enable/Disable Ignore OS ELOG Opt-in and log
+  0:Disable, 1:Enable
+**/
+  UINT8                       ElogIgnOptin;
+
+/**  Corrected Error eLog
+  Enable/Disable Corrected Error eLog
+  0:Disable, 1:Enable
+**/
+  UINT8                       ElogCorrErrEn;
+
+/**  Memory Error eLog
+  Enable/Disable Memory Error eLog
+  0:Disable, 1:Enable
+**/
+  UINT8                       ElogMemErrEn;
+
+/**  Processor Error eLog
+  Enable/Disable Processor Error eLog
+  0:Disable, 1:Enable
+**/
+  UINT8                       ElogProcErrEn;
+
+/**  Ubox Error Mask
+  Mask SMI generation for Ubox Error
+  0:Disable, 1:Enable
+**/
+  UINT8                       UboxErrorMask;
+
+/**  Corrected Error Cloaking
+  Mask Corrected errors from OS/SW visibility only when EMCA is enabled
+  0:Disable, 1:Enable
+**/
+  UINT8                       CeCloakingEn;
+
+/**  Memory Corrected Error
+  Enable/Disable Memory Corrected Error
+  0:Disable, 1:Enable, 2:Auto
+**/
+  UINT8                       CorrMemErrEn;
+
+/**  Mca Bank Error Injection Support
+  Enable/Disable Mca Bank Error Injection Support.
+  $EN_DIS
+**/
+  UINT8                       McaBankErrInjEn;
+
+/**  Whea Log Memory Error
+  Enable/Disable Whea Log Memory Error
+  0:Disabled, 1:Enabled
+**/
+  UINT8                       WheaLogMemoryEn;
+
+/**  Whea Log Processor Error
+  Enable/Disable Whea Log Processor Error
+  0:Disabled, 1:Enabled
+**/
+  UINT8                       WheaLogProcEn;
+
+/**  Whea Log PCI Error
+  Enable/Disable Whea Log PCI Error
+  0:Disabled, 1:Enabled
+**/
+  UINT8                       WheaLogPciEn;
+
+/**  Viral Status
+  Enable/Disable Viral
+  $EN_DIS
+**/
+  UINT8                       ViralEn;
+
+/**  System Memory Poison
+  Enable/Disable System Memory Poison.
+  $EN_DIS
+**/
+  UINT8                       DfxPoisonEn;
+
+/**  Clear Shadow Registers
+  Enable/Disable clearing shadow registers.
+  $EN_DIS
+**/
+  UINT8                       ClearShadowRegisters;
+
+/**  PCIE Corrected Error Threshold Counter
+  Enable/Disable PCIE Corrected Error Counter.
+  $EN_DIS
+**/
+  UINT8                       PcieCorErrCntr;
+
+/**  PCIE Corrected Error Threshold Counter
+  0x00000001 - 0x0000ffff.
+**/
+  UINT32                      PcieCorErrThres;
+
 /**  IIO eDPC Support
   Enable/Disable IIO eDPC Support.
   0:Disabled, 1:On Fatal Error, 2:On Fatal and Non-Fatal Errors
 **/
   UINT8                       EdpcEn;
 
+/**  IIO eDPC Interrupt
+  Enable/Disable IIO eDPC Interrupt.
+  0:Disabled, 1:Enabled
+**/
+  UINT8                       EdpcInterrupt;
+
+/**  IpmiIoBase
+  Address of IpmiIoBase
+**/
+  UINT16                      IpmiIoBase;
+
+/**  Trigger SW Error Threshold
+  Enable or Disable Sparing trigger SW Error Match Threshold.
+  0:Disable, 1:Enable
+**/
+  UINT8                       TriggerSWErrThEn;
+
+/**  SW Per Row Threshold
+  SW Per Row Correctable Error Threshold (1 - 0x7FFF) used for row level error.
+**/
+  UINT16                      SparePerRowTh;
+
 /** N/A
 **/
-  UINT8                       ReservedSiliconInitUpd[16];
+  UINT8                       ReservedSmmInitUpd[16];
 
 } FSPI_CONFIG;
 
@@ -87,11 +302,15 @@ typedef struct {
 /** N/A
 **/
   FSP_UPD_HEADER              FspUpdHeader;
-  
+
+/** N/A
+**/
+  FSPI_ARCH_UPD               FspiArchUpd;
+
 /** N/A
 **/
   FSPI_CONFIG                 FspiConfig;
-  
+
 /** N/A
 **/
   UINT16                      UpdTerminator;

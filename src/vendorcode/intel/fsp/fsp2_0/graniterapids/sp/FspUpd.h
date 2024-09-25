@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2022, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2024, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -37,11 +37,11 @@ are permitted provided that the following conditions are met:
 
 #pragma pack(1)
 
-#define FSPT_UPD_SIGNATURE               0x545F445055525053        /* 'SPRUPD_T' */
+#define FSPT_UPD_SIGNATURE    0x545F445055524E47  /* 'GNRUPD_T' */
 
-#define FSPM_UPD_SIGNATURE               0x4D5F445055525053        /* 'SPRUPD_M' */
+#define FSPM_UPD_SIGNATURE    0x4D5F445055524E47  /* 'GNRUPD_M' */
 
-#define FSPS_UPD_SIGNATURE               0x535F445055525053        /* 'SPRUPD_S' */
+#define FSPS_UPD_SIGNATURE    0x535F445055524E47  /* 'GNRUPD_S' */
 
 #define FSPI_UPD_SIGNATURE    0x495F445055524E47  /* 'GNRUPD_I' */
 

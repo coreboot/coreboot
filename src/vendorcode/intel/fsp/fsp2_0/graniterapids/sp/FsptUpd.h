@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2022, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2024, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -38,19 +38,19 @@ are permitted provided that the following conditions are met:
 #pragma pack(1)
 
 typedef struct {
-  
+
 /** N/A
 **/
   UINT64                      MicrocodeRegionBase;
-  
+
 /** N/A
 **/
   UINT64                      MicrocodeRegionLength;
-  
+
 /** N/A
 **/
   UINT64                      CodeRegionBase;
-  
+
 /** N/A
 **/
   UINT64                      CodeRegionLength;
@@ -60,13 +60,11 @@ typedef struct {
 
 typedef struct {
 
-/** Offset 0x0040 - Disable Port80 output in FSP-T
-  Select Port80 Control in FSP-T - 0:VPD-Style, <b>1:Enable Port80 Output (Default)</b>,
-  2:Disable Port80 Output, refer to FSP Integration Guide for details.
+/**  Disable Port80 output in FSP-T
   0:VPD-Style, 1:Enable Port80 Output[Default], 2:Disable Port80 Output
 **/
   UINT8                       FsptPort80RouteDisable;
-  
+
 /** N/A
 **/
   UINT8                       ReservedTempRamInitUpd[31];
@@ -75,23 +73,23 @@ typedef struct {
 
 
 typedef struct {
-  
+
 /** N/A
 **/
   FSP_UPD_HEADER              FspUpdHeader;
-  
+
 /** N/A
 **/
   FSPT_ARCH2_UPD              FsptArchUpd;
-  
+
 /** N/A
 **/
   FSPT_CORE_UPD               FsptCoreUpd;
-  
+
 /** N/A
 **/
   FSPT_CONFIG                 FsptConfig;
-  
+
 /** N/A
 **/
   UINT16                      UpdTerminator;

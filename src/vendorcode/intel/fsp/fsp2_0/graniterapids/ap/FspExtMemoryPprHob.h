@@ -30,72 +30,41 @@ are permitted provided that the following conditions are met:
 
 **/
 
-#ifndef __FSPT_UPD_H__
-#define __FSPT_UPD_H__
+#ifndef _FSP_EXT_MEMORY_PPR_HOB_H_
+#define _FSP_EXT_MEMORY_PPR_HOB_H_
 
-#include <FspUpd.h>
+#include "FspGlobals.h"
+
+#define FSP_EXT_MEMORY_PPR_HOB_GUID   { 0x3956C6DA, 0x35B6, 0x4036, { 0x93, 0xE4, 0xB1, 0x51, 0x38, 0x60, 0x21, 0x1E } }
 
 #pragma pack(1)
 
-typedef struct {
+typedef struct FspExtPprAddr {
+  UINT8               Status;
+  UINT8               ErrorType;
+  UINT8               Socket;
+  UINT8               MemoryController;
+  UINT8               Channel;
+  UINT8               Dimm;
+  UINT8               Bank;
+  UINT32              Row;
+  UINT8               Rank;
+} FSP_EXT_PPR_ADDR;
 
-/** N/A
-**/
-  UINT64                      MicrocodeRegionBase;
+typedef struct FspExtPprDdrInfo {
+  UINT8               Count;
+  FSP_EXT_PPR_ADDR    PprAddresses[FSP_MAX_PPR_ADDR_ENTRIES_DDR];
+} FSP_EXT_DDR_PPR_INFO;
 
-/** N/A
-**/
-  UINT64                      MicrocodeRegionLength;
+typedef struct FspExtMemoryPprData {
+  FSP_EXT_DDR_PPR_INFO          DdrPprInfo;
+} FSP_EXT_MEMORY_PPR_DATA;
 
-/** N/A
-**/
-  UINT64                      CodeRegionBase;
-
-/** N/A
-**/
-  UINT64                      CodeRegionLength;
-
-} FSPT_CORE_UPD;
-
-
-typedef struct {
-
-/**  Disable Port80 output in FSP-T
-  0:VPD-Style, 1:Enable Port80 Output[Default], 2:Disable Port80 Output
-**/
-  UINT8                       FsptPort80RouteDisable;
-
-/** N/A
-**/
-  UINT8                       ReservedTempRamInitUpd[31];
-
-} FSPT_CONFIG;
-
-
-typedef struct {
-
-/** N/A
-**/
-  FSP_UPD_HEADER              FspUpdHeader;
-
-/** N/A
-**/
-  FSPT_ARCH2_UPD              FsptArchUpd;
-
-/** N/A
-**/
-  FSPT_CORE_UPD               FsptCoreUpd;
-
-/** N/A
-**/
-  FSPT_CONFIG                 FsptConfig;
-
-/** N/A
-**/
-  UINT16                      UpdTerminator;
-
-} FSPT_UPD;
+typedef struct FspExtMemoryPprHob {
+  FSP_EXT_HEADER                Header;
+  FSP_EXT_MEMORY_PPR_DATA       Data;
+} FSP_EXT_MEMORY_PPR_HOB;
 
 #pragma pack()
 
-#endif
+#endif // _FSP_EXT_MEMORY_PPR_HOB_H_

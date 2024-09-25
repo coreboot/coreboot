@@ -30,72 +30,32 @@ are permitted provided that the following conditions are met:
 
 **/
 
-#ifndef __FSPT_UPD_H__
-#define __FSPT_UPD_H__
+#ifndef _FSP_EXT_GLOBALS_
+#define _FSP_EXT_GLOBALS_
 
-#include <FspUpd.h>
+#define FSP_MAX_SOCKET                      MAX_SOCKET
+#define FSP_MAX_IMC                         MAX_IMC
+#define FSP_MAX_MC_CH                       MAX_MC_CH
+#define FSP_MAX_DIMM                        MAX_DIMM
+#define FSP_DIMM_MAX_SERIALNUMBER_LEN       NGN_MAX_SERIALNUMBER_STRLEN
+#define FSP_DIMM_MAX_PARTNUMBER_LEN         NGN_MAX_PARTNUMBER_STRLEN
+#define FSP_MAX_CH                          ((FSP_MAX_IMC)*(FSP_MAX_MC_CH))
+#define FSP_MAX_MEMORY_MAP_ELEMENTS         150
 
-#pragma pack(1)
+#define MEM_64MB_TO_BYTES(Size64M)          ((UINT64)(Size64M) << 26)
+#define MEM_64MB_TO_KBYTES(Size64M)         ((UINT64)(Size64M) << 16)
+#define MEM_64MB_TO_MBYTES(Size64M)         ((UINT64)(Size64M) << 6)
+#define MEM_64MB_TO_GBYTES(Size64M)         ((Size64M) >> 4)
+#define MEM_BYTES_TO_64MB(SizeB)            ((SizeB) >> 26)
+#define MEM_KBYTES_TO_64MB(SizeKB)          ((SizeKB) >> 16)
+#define MEM_MBYTES_TO_64MB(SizeMB)          ((SizeMB) >> 6)
 
-typedef struct {
+#define FSP_MAX_PPR_ADDR_ENTRIES_DDR        MAX_PPR_ADDR_ENTRIES_DDR
 
-/** N/A
-**/
-  UINT64                      MicrocodeRegionBase;
+typedef struct FspExtHeader {
+  UINT64 Magic;
+  UINT32 DataLength;
+  UINT32 CheckSum;
+} FSP_EXT_HEADER;
 
-/** N/A
-**/
-  UINT64                      MicrocodeRegionLength;
-
-/** N/A
-**/
-  UINT64                      CodeRegionBase;
-
-/** N/A
-**/
-  UINT64                      CodeRegionLength;
-
-} FSPT_CORE_UPD;
-
-
-typedef struct {
-
-/**  Disable Port80 output in FSP-T
-  0:VPD-Style, 1:Enable Port80 Output[Default], 2:Disable Port80 Output
-**/
-  UINT8                       FsptPort80RouteDisable;
-
-/** N/A
-**/
-  UINT8                       ReservedTempRamInitUpd[31];
-
-} FSPT_CONFIG;
-
-
-typedef struct {
-
-/** N/A
-**/
-  FSP_UPD_HEADER              FspUpdHeader;
-
-/** N/A
-**/
-  FSPT_ARCH2_UPD              FsptArchUpd;
-
-/** N/A
-**/
-  FSPT_CORE_UPD               FsptCoreUpd;
-
-/** N/A
-**/
-  FSPT_CONFIG                 FsptConfig;
-
-/** N/A
-**/
-  UINT16                      UpdTerminator;
-
-} FSPT_UPD;
-
-#pragma pack()
-
-#endif
+#endif // _FSP_EXT_GLOBALS_

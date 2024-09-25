@@ -13,13 +13,11 @@ The supported platform status are as below,
 
 1. Beechnut City CRB (Sierra Forest-SP)
 
-- Buildable with n-1 FSP headers
-
-- Bootable with real FSP headers/binaries
+- Buildable and bootable with real FSP headers/binaries
 
 2. Avenue City CRB (Granite Rapids-AP)
 
-- Buildable with n-1 FSP headers
+- Buildable and bootable with real FSP headers/binaries
 
 ## Build steps
 
@@ -108,21 +106,14 @@ make UPDATED_SUBMODULES=1 -j`nproc`
 git format-patch upstream..HEAD
 ```
 
-## About Granite Rapids n-1 FSP headers
+## About Granite Rapids FSP binaries and other needed firmware ingredients
 
-This is a set of stub FSP headers for Granite Rapids server, which will
-be forward compatible with the formal Granite Rapids FSP headers which
-will be opensource at a later stage. For the n-1 FSP headers, there are
-no corresponding n-1 FSP binaries. To pass build, users need to use stub
-binaries which could be generated in arbitrary ways.  Granite Rapids n-1
-FSP headers are at: `src/vendorcode/intel/fsp/fsp2_0/graniterapids`.
-
-## About Granite Rapids real FSP headers
-
-For the real Granite Rapids FSP headers and binaries, please contact
-intel business interface to obtain. Then please update
-configs/builder/config.intel.crb.avc and configs/builder/config.intel.crb.bnc
+For the real Granite Rapids FSP binaries, please contact intel business interface to obtain.
+Then please update configs/builder/config.intel.crb.avc and configs/builder/config.intel.crb.bnc
 to apply.
+
+Other needed firmware ingredients includes microcode, intel flash descriptor and platform boot
+policy. The same flow to obtain and apply.
 
 ## Test Environment
 

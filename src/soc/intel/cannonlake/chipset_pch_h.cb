@@ -49,10 +49,10 @@ chip soc/intel/cannonlake
 						device usb 2.9 alias usb2_port10 off end
 					end
 					chip drivers/usb/acpi
-						device usb 2.10 alias usb2_port11 off end
+						device usb 2.a alias usb2_port11 off end
 					end
 					chip drivers/usb/acpi
-						device usb 2.11 alias usb2_port12 off end
+						device usb 2.b alias usb2_port12 off end
 					end
 					chip drivers/usb/acpi
 						device usb 3.0 alias usb3_port1 off end

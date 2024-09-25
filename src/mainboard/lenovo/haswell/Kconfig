@@ -72,10 +72,6 @@ config USBDEBUG_HCD_INDEX
 	int
 	default 2
 
-config DRIVER_LENOVO_SERIALS
-	bool
-	default n
-
 config PS2K_EISAID
 	default "LEN0071"
 

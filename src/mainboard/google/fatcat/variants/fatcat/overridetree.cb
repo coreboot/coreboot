@@ -1,0 +1,59 @@
+fw_config
+	field AUDIO 0 3
+		option AUDIO_NONE		0
+		option MAX98373_ALC5682_SNDW	1
+		option ALC722_SNDW		2
+		option ALC256_HDA		3
+		option MAX98360_ALC5682I_I2S	4
+	end
+	field WIFI 4 5
+		option WIFI_CNVI_6		0
+		option WIFI_CNVI_7		1
+		option WIFI_PCIE_6		2
+		option WIFI_PCIE_7		3
+	end
+	field CELLULAR 6 7
+		option CELLULAR_ABSENT		0
+		option CELLULAR_USB		1
+		option CELLULAR_PCIE		2
+	end
+	field TOUCHSCREEN 8 10
+		option TOUCHSCREEN_NONE		0
+		option TOUCHSCREEN_LPSS_I2C	1
+		option TOUCHSCREEN_GSPI		2
+		option TOUCHSCREEN_THC_SPI	3
+		option TOUCHSCREEN_THC0_I2C	4
+	end
+	field TOUCHPAD 11 12
+		option TOUCHPAD_NONE		0
+		option TOUCHPAD_THC_I2C		1
+		option TOUCHPAD_LPSS_I2C	2
+	end
+	field SD 13 14
+		option SD_NONE			0
+		option SD_GENSYS		1
+		option SD_BAYHUB		2
+	end
+	field STORAGE 15 16
+		option STORAGE_UNKNOWN		0
+		option STORAGE_NVME_GEN4	1
+		option STORAGE_NVME_GEN5	2
+		option STORAGE_UFS		3
+	end
+	field FP 17
+		option FP_ABSENT		0
+		option FP_PRESENT		1
+	end
+	field DISPLAY 18
+		option DISPLAY_ABSENT		0
+		option DISPLAY_PRESENT		1
+	end
+	field KB 19
+		option KB_ABSENT		0
+		option KB_PRESENT		1
+	end
+end
+
+chip soc/intel/pantherlake
+	device domain 0 on end
+end

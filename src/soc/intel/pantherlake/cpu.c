@@ -53,7 +53,7 @@ static void configure_misc(void)
 {
 	msr_t msr;
 
-	config_t *conf = (config_t *)config_of_soc();
+	const struct soc_intel_pantherlake_config *conf = config_of_soc();
 
 	msr = rdmsr(IA32_MISC_ENABLE);
 	msr.lo |= FAST_STRINGS_ENABLE_BIT;
@@ -123,7 +123,7 @@ void soc_core_init(struct device *cpu)
 	/* Set energy policy */
 	set_energy_perf_bias(ENERGY_POLICY_NORMAL);
 
-	const config_t *conf = config_of_soc();
+	const struct soc_intel_pantherlake_config *conf = config_of_soc();
 	/* Set energy-performance preference */
 	if (conf != NULL && conf->enable_energy_perf_pref) {
 		if (check_energy_perf_cap())
@@ -152,7 +152,7 @@ static void pre_mp_init(void)
 {
 	soc_fsp_load();
 
-	const config_t *conf = config_of_soc();
+	const struct soc_intel_pantherlake_config *conf = config_of_soc();
 	if (conf == NULL) {
 		printk(BIOS_ERR, "Configuration could not be retrieved.\n");
 		return;

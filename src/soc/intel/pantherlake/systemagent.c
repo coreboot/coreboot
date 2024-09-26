@@ -144,7 +144,7 @@ static void configure_tdp(struct device *dev)
 	u8 tdp;
 	size_t i;
 	bool config_tdp = false;
-	config_t *config;
+	struct soc_intel_pantherlake_config *config;
 
 	config = config_of_soc();
 

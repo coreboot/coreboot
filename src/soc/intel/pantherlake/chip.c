@@ -139,7 +139,7 @@ bool soc_is_ish_partition_enabled(void)
 static void soc_fill_gpio_pm_configuration(void)
 {
 	uint8_t value[TOTAL_GPIO_COMM];
-	const config_t *config = config_of_soc();
+	const struct soc_intel_pantherlake_config *config = config_of_soc();
 
 	if (config->gpio_override_pm)
 		memcpy(value, config->gpio_pm, sizeof(value));
@@ -163,7 +163,7 @@ static void soc_enable_tracehub(void)
 
 void soc_init_pre_device(void *chip_info)
 {
-	config_t *config = config_of_soc();
+	struct soc_intel_pantherlake_config *config = config_of_soc();
 	if (config == NULL) {
 		printk(BIOS_ERR, "Error: Configuration could not be retrieved.\n");
 		return;

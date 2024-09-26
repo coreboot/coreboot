@@ -66,7 +66,7 @@ static void config_deep_sx(uint32_t deepsx_config)
 
 static void soc_pmc_enable(struct device *dev)
 {
-	const config_t *config = config_of_soc();
+	const struct soc_intel_pantherlake_config *config = config_of_soc();
 
 	rtc_init();
 

@@ -126,7 +126,7 @@ const acpi_cstate_t *soc_get_cstate_map(size_t *entries)
 	if (c_state_initialized)
 		return map;
 
-	config_t *config = config_of_soc();
+	const struct soc_intel_pantherlake_config *config = config_of_soc();
 	if (config == NULL) {
 		printk(BIOS_ERR, "Error: Configuration could not be retrieved.\n");
 		return NULL;
@@ -152,7 +152,7 @@ const acpi_cstate_t *soc_get_cstate_map(size_t *entries)
 
 void soc_power_states_generation(int core_id, int cores_per_package)
 {
-	config_t *config = config_of_soc();
+	const struct soc_intel_pantherlake_config *config = config_of_soc();
 	if (config == NULL) {
 		printk(BIOS_ERR, "Error: Configuration could not be retrieved.\n");
 		return;
@@ -166,7 +166,7 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 {
 	const uint16_t pmbase = ACPI_BASE_ADDRESS;
 
-	config_t *config = config_of_soc();
+	const struct soc_intel_pantherlake_config *config = config_of_soc();
 	if (config == NULL) {
 		printk(BIOS_ERR, "Error: Configuration could not be retrieved.\n");
 		return;
@@ -339,7 +339,7 @@ unsigned long sa_write_acpi_tables(const struct device *dev, unsigned long curre
 
 void soc_fill_gnvs(struct global_nvs *gnvs)
 {
-	config_t *config = config_of_soc();
+	const struct soc_intel_pantherlake_config *config = config_of_soc();
 	if (config == NULL) {
 		printk(BIOS_ERR, "Configuration could not be retrieved.\n");
 		return;

@@ -1,0 +1,179 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+#ifndef _SOC_SNOWRIDGE_GPIO_DEFS_H_
+#define _SOC_SNOWRIDGE_GPIO_DEFS_H_
+
+enum gpio_pad_own_t {
+	GPIO_PAD_OWN_HOST = 0x00,
+	GPIO_PAD_OWN_ME = 0x03
+};
+
+/**
+ * The following sets of macros are used when defining pad_community in
+ * src/soc/intel/snowridge/common/gpio.c.
+ */
+
+#define GPIO_WEST2_PAD_OWN      0x0020
+#define GPIO_WEST2_HOSTSW_OWN   0x0120
+#define GPIO_WEST2_GPI_IS       0x0200
+#define GPIO_WEST2_GPI_IE       0x0230
+#define GPIO_WEST2_GPI_GPE_STS  0x0260
+#define GPIO_WEST2_GPI_GPE_EN   0x0290
+#define GPIO_WEST2_SMI_STS      0x02c0
+#define GPIO_WEST2_SMI_EN       0x02f0
+#define GPIO_WEST2_NMI_STS      0x0320
+#define GPIO_WEST2_NMI_EN       0x0350
+#define GPIO_WEST2_PADCFGLOCK   0x00c0
+#define GPIO_WEST2_PADCFGLOCKTX 0x00c4
+#define GPIO_WEST2_PAD_NUM      24
+
+#define GPIO_WEST3_PAD_OWN      0x002c
+#define GPIO_WEST3_HOSTSW_OWN   0x0124
+#define GPIO_WEST3_GPI_IS       0x0204
+#define GPIO_WEST3_GPI_IE       0x0234
+#define GPIO_WEST3_GPI_GPE_STS  0x0264
+#define GPIO_WEST3_GPI_GPE_EN   0x0294
+#define GPIO_WEST3_SMI_STS      0x02c4
+#define GPIO_WEST3_SMI_EN       0x02f4
+#define GPIO_WEST3_NMI_STS      0x0324
+#define GPIO_WEST3_NMI_EN       0x0354
+#define GPIO_WEST3_PADCFGLOCK   0x00c8
+#define GPIO_WEST3_PADCFGLOCKTX 0x00cc
+#define GPIO_WEST3_PAD_NUM      16
+
+#define GPIO_WEST01_PAD_OWN      0x0038
+#define GPIO_WEST01_HOSTSW_OWN   0x0128
+#define GPIO_WEST01_GPI_IS       0x0208
+#define GPIO_WEST01_GPI_IE       0x0238
+#define GPIO_WEST01_GPI_GPE_STS  0x0268
+#define GPIO_WEST01_GPI_GPE_EN   0x0298
+#define GPIO_WEST01_SMI_STS      0x02c8
+#define GPIO_WEST01_SMI_EN       0x02f8
+#define GPIO_WEST01_NMI_STS      0x0328
+#define GPIO_WEST01_NMI_EN       0x0358
+#define GPIO_WEST01_PADCFGLOCK   0x00d0
+#define GPIO_WEST01_PADCFGLOCKTX 0x00d4
+#define GPIO_WEST01_PAD_NUM      23
+
+#define GPIO_WEST5_PAD_OWN      0x0044
+#define GPIO_WEST5_HOSTSW_OWN   0x012c
+#define GPIO_WEST5_GPI_IS       0x020c
+#define GPIO_WEST5_GPI_IE       0x023c
+#define GPIO_WEST5_GPI_GPE_STS  0x026c
+#define GPIO_WEST5_GPI_GPE_EN   0x029c
+#define GPIO_WEST5_SMI_STS      0x02cc
+#define GPIO_WEST5_SMI_EN       0x02fc
+#define GPIO_WEST5_NMI_STS      0x032c
+#define GPIO_WEST5_NMI_EN       0x035c
+#define GPIO_WEST5_PADCFGLOCK   0x00d8
+#define GPIO_WEST5_PADCFGLOCKTX 0x00dc
+#define GPIO_WEST5_PAD_NUM      13
+
+#define GPIO_WESTB_PAD_OWN      0x0060 /**< Reserved. */
+#define GPIO_WESTB_HOSTSW_OWN   0x013c
+#define GPIO_WESTB_GPI_IS       0x021c
+#define GPIO_WESTB_GPI_IE       0x024c
+#define GPIO_WESTB_GPI_GPE_STS  0x027c
+#define GPIO_WESTB_GPI_GPE_EN   0x02ac
+#define GPIO_WESTB_SMI_STS      0x02dc
+#define GPIO_WESTB_SMI_EN       0x030c
+#define GPIO_WESTB_NMI_STS      0x033c
+#define GPIO_WESTB_NMI_EN       0x036c
+#define GPIO_WESTB_PADCFGLOCK   0x00f8
+#define GPIO_WESTB_PADCFGLOCKTX 0x00fc
+#define GPIO_WESTB_PAD_NUM      4
+
+#define GPIO_WESTD_PECI_PAD_OWN      0x0074
+#define GPIO_WESTD_PECI_HOSTSW_OWN   0x0144
+#define GPIO_WESTD_PECI_GPI_IS       0x0224
+#define GPIO_WESTD_PECI_GPI_IE       0x0254
+#define GPIO_WESTD_PECI_GPI_GPE_STS  0x0284
+#define GPIO_WESTD_PECI_GPI_GPE_EN   0x02b4
+#define GPIO_WESTD_PECI_SMI_STS      0x02e4
+#define GPIO_WESTD_PECI_SMI_EN       0x0314
+#define GPIO_WESTD_PECI_NMI_STS      0x0344
+#define GPIO_WESTD_PECI_NMI_EN       0x0374
+#define GPIO_WESTD_PECI_PADCFGLOCK   0x0108
+#define GPIO_WESTD_PECI_PADCFGLOCKTX 0x010c
+#define GPIO_WESTD_PECI_PAD_NUM      1
+
+#define GPIO_EAST2_PAD_OWN      0x0020
+#define GPIO_EAST2_HOSTSW_OWN   0x0120
+#define GPIO_EAST2_GPI_IS       0x0200
+#define GPIO_EAST2_GPI_IE       0x0230
+#define GPIO_EAST2_GPI_GPE_STS  0x0260
+#define GPIO_EAST2_GPI_GPE_EN   0x0290
+#define GPIO_EAST2_SMI_STS      0x02c0
+#define GPIO_EAST2_SMI_EN       0x02f0
+#define GPIO_EAST2_NMI_STS      0x0320
+#define GPIO_EAST2_NMI_EN       0x0350
+#define GPIO_EAST2_PADCFGLOCK   0x00c0
+#define GPIO_EAST2_PADCFGLOCKTX 0x00c4
+#define GPIO_EAST2_PAD_NUM      23
+
+#define GPIO_EAST3_PAD_OWN      0x002c
+#define GPIO_EAST3_HOSTSW_OWN   0x0124
+#define GPIO_EAST3_GPI_IS       0x0204
+#define GPIO_EAST3_GPI_IE       0x0234
+#define GPIO_EAST3_GPI_GPE_STS  0x0264
+#define GPIO_EAST3_GPI_GPE_EN   0x0294
+#define GPIO_EAST3_SMI_STS      0x02c4
+#define GPIO_EAST3_SMI_EN       0x02f4
+#define GPIO_EAST3_NMI_STS      0x0324
+#define GPIO_EAST3_NMI_EN       0x0354
+#define GPIO_EAST3_PADCFGLOCK   0x00c8
+#define GPIO_EAST3_PADCFGLOCKTX 0x00cc
+#define GPIO_EAST3_PAD_NUM      10
+
+#define GPIO_EAST0_PAD_OWN      0x0034 /**< Reserved. */
+#define GPIO_EAST0_HOSTSW_OWN   0x0128
+#define GPIO_EAST0_GPI_IS       0x0208
+#define GPIO_EAST0_GPI_IE       0x0238
+#define GPIO_EAST0_GPI_GPE_STS  0x0268
+#define GPIO_EAST0_GPI_GPE_EN   0x0298
+#define GPIO_EAST0_SMI_STS      0x02c8
+#define GPIO_EAST0_SMI_EN       0x02f8
+#define GPIO_EAST0_NMI_STS      0x0328
+#define GPIO_EAST0_NMI_EN       0x0358
+#define GPIO_EAST0_PADCFGLOCK   0x00d0
+#define GPIO_EAST0_PADCFGLOCKTX 0x00d4
+#define GPIO_EAST0_PAD_NUM      8
+
+#define GPIO_EMMC_PAD_OWN      0x0040
+#define GPIO_EMMC_HOSTSW_OWN   0x012c
+#define GPIO_EMMC_GPI_IS       0x020c
+#define GPIO_EMMC_GPI_IE       0x023c
+#define GPIO_EMMC_GPI_GPE_STS  0x026c
+#define GPIO_EMMC_GPI_GPE_EN   0x029c
+#define GPIO_EMMC_SMI_STS      0x02cc
+#define GPIO_EMMC_SMI_EN       0x02fc
+#define GPIO_EMMC_NMI_STS      0x032c
+#define GPIO_EMMC_NMI_EN       0x035c
+#define GPIO_EMMC_PADCFGLOCK   0x00d8
+#define GPIO_EMMC_PADCFGLOCKTX 0x00dc
+#define GPIO_EMMC_PAD_NUM      11
+
+/**
+ * @brief GPIO west community.
+ */
+#define GPIO_WEST2_PADCFG_OFFSET      0x800
+#define GPIO_WEST3_PADCFG_OFFSET      0x980
+#define GPIO_WEST01_PADCFG_OFFSET     0xb00
+#define GPIO_WEST5_PADCFG_OFFSET      0xc70
+#define GPIO_WESTB_PADCFG_OFFSET      0xf00 /**< Reserved. */
+#define GPIO_WESTD_PECI_PADCFG_OFFSET 0x1100
+
+/**
+ * @brief GPIO east community.
+ */
+#define GPIO_EAST2_PADCFG_OFFSET 0x800
+#define GPIO_EAST3_PADCFG_OFFSET 0x980
+#define GPIO_EAST0_PADCFG_OFFSET 0xa30 /**< Reserved. */
+#define GPIO_EMMC_PADCFG_OFFSET  0xba0
+
+#define TOTAL_PADS                                                                            \
+	(GPIO_WEST2_PAD_NUM + GPIO_WEST3_PAD_NUM + GPIO_WEST01_PAD_NUM + GPIO_WEST5_PAD_NUM + \
+	 GPIO_WESTB_PAD_NUM + GPIO_WESTD_PECI_PAD_NUM + GPIO_EAST2_PAD_NUM +                  \
+	 GPIO_EAST3_PAD_NUM + GPIO_EAST0_PAD_NUM + GPIO_EMMC_PAD_NUM)
+
+#endif // _SOC_SNOWRIDGE_GPIO_DEFS_H_

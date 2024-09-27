@@ -1,0 +1,49 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+#include <fsp/util.h>
+
+#include "fsp_hob.h"
+
+const guid_t fsp_hob_fia_override_status_guid = {
+	.b = {0xc1, 0x94, 0x8d, 0x61, 0xde, 0x0e, 0xe3, 0x4e, 0x98, 0x4F, 0xB2, 0x07, 0x6B,
+	      0x05, 0x50, 0xFB}
+};
+
+const guid_t fsp_hob_iio_uds_data_guid = {
+	.b = {0xbd, 0x74, 0x6b, 0x83, 0xf3, 0xc2, 0x28, 0x4d, 0xa3, 0xb8, 0x91, 0x33, 0x10,
+	      0x52, 0x52, 0x9b}
+};
+
+const guid_t fsp_hob_kti_cache_guid = {
+	.b = {0xd6, 0xd3, 0x45, 0xac, 0x6e, 0xa3, 0xa6, 0x43, 0xad, 0x17, 0x0a, 0x45, 0xbb,
+	      0x47, 0xbe, 0xd6}
+};
+
+const guid_t fsp_hob_smbios_memory_info_guid = {
+	.b = {0x8c, 0x10, 0xa1, 0x01, 0xee, 0x9d, 0x84, 0x49, 0x88, 0xc3, 0xee, 0xe8, 0xc4,
+	      0x9e, 0xfb, 0x89}
+};
+
+static const void *fsp_hob_get(const guid_t *guid, size_t *hob_size)
+{
+	return fsp_find_extension_hob_by_guid(guid->b, hob_size);
+}
+
+const BL_IIO_UDS *fsp_hob_get_iio_uds_data(void)
+{
+	size_t unused;
+
+	return fsp_hob_get(&fsp_hob_iio_uds_data_guid, &unused);
+}
+
+const void *fsp_hob_get_kti_cache(size_t *hob_size)
+{
+	return fsp_hob_get(&fsp_hob_kti_cache_guid, hob_size);
+}
+
+const FSP_SMBIOS_MEMORY_INFO *fsp_hob_get_memory_info(void)
+{
+	size_t unused;
+
+	return fsp_hob_get(&fsp_hob_smbios_memory_info_guid, &unused);
+}

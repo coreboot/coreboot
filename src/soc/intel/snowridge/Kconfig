@@ -1,0 +1,259 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_INTEL_SNOWRIDGE
+	bool
+	help
+	  Intel Snow Ridge SoC support
+
+	select BOOT_DEVICE_SUPPORTS_WRITES
+
+	## Arch
+	select ARCH_X86
+
+	## CPU
+	select SSE
+	select SUPPORT_CPU_UCODE_IN_CBFS
+	select MICROCODE_BLOB_NOT_IN_BLOB_REPO
+	select CPU_INTEL_COMMON
+	select CPU_INTEL_FIRMWARE_INTERFACE_TABLE
+	select PARALLEL_MP
+	select PARALLEL_MP_AP_WORK
+	select UDELAY_TSC
+	select TSC_MONOTONIC_TIMER
+	select TSC_SYNC_MFENCE
+	select HAVE_SMI_HANDLER
+
+	## ACPI
+	select ACPI_INTEL_HARDWARE_SLEEP_VALUES
+
+	## Device
+	select USE_DDR4
+
+	## Drivers
+	select CACHE_MRC_SETTINGS
+	select UART_OVERRIDE_REFCLK
+
+	## FSP 2.0
+	select PLATFORM_USES_FSP2_0
+	select FSP_CAR
+	select FSP_USES_CB_STACK
+	select FSP_M_XIP
+	select FSP_T_XIP
+	select SOC_INTEL_COMMON_FSP_RESET
+
+	## SoC
+	select SOC_INTEL_COMMON
+	select SOC_INTEL_COMMON_BASECODE
+	select SOC_INTEL_COMMON_BLOCK
+	select SOC_INTEL_COMMON_BLOCK_ACPI
+	select SOC_INTEL_COMMON_BLOCK_CHIP_CONFIG
+	select SOC_INTEL_COMMON_BLOCK_CPU
+	select SOC_INTEL_COMMON_BLOCK_CPU_MPINIT
+	select SOC_INTEL_COMMON_BLOCK_CPU_SMMRELOCATE
+	select USE_INTEL_FSP_MP_INIT
+	select SOC_INTEL_COMMON_BLOCK_FAST_SPI
+	select SOC_INTEL_COMMON_BLOCK_GPIO
+	select SOC_INTEL_COMMON_BLOCK_GPIO_ITSS_POL_CFG
+	select SOC_INTEL_COMMON_BLOCK_GPMR
+	select USE_SOC_GPMR_DEFS
+	select SOC_INTEL_COMMON_BLOCK_IMC
+	select SOC_INTEL_COMMON_BLOCK_IRQ
+	select SOC_INTEL_COMMON_BLOCK_ITSS
+	select SOC_INTEL_COMMON_BLOCK_LPC
+	select SOC_INTEL_COMMON_BLOCK_LPC_MIRROR_TO_GPMR
+	select SOC_INTEL_COMMON_BLOCK_MEMINIT
+	select SOC_INTEL_COMMON_BLOCK_P2SB
+	select SOC_INTEL_COMMON_BLOCK_PCR
+	select SOC_INTEL_COMMON_BLOCK_PMC
+	select SOC_INTEL_COMMON_BLOCK_RTC
+	select SOC_INTEL_MEM_MAPPED_PM_CONFIGURATION
+	select PMC_GLOBAL_RESET_ENABLE_LOCK
+	select SOC_INTEL_COMMON_BLOCK_SMBUS
+	select SOC_INTEL_COMMON_BLOCK_TCO
+	select SOC_INTEL_COMMON_BLOCK_TCO_ENABLE_THROUGH_SMBUS
+	select SOC_INTEL_COMMON_BLOCK_SA_SERVER
+	select SOC_INTEL_COMMON_BLOCK_SMM
+	select SOC_INTEL_COMMON_BLOCK_SMM_IO_TRAP
+	select SOC_INTEL_COMMON_BLOCK_SMM_ESPI_DISABLE
+	select SOC_INTEL_COMMON_BLOCK_SMM_TCO_ENABLE
+	select SOC_INTEL_COMMON_BLOCK_SPI
+	select SOC_INTEL_COMMON_BLOCK_TIMER
+	select SOC_INTEL_COMMON_BLOCK_XHCI
+	select SOC_INTEL_COMMON_IBL_BASE # Select this one to add intelpch to including path.
+	select SOC_INTEL_COMMON_PCH_LOCKDOWN
+	select SOC_INTEL_COMMON_RESET
+
+	## Southbridge
+	select INTEL_DESCRIPTOR_MODE_CAPABLE
+
+	## Vendorcode
+	select UDK_202005_BINDING
+
+if SOC_INTEL_SNOWRIDGE
+
+config CHIPSET_DEVICETREE
+	default "soc/intel/snowridge/chipset.cb"
+
+config MAX_CPUS
+	default 16
+
+config HEAP_SIZE
+	default 0x100000
+
+config PRERAM_CBFS_CACHE_SIZE
+	default 0x0
+
+config C_ENV_BOOTBLOCK_SIZE
+	default 0x8000
+
+# CAR memory layout on Snow Ridge hardware:
+# CAR base address - 0xfe800000
+# CAR size - 0x7ff00 (512KB - 0x100)
+# 	FSP:
+# 		FSP reserved base - 0xfe800000
+# 		FSP reserved size - 0x40000
+# 	remaining:
+# 		DCACHE base - 0xfe840000
+# 		DCACHE size - 0x3ff00
+
+config DCACHE_RAM_BASE
+	default 0xfe840000
+
+config DCACHE_RAM_SIZE
+	default 0x3ff00 if FSP_CAR
+
+config DCACHE_BSP_STACK_SIZE
+	default 0x1C400
+	help
+	  The amount of anticipated stack usage in CAR by bootblock and other stages.
+	  In the case of FSP_USES_CB_STACK, the default value will be sum of FSP-M
+	  stack requirement (112KiB) and CB romstage stack requirement (~1KiB).
+
+config CPU_INTEL_NUM_FIT_ENTRIES
+	default 24
+	help
+	  Number of microcode files.
+
+config ECAM_MMCONF_BASE_ADDRESS
+	default 0x80000000
+
+config ECAM_MMCONF_BUS_NUMBER
+	default 256
+
+config ALWAYS_ALLOW_ABOVE_4G_ALLOCATION
+	default y
+
+config MAX_SOCKET
+	int
+	default 1
+
+config FSP_HEADER_PATH
+	default "src/vendorcode/intel/fsp/fsp2_0/snowridge" if !FSP_USE_REPO
+
+config FSP_TEMP_RAM_SIZE
+	default 0x20000
+	help
+	  The amount of anticipated heap usage in CAR by FSP. Refer to platform FSP
+	  integration guide document to know the exact FSP requirement for heap setup.
+
+config FSP_T_LOCATION
+	hex "Intel FSP-T (temp ram init) binary location"
+	depends on ADD_FSP_BINARIES && FSP_CAR
+	default 0xffe20000
+	help
+	  The memory location of the Intel FSP-T binary for this platform.
+
+config FSP_M_ADDR
+	hex "Intel FSP-M (memory init) binary location"
+	depends on ADD_FSP_BINARIES
+	default 0xffe27000
+	help
+	  The memory location of the Intel FSP-M binary for this platform.
+
+config FSP_S_ADDR
+	hex "Intel FSP-S (silicon init) binary location"
+	depends on ADD_FSP_BINARIES
+	default 0xffdb5000
+	help
+	  The memory location of the Intel FSP-S binary for this platform.
+
+config DIMMS_PER_CHANNEL
+	default 2
+
+config DATA_BUS_WIDTH
+	default 128
+
+config MRC_CHANNEL_WIDTH
+	default 64
+
+## Private settings
+config KTI_CACHE_IN_FMAP
+	bool
+	default y
+	help
+	  Save KTI cache data to flash and load it on following boots.
+
+if KTI_CACHE_IN_FMAP
+
+config KTI_CACHE_FMAP_NAME
+	string
+	default "RW_KTI_CACHE"
+
+config KTI_CACHE_SIZE
+	hex
+	default 0x1000
+	help
+	  Size should be aligned to sector size.
+
+endif # KTI_CACHE_IN_FMAP
+
+config HSUART_DEV
+	hex
+	default 0x1a
+
+choice
+	prompt "UART mode selection"
+	default HIGH_SPEED_UART
+
+config LEGACY_UART
+	bool "Enable legacy UART"
+	select DRIVERS_UART_8250IO
+
+config HIGH_SPEED_UART
+	bool "Enable High-Speed UART"
+	select DRIVERS_UART_8250MEM
+endchoice
+
+config CONSOLE_UART_BASE_ADDRESS
+	hex "Temporary MMIO Base Address for HSUART"
+	default 0xfe032000
+	depends on HIGH_SPEED_UART
+	help
+	  This option allows you to select temporary MMIO Base Address for HSUART.
+	  It should be selected from 8M temporary MMIO address space starting at
+	  0xfe000000. It will be used until coreboot resource allocation overwrite it
+	  with new allocated value.
+
+config PCR_BASE_ADDRESS
+	hex
+	default 0xfd000000
+	help
+	  This option allows you to select MMIO Base Address of sideband bus.
+
+config IED_REGION_SIZE
+	hex
+	default 0x400000
+
+config SMM_RESERVED_SIZE
+	hex
+	default 0x200000
+
+config CPU_BCLK_MHZ
+	int
+	default 100
+
+config ENABLE_VTD
+	bool "Enable Intel Virtualization Technology"
+	default y
+
+endif # SOC_INTEL_SNOWRIDGE

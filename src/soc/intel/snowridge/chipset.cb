@@ -1,0 +1,214 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/intel/snowridge
+
+	register "common_soc_config" = "{
+		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
+	}"
+
+	# Enable Enhanced Intel SpeedStep
+	register "eist_enable" = "1"
+
+	device cpu_cluster 0 alias cpu_bus on end
+
+	device domain 0 on # S0 personality: 0x01 (UBOX_IIO)
+		#
+		# S0 hosts all the PCH peripherals and some of the CPU Complex peripherals.
+		#
+		device pci 00.0 alias pch_sa on end # 0x09a2 - Mesh2IIO MMAP/Intel VT-d - Bus S0
+		device pci 00.1 on end # 0x09a4 - Mesh2IIO PMU/PMON - Bus S0
+		device pci 00.2 on end # 0x09a3 - Mesh2IIO RAS - Bus S0
+		device pci 00.3 on end # 0x09a5 - Mesh2IIO DFx - Bus S0
+		device pci 00.4 on end # 0x0998 - Satellite IEH - Bus S0
+		#
+		# Not found
+		# device pci 00.5 off end # 0x28c0 - VMD2 - Bus S0
+		#
+		device pci 01.0 on end # 0x0b00 - DMA Channel 0
+		device pci 01.1 on end # 0x0b00 - DMA Channel 1
+		device pci 01.2 on end # 0x0b00 - DMA Channel 2
+		device pci 01.3 on end # 0x0b00 - DMA Channel 3
+		device pci 01.4 on end # 0x0b00 - DMA Channel 4
+		device pci 01.5 on end # 0x0b00 - DMA Channel 5
+		device pci 01.6 on end # 0x0b00 - DMA Channel 6
+		device pci 01.7 on end # 0x0b00 - DMA Channel 7
+		device pci 02.0 on end # 0x09a6 - PECI Out-Of-Band Management Services Module (OOBMSM)
+		device pci 02.1 on end # 0x09a7 - PECI OOB-MSM - Discovery
+		device pci 02.2 hidden end # 0x09a8 - Reserved
+		device pci 02.4 on end # 0x3456 - CPU Complex Intel Trace Hub
+		#
+		# QAT v.17 is SKU dependent, let coreboot autodetect it.
+		# device pci 06.0 on end # 0x18da - Intel QAT v1.7
+		#
+		device pci 07.0 on end # 0x18b3 - SATA Controller 0
+		#
+		# Let coreboot autodetect when something is plugged in.
+		# device pci 09.0 on end # 0x18a4 - PCH PCIe Cluster 0, Root Port 0
+		# device pci 0a.0 on end # 0x18a5 - PCH PCIe Cluster 0, Root Port 1
+		# device pci 0b.0 on end # 0x18a6 - PCH PCIe Cluster 0, Root Port 2
+		# device pci 0c.0 on end # 0x18a7 - PCH PCIe Cluster 0, Root Port 3
+		#
+		device pci 0e.0 on end # 0x18f3 - SATA Controller 2
+		device pci 0f.0 on end # 0x18ac - Host (DMA) SMBus
+		#
+		# Let coreboot autodetect when something is plugged in.
+		# device pci 14.0 on end # 0x18ad - PCH PCIe Cluster 2, Root Port 8
+		# device pci 15.0 on end # 0x18ae - PCH PCIe Cluster 2, Root Port 9
+		# device pci 16.0 on end # 0x18af - PCH PCIe Cluster 2, Root Port 10
+		# device pci 17.0 on end # 0x18a2 - PCH PCIe Cluster 2, Root Port 11
+		#
+		device pci 18.0 on end # 0x18d3 - Intel ME - HECI 1
+		device pci 18.1 hidden end # 0x18d4 - Reserved
+		device pci 18.2 hidden end # 0x18ea - Reserved
+		device pci 18.3 hidden end # 0x18d5 - Reserved
+		device pci 18.4 hidden end # 0x18d6 - Reserved
+		device pci 18.6 hidden end # 0x18d7 - Reserved
+		device pci 1a.0 on end # 0x18d8 - HSUART 0
+		device pci 1a.1 on end # 0x18d8 - HSUART 1
+		device pci 1a.2 on end # 0x18d8 - HSUART 2
+		device pci 1a.3 hidden end # 0x18d9 - Reserved
+		#
+		# Not found
+		# device pci 1a.4 on end # 0x18ec - Reserved
+		# device pci 1b.0 on end # 0x18e5 - Reserved
+		# device pci 1b.1 on end # 0x18e6 - Reserved
+		# device pci 1b.2 on end # 0x18e7 - Reserved
+		# device pci 1b.3 on end # 0x18e8 - Reserved
+		# device pci 1b.4 on end # 0x18e9 - Reserved
+		# device pci 1b.6 on end # 0x18eb - Reserved
+		#
+		device pci 1c.0 on end # 0x18db - eMMC Controller
+		device pci 1d.0 on end # 0x0998 - Satellite IEH - PCH
+		device pci 1e.0 on end # 0x18d0 - USB Controller
+		#
+		# Not found
+		# device pci 1e.2 on end # 0x18e3 - PCM/SRAM
+		#
+		device pci 1f.0 on end # 0x18dc - LPC/eSPI Controller
+		device pci 1f.1 on end # 0x18dd - PH Bridge Control - P2SB
+		device pci 1f.2 hidden end # 0x18de - PCH PMC
+		device pci 1f.4 on end # 0x18df - Legacy SMBus
+		device pci 1f.5 on end # 0x18e0 - SPI Controller
+		device pci 1f.7 on end # 0x18e1 - PCH Intel Trace Hub
+	end # D0 S0
+	device domain 1 on # S1 personality: 0x01 (UBOX_IIO)
+		#
+		# S1 hosts the CPU Complex PCIe Root Ports
+		#
+		device pci 00.0 alias cpu_sa on end # 0x09a2 - Mesh2IIO MMAP/Intel VT-d - Bus S1
+		device pci 00.1 on end # 0x09a4 - Mesh2IIO PMU/PMON - Bus S1
+		device pci 00.2 on end # 0x09a3 - Mesh2IIO RAS - Bus S1
+		device pci 00.3 on end # 0x09a5 - Mesh2IIO DFx - Bus S1
+		device pci 00.4 on end # 0x0998 - Satellite IEH - Bus S1
+		#
+		# Not found
+		# device pci 00.5 off end # 0x28c0 - VMD2 - Bus S1
+		#
+		# Let coreboot autodetect when something is plugged in.
+		# device pci 04.0 on end # 0x334a - CPU PCIe Root Port - A link widths: x16, x8, x4, x2, x1
+		# device pci 05.0 on end # 0x334b - CPU PCIe Root Port - B link widths: x4, x2, x1
+		# device pci 06.0 on end # 0x334c - CPU PCIe Root Port - C link widths: x8, x4, x2, x1
+		# device pci 07.0 on end # 0x334d - CPU PCIe Root Port - D link widths: x4, x2, x1
+		#
+	end # D1 S1
+	device domain 2 on # S2 personality: 0x05 (NAC)
+		device pci 00.0 alias dlb_sa on end # 0x09a2 - Mesh2IIO MMAP/Intel VT-d - Bus S2
+		device pci 00.1 on end # 0x09a4 - Mesh2IIO PMU/PMON - Bus S2
+		device pci 00.2 on end # 0x09a3 - Mesh2IIO RAS - Bus S2
+		device pci 00.3 on end # 0x09a5 - Mesh2IIO DFx - Bus S2
+		device pci 00.4 on end # 0x0998 - Satellite IEH - Bus S2
+		#
+		# Not found
+		# device pci 00.5 off end # 0x28c0 - VMD2 - Bus S2
+		#
+	end # D2 S2
+	device domain 3 on # S3 personality: 0x05 (NAC)
+		#
+		# S3 hosts the VRP to the Network Interface and Scheduler (NIS)
+		#
+		device pci 00.0 on end # 0x09a2 - Mesh2IIO MMAP/Intel VT-d - Bus S3
+		device pci 00.1 on end # 0x09a4 - Mesh2IIO PMU/PMON - Bus S3
+		device pci 00.2 on end # 0x09a3 - Mesh2IIO RAS - Bus S3
+		device pci 00.3 on end # 0x09a5 - Mesh2IIO DFx - Bus S3
+		device pci 00.4 on end # 0x0998 - Satellite IEH - Bus S3
+		#
+		# Not found
+		# device pci 00.5 off end # 0x28c0 - VMD2 - Bus S3
+		#
+		device pci 04.0 alias nis_vrp on # 0x18d1 - VRP to Network Interface and Scheduler (NIS)
+			#
+			# NIS devices are SKU dependent, let coreboot autodetect them.
+			#
+		end
+	end # D3 S3
+	device domain 4 on # S4 personality: 0x05 (NAC)
+		#
+		# S4 hosts the Intel QAT v1.8 accelerator and the iRC-NAC
+		#
+		device pci 00.0 on end # 0x09a2 - Mesh2IIO MMAP/Intel VT-d - Bus S4
+		device pci 00.1 on end # 0x09a4 - Mesh2IIO PMU/PMON - Bus S4
+		device pci 00.2 on end # 0x09a3 - Mesh2IIO RAS - Bus S4
+		device pci 00.3 on end # 0x09a5 - Mesh2IIO DFx - Bus S4
+		device pci 00.4 on end # 0x0998 - Satellite IEH - Bus S4
+		#
+		# Not found
+		# device pci 00.5 off end # 0x28c0 - VMD2 - Bus S4
+		#
+		device pci 05.0 alias qat_1_8_vrp on # 0x18da - VRP for Intel QAT v1.8 accelerator
+			device pci 00.0 on end # 0x18a0 - Intel QAT v1.8 accelerator
+		end
+		device pci 06.0 on end # 0x18e2 - NAC Intelligent Reset Controller (iRC)
+	end # D4 S4
+	device domain 5 off # Personality: 0x12 (None)
+	end # D5 S5
+	device domain 6 off # Personality: 0x08 (Reserved)
+	end # D6 S6
+	device domain 7 on # Personality: 0x00 (Ubox) U0
+		#
+		# U0 is the second-highest bus number assigned to the device
+		# U0 hosts the Ubox, Serial Presence Detect (SPD) SMBus,
+		# Virtual Pin Port (VPP) SMBus, the Memory Controller, and DDRIO
+		#
+		device pci 00.0 on end # 0x3460 - Ubox - Noncoherent Events (NCEVENTS)
+		device pci 00.1 on end # 0x3451 - Ubox - Register Access Control Unit (RACU)
+		device pci 00.2 on end # 0x3452 - Ubox - Noncoherent Decode (NCDECS)
+		device pci 00.3 on end # 0x0998 - Ubox - Global I/O Error Handler (Global IEH)
+		device pci 00.5 on end # 0x3455 - Ubox - Error Handling
+		device pci 0b.0 on end # 0x3448 - Ubox - SPD0 SMBus
+		device pci 0b.1 on end # 0x3449 - Ubox - SPD1 SMBus. Note: SoC does not pin out it.
+		device pci 0b.2 hidden end # 0x344b - Ubox - Reserved
+		device pci 0c.0 on end # 0x344a - Ubox - IMC
+		device pci 1a.0 on end # 0x2880 - Ubox - DDRIO
+	end # D7 U0
+	device domain 8 on # U1 - additional root bus 0xFF for domain/stack 7
+		#
+		# U1 is the highest bus number assigned to the device
+		# U1 hosts the Cache and Home Agent (CHA) and Power Control Unit (PCU)
+		#
+		device pci 00.0 on end # 0x344c - CHA0_GRP1 - Mesh Credit Configuration
+		device pci 00.1 on end # 0x344c - CHA1_GRP1 - Mesh Credit Configuration
+		device pci 00.2 on end # 0x344c - CHA2_GRP1 - Mesh Credit Configuration
+		device pci 00.3 on end # 0x344c - CHA3_GRP1 - Mesh Credit Configuration
+		device pci 00.4 on end # 0x344c - CHA4_GRP1 - Mesh Credit Configuration
+		device pci 00.5 on end # 0x344c - CHA5_GRP1 - Mesh Credit Configuration
+		device pci 0a.0 on end # 0x344d - CHA0_GRP0 - IMC Channel Mapping
+		device pci 0a.1 on end # 0x344d - CHA1_GRP0 - IMC Channel Mapping
+		device pci 0a.2 on end # 0x344d - CHA2_GRP0 - IMC Channel Mapping
+		device pci 0a.3 on end # 0x344d - CHA3_GRP0 - IMC Channel Mapping
+		device pci 0a.4 on end # 0x344d - CHA4_GRP0 - IMC Channel Mapping
+		device pci 0a.5 on end # 0x344d - CHA5_GRP0 - IMC Channel Mapping
+		device pci 1d.0 on end # 0x344f - CHAALL0 - Multicast DRAM Rules
+		device pci 1d.1 on end # 0x3457 - CHAALL1 - Multicast MMIO Rules
+		device pci 1e.0 on end # 0x3458 - Power Control Unit (PCU)
+		device pci 1e.1 on end # 0x3459 - PCU
+		device pci 1e.2 on end # 0x345a - PCU
+		device pci 1e.3 on end # 0x345b - PCU
+		device pci 1e.4 on end # 0x345c - PCU
+		device pci 1e.5 on end # 0x345d - PCU
+		device pci 1e.6 on end # 0x345e - PCU
+		device pci 1e.7 on end # 0x345f - PCU
+	end # D8 U1
+	device domain 9 on # Additional root bus 0xE7 for domain/stack 2
+		device pci 0.0 alias dlb on end # 0x270b - Intel DLB 1.0
+	end
+end #chip

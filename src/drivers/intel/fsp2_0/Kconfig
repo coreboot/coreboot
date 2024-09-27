@@ -341,50 +341,32 @@ config FSP_M_ADDR
 	help
 	  The address FSP-M will be relocated to during build time
 
-config FSP_STATUS_GLOBAL_RESET_REQUIRED_3
-	bool
-	help
-	  FSP Reset Status code used for global reset as per FSP EAS v2.0 section 11.2.2
-
-config FSP_STATUS_GLOBAL_RESET_REQUIRED_4
-	bool
-	help
-	  FSP Reset Status code used for global reset as per FSP EAS v2.0 section 11.2.2
-
-config FSP_STATUS_GLOBAL_RESET_REQUIRED_5
-	bool
-	help
-	  FSP Reset Status code used for global reset as per FSP EAS v2.0 section 11.2.2
-
-config FSP_STATUS_GLOBAL_RESET_REQUIRED_6
-	bool
-	help
-	  FSP Reset Status code used for global reset as per FSP EAS v2.0 section 11.2.2
-
-config FSP_STATUS_GLOBAL_RESET_REQUIRED_7
-	bool
-	help
-	  FSP Reset Status code used for global reset as per FSP EAS v2.0 section 11.2.2
-
-config FSP_STATUS_GLOBAL_RESET_REQUIRED_8
-	bool
-	help
-	  FSP Reset Status code used for global reset as per FSP EAS v2.0 section 11.2.2
-
 config FSP_STATUS_GLOBAL_RESET
 	hex
 	depends on SOC_INTEL_COMMON_FSP_RESET
-	default 0x40000003 if FSP_STATUS_GLOBAL_RESET_REQUIRED_3
-	default 0x40000004 if FSP_STATUS_GLOBAL_RESET_REQUIRED_4
-	default 0x40000005 if FSP_STATUS_GLOBAL_RESET_REQUIRED_5
-	default 0x40000006 if FSP_STATUS_GLOBAL_RESET_REQUIRED_6
-	default 0x40000007 if FSP_STATUS_GLOBAL_RESET_REQUIRED_7
-	default 0x40000008 if FSP_STATUS_GLOBAL_RESET_REQUIRED_8
-	default 0xffffffff
+	range 0x4000000000000003 0x4000000000000008 if !PLATFORM_USES_FSP2_X86_32
+	range 0x40000003 0x40000008
+	default 0x4000000000000003 if !PLATFORM_USES_FSP2_X86_32
+	default 0x40000003
 	help
 	  If global reset is supported by SoC then select the correct status value for global
-	  reset type from SoC Kconfig based on available Kconfig options
-	  FSP_STATUS_GLOBAL_RESET_REQUIRED_X. Default is unsupported.
+	  reset type.
+
+	  This option specifies the global reset status code used by the
+	  platform, as defined in the FSP specification.
+
+	  The FSP specification allows for a range of values to indicate a
+	  global reset request, typically between
+	  FSP_STATUS_GLOBAL_RESET_REQUIRED_3 and
+	  FSP_STATUS_GLOBAL_RESET_REQUIRED_8.
+
+	  This option defaults to the most commonly used global reset
+	  status code in FSP implementations:
+	  - 0x40000003 for 32-bit FSP interfaces
+	  - 0x4000000000000003 for 64-bit FSP interfaces
+
+	  If your FSP implementation uses a different global reset status
+	  code, override this default value accordingly.
 
 config SOC_INTEL_COMMON_FSP_RESET
 	bool

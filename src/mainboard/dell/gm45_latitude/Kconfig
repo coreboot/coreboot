@@ -1,9 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-if BOARD_DELL_E6400
-
-config BOARD_SPECIFIC_OPTIONS
-	def_bool y
+config BOARD_DELL_GM45_LATITUDE_COMMON
+	def_bool n
 	select SYSTEM_TYPE_LAPTOP
 	select CPU_INTEL_SOCKET_P
 	select NORTHBRIDGE_INTEL_GM45
@@ -19,11 +17,22 @@ config BOARD_SPECIFIC_OPTIONS
 	select INTEL_GMA_HAVE_VBT
 	select EC_DELL_MEC5035
 
+config BOARD_DELL_E6400
+	select BOARD_DELL_GM45_LATITUDE_COMMON
+
+if BOARD_DELL_GM45_LATITUDE_COMMON
+
 config MAINBOARD_DIR
-	default "dell/e6400"
+	default "dell/gm45_latitude"
 
 config MAINBOARD_PART_NUMBER
 	default "Latitude E6400" if BOARD_DELL_E6400
+
+config OVERRIDE_DEVICETREE
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
+
+config VARIANT_DIR
+	default "e6400" if BOARD_DELL_E6400
 
 config USBDEBUG_HCD_INDEX
 	default 1
@@ -31,4 +40,4 @@ config USBDEBUG_HCD_INDEX
 config CBFS_SIZE
 	default 0x1A0000
 
-endif # BOARD_DELL_E6400
+endif # BOARD_DELL_GM45_LATITUDE_COMMON

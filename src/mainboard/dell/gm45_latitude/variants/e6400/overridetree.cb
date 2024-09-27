@@ -1,0 +1,7 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+chip northbridge/intel/gm45
+	device domain 0 on
+		subsystemid 0x1028 0x0233 inherit
+	end
+end

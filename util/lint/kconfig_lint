@@ -856,18 +856,24 @@ sub handle_range {
     my $expression;
     ( $range2, $expression ) = handle_if_line( $range2, $inside_config, $filename, $line_no );
 
+    # Use bigint for large hexadecimal values
+    use bigint;
     $range1 =~ /^\s*(?:0x)?([A-Fa-f0-9]+)\s*$/;
-    my $checkrange1 = $1;
+    my $checkrange1 = Math::BigInt->new($1);
     $range2 =~ /^\s*(?:0x)?([A-Fa-f0-9]+)\s*$/;
-    my $checkrange2 = $1;
+    my $checkrange2 = Math::BigInt->new($1);
 
-    if ( $checkrange1 && $checkrange2 && ( hex($checkrange1) > hex($checkrange2) ) ) {
+    if ( $checkrange1 && $checkrange2 && ( $checkrange1 > $checkrange2 ) ) {
         show_error("Range entry in $filename line $line_no value 1 ($range1) is greater than value 2 ($range2).");
     }
 
     if ($inside_config) {
         if ( exists( $symbols{$inside_config}{range1} ) ) {
-            if ( ( $symbols{$inside_config}{range1} != $range1 ) || ( $symbols{$inside_config}{range2} != $range2 ) ) {
+            # Convert existing range values to BigInt objects
+            $symbols{$inside_config}{range1} = Math::BigInt->new($symbols{$inside_config}{range1});
+            $symbols{$inside_config}{range2} = Math::BigInt->new($symbols{$inside_config}{range2});
+
+            if ( ( $symbols{$inside_config}{range1} != $checkrange1 ) || ( $symbols{$inside_config}{range2} != $checkrange2 ) ) {
                 if ($show_note_output) {
                     print "#!!!!! Note: Config '$inside_config' range entry $range1 $range2 at $filename:$line_no does";
                     print " not match the previously defined range $symbols{$inside_config}{range1}"
@@ -877,9 +883,9 @@ sub handle_range {
             }
         }
         else {
-            $symbols{$inside_config}{range1}        = $range1;
-            $symbols{$inside_config}{range2}        = $range2;
-            $symbols{$inside_config}{range_file}    = $filename;
+            $symbols{$inside_config}{range1}      = $checkrange1;
+            $symbols{$inside_config}{range2}      = $checkrange2;
+            $symbols{$inside_config}{range_file}  = $filename;
             $symbols{$inside_config}{range_line_no} = $line_no;
         }
     }

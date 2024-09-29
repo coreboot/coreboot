@@ -108,12 +108,19 @@ git format-patch upstream..HEAD
 
 ## About Granite Rapids FSP binaries and other needed firmware ingredients
 
-For the real Granite Rapids FSP binaries, please contact intel business interface to obtain.
-Then please update configs/builder/config.intel.crb.avc and configs/builder/config.intel.crb.bnc
-to apply.
+For the real Granite Rapids FSP binaries, please contact intel business interface to obtain them.
+Then please update below config files to apply.
 
-Other needed firmware ingredients includes microcode, intel flash descriptor and platform boot
-policy. The same flow to obtain and apply.
+```
+configs/builder/config.intel.crb.avc
+configs/builder/config.intel.crb.bnc
+```
+
+The following firmware ingredients are also obtained and applied using the same process:
+
+- Microcode updates
+- Intel Flash Descriptor
+- Platform Boot Policy
 
 ## Test Environment
 

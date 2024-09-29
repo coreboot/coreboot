@@ -121,6 +121,7 @@ check_for_license 'HPND-sell-variant'
 check_for_license 'ISC'
 check_for_license 'MIT'
 check_for_license 'X11'
+check_for_license 'GPL-2.0 OR MIT'
 
 # This is 4 clause ("with advertising") but the University of Berkeley
 # declared that 4th clause void, see

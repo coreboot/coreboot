@@ -21,6 +21,7 @@
 #include <soc/platform_descriptors.h>
 #include <soc/smi.h>
 #include <soc/southbridge.h>
+#include <static.h>
 #include "chip.h"
 
 /*

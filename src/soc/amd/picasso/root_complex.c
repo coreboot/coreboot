@@ -8,6 +8,7 @@
 #include <arch/ioapic.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <static.h>
 #include <stdint.h>
 #include <soc/iomap.h>
 #include "chip.h"

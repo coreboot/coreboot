@@ -13,6 +13,7 @@
 #include <fsp/api.h>
 #include <soc/platform_descriptors.h>
 #include <soc/pci_devs.h>
+#include <static.h>
 #include <string.h>
 #include <types.h>
 #include <vendorcode/amd/fsp/glinda/FspUsb.h>

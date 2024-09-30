@@ -21,6 +21,7 @@
 #include <soc/smi.h>
 #include <soc/amd_pci_int_defs.h>
 #include <soc/pci_devs.h>
+#include <static.h>
 #include <types.h>
 #include "chip.h"
 

@@ -6,6 +6,7 @@
 #include <console/console.h>
 #include <soc/i2c.h>
 #include <soc/southbridge.h>
+#include <static.h>
 #include "chip.h"
 
 /* Table to switch SCL pins to outputs to initially reset the I2C peripherals */

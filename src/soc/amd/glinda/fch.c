@@ -18,6 +18,7 @@
 #include <soc/i2c.h>
 #include <soc/smi.h>
 #include <soc/southbridge.h>
+#include <static.h>
 #include "chip.h"
 
 /*

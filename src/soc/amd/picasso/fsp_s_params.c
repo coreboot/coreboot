@@ -7,6 +7,7 @@
 #include <soc/pci_devs.h>
 #include <soc/platform_descriptors.h>
 #include <soc/soc_util.h>
+#include <static.h>
 #include <fsp/api.h>
 #include "chip.h"
 

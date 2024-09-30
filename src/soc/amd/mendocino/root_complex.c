@@ -12,6 +12,7 @@
 #include <device/pci.h>
 #include <fsp/amd_misc_data.h>
 #include <soc/iomap.h>
+#include <static.h>
 #include <stdint.h>
 #include "chip.h"
 

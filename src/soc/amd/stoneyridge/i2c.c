@@ -4,6 +4,7 @@
 #include <amdblocks/i2c.h>
 #include <soc/iomap.h>
 #include <soc/i2c.h>
+#include <static.h>
 #include "chip.h"
 #include <drivers/i2c/designware/dw_i2c.h>
 

@@ -9,6 +9,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <soc/iomap.h>
+#include <static.h>
 #include <stdint.h>
 #include "chip.h"
 

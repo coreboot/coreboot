@@ -21,6 +21,7 @@
 #include <southbridge/intel/common/pmutil.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
 #include <southbridge/intel/common/rcba_pirq.h>
+#include <static.h>
 
 #define NMI_OFF	0
 

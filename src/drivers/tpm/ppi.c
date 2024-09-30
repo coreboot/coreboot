@@ -633,7 +633,10 @@ void tpm_ppi_acpi_fill_ssdt(const struct device *dev)
 	 */
 	acpigen_write_method_serialized("FUNC", 1);
 
+	/* Local0 = ToInteger(Arg0) */
 	acpigen_write_to_integer(ARG0_OP, LOCAL0_OP);
+
+	/* If (Local0 > 0x80) */
 	acpigen_write_if();
 	acpigen_emit_byte(LGREATER_OP);
 	acpigen_emit_byte(LOCAL0_OP);
@@ -641,17 +644,27 @@ void tpm_ppi_acpi_fill_ssdt(const struct device *dev)
 	acpigen_write_return_integer(0);
 	acpigen_pop_len(); /* If */
 
-	/* TPPF = CreateField("PPOP", Local0) */
-	acpigen_emit_byte(CREATE_BYTE_OP);
-	acpigen_emit_namestring("PPOP");
+	/* Local1 = (Local0 * 0x08) */
+	acpigen_emit_byte(MULTIPLY_OP);
 	acpigen_emit_byte(LOCAL0_OP);
+	acpigen_write_integer(8);
+	acpigen_emit_byte(LOCAL1_OP);
+
+	/* CreateField (PPOP, Local1, 0x08, TPPF) */
+	acpigen_emit_ext_op(CREATEFIELD_OP);
+	acpigen_emit_namestring("PPOP");
+	acpigen_emit_byte(LOCAL1_OP);
+	acpigen_write_integer(8);
+
+	/* Name of the dynamically-created field */
 	acpigen_emit_namestring("TPPF");
 
-	/* Local0 = ToInteger("TPPF") */
+	/* Local0 = ToInteger(TPPF) */
 	acpigen_emit_byte(TO_INTEGER_OP);
 	acpigen_emit_namestring("TPPF");
 	acpigen_emit_byte(LOCAL0_OP);
 
+	/* Return (Local0) */
 	acpigen_write_return_op(LOCAL0_OP);
 	acpigen_pop_len(); /* Method */
 

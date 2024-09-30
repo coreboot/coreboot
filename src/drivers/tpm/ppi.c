@@ -634,7 +634,6 @@ void tpm_ppi_acpi_fill_ssdt(const struct device *dev)
 	acpigen_write_method_serialized("FUNC", 1);
 
 	acpigen_write_to_integer(ARG0_OP, LOCAL0_OP);
-	acpigen_write_to_integer(ARG1_OP, LOCAL1_OP);
 	acpigen_write_if();
 	acpigen_emit_byte(LGREATER_OP);
 	acpigen_emit_byte(LOCAL0_OP);

@@ -3,6 +3,7 @@
 #include <baseboard/variants.h>
 #include <soc/amd/picasso/chip.h>
 #include <soc/pci_devs.h>
+#include <static.h>
 
 uint32_t usb_oc_map_override[USB_PORT_COUNT] = {
 	USB_OC_PIN_0,

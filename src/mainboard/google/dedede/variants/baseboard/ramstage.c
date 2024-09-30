@@ -13,6 +13,7 @@
 #include <chip.h>
 #include <drivers/intel/dptf/chip.h>
 #include <soc/pci_devs.h>
+#include <static.h>
 
 #define SET_PSYSPL2(e, w) ((e) * (w) / 100)
 #define MICROWATTS_TO_WATTS 1000000

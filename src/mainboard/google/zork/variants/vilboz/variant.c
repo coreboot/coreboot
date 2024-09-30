@@ -5,6 +5,7 @@
 #include <fw_config.h>
 #include <sar.h>
 #include <soc/amd/picasso/chip.h>
+#include <static.h>
 
 static const fsp_ddi_descriptor hdmi_ddi_descriptors[] = {
 	{ // DDI0, DP0, eDP

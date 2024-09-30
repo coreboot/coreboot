@@ -6,6 +6,7 @@
 #include <device/pci_ops.h>
 #include <ec/google/chromeec/ec.h>
 #include <soc/pci_devs.h>
+#include <static.h>
 
 #include <drivers/intel/dptf/chip.h>
 #include <intelblocks/power_limit.h>

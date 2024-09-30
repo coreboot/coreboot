@@ -8,6 +8,7 @@
 #include <ec/google/chromeec/ec.h>
 #include <intelblocks/power_limit.h>
 #include <soc/pci_devs.h>
+#include <static.h>
 
 
 WEAK_DEV_PTR(dptf_policy);

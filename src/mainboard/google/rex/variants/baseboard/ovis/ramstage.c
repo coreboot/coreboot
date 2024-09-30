@@ -6,6 +6,7 @@
 #include <device/pci_ops.h>
 #include <intelblocks/power_limit.h>
 #include <soc/pci_devs.h>
+#include <static.h>
 
 struct soc_power_limits_config *variant_get_soc_power_limit_config(void)
 {

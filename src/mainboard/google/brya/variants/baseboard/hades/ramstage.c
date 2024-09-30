@@ -5,6 +5,7 @@
 #include <console/console.h>
 #include <device/pci_ops.h>
 #include <soc/pci_devs.h>
+#include <static.h>
 
 #include <drivers/intel/dptf/chip.h>
 #include <intelblocks/power_limit.h>

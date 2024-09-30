@@ -10,6 +10,7 @@
 #include <soc/southbridge.h>
 #include <soc/pci_devs.h>
 #include <soc/platform_descriptors.h>
+#include <static.h>
 #include <types.h>
 #include <commonlib/helpers.h>
 #include <soc/amd/picasso/chip.h>

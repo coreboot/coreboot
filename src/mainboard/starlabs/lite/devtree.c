@@ -4,6 +4,7 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <option.h>
+#include <static.h>
 #include <types.h>
 #include <variants.h>
 

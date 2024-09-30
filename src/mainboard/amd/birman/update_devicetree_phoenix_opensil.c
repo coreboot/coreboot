@@ -3,6 +3,7 @@
 #include <device/device.h>
 #include <soc/amd/phoenix/chip.h>
 #include <soc/soc_util.h>
+#include <static.h>
 #include <vendorcode/amd/opensil/chip/mpio/chip.h>
 #include "display_card_type.h"
 #include "update_devicetree.h"

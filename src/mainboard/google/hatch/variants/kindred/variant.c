@@ -6,6 +6,7 @@
 #include <ec/google/chromeec/ec.h>
 #include <sar.h>
 #include <drivers/intel/gma/opregion.h>
+#include <static.h>
 
 void variant_devtree_update(void)
 {

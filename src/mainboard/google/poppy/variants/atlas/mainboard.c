@@ -6,6 +6,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <intelblocks/power_limit.h>
+#include <static.h>
 
 #define PL2_AML	18
 #define PL2_KBL	15

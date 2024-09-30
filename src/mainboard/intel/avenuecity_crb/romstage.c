@@ -10,6 +10,7 @@
 #include <soc/dimm_slot.h>
 #include <soc/iio.h>
 #include <soc/romstage.h>
+#include <static.h>
 
 #include "chip.h"
 

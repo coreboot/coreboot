@@ -11,6 +11,7 @@
 #include <ec/ec.h>
 #include <security/tpm/tss.h>
 #include <soc/soc_chip.h>
+#include <static.h>
 #include <timer.h>
 #include <vb2_api.h>
 

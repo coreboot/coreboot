@@ -3,6 +3,7 @@
 #include <baseboard/variants.h>
 #include <chip.h>
 #include <intelblocks/power_limit.h>
+#include <static.h>
 
 /*
  * SKU_ID, TDP (Watts), pl1_min (milliWatts), pl1_max (milliWatts),

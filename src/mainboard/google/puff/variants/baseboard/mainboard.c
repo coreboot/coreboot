@@ -12,6 +12,7 @@
 #include <gpio.h>
 #include <intelblocks/power_limit.h>
 #include <soc/pci_devs.h>
+#include <static.h>
 #include <timer.h>
 
 #define GPIO_HDMI_HPD		GPP_E13

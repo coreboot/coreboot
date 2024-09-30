@@ -6,6 +6,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <intelblocks/power_limit.h>
+#include <static.h>
 
 /* PL2 limit in watts for AML and KBL */
 #define PL2_AML	18

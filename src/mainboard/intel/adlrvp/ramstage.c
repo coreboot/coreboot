@@ -8,6 +8,7 @@
 #include <soc/gpio_soc_defs.h>
 #include <soc/pci_devs.h>
 #include <soc/soc_chip.h>
+#include <static.h>
 #include <string.h>
 #include <drivers/intel/dptf/chip.h>
 #include "board_id.h"

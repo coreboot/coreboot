@@ -12,6 +12,7 @@
 #include <gpio.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
+#include <static.h>
 
 extern struct chip_operations drivers_i2c_generic_ops;
 extern struct chip_operations drivers_i2c_hid_ops;

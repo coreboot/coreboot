@@ -2,6 +2,7 @@
 #include <baseboard/variants.h>
 #include <fw_config.h>
 #include <soc/soc_chip.h>
+#include <static.h>
 
 static void ext_vr_update(void)
 {

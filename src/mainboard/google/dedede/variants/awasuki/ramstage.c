@@ -4,6 +4,7 @@
 #include <fw_config.h>
 #include <soc/soc_chip.h>
 #include <soc/gpio.h>
+#include <static.h>
 
 static const struct pad_config ts_disable_pad[] = {
 	/* A11 : TOUCH_RPT_EN */

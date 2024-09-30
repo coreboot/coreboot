@@ -529,7 +529,20 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 
 	/* Enable CNVi Wifi if enabled in device tree */
 #if CONFIG(SOC_INTEL_COMETLAKE)
+	/* CNVi */
 	s_cfg->CnviMode = is_devfn_enabled(PCH_DEVFN_CNViWIFI);
+	s_cfg->CnviBtCore = config->CnviBtCore;
+	s_cfg->CnviBtAudioOffload = config->CnviBtAudioOffload;
+
+	if (!s_cfg->CnviBtCore && s_cfg->CnviBtAudioOffload) {
+		printk(BIOS_ERR, "BT offload is enabled without CNVi BT being enabled\n");
+		s_cfg->CnviBtAudioOffload = 0;
+	}
+	if (!s_cfg->CnviMode && s_cfg->CnviBtCore) {
+		printk(BIOS_ERR, "CNVi BT is enabled without CNVi being enabled\n");
+		s_cfg->CnviBtCore = 0;
+		s_cfg->CnviBtAudioOffload = 0;
+	}
 #else
 	s_cfg->PchCnviMode = is_devfn_enabled(PCH_DEVFN_CNViWIFI);
 #endif

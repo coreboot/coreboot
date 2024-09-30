@@ -18,6 +18,7 @@
 #include <northbridge/intel/haswell/raminit.h>
 #include <smbios.h>
 #include <spd.h>
+#include <static.h>
 #include <security/vboot/vboot_common.h>
 #include <commonlib/region.h>
 #include <southbridge/intel/lynxpoint/me.h>

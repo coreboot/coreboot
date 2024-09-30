@@ -19,6 +19,7 @@
 #include <mrc_cache.h>
 #include <spd.h>
 #include <smbios.h>
+#include <static.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <timestamp.h>

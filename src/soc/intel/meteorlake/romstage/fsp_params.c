@@ -26,6 +26,7 @@
 #include <soc/romstage.h>
 #include <soc/soc_chip.h>
 #include <soc/soc_info.h>
+#include <static.h>
 #include <string.h>
 #include <ux_locales.h>
 

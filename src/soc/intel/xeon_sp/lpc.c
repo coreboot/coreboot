@@ -4,6 +4,7 @@
 #include <intelblocks/lpc_lib.h>
 #include <soc/iomap.h>
 #include <soc/pcr_ids.h>
+#include <static.h>
 
 #include <chip.h>
 

@@ -27,6 +27,7 @@
 #include <soc/ramstage.h>
 #include <soc/soc_chip.h>
 #include <soc/tcss.h>
+#include <static.h>
 #include <string.h>
 #include <types.h>
 

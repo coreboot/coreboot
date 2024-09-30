@@ -18,6 +18,7 @@
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>
 #include <soc/pmc.h>
+#include <static.h>
 #include "../chip.h"
 
 #define PCR_DMI_ACPIBA		0x27B4

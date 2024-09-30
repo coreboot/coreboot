@@ -18,6 +18,7 @@
 #include <soc/romstage.h>
 #include <soc/pci_devs.h>
 #include <soc/soc_pch.h>
+#include <static.h>
 #include <string.h>
 #include <soc/config.h>
 #include <soc/soc_util.h>

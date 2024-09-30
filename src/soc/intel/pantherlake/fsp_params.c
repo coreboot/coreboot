@@ -16,6 +16,7 @@
 #include <soc/intel/common/vbt.h>
 #include <soc/pcie.h>
 #include <soc/ramstage.h>
+#include <static.h>
 
 #define MAX_ONBOARD_PCIE_DEVICES 256
 

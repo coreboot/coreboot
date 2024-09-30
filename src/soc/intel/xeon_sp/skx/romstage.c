@@ -4,6 +4,7 @@
 #include <intelblocks/rtc.h>
 #include <soc/romstage.h>
 #include <soc/soc_util.h>
+#include <static.h>
 
 #include "chip.h"
 

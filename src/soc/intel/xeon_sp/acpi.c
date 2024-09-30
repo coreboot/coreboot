@@ -9,6 +9,7 @@
 #include <soc/pci_devs.h>
 #include <soc/util.h>
 #include <southbridge/intel/common/acpi_pirq_gen.h>
+#include <static.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>

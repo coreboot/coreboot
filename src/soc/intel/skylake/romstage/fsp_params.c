@@ -10,6 +10,7 @@
 #include <soc/pci_devs.h>
 #include <soc/romstage.h>
 #include <soc/soc_chip.h>
+#include <static.h>
 
 static void cpu_flex_override(FSP_M_CONFIG *m_cfg)
 {

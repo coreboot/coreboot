@@ -32,6 +32,7 @@
 #include <soc/ramstage.h>
 #include <soc/soc_chip.h>
 #include <soc/soc_info.h>
+#include <static.h>
 #include <stdlib.h>
 #include <string.h>
 #include <types.h>

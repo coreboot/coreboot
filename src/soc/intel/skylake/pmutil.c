@@ -24,6 +24,7 @@
 #include <soc/pmc.h>
 #include <soc/smbus.h>
 #include <security/vboot/vbnv.h>
+#include <static.h>
 
 #include "chip.h"
 

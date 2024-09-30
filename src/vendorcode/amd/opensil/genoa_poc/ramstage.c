@@ -9,6 +9,7 @@
 #include <cpu/cpu.h>
 #include <device/device.h>
 #include <soc/soc_chip.h>
+#include <static.h>
 #include <stdio.h>
 #include <xSIM-api.h>
 #include "opensil_console.h"

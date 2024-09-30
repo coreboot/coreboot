@@ -227,9 +227,6 @@ struct soc_intel_jasperlake_config {
 	/* Enable Pch iSCLK */
 	bool pch_isclk;
 
-	/* CNVi BT Audio Offload: Enable/Disable BT Audio Offload. */
-	bool CnviBtAudioOffload;
-
 	/* Tcss */
 	bool TcssXhciEn;
 	bool TcssXdciEn;

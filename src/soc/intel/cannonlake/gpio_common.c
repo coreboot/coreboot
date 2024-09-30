@@ -2,6 +2,7 @@
 
 #include <gpio.h>
 #include <soc/soc_chip.h>
+#include <static.h>
 
 /*
  * Routine to perform below operations:

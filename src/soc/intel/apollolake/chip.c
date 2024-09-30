@@ -35,6 +35,7 @@
 #include <soc/pm.h>
 #include <soc/systemagent.h>
 #include <spi-generic.h>
+#include <static.h>
 #include <timer.h>
 #include <soc/ramstage.h>
 #include <soc/soc_chip.h>

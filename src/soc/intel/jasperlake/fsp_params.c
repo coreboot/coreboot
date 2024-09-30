@@ -14,6 +14,7 @@
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
 #include <soc/soc_chip.h>
+#include <static.h>
 #include <string.h>
 #include <types.h>
 

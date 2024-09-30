@@ -11,6 +11,7 @@
 #include <soc/iomap.h>
 #include <soc/soc_chip.h>
 #include <soc/systemagent.h>
+#include <static.h>
 
 /*
  * SoC implementation

@@ -10,6 +10,7 @@
 #include <soc/pci_devs.h>
 #include <soc/soc_chip.h>
 #include <soc/systemagent.h>
+#include <static.h>
 
 /* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */
 static const u8 power_limit_time_sec_to_msr[] = {

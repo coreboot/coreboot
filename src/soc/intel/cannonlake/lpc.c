@@ -13,6 +13,7 @@
 #include <soc/lpc.h>
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
+#include <static.h>
 
 #include "chip.h"
 

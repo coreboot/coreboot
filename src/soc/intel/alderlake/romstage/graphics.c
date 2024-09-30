@@ -4,6 +4,7 @@
 #include <drivers/intel/gma/i915_reg.h>
 #include <intelblocks/early_graphics.h>
 #include <soc/soc_chip.h>
+#include <static.h>
 
 void early_graphics_soc_panel_init(void)
 {

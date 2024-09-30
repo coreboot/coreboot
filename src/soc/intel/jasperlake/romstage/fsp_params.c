@@ -11,6 +11,7 @@
 #include <soc/pcie.h>
 #include <soc/romstage.h>
 #include <soc/soc_chip.h>
+#include <static.h>
 
 static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_jasperlake_config *config)

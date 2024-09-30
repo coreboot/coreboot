@@ -24,6 +24,7 @@
 #include <soc/pm.h>
 #include <soc/smbus.h>
 #include <soc/soc_chip.h>
+#include <static.h>
 
 /*
  * SMI

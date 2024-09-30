@@ -19,6 +19,7 @@
 #include <soc/soc_chip.h>
 #include <soc/systemagent.h>
 #include <spi_flash.h>
+#include <static.h>
 #include <stddef.h>
 
 /*

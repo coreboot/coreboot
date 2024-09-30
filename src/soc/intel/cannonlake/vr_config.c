@@ -5,6 +5,7 @@
 #include <fsp/api.h>
 #include <soc/ramstage.h>
 #include <soc/vr_config.h>
+#include <static.h>
 #include <console/console.h>
 #include <intelblocks/cpulib.h>
 

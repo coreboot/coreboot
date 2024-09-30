@@ -26,6 +26,7 @@
 #include <soc/soc_chip.h>
 #include <soc/systemagent.h>
 #include <spi-generic.h>
+#include <static.h>
 
 #define CAMERA1_CLK		0x8000 /* Camera 1 Clock */
 #define CAMERA2_CLK		0x8080 /* Camera 2 Clock */

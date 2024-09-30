@@ -5,6 +5,7 @@
 #include <intelblocks/pcr.h>
 #include <soc/pci_devs.h>
 #include <soc/pnpconfig.h>
+#include <static.h>
 #include "chip.h"
 
 static const struct pnpconfig perf[] = {

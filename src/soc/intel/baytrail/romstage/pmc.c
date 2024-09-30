@@ -11,6 +11,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
+#include <static.h>
 #include "../chip.h"
 
 /* This sequence signals the PUNIT to start running. */

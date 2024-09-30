@@ -24,6 +24,7 @@
 #include <soc/smbus.h>
 #include <soc/soc_chip.h>
 #include <security/vboot/vbnv.h>
+#include <static.h>
 
 /*
  * SMI

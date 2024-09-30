@@ -16,6 +16,7 @@
 #include <soc/intel/common/vbt.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
+#include <static.h>
 #include <string.h>
 #include <types.h>
 

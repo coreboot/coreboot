@@ -4,6 +4,7 @@
 #include <device/mmio.h>
 #include <intelblocks/xhci.h>
 #include <soc/soc_chip.h>
+#include <static.h>
 
 #define XHCI_USB2_PORT_STATUS_REG	0x480
 #define XHCI_USB3_PORT_STATUS_REG	0x500

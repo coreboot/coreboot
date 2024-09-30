@@ -11,6 +11,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/soc_chip.h>
+#include <static.h>
 
 static void config_deep_sX(uint32_t offset, uint32_t mask, int sx, int enable)
 {

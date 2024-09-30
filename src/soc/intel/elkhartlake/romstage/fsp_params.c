@@ -11,6 +11,7 @@
 #include <soc/pcie.h>
 #include <soc/romstage.h>
 #include <soc/soc_chip.h>
+#include <static.h>
 
 /* ISA Serial Base selection. */
 enum {

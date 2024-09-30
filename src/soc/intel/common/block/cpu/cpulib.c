@@ -13,6 +13,7 @@
 #include <intelblocks/msr.h>
 #include <smp/node.h>
 #include <soc/soc_chip.h>
+#include <static.h>
 #include <types.h>
 
 #define CPUID_PROCESSOR_FREQUENCY		0X16

@@ -24,6 +24,7 @@
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/soc_chip.h>
+#include <static.h>
 #include <types.h>
 
 enum alderlake_model {

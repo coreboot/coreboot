@@ -9,6 +9,7 @@
 #include <soc/cpu.h>
 #include <soc/iomap.h>
 #include <soc/systemagent.h>
+#include <static.h>
 #include "chip.h"
 
 /*

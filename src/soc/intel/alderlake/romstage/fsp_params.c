@@ -22,6 +22,7 @@
 #include <soc/pcie.h>
 #include <soc/romstage.h>
 #include <soc/soc_chip.h>
+#include <static.h>
 #include <string.h>
 
 #include "ux.h"

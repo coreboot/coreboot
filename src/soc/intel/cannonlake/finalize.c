@@ -21,6 +21,7 @@
 #include <soc/smbus.h>
 #include <soc/systemagent.h>
 #include <spi-generic.h>
+#include <static.h>
 
 #include "chip.h"
 

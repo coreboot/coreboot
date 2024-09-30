@@ -15,6 +15,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/common/common.h>
+#include <static.h>
 #include <types.h>
 
 #include "chip.h"

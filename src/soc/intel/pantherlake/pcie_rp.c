@@ -3,7 +3,6 @@
 #include <intelblocks/pcie_rp.h>
 #include <soc/pci_devs.h>
 #include <soc/pcie.h>
-#include <soc/soc_info.h>
 
 /*
  * TBT's LCAP registers are returning port index which starts from 0x10 (Usually for other PCIe

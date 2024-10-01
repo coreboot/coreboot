@@ -9,7 +9,6 @@
 #include <soc/msr.h>
 #include <soc/pcie.h>
 #include <soc/romstage.h>
-#include <soc/soc_info.h>
 
 #define FSP_CLK_NOTUSED		0xff
 #define FSP_CLK_LAN		0x70
@@ -197,9 +196,7 @@ static void fill_fspm_pcie_rp_params(FSP_M_CONFIG *m_cfg,
 				     const struct soc_intel_pantherlake_config *config)
 {
 	/* Disable all PCIe clock sources by default. And set RP irrelevant clock. */
-	uint8_t max_clock = get_max_pcie_clock();
-
-	for (size_t i = 0; i < max_clock; i++) {
+	for (size_t i = 0; i < CONFIG_MAX_PCIE_CLOCK_SRC; i++) {
 		if (config->pcie_clk_config_flag[i] & PCIE_CLK_FREE_RUNNING)
 			m_cfg->PcieClkSrcUsage[i] = FSP_CLK_FREE_RUNNING;
 		else if (config->pcie_clk_config_flag[i] & PCIE_CLK_LAN)
@@ -212,7 +209,7 @@ static void fill_fspm_pcie_rp_params(FSP_M_CONFIG *m_cfg,
 	/* PCIE ports */
 	m_cfg->PcieRpEnableMask = pcie_rp_enable_mask(get_pcie_rp_table());
 	pcie_rp_init(m_cfg, m_cfg->PcieRpEnableMask, config->pcie_rp,
-		     get_max_pcie_port());
+		     CONFIG_MAX_ROOT_PORTS);
 }
 
 static void fill_fspm_ish_params(FSP_M_CONFIG *m_cfg,

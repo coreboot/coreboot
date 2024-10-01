@@ -8,7 +8,6 @@
 #include <intelblocks/xhci.h>
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
-#include <soc/soc_info.h>
 #include <types.h>
 
 struct pme_map {
@@ -30,9 +29,6 @@ static void pch_log_gpio_gpe(u32 gpe0_sts, u32 gpe0_en, int start)
 
 static void pch_log_rp_wake_source(void)
 {
-	size_t i;
-	uint8_t max_port = get_max_pcie_port();
-
 	const struct pme_map pme_map[] = {
 		{ PCI_DEVFN_PCIE1,	ELOG_WAKE_SOURCE_PME_PCIE1 },
 		{ PCI_DEVFN_PCIE2,	ELOG_WAKE_SOURCE_PME_PCIE2 },
@@ -50,7 +46,7 @@ static void pch_log_rp_wake_source(void)
 #endif
 	};
 
-	for (i = 0; i < MIN(max_port, ARRAY_SIZE(pme_map)); ++i) {
+	for (size_t i = 0; i < MIN(CONFIG_MAX_ROOT_PORTS, ARRAY_SIZE(pme_map)); i++) {
 		if (pci_dev_is_wake_source(PCI_DEV(0, PCI_SLOT(pme_map[i].devfn),
 						   PCI_FUNC(pme_map[i].devfn))))
 			elog_add_event_wake(pme_map[i].wake_source, 0);

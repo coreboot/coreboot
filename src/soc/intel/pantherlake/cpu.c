@@ -20,7 +20,6 @@
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/soc_chip.h>
-#include <soc/soc_info.h>
 
 bool cpu_soc_is_in_untrusted_mode(void)
 {

@@ -14,6 +14,8 @@
 #define MBOX_PSP_CMD_SPI_READ		0x84
 #define MBOX_PSP_CMD_SPI_WRITE		0x85
 #define MBOX_PSP_CMD_SPI_ERASE		0x86
+#define MBOX_PSP_CMD_SPI_RPMC_INC_MC	0x88
+#define MBOX_PSP_CMD_SPI_RPMC_REQ_MC	0x89
 
 extern struct {
 	uint8_t buffer[P2C_BUFFER_MAXSIZE];
@@ -153,6 +155,12 @@ static void handle_psp_command(void)
 		break;
 	case MBOX_PSP_CMD_SPI_ERASE:
 		status = psp_smi_spi_erase(buffer);
+		break;
+	case MBOX_PSP_CMD_SPI_RPMC_INC_MC:
+		status = psp_smi_spi_rpmc_inc_mc(buffer);
+		break;
+	case MBOX_PSP_CMD_SPI_RPMC_REQ_MC:
+		status = psp_smi_spi_rpmc_req_mc(buffer);
 		break;
 	default:
 		printk(BIOS_ERR, "PSP: Unknown command %d\n", cmd);

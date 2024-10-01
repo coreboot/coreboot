@@ -269,3 +269,17 @@ enum mbox_p2c_status psp_smi_spi_erase(struct mbox_default_buffer *buffer)
 
 	return MBOX_PSP_SUCCESS;
 }
+
+enum mbox_p2c_status psp_smi_spi_rpmc_inc_mc(struct mbox_default_buffer *buffer)
+{
+	printk(BIOS_SPEW, "PSP: SPI RPMC increment monotonic counter request\n");
+
+	return MBOX_PSP_UNSUPPORTED;
+}
+
+enum mbox_p2c_status psp_smi_spi_rpmc_req_mc(struct mbox_default_buffer *buffer)
+{
+	printk(BIOS_SPEW, "PSP: SPI RPMC request monotonic counter request\n");
+
+	return MBOX_PSP_UNSUPPORTED;
+}

@@ -36,10 +36,12 @@ static void usb4_retimer_execute_ec_cmd(uint8_t port, uint8_t cmd, uint8_t expec
 	/* Invoke EC Retimer firmware update command execution */
 	ec_retimer_fw_update(data);
 	/* If RFWU has return value 0xfe, return error -1 */
-	acpigen_write_if_lequal_namestr_int(RFWU, USB_RETIMER_FW_UPDATE_ERROR);
-	acpigen_disable_tx_gpio(power_gpio);
-	acpigen_write_return_integer(-1);
-	acpigen_pop_len(); /* If */
+	if (RFWU) {
+		acpigen_write_if_lequal_namestr_int(RFWU, USB_RETIMER_FW_UPDATE_ERROR);
+		acpigen_disable_tx_gpio(power_gpio);
+		acpigen_write_return_integer(-1);
+		acpigen_pop_len(); /* If */
+	}
 
 	acpigen_write_store_int_to_op(USB4_RETIMER_ITERATION_NUM, LOCAL2_OP);
 	acpigen_emit_byte(WHILE_OP);
@@ -47,39 +49,42 @@ static void usb4_retimer_execute_ec_cmd(uint8_t port, uint8_t cmd, uint8_t expec
 	acpigen_emit_byte(LGREATER_OP);
 	acpigen_emit_byte(LOCAL2_OP);
 	acpigen_emit_byte(ZERO_OP);
-	acpigen_write_if_lequal_namestr_int(RFWU, expected_value);
-	acpigen_emit_byte(BREAK_OP);
-	acpigen_pop_len(); /* If */
 
-	if (cmd == USB_RETIMER_FW_UPDATE_GET_MUX) {
-		acpigen_write_if_lequal_namestr_int(RFWU, USB_RETIMER_FW_UPDATE_INVALID_MUX);
-		acpigen_write_sleep(USB4_RETIMER_POLL_CYCLE_MS);
-		acpigen_emit_byte(DECREMENT_OP);
-		acpigen_emit_byte(LOCAL2_OP);
-		acpigen_emit_byte(CONTINUE_OP);
-		acpigen_pop_len(); /* If */
-
-		acpigen_emit_byte(AND_OP);
-		acpigen_emit_namestring(RFWU);
-		acpigen_write_integer(USB_RETIMER_FW_UPDATE_MUX_MASK);
-		acpigen_emit_byte(LOCAL3_OP);
-		acpigen_write_if();
-		acpigen_emit_byte(LNOT_OP);
-		acpigen_emit_byte(LEQUAL_OP);
-		acpigen_emit_byte(LOCAL3_OP);
-		acpigen_emit_byte(0);
-		acpigen_disable_tx_gpio(power_gpio);
-		acpigen_write_return_integer(-1);
-		acpigen_pop_len(); /* If */
-	} else if (cmd == USB_RETIMER_FW_UPDATE_SET_TBT) {
-		/*
-		 * EC return either USB_PD_MUX_USB4_ENABLED or USB_PD_MUX_TBT_COMPAT_ENABLED
-		 * to RFWU after the USB_RETIMER_FW_UPDATE_SET_TBT command execution. It is
-		 * needed to add additional check for USB_PD_MUX_TBT_COMPAT_ENABLED.
-		 */
-		acpigen_write_if_lequal_namestr_int(RFWU, USB_PD_MUX_TBT_COMPAT_ENABLED);
+	if (RFWU) {
+		acpigen_write_if_lequal_namestr_int(RFWU, expected_value);
 		acpigen_emit_byte(BREAK_OP);
 		acpigen_pop_len(); /* If */
+
+		if (cmd == USB_RETIMER_FW_UPDATE_GET_MUX) {
+			acpigen_write_if_lequal_namestr_int(RFWU, USB_RETIMER_FW_UPDATE_INVALID_MUX);
+			acpigen_write_sleep(USB4_RETIMER_POLL_CYCLE_MS);
+			acpigen_emit_byte(DECREMENT_OP);
+			acpigen_emit_byte(LOCAL2_OP);
+			acpigen_emit_byte(CONTINUE_OP);
+			acpigen_pop_len(); /* If */
+
+			acpigen_emit_byte(AND_OP);
+			acpigen_emit_namestring(RFWU);
+			acpigen_write_integer(USB_RETIMER_FW_UPDATE_MUX_MASK);
+			acpigen_emit_byte(LOCAL3_OP);
+			acpigen_write_if();
+			acpigen_emit_byte(LNOT_OP);
+			acpigen_emit_byte(LEQUAL_OP);
+			acpigen_emit_byte(LOCAL3_OP);
+			acpigen_emit_byte(0);
+			acpigen_disable_tx_gpio(power_gpio);
+			acpigen_write_return_integer(-1);
+			acpigen_pop_len(); /* If */
+		} else if (cmd == USB_RETIMER_FW_UPDATE_SET_TBT) {
+			/*
+			 * EC return either USB_PD_MUX_USB4_ENABLED or USB_PD_MUX_TBT_COMPAT_ENABLED
+			 * to RFWU after the USB_RETIMER_FW_UPDATE_SET_TBT command execution. It is
+			 * needed to add additional check for USB_PD_MUX_TBT_COMPAT_ENABLED.
+			 */
+			acpigen_write_if_lequal_namestr_int(RFWU, USB_PD_MUX_TBT_COMPAT_ENABLED);
+			acpigen_emit_byte(BREAK_OP);
+			acpigen_pop_len(); /* If */
+		}
 	}
 
 	acpigen_write_sleep(USB4_RETIMER_POLL_CYCLE_MS);

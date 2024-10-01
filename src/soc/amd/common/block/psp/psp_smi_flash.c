@@ -281,14 +281,52 @@ enum mbox_p2c_status psp_smi_spi_erase(struct mbox_default_buffer *buffer)
 
 enum mbox_p2c_status psp_smi_spi_rpmc_inc_mc(struct mbox_default_buffer *buffer)
 {
+	struct mbox_psp_cmd_spi_rpmc_inc_mc *const cmd_buf =
+		(struct mbox_psp_cmd_spi_rpmc_inc_mc *)buffer;
+	const struct spi_flash *flash;
+
 	printk(BIOS_SPEW, "PSP: SPI RPMC increment monotonic counter request\n");
 
-	return MBOX_PSP_UNSUPPORTED;
+	if (!CONFIG(SOC_AMD_COMMON_BLOCK_PSP_RPMC))
+		return MBOX_PSP_UNSUPPORTED;
+
+	if (spi_controller_busy()) {
+		return MBOX_PSP_SPI_BUSY;
+	}
+
+	if (get_flash_device(&flash) != MBOX_PSP_SUCCESS)
+		return MBOX_PSP_COMMAND_PROCESS_ERROR;
+
+	if (spi_flash_rpmc_increment(flash, cmd_buf->req.counter_address,
+				     cmd_buf->req.counter_data, cmd_buf->req.signature)
+			!= CB_SUCCESS)
+		return MBOX_PSP_COMMAND_PROCESS_ERROR;
+
+	return MBOX_PSP_SUCCESS;
 }
 
 enum mbox_p2c_status psp_smi_spi_rpmc_req_mc(struct mbox_default_buffer *buffer)
 {
+	struct mbox_psp_cmd_spi_rpmc_req_mc *const cmd_buf =
+		(struct mbox_psp_cmd_spi_rpmc_req_mc *)buffer;
+	const struct spi_flash *flash;
+
 	printk(BIOS_SPEW, "PSP: SPI RPMC request monotonic counter request\n");
 
-	return MBOX_PSP_UNSUPPORTED;
+	if (!CONFIG(SOC_AMD_COMMON_BLOCK_PSP_RPMC))
+		return MBOX_PSP_UNSUPPORTED;
+
+	if (spi_controller_busy()) {
+		return MBOX_PSP_SPI_BUSY;
+	}
+
+	if (get_flash_device(&flash) != MBOX_PSP_SUCCESS)
+		return MBOX_PSP_COMMAND_PROCESS_ERROR;
+
+	if (spi_flash_rpmc_request(flash, cmd_buf->req.counter_address, cmd_buf->req.tag,
+				   cmd_buf->req.signature, cmd_buf->req.output_counter_data,
+				   cmd_buf->req.output_signature) != CB_SUCCESS)
+		return MBOX_PSP_COMMAND_PROCESS_ERROR;
+
+	return MBOX_PSP_SUCCESS;
 }

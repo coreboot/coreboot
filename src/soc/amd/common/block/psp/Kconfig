@@ -34,6 +34,7 @@ config SOC_AMD_PSP_SELECTABLE_SMU_FW
 config SOC_AMD_COMMON_BLOCK_PSP_RPMC
 	bool
 	depends on SOC_AMD_COMMON_BLOCK_PSP_GEN2
+	select SPI_FLASH_RPMC
 	help
 	  Select this option in the SoC's Kconfig to include the support for
 	  the replay-protected monotonic counter (RPMC) feature.

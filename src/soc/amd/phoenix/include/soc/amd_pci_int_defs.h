@@ -19,8 +19,10 @@
 #define PIRQ_H		0x07	/* INT H */
 #define PIRQ_MISC	0x08	/* Miscellaneous IRQ Settings */
 #define PIRQ_MISC0	0x09	/* Miscellaneous0 IRQ Settings */
-#define PIRQ_HPET_L	0x0a	/* HPET TMR{0..2}_CONF_CAP_H[0:7] */
-#define PIRQ_HPET_H	0x0b	/* HPET TMR{0..2}_CONF_CAP_H[15:8] */
+#define PIRQ_MISC1	0x0a	/* Miscellaneous1 IRQ Settings */
+#define PIRQ_MISC2	0x0b	/* Miscellaneous2 IRQ Settings */
+#define PIRQ_HPET_L PIRQ_MISC1	/* HPET TMR{0..2}_CONF_CAP_L[0:7] */
+#define PIRQ_HPET_H PIRQ_MISC2	/* HPET TMR{0..2}_CONF_CAP_H[15:8] */
 #define PIRQ_SIRQA	0x0c	/* Serial IRQ INTA */
 #define PIRQ_SIRQB	0x0d	/* Serial IRQ INTB */
 #define PIRQ_SIRQC	0x0e	/* Serial IRQ INTC */

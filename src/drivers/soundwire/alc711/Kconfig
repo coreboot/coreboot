@@ -11,6 +11,12 @@ config DRIVERS_SOUNDWIRE_ALC711
 	help
 	  SoundWire driver for Realtek ALC711 device
 
+config DRIVERS_SOUNDWIRE_ALC721
+	bool
+	select  DRIVERS_SOUNDWIRE_ALC_BASE_7XX
+	help
+	  SoundWire driver for Realtek ALC721 device
+
 config DRIVERS_SOUNDWIRE_ALC722
 	bool
 	select DRIVERS_SOUNDWIRE_ALC_BASE_7XX

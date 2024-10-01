@@ -15,6 +15,10 @@ static struct soundwire_address alc711_address = {
 	.version = SOUNDWIRE_VERSION_1_2,
 	.part_id = MIPI_DEV_ID_REALTEK_ALC722,
 	.class = MIPI_CLASS_SDCA,
+#elif CONFIG(DRIVERS_SOUNDWIRE_ALC721)
+	.version = SOUNDWIRE_VERSION_1_2,
+	.part_id = MIPI_DEV_ID_REALTEK_ALC721,
+	.class = MIPI_CLASS_SDCA,
 #elif CONFIG(DRIVERS_SOUNDWIRE_ALC711)
 	.version = SOUNDWIRE_VERSION_1_1,
 	.part_id = MIPI_DEV_ID_REALTEK_ALC711,

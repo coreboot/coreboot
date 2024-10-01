@@ -77,7 +77,6 @@ chip northbridge/intel/sandybridge
 						drq 0xe6 = 0x7f		# GP7x OD
 					end
 					device pnp 2e.9 off end		# GPIO 8
-					device pnp 2e.308 on end	# GPIO by I/O
 					device pnp 2e.109 on end	# GPIO 1
 					device pnp 2e.209 on		# GPIO 2
 						drq 0xe0 = 0xbf		# GP26 output

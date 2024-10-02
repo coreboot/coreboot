@@ -8,6 +8,7 @@ debug_level=Debug
 vtd=Enable
 power_profile=Balanced
 me_state=Disable
+memory_speed=5500
 # Devices
 wireless=Enable
 webcam=Enable

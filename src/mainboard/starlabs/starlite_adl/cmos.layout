@@ -24,6 +24,7 @@ entries
 416	2	e	5	power_profile
 424	1	e	4	me_state
 432	4	h	0	me_state_counter
+440	2	e	8	memory_speed
 
 # coreboot config options: Devices
 504	1	e	1	wireless
@@ -77,6 +78,10 @@ enumerations
 7	0	1.0C
 7	1	0.5C
 7	2	0.2C
+
+8	0	5500MT/s
+8	1	6400MT/s
+8	2	7500MT/s
 
 # -----------------------------------------------------------------
 checksums

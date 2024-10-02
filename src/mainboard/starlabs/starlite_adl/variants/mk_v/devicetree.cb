@@ -95,8 +95,8 @@ chip soc/intel/alderlake
 						device ref usb3_port1 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Detachable Keyboard""
-						register "type"		= "UPC_TYPE_INTERNAL"
+						register "desc"		= ""USB 2.0 Hub""
+						register "type"		= "UPC_TYPE_HUB"
 						register "group"	= "ACPI_PLD_GROUP(0, 2)"
 						device ref usb2_port3 on end
 					end

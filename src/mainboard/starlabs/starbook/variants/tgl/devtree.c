@@ -26,7 +26,6 @@ void devtree_update(void)
 	/* Update PL1 & PL2 based on CMOS settings */
 	switch (get_power_profile(PP_POWER_SAVER)) {
 	case PP_POWER_SAVER:
-		disable_turbo();
 		soc_conf_2core->tdp_pl1_override	= 15;
 		soc_conf_4core->tdp_pl1_override	= 15;
 		soc_conf_2core->tdp_pl2_override	= 15;

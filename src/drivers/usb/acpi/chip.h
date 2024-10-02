@@ -86,4 +86,7 @@ struct drivers_usb_acpi_config {
 /* Method to get PLD structure from USB device */
 bool usb_acpi_get_pld(const struct device *usb_device, struct acpi_pld *pld);
 
+/* Intel Bluetooth */
+void acpi_device_intel_bt(void);
+
 #endif /* __USB_ACPI_CHIP_H__ */

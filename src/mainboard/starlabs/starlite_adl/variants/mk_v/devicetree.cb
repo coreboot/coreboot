@@ -9,7 +9,6 @@ chip soc/intel/alderlake
 	}"
 
 	# FSP Memory
-	register "enable_c6dram"		= "1"
 	register "sagv"				= "SaGv_Enabled"
 
 	# FSP Silicon

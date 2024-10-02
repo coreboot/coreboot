@@ -6,12 +6,6 @@
 /*
  * Intel Bluetooth DSM
  *
- * Check Tile Activation (2d19d3e1-5708-4696-bd5b-2c3dbae2d6a9)
- *
- * Arg2 == 0: Return a package with the following bits set
- * BIT(0)	Indicates whether the device supports other functions
- * BIT(1)	Check Tile Activation
- *
  * Check/Set Reset Delay (aa10f4e0-81ac-4233-abf6-3b2ac50e28d9)
  * Arg2 == 0:	Return a package with the following bit set
  * BIT(0)	Indicates whether the device supports other functions
@@ -42,21 +36,7 @@ static void set_reset_delay(void *arg)
 	acpigen_write_store_op_to_namestr(ARG3_OP, "RDLY");
 }
 
-static void get_feature_flag(void *arg)
-{
-	acpigen_write_if_lequal_op_int(ARG1_OP, 0);
-	{
-		acpigen_write_return_singleton_buffer(0x03);
-	}
-	acpigen_write_else();
-	{
-		acpigen_write_return_singleton_buffer(0x00);
-	}
-	acpigen_pop_len();
-}
-
 void (*uuid_callbacks1[])(void *) = { check_reset_delay, set_reset_delay };
-void (*uuid_callbacks2[])(void *) = { get_feature_flag };
 
 void acpi_device_intel_bt(unsigned int reset_gpio, unsigned int enable_gpio, bool audio_offload)
 {
@@ -93,27 +73,6 @@ void acpi_device_intel_bt(unsigned int reset_gpio, unsigned int enable_gpio, boo
  *			}
  *			Return (Zero)
  *		}
- *		ElseIf ((Arg0 == ToUUID ("2d19d3e1-5708-4696-bd5b-2c3dbae2d6a9")))
- *		{
- *			If ((Arg2 == Zero))
- *			{
- *				If ((Arg1 == Zero))
- *				{
- *					Return (Buffer (One)
- *					{
- *						0x00
- *					})
- *				}
- *				Else
- *				{
- *					Return (Buffer (One)
- *					{
- *						0x00
- *					})
- *				}
- *			}
- *			Return (Zero)
- *		}
  *		Else
  *		{
  *			Return (Buffer (One)
@@ -125,7 +84,6 @@ void acpi_device_intel_bt(unsigned int reset_gpio, unsigned int enable_gpio, boo
  */
 	struct dsm_uuid uuid_callbacks[] = {
 		DSM_UUID("aa10f4e0-81ac-4233-abf6-3b2ac50e28d9", uuid_callbacks1, 2, NULL),
-		DSM_UUID("2d19d3e1-5708-4696-bd5b-2c3dbae2d6a9", uuid_callbacks2, 1, NULL),
 	};
 
 	acpigen_write_dsm_uuid_arr(uuid_callbacks, ARRAY_SIZE(uuid_callbacks));

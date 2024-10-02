@@ -256,7 +256,7 @@ static struct eint_info eint_data[] = {
 	[291] = { EINT_C, 20 },
 	[292] = { EINT_C, 21 },
 };
-_Static_assert(ARRAY_SIZE(eint_data) == 293);
+_Static_assert(ARRAY_SIZE(eint_data) == 293, "Incorrect eint_data size");
 
 void gpio_calc_eint_pos_bit(gpio_t gpio, u32 *pos, u32 *bit)
 {

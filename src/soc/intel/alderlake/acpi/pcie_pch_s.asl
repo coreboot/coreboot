@@ -275,14 +275,26 @@ Device (RP28)
 Device (PEG0)
 {
 	Name (_ADR, 0x00060000)
+	Method (_PRT)
+	{
+		Return (IRQM (1))
+	}
 }
 
 Device (PEG1)
 {
 	Name (_ADR, 0x00010000)
+	Method (_PRT)
+	{
+		Return (IRQM (1))
+	}
 }
 
 Device (PEG2)
 {
 	Name (_ADR, 0x00010001)
+	Method (_PRT)
+	{
+		Return (IRQM (2))
+	}
 }

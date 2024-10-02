@@ -309,16 +309,52 @@ Device (RP12)
 Device (PEG0)
 {
 	Name (_ADR, 0x00060000)
+
+	OperationRegion (RPCS, PCI_Config, 0x4c, 4)
+	Field (RPCS, AnyAcc, NoLock, Preserve)
+	{
+		, 24,
+		RPPN, 8,	/* Root Port Number */
+	}
+
+	Method (_PRT)
+	{
+		Return (IRQM (RPPN))
+	}
 }
 
 Device (PEG1)
 {
 	Name (_ADR, 0x00060002)
+
+	OperationRegion (RPCS, PCI_Config, 0x4c, 4)
+	Field (RPCS, AnyAcc, NoLock, Preserve)
+	{
+		, 24,
+		RPPN, 8,	/* Root Port Number */
+	}
+
+	Method (_PRT)
+	{
+		Return (IRQM (RPPN))
+	}
 }
 
 Device (PEG2)
 {
 	Name (_ADR, 0x00010000)
+
+	OperationRegion (RPCS, PCI_Config, 0x4c, 4)
+	Field (RPCS, AnyAcc, NoLock, Preserve)
+	{
+		, 24,
+		RPPN, 8,	/* Root Port Number */
+	}
+
+	Method (_PRT)
+	{
+		Return (IRQM (RPPN))
+	}
 }
 #endif
 

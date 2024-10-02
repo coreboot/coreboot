@@ -310,9 +310,7 @@ Device (PEG0)
 {
 	Name (_ADR, 0x00060000)
 }
-#endif
 
-#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_P)
 Device (PEG1)
 {
 	Name (_ADR, 0x00060002)

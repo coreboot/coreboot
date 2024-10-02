@@ -98,8 +98,8 @@ static const struct slot_irq_constraints irq_constraints[] = {
 	{
 		.slot = SA_DEV_SLOT_CPU_6,
 		.fns = {
-			FIXED_INT_PIRQ(SA_DEVFN_CPU_PCIE6_0, PCI_INT_A, PIRQ_A),
-			FIXED_INT_PIRQ(SA_DEVFN_CPU_PCIE6_2, PCI_INT_C, PIRQ_C),
+			FIXED_INT_PIRQ(SA_DEVFN_CPU_PCIE6_0, PCI_INT_D, PIRQ_A),
+			FIXED_INT_PIRQ(SA_DEVFN_CPU_PCIE6_2, PCI_INT_B, PIRQ_C),
 		},
 	},
 	{

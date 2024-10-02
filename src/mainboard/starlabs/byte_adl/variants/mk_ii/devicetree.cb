@@ -75,7 +75,7 @@ chip soc/intel/alderlake
 						device ref usb2_port2 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Back Top USB Type-C""
+						register "desc"		= ""Back Top USB Type-A""
 						register "type"		= "UPC_TYPE_USB3_A"
 						device ref usb3_port3 on end
 					end
@@ -85,7 +85,7 @@ chip soc/intel/alderlake
 						device ref usb2_port3 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Back Bottom USB Type-C""
+						register "desc"		= ""Back Bottom USB Type-A""
 						register "type"		= "UPC_TYPE_USB3_A"
 						device ref usb3_port4 on end
 					end
@@ -95,7 +95,7 @@ chip soc/intel/alderlake
 						device ref usb2_port6 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Front Left USB Type-C""
+						register "desc"		= ""Front Left USB Type-A""
 						register "type"		= "UPC_TYPE_USB3_A"
 						device ref usb3_port2 on end
 					end
@@ -105,7 +105,7 @@ chip soc/intel/alderlake
 						device ref usb2_port7 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Front Right USB Type-C""
+						register "desc"		= ""Front Right USB Type-A""
 						register "type"		= "UPC_TYPE_USB3_A"
 						device ref usb3_port1 on end
 					end

@@ -63,7 +63,7 @@ const struct pad_config gpio_table[] = {
 	/* A12:		PCH M.2 SSD PEDET				*/
 	PAD_CFG_NF(GPP_A12, NONE, DEEP, NF1),
 	/* A13:		BlueTooth RF Kill				*/
-	PAD_CFG_GPO(GPP_A13, 1, DEEP),
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_A13, 1, DEEP, NONE),
 	/* A14:		Type C VBUS OverCurrent				*/
 	PAD_CFG_NF(GPP_A14, NONE, DEEP, NF1),
 	/* A15:		Test Point 3					*/
@@ -244,7 +244,7 @@ const struct pad_config gpio_table[] = {
 	/* E2:		Not Connected					*/
 	PAD_NC(GPP_E2, NONE),
 	/* E3:		WiFi RF Kill					*/
-	PAD_CFG_GPO(GPP_E3, 1, DEEP),
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_E3, 1, DEEP, NONE),
 	/* E4:		Test Point 7					*/
 	PAD_NC(GPP_E4, NONE),
 	/* E5:		Not Connected					*/

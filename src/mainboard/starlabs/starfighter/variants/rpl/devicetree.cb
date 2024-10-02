@@ -165,6 +165,8 @@ chip soc/intel/alderlake
 						register "desc"		= ""Internal Bluetooth""
 						register "type"		= "UPC_TYPE_INTERNAL"
 						register "group"	= "ACPI_PLD_GROUP(0, 5)"
+						register "is_intel_bluetooth" = "1"
+						register "enable_gpio"	= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A13)"
 						device ref usb2_port10 on end
 					end
 				end

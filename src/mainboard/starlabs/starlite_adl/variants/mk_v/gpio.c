@@ -91,8 +91,7 @@ const struct pad_config gpio_table[] = {
 	/* B1:		Core Vendor ID 1				*/
 	PAD_CFG_NF(GPP_B1, NONE, DEEP, NF1),
 	/* B2:		BC PROCHOT					*/
-	// PAD_CFG_GPI_SCI(GPP_B2, NONE, PLTRST, EDGE_SINGLE, INVERT),
-	_PAD_CFG_STRUCT(GPP_B2, PAD_FUNC(NF1) | PAD_RESET(DEEP) | PAD_TRIG(OFF) | PAD_BUF(TX_RX_DISABLE) | (1 << 1), PAD_IOSSTATE(IGNORE)),
+	PAD_CFG_GPI_SCI(GPP_B2, NONE, PLTRST, EDGE_SINGLE, INVERT),
 	/* B3:		Not Connected					*/
 	PAD_NC(GPP_B3, NONE),
 	/* B4:		Not Connected					*/

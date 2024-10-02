@@ -139,15 +139,15 @@ void acpi_device_intel_bt(void)
  *		}
  *		Method (_RST, 0, NotSerialized)
  *		{
- *			Local0 = Acquire (CNMT, 0x03E8)
+ *			Local0 = Acquire (\_SB.PCI0.CNMT, 1000)
  *			If ((Local0 == Zero))
  *			{
  *				BTRK (Zero)
  *				Sleep (RDLY)
  *				BTRK (One)
  *				Sleep (RDLY)
- *			}
- *			Release (CNMT)
+ *				Release (\_SB.PCI0.CNMT)
+			}
  *		}
  *	}
  */
@@ -168,7 +168,7 @@ void acpi_device_intel_bt(void)
 		acpigen_write_method("_RST", 0);
 		{
 			acpigen_write_store();
-			acpigen_write_acquire("CNMT", 0x03e8);
+			acpigen_write_acquire("\\_SB.PCI0.CNMT", 1000);
 			acpigen_emit_byte(LOCAL0_OP);
 
 			acpigen_write_if_lequal_op_int(LOCAL0_OP, 0);
@@ -184,11 +184,23 @@ void acpi_device_intel_bt(void)
 
 				acpigen_emit_ext_op(SLEEP_OP);
 				acpigen_emit_namestring("RDLY");
+
+				acpigen_write_release("\\_SB.PCI0.CNMT");
 			}
 			acpigen_pop_len();
-			acpigen_write_release("CNMT");
 		}
 		acpigen_pop_len();
 	}
 	acpigen_write_power_res_end();
+}
+
+void acpi_device_intel_bt_common(void)
+{
+	acpigen_write_scope("\\_SB.PCI0");
+/*
+ *	Mutex (CNMT, 0)
+ */
+	acpigen_write_mutex("CNMT", 0);
+
+	acpigen_pop_len();
 }

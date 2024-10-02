@@ -112,6 +112,13 @@ static void usb_acpi_fill_ssdt_generator(const struct device *dev)
 
 	acpigen_pop_len();
 
+	/*
+	 * This is generated outside of the USB Device Scope to make it easier for
+	 * other code to access it i.e. CNVi driver.
+	 */
+	if (config->is_intel_bluetooth)
+		acpi_device_intel_bt_common();
+
 	printk(BIOS_INFO, "%s: %s at %s\n", path,
 	       config->desc ? : dev->chip_ops->name, dev_path(dev));
 }

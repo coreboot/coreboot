@@ -29,15 +29,15 @@ chip soc/intel/alderlake
 		end
 		device ref gna		on  end
 		device ref xhci		on
-			# Motherboard USB Type C
+			# Motherboard USB 3.0 Type-C
 			register "usb2_ports[0]"		= "USB2_PORT_MID(OC5)"
 			register "usb3_ports[2]"		= "USB3_PORT_DEFAULT(OC3)"
 
-			# Motherboard USB 3.0
+			# Motherboard USB 3.0 Type-A
 			register "usb2_ports[2]"		= "USB2_PORT_MID(OC_SKIP)"
 			register "usb3_ports[0]"		= "USB3_PORT_DEFAULT(OC5)"
 
-			# Daughterboard USB 3.0
+			# Daughterboard USB 3.0 Type-A
 			register "usb2_ports[6]"		= "USB2_PORT_MID(OC0)"
 			register "usb3_ports[1]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 
@@ -47,7 +47,7 @@ chip soc/intel/alderlake
 			# Fingerprint Reader
 			register "usb2_ports[5]"		= "USB2_PORT_MID(OC0)"
 
-			# Daughterboard SD Card
+			# Daughterboard USB 2.0 Type-A + SD Card Reader
 			register "usb2_ports[3]"		= "USB2_PORT_MID(OC_SKIP)"
 
 			# Internal Bluetooth
@@ -104,8 +104,8 @@ chip soc/intel/alderlake
 						device ref usb2_port6 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""MicroSD Card Reader""
-						register "type"		= "UPC_TYPE_INTERNAL"
+						register "desc"		= ""USB 2.0 Hub""
+						register "type"		= "UPC_TYPE_HUB"
 						register "group"	= "ACPI_PLD_GROUP(0, 5)"
 						device ref usb2_port4 on end
 					end

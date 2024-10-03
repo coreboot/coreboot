@@ -36,15 +36,15 @@ chip soc/intel/alderlake
 		end
 		device ref gna		on  end
 		device ref xhci		on
-			# Primary USB Type C
+			# Top USB 3.0 Type-C
 			register "usb2_ports[0]"			= "USB2_PORT_MID(OC_SKIP)"
 			register "usb3_ports[2]"			= "USB3_PORT_DEFAULT(OC_SKIP)"
 
-			# Secondary USB Type C
+			# Bottom USB 3.0 Type-C
 			register "usb2_ports[1]"			= "USB2_PORT_MID(OC_SKIP)"
 			register "usb3_ports[0]"			= "USB3_PORT_DEFAULT(OC_SKIP)"
 
-			# Keyboard
+			# Detachable Keyboard + SD Card Reader
 			register "usb2_ports[2]"			= "USB2_PORT_MID(OC_SKIP)"
 
 			# Internal Webcam

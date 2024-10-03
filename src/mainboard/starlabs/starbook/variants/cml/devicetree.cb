@@ -38,18 +38,18 @@ chip soc/intel/cannonlake
 	device domain 0 on
 		device ref igpu on  end
 		device ref xhci on
-			# Motherboard USB Type C
+			# Motherboard USB 3.0 Type-C
 			register "usb2_ports[0]"		= "USB2_PORT_TYPE_C(OC_SKIP)"
 			register "usb3_ports[0]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 
-			# Motherboard USB 3.0
+			# Motherboard USB 3.0 Type-A
 			register "usb2_ports[1]"		= "USB2_PORT_MID(OC_SKIP)"
 			register "usb3_ports[1]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 
 			# Daughterboard SD Card
 			register "usb2_ports[3]"		= "USB2_PORT_MID(OC_SKIP)"
 
-			# Daughterboard USB 3.0
+			# Daughterboard USB 3.0 Type-A
 			register "usb2_ports[5]"		= "USB2_PORT_MID(OC_SKIP)"
 			register "usb3_ports[2]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 

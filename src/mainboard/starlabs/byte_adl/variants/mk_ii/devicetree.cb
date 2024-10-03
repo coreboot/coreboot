@@ -39,23 +39,23 @@ chip soc/intel/alderlake
 		end
 		device ref gna		on  end
 		device ref xhci		on
-			# Front panel USB Type C
+			# Front USB 3.0 Type-C
 			register "usb2_ports[0]"		= "USB2_PORT_MID(OC_SKIP)"
 			register "tcss_ports[0]"		= "TCSS_PORT_DEFAULT(OC_SKIP)"
 
-			# Back Top USB Type A [5]
+			# Back Top USB 3.0 Type-A
 			register "usb2_ports[1]"		= "USB2_PORT_MID(OC_SKIP)"
 			register "usb3_ports[2]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 
-			# Back Bottom USB Type A [6]
+			# Back Bottom USB 3.0 Type-A
 			register "usb2_ports[2]"		= "USB2_PORT_MID(OC_SKIP)"
 			register "usb3_ports[3]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 
-			# Front Left USB Type A [3]
+			# Front Left USB 3.0 Type-A
 			register "usb2_ports[5]"		= "USB2_PORT_MID(OC_SKIP)"
 			register "usb3_ports[1]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 
-			# Front Right USB Type A [2]
+			# Front Right USB 3.0 Type-A
 			register "usb2_ports[6]"		= "USB2_PORT_MID(OC_SKIP)"
 			register "usb3_ports[0]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 

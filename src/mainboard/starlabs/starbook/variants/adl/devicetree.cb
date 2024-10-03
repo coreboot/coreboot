@@ -58,51 +58,61 @@ chip soc/intel/alderlake
 					chip drivers/usb/acpi
 						register "desc"		= ""USB Type-C""
 						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group"	= "ACPI_PLD_GROUP(0, 0)"
 						device ref usb2_port1 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""USB Type-C""
 						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group"	= "ACPI_PLD_GROUP(0, 0)"
 						device ref usb3_port3 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""Left USB Type-A""
 						register "type"		= "UPC_TYPE_USB3_A"
+						register "group"	= "ACPI_PLD_GROUP(0, 1)"
 						device ref usb2_port3 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""Left USB Type-A""
 						register "type"		= "UPC_TYPE_USB3_A"
+						register "group"	= "ACPI_PLD_GROUP(0, 1)"
 						device ref usb3_port1 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""Right USB Type-A""
 						register "type"		= "UPC_TYPE_USB3_A"
+						register "group"	= "ACPI_PLD_GROUP(0, 2)"
 						device ref usb2_port7 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""Right USB Type-A""
 						register "type"		= "UPC_TYPE_USB3_A"
+						register "group"	= "ACPI_PLD_GROUP(0, 2)"
 						device ref usb3_port2 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""Internal Webcam""
 						register "type"		= "UPC_TYPE_INTERNAL"
+						register "group"	= "ACPI_PLD_GROUP(0, 3)"
 						device ref usb2_port5 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""Fingerprint Reader""
 						register "type"		= "UPC_TYPE_INTERNAL"
+						register "group"	= "ACPI_PLD_GROUP(0, 4)"
 						device ref usb2_port6 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""MicroSD Card Reader""
 						register "type"		= "UPC_TYPE_INTERNAL"
+						register "group"	= "ACPI_PLD_GROUP(0, 5)"
 						device ref usb2_port4 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""Internal Bluetooth""
 						register "type"		= "UPC_TYPE_INTERNAL"
+						register "group"	= "ACPI_PLD_GROUP(0, 6)"
 						device ref usb2_port10 on end
 					end
 				end

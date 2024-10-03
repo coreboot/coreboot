@@ -158,10 +158,8 @@ static void soundwire_alc711_enable(struct device *dev)
 }
 
 struct chip_operations drivers_soundwire_alc711_ops = {
-#if CONFIG(DRIVERS_SOUNDWIRE_ALC711)
-	.name = "Realtek ALC711 SoundWire Codec",
-#elif CONFIG(DRIVERS_SOUNDWIRE_ALC722)
-	.name = "Realtek ALC722 SoundWire Codec",
+#if CONFIG(DRIVERS_SOUNDWIRE_ALC_BASE_7XX)
+	.name = "Realtek ALC 7 Series SoundWire Codec",
 #else
 	.name = "Unknown",
 #endif

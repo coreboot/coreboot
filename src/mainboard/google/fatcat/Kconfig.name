@@ -4,3 +4,9 @@ comment "Fatcat"
 
 config BOARD_GOOGLE_FATCAT
 	bool "-> Fatcat"
+
+config BOARD_GOOGLE_FATCATITE
+	bool "-> Fatcatite"
+
+config BOARD_GOOGLE_FATCATNUVO
+	bool "-> Fatcatnuvo"

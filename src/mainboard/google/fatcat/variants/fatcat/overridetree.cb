@@ -52,6 +52,16 @@ fw_config
 		option KB_ABSENT		0
 		option KB_PRESENT		1
 	end
+	field UFC 20 21
+		option UFC_ABSENT		0
+		option UFC_MIPI			1
+		option UFC_USB			2
+	end
+	field WFC 22 23
+		option WFC_ABSENT		0
+		option WFC_MIPI			1
+		option WFC_USB			2
+	end
 end
 
 chip soc/intel/pantherlake

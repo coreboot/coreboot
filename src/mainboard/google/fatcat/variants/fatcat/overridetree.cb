@@ -22,7 +22,7 @@ fw_config
 		option TOUCHSCREEN_LPSS_I2C	1
 		option TOUCHSCREEN_GSPI		2
 		option TOUCHSCREEN_THC_SPI	3
-		option TOUCHSCREEN_THC0_I2C	4
+		option TOUCHSCREEN_THC_I2C	4
 	end
 	field TOUCHPAD 11 12
 		option TOUCHPAD_NONE		0

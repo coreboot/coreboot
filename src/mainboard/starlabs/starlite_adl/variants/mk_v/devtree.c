@@ -42,6 +42,9 @@ void devtree_update(void)
 		break;
 	}
 
+	/* Set PL4 to 1.0C */
+	soc_conf_4core->tdp_pl4				= 37;
+
 	/* Enable/Disable Bluetooth based on CMOS settings */
 	if (get_uint_option("wireless", 1) == 0) {
 		cfg->usb2_ports[9].enable = 0;

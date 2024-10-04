@@ -36,6 +36,9 @@ void devtree_update(void)
 		break;
 	}
 
+	/* Set PL4 to 1.0C */
+	soc_conf->tdp_pl4			= 45;
+
 	/* Enable/Disable Wireless based on CMOS settings */
 	if (get_uint_option("wireless", 1) == 0)
 		nic_dev->enabled = 0;

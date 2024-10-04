@@ -126,8 +126,8 @@ chip soc/intel/apollolake
 				device pnp 4e.19 off end			# Power Management Channel 5
 			end
 		end
-	end
-	chip drivers/crb
-		device mmio 0xfed40000 on end
+		chip drivers/crb
+			device mmio 0xfed40000 on end
+		end
 	end
 end

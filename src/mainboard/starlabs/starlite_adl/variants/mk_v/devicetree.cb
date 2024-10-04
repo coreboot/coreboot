@@ -217,8 +217,8 @@ chip soc/intel/alderlake
 			register "pch_hda_idisp_link_tmode"		= "HDA_TMODE_8T"
 		end
 		device ref smbus	on  end
-	end
-	chip drivers/crb
-		device mmio 0xfed40000 on end
+		chip drivers/crb
+			device mmio 0xfed40000 on end
+		end
 	end
 end

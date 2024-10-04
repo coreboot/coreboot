@@ -186,8 +186,8 @@ chip soc/intel/cannonlake
 			register "PchHdaAudioLinkHda"		= "1"
 		end
 		device ref smbus on  end
-	end
-	chip drivers/crb
-		device mmio 0xfed40000 on end
+		chip drivers/crb
+			device mmio 0xfed40000 on end
+		end
 	end
 end

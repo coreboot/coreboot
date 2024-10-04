@@ -3,6 +3,10 @@ fw_config
 		option THERMAL_SOLUTION_PASSIVE  0
 		option THERMAL_SOLUTION_ACTIVE   1
 	end
+	field AUDIO 2 4
+		option AUDIO_ALC1019_ALC5682IVS		0
+		option AUDIO_ALC5650_ALC5650		1
+	end
 	field DB_USB 5 7
 		option DB_NONE			 0
 		option DB_1C			 1
@@ -371,12 +375,29 @@ chip soc/intel/alderlake
 				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
 				register "property_list[0].name" = ""realtek,jd-src""
 				register "property_list[0].integer" = "1"
-				device i2c 1a on end
+				device i2c 1a on
+					probe AUDIO AUDIO_ALC1019_ALC5682IVS
+				end
 			end
 			chip drivers/generic/alc1015
 				register "hid" = ""RTL1019""
 				register "sdb" =  "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A11)"
-				device generic 1 on end
+				device generic 1 on
+					probe AUDIO AUDIO_ALC1019_ALC5682IVS
+				end
+			end
+			chip drivers/i2c/generic
+				register "hid" = ""10EC5650""
+				register "name" = ""RT58""
+				register "desc" = ""Realtek RT5650""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_A23)"
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-mode""
+				register "property_list[0].integer" = "2"
+				device i2c 1a on
+					probe AUDIO AUDIO_ALC5650_ALC5650
+				end
 			end
 		end #I2C3
 		device ref i2c5 on

@@ -268,7 +268,7 @@ const struct pad_config gpio_table[] = {
 	/* E13:		PWD Amplifier Input				*/
 	PAD_CFG_GPO(GPP_E13, 0, PLTRST),
 	/* E14:		EDP HPD						*/
-	PAD_NC(GPP_E14, NONE),
+	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),
 	/* E15:		Not Connected		LAN RESET		*/
 	PAD_NC(GPP_E15, NONE),
 	/* E16:		Not Connected					*/

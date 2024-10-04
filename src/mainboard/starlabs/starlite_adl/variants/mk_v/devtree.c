@@ -17,7 +17,7 @@ void devtree_update(void)
 	common_config = chip_get_common_soc_structure();
 
 	struct soc_power_limits_config *soc_conf_4core =
-		&cfg->power_limits_config[ADL_N_021_6W_CORE];
+		&cfg->power_limits_config[ADL_N_041_6W_CORE];
 
 	struct device *nic_dev = pcidev_on_root(0x14, 3);
 	struct device *touchscreen_dev = pcidev_on_root(0x15, 2);

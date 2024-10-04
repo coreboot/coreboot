@@ -1453,9 +1453,9 @@ static void integrate_bios_firmwares(context *ctx,
 			}
 
 			biosdir->entries[count].source =
-				RUN_CURRENT_MODE(*ctx, AMD_ADDR_REL_BIOS);
+				RUN_CURRENT(*ctx);
 			biosdir->entries[count].address_mode =
-				SET_ADDR_MODE(biosdir, AMD_ADDR_REL_BIOS);
+				SET_ADDR_MODE_BY_TABLE(biosdir);
 
 			adjust_current_pointer(ctx, bytes, 0x100U);
 			break;

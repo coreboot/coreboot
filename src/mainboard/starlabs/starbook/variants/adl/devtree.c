@@ -22,30 +22,29 @@ void devtree_update(void)
 	struct soc_power_limits_config *soc_conf_12core =
 		&cfg->power_limits_config[ADL_P_682_28W_CORE];
 
+	uint8_t performance_scale = 100;
+
 	/* Update PL1 & PL2 based on CMOS settings */
 	switch (get_power_profile(PP_POWER_SAVER)) {
 	case PP_POWER_SAVER:
-		soc_conf_10core->tdp_pl1_override	= 15;
-		soc_conf_12core->tdp_pl1_override	= 15;
-		soc_conf_10core->tdp_pl2_override	= 15;
-		soc_conf_12core->tdp_pl2_override	= 15;
+		performance_scale -= 25;
 		common_config->pch_thermal_trip		= 20;
 		break;
 	case PP_BALANCED:
-		soc_conf_10core->tdp_pl1_override	= 15;
-		soc_conf_12core->tdp_pl1_override	= 15;
-		soc_conf_10core->tdp_pl2_override	= 25;
-		soc_conf_12core->tdp_pl2_override	= 25;
+		/* Use the Intel defaults */
 		common_config->pch_thermal_trip		= 15;
 		break;
 	case PP_PERFORMANCE:
-		soc_conf_10core->tdp_pl1_override	= 28;
-		soc_conf_12core->tdp_pl1_override	= 28;
-		soc_conf_10core->tdp_pl2_override	= 40;
-		soc_conf_12core->tdp_pl2_override	= 40;
+		performance_scale += 25;
 		common_config->pch_thermal_trip		= 10;
 		break;
 	}
+
+	soc_conf_10core->tdp_pl1_override = (soc_conf_10core->tdp_pl1_override * performance_scale) / 100;
+	soc_conf_12core->tdp_pl1_override = (soc_conf_12core->tdp_pl2_override * performance_scale) / 100;
+
+	soc_conf_10core->tdp_pl2_override = (soc_conf_10core->tdp_pl1_override * performance_scale) / 100;
+	soc_conf_12core->tdp_pl2_override = (soc_conf_12core->tdp_pl2_override * performance_scale) / 100;
 
 	/* Set PL4 to 1.0C */
 	soc_conf_10core->tdp_pl4			= 65;

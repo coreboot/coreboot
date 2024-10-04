@@ -21,24 +21,26 @@ void devtree_update(void)
 
 	struct device *nic_dev = pcidev_on_root(0x14, 3);
 
+	uint8_t performance_scale = 100;
+
 	/* Update PL1 & PL2 based on CMOS settings */
 	switch (get_power_profile(PP_POWER_SAVER)) {
 	case PP_POWER_SAVER:
-		soc_conf_4core->tdp_pl1_override	= 6;
-		soc_conf_4core->tdp_pl2_override	= 10;
+		performance_scale -= 25;
 		common_config->pch_thermal_trip		= 30;
 		break;
 	case PP_BALANCED:
-		soc_conf_4core->tdp_pl1_override	= 10;
-		soc_conf_4core->tdp_pl2_override	= 25;
+		/* Use the Intel defaults */
 		common_config->pch_thermal_trip		= 25;
 		break;
 	case PP_PERFORMANCE:
-		soc_conf_4core->tdp_pl1_override	= 20;
-		soc_conf_4core->tdp_pl2_override	= 35;
+		performance_scale += 25;
 		common_config->pch_thermal_trip		= 20;
 		break;
 	}
+
+	soc_conf_4core->tdp_pl1_override = (soc_conf_4core->tdp_pl1_override * performance_scale) / 100;
+	soc_conf_4core->tdp_pl2_override = (soc_conf_4core->tdp_pl2_override * performance_scale) / 100;
 
 	/* Set PL4 to 1.0C */
 	soc_conf_4core->tdp_pl4				= 36;

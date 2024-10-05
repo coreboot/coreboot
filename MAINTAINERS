@@ -1041,6 +1041,11 @@ GIT
 F:	.git*
 F:	/util/gitconfig
 
+HDA DECODER
+M:	Nicholas Sudsgaard <devel+coreboot@nsudsgaard.com>
+S:	Maintained
+F:	util/hda-decoder/
+
 LINT SCRIPTS
 M:	Martin Roth <gaumless@gmail.com>
 S:	Supported

@@ -107,3 +107,42 @@ func TestToHumanReadable(t *testing.T) {
 		}
 	}
 }
+
+type configToVerbsTest struct {
+	arg1     uint32
+	arg2     uint32
+	arg3     uint32
+	expected [4]uint32
+}
+
+var configToVerbsTests = []configToVerbsTest{
+	configToVerbsTest{
+		0, 0x19, 0x1cc3efde,
+		[4]uint32{0x01971cde, 0x01971def, 0x01971ec3, 0x01971f1c},
+	},
+	configToVerbsTest{
+		9, 0x4e, 0x913ddc4c,
+		[4]uint32{0x94e71c4c, 0x94e71ddc, 0x94e71e3d, 0x94e71f91},
+	},
+	configToVerbsTest{
+		12, 0xf4, 0x4193db3a,
+		[4]uint32{0xcf471c3a, 0xcf471ddb, 0xcf471e93, 0xcf471f41},
+	},
+	configToVerbsTest{
+		7, 0xb7, 0x0c39e09a,
+		[4]uint32{0x7b771c9a, 0x7b771de0, 0x7b771e39, 0x7b771f0c},
+	},
+	configToVerbsTest{
+		3, 0x5a, 0x24c04c66,
+		[4]uint32{0x35a71c66, 0x35a71d4c, 0x35a71ec0, 0x35a71f24},
+	},
+}
+
+func TestConfigToVerbs(t *testing.T) {
+	for _, test := range configToVerbsTests {
+		output := ConfigToVerbs(test.arg1, test.arg2, test.arg3)
+		if output != test.expected {
+			t.Errorf("Expected %#08x, received %#08x", test.expected, output)
+		}
+	}
+}

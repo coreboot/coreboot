@@ -14,6 +14,13 @@ import (
 	"strings"
 )
 
+type decodeOperation int
+
+const (
+	decodeToHumanReadable decodeOperation = iota
+	decodeToVerbs
+)
+
 var indentLevel int = 0
 
 func indentedPrintf(format string, args ...interface{}) (n int, err error) {
@@ -58,7 +65,7 @@ func printDisconnectedPort(config uint32) {
 	}
 }
 
-func decodeFile(path string, codec uint32) {
+func decodeFile(path string, codec uint32, operation decodeOperation) {
 	file, err := os.Open(path)
 	if err != nil {
 		log.Fatal(err)
@@ -77,15 +84,27 @@ func decodeFile(path string, codec uint32) {
 		pin := stringToUint32(fields[0])
 		config := stringToUint32(fields[1])
 
-		indentedPrintf("AZALIA_PIN_CFG(%d, 0x%02x, ", codec, pin)
-		if decoder.PortIsConnected(config) {
-			fmt.Printf("AZALIA_PIN_DESC(\n")
-			indentLevel += 1
-			decodeConfig(config)
-			indentLevel -= 1
-			indentedPrintf(")),\n")
-		} else {
-			printDisconnectedPort(config)
+		switch operation {
+		case decodeToVerbs:
+			fmt.Printf("address: %d, node ID: %#02x, configuration default: %#08x\n",
+				codec, pin, config)
+
+			verbs := decoder.ConfigToVerbs(codec, pin, config)
+			fmt.Printf("  %#08x\n", verbs[0])
+			fmt.Printf("  %#08x\n", verbs[1])
+			fmt.Printf("  %#08x\n", verbs[2])
+			fmt.Printf("  %#08x\n", verbs[3])
+		case decodeToHumanReadable:
+			indentedPrintf("AZALIA_PIN_CFG(%d, 0x%02x, ", codec, pin)
+			if decoder.PortIsConnected(config) {
+				fmt.Printf("AZALIA_PIN_DESC(\n")
+				indentLevel += 1
+				decodeConfig(config)
+				indentLevel -= 1
+				indentedPrintf(")),\n")
+			} else {
+				printDisconnectedPort(config)
+			}
 		}
 	}
 }
@@ -116,7 +135,7 @@ func decodeDeviceCodec(path string, codec uint32, isLastCodec bool, generate boo
 		indentedPrintf("AZALIA_SUBVENDOR(%d, %s),\n\n", codec, subsystemId)
 	}
 
-	decodeFile(path+"/init_pin_configs", codec)
+	decodeFile(path+"/init_pin_configs", codec, decodeToHumanReadable)
 	if !isLastCodec {
 		fmt.Printf("\n")
 	}
@@ -155,12 +174,19 @@ func main() {
 	file := flag.String("file", "", "Decode configurations in a file\n"+
 		"The decoder assumes each line in the file has the format: <pin> <config>")
 	generate := flag.Bool("generate", false, "Automatically generate hda_verb.c for the host device")
+	toVerbs := flag.Bool("to-verbs", false, "Convert configuration defaults to their corresponding verbs\n"+
+		"This flag is only meaningful in combination with the 'file' flag")
 	flag.Parse()
+
+	operation := decodeToHumanReadable
+	if *toVerbs {
+		operation = decodeToVerbs
+	}
 
 	if isFlagPassed("config") {
 		decodeConfig(uint32(*config))
 	} else if isFlagPassed("file") {
-		decodeFile(*file, uint32(*codec))
+		decodeFile(*file, uint32(*codec), operation)
 	} else {
 		if *generate {
 			fmt.Printf("/* SPDX-License-Identifier: GPL-2.0-only */\n\n")

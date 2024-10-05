@@ -177,3 +177,12 @@ func ToHumanReadable(fields Fields[uint32]) Fields[string] {
 		Sequence:           fmt.Sprintf("%d", fields.Sequence),
 	}
 }
+
+func ConfigToVerbs(address uint32, nodeId uint32, config uint32) [4]uint32 {
+	return [4]uint32{
+		(address << 28) | (nodeId << 20) | (0x71c << 8) | ((config >> 0) & 0xff),
+		(address << 28) | (nodeId << 20) | (0x71d << 8) | ((config >> 8) & 0xff),
+		(address << 28) | (nodeId << 20) | (0x71e << 8) | ((config >> 16) & 0xff),
+		(address << 28) | (nodeId << 20) | (0x71f << 8) | ((config >> 24) & 0xff),
+	}
+}

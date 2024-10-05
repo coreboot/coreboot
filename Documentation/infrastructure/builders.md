@@ -23,8 +23,6 @@ as the system can just be disabled until someone is available to fix any
 issues.
 
 Currently active Jenkins admins:
-*   Patrick Georgi:
-    *   Email: [patrick@coreboot.org](mailto:patrick@coreboot.org)
 *   Martin Roth:
     *   Email: [gaumless@gmail.com](mailto:gaumless@gmail.com)
     *   IRC: martinr

@@ -100,4 +100,4 @@ are discovered and go unnoticed in a later build.
 
 More projects that are hosted on review.coreboot.org (potentially as a
 mirror, like vboot and EC) could be served through that pipeline. Reach
-out to {stepan,patrick,martin}@coreboot.org.
+out to {stepan,martin}@coreboot.org.

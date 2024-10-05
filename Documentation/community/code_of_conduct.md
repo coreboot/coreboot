@@ -117,7 +117,6 @@ communications pertaining to community business.
 
 Our arbitration team consists of the following people
 * Stefan Reinauer <stefan.reinauer@coreboot.org> (USA)
-* Patrick Georgi <patrick@coreboot.org> (Germany)
 * Ronald Minnich <rminnich@coreboot.org> (USA)
 * Martin Roth <martin@coreboot.org> (USA)
 

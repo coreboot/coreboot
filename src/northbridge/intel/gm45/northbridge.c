@@ -13,6 +13,7 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
+#include <static.h>
 #include <stdint.h>
 
 #include "chip.h"
@@ -239,7 +240,6 @@ struct chip_operations northbridge_intel_gm45_ops = {
 
 bool northbridge_support_slfm(void)
 {
-	struct device *gmch = __pci_0_00_0;
-	struct northbridge_intel_gm45_config *config = gmch->chip_info;
+	struct northbridge_intel_gm45_config *config = config_of_soc();
 	return config->slfm == 1;
 }

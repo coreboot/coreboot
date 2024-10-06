@@ -502,12 +502,4 @@ void scan_smbus(struct device *bus);
 void scan_generic_bus(struct device *bus);
 void scan_static_bus(struct device *bus);
 
-/* Macro to generate `struct device *` name that points to a device with the given alias. */
-#define DEV_PTR(_alias)		_dev_##_alias##_ptr
-
-/* Macro to generate weak `struct device *` definition that points to a device with the given
-   alias. */
-#define WEAK_DEV_PTR(_alias)			\
-	__weak DEVTREE_CONST struct device *const DEV_PTR(_alias)
-
 #endif /* DEVICE_H */

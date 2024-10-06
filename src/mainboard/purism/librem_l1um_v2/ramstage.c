@@ -26,13 +26,13 @@ static void mainboard_final(void *chip_info)
 	 * Control Register), but we have to use one of the LDNs as the device
 	 * because the chip ops are only assigned to the LDNs.
 	 */
-	pnp_enter_conf_mode(_dev_nvt_superio_gpio1_ptr);
+	pnp_enter_conf_mode(DEV_PTR(nvt_superio_gpio1));
 	printk(BIOS_DEBUG, "GCR 0x2f was: %02X\n",
-		pnp_read_config(_dev_nvt_superio_gpio1_ptr, 0x2f));
-	pnp_write_config(_dev_nvt_superio_gpio1_ptr, 0x2f, 0x00);
+		pnp_read_config(DEV_PTR(nvt_superio_gpio1), 0x2f));
+	pnp_write_config(DEV_PTR(nvt_superio_gpio1), 0x2f, 0x00);
 	printk(BIOS_DEBUG, "GCR 0x2f is now: %02X\n",
-		pnp_read_config(_dev_nvt_superio_gpio1_ptr, 0x2f));
-	pnp_exit_conf_mode(_dev_nvt_superio_gpio1_ptr);
+		pnp_read_config(DEV_PTR(nvt_superio_gpio1), 0x2f));
+	pnp_exit_conf_mode(DEV_PTR(nvt_superio_gpio1));
 }
 
 struct chip_operations mainboard_ops = {

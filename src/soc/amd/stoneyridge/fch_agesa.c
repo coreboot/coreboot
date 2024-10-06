@@ -3,6 +3,7 @@
 #include <amdblocks/agesawrapper.h>
 #include <device/device.h>
 #include <soc/pci_devs.h>
+#include <static.h>
 
 static int is_sata_config(void)
 {

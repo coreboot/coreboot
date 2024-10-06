@@ -3,6 +3,8 @@
 #ifndef AMD_MENDOCINO_XHCI_H
 #define AMD_MENDOCINO_XHCI_H
 
+#include <static.h>
+
 #define SOC_XHCI_0 DEV_PTR(xhci_0)
 #define SOC_XHCI_1 DEV_PTR(xhci_1)
 #define SOC_XHCI_2 DEV_PTR(xhci_2)

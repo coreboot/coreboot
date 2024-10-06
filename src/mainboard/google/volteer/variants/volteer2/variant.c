@@ -3,6 +3,7 @@
 #include <baseboard/variants.h>
 #include <soc/pci_devs.h>
 #include <acpi/acpi_device.h>
+#include <static.h>
 
 /*
  * This function runs only on the volteer_ti50 variant, which has the GSC on a

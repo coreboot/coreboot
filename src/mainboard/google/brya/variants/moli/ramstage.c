@@ -13,6 +13,7 @@
 #include <drivers/intel/dptf/chip.h>
 #include <boardid.h>
 #include <soc/intel/common/block/pcie/rtd3/chip.h>
+#include <static.h>
 #include <acpi/acpi_device.h>
 
 static void devtree_update_emmc_rtd3(void)

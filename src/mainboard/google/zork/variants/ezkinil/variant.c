@@ -4,6 +4,7 @@
 #include <device/device.h>
 #include <soc/pci_devs.h>
 #include <ec/google/chromeec/ec.h>
+#include <static.h>
 
 void variant_devtree_update(void)
 {

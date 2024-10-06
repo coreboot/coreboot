@@ -4,6 +4,7 @@
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
 #include <device/device.h>
+#include <static.h>
 #include <variant/sku.h>
 
 static bool eps_sku(uint32_t sku_id)

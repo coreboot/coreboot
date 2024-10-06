@@ -11,6 +11,7 @@
 #include <fw_config.h>
 #include <intelblocks/power_limit.h>
 #include <drivers/intel/dptf/chip.h>
+#include <static.h>
 
 const struct cpu_power_limits limits[] = {
 	/* SKU_ID, TDP (Watts), pl1_min, pl1_max, pl2_min, pl2_max, pl4 */

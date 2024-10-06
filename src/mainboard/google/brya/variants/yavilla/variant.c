@@ -5,6 +5,7 @@
 #include <device/device.h>
 #include <fw_config.h>
 #include <sar.h>
+#include <static.h>
 
 void variant_devtree_update(void)
 {

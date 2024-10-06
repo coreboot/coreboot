@@ -5,6 +5,7 @@
 #include <device/pci_def.h>
 #include <gpio.h>
 #include <soc/platform_descriptors.h>
+#include <static.h>
 #include <types.h>
 
 /* All PCIe Resets are handled in coreboot */

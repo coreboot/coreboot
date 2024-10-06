@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <baseboard/variants.h>
+#include <static.h>
 
 void variant_devtree_update(void)
 {

@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <baseboard/variants.h>
+#include <static.h>
 
 #define MORPHIUS_SKU_1  0x5A010010
 #define MORPHIUS_SKU_2  0x5A010011

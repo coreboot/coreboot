@@ -8,6 +8,7 @@
 #include <fw_config.h>
 #include <soc/bootblock.h>
 #include <sar.h>
+#include <static.h>
 
 WEAK_DEV_PTR(dptf_policy);
 

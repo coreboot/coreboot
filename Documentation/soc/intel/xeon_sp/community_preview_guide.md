@@ -19,6 +19,90 @@ The supported platform status are as below,
 
 - Buildable and bootable with real FSP headers/binaries
 
+## Targeted features list
+
+1. ACPI
+
+- RSDP/RSDT/XSDT/FADT/FACS/DSDT/SSDT
+
+- MCFG/MADT/SRAT/SLIT/HMAT/DMAR/CEDT
+
+- HEPT/SPMI/TPM2
+
+- HEST/EINJ/ERST/BERT
+
+2. SMBIOS
+
+- Type 0 - BIOS information
+
+- Type 1 - system information
+
+- Type 2 - base board information
+
+- Type 3 - chassis information
+
+- Type 4 - processor information
+
+- Type 17 - memory device
+
+3. Hardware related
+
+- Basic PCIe support
+
+  * IIO bifurcation
+
+  * PCIe hot plug
+
+  * VT-d
+
+- Customizable PCIe host bridge bus/MMIO resource window size for smart NIC support
+
+  * To handle the case where a large amount of PFs/VFs will be presented under specific PCIe host bridge
+
+- On-Chip accelerator (QAT, IAA, DSA, DLB)
+
+- CXL 2.0 Type-3 memory
+
+- NUMA and sub-NUMA clustering
+
+- GPIO (with physical pins)
+
+- Virtual GPIO
+
+  * eSPI based, use BMC or CPLD to expand GPIO pin counts on PCH-less SoC
+
+- BMC support
+
+  * IPMI KCS
+
+- Power Sequence
+
+  * ACPI S0/S5
+
+  * Fast cold/warm reset
+
+- CPU OSPM
+
+  * OS native (based on intel p_state/intel_idle OS driver)
+
+- RAS
+
+  * Based on FSP2.4 FSP-SMM
+
+  * APEI support
+
+  * Memory CE/UCE (firmware first mode, e.g. MCA/eMCA)
+
+  * IIO CE/UCE (firmware first mode, e.g. DPC/eDPC)
+
+4. Firmware related
+
+- Boot to various payloads (Linux payload/TianoCore/UniversalPayload)
+
+- Enlarged CBFS (>16MB) for one or multiple cloud payloads
+
+- VPD
+
 ## Build steps
 
 ### Prepare workspace

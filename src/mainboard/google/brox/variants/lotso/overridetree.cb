@@ -222,7 +222,10 @@ chip soc/intel/alderlake
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E21)"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E20)"
 				register "enable_delay_ms" = "3"
-				device spi 0 on end
+				device spi 0 on
+					probe FP FP_PRESENT
+					probe unprovisioned
+				end
 			end # FPMCU
 		end
 		device ref pmc hidden
@@ -350,6 +353,7 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 			probe WIFI_BT WIFI_PCIE_WIFI7
+			probe unprovisioned
 		end
 		device ref pcie_rp6 on
 			# Enable SD Card PCIE6 rp6 using clk 3
@@ -375,6 +379,7 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 			probe WIFI_BT WIFI_CNVI_WIFI6E
+			probe unprovisioned
 		end
 		device ref ish on
 			chip drivers/intel/ish

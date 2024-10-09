@@ -12,21 +12,6 @@ static const char *cnvi_wifi_acpi_name(const struct device *dev)
 	return "CNVW";
 }
 
-static void cnvw_fill_ssdt(const struct device *dev)
-{
-	const char *scope = acpi_device_path(dev);
-
-	acpi_device_write_pci_dev(dev);
-
-	acpigen_write_scope(scope);
-/*
- *	Mutex (CNMT, 0)
- */
-	acpigen_write_mutex("CNMT", 0);
-
-	acpigen_write_scope_end();
-}
-
 static struct device_operations cnvi_wifi_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
@@ -34,7 +19,7 @@ static struct device_operations cnvi_wifi_ops = {
 	.ops_pci		= &pci_dev_ops_pci,
 	.scan_bus		= scan_static_bus,
 	.acpi_name		= cnvi_wifi_acpi_name,
-	.acpi_fill_ssdt		= cnvw_fill_ssdt,
+	.acpi_fill_ssdt		= acpi_device_write_pci_dev,
 };
 
 static const unsigned short wifi_pci_device_ids[] = {

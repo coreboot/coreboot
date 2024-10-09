@@ -496,10 +496,16 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	params->CnviMode = is_devfn_enabled(PCH_DEVFN_CNVI_WIFI);
 	params->CnviBtCore = config->CnviBtCore;
 	params->CnviBtAudioOffload = config->CnviBtAudioOffload;
-	/* Assert if CNVi BT is enabled without CNVi being enabled. */
-	assert(params->CnviMode || !params->CnviBtCore);
-	/* Assert if CNVi BT offload is enabled without CNVi BT being enabled. */
-	assert(params->CnviBtCore || !params->CnviBtAudioOffload);
+
+	if (!params->CnviBtCore && params->CnviBtAudioOffload) {
+		printk(BIOS_ERR, "BT offload is enabled without CNVi BT being enabled\n");
+		params->CnviBtAudioOffload = 0;
+	}
+	if (!params->CnviMode && params->CnviBtCore) {
+		printk(BIOS_ERR, "CNVi BT is enabled without CNVi being enabled\n");
+		params->CnviBtCore = 0;
+		params->CnviBtAudioOffload = 0;
+	}
 
 	/* VMD */
 	params->VmdEnable = is_devfn_enabled(SA_DEVFN_VMD);

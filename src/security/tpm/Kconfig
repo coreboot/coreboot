@@ -60,15 +60,6 @@ config DEBUG_TPM
 	help
 	  This option enables additional TPM related debug messages.
 
-config TPM_RDRESP_NEED_DELAY
-	bool "Enable Delay Workaround for TPM"
-	default n
-	depends on MEMORY_MAPPED_TPM
-	help
-	  Certain TPMs seem to need some delay when reading response
-	  to work around a race-condition-related issue, possibly
-	  caused by ill-programmed TPM firmware.
-
 config TPM_STARTUP_IGNORE_POSTINIT
 	bool
 	help

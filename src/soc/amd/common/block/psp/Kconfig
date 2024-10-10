@@ -65,7 +65,6 @@ config SPL_TABLE_FILE
 
 config HAVE_SPL_RW_AB_FILE
 	bool "Have a separate mainboard-specific SPL file in RW A/B partitions"
-	default n
 	depends on SOC_AMD_COMMON_BLOCK_PSP_SPL
 	depends on VBOOT_SLOTS_RW_AB
 	help
@@ -90,7 +89,6 @@ config PSP_PLATFORM_SECURE_BOOT
 
 config SOC_AMD_COMMON_BLOCK_PSP_SMI
 	bool
-	default n
 	select SPI_FLASH_SMM if BOOT_DEVICE_SPI_FLASH_RW_NOMMAP
 	help
 	  Add PSP SMI handler for SPI flash access.
@@ -110,7 +108,6 @@ config SOC_AMD_COMMON_BLOCK_PSP_SMI
 config PSP_INCLUDES_HSP
 	bool
 	depends on SOC_AMD_COMMON_BLOCK_PSP
-	default n
 	help
 	  Select this config to indicate SoC includes Hardware Security Processor(HSP).
 

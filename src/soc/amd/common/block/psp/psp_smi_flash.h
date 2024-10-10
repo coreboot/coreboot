@@ -66,3 +66,5 @@ enum mbox_p2c_status psp_smi_spi_get_info(struct mbox_default_buffer *buffer);
 enum mbox_p2c_status psp_smi_spi_read(struct mbox_default_buffer *buffer);
 enum mbox_p2c_status psp_smi_spi_write(struct mbox_default_buffer *buffer);
 enum mbox_p2c_status psp_smi_spi_erase(struct mbox_default_buffer *buffer);
+enum mbox_p2c_status psp_smi_spi_rpmc_inc_mc(struct mbox_default_buffer *buffer);
+enum mbox_p2c_status psp_smi_spi_rpmc_req_mc(struct mbox_default_buffer *buffer);

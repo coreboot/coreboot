@@ -68,7 +68,7 @@ Method (RPTS, 1, Serialized)
 	 * Disable ACPI support.
 	 * This should always be the last action before entering S4 or S5.
 	 */
-	\_SB.PCI0.LPCB.EC.OSFG = 0x00
+	\_SB.PCI0.LPCB.EC.ECWR(0x00, RefOf(\_SB.PCI0.LPCB.EC.OSFG))
 }
 
 Method (RWAK, 1, Serialized)
@@ -77,7 +77,7 @@ Method (RWAK, 1, Serialized)
 	 * Enable ACPI support.
 	 * This should always be the first action when exiting S4 or S5.
 	 */
-	\_SB.PCI0.LPCB.EC.OSFG = 0x01
+	\_SB.PCI0.LPCB.EC.ECWR(0x01, RefOf(\_SB.PCI0.LPCB.EC.OSFG))
 
 	/* Restore EC settings from CMOS */
 	Switch (ToInteger (\_SB.PCI0.LPCB.TPLC))

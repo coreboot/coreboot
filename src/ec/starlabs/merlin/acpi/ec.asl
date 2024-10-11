@@ -147,10 +147,10 @@ Scope (\_SB.PCI0.LPCB)
 				ECAV = 0x01
 
 				// Initialise the Lid State
-				\LIDS = LSTE
+				\LIDS = ECRD(RefOf(LSTE))
 
 				// Initialise the OS State
-				OSFG = 0x01
+				ECWR(0x01, RefOf(OSFG))
 
 				// Initialise the Power State
 				PWRS = (ECRD (RefOf(ECPS)) & 0x01)

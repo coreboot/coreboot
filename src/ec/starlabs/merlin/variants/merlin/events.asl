@@ -22,6 +22,6 @@ Method (_Q0B, 0, NotSerialized)			// Event: Battery Information Update
 
 Method (_Q0C, 0, NotSerialized)			// Event: Lid Opened or Closed
 {
-	\LIDS = LSTE
+	\LIDS = ECRD(RefOf(LSTE))
 	Notify (LID0, 0x80)
 }

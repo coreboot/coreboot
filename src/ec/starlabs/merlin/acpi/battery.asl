@@ -9,7 +9,7 @@ Device (BAT0)
 		// Battery Status
 		// 0x80 BIT1 0x01 = Present
 		// 0x80 BIT1 0x00 = Not Present
-		If (ECPS & 0x02)
+		If (ECRD (RefOf(ECPS)) & 0x02)
 		{
 			Return (0x1F)
 		}
@@ -34,20 +34,22 @@ Device (BAT0)
 		CONFIG_EC_STARLABS_BATTERY_TYPE,	// 11: Battery Type
 		CONFIG_EC_STARLABS_BATTERY_OEM		// 12: OEM Information
 	})
+
 	Method (_BIF, 0, NotSerialized)
 	{
-		If (B1DC) {
-			SBIF  [1] = B1DC
+		Local0 = ECRD(RefOf(B1DC))
+		If (Local0) {
+			SBIF  [1] = Local0
 			If (B1FC != 0xffff) {
-				SBIF  [2] = B1FC
+				SBIF  [2] = ECRD(RefOf(B1FC))
 			} Else {
-				SBIF  [2] = B1DC
+				SBIF  [2] = Local0
 			}
-			SBIF  [4] = B1DV
-			SBIF  [5] = B1DC / 5	// 20%
-			SBIF  [6] = B1DC / 20	// 5%
-			SBIF  [7] = B1DC / 500	// 0.2%
-			SBIF  [8] = B1DC / 500	// 0.2%
+			SBIF  [4] = ECRD(RefOf(B1DV))
+			SBIF  [5] = Local0 / 5		// 20%
+			SBIF  [6] = Local0 / 20		// 5%
+			SBIF  [7] = Local0 / 500	// 0.2%
+			SBIF  [8] = Local0 / 500	// 0.2%
 		}
 		Return (SBIF)
 	}
@@ -83,21 +85,22 @@ Device (BAT0)
 	})
 	Method (_BIX, 0, NotSerialized)
 	{
-		If (B1DC) {
-			XBIF  [2] = B1DC
+		Local0 = ECRD(RefOf(B1DC))
+		If (Local0) {
+			XBIF  [2] = Local0
 			If (B1FC != 0xffff) {
-				XBIF  [3] = B1FC
+				XBIF  [3] = ECRD(RefOf(B1FC))
 			} Else {
-				XBIF  [3] = B1DC
+				XBIF  [3] = Local0
 			}
-			XBIF  [5] = B1DV
-			XBIF  [6] = B1DC / 5	// 20%
-			XBIF  [7] = B1DC / 20	// 5%
+			XBIF  [5] = ECRD(RefOf(B1DV))
+			XBIF  [6] = Local0 / 5	// 20%
+			XBIF  [7] = Local0 / 20	// 5%
 			If (B1CC != 0xffff) {
-				XBIF  [8] = B1CC
+				XBIF  [8] = ECRD(RefOf(B1CC))
 			}
-			XBIF [14] = B1DC / 500	// 0.2%
-			XBIF [15] = B1DC / 500	// 0.2%
+			XBIF [14] = Local0 / 500	// 0.2%
+			XBIF [15] = Local0 / 500	// 0.2%
 		}
 		Return (XBIF)
 	}
@@ -111,14 +114,16 @@ Device (BAT0)
 	})
 	Method (_BST, 0, NotSerialized)
 	{
-		PKG1[0] = (B1ST & 0x07)
-		PKG1[1] = B1PR
-		If (B1RC != 0xffff) {
-			PKG1[2] = B1RC
+		PKG1[0] = (ECRD(RefOf(B1ST)) & 0x07)
+		PKG1[1] = ECRD(RefOf(B1PR))
+
+		Local0 = ECRD(RefOf(B1RC))
+		If (Local0 != 0xffff) {
+			PKG1[2] = Local0
 		} Else {
-			PKG1[2] = (B1RP * B1DC) / 100
+			PKG1[2] = (ECRD(RefOf(B1RP)) * ECRD(RefOf(B1DC))) / 100
 		}
-		PKG1[3] = B1PV
+		PKG1[3] = ECRD(RefOf(B1PV))
 		Return (PKG1)
 	}
 	Method (_PCL, 0, NotSerialized)

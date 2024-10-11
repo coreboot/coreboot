@@ -279,15 +279,15 @@ const struct pad_config gpio_table[] = {
 	/* E16:		Not Connected					*/
 	PAD_NC(GPP_E16, NONE),
 	/* E17:		Not Connected					*/
-	PAD_CFG_GPO(GPP_E17, 1, PLTRST),
-	/* E18:		Thunderbolt LSX TXD				*/
-	PAD_NC(GPP_E18, NATIVE),
-	/* E19:		Thunderbolt LSX RXD				*/
-	PAD_NC(GPP_E19, NATIVE),
+	PAD_NC(GPP_E17, NONE),
+	/* E18:		TBT_LSX0_TXD					*/
+	PAD_CFG_NF(GPP_E18, NONE, DEEP, NF2),
+	/* E19:		TBT_LSX0_RXD					*/
+	PAD_CFG_NF(GPP_E19, NONE, DEEP, NF2),
 	/* E20:		TBT_LSX1_TXD					*/
-	PAD_NC(GPP_E20, NONE),
+	PAD_CFG_NF(GPP_E20, NONE, DEEP, NF4),
 	/* E21:		TBT_LSX1_RXD					*/
-	PAD_NC(GPP_E21, NONE),
+	PAD_CFG_NF(GPP_E21, NONE, DEEP, NF4),
 	/* E22:		Not Connected					*/
 	PAD_NC(GPP_E22, NONE),
 	/* E23:		Not Connected					*/

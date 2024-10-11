@@ -9,7 +9,6 @@ chip soc/intel/alderlake
 	}"
 
 	# FSP Memory
-	register "enable_c6dram"		= "1"
 	register "sagv"				= "SaGv_Enabled"
 
 	# FSP Silicon
@@ -73,46 +72,53 @@ chip soc/intel/alderlake
 					chip drivers/usb/acpi
 						register "desc"		= ""Top USB Type-C""
 						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group"	= "ACPI_PLD_GROUP(0, 0)"
 						device ref usb2_port1 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""Top USB Type-C""
 						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group"	= "ACPI_PLD_GROUP(0, 0)"
 						device ref usb3_port3 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""Bottom USB Type-C""
 						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group"	= "ACPI_PLD_GROUP(0, 1)"
 						device ref usb2_port2 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""Bottom USB Type-C""
 						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group"	= "ACPI_PLD_GROUP(0, 1)"
 						device ref usb3_port1 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Detachable Keyboard""
-						register "type"		= "UPC_TYPE_INTERNAL"
+						register "desc"		= ""USB 2.0 Hub""
+						register "type"		= "UPC_TYPE_HUB"
+						register "group"	= "ACPI_PLD_GROUP(0, 2)"
 						device ref usb2_port3 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""Internal Webcam""
 						register "type"		= "UPC_TYPE_INTERNAL"
+						register "group"	= "ACPI_PLD_GROUP(0, 3)"
 						device ref usb2_port5 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""Camera""
 						register "type"		= "UPC_TYPE_INTERNAL"
+						register "group"	= "ACPI_PLD_GROUP(0, 4)"
 						device ref usb2_port6 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""CNVi Bluetooth""
 						register "type"		= "UPC_TYPE_INTERNAL"
 						register "reset_gpio"	= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A13)"
+						register "group"	= "ACPI_PLD_GROUP(0, 5)"
 						device ref usb2_port10 on end
 					end
 				end
-
 			end
 		end
 		device ref shared_sram	on  end
@@ -141,8 +147,10 @@ chip soc/intel/alderlake
 				register "generic.hid"			= ""GXTP7386""
 				register "generic.cid"			= ""GXTP7386""
 				register "generic.desc"			= ""Touchscreen""
-				register "generic.irq_gpio"		= "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_F18)"
+				register "generic.irq"			= "ACPI_IRQ_LEVEL_LOW(GPP_F18_IRQ)"
 				register "generic.reset_gpio"		= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F17)"
+				register "generic.reset_delay_ms"	= "10"
+				register "generic.has_power_resource"	= "1"
 				register "hid_desc_reg_offset"		= "0x01"
 				device i2c 5d on end
 			end

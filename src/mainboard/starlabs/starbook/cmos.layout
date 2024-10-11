@@ -32,6 +32,8 @@ entries
 520	1	e	1	microphone
 528	1	e	1	legacy_8254_timer
 536	1	e	1	pci_hot_plug
+542	1	e	1	fingerprint_reader
+550	1	e	1	card_reader
 
 # coreboot config options: EC
 600	3	e	4	kbl_timeout

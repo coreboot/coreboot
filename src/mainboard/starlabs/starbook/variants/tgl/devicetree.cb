@@ -49,7 +49,9 @@ chip soc/intel/tigerlake
 
 # Actual device tree.
 	device domain 0 on
-		device ref igpu		on  end
+		device ref igpu		on
+			register "gfx"				= "GMA_DEFAULT_PANEL(0)"
+		end
 		device ref tbt_pcie_rp0	on  end
 		device ref gna		on  end
 		device ref crashlog	on  end

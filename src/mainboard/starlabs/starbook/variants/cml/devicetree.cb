@@ -36,7 +36,9 @@ chip soc/intel/cannonlake
 
 # Actual device tree.
 	device domain 0 on
-		device ref igpu on  end
+		device ref igpu on
+			register "gfx"				= "GMA_DEFAULT_PANEL(0)"
+		end
 		device ref xhci on
 			# Motherboard USB 3.0 Type-C
 			register "usb2_ports[0]"		= "USB2_PORT_TYPE_C(OC_SKIP)"

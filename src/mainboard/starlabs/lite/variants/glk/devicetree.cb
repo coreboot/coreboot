@@ -55,7 +55,9 @@ chip soc/intel/apollolake
 	register "slp_s3_assertion_width_usecs"	= "28000"
 
 	device domain 0 on
-		device ref igd		on  end
+		device ref igd		on
+			register "gfx"				= "GMA_DEFAULT_PANEL(0)"
+		end
 		device ref cnvi		on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0A_CNVI_PME_STS"

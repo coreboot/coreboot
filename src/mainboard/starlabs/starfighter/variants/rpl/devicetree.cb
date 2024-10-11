@@ -61,11 +61,13 @@ chip soc/intel/alderlake
 					chip drivers/usb/acpi
 						register "desc" = ""Left Back USB Type-C""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group"	= "ACPI_PLD_GROUP(0, 0)"
 						device ref tcss_usb3_port1 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""Left Front USB Type-C""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group"	= "ACPI_PLD_GROUP(0, 1)"
 						device ref tcss_usb3_port2 on end
 					end
 				end
@@ -85,22 +87,22 @@ chip soc/intel/alderlake
 		end
 		device ref gna		on  end
 		device ref xhci		on
-			# Motherboard USB Type C #0
+			# Motherboard USB TBT Type-C #0
 			register "usb2_ports[0]"		= "USB2_PORT_MID(OC_SKIP)"
 			register "tcss_ports[0]"		= "TCSS_PORT_DEFAULT(OC_SKIP)"
 
-			# Motherboard USB Type-C #1
+			# Motherboard USB TBT Type-C #1
 			register "usb2_ports[1]"		= "USB2_PORT_MID(OC_SKIP)"
 			register "tcss_ports[1]"		= "TCSS_PORT_DEFAULT(OC_SKIP)"
 
-			# Motherboard USB Type-A #0
+			# Motherboard USB 3.0 Type-A
 			register "usb2_ports[2]"		= "USB2_PORT_MID(OC0)"
 			register "usb3_ports[0]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 
 			# Removable Webcam
 			register "usb2_ports[4]"		= "USB2_PORT_MID(OC_SKIP)"
 
-			# I/O Board USB Type-A
+			# Daughterboard USB 3.0 Type-A + USB 3.0 Type-A
 			register "usb2_ports[5]"		= "USB2_PORT_MID(OC0)"
 			register "usb3_ports[1]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 
@@ -112,41 +114,48 @@ chip soc/intel/alderlake
 					chip drivers/usb/acpi
 						register "desc"		= ""Left Back USB Type-C""
 						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group"	= "ACPI_PLD_GROUP(0, 0)"
 						device ref usb2_port1 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""Left Front USB Type-C""
 						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group"	= "ACPI_PLD_GROUP(0, 1)"
 						device ref usb2_port2 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""Left USB Type-A""
 						register "type"		= "UPC_TYPE_USB3_A"
+						register "group"	= "ACPI_PLD_GROUP(0, 2)"
 						device ref usb2_port3 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""Left USB Type-A""
 						register "type"		= "UPC_TYPE_USB3_A"
+						register "group"	= "ACPI_PLD_GROUP(0, 2)"
 						device ref usb3_port1 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Right USB Type-A""
-						register "type"		= "UPC_TYPE_USB3_A"
+						register "desc"		= ""USB 3.0 Hub""
+						register "type"		= "UPC_TYPE_HUB"
+						register "group"	= "ACPI_PLD_GROUP(0, 3)"
 						device ref usb2_port6 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Right USB Type-A""
-						register "type"		= "UPC_TYPE_USB3_A"
+						register "desc"		= ""USB 3.0 Hub""
+						register "type"		= "UPC_TYPE_HUB"
+						register "group"	= "ACPI_PLD_GROUP(0, 3)"
 						device ref usb3_port2 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""Internal Webcam""
-						register "type"		= "UPC_TYPE_INTERNAL"
+						register "group"	= "ACPI_PLD_GROUP(0, 4)"
 						device ref usb2_port5 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""Internal Bluetooth""
 						register "type"		= "UPC_TYPE_INTERNAL"
+						register "group"	= "ACPI_PLD_GROUP(0, 5)"
 						device ref usb2_port10 on end
 					end
 				end

@@ -1,6 +1,9 @@
 chip soc/intel/cannonlake
 
 	device cpu_cluster 0 on end
+
+	register "CnviBtCore" = "true"
+
 	device domain 0 on
 		device pci 00.0 alias system_agent on	end	# Host Bridge
 		device pci 01.0 alias peg0         off	end	# PCIe x16

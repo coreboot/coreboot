@@ -17,30 +17,35 @@ void devtree_update(void)
 	common_config = chip_get_common_soc_structure();
 
 	struct soc_power_limits_config *soc_conf_4core =
-		&cfg->power_limits_config[ADL_N_021_6W_CORE];
+		&cfg->power_limits_config[ADL_N_041_6W_CORE];
 
 	struct device *nic_dev = pcidev_on_root(0x14, 3);
 	struct device *touchscreen_dev = pcidev_on_root(0x15, 2);
 	struct device *accelerometer_dev = pcidev_on_root(0x15, 0);
 
+	uint8_t performance_scale = 100;
+
 	/* Update PL1 & PL2 based on CMOS settings */
 	switch (get_power_profile(PP_POWER_SAVER)) {
 	case PP_POWER_SAVER:
-		soc_conf_4core->tdp_pl1_override	= 6;
-		soc_conf_4core->tdp_pl2_override	= 10;
+		performance_scale -= 25;
 		common_config->pch_thermal_trip		= 30;
 		break;
 	case PP_BALANCED:
-		soc_conf_4core->tdp_pl1_override	= 10;
-		soc_conf_4core->tdp_pl2_override	= 25;
+		/* Use the Intel defaults */
 		common_config->pch_thermal_trip		= 25;
 		break;
 	case PP_PERFORMANCE:
-		soc_conf_4core->tdp_pl1_override	= 20;
-		soc_conf_4core->tdp_pl2_override	= 35;
+		performance_scale += 25;
 		common_config->pch_thermal_trip		= 20;
 		break;
 	}
+
+	soc_conf_4core->tdp_pl1_override = (soc_conf_4core->tdp_pl1_override * performance_scale) / 100;
+	soc_conf_4core->tdp_pl2_override = (soc_conf_4core->tdp_pl2_override * performance_scale) / 100;
+
+	/* Set PL4 to 1.0C */
+	soc_conf_4core->tdp_pl4				= 37;
 
 	/* Enable/Disable Bluetooth based on CMOS settings */
 	if (get_uint_option("wireless", 1) == 0) {
@@ -63,4 +68,10 @@ void devtree_update(void)
 	/* Enable/Disable Accelerometer based on CMOS settings */
 	if (get_uint_option("accelerometer", 1) == 0)
 		accelerometer_dev->enabled = 0;
+
+	/* Set I2C devices speed to fast based on CMOS settings */
+	if (get_uint_option("i2c_speed_fast", 0) == 1) {
+		common_config->i2c[0].speed = I2C_SPEED_FAST;
+		common_config->i2c[2].speed = I2C_SPEED_FAST;
+	}
 }

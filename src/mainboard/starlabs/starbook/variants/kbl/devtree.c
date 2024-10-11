@@ -17,24 +17,29 @@ void devtree_update(void)
 
 	struct device *nic_dev = pcidev_on_root(0x1c, 5);
 
+	uint8_t performance_scale = 100;
+
 	/* Update PL1 & PL2 based on CMOS settings */
 	switch (get_power_profile(PP_POWER_SAVER)) {
 	case PP_POWER_SAVER:
-		soc_conf->tdp_pl1_override	= 15;
-		soc_conf->tdp_pl2_override	= 15;
+		performance_scale -= 25;
 		cfg->tcc_offset			= 20;
 		break;
 	case PP_BALANCED:
-		soc_conf->tdp_pl1_override	= 17;
-		soc_conf->tdp_pl2_override	= 20;
+		/* Use the Intel defaults */
 		cfg->tcc_offset			= 15;
 		break;
 	case PP_PERFORMANCE:
-		soc_conf->tdp_pl1_override	= 20;
-		soc_conf->tdp_pl2_override	= 25;
+		performance_scale += 25;
 		cfg->tcc_offset			= 10;
 		break;
 	}
+
+	soc_conf->tdp_pl1_override = (soc_conf->tdp_pl1_override * performance_scale) / 100;
+	soc_conf->tdp_pl2_override = (soc_conf->tdp_pl2_override * performance_scale) / 100;
+
+	/* Set PL4 to 1.0C */
+	soc_conf->tdp_pl4			= 45;
 
 	/* Enable/Disable Wireless based on CMOS settings */
 	if (get_uint_option("wireless", 1) == 0)

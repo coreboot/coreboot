@@ -1,20 +1,9 @@
 chip soc/intel/alderlake
-	register "common_soc_config" = "{
-		.i2c[0] = {
-			.speed = I2C_SPEED_FAST,
-		},
-		.i2c[2] = {
-			.speed = I2C_SPEED_FAST,
-		},
-	}"
-
-	# FSP Memory
-	register "sagv"				= "SaGv_Enabled"
-
-	# FSP Silicon
-	register "eist_enable"			= "true"
-	register "cnvi_bt_core"			= "true"
+	# FSP UPDs
 	register "cnvi_bt_audio_offload"	= "true"
+	register "cnvi_bt_core"			= "true"
+	register "eist_enable"			= "true"
+	register "sagv"				= "SaGv_Enabled"
 
 	# Serial I/O
 	register "serial_io_i2c_mode" = "{
@@ -47,15 +36,15 @@ chip soc/intel/alderlake
 		end
 		device ref gna		on  end
 		device ref xhci		on
-			# Primary USB Type C
+			# Top USB 3.0 Type-C
 			register "usb2_ports[0]"			= "USB2_PORT_MID(OC_SKIP)"
 			register "usb3_ports[2]"			= "USB3_PORT_DEFAULT(OC_SKIP)"
 
-			# Secondary USB Type C
+			# Bottom USB 3.0 Type-C
 			register "usb2_ports[1]"			= "USB2_PORT_MID(OC_SKIP)"
 			register "usb3_ports[0]"			= "USB3_PORT_DEFAULT(OC_SKIP)"
 
-			# Keyboard
+			# Detachable Keyboard + SD Card Reader
 			register "usb2_ports[2]"			= "USB2_PORT_MID(OC_SKIP)"
 
 			# Internal Webcam
@@ -228,8 +217,8 @@ chip soc/intel/alderlake
 			register "pch_hda_idisp_link_tmode"		= "HDA_TMODE_8T"
 		end
 		device ref smbus	on  end
-	end
-	chip drivers/crb
-		device mmio 0xfed40000 on end
+		chip drivers/crb
+			device mmio 0xfed40000 on end
+		end
 	end
 end

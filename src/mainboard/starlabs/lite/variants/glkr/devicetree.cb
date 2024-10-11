@@ -76,15 +76,15 @@ chip soc/intel/apollolake
 			register "sata_ports_enable[0]"	= "1"
 		end
 		device ref xhci		on
-			# Motherboard USB Type C
+			# Motherboard USB 3.0 Type-C
 			register "usb2_port[0]"		= "PORT_EN(OC1)"
 			register "usb3_port[0]"		= "PORT_EN(OC1)"
 
-			# Motherboard USB 3.0
+			# Motherboard USB 3.0 Type-A
 			register "usb2_port[1]"		= "PORT_EN(OC0)"
 			register "usb3_port[1]"		= "PORT_EN(OC0)"
 
-			# Daughterboard USB 3.0
+			# Daughterboard USB 3.0 Type-A
 			register "usb2_port[3]"		= "PORT_EN(OC1)"
 			register "usb3_port[4]"		= "PORT_EN(OC1)"
 
@@ -120,8 +120,8 @@ chip soc/intel/apollolake
 				device pnp 4e.1e off end			# Power Management Channel 4
 			end
 		end
-	end
-	chip drivers/crb
-		device mmio 0xfed40000 on end
+		chip drivers/crb
+			device mmio 0xfed40000 on end
+		end
 	end
 end

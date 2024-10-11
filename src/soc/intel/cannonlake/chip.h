@@ -409,6 +409,12 @@ struct soc_intel_cannonlake_config {
 	uint32_t VrPowerDeliveryDesign;
 #endif
 
+	/* CNVi BT Core Enable/Disable */
+	bool CnviBtCore;
+
+	/* CNVi BT Audio Offload: Enable/Disable BT Audio Offload. */
+	bool CnviBtAudioOffload;
+
 	/*
 	 * Override GPIO PM configuration:
 	 * 0: Use FSP default GPIO PM program,

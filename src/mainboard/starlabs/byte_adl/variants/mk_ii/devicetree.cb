@@ -132,7 +132,13 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref shared_sram	on  end
-		device ref cnvi_wifi	on  end
+		device ref cnvi_wifi	on
+			chip drivers/wifi/generic
+				register "add_acpi_dma_property"	= "true"
+				register "enable_cnvi_ddr_rfim"		= "true"
+				device generic 0 on end
+			end
+		end
 		device ref sata		on
 			register "sata_salp_support"		= "1"
 			register "sata_ports_enable[0]"		= "1"

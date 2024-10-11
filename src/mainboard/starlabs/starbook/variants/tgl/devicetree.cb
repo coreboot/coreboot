@@ -164,7 +164,8 @@ chip soc/intel/tigerlake
 		device ref shared_ram	on  end
 		device ref cnvi_wifi	on
 			chip drivers/wifi/generic
-				register "wake"			= "GPE0_PME_B0"
+				register "add_acpi_dma_property"	= "true"
+				register "enable_cnvi_ddr_rfim"		= "true"
 				device generic 0 on end
 			end
 		end

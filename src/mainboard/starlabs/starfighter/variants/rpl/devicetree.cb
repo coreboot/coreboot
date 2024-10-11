@@ -189,7 +189,7 @@ chip soc/intel/alderlake
                 end
 		device ref pcie_rp5	on			# WiFi
 			chip drivers/wifi/generic
-				register "wake"				= "GPE0_PME_B0"
+				register "enable_cnvi_ddr_rfim"		= "true"
 				device generic 0 on end
 			end
 			register "pch_pcie_rp[PCH_RP(5)]" = "{
@@ -207,7 +207,7 @@ chip soc/intel/alderlake
 				register "enable_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D13)"
 				register "reset_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H2)"
 				register "srcclk_pin"			= "2"
-				register "add_acpi_dma_property"	= "1"
+				register "add_acpi_dma_property"	= "true"
 				register "skip_on_off_support"		= "1"
 				register "ext_pm_support"		= "ACPI_PCIE_RP_EMIT_ALL"
 				register "use_rp_mutex"			= "1"

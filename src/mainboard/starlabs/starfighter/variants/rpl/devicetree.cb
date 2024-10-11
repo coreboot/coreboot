@@ -41,6 +41,8 @@ chip soc/intel/alderlake
 				.clk_src			= 4,
 				.clk_req			= 4,
 				.flags				= PCIE_RP_LTR | PCIE_RP_AER,
+				.pcie_rp_aspm			= ASPM_L0S_L1,
+				.PcieRpL1Substates		= L1_SS_L1_2,
 
 			}"
 			smbios_slot_desc			"SlotTypeM2Socket3"
@@ -186,6 +188,8 @@ chip soc/intel/alderlake
 				.clk_src			= 2,
 				.clk_req			= 2,
 				.flags				= PCIE_RP_LTR | PCIE_RP_AER,
+				.pcie_rp_aspm			= ASPM_L0S_L1,
+				.PcieRpL1Substates		= L1_SS_L1_2,
 			}"
 			smbios_slot_desc			"SlotTypePciExpressGen3X1"
 								"SlotLengthShort"

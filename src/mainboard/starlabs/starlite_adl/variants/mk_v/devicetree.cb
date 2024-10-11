@@ -149,6 +149,8 @@ chip soc/intel/alderlake
 				.clk_src				= 0,
 				.clk_req				= 0,
 				.flags					= PCIE_RP_LTR | PCIE_RP_AER,
+				.pcie_rp_aspm				= ASPM_L0S_L1,
+				.PcieRpL1Substates			= L1_SS_L1_2,
 			}"
 
 			smbios_slot_desc				"SlotTypeM2Socket3"

@@ -242,7 +242,7 @@ const struct pad_config gpio_table[] = {
 	/* E1:		Not used		Accelerometer Interrupt	*/
 	PAD_NC(GPP_E1, NONE),
 	/* E2:		Not Connected					*/
-	PAD_CFG_GPO(GPP_E2, 1, PLTRST),
+	PAD_NC(GPP_E2, NONE),
 	/* E3:		WiFi RF Kill					*/
 	PAD_NC(GPP_E3, NONE),
 	/* E4:		Retimer Force Power				*/

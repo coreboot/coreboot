@@ -22,6 +22,12 @@ chip soc/intel/tigerlake
 		[PchSerialIoIndexI2C4]		= PchSerialIoSkipInit,
 	}"
 
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed				= I2C_SPEED_FAST,
+		},
+	}"
+
 	register "SerialIoUartMode" = "{
 		[PchSerialIoIndexUART2]		= PchSerialIoSkipInit,
 	}"

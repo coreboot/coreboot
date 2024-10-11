@@ -20,6 +20,12 @@ chip soc/intel/skylake
 		[PchSerialIoIndexUart2]		= PchSerialIoSkipInit,
 	}"
 
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed				= I2C_SPEED_FAST,
+		},
+	}"
+
 	# Power
 	register "PmConfigSlpS3MinAssert"	= "2"				# 50ms
 	register "PmConfigSlpS4MinAssert"	= "3"				# 1s

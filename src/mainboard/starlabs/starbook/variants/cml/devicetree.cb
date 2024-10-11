@@ -21,6 +21,12 @@ chip soc/intel/cannonlake
 		[PchSerialIoIndexUART2]		= PchSerialIoSkipInit,
 	}"
 
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed				= I2C_SPEED_FAST,
+		},
+	}"
+
 	# Power
 	register "PchPmSlpS3MinAssert"		= "2"				# 50ms
 	register "PchPmSlpS4MinAssert"		= "3"				# 1s

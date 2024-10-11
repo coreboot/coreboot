@@ -11,6 +11,15 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexI2C2]		= PchSerialIoPci,
 	}"
 
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.speed				= I2C_SPEED_FAST,
+		},
+		.i2c[2] = {
+			.speed				= I2C_SPEED_FAST,
+		}
+	}"
+
 	register "serial_io_uart_mode" = "{
 		[PchSerialIoIndexUART0]		= PchSerialIoSkipInit,
 	}"

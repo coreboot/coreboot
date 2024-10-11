@@ -23,30 +23,35 @@ chip soc/intel/alderlake
 	# Device Tree
 	device domain 0 on
 		device ref igpu		on
-			register "gfx"				= "GMA_DEFAULT_PANEL(0)"
-			register "ddi_portA_config"		= "1"
+			register "gfx"					= "GMA_DEFAULT_PANEL(0)"
+			register "ddi_portA_config"			= "1"
 			register "ddi_ports_config" = "{
-				[DDI_PORT_A]			= DDI_ENABLE_HPD,
-				[DDI_PORT_B]			= DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_A]				= DDI_ENABLE_HPD,
+				[DDI_PORT_B]				= DDI_ENABLE_HPD | DDI_ENABLE_DDC,
 			}"
 		end
 		device ref pcie4_0	on				# SSD x4
 			register "cpu_pcie_rp[CPU_RP(1)]" = "{
-				.clk_src			= 4,
-				.clk_req			= 4,
-				.flags				= PCIE_RP_LTR | PCIE_RP_AER,
-				.pcie_rp_aspm			= ASPM_L0S_L1,
-				.PcieRpL1Substates		= L1_SS_L1_2,
+				.clk_src				= 4,
+				.clk_req				= 4,
+				.flags					= PCIE_RP_LTR | PCIE_RP_AER,
+				.pcie_rp_aspm				= ASPM_L0S_L1,
+				.PcieRpL1Substates			= L1_SS_L1_2,
 
 			}"
-			smbios_slot_desc			"SlotTypeM2Socket3"
-								"SlotLengthLong"
-								"M.2/M 2280"
-								"SlotDataBusWidth4X"
+			smbios_slot_desc				"SlotTypeM2Socket3"
+									"SlotLengthLong"
+									"M.2/M 2280"
+									"SlotDataBusWidth4X"
 			chip soc/intel/common/block/pcie/rtd3
-				register "enable_gpio"		= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D14)"
-				register "reset_gpio"		= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F20)"
-				register "srcclk_pin"		= "4"
+				register "enable_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D14)"
+				register "reset_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F20)"
+				register "srcclk_pin"			= "4"
+				register "is_storage"			= "1"
+				register "add_acpi_dma_property"	= "1"
+				register "skip_on_off_support"		= "1"
+				register "ext_pm_support"		= "ACPI_PCIE_RP_EMIT_ALL"
+				register "use_rp_mutex"			= "1"
 				device generic 0 on end
 			end
 		end
@@ -168,24 +173,28 @@ chip soc/intel/alderlake
 		device ref shared_sram	on  end
 		device ref pcie_rp5	on				# WiFi
 			chip drivers/wifi/generic
-				register "wake"			= "GPE0_PME_B0"
+				register "wake"				= "GPE0_PME_B0"
 				device generic 0 on end
 			end
 			register "pch_pcie_rp[PCH_RP(5)]" = "{
-				.clk_src			= 2,
-				.clk_req			= 2,
-				.flags				= PCIE_RP_LTR | PCIE_RP_AER,
-				.pcie_rp_aspm			= ASPM_L0S_L1,
-				.PcieRpL1Substates		= L1_SS_L1_2,
+				.clk_src				= 2,
+				.clk_req				= 2,
+				.flags					= PCIE_RP_LTR | PCIE_RP_AER,
+				.pcie_rp_aspm				= ASPM_L0S_L1,
+				.PcieRpL1Substates			= L1_SS_L1_2,
 			}"
-			smbios_slot_desc			"SlotTypePciExpressGen3X1"
-								"SlotLengthShort"
-								"M.2/M 2230"
-								"SlotDataBusWidth1X"
+			smbios_slot_desc				"SlotTypePciExpressGen3X1"
+									"SlotLengthShort"
+									"M.2/M 2230"
+									"SlotDataBusWidth1X"
 			chip soc/intel/common/block/pcie/rtd3
-				register "enable_gpio"		= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D13)"
-				register "reset_gpio"		= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H2)"
-				register "srcclk_pin"		= "2"
+				register "enable_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D13)"
+				register "reset_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H2)"
+				register "srcclk_pin"			= "2"
+				register "add_acpi_dma_property"	= "1"
+				register "skip_on_off_support"		= "1"
+				register "ext_pm_support"		= "ACPI_PCIE_RP_EMIT_ALL"
+				register "use_rp_mutex"			= "1"
 				device generic 0 on end
 			end
 		end

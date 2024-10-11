@@ -138,47 +138,52 @@ chip soc/intel/alderlake
 		end
 		device ref pcie_rp9	on				# RLT8111 (LAN 1)
 			register "pch_pcie_rp[PCH_RP(9)]" = "{
-				.clk_src			= 2,
-				.clk_req			= 2,
-				.flags				= PCIE_RP_LTR | PCIE_RP_AER,
-				.pcie_rp_aspm			= ASPM_L0S_L1,
-				.PcieRpL1Substates		= L1_SS_L1_2,
+				.clk_src				= 2,
+				.clk_req				= 2,
+				.flags					= PCIE_RP_LTR | PCIE_RP_AER,
+				.pcie_rp_aspm				= ASPM_L0S_L1,
+				.PcieRpL1Substates			= L1_SS_L1_2,
 
 			}"
-			smbios_slot_desc			"SlotTypePciExpressGen4x1"
-								"SlotLengthShort"
-								"SlotTypePci"
-								"SlotDataBusWidth4X"
+			smbios_slot_desc				"SlotTypePciExpressGen4x1"
+									"SlotLengthShort"
+									"SlotTypePci"
+									"SlotDataBusWidth4X"
 		end
 		device ref pcie_rp10	on				# RLT8125B (LAN 2)
 			register "pch_pcie_rp[PCH_RP(10)]" = "{
-				.clk_src			= 3,
-				.clk_req			= 3,
-				.flags				= PCIE_RP_LTR | PCIE_RP_AER,
-				.pcie_rp_aspm			= ASPM_L0S_L1,
-				.PcieRpL1Substates		= L1_SS_L1_2,
+				.clk_src				= 3,
+				.clk_req				= 3,
+				.flags					= PCIE_RP_LTR | PCIE_RP_AER,
+				.pcie_rp_aspm				= ASPM_L0S_L1,
+				.PcieRpL1Substates			= L1_SS_L1_2,
 			}"
-			smbios_slot_desc			"SlotTypePciExpressGen3X4"
-								"SlotLengthShort"
-								"SlotTypePci"
-								"SlotDataBusWidth4X"
+			smbios_slot_desc				"SlotTypePciExpressGen3X4"
+									"SlotLengthShort"
+									"SlotTypePci"
+									"SlotDataBusWidth4X"
 		end
 		device ref pcie_rp12	on				# SSD x4
 			register "pch_pcie_rp[PCH_RP(12)]" = "{
-				.clk_src			= 0,
-				.clk_req			= 0,
-				.flags				= PCIE_RP_LTR | PCIE_RP_AER,
-				.pcie_rp_aspm			= ASPM_L0S_L1,
-				.PcieRpL1Substates		= L1_SS_L1_2,
+				.clk_src				= 0,
+				.clk_req				= 0,
+				.flags					= PCIE_RP_LTR | PCIE_RP_AER,
+				.pcie_rp_aspm				= ASPM_L0S_L1,
+				.PcieRpL1Substates			= L1_SS_L1_2,
 			}"
-			smbios_slot_desc			"SlotTypePciExpressGen3X4"
-								"SlotLengthLong"
-								"M.2/M 2280"
-								"SlotDataBusWidth4X"
+			smbios_slot_desc				"SlotTypePciExpressGen3X4"
+									"SlotLengthLong"
+									"M.2/M 2280"
+									"SlotDataBusWidth4X"
 			chip soc/intel/common/block/pcie/rtd3
-				register "enable_gpio"		= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D16)"
-				register "reset_gpio"		= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H0)"
-				register "srcclk_pin"		= "0"
+				register "enable_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D16)"
+				register "reset_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H0)"
+				register "srcclk_pin"			= "0"
+				register "is_storage"			= "1"
+				register "add_acpi_dma_property"	= "1"
+				register "skip_on_off_support"		= "1"
+				register "ext_pm_support"		= "ACPI_PCIE_RP_EMIT_ALL"
+				register "use_rp_mutex"			= "1"
 				device generic 0 on end
 			end
 		end

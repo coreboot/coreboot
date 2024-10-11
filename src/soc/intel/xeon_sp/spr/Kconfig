@@ -174,10 +174,9 @@ config ENABLE_RMT
 	  Enable Rank Margining Tool. This option is intended for debugging and
 	  validation and should normally be disabled.
 
-config RMT_MEM_POR_FREQ
+config MEM_POR_FREQ
 	bool "Enforce Plan Of Record restrictions for DDR5 frequency and voltage"
 	default n
-	depends on ENABLE_RMT
 	help
 	  When RMT is enabled. Select this option to enforce Intel Plan Of Record(POR)
 	  restriction on DDR5 frequency & voltage settings.

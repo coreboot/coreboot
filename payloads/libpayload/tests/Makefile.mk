@@ -44,7 +44,7 @@ TEST_CFLAGS += -I$(cmockasrc)/include
 
 # Minimal subset of warnings and errors. Tests can be less strict than actual build.
 TEST_CFLAGS += -Wall -Wundef -Wstrict-prototypes -Wvla
-TEST_CFLAGS += -Wwrite-strings -Wimplicit-fallthrough
+TEST_CFLAGS += -Wwrite-strings -Wno-address-of-packed-member -Wimplicit-fallthrough
 TEST_CFLAGS += -Wstrict-aliasing -Wshadow -Werror
 TEST_CFLAGS += -Wno-unknown-warning-option -Wno-source-mgr -Wno-main-return-type
 

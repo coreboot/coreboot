@@ -254,6 +254,6 @@ for AMD Family 17h Processors* (PID #55758) and *AMD Platform
 Security Processor BIOS Architecture Design Guide* (PID #54267) for
 earlier products
 2. [PSP Integration](psp_integration.md)
-3. [https://www.amd.com/system/files/TechDocs/44065_Arch2008.pdf](https://www.amd.com/system/files/TechDocs/44065_Arch2008.pdf)
+3. [AGESA Interface Specification for Arch2008](https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/specifications/44065_Arch2008.pdf)
 4. [https://en.wikichip.org/wiki/amd/cores/picasso](https://en.wikichip.org/wiki/amd/cores/picasso)
 5. [https://www.intel.com/content/www/us/en/intelligent-systems/intel-firmware-support-package/intel-fsp-overview.html](https://www.intel.com/content/www/us/en/intelligent-systems/intel-firmware-support-package/intel-fsp-overview.html)

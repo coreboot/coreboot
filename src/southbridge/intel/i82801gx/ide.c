@@ -18,7 +18,7 @@ static void ide_init(struct device *dev)
 	const struct southbridge_intel_i82801gx_config *config = dev->chip_info;
 
 	printk(BIOS_DEBUG, "i82801gx_ide: initializing...");
-	if (config == NULL) {
+	if (config == nullptr) {
 		printk(BIOS_ERR, "\ni82801gx_ide: Not mentioned in devicetree.cb!\n");
 		// Trying to set somewhat safe defaults instead of bailing out.
 		enable_primary = enable_secondary = 1;

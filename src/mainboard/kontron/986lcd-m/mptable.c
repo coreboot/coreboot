@@ -7,7 +7,7 @@
 static void *smp_write_config_table(void *v)
 {
 	struct mp_config_table *mc;
-	struct device *riser = NULL, *firewire = NULL;
+	struct device *riser = nullptr, *firewire = nullptr;
 	int firewire_bus = 0, riser_bus = 0, isa_bus;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
@@ -30,7 +30,7 @@ static void *smp_write_config_table(void *v)
 		riser_bus = riser->downstream->secondary;
 	}
 
-	mptable_write_buses(mc, NULL, &isa_bus);
+	mptable_write_buses(mc, nullptr, &isa_bus);
 
 	/* I/O APICs:	APIC ID	Version	State		Address */
 	u8 ioapic_id = smp_write_ioapic_from_hw(mc, IO_APIC_ADDR);

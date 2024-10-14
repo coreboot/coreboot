@@ -86,14 +86,24 @@ organizers may take any action they deem appropriate, up to and including
 a temporary ban or permanent expulsion from the community without warning
 (and without refund in the case of a paid event).
 
-Community organizers can be members of the arbitration team, or organizers
-of events and online communities.
+As a part of running the project, coreboot leadership has the right to
+revoke privileges as they see fit. This is not done lightly. Over the
+history of the coreboot project, there have been only a handful of times
+where an action needed to be taken.
+
+Community organizers can be members of the arbitration team, the
+leadership board, or organizers of events and online communities.
 
 ## Addressing Grievances
 
 If you feel you have been falsely or unfairly accused of violating this
 Code of Conduct, you should notify the arbitration team with a concise
 description of your grievance.
+
+Discussions about these actions are not done publicly, for obvious
+reasons. If someone believes that the circumstances that led to an
+action have changed, please send an email to all the members of the
+arbitration team and/or leadership board for discussion.
 
 ## Legal action
 
@@ -115,10 +125,17 @@ communications pertaining to community business.
 
 ## Contact info
 
-Our arbitration team consists of the following people
-* Stefan Reinauer <stefan.reinauer@coreboot.org> (USA)
+Our arbitration team currently consists of the following people
+* Daniel Pono Takamori <pono@sfconservancy.org> (USA)
 * Ronald Minnich <rminnich@coreboot.org> (USA)
 * Martin Roth <martin@coreboot.org> (USA)
+
+If you have an issue with someone on the arbitration team, please reach
+out to the coreboot leadership board directly.
+
+The leadership board's information can be found on the
+[coreboot Leadership and Admin Boards](https://coreboot.org/leadership.html)
+page on the website.
 
 ## License and attribution
 

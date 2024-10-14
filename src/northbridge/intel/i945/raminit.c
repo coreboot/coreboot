@@ -1142,7 +1142,7 @@ static int sdram_program_row_boundaries(struct sys_info *sysinfo)
 	int i;
 	size_t cum0, cum1, tolud, tom, pci_mmio_size;
 	const struct device *dev;
-	const struct northbridge_intel_i945_config *cfg = NULL;
+	const struct northbridge_intel_i945_config *cfg = nullptr;
 
 	printk(BIOS_DEBUG, "Setting RAM size...\n");
 

@@ -16,8 +16,6 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC_LOCK(GPP_B5, NONE, LOCK_CONFIG),
 	/* B6  : NC */
 	PAD_NC_LOCK(GPP_B6, NONE, LOCK_CONFIG),
-	/* C1  : SMBDATA ==> USI_RST_L */
-	PAD_CFG_GPO(GPP_C1, 1, DEEP),
 	/* D3  : WCAM_RST_L ==> NC */
 	PAD_NC_LOCK(GPP_D3, NONE, LOCK_CONFIG),
 	/* D6  : SRCCLKREQ1# ==> WWAN_EN */
@@ -35,7 +33,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* E21  : NC */
 	PAD_NC_LOCK(GPP_E21, NONE, LOCK_CONFIG),
 	/* F12 : WWAN_RST_L */
-	PAD_CFG_GPO_LOCK(GPP_F12, 1, LOCK_CONFIG),
+	PAD_CFG_GPO(GPP_F12, 1, DEEP),
 	/* F13  : NC */
 	PAD_NC_LOCK(GPP_F13, NONE, LOCK_CONFIG),
 	/* F15  : NC */
@@ -64,6 +62,13 @@ static const struct pad_config early_gpio_table[] = {
 	*/
 	/* D6  : SRCCLKREQ1# ==> WWAN_EN */
 	PAD_CFG_GPO(GPP_D6, 0, DEEP),
+	/* F12 : WWAN_RST_L */
+	PAD_CFG_GPO(GPP_F12, 0, DEEP),
+	/* Enable touchscreen, hold in reset */
+	/* C0  : SMBCLK ==> EN_PP3300_TCHSCR */
+	PAD_CFG_GPO(GPP_C0, 0, DEEP),
+	/* C1  : SMBDATA ==> USI_RST_L */
+	PAD_CFG_GPO(GPP_C1, 0, DEEP),
 	/* E12 : THC0_SPI1_IO1 ==> SOC_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E12, NONE, DEEP),
 	/* F18 : THC1_SPI2_INT# ==> EC_IN_RW_OD */
@@ -80,11 +85,11 @@ static const struct pad_config early_gpio_table[] = {
 
 /* Pad configuration in romstage for Sundance */
 static const struct pad_config romstage_gpio_table[] = {
+	/* D6  : SRCCLKREQ1# ==> WWAN_EN */
+	PAD_CFG_GPO(GPP_D6, 1, DEEP),
 	/* Enable touchscreen, hold in reset */
 	/* C0  : SMBCLK ==> EN_PP3300_TCHSCR */
 	PAD_CFG_GPO(GPP_C0, 1, DEEP),
-	/* C1  : SMBDATA ==> USI_RST_L */
-	PAD_CFG_GPO(GPP_C1, 1, DEEP),
 };
 
 const struct pad_config *variant_gpio_override_table(size_t *num)

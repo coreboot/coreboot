@@ -33,6 +33,10 @@ chip soc/intel/pantherlake
 	# DPTF enable
 	register "dptf_enable" = "false"
 
+	# TODO: Safe Setting. Needs to be removed later
+	# Disable C1 C-state auto-demotion
+	register "disable_c1_state_auto_demotion" = "true"
+
 	# Enable CNVi BT
 	register "cnvi_bt_core" = "true"
 

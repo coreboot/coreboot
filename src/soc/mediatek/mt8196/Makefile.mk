@@ -30,6 +30,9 @@ romstage-y += l2c_ops.c
 romstage-y += ../common/memory.c memory.c
 romstage-y += ../common/memory_test.c
 romstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
+romstage-y += ../common/pmif_clk.c pmif_clk.c
+romstage-y += ../common/pmif.c pmif_init.c
+romstage-y += pmif_spmi.c
 
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += ../common/bl31.c
 ramstage-y += ../common/dpm_v2.c
@@ -41,6 +44,9 @@ ramstage-y += ../common/mcu.c
 ramstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 ramstage-$(CONFIG_PCI) += ../common/pcie.c pcie.c
 ramstage-y += soc.c
+ramstage-y += ../common/pmif_clk.c pmif_clk.c
+ramstage-y += ../common/pmif.c pmif_init.c
+ramstage-y += pmif_spmi.c
 ramstage-y += ../common/usb.c usb.c
 
 BL31_MAKEARGS += PLAT=mt8196

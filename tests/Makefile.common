@@ -48,7 +48,7 @@ TEST_INCLUDES += -I$(dir $(TEST_KCONFIG_AUTOHEADER))
 # unintentional.
 TEST_CFLAGS += -Wall -Werror -Wundef -Wstrict-prototypes -Wno-inline-asm
 TEST_CFLAGS += -Wno-unknown-warning-option -Wno-source-mgr -Wno-main-return-type
-TEST_CFLAGS += -Wno-array-compare -Wno-packed-not-aligned -Wno-trigraphs
+TEST_CFLAGS += -Wno-array-compare -Wno-trigraphs
 TEST_CFLAGS += -Wno-unused-but-set-variables
 
 TEST_CFLAGS += -std=gnu11 -ffunction-sections -fdata-sections -fno-builtin

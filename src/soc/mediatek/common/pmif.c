@@ -74,6 +74,18 @@ void pmif_spmi_write(struct pmif *arb, u32 slvid, u32 reg, u32 data)
 	pmif_send_cmd(arb, 1, PMIF_CMD_EXT_REG_LONG, slvid, reg, NULL, data, 1);
 }
 
+void pmif_spmi_read16(struct pmif *arb, u32 slvid, u32 reg, u16 *data)
+{
+	u32 rdata = 0;
+	pmif_send_cmd(arb, 0, PMIF_CMD_EXT_REG_LONG, slvid, reg, &rdata, 0, 2);
+	*data = (u16)rdata;
+}
+
+void pmif_spmi_write16(struct pmif *arb, u32 slvid, u32 reg, u16 data)
+{
+	pmif_send_cmd(arb, 1, PMIF_CMD_EXT_REG_LONG, slvid, reg, NULL, data, 2);
+}
+
 u32 pmif_spmi_read_field(struct pmif *arb, u32 slvid, u32 reg, u32 mask, u32 shift)
 {
 	u32 data;

@@ -35,18 +35,39 @@ enum spmi_slave {
 enum slv_type {
 	BUCK_CPU,
 	BUCK_GPU,
+	BUCK_MD,
+	BUCK_RF,
+	MAIN_PMIC,
+	BUCK_VPU,
+	SUB_PMIC,
+	CLOCK_PMIC,
+	SECOND_PMIC,
+	BUCK_APU,
 	SLV_TYPE_MAX,
 };
 
 enum slv_type_id {
-	BUCK_CPU_ID,
-	BUCK_GPU_ID,
+	BUCK_RF_ID = 1,
+	BUCK_MD_ID = 3,
+	MAIN_PMIC_ID = 5,
+	BUCK_CPU_ID = 6,
+	BUCK_GPU_ID = 7,
+	BUCK_VPU_ID = 8,
+	BUCK_APU_ID = 9,
+	SUB_PMIC_ID = 10,
+	CLOCK_PMIC_ID = 11,
+	SECOND_PMIC_ID = 12,
 	SLV_TYPE_ID_MAX,
 };
 
 struct spmi_device {
-	u32 slvid;
+	enum spmi_slave slvid;
+	enum spmi_master mstid;
 	enum slv_type type;
 	enum slv_type_id type_id;
+	u16 hwcid_addr;
+	u8 hwcid_val;
+	u8 hwcid_mask;
 };
+
 #endif /* __SOC_MEDIATEK_SPMI_H__ */

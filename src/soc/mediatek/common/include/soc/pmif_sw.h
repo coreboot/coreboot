@@ -17,12 +17,6 @@ enum {
 	PMIF_WAIT_IDLE_US   = 1000,
 };
 
-/* calibation tolerance rate, unit: 0.1% */
-enum {
-	CAL_TOL_RATE = 40,
-	CAL_MAX_VAL = 0x7F,
-};
-
 u32 pmif_get_ulposc_freq_mhz(u32 cali_val);
 int pmif_clk_init(void);
 #endif /* __SOC_MEDIATEK_PMIF_SW_H__ */

@@ -140,5 +140,11 @@ enum {
 	FREQ_248MHZ = 248,
 };
 
+/* calibation tolerance rate, unit: 0.1% */
+enum {
+	CAL_TOL_RATE = 40,
+	CAL_MAX_VAL = 0x7F,
+};
+
 #define FREQ_METER_ABIST_AD_OSC_CK	48
 #endif /*__MT8195_SOC_PMIF_H__*/

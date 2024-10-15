@@ -136,6 +136,12 @@ enum {
 	FREQ_250MHZ = 250,
 };
 
+/* calibation tolerance rate, unit: 0.1% */
+enum {
+	CAL_TOL_RATE = 40,
+	CAL_MAX_VAL = 0x7F,
+};
+
 struct mtk_scp_clk_regs {
 	u32 reserved0;
 	u32 scp_clk_en;

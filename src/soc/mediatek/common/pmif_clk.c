@@ -2,6 +2,7 @@
 
 #include <commonlib/helpers.h>
 #include <console/console.h>
+#include <soc/pmif.h>
 #include <soc/pmif_clk_common.h>
 #include <soc/pmif_sw.h>
 

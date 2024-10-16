@@ -262,6 +262,17 @@
                 "speedMbps": 8533,
                 "lp5x": true
             }
+        },
+        {
+            "name":  "MT62F2G32D4DS-020 WT:F",
+            "attribs": {
+                "densityPerDieGb": 16,
+                "diesPerPackage": 4,
+                "bitWidthPerChannel": 16,
+                "ranksPerChannel": 2,
+                "speedMbps": 8533,
+                "lp5x": true
+            }
         }
     ]
 }

@@ -7,6 +7,8 @@
 #ifndef SPI_FLASH_INTERNAL_H
 #define SPI_FLASH_INTERNAL_H
 
+#include <types.h>
+
 /* Common commands */
 #define CMD_READ_ID			0x9f
 

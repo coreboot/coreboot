@@ -45,6 +45,8 @@ static inline bool pciexp_is_downstream_port(int type)
 	       type == PCI_EXP_TYPE_PCIE_BRIDGE;
 }
 
+bool pciexp_dev_is_slot_hot_plug_cap(struct device *dev);
+
 struct device *pcie_find_dsn(const uint64_t serial, const uint16_t vid,
 	struct device *from);
 

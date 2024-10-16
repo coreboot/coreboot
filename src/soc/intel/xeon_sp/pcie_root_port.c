@@ -19,14 +19,9 @@ static const char *pcie_device_get_acpi_name(const struct device *dev)
 
 static void soc_pciexp_scan_bridge(struct device *dev)
 {
-	if (CONFIG(PCIEXP_HOTPLUG)) {
-		unsigned int pciexpos = pci_find_capability(dev, PCI_CAP_ID_PCIE);
-		u16 sltcap = pci_read_config16(dev, pciexpos + PCI_EXP_SLTCAP);
-		if (sltcap & PCI_EXP_SLTCAP_HPC) {
-			pciexp_hotplug_scan_bridge(dev);
-			return;
-		}
-	} else
+	if (CONFIG(PCIEXP_HOTPLUG) && pciexp_dev_is_slot_hot_plug_cap(dev))
+		pciexp_hotplug_scan_bridge(dev);
+	else
 		pciexp_scan_bridge(dev);
 }
 

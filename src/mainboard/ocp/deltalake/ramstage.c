@@ -6,9 +6,7 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/smm.h>
 #include <cpxsp_dl_gpio.h>
-#include <device/device.h>
-#include <device/pci_def.h>
-#include <device/pci_ops.h>
+#include <device/pciexp.h>
 #include <drivers/ipmi/ipmi_ops.h>
 #include <drivers/ocp/dmi/ocp_dmi.h>
 #include <drivers/vpd/vpd.h>
@@ -24,7 +22,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <types.h>
-
 #include "ipmi.h"
 #include "vpd.h"
 
@@ -186,8 +183,6 @@ static int create_smbios_type9(int *handle, unsigned long *current)
 	uint8_t slot_usage;
 	uint8_t pcie_config = 0;
 	struct device *slot_dev;
-	unsigned int cap;
-	uint16_t sltcap;
 
 	if (ipmi_get_pcie_config(&pcie_config) != CB_SUCCESS)
 		printk(BIOS_ERR, "Failed to get IPMI PCIe config\n");
@@ -250,9 +245,7 @@ static int create_smbios_type9(int *handle, unsigned long *current)
 		characteristics_2 |= SMBIOS_SLOT_PME; // PmeSiganalSupported
 
 		/* Read IIO root port device CSR for slot capabilities */
-		cap = pci_find_capability(slot_dev, PCI_CAP_ID_PCIE);
-		sltcap = pci_read_config16(slot_dev, cap + PCI_EXP_SLTCAP);
-		if (sltcap & PCI_EXP_SLTCAP_HPC)
+		if (CONFIG(PCIEXP_PLUGIN_SUPPORT) && pciexp_dev_is_slot_hot_plug_cap(slot_dev))
 			characteristics_2 |= SMBIOS_SLOT_HOTPLUG;
 
 		const uint16_t slot_id = index + 1;

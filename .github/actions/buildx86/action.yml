@@ -27,7 +27,7 @@ runs:
           key: X86-crossgcc
     - name: Install Tools
       shell: bash
-      run: sudo apt-get install -y bison build-essential curl flex git gnat libncurses5-dev m4 zlib1g-dev libelf-dev nasm
+      run: sudo apt-get install -y bison build-essential curl flex git gnat libncurses5-dev m4 zlib1g-dev libelf-dev nasm uuid-dev
     - name: Build Toolchain Action
       if: steps.cache-toolchain.outputs.cache-hit != 'true'
       uses: ./.github/actions/buildx86-toolchain

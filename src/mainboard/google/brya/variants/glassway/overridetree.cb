@@ -20,6 +20,8 @@ fw_config
 	field WIFI_SAR_ID 10 12
 		option WIFI_SAR_ID_0		 0
 		option WIFI_SAR_ID_1		 1
+		option WIFI_SAR_ID_INTEL_CONVERTIBLE		 2
+		option WIFI_SAR_ID_INTEL_CLAMSHELL		 3
 	end
 	field STYLUS 14
 		option STYLUS_ABSENT		0

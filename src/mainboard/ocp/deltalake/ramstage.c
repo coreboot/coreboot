@@ -16,6 +16,7 @@
 #include <hob_memmap.h>
 #include <security/intel/txt/txt.h>
 #include <smbios.h>
+#include <soc/chip_common.h>
 #include <soc/ramstage.h>
 #include <soc/smmrelocate.h>
 #include <soc/soc_util.h>
@@ -73,26 +74,26 @@ typedef struct {
 	u8 stack;
 	u8 slot_type;
 	u8 slot_data_bus_width;
-	u8 dev_func;
+	u16 device_id;
 	const char *slot_designator;
 } slot_info;
 
 /* Array index + 1 would be used as Slot ID */
 slot_info slotinfo[] = {
-	{CSTACK,  SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0xE8, "SSD1_M2_Data_Drive"},
-	{PSTACK1, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x10, "SSD0_M2_Boot_Drive"},
-	{PSTACK1, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x18, "BB_OCP_NIC"},
-	{PSTACK2, SlotTypePciExpressGen3X16, SlotDataBusWidth16X, 0x00, "1OU_OCP_NIC"},
-	{PSTACK0, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x00, "2OU_JD1_M2_0"},
-	{PSTACK0, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x08, "2OU_JD1_M2_1"},
-	{PSTACK1, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x08, "2OU_JD2_M2_2"},
-	{PSTACK1, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x00, "2OU_JD2_M2_3"},
-	{PSTACK0, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x10, "2OU_JD3_M2_4"},
-	{PSTACK0, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x18, "2OU_JD3_M2_5"},
-	{PSTACK2, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x18, "1OU_JD1_M2_0"},
-	{PSTACK2, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x10, "1OU_JD1_M2_1"},
-	{PSTACK2, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x08, "1OU_JD2_M2_2"},
-	{PSTACK2, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x00, "1OU_JD2_M2_3"},
+	{CSTACK,  SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0xa218, "SSD1_M2_Data_Drive"},
+	{PSTACK1, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x2032, "SSD0_M2_Boot_Drive"},
+	{PSTACK1, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x2033, "BB_OCP_NIC"},
+	{PSTACK2, SlotTypePciExpressGen3X16, SlotDataBusWidth16X, 0x2030, "1OU_OCP_NIC"},
+	{PSTACK0, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x2030, "2OU_JD1_M2_0"},
+	{PSTACK0, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x2032, "2OU_JD1_M2_1"},
+	{PSTACK1, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x2031, "2OU_JD2_M2_2"},
+	{PSTACK1, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x2030, "2OU_JD2_M2_3"},
+	{PSTACK0, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x2032, "2OU_JD3_M2_4"},
+	{PSTACK0, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x2033, "2OU_JD3_M2_5"},
+	{PSTACK2, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x2033, "1OU_JD1_M2_0"},
+	{PSTACK2, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x2032, "1OU_JD1_M2_1"},
+	{PSTACK2, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x2031, "1OU_JD2_M2_2"},
+	{PSTACK2, SlotTypePciExpressGen3X4, SlotDataBusWidth4X, 0x2030, "1OU_JD2_M2_3"},
 };
 
 #define SPD_REGVID_LEN 6
@@ -182,20 +183,14 @@ static int create_smbios_type9(int *handle, unsigned long *current)
 	int index;
 	int length = 0;
 	uint8_t slot_length;
-	uint8_t sec_bus;
 	uint8_t slot_usage;
 	uint8_t pcie_config = 0;
-	uint32_t vendor_device_id;
-	uint8_t stack_busnos[MAX_IIO_STACK];
-	pci_devfn_t pci_dev_slot, pci_dev = 0;
+	struct device *slot_dev;
 	unsigned int cap;
 	uint16_t sltcap;
 
 	if (ipmi_get_pcie_config(&pcie_config) != CB_SUCCESS)
 		printk(BIOS_ERR, "Failed to get IPMI PCIe config\n");
-
-	for (index = 0; index < ARRAY_SIZE(stack_busnos); index++)
-		stack_busnos[index] = socket0_get_ubox_busno(index);
 
 	for (index = 0; index < ARRAY_SIZE(slotinfo); index++) {
 		uint8_t characteristics_1 = 0;
@@ -243,27 +238,20 @@ static int create_smbios_type9(int *handle, unsigned long *current)
 		else
 			slot_length = SlotLengthShort;
 
-		pci_dev_slot = PCI_DEV(stack_busnos[slotinfo[index].stack],
-			slotinfo[index].dev_func >> 3, slotinfo[index].dev_func & 0x7);
-		sec_bus = pci_s_read_config8(pci_dev_slot, PCI_SECONDARY_BUS);
+		slot_dev = dev_find_all_devices_on_stack(0, slotinfo[index].stack, 0x8086,
+							 slotinfo[index].device_id, NULL);
 
-		if (sec_bus == 0xFF) {
-			slot_usage = SlotUsageUnknown;
-		} else {
-			/* Checking for downstream device availability */
-			pci_dev = PCI_DEV(sec_bus, 0, 0);
-			vendor_device_id = pci_s_read_config32(pci_dev, 0);
-			if (vendor_device_id == 0xFFFFFFFF)
-				slot_usage  = SlotUsageAvailable;
-			else
-				slot_usage = SlotUsageInUse;
-		}
+		if (dev_is_active_bridge(slot_dev))
+			slot_usage = SlotUsageAvailable;
+		else
+			slot_usage = SlotUsageInUse;
 
 		characteristics_1 |= SMBIOS_SLOT_3P3V; // Provides33Volts
 		characteristics_2 |= SMBIOS_SLOT_PME; // PmeSiganalSupported
+
 		/* Read IIO root port device CSR for slot capabilities */
-		cap = pci_s_find_capability(pci_dev_slot, PCI_CAP_ID_PCIE);
-		sltcap = pci_s_read_config16(pci_dev_slot, cap + PCI_EXP_SLTCAP);
+		cap = pci_find_capability(slot_dev, PCI_CAP_ID_PCIE);
+		sltcap = pci_read_config16(slot_dev, cap + PCI_EXP_SLTCAP);
 		if (sltcap & PCI_EXP_SLTCAP_HPC)
 			characteristics_2 |= SMBIOS_SLOT_HOTPLUG;
 
@@ -280,9 +268,9 @@ static int create_smbios_type9(int *handle, unsigned long *current)
 					  slot_id,
 					  characteristics_1,
 					  characteristics_2,
-					  0, /* segment group */
-					  stack_busnos[slotinfo[index].stack],
-					  slotinfo[index].dev_func);
+					  slot_dev->upstream->segment_group,
+					  slot_dev->upstream->secondary,
+					  slot_dev->path.pci.devfn);
 	}
 
 	return length;

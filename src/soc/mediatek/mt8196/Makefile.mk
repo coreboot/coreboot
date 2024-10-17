@@ -13,6 +13,7 @@ all-y += ../common/uart.c
 bootblock-y += bootblock.c
 bootblock-y += ../common/bootblock.c bootblock.c
 bootblock-y += ../common/early_init.c
+bootblock-y += ../common/lastbus_v2.c lastbus.c
 bootblock-y += ../common/mmu_operations.c
 bootblock-$(CONFIG_PCI) += ../common/pcie.c pcie.c
 bootblock-y += ../common/wdt.c ../common/wdt_req.c wdt.c

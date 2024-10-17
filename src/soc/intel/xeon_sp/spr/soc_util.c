@@ -136,20 +136,6 @@ uint8_t get_cxl_node_count(void)
 	return count;
 }
 
-/* Returns the UBOX(offset) bus number for socket0 */
-uint8_t socket0_get_ubox_busno(uint8_t offset)
-{
-	const IIO_UDS *hob = get_iio_uds();
-
-	for (int stack = 0; stack < MAX_LOGIC_IIO_STACK; ++stack) {
-		if (hob->PlatformData.IIO_resource[0].StackRes[stack].Personality
-		    == TYPE_UBOX)
-			return (hob->PlatformData.IIO_resource[0].StackRes[stack].BusBase
-				+ offset);
-	}
-	die("Unable to locate UBOX BUS NO");
-}
-
 void bios_done_msr(void *unused)
 {
 	msr_t msr = rdmsr(MSR_BIOS_DONE);

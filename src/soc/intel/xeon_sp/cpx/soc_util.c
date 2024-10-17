@@ -35,18 +35,6 @@ bool is_ubox_stack_res(const STACK_RES *res)
 	return res->Personality == TYPE_UBOX;
 }
 
-/* Returns the UBOX(stack) bus number when called from socket0 */
-uint8_t socket0_get_ubox_busno(const uint8_t stack)
-{
-	if (stack >= MAX_IIO_STACK) {
-		printk(BIOS_ERR, "%s: Stack %u does not exist!\n", __func__, stack);
-		return 0;
-	}
-	const pci_devfn_t dev = PCI_DEV(UBOX_DECS_BUS, UBOX_DECS_DEV, UBOX_DECS_FUNC);
-	const uint16_t offset = stack / 4 ? UBOX_DECS_CPUBUSNO1_CSR : UBOX_DECS_CPUBUSNO_CSR;
-	return pci_io_read_config32(dev, offset) >> (8 * (stack % 4)) & 0xff;
-}
-
 /*
  * EX: CPX-SP
  * Ports    Stack   Stack(HOB)  IioConfigIou

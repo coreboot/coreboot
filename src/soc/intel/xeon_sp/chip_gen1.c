@@ -181,28 +181,3 @@ void create_xeonsp_domains(const union xeon_domain_path dp, struct bus *bus,
 	else if (CONFIG(HAVE_IOAT_DOMAINS) && is_ioat_iio_stack_res(sr))
 		create_ioat_domains(dp, bus, sr, pci_segment_group);
 }
-
-/*
- * Route PAM segment access to DRAM
- * Only call this code from socket0!
- */
-void unlock_pam_regions(void)
-{
-	uint32_t pam0123_unlock_dram = 0x33333330;
-	uint32_t pam456_unlock_dram = 0x00333333;
-	/* Get UBOX(1) for socket0 */
-	uint32_t bus1 = socket0_get_ubox_busno(PCU_IIO_STACK);
-
-	/* Assume socket0 owns PCI segment 0 */
-	pci_io_write_config32(PCI_DEV(bus1, SAD_ALL_DEV, SAD_ALL_FUNC),
-		SAD_ALL_PAM0123_CSR, pam0123_unlock_dram);
-	pci_io_write_config32(PCI_DEV(bus1, SAD_ALL_DEV, SAD_ALL_FUNC),
-		SAD_ALL_PAM456_CSR, pam456_unlock_dram);
-
-	uint32_t reg1 = pci_io_read_config32(PCI_DEV(bus1, SAD_ALL_DEV,
-		SAD_ALL_FUNC), SAD_ALL_PAM0123_CSR);
-	uint32_t reg2 = pci_io_read_config32(PCI_DEV(bus1, SAD_ALL_DEV,
-		SAD_ALL_FUNC), SAD_ALL_PAM456_CSR);
-	printk(BIOS_DEBUG, "%s:%s pam0123_csr: 0x%x, pam456_csr: 0x%x\n",
-		__FILE__, __func__, reg1, reg2);
-}

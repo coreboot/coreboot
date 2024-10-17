@@ -85,8 +85,6 @@ bool is_cxl_domain(const struct device *dev);
 
 #define is_stack0(socket, stack) (socket == 0 && stack == IioStack0)
 
-void unlock_pam_regions(void);
-
 size_t vtd_probe_bar_size(struct device *dev);
 
 void soc_pci_domain_fill_ssdt(const struct device *domain);

@@ -9,8 +9,6 @@
 
 #define MEM_ADDR_64MB_SHIFT_BITS 26
 
-void lock_pam0123(void);
-
 msr_t read_msr_ppin(void);
 int get_platform_thread_count(void);
 const IIO_UDS *get_iio_uds(void);

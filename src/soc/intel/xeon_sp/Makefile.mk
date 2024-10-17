@@ -21,6 +21,8 @@ ramstage-$(CONFIG_HAVE_ACPI_TABLES) += uncore_acpi.c acpi.c
 ramstage-$(CONFIG_SOC_INTEL_HAS_CXL) += uncore_acpi_cxl.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.c
 ramstage-$(CONFIG_XEON_SP_HAVE_IIO_IOAPIC) += iio_ioapic.c
+ramstage-y += sad.c
+
 smm-y += smihandler.c pmutil.c
 postcar-y += spi.c
 

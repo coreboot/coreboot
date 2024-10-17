@@ -38,8 +38,6 @@ static void soc_enable_dev(struct device *dev)
 
 static void soc_init(void *data)
 {
-	unlock_pam_regions();
-
 	printk(BIOS_DEBUG, "coreboot: calling fsp_silicon_init\n");
 	fsp_silicon_init();
 

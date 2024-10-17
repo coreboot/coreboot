@@ -193,6 +193,16 @@ static inline void le64enc(void *pp, uint32_t u)
 #define letohl(in) le32toh(in)
 #define letohll(in) le64toh(in)
 
+/* read/write with uintptr_t address */
+#define read8p(addr)	read8((void *)((uintptr_t)(addr)))
+#define read16p(addr)	read16((void *)((uintptr_t)(addr)))
+#define read32p(addr)	read32((void *)((uintptr_t)(addr)))
+#define read64p(addr)	read64((void *)((uintptr_t)(addr)))
+#define write8p(addr, value)	write8((void *)((uintptr_t)(addr)), value)
+#define write16p(addr, value)	write16((void *)((uintptr_t)(addr)), value)
+#define write32p(addr, value)	write32((void *)((uintptr_t)(addr)), value)
+#define write64p(addr, value)	write64((void *)((uintptr_t)(addr)), value)
+
 /* Handy bit manipulation macros */
 
 #define __clrsetbits(endian, bits, addr, clear, set) \
@@ -237,5 +247,20 @@ static inline void le64enc(void *pp, uint32_t u)
 #define clrbits16(addr, clear)		clrsetbits16(addr, clear, 0)
 #define clrbits32(addr, clear)		clrsetbits32(addr, clear, 0)
 #define clrbits64(addr, clear)		clrsetbits64(addr, clear, 0)
+
+#define clrsetbits8p(addr, clear, set)	clrsetbits8((void *)((uintptr_t)(addr)), clear, set)
+#define clrsetbits16p(addr, clear, set)	clrsetbits16((void *)((uintptr_t)(addr)), clear, set)
+#define clrsetbits32p(addr, clear, set)	clrsetbits32((void *)((uintptr_t)(addr)), clear, set)
+#define clrsetbits64p(addr, clear, set)	clrsetbits64((void *)((uintptr_t)(addr)), clear, set)
+
+#define setbits8p(addr, set)		clrsetbits8((void *)((uintptr_t)(addr)), 0, set)
+#define setbits16p(addr, set)		clrsetbits16((void *)((uintptr_t)(addr)), 0, set)
+#define setbits32p(addr, set)		clrsetbits32((void *)((uintptr_t)(addr)), 0, set)
+#define setbits64p(addr, set)		clrsetbits64((void *)((uintptr_t)(addr)), 0, set)
+
+#define clrbits8p(addr, clear)		clrsetbits8((void *)((uintptr_t)(addr)), clear, 0)
+#define clrbits16p(addr, clear)		clrsetbits16((void *)((uintptr_t)(addr)), clear, 0)
+#define clrbits32p(addr, clear)		clrsetbits32((void *)((uintptr_t)(addr)), clear, 0)
+#define clrbits64p(addr, clear)		clrsetbits64((void *)((uintptr_t)(addr)), clear, 0)
 
 #endif /* _ENDIAN_H_ */

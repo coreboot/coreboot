@@ -1,13 +1,22 @@
 ## SPDX-License-Identifier: GPL-2.0-or-later
 
 chip soc/intel/xeon_sp/spr
-
 	device domain 0 on
 		device pci 16.3 off end # Serial controller: Intel Corporation Device 1be3
 		device pci 17.0 off end # Intel device 1ba2: PCH SATA controller 0 (AHCI)
 		device pci 18.0 off end # Intel device 1bf2: PCH SATA controller 1 (AHCI)
 		device pci 19.0 off end # Intel device 1bd2: PCH SATA controller 2 (AHCI)
-
+		device pci 0a.0 on # M.2_1
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthLong" "M.2_1" "SlotDataBusWidth4X"
+		end
+		device pci 0f.0 on
+			device pci 0 on # BMC
+				device pci 0 on end # VGA
+			end
+		end
+		device pci 10.0 on  # M.2_2
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthLong" "M.2_2" "SlotDataBusWidth4X"
+		end
 		device pci 1f.0 on         # Intel device 1b81: PCH eSPI controller
 			chip drivers/ipmi # BMC KCS
 				device pnp ca2.0 on end
@@ -20,5 +29,125 @@ chip soc/intel/xeon_sp/spr
 		end
 		device pci 1f.3 off end # Intel device 1bc8: PCH audio
 		device pci 1f.6 off end # Intel device 1bcb: PCH GbE controller
+	end
+	device domain 226 on
+		device pci 00.0 on end # VTD
+		device pci 01.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD12" "SlotDataBusWidth4X"
+		end
+		device pci 03.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD11" "SlotDataBusWidth4X"
+		end
+		device pci 05.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD10" "SlotDataBusWidth4X"
+		end
+		device pci 07.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD09" "SlotDataBusWidth4X"
+		end
+	end
+	device domain 337 on
+		device pci 00.0 on end # VTD
+		device pci 01.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD13" "SlotDataBusWidth4X"
+		end
+		device pci 03.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD14" "SlotDataBusWidth4X"
+		end
+		device pci 05.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD15" "SlotDataBusWidth4X"
+		end
+		device pci 07.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD16" "SlotDataBusWidth4X"
+		end
+	end
+	device domain 102a7 on
+		device pci 00.0 on end # VTD
+		device pci 01.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD28" "SlotDataBusWidth4X"
+		end
+		device pci 03.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD27" "SlotDataBusWidth4X"
+		end
+		device pci 05.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD26" "SlotDataBusWidth4X"
+		end
+		device pci 07.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD25" "SlotDataBusWidth4X"
+		end
+	end
+	device domain 103b7 on
+		device pci 00.0 on end # VTD
+		device pci 01.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD29" "SlotDataBusWidth4X"
+		end
+		device pci 03.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD30" "SlotDataBusWidth4X"
+		end
+		device pci 05.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD31" "SlotDataBusWidth4X"
+		end
+		device pci 07.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD32" "SlotDataBusWidth4X"
+		end
+	end
+	device domain 20448 on
+		device pci 00.0 on end # VTD
+		device pci 01.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD17" "SlotDataBusWidth4X"
+		end
+		device pci 03.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD18" "SlotDataBusWidth4X"
+		end
+		device pci 05.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD19" "SlotDataBusWidth4X"
+		end
+		device pci 07.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD20" "SlotDataBusWidth4X"
+		end
+	end
+	device domain 20559 on
+		device pci 00.0 on end # VTD
+		device pci 01.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD24" "SlotDataBusWidth4X"
+		end
+		device pci 03.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD23" "SlotDataBusWidth4X"
+		end
+		device pci 05.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD22" "SlotDataBusWidth4X"
+		end
+		device pci 07.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD21" "SlotDataBusWidth4X"
+		end
+	end
+	device domain 304c7 on
+		device pci 00.0 on end # VTD
+		device pci 01.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD01" "SlotDataBusWidth4X"
+		end
+		device pci 03.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD02" "SlotDataBusWidth4X"
+		end
+		device pci 05.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD03" "SlotDataBusWidth4X"
+		end
+		device pci 07.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD04" "SlotDataBusWidth4X"
+		end
+	end
+	device domain 305d7 on
+		device pci 00.0 on end # VTD
+		device pci 01.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD08" "SlotDataBusWidth4X"
+		end
+		device pci 03.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD07" "SlotDataBusWidth4X"
+		end
+		device pci 05.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD06" "SlotDataBusWidth4X"
+		end
+		device pci 07.0 on
+			smbios_slot_desc "SlotTypeEDSFF_E1" "SlotLengthLong" "RSSD05" "SlotDataBusWidth4X"
+		end
 	end
 end

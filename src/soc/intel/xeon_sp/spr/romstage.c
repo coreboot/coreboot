@@ -241,9 +241,9 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 		mupd->FspmConfig.serialDebugMsgLvl = 0x3;
 		mupd->FspmConfig.AllowedSocketsInParallel = 0x1;
 		mupd->FspmConfig.EnforcePopulationPor = 0x1;
-		if (CONFIG(RMT_MEM_POR_FREQ))
-			mupd->FspmConfig.EnforceDdrMemoryFreqPor = 0x0;
 	}
+	if (CONFIG(MEM_POR_FREQ))
+		mupd->FspmConfig.EnforceDdrMemoryFreqPor = 0x0;
 
 	/* SPR-FSP has no UPD to disable HDA, so do it manually here... */
 	if (!is_devfn_enabled(PCH_DEVFN_HDA))

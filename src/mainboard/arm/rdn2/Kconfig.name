@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+config BOARD_ARM_RDN2
+	bool "Neoverse N2"
+	help
+	  To execute, do:
+	  FVP_RD_N2\models\Win64_VC2019\FVP_RD_N2 -C board.flashloader0.fname=coreboot.rom \
+	  -C css.trustedBootROMloader.fname=bl1.bin

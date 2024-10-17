@@ -196,3 +196,6 @@ config BOARD_GOOGLE_PUJJOGA
 
 config BOARD_GOOGLE_ORISA
 	bool "->  Orisa"
+
+config BOARD_GOOGLE_TELITH
+	bool "->  Telith"

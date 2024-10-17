@@ -155,10 +155,8 @@ u32 azalia_find_verb(const u32 *verb_table, u32 verb_table_bytes, u32 viddid, co
 }
 
 /*
- * Wait 50usec for the codec to indicate it is ready.
- * No response would imply that the codec is non-operative.
+ * Wait 50usec for the controller to indicate it is ready.
  */
-
 static int wait_for_ready(u8 *base)
 {
 	struct stopwatch sw;
@@ -179,7 +177,6 @@ static int wait_for_ready(u8 *base)
  * Wait for the codec to indicate that it accepted the previous command.
  * No response would imply that the codec is non-operative.
  */
-
 static int wait_for_valid(u8 *base)
 {
 	struct stopwatch sw;
@@ -206,6 +203,16 @@ static int wait_for_valid(u8 *base)
 		udelay(1);
 	}
 
+	/*
+	 * HDA spec 1.0a "3.4.3 Offset 68h: Immediate Command Status"
+	 * tells us to clear the busy bit explicitly, then poll until
+	 * the controller is ready.
+	 */
+	write32(base + HDA_ICII_REG, 0);
+	if (wait_for_ready(base) < 0) {
+		printk(BIOS_WARNING, "azalia_audio: controller is unresponsive.\n");
+		return -2;
+	}
 	return -1;
 }
 
@@ -238,7 +245,7 @@ __weak void mainboard_azalia_program_runtime_verbs(u8 *base, u32 viddid)
 static bool codec_is_operative(u8 *base, const int addr)
 {
 	if (wait_for_ready(base) < 0) {
-		printk(BIOS_DEBUG, "azalia_audio: codec #%d not ready\n", addr);
+		printk(BIOS_WARNING, "azalia_audio: controller not ready\n");
 		return false;
 	}
 
@@ -246,7 +253,7 @@ static bool codec_is_operative(u8 *base, const int addr)
 	write32(base + HDA_IC_REG, reg32);
 
 	if (wait_for_valid(base) < 0) {
-		printk(BIOS_DEBUG, "azalia_audio: codec #%d not valid\n", addr);
+		printk(BIOS_NOTICE, "azalia_audio: codec #%d doesn't respond\n", addr);
 		return false;
 	}
 	return true;

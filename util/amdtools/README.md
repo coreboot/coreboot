@@ -15,7 +15,7 @@ Before you can use them, you need to massage the relevant BKDG
 sections into useable data. Here's how.
 
   1. First, you need to acquire a copy of the K8 BKDG. Go here:
-     Rev F: http://www.amd.com/us-en/assets/content_type/white_papers_and_tech_docs/32559.pdf
+     Rev F: https://www.amd.com/content/dam/amd/en/documents/archived-tech-docs/programmer-references/32559.pdf
   2. Make sure pdftotext is installed (it's in the poppler-utils
      package on Debian/Ubuntu).
   3. Run the bkdg through pdftotext:

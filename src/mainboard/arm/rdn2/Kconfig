@@ -1,0 +1,64 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+if BOARD_ARM_RDN2
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select ARCH_BOOTBLOCK_ARMV8_64
+	select ARCH_VERSTAGE_ARMV8_64
+	select ARCH_ROMSTAGE_ARMV8_64
+	select ARCH_RAMSTAGE_ARMV8_64
+	select ARM64_USE_ARCH_TIMER
+	select BOARD_ROMSIZE_KB_65536
+	select BOOTBLOCK_CUSTOM
+	select DRIVERS_UART_PL011
+	select HAVE_ACPI_TABLES
+	select ACPI_GTDT
+	select ACPI_COMMON_MADT_GICC_V3
+	select MISSING_BOARD_RESET
+	select PCI
+	select PROBE_RAM
+	select ACPI_IORT
+	select ACPI_GTDT
+	select ACPI_COMMON_MADT_GICC_V3
+	select ACPI_PPTT
+	select GENERATE_SMBIOS_TABLES
+
+config ARM64_CURRENT_EL
+	default 2
+
+config ECAM_MMCONF_BASE_ADDRESS
+	default 0x1010000000
+
+config ECAM_MMCONF_BUS_NUMBER
+	default 256
+
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/mainboard/arm/rdn2/memlayout.ld"
+
+config FATAL_ASSERTS
+	default y
+
+config FMDFILE
+	default "src/mainboard/arm/rdn2/flash.fmd"
+
+config MAINBOARD_DIR
+	default "arm/rdn2"
+
+config MAINBOARD_PART_NUMBER
+	default "Neoverse N2"
+
+config MAX_CPUS
+	int
+	default 128
+
+config MAINBOARD_VENDOR
+	string
+	default "Arm"
+
+config DRAM_SIZE_MB
+	int
+	default 2048
+
+endif #  BOARD_ARM_RDN2

@@ -1,0 +1,7 @@
+Category: desktop
+Board URL: https://support.hp.com/us-en/product/hp-compaq-elite-8300-small-form-factor-pc/5232852
+ROM IC: MT25QL128
+ROM package: SOIC-16
+ROM socketed: no
+Flashrom support: yes
+Release year: 2012

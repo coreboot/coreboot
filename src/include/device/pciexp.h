@@ -3,6 +3,7 @@
 #ifndef DEVICE_PCIEXP_H
 #define DEVICE_PCIEXP_H
 /* (c) 2005 Linux Networx GPL see COPYING for details */
+#include <device/pci_def.h>
 
 enum aspm_type {
 	PCIE_ASPM_NONE = 0,

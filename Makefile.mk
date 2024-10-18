@@ -209,7 +209,7 @@ int-gt=$(if $(filter 1,$(words $1)),$(strip $1),$(shell expr $(call _toint,$(wor
 int-eq=$(if $(filter 1,$(words $1)),$(strip $1),$(shell expr $(call _toint,$(word 1,$1)) = $(call _toint,$(word 2,$1))))
 int-align=$(shell A=$(call _toint,$1) B=$(call _toint,$2); expr $$A + \( \( $$B - \( $$A % $$B \) \) % $$B \) )
 int-align-down=$(shell A=$(call _toint,$1) B=$(call _toint,$2); expr $$A - \( $$A % $$B \) )
-file-size=$(strip $(shell wc -c "$1" | cut -f 1 -d ' '))
+file-size=$(strip $(shell wc -c "$1" | awk '{print $$1}'))
 tolower=$(shell echo '$1' | tr '[:upper:]' '[:lower:]')
 toupper=$(shell echo '$1' | tr '[:lower:]' '[:upper:]')
 ws_to_under=$(shell echo '$1' | tr ' \t' '_')

@@ -19,6 +19,7 @@ bootblock-y += mminfra.c
 bootblock-y += ../common/mmu_operations.c
 bootblock-y +=  mtcmos.c
 bootblock-$(CONFIG_PCI) += ../common/pcie.c pcie.c
+bootblock-y += tracker.c
 bootblock-y += ../common/wdt.c ../common/wdt_req.c wdt.c
 
 romstage-y += ../common/cbmem.c

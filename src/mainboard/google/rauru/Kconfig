@@ -2,7 +2,8 @@
 
 # Umbrella option to be selected by variant boards.
 config BOARD_GOOGLE_RAURU_COMMON
-	def_bool BOARD_GOOGLE_RAURU
+	def_bool BOARD_GOOGLE_NAVI || \
+		 BOARD_GOOGLE_RAURU
 
 if BOARD_GOOGLE_RAURU_COMMON
 
@@ -26,6 +27,7 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
+	default "Navi" if BOARD_GOOGLE_NAVI
 	default "Rauru" if BOARD_GOOGLE_RAURU
 
 config BOOT_DEVICE_SPI_FLASH_BUS

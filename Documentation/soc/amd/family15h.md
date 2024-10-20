@@ -42,9 +42,9 @@ structure.
 
 ## References
 
-1. [Models 00h-0Fh BKDG](https://www.amd.com/system/files/TechDocs/42301_15h_Mod_00h-0Fh_BKDG.pdf)
-2. [Models 10h-1Fh BKDG](https://www.amd.com/system/files/TechDocs/42300_15h_Mod_10h-1Fh_BKDG.pdf)
-3. [Models 30h-3Fh BKDG](https://www.amd.com/system/files/TechDocs/49125_15h_Models_30h-3Fh_BKDG.pdf)
-4. [Models 60h-6Fh BKDG](https://www.amd.com/system/files/TechDocs/50742_15h_Models_60h-6Fh_BKDG.pdf)
-5. [Models 70h-7Fh BKDG](https://www.amd.com/system/files/TechDocs/55072_AMD_Family_15h_Models_70h-7Fh_BKDG.pdf)
+1. [Models 00h-0Fh BKDG](https://www.amd.com/content/dam/amd/en/documents/archived-tech-docs/programmer-references/42301_15h_Mod_00h-0Fh_BKDG.pdf)
+2. [Models 10h-1Fh BKDG](https://www.amd.com/content/dam/amd/en/documents/archived-tech-docs/programmer-references/42300_15h_Mod_10h-1Fh_BKDG.pdf)
+3. [Models 30h-3Fh BKDG](https://www.amd.com/content/dam/amd/en/documents/archived-tech-docs/programmer-references/49125_15h_Models_30h-3Fh_BKDG.pdf)
+4. [Models 60h-6Fh BKDG](https://www.amd.com/content/dam/amd/en/documents/archived-tech-docs/programmer-references/50742_15h_Models_60h-6Fh_BKDG.pdf)
+5. [Models 70h-7Fh BKDG](https://www.amd.com/content/dam/amd/en/documents/archived-tech-docs/programmer-references/55072_AMD_Family_15h_Models_70h-7Fh_BKDG.pdf)
 6. [PSP Integration](psp_integration.md)

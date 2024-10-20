@@ -40,6 +40,8 @@
 #define HECI_CIP_TIMEOUT_US	1000
 /* Wait up to 5 seconds for CSE to boot from RO(BP1) */
 #define CSE_DELAY_BOOT_TO_RO_MS	(5 * 1000)
+/* Wait up to 5 sec for CSE FW init to complete */
+#define CSE_FW_INIT_TIMEOUT_MS	(5 * 1000)
 
 #define SLOT_SIZE		sizeof(uint32_t)
 
@@ -1193,10 +1195,8 @@ void cse_enable_ptt(bool state)
 	 * 4) HFSTS1 FW Init Complete is set
 	 * 5) Before EOP issued to CSE
 	 */
-	if (!cse_is_hfs1_cws_normal() || !cse_is_hfs1_com_normal() ||
-	    !cse_is_hfs1_fw_init_complete() || !ENV_RAMSTAGE) {
-		printk(BIOS_ERR, "HECI: Unmet prerequisites for"
-				 "FW FEATURE SHIPMENT TIME STATE OVERRIDE\n");
+	if (!cse_is_hfs1_cws_normal() || !cse_is_hfs1_com_normal() || !ENV_RAMSTAGE) {
+		printk(BIOS_ERR, "HECI: Could not set PTT state because ME is not ready\n");
 		return;
 	}
 
@@ -1209,6 +1209,14 @@ void cse_enable_ptt(bool state)
 		printk(BIOS_DEBUG, "HECI: PTT is already in the requested state\n");
 		return;
 	}
+
+	int elapsed = wait_ms(CSE_FW_INIT_TIMEOUT_MS, cse_is_hfs1_fw_init_complete());
+	if (!elapsed) {
+		printk(BIOS_ERR, "HECI: Could not set PTT state because ME is not ready\n");
+		return;
+	}
+
+	printk(BIOS_DEBUG, "HECI: CSE took %d ms to become ready\n", elapsed);
 
 	printk(BIOS_DEBUG, "HECI: Send FW FEATURE SHIPMENT TIME STATE OVERRIDE Command\n");
 

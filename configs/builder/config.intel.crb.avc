@@ -13,6 +13,7 @@ CONFIG_CONFIGURABLE_RAMSTAGE=y
 CONFIG_NO_GFX_INIT=y
 
 CONFIG_HAVE_IFD_BIN=y
+CONFIG_HAVE_PBP_BIN=y
 CONFIG_DO_NOT_TOUCH_DESCRIPTOR_REGION=y
 CONFIG_CPU_MICROCODE_CBFS_EXTERNAL_BINS=y
 CONFIG_ADD_FSP_BINARIES=y
@@ -25,6 +26,7 @@ CONFIG_CONSOLE_SERIAL_115200=y
 # [RW] IFWI Ingredients
 #
 CONFIG_IFD_BIN_PATH="site-local/avenuecity/descriptor.bin"
+CONFIG_PBP_BIN_PATH="site-local/avenuecity/pbp.bin"
 CONFIG_CPU_UCODE_BINARIES="site-local/avenuecity/ucode.mcb"
 CONFIG_FSP_T_FILE="site-local/avenuecity/Server_T.fd"
 CONFIG_FSP_M_FILE="site-local/avenuecity/Server_M.fd"

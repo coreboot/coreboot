@@ -251,11 +251,7 @@ static unsigned long acpi_create_drhd(unsigned long current, struct device *iomm
 
 	struct resource *resource;
 	resource = probe_resource(iommu, VTD_BAR_CSR);
-	if (!resource)
-		return current;
-
-	uint32_t reg_base = resource->base;
-	if (!reg_base)
+	if (!resource || !resource->base || !resource->size)
 		return current;
 
 	const uint32_t bus = iommu->upstream->secondary;
@@ -263,8 +259,8 @@ static unsigned long acpi_create_drhd(unsigned long current, struct device *iomm
 	int socket = iio_pci_domain_socket_from_dev(iommu);
 	int stack = iio_pci_domain_stack_from_dev(iommu);
 
-	printk(BIOS_SPEW, "%s socket: %d, stack: %d, bus: 0x%x, pcie_seg: 0x%x, reg_base: 0x%x\n",
-		__func__, socket, stack, bus, pcie_seg, reg_base);
+	printk(BIOS_SPEW, "%s socket: %d, stack: %d, bus: 0x%x, pcie_seg: 0x%x, reg_base: 0x%llx\n",
+		__func__, socket, stack, bus, pcie_seg, resource->base);
 
 	/*
 	 * Add DRHD Hardware Unit
@@ -276,10 +272,10 @@ static unsigned long acpi_create_drhd(unsigned long current, struct device *iomm
 			DRHD_INCLUDE_PCI_ALL : 0;
 
 	printk(BIOS_DEBUG, "[Hardware Unit Definition] Flags: 0x%x, PCI Segment Number: 0x%x, "
-		"Register Base Address: 0x%x\n",
-		flags, pcie_seg, reg_base);
-	current += acpi_create_dmar_drhd(current, flags,
-		pcie_seg, reg_base, vtd_probe_bar_size(iommu));
+	       "Register Base Address: 0x%llx\n",
+	       flags, pcie_seg, resource->base);
+	current += acpi_create_dmar_drhd(current, flags, pcie_seg, resource->base,
+					 resource->size);
 
 	// Add IOAPIC
 	if (is_dev_on_domain0(iommu)) {

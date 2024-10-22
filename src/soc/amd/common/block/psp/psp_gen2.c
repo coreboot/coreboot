@@ -193,7 +193,7 @@ enum cb_err psp_get_psp_capabilities(uint32_t *capabilities)
 	/* buffer's status shouldn't change but report it if it does */
 	psp_print_cmd_status(cmd_status, &buffer.header);
 
-	if (!cmd_status)
+	if (cmd_status)
 		return CB_ERR;
 
 	*capabilities = read32(&buffer.capabilities);

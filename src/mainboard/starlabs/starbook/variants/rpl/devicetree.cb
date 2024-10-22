@@ -34,6 +34,7 @@ chip soc/intel/alderlake
 			register "ddi_ports_config" = "{
 				[DDI_PORT_A]				= DDI_ENABLE_HPD,
 				[DDI_PORT_B]				= DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_1]				= DDI_ENABLE_HPD,
 			}"
 		end
 		device ref pcie4_0	on				# SSD x4

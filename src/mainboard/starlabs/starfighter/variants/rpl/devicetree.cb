@@ -32,8 +32,9 @@ chip soc/intel/alderlake
 			register "gfx"				= "GMA_DEFAULT_PANEL(0)"
 			register "ddi_portA_config"		= "1"
 			register "ddi_ports_config" = "{
-				[DDI_PORT_A]			= DDI_ENABLE_HPD,
-				[DDI_PORT_B]			= DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_A]				= DDI_ENABLE_HPD,
+				[DDI_PORT_B]				= DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_1]				= DDI_ENABLE_HPD,
 			}"
 		end
 		device ref pcie4_0	on				# SSD x4

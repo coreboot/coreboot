@@ -495,6 +495,17 @@ find_llc_subleaf:
 	div	%ebx /* way size */
 	mov	%eax, %ecx
 
+#if CONFIG(INTEL_CAR_ENEM_USE_EFFECTIVE_WAY_SIZE)
+	/*
+	 * Limit the way size to the effective way size defined
+	 * as the biggest power of two of the way size.
+	 */
+	bsr	%ecx, %ecx /* Find the most significant bit */
+	mov	$1, %eax
+	shl	%cl, %eax  /* Shift 1 left to get the effective way size */
+	mov	%eax, %ecx
+#endif
+
 	/*
 	 * Check if way size if bigger than the cache ram size.
 	 * Then we need to allocate just one way for non-eviction

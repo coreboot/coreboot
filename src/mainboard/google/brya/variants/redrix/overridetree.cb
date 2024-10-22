@@ -162,6 +162,41 @@ chip soc/intel/alderlake
 				register "options.tsr[2].desc" = ""Charger""
 				register "options.tsr[3].desc" = ""5V regulator""
 
+				## Active Policy
+				# NOTE: Copy from EC. Only to enable acpi-fan.
+				register "policies.active" = "{
+					[0] = {
+						.target = DPTF_TEMP_SENSOR_0,
+						.thresholds = {
+								TEMP_PCT(100, 85),
+								TEMP_PCT( 58, 78),
+								TEMP_PCT( 57, 71),
+								TEMP_PCT( 56, 68),
+								TEMP_PCT( 55, 66),
+								TEMP_PCT( 54, 53),
+						}
+					},
+					[1] = {
+						.target = DPTF_CPU,
+						.thresholds = {
+								TEMP_PCT(100, 85),
+								TEMP_PCT( 58, 78),
+								TEMP_PCT( 57, 71),
+								TEMP_PCT( 56, 68),
+								TEMP_PCT( 55, 66),
+								TEMP_PCT( 54, 53),
+						}
+					},
+					[2] = {
+						.target = DPTF_TEMP_SENSOR_2,
+						.thresholds = {
+								TEMP_PCT(100, 100),
+								TEMP_PCT( 58,  63),
+								TEMP_PCT( 57,  61),
+						}
+					}
+				}"
+
 				# TODO: below values are initial reference values only
 				## Passive Policy
 				register "policies.passive" = "{
@@ -194,6 +229,27 @@ chip soc/intel/alderlake
 					[2] = {  16, 1000 },
 					[3] = {   8,  500 }
 				}"
+
+				## Fan Performance Control (Percent, Speed, Noise, Power)
+				# NOTE: Noise and Power numbers are placeholders.
+				register "controls.fan_perf" = "{
+					[ 0] = { 100, 9500, 200, 2000, },
+					[ 1] = {  90, 8700, 180, 1800, },
+					[ 2] = {  80, 8000, 160, 1600, },
+					[ 3] = {  70, 7200, 140, 1400, },
+					[ 4] = {  60, 6300, 120, 1200, },
+					[ 5] = {  50, 5400, 100, 1000, },
+					[ 6] = {  40, 4400,  80,  800, },
+					[ 7] = {  30, 3300,  60,  600, },
+					[ 8] = {  20, 2100,  40,  400, },
+					[ 9] = {  10,  800,  20,  200, },
+					[10] = {   0,    0,   0,    0, },
+				}"
+
+				## Fan options
+				register "options.fan.fine_grained_control" = "1"
+				register "options.fan.step_size" = "2"
+
 				device generic 0 alias dptf_policy on end
 			end
 		end

@@ -6,7 +6,6 @@
 #include <acpi/acpi.h>
 
 #define MAX_SRAT_MEM_ENTRIES_PER_IMC	8
-#define MAX_ACPI_MEMORY_AFFINITY_COUNT	256
 
 /**
  Select C-state map set in config cstate_states

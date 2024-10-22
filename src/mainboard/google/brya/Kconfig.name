@@ -128,6 +128,9 @@ config BOARD_GOOGLE_REDRIX4ES
 config BOARD_GOOGLE_RIVEN
 	bool "->  Riven"
 
+config BOARD_GOOGLE_RULL
+	bool "->  Rull"
+
 config BOARD_GOOGLE_SKOLAS
 	bool "->  Skolas"
 

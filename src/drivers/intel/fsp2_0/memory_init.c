@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <arch/null_breakpoint.h>
+#include <arch/stack_canary_breakpoint.h>
 #include <arch/symbols.h>
 #include <assert.h>
 #include <cbfs.h>
@@ -412,6 +413,7 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 
 	/* FSP disables the interrupt handler so remove debug exceptions temporarily  */
 	null_breakpoint_disable();
+	stack_canary_breakpoint_disable();
 	post_code(POSTCODE_FSP_MEMORY_INIT);
 	timestamp_add_now(TS_FSP_MEMORY_INIT_START);
 	if (ENV_X86_64 && CONFIG(PLATFORM_USES_FSP2_X86_32))
@@ -421,6 +423,7 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 	else
 		status = fsp_raminit(&fspm_upd, fsp_get_hob_list_ptr());
 	null_breakpoint_init();
+	stack_canary_breakpoint_init();
 
 	post_code(POSTCODE_FSP_MEMORY_EXIT);
 	timestamp_add_now(TS_FSP_MEMORY_INIT_END);

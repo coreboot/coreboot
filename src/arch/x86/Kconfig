@@ -368,6 +368,18 @@ config DEBUG_NULL_DEREF_BREAKPOINTS_IN_ALL_STAGES
 	default y
 	depends on DEBUG_NULL_DEREF_BREAKPOINTS && DEBUG_HW_BREAKPOINTS_IN_ALL_STAGES
 
+config DEBUG_STACK_OVERFLOW_BREAKPOINTS
+	bool
+	default y
+	depends on DEBUG_HW_BREAKPOINTS
+	help
+	  Enable support for catching stack overflows
+
+config DEBUG_STACK_OVERFLOW_BREAKPOINTS_IN_ALL_STAGES
+	bool
+	default y
+	depends on DEBUG_STACK_OVERFLOW_BREAKPOINTS && DEBUG_HW_BREAKPOINTS_IN_ALL_STAGES
+
 # Some EC need an "EC firmware pointer" (a data structure hinting the address
 # of its firmware blobs) being put at a fixed position. Its space
 # (__section__(".ecfw_ptr")) should be reserved if it lies in the range of a

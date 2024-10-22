@@ -2,6 +2,7 @@
 #include <arch/cpu.h>
 #include <arch/breakpoint.h>
 #include <arch/null_breakpoint.h>
+#include <arch/stack_canary_breakpoint.h>
 #include <arch/exception.h>
 #include <arch/registers.h>
 #include <commonlib/helpers.h>
@@ -665,4 +666,5 @@ asmlinkage void exception_init(void)
 	load_idt(idt, sizeof(idt));
 
 	null_breakpoint_init();
+	stack_canary_breakpoint_init();
 }

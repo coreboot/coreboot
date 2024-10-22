@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <arch/null_breakpoint.h>
+#include <arch/stack_canary_breakpoint.h>
 #include <bootsplash.h>
 #include <bootstate.h>
 #include <cbfs.h>
@@ -132,11 +133,13 @@ static void do_silicon_init(struct fsp_header *hdr)
 
 	/* FSP disables the interrupt handler so remove debug exceptions temporarily  */
 	null_breakpoint_disable();
+	stack_canary_breakpoint_disable();
 	if (ENV_X86_64 && CONFIG(PLATFORM_USES_FSP2_X86_32))
 		status = protected_mode_call_1arg(silicon_init, (uintptr_t)upd);
 	else
 		status = silicon_init(upd);
 	null_breakpoint_init();
+	stack_canary_breakpoint_init();
 
 	fsp_printk(status, BIOS_INFO, "FSPS");
 

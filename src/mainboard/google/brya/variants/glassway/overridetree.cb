@@ -32,9 +32,10 @@ fw_config
 		option WFC_PRESENT		1
 	end
 	field TOUCHSCREEN_SOURCE 32 33
-		option TOUCHSCREEN_UNPROVISIONED 0
-		option TOUCHSCREEN_ELAN0001      1
-		option TOUCHSCREEN_GTCH7503      2
+		option TOUCHSCREEN_UNPROVISIONED	0
+		option TOUCHSCREEN_ELAN0001		1
+		option TOUCHSCREEN_GTCH7503		2
+		option TOUCHSCREEN_ELAN9004		3
 	end
 end
 
@@ -372,6 +373,25 @@ chip soc/intel/alderlake
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 40  on
 					probe TOUCHSCREEN_SOURCE TOUCHSCREEN_GTCH7503
+				end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN9004""
+				register "generic.desc" = ""ELAN Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
+				register "generic.detect" = "1"
+				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
+				register "generic.reset_delay_ms" = "20"
+				register "generic.reset_off_delay_ms" = "2"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
+				register "generic.enable_delay_ms" = "6"
+				register "generic.stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C6)"
+				register "generic.stop_delay_ms" = "150"
+				register "generic.stop_off_delay_ms" = "2"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 10 on
+					probe TOUCHSCREEN_SOURCE TOUCHSCREEN_ELAN9004
 				end
 			end
 			chip drivers/generic/gpio_keys

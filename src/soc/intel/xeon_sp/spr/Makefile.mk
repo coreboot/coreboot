@@ -15,7 +15,7 @@ romstage-$(CONFIG_DISPLAY_UPD_DATA) += upd_display.c
 
 ramstage-y += chip.c cpu.c soc_util.c ramstage.c soc_acpi.c reset.c
 ramstage-y += crashlog.c ioat.c
-ramstage-y += ../chip_gen1.c
+ramstage-y += ../chip_gen1.c ../lpc_gen1.c
 ramstage-$(CONFIG_DISPLAY_HOBS) += hob_display.c
 ramstage-$(CONFIG_DISPLAY_UPD_DATA) += upd_display.c
 CPPFLAGS_common += -I$(src)/soc/intel/xeon_sp/spr/include -I$(src)/soc/intel/xeon_sp/spr

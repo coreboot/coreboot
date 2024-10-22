@@ -84,6 +84,9 @@ void soc_pci_domain_fill_ssdt(const struct device *domain)
 	acpigen_write_name("_PXM");
 	acpigen_write_integer(device_to_pd(domain));
 
+	/* _PRT */
+	acpigen_write_PRT_pre_routed(domain);
+
 	/* _OSC */
 	acpigen_write_OSC_pci_domain_fixed_caps(domain,
 		get_granted_pcie_features(),

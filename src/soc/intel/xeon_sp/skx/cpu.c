@@ -1,22 +1,25 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <assert.h>
 #include <console/console.h>
 #include <console/debug.h>
-#include <intelblocks/cpulib.h>
 #include <cpu/cpu.h>
 #include <cpu/intel/cpu_ids.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/mp.h>
 #include <cpu/intel/turbo.h>
+#include <cpu/intel/smm_reloc.h>
+#include <cpu/intel/em64t101_save_state.h>
+#include <intelblocks/cpulib.h>
+#include <intelpch/lockdown.h>
 #include <soc/msr.h>
+#include <soc/pm.h>
 #include <soc/soc_util.h>
 #include <soc/smmrelocate.h>
 #include <soc/util.h>
-#include <assert.h>
-#include "chip.h"
-#include <cpu/intel/smm_reloc.h>
-#include <cpu/intel/em64t101_save_state.h>
 #include <types.h>
+#include "chip.h"
+
 
 static const config_t *chip_config = NULL;
 
@@ -211,8 +214,11 @@ static void post_mp_init(void)
 	/* Set Max Ratio */
 	set_max_turbo_freq();
 
-	if (CONFIG(HAVE_SMI_HANDLER))
+	if (CONFIG(HAVE_SMI_HANDLER)) {
 		global_smi_enable();
+		if (get_lockdown_config() == CHIPSET_LOCKDOWN_COREBOOT)
+			pmc_lock_smi();
+	}
 }
 
 /*

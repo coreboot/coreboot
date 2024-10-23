@@ -113,19 +113,6 @@ static void soc_init(void *data)
 
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 {
-	const struct microcode *microcode_file;
-	size_t microcode_len;
-
-	microcode_file = cbfs_map("cpu_microcode_blob.bin", &microcode_len);
-
-	if ((microcode_file) && (microcode_len != 0)) {
-		/* Update CPU Microcode patch base address/size */
-		silupd->FspsConfig.PcdCpuMicrocodePatchBase =
-		       (uint32_t)microcode_file;
-		silupd->FspsConfig.PcdCpuMicrocodePatchSize =
-		       (uint32_t)microcode_len;
-	}
-
 	mainboard_silicon_init_params(silupd);
 }
 

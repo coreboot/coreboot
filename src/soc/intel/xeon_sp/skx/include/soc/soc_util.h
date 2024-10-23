@@ -13,7 +13,6 @@ void config_reset_cpl3_csrs(void);
 
 const struct SystemMemoryMapHob *get_system_memory_map(void);
 
-int soc_get_stack_for_port(int port);
 uint8_t get_cxl_node_count(void);
 
 #endif /* _SOC_UTIL_H_ */

@@ -45,6 +45,7 @@ ramstage-y += ../common/mcu.c
 ramstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 ramstage-$(CONFIG_PCI) += ../common/pcie.c pcie.c
 ramstage-y += ../common/mt6363.c mt6363.c
+ramstage-y += ../common/mt6363_sdmadc.c
 ramstage-y += soc.c
 ramstage-y += ../common/pmif_clk.c pmif_clk.c
 ramstage-y += ../common/pmif.c pmif_init.c

@@ -86,30 +86,16 @@ bool is_ubox_stack_res(const STACK_RES *res)
 #if ENV_RAMSTAGE
 void config_reset_cpl3_csrs(void)
 {
-	uint32_t data, plat_info, max_min_turbo_limit_ratio;
+	uint32_t data;
 	struct device *dev;
 
-	dev = NULL;
-	while ((dev = dev_find_device(PCI_VID_INTEL, PCU_CR0_DEVID, dev))) {
-		data = pci_read_config32(dev, PCU_CR0_P_STATE_LIMITS);
-		data |= P_STATE_LIMITS_LOCK;
-		pci_write_config32(dev, PCU_CR0_P_STATE_LIMITS, data);
-
-		plat_info = pci_read_config32(dev, PCU_CR0_PLATFORM_INFO);
-		dump_csr64(dev, PCU_CR0_PLATFORM_INFO);
-		max_min_turbo_limit_ratio =
-			(plat_info & MAX_NON_TURBO_LIM_RATIO_MASK) >>
-				MAX_NON_TURBO_LIM_RATIO_SHIFT;
-		printk(BIOS_SPEW, "plat_info: 0x%x, max_min_turbo_limit_ratio: 0x%x\n",
-			plat_info, max_min_turbo_limit_ratio);
-	}
+	// FIXME: Looks like this needs to run after FSP-S since it modifies FSP defaults!
 
 	dev = NULL;
 	while ((dev = dev_find_device(PCI_VID_INTEL, PCU_CR1_DEVID, dev))) {
 		data = pci_read_config32(dev, PCU_CR1_SAPMCTL);
 		/* clear bits 27:31 - FSP sets this with 0x7 which needs to be cleared */
 		data &= 0x0fffffff;
-		data |= SAPMCTL_LOCK_MASK;
 		pci_write_config32(dev, PCU_CR1_SAPMCTL, data);
 	}
 

@@ -34,23 +34,32 @@
 
 #define PCU_IIO_STACK                   1
 #define PCU_DEV                         30
-#define PCU_CR1_FUN                     1
-#define PCU_CR1_DEVID                   0x2081
 
 #define PCU_CR0_FUN                     0
 #define PCU_CR0_DEVID                   0x2080
 #define PCU_DEV_CR0(bus)                _PCU_DEV(bus, PCU_CR0_FUN)
 #define PCU_CR0_PLATFORM_INFO           0xa8
+#define PCU_CR0_TURBO_ACTIVATION_RATIO  0xb0
+#define   TURBO_ACTIVATION_RATIO_LOCK   BIT(31)
 #define PCU_CR0_P_STATE_LIMITS          0xd8
 #define P_STATE_LIMITS_LOCK_SHIFT       31
 #define P_STATE_LIMITS_LOCK             (1 << P_STATE_LIMITS_LOCK_SHIFT)
 #define PCU_CR0_TEMPERATURE_TARGET      0xe4
 #define PCU_CR0_PACKAGE_RAPL_LIMIT      0xe8
+#define PCU_CR0_PACKAGE_RAPL_LIMIT_UPR   (PCU_CR0_PACKAGE_RAPL_LIMIT + 4)
+#define   PKG_PWR_LIM_LOCK_UPR          BIT(31)
 #define PCU_CR0_CURRENT_CONFIG          0xf8
 #define MAX_NON_TURBO_LIM_RATIO_SHIFT   8 /* 8:15 */
 #define MAX_NON_TURBO_LIM_RATIO_MASK    (0xff << MAX_NON_TURBO_LIM_RATIO_SHIFT)
 #define PCU_CR0_PMAX                    0xf0
 #define   PMAX_LOCK                     BIT(31)
+
+#define PCU_CR1_FUN                     1
+#define PCU_CR1_DEVID                   0x2081
+
+#define PCU_CR1_C2C3TT_REG                                 0xdc
+#define PCU_CR1_PCIE_ILTR_OVRD                             0xfc
+#define PCU_CR1_SAPMCTL                                    0xb0
 
 #define PCU_CR1_BIOS_MB_DATA_REG                           0x8c
 
@@ -71,10 +80,39 @@
 #define   PCODE_INIT_DONE3_MASK                            BIT(11)
 #define   PCODE_INIT_DONE4_MASK                            BIT(12)
 
+#define PCU_CR1_MC_BIOS_REQ                                0x98
+
 #define PCU_CR1_DESIRED_CORES_CFG2_REG                     0xa0
 #define PCU_CR1_DESIRED_CORES_CFG2_REG_LOCK_MASK           BIT(31)
 
+#define PCU_CR1_SAPMCTL                                    0xb0
+#define SAPMCTL_LOCK_MASK                                   BIT(31)
+
+#define PCU_CR2_FUN                     2
 #define PCU_CR2_DEVID                   0x2082
+#define PCU_DEV_CR2(bus)                                   _PCU_DEV(bus, PCU_CR2_FUN)
+#define PCU_CR2_PKG_CST_ENTRY_CRITERIA_MASK                0x8c
+#define PCIE_IN_PKGCSTATE_L1_MASK                          0xFFFFFF /* 23:0 bits */
+#define PCU_CR2_PKG_CST_ENTRY_CRITERIA_MASK2               0x90
+#define KTI_IN_PKGCSTATE_L1_MASK                           0x7 /* 2:0 bits */
+#define PCU_CR2_DRAM_POWER_INFO_LWR                        0xa8
+#define PCU_CR2_DRAM_POWER_INFO_UPR                        (PCU_CR2_DRAM_POWER_INFO_LWR + 4)
+#define   DRAM_POWER_INFO_LOCK_UPR                         BIT(31)
+#define PCU_CR2_DYNAMIC_PERF_POWER_CTL                     0xdc
+#define UNCORE_PLIMIT_OVERRIDE_BIT                         20
+#define UNOCRE_PLIMIT_OVERRIDE_SHIFT                       (1 << UNCORE_PLIMIT_OVERRIDE_BIT)
+#define PCU_CR2_PROCHOT_RESPONSE_RATIO_REG                 0xb0
+#define PROCHOT_RATIO                                      0xa /* bits 0:7 */
+#define PCU_CR2_DRAM_PLANE_POWER_LIMIT                     0xf0
+#define PP_PWR_LIM_LOCK                                    BIT(31)
+
+#define PCU_CR3_FUN                     3
+#define PCU_CR3_DEVID                   0x2083
+#define PCU_DEV_CR3(bus)                                   _PCU_DEV(bus, PCU_CR3_FUN)
+#define PCU_CR3_CONFIG_TDP_CONTROL                         0x60
+#define   TDP_LOCK                                         BIT(31)
+#define PCU_CR3_FLEX_RATIO                                 0xa0
+#define   OC_LOCK                                          BIT(20)
 
 #if !defined(__SIMPLE_DEVICE__)
 #define _UBOX_DEV(func)		pcidev_path_on_root_debug(PCI_DEVFN(UBOX_DEV, func), __func__)
@@ -114,24 +152,6 @@
 #define VTD_BAR_CSR			0x180
 #define VTD_LTDPR			0x290
 
-#define PCU_CR1_C2C3TT_REG                                 0xdc
-#define PCU_CR1_PCIE_ILTR_OVRD                             0xfc
-#define PCU_CR1_SAPMCTL                                    0xb0
-#define SAPMCTL_LOCK_SHIFT                                 31
-#define SAPMCTL_LOCK_MASK                                  (1 << SAPMCTL_LOCK_SHIFT)
-#define PCU_CR1_MC_BIOS_REQ                                0x98
-
-#define PCU_CR2_FUN                                        2
-#define PCU_CR2_PKG_CST_ENTRY_CRITERIA_MASK                0x8c
-#define PCIE_IN_PKGCSTATE_L1_MASK                          0xFFFFFF /* 23:0 bits */
-#define PCU_CR2_PKG_CST_ENTRY_CRITERIA_MASK2               0x90
-#define KTI_IN_PKGCSTATE_L1_MASK                           0x7 /* 2:0 bits */
-#define PCU_CR2_DYNAMIC_PERF_POWER_CTL                     0xdc
-#define UNCORE_PLIMIT_OVERRIDE_BIT                         20
-#define UNOCRE_PLIMIT_OVERRIDE_SHIFT                       (1 << UNCORE_PLIMIT_OVERRIDE_BIT)
-#define PCU_CR2_PROCHOT_RESPONSE_RATIO_REG                 0xb0
-#define PROCHOT_RATIO                                      0xa /* bits 0:7 */
-
 #define CHA_UTIL_ALL_DEV                                   29
 #define CHA_UTIL_ALL_FUNC                                  1
 #define CHA_UTIL_ALL_MMCFG_CSR                             0xc0
@@ -146,6 +166,18 @@
 #else
 #define VTD_DEV(bus)		PCI_DEV((bus), VTD_DEV_NUM, VTD_FUNC_NUM)
 #endif
+
+/* IMC Devices */
+/* Bus: B(2), Device: 9-8, Function: 0 (M2MEM) */
+#define IMC_M2MEM_DEVID			0x2066
+#define IMC_M2MEM_TIMEOUT		0x104
+#define   TIMEOUT_LOCK			BIT(1)
+
+/* UPI Devices */
+/* Bus: B(3), Device: 16,14, Function: 3 (LL_CR) */
+#define UPI_LL_CR_DEVID			0x205B
+#define UPI_LL_CR_KTIMISCMODLCK		0x300
+#define   KTIMISCMODLCK_LOCK		BIT(0)
 
 #define CBDMA_DEV_NUM           0x04
 #define IIO_CBDMA_MMIO_SIZE     0x10000 //64kB for one CBDMA function

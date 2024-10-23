@@ -220,21 +220,6 @@ static void pre_mp_init(void)
 	x86_mtrr_check();
 }
 
-static int get_thread_count(void)
-{
-	unsigned int num_phys = 0, num_virts = 0;
-
-	/*
-	 * This call calculates the thread count which is corresponding to num_virts
-	 * (logical cores), while num_phys is corresponding to physical cores (in SMT
-	 * system, one physical core has multiple threads, a.k.a. logical cores).
-	 * Hence num_phys is not actually used.
-	 */
-	cpu_read_topology(&num_phys, &num_virts);
-	printk(BIOS_SPEW, "Detected %u cores and %u threads\n", num_phys, num_virts);
-	return num_virts * soc_get_num_cpus();
-}
-
 static void post_mp_init(void)
 {
 	/* Set Max Ratio */
@@ -249,7 +234,7 @@ static void post_mp_init(void)
 
 static const struct mp_ops mp_ops = {
 	.pre_mp_init = pre_mp_init,
-	.get_cpu_count = get_thread_count,
+	.get_cpu_count = get_platform_thread_count,
 #if CONFIG(HAVE_SMI_HANDLER)
 	.get_smm_info = get_smm_info,
 	.pre_mp_smm_init = smm_southbridge_clear_state,

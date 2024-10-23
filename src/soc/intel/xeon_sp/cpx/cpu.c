@@ -173,22 +173,6 @@ static void pre_mp_init(void)
 	x86_mtrr_check();
 }
 
-static int get_thread_count(void)
-{
-	unsigned int num_phys = 0, num_virts = 0;
-
-	cpu_read_topology(&num_phys, &num_virts);
-	printk(BIOS_SPEW, "Detected %u cores and %u threads\n", num_phys, num_virts);
-	/*
-	 * Currently we do not know a way to figure out how many CPUs we have total
-	 * on multi-socketed. So we pretend all sockets are populated with CPUs with
-	 * same thread/core fusing.
-	 * TODO: properly figure out number of active sockets OR refactor MPinit code
-	 * to remove requirements of having to know total number of CPUs in advance.
-	 */
-	return num_virts * CONFIG_MAX_SOCKET;
-}
-
 static void post_mp_init(void)
 {
 	/* Set Max Ratio */
@@ -203,7 +187,7 @@ static void post_mp_init(void)
 
 static const struct mp_ops mp_ops = {
 	.pre_mp_init = pre_mp_init,
-	.get_cpu_count = get_thread_count,
+	.get_cpu_count = get_platform_thread_count,
 	.get_smm_info = get_smm_info,
 	.pre_mp_smm_init = smm_southbridge_clear_state,
 	.relocation_handler = smm_relocation_handler,

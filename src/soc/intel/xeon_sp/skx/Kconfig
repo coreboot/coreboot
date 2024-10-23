@@ -25,6 +25,10 @@ config MAX_CPUS
 	int
 	default 80
 
+config CPU_BCLK_MHZ
+	int
+	default 100
+
 config PCR_BASE_ADDRESS
 	hex
 	default 0xfd000000

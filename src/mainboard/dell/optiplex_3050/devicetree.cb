@@ -1,0 +1,103 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/intel/skylake
+	register "deep_sx_config" = "DSX_EN_WAKE_PIN | DSX_EN_LAN_WAKE_PIN"
+
+	# Enable Enhanced Intel SpeedStep
+	register "eist_enable" = "1"
+
+	device domain 0 on
+		device ref igpu on
+			register "PrimaryDisplay" = "Display_iGFX"
+		end
+
+		device ref south_xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC0),	// Front panel (blue)
+				[1] = USB2_PORT_MID(OC0),	// Front panel (blue)
+				[2] = USB2_PORT_MID(OC3),	// Back panel (black)
+				[3] = USB2_PORT_MID(OC2),	// Back panel (blue)
+				[4] = USB2_PORT_MID(OC1),	// Back panel (blue)
+				[6] = USB2_PORT_MID(OC1),	// Back panel (black)
+				[8] = USB2_PORT_MID(OC_SKIP),	// WiFi slot
+			}"
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC0),	// Front panel (blue)
+				[1] = USB3_PORT_DEFAULT(OC0),	// Front panel (blue)
+				[2] = USB3_PORT_DEFAULT(OC2),	// Back panel (blue)
+				[3] = USB3_PORT_DEFAULT(OC1),	// Back panel (blue)
+			}"
+		end
+
+		# ME interface is 'off' to avoid HECI reset delay due to HAP
+		device ref heci1 off end
+
+		device ref sata on
+			register "SataSalpSupport" = "1"
+			register "SataPortsEnable[0]" = "1"
+		end
+
+		# M.2 SSD
+		device ref pcie_rp21 on
+			register "PcieRpEnable[20]"                     = "1"
+			register "PcieRpClkReqSupport[20]"              = "1"
+			register "PcieRpClkReqNumber[20]"               = "3"
+			register "PcieRpAdvancedErrorReporting[20]"     = "1"
+			register "PcieRpLtrEnable[20]"                  = "1"
+			register "PcieRpClkSrcNumber[20]"               = "3"
+			register "PcieRpHotPlug[20]"                    = "1"
+		end
+
+		# Realtek LAN
+		device ref pcie_rp5 on
+			register "PcieRpEnable[4]"			= "1"
+			register "PcieRpClkReqSupport[4]"		= "0"
+			register "PcieRpHotPlug[4]"			= "0"
+		end
+
+		# M.2 WiFi
+		device ref pcie_rp8 on
+			register "PcieRpEnable[7]"			= "1"
+			register "PcieRpClkReqSupport[7]"		= "0"
+			register "PcieRpHotPlug[7]"			= "1"
+		end
+
+		# UART0 is exposed on test points on the bottom of the board
+		device ref uart0 on
+			register "SerialIoDevMode[PchSerialIoIndexUart0]" = "PchSerialIoPci"
+		end
+
+		device ref lpc_espi on
+			register "serirq_mode" = "SERIRQ_CONTINUOUS"
+
+			# I/O decode for EMI/Runtime registers
+			register "gen1_dec" = "0x007c0a01"
+
+			# SCH5553
+			chip superio/smsc/sch555x
+				device pnp 2e.0 on		# EMI
+					io 0x60 = 0xa00
+				end
+				device pnp 2e.1 off end		# 8042
+				device pnp 2e.7 on		# UART1
+					io 0x60 = 0x3f8
+					irq 0x0f = 2
+					irq 0x70 = 4
+				end
+				device pnp 2e.8 off end 	# UART2
+				device pnp 2e.c on		# LPC interface
+					io 0x60 = 0x2e
+				end
+				device pnp 2e.a on		# Runtime registers
+					io 0x60 = 0xa40
+				end
+				device pnp 2e.b  off end	# Floppy Controller
+				device pnp 2e.11 off end	# Parallel Port
+			end
+		end
+
+		device ref hda on end
+
+		device ref smbus on end
+	end
+end

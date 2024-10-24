@@ -1,0 +1,7 @@
+Category: desktop
+Board URL: https://www.dell.com/support/kbdoc/en-uk/000124265/dell-optiplex-3050-system-guide
+ROM package: SOIC-8
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y
+Release year: 2017

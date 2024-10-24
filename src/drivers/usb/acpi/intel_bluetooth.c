@@ -326,11 +326,12 @@ void acpi_device_intel_bt_common(unsigned int enable_gpio)
  */
 	acpigen_write_method("GBTE", 0);
 	{
-		acpigen_emit_byte(RETURN_OP);
-		if (enable_gpio)
+		if (enable_gpio) {
 			acpigen_soc_get_tx_gpio(enable_gpio);
-		else
-			acpigen_emit_byte(0);
+			acpigen_write_return_op(LOCAL0_OP);
+		} else {
+			acpigen_write_return_integer(0);
+		}
 	}
 	acpigen_pop_len();
 

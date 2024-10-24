@@ -100,7 +100,7 @@ struct usb3_port_config {
 extern const struct usb2_port_config mainboard_usb2_ports[MAX_USB2_PORTS];
 extern const struct usb3_port_config mainboard_usb3_ports[MAX_USB3_PORTS];
 
-static inline int pch_is_lp(void)
+static inline bool pch_is_lp(void)
 {
 	return CONFIG(INTEL_LYNXPOINT_LP);
 }

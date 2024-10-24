@@ -53,6 +53,9 @@ void lpc_open_mmio_window(uintptr_t base, size_t size);
 /* Init SoC Specific LPC features. Common definition will be weak and
 each soc will need to define the init. */
 void lpc_soc_init(struct device *dev);
+/* Create SoC specific SSDT, by default it does nothing so that static
+DSDT could be used. */
+void lpc_soc_fill_ssdt(const struct device *dev);
 /* Fill up LPC IO resource structure inside SoC directory */
 void pch_lpc_soc_fill_io_resources(struct device *dev);
 /* Set LPC BIOS Control BILD bit. */

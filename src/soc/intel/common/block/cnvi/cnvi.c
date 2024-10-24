@@ -131,7 +131,7 @@ static void cnvw_fill_ssdt(const struct device *dev)
  *						Local2 = Zero
  *						If ((GBTE() == One))
  *						{
- *							BTRK (Zero)
+ *							\_SB.PCI0.BTRK (Zero)
  *							Sleep (105)
  *							Local2 = One
  *						}
@@ -143,7 +143,7 @@ static void cnvw_fill_ssdt(const struct device *dev)
  *							PRRS = CNVI_PLDR_COMPLETE
  *							If ((Local2 == One))
  *							{
- *								BTRK (One)
+ *								\_SB.PCI0.BTRK (One)
  *								Sleep (105)
  *							}
  *						}
@@ -211,7 +211,7 @@ static void cnvw_fill_ssdt(const struct device *dev)
 						acpigen_write_store_int_to_op(0, LOCAL2_OP);
 						acpigen_write_if_lequal_namestr_int("\\_SB.PCI0.GBTE", 1);
 						{
-							acpigen_emit_namestring("BTRK");
+							acpigen_emit_namestring("\\_SB.PCI0.BTRK");
 							acpigen_emit_byte(0);
 
 							acpigen_write_sleep(105);
@@ -251,7 +251,7 @@ static void cnvw_fill_ssdt(const struct device *dev)
 
 								acpigen_write_if_lequal_op_int(LOCAL2_OP, 1);
 								{
-									acpigen_emit_namestring("BTRK");
+									acpigen_emit_namestring("\\_SB.PCI0.BTRK");
 									acpigen_emit_byte(1);
 									acpigen_write_sleep(105);
 								}

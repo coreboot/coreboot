@@ -91,6 +91,7 @@ bool usb_acpi_get_pld(const struct device *usb_device, struct acpi_pld *pld);
 void acpi_device_intel_bt(unsigned int reset_gpio,
 			  unsigned int enable_gpio,
 			  bool audio_offload);
-void acpi_device_intel_bt_common(unsigned int enable_gpio);
+void acpi_device_intel_bt_common(unsigned int enable_gpio,
+				 unsigned int reset_gpio);
 
 #endif /* __USB_ACPI_CHIP_H__ */

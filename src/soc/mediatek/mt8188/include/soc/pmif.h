@@ -137,6 +137,12 @@ enum {
 	FREQ_260MHZ = 260,
 };
 
+/* calibation tolerance rate, unit: 0.1% */
+enum {
+	CAL_TOL_RATE = 40,
+	CAL_MAX_VAL = 0x7F,
+};
+
 #define FREQ_METER_ABIST_AD_OSC_CK	42
 #define CALI_DEFAULT_CAP_VALUE		0x3d
 

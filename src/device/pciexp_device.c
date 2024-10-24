@@ -144,6 +144,26 @@ struct device *pcie_find_dsn(const uint64_t serial, const uint16_t vid,
 	return from;
 }
 
+/**
+ * Returns true if the device is a hot-plug capable PCIe device.
+ *
+ * @param dev Pointer to the device structure.
+ *
+ * @return True when marked hot-plug capable.
+ */
+bool pciexp_dev_is_slot_hot_plug_cap(struct device *dev)
+{
+	u16 sltcap;
+	unsigned int pcie_cap = pci_find_capability(dev, PCI_CAP_ID_PCIE);
+
+	if (!pcie_cap)
+		return 0;
+
+	sltcap = pci_read_config16(dev, pcie_cap + PCI_EXP_SLTCAP);
+	sltcap &= PCI_EXP_SLTCAP_HPC;
+	return !!sltcap;
+}
+
 static bool pcie_is_root_port(struct device *dev)
 {
 	unsigned int pcie_pos, pcie_type;

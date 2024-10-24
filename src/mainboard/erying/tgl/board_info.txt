@@ -1,0 +1,7 @@
+Board name: Erying Polestar G613 Pro
+Release year: 2022
+Category: desktop
+ROM IC: W25Q128FV
+ROM package: SOIC-8
+ROM socketed: no
+Flashrom support: yes

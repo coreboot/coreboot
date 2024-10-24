@@ -3,6 +3,7 @@
 #ifndef DEVICE_PCIEXP_H
 #define DEVICE_PCIEXP_H
 /* (c) 2005 Linux Networx GPL see COPYING for details */
+#include <device/pci_def.h>
 
 enum aspm_type {
 	PCIE_ASPM_NONE = 0,
@@ -43,6 +44,8 @@ static inline bool pciexp_is_downstream_port(int type)
 	       type == PCI_EXP_TYPE_DOWNSTREAM ||
 	       type == PCI_EXP_TYPE_PCIE_BRIDGE;
 }
+
+bool pciexp_dev_is_slot_hot_plug_cap(struct device *dev);
 
 struct device *pcie_find_dsn(const uint64_t serial, const uint16_t vid,
 	struct device *from);

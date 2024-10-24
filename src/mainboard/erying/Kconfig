@@ -1,0 +1,17 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if VENDOR_ERYING
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/erying/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/erying/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	default "Erying"
+
+endif # VENDOR_ERYING

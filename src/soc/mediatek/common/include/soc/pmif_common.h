@@ -84,4 +84,20 @@ DEFINE_BIT(PMIFSPMI_MD_CTL_SRVOL_EN, 11)
 struct pmif *get_pmif_controller(int inf, int mstid);
 void pmwrap_interface_init(void);
 int mtk_pmif_init(void);
+void pmif_spmi_read(struct pmif *arb, u32 slvid, u32 reg, u32 *data);
+void pmif_spmi_write(struct pmif *arb, u32 slvid, u32 reg, u32 data);
+u32 pmif_spmi_read_field(struct pmif *arb, u32 slvid, u32 reg, u32 mask, u32 shift);
+void pmif_spmi_write_field(struct pmif *arb, u32 slvid, u32 reg,
+			   u32 val, u32 mask, u32 shift);
+void pmif_spi_read(struct pmif *arb, u32 slvid, u32 reg, u32 *data);
+void pmif_spi_write(struct pmif *arb, u32 slvid, u32 reg, u32 data);
+u32 pmif_spi_read_field(struct pmif *arb, u32 slvid, u32 reg, u32 mask, u32 shift);
+void pmif_spi_write_field(struct pmif *arb, u32 slvid, u32 reg,
+			  u32 val, u32 mask, u32 shift);
+int pmif_check_init_done(struct pmif *arb);
+
+extern const struct pmif pmif_spmi_arb[];
+extern const size_t pmif_spmi_arb_count;
+extern const struct pmif pmif_spi_arb[];
+extern const size_t pmif_spi_arb_count;
 #endif /*__MEDIATEK_SOC_PMIF_COMMON__*/

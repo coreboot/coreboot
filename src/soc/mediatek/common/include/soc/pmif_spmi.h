@@ -16,8 +16,14 @@
 struct mtk_rgu_regs {
 	u32 reserved[36];
 	u32 wdt_swsysrst2;
+	u32 reserved1[91];
+	u32 wdt_vlp_swsysrst0;
+	u32 reserved2[3];
+	u32 wdt_vlp_swsysrst1;
 };
 check_member(mtk_rgu_regs, wdt_swsysrst2, 0x90);
+check_member(mtk_rgu_regs, wdt_vlp_swsysrst0, 0x200);
+check_member(mtk_rgu_regs, wdt_vlp_swsysrst1, 0x210);
 
 struct mtk_spmi_mst_reg {
 	u32 op_st_ctrl;
@@ -51,6 +57,7 @@ struct cali {
 enum {
 	SPMI_CK_NO_DLY = 0,
 	SPMI_CK_DLY_1T,
+	SPMI_CK_DLY_2T,
 };
 
 enum {

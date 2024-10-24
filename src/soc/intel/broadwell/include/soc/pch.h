@@ -3,6 +3,8 @@
 #ifndef _BROADWELL_PCH_H_
 #define _BROADWELL_PCH_H_
 
+#include <stdbool.h>
+
 /* Haswell ULT Pch (LynxPoint-LP) */
 #define PCH_LPT_LP_SAMPLE	0x9c41
 #define PCH_LPT_LP_PREMIUM	0x9c43
@@ -25,8 +27,8 @@
 
 u8 pch_revision(void);
 u16 pch_type(void);
-int pch_is_wpt(void);
-int pch_is_wpt_ulx(void);
+bool pch_is_wpt(void);
+bool pch_is_wpt_ulx(void);
 u32 pch_read_soft_strap(int id);
 void pch_disable_devfn(struct device *dev);
 

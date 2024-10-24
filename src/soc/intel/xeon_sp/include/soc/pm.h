@@ -61,8 +61,6 @@
 #define  SMI_ON_SLP_EN_STS_BIT		4
 #define  LEGACY_USB_STS_BIT		3
 #define  BIOS_STS_BIT			2
-#define GPE_CNTL		0x42
-#define  SWGPE_CTRL		(1 << 1)
 #define DEVACT_STS		0x44
 #define PM2_CNT			0x50
 #define GPE0_REG_MAX		4

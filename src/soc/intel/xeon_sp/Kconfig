@@ -110,4 +110,9 @@ config HAVE_IOAT_DOMAINS
 config SOC_INTEL_HAS_CXL
 	bool
 
+config SUPPORT_SIMICS_SIMULATION
+	bool
+	default y
+	select SHADOW_ROM_TABLE_TO_EBDA
+
 endif ## SOC_INTEL_XEON_SP

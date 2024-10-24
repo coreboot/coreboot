@@ -140,6 +140,7 @@ https://review.coreboot.org/admin/repos/intel-dev-pub,branches
 # https://cdrdv2-public.intel.com/736809/736809_FSP_EAS_v2.4_Errata_A.pdf
 
 CONFIG_IFD_BIN_PATH=<path of intel flash descriptor blob>
+CONFIG_PBP_BIN_PATH=<path of platform boot policy blob>
 CONFIG_CPU_UCODE_BINARIES=<path of ucode>
 CONFIG_FSP_T_FILE=<path of FSP-T binary>
 CONFIG_FSP_M_FILE=<path of FSP-M binary>

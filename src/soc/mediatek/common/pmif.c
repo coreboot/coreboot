@@ -64,18 +64,18 @@ static void pmif_send_cmd(struct pmif *arb, int write, u32 opc, u32 slvid,
 	}
 }
 
-static void pmif_spmi_read(struct pmif *arb, u32 slvid, u32 reg, u32 *data)
+void pmif_spmi_read(struct pmif *arb, u32 slvid, u32 reg, u32 *data)
 {
 	*data = 0;
 	pmif_send_cmd(arb, 0, PMIF_CMD_EXT_REG_LONG, slvid, reg, data, 0, 1);
 }
 
-static void pmif_spmi_write(struct pmif *arb, u32 slvid, u32 reg, u32 data)
+void pmif_spmi_write(struct pmif *arb, u32 slvid, u32 reg, u32 data)
 {
 	pmif_send_cmd(arb, 1, PMIF_CMD_EXT_REG_LONG, slvid, reg, NULL, data, 1);
 }
 
-static u32 pmif_spmi_read_field(struct pmif *arb, u32 slvid, u32 reg, u32 mask, u32 shift)
+u32 pmif_spmi_read_field(struct pmif *arb, u32 slvid, u32 reg, u32 mask, u32 shift)
 {
 	u32 data;
 
@@ -86,8 +86,8 @@ static u32 pmif_spmi_read_field(struct pmif *arb, u32 slvid, u32 reg, u32 mask, 
 	return data;
 }
 
-static void pmif_spmi_write_field(struct pmif *arb, u32 slvid, u32 reg,
-				  u32 val, u32 mask, u32 shift)
+void pmif_spmi_write_field(struct pmif *arb, u32 slvid, u32 reg,
+			   u32 val, u32 mask, u32 shift)
 {
 	u32 old, new;
 
@@ -97,18 +97,18 @@ static void pmif_spmi_write_field(struct pmif *arb, u32 slvid, u32 reg,
 	pmif_spmi_write(arb, slvid, reg, new);
 }
 
-static void pmif_spi_read(struct pmif *arb, u32 slvid, u32 reg, u32 *data)
+void pmif_spi_read(struct pmif *arb, u32 slvid, u32 reg, u32 *data)
 {
 	*data = 0;
 	pmif_send_cmd(arb, 0, PMIF_CMD_REG_0, slvid, reg, data, 0, 1);
 }
 
-static void pmif_spi_write(struct pmif *arb, u32 slvid, u32 reg, u32 data)
+void pmif_spi_write(struct pmif *arb, u32 slvid, u32 reg, u32 data)
 {
 	pmif_send_cmd(arb, 1, PMIF_CMD_REG_0, slvid, reg, NULL, data, 1);
 }
 
-static u32 pmif_spi_read_field(struct pmif *arb, u32 slvid, u32 reg, u32 mask, u32 shift)
+u32 pmif_spi_read_field(struct pmif *arb, u32 slvid, u32 reg, u32 mask, u32 shift)
 {
 	u32 data;
 
@@ -119,8 +119,8 @@ static u32 pmif_spi_read_field(struct pmif *arb, u32 slvid, u32 reg, u32 mask, u
 	return data;
 }
 
-static void pmif_spi_write_field(struct pmif *arb, u32 slvid, u32 reg,
-				 u32 val, u32 mask, u32 shift)
+void pmif_spi_write_field(struct pmif *arb, u32 slvid, u32 reg,
+			  u32 val, u32 mask, u32 shift)
 {
 	u32 old, new;
 
@@ -130,7 +130,7 @@ static void pmif_spi_write_field(struct pmif *arb, u32 slvid, u32 reg,
 	pmif_spi_write(arb, slvid, reg, new);
 }
 
-static int is_pmif_init_done(struct pmif *arb)
+int pmif_check_init_done(struct pmif *arb)
 {
 	if (read32(&arb->mtk_pmif->init_done) & 0x1)
 		return 0;
@@ -138,36 +138,9 @@ static int is_pmif_init_done(struct pmif *arb)
 	return -E_NODEV;
 }
 
-static const struct pmif pmif_spmi_arb[] = {
-	{
-		.mtk_pmif = (struct mtk_pmif_regs *)PMIF_SPMI_BASE,
-		.ch = (struct chan_regs *)PMIF_SPMI_AP_CHAN,
-		.mstid = SPMI_MASTER_0,
-		.pmifid = PMIF_SPMI,
-		.write = pmif_spmi_write,
-		.read = pmif_spmi_read,
-		.write_field = pmif_spmi_write_field,
-		.read_field = pmif_spmi_read_field,
-		.is_pmif_init_done = is_pmif_init_done,
-	},
-};
-
-static const struct pmif pmif_spi_arb[] = {
-	{
-		.mtk_pmif = (struct mtk_pmif_regs *)PMIF_SPI_BASE,
-		.ch = (struct chan_regs *)PMIF_SPI_AP_CHAN,
-		.pmifid = PMIF_SPI,
-		.write = pmif_spi_write,
-		.read = pmif_spi_read,
-		.write_field = pmif_spi_write_field,
-		.read_field = pmif_spi_read_field,
-		.is_pmif_init_done = is_pmif_init_done,
-	},
-};
-
 struct pmif *get_pmif_controller(int inf, int mstid)
 {
-	if (inf == PMIF_SPMI && mstid < ARRAY_SIZE(pmif_spmi_arb))
+	if (inf == PMIF_SPMI && mstid < pmif_spmi_arb_count)
 		return (struct pmif *)&pmif_spmi_arb[mstid];
 	else if (inf == PMIF_SPI)
 		return (struct pmif *)&pmif_spi_arb[0];
@@ -288,17 +261,4 @@ void pmwrap_interface_init(void)
 		printk(BIOS_INFO, "%s: Select PMIF_SLP_REQ\n", __func__);
 		pmif_select(PMIF_SLP_REQ);
 	}
-}
-
-int mtk_pmif_init(void)
-{
-	int ret;
-
-	ret = pmif_clk_init();
-	if (!ret)
-		ret = pmif_spmi_init(get_pmif_controller(PMIF_SPMI, SPMI_MASTER_0));
-	if (!ret && !CONFIG(PWRAP_WITH_PMIF_SPMI))
-		ret = pmif_spi_init(get_pmif_controller(PMIF_SPI, 0));
-
-	return ret;
 }

@@ -1,0 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_ERYING_POLESTAR_G613_PRO
+	bool "Polestar G613 Pro (TGL-H)"

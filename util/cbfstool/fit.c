@@ -17,6 +17,7 @@
 #define FIT_HEADER_VERSION 0x0100
 #define FIT_HEADER_ADDRESS "_FIT_   "
 #define FIT_MICROCODE_VERSION 0x0100
+#define FIT_PLATFORM_BOOT_POLICY_VERSION 0x0100
 #define FIT_TXT_VERSION 0x0100
 
 #define FIT_SIZE_ALIGNMENT 16
@@ -367,6 +368,18 @@ static void update_fit_bios_acm_entry(struct fit_table *fit,
 	fit_entry_add_size(&fit->header, sizeof(struct fit_entry));
 }
 
+static void update_fit_pbp_entry(struct fit_table *fit,
+				struct fit_entry *entry,
+				const uint64_t pbp_addr)
+{
+	entry->address = pbp_addr;
+	entry->size_reserved = 0;
+	entry->type_checksum_valid = FIT_TYPE_PLATFORM_BOOT_POLICY;
+	entry->version = FIT_PLATFORM_BOOT_POLICY_VERSION;
+	entry->checksum = 0;
+	fit_entry_add_size(&fit->header, sizeof(struct fit_entry));
+}
+
 /*
  * In case there's a FIT_TYPE_BIOS_ACM entry, at least one
  * FIT_TYPE_BIOS_STARTUP entry must exist.
@@ -607,6 +620,9 @@ int fit_dump(struct fit_table *fit)
 		case FIT_TYPE_BIOS_ACM:
 			name = "BIOS ACM";
 			break;
+		case FIT_TYPE_PLATFORM_BOOT_POLICY:
+			name = "Platform Boot Policy";
+			break;
 		case FIT_TYPE_BIOS_STARTUP:
 			name = "BIOS Startup Module";
 			break;
@@ -676,6 +692,7 @@ int fit_is_supported_type(const enum fit_type type)
 	switch (type) {
 	case FIT_TYPE_MICROCODE:
 	case FIT_TYPE_BIOS_ACM:
+	case FIT_TYPE_PLATFORM_BOOT_POLICY:
 	case FIT_TYPE_BIOS_STARTUP:
 	case FIT_TYPE_BIOS_POLICY:
 	case FIT_TYPE_TXT_POLICY:
@@ -727,6 +744,9 @@ int fit_add_entry(struct fit_table *fit,
 		break;
 	case FIT_TYPE_BIOS_ACM:
 		update_fit_bios_acm_entry(fit, entry, offset);
+		break;
+	case FIT_TYPE_PLATFORM_BOOT_POLICY:
+		update_fit_pbp_entry(fit, entry, offset);
 		break;
 	case FIT_TYPE_BIOS_STARTUP:
 		update_fit_bios_startup_entry(fit, entry, offset, len);

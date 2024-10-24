@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only OR MIT */
 
-#ifndef SOC_MEDIATEK_MT8195_PCIE_H
-#define SOC_MEDIATEK_MT8195_PCIE_H
+#ifndef SOC_MEDIATEK_COMMON_PCIE_H
+#define SOC_MEDIATEK_COMMON_PCIE_H
 
 #include <soc/pcie_common.h>
 #include <types.h>

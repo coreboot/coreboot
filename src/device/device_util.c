@@ -5,6 +5,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci_def.h>
+#include <device/pci_ids.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -968,4 +969,11 @@ bool is_pci_dev_on_bus(const struct device *pci, unsigned int bus)
 bool is_pci_bridge(const struct device *pci)
 {
 	return is_pci(pci) && ((pci->hdr_type & 0x7f) == PCI_HEADER_TYPE_BRIDGE);
+}
+
+bool is_pci_ioapic(const struct device *pci)
+{
+	return is_pci(pci) && ((pci->class >> 16) == PCI_BASE_CLASS_SYSTEM) &&
+		((pci->class >> 8) == PCI_CLASS_SYSTEM_PIC) &&
+		((pci->class & 0xff) >= 0x10);
 }

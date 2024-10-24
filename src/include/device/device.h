@@ -195,6 +195,7 @@ bool is_pci(const struct device *pci);
 bool is_enabled_pci(const struct device *pci);
 bool is_pci_dev_on_bus(const struct device *pci, unsigned int bus);
 bool is_pci_bridge(const struct device *pci);
+bool is_pci_ioapic(const struct device *pci);
 bool is_domain0(const struct device *dev);
 bool is_dev_on_domain0(const struct device *dev);
 

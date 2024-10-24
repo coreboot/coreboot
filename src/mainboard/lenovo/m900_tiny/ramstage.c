@@ -5,8 +5,10 @@
 #include <device/pci_def.h>
 #include <drivers/intel/gma/int15.h>
 #include <gpio.h>
+#include <intelblocks/pcr.h>
 #include <mainboard/gpio.h>
 #include <option.h>
+#include <soc/pcr_ids.h>
 #include <soc/ramstage.h>
 #include <static.h>
 #include <superio/nuvoton/nct6687d/nct6687d.h>
@@ -73,6 +75,12 @@ static void mainboard_enable(struct device *dev)
 	mainboard_configure_gpios();
 	devtree_update();
 	print_board_id();
+	/* Configure GPIO community 1 PWM frequency to 0.5Hz, 0% duty cycle */
+	pcr_write32(PID_GPIOCOM1, 0x204, (1 << 14));
+	/* Set the software update flag */
+	pcr_or32(PID_GPIOCOM1, 0x204, (1 << 30));
+	/* Enable PWM */
+	pcr_or32(PID_GPIOCOM1, 0x204, (1 << 31));
 }
 
 struct chip_operations mainboard_ops = {

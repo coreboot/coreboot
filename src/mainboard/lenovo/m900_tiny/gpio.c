@@ -91,7 +91,7 @@ static const struct pad_config gpio_table[] = {
 	/* ------- GPIO Group GPP_D ------- */
 
 	PAD_NC(GPP_D0, NONE),
-	PAD_NC(GPP_D1, NONE),
+	PAD_CFG_NF(GPP_D1, NONE, DEEP, NF4), /* PW_LED# (blink mode)*/
 	PAD_NC(GPP_D2, NONE),
 	PAD_NC(GPP_D3, NONE),
 	PAD_NC(GPP_D4, NONE),

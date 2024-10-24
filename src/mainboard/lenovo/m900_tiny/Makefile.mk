@@ -12,3 +12,5 @@ ramstage-y += gpio.c
 ramstage-y += hda_verb.c
 ramstage-y += ramstage.c
 ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads
+
+smm-y += smihandler.c

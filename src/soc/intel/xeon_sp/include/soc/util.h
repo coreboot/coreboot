@@ -15,7 +15,6 @@ const IIO_UDS *get_iio_uds(void);
 unsigned int soc_get_num_cpus(void);
 bool soc_cpu_is_enabled(const size_t idx);
 void set_bios_init_completion(void);
-uint8_t soc_get_iio_ioapicid(int socket, int stack);
 
 bool is_memtype_non_volatile(uint16_t mem_type);
 bool is_memtype_reserved(uint16_t mem_type);

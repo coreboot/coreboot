@@ -10,6 +10,7 @@
 #include <device/pci.h>
 #include <device/pciexp.h>
 #include <device/pci_ids.h>
+#include <device/pci_ops.h>
 #include <soc/acpi.h>
 #include <soc/chip_common.h>
 #include <soc/hest.h>
@@ -275,21 +276,37 @@ static unsigned long acpi_create_drhd(unsigned long current, struct device *iomm
 	if (is_dev_on_domain0(iommu)) {
 		union p2sb_bdf ioapic_bdf = soc_get_ioapic_bdf();
 		printk(BIOS_DEBUG, "    [IOAPIC Device] Enumeration ID: 0x%x, PCI Bus Number: 0x%x, "
-		       "PCI Path: 0x%x, 0x%x\n", get_ioapic_id(IO_APIC_ADDR), ioapic_bdf.bus,
-		       ioapic_bdf.dev, ioapic_bdf.fn);
+		       "PCI Path: 0x%x, 0x%x, Address: 0x%x\n", get_ioapic_id(IO_APIC_ADDR), ioapic_bdf.bus,
+		       ioapic_bdf.dev, ioapic_bdf.fn, IO_APIC_ADDR);
 		current += acpi_create_dmar_ds_ioapic_from_hw(current,
 				IO_APIC_ADDR, ioapic_bdf.bus, ioapic_bdf.dev, ioapic_bdf.fn);
 	}
 
-/* SPR and later SoCs have no per stack IOAPIC */
-#if CONFIG(SOC_INTEL_SKYLAKE_SP) || CONFIG(SOC_INTEL_COOPERLAKE_SP)
-	uint32_t enum_id;
-	// Add IOAPIC entry
-	enum_id = soc_get_iio_ioapicid(socket, stack);
-	printk(BIOS_DEBUG, "    [IOAPIC Device] Enumeration ID: 0x%x, PCI Bus Number: 0x%x, "
-		"PCI Path: 0x%x, 0x%x\n", enum_id, bus, APIC_DEV_NUM, APIC_FUNC_NUM);
-	current += acpi_create_dmar_ds_ioapic(current, enum_id, bus,
-		APIC_DEV_NUM, APIC_FUNC_NUM);
+#if (CONFIG(SOC_INTEL_SKYLAKE_SP) || CONFIG(SOC_INTEL_COOPERLAKE_SP))
+	/* 14nm Xeon-SP have per stack PCI IOAPIC */
+	{
+		const struct device *domain = dev_get_domain(iommu);
+		struct device *dev = NULL;
+		while ((dev = dev_bus_each_child(domain->downstream, dev))) {
+			if (!is_pci_ioapic(dev))
+				continue;
+
+			const uint32_t b = dev->upstream->secondary;
+			const uint32_t d = PCI_SLOT(dev->path.pci.devfn);
+			const uint32_t f = PCI_FUNC(dev->path.pci.devfn);
+
+			u16 abar = pci_read_config16(dev, APIC_ABAR);
+			if (!abar)
+				continue;
+			const u32 addr = IO_APIC_ADDR | ((abar & 0xfff) << 8);
+
+			printk(BIOS_DEBUG, "    [IOAPIC Device] Enumeration ID: 0x%x, PCI Bus Number: 0x%x, "
+				"PCI Path: 0x%x, 0x%x, Address: 0x%x\n", get_ioapic_id(addr), b, d, f, addr);
+
+			current += acpi_create_dmar_ds_ioapic_from_hw(
+				current, addr, b, d, f);
+		}
+	}
 #endif
 
 	if (flags != DRHD_INCLUDE_PCI_ALL) {

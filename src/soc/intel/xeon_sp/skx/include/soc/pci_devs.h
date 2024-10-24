@@ -186,8 +186,8 @@
 #define VMD_DEV_NUM             0x05
 #define VMD_FUNC_NUM            0x05
 
-#define APIC_DEV_NUM            0x05
-#define APIC_FUNC_NUM           0x00
+// Per stack PCI IOAPIC (BxD5F4)
+#define APIC_ABAR		0x40
 
 // DMI3 B0D0F0 registers
 #define DMI3_DEVID		0x2020

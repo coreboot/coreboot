@@ -35,27 +35,6 @@ bool is_ubox_stack_res(const STACK_RES *res)
 	return res->Personality == TYPE_UBOX;
 }
 
-uint8_t soc_get_iio_ioapicid(int socket, int stack)
-{
-	uint8_t ioapic_id = socket ? 0xf : 0x9;
-	switch (stack) {
-	case CSTACK:
-		break;
-	case PSTACK0:
-		ioapic_id += 1;
-		break;
-	case PSTACK1:
-		ioapic_id += 2;
-		break;
-	case PSTACK2:
-		ioapic_id += 3;
-		break;
-	default:
-		return 0xff;
-	}
-	return ioapic_id;
-}
-
 void soc_set_mrc_cold_boot_flag(bool cold_boot_required)
 {
 	uint8_t mrc_status = cmos_read(CMOS_OFFSET_MRC_STATUS);

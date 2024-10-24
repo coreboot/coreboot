@@ -151,9 +151,6 @@
 #define VTD_DEV(bus)		PCI_DEV((bus), VTD_DEV_NUM, VTD_FUNC_NUM)
 #endif
 
-#define APIC_DEV_NUM            0x05
-#define APIC_FUNC_NUM           0x04
-
 /* Root port Registers */
 #define RP_UNCERRMSK			0x150
 #define  SURPRISE_DWN_ERR_MSK		(1 << 5)
@@ -164,6 +161,9 @@
 #define  RCVD_PCIE_UR_STS_MASK		(1 << 6)
 
 #define DEVICES_PER_IIO_STACK		4
+
+// Per stack PCI IOAPIC (BxD5F4)
+#define APIC_ABAR		0x40
 
 // DMI3 B0D0F0 registers
 #define DMI3_DEVID		0x2020

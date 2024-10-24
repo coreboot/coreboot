@@ -335,5 +335,22 @@ void acpi_device_intel_bt_common(unsigned int enable_gpio, unsigned int reset_gp
 	}
 	acpigen_pop_len();
 
+/*
+ *	Method (GBTR, 0, NotSerialized)
+ *	{
+ *		 Return (GTXS (reset_gpio))
+ *	}
+ */
+	acpigen_write_method("GBTR", 0);
+	{
+		if (reset_gpio) {
+			acpigen_soc_get_tx_gpio(reset_gpio);
+			acpigen_write_return_op(LOCAL0_OP);
+		} else {
+			acpigen_write_return_op(0);
+		}
+	}
+	acpigen_pop_len();
+
 	acpigen_pop_len();
 }

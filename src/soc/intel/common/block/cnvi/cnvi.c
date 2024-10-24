@@ -129,7 +129,7 @@ static void cnvw_fill_ssdt(const struct device *dev)
  *					If (((PCRR (CNVI_SIDEBAND_ID, CNVI_ABORT_PLDR) & CNVI_ABORT_REQUEST) == Zero))
  *					{
  *						Local2 = Zero
- *						If ((GBTE() == One))
+ *						If ((\_SB.PCI0.GBTE() == One))
  *						{
  *							\_SB.PCI0.BTRK (Zero)
  *							Sleep (105)

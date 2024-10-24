@@ -10,6 +10,9 @@
 
 static bool usb_acpi_add_gpios_to_crs(struct drivers_usb_acpi_config *cfg)
 {
+	if (cfg->is_intel_bluetooth)
+		return false;
+
 	if (cfg->privacy_gpio.pin_count)
 		return true;
 

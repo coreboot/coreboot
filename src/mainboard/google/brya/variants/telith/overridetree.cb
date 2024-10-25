@@ -249,20 +249,20 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref i2c1 on
-			chip drivers/i2c/hid
-				register "generic.hid" = ""ILTK0001""
-				register "generic.desc" = ""ILITEK Touchscreen""
-				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
-				register "generic.detect" = "1"
-				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
-				register "generic.reset_delay_ms" = "200"
-				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
-				register "generic.enable_delay_ms" = "12"
-				register "generic.stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C6)"
-				register "generic.stop_off_delay_ms" = "200"
-				register "generic.has_power_resource" = "1"
-				register "hid_desc_reg_offset" = "0x01"
-				device i2c 41 on end
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0001""
+				register "desc" = ""ELAN Touchscreen""
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
+				register "reset_delay_ms" = "20"
+				register "reset_off_delay_ms" = "4"
+				register "stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C6)"
+				register "stop_delay_ms" = "5"
+				register "stop_off_delay_ms" = "25"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
+				register "enable_delay_ms" = "25"
+				register "has_power_resource" = "1"
+				device i2c 10 on end
 			end
 			chip drivers/generic/gpio_keys
 				register "name" = ""PENH""

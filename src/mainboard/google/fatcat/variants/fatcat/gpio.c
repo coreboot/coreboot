@@ -413,7 +413,7 @@ static const struct pad_config early_gpio_table[] = {
 	/* GPP_H07: I2C3_SCL_PSS */
 	PAD_CFG_NF(GPP_H07, NONE, DEEP, NF1),
 	/* GPP_D15: SPI_TPM_INT_N */
-	PAD_CFG_GPI_APIC_LOCK(GPP_D15, NONE, LEVEL, INVERT, LOCK_CONFIG),
+	PAD_CFG_GPI_APIC(GPP_D15, NONE, PLTRST, LEVEL, INVERT),
 };
 
 /* Pad configuration in romstage */

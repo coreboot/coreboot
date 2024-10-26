@@ -53,7 +53,6 @@ chip soc/intel/pantherlake
 	register "pch_hda_sdi_enable" = "{ true, false }"
 
 	device domain 0 on
-		device ref igpu on end
 		device ref dtt on end
 		device ref npu on end
 		device ref xhci on end

@@ -70,6 +70,15 @@ uint32_t tco_reset_status(void)
 
 	/* TCO Status 1 register */
 	tco1_sts = tco_read_reg(TCO1_STS);
+
+	/*
+	 * Don't reset the TIMEOUT status bit in case the WDAT
+	 * table is enabled, otherwise the watchdog will never
+	 * reboot the system.
+	 */
+	if (CONFIG(ACPI_WDAT_WDT))
+		tco1_sts &= ~TCO1_STS_TIMEOUT;
+
 	tco_write_reg(TCO1_STS, tco1_sts);
 
 	/* TCO Status 2 register */

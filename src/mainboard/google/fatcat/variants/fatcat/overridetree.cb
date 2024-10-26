@@ -136,6 +136,10 @@ chip soc/intel/pantherlake
 	}"
 
 	device domain 0 on
+		device ref igpu on
+			probe DISPLAY DISPLAY_PRESENT
+		end
+
 		device ref ipu on
 			chip drivers/intel/mipi_camera
 				register "acpi_uid" = "0x50000"

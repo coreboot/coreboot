@@ -19,6 +19,7 @@ bootblock-y += ../common/wdt.c ../common/wdt_req.c wdt.c
 romstage-y += ../common/cbmem.c
 romstage-$(CONFIG_PCI) += ../common/early_init.c ../common/pcie.c
 romstage-y += emi.c
+romstage-y += irq2axi.c
 romstage-y += l2c_ops.c
 romstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 

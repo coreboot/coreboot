@@ -1,0 +1,18 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+#ifndef SOC_MEDIATEK_MT8196_IRQ2AXI_H
+#define SOC_MEDIATEK_MT8196_IRQ2AXI_H
+
+#define IRQ2AXI_BASE			0x14413000
+#define IRQ2AXI_CFG1			(IRQ2AXI_BASE + 0x0004)
+
+#define APIFR_AO_IO_INTX_SEC_REG	0x101C9000
+#define CIRQ_AXI_MODE			(APIFR_AO_IO_INTX_SEC_REG + 0x900)
+#define CIRQ_AXI_MODE_LEGACY		0x3
+
+#define MCUSYS_ACK_REG			0x0C00FFEC
+#define MCUSYS_ACK_CLR			0x1
+
+void irq2axi_disable(void);
+
+#endif /* SOC_MEDIATEK_MT8196_IRQ2AXI_H */

@@ -21,8 +21,8 @@ binary with specific SPDs and GPIO selection pins. `Python3`
 	* _apcb_v3_edit.py_ - This tool allows patching an existing
 APCB v3 binary with up to 16 specific SPDs. `Python3`
 * __archive__ - Concatenate files and create an archive `C`
-* __autoport__ - Automated porting coreboot to Sandy Bridge/Ivy Bridge
-platforms `Go`
+* __autoport__ - Automated porting coreboot to Sandy Bridge/Ivy
+Bridge/Haswell platforms `Go`
 * __bincfg__ - Compiler/Decompiler for data blobs with specs `Lex`
 `Yacc`
 * __board_status__ - Tools to collect logs and upload them to the board
@@ -55,6 +55,8 @@ Controller (EC). `C`
 * __genbuild_h__ - Generate build system definitions `Shell`
 * __gitconfig__ - Initialize git repository submodules install git
 hooks `Bash`
+* __hda-decoder__ - Dumps decoded HDA default configuration registers
+into a format which can be used in coreboot's verb table `Go`
 * __ifdtool__ - Extract and dump Intel Firmware Descriptor information
 `C`
 * __intelmetool__ - Dump interesting things about Management Engine
@@ -64,14 +66,6 @@ an inteltool dump to coreboot macros. `go`
 * __inteltool__ - Provides information about the Intel CPU/chipset
 hardware configuration (register contents, MSRs, etc). `C`
 * __intelvbttool__ - Parse VBT from VGA BIOS `C`
-* __ipqheader__
-	* _createxbl.py_ - Concatenates XBL segments into one ELF image
-`Python`
-	* _ipqheader.py_ - Returns a packed MBN header image with the
-specified base and size `Python`
-	* _mbncat.py_ - Generate ipq8064 uber SBL `Python`
-	* *mbn_tools.py* - Contains all MBN Utilities for image
-generation `Python`
 * __kbc1126__ - Tools used to dump the two blobs from the factory
 firmware of many HP laptops with 8051-based SMSC KBC1098/KBC1126
 embedded controller and insert them to the firmware image. `C`
@@ -96,8 +90,16 @@ devices on the board such as dGPU. `C`
 * __post__ - Userspace utility that can be used to test POST cards. `C`
 * __qemu__ - Makefile & comprehensive default config for QEMU Q35
 emulation `Make`
-* __qualcomm__ - CMM script to debug Qualcomm coreboot environments.
-`CMM`
+* __qualcomm__ - __cmm__
+	* CMM script to debug Qualcomm coreboot environments. `CMM`
+__ipqheader__
+	* _createxbl.py_ - Concatenates XBL segments into one ELF image
+`Python`
+	* _ipqheader.py_ - Returns a packed MBN header image with the
+specified base and size `Python`
+	* _mbncat.py_ - Generate ipq8064 uber SBL `Python`
+	* *mbn_tools.py* - Contains all MBN Utilities for image
+generation `Python`
 * __release__ - Generate coreboot release `Bash`
 * __riscv__
 	* _make-spike-elf.sh_ - Converts a flat file into an ELF, that
@@ -107,6 +109,8 @@ SiFive's bootrom. `Python3`
 * __rockchip__ - Generate Rockchip idblock bootloader. `Python3`
 * __sconfig__ - coreboot device tree compiler `Lex` `Yacc`
 * __scripts__
+	* capture_commands.sh - Write all commands from the build to a
+file. `Shell`
 	* _config_ - Manipulate options in a .config file from the
 command line `Bash`
 	* _cross-repo-cherrypick_ - Pull in patches from another tree
@@ -115,6 +119,8 @@ from a gerrit repository. `Shell`
 into various human readable formats. `Bash`
 	* _dts-to-fmd.sh_ -Converts a depthcharge fmap.dts into an
 fmaptool compatible .fmd format `Bash`
+	* _find_new_user_commits.sh_ - Finds new gerrit committers
+`Bash`
 	* _find-unused-kconfig-symbols.sh_ - Points out Kconfig
 variables that may be unused. There are some false positives, but it
 serves as a starting point `Shell`

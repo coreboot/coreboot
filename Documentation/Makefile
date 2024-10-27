@@ -5,7 +5,7 @@
 #
 
 BUILDDIR ?= _build
-SPHINXOPTS ?= -j auto
+SPHINXOPTS ?= -j auto -W --keep-going
 
 export SPHINXOPTS
 

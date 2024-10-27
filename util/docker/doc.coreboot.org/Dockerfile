@@ -9,7 +9,6 @@ RUN \
 		make \
 		bash \
 		git \
-		openjdk8-jre \
 		ttf-dejavu \
 		fontconfig \
 	&& chmod 755 /makeSphinx.sh
@@ -29,14 +28,8 @@ RUN \
 		jinja2==3.1.3 \
 		myst-parser==2.0.0 \
 		sphinx===7.2.6 \
-		sphinxcontrib-ditaa===1.0.2 \
 		sphinx_autobuild===2024.2.4 \
 		sphinx_rtd_theme===2.0.0
-
-ADD https://github.com/stathissideris/ditaa/releases/download/v0.11.0/ditaa-0.11.0-standalone.jar \
-    /usr/lib/ditaa-0.11.0-standalone.jar
-
-ADD ditaa.sh /usr/bin/ditaa
 
 VOLUME /data-in /data-out
 

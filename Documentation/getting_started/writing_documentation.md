@@ -49,10 +49,9 @@ modules:
 * sphinx
 * recommonmark
 * sphinx_rtd_theme
-* sphinxcontrib-ditaa
 
 The following combination of versions has been tested: sphinx 2.3.1,
-recommonmark 0.6.0, sphinx_rtd_theme 0.4.3 and sphinxcontrib-ditaa 0.7.
+recommonmark 0.6.0, and sphinx_rtd_theme 0.4.3.
 
 Now change into the `Documentation` folder in the coreboot directory and run
 this command in there

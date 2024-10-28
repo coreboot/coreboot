@@ -9,6 +9,15 @@ FLASH 32M {
 			FW_MAIN_A(CBFS)
 			RW_FWID_A 64
 		}
+		# This section starts at the 16M boundary in SPI flash.
+		# PTL does not support a region crossing this boundary,
+		# because the SPI flash is memory-mapped into two non-
+		# contiguous windows.
+		RW_SECTION_B 7680K {
+			VBLOCK_B 8K
+			FW_MAIN_B(CBFS)
+			RW_FWID_B 64
+		}
 		RW_MISC 1M {
 			UNIFIED_MRC_CACHE(PRESERVE) 128K {
 				RECOVERY_MRC_CACHE 64K
@@ -21,15 +30,6 @@ FLASH 32M {
 			}
 			RW_VPD(PRESERVE) 8K
 			RW_NVRAM(PRESERVE) 24K
-		}
-		# This section starts at the 16M boundary in SPI flash.
-		# MTL does not support a region crossing this boundary,
-		# because the SPI flash is memory-mapped into two non-
-		# contiguous windows.
-		RW_SECTION_B 7680K {
-			VBLOCK_B 8K
-			FW_MAIN_B(CBFS)
-			RW_FWID_B 64
 		}
 		RW_LEGACY(CBFS) 1M
 		RW_UNUSED 2M

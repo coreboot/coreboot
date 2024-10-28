@@ -232,7 +232,7 @@ static void test_imd_recover(void **state)
 	const struct imd_entry *lg_entry;
 
 	/* Fail when the limit for lg was not set. */
-	imd.lg.limit = (uintptr_t)NULL;
+	imd.lg.limit = 0;
 	assert_int_equal(-1, imd_recover(&imd));
 
 	/* Set the limit for lg. */

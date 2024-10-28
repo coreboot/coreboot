@@ -251,7 +251,7 @@ static void threads_initialize(void)
 
 	set_current_thread(t);
 
-	t->stack_orig = (uintptr_t)NULL; /* We never free the main thread */
+	t->stack_orig = 0; /* We never free the main thread */
 	t->id = 0;
 	t->can_yield = 1;
 

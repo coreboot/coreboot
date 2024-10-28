@@ -75,8 +75,10 @@
 /* Enable EC backed PD MCU device in ACPI */
 #define EC_ENABLE_PD_MCU_DEVICE
 
-#define EC_ENABLE_SYNC_IRQ      /* Enable tight timestamp / wake support */
-#define EC_SYNC_IRQ_WAKE_CAPABLE /* Let the OS know ec_sync is wake capable */
+#if !CONFIG(BOARD_GOOGLE_FATCAT)
+ #define EC_ENABLE_SYNC_IRQ      /* Enable tight timestamp / wake support */
+ #define EC_SYNC_IRQ_WAKE_CAPABLE /* Let the OS know ec_sync is wake capable */
+#endif
 
 #define SIO_EC_ENABLE_PS2K       /* Enable PS/2 Keyboard */
 #define SIO_EC_HOST_ENABLE       /* EC Host Interface Resources */

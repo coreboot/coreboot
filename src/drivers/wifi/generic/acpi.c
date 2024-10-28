@@ -701,6 +701,41 @@ static void sar_emit_bpag(const struct bpag_profile *bpag)
 	acpigen_write_package_end();
 }
 
+static void sar_emit_bbfb(const struct bbfb_profile *bbfb)
+{
+	if (bbfb == NULL)
+		return;
+
+	/*
+	 * Name ("BBFB", Package () {
+	 *   Revision,
+	 *   Package () {
+	 *     Domain Type,			// 0x12:Bluetooth
+	 *     By Pass Enabled			// Enable ByPass
+	 *   }
+	 * })
+	 */
+	if (bbfb->revision != BBFB_REVISION) {
+		printk(BIOS_ERR, "Unsupported BBFB table revision: %d\n",
+		       bbfb->revision);
+		return;
+	}
+
+	acpigen_write_name("BBFB");
+	acpigen_write_package(2);
+	acpigen_write_dword(bbfb->revision);
+
+	/*
+	 * Emit 'Domain Type' + 'Enable ByPass'
+	 */
+	acpigen_write_package(2);
+	acpigen_write_dword(DOMAIN_TYPE_BLUETOOTH);
+	acpigen_write_dword(bbfb->enable_quad_filter_bypass);
+
+	acpigen_write_package_end();
+	acpigen_write_package_end();
+}
+
 static void emit_wifi_sar_acpi_structures(const struct device *dev,
 					  union wifi_sar_limits *sar_limits)
 {
@@ -834,6 +869,7 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 			acpigen_write_scope(path);
 			sar_emit_brds(sar_limits.bsar);
 			sar_emit_bpag(sar_limits.bpag);
+			sar_emit_bbfb(sar_limits.bbfb);
 			acpigen_write_scope_end();
 		} else {
 			printk(BIOS_ERR, "Failed to get %s Bluetooth companion ACPI path\n",

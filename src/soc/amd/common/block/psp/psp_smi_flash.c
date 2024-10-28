@@ -66,15 +66,23 @@ static int lookup_store(uint64_t target_nv_id, struct region_device *rstore)
 	return rdev_chain(rstore, rdev, 0, region_device_sz(rdev));
 }
 
-static enum mbox_p2c_status find_psp_spi_flash_device_region(uint64_t target_nv_id,
-							     struct region_device *store,
-							     const struct spi_flash **flash)
+static enum mbox_p2c_status get_flash_device(const struct spi_flash **flash)
 {
 	*flash = boot_device_spi_flash();
 	if (*flash == NULL) {
 		printk(BIOS_ERR, "PSP: Unable to find SPI device\n");
 		return MBOX_PSP_COMMAND_PROCESS_ERROR;
 	}
+
+	return MBOX_PSP_SUCCESS;
+}
+
+static enum mbox_p2c_status find_psp_spi_flash_device_region(uint64_t target_nv_id,
+							     struct region_device *store,
+							     const struct spi_flash **flash)
+{
+	if (get_flash_device(flash) != MBOX_PSP_SUCCESS)
+		return MBOX_PSP_COMMAND_PROCESS_ERROR;
 
 	if (lookup_store(target_nv_id, store) < 0) {
 		printk(BIOS_ERR, "PSP: Unable to find PSP SPI region\n");

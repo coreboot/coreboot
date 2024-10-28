@@ -666,6 +666,41 @@ static void sar_emit_wbem(const struct wbem_profile *wbem)
 	acpigen_write_package_end();
 }
 
+static void sar_emit_bpag(const struct bpag_profile *bpag)
+{
+	if (bpag == NULL)
+		return;
+
+	/*
+	 * Name ("BPAG", Package () {
+	 *   Revision,
+	 *   Package () {
+	 *     Domain Type,			// 0x12:Bluetooth
+	 *     Bluetooth Per-Platform Antenna Gain Mode
+	 *   }
+	 * })
+	 */
+	if (bpag->revision == 0 || bpag->revision > BPAG_REVISION) {
+		printk(BIOS_ERR, "Unsupported BPAG table revision: %d\n",
+		       bpag->revision);
+		return;
+	}
+
+	acpigen_write_name("BPAG");
+	acpigen_write_package(2);
+	acpigen_write_dword(bpag->revision);
+
+	/*
+	 * Emit 'Domain Type' + 'Antenna Gain Mode'
+	 */
+	acpigen_write_package(2);
+	acpigen_write_dword(DOMAIN_TYPE_BLUETOOTH);
+	acpigen_write_dword(bpag->antenna_gain_country_enablement);
+
+	acpigen_write_package_end();
+	acpigen_write_package_end();
+}
+
 static void emit_wifi_sar_acpi_structures(const struct device *dev,
 					  union wifi_sar_limits *sar_limits)
 {
@@ -798,6 +833,7 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 		if (path) {	/* Bluetooth device under USB Hub scope or PCIe root port */
 			acpigen_write_scope(path);
 			sar_emit_brds(sar_limits.bsar);
+			sar_emit_bpag(sar_limits.bpag);
 			acpigen_write_scope_end();
 		} else {
 			printk(BIOS_ERR, "Failed to get %s Bluetooth companion ACPI path\n",

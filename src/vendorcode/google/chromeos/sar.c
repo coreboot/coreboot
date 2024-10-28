@@ -110,6 +110,14 @@ static size_t wbem_table_size(const struct wbem_profile *wbem)
 	return sizeof(struct wbem_profile);
 }
 
+static size_t bpag_table_size(const struct bpag_profile *bpag)
+{
+	if (bpag == NULL)
+		return 0;
+
+	return sizeof(struct bpag_profile);
+}
+
 static bool valid_legacy_length(size_t bin_len)
 {
 	if (bin_len == LEGACY_SAR_WGDS_BIN_SIZE)
@@ -163,6 +171,7 @@ static int fill_wifi_sar_limits(union wifi_sar_limits *sar_limits, const uint8_t
 	expected_sar_bin_size += dsm_table_size(sar_limits->dsm);
 	expected_sar_bin_size += bsar_table_size(sar_limits->bsar);
 	expected_sar_bin_size += wbem_table_size(sar_limits->wbem);
+	expected_sar_bin_size += bpag_table_size(sar_limits->bpag);
 
 	if (sar_bin_size != expected_sar_bin_size) {
 		printk(BIOS_ERR, "Invalid SAR size, expected: %zu, obtained: %zu\n",

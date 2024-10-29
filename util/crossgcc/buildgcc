@@ -71,6 +71,7 @@ CRT_ARCHIVE="compiler-rt-${CLANG_VERSION}.src.tar.xz"
 CTE_ARCHIVE="clang-tools-extra-${CLANG_VERSION}.src.tar.xz"
 LLVMCMAKE_ARCHIVE="cmake-${CLANG_VERSION}.src.tar.xz"
 LIBUNWIND_ARCHIVE="libunwind-${CLANG_VERSION}.src.tar.xz"
+RUNTIMES_ARCHIVE="runtimes-${CLANG_VERSION}.src.tar.xz"
 CMAKE_ARCHIVE="cmake-${CMAKE_VERSION}.tar.gz"
 NASM_ARCHIVE="nasm-${NASM_VERSION}.tar.bz2"
 
@@ -94,6 +95,7 @@ CTE_BASE_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-${C
 LLVMCMAKE_BASE_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}"
 LLD_BASE_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}"
 LIBUNWIND_BASE_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}"
+RUNTIMES_BASE_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}"
 CMAKE_BASE_URL="https://cmake.org/files/v${CMAKE_VERSION%.*}"
 NASM_BASE_URL="https://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}"
 
@@ -101,8 +103,8 @@ ALL_ARCHIVES="$GMP_BASE_URL/$GMP_ARCHIVE $MPFR_BASE_URL/$MPFR_ARCHIVE $MPC_BASE_
 	$GCC_BASE_URL/$GCC_ARCHIVE $BINUTILS_BASE_URL/$BINUTILS_ARCHIVE $IASL_BASE_URL/$IASL_ARCHIVE \
 	$LLD_BASE_URL/$LLD_ARCHIVE $LLVM_BASE_URL/$LLVM_ARCHIVE $CLANG_BASE_URL/$CLANG_ARCHIVE \
 	$LLVMCMAKE_BASE_URL/$LLVMCMAKE_ARCHIVE $CRT_BASE_URL/$CRT_ARCHIVE $CTE_BASE_URL/$CTE_ARCHIVE \
-	$LIBUNWIND_BASE_URL/$LIBUNWIND_ARCHIVE $CMAKE_BASE_URL/$CMAKE_ARCHIVE $NASM_BASE_URL/$NASM_ARCHIVE \
-	$LIBSTDCXX_BASE_URL/$LIBSTDCXX_ARCHIVE"
+	$LIBUNWIND_BASE_URL/$LIBUNWIND_ARCHIVE $RUNTIMES_BASE_URL/$RUNTIMES_ARCHIVE \
+	$CMAKE_BASE_URL/$CMAKE_ARCHIVE $NASM_BASE_URL/$NASM_ARCHIVE $LIBSTDCXX_BASE_URL/$LIBSTDCXX_ARCHIVE"
 
 # GCC toolchain directories
 GMP_DIR="gmp-${GMP_VERSION}"
@@ -122,6 +124,7 @@ CRT_DIR="compiler-rt-${CLANG_VERSION}.src"
 CTE_DIR="clang-tools-extra-${CLANG_VERSION}.src"
 LLVMCMAKE_DIR="cmake-${CLANG_VERSION}.src"
 LIBUNWIND_DIR="libunwind-${CLANG_VERSION}.src"
+RUNTIMES_DIR="runtimes-${CLANG_VERSION}.src"
 CMAKE_DIR="cmake-${CMAKE_VERSION}"
 NASM_DIR="nasm-${NASM_VERSION}"
 
@@ -920,22 +923,24 @@ build_LLVM() {
 	ln -nsf "$CRT_DIR" ../compiler-rt
 	ln -nsf "$LLVMCMAKE_DIR" ../cmake
 	ln -nsf "$LIBUNWIND_DIR" ../libunwind
+	ln -nsf "$RUNTIMES_DIR" ../runtimes
 
 	$CMAKE -G "Unix Makefiles" \
 		-DCMAKE_INSTALL_PREFIX="$DESTDIR$TARGETDIR" \
 		-DCLANG_VENDOR="coreboot toolchain v$CROSSGCC_VERSION - " \
-		-DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;compiler-rt;lld" \
+		-DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;lld" \
 		-DLLVM_INCLUDE_BENCHMARKS="OFF" \
 		-DLLVM_INCLUDE_TESTS="OFF" \
 		-DLLVM_INCLUDE_EXAMPLES="OFF" \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DLLVM_TARGETS_TO_BUILD="AArch64;ARM;PowerPC;RISCV;X86" \
+		-DLLVM_ENABLE_RUNTIMES="compiler-rt" \
 		../llvm || touch .failed
 	# shellcheck disable=SC2086
 	$MAKE $JOBS || touch .failed
 	$MAKE install || touch .failed
 
-	rm -f ../llvm ../clang ../clang-tools-extra ../compiler-rt ../cmake ../lld ../libunwind
+	rm -f ../llvm ../clang ../clang-tools-extra ../compiler-rt ../cmake ../lld ../libunwind ../runtimes
 
 	cp -a ../$CLANG_DIR/tools/scan-build/* "$DESTDIR$TARGETDIR/bin"
 	cp -a ../$CLANG_DIR/tools/scan-view/* "$DESTDIR$TARGETDIR/bin"
@@ -1078,7 +1083,7 @@ case "$PACKAGE" in
 	CLANG|clang)
 		NAME="LLVM clang"
 		LLVM_VERSION=${CLANG_VERSION}
-		PACKAGES="CMAKE LLVM CLANG CRT CTE LLVMCMAKE LLD LIBUNWIND"
+		PACKAGES="CMAKE LLVM CLANG CRT CTE LLVMCMAKE LLD LIBUNWIND RUNTIMES"
 		CMAKE=${DESTDIR}${TARGETDIR}/bin/cmake
 		;;
 	IASL|iasl)

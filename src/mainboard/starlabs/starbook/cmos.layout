@@ -35,6 +35,7 @@ entries
 542	1	e	1	fingerprint_reader
 550	1	e	1	card_reader
 558	1	e	1	lid_switch
+566	1	e	1	gna
 
 # coreboot config options: EC
 600	3	e	4	kbl_timeout

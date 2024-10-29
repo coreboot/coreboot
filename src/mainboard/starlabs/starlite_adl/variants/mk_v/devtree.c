@@ -22,6 +22,7 @@ void devtree_update(void)
 	struct device *nic_dev = pcidev_on_root(0x14, 3);
 	struct device *touchscreen_dev = pcidev_on_root(0x15, 2);
 	struct device *accelerometer_dev = pcidev_on_root(0x15, 0);
+	struct device *gna_dev = pcidev_on_root(0x08, 0);
 
 	uint8_t performance_scale = 100;
 
@@ -71,4 +72,8 @@ void devtree_update(void)
 	/* Enable/Disable Accelerometer based on CMOS settings */
 	if (get_uint_option("accelerometer", 1) == 0)
 		accelerometer_dev->enabled = 0;
+
+	/* Enable/Disable GNA based on CMOS settings */
+	if (get_uint_option("gna", 0) == 0)
+		gna_dev->enabled = 0;
 }

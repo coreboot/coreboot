@@ -31,6 +31,7 @@ entries
 512	1	e	1	webcam
 520	1	e	1	microphone
 528	1	e	1	lid_switch
+536	1	e	1	gna
 
 # coreboot config options: EC
 600	3	e	4	kbl_timeout

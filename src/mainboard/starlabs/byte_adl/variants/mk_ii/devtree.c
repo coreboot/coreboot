@@ -20,6 +20,7 @@ void devtree_update(void)
 		&cfg->power_limits_config[ADL_N_041_6W_CORE];
 
 	struct device *nic_dev = pcidev_on_root(0x14, 3);
+	struct device *gna_dev = pcidev_on_root(0x08, 0);
 
 	uint8_t performance_scale = 100;
 
@@ -53,4 +54,8 @@ void devtree_update(void)
 		cfg->usb2_ports[9].enable = 0;
 		nic_dev->enabled = 0;
 	}
+
+	/* Enable/Disable GNA based on CMOS settings */
+	if (get_uint_option("gna", 0) == 0)
+		gna_dev->enabled = 0;
 }

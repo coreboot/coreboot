@@ -16,5 +16,6 @@ camera=Enable
 microphone=Enable
 lid_switch=Disable
 power_led=Normal
+gna=Disable
 # EC
 charging_speed=0.5C

@@ -24,6 +24,7 @@ void devtree_update(void)
 
 	struct device *tbt_pci_dev = pcidev_on_root(0x07, 0);
 	struct device *tbt_dma_dev = pcidev_on_root(0x0d, 2);
+	struct device *gna_dev = pcidev_on_root(0x08, 0);
 
 	uint8_t performance_scale = 100;
 
@@ -78,4 +79,8 @@ void devtree_update(void)
 		tbt_pci_dev->enabled = 0;
 		tbt_dma_dev->enabled = 0;
 	}
+
+	/* Enable/Disable GNA based on CMOS settings */
+	if (get_uint_option("gna", 0) == 0)
+		gna_dev->enabled = 0;
 }

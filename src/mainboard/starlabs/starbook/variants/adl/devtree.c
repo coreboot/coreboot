@@ -22,6 +22,8 @@ void devtree_update(void)
 	struct soc_power_limits_config *soc_conf_12core =
 		&cfg->power_limits_config[ADL_P_682_28W_CORE];
 
+	struct device *gna_dev = pcidev_on_root(0x08, 0);
+
 	uint8_t performance_scale = 100;
 
 	/* Set PL4 to 1.0C */
@@ -69,4 +71,8 @@ void devtree_update(void)
 	/* Enable/Disable Card Reader based on CMOS Settings */
 	if (get_uint_option("card_reader", 1) == 0)
 		cfg->usb2_ports[3].enable = 0;
+
+	/* Enable/Disable GNA based on CMOS settings */
+	if (get_uint_option("gna", 0) == 0)
+		gna_dev->enabled = 0;
 }

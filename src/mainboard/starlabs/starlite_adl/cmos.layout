@@ -33,6 +33,7 @@ entries
 528	1	e	1	microphone
 536	1	e	1	lid_switch
 542	1	e	9	power_led
+550	1	e	1	gna
 
 # coreboot config options: EC
 600	2	e	6	max_charge

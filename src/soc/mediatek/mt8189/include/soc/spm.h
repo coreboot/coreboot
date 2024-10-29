@@ -1027,6 +1027,7 @@ check_member(mtk_spm_regs, dp_tx_pwr_con, 0x0E80);
 check_member(mtk_spm_regs, scp_peri_pwr_con, 0x0E88);
 check_member(mtk_spm_regs, csi_rx_pwr_con, 0x0E9C);
 check_member(mtk_spm_regs, ssusb_pwr_con, 0x0EA8);
+check_member(mtk_spm_regs, cpueb_pwr_con, 0x0EB0);
 check_member(mtk_spm_regs, mfg0_pwr_con, 0x0EB4);
 check_member(mtk_spm_regs, mfg3_pwr_con, 0x0EC0);
 check_member(mtk_spm_regs, pwr_status, 0x0F40);

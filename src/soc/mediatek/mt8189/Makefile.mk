@@ -34,7 +34,7 @@ ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += ../common/bl31.c
 ramstage-y += ../common/dpm.c ../common/dpm_v2.c
 ramstage-y += ../common/dramc_info.c
 ramstage-y += ../common/emi.c
-ramstage-y += ../common/mcu.c
+ramstage-y += ../common/mcu.c mcupm.c
 ramstage-y += ../common/memory.c
 ramstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 ramstage-y += ../common/mt6315.c mt6315.c
@@ -58,6 +58,7 @@ MT8189_BLOB_DIR := 3rdparty/blobs/soc/mediatek/mt8189
 firmware-files := \
 	$(CONFIG_DPM_DM_FIRMWARE) \
 	$(CONFIG_DPM_PM_FIRMWARE) \
+	$(CONFIG_MCUPM_FIRMWARE) \
 	$(CONFIG_SPM_FIRMWARE)
 
 $(foreach fw, $(call strip_quotes,$(firmware-files)), \

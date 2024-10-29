@@ -771,6 +771,41 @@ static void sar_emit_bdcm(const struct bdcm_profile *bdcm)
 	acpigen_write_package_end();
 }
 
+static void sar_emit_bbsm(const struct bbsm_profile *bbsm)
+{
+	if (bbsm == NULL)
+		return;
+
+	/*
+	 * Name ("BBSM", Package () {
+	 *   Revision,
+	 *   Package () {
+	 *     Domain Type,			// 0x12:Bluetooth
+	 *     Bluetooth Bands Selection
+	 *   }
+	 * })
+	 */
+	if (bbsm->revision != BBSM_REVISION) {
+		printk(BIOS_ERR, "Unsupported BBSM table revision: %d\n",
+		       bbsm->revision);
+		return;
+	}
+
+	acpigen_write_name("BBSM");
+	acpigen_write_package(2);
+	acpigen_write_dword(bbsm->revision);
+
+	/*
+	 * Emit 'Domain Type' + 'Bluetooth Bands Selection'
+	 */
+	acpigen_write_package(2);
+	acpigen_write_dword(DOMAIN_TYPE_BLUETOOTH);
+	acpigen_write_dword(bbsm->bands_selection);
+
+	acpigen_write_package_end();
+	acpigen_write_package_end();
+}
+
 static void emit_wifi_sar_acpi_structures(const struct device *dev,
 					  union wifi_sar_limits *sar_limits)
 {
@@ -906,6 +941,7 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 			sar_emit_bpag(sar_limits.bpag);
 			sar_emit_bbfb(sar_limits.bbfb);
 			sar_emit_bdcm(sar_limits.bdcm);
+			sar_emit_bbsm(sar_limits.bbsm);
 			acpigen_write_scope_end();
 		} else {
 			printk(BIOS_ERR, "Failed to get %s Bluetooth companion ACPI path\n",

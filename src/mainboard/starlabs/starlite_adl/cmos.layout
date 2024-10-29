@@ -32,6 +32,7 @@ entries
 520	1	e	1	camera
 528	1	e	1	microphone
 536	1	e	1	lid_switch
+542	1	e	9	power_led
 
 # coreboot config options: EC
 600	2	e	6	max_charge
@@ -82,6 +83,9 @@ enumerations
 8	0	5500MT/s
 8	1	6400MT/s
 8	2	7500MT/s
+
+9	0	Normal
+9	1	Reduced
 
 # -----------------------------------------------------------------
 checksums

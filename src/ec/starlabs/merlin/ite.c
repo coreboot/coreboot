@@ -71,6 +71,7 @@ static void merlin_init(struct device *dev)
 	 * kbl_state
 	 * charging_speed
 	 * lid_switch
+	 * power_led
 	 */
 
 	/*
@@ -285,6 +286,27 @@ static void merlin_init(struct device *dev)
 				0,
 				lid_switch,
 				ARRAY_SIZE(lid_switch)));
+
+	/*
+	 * Power LED Brightness
+	 *
+	 * Setting:	power_led
+	 *
+	 * Values:	0, 1
+	 * Default:	0
+	 *
+	 */
+	const uint8_t power_led[] = {
+		LED_NORMAL,
+		LED_REDUCED
+	};
+
+	if (CONFIG(EC_STARLABS_POWER_LED))
+		ec_write(ECRAM_POWER_LED,
+			get_ec_value_from_option("power_led",
+				0,
+				power_led,
+				ARRAY_SIZE(power_led)));
 }
 
 static struct device_operations ops = {

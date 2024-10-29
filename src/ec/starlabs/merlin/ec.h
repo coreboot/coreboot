@@ -107,6 +107,10 @@
 #define SWITCH_ENABLED		0x00
 #define SWITCH_DISABLED		0x01
 
+/* Power LED Brightness */
+#define LED_NORMAL		0x00
+#define LED_REDUCED		0x01
+
 uint16_t ec_get_version(void);
 
 #endif

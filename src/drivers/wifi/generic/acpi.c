@@ -736,6 +736,41 @@ static void sar_emit_bbfb(const struct bbfb_profile *bbfb)
 	acpigen_write_package_end();
 }
 
+static void sar_emit_bdcm(const struct bdcm_profile *bdcm)
+{
+	if (bdcm == NULL)
+		return;
+
+	/*
+	 * Name ("BDCM", Package () {
+	 *   Revision,
+	 *   Package () {
+	 *     Domain Type,			// 0x12:Bluetooth
+	 *     Dual Chain Mode
+	 *   }
+	 * })
+	 */
+	if (bdcm->revision != BDCM_REVISION) {
+		printk(BIOS_ERR, "Unsupported BDCM table revision: %d\n",
+		       bdcm->revision);
+		return;
+	}
+
+	acpigen_write_name("BDCM");
+	acpigen_write_package(2);
+	acpigen_write_dword(bdcm->revision);
+
+	/*
+	 * Emit 'Domain Type' + 'Dual Chain Mode'
+	 */
+	acpigen_write_package(2);
+	acpigen_write_dword(DOMAIN_TYPE_BLUETOOTH);
+	acpigen_write_dword(bdcm->dual_chain_mode);
+
+	acpigen_write_package_end();
+	acpigen_write_package_end();
+}
+
 static void emit_wifi_sar_acpi_structures(const struct device *dev,
 					  union wifi_sar_limits *sar_limits)
 {
@@ -870,6 +905,7 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 			sar_emit_brds(sar_limits.bsar);
 			sar_emit_bpag(sar_limits.bpag);
 			sar_emit_bbfb(sar_limits.bbfb);
+			sar_emit_bdcm(sar_limits.bdcm);
 			acpigen_write_scope_end();
 		} else {
 			printk(BIOS_ERR, "Failed to get %s Bluetooth companion ACPI path\n",

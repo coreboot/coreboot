@@ -66,6 +66,8 @@ static const struct {
 	{ PCI_DID_INTEL_PTL_U_ID_1, PTL_U_1_CORE, TDP_15W },
 	{ PCI_DID_INTEL_PTL_H_ID_1, PTL_H_1_CORE, TDP_25W },
 	{ PCI_DID_INTEL_PTL_H_ID_2, PTL_H_3_CORE, TDP_45W },
+	{ PCI_DID_INTEL_PTL_H_ID_3, PTL_H_1_CORE, TDP_25W },
+	{ PCI_DID_INTEL_PTL_H_ID_4, PTL_H_1_CORE, TDP_25W },
 };
 
 /* Types of display ports */

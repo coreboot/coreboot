@@ -22,6 +22,7 @@
 #define SAD_ALL_DEV CHA_DEV
 #define SAD_ALL_FUNC 0
 #define SAD_ALL_PAM0123_CSR 0x80
+#define   PAM_LOCK BIT(0)
 #define SAD_ALL_PAM456_CSR 0x84
 #define SAD_ALL_DEVID 0x344f
 

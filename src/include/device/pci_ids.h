@@ -2796,6 +2796,18 @@
 #define PCI_DID_INTEL_DNV_SPI			0x19e0
 #define PCI_DID_INTEL_DNV_TRACEHUB		0x19e1
 
+/* Intel Atom P3000 and P5000 family */
+#define PCI_DID_INTEL_SNR_VRP0_QAT_1_7	0x18da /* VRP for Intel QAT v1.7. */
+#define PCI_DID_INTEL_SNR_VRP5_QAT_1_8	0x18da /* VRP for Intel QAT v1.8. */
+#define PCI_DID_INTEL_SNR_QAT_1_7	0x18ee /* Intel QAT v1.7. */
+#define PCI_DID_INTEL_SNR_QAT_1_8	0x18a0 /* Intel QAT v1.8. */
+#define PCI_DID_INTEL_SNR_VRP4_NIS	0x18d1 /* VRP to Network Interface and Scheduler. */
+#define PCI_DID_INTEL_SNR_NIS1890	0x1890 /* Intel Ethernet Connection E822-C for backplane. */
+#define PCI_DID_INTEL_SNR_NIS1891	0x1891 /* Intel Ethernet Connection E822-C for QSFP. */
+#define PCI_DID_INTEL_SNR_NIS1892	0x1892 /* Intel Ethernet Connection E822-C for SFP. */
+#define PCI_DID_INTEL_SNR_NIS1895	0x1895 /* Intel Ethernet Connection E822-X (for BMSM). */
+#define PCI_DID_INTEL_SNR_DLB		0x270b /* Intel Dynamic Load Balancer. */
+
 /* Intel Ibex Peak (5 Series Chipset and 3400 Series Chipset) */
 #define PCI_DID_INTEL_IBEXPEAK_LPC_P55			0x3b02
 #define PCI_DID_INTEL_IBEXPEAK_LPC_PM55			0x3b03
@@ -3655,6 +3667,19 @@
 #define PCI_DID_INTEL_RPP_S_PCIE_RP27			0x7a4a
 #define PCI_DID_INTEL_RPP_S_PCIE_RP28			0x7a4b
 
+#define PCI_DID_INTEL_SNR_CPU_PCIE_RPA			0x334a
+#define PCI_DID_INTEL_SNR_CPU_PCIE_RPB			0x334b
+#define PCI_DID_INTEL_SNR_CPU_PCIE_RPC			0x334c
+#define PCI_DID_INTEL_SNR_CPU_PCIE_RPD			0x334d
+#define PCI_DID_INTEL_SNR_PCH_PCIE_RP0			0x18a4
+#define PCI_DID_INTEL_SNR_PCH_PCIE_RP1			0x18a5
+#define PCI_DID_INTEL_SNR_PCH_PCIE_RP2			0x18a6
+#define PCI_DID_INTEL_SNR_PCH_PCIE_RP3			0x18a7
+#define PCI_DID_INTEL_SNR_PCH_PCIE_RP8			0x18ad
+#define PCI_DID_INTEL_SNR_PCH_PCIE_RP9			0x18ae
+#define PCI_DID_INTEL_SNR_PCH_PCIE_RP10			0x18af
+#define PCI_DID_INTEL_SNR_PCH_PCIE_RP11			0x18a2
+
 /* Intel SATA device Ids */
 #define PCI_DID_INTEL_LPT_H_DESKTOP_SATA_IDE			0x8c00
 #define PCI_DID_INTEL_LPT_H_DESKTOP_SATA_AHCI			0x8c02
@@ -3742,6 +3767,8 @@
 #define PCI_DID_INTEL_RPP_P_SATA_1		0x51d3
 #define PCI_DID_INTEL_RPP_P_SATA_2		0x51d7
 #define PCI_DID_INTEL_RPP_S_SATA		0x7a62
+#define PCI_DID_INTEL_SNR_SATA0			0x18b3
+#define PCI_DID_INTEL_SNR_SATA2			0x18f3
 
 /* Intel PMC device Ids */
 #define PCI_DID_INTEL_SPT_LP_PMC		0x9d21
@@ -4112,6 +4139,8 @@
 #define PCI_DID_INTEL_PTL_U_H_SPI0		0xe327
 #define PCI_DID_INTEL_PTL_U_H_SPI1		0xe330
 #define PCI_DID_INTEL_PTL_U_H_SPI2		0xe346
+
+#define PCI_DID_INTEL_SNR_SPI			0x18e0
 
 /* Intel IGD device Ids */
 #define PCI_DID_INTEL_SKL_GT1F_DT2			0x1902
@@ -4686,6 +4715,7 @@
 #define PCI_DID_INTEL_LNL_CSE0			0xa870
 #define PCI_DID_INTEL_PTL_H_CSE0		0xe470
 #define PCI_DID_INTEL_PTL_U_H_CSE0		0xe370
+#define PCI_DID_INTEL_SNR_HECI1			0x18d3
 
 /* Intel XDCI device Ids */
 #define PCI_DID_INTEL_APL_XDCI			0x5aaa

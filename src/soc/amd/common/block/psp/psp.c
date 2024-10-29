@@ -71,7 +71,7 @@ enum cb_err psp_get_ftpm_capabilties(uint32_t *capabilities)
 	/* buffer's status shouldn't change but report it if it does */
 	psp_print_cmd_status(cmd_status, &buffer.header);
 
-	if (!cmd_status)
+	if (cmd_status)
 		return CB_ERR;
 
 	*capabilities = read32(&buffer.capabilities);
@@ -94,7 +94,7 @@ enum cb_err psp_get_hsti_state(uint32_t *state)
 	/* buffer's status shouldn't change but report it if it does */
 	psp_print_cmd_status(cmd_status, &buffer.header);
 
-	if (!cmd_status)
+	if (cmd_status)
 		return CB_ERR;
 
 	*state = read32(&buffer.state);

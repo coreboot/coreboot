@@ -293,7 +293,7 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	parse_devicetree_setting(mupd);
 
 	/* Do NOT let FSP do any GPIO pad configuration */
-	mupd->FspmConfig.PreMemGpioTablePtr = (uintptr_t)NULL;
+	mupd->FspmConfig.PreMemGpioTablePtr = 0;
 
 	mupd->FspmConfig.SkipCseRbp = CONFIG(SKIP_CSE_RBP);
 

@@ -123,20 +123,6 @@ union p2sb_bdf soc_get_ioapic_bdf(void)
 
 #if ENV_RAMSTAGE /* Setting devtree variables is only allowed in ramstage. */
 
-void lock_pam0123(void)
-{
-	const uint32_t pam0123_lock = 0x33333331;
-	struct device *dev;
-
-	if (get_lockdown_config() != CHIPSET_LOCKDOWN_COREBOOT)
-		return;
-
-	dev = NULL;
-	/* Look for SAD_ALL devices on all sockets */
-	while ((dev = dev_find_device(PCI_VID_INTEL, SAD_ALL_DEVID, dev)))
-		pci_write_config32(dev, SAD_ALL_PAM0123_CSR, pam0123_lock);
-}
-
 /* return true if command timed out else false */
 static bool wait_for_bios_cmd_cpl(struct device *pcu1, uint32_t reg, uint32_t mask,
 				  uint32_t target)

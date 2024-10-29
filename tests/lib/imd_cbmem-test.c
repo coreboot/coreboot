@@ -21,9 +21,9 @@
 
 static void reset_imd(void)
 {
-	imd.lg.limit = (uintptr_t)NULL;
+	imd.lg.limit = 0;
 	imd.lg.r = NULL;
-	imd.sm.limit = (uintptr_t)NULL;
+	imd.sm.limit = 0;
 	imd.sm.r = NULL;
 
 	cbmem_initialized = 0;

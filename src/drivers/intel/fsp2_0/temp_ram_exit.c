@@ -29,7 +29,7 @@ static void fsp_temp_ram_exit(void)
 	temp_ram_exit = (void *)(uintptr_t)(hdr.image_base + hdr.temp_ram_exit_entry_offset);
 	printk(BIOS_DEBUG, "Calling TempRamExit: %p\n", temp_ram_exit);
 	if (ENV_X86_64 && CONFIG(PLATFORM_USES_FSP2_X86_32))
-		status = protected_mode_call_1arg(temp_ram_exit, (uintptr_t)NULL);
+		status = protected_mode_call_1arg(temp_ram_exit, 0);
 	else
 		status = temp_ram_exit(NULL);
 

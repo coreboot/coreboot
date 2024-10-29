@@ -34,6 +34,7 @@ smm-y += psp_gen2.c
 smm-$(CONFIG_SOC_AMD_COMMON_BLOCK_PSP_SMI) += psp_smi_flash_gen2.c
 smm-y += psp_smm_gen2.c
 
+ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_PSP_RPMC) += rpmc.c
 ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_PSP_SPL) += spl_fuse.c
 
 endif # CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN2

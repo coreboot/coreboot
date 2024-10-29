@@ -88,7 +88,7 @@ uintptr_t dw_i2c_base_address(unsigned int bus)
 	/* Find device+function for this controller */
 	devfn = dw_i2c_soc_bus_to_devfn(bus);
 	if (devfn < 0)
-		return (uintptr_t)NULL;
+		return 0;
 
 	/* Form a PCI address for this device */
 	dev = PCI_DEV(0, PCI_SLOT(devfn), PCI_FUNC(devfn));
@@ -114,12 +114,12 @@ uintptr_t dw_i2c_base_address(unsigned int bus)
 	devfn = dw_i2c_soc_bus_to_devfn(bus);
 
 	if (devfn < 0)
-		return (uintptr_t)NULL;
+		return 0;
 
 	/* devfn -> dev */
 	dev = pcidev_path_on_root(devfn);
 	if (!dev || !dev->enabled)
-		return (uintptr_t)NULL;
+		return 0;
 
 	/* dev -> bar0 */
 	res = probe_resource(dev, PCI_BASE_ADDRESS_0);

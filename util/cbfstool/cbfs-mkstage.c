@@ -403,11 +403,23 @@ int parse_elf_to_xip_stage(const struct buffer *input, struct buffer *output,
 		size_t reloc_offset;
 		uint32_t val;
 		struct buffer in, out;
+		Elf64_Addr reloc = rmodctx->emitted_relocs[i];
 
 		/* The relocations represent in-program addresses of the
 		 * linked program. Obtain the offset into the program to do
 		 * the adjustment. */
-		reloc_offset = rmodctx->emitted_relocs[i] - pelf->phdr->p_vaddr;
+		reloc_offset = 0;
+		for (phdr = toload; *phdr; phdr++) {
+			if (reloc >= (*phdr)->p_vaddr &&
+			    reloc < (*phdr)->p_vaddr + (*phdr)->p_memsz)
+				break;
+			reloc_offset += (*phdr)->p_filesz;
+		}
+		if (!*phdr) {
+			ERROR("Relocation outside of loadable segments\n");
+			goto out;
+		}
+		reloc_offset += reloc - (*phdr)->p_vaddr;
 
 		buffer_clone(&out, &boutput);
 		buffer_seek(&out, reloc_offset);

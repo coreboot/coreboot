@@ -2,6 +2,7 @@
 
 #include <device/device.h>
 #include <gpio.h>
+#include <soc/pcie.h>
 #include <soc/usb.h>
 
 #include "gpio.h"
@@ -11,6 +12,11 @@ static void power_on_fpmcu(void)
 	/* Power on the fingerprint MCU */
 	gpio_output(GPIO_EN_PWR_FP, 1);
 	gpio_output(GPIO_FP_RST_1V8_S3_L, 1);
+}
+
+bool mainboard_needs_pcie_init(void)
+{
+	return true;
 }
 
 static void mainboard_init(struct device *dev)

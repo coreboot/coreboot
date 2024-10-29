@@ -27,6 +27,7 @@
 #define MBOX_BIOS_CMD_PSB_AUTO_FUSING		0x21
 #define MBOX_BIOS_CMD_PSP_CAPS_QUERY		0x27
 #define MBOX_BIOS_CMD_SET_SPL_FUSE		0x2d
+#define MBOX_BIOS_CMD_SET_RPMC_ADDRESS		0x39
 #define MBOX_BIOS_CMD_QUERY_SPL_FUSE		0x47
 #define MBOX_BIOS_CMD_I2C_TPM_ARBITRATION	0x64
 #define MBOX_BIOS_CMD_ABORT			0xfe
@@ -96,6 +97,12 @@ struct mbox_cmd_capability_query_buffer {
 struct mbox_cmd_hsti_query_buffer {
 	struct mbox_buffer_header header;
 	uint32_t state;
+} __packed __aligned(32);
+
+/* MBOX_BIOS_CMD_SET_RPMC_ADDRESS */
+struct mbox_cmd_set_rpmc_address_buffer {
+	struct mbox_buffer_header header;
+	uint32_t address;
 } __packed __aligned(32);
 
 /* MBOX_BIOS_CMD_SET_SPL_FUSE */

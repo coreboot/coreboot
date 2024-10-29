@@ -1,3 +1,7 @@
+```{eval-rst}
+:orphan:
+```
+
 # Background
 
 CB:31250 ("soc/intel/cannonlake: Configure GPIOs again after FSP-S is

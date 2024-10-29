@@ -31,6 +31,22 @@ config SOC_AMD_PSP_SELECTABLE_SMU_FW
 	  fanned set of blobs.  Ask your AMD representative whether your APU
 	  is considered fanless.
 
+config SOC_AMD_COMMON_BLOCK_PSP_RPMC
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_PSP_GEN2
+	help
+	  Select this option in the SoC's Kconfig to include the support for
+	  the replay-protected monotonic counter (RPMC) feature.
+
+config PERFORM_RPMC_PROVISIONING
+	bool "Send RPMC fusing command to PSP"
+	default n
+	depends on SOC_AMD_COMMON_BLOCK_PSP_RPMC
+	help
+	  Send the RPMC root key provisioning command to the PSP in case it's
+	  not already fused. Sending this command will fuse the silicon which
+	  is a permanent change.
+
 config SOC_AMD_COMMON_BLOCK_PSP_SPL
 	bool
 	help

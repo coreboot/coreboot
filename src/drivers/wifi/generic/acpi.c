@@ -582,6 +582,9 @@ static void sar_emit_brds(const struct bsar_profile *bsar)
 	size_t package_size, table_size;
 	const uint8_t *set;
 
+	if (bsar == NULL)
+		return;
+
 	/*
 	 * Name ("BRDS", Package () {
 	 *   Revision,
@@ -663,11 +666,9 @@ static void sar_emit_wbem(const struct wbem_profile *wbem)
 	acpigen_write_package_end();
 }
 
-static void emit_sar_acpi_structures(const struct device *dev, struct dsm_profile *dsm,
-				     struct bsar_profile *bsar, bool *bsar_loaded)
+static void emit_wifi_sar_acpi_structures(const struct device *dev,
+					  union wifi_sar_limits *sar_limits)
 {
-	union wifi_sar_limits sar_limits = {0};
-
 	/*
 	 * If device type is PCI, ensure that the device has Intel vendor ID. CBFS SAR and SAR
 	 * ACPI tables are currently used only by Intel WiFi devices.
@@ -675,30 +676,12 @@ static void emit_sar_acpi_structures(const struct device *dev, struct dsm_profil
 	if (dev->path.type == DEVICE_PATH_PCI && dev->vendor != PCI_VID_INTEL)
 		return;
 
-	/* Retrieve the SAR limits data */
-	if (get_wifi_sar_limits(&sar_limits) < 0) {
-		printk(BIOS_ERR, "failed getting SAR limits!\n");
-		return;
-	}
-
-	sar_emit_wrds(sar_limits.sar);
-	sar_emit_ewrd(sar_limits.sar);
-	sar_emit_wgds(sar_limits.wgds);
-	sar_emit_ppag(sar_limits.ppag);
-	sar_emit_wtas(sar_limits.wtas);
-	sar_emit_wbem(sar_limits.wbem);
-
-	/* copy the dsm data to be later used for creating _DSM function */
-	if (sar_limits.dsm != NULL)
-		memcpy(dsm, sar_limits.dsm, sizeof(struct dsm_profile));
-
-	/* copy the bsar data to be later used for creating Bluetooth BRDS method */
-	if (sar_limits.bsar != NULL) {
-		memcpy(bsar, sar_limits.bsar, sizeof(struct bsar_profile));
-		*bsar_loaded = true;
-	}
-
-	free(sar_limits.sar);
+	sar_emit_wrds(sar_limits->sar);
+	sar_emit_ewrd(sar_limits->sar);
+	sar_emit_wgds(sar_limits->wgds);
+	sar_emit_ppag(sar_limits->ppag);
+	sar_emit_wtas(sar_limits->wtas);
+	sar_emit_wbem(sar_limits->wbem);
 }
 
 static void wifi_ssdt_write_device(const struct device *dev, const char *path)
@@ -756,26 +739,32 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 	}
 
 	struct dsm_uuid dsm_ids[MAX_DSM_FUNCS];
-	/* We will need a copy dsm data to be used later for creating _DSM function */
-	struct dsm_profile dsm = {0};
-	/* We will need a copy of bsar data to be used later for creating BRDS function */
-	struct bsar_profile bsar = {0};
-	bool bsar_loaded = false;
-	uint8_t dsm_count = 0;
+
+	/* Retrieve the SAR limits data */
+	union wifi_sar_limits sar_limits = {0};
+	bool sar_loaded = false;
+	if (CONFIG(USE_SAR)) {
+		if (get_wifi_sar_limits(&sar_limits) < 0)
+			printk(BIOS_ERR, "failed getting SAR limits!\n");
+		else
+			sar_loaded = true;
+	}
 
 	/* Fill Wifi SAR related ACPI structures */
-	if (CONFIG(USE_SAR)) {
-		emit_sar_acpi_structures(dev, &dsm, &bsar, &bsar_loaded);
+	uint8_t dsm_count = 0;
+	if (sar_loaded) {
+		emit_wifi_sar_acpi_structures(dev, &sar_limits);
 
-		if (dsm.supported_functions != 0) {
+		struct dsm_profile *dsm = sar_limits.dsm;
+		if (dsm && dsm->supported_functions != 0) {
 			for (int i = 1; i < ARRAY_SIZE(wifi_dsm_callbacks); i++)
-				if (!(dsm.supported_functions & (1 << i)))
+				if (!(dsm->supported_functions & (1 << i)))
 					wifi_dsm_callbacks[i] = NULL;
 
 			dsm_ids[dsm_count].uuid = ACPI_DSM_OEM_WIFI_UUID;
 			dsm_ids[dsm_count].callbacks = &wifi_dsm_callbacks[0];
 			dsm_ids[dsm_count].count = ARRAY_SIZE(wifi_dsm_callbacks);
-			dsm_ids[dsm_count].arg = &dsm;
+			dsm_ids[dsm_count].arg = dsm;
 			dsm_count++;
 		}
 	}
@@ -804,17 +793,20 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 	acpigen_write_scope_end(); /* Scope */
 
 	/* Fill Bluetooth companion SAR related ACPI structures */
-	if (bsar_loaded && is_dev_enabled(config->bluetooth_companion)) {
+	if (sar_loaded && is_dev_enabled(config->bluetooth_companion)) {
 		const char *path = acpi_device_path(config->bluetooth_companion);
 		if (path) {	/* Bluetooth device under USB Hub scope or PCIe root port */
 			acpigen_write_scope(path);
-			sar_emit_brds(&bsar);
+			sar_emit_brds(sar_limits.bsar);
 			acpigen_write_scope_end();
 		} else {
 			printk(BIOS_ERR, "Failed to get %s Bluetooth companion ACPI path\n",
 			       dev_path(dev));
 		}
 	}
+
+	if (sar_loaded)
+		free(sar_limits.sar);
 
 	printk(BIOS_INFO, "%s: %s %s\n", scope, dev->chip_ops ? dev->chip_ops->name : "",
 	       dev_path(dev));

@@ -806,6 +806,41 @@ static void sar_emit_bbsm(const struct bbsm_profile *bbsm)
 	acpigen_write_package_end();
 }
 
+static void sar_emit_bucs(const struct bucs_profile *bucs)
+{
+	if (bucs == NULL)
+		return;
+
+	/*
+	 * Name ("BUCS", Package () {
+	 *   Revision,
+	 *   Package () {
+	 *     Domain Type,			// 0x12:Bluetooth
+	 *     UHB country selection bits
+	 *   }
+	 * })
+	 */
+	if (bucs->revision != BUCS_REVISION) {
+		printk(BIOS_ERR, "Unsupported BUCS table revision: %d\n",
+		       bucs->revision);
+		return;
+	}
+
+	acpigen_write_name("BUCS");
+	acpigen_write_package(2);
+	acpigen_write_dword(bucs->revision);
+
+	/*
+	 * Emit 'Domain Type' + 'UHB country selection bits'
+	 */
+	acpigen_write_package(2);
+	acpigen_write_dword(DOMAIN_TYPE_BLUETOOTH);
+	acpigen_write_dword(bucs->uhb_country_selection);
+
+	acpigen_write_package_end();
+	acpigen_write_package_end();
+}
+
 static void emit_wifi_sar_acpi_structures(const struct device *dev,
 					  union wifi_sar_limits *sar_limits)
 {
@@ -942,6 +977,7 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 			sar_emit_bbfb(sar_limits.bbfb);
 			sar_emit_bdcm(sar_limits.bdcm);
 			sar_emit_bbsm(sar_limits.bbsm);
+			sar_emit_bucs(sar_limits.bucs);
 			acpigen_write_scope_end();
 		} else {
 			printk(BIOS_ERR, "Failed to get %s Bluetooth companion ACPI path\n",

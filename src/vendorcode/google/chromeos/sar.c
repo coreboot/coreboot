@@ -142,6 +142,14 @@ static size_t bbsm_table_size(const struct bbsm_profile *bbsm)
 	return sizeof(struct bbsm_profile);
 }
 
+static size_t bucs_table_size(const struct bucs_profile *bucs)
+{
+	if (bucs == NULL)
+		return 0;
+
+	return sizeof(struct bucs_profile);
+}
+
 static bool valid_legacy_length(size_t bin_len)
 {
 	if (bin_len == LEGACY_SAR_WGDS_BIN_SIZE)
@@ -199,6 +207,7 @@ static int fill_wifi_sar_limits(union wifi_sar_limits *sar_limits, const uint8_t
 	expected_sar_bin_size += bbfb_table_size(sar_limits->bbfb);
 	expected_sar_bin_size += bdcm_table_size(sar_limits->bdcm);
 	expected_sar_bin_size += bbsm_table_size(sar_limits->bbsm);
+	expected_sar_bin_size += bucs_table_size(sar_limits->bucs);
 
 	if (sar_bin_size != expected_sar_bin_size) {
 		printk(BIOS_ERR, "Invalid SAR size, expected: %zu, obtained: %zu\n",

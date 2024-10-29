@@ -9,7 +9,7 @@
 #define MAX_DENYLIST_ENTRY	16
 #define MAX_DSAR_SET_COUNT	3
 #define MAX_GEO_OFFSET_REVISION	3
-#define MAX_PROFILE_COUNT	11
+#define MAX_PROFILE_COUNT	12
 #define MAX_SAR_REVISION	2
 #define BSAR_REVISION		1
 #define WBEM_REVISION		0
@@ -17,6 +17,7 @@
 #define BBFB_REVISION		1
 #define BDCM_REVISION		1
 #define BBSM_REVISION		1
+#define BUCS_REVISION		1
 #define REVISION_SIZE		1
 #define SAR_REV0_CHAINS_COUNT	2
 #define SAR_REV0_SUBBANDS_COUNT	5
@@ -105,6 +106,11 @@ struct bbsm_profile {
 	uint32_t bands_selection;
 } __packed;
 
+struct bucs_profile {
+	uint8_t revision;
+	uint32_t uhb_country_selection;
+} __packed;
+
 struct sar_header {
 	char marker[SAR_STR_PREFIX_SIZE];
 	uint8_t version;
@@ -125,6 +131,7 @@ union wifi_sar_limits {
 		struct bbfb_profile *bbfb;
 		struct bdcm_profile *bdcm;
 		struct bbsm_profile *bbsm;
+		struct bucs_profile *bucs;
 	};
 	void *profile[MAX_PROFILE_COUNT];
 };

@@ -841,6 +841,41 @@ static void sar_emit_bucs(const struct bucs_profile *bucs)
 	acpigen_write_package_end();
 }
 
+static void sar_emit_bdmm(const struct bdmm_profile *bdmm)
+{
+	if (bdmm == NULL)
+		return;
+
+	/*
+	 * Name ("BDMM", Package () {
+	 *   Revision,
+	 *   Package () {
+	 *     Domain Type,			// 0x12:Bluetooth
+	 *     Dual Mac Enable
+	 *   }
+	 * })
+	 */
+	if (bdmm->revision != BDMM_REVISION) {
+		printk(BIOS_ERR, "Unsupported BDMM table revision: %d\n",
+		       bdmm->revision);
+		return;
+	}
+
+	acpigen_write_name("BDMM");
+	acpigen_write_package(2);
+	acpigen_write_dword(bdmm->revision);
+
+	/*
+	 * Emit 'Domain Type' + 'Dual Mac Enable'
+	 */
+	acpigen_write_package(2);
+	acpigen_write_dword(DOMAIN_TYPE_BLUETOOTH);
+	acpigen_write_dword(bdmm->dual_mac_enable);
+
+	acpigen_write_package_end();
+	acpigen_write_package_end();
+}
+
 static void emit_wifi_sar_acpi_structures(const struct device *dev,
 					  union wifi_sar_limits *sar_limits)
 {
@@ -978,6 +1013,7 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 			sar_emit_bdcm(sar_limits.bdcm);
 			sar_emit_bbsm(sar_limits.bbsm);
 			sar_emit_bucs(sar_limits.bucs);
+			sar_emit_bdmm(sar_limits.bdmm);
 			acpigen_write_scope_end();
 		} else {
 			printk(BIOS_ERR, "Failed to get %s Bluetooth companion ACPI path\n",

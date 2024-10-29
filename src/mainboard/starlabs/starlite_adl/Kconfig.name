@@ -2,3 +2,6 @@ comment "Star Labs StarLite Series"
 
 config BOARD_STARLABS_LITE_ADL
 	bool "Star Labs Lite Mk V (N200)"
+
+config BOARD_STARLABS_LITE_ADL_SB
+	bool "Star Labs Lite Mk V Smart Battery (N200)"

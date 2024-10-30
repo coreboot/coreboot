@@ -1170,6 +1170,17 @@ int google_chromeec_get_num_pd_ports(unsigned int *num_ports)
 	return 0;
 }
 
+int google_chromeec_get_pd_chip_infoi(int port, int renew,
+				struct ec_response_pd_chip_info *r)
+{
+	const struct ec_params_pd_chip_info p = {
+		.port = port,
+		.live = renew,
+	};
+
+	return ec_cmd_pd_chip_info(PLAT_EC, &p, r);
+}
+
 int google_chromeec_get_pd_port_caps(int port,
 				struct usb_pd_port_caps *port_caps)
 {

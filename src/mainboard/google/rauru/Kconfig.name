@@ -2,8 +2,11 @@
 
 comment "Rauru"
 
-config BOARD_GOOGLE_RAURU
-	bool "->  Rauru"
+config BOARD_GOOGLE_HYLIA
+	bool "->  Hylia"
 
 config BOARD_GOOGLE_NAVI
 	bool "->  Navi"
+
+config BOARD_GOOGLE_RAURU
+	bool "->  Rauru"

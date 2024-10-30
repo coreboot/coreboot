@@ -96,10 +96,14 @@ static size_t dsm_table_size(const struct dsm_profile *dsm)
 
 static size_t bsar_table_size(const struct bsar_profile *bsar)
 {
+	int revs_offset = offsetof(struct bsar_profile, revs);
+
 	if (bsar == NULL)
 		return 0;
 
-	return sizeof(struct bsar_profile);
+	if (bsar->revision == 2)
+		return revs_offset + sizeof(bsar->revs.rev2);
+	return revs_offset + sizeof(bsar->revs.rev1);
 }
 
 static size_t wbem_table_size(const struct wbem_profile *wbem)
@@ -156,6 +160,14 @@ static size_t bdmm_table_size(const struct bdmm_profile *bdmm)
 		return 0;
 
 	return sizeof(struct bdmm_profile);
+}
+
+static size_t ebrd_table_size(const struct ebrd_profile *ebrd)
+{
+	if (ebrd == NULL)
+		return 0;
+
+	return sizeof(struct ebrd_profile);
 }
 
 static bool valid_legacy_length(size_t bin_len)
@@ -217,6 +229,7 @@ static int fill_wifi_sar_limits(union wifi_sar_limits *sar_limits, const uint8_t
 	expected_sar_bin_size += bbsm_table_size(sar_limits->bbsm);
 	expected_sar_bin_size += bucs_table_size(sar_limits->bucs);
 	expected_sar_bin_size += bdmm_table_size(sar_limits->bdmm);
+	expected_sar_bin_size += ebrd_table_size(sar_limits->ebrd);
 
 	if (sar_bin_size != expected_sar_bin_size) {
 		printk(BIOS_ERR, "Invalid SAR size, expected: %zu, obtained: %zu\n",

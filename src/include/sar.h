@@ -9,9 +9,9 @@
 #define MAX_DENYLIST_ENTRY	16
 #define MAX_DSAR_SET_COUNT	3
 #define MAX_GEO_OFFSET_REVISION	3
-#define MAX_PROFILE_COUNT	13
+#define MAX_PROFILE_COUNT	14
 #define MAX_SAR_REVISION	2
-#define BSAR_REVISION		1
+#define MAX_BSAR_REVISION	2
 #define WBEM_REVISION		0
 #define BPAG_REVISION		2
 #define BBFB_REVISION		1
@@ -19,6 +19,7 @@
 #define BBSM_REVISION		1
 #define BUCS_REVISION		1
 #define BDMM_REVISION		1
+#define EBRD_REVISION		1
 #define REVISION_SIZE		1
 #define SAR_REV0_CHAINS_COUNT	2
 #define SAR_REV0_SUBBANDS_COUNT	5
@@ -70,16 +71,32 @@ struct dsm_profile {
 	uint32_t rfi_mitigation;
 };
 
+struct sar_power_table {
+	uint8_t restriction_for_2g4;
+	uint8_t restriction_for_5g2;
+	uint8_t restriction_for_5g8_5g9;
+	uint8_t restriction_for_6g1;
+	uint8_t restriction_for_6g3;
+} __packed;
+
 struct bsar_profile {
 	uint8_t revision;
 	uint8_t increased_power_mode_limitation;
-	uint8_t sar_lb_power_restriction;
-	uint8_t br_modulation;
-	uint8_t edr2_modulation;
-	uint8_t edr3_modulation;
-	uint8_t le_modulation;
-	uint8_t le2_mhz_modulation;
-	uint8_t le_lr_modulation;
+	union {
+		struct rev1 {
+			uint8_t sar_lb_power_restriction;
+			uint8_t br_modulation;
+			uint8_t edr2_modulation;
+			uint8_t edr3_modulation;
+			uint8_t le_modulation;
+			uint8_t le2_mhz_modulation;
+			uint8_t le_lr_modulation;
+		} rev1;
+		struct rev2 {
+			struct sar_power_table set_1_chain_a;
+			struct sar_power_table set_1_chain_b;
+		} rev2;
+	} revs;
 } __packed;
 
 struct wbem_profile {
@@ -117,6 +134,16 @@ struct bdmm_profile {
 	uint8_t dual_mac_enable;
 } __packed;
 
+struct ebrd_profile {
+	uint8_t revision;
+	uint32_t dynamic_sar_enable;
+	uint32_t number_of_optional_sar;
+	struct {
+		struct sar_power_table chain_a;
+		struct sar_power_table chain_b;
+	} sar_table_sets[3];
+} __packed;
+
 struct sar_header {
 	char marker[SAR_STR_PREFIX_SIZE];
 	uint8_t version;
@@ -139,6 +166,7 @@ union wifi_sar_limits {
 		struct bbsm_profile *bbsm;
 		struct bucs_profile *bucs;
 		struct bdmm_profile *bdmm;
+		struct ebrd_profile *ebrd;
 	};
 	void *profile[MAX_PROFILE_COUNT];
 };

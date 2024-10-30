@@ -599,7 +599,7 @@ static void sar_emit_brds(const struct bsar_profile *bsar)
 	 *   }
 	 * })
 	 */
-	if (bsar->revision != BSAR_REVISION) {
+	if (bsar->revision == 0 || bsar->revision > MAX_BSAR_REVISION) {
 		printk(BIOS_ERR, "Unsupported BSAR table revision: %d\n",
 		       bsar->revision);
 		return;
@@ -609,11 +609,14 @@ static void sar_emit_brds(const struct bsar_profile *bsar)
 	acpigen_write_package(2);
 	acpigen_write_dword(bsar->revision);
 
-	table_size = sizeof(*bsar) -
-		offsetof(struct bsar_profile, sar_lb_power_restriction);
+	if (bsar->revision == 1)
+		table_size = sizeof(bsar->revs.rev1);
+	else
+		table_size = sizeof(bsar->revs.rev2);
+
 	/*
 	 * Emit 'Domain Type' + 'Dynamic SAR Enable' + 'Increase Power Mode'
-	 * + ('SAR Power Restriction' + SAR table).
+	 * + ('SAR Power Restriction' + SAR table) | (Chain A and B SAR tables).
 	 */
 	package_size = 1 + 1 + 1 + table_size;
 	acpigen_write_package(package_size);
@@ -621,7 +624,7 @@ static void sar_emit_brds(const struct bsar_profile *bsar)
 	acpigen_write_dword(1);
 	acpigen_write_dword(bsar->increased_power_mode_limitation);
 
-	set = (const uint8_t *)&bsar->sar_lb_power_restriction;
+	set = (const uint8_t *)&bsar->revs;
 	for (int i = 0; i < table_size; i++)
 		acpigen_write_byte(set[i]);
 
@@ -876,6 +879,54 @@ static void sar_emit_bdmm(const struct bdmm_profile *bdmm)
 	acpigen_write_package_end();
 }
 
+static void sar_emit_ebrd(const struct ebrd_profile *ebrd)
+{
+	if (ebrd == NULL)
+		return;
+
+	size_t package_size, table_size;
+	const uint8_t *set;
+
+	/*
+	 * Name ("EBRD", Package () {
+	 *   Revision,
+	 *   Package () {
+	 *     Domain Type,			// 0x12:Bluetooth
+	 *     Dynamic SAR Enable,
+	 *     Number of Optional SAR,
+	 *     Three SAR Sets
+	 *   }
+	 * })
+	 */
+	if (ebrd->revision != EBRD_REVISION) {
+		printk(BIOS_ERR, "Unsupported EBRD table revision: %d\n",
+		       ebrd->revision);
+		return;
+	}
+
+	acpigen_write_name("EBRD");
+	acpigen_write_package(2);
+	acpigen_write_dword(ebrd->revision);
+
+	/*
+	 * Emit 'Domain Type' + 'Dynamic Sar Enabled' + 'Number of Optional SAR' +
+	 * 'Three SAR Sets'
+	 */
+	table_size = sizeof(*ebrd) - offsetof(struct ebrd_profile, sar_table_sets);
+	package_size = 1 + 1 + 1 + table_size;
+	acpigen_write_package(package_size);
+	acpigen_write_dword(DOMAIN_TYPE_BLUETOOTH);
+	acpigen_write_dword(ebrd->dynamic_sar_enable);
+	acpigen_write_dword(ebrd->number_of_optional_sar);
+
+	set = (const uint8_t *)&ebrd->sar_table_sets;
+	for (size_t i = 0; i < table_size; i++)
+		acpigen_write_byte(set[i]);
+
+	acpigen_write_package_end();
+	acpigen_write_package_end();
+}
+
 static void emit_wifi_sar_acpi_structures(const struct device *dev,
 					  union wifi_sar_limits *sar_limits)
 {
@@ -1014,6 +1065,7 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 			sar_emit_bbsm(sar_limits.bbsm);
 			sar_emit_bucs(sar_limits.bucs);
 			sar_emit_bdmm(sar_limits.bdmm);
+			sar_emit_ebrd(sar_limits.ebrd);
 			acpigen_write_scope_end();
 		} else {
 			printk(BIOS_ERR, "Failed to get %s Bluetooth companion ACPI path\n",

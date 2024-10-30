@@ -34,7 +34,7 @@ chip soc/intel/pantherlake
 	register "sagv" = "SAGV_ENABLED"
 
 	# Enable s0ix
-	register "s0ix_enable" = "false"
+	register "s0ix_enable" = "true"
 
 	# DPTF enable
 	register "dptf_enable" = "true"

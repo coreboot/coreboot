@@ -33,7 +33,7 @@ void *tpm1_log_cbmem_init(void)
 		if (!tclt)
 			return NULL;
 
-		memset(tclt, 0, sizeof(*tclt));
+		memset(tclt, 0, tpm_log_len);
 		hdr = &tclt->spec_id;
 
 		/* Fill in first "header" entry. */

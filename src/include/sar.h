@@ -9,7 +9,7 @@
 #define MAX_DENYLIST_ENTRY	16
 #define MAX_DSAR_SET_COUNT	3
 #define MAX_GEO_OFFSET_REVISION	3
-#define MAX_PROFILE_COUNT	14
+#define MAX_PROFILE_COUNT	15
 #define MAX_SAR_REVISION	2
 #define MAX_BSAR_REVISION	2
 #define WBEM_REVISION		0
@@ -20,6 +20,7 @@
 #define BUCS_REVISION		1
 #define BDMM_REVISION		1
 #define EBRD_REVISION		1
+#define WPFC_REVISION		0
 #define REVISION_SIZE		1
 #define SAR_REV0_CHAINS_COUNT	2
 #define SAR_REV0_SUBBANDS_COUNT	5
@@ -144,6 +145,14 @@ struct ebrd_profile {
 	} sar_table_sets[3];
 } __packed;
 
+struct wpfc_profile {
+	uint8_t revision;
+	uint8_t filter_cfg_chain_a;
+	uint8_t filter_cfg_chain_b;
+	uint8_t filter_cfg_chain_c;
+	uint8_t filter_cfg_chain_d;
+} __packed;
+
 struct sar_header {
 	char marker[SAR_STR_PREFIX_SIZE];
 	uint8_t version;
@@ -167,6 +176,7 @@ union wifi_sar_limits {
 		struct bucs_profile *bucs;
 		struct bdmm_profile *bdmm;
 		struct ebrd_profile *ebrd;
+		struct wpfc_profile *wpfc;
 	};
 	void *profile[MAX_PROFILE_COUNT];
 };

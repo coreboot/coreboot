@@ -170,6 +170,14 @@ static size_t ebrd_table_size(const struct ebrd_profile *ebrd)
 	return sizeof(struct ebrd_profile);
 }
 
+static size_t wpfc_table_size(const struct wpfc_profile *wpfc)
+{
+	if (wpfc == NULL)
+		return 0;
+
+	return sizeof(struct wpfc_profile);
+}
+
 static bool valid_legacy_length(size_t bin_len)
 {
 	if (bin_len == LEGACY_SAR_WGDS_BIN_SIZE)
@@ -230,6 +238,7 @@ static int fill_wifi_sar_limits(union wifi_sar_limits *sar_limits, const uint8_t
 	expected_sar_bin_size += bucs_table_size(sar_limits->bucs);
 	expected_sar_bin_size += bdmm_table_size(sar_limits->bdmm);
 	expected_sar_bin_size += ebrd_table_size(sar_limits->ebrd);
+	expected_sar_bin_size += wpfc_table_size(sar_limits->wpfc);
 
 	if (sar_bin_size != expected_sar_bin_size) {
 		printk(BIOS_ERR, "Invalid SAR size, expected: %zu, obtained: %zu\n",

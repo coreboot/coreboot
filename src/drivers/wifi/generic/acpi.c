@@ -927,6 +927,46 @@ static void sar_emit_ebrd(const struct ebrd_profile *ebrd)
 	acpigen_write_package_end();
 }
 
+static void sar_emit_wpfc(const struct wpfc_profile *wpfc)
+{
+	if (wpfc == NULL)
+		return;
+
+	/*
+	 * Name ("WPFC", Package() {
+	 * {
+	 *   Revision,
+	 *   Package()
+	 *   {
+	 *     DomainType,				// 0x7:WiFi
+	 *     Chain A Filter Platform Configuration
+	 *     Chain B Filter Platform Configuration
+	 *     Chain C Filter Platform Configuration
+	 *     Chain D Filter Platform Configuration
+	 *   }
+	 } })
+	 */
+	if (wpfc->revision != WPFC_REVISION) {
+		printk(BIOS_ERR, "Unsupported WPFC table revision: %d\n",
+		       wpfc->revision);
+		return;
+	}
+
+	acpigen_write_name("WPFC");
+	acpigen_write_package(2);
+	acpigen_write_dword(wpfc->revision);
+
+	acpigen_write_package(5);
+	acpigen_write_dword(DOMAIN_TYPE_WIFI);
+	acpigen_write_byte(wpfc->filter_cfg_chain_a);
+	acpigen_write_byte(wpfc->filter_cfg_chain_b);
+	acpigen_write_byte(wpfc->filter_cfg_chain_c);
+	acpigen_write_byte(wpfc->filter_cfg_chain_d);
+
+	acpigen_write_package_end();
+	acpigen_write_package_end();
+}
+
 static void emit_wifi_sar_acpi_structures(const struct device *dev,
 					  union wifi_sar_limits *sar_limits)
 {
@@ -943,6 +983,7 @@ static void emit_wifi_sar_acpi_structures(const struct device *dev,
 	sar_emit_ppag(sar_limits->ppag);
 	sar_emit_wtas(sar_limits->wtas);
 	sar_emit_wbem(sar_limits->wbem);
+	sar_emit_wpfc(sar_limits->wpfc);
 }
 
 static void wifi_ssdt_write_device(const struct device *dev, const char *path)

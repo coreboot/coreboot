@@ -26,4 +26,15 @@ config VBOOT
 	select VBOOT_RETURN_FROM_VERSTAGE
 	select VBOOT_DEFINE_WIDEVINE_COUNTERS
 
+config DPM_DM_FIRMWARE
+	string
+	default "dpm.dm"
+	help
+	  The file name of the MediaTek DPM DM firmware.
+
+config DPM_PM_FIRMWARE
+	string
+	default "dpm.pm"
+	help
+	  The file name of the MediaTek DPM PM firmware.
 endif

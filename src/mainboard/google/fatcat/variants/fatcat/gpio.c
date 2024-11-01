@@ -100,7 +100,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_B23:     ISH_GP_6_SNSR_HDR */
 	PAD_CFG_NF(GPP_B23, NONE, DEEP, NF4),
 	/* GPP_B24:     ESPI_ALERT0_EC_R_N */
-	PAD_CFG_NF(GPP_B24, NONE, DEEP, NF1),
+	PAD_NC(GPP_B24, NONE),
 	/* GPP_B25:     X1_SLOT_WAKE_N */
 	PAD_CFG_GPI_SCI_LOW(GPP_B25, NONE, DEEP, LEVEL),
 

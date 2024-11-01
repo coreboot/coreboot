@@ -16,8 +16,10 @@
 #include "wifi_private.h"
 
 /* Domain type */
-#define DOMAIN_TYPE_WIFI 0x7
-#define DOMAIN_TYPE_BLUETOOTH 0x12
+enum sar_domain {
+	DOMAIN_TYPE_WIFI = 0x7,
+	DOMAIN_TYPE_BLUETOOTH = 0x12
+};
 
 /* Maximum number DSM UUID bifurcations in _DSM */
 #define MAX_DSM_FUNCS 2
@@ -967,6 +969,40 @@ static void sar_emit_wpfc(const struct wpfc_profile *wpfc)
 	acpigen_write_package_end();
 }
 
+static void sar_emit_dsbr(const struct dsbr_profile *dsbr, enum sar_domain domain)
+{
+	if (dsbr == NULL)
+		return;
+
+	/*
+	 * Name ("DSBR", Package() {
+	 * {
+	 *   Revision,
+	 *   Package()
+	 *   {
+	 *     DomainType,				// 0x7:WiFi
+	 *     BRI Resistor Value			// in Ohm
+	 *   }
+	 } })
+	 */
+	if (dsbr->revision != DSBR_REVISION) {
+		printk(BIOS_ERR, "Unsupported DSBR table revision: %d\n",
+		       dsbr->revision);
+		return;
+	}
+
+	acpigen_write_name("DSBR");
+	acpigen_write_package(2);
+	acpigen_write_dword(dsbr->revision);
+
+	acpigen_write_package(2);
+	acpigen_write_dword(domain);
+	acpigen_write_dword(dsbr->bri_resistor_value);
+
+	acpigen_write_package_end();
+	acpigen_write_package_end();
+}
+
 static void emit_wifi_sar_acpi_structures(const struct device *dev,
 					  union wifi_sar_limits *sar_limits)
 {
@@ -984,6 +1020,7 @@ static void emit_wifi_sar_acpi_structures(const struct device *dev,
 	sar_emit_wtas(sar_limits->wtas);
 	sar_emit_wbem(sar_limits->wbem);
 	sar_emit_wpfc(sar_limits->wpfc);
+	sar_emit_dsbr(sar_limits->dsbr, DOMAIN_TYPE_WIFI);
 }
 
 static void wifi_ssdt_write_device(const struct device *dev, const char *path)
@@ -1107,6 +1144,7 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 			sar_emit_bucs(sar_limits.bucs);
 			sar_emit_bdmm(sar_limits.bdmm);
 			sar_emit_ebrd(sar_limits.ebrd);
+			sar_emit_dsbr(sar_limits.dsbr, DOMAIN_TYPE_BLUETOOTH);
 			acpigen_write_scope_end();
 		} else {
 			printk(BIOS_ERR, "Failed to get %s Bluetooth companion ACPI path\n",

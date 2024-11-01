@@ -1,8 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <console/console.h>
 #include <device/device.h>
 #include <gpio.h>
 #include <soc/bl31.h>
+#include <soc/dpm_v2.h>
 #include <soc/pcie.h>
 #include <soc/usb.h>
 
@@ -24,6 +26,9 @@ static void mainboard_init(struct device *dev)
 {
 	setup_usb_host();
 	power_on_fpmcu();
+
+	if (dpm_init())
+		printk(BIOS_ERR, "dpm init failed, DVFS may not work\n");
 
 	if (CONFIG(ARM64_USE_ARM_TRUSTED_FIRMWARE))
 		register_reset_to_bl31(GPIO_AP_EC_WARM_RST_REQ.id, true);

@@ -15,17 +15,13 @@ chip soc/intel/skylake
 			#| Camera         |   8   |                                   |
 			#| Touchsreen     |   10  |                                   |
 			#+----------------+-------+-----------------------------------+
-			register "usb2_ports" = "{
-				[2] = USB2_PORT_MID(OC2),	// Type-A Side
-				[3] = USB2_PORT_MID(OC_SKIP),	// Card reader
-				[7] = USB2_PORT_MID(OC_SKIP),	// Camera
-				[9] = USB2_PORT_MID(OC_SKIP),	// Touchscreen
-			}"
+			register "usb2_ports[2]" = "USB2_PORT_MID(OC2)"		# Type-A Side
+			register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# Card reader
+			register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# Camera
+			register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# Touchscreen
 
-			register "usb3_ports" = "{
-				[2] = USB3_PORT_DEFAULT(OC2),		// Type-A Side
-				[3] = USB3_PORT_DEFAULT(OC_SKIP),	// Card reader
-			}"
+			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC2)"	# Type-A Side
+			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Card reader
 
 			chip drivers/usb/acpi
 				device usb 0.0 on

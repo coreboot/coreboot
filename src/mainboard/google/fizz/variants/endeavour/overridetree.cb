@@ -22,23 +22,20 @@ chip soc/intel/skylake
 
 	device domain 0 on
 		device ref south_xhci on
-			register "usb2_ports" = "{
-				[0] = USB2_PORT_LONG(OC_SKIP),	// Type-C
-				[1] = USB2_PORT_MID(OC_SKIP),	// HDMI
-				[2] = USB2_PORT_MID(OC2),	// Type-A Rear
-				[3] = USB2_PORT_MID(OC2),	// Type-A Rear
-				[4] = USB2_PORT_MID(OC3),	// Type-A Rear
-				[5] = USB2_PORT_MID(OC_SKIP),	// HDMI Audio
-				[6] = USB2_PORT_MID(OC_SKIP),	// Bluetooth
-			}"
+			register "usb2_ports[0]" = "USB2_PORT_LONG(OC_SKIP)"	# Type-C
+			register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"	# HDMI
+			register "usb2_ports[2]" = "USB2_PORT_MID(OC2)"		# Type-A Rear
+			register "usb2_ports[3]" = "USB2_PORT_MID(OC2)"		# Type-A Rear
+			register "usb2_ports[4]" = "USB2_PORT_MID(OC3)"		# Type-A Rear
+			register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# HDMI Audio
+			register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth
 
-			register "usb3_ports" = "{
-				[0] = USB3_PORT_DEFAULT(OC_SKIP),	// Type-C
-				[1] = USB3_PORT_DEFAULT(OC_SKIP),	// HDMI
-				[2] = USB3_PORT_DEFAULT(OC2),		// Type-A Rear
-				[3] = USB3_PORT_DEFAULT(OC2),		// Type-A Rear
-				[4] = USB3_PORT_DEFAULT(OC3),		// Type-A Rear
-			}"
+			register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# Type-C
+			register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# HDMI
+			register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC2)"	# Type-A Rear
+			register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC2)"	# Type-A Rear
+			register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC3)"	# Type-A Rear
+
 			chip drivers/usb/acpi
 				device usb 0.0 on
 					chip drivers/usb/acpi

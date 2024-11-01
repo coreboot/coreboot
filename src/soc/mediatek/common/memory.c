@@ -5,6 +5,7 @@
 #include <cbmem.h>
 #include <commonlib/bsd/mem_chip_info.h>
 #include <console/console.h>
+#include <fmap_config.h>
 #include <soc/dramc_common.h>
 #include <mrc_cache.h>
 #include <soc/dramc_param.h>
@@ -13,12 +14,8 @@
 #include <symbols.h>
 #include <timer.h>
 
-/* This must be defined in chromeos.fmd in same name and size. */
-#define CAL_REGION_RW_MRC_CACHE			"RW_MRC_CACHE"
-#define CAL_REGION_RW_MRC_CACHE_SIZE		0x2000
-
-_Static_assert(sizeof(struct dramc_param) <= CAL_REGION_RW_MRC_CACHE_SIZE,
-	       "sizeof(struct dramc_param) exceeds " CAL_REGION_RW_MRC_CACHE);
+_Static_assert(sizeof(struct dramc_param) <= FMAP_SECTION_RW_MRC_CACHE_SIZE,
+	       "sizeof(struct dramc_param) exceeds RW_MRC_CACHE size");
 
 const char *get_dram_geometry_str(u32 ddr_geometry);
 const char *get_dram_type_str(u32 ddr_type);

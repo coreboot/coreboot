@@ -114,7 +114,7 @@ void mtk_spi_set_gpio_pinmux(unsigned int bus, enum spi_pad_mask pad_select)
 
 	ptr = pad_funcs[bus];
 
-	for (unsigned int i = 0; i < SPI_BUS_NUMBER; i++)
+	for (unsigned int i = 0; i < ARRAY_SIZE(pad_funcs[0]); i++)
 		gpio_set_mode(ptr[i].gpio, ptr[i].func);
 }
 

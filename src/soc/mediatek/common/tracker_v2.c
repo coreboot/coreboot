@@ -61,16 +61,16 @@ void tracker_setup(void)
 	 * peri tracker clock: 78MHz
 	 */
 	val = 156 * 1000 / 16 * 200;
-	write32((void *)(INFRA_TRACKER_BASE + BUS_DBG_TIMER_CON0), val);
-	write32((void *)(INFRA_TRACKER_BASE + BUS_DBG_TIMER_CON1), val);
+	write32p(INFRA_TRACKER_BASE + BUS_DBG_TIMER_CON0, val);
+	write32p(INFRA_TRACKER_BASE + BUS_DBG_TIMER_CON1, val);
 
 	val = 78 * 1000 / 16 * 200;
-	write32((void *)(PERI_TRACKER_BASE + BUS_DBG_TIMER_CON0), val);
-	write32((void *)(PERI_TRACKER_BASE + BUS_DBG_TIMER_CON1), val);
+	write32p(PERI_TRACKER_BASE + BUS_DBG_TIMER_CON0, val);
+	write32p(PERI_TRACKER_BASE + BUS_DBG_TIMER_CON1, val);
 
 	/* Enable infra/peri tracer because tracker and tracer share the same enable bit. */
-	write32((void *)(BUS_TRACE_MONITOR_BASE + BUS_TRACE_CON_1), 1 << BUS_TRACE_EN);
-	write32((void *)(BUS_TRACE_MONITOR_BASE + BUS_TRACE_CON_2), 1 << BUS_TRACE_EN);
+	write32p(BUS_TRACE_MONITOR_BASE + BUS_TRACE_CON_1, 1 << BUS_TRACE_EN);
+	write32p(BUS_TRACE_MONITOR_BASE + BUS_TRACE_CON_2, 1 << BUS_TRACE_EN);
 
 	/*
 	 * Enable infra/peri tracker.
@@ -81,6 +81,6 @@ void tracker_setup(void)
 	 * bit[14] - BUS_OT_WEN_CTRL
 	 */
 	val = BIT(0) | BIT(1) | BIT(2) | BIT(13) | BIT(14);
-	write32((void *)(BUS_TRACE_MONITOR_BASE + BUS_TRACE_CON_AO_1), val);
-	write32((void *)(BUS_TRACE_MONITOR_BASE + BUS_TRACE_CON_AO_2), val);
+	write32p(BUS_TRACE_MONITOR_BASE + BUS_TRACE_CON_AO_1, val);
+	write32p(BUS_TRACE_MONITOR_BASE + BUS_TRACE_CON_AO_2, val);
 }

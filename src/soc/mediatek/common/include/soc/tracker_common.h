@@ -16,7 +16,8 @@ struct tracker {
 	uintptr_t base_addr;
 	u32 timeout;
 	u32 entry;
-	u32 offset[2];
+	const u32 *offsets;
+	u32 offsets_size;
 	const char *str;
 };
 

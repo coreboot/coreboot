@@ -25,10 +25,10 @@ static void tracker_dump_data(void)
 			continue;
 
 		printk(BIOS_INFO, "**Dump %s debug register start**\n", tra->str);
-		for (k = 0; k < 2; k++) {
+		for (k = 0; k < tra->offsets_size; k++) {
 			size = 2 * tra->entry;
 			for (i = 0; i < size; i++) {
-				reg = tra->base_addr + tra->offset[k] + i * 4;
+				reg = tra->base_addr + tra->offsets[k] + i * 4;
 				printk(BIOS_INFO, "%#lx:%#x,", reg, read32((void *)reg));
 
 				if (i % 4 == 3 || i == size - 1)

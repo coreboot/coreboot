@@ -188,9 +188,9 @@ void mainboard_romstage_entry(void)
 	/* Program to Disable UFS Controllers */
 	if (!is_devfn_enabled(PCH_DEVFN_UFS) &&
 			 (CONFIG(USE_UNIFIED_AP_FIRMWARE_FOR_UFS_AND_NON_UFS))) {
-		printk(BIOS_INFO, "Disabling UFS controllers\n");
-		disable_ufs();
 		if (ps->prev_sleep_state == ACPI_S5 && !mainboard_expects_another_reset()) {
+			printk(BIOS_INFO, "Disabling UFS controllers\n");
+			disable_ufs();
 			printk(BIOS_INFO, "Warm Reset after disabling UFS controllers\n");
 			system_reset();
 		}

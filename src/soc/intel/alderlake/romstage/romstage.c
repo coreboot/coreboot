@@ -34,7 +34,19 @@
 
 bool __weak mainboard_expects_another_reset(void)
 {
-	return false;
+	bool reset_pending = true;
+
+	if (!CONFIG(SOC_INTEL_CSE_LITE_SKU))
+		reset_pending = false;
+
+	/*
+	 * Skip reset if CSE slot switch is pending meaning, CSE is booting from RO.
+	 * CSE state switch will issue a reset anyway.
+	 */
+	if (is_cse_boot_to_rw() == true)
+		reset_pending = false;
+
+	return reset_pending;
 }
 
 static void disable_ufs(void)
@@ -182,9 +194,6 @@ void mainboard_romstage_entry(void)
 	if (!CONFIG(INTEL_TXT))
 		disable_intel_txt();
 
-	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_ROMSTAGE) && !s3wake)
-		cse_fw_sync();
-
 	/* Program to Disable UFS Controllers */
 	if (!is_devfn_enabled(PCH_DEVFN_UFS) &&
 			 (CONFIG(USE_UNIFIED_AP_FIRMWARE_FOR_UFS_AND_NON_UFS))) {
@@ -195,6 +204,9 @@ void mainboard_romstage_entry(void)
 			system_reset();
 		}
 	}
+
+	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_ROMSTAGE) && !s3wake)
+		cse_fw_sync();
 
 	/* Program MCHBAR, DMIBAR, GDXBAR and EDRAMBAR */
 	systemagent_early_init();

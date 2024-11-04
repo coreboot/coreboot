@@ -611,4 +611,11 @@ void cse_fill_bp_info(void);
  * Returns true if an update is required, false otherwise
  */
 bool is_cse_fw_update_required(void);
+
+/*
+ * Check if the CSE firmware is booting from RW slot.
+ * Returns true if CSE is booting from RW slot, false otherwise
+ */
+bool is_cse_boot_to_rw(void);
+
 #endif // SOC_INTEL_COMMON_CSE_H

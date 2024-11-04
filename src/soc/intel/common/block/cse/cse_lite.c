@@ -1071,6 +1071,19 @@ bool is_cse_fw_update_required(void)
 	return !!cse_compare_sub_part_version(&cbfs_rw_version, cse_get_rw_version());
 }
 
+bool is_cse_boot_to_rw(void)
+{
+	if (cse_get_bp_info() != CB_SUCCESS) {
+		printk(BIOS_ERR, "cse_lite: Failed to get CSE boot partition info\n");
+		return false;
+	}
+
+	if (cse_get_current_bp() == RW)
+		return true;
+
+	return false;
+}
+
 static uint8_t cse_fw_update(void)
 {
 	struct region_device target_rdev;

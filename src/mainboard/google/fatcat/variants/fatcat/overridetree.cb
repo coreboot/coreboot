@@ -62,6 +62,10 @@ fw_config
 		option WFC_MIPI			1
 		option WFC_USB			2
 	end
+	field ISH 24
+		option ISH_DISABLE		0
+		option ISH_ENABLE		1
+	end
 end
 
 chip soc/intel/pantherlake
@@ -223,6 +227,14 @@ chip soc/intel/pantherlake
 			chip drivers/intel/usb4/retimer
 				register "dfp[1].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B21)"
 				use tcss_usb3_port3 as dfp[1].typec_port
+				device generic 0 on end
+			end
+		end
+
+		device ref ish on
+			probe ISH ISH_ENABLE
+			chip drivers/intel/ish
+				register "add_acpi_dma_property" = "true"
 				device generic 0 on end
 			end
 		end

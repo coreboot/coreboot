@@ -23,8 +23,6 @@ static const struct pad_config override_gpio_table[] = {
 	/* A22 : GPP_A22 ==> NC */
 	PAD_NC_LOCK(GPP_A22, NONE, LOCK_CONFIG),
 
-	/* B4  : I2C2_SDA ==> SSD1_RST_L */
-	PAD_CFG_GPO_LOCK(GPP_B4, 1, LOCK_CONFIG),
 	/* B5  : I2C2_SDA ==> NA */
 	PAD_NC_LOCK(GPP_B5, NONE, LOCK_CONFIG),
 	/* B6  : I2C2_SCL ==> NA */
@@ -32,14 +30,18 @@ static const struct pad_config override_gpio_table[] = {
 	/* B11 : NC ==> EN_PP3300_WLAN_X*/
 	PAD_CFG_GPO(GPP_B11, 0, DEEP),
 
+	/* D11 : EN_PP1800_WCAM_X ==> EN_PP3300_SSD_X */
+	PAD_CFG_GPO(GPP_D11, 1, DEEP),
+	/* B4  : SSD_PERST_L */
+	PAD_CFG_GPO(GPP_B4, 1, DEEP),
+
 	/* D3 : ISH_GP3 ==> NA */
 	PAD_NC_LOCK(GPP_D3, NONE, LOCK_CONFIG),
 	/* D6 : WWAN_PWR_ENABLE ==> PCIE_REFCLK_SSD1_REQ_N */
 	PAD_CFG_NF(GPP_D6, NONE, DEEP, NF1),
 	/* D8  : SRCCLKREQ3# ==> NC */
 	PAD_NC_LOCK(GPP_D8, NONE, LOCK_CONFIG),
-	/* D11 : EN_PP1800_WCAM_X ==> EN_PP3300_SSD_X */
-	PAD_CFG_GPO(GPP_D11, 1, DEEP),
+
 	/* D13 : EN_PP1800_WCAM_X ==> NA */
 	PAD_NC_LOCK(GPP_D13, NONE, LOCK_CONFIG),
 	/* D15 : EN_PP2800_WCAM_X ==> NA */
@@ -105,6 +107,11 @@ static const struct pad_config override_gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
+	/* B4  : I2C2_SDA ==> SSD1_RST_L */
+	PAD_CFG_GPO(GPP_B4, 0, DEEP),
+	/* D11 : EN_PP1800_WCAM_X ==> EN_PP3300_SSD_X */
+	PAD_CFG_GPO(GPP_D11, 1, DEEP),
+
 	/* A13 : GPP_A13 ==> GSC_SOC_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
 

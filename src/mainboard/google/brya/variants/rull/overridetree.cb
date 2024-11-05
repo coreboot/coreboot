@@ -405,13 +405,14 @@ chip soc/intel/alderlake
 			}"
 			chip soc/intel/common/block/pcie/rtd3
 				# enable_gpio is EN_PP3300_SSD
-				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B4)"
-				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D11)"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D11)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B4)"
 				register "srcclk_pin" = "1"
-				device generic 0 on end
+				device generic 0 on
+					probe STORAGE STORAGE_NVME
+					probe unprovisioned
+				end
 			end
-			probe STORAGE STORAGE_NVME
-			probe unprovisioned
 		end
 		device ref emmc on
 			probe STORAGE STORAGE_EMMC

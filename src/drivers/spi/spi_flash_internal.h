@@ -136,4 +136,27 @@ extern const struct spi_flash_ops_descriptor spi_flash_pp_0x20_sector_desc;
 /* Page Programming Command Set with 0xd8 Sector Erase command. */
 extern const struct spi_flash_ops_descriptor spi_flash_pp_0xd8_sector_desc;
 
+struct sfdp_rpmc_info {
+	bool flash_hardening;
+	enum {
+		SFDP_RPMC_COUNTER_BITS_32		= 0,
+		SFDP_RPMC_COUNTER_BITS_RESERVED		= 1,
+	} monotonic_counter_size;
+	enum {
+		SFDP_RPMC_POLL_OP2_EXTENDED_STATUS	= 0,
+		SFDP_RPMC_POLL_READ_STATUS		= 1,
+	} busy_polling_method;
+	uint8_t number_of_counters;
+	uint8_t op1_write_command;
+	uint8_t op2_read_command;
+	uint64_t update_rate_s;
+	uint64_t read_counter_polling_delay_us;
+	uint64_t write_counter_polling_short_delay_us;
+	uint64_t write_counter_polling_long_delay_us;
+};
+
+/* Get RPMC information from the SPI flash's SFDP table */
+enum cb_err spi_flash_get_sfdp_rpmc(const struct spi_flash *flash,
+				    struct sfdp_rpmc_info *rpmc_info);
+
 #endif /* SPI_FLASH_INTERNAL_H */

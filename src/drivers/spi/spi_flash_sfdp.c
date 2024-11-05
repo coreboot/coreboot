@@ -164,10 +164,9 @@ void spi_flash_print_sfdp_headers(const struct spi_flash *flash)
 	}
 }
 
-static inline enum cb_err find_sfdp_parameter_header(const struct spi_flash *flash,
-						     uint16_t table_id, uint16_t *revision,
-						     uint8_t *length_dwords,
-						     uint32_t *table_pointer)
+static enum cb_err find_sfdp_parameter_header(const struct spi_flash *flash, uint16_t table_id,
+					      uint16_t *revision, uint8_t *length_dwords,
+					      uint32_t *table_pointer)
 {
 	enum cb_err stat;
 	uint16_t sfdp_rev;
@@ -200,4 +199,154 @@ static inline enum cb_err find_sfdp_parameter_header(const struct spi_flash *fla
 	printk(BIOS_WARNING, "Cound't find SFPD header with table ID %#x.\n", table_id);
 
 	return CB_ERR;
+}
+
+#define SFDP_PARAMETER_ID_RPMC			0xff03
+
+#define SFDP_RPMC_TABLE_LENGTH_DWORDS		2
+#define SFDP_RPMC_TABLE_SUPPORTED_MAJOR_REV	1
+
+/* RPMC parameter table byte offsets and fields */
+#define SFDP_RPMC_TABLE_CONFIG					0
+#define   SFDP_RPMC_TABLE_CONFIG_FLASH_HARDENING_BIT		BIT(0)
+#define   SFDP_RPMC_TABLE_CONFIG_MONOTONIC_COUNTER_SIZE_BIT	BIT(1)
+#define   SFDP_RPMC_TABLE_CONFIG_BUSY_POLLING_METHOD		BIT(2)
+#define   SFDP_RPMC_TABLE_CONFIG_RESERVED			BIT(3)
+#define   SFDP_RPMC_TABLE_CONFIG_RESERVED_VALUE			0x08
+#define   SFDP_RPMC_TABLE_CONFIG_NUM_COUNTERS_MASK		0xf0
+#define   SFDP_RPMC_TABLE_CONFIG_NUM_COUNTERS_SHIFT		4
+#define SFDP_RPMC_TABLE_RPMC_OP1				1
+#define SFDP_RPMC_TABLE_RPMC_OP2				2
+#define SFDP_RPMC_TABLE_UPDATE_RATE				3
+#define   SFDP_RPMC_TABLE_UPDATE_RATE_MASK			0x0f
+#define   SFDP_RPMC_TABLE_UPDATE_RATE_RESERVED_MASK		0xf0
+#define   SFDP_RPMC_TABLE_UPDATE_RATE_RESERVED_VALUE		0xf0
+#define SFDP_RPMC_TABLE_READ_COUNTER_POLLING_DELAY		4
+#define SFDP_RPMC_TABLE_WRITE_COUNTER_POLLING_SHORT_DELAY	5
+#define SFDP_RPMC_TABLE_WRITE_COUNTER_POLLING_LONG_DELAY	6
+#define SFDP_RPMC_TABLE_RESERVED_BYTE				7
+#define   SFDP_RPMC_TABLE_RESERVED_BYTE_VALUE			0xff
+
+static uint64_t calc_rpmc_update_rate_s(uint8_t val)
+{
+	/* val is at most 15, so this won't overflow */
+	return 5 * 1 << (val & SFDP_RPMC_TABLE_UPDATE_RATE_MASK);
+}
+
+#define SPDF_RPMC_DELAY_VALUE_MASK		0x1f
+#define SPDF_RPMC_DELAY_UNIT_MASK		0x60
+#define SPDF_RPMC_DELAY_UNIT_SHIFT		5
+#define SPDF_RPMC_DELAY_SHORT_UNIT_0_US		1	/* 1us */
+#define SPDF_RPMC_DELAY_SHORT_UNIT_1_US		16	/* 16us */
+#define SPDF_RPMC_DELAY_SHORT_UNIT_2_US		128	/* 128us */
+#define SPDF_RPMC_DELAY_SHORT_UNIT_3_US		1000	/* 1ms */
+#define SPDF_RPMC_DELAY_LONG_UNIT_0_US		1000	/* 1ms */
+#define SPDF_RPMC_DELAY_LONG_UNIT_1_US		16000	/* 16ms */
+#define SPDF_RPMC_DELAY_LONG_UNIT_2_US		128000	/* 128ms */
+#define SPDF_RPMC_DELAY_LONG_UNIT_3_US		1000000	/* 1s */
+
+static uint64_t calc_rpmc_short_delay_us(uint8_t val)
+{
+	const uint8_t value = val & SPDF_RPMC_DELAY_VALUE_MASK;
+	const uint8_t shift = (val & SPDF_RPMC_DELAY_UNIT_MASK) >> SPDF_RPMC_DELAY_UNIT_SHIFT;
+	uint64_t multiplier;
+
+	switch (shift) {
+	case 0:
+		multiplier = SPDF_RPMC_DELAY_SHORT_UNIT_0_US;
+		break;
+	case 1:
+		multiplier = SPDF_RPMC_DELAY_SHORT_UNIT_1_US;
+		break;
+	case 2:
+		multiplier = SPDF_RPMC_DELAY_SHORT_UNIT_2_US;
+		break;
+	default:
+		multiplier = SPDF_RPMC_DELAY_SHORT_UNIT_3_US;
+		break;
+	}
+
+	return value * multiplier;
+}
+
+static uint64_t calc_rpmc_long_delay_us(uint8_t val)
+{
+	const uint8_t value = val & SPDF_RPMC_DELAY_VALUE_MASK;
+	const uint8_t shift = (val & SPDF_RPMC_DELAY_UNIT_MASK) >> SPDF_RPMC_DELAY_UNIT_SHIFT;
+	uint64_t multiplier;
+
+	switch (shift) {
+	case 0:
+		multiplier = SPDF_RPMC_DELAY_LONG_UNIT_0_US;
+		break;
+	case 1:
+		multiplier = SPDF_RPMC_DELAY_LONG_UNIT_1_US;
+		break;
+	case 2:
+		multiplier = SPDF_RPMC_DELAY_LONG_UNIT_2_US;
+		break;
+	default:
+		multiplier = SPDF_RPMC_DELAY_LONG_UNIT_3_US;
+		break;
+	}
+
+	return value * multiplier;
+}
+
+enum cb_err spi_flash_get_sfdp_rpmc(const struct spi_flash *flash,
+				    struct sfdp_rpmc_info *rpmc_info)
+{
+	uint16_t rev;
+	uint8_t length_dwords;
+	uint32_t table_pointer;
+	uint8_t buf[SFDP_RPMC_TABLE_LENGTH_DWORDS * sizeof(uint32_t)];
+
+	if (find_sfdp_parameter_header(flash, SFDP_PARAMETER_ID_RPMC, &rev, &length_dwords,
+				       &table_pointer) != CB_SUCCESS)
+		return CB_ERR;
+
+	if (length_dwords != SFDP_RPMC_TABLE_LENGTH_DWORDS)
+		return CB_ERR;
+
+	if (rev >> 8 != SFDP_RPMC_TABLE_SUPPORTED_MAJOR_REV) {
+		printk(BIOS_ERR, "Unsupprted major RPMC table revision %#x\n", rev >> 8);
+		return CB_ERR;
+	}
+
+	if (read_sfdp_data(flash, table_pointer, sizeof(buf), buf) != CB_SUCCESS)
+		return CB_ERR;
+
+	if ((buf[SFDP_RPMC_TABLE_CONFIG] & SFDP_RPMC_TABLE_CONFIG_RESERVED) !=
+	    SFDP_RPMC_TABLE_CONFIG_RESERVED_VALUE ||
+	    (buf[SFDP_RPMC_TABLE_UPDATE_RATE] & SFDP_RPMC_TABLE_UPDATE_RATE_RESERVED_MASK) !=
+	    SFDP_RPMC_TABLE_UPDATE_RATE_RESERVED_VALUE ||
+	    buf[SFDP_RPMC_TABLE_RESERVED_BYTE] != SFDP_RPMC_TABLE_RESERVED_BYTE_VALUE) {
+		printk(BIOS_ERR, "Unexpected reserved values in RPMC table\n");
+		return CB_ERR;
+	}
+
+	rpmc_info->flash_hardening = !!(buf[SFDP_RPMC_TABLE_CONFIG] &
+					SFDP_RPMC_TABLE_CONFIG_FLASH_HARDENING_BIT);
+	rpmc_info->monotonic_counter_size = (buf[SFDP_RPMC_TABLE_CONFIG] &
+					    SFDP_RPMC_TABLE_CONFIG_FLASH_HARDENING_BIT) ?
+					    SFDP_RPMC_COUNTER_BITS_RESERVED :
+					    SFDP_RPMC_COUNTER_BITS_32;
+	rpmc_info->busy_polling_method = (buf[SFDP_RPMC_TABLE_CONFIG] &
+					 SFDP_RPMC_TABLE_CONFIG_BUSY_POLLING_METHOD) ?
+					 SFDP_RPMC_POLL_READ_STATUS :
+					 SFDP_RPMC_POLL_OP2_EXTENDED_STATUS;
+	rpmc_info->number_of_counters = ((buf[SFDP_RPMC_TABLE_CONFIG] &
+					SFDP_RPMC_TABLE_CONFIG_NUM_COUNTERS_MASK) >>
+					SFDP_RPMC_TABLE_CONFIG_NUM_COUNTERS_SHIFT) + 1;
+	rpmc_info->op1_write_command = buf[SFDP_RPMC_TABLE_RPMC_OP1];
+	rpmc_info->op2_read_command = buf[SFDP_RPMC_TABLE_RPMC_OP2];
+	rpmc_info->update_rate_s = calc_rpmc_update_rate_s(buf[SFDP_RPMC_TABLE_UPDATE_RATE] &
+							   SFDP_RPMC_TABLE_UPDATE_RATE_MASK);
+	rpmc_info->read_counter_polling_delay_us = calc_rpmc_short_delay_us(
+				buf[SFDP_RPMC_TABLE_READ_COUNTER_POLLING_DELAY]);
+	rpmc_info->write_counter_polling_short_delay_us = calc_rpmc_short_delay_us(
+				buf[SFDP_RPMC_TABLE_WRITE_COUNTER_POLLING_SHORT_DELAY]);
+	rpmc_info->write_counter_polling_long_delay_us = calc_rpmc_long_delay_us(
+				buf[SFDP_RPMC_TABLE_WRITE_COUNTER_POLLING_LONG_DELAY]);
+	return CB_SUCCESS;
 }

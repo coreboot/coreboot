@@ -21,8 +21,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	size_t pads_num;
 
 	/* If battery is not present - Boot with maximum non-turbo frequency */
-	if (CONFIG(EC_GOOGLE_CHROMEEC) &&
-			!google_chromeec_is_battery_present_and_above_critical_threshold()) {
+	if (CONFIG(EC_GOOGLE_CHROMEEC) && !google_chromeec_is_battery_present()) {
 		FSP_M_CONFIG *mem_cfg = &memupd->FspmConfig;
 		mem_cfg->BootFrequency = MAX_NONTURBO_PERFORMANCE;
 		printk(BIOS_DEBUG, "Boot Frequency is set to %u\n", mem_cfg->BootFrequency);

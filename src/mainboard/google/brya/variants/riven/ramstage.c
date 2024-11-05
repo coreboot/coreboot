@@ -7,6 +7,6 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 {
 	/* Refer to FSP Silicon (soc/intel/alderlake/fsp_params.c)
 	   VccIn Aux Imon IccMax. Values are in 1/4 Amp increments */
-	params->VccInAuxImonIccImax = 100; /* 25000(25A) * 4 / 1000 */
+	params->VccInAuxImonIccImax = 120; /* 30000(30A) * 4 / 1000 */
 	printk(BIOS_INFO, "Override VccInAuxImonIccImax = %d\n", params->VccInAuxImonIccImax);
 }

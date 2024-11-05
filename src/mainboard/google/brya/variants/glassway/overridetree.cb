@@ -31,11 +31,12 @@ fw_config
 		option WFC_ABSENT		0
 		option WFC_PRESENT		1
 	end
-	field TOUCHSCREEN_SOURCE 32 33
+	field TOUCHSCREEN_SOURCE 32 34
 		option TOUCHSCREEN_UNPROVISIONED	0
 		option TOUCHSCREEN_ELAN0001		1
 		option TOUCHSCREEN_GTCH7503		2
 		option TOUCHSCREEN_ELAN9004		3
+		option TOUCHSCREEN_ILIT2901		4
 	end
 end
 
@@ -392,6 +393,22 @@ chip soc/intel/alderlake
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 10 on
 					probe TOUCHSCREEN_SOURCE TOUCHSCREEN_ELAN9004
+				end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ILIT2901""
+				register "generic.desc" = ""ILI Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
+				register "generic.detect" = "1"
+				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
+				register "generic.reset_delay_ms" = "100"
+				register "generic.reset_off_delay_ms" = "2"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
+				register "generic.enable_delay_ms" = "6"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 41 on
+					probe TOUCHSCREEN_SOURCE TOUCHSCREEN_ILIT2901
 				end
 			end
 			chip drivers/generic/gpio_keys

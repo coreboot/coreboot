@@ -614,6 +614,14 @@ chip soc/intel/pantherlake
 					end
 				end
 			end
+			chip drivers/generic/max98357a
+				register "hid" = ""MX98360A""
+				register "sdmode_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E19)"
+				register "sdmode_delay" = "5"
+				device generic 0 on
+					probe AUDIO AUDIO_MAX98360_ALC5682I_I2S
+				end
+			end
 		end
 	end
 end

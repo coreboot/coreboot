@@ -32,6 +32,11 @@
 #define PCR_PSFX_T0_SHDW_PCIEN 0x1C
 #define PCR_PSFX_T0_SHDW_PCIEN_FUNDIS  (1 << 8)
 
+bool __weak mainboard_expects_another_reset(void)
+{
+	return false;
+}
+
 static void disable_ufs(void)
 {
 	/* disable USF0 */
@@ -183,9 +188,9 @@ void mainboard_romstage_entry(void)
 	/* Program to Disable UFS Controllers */
 	if (!is_devfn_enabled(PCH_DEVFN_UFS) &&
 			 (CONFIG(USE_UNIFIED_AP_FIRMWARE_FOR_UFS_AND_NON_UFS))) {
-		printk(BIOS_INFO, "Disabling UFS controllers\n");
-		disable_ufs();
-		if (ps->prev_sleep_state == ACPI_S5) {
+		if (ps->prev_sleep_state == ACPI_S5 && !mainboard_expects_another_reset()) {
+			printk(BIOS_INFO, "Disabling UFS controllers\n");
+			disable_ufs();
 			printk(BIOS_INFO, "Warm Reset after disabling UFS controllers\n");
 			system_reset();
 		}

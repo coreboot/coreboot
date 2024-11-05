@@ -1170,6 +1170,17 @@ int google_chromeec_get_num_pd_ports(unsigned int *num_ports)
 	return 0;
 }
 
+int google_chromeec_get_pd_chip_infoi(int port, int renew,
+				struct ec_response_pd_chip_info *r)
+{
+	const struct ec_params_pd_chip_info p = {
+		.port = port,
+		.live = renew,
+	};
+
+	return ec_cmd_pd_chip_info(PLAT_EC, &p, r);
+}
+
 int google_chromeec_get_pd_port_caps(int port,
 				struct usb_pd_port_caps *port_caps)
 {
@@ -1561,6 +1572,22 @@ bool google_chromeec_is_battery_present_and_above_critical_threshold(void)
 	if (ec_cmd_battery_get_dynamic(PLAT_EC, &params, &resp) == 0) {
 		/* Check if battery is present and LEVEL_CRITICAL is not set */
 		if (resp.flags && !(resp.flags & EC_BATT_FLAG_LEVEL_CRITICAL))
+			return true;
+	}
+
+	return false;
+}
+
+bool google_chromeec_is_battery_present(void)
+{
+	struct ec_params_battery_dynamic_info params = {
+		.index = 0,
+	};
+	struct ec_response_battery_dynamic_info resp;
+
+	if (ec_cmd_battery_get_dynamic(PLAT_EC, &params, &resp) == 0) {
+		/* Check if battery is present */
+		if (resp.flags & EC_BATT_FLAG_BATT_PRESENT)
 			return true;
 	}
 

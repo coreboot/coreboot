@@ -176,6 +176,7 @@ Hardware Maintenance Manual of ThinkPads <lenovo/thinkpad_hmm.md>
 R60 <lenovo/r60.md>
 T4xx common <lenovo/t4xx_series.md>
 X2xx common <lenovo/x2xx_series.md>
+M920 Tiny <lenovo/m920q.md>
 vboot <lenovo/vboot.md>
 ```
 

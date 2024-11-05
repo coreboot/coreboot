@@ -1,0 +1,59 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+# -----------------------------------------------------------------
+entries
+
+#start-bit length  config config-ID	name
+
+# -----------------------------------------------------------------
+0	120	r	0	reserved_memory
+
+# -----------------------------------------------------------------
+# RTC_BOOT_BYTE (coreboot hardcoded)
+384	1	e	4	boot_option
+388	4	h	0	reboot_counter
+
+# -----------------------------------------------------------------
+# coreboot config options: console
+395	4	e	6	debug_level
+
+# coreboot config options: cpu
+400	1	e	2	hyper_threading
+
+# coreboot config options: southbridge
+409	2	e	7	power_on_after_fail
+
+# coreboot config options: bootloader
+#Used by ChromeOS:
+416	128	r	0	vbnv
+
+# coreboot config options: check sums
+984	16	h	0	check_sum
+
+# -----------------------------------------------------------------
+
+enumerations
+
+#ID	value	text
+1	0	Disable
+1	1	Enable
+2	0	Disable
+2	1	Enable
+4	0	Fallback
+4	1	Normal
+6	0	Emergency
+6	1	Alert
+6	2	Critical
+6	3	Error
+6	4	Warning
+6	5	Notice
+6	6	Info
+6	7	Debug
+6	8	Spew
+7	0	Disable
+7	1	Enable
+7	2	Keep
+# -----------------------------------------------------------------
+checksums
+
+checksum 392 415 984

@@ -337,6 +337,18 @@ int google_chromeec_get_cmd_versions(int command, uint32_t *pmask);
  */
 int google_chromeec_get_num_pd_ports(unsigned int *num_ports);
 
+/**
+ * Return a port's PD chip information.
+ *
+ * @param port		The desired port number
+ * @param renew		Refresh cached value
+ * @param r		Result buffer for chip info
+ *
+ * @return 0 if ok, -1 on error
+ */
+int google_chromeec_get_pd_chip_infoi(int port, int renew,
+				struct ec_response_pd_chip_info *r);
+
 /* Structure representing the capabilities of a USB-PD port */
 struct usb_pd_port_caps {
 	enum ec_pd_power_role_caps power_role_cap;
@@ -423,6 +435,14 @@ void google_chromeec_clear_ec_ap_idle(void);
  *			false: any of the above conditions is not true
  */
 bool google_chromeec_is_battery_present_and_above_critical_threshold(void);
+
+/**
+ * Check if battery is present.
+ *
+ * @return		true: if the battery is present
+ *			false: if the battery is not present
+ */
+bool google_chromeec_is_battery_present(void);
 
 /**
  * Determine if the UCSI stack is currently active.

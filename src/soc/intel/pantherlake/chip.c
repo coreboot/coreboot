@@ -80,10 +80,13 @@ const char *soc_acpi_name(const struct device *dev)
 	case PCI_DEVFN_TBT1:		return "TRP1";
 	case PCI_DEVFN_TBT2:		return "TRP2";
 	case PCI_DEVFN_TBT3:		return "TRP3";
+	case PCI_DEVFN_THC0:		return "THC0";
+	case PCI_DEVFN_THC1:		return "THC1";
 	case PCI_DEVFN_NPU:		return "NPU";
 	case PCI_DEVFN_IPU:		return "IPU";
 	case PCI_DEVFN_ISH:		return "ISHB";
 	case PCI_DEVFN_XHCI:		return "XHCI";
+	case PCI_DEVFN_SRAM:		return "SRAM";
 	case PCI_DEVFN_I2C0:		return "I2C0";
 	case PCI_DEVFN_I2C1:		return "I2C1";
 	case PCI_DEVFN_I2C2:		return "I2C2";
@@ -111,6 +114,7 @@ const char *soc_acpi_name(const struct device *dev)
 	case PCI_DEVFN_GSPI1:		return "SPI1";
 	/* Keeping ACPI device name coherent with ec.asl */
 	case PCI_DEVFN_ESPI:		return "LPCB";
+	case PCI_DEVFN_SPI:		return "FSPI";
 	case PCI_DEVFN_HDA:		return "HDAS";
 	case PCI_DEVFN_SMBUS:		return "SBUS";
 	case PCI_DEVFN_GBE:		return "GLAN";

@@ -66,15 +66,23 @@ static int lookup_store(uint64_t target_nv_id, struct region_device *rstore)
 	return rdev_chain(rstore, rdev, 0, region_device_sz(rdev));
 }
 
-static enum mbox_p2c_status find_psp_spi_flash_device_region(uint64_t target_nv_id,
-							     struct region_device *store,
-							     const struct spi_flash **flash)
+static enum mbox_p2c_status get_flash_device(const struct spi_flash **flash)
 {
 	*flash = boot_device_spi_flash();
 	if (*flash == NULL) {
 		printk(BIOS_ERR, "PSP: Unable to find SPI device\n");
 		return MBOX_PSP_COMMAND_PROCESS_ERROR;
 	}
+
+	return MBOX_PSP_SUCCESS;
+}
+
+static enum mbox_p2c_status find_psp_spi_flash_device_region(uint64_t target_nv_id,
+							     struct region_device *store,
+							     const struct spi_flash **flash)
+{
+	if (get_flash_device(flash) != MBOX_PSP_SUCCESS)
+		return MBOX_PSP_COMMAND_PROCESS_ERROR;
 
 	if (lookup_store(target_nv_id, store) < 0) {
 		printk(BIOS_ERR, "PSP: Unable to find PSP SPI region\n");
@@ -84,9 +92,14 @@ static enum mbox_p2c_status find_psp_spi_flash_device_region(uint64_t target_nv_
 	return MBOX_PSP_SUCCESS;
 }
 
-static bool spi_controller_available(void)
+static bool spi_controller_busy(void)
 {
-	return !(spi_read8(SPI_MISC_CNTRL) & SPI_SEMAPHORE_DRIVER_LOCKED);
+	const bool busy = (spi_read8(SPI_MISC_CNTRL) & SPI_SEMAPHORE_DRIVER_LOCKED);
+
+	if (busy)
+		printk(BIOS_NOTICE, "PSP: SPI controller busy\n");
+
+	return busy;
 }
 
 enum mbox_p2c_status psp_smi_spi_get_info(struct mbox_default_buffer *buffer)
@@ -105,8 +118,7 @@ enum mbox_p2c_status psp_smi_spi_get_info(struct mbox_default_buffer *buffer)
 	if (!is_valid_psp_spi_info(cmd_buf))
 		return MBOX_PSP_COMMAND_PROCESS_ERROR;
 
-	if (!spi_controller_available()) {
-		printk(BIOS_NOTICE, "PSP: SPI controller busy\n");
+	if (spi_controller_busy()) {
 		return MBOX_PSP_SPI_BUSY;
 	}
 
@@ -148,8 +160,7 @@ enum mbox_p2c_status psp_smi_spi_read(struct mbox_default_buffer *buffer)
 	if (!is_valid_psp_spi_read_write(cmd_buf))
 		return MBOX_PSP_COMMAND_PROCESS_ERROR;
 
-	if (!spi_controller_available()) {
-		printk(BIOS_NOTICE, "PSP: SPI controller busy\n");
+	if (spi_controller_busy()) {
 		return MBOX_PSP_SPI_BUSY;
 	}
 
@@ -197,8 +208,7 @@ enum mbox_p2c_status psp_smi_spi_write(struct mbox_default_buffer *buffer)
 	if (!is_valid_psp_spi_read_write(cmd_buf))
 		return MBOX_PSP_COMMAND_PROCESS_ERROR;
 
-	if (!spi_controller_available()) {
-		printk(BIOS_NOTICE, "PSP: SPI controller busy\n");
+	if (spi_controller_busy()) {
 		return MBOX_PSP_SPI_BUSY;
 	}
 
@@ -245,8 +255,7 @@ enum mbox_p2c_status psp_smi_spi_erase(struct mbox_default_buffer *buffer)
 	if (!is_valid_psp_spi_erase(cmd_buf))
 		return MBOX_PSP_COMMAND_PROCESS_ERROR;
 
-	if (!spi_controller_available()) {
-		printk(BIOS_NOTICE, "PSP: SPI controller busy\n");
+	if (spi_controller_busy()) {
 		return MBOX_PSP_SPI_BUSY;
 	}
 

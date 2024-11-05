@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_LENOVO_M920Q
+	bool "ThinkCentre M920 Tiny"

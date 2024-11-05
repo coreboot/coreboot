@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  pull_request:
 
 jobs:
   build-hermes:
@@ -17,7 +18,7 @@ jobs:
       uses: ./.github/actions/buildx86
       with:
         config: firmwareci/config.prodrive_hermes.edk2
-        token: ${{ secrets.ACCESS_TOKEN }}
+        token: ${{ secrets.PRIVATE_SSH_KEY }}
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
@@ -32,3 +33,4 @@ jobs:
         BINARY_PATH: ./build/coreboot.rom
         PROTOCOL: local
         API: https://api.firmwareci.9esec.dev:8443  
+      if: github.event_name != 'pull_request'

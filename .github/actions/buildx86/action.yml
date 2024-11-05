@@ -48,14 +48,14 @@ runs:
       uses: JesseTG/rm@v1.0.3
       with:
         path: ./3rdparty/blobs
-
+    
     - name: Clone new blobs folder
       uses: actions/checkout@v4
       with:
         repository: BlindspotSoftware/blobs
         path: ./3rdparty/blobs
         ref: main
-        token: ${{ inputs.token }}
+        ssh-key: ${{ inputs.token }}
 
     - name: Build coreboot
       shell: bash

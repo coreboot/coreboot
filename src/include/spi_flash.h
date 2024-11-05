@@ -249,4 +249,7 @@ int spi_flash_vector_helper(const struct spi_slave *slave,
  */
 uint32_t spi_flash_get_mmap_windows(struct flash_mmap_window *table);
 
+/* Print the SFDP headers read from the SPI flash */
+void spi_flash_print_sfdp_headers(const struct spi_flash *flash);
+
 #endif /* _SPI_FLASH_H_ */

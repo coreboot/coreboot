@@ -346,7 +346,7 @@ int google_chromeec_get_num_pd_ports(unsigned int *num_ports);
  *
  * @return 0 if ok, -1 on error
  */
-int google_chromeec_get_pd_chip_infoi(int port, int renew,
+int google_chromeec_get_pd_chip_info(int port, int renew,
 				struct ec_response_pd_chip_info *r);
 
 /* Structure representing the capabilities of a USB-PD port */

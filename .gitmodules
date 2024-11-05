@@ -1,6 +1,6 @@
 [submodule "3rdparty/blobs"]
 	path = 3rdparty/blobs
-	url = ../blobs.git
+	url = ../../coreboot/blobs.git
 	branch = main
 [submodule "util/nvidia-cbootimage"]
 	path = util/nvidia/cbootimage

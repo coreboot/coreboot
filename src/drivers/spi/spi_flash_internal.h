@@ -159,4 +159,7 @@ struct sfdp_rpmc_info {
 enum cb_err spi_flash_get_sfdp_rpmc(const struct spi_flash *flash,
 				    struct sfdp_rpmc_info *rpmc_info);
 
+/* Fill rpmc_caps field in spi_flash struct with RPMC config from SFDP */
+void spi_flash_fill_rpmc_caps(struct spi_flash *flash);
+
 #endif /* SPI_FLASH_INTERNAL_H */

@@ -569,6 +569,11 @@ int spi_flash_probe(unsigned int bus, unsigned int cs, struct spi_flash *flash)
 		spi_flash_cmd(&flash->spi, CMD_EXIT_4BYTE_ADDR_MODE, NULL, 0);
 	}
 
+	/* TODO: only do this in stages that will need to call those functions? */
+	if (CONFIG(SPI_FLASH_RPMC)) {
+		spi_flash_fill_rpmc_caps(flash);
+	}
+
 	return 0;
 }
 

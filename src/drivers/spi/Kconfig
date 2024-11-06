@@ -194,6 +194,12 @@ config SPI_FLASH_SFDP
 	help
 	  Include serial flash discoverable parameters (SFDP) support.
 
+config SPI_FLASH_RPMC
+	bool
+	select SPI_FLASH_SFDP
+	help
+	  Include replay-protected monotonic counter (RPMC) support.
+
 endif # SPI_FLASH
 
 config HAVE_EM100PRO_SPI_CONSOLE_SUPPORT

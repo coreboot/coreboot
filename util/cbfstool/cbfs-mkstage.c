@@ -311,12 +311,21 @@ static Elf64_Phdr **find_loadable_segments(struct parsed_elf *pelf)
 		}
 		phdrs[size - 2] = cur;
 
-		if (prev && (prev->p_paddr + prev->p_memsz != cur->p_paddr ||
-			     prev->p_filesz != prev->p_memsz)) {
-			ERROR("Loadable segments physical addresses should "
-			      "be consecutive\n");
-			free(phdrs);
-			return NULL;
+		if (prev) {
+			const bool bfd_is_consecutive = prev->p_paddr + prev->p_memsz == cur->p_paddr
+				&& prev->p_filesz == prev->p_memsz;
+			/*
+			 * lld pads the memsz of the .text vaddr till the vaddr of car.data.
+			 * Since we don't load XIP stages at runtime, we don't care.
+			 */
+			const bool lld_is_consecutive = prev->p_vaddr + prev->p_memsz == cur->p_vaddr;
+
+			if (!bfd_is_consecutive && !lld_is_consecutive) {
+				ERROR("Loadable segments physical addresses should "
+				      "be consecutive\n");
+				free(phdrs);
+				return NULL;
+			}
 		}
 		prev = cur;
 	}

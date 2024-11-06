@@ -474,7 +474,7 @@ static const struct pad_config ish_enable_pads[] = {
 void fw_config_configure_pre_mem_gpio(void)
 {
 	if (!fw_config_is_provisioned()) {
-		printk(BIOS_WARNING, "FW_CONFIG is not provisioned, Existing");
+		printk(BIOS_WARNING, "FW_CONFIG is not provisioned, Exiting\n");
 		return;
 	}
 
@@ -519,7 +519,7 @@ void fw_config_configure_pre_mem_gpio(void)
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 {
 	if (!fw_config_is_provisioned()) {
-		printk(BIOS_WARNING, "FW_CONFIG is not provisioned, Existing");
+		printk(BIOS_WARNING, "FW_CONFIG is not provisioned, Exiting\n");
 		return;
 	}
 

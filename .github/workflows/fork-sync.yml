@@ -2,7 +2,7 @@ name: Sync Fork
 
 on:
   schedule:
-    - cron: '* */4 * * *' # every 30 minutes
+    - cron: '* */4 * * *' # every four hours
   workflow_dispatch: # on button click
 
 jobs:
@@ -13,8 +13,10 @@ jobs:
     steps:
       - uses: tgymnich/fork-sync@v1.8
         with:
+          token: ${{ secrets.PERSONAL_REVIEW_TOKEN }}
           owner: coreboot
           base: main
           head: main
           ignore_fail: true
           merge_method: merge
+          auto_approve: true

@@ -11,6 +11,8 @@
 #include <vendorcode/intel/edk2/edk2-stable202111/IntelFsp2Pkg/Include/Guid/FspHeaderFile.h>
 #elif CONFIG_UDK_VERSION == CONFIG_UDK_202302_VERSION
 #include <vendorcode/intel/edk2/edk2-stable202302/IntelFsp2Pkg/Include/Guid/FspHeaderFile.h>
+#elif CONFIG_UDK_VERSION == CONFIG_UDK_202305_VERSION
+#include <vendorcode/intel/edk2/edk2-stable202305/IntelFsp2Pkg/Include/Guid/FspHeaderFile.h>
 #else
 #error "Unknown UDK_VESION!"
 #endif

@@ -32,4 +32,10 @@ CPPFLAGS_x86_64 += -I$(src)/vendorcode/intel/edk2/edk2-stable202302/MdePkg/Inclu
 CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/edk2-stable202302/MdePkg/Include
 CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/edk2-stable202302/IntelFsp2Pkg/Include
 CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/edk2-stable202302/UefiCpuPkg/Include/
+else ifeq ($(CONFIG_UDK_202305_BINDING),y)
+CPPFLAGS_x86_32 += -I$(src)/vendorcode/intel/edk2/edk2-stable202305/MdePkg/Include/Ia32
+CPPFLAGS_x86_64 += -I$(src)/vendorcode/intel/edk2/edk2-stable202305/MdePkg/Include/X64
+CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/edk2-stable202305/MdePkg/Include
+CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/edk2-stable202305/IntelFsp2Pkg/Include
+CPPFLAGS_common += -I$(src)/vendorcode/intel/edk2/edk2-stable202305/UefiCpuPkg/Include/
 endif

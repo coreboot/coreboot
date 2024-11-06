@@ -53,9 +53,8 @@ static void variant_pl4_override(struct soc_power_limits_config *config,
 	if (!config->tdp_pl4)
 		return;
 
-	/* limiting PL4 value for battery disconnected or below critical threshold */
-	if (CONFIG_PL4_LIMIT_FOR_CRITICAL_BAT_BOOT &&
-	     (!google_chromeec_is_battery_present_and_above_critical_threshold()))
+	/* Limit PL4 when battery is disconnected */
+	if (CONFIG_PL4_LIMIT_FOR_CRITICAL_BAT_BOOT && !google_chromeec_is_battery_present())
 		config->tdp_pl4 = CONFIG_PL4_LIMIT_FOR_CRITICAL_BAT_BOOT;
 	else
 		config->tdp_pl4 = DIV_ROUND_UP(limits[brox_idx].pl4_power, MILLIWATTS_TO_WATTS);

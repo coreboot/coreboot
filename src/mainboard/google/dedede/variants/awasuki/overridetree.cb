@@ -1,4 +1,7 @@
 chip soc/intel/jasperlake
+	# PCIe RP LTR configuration
+	register "PcieRpLtrEnable[7]" = "1"
+
 	# USB Port Configuration
 	register "usb2_ports[1]" = "USB2_PORT_EMPTY"
 	register "usb2_ports[3]" = "USB2_PORT_EMPTY"

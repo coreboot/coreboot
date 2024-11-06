@@ -397,7 +397,7 @@ bool generate_pin_irq_map(void)
 		entry = entry->next;
 	}
 
-	intel_write_pci0_PRT(pin_irq_map, map_count, &pirq_map);
+	intel_write_pci_PRT("\\_SB.PCI0", pin_irq_map, map_count, &pirq_map);
 	free(pin_irq_map);
 
 	return true;

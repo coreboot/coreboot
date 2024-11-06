@@ -43,12 +43,10 @@ static void gen_pic_route(const struct slot_pin_irq_map *pin_irq_map,
 	}
 }
 
-void intel_write_pci0_PRT(const struct slot_pin_irq_map *pin_irq_map,
-			  unsigned int map_count,
-			  const struct pic_pirq_map *pirq_map)
+void intel_write_pci_PRT(const char *scope, const struct slot_pin_irq_map *pin_irq_map,
+			 unsigned int map_count, const struct pic_pirq_map *pirq_map)
 {
-	/* \_SB.PCI0._PRT */
-	acpigen_write_scope("\\_SB.PCI0");
+	acpigen_write_scope(scope);
 	acpigen_write_method("_PRT", 0);
 	acpigen_write_if();
 	acpigen_emit_namestring("PICM");

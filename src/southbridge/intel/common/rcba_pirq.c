@@ -90,7 +90,7 @@ void intel_acpi_gen_def_acpi_pirq(const struct device *lpc)
 		map_count++;
 	}
 
-	intel_write_pci0_PRT(pin_irq_map, map_count, &pirq_map);
+	intel_write_pci_PRT("\\_SB.PCI0", pin_irq_map, map_count, &pirq_map);
 
 	free(pin_irq_map);
 }

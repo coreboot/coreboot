@@ -84,9 +84,8 @@ struct pic_pirq_map {
  * slot/pin combination, and optionally providing paths to LNKx devices that can
  * provide IRQs in PIC mode.
  */
-void intel_write_pci0_PRT(const struct slot_pin_irq_map *pin_irq_map,
-			  unsigned int map_count,
-			  const struct pic_pirq_map *pirq_map);
+void intel_write_pci_PRT(const char *scope, const struct slot_pin_irq_map *pin_irq_map,
+			 unsigned int map_count, const struct pic_pirq_map *pirq_map);
 
 bool is_slot_pin_assigned(const struct slot_pin_irq_map *pin_irq_map,
 			  unsigned int map_count, unsigned int slot,

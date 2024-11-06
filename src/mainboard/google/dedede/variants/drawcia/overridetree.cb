@@ -7,6 +7,9 @@ fw_config
 end
 chip soc/intel/jasperlake
 
+	# PCIe RP LTR configuration
+	register "PcieRpLtrEnable[7]" = "1"
+
 	# USB Port Configuration
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"     # Camera
 

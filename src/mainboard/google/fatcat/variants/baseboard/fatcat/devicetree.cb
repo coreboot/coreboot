@@ -34,7 +34,7 @@ chip soc/intel/pantherlake
 	register "s0ix_enable" = "false"
 
 	# DPTF enable
-	register "dptf_enable" = "false"
+	register "dptf_enable" = "true"
 
 	# TODO: Safe Setting. Needs to be removed later
 	# Disable C1 C-state auto-demotion

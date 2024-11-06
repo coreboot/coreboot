@@ -6,7 +6,7 @@ const u32 cim_verb_data[] = {
 	/* ALC 700 */
 	0x10EC0700,
 	0xFFFFFFFF,
-	0x00000023,
+	161,
 
 	AZALIA_SUBVENDOR(0, 0x10EC10F2),
 	AZALIA_PIN_CFG(0, 0x01, 0x00000000),

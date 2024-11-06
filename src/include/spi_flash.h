@@ -15,6 +15,10 @@
 /* SPI RPMC field lengths in bytes */
 #define SPI_RPMC_TAG_LEN		12
 #define SPI_RPMC_SIG_LEN		32
+#define SPI_RPMC_ROOT_KEY_LEN		32
+#define SPI_RPMC_TRUNCTAED_SIG_LEN	28 /* only used in write RPMC root key command */
+#define SPI_RPMC_KEY_DATA_LEN		4
+#define SPI_RPMC_COUNTER_DATA_LEN	4
 
 struct spi_flash;
 
@@ -260,5 +264,53 @@ uint32_t spi_flash_get_mmap_windows(struct flash_mmap_window *table);
 
 /* Print the SFDP headers read from the SPI flash */
 void spi_flash_print_sfdp_headers(const struct spi_flash *flash);
+
+/*
+ * Write RPMC root key
+ *
+ * root_key: pointer to 32 bytes long buffer with root key
+ * truncated_signature: pointer to 28 bytes long buffer with truncated signature
+ *
+ * The buffers have the bytes in the order in which they will be sent to the SPI flash
+ */
+enum cb_err spi_flash_rpmc_write_root_key(const struct spi_flash *flash, uint8_t counter_addr,
+					  const uint8_t *root_key,
+					  const uint8_t *truncated_signature);
+
+/*
+ * Update HMAC key
+ *
+ * key_data: pointer to 4 bytes long buffer with key data
+ * signature: pointer to 32 bytes long buffer with signature
+ *
+ * The buffers have the bytes in the order in which they will be sent to the SPI flash
+ */
+enum cb_err spi_flash_rpmc_update_hmac_key(const struct spi_flash *flash, uint8_t counter_addr,
+					   uint8_t *key_data, const uint8_t *signature);
+
+/*
+ * Increment monotonic counter
+ *
+ * counter_data: pointer to 4 bytes long buffer with counter data
+ * signature: pointer to 32 bytes long buffer with signature
+ *
+ * The buffers have the bytes in the order in which they will be sent to the SPI flash
+ */
+enum cb_err spi_flash_rpmc_increment(const struct spi_flash *flash, uint8_t counter_addr,
+				     const uint8_t *counter_data, const uint8_t *signature);
+
+/*
+ * Request monotonic counter
+ *
+ * tag: pointer to 12 bytes long buffer with tag
+ * signature: pointer to 32 bytes long buffer with signature
+ * counter_data: pointer to 4 bytes long buffer with counter data
+ * signature_out: pointer to 32 bytes long buffer with signature
+ *
+ * The buffers have the bytes in the order in which they will be sent to the SPI flash
+ */
+enum cb_err spi_flash_rpmc_request(const struct spi_flash *flash, uint8_t counter_addr,
+				   const uint8_t *tag, const uint8_t *signature,
+				   uint8_t *counter_data, uint8_t *signature_out);
 
 #endif /* _SPI_FLASH_H_ */

@@ -1756,9 +1756,23 @@ static int calculate_gpr0_range(char *image, int size,
 		fprintf(stderr, "Unsupported platform\n");
 		exit(EXIT_FAILURE);
 	}
-	uint32_t data_part_offset = *((uint32_t *)(image + cse_region_start + cse_data_offset));
+	const uint32_t *data_part_offset_ptr = (uint32_t *)(image + cse_region_start +
+							    cse_data_offset);
+	if (!PTR_IN_RANGE(data_part_offset_ptr, image, size)) {
+		fprintf(stderr, "Data part offset %d exceeds image size %d\n",
+			cse_region_start + cse_data_offset, size);
+		return -1;
+	}
+	uint32_t data_part_offset = *data_part_offset_ptr;
+
 	/* Start reading the CSE Data Partition Table, also known as FPT */
 	uint32_t data_part_start = data_part_offset + cse_region_start;
+	struct cse_fpt *fpt = (struct cse_fpt *)(image + data_part_start);
+	if (!PTR_IN_RANGE(fpt, image, size)) {
+		fprintf(stderr, "FPT offset %d exceeds image size %d\n",
+			data_part_start, size);
+		return -1;
+	}
 
 	uint32_t fitc_region_start = 0;
 	size_t fitc_region_size = 0;
@@ -1766,8 +1780,7 @@ static int calculate_gpr0_range(char *image, int size,
 	 * FPT holds entry for own FPT data structure also bunch of sub-partitions.
 	 * `FITC` is one of such sub-partition entry.
 	 */
-	if (parse_fitc_table(((struct cse_fpt *)(image + data_part_start)),
-			 &fitc_region_start, &fitc_region_size) < 0) {
+	if (parse_fitc_table(fpt, &fitc_region_start, &fitc_region_size) < 0) {
 		fprintf(stderr, "Unable to find FITC entry\n");
 		return -1;
 	}

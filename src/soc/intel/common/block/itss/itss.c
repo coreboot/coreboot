@@ -134,3 +134,19 @@ void itss_restore_irq_polarities(int start, int end)
 
 	show_irq_polarities("After");
 }
+
+enum pirq itss_get_on_chip_dev_pirq(struct device *dev, enum pci_pin pin)
+{
+	/* Check if device is on chip. */
+	if (dev->upstream->dev->path.type != DEVICE_PATH_DOMAIN)
+		return PIRQ_INVALID;
+
+	uint16_t pir = pcr_read16(PID_ITSS, itss_soc_get_on_chip_dev_pir(dev));
+	if (pir < PCI_ITSS_PIR(0))
+		return PIRQ_INVALID;
+
+	/* The lower 3 bits of every 4 bits indicates which PIRQ is connect to INT. */
+	unsigned int pir_shift = (pin - PCI_INT_A) * 4;
+	unsigned int pir_mask = 0x07;
+	return ((pir >> pir_shift) & pir_mask) + PIRQ_A;
+}

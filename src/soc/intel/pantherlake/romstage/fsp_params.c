@@ -1,7 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <bootmode.h>
 #include <cpu/intel/common/common.h>
 #include <cpu/x86/msr.h>
+#include <elog.h>
 #include <fsp/debug.h>
 #include <fsp/fsp_debug_event.h>
 #include <fsp/util.h>
@@ -11,6 +13,7 @@
 #include <soc/pcie.h>
 #include <soc/romstage.h>
 #include <static.h>
+#include <ux_locales.h>
 
 #define FSP_CLK_NOTUSED		0xff
 #define FSP_CLK_LAN		0x70
@@ -355,6 +358,35 @@ static void fill_fsp_event_handler(FSPM_UPD *mupd)
 	fsp_control_log_level(mupd, fsp_debug_enable);
 }
 
+static void fill_fspm_sign_of_life(FSPM_UPD *mupd)
+{
+	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
+	FSPM_ARCHx_UPD *arch_upd = &mupd->FspmArchUpd;
+	void *vbt;
+	size_t vbt_size;
+
+	if (arch_upd->NvsBufferPtr)
+		return;
+
+	/* To enhance the user experience, let's display on-screen guidance during memory
+	   training, acknowledging that the process may require patience. */
+
+	vbt = cbfs_map("vbt.bin", &vbt_size);
+	if (!vbt) {
+		printk(BIOS_ERR, "Could not load vbt.bin\n");
+		return;
+	}
+
+	printk(BIOS_INFO, "Enabling FSP-M Sign-of-Life\n");
+	elog_add_event_byte(ELOG_TYPE_FW_EARLY_SOL, ELOG_FW_EARLY_SOL_MRC);
+
+	m_cfg->VgaInitControl = 1;
+	m_cfg->VbtPtr = (efi_uintn_t)vbt;
+	m_cfg->VbtSize = vbt_size;
+	m_cfg->LidStatus = CONFIG(VBOOT_LID_SWITCH) ? get_lid_switch() : CONFIG(RUN_FSP_GOP);
+	m_cfg->VgaMessage = (efi_uintn_t)ux_locales_get_text(UX_LOCALE_MSG_MEMORY_TRAINING);
+}
+
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	const struct soc_intel_pantherlake_config *config = config_of_soc();
@@ -363,6 +395,10 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 		fill_fsp_event_handler(mupd);
 
 	soc_memory_init_params(&mupd->FspmConfig, config);
+
+	if (CONFIG(FSP_UGOP_EARLY_SIGN_OF_LIFE))
+		fill_fspm_sign_of_life(mupd);
+
 	mainboard_memory_init_params(mupd);
 }
 

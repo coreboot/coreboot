@@ -105,7 +105,6 @@ config SOC_INTEL_PANTHERLAKE_BASE
 	select UDELAY_TSC
 	select UDK_202302_BINDING
 	select USE_X86_64_SUPPORT
-	select X86_CLFLUSH_CAR
 	select X86_INIT_NEED_1_SIPI
 	help
 	  Intel Pantherlake support. Mainboards should specify the SoC

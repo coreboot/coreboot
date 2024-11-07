@@ -17,6 +17,5 @@ jobs:
           owner: coreboot
           base: main
           head: main
-          ignore_fail: true
           merge_method: merge
           auto_approve: true

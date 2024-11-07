@@ -4,7 +4,7 @@
 #include <soc/rtc_common.h>
 
 /* 32k clock calibration */
-static int rtc_eosc_cali(void)
+u16 rtc_eosc_cali(void)
 {
 	u16 diff_left, diff_right, cksel;
 	u16 val = 0;

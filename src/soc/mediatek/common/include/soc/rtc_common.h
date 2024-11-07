@@ -103,5 +103,6 @@ bool rtc_reg_init(void);
 void rtc_osc_init(void);
 bool rtc_powerkey_init(void);
 void rtc_boot_common(void);
+u16 rtc_eosc_cali(void);
 
 #endif /* SOC_MEDIATEK_RTC_COMMON_H */

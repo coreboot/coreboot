@@ -11,6 +11,7 @@
 #include <soc/mt6363.h>
 #include <soc/mt6373.h>
 #include <soc/mt6685.h>
+#include <soc/mt6685_rtc.h>
 #include <soc/mtk_fsp.h>
 #include <soc/pcie.h>
 #include <soc/pll.h>
@@ -44,6 +45,8 @@ void platform_romstage_main(void)
 	dvfsrc_opp_level_mapping();
 	srclken_rc_init();
 	clk_buf_init();
+	if (CONFIG(RTC))
+		rtc_boot();
 	mtk_dram_init();
 	modem_power_down();
 	dvfs_init();

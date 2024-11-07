@@ -15,7 +15,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        token: ${{ secrets.ACCESS_TOKEN }}
         submodules: recursive
     - name: Build Prodrive Hermes Board
       uses: ./.github/actions/buildx86

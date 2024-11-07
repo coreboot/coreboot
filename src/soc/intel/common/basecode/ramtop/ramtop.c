@@ -181,25 +181,19 @@ void early_ramtop_enable_cache_range(void)
 	}
 
 	size_t ramtop_size = get_ramtop_size();
-	/*
-	 * Background: Some SoCs have a critical bug inside the NEM logic which is responsible
-	 *             for mapping cached memory to physical memory during tear down and
-	 *             eventually malfunctions if the number of cache sets is not a power of two.
-	 *             This can lead to runtime hangs.
-	 *
-	 * Workaround: To mitigate this issue on affected SoCs, we force the MTRR type to
-	 *             WC (Write Combining) unless the cache set count is a power of two.
-	 *             This change alters caching behavior but prevents the runtime failures.
-	 */
-	unsigned int mtrr_type = MTRR_TYPE_WRCOMB;
-	/*
-	* Late romstage (including FSP-M post-memory initialization) needs to be
-	* executed from cache for performance reasons. This requires caching
-	* `ramtop_size`, which encompasses both FSP reserved memory and the CBMEM
-	* range, to guarantee sufficient cache coverage for late romstage.
-	*/
-	if (is_cache_sets_power_of_two())
-		mtrr_type = MTRR_TYPE_WRBACK;
+	if (!ramtop_size)
+		return;
 
-	set_var_mtrr(mtrr, ramtop - ramtop_size, ramtop_size, mtrr_type);
+	/*
+	 *  INTEL RECOMMENDATION: Early Ramtop Caching Configuration
+	 *
+	 *  Configuring the Early Caching Ramtop range as Write-Back (WB) before
+	 *  memory initialization is NOT RECOMMENDED. Speculative execution within
+	 *  this WB range can lead to issues. WB configuration should be applied
+	 *  to this range ONLY AFTER memory initialization is complete.
+	 *
+	 *  To enable Ramtop caching before memory initialization, use Write-Combining
+	 *  (WC) instead of Write-Back (WB).
+	 */
+	set_var_mtrr(mtrr, ramtop - ramtop_size, ramtop_size, MTRR_TYPE_WRCOMB);
 }

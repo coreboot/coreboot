@@ -11,6 +11,7 @@ all-y += ../common/uart.c
 
 bootblock-y += bootblock.c
 bootblock-y += ../common/mmu_operations.c
+bootblock-y += ../common/mtcmos.c mtcmos.c
 bootblock-y += ../common/wdt.c ../common/wdt_req.c wdt.c
 
 romstage-y += ../common/cbmem.c
@@ -25,6 +26,7 @@ ramstage-y += ../common/dramc_info.c
 ramstage-y += ../common/emi.c
 ramstage-y += ../common/memory.c
 ramstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
+ramstage-y += ../common/mtcmos.c mtcmos.c
 ramstage-y += soc.c
 ramstage-y += ../common/usb.c usb.c
 

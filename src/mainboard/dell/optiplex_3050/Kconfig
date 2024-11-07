@@ -1,0 +1,37 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_DELL_OPTIPLEX_3050
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_16384
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_CMOS_DEFAULT
+	select HAVE_OPTION_TABLE
+	select INTEL_GMA_ADD_VBT
+	select INTEL_GMA_HAVE_VBT
+	select MAINBOARD_HAS_LIBGFXINIT
+	select MAINBOARD_SUPPORTS_KABYLAKE_CPU
+	select MAINBOARD_SUPPORTS_SKYLAKE_CPU
+	select SKYLAKE_SOC_PCH_H
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select SOC_INTEL_KABYLAKE
+	select SUPERIO_SMSC_SCH555x
+
+config CBFS_SIZE
+	default 0x900000
+
+config MAINBOARD_DIR
+	default "dell/optiplex_3050"
+
+config MAINBOARD_PART_NUMBER
+	default "OptiPlex 3050 Micro"
+
+config INTEL_GMA_VBT_FILE
+	default "src/mainboard/\$(MAINBOARDDIR)/data.vbt"
+
+config DIMM_SPD_SIZE
+	default 512	# DDR4
+
+endif

@@ -1,0 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_GIGABYTE_GA_H77M_D3H
+	bool "GA-H77M-D3H"

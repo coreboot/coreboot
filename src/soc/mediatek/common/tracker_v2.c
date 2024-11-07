@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <commonlib/bsd/helpers.h>
 #include <device/mmio.h>
 #include <soc/addressmap.h>
 #include <soc/tracker.h>
@@ -18,29 +19,32 @@
  * offset[0] dump from offset 0x100 ~ 0x2F8
  * offset[1] dump from offset 0x300 ~ 0x4FC
  */
+
+static const u32 offsets[] = { AR_TRACK_OFFSET, AW_TRACK_OFFSET };
+
 struct tracker tracker_data[TRACKER_NUM] = {
 	[TRACKER_SYSTRACKER] = {
 		.base_addr = DBG_TRACKER_BASE,
 		.timeout = BUS_DBG_CON_TIMEOUT,
 		.entry = SYS_TRACK_ENTRY,
-		.offset[0] = AR_TRACK_OFFSET,
-		.offset[1] = AW_TRACK_OFFSET,
+		.offsets = offsets,
+		.offsets_size = ARRAY_SIZE(offsets),
 		.str = "systracker",
 	},
 	[TRACKER_INFRATRACKER] = {
 		.base_addr = INFRA_TRACKER_BASE,
 		.timeout = BUSTRACKER_TIMEOUT,
 		.entry = INFRA_ENTRY_NUM,
-		.offset[0] = AR_TRACK_OFFSET,
-		.offset[1] = AW_TRACK_OFFSET,
+		.offsets = offsets,
+		.offsets_size = ARRAY_SIZE(offsets),
 		.str = "infra_tracker",
 	},
 	[TRACKER_PERISYSTRACKER] = {
 		.base_addr = PERI_TRACKER_BASE,
 		.timeout = BUSTRACKER_TIMEOUT,
 		.entry = PERI_ENTRY_NUM,
-		.offset[0] = AR_TRACK_OFFSET,
-		.offset[1] = AW_TRACK_OFFSET,
+		.offsets = offsets,
+		.offsets_size = ARRAY_SIZE(offsets),
 		.str = "peri_tracker",
 	},
 };
@@ -57,16 +61,16 @@ void tracker_setup(void)
 	 * peri tracker clock: 78MHz
 	 */
 	val = 156 * 1000 / 16 * 200;
-	write32((void *)(INFRA_TRACKER_BASE + BUS_DBG_TIMER_CON0), val);
-	write32((void *)(INFRA_TRACKER_BASE + BUS_DBG_TIMER_CON1), val);
+	write32p(INFRA_TRACKER_BASE + BUS_DBG_TIMER_CON0, val);
+	write32p(INFRA_TRACKER_BASE + BUS_DBG_TIMER_CON1, val);
 
 	val = 78 * 1000 / 16 * 200;
-	write32((void *)(PERI_TRACKER_BASE + BUS_DBG_TIMER_CON0), val);
-	write32((void *)(PERI_TRACKER_BASE + BUS_DBG_TIMER_CON1), val);
+	write32p(PERI_TRACKER_BASE + BUS_DBG_TIMER_CON0, val);
+	write32p(PERI_TRACKER_BASE + BUS_DBG_TIMER_CON1, val);
 
 	/* Enable infra/peri tracer because tracker and tracer share the same enable bit. */
-	write32((void *)(BUS_TRACE_MONITOR_BASE + BUS_TRACE_CON_1), 1 << BUS_TRACE_EN);
-	write32((void *)(BUS_TRACE_MONITOR_BASE + BUS_TRACE_CON_2), 1 << BUS_TRACE_EN);
+	write32p(BUS_TRACE_MONITOR_BASE + BUS_TRACE_CON_1, 1 << BUS_TRACE_EN);
+	write32p(BUS_TRACE_MONITOR_BASE + BUS_TRACE_CON_2, 1 << BUS_TRACE_EN);
 
 	/*
 	 * Enable infra/peri tracker.
@@ -77,6 +81,6 @@ void tracker_setup(void)
 	 * bit[14] - BUS_OT_WEN_CTRL
 	 */
 	val = BIT(0) | BIT(1) | BIT(2) | BIT(13) | BIT(14);
-	write32((void *)(BUS_TRACE_MONITOR_BASE + BUS_TRACE_CON_AO_1), val);
-	write32((void *)(BUS_TRACE_MONITOR_BASE + BUS_TRACE_CON_AO_2), val);
+	write32p(BUS_TRACE_MONITOR_BASE + BUS_TRACE_CON_AO_1, val);
+	write32p(BUS_TRACE_MONITOR_BASE + BUS_TRACE_CON_AO_2, val);
 }

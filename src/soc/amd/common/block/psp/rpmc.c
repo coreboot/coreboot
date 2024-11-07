@@ -68,8 +68,8 @@ static enum psp_rpmc_revision get_rpmc_rev(union psp_rpmc_caps psp_caps)
 
 static void print_rpmc_general_status(uint8_t healthy, uint8_t rpmc_protected)
 {
-	printk(BIOS_SPEW, "PSP NVRAM %s healthy\n", healthy ? "is" : "isn't");
-	printk(BIOS_SPEW, "PSP NVRAM %s using RPMC protection\n",
+	printk(BIOS_SPEW, "PSP RPMC NVRAM %s healthy\n", healthy ? "is" : "isn't");
+	printk(BIOS_SPEW, "PSP RPMC NVRAM %s using RPMC protection\n",
 	       rpmc_protected ? "is" : " isn't");
 }
 

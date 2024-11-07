@@ -1,7 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
 config ACPI_FNKEY_GEN_SCANCODE
-	default 94 if (BOARD_GOOGLE_XOL || BOARD_GOOGLE_RIVEN)
+	default 94 if (BOARD_GOOGLE_XOL || BOARD_GOOGLE_RIVEN || BOARD_GOOGLE_RULL)
 
 config BOARD_GOOGLE_BRYA_COMMON
 	def_bool n

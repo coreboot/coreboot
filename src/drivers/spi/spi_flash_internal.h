@@ -32,6 +32,10 @@
 /* Send a single-byte command to the device and read the response */
 int spi_flash_cmd(const struct spi_slave *spi, u8 cmd, void *response, size_t len);
 
+/* Send a multi-byte command to the device and read the response */
+int spi_flash_cmd_multi(const struct spi_slave *spi, const u8 *dout, size_t bytes_out,
+			void *din, size_t bytes_in);
+
 /*
  * Send a multi-byte command to the device followed by (optional)
  * data. Used for programming the flash array, etc.

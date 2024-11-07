@@ -1,0 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+config BOARD_ASROCK_IMB_1222
+	bool "IMB-1222"

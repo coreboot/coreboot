@@ -8,6 +8,7 @@
 #include <soc/chip_common.h>
 #include <soc/pci_devs.h>
 #include <soc/util.h>
+#include <southbridge/intel/common/acpi_pirq_gen.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -189,6 +190,46 @@ void acpigen_write_pci_root_port(const struct device *rp)
 	acpigen_write_device(acpi_name);
 	acpigen_write_ADR_pci_device(rp);
 	acpigen_write_pci_root_port_devices(rp);
+
+	acpigen_pop_len();
+	acpigen_pop_len();
+}
+
+void acpigen_write_PRT_pre_routed(const struct device *br)
+{
+	int dev_num = 0;
+	uint32_t routed_dev_bitmap = 0;
+	char *entry_count;
+
+	if (!is_pci_bridge(br))
+		return;
+
+	const char *acpi_scope = acpi_device_path(br);
+	if (!acpi_scope)
+		return;
+
+	acpigen_write_scope(acpi_scope);
+	acpigen_write_name("_PRT");
+	entry_count = acpigen_write_package(0);
+
+	struct device *dev = NULL;
+	while ((dev = dev_bus_each_child(br->downstream, dev))) {
+		if (!is_pci(dev))
+			continue;
+		dev_num = PCI_SLOT(dev->path.pci.devfn);
+		if (routed_dev_bitmap & (1 << dev_num))
+			continue;
+
+		uint8_t int_line = pci_read_config8(dev, PCI_INTERRUPT_LINE);
+		uint8_t int_pin = pci_read_config8(dev, PCI_INTERRUPT_PIN);
+		if ((int_pin > PCI_INT_MAX) || (int_pin < PCI_INT_A))
+			continue;
+
+		acpigen_write_PRT_GSI_entry(dev_num, int_pin - PCI_INT_A, int_line);
+
+		(*entry_count)++;
+		routed_dev_bitmap |= (1 << dev_num);
+	}
 
 	acpigen_pop_len();
 	acpigen_pop_len();

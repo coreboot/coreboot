@@ -31,6 +31,11 @@ const char *get_wifi_sar_cbfs_filename(void)
 	return get_wifi_sar_fw_config_filename(FW_CONFIG_FIELD(WIFI_BT));
 }
 
+const char *variant_get_auxfw_version_file(void)
+{
+	return "rts5453_retimer_bypass.hash";
+}
+
 static void wwan_out_of_reset(void *unused)
 {
 	if (fw_config_probe(FW_CONFIG(DB_USB, DB_1A_LTE))) {

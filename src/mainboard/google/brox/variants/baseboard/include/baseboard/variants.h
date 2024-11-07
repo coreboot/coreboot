@@ -60,4 +60,5 @@ void variant_update_power_limits(const struct cpu_power_limits *limits,
 void variant_init(void);
 void variant_finalize(void);
 
+const char *variant_get_auxfw_version_file(void);
 #endif /*__BASEBOARD_VARIANTS_H__ */

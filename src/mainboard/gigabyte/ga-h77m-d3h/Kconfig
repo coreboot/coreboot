@@ -1,0 +1,37 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_GIGABYTE_GA_H77M_D3H
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select NORTHBRIDGE_INTEL_SANDYBRIDGE
+	select USE_NATIVE_RAMINIT
+	select SOUTHBRIDGE_INTEL_C216
+	select SUPERIO_ITE_IT8728F
+	select BOARD_ROMSIZE_KB_8192
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select HAVE_CMOS_DEFAULT
+	select HAVE_ACPI_RESUME
+	select INTEL_GMA_HAVE_VBT
+	select SERIRQ_CONTINUOUS_MODE
+	select MAINBOARD_HAS_LIBGFXINIT
+	select MEMORY_MAPPED_TPM
+
+config DRAM_RESET_GATE_GPIO
+	int
+	# Use GPIO25 because it does not exist on desktop PCHs and because
+	# this board does not use DRAM reset gate GPIO
+	default 25
+
+config USBDEBUG_HCD_INDEX
+	int
+	default 2
+
+config MAINBOARD_DIR
+	default "gigabyte/ga-h77m-d3h"
+
+config MAINBOARD_PART_NUMBER
+	default "GA-H77M-D3H"
+
+endif # BOARD_GIGABYTE_GA_H77_D3H

@@ -4,6 +4,14 @@ This page describes how to run coreboot on the [Protectli FW6].
 
 ![](fw6.jpg)
 
+## Stock firmware
+
+The stock firmware contains only the firmware descriptor, BIOS and
+Management Engine. The EC firmware is not present on the SPI chip.
+
+Using ifdtool, a full layout can be obtained along with the ME and FD
+flash regions.
+
 ## Required proprietary blobs
 
 To build a minimal working coreboot image some blobs are required (assuming
@@ -39,6 +47,9 @@ The main SPI flash can be accessed using [flashrom]. The first version
 supporting the chipset is flashrom v1.1. Firmware an be easily flashed
 with internal programmer (either BIOS region or full image).
 
+The stock firmware can be dumped using [flashrom] or downloaded from
+Protectli's official [website].
+
 ### External programming
 
 The system has an internal flash chip which is a 8 MiB soldered SOIC-8 chip.
@@ -59,7 +70,7 @@ it's a Macronix MX25L6406E (3.3V) -[datasheet][MX25L6406E].
 - Sometimes FSPMemoryInit return errors or hangs (especially with 2 DIMMs
   connected). A workaround is to power cycle the board (even a few times) or
   temporarily disconnect DIMM when platform is powered off.
-- When using libgfxinit and SeaBIOS bootsplash, the red color is dim
+- When using libgfxinit and SeaBIOS bootsplash, the red color is dim.
 
 ## Untested
 
@@ -67,7 +78,6 @@ Not all mainboard's peripherals and functions were tested because of lack of
 the cables or not being populated on the board case.
 
 - Internal USB 2.0 headers
-- Boot with cleaned ME
 
 ## Working
 
@@ -83,7 +93,9 @@ the cables or not being populated on the board case.
 - SeaBIOS payload (version rel-1.12.1)
 - Mini PCIe debug card connected to mSATA (mSATA slot has LPC signals routed)
 - Reset switch
-- Booting Debian, Ubuntu, FreeBSD
+- Booting Debian, Ubuntu, FreeBSD, Proxmox
+- PCIe passthrough for NICs and iGPU
+- Boot with cleaned ME
 
 ## Technology
 
@@ -132,6 +144,15 @@ used SoC.
 +------------------+--------------------------------------------------+
 ```
 
+## Other compatible boards
+
+As Protectli licenses and uses [Yanling] appliances with no modifications
+to the actual hardware, any compatible [Yanling] appliances would work.
+Specifically, look for hardware with the same CPU and NIC and coreboot
+should be able to compile and boot with no modifications required.
+
 [Protectli FW6]: https://protectli.com/vault-6-port/
+[website]: https://protectli.com/kb/coreboot-on-the-vault/
 [MX25L6406E]: https://www.macronix.com/Lists/Datasheet/Attachments/7370/MX25L6406E,%203V,%2064Mb,%20v1.9.pdf
 [flashrom]: https://flashrom.org/Flashrom
+[Yanling]: http://www.ylgkdn.cn/

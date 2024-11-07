@@ -39,5 +39,6 @@ void acpigen_write_OSC_pci_domain_fixed_caps(const struct device *domain,
 				const bool is_cxl_domain,
 				const uint32_t granted_cxl_features);
 void acpigen_write_pci_root_port(const struct device *rp);
+void acpigen_write_PRT_pre_routed(const struct device *br);
 
 #endif /* _SOC_ACPI_H_ */

@@ -25,3 +25,12 @@ const char *get_wifi_sar_cbfs_filename(void)
 {
 	return get_wifi_sar_fw_config_filename(FW_CONFIG_FIELD(WIFI_BT));
 }
+
+const char *variant_get_auxfw_version_file(void)
+{
+	if (fw_config_probe(FW_CONFIG(RETIMER, RETIMER_BYPASS)))
+		return "rts5453_retimer_bypass.hash";
+	else if (fw_config_probe(FW_CONFIG(RETIMER, RETIMER_JHL8040)))
+		return "rts5453_retimer_jhl8040.hash";
+	return NULL;
+}

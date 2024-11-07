@@ -129,6 +129,16 @@ int spi_flash_cmd(const struct spi_slave *spi, u8 cmd, void *response, size_t le
 	return ret;
 }
 
+int spi_flash_cmd_multi(const struct spi_slave *spi, const u8 *dout, size_t bytes_out,
+			void *din, size_t bytes_in)
+{
+	int ret = do_spi_flash_cmd(spi, dout, bytes_out, din, bytes_in);
+	if (ret)
+		printk(BIOS_WARNING, "SF: Failed to send command %02x: %d\n", dout[0], ret);
+
+	return ret;
+}
+
 /* TODO: This code is quite possibly broken and overflowing stacks. Fix ASAP! */
 #pragma GCC diagnostic push
 #if defined(__GNUC__) && !defined(__clang__)

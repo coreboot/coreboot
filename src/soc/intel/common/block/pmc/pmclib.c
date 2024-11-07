@@ -430,6 +430,9 @@ static int pmc_prev_sleep_state(const struct chipset_power_state *ps)
 
 		/* Clear SLP_TYP. */
 		pmc_write_pm1_control(ps->pm1_cnt & ~(SLP_TYP));
+
+		/* Clear PM1_STATUS */
+		pmc_clear_pm1_status();
 	}
 
 	prev_sleep_state = soc_prev_sleep_state(ps, prev_sleep_state);
@@ -438,6 +441,34 @@ static int pmc_prev_sleep_state(const struct chipset_power_state *ps)
 	pmc_clear_pmcon_pwr_failure_sts();
 
 	return prev_sleep_state;
+}
+
+static bool pmc_get_global_reset_sts_mmio(void)
+{
+	uint8_t *addr = pmc_mmio_regs();
+
+	return !!(read32p((uintptr_t)(addr + GEN_PMCON_A)) & GBL_RST_STS);
+}
+
+static bool pmc_get_global_reset_sts_pci(void)
+{
+#if defined(__SIMPLE_DEVICE__)
+	pci_devfn_t dev = PCI_DEV(0, PCI_SLOT(PCH_DEVFN_PMC), PCI_FUNC(PCH_DEVFN_PMC));
+#else
+	struct device *dev = pcidev_path_on_root(PCH_DEVFN_PMC);
+	if (!dev)
+		return false;
+#endif
+
+	return !!(pci_read_config32(dev, GEN_PMCON_A) & GBL_RST_STS);
+}
+
+static bool pmc_get_global_reset_sts(void)
+{
+	if (CONFIG(SOC_INTEL_MEM_MAPPED_PM_CONFIGURATION))
+		return pmc_get_global_reset_sts_mmio();
+	else
+		return pmc_get_global_reset_sts_pci();
 }
 
 void pmc_fill_pm_reg_info(struct chipset_power_state *ps)
@@ -449,6 +480,21 @@ void pmc_fill_pm_reg_info(struct chipset_power_state *ps)
 	ps->pm1_sts = inw(ACPI_BASE_ADDRESS + PM1_STS);
 	ps->pm1_en = inw(ACPI_BASE_ADDRESS + PM1_EN);
 	ps->pm1_cnt = pmc_read_pm1_control();
+
+	/*
+	 * Before system memory initialization, AP firmware should check the wake status
+	 * to determine if Intel CSE has reset the system and system sleep state (PM1_CNT)
+	 * holds a valid sleep entry?
+	 *
+	 * If not, then AP FW should force to take a S5 exit path (by programming the PM1_CNT)
+	 * register as per PM register initialization requirement for CSE.
+	 */
+	if (pmc_get_global_reset_sts() && (ps->pm1_sts & WAK_STS) && !(ps->pm1_cnt & SLP_TYP)) {
+		printk(BIOS_DEBUG, "Enforcing the S5 exit path\n");
+		uint32_t pm1_cnt_slp_type = SLP_TYP_S5 << SLP_TYP_SHIFT;
+		ps->pm1_cnt |= pm1_cnt_slp_type;
+		pmc_enable_pm1_control(pm1_cnt_slp_type);
+	}
 
 	printk(BIOS_DEBUG, "pm1_sts: %04x pm1_en: %04x pm1_cnt: %08x\n",
 	       ps->pm1_sts, ps->pm1_en, ps->pm1_cnt);

@@ -146,8 +146,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D00, NONE),
 	/* GPP_D01 : Not Connected */
 	PAD_NC(GPP_D01, NONE),
-	/* GPP_D04 : Not Connected. */
-	PAD_NC(GPP_D04, NONE),
+	/* GPP_D04 : [] ==> EN_SPKR */
+	PAD_CFG_GPO(GPP_D04, 1, DEEP),
 	/* GPP_D05 : net NC.  Test pad. */
 	PAD_NC(GPP_D05, NONE),
 	/* GPP_D06 : net NC.  Test pad.*/

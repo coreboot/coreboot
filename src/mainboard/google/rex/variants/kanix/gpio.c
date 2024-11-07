@@ -205,8 +205,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E07, NONE),
 	/* GPP_E08 : NC net. */
 	PAD_NC(GPP_E08, NONE),
-	/* GPP_E09 : SOC_PEN_DETECT */
-	PAD_CFG_GPI_SCI_LOCK(GPP_E09, NONE, EDGE_SINGLE, NONE, LOCK_CONFIG),
+	/* GPP_E09 : [] ==> USB_OC0# */
+	PAD_CFG_NF_LOCK(GPP_E09, NONE, NF1, LOCK_CONFIG),
 	/* GPP_E10 : [] ==> SOC_FPMCU_INT_L */
 	PAD_CFG_GPI_IRQ_WAKE(GPP_E10, NONE, PWROK, LEVEL, INVERT),
 	/* GPP_E11 : [] ==> MEM_STRAP_0 */

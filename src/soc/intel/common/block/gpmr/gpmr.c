@@ -33,6 +33,7 @@ void gpmr_or32(uint16_t offset, uint32_t ordata)
 		return pcr_or32(PID_DMI, offset, ordata);
 }
 
+#if CONFIG(FAST_SPI_SUPPORTS_EXT_BIOS_WINDOW)
 /* Check for available free gpmr */
 static int get_available_gpmr(void)
 {
@@ -85,3 +86,4 @@ enum cb_err enable_gpmr(uint32_t base, uint32_t size, uint32_t dest_id)
 
 	return CB_SUCCESS;
 }
+#endif

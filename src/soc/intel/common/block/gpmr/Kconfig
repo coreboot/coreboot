@@ -12,6 +12,6 @@ config USE_SOC_GPMR_DEFS
 	bool
 	default n
 	help
-	  Specify if the SoC have specific GPMR register definitions.
+	  Specify if the SoC has specific GPMR register definitions.
 
 endif

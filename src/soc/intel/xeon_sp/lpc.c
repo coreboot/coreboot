@@ -17,14 +17,6 @@ void soc_get_gen_io_dec_range(uint32_t gen_io_dec[LPC_NUM_GENERIC_IO_RANGES])
 	gen_io_dec[3] = config->gen4_dec;
 }
 
-void lpc_soc_init(struct device *dev)
-{
-	printk(BIOS_SPEW, "pch: lpc_init\n");
-
-	/* FSP configures IOAPIC and PCHInterrupt Config */
-	/* Should read back the ID to fill ACPI IOAPIC accordingly. */
-}
-
 void pch_lpc_soc_fill_io_resources(struct device *dev)
 {
 }

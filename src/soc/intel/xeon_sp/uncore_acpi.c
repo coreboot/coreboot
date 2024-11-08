@@ -74,90 +74,84 @@ unsigned long acpi_create_srat_lapics(unsigned long current)
 	return current;
 }
 
-static unsigned int get_srat_memory_entries(acpi_srat_mem_t *srat_mem)
+static void acpi_fill_srat_memory(int *cnt, acpi_srat_mem_t *current,
+				  const struct SystemMemoryMapElement *e)
 {
-	const struct SystemMemoryMapHob *memory_map;
-	unsigned int mmap_index;
+	acpi_srat_mem_t srat;
+	uint64_t addr, size;
 
-	memory_map = get_system_memory_map();
-	assert(memory_map);
-	printk(BIOS_DEBUG, "memory_map: %p\n", memory_map);
+	addr = ((uint64_t)e->BaseAddress << MEM_ADDR_64MB_SHIFT_BITS);
+	size = ((uint64_t)e->ElementSize << MEM_ADDR_64MB_SHIFT_BITS);
 
-	mmap_index = 0;
-	for (int e = 0; e < memory_map->numberEntries; ++e) {
-		const struct SystemMemoryMapElement *mem_element = &memory_map->Element[e];
-		uint64_t addr =
-			(uint64_t)((uint64_t)mem_element->BaseAddress <<
-				MEM_ADDR_64MB_SHIFT_BITS);
-		uint64_t size =
-			(uint64_t)((uint64_t)mem_element->ElementSize <<
-				MEM_ADDR_64MB_SHIFT_BITS);
+	printk(BIOS_DEBUG, "SRAT: sysmemmap addr: 0x%llx, BaseAddress: 0x%x, size: 0x%llx, "
+	       "ElementSize: 0x%x, type: %d, reserved: %d\n", addr, e->BaseAddress,
+	       size, e->ElementSize, e->Type, is_memtype_reserved(e->Type));
 
-		printk(BIOS_DEBUG, "memory_map %d addr: 0x%llx, BaseAddress: 0x%x, size: 0x%llx, "
-			"ElementSize: 0x%x, type: %d, reserved: %d\n",
-			e, addr, mem_element->BaseAddress, size,
-			mem_element->ElementSize, mem_element->Type,
-			is_memtype_reserved(mem_element->Type));
+	/* skip reserved memory region */
+	if (is_memtype_reserved(e->Type))
+		return;
 
-		assert(mmap_index < MAX_ACPI_MEMORY_AFFINITY_COUNT);
+	/* skip all non processor attached memory regions */
+	if (CONFIG(SOC_INTEL_HAS_CXL) &&
+	    (!is_memtype_processor_attached(e->Type)))
+		return;
 
-		/* skip reserved memory region */
-		if (is_memtype_reserved(mem_element->Type))
-			continue;
-		/* skip all non processor attached memory regions */
-		if (CONFIG(SOC_INTEL_HAS_CXL) &&
-			(!is_memtype_processor_attached(mem_element->Type)))
-			continue;
+	/* Prepare ACPI table entry */
+	memset(&srat, 0, sizeof(acpi_srat_mem_t));
 
-		/* skip if this address is already added */
-		bool skip = false;
-		for (int idx = 0; idx < mmap_index; ++idx) {
-			uint64_t base_addr = ((uint64_t)srat_mem[idx].base_address_high << 32) +
-				srat_mem[idx].base_address_low;
-			if (addr == base_addr) {
-				skip = true;
-				break;
-			}
+	srat.type = 1; /* Memory affinity structure */
+	srat.length = sizeof(acpi_srat_mem_t);
+	srat.base_address_low = (uint32_t)(addr & 0xffffffff);
+	srat.base_address_high = (uint32_t)(addr >> 32);
+	srat.length_low = (uint32_t)(size & 0xffffffff);
+	srat.length_high = (uint32_t)(size >> 32);
+	srat.proximity_domain = memory_to_pd(e);
+	srat.flags = ACPI_SRAT_MEMORY_ENABLED;
+	if (is_memtype_non_volatile(e->Type))
+		srat.flags |= ACPI_SRAT_MEMORY_NONVOLATILE;
+
+	/* skip if this address is already added */
+	bool skip = false;
+	for (int i = 0; i < *cnt; i++) {
+		if ((srat.base_address_high == current[-i].base_address_high) &&
+		    (srat.base_address_low == current[-i].base_address_low)) {
+			skip = true;
+			break;
 		}
-		if (skip)
-			continue;
-
-		srat_mem[mmap_index].type = 1; /* Memory affinity structure */
-		srat_mem[mmap_index].length = sizeof(acpi_srat_mem_t);
-		srat_mem[mmap_index].base_address_low = (uint32_t)(addr & 0xffffffff);
-		srat_mem[mmap_index].base_address_high = (uint32_t)(addr >> 32);
-		srat_mem[mmap_index].length_low = (uint32_t)(size & 0xffffffff);
-		srat_mem[mmap_index].length_high = (uint32_t)(size >> 32);
-		srat_mem[mmap_index].proximity_domain = memory_to_pd(mem_element);
-		srat_mem[mmap_index].flags = ACPI_SRAT_MEMORY_ENABLED;
-		if (is_memtype_non_volatile(mem_element->Type))
-			srat_mem[mmap_index].flags |= ACPI_SRAT_MEMORY_NONVOLATILE;
-		++mmap_index;
 	}
 
-	return mmap_index;
+	if (!skip) {
+		printk(BIOS_DEBUG, "SRAT: adding memory %d entry length: %d, addr: 0x%x%x, "
+		       "length: 0x%x%x, proximity_domain: %d, flags: %x\n",
+		       *cnt, srat.length, srat.base_address_high, srat.base_address_low,
+		       srat.length_high, srat.length_low, srat.proximity_domain, srat.flags);
+
+		memcpy(current, &srat, sizeof(acpi_srat_mem_t));
+		(*cnt)++;
+	}
 }
 
 static unsigned long acpi_fill_srat(unsigned long current)
 {
-	acpi_srat_mem_t srat_mem[MAX_ACPI_MEMORY_AFFINITY_COUNT];
-	unsigned int mem_count;
+	const struct SystemMemoryMapHob *memory_map;
+	acpi_srat_mem_t *acpi_srat;
+	int cnt = 0;
+
+	memory_map = get_system_memory_map();
+	assert(memory_map);
+	printk(BIOS_DEBUG, "SRAT: memory_map: %p\n", memory_map);
 
 	/* create all subtables for processors */
 	current = acpi_create_srat_lapics(current);
+	acpi_srat = (acpi_srat_mem_t *)current;
 
-	memset(srat_mem, 0, sizeof(srat_mem));
-	mem_count = get_srat_memory_entries(srat_mem);
-	for (int i = 0; i < mem_count; ++i) {
-		printk(BIOS_DEBUG, "adding srat memory %d entry length: %d, addr: 0x%x%x, "
-			"length: 0x%x%x, proximity_domain: %d, flags: %x\n",
-			i, srat_mem[i].length,
-			srat_mem[i].base_address_high, srat_mem[i].base_address_low,
-			srat_mem[i].length_high, srat_mem[i].length_low,
-			srat_mem[i].proximity_domain, srat_mem[i].flags);
-		memcpy((acpi_srat_mem_t *)current, &srat_mem[i], sizeof(srat_mem[i]));
-		current += srat_mem[i].length;
+	for (int i = 0; i < memory_map->numberEntries; ++i) {
+		const struct SystemMemoryMapElement *e = &memory_map->Element[i];
+		acpi_fill_srat_memory(&cnt, &acpi_srat[cnt], e);
 	}
+	printk(BIOS_DEBUG, "SRAT: Added %d memory entries\n", cnt);
+
+	current = (unsigned long)&acpi_srat[cnt];
 
 	if (CONFIG(SOC_INTEL_HAS_CXL))
 		current = cxl_fill_srat(current);

@@ -19,8 +19,8 @@
  #define EC_SYNC_IRQ	0 /* Not Connected */
  #define GPIO_PCH_WP	GPP_D02
 #elif CONFIG(BOARD_GOOGLE_FRANCKA)
- #define EC_SYNC_IRQ	0 /* TODO */
- #define GPIO_PCH_WP	0 /* TODO */
+ #define EC_SYNC_IRQ	GPP_B05_IRQ
+ #define GPIO_PCH_WP	GPP_E22
 #endif
 
 #endif /* __BASEBOARD_GPIO_H__ */

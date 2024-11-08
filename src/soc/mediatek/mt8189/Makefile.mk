@@ -19,12 +19,15 @@ romstage-y += ../common/emi.c
 romstage-y += ../common/memory.c ../common/memory_test.c
 romstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 
+ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += ../common/bl31.c
 ramstage-y += ../common/dramc_info.c
 ramstage-y += ../common/emi.c
 ramstage-y += ../common/memory.c
 ramstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 ramstage-y += soc.c
 ramstage-y += ../common/usb.c usb.c
+
+BL31_MAKEARGS += PLAT=mt8189
 
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8189/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/include

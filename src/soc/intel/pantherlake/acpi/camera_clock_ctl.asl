@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #define R_ICLK_PCR_CAMERA1	0x8000
-#define B_ICLK_PCR_FREQUENCY	0x1
-#define B_ICLK_PCR_REQUEST	0x2
+#define B_ICLK_PCR_FREQUENCY	0x3
+#define B_ICLK_PCR_REQUEST	0x4
 
 /* The clock control registers for each IMGCLK are offset by 0xC */
 #define B_ICLK_PCR_OFFSET	0xC
@@ -32,7 +32,11 @@ Scope (\_SB.PCI0) {
 	/*
 	 * Clock control Method
 	 * Arg0: Clock source select (0 .. 5 => IMGCLKOUT_0 .. IMGCLKOUT_5)
-	 * Arg1: Frequency select (0: 24MHz, 1: 19.2MHz)
+	 * Arg1: Frequency select
+	 *  2'b00 - 19p2 XTAL
+	 *  2'b01 - 19p2 IMG
+	 *  2'b10 - 19p2 RTC
+	 *  2'b11 - 24 IMG
 	 */
 	Method (MCON, 0x2, NotSerialized)
 	{

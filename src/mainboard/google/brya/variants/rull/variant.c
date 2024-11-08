@@ -22,6 +22,10 @@ void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config)
 		printk(BIOS_INFO, "CNVi bluetooth enabled by fw_config\n");
 		config->cnvi_bt_core = true;
 		config->cnvi_bt_audio_offload = true;
+	} else {
+		printk(BIOS_INFO, "CNVi bluetooth disabled by fw_config\n");
+		config->cnvi_bt_core = false;
+		config->cnvi_bt_audio_offload = false;
 	}
 }
 

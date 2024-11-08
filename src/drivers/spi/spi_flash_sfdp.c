@@ -10,8 +10,6 @@
 /*
  * Assumptions (not) made in the code:
  * - code is supposed to be endian-safe
- * - requested SFDP data blocks are small enough to fit into the SPI controller buffer, so no
- *   spi_crop_chunk calls are needed
  *
  * Limitations:
  * - only legacy access protocol supported:
@@ -24,20 +22,35 @@
 
 #define CMD_READ_SFDP			0x5a
 
+static void read_sfdp_data_update_buffer_offset(uint8_t *buf_cmd, uint32_t offset)
+{
+	buf_cmd[1] = offset >> 16 & 0xff;
+	buf_cmd[2] = offset >> 8 & 0xff;
+	buf_cmd[3] = offset >> 0 & 0xff;
+}
+
 static enum cb_err read_sfdp_data(const struct spi_flash *flash, uint32_t offset, size_t len,
 				  uint8_t *buf)
 {
 	uint8_t buf_cmd[5];
 
 	buf_cmd[0] = CMD_READ_SFDP;
-	buf_cmd[1] = offset >> 16 & 0xff;
-	buf_cmd[2] = offset >> 8 & 0xff;
-	buf_cmd[3] = offset >> 0 & 0xff;
+	/* the read offset in buf_cmd[1..3] gets written in
+	   read_sfdp_data_update_buffer_offset */
 	buf_cmd[4] = 0; /* dummy byte */
 
-	/* TODO: use spi_crop_chunk to break up larger transfers */
-	if (spi_flash_cmd_multi(&flash->spi, buf_cmd, sizeof(buf_cmd), buf, len))
-		return CB_ERR;
+	uint8_t *data = buf;
+
+	/* split data transfers into chunks that each fit into the SPI controller's buffer */
+	while (len) {
+		uint32_t xfer_len = spi_crop_chunk(&flash->spi, sizeof(buf_cmd), len);
+		read_sfdp_data_update_buffer_offset(buf_cmd, offset);
+		if (spi_flash_cmd_multi(&flash->spi, buf_cmd, sizeof(buf_cmd), data, xfer_len))
+			return CB_ERR;
+		offset += xfer_len;
+		data += xfer_len;
+		len -= xfer_len;
+	}
 
 	return CB_SUCCESS;
 }

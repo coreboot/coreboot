@@ -4456,6 +4456,8 @@
 #define PCI_DID_INTEL_PTL_U_ID_1		0xb000
 #define PCI_DID_INTEL_PTL_H_ID_1		0xb001
 #define PCI_DID_INTEL_PTL_H_ID_2		0xb002
+#define PCI_DID_INTEL_PTL_H_ID_3		0xb004
+#define PCI_DID_INTEL_PTL_H_ID_4		0xb00a
 #define PCI_DID_INTEL_SNR_ID			0x09a2
 
 /* Intel SMBUS device Ids */

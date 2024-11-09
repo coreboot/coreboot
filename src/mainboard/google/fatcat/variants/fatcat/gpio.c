@@ -163,14 +163,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_D03, 1, PLTRST),
 	/* GPP_D04:     IMGCLKOUT_0 */
 	PAD_CFG_NF(GPP_D04, NONE, DEEP, NF1),
-	/* GPP_D05:     ISH_SPI_CS_N_SNSR_HDR */
-	PAD_CFG_NF(GPP_D05, NONE, DEEP, NF3),
-	/* GPP_D06:     ISH_SPI_CLK_SNSR_HDR */
-	PAD_CFG_NF(GPP_D06, NONE, DEEP, NF3),
-	/* GPP_D07:     ISH_SPI_MISO_SNSR_HDR */
-	PAD_CFG_NF(GPP_D07, NONE, DEEP, NF3),
-	/* GPP_D08:     ISH_SPI_MOSI_SNSR_HDR */
-	PAD_CFG_NF(GPP_D08, NONE, DEEP, NF3),
+	/* GPP_D07:     NC */
+	PAD_NC(GPP_D07, NONE),
+	/* GPP_D08:     NC */
+	PAD_NC(GPP_D08, NONE),
 	/* GPP_D09:     PEG_SLOT_RST_N */
 	PAD_CFG_GPO(GPP_D09, 1, PLTRST),
 	/* GPP_D10:     HDA_BCLK */
@@ -212,8 +208,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_SCI_LOW(GPP_E02, NONE, DEEP, LEVEL),
 	/* GPP_E03:     M2_GEN5_SSD_RESET_N */
 	PAD_CFG_GPO(GPP_E03, 1, PLTRST),
-	/* GPP_E05:     ISH_GP_7_SNSR_HDR */
-	PAD_CFG_NF(GPP_E05, NONE, DEEP, NF4),
 	/* GPP_E06:     SECURE_CAM_SW */
 	PAD_CFG_GPI_TRIG_OWN(GPP_E06, NONE, PLTRST, LEVEL, ACPI),
 	/* GPP_E07:     Not used */
@@ -274,8 +268,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_F07, NONE, DEEP, NF2),
 	/* GPP_F08:     TCH_PNL1_PWR_EN */
 	PAD_CFG_GPO(GPP_F08, 1, PLTRST),
-	/* GPP_F09:     ISH_INT_GP11_CVS */
-	PAD_CFG_NF(GPP_F09, NONE, DEEP, NF4),
+	/* GPP_F09:     NC */
+	PAD_NC(GPP_F09, NONE),
 	/* GPP_F10:     PEG_SLOT_PWR_EN_N */
 	PAD_CFG_GPO(GPP_F10, 0, PLTRST),
 	/* GPP_F11:     MOD_TCSS2_TYP_A_VBUS_EN */
@@ -329,10 +323,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF1),
 	/* GPP_H13:     CPU_C10_GATE_N_R */
 	PAD_CFG_NF(GPP_H13, NONE, DEEP, NF1),
-	/* GPP_H14:     ISH_I3C1_SDA_SNSR_HDR */
-	PAD_CFG_NF(GPP_H14, NONE, DEEP, NF4),
-	/* GPP_H15:     ISH_I3C1_SCL_SNSR_HDR */
-	PAD_CFG_NF(GPP_H15, NONE, DEEP, NF4),
+	/* GPP_H14:     NC */
+	PAD_NC(GPP_H14, NONE),
+	/* GPP_H15:     NC */
+	PAD_NC(GPP_H15, NONE),
 	/* GPP_H16:     WWAN_PWREN */
 	PAD_CFG_GPO(GPP_H16, 1, PLTRST),
 	/* GPP_H17:     MIC MUTE LED */

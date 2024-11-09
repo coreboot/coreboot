@@ -551,7 +551,8 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		GPIO_PADBASED_OVERRIDE(padbased_table, i2s_enable_pads);
 	else if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_MAX98373_ALC5682_SNDW)))
 		GPIO_PADBASED_OVERRIDE(padbased_table, sndw_external_codec_enable_pads);
-	else if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_ALC722_SNDW)))
+	else if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_ALC722_SNDW)) ||
+		fw_config_probe(FW_CONFIG(AUDIO, AUDIO_ALC721_SNDW)))
 		GPIO_PADBASED_OVERRIDE(padbased_table, sndw_alc722_enable_pads);
 	else if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_ALC256_HDA)))
 		GPIO_PADBASED_OVERRIDE(padbased_table, hda_enable_pads);

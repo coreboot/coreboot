@@ -5,6 +5,7 @@ fw_config
 		option AUDIO_ALC722_SNDW		2
 		option AUDIO_ALC256_HDA			3
 		option AUDIO_MAX98360_ALC5682I_I2S	4
+		option AUDIO_ALC721_SNDW		5
 	end
 	field WIFI 4 5
 		option WIFI_CNVI_6		0
@@ -622,6 +623,10 @@ chip soc/intel/pantherlake
 						register "desc" = ""Headset Codec""
 						device generic 1.1 on
 							probe AUDIO AUDIO_ALC722_SNDW
+						end
+						# SoundWire Link 3 ID 1
+						device generic 3.1 on
+							probe AUDIO AUDIO_ALC721_SNDW
 						end
 					end
 				end

@@ -49,6 +49,10 @@ uintptr_t spd_cbfs_map(u8 spd_index);
 void dump_spd_info(struct spd_block *blk);
 void get_spd_smbus(struct spd_block *blk);
 
+int spd_read_byte(u8 slave_addr, u8 bus_addr);
+int spd_read_word(u8 slave_addr, u8 bus_addr);
+void spd_write_byte(u8 slave_addr, u8 bus_addr, u8 value);
+
 /*
  * get_spd_sn returns the SODIMM serial number. It only supports DDR3 and DDR4.
  *  return CB_SUCCESS, sn is the serial number and sn=0xffffffff if the dimm is not present.

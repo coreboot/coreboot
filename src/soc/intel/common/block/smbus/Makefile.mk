@@ -13,3 +13,8 @@ ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_TCO) += tco.c
 postcar-$(CONFIG_SOC_INTEL_COMMON_BLOCK_TCO) += tco.c
 smm-$(CONFIG_SOC_INTEL_COMMON_BLOCK_TCO) += tco.c
 verstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_TCO) += tco.c
+
+ifneq ($(CONFIG_SOC_INTEL_COMMON_BLOCK_IMC),y)
+bootblock-$(CONFIG_SOC_INTEL_COMMON_BLOCK_SMBUS) += spd_access.c
+romstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_SMBUS) += spd_access.c
+endif

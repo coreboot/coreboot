@@ -1,0 +1,24 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_INTEL_COMMON_BLOCK_SA_SERVER
+	bool
+	help
+	  Intel Server Processor common System Agent support
+
+if SOC_INTEL_COMMON_BLOCK_SA_SERVER
+
+config TOUUD_LIMIT
+	bool
+	default y
+	help
+	  Specify if the lower bits in top of upper usable DRAM register should be
+	  treated as 1s.
+
+config TOLUD_LIMIT
+	bool
+	default y
+	help
+	  Specify if the lower bits in top of lower usable DRAM register should be
+	  treated as 1s.
+
+endif

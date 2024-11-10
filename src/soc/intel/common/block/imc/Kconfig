@@ -1,0 +1,8 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_INTEL_COMMON_BLOCK_IMC
+	bool
+	depends on ECAM_MMCONF_SUPPORT
+	default n
+	help
+	  Select this to access SPD data through Integrated Memory Controller.

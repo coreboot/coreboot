@@ -27,6 +27,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pcr_ids.h>
 #include <soc/pm.h>
+#include <static.h>
 
 #if CONFIG(SOC_INTEL_TIGERLAKE_PCH_H)
 #define PCR_PSF3_TO_SHDW_PMC_REG_BASE	0x1000

@@ -1906,7 +1906,15 @@ static void generate_outputh(FILE *f, const char *fw_conf_header, const char *de
 	fprintf(f, "#include <%s>\n\n", device_header);
 
 	fprintf(f, "/* Returns pointer to config structure of root device (B:D:F = 0:00:0) */\n");
-	fprintf(f, "#define config_of_soc() __pci_0_00_0_config\n");
+	fprintf(f, "#define config_of_soc() __pci_0_00_0_config\n\n");
+
+	fprintf(f, "/* Macro to generate `struct device *` name that points to a device with the given alias. */\n");
+	fprintf(f, "#define DEV_PTR(_alias) \t_dev_##_alias##_ptr\n\n");
+
+	fprintf(f, "/* Macro to generate weak `struct device *` definition that points to a device with the given\n");
+	fprintf(f, "   alias. */\n");
+	fprintf(f, "#define WEAK_DEV_PTR(_alias)\t\t\t\\\n");
+	fprintf(f, "\t__weak DEVTREE_CONST struct device *const DEV_PTR(_alias)\n");
 
 	fprintf(f, "\n#endif /* __STATIC_DEVICE_TREE_H */\n");
 }

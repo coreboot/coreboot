@@ -2,6 +2,7 @@
 
 #include <intelblocks/tcss.h>
 #include <soc/soc_chip.h>
+#include <static.h>
 
 const struct soc_tcss_ops tcss_ops = {
 	.configure_aux_bias_pads = ioe_tcss_configure_aux_bias_pads_sbi,

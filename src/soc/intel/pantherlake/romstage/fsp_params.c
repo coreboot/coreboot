@@ -9,6 +9,7 @@
 #include <soc/msr.h>
 #include <soc/pcie.h>
 #include <soc/romstage.h>
+#include <static.h>
 
 #define FSP_CLK_NOTUSED		0xff
 #define FSP_CLK_LAN		0x70

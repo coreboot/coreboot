@@ -3,6 +3,7 @@
 #include <acpi/acpi.h>
 #include <soc/iomap.h>
 #include <soc/pm.h>
+#include <static.h>
 #include "chip.h"
 
 void soc_fill_fadt(acpi_fadt_t *fadt)

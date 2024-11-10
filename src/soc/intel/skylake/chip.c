@@ -28,6 +28,7 @@
 #include <soc/ramstage.h>
 #include <soc/systemagent.h>
 #include <soc/usb.h>
+#include <static.h>
 #include <string.h>
 #include <types.h>
 

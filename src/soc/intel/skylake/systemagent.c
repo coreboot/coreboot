@@ -12,6 +12,7 @@
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/systemagent.h>
+#include <static.h>
 #include <types.h>
 #include "chip.h"
 

@@ -13,6 +13,7 @@
 #include <soc/pci_devs.h>
 #include <soc/intel/common/smbios.h>
 #include <soc/soc_util.h>
+#include <static.h>
 #include <string.h>
 
 #include "chip.h"

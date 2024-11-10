@@ -20,6 +20,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pm.h>
 #include <soc/soc_chip.h>
+#include <static.h>
 #include <bootstate.h>
 
 #define PMC_HID		"INTC1026"

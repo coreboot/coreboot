@@ -10,6 +10,7 @@
 #include <soc/iomap.h>
 #include <soc/pcr_ids.h>
 #include <soc/intel/common/block/lpc/lpc_def.h>
+#include <static.h>
 
 #include "chip.h"
 

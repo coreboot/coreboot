@@ -6,6 +6,7 @@
 #include <drivers/i2c/hid/chip.h>
 #include <fw_config.h>
 #include <gpio.h>
+#include <static.h>
 
 static void devtree_update_emmc_rtd3(uint32_t board_ver)
 {

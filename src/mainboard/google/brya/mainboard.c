@@ -11,6 +11,7 @@
 #include <security/tpm/tss.h>
 #include <soc/gpio.h>
 #include <soc/ramstage.h>
+#include <static.h>
 #include <stdio.h>
 
 WEAK_DEV_PTR(rp6_wwan);

@@ -12,6 +12,7 @@
 #include <device/device.h>
 #include <drivers/i2c/tpm/chip.h>
 #include <gpio.h>
+#include <static.h>
 #include <variant/ec.h>
 
 #define BACKLIGHT_GPIO			GPIO_129

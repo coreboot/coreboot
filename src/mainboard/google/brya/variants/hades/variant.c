@@ -7,6 +7,7 @@
 #include <delay.h>
 #include <device/pci.h>
 #include <gpio.h>
+#include <static.h>
 #include <timer.h>
 #include <types.h>
 

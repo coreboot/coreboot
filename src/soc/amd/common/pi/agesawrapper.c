@@ -10,6 +10,7 @@
 #include <soc/pci_devs.h>
 #include <soc/northbridge.h>
 #include <soc/cpu.h>
+#include <static.h>
 #include <string.h>
 
 void __weak SetMemParams(AMD_POST_PARAMS *PostParams) {}

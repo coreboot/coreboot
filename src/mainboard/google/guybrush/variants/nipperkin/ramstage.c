@@ -6,6 +6,7 @@
 #include <drivers/i2c/tpm/chip.h>
 #include <drivers/uart/acpi/chip.h>
 #include <gpio.h>
+#include <static.h>
 
 static void cr50_devtree_update(void)
 {

@@ -9,6 +9,7 @@
 #include <drivers/intel/dptf/chip.h>
 #include <ec/google/chromeec/ec.h>
 #include <intelblocks/power_limit.h>
+#include <static.h>
 
 WEAK_DEV_PTR(dptf_policy);
 

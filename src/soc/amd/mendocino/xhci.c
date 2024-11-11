@@ -11,6 +11,7 @@
 #include <drivers/usb/pci_xhci/pci_xhci.h>
 #include <soc/pci_devs.h>
 #include <soc/smi.h>
+#include <static.h>
 
 static const struct sci_source xhci_sci_sources[] = {
 	{

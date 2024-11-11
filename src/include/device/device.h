@@ -9,7 +9,6 @@
 #include <device/pci_type.h>
 #include <device/resource.h> /* IWYU pragma: export */
 #include <smbios.h>
-#include <static.h>
 #include <stdlib.h>
 #include <types.h>
 

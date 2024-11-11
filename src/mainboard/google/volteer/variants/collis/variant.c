@@ -4,6 +4,7 @@
 #include <fw_config.h>
 #include <drivers/i2c/hid/chip.h>
 #include <device/device.h>
+#include <static.h>
 
 static void audio_codec_update(void)
 {

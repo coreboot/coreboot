@@ -4,6 +4,7 @@
 #include <boardid.h>
 #include <sar.h>
 #include <soc/pci_devs.h>
+#include <static.h>
 
 const char *get_wifi_sar_cbfs_filename(void)
 {

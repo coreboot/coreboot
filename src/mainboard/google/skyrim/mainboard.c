@@ -9,6 +9,7 @@
 #include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <drivers/i2c/tpm/chip.h>
+#include <static.h>
 #include <variant/ec.h>
 
 /* The IRQ mapping in fch_irq_map ends up getting written to the indirect address space that is

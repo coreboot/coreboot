@@ -7,6 +7,7 @@
 #include <drivers/intel/gma/opregion.h>
 #include <fw_config.h>
 #include <sar.h>
+#include <static.h>
 
 const char *get_wifi_sar_cbfs_filename(void)
 {

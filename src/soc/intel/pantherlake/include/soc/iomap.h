@@ -16,8 +16,7 @@
 #define MCH_BASE_SIZE		0x20000
 
 /* System Agent Fabric (SAF) */
-/* TODO: Update with latest value */
-#define SAF_BASE_ADDRESS	0x3ffe000000
+#define SAF_BASE_ADDRESS	0xfa000000
 #define SAF_BASE_SIZE		0x2000000
 
 /* Add dummy entry to cater common/block/acpi/acpi/northbridge.asl */

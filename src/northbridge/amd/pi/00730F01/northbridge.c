@@ -11,6 +11,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <static.h>
 #include <string.h>
 #include <stdlib.h>
 #include <cpu/x86/mp.h>

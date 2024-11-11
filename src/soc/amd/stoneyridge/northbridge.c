@@ -25,6 +25,7 @@
 #include <soc/northbridge.h>
 #include <soc/pci_devs.h>
 #include <soc/iomap.h>
+#include <static.h>
 #include <stdint.h>
 #include <string.h>
 

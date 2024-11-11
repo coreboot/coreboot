@@ -5,6 +5,7 @@
 #include <device/device.h>
 #include <amdblocks/cpu.h>
 #include <gpio.h>
+#include <static.h>
 
 bool variant_has_pcie_wwan(void)
 {

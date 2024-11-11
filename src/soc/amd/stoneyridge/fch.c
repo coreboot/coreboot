@@ -20,6 +20,7 @@
 #include <soc/acpi.h>
 #include <soc/aoac_defs.h>
 #include <soc/nvs.h>
+#include <static.h>
 #include <types.h>
 
 /*

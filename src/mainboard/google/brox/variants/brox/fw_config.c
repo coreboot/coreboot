@@ -4,6 +4,7 @@
 #include <drivers/intel/ish/chip.h>
 #include <fw_config.h>
 #include <gpio.h>
+#include <static.h>
 
 #define ISH_FIRMWARE_NAME "brox_ish.bin"
 

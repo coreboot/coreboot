@@ -18,6 +18,7 @@
 #include <cpu/intel/common/common.h>
 #include <smbios.h>
 #include <smp/node.h>
+#include <static.h>
 #include <types.h>
 
 /* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */

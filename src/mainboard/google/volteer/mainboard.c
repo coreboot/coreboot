@@ -12,6 +12,7 @@
 #include <intelblocks/tcss.h>
 #include <soc/pci_devs.h>
 #include <soc/ramstage.h>
+#include <static.h>
 #include <stdio.h>
 #include <variant/gpio.h>
 #include <vb2_api.h>

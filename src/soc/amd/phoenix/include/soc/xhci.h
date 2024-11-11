@@ -3,7 +3,7 @@
 #ifndef AMD_PHOENIX_XHCI_H
 #define AMD_PHOENIX_XHCI_H
 
-#include <device/device.h>
+#include <static.h>
 
 #define SOC_XHCI_0 DEV_PTR(xhci_0)
 #define SOC_XHCI_1 DEV_PTR(xhci_1)

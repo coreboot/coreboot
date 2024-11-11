@@ -1,0 +1,35 @@
+name: Network Test (iPerf)
+description: Flash the provided firmware binary and test network interface
+tools:
+  - iperf_static
+defaults:
+  transport: &transport
+    proto: ssh
+    options:
+      host: "[[.Host]]"
+      user: root
+      identity_file: /root/.ssh/fwci
+stages:
+  - name: Network Test
+    steps:
+      - cmd: copy
+        name: Copy tooling to DUT
+        transport: *transport
+        parameters:
+          source: "[[.iperf_static]]/iperf3-amd64"
+          destination: /tmp/iperf3-amd64
+          recursive: true
+      - cmd: cmd
+        name: Run iperf3 against public server
+        transport: *transport
+        parameters:
+          executable: "/tmp/iperf3-amd64"
+          args: ["-c", "speedtest.wtnet.de", "-p", "5209", "-P", "10", "-4", "-R"]
+          expect:
+            - regex: "iperf Done."
+      - cmd: cmd
+        name: Power off device
+        transport: *transport
+        parameters:
+          executable: shutdown
+          args: ["now"]

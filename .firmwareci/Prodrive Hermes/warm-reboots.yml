@@ -1,0 +1,148 @@
+name: Warm Reboot Test
+description: Flash the provided firmware binary and do multiple warm reboots.
+defaults:
+  transport: &transport
+    proto: ssh
+    options:
+      host: "[[.Host]]"
+      user: root
+      identity_file: /root/.ssh/fwci
+stages:
+  - name: Reboot 1
+    steps:
+      - cmd: cmd
+        name: Warm reboot DUT
+        transport: *transport
+        parameters:
+          executable: reboot
+      - cmd: ping
+        name: Wait for the device to become online.
+        options:
+          timeout: 4m
+        parameters:
+          host: "[[.Host]]"
+  - name: Reboot 2
+    steps:
+      - cmd: cmd
+        name: Warm reboot DUT
+        transport: *transport
+        parameters:
+          executable: reboot
+      - cmd: ping
+        name: Wait for the device to become online.
+        options:
+          timeout: 4m
+        parameters:
+          host: "[[.Host]]"
+  - name: Reboot 3
+    steps:
+      - cmd: cmd
+        name: Warm reboot DUT
+        transport: *transport
+        parameters:
+          executable: reboot
+      - cmd: ping
+        name: Wait for the device to become online.
+        options:
+          timeout: 4m
+        parameters:
+          host: "[[.Host]]"
+  - name: Reboot 4
+    steps:
+      - cmd: cmd
+        name: Warm reboot DUT
+        transport: *transport
+        parameters:
+          executable: reboot
+      - cmd: ping
+        name: Wait for the device to become online.
+        options:
+          timeout: 4m
+        parameters:
+          host: "[[.Host]]"
+  - name: Reboot 5
+    steps:
+      - cmd: cmd
+        name: Warm reboot DUT
+        transport: *transport
+        parameters:
+          executable: reboot
+      - cmd: ping
+        name: Wait for the device to become online.
+        options:
+          timeout: 4m
+        parameters:
+          host: "[[.Host]]"
+  - name: Reboot 6
+    steps:
+      - cmd: cmd
+        name: Warm reboot DUT
+        transport: *transport
+        parameters:
+          executable: reboot
+      - cmd: ping
+        name: Wait for the device to become online.
+        options:
+          timeout: 4m
+        parameters:
+          host: "[[.Host]]"
+  - name: Reboot 7
+    steps:
+      - cmd: cmd
+        name: Warm reboot DUT
+        transport: *transport
+        parameters:
+          executable: reboot
+      - cmd: ping
+        name: Wait for the device to become online.
+        options:
+          timeout: 4m
+        parameters:
+          host: "[[.Host]]"
+  - name: Reboot 8
+    steps:
+      - cmd: cmd
+        name: Warm reboot DUT
+        transport: *transport
+        parameters:
+          executable: reboot
+      - cmd: ping
+        name: Wait for the device to become online.
+        options:
+          timeout: 4m
+        parameters:
+          host: "[[.Host]]"
+  - name: Reboot 9
+    steps:
+      - cmd: cmd
+        name: Warm reboot DUT
+        transport: *transport
+        parameters:
+          executable: reboot
+      - cmd: ping
+        name: Wait for the device to become online.
+        options:
+          timeout: 4m
+        parameters:
+          host: "[[.Host]]"
+  - name: Reboot 10
+    steps:
+      - cmd: cmd
+        name: Warm reboot DUT
+        transport: *transport
+        parameters:
+          executable: reboot
+      - cmd: ping
+        name: Wait for the device to become online.
+        options:
+          timeout: 4m
+        parameters:
+          host: "[[.Host]]"
+  - name: Shutdown
+    steps:
+      - cmd: cmd
+        name: Power off device
+        transport: *transport
+        parameters:
+          executable: shutdown
+          args: ["now"]

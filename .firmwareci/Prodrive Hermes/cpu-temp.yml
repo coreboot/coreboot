@@ -1,0 +1,58 @@
+name: CPU Temperature Test
+description: Run the CPU Stress Test on the device and check the temperature before and after the Stress Test
+tools:
+  - system_suite
+defaults:
+  transport: &transport
+    proto: ssh
+    options:
+      host: "[[.Host]]"
+      user: root
+      identity_file: /root/.ssh/fwci
+stages:
+  - name: CPU Temperature Test
+    steps:
+      - cmd: copy
+        name: Copy tooling to DUT
+        transport: *transport
+        parameters:
+          source: "[[.system_suite]]/system-suite"
+          destination: /tmp/system-suite
+          recursive: true
+      - cmd: cmd
+        name: Cooldown before Stress Test
+        transport: *transport
+        parameters:
+          executable: sleep
+          args: ["5m"]
+        options:
+          timeout: 10m
+      - cmd: cmd
+        name: Check CPU Temperature before Stress Test
+        transport: *transport
+        parameters:
+          executable: sensors
+          args: ["|", "grep", "-i", "'CPU'", "|", "awk", "'{print $2}'"]
+      - cmd: cpuload
+        name: Stress Test CPU for 20m
+        transport: *transport
+        options:
+          timeout: 30m
+        parameters:
+          tool_path: /tmp/system-suite
+          args: [--ignite-cpu]
+          duration: 20m
+      - cmd: cmd
+        name: Check CPU Temperature after Stress Test
+        transport: *transport
+        parameters:
+          executable: sensors
+          args: ["|", "grep", "-i", "'CPU'", "|", "awk", "'{print $2}'"]
+      - cmd: cmd
+        name: Cooldown after Stress Test
+        transport: *transport
+        parameters:
+          executable: sleep
+          args: ["5m"]
+        options:
+          timeout: 10m

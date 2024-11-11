@@ -1,0 +1,513 @@
+name: ACPI Info Test
+description: This test dumps and prints all ACPI tables.
+defaults:
+  transport: &transport
+    proto: ssh
+    options:
+      host: "[[.Host]]"
+      user: root
+      identity_file: /root/.ssh/fwci
+stages:
+  - name: Display ACPI information
+    steps:
+      - cmd: cmd
+        name: Clear data
+        transport: *transport
+        parameters:
+          executable: rm
+          args: ["-f", "*.dsl", "*.dat"]
+      - cmd: cmd
+        name: Dump ACPI tables
+        transport: *transport
+        parameters:
+          executable: acpidump
+          args: [-b]
+      - cmd: cmd
+        name: Decode ACPI tables
+        transport: *transport
+        parameters:
+          executable: iasl
+          args: [-d, "*.dat"]
+      - cmd: cmd
+        name: Show APIC tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", apic*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show BATB tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", batb*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show BERT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", bert*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show BGRT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", bgrt*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show CPEP tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", cpep*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show DSDT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", dsdt*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show ECDT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", ecdt*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show EINJ tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", einj*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show ERST tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", esrt*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show FACP tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", facp*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show FACS tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", facs*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show FADT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", fadt*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show FPDT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", fpdt*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show GTDT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", gtdt*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show HEST tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", hest*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show MADT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", madt*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show MSCT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", msct*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show MPST tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", mpst*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show NFIT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", nfit*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show NHLT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", nhlt*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show OEMx tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", oemx*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show PCCT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", pcct*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show PHAT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", phat*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show PMTT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", pmtt*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show PSDT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", psdt*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show RASF tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", rasf*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show RSDT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", rsdt*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show SBST tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", sbst*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show SDEV tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", sdev*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show SLIT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", slit*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show SRAT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", srat*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show SSDT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", ssdt*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show AEST tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", aest*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show BDAT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", bdat*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show BOOT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", boot*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show CDIT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", cdit*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show CEDT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", cedt*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show CRAT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", crat*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show CSRT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", csrt*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show DBGP tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", dbgp*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show DMAR tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", dmar*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show DRTM tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", drtm*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show ETDT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", etdt*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show HPET tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", hpet*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show IBFT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", ibft*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show IORT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", iort*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show IVRS tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", ivrs*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show LPIT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", lpit*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show MCFG tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", mcfg*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show MCHI tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", mchi*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show MPAM tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", mpam*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show MSDM tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", msdm*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show PRMT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", prmt*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show RGRT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", rgrt*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show SDEI tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", sdei*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show SLIC tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", slic*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show SPCR tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", spcr*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show SPMI tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", spmi*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show STAO tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", stao*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show SVKL tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", svkl*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show TCPA tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", tcpa*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show TPM2 tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", tpm*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show UEFI tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", uefi*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show WAET tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", waet*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show WDAT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", wdat*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show WDRT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", wdrt*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show WPBT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", wpbt*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show WSMT tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", wsmt*.dsl]
+          report_only: true
+      - cmd: cmd
+        name: Show XENV tables
+        transport: *transport
+        parameters:
+          executable: tail
+          args: [-v, -n, "+1", xenv*.dsl]
+          report_only: true

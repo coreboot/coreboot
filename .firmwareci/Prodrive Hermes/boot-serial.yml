@@ -1,0 +1,59 @@
+name: Boot Test (Serial)
+description: Flash the provided firmware binary and conduct a boot test.
+defaults:
+  transport: &transport
+    proto: ssh
+    options:
+      host: "[[.Host]]"
+      user: root
+      identity_file: /root/.ssh/fwci
+stages:
+  - name: Setup
+    steps:
+    - cmd: dutctl
+      name: Shutdown the DUT.
+      parameters:
+        host: "[[.Pi]]"
+        command: power
+        args: ["off"]
+    - cmd: dutctl
+      name: Flash the provided binary.
+      parameters:
+        host: "[[ .Pi ]]"
+        command: flash
+        args: [write, "[[.Binary]]"]
+    - cmd: sleep
+      name: Wait for the DUT to settle
+      parameters:
+        duration: 15s
+    - cmd: dutctl
+      name: Turn the DUT on
+      parameters:
+        host: "[[ .Pi ]]"
+        command: power
+        args: ["hardreset"]
+      options:
+        timeout: 2m
+    - cmd: dutctl
+      name: Check Serial
+      parameters:
+        host: "[[ .Pi ]]"
+        command: serial
+        expect:
+          - regex: "XhcClearBiosOwnership: called to clear BIOS ownership"
+      options:
+        timeout: 5m
+  - name: Boot Test
+    steps:
+      - cmd: cmd
+        name: Cat OS Version
+        transport: *transport
+        parameters:
+          executable: cat
+          args: ["/etc/os-release"]
+      - cmd: cmd
+        name: Power off device
+        transport: *transport
+        parameters:
+          executable: shutdown
+          args: ["now"]

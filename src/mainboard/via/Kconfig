@@ -1,0 +1,17 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if VENDOR_VIA
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/via/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/via/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	default "VIA"
+
+endif # VENDOR_VIA

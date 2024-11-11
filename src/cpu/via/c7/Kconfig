@@ -1,0 +1,23 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config CPU_VIA_C7
+	bool
+	select ARCH_X86
+	select NO_SMM
+	select SSE2
+	select UNKNOWN_TSC_RATE
+	select UDELAY_LAPIC
+	select LAPIC_MONOTONIC_TIMER
+
+if CPU_VIA_C7
+
+config DCACHE_BSP_STACK_SIZE
+	default 0x1000
+
+config DCACHE_RAM_BASE
+	default 0xffef0000
+
+config DCACHE_RAM_SIZE
+	default 0x10000
+
+endif

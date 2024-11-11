@@ -9,5 +9,6 @@ DECLARE_REGION(dram_dma)
 DECLARE_REGION(resv_mem_optee)
 DECLARE_REGION(resv_mem_gpu)
 DECLARE_REGION(resv_mem_gpueb)
+DECLARE_REGION(mcufw_reserved)
 
 #endif /* _SOC_MEDIATEK_COMMON_SYMBOLS_H_ */

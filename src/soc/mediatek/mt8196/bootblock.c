@@ -2,6 +2,7 @@
 
 #include <soc/booker.h>
 #include <bootblock_common.h>
+#include <soc/cksys.h>
 #include <soc/early_init.h>
 #include <soc/lastbus_v2.h>
 #include <soc/mminfra.h>
@@ -14,6 +15,7 @@
 void bootblock_soc_init(void)
 {
 	booker_init();
+	mtk_cksys_init();
 	mtk_mmu_init();
 	bustracker_init();
 	lastbus_init();

@@ -13,6 +13,7 @@ all-y += ../common/uart.c
 bootblock-y += booker.c
 bootblock-y += bootblock.c
 bootblock-y += ../common/bootblock.c bootblock.c
+bootblock-y += cksys.c
 bootblock-y += ../common/early_init.c
 bootblock-y += ../common/lastbus_v2.c lastbus.c
 bootblock-y += mminfra.c

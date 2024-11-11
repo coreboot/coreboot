@@ -74,6 +74,9 @@ static void fill_fspm_mrc_params(FSP_M_CONFIG *m_cfg,
 			m_cfg->SaGvWpMask = SAGV_POINTS_0_1_2_3;
 	}
 
+	if (config->max_dram_speed_mts)
+		m_cfg->DdrFreqLimit = config->max_dram_speed_mts;
+
 	m_cfg->RMT = config->rmt;
 	m_cfg->MrcFastBoot = 1;
 }

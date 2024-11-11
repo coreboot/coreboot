@@ -1,5 +1,7 @@
 chip soc/intel/pantherlake
 
+	register "max_dram_speed_mts" = "7467"
+
 	device domain 0 on
 	end
 end

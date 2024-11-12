@@ -102,7 +102,7 @@ main() {
 			exit 1
 		fi
 
-		initial_commit_id="$(git log --pretty='%h' -n 1)"
+		initial_commit_id="$(git log --pretty='%h' -n 1 --abbrev=12)"
 		initial_commit_description="$(git log --pretty='%ci - (%s)' -n 1)"
 		if [[ ${skip_sync} != "1" ]]; then
 			git fetch 2>/dev/null
@@ -116,14 +116,14 @@ main() {
 			fi
 		done
 
-		updated_commit_id="$(git log --pretty='%h' -n 1 "${branch_name}" -- )"
+		updated_commit_id="$(git log --pretty='%h' -n 1 --abbrev=12 "${branch_name}" -- )"
 		updated_commit_description="$(git log --pretty='%ci - (%s)' -n 1 "${updated_commit_id}")"
 		if [ "${initial_commit_id}" = "${updated_commit_id}" ]; then
 			echo "No updates for ${submodule}"
 			continue
 		fi
 		SUBMODULES_WITH_UPDATES+=1
-		update_log="$(git log --oneline "${initial_commit_id}..${updated_commit_id}")"
+		update_log="$(git log --oneline --abbrev=12 "${initial_commit_id}..${updated_commit_id}")"
 		update_count="$(echo "${update_log}" | wc -l)"
 		if [[ "${update_count}" -gt "${max_commits_to_list}" ]]; then
 			update_log=""

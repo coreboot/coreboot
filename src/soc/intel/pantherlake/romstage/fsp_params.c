@@ -285,8 +285,15 @@ static void fill_fspm_thermal_params(FSP_M_CONFIG *m_cfg,
 static void fill_fspm_vr_config_params(FSP_M_CONFIG *m_cfg,
 				       const struct soc_intel_pantherlake_config *config)
 {
-	for (size_t i = 0; i < ARRAY_SIZE(m_cfg->EnableFastVmode); i++)
-		m_cfg->EnableFastVmode[i] = 0;
+	for (size_t i = 0; i < ARRAY_SIZE(config->enable_fast_vmode); i++) {
+		if (config->cep_enable[i]) {
+			m_cfg->CepEnable[i] = config->cep_enable[i];
+			if (config->enable_fast_vmode[i]) {
+				m_cfg->EnableFastVmode[i] = config->enable_fast_vmode[i];
+				m_cfg->IccLimit[i] = config->fast_vmode_i_trip[i];
+			}
+		}
+	}
 }
 
 #if CONFIG(PLATFORM_HAS_EARLY_LOW_BATTERY_INDICATOR)

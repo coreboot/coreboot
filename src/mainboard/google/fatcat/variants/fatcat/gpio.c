@@ -210,8 +210,13 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_E03, 1, PLTRST),
 	/* GPP_E06:     SECURE_CAM_SW */
 	PAD_CFG_GPI_TRIG_OWN(GPP_E06, NONE, PLTRST, LEVEL, ACPI),
+#if CONFIG(BOARD_GOOGLE_FATCAT)
 	/* GPP_E07:     Not used */
 	PAD_NC(GPP_E07, NONE),
+#else
+	/* GPP_E07 : [] ==> EC_SOC_INT_ODL */
+	PAD_CFG_GPI_APIC_LOCK(GPP_E07, NONE, LEVEL, INVERT, LOCK_CONFIG),
+#endif
 	/* GPP_E08:     Not used */
 	PAD_NC(GPP_E08, NONE),
 	/* GPP_E09:     USB_RD_FP_CONN_12_OC0_N */

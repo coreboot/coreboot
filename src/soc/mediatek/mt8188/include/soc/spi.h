@@ -13,8 +13,8 @@
 
 #define SPI_BUS_NUMBER 6
 
-#define GET_SCK_REG(x) x->spi_cfg2_reg
-#define GET_TICK_DLY_REG(x) x->spi_cmd_reg
+#define GET_SCK_REG(x) ((x)->spi_cfg2_reg)
+#define GET_TICK_DLY_REG(x) ((x)->spi_cmd_reg)
 
 DEFINE_BITFIELD(SPI_CFG_CS_HOLD, 15, 0)
 DEFINE_BITFIELD(SPI_CFG_CS_SETUP, 31, 16)

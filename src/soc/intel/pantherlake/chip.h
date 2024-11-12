@@ -512,6 +512,8 @@ struct soc_intel_pantherlake_config {
 	 */
 	uint8_t slow_slew_rate_config[NUM_VR_DOMAINS];
 
+	uint16_t max_dram_speed_mts;
+
 };
 
 typedef struct soc_intel_pantherlake_config config_t;

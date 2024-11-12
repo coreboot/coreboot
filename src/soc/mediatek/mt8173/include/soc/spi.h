@@ -7,8 +7,8 @@
 
 #define SPI_BUS_NUMBER 1
 
-#define GET_SCK_REG(x) x->spi_cfg0_reg
-#define GET_TICK_DLY_REG(x) x->spi_cfg1_reg
+#define GET_SCK_REG(x) ((x)->spi_cfg0_reg)
+#define GET_TICK_DLY_REG(x) ((x)->spi_cfg1_reg)
 
 DEFINE_BITFIELD(SPI_CFG_SCK_HIGH, 7, 0)
 DEFINE_BITFIELD(SPI_CFG_SCK_LOW, 15, 8)

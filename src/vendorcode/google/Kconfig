@@ -28,3 +28,12 @@ config GOOGLE_DSM_PARAM_FILE_NAME
 	  On some boards, there are different dsm parameter files for Dynamic Speaker
 	  Management (DSM). Enable this config to assign dsm parameters file name in ACPI
 	  SSDT table. Kernel driver uses this to load the DSM parameter file.
+
+config MAINBOARD_HAS_GOOGLE_STRAUSS_KEYBOARD
+	bool
+	default n
+	help
+	  Select this config to indicate that a board has Strauss keyboard.
+
+config ACPI_FNKEY_GEN_SCANCODE
+	default 94 if MAINBOARD_HAS_GOOGLE_STRAUSS_KEYBOARD

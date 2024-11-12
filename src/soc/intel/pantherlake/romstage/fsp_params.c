@@ -79,6 +79,7 @@ static void fill_fspm_mrc_params(FSP_M_CONFIG *m_cfg,
 
 	m_cfg->RMT = config->rmt;
 	m_cfg->MrcFastBoot = 1;
+	m_cfg->LowerBasicMemTestSize = config->lower_basic_mem_test_size;
 }
 
 static void fill_fspm_cpu_params(FSP_M_CONFIG *m_cfg,

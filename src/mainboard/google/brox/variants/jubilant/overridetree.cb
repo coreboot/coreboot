@@ -10,6 +10,7 @@ fw_config
 	field DB_USB 11 12
 		option DB_1A				0
 		option DB_1A_LTE			1
+		option DB_1A_LTE_SAR			2
 	end
 	field FPMCU 17 18
 		option FPMCU_ABSENT			0
@@ -220,6 +221,7 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_INTERNAL"
 						device ref usb2_port4 on
 							probe DB_USB DB_1A_LTE
+							probe DB_USB DB_1A_LTE_SAR
 							probe unprovisioned
 						end
 					end
@@ -269,6 +271,7 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_INTERNAL"
 						device ref usb3_port4 on
 							probe DB_USB DB_1A_LTE
+							probe DB_USB DB_1A_LTE_SAR
 							probe unprovisioned
 						end
 					end
@@ -431,7 +434,7 @@ chip soc/intel/alderlake
 				register "input_precharge_resistor_ohms" = "4000"
 				register "input_analog_gain" = "1"
 				device i2c 28 on
-					probe DB_USB DB_1A_LTE
+					probe DB_USB DB_1A_LTE_SAR
 					probe unprovisioned
 				end
 			end

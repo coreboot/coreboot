@@ -38,7 +38,8 @@ const char *variant_get_auxfw_version_file(void)
 
 static void wwan_out_of_reset(void *unused)
 {
-	if (fw_config_probe(FW_CONFIG(DB_USB, DB_1A_LTE))) {
+	if (fw_config_probe(FW_CONFIG(DB_USB, DB_1A_LTE)) ||
+		fw_config_probe(FW_CONFIG(DB_USB, DB_1A_LTE_SAR))) {
 		gpio_set(WWAN_FCPO_L, 1);
 		gpio_set(WWAN_RSL_L, 1);
 	}

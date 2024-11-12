@@ -205,8 +205,13 @@ void mainboard_romstage_entry(void)
 		}
 	}
 
-	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_ROMSTAGE) && !s3wake)
+	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_ROMSTAGE) && !s3wake) {
+		cse_fill_bp_info();
+		if (CONFIG(CHROMEOS_ENABLE_ESOL) &&
+		    is_cse_fw_update_required() && !is_cse_boot_to_rw())
+			ux_inform_user_of_update_operation("CSE update");
 		cse_fw_sync();
+	}
 
 	/* Program MCHBAR, DMIBAR, GDXBAR and EDRAMBAR */
 	systemagent_early_init();

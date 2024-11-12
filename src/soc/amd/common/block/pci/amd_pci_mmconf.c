@@ -4,6 +4,7 @@
 #include <cpu/amd/msr.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
+#include <lib.h>
 
 void enable_pci_mmconf(void)
 {
@@ -11,6 +12,6 @@ void enable_pci_mmconf(void)
 
 	mmconf.hi = 0;
 	mmconf.lo = CONFIG_ECAM_MMCONF_BASE_ADDRESS | MMIO_RANGE_EN
-			| fms(CONFIG_ECAM_MMCONF_BUS_NUMBER) << MMIO_BUS_RANGE_SHIFT;
+			| __fls(CONFIG_ECAM_MMCONF_BUS_NUMBER) << MMIO_BUS_RANGE_SHIFT;
 	wrmsr(MMIO_CONF_BASE, mmconf);
 }

@@ -94,8 +94,8 @@ int var_mtrr_set(struct var_mtrr_context *ctx, uintptr_t addr, size_t size, int 
 			return -1;
 		}
 
-		addr_lsb = fls(addr);
-		size_msb = fms(size);
+		addr_lsb = __ffs(addr);
+		size_msb = __fls(size);
 
 		/* All MTRR entries need to have their base aligned to the mask
 		   size. The maximum size is calculated by a function of the

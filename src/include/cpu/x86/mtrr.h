@@ -61,6 +61,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <lib.h>
 
 /*
  * The MTRR code has some side effects that the callers should be aware for.
@@ -128,29 +129,6 @@ int var_mtrr_set(struct var_mtrr_context *ctx, uintptr_t addr, size_t size, int 
 void commit_mtrr_setup(const struct var_mtrr_context *ctx);
 void postcar_mtrr_setup(void);
 
-/* fms: find most significant bit set, stolen from Linux Kernel Source. */
-static inline unsigned int fms(unsigned int x)
-{
-	unsigned int r;
-
-	__asm__("bsrl %1,%0\n\t"
-		"jnz 1f\n\t"
-		"movl $0,%0\n"
-		"1:" : "=r" (r) : "mr" (x));
-	return r;
-}
-
-/* fls: find least significant bit set */
-static inline unsigned int fls(unsigned int x)
-{
-	unsigned int r;
-
-	__asm__("bsfl %1,%0\n\t"
-		"jnz 1f\n\t"
-		"movl $32,%0\n"
-		"1:" : "=r" (r) : "mr" (x));
-	return r;
-}
 #endif /* !defined(__ASSEMBLER__) */
 
 /* Align up/down to next power of 2, suitable for assembler

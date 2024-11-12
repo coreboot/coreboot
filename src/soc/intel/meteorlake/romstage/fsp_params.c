@@ -456,8 +456,11 @@ static void fill_fspm_sign_of_life(FSP_M_CONFIG *m_cfg,
 		elog_add_event_byte(ELOG_TYPE_FW_EARLY_SOL, ELOG_FW_EARLY_SOL_MRC);
 	}
 
-	if (CONFIG(SOC_INTEL_CSE_LITE_SKU) && is_cse_fw_update_required())
+	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_RAMSTAGE) && is_cse_fw_update_required()
+		&& !is_cse_boot_to_rw()) {
 		vga_init_control = VGA_INIT_CONTROL_ENABLE;
+		elog_add_event_byte(ELOG_TYPE_FW_EARLY_SOL, ELOG_FW_EARLY_SOL_CSE_SYNC);
+	}
 
 	if (!vga_init_control)
 		return;

@@ -439,13 +439,15 @@ static void fill_fspm_sign_of_life(FSP_M_CONFIG *m_cfg,
 	 * packed as part of the CBFS then CSE sync will be triggered. CSE sync can take
 	 * < 1-minute hence, let's inform the end user with an on-screen text message.
 	 */
-	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_RAMSTAGE) && is_cse_fw_update_required()) {
+	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_IN_RAMSTAGE) && is_cse_fw_update_required()
+		&& !is_cse_boot_to_rw()) {
 		if (esol_required) {
 			name = "memory training and CSE update";
 		} else {
 			name = "CSE update";
 			esol_required =  true;
 		}
+		elog_add_event_byte(ELOG_TYPE_FW_EARLY_SOL, ELOG_FW_EARLY_SOL_CSE_SYNC);
 	}
 
 	if (esol_required)

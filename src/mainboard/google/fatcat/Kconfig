@@ -68,7 +68,7 @@ config BOARD_GOOGLE_FATCATITE
 	select BOARD_GOOGLE_MODEL_FATCAT
 
 config BOARD_GOOGLE_FRANCKA
-	select BOARD_GOOGLE_MODEL_FATCAT
+	select BOARD_GOOGLE_BASEBOARD_FATCAT
 
 if BOARD_GOOGLE_FATCAT_COMMON
 
@@ -103,7 +103,8 @@ config DRIVER_TPM_I2C_ADDR
 
 config DRIVER_TPM_I2C_BUS
 	hex
-	default 0x03
+	default 0x03 if BOARD_GOOGLE_MODEL_FATCAT
+	default 0x01 if BOARD_GOOGLE_FRANCKA
 
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-debug-fsp.fmd" if CHROMEOS && BUILDING_WITH_DEBUG_FSP
@@ -145,6 +146,7 @@ config USE_PM_ACPI_TIMER
 config VARIANT_DIR
 	string
 	default "fatcat" if BOARD_GOOGLE_MODEL_FATCAT
+	default "francka" if BOARD_GOOGLE_FRANCKA
 
 config OVERRIDE_DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"

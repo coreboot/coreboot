@@ -197,13 +197,13 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_C21 - GPIO */
 	PAD_CFG_GPI_TRIG_OWN(GPP_C21, NONE, DEEP, OFF, DRIVER),
 	/* GPP_C22 - GPIO */
-	PAD_CFG_GPI_SMI(GPP_C22, NONE, PLTRST, LEVEL, NONE),
+	PAD_CFG_GPI(GPP_C22, NONE, PLTRST),
 	/* GPP_C23 - GPIO */
-	PAD_CFG_GPI_SMI(GPP_C23, NONE, DEEP, LEVEL, INVERT),
+	PAD_CFG_GPI(GPP_C23, NONE, DEEP),
 
 	/* ------- GPIO Group GPP_D ------- */
 	/* GPP_D0 - GPIO */
-	PAD_CFG_GPI_SMI(GPP_D0, NONE, PLTRST, LEVEL, INVERT),
+	PAD_CFG_GPI(GPP_D0, NONE, PLTRST),
 	/* GPP_D1 - GPIO */
 	PAD_CFG_GPO(GPP_D1, 0, DEEP),
 	/* GPP_D2 - GPIO */
@@ -253,9 +253,9 @@ static const struct pad_config gpio_table[] = {
 
 	/* ------- GPIO Group GPP_E ------- */
 	/* GPP_E0 - GPIO */
-	PAD_CFG_GPI_SMI(GPP_E0, NONE, DEEP, LEVEL, NONE),
+	PAD_CFG_GPI(GPP_E0, NONE, DEEP),
 	/* GPP_E1 - GPIO */
-	PAD_CFG_GPI_SMI(GPP_E1, NONE, DEEP, LEVEL, NONE),
+	PAD_CFG_GPI(GPP_E1, NONE, DEEP),
 	/* GPP_E2 - GPIO */
 	PAD_CFG_GPI_TRIG_OWN(GPP_E2, NONE, DEEP, OFF, DRIVER),
 	/* GPP_E3 - CPU_GP0 */

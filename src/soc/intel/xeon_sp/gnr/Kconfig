@@ -105,9 +105,6 @@ config MAX_ACPI_TABLE_SIZE_KB
 config SOC_INTEL_HAS_NCMEM
 	def_bool y
 
-config SOC_INTEL_MMAPVTD_ONLY_FOR_DPR
-	def_bool y
-
 config SOC_INTEL_HAS_CXL
 	def_bool n
 

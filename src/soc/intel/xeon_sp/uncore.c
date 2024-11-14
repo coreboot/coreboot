@@ -56,7 +56,8 @@ enum {
 size_t vtd_probe_bar_size(struct device *dev)
 {
 	uint32_t id = pci_read_config32(dev, PCI_VENDOR_ID);
-	assert(id == (PCI_VID_INTEL | (MMAP_VTD_CFG_REG_DEVID << 16)));
+	assert((id == (PCI_VID_INTEL | (MMAP_VTD_CFG_REG_DEVID << 16))) ||
+	       (id == (PCI_VID_INTEL | (MMAP_VTD_STACK_CFG_REG_DEVID << 16))));
 
 	uint32_t val = pci_read_config32(dev, VTD_BAR_CSR);
 	pci_write_config32(dev, VTD_BAR_CSR, (uint32_t)(-4 * KiB));
@@ -432,6 +433,7 @@ static struct device_operations mmapvtd_ops = {
 
 static const unsigned short mmapvtd_ids[] = {
 	MMAP_VTD_CFG_REG_DEVID, /* Memory Map/Intel® VT-d Configuration Registers */
+	MMAP_VTD_STACK_CFG_REG_DEVID,
 	0
 };
 
@@ -440,29 +442,6 @@ static const struct pci_driver mmapvtd_driver __pci_driver = {
 	.vendor   = PCI_VID_INTEL,
 	.devices  = mmapvtd_ids
 };
-
-#if !CONFIG(SOC_INTEL_MMAPVTD_ONLY_FOR_DPR)
-static void vtd_read_resources(struct device *dev)
-{
-	pci_dev_read_resources(dev);
-
-	configure_dpr(dev);
-}
-
-static struct device_operations vtd_ops = {
-	.read_resources    = vtd_read_resources,
-	.set_resources     = pci_dev_set_resources,
-	.enable_resources  = pci_dev_enable_resources,
-	.ops_pci           = &soc_pci_ops,
-};
-
-/* VTD devices on other stacks */
-static const struct pci_driver vtd_driver __pci_driver = {
-	.ops      = &vtd_ops,
-	.vendor   = PCI_VID_INTEL,
-	.device   = MMAP_VTD_STACK_CFG_REG_DEVID,
-};
-#endif
 
 static void dmi3_init(struct device *dev)
 {

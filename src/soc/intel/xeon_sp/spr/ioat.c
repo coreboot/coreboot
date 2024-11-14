@@ -10,8 +10,8 @@
 #include <intelblocks/acpi.h>
 #include <intelblocks/vtd.h>
 #include <soc/acpi.h>
+#include <soc/pci_devs.h>
 #include <IioPcieConfigUpd.h>
-
 #include <soc/chip_common.h>
 
 /*
@@ -79,6 +79,8 @@ void create_ioat_domains(const union xeon_domain_path path,
 			const STACK_RES *const sr,
 			const size_t pci_segment_group)
 {
+	struct device *vtd_dev;
+
 	if (sr->BusLimit < sr->BusBase + HQM_BUS_OFFSET + HQM_RESERVED_BUS) {
 		printk(BIOS_WARNING,
 			"Ignoring IOAT domain with limited bus range.\n");
@@ -143,7 +145,10 @@ void create_ioat_domains(const union xeon_domain_path path,
 				&index);
 
 	/* Declare domain reserved MMIO */
-	uint64_t reserved_mmio = sr->VtdBarAddress + vtd_probe_bar_size(pcidev_on_root(0, 0));
+	vtd_dev = pcidev_on_root(VTD_DEV_NUM, VTD_FUNC_NUM);
+	assert(vtd_dev);
+
+	uint64_t reserved_mmio = sr->VtdBarAddress + vtd_probe_bar_size(vtd_dev);
 	if ((reserved_mmio >= sr->PciResourceMem32Base) &&
 	    (reserved_mmio <= sr->PciResourceMem32Limit))
 		mmio_range(dev, index, reserved_mmio,

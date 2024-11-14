@@ -28,6 +28,7 @@ static const STACK_RES *domain_to_stack_res(const struct device *dev)
 static void iio_pci_domain_read_resources(struct device *dev)
 {
 	const STACK_RES *sr = domain_to_stack_res(dev);
+	struct device *vtd_dev;
 
 	if (!sr)
 		return;
@@ -56,7 +57,10 @@ static void iio_pci_domain_read_resources(struct device *dev)
 				sr->PciResourceMem64Base, sr->PciResourceMem64Limit + 1);
 
 	/* Declare domain reserved MMIO */
-	uint64_t reserved_mmio = sr->VtdBarAddress + vtd_probe_bar_size(pcidev_on_root(0, 0));
+	vtd_dev = pcidev_on_root(VTD_DEV_NUM, VTD_FUNC_NUM);
+	assert(vtd_dev);
+
+	uint64_t reserved_mmio = sr->VtdBarAddress + vtd_probe_bar_size(vtd_dev);
 	if ((reserved_mmio >= sr->PciResourceMem32Base) &&
 	    (reserved_mmio <= sr->PciResourceMem32Limit))
 		mmio_range(dev, index++, reserved_mmio,

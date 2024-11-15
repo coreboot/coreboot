@@ -6,5 +6,6 @@
 #define PCH_IRQ10          10
 #define PCH_IRQ11          11
 #define PCH_IRQ14          14
+#define PCH_IRQ16          16
 
 #endif /* _SOC_IRQ_H_ */

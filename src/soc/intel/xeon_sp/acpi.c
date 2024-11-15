@@ -202,7 +202,7 @@ void acpigen_write_PRT_pre_routed(const struct device *br)
 	uint32_t routed_dev_bitmap = 0;
 	char *entry_count;
 
-	if (!is_pci_bridge(br))
+	if (!dev_is_active_bridge(br))
 		return;
 
 	const char *acpi_scope = acpi_device_path(br);

@@ -20,6 +20,9 @@ chip soc/intel/pantherlake
 		.tdp_pl4 = 154,
 	}"
 
+	# Reduce the size of BasicMemoryTests to speed up the boot time.
+	register "lower_basic_mem_test_size" = "true"
+
 	# NOTE: if any variant wants to override this value, use the same format
 	# as register "common_soc_config.pch_thermal_trip" = "value", instead of
 	# putting it under register "common_soc_config" in overridetree.cb file.

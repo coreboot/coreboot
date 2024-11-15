@@ -19,10 +19,6 @@ end
 chip soc/intel/alderlake
 	register "sagv" = "SaGv_Enabled"
 
-	# GPE configuration
-	register "pmc_gpe0_dw1" = "GPP_B"
-	register "pmc_gpe0_dw2" = "GPP_F"
-
 	# S0ix enable
 	register "s0ix_enable" = "true"
 

@@ -225,6 +225,8 @@ void acpigen_write_PRT_pre_routed(const struct device *br)
 		uint8_t int_pin = pci_read_config8(dev, PCI_INTERRUPT_PIN);
 		if ((int_pin > PCI_INT_MAX) || (int_pin < PCI_INT_A))
 			continue;
+		if (!int_line)
+			continue;
 
 		acpigen_write_PRT_GSI_entry(dev_num, int_pin - PCI_INT_A, int_line);
 

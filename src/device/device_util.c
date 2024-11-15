@@ -655,7 +655,7 @@ void disable_children(struct bus *bus)
  * Returns true if the device is an enabled bridge that has at least
  * one enabled device on its secondary bus that is not of type NONE.
  */
-bool dev_is_active_bridge(struct device *dev)
+bool dev_is_active_bridge(const struct device *dev)
 {
 	struct device *child;
 

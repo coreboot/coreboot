@@ -186,7 +186,7 @@ const struct device *dev_get_domain(const struct device *dev);
 unsigned int dev_get_domain_id(const struct device *dev);
 void dev_set_enabled(struct device *dev, int enable);
 void disable_children(struct bus *bus);
-bool dev_is_active_bridge(struct device *dev);
+bool dev_is_active_bridge(const struct device *dev);
 bool is_dev_enabled(const struct device *const dev);
 bool is_devfn_enabled(unsigned int devfn);
 bool is_cpu(const struct device *cpu);

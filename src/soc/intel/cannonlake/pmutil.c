@@ -148,10 +148,21 @@ uint32_t *soc_pmc_etr_addr(void)
 	return (uint32_t *)(soc_read_pmc_base() + ETR);
 }
 
+static void gpe0_different_values(const struct soc_intel_cannonlake_config *config)
+{
+	bool result = (config->gpe0_dw0 != config->gpe0_dw1) &&
+			 (config->gpe0_dw0 != config->gpe0_dw2) &&
+			 (config->gpe0_dw1 != config->gpe0_dw2);
+
+	assert(result);
+}
+
 void soc_get_gpi_gpe_configs(uint8_t *dw0, uint8_t *dw1, uint8_t *dw2)
 {
 	DEVTREE_CONST struct soc_intel_cannonlake_config *config;
 	config = config_of_soc();
+
+	gpe0_different_values(config);
 
 	/* Assign to out variable */
 	*dw0 = config->gpe0_dw0;

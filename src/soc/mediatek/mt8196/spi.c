@@ -6,7 +6,6 @@
  */
 
 #include <assert.h>
-#include <console/console.h>
 #include <device/mmio.h>
 #include <gpio.h>
 #include <soc/addressmap.h>

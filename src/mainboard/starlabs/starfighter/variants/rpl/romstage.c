@@ -5,7 +5,6 @@
 #include <soc/romstage.h>
 #include <types.h>
 
-#include <console/console.h>
 #include <gpio.h>
 
 static uint8_t get_memory_config_straps(void)

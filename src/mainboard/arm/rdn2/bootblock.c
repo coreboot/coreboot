@@ -2,7 +2,6 @@
 
 #include <arch/mmu.h>
 #include <bootblock_common.h>
-#include <console/console.h>
 #include <mainboard/addressmap.h>
 #include <symbols.h>
 

@@ -2,7 +2,6 @@
 
 #include <assert.h>
 #include <arch/romstage.h>
-#include <console/console.h>
 #include <cbmem.h>
 #include <fsp/api.h>
 #include <fsp/util.h>

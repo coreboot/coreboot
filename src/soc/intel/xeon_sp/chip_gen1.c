@@ -2,7 +2,6 @@
 
 #include <acpi/acpigen_pci.h>
 #include <assert.h>
-#include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <soc/pci_devs.h>

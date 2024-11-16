@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <console/console.h>
 #include <device/mmio.h>
 #include <soc/addressmap.h>
 #include <soc/lastbus_v2.h>

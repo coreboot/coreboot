@@ -3,7 +3,6 @@
 #include <boot/coreboot_tables.h>
 #include <drivers/tpm/cr50.h>
 #include <gpio.h>
-#include <console/console.h>
 
 #include "gpio.h"
 

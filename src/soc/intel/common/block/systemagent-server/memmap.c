@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/romstage.h>
-#include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <intelblocks/systemagent_server.h>
 

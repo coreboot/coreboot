@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <console/console.h>
 #include <intelblocks/lpc_lib.h>
 #include <soc/iomap.h>
 #include <soc/pcr_ids.h>

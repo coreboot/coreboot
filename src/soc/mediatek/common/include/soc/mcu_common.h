@@ -3,6 +3,8 @@
 #ifndef SOC_MEDIATEK_MTLIB_COMMON_H
 #define SOC_MEDIATEK_MTLIB_COMMON_H
 
+#include <types.h>
+
 struct mtk_mcu {
 	const char *firmware_name;	/* The firmware file name in CBFS */
 	void *run_address;		/* The address for running the firmware */

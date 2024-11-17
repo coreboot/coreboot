@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <assert.h>
 #include <intelblocks/acpi.h>
 #include <soc/chip_common.h>
 #include <soc/util.h>

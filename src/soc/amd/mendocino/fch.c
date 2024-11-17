@@ -7,7 +7,6 @@
 #include <amdblocks/pci_clk_req.h>
 #include <amdblocks/reset.h>
 #include <amdblocks/smi.h>
-#include <assert.h>
 #include <bootstate.h>
 #include <cpu/x86/smm.h>
 #include <amdblocks/i2c.h>

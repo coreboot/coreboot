@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <acpi/acpigen_pci.h>
-#include <assert.h>
 #include <console/console.h>
 #include <device/pci.h>
 #include <intelblocks/acpi.h>

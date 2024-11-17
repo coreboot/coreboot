@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/psp_efs.h>
-#include <assert.h>
 #include <boot_device.h>
 #include <commonlib/region.h>
 #include <device/mmio.h>

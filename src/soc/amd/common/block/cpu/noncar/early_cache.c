@@ -2,7 +2,6 @@
 
 #include <amdblocks/cpu.h>
 #include <amdblocks/iomap.h>
-#include <assert.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>

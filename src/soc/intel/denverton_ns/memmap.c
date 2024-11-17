@@ -2,7 +2,6 @@
 
 #include <arch/romstage.h>
 #include <cbmem.h>
-#include <assert.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
 #include <device/device.h>

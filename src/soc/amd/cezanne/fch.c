@@ -8,7 +8,6 @@
 #include <amdblocks/gpio.h>
 #include <amdblocks/i2c.h>
 #include <amdblocks/smi.h>
-#include <assert.h>
 #include <bootstate.h>
 #include <cpu/x86/smm.h>
 #include <device/device.h>

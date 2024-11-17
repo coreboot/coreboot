@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <assert.h>
 #include <baseboard/variants.h>
 #include <chip.h>
 #include <fw_config.h>

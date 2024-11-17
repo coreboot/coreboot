@@ -5,7 +5,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <assert.h>
 #include <types.h>
 #include "82870.h"
 

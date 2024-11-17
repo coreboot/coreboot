@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <assert.h>
 #include <fsp/api.h>
 #include <soc/romstage.h>
 #include <soc/meminit.h>

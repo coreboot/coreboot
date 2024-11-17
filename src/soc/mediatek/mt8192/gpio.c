@@ -2,7 +2,6 @@
 
 #include <device/mmio.h>
 #include <gpio.h>
-#include <assert.h>
 
 void *gpio_find_reg_addr(gpio_t gpio)
 {

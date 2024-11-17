@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <assert.h>
 #include <soc/mcu_common.h>
 #include <soc/spm.h>
 

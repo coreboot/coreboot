@@ -2,7 +2,6 @@
 
 #include <acpi/acpigen.h>
 #include <acpi/acpigen_pci.h>
-#include <assert.h>
 #include <intelblocks/acpi.h>
 #include <intelblocks/pcr.h>
 #include <intelblocks/itss.h>

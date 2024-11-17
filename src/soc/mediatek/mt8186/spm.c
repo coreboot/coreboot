@@ -5,7 +5,6 @@
  * Chapter number: 3.5
  */
 
-#include <assert.h>
 #include <soc/mcu_common.h>
 #include <soc/spm.h>
 

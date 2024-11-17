@@ -2,7 +2,6 @@
 
 #include <soc/addressmap.h>
 #include <stdint.h>
-#include <assert.h>
 #include <device/mmio.h>
 #include <gpio.h>
 

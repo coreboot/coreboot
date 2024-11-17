@@ -68,6 +68,9 @@ config BOARD_GOOGLE_FATCATNUVO
 config BOARD_GOOGLE_FATCATITE
 	select BOARD_GOOGLE_MODEL_FATCAT
 
+config BOARD_GOOGLE_FELINO
+	select BOARD_GOOGLE_MODEL_FATCAT
+
 config BOARD_GOOGLE_FRANCKA
 	select BOARD_GOOGLE_BASEBOARD_FATCAT
 
@@ -126,6 +129,7 @@ config MAINBOARD_PART_NUMBER
 	default "Fatcatite" if BOARD_GOOGLE_FATCATITE
 	default "Fatcatnuvo" if BOARD_GOOGLE_FATCATNUVO
 	default "Francka" if BOARD_GOOGLE_FRANCKA
+	default "Felino" if BOARD_GOOGLE_FELINO
 
 config MEMORY_SOLDERDOWN
 	def_bool n
@@ -135,6 +139,7 @@ config MEMORY_SOLDERDOWN
 config TPM_TIS_ACPI_INTERRUPT
 	int
 	default 47 if BOARD_GOOGLE_MODEL_FATCAT # GPE0_DW1_15 (GPP_D15)
+	default 79 if BOARD_GOOGLE_FELINO # GPE0_DW2_15 (GPP_F15)
 	default 11 if BOARD_GOOGLE_FRANCKA # GPE0_DW0_11 (GPP_H11)
 
 # FIXME: update as per board schematics
@@ -149,6 +154,7 @@ config VARIANT_DIR
 	string
 	default "fatcat" if BOARD_GOOGLE_MODEL_FATCAT
 	default "francka" if BOARD_GOOGLE_FRANCKA
+	default "felino" if BOARD_GOOGLE_FELINO
 
 config OVERRIDE_DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"

@@ -1,0 +1,7 @@
+chip soc/intel/pantherlake
+
+	register "pmc_gpe0_dw0" = "GPP_A"
+	register "pmc_gpe0_dw1" = "GPP_D"
+	register "pmc_gpe0_dw2" = "GPP_F"
+
+end

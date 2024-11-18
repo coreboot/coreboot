@@ -1734,6 +1734,11 @@ int main(int argc, char **argv)
 	ctx.ish_b_dir = NULL;
 
 	if (platform_is_multi_level(cb_config.soc_id)) {
+
+		ctx.current_l1_pointer = 0;
+		ctx.current_a_pointer = cb_config.ral2_location;
+		ctx.current_b_pointer = cb_config.rbl2_location;
+
 		/* PSP L1.
 		 * On multi-level platforms, the PSP L1 table contains mandatory files and
 		 * a pointer to the PSP L2 table. On ISH platforms the PSP L1 table only contains
@@ -1748,17 +1753,27 @@ int main(int argc, char **argv)
 			if (!cb_config.recovery_ab_single_copy)
 				ctx.ish_b_dir = new_ish_dir(&ctx);
 		}
+		ctx.current_l1_pointer = ctx.current;
+
+		if (cb_config.recovery_ab && cb_config.ral2_location)
+			set_current_pointer(&ctx, cb_config.ral2_location);
 
 		/* PSP L2 & BIOS L2 (if AB recovery) */
 		ctx.pspdir2 = integrate_psp_firmwares(&ctx, amd_psp_fw_table, PSPL2_COOKIE, &cb_config);
 		if (cb_config.recovery_ab) {
 			integrate_bios_firmwares(&ctx, amd_bios_table, BHDL2_COOKIE,
 						 &cb_config);
+			ctx.current_a_pointer = ctx.current;
+
 			if (!cb_config.recovery_ab_single_copy) {
+				if (cb_config.recovery_ab && cb_config.rbl2_location)
+					set_current_pointer(&ctx, cb_config.rbl2_location);
+
 				ctx.pspdir2_b = integrate_psp_firmwares(&ctx, amd_psp_fw_table, PSPL2_COOKIE,
 							&cb_config);
 				integrate_bios_firmwares(&ctx, amd_bios_table, BHDL2_COOKIE,
 							 &cb_config);
+				ctx.current_b_pointer = ctx.current;
 			}
 			integrate_bios_levels(&ctx, &cb_config);
 		}
@@ -1787,16 +1802,39 @@ int main(int argc, char **argv)
 	if (cb_config.debug)
 		dump_image_addresses(&ctx);
 
-	/* Write EFS or all tables */
+	/* Validate A/B recovery config */
+	if (cb_config.recovery_ab && cb_config.rbl2_location && cb_config.ral2_location) {
+		ssize_t abytes = 0, bbytes = 0;
+		abytes = ctx.current_a_pointer - cb_config.ral2_location;
+		bbytes = ctx.current_b_pointer - cb_config.rbl2_location;
+		if (abytes != bbytes) {
+			fprintf(stderr, "Warning: The size of A and B tables are not the same\n");
+			amdfwtool_cleanup(&ctx);
+			return 1;
+		}
+	}
+
 	uint32_t efs_offset = cb_config.efs_location;
-	ssize_t bytes = cb_config.efs_location == cb_config.body_location ?
-			ctx.current - efs_offset : sizeof(embedded_firmware);
-	ssize_t ret_bytes = write_blob(cb_config.output, BUFF_OFFSET(ctx, efs_offset), bytes, "");
+	ssize_t bytes, ret_bytes;
+
+	if (cb_config.recovery_ab && cb_config.ral2_location) {
+		/* EFS, PSP L1 and ISH A and ISH B is split off. */
+		bytes = ctx.current_l1_pointer - cb_config.efs_location;
+	} else if (cb_config.efs_location != cb_config.body_location) {
+		/* Special case for VBOOT on PSP. Only write EFS. */
+		bytes = sizeof(embedded_firmware);
+	} else {
+		/* Write whole image (EFS + all tables) */
+		bytes = ctx.current - efs_offset;
+	}
+
+	ret_bytes = write_blob(cb_config.output, BUFF_OFFSET(ctx, efs_offset), bytes, "");
 	if (bytes != ret_bytes) {
 		fprintf(stderr, "Error: Writing to file %s failed\n", cb_config.output);
 		retval = 1;
 	}
 
+	/* Special case for VBOOT on PSP. Write body (all tables except EFS). */
 	if (cb_config.efs_location != cb_config.body_location) {
 		bytes = write_blob(cb_config.output, BUFF_OFFSET(ctx, cb_config.body_location),
 				   ctx.current - cb_config.body_location, BODY_FILE_SUFFIX);
@@ -1804,6 +1842,21 @@ int main(int argc, char **argv)
 			fprintf(stderr, "Error: Writing body\n");
 			retval = 1;
 		}
+	}
+
+	/* When recovery A location was provided generate a separate file for it. */
+	if (cb_config.recovery_ab && cb_config.ral2_location) {
+		ssize_t abytes = 0;
+		abytes = ctx.current_a_pointer - cb_config.ral2_location;
+		write_blob(cb_config.output, BUFF_OFFSET(ctx, cb_config.ral2_location),
+			   abytes, RA_FILE_SUFFIX);
+	}
+	/* When recovery B location was provided generate a separate file for it. */
+	if (cb_config.recovery_ab && cb_config.rbl2_location) {
+		ssize_t bbytes = 0;
+		bbytes = ctx.current_b_pointer - cb_config.rbl2_location;
+		write_blob(cb_config.output, BUFF_OFFSET(ctx, cb_config.rbl2_location),
+			   bbytes, RB_FILE_SUFFIX);
 	}
 
 	if (cb_config.manifest_file) {

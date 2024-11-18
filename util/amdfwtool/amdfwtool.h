@@ -460,7 +460,7 @@ typedef struct _amd_cb_config {
 	enum platform soc_id;
 
 	uint8_t efs_spi_readmode, efs_spi_speed, efs_spi_micron_flag;
-	uint32_t body_location, efs_location;
+	uint32_t body_location, efs_location, ral2_location, rbl2_location;
 	uint64_t signed_start_addr;
 	char *manifest_file;
 	const char *signed_output_file;
@@ -475,6 +475,7 @@ typedef struct _context {
 	uint32_t current;	/* pointer within flash & proxy buffer */
 	uint32_t current_pointer_saved;
 	uint32_t current_table;
+	uint32_t current_a_pointer, current_b_pointer, current_l1_pointer;
 	void *amd_psp_fw_table_clean;
 	void *amd_bios_table_clean;
 	embedded_firmware *amd_romsig_ptr;
@@ -493,6 +494,8 @@ int find_bios_entry(amd_bios_type type);
 #define EFS_FILE_SUFFIX ".efs"
 #define TMP_FILE_SUFFIX ".tmp"
 #define BODY_FILE_SUFFIX ".body"
+#define RA_FILE_SUFFIX ".ra"
+#define RB_FILE_SUFFIX ".rb"
 
 void write_or_fail(int fd, void *ptr, size_t size);
 ssize_t read_from_file_to_buf(int fd, void *buf, size_t buf_size);

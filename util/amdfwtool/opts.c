@@ -59,6 +59,8 @@ enum {
 	AMDFW_OPT_BODY_LOCATION,
 	AMDFW_OPT_VARIABLE_NVRAM_BASE,
 	AMDFW_OPT_VARIABLE_NVRAM_SIZE,
+	AMDFW_OPT_RECOVERY_A_LOCATION,
+	AMDFW_OPT_RECOVERY_B_LOCATION,
 	/* begin after ASCII characters */
 	LONGOPT_SPI_READ_MODE	= 256,
 	LONGOPT_SPI_SPEED	= 257,
@@ -116,6 +118,8 @@ static struct option long_options[] = {
 	{"spi-speed",        required_argument, 0, LONGOPT_SPI_SPEED },
 	{"spi-micron-flag",  required_argument, 0, LONGOPT_SPI_MICRON_FLAG },
 	{"body-location",     required_argument, 0, AMDFW_OPT_BODY_LOCATION },
+	{"recovery-a-location", required_argument, 0, AMDFW_OPT_RECOVERY_A_LOCATION },
+	{"recovery-b-location", required_argument, 0, AMDFW_OPT_RECOVERY_B_LOCATION },
 	/* other */
 	{"output",           required_argument, 0, AMDFW_OPT_OUTPUT },
 	{"flashsize",        required_argument, 0, AMDFW_OPT_FLASHSIZE },
@@ -158,6 +162,16 @@ static void usage(void)
 	printf("--verstage <FILE>               Add verstage\n");
 	printf("--verstage_sig                  Add verstage signature\n");
 	printf("--recovery-ab                   Use the recovery A/B layout\n");
+	printf("--recovery-a-location           Flash offset to recovery A partition\n");
+	printf("                                Depends on recovery-ab\n");
+	printf("                                When set generates a separate file with\n");
+	printf("                                the .ra suffix, containing the PSP L2A and\n");
+	printf("                                BHD L2A tables.\n");
+	printf("--recovery-b-location           Flash offset to recovery B partition\n");
+	printf("                                Depends on recovery-ab\n");
+	printf("                                When set generates a separate file with\n");
+	printf("                                the .rb suffix, containing the PSP L2B and\n");
+	printf("                                BHD L2B tables.\n");
 	printf("\nBIOS options:\n");
 	printf("--instance <number>             Sets instance field for the next BIOS\n");
 	printf("                                firmware\n");
@@ -561,7 +575,12 @@ int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config, context *
 				retval = 1;
 			}
 			break;
-
+		case AMDFW_OPT_RECOVERY_A_LOCATION:
+			cb_config->ral2_location = (uint32_t)strtoul(optarg, &tmp, 16);
+			break;
+		case AMDFW_OPT_RECOVERY_B_LOCATION:
+			cb_config->rbl2_location = (uint32_t)strtoul(optarg, &tmp, 16);
+			break;
 		default:
 			break;
 		}
@@ -673,6 +692,31 @@ int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config, context *
 	else
 		printf("\n");
 
+	if (!cb_config->recovery_ab &&
+	    (cb_config->ral2_location || cb_config->rbl2_location)) {
+		fprintf(stderr, "Error: A/B location specified, but argument 'recovery-ab' is missing\n");
+		return 1;
+	}
+	if (cb_config->recovery_ab && !cb_config->recovery_ab_single_copy &&
+	   (!cb_config->ral2_location || !cb_config->rbl2_location)) {
+		fprintf(stderr, "Error: A/B location not specified, but argument 'recovery-ab' set\n");
+		return 1;
+	}
+	if (cb_config->recovery_ab_single_copy && cb_config->rbl2_location) {
+		fprintf(stderr, "Error: B location specified, but argument 'recovery_ab_single_copy' set\n");
+		return 1;
+	}
+	if (cb_config->ral2_location && cb_config->rbl2_location &&
+	    (cb_config->ral2_location == cb_config->rbl2_location)) {
+		fprintf(stderr, "Error: A location equals B location\n");
+		return 1;
+	}
+	if ((cb_config->body_location != cb_config->efs_location) &&
+	    cb_config->recovery_ab &&
+	    (cb_config->ral2_location || cb_config->rbl2_location)) {
+		fprintf(stderr, "Error: EFS split body isn't supported with A/B location\n");
+		return 1;
+	}
 	if (retval) {
 		usage();
 		return retval;

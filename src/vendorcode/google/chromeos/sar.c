@@ -53,7 +53,7 @@ static uint8_t *wifi_hextostr(const char *sar_str, size_t str_len, size_t *sar_b
 	return sar_bin;
 }
 
-static int sar_table_size(const struct sar_profile *sar)
+static size_t sar_table_size(const struct sar_profile *sar)
 {
 	if (sar == NULL)
 		return 0;
@@ -62,7 +62,7 @@ static int sar_table_size(const struct sar_profile *sar)
 					      sar->subbands_count));
 }
 
-static int wgds_table_size(const struct geo_profile *geo)
+static size_t wgds_table_size(const struct geo_profile *geo)
 {
 	if (geo == NULL)
 		return 0;
@@ -70,7 +70,7 @@ static int wgds_table_size(const struct geo_profile *geo)
 	return sizeof(struct geo_profile) + (geo->chains_count * geo->bands_count);
 }
 
-static int gain_table_size(const struct gain_profile *gain)
+static size_t gain_table_size(const struct gain_profile *gain)
 {
 	if (gain == NULL)
 		return 0;
@@ -78,7 +78,7 @@ static int gain_table_size(const struct gain_profile *gain)
 	return sizeof(struct gain_profile) + (gain->chains_count * gain->bands_count);
 }
 
-static int sar_avg_table_size(const struct avg_profile *sar_avg)
+static size_t sar_avg_table_size(const struct avg_profile *sar_avg)
 {
 	if (sar_avg == NULL)
 		return 0;
@@ -86,7 +86,7 @@ static int sar_avg_table_size(const struct avg_profile *sar_avg)
 	return sizeof(struct avg_profile);
 }
 
-static int dsm_table_size(const struct dsm_profile *dsm)
+static size_t dsm_table_size(const struct dsm_profile *dsm)
 {
 	if (dsm == NULL)
 		return 0;
@@ -94,7 +94,7 @@ static int dsm_table_size(const struct dsm_profile *dsm)
 	return sizeof(struct dsm_profile);
 }
 
-static int bsar_table_size(const struct bsar_profile *bsar)
+static size_t bsar_table_size(const struct bsar_profile *bsar)
 {
 	if (bsar == NULL)
 		return 0;
@@ -102,7 +102,7 @@ static int bsar_table_size(const struct bsar_profile *bsar)
 	return sizeof(struct bsar_profile);
 }
 
-static int wbem_table_size(const struct wbem_profile *wbem)
+static size_t wbem_table_size(const struct wbem_profile *wbem)
 {
 	if (wbem == NULL)
 		return 0;
@@ -121,7 +121,7 @@ static bool valid_legacy_length(size_t bin_len)
 	return false;
 }
 
-static int sar_header_size(void)
+static size_t sar_header_size(void)
 {
 	return (MAX_PROFILE_COUNT * sizeof(uint16_t)) + sizeof(struct sar_header);
 }

@@ -40,8 +40,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC(GPP_A17, NONE, PLTRST, LEVEL, INVERT),
 	/* A18 : DDSP_HPDB ==> DDI2_HPD */
 	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),
-	/* A19 : DDSP_HPD1 ==> USBC_DP_HPD */
-	PAD_CFG_NF(GPP_A19, NONE, DEEP, NF1),
+	/* A19 : NC */
+	PAD_NC(GPP_A19, NONE),
 	/* A20 : NC */
 	PAD_NC(GPP_A20, NONE),
 	/* A21 : DDPC_CTRLCLK ==> TCHSCR_REPORT_EN */

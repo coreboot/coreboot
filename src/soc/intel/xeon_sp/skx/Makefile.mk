@@ -19,6 +19,7 @@ ramstage-y += chip.c
 ramstage-y += ../chip_gen1.c ../lpc_gen1.c
 ramstage-y += soc_util.c
 ramstage-y += cpu.c
+ramstage-y += ioapic.c
 ramstage-$(CONFIG_DISPLAY_UPD_DATA) += upd_display.c
 ramstage-$(CONFIG_DISPLAY_HOBS) += hob_display.c
 ramstage-y += hob_display.c

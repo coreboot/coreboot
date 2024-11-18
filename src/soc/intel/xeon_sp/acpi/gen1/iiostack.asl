@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#define MAKE_IIO_DEV(id,rt)						\
+#define MAKE_IIO_DEV(id,rt,pxm)						\
 	Device (PC##id)							\
 	{								\
 		Name (_HID, EisaId ("PNP0A08") /* PCI Express Bus */)	\
@@ -27,7 +27,7 @@
 		}							\
 		Name (SUPP, 0x00)					\
 		Name (CTRL, 0x00)					\
-		Name (_PXM, 0x00)  /* _PXM: Device Proximity */		\
+		Name (_PXM, pxm)  /* _PXM: Device Proximity */		\
 		Method (_OSC, 4, NotSerialized)				\
 		{							\
 			CreateDWordField (Arg3, 0x00, CDW1)		\
@@ -72,14 +72,14 @@
 	}
 
 // Keep in sync with iio_domain_set_acpi_name()!
-MAKE_IIO_DEV(00, 00)
-MAKE_IIO_DEV(01, 10)
-MAKE_IIO_DEV(02, 20)
-MAKE_IIO_DEV(03, 28)
+MAKE_IIO_DEV(00, 00, 0)
+MAKE_IIO_DEV(01, 10, 0)
+MAKE_IIO_DEV(02, 20, 0)
+MAKE_IIO_DEV(03, 28, 0)
 
 #if (CONFIG_MAX_SOCKET > 1)
-MAKE_IIO_DEV(20, 40)
-MAKE_IIO_DEV(21, 50)
-MAKE_IIO_DEV(22, 60)
-MAKE_IIO_DEV(23, 68)
+MAKE_IIO_DEV(20, 40, 1)
+MAKE_IIO_DEV(21, 50, 1)
+MAKE_IIO_DEV(22, 60, 1)
+MAKE_IIO_DEV(23, 68, 1)
 #endif

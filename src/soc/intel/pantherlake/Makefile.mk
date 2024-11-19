@@ -43,6 +43,7 @@ ramstage-y += soundwire.c
 ramstage-y += systemagent.c
 ramstage-y += tcss.c
 ramstage-y += xhci.c
+ramstage-$(CONFIG_DRIVERS_INTEL_TOUCH) += touch.c
 
 smm-y += elog.c
 smm-y += gpio.c

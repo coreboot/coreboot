@@ -26,6 +26,8 @@
 #define MAX_SAGV_POINTS 4
 #define MAX_HD_AUDIO_SDI_LINKS 2
 
+#define NUM_THC 2
+
 /* In-Band ECC Operation Mode */
 enum ibecc_mode {
 	IBECC_MODE_PER_REGION,
@@ -539,6 +541,19 @@ struct soc_intel_pantherlake_config {
 
 	uint16_t max_dram_speed_mts;
 
+	/*
+	 * Touch Host Controller Mode
+	 * Switch between Intel THC protocol and Industry standard HID protocols.
+	 * 0x0:Thc, 0x1:HID over SPI, 0x2:HID over I2C
+	 */
+	uint8_t thc_mode[NUM_THC];
+
+	/*
+	 * Touch Host Controller Wake On Touch
+	 * Based on this setting vGPIO for given THC will be in native mode, and additional _CRS
+	 * for wake will be exposed in ACPI
+	 */
+	bool thc_wake_on_touch[NUM_THC];
 };
 
 typedef struct soc_intel_pantherlake_config config_t;

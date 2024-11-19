@@ -576,8 +576,15 @@ static void fill_fsps_pmcpd_params(FSP_S_CONFIG *s_cfg,
 static void fill_fsps_thc_params(FSP_S_CONFIG *s_cfg,
 				 const struct soc_intel_pantherlake_config *config)
 {
-	s_cfg->ThcAssignment[0] = is_devfn_enabled(PCI_DEVFN_THC0) ? THC_0 : THC_NONE;
-	s_cfg->ThcAssignment[1] = is_devfn_enabled(PCI_DEVFN_THC1) ? THC_1 : THC_NONE;
+	for (size_t i = 0; i < NUM_THC; i++) {
+		if (!is_devfn_enabled(_PCI_DEVFN(THC, i))) {
+			s_cfg->ThcAssignment[i] = THC_NONE;
+			continue;
+		}
+		s_cfg->ThcAssignment[i] = THC_0 + i;
+		s_cfg->ThcMode[i] = config->thc_mode[i];
+		s_cfg->ThcWakeOnTouch[i] = config->thc_wake_on_touch[i];
+	}
 }
 
 static void fill_fsps_8254_params(FSP_S_CONFIG *s_cfg,

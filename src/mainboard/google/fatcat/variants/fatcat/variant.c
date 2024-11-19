@@ -4,6 +4,8 @@
 #include <fsp/api.h>
 #include <fw_config.h>
 #include <sar.h>
+#include <soc/gpio_soc_defs.h>
+#include <drivers/intel/touch/chip.h>
 
 const char *get_wifi_sar_cbfs_filename(void)
 {
@@ -24,6 +26,50 @@ void variant_update_soc_chip_config(struct soc_intel_pantherlake_config *config)
 			printk(BIOS_INFO, "BT audio offload configured.\n");
 			config->cnvi_bt_audio_offload = true;
 		}
+	}
+
+    /* Touchscreen and touchpad WOT support:
+     * +===================+==================+=================+============================+
+     * | touchsreen        | touchpad         | PMC_GPE0_DW0    | WOT                        |
+     * +===================+==================+==============================================+
+     * | THC-SPI/THC-I2C   | LPSS-I2C         | GPP_F           | TS, TP                     |
+     * +-------------------+------------------+----------------------------------------------+
+     * | THC-SPI/THC-I2C   | not used or      | GPP_A (default) | TS                         |
+     * |                   | with WOT disabled|                 |                            |
+     * +-------------------+------------------+----------------------------------------------+
+     * | THC-SPI/THC-I2C   | THC-I2C          | GPP_A (default) | TS, TP                     |
+     * +-------------------+------------------+----------------------------------------------+
+     * | LPSS-SPI/LPSS-I2C | LPSS-I2C         | GPP_F           | TS via PMC_GPE0_DW2: GPP_E,|
+     * |                   |                  |                 | TP                         |
+     * +-------------------+------------------+----------------------------------------------+
+     * | LPSS-SPI/LPSS-I2C | not used or      | GPP_A (default) | TS via PMC_GPE0_DW2: GPP_E |
+     * |                   | with WOT disabled|                 |                            |
+     * +-------------------+------------------+----------------------------------------------+
+     * | not used          | not used or      | GPP_A (default) | NA                         |
+     * | with WOT disabled | with WOT disabled|                 |                            |
+     * +===================+==================+=================+============================+
+     */
+	if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_I2C))) {
+		config->thc_mode[0] = THC_HID_I2C_MODE;
+	} else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_SPI))) {
+		config->thc_mode[0] = THC_HID_SPI_MODE;
+	} else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_GSPI))) {
+		config->serial_io_gspi_mode[PchSerialIoIndexGSPI0] = PchSerialIoPci;
+	}
+
+	if (fw_config_probe(FW_CONFIG(TOUCHPAD, TOUCHPAD_LPSS_I2C))) {
+		/* touchpad: GPP_F18: GPE0_DW0_18 */
+		if (config->thc_wake_on_touch[1])
+			config->pmc_gpe0_dw0 = GPP_F;
+	} else if (fw_config_probe(FW_CONFIG(TOUCHPAD, TOUCHPAD_THC_I2C))) {
+		config->thc_mode[1] = THC_HID_I2C_MODE;
+
+		if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_NONE)))
+			/* When THC0 is only enabled due to THC1 is enabled, we force THC0
+			 * to I2C mode so that kernel THC I2C driver will find it and put
+			 * THC0 to low power state because no connected device is found.
+			 */
+			config->thc_mode[0] = THC_HID_I2C_MODE;
 	}
 }
 

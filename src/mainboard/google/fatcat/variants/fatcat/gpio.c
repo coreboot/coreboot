@@ -265,6 +265,9 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_F13, NONE, DEEP, NF8),
 	/* GPP_F17:     Not used */
 	PAD_CFG_GPI_INT(GPP_F17, NONE, PLTRST, EDGE_BOTH),
+	/* GPP_F18:     TCH_PAD_INT_N */
+	/* NOTE: require rework to switch from GPP_A13 to GPP_F18 */
+	PAD_CFG_GPI_APIC(GPP_F18, NONE, PLTRST, LEVEL, INVERT),
 	/* GPP_F19:     GPP_PRIVACY_LED_CAM2 */
 	PAD_CFG_GPO(GPP_F19, 0, PLTRST),
 	/* GPP_F20:     GPP_PRIVACY_LED_CAM1_CVS_HST_WAKE */

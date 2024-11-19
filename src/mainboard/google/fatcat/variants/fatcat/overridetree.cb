@@ -317,13 +317,66 @@ chip soc/intel/pantherlake
 		device ref iaa off end
 
 		device ref thc0 on
+			register "thc_wake_on_touch[0]" = "true"
 			probe TOUCHSCREEN TOUCHSCREEN_THC_SPI
 			probe TOUCHSCREEN TOUCHSCREEN_THC_I2C
 			# THC0 is function 0; hence it needs to be enabled when THC1 is to be enabled.
 			probe TOUCHPAD TOUCHPAD_THC_I2C
+			chip drivers/intel/touch
+				register "name" = "INTEL_THC0_NAME"
+				register "mode" = "THC_HID_I2C_MODE"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_F08)"
+				register "enable_delay_ms" = "2"
+				register "enable_off_delay_ms" = "2"
+				register "wake_on_touch" = "true"
+				# NOTE: Use GpioInt() in _CRS and does not use GPE.
+				register "wake_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW_WAKE(GPP_VGPIO3_THC0)"
+				register "active_ltr" = "1"
+				register "idle_ltr" = "0"
+				register "connected_device" = "TH_SENSOR_ELAN"
+				register "add_acpi_dma_property" = "true"
+				device generic 0 alias touch_0_i2c_elan on
+					probe TOUCHSCREEN TOUCHSCREEN_THC_I2C
+				end
+			end
+			chip drivers/intel/touch
+				register "name" = "INTEL_THC0_NAME"
+				register "mode" = "THC_HID_SPI_MODE"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_F08)"
+				register "enable_delay_ms" = "2"
+				register "enable_off_delay_ms" = "2"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E16)"
+				register "reset_delay_ms" = "10"
+				register "reset_off_delay_ms" = "2"
+				register "wake_on_touch" = "true"
+				# NOTE: Use GpioInt() in _CRS and does not use GPE.
+				register "wake_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW_WAKE(GPP_VGPIO3_THC0)"
+				register "active_ltr" = "1"
+				register "idle_ltr" = "0"
+				register "connected_device" = "TH_SENSOR_ELAN"
+				register "soc_hidspi.write_mode" = "HIDSPI_WRITE_MODE_MULTI_SINGLE_SPI"
+				register "soc_hidspi.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E16)"
+				register "add_acpi_dma_property" = "true"
+				device generic 0 alias touch_0_spi_elan on
+					probe TOUCHSCREEN TOUCHSCREEN_THC_SPI
+				end
+			end
 		end
 		device ref thc1 on
+			register "thc_wake_on_touch[1]" = "true"
 			probe TOUCHPAD TOUCHPAD_THC_I2C
+			chip drivers/intel/touch
+				register "name" = "INTEL_THC1_NAME"
+				register "mode" = "THC_HID_I2C_MODE"
+				register "wake_on_touch" = "true"
+				# NOTE: Use GpioInt() in _CRS and does not use GPE.
+				register "wake_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW_WAKE(GPP_VGPIO3_THC1)"
+				register "active_ltr" = "1"
+				register "idle_ltr" = "0"
+				register "connected_device" = "TH_SENSOR_HYNITRON"
+				register "add_acpi_dma_property" = "true"
+				device generic 0 alias touch_1_i2c_hynitron on end
+			end
 		end
 
 		device ref tbt_pcie_rp0 on end
@@ -811,9 +864,11 @@ chip soc/intel/pantherlake
 		end # I2C3
 		device ref i2c4 on
 			chip drivers/i2c/hid
-				register "generic.hid" = ""ELAN6918""
+				register "generic.hid" = ""ELAN9048""
 				register "generic.desc" = ""ELAN Touchscreen""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E18_IRQ)"
+				# NOTE: pmc_gpe0_dw2 is GPP_E in baseboard devicetree.cb.
+				register "generic.wake" = "GPE0_DW2_18"
 				register "generic.probed" = "1"
 				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E16)"
 				register "generic.reset_delay_ms" = "20"
@@ -832,6 +887,8 @@ chip soc/intel/pantherlake
 				register "generic.hid" = ""HFW68H""
 				register "generic.desc" = ""Hynitron TOUCHPAD""
 				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F18_IRQ)"
+				# NOTE: pmc_gpe0_dw0 will be overridden to GPP_F in variant.c.
+				register "generic.wake" = "GPE0_DW0_18"
 				register "generic.uid" = "5"
 				register "generic.detect" = "1"
 				register "hid_desc_reg_offset" = "0x20"

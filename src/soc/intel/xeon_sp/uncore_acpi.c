@@ -84,9 +84,9 @@ static void acpi_fill_srat_memory(int *cnt, acpi_srat_mem_t *current,
 	addr = ((uint64_t)e->BaseAddress << MEM_ADDR_64MB_SHIFT_BITS);
 	size = ((uint64_t)e->ElementSize << MEM_ADDR_64MB_SHIFT_BITS);
 
-	printk(BIOS_DEBUG, "SRAT: sysmemmap addr: 0x%llx, BaseAddress: 0x%x, size: 0x%llx, "
-	       "ElementSize: 0x%x, type: %d, reserved: %d\n", addr, e->BaseAddress,
-	       size, e->ElementSize, e->Type, is_memtype_reserved(e->Type));
+	printk(BIOS_DEBUG, "     sysmemmap addr: 0x%llx, size: 0x%llx, "
+	       "type: %d, reserved: %d\n", addr, size, e->Type,
+	       is_memtype_reserved(e->Type));
 
 	/* skip reserved memory region */
 	if (is_memtype_reserved(e->Type))
@@ -122,9 +122,9 @@ static void acpi_fill_srat_memory(int *cnt, acpi_srat_mem_t *current,
 	}
 
 	if (!skip) {
-		printk(BIOS_DEBUG, "SRAT: adding memory %d entry length: %d, addr: 0x%x%x, "
-		       "length: 0x%x%x, proximity_domain: %d, flags: %x\n",
-		       *cnt, srat.length, srat.base_address_high, srat.base_address_low,
+		printk(BIOS_DEBUG, "SRAT: memory %d: addr=0x%x%08x, "
+		       "length=0x%x%08x, proximity_domain=%d, flags=%x\n",
+		       *cnt, srat.base_address_high, srat.base_address_low,
 		       srat.length_high, srat.length_low, srat.proximity_domain, srat.flags);
 
 		memcpy(current, &srat, sizeof(acpi_srat_mem_t));

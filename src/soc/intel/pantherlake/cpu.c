@@ -138,7 +138,18 @@ void soc_core_init(struct device *cpu)
 	if (CONFIG(INTEL_TME) && is_tme_supported())
 		set_tme_core_activate();
 
-	/* TODO: Add support for DROP_CPU_FEATURE_PROGRAM_IN_FSP */
+	if (CONFIG(DROP_CPU_FEATURE_PROGRAM_IN_FSP)) {
+		/* Disable 3-strike error */
+		disable_signaling_three_strike_event();
+
+		set_aesni_lock();
+
+		/* Enable VMX */
+		set_feature_ctrl_vmx_arg(CONFIG(ENABLE_VMX) && !conf->disable_vmx);
+
+		/* Feature control lock configure */
+		set_feature_ctrl_lock();
+	}
 }
 
 static void per_cpu_smm_trigger(void)

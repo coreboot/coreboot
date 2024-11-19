@@ -368,6 +368,7 @@ config SOC_INTEL_GFX_FRAMEBUFFER_OFFSET
 
 config DROP_CPU_FEATURE_PROGRAM_IN_FSP
 	bool
+	default y if MP_SERVICES_PPI_V2_NOOP || CHROMEOS
 	default n
 	help
 	  This is to avoid FSP running basic CPU feature programming on BSP

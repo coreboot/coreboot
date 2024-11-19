@@ -536,6 +536,10 @@ void acpigen_write_create_byte_field(uint8_t op, size_t byte_offset, const char 
 void acpigen_write_create_word_field(uint8_t op, size_t byte_offset, const char *name);
 void acpigen_write_create_dword_field(uint8_t op, size_t byte_offset, const char *name);
 void acpigen_write_create_qword_field(uint8_t op, size_t byte_offset, const char *name);
+void acpigen_write_create_buffer_byte_field(const char *src_buf, size_t byte_offset, const char *name);
+void acpigen_write_create_buffer_word_field(const char *src_buf, size_t byte_offset, const char *name);
+void acpigen_write_create_buffer_dword_field(const char *src_buf, size_t byte_offset, const char *name);
+void acpigen_write_create_buffer_qword_field(const char *src_buf, size_t byte_offset, const char *name);
 void acpigen_write_field_name(const char *name, uint32_t size);
 /*
  * Generate ACPI AML code for _DSM method.

@@ -1,0 +1,7 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config DRIVERS_INTEL_TOUCH
+	bool
+	help
+	  If selected, chip drivers/intel/touch publishes data into the SSDT (Secondary System
+	  Description Table) for both the touch controller and the sensor device.

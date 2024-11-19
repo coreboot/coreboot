@@ -39,6 +39,7 @@ GMP_VERSION=6.3.0
 MPFR_VERSION=4.2.1
 MPC_VERSION=1.3.1
 GCC_VERSION=14.2.0
+LIBSTDCXX_VERSION="${GCC_VERSION}"
 BINUTILS_VERSION=2.43.1
 IASL_VERSION="20230628"
 # CLANG version number
@@ -51,6 +52,7 @@ GMP_ARCHIVE="gmp-${GMP_VERSION}.tar.xz"
 MPFR_ARCHIVE="mpfr-${MPFR_VERSION}.tar.xz"
 MPC_ARCHIVE="mpc-${MPC_VERSION}.tar.gz"
 GCC_ARCHIVE="gcc-${GCC_VERSION}.tar.xz"
+LIBSTDCXX_ARCHIVE="${GCC_ARCHIVE}"
 BINUTILS_ARCHIVE="binutils-${BINUTILS_VERSION}.tar.xz"
 IASL_ARCHIVE="acpica-unix-${IASL_VERSION}.tar.gz"
 # CLANG toolchain FILE locations
@@ -73,6 +75,7 @@ GMP_BASE_URL="https://ftpmirror.gnu.org/gmp"
 MPFR_BASE_URL="https://ftpmirror.gnu.org/mpfr"
 MPC_BASE_URL="https://ftpmirror.gnu.org/mpc"
 GCC_BASE_URL="https://ftpmirror.gnu.org/gcc/gcc-${GCC_VERSION}"
+LIBSTDCXX_BASE_URL="${GCC_BASE_URL}"
 BINUTILS_BASE_URL="https://ftpmirror.gnu.org/binutils"
 IASL_BASE_URL="https://downloadmirror.intel.com/783534"
 # CLANG toolchain archive locations
@@ -90,7 +93,8 @@ ALL_ARCHIVES="$GMP_BASE_URL/$GMP_ARCHIVE $MPFR_BASE_URL/$MPFR_ARCHIVE $MPC_BASE_
 	$GCC_BASE_URL/$GCC_ARCHIVE $BINUTILS_BASE_URL/$BINUTILS_ARCHIVE $IASL_BASE_URL/$IASL_ARCHIVE \
 	$LLD_BASE_URL/$LLD_ARCHIVE $LLVM_BASE_URL/$LLVM_ARCHIVE $CLANG_BASE_URL/$CLANG_ARCHIVE \
 	$LLVMCMAKE_BASE_URL/$LLVMCMAKE_ARCHIVE $CRT_BASE_URL/$CRT_ARCHIVE $CTE_BASE_URL/$CTE_ARCHIVE \
-	$LIBUNWIND_BASE_URL/$LIBUNWIND_ARCHIVE $CMAKE_BASE_URL/$CMAKE_ARCHIVE $NASM_BASE_URL/$NASM_ARCHIVE"
+	$LIBUNWIND_BASE_URL/$LIBUNWIND_ARCHIVE $CMAKE_BASE_URL/$CMAKE_ARCHIVE $NASM_BASE_URL/$NASM_ARCHIVE \
+	$LIBSTDCXX_BASE_URL/$LIBSTDCXX_ARCHIVE"
 
 # GCC toolchain directories
 GMP_DIR="gmp-${GMP_VERSION}"
@@ -98,6 +102,7 @@ MPFR_DIR="mpfr-${MPFR_VERSION}"
 MPC_DIR="mpc-${MPC_VERSION}"
 # shellcheck disable=SC2034
 GCC_DIR="gcc-${GCC_VERSION}"
+LIBSTDCXX_DIR="${GCC_DIR}"
 # shellcheck disable=SC2034
 BINUTILS_DIR="binutils-${BINUTILS_VERSION}"
 IASL_DIR="acpica-unix-${IASL_VERSION}"
@@ -480,7 +485,7 @@ is_package_enabled()
 
 package_uses_targetarch()
 {
-	if [ "$1" = "GCC" ] || [ "$1" = "BINUTILS" ]; then
+	if [ "$1" = "GCC" ] || [ "$1" = "BINUTILS" ] || [ "$1" = "LIBSTDCXX" ]; then
 		true
 	else
 		false
@@ -774,7 +779,7 @@ bootstrap_GCC() {
 		DESTDIR=$DESTDIR || touch .failed
 }
 
-build_cross_GCC() {
+configure_GCC(){
 	# Work around crazy code generator in GCC that confuses CLANG.
 	$CC --version | grep clang >/dev/null 2>&1 && \
 		CLANGFLAGS="-fbracket-depth=1024"
@@ -832,7 +837,11 @@ build_cross_GCC() {
 		--with-gnu-as \
 		--with-gnu-ld \
 		--with-pkgversion="coreboot toolchain v$CROSSGCC_VERSION" \
-		&& \
+		"$@"
+}
+
+build_cross_GCC() {
+	configure_GCC && \
 	mkdir -p gcc/$TARGETARCH && \
 	rm -f "gcc/$TARGETARCH/$GCC_VERSION" && \
 	ln -s "$DESTDIR$TARGETDIR/$TARGETARCH/bin" "gcc/$TARGETARCH/$GCC_VERSION" && \
@@ -844,6 +853,24 @@ build_cross_GCC() {
 		$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-target-libgcc && \
 		$MAKE install-target-libgcc DESTDIR=$DESTDIR || touch .failed
 	fi
+}
+
+build_LIBSTDCXX() {
+	if [ ! -e ${LIBSTDCXX_INCLUDE_PATH} ]; then
+		touch .failed
+		printf "libstdcxx include path \"%s\" does not exist"
+		return
+	fi
+	configure_GCC \
+		--with-gxx-include-dir="${LIBSTDCXX_INCLUDE_PATH}/coreboot-${TARGETARCH}/include/" \
+		--with-sysroot="${LIBSTDCXX_INCLUDE_PATH}/" && \
+	mkdir -p gcc/$TARGETARCH && \
+	# shellcheck disable=SC2086
+	$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-target-libgcc && \
+	$MAKE install-target-libgcc DESTDIR=$DESTDIR && \
+	# shellcheck disable=SC2086
+	$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-target-libstdc++-v3 && \
+	$MAKE install-target-libstdc++-v3 DESTDIR=$DESTDIR || touch .failed
 }
 
 build_GCC() {
@@ -946,12 +973,12 @@ getopt - > /dev/null 2>/dev/null || gcc -o getopt getopt.c
 getoptbrand="$(getopt -V 2>/dev/null | sed -e '1!d' -e 's,^\(......\).*,\1,')"
 if [ "${getoptbrand}" = "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=$(getopt -l print-version,version,help,clean,directory:,bootstrap,bootstrap-only,platform:,languages:,package:,jobs:,destdir:,savetemps,scripting,ccache,supported:,urls,nocolor,mirror,fetch -o WVhcd:bBp:l:P:j:D:tSys:unmf -- "$@")
+	args=$(getopt -l print-version,version,help,clean,directory:,bootstrap,bootstrap-only,platform:,languages:,package:,libstdcxx_include:,jobs:,destdir:,savetemps,scripting,ccache,supported:,urls,nocolor,mirror,fetch -o WVhcd:bBp:l:P:L:j:D:tSys:unmf -- "$@")
 	getopt_ret=$?
 	eval set -- "$args"
 else
 	# Detected non-GNU getopt
-	args=$(getopt WVhcd:bBp:l:P:j:D:tSys:unm $*)
+	args=$(getopt WVhcd:bBp:l:P:L:j:D:tSys:unm $*)
 	getopt_ret=$?
 	# shellcheck disable=SC2086
 	set -- $args
@@ -979,6 +1006,7 @@ while true ; do
 		-f|--fetch)		shift; FETCH_ONLY=1;;
 		-j|--jobs)		shift; THREADS="$1"; JOBS="-j $1"; shift;;
 		-P|--package)		shift; PACKAGE="$1"; shift;;
+		-L|--libstdcxx_include)	shift; LIBSTDCXX_INCLUDE_PATH="$1"; shift;;
 		-y|--ccache)		shift; USECCACHE=1;;
 		-s|--supported)		shift; PRINTSUPPORTED="$1"; shift;;
 		-u|--urls)		shift; printf "%s\n" "$ALL_ARCHIVES"; exit 0;;
@@ -1028,6 +1056,11 @@ case "$PACKAGE" in
 		echo "Target architecture is $TARGETARCH"
 		NAME="${TARGETARCH} cross GCC"
 		PACKAGES="GMP MPFR MPC BINUTILS GCC"
+		;;
+	LIBSTDCXX|libstdcxx)
+		echo "Target architecture is $TARGETARCH"
+		NAME="${TARGETARCH} cross libstdcxx"
+		PACKAGES=LIBSTDCXX
 		;;
 	CLANG|clang)
 		NAME="LLVM clang"

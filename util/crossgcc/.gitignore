@@ -5,6 +5,7 @@ build-*CMAKE/
 build-*GCC/
 build-*GMP/
 build-*LIBELF/
+build-*LIBSTDCXX/
 build-*MPC/
 build-*MPFR/
 build-*LVM/

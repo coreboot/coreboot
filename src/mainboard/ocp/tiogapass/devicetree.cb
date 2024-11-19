@@ -37,6 +37,7 @@ chip soc/intel/xeon_sp/skx
 	register "vtd_support" = "1"
 	register "coherency_support" = "1"
 	register "ats_support" = "1"
+	register "cstate_states" = "CSTATES_C1C6"
 
 	register "gen2_dec" = "0x000c0ca1" # IPMI KCS
 

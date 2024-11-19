@@ -49,6 +49,8 @@
 #include <soc/intel/common/block/acpi/acpi/pch_glan.asl>
 
 /* UFS 0:17:0 */
-/* TODO: Add ufs.asl entry for PTL-U SKU */
+#if CONFIG(SOC_INTEL_PANTHERLAKE_U_H)
+#include <soc/intel/common/block/acpi/acpi/ufs.asl>
+#endif
 
 #endif

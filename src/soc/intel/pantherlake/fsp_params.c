@@ -658,6 +658,20 @@ static void fill_fsps_iax_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->IaxEnable = is_devfn_enabled(PCI_DEVFN_IAA);
 }
 
+static void fill_fsps_ufs_params(FSP_S_CONFIG *s_cfg,
+		const struct soc_intel_pantherlake_config *config)
+{
+#if CONFIG(SOC_INTEL_PANTHERLAKE_U_H)
+	/* Setting FSP UPD (1,0) to enable controller 0 */
+	s_cfg->UfsEnable[0] = is_devfn_enabled(PCI_DEVFN_UFS);
+	s_cfg->UfsEnable[1] = 0;
+#else
+	/* Setting FSP UPD (0,0) to keep both controllers disabled */
+	s_cfg->UfsEnable[0] = 0;
+	s_cfg->UfsEnable[1] = 0;
+#endif
+}
+
 static void arch_silicon_init_params(FSPS_ARCH2_UPD *s_arch_cfg)
 {
 	/* Assign FspEventHandler arch Upd to use coreboot debug event handler */
@@ -696,6 +710,7 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 		fill_fsps_npu_params,
 		fill_fsps_audio_params,
 		fill_fsps_iax_params,
+		fill_fsps_ufs_params,
 	};
 
 	for (size_t i = 0; i < ARRAY_SIZE(fill_fsps_params); i++)

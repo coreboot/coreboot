@@ -421,4 +421,8 @@ config SOC_PHYSICAL_ADDRESS_WIDTH
 	int
 	default 42
 
+config SOC_INTEL_UFS_CLK_FREQ_HZ
+	int
+	default 38400000
+
 endif

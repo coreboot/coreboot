@@ -4,11 +4,11 @@ chip soc/intel/pantherlake
 	register "pmc_gpe0_dw1" = "GPP_D"
 	register "pmc_gpe0_dw2" = "GPP_E"
 
-	# For Fatcat (with microchip EC):
+	# For Fatcat variants with microchip EC:
 	#	EC host command ranges are in 0x800-0x807 & 0x200-0x20f
-	# For other Fatcat variants (with ITE/Nuvoton EC):
+	# For Fatcat variants with ITE/Nuvoton EC:
 	# 	EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
-	register "gen1_dec" = "CONFIG(BOARD_GOOGLE_FATCAT) ? 0x00040801 : 0x00fc0801"
+	register "gen1_dec" = "CONFIG(BOARD_GOOGLE_FATCAT) || CONFIG(BOARD_GOOGLE_FATCATISH) ? 0x00040801 : 0x00fc0801"
 	register "gen2_dec" = "0x000c0201"
 	# EC memory map range is 0x900-0x9ff
 	register "gen3_dec" = "0x00fc0901"

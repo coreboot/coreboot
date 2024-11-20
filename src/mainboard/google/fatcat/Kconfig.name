@@ -5,6 +5,9 @@ comment "Fatcat"
 config BOARD_GOOGLE_FATCAT
 	bool "-> Fatcat"
 
+config BOARD_GOOGLE_FATCATISH
+	bool "-> Fatcat_ish"
+
 config BOARD_GOOGLE_FATCATITE
 	bool "-> Fatcatite"
 

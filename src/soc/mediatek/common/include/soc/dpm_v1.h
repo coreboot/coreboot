@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __SOC_MEDIATEK_COMMON_DPM_H__
-#define __SOC_MEDIATEK_COMMON_DPM_H__
+#ifndef __SOC_MEDIATEK_COMMON_DPM_V1_H__
+#define __SOC_MEDIATEK_COMMON_DPM_V1_H__
 
 #include <soc/addressmap.h>
 #include <soc/mcu_common.h>
@@ -53,4 +53,4 @@ int dpm_init(void);
 int dpm_4ch_para_setting(void);
 int dpm_4ch_init(void);
 
-#endif  /* __SOC_MEDIATEK_COMMON_DPM_H__ */
+#endif  /* __SOC_MEDIATEK_COMMON_DPM_V1_H__ */

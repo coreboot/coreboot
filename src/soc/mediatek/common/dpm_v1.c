@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/mmio.h>
-#include <soc/dpm.h>
+#include <soc/dpm_v1.h>
 #include <soc/mcu_common.h>
 #include <soc/symbols.h>
 

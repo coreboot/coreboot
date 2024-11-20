@@ -6,7 +6,7 @@
 #include <soc/cpu_input_gating.h>
 #include <soc/devapc.h>
 #include <soc/dfd.h>
-#include <soc/dpm.h>
+#include <soc/dpm_v1.h>
 #include <soc/emi.h>
 #include <soc/mcupm.h>
 #include <soc/mmu_operations.h>

@@ -9,7 +9,7 @@
 #include <gpio.h>
 #include <soc/bl31.h>
 #include <soc/display.h>
-#include <soc/dpm.h>
+#include <soc/dpm_v1.h>
 #include <soc/i2c.h>
 #include <soc/msdc.h>
 #include <soc/mtcmos.h>

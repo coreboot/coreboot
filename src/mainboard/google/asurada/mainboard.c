@@ -11,7 +11,7 @@
 #include <gpio.h>
 #include <soc/bl31.h>
 #include <soc/ddp.h>
-#include <soc/dpm.h>
+#include <soc/dpm_v1.h>
 #include <soc/dsi.h>
 #include <soc/gpio_common.h>
 #include <soc/i2c.h>

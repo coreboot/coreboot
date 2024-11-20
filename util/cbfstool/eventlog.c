@@ -170,6 +170,7 @@ static void eventlog_print_type(const struct event_header *event)
 		{ELOG_TYPE_PSR_DATA_LOST, "PSR data lost"},
 		{ELOG_TYPE_FW_SPLASH_SCREEN, "Firmware Splash Screen"},
 		{ELOG_TYPE_FW_LATE_SOL, "Late Sign of Life "},
+		{ELOG_TYPE_FW_CSE_SYNC, "Firmware CSE sync"},
 		{ELOG_TYPE_EOL, "End of log"},
 	};
 
@@ -489,6 +490,13 @@ static int eventlog_print_data(const struct event_header *event)
 		{0, NULL},
 	};
 
+	static const struct valstr cse_sync_path_types[] = {
+		{ELOG_FW_EARLY_CSE_SYNC, "Early CSE Sync"},
+		{ELOG_FW_LATE_CSE_SYNC, "Late CSE Sync"},
+		{ELOG_FW_CSE_SYNC_AT_PAYLOAD, "CSE Sync at Payload"},
+		{0, NULL},
+	};
+
 	size_t elog_type_to_min_size[] = {
 		[ELOG_TYPE_LOG_CLEAR]		= sizeof(uint16_t),
 		[ELOG_TYPE_BOOT]		= sizeof(uint32_t),
@@ -510,7 +518,8 @@ static int eventlog_print_data(const struct event_header *event)
 		[ELOG_TYPE_FW_EARLY_SOL]	= sizeof(uint8_t),
 		[ELOG_TYPE_PSR_DATA_BACKUP]	= sizeof(uint8_t),
 		[ELOG_TYPE_FW_SPLASH_SCREEN]	= sizeof(uint8_t),
-		[ELOG_TYPE_FW_LATE_SOL]	= sizeof(uint8_t),
+		[ELOG_TYPE_FW_LATE_SOL]		= sizeof(uint8_t),
+		[ELOG_TYPE_FW_CSE_SYNC]		= sizeof(uint8_t),
 		[0xff]				= 0,
 	};
 
@@ -680,6 +689,11 @@ static int eventlog_print_data(const struct event_header *event)
 	case ELOG_TYPE_FW_LATE_SOL: {
 		const uint8_t *sol_event = event_get_data(event);
 		eventlog_printf("%s", val2str(*sol_event, late_sol_path_types));
+		break;
+	}
+	case ELOG_TYPE_FW_CSE_SYNC: {
+		const uint8_t *cse_event = event_get_data(event);
+		eventlog_printf("%s", val2str(*cse_event, cse_sync_path_types));
 		break;
 	}
 	default:

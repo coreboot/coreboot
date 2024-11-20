@@ -99,7 +99,7 @@ static int pmif_init_ulposc(void)
 	udelay(100);
 	SET32_BITFIELDS(&mtk_spm->ulposc_con, ULPOSC_CG_EN, 1);
 
-	return pmif_ulposc_cali(FREQ_260MHZ);
+	return pmif_ulposc_cali(PMIF_TARGET_FREQ_MHZ);
 }
 
 int pmif_clk_init(void)

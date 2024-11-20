@@ -133,7 +133,7 @@ check_member(mtk_pmif_regs, swinf_0_acc, 0x800);
 #define PMIF_SPI_AP_CHAN	(PMIF_SPI_BASE + 0xC20)
 
 enum {
-	FREQ_250MHZ = 250,
+	PMIF_TARGET_FREQ_MHZ = 250,
 };
 
 /* calibation tolerance rate, unit: 0.1% */

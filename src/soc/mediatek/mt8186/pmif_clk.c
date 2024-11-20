@@ -42,7 +42,7 @@ int pmif_clk_init(void)
 
 	/* get hardware default value */
 	ulposc = pmif_get_ulposc_freq_mhz(ULPOSC1_RG_OSC_DIV);
-	if (pmif_ulposc_check(ulposc, FREQ_250MHZ))
+	if (pmif_ulposc_check(ulposc, PMIF_TARGET_FREQ_MHZ))
 		die("ERROR: failed to meet ulposc frequency\n");
 
 	mt_pll_spmi_mux_select();

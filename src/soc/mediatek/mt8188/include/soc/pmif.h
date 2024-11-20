@@ -134,7 +134,7 @@ struct mtk_clk_monitor_regs {
 #define mtk_clk_monitor		((struct mtk_clk_monitor_regs *)EFUSE_BASE + 0x45C)
 
 enum {
-	FREQ_260MHZ = 260,
+	PMIF_TARGET_FREQ_MHZ = 260,
 };
 
 /* calibation tolerance rate, unit: 0.1% */

@@ -98,7 +98,7 @@ static int pmif_init_ulposc(void)
 	SET32_BITFIELDS(&mtk_scp->scp_clk_on_ctrl, SCP_CLK_ON_CTRL, 1);
 	SET32_BITFIELDS(&mtk_spm->ulposc_con, ULPOSC_CG_EN, 1);
 
-	return pmif_ulposc_cali(FREQ_248MHZ);
+	return pmif_ulposc_cali(PMIF_TARGET_FREQ_MHZ);
 }
 
 int pmif_clk_init(void)

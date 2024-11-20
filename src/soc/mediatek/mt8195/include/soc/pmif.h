@@ -137,7 +137,7 @@ check_member(mtk_scp_regs, scp_clk_on_ctrl, 0x6C);
 #define mtk_scp		((struct mtk_scp_regs *)SCP_CFG_BASE + 0x21000)
 
 enum {
-	FREQ_248MHZ = 248,
+	PMIF_TARGET_FREQ_MHZ = 248,
 };
 
 /* calibation tolerance rate, unit: 0.1% */

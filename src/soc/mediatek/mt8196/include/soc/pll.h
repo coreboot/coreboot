@@ -136,13 +136,15 @@ struct mtk_topckgen_regs {
 	u32 reserved1[1];
 	u32 clk_cfg_update[3];
 	struct mtk_clk_cfg clk_cfg[23];
-	u32 reserved2[16];
+	u32 reserved2[8];
+	u32 clk_scp_cfg;
+	u32 reserved3[7];
 	u32 clk26cali[2];
-	u32 reserved3[3];
+	u32 reserved4[3];
 	u32 clk_misc_cfg;
-	u32 reserved4[10];
+	u32 reserved5[10];
 	u32 clk_dbg_cfg;
-	u32 reserved5[13];
+	u32 reserved6[13];
 	u32 clk_prot_idle_reg;
 	u32 clk_fenc_bypass_reg[3];
 	u32 clk_prot_idle_all_reg[3];
@@ -152,6 +154,7 @@ struct mtk_topckgen_regs {
 };
 check_member(mtk_topckgen_regs, clk_cfg_update[0], 0x0004);
 check_member(mtk_topckgen_regs, clk_cfg[0], 0x0010);
+check_member(mtk_topckgen_regs, clk_scp_cfg, 0x01A0);
 check_member(mtk_topckgen_regs, clk26cali[0], 0x01C0);
 check_member(mtk_topckgen_regs, clk_prot_idle_all_reg[0], 0x0248);
 check_member(mtk_topckgen_regs, clk_prot_spm_ck_en_reg, 0x026C);

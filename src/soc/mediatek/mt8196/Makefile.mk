@@ -53,6 +53,7 @@ ramstage-y += ../common/mt6363.c mt6363.c
 ramstage-y += ../common/mt6363_sdmadc.c
 ramstage-y += ../common/mt6373.c mt6373.c
 ramstage-y += soc.c
+ramstage-y += ../common/spm.c spm.c
 ramstage-y += ../common/sspm.c sspm_sram.c
 ramstage-y += ../common/pmif_clk.c pmif_clk.c
 ramstage-y += ../common/pmif.c pmif_init.c
@@ -69,7 +70,8 @@ MT8196_BLOB_DIR := 3rdparty/blobs/soc/mediatek/mt8196
 mcu-firmware-files := \
 	$(CONFIG_DPM_DM_FIRMWARE) \
 	$(CONFIG_DPM_PM_FIRMWARE) \
-	$(CONFIG_SSPM_FIRMWARE)
+	$(CONFIG_SSPM_FIRMWARE) \
+	$(CONFIG_SPM_FIRMWARE)
 
 $(foreach fw, $(call strip_quotes,$(mcu-firmware-files)), \
 	$(eval $(fw)-file := $(MT8196_BLOB_DIR)/$(fw)) \

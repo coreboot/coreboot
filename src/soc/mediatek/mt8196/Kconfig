@@ -45,4 +45,9 @@ config SSPM_FIRMWARE
 	help
 	  The file name of the MediaTek SSPM firmware.
 
+config SPM_FIRMWARE
+	string
+	default "spm_firmware.pm"
+	help
+	  The file name of the MediaTek SPM firmware.
 endif

@@ -53,7 +53,7 @@ struct mbox_psp_cmd_spi_erase {
 
 struct psp_spi_rpmc_inc_mc {
 	uint32_t counter_address;
-	uint32_t counter_data;
+	uint8_t counter_data[SPI_RPMC_COUNTER_DATA_LEN];
 	uint8_t signature[SPI_RPMC_SIG_LEN];
 } __packed;
 
@@ -66,7 +66,7 @@ struct psp_smi_rpmc_req_mc {
 	uint32_t counter_address;
 	uint8_t tag[SPI_RPMC_TAG_LEN];
 	uint8_t signature[SPI_RPMC_SIG_LEN];
-	uint32_t output_counter_data;
+	uint8_t output_counter_data[SPI_RPMC_COUNTER_DATA_LEN];
 	uint8_t output_signature[SPI_RPMC_SIG_LEN];
 } __packed;
 

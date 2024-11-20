@@ -28,6 +28,7 @@ Scope (\_SB.PCI0)
 			}
 		})
 
+#if CONFIG(SOC_INTEL_UFS_OCP_TIMER_DISABLE)
 		/*
 		 * OCP Timer need to be disabled in SCS UFS IOSF Bridge to work around
 		 * the Silicon Issue due to which LTR mechanism doesn't work.
@@ -47,6 +48,7 @@ Scope (\_SB.PCI0)
 			PCRA (PID_UFSX2, R_SCS_PCR_5820, 0x0)
 			PCRA (PID_UFSX2, R_SCS_PCR_1078, 0x0)
 		}
+#endif
 
 		/* Memory Region to access to the UFS PCI Configuration Space */
 		OperationRegion(SCSR, PCI_Config, 0x00, 0x100)
@@ -62,6 +64,7 @@ Scope (\_SB.PCI0)
 			PGEN, 1
 		}
 
+#if CONFIG(SOC_INTEL_UFS_LTR_DISQUALIFY)
 		OperationRegion(PWMR, SystemMemory, PCH_PWRM_BASE_ADDRESS, PCH_PWRM_BASE_SIZE)
 		Field(PWMR, DWordAcc, NoLock, Preserve)
 		{
@@ -73,6 +76,7 @@ Scope (\_SB.PCI0)
 		Method (ULTR, 1, Serialized) {
 			LTRU = Arg0
 		}
+#endif
 
 		Method (_PS0, 0, Serialized)
 		{

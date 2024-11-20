@@ -601,6 +601,9 @@ config BOARD_GOOGLE_ULDREN
 	select HAVE_WWAN_POWER_SEQUENCE
 	select INTEL_GMA_HAVE_VBT
 
+config BOARD_GOOGLE_ULDRENITE
+	select BOARD_GOOGLE_BASEBOARD_TRULO
+
 config BOARD_GOOGLE_VELL
 	select BOARD_GOOGLE_BASEBOARD_BRYA
 	select CHROMEOS_WIFI_SAR if CHROMEOS
@@ -909,6 +912,7 @@ config MAINBOARD_PART_NUMBER
 	default "Tivviks" if BOARD_GOOGLE_TIVVIKS
 	default "Trulo" if BOARD_GOOGLE_TRULO
 	default "Uldren" if BOARD_GOOGLE_ULDREN
+	default "Uldrenite" if BOARD_GOOGLE_ULDRENITE
 	default "Vell" if BOARD_GOOGLE_VELL
 	default "Volmar" if BOARD_GOOGLE_VOLMAR
 	default "Xivu" if BOARD_GOOGLE_XIVU
@@ -978,6 +982,7 @@ config VARIANT_DIR
 	default "teliks" if BOARD_GOOGLE_TELIKS
 	default "trulo" if BOARD_GOOGLE_TRULO
 	default "uldren" if BOARD_GOOGLE_ULDREN
+	default "uldrenite" if BOARD_GOOGLE_ULDRENITE
 	default "vell" if BOARD_GOOGLE_VELL
 	default "volmar" if BOARD_GOOGLE_VOLMAR
 	default "xivu" if BOARD_GOOGLE_XIVU

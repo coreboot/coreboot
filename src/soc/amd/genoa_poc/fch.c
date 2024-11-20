@@ -5,7 +5,6 @@
 #include <amdblocks/amd_pci_util.h>
 #include <amdblocks/gpio.h>
 #include <amdblocks/smi.h>
-#include <bootstate.h>
 #include <cpu/x86/smm.h>
 #include <soc/amd_pci_int_defs.h>
 #include <soc/smi.h>

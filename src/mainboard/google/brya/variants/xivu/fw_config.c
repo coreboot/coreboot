@@ -2,7 +2,6 @@
 
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
-#include <bootstate.h>
 #include <console/console.h>
 #include <fw_config.h>
 

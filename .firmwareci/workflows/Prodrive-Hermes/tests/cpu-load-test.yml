@@ -1,0 +1,22 @@
+name: CPU Stress Test
+description: Run the CPU Stress Test on the device
+
+defaults:
+  transport: &transport
+    proto: ssh
+    options:
+      host: "[[attributes.Host]]"
+      user: root
+      identity_file: /root/.ssh/fwci
+
+stages:
+  - name: Stress Test
+    steps:
+      - cmd: cpuload
+        name: Stress Test CPU for 10m
+        transport: *transport
+        options:
+          timeout: 20m
+        parameters:
+          args: [--ignite-cpu]
+          duration: 10m

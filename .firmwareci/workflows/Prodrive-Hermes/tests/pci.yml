@@ -1,0 +1,52 @@
+name: Check PCI Devices
+description: Flash the provided firmware binary and check if the PCI devices are detected.
+
+defaults:
+  transport: &transport
+    proto: ssh
+    options:
+      host: "[[attributes.Host]]"
+      user: root
+      identity_file: /root/.ssh/fwci
+
+stages:
+  - name: Boot Test
+    steps:
+      - cmd: cmd
+        name: Check Audio Device
+        transport: *transport
+        parameters:
+          executable: lspci
+          expect:
+            - regex: "Audio"
+
+      - cmd: cmd
+        name: Check Display Controller
+        transport: *transport
+        parameters:
+          executable: lspci
+          expect:
+            - regex: "Display controller"
+
+      - cmd: cmd
+        name: Check Processing Controller
+        transport: *transport
+        parameters:
+          executable: lspci
+          expect:
+            - regex: "Signal processing controller"
+
+      - cmd: cmd
+        name: Check Serial Bus Controller
+        transport: *transport
+        parameters:
+          executable: lspci
+          expect:
+            - regex: "Serial bus controller"
+
+      - cmd: cmd
+        name: Power off device
+        transport: *transport
+        parameters:
+          executable: shutdown
+          args: ["now"]

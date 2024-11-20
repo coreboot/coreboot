@@ -1,0 +1,27 @@
+name: Boot Test (Network)
+description: Flash the provided firmware binary and conduct a boot test.
+
+defaults:
+  transport: &transport
+    proto: ssh
+    options:
+      host: "[[attributes.Host]]"
+      user: root
+      identity_file: /root/.ssh/fwci
+
+stages:
+  - name: Boot Test
+    steps:
+      - cmd: cmd
+        name: Cat OS Version
+        transport: *transport
+        parameters:
+          executable: cat
+          args: ["/etc/os-release"]
+
+      - cmd: cmd
+        name: Power off device
+        transport: *transport
+        parameters:
+          executable: shutdown
+          args: ["now"]

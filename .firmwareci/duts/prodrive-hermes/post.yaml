@@ -1,0 +1,7 @@
+post-stage:
+  - cmd: dutctl
+    name: Clean up. Shutdown the DUT.
+    parameters:
+      host: "[[attributes.Pi]]"
+      command: power
+      args: ["off"]

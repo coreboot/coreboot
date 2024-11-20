@@ -1,0 +1,35 @@
+pre-stage:
+  - cmd: dutctl
+    name: Shutdown the DUT.
+    parameters:
+      host: "[[attributes.Pi]]"
+      command: power
+      args: ["off"]
+
+  - cmd: dutctl
+    name: Flash the provided binary.
+    parameters:
+      host: "[[attributes.Pi]]"
+      command: flash
+      args: [write, "[[defaults.Binary]]"]
+
+  - cmd: sleep
+    name: Wait for the DUT to settle
+    parameters:
+      duration: 15s
+
+  - cmd: dutctl
+    name: Turn the DUT on
+    parameters:
+      host: "[[attributes.Pi]]"
+      command: power
+      args: ["hardreset"]
+    options:
+      timeout: 2m
+
+  - cmd: ping
+    name: Wait for the device to become online.
+    options:
+      timeout: 4m
+    parameters:
+      host: "[[attributes.Host]]"

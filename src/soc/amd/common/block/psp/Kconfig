@@ -202,3 +202,7 @@ config USE_AMDFWTOOL
 	default y if SOC_AMD_COMMON_BLOCK_PSP
 	help
 	  Select this if AMDFWTOOL needs to be built
+
+config PSPV2_MBOX_CMD_OFFSET
+	hex
+	default 0x10570

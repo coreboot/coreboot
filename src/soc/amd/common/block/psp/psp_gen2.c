@@ -8,8 +8,8 @@
 #include <device/mmio.h>
 #include "psp_def.h"
 
-#define PSP_MAILBOX_COMMAND_OFFSET	0x10570 /* 4 bytes */
-#define PSP_MAILBOX_BUFFER_OFFSET	0x10574 /* 8 bytes */
+#define PSP_MAILBOX_COMMAND_OFFSET	CONFIG_PSPV2_MBOX_CMD_OFFSET		/* 4 bytes */
+#define PSP_MAILBOX_BUFFER_OFFSET	(CONFIG_PSPV2_MBOX_CMD_OFFSET + 4)	/* 8 bytes */
 
 #define IOHC_MISC_PSP_MMIO_REG		0x2e0
 

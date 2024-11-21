@@ -78,8 +78,8 @@ static void each_cpu_init(struct device *cpu)
 {
 	msr_t msr;
 
-	printk(BIOS_SPEW, "%s dev: %s, cpu: %lu, apic_id: 0x%x, package_id: 0x%x\n",
-	       __func__, dev_path(cpu), cpu_index(), cpu->path.apic.apic_id,
+	printk(BIOS_SPEW, "%s: cpu: %lu, apic_id: 0x%x, package_id: 0x%x\n",
+	       __func__, cpu_index(), cpu->path.apic.apic_id,
 	       cpu->path.apic.package_id);
 
 	/*

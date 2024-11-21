@@ -112,6 +112,7 @@ static struct {
 	{ PCI_DID_INTEL_PTL_U_GT2_1, "Pantherlake-U GT2" },
 	{ PCI_DID_INTEL_PTL_H_GT2_1, "Pantherlake-H GT2" },
 	{ PCI_DID_INTEL_PTL_H_GT2_2, "Pantherlake-H GT2" },
+	{ PCI_DID_INTEL_PTL_H_GT2_3, "Pantherlake-H GT2" },
 };
 
 static inline uint8_t get_dev_revision(pci_devfn_t dev)

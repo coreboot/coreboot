@@ -130,6 +130,9 @@ static int path_eq(const struct device_path *path1,
 	case DEVICE_PATH_CPU_BUS:
 		equal = (path1->cpu_bus.id == path2->cpu_bus.id);
 		break;
+	case DEVICE_PATH_IOAPIC:
+		equal = (path1->ioapic.ioapic_id == path2->ioapic.ioapic_id);
+		break;
 	case DEVICE_PATH_GENERIC:
 		equal = (path1->generic.id == path2->generic.id) &&
 			(path1->generic.subid == path2->generic.subid);

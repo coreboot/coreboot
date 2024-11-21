@@ -85,7 +85,9 @@ struct apic_path {
 };
 
 struct ioapic_path {
+	uintptr_t addr;
 	unsigned int ioapic_id;
+	unsigned int gsi_base;
 };
 
 struct cpu_cluster_path {

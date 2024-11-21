@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
 #include <acpi/acpi.h>
 #include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
@@ -226,6 +227,8 @@ int acpi_create_srat_x2apic(acpi_srat_x2apic_t *x2apic, u32 node, u32 apic)
 
 unsigned long acpi_arch_fill_madt(acpi_madt_t *madt, unsigned long current)
 {
+	struct device *dev = NULL;
+
 	madt->lapic_addr = cpu_get_lapic_addr();
 
 	if (CONFIG(ACPI_HAVE_PCAT_8259))
@@ -236,6 +239,22 @@ unsigned long acpi_arch_fill_madt(acpi_madt_t *madt, unsigned long current)
 
 	if (CONFIG(ACPI_COMMON_MADT_IOAPIC))
 		current = acpi_create_madt_ioapic_gsi0_default(current);
+
+	while ((dev = dev_find_path(dev, DEVICE_PATH_IOAPIC)) != NULL) {
+		/*
+		 CONFIG(ACPI_COMMON_MADT_IOAPIC) adds the IOAPIC with gsi_base = 0 above.
+		 Make sure to not add it twice when it's also part of the devicetree.
+		 Currently no SoC adds ioapic_gsi0 to the devicetree.
+		 TODO: Add the ioapic_gsi0 to the device-tree on all SoCs and remove this check.
+		*/
+		assert(!CONFIG(ACPI_COMMON_MADT_IOAPIC) || dev->path.ioapic.gsi_base != 0);
+		assert(dev->path.ioapic.addr);
+
+		current += acpi_create_madt_ioapic((void *)(uintptr_t)current,
+						   dev->path.ioapic.ioapic_id,
+						   dev->path.ioapic.addr,
+						   dev->path.ioapic.gsi_base);
+	}
 
 	return current;
 }

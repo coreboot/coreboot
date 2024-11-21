@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <assert.h>
+#include <device/device.h>
 #include <device/mmio.h>
 #include <arch/ioapic.h>
 #include <console/console.h>
@@ -172,6 +173,44 @@ void ioapic_set_boot_config(uintptr_t ioapic_base, bool irq_on_fsb)
 			"IOAPIC: Enabling interrupts on APIC serial bus\n");
 		io_apic_write(ioapic_base, 0x03, 0);
 	}
+}
+
+/**
+ * Create a new IOAPIC device under the given device.
+ *
+ * @param parent      The parent device. A PCI domain or PCI device (in case of PCI IOAPIC).
+ * @param ioapic_base The IOAPIC base address
+ * @param gsi_base    Platform specific GSI base
+ * @return Pointer to the device struct.
+ */
+struct device *ioapic_create_dev(struct device *parent,
+				 const uintptr_t ioapic_base,
+				 const u32 gsi_base)
+{
+	struct device_path path = {0};
+	struct device *dev;
+
+	if (!parent)
+		return NULL;
+
+	struct bus *bus = alloc_bus(parent);
+	if (!bus)
+		return NULL;
+
+	if (gsi_base == 0)
+		register_new_ioapic_gsi0(ioapic_base);
+	else
+		register_new_ioapic(ioapic_base);
+
+	path.type = DEVICE_PATH_IOAPIC;
+	path.ioapic.ioapic_id = get_ioapic_id(ioapic_base);
+	path.ioapic.addr = ioapic_base;
+	path.ioapic.gsi_base = gsi_base;
+
+	dev = alloc_dev(bus, &path);
+	assert(dev);
+
+	return dev;
 }
 
 void setup_ioapic(uintptr_t ioapic_base, u8 ioapic_id)

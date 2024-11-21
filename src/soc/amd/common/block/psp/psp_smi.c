@@ -173,6 +173,9 @@ out:
 
 	if (status == MBOX_PSP_SUCCESS && rd_bios_mbox_checksum_en())
 		wr_bios_mbox_checksum(calc_psp_buffer_checksum8());
+
+	if (status != MBOX_PSP_SUCCESS)
+		printk(BIOS_ERR, "PSP: SMI processing error. staus code %#x\n", status);
 }
 
 /* TODO: check if all wbinvd() calls are necessary */

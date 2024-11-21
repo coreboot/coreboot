@@ -8,6 +8,7 @@
 #include <static_devices.h>
 #include <arch/romstage.h>
 #include <cbmem.h>
+#include <static.h>
 
 #include "chip.h"
 #include "raminit.h"

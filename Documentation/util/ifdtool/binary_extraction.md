@@ -9,9 +9,9 @@ Now, execute the following commands to extract the binaries from a ROM image.
 **Note:** Make sure you are in the root coreboot directory.
 
     cd /path/to/coreboot/util/ifdtool
-    ./ifdtool COREBOOT_IMAGE
-    ./ifdtool -d COREBOOT_IMAGE
-    ./ifdtool -x COREBOOT_IMAGE
+    make
+    ./ifdtool -d COREBOOT_IMAGE # dump flash descriptor to stdout
+    ./ifdtool -x COREBOOT_IMAGE # extract IFD binaries into files (e.g. ME, IFD, GBE...)
 
 In the above steps, COREBOOT_IMAGE is the name of the ROM image to extract the
 binaries from, including the file path (ex. /build/coreboot.rom).

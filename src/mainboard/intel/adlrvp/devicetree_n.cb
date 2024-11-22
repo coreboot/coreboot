@@ -390,6 +390,9 @@ chip soc/intel/alderlake
 					chip drivers/soundwire/alc711
 						# SoundWire Link 0 ID 1
 						register "desc" = ""Headset Codec""
+						register "alc711_address.version" = "SOUNDWIRE_VERSION_1_1"
+						register "alc711_address.class" = "MIPI_CLASS_NONE"
+						register "alc711_address.part_id" = "MIPI_DEV_ID_REALTEK_ALC711"
 						device generic 0.1 on end
 					end
 				end

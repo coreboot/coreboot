@@ -56,8 +56,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B03, NONE),
 	/* GPP_B04 : GPP_B04_STRAP ==> Component NC */
 	PAD_NC(GPP_B04, NONE),
-	/* GPP_B05 : [] ==> SPKR_INT_L_R */
-	PAD_CFG_GPI(GPP_B05, NONE, DEEP),
+	/* GPP_B05 : [] ==> SPKR_INT_L_R, test point */
+	PAD_NC(GPP_B05, NONE),
 	/* GPP_B06 : [] ==> HP_INT_L_R */
 	PAD_CFG_GPI_INT(GPP_B06, NONE, PLTRST, EDGE_BOTH),
 	/* GPP_B07 : [] ==> CAM_DET_L */
@@ -174,8 +174,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_D16, NONE, DEEP, NF2),
 	/* GPP_D17 : [] ==> I2S_SOC_RX_HP_TX */
 	PAD_CFG_NF(GPP_D17, NONE, DEEP, NF2),
-	/* GPP_D18 : net NC is not present in the given design */
-	PAD_NC(GPP_D18, NONE),
+	/* GPP_D18 : [] ==> LAN_CLKREQ_ODL */
+	PAD_CFG_NF(GPP_D18, NONE, DEEP, NF1),
 	/* GPP_D19 : [] ==> EC_SOC_REC_SWITCH_ODL */
 	PAD_CFG_GPI_LOCK(GPP_D19, NONE, LOCK_CONFIG),
 	/* GPP_D20 : [] ==> SSD_CLKREQ_ODL */
@@ -195,8 +195,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_LOCK(GPP_E02, NONE, LOCK_CONFIG),
 	/* GPP_E03 : [] ==> GSC_SOC_INT_ODL */
 	PAD_CFG_GPI_APIC_LOCK(GPP_E03, NONE, LEVEL, INVERT, LOCK_CONFIG),
-	/* GPP_E04 : [] ==> SOC_PEN_DETECT */
-	PAD_CFG_GPI_GPIO_DRIVER(GPP_E04, NONE, PLTRST),
+	/* GPP_E04 : [] ==> SOC_PEN_DETECT, test point */
+	PAD_NC(GPP_E04, NONE),
 	/* GPP_E05 : [] ==> USB_A0_RT_RST_ODL */
 	PAD_CFG_GPO(GPP_E05, 1, DEEP),
 	/* GPP_E06 : GPP_E06_STRAP ==> Component NC */
@@ -320,9 +320,9 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_S00, NONE, DEEP, NF1),
 	/* GPP_S01 :  [] ==> SDW_HP_DATA_WLAN_PCM_SYNC */
 	PAD_CFG_NF(GPP_S01, NONE, DEEP, NF1),
-	/* GPP_S02 : [] ==> DMIC_SOC_CLK0_WLAN_PCM_OUT */
+	/* GPP_S02 : [] ==> DMIC_CLK1_R */
 	PAD_CFG_NF(GPP_S02, NONE, DEEP, NF3),
-	/* GPP_S03 : [] ==> DMIC_SOC_DATA0_WLAN_PCM_IN */
+	/* GPP_S03 : [] ==> DMIC_DATA1_R */
 	PAD_CFG_NF(GPP_S03, NONE, DEEP, NF3),
 	/* GPP_S04 : Not connected. */
 	PAD_NC(GPP_S04, NONE),

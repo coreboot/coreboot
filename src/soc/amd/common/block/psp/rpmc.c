@@ -78,12 +78,12 @@ static void print_rpmc_general_status(uint8_t healthy, uint8_t rpmc_protected)
 static void print_spi_rpmc_usage(uint8_t available, uint8_t used)
 {
 	for (size_t i = 0; i < SPI_RPMC_COUNTER_COUNT; i++) {
-		printk(BIOS_SPEW, "SPI flash RPMC counter %ld %s provisioned\n", i,
+		printk(BIOS_SPEW, "SPI flash RPMC counter %zu %s provisioned\n", i,
 		       available & BIT(i) ? "can still be" : "has already been");
 	}
 
 	for (size_t i = 0; i < SPI_RPMC_COUNTER_COUNT; i++) {
-		printk(BIOS_SPEW, "SPI flash RPMC counter %ld is%s in use\n", i,
+		printk(BIOS_SPEW, "SPI flash RPMC counter %zu is%s in use\n", i,
 		       used & BIT(i) ? "" : " not");
 	}
 }
@@ -97,7 +97,7 @@ static void print_rpmc_rev0_status(union psp_rpmc_caps psp_caps)
 	print_spi_rpmc_usage(psp_caps.r0.spi_rpmc_slots_available,
 			     psp_caps.r0.spi_rpmc_slot_used);
 	for (size_t i = 0; i < PSP_RPMC_R0_SLOT_COUNT; i++) {
-		printk(BIOS_SPEW, "SoC RPMC slot %ld %s provisioned\n", i,
+		printk(BIOS_SPEW, "SoC RPMC slot %zu %s provisioned\n", i,
 		       psp_caps.r0.psp_rpmc_slot_available & BIT(i) ? "can still be" :
 		       "has already been");
 	}

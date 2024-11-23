@@ -7,11 +7,16 @@
 #include <cpu/amd/microcode.h>
 #include <cpu/cpu.h>
 #include <device/device.h>
+#include <smbios.h>
 #include <soc/cpu.h>
 
 _Static_assert(CONFIG_MAX_CPUS == 24, "Do not override MAX_CPUS. To reduce the number of "
 	"available cores, use the downcore_mode and disable_smt devicetree settings instead.");
 
+unsigned int smbios_processor_external_clock(void)
+{
+	return 100; // 100 MHz
+}
 static void zen_2_3_init(struct device *dev)
 {
 	check_mca();

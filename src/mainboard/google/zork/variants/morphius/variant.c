@@ -3,17 +3,6 @@
 #include <baseboard/variants.h>
 #include <static.h>
 
-#define MORPHIUS_SKU_1  0x5A010010
-#define MORPHIUS_SKU_2  0x5A010011
-#define MORPHIUS_SKU_3  0x5A010012
-#define MORPHIUS_SKU_4  0x5A010014
-#define MORPHIUS_SKU_5  0x5A010029
-#define MORPHIUS_SKU_11 0x5A010025
-#define MORPHIUS_SKU_12 0x5A010026
-#define MORPHIUS_SKU_13 0x5A010013
-#define MORPHIUS_SKU_14 0x5A010028
-#define MORPHIUS_SKU_15 0x5A010016
-
 void variant_devtree_update(void)
 {
 	/*
@@ -26,18 +15,21 @@ void variant_devtree_update(void)
 bool variant_has_fingerprint(void)
 {
 	switch (sku_id()) {
-	case MORPHIUS_SKU_1:
-	case MORPHIUS_SKU_2:
-	case MORPHIUS_SKU_3:
-	case MORPHIUS_SKU_4:
-	case MORPHIUS_SKU_5:
-	case MORPHIUS_SKU_11:
-	case MORPHIUS_SKU_12:
-	case MORPHIUS_SKU_13:
-	case MORPHIUS_SKU_14:
-	case MORPHIUS_SKU_15:
-		return true;
-	default:
+	case 0x5A010001:
+	case 0x5A010002:
+	case 0x5A010003:
+	case 0x5A010020:
+	case 0x5A010021:
+	case 0x5A010022:
+	case 0x5A010023:
+	case 0x5A010024:
+	case 0x5A01002A:
+	case 0x5A01002B:
+	case 0x5A01002C:
+	case 0x5A01002D:
+	case 0x5A01002E:
 		return false;
+	default:
+		return true;
 	}
 }

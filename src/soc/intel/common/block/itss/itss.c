@@ -142,8 +142,6 @@ enum pirq itss_get_on_chip_dev_pirq(const struct device *dev, enum pci_pin pin)
 		return PIRQ_INVALID;
 
 	uint16_t pir = pcr_read16(PID_ITSS, itss_soc_get_on_chip_dev_pir(dev));
-	if (pir < PCI_ITSS_PIR(0))
-		return PIRQ_INVALID;
 
 	/* The lower 3 bits of every 4 bits indicates which PIRQ is connect to INT. */
 	unsigned int pir_shift = (pin - PCI_INT_A) * 4;

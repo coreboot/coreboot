@@ -48,10 +48,10 @@ void itss_irq_init(const uint8_t pch_interrupt_routing[PIRQ_COUNT]);
 void itss_clock_gate_8254(void);
 
 /* SoC implementation to return corresponding PIR register offset. */
-uint32_t itss_soc_get_on_chip_dev_pir(struct device *dev);
+uint32_t itss_soc_get_on_chip_dev_pir(const struct device *dev);
 
 /* Return which PIRQx the device's INTx is connected to. */
-enum pirq itss_get_on_chip_dev_pirq(struct device *dev, enum pci_pin pin);
+enum pirq itss_get_on_chip_dev_pirq(const struct device *dev, enum pci_pin pin);
 
 #endif /* !defined(__ACPI__) */
 

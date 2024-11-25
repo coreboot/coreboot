@@ -135,7 +135,7 @@ void itss_restore_irq_polarities(int start, int end)
 	show_irq_polarities("After");
 }
 
-enum pirq itss_get_on_chip_dev_pirq(struct device *dev, enum pci_pin pin)
+enum pirq itss_get_on_chip_dev_pirq(const struct device *dev, enum pci_pin pin)
 {
 	/* Check if device is on chip. */
 	if (dev->upstream->dev->path.type != DEVICE_PATH_DOMAIN)

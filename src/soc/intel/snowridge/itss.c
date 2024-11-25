@@ -11,7 +11,7 @@
 
 #include "ramstage.h"
 
-uint32_t itss_soc_get_on_chip_dev_pir(struct device *dev)
+uint32_t itss_soc_get_on_chip_dev_pir(const struct device *dev)
 {
 	/* Check if device is on chip. */
 	if (dev->upstream->dev->path.type != DEVICE_PATH_DOMAIN)

@@ -293,8 +293,6 @@ void mp_init_cpus(struct bus *bus)
 	 */
 	chip_config = bus->dev->chip_info;
 
-	config_reset_cpl3_csrs();
-
 	/* calls src/cpu/x86/mp_init.c */
 	/* TODO: Handle mp_init_with_smm failure? */
 	mp_init_with_smm(bus, &mp_ops);

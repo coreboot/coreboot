@@ -59,44 +59,6 @@ static void chip_enable_dev(struct device *dev)
 	}
 }
 
-static void set_pcu_locks(void)
-{
-	struct device *dev = NULL;
-
-	while ((dev = dev_find_device(PCI_VID_INTEL, PCU_CR0_DEVID, dev))) {
-		printk(BIOS_SPEW, "%s: locking registers\n", dev_path(dev));
-		pci_or_config32(dev, PCU_CR0_P_STATE_LIMITS, P_STATE_LIMITS_LOCK);
-		pci_or_config32(dev, PCU_CR0_PACKAGE_RAPL_LIMIT_UPR,
-				PKG_PWR_LIM_LOCK_UPR);
-		pci_or_config32(dev, PCU_CR0_TURBO_ACTIVATION_RATIO,
-				TURBO_ACTIVATION_RATIO_LOCK);
-	}
-
-	dev = NULL;
-	while ((dev = dev_find_device(PCI_VID_INTEL, PCU_CR2_DEVID, dev))) {
-		printk(BIOS_SPEW, "%s: locking registers\n", dev_path(dev));
-		pci_or_config32(dev, PCU_CR2_DRAM_POWER_INFO_UPR,
-				DRAM_POWER_INFO_LOCK_UPR);
-		pci_or_config32(dev, PCU_CR2_DRAM_PLANE_POWER_LIMIT_UPR,
-				PP_PWR_LIM_LOCK_UPR);
-	}
-
-	dev = NULL;
-	while ((dev = dev_find_device(PCI_VID_INTEL, PCU_CR3_DEVID, dev))) {
-		printk(BIOS_SPEW, "%s: locking registers\n", dev_path(dev));
-		pci_or_config32(dev, PCU_CR3_CONFIG_TDP_CONTROL, TDP_LOCK);
-	}
-
-	dev = NULL;
-	while ((dev = dev_find_device(PCI_VID_INTEL, PCU_CR6_DEVID, dev))) {
-		printk(BIOS_SPEW, "%s: locking registers\n", dev_path(dev));
-		pci_or_config32(dev, PCU_CR6_PLATFORM_RAPL_LIMIT_CFG_UPR,
-				PLT_PWR_LIM_LOCK_UPR);
-		pci_or_config32(dev, PCU_CR6_PLATFORM_POWER_INFO_CFG_UPR,
-				PLT_PWR_INFO_LOCK_UPR);
-	}
-}
-
 static void chip_final(void *data)
 {
 	/* Lock SBI */
@@ -105,7 +67,6 @@ static void chip_final(void *data)
 	/* LOCK PAM */
 	pci_or_config32(pcidev_path_on_root(PCI_DEVFN(0, 0)), 0x80, 1 << 0);
 
-	set_pcu_locks();
 	tco_lockdown();
 
 	p2sb_hide();
@@ -116,8 +77,6 @@ static void chip_final(void *data)
 	lock_oc_cfg(true);
 	/* Disable CPU Crashlog to avoid conflict between CPU Crashlog and BMC ACD. */
 	disable_cpu_crashlog();
-
-	set_bios_init_completion();
 }
 
 static void chip_init(void *data)

@@ -15,73 +15,11 @@
 #define SAD_ALL_PAM456_CSR		0x44
 #define SAD_ALL_DEVID			0x344f
 
-#if !defined(__SIMPLE_DEVICE__)
-#define _PCU_DEV(bus, func)		pcidev_path_on_bus(bus, PCI_DEVFN(PCU_DEV, func))
-#else
-#define _PCU_DEV(bus, func)		PCI_DEV(bus, PCU_DEV, func)
-#endif
-
 #define PCU_IIO_STACK                   1
-#define PCU_DEV                         30
-
-#define PCU_CR0_FUN                     0
 #define PCU_CR0_DEVID                   0x2080
-#define PCU_DEV_CR0(bus)                                   _PCU_DEV(bus, PCU_CR0_FUN)
-#define PCU_CR0_PLATFORM_INFO                              0xa8
-#define PCU_CR0_TURBO_ACTIVATION_RATIO                     0xb0
-#define   TURBO_ACTIVATION_RATIO_LOCK                      BIT(31)
-#define PCU_CR0_P_STATE_LIMITS                             0xd8
-#define   P_STATE_LIMITS_LOCK                              BIT(31)
-#define PCU_CR0_PACKAGE_RAPL_LIMIT_LWR                     0xe8
-#define PCU_CR0_PACKAGE_RAPL_LIMIT_UPR                     (PCU_CR0_PACKAGE_RAPL_LIMIT_LWR + 4)
-#define   PKG_PWR_LIM_LOCK_UPR                             BIT(31)
-#define PCU_CR0_PMAX                                       0xf0
-#define   PMAX_LOCK                                        BIT(31)
-
-#define PCU_CR1_FUN                     1
 #define PCU_CR1_DEVID                   0x2081
-#define PCU_DEV_CR1(bus)                                   _PCU_DEV(bus, PCU_CR1_FUN)
-#define PCU_CR1_BIOS_MB_DATA_REG                           0x8c
-
-#define PCU_CR1_BIOS_MB_INTERFACE_REG                      0x90
-#define   BIOS_MB_RUN_BUSY_MASK                            BIT(31)
-#define   BIOS_MB_CMD_MASK                                 0xff
-#define   BIOS_CMD_READ_PCU_MISC_CFG                       0x5
-#define   BIOS_CMD_WRITE_PCU_MISC_CFG                      0x6
-#define   BIOS_ERR_INVALID_CMD                             0x01
-
-#define PCU_CR1_BIOS_RESET_CPL_REG                         0x94
-#define   RST_CPL1_MASK                                    BIT(1)
-#define   RST_CPL2_MASK                                    BIT(2)
-#define   RST_CPL3_MASK                                    BIT(3)
-#define   RST_CPL4_MASK                                    BIT(4)
-#define   PCODE_INIT_DONE1_MASK                            BIT(9)
-#define   PCODE_INIT_DONE2_MASK                            BIT(10)
-#define   PCODE_INIT_DONE3_MASK                            BIT(11)
-#define   PCODE_INIT_DONE4_MASK                            BIT(12)
-
-#define PCU_CR1_DESIRED_CORES_CFG2_REG                     0xa0
-#define PCU_CR1_DESIRED_CORES_CFG2_REG_LOCK_MASK           BIT(31)
-
-#define PCU_CR1_SAPMCTL                                    0xb0
-#define SAPMCTL_LOCK_MASK                                   BIT(31)
-
-#define PCU_CR2_FUN                     2
 #define PCU_CR2_DEVID                   0x2082
-#define PCU_DEV_CR2(bus)                                   _PCU_DEV(bus, PCU_CR2_FUN)
-#define PCU_CR2_DRAM_POWER_INFO_LWR                        0xa8
-#define PCU_CR2_DRAM_POWER_INFO_UPR                        (PCU_CR2_DRAM_POWER_INFO_LWR + 4)
-#define   DRAM_POWER_INFO_LOCK_UPR                         BIT(31)
-#define PCU_CR2_DRAM_PLANE_POWER_LIMIT                     0xf0
-#define PP_PWR_LIM_LOCK                                    BIT(31)
-
-#define PCU_CR3_FUN                     3
 #define PCU_CR3_DEVID                   0x2083
-#define PCU_DEV_CR3(bus)                                   _PCU_DEV(bus, PCU_CR3_FUN)
-#define PCU_CR3_CONFIG_TDP_CONTROL                         0x60
-#define   TDP_LOCK                                         BIT(31)
-#define PCU_CR3_FLEX_RATIO                                 0xa0
-#define   OC_LOCK                                          BIT(20)
 
 #if !defined(__SIMPLE_DEVICE__)
 #define _UBOX_DEV(func)		pcidev_path_on_root_debug(PCI_DEVFN(UBOX_DEV, func), __func__)

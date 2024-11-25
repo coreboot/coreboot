@@ -94,42 +94,6 @@ static void iio_enable_masks(void)
 	iio_dmi_en_masks();
 }
 
-static void set_pcu_locks(void)
-{
-	struct device *dev = NULL;
-
-	while ((dev = dev_find_device(PCI_VID_INTEL, PCU_CR0_DEVID, dev))) {
-		printk(BIOS_SPEW, "%s: locking registers\n", dev_path(dev));
-		pci_or_config32(dev, PCU_CR0_P_STATE_LIMITS, P_STATE_LIMITS_LOCK);
-		pci_or_config32(dev, PCU_CR0_PACKAGE_RAPL_LIMIT_UPR,
-				PKG_PWR_LIM_LOCK_UPR);
-		pci_or_config32(dev, PCU_CR0_TURBO_ACTIVATION_RATIO,
-				TURBO_ACTIVATION_RATIO_LOCK);
-	}
-
-	dev = NULL;
-	while ((dev = dev_find_device(PCI_VID_INTEL, PCU_CR1_DEVID, dev))) {
-		printk(BIOS_SPEW, "%s: locking registers\n", dev_path(dev));
-		pci_or_config32(dev, PCU_CR1_SAPMCTL, SAPMCTL_LOCK_MASK);
-	}
-
-	dev = NULL;
-	while ((dev = dev_find_device(PCI_VID_INTEL, PCU_CR2_DEVID, dev))) {
-		printk(BIOS_SPEW, "%s: locking registers\n", dev_path(dev));
-		pci_or_config32(dev, PCU_CR2_DRAM_PLANE_POWER_LIMIT,
-				PP_PWR_LIM_LOCK);
-		pci_or_config32(dev, PCU_CR2_DRAM_POWER_INFO_UPR,
-				DRAM_POWER_INFO_LOCK_UPR);
-	}
-
-	dev = NULL;
-	while ((dev = dev_find_device(PCI_VID_INTEL, PCU_CR3_DEVID, dev))) {
-		printk(BIOS_SPEW, "%s: locking registers\n", dev_path(dev));
-		pci_or_config32(dev, PCU_CR3_CONFIG_TDP_CONTROL, TDP_LOCK);
-		pci_or_config32(dev, PCU_CR3_FLEX_RATIO, OC_LOCK);
-	}
-}
-
 static void set_imc_locks(void)
 {
 	struct device *dev = 0;
@@ -152,13 +116,11 @@ static void chip_final(void *data)
 	/* LOCK PAM */
 	pci_or_config32(pcidev_path_on_root(PCI_DEVFN(0, 0)), 0x80, 1 << 0);
 
-	set_pcu_locks();
 	set_imc_locks();
 	set_upi_locks();
 
 	p2sb_hide();
 	iio_enable_masks();
-	set_bios_init_completion();
 }
 
 static void chip_init(void *data)

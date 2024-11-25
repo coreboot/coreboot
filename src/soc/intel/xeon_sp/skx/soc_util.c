@@ -83,42 +83,6 @@ bool is_ubox_stack_res(const STACK_RES *res)
 	return false;
 }
 
-#if ENV_RAMSTAGE
-void config_reset_cpl3_csrs(void)
-{
-	uint32_t data;
-	struct device *dev;
-
-	// FIXME: Looks like this needs to run after FSP-S since it modifies FSP defaults!
-
-	dev = NULL;
-	while ((dev = dev_find_device(PCI_VID_INTEL, PCU_CR1_DEVID, dev))) {
-		data = pci_read_config32(dev, PCU_CR1_SAPMCTL);
-		/* clear bits 27:31 - FSP sets this with 0x7 which needs to be cleared */
-		data &= 0x0fffffff;
-		pci_write_config32(dev, PCU_CR1_SAPMCTL, data);
-	}
-
-	dev = NULL;
-	while ((dev = dev_find_device(PCI_VID_INTEL, PCU_CR2_DEVID, dev))) {
-		data = PCIE_IN_PKGCSTATE_L1_MASK;
-		pci_write_config32(dev, PCU_CR2_PKG_CST_ENTRY_CRITERIA_MASK, data);
-
-		data = KTI_IN_PKGCSTATE_L1_MASK;
-		pci_write_config32(dev, PCU_CR2_PKG_CST_ENTRY_CRITERIA_MASK2, data);
-
-		data = PROCHOT_RATIO;
-		printk(BIOS_SPEW, "PCU_CR2_PROCHOT_RESPONSE_RATIO_REG data: 0x%x\n", data);
-		pci_write_config32(dev, PCU_CR2_PROCHOT_RESPONSE_RATIO_REG, data);
-		dump_csr(dev, PCU_CR2_PROCHOT_RESPONSE_RATIO_REG);
-
-		data = pci_read_config32(dev, PCU_CR2_DYNAMIC_PERF_POWER_CTL);
-		data |= UNOCRE_PLIMIT_OVERRIDE_SHIFT;
-		pci_write_config32(dev, PCU_CR2_DYNAMIC_PERF_POWER_CTL, data);
-	}
-}
-#endif
-
 bool is_memtype_reserved(uint16_t mem_type)
 {
 	return !!(mem_type & MEM_TYPE_RESERVED);

@@ -8,6 +8,8 @@
 #define MSR_FEATURE_CONFIG              0x13c
 #define   FEATURE_CONFIG_LOCK           BIT(0)
 
+#define MSR_SNC_CONFIG                  0x152
+
 #define IA32_MCG_CAP                    0x179
 #define IA32_MCG_CAP_COUNT_MASK         0xff
 #define IA32_MCG_CAP_CTL_P_BIT          8
@@ -71,7 +73,6 @@
 #define MSR_TURBO_ACTIVATION_RATIO   0x64c
 #define MAX_NON_TURBO_RATIO_SHIFT    0
 #define MAX_NON_TURBO_RATIO          (0xff << MAX_NON_TURBO_RATIO_SHIFT)
-
 #define IA32_PM_ENABLE 0x770
 #define IA32_HWP_CAPABILITIES 0x771
 

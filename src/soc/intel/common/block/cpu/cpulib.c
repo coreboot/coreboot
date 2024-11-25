@@ -320,7 +320,7 @@ void configure_tcc_thermal_target(void)
 	 */
 	if (CONFIG(SOC_INTEL_APOLLOLAKE) || CONFIG(SOC_INTEL_SKYLAKE) ||
 	    CONFIG(SOC_INTEL_KABYLAKE) || CONFIG(SOC_INTEL_BRASWELL) ||
-	    CONFIG(SOC_INTEL_BROADWELL))
+	    CONFIG(SOC_INTEL_BROADWELL) || CONFIG(SOC_INTEL_SKYLAKE_SP))
 		return;
 
 	/* Time Window Tau Bits [6:0] */

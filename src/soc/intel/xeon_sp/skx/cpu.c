@@ -7,6 +7,7 @@
 #include <cpu/intel/cpu_ids.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/mp.h>
+#include <cpu/intel/common/common.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/turbo.h>
 #include <cpu/intel/smm_reloc.h>
@@ -84,15 +85,18 @@ static void xeon_sp_core_init(struct device *cpu)
 	       cpu->path.apic.package_id);
 	assert(chip_config);
 
-	/* set MSR_PKG_CST_CONFIG_CONTROL - scope per core*/
+	/* set MSR_PKG_CST_CONFIG_CONTROL - scope per core */
 	msr.hi = 0;
 	msr.lo = (PKG_CSTATE_NO_LIMIT | CFG_LOCK_ENABLE);
 	wrmsr(MSR_PKG_CST_CONFIG_CONTROL, msr);
 
 	/* Enable Energy Perf Bias Access, Dynamic switching and lock MSR */
 	msr = rdmsr(MSR_POWER_CTL);
-	msr.lo |= (ENERGY_PERF_BIAS_ACCESS_ENABLE | PWR_PERF_TUNING_DYN_SWITCHING_ENABLE
-		| PROCHOT_LOCK_ENABLE);
+	msr.lo &= ~(POWER_CTL_C1E_MASK | BIT2);
+	msr.lo |= ENERGY_PERF_BIAS_ACCESS_ENABLE;
+	msr.lo |= PWR_PERF_TUNING_DYN_SWITCHING_ENABLE;
+	msr.lo |= LTR_IIO_DISABLE;
+	msr.lo |= PROCHOT_LOCK_ENABLE;
 	wrmsr(MSR_POWER_CTL, msr);
 
 	/* Set P-State ratio */
@@ -115,7 +119,9 @@ static void xeon_sp_core_init(struct device *cpu)
 		wrmsr(MSR_MISC_PWR_MGMT, msr);
 	}
 
-	/* TODO MSR_VR_MISC_CONFIG */
+	msr = rdmsr(MSR_VR_MISC_CONFIG);
+	msr.hi |= BIT20;
+	wrmsr(MSR_VR_MISC_CONFIG, msr);
 
 	/* Set current limit lock */
 	msr = rdmsr(MSR_VR_CURRENT_CONFIG);
@@ -132,14 +138,19 @@ static void xeon_sp_core_init(struct device *cpu)
 	msr.hi = (chip_config->turbo_ratio_limit_cores >> 32) & 0xffffffff;
 	wrmsr(MSR_TURBO_RATIO_LIMIT_CORES, msr);
 
-	/* set Turbo Activation ratio */
-	msr.hi = 0;
+	/* set Turbo Activation ratio - scope package */
 	msr = rdmsr(MSR_TURBO_ACTIVATION_RATIO);
 	msr.lo |= MAX_NON_TURBO_RATIO;
+	msr.lo |= BIT31;	/* Lock it */
 	wrmsr(MSR_TURBO_ACTIVATION_RATIO, msr);
 
-	/* Enable Fast Strings */
+	/* Scope package */
+	msr = rdmsr(MSR_CONFIG_TDP_CONTROL);
+	msr.lo |= BIT31;	/* Lock it */
+	wrmsr(MSR_CONFIG_TDP_CONTROL, msr);
+
 	msr = rdmsr(IA32_MISC_ENABLE);
+	/* Enable Fast Strings */
 	msr.lo |= FAST_STRINGS_ENABLE_BIT;
 	wrmsr(IA32_MISC_ENABLE, msr);
 
@@ -149,8 +160,17 @@ static void xeon_sp_core_init(struct device *cpu)
 	msr.hi = 0;
 	wrmsr(MSR_IA32_ENERGY_PERF_BIAS, msr);
 
+	if (!intel_ht_sibling()) {
+		/* scope per core */
+		msr = rdmsr(MSR_SNC_CONFIG);
+		msr.lo |= BIT28;	/* Lock it */
+		wrmsr(MSR_SNC_CONFIG, msr);
+	}
+
 	/* Enable Turbo */
 	enable_turbo();
+
+	configure_tcc_thermal_target();
 
 	/* Enable speed step. */
 	if (get_turbo_state() == TURBO_ENABLED) {
@@ -161,6 +181,12 @@ static void xeon_sp_core_init(struct device *cpu)
 
 	/* Clear out pending MCEs */
 	xeon_configure_mca();
+
+	/* Enable Vmx */
+	set_vmx_and_lock();
+	set_aesni_lock();
+
+	enable_lapic_tpr();
 }
 
 static struct device_operations cpu_dev_ops = {

@@ -113,7 +113,7 @@ chip soc/intel/alderlake
 			register "usb2_ports[4]"		= "USB2_PORT_MID(OC_SKIP)"
 
 			# Daughterboard USB 3.0 Type-A + USB 3.0 Type-A
-			register "usb2_ports[5]"		= "USB2_PORT_MID(OC0)"
+			register "usb2_ports[6]"		= "USB2_PORT_MID(OC0)"
 			register "usb3_ports[1]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 
 			# Internal Bluetooth

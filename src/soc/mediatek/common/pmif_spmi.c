@@ -22,7 +22,7 @@ DEFINE_BIT(SPI_EINT_MODE_GATING_EN, 13)
 DEFINE_BITFIELD(SPM_SLEEP_REQ_SEL, 1, 0)
 DEFINE_BITFIELD(SCP_SLEEP_REQ_SEL, 10, 9)
 
-__weak void pmif_spmi_config(struct pmif *arb, int mstid)
+__weak void pmif_spmi_config(struct pmif *arb)
 {
 	/* Do nothing. */
 }
@@ -94,10 +94,8 @@ static int spmi_mst_init(struct pmif *pmif_arb)
 	return 0;
 }
 
-static void pmif_spmi_force_normal_mode(int mstid)
+static void pmif_spmi_force_normal_mode(struct pmif *arb)
 {
-	struct pmif *arb = get_pmif_controller(PMIF_SPMI, mstid);
-
 	/* listen srclken_0 only for entering normal or sleep mode */
 	SET32_BITFIELDS(&arb->mtk_pmif->spi_mode_ctrl,
 			SPI_MODE_CTRL, 0,
@@ -110,27 +108,21 @@ static void pmif_spmi_force_normal_mode(int mstid)
 			SCP_SLEEP_REQ_SEL, 0);
 }
 
-static void pmif_spmi_enable_swinf(int mstid)
+static void pmif_spmi_enable_swinf(struct pmif *arb)
 {
-	struct pmif *arb = get_pmif_controller(PMIF_SPMI, mstid);
-
 	write32(&arb->mtk_pmif->inf_en, PMIF_SPMI_SW_CHAN);
 	write32(&arb->mtk_pmif->arb_en, PMIF_SPMI_SW_CHAN);
 }
 
-static void pmif_spmi_enable_cmdIssue(int mstid, bool en)
+static void pmif_spmi_enable_cmdIssue(struct pmif *arb, bool en)
 {
-	struct pmif *arb = get_pmif_controller(PMIF_SPMI, mstid);
-
 	/* Enable cmdIssue */
 	write32(&arb->mtk_pmif->cmdissue_en, en);
 }
 
-static void pmif_spmi_enable(int mstid)
+static void pmif_spmi_enable(struct pmif *arb)
 {
-	struct pmif *arb = get_pmif_controller(PMIF_SPMI, mstid);
-
-	pmif_spmi_config(arb, mstid);
+	pmif_spmi_config(arb);
 
 	/*
 	 * set bytecnt max limitation.
@@ -161,10 +153,10 @@ static void pmif_spmi_enable(int mstid)
 int pmif_spmi_init(struct pmif *arb)
 {
 	if (arb->is_pmif_init_done(arb) != 0) {
-		pmif_spmi_force_normal_mode(arb->mstid);
-		pmif_spmi_enable_swinf(arb->mstid);
-		pmif_spmi_enable_cmdIssue(arb->mstid, true);
-		pmif_spmi_enable(arb->mstid);
+		pmif_spmi_force_normal_mode(arb);
+		pmif_spmi_enable_swinf(arb);
+		pmif_spmi_enable_cmdIssue(arb, true);
+		pmif_spmi_enable(arb);
 		if (arb->is_pmif_init_done(arb))
 			return -E_NODEV;
 	}

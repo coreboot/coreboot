@@ -95,5 +95,5 @@ extern const size_t spmi_dev_cnt;
 int pmif_spmi_init(struct pmif *arb);
 int spmi_config_master(void);
 void pmif_spmi_iocfg(void);
-void pmif_spmi_config(struct pmif *arb, int mstid);
+void pmif_spmi_config(struct pmif *arb);
 #endif /* __SOC_MEDIATEK_PMIF_SPMI_H__ */

@@ -66,7 +66,7 @@ int spmi_config_master(void)
 	return 0;
 }
 
-void pmif_spmi_config(struct pmif *arb, int mstid)
+void pmif_spmi_config(struct pmif *arb)
 {
 	u32 cmd_per;
 

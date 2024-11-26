@@ -123,16 +123,22 @@ struct mtk_vlp_regs {
 	u32 vlp_clk_cfg_30;
 	u32 vlp_clk_cfg_30_set;
 	u32 vlp_clk_cfg_30_clr;
-	u32 reserved3[13];
+	u32 reserved3[3];
+	u32 vlp_ulposc1_con0;
+	u32 vlp_ulposc1_con1;
+	u32 vlp_ulposc1_con2;
+	u32 reserved4[7];
 	u32 vlp_fqmtr_con[2];
 };
-
 check_member(mtk_vlp_regs, vlp_clk_cfg_update, 0x0004);
 check_member(mtk_vlp_regs, vlp_clk_cfg[0].set, 0x000C);
 check_member(mtk_vlp_regs, vlp_clk_cfg[0].clr, 0x0010);
 check_member(mtk_vlp_regs, vlp_clk_cfg[5].set, 0x0048);
 check_member(mtk_vlp_regs, vlp_clk_cfg[5].clr, 0x004C);
 check_member(mtk_vlp_regs, vlp_clk_cfg_30, 0x01F0);
+check_member(mtk_vlp_regs, vlp_ulposc1_con0, 0x0208);
+check_member(mtk_vlp_regs, vlp_ulposc1_con1, 0x020C);
+check_member(mtk_vlp_regs, vlp_ulposc1_con2, 0x0210);
 check_member(mtk_vlp_regs, vlp_fqmtr_con[0], 0x0230);
 
 struct mtk_topckgen_regs {

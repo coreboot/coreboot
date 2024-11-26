@@ -17,13 +17,17 @@ struct mtk_reg_cfg {
 struct mtk_vlpcfg_regs {
 	u32 reserved1;
 	u32 vlp_test_ck_ctrl;
-	u32 reserved2[130];
+	u32 reserved2[3];
+	u32 pmicw_clock_ctrl_set;
+	u32 pmicw_clock_ctrl_clr;
+	u32 reserved3[125];
 	u32 bus_vlp_topaxi_protecten;
 	u32 bus_vlp_topaxi_protecten_set;
 	u32 bus_vlp_topaxi_protecten_clr;
 	u32 bus_vlp_topaxi_protecten_sta1;
 };
 check_member(mtk_vlpcfg_regs, vlp_test_ck_ctrl, 0x0004);
+check_member(mtk_vlpcfg_regs, pmicw_clock_ctrl_clr, 0x0018);
 check_member(mtk_vlpcfg_regs, bus_vlp_topaxi_protecten, 0x0210);
 
 struct mtk_infracfg_ao_regs {

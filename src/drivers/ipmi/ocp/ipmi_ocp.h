@@ -5,6 +5,7 @@
 
 #include <commonlib/bsd/cb_err.h>
 #include <device/pci_type.h>
+#include <stddef.h>
 
 #define IPMI_NETFN_OEM				0x30
 #define  IPMI_OEM_SET_PPIN			0x77

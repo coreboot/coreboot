@@ -20,12 +20,10 @@
 /* Disable SDR104 and SDR50 mode while keeping DDR50 mode enabled. */
 static void disable_sdr_modes(struct resource *res)
 {
-	uint32_t reg;
 	write32(res2mmio(res, MMC_CAP_BYP, 0), MMC_CAP_BYP_EN);
-	reg = read32(res2mmio(res, MMC_CAP_BYP_REG1, 0));
-	reg &= ~(MMC_CAP_BYP_SDR104 | MMC_CAP_BYP_SDR50);
-	reg |= MMC_CAP_BYP_DDR50;
-	write32(res2mmio(res, MMC_CAP_BYP_REG1, 0), reg);
+	clrsetbits32(res2mmio(res, MMC_CAP_BYP_REG1, 0),
+			MMC_CAP_BYP_SDR104 | MMC_CAP_BYP_SDR50,
+			MMC_CAP_BYP_DDR50);
 }
 
 void variant_mainboard_final(void)
@@ -43,7 +41,6 @@ void variant_mainboard_final(void)
 
 	dev = pcidev_path_on_root(PCH_DEVFN_SDCARD);
 	if (dev) {
-		uint16_t reg16;
 		struct resource *res = probe_resource(dev, PCI_BASE_ADDRESS_0);
 		if (!res)
 			return;
@@ -51,9 +48,7 @@ void variant_mainboard_final(void)
 		disable_sdr_modes(res);
 
 		/* Use preset driver strength from preset value registers. */
-		reg16 = read16(res2mmio(res, HOSTCTRL2, 0));
-		reg16 |= HOSTCTRL2_PRESET;
-		write16(res2mmio(res, HOSTCTRL2, 0), reg16);
+		clrsetbits16(res2mmio(res, HOSTCTRL2, 0), 0, HOSTCTRL2_PRESET);
 	}
 
 	dev = pcidev_path_on_root(PCH_DEVFN_EMMC);

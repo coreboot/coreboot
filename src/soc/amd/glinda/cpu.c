@@ -17,6 +17,22 @@ unsigned int smbios_processor_external_clock(void)
 {
 	return 100; // 100 MHz
 }
+
+unsigned int smbios_cache_error_correction_type(u8 level)
+{
+	return SMBIOS_CACHE_ERROR_CORRECTION_MULTI_BIT;
+}
+
+unsigned int smbios_cache_conf_operation_mode(u8 level)
+{
+	return SMBIOS_CACHE_OP_MODE_WRITE_BACK;
+}
+
+unsigned int smbios_cache_sram_type(void)
+{
+	return SMBIOS_CACHE_SRAM_TYPE_PIPELINE_BURST;
+}
+
 static void zen_2_3_init(struct device *dev)
 {
 	check_mca();

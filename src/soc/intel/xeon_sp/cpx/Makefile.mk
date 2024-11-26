@@ -6,7 +6,6 @@ subdirs-y += ../../../../cpu/intel/turbo
 subdirs-y += ../../../../cpu/intel/microcode
 
 romstage-y += romstage.c soc_util.c
-romstage-y += ../dimm.c
 romstage-$(CONFIG_DISPLAY_UPD_DATA) += upd_display.c
 romstage-$(CONFIG_DISPLAY_HOBS) += hob_display.c
 

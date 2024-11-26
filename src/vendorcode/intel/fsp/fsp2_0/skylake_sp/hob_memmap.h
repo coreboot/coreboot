@@ -36,6 +36,15 @@ are permitted provided that the following conditions are met:
 	0xbd, 0x56, 0xda, 0x91, 0xc0, 0x7f \
 	}
 
+#define CH_INDEPENDENT		0
+#define FULL_MIRROR_1LM		BIT0
+#define FULL_MIRROR_2LM		BIT1
+#define CH_LOCKSTEP		BIT2
+#define RK_SPARE		BIT3
+#define PARTIAL_MIRROR_1LM	BIT5
+#define PARTIAL_MIRROR_2LM	BIT6
+#define STAT_VIRT_LOCKSTEP	BIT7
+
 #define MEMTYPE_1LM_MASK       (1 << 0)
 #define MEMTYPE_2LM_MASK       (1 << 1)
 #define MEMTYPE_VOLATILE_MASK  (MEMTYPE_1LM_MASK | MEMTYPE_2LM_MASK)
@@ -49,6 +58,34 @@ are permitted provided that the following conditions are met:
 //
 
 #pragma pack(1)
+
+typedef struct DimmDevice {
+	UINT8    Present;
+	UINT8    reserved1[3];
+	UINT8    NumRanks;
+	UINT8    reserved2[1];
+	UINT8    actKeyByte2;
+	UINT8    reserved3[9];
+	UINT16   DimmSize;
+	UINT8    reserved4[8];
+	UINT16   VendorID;
+	UINT16   DeviceID;
+	UINT8    reserved5[24];
+	UINT8    serialNumber[4];
+	UINT8    PartNumber[4];
+	UINT8    reserved6[50];
+	INT32    commonTck;
+	UINT8    reserved7[24];
+} MEMMAP_DIMM_DEVICE_INFO_STRUCT;
+
+struct ChannelDevice {
+	UINT8    reserved1[191];
+	MEMMAP_DIMM_DEVICE_INFO_STRUCT    DimmInfo[MAX_IMC];
+};
+typedef struct socket {
+	UINT8    reserved[2075];
+	struct   ChannelDevice ChannelInfo[MAX_CH];
+} MEMMAP_SOCKET;
 
 struct SystemMemoryMapElement {
 	UINT8    NodeId;         // Node ID of the HA Owning the memory
@@ -98,7 +135,7 @@ struct SystemMemoryMapHob {
 	UINT8	maxCh;
 	struct  SystemMemoryMapElement Element[MAX_SOCKET * SAD_RULES];
 	UINT8	reserved1[982];
-	UINT8	reserved2[4901*MAX_SOCKET];
+	MEMMAP_SOCKET Socket[MAX_SOCKET];
 	UINT8	reserved3[707];
 };
 

@@ -26,4 +26,37 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	m_cfg->VTdConfig.ATS = config->ats_support;
 }
 
-void save_dimm_info(void) {}
+uint8_t get_error_correction_type(const uint8_t RasModesEnabled)
+{
+	switch (RasModesEnabled) {
+	case CH_INDEPENDENT:
+		return MEMORY_ARRAY_ECC_SINGLE_BIT;
+	case FULL_MIRROR_1LM:
+	case PARTIAL_MIRROR_1LM:
+	case FULL_MIRROR_2LM:
+	case PARTIAL_MIRROR_2LM:
+		return MEMORY_ARRAY_ECC_MULTI_BIT;
+	case RK_SPARE:
+		return MEMORY_ARRAY_ECC_SINGLE_BIT;
+	case CH_LOCKSTEP:
+		return MEMORY_ARRAY_ECC_SINGLE_BIT;
+	default:
+		return MEMORY_ARRAY_ECC_MULTI_BIT;
+	}
+}
+
+uint32_t get_max_capacity_mib(void)
+{
+	/* According to Dear Customer Letter it's 1.12 TB per processor. */
+	return 1.12 * MiB * CONFIG_MAX_SOCKET;
+}
+
+uint8_t get_max_dimm_count(void)
+{
+	return MAX_DIMM;
+}
+
+uint8_t get_dram_type(const struct SystemMemoryMapHob *hob)
+{
+	return MEMORY_TYPE_DDR4;
+}

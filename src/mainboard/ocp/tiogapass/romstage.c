@@ -1,13 +1,14 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <fsp/api.h>
-#include <FspmUpd.h>
 #include <drivers/ipmi/ipmi_if.h>
 #include <drivers/ipmi/ocp/ipmi_ocp.h>
+#include <fsp/api.h>
+#include <FspmUpd.h>
+#include <gpio.h>
+#include <soc/ddr.h>
+#include <soc/gpio_soc_defs.h>
 #include <soc/romstage.h>
 #include <string.h>
-#include <gpio.h>
-#include <soc/gpio_soc_defs.h>
 #include <skxsp_tp_iio.h>
 
 #include "ipmi.h"
@@ -63,4 +64,16 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	/* do not configure GPIO controller inside FSP-M */
 	mupd->FspmConfig.GpioConfig.GpioTable = NULL;
 	mupd->FspmConfig.GpioConfig.NumberOfEntries = 0;
+}
+
+bool mainboard_dimm_slot_exists(uint8_t socket, uint8_t channel, uint8_t dimm)
+{
+	if (socket >= CONFIG_MAX_SOCKET)
+		return false;
+	if (channel >= 6)
+		return false;
+	if (dimm >= 2)
+		return false;
+
+	return true;
 }

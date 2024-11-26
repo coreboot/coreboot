@@ -195,8 +195,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_LOCK(GPP_E02, NONE, LOCK_CONFIG),
 	/* GPP_E03 : [] ==> GSC_SOC_INT_ODL */
 	PAD_CFG_GPI_APIC_LOCK(GPP_E03, NONE, LEVEL, INVERT, LOCK_CONFIG),
-	/* GPP_E04 : [] ==> SOC_PEN_DETECT, test point */
-	PAD_NC(GPP_E04, NONE),
+	/* GPP_E04 : [] ==> SOC_WAKE_L ==> LAN_WAKE_ODL */
+	PAD_CFG_GPI_SCI_LOW(GPP_E04, NONE, DEEP, EDGE_SINGLE),
 	/* GPP_E05 : [] ==> USB_A0_RT_RST_ODL */
 	PAD_CFG_GPO(GPP_E05, 1, DEEP),
 	/* GPP_E06 : GPP_E06_STRAP ==> Component NC */

@@ -401,17 +401,36 @@ void google_chromeec_ioport_range(uint16_t *out_base, size_t *out_size)
 int google_chromeec_command(struct chromeec_command *cec_command)
 {
 	static int command_version;
+	struct stopwatch sw;
+	uint16_t cmd_code;
+	int result = -1;
 
 	if (command_version <= 0)
 		command_version = google_chromeec_command_version();
 
+	if (CONFIG(EC_GOOGLE_CHROMEEC_EC_HOST_CMD_DEBUG)) {
+		cmd_code = cec_command->cmd_code;
+		stopwatch_init(&sw);
+	}
+
 	switch (command_version) {
 	case EC_HOST_CMD_FLAG_VERSION_3:
-		return google_chromeec_command_v3(cec_command);
+		result = google_chromeec_command_v3(cec_command);
+		break;
 	case EC_HOST_CMD_FLAG_LPC_ARGS_SUPPORTED:
-		return google_chromeec_command_v1(cec_command);
+		result = google_chromeec_command_v1(cec_command);
+		break;
 	}
-	return -1;
+
+	if (CONFIG(EC_GOOGLE_CHROMEEC_EC_HOST_CMD_DEBUG)) {
+		stopwatch_tick(&sw);
+		printk(BIOS_DEBUG, "EC HOST CMD end Duration: %llu us, Command: 0x%x, Version: 0x%x\n",
+				stopwatch_duration_usecs(&sw),
+				cmd_code,
+				command_version);
+	}
+
+	return result;
 }
 
 static void lpc_ec_init(struct device *dev)

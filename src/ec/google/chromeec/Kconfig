@@ -98,6 +98,12 @@ config EC_GOOGLE_CHROMEEC_MEC
 	help
 	  Microchip EC variant for LPC register access.
 
+config EC_GOOGLE_CHROMEEC_EC_HOST_CMD_DEBUG
+	depends on EC_GOOGLE_CHROMEEC_LPC && HAVE_MONOTONIC_TIMER
+	def_bool n
+	help
+	  Enables timestamp and duration logging for host EC commands.
+
 config EC_GOOGLE_CHROMEEC_PD
 	def_bool n
 	help

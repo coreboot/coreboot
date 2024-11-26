@@ -98,16 +98,19 @@ static inline size_t mem_chip_info_size(int entries)
 	return sizeof(struct mem_chip_info) + sizeof(struct mem_chip_entry) * entries;
 };
 
+static inline uint64_t mem_chip_info_entry_density_bytes(const struct mem_chip_entry *entry)
+{
+	return (uint64_t)entry->density_mbits * (entry->channel_io_width / entry->io_width)
+	       * (MiB / 8);
+}
+
 static inline uint64_t mem_chip_info_total_density_bytes(const struct mem_chip_info *info)
 {
 	uint64_t bytes = 0;
 	int i;
 
-	for (i = 0; i < info->num_entries; i++) {
-		const struct mem_chip_entry *e = &info->entries[i];
-		bytes += (uint64_t)e->density_mbits * (e->channel_io_width / e->io_width)
-			 * (MiB / 8);
-	}
+	for (i = 0; i < info->num_entries; i++)
+		bytes += mem_chip_info_entry_density_bytes(&info->entries[i]);
 
 	return bytes;
 }

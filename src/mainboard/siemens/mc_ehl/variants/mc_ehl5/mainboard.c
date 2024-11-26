@@ -17,6 +17,17 @@
 #define  MMC_CAP_BYP_SDR104	(1 << 14)
 #define  MMC_CAP_BYP_DDR50	(1 << 15)
 
+/* Disable SDR104 and SDR50 mode while keeping DDR50 mode enabled. */
+static void disable_sdr_modes(struct resource *res)
+{
+	uint32_t reg;
+	write32(res2mmio(res, MMC_CAP_BYP, 0), MMC_CAP_BYP_EN);
+	reg = read32(res2mmio(res, MMC_CAP_BYP_REG1, 0));
+	reg &= ~(MMC_CAP_BYP_SDR104 | MMC_CAP_BYP_SDR50);
+	reg |= MMC_CAP_BYP_DDR50;
+	write32(res2mmio(res, MMC_CAP_BYP_REG1, 0), reg);
+}
+
 void variant_mainboard_final(void)
 {
 	struct device *dev;
@@ -30,21 +41,14 @@ void variant_mainboard_final(void)
 	if (dev)
 		pci_write_config8(dev, 0xd8, 0x3e);
 
-	/* Limit SD-Card speed to DDR50 mode to avoid SDR104/SDR50 modes due to
-	   layout limitations. */
 	dev = pcidev_path_on_root(PCH_DEVFN_SDCARD);
 	if (dev) {
-		uint32_t reg;
 		uint16_t reg16;
 		struct resource *res = probe_resource(dev, PCI_BASE_ADDRESS_0);
 		if (!res)
 			return;
-		write32(res2mmio(res, MMC_CAP_BYP, 0), MMC_CAP_BYP_EN);
-		reg = read32(res2mmio(res, MMC_CAP_BYP_REG1, 0));
-		/* Disable SDR104 and SDR50 mode while keeping DDR50 mode enabled. */
-		reg &= ~(MMC_CAP_BYP_SDR104 | MMC_CAP_BYP_SDR50);
-		reg |= MMC_CAP_BYP_DDR50;
-		write32(res2mmio(res, MMC_CAP_BYP_REG1, 0), reg);
+
+		disable_sdr_modes(res);
 
 		/* Use preset driver strength from preset value registers. */
 		reg16 = read16(res2mmio(res, HOSTCTRL2, 0));

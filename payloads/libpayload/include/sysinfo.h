@@ -121,6 +121,8 @@ struct sysinfo_t {
 	uintptr_t cse_bp_info;
 	uintptr_t cse_info;
 
+	uintptr_t st_buffer;
+
 #define UNDEFINED_STRAPPING_ID	(~0)
 #define UNDEFINED_FW_CONFIG	~((uint64_t)0)
 	u32		board_id;

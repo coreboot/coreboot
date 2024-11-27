@@ -276,6 +276,9 @@ static void cb_parse_cbmem_entry(void *ptr, struct sysinfo_t *info)
 	case CBMEM_ID_MEMINFO:
 		info->memory_info = cbmem_entry->address;
 		break;
+	case CBMEM_ID_SELF_TEST:
+		info->st_buffer = cbmem_entry->address;
+		break;
 	default:
 		break;
 	}

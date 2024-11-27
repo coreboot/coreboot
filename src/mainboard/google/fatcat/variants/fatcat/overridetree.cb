@@ -98,9 +98,6 @@ chip soc/intel/pantherlake
                 [DDI_PORT_A] = DDI_ENABLE_HPD,
         }"
 
-	# TCSS USB3
-	register "tcss_aux_ori" = "1"
-
 	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C1]  = PchSerialIoPci,

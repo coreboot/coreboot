@@ -133,7 +133,7 @@ struct mbox_cmd_dtpm_config_buffer {
 #define PSP_CMD_TIMEOUT 1000 /* 1 second */
 
 #define C2P_BUFFER_MAXSIZE 0xc00 /* Core-to-PSP buffer */
-#define P2C_BUFFER_MAXSIZE 0xc00 /* PSP-to-core buffer */
+#define P2C_BUFFER_MAXSIZE 0x1000 /* PSP-to-core buffer */
 
 /* PSP to x86 status */
 enum mbox_p2c_status {

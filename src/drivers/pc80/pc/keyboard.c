@@ -22,19 +22,6 @@
 #define KBC_CMD_SELF_TEST	0xAA	// Controller self-test
 #define KBC_CMD_KBD_TEST	0xAB	// Keyboard Interface test
 
-/* The Keyboard controller command byte
- *  BIT	| Description
- *  ----+-------------------------------------------------------
- *   7  | reserved, must be zero
- *   6  | XT Translation, (1 = on, 0 = off)
- *   5  | Disable Mouse Port (1 = disable, 0 = enable)
- *   4  | Disable Keyboard Port (1 = disable, 0 = enable)
- *   3  | reserved, must be zero
- *   2  | System Flag (1 = self-test passed. DO NOT SET TO ZERO)
- *   1  | Mouse Port Interrupts (1 = enable, 0 = disable)
- *   0  | Keyboard Port Interrupts (1 = enable, 0 = disable)
- */
-
 // Keyboard Controller Replies
 #define KBC_REPLY_SELFTEST_OK	0x55	// controller self-test succeeded
 
@@ -368,4 +355,35 @@ void set_kbc_ps2_mode(void)
 	outb(0x01, KBD_DATA);
 
 	kbc_cleanup_buffers();
+}
+
+enum cb_err pc_keyboard_set_command_byte_bit(u8 bit, u8 value)
+{
+	if (!kbc_input_buffer_empty()) {
+		printk(BIOS_ERR, "Timeout waiting to read command byte\n");
+		return CB_KBD_INTERFACE_FAILURE;
+	}
+	outb(KBC_CMD_READ_COMMAND, KBD_COMMAND);
+
+	if (!kbc_output_buffer_full()) {
+		printk(BIOS_ERR, "Timeout waiting to read command byte\n");
+		return CB_KBD_INTERFACE_FAILURE;
+	}
+	u8 byte = inb(KBD_DATA);
+
+	if (!kbc_input_buffer_empty()) {
+		printk(BIOS_ERR, "Timeout waiting to write command byte\n");
+		return CB_KBD_INTERFACE_FAILURE;
+	}
+	outb(KBC_CMD_WRITE_COMMAND, KBD_COMMAND);
+
+	byte = value ? (byte | BIT(bit)) : (byte & ~BIT(bit));
+
+	if (!kbc_input_buffer_empty()) {
+		printk(BIOS_ERR, "Timeout waiting to write command byte\n");
+		return CB_KBD_INTERFACE_FAILURE;
+	}
+	outb(byte, KBD_DATA);
+
+	return CB_SUCCESS;
 }

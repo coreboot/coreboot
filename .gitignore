@@ -44,3 +44,6 @@ tarballs/
 *~
 *.kate-swp
 *.kdev4
+
+# Direnv
+.direnv/

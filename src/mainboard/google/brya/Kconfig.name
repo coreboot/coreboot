@@ -200,6 +200,9 @@ config BOARD_GOOGLE_SUNDANCE
 config BOARD_GOOGLE_PUJJOGA
 	bool "->  Pujjoga"
 
+config BOARD_GOOGLE_PUJJOGATWIN
+	bool "->  Pujjogatwin"
+
 config BOARD_GOOGLE_ORISA
 	bool "->  Orisa"
 

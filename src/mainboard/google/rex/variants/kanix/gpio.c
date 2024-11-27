@@ -357,8 +357,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_V11, NONE),
 	/* GPP_V12 : [] ==> SOC_SLP_LAN_L */
 	PAD_CFG_NF(GPP_V12, NONE, DEEP, NF1),
-	/* GPP_V14 : [] ==> SOC_WAKE_L */
-	PAD_CFG_NF(GPP_V14, NONE, DEEP, NF1),
+	/* GPP_V14 : [] ==> SOC_GPP_V14, testpoint */
+	PAD_NC(GPP_V14, NONE),
 	/* GPP_V22 : NC net. */
 	PAD_NC(GPP_V22, NONE),
 	/* GPP_V23 : [] ==> UCAM_RST_L */

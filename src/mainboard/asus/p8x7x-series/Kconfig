@@ -25,6 +25,7 @@ config BOARD_ASUS_P8H77_V
 	select BOARD_ROMSIZE_KB_8192
 	select SUPERIO_NUVOTON_NCT6779D
 	select USE_NATIVE_RAMINIT
+	select POWER_LED_USES_GPIO8
 
 config BOARD_ASUS_P8Z77_M_PRO
 	select BOARD_ASUS_P8X7X_SERIES
@@ -39,6 +40,7 @@ config BOARD_ASUS_P8Z77_V_LX2
 	select REALTEK_8168_RESET
 	select SUPERIO_NUVOTON_NCT6779D
 	select USE_NATIVE_RAMINIT
+	select POWER_LED_USES_GPIO8
 
 config BOARD_ASUS_P8Z77_V
 	select BOARD_ASUS_P8X7X_SERIES
@@ -57,6 +59,11 @@ config BOARD_ASUS_P8Z77_M
 	select SUPERIO_NUVOTON_COMMON_COM_A
 
 if BOARD_ASUS_P8X7X_SERIES
+
+config POWER_LED_USES_GPIO8
+	bool
+	help
+	  If power LED doesn't blink when entering S3 suspend, try setting this.
 
 config MAINBOARD_DIR
 	default "asus/p8x7x-series"

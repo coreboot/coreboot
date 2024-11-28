@@ -418,6 +418,10 @@ S:	Orphan
 F:	src/mainboard/ibase/
 
 
+INTEL FROST_CREEK_CRB MAINBOARD
+M:	Yuchi Chen <yuchi.chen@intel.com>
+S:	Supported
+F:	src/mainboard/intel/frost_creek/
 
 INTEL HARCUVAR_CRB MAINBOARD
 M:	Jeff Daly <jeffd@silicom-usa.com>
@@ -931,6 +935,15 @@ M:	Subrata Banik <subratabanik@google.com>
 M:	Nick Vaccaro <nvaccaro@chromium.org>
 S:	Maintained
 F:	src/soc/intel/tigerlake/
+
+INTEL Atom Snow Ridge SoC
+M:	Yuchi Chen <yuchi.chen@intel.com>
+M:	Vasiliy Khoruzhick <vasilykh@arista.com>
+S:	Maintained
+F:	src/soc/intel/common/block/imc/
+F:	src/soc/intel/common/block/systemagent-server/
+F:	src/soc/intel/snowridge/
+F:	src/vendorcode/intel/fsp/fsp2_0/snowridge/
 
 INTEL Xeon Scalable Processor Family
 M:	Jonathan Zhang <jon.zhixiong.zhang@gmail.com>

@@ -1,5 +1,12 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
+fw_config
+	field AUDIO_AMP 28 29
+		option AMP_NAU8318 0
+		option AMP_TAS2563 1
+	end
+end
+
 chip soc/mediatek/mt8196
 	device cpu_cluster 0 on end
 

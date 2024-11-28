@@ -16,6 +16,10 @@
 #define GPIO_AP_FP_FW_UP_STRAP	GPIO(EINT27)
 #define GPIO_EN_PWR_FP		GPIO(PERIPHERAL_EN3)
 
+#define GPIO_I2SI4_BCK		GPIO(I2SIN1_BCK)
+#define GPIO_I2SI4_LRCK		GPIO(I2SIN1_LRCK)
+#define GPIO_I2SO4_D0		GPIO(I2SOUT1_DO)
+
 void setup_chromeos_gpios(void);
 
 #endif

@@ -1,20 +1,21 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
+#if CONFIG(POWER_LED_USES_GPIO8)
+#define BLINK_POWER_LED GB08
+#else
+#define BLINK_POWER_LED GB27
+#endif
 
 Method(_PTS, 1)
 {
-#if (CONFIG(BOARD_ASUS_P8Z77_M) || CONFIG(BOARD_ASUS_P8Z77_M_PRO))
 	/* blink power LED if not turning off */
-	If (Arg0 != 0x05)
+	If (Arg0 != 5)
 	{
-	    GB27 = 1
+	    BLINK_POWER_LED = 1
 	}
-#endif
 }
 
 Method(_WAK, 1)
 {
-#if (CONFIG(BOARD_ASUS_P8Z77_M) || CONFIG(BOARD_ASUS_P8Z77_M_PRO))
-	GB27 = 0
-#endif
+	BLINK_POWER_LED = 0
 	Return(Package(){0, 0})
 }

@@ -191,6 +191,11 @@ M:	Angel Pons <th3fanbus@gmail.com>
 S:	Maintained
 F:	src/mainboard/asrock/g41c-gs/
 
+ASROCK IMB-1222 MAINBOARD
+M:	Maxim Polyakov <max.senia.poliak@gmail.com>
+S:	Maintained
+F:	src/mainboard/asrock/imb-1222/
+
 ASROCK Z97 EXTREME6 MAINBOARD
 M:	Angel Pons <th3fanbus@gmail.com>
 S:	Maintained

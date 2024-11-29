@@ -1,8 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only OR MIT */
 
 #include <arch/stages.h>
+#include <soc/emi.h>
 
 void platform_romstage_main(void)
 {
-	/* TODO: add romstage main function */
+	mtk_dram_init();
 }

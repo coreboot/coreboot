@@ -2,12 +2,14 @@
 
 #include <device/device.h>
 #include <soc/dpm_v2.h>
+#include <soc/spm_common.h>
 #include <soc/usb.h>
 
 static void mainboard_init(struct device *dev)
 {
 	dpm_init();
 	setup_usb_host();
+	spm_init();
 }
 
 static void mainboard_enable(struct device *dev)

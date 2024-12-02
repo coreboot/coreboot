@@ -268,7 +268,7 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 
 	/* 1MB -> top_of_ram */
 	fsp_find_reserved_memory(&fsp_mem);
-	top_of_ram = range_entry_base(&fsp_mem) - 1;
+	top_of_ram = range_entry_base(&fsp_mem);
 	res = ram_from_to(dev, index++, 1 * MiB, top_of_ram);
 	LOG_RESOURCE("low_ram", dev, res);
 

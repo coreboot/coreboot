@@ -32,8 +32,9 @@ extern EFI_GUID gSiMemoryPlatformDataGuid;
 #define MAX_DDR5_CH     2
 #define MAX_DIMM        2
 
-#define MAX_RANK_IN_CHANNEL (4)
-#define MAX_SDRAM_IN_DIMM (5)
+// Must be same or higher than the corresponding definitions in MrcGlobalDefinitions.h
+#define _MAX_RANK_IN_CHANNEL       (4)       ///< The maximum number of ranks per channel.
+#define _MAX_SDRAM_IN_DIMM         (5)       ///< The maximum number of SDRAMs per DIMM.
 
 // Must match definitions in
 // Intel\OneSiliconPkg\IpBlock\MemoryInit\Mtl\Include\MrcInterface.h
@@ -70,7 +71,7 @@ typedef struct _EFI_HOB_GUID_TYPE {
 #endif
 
 ///
-/// Defines taken from MRC to avoid having to include MrcInterface.h
+/// Defines taken from MRC so avoid having to include MrcInterface.h
 ///
 
 //
@@ -337,7 +338,7 @@ typedef struct {
   UINT16            PprForceRepairStatus;              ///< PPR: Force Repair Status
   UINT16            PprRepairsSuccessful;              ///< PPR: Counts of repair successes
   PPR_RESULT_COLUMNS_HOB PprErrorInfo;                 ///< PPR: Error location
-  UINT8             PprAvailableResources[MAX_NODE][MAX_CH][MAX_RANK_IN_CHANNEL][MAX_SDRAM_IN_DIMM]; ///< PPR available resources per device
+  UINT8             PprAvailableResources[MAX_NODE][MAX_CH][_MAX_RANK_IN_CHANNEL][_MAX_SDRAM_IN_DIMM]; ///< PPR available resources per device
 } MEMORY_INFO_DATA_HOB;
 
 /**

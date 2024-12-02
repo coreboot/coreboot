@@ -464,17 +464,6 @@ void fast_spi_set_bde(void)
 	pci_or_config32(dev, SPI_BIOS_DECODE_EN, SPI_BIOS_DECODE_LOCK);
 }
 
-/* Set FAST_SPIBAR + SPIBAR_SFDP0_VSCC0 (0xc4) Vendor Control Lock */
-void fast_spi_set_vcl(void)
-{
-	void *spibar = fast_spi_get_bar();
-	uint32_t vcss;
-
-	vcss = read32(spibar + SPIBAR_SFDP0_VSCC0);
-	vcss |= SPIBAR_SFDP0_VSCC0_VCL;
-	write32(spibar + SPIBAR_SFDP0_VSCC0, vcss);
-}
-
 void fast_spi_clear_outstanding_status(void)
 {
 	void *spibar = fast_spi_get_bar();

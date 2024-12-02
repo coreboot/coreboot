@@ -13,6 +13,5 @@ void spi_lockdown_config(int chipset_lockdown)
 {
 	if (chipset_lockdown == CHIPSET_LOCKDOWN_COREBOOT) {
 		fast_spi_set_bde();
-		fast_spi_set_vcl();
 	}
 }

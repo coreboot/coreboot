@@ -107,9 +107,5 @@ void fast_spi_cache_ext_bios_postcar(struct postcar_frame *pcf);
  * Set FAST_SPIBAR BIOS Decode Lock bit
  */
 void fast_spi_set_bde(void);
-/*
- * Set FAST_SPIBAR Vendor Component Lock bit.
- */
-void fast_spi_set_vcl(void);
 
 #endif	/* SOC_INTEL_COMMON_BLOCK_FAST_SPI_H */

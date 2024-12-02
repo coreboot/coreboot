@@ -115,10 +115,8 @@ static void each_cpu_init(struct device *cpu)
 	set_vmx_and_lock();
 	set_aesni_lock();
 
-	/* The MSRs and CSRS have the same register layout. Use the CSRS bit definitions
-	   Lock Turbo. Did FSP-S set this up??? */
 	msr = rdmsr(MSR_TURBO_ACTIVATION_RATIO);
-	msr.lo |= (TURBO_ACTIVATION_RATIO_LOCK);
+	msr.lo |= BIT31;	/* Lock it */
 	wrmsr(MSR_TURBO_ACTIVATION_RATIO, msr);
 }
 

@@ -287,4 +287,15 @@ void pmc_set_acpi_mode(void);
  */
 void pmc_dump_soc_qdf_info(void);
 
+/*
+ * Retrieve SoC QDF information.
+ *
+ * This function retrieves the SoC QDF information string, which can be used to
+ * populate various data structures, such as the SMBIOS Type 4 table for CPU
+ * identification.
+ *
+ * @return A pointer to the SoC QDF information string.
+ */
+char *retrieve_soc_qdf_info_via_pmc_ipc(void);
+
 #endif /* SOC_INTEL_COMMON_BLOCK_PMCLIB_H */

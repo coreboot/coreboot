@@ -934,20 +934,16 @@ void pmc_send_bios_reset_pci_enum_done(void)
 		printk(BIOS_ERR, "PMC: Failed sending PCI Enumeration Done Command\n");
 }
 
-/*
- * This function reads and prints SoC QDF information using PMC interface
- * if SOC_QDF_DYNAMIC_READ_PMC config is enabled.
- */
-void pmc_dump_soc_qdf_info(void)
+char *retrieve_soc_qdf_info_via_pmc_ipc(void)
 {
 	struct pmc_ipc_buffer req = { 0 };
 	struct pmc_ipc_buffer rsp;
 	uint32_t cmd_reg;
 	int r;
-	char qdf_info[5];
+	static char qdf_info[5] = { 0 };
 
 	if (!CONFIG(SOC_QDF_DYNAMIC_READ_PMC))
-		return;
+		return NULL;
 
 	req.buf[0] = PMC_IPC_CMD_REGID_SOC_QDF;
 	cmd_reg = pmc_make_ipc_cmd(PMC_IPC_CMD_SOC_REG_ACC,
@@ -959,7 +955,7 @@ void pmc_dump_soc_qdf_info(void)
 	if (r < 0 || rsp.buf[0] == 0) {
 		printk(BIOS_ERR, "%s: pmc_send_ipc_cmd failed or QDF not available.\n",
 				__func__);
-		return;
+		return NULL;
 	}
 
 	qdf_info[0] = ((rsp.buf[0] >> 24) & 0xFF);
@@ -967,5 +963,18 @@ void pmc_dump_soc_qdf_info(void)
 	qdf_info[2] = ((rsp.buf[0] >> 8) & 0xFF);
 	qdf_info[3] = (rsp.buf[0] & 0xFF);
 	qdf_info[4] = '\0';
-	printk(BIOS_INFO, "SoC QDF: %s\n", qdf_info);
+
+	return qdf_info;
+}
+
+/*
+ * This function reads and prints SoC QDF information using PMC interface
+ * if SOC_QDF_DYNAMIC_READ_PMC config is enabled.
+ */
+void pmc_dump_soc_qdf_info(void)
+{
+	char *qdf = retrieve_soc_qdf_info_via_pmc_ipc();
+
+	if (qdf != NULL)
+		printk(BIOS_INFO, "SoC QDF: %s\n", qdf);
 }

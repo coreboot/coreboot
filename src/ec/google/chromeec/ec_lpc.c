@@ -52,6 +52,15 @@ static inline u8 read_byte(u16 port)
 	return byte;
 }
 
+#if CONFIG(EC_GOOGLE_CHROMEEC_MEMMAP_INDEXED_IO)
+/* Read singe byte and return byte read using indexed IO*/
+static inline u8 read_byte_indexed_io(u8 offset)
+{
+	outb(offset, CONFIG_EC_GOOGLE_CHROMEEC_MEMMAP_INDEXED_IO_PORT);
+	return inb(CONFIG_EC_GOOGLE_CHROMEEC_MEMMAP_INDEXED_IO_PORT + 1);
+}
+#endif
+
 /*
  * Write bytes to a given LPC-mapped address.
  *
@@ -156,6 +165,10 @@ static int google_chromeec_command_version(void)
 		printk(BIOS_ERR, "Error reading memmap data.\n");
 		return -1;
 	}
+#elif CONFIG(EC_GOOGLE_CHROMEEC_MEMMAP_INDEXED_IO)
+	id1 = read_byte_indexed_io(EC_MEMMAP_ID);
+	id2 = read_byte_indexed_io(EC_MEMMAP_ID + 1);
+	flags = read_byte_indexed_io(EC_MEMMAP_HOST_CMD_FLAGS);
 #else
 	id1 = read_byte(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_ID);
 	id2 = read_byte(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_ID + 1);
@@ -358,7 +371,11 @@ static int google_chromeec_command_v1(struct chromeec_command *cec_command)
 /* Return the byte of EC switch states */
 uint8_t google_chromeec_get_switches(void)
 {
+#if CONFIG(EC_GOOGLE_CHROMEEC_MEMMAP_INDEXED_IO)
+	return read_byte_indexed_io(EC_MEMMAP_SWITCHES);
+#else
 	return read_byte(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_SWITCHES);
+#endif
 }
 
 void google_chromeec_ioport_range(uint16_t *out_base, size_t *out_size)

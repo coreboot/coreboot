@@ -60,6 +60,30 @@ config EC_GOOGLE_CHROMEEC_ESPI
 	  this option simply enables the LPC EC code.  The eSPI device
 	  still needs to correctly configure the bus transactions.
 
+config EC_GOOGLE_CHROMEEC_MEMMAP_INDEXED_IO
+	depends on EC_GOOGLE_CHROMEEC && ARCH_X86
+	def_bool n
+	help
+	  Google Chrome EC enable support for indexed I/O access.
+
+	  Indexed I/O allows devices with multiple memory locations to be
+	  accessed using a single I/O port base address and an index register.
+	  A separate data register, typically located at the address
+	  immediately following the index register, is used for sending and
+	  receiving data to the device.
+
+	  Ensure port address and gen3_dec values are correct when selecting
+	  this configuration.
+
+config EC_GOOGLE_CHROMEEC_MEMMAP_INDEXED_IO_PORT
+	depends on EC_GOOGLE_CHROMEEC_MEMMAP_INDEXED_IO
+	hex
+	default 0x380
+	help
+	  Google Chrome EC indexed I/O access address.
+
+	  Index register port address for memory mapped indexed IO access
+
 config EC_GOOGLE_CHROMEEC_LPC
 	depends on ARCH_X86  # Needs Plug-and-play.
 	def_bool n

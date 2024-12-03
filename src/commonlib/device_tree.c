@@ -935,11 +935,10 @@ void dt_flatten(const struct device_tree *tree, void *start_dest)
 
 	uint8_t *struct_start = dest;
 	header->structure_offset = htobe32(dest - (uint8_t *)start_dest);
+	be32enc(&dest[struct_size], FDT_TOKEN_END);
+	struct_size += sizeof(uint32_t);
 	header->structure_size = htobe32(struct_size);
 	dest += struct_size;
-
-	*((uint32_t *)dest) = htobe32(FDT_TOKEN_END);
-	dest += sizeof(uint32_t);
 
 	uint8_t *strings_start = dest;
 	header->strings_offset = htobe32(dest - (uint8_t *)start_dest);

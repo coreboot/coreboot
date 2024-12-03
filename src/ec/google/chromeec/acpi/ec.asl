@@ -12,6 +12,7 @@
 #define EC_OEM_VARIABLE_DATA_MASK	0x7
 #define INT3400_ODVP_CHANGED		0x88
 
+#define ACPI_NOTIFY_CROS_EC_MKBP	0x80
 #define ACPI_NOTIFY_CROS_EC_PANIC	0xB0
 
 // Mainboard specific throttle handler
@@ -437,7 +438,7 @@ Device (EC0)
 	Method (_Q1B, 0, NotSerialized)
 	{
 		Printf ("EC: MKBP")
-		Notify (CREC, 0x80)
+		Notify (CREC, ACPI_NOTIFY_CROS_EC_MKBP)
 	}
 
 #ifdef EC_ENABLE_PD_MCU_DEVICE

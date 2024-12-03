@@ -155,7 +155,8 @@ struct mtk_topckgen_regs {
 	struct mtk_clk_cfg clk_cfg_18;
 	u32 reserved5[24];
 	u32 clk_scp_cfg_0;
-	u32 reserved6[7];
+	u32 clk_scp_cfg_1;
+	u32 reserved6[6];
 	u32 clk26cali[2];
 	u32 reserved7[6];
 	struct mtk_clk_cfg clk_cfg_19;
@@ -175,6 +176,7 @@ check_member(mtk_topckgen_regs, clk_cfg_17.clr, 0x0188);
 check_member(mtk_topckgen_regs, clk_cfg_18.set, 0x0194);
 check_member(mtk_topckgen_regs, clk_cfg_18.clr, 0x0198);
 check_member(mtk_topckgen_regs, clk_scp_cfg_0, 0x0200);
+check_member(mtk_topckgen_regs, clk_scp_cfg_1, 0x0204);
 check_member(mtk_topckgen_regs, clk26cali, 0x0220);
 check_member(mtk_topckgen_regs, clk_cfg_19.set, 0x0244);
 check_member(mtk_topckgen_regs, clk_cfg_19.clr, 0x0248);

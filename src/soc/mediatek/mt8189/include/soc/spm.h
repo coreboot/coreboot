@@ -13,6 +13,7 @@
 /* SPM READ/WRITE CFG */
 #define SPM_PROJECT_CODE			0xB16
 #define SPM_REGWR_CFG_KEY			(SPM_PROJECT_CODE << 16)
+#define SPM_SYSTEM_BASE_OFFSET			0x40000000
 
 /* POWERON_CONFIG_EN (0x1C001000 + 0x000) */
 #define BCLK_CG_EN_LSB				BIT(0)
@@ -65,6 +66,13 @@
 #define SYS_TIMER_LATCH_EN_LSB			BIT(1)
 #define SYS_TIMER_ID_LSB			BIT(8)
 #define SYS_TIMER_VALID_LSB			BIT(31)
+
+#define AP_WDT_TIMEOUT_SUSPEND	5400 /* 90min */
+#define PCM_TIMER_SUSPEND	((AP_WDT_TIMEOUT_SUSPEND - 30) * 32768) /* 90min - 30sec */
+#define RG_AXI_DCM_DIS_EN	BIT(21)
+#define RG_PLLCK_SEL_NO_SPM	BIT(22)
+
+#define SPM_WAKEUP_EVENT_MASK_BIT0	BIT(0)
 
 /**************************************
  * Config and Parameter
@@ -145,6 +153,28 @@ DEFINE_BIT(SPM_ACK_CHK_3_CON_CLR_ALL, 1)
 DEFINE_BIT(SPM_ACK_CHK_3_CON_EN_0, 4)
 DEFINE_BIT(SPM_ACK_CHK_3_CON_EN_1, 8)
 DEFINE_BIT(SPM_ACK_CHK_3_CON_HW_MODE_TRIG, 11)
+
+/* SPM Flags */
+#define SPM_FLAG_DISABLE_VCORE_DVS		BIT(8)
+#define SPM_FLAG_DISABLE_DDR_DFS		BIT(9)
+#define SPM_FLAG_DISABLE_EMI_DFS		BIT(10)
+#define SPM_FLAG_DISABLE_BUS_DFS		BIT(11)
+#define SPM_FLAG_RUN_COMMON_SCENARIO		BIT(19)
+
+/* SPM_EVENT_COUNTER_CLEAR (0x1C001000+0x8B8) */
+#define REG_SPM_EVENT_COUNTER_CLR_LSB		BIT(0)
+
+/* SYS_TIMER_CON (0x10006000+0x98C) */
+#define SYS_TIMER_START_EN_LSB			BIT(0)
+
+/* MD32PCM_CFGREG_SW_RSTN (0x10006000+0xA00) */
+DEFINE_BIT(MD32PCM_CFGREG_SW_RSTN_RESET, 0)
+
+/* MD32PCM_STA1 event */
+#define R12_CSYSPWREQ_B			BIT(24)
+
+/* SPM_EVENT_COUNTER_CLEAR (0x1C001000+0x8B8) */
+#define REG_SPM_EVENT_COUNTER_CLR_LSBBIT 0
 
 struct pwr_ctrl {
 	/* for SPM */
@@ -856,8 +886,19 @@ struct mtk_spm_regs {
 	u32 spm_ack_chk_sta_2;
 	u32 spm_ack_chk_con_3;
 	u32 spm_ack_chk_sel_3;
-	u8 reserved23[1024];
-	u32 md1_pwr_con;
+	u32 md32pcm_cfgreg_sw_rstn; /* 0xA00 */
+	u8 reserved23[508];
+	u32 md32pcm_dma0_src; /* 0xC00 */
+	u32 md32pcm_dma0_dst;
+	u32 md32pcm_dma0_wppt;
+	u32 md32pcm_dma0_wpto;
+	u32 md32pcm_dma0_count;
+	u32 md32pcm_dma0_con;
+	u32 md32pcm_dma0_start; /* 0xC18 */
+	u8 reserved24[8];
+	u32 md32pcm_dma0_rlct; /* 0x0C24 */
+	u8 reserved25[472];
+	u32 md1_pwr_con; /* 0x0E00 */
 	u32 conn_pwr_con;
 	u32 ifr_pwr_con;
 	u32 peri_pwr_con;
@@ -952,7 +993,7 @@ struct mtk_spm_regs {
 	u32 edp_tx_pwr_con;
 	u32 pcie_pwr_con;
 	u32 pcie_phy_pwr_con;
-	u8 reserved24[4];
+	u8 reserved26[4];
 	u32 spm_twam_con;
 	u32 spm_twam_window_len;
 	u32 spm_twam_idle_sel;
@@ -969,6 +1010,9 @@ struct mtk_spm_regs {
 
 check_member(mtk_spm_regs, ap_mdsrc_req, 0x404);
 check_member(mtk_spm_regs, ulposc_con, 0x400);
+check_member(mtk_spm_regs, md32pcm_cfgreg_sw_rstn, 0xA00);
+check_member(mtk_spm_regs, md32pcm_dma0_src, 0xC00);
+check_member(mtk_spm_regs, md1_pwr_con, 0x0E00);
 check_member(mtk_spm_regs, conn_pwr_con, 0x0E04);
 check_member(mtk_spm_regs, ufs0_pwr_con, 0x0E10);
 check_member(mtk_spm_regs, audio_pwr_con, 0xe18);

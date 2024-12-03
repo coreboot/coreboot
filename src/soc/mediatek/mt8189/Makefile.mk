@@ -45,6 +45,7 @@ ramstage-y += ../common/pmif_spi.c pmif_spi.c
 ramstage-y += ../common/pmif_spmi.c pmif_spmi.c
 ramstage-y += ../common/rtc.c ../common/rtc_mt6359p.c ../common/rtc_osc_init.c
 ramstage-y += soc.c
+ramstage-y += ../common/spm.c ../common/spm_v2.c spm.c
 ramstage-y += ../common/usb.c usb.c
 
 BL31_MAKEARGS += PLAT=mt8189
@@ -56,7 +57,8 @@ MT8189_BLOB_DIR := 3rdparty/blobs/soc/mediatek/mt8189
 
 firmware-files := \
 	$(CONFIG_DPM_DM_FIRMWARE) \
-	$(CONFIG_DPM_PM_FIRMWARE)
+	$(CONFIG_DPM_PM_FIRMWARE) \
+	$(CONFIG_SPM_FIRMWARE)
 
 $(foreach fw, $(call strip_quotes,$(firmware-files)), \
 	$(eval $(fw)-file := $(MT8189_BLOB_DIR)/$(fw)) \

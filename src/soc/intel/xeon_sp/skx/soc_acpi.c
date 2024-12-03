@@ -47,7 +47,7 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 	fadt->pm2_cnt_len = 1;
 	fadt->pm_tmr_len = 4;
 
-	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_DEVICES | ACPI_FADT_8042;
+	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_DEVICES;
 
 	/* PM Extended Registers */
 	fill_fadt_extended_pm_io(fadt);

@@ -15,6 +15,8 @@
 #include <intelblocks/cpulib.h>
 #include <intelblocks/mp_init.h>
 #include <intelblocks/msr.h>
+#include <intelblocks/pmclib.h>
+#include <smbios.h>
 #include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
@@ -233,4 +235,15 @@ int soc_skip_ucode_update(u32 current_patch_id, u32 new_patch_id)
 		return 1;
 
 	return 0;
+}
+
+/* Override SMBIOS type 4 processor serial numbers */
+const char *smbios_processor_serial_number(void)
+{
+	char *qdf = retrieve_soc_qdf_info_via_pmc_ipc();
+
+	if (qdf != NULL)
+		return qdf;
+	else
+		return "";
 }

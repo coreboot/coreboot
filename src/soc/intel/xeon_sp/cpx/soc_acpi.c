@@ -36,8 +36,22 @@ uint32_t soc_read_sci_irq_select(void)
 
 void soc_fill_fadt(acpi_fadt_t *fadt)
 {
-	/* Clear flags set by common/block/acpi/acpi.c acpi_fill_fadt() */
-	fadt->flags &=  ~(ACPI_FADT_SEALED_CASE | ACPI_FADT_S4_RTC_WAKE);
+	const uint16_t pmbase = ACPI_BASE_ADDRESS;
+
+	/* Fix flags set by common/block/acpi/acpi.c acpi_fill_fadt() */
+	fadt->flags &=  ~(ACPI_FADT_SEALED_CASE);
+	fadt->flags |= ACPI_FADT_SLEEP_TYPE;
+
+	fadt->pm2_cnt_blk = pmbase + PM2_CNT;
+	fadt->pm_tmr_blk = pmbase + PM1_TMR;
+
+	fadt->pm2_cnt_len = 1;
+	fadt->pm_tmr_len = 4;
+
+	fadt->iapc_boot_arch = ACPI_FADT_LEGACY_DEVICES;
+
+	/* PM Extended Registers */
+	fill_fadt_extended_pm_io(fadt);
 }
 
 void soc_power_states_generation(int core_id, int cores_per_package)

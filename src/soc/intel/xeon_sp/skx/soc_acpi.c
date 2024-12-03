@@ -53,6 +53,7 @@ void soc_fill_fadt(acpi_fadt_t *fadt)
 	fill_fadt_extended_pm_io(fadt);
 }
 
-void soc_power_states_generation(int core, int cores_per_package)
+void soc_power_states_generation(int core_id, int cores_per_package)
 {
+	generate_p_state_entries(core_id, cores_per_package);
 }

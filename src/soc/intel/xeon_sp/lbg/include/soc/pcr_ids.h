@@ -6,6 +6,7 @@
 #define PID_CSME0	0x90
 #define PID_ITSS	0xC4
 #define PID_RTC		0xC3
+#define PID_PSF3	0xBC
 #define PID_DMI		0xEF
 #define PID_GPIOCOM5	0x11
 #define PID_GPIOCOM4	0xAB

@@ -49,4 +49,7 @@
 #define GPE0_DW_SHIFT(x)	(4 * (x))
 #define GBLRST_CAUSE0		0x124
 #define GBLRST_CAUSE1		0x128
+
+#define NST_PG_FDIS1		0x628
+#define  NST_FDIS_DSP		(1 << 23)
 #endif

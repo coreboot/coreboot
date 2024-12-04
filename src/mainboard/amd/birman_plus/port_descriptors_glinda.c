@@ -11,7 +11,7 @@
 	.engine_type = PCIE_ENGINE,			\
 	.port_present = CONFIG(ENABLE_EVAL_CARD),	\
 	.start_logical_lane = 0,				\
-	.end_logical_lane = 7,					\
+	.end_logical_lane = CONFIG(ENABLE_SSD1_BIRMANPLUS) ? 3 : 7,	\
 	.device_number = 3,				\
 	.function_number = 1,				\
 	.link_speed_capability = GEN_MAX,			\
@@ -19,6 +19,21 @@
 	.link_aspm = ASPM_L1,				\
 	.link_hotplug = HOTPLUG_DISABLED,		\
 	.clk_req = CLK_REQ0,				\
+	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}, \
+}
+
+#define glinda_ssd1_dxio_descriptor {				\
+	.engine_type = PCIE_ENGINE,			\
+	.port_present = true,				\
+	.start_logical_lane = 4,				\
+	.end_logical_lane = 7,					\
+	.device_number = 3,				\
+	.function_number = 2,				\
+	.link_speed_capability = GEN_MAX,			\
+	.turn_off_unused_lanes = true,			\
+	.link_aspm = ASPM_L1,				\
+	.link_hotplug = HOTPLUG_DISABLED,		\
+	.clk_req = CLK_REQ1, \
 	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}, \
 }
 
@@ -39,11 +54,11 @@
 
 #define glinda_wlan_dxio_descriptor {				\
 	.engine_type = PCIE_ENGINE,			\
-	.port_present = true,				\
-	.start_logical_lane = 15,				\
+	.port_present = !CONFIG(DISABLE_WLAN_SD_BIRMANPLUS),	\
+	.start_logical_lane = CONFIG(ENABLE_WLAN02_BIRMANPLUS) ? 14 : 15,	\
 	.end_logical_lane = 15,		\
 	.device_number = 2,				\
-	.function_number = 2,				\
+	.function_number = 3,				\
 	.link_speed_capability = GEN_MAX,			\
 	.turn_off_unused_lanes = true,			\
 	.link_aspm = ASPM_L1,				\
@@ -53,9 +68,9 @@
 
 #define glinda_wwan_dxio_descriptor {				\
 	.engine_type = PCIE_ENGINE,			\
-	.port_present = true,				\
+	.port_present = !CONFIG(DISABLE_WWAN_GBE_BIRMANPLUS),	\
 	.start_logical_lane = 12,				\
-	.end_logical_lane = 12,		\
+	.end_logical_lane = CONFIG(ENABLE_WWAN02_BIRMANPLUS) ? 13 : 12,		\
 	.device_number = 2,				\
 	.function_number = 5,				\
 	.link_speed_capability = GEN_MAX,			\
@@ -91,7 +106,7 @@
 	.link_speed_capability = GEN_MAX,			\
 	.turn_off_unused_lanes = true,			\
 	.link_aspm = ASPM_L1,				\
-	.link_hotplug = HOTPLUG_DISABLED,		\
+	.link_hotplug = HOTPLUG_BASIC,		\
 	.clk_req = CLK_REQ5,				\
 	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}, \
 }
@@ -170,11 +185,18 @@ void mainboard_get_dxio_ddi_descriptors(
 
 	static const fsp_dxio_descriptor birmanplus_glinda_dxio_descriptors[] = {
 		glinda_mxm_dxio_descriptor,
+#if CONFIG(ENABLE_SSD1_BIRMANPLUS)
+		glinda_ssd1_dxio_descriptor,
+#endif
 		glinda_ssd0_dxio_descriptor,
 		glinda_wlan_dxio_descriptor,
 		glinda_wwan_dxio_descriptor,
+#if CONFIG(ENABLE_GBE_BIRMANPLUS)
 		glinda_gbe_dxio_descriptor,
+#endif
+#if CONFIG(ENABLE_SDCARD_BIRMANPLUS)
 		glinda_sd_dxio_descriptor,
+#endif
 	};
 
 	*dxio_descs = birmanplus_glinda_dxio_descriptors;

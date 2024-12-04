@@ -130,21 +130,12 @@ static void configure_ec_gpio(void)
 	ec_write(EC_GPIO_7_ADDR, tmp);
 
 	tmp = ec_read(EC_GPIO_8_ADDR);
-	if (CONFIG(ENABLE_M2_SSD1_BIRMANPLUS)) {
-		tmp |= EC8_DT_N_SSD1_SW;
-	} else {
-		tmp &= ~EC8_DT_N_SSD1_SW;
-	}
+	tmp |= EC8_DT_N_SSD1_SW;
 	printk(BIOS_SPEW, "Write reg [0x%02x] = 0x%02x\n", EC_GPIO_8_ADDR, tmp);
 	ec_write(EC_GPIO_8_ADDR, tmp);
 
 	tmp = ec_read(EC_GPIO_9_ADDR);
-	tmp |= EC9_CAM0_PWR_EN | EC9_CAM1_PWR_EN | EC9_WWAN_RST | EC9_TPM_PWR_EN;
-	if (CONFIG(ENABLE_DT_SLOT_BIRMANPLUS)) {
-		tmp |= EC9_DT_PWREN;
-	} else {
-		tmp &= ~EC9_DT_PWREN;
-	}
+	tmp |= EC9_CAM0_PWR_EN | EC9_CAM1_PWR_EN | EC9_WWAN_RST | EC9_TPM_PWR_EN | EC9_DT_PWREN;
 	printk(BIOS_SPEW, "Write reg [0x%02x] = 0x%02x\n", EC_GPIO_9_ADDR, tmp);
 	ec_write(EC_GPIO_9_ADDR, tmp);
 
@@ -158,12 +149,7 @@ static void configure_ec_gpio(void)
 	ec_write(EC_GPIO_C_ADDR, tmp);
 
 	tmp = ec_read(EC_GPIO_D_ADDR);
-	tmp |= ECD_TPNL_PWR_EN | ECD_TPNL_EN | ECD_TPAD_DISABLE_N;
-	if (CONFIG(ENABLE_M2_SSD1_BIRMANPLUS)) {
-		tmp |= ECD_SSD1_PWR_EN;
-	} else {
-		tmp &= ~ECD_SSD1_PWR_EN;
-	}
+	tmp |= ECD_TPNL_PWR_EN | ECD_TPNL_EN | ECD_TPAD_DISABLE_N | ECD_SSD1_PWR_EN;
 	printk(BIOS_SPEW, "Write reg [0x%02x] = 0x%02x\n", EC_GPIO_D_ADDR, tmp);
 	ec_write(EC_GPIO_D_ADDR, tmp);
 
@@ -171,12 +157,12 @@ static void configure_ec_gpio(void)
 	tmp |= ECE_LOM_PWR_EN | ECE_SSD0_PWR_EN | ECE_SD_PWR_EN;
 	tmp |= ECE_CAM_PWR_EN | ECE_FPR_N_GBE_SEL;
 	tmp &= ~ECE_BT_N_TPNL_SEL;
-	if (CONFIG(WLAN01_BIRMANPLUS)) {	// no WWAN, turn off WWAN power
+	if (CONFIG(DISABLE_WWAN_GBE_BIRMANPLUS)) {	// no WWAN, turn off WWAN power
 		tmp &= ~ECE_WWAN_PWR_EN;
 	} else {
 		tmp |= ECE_WWAN_PWR_EN;
 	}
-	if (CONFIG(WWAN01_BIRMANPLUS)) {	// no WLAN, turn off WLAN power
+	if (CONFIG(DISABLE_WLAN_SD_BIRMANPLUS)) {	// no WLAN, turn off WLAN power
 		tmp &= ~ECE_WLAN_PWR_EN;
 	} else {
 		tmp |= ECE_WLAN_PWR_EN;
@@ -185,12 +171,12 @@ static void configure_ec_gpio(void)
 	ec_write(EC_GPIO_E_ADDR, tmp);
 
 	tmp = ec_read(EC_GPIO_F_ADDR);
-	if (CONFIG(WLAN01_BIRMANPLUS)) {
+	if (CONFIG(ENABLE_WLAN02_BIRMANPLUS)) {
 		tmp |= ECF_WWAN0_N_WLAN1_SW;
 	} else {
 		tmp &= ~ECF_WWAN0_N_WLAN1_SW;
 	}
-	if (CONFIG(WWAN01_BIRMANPLUS)) {
+	if (CONFIG(ENABLE_WWAN02_BIRMANPLUS)) {
 		tmp |= ECF_WLAN0_N_WWAN1_SW;
 	} else {
 		tmp &= ~ECF_WLAN0_N_WWAN1_SW;

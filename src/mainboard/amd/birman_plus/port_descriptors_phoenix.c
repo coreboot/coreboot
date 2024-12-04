@@ -52,7 +52,7 @@
 
 #define phx_ssd1_dxio_descriptor {			\
 	.engine_type = PCIE_ENGINE,			\
-	.port_present = true,		\
+	.port_present = CONFIG(ENABLE_SSD1_BIRMANPLUS),		\
 	.start_lane = 8,				\
 	.end_lane = 11,					\
 	.device_number = 1,				\

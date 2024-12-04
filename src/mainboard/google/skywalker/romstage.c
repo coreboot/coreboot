@@ -10,6 +10,7 @@
 #include <soc/pmif.h>
 #include <soc/regulator.h>
 #include <soc/rtc.h>
+#include <soc/thermal.h>
 
 static void raise_little_cpu_freq(void)
 {
@@ -29,4 +30,5 @@ void platform_romstage_main(void)
 	rtc_boot();
 	dvfs_init();
 	mtk_dram_init();
+	thermal_init();
 }

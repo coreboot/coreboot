@@ -20,6 +20,7 @@
 #include <commonlib/bsd/helpers.h>
 #include <commonlib/bsd/tpm_log_defs.h>
 #include <commonlib/loglevel.h>
+#include <commonlib/self_test.h>
 #include <commonlib/timestamp_serialized.h>
 #include <commonlib/tpm_log_serialized.h>
 #include <commonlib/coreboot_tables.h>
@@ -961,6 +962,51 @@ static void dump_cbmem_toc(void)
 	cbmem_drv_foreach_cbmem_entry(toc_handler, &i, false);
 }
 
+/* Function to get Test name from Test ID */
+static const char *st_get_name(uint32_t id)
+{
+	static char name_buf[32];
+	for (size_t i = 0; i < ARRAY_SIZE(st_ids); i++) {
+		if (st_ids[i].id == id)
+			return st_ids[i].name;
+	}
+	snprintf(name_buf, sizeof(name_buf), "0x%x", id);
+	return name_buf;
+}
+
+/* Function to get error string from Test ID and error code */
+static const char *st_get_error_str(uint32_t id, uint16_t error_code)
+{
+	static char error_buf[32];
+	for (size_t i = 0; i < ARRAY_SIZE(st_err_ids); i++) {
+		if (st_err_ids[i].id == id && st_err_ids[i].error_code == error_code)
+			return st_err_ids[i].name;
+	}
+	snprintf(error_buf, sizeof(error_buf), "0x%x", error_code);
+	return error_buf;
+}
+
+static void dump_self_test_report(void)
+{
+	struct self_test_log *logs;
+	size_t size;
+
+	if (!cbmem_drv_get_cbmem_entry(CBMEM_ID_SELF_TEST, (uint8_t **)&logs, &size, NULL)) {
+		printf("Self test report not found!\n");
+		return;
+	}
+
+	printf("%-8s %-50s %-10s %-20s\n", "ID", "Name", "Result", "Error Code");
+	struct self_test_log *curr = logs;
+	while (curr->id != ST_INVALID_ID) {
+		printf("%-8x %-50s %-10s %-20s\n", curr->id, st_get_name(curr->id),
+			st_status_str[curr->result.status],
+			st_get_error_str(curr->id, curr->result.error_code));
+		curr++;
+	}
+
+	free(logs);
+}
 #define COVERAGE_MAGIC 0x584d4153
 struct file {
 	uint32_t magic;
@@ -1054,7 +1100,7 @@ static void print_version(void)
 
 static void print_usage(const char *name, int exit_code)
 {
-	printf("usage: %s [-cCltTLxVvh?]\n", name);
+	printf("usage: %s [-cCltTsLxVvh?]\n", name);
 	printf("\n"
 	     "   -c | --console:                   print cbmem console\n"
 	     "   -1 | --oneboot:                   print cbmem console for last boot only\n"
@@ -1068,6 +1114,7 @@ static void print_usage(const char *name, int exit_code)
 	     "   -t | --timestamps:                print timestamp information\n"
 	     "   -T | --parseable-timestamps:      print parseable timestamps\n"
 	     "   -S | --stacked-timestamps:        print stacked timestamps (e.g. for flame graph tools)\n"
+	     "   -s | --self-test-report:          print self test report\n"
 	     "   -a | --add-timestamp ID:          append timestamp with ID\n"
 	     "   -L | --tcpa-log                   print TPM log\n"
 	     "   -V | --verbose:                   verbose (debugging) output\n"
@@ -1086,6 +1133,7 @@ int main(int argc, char** argv)
 	int print_hexdump = 0;
 	int print_rawdump = 0;
 	int print_tcpa_log = 0;
+	int print_self_test_report = 0;
 	enum timestamps_print_type timestamp_type = TIMESTAMPS_PRINT_NONE;
 	enum console_print_type console_type = CONSOLE_PRINT_FULL;
 	unsigned int rawdump_id = 0;
@@ -1107,6 +1155,7 @@ int main(int argc, char** argv)
 		{"timestamps", 0, 0, 't'},
 		{"parseable-timestamps", 0, 0, 'T'},
 		{"stacked-timestamps", 0, 0, 'S'},
+		{"self-test-report", 0, 0, 's'},
 		{"add-timestamp", required_argument, 0, 'a'},
 		{"hexdump", 0, 0, 'x'},
 		{"rawdump", required_argument, 0, 'r'},
@@ -1115,7 +1164,7 @@ int main(int argc, char** argv)
 		{"help", 0, 0, 'h'},
 		{0, 0, 0, 0}
 	};
-	while ((opt = getopt_long(argc, argv, "cb:12B:CltTSa:LxVvh?r:",
+	while ((opt = getopt_long(argc, argv, "cb:12B:CltTSsa:LxVvh?r:",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'c':
@@ -1177,6 +1226,10 @@ int main(int argc, char** argv)
 			break;
 		case 'S':
 			timestamp_type = TIMESTAMPS_PRINT_STACKED;
+			print_defaults = 0;
+			break;
+		case 's':
+			print_self_test_report = 1;
 			print_defaults = 0;
 			break;
 		case 'a':
@@ -1245,6 +1298,9 @@ int main(int argc, char** argv)
 
 	if (print_tcpa_log)
 		dump_tpm_log();
+
+	if (print_self_test_report)
+		dump_self_test_report();
 
 	cbmem_drv_terminate();
 

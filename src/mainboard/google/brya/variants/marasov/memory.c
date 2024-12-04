@@ -96,14 +96,6 @@ int variant_memory_sku(void)
 
 bool variant_is_half_populated(void)
 {
-	/*
-	 * Ideally half_populated is used in platforms with multiple channels to
-	 * enable only one half of the channel. Alder Lake N has single channel,
-	 * and it would require for new structures to be defined in meminit block
-	 * driver for LPx memory configurations. In order to avoid adding new
-	 * structures, set half_populated to true. This has the same effect as
-	 * having single channel with 64-bit width.
-	*/
 	/* GPIO_MEM_CH_SEL GPP_E13 */
 	return gpio_get(GPP_E13);
 }

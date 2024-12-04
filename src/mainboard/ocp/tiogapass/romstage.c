@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <delay.h>
 #include <drivers/ipmi/ipmi_if.h>
 #include <drivers/ipmi/ocp/ipmi_ocp.h>
 #include <fsp/api.h>
@@ -10,8 +11,10 @@
 #include <soc/romstage.h>
 #include <string.h>
 #include <skxsp_tp_iio.h>
+#include <timer.h>
 
 #include "ipmi.h"
+#include "tp_pch_gpio.h"
 
 static uint8_t iio_table_buf[sizeof(tp_iio_bifur_table)];
 
@@ -52,8 +55,31 @@ static void mainboard_config_iio(FSPM_UPD *mupd)
 	oem_update_iio(mupd);
 }
 
+static void mainboard_wait_for_bmc_ready(void)
+{
+	struct stopwatch sw;
+	static const long timeout_ms = 300 * 1000;
+
+	printk(BIOS_DEBUG, "Waiting for BMC ready\n");
+	gpio_input(GPIO_BMC_READY_N);
+
+	stopwatch_init_msecs_expire(&sw, timeout_ms);
+	while (gpio_get(GPIO_BMC_READY_N)) {
+		if (stopwatch_expired(&sw)) {
+			printk(BIOS_WARNING,
+			       "BMC not ready after %ld ms. Abort.\n", timeout_ms);
+			return;
+		}
+	}
+	printk(BIOS_DEBUG, "BMC ready after %lld ms\n",
+	       stopwatch_duration_msecs(&sw));
+}
+
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
+	/* Need to wait for BMC ready so that IPMI works. */
+	mainboard_wait_for_bmc_ready();
+
 	/* It's better to run get BMC selftest result first */
 	if (ipmi_premem_init(CONFIG_BMC_KCS_BASE, 0) == CB_SUCCESS) {
 		ipmi_set_post_start(CONFIG_BMC_KCS_BASE);

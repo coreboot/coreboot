@@ -5,6 +5,8 @@
 
 #include <soc/gpio.h>
 
+#define GPIO_BMC_READY_N GPP_F4
+
 /* Pad configuration table for C621 Lewisburg PCH */
 static const struct pad_config gpio_table[] = {
 	/* ------- GPIO Community 0 ------- */
@@ -116,7 +118,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_TRIG_OWN(GPP_F2, NONE, DEEP, OFF, DRIVER),
 	/* GPP_F3 - GPIO */
 	PAD_CFG_GPI_TRIG_OWN(GPP_F3, NONE, DEEP, OFF, DRIVER),
-	/* GPP_F4 - GPIO */
+	/* GPP_F4 - BMC_READY_N */
 	PAD_CFG_GPI_TRIG_OWN(GPP_F4, NONE, DEEP, OFF, DRIVER),
 	/* GPP_F5 - GPIO */
 	PAD_CFG_GPI_TRIG_OWN(GPP_F5, NONE, DEEP, OFF, DRIVER),

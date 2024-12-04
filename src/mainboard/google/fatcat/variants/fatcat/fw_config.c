@@ -459,6 +459,8 @@ static const struct pad_config ish_disable_pads[] = {
 	PAD_NC(GPP_D06, NONE),
 	/* GPP_E05:     NC */
 	PAD_NC(GPP_E05, NONE),
+	/* GPP_F23:     NC */
+	PAD_NC(GPP_F23, NONE),
 };
 
 static const struct pad_config ish_enable_pads[] = {
@@ -468,6 +470,8 @@ static const struct pad_config ish_enable_pads[] = {
 	PAD_CFG_NF(GPP_D06, NONE, DEEP, NF2),
 	/* GPP_E05:     ISH_GP_7_SNSR_HDR */
 	PAD_CFG_NF(GPP_E05, NONE, DEEP, NF4),
+	/* GPP_F23:     ISH_GP_9A */
+	PAD_CFG_NF(GPP_F23, NONE, DEEP, NF8),
 };
 
 void fw_config_configure_pre_mem_gpio(void)

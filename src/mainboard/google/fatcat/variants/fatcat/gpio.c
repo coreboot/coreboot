@@ -293,8 +293,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_F20, 0, PLTRST),
 	/* GPP_F22:     THC1_SPI2_DSYNC */
 	PAD_CFG_NF(GPP_F22, NONE, DEEP, NF3),
-	/* GPP_F23:     SMC_LID */
-	PAD_CFG_GPI_SCI_LOW(GPP_F23, NONE, DEEP, LEVEL),
 
 	/* GPP_H00:     Not used */
 	PAD_NC(GPP_H00, NONE),

@@ -29,8 +29,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	PAD_SCI(GPIO_8, PULL_UP, EDGE_LOW),
 	/* SD_CARD_PRSNT_L */
 	PAD_GPI(GPIO_9, PULL_UP), /* Unclear if this needs to be SCI */
-	/* VDD_MEM_VID0 */
-	PAD_GPO(GPIO_10, HIGH),
+	/* GPIO_10: VDD_MEM_VID0 - Controlled by firmware outside of coreboot (ABL) */
 	/* HP_MIC_DET_L */
 	PAD_GPI(GPIO_11, PULL_UP),
 	/* ALIGN_FLAG_MU_L */
@@ -76,8 +75,7 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/* USB2_HDR_P0/1_SMI */
 	PAD_SCI(GPIO_40, PULL_UP, EDGE_LOW),
 	/* GPIO_41: Not available */
-	/* VDD_MEM_VID1 */
-	PAD_GPO(GPIO_42, HIGH),
+	/* GPIO_42: VDD_MEM_VID1 - Controlled by firmware outside of coreboot (ABL) */
 	/* GPIO_43 - GPIO_66: Not available */
 	/* SPI_ROM_REQ */
 	PAD_NF(GPIO_67, SPI_ROM_REQ, PULL_NONE),

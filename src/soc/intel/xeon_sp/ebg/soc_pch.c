@@ -10,6 +10,7 @@
 #include <soc/azalia_device.h>
 #include <soc/bootblock.h>
 #include <soc/soc_pch.h>
+#include <soc/pch_pci_devs.h>
 #include <soc/pch.h>
 #include <soc/pmc.h>
 #include <console/console.h>
@@ -67,7 +68,7 @@ void pch_lock_dmictl(void)
 #define PCR_PSFX_T0_SHDW_PCIEN_FUNDIS	(1 << 8)
 #define PSF3_HDA_BASE_ADDRESS		0x280
 
-void pch_disable_hda(void)
+static void pch_disable_hda(void)
 {
 	/* Ensure memory, io, and bus master are all disabled */
 	pci_and_config16(PCH_DEV_HDA, PCI_COMMAND, ~(PCI_COMMAND_MASTER |
@@ -81,4 +82,11 @@ void pch_disable_hda(void)
 		 PCR_PSFX_T0_SHDW_PCIEN_FUNDIS);
 
 	printk(BIOS_INFO, "%s: Disabled HDA device 00:1f.3\n", __func__);
+}
+
+void early_pch_init(void)
+{
+	/* FSP has no UPD to disable HDA, so do it manually here... */
+	if (!is_devfn_enabled(PCH_DEVFN_HDA))
+		pch_disable_hda();
 }

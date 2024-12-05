@@ -17,7 +17,6 @@
 #include <soc/chip_common.h>
 #include <soc/romstage.h>
 #include <soc/pci_devs.h>
-#include <soc/soc_pch.h>
 #include <static.h>
 #include <string.h>
 #include <soc/config.h>
@@ -245,10 +244,6 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	}
 	if (CONFIG(MEM_POR_FREQ))
 		mupd->FspmConfig.EnforceDdrMemoryFreqPor = 0x0;
-
-	/* SPR-FSP has no UPD to disable HDA, so do it manually here... */
-	if (!is_devfn_enabled(PCH_DEVFN_HDA))
-		pch_disable_hda();
 }
 
 uint8_t get_error_correction_type(const uint8_t RasModesEnabled)

@@ -3,7 +3,8 @@
 #ifndef _SOC_SOC_PCH_H_
 #define _SOC_SOC_PCH_H_
 
+void early_pch_init(void);
+
 void pch_lock_dmictl(void);
-void pch_disable_hda(void);
 
 #endif /* _SOC_SOC_PCH_H_ */

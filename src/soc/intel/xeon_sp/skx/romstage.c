@@ -1,11 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/romstage.h>
-#include <device/pci_def.h>
 #include <intelblocks/rtc.h>
 #include <soc/romstage.h>
-#include <soc/pch_pci_devs.h>
-#include <soc/soc_pch.h>
 #include <soc/soc_util.h>
 #include <static.h>
 
@@ -27,10 +24,6 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	m_cfg->VTdConfig.VTdSupport = config->vtd_support;
 	m_cfg->VTdConfig.CoherencySupport = config->coherency_support;
 	m_cfg->VTdConfig.ATS = config->ats_support;
-
-	/* FSP has no UPD to disable HDA, so do it manually here... */
-	if (!is_devfn_enabled(PCH_DEVFN_HDA))
-		pch_disable_hda();
 }
 
 uint8_t get_error_correction_type(const uint8_t RasModesEnabled)

@@ -10,7 +10,6 @@
 #include <soc/romstage.h>
 #include <soc/pci_devs.h>
 #include <soc/intel/common/smbios.h>
-#include <soc/soc_pch.h>
 #include <soc/soc_util.h>
 #include <static.h>
 #include <string.h>
@@ -108,10 +107,6 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 
 	/* Adjust the "cold boot required" flag in CMOS. */
 	soc_set_mrc_cold_boot_flag(!mupd->FspmArchUpd.NvsBufferPtr);
-
-	/* FSP has no UPD to disable HDA, so do it manually here... */
-	if (!is_devfn_enabled(PCH_DEVFN_HDA))
-		pch_disable_hda();
 }
 
 uint32_t get_max_capacity_mib(void)

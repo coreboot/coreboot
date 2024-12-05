@@ -1,11 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <console/console.h>
 #include <device/pci_ops.h>
-#include <soc/pci_devs.h>
-#include <soc/pcr_ids.h>
 #include <intelblocks/pcr.h>
 #include <soc/bootblock.h>
-#include <console/console.h>
+#include <soc/pci_devs.h>
+#include <soc/pcr_ids.h>
+#include <soc/soc_pch.h>
 
 #define PCR_PSF3_TO_SHDW_PMC_REG_BASE	0x600
 #define PCR_PSFX_TO_SHDW_BAR4		0x10
@@ -43,4 +44,8 @@ void bootblock_pch_init(void)
 	 * Enabling ABASE for accessing PM1_STS, PM1_EN, PM1_CNT
 	 */
 	soc_config_acpibase();
+}
+
+void early_pch_init(void)
+{
 }

@@ -8,11 +8,14 @@
 #include <soc/ddr.h>
 #include <soc/intel/common/smbios.h>
 #include <soc/romstage.h>
+#include <soc/soc_pch.h>
 #include <soc/util.h>
 #include <spd.h>
 
 void mainboard_romstage_entry(void)
 {
+	early_pch_init();
+
 	rtc_init();
 	if (soc_get_rtc_failed())
 		mainboard_rtc_failed();

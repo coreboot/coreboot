@@ -1,0 +1,2 @@
+config VENDOR_MITAC_COMPUTING
+	bool "MiTAC Computing"

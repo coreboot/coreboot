@@ -1,0 +1,7 @@
+Vendor name: MiTAC Computing
+Board name: Whitestone 2
+Category: eval
+ROM package: SOIC-16
+ROM protocol: SPI
+ROM socketed: y
+Flashrom support: y

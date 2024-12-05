@@ -1,0 +1,15 @@
+if VENDOR_MITAC_COMPUTING
+
+choice
+	prompt "Mainboard model"
+
+source "src/mainboard/mitaccomputing/*/Kconfig.name"
+
+endchoice
+
+source "src/mainboard/mitaccomputing/*/Kconfig"
+
+config MAINBOARD_VENDOR
+	default "MiTAC Computing"
+
+endif # VENDOR_MITAC_COMPUTING

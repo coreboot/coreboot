@@ -1,0 +1,28 @@
+# MiTAC Computing Whitestone-2 coreboot is modified from Intel ArcherCity CRB
+# MiTAC Computing Whitestone-2 is a one socket CRB based on Intel.
+# Sapphire Rapids Scalable Processor (SPR-SP) chipset.
+#
+# Type this in coreboot root directory to get a working .config:
+#   make defconfig KBUILD_DEFCONFIG=configs/config.config.mitaccomputing_ws_2
+
+CONFIG_VENDOR_MITAC_COMPUTING=y
+CONFIG_MAINBOARD_FAMILY="MiTAC Computing whitestone_2"
+CONFIG_MAINBOARD_PART_NUMBER="MiTAC Computing WHITESTONE-2"
+CONFIG_MAINBOARD_VERSION="1.0"
+CONFIG_MAINBOARD_VENDOR="MiTAC Computing Technology Corp."
+CONFIG_MAINBOARD_SMBIOS_MANUFACTURER="MiTAC Computing Technology Corp."
+CONFIG_BOARD_MITAC_COMPUTING_WHITESTONE_2=y
+CONFIG_X2APIC_LATE_WORKAROUND=y
+CONFIG_LINUX_COMMAND_LINE="loglevel=7 earlyprintk=serial,ttyS0,115200 console=ttyS0,115200"
+CONFIG_PAYLOAD_LINUX=y
+CONFIG_PAYLOAD_FILE="site-local/whitestone-2/bzImage"
+CONFIG_ADD_FSP_BINARIES=y
+CONFIG_FSP_T_FILE="site-local/whitestone-2/Fsp_T.fd"
+CONFIG_FSP_M_FILE="site-local/whitestone-2/Fsp_M.fd"
+CONFIG_FSP_S_FILE="site-local/whitestone-2/Fsp_S.fd"
+CONFIG_HAVE_IFD_BIN=y
+CONFIG_IFD_BIN_PATH="site-local/whitestone-2/descriptor.bin"
+CONFIG_HAVE_ME_BIN=y
+CONFIG_ME_BIN_PATH="site-local/whitestone-2/me.bin"
+CONFIG_HAVE_GBE_BIN=y
+CONFIG_GBE_BIN_PATH="site-local/whitestone-2/gbe.bin"

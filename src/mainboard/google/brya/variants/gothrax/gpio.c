@@ -81,13 +81,6 @@ static const struct pad_config romstage_gpio_table[] = {
 	PAD_CFG_GPO(GPP_H20, 1, DEEP),
 };
 
-static const struct pad_config romstage_gpio_table_nontp[] = {
-	/* H12 : UART0_RTS# ==> SD_PERST_L */
-	PAD_CFG_GPO(GPP_H12, 1, DEEP),
-	/* H20 : IMGCLKOUT1 ==> WLAN_PERST_L */
-	PAD_CFG_GPO(GPP_H20, 1, DEEP),
-};
-
 const struct pad_config *variant_gpio_override_table(size_t *num)
 {
 	*num = ARRAY_SIZE(override_gpio_table);
@@ -102,11 +95,6 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 
 const struct pad_config *variant_romstage_gpio_table(size_t *num)
 {
-	if (fw_config_probe(FW_CONFIG(TOUCH_PANEL, TOUCH_PANEL_DISABLE))) {
-		*num = ARRAY_SIZE(romstage_gpio_table_nontp);
-		return romstage_gpio_table_nontp;
-	} else {
-		*num = ARRAY_SIZE(romstage_gpio_table);
-		return romstage_gpio_table;
-	}
+	*num = ARRAY_SIZE(romstage_gpio_table);
+	return romstage_gpio_table;
 }

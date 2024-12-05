@@ -3,7 +3,7 @@ fw_config
 		option DB_NONE		0
 		option DB_C_A		1
 		option DB_C_A_LTE	2
-		option DB_A		3
+		option DB_A_HDMI_LTE		3
 	end
 	field THERMAL_SOLUTION 2
 		option THERMAL_SOLUTION_PASSIVE	0
@@ -25,8 +25,8 @@ fw_config
 		option WFC_ABSENT	1
 	end
 	field TOUCH_PANEL 9
-		option TOUCH_PANEL_ENABLE	0
-		option TOUCH_PANEL_DISABLE	1
+		option TOUCH_PANEL_I2C_HID	0
+		option TOUCH_PANEL_I2C_GENERIC	1
 	end
 end
 
@@ -231,7 +231,7 @@ chip soc/intel/alderlake
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 0x10 on
-					probe TOUCH_PANEL TOUCH_PANEL_ENABLE
+					probe TOUCH_PANEL TOUCH_PANEL_I2C_HID
 				end
 			end
 			chip drivers/i2c/hid
@@ -249,7 +249,23 @@ chip soc/intel/alderlake
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 0x41 on
-					probe TOUCH_PANEL TOUCH_PANEL_ENABLE
+					probe TOUCH_PANEL TOUCH_PANEL_I2C_HID
+				end
+			end
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0001""
+				register "desc" = ""ELAN Touchscreen""
+				register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
+				register "detect" = "1"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
+				register "reset_delay_ms" = "150"
+				register "reset_off_delay_ms" = "1"
+				register "enable_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
+				register "enable_delay_ms" = "6"
+				register "has_power_resource" = "1"
+				device i2c 10 on
+					probe TOUCH_PANEL TOUCH_PANEL_I2C_GENERIC
 				end
 			end
 		end
@@ -317,6 +333,7 @@ chip soc/intel/alderlake
 				register "input_analog_gain" = "3"
 				device i2c 28 on
 					probe DB_USB DB_C_A_LTE
+					probe DB_USB DB_A_HDMI_LTE
 				end
 			end
 		end
@@ -396,7 +413,10 @@ chip soc/intel/alderlake
 					chip drivers/intel/pmc_mux/conn
 						use usb2_port2 as usb2_port
 						use tcss_usb3_port2 as usb3_port
-						device generic 1 alias conn1 on end
+						device generic 1 alias conn1 on
+							probe DB_USB DB_C_A
+							probe DB_USB DB_C_A_LTE
+						end
 					end
 				end
 			end
@@ -469,6 +489,7 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_INTERNAL"
 						device ref usb2_port5 on
 							probe DB_USB DB_C_A_LTE
+							probe DB_USB DB_A_HDMI_LTE
 						end
 					end
 					chip drivers/usb/acpi
@@ -516,6 +537,7 @@ chip soc/intel/alderlake
 						register "type" = "UPC_TYPE_INTERNAL"
 						device ref usb3_port3 on
 							probe DB_USB DB_C_A_LTE
+							probe DB_USB DB_A_HDMI_LTE
 						end
 					end
 				end

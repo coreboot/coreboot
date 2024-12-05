@@ -7,7 +7,8 @@
 
 void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config)
 {
-	if (!fw_config_probe(FW_CONFIG(DB_USB, DB_C_A_LTE))) {
+	if (!(fw_config_probe(FW_CONFIG(DB_USB, DB_C_A_LTE)) ||
+		fw_config_probe(FW_CONFIG(DB_USB, DB_A_HDMI_LTE)))) {
 		printk(BIOS_INFO, "Disable usb2_port5 and usb3_port3 of WWAN.\n");
 
 		config->usb2_ports[4].enable = 0;
@@ -33,7 +34,7 @@ void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config)
 		config->usb2_ports[6].pre_emp_bit = USB2_HALF_BIT_PRE_EMP;
 	}
 
-	if (fw_config_probe(FW_CONFIG(DB_USB, DB_A))) {
+	if (fw_config_probe(FW_CONFIG(DB_USB, DB_A_HDMI_LTE))) {
 		printk(BIOS_INFO, "Disable typec aux_bias_pads in the SOC.\n");
 		config->typec_aux_bias_pads[1].pad_auxp_dc = 0x00;
 		config->typec_aux_bias_pads[1].pad_auxn_dc = 0x00;

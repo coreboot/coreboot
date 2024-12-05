@@ -28,7 +28,8 @@ static const struct pad_config wfc_disable_pads[] = {
 
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 {
-	if (!fw_config_probe(FW_CONFIG(DB_USB, DB_C_A_LTE))) {
+	if (!(fw_config_probe(FW_CONFIG(DB_USB, DB_C_A_LTE)) ||
+		fw_config_probe(FW_CONFIG(DB_USB, DB_A_HDMI_LTE)))) {
 		printk(BIOS_INFO, "Disable LTE-related GPIO pins on gothrax.\n");
 		gpio_padbased_override(padbased_table, lte_disable_pads_gothrax,
 						ARRAY_SIZE(lte_disable_pads_gothrax));

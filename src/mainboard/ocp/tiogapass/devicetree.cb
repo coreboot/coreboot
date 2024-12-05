@@ -82,6 +82,9 @@ chip soc/intel/xeon_sp/skx
 			chip drivers/ipmi/ocp # OCP specific IPMI porting
 				device pnp ca2.1 on end
 			end
+			chip drivers/pc80/tpm	# TPM
+				device pnp 0c31.0 alias tpm on end
+			end
 		end # Intel Corporation C621 Series Chipset LPC/eSPI Controller
 		device pci 1f.1 hidden end # p2sb
 		device pci 1f.2 on end # Intel Corporation C620 Series Chipset Family Power Management Controller

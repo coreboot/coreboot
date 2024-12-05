@@ -3,8 +3,10 @@
 #include <cpu/x86/smm.h>
 #include <drivers/ipmi/ipmi_ops.h>
 #include <drivers/ocp/dmi/ocp_dmi.h>
+#include <gpio.h>
 #include <soc/ramstage.h>
 #include <soc/smmrelocate.h>
+#include <static.h>
 
 extern struct fru_info_str fru_strings;
 
@@ -165,8 +167,18 @@ static void tp_oem_smbios_strings(struct device *dev, struct smbios_type11 *t)
 		t->count = smbios_add_oem_string(t->eos, TBF);
 }
 
+WEAK_DEV_PTR(tpm);
+
 static void mainboard_enable(struct device *dev)
 {
+	struct device *tpm = DEV_PTR(tpm);
+
+	gpio_input(GPP_A22);
+	if (tpm)
+		tpm->enabled = !gpio_get(GPP_A22);
+
+	printk(BIOS_DEBUG, "TPM present: %d\n", !gpio_get(GPP_A22));
+
 	dev->ops->get_smbios_strings = tp_oem_smbios_strings;
 	read_fru_areas(CONFIG_BMC_KCS_BASE, CONFIG_FRU_DEVICE_ID, 0, &fru_strings);
 #if CONFIG(GENERATE_SMBIOS_TABLES)

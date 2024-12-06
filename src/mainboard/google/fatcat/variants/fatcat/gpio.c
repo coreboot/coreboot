@@ -28,8 +28,6 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_A06:     ESPI_RST_EC_R_N */
 	/*  GPP_A06 : GPP_A06 ==> ESPI_RST_HDR configured on reset, do not touch */
 
-	/* GPP_A08:     X1_PCIE_SLOT_PWR_EN */
-	PAD_CFG_GPO(GPP_A08, 1, PLTRST),
 	/* GPP_A09:     M.2_WWAN_FCP_OFF_N */
 	PAD_CFG_GPO(GPP_A09, 1, PLTRST),
 	/* GPP_A10:     M.2_WWAN_DISABLE_N */
@@ -101,8 +99,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B23, NONE, DEEP, NF4),
 	/* GPP_B24:     ESPI_ALERT0_EC_R_N */
 	PAD_NC(GPP_B24, NONE),
-	/* GPP_B25:     X1_SLOT_WAKE_N */
-	PAD_CFG_GPI_SCI_LOW(GPP_B25, NONE, DEEP, LEVEL),
 
 	/* GPP_C00:     GPP_C0_SMBCLK */
 	PAD_CFG_NF(GPP_C00, NONE, DEEP, NF1),
@@ -187,8 +183,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_D17, NONE, DEEP, NF1),
 	/* GPP_D18:     CLKREQ6_X4_GEN4_M2_SSD_N */
 	PAD_CFG_NF(GPP_D18, NONE, DEEP, NF1),
-	/* GPP_D19:     X1_DT_PCIE_RST_N */
-	PAD_CFG_GPO(GPP_D19, 1, PLTRST),
 	/* GPP_D20:     CSE_EARLY_SW */
 	PAD_CFG_GPI_SCI_HIGH(GPP_D20, NONE, DEEP, LEVEL),
 	/* GPP_D21:     GPP_D21_UFS_REFCLK */

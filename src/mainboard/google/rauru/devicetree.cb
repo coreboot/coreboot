@@ -8,6 +8,13 @@ fw_config
 	end
 end
 
+fw_config
+	field PANEL 18 21
+		option DEFAULT 0
+		option OLED 1
+	end
+end
+
 chip soc/mediatek/mt8196
 	device cpu_cluster 0 on end
 

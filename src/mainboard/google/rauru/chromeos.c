@@ -56,6 +56,12 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		lb_add_gpios(gpios, alc5645_gpios, ARRAY_SIZE(alc5645_gpios));
 	else
 		lb_add_gpios(gpios, nau8318_gpios, ARRAY_SIZE(nau8318_gpios));
+
+	struct lb_gpio edp_pwm_backlight_gpios[] = {
+		{GPIO_BL_PWM_1V8.id, ACTIVE_HIGH, -1, "PWM control"},
+		{GPIO_AP_EDP_BKLTEN.id, ACTIVE_HIGH, -1, "backlight enable"},
+	};
+	lb_add_gpios(gpios, edp_pwm_backlight_gpios, ARRAY_SIZE(edp_pwm_backlight_gpios));
 }
 
 int cr50_plat_irq_status(void)

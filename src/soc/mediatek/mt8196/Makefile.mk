@@ -48,6 +48,7 @@ ramstage-y += ../common/dpm_v2.c
 ramstage-y += dramc_info.c
 ramstage-y += ../common/early_init.c
 ramstage-y += ../common/emi.c
+ramstage-y += gpueb.c
 ramstage-y += l2c_ops.c
 ramstage-y += ../common/mcu.c
 ramstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
@@ -75,6 +76,7 @@ MT8196_BLOB_DIR := 3rdparty/blobs/soc/mediatek/mt8196
 mcu-firmware-files := \
 	$(CONFIG_DPM_DM_FIRMWARE) \
 	$(CONFIG_DPM_PM_FIRMWARE) \
+	$(CONFIG_GPUEB_FIRMWARE) \
 	$(CONFIG_SSPM_FIRMWARE) \
 	$(CONFIG_SPM_FIRMWARE)
 

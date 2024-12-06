@@ -1,9 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <bootmem.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <soc/dramc_info.h>
 #include <soc/emi.h>
+#include <soc/gpueb.h>
 #include <soc/mmu_operations.h>
 #include <soc/pcie.h>
 #include <soc/sspm.h>
@@ -17,6 +19,10 @@ void bootmem_platform_add_ranges(void)
 				  REGION_SIZE(resv_mem_optee), BM_MEM_RESERVED);
 
 	reserve_buffer_for_dramc();
+
+	bootmem_add_range((uint64_t)_resv_mem_gpu, REGION_SIZE(resv_mem_gpu), BM_MEM_RESERVED);
+	bootmem_add_range((uint64_t)_resv_mem_gpueb,
+			  REGION_SIZE(resv_mem_gpueb), BM_MEM_RESERVED);
 }
 
 static void soc_read_resources(struct device *dev)
@@ -28,6 +34,7 @@ static void soc_init(struct device *dev)
 {
 	mtk_mmu_disable_l2c_sram();
 	sspm_init();
+	gpueb_init();
 }
 
 static struct device_operations soc_ops = {

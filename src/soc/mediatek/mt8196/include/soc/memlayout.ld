@@ -5,6 +5,12 @@
 #define OPTEE_BUF(addr, size) \
 	REGION(resv_mem_optee, addr, size, 4K)
 
+#define GPU_SEC_BUF(addr, size) \
+	REGION(resv_mem_gpu, addr, size, 4K)
+
+#define RESV_MEMORY_GPUEB(addr, size)\
+	REGION(resv_mem_gpueb, addr, size, 2M)
+
 SECTIONS
 {
 	/* MT8196 has 256KB SRAM. */
@@ -60,4 +66,9 @@ SECTIONS
 	OPTEE_BUF(0x80500000, 70M)
 
 	BL31(0x94600000, 0x200000)
+
+	/* Reserved memory for the shared buffer between AP and microprocessor */
+	RESV_MEMORY_GPUEB(0xA0000000, 2M)
+	/* Reserved memory for the dedicated secured memory allocator of GPU Mali firmware */
+	GPU_SEC_BUF(0xA2000000, 16M)
 }

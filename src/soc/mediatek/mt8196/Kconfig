@@ -50,4 +50,11 @@ config SPM_FIRMWARE
 	default "spm_firmware.pm"
 	help
 	  The file name of the MediaTek SPM firmware.
+
+config GPUEB_FIRMWARE
+	string
+	default "gpueb_fw.img"
+	help
+	  The file name of the MediaTek GPUEB firmware.
+
 endif

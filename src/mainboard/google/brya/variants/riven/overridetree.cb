@@ -487,6 +487,7 @@ chip soc/intel/alderlake
 				.clk_src = 2,
 				.clk_req = 2,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+				.pcie_rp_pcie_speed = SPEED_GEN2,
 			}"
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_DW1_03"

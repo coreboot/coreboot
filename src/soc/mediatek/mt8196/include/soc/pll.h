@@ -36,7 +36,7 @@ static struct mtk_pericfg_regs *const
 static struct mtk_ssr_regs *const
 	mtk_ssr = (void *)SSR_TOP_BASE;
 static struct mtk_spm_mtcmos_regs *const
-	mtk_spm_mtcmos = (void *)SCP_BASE;
+	mtk_spm_mtcmos = (void *)SPM_BASE;
 static struct mtk_vlp_regs *const
 	mtk_vlpsys = (void *)VLP_CKSYS_BASE;
 static struct mtk_dispsys_regs *const

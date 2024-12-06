@@ -16,8 +16,15 @@ static struct mtk_mcu sspm = {
 	.reset = reset_sspm,
 };
 
+__weak void sspm_enable_sram(void)
+{
+	/* do nothing. */
+}
+
 void sspm_init(void)
 {
+	sspm_enable_sram();
+
 	sspm.load_buffer = _dram_dma;
 	sspm.buffer_size = REGION_SIZE(dram_dma);
 

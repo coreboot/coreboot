@@ -15,6 +15,7 @@
 #include <soc/pmif.h>
 #include <soc/pwrsel.h>
 #include <soc/srclken_rc.h>
+#include <soc/thermal.h>
 
 static void raise_little_cpu_freq(void)
 {
@@ -42,6 +43,7 @@ void platform_romstage_main(void)
 	clk_buf_init();
 	mtk_dram_init();
 	modem_power_down();
+	thermal_init();
 
 	if (CONFIG(PCI))
 		mtk_pcie_deassert_perst();

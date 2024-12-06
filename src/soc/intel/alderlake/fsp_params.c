@@ -490,6 +490,12 @@ static const SI_PCH_DEVICE_INTERRUPT_CONFIG *pci_irq_to_fsp(size_t *out_count)
  * |                   | PchPcieL1SubstatesL1_1   |           |           |
  * |                   | PchPcieL1SubstatesL1_1_2 |           | [Default] |
  * |                   | PchPcieL1SubstatesMax    | [Default] |           |
+ * |-------------------|--------------------------|-----------|-----------|
+ * | PchPcieRpPcieSpeed| PchPcieRpPcieSpeedAuto   | [Default] |           |
+ * |                   | PchPcieRpPcieSpeedGen1   |           |           |
+ * |                   | PchPcieRpPcieSpeedGen2   |           |           |
+ * |                   | PchPcieRpPcieSpeedGen3   |           |           |
+ * |                   | PchPcieRpPcieSpeedGen4   |           |           |
  * +-------------------+--------------------------+-----------+-----------+
  */
 
@@ -527,6 +533,15 @@ static unsigned int adl_l1ss_control_to_upd(enum L1_substates_control l1_substat
 	return UPD_INDEX(l1_substates_control);
 }
 
+static unsigned int adl_pcie_speed_control_to_upd(enum PCIE_SPEED_control pcie_speed_control)
+{
+	/* Use auto unless overwritten */
+	if (!pcie_speed_control)
+		return UPD_INDEX(SPEED_AUTO);
+
+	return UPD_INDEX(pcie_speed_control);
+}
+
 static void configure_pch_rp_power_management(FSP_S_CONFIG *s_cfg,
 					      const struct pcie_rp_config *rp_cfg,
 					      unsigned int index)
@@ -537,6 +552,8 @@ static void configure_pch_rp_power_management(FSP_S_CONFIG *s_cfg,
 		adl_aspm_control_to_upd(get_uint_option("pciexp_aspm", rp_cfg->pcie_rp_aspm));
 	s_cfg->PcieRpL1Substates[index] =
 		adl_l1ss_control_to_upd(get_uint_option("pciexp_l1ss", rp_cfg->PcieRpL1Substates));
+	s_cfg->PcieRpPcieSpeed[index] =
+		adl_pcie_speed_control_to_upd(get_uint_option("pciexp_speed", rp_cfg->pcie_rp_pcie_speed));
 }
 
 /*

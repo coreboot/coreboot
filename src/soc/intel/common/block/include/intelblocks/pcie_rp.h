@@ -58,6 +58,16 @@ enum ASPM_control {
 	ASPM_AUTO,
 };
 
+/* This enum is for passing into an FSP UPD, typically PCIe Speed */
+enum PCIE_SPEED_control {
+	SPEED_DEFAULT,
+	SPEED_AUTO,
+	SPEED_GEN1,
+	SPEED_GEN2,
+	SPEED_GEN3,
+	SPEED_GEN4,
+};
+
 /* PCIe Root Ports */
 struct pcie_rp_config {
 	/* CLKOUT_PCIE_P/N# used by this root port as per schematics. */
@@ -71,6 +81,8 @@ struct pcie_rp_config {
 	enum ASPM_control pcie_rp_aspm;
 	/* timeout for device detect */
 	uint32_t pcie_rp_detect_timeout_ms;
+	/* PCIe RP PCIe Speed */
+	enum PCIE_SPEED_control pcie_rp_pcie_speed;
 };
 
 /*

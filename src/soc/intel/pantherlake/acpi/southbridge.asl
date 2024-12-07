@@ -47,10 +47,9 @@
 /* GbE 0:1f.6 */
 #if CONFIG(MAINBOARD_USES_IFD_GBE_REGION)
 #include <soc/intel/common/block/acpi/acpi/pch_glan.asl>
+#endif
 
 /* UFS 0:17:0 */
 #if CONFIG(SOC_INTEL_PANTHERLAKE_U_H)
 #include <soc/intel/common/block/acpi/acpi/ufs.asl>
-#endif
-
 #endif

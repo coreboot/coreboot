@@ -49,15 +49,15 @@ void stack_canary_breakpoint_init(void)
 	create_stack_canary_breakpoint(addr);
 }
 
-void stack_canary_breakpoint_disable(void)
+void stack_canary_breakpoint_remove(void)
 {
 	breakpoint_remove(stack_canary_bp);
 }
 
-static void stack_canary_breakpoint_disable_hook(void *unused)
+static void stack_canary_breakpoint_remove_hook(void *unused)
 {
-	stack_canary_breakpoint_disable();
+	stack_canary_breakpoint_remove();
 }
 
-BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, stack_canary_breakpoint_disable_hook, NULL);
-BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, stack_canary_breakpoint_disable_hook, NULL);
+BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, stack_canary_breakpoint_remove_hook, NULL);
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, stack_canary_breakpoint_remove_hook, NULL);

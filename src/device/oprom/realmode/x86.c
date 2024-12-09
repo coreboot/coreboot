@@ -181,7 +181,7 @@ static void setup_realmode_idt(void)
 
 	/* It's expected that we write to the NULL page in the first two iterations of the
 	   following loop, so temporarily disable the NULL breakpoint. */
-	null_breakpoint_disable();
+	null_breakpoint_remove();
 
 	/* Copy IDT stub code for each interrupt. This might seem wasteful
 	 * but it is really simple

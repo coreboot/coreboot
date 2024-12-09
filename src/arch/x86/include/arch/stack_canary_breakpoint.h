@@ -7,13 +7,13 @@
 
 /* Places a data breakpoint at stack canary. */
 void stack_canary_breakpoint_init(void);
-void stack_canary_breakpoint_disable(void);
+void stack_canary_breakpoint_remove(void);
 #else
 static inline void stack_canary_breakpoint_init(void)
 {
 	/* Not implemented */
 }
-static inline void stack_canary_breakpoint_disable(void)
+static inline void stack_canary_breakpoint_remove(void)
 {
 	/* Not implemented */
 }

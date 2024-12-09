@@ -132,8 +132,8 @@ static void do_silicon_init(struct fsp_header *hdr)
 	post_code(POSTCODE_FSP_SILICON_INIT);
 
 	/* FSP disables the interrupt handler so remove debug exceptions temporarily  */
-	null_breakpoint_disable();
-	stack_canary_breakpoint_disable();
+	null_breakpoint_remove();
+	stack_canary_breakpoint_remove();
 	if (ENV_X86_64 && CONFIG(PLATFORM_USES_FSP2_X86_32))
 		status = protected_mode_call_1arg(silicon_init, (uintptr_t)upd);
 	else

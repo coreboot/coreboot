@@ -412,8 +412,8 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 	fsp_debug_before_memory_init(fsp_raminit, upd, &fspm_upd);
 
 	/* FSP disables the interrupt handler so remove debug exceptions temporarily  */
-	null_breakpoint_disable();
-	stack_canary_breakpoint_disable();
+	null_breakpoint_remove();
+	stack_canary_breakpoint_remove();
 	post_code(POSTCODE_FSP_MEMORY_INIT);
 	timestamp_add_now(TS_FSP_MEMORY_INIT_START);
 	if (ENV_X86_64 && CONFIG(PLATFORM_USES_FSP2_X86_32))

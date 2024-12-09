@@ -268,7 +268,8 @@ void variant_update_cpu_power_limits(const struct cpu_tdp_power_limits *limits,
 		} else {
 			struct dptf_power_limits *settings = &config->controls.power_limits;
 			config_t *conf = config_of_soc();
-			struct soc_power_limits_config *soc_config = conf->power_limits_config;
+			struct soc_power_limits_config *soc_config =
+				&conf->power_limits_config[limits[index].power_limits_index];
 			settings->pl1.min_power = limits[index].pl1_min_power;
 			settings->pl1.max_power = limits[index].pl1_max_power;
 			settings->pl2.min_power = limits[index].pl2_min_power;

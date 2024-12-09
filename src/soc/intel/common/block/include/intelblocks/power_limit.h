@@ -45,6 +45,7 @@ u8 get_cpu_tdp(void);
 struct cpu_tdp_power_limits {
 	uint16_t mch_id;
 	uint8_t cpu_tdp;
+	uint32_t power_limits_index;
 	unsigned int pl1_min_power;
 	unsigned int pl1_max_power;
 	unsigned int pl2_min_power;

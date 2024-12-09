@@ -381,6 +381,16 @@ chip soc/intel/meteorlake
 				end
 			end
 		end
+		device ref cnvi_wifi on
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				register "add_acpi_dma_property" = "true"
+				register "enable_cnvi_ddr_rfim" = "true"
+				device generic 0 on
+					probe WIFI_TYPE WIFI_CNVI
+				end
+			end
+		end
 		device ref ipu on
 			chip drivers/intel/mipi_camera
 				register "acpi_uid" = "0x50000"

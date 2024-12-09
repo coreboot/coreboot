@@ -199,6 +199,14 @@ static const struct slot_irq_constraints irq_constraints[] = {
 			ANY_PIRQ(PCI_DEVFN_CSE_4),
 		},
 	},
+#if CONFIG(SOC_INTEL_PANTHERLAKE_U_H)
+	{
+		.slot = PCI_DEV_SLOT_UFS,
+		.fns = {
+			ANY_PIRQ(PCI_DEVFN_UFS),
+		},
+	},
+#endif
 	{
 		.slot = PCI_DEV_SLOT_SIO1,
 		.fns = {

@@ -17,6 +17,7 @@ romstage-y += emi.c
 
 ramstage-y += emi.c
 ramstage-y += soc.c
+ramstage-y += ../common/usb.c usb.c
 
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8189/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/include

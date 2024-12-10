@@ -1,15 +1,18 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <bootmode.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <fw_config.h>
 #include <gpio.h>
 #include <soc/addressmap.h>
 #include <soc/bl31.h>
+#include <soc/display.h>
 #include <soc/dpm_v2.h>
 #include <soc/gpio_common.h>
 #include <soc/i2c.h>
 #include <soc/msdc.h>
+#include <soc/mt6373.h>
 #include <soc/pcie.h>
 #include <soc/spm_common.h>
 #include <soc/storage.h>
@@ -70,6 +73,13 @@ static void power_on_fpmcu(void)
 	gpio_output(GPIO_FP_RST_1V8_S3_L, 1);
 }
 
+static void enable_display_power_rail(void)
+{
+	mt6373_init_pmif_arb();
+	mt6373_enable_vcn33_3(true);
+	mt6373_set_vcn33_3_voltage(3300000);
+}
+
 enum mtk_storage_type mainboard_get_storage_type(void)
 {
 	uint32_t index = storage_id();
@@ -96,6 +106,14 @@ bool mainboard_needs_pcie_init(void)
 
 static void mainboard_init(struct device *dev)
 {
+	if (display_init_required()) {
+		enable_display_power_rail();
+		if (mtk_display_init() < 0)
+			printk(BIOS_ERR, "%s: Failed to init display\n", __func__);
+	} else {
+		printk(BIOS_INFO, "%s: Skipped display initialization\n", __func__);
+	}
+
 	setup_usb_host();
 	power_on_fpmcu();
 	configure_audio();

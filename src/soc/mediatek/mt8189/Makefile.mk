@@ -2,6 +2,7 @@
 
 ifeq ($(CONFIG_SOC_MEDIATEK_MT8189),y)
 
+all-y += ../common/flash_controller.c
 all-y += ../common/gpio.c ../common/gpio_op.c gpio.c
 all-$(CONFIG_SPI_FLASH) += spi.c
 all-y += ../common/timer_prepare.c timer.c

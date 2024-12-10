@@ -8,6 +8,7 @@
 #ifndef __SOC_MEDIATEK_MT8189_INCLUDE_SOC_SPI_H__
 #define __SOC_MEDIATEK_MT8189_INCLUDE_SOC_SPI_H__
 
-#include <spi-generic.h>
+/* Initialize SPI NOR Flash Controller */
+void mtk_snfc_init(void);
 
-#endif /* __SOC_MEDIATEK_MT8189_INCLUDE_SOC_SPI_H__ */
+#endif

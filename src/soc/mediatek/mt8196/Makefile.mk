@@ -51,6 +51,8 @@ romstage-y += thermal.c
 romstage-y += thermal_sram.c
 
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += ../common/bl31.c
+ramstage-y += ddp.c
+ramstage-y += ../common/display.c
 ramstage-y += ../common/dpm_v2.c
 ramstage-y += ../common/dp/dptx_common.c ../common/dp/dptx_hal_common.c
 ramstage-y += dptx.c dptx_hal.c dp_intf.c
@@ -66,6 +68,7 @@ ramstage-$(CONFIG_COMMONLIB_STORAGE_MMC) += msdc.c
 ramstage-y += ../common/mt6363.c mt6363.c
 ramstage-y += ../common/mt6363_sdmadc.c
 ramstage-y += ../common/mt6373.c mt6373.c
+ramstage-y += mtcmos.c
 ramstage-y += ../common/mtk_fsp.c
 ramstage-y += soc.c
 ramstage-y += ../common/spm.c spm.c

@@ -8,8 +8,11 @@ chip soc/intel/alderlake
 	# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
 	register "gen1_dec" = "0x00fc0801"
 	register "gen2_dec" = "0x000c0201"
-	# EC memory map range is 0x900-0x9ff
-	register "gen3_dec" = "0x00fc0901"
+	# For platform selects EC_GOOGLE_CHROMEEC_MEMMAP_INDEXED_IO
+	#    EC memmap range is in 0x380-0x381
+	# For others
+	#    EC memmap range is in 0x900-0x9ff
+	register "gen3_dec" = "CONFIG(EC_GOOGLE_CHROMEEC_MEMMAP_INDEXED_IO) ? (0x00010001 | CONFIG_EC_GOOGLE_CHROMEEC_MEMMAP_INDEXED_IO_PORT) : 0x00fc0901"
 
 	register "usb2_ports[0]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 0
 	register "usb2_ports[1]" = "USB2_PORT_EMPTY"	# Disable USB2.0 Port 1

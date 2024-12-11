@@ -2,6 +2,7 @@
 
 #include <intelblocks/itss.h>
 #include <intelblocks/pcr.h>
+#include <soc/acpi.h>
 #include <soc/iomap.h>
 #include <soc/irq.h>
 #include <soc/pcr_ids.h>
@@ -9,6 +10,7 @@
 Scope (\_SB)
 {
 	#include "uncore_irq.asl"
+	#include <soc/intel/xeon_sp/acpi/iiostack.asl>
 
 	// Keep in sync with iio_domain_set_acpi_name()!
 	#define SOCKET 0

@@ -70,10 +70,10 @@ Scope (\_SB)
 #define IsCxlDomain          Arg5
 #define GrantedCxlFeatures   Arg6
 
-                Local7 = OscArg3
-                CreateDWordField (OscArg3, Zero, RETE)
-                RETE = 0x0
-                Local6 = ASL_UUID_UNHANDLED
+		Local7 = OscArg3
+		CreateDWordField (OscArg3, Zero, RETE)
+		RETE = 0x0
+		Local6 = ASL_UUID_UNHANDLED
 
 		If ((OscArg1 != 0x01))
 		{
@@ -116,7 +116,7 @@ Scope (\_SB)
 
 			CTRC &= GrantedCxlFeatures
 
-                        /* TODO: further suppress CTRC bits per SUPC caps */
+			/* TODO: further suppress CTRC bits per SUPC caps */
 
 			If ((CTRC != OTRC))
 			{

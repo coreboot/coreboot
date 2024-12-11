@@ -20,6 +20,13 @@ enum core_type {
 
 unsigned long acpi_create_madt_lapics_with_nmis_hybrid(unsigned long current);
 
+/*
+ * Read the performance and efficient core ratios.
+ * This is to be implemented by the SoC specific code if
+ * SOC_INTEL_COMMON_BLOCK_RUNTIME_CORE_SCALING_FACTORS is selected.
+ */
+enum cb_err soc_read_core_scaling_factors(u16 *performance, u16 *efficient);
+
 /* Generates ACPI code to define _CPC control method */
 void acpigen_write_CPPC_hybrid_method(int core_id);
 

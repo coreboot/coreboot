@@ -54,6 +54,15 @@ config SOC_INTEL_COMMON_BLOCK_ACPI_CPU_HYBRID
 	help
 	  Defines hybrid CPU specific ACPI helper functions.
 
+config SOC_INTEL_COMMON_BLOCK_RUNTIME_CORE_SCALING_FACTORS
+	bool
+	depends on SOC_INTEL_COMMON_BLOCK_ACPI_CPU_HYBRID
+	help
+	  Core performance and efficient scaling factors are read at runtime
+	  using the soc_read_core_scaling_factors() function instead of using
+	  statically defined values SOC_INTEL_PERFORMANCE_CORE_SCALE_FACTOR and
+	  SOC_INTEL_EFFICIENT_CORE_SCALE_FACTOR.
+
 config SOC_INTEL_UFS_OCP_TIMER_DISABLE
 	bool
 	help

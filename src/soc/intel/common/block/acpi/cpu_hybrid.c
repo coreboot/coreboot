@@ -113,18 +113,27 @@ void set_dev_core_type(void)
 static void acpi_get_cpu_nomi_perf(u16 *eff_core_nom_perf, u16 *perf_core_nom_perf)
 {
 	u8 max_non_turbo_ratio = cpu_get_max_non_turbo_ratio();
+	static u16 performance, efficient;
 
-	_Static_assert(CONFIG_SOC_INTEL_PERFORMANCE_CORE_SCALE_FACTOR != 0,
+	_Static_assert(CONFIG(SOC_INTEL_COMMON_BLOCK_RUNTIME_CORE_SCALING_FACTORS) ||
+		       CONFIG_SOC_INTEL_PERFORMANCE_CORE_SCALE_FACTOR != 0,
 		       "CONFIG_SOC_INTEL_PERFORMANCE_CORE_SCALE_FACTOR must not be zero");
 
-	_Static_assert(CONFIG_SOC_INTEL_EFFICIENT_CORE_SCALE_FACTOR != 0,
+	_Static_assert(CONFIG(SOC_INTEL_COMMON_BLOCK_RUNTIME_CORE_SCALING_FACTORS) ||
+		       CONFIG_SOC_INTEL_EFFICIENT_CORE_SCALE_FACTOR != 0,
 		       "CONFIG_SOC_INTEL_EFFICIENT_CORE_SCALE_FACTOR must not be zero");
 
-	*perf_core_nom_perf = (u16)((max_non_turbo_ratio *
-				CONFIG_SOC_INTEL_PERFORMANCE_CORE_SCALE_FACTOR) / 100);
+	if (!performance) {
+		if (CONFIG(SOC_INTEL_COMMON_BLOCK_RUNTIME_CORE_SCALING_FACTORS)) {
+			soc_read_core_scaling_factors(&performance, &efficient);
+		} else {
+			performance = CONFIG_SOC_INTEL_PERFORMANCE_CORE_SCALE_FACTOR;
+			efficient = CONFIG_SOC_INTEL_EFFICIENT_CORE_SCALE_FACTOR;
+		}
+	}
 
-	*eff_core_nom_perf = (u16)((max_non_turbo_ratio *
-				CONFIG_SOC_INTEL_EFFICIENT_CORE_SCALE_FACTOR) / 100);
+	*perf_core_nom_perf = (u16)((max_non_turbo_ratio * performance) / 100);
+	*eff_core_nom_perf = (u16)((max_non_turbo_ratio * efficient) / 100);
 }
 
 static u16 acpi_get_cpu_nominal_freq(void)

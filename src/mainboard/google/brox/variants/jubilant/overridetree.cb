@@ -21,6 +21,10 @@ end
 chip soc/intel/alderlake
 	register "platform_pmax" = "208"
 
+	# As per Intel Advisory doc#723158, the change is required to prevent possible
+	# display flickering issue.
+	register "disable_dynamic_tccold_handshake" = "true"
+
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"  # USB2_C0
 	register "usb2_ports[1]" = "USB2_PORT_EMPTY"		# Disable USB2 Port
 	register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC_SKIP)"  # USB2_C2

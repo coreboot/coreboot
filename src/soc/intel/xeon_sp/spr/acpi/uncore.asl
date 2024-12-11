@@ -10,7 +10,9 @@ Scope (\_SB)
 {
 	#include "uncore_irq.asl"
 
+	// Keep in sync with iio_domain_set_acpi_name()!
 	#define SOCKET 0
+	#define SOCKET_NAME 0
 	#include "iiostack.asl"
 	#undef SOCKET
 
@@ -24,19 +26,25 @@ Scope (\_SB)
 	#endif
 
 	#if (CONFIG_MAX_SOCKET > 1)
+		// Keep in sync with iio_domain_set_acpi_name()!
 		#define SOCKET 1
+		#define SOCKET_NAME 2
 		#include "iiostack.asl"
 		#undef SOCKET
 	#endif
 
 	#if (CONFIG_MAX_SOCKET > 2)
+		// Keep in sync with iio_domain_set_acpi_name()!
 		#define SOCKET 2
+		#define SOCKET_NAME 4
 		#include "iiostack.asl"
 		#undef SOCKET
 	#endif
 
 	#if (CONFIG_MAX_SOCKET > 3)
+		// Keep in sync with iio_domain_set_acpi_name()!
 		#define SOCKET 3
+		#define SOCKET_NAME 6
 		#include "iiostack.asl"
 		#undef SOCKET
 	#endif

@@ -8,11 +8,11 @@
 #define _IIO_DEVICE_UID(str, skt, stk)      STR(str##skt##stk)
 #define IIO_DEVICE_UID(str, skt, stk)       _IIO_DEVICE_UID(str, skt, stk)
 
-Device (IIO_DEVICE_NAME(DEVPREFIX, SOCKET, STACK))
+Device (IIO_DEVICE_NAME(DEVPREFIX, SOCKET_NAME, STACK))
 {
 	Name (_HID, EisaId ("PNP0A08") /* PCI Express Bus */)
 	Name (_CID, EisaId ("PNP0A03") /* PCI Bus */)
-	Name (_UID, IIO_DEVICE_UID(DEVPREFIX, SOCKET, STACK))
+	Name (_UID, IIO_DEVICE_UID(DEVPREFIX, SOCKET_NAME, STACK))
 	Method (_STA, 0, NotSerialized)
 	{
 		/*

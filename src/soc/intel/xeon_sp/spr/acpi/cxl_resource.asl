@@ -8,7 +8,7 @@
 #define _IIO_DEVICE_UID(str, skt, stk)      STR(str##skt##stk)
 #define IIO_DEVICE_UID(str, skt, stk)       _IIO_DEVICE_UID(str, skt, stk)
 
-Device (IIO_DEVICE_NAME(DEVPREFIX, SOCKET, STACK))
+Device (IIO_DEVICE_NAME(DEVPREFIX, SOCKET_NAME, STACK))
 {
 	Name (_HID, "ACPI0017") /* CXL */
 	Name (_CID, Package (0x02)
@@ -16,7 +16,7 @@ Device (IIO_DEVICE_NAME(DEVPREFIX, SOCKET, STACK))
 		EisaId ("PNP0A08") /* PCI Express Bus */,
 		EisaId ("PNP0A03") /* PCI Bus */
 	})
-	Name (_UID, IIO_DEVICE_UID(DEVPREFIX, SOCKET, STACK))
+	Name (_UID, IIO_DEVICE_UID(DEVPREFIX, SOCKET_NAME, STACK))
 	Method (_STA, 0, NotSerialized)
 	{
 		/*

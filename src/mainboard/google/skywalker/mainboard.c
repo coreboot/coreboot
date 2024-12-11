@@ -1,10 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only OR MIT */
 
 #include <device/device.h>
+#include <soc/dpm_v2.h>
 #include <soc/usb.h>
 
 static void mainboard_init(struct device *dev)
 {
+	dpm_init();
 	setup_usb_host();
 }
 

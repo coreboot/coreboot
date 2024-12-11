@@ -2,9 +2,12 @@
 
 #include <arch/ioapic.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
+#include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <intelblocks/acpi.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/msr.h>
 #include <intelblocks/power_limit.h>
@@ -181,6 +184,142 @@ static void configure_tdp(struct device *dev)
 			sa_pci_id);
 		return;
 	}
+}
+
+union pcode_mailbox_command {
+	struct {
+		uint32_t command: 8;
+		uint32_t param1: 8;
+		uint32_t param2: 13;
+		uint32_t reserved: 2;
+		/*
+		 * Run/Busy bit. This bit is set by BIOS to indicate the mailbox buffer is
+		 * ready. pcode will clear this bit after the message is
+		 * consumed.
+		 */
+		uint32_t runbusy: 1;
+	} fields;
+	uint32_t data;
+};
+
+union pcode_scaling_factor {
+	struct {
+		/* Core scaling factor */
+		uint32_t scaling_factor: 16;
+		/*
+		 * Number of modules with consecutive module id sharing the same scaling
+		 * factor
+		 */
+		uint32_t num_equivalent_module: 8;
+		uint32_t reserved: 8;
+	} fields;
+	uint32_t data;
+};
+
+#define MAILBOX_WAIT_TIMEOUT_US			1000
+#define PCODE_READ_CORE_SCALING_FACTOR_CMD	0x21
+
+static bool poll_mailbox_ready(void)
+{
+	union pcode_mailbox_command cmd;
+	size_t i;
+
+	for (i = 0; i < MAILBOX_WAIT_TIMEOUT_US; i++) {
+		cmd.data = MCHBAR32(PCODE_MAILBOX_INTERFACE);
+		if (!cmd.fields.runbusy)
+			return true;
+		udelay(1);
+	}
+	return false;
+}
+
+static u16 u88_to_scaling_factor(u16 u88)
+{
+	unsigned int tmp = (u88 & 0xff) * 100;
+	unsigned int fraction = tmp / (1 << 8);
+
+	/* Rounding */
+	if (((tmp & 0xff) << 1) >= (1 << 8))
+		fraction++;
+	return ((u88 >> 8) * 100) + fraction;
+}
+
+/*
+ * The following function sends commands to the pcode mailbox interface to read the core scaling
+ * factors for performance and efficient cores.
+ *
+ * The READ_CORE_SCALING_FACTOR command takes a module ID as a parameter. The function iterates
+ * over all the CPU devices to identify module IDs of different core types (efficient and
+ * performance).
+ *
+ * If no efficient cores are present, no efficient factor is returned.
+ *
+ * Return values:
+ * - CB_ERR_ARG: If any of the input pointers were NULL.
+ * - CB_ERR: If there was a generic error while reading the scaling factors.
+ * - CB_SUCCESS: If the scaling factors were read successfully.
+ */
+enum cb_err soc_read_core_scaling_factors(u16 *performance, u16 *efficient)
+{
+	extern struct cpu_info cpu_infos[];
+	union pcode_mailbox_command cmd = {
+		.fields = {
+			.command = PCODE_READ_CORE_SCALING_FACTOR_CMD,
+			.runbusy = 1
+		}
+	};
+	union pcode_scaling_factor res;
+	bool has_efficient_core = false;
+
+	if (!performance || !efficient)
+		return CB_ERR_ARG;
+
+	for (size_t i = 0; i < CONFIG_MAX_CPUS; i++) {
+		struct device *cpu = cpu_infos[i].cpu;
+
+		if (!cpu)
+			continue;
+
+		if (cpu->path.apic.core_type != CPU_TYPE_PERF)
+			has_efficient_core = true;
+
+		if (cpu->path.apic.core_type == CPU_TYPE_PERF && *performance)
+			continue;
+
+		cmd.fields.param1 = cpu->path.apic.module_id;
+
+		if (!poll_mailbox_ready()) {
+			printk(BIOS_ERR, "pcode mailbox is busy\n");
+			return CB_ERR;
+		}
+
+		MCHBAR32(PCODE_MAILBOX_INTERFACE) = cmd.data;
+
+		if (!poll_mailbox_ready()) {
+			printk(BIOS_ERR, "pcode command mailbox not completing in time\n");
+			return CB_ERR;
+		}
+
+		res.data = MCHBAR32(PCODE_MAILBOX_DATA);
+
+		if (cpu->path.apic.core_type == CPU_TYPE_PERF)
+			*performance = u88_to_scaling_factor(res.fields.scaling_factor);
+		else
+			*efficient = u88_to_scaling_factor(res.fields.scaling_factor);
+
+		if (*performance && *efficient)
+			break;
+	}
+
+	if (!*performance) {
+		printk(BIOS_ERR, "Could not read performance scaling factor\n");
+		return CB_ERR;
+	}
+	if (has_efficient_core && !*efficient) {
+		printk(BIOS_ERR, "Could not read efficient scaling factor\n");
+		return CB_ERR;
+	}
+	return CB_SUCCESS;
 }
 
 /*

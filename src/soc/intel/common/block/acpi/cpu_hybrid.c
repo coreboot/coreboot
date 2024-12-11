@@ -15,11 +15,6 @@
 #define CPPC_NOM_FREQ_IDX	22
 #define CPPC_NOM_PERF_IDX	3
 
-enum cpu_perf_eff_type {
-	CPU_TYPE_EFF,
-	CPU_TYPE_PERF,
-};
-
 struct cpu_apic_info_type {
 	/*
 	 * Ordered APIC IDs based on core type.

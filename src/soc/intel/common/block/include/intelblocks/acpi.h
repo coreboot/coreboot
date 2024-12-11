@@ -18,6 +18,12 @@ enum core_type {
 	CPUID_UNKNOWN = 0xff,
 };
 
+/* CPU Performance Type */
+enum cpu_perf_eff_type {
+	CPU_TYPE_EFF,
+	CPU_TYPE_PERF,
+};
+
 unsigned long acpi_create_madt_lapics_with_nmis_hybrid(unsigned long current);
 
 /*

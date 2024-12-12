@@ -119,6 +119,9 @@ config BOARD_GOOGLE_PUJJO
 config BOARD_GOOGLE_QUANDISO
 	bool "->  Quandiso"
 
+config BOARD_GOOGLE_QUANDISO2
+	bool "->  Quandiso2"
+
 config BOARD_GOOGLE_REDRIX
 	bool "->  Redrix"
 

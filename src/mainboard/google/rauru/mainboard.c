@@ -9,6 +9,7 @@
 #include <soc/dpm_v2.h>
 #include <soc/gpio_common.h>
 #include <soc/i2c.h>
+#include <soc/msdc.h>
 #include <soc/pcie.h>
 #include <soc/usb.h>
 
@@ -54,6 +55,9 @@ static void mainboard_init(struct device *dev)
 	setup_usb_host();
 	power_on_fpmcu();
 	configure_audio();
+
+	if (CONFIG(RAURU_SDCARD_INIT))
+		mtk_msdc_configure_sdcard();
 
 	if (dpm_init())
 		printk(BIOS_ERR, "dpm init failed, DVFS may not work\n");

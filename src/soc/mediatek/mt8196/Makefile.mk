@@ -47,6 +47,7 @@ ramstage-y += l2c_ops.c
 ramstage-y += ../common/mcu.c
 ramstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 ramstage-$(CONFIG_PCI) += ../common/pcie.c pcie.c
+ramstage-$(CONFIG_COMMONLIB_STORAGE_MMC) += msdc.c
 ramstage-y += ../common/mt6363.c mt6363.c
 ramstage-y += ../common/mt6363_sdmadc.c
 ramstage-y += ../common/mt6373.c mt6373.c

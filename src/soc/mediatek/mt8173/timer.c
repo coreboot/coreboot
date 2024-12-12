@@ -18,5 +18,5 @@ void timer_prepare(void)
 	 */
 	write32(&mt8173_mcucfg->xgpt_idx, 0);
 	/* Set clock mode to 13Mhz and enable XGPT */
-	write32(&mt8173_mcucfg->xgpt_ctl, (0x1 | ((26 / GPT_MHZ) << 8)));
+	write32(&mt8173_mcucfg->xgpt_ctl, (0x1 | ((26 / TIMER_MHZ) << 8)));
 }

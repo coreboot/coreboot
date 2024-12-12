@@ -7,7 +7,7 @@
 #include <soc/timer_common.h>
 #include <types.h>
 
-#define GPT_MHZ	13
+#define TIMER_MHZ	13
 
 struct mtk_gpt_regs {
 	u32 reserved1[24];

@@ -7,7 +7,7 @@
 #include <soc/timer_common.h>
 #include <types.h>
 
-#define GPT_MHZ	13
+#define TIMER_MHZ	13
 
 enum {
 	TIE_0_EN = 1 << 3,

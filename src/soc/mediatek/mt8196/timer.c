@@ -9,5 +9,5 @@ void init_timer(void)
 {
 	timer_prepare();
 
-	raw_write_cntfrq_el0(GPT_MHZ * MHz);
+	raw_write_cntfrq_el0(TIMER_MHZ * MHz);
 }

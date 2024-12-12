@@ -27,7 +27,7 @@ static uint64_t timer_raw_value(void)
 
 void timer_monotonic_get(struct mono_time *mt)
 {
-	mono_time_set_usecs(mt, timer_raw_value() / GPT_MHZ);
+	mono_time_set_usecs(mt, timer_raw_value() / TIMER_MHZ);
 }
 
 void init_timer(void)

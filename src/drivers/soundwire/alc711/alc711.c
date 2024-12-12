@@ -10,6 +10,9 @@
 
 #include "chip.h"
 
+static struct soundwire_multilane alc711_multilane = {
+};
+
 static struct soundwire_slave alc711_slave = {
 	.wake_up_unavailable = false,
 	.test_mode_supported = false,
@@ -87,7 +90,8 @@ static const struct soundwire_codec alc711_codec = {
 			.port = 2,
 			.source = &alc711_dp
 		}
-	}
+	},
+	.multilane = &alc711_multilane
 
 };
 
@@ -96,6 +100,7 @@ static void soundwire_alc711_fill_ssdt(const struct device *dev)
 	struct drivers_soundwire_alc711_config *config = dev->chip_info;
 	const char *scope = acpi_device_scope(dev);
 	struct acpi_dp *dsd;
+	size_t lane_mapping_count, audio_mode_count;
 
 	if (!scope)
 		return;
@@ -111,6 +116,20 @@ static void soundwire_alc711_fill_ssdt(const struct device *dev)
 	acpigen_write_ADR_soundwire_device(&config->alc711_address);
 	acpigen_write_name_string("_DDN", config->desc ? : dev->chip_ops->name);
 	acpigen_write_STA(acpi_device_status(dev));
+
+	/* Overlay multilane config, if provided. */
+	lane_mapping_count = MIN(ARRAY_SIZE(config->multilane.lane_mapping), SOUNDWIRE_MAX_LANE);
+	if (lane_mapping_count > 0) {
+		alc711_multilane.lane_mapping_count = lane_mapping_count;
+		memcpy(&alc711_multilane.lane_mapping, &config->multilane.lane_mapping,
+			sizeof(struct soundwire_multilane_map) * lane_mapping_count);
+	}
+
+	/* Overlay Audio Mode config, if provided. */
+	audio_mode_count = MIN(ARRAY_SIZE(config->audio_mode), SOUNDWIRE_MAX_MODE);
+	if (audio_mode_count > 0)
+		/* Currently only 1 audio mode is supported. */
+		memcpy(&alc711_audio_mode, &config->audio_mode, sizeof(struct soundwire_audio_mode));
 
 	dsd = acpi_dp_new_table("_DSD");
 	soundwire_gen_codec(dsd, &alc711_codec, NULL);

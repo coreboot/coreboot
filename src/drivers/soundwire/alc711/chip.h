@@ -10,6 +10,8 @@ struct drivers_soundwire_alc711_config {
 	const char *name;
 	const char *desc;
 	struct soundwire_address alc711_address;
+	struct soundwire_audio_mode audio_mode[SOUNDWIRE_MAX_MODE];
+	struct soundwire_multilane multilane;
 };
 
 #endif /* __DRIVERS_SOUNDWIRE_ALC711_CHIP_H__ */

@@ -116,4 +116,16 @@ struct mb_cfg {
 void memcfg_init(FSPM_UPD *memupd, const struct mb_cfg *mb_cfg,
 		 const struct mem_spd *spd_info, bool half_populated);
 
+/*
+ * This function is expected to return a bitmap of memory channels to
+ * disable. A set bit will disable corresponding memory channel.
+ * Variants can override this bitmap by selecting
+ * `ENFORCE_MEM_CHANNEL_DISABLE` and implementing this function.
+ */
+#if CONFIG(ENFORCE_MEM_CHANNEL_DISABLE)
+uint8_t mb_get_channel_disable_mask(void);
+#else
+static inline uint8_t mb_get_channel_disable_mask(void) { return 0; }
+#endif
+
 #endif /* _SOC_ALDERLAKE_MEMINIT_H_ */

@@ -441,6 +441,14 @@ config MRC_CHANNEL_WIDTH
 	int
 	default 16
 
+config ENFORCE_MEM_CHANNEL_DISABLE
+	bool
+	default n
+	help
+	  Select this option to disable certain memory channels on demand. If
+	  selected, A function named mb_get_channel_disable_mask() must be
+	  implemented to return the bit map of memory channels to disable.
+
 config ALDERLAKE_ENABLE_SOC_WORKAROUND
 	bool
 	default y

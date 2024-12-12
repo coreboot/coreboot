@@ -2,6 +2,7 @@
 
 #include <baseboard/variants.h>
 #include <boardid.h>
+#include <intelblocks/early_graphics.h>
 #include <soc/gpio.h>
 
 /* Pad configuration in ramstage */
@@ -221,6 +222,17 @@ static const struct pad_config romstage_gpio_table[] = {
 	/* D2  : EN_FP_PWR ==> EN_FP_PWR */
 	PAD_CFG_GPO(GPP_D2, 0, DEEP),
 };
+
+static const struct pad_config early_graphics_gpio_table[] = {
+	/* F9  : BOOTMPC ==> SLP_S0_GATE_R */
+	PAD_CFG_GPO(GPP_F9, 1, PLTRST),
+};
+
+const struct pad_config *variant_early_graphics_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(early_graphics_gpio_table);
+	return early_graphics_gpio_table;
+}
 
 const struct pad_config *variant_gpio_override_table(size_t *num)
 {

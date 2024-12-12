@@ -3,6 +3,7 @@
 #include <adainit.h>
 #include <arch/romstage.h>
 #include <arch/symbols.h>
+#include <arch/stack_canary_breakpoint.h>
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
@@ -35,8 +36,25 @@ void __noreturn romstage_main(void)
 
 	stack_base = (u32 *)(_ecar_stack - size);
 
+	/* Disable breakpoint since stack is intentionally corrupted */
+	stack_canary_breakpoint_remove();
+
+	/*
+	 * The "stack guard" and the "stack canary breakpoint" can both detect excessive
+	 * stack usage. Excessive stack usage can corrupt data and lead to undefined
+	 * (and thus hard to debug) behaviour.
+	 * The stack guard will be checked later on, assuming the corruption wasn't to
+	 * severe and allowed romstage to run. It's useful to detect problems when
+	 * HW breakpoints were disabled.
+	 *
+	 * When HW breakpoints are used and enabled, the stack canary breakpoint will
+	 * report the instruction pointer immediately, which can hint at which function
+	 * may be using too much stack. FSP might disable HW breakpoints, though.
+	 */
 	for (i = 0; i < num_guards; i++)
 		stack_base[i] = stack_guard;
+
+	stack_canary_breakpoint_init();
 
 	if (CONFIG(VBOOT_EARLY_EC_SYNC))
 		vboot_sync_ec();

@@ -72,8 +72,6 @@ static void each_cpu_init(struct device *cpu)
 	       __func__, dev_path(cpu), cpu_index(), cpu->path.apic.apic_id,
 	       cpu->path.apic.package_id);
 
-	/* Populate the node ID. It will be used as proximity ID. */
-	set_cpu_node_id_leaf_1f_b(cpu);
 	assert (cpu->path.apic.node_id < CONFIG_MAX_SOCKET);
 
 	/*

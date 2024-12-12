@@ -253,10 +253,49 @@ device ref tbt_pcie_rp0 on end
 			chip drivers/intel/soundwire
 				device generic 0 on
 					chip drivers/soundwire/alc711
-						# SoundWire Link 3 ID 1
+						register "multilane.lane_mapping" = "{
+							{
+								.lane = 1,
+								.direction = MASTER_LANE,
+								.connection.master_lane = 1
+							},
+							{
+								.lane = 2,
+								.direction = MASTER_LANE,
+								.connection.master_lane = 2
+							},
+						}"
+						register "audio_mode" = "{
+							{
+								.bus_frequency_configs_count = 9,
+								.bus_frequency_configs = {
+									9600 * KHz,
+									4800 * KHz,
+									2400 * KHz,
+									12000 * KHz,
+									6000 * KHz,
+									3000 * KHz,
+									12288 * KHz,
+									6144 * KHz,
+									3072 * KHz,
+								},
+								/* Support 16 KHz to 192 KHz sampling frequency */
+								.sampling_frequency_configs_count = 6,
+								.sampling_frequency_configs = {
+									16 * KHz,
+									32 * KHz,
+									44.1 * KHz,
+									48 * KHz,
+									96 * KHz,
+									192 * KHz
+								},
+							},
+						}"
 						register "desc" = ""Headset Codec""
-						device generic 3.1 on
-						end
+						register "alc711_address.version" = "SOUNDWIRE_VERSION_1_2"
+						register "alc711_address.class" = "MIPI_CLASS_SDCA"
+						register "alc711_address.part_id" = "MIPI_DEV_ID_REALTEK_ALC712"
+						device generic 3.0 on end # SoundWire Link 3 ID 0
 					end
 				end
 			end

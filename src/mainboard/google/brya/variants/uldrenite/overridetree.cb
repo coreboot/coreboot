@@ -1,4 +1,87 @@
 chip soc/intel/alderlake
+	register "sagv" = "SaGv_Enabled"
+
+	# S0ix enable
+	register "s0ix_enable" = "true"
+
+	# DPTF enable
+	register "dptf_enable" = "1"
+
+	register "tcc_offset" = "5"     # TCC of 100
+
+	# Configure external V1P05/Vnn/VnnSx Rails
+	register "ext_fivr_settings" = "{
+		.configure_ext_fivr = 1,
+		.v1p05_enable_bitmap = FIVR_ENABLE_ALL_SX & ~FIVR_ENABLE_S0,
+		.vnn_enable_bitmap = FIVR_ENABLE_ALL_SX,
+		.vnn_sx_enable_bitmap = FIVR_ENABLE_ALL_SX,
+		.v1p05_supported_voltage_bitmap = FIVR_VOLTAGE_NORMAL,
+		.vnn_supported_voltage_bitmap = FIVR_VOLTAGE_MIN_ACTIVE,
+		.v1p05_voltage_mv = 1050,
+		.vnn_voltage_mv = 780,
+		.vnn_sx_voltage_mv = 1050,
+		.v1p05_icc_max_ma = 500,
+		.vnn_icc_max_ma = 500,
+	}"
+
+	register "power_limits_config[ADL_N_041_6W_CORE]" = "{
+		.tdp_pl1_override = 10,
+		.tdp_pl2_override = 25,
+		.tdp_pl4 = 78,
+	}"
+
 	device domain 0 on
+		device ref igpu on end
+		device ref dtt on
+			chip drivers/intel/dptf
+				## sensor information
+				register "options.tsr[0].desc" = ""DDR""
+				register "options.tsr[1].desc" = ""charger""
+				register "options.tsr[2].desc" = ""ambient""
+
+				## Passive Policy
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU,         CPU,           95, 5000),
+					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 90, 5000),
+					[2] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_1, 90, 5000),
+					[3] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_2, 90, 5000),
+				}"
+
+				## Critical Policy
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,               105, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,     98, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,     98, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,     98, SHUTDOWN),
+				}"
+
+				register "controls.power_limits" = "{
+					.pl1 = {
+						.min_power = 6000,
+						.max_power = 10000,
+						.time_window_min = 28 * MSECS_PER_SEC,
+						.time_window_max = 28 * MSECS_PER_SEC,
+						.granularity = 500
+					},
+					.pl2 = {
+						.min_power = 25000,
+						.max_power = 25000,
+						.time_window_min = 32 * MSECS_PER_SEC,
+						.time_window_max = 32 * MSECS_PER_SEC,
+						.granularity = 500
+					}
+				}"
+
+				## Charger Performance Control (Control, mA)
+				register "controls.charger_perf" = "{
+					[0] = { 255, 1700 },
+					[1] = {  24, 1500 },
+					[2] = {  16, 1000 },
+					[3] = {   8,  500 }
+				}"
+
+				device generic 0 on end
+			end
+		end # DPTF
 	end
 end

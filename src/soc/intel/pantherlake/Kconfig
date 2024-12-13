@@ -425,4 +425,13 @@ config SOC_INTEL_UFS_CLK_FREQ_HZ
 	int
 	default 38400000
 
+# Override DEBUG Kconfig to avoid false alarm about stack overflow.
+config DEBUG_STACK_OVERFLOW_BREAKPOINTS
+	bool
+	default n
+
+config DEBUG_STACK_OVERFLOW_BREAKPOINTS_IN_ALL_STAGES
+	bool
+	default n
+
 endif

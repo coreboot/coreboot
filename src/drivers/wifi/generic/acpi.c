@@ -985,7 +985,7 @@ static void sar_emit_dsbr(const struct dsbr_profile *dsbr, enum sar_domain domai
 	 *   }
 	 } })
 	 */
-	if (dsbr->revision != DSBR_REVISION) {
+	if (dsbr->revision > DSBR_REVISION) {
 		printk(BIOS_ERR, "Unsupported DSBR table revision: %d\n",
 		       dsbr->revision);
 		return;

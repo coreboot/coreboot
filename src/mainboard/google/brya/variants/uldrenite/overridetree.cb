@@ -58,6 +58,23 @@ chip soc/intel/alderlake
 	# [6:0] Rx Strobe Delay DLL 2(HS400 Mode), each 125ps, range: 0 - 39.
 	register "common_soc_config.emmc_dll.emmc_rx_strobe_cntl" = "0x01515"
 
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C0
+	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C1
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"    # USB2_A0
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"    # WWAN
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"    # User Facing Camera
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"    # World Facing Camera
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type A port A0
+
+	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
+	register "tcss_ports[1]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
+
+	# Bit 0 - C0 has no redriver, so enable SBU muxing in the SoC.
+	# Bit 2 - C1 has a redriver which does SBU muxing.
+	# Bit 1,3 - AUX lines are not swapped on the motherboard for either C0 or C1.
+	register "tcss_aux_ori" = "0"
+
 	# Configure external V1P05/Vnn/VnnSx Rails
 	register "ext_fivr_settings" = "{
 		.configure_ext_fivr = 1,
@@ -193,6 +210,81 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 		end # DPTF
+		device ref tcss_xhci on
+			chip drivers/usb/acpi
+				device ref tcss_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Port C0 (MLB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(1, 1))"
+						device ref tcss_usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Port C1 (MLB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, RIGHT, ACPI_PLD_GROUP(2, 1))"
+						device ref tcss_usb3_port2 on end
+					end
+				end
+			end
+		end
+		device ref xhci on
+			chip drivers/usb/acpi
+				device ref xhci_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port C0 (MLB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(1, 1))"
+						device ref usb2_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port C1 (MLB)""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(2, 1))"
+						device ref usb2_port2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port A0 (MLB)""
+						register "type" = "UPC_TYPE_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(LEFT, RIGHT, ACPI_PLD_GROUP(3, 1))"
+						device ref usb2_port3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 WWAN""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port5 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 User Facing Camera""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 World Facing Camera""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port8 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "reset_gpio" =	"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A13)"
+						device ref usb2_port10 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port A0 (MLB)""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(LEFT, RIGHT, ACPI_PLD_GROUP(3, 1))"
+						device ref usb3_port1 on end
+					end
+				end
+			end
+		end
 		device ref i2c0 on
 			chip drivers/i2c/tpm
 				register "hid" = ""GOOG0005""

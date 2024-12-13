@@ -115,9 +115,6 @@ static void fill_fspm_uart_params(FSP_M_CONFIG *m_cfg,
 static void fill_fspm_ipu_params(FSP_M_CONFIG *m_cfg,
 				 const struct soc_intel_pantherlake_config *config)
 {
-	/* Image clock: disable all clocks for bypassing FSP pin mux */
-	memset(m_cfg->ImguClkOutEn, 0, sizeof(m_cfg->ImguClkOutEn));
-
 	/* IPU */
 	m_cfg->SaIpuEnable = is_devfn_enabled(PCI_DEVFN_IPU);
 }

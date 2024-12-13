@@ -331,6 +331,18 @@ uint8_t cpu_get_c_substate_support(const int state);
 bool fill_cpu_cache_info(uint8_t level, struct cpu_cache_info *info);
 
 /*
+ * soc_fill_cpu_cache_info is SoC specific implementation for fill_cpu_cache_info.
+ * This is intended to compute cache size for a particular level when generic
+ * implementation isn't accurate.
+ * Returns True if SoC handler was success else return False.
+ */
+bool soc_fill_cpu_cache_info(uint8_t level, struct cpu_cache_info *info);
+
+/*
+ * x86_get_cpu_cache_info is generic x86 implementation.
+ */
+bool x86_get_cpu_cache_info(uint8_t level, struct cpu_cache_info *info);
+/*
  * Determines whether the number of cache sets is a power of two.
  *
  * Cache designs often favor power-of-two set counts for efficient indexing

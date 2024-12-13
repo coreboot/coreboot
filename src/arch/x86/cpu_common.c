@@ -212,11 +212,8 @@ uint8_t cpu_get_c_substate_support(const int state)
 	return (cpuid_edx(5) >> (state * 4)) & 0xf;
 }
 
-bool fill_cpu_cache_info(uint8_t level, struct cpu_cache_info *info)
+bool x86_get_cpu_cache_info(uint8_t level, struct cpu_cache_info *info)
 {
-	if (!info)
-		return false;
-
 	uint32_t leaf = cpu_get_cache_info_leaf();
 	if (!leaf)
 		return false;
@@ -234,6 +231,16 @@ bool fill_cpu_cache_info(uint8_t level, struct cpu_cache_info *info)
 	info->size = get_cache_size(info);
 
 	return true;
+}
+bool fill_cpu_cache_info(uint8_t level, struct cpu_cache_info *info)
+{
+	if (!info)
+		return false;
+
+	if (CONFIG(SOC_FILL_CPU_CACHE_INFO))
+		return soc_fill_cpu_cache_info(level, info);
+
+	return x86_get_cpu_cache_info(level, info);
 }
 
 bool is_cache_sets_power_of_two(void)

@@ -453,4 +453,10 @@ config SHADOW_ROM_TABLE_TO_EBDA
 	help
 	  For platforms without writable PAM-F segment support. Put ROM table
 	  pointers (e.g. ACPI/SMBIOS low pointers) into EBDA.
+
+config SOC_FILL_CPU_CACHE_INFO
+	bool
+	default n
+	help
+	  SoC selects this if it implements soc_fill_cpu_cache_info.
 endif

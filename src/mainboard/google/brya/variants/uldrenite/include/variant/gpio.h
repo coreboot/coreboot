@@ -5,4 +5,10 @@
 
 #include <baseboard/gpio.h>
 
+#define WWAN_FCPO	GPP_H23
+#define WWAN_RST	GPP_F12
+#define WWAN_PERST	GPP_H13
+#define T1_OFF_MS	20
+#define T2_OFF_MS	10
+
 #endif

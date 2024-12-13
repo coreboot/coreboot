@@ -9,6 +9,9 @@ chip soc/intel/alderlake
 
 	register "tcc_offset" = "5"     # TCC of 100
 
+	# Enable CNVi BT
+	register "cnvi_bt_core" = "true"
+
 	# eMMC HS400
 	register "emmc_enable_hs400_mode" = "true"
 
@@ -285,6 +288,14 @@ chip soc/intel/alderlake
 				end
 			end
 		end
+		device ref cnvi_wifi on
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				register "enable_cnvi_ddr_rfim" = "true"
+				register "add_acpi_dma_property" = "true"
+				device generic 0 on end
+			end
+		end
 		device ref i2c0 on
 			chip drivers/i2c/tpm
 				register "hid" = ""GOOG0005""
@@ -405,6 +416,31 @@ chip soc/intel/alderlake
 				device i2c 40 on end
 			end # GTCH7502
 		end # I2C5
+		device ref pcie_rp2 on
+			# Enable WWAN Card PCIE 2 using clk 2
+			register "pch_pcie_rp[PCH_RP(2)]" = "{
+				.clk_src = 2,
+				.clk_req = 2,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F13)"
+				register "reset_off_delay_ms" = "20"
+				register "srcclk_pin" = "2"
+				register "ext_pm_support" = "ACPI_PCIE_RP_EMIT_ALL"
+				register "skip_on_off_support" = "true"
+				device generic 0 alias rp2_rtd3 on end
+			end
+			chip drivers/wwan/fm
+				register "fcpo_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H23)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F12)"
+				register "perst_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F13)"
+				register "wake_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E16)"
+				register "add_acpi_dma_property" = "true"
+				use rp2_rtd3 as rtd3dev
+				device generic 0 alias rp2_wwan on end
+			end
+		end # PCIE2 WWAN card
 		device ref emmc on end
 		device ref uart0 on end
 		device ref pch_espi on

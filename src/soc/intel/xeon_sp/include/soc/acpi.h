@@ -3,6 +3,7 @@
 #ifndef _SOC_ACPI_H_
 #define _SOC_ACPI_H_
 
+#ifndef __ACPI__
 #include <acpi/acpi.h>
 
 #define MAX_SRAT_MEM_ENTRIES_PER_IMC	8
@@ -23,6 +24,14 @@ unsigned long cxl_fill_srat(unsigned long current);
 
 void iio_domain_set_acpi_name(struct device *dev, const char *prefix);
 
+void acpigen_write_OSC_pci_domain_fixed_caps(const struct device *domain,
+				const uint32_t granted_pcie_features,
+				const bool is_cxl_domain,
+				const uint32_t granted_cxl_features);
+void acpigen_write_pci_root_port(const struct device *rp);
+void acpigen_write_PRT_pre_routed(const struct device *br);
+#endif
+
 #define PCIE_NATIVE_HOTPLUG_CONTROL  0x01
 #define SHPC_NATIVE_HOTPLUG_CONTROL  0x02
 #define PCIE_PME_CONTROL             0x04
@@ -32,12 +41,5 @@ void iio_domain_set_acpi_name(struct device *dev, const char *prefix);
 #define PCIE_DPC_COTROL              0x80
 
 #define CXL_ERROR_REPORTING_CONTROL  0x01
-
-void acpigen_write_OSC_pci_domain_fixed_caps(const struct device *domain,
-				const uint32_t granted_pcie_features,
-				const bool is_cxl_domain,
-				const uint32_t granted_cxl_features);
-void acpigen_write_pci_root_port(const struct device *rp);
-void acpigen_write_PRT_pre_routed(const struct device *br);
 
 #endif /* _SOC_ACPI_H_ */

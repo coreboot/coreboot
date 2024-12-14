@@ -377,8 +377,11 @@ config DEBUG_STACK_OVERFLOW_BREAKPOINTS
 
 config DEBUG_STACK_OVERFLOW_BREAKPOINTS_IN_ALL_STAGES
 	bool
-	default y
+	default n
 	depends on DEBUG_STACK_OVERFLOW_BREAKPOINTS && DEBUG_HW_BREAKPOINTS_IN_ALL_STAGES
+	help
+	  Disabled as false-positive stack corruptions where observed on some platforms.
+	  TODO: Investigate those reported errors before defaulting to yes.
 
 # Some EC need an "EC firmware pointer" (a data structure hinting the address
 # of its firmware blobs) being put at a fixed position. Its space

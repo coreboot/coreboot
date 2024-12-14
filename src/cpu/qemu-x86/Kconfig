@@ -8,6 +8,7 @@ config CPU_QEMU_X86
 	select TSC_MONOTONIC_TIMER
 	select UNKNOWN_TSC_RATE
 	select NEED_SMALL_2MB_PAGE_TABLES	# QEMU doesn't support 1GB pages
+	select IDT_IN_EVERY_STAGE
 
 if CPU_QEMU_X86
 

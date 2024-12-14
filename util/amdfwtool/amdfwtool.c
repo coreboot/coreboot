@@ -1628,7 +1628,6 @@ static bool needs_new_combo_layout(enum platform soc_id)
 int main(int argc, char **argv)
 {
 	int retval = 0;
-	int combo_index = 0;
 	int targetfd;
 	context ctx = { 0 };
 	uint32_t romsig_offset;
@@ -1719,17 +1718,17 @@ int main(int argc, char **argv)
 			ctx.bhd_combo_dir = new_combo_dir(&ctx, BHD2_COOKIE);
 	}
 
-	combo_index = 0;
+	ctx.combo_index = 0;
 	if (cb_config.config)
 		cb_config.combo_config[0] = cb_config.config;
 
 	do {
 		if (cb_config.use_combo && cb_config.debug)
-			printf("Processing %dth combo entry\n", combo_index);
+			printf("Processing %dth combo entry\n", ctx.combo_index);
 
 		/* The pspdir level 1 is special. For new combo layout, all the combo entries
 		   share one pspdir L1. It should not be cleared at each iteration. */
-		if (!cb_config.combo_new_rab || combo_index == 0) {
+		if (!cb_config.combo_new_rab || ctx.combo_index == 0) {
 			ctx.pspdir = NULL;
 			ctx.pspdir_bak = NULL;
 		}
@@ -1746,14 +1745,14 @@ int main(int argc, char **argv)
 		 *  and make it clear this will not affect non-combo
 		 *  case.
 		 */
-		if (cb_config.use_combo && combo_index > 0) {
+		if (cb_config.use_combo && ctx.combo_index > 0) {
 			/* Restore the table as clean data. */
 			memcpy(amd_psp_fw_table, ctx.amd_psp_fw_table_clean,
 				sizeof(amd_psp_fw_table));
 			memcpy(amd_bios_table, ctx.amd_bios_table_clean,
 				sizeof(amd_bios_table));
-			assert_fw_entry(combo_index, MAX_COMBO_ENTRIES, &ctx);
-			open_process_config(cb_config.combo_config[combo_index], &cb_config);
+			assert_fw_entry(ctx.combo_index, MAX_COMBO_ENTRIES, &ctx);
+			open_process_config(cb_config.combo_config[ctx.combo_index], &cb_config);
 
 			/* In most cases, the address modes are same. */
 			if (cb_config.need_ish)
@@ -1763,7 +1762,7 @@ int main(int argc, char **argv)
 			else
 				ctx.address_mode = AMD_ADDR_PHYSICAL;
 
-			register_apcb_combo(&cb_config, combo_index, &ctx);
+			register_apcb_combo(&cb_config, ctx.combo_index, &ctx);
 		}
 
 		if (cb_config.multi_level) {
@@ -1781,7 +1780,7 @@ int main(int argc, char **argv)
 				}
 				integrate_bios_levels(&ctx, &cb_config);
 			}
-			if (!cb_config.combo_new_rab || combo_index == 0)
+			if (!cb_config.combo_new_rab || ctx.combo_index == 0)
 				integrate_psp_firmwares(&ctx,
 					amd_psp_fw_table, PSP_COOKIE, &cb_config);
 			integrate_psp_levels(&ctx, &cb_config);
@@ -1791,13 +1790,13 @@ int main(int argc, char **argv)
 					amd_psp_fw_table, PSP_COOKIE, &cb_config);
 		}
 
-		if (!cb_config.use_combo || (cb_config.combo_new_rab && combo_index == 0)) {
+		if (!cb_config.use_combo || (cb_config.combo_new_rab && ctx.combo_index == 0)) {
 			/* For new combo layout, there is only 1 PSP level 1 directory. */
 			fill_psp_directory_to_efs(ctx.amd_romsig_ptr, ctx.pspdir, &ctx, &cb_config);
 			fill_psp_bak_directory_to_efs(ctx.amd_romsig_ptr, ctx.pspdir_bak, &ctx, &cb_config);
 		} else if (cb_config.use_combo && !cb_config.combo_new_rab) {
 			fill_psp_directory_to_efs(ctx.amd_romsig_ptr, ctx.psp_combo_dir, &ctx, &cb_config);
-			add_combo_entry(ctx.psp_combo_dir, ctx.pspdir, combo_index, &ctx, &cb_config);
+			add_combo_entry(ctx.psp_combo_dir, ctx.pspdir, ctx.combo_index, &ctx, &cb_config);
 		}
 
 		if (have_bios_tables(amd_bios_table) && !cb_config.recovery_ab) {
@@ -1822,13 +1821,13 @@ int main(int argc, char **argv)
 				 */
 				fill_bios_directory_to_efs(ctx.amd_romsig_ptr, ctx.bhd_combo_dir,
 					&ctx, &cb_config);
-				add_combo_entry(ctx.bhd_combo_dir, ctx.biosdir, combo_index, &ctx, &cb_config);
+				add_combo_entry(ctx.bhd_combo_dir, ctx.biosdir, ctx.combo_index, &ctx, &cb_config);
 			}
 		}
 		if (cb_config.debug)
 			dump_image_addresses(&ctx);
-	} while (cb_config.use_combo && ++combo_index < MAX_COMBO_ENTRIES &&
-					cb_config.combo_config[combo_index] != NULL);
+	} while (cb_config.use_combo && ++ctx.combo_index < MAX_COMBO_ENTRIES &&
+					cb_config.combo_config[ctx.combo_index] != NULL);
 
 	targetfd = open(cb_config.output, O_RDWR | O_CREAT | O_TRUNC, 0666);
 	if (targetfd >= 0) {

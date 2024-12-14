@@ -447,6 +447,7 @@ typedef struct _context {
 	uint32_t current;	/* pointer within flash & proxy buffer */
 	uint32_t current_pointer_saved;
 	uint32_t current_table;
+	uint32_t combo_index;
 	void *amd_psp_fw_table_clean;
 	void *amd_bios_table_clean;
 	struct _combo_apcb {

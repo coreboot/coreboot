@@ -120,6 +120,10 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
 	}"
 
+	# FIXME: To be enabled in future based on PNP impact data.
+	# Disable Package C-state demotion for nissa baseboard.
+	register "disable_package_c_state_demotion" = "true"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
@@ -448,6 +452,9 @@ chip soc/intel/alderlake
 				device generic 0 alias rp2_wwan on end
 			end
 		end # PCIE2 WWAN card
+		device ref shared_sram on end
+		device ref heci1 on end
+		device ref pmc hidden end
 		device ref emmc on end
 		device ref uart0 on end
 		device ref pch_espi on

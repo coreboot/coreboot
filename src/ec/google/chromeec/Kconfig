@@ -167,6 +167,12 @@ config EC_GOOGLE_CHROMEEC_READ_BATTERY_LONG_STRING
 
 	  If unsure, say N.
 
+config EC_GOOGLE_CHROMEEC_LPC_GENERIC_MEMORY_RANGE
+	def_bool n
+	help
+	  Select this option to access LPC GMR (Generic Memory Range) Register to
+	  implement MMIO based communication between EC and AP firmware.
+
 endif # EC_GOOGLE_CHROMEEC
 
 source "src/ec/google/chromeec/*/Kconfig"

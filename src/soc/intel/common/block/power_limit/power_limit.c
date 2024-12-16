@@ -91,6 +91,14 @@ void set_power_limits(u8 power_limit_1_time,
 			MCHBAR32(MCH_PKG_POWER_LIMIT_LO) = value & ~(PKG_POWER_LIMIT_EN);
 			value = MCHBAR32(MCH_PKG_POWER_LIMIT_HI);
 			MCHBAR32(MCH_PKG_POWER_LIMIT_HI) = value & ~(PKG_POWER_LIMIT_EN);
+			/* Elkhartlake SoC does not shadow PKG_POWER_LIMIT MCHBAR settings
+			   to MSR correctly. */
+			if (CONFIG(SOC_INTEL_ELKHARTLAKE)) {
+				msr = rdmsr(MSR_PKG_POWER_LIMIT);
+				msr.hi = 0;
+				msr.lo = 0;
+				wrmsr(MSR_PKG_POWER_LIMIT, msr);
+			}
 		} else {
 			msr = rdmsr(MSR_PKG_POWER_LIMIT);
 			msr.lo &= ~PKG_POWER_LIMIT_EN;

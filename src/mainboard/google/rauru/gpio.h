@@ -20,6 +20,11 @@
 #define GPIO_I2SI4_LRCK		GPIO(I2SIN1_LRCK)
 #define GPIO_I2SO4_D0		GPIO(I2SOUT1_DO)
 
+#define GPIO_I2SI6_MCK		GPIO(I2SIN0_MCK)
+#define GPIO_I2SI6_BCK		GPIO(I2SIN0_BCK)
+#define GPIO_I2SI6_LRCK		GPIO(I2SIN0_LRCK)
+#define GPIO_I2SO6_D0		GPIO(I2SOUT0_DO)
+
 void setup_chromeos_gpios(void);
 
 #endif

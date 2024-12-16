@@ -18,7 +18,7 @@
 
 #define AFE_SE_SECURE_CON1	(AUDIO_BASE + 0x5634)
 
-static void configure_i2s(void)
+static void configure_tas2563(void)
 {
 	/* Switch to normal mode */
 	write32p(AFE_SE_SECURE_CON1, 0x0);
@@ -27,13 +27,35 @@ static void configure_i2s(void)
 	gpio_set_mode(GPIO_I2SI4_BCK, GPIO_FUNC(I2SIN1_BCK, I2SIN4_BCK));
 	gpio_set_mode(GPIO_I2SI4_LRCK, GPIO_FUNC(I2SIN1_LRCK, I2SIN4_LRCK));
 	gpio_set_mode(GPIO_I2SO4_D0, GPIO_FUNC(I2SOUT1_DO, I2SOUT4_DATA0));
+
+	printk(BIOS_INFO, "%s: done\n", __func__);
 }
 
+static void configure_alc5645(void)
+{
+	/* Switch to normal mode */
+	write32p(AFE_SE_SECURE_CON1, 0x0);
+
+	/* Set up I2S */
+	gpio_set_mode(GPIO_I2SI6_MCK, GPIO_FUNC(I2SIN0_MCK, I2S_MCK0));
+	gpio_set_mode(GPIO_I2SI6_BCK, GPIO_FUNC(I2SIN0_BCK, I2SIN6_0_BCK));
+	gpio_set_mode(GPIO_I2SI6_LRCK, GPIO_FUNC(I2SIN0_LRCK, I2SIN6_0_LRCK));
+	gpio_set_mode(GPIO_I2SO6_D0, GPIO_FUNC(I2SOUT0_DO, I2SOUT6_0_DO));
+
+	/* Init I2C bus timing register for audio codecs */
+	mtk_i2c_bus_init(I2C3, I2C_SPEED_STANDARD);
+
+	printk(BIOS_INFO, "%s: done\n", __func__);
+}
 static void configure_audio(void)
 {
 	if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_TAS2563))) {
 		mtk_i2c_bus_init(I2C3, I2C_SPEED_FAST);
-		configure_i2s();
+		configure_tas2563();
+	} else if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_ALC5645))) {
+		configure_alc5645();
+	} else {
+		printk(BIOS_INFO, "Audio configure default amps NAU8318\n");
 	}
 
 	printk(BIOS_INFO, "%s: done\n", __func__);

@@ -9,6 +9,7 @@
 #include <elog.h>
 #include <fmap.h>
 #include <region_file.h>
+#include <security/tpm/tspi.h>
 #include <security/vboot/antirollback.h>
 #include <security/vboot/mrc_cache_hash_tpm.h>
 #include <security/vboot/vboot_common.h>
@@ -248,6 +249,19 @@ static int mrc_data_valid(int type, const struct mrc_metadata *md,
 	return 0;
 }
 
+static tpm_result_t mrc_measure_cache(int type, struct region_device *cache_region)
+{
+	tpm_result_t rc = TPM_SUCCESS;
+	char rname[TPM_CB_LOG_PCR_HASH_NAME];
+	snprintf(rname, sizeof(rname), "MRC: %s cache",
+		 (type == MRC_VARIABLE_DATA) ? "variable" : "training");
+	rc = tpm_measure_region(cache_region, CONFIG_PCR_RUNTIME_DATA, rname);
+	if (rc)
+		printk(BIOS_ERR, "MRC: Couldn't measure %s! rc %#x\n", rname, rc);
+
+	return rc;
+}
+
 static int mrc_cache_get_latest_slot_info(const char *name,
 				const struct region_device *backing_rdev,
 				struct mrc_metadata *md,
@@ -346,6 +360,9 @@ ssize_t mrc_cache_load_current(int type, uint32_t version, void *buffer,
 	if (mrc_data_valid(type, &md, buffer, data_size) < 0)
 		return -1;
 
+	if (CONFIG(TPM_MEASURE_MRC_CACHE))
+		mrc_measure_cache(type, &rdev);
+
 	return data_size;
 }
 
@@ -372,6 +389,9 @@ void *mrc_cache_current_mmap_leak(int type, uint32_t version,
 
 	if (mrc_data_valid(type, &md, data, region_device_size) < 0)
 		return NULL;
+
+	if (CONFIG(TPM_MEASURE_MRC_CACHE))
+		mrc_measure_cache(type, &rdev);
 
 	return data;
 }
@@ -509,6 +529,9 @@ static void update_mrc_cache_by_type(int type,
 		hash_idx = cr->tpm_hash_index;
 		if (hash_idx && CONFIG(MRC_SAVE_HASH_IN_TPM))
 			mrc_cache_update_hash(hash_idx, new_data, new_data_size);
+		if (CONFIG(TPM_MEASURE_MRC_CACHE) &&
+		    !rdev_chain_mem(&read_rdev, new_data, new_data_size))
+			mrc_measure_cache(type, &read_rdev);
 	}
 }
 

@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <acpi/acpi.h>
+#include <device/fw_cfg.h>
 
-#include "../qemu-i440fx/fw_cfg.h"
 #include "../qemu-i440fx/acpi.h"
 
 void mainboard_fill_fadt(acpi_fadt_t *fadt)

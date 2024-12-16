@@ -5,8 +5,8 @@
 #include <arch/romstage.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
+#include <device/fw_cfg.h>
 #include "memory.h"
-#include "fw_cfg.h"
 
 #define CMOS_ADDR_PORT 0x70
 #define CMOS_DATA_PORT 0x71

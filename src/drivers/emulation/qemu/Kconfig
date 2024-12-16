@@ -35,3 +35,9 @@ config DRIVERS_EMULATION_QEMU_YRES
 	default 600
 	depends on LINEAR_FRAMEBUFFER
 	depends on DRIVERS_EMULATION_QEMU_BOCHS || DRIVERS_EMULATION_QEMU_CIRRUS
+
+config DRIVERS_EMULATION_QEMU_FW_CFG
+	bool "qemu fw_cfg"
+	default n
+	help
+	  qemu fw_cfg driver

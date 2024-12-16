@@ -8,9 +8,8 @@
 #include <arch/io.h>
 #include <acpi/acpi.h>
 #include <commonlib/endian.h>
-
-#include "fw_cfg.h"
-#include "fw_cfg_if.h"
+#include <device/fw_cfg.h>
+#include <device/fw_cfg_if.h>
 
 #define FW_CFG_PORT_CTL       0x0510
 #define FW_CFG_PORT_DATA      0x0511

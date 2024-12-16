@@ -2,7 +2,7 @@
 
 #include <bootmode.h>
 #include <console/console.h>
-#include "fw_cfg.h"
+#include <device/fw_cfg.h>
 
 /*
  * Enable recovery mode with fw_cfg option to qemu:

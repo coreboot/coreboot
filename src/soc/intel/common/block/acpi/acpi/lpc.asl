@@ -9,6 +9,22 @@ Device (LPCB)
 	Name (_ADR, 0x001f0000)
 	Name (_DDN, "LPC Bus Device")
 
+	OperationRegion (LPCP, PCI_Config, 0x00, 0x100)
+	Field (LPCP, DWordAcc, NoLock, Preserve)
+	{
+		Offset(0x98),	/* LGMR */
+		LGEN, 1,	/* Enable */
+		, 15,
+		LADR, 16,	/* MADDR [31:16] */
+	}
+
+	/* Get LGMR */
+	Method (GLGM, 0, Serialized)
+	{
+		Local0 = LADR << 16
+		Return (Local0)
+	}
+
 	/* DMA Controller */
 	Device (DMAC)
 	{

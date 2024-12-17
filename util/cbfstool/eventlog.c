@@ -485,8 +485,8 @@ static int eventlog_print_data(const struct event_header *event)
 	};
 
 	static const struct valstr cse_sync_path_types[] = {
-		{ELOG_FW_EARLY_CSE_SYNC, "Early CSE Sync"},
-		{ELOG_FW_LATE_CSE_SYNC, "Late CSE Sync"},
+		{ELOG_FW_PRE_RAM_CSE_SYNC, "Pre-RAM CSE Sync"},
+		{ELOG_FW_POST_RAM_CSE_SYNC, "Post-RAM CSE Sync"},
 		{ELOG_FW_CSE_SYNC_AT_PAYLOAD, "CSE Sync at Payload"},
 		{0, NULL},
 	};

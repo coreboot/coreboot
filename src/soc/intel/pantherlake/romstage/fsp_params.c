@@ -249,11 +249,12 @@ static void fill_fspm_vtd_params(FSP_M_CONFIG *m_cfg,
 static void fill_fspm_trace_params(FSP_M_CONFIG *m_cfg,
 				   const struct soc_intel_pantherlake_config *config)
 {
+	m_cfg->CpuCrashLogEnable = CONFIG(SOC_INTEL_CRASHLOG);
+
 	if (!CONFIG(SOC_INTEL_COMMON_BLOCK_TRACEHUB))
 		return;
 
 	m_cfg->PlatformDebugOption = CONFIG_SOC_INTEL_COMMON_DEBUG_CONSENT;
-	m_cfg->CpuCrashLogEnable = CONFIG(SOC_INTEL_CRASHLOG);
 
 	switch (CONFIG_SOC_INTEL_COMMON_DEBUG_CONSENT) {
 	case HW_DEBUG_TRACEHUB_ACTIVE:

@@ -67,8 +67,8 @@ void spm_set_pcm_flags(const struct pwr_ctrl *pwrctrl)
 
 	write32(&mtk_spm->spm_sw_flag_0, pcm_flags);
 	write32(&mtk_spm->spm_sw_flag_1, pcm_flags1);
-	write32(&mtk_spm->spm_sw_rsv_7, pcm_flags);
-	write32(&mtk_spm->spm_sw_rsv_8, pcm_flags1);
+	write32(&mtk_spm->spm_sw_rsv[7], pcm_flags);
+	write32(&mtk_spm->spm_sw_rsv[8], pcm_flags1);
 }
 
 static void spm_parse_firmware(struct mtk_mcu *mcu)

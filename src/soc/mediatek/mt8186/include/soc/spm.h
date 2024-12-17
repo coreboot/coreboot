@@ -415,15 +415,7 @@ struct mtk_spm_regs {
 	uint32_t spm_sw_debug_0;
 	uint32_t spm_sw_flag_1;
 	uint32_t spm_sw_debug_1;
-	uint32_t spm_sw_rsv_0;
-	uint32_t spm_sw_rsv_1;
-	uint32_t spm_sw_rsv_2;
-	uint32_t spm_sw_rsv_3;
-	uint32_t spm_sw_rsv_4;
-	uint32_t spm_sw_rsv_5;
-	uint32_t spm_sw_rsv_6;
-	uint32_t spm_sw_rsv_7;
-	uint32_t spm_sw_rsv_8;
+	uint32_t spm_sw_rsv[9];
 	uint32_t spm_bk_wake_event;
 	uint32_t spm_bk_vtcxo_dur;
 	uint32_t spm_bk_wake_misc;

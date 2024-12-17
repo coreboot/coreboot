@@ -9,6 +9,8 @@
 #include <soc/spm_common.h>
 #include <types.h>
 
+#define SPM_SYSTEM_BASE_OFFSET	0x40000000
+
 /* SPM READ/WRITE CFG */
 #define SPM_PROJECT_CODE			0xb16
 #define SPM_REGWR_CFG_KEY			(SPM_PROJECT_CODE << 16)

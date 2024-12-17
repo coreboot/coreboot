@@ -5,8 +5,6 @@
 
 #include <soc/mcu_common.h>
 
-#define SPM_SYSTEM_BASE_OFFSET	0x40000000
-
 struct pcm_desc {
 	u32 pmem_words;
 	u32 total_words;

@@ -14,6 +14,7 @@
 #include <soc/spm_common.h>
 #include <types.h>
 
+#define SPM_SYSTEM_BASE_OFFSET		0x40000000
 #define SPM_INIT_DONE_US		20
 
 #define CLK_SCP_CFG_0			(IO_PHYS + 0x200)

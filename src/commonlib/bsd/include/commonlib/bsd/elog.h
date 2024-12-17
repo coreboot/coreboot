@@ -382,12 +382,6 @@ struct elog_event_extended_event {
 #define ELOG_TYPE_FW_SPLASH_SCREEN        0xbb
 
 /*
- * Events related to CSE sync from payload
- */
-#define ELOG_TYPE_FW_LATE_SOL             0xbc
-#define  ELOG_FW_LATE_SOL_CSE_SYNC         0x0
-
-/*
  * Events related to CSE sync
  */
 #define ELOG_TYPE_FW_CSE_SYNC             0xbd

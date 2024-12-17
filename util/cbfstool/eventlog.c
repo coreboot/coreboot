@@ -169,7 +169,6 @@ static void eventlog_print_type(const struct event_header *event)
 		{ELOG_TYPE_PSR_DATA_BACKUP, "PSR data backup"},
 		{ELOG_TYPE_PSR_DATA_LOST, "PSR data lost"},
 		{ELOG_TYPE_FW_SPLASH_SCREEN, "Firmware Splash Screen"},
-		{ELOG_TYPE_FW_LATE_SOL, "Late Sign of Life "},
 		{ELOG_TYPE_FW_CSE_SYNC, "Firmware CSE sync"},
 		{ELOG_TYPE_EOL, "End of log"},
 	};
@@ -485,11 +484,6 @@ static int eventlog_print_data(const struct event_header *event)
 		{0, NULL},
 	};
 
-	static const struct valstr late_sol_path_types[] = {
-		{ELOG_FW_LATE_SOL_CSE_SYNC, "CSE Sync Late SOL Screen Shown"},
-		{0, NULL},
-	};
-
 	static const struct valstr cse_sync_path_types[] = {
 		{ELOG_FW_EARLY_CSE_SYNC, "Early CSE Sync"},
 		{ELOG_FW_LATE_CSE_SYNC, "Late CSE Sync"},
@@ -518,7 +512,6 @@ static int eventlog_print_data(const struct event_header *event)
 		[ELOG_TYPE_FW_EARLY_SOL]	= sizeof(uint8_t),
 		[ELOG_TYPE_PSR_DATA_BACKUP]	= sizeof(uint8_t),
 		[ELOG_TYPE_FW_SPLASH_SCREEN]	= sizeof(uint8_t),
-		[ELOG_TYPE_FW_LATE_SOL]		= sizeof(uint8_t),
 		[ELOG_TYPE_FW_CSE_SYNC]		= sizeof(uint8_t),
 		[0xff]				= 0,
 	};
@@ -684,11 +677,6 @@ static int eventlog_print_data(const struct event_header *event)
 	case ELOG_TYPE_FW_SPLASH_SCREEN: {
 		const uint8_t *fw_splash_screen_event = event_get_data(event);
 		eventlog_printf("%s", *fw_splash_screen_event ? "Enabled" : "Disabled");
-		break;
-	}
-	case ELOG_TYPE_FW_LATE_SOL: {
-		const uint8_t *sol_event = event_get_data(event);
-		eventlog_printf("%s", val2str(*sol_event, late_sol_path_types));
 		break;
 	}
 	case ELOG_TYPE_FW_CSE_SYNC: {

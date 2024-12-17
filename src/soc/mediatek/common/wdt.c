@@ -10,6 +10,7 @@
 
 __weak void mtk_wdt_clr_status(void) { /* do nothing */ }
 __weak void mtk_wdt_set_req(void) { /* do nothing */ }
+__weak void mtk_wdt_clear_efuse_ecc(void) { /* do nothing */ }
 
 static inline void mtk_wdt_swreset(void)
 {
@@ -36,6 +37,7 @@ int mtk_wdt_init(void)
 {
 	uint32_t wdt_sta;
 
+	mtk_wdt_clear_efuse_ecc();
 	mtk_wdt_set_req();
 
 	/* Writing mode register will clear status register */

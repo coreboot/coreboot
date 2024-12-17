@@ -57,5 +57,6 @@ static struct mtk_wdt_regs *const mtk_wdt = (void *)RGU_BASE;
 int mtk_wdt_init(void);
 void mtk_wdt_clr_status(void);
 void mtk_wdt_set_req(void);
+void mtk_wdt_clear_efuse_ecc(void);
 
 #endif /* SOC_MEDIATEK_WDT_COMMON_H */

@@ -3,6 +3,7 @@
 #include <baseboard/variants.h>
 #include <cbfs.h>
 #include <ec/google/chromeec/ec.h>
+#include <intelblocks/cse.h>
 #include <security/vboot/vboot_common.h>
 #include <security/vboot/misc.h>
 #include <soc/romstage.h>
@@ -53,8 +54,13 @@ static bool check_auxfw_ver_mismatch(void)
 
 bool mainboard_expects_another_reset(void)
 {
+	/* Do not change the order of the check in this function */
 	if (vboot_recovery_mode_enabled())
 		return false;
+
+	/* If CSE is booting from RO, CSE state switch will issue a reset anyway. */
+	if (!is_cse_boot_to_rw())
+		return true;
 
 	if (!CONFIG(VBOOT) ||
 	    (vboot_is_gbb_flag_set(VB2_GBB_FLAG_DISABLE_EC_SOFTWARE_SYNC) &&

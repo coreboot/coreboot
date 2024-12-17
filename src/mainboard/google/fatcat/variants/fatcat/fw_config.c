@@ -85,6 +85,44 @@ static const struct pad_config sndw_external_codec_enable_pads[] = {
 	PAD_CFG_GPO(GPP_D13, 1, PLTRST),
 };
 
+static const struct pad_config bt_i2s_enable_pads[] = {
+	/* GPP_V30 : [] ==> BT_I2S_BCLK - SSP2 */
+	PAD_CFG_NF(GPP_VGPIO30, NONE, DEEP, NF3),
+	/* GPP_V31 : [] ==> BT_I2S_SYNC - SSP2 */
+	PAD_CFG_NF(GPP_VGPIO31, NONE, DEEP, NF3),
+	/* GPP_V32 : [] ==> BT_I2S_SDO - SSP2 */
+	PAD_CFG_NF(GPP_VGPIO32, NONE, DEEP, NF3),
+	/* GPP_V33 : [] ==> BT_I2S_SDI - SSP2 */
+	PAD_CFG_NF(GPP_VGPIO33, NONE, DEEP, NF3),
+	/* GPP_V34 : [] ==> SSP_SCLK */
+	PAD_CFG_NF(GPP_VGPIO34, NONE, DEEP, NF1),
+	/* GPP_V35 : [] ==> SSP_SFRM */
+	PAD_CFG_NF(GPP_VGPIO35, NONE, DEEP, NF1),
+	/* GPP_V36 : [] ==> SSP_TXD */
+	PAD_CFG_NF(GPP_VGPIO36, NONE, DEEP, NF1),
+	/* GPP_V37 : [] ==> SSP_RXD */
+	PAD_CFG_NF(GPP_VGPIO37, NONE, DEEP, NF1),
+};
+
+static const struct pad_config bt_i2s_disable_pads[] = {
+	/* GPP_V30 : [] ==> BT_I2S_BCLK */
+	PAD_NC(GPP_VGPIO30, NONE),
+	/* GPP_V31 : [] ==> BT_I2S_SYNC */
+	PAD_NC(GPP_VGPIO31, NONE),
+	/* GPP_V32 : [] ==> BT_I2S_SDO */
+	PAD_NC(GPP_VGPIO32, NONE),
+	/* GPP_V33 : [] ==> BT_I2S_SDI */
+	PAD_NC(GPP_VGPIO33, NONE),
+	/* GPP_V34 : [] ==> SSP2_SCLK */
+	PAD_NC(GPP_VGPIO34, NONE),
+	/* GPP_V35 : [] ==> SSP2_SFRM */
+	PAD_NC(GPP_VGPIO35, NONE),
+	/* GPP_V36 : [] ==> SSP_TXD */
+	PAD_NC(GPP_VGPIO36, NONE),
+	/* GPP_V37 : [] ==> SSP_RXD */
+	PAD_NC(GPP_VGPIO37, NONE),
+};
+
 static const struct pad_config sndw_alc722_enable_pads[] = {
 	/* SNDW3_CLK   */
 	PAD_CFG_NF(GPP_S00, NONE, DEEP, NF1),
@@ -535,17 +573,28 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		GPIO_PADBASED_OVERRIDE(padbased_table, ufs_enable_pads);
 	}
 
-	if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_NONE)))
+	if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_NONE))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, audio_disable_pads);
-	else if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_MAX98360_ALC5682I_I2S)))
+		GPIO_PADBASED_OVERRIDE(padbased_table, bt_i2s_disable_pads);
+	} else if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_MAX98360_ALC5682I_I2S))) {
+		printk(BIOS_INFO, "Configure GPIOs for I2S MAX98360 ALC5682 audio.\n");
 		GPIO_PADBASED_OVERRIDE(padbased_table, i2s_enable_pads);
-	else if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_MAX98373_ALC5682_SNDW)))
+		printk(BIOS_INFO, "Configure GPIOs for BT offload mode.\n");
+		GPIO_PADBASED_OVERRIDE(padbased_table, bt_i2s_enable_pads);
+	} else if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_MAX98373_ALC5682_SNDW))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, sndw_external_codec_enable_pads);
-	else if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_ALC722_SNDW)) ||
-		fw_config_probe(FW_CONFIG(AUDIO, AUDIO_ALC721_SNDW)))
+		GPIO_PADBASED_OVERRIDE(padbased_table, bt_i2s_disable_pads);
+	} else if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_ALC722_SNDW)) ||
+			fw_config_probe(FW_CONFIG(AUDIO, AUDIO_ALC721_SNDW))) {
+		printk(BIOS_INFO, "Configure GPIOs for Soundwire audio.\n");
 		GPIO_PADBASED_OVERRIDE(padbased_table, sndw_alc722_enable_pads);
-	else if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_ALC256_HDA)))
+		printk(BIOS_INFO, "Configure GPIOs for BT offload mode.\n");
+		GPIO_PADBASED_OVERRIDE(padbased_table, bt_i2s_enable_pads);
+	} else if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_ALC256_HDA))) {
+		printk(BIOS_INFO, "Configure GPIOs for HDA ALC 256 mode.\n");
 		GPIO_PADBASED_OVERRIDE(padbased_table, hda_enable_pads);
+		GPIO_PADBASED_OVERRIDE(padbased_table, bt_i2s_disable_pads);
+	}
 
 	if (fw_config_probe(FW_CONFIG(WIFI, WIFI_PCIE_6)) ||
 		fw_config_probe(FW_CONFIG(WIFI, WIFI_PCIE_7))) {

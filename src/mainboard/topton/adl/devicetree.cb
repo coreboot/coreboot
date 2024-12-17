@@ -118,5 +118,8 @@ chip soc/intel/alderlake
 			register "pch_hda_idisp_link_frequency"		= "HDA_LINKFREQ_96MHZ"
 			register "pch_hda_idisp_link_tmode"		= "HDA_TMODE_8T"
 		end
+		chip drivers/crb
+			device mmio 0xfed40000 on end
+		end
 	end
 end

@@ -13,6 +13,8 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOC_INTEL_ALDERLAKE_PCH_N
 	select INTEL_GMA_HAVE_VBT
 	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select HAVE_INTEL_PTT
+	select CRB_TPM
 
 config MAINBOARD_DIR
 	default "topton/adl"

@@ -259,6 +259,26 @@ static u32 fdt_read_cell_props(const void *blob, u32 node_offset, u32 *addrcp, u
 	return offset;
 }
 
+uint64_t fdt_read_int_prop(struct fdt_property *prop, u32 cells)
+{
+	if (cells == 0)
+		cells = prop->size / 4;
+
+	if (cells * 4 != prop->size) {
+		printk(BIOS_ERR, "FDT integer property of size %u @%p doesn't match expected cell count %u\n",
+		       prop->size, prop->data, cells);
+		return 0;
+	}
+
+	if (cells == 2)
+		return be64dec(prop->data);
+	else if (cells == 1)
+		return be32dec(prop->data);
+
+	printk(BIOS_ERR, "Illegal FDT integer property size %u @%p\n", prop->size, prop);
+	return 0;
+}
+
 /*
  * fdt_find_node searches for a node relative to another node
  *

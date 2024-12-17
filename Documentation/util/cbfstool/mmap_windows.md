@@ -36,9 +36,8 @@ The location of standard decode window is fixed in host address space
 `(4G - 16M) to 4G`. However, the platform is free to choose where the
 extended window lives in the host address space. Since `cbfstool`
 needs to know the exact location of the extended window, it allows the
-platform to pass in two parameters `ext-win-base` and `ext-win-size`
-that provide the base and the size of the extended window in host
-address space.
+platform to pass in one parameter `mmap` that provide the base and the
+size of the extended window in host address space.
 
 `cbfstool` creates two memory map windows using the knowledge about the
 standard decode window and the information passed in by the platform

@@ -988,7 +988,6 @@ endif
 #
 # CBFSTOOL_ADD_CMD_OPTIONS can be used by arch/SoC/mainboard to supply
 # add commands with any additional arguments for cbfstool.
-# Example: --ext-win-base <base> --ext-win-size <size>
 define cbfs-add-cmd-for-region
 	$(CBFSTOOL) $@.tmp \
 	add$(if $(filter stage,$(call extract_nth,3,$(1))),-stage)$(if \

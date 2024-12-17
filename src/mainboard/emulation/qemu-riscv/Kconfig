@@ -79,4 +79,8 @@ config OPENSBI_TEXT_START
 	hex
 	default 0x80020000
 
+config PCI_IOBASE
+	hex
+	default 0x3000000
+
 endif #  BOARD_EMULATION_QEMU_RISCV

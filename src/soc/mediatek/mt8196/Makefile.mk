@@ -34,6 +34,7 @@ romstage-y += ../common/memory_test.c
 romstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 romstage-y += ../common/mt6363.c mt6363.c
 romstage-y += ../common/mt6373.c mt6373.c
+romstage-y += mtk_pwrsel.c
 romstage-y += ../common/pmif_clk.c pmif_clk.c
 romstage-y += ../common/pmif.c pmif_init.c
 romstage-y += pmif_spmi.c

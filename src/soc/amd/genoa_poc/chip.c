@@ -3,16 +3,15 @@
 #include <amdblocks/acpi.h>
 #include <amdblocks/data_fabric.h>
 #include <device/device.h>
+#include <drivers/amd/opensil/opensil.h>
 #include <soc/southbridge.h>
 #include <soc/southbridge.h>
-#include <vendorcode/amd/opensil/opensil.h>
 
 static void soc_init(void *chip_info)
 {
 	default_dev_ops_root.write_acpi_tables = soc_acpi_write_tables;
 
-	setup_opensil();
-	opensil_xSIM_timepoint_1();
+	amd_opensil_silicon_init();
 
 	data_fabric_print_mmio_conf();
 

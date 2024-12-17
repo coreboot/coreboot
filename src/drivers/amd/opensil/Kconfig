@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config OPENSIL_DRIVER
+	bool
+	help
+	  Indicate that the openSIL driver is being used on the platform.

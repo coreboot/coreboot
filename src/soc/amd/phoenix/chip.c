@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Update for Phoenix */
-
 #include <acpi/acpigen_pci.h>
 #include <amdblocks/acpi.h>
 #include <amdblocks/data_fabric.h>
@@ -10,11 +8,12 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <drivers/amd/opensil/opensil.h>
 #include <soc/cpu.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 #include <types.h>
-#include <vendorcode/amd/opensil/opensil.h>
+
 #include "chip.h"
 
 static const char *soc_acpi_name(const struct device *dev)
@@ -46,8 +45,7 @@ static void soc_init(void *chip_info)
 	if (CONFIG(PLATFORM_USES_FSP2_0)) {
 		amd_fsp_silicon_init();
 	} else {
-		setup_opensil();
-		opensil_xSIM_timepoint_1();
+		amd_opensil_silicon_init();
 	}
 
 	data_fabric_print_mmio_conf();

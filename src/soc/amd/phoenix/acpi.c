@@ -17,10 +17,10 @@
 #include <console/console.h>
 #include <cpu/amd/cpuid.h>
 #include <device/device.h>
+#include <drivers/amd/opensil/opensil.h>
 #include <soc/iomap.h>
 #include <static.h>
 #include <types.h>
-#include <vendorcode/amd/opensil/opensil.h>
 #include "chip.h"
 
 /*
@@ -40,7 +40,7 @@ void acpi_fill_fadt(acpi_fadt_t *fadt)
 		fadt->gpe0_blk = ACPI_GPE0_BLK;
 	} else {
 		/* Fill in pm1_evt, pm1_cnt, pm_tmr, gpe0_blk from openSIL input structure */
-		opensil_fill_fadt_io_ports(fadt);
+		amd_opensil_fill_fadt_io_ports(fadt);
 	}
 
 	fadt->pm1_evt_len = 4;	/* 32 bits */

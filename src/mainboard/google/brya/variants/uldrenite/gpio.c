@@ -30,8 +30,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_A12, NONE),
 	/* A13 : GPP_A13 ==> SOC_BT_ON */
 	PAD_CFG_GPO_LOCK(GPP_A13, 1, LOCK_CONFIG),
-	/* A14 : USB_OC1# ==> NC */
-	PAD_NC(GPP_A14, NONE),
+	/* A14 : USB_OC1# */
+	PAD_CFG_NF(GPP_A14, NONE, DEEP, NF1),
 	/* A15 : USB_OC2# ==> NC */
 	PAD_NC(GPP_A15, NONE),
 	/* A16 : USB_OC3# ==> NC */

@@ -63,7 +63,7 @@ chip soc/intel/alderlake
 
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C1
-	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"    # USB2_A0
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC1)"    # USB2_A0
 	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"    # WWAN
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"    # User Facing Camera
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"    # World Facing Camera

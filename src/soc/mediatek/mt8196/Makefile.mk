@@ -24,6 +24,7 @@ bootblock-y += tracker.c
 bootblock-y += ../common/wdt.c ../common/wdt_req.c wdt.c
 
 romstage-y += ../common/cbmem.c
+romstage-y += clkbuf_ctl.c
 romstage-y += ../common/dram_init.c
 romstage-y += ../common/dramc_param.c
 romstage-$(CONFIG_PCI) += ../common/early_init.c ../common/pcie.c

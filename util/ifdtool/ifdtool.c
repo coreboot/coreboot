@@ -2246,8 +2246,7 @@ int main(int argc, char *argv[])
 	int mode_layout = 0, mode_newlayout = 0, mode_density = 0, mode_setstrap = 0;
 	int mode_read = 0, mode_altmedisable = 0, altmedisable = 0, mode_fmap_template = 0;
 	int mode_gpr0_disable = 0, mode_gpr0_enable = 0, mode_gpr0_status = 0;
-	char *region_type_string = NULL, *region_fname = NULL;
-	const char *layout_fname = NULL;
+	char *region_type_string = NULL, *region_fname = NULL, *layout_fname = NULL;
 	char *new_filename = NULL;
 	int region_type = -1, inputfreq = 0;
 	unsigned int value = 0;
@@ -2682,6 +2681,8 @@ int main(int argc, char *argv[])
 		write_image(new_filename, image, size);
 	}
 
+	free(region_type_string);
+	free(layout_fname);
 	free(new_filename);
 	free(image);
 

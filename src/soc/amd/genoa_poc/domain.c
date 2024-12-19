@@ -9,9 +9,8 @@
 #include <arch/ioapic.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <drivers/amd/opensil/opensil.h>
 #include <types.h>
-
-#include <vendorcode/amd/opensil/opensil.h>
 
 #define IOHC_IOAPIC_BASE_ADDR_LO 0x2f0
 
@@ -19,7 +18,7 @@ void read_soc_memmap_resources(struct device *domain, unsigned long *idx)
 {
 	read_lower_soc_memmap_resources(domain, idx);
 
-	add_opensil_memmap(domain, idx);
+	amd_opensil_add_memmap(domain, idx);
 }
 
 static void genoa_domain_set_resources(struct device *domain)

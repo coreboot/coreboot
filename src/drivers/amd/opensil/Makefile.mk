@@ -8,5 +8,6 @@ romstage-y += romstage.c
 
 ramstage-y += acpi.c
 ramstage-y += ramstage.c
+ramstage-y += memmap.c
 
 endif

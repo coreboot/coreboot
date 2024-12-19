@@ -3,6 +3,7 @@
 #include <arch/stages.h>
 #include <soc/emi.h>
 #include <soc/irq2axi.h>
+#include <soc/modem_power_ctrl.h>
 #include <soc/mt6316.h>
 #include <soc/mt6363.h>
 #include <soc/mt6373.h>
@@ -33,6 +34,7 @@ void platform_romstage_main(void)
 	mt6373_init();
 	mt6685_init();
 	mtk_dram_init();
+	modem_power_down();
 
 	if (CONFIG(PCI))
 		mtk_pcie_deassert_perst();

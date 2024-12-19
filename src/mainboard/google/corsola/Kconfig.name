@@ -47,3 +47,6 @@ config BOARD_GOOGLE_STARMIE
 
 config BOARD_GOOGLE_WUGTRIO
 	bool "->  Wugtrio"
+
+config BOARD_GOOGLE_WYRDEER
+	bool "->  Wyrdeer"

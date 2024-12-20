@@ -23,7 +23,7 @@ enum {
 enum {
 	PchSerialIoIndexGSPI0,
 	PchSerialIoIndexGSPI1,
-	PchSerialIoIndexGSPI2,
+	PchSerialIoIndexGSPI0A,
 };
 
 enum {

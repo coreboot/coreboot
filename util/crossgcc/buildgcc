@@ -867,10 +867,10 @@ build_LIBSTDCXX() {
 	mkdir -p gcc/$TARGETARCH && \
 	# shellcheck disable=SC2086
 	$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-target-libgcc && \
-	$MAKE install-target-libgcc DESTDIR=$DESTDIR && \
+	$MAKE install-target-libgcc DESTDIR="$DESTDIR" && \
 	# shellcheck disable=SC2086
 	$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" all-target-libstdc++-v3 && \
-	$MAKE install-target-libstdc++-v3 DESTDIR=$DESTDIR || touch .failed
+	$MAKE install-target-libstdc++-v3 DESTDIR="$DESTDIR" || touch .failed
 }
 
 build_GCC() {

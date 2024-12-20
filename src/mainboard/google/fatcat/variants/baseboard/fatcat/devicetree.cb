@@ -51,6 +51,12 @@ chip soc/intel/pantherlake
 		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
 	}"
 
+	register "serial_io_gspi_mode" = "{
+		[PchSerialIoIndexGSPI0] = PchSerialIoPci,
+		[PchSerialIoIndexGSPI1] = PchSerialIoPci,
+		[PchSerialIoIndexGSPI0A] = PchSerialIoPci,
+	}"
+
 	register "pch_hda_dsp_enable" = "true"
 	register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
 	register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"

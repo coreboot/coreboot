@@ -30,6 +30,7 @@ chip soc/intel/meteorlake
 
 			register "gfx" = "GMA_DEFAULT_PANEL(0)"
 		end
+		device ref vpu on end
 		device ref ioe_shared_sram on end
 		device ref pmc_shared_sram on end
 		device ref cnvi_wifi on

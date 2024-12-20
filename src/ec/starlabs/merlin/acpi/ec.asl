@@ -134,7 +134,9 @@ Scope (\_SB.PCI0.LPCB)
 		}
 
 		#include "ac.asl"
+#if CONFIG(SYSTEM_TYPE_LAPTOP) || CONFIG(SYSTEM_TYPE_DETACHABLE)
 		#include "battery.asl"
+#endif
 #if !CONFIG(EC_STARLABS_MERLIN)
 		#include "events.asl"
 #endif

@@ -1,6 +1,7 @@
 chip soc/intel/tigerlake
 	# FSP UPDs
 	register "eist_enable"			= "true"
+	register "enable_c6dram"		= "1"
 	register "CnviBtCore"			= "true"
 	register "CnviBtAudioOffload"		= "1"
 	register "SaGv"				= "SaGv_Enabled"

@@ -1,6 +1,7 @@
 chip soc/intel/cannonlake
 	# FSP UPDs
 	register "eist_enable"			= "true"
+	register "enable_c6dram"		= "1"
 	register "SaGv"				= "SaGv_Enabled"
 
 	# Graphics

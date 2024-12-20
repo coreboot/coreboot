@@ -3,6 +3,7 @@ chip soc/intel/alderlake
 	register "disable_dynamic_tccold_handshake"	= "true"
 	register "eist_enable"				= "true"
 	register "enable_c1e"				= "true"
+	register "enable_c6dram"			= "true"
 	register "sagv"					= "SaGv_Enabled"
 
 	# Serial I/O

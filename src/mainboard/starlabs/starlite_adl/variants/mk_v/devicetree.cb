@@ -2,6 +2,7 @@ chip soc/intel/alderlake
 	# FSP UPDs
 	register "cnvi_bt_audio_offload"	= "true"
 	register "cnvi_bt_core"			= "true"
+	register "enable_c6dram"		= "true"
 	register "eist_enable"			= "true"
 	register "sagv"				= "SaGv_Enabled"
 

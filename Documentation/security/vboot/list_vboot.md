@@ -84,6 +84,7 @@
 - Redrix
 - Redrix4ES
 - Riven
+- Rull
 - Skolas
 - Skolas4ES
 - Taeko
@@ -94,6 +95,7 @@
 - Tivviks
 - Trulo
 - Uldren
+- Uldrenite
 - Vell
 - Volmar
 - Xivu
@@ -106,7 +108,9 @@
 - Yavista
 - Sundance
 - Pujjoga
+- Pujjogatwin
 - Orisa
+- Telith
 - Butterfly (HP Pavilion Chromebook 14)
 - Cherry
 - Dojo
@@ -139,6 +143,11 @@
 - Drallion
 - Eve (Google Pixelbook)
 - Fatcat
+- Fatcat_ish
+- Fatcatite
+- Fatcatnuvo
+- Felino
+- Francka
 - Fizz
 - Karma
 - Endeavour
@@ -242,6 +251,8 @@
 - Puff
 - Scout
 - Wyvern (CTL Chromebox CBx2)
+- Hylia
+- Navi
 - Rauru
 - Reef/Electro (Acer Chromebook Spin 11 R751T)
 - Pyro (Lenovo Thinkpad (Yoga) 11e Chromebook)
@@ -261,6 +272,7 @@
 - Rex 64
 - Screebo
 - Screebo4ES
+- Kanix
 - Arcada (Latitude 5300 2-in-1 Chromebook Enterprise)
 - Sarien (Dell Latitude 5400 Chromebook Enterprise)
 - Crystaldrift
@@ -268,6 +280,7 @@
 - Markarth (Acer Chromebook Plus 514)
 - Skyrim
 - Winterhold (Dell Latitude 3445 Chromebook)
+- Skywalker
 - Falco (HP Chromebook 14)
 - Leon (Toshiba Chromebook)
 - Peppy (Acer C720/C720P Chromebook)
@@ -326,6 +339,9 @@
 - Woomax (ASUS Chromebook Flip CM5)
 
 ## HP
+- Compaq 8200 Elite SFF
+- Compaq 8200 Elite USDT
+- Compaq 8300 Elite SFF
 - Compaq Elite 8300 USDT
 - Z220 CMT Workstation
 - Z220 SFF Workstation
@@ -423,6 +439,7 @@
 - MC APL7
 
 ## Star Labs
+- Star Labs Byte Mk II (N200)
 - Star Labs Lite Mk III (N5000)
 - Star Labs Lite Mk IV (N5030)
 - Star Labs LabTop Mk III (i7-8550u)
@@ -430,6 +447,7 @@
 - Star Labs StarBook Mk V (i3-1115G4 and i7-1165G7)
 - Star Labs StarBook Mk VI (i3-1220P and i7-1260P)
 - Star Labs StarBook Mk VI (i3-1315U and i7-1360P)
+- Star Labs StarFighter Mk I (i3-1315U, i7-13700H and i9-13900H)
 - Star Labs Lite Mk V (N200)
 
 ## Supermicro

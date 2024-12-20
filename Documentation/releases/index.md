@@ -6,7 +6,7 @@ Please add to the release notes as changes are added:
 ```{toctree}
 :maxdepth: 1
 
-24.11 - November 2024 <coreboot-24.11-relnotes.md>
+24.12 - December 2024 <coreboot-24.12-relnotes.md>
 ```
 
 The [checklist] contains instructions to ensure that a release covers all

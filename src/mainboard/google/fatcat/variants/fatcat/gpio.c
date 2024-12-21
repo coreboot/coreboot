@@ -130,8 +130,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C13, NONE, DEEP, NF1),
 	/* GPP_C14:     CLKREQ5_X1_GEN4_M2_WWAN_N */
 	PAD_CFG_NF(GPP_C14, NONE, DEEP, NF1),
-	/* GPP_C15:     CRD1_CLK_EN */
-	PAD_CFG_GPO(GPP_C15, 1, PLTRST),
 	/* GPP_C16:     TBT_LSX0_TXD  */
 	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),
 	/* GPP_C17:     TBT_LSX0_RXD  */
@@ -151,8 +149,6 @@ static const struct pad_config gpio_table[] = {
 
 	/* GPP_D00:     IMGCLKOUT_1 */
 	PAD_CFG_NF(GPP_D00, NONE, DEEP, NF1),
-	/* GPP_D01:     MOD_TCSS1_TYP_A_VBUS_EN */
-	PAD_CFG_GPO(GPP_D01, 1, DEEP),
 	/* GPP_D02:     Not used */
 	PAD_NC(GPP_D02, NONE),
 	/* GPP_D03:     M.2_WWAN_PERST_GPIO_N */
@@ -234,10 +230,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_E17, NONE, DEEP, NF3),
 	/* GPP_E18:     THC0_SPI1_INT_N_TCH_PNL1 */
 	PAD_CFG_NF(GPP_E18, NONE, DEEP, NF3),
-	/* GPP_E19:     PEG_SLOT_DGPU_SEL_N */
-	PAD_CFG_GPO(GPP_E19, 1, PLTRST),
-	/* GPP_E20:     PEG_SLOT_DGPU_PWR_OK */
-	PAD_CFG_GPI(GPP_E20, NONE, PLTRST),
 	/* GPP_E21:     I2C_PMC_PD_INT_N */
 	PAD_CFG_NF(GPP_E21, NONE, DEEP, NF1),
 	/* GPP_E22:     THC0_SPI1_DSYNC */
@@ -277,16 +269,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_F12, NONE, DEEP, NF8),
 	/* GPP_F13:     THC_I2C1_SDA_TCH_PAD */
 	PAD_CFG_NF(GPP_F13, NONE, DEEP, NF8),
-	/* GPP_F14:     Not used */
-	PAD_NC(GPP_F14, NONE),
-	/* GPP_F15:     Not used */
-	PAD_NC(GPP_F15, NONE),
-	/* GPP_F16:     Not used */
-	PAD_NC(GPP_F16, NONE),
 	/* GPP_F17:     Not used */
 	PAD_CFG_GPI_INT(GPP_F17, NONE, PLTRST, EDGE_BOTH),
-	/* GPP_F18:     TCH_PAD_INT_N */
-	PAD_CFG_GPI_APIC(GPP_F18, NONE, PLTRST, EDGE_SINGLE, INVERT),
 	/* GPP_F19:     GPP_PRIVACY_LED_CAM2 */
 	PAD_CFG_GPO(GPP_F19, 0, PLTRST),
 	/* GPP_F20:     GPP_PRIVACY_LED_CAM1_CVS_HST_WAKE */

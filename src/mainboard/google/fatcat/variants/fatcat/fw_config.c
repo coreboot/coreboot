@@ -474,6 +474,42 @@ static const struct pad_config ish_enable_pads[] = {
 	PAD_CFG_NF(GPP_F23, NONE, DEEP, NF8),
 };
 
+static const struct pad_config fp_disable_pads[] = {
+	PAD_NC(GPP_C15, NONE),
+	/* GPP_D01:     MOD_TCSS1_TYP_A_VBUS_EN */
+	PAD_CFG_GPO(GPP_D01, 1, DEEP),
+	PAD_NC(GPP_E19, NONE),
+	PAD_NC(GPP_E20, NONE),
+	PAD_NC(GPP_F14, NONE),
+	PAD_NC(GPP_F15, NONE),
+	PAD_NC(GPP_F16, NONE),
+	PAD_NC(GPP_F18, NONE),
+};
+
+static const struct pad_config fp_enable_pads[] = {
+	/* GPP_C15:     FPS_RST_N */
+	PAD_CFG_GPO_LOCK(GPP_C15, 1, LOCK_CONFIG),
+	/* GPP_D01:     FPS_SOC_INT_L */
+	PAD_CFG_GPI_IRQ_WAKE(GPP_D01, NONE, PWROK, LEVEL, INVERT),
+	/* GPP_E19:     FPMCU_PWREN */
+	PAD_CFG_GPO(GPP_E19, 1, DEEP),
+	/* GPP_E20:     FPMCU_FW_UPDATE */
+	PAD_CFG_GPO_LOCK(GPP_E20, 0, LOCK_CONFIG),
+	/* GPP_F14:     GPSI0A_MOSI */
+	PAD_CFG_NF(GPP_F14, NONE, DEEP, NF8),
+	/* GPP_F15:     GSPI0A_MISO */
+	PAD_CFG_NF(GPP_F15, NONE, DEEP, NF8),
+	/* GPP_F16:     GPSI0A_CLK */
+	PAD_CFG_NF(GPP_F16, NONE, DEEP, NF8),
+	/* GPP_F18:     GSPI0A_CS0 */
+	PAD_CFG_NF(GPP_F18, NONE, DEEP, NF8),
+};
+
+static const struct pad_config pre_mem_fp_enable_pads[] = {
+	/* GPP_C15:     FPS_RST_N */
+	PAD_CFG_GPO(GPP_C15, 0, DEEP),
+};
+
 void fw_config_configure_pre_mem_gpio(void)
 {
 	if (!fw_config_is_provisioned()) {
@@ -517,6 +553,10 @@ void fw_config_configure_pre_mem_gpio(void)
 	 */
 	if (!fw_config_probe(FW_CONFIG(CELLULAR, CELLULAR_ABSENT)))
 		GPIO_CONFIGURE_PADS(pre_mem_wwan_pwr_seq2_pads);
+
+	if (fw_config_probe(FW_CONFIG(FP, FP_PRESENT)))
+		GPIO_CONFIGURE_PADS(pre_mem_fp_enable_pads);
+
 }
 
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
@@ -607,4 +647,9 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 
 	/* NOTE: disable PEG (x8 slot) and x4 slot wake for now */
 	GPIO_PADBASED_OVERRIDE(padbased_table, peg_x4slot_wake_disable_pads);
+
+	if (fw_config_probe(FW_CONFIG(FP, FP_PRESENT)))
+		GPIO_CONFIGURE_PADS(fp_enable_pads);
+	else
+		GPIO_CONFIGURE_PADS(fp_disable_pads);
 }

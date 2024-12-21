@@ -1,8 +1,10 @@
-FROM alpine:3.19.1
+FROM alpine:3.19
 
 COPY makeSphinx.sh /makeSphinx.sh
 
 RUN \
+	apk update && \
+	apk upgrade --no-cache && \
 	apk add --no-cache \
 		python3 \
 		py3-pip \

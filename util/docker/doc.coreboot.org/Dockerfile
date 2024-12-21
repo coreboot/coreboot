@@ -14,6 +14,9 @@ RUN \
 	&& chmod 755 /makeSphinx.sh
 
 RUN adduser -D coreboot
+RUN \
+	mkdir /data-in /data-out && \
+	chown -R coreboot:coreboot /data-in /data-out
 
 USER coreboot
 
@@ -30,8 +33,6 @@ RUN \
 		sphinx===7.2.6 \
 		sphinx_autobuild===2024.2.4 \
 		sphinx_rtd_theme===2.0.0
-
-VOLUME /data-in /data-out
 
 # For Sphinx-autobuild
 # Port 8000 - HTTP server

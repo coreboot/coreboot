@@ -34,6 +34,8 @@ RUN \
 		sphinx_autobuild===2024.2.4 \
 		sphinx_rtd_theme===2.0.0
 
+RUN git config --global --add safe.directory /data-in
+
 # For Sphinx-autobuild
 # Port 8000 - HTTP server
 # Port 35729 - websockets connection to allow automatic browser reloads after each build

@@ -25,8 +25,8 @@ func GetPlatform(dw0, dw1 uint32) common.PlatformIf {
 	return &p
 }
 
-// RemapRstSrc() remaps Pad Reset Source Config
-func (p *BasePlatform) RemapRstSrc(m *common.Macro) {}
+// RemapResetSource() remaps Pad Reset Source Config
+func (p *BasePlatform) RemapResetSource(m *common.Macro) {}
 
 // Pull() adds The Pad Termination (TERM) parameter from PAD_CFG_DW1 to the macro
 func (p *BasePlatform) Pull(m *common.Macro) {

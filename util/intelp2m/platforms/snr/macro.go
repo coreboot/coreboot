@@ -14,6 +14,12 @@ const (
 	DW1Mask uint32 = 0b11111101111111111100001111111111
 )
 
+var remapping = common.ResetSources{
+	0b00: bits.RstCfgRSMRST << bits.DW0PadRstCfg,
+	0b01: bits.RstCfgDEEP << bits.DW0PadRstCfg,
+	0b10: bits.RstCfgPLTRST << bits.DW0PadRstCfg,
+}
+
 type BasePlatform struct {
 	common.BasePlatform
 }
@@ -28,29 +34,16 @@ func GetPlatform(dw0, dw1 uint32) common.PlatformIf {
 }
 
 // RemmapRstSrc() remaps Pad Reset Source Config
-func (p *BasePlatform) RemapRstSrc(m *common.Macro) {
+func (p *BasePlatform) RemapResetSource(m *common.Macro) {
 	if strings.Contains(m.GetPadId(), "GPD") {
 		// See reset map for the Sunrise GPD Group in the Community 2:
 		// https://github.com/coreboot/coreboot/blob/master/src/soc/intel/skylake/gpio.c#L15
 		// remmap is not required because it is the same as common.
 		return
 	}
-
-	dw0 := p.GetRegisterDW0()
-	remapping := map[uint32]uint32{
-		0b00: bits.RstCfgRSMRST << bits.DW0PadRstCfg,
-		0b01: bits.RstCfgDEEP << bits.DW0PadRstCfg,
-		0b10: bits.RstCfgPLTRST << bits.DW0PadRstCfg,
+	if err := p.UpdateResetSource(remapping); err != nil {
+		logs.Errorf("remap reset source for %s: %v", m.GetPadId(), err)
 	}
-
-	if source, valid := remapping[dw0.GetResetConfig()]; valid {
-		dw0.Value &= 0x3fffffff
-		dw0.Value |= source
-	} else {
-		logs.Errorf("%s: skip re-mapping: DW0 %s: invalid reset config source value 0b%b",
-			m.GetPadId(), dw0, dw0.GetResetConfig())
-	}
-	dw0.CntrMaskFieldsClear(bits.DW0[bits.DW0PadRstCfg])
 }
 
 // Pull() adds The Pad Termination (TERM) parameter from PAD_CFG_DW1 to the macro

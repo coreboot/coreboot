@@ -14,6 +14,12 @@ const (
 	DW1Mask = 0b11111101111111111100001111111111
 )
 
+var remapping = common.ResetSources{
+	0b00: bits.RstCfgRSMRST << bits.DW0PadRstCfg,
+	0b01: bits.RstCfgDEEP << bits.DW0PadRstCfg,
+	0b10: bits.RstCfgPLTRST << bits.DW0PadRstCfg,
+}
+
 type BasePlatform struct {
 	// based on the Cannon Lake platform
 	cnl.BasePlatform
@@ -28,29 +34,15 @@ func GetPlatform(dw0, dw1 uint32) common.PlatformIf {
 	return &p
 }
 
-// Override BasePlatform.RemapRstSrc()
-func (p *BasePlatform) RemapRstSrc(m *common.Macro) {
+// Override BasePlatform.RemapResetSource()
+func (p *BasePlatform) RemapResetSource(m *common.Macro) {
 	if strings.Contains(m.GetPadId(), "GPD") {
 		// See reset map for the TigerLake Community 2:
 		// https://github.com/coreboot/coreboot/blob/master/src/soc/intel/tigerlake/gpio.c#L21
 		// remmap is not required because it is the same as common.
 		return
 	}
-
-	remapping := map[uint32]uint32{
-		0b00: bits.RstCfgRSMRST << bits.DW0PadRstCfg,
-		0b01: bits.RstCfgDEEP << bits.DW0PadRstCfg,
-		0b10: bits.RstCfgPLTRST << bits.DW0PadRstCfg,
+	if err := p.UpdateResetSource(remapping); err != nil {
+		logs.Errorf("remap reset source for %s: %v", m.GetPadId(), err)
 	}
-	dw0 := p.GetRegisterDW0()
-	source, valid := remapping[dw0.GetResetConfig()]
-	if valid {
-		dw0.Value &= 0x3fffffff
-		dw0.Value |= source
-	} else {
-		logs.Errorf("%s: skip re-mapping: DW0 %s: invalid reset config source value 0b%b",
-			m.GetPadId(), dw0, dw0.GetResetConfig())
-	}
-	mask := bits.DW0[bits.DW0PadRstCfg]
-	dw0.CntrMaskFieldsClear(mask)
 }

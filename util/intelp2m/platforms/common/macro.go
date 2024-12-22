@@ -22,7 +22,7 @@ type FieldsIf interface {
 }
 
 type PlatformIf interface {
-	RemapRstSrc(*Macro)
+	RemapResetSource(*Macro)
 	Pull(*Macro)
 	AddGpiMacro(*Macro)
 	AddGpoMacro(*Macro)
@@ -352,7 +352,7 @@ func (m *Macro) Bidirection() {
 
 // Generate() generates string of macro
 func (m *Macro) Generate() string {
-	m.Platform.RemapRstSrc(m)
+	m.Platform.RemapResetSource(m)
 	if dw0 := m.Platform.GetRegisterDW0(); dw0.GetPadMode() == 0 {
 		const txDisable uint32 = 0b01
 		const rxDisable uint32 = 0b10

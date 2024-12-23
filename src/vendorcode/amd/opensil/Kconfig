@@ -25,8 +25,8 @@ config AMD_OPENSIL_PATH
 
 config AMD_OPENSIL_MPIO_CHIP_H_FILE
 	string "Location of specific MPIO chip.h implementation"
-	default "../../genoa_poc/mpio/chip.h" if SOC_AMD_OPENSIL_GENOA_POC
-	default "../../stub/mpio/chip.h"
+	default "$(top)/src/vendorcode/amd/opensil/genoa_poc/mpio/chip.h" if SOC_AMD_OPENSIL_GENOA_POC
+	default "$(top)/src/vendorcode/amd/opensil/stub/mpio/chip.h"
 	help
 	  Set to the location of the MPIO chip.h in the selected openSIL
 	  implementation, so that the common MPIO chip.h file can include the

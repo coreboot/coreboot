@@ -4,7 +4,7 @@
 #include <soc/amd/phoenix/chip.h>
 #include <soc/soc_util.h>
 #include <static.h>
-#include <vendorcode/amd/opensil/chip/mpio/chip.h>
+#include <drivers/amd/opensil/mpio/chip.h>
 #include "display_card_type.h"
 #include "update_devicetree.h"
 
@@ -14,10 +14,10 @@ static void mainboard_update_mpio(void)
 	struct device *ssd1_bridge = DEV_PTR(gpp_bridge_1_2);
 	struct device *wwan_bridge = DEV_PTR(gpp_bridge_2_2);
 	struct device *wlan_bridge = DEV_PTR(gpp_bridge_2_3);
-	struct vendorcode_amd_opensil_chip_mpio_config *mxm_bridge_cfg = config_of(mxm_bridge);
-	struct vendorcode_amd_opensil_chip_mpio_config *ssd1_bridge_cfg = config_of(ssd1_bridge);
-	struct vendorcode_amd_opensil_chip_mpio_config *wwan_bridge_cfg = config_of(wwan_bridge);
-	struct vendorcode_amd_opensil_chip_mpio_config *wlan_bridge_cfg = config_of(wlan_bridge);
+	struct drivers_amd_opensil_mpio_config *mxm_bridge_cfg = config_of(mxm_bridge);
+	struct drivers_amd_opensil_mpio_config *ssd1_bridge_cfg = config_of(ssd1_bridge);
+	struct drivers_amd_opensil_mpio_config *wwan_bridge_cfg = config_of(wwan_bridge);
+	struct drivers_amd_opensil_mpio_config *wlan_bridge_cfg = config_of(wlan_bridge);
 
 	/* Phoenix 2 has less PCIe lanes than Phoenix */
 	if (get_soc_type() == SOC_PHOENIX2) {

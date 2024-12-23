@@ -16,78 +16,78 @@ chip soc/amd/genoa_poc
 		device pci 00.3 alias rcec_0 off end
 
 		device pci 01.0 on end # Dummy device function, do not disable
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.1 alias gpp_bridge_0_0_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.2 alias gpp_bridge_0_1_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.3 alias gpp_bridge_0_2_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.4 alias gpp_bridge_0_3_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.5 alias gpp_bridge_0_4_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.6 alias gpp_bridge_0_5_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.7 alias gpp_bridge_0_6_a off end
 		end
 
 		device pci 02.0 on end # Dummy device function, do not disable
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 02.1 alias gpp_bridge_0_7_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 02.2 alias gpp_bridge_0_8_a off end
 		end
 
 		device pci 03.0 on end # Dummy device function, do not disable
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.1 alias gpp_bridge_0_0_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.2 alias gpp_bridge_0_1_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.3 alias gpp_bridge_0_2_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.4 alias gpp_bridge_0_3_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.5 alias gpp_bridge_0_4_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.6 alias gpp_bridge_0_5_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.7 alias gpp_bridge_0_6_b off end
 		end
 
 		device pci 04.0 on end # Dummy device function, do not disable
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 04.1 alias gpp_bridge_0_7_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 04.2 alias gpp_bridge_0_8_b off end
 		end
 
 		device pci 05.0 on end # Dummy device function, do not disable
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 05.1 alias gpp_bridge_0_0_c off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 05.2 alias gpp_bridge_0_1_c off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 05.3 alias gpp_bridge_0_2_c off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 05.4 alias gpp_bridge_0_3_c off end
 		end
 
@@ -128,64 +128,64 @@ chip soc/amd/genoa_poc
 		device pci 00.3 alias rcec_1 off end
 
 		device pci 01.0 on end # Dummy device function, do not disable
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.1 alias gpp_bridge_1_0_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.2 alias gpp_bridge_1_1_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.3 alias gpp_bridge_1_2_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.4 alias gpp_bridge_1_3_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.5 alias gpp_bridge_1_4_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.6 alias gpp_bridge_1_5_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.7 alias gpp_bridge_1_6_a off end
 		end
 
 		device pci 02.0 on end # Dummy device function, do not disable
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 02.1 alias gpp_bridge_1_7_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 02.2 alias gpp_bridge_1_8_a off end
 		end
 
 		device pci 03.0 on end # Dummy device function, do not disable
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.1 alias gpp_bridge_1_0_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.2 alias gpp_bridge_1_1_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.3 alias gpp_bridge_1_2_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.4 alias gpp_bridge_1_3_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.5 alias gpp_bridge_1_4_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.6 alias gpp_bridge_1_5_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.7 alias gpp_bridge_1_6_b off end
 		end
 
 		device pci 04.0 on end # Dummy device function, do not disable
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 04.1 alias gpp_bridge_1_7_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 04.2 alias gpp_bridge_1_8_b off end
 		end
 
@@ -207,64 +207,64 @@ chip soc/amd/genoa_poc
 		device pci 00.3 alias rcec_2 off end
 
 		device pci 01.0 on end # Dummy device function, do not disable
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.1 alias gpp_bridge_2_0_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.2 alias gpp_bridge_2_1_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.3 alias gpp_bridge_2_2_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.4 alias gpp_bridge_2_3_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.5 alias gpp_bridge_2_4_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.6 alias gpp_bridge_2_5_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.7 alias gpp_bridge_2_6_a off end
 		end
 
 		device pci 02.0 on end # Dummy device function, do not disable
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 02.1 alias gpp_bridge_2_7_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 02.2 alias gpp_bridge_2_8_a off end
 		end
 
 		device pci 03.0 on end # Dummy device function, do not disable
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.1 alias gpp_bridge_2_0_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.2 alias gpp_bridge_2_1_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.3 alias gpp_bridge_2_2_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.4 alias gpp_bridge_2_3_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.5 alias gpp_bridge_2_4_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.6 alias gpp_bridge_2_5_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.7 alias gpp_bridge_2_6_b off end
 		end
 
 		device pci 04.0 on end # Dummy device function, do not disable
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 04.1 alias gpp_bridge_2_7_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 04.2 alias gpp_bridge_2_8_b off end
 		end
 
@@ -286,78 +286,78 @@ chip soc/amd/genoa_poc
 		device pci 00.3 alias rcec_3 off end
 
 		device pci 01.0 on end # Dummy device function, do not disable
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.1 alias gpp_bridge_3_0_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.2 alias gpp_bridge_3_1_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.3 alias gpp_bridge_3_2_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.4 alias gpp_bridge_3_3_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.5 alias gpp_bridge_3_4_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.6 alias gpp_bridge_3_5_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 01.7 alias gpp_bridge_3_6_a off end
 		end
 
 		device pci 02.0 on end # Dummy device function, do not disable
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 02.1 alias gpp_bridge_3_7_a off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 02.2 alias gpp_bridge_3_8_a off end
 		end
 
 		device pci 03.0 on end # Dummy device function, do not disable
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.1 alias gpp_bridge_3_0_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.2 alias gpp_bridge_3_1_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.3 alias gpp_bridge_3_2_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.4 alias gpp_bridge_3_3_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.5 alias gpp_bridge_3_4_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.6 alias gpp_bridge_3_5_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 03.7 alias gpp_bridge_3_6_b off end
 		end
 
 		device pci 04.0 on end # Dummy device function, do not disable
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 04.1 alias gpp_bridge_3_7_b off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 04.2 alias gpp_bridge_3_8_b off end
 		end
 
 		device pci 05.0 on end # Dummy device function, do not disable
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 05.1 alias gpp_bridge_3_0_c off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 05.2 alias gpp_bridge_3_1_c off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 05.3 alias gpp_bridge_3_2_c off end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			device pci 05.4 alias gpp_bridge_3_3_c off end
 		end
 

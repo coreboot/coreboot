@@ -3,11 +3,13 @@
 #include <bootstate.h>
 #include <vendorcode/amd/opensil/opensil.h>
 
+#include "mpio/chip.h"
 #include "opensil.h"
 
 void amd_opensil_silicon_init(void)
 {
 	setup_opensil();
+	configure_mpio();
 	opensil_xSIM_timepoint_1();
 }
 

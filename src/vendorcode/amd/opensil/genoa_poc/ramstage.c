@@ -12,6 +12,7 @@
 #include <static.h>
 #include <stdio.h>
 #include <xSIM-api.h>
+
 #include "opensil_console.h"
 #include "../opensil.h"
 
@@ -128,7 +129,6 @@ void setup_opensil(void)
 	setup_rc_manager_default();
 	configure_usb();
 	configure_sata();
-	configure_mpio();
 }
 
 static void opensil_entry(SIL_TIMEPOINT timepoint)

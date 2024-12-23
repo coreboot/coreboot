@@ -208,7 +208,7 @@ chip soc/amd/phoenix
 
 	device domain 0 on
 		device ref iommu on end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			register "type" = "IFTYPE_PCIE"
 			register "start_lane" = "0"
 			register "end_lane" = "7"
@@ -217,7 +217,7 @@ chip soc/amd/phoenix
 			# register "gpio_group" is currently not used
 			device ref gpp_bridge_1_1 on end # MXM
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			register "type" = "IFTYPE_PCIE"
 			register "start_lane" = "8"
 			register "end_lane" = "11"
@@ -231,7 +231,7 @@ chip soc/amd/phoenix
 				end
 			end
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			register "type" = "IFTYPE_PCIE"
 			register "start_lane" = "12"
 			register "end_lane" = "12"
@@ -239,7 +239,7 @@ chip soc/amd/phoenix
 			register "clk_req" = "CLK_REQ6"
 			device ref gpp_bridge_1_3 on end # GBE
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			register "type" = "IFTYPE_PCIE"
 			register "start_lane" = "13"
 			register "end_lane" = "13"
@@ -247,7 +247,7 @@ chip soc/amd/phoenix
 			register "clk_req" = "CLK_REQ5"
 			device ref gpp_bridge_2_1 on end # SD
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			register "type" = "IFTYPE_PCIE"
 			register "start_lane" = "14"
 			register "end_lane" = "14"
@@ -255,7 +255,7 @@ chip soc/amd/phoenix
 			register "clk_req" = "CLK_REQ4"
 			device ref gpp_bridge_2_2 on end # WWAN
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			register "type" = "IFTYPE_PCIE"
 			register "start_lane" = "15"
 			register "end_lane" = "15"
@@ -263,7 +263,7 @@ chip soc/amd/phoenix
 			register "clk_req" = "CLK_REQ3"
 			device ref gpp_bridge_2_3 on end # WIFI
 		end
-		chip vendorcode/amd/opensil/chip/mpio
+		chip drivers/amd/opensil/mpio
 			register "type" = "IFTYPE_PCIE"
 			register "start_lane" = "16"
 			register "end_lane" = "19"

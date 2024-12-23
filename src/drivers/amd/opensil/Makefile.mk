@@ -2,6 +2,8 @@
 
 ifeq ($(CONFIG_OPENSIL_DRIVER),y)
 
+subdirs-y += mpio
+
 ramstage-y += ramstage.c
 
 endif

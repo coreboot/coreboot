@@ -966,6 +966,25 @@ int google_chromeec_get_usb_pd_power_info(enum usb_chg_type *type,
 	return 0;
 }
 
+/*
+ * This API checks the current status of the USB-C port and returns
+ * whether a USB Power Delivery (PD) charger is currently connected.
+ */
+bool google_chromeec_is_usb_pd_attached(void)
+{
+	const struct ec_params_usb_pd_power_info params = {
+		.port = PD_POWER_CHARGING_PORT,
+	};
+	struct ec_response_usb_pd_power_info resp = {};
+	int rv;
+
+	rv = ec_cmd_usb_pd_power_info(PLAT_EC, &params, &resp);
+	if (rv != 0)
+		return false;
+
+	return resp.type == USB_CHG_TYPE_PD;
+}
+
 int google_chromeec_override_dedicated_charger_limit(uint16_t current_lim,
 						     uint16_t voltage_lim)
 {

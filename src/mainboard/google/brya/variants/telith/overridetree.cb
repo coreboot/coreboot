@@ -388,18 +388,6 @@ chip soc/intel/alderlake
 				register "has_power_resource" = "1"
 				device i2c 10 on end
 			end
-			chip drivers/generic/gpio_keys
-				register "name" = ""PENH""
-				register "gpio" = "ACPI_GPIO_INPUT_ACTIVE_LOW(GPP_F13)"
-				register "key.wake_gpe" = "GPE0_DW2_15"
-				register "key.wakeup_route" = "WAKEUP_ROUTE_SCI"
-				register "key.wakeup_event_action" = "EV_ACT_ANY"
-				register "key.dev_name" = ""EJCT""
-				register "key.linux_code" = "SW_PEN_INSERTED"
-				register "key.linux_input_type" = "EV_SW"
-				register "key.label" = ""pen_eject""
-				device generic 0 on end
-			end
 		end
 		device ref i2c2 on
 			chip drivers/intel/mipi_camera

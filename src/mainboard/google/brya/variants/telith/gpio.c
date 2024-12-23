@@ -42,8 +42,10 @@ static const struct pad_config override_gpio_table[] = {
 
 	/* F6  : CNV_PA_BLANKING ==> NC */
 	PAD_NC(GPP_F6, NONE),
-	/* F15 : GSXSRESET# ==> SOC_PEN_DETECT_ODL */
-	PAD_CFG_GPI_SCI_HIGH(GPP_F15, NONE, PLTRST, EDGE_BOTH),
+	/* F15 : GSXSRESET# ==> GPIO */
+	PAD_CFG_GPO(GPP_F15, 0, DEEP),
+	/* F13 : GSXSLOAD ==> GPIO */
+	PAD_CFG_GPO(GPP_F13, 0, DEEP),
 	/* F18 : THC1_SPI2_INT# ==> NC */
 	PAD_NC(GPP_F18, NONE),
 	/* F23 : V1P05_CTRL ==> NC*/

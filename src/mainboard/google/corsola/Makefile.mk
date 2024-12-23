@@ -22,6 +22,8 @@ ramstage-y += mainboard.c
 ramstage-y += panel.c
 ramstage-y += panel_anx7625.c
 ramstage-y += panel_ps8640.c
+ramstage-y += panel_tps65132s.c
+
 ramstage-y += regulator.c
 ramstage-y += reset.c
 

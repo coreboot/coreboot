@@ -50,11 +50,11 @@ static struct mtk_dispsys_regs *const
 static struct mtk_dispsys_regs *const
 	mtk_disp = (void *)DISP_VDISP_AO_CONFIG_BASE;
 static struct mtk_mfgpll_regs *const
-	mtk_mfgpll = (void *)MFGPLL_PLL_CTRL_BASE;
+	mtk_mfgpll = (void *)MFG_PLL_PLL_CTRL_BASE;
 static struct mtk_mfgpll_regs *const
-	mtk_mfgpll_sc0 = (void *)MFGPLL_SC0_PLL_CTRL_BASE;
+	mtk_mfgpll_sc0 = (void *)MFG_PLL_SC0_PLL_CTRL_BASE;
 static struct mtk_mfgpll_regs *const
-	mtk_mfgpll_sc1 = (void *)MFGPLL_SC1_PLL_CTRL_BASE;
+	mtk_mfgpll_sc1 = (void *)MFG_PLL_SC1_PLL_CTRL_BASE;
 static struct mtk_mcupll_regs *const
 	mtk_ccipll = (void *)CCIPLL_PLL_CTRL_BASE;
 static struct mtk_mcupll_regs *const

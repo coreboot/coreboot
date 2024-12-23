@@ -1,0 +1,122 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_AMD_CRATER_COMMON
+	def_bool n
+	select BOARD_ROMSIZE_KB_16384	# Birman actually has a 32MiB ROM
+	select EC_ACPI
+	select SOC_AMD_COMMON_BLOCK_USE_ESPI if !SOC_AMD_COMMON_BLOCK_SIMNOW_BUILD
+	select DRIVERS_PCIE_RTD3_DEVICE
+	select MAINBOARD_HAS_CHROMEOS
+	select HAVE_ACPI_RESUME
+	select PCIEXP_ASPM
+	select PCIEXP_CLK_PM
+	select PCIEXP_COMMON_CLOCK
+	select PCIEXP_L1_SUB_STATE
+	select SOC_AMD_COMMON_BLOCK_ESPI_RETAIN_PORT80_EN if !SOC_AMD_COMMON_BLOCK_SIMNOW_BUILD
+	select SOC_AMD_COMMON_BLOCK_SIMNOW_SUPPORTED
+	select SPI_FLASH_EXIT_4_BYTE_ADDR_MODE
+	select SOC_AMD_COMMON_BLOCK_PSP_RPMC
+	select SOC_AMD_COMMON_BLOCK_PSP_SMI
+
+config BOARD_AMD_CRATER_RENOIR
+	select BOARD_AMD_CRATER_COMMON
+	select SOC_AMD_CEZANNE
+
+if BOARD_AMD_CRATER_RENOIR
+
+config FMDFILE
+	default "src/mainboard/amd/crater/chromeos_renoir.fmd" if CHROMEOS
+	default "src/mainboard/amd/crater/board_renoir.fmd"
+
+config MAINBOARD_DIR
+	default "amd/crater"
+
+config MAINBOARD_PART_NUMBER
+	default "Crater_RENOIR"
+
+config DEVICETREE
+	default "devicetree_renoir.cb"
+
+config CRATER_HAVE_MCHP_FW
+	bool "Have Microchip EC firmware?"
+	default n
+
+config CRATER_MCHP_SIG_FILE
+	string "Microchip EC signature file"
+	depends on CRATER_HAVE_MCHP_FW
+	help
+	  The EC sig blob is the first 4kBytes of the firmware image.
+	  The first 4 bytes form a pointer (with CRC) to where the EC firmware
+	  is located
+
+config AMD_SOC_CONSOLE_UART
+	default y if !SOC_AMD_COMMON_BLOCK_SIMNOW_BUILD
+
+config CRATER_MCHP_FW_FILE
+	string "Microchip EC firmware file"
+	depends on CRATER_HAVE_MCHP_FW
+	default "3rdparty/blobs/mainboard/amd/crater/EcSig_Crater.bin"
+	help
+	  The EC firmware blob is at the EC_BODY FMAP region of the firmware image.
+
+config VBOOT
+	select VBOOT_NO_BOARD_SUPPORT
+	select VBOOT_SEPARATE_VERSTAGE
+	select VBOOT_STARTS_IN_BOOTBLOCK
+
+config VBOOT_VBNV_OFFSET
+	hex
+	default 0x2A
+
+config RO_REGION_ONLY
+	string
+	depends on VBOOT_SLOTS_RW_AB || VBOOT_SLOTS_RW_A
+	# Add the EFS and EC to the RO region only
+	# This is a crater specific override of soc/amd/cezanne/Kconfig
+	default "apu/amdfw apu/ecfw"
+
+config CHROMEOS
+	# Use default libpayload config
+	select LP_DEFCONFIG_OVERRIDE if PAYLOAD_DEPTHCHARGE
+	# We don't have recovery buttons, so we can't manually enable devmode.
+	select GBB_FLAG_FORCE_DEV_SWITCH_ON
+
+config ENABLE_EDP
+	bool "Enable EDP display"
+	default n
+	help
+	  Select this option to enable EDP display on DDI1 interface
+
+config ENABLE_EVAL_CARD
+	bool "Enable Eval Card"
+	help
+	  Enable the Eval Card PCIe slot
+
+config ENABLE_EVAL_19V
+	bool "Enable 19V rail for Eval Card"
+	depends on ENABLE_EVAL_CARD
+	help
+	  Enable the 19V rail for Eval Card PCIe slot
+
+if !EM100	# EM100 defaults in soc/amd/common/blocks/spi/Kconfig
+config EFS_SPI_READ_MODE
+	default 3	# Quad IO (1-1-4)
+
+config EFS_SPI_SPEED
+	default 0	# 66MHz
+
+config EFS_SPI_MICRON_FLAG
+	default 0
+
+config NORMAL_READ_SPI_SPEED
+	default 1	# 33MHz
+
+config ALT_SPI_SPEED
+	default 1	# 33MHz
+
+config TPM_SPI_SPEED
+	default 1	# 33MHz
+
+endif # !EM100
+
+endif # BOARD_AMD_CRATER_COMMON

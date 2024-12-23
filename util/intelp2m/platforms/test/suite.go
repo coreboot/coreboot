@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	"review.coreboot.org/coreboot.git/util/intelp2m/config/p2m"
-	"review.coreboot.org/coreboot.git/util/intelp2m/fields"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common/fields"
 )
 
 type (

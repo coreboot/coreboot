@@ -2,10 +2,10 @@ package fields
 
 import (
 	"review.coreboot.org/coreboot.git/util/intelp2m/config/p2m"
-	"review.coreboot.org/coreboot.git/util/intelp2m/fields/cb"
-	"review.coreboot.org/coreboot.git/util/intelp2m/fields/fsp"
-	"review.coreboot.org/coreboot.git/util/intelp2m/fields/raw"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common/fields/cb"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common/fields/fsp"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common/fields/raw"
 )
 
 // InterfaceSet - set the interface for decoding configuration

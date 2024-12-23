@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"review.coreboot.org/coreboot.git/util/intelp2m/config/p2m"
-	"review.coreboot.org/coreboot.git/util/intelp2m/fields/test"
+	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/common/fields/test"
 )
 
 func TestFSPFields(t *testing.T) {

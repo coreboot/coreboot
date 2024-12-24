@@ -140,6 +140,14 @@ int google_chromeec_get_usb_pd_power_info(enum usb_chg_type *type,
 /* Check if a USB Power Delivery (PD) charger is attached */
 bool google_chromeec_is_usb_pd_attached(void);
 
+/**
+ * Check if charger is present.
+ *
+ * @return		true: if the charger is present
+ *			false: if the charger is not present
+ */
+bool google_chromeec_is_charger_present(void);
+
 /*
  * Set max current and voltage of a dedicated charger.
  *

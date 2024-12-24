@@ -756,7 +756,7 @@ chip soc/intel/pantherlake
 			chip drivers/i2c/hid
 				register "generic.hid" = ""HFW68H""
 				register "generic.desc" = ""Hynitron TOUCHPAD""
-				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F18_IRQ)"
+				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_A13_IRQ)"
 				register "generic.uid" = "5"
 				register "generic.detect" = "1"
 				register "hid_desc_reg_offset" = "0x20"

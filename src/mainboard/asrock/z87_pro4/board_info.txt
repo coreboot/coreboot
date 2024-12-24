@@ -1,0 +1,7 @@
+Category: desktop
+Board URL: https://www.asrock.com/mb/Intel/Z87%20Pro4/
+ROM protocol: SPI
+Flashrom support: n
+ROM package: DIP-8 (1x)
+ROM socketed: y
+Release year: 2013

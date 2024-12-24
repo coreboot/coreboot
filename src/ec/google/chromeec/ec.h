@@ -448,6 +448,14 @@ void google_chromeec_clear_ec_ap_idle(void);
 bool google_chromeec_is_battery_present_and_above_critical_threshold(void);
 
 /**
+ * Check if battery level is below critical threshold.
+ *
+ * @return		true: if the battery level is below critical threshold
+ *			false: any the above conditions is not true
+ */
+bool google_chromeec_is_below_critical_threshold(void);
+
+/**
  * Check if battery is present.
  *
  * @return		true: if the battery is present

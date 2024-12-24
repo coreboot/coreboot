@@ -1737,21 +1737,21 @@ typedef struct {
 
 /** Offset 0x05BF - Reserved
 **/
-  UINT8                       Reserved50[6];
+  UINT8                       Reserved50[7];
 
-/** Offset 0x05C5 - Usage type for ClkSrc
+/** Offset 0x05C6 - Usage type for ClkSrc
   0-23: PCH rootport, 0x70:LAN, 0x80: unspecified but in use (free running), 0xFF: not used
 **/
   UINT8                       PcieClkSrcUsage[18];
 
-/** Offset 0x05D7 - ClkReq-to-ClkSrc mapping
+/** Offset 0x05D8 - ClkReq-to-ClkSrc mapping
   Number of ClkReq signal assigned to ClkSrc
 **/
   UINT8                       PcieClkSrcClkReq[18];
 
-/** Offset 0x05E9 - Reserved
+/** Offset 0x05EA - Reserved
 **/
-  UINT8                       Reserved51[47];
+  UINT8                       Reserved51[46];
 
 /** Offset 0x0618 - Enable PCIE RP Mask
   Enable/disable PCIE Root Ports. 0: disable, 1: enable. One bit for each port, bit0
@@ -2918,7 +2918,7 @@ typedef struct {
 
 /** Offset 0x0B10
 **/
-  UINT8                       UnusedUpdSpace56[6];
+  UINT8                       UnusedUpdSpace55[6];
 
 /** Offset 0x0B16
 **/

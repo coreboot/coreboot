@@ -89,6 +89,6 @@ void mt6359p_enable_vsim1(bool enable);
 void mt6359p_enable_vm18(bool enable);
 void mt6359p_init_pmif_arb(void);
 void mt6359p_write_field(u32 reg, u32 val, u32 mask, u32 shift);
-void pmic_init_setting(void);
-void pmic_lp_setting(void);
+void mt6359p_init_setting(void);
+void mt6359p_lp_setting(void);
 #endif /* __SOC_MEDIATEK_MT6359P_H__ */

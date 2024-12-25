@@ -269,6 +269,6 @@ void mt6363_init(void)
 	pmic_set_power_hold();
 	pmic_wdt_set();
 	pmic_protect_key_setting(false);
-	pmic_init_setting();
+	mt6363_init_setting();
 	pmic_protect_key_setting(true);
 }

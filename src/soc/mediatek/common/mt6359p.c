@@ -347,8 +347,8 @@ void mt6359p_init(void)
 	pmic_set_power_hold();
 	pmic_wdt_set();
 	pmic_protect_key_setting(false);
-	pmic_init_setting();
-	pmic_lp_setting();
+	mt6359p_init_setting();
+	mt6359p_lp_setting();
 	pmic_efuse_setting();
 	pmic_protect_key_setting(true);
 	pmic_wk_vs2_voter_setting();

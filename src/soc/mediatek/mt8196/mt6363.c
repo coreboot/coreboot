@@ -376,7 +376,7 @@ static const struct pmic_setting init_setting[] = {
 	{0x191A, 0x8, 0xFF},
 };
 
-void pmic_init_setting(void)
+void mt6363_init_setting(void)
 {
 	for (int i = 0; i < ARRAY_SIZE(init_setting); i++)
 		mt6363_write_field(init_setting[i].addr, init_setting[i].val,

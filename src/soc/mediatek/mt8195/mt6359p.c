@@ -239,14 +239,14 @@ static const struct pmic_setting lp_setting[] = {
 	{0x1d14, 0x1, 0x1, 0x2},
 };
 
-void pmic_init_setting(void)
+void mt6359p_init_setting(void)
 {
 	for (int i = 0; i < ARRAY_SIZE(init_setting); i++)
 		mt6359p_write_field(init_setting[i].addr, init_setting[i].val,
 			init_setting[i].mask, init_setting[i].shift);
 }
 
-void pmic_lp_setting(void)
+void mt6359p_lp_setting(void)
 {
 	for (int i = 0; i < ARRAY_SIZE(lp_setting); i++)
 		mt6359p_write_field(lp_setting[i].addr, lp_setting[i].val,

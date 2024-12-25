@@ -211,7 +211,7 @@ void mt6363_enable_vtref18(bool enable)
 
 void mt6363_enable_buck5(bool enable)
 {
-	mt6363_write_field(PMIC_VBUCK5_OP_EN_2, enable, 0x7, 0);
+	mt6363_write_field(PMIC_VBUCK5_OP_EN_2, enable, 0x1, 7);
 }
 
 void mt6363_enable_vcn15(bool enable)

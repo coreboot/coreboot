@@ -19,6 +19,7 @@ romstage-y += ../common/emi.c
 romstage-y += ../common/memory.c ../common/memory_test.c
 romstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 
+ramstage-y += ../common/dramc_info.c
 ramstage-y += ../common/emi.c
 ramstage-y += ../common/memory.c
 ramstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c

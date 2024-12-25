@@ -1,8 +1,15 @@
 /* SPDX-License-Identifier: GPL-2.0-only OR MIT */
 
+#include <bootmem.h>
 #include <device/device.h>
+#include <soc/dramc_info.h>
 #include <soc/emi.h>
 #include <symbols.h>
+
+void bootmem_platform_add_ranges(void)
+{
+	reserve_buffer_for_dramc();
+}
 
 static void soc_read_resources(struct device *dev)
 {

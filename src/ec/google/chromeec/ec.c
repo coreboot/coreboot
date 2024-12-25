@@ -1002,6 +1002,30 @@ bool google_chromeec_is_charger_present(void)
 	return false;
 }
 
+/*
+ * Using below scenarios to conclude if device has a barrel charger attached.
+ * +-----------+-----------------+------------------+---------------------------------+
+ * | Scenarios | Charger Present | USB-C PD Present | Conclusion: Barrel Present ?    |
+ * +-----------+-----------------+------------------+---------------------------------+
+ * |  #1       | Yes             | Yes              | Non Conclusive (comments below) |
+ * |  #2       | No              | Yes              | Not possible                    |
+ * |  #3       | Yes             | No               | Must be barrel charger          |
+ * |  #4       | No              | No               | Barrel not present              |
+ * +-----------+-----------------+------------------+---------------------------------+
+ */
+bool google_chromeec_is_barrel_charger_present(void)
+{
+	/*
+	 * If both the barrel charger and USB-C PD are connected, the barrel charger takes
+	 * precedence over USB-C PD. This means google_chromeec_is_usb_pd_attached()
+	 * will return false in such a scenario.
+	 *
+	 * This behavior allows us to reliably detect the presence of a barrel
+	 * charger, even when a USB-C PD charger is also connected.
+	 */
+	return google_chromeec_is_charger_present() && !google_chromeec_is_usb_pd_attached();
+}
+
 int google_chromeec_override_dedicated_charger_limit(uint16_t current_lim,
 						     uint16_t voltage_lim)
 {

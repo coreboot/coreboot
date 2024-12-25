@@ -148,6 +148,14 @@ bool google_chromeec_is_usb_pd_attached(void);
  */
 bool google_chromeec_is_charger_present(void);
 
+/**
+ * Check if barrel charger is present.
+ *
+ * @return		true: if the barrel charger is present
+ *			false: if the barrel charger is not present
+ */
+bool google_chromeec_is_barrel_charger_present(void);
+
 /*
  * Set max current and voltage of a dedicated charger.
  *

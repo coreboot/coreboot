@@ -82,15 +82,25 @@ func extractGroup(line string) Entry {
 	return group
 }
 
+// checkGPPG() checks whether the desired group is present in the string
+func checkKeywords(line string, slice []string) bool {
+	for _, key := range slice {
+		if strings.Contains(line, key) {
+			return true
+		}
+	}
+	return false
+}
+
 // Extract() extracts pad information from a string
 func Extract(line string) Entry {
-	if included, _ := common.KeywordsCheck(line, "GPIO Community", "GPIO Group"); included {
+	if checkKeywords(line, []string{"GPIO Community", "GPIO Group"}) {
 		return extractGroup(line)
 	}
-	if checkKeyword := platforms.GetKeywordChekingAction(); checkKeyword == nil {
-		logs.Errorf("information extraction error: skip line <%s>", line)
+	if gppg, err := platforms.GetGPPGroups(); err != nil {
+		logs.Errorf("extract error: %v: skip line <%s>", err, line)
 		return Entry{EType: EntryEmpty}
-	} else if checkKeyword(line) {
+	} else if checkKeywords(line, gppg) {
 		pad, err := extractPad(line)
 		if err != nil {
 			logs.Errorf("extract pad info from %s: %v", line, err)

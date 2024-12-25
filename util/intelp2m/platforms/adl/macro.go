@@ -14,6 +14,11 @@ const (
 	DW1Mask uint32 = 0b11111101111111111100001111111111
 )
 
+// "GPP_A", "GPP_B", "GPP_C", "GPP_D", "GPP_E", "GPP_F", "GPP_G",
+// "GPP_H", "GPP_I", "GPP_J", "GPP_K", "GPP_R", "GPP_S", "GPP_T",
+// "GPD", "VGPIO_USB", "VGPIO_PCIE"
+var GPPGroups = []string{"GPP_", "GPD", "VGPIO"}
+
 var remapping = common.ResetSources{
 	0b00: bits.RstCfgRSMRST << bits.DW0PadRstCfg,
 	0b01: bits.RstCfgDEEP << bits.DW0PadRstCfg,

@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"review.coreboot.org/coreboot.git/util/intelp2m/config/p2m"
-	"review.coreboot.org/coreboot.git/util/intelp2m/logs"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/adl"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/apl"
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/cnl"
@@ -17,9 +16,9 @@ import (
 	"review.coreboot.org/coreboot.git/util/intelp2m/platforms/tgl"
 )
 
-type KeywordAction func(line string) bool
-
 type Constructor func(dw0, dw1 uint32) common.PlatformIf
+
+var ErrUnregisteredPlatform = fmt.Errorf("unregistered platform type %d", p2m.Config.Platform)
 
 var platformConstructorMap = map[p2m.PlatformType]Constructor{
 	p2m.Alder:      adl.GetPlatform,
@@ -33,30 +32,30 @@ var platformConstructorMap = map[p2m.PlatformType]Constructor{
 	p2m.Lewisburg:  lbg.GetPlatform,
 }
 
-func GetKeywordChekingAction() KeywordAction {
-	actions := map[p2m.PlatformType]KeywordAction{
-		p2m.Alder:      adl.CheckKeyword,
-		p2m.Apollo:     apl.CheckKeyword,
-		p2m.Cannon:     cnl.CheckKeyword,
-		p2m.Sunrise:    snr.CheckKeyword,
-		p2m.Tiger:      tgl.CheckKeyword,
-		p2m.Jasper:     jsl.CheckKeyword,
-		p2m.Meteor:     mtl.CheckKeyword,
-		p2m.Emmitsburg: ebg.CheckKeyword,
-		p2m.Lewisburg:  lbg.CheckKeyword,
-	}
-	action, exist := actions[p2m.Config.Platform]
-	if !exist {
-		logs.Errorf("unregistered platform type %d", p2m.Config.Platform)
-		return nil
-	}
-	return action
+var GppMap = map[p2m.PlatformType][]string{
+	p2m.Alder:      adl.GPPGroups,
+	p2m.Apollo:     apl.GPPGroups,
+	p2m.Cannon:     cnl.GPPGroups,
+	p2m.Sunrise:    snr.GPPGroups,
+	p2m.Tiger:      tgl.GPPGroups,
+	p2m.Jasper:     jsl.GPPGroups,
+	p2m.Meteor:     mtl.GPPGroups,
+	p2m.Emmitsburg: ebg.GPPGroups,
+	p2m.Lewisburg:  lbg.GPPGroups,
 }
 
 func GetConstructor() (Constructor, error) {
 	constructor, exist := platformConstructorMap[p2m.Config.Platform]
 	if !exist {
-		return nil, fmt.Errorf("unregistered platform type %d", p2m.Config.Platform)
+		return nil, ErrUnregisteredPlatform
 	}
 	return constructor, nil
+}
+
+func GetGPPGroups() ([]string, error) {
+	groups, exist := GppMap[p2m.Config.Platform]
+	if !exist {
+		return nil, ErrUnregisteredPlatform
+	}
+	return groups, nil
 }

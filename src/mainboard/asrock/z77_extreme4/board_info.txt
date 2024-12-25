@@ -1,0 +1,7 @@
+Category: desktop
+Board URL: https://www.asrock.com/mb/Intel/Z77%20Extreme4/
+ROM protocol: SPI
+Flashrom support: y
+ROM package: DIP-8
+ROM socketed: y
+Release year: 2012

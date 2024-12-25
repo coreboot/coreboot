@@ -1,0 +1,168 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+chip northbridge/intel/sandybridge
+	register "spd_addresses" = "{0x50, 0x51, 0x52, 0x53}"
+	device domain 0 on
+		device ref host_bridge on
+			subsystemid 0x1849 0x0150
+		end
+		device ref peg10 on
+			subsystemid 0x1849 0x0151
+			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthLong"
+			                 "PCIE2" "SlotDataBusWidth16X"
+		end
+		device ref peg11 on
+			subsystemid 0x1849 0x0155
+			smbios_slot_desc "SlotTypePciExpressGen3X16" "SlotLengthLong"
+			                 "PCIE3" "SlotDataBusWidth8X"
+		end
+		device ref igd on
+			subsystemid 0x1849 0x0162
+			register "gpu_dp_b_hotplug" = "4"
+			register "gpu_dp_c_hotplug" = "4"
+			register "gpu_dp_d_hotplug" = "4"
+		end
+		chip southbridge/intel/bd82x6x # Intel Series 7 Panther Point PCH
+			register "pcie_port_coalesce" = "1"
+			register "spi_lvscc" = "0x2005"
+			register "spi_uvscc" = "0x2005"
+			register "usb_port_config" = "{
+				{1, 6, 0},
+				{1, 6, 0},
+				{1, 1, 1},
+				{1, 1, 1},
+				{1, 1, 2},
+				{1, 1, 2},
+				{1, 6, 3},
+				{1, 6, 3},
+				{1, 6, 4},
+				{1, 6, 4},
+				{1, 6, 6},
+				{1, 1, 5},
+				{1, 1, 5},
+				{1, 6, 6},
+			}"
+			device ref xhci on
+				subsystemid 0x1849 0x1e31
+				register "superspeed_capable_ports" = "0x0000000f"
+				register "xhci_switchable_ports" = "0x0000000f"
+			end
+			device ref mei1 on
+				subsystemid 0x1849 0x1e3a
+			end
+			device ref ehci2 on
+				subsystemid 0x1849 0x1e2d
+			end
+			device ref hda on
+				subsystemid 0x1849 0x1898
+			end
+			device ref pcie_rp1 on  # PCIe x1 slot, "PCIE4"
+				subsystemid 0x1849 0x1e10
+				smbios_slot_desc "SlotTypePciExpressGen2X1" "SlotLengthShort"
+				                 "PCIE4" "SlotDataBusWidth1X"
+			end
+			device ref pcie_rp4 on  # ASM1061 SATA Controller
+				subsystemid 0x1849 0x1e16
+				device pci 00.0 on end
+			end
+			device ref pcie_rp5 on  # BCM57781 GbE NIC
+				subsystemid 0x1849 0x1e18
+				device pci 00.0 on end
+			end
+			device ref pcie_rp6 on  # ASM1083 PCI bridge
+				subsystemid 0x1849 0x1e1a
+				device pci 00.0 on end
+			end
+			device ref pcie_rp7 on  # PCIe x1 slot, "PCIE1"
+				smbios_slot_desc "SlotTypePciExpressGen2X1" "SlotLengthShort"
+				                 "PCIE1" "SlotDataBusWidth16X"
+			end
+			device ref pcie_rp8 on  # ASM1042 USB 3.0 Controller
+				subsystemid 0x1849 0x1e1e
+				device pci 00.0 on end
+			end
+			device ref ehci1 on
+				subsystemid 0x1849 0x1e26
+			end
+			device ref lpc on
+				subsystemid 0x1849 0x1e44
+				register "gen1_dec" = "0x000c0291"
+				register "gen2_dec" = "0x000c0241"
+				register "gen3_dec" = "0x000c0251"
+				chip superio/nuvoton/nct6776
+					device pnp 2e.0 off end	 # Floppy
+					device pnp 2e.1 off end  # Parallel port
+					device pnp 2e.2 on  # COM1
+						# global
+						irq 0x13 = 0xff
+						irq 0x14 = 0xff
+						irq 0x1a = 0xf8
+						irq 0x1b = 0x0e
+						irq 0x24 = 0x5c
+						irq 0x27 = 0xd8
+						irq 0x2a = 0x62
+						irq 0x2c = 0x80
+						# COM1
+						io 0x60 = 0x3f8
+					end
+					device pnp 2e.3 on  # COM2, IR
+						io 0x60 = 0x2f8
+						irq 0xf1 = 0x5c
+					end
+					device pnp 2e.5 on
+						io 0x60 = 0x60
+						io 0x62 = 0x64
+						irq 0x70 = 0x01
+						irq 0x72 = 0x0c
+					end
+					device pnp 2e.6 off end  # CIR
+					device pnp 2e.7 on  # GPIO 6-9
+						irq 0x30 = 0x00
+						irq 0xe8 = 0xff
+						irq 0xea = 0xff
+						irq 0xf6 = 0xff
+						irq 0xf8 = 0xff
+					end
+					device pnp 2e.8 on  # WDT1, GPIO0-1, GPIOA
+						irq 0x30 = 0x00
+						irq 0xe2 = 0xff
+						irq 0xf0 = 0xb0
+						irq 0xf1 = 0x01
+					end
+					device pnp 2e.9 on  # GPIO2-5
+						irq 0x30 = 0xb6
+						irq 0xe0 = 0xff
+						irq 0xe6 = 0xff
+						irq 0xea = 0xff
+					end
+					device pnp 2e.a on  # ACPI
+						irq 0xe3 = 0x01
+						irq 0xe4 = 0x10
+						irq 0xe6 = 0x4c
+						irq 0xf0 = 0x20
+					end
+					device pnp 2e.b on  # HWM, front panel LED
+						irq 0x30 = 0xe1
+						io 0x60 = 0x290
+					end
+					device pnp 2e.d on end  # VID
+					device pnp 2e.e off end  # CIR wake-up
+					device pnp 2e.f on end   # GPIO push-pull or open drain
+					device pnp 2e.14 on end  # SVID
+					device pnp 2e.16 off  # Deep Sleep
+						irq 0x30 = 0x68
+					end
+					device pnp 2e.17 off end  # GPIOA
+				end
+			end
+			device ref sata1 on
+				subsystemid 0x1849 0x1e02
+				register "sata_interface_speed_support" = "0x3"
+				register "sata_port_map" = "0x3f"
+			end
+			device ref smbus on
+				subsystemid 0x1849 0x1e22
+			end
+		end
+	end
+end

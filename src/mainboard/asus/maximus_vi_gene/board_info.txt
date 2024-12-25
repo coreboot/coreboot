@@ -1,0 +1,7 @@
+Category: desktop
+Board URL: https://www.asus.com/ROG-Republic-Of-Gamers/MAXIMUS_VI_GENE/
+ROM protocol: SPI
+Flashrom support: n
+ROM package: DIP-8 (1x)
+ROM socketed: y
+Release year: 2013

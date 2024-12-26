@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only OR MIT */
 
 #include <console/console.h>
+#include <delay.h>
 #include <device/mmio.h>
 #include <gpio.h>
 #include <soc/addressmap.h>
@@ -285,6 +286,7 @@ static void pmif_spmi_enable_swinf(struct pmif *arb)
 {
 	write32(&arb->mtk_pmif->inf_en, PMIF_SPMI_SW_CHAN);
 	write32(&arb->mtk_pmif->arb_en, PMIF_SPMI_SW_CHAN);
+	udelay(500);
 	printk(BIOS_INFO, "%s done\n", __func__);
 }
 

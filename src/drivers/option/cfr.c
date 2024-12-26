@@ -29,9 +29,6 @@ static uint32_t cfr_record_size(const char *startp, const char *endp)
 
 static uint32_t write_cfr_varchar(char *current, const char *string, uint32_t tag)
 {
-	uint8_t *data;
-	size_t padding;
-
 	ASSERT(string);
 	if (!string)
 		return 0;
@@ -98,7 +95,7 @@ static uint32_t write_numeric_option(char *current, uint32_t tag, const uint64_t
 	option->object_id = object_id;
 	option->dependency_id = dep_id;
 	option->flags = flags;
-	if (option->flags & (CFR_OPTFLAG_GRAYOUT | CFR_OPTFLAG_VOLATILE))
+	if (option->flags & (CFR_OPTFLAG_INACTIVE | CFR_OPTFLAG_VOLATILE))
 		option->flags |= CFR_OPTFLAG_READONLY;
 	option->default_value = default_value;
 	option->size = sizeof(*option);
@@ -163,7 +160,7 @@ static uint32_t sm_write_opt_varchar(char *current, const struct sm_obj_varchar 
 	option->object_id = object_id;
 	option->dependency_id = dep_id;
 	option->flags = sm_varchar->flags;
-	if (option->flags & (CFR_OPTFLAG_GRAYOUT | CFR_OPTFLAG_VOLATILE))
+	if (option->flags & (CFR_OPTFLAG_INACTIVE | CFR_OPTFLAG_VOLATILE))
 		option->flags |= CFR_OPTFLAG_READONLY;
 	option->size = sizeof(*option);
 
@@ -193,7 +190,7 @@ static uint32_t sm_write_opt_comment(char *current, const struct sm_obj_comment 
 	comment->object_id = object_id;
 	comment->dependency_id = dep_id;
 	comment->flags = sm_comment->flags;
-	if (comment->flags & (CFR_OPTFLAG_GRAYOUT | CFR_OPTFLAG_VOLATILE))
+	if (comment->flags & (CFR_OPTFLAG_INACTIVE | CFR_OPTFLAG_VOLATILE))
 		comment->flags |= CFR_OPTFLAG_READONLY;
 	comment->size = sizeof(*comment);
 
@@ -228,7 +225,7 @@ static uint32_t sm_write_form(char *current, struct sm_obj_form *sm_form,
 	form->object_id = object_id;
 	form->dependency_id = dep_id;
 	form->flags = sm_form->flags;
-	if (form->flags & (CFR_OPTFLAG_GRAYOUT | CFR_OPTFLAG_VOLATILE))
+	if (form->flags & (CFR_OPTFLAG_INACTIVE | CFR_OPTFLAG_VOLATILE))
 		form->flags |= CFR_OPTFLAG_READONLY;
 	form->size = sizeof(*form);
 

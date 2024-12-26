@@ -68,7 +68,7 @@ enum cfr_tags {
  * effect on the non-volatile variable.
  * CFR_OPTFLAG_READONLY:
  *   Prevents writes to the variable.
- * CFR_OPTFLAG_GRAYOUT:
+ * CFR_OPTFLAG_INACTIVE:
  *   Implies READONLY. The option is visible, but cannot be modified
  *   because one of the dependencies are not given. However there's a
  *   possibility to enable the option by changing runtime configuration.
@@ -93,7 +93,7 @@ enum cfr_tags {
  */
 enum cfr_option_flags {
 	CFR_OPTFLAG_READONLY	= 1 << 0,
-	CFR_OPTFLAG_GRAYOUT	= 1 << 1,
+	CFR_OPTFLAG_INACTIVE	= 1 << 1,
 	CFR_OPTFLAG_SUPPRESS	= 1 << 2,
 	CFR_OPTFLAG_VOLATILE	= 1 << 3,
 	CFR_OPTFLAG_RUNTIME	= 1 << 4,

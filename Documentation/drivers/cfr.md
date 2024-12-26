@@ -26,7 +26,7 @@ visible name, a help text, a default value and status flags.
 All strings are in ASCII.
 
 The boot options are grouped into forms, where each form hold
-one ore more options. Boot options that are not used in the current
+one or more options. Boot options that are not used in the current
 boot flow, and are never reachable should be marked as hidden.
 Dependecies between options can be defined in the code and should
 be evaluated by the CFR parser/UI.
@@ -66,7 +66,7 @@ The public API can be found in
 ## Implementation design
 ### Tags
 Tags identify the structure defined in `src/commonlib/include/commonlib/cfr.h`.
-Every struct might be immideatly followed by additional structs (so called
+Every struct might be immediately followed by additional structs (so called
 sub nodes), having their own tag and size field. The sum of all sub nodes size
 fields plus the size of the struct itself equals the size field.
 
@@ -208,7 +208,7 @@ effect on the non-volatile variable.
 
    Prevents writes to the variable.
 
-* `CFR_OPTFLAG_GRAYOUT`
+* `CFR_OPTFLAG_INACTIVE`
 
    Implies `READONLY`. The option is visible, but cannot be modified
    because one of the dependencies are not given. However there's a

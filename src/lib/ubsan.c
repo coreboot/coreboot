@@ -43,8 +43,8 @@ static void __noreturn ubsan_abort(const struct ubsan_source_location *location,
 	if (!location || !location->filename)
 		location = &unknown_location;
 	printk(BIOS_ERR, "%s %s:%lu:%lu\n", violation, location->filename,
-		(unsigned long int)location->line,
-		(unsigned long int)location->column);
+		(unsigned long)location->line,
+		(unsigned long)location->column);
 	die("ubsan: unrecoverable error.\n");
 }
 

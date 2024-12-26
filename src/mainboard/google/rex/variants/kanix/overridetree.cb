@@ -450,6 +450,15 @@ chip soc/intel/meteorlake
 				register "hid_desc_reg_offset" = "0x20"
 				device i2c 68 on end
 			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""PNP0C50""
+				register "generic.desc" = ""Synaptics Touchpad""
+				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_B00_IRQ)"
+				register "generic.wake" = "GPE0_DW0_00"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x20"
+				device i2c 2c on end
+			end
 		end
 		device ref i2c4 on
 			chip drivers/i2c/tpm

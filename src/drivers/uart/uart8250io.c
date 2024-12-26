@@ -26,14 +26,14 @@ static int uart8250_can_tx_byte(unsigned int base_port)
 
 static void uart8250_tx_byte(unsigned int base_port, unsigned char data)
 {
-	unsigned long int i = SINGLE_CHAR_TIMEOUT;
+	unsigned long i = SINGLE_CHAR_TIMEOUT;
 	while (i-- && !uart8250_can_tx_byte(base_port));
 	outb(data, base_port + UART8250_TBR);
 }
 
 static void uart8250_tx_flush(unsigned int base_port)
 {
-	unsigned long int i = FIFO_TIMEOUT;
+	unsigned long i = FIFO_TIMEOUT;
 	while (i-- && !(inb(base_port + UART8250_LSR) & UART8250_LSR_TEMT));
 }
 
@@ -44,7 +44,7 @@ static int uart8250_can_rx_byte(unsigned int base_port)
 
 static unsigned char uart8250_rx_byte(unsigned int base_port)
 {
-	unsigned long int i = SINGLE_CHAR_TIMEOUT;
+	unsigned long i = SINGLE_CHAR_TIMEOUT;
 	while (i && !uart8250_can_rx_byte(base_port))
 		i--;
 

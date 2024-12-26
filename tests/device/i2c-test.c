@@ -80,7 +80,7 @@ int platform_i2c_transfer(unsigned int bus, struct i2c_msg *segments, int count)
 
 static void mock_expect_params_platform_i2c_transfer(void)
 {
-	unsigned long int expected_flags[] = {0, I2C_M_RD, I2C_M_TEN, I2C_M_RECV_LEN,
+	unsigned long expected_flags[] = {0, I2C_M_RD, I2C_M_TEN, I2C_M_RECV_LEN,
 					      I2C_M_NOSTART};
 
 	/* Flags should always be only within supported range */

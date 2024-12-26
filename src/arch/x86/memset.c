@@ -12,7 +12,7 @@ typedef uint32_t op_t;
 void *memset(void *dstpp, int c, size_t len)
 {
 	int d0;
-	unsigned long int dstp = (unsigned long int)dstpp;
+	unsigned long dstp = (unsigned long)dstpp;
 
 #if (ENV_SEPARATE_ROMSTAGE && CONFIG(ASAN_IN_ROMSTAGE)) || \
 		(ENV_RAMSTAGE && CONFIG(ASAN_IN_RAMSTAGE))

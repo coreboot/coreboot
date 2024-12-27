@@ -19,12 +19,22 @@ protected_mode_call_wrapper:
 	movl	%gs, %eax
 	push	%rax
 
+	/* Backup IDT to stack */
+	sub	$16, %rsp
+	sidt	(%rsp)
+
 	/* Store stack pointer */
 	mov	%rsp, %rbp
 
-	/* Align stack and make space for arguments */
+	/* New IDT to stack */
+	pushq	$0
+	pushq	$0
+
+	/* Align stack */
 	movabs	$0xfffffffffffffff0, %rax
 	andq	%rax, %rsp
+
+	/* Make room for arguments on stack */
 	sub	$16, %rsp
 
 	/* Arguments to stack */
@@ -35,6 +45,9 @@ protected_mode_call_wrapper:
 
 	/* Drop to protected mode */
 	#include <cpu/x86/64bit/exit32.inc>
+
+	/* Load zero IDT. x86_32 FSP doesn't like to find a x86_64 IDT */
+	lidt	-16(%ebp)
 
 	/* Fetch function to call */
 	movl	12(%esp), %ebx
@@ -51,6 +64,10 @@ protected_mode_call_wrapper:
 
 	/* Restore stack pointer */
 	mov	%rbp, %rsp
+
+	/* Restore IDT */
+	lidt	(%rsp)
+	add	$16, %rsp
 
 	/* Restore registers */
 	pop	%rbx

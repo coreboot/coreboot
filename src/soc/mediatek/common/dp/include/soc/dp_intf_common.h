@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef SOC_MEDIATEK_COMMON_DP_DP_INTF_H
-#define SOC_MEDIATEK_COMMON_DP_DP_INTF_H
+#ifndef SOC_MEDIATEK_COMMON_DP_DP_INTF_COMMON_H
+#define SOC_MEDIATEK_COMMON_DP_DP_INTF_COMMON_H
 
 #include <edid.h>
 #include <types.h>
@@ -264,4 +264,4 @@ extern const struct mtk_dpintf dpintf_data;
 
 void dp_intf_config(const struct edid *edid);
 
-#endif /* SOC_MEDIATEK_COMMON_DP_DP_INTF_H */
+#endif /* SOC_MEDIATEK_COMMON_DP_DP_INTF_COMMON_H */

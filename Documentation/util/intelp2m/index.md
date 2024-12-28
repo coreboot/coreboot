@@ -28,7 +28,6 @@ image.
 ```bash
 cd util/intelp2m
 make
-./intelp2m -version
 ```
 
 Set automatic argument completion:
@@ -263,7 +262,114 @@ Show more details:
 ./intelp2m -fields ?
 ```
 
-## Unit testing
+## For developers
+
+### Version
+
+```bash
+./intelp2m -version
+```
+
+The version string includes several parts:
+
+```text
+{major}.{minor}-{last commit in the intelp2m directory}-{?dirty}
+```
+
+`major` - incompatible API changes (e.g. remove or update a command line option);
+`minor` - new platform, new feature or adding a new command line option.
+
+The version is added to the generated `gpio.h` file and it is necessary to support the project.
+
+```c
+/* Pad configuration was generated automatically using intelp2m 2.5-870c694 */
+static const struct pad_config gpio_table[] = {
+...
+```
+
+Please do not remove this information, as it makes support easier!
+
+### Adding support for new platforms
+
+The platform-dependent code is located in `./platforms/`. Each PCH and SoC is in a separate
+package with a name corresponding to this platform (adl, apl, snr, ...). The macro generation
+code for all platforms is in the `common` directory.
+
+The package file must contain the structure `BasePlatform struct{}` with methods for the
+`PlatformIf interface{}` from the `common` package:
+
+```Go
+type PlatformIf interface {
+	RemapResetSource(*Macro)
+	Pull(*Macro)
+	AddGpiMacro(*Macro)
+	AddGpoMacro(*Macro)
+	AddNativeFunctionMacro(*Macro)
+	AddNoConnMacro(*Macro)
+	GetRegisterDW0() *register.DW0
+	GetRegisterDW1() *register.DW1
+}
+```
+
+Some methods (for example, register access methods: `GetRegisterDW0()` and `GetRegisterDW1()`)
+are already defined in the base platform from `common`. Therefore, embedding should be used in
+the basic platform structure to avoid code duplication:
+
+```Go
+type BasePlatform struct {
+	common.BasePlatform
+}
+```
+
+Since GPIO controllers are similar across intel platforms, the macro generation code can also be
+reused. You can use any platform instead of `common.BasePlatform` from the catalog to reuse its
+methods and redefine those that differ in logic.
+
+The platform file should also contain the slice `GPPGroups[]` with templates for pad names from
+`inteltool.log`, register masks `DW0` and `DW1` (the analysis will be only for the bits in these
+masks), the base platform constructor - `InitBasePlatform()`, and `GetPlatform()` that provides
+the platform interface.
+
+```Go
+const (
+	DW0Mask = (0b1 << 27) | (0b1 << 18) | (0b00111111 << 11) | (0b00111111 << 2) | (0b1 << 1)
+	DW1Mask = 0b11111101111111111100001111111111
+)
+
+// "GPP_A", "GPP_B", "GPP_C", "GPP_D", "GPP_E", "GPP_F", "GPP_G", "GPP_H", "GPP_R", "GPP_S",
+// "GPP_T", "GPD", "HVMOS", "VGPIO5"
+var GPPGroups = []string{"GPP_", "GPD", "VGPIO"}
+
+type BasePlatform struct {
+	// based on the Cannon Lake platform
+	cnl.BasePlatform
+}
+
+func InitBasePlatform(dw0, dw0mask uint32, dw1, dw1mask uint32) BasePlatform {
+	return BasePlatform{cnl.InitBasePlatform(dw0, dw0mask, dw1, dw1mask)}
+}
+
+func GetPlatform(dw0, dw1 uint32) common.PlatformIf {
+	p := InitBasePlatform(dw0, DW0Mask, dw1, DW1Mask)
+	return &p
+}
+
+// Override BasePlatform.RemapResetSource()
+func (p *BasePlatform) RemapResetSource(m *common.Macro) {
+    // Some code is here
+}
+```
+
+- Use `GetPlatform()` and `GPPGroups[]` in the file `./platform/platform.go` to define the
+  resources for the parser.
+- Add the platform argument for the options `-p` (`-platform`) to `cli/options.go`.
+- Update the documentation in `Documentation/util/intelp2m/index.md`.
+- Add unit tests.
+
+[Here](https://review.coreboot.org/c/coreboot/+/84191) is an example of porting the Intel
+Jasper lake platform.
+
+### Unit testing
 
 Please run the tests before creating a new commit:
 

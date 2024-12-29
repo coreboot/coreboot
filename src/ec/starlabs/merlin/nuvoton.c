@@ -5,7 +5,6 @@
 #include <device/pnp.h>
 #include <ec/acpi/ec.h>
 #include <option.h>
-#include <pc80/keyboard.h>
 
 #include "ec.h"
 #include "ecdefs.h"
@@ -55,8 +54,6 @@ static void merlin_init(struct device *dev)
 			NUVOTON_CHIPID_VAL, chip_id);
 		return;
 	}
-
-	pc_keyboard_init(NO_AUX_DEVICE);
 
 	/*
 	 * Restore settings from CMOS into EC RAM:

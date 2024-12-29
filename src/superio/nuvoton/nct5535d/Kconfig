@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config SUPERIO_NUVOTON_NCT5535D
+	bool
+	select SUPERIO_NUVOTON_COMMON_PRE_RAM
+	select HAVE_POWER_STATE_AFTER_FAILURE
+	help
+	  NCT5535D is a cut-down version of NCT6779D and is otherwise supported by
+	  superio/nuvoton/nct6779d, which provides C code for initialization. This directory
+	  only provides consistently-named header and structures.

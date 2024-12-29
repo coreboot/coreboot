@@ -3,8 +3,10 @@
 #ifndef SUPERIO_NUVOTON_NCT6779D_H
 #define SUPERIO_NUVOTON_NCT6779D_H
 
+#include <device/device.h>
+
 /* Logical Device Numbers (LDN). */
-#define NCT6779D_PP			0x01 /* Parallel port */
+#define NCT6779D_PP		0x01 /* Parallel port */
 #define NCT6779D_SP1		0x02 /* Com1 */
 #define NCT6779D_SP2		0x03 /* Com2 & IR */
 #define NCT6779D_KBC		0x05 /* PS/2 keyboard and mouse */
@@ -33,5 +35,7 @@
 #define NCT6779D_GPIO6		((6 << 8) | NCT6779D_GPIO12345678_V)
 #define NCT6779D_GPIO7		((7 << 8) | NCT6779D_GPIO12345678_V)
 #define NCT6779D_GPIO8		((0 << 8) | NCT6779D_GPIO12345678_V)
+
+extern struct device_operations _nuvoton_nct6779d_ops;
 
 #endif /* SUPERIO_NUVOTON_NCT6779D_H */

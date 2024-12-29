@@ -27,6 +27,19 @@ if [ "$uid" -ne 0 ]; then
 	echo "Must be run as root. Exiting."
 	exit 1
 fi
+
+if ! command -v lsusb; then
+	echo "lsusb not found. Please install \"usbutils\" from your
+distribution's package manager. Exiting."
+	exit 1
+fi
+
+if ! command -v lspci; then
+	echo "lspci not found. Please install \"pciutils\" from your
+distribution's package manager. Exiting."
+	exit 1
+fi
+
 dmesgfile=$1
 
 find_devs_in_tree () {

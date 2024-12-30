@@ -378,7 +378,7 @@ chip soc/intel/pantherlake
 				register "compat_string" = ""google,cros-ec-spi""
 				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_D01_IRQ)"
 				register "wake" = "GPE0_DW1_01"
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C15)"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E19)"
 				register "enable_delay_ms" = "3"
@@ -585,7 +585,7 @@ chip soc/intel/pantherlake
 				register "link_freq[0]" = "560000000"
 				register "remote_name" = ""IPU0""
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				#Controls
 				register "clk_panel.clks[0].clknum" = "0"
 				register "clk_panel.clks[0].freq" = "1" #19.2 Mhz
@@ -657,7 +657,7 @@ chip soc/intel/pantherlake
 				register "link_freq[0]" = "560000000"
 				register "remote_name" = ""IPU0""
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				#Controls
 				register "clk_panel.clks[0].clknum" = "1"
 				register "clk_panel.clks[0].freq" = "1" #19.2 Mhz

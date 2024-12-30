@@ -347,7 +347,7 @@ chip soc/intel/alderlake
 				register "stop_off_delay_ms" = "2"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E17)"
 				register "enable_delay_ms" = "1"
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				device i2c 10 on end
 			end # EKTH5012
 			chip drivers/i2c/hid

@@ -130,7 +130,7 @@ chip soc/intel/jasperlake
 						register "desc" = ""LTE""
 						register "type" = "UPC_TYPE_INTERNAL"
 						register "group" = "ACPI_PLD_GROUP(2, 2)"
-						register "has_power_resource" = "1"
+						register "has_power_resource" = "true"
 						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H17)"
 						register "reset_off_delay_ms" = "20"
 						register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A10)"

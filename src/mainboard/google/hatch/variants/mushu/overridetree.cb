@@ -114,7 +114,7 @@ chip soc/intel/cannonlake
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D9)"
 				register "enable_delay_ms" = "10"
 				register "enable_off_delay_ms" = "1"
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				register "stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C4)"
 				register "stop_off_delay_ms" = "5"
 				device i2c 49 on end

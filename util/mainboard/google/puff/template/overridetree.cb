@@ -389,7 +389,7 @@ chip soc/intel/cannonlake
 				register "stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A18)"
 				register "stop_delay_ms" = "12" # NIC needs time to quiesce
 				register "stop_off_delay_ms" = "1"
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				register "device_index" = "0"
 				device pci 00.0 on end
 			end

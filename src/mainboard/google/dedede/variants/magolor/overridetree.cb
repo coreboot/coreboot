@@ -315,7 +315,7 @@ chip soc/intel/jasperlake
 				register "reset_delay_ms" = "20"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D6)"
 				register "enable_delay_ms" = "1"
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				device i2c 10 on
 					probe TS_SOURCE TS_UNPROVISIONED
 					probe TS_SOURCE TS_ELAN_0001
@@ -330,7 +330,7 @@ chip soc/intel/jasperlake
 				register "reset_delay_ms" = "100"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D6)"
 				register "enable_delay_ms" = "50"
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				device i2c 39 on
 					probe TS_SOURCE TS_UNPROVISIONED
 					probe TS_SOURCE TS_RAYD_0001
@@ -353,7 +353,7 @@ chip soc/intel/jasperlake
 				register "link_freq[0]" = "DEFAULT_LINK_FREQ"
 				register "remote_name" = ""IPU0""
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				#Controls
 				register "clk_panel.clks[0].clknum" = "1" #IMGCLKOUT_1
 				register "clk_panel.clks[0].freq" = "1" #19.2 Mhz
@@ -398,7 +398,7 @@ chip soc/intel/jasperlake
 				register "link_freq[1]" = "360000000"
 				register "remote_name" = ""IPU0""
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				#Controls
 				register "clk_panel.clks[0].clknum" = "1" #IMGCLKOUT_1
 				register "clk_panel.clks[0].freq" = "1" #19.2 Mhz

@@ -244,7 +244,7 @@ chip soc/intel/alderlake
 				register "stop_off_delay_ms" = "2"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
 				register "enable_delay_ms" = "5"
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				device i2c 10 on
 					probe TOUCH_PANEL TOUCH_I2C
 				end
@@ -324,7 +324,7 @@ chip soc/intel/alderlake
 				register "acpi_name" = ""CAM0""
 				register "chip_name" = ""Ov 8856 Camera""
 				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 
 				register "ssdb.lanes_used" = "2"
 				register "ssdb.link_used" = "1"

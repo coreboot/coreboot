@@ -385,7 +385,7 @@ chip soc/intel/alderlake
 				register "stop_off_delay_ms" = "25"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
 				register "enable_delay_ms" = "25"
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				device i2c 10 on end
 			end
 		end
@@ -404,7 +404,7 @@ chip soc/intel/alderlake
 				register "link_freq[0]" = "560 * MHz"
 				register "remote_name" = ""IPU0""
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				#Controls
 				register "clk_panel.clks[0].clknum" = "IMGCLKOUT_3"
 				register "clk_panel.clks[0].freq" = "FREQ_19_2_MHZ"
@@ -441,7 +441,7 @@ chip soc/intel/alderlake
 
 				register "vcm_compat" = ""dongwoon,dw9714""
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				#Controls
 				register "gpio_panel.gpio[0].gpio_num" = "GPP_D15"  # EN_PP2800_AFVDD
 

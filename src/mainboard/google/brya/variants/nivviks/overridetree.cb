@@ -395,7 +395,7 @@ chip soc/intel/alderlake
 				register "link_freq[0]" = "DEFAULT_LINK_FREQ"
 				register "remote_name" = ""IPU0""
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
 
 				# Controls
@@ -432,7 +432,7 @@ chip soc/intel/alderlake
 				register "device_type" = "INTEL_ACPI_CAMERA_VCM"
 
 				register "vcm_compat" = ""dongwoon,dw9714""
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
 
 				# Controls
@@ -459,7 +459,7 @@ chip soc/intel/alderlake
 				register "acpi_name" = ""NVM0""
 				register "chip_name" = ""GT24C08""
 				register "device_type" = "INTEL_ACPI_CAMERA_NVM"
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
 
 				# Controls

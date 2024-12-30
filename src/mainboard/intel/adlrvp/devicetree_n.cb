@@ -302,7 +302,7 @@ chip soc/intel/alderlake
 				register "link_freq[0]" = "450000000"
 				register "remote_name" = ""IPU0""
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				#Controls
 				register "clk_panel.clks[0].clknum" = "0" #IMGCLKOUT_0
 				register "clk_panel.clks[0].freq" = "1" #19.2 Mhz
@@ -353,7 +353,7 @@ chip soc/intel/alderlake
 				register "link_freq[0]" = "450000000"
 				register "remote_name" = ""IPU0""
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				#Controls
 				register "clk_panel.clks[0].clknum" = "1" #IMGCLKOUT_1
 				register "clk_panel.clks[0].freq" = "1" #19.2 Mhz

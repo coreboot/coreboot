@@ -551,7 +551,7 @@ chip soc/intel/alderlake
 				register "remote_name" = ""IPU0""
 
 				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 
 				#Controls
 				register "clk_panel.clks[0].clknum" = "IMGCLKOUT_3"
@@ -590,7 +590,7 @@ chip soc/intel/alderlake
 
 				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D0"
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 
 				#Controls
 				register "gpio_panel.gpio[0].gpio_num" = "GPP_D16" #EN_WCAM_PWR
@@ -622,7 +622,7 @@ chip soc/intel/alderlake
 
 				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D0"
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 
 				#Controls
 				register "gpio_panel.gpio[0].gpio_num" = "GPP_D16" #EN_WCAM_PWR
@@ -657,7 +657,7 @@ chip soc/intel/alderlake
 
 				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				#Controls
 				register "clk_panel.clks[0].clknum" = "IMGCLKOUT_3"
 				register "clk_panel.clks[0].freq" = "FREQ_19_2_MHZ"
@@ -695,7 +695,7 @@ chip soc/intel/alderlake
 
 				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D0"
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 
 				#Controls
 				register "gpio_panel.gpio[0].gpio_num" = "GPP_D16" #EN_WCAM_PWR
@@ -727,7 +727,7 @@ chip soc/intel/alderlake
 
 				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D0"
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 
 				#Controls
 				register "gpio_panel.gpio[0].gpio_num" = "GPP_D16" #EN_WCAM_PWR
@@ -864,7 +864,7 @@ chip soc/intel/alderlake
 				register "remote_name" = ""IPU0""
 				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				#Controls
 				register "gpio_panel.gpio[0].gpio_num" = "GPP_C3"  #PP3300_FCAM_X
 				register "gpio_panel.gpio[1].gpio_num" = "GPP_A17" #EN_UCAM_PWR
@@ -906,7 +906,7 @@ chip soc/intel/alderlake
 
 				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D0"
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 
 				#Controls
 				register "gpio_panel.gpio[0].gpio_num" = "GPP_C3" #PP3300_FCAM_X
@@ -1062,7 +1062,7 @@ chip soc/intel/alderlake
 				register "compat_string" = ""google,cros-ec-spi""
 				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F15_IRQ)"
 				register "wake" = "GPE0_DW2_15"
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D1)"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D2)"
 				register "enable_delay_ms" = "3"

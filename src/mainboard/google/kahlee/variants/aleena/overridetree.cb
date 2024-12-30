@@ -56,7 +56,7 @@ chip soc/amd/stoneyridge
 			register "reset_delay_ms" = "20"
 			register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_76)"
 			register "enable_delay_ms" = "1"
-			register "has_power_resource" = "1"
+			register "has_power_resource" = "true"
 			device i2c 39 on end
 		end
 	end

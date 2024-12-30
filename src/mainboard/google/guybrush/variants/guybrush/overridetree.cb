@@ -172,7 +172,7 @@ chip soc/amd/cezanne
 			register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_21)"
 			register "wake" = "GEVENT_5"
 			register "uart" = "ACPI_UART_RAW_DEVICE(3000000, 64)"
-			register "has_power_resource" = "1"
+			register "has_power_resource" = "true"
 			register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPIO_11)"
 			register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPIO_32)"
 			register "enable_delay_ms" = "3"

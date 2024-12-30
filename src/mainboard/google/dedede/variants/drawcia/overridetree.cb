@@ -152,7 +152,7 @@ chip soc/intel/jasperlake
 						register "desc" = ""LTE""
 						register "type" = "UPC_TYPE_INTERNAL"
 						register "group" = "ACPI_PLD_GROUP(2, 2)"
-						register "has_power_resource" = "1"
+						register "has_power_resource" = "true"
 						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H17)"
 						register "reset_off_delay_ms" = "20"
 						register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A10)"
@@ -236,7 +236,7 @@ chip soc/intel/jasperlake
 				register "reset_delay_ms" = "20"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D6)"
 				register "enable_delay_ms" = "1"
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				device i2c 10 on end
 			end
 			chip drivers/i2c/hid
@@ -313,7 +313,7 @@ chip soc/intel/jasperlake
 				register "link_freq[1]" = "180000000"
 				register "remote_name" = ""IPU0""
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				register "low_power_probe" = "1"
 
 				#Controls
@@ -349,7 +349,7 @@ chip soc/intel/jasperlake
 				register "chip_name" = ""DW AF DAC""
 				register "device_type" = "INTEL_ACPI_CAMERA_VCM"
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				register "vcm_compat" = ""dongwoon,dw9714""
 				register "low_power_probe" = "1"
 
@@ -379,7 +379,7 @@ chip soc/intel/jasperlake
 				register "nvm_compat" = ""atmel,24c08""
 				register "low_power_probe" = "1"
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 
 				register "gpio_panel.gpio[0].gpio_num" = "GPP_D14" #power_enable_1p2
 				#_ON

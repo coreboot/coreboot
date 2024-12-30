@@ -229,7 +229,7 @@ chip soc/intel/tigerlake
 							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C10)"
 				register "reset_delay_ms" = "100"
 				register "reset_off_delay_ms" = "5"
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A8)"
 				register "enable_delay_ms" = "10"
 				register "enable_off_delay_ms" = "1"

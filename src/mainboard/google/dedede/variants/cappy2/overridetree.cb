@@ -113,7 +113,7 @@ chip soc/intel/jasperlake
 					chip drivers/usb/acpi
 						register "desc" = ""UFCamera""
 						register "type" = "UPC_TYPE_INTERNAL"
-						register "has_power_resource" = "1"
+						register "has_power_resource" = "true"
 						register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D15)"
 						register "enable_delay_ms" = "20"
 						device usb 2.5 on end

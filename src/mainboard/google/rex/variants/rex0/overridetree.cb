@@ -380,7 +380,7 @@ chip soc/intel/meteorlake
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Camera""
 						register "type" = "UPC_TYPE_INTERNAL"
-						register "has_power_resource" = "1"
+						register "has_power_resource" = "true"
 						register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B09)"
 						device ref usb2_port6 on
 							probe UFC UFC_USB
@@ -477,7 +477,7 @@ chip soc/intel/meteorlake
 				register "remote_name" = ""IPU0""
 				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				#Controls
 				register "clk_panel.clks[0].clknum" = "1" # IMGCLKOUT_1
 				register "clk_panel.clks[0].freq" = "1" # FREQ_19_2_MHZ
@@ -515,7 +515,7 @@ chip soc/intel/meteorlake
 
 				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D0"
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 
 				#Controls
 				register "gpio_panel.gpio[0].gpio_num" = "GPP_C04" #EN_WCAM_PWR
@@ -547,7 +547,7 @@ chip soc/intel/meteorlake
 
 				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D0"
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 
 				#Controls
 				register "gpio_panel.gpio[0].gpio_num" = "GPP_C04" #EN_WCAM_PWR
@@ -620,7 +620,7 @@ chip soc/intel/meteorlake
 				register "acpi_name" = ""CAM1""
 				register "chip_name" = ""Hi-556 Camera""
 				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 
 				register "ssdb.lanes_used" = "2"
 				register "ssdb.link_used" = "1"
@@ -669,7 +669,7 @@ chip soc/intel/meteorlake
 
 				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D0"
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 
 				#Controls
 				register "gpio_panel.gpio[0].gpio_num" = "GPP_B09" #EN_FCAM_PWR
@@ -816,7 +816,7 @@ chip soc/intel/meteorlake
 				register "compat_string" = ""google,cros-ec-spi""
 				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_E10_IRQ)"
 				register "wake" = "GPE0_DW1_10"
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C23)"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B11)"
 				register "enable_delay_ms" = "3"

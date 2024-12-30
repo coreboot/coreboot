@@ -152,7 +152,7 @@ chip soc/intel/jasperlake
 					chip drivers/usb/acpi
 						register "desc" = ""UFCamera""
 						register "type" = "UPC_TYPE_INTERNAL"
-						register "has_power_resource" = "1"
+						register "has_power_resource" = "true"
 						register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D13)"
 						register "enable_delay_ms" = "20"
 						device usb 2.5 on end
@@ -160,7 +160,7 @@ chip soc/intel/jasperlake
 					chip drivers/usb/acpi
 						register "desc" = ""LTE""
 						register "type" = "UPC_TYPE_INTERNAL"
-						register "has_power_resource" = "1"
+						register "has_power_resource" = "true"
 						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H17)"
 						register "reset_off_delay_ms" = "20"
 						register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A10)"
@@ -247,7 +247,7 @@ chip soc/intel/jasperlake
 				register "link_freq[1]" = "180000000"
 				register "remote_name" = ""IPU0""
 
-				register "has_power_resource" = "1"
+				register "has_power_resource" = "true"
 				#Controls
 				register "clk_panel.clks[0].clknum" = "1" #IMGCLKOUT_1
 				register "clk_panel.clks[0].freq" = "1" #19.2 Mhz

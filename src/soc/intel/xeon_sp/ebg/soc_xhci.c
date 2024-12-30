@@ -17,6 +17,13 @@ static uint8_t *get_xhci_bar(void)
 		printk(BIOS_ERR, "XHCI BAR is not found\n");
 		return NULL;
 	}
+
+#if ENV_X86_32
+	assert(res->base < 0x100000000ULL);
+	if (res->base >= 0x100000000ULL)
+		return NULL;
+#endif
+
 	return (void *)(uintptr_t)res->base;
 }
 

@@ -6,6 +6,8 @@ config SOC_INTEL_SKYLAKE_SP
 	select PLATFORM_USES_FSP2_0
 	select NO_FSP_TEMP_RAM_EXIT
 	select UDK_202005_BINDING
+	select HAVE_X86_64_SUPPORT
+	select USE_X86_64_SUPPORT
 	help
 	  Intel Skylake-SP support
 

@@ -440,7 +440,7 @@ static const struct pad_config touchpad_lpss_i2c_enable_pads[] = {
 	/* GPP_F13:     THC_I2C1_SDA_TCH_PAD */
 	PAD_CFG_NF(GPP_F13, NONE, DEEP, NF8),
 	/* GPP_A13:     TCH_PAD_INT_N */
-	PAD_CFG_GPI_IRQ_WAKE(GPP_A13, NONE, PWROK, LEVEL, INVERT),
+	PAD_CFG_GPI_IRQ_WAKE(GPP_A13, NONE, PWROK, EDGE_SINGLE, INVERT),
 };
 
 static const struct pad_config touchpad_i2c_disable_pads[] = {

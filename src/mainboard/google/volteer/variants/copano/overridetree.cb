@@ -96,7 +96,7 @@ chip soc/intel/tigerlake
 				register "controls.fan_perf" = "{[0] = {0}}"
 
 				## Fan options
-				register "options.fan.fine_grained_control" = "0"
+				register "options.fan.fine_grained_control" = "false"
 				register "options.fan.step_size" = "0"
 
 				device generic 0 on end

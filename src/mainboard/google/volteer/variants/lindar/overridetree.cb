@@ -68,7 +68,7 @@ chip soc/intel/tigerlake
 					[8] = {  10,  800,  10,  100, },
 					[9] = {   0,    0,   0,   50, }}"
 
-				register "options.fan.fine_grained_control" = "1"
+				register "options.fan.fine_grained_control" = "true"
 				register "options.fan.step_size" = "2"
 				device generic 0 on
 					probe THERMAL FAN_TABLE_0
@@ -159,7 +159,7 @@ chip soc/intel/tigerlake
 					[8] = {  45, 3400,  10,  100, },
 					[9] = {   0,    0,   0,   50, }}"
 
-				register "options.fan.fine_grained_control" = "1"
+				register "options.fan.fine_grained_control" = "true"
 				register "options.fan.step_size" = "2"
 				device generic 1 on
 					probe THERMAL FAN_TABLE_1

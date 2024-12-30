@@ -108,6 +108,9 @@ Device (EC0)
 	OperationRegion (EMEM, EmbeddedControl,
 			 EC_ACPI_MEM_MAPPED_BEGIN, EC_ACPI_MEM_MAPPED_SIZE)
 	Field (EMEM, ByteAcc, Lock, Preserve)
+#elif CONFIG(EC_GOOGLE_CHROMEEC_LPC_GENERIC_MEMORY_RANGE)
+	OperationRegion (EMEM, SystemMemory, \_SB.PCI0.LPCB.GLGM() + 0x100, EC_MEMMAP_SIZE)
+	Field (EMEM, ByteAcc, NoLock, Preserve)
 #else
 	OperationRegion (EMEM, SystemIO, EC_LPC_ADDR_MEMMAP, EC_MEMMAP_SIZE)
 	Field (EMEM, ByteAcc, NoLock, Preserve)

@@ -1,7 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 /*
- * EMEM data may be accessed through port 62/66 or through LPC at 900h.
+ * EMEM data may be accessed through port 62/66 or through LPC at 900h
+ * or through LPC GMR (Generic Memory Range) MMIO range.
  */
 
 TIN0, 8,	// Temperature 0

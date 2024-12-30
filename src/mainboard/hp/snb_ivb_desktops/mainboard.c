@@ -2,7 +2,6 @@
 
 #include <device/device.h>
 #include <drivers/intel/gma/int15.h>
-#include <southbridge/intel/bd82x6x/pch.h>
 #include <smbios.h>
 
 #if CONFIG(GENERATE_SMBIOS_TABLES)

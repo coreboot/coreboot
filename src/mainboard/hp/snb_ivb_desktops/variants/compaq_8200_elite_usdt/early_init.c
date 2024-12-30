@@ -3,7 +3,6 @@
 #include <bootblock_common.h>
 #include <superio/nuvoton/npcd378/npcd378.h>
 #include <superio/nuvoton/common/nuvoton.h>
-#include <southbridge/intel/bd82x6x/pch.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, NPCD378_SP2)
 

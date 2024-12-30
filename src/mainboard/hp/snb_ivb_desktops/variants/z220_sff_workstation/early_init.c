@@ -3,26 +3,8 @@
 #include <bootblock_common.h>
 #include <superio/nuvoton/npcd378/npcd378.h>
 #include <superio/nuvoton/common/nuvoton.h>
-#include <southbridge/intel/bd82x6x/pch.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, NPCD378_SP2)
-
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-	{ 1, 0, 0 },
-	{ 1, 0, 0 },
-	{ 1, 0, 0 },
-	{ 1, 0, 0 },
-	{ 1, 0, 3 },
-	{ 1, 0, 3 },
-	{ 1, 0, 3 },
-	{ 1, 0, 3 },
-	{ 1, 1, 5 },
-	{ 1, 0, 5 },
-	{ 1, 0, 5 },
-	{ 1, 0, 5 },
-	{ 1, 0, 7 },
-	{ 1, 0, 7 },
-};
 
 void bootblock_mainboard_early_init(void)
 {

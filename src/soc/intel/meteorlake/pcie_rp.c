@@ -6,13 +6,15 @@
 #include <soc/soc_info.h>
 
 /*
- * TBT's LCAP registers are returning port index which starts from 0x10 (Usually for other PCIe
- * root ports index starts from 1). Thus keeping lcap_port_base 0x10 for TBT, so that coreboot's
- * PCIe remapping logic can return correct index (0-based)
+ * Document #640228 Meteor Lake - U/H and U Type4 Processor - 2.3 Device IDs - Table 8 "Other
+ * Device ID" specifies that the first Thunderbolt PCIe root port number is 16. TBT's LCAP
+ * registers return port index which starts from 16 (usually for other PCIe root ports index
+ * starts from 1). Thus, keeping lcap_port_base 16 for TBT, so that coreboot's PCIe remapping
+ * logic can return a correct index (0-based).
  */
 
 static const struct pcie_rp_group tbt_rp_groups[] = {
-	{ .slot = PCI_DEV_SLOT_TBT, .count = CONFIG_MAX_TBT_ROOT_PORTS, .lcap_port_base = 0x10 },
+	{ .slot = PCI_DEV_SLOT_TBT, .count = CONFIG_MAX_TBT_ROOT_PORTS, .lcap_port_base = 16 },
 	{ 0 }
 };
 

@@ -7,6 +7,7 @@
 #include "pch.h"
 #include <device/pci_ehci.h>
 #include <device/pci_ops.h>
+#include <southbridge/intel/common/rcba.h>
 #include "chip.h"
 
 static void usb_xhci_init(struct device *dev)
@@ -16,8 +17,8 @@ static void usb_xhci_init(struct device *dev)
 
 	printk(BIOS_DEBUG, "XHCI: Setting up controller.. ");
 
-	if (config->xhci_overcurrent_mapping)
-		pci_write_config32(dev, XOCM, config->xhci_overcurrent_mapping);
+	reg32 = RCBA32(USBOCM1) & 0x0f0f0f0f;
+	pci_write_config32(dev, XOCM, reg32);
 
 	/* lock overcurrent map */
 	pci_or_config32(dev, 0x44, 1);

@@ -18,7 +18,7 @@
 void SIL_STATUS_report(const char *function, const int status)
 {
 	const int log_level = status == SilPass ? BIOS_DEBUG : BIOS_ERR;
-	const char *error_string = "Unkown error";
+	const char *error_string = "Unknown error";
 
 	const struct error_string_entry {
 		SIL_STATUS status;
@@ -151,7 +151,7 @@ static void opensil_entry(SIL_TIMEPOINT timepoint)
 		return;
 	}
 	char opensil_function[16];
-	snprintf(opensil_function, sizeof(opensil_function), "InitializeSiTp%d", tp);
+	snprintf(opensil_function, sizeof(opensil_function), "InitializeSiTp%d", tp + 1);
 	SIL_STATUS_report(opensil_function, ret);
 	if (ret == SilResetRequestColdImm || ret == SilResetRequestColdDef) {
 		printk(BIOS_INFO, "openSIL requested a cold reset");

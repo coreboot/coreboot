@@ -84,7 +84,7 @@ struct auxadc_chan_spec {
 	} sdmadc_hw_info;
 };
 
-int mt6363_sdmadc_read(enum auxadc_channel channel, int *val, enum sdmadc_pures pures,
+int mt6363_sdmadc_read(enum auxadc_channel channel, u32 *val, enum sdmadc_pures pures,
 		       enum auxadc_val_type type);
 
 #endif /* __MT6363_SDMADC_H__ */

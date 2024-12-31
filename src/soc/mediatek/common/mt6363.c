@@ -25,7 +25,7 @@ static const struct pmic_setting key_protect_setting[] = {
 };
 
 static struct pmif *pmif_arb;
-u32 mt6363_read16(u32 reg)
+u16 mt6363_read16(u32 reg)
 {
 	u16 rdata = 0;
 

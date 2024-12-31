@@ -38,7 +38,7 @@ static const unsigned int *adc_voltages[] = {
 
 static uint32_t get_adc_index(unsigned int channel)
 {
-	int value;
+	u32 value;
 
 	mt6363_sdmadc_read(channel, &value, SDMADC_OPEN, AUXADC_VAL_PROCESSED);
 	assert(channel < ARRAY_SIZE(adc_voltages));

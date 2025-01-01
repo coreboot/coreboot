@@ -7,13 +7,6 @@ chip northbridge/intel/sandybridge
 	register "max_mem_clock_mhz" = "800"
 	register "spd_addresses" = "{0x50, 0x51, 0x52, 0x53}"
 
-	# 4 bit switch mask. 0=not switchable, 1=switchable
-	# Means once it's loaded the OS, it can swap ports
-	# from/to EHCI/xHCI. Z77 has four USB3 ports, so 0xf
-	register "usb3.hs_port_switch_mask" = "0xf"
-	# (The other 3 usb3.* settings can be set from nvram options, and so are set
-	# from runtime code)
-
 	device domain 0 on
 		device ref peg10 on  end # PCIEX16_1
 		device ref igd on  end

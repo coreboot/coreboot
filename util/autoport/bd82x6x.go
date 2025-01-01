@@ -104,9 +104,16 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 		pcieHotplugMap += "0 }"
 	}
 
+	pchComment := "Intel Series "
+	if b.variant == "BD82X6X" {
+		pchComment += "6 Cougar Point PCH"
+	} else {
+		pchComment += "7 Panther Point PCH"
+	}
+
 	cur := DevTreeNode{
 		Chip:    "southbridge/intel/bd82x6x",
-		Comment: "Intel Series 6 Cougar Point PCH",
+		Comment: pchComment,
 
 		Registers: map[string]string{
 			"sata_interface_speed_support": "0x3",

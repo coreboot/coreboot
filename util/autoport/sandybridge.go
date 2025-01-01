@@ -51,15 +51,15 @@ func (i sandybridgemc) Scan(ctx Context, addr PCIDevData) {
 				PCIController: true,
 				ChildPCIBus:   0,
 				PCISlots: []PCISlot{
-					PCISlot{PCIAddr: PCIAddr{Dev: 0x0, Func: 0}, writeEmpty: true, alias: "host_bridge", additionalComment: "Host bridge"},
-					PCISlot{PCIAddr: PCIAddr{Dev: 0x1, Func: 0}, writeEmpty: true, alias: "peg10", additionalComment: "PEG"},
-					PCISlot{PCIAddr: PCIAddr{Dev: 0x2, Func: 0}, writeEmpty: true, alias: "igd", additionalComment: "iGPU"},
+					PCISlot{PCIAddr: PCIAddr{Dev: 0x0, Func: 0}, writeEmpty: true, alias: "host_bridge"},
+					PCISlot{PCIAddr: PCIAddr{Dev: 0x1, Func: 0}, writeEmpty: true, alias: "peg10"},
+					PCISlot{PCIAddr: PCIAddr{Dev: 0x2, Func: 0}, writeEmpty: true, alias: "igd"},
 				},
 			},
 		},
 	}
 
-	PutPCIDev(addr, "Host bridge")
+	PutPCIDev(addr, "")
 
 	/* FIXME:XX some configs are unsupported.  */
 	KconfigBool["NORTHBRIDGE_INTEL_SANDYBRIDGE"] = true

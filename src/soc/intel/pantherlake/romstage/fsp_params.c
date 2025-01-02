@@ -296,35 +296,44 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		fill_fspm_params[i](m_cfg, config);
 }
 
-static void fill_fsp_event_handler(FSPM_ARCH2_UPD *arch_upd, FSP_M_CONFIG *m_cfg)
+static void fsp_control_log_level(FSPM_UPD *mupd, bool is_enabled)
 {
-	if (!CONFIG(FSP_USES_CB_DEBUG_EVENT_HANDLER))
-		return;
+	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
+	FSPM_ARCHx_UPD *arch_upd = &mupd->FspmArchUpd;
 
-	if (!CONFIG(CONSOLE_SERIAL) || !CONFIG(FSP_ENABLE_SERIAL_DEBUG)) {
+	if (is_enabled) {
+		enum fsp_log_level log_level = fsp_map_console_log_level();
+		arch_upd->FspEventHandler = (uintptr_t)((FSP_EVENT_HANDLER *)fsp_debug_event_handler);
+		/* Set Serial debug message level */
+		m_cfg->PcdSerialDebugLevel = log_level;
+		/* Set MRC debug level */
+		m_cfg->SerialDebugMrcLevel = log_level;
+	} else {
 		/* Disable Serial debug message */
 		m_cfg->PcdSerialDebugLevel = 0;
 		/* Disable MRC debug message */
 		m_cfg->SerialDebugMrcLevel = 0;
-		return;
 	}
+}
 
-	enum fsp_log_level log_level = fsp_map_console_log_level();
-	arch_upd->FspEventHandler = (uintptr_t)((FSP_EVENT_HANDLER *)fsp_debug_event_handler);
-	/* Set Serial debug message level */
-	m_cfg->PcdSerialDebugLevel = log_level;
-	/* Set MRC debug level */
-	m_cfg->SerialDebugMrcLevel = log_level;
+static void fill_fsp_event_handler(FSPM_UPD *mupd)
+{
+	bool fsp_debug_enable = false;
+
+	if (CONFIG(CONSOLE_SERIAL) && CONFIG(FSP_ENABLE_SERIAL_DEBUG))
+		fsp_debug_enable = true;
+
+	fsp_control_log_level(mupd, fsp_debug_enable);
 }
 
 void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 {
 	const struct soc_intel_pantherlake_config *config = config_of_soc();
-	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
-	FSPM_ARCH2_UPD *arch_upd = &mupd->FspmArchUpd;
 
-	fill_fsp_event_handler(arch_upd, m_cfg);
-	soc_memory_init_params(m_cfg, config);
+	if (CONFIG(FSP_USES_CB_DEBUG_EVENT_HANDLER))
+		fill_fsp_event_handler(mupd);
+
+	soc_memory_init_params(&mupd->FspmConfig, config);
 	mainboard_memory_init_params(mupd);
 }
 

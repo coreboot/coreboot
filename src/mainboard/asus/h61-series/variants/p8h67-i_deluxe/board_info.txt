@@ -1,0 +1,9 @@
+Category: desktop
+Board URL: https://www.asus.com/us/supportonly/p8h67-i%20deluxe/helpdesk_knowledge/
+Release year: 2011
+ROM package: DIP-8
+ROM protocol: SPI
+ROM socketed: y
+ROM IC: W25Q32BV
+Flashrom support: y
+Internal flashing: y

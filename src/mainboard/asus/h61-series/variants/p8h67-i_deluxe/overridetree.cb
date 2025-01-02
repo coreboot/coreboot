@@ -1,0 +1,97 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+chip northbridge/intel/sandybridge
+	register "spd_addresses" = "{0x50, 0x51, 0x52, 0x53}"
+	device domain 0 on
+		subsystemid 0x1043 0x844d inherit
+
+		device ref peg10 on
+			smbios_slot_desc "SlotTypePciExpressGen2X16" "SlotLengthLong" "PCIEX16" "SlotDataBusWidth16X"
+		end
+		device ref igd on
+			register "gpu_dp_b_hotplug" = "4"
+			register "gpu_dp_d_hotplug" = "4"
+		end
+		chip southbridge/intel/bd82x6x  # Intel Series 6 Cougar Point PCH
+			register "pcie_port_coalesce" = "1"
+			register "usb_port_config" = "{
+				{1, 0xb57, 0}, /* USB3_12 (rear USB 3.0 ports) */
+				{1, 0xb57, 0}, /* USB3_12 (rear USB 3.0 ports) */
+				{1, 0xb57, 1}, /* USB12 (rear USB2 above eSATA, red) */
+				{1, 0xb57, 1}, /* USB12 (rear USB2 above eSATA, red) */
+				{1, 0x57, 2},  /* USB34 (rear USB2 under PS/2, black) */
+				{1, 0x57, 2},  /* USB34 (rear USB2 under PS/2, black) */
+				{1, 0xb57, 3}, /* USB3_34 header (front panel USB 3.0) */
+				{1, 0xb57, 3}, /* USB3_34 header (front panel USB 3.0) */
+				{1, 0x357, 4}, /* USB56 header (front panel USB 2.0) */
+				{1, 0x357, 4}, /* USB56 header (front panel USB 2.0) */
+				{0, 0xb57, 5}, /* unconnected */
+				{0, 0x343, 5}, /* unconnected */
+				{1, 0xb57, 6}, /* integrated Bluetooth */
+				{0, 0xb57, 6}, /* unconnected */
+			}"
+			device ref hda on  # Realtek ALC892
+				subsystemid 0x1043 0x848d
+			end
+			device ref pcie_rp5 on
+				smbios_slot_desc "SlotTypePciExpressMini52pinWithoutBSKO" "SlotLengthShort" "WLAN"
+			end
+			device ref pcie_rp6 on end  # uPD720200 for front panel USB3
+			device ref pcie_rp7 on  # RTL8111E GbE NIC
+				chip drivers/net
+					register "customized_leds" = "0x0c40"
+					device pci 00.0 on end
+				end
+			end
+			device ref pcie_rp8 on end  # uPD720200 for rear USB3 ports
+			device ref lpc on
+				register "gen1_dec" = "0x00fc0295"
+				register "gen2_dec" = "0x00fc0a01"
+				chip superio/nuvoton/nct6776
+					device pnp 2e.0 off end
+					device pnp 2e.1 off end
+					device pnp 2e.2 off end  # COM1
+					device pnp 2e.3 off end  # COM2, IR
+					device pnp 2e.5 on  # KBC
+						io 0x60 = 0x60
+						io 0x62 = 0x64
+						irq 0x70 = 0x01
+						irq 0x72 = 0x0c
+						irq 0xf0 = 0x83
+					end
+					device pnp 2e.6 off end
+					device pnp 2e.7 off end
+					device pnp 2e.8 off end
+					device pnp 2e.9 on  # GPIO2-5
+						irq 0x30 = 0x0e
+						irq 0xe0 = 0xef
+						irq 0xe1 = 0x10
+						irq 0xe4 = 0xf7
+					end
+					device pnp 2e.a on  # ACPI
+						irq 0xe4 = 0x10
+						irq 0xe7 = 0x01
+					end
+					device pnp 2e.b on  # HWM, front panel LED
+						irq 0x30 = 0x01
+						io 0x60 = 0x290
+					end
+					device pnp 2e.d off end
+					device pnp 2e.e off end
+					device pnp 2e.f on  # GPIO push-pull/open drain
+						irq 0xf0 = 0x9d
+					end
+					device pnp 2e.14 off end
+					device pnp 2e.16 on end  # Deep sleep
+					device pnp 2e.17 on  # GPIOA
+						irq 0xe0 = 0xff
+					end
+				end
+			end
+			device ref sata1 on
+				register "sata_interface_speed_support" = "0x3"
+				register "sata_port_map" = "0x1f"  # 0-3: internal SATA, 4: eSATA
+			end
+		end
+	end
+end

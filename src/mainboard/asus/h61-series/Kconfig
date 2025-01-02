@@ -60,6 +60,15 @@ config BOARD_ASUS_P8H61_M_PRO_CM6630
 	select RT8168_SET_LED_MODE
 	select SUPERIO_NUVOTON_NCT6776
 
+config BOARD_ASUS_P8H67_I_DELUXE
+	select BOARD_ASUS_H61_SERIES
+	select BOARD_ROMSIZE_KB_4096
+	select HAVE_CMOS_DEFAULT
+	select HAVE_OPTION_TABLE
+	select NO_UART_ON_SUPERIO
+	select REALTEK_8168_RESET
+	select SUPERIO_NUVOTON_NCT6776
+
 if BOARD_ASUS_H61_SERIES
 
 config MAINBOARD_DIR
@@ -71,6 +80,7 @@ config VARIANT_DIR
 	default "p8h61-m_lx3_r2_0" if BOARD_ASUS_P8H61_M_LX3_R2_0
 	default "p8h61-m_pro"      if BOARD_ASUS_P8H61_M_PRO
 	default "p8h61-m_pro_cm6630" if BOARD_ASUS_P8H61_M_PRO_CM6630
+	default "p8h67-i_deluxe"   if BOARD_ASUS_P8H67_I_DELUXE
 
 config MAINBOARD_PART_NUMBER
 	default "H61M-CS"          if BOARD_ASUS_H61M_CS
@@ -78,6 +88,7 @@ config MAINBOARD_PART_NUMBER
 	default "P8H61-M LX3 R2.0" if BOARD_ASUS_P8H61_M_LX3_R2_0
 	default "P8H61-M PRO"      if BOARD_ASUS_P8H61_M_PRO
 	default "P8H61-M PRO CM6630" if BOARD_ASUS_P8H61_M_PRO_CM6630
+	default "P8H67-I DELUXE"   if BOARD_ASUS_P8H67_I_DELUXE
 
 config OVERRIDE_DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
@@ -87,6 +98,9 @@ config CMOS_DEFAULT_FILE
 
 config CMOS_LAYOUT_FILE
 	default "src/mainboard/\$(MAINBOARDDIR)/variants/\$(CONFIG_VARIANT_DIR)/cmos.layout"
+
+config CBFS_SIZE
+	default 0x280000 if BOARD_ASUS_P8H67_I_DELUXE
 
 #
 # These ME partitions need to be whitelisted for correct system

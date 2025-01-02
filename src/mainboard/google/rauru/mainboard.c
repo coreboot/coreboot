@@ -91,7 +91,7 @@ enum mtk_storage_type mainboard_get_storage_type(void)
 
 bool mainboard_needs_pcie_init(void)
 {
-	return true;
+	return mainboard_get_storage_type() == STORAGE_NVME;
 }
 
 static void mainboard_init(struct device *dev)

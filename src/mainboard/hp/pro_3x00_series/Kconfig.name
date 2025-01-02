@@ -1,4 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+config BOARD_HP_PRO_3400_SERIES
+	bool "Pro 3400 Series"
+
 config BOARD_HP_PRO_3500_SERIES
 	bool "Pro 3500 Series"

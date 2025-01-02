@@ -1,0 +1,27 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip northbridge/intel/sandybridge
+	device domain 0x0 on
+		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+			register "usb_port_config" = "{
+				{ 0,  6, -1 },
+				{ 1,  6,  0 },
+				{ 1,  6,  0 },
+				{ 1,  6,  1 },
+				{ 1,  6,  1 },
+				{ 1,  6,  2 },
+				{ 0,  6, -1 },
+				{ 0,  6, -1 },
+				{ 1, 12,  5 },
+				{ 1, 12,  5 },
+				{ 1, 12,  6 },
+				{ 1, 12,  6 },
+				{ 0,  6, -1 },
+				{ 0,  6, -1 },
+			}"
+
+			# Dummy device, sconfig requires at least one device per chip
+			device ref ehci1 on end
+		end
+	end
+end

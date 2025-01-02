@@ -1,0 +1,5 @@
+Category: desktop
+ROM package: SOIC-8
+ROM socketed: no
+Flashrom support: yes
+Release year: 2011-2012

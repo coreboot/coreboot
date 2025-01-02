@@ -22,22 +22,6 @@ chip northbridge/intel/sandybridge
 			register "sata_port_map" = "0x33"
 			register "spi_lvscc" = "0x2005"
 			register "spi_uvscc" = "0x2005"
-			register "usb_port_config" = "{
-				{ 1,  6, 0 },
-				{ 1,  6, 0 },
-				{ 1,  6, 1 },
-				{ 1,  9, 1 },
-				{ 1, 10, 2 },
-				{ 1, 11, 2 },
-				{ 1,  6, 3 },
-				{ 1,  6, 3 },
-				{ 1,  6, 4 },
-				{ 1, 12, 4 },
-				{ 1,  6, 6 },
-				{ 1, 11, 5 },
-				{ 1,  6, 5 },
-				{ 1,  6, 6 },
-			}"
 			device ref ehci2 on end
 			device ref hda on end
 			device ref pcie_rp2 on end # MINI_PCIE

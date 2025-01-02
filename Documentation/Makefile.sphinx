@@ -21,7 +21,7 @@ livehtml:
 	@echo "Starting sphinx-autobuild. The HTML pages are in $(BUILDDIR)."
 	@echo "Press Ctrl-C to stop."
 	@echo
-	$(SPHINXAUTOBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)
+	$(SPHINXAUTOBUILD) "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).

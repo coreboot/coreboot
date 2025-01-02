@@ -67,6 +67,12 @@ config DPM_FOUR_CHANNEL
 	help
 	  This option enables four channel configuration for DPM.
 
+config DPM_BROADCAST
+	bool
+	default n
+	help
+	  This option enables the DPM Broadcast function, applicable only for dpm_v2.
+
 config MTK_DFD
 	bool "Enable MediaTek DFD (Design For Debug) settings"
 	help

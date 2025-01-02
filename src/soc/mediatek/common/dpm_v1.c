@@ -4,6 +4,9 @@
 #include <soc/dpm_v1.h>
 #include <soc/mcu_common.h>
 
+_Static_assert(!CONFIG(DPM_BROADCAST),
+	       "DPM_BROADCAST not implemented in dpm_v1");
+
 static struct mtk_mcu dpm_mcu[] = {
 	{
 		.firmware_name = CONFIG_DPM_DM_FIRMWARE,

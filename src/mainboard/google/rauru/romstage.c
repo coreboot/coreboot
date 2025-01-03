@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <arch/stages.h>
+#include <soc/clkbuf_ctl.h>
 #include <soc/emi.h>
 #include <soc/irq2axi.h>
 #include <soc/modem_power_ctrl.h>
@@ -12,6 +13,7 @@
 #include <soc/pcie.h>
 #include <soc/pll.h>
 #include <soc/pmif.h>
+#include <soc/srclken_rc.h>
 
 static void raise_little_cpu_freq(void)
 {
@@ -33,6 +35,8 @@ void platform_romstage_main(void)
 	raise_little_cpu_freq();
 	mt6373_init();
 	mt6685_init();
+	srclken_rc_init();
+	clk_buf_init();
 	mtk_dram_init();
 	modem_power_down();
 

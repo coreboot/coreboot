@@ -119,6 +119,9 @@ config BOARD_GOOGLE_PRIMUS
 config BOARD_GOOGLE_PUJJO
 	bool "->  Pujjo"
 
+config BOARD_GOOGLE_PUJJONIRU
+	bool "->  Pujjoniru"
+
 config BOARD_GOOGLE_QUANDISO
 	bool "->  Quandiso"
 

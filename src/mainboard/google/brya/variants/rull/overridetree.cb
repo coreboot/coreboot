@@ -152,7 +152,11 @@ chip soc/intel/alderlake
 		.tdp_pl2_override = 25,
 		.tdp_pl4 = 78,
 	}"
-
+	register "power_limits_config[ADL_N_081_15W_CORE]" = "{
+		.tdp_pl1_override = 22,
+		.tdp_pl2_override = 35,
+		.tdp_pl4 = 83,
+	}"
 	device domain 0 on
 		device ref dtt on
 			chip drivers/intel/dptf
@@ -165,11 +169,11 @@ chip soc/intel/alderlake
 				# TODO: below values are initial reference values only
 				## Passive Policy
 				register "policies.passive" = "{
-					[0] = DPTF_PASSIVE(CPU,    	CPU,    	85, 6000),
-					[1] = DPTF_PASSIVE(CPU,    	TEMP_SENSOR_0,	85, 6000),
-					[2] = DPTF_PASSIVE(CPU,    	TEMP_SENSOR_1,	85, 6000),
-					[3] = DPTF_PASSIVE(CPU,	        TEMP_SENSOR_2,	85, 5000),
-					[4] = DPTF_PASSIVE(CHARGER,  	TEMP_SENSOR_3,	85, 6000),
+					[0] = DPTF_PASSIVE(CPU,    	CPU,    	85, 4000),
+					[1] = DPTF_PASSIVE(CPU,    	TEMP_SENSOR_0,	85, 4000),
+					[2] = DPTF_PASSIVE(CPU,    	TEMP_SENSOR_1,	85, 4000),
+					[3] = DPTF_PASSIVE(CPU,	        TEMP_SENSOR_2,	85, 4000),
+					[4] = DPTF_PASSIVE(CHARGER,  	TEMP_SENSOR_3,	85, 4000),
 				}"
 
 				## Critical Policy
@@ -181,7 +185,7 @@ chip soc/intel/alderlake
 				register "controls.power_limits" = "{
 					.pl1 = {
 							.min_power = 6000,
-							.max_power = 6000,
+							.max_power = 13000,
 							.time_window_min = 28 * MSECS_PER_SEC,
 							.time_window_max = 32 * MSECS_PER_SEC,
 							.granularity = 200
@@ -197,8 +201,8 @@ chip soc/intel/alderlake
 
 				## Charger Performance Control (Control, mA)
 				register "controls.charger_perf" = "{
-					[0] = { 255, 3000 },
-					[1] = {  24, 1500 },
+					[0] = { 255, 4700 },
+					[1] = {  40, 2500 },
 					[2] = {  16, 1000 },
 					[3] = {   8,  500 }
 				}"
@@ -222,11 +226,11 @@ chip soc/intel/alderlake
 							.target = DPTF_TEMP_SENSOR_0,
 							.thresholds = {
 									TEMP_PCT(85, 90),
-									TEMP_PCT(54, 64),
-									TEMP_PCT(52, 52),
-									TEMP_PCT(50, 44),
-									TEMP_PCT(48, 38),
-									TEMP_PCT(45, 34),
+									TEMP_PCT(44, 61),
+									TEMP_PCT(42, 54),
+									TEMP_PCT(40, 45),
+									TEMP_PCT(38, 38),
+									TEMP_PCT(36, 25),
 								}
 						},
 						[1] = {
@@ -277,7 +281,7 @@ chip soc/intel/alderlake
 				register "controls.power_limits" = "{
 					.pl1 = {
 							.min_power = 15000,
-							.max_power = 15000,
+							.max_power = 22000,
 							.time_window_min = 28 * MSECS_PER_SEC,
 							.time_window_max = 32 * MSECS_PER_SEC,
 							.granularity = 200
@@ -293,23 +297,23 @@ chip soc/intel/alderlake
 
 				## Charger Performance Control (Control, mA)
 				register "controls.charger_perf" = "{
-					[0] = { 255, 3000 },
-					[1] = {  24, 2000 },
+					[0] = { 255, 4700 },
+					[1] = {  40, 2500 },
 					[2] = {  16, 1000 },
 					[3] = {   8,  500 }
 				}"
 
 				## Fan Performance Control (Percent, Speed, Noise, Power)
 				register "controls.fan_perf" = "{
-						[0] = {  100, 4000, 220, 1640, },
-						[1] = {  90, 3700, 220, 1640, },
-						[2] = {  80, 3500, 180, 1310, },
-						[3] = {  70, 3300, 145, 1030, },
+						[0] = {  100, 4400, 220, 1640, },
+						[1] = {  90, 4100, 220, 1640, },
+						[2] = {  80, 3800, 180, 1310, },
+						[3] = {  70, 3500, 145, 1030, },
 						[4] = {  60, 3100, 115, 765, },
 						[5] = {  50, 2800,  90,  545, },
-						[6] = {  40, 2500,  55,  365, },
-						[7] = {  30, 2100,  30,  220, },
-						[8] = {  20, 1500,  15,  120, },
+						[6] = {  40, 2400,  55,  365, },
+						[7] = {  30, 1900,  30,  220, },
+						[8] = {  20, 1400,  15,  120, },
 						[9] = {   0,    0,   0,   50, }
 				}"
 

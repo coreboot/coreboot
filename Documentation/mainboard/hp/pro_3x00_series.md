@@ -71,7 +71,7 @@ region will be modified on shutdown. Cut the AC power or do a restart
 from the OS.
 
 **Position of FDO jumper (E2) close to the F_USB3**
-![FDO jumper position](pro_3500_series_jumper.avif)
+![FDO jumper position](pro_3x00_series_jumper.avif)
 
 ### External programming
 
@@ -83,7 +83,7 @@ The supply needs to quickly reach 3V3 or else the chip is also unstable
 until cleanly power cycled.
 
 **Position of SOIC-8 flash and pin-header near ATX power connector**
-![Flash position](pro_3500_series_flash.avif)
+![Flash position](pro_3x00_series_flash.avif)
 
 ## Technology
 

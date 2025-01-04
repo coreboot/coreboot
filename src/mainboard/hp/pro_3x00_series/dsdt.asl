@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#define BRIGHTNESS_UP \_SB.PCI0.GFX0.INCB
-#define BRIGHTNESS_DOWN \_SB.PCI0.GFX0.DECB
 #include <acpi/acpi.h>
 
 DefinitionBlock(
@@ -23,7 +21,6 @@ DefinitionBlock(
 	Device (\_SB.PCI0)
 	{
 		#include <northbridge/intel/sandybridge/acpi/sandybridge.asl>
-		#include <drivers/intel/gma/acpi/default_brightness_levels.asl>
 		#include <southbridge/intel/bd82x6x/acpi/pch.asl>
 	}
 }

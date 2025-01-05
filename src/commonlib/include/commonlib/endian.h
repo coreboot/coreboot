@@ -11,7 +11,7 @@
 
 static inline uint8_t read_ble8(const void *src)
 {
-	const uint8_t *s = src;
+	const volatile uint8_t *s = src;
 	return *s;
 }
 
@@ -24,7 +24,7 @@ static inline uint8_t read_at_ble8(const void *src, size_t offset)
 
 static inline void write_ble8(void *dest, uint8_t val)
 {
-	*(uint8_t *)dest = val;
+	*(volatile uint8_t *)dest = val;
 }
 
 static inline void write_at_ble8(void *dest, uint8_t val, size_t offset)
@@ -58,7 +58,7 @@ static inline void write_at_be8(void *dest, uint8_t val, size_t offset)
 
 static inline uint16_t read_be16(const void *src)
 {
-	const uint8_t *s = src;
+	const volatile uint8_t *s = src;
 	return (((uint16_t)s[0]) << 8) | (((uint16_t)s[1]) << 0);
 }
 
@@ -84,7 +84,7 @@ static inline void write_at_be16(void *dest, uint16_t val, size_t offset)
 
 static inline uint32_t read_be32(const void *src)
 {
-	const uint8_t *s = src;
+	const volatile uint8_t *s = src;
 	return (((uint32_t)s[0]) << 24) | (((uint32_t)s[1]) << 16) |
 		(((uint32_t)s[2]) << 8) | (((uint32_t)s[3]) << 0);
 }
@@ -162,7 +162,7 @@ static inline void write_at_le8(void *dest, uint8_t val, size_t offset)
 
 static inline uint16_t read_le16(const void *src)
 {
-	const uint8_t *s = src;
+	const volatile uint8_t *s = src;
 	return (((uint16_t)s[1]) << 8) | (((uint16_t)s[0]) << 0);
 }
 
@@ -188,7 +188,7 @@ static inline void write_at_le16(void *dest, uint16_t val, size_t offset)
 
 static inline uint32_t read_le32(const void *src)
 {
-	const uint8_t *s = src;
+	const volatile uint8_t *s = src;
 	return (((uint32_t)s[3]) << 24) | (((uint32_t)s[2]) << 16) |
 		(((uint32_t)s[1]) << 8) | (((uint32_t)s[0]) << 0);
 }

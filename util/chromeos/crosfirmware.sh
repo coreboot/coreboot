@@ -105,8 +105,14 @@ extract_coreboot() {
 			_version=$(cat $_unpacked/VERSION | grep -m 1 -e Model.*$_board -A5 |
 				grep "BIOS version:" | cut -f2 -d: | tr -d \ )
 		fi
-		_bios_image=$(grep "IMAGE_MAIN" $_unpacked/models/$_board/setvars.sh |
-			cut -f2 -d\")
+		if [ -f $_unpacked/models/$_board/setvars.sh ]; then
+			_bios_image=$(grep "IMAGE_MAIN" $_unpacked/models/$_board/setvars.sh |
+				cut -f2 -d'"')
+		else
+			# special case for REEF, others?
+			_version=$(grep -m1 "host" "$_unpacked/manifest.json" | cut -f12 -d'"')
+			_bios_image=$(grep -m1 "image" "$_unpacked/manifest.json" | cut -f4 -d'"')
+		fi
 	elif [ -f "$_unpacked/manifest.json" ]; then
 		_version=$(grep -m1 -A1 "$BOARD" "$_unpacked/manifest.json" | grep "host" | cut -f12 -d'"')
 		_bios_image=$(grep -m1 -A3 "$BOARD" "$_unpacked/manifest.json" | grep "image" | cut -f4 -d'"')

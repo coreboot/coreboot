@@ -33,6 +33,7 @@ enum fsp_param_type {
 	FSP_PARAM_TYPE_INVALID = 0,
 	/* 0x40000000+ reserved for input type params */
 	FSP_PARAM_TYPE_IN = FSP_PARAM_IO_ENCODE(FSP_PARAM_IO_IN),
+	FSP_PARAM_TYPE_STORAGE,
 
 	/* 0x80000000+ reserved for output type params */
 	FSP_PARAM_TYPE_OUT = FSP_PARAM_IO_ENCODE(FSP_PARAM_IO_OUT),

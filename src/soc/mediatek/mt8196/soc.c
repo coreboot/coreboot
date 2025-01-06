@@ -8,8 +8,10 @@
 #include <soc/gpueb.h>
 #include <soc/mcupm.h>
 #include <soc/mmu_operations.h>
+#include <soc/mtk_fsp.h>
 #include <soc/pcie.h>
 #include <soc/sspm.h>
+#include <soc/storage.h>
 #include <soc/symbols.h>
 #include <symbols.h>
 
@@ -33,6 +35,11 @@ static void soc_read_resources(struct device *dev)
 
 static void soc_init(struct device *dev)
 {
+	mtk_fsp_init(RAMSTAGE_SOC_INIT);
+	uint32_t storage_type = mainboard_get_storage_type();
+	mtk_fsp_add_param(FSP_PARAM_TYPE_STORAGE, sizeof(storage_type), &storage_type);
+	mtk_fsp_load_and_run();
+
 	mtk_mmu_disable_l2c_sram();
 	sspm_init();
 	gpueb_init();

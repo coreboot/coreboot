@@ -409,7 +409,7 @@ Spec](https://uefi.org/specifications) for details, or run the tool
 * GPD - PCH GPIO in Deep Sleep well (D5 power)
 * GPE - ACPI: General Purpose Event
 * GPI - GPIOs: GPIO Input
-* GPIO - [**General Purpose Input/Output**](https://en.wikipedia.org/wiki/General-purpose_Input/Output) (Pin)
+* GPIO - [**General Purpose Input/Output**](https://en.wikipedia.org/wiki/General-purpose_input/output) (Pin)
 * GPMR - Intel: General Purpose Memory Range
 * GPO - GPIOs: GPIO Output
 * GPP - AMD: General Purpose (PCI/PCIe) port

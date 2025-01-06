@@ -108,6 +108,9 @@ struct soc_amd_cezanne_config {
 		uint8_t tx_eq_post;
 		uint8_t tx_vboost_lvl;
 	} edp_tuningset;
+
+	/* If using an external 48MHz OSC for codec, will disable internal X48M_OSC */
+	bool acp_i2s_use_external_48mhz_osc;
 };
 
 #endif /* CEZANNE_CHIP_H */

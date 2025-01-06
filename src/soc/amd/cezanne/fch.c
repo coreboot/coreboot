@@ -83,8 +83,15 @@ const struct irq_idx_name *sb_get_apic_reg_association(size_t *size)
 static void fch_clk_output_48Mhz(void)
 {
 	uint32_t ctrl = misc_read32(MISC_CLK_CNTL0);
-	/* Enable BP_X48M0 Clock Output */
-	ctrl |= BP_X48M0_OUTPUT_EN;
+	const struct soc_amd_cezanne_config *cfg = config_of_soc();
+
+	/* If using external clock source for I2S, disable the internal clock output */
+	if (cfg->acp_i2s_use_external_48mhz_osc &&
+		cfg->common_config.acp_config.acp_pin_cfg == I2S_PINS_I2S_TDM)
+		ctrl &= ~BP_X48M0_OUTPUT_EN;
+	else
+		ctrl |= BP_X48M0_OUTPUT_EN;
+
 	/* Disable clock output in S0i3 */
 	ctrl |= BP_X48M0_S0I3_DIS;
 	misc_write32(MISC_CLK_CNTL0, ctrl);

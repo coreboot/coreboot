@@ -34,6 +34,16 @@ u16 mt6363_read16(u32 reg)
 	return rdata;
 }
 
+u8 mt6363_read8(u32 reg)
+{
+	u32 rdata = 0;
+
+	assert(pmif_arb);
+	pmif_arb->read(pmif_arb, SPMI_SLAVE_4, reg, &rdata);
+
+	return (u8)rdata;
+}
+
 void mt6363_write8(u32 reg, u8 data)
 {
 	assert(pmif_arb);

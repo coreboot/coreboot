@@ -109,6 +109,7 @@ void mt6363_enable_vram_digrf(bool enable);
 void mt6363_enable_vram_mdfe(bool enable);
 void mt6363_init_pmif_arb(void);
 u16 mt6363_read16(u32 reg);
+u8 mt6363_read8(u32 reg);
 void mt6363_write8(u32 reg, u8 reg_val);
 void mt6363_write_field(u32 reg, u32 val, u32 mask, u32 shift);
 void mt6363_init_setting(void);

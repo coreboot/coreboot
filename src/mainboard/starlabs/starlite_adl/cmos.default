@@ -13,5 +13,3 @@ wireless=Enable
 webcam=Enable
 camera=Enable
 microphone=Enable
-# EC
-mirror_flag=Disable

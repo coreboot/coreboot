@@ -11,5 +11,3 @@ me_state=Disable
 # Devices
 wireless=Enable
 webcam=Enable
-# EC
-mirror_flag=Disable

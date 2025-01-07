@@ -329,7 +329,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 		params->PsfTccEnable = 1;
 		params->PmcLpmS0ixSubStateEnableMask = 0;
 		params->PchDmiAspmCtrl = 0;
-		params->PchLegacyIoLowLatency = 0;
+		params->PchLegacyIoLowLatency = 1;
 		params->EnableItbm = 0;
 		params->D3ColdEnable = 0;
 		params->PmcOsIdleEnable = 0;

@@ -1,0 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_ASROCK_Z87M_EXTREME4
+	bool "Z87M Extreme4"

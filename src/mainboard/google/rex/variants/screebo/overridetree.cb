@@ -97,7 +97,7 @@ chip soc/intel/meteorlake
 	#  slew rate for IA Domain: Fast/8
 	#  slew rate for GT Domain: Fast/8
 	#  Ignore slew rate configuration for SA Domain
-	register "enable_acoustic_noise_mitigation" = "1"
+	register "enable_acoustic_noise_mitigation" = "true"
 	register "disable_fast_pkgc_ramp[VR_DOMAIN_IA]" = "1"
 	register "slow_slew_rate_config[VR_DOMAIN_IA]" = "SLEW_FAST_8"
 	register "disable_fast_pkgc_ramp[VR_DOMAIN_GT]" = "1"

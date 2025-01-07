@@ -12,9 +12,11 @@
 #include <soc/msdc.h>
 #include <soc/pcie.h>
 #include <soc/spm_common.h>
+#include <soc/storage.h>
 #include <soc/usb.h>
 
 #include "gpio.h"
+#include "storage.h"
 
 #define AFE_SE_SECURE_CON1	(AUDIO_BASE + 0x5634)
 
@@ -66,6 +68,25 @@ static void power_on_fpmcu(void)
 	/* Power on the fingerprint MCU */
 	gpio_output(GPIO_EN_PWR_FP, 1);
 	gpio_output(GPIO_FP_RST_1V8_S3_L, 1);
+}
+
+enum mtk_storage_type mainboard_get_storage_type(void)
+{
+	uint32_t index = storage_id();
+
+	switch (index) {
+	case 0:
+		return STORAGE_UFS_40;
+	case 1:
+		return STORAGE_UFS_31;
+	case 2:
+		return STORAGE_UFS_40_HS;
+	case 3:
+		return STORAGE_NVME;
+	default:
+		printk(BIOS_WARNING, "unsupported storage id %u\n", index);
+	}
+	return STORAGE_UNKNOWN;
 }
 
 bool mainboard_needs_pcie_init(void)

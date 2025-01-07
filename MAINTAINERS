@@ -137,12 +137,12 @@ F:	src/mainboard/acer/
 
 AMD non-server family 17h and 19h reference boards
 M:	Felix Held <felix-coreboot@felixheld.de>
-M:	Jason Glenesk <jason.glenesk@gmail.com>
+M:	Nick Kochlowski <nickkochlowski@gmail.com>
 M:	Fred Reitberger <reitbergerfred@gmail.com>
-L:	amd_coreboot_org_changes@googlegroups.com
 S:	Maintained
 F:	src/mainboard/amd/bilby/
 F:	src/mainboard/amd/birman/
+F:	src/mainboard/amd/birman_plus/
 F:	src/mainboard/amd/chausie/
 F:	src/mainboard/amd/majolica/
 F:	src/mainboard/amd/mandolin/
@@ -150,14 +150,11 @@ F:	src/mainboard/amd/mayan/
 
 AMD server family 19h reference boards
 M:	Felix Held <felix-coreboot@felixheld.de>
-M:	Martin Roth <gaumless@gmail.com>
-M:	Varshit Pandya <pandyavarshit@gmail.com>
 S:	Maintained
 F:	src/mainboard/amd/onyx_poc/
 
 AMD reference boards outside of family 17h and 19h
-S:	Odd Fixes
-L:	amd_coreboot_org_changes@googlegroups.com
+S:	Orphan
 F:	src/mainboard/amd/gardenia/
 F:	src/mainboard/amd/pademelon/
 
@@ -387,9 +384,9 @@ F:	src/mainboard/google/slippy/
 F:	src/mainboard/google/stout/
 
 GOOGLE AMD-BASED MAINBOARDS
-M:	Martin Roth <martin.roth@amd.corp-partner.google.com>
+M:	Martin Roth <gaumless@gmail.com>
 M:	Jason Nien <jason.nien@amd.corp-partner.google.com>
-L:	amd_coreboot_org_changes@googlegroups.com
+M:	Matt DeVillier <matt.devillier@gmail.com>
 S:	Supported
 F:	src/mainboard/google/kahlee/
 F:	src/mainboard/google/zork/
@@ -684,7 +681,6 @@ F:	util/nvidia/
 F:	util/rockchip/
 
 PPC64 ARCHITECTURE
-M:	Ronald Minnich <rminnich@gmail.com>
 M:	Timothy Pearson <tpearson@raptorengineeringinc.com>
 S:	Maintained
 F:	src/arch/ppc64/
@@ -692,7 +688,6 @@ F:	src/cpu/qemu-power8/
 F:	src/mainboard/emulation/qemu-power8/
 
 RISC-V ARCHITECTURE
-M:	Ronald Minnich <rminnich@gmail.com>
 M:	Maximilian Brune <maximilian.brune@9elements.com>
 R:	Philipp Hug <philipp@hug.cx>
 S:	Maintained
@@ -787,13 +782,23 @@ F:	src/northbridge/intel/x4x/
 ################################################################################
 
 AMD SUPPORT
-L:	amd_coreboot_org_changes@googlegroups.com
+M:	Felix Held <felix-coreboot@felixheld.de>
+M:	Martin Roth <gaumless@gmail.com>
+M:	Nick Kochlowski <nickkochlowski@gmail.com>
+M:	Ana Carolina Cabral <ana.cpmelo95@gmail.com>
 S:	Odd Fixes
-F:	src/vendorcode/amd/
 F:	src/cpu/amd/
 F:	src/northbridge/amd/
 F:	src/southbridge/amd/
 F:	src/include/cpu/amd/
+
+AMD VENDORCODE-SUPPORT
+M:	Felix Held <felix-coreboot@felixheld.de>
+M:	Martin Roth <gaumless@gmail.com>
+M:	Nick Kochlowski <nickkochlowski@gmail.com>
+M:	Ana Carolina Cabral <ana.cpmelo95@gmail.com>
+S:	Maintained
+F:	src/vendorcode/amd/
 
 INTEL SUPPORT
 R:	Intel_Coreboot_Reviewers <intel_coreboot_reviewers@intel.com>
@@ -828,64 +833,41 @@ F:	src/drivers/intel/dptf/
 
 AMD Cezanne
 M:	Felix Held <felix-coreboot@felixheld.de>
-M:	Jason Glenesk <jason.glenesk@gmail.com>
-M:	Fred Reitberger <reitbergerfred@gmail.com>
-M:	Matt DeVillier <matt.devillier@amd.corp-partner.google.com>
-L:	amd_coreboot_org_changes@googlegroups.com
 S:	Maintained
 F:	src/soc/amd/cezanne/
 F:	src/vendorcode/amd/fsp/cezanne/
 
 AMD common SoC code
 M:	Felix Held <felix-coreboot@felixheld.de>
-M:	Jason Glenesk <jason.glenesk@gmail.com>
-M:	Fred Reitberger <reitbergerfred@gmail.com>
-M:	Matt DeVillier <matt.devillier@amd.corp-partner.google.com>
-L:	amd_coreboot_org_changes@googlegroups.com
 S:	Maintained
 F:	src/soc/amd/common/
 
 AMD Genoa Proof of Concept
 M:	Felix Held <felix-coreboot@felixheld.de>
 M:	Martin Roth <gaumless@gmail.com>
-M:	Varshit Pandya <pandyavarshit@gmail.com>
 S:	Maintained
 F:	src/soc/amd/genoa_poc/
 
 AMD Mendocino
 M:	Felix Held <felix-coreboot@felixheld.de>
-M:	Jason Glenesk <jason.glenesk@gmail.com>
-M:	Fred Reitberger <reitbergerfred@gmail.com>
-M:	Matt DeVillier <matt.devillier@amd.corp-partner.google.com>
-L:	amd_coreboot_org_changes@googlegroups.com
-S:	Supported
+S:	Maintained
 F:	src/soc/amd/mendocino/
 F:	src/vendorcode/amd/fsp/mendocino/
 
 AMD Picasso
 M:	Felix Held <felix-coreboot@felixheld.de>
-M:	Jason Glenesk <jason.glenesk@gmail.com>
-M:	Fred Reitberger <reitbergerfred@gmail.com>
-M:	Matt DeVillier <matt.devillier@amd.corp-partner.google.com>
-L:	amd_coreboot_org_changes@googlegroups.com
 S:	Maintained
 F:	src/soc/amd/picasso/
 F:	src/vendorcode/amd/fsp/picasso/
 
 AMD Phoenix
 M:	Felix Held <felix-coreboot@felixheld.de>
-M:	Jason Glenesk <jason.glenesk@gmail.com>
-M:	Fred Reitberger <reitbergerfred@gmail.com>
-M:	Matt DeVillier <matt.devillier@amd.corp-partner.google.com>
-L:	amd_coreboot_org_changes@googlegroups.com
-S:	Supported
+S:	Maintained
 F:	src/soc/amd/phoenix/
 F:	src/vendorcode/amd/fsp/phoenix/
 
 AMD Stoneyridge
 M:	Felix Held <felix-coreboot@felixheld.de>
-M:	Matt DeVillier <matt.devillier@amd.corp-partner.google.com>
-L:	amd_coreboot_org_changes@googlegroups.com
 S:	Odd Fixes
 F:	src/soc/amd/stoneyridge/
 
@@ -1246,47 +1228,47 @@ MISSING: SPI
 # *** Infrastructure Owners ***
 # This is intended to let people know who they should contact for issues with various infrastructure pieces.
 # Hardware
-#	Owners: Patrick
-#	Backups:
+#	Owners: Felix Singer <felixsinger@posteo.net>
+#		David Hendricks <dhendrix@coreboot.org>
+#	Backups: Martin Roth <gaumless@gmail.com>
 
 # Web Server
-#	Owners: Patrick
-#	Backups:
+#	Owners: Felix Singer <felixsinger@posteo.net>
+#		David Hendricks <dhendrix@coreboot.org>
+#	Backups: Martin Roth <gaumless@gmail.com>
 
 # Website
-#	Owners: Martin
-#	Backups: Patrick
+#	Owners: Martin Roth <gaumless@gmail.com>
+#	Backups:
 
 # Documentation Website
-#	Owners: Patrick
+#	Owners: Felix Singer <felixsinger@posteo.net>
 #	Backups:
 
 CODE OF CONDUCT
-M:	Ronald Minnich <rminnich@gmail.com>
-M:	Martin Roth <martin@coreboot.org>
+M:	Martin Roth <gaumless@gmail.com>
+M:	David Hendricks <dhendrix@coreboot.org>
 S:	Maintained
 F:	Documentation/community/code_of_conduct.md
 
-# Wiki
-#	Owners: Patrick
-#	Backups:
-
 # Gerrit
-#	Owners: Patrick
-#	Backups: Martin
+#	Owners: Felix Singer <felixsinger@posteo.net>
+#		David Hendricks <dhendrix@coreboot.org>
+#	Backups: Martin Roth <gaumless@gmail.com>
 
 # Jenkins
-#	Owners: Patrick, Martin
+#	Owners: Felix Singer <felixsinger@posteo.net>
 #	Backups:
 
 # Bug Tracker
 #	Owners: Lynxis,
-#	Backups: Martin,
+#	Backups: Felix Singer <felixsinger@posteo.net>
 
 # Mailing List
 #	Owners: Patrick
-#	Backups: Martin
+#	Backups: Martin Roth <gaumless@gmail.com>
 
 # Software Freedom Conservancy
-#	Main contact: Martin
-#	“Official” contact: David, Matt, Werner
+#	Main contact: Martin Roth <gaumless@gmail.com>
+#	Backup: Matt DeVillier <mrchromeboox@coreboot.org>
+#		Werner Zeh <mrchromebox@coreboot.org>

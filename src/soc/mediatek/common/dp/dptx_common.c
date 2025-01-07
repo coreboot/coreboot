@@ -333,7 +333,7 @@ static void dptx_set_tu(struct mtk_dp *mtk_dp)
 static void dptx_set_misc(struct mtk_dp *mtk_dp)
 {
 	u8 format, depth;
-	union misc_t dptx_misc;
+	union misc_t dptx_misc = { .cmisc = {0} };
 
 	format = mtk_dp->info.format;
 	depth = mtk_dp->info.depth;

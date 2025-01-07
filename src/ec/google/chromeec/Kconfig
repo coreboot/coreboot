@@ -93,6 +93,7 @@ config EC_GOOGLE_CHROMEEC_LPC
 config EC_GOOGLE_CHROMEEC_MEC
 	depends on EC_GOOGLE_CHROMEEC_LPC
 	def_bool n
+	select EC_GOOGLE_CHROMEEC_ACPI_MEMMAP
 	select EC_GOOGLE_COMMON_MEC
 	help
 	  Microchip EC variant for LPC register access.

@@ -189,7 +189,7 @@ static void cnvw_fill_ssdt(const struct device *dev)
 
 			acpigen_write_if_lequal_op_int(LOCAL0_OP, 0);
 			{
-				acpigen_emit_namestring("CFLR");
+				acpigen_emit_namestring("^CFLR");
 
 				acpigen_write_store_int_to_namestr(1, "PRRS");
 

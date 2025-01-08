@@ -42,22 +42,21 @@ void variant_mainboard_final(void)
 	dev = pcidev_path_on_root(PCH_DEVFN_SDCARD);
 	if (dev) {
 		struct resource *res = probe_resource(dev, PCI_BASE_ADDRESS_0);
-		if (!res)
-			return;
+		if (res) {
+			disable_sdr_modes(res);
 
-		disable_sdr_modes(res);
-
-		/* Use preset driver strength from preset value registers. */
-		clrsetbits16(res2mmio(res, HOSTCTRL2, 0), 0, HOSTCTRL2_PRESET);
+			/* Use preset driver strength from preset value
+			   registers. */
+			clrsetbits16(res2mmio(res, HOSTCTRL2, 0), 0,
+					HOSTCTRL2_PRESET);
+		}
 	}
 
 	dev = pcidev_path_on_root(PCH_DEVFN_EMMC);
 	if (dev) {
 		struct resource *res = probe_resource(dev, PCI_BASE_ADDRESS_0);
-		if (!res)
-			return;
-
-		disable_sdr_modes(res);
+		if (res)
+			disable_sdr_modes(res);
 	}
 }
 

@@ -44,8 +44,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_A19, NONE),
 	/* A20 : NC */
 	PAD_NC(GPP_A20, NONE),
-	/* A21 : DDPC_CTRLCLK ==> TCHSCR_REPORT_EN */
-	PAD_CFG_GPO(GPP_A21, 0, DEEP),
+	/* A21 : NC */
+	PAD_NC(GPP_A21, NONE),
 	/* A22 : GPP_A22 ==> TPM_PIRQ# */
 	PAD_CFG_GPI(GPP_A22, NONE, DEEP),
 	/* A23 : GPP_A23 ==> NC */
@@ -147,10 +147,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_D13, NONE, DEEP, NF1),
 	/* D14 : UART0_ISH_TX_DBG_RX */
 	PAD_CFG_NF(GPP_D14, NONE, DEEP, NF1),
-	/* D15  : GPP_D15 ==> SOC_TS_I2C_RST# */
-	PAD_CFG_GPO_LOCK(GPP_D15, 1, LOCK_CONFIG),
-	/* D16 : ISH_UART0_CTS# ==> SOC_TS_I2C_INT# */
-	PAD_CFG_GPI_LOCK(GPP_D16, NONE, LOCK_CONFIG),
+	/* D15  : NC */
+	PAD_NC(GPP_D15, NONE),
+	/* D16  : NC */
+	PAD_NC(GPP_D16, NONE),
 	/* D17 : NC */
 	PAD_NC_LOCK(GPP_D17, NONE, LOCK_CONFIG),
 	/* D18 : NC */
@@ -192,8 +192,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E15, NONE),
 	/* E16 : NC */
 	PAD_NC(GPP_E16, NONE),
-	/* E17  : GPP_E17 ==> SOC_TS_PWR_EN */
-	PAD_CFG_GPO_LOCK(GPP_E17, 1, LOCK_CONFIG),
+	/* E17  : NC */
+	PAD_NC(GPP_E17, NONE),
 	/* E18 : NC */
 	PAD_NC(GPP_E18, NONE),
 	/* E19 : DDP1_CTRLDATA ==> GPP_E19_STRAP */
@@ -432,11 +432,6 @@ static const struct pad_config early_gpio_table[] = {
 
 /* Fill romstage gpio configuration */
 static const struct pad_config romstage_gpio_table[] = {
-	/* Enable touchscreen, hold in reset */
-	/* E17  : GPP_E17 ==> SOC_TS_PWR_EN */
-	PAD_CFG_GPO(GPP_E17, 1, DEEP),
-	/* D15  : GPP_D15 ==> SOC_TS_I2C_RST# */
-	PAD_CFG_GPO(GPP_D15, 0, DEEP),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

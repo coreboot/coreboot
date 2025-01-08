@@ -122,7 +122,7 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexI2C2] = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C3] = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C4] = PchSerialIoDisabled,
-		[PchSerialIoIndexI2C5] = PchSerialIoPci,
+		[PchSerialIoIndexI2C5] = PchSerialIoDisabled,
 	}"
 
 	register "serial_io_gspi_mode" = "{
@@ -148,7 +148,6 @@ chip soc/intel/alderlake
 	#|                   | required to set up a BAR  |
 	#|                   | for TPM communication     |
 	#| I2C1              | Trackpad                  |
-	#| I2C5              | Touchscreen               |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
 		.i2c[0] = {
@@ -162,15 +161,6 @@ chip soc/intel/alderlake
 			}
 		},
 		.i2c[1] = {
-			.speed = I2C_SPEED_FAST,
-			.speed_config[0] = {
-				.speed = I2C_SPEED_FAST,
-				.scl_lcnt = 158,
-				.scl_hcnt = 79,
-				.sda_hold = 7,
-			}
-		},
-		.i2c[5] = {
 			.speed = I2C_SPEED_FAST,
 			.speed_config[0] = {
 				.speed = I2C_SPEED_FAST,
@@ -470,25 +460,6 @@ chip soc/intel/alderlake
 				device i2c 15 on end
 			end
 		end #I2C1
-		device ref i2c5 on
-			chip drivers/i2c/hid
-				register "generic.hid" = ""ELAN9004""
-				register "generic.desc" = ""ELAN Touchscreen""
-				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_D16_IRQ)"
-				register "generic.detect" = "1"
-				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D15)"
-				register "generic.reset_delay_ms" = "20"
-				register "generic.reset_off_delay_ms" = "2"
-				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E17)"
-				register "generic.enable_delay_ms" = "1"
-				register "generic.stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A21)"
-				register "generic.stop_delay_ms" = "150"
-				register "generic.stop_off_delay_ms" = "2"
-				register "generic.has_power_resource" = "1"
-				register "hid_desc_reg_offset" = "0x01"
-				device i2c 10 on end
-			end
-		end #I2C5
 		device ref heci1 on end
 		device ref emmc on
 			probe STORAGE STORAGE_UNKNOWN

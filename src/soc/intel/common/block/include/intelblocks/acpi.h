@@ -26,12 +26,30 @@ enum cpu_perf_eff_type {
 
 unsigned long acpi_create_madt_lapics_with_nmis_hybrid(unsigned long current);
 
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_ACPI_CPU_HYBRID)
 /*
  * Read the performance and efficient core ratios.
  * This is to be implemented by the SoC specific code if
  * SOC_INTEL_COMMON_BLOCK_RUNTIME_CORE_SCALING_FACTORS is selected.
  */
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_RUNTIME_CORE_SCALING_FACTORS)
 enum cb_err soc_read_core_scaling_factors(u16 *performance, u16 *efficient);
+#else
+static inline enum cb_err soc_read_core_scaling_factors(u16 *performance, u16 *efficient)
+{
+	_Static_assert(CONFIG_SOC_INTEL_PERFORMANCE_CORE_SCALE_FACTOR != 0,
+		       "CONFIG_SOC_INTEL_PERFORMANCE_CORE_SCALE_FACTOR must not be zero");
+
+	_Static_assert(CONFIG_SOC_INTEL_EFFICIENT_CORE_SCALE_FACTOR != 0,
+		       "CONFIG_SOC_INTEL_EFFICIENT_CORE_SCALE_FACTOR must not be zero");
+
+	*performance = CONFIG_SOC_INTEL_PERFORMANCE_CORE_SCALE_FACTOR;
+	*efficient = CONFIG_SOC_INTEL_EFFICIENT_CORE_SCALE_FACTOR;
+
+	return CB_SUCCESS;
+}
+#endif
+#endif	/* SOC_INTEL_COMMON_BLOCK_ACPI_CPU_HYBRID */
 
 /* Generates ACPI code to define _CPC control method */
 void acpigen_write_CPPC_hybrid_method(int core_id);

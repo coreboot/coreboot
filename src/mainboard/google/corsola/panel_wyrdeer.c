@@ -25,6 +25,14 @@ static struct panel_description wyrdeer_panels[] = {
 		.disp_path = DISP_PATH_MIPI,
 		.orientation = LB_FB_ORIENTATION_LEFT_UP,
 	},
+	/* STA Technology panel */
+	[9] = {
+		.configure_backlight = backlight_control,
+		.power_on = mipi_panel_power_on,
+		.name = "STA_2082109QFH040022_50E",
+		.disp_path = DISP_PATH_MIPI,
+		.orientation = LB_FB_ORIENTATION_LEFT_UP,
+	},
 };
 
 struct panel_description *get_panel_description(void)

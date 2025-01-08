@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
 #include <console/console.h>
 #include <device/mmio.h>
 #include <delay.h>
@@ -64,6 +65,37 @@ void mtk_dp_write_byte(struct mtk_dp *mtk_dp, u32 addr, u8 val, u32 mask)
 	}
 
 	mtk_dp_write(mtk_dp, DP_TX_TOP_APB_WSTRB, 0x0);
+}
+
+u32 mtk_dp_phy_read(struct mtk_dp *mtk_dp, u32 offset)
+{
+	void *addr = mtk_dp->phy_regs + offset;
+
+	assert(mtk_dp->phy_regs);
+	assert(offset % 4 == 0 && offset <= REG_OFFSET_LIMIT);
+
+	return read32(addr);
+}
+
+void mtk_dp_phy_write(struct mtk_dp *mtk_dp, u32 offset, u32 val)
+{
+	void *addr = mtk_dp->phy_regs + offset;
+
+	assert(mtk_dp->phy_regs);
+	assert(offset % 4 == 0 && offset <= REG_OFFSET_LIMIT);
+
+	write32(addr, val);
+}
+
+void mtk_dp_phy_mask(struct mtk_dp *mtk_dp, u32 offset, u32 val, u32 mask)
+{
+	void *addr = mtk_dp->phy_regs + offset;
+
+	assert(mtk_dp->phy_regs);
+	assert(offset % 4 == 0 && offset <= REG_OFFSET_LIMIT);
+	assert((val & mask) == val);
+
+	clrsetbits32(addr, mask, val);
 }
 
 void dptx_hal_verify_clock(struct mtk_dp *mtk_dp)

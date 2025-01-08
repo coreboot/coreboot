@@ -215,6 +215,7 @@ static void dptx_fec_ready(struct mtk_dp *mtk_dp, u8 err_cnt_sel)
 void dptx_init_variable(struct mtk_dp *mtk_dp)
 {
 	mtk_dp->regs = (void *)EDP_BASE;
+	mtk_dp->phy_regs = (void *)EDP_PHY_BASE;
 	mtk_dp->train_info.sys_max_linkrate = DP_LINKRATE_HBR3;
 	mtk_dp->train_info.linkrate = DP_LINKRATE_HBR2;
 	mtk_dp->train_info.linklane_count = DP_LANECOUNT_4;

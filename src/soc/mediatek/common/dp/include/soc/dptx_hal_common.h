@@ -65,6 +65,9 @@ bool dptx_hal_auxwrite_bytes(struct mtk_dp *mtk_dp, u8 cmd,
 bool dptx_hal_setswing_preemphasis(struct mtk_dp *mtk_dp, int lane_num,
 				   int swing_value, int preemphasis);
 u8 dptx_hal_get_colorbpp(struct mtk_dp *mtk_dp);
+u32 mtk_dp_phy_read(struct mtk_dp *mtk_dp, u32 offset);
+void mtk_dp_phy_mask(struct mtk_dp *mtk_dp, u32 offset, u32 val, u32 mask);
+void mtk_dp_phy_write(struct mtk_dp *mtk_dp, u32 offset, u32 val);
 u32 mtk_dp_read(struct mtk_dp *mtk_dp, u32 offset);
 void mtk_dp_write_byte(struct mtk_dp *mtk_dp, u32 addr, u8 val, u32 mask);
 void mtk_dp_mask(struct mtk_dp *mtk_dp, u32 offset, u32 val, u32 mask);

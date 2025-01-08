@@ -198,6 +198,7 @@ struct mtk_dp {
 	u32 max_hdisplay;
 	u32 max_vdisplay;
 	void *regs;
+	void *phy_regs;
 	int disp_status;
 	bool power_on;
 	bool audio_enable;

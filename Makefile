@@ -88,21 +88,21 @@ all: real-all
 help_coreboot help::
 	@echo  '*** coreboot platform targets ***'
 	@echo  '  Use "make [target] V=1" for extra build debug information'
-	@echo  '  all                   - Build coreboot'
-	@echo  '  clean                 - Remove coreboot build artifacts'
-	@echo  '  distclean             - Remove build artifacts and config files'
-	@echo  '  sphinx                - Build sphinx documentation for coreboot'
-	@echo  '  sphinx-lint           - Build sphinx documentation for coreboot with warnings as errors'
-	@echo  '  filelist              - Show files used in current build'
-	@echo  '  printall              - Print makefile info for debugging'
-	@echo  '  gitconfig             - Set up git to submit patches to coreboot'
-	@echo  '  ctags / ctags-project - Make ctags file for all of coreboot or current board'
+	@echo  '  all                     - Build coreboot'
+	@echo  '  clean                   - Remove coreboot build artifacts'
+	@echo  '  distclean               - Remove build artifacts and config files'
+	@echo  '  sphinx                  - Build sphinx documentation for coreboot'
+	@echo  '  sphinx-lint             - Build sphinx documentation for coreboot with warnings as errors'
+	@echo  '  filelist                - Show files used in current build'
+	@echo  '  printall                - Print makefile info for debugging'
+	@echo  '  gitconfig               - Set up git to submit patches to coreboot'
+	@echo  '  ctags / ctags-project   - Make ctags file for all of coreboot or current board'
 	@echo  '  cscope / cscope-project - Make cscope.out file for coreboot or current board'
 	@echo
 	@echo  '*** site-local related targets ***'
-	@echo  '  symlink               - Create symbolic links from site-local into coreboot tree'
-	@echo  '  clean-symlink         - Remove symbolic links created by "make symlink"'
-	@echo  '  cleanall-symlink      - Remove all symbolic links in the coreboot tree'
+	@echo  '  symlink                 - Create symbolic links from site-local into coreboot tree'
+	@echo  '  clean-symlink           - Remove symbolic links created by "make symlink"'
+	@echo  '  cleanall-symlink        - Remove all symbolic links in the coreboot tree'
 	@echo
 
 # This include must come _before_ the pattern rules below!

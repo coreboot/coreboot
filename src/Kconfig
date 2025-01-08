@@ -149,6 +149,7 @@ config UTIL_GENPARSER
 
 choice
 	prompt "Option backend to use"
+	default USE_CBFS_FILE_OPTION_BACKEND if CHROMEOS && PLATFORM_USES_FSP2_0
 	default USE_MAINBOARD_SPECIFIC_OPTION_BACKEND if HAVE_MAINBOARD_SPECIFIC_OPTION_BACKEND
 	default USE_OPTION_TABLE if NVRAMCUI_SECONDARY_PAYLOAD
 	default USE_UEFI_VARIABLE_STORE if DRIVERS_EFI_VARIABLE_STORE && \
@@ -163,6 +164,12 @@ config USE_OPTION_TABLE
 	help
 	  Enable this option if coreboot shall read options from the "CMOS"
 	  NVRAM instead of using hard-coded values.
+
+config USE_CBFS_FILE_OPTION_BACKEND
+	bool "Use CBFS files for configuration values"
+	help
+	  Enable this option if coreboot shall read options from files in CBFS.
+	  Options can be set using `cbfstool add-int -n option/<option-name> -i value`.
 
 config USE_UEFI_VARIABLE_STORE
 	bool "Use UEFI variable-store in SPI flash as option backend"

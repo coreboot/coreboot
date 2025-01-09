@@ -44,7 +44,6 @@ chip northbridge/intel/sandybridge # FIXME: check gfx
 			# enable ONLY ports present on stock MintBox/Intense PC
 			#register "sata_port_map" = "0x1d"
 			register "superspeed_capable_ports" = "0x0000000f"
-			register "xhci_overcurrent_mapping" = "0x00000c03"
 			register "xhci_switchable_ports" = "0x0000000f"
 			register "spi_uvscc" = "0x2005"
 			register "spi_lvscc" = "0x2005"

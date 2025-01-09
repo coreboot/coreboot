@@ -44,7 +44,6 @@ chip northbridge/intel/sandybridge
 			# Do not enable xHCI Port 4 since WWAN USB is EHCI-only
 			register "xhci_switchable_ports" = "0x7"
 			register "superspeed_capable_ports" = "0x7"
-			register "xhci_overcurrent_mapping" = "0x4000201"
 
 			# Enable zero-based linear PCIe root port functions
 			register "pcie_port_coalesce" = "true"

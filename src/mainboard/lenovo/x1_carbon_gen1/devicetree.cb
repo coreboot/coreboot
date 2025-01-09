@@ -42,7 +42,6 @@ chip northbridge/intel/sandybridge
 
 			register "xhci_switchable_ports" = "0xf"
 			register "superspeed_capable_ports" = "0xf"
-			register "xhci_overcurrent_mapping" = "0x4000201"
 			register "usb_port_config" = "{
 				{0, 3, 0 }, /* P00 disconnected */
 				{1, 1, 1 }, /* P01 left or right */

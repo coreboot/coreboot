@@ -43,7 +43,6 @@ chip northbridge/intel/sandybridge
 			# Wire port 4 (wwan usb) to ehci for it lacks superspeed components
 			register "xhci_switchable_ports" = "0x7"
 			register "superspeed_capable_ports" = "0xf"
-			register "xhci_overcurrent_mapping" = "0x4000201"
 
 			# Enable zero-based linear PCIe root port functions
 			register "pcie_port_coalesce" = "true"

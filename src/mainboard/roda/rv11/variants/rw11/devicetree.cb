@@ -58,7 +58,6 @@ chip northbridge/intel/sandybridge
 			register "pcie_port_coalesce" = "false"
 			register "pcie_hotplug_map" = "{ 0, 0, 0, 0, 0, 0, 1, 1 }"
 
-			register "xhci_overcurrent_mapping"	= "0x00000c03"
 			register "xhci_switchable_ports"	= "0x0f"
 			register "superspeed_capable_ports"	= "0x0f"
 			register "usb_port_config" = "{

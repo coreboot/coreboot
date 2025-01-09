@@ -28,7 +28,6 @@ chip northbridge/intel/sandybridge
 			}"
 			device ref xhci on
 				register "superspeed_capable_ports" = "0x0000000f"
-				register "xhci_overcurrent_mapping" = "0x00000c03"
 				register "xhci_switchable_ports" = "0x0000000f"
 			end
 		end

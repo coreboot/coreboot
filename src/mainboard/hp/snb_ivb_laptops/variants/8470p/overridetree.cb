@@ -21,7 +21,6 @@ chip northbridge/intel/sandybridge
 			# HDD(0), ODD(1), mSATA(2), eSATA(4)
 			register "sata_port_map" = "0x3f"
 			register "superspeed_capable_ports" = "0x0000000f"
-			register "xhci_overcurrent_mapping" = "0x00000c03"
 			register "xhci_switchable_ports"    = "0x0000000f"
 			register "usb_port_config" = "{
 				{ 1, 1, 0 },

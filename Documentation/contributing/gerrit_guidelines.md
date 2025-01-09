@@ -304,7 +304,7 @@ would be a good reviewer, look in the MAINTAINERS file or git history of
 the files that you’ve changed, and add those people.
 
 * Familiarize yourself with the coreboot [commit message
-guidelines](https://www.coreboot.org/Git#Commit_messages), before pushing
+guidelines](#commit-message-guidelines), before pushing
 patches. This will help to keep annoying requests to fix your commit
 message to a minimum.
 
@@ -433,8 +433,55 @@ reversed after they come back.
 Requests for clarification and suggestions for updates to these guidelines
 should be sent to the coreboot mailing list at <coreboot@coreboot.org>.
 
+Commit message guidelines
+-------------------------
+Git does not enforce a certain style for commit messages. For all aspects of
+Git to work best with, it's important to follow these simple guidelines for
+commit messages:
+
+* The first line of the commit message consists of a short
+  (less than 65 characters, absolute maximum is 75) summary
+* The second line is empty (no whitespace at all)
+* The third and any following number of lines contains a longer description
+  of the commit as is necessary, including relevant background information
+  and quite possibly rationale for why the issue was solved in this particular
+  way. These lines should never be longer than 75 characters.
+* The next line is empty (no whitespace at all)
+* An optional TEST= line which describes the test that was done in order to
+  validate the patch
+* An optional BUG= line to reference to a bug (of [coreboot's bug tracker] or any
+  other) this patch resolves
+* The next line is empty if the optional lines are used
+* A Change-Id: line to let Gerrit track this logical change
+* A Signed-off-by: line according to [Signed-off-by policy](#sign-off-procedure)
+
+Please do not create the Change-Id: and Signed-off-by: entries manually because
+it is boring and error-prone. Instead, please install the commit-msg hook, e.g.
+by running
+```Bash
+make gitconfig
+```
+in coreboot's top-level directory, and let the hook script do it for you.
+And remember to always use
+```Bash
+git commit -s
+```
+to have git add your Signed-off-by: automatically.
+
+When you write your commit message, please keep the following two hints in mind:
+
+* If anyone involved in coreboot reads your comment in a year or so, they
+  shall still be able to understand what your commit is about, without the need
+  to analyze the code.
+* Double-check that you are really committing what you think you are, e.g. by
+  typing the following in the top-level coreboot directory:
+```Bash
+git show
+```
+
 [ready changes]: https://review.coreboot.org/q/age:1d+project:coreboot+status:open+is:mergeable+label:All-Comments-Resolved%253Dok+label:Code-Review%253D2+-label:Code-Review%253C0+label:Verified%253D1+-label:Verified-1
 [Developer's Certificate of Origin 1.1]: https://developercertificate.org/
 [Creative Commons Attribution-ShareAlike 2.5 License]: https://creativecommons.org/licenses/by-sa/2.5/
 [this LKML thread]: https://lkml.org/lkml/2004/5/23/10
 [SCO-Linux disputes]: https://en.wikipedia.org/wiki/SCO%E2%80%93Linux_disputes
+[coreboot's bug tracker]: https://ticket.coreboot.org/

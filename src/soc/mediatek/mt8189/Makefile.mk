@@ -40,6 +40,7 @@ ramstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 ramstage-y += ../common/mt6315.c mt6315.c
 ramstage-y += ../common/mt6359p.c mt6359p.c
 ramstage-y += ../common/mtcmos.c mtcmos.c
+ramstage-y += ../common/mtk_fsp.c
 ramstage-y += ../common/pmif.c ../common/pmif_clk.c ../common/pmif_init.c pmif_clk.c
 ramstage-y += ../common/pmif_spi.c pmif_spi.c
 ramstage-y += ../common/pmif_spmi.c pmif_spmi.c
@@ -80,4 +81,12 @@ endif
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
 	./util/mediatek/gen-bl-img.py mt8189 sf $< $@
 
+endif
+
+FSP_CBFS := $(CONFIG_CBFS_PREFIX)/mtk_fsp_ramstage
+$(FSP_CBFS)-file := $(MT8189_BLOB_DIR)/mtk_fsp_ramstage.elf
+$(FSP_CBFS)-type := stage
+$(FSP_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+ifneq ($(wildcard $($(FSP_CBFS)-file)),)
+	cbfs-files-y += $(FSP_CBFS)
 endif

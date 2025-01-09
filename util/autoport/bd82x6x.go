@@ -164,7 +164,6 @@ func (b bd82x6x) Scan(ctx Context, addr PCIDevData) {
 	if ok {
 		cur.Registers["xhci_switchable_ports"] = FormatHexLE32(xhciDev.ConfigDump[0xd4:0xd8])
 		cur.Registers["superspeed_capable_ports"] = FormatHexLE32(xhciDev.ConfigDump[0xdc:0xe0])
-		cur.Registers["xhci_overcurrent_mapping"] = FormatHexLE32(xhciDev.ConfigDump[0xc0:0xc4])
 	}
 
 	PutPCIChip(addr, cur)

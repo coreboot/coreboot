@@ -137,6 +137,7 @@ void dptx_hal_set_msa(struct mtk_dp *mtk_dp)
 	htotal = ha + hsync + hbp + hfp;
 	vtotal = va + vsync + vbp + vfp;
 
+	/* horizontal */
 	DP_WRITE2BYTE(mtk_dp, REG_3010_DP_ENCODER0_P0, htotal);
 	DP_WRITE2BYTE(mtk_dp, REG_3018_DP_ENCODER0_P0, hsync + hbp);
 	mtk_dp_mask(mtk_dp, REG_3028_DP_ENCODER0_P0,
@@ -146,7 +147,8 @@ void dptx_hal_set_msa(struct mtk_dp *mtk_dp)
 		    0 << HSP_SW_DP_ENCODER0_P0_FLDMASK_POS,
 		    HSP_SW_DP_ENCODER0_P0_FLDMASK);
 	DP_WRITE2BYTE(mtk_dp, REG_3020_DP_ENCODER0_P0, ha);
-	DP_WRITE2BYTE(mtk_dp, REG_3014_DP_ENCODER0_P0, va);
+	/* vertical */
+	DP_WRITE2BYTE(mtk_dp, REG_3014_DP_ENCODER0_P0, vtotal);
 	DP_WRITE2BYTE(mtk_dp, REG_301C_DP_ENCODER0_P0, vsync + vbp);
 	mtk_dp_mask(mtk_dp, REG_302C_DP_ENCODER0_P0,
 		    vsync << VSW_SW_DP_ENCODER0_P0_FLDMASK_POS,
@@ -155,14 +157,16 @@ void dptx_hal_set_msa(struct mtk_dp *mtk_dp)
 		    0 << VSP_SW_DP_ENCODER0_P0_FLDMASK_POS,
 		    VSP_SW_DP_ENCODER0_P0_FLDMASK);
 	DP_WRITE2BYTE(mtk_dp, REG_3024_DP_ENCODER0_P0, va);
+	/* horizontal */
 	DP_WRITE2BYTE(mtk_dp, REG_3064_DP_ENCODER0_P0, ha);
 	DP_WRITE2BYTE(mtk_dp, REG_3154_DP_ENCODER0_P0, htotal);
 	DP_WRITE2BYTE(mtk_dp, REG_3158_DP_ENCODER0_P0, hfp);
-	DP_WRITE2BYTE(mtk_dp, REG_315C_DP_ENCODER0_P0, vsync);
+	DP_WRITE2BYTE(mtk_dp, REG_315C_DP_ENCODER0_P0, hsync);
 	DP_WRITE2BYTE(mtk_dp, REG_3160_DP_ENCODER0_P0, hsync + hbp);
 	DP_WRITE2BYTE(mtk_dp, REG_3164_DP_ENCODER0_P0, ha);
+	/* vertical */
 	DP_WRITE2BYTE(mtk_dp, REG_3168_DP_ENCODER0_P0, vtotal);
-	DP_WRITE2BYTE(mtk_dp, REG_316C_DP_ENCODER0_P0, hfp);
+	DP_WRITE2BYTE(mtk_dp, REG_316C_DP_ENCODER0_P0, vfp);
 	DP_WRITE2BYTE(mtk_dp, REG_3170_DP_ENCODER0_P0, vsync);
 	DP_WRITE2BYTE(mtk_dp, REG_3174_DP_ENCODER0_P0, vsync + vbp);
 	DP_WRITE2BYTE(mtk_dp, REG_3178_DP_ENCODER0_P0, va);

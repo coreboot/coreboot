@@ -69,7 +69,7 @@ u32 mtk_dp_phy_read(struct mtk_dp *mtk_dp, u32 offset);
 void mtk_dp_phy_mask(struct mtk_dp *mtk_dp, u32 offset, u32 val, u32 mask);
 void mtk_dp_phy_write(struct mtk_dp *mtk_dp, u32 offset, u32 val);
 u32 mtk_dp_read(struct mtk_dp *mtk_dp, u32 offset);
-void mtk_dp_write_byte(struct mtk_dp *mtk_dp, u32 addr, u8 val, u32 mask);
+void mtk_dp_write_byte(struct mtk_dp *mtk_dp, u32 addr, u8 val, u8 mask);
 void mtk_dp_mask(struct mtk_dp *mtk_dp, u32 offset, u32 val, u32 mask);
 void mtk_dp_write(struct mtk_dp *mtk_dp, u32 offset, u32 val);
 void dptx_hal_verify_clock(struct mtk_dp *mtk_dp);

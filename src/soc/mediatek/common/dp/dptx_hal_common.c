@@ -54,7 +54,7 @@ void mtk_dp_mask(struct mtk_dp *mtk_dp, u32 offset, u32 val, u32 mask)
 	clrsetbits32(addr, mask, val & mask);
 }
 
-void mtk_dp_write_byte(struct mtk_dp *mtk_dp, u32 addr, u8 val, u32 mask)
+void mtk_dp_write_byte(struct mtk_dp *mtk_dp, u32 addr, u8 val, u8 mask)
 {
 	if (addr % 2) {
 		mtk_dp_write(mtk_dp, DP_TX_TOP_APB_WSTRB, 0x12);

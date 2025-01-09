@@ -65,7 +65,7 @@ void dptx_hal_settu_setencoder(struct mtk_dp *mtk_dp)
 	mtk_dp_write_byte(mtk_dp, REG_303C_DP_ENCODER0_P0 + 1,
 			  BIT(7), BIT(7));
 	DP_WRITE2BYTE(mtk_dp, REG_3040_DP_ENCODER0_P0, 0x2020);
-	mtk_dp_mask(mtk_dp, REG_3364_DP_ENCODER1_P0, 0x2020, 0xfff);
+	DP_WRITE2BYTE(mtk_dp, REG_3364_DP_ENCODER1_P0, 0x2020);
 	mtk_dp_write_byte(mtk_dp, REG_3300_DP_ENCODER1_P0 + 1,
 			  0x2, BIT(1) | BIT(0));
 	mtk_dp_write_byte(mtk_dp, REG_3364_DP_ENCODER1_P0 + 1,

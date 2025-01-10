@@ -16,11 +16,8 @@ u32 mtk_dp_read(struct mtk_dp *mtk_dp, u32 offset)
 {
 	void *addr = mtk_dp->regs + offset;
 
-	if (offset % 4 != 0 || offset > REG_OFFSET_LIMIT) {
-		printk(BIOS_ERR, "[%s] invalid offset %#x for reg %p\n", __func__, offset,
-		       mtk_dp->regs);
-		return 0;
-	}
+	assert(mtk_dp->regs);
+	assert(offset % 4 == 0 && offset <= REG_OFFSET_LIMIT);
 
 	return read32(addr);
 }
@@ -28,11 +25,8 @@ void mtk_dp_write(struct mtk_dp *mtk_dp, u32 offset, u32 val)
 {
 	void *addr = mtk_dp->regs + offset;
 
-	if (offset % 4 != 0 || offset > REG_OFFSET_LIMIT) {
-		printk(BIOS_ERR, "[%s] invalid offset %#x for reg %p\n", __func__, offset,
-		       mtk_dp->regs);
-		return;
-	}
+	assert(mtk_dp->regs);
+	assert(offset % 4 == 0 && offset <= REG_OFFSET_LIMIT);
 
 	write32(addr, val);
 }
@@ -41,17 +35,11 @@ void mtk_dp_mask(struct mtk_dp *mtk_dp, u32 offset, u32 val, u32 mask)
 {
 	void *addr = mtk_dp->regs + offset;
 
-	if (offset % 4 != 0 || offset > REG_OFFSET_LIMIT) {
-		printk(BIOS_ERR, "[%s] invalid offset %#x for reg %p\n", __func__, offset,
-		       mtk_dp->regs);
-		return;
-	}
+	assert(mtk_dp->regs);
+	assert(offset % 4 == 0 && offset <= REG_OFFSET_LIMIT);
+	assert((val & mask) == val);
 
-	/*
-	 * TODO: modify to clrsetbits32(addr, mask, val);
-	 * There is asserion error when testing assert((val & mask) == val).
-	 */
-	clrsetbits32(addr, mask, val & mask);
+	clrsetbits32(addr, mask, val);
 }
 
 void mtk_dp_write_byte(struct mtk_dp *mtk_dp, u32 addr, u8 val, u8 mask)

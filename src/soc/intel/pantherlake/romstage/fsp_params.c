@@ -296,24 +296,33 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		fill_fspm_params[i](m_cfg, config);
 }
 
+static void fsp_set_debug_level(FSP_M_CONFIG *m_cfg,
+	 enum fsp_log_level fsp_pcd_log_level, enum fsp_log_level fsp_mrc_log_level)
+{
+	/* Set Serial debug message level */
+	m_cfg->PcdSerialDebugLevel = fsp_pcd_log_level;
+	/* Set MRC debug level */
+	m_cfg->SerialDebugMrcLevel = fsp_mrc_log_level;
+}
+
 static void fsp_control_log_level(FSPM_UPD *mupd, bool is_enabled)
 {
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
 	FSPM_ARCHx_UPD *arch_upd = &mupd->FspmArchUpd;
 
-	if (is_enabled) {
-		enum fsp_log_level log_level = fsp_map_console_log_level();
-		arch_upd->FspEventHandler = (uintptr_t)((FSP_EVENT_HANDLER *)fsp_debug_event_handler);
-		/* Set Serial debug message level */
-		m_cfg->PcdSerialDebugLevel = log_level;
-		/* Set MRC debug level */
-		m_cfg->SerialDebugMrcLevel = log_level;
-	} else {
-		/* Disable Serial debug message */
-		m_cfg->PcdSerialDebugLevel = 0;
-		/* Disable MRC debug message */
-		m_cfg->SerialDebugMrcLevel = 0;
+	enum fsp_log_level log_level = is_enabled ? fsp_map_console_log_level() :
+		 FSP_LOG_LEVEL_DISABLE;
+	fsp_set_debug_level(m_cfg, log_level, log_level);
+
+	if ((m_cfg->PcdSerialDebugLevel > FSP_LOG_LEVEL_VERBOSE) ||
+	    (m_cfg->SerialDebugMrcLevel > FSP_LOG_LEVEL_VERBOSE)) {
+		printk(BIOS_ERR, "Invalid FSP log level\n");
+		return;
 	}
+
+	/* Set Event Handler if log-level is non-zero */
+	if (m_cfg->PcdSerialDebugLevel || m_cfg->SerialDebugMrcLevel)
+		arch_upd->FspEventHandler = (uintptr_t)((FSP_EVENT_HANDLER *)fsp_debug_event_handler);
 }
 
 static void fill_fsp_event_handler(FSPM_UPD *mupd)

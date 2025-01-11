@@ -4,26 +4,8 @@
 #include <device/pci_ops.h>
 #include <device/pci_def.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
-#include <southbridge/intel/bd82x6x/pch.h>
 #include <ec/lenovo/pmh7/pmh7.h>
 #include <types.h>
-
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-	{ 1, 0,  0 }, /* P0:, OC 0 */
-	{ 1, 1,  1 }, /* P1: (EHCI debug), OC 1 */
-	{ 1, 1,  3 }, /* P2:  OC 3 */
-	{ 1, 0, -1 }, /* P3: no OC */
-	{ 1, 2, -1 }, /* P4: no OC */
-	{ 1, 1, -1 }, /* P5: no OC */
-	{ 1, 1, -1 }, /* P6: no OC */
-	{ 0, 1, -1 }, /* P7: empty, no OC */
-	{ 1, 1, -1 }, /* P8: smart card reader, no OC */
-	{ 1, 0,  5 }, /* P9:  (EHCI debug), OC 5 */
-	{ 1, 0, -1 }, /* P10: fingerprint reader, no OC */
-	{ 1, 1, -1 }, /* P11: bluetooth, no OC. */
-	{ 0, 0, -1 }, /* P12: wlan, no OC */
-	{ 1, 1, -1 }, /* P13: camera, no OC */
-};
 
 void mainboard_early_init(int s3resume)
 {

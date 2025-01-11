@@ -5,7 +5,6 @@
 #include <device/pnp_ops.h>
 #include <bootblock_common.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
-#include <southbridge/intel/bd82x6x/pch.h>
 #include <superio/nuvoton/common/nuvoton.h>
 #include <superio/nuvoton/nct6776/nct6776.h>
 #include <superio/nuvoton/wpcm450/wpcm450.h>
@@ -17,23 +16,6 @@
 
 #define SUPERIO_INITVAL(reg, data) {(reg), (data)}
 #define SUPERIO_BANK(x) SUPERIO_INITVAL(0x07, (x))
-
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-	{ 1, 0, 0 },	/* ? USB0  1d.0 port 1 */
-	{ 1, 0, 0 },	/* ? USB1  1d.0 port 2 */
-	{ 1, 0, 1 },	/* ? USB2  1d.0 port 3 */
-	{ 1, 0, 1 },	/* ? USB3  1d.0 port 4 */
-	{ 1, 0, 2 },	/* ? USB4  1d.0 port 5 */
-	{ 1, 0, 2 },	/* ? USB5  1d.0 port 6 */
-	{ 1, 0, 3 },	/* ? ???   1a.0 port 1 */
-	{ 1, 0, 3 },	/* ? BMC   1a.0 port 2 */
-	{ 1, 0, 4 },	/* ? ???   1a.0 port 3 */
-	{ 1, 0, 4 },	/* ? USB11 1a.0 port 4 */
-	{ 1, 0, 6 },	/* ? USB12 1a.0 port 5 */
-	{ 1, 0, 5 },	/* ? USB13 1a.0 port 6 */
-	{ 1, 0, 5 },
-	{ 1, 0, 6 },
-};
 
 static const uint8_t superio_initvals[][2] = {
 	/* Global config registers */

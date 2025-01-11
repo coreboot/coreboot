@@ -2,26 +2,7 @@
 
 #include <console/console.h>
 #include <northbridge/intel/sandybridge/raminit.h>
-#include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/common/gpio.h>
-
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-	/* enabled, current, OC pin */
-	{ 0, 3, 0 }, /* P00 disconnected */
-	{ 1, 1, 1 }, /* P01 left or right */
-	{ 0, 1, 3 }, /* P02 disconnected */
-	{ 1, 3, -1 },/* P03 WWAN */
-	{ 0, 1, 2 }, /* P04 disconnected */
-	{ 0, 1, -1 },/* P05 disconnected */
-	{ 0, 1, -1 },/* P06 disconnected */
-	{ 0, 2, -1 },/* P07 disconnected */
-	{ 0, 1, -1 },/* P08 disconnected */
-	{ 1, 2, 5 }, /* P09 left or right */
-	{ 1, 3, -1 },/* P10 FPR */
-	{ 1, 3, -1 },/* P11 Bluetooth */
-	{ 1, 1, -1 },/* P12 WLAN */
-	{ 1, 1, -1 },/* P13 Camera */
-};
 
 static unsigned int get_spd_index(void)
 {

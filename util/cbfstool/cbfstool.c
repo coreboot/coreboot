@@ -352,11 +352,11 @@ static int decode_mmap_arg(char *arg)
 		return 1;
 
 	union {
-		unsigned long int array[3];
+		unsigned long array[3];
 		struct {
-			unsigned long int flash_base;
-			unsigned long int mmap_base;
-			unsigned long int mmap_size;
+			unsigned long flash_base;
+			unsigned long mmap_base;
+			unsigned long mmap_size;
 		};
 	} mmap_args;
 	char *suffix = NULL;

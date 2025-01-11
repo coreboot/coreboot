@@ -74,7 +74,7 @@ static int is_valid_fmap(const struct fmap *fmap)
 /* brute force linear search */
 static long int fmap_lsearch(const uint8_t *image, size_t len)
 {
-	unsigned long int offset;
+	unsigned long offset;
 	int fmap_found = 0;
 
 	for (offset = 0; offset < len - strlen(FMAP_SIGNATURE); offset++) {
@@ -94,9 +94,9 @@ static long int fmap_lsearch(const uint8_t *image, size_t len)
 }
 
 /* if image length is a power of 2, use binary search */
-static long int fmap_bsearch(const uint8_t *image, size_t len)
+static long fmap_bsearch(const uint8_t *image, size_t len)
 {
-	unsigned long int offset = -1;
+	unsigned long offset;
 	int fmap_found = 0, stride;
 
 	/*
@@ -142,9 +142,9 @@ static int popcnt(unsigned int u)
 	return count;
 }
 
-long int fmap_find(const uint8_t *image, unsigned int image_len)
+long fmap_find(const uint8_t *image, unsigned int image_len)
 {
-	long int ret = -1;
+	long ret = -1;
 
 	if ((image == NULL) || (image_len == 0))
 		return -1;

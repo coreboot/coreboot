@@ -95,7 +95,7 @@ static void fimd_bypass(void)
  * @param lcdbase	pointer to the base address of framebuffer.
  * @param pd		pointer to the main panel_data structure
  */
-void fb_init(unsigned long int fb_size, void *lcdbase,
+void fb_init(unsigned long fb_size, void *lcdbase,
 	     struct exynos5_fimd_panel *pd)
 {
 	unsigned int val;
@@ -532,7 +532,7 @@ int dp_controller_init(struct s5p_dp_device *dp_device)
  * @param lcdbase	Base address of LCD frame buffer
  * @return 0 if ok, -ve error code on error
  */
-int lcd_ctrl_init(unsigned long int fb_size,
+int lcd_ctrl_init(unsigned long fb_size,
 		  struct exynos5_fimd_panel *panel_data, void *lcdbase)
 {
 	int ret = 0;

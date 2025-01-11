@@ -39,7 +39,7 @@ def parse_file(input_file):
             file_path = temp[1].split(":")[0]
             line_number = temp[1].split(":")[1]
             update_struct( file_path.strip(), msg_output, str(line_number)  )
-        elif re.search("^\d+:\Z",line) != "None" and line.startswith("#"):
+        elif re.search(r"^\d+:\Z",line) != "None" and line.startswith("#"):
             file_path="/COMMIT_MSG"
             line = line.replace('#', '')
             line_number = int(line.split(":")[0]) + 2

@@ -46,7 +46,6 @@ chip northbridge/intel/sandybridge
 
 			register "xhci_switchable_ports" = "0xf"
 			register "superspeed_capable_ports" = "0xf"
-			register "xhci_overcurrent_mapping" = "0x04000201"
 
 			register "docking_supported" = "true"
 

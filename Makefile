@@ -486,6 +486,9 @@ ctags-project: clean-ctags $(obj)/project_filelist.txt
 	cat $(obj)/project_filelist.txt | \
 	  xargs ctags -o tags
 
+ctags:
+	ctags -R
+
 cscope-project: clean-cscope $(obj)/project_filelist.txt
 	cat $(obj)/project_filelist.txt | xargs cscope -b
 

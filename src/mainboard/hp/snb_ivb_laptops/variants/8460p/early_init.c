@@ -1,28 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <bootblock_common.h>
-#include <southbridge/intel/bd82x6x/pch.h>
 #include <superio/smsc/lpc47n217/lpc47n217.h>
 #include <ec/hp/kbc1126/ec.h>
 
 #define SERIAL_DEV PNP_DEV(0x4e, LPC47N217_SP1)
-
-const struct southbridge_usb_port mainboard_usb_ports[] = {
-	{ 1, 1, 0 }, /* USB0, eSATA */
-	{ 1, 0, 0 }, /* USB charger */
-	{ 0, 1, 1 },
-	{ 1, 1, 1 }, /* camera */
-	{ 1, 0, 2 }, /* USB4 expresscard */
-	{ 1, 0, 2 }, /* bluetooth */
-	{ 0, 0, 3 },
-	{ 1, 0, 3 }, /* smartcard */
-	{ 1, 1, 4 }, /* fingerprint */
-	{ 1, 1, 4 }, /* WWAN */
-	{ 1, 0, 5 }, /* CONN */
-	{ 1, 0, 5 }, /* docking */
-	{ 1, 0, 6 }, /* CONN */
-	{ 1, 0, 6 }, /* docking */
-};
 
 void bootblock_mainboard_early_init(void)
 {

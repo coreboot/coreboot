@@ -127,7 +127,7 @@ void raminit(struct romstage_params *params)
 	} else {
 		fsp_reserved_bytes = fsp_memory->ResourceLength;
 		printk(BIOS_DEBUG, "Reserving 0x%016lx bytes for FSP\n",
-			(unsigned long int)fsp_reserved_bytes);
+			(unsigned long)fsp_reserved_bytes);
 	}
 
 	/* Display SMM area */

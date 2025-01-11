@@ -10,7 +10,6 @@ chip northbridge/intel/haswell
 
 	device domain 0x0 on
 		ops haswell_pci_domain_ops
-		subsystemid  0x1028 0x05ca inherit
 
 		device pci 00.0 on end # Host bridge
 		device pci 02.0 on # Internal graphics VGA controller
@@ -30,7 +29,7 @@ chip northbridge/intel/haswell
 		end
 		device pci 03.0 on end # Mini-HD audio
 
-		chip southbridge/intel/lynxpoint # Intel Series 8 Lynx Point PCH
+		chip southbridge/intel/lynxpoint # Intel Series 8 Lynx Point LP PCH
 			register "docking_supported" = "true"
 			register "alt_gp_smi_en" = "0x00002000"
 			register "gpe0_en_1" = "0x00000100"
@@ -53,13 +52,12 @@ chip northbridge/intel/haswell
 			device pci 17.0 off end # SDIO
 			device pci 19.0 on  end # Intel Gigabit Ethernet
 			device pci 1b.0 on  end # High Definition Audio
-			device pci 1c.0 on  end # PCIe Port #1
+			device pci 1c.0 off end # PCIe Port #1
 			device pci 1c.1 off end # PCIe Port #2
 			device pci 1c.2 off end # PCIe Port #3
-			device pci 1c.3 on  end # PCIe Port #4, WLAN
-			device pci 1c.4 on  end # PCIe Port #5, SD/MMC Card Reader
-			# PCIe Port #6 Can be muxed between PCIe and SATA
-			device pci 1c.5 on  end # PCIe Port #6
+			device pci 1c.3 off end # PCIe Port #4
+			device pci 1c.4 off end # PCIe Port #5
+			device pci 1c.5 off end # PCIe Port #6
 			device pci 1d.0 on  end # USB2 EHCI #1
 			device pci 1f.0 on      # LPC bridge
 				register "gen1_dec" = "0x007c0681"
@@ -72,10 +70,7 @@ chip northbridge/intel/haswell
 					device pnp ff.0 on end
                                 end
 			end
-			device pci 1f.2 on # SATA Controller (AHCI)
-				# 0(eSATA on dock), 1(mSATA near the fan), 3(mSATA near WLAN)
-				register "sata_port_map" = "0x0b"
-			end
+			device pci 1f.2 on  end # SATA Controller (AHCI)
 			device pci 1f.3 on  end # SMBus
 			device pci 1f.6 off end # Thermal
 		end

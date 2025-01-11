@@ -1,0 +1,21 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+chip northbridge/intel/haswell
+	device domain 0 on
+		subsystemid  0x1028 0x05ca inherit
+
+		chip southbridge/intel/lynxpoint # Intel Series 8 Lynx Point PCH
+			device pci 1c.0 on  end # PCIe Port #1
+			device pci 1c.1 off end # PCIe Port #2
+			device pci 1c.2 off end # PCIe Port #3
+			device pci 1c.3 on  end # PCIe Port #4, WLAN
+			device pci 1c.4 on  end # PCIe Port #5, SD/MMC Card Reader
+			# PCIe Port #6 Can be muxed between PCIe and SATA
+			device pci 1c.5 on  end # PCIe Port #6
+			device pci 1f.2 on # SATA Controller (AHCI)
+				# 0(eSATA on dock), 1(mSATA near the fan), 3(mSATA near WLAN)
+				register "sata_port_map" = "0x0b"
+			end
+		end
+	end
+end

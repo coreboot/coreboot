@@ -26,11 +26,13 @@ static void mm_gce_lock_prot_en(void)
 		   GCE_D_SLEEPPORT_RX_EN | GCE_D_HAND_SLEEPPORT_RX_EN |
 		   GCE_D_HAND_SLEEPPORT_TX_EN | GCE_M_SLEEPPORT_RX_EN |
 		   GCE_M_HAND_SLEEPPORT_RX_EN | GCE_M_HAND_SLEEPPORT_TX_EN);
+	write32p(MMINFRA_GCE_DDREN_SEL, 0);
 }
 
 static void mm_gce_release_prot_en(void)
 {
 	write32p(MMINFRA_GCE_PROT_EN, 0);
+	write32p(MMINFRA_GCE_DDREN_SEL, 0x1);
 }
 
 static void mm_infra0_lock_prot_en(void)

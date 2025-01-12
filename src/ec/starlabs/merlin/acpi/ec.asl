@@ -135,7 +135,9 @@ Scope (\_SB.PCI0.LPCB)
 
 		#include "ac.asl"
 		#include "battery.asl"
+#if !CONFIG(EC_STARLABS_MERLIN)
 		#include "events.asl"
+#endif
 		#include "lid.asl"
 		#include "dock.asl"
 

@@ -1,5 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#if CONFIG(EC_STARLABS_MERLIN)
+Method (_Q0B, 0, NotSerialized)			// Event: Battery Information Update
+{
+	Notify (BAT0, 0x80)
+}
+#endif
+
 Device (BAT0)
 {
 	Name (_HID, EisaId("PNP0C0A"))

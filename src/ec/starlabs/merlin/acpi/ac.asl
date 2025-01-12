@@ -1,5 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#if CONFIG(EC_STARLABS_MERLIN)
+Method (_Q0A, 0, NotSerialized)			// Event: Charger Status Update
+{
+	Notify (ADP1, 0x80)
+}
+#endif
+
 Device (ADP1)
 {
 	Name (_HID, "ACPI0003")

@@ -351,6 +351,8 @@ static const struct pad_config touchscreen_disable_pads[] = {
 	PAD_NC(GPP_E17, NONE),
 	/* GPP_E18:     THC0_SPI1_INT_N_TCH_PNL1 */
 	PAD_NC(GPP_E18, NONE),
+	/* GPP_VGPIO3_THC0: THC0_WOT */
+	PAD_NC(GPP_VGPIO3_THC0, NONE),
 };
 
 static const struct pad_config touchscreen_lpss_i2c_enable_pads[] = {
@@ -370,6 +372,8 @@ static const struct pad_config touchscreen_lpss_i2c_enable_pads[] = {
 	PAD_NC(GPP_E17, NONE),
 	/* GPP_E18:     THC0_SPI1_INT_N_TCH_PNL1 */
 	PAD_CFG_GPI_APIC(GPP_E18, NONE, PLTRST, LEVEL, NONE),
+	/* GPP_VGPIO3_THC0: THC0_WOT */
+	PAD_NC(GPP_VGPIO3_THC0, NONE),
 };
 
 static const struct pad_config touchscreen_thc_i2c_enable_pads[] = {
@@ -388,7 +392,10 @@ static const struct pad_config touchscreen_thc_i2c_enable_pads[] = {
 	/* GPP_E17:     THC0_SPI1_CS0_N_TCH_PNL1 */
 	PAD_NC(GPP_E17, NONE),
 	/* GPP_E18:     THC0_SPI1_INT_N_TCH_PNL1 */
-	PAD_CFG_GPI_APIC(GPP_E18, NONE, PLTRST, LEVEL, NONE),
+	/* NOTE: this SPI INT NF is also used in THC-I2C mode */
+	PAD_CFG_NF(GPP_E18, NONE, DEEP, NF3),
+	/* GPP_VGPIO3_THC0: THC0_WOT */
+	PAD_NC(GPP_VGPIO3_THC0, NONE),
 };
 
 static const struct pad_config touchscreen_gspi_enable_pads[] = {
@@ -407,7 +414,9 @@ static const struct pad_config touchscreen_gspi_enable_pads[] = {
 	/* GPP_E17:     THC0_SPI1_CS0_N_TCH_PNL1 NF5: GSPI0 */
 	PAD_CFG_NF(GPP_E17, NONE, DEEP, NF5),
 	/* GPP_E18:     THC0_SPI1_INT_N_TCH_PNL1 */
-	PAD_CFG_GPI_APIC(GPP_E18, NONE, PLTRST, EDGE_SINGLE, INVERT)
+	PAD_CFG_GPI_APIC(GPP_E18, NONE, PLTRST, EDGE_SINGLE, INVERT),
+	/* GPP_VGPIO3_THC0: THC0_WOT */
+	PAD_NC(GPP_VGPIO3_THC0, NONE),
 };
 
 static const struct pad_config touchscreen_thc_spi_enable_pads[] = {
@@ -428,13 +437,21 @@ static const struct pad_config touchscreen_thc_spi_enable_pads[] = {
 	PAD_CFG_NF(GPP_E17, NONE, DEEP, NF3),
 	/* GPP_E18:     THC0_SPI1_INT_N_TCH_PNL1 NF3: THC HID-SPI */
 	PAD_CFG_NF(GPP_E18, NONE, DEEP, NF3),
+	/* GPP_VGPIO3_THC0: THC0_WOT */
+	PAD_NC(GPP_VGPIO3_THC0, NONE),
 };
 
 static const struct pad_config touchpad_thc_i2c_enable_pads[] = {
-	/* GPP_F12:     NF1: thc_i2c1_scl */
+	/* GPP_F12:     NF1: THC_I2C1_SCL */
 	PAD_CFG_NF(GPP_F12, NONE, DEEP, NF1),
-	/* GPP_F13:     NF1: thc_i2c1_sda */
+	/* GPP_F13:     NF1: THC_I2C1_SDA */
 	PAD_CFG_NF(GPP_F13, NONE, DEEP, NF1),
+	/* GPP_F18:     TCH_PAD_INT_N */
+	/* NOTE: this SPI INT NF is also used in THC-I2C mode */
+	/* NOTE: require rework to switch from GPP_A13 to GPP_F18 */
+	PAD_CFG_NF(GPP_F18, NONE, DEEP, NF3),
+	/* GPP_VGPIO3_THC1: THC1_WOT */
+	PAD_NC(GPP_VGPIO3_THC1, NONE),
 };
 
 static const struct pad_config touchpad_lpss_i2c_enable_pads[] = {
@@ -442,8 +459,11 @@ static const struct pad_config touchpad_lpss_i2c_enable_pads[] = {
 	PAD_CFG_NF(GPP_F12, NONE, DEEP, NF8),
 	/* GPP_F13:     THC_I2C1_SDA_TCH_PAD */
 	PAD_CFG_NF(GPP_F13, NONE, DEEP, NF8),
-	/* GPP_A13:     TCH_PAD_INT_N */
-	PAD_CFG_GPI_IRQ_WAKE(GPP_A13, NONE, PWROK, EDGE_SINGLE, INVERT),
+	/* GPP_F18:     TCH_PAD_INT_N */
+	/* NOTE: require rework to switch from GPP_A13 to GPP_F18 */
+	PAD_CFG_GPI_APIC(GPP_F18, NONE, PLTRST, LEVEL, INVERT),
+	/* GPP_VGPIO3_THC1: THC1_WOT */
+	PAD_NC(GPP_VGPIO3_THC1, NONE),
 };
 
 static const struct pad_config touchpad_i2c_disable_pads[] = {
@@ -451,8 +471,21 @@ static const struct pad_config touchpad_i2c_disable_pads[] = {
 	PAD_NC(GPP_F12, NONE),
 	/* GPP_F13:     THC_I2C1_SDA_TCH_PAD */
 	PAD_NC(GPP_F13, NONE),
-	/* GPP_A13:     TCH_PAD_INT_N */
-	PAD_NC(GPP_A13, NONE),
+	/* GPP_F18:     TCH_PAD_INT_N */
+	/* NOTE: require rework to switch from GPP_A13 to GPP_F18 */
+	PAD_NC(GPP_F18, NONE),
+	/* GPP_VGPIO3_THC1: THC1_WOT */
+	PAD_NC(GPP_VGPIO3_THC1, NONE),
+};
+
+static const struct pad_config thc0_enable_wake[] = {
+	/* GPP_VGPIO3_THC0: THC0_WOT */
+	PAD_CFG_GPI_APIC_DRIVER(GPP_VGPIO3_THC0, NONE, PLTRST, LEVEL, NONE),
+};
+
+static const struct pad_config thc1_enable_wake[] = {
+	/* GPP_VGPIO3_THC1: THC1_WOT */
+	PAD_CFG_GPI_APIC_DRIVER(GPP_VGPIO3_THC1, NONE, PLTRST, LEVEL, NONE),
 };
 
 static const struct pad_config ish_disable_pads[] = {
@@ -477,6 +510,7 @@ static const struct pad_config fp_disable_pads[] = {
 	PAD_NC(GPP_C15, NONE),
 	/* GPP_D01:     MOD_TCSS1_TYP_A_VBUS_EN */
 	PAD_CFG_GPO(GPP_D01, 1, DEEP),
+	PAD_NC(GPP_E17, NONE),
 	/* FIXME: b/390031369
 	 * use dedicated GPIO PIN for codec enable
 	 * when FPS is enabled.
@@ -487,7 +521,6 @@ static const struct pad_config fp_disable_pads[] = {
 	PAD_NC(GPP_F14, NONE),
 	PAD_NC(GPP_F15, NONE),
 	PAD_NC(GPP_F16, NONE),
-	PAD_NC(GPP_F18, NONE),
 };
 
 static const struct pad_config fp_enable_pads[] = {
@@ -495,6 +528,8 @@ static const struct pad_config fp_enable_pads[] = {
 	PAD_CFG_GPO_LOCK(GPP_C15, 1, LOCK_CONFIG),
 	/* GPP_D01:     FPS_SOC_INT_L */
 	PAD_CFG_GPI_IRQ_WAKE(GPP_D01, NONE, PWROK, LEVEL, INVERT),
+	/* GPP_E17:     GSPI0A_CS0 */
+	PAD_CFG_NF(GPP_E17, NONE, DEEP, NF5),
 	/* GPP_E19:     FPMCU_PWREN */
 	PAD_CFG_GPO(GPP_E19, 1, DEEP),
 	/* GPP_E20:     FPMCU_FW_UPDATE */
@@ -505,8 +540,6 @@ static const struct pad_config fp_enable_pads[] = {
 	PAD_CFG_NF(GPP_F15, NONE, DEEP, NF8),
 	/* GPP_F16:     GPSI0A_CLK */
 	PAD_CFG_NF(GPP_F16, NONE, DEEP, NF8),
-	/* GPP_F18:     GSPI0A_CS0 */
-	PAD_CFG_NF(GPP_F18, NONE, DEEP, NF8),
 };
 
 static const struct pad_config pre_mem_fp_enable_pads[] = {
@@ -556,6 +589,8 @@ void fw_config_configure_pre_mem_gpio(void)
 
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 {
+	const struct soc_intel_pantherlake_config *config = config_of_soc();
+
 	if (!fw_config_is_provisioned()) {
 		printk(BIOS_WARNING, "FW_CONFIG is not provisioned, Exiting\n");
 		return;
@@ -618,23 +653,31 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	else
 		GPIO_PADBASED_OVERRIDE(padbased_table, x1slot_pads);
 
-	if (fw_config_probe(FW_CONFIG(TOUCHPAD, TOUCHPAD_LPSS_I2C)))
+	if (fw_config_probe(FW_CONFIG(TOUCHPAD, TOUCHPAD_LPSS_I2C))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchpad_lpss_i2c_enable_pads);
-	else if (fw_config_probe(FW_CONFIG(TOUCHPAD, TOUCHPAD_THC_I2C)))
+	} else if (fw_config_probe(FW_CONFIG(TOUCHPAD, TOUCHPAD_THC_I2C))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchpad_thc_i2c_enable_pads);
-	else
+		if (config->thc_wake_on_touch[1])
+			GPIO_PADBASED_OVERRIDE(padbased_table, thc1_enable_wake);
+	} else {
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchpad_i2c_disable_pads);
+	}
 
-	if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_LPSS_I2C)))
+	if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_LPSS_I2C))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchscreen_lpss_i2c_enable_pads);
-	else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_I2C)))
+	} else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_I2C))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchscreen_thc_i2c_enable_pads);
-	else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_GSPI)))
+		if (config->thc_wake_on_touch[0])
+			GPIO_PADBASED_OVERRIDE(padbased_table, thc0_enable_wake);
+	} else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_GSPI))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchscreen_gspi_enable_pads);
-	else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_SPI)))
+	} else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_SPI))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchscreen_thc_spi_enable_pads);
-	else
+		if (config->thc_wake_on_touch[0])
+			GPIO_PADBASED_OVERRIDE(padbased_table, thc0_enable_wake);
+	} else {
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchscreen_disable_pads);
+	}
 
 	if (fw_config_probe(FW_CONFIG(ISH, ISH_DISABLE)))
 		GPIO_PADBASED_OVERRIDE(padbased_table, ish_disable_pads);
@@ -644,8 +687,26 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	/* NOTE: disable PEG (x8 slot) and x4 slot wake for now */
 	GPIO_PADBASED_OVERRIDE(padbased_table, peg_x4slot_wake_disable_pads);
 
-	if (fw_config_probe(FW_CONFIG(FP, FP_PRESENT)))
-		GPIO_CONFIGURE_PADS(fp_enable_pads);
-	else
-		GPIO_CONFIGURE_PADS(fp_disable_pads);
+	/*
+	 * *=========================================================================*
+	 * |             userage                   |           GPP_E17               |
+	 * *=========================================================================*
+	 * | touchscreen in THC-SPI (with rework)  | NF3: THC HID-SPI CS0            |
+	 * *---------------------------------------*---------------------------------*
+	 * | touchscreen in gSPI    (with rework)  | NF5: GSPI0 CS0                  |
+	 * *---------------------------------------*---------------------------------*
+	 * | FPS present         (without rework)  | NF5: GSPI0 CS0                  |
+	 * *---------------------------------------*---------------------------------*
+	 *
+	 * NOTE: 1. CBI selecting TS THC-SPI or GSPI mode implies TS rework is applied for the board.
+	 *       2. CBI selecting TS THC-SPI or TS GSPI with FSP present is invalid case.
+	 */
+	if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_GSPI)) ||
+		fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_SPI))) {
+		/*  board has TS SPI rework and not FPS support */
+	} else if (fw_config_probe(FW_CONFIG(FP, FP_PRESENT))) {
+		GPIO_PADBASED_OVERRIDE(padbased_table, fp_enable_pads);
+	} else {
+		GPIO_PADBASED_OVERRIDE(padbased_table, fp_disable_pads);
+	}
 }

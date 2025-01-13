@@ -223,46 +223,6 @@ static const struct pad_config gen5_ssd_pads[] = {
 	PAD_CFG_GPO(GPP_E03, 1, PLTRST),
 };
 
-/* camera1: WFC  */
-static const struct pad_config pre_mem_wfc_camera_pwr_pads[] = {
-	/* GPP_C05:     CRD1_PWREN */
-	PAD_CFG_GPO(GPP_C05, 0, PLTRST),
-};
-
-static const struct pad_config wfc_camera_enable_pads[] = {
-	/* GPP_C05:     CRD1_PWREN */
-	PAD_CFG_GPO(GPP_C05, 1, PLTRST),
-	/* GPP_D04:     IMGCLKOUT_0 */
-	PAD_CFG_NF(GPP_D04, NONE, DEEP, NF1),
-};
-
-static const struct pad_config wfc_camera_disable_pads[] = {
-	/* GPP_C05:     CRD1_PWREN */
-	PAD_NC(GPP_C05, NONE),
-	/* GPP_D04:     IMGCLKOUT_0 */
-	PAD_NC(GPP_D04, NONE),
-};
-
-/* camera2: UFC */
-static const struct pad_config pre_mem_ufc_camera_pwr_pads[] = {
-	/* GPP_C08:     CRD2_PWREN */
-	PAD_CFG_GPO(GPP_C08, 0, PLTRST),
-};
-
-static const struct pad_config ufc_camera_enable_pads[] = {
-	/* GPP_C08:     CRD2_PWREN */
-	PAD_CFG_GPO(GPP_C08, 1, PLTRST),
-	/* GPP_D00:     IMGCLKOUT_1 */
-	PAD_CFG_NF(GPP_D00, NONE, DEEP, NF1),
-};
-
-static const struct pad_config ufc_camera_disable_pads[] = {
-	/* GPP_C08:     CRD2_PWREN */
-	PAD_NC(GPP_C08, NONE),
-	/* GPP_D00:     IMGCLKOUT_1 */
-	PAD_NC(GPP_D00, NONE),
-};
-
 static const struct pad_config peg_x4slot_wake_disable_pads[] = {
 	/* GPP_D24:     PEG_SLOT_WAKE_N */
 	PAD_NC(GPP_D24, NONE),
@@ -520,12 +480,6 @@ void fw_config_configure_pre_mem_gpio(void)
 	if (!fw_config_probe(FW_CONFIG(CELLULAR, CELLULAR_ABSENT)))
 		GPIO_CONFIGURE_PADS(pre_mem_wwan_pwr_seq1_pads);
 
-	if (fw_config_probe(FW_CONFIG(WFC, WFC_MIPI)))
-		GPIO_CONFIGURE_PADS(pre_mem_wfc_camera_pwr_pads);
-
-	if (fw_config_probe(FW_CONFIG(UFC, UFC_MIPI)))
-		GPIO_CONFIGURE_PADS(pre_mem_ufc_camera_pwr_pads);
-
 	if (fw_config_probe(FW_CONFIG(STORAGE, STORAGE_NVME_GEN4))) {
 		GPIO_CONFIGURE_PADS(pre_mem_gen4_ssd_pwr_pads);
 	} else if (fw_config_probe(FW_CONFIG(STORAGE, STORAGE_NVME_GEN5))) {
@@ -577,16 +531,6 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		GPIO_PADBASED_OVERRIDE(padbased_table, gen5_ssd_pads);
 		/* TODO for UFS */
 	}
-
-	if (fw_config_probe(FW_CONFIG(WFC, WFC_MIPI)))
-		GPIO_PADBASED_OVERRIDE(padbased_table, wfc_camera_enable_pads);
-	else
-		GPIO_PADBASED_OVERRIDE(padbased_table, wfc_camera_disable_pads);
-
-	if (fw_config_probe(FW_CONFIG(UFC, UFC_MIPI)))
-		GPIO_PADBASED_OVERRIDE(padbased_table, ufc_camera_enable_pads);
-	else
-		GPIO_PADBASED_OVERRIDE(padbased_table, ufc_camera_disable_pads);
 
 	if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_NONE)))
 		GPIO_PADBASED_OVERRIDE(padbased_table, audio_disable_pads);

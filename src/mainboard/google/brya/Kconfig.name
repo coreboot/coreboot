@@ -38,6 +38,9 @@ config BOARD_GOOGLE_CONSTITUTION
 config BOARD_GOOGLE_CROTA
 	bool "->  Crota"
 
+config BOARD_GOOGLE_DIRKS
+	bool "->  Dirks"
+
 config BOARD_GOOGLE_DOCHI
 	bool "->  Dochi"
 

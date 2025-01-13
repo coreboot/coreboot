@@ -219,6 +219,10 @@ config BOARD_GOOGLE_CROTA
 	select INTEL_GMA_HAVE_VBT
 	select SOC_INTEL_RAPTORLAKE
 
+config BOARD_GOOGLE_DIRKS
+	select BOARD_GOOGLE_BASEBOARD_NISSA
+	select SOC_INTEL_TWINLAKE
+
 config BOARD_GOOGLE_DOCHI
 	select BOARD_GOOGLE_BASEBOARD_BRYA
 	select CHROMEOS_WIFI_SAR if CHROMEOS
@@ -738,6 +742,7 @@ config DRIVER_TPM_I2C_BUS
 	default 0x0 if BOARD_GOOGLE_CRAASK
 	default 0x0 if BOARD_GOOGLE_CRAASKOV
 	default 0x1 if BOARD_GOOGLE_CROTA
+	default 0x0 if BOARD_GOOGLE_DIRKS
 	default 0x1 if BOARD_GOOGLE_DOCHI
 	default 0x0 if BOARD_GOOGLE_DOMIKA
 	default 0x1 if BOARD_GOOGLE_FELWINTER
@@ -817,6 +822,7 @@ config TPM_TIS_ACPI_INTERRUPT
 	default 13 if BOARD_GOOGLE_CRAASK
 	default 13 if BOARD_GOOGLE_CRAASKOV
 	default 13 if BOARD_GOOGLE_CROTA
+	default 13 if BOARD_GOOGLE_DIRKS
 	default 13 if BOARD_GOOGLE_DOCHI
 	default 13 if BOARD_GOOGLE_DOMIKA
 	default 13 if BOARD_GOOGLE_FELWINTER
@@ -900,6 +906,7 @@ config MAINBOARD_PART_NUMBER
 	default "Craask" if BOARD_GOOGLE_CRAASK
 	default "Craaskov" if BOARD_GOOGLE_CRAASKOV
 	default "Crota" if BOARD_GOOGLE_CROTA
+	default "Dirks" if BOARD_GOOGLE_DIRKS
 	default "Dochi" if BOARD_GOOGLE_DOCHI
 	default "Domika" if BOARD_GOOGLE_DOMIKA
 	default "Felwinter" if BOARD_GOOGLE_FELWINTER
@@ -972,6 +979,7 @@ config VARIANT_DIR
 	default "craask" if BOARD_GOOGLE_CRAASK
 	default "craaskov" if BOARD_GOOGLE_CRAASKOV
 	default "crota" if BOARD_GOOGLE_CROTA
+	default "dirks" if BOARD_GOOGLE_DIRKS
 	default "dochi" if BOARD_GOOGLE_DOCHI
 	default "yavilla" if BOARD_GOOGLE_DOMIKA
 	default "felwinter" if BOARD_GOOGLE_FELWINTER

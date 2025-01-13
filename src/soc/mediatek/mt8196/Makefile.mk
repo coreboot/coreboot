@@ -52,6 +52,8 @@ romstage-y += thermal_sram.c
 
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += ../common/bl31.c
 ramstage-y += ../common/dpm_v2.c
+ramstage-y += ../common/dp/dptx_common.c ../common/dp/dptx_hal_common.c
+ramstage-y += dptx.c dptx_hal.c dp_intf.c
 ramstage-y += dramc_info.c
 ramstage-y += ../common/early_init.c
 ramstage-y += ../common/emi.c
@@ -77,6 +79,7 @@ BL31_MAKEARGS += PLAT=mt8196
 
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8196/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/include
+CPPFLAGS_common += -Isrc/soc/mediatek/common/dp/include
 
 MT8196_BLOB_DIR := 3rdparty/blobs/soc/mediatek/mt8196
 

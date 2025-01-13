@@ -396,7 +396,10 @@ ifeq ($(CONFIG_LINUXBOOT_CROSS_COMPILE_PATH),"")
     CONFIG_LINUXBOOT_CROSS_COMPILE_PATH=$(CROSS_COMPILE_$(LINUXBOOT_CROSS_COMPILE_ARCH-y))
 endif # CONFIG_LINUXBOOT_CROSS_COMPILE_PATH
 else  # CONFIG_LINUXBOOT_CROSS_COMPILE
+ifeq ($(CONFIG_PAYLOAD_LINUXBOOT),y)
+    # only print warning when Linuxboot payload is actually selected
     $(warning "Using host toolchain to build Linuxboot")
+endif # CONFIG_PAYLOAD_LINUXBOOT
 endif # CONFIG_LINUXBOOT_CROSS_COMPILE
 .PHONY: linuxboot
 payloads/external/LinuxBoot/build/Image payloads/external/LinuxBoot/build/initramfs linuxboot:

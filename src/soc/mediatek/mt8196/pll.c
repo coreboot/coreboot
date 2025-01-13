@@ -1572,11 +1572,7 @@ void mt_pll_set_tvd_pll1_freq(u32 freq)
 {
 	const struct pll *pll = &plls[CLK_APMIXED2_TVDPLL3];
 
-	clrbits32(pll->reg, MT8196_PLL_EN);
 	pll_set_rate(pll, freq);
-	setbits32(pll->reg, MT8196_PLL_EN);
-
-	udelay(PLL_EN_DELAY);
 }
 
 void mt_pll_edp_mux_set_sel(u32 sel)

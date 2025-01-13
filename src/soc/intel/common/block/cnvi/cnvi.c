@@ -470,6 +470,8 @@ static struct device_operations cnvi_bt_ops = {
 };
 
 static const unsigned short bt_pci_device_ids[] = {
+	PCI_DID_INTEL_PTL_H_CNVI_BT,
+	PCI_DID_INTEL_PTL_U_H_CNVI_BT,
 	PCI_DID_INTEL_TGL_CNVI_BT_0,
 	PCI_DID_INTEL_TGL_CNVI_BT_1,
 	PCI_DID_INTEL_TGL_CNVI_BT_2,

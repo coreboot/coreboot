@@ -63,7 +63,7 @@ bool dptx_hal_auxread_bytes(struct mtk_dp *mtk_dp, u8 cmd,
 bool dptx_hal_auxwrite_bytes(struct mtk_dp *mtk_dp, u8 cmd,
 			     u32 dpcd_addr, size_t length, u8 *data);
 bool dptx_hal_setswing_preemphasis(struct mtk_dp *mtk_dp, int lane_num,
-				   int swing_value, int preemphasis);
+				   u8 swing_value, u8 preemphasis);
 u8 dptx_hal_get_colorbpp(struct mtk_dp *mtk_dp);
 u32 mtk_dp_phy_read(struct mtk_dp *mtk_dp, u32 offset);
 void mtk_dp_phy_mask(struct mtk_dp *mtk_dp, u32 offset, u32 val, u32 mask);
@@ -81,10 +81,10 @@ void dptx_hal_hpd_detect_setting(struct mtk_dp *mtk_dp);
 void dptx_hal_phy_setting(struct mtk_dp *mtk_dp);
 void dptx_hal_aux_setting(struct mtk_dp *mtk_dp);
 void dptx_hal_digital_setting(struct mtk_dp *mtk_dp);
-void dptx_hal_set_txlane(struct mtk_dp *mtk_dp, int value);
+void dptx_hal_set_txlane(struct mtk_dp *mtk_dp, u8 value);
 void dptx_hal_phy_setidlepattern(struct mtk_dp *mtk_dp, bool enable);
 void dptx_hal_phyd_reset(struct mtk_dp *mtk_dp);
-void dptx_hal_set_txtrainingpattern(struct mtk_dp *mtk_dp, int value);
+void dptx_hal_set_txtrainingpattern(struct mtk_dp *mtk_dp, u8 value);
 void dptx_hal_set_ef_mode(struct mtk_dp *mtk_dp, bool enable);
 void dptx_hal_setscramble(struct mtk_dp *mtk_dp, bool enable);
 void dptx_hal_init_setting(struct mtk_dp *mtk_dp);
@@ -100,7 +100,7 @@ void dptx_hal_set_msa(struct mtk_dp *mtk_dp);
 void dptx_hal_setmisc(struct mtk_dp *mtk_dp, u8 cmisc[2]);
 void dptx_hal_set_color_depth(struct mtk_dp *mtk_dp, u8 color_depth);
 void dptx_hal_set_color_format(struct mtk_dp *mtk_dp, u8 color_format);
-void dptx_hal_set_txrate(struct mtk_dp *mtk_dp, int value);
+void dptx_hal_set_txrate(struct mtk_dp *mtk_dp, u8 value);
 void dptx_hal_analog_power_en(struct mtk_dp *mtk_dp, bool enable);
 
 #endif /* SOC_MEDIATEK_COMMON_DP_DPTX_HAL_COMMON_H */

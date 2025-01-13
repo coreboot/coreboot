@@ -498,7 +498,7 @@ void dptx_hal_hpd_int_en(struct mtk_dp *mtk_dp, bool enable)
 			  GENMASK(7, 5));
 }
 
-void dptx_hal_set_txtrainingpattern(struct mtk_dp *mtk_dp, int value)
+void dptx_hal_set_txtrainingpattern(struct mtk_dp *mtk_dp, u8 value)
 {
 	/* if Set TPS1. */
 	if (value == BIT(4))

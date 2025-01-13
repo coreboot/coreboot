@@ -79,7 +79,7 @@ bool dptx_hal_hpd_high(struct mtk_dp *mtk_dp)
 }
 
 bool dptx_hal_setswing_preemphasis(struct mtk_dp *mtk_dp, int lane_num,
-				   int swing_value, int preemphasis)
+				   u8 swing_value, u8 preemphasis)
 {
 	printk(BIOS_DEBUG, "lane(%d), set swing(%#x), emp(%#x)\n",
 	       lane_num, swing_value, preemphasis);
@@ -220,7 +220,7 @@ void dptx_hal_phyd_reset(struct mtk_dp *mtk_dp)
 	mtk_dp_write_byte(mtk_dp, 0x1038, BIT(0), BIT(0));
 }
 
-void dptx_hal_set_txlane(struct mtk_dp *mtk_dp, int value)
+void dptx_hal_set_txlane(struct mtk_dp *mtk_dp, u8 value)
 {
 	if (value == 0)
 		mtk_dp_write_byte(mtk_dp, REG_35F0_DP_TRANS_P0,
@@ -239,7 +239,7 @@ void dptx_hal_set_txlane(struct mtk_dp *mtk_dp, int value)
 	}
 }
 
-void dptx_hal_set_txrate(struct mtk_dp *mtk_dp, int value)
+void dptx_hal_set_txrate(struct mtk_dp *mtk_dp, u8 value)
 {
 	/* Power off TPLL and lane */
 	mtk_dp_write(mtk_dp, 0x2000, 0x00000001);

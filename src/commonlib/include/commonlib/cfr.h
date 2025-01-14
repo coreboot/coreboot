@@ -63,6 +63,7 @@ enum cfr_tags {
 	CFR_TAG_VARCHAR_UI_HELPTEXT	= 9,
 	CFR_TAG_VARCHAR_DEF_VALUE	= 10,
 	CFR_TAG_OPTION_COMMENT		= 11,
+	CFR_TAG_DEP_VALUES		= 12,
 };
 
 /*
@@ -104,7 +105,8 @@ enum cfr_option_flags {
 struct __packed lb_cfr_varbinary {
 	uint32_t tag;		/*
 				 * CFR_TAG_VARCHAR_OPT_NAME, CFR_TAG_VARCHAR_UI_NAME,
-				 * CFR_TAG_VARCHAR_UI_HELPTEXT or CFR_TAG_VARCHAR_DEF_VALUE
+				 * CFR_TAG_VARCHAR_UI_HELPTEXT, CFR_TAG_VARCHAR_DEF_VALUE
+				 * or CFR_TAG_DEP_VALUES
 				 */
 	uint32_t size;		/* Length of the entire structure */
 	uint32_t data_length;	/* Length of data, including NULL terminator for strings */
@@ -136,6 +138,7 @@ struct __packed lb_cfr_numeric_option {
 	 * struct lb_cfr_varbinary		opt_name
 	 * struct lb_cfr_varbinary		ui_name
 	 * struct lb_cfr_varbinary		ui_helptext (Optional)
+	 * struct lb_cfr_varbinary		dependency_values (Optional)
 	 * struct lb_cfr_enum_value		enum_values[]
 	 */
 };
@@ -153,6 +156,7 @@ struct __packed lb_cfr_varchar_option {
 	 * struct lb_cfr_varbinary		opt_name
 	 * struct lb_cfr_varbinary		ui_name
 	 * struct lb_cfr_varbinary		ui_helptext (Optional)
+	 * struct lb_cfr_varbinary		dependency_values (Optional)
 	 */
 };
 
@@ -172,6 +176,7 @@ struct __packed lb_cfr_option_comment {
 	/*
 	 * struct lb_cfr_varbinary		ui_name
 	 * struct lb_cfr_varbinary		ui_helptext (Optional)
+	 * struct lb_cfr_varbinary		dependency_values (Optional)
 	 */
 };
 
@@ -186,6 +191,7 @@ struct __packed lb_cfr_option_form {
 	uint32_t flags;		/* enum cfr_option_flags */
 	/*
 	 * struct lb_cfr_varbinary		ui_name
+	 * struct lb_cfr_varbinary		dependency_values (Optional)
 	 * struct lb_cfr_varchar_option		options[]
 	 */
 };

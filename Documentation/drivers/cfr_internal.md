@@ -50,8 +50,9 @@ static const struct sm_object serial_number = SM_DECLARE_VARCHAR({
 
 The CFR options can have a dependency that must be evaluated at runtime by
 the OS/payload that parses the CFR record and displays the UI.
-By using the `WITH_DEP()` macro you can specify another numberic option that
-is checked to hide the current option.
+By using the `WITH_DEP()` macro you can specify another numeric option that
+is checked to hide the current option. The `WITH_DEP_VALUES()` macro allows
+specifying one or more values that cause the dependent option to be displayed.
 
 **Example:** Declares a dependency from `sata_disable_port0` to `sata_enable`.
 The option `sata_disable_port0` will be hidden as long as "sata_enable" is 0.
@@ -74,6 +75,37 @@ static struct sm_object sata_disable_port0 = SM_DECLARE_BOOL({
 	.ui_helptext	= NULL,
 	.default_value	= false,
 }, WITH_DEP(&sata_enable));
+```
+
+**Example:** Declares a dependency from `com1_termination` to `com1_mode`.
+The option `com1_termination` will only be shown if `com1_mode` is set to RS-485.
+
+```
+#define COM_MODE_DISABLED 3
+#define COM_MODE_RS232    0
+#define COM_MODE_RS485    1
+
+static struct sm_object com1_mode = SM_DECLARE_ENUM({
+	.flags		= CFR_OPTFLAG_RUNTIME,
+	.opt_name	= "com1_mode",
+	.ui_name	= "COM1 Mode",
+	.ui_helptext	= NULL,
+	.default_value	= 1,
+	.values		= (const struct sm_enum_value[]) {
+				{ "Disabled", COM_MODE_DISABLED },
+				{ "RS-232",   COM_MODE_RS232    },
+				{ "RS-485",   COM_MODE_RS485    },
+				SM_ENUM_VALUE_END },
+});
+
+static struct sm_object com1_termination = SM_DECLARE_BOOL({
+	.flags		= CFR_OPTFLAG_RUNTIME,
+	.opt_name	= "com1_termination",
+	.ui_name	= "Enable COM1 termination resistors",
+	.ui_helptext	= NULL,
+	.default_value	= false,
+}, WITH_DEP_VALUES(&com1_mode, COM_MODE_RS485));
+
 ```
 
 ### Providing mainboard custom options

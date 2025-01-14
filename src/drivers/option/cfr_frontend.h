@@ -75,6 +75,8 @@ enum sm_object_kind {
 struct sm_object {
 	enum sm_object_kind kind;
 	const struct sm_object *dep;
+	const uint32_t *dep_values;
+	const uint32_t num_dep_values;
 	void (*ctor)(const struct sm_object *obj, struct sm_object *new);	/* Called on object creation */
 	union {
 		struct sm_obj_enum sm_enum;
@@ -87,21 +89,31 @@ struct sm_object {
 };
 
 /* sm_object helpers with type checking */
-#define SM_DECLARE_ENUM(...)	{ .kind = SM_OBJ_ENUM,    .dep = NULL, \
+#define SM_DECLARE_ENUM(...)	{ .kind = SM_OBJ_ENUM,    .dep = NULL,     \
+				  .dep_values = NULL, .num_dep_values = 0, \
 				  .ctor = NULL, .sm_enum    = __VA_ARGS__ }
-#define SM_DECLARE_NUMBER(...)	{ .kind = SM_OBJ_NUMBER,  .dep = NULL, \
+#define SM_DECLARE_NUMBER(...)	{ .kind = SM_OBJ_NUMBER,  .dep = NULL,     \
+				  .dep_values = NULL, .num_dep_values = 0, \
 				  .ctor = NULL, .sm_number  = __VA_ARGS__ }
-#define SM_DECLARE_BOOL(...)	{ .kind = SM_OBJ_BOOL,    .dep = NULL, \
+#define SM_DECLARE_BOOL(...)	{ .kind = SM_OBJ_BOOL,    .dep = NULL,     \
+				  .dep_values = NULL, .num_dep_values = 0, \
 				  .ctor = NULL, .sm_bool    = __VA_ARGS__ }
-#define SM_DECLARE_VARCHAR(...)	{ .kind = SM_OBJ_VARCHAR, .dep = NULL, \
+#define SM_DECLARE_VARCHAR(...)	{ .kind = SM_OBJ_VARCHAR, .dep = NULL,     \
+				  .dep_values = NULL, .num_dep_values = 0, \
 				  .ctor = NULL, .sm_varchar = __VA_ARGS__ }
-#define SM_DECLARE_COMMENT(...)	{ .kind = SM_OBJ_COMMENT, .dep = NULL, \
+#define SM_DECLARE_COMMENT(...)	{ .kind = SM_OBJ_COMMENT, .dep = NULL,     \
+				  .dep_values = NULL, .num_dep_values = 0, \
 				  .ctor = NULL, .sm_comment = __VA_ARGS__ }
-#define SM_DECLARE_FORM(...)	{ .kind = SM_OBJ_FORM,    .dep = NULL, \
+#define SM_DECLARE_FORM(...)	{ .kind = SM_OBJ_FORM,    .dep = NULL,     \
+				  .dep_values = NULL, .num_dep_values = 0, \
 				  .ctor = NULL, .sm_form    = __VA_ARGS__ }
 
 #define WITH_CALLBACK(c) .ctor = (c)
 #define WITH_DEP(d) .dep = (d)
+#define WITH_DEP_VALUES(d, ...)							\
+	.dep = (d),								\
+	.dep_values = ((const uint32_t[]) { __VA_ARGS__ }),			\
+	.num_dep_values = sizeof((uint32_t[]) { __VA_ARGS__ }) / sizeof(uint32_t)
 
 void cfr_write_setup_menu(struct lb_cfr *cfr_root, struct sm_obj_form *sm_root[]);
 

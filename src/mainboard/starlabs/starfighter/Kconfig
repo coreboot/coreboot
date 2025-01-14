@@ -65,9 +65,6 @@ config DRIVER_TPM_SPI_CHIP
 config EC_GPE_SCI
 	default 0x6e
 
-config EC_STARLABS_ADD_ITE_BIN
-	default n
-
 config EC_STARLABS_BATTERY_MODEL
 	default "AEC617573-4S1P"
 

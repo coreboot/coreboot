@@ -44,9 +44,6 @@ config DIMM_SPD_SIZE
 config EC_GPE_SCI
 	default 0x6e
 
-config EC_STARLABS_ADD_ITE_BIN
-	default n
-
 config EC_STARLABS_ITE_BIN_PATH
 	string
 	depends on EC_STARLABS_NEED_ITE_BIN

@@ -118,10 +118,6 @@ config DRIVER_TPM_I2C_BUS
 	default 0x03 if BOARD_GOOGLE_MODEL_FATCAT
 	default 0x01 if BOARD_GOOGLE_FRANCKA
 
-config FMDFILE
-	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos-debug-fsp.fmd" if CHROMEOS && BUILDING_WITH_DEBUG_FSP
-	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/chromeos.fmd" if CHROMEOS
-
 config HAVE_SLP_S0_GATE
 	def_bool n
 

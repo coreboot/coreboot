@@ -285,7 +285,10 @@ EMULATION MAINBOARDS
 S:	Orphan
 F:	src/mainboard/emulation/
 
-
+ERYING MAINBOARDS
+M:	Alicja Michalska <ahplka19@gmail.com>
+S:	Maintained
+F:	src/mainboard/erying/
 
 EXAMPLE MAINBOARDS
 S:	Orphan
@@ -650,6 +653,12 @@ F:	src/mainboard/system76/
 TI MAINBOARDS
 S:	Orphan
 F:	src/mainboard/ti/
+
+
+TOPTON MAINBOARDS
+M:	Alicja Michalska <ahplka19@gmail.com>
+S:	Maintained
+F:	src/mainboard/topton/
 
 
 

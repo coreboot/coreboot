@@ -118,6 +118,7 @@ config DRIVER_TPM_I2C_BUS
 	hex
 	default 0x03 if BOARD_GOOGLE_MODEL_FATCAT
 	default 0x01 if BOARD_GOOGLE_FRANCKA
+	default 0x01 if BOARD_GOOGLE_FELINO
 
 config HAVE_SLP_S0_GATE
 	def_bool n

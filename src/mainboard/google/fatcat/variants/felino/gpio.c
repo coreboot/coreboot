@@ -278,7 +278,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_F14:     NC */
 	PAD_NC(GPP_F14, NONE),
 	/* GPP_F15:     GSC_PCH_INT_ODL */
-	PAD_CFG_NF(GPP_F15, NONE, DEEP, NF1),
+	PAD_CFG_GPI_APIC(GPP_F15, NONE, PLTRST, LEVEL, INVERT),
 	/* GPP_F16:     NC */
 	PAD_NC(GPP_F16, NONE),
 	/* GPP_F17:     NC */
@@ -399,12 +399,12 @@ static const struct pad_config early_gpio_table[] = {
 	/* GPP_H09:     UART0_BUF_TXD */
 	PAD_CFG_NF(GPP_H09, NONE, DEEP, NF1),
 
-	/* GPP_H06: I2C3_SDA_PSS */
-	PAD_CFG_NF(GPP_H06, NONE, DEEP, NF1),
-	/* GPP_H07: I2C3_SCL_PSS */
-	PAD_CFG_NF(GPP_H07, NONE, DEEP, NF1),
-	/* GPP_D15: SPI_TPM_INT_N */
-	PAD_CFG_GPI_APIC(GPP_D15, NONE, PLTRST, LEVEL, INVERT),
+	/* GPP_H21:     PCH_I2C_GSC_SDA */
+	PAD_CFG_NF(GPP_H21, NONE, DEEP, NF1),
+	/* GPP_H22:     PCH_I2C_GSC_SCL */
+	PAD_CFG_NF(GPP_H22, NONE, DEEP, NF1),
+	/* GPP_F15: SPI_TPM_INT_N */
+	PAD_CFG_GPI_APIC(GPP_F15, NONE, PLTRST, LEVEL, INVERT),
 };
 
 /* Pad configuration in romstage */

@@ -177,7 +177,7 @@ static void init_pmif_arb(void)
 	pmif_arb = get_pmif_controller(PMIF_SPMI, SPMI_MASTER_0);
 	assert(pmif_arb);
 
-	if (pmif_arb->is_pmif_init_done(pmif_arb))
+	if (pmif_arb->check_init_done(pmif_arb))
 		die("ERROR - Failed to initialize pmif spmi");
 
 	for (int i = 0; i < ARRAY_SIZE(mt6316_slave_id); i++)

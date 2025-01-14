@@ -34,7 +34,7 @@ struct pmif {
 	void (*write16)(struct pmif *arb, u32 slvid, u32 reg, u16 data);
 	u32 (*read_field)(struct pmif *arb, u32 slvid, u32 reg, u32 mask, u32 shift);
 	void (*write_field)(struct pmif *arb, u32 slvid, u32 reg, u32 val, u32 mask, u32 shift);
-	int (*is_pmif_init_done)(struct pmif *arb);
+	int (*check_init_done)(struct pmif *arb);
 };
 
 enum {

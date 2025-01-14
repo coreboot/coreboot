@@ -17,7 +17,7 @@ const struct pmif pmif_spmi_arb[] = {
 		.read = pmif_spmi_read,
 		.write_field = pmif_spmi_write_field,
 		.read_field = pmif_spmi_read_field,
-		.is_pmif_init_done = pmif_check_init_done,
+		.check_init_done = pmif_check_init_done,
 	},
 };
 
@@ -32,7 +32,7 @@ const struct pmif pmif_spi_arb[] = {
 		.read = pmif_spi_read,
 		.write_field = pmif_spi_write_field,
 		.read_field = pmif_spi_read_field,
-		.is_pmif_init_done = pmif_check_init_done,
+		.check_init_done = pmif_check_init_done,
 	},
 };
 

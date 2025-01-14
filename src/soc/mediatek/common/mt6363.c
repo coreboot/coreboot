@@ -267,7 +267,7 @@ void mt6363_init_pmif_arb(void)
 	pmif_arb = get_pmif_controller(PMIF_SPMI, SPMI_MASTER_1);
 	assert(pmif_arb);
 
-	if (pmif_arb->is_pmif_init_done(pmif_arb))
+	if (pmif_arb->check_init_done(pmif_arb))
 		die("ERROR - Failed to initialize pmif spi");
 
 	printk(BIOS_INFO, "[%s][MT6363]CHIP ID =  0x%x\n", __func__,

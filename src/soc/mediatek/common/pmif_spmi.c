@@ -152,12 +152,12 @@ static void pmif_spmi_enable(struct pmif *arb)
 
 int pmif_spmi_init(struct pmif *arb)
 {
-	if (arb->is_pmif_init_done(arb) != 0) {
+	if (arb->check_init_done(arb) != 0) {
 		pmif_spmi_force_normal_mode(arb);
 		pmif_spmi_enable_swinf(arb);
 		pmif_spmi_enable_cmdIssue(arb, true);
 		pmif_spmi_enable(arb);
-		if (arb->is_pmif_init_done(arb))
+		if (arb->check_init_done(arb))
 			return -E_NODEV;
 	}
 

@@ -91,7 +91,7 @@ static void init_pmif_arb(void)
 	pmif_arb = get_pmif_controller(PMIF_SPMI, 0);
 	assert(pmif_arb);
 
-	if (pmif_arb->is_pmif_init_done(pmif_arb))
+	if (pmif_arb->check_init_done(pmif_arb))
 		die("ERROR - Failed to initialize pmif spmi");
 }
 

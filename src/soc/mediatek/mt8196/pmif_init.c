@@ -24,7 +24,7 @@ const struct pmif pmif_spmi_arb[] = {
 		.read16 = pmif_spmi_read16,
 		.write_field = pmif_spmi_write_field,
 		.read_field = pmif_spmi_read_field,
-		.is_pmif_init_done = pmif_check_init_done,
+		.check_init_done = pmif_check_init_done,
 	}, {
 		.mtk_pmif = (struct mtk_pmif_regs *)PMIF_SPMI_BASE,
 		.ch = (struct chan_regs *)PMIF_SPMI_AP_CHAN,
@@ -36,7 +36,7 @@ const struct pmif pmif_spmi_arb[] = {
 		.read16 = pmif_spmi_read16,
 		.write_field = pmif_spmi_write_field,
 		.read_field = pmif_spmi_read_field,
-		.is_pmif_init_done = pmif_check_init_done,
+		.check_init_done = pmif_check_init_done,
 	}, {
 		.mtk_pmif = (struct mtk_pmif_regs *)PMIF_SPMI_P_BASE,
 		.ch = (struct chan_regs *)PMIF_SPMI_AP_CHAN_P,
@@ -48,7 +48,7 @@ const struct pmif pmif_spmi_arb[] = {
 		.read16 = pmif_spmi_read16,
 		.write_field = pmif_spmi_write_field,
 		.read_field = pmif_spmi_read_field,
-		.is_pmif_init_done = pmif_check_init_done,
+		.check_init_done = pmif_check_init_done,
 	},
 };
 
@@ -63,7 +63,7 @@ const struct pmif pmif_spi_arb[] = {
 		.read = pmif_spi_read,
 		.write_field = pmif_spi_write_field,
 		.read_field = pmif_spi_read_field,
-		.is_pmif_init_done = pmif_check_init_done,
+		.check_init_done = pmif_check_init_done,
 	},
 };
 

@@ -241,10 +241,11 @@ static void mt6373_pmic_wdt_set(void)
 
 void mt6373_init_pmif_arb(void)
 {
-	if (!pmif_arb) {
-		pmif_arb = get_pmif_controller(PMIF_SPMI, SPMI_MASTER_1);
-		assert(pmif_arb);
-	}
+	if (pmif_arb)
+		return;
+
+	pmif_arb = get_pmif_controller(PMIF_SPMI, SPMI_MASTER_1);
+	assert(pmif_arb);
 
 	if (pmif_arb->is_pmif_init_done(pmif_arb))
 		die("%s: initialization failed", __func__);

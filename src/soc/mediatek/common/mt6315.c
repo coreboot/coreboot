@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
 #include <console/console.h>
 #include <delay.h>
 #include <soc/mt6315.h>
@@ -84,11 +85,11 @@ u32 mt6315_buck_get_voltage(u32 slvid, u32 buck_id)
 
 static void init_pmif_arb(void)
 {
-	if (!pmif_arb) {
-		pmif_arb = get_pmif_controller(PMIF_SPMI, 0);
-		if (!pmif_arb)
-			die("ERROR: No spmi device");
-	}
+	if (pmif_arb)
+		return;
+
+	pmif_arb = get_pmif_controller(PMIF_SPMI, 0);
+	assert(pmif_arb);
 
 	if (pmif_arb->is_pmif_init_done(pmif_arb))
 		die("ERROR - Failed to initialize pmif spmi");

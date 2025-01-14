@@ -171,10 +171,11 @@ static void mt6316_set_all_test_con9(void)
 
 static void init_pmif_arb(void)
 {
-	if (!pmif_arb) {
-		pmif_arb = get_pmif_controller(PMIF_SPMI, SPMI_MASTER_0);
-		assert(pmif_arb);
-	}
+	if (pmif_arb)
+		return;
+
+	pmif_arb = get_pmif_controller(PMIF_SPMI, SPMI_MASTER_0);
+	assert(pmif_arb);
 
 	if (pmif_arb->is_pmif_init_done(pmif_arb))
 		die("ERROR - Failed to initialize pmif spmi");

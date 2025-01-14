@@ -49,22 +49,22 @@ chip soc/intel/alderlake
 		end
 		device ref gna		on  end
 		device ref xhci		on
-			# Bottom USB 3.0 Type-C
-			register "usb2_ports[0]"			= "USB2_PORT_MID(OC_SKIP)"
+			# Bottom USB 3.0 Type-C				3289 mil
+			register "usb2_ports[0]"			= "USB2_PORT_SHORT(OC_SKIP)"
 			register "usb3_ports[2]"			= "USB3_PORT_DEFAULT(OC_SKIP)"
 
-			# Top USB 3.0 Type-C
-			register "usb2_ports[1]"			= "USB2_PORT_MID(OC_SKIP)"
+			# Top USB 3.0 Type-C				4237 mil
+			register "usb2_ports[1]"			= "USB2_PORT_SHORT(OC_SKIP)"
 			register "usb3_ports[0]"			= "USB3_PORT_DEFAULT(OC_SKIP)"
 
-			# Detachable Keyboard + SD Card Reader
-			register "usb2_ports[2]"			= "USB2_PORT_MID(OC_SKIP)"
+			# Detachable Keyboard + SD Card Reader		6418 mil
+			register "usb2_ports[2]"			= "USB2_PORT_SHORT(OC_SKIP)"
 
-			# Camera + Webcam
-			register "usb2_ports[CONFIG_CCD_PORT]"		= "USB2_PORT_MID(OC_SKIP)"
+			# Camera + Webcam				3249 mil
+			register "usb2_ports[CONFIG_CCD_PORT]"		= "USB2_PORT_SHORT(OC_SKIP)"
 
-			# Internal Bluetooth
-			register "usb2_ports[9]"			= "USB2_PORT_MID(OC_SKIP)"
+			# Internal Bluetooth				1874 mil
+			register "usb2_ports[9]"			= "USB2_PORT_SHORT(OC_SKIP)"
 
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on

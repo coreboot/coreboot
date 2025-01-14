@@ -1050,7 +1050,8 @@ static struct device_tree_node *_dt_find_node(struct device_tree_node *parent,
 
 	/* Update #address-cells and #size-cells for the parent level (cells
 	   properties always count for the direct children of their node). */
-	dt_read_cell_props(parent, addrcp, sizecp);
+	if (addrcp || sizecp)
+		dt_read_cell_props(parent, addrcp, sizecp);
 
 	/* Find the next node in the path, if it exists. */
 	list_for_each(node, parent->children, list_node) {
@@ -1135,7 +1136,8 @@ struct device_tree_node *dt_find_node_by_path(struct device_tree *tree,
 
 	if (path[0] == '/') { /* regular path */
 		if (path[1] == '\0') {	/* special case: "/" is root node */
-			dt_read_cell_props(tree->root, addrcp, sizecp);
+			if (addrcp || sizecp)
+				dt_read_cell_props(tree->root, addrcp, sizecp);
 			return tree->root;
 		}
 

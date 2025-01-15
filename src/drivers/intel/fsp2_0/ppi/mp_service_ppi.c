@@ -61,7 +61,7 @@ efi_return_status_t mp_get_processor_info(efi_uintn_t processor_number,
 
 	processor_info_buffer->ProcessorId = dev->path.apic.apic_id;
 	processor_info_buffer->Location.Package = dev->path.apic.package_id;
-	processor_info_buffer->Location.Core = dev->path.apic.core_id;
+	processor_info_buffer->Location.Core = dev->path.apic.core_id_within_package;
 	processor_info_buffer->Location.Thread = dev->path.apic.thread_id;
 
 	return FSP_SUCCESS;

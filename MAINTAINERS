@@ -354,6 +354,7 @@ F:	src/mainboard/google/brya/
 GOOGLE FATCAT MAINBOARDS
 M:	Subrata Banik <subratabanik@google.com>
 M:	Pranava Y N <pranavayn@google.com>
+M:	Jayvik Desai <jayvik@google.com>
 F:	src/mainboard/google/fatcat/
 
 GOOGLE HATCH MAINBOARDS
@@ -927,6 +928,7 @@ INTEL PANTHERLAKE SOC
 M:	Subrata Banik <subratabanik@google.com>
 M:	Kapil Porwal <kapilporwal@google.com>
 M:	Pranava Y N <pranavayn@google.com>
+M:	Jayvik Desai <jayvik@google.com>
 S:	Maintained
 F:	src/soc/intel/pantherlake/
 

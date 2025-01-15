@@ -40,6 +40,12 @@ end
 
 chip soc/intel/meteorlake
 
+        register "power_limits_config[MTL_P_282_242_CORE]" = "{
+                .tdp_pl1_override = 18,
+                .tdp_pl2_override = 40,
+                .tdp_pl4 = 84,
+        }"
+
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# USB2_C1
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# USB2_C0
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC0)"		# Type-A Port A1
@@ -218,15 +224,15 @@ chip soc/intel/meteorlake
 				## Power Limits Control
 				register "controls.power_limits" = "{
 						.pl1 = {
-							.min_power = 15000,
-							.max_power = 15000,
+							.min_power = 12000,
+							.max_power = 18000,
 							.time_window_min = 28 * MSECS_PER_SEC,
 							.time_window_max = 32 * MSECS_PER_SEC,
 							.granularity = 200,
 						},
 						.pl2 = {
-							.min_power = 57000,
-							.max_power = 57000,
+							.min_power = 40000,
+							.max_power = 40000,
 							.time_window_min = 28 * MSECS_PER_SEC,
 							.time_window_max = 32 * MSECS_PER_SEC,
 							.granularity = 1000,

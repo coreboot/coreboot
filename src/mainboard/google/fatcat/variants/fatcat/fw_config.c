@@ -418,8 +418,6 @@ static const struct pad_config touchpad_i2c_disable_pads[] = {
 };
 
 static const struct pad_config ish_disable_pads[] = {
-	/* GPP_D05:     NC */
-	PAD_NC(GPP_D05, NONE),
 	/* GPP_D06:     NC */
 	PAD_NC(GPP_D06, NONE),
 	/* GPP_E05:     NC */
@@ -429,8 +427,6 @@ static const struct pad_config ish_disable_pads[] = {
 };
 
 static const struct pad_config ish_enable_pads[] = {
-	/* GPP_D05:     ISH_UART0_RXD */
-	PAD_CFG_NF(GPP_D05, NONE, DEEP, NF2),
 	/* GPP_D06:     ISH_UART0_TXD */
 	PAD_CFG_NF(GPP_D06, NONE, DEEP, NF2),
 	/* GPP_E05:     ISH_GP_7_SNSR_HDR */

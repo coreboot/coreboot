@@ -3,6 +3,7 @@
 #include <bootmode.h>
 #include <cpu/intel/microcode.h>
 #include <fsp/api.h>
+#include <fsp/debug.h>
 #include <fsp/fsp_debug_event.h>
 #include <fsp/fsp_gop_blt.h>
 #include <fsp/ppi/mp_service_ppi.h>
@@ -685,7 +686,7 @@ static void arch_silicon_init_params(FSPS_ARCH2_UPD *s_arch_cfg)
 	/* Assign FspEventHandler arch Upd to use coreboot debug event handler */
 	if (CONFIG(FSP_USES_CB_DEBUG_EVENT_HANDLER)
 	    && CONFIG(CONSOLE_SERIAL)
-	    && CONFIG(FSP_ENABLE_SERIAL_DEBUG))
+	    && CONFIG(FSP_ENABLE_SERIAL_DEBUG) && fsp_get_pcd_debug_log_level())
 		s_arch_cfg->FspEventHandler = (uintptr_t)((FSP_EVENT_HANDLER *)
 							  fsp_debug_event_handler);
 

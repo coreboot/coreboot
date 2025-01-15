@@ -2,6 +2,7 @@
 
 #include <cpu/intel/common/common.h>
 #include <cpu/x86/msr.h>
+#include <fsp/debug.h>
 #include <fsp/fsp_debug_event.h>
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
@@ -320,9 +321,12 @@ static void fsp_control_log_level(FSPM_UPD *mupd, bool is_enabled)
 	FSP_M_CONFIG *m_cfg = &mupd->FspmConfig;
 	FSPM_ARCHx_UPD *arch_upd = &mupd->FspmArchUpd;
 
-	enum fsp_log_level log_level = is_enabled ? fsp_map_console_log_level() :
-		 FSP_LOG_LEVEL_DISABLE;
-	fsp_set_debug_level(m_cfg, log_level, log_level);
+	enum fsp_log_level fsp_log_level = is_enabled ? fsp_get_pcd_debug_log_level() :
+			 FSP_LOG_LEVEL_DISABLE;
+	enum fsp_log_level mrc_log_level = is_enabled ? fsp_get_mrc_debug_log_level() :
+			 FSP_LOG_LEVEL_DISABLE;
+
+	fsp_set_debug_level(m_cfg, fsp_log_level, mrc_log_level);
 
 	if ((m_cfg->PcdSerialDebugLevel > FSP_LOG_LEVEL_VERBOSE) ||
 	    (m_cfg->SerialDebugMrcLevel > FSP_LOG_LEVEL_VERBOSE)) {

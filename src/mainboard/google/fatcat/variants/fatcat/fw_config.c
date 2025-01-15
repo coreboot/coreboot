@@ -443,7 +443,12 @@ static const struct pad_config fp_disable_pads[] = {
 	PAD_NC(GPP_C15, NONE),
 	/* GPP_D01:     MOD_TCSS1_TYP_A_VBUS_EN */
 	PAD_CFG_GPO(GPP_D01, 1, DEEP),
-	PAD_NC(GPP_E19, NONE),
+	/* FIXME: b/390031369
+	 * use dedicated GPIO PIN for codec enable
+	 * when FPS is enabled.
+	 */
+	/* GPP_E19:     CODEC_EN */
+	PAD_CFG_GPO(GPP_E19, 1, PLTRST),
 	PAD_NC(GPP_E20, NONE),
 	PAD_NC(GPP_F14, NONE),
 	PAD_NC(GPP_F15, NONE),

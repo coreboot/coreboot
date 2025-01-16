@@ -50,12 +50,6 @@ void mt6363_write8(u32 reg, u8 data)
 	pmif_arb->write(pmif_arb, SPMI_SLAVE_4, reg, data);
 }
 
-static void mt6363_write16(u32 reg, u16 data)
-{
-	assert(pmif_arb);
-	pmif_arb->write16(pmif_arb, SPMI_SLAVE_4, reg, data);
-}
-
 static u32 mt6363_read_field(u32 reg, u32 mask, u32 shift)
 {
 	assert(pmif_arb);
@@ -101,7 +95,7 @@ static void pmic_protect_key_setting(bool lock)
 
 	for (int i = 0; i < ARRAY_SIZE(key_protect_setting); i++) {
 		entry = &key_protect_setting[i];
-		mt6363_write16(entry->addr, lock ? 0 : entry->val);
+		mt6363_write8(entry->addr, lock ? 0 : entry->val);
 	}
 	printk(BIOS_INFO, "%s done\n", __func__);
 }

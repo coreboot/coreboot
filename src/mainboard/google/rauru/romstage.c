@@ -9,6 +9,7 @@
 #include <soc/mt6363.h>
 #include <soc/mt6373.h>
 #include <soc/mt6685.h>
+#include <soc/mtk_fsp.h>
 #include <soc/mtk_pwrsel.h>
 #include <soc/pcie.h>
 #include <soc/pll.h>
@@ -34,6 +35,8 @@ void platform_romstage_main(void)
 	mt6316_init();
 	raise_little_cpu_freq();
 	mt6373_init();
+	mtk_fsp_init(ROMSTAGE_INIT);
+	mtk_fsp_load_and_run();
 	mt6685_init();
 	srclken_rc_init();
 	clk_buf_init();

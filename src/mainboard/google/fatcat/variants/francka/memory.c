@@ -89,5 +89,5 @@ int variant_memory_sku(void)
 void variant_get_spd_info(struct mem_spd *spd_info)
 {
 	spd_info->topo = MEM_TOPO_MEMORY_DOWN;
-	spd_info->cbfs_index = 0;
+	spd_info->cbfs_index = variant_memory_sku();
 }

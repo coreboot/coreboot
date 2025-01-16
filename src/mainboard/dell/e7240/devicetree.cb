@@ -31,7 +31,7 @@ chip northbridge/intel/haswell
 		device pci 03.0 on end # Mini-HD audio
 
 		chip southbridge/intel/lynxpoint # Intel Series 8 Lynx Point PCH
-			register "docking_supported" = "1"
+			register "docking_supported" = "true"
 			register "alt_gp_smi_en" = "0x00002000"
 			register "gpe0_en_1" = "0x00000100"
 			register "gpe0_en_2" = "0x00000080"

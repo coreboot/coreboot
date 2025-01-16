@@ -5,7 +5,7 @@ chip northbridge/intel/sandybridge
 	device domain 0x0 on
 		subsystemid 0x1028 0x04aa inherit
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
-			register "docking_supported" = "0"
+			register "docking_supported" = "false"
 			register "pcie_port_coalesce" = "1"
 
 			register "usb_port_config" = "{

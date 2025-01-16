@@ -18,7 +18,7 @@ chip northbridge/intel/sandybridge
 		end
 
 		chip southbridge/intel/bd82x6x # Intel 6/7 Series PCH
-			register "docking_supported" = "1"
+			register "docking_supported" = "true"
 
 			register "gpi0_routing" = "2"
 			register "pcie_hotplug_map" = "{ 0, 0, 1, 1, 0, 0, 0, 0 }"

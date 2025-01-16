@@ -64,7 +64,7 @@ struct southbridge_intel_ibexpeak_config {
 	/* Override PCIe ASPM */
 	uint8_t pcie_aspm[8];
 
-	int docking_supported;
+	bool docking_supported;
 
 	bool pcie_hotplug_map[8];
 

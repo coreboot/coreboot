@@ -15,7 +15,7 @@ chip northbridge/intel/sandybridge
 		device ref peg60 off end
 
 		chip southbridge/intel/bd82x6x # Intel Series 7 PCH
-			register "docking_supported" = "0"
+			register "docking_supported" = "false"
 			register "gen1_dec" = "0x00fc0601"
 			register "gen2_dec" = "0x00fc0801"
 			register "pcie_hotplug_map" = "{ 0, 0, 0, 0, 0, 0, 0, 0 }"

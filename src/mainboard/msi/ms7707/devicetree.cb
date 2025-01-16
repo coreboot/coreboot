@@ -8,7 +8,7 @@ chip northbridge/intel/sandybridge
 		device ref igd off end	# Internal graphics
 
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
-			register "docking_supported" = "0"
+			register "docking_supported" = "false"
 			register "gen1_dec" = "0x000c0291"
 			register "gen2_dec" = "0x000c0a01"
 			register "pcie_port_coalesce" = "true"

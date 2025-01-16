@@ -12,7 +12,7 @@ chip northbridge/intel/sandybridge
 		device ref igd off end
 
 		chip southbridge/intel/bd82x6x # Intel Series 7 Panther Point PCH
-			register "docking_supported" = "0"
+			register "docking_supported" = "false"
 			# mailbox at 0x200/0x201 and PM1 at 0x220
 			register "gen1_dec" = "0x007c0201"
 			register "gen2_dec" = "0x000c0101"

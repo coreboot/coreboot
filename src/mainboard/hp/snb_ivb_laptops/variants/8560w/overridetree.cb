@@ -8,7 +8,7 @@ chip northbridge/intel/sandybridge
 		device ref igd off end
 
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
-			register "docking_supported" = "0"
+			register "docking_supported" = "false"
 			register "gpi6_routing" = "2"
 			register "pcie_hotplug_map" = "{ 0, 1, 1, 0, 0, 0, 0, 0 }"
 			# HDD(0), ODD(1), eSATA(4)

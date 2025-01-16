@@ -20,7 +20,7 @@ chip northbridge/intel/sandybridge
 		device ref igd on end # Internal graphics VGA controller
 
 		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
-			register "docking_supported" = "1"
+			register "docking_supported" = "true"
 			register "gen1_dec" = "0x00000000"
 			register "gen2_dec" = "0x000c0701"
 			register "gen3_dec" = "0x000c0069"

@@ -26,7 +26,7 @@ chip northbridge/intel/sandybridge
 			subsystemid 0x1849 0x0152
 		end
 		chip southbridge/intel/bd82x6x
-			register "docking_supported" = "0"
+			register "docking_supported" = "false"
 			register "gen1_dec" = "0x000c0291"
 			register "gen2_dec" = "0x000c0241"
 			register "gen3_dec" = "0x000c0251"

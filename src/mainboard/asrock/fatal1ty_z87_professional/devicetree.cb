@@ -98,8 +98,10 @@ chip northbridge/intel/haswell
 					device pnp 2e.107 off end	# GPIO9
 					device pnp 2e.8   off end	# WDT
 					device pnp 2e.108 on		# GPIO0
-						irq 0xe0 = 0xf9		# + GPIO0 direction
-						irq 0xe1 = 0xfd		# + GPIO0 value
+						irq 0xe0 = 0xff		# + GPIO0 direction
+						irq 0xe1 = 0x00		# + GPIO0 value
+						irq 0xf0 = 0x30		# + GPIO1 direction
+						irq 0xf1 = 0x31		# + GPIO1 value
 					end
 					device pnp 2e.208 off end	# GPIOA
 					device pnp 2e.308 off end	# GPIO base

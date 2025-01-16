@@ -653,8 +653,10 @@ static int cbfs_add_integer_component(const char *name,
 	}
 
 	if (cbfs_get_entry(&image, name)) {
-		ERROR("'%s' already in ROM image.\n", name);
-		goto done;
+		if (cbfs_remove_entry(&image, name) != 0) {
+			ERROR("Removing file '%s' failed.\n", name);
+			goto done;
+		}
 	}
 
 	header = cbfs_create_file_header(CBFS_TYPE_RAW,

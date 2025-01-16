@@ -1,4 +1,8 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 chip northbridge/intel/haswell
+	register "gpu_dp_c_hotplug" = "4"
+	register "gpu_dp_d_hotplug" = "4"
 	register "spd_addresses" = "{0x50, 0x51, 0x52, 0x53}"
 	chip cpu/intel/haswell
 		device cpu_cluster 0 on
@@ -8,18 +12,20 @@ chip northbridge/intel/haswell
 	device domain 0 on
 		ops haswell_pci_domain_ops
 
-		device pci 00.0 on # Desktop Host bridge
+		device pci 00.0 on	 # Desktop Host bridge
 			subsystemid 0x1849 0x0c00
 		end
-		device pci 01.0 on # PEG
+		device pci 01.0 on	 # PCIE2
 			subsystemid 0x1849 0x0c01
 		end
-		device pci 01.1 on end
-		device pci 01.2 on end
-		device pci 02.0 on # iGPU
+		device pci 01.1 on	 # PCIE3
+		end
+		device pci 01.2 on	 # PCIE4
+		end
+		device pci 02.0 on	 # iGPU
 			subsystemid 0x1849 0x0412
 		end
-		device pci 03.0 on # Mini-HD audio
+		device pci 03.0 on	 # Mini-HD audio
 			subsystemid 0x1849 0x0c0c
 		end
 
@@ -27,48 +33,51 @@ chip northbridge/intel/haswell
 			register "gen1_dec" = "0x000c0291"
 			register "gen2_dec" = "0x000c0241"
 			register "gen3_dec" = "0x000c0251"
+			register "gpe0_en_1" = "0x2246"
+			register "sata_port0_gen3_dtle" = "0x2"
+			register "sata_port1_gen3_dtle" = "0x2"
 			register "sata_port_map" = "0x3f"
-			device pci 14.0 on # xHCI Controller
+			device pci 14.0 on	 # xHCI Controller
 				subsystemid 0x1849 0x8c31
 			end
-			device pci 16.0 on	# MEI #1
+			device pci 16.0 on	 # MEI #1
 				subsystemid 0x1849 0x8c3a
 			end
-			device pci 16.1 off end	# MEI #2
-			device pci 19.0 on # Intel Gigabit Ethernet
+			device pci 16.1 off end	 # MEI #2
+			device pci 19.0 on	 # Intel Gigabit Ethernet
 				subsystemid 0x1849 0x153b
 			end
-			device pci 1a.0 on # USB2 EHCI #2
+			device pci 1a.0 on	 # USB2 EHCI #2
 				subsystemid 0x1849 0x8c2d
 			end
-			device pci 1b.0 on # High Definition Audio
+			device pci 1b.0 on	 # High Definition Audio
 				subsystemid 0x1849 0x1020
 			end
-			device pci 1c.0 off end	# RP #1
-			device pci 1c.1 on	# RP #2: mPCIe slot
+			device pci 1c.0 off end	 # RP #1
+			device pci 1c.1 on	 # RP #2: mPCIe slot
 				subsystemid 0x1849 0x8c12
 			end
-			device pci 1c.2 on	# RP #3: ASM1061 SATA controller
+			device pci 1c.2 on	 # RP #3: ASM1061 SATA controller
 				subsystemid 0x1849 0x8c14
 			end
-			device pci 1c.3 on	# RP #4: Intel I211 GbE
+			device pci 1c.3 on	 # RP #4: Intel I211 GbE
 				subsystemid 0x1849 0x8c16
 				device pci 00.0 on end
 			end
-			device pci 1c.4 on	# RP #5: ASM1061 SATA controller
+			device pci 1c.4 on	 # RP #5: ASM1061 SATA controller
 				subsystemid 0x1849 0x8c18
 			end
-			device pci 1c.5 on	# RP #6: PCIe x1 slot
+			device pci 1c.5 on	 # RP #6: PCIE1
 				subsystemid 0x1849 0x8c1a
 			end
-			device pci 1c.6 on	# RP #7: ASM1083 PCIe-to-PCI bridge
+			device pci 1c.6 on	 # RP #7: ASM1083 PCIe-to-PCI bridge
 				subsystemid 0x1849 0x8c1c
 			end
-			device pci 1c.7 off end	# RP #8
-			device pci 1d.0 on # USB2 EHCI #1
+			device pci 1c.7 off end	 # RP #8
+			device pci 1d.0 on	 # USB2 EHCI #1
 				subsystemid 0x1849 0x8c26
 			end
-			device pci 1f.0 on # LPC bridge
+			device pci 1f.0 on	 # LPC bridge
 				subsystemid 0x1849 0x8c44
 				chip superio/nuvoton/nct6776
 					device pnp 2e.0   off end	# Floppy
@@ -123,12 +132,12 @@ chip northbridge/intel/haswell
 					device pnp 2e.17  off end	# GPIOA
 				end
 			end
-			device pci 1f.2 on  end	# SATA Controller (AHCI)
-			device pci 1f.3 on	# SMBus
+			device pci 1f.2 on  end	 # SATA Controller (AHCI)
+			device pci 1f.3 on	 # SMBus
 				subsystemid 0x1849 0x8c22
 			end
-			device pci 1f.5 off end	# SATA Controller (Legacy)
-			device pci 1f.6 off end	# Thermal
+			device pci 1f.5 off end	 # SATA Controller (Legacy)
+			device pci 1f.6 off end	 # Thermal
 		end
 	end
 end

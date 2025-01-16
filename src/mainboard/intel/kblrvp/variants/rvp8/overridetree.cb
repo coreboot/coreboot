@@ -1,8 +1,8 @@
 chip soc/intel/skylake
 
 	# Enable deep Sx states
-	register "deep_s3_enable_ac" = "0"
-	register "deep_s3_enable_dc" = "0"
+	register "deep_s3_enable_ac" = "false"
+	register "deep_s3_enable_dc" = "false"
 
 	# FSP Configuration
 	register "ScsEmmcHs400Enabled" = "0"

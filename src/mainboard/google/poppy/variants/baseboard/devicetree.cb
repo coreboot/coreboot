@@ -4,10 +4,10 @@ chip soc/intel/skylake
 	register "gfx" = "GMA_STATIC_DISPLAYS(0)"
 
 	# Deep Sx states
-	register "deep_s3_enable_ac" = "0"
-	register "deep_s3_enable_dc" = "0"
-	register "deep_s5_enable_ac" = "1"
-	register "deep_s5_enable_dc" = "1"
+	register "deep_s3_enable_ac" = "false"
+	register "deep_s3_enable_dc" = "false"
+	register "deep_s5_enable_ac" = "true"
+	register "deep_s5_enable_dc" = "true"
 	register "deep_sx_config" = "DSX_EN_LAN_WAKE_PIN | DSX_EN_WAKE_PIN | DSX_DIS_AC_PRESENT_PD"
 
 	# GPE configuration

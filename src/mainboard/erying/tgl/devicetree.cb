@@ -17,10 +17,10 @@ chip soc/intel/tigerlake
 	register "eist_enable" = "1"
 	register "enable_c6dram" = "1"
 
-	register "deep_s3_enable_ac" = "1"
-	register "deep_s3_enable_dc" = "1"
-	register "deep_s5_enable_ac" = "1"
-	register "deep_s5_enable_dc" = "1"
+	register "deep_s3_enable_ac" = "true"
+	register "deep_s3_enable_dc" = "true"
+	register "deep_s5_enable_ac" = "true"
+	register "deep_s5_enable_dc" = "true"
 
 	# PME routing
 	register "pmc_gpe0_dw0" = "PMC_GPP_R"

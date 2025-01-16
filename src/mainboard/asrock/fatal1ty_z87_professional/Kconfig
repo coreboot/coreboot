@@ -22,5 +22,5 @@ config MAINBOARD_PART_NUMBER
 	default "Fatal1ty Z87 Professional"
 
 config USBDEBUG_HCD_INDEX
-	default 2 # USB-2.0-Header with the designation USB4_5
+	default 2	# Headers:	USB45, USB3_6_7
 endif

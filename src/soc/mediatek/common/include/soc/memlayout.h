@@ -18,6 +18,9 @@
 	_ = ASSERT(size % 4K == 0, \
 		"DRAM DMA buffer should be multiple of smallest page size (4K)!");
 
+#define FSP_ROMSTAGE_INIT_CODE(addr, size) \
+	REGION(fsp_romstage_init_code, addr, size, 64K)
+
 #define FSP_RAMSTAGE_INIT_CODE(addr, size) \
 	REGION(fsp_ramstage_init_code, addr, size, 64K)
 

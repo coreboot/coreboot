@@ -41,7 +41,7 @@ chip soc/amd/glinda
 
 	register "pspp_policy" = "DXIO_PSPP_DISABLED" # TODO: reenable when PSPP works
 
-	register "usb_phy_custom" = "1"
+	register "usb_phy_custom" = "true"
 	register "usb_phy" = "{
 		.Usb2PhyPort[0] = {
 			.compdistune = 0x1,

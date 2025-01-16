@@ -107,7 +107,7 @@ struct soc_amd_phoenix_config {
 		DXIO_PSPP_POWERSAVE,
 	} pspp_policy;
 
-	uint8_t usb_phy_custom;
+	bool usb_phy_custom;
 	struct usb_phy_config usb_phy;
 
 #if !CONFIG(PLATFORM_USES_FSP2_0)

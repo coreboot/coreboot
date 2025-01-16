@@ -6,6 +6,7 @@
 #include <cpu/x86/mtrr.h>
 #include <fsp/debug.h>
 #include <fsp/util.h>
+#include <option.h>
 
 enum fsp_call_phase {
 	BEFORE_FSP_CALL,
@@ -177,4 +178,14 @@ void fsp_debug_after_notify(efi_return_status_t status)
 		fsp_display_hobs();
 
 	display_mtrrs();
+}
+
+enum fsp_log_level fsp_get_pcd_debug_log_level(void)
+{
+	return get_uint_option("fsp_pcd_debug_level", fsp_map_console_log_level());
+}
+
+enum fsp_log_level fsp_get_mrc_debug_log_level(void)
+{
+	return get_uint_option("fsp_mrc_debug_level", fsp_map_console_log_level());
 }

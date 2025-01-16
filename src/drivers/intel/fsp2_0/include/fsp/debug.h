@@ -63,4 +63,45 @@ void gpio_snapshot(void);
 /* Callback to verify that current GPIO configuration matches the saved snapshot */
 size_t gpio_verify_snapshot(void);
 
+/*
+ * Retrieve fsp_pcd_debug_level file from option backend (e.g. CBFS) to identify the log-level
+ * used for outputting FSP debug messages.
+ *
+ * 1. Critical errors, need action etc., FSP_LOG_LEVEL_ERR aka value 1
+ * 2. #1 including warnings, FSP_LOG_LEVEL_ERR_WARN aka value 2
+ * 3. #2 including additional informational messages, FSP_LOG_LEVEL_ERR_WARN_INFO aka value 3
+ *
+ * The default log-level is setup in coreboot while stitching the CBFS option binaries
+ * depending upon the coreboot log-level. One can override that using below example:
+ *
+ * Here is an example of adding fsp_pcd_debug_level option binary file into the RO-CBFS
+ * to specify the FSP log-level:
+ *  - cbfstool <AP FW image> add-int -i <log-level> -n option/fsp_pcd_debug_level
+ *
+ * If OPTION_BACKEND_NONE then the then, use log levels will be determined by
+ * calling into fsp_map_console_log_level API.
+ */
+enum fsp_log_level fsp_get_pcd_debug_log_level(void);
+/*
+ * Retrieve fsp_mrc_debug_level file from option backend (e.g. CBFS) to identify the log-level
+ * used for outputting FSP debug messages.
+ *
+ * 1. Critical errors, need action etc., FSP_LOG_LEVEL_ERR aka value 1
+ * 2. #1 including warnings, FSP_LOG_LEVEL_ERR_WARN aka value 2
+ * 3. #2 including additional informational messages, FSP_LOG_LEVEL_ERR_WARN_INFO aka value 3
+ * 4. #3 including event logs, FSP_LOG_LEVEL_ERR_WARN_INFO_EVENT aka value 4
+ * 5. Use FSP_LOG_LEVEL_VERBOSE aka 5 for all types of debug messages.
+ *
+ * The default log-level is setup in coreboot while stitching the CBFS option binaries
+ * depending upon the coreboot log-level. One can override that using below example:
+ *
+ * Here is an example of adding fsp_mrc_debug_level option binary file into the RO-CBFS
+ * to specify the FSP log-level:
+ *  - cbfstool <AP FW image> add-int -i <log-level> -n option/fsp_mrc_debug_level
+ *
+ * If OPTION_BACKEND_NONE then the then, use log levels will be determined by
+ * calling into fsp_map_console_log_level API.
+ */
+enum fsp_log_level fsp_get_mrc_debug_log_level(void);
+
 #endif /* _FSP2_0_DEBUG_H_ */

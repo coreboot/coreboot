@@ -12,8 +12,8 @@ chip soc/intel/tigerlake
 	register "tcc_offset" = "8"
 
 	register "power_limits_config[POWER_LIMITS_U_4_CORE]" = "{
-		.tdp_pl1_override = 9,
-		.tdp_pl2_override = 28,
+		.tdp_pl1_override = 17,
+		.tdp_pl2_override = 64,
 		.tdp_pl4 = 105,
 	}"
 

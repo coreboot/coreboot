@@ -211,7 +211,9 @@ struct mtk_dp {
 	bool powered;
 };
 
-int mtk_edp_init(struct edid *edid);
+int mtk_edp_init(struct mtk_dp *mtk_dp, struct edid *edid);
+int mtk_edp_enable(struct mtk_dp *mtk_dp);
+
 bool dptx_auxread_dpcd(struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr,
 		       size_t length, u8 *rxbuf);
 bool dptx_auxwrite_dpcd(struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr,

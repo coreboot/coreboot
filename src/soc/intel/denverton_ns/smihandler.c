@@ -141,6 +141,8 @@ static em64t100_smm_state_save_area_t *smi_apmc_find_state_save(uint8_t cmd)
 	/* Check all nodes looking for the one that issued the IO */
 	for (node = 0; node < CONFIG_MAX_CPUS; node++) {
 		state = smm_get_save_state(node);
+		if (!state)
+			continue;
 
 		/* Check for Synchronous IO (bit0==1) */
 		if (!(state->io_misc_info & (1 << 0)))

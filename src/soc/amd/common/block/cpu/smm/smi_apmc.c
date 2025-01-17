@@ -33,6 +33,8 @@ static void *find_save_state(int cmd)
 	/* Check all nodes looking for the one that issued the IO */
 	for (core = 0; core < CONFIG_MAX_CPUS; core++) {
 		state = smm_get_save_state(core);
+		if (!state)
+			continue;
 		smm_io_trap = state->smm_io_trap_offset;
 		/* Check for Valid IO Trap Word (bit1==1) */
 		if (!(smm_io_trap & SMM_IO_TRAP_VALID))

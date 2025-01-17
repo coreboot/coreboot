@@ -3,18 +3,18 @@
 #ifndef SOC_MEDIATEK_COMMON_EINT_EVENT_H
 #define SOC_MEDIATEK_COMMON_EINT_EVENT_H
 
-#include <device/mmio.h>
-#include <soc/addressmap.h>
+#include <stddef.h>
+#include <stdint.h>
 
-/* eint event mask clear register */
-struct eint_event_reg {
-	uint32_t eint_event_mask_clr[7];
+struct eint_event_info {
+	uintptr_t reg_base;
+	size_t eint_num;
 };
 
-/* eint_base + 0x880 is eint_event_mask_clr register with access type W1C. */
-static struct eint_event_reg *const mtk_eint_event = (void *)(EINT_BASE + 0x880);
+/* An element { 0, 0 } indicates the end of array. */
+extern const struct eint_event_info eint_event[];
 
-/* unmask eint event, eint can wakeup by spm */
+/* Unmask eint event, which can be waken up by SPM. */
 void unmask_eint_event_mask(void);
 
 #endif

@@ -12,7 +12,7 @@ all-y += ../common/timer.c ../common/timer_prepare.c
 all-y += ../common/uart.c
 
 bootblock-y += bootblock.c
-bootblock-y += ../common/eint_event.c
+bootblock-y += ../common/eint_event.c ../common/eint_event_info.c
 bootblock-y += gic.c
 bootblock-y += ../common/lastbus_v1.c
 bootblock-y += ../common/mmu_operations.c

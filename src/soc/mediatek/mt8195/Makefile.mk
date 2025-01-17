@@ -11,7 +11,7 @@ all-y += ../common/uart.c
 
 bootblock-y += bootblock.c
 bootblock-y += ../common/early_init.c
-bootblock-y += ../common/eint_event.c
+bootblock-y += ../common/eint_event.c ../common/eint_event_info.c
 bootblock-y += ../common/mmu_operations.c
 bootblock-$(CONFIG_PCI) += ../common/pcie.c pcie.c
 bootblock-y += ../common/pll.c pll.c

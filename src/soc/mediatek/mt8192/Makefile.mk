@@ -10,7 +10,7 @@ all-y += ../common/timer.c
 all-y += ../common/uart.c
 
 bootblock-y += bootblock.c
-bootblock-y += ../common/eint_event.c
+bootblock-y += ../common/eint_event.c ../common/eint_event_info.c
 bootblock-y += ../common/mmu_operations.c
 bootblock-y += ../common/pll.c pll.c
 bootblock-y += ../common/tracker.c ../common/tracker_v2.c

@@ -1074,7 +1074,7 @@ static struct device_tree_node *_dt_find_node(struct device_tree_node *parent,
 		list_insert_after(&found->list_node, &parent->children);
 	}
 
-	return dt_find_node(found, path + 1, addrcp, sizecp, create);
+	return _dt_find_node(found, path + 1, addrcp, sizecp, create);
 }
 
 /*

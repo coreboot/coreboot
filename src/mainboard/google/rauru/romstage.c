@@ -2,6 +2,7 @@
 
 #include <arch/stages.h>
 #include <soc/clkbuf_ctl.h>
+#include <soc/dvfs.h>
 #include <soc/emi.h>
 #include <soc/irq2axi.h>
 #include <soc/modem_power_ctrl.h>
@@ -43,6 +44,7 @@ void platform_romstage_main(void)
 	clk_buf_init();
 	mtk_dram_init();
 	modem_power_down();
+	dvfs_init();
 	thermal_init();
 
 	if (CONFIG(PCI))

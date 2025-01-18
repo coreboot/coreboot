@@ -4,6 +4,7 @@
 #include <bootblock_common.h>
 #include <soc/cksys.h>
 #include <soc/early_init.h>
+#include <soc/eint_event.h>
 #include <soc/lastbus_v2.h>
 #include <soc/mminfra.h>
 #include <soc/mmu_operations.h>
@@ -26,4 +27,5 @@ void bootblock_soc_init(void)
 	mt_pll_post_init();
 	mtcmos_post_init();
 	early_init_clear();
+	unmask_eint_event_mask();
 }

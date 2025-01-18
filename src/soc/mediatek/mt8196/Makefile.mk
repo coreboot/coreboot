@@ -15,6 +15,7 @@ bootblock-y += bootblock.c
 bootblock-y += ../common/bootblock.c bootblock.c
 bootblock-y += cksys.c
 bootblock-y += ../common/early_init.c
+bootblock-y += ../common/eint_event.c eint_event_info.c
 bootblock-y += ../common/lastbus_v2.c lastbus.c
 bootblock-y += mminfra.c
 bootblock-y += ../common/mmu_operations.c

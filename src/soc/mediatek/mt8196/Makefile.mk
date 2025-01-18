@@ -28,6 +28,7 @@ romstage-y += ../common/cbmem.c
 romstage-y += clkbuf_ctl.c
 romstage-y += ../common/dram_init.c
 romstage-y += ../common/dramc_param.c
+romstage-y += dvfs.c
 romstage-$(CONFIG_PCI) += ../common/early_init.c ../common/pcie.c
 romstage-y += ../common/emi.c
 romstage-y += irq2axi.c

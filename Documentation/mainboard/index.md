@@ -53,6 +53,7 @@ P8H77-V <asus/p8h77-v.md>
 P8Z77-M <asus/p8z77-m.md>
 P8Z77-M Pro <asus/p8z77-m_pro.md>
 P8Z77-V <asus/p8z77-v.md>
+P8Z77-V LE PLUS <asus/p8z77-v_le_plus.md>
 wifigo_v1 <asus/wifigo_v1.md>
 ```
 

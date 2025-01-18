@@ -1,0 +1,12 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+boot_option=Fallback
+gfx_uma_size=64M
+debug_level=Debug
+nmi=Disable
+power_on_after_fail=Disable
+sata_mode=AHCI
+gfx_uma_size=64M
+audio_panel_type=HDA
+spdif_dest=SPDIF_OUT
+pciex16_3_bandwidth=x2

@@ -1,0 +1,7 @@
+Category: desktop
+Board URL: https://www.asus.com/supportonly/p8z77-v%20le%20plus/helpdesk_manual/
+ROM package: DIP-8
+ROM protocol: SPI
+ROM socketed: y
+Flashrom support: y
+Release year: 2012

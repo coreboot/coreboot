@@ -1,0 +1,100 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip northbridge/intel/sandybridge
+	device domain 0 on
+		subsystemid 0x1043 0x84ca inherit
+		device ref peg11 on	# PCIEX_16_2
+			smbios_slot_desc "SlotTypePciExpressGen3X8" "SlotLengthLong" "PCIEX16_2" "SlotDataBusWidth8X"
+		end
+		chip southbridge/intel/bd82x6x
+			register "usb_port_config" = "{
+				{ 1, 2, 0 },
+				{ 1, 8, 0 },
+				{ 1, 8, 1 },
+				{ 1, 8, 1 },
+				{ 1, 9, 2 },
+				{ 1, 9, 2 },
+				{ 1, 0xa53, 3 },
+				{ 1, 0xa53, 3 },
+				{ 1, 0xa53, 4 },
+				{ 1, 0xa53, 4 },
+				{ 1, 0xa53, 6 },
+				{ 1, 0xa53, 5 },
+				{ 1, 0xa53, 5 },
+				{ 1, 0xa53, 6 }
+			}"
+			register "gen1_dec" = "0x000c0291" # NCT6779 HWM
+			register "gen4_dec" = "0x0000ff29" # Could be for KB3722 EC
+
+			device ref pcie_rp1 on	# PCIEX_16_3 (electrical x2 or x4)
+				smbios_slot_desc "SlotTypePciExpressGen2X4" "SlotLengthLong" "PCIEX16_3" "SlotDataBusWidth4X"
+			end
+			device ref pcie_rp3 on
+				smbios_slot_desc "SlotTypePciExpressGen2X1" "SlotLengthShort" "PCIEX1_1" "SlotDataBusWidth1X"
+			end
+			device ref pcie_rp4 on
+				smbios_slot_desc "SlotTypePciExpressGen2X1" "SlotLengthShort" "PCIEX1_2" "SlotDataBusWidth1X"
+			end
+			device ref pcie_rp5 on		# RTL8111F LAN
+				chip drivers/net
+					register "customized_leds" = "0x482"
+					device pci 00.0 on
+						subsystemid 0x1043 0x8505
+					end
+				end
+			end
+			device ref pcie_rp6 on		# ASM1083 PCI bridge
+				subsystemid 0x1043 0x8489
+				smbios_slot_desc "SlotTypePci" "SlotLengthLong" "PCI1" "SlotDataBusWidth32Bit"
+			end
+			device ref pcie_rp7 on		# Marvell 88SE9120 ESATA6G
+				subsystemid 0x1043 0x83ba
+			end
+			device ref pcie_rp8 on		# ASM1042 USB3
+				subsystemid 0x1043 0x8488
+			end
+			device ref hda on
+				subsystemid 0x1043 0x841a
+			end
+			device ref lpc on
+				chip superio/nuvoton/nct6779d
+					device pnp 2e.1 off end		# Parallel
+					device pnp 2e.2 on		# UART A
+						io  0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.3 off end		# UART B, IR
+					device pnp 2e.5 on		# PS2 KBC
+						io  0x60 = 0x0060	# KBC1 base
+						io  0x62 = 0x0064	# KBC2 base
+						irq 0x70 = 1		# Keyboard IRQ
+						irq 0x72 = 12		# Mouse IRQ
+						# KBC 12Mhz/A20 speed/sw KBRST
+						drq 0xf0 = 0x82
+					end
+					device pnp 2e.6 off  end	# CIR
+					device pnp 2e.7 off  end	# GPIOs 6-8
+					device pnp 2e.8 off  end	# WDT1 GPIO 0-1
+					device pnp 2e.108 on end	# GPIO0
+					device pnp 2e.109 on end	# GPIO1
+					device pnp 2e.509 on end 	# GPIO5 all in
+					device pnp 2e.a on		# ACPI
+						drq 0xe7 = 0x11
+						drq 0xf2 = 0x5d		# Enable PME
+					end
+					device pnp 2e.b   on		# H/W Monitor, FP LED
+						io  0x60 = 0x290
+						io  0x62 = 0
+						irq 0x70 = 0
+						drq 0xe4 = 0xf9		# Use GP50/52/55
+					end
+					device pnp 2e.d off end		# WDT1
+					device pnp 2e.e off end		# CIR wake-up
+					device pnp 2e.f off end
+					device pnp 2e.14 on  end	# Port 80 UART
+					device pnp 2e.16 off end	# Deep sleep
+				end
+			end
+		end
+	end
+end

@@ -1,0 +1,102 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+# -----------------------------------------------------------------
+entries
+
+# -----------------------------------------------------------------
+0	120	r	0	reserved_memory
+
+# -----------------------------------------------------------------
+# RTC_BOOT_BYTE (coreboot hardcoded)
+384	1	e	2	boot_option
+388	4	h	0	reboot_counter
+
+# -----------------------------------------------------------------
+# coreboot config options: console
+395	4	e	3	debug_level
+
+# coreboot config options: southbridge
+408	1	e	1	nmi
+
+409	2	e	4	power_on_after_fail
+411	2	e	5	sata_mode
+
+# coreboot config options: northbridge
+416	5	e	6	gfx_uma_size
+
+# coreboot config options: mainboard
+425	1	e	9	audio_panel_type
+426	1	e	10	spdif_dest
+427	1	e	11	pciex16_3_bandwidth
+# coreboot config options: check sums
+984	16	h	0	check_sum
+
+# -----------------------------------------------------------------
+
+enumerations
+#ID	value	text
+
+# Generic on/off enum
+1	0	Disable
+1	1	Enable
+
+# boot_option
+2	0	Fallback
+2	1	Normal
+
+# debug_level
+3	0	Emergency
+3	1	Alert
+3	2	Critical
+3	3	Error
+3	4	Warning
+3	5	Notice
+3	6	Info
+3	7	Debug
+3	8	Spew
+
+# power_on_after_fail
+4	0	Disable
+4	1	Enable
+4	2	Keep
+
+# sata_mode
+5	0	AHCI
+5	1	Compatible
+5	2	Legacy
+
+# gfx_uma_size (Intel IGP Video RAM size)
+6	0	32M
+6	1	64M
+6	2	96M
+6	3	128M
+6	4	160M
+6	5	192M
+6	6	224M
+6	7	256M
+6	8	288M
+6	9	320M
+6	10	352M
+6	11	384M
+6	12	416M
+6	13	448M
+6	14	480M
+6	15	512M
+6	16	1024M
+
+# audio_panel_type
+9     0     HDA
+9     1     AC97
+
+# spdif_dest
+10    0     SPDIF_OUT
+10    1     HDMI
+
+# pciex16_3_bandwidth
+11	0	x2
+11	1	x4
+
+# -----------------------------------------------------------------
+checksums
+
+checksum 392 423 984

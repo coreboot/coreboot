@@ -17,3 +17,6 @@ config BOARD_ASUS_P8Z77_V
 
 config BOARD_ASUS_P8Z77_M
 	bool "P8Z77-M"
+
+config BOARD_ASUS_P8Z77_V_LE_PLUS
+	bool "P8Z77-V LE PLUS"

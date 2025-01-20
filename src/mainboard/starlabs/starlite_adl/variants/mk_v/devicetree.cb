@@ -49,11 +49,11 @@ chip soc/intel/alderlake
 		end
 		device ref gna		on  end
 		device ref xhci		on
-			# Top USB 3.0 Type-C
+			# Bottom USB 3.0 Type-C
 			register "usb2_ports[0]"			= "USB2_PORT_MID(OC_SKIP)"
 			register "usb3_ports[2]"			= "USB3_PORT_DEFAULT(OC_SKIP)"
 
-			# Bottom USB 3.0 Type-C
+			# Top USB 3.0 Type-C
 			register "usb2_ports[1]"			= "USB2_PORT_MID(OC_SKIP)"
 			register "usb3_ports[0]"			= "USB3_PORT_DEFAULT(OC_SKIP)"
 
@@ -72,25 +72,25 @@ chip soc/intel/alderlake
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
 					chip drivers/usb/acpi
-						register "desc"		= ""Top USB Type-C""
+						register "desc"		= ""Bottom USB Type-C""
 						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "group"	= "ACPI_PLD_GROUP(0, 0)"
 						device ref usb2_port1 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Top USB Type-C""
+						register "desc"		= ""Bottom USB Type-C""
 						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "group"	= "ACPI_PLD_GROUP(0, 0)"
 						device ref usb3_port3 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Bottom USB Type-C""
+						register "desc"		= ""Top USB Type-C""
 						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "group"	= "ACPI_PLD_GROUP(0, 1)"
 						device ref usb2_port2 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Bottom USB Type-C""
+						register "desc"		= ""Top USB Type-C""
 						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "group"	= "ACPI_PLD_GROUP(0, 1)"
 						device ref usb3_port1 on end

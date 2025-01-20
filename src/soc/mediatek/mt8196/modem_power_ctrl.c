@@ -10,7 +10,7 @@
 #include <soc/spmi.h>
 
 #define SPMI_SLAVE_4_750MV	0x78
-#define MAX_RETRY_COUNT		200
+#define MAX_RETRY_COUNT		4000
 #define VSRAM_VOSEL		0x24d
 #define VMODEM_VOSEL		0x24e
 #define MD1_PWR_STA_MASK	BIT(0)
@@ -74,7 +74,7 @@ static void spm_mtcmos_ctrl_md1_disable(void)
 
 	clrbits32(&mtk_spm->md1_pwr_con, PWR_ON);
 	if (!retry(MAX_RETRY_COUNT,
-		   read32(&mtk_spm->pwr_status) & MD1_PWR_STA_MASK)) {
+		   (read32(&mtk_spm->pwr_status) & MD1_PWR_STA_MASK) == 0)) {
 		printk(BIOS_ERR, "Check MD1_PWR_STA failed\n");
 	}
 

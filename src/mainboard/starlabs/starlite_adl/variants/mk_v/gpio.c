@@ -148,7 +148,7 @@ const struct pad_config gpio_table[] = {
 	/* C2:		TLS Confidentiality	Weak Internal PD 20K
 				Low:	Disabled
 				High:	Enabled				*/
-	PAD_CFG_GPO(GPP_C2, 0, DEEP),
+	PAD_CFG_GPO(GPP_C2, 1, PLTRST),
 	/* C3:		SML 0 Clock					*/
 	PAD_CFG_NF(GPP_C3, NONE, DEEP, NF1),
 	/* C4:		SML 0 Data					*/

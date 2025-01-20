@@ -2,7 +2,7 @@
 
 #include <console/console.h>
 #include <device/mmio.h>
-#include <soc/mtk_pwrsel.h>
+#include <soc/pwrsel.h>
 
 static void cpu_pwrsel_init(void)
 {

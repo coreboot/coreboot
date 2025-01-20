@@ -10,10 +10,10 @@
 #include <soc/mt6373.h>
 #include <soc/mt6685.h>
 #include <soc/mtk_fsp.h>
-#include <soc/mtk_pwrsel.h>
 #include <soc/pcie.h>
 #include <soc/pll.h>
 #include <soc/pmif.h>
+#include <soc/pwrsel.h>
 #include <soc/srclken_rc.h>
 
 static void raise_little_cpu_freq(void)

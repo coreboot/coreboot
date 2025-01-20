@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only OR MIT */
 
-#ifndef __SOC_MEDIATEK_MT8196_MTK_PWRSEL__
-#define __SOC_MEDIATEK_MT8196_MTK_PWRSEL__
+#ifndef __SOC_MEDIATEK_MT8196_PWRSEL__
+#define __SOC_MEDIATEK_MT8196_PWRSEL__
 
 #include <soc/addressmap.h>
 
@@ -15,4 +15,4 @@
 
 void pwrsel_init(void);
 
-#endif /* end of __SOC_MEDIATEK_MT8196_MTK_PWRSEL__ */
+#endif /* end of __SOC_MEDIATEK_MT8196_PWRSEL__ */

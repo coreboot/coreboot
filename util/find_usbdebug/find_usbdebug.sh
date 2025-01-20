@@ -47,7 +47,7 @@ find_devs_in_tree () {
 	port=$2
 
 	# lsusb -t uses 3 digits for bus/port nunmbers as of version 016 and later
-        if [ $(lsusb -V | cut -f 3 -d " ") -lt 16 ]; then
+	if [ $(lsusb -V | cut -f 3 -d " ") -lt 16 ]; then
 		busstr=`printf "Bus %02d" "$bus"`
 		portstr="Port $port"
 	else

@@ -3,6 +3,7 @@
 #include <arch/stages.h>
 #include <soc/clkbuf_ctl.h>
 #include <soc/dvfs.h>
+#include <soc/dvfsrc.h>
 #include <soc/emi.h>
 #include <soc/irq2axi.h>
 #include <soc/modem_power_ctrl.h>
@@ -40,6 +41,7 @@ void platform_romstage_main(void)
 	mtk_fsp_init(ROMSTAGE_INIT);
 	mtk_fsp_load_and_run();
 	mt6685_init();
+	dvfsrc_opp_level_mapping();
 	srclken_rc_init();
 	clk_buf_init();
 	mtk_dram_init();

@@ -60,11 +60,8 @@ chip soc/intel/alderlake
 			# Detachable Keyboard + SD Card Reader
 			register "usb2_ports[2]"			= "USB2_PORT_MID(OC_SKIP)"
 
-			# Internal Webcam
+			# Camera + Webcam
 			register "usb2_ports[CONFIG_CCD_PORT]"		= "USB2_PORT_MID(OC_SKIP)"
-
-			# Camera
-			register "usb2_ports[5]"			= "USB2_PORT_MID(OC_SKIP)"
 
 			# Internal Bluetooth
 			register "usb2_ports[9]"			= "USB2_PORT_MID(OC_SKIP)"
@@ -102,14 +99,8 @@ chip soc/intel/alderlake
 						device ref usb2_port3 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Internal Webcam""
-						register "type"		= "UPC_TYPE_INTERNAL"
-						register "group"	= "ACPI_PLD_GROUP(0, 3)"
-						device ref usb2_port5 on end
-					end
-					chip drivers/usb/acpi
-						register "desc"		= ""Camera""
-						register "type"		= "UPC_TYPE_INTERNAL"
+						register "desc"		= ""USB 2.0 Hub""
+						register "type"		= "UPC_TYPE_HUB"
 						register "group"	= "ACPI_PLD_GROUP(0, 4)"
 						device ref usb2_port6 on end
 					end

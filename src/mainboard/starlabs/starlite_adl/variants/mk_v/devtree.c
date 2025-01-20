@@ -57,13 +57,9 @@ void devtree_update(void)
 		nic_dev->enabled = 0;
 	}
 
-	/* Enable/Disable Webcam based on CMOS settings */
+	/* Enable/Disable Webcam/Camera based on CMOS settings */
 	if (get_uint_option("webcam", 1) == 0)
 		cfg->usb2_ports[CONFIG_CCD_PORT].enable = 0;
-
-	/* Enable/Disable Camera based on CMOS settings */
-	if (get_uint_option("camera", 1) == 0)
-		cfg->usb2_ports[5].enable = 0;
 
 	/* Enable/Disable Touchscreen based on CMOS settings */
 	if (get_uint_option("touchscreen", 1) == 0)

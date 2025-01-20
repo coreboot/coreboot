@@ -41,7 +41,7 @@ if BOARD_STARLABS_STARLITE_SERIES
 
 config CCD_PORT
 	int
-	default 4
+	default 5
 
 config CONSOLE_SERIAL
 	default n if !EDK2_DEBUG

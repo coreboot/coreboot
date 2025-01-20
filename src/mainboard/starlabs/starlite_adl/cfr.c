@@ -27,13 +27,6 @@ static const struct sm_object boot_option = SM_DECLARE_ENUM({
 				SM_ENUM_VALUE_END			},
 });
 
-static const struct sm_object camera = SM_DECLARE_BOOL({
-	.opt_name	= "camera",
-	.ui_name	= "Camera",
-	.ui_helptext	= "Enable or disable the built-in camera",
-	.default_value	= true,
-});
-
 #if CONFIG(EC_STARLABS_CHARGING_SPEED)
 static const struct sm_object charging_speed = SM_DECLARE_ENUM({
 	.opt_name	= "charging_speed",
@@ -270,7 +263,6 @@ static struct sm_obj_form devices = {
 	.ui_name = "Devices",
 	.obj_list = (const struct sm_object *[]) {
 		&accelerometer,
-		&camera,
 		#if CONFIG(SOC_INTEL_TIGERLAKE) || CONFIG(SOC_INTEL_ALDERLAKE) || CONFIG(SOC_INTEL_RAPTORLAKE)
 		&gna,
 		#endif

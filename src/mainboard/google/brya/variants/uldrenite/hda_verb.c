@@ -4,7 +4,7 @@
 
 const u32 cim_verb_data[] = {
 	/* coreboot specific header */
-	0x10ec0236, //Codec Vendor / Device ID: Realtek ALC3204
+	0x10ec0236,	// Codec Vendor ID: Realtek ALC3204
 	0x10280D76,	// Subsystem ID
 	0x00000021,	// Number of jacks (NID entries)
 
@@ -14,22 +14,22 @@ const u32 cim_verb_data[] = {
 
 	/* Pin Widget Verb Table */
 	/*
-	* DMIC
-	* Requirement is to use PCH DMIC. Hence,
-	* commented out codec's Internal DMIC.
-	* AZALIA_PIN_CFG(0, 0x12, 0x90A60130),
-	* AZALIA_PIN_CFG(0, 0x13, 0x40000000),
-	*/
+	 * DMIC
+	 * Requirement is to use PCH DMIC. Hence,
+	 * commented out codec's Internal DMIC.
+	 * AZALIA_PIN_CFG(0, 0x12, 0x90A60130),
+	 * AZALIA_PIN_CFG(0, 0x13, 0x40000000),
+	 */
 	AZALIA_PIN_CFG(0, 0x12, 0x90a60140),
 	AZALIA_PIN_CFG(0, 0x13, 0x40000000),
 	AZALIA_PIN_CFG(0, 0x14, 0x90170110),
 	AZALIA_PIN_CFG(0, 0x18, 0x411111f0),
-	AZALIA_PIN_CFG(0, 0x19, 0x02a11030),
+	AZALIA_PIN_CFG(0, 0x19, 0x00a11030),
 	AZALIA_PIN_CFG(0, 0x1a, 0x411111f0),
 	AZALIA_PIN_CFG(0, 0x1b, 0x411111f0),
 	AZALIA_PIN_CFG(0, 0x1d, 0x40700001),
 	AZALIA_PIN_CFG(0, 0x1e, 0x421212f2),
-	AZALIA_PIN_CFG(0, 0x21, 0x02211020),
+	AZALIA_PIN_CFG(0, 0x21, 0x00211020),
 
 	/* RESET to D0 */
 	0x00170500,
@@ -51,8 +51,9 @@ const u32 cim_verb_data[] = {
 	0x02049800,
 	0x02050034,
 	0x0204023C,
-	/* ALC3204 Speaker output power - 4 ohm 2W (+12dB gain)
-	* + Combo Jack TRS setting */
+	/* ALC3204 Speaker output power - 4 ohm
+	 * 2W (+12dB gain) + Combo Jack TRS setting
+	 */
 	0x02050038,
 	0x02043901,
 	0x02050045,
@@ -140,12 +141,12 @@ const u32 cim_verb_data[] = {
 };
 
 const u32 pc_beep_verbs[] = {
-	//=== PCBeep pass through to NID14 for ePSA test-1
+	/* PCBeep pass through to NID14 for ePSA test-1 */
 	0x02050036,
 	0x02047717,
 	0x02050036,
 	0x02047717,
-	//=== PCBeep pass through to NID14 for ePSA test-2
+	/* PCBeep pass through to NID14 for ePSA test-2 */
 	0x01470740,
 	0x0143B000,
 	0x01470C02,

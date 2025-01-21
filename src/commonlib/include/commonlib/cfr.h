@@ -121,6 +121,15 @@ struct __packed lb_cfr_enum_value {
 	 */
 };
 
+/*
+ * The optional flags describe how a numeric option is to be displayed.
+ * CFR_NUM_OPT_DISPFLAG_HEX:
+ *   Displays a NUMBER option in hexadecimal instead of decimal notation.
+ */
+enum cfr_numeric_option_display_flags {
+	CFR_NUM_OPT_DISPFLAG_HEX	= 1 << 0,
+};
+
 /* Supports multiple option types: ENUM, NUMBER, BOOL */
 struct __packed lb_cfr_numeric_option {
 	uint32_t tag;		/*
@@ -134,6 +143,11 @@ struct __packed lb_cfr_numeric_option {
 				 */
 	uint32_t flags;		/* enum cfr_option_flags */
 	uint32_t default_value;
+	uint32_t min;
+	uint32_t max;
+	uint32_t step;
+	uint32_t display_flags;	/* enum cfr_numeric_option_display_flags */
+
 	/*
 	 * struct lb_cfr_varbinary		opt_name
 	 * struct lb_cfr_varbinary		ui_name

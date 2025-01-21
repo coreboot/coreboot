@@ -30,6 +30,10 @@ struct sm_obj_number {
 	const char *ui_name;
 	const char *ui_helptext;
 	uint32_t default_value;
+	uint32_t min;
+	uint32_t max;
+	uint32_t step;
+	uint32_t display_flags;	/* enum cfr_numeric_option_display_flags */
 };
 
 struct sm_obj_bool {

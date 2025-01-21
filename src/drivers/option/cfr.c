@@ -104,8 +104,9 @@ static uint32_t sm_write_enum_value(char *current, const struct sm_enum_value *e
 
 static uint32_t write_numeric_option(char *current, uint32_t tag, const uint64_t object_id,
 		const char *opt_name, const char *ui_name, const char *ui_helptext,
-		uint32_t flags, uint32_t default_value, const struct sm_enum_value *values,
-		const uint64_t dep_id, const uint32_t *dep_values, const uint32_t num_dep_values)
+		uint32_t flags, uint32_t default_value, uint32_t min, uint32_t max, uint32_t step,
+		uint32_t display_flags, const struct sm_enum_value *values, const uint64_t dep_id,
+		const uint32_t *dep_values, const uint32_t num_dep_values)
 {
 	struct lb_cfr_numeric_option *option = (struct lb_cfr_numeric_option *)current;
 	size_t len;
@@ -117,6 +118,10 @@ static uint32_t write_numeric_option(char *current, uint32_t tag, const uint64_t
 	if (option->flags & (CFR_OPTFLAG_INACTIVE | CFR_OPTFLAG_VOLATILE))
 		option->flags |= CFR_OPTFLAG_READONLY;
 	option->default_value = default_value;
+	option->min = (min <= max) ? min : 0;
+	option->max = (min == 0 && max == 0) ? UINT32_MAX : max;
+	option->step = step;
+	option->display_flags = display_flags;
 	option->size = sizeof(*option);
 
 	current += option->size;
@@ -148,7 +153,7 @@ static uint32_t sm_write_opt_enum(char *current, const struct sm_obj_enum *sm_en
 {
 	return write_numeric_option(current, CFR_TAG_OPTION_ENUM, object_id,
 			sm_enum->opt_name, sm_enum->ui_name, sm_enum->ui_helptext,
-			sm_enum->flags, sm_enum->default_value, sm_enum->values,
+			sm_enum->flags, sm_enum->default_value, 0, 0, 0, 0, sm_enum->values,
 			dep_id, dep_values, num_dep_values);
 }
 
@@ -159,8 +164,9 @@ static uint32_t sm_write_opt_number(char *current, const struct sm_obj_number *s
 {
 	return write_numeric_option(current, CFR_TAG_OPTION_NUMBER, object_id,
 			sm_number->opt_name, sm_number->ui_name, sm_number->ui_helptext,
-			sm_number->flags, sm_number->default_value, NULL, dep_id,
-			dep_values, num_dep_values);
+			sm_number->flags, sm_number->default_value, sm_number->min, sm_number->max,
+			sm_number->step, sm_number->display_flags, NULL, dep_id, dep_values,
+			num_dep_values);
 }
 
 static uint32_t sm_write_opt_bool(char *current, const struct sm_obj_bool *sm_bool,
@@ -170,7 +176,7 @@ static uint32_t sm_write_opt_bool(char *current, const struct sm_obj_bool *sm_bo
 {
 	return write_numeric_option(current, CFR_TAG_OPTION_BOOL, object_id,
 			sm_bool->opt_name, sm_bool->ui_name, sm_bool->ui_helptext,
-			sm_bool->flags, sm_bool->default_value, NULL, dep_id,
+			sm_bool->flags, sm_bool->default_value, 0, 0, 0, 0, NULL, dep_id,
 			dep_values, num_dep_values);
 }
 

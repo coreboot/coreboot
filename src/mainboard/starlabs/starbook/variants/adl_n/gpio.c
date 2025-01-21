@@ -255,7 +255,7 @@ const struct pad_config gpio_table[] = {
 	/* E7:		Embedded Controller SMI				*/
 	PAD_NC(GPP_E7, NONE),
 	/* E8:		DRAM Sleep					*/
-	PAD_CFG_NF(GPP_E8, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_E8, NONE, DEEP, NF2),
 	/* E9:		USB OverCurrent 0				*/
 	PAD_CFG_NF(GPP_E9, NONE, DEEP, NF1),
 	/* E10:		PWD Amplifier Input				*/

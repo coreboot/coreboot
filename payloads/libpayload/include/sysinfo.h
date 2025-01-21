@@ -162,6 +162,10 @@ struct sysinfo_t {
 	uint32_t cbfs_ro_mcache_size;
 	uintptr_t cbfs_rw_mcache_offset;
 	uint32_t cbfs_rw_mcache_size;
+
+	/* pvmfw buffer location */
+	uintptr_t pvmfw;
+	uint32_t pvmfw_size;
 };
 
 extern struct sysinfo_t lib_sysinfo;

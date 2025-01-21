@@ -268,6 +268,10 @@ static void cb_parse_cbmem_entry(void *ptr, struct sysinfo_t *info)
 	case CBMEM_ID_CSE_INFO:
 		info->cse_info = cbmem_entry->address;
 		break;
+	case CBMEM_ID_PVMFW:
+		info->pvmfw = cbmem_entry->address;
+		info->pvmfw_size = cbmem_entry->entry_size;
+		break;
 	default:
 		break;
 	}

@@ -189,7 +189,7 @@ static void cnvw_fill_ssdt(const struct device *dev)
 
 			acpigen_write_if_lequal_op_int(LOCAL0_OP, 0);
 			{
-				acpigen_emit_namestring("^CFLR");
+				acpigen_emit_namestring("CFLR");
 
 				acpigen_write_store_int_to_namestr(1, "PRRS");
 
@@ -338,26 +338,26 @@ static void cnvw_fill_ssdt(const struct device *dev)
 	acpigen_write_method("_DSW", 3);
 	acpigen_pop_len();
 
-	acpigen_write_scope_end();
-
 /*
  *	Method (CFLR, 0, NotSerialized)
  *	{
- *		If (^CNVW.WFLR == One)
+ *		If (WFLR == One)
  *		{
- *			^CNVW.WIFR = One
+ *			WIFR = One
  *		}
  *	}
  */
 	acpigen_write_method("CFLR", 0);
 	{
-		acpigen_write_if_lequal_namestr_int("^CNVW.WFLR", 1);
+		acpigen_write_if_lequal_namestr_int("WFLR", 1);
 		{
-			acpigen_write_store_int_to_namestr(1, "^CNVW.WIFR");
+			acpigen_write_store_int_to_namestr(1, "WIFR");
 		}
 		acpigen_pop_len();
 	}
 	acpigen_pop_len();
+
+	acpigen_write_scope_end();
 }
 
 static struct device_operations cnvi_wifi_ops = {

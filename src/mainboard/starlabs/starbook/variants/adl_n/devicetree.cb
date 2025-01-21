@@ -109,13 +109,13 @@ chip soc/intel/alderlake
 					chip drivers/usb/acpi
 						register "desc"		= ""Right USB Type-A""
 						register "type"		= "UPC_TYPE_USB3_A"
-						register "group"	= "ACPI_PLD_GROUP(0, 2)"
+						register "group"	= "ACPI_PLD_GROUP(0, 3)"
 						device ref usb2_port1 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""Right USB Type-A""
 						register "type"		= "UPC_TYPE_USB3_A"
-						register "group"	= "ACPI_PLD_GROUP(0, 2)"
+						register "group"	= "ACPI_PLD_GROUP(0, 3)"
 						device ref usb3_port2 on end
 					end
 					chip drivers/usb/acpi

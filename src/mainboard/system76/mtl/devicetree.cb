@@ -34,6 +34,7 @@ chip soc/intel/meteorlake
 		device ref ioe_shared_sram on end
 		device ref pmc_shared_sram on end
 		device ref cnvi_wifi on
+			register "cnvi_wifi_core" = "true"
 			register "cnvi_bt_core" = "true"
 			register "cnvi_bt_audio_offload" = "true"
 			chip drivers/wifi/generic

@@ -1,4 +1,6 @@
 chip soc/intel/meteorlake
+	# Enable CNVi WiFi
+	register "cnvi_wifi_core" = "true"
 
 	# GPE configuration
 	register "pmc_gpe0_dw0" = "GPP_D"

@@ -29,9 +29,6 @@ chip soc/intel/meteorlake
 	# Temporary setting TCC of 90C = Tj max (110) - TCC_Offset (20)
 	register "tcc_offset" = "20"
 
-	# Enable CNVi WiFi
-	register "cnvi_wifi_core" = "true"
-
 	device domain 0 on
 		device pci 00.0 alias system_agent on end
 		device pci 01.0 alias pcie_rp12 off end

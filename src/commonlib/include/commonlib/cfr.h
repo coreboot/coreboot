@@ -49,6 +49,8 @@
  *
  */
 
+#define CFR_VERSION 0x00000000
+
 enum cfr_tags {
 	CFR_TAG_OPTION_FORM		= 1,
 	CFR_TAG_ENUM_VALUE		= 2,

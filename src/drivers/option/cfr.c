@@ -307,6 +307,7 @@ void cfr_write_setup_menu(struct lb_cfr *cfr_root, struct sm_obj_form *sm_root[]
 
 	cfr_root->tag = LB_TAG_CFR_ROOT;
 	cfr_root->size = sizeof(*cfr_root);
+	cfr_root->version = CFR_VERSION;
 
 	current += cfr_root->size;
 	while (sm_root && sm_root[i])

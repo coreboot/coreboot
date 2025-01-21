@@ -602,6 +602,7 @@ struct lb_efi_fw_info {
 struct lb_cfr {
 	uint32_t tag;
 	uint32_t size;
+	uint32_t version;
 	uint32_t checksum;	/* Checksum of the variable payload. */
 	/* struct lb_cfr_option_form		forms[] */
 };

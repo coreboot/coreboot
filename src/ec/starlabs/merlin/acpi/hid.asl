@@ -1,14 +1,17 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #if CONFIG(EC_STARLABS_MERLIN)
-Method (_Q05, 0, NotSerialized)			// Event: Backlight Brightness Down
+Scope (\_SB.PCI0.LPCB.EC)
 {
-	^HIDD.HPEM (20)
-}
+	Method (_Q05, 0, NotSerialized)			// Event: Backlight Brightness Down
+	{
+		^^^^HIDD.HPEM (20)
+	}
 
-Method (_Q06, 0, NotSerialized)			// Event: Backlight Brightness Up
-{
-	^HIDD.HPEM (19)
+	Method (_Q06, 0, NotSerialized)			// Event: Backlight Brightness Up
+	{
+		^^^^HIDD.HPEM (19)
+	}
 }
 #endif
 

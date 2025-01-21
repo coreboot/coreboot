@@ -17,7 +17,7 @@ static void enable_eint_event(const struct eint_event_info *event)
 	int i;
 
 	for (i = 0; i < port; i++)
-		write32p(reg[i], EINT_VALUE);
+		write32(&reg[i], EINT_VALUE);
 }
 
 void unmask_eint_event_mask(void)

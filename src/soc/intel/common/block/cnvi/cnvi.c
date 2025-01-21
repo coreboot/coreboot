@@ -358,31 +358,6 @@ static void cnvw_fill_ssdt(const struct device *dev)
 		acpigen_pop_len();
 	}
 	acpigen_pop_len();
-
-/*
- *	Method (CNIP, 0, NotSerialized)
- *	{
- *		If (^CNVW.VDID == 0xFFFFFFFF)
- *		{
- *			Return (Zero)
- *		} Else {
- *			Return (One)
- *		}
- *	}
- */
-	acpigen_write_method("CNIP", 0);
-	{
-		acpigen_write_if_lequal_namestr_int("^CNVW.VDID", 0xffffffff);
-		{
-			acpigen_write_return_integer(0);
-		}
-		acpigen_write_else();
-		{
-			acpigen_write_return_integer(1);
-		}
-		acpigen_pop_len();
-	}
-	acpigen_pop_len();
 }
 
 static struct device_operations cnvi_wifi_ops = {

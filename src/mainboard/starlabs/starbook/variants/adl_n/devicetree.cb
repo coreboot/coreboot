@@ -77,7 +77,7 @@ chip soc/intel/alderlake
 						device ref usb2_port2 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""USB Type-C Back""
+						register "desc"		= ""Back USB Type-C""
 						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "group"	= "ACPI_PLD_GROUP(0, 0)"
 						device ref usb3_port3 on end

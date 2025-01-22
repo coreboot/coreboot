@@ -5,6 +5,7 @@
 #include <drivers/analogix/anx7625/anx7625.h>
 #include <edid.h>
 #include <gpio.h>
+#include <soc/dsi.h>
 #include <soc/i2c.h>
 
 #include "gpio.h"
@@ -61,4 +62,9 @@ struct panel_description *get_anx7625_description(void)
 {
 	mtk_i2c_bus_init(BRIDGE_I2C, I2C_SPEED_FAST);
 	return &anx7625_bridge;
+}
+
+void mtk_dsi_override_phy_timing(struct mtk_phy_timing *timing)
+{
+	timing->da_hs_trail += 9;
 }

@@ -7,9 +7,9 @@
 #include <commonlib/bsd/bcd.h>
 #include <console/console.h>
 #include <delay.h>
+#include <rtc.h>
 #include <soc/mt6685.h>
-#include <soc/mt6685_rtc.h>
-#include <soc/mt6685_rtc_hw.h>
+#include <soc/rtc.h>
 #include <stdbool.h>
 #include <timer.h>
 

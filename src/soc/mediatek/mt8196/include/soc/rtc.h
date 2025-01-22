@@ -8,6 +8,7 @@
 #ifndef SOC_MEDIATEK_MT8196_RTC_H
 #define SOC_MEDIATEK_MT8196_RTC_H
 
+#include <soc/mt6685_rtc.h>
 #include <soc/rtc_common.h>
 #include <soc/rtc_reg_common.h>
 #include <stdbool.h>

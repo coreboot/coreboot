@@ -24,18 +24,18 @@ SECTIONS
 	/* EMPTY(0x0010bc90, 29K - 144) */
 	/*
 	 * MCUPM exchanges data with kernel driver using SRAM 0x00113000 ~
-	 * 0x0011ffff. The address is hardcoded in MCUPM image.
+	 * 0x00123fff. The address is hardcoded in MCUPM image.
 	 */
-	REGION(mcufw_reserved, 0x00113000, 52K, 4K)
+	REGION(mcufw_reserved, 0x00113000, 68K, 4K)
 	/* End of regions that need to stay in SRAM. */
 	/* Regions can be moved to SRAM_L2C. */
-	CBFS_MCACHE(0x00120000, 16k)
-	VBOOT2_WORK(0x00124000, 12K)
-	FMAP_CACHE(0x00127000, 2k)
-	TPM_LOG(0x00127800, 2k)
-	TIMESTAMP(0x00128000, 1k)
+	CBFS_MCACHE(0x00124000, 16k)
+	VBOOT2_WORK(0x00128000, 12K)
+	FMAP_CACHE(0x0012B000, 2k)
+	TPM_LOG(0x0012B800, 2k)
+	TIMESTAMP(0x0012C000, 1k)
 	/* End of regions that can also be moved to SRAM_L2C. */
-	/* EMPTY(0x00128400, 95K) */
+	/* EMPTY(0x0012C400, 79K) */
 	SRAM_END(0x00140000)
 
 	/*

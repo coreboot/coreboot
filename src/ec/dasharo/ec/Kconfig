@@ -27,5 +27,6 @@ config EC_DASHARO_EC_UPDATE_FILE
 	default "ec.rom"
 
 config EC_DASHARO_EC_FLASH_SIZE
+	depends on EC_DASHARO_EC
 	hex
 	default 0x20000

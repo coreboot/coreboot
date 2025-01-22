@@ -30,12 +30,6 @@ config MAINBOARD_PART_NUMBER
 config CBFS_SIZE
 	default 0xA00000
 
-config USE_PM_ACPI_TIMER
-	default n
-
-config USE_LEGACY_8254_TIMER
-	default y
-
 config PCIEXP_ASPM
 	default n
 

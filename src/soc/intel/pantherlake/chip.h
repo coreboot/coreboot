@@ -121,6 +121,23 @@ enum lpm_state_mask {
 			| LPM_S0i3_0 | LPM_S0i3_1 | LPM_S0i3_2 | LPM_S0i3_3 | LPM_S0i3_4,
 };
 
+/* Platform Debug Option using HW interface
+ *
+ * 0: Disabled,
+ * 2: Enabled Trace active: TraceHub is enabled and trace is active, blocks s0ix,
+ * 4: Enabled Trace ready: TraceHub is enabled and allowed S0ix,
+ * 6: Enabled Trace power off: TraceHub is powergated, provide setting close to functional
+ *    low power state,
+ * 7: User needs to configure Advanced Debug Settings manually. (only applicable for devices
+ *    with BIOS Setup Menu option present.
+ */
+enum platform_hw_debug_option {
+	HW_DEBUG_DISABLE = 0,
+	HW_DEBUG_TRACEHUB_ACTIVE = BIT(1),
+	HW_DEBUG_TRACEHUB_READY = BIT(2),
+	HW_DEBUG_TRACEHUB_POWEROFF = BIT(2) | BIT(1),
+};
+
 /*
  * As per definition from FSP header:
  * - [0] for IA

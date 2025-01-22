@@ -253,7 +253,17 @@ static void fill_fspm_trace_params(FSP_M_CONFIG *m_cfg,
 
 	m_cfg->PlatformDebugOption = CONFIG_SOC_INTEL_COMMON_DEBUG_CONSENT;
 	m_cfg->CpuCrashLogEnable = CONFIG(SOC_INTEL_CRASHLOG);
-	m_cfg->DciEn = 1;
+
+	switch (CONFIG_SOC_INTEL_COMMON_DEBUG_CONSENT) {
+	case HW_DEBUG_TRACEHUB_ACTIVE:
+	case HW_DEBUG_TRACEHUB_READY:
+	case HW_DEBUG_TRACEHUB_POWEROFF:
+		m_cfg->DciEn = 1;
+		break;
+	case HW_DEBUG_DISABLE:
+		m_cfg->DciEn = 0;
+		break;
+	}
 }
 
 static void fill_fspm_thermal_params(FSP_M_CONFIG *m_cfg,

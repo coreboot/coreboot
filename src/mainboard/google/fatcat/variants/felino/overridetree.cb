@@ -184,13 +184,13 @@ chip soc/intel/pantherlake
 
 		device ref pcie_rp9 on
 			register "pcie_rp[PCIE_RP(9)]" = "{
-			.clk_src = 1,
-			.clk_req = 1,
+			.clk_src = 0,
+			.clk_req = 0,
 			.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 			chip soc/intel/common/block/pcie/rtd3
 				register "is_storage" = "true"
-				register "srcclk_pin" = "1"
+				register "srcclk_pin" = "0"
 				device generic 0 on end
 			end
 		end # Gen5 SSD

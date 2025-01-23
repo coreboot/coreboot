@@ -631,6 +631,7 @@ F:	src/mainboard/sifive/
 
 STAR LABS MAINBOARDS
 M:	Sean Rhodes <sean@starlabs.systems>
+M:	Matt DeVillier <matt.devillier@gmail.com>
 S:	Maintained
 F:	src/mainboard/starlabs/
 

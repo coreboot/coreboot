@@ -296,8 +296,8 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_F3, UP_20K, DEEP, NF1),
 	/* F4:		CNV RF Reset					*/
 	PAD_CFG_NF(GPP_F4, NONE, DEEP, NF1),
-	/* F5:		Not used		MODEM_CLKREQ		*/
-	PAD_CFG_NF(GPP_F5, NONE, DEEP, NF2),
+	/* F5:		MODEM_CLKREQ					*/
+	PAD_CFG_NF(GPP_F5, NONE, DEEP, NF1),
 	/* F6:		CNV PA Blanking					*/
 	PAD_NC(GPP_F6, NONE),
 	/* F7:		TBT LSX VCCIO		Weak Internal PD 20K

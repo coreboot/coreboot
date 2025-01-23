@@ -1005,10 +1005,15 @@ config RESOURCE_ALLOCATION_TOP_DOWN
 
 config ALWAYS_ALLOW_ABOVE_4G_ALLOCATION
 	bool
+	prompt "Extend resource window for PCIe devices above 4G" if ARCH_X86
 	default n if ARCH_X86
 	default y
 	help
-	  Don't limit mem resources to 4G, but to their actual limit.
+	  This option extends PCIe resource allocation beyond the 4G limit.
+	  Required for modern graphics cards that support resizable BAR, such as
+	  Intel Arc or AMD RX series.
+	  Please keep in mind that not all payloads support it
+	  (i.e: LinuxBoot and EDK2 do, GRUB doesn't).
 
 config XHCI_UTILS
 	def_bool n

@@ -451,6 +451,18 @@ const struct pad_config gpio_table[] = {
 
 	/* BT_EN */
 	PAD_CFG_GPO_GPIO_DRIVER(GPP_VGPIO_0, 1, DEEP, NONE),
+
+	/* CNVi BT UART0 */
+	PAD_NC(GPP_VGPIO_6, NONE),
+	PAD_NC(GPP_VGPIO_7, NONE),
+	PAD_NC(GPP_VGPIO_8, NONE),
+	PAD_NC(GPP_VGPIO_9, NONE),
+
+	/* CNVi UART0 */
+	PAD_NC(GPP_VGPIO_18, NONE),
+	PAD_NC(GPP_VGPIO_19, NONE),
+	PAD_NC(GPP_VGPIO_20, NONE),
+	PAD_NC(GPP_VGPIO_21, NONE),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

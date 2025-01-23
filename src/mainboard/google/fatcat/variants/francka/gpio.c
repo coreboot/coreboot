@@ -86,7 +86,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_B17:     SOC_ENVDD2 */
 	PAD_CFG_NF(GPP_B17, NONE, DEEP, NF2),
 	/* GPP_B18:     TCHSCR_REPORT_DISABLE */
-	PAD_CFG_GPO(GPP_B18, 0, PLTRST),
+	PAD_CFG_GPO(GPP_B18, 1, PLTRST),
 	/* GPP_B19:     SOC_CNVI_EN# */
 	PAD_CFG_GPO(GPP_B19, 0, PLTRST),
 	/* GPP_B20:     SOC_WWAN_RST# */

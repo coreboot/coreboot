@@ -8,6 +8,7 @@
 #include <intelblocks/acpi.h>
 
 static const unsigned short pci_device_ids[] = {
+	PCI_DID_INTEL_PTL_DTT,
 	PCI_DID_INTEL_RPL_DTT,
 	PCI_DID_INTEL_MTL_DTT,
 	PCI_DID_INTEL_CML_DTT,

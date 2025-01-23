@@ -4854,6 +4854,7 @@
 #define PCI_DID_INTEL_ADL_DTT			0x461d
 #define PCI_DID_INTEL_MTL_DTT			0x7d03
 #define PCI_DID_INTEL_RPL_DTT			0xa71d
+#define PCI_DID_INTEL_PTL_DTT			0xb01d
 
 /* Intel CNVi WiFi/BT device IDs */
 #define PCI_DID_INTEL_CML_LP_CNVI_WIFI		0x02f0

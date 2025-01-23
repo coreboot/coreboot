@@ -448,6 +448,9 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_R6, NONE),
 	/* R7:		Not Connected					*/
 	PAD_NC(GPP_R7, NONE),
+
+	/* BT_EN */
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_VGPIO_0, 1, DEEP, NONE),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

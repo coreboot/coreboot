@@ -39,6 +39,13 @@ config DPM_PM_FIRMWARE
 	help
 	  The file name of the MediaTek DPM PM firmware.
 
+config PI_IMG_FIRMWARE
+	string
+	default "pi_img.img"
+	help
+	  The file name of the MediaTek PI_IMG firmware. The main purpose of the pi_img is to
+	  pass various frequency and voltage scaling parameters and settings to MCUPM.
+
 config SSPM_FIRMWARE
 	string
 	default "sspm.bin"

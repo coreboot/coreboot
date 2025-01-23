@@ -16,6 +16,7 @@ enum fsp_status {
 	FSP_STATUS_PARAM_NOT_FOUND,
 	FSP_STATUS_PARAM_INVALID_SIZE,
 	FSP_STATUS_INVALID_STORAGE,
+	FSP_STATUS_INVALID_PI_IMG,
 };
 
 enum fsp_phase {
@@ -38,6 +39,8 @@ enum fsp_param_type {
 	/* 0x40000000+ reserved for input type params */
 	FSP_PARAM_TYPE_IN = FSP_PARAM_IO_ENCODE(FSP_PARAM_IO_IN),
 	FSP_PARAM_TYPE_STORAGE,
+	FSP_PARAM_TYPE_PI_IMG,
+	FSP_PARAM_TYPE_PI_IMG_CSRAM,
 
 	/* 0x80000000+ reserved for output type params */
 	FSP_PARAM_TYPE_OUT = FSP_PARAM_IO_ENCODE(FSP_PARAM_IO_OUT),

@@ -27,6 +27,7 @@ romstage-y += ../common/pll.c pll.c
 romstage-y += ../common/pmif.c ../common/pmif_clk.c ../common/pmif_init.c pmif_clk.c
 romstage-y += ../common/pmif_spi.c pmif_spi.c
 romstage-y += ../common/pmif_spmi.c pmif_spmi.c
+romstage-y += ../common/rtc.c ../common/rtc_osc_init.c ../common/rtc_mt6359p.c
 
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += ../common/bl31.c
 ramstage-y += ../common/dramc_info.c
@@ -39,6 +40,7 @@ ramstage-y += ../common/mtcmos.c mtcmos.c
 ramstage-y += ../common/pmif.c ../common/pmif_clk.c ../common/pmif_init.c pmif_clk.c
 ramstage-y += ../common/pmif_spi.c pmif_spi.c
 ramstage-y += ../common/pmif_spmi.c pmif_spmi.c
+ramstage-y += ../common/rtc.c ../common/rtc_mt6359p.c ../common/rtc_osc_init.c
 ramstage-y += soc.c
 ramstage-y += ../common/usb.c usb.c
 

@@ -41,6 +41,10 @@ void cpu_soc_bios_done(void)
 
 uint8_t get_supported_lpm_mask(void)
 {
+	const config_t *conf = config_of_soc();
+	if (!conf->s0ix_enable)
+		return 0;
+
 	return LPM_S0i2_0 | LPM_S0i2_1 | LPM_S0i2_2;
 }
 

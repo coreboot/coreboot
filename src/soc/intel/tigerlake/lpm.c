@@ -8,6 +8,7 @@
 #include <soc/lpm.h>
 #include <soc/pci_devs.h>
 #include <soc/soc_chip.h>
+#include <static.h>
 #include <types.h>
 
 /* Function returns true if the platform is TGL-UP3 */
@@ -26,6 +27,10 @@ static bool platform_is_up3(void)
 
 int get_supported_lpm_mask(struct soc_intel_tigerlake_config *config)
 {
+	const config_t *conf = config_of_soc();
+	if (!conf->s0ix_enable)
+		return 0;
+
 	int disable_mask;
 
 	/* Disable any sub-states requested by mainboard */

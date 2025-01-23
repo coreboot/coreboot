@@ -465,6 +465,12 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_VGPIO_19, NONE),
 	PAD_NC(GPP_VGPIO_20, NONE),
 	PAD_NC(GPP_VGPIO_21, NONE),
+
+	/* BT I2S */
+	PAD_CFG_NF(GPP_VGPIO_30, NONE, DEEP, NF3),
+	PAD_CFG_NF(GPP_VGPIO_31, NONE, DEEP, NF3),
+	PAD_CFG_NF(GPP_VGPIO_32, NONE, DEEP, NF3),
+	PAD_CFG_NF(GPP_VGPIO_33, NONE, DEEP, NF3),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

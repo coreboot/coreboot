@@ -180,6 +180,7 @@ chip soc/intel/alderlake
 				.flags					= PCIE_RP_LTR | PCIE_RP_AER,
 				.pcie_rp_aspm				= ASPM_L0S_L1,
 				.PcieRpL1Substates			= L1_SS_L1_2,
+				.pcie_rp_detect_timeout_ms		= 50,
 			}"
 			smbios_slot_desc				"SlotTypePciExpressGen3X4"
 									"SlotLengthLong"

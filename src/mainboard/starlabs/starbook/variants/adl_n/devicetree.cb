@@ -217,7 +217,6 @@ chip soc/intel/alderlake
 
 			chip ec/starlabs/merlin
 				# Port pair 4Eh/4Fh
-				device pnp 4e.00 on  end			# IO Interface
 				device pnp 4e.01 off end			# Com 1
 				device pnp 4e.02 off end			# Com 2
 				device pnp 4e.04 off end			# System Wake-Up

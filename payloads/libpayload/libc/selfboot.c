@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Google Inc.
+ * Copyright 2025 Google LLC
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,8 +27,13 @@
 
 #include <libpayload.h>
 
+extern void *cb_header_ptr;
+
 void selfboot(void *entry)
 {
-	void (*entry_func)(void) = entry;
-	entry_func();
+#if CONFIG(LP_ARCH_X86_32)
+	__attribute__((__regparm__(0)))
+#endif
+	void (*entry_func)(void *arg) = entry;
+	entry_func(cb_header_ptr);
 }

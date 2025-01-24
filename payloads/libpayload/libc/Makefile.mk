@@ -38,6 +38,7 @@ libc-$(CONFIG_LP_LIBC) += hexdump.c
 libc-$(CONFIG_LP_LIBC) += coreboot.c
 libc-$(CONFIG_LP_LIBC) += fmap.c
 libc-$(CONFIG_LP_LIBC) += fpmath.c
+libc-$(CONFIG_LP_LIBC) += selfboot.c
 
 ifeq ($(CONFIG_LP_VBOOT_LIB),y)
 libc-$(CONFIG_LP_LIBC) += lp_vboot.c

@@ -182,10 +182,17 @@ struct cse_fw_partition_info {
 	struct cse_fw_ish_version_info ish_partition_info;
 };
 
+/* CSE sync flags */
+enum cse_sync_flags {
+	CSE_DOWNGRADE_REQUEST		= 1 << 0,
+	CSE_ENFORCED_SYNC_REQUEST	= 1 << 1,
+	CSE_ENFORCED_SYNC_PERFORMED	= 1 << 2,
+};
+
 /* CSE Specific Information */
 struct cse_specific_info {
 	struct cse_fw_partition_info cse_fwp_version;
-	bool cse_downgrade_requested;
+	int8_t cse_sync_status;
 	uint32_t crc;
 };
 

@@ -172,6 +172,9 @@ static void cse_store_rw_fw_version(void)
 	memcpy(&(cse_info_in_cbmem->cse_fwp_version.cur_cse_fw_version),
 		 &(cse_bp->fw_ver), sizeof(struct fw_version));
 
+	/* Update CBMEM cse sync status flag with CMOS stored information */
+	cse_info_in_cbmem->cse_sync_status = cse_info_in_cmos.cse_sync_status;
+
 	/* Update the CRC */
 	store_cse_info_crc(cse_info_in_cbmem);
 
@@ -743,17 +746,83 @@ static enum cb_err get_cse_ver_from_cbfs(struct fw_version *cbfs_rw_version)
 	return CB_SUCCESS;
 }
 
+static void cmos_update_cse_sync_performed(void)
+{
+	if (!CONFIG(VBOOT) || !vboot_is_gbb_flag_set(VB2_GBB_FLAG_FORCE_CSE_SYNC))
+		return;
+
+	struct cse_specific_info cse_info_in_cmos;
+	cmos_read_fw_partition_info(&cse_info_in_cmos);
+
+	/* Update CSE sync as performed */
+	cse_info_in_cmos.cse_sync_status |= CSE_ENFORCED_SYNC_PERFORMED;
+
+	/* Update the CRC */
+	store_cse_info_crc(&cse_info_in_cmos);
+
+	/* Update CSE specific info at CMOS */
+	cmos_write_fw_partition_info(&cse_info_in_cmos);
+}
+
+static void cmos_update_cse_sync_status(void)
+{
+	if (!CONFIG(VBOOT) || !vboot_is_gbb_flag_set(VB2_GBB_FLAG_FORCE_CSE_SYNC))
+		return;
+
+	/*
+	 * If the pertinent GBB flag is set, the Enforce CSE sync sequence proceeds as follows:
+	 *	1) Request forced sync (set CSE_FORCED_SYNC_REQUEST):
+	 *		CSE_FORCED_SYNC_REQUEST is set during the "CSE sync status check" only if CSE
+	 *		sync has not yet been performed.
+	 *		It is possible to have duplicate CSE status checks, for example, if eSOL tries
+	 *		to make an early decision to display a screen for the CSE update, or if the
+	 *		device switches from an RW partition to RO before sync. These duplicate
+	 *		requests will set the request flag again, effectively will not alter the state
+	 *		machines.
+	 *	2) Sync is performed (set CSE_FORCED_SYNC_PERFORMED):
+	 *		AP will set CSE_FORCED_SYNC_PERFORMED upon successful CSE sync.
+	 *	3) Reset forced sync Request (reset CSE_FORCED_SYNC_REQUEST):
+	 *		Once the CSE sync is performed and the CSE_FORCED_SYNC_PERFORMED flag is set.
+	 *		For eSOL decision, AP will request a "CSE sync status check" on the subsequent
+	 *		boot. As the CSE sync request is honoured, CSE_FORCED_SYNC_REQUEST is reset.
+	 *	4) Resert Sync performed flag (reset CSE_FORCED_SYNC_PERFORMED):
+	 *		Another "CSE sync status check" occurs during the CSE sync process itself. The
+	 *		AP then resets CSE_FORCED_SYNC_PERFORMED to signify the completion of the
+	 *		entire CSE sync cycle.
+	 *
+	 * It is important to avoid clearing both flags in step 3, as the process is not yet
+	 * finished. Doing so would cause boot loop as the AP will interpret a subsequent "CSE
+	 * sync status check" as a fresh sync request.
+*/
+
+	struct cse_specific_info cse_info_in_cmos;
+	cmos_read_fw_partition_info(&cse_info_in_cmos);
+
+	/* Reset flags if Enforced CSE sync is performed; else, request sync.*/
+	if (cse_info_in_cmos.cse_sync_status & CSE_ENFORCED_SYNC_PERFORMED) {
+		if (cse_info_in_cmos.cse_sync_status & CSE_ENFORCED_SYNC_REQUEST)
+			cse_info_in_cmos.cse_sync_status &= ~(CSE_ENFORCED_SYNC_REQUEST);
+		else
+			cse_info_in_cmos.cse_sync_status &= ~(CSE_ENFORCED_SYNC_PERFORMED);
+	} else {
+		cse_info_in_cmos.cse_sync_status |= CSE_ENFORCED_SYNC_REQUEST;
+	}
+
+	/* Update the CRC */
+	store_cse_info_crc(&cse_info_in_cmos);
+
+	/* Update CSE specific info at CMOS */
+	cmos_write_fw_partition_info(&cse_info_in_cmos);
+}
+
 static bool is_cse_sync_enforced(void)
 {
-	/*
-	 * Force test CSE firmware update scenario if below conditions are being met:
-	 *  - VB2_GBB_FLAG_FORCE_CSE_SYNC flag is set
-	 *  - CSE FW is in RO
-	 */
-	struct vb2_context *ctx = vboot_get_context();
-	if ((vb2api_gbb_get_flags(ctx) & VB2_GBB_FLAG_FORCE_CSE_SYNC) &&
-		 cse_get_current_bp() == RO) {
-		return true;
+	if (CONFIG(VBOOT) && vboot_is_gbb_flag_set(VB2_GBB_FLAG_FORCE_CSE_SYNC)) {
+
+		struct cse_specific_info cse_info_in_cmos;
+		cmos_read_fw_partition_info(&cse_info_in_cmos);
+
+		return cse_info_in_cmos.cse_sync_status & CSE_ENFORCED_SYNC_REQUEST;
 	}
 	return false;
 }
@@ -777,6 +846,9 @@ static enum cse_update_status cse_check_update_status(struct region_device *targ
 
 	ret = cse_compare_sub_part_version(&cbfs_rw_version, cse_get_rw_version());
 	if (ret == 0) {
+		/* Update the CMOS status flag enforced CSE sync */
+		cmos_update_cse_sync_status();
+
 		if (is_cse_sync_enforced()) {
 			printk(BIOS_WARNING, "Force CSE Firmware upgrade for Autotest\n");
 			return CSE_UPDATE_UPGRADE;
@@ -843,6 +915,7 @@ static enum csme_failure_reason cse_update_rw(const void *cse_cbfs_rw, const siz
 	if (cse_write_rw_region(target_rdev, cse_cbfs_rw, cse_blob_sz) != CB_SUCCESS)
 		return CSE_LITE_SKU_FW_UPDATE_ERROR;
 
+	cmos_update_cse_sync_performed();
 	return CSE_NO_ERROR;
 }
 
@@ -1038,6 +1111,9 @@ bool is_cse_fw_update_required(void)
 
 	if (get_cse_ver_from_cbfs(&cbfs_rw_version) == CB_ERR)
 		return false;
+
+	/* Update the CMOS status flag enforced CSE sync */
+	cmos_update_cse_sync_status();
 
 	/* Check if CSE sync is enforced */
 	if (is_cse_sync_enforced()) {

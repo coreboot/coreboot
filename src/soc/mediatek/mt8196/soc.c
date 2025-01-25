@@ -8,6 +8,7 @@
 #include <soc/gpueb.h>
 #include <soc/mcupm.h>
 #include <soc/mmu_operations.h>
+#include <soc/mt6685.h>
 #include <soc/mtk_fsp.h>
 #include <soc/pcie.h>
 #include <soc/sspm.h>
@@ -44,6 +45,7 @@ static void soc_init(struct device *dev)
 	sspm_init();
 	gpueb_init();
 	mcupm_init();
+	mt6685_init_pmif_arb();
 }
 
 static struct device_operations soc_ops = {

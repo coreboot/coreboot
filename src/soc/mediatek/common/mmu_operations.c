@@ -4,6 +4,7 @@
 #include <symbols.h>
 #include <soc/emi.h>
 #include <soc/mmu_operations.h>
+#include <soc/symbols.h>
 
 __weak void mtk_soc_after_dram(void) { /* do nothing */ }
 
@@ -34,6 +35,11 @@ void mtk_mmu_init(void)
 	/* DMA is non-cached and is reserved for TPM & da9212 I2C DMA */
 	mmu_config_range(_dma_coherent, REGION_SIZE(dma_coherent),
 			 SECURE_UNCACHED_MEM);
+
+	/* Set mcufw_reserved to non-cacheable */
+	if (REGION_SIZE(mcufw_reserved) != 0)
+		mmu_config_range(_mcufw_reserved, REGION_SIZE(mcufw_reserved),
+				 SECURE_UNCACHED_MEM);
 
 	mmu_enable();
 }

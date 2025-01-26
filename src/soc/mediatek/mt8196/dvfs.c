@@ -12,6 +12,4 @@ void dvfs_init(void)
 
 	write32p(CSRAM_BASE + 0x8, 0x55AA55AA);
 	write32p(CSRAM_BASE + 0xC, val);
-
-	dcache_clean_invalidate_by_mva((void *)CSRAM_BASE, CACHE_LINE);
 }

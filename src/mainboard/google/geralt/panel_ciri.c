@@ -44,6 +44,15 @@ static struct panel_description ciri_panels[] = {
 		.orientation = LB_FB_ORIENTATION_LEFT_UP,
 		.disp_path = DISP_PATH_MIPI,
 		.pwm_ctrl_gpio = true,
+	},
+
+	[51] = {
+		.name = "CSOT_PNA957QT1_1",
+		.power_on = power_on_mipi_himax_83102j,
+		.configure_backlight = configure_mipi_pwm_backlight,
+		.orientation = LB_FB_ORIENTATION_LEFT_UP,
+		.disp_path = DISP_PATH_MIPI,
+		.pwm_ctrl_gpio = true,
 	}
 };
 

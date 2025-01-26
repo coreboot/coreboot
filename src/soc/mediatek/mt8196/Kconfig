@@ -47,7 +47,7 @@ config SSPM_FIRMWARE
 
 config SPM_FIRMWARE
 	string
-	default "spm_firmware.pm"
+	default "spm_firmware.bin"
 	help
 	  The file name of the MediaTek SPM firmware.
 

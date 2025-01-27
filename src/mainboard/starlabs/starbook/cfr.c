@@ -97,12 +97,14 @@ static const struct sm_object gna = SM_DECLARE_BOOL({
 });
 #endif
 
+#if !CONFIG(SOC_INTEL_ALDERLAKE_PCH_N)
 static const struct sm_object hyper_threading = SM_DECLARE_BOOL({
 	.opt_name	= "hyper_threading",
 	.ui_name	= "Hyper-Threading",
 	.ui_helptext	= "Enable or disable Hyper-Threading",
 	.default_value	= true,
 });
+#endif
 
 static const struct sm_object kbl_timeout = SM_DECLARE_ENUM({
 	.opt_name	= "kbl_timeout",
@@ -291,7 +293,9 @@ static struct sm_obj_form processor = {
 	.obj_list = (const struct sm_object *[]) {
 		&me_state,
 		&me_state_counter,
+		#if !CONFIG(SOC_INTEL_ALDERLAKE_PCH_N)
 		&hyper_threading,
+		#endif
 		&vtd,
 		NULL
 	},

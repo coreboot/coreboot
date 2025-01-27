@@ -298,6 +298,28 @@ bool cse_is_hfs1_spi_protected(void)
 	return !hfs1.fields.mfg_mode;
 }
 
+#define ME_HFSTS2_CUR_PM_EVENT_SHIFT 24
+#define ME_HFSTS2_CUR_PM_EVENT_MASK (0xf << ME_HFSTS2_CUR_PM_EVENT_SHIFT)
+
+static uint8_t cse_get_hfs2_current_pm_event(void)
+{
+	uint32_t data = me_read_config32(PCI_ME_HFSTS2);
+	return (uint8_t)((data & ME_HFSTS2_CUR_PM_EVENT_MASK) >>
+						ME_HFSTS2_CUR_PM_EVENT_SHIFT);
+}
+
+bool cse_check_host_cold_reset(void)
+{
+	uint8_t event = cse_get_hfs2_current_pm_event();
+
+	switch (event) {
+	case PWR_CYCLE_RESET_CMOFF:
+		return true;
+	default:
+		return false;
+	}
+}
+
 bool cse_is_hfs3_fw_sku_lite(void)
 {
 	union me_hfsts3 hfs3;

@@ -383,6 +383,10 @@ enum rst_req_type {
 	CSE_RESET_ONLY = 3,
 };
 
+enum cse_fw_sts_current_pm_event {
+	PWR_CYCLE_RESET_CMOFF = 0xb,
+};
+
 /*
  * Sends GLOBAL_RESET_REQ cmd to CSE with reset type GLOBAL_RESET.
  * Returns 0 on failure and 1 on success.
@@ -617,5 +621,12 @@ bool is_cse_fw_update_required(void);
  * Returns true if CSE is booting from RW slot, false otherwise
  */
 bool is_cse_boot_to_rw(void);
+
+/*
+ * Check if the CSE FW Status Current Power Management Event indicates that the
+ * host came out of cold reset.
+ * Returns true if the host came out of a cold reset, false otherwise.
+ */
+bool cse_check_host_cold_reset(void);
 
 #endif // SOC_INTEL_COMMON_CSE_H

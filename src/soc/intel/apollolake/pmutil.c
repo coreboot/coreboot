@@ -140,11 +140,16 @@ void soc_clear_pm_registers(uintptr_t pmc_bar)
 
 static void gpe0_different_values(const struct soc_intel_apollolake_config *config)
 {
-	bool result = (config->gpe0_dw1 != config->gpe0_dw2) &&
+	bool all_zero = (config->gpe0_dw1 == 0) &&
+			 (config->gpe0_dw2 == 0) &&
+			 (config->gpe0_dw3 == 0);
+
+	/* Check if all values are different AND not all zero */
+	bool all_different = (config->gpe0_dw1 != config->gpe0_dw2) &&
 			 (config->gpe0_dw1 != config->gpe0_dw3) &&
 			 (config->gpe0_dw2 != config->gpe0_dw3);
 
-	assert(result);
+	assert(all_different || all_zero);
 }
 
 void soc_get_gpi_gpe_configs(uint8_t *dw0, uint8_t *dw1, uint8_t *dw2)

@@ -156,11 +156,16 @@ uint32_t *soc_pmc_etr_addr(void)
 
 static void gpe0_different_values(const struct soc_intel_skylake_config *config)
 {
-	bool result = (config->gpe0_dw0 != config->gpe0_dw1) &&
+	bool all_zero = (config->gpe0_dw0 == 0) &&
+			 (config->gpe0_dw1 == 0) &&
+			 (config->gpe0_dw2 == 0);
+
+	/* Check if all values are different AND not all zero */
+	bool all_different = (config->gpe0_dw0 != config->gpe0_dw1) &&
 			 (config->gpe0_dw0 != config->gpe0_dw2) &&
 			 (config->gpe0_dw1 != config->gpe0_dw2);
 
-	assert(result);
+	assert(all_different || all_zero);
 }
 
 void soc_get_gpi_gpe_configs(uint8_t *dw0, uint8_t *dw1, uint8_t *dw2)

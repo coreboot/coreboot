@@ -18,10 +18,6 @@ chip soc/intel/meteorlake
 		[PchSerialIoIndexUART0]			= PchSerialIoSkipInit,
 	}"
 
-	register "pmc_gpe0_dw0"				= "PMC_GPP_F"
-	register "pmc_gpe0_dw1"				= "PMC_GPP_C"
-	register "pmc_gpe0_dw2"				= "PMC_GPP_E"
-
 	# Device Tree
 	device domain 0 on
 		device ref igpu		on

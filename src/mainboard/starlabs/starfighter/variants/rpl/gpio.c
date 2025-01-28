@@ -221,7 +221,7 @@ const struct pad_config gpio_table[] = {
 	/* D9:		PWD_AMP_IN					*/
 	PAD_NC(GPP_D9, NONE),
 	/* D10:		TPM_IRQ						*/
-	PAD_NC(GPP_D10, NONE),
+	PAD_CFG_GPI_APIC_LOW(GPP_D10, NONE, PLTRST),
 	/* D11:		TCHPAD_INT_N					*/
 	PAD_CFG_GPI_APIC_LOW(GPP_D11, NONE, PLTRST),
 	/* D12:		ES8336_INT_N					*/

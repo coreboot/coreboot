@@ -261,7 +261,7 @@ const struct pad_config gpio_table[] = {
 	/* E10:		PWD Amplifier Input				*/
 	PAD_NC(GPP_E10, NONE),
 	/* E11:		TPM IRQ						*/
-	PAD_CFG_NF(GPP_E11, NONE, DEEP, NF1),
+	PAD_CFG_GPI_APIC_LOW(GPP_E11, NONE, PLTRST),
 	/* E12:		Touchpad Interrupt				*/
 	PAD_CFG_GPI_APIC_LOW(GPP_E12, NONE, PLTRST),
 	/* E13:		Not connected					*/

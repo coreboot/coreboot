@@ -117,6 +117,10 @@ config POWER_STATE_DEFAULT_ON_AFTER_FAILURE
 config SOC_INTEL_CSE_SEND_EOP_EARLY
 	default n
 
+config TPM_PIRQ
+	depends on MAINBOARD_HAS_TPM2
+	default 0x37
+
 config UART_FOR_CONSOLE
 	default 0
 

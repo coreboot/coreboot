@@ -162,10 +162,6 @@ static void cnvw_fill_ssdt(const struct device *dev)
  *		}
  *	}
  *
- *	Name (_PRR, Package (0x01)
- *	{
- *		WRST
- *	})
  */
 	acpigen_write_power_res("WRST", 5, 0, NULL, 0);
 	{
@@ -280,6 +276,12 @@ static void cnvw_fill_ssdt(const struct device *dev)
 	}
 	acpigen_write_power_res_end();
 
+/*
+ *	Name (_PRR, Package (0x01)
+ *	{
+ *		WRST
+ *	})
+ */
 	acpigen_write_name("_PRR");
 	{
 		acpigen_write_package(1);

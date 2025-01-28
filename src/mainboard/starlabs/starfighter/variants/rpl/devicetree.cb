@@ -183,11 +183,6 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref shared_sram	on  end
-		device ref sata		on
-			register "sata_salp_support"		= "1"
-			register "sata_ports_enable[1]"		= "1"
-			register "sata_ports_dev_slp[1]"	= "1"
-                end
 		device ref pcie_rp5	on			# WiFi
 			chip drivers/wifi/generic
 				register "enable_cnvi_ddr_rfim"		= "true"

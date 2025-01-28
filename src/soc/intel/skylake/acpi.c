@@ -124,7 +124,7 @@ static int cstate_set_s0ix[] = {
 static int cstate_set_non_s0ix[] = {
 	C_STATE_C1E,
 	C_STATE_C3,
-	C_STATE_C7S_LONG_LAT,
+	C_STATE_C8
 };
 
 const acpi_cstate_t *soc_get_cstate_map(size_t *entries)

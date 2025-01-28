@@ -61,6 +61,6 @@ void devtree_update(void)
 		cfg->usb2_ports[3].enable = 0;
 
 	/* Enable/Disable GNA based on CMOS settings */
-	if (get_uint_option("gna", 1) == 0)
+	if (get_uint_option("gna", 0) == 0)
 		gna_dev->enabled = 0;
 }

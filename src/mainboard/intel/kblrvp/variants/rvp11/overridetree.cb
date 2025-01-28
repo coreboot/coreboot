@@ -1,7 +1,7 @@
 chip soc/intel/skylake
 
 	# FSP Configuration
-	register "DspEnable" = "0"
+	register "DspEnable" = "false"
 	register "ScsEmmcHs400Enabled" = "0"
 
 	register "SerialIoDevMode" = "{

@@ -4,7 +4,7 @@ chip soc/intel/skylake
 	register "gpe0_dw0" = "GPP_C"
 
 	# FSP Configuration
-	register "DspEnable" = "1"
+	register "DspEnable" = "true"
 
 	# VR Settings Configuration for 4 Domains
 	#+----------------+-------+-------+-------+-------+

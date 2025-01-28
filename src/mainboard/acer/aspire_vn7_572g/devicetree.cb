@@ -315,7 +315,7 @@ chip soc/intel/skylake
 			register "PmConfigSlpAMinAssert" = "SLP_A_MIN_ASSERT_2S"	# 17:16 in pmbase+0018h
 		end
 		device ref hda		on
-			register "DspEnable" = "1"
+			register "DspEnable" = "true"
 			# PchHdaDspEndpointDmic is only to be returned to reference code
 			# DXE phase as HOB, used to select blob for NHLT
 		end

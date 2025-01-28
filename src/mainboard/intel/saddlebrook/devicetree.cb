@@ -15,7 +15,7 @@ chip soc/intel/skylake
 	register "gpe0_dw2" = "GPP_E"
 
 	# FSP Configuration
-	register "DspEnable" = "1"
+	register "DspEnable" = "true"
 	register "IoBufferOwnership" = "3"
 	register "SkipExtGfxScan" = "1"
 

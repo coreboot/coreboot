@@ -27,7 +27,7 @@ chip soc/intel/skylake
 	register "dptf_enable" = "false"
 
 	# FSP Configuration
-	register "DspEnable" = "1"
+	register "DspEnable" = "true"
 	register "IoBufferOwnership" = "0"
 	register "SkipExtGfxScan" = "1"
 	register "SaGv" = "SaGv_Enabled"

@@ -277,8 +277,8 @@ struct soc_intel_tigerlake_config {
 	/* PCIe RP L1 substate */
 	enum L1_substates_control PcieRpL1Substates[CONFIG_MAX_ROOT_PORTS];
 
-	/* PCIe LTR: Enable (1) / Disable (0) */
-	uint8_t PcieRpLtrEnable[CONFIG_MAX_ROOT_PORTS];
+	/* PCIe LTR */
+	bool PcieRpLtrEnable[CONFIG_MAX_ROOT_PORTS];
 
 	/* PCIE RP Advanced Error Report: Enable (1) / Disable (0) */
 	uint8_t PcieRpAdvancedErrorReporting[CONFIG_MAX_ROOT_PORTS];

@@ -340,7 +340,7 @@ chip soc/intel/skylake
 			register "PcieRpClkReqSupport[0]" = "1"
 			register "PcieRpClkReqNumber[0]" = "1"
 			register "PcieRpAdvancedErrorReporting[0]" = "1"
-			register "PcieRpLtrEnable[0]" = "1"
+			register "PcieRpLtrEnable[0]" = "true"
 			register "PcieRpHotPlug[0]" = "1"
 			register "PcieRpClkSrcNumber[0]" = "1"
 			chip drivers/wifi/generic
@@ -353,7 +353,7 @@ chip soc/intel/skylake
 			register "PcieRpClkReqSupport[4]" = "1"
 			register "PcieRpClkReqNumber[4]" = "4"
 			register "PcieRpAdvancedErrorReporting[4]" = "1"
-			register "PcieRpLtrEnable[4]" = "1"
+			register "PcieRpLtrEnable[4]" = "true"
 			register "PcieRpClkSrcNumber[4]" = "4"
 		end
 		device ref uart0	on  end

@@ -120,7 +120,7 @@ chip soc/intel/skylake
 			register "PcieRpClkReqSupport[6]" = "1"
 			register "PcieRpClkReqNumber[6]" = "4"
 			register "PcieRpAdvancedErrorReporting[6]" = "1"
-			register "PcieRpLtrEnable[6]" = "1"
+			register "PcieRpLtrEnable[6]" = "true"
 			register "PcieRpClkSrcNumber[6]" = "4"
 		end
 		device ref pcie_rp8 on
@@ -129,7 +129,7 @@ chip soc/intel/skylake
 			register "PcieRpClkReqSupport[7]" = "1"
 			register "PcieRpClkReqNumber[7]" = "2"
 			register "PcieRpAdvancedErrorReporting[7]" = "1"
-			register "PcieRpLtrEnable[7]" = "1"
+			register "PcieRpLtrEnable[7]" = "true"
 			register "PcieRpClkSrcNumber[7]" = "2"
 		end
 		device ref pcie_rp9 on
@@ -137,7 +137,7 @@ chip soc/intel/skylake
 			register "PcieRpEnable[8]" = "true"
 			register "PcieRpClkReqSupport[8]" = "0"
 			register "PcieRpAdvancedErrorReporting[8]" = "1"
-			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieRpLtrEnable[8]" = "true"
 			register "PcieRpClkSrcNumber[8]" = "2"
 		end
 		device ref pcie_rp10 off

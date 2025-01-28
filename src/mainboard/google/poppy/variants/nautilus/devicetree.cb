@@ -366,7 +366,7 @@ chip soc/intel/skylake
 			register "PcieRpClkReqNumber[0]" = "1"
 			register "PcieRpClkSrcNumber[0]" = "1"
 			register "PcieRpAdvancedErrorReporting[0]" = "1"
-			register "PcieRpLtrEnable[0]" = "1"
+			register "PcieRpLtrEnable[0]" = "true"
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_DW0_00"
 				device pci 00.0 on end

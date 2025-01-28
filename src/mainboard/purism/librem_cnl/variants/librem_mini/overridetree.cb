@@ -119,7 +119,7 @@ chip soc/intel/cannonlake
 		device ref pcie_rp8 on	# x1 M.2/E 2230 (WLAN)
 			register "PcieRpSlotImplemented[7]" = "1"
 			register "PcieRpEnable[7]" = "true"
-			register "PcieRpLtrEnable[7]" = "1"
+			register "PcieRpLtrEnable[7]" = "true"
 			# ClkSrcUsage must be set to free-run since SRCCLKREQ2 is NC
 			register "PcieClkSrcUsage[2]" = "0x80"
 			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/E 2230" "SlotDataBusWidth1X"
@@ -133,7 +133,7 @@ chip soc/intel/cannonlake
 		device ref pcie_rp13 on	# x4 M.2/M 2280 (NVMe)
 			register "PcieRpSlotImplemented[12]" = "1"
 			register "PcieRpEnable[12]" = "true"
-			register "PcieRpLtrEnable[12]" = "1"
+			register "PcieRpLtrEnable[12]" = "true"
 			register "PcieClkSrcUsage[1]" = "12"
 			register "PcieClkSrcClkReq[1]" = "1"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280" "SlotDataBusWidth4X"

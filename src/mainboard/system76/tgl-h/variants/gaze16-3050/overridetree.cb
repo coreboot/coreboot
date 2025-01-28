@@ -55,26 +55,26 @@ chip soc/intel/tigerlake
 		end
 		device ref pcie_rp5 on
 			# PCIe root port #5 x1, Clock 5 (GLAN)
-			register "PcieRpLtrEnable[4]" = "1"
+			register "PcieRpLtrEnable[4]" = "true"
 			register "PcieClkSrcUsage[5]" = "4"
 			register "PcieClkSrcClkReq[5]" = "5"
 		end
 		device ref pcie_rp7 on
 			# PCIe root port #7 x1, Clock 7 (CARD)
-			register "PcieRpLtrEnable[6]" = "1"
+			register "PcieRpLtrEnable[6]" = "true"
 			register "PcieClkSrcUsage[7]" = "6"
 			register "PcieClkSrcClkReq[7]" = "7"
 		end
 		device ref pcie_rp8 on
 			# PCIe root port #8 x1, Clock 8 (WLAN)
-			register "PcieRpLtrEnable[7]" = "1"
+			register "PcieRpLtrEnable[7]" = "true"
 			register "PcieClkSrcUsage[8]" = "7"
 			register "PcieClkSrcClkReq[8]" = "8"
 			register "PcieRpSlotImplemented[7]" = "1"
 		end
 		device ref pcie_rp9 on
 			# PCIe root port #9 x4, Clock 9 (SSD1)
-			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieRpLtrEnable[8]" = "true"
 			register "PcieClkSrcUsage[9]" = "8"
 			register "PcieClkSrcClkReq[9]" = "9"
 			register "PcieRpSlotImplemented[8]" = "1"

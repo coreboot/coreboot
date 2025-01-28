@@ -72,14 +72,14 @@ chip soc/intel/cannonlake
 	register "PcieRpAdvancedErrorReporting[12]" = "1"
 
 	# Enable Latency Tolerance Reporting Mechanism RP 5-10, 12, 13
-	register "PcieRpLtrEnable[4]" = "1"
-	register "PcieRpLtrEnable[5]" = "1"
-	register "PcieRpLtrEnable[6]" = "1"
-	register "PcieRpLtrEnable[7]" = "1"
-	register "PcieRpLtrEnable[8]" = "1"
-	register "PcieRpLtrEnable[9]" = "1"
-	register "PcieRpLtrEnable[11]" = "1"
-	register "PcieRpLtrEnable[12]" = "1"
+	register "PcieRpLtrEnable[4]" = "true"
+	register "PcieRpLtrEnable[5]" = "true"
+	register "PcieRpLtrEnable[6]" = "true"
+	register "PcieRpLtrEnable[7]" = "true"
+	register "PcieRpLtrEnable[8]" = "true"
+	register "PcieRpLtrEnable[9]" = "true"
+	register "PcieRpLtrEnable[11]" = "true"
+	register "PcieRpLtrEnable[12]" = "true"
 
 	register "PcieClkSrcUsage[0]" = "PCIE_CLK_FREE"
 	register "PcieClkSrcUsage[1]" = "PCIE_CLK_FREE"

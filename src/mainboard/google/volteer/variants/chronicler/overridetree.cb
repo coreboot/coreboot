@@ -268,7 +268,7 @@ chip soc/intel/tigerlake
 		end
 		device ref pcie_rp5 on
 			# EMMC PCIE 5 using clk 5
-			register "PcieRpLtrEnable[4]" = "1"
+			register "PcieRpLtrEnable[4]" = "true"
 			register "PcieRpHotPlug[4]" = "1"
 			register "PcieClkSrcUsage[5]" = "4"
 			register "PcieClkSrcClkReq[5]" = "5"

@@ -43,7 +43,7 @@ chip soc/intel/skylake
 			register "PcieRpClkReqSupport[20]"              = "1"
 			register "PcieRpClkReqNumber[20]"               = "3"
 			register "PcieRpAdvancedErrorReporting[20]"     = "1"
-			register "PcieRpLtrEnable[20]"                  = "1"
+			register "PcieRpLtrEnable[20]"                  = "true"
 			register "PcieRpClkSrcNumber[20]"               = "3"
 			register "PcieRpHotPlug[20]"                    = "1"
 		end

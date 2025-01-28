@@ -211,20 +211,20 @@ chip soc/intel/cannonlake
 		device ref pcie_rp21 on
 			register "PcieRpSlotImplemented[20]" = "1"
 			register "PcieRpEnable[20]" = "true"
-			register "PcieRpLtrEnable[20]" = "1"
+			register "PcieRpLtrEnable[20]" = "true"
 			register "PcieClkSrcUsage[10]" = "20"
 			smbios_slot_desc "SlotTypePciExpressGen3X4" "SlotLengthOther" "PCIE5" "SlotDataBusWidth4X"
 		end
 		device ref pcie_rp1 on
 			register "PcieRpSlotImplemented[0]" = "1"
 			register "PcieRpEnable[0]" = "true"
-			register "PcieRpLtrEnable[0]" = "1"
+			register "PcieRpLtrEnable[0]" = "true"
 			register "PcieClkSrcUsage[1]" = "0x80"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M2_1" "SlotDataBusWidth4X"
 		end
 		device ref pcie_rp9 on	# GbE #1
 			register "PcieRpEnable[8]" = "true"
-			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieRpLtrEnable[8]" = "true"
 			register "PcieClkSrcUsage[14]" = "8"
 			# Type indexes are needed for systemd to use "onboard" names by default
 			# (eno0, eno1).  Otherwise it uses "slot" names that can change if any
@@ -237,12 +237,12 @@ chip soc/intel/cannonlake
 		end
 		device ref pcie_rp10 on	# BMC video
 			register "PcieRpEnable[9]" = "true"
-			register "PcieRpLtrEnable[9]" = "1"
+			register "PcieRpLtrEnable[9]" = "true"
 			register "PcieClkSrcUsage[8]" = "9"
 		end
 		device ref pcie_rp11 on	# GbE #2
 			register "PcieRpEnable[10]" = "true"
-			register "PcieRpLtrEnable[10]" = "1"
+			register "PcieRpLtrEnable[10]" = "true"
 			register "PcieClkSrcUsage[11]" = "10"
 			device pci 00.0 on
 				smbios_dev_info 2

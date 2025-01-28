@@ -253,7 +253,7 @@ chip soc/intel/skylake
 			# dGPU; x4
 			register "PcieRpEnable[0]" = "true"
 			register "PcieRpAdvancedErrorReporting[0]" = "1"
-			register "PcieRpLtrEnable[0]" = "1"
+			register "PcieRpLtrEnable[0]" = "true"
 			register "PcieRpClkReqSupport[0]" = "1"
 			register "PcieRpClkReqNumber[0]" = "0"
 			register "PcieRpMaxPayload[0]" = "RpMaxPayload_256"
@@ -262,7 +262,7 @@ chip soc/intel/skylake
 			# NGFF; x2
 			register "PcieRpEnable[6]" = "true"
 			register "PcieRpAdvancedErrorReporting[6]" = "1"
-			register "PcieRpLtrEnable[6]" = "1"
+			register "PcieRpLtrEnable[6]" = "true"
 			register "PcieRpClkReqSupport[6]" = "1"
 			register "PcieRpClkReqNumber[6]" = "3"
 			register "PcieRpMaxPayload[6]" = "RpMaxPayload_256"
@@ -271,7 +271,7 @@ chip soc/intel/skylake
 			# LAN
 			register "PcieRpEnable[8]" = "true"
 			register "PcieRpAdvancedErrorReporting[8]" = "1"
-			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieRpLtrEnable[8]" = "true"
 			register "PcieRpClkReqSupport[8]" = "1"
 			register "PcieRpClkReqNumber[8]" = "1"
 			register "PcieRpMaxPayload[8]" = "RpMaxPayload_256"
@@ -280,7 +280,7 @@ chip soc/intel/skylake
 			# WLAN
 			register "PcieRpEnable[9]" = "true"
 			register "PcieRpAdvancedErrorReporting[9]" = "1"
-			register "PcieRpLtrEnable[9]" = "1"
+			register "PcieRpLtrEnable[9]" = "true"
 			register "PcieRpClkReqSupport[9]" = "1"
 			register "PcieRpClkReqNumber[9]" = "2"
 			register "PcieRpMaxPayload[9]" = "RpMaxPayload_256"

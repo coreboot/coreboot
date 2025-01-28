@@ -99,7 +99,7 @@ chip soc/intel/cannonlake
 		device ref pcie_rp17	on
 			# PCI Express root port #17 x4, Clock 0 (Thunderbolt)
 			register "PcieRpEnable[16]" = "true"
-			register "PcieRpLtrEnable[16]" = "1"
+			register "PcieRpLtrEnable[16]" = "true"
 			register "PcieRpHotPlug[16]" = "1"
 			register "PcieClkSrcUsage[0]" = "16"
 			register "PcieClkSrcClkReq[0]" = "0"
@@ -107,7 +107,7 @@ chip soc/intel/cannonlake
 		device ref pcie_rp21	on
 			# PCI Express root port #21 x4, Clock 10 (SSD2)
 			register "PcieRpEnable[20]" = "true"
-			register "PcieRpLtrEnable[20]" = "1"
+			register "PcieRpLtrEnable[20]" = "true"
 			register "PcieClkSrcUsage[10]" = "20"
 			register "PcieClkSrcClkReq[10]" = "10"
 			register "PcieRpSlotImplemented[20]" = "1"
@@ -115,7 +115,7 @@ chip soc/intel/cannonlake
 		device ref pcie_rp9	on
 			# PCI Express root port #9 x4, Clock 9 (SSD1)
 			register "PcieRpEnable[8]" = "true"
-			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieRpLtrEnable[8]" = "true"
 			register "PcieClkSrcUsage[9]" = "8"
 			register "PcieClkSrcClkReq[9]" = "9"
 			register "PcieRpSlotImplemented[8]" = "1"
@@ -123,7 +123,7 @@ chip soc/intel/cannonlake
 		device ref pcie_rp14	on
 			# PCI Express root port #14 x1, Clock 5 (GLAN)
 			register "PcieRpEnable[13]" = "true"
-			register "PcieRpLtrEnable[13]" = "1"
+			register "PcieRpLtrEnable[13]" = "true"
 			register "PcieClkSrcUsage[5]" = "13"
 			register "PcieClkSrcClkReq[5]" = "5"
 			register "PcieRpSlotImplemented[13]" = "1"
@@ -131,7 +131,7 @@ chip soc/intel/cannonlake
 		device ref pcie_rp15	on
 			# PCI Express root port #15 x1, Clock 7 (Card Reader)
 			register "PcieRpEnable[14]" = "true"
-			register "PcieRpLtrEnable[14]" = "1"
+			register "PcieRpLtrEnable[14]" = "true"
 			register "PcieClkSrcUsage[7]" = "14"
 			register "PcieClkSrcClkReq[7]" = "7"
 			register "PcieRpSlotImplemented[14]" = "1"
@@ -139,7 +139,7 @@ chip soc/intel/cannonlake
 		device ref pcie_rp16	on
 			# PCI Express root port #16 x1, Clock 6 (WLAN)
 			register "PcieRpEnable[15]" = "true"
-			register "PcieRpLtrEnable[15]" = "1"
+			register "PcieRpLtrEnable[15]" = "true"
 			register "PcieClkSrcUsage[6]" = "15"
 			register "PcieClkSrcClkReq[6]" = "6"
 			register "PcieRpSlotImplemented[15]" = "1"

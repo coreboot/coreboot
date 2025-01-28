@@ -114,21 +114,21 @@ chip soc/intel/cannonlake
 		device ref pcie_rp17	on
 			# PCI Express root port #17 x4, Clock 14 (SSD2)
 			register "PcieRpEnable[16]" = "true"
-			register "PcieRpLtrEnable[16]" = "1"
+			register "PcieRpLtrEnable[16]" = "true"
 			register "PcieClkSrcUsage[14]" = "16"
 			register "PcieClkSrcClkReq[14]" = "14"
 		end
 		device ref pcie_rp21	on
 			# PCI Express root port #21 x4, Clock 15 (SSD3)
 			register "PcieRpEnable[20]" = "true"
-			register "PcieRpLtrEnable[20]" = "1"
+			register "PcieRpLtrEnable[20]" = "true"
 			register "PcieClkSrcUsage[15]" = "20"
 			register "PcieClkSrcClkReq[15]" = "15"
 		end
 		device ref pcie_rp1	on
 			# PCI Express root port #1 x4, Clock 6 (Thunderbolt)
 			register "PcieRpEnable[0]" = "true"
-			register "PcieRpLtrEnable[0]" = "1"
+			register "PcieRpLtrEnable[0]" = "true"
 			register "PcieRpHotPlug[0]" = "1"
 			register "PcieClkSrcUsage[6]" = "PCIE_CLK_RP0" # 0 is converted to PCIE_CLK_NOTUSED
 			register "PcieClkSrcClkReq[6]" = "6"
@@ -136,35 +136,35 @@ chip soc/intel/cannonlake
 		device ref pcie_rp5	on
 			# PCI Express root port #5 x4, Clock 10 (USB 3.2)
 			register "PcieRpEnable[4]" = "true"
-			register "PcieRpLtrEnable[4]" = "1"
+			register "PcieRpLtrEnable[4]" = "true"
 			register "PcieClkSrcUsage[10]" = "4"
 			register "PcieClkSrcClkReq[10]" = "10"
 		end
 		device ref pcie_rp9	on
 			# PCI Express root port #9 x4, Clock 8 (SSD)
 			register "PcieRpEnable[8]" = "true"
-			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieRpLtrEnable[8]" = "true"
 			register "PcieClkSrcUsage[8]" = "8"
 			register "PcieClkSrcClkReq[8]" = "8"
 		end
 		device ref pcie_rp13	on
 			# PCI Express root port #13 x1, Clock 0 (WLAN)
 			register "PcieRpEnable[12]" = "true"
-			register "PcieRpLtrEnable[12]" = "1"
+			register "PcieRpLtrEnable[12]" = "true"
 			register "PcieClkSrcUsage[0]" = "12"
 			register "PcieClkSrcClkReq[0]" = "0"
 		end
 		device ref pcie_rp14	on
 			# PCI Express root port #14 x1, Clock 1 (GLAN)
 			register "PcieRpEnable[13]" = "true"
-			register "PcieRpLtrEnable[13]" = "1"
+			register "PcieRpLtrEnable[13]" = "true"
 			register "PcieClkSrcUsage[1]" = "13"
 			register "PcieClkSrcClkReq[1]" = "1"
 		end
 		device ref pcie_rp15	on
 			# PCI Express root port #15 x1, Clock 4 (Card Reader)
 			register "PcieRpEnable[14]" = "true"
-			register "PcieRpLtrEnable[14]" = "1"
+			register "PcieRpLtrEnable[14]" = "true"
 			register "PcieClkSrcUsage[4]" = "14"
 			register "PcieClkSrcClkReq[4]" = "4"
 		end

@@ -94,7 +94,7 @@ chip soc/intel/skylake
 			register "PcieRpClkReqNumber[2]" = "0"
 			register "PcieRpClkSrcNumber[2]" = "0"
 			register "PcieRpAdvancedErrorReporting[2]" = "1"
-			register "PcieRpLtrEnable[2]" = "1"
+			register "PcieRpLtrEnable[2]" = "true"
 		end
 		device ref pcie_rp4	on
 			# Wireless controller
@@ -103,7 +103,7 @@ chip soc/intel/skylake
 			register "PcieRpClkReqNumber[3]" = "1"
 			register "PcieRpClkSrcNumber[3]" = "1"
 			register "PcieRpAdvancedErrorReporting[3]" = "1"
-			register "PcieRpLtrEnable[3]" = "1"
+			register "PcieRpLtrEnable[3]" = "true"
 		end
 		device ref pcie_rp9	on
 			# NVMe controller
@@ -112,7 +112,7 @@ chip soc/intel/skylake
 			register "PcieRpClkReqNumber[8]" = "4"
 			register "PcieRpClkSrcNumber[8]" = "4"
 			register "PcieRpAdvancedErrorReporting[8]" = "1"
-			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieRpLtrEnable[8]" = "true"
 		end
 		device ref lpc_espi	on
 			register "serirq_mode" = "SERIRQ_CONTINUOUS"

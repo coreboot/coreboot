@@ -210,7 +210,7 @@ chip soc/intel/cannonlake
 		end
 		device ref pcie_rp17 on # M.2 Key-M 2242/2260/2280 slot for SSD (PCIEx4)
 			register "PcieRpEnable[16]" = "true"
-			register "PcieRpLtrEnable[16]" = "1"
+			register "PcieRpLtrEnable[16]" = "true"
 			register "PcieRpSlotImplemented[16]" = "1"
 			register "PcieClkSrcUsage[7]" = "16"
 			register "PcieClkSrcClkReq[7]" = "7"
@@ -218,14 +218,14 @@ chip soc/intel/cannonlake
 		end
 		device ref pcie_rp5 on # Intel Corporation Ethernet Controller I225-LM
 			register "PcieRpEnable[4]" = "true"
-			register "PcieRpLtrEnable[4]" = "1"
+			register "PcieRpLtrEnable[4]" = "true"
 			register "PcieClkSrcUsage[3]" = "4"
 			register "PcieClkSrcClkReq[3]" = "3"
 		end
 		device ref pcie_rp6 on # M.2 Key-E 2230 slot for Wireless M.2 Key-E (PCIe x1)
 			register "PcieRpEnable[5]" = "true"
 			register "PcieRpSlotImplemented[5]" = "1"
-			register "PcieRpLtrEnable[5]" = "1"
+			register "PcieRpLtrEnable[5]" = "true"
 			register "PcieClkSrcUsage[5]" = "5"
 			register "PcieClkSrcClkReq[5]" = "5"
 			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/E 2230 (M2_KEYE1)" "SlotDataBusWidth1X"
@@ -233,7 +233,7 @@ chip soc/intel/cannonlake
 		device ref pcie_rp7 on # M.2 Key-B 3042/3052 slot for 4G/5G modem (PCIe x1)
 			register "PcieRpEnable[6]" = "true"
 			register "PcieRpSlotImplemented[6]" = "1"
-			register "PcieRpLtrEnable[6]" = "1"
+			register "PcieRpLtrEnable[6]" = "true"
 			register "PcieClkSrcUsage[6]" = "6"
 			register "PcieClkSrcClkReq[6]" = "6"
 			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/B 3042/3052 (M2_KEYB1)" "SlotDataBusWidth1X"

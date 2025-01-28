@@ -21,7 +21,7 @@ chip soc/intel/cannonlake
 
 	# Enable Root port 9(x2) for NVMe.
 	register "PcieRpEnable[8]" = "true"
-	register "PcieRpLtrEnable[8]" = "1"
+	register "PcieRpLtrEnable[8]" = "true"
 	# RP 9 uses CLK SRC 1
 	register "PcieClkSrcUsage[1]" = "8"
 	# ClkReq-to-ClkSrc mapping for CLK SRC 1
@@ -29,7 +29,7 @@ chip soc/intel/cannonlake
 
 	# Enable Root port 11(x2) for NVMe.
 	register "PcieRpEnable[10]" = "true"
-	register "PcieRpLtrEnable[10]" = "1"
+	register "PcieRpLtrEnable[10]" = "true"
 	# RP 11 uses CLK SRC 2
 	register "PcieClkSrcUsage[2]" = "10"
 	# ClkReq-to-ClkSrc mapping for CLK SRC 2

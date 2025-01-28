@@ -113,7 +113,7 @@ chip soc/intel/cannonlake
 		device ref pcie_rp6 on
 			device pci 00.0 on end # x1 Card reader
 			register "PcieRpEnable[5]" = "true"
-			register "PcieRpLtrEnable[5]" = "1"
+			register "PcieRpLtrEnable[5]" = "true"
 			register "PcieClkSrcUsage[3]" = "5"
 			register "PcieClkSrcClkReq[3]" = "3"
 		end
@@ -122,7 +122,7 @@ chip soc/intel/cannonlake
 				device pci 00.0 on end
 			end
 			register "PcieRpEnable[7]" = "true"
-			register "PcieRpLtrEnable[7]" = "1"
+			register "PcieRpLtrEnable[7]" = "true"
 			register "PcieClkSrcUsage[2]" = "7"
 			register "PcieClkSrcClkReq[2]" = "2"
 			register "PcieRpSlotImplemented[7]" = "1"
@@ -130,7 +130,7 @@ chip soc/intel/cannonlake
 		end
 		device ref pcie_rp9 on
 			register "PcieRpEnable[8]" = "true"
-			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieRpLtrEnable[8]" = "true"
 			register "PcieClkSrcUsage[4]" = "8"
 			register "PcieClkSrcClkReq[4]" = "4"
 			register "PcieRpSlotImplemented[8]" = "1"
@@ -138,7 +138,7 @@ chip soc/intel/cannonlake
 		end
 		device ref pcie_rp13 on
 			register "PcieRpEnable[12]" = "true"
-			register "PcieRpLtrEnable[12]" = "1"
+			register "PcieRpLtrEnable[12]" = "true"
 			register "PcieClkSrcUsage[5]" = "12"
 			register "PcieClkSrcClkReq[5]" = "5"
 			register "PcieRpSlotImplemented[12]" = "1"

@@ -425,14 +425,14 @@ chip soc/intel/tigerlake
 		end
 		device ref pcie_rp7 on
 			# WLAN PCIE 7 using clk 1
-			register "PcieRpLtrEnable[6]" = "1"
+			register "PcieRpLtrEnable[6]" = "true"
 			register "PcieClkSrcUsage[1]" = "6"
 			register "PcieClkSrcClkReq[1]" = "1"
 			register "PcieRpSlotImplemented[6]" = "1"
 		end
 		device ref pcie_rp8 on
 			# SD Card PCIE 8 using clk 3
-			register "PcieRpLtrEnable[7]" = "1"
+			register "PcieRpLtrEnable[7]" = "true"
 			register "PcieRpHotPlug[7]" = "1"
 			register "PcieClkSrcUsage[3]" = "7"
 			register "PcieClkSrcClkReq[3]" = "3"
@@ -464,14 +464,14 @@ chip soc/intel/tigerlake
 		end
 		device ref pcie_rp9 on
 			# NVMe PCIE 9 using clk 0
-			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieRpLtrEnable[8]" = "true"
 			register "PcieClkSrcUsage[0]" = "8"
 			register "PcieClkSrcClkReq[0]" = "0"
 			register "PcieRpSlotImplemented[8]" = "1"
 		end
 		device ref pcie_rp11 on
 			# Optane PCIE 11 using clk 0
-			register "PcieRpLtrEnable[10]" = "1"
+			register "PcieRpLtrEnable[10]" = "true"
 			register "HybridStorageMode" = "0"
 			register "PcieRpSlotImplemented[10]" = "1"
 		end

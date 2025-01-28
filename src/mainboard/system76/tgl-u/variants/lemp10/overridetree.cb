@@ -120,21 +120,21 @@ chip soc/intel/tigerlake
 		end
 		device ref pcie_rp3 on
 			# PCIe root port #3 x1, Clock 1 (WLAN)
-			register "PcieRpLtrEnable[2]" = "1"
+			register "PcieRpLtrEnable[2]" = "true"
 			register "PcieClkSrcUsage[1]" = "2"
 			register "PcieClkSrcClkReq[1]" = "1"
 			register "PcieRpSlotImplemented[2]" = "1"
 		end
 		device ref pcie_rp6 on
 			# PCIe root port #6 x1, Clock 2 (CARD)
-			register "PcieRpLtrEnable[5]" = "1"
+			register "PcieRpLtrEnable[5]" = "true"
 			register "PcieClkSrcUsage[2]" = "5"
 			register "PcieClkSrcClkReq[2]" = "2"
 		end
 		device ref pcie_rp9 on
 			# PCIe root port #9 x4, Clock 0 (SSD2)
 			# Despite the name, SSD1_CLKREQ# is used for SSD2
-			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieRpLtrEnable[8]" = "true"
 			register "PcieClkSrcUsage[0]" = "8"
 			register "PcieClkSrcClkReq[0]" = "0"
 			register "PcieRpSlotImplemented[8]" = "1"

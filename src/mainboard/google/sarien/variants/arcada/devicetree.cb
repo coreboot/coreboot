@@ -188,13 +188,13 @@ chip soc/intel/cannonlake
 
 	# PCIe port 11 for card reader
 	register "PcieRpEnable[10]" = "true"
-	register "PcieRpLtrEnable[10]" = "1"
+	register "PcieRpLtrEnable[10]" = "true"
 	register "PcieClkSrcUsage[1]" = "10"
 	register "PcieClkSrcClkReq[1]" = "1"
 
 	# PCIe port 13 for M.2 2280 SSD
 	register "PcieRpEnable[12]" = "true"
-	register "PcieRpLtrEnable[12]" = "1"
+	register "PcieRpLtrEnable[12]" = "true"
 	register "PcieClkSrcUsage[4]" = "12"
 	register "PcieClkSrcClkReq[4]" = "4"
 

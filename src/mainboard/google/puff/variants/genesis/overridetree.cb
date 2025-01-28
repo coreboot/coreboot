@@ -178,21 +178,21 @@ chip soc/intel/cannonlake
 
 	# PCIe root port 7 for LAN
 	register "PcieRpEnable[6]" = "true"
-	register "PcieRpLtrEnable[6]" = "1"
+	register "PcieRpLtrEnable[6]" = "true"
 	# Uses CLK SRC 0
 	register "PcieClkSrcUsage[0]" = "6"
 	register "PcieClkSrcClkReq[0]" = "0"
 
 	# PCIe root port 8 for WLAN
 	register "PcieRpEnable[7]" = "true"
-	register "PcieRpLtrEnable[7]" = "1"
+	register "PcieRpLtrEnable[7]" = "true"
 	# Uses CLK SRC 5
 	register "PcieClkSrcUsage[5]" = "7"
 	register "PcieClkSrcClkReq[5]" = "5"
 
 	# PCIe root port 9 for SSD (PCIe Lanes 11, 12)
 	register "PcieRpEnable[8]" = "true"
-	register "PcieRpLtrEnable[8]" = "1"
+	register "PcieRpLtrEnable[8]" = "true"
 	# RP 9 uses CLK SRC 1
 	register "PcieClkSrcUsage[1]" = "8"
 	register "PcieClkSrcClkReq[1]" = "1"
@@ -202,21 +202,21 @@ chip soc/intel/cannonlake
 
 	# PCIe root port 11 TPU1
 	register "PcieRpEnable[10]" = "true"
-	register "PcieRpLtrEnable[10]" = "1"
+	register "PcieRpLtrEnable[10]" = "true"
 	# RP 11 uses CLK SRC 1
 	register "PcieClkSrcUsage[4]" = "10"
 	register "PcieClkSrcClkReq[4]" = "4"
 
 	# PCIe root port 12 TPU0
 	register "PcieRpEnable[11]" = "true"
-	register "PcieRpLtrEnable[11]" = "1"
+	register "PcieRpLtrEnable[11]" = "true"
 	# RP 11 uses CLK SRC 1
 	register "PcieClkSrcUsage[2]" = "11"
 	register "PcieClkSrcClkReq[2]" = "2"
 
 	# PCIe port 13 for i350 NIC (x4)
 	register "PcieRpEnable[12]" = "true"
-	register "PcieRpLtrEnable[12]" = "1"
+	register "PcieRpLtrEnable[12]" = "true"
 	# RP 13 uses CLK SRC 3
 	register "PcieClkSrcUsage[3]" = "12"
 	# RP 13 does not use a source clock request line

@@ -117,7 +117,7 @@ chip soc/intel/skylake
 			register "PcieRpClkReqSupport[4]"		= "1"
 			register "PcieRpClkReqNumber[4]"		= "2"
 			register "PcieRpAdvancedErrorReporting[4]"	= "1"
-			register "PcieRpLtrEnable[4]"			= "1"
+			register "PcieRpLtrEnable[4]"			= "true"
 			register "PcieRpClkSrcNumber[4]"		= "2"
 			register "PcieRpHotPlug[4]"			= "1"
 		end
@@ -127,7 +127,7 @@ chip soc/intel/skylake
 			# Disable CLKREQ#, since onboard LAN is always present
 			register "PcieRpClkReqSupport[5]"		= "0"
 			register "PcieRpAdvancedErrorReporting[5]"	= "1"
-			register "PcieRpLtrEnable[5]"			= "1"
+			register "PcieRpLtrEnable[5]"			= "true"
 			register "PcieRpClkSrcNumber[5]"		= "1"
 		end
 		device ref pcie_rp7	on
@@ -135,7 +135,7 @@ chip soc/intel/skylake
 			register "PcieRpClkReqSupport[6]"		= "1"
 			register "PcieRpClkReqNumber[6]"		= "3"
 			register "PcieRpAdvancedErrorReporting[6]"	= "1"
-			register "PcieRpLtrEnable[6]"			= "1"
+			register "PcieRpLtrEnable[6]"			= "true"
 			register "PcieRpClkSrcNumber[6]"		= "3"
 			register "PcieRpHotPlug[6]"			= "1"
 		end

@@ -97,7 +97,7 @@ chip soc/intel/cannonlake
 		device ref pcie_rp21	on
 			# PCI Express root port #21 x4, Clock 11 (SSD2)
 			register "PcieRpEnable[20]" = "true"
-			register "PcieRpLtrEnable[20]" = "1"
+			register "PcieRpLtrEnable[20]" = "true"
 			register "PcieClkSrcUsage[11]" = "20"
 			register "PcieClkSrcClkReq[11]" = "11"
 			register "PcieRpSlotImplemented[20]" = "1"
@@ -105,7 +105,7 @@ chip soc/intel/cannonlake
 		device ref pcie_rp9	on
 			# PCI Express root port #9 x4, Clock 10 (SSD)
 			register "PcieRpEnable[8]" = "true"
-			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieRpLtrEnable[8]" = "true"
 			register "PcieClkSrcUsage[10]" = "8"
 			register "PcieClkSrcClkReq[10]" = "10"
 			register "PcieRpSlotImplemented[8]" = "1"
@@ -113,7 +113,7 @@ chip soc/intel/cannonlake
 		device ref pcie_rp14	on
 			# PCI Express root port #14 x1, Clock 6 (WLAN)
 			register "PcieRpEnable[13]" = "true"
-			register "PcieRpLtrEnable[13]" = "1"
+			register "PcieRpLtrEnable[13]" = "true"
 			register "PcieClkSrcUsage[6]" = "13"
 			register "PcieClkSrcClkReq[6]" = "6"
 			register "PcieRpSlotImplemented[13]" = "1"
@@ -121,7 +121,7 @@ chip soc/intel/cannonlake
 		device ref pcie_rp15	on
 			# PCI Express root port #15 x1, Clock 5 (LAN)
 			register "PcieRpEnable[14]" = "true"
-			register "PcieRpLtrEnable[14]" = "1"
+			register "PcieRpLtrEnable[14]" = "true"
 			register "PcieClkSrcUsage[5]" = "14"
 			register "PcieClkSrcClkReq[5]" = "5"
 			register "PcieRpSlotImplemented[14]" = "1"

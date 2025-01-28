@@ -160,7 +160,7 @@ chip soc/intel/skylake
 			register "PcieRpEnable[2]" = "true"
 			register "PcieRpClkReqSupport[2]" = "0"
 			register "PcieRpMaxPayload[2]" = "RpMaxPayload_256"
-			register "PcieRpLtrEnable[2]" = "1"
+			register "PcieRpLtrEnable[2]" = "true"
 			register "PcieRpAdvancedErrorReporting[2]" = "1"
 			register "pcie_rp_aspm[2]" = "AspmDisabled"
 		end
@@ -170,7 +170,7 @@ chip soc/intel/skylake
 			register "PcieRpEnable[5]" = "true"
 			register "PcieRpClkReqSupport[5]" = "0"
 			register "PcieRpMaxPayload[5]" = "RpMaxPayload_256"
-			register "PcieRpLtrEnable[5]" = "1"
+			register "PcieRpLtrEnable[5]" = "true"
 			register "PcieRpAdvancedErrorReporting[5]" = "1"
 			register "pcie_rp_aspm[5]" = "AspmDisabled"
 		end
@@ -181,7 +181,7 @@ chip soc/intel/skylake
 			register "PcieRpClkReqSupport[8]" = "0"
 			register "PcieRpHotPlug[8]" = "1"
 			register "PcieRpMaxPayload[8]" = "RpMaxPayload_256"
-			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieRpLtrEnable[8]" = "true"
 			register "PcieRpAdvancedErrorReporting[8]" = "1"
 			register "pcie_rp_aspm[8]" = "AspmDisabled"
 		end

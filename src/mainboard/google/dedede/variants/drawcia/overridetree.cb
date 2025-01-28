@@ -8,7 +8,7 @@ end
 chip soc/intel/jasperlake
 
 	# PCIe RP LTR configuration
-	register "PcieRpLtrEnable[7]" = "1"
+	register "PcieRpLtrEnable[7]" = "true"
 
 	# USB Port Configuration
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"     # Camera

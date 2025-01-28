@@ -45,20 +45,20 @@ chip soc/intel/skylake
 		device ref pcie_rp1 on
 			# Slot JPCIE4
 			register "PcieRpEnable[0]" = "true"
-			register "PcieRpLtrEnable[0]" = "1"
+			register "PcieRpLtrEnable[0]" = "true"
 			register "PcieRpAdvancedErrorReporting[0]" = "1"
 			smbios_slot_desc "SlotTypePciExpressGen3X8" "SlotLengthShort" "PCH SLOT4 PCI-E 3.0 X4(IN X8)" "SlotDataBusWidth4X"
 		end
 		device ref pcie_rp5 on
 			# Slot JPCIE5
 			register "PcieRpEnable[4]" = "true"
-			register "PcieRpLtrEnable[4]" = "1"
+			register "PcieRpLtrEnable[4]" = "true"
 			register "PcieRpAdvancedErrorReporting[4]" = "1"
 			smbios_slot_desc "SlotTypePciExpressGen3X8" "SlotLengthShort" "PCH SLOT5 PCI-E 3.0 X4(IN X8)" "SlotDataBusWidth4X"
 		end
 		device ref pcie_rp9 on
 			register "PcieRpEnable[8]" = "true"
-			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieRpLtrEnable[8]" = "true"
 			register "PcieRpAdvancedErrorReporting[8]" = "1"
 			device pci 00.0 on	# GbE 1
 				subsystemid 0x15d9 0x1533
@@ -66,7 +66,7 @@ chip soc/intel/skylake
 		end
 		device ref pcie_rp10 on
 			register "PcieRpEnable[9]" = "true"
-			register "PcieRpLtrEnable[9]" = "1"
+			register "PcieRpLtrEnable[9]" = "true"
 			register "PcieRpAdvancedErrorReporting[9]" = "1"
 			device pci 00.0 on	# GbE 2
 				subsystemid 0x15d9 0x1533
@@ -74,7 +74,7 @@ chip soc/intel/skylake
 		end
 		device ref pcie_rp11 on
 			register "PcieRpEnable[10]" = "true"
-			register "PcieRpLtrEnable[10]" = "1"
+			register "PcieRpLtrEnable[10]" = "true"
 			register "PcieRpAdvancedErrorReporting[10]" = "1"
 			device pci 00.0 on	# Aspeed PCI Bridge
 				device pci 00.0 on end	# Aspeed 2400 VGA

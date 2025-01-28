@@ -138,7 +138,7 @@ chip soc/intel/skylake
 			register "PcieRpClkReqNumber[0]" = "4"
 			register "PcieRpClkSrcNumber[0]" = "4"
 			register "PcieRpAdvancedErrorReporting[0]" = "1"
-			register "PcieRpLtrEnable[0]" = "1"
+			register "PcieRpLtrEnable[0]" = "true"
 			register "PcieRpHotPlug[0]" = "1"
 		end
 		device ref pcie_rp5 on
@@ -148,7 +148,7 @@ chip soc/intel/skylake
 			register "PcieRpClkReqNumber[4]" = "3"
 			register "PcieRpClkSrcNumber[4]" = "3"
 			register "PcieRpAdvancedErrorReporting[4]" = "1"
-			register "PcieRpLtrEnable[4]" = "1"
+			register "PcieRpLtrEnable[4]" = "true"
 		end
 		device ref pcie_rp6 on
 			# Root port #6 x1 (WLAN)
@@ -157,7 +157,7 @@ chip soc/intel/skylake
 			register "PcieRpClkReqNumber[5]" = "2"
 			register "PcieRpClkSrcNumber[5]" = "2"
 			register "PcieRpAdvancedErrorReporting[5]" = "1"
-			register "PcieRpLtrEnable[5]" = "1"
+			register "PcieRpLtrEnable[5]" = "true"
 		end
 		device ref pcie_rp9 on
 			# Root port #9 x4 (NVMe)
@@ -166,7 +166,7 @@ chip soc/intel/skylake
 			register "PcieRpClkReqNumber[8]" = "5"
 			register "PcieRpClkSrcNumber[8]" = "5"
 			register "PcieRpAdvancedErrorReporting[8]" = "1"
-			register "PcieRpLtrEnable[8]" = "1"
+			register "PcieRpLtrEnable[8]" = "true"
 		end
 		device ref lpc_espi on
 			register "serirq_mode" = "SERIRQ_CONTINUOUS"

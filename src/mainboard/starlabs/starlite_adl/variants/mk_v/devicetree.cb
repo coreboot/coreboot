@@ -175,7 +175,7 @@ chip soc/intel/alderlake
 		end
 		device ref uart0	on  end
 		device ref pch_espi	on
-			register "gen1_dec"				= "0x3c030070"
+			register "gen1_dec"				= "0x00040069"
 			register "gen2_dec"				= "0x00fc0201"
 			register "gen3_dec"				= "0x000c0081"
 

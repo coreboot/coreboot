@@ -105,10 +105,9 @@ chip soc/intel/skylake
 		end
 		device ref uart0	on  end
 		device ref lpc_espi on
-			register "gen1_dec"			= "0x000c0681"
-			register "gen2_dec"			= "0x000c1641"
-			register "gen3_dec"			= "0x00000069"
-			register "gen4_dec"			= "0x0000006d"
+			register "gen1_dec"			= "0x00040069"
+			register "gen2_dec"			= "0x00fc0201"
+			register "gen3_dec"			= "0x000c0081"
 
 			chip ec/starlabs/merlin
 				# Port pair 4Eh/4Fh

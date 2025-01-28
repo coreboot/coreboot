@@ -40,7 +40,7 @@ chip soc/intel/cannonlake
 	register "PchUsb2PhySusPgDisable" = "1"
 
 	register "s0ix_enable" = "true"
-	register "dptf_enable" = "1"
+	register "dptf_enable" = "true"
 	register "power_limits_config" = "{
 		.tdp_pl1_override = 25,
 		.tdp_pl2_override = 51,

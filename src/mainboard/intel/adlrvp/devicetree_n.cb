@@ -17,7 +17,7 @@ chip soc/intel/alderlake
 	register "sagv" = "SaGv_Enabled"
 
 	# Enable DPTF
-	register "dptf_enable" = "1"
+	register "dptf_enable" = "true"
 
 	# eMMC HS400
 	register "emmc_enable_hs400_mode" = "true"

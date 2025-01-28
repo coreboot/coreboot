@@ -15,7 +15,7 @@ chip soc/intel/skylake
 	register "eist_enable" = "true"
 
 	# Disable DPTF
-	register "dptf_enable" = "0"
+	register "dptf_enable" = "false"
 
 	register "tcc_offset" = "5" # TCC of 95C
 

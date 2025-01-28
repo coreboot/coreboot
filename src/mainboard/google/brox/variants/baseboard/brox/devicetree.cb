@@ -25,7 +25,7 @@ chip soc/intel/alderlake
 	register "disable_c1_state_auto_demotion" = "true"
 
 	# DPTF enable
-	register "dptf_enable" = "1"
+	register "dptf_enable" = "true"
 
 	register "tcc_offset" = "10"     # TCC of 90
 

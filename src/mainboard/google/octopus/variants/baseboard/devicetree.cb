@@ -55,7 +55,7 @@ chip soc/intel/apollolake
 	register "lpss_s0ix_enable" = "true"
 
 	# Enable DPTF
-	register "dptf_enable" = "1"
+	register "dptf_enable" = "true"
 
 	# Enable Audio Clock and Power gating
 	register "hdaudio_clk_gate_enable" = "1"

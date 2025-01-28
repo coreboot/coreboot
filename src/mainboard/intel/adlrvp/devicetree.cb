@@ -133,7 +133,7 @@ chip soc/intel/alderlake
 	register "tcss_aux_ori" = "0"
 
 	register "s0ix_enable" = "true"
-	register "dptf_enable" = "1"
+	register "dptf_enable" = "true"
 
 	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,

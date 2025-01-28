@@ -43,7 +43,7 @@ chip soc/intel/apollolake
 	register "emmc_rx_cmd_data_cntl2" = "0x10008"
 
 	# Enable DPTF
-	register "dptf_enable" = "1"
+	register "dptf_enable" = "true"
 
 	# PL1 override 12 W: the energy calculation is wrong with the
 	# current VR solution. Experiments show that SoC TDP max (6W) can

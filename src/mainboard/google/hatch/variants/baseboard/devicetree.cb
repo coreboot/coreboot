@@ -30,7 +30,7 @@ chip soc/intel/cannonlake
 	# Enable S0ix
 	register "s0ix_enable" = "true"
 	# Enable DPTF
-	register "dptf_enable" = "1"
+	register "dptf_enable" = "true"
 	register "power_limits_config" = "{
 		.tdp_pl1_override = 15,
 		.tdp_pl2_override = 64,

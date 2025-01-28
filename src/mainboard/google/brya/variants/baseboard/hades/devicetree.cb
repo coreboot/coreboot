@@ -15,7 +15,7 @@ chip soc/intel/alderlake
 	register "s0ix_enable" = "true"
 
 	# DPTF enable
-	register "dptf_enable" = "1"
+	register "dptf_enable" = "true"
 
 	register "tcc_offset" = "10"     # TCC of 90
 

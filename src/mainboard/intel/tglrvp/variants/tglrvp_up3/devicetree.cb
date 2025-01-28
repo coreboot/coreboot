@@ -71,7 +71,7 @@ chip soc/intel/tigerlake
 	register "s0ix_enable" = "true"
 
 	# Enable DPTF
-	register "dptf_enable" = "1"
+	register "dptf_enable" = "true"
 
 	# Add PL1 and PL2 values
 	register "power_limits_config[POWER_LIMITS_U_2_CORE]" = "{

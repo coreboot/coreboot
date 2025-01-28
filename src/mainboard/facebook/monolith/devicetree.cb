@@ -22,7 +22,7 @@ chip soc/intel/skylake
 	register "eist_enable" = "true"
 
 	# DPTF
-	register "dptf_enable" = "1"
+	register "dptf_enable" = "true"
 
 	# FSP Configuration
 	register "ScsEmmcHs400Enabled" = "1"

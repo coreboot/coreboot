@@ -198,7 +198,7 @@ chip soc/intel/tigerlake
 	register "s0ix_enable" = "true"
 
 	# Enable DPTF
-	register "dptf_enable" = "1"
+	register "dptf_enable" = "true"
 
 	# Enable External Bypass
 	register "external_bypass" = "1"

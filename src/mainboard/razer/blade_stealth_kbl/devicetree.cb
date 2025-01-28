@@ -16,7 +16,7 @@ chip soc/intel/skylake
 	register "gpe0_dw2" = "GPP_E"
 
 	# Disable DPTF
-	register "dptf_enable" = "0"
+	register "dptf_enable" = "false"
 
 	# FSP Configuration
 	register "DspEnable" = "0"

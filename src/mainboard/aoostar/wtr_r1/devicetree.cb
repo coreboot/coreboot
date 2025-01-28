@@ -12,7 +12,7 @@ chip soc/intel/alderlake
 
 	register "sagv" = "SaGv_Enabled"
 
-	register "dptf_enable" = "1"
+	register "dptf_enable" = "true"
 
 	register "s0ix_enable" = "true"
 

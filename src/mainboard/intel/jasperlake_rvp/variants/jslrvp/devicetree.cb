@@ -116,7 +116,7 @@ chip soc/intel/jasperlake
 	}"
 
 	# Enable DPTF
-	register "dptf_enable" = "1"
+	register "dptf_enable" = "true"
 
 	# Add PL1 and PL2 values
 	register "power_limits_config[JSL_N4500_6W_CORE]" = "{

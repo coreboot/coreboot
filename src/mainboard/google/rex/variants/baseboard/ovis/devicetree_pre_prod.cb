@@ -43,7 +43,7 @@ chip soc/intel/meteorlake
 	register "pch_pm_energy_report_enable" = "1"
 
 	# DPTF enable
-	register "dptf_enable" = "1"
+	register "dptf_enable" = "true"
 
 	# Temporary setting TCC of 100C = Tj max (110) - TCC_Offset (10)
 	register "tcc_offset" = "10"

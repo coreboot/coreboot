@@ -202,6 +202,7 @@ const struct pad_config gpio_table[] = {
 	/* E03:					*/
 	PAD_NC(GPP_E03, NONE),
 	/* E04:	M.2_SSD_DEVSLP0			*/
+	PAD_NC(GPP_E04, NONE),
 	/* E05:					*/
 	PAD_NC(GPP_E05, NONE),
 	/* E06:	JTAG ODT

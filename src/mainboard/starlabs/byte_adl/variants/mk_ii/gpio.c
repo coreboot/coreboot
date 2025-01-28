@@ -362,7 +362,7 @@ const struct pad_config gpio_table[] = {
 	/* H12:		Not Connected					*/
 	PAD_NC(GPP_H12, NONE),
 	/* H13:		PCH M.2 SSD Device Sleep			*/
-	PAD_CFG_GPO(GPP_H13, 0, PLTRST),
+	PAD_CFG_NF(GPP_H13, NONE, DEEP, NF5),
 	/* H14:		Not Connected					*/
 	PAD_NC(GPP_H14, NONE),
 	/* H15:		DDPB Control Clock				*/

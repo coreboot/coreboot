@@ -9,7 +9,10 @@ chip northbridge/intel/sandybridge
 
 	device domain 0 on
 		device ref peg10 on  end # PCIEX16_1
+		device ref peg12 hidden end
 		device ref igd on  end
+		device ref dev4 hidden end
+		device ref peg60 hidden end
 
 		chip southbridge/intel/bd82x6x
 			register "sata_interface_speed_support" = "0x3"

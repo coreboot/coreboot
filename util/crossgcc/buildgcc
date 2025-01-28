@@ -1038,7 +1038,8 @@ case "$TARGETARCH" in
 	x86_64*)		TARGETARCH=x86_64-elf;;
 	i386-elf)		;;
 	i386-mingw32)		;;
-	riscv-elf)		TARGETARCH=riscv64-elf
+	riscv-elf | riscv64-elf)
+				TARGETARCH=riscv64-elf
 				TARGET_GCC_OPTIONS="$TARGET_GCC_OPTIONS --with-isa-spec=20191213"
 				TARGET_BINUTILS_OPTIONS="$TARGET_BINUTILS_OPTIONS --with-isa-spec=20191213";;
 	powerpc64*-linux*)	;;

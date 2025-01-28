@@ -221,7 +221,7 @@ const struct pad_config gpio_table[] = {
 	/* D12:		GSPI 2 MOSI FPS					*/
 	PAD_NC(GPP_D12, NONE),
 	/* D13:		Wireless LAN Wake				*/
-	PAD_CFG_GPO(GPP_D13, 1, PLTRST),
+	PAD_NC(GPP_D13, NONE),
 	/* D14:		ALS Interrupt					*/
 	PAD_NC(GPP_D14, NONE),
 	/* D15:		Not Connected					*/

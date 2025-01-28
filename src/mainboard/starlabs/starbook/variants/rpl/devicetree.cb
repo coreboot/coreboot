@@ -199,7 +199,7 @@ chip soc/intel/alderlake
 									"M.2/M 2230"
 									"SlotDataBusWidth1X"
 			chip soc/intel/common/block/pcie/rtd3
-				register "enable_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D13)"
+				register "enable_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_E3)"
 				register "reset_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H2)"
 				register "srcclk_pin"			= "2"
 				register "skip_on_off_support"		= "1"

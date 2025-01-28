@@ -1,6 +1,6 @@
 chip soc/intel/cannonlake
 
-	register "PchHdaDspEnable" = "1"
+	register "PchHdaDspEnable" = "true"
 	register "PchHdaAudioLinkHda" = "1"
 
 	register "PcieRpEnable[0]" = "true"

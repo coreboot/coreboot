@@ -325,7 +325,7 @@ chip soc/intel/tigerlake
 			end
 		end
 		device ref hda on
-			register "PchHdaDspEnable" = "1"
+			register "PchHdaDspEnable" = "true"
 			register "PchHdaAudioLinkDmicEnable" = "{
 				[0] = 1,
 				[1] = 1,

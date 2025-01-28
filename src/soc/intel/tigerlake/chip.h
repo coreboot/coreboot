@@ -249,7 +249,7 @@ struct soc_intel_tigerlake_config {
 	uint16_t SataPortsDitoVal[8];
 
 	/* Audio related */
-	uint8_t PchHdaDspEnable;
+	bool PchHdaDspEnable;
 	uint8_t PchHdaAudioLinkHdaEnable;
 	uint8_t PchHdaAudioLinkDmicEnable[MAX_HD_AUDIO_DMIC_LINKS];
 	uint8_t PchHdaAudioLinkSspEnable[MAX_HD_AUDIO_SSP_LINKS];

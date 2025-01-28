@@ -22,7 +22,7 @@ chip soc/intel/cannonlake
 	register "usb3_ports[4]" = "USB3_PORT_DEFAULT(OC0)"
 	register "usb3_ports[5]" = "USB3_PORT_DEFAULT(OC0)"
 
-	register "PchHdaDspEnable" = "1"
+	register "PchHdaDspEnable" = "true"
 	register "PchHdaAudioLinkHda" = "1"
 
 	register "PcieClkSrcUsage[0]" = "1"

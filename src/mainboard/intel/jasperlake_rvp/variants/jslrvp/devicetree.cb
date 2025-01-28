@@ -56,7 +56,7 @@ chip soc/intel/jasperlake
 	# Skip the CPU replacement check
 	register "SkipCpuReplacementCheck" = "1"
 
-	register "PchHdaDspEnable" = "1"
+	register "PchHdaDspEnable" = "true"
 	register "PchHdaAudioLinkHdaEnable" = "0"
 	register "PchHdaAudioLinkSspEnable[0]" = "1"
 	register "PchHdaAudioLinkSspEnable[1]" = "1"

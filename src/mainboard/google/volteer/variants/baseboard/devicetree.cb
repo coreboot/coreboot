@@ -506,7 +506,7 @@ chip soc/intel/tigerlake
 			end
 		end
 		device ref hda on
-			register "PchHdaDspEnable" = "1"
+			register "PchHdaDspEnable" = "true"
 
 			chip drivers/sof
 				register "spkr_tplg" = "max98373"

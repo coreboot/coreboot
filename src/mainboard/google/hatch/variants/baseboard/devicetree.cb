@@ -177,7 +177,7 @@ chip soc/intel/cannonlake
 	register "PcieClkSrcClkReq[3]" = "3"
 
 	#Enable I2S Audio, SSP0, SSP1 and DMIC0, default DMIC1 N/A (by variants override)
-	register "PchHdaDspEnable" = "1"
+	register "PchHdaDspEnable" = "true"
 	register "PchHdaAudioLinkSsp0" = "1"
 	register "PchHdaAudioLinkSsp1" = "1"
 	register "PchHdaAudioLinkDmic0" = "1"

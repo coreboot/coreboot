@@ -129,7 +129,7 @@ chip soc/intel/jasperlake
 	register "PcieClkSrcClkReq[5]" = "5"
 
 	# Audio related configurations
-	register "PchHdaDspEnable" = "1"
+	register "PchHdaDspEnable" = "true"
 	register "PchHdaAudioLinkHdaEnable" = "1"
 	register "PchHdaAudioLinkSspEnable[0]" = "1"
 	register "PchHdaAudioLinkSspEnable[1]" = "1"

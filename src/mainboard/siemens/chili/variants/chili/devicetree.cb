@@ -4,7 +4,7 @@ chip soc/intel/cannonlake
 	# FSP configuration
 	register "RMT" = "0"
 
-	register "PchHdaDspEnable" = "0"
+	register "PchHdaDspEnable" = "false"
         register "PchHdaAudioLinkHda" = "1"
 
 	device domain 0 on

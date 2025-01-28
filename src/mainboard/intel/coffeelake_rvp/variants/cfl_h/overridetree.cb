@@ -39,7 +39,7 @@ chip soc/intel/cannonlake
 	register "SataPortsEnable[6]" = "1"
 	register "SataPortsEnable[7]" = "1"
 
-	register "PchHdaDspEnable" = "0"
+	register "PchHdaDspEnable" = "false"
 	register "PchHdaAudioLinkHda" = "1"
 
 	register "PcieRpEnable[0]" = "true"

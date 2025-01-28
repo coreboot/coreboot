@@ -203,7 +203,7 @@ struct soc_intel_elkhartlake_config {
 	uint16_t SataPortsDitoVal[CONFIG_MAX_SATA_PORTS];
 
 	/* Audio related */
-	uint8_t PchHdaDspEnable;
+	bool PchHdaDspEnable;
 	uint8_t PchHdaAudioLinkHdaEnable;
 	uint8_t PchHdaSdiEnable[MAX_HD_AUDIO_SDI_LINKS];
 	uint8_t PchHdaAudioLinkDmicEnable[MAX_HD_AUDIO_DMIC_LINKS];

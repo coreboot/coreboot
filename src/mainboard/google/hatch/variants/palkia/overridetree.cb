@@ -23,7 +23,7 @@ chip soc/intel/cannonlake
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # SD CARD
 
 	# No PCIe WiFi
-	register "PcieRpEnable[13]" = "0"
+	register "PcieRpEnable[13]" = "false"
 
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+

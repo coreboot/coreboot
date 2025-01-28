@@ -20,7 +20,7 @@ chip soc/intel/cannonlake
 	}"
 
 	# No PCIe WiFi
-	register "PcieRpEnable[13]" = "0"
+	register "PcieRpEnable[13]" = "false"
 
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+

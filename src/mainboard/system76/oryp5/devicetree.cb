@@ -109,35 +109,35 @@ chip soc/intel/cannonlake
 		device ref uart2	on	end
 		device ref pcie_rp21	on
 			# PCI Express root port #21 x4, Clock 11 (SSD2)
-			register "PcieRpEnable[20]" = "1"
+			register "PcieRpEnable[20]" = "true"
 			register "PcieRpLtrEnable[20]" = "1"
 			register "PcieClkSrcUsage[11]" = "20"
 			register "PcieClkSrcClkReq[11]" = "11"
 		end
 		device ref pcie_rp9	on
 			# PCI Express root port #9 x4, Clock 12 (SSD)
-			register "PcieRpEnable[8]" = "1"
+			register "PcieRpEnable[8]" = "true"
 			register "PcieRpLtrEnable[8]" = "1"
 			register "PcieClkSrcUsage[12]" = "8"
 			register "PcieClkSrcClkReq[12]" = "12"
 		end
 		device ref pcie_rp14	on
 			# PCI Express root port #14 x1, Clock 13 (WLAN)
-			register "PcieRpEnable[13]" = "1"
+			register "PcieRpEnable[13]" = "true"
 			register "PcieRpLtrEnable[13]" = "1"
 			register "PcieClkSrcUsage[13]" = "13"
 			register "PcieClkSrcClkReq[13]" = "13"
 		end
 		device ref pcie_rp15	on
 			# PCI Express root port #15 x1, Clock 14 (GLAN)
-			register "PcieRpEnable[14]" = "1"
+			register "PcieRpEnable[14]" = "true"
 			register "PcieRpLtrEnable[14]" = "1"
 			register "PcieClkSrcUsage[14]" = "14"
 			register "PcieClkSrcClkReq[14]" = "14"
 		end
 		device ref pcie_rp16	on
 			# PCI Express root port #16 x1, Clock 15 (Card Reader)
-			register "PcieRpEnable[15]" = "1"
+			register "PcieRpEnable[15]" = "true"
 			register "PcieRpLtrEnable[15]" = "1"
 			register "PcieClkSrcUsage[15]" = "15"
 			register "PcieClkSrcClkReq[15]" = "15"

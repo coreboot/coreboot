@@ -178,10 +178,10 @@ chip soc/intel/cannonlake
 	}"
 
 	# PCIe port 7 for LAN
-	register "PcieRpEnable[6]" = "1"
+	register "PcieRpEnable[6]" = "true"
 	register "PcieRpLtrEnable[6]" = "1"
 	# PCIe port 11 (x2) for NVMe hybrid storage devices
-	register "PcieRpEnable[10]" = "1"
+	register "PcieRpEnable[10]" = "true"
 	register "PcieRpLtrEnable[10]" = "1"
 	# Uses CLK SRC 0
 	register "PcieClkSrcUsage[0]" = "6"

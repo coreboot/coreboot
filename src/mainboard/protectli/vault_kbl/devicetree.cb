@@ -142,49 +142,49 @@ chip soc/intel/skylake
 		end
 		device ref pcie_rp1	on
 			# LAN
-			register "PcieRpEnable[0]" = "1"
+			register "PcieRpEnable[0]" = "true"
 			register "PcieRpAdvancedErrorReporting[0]" = "1"
 			register "PcieRpLtrEnable[0]" = "1"
 			register "PcieRpClkSrcNumber[0]" = "0"
 		end
 		device ref pcie_rp2	on
 			# LAN
-			register "PcieRpEnable[1]" = "1"
+			register "PcieRpEnable[1]" = "true"
 			register "PcieRpAdvancedErrorReporting[1]" = "1"
 			register "PcieRpLtrEnable[1]" = "1"
 			register "PcieRpClkSrcNumber[1]" = "1"
 		end
 		device ref pcie_rp3	on
 			# LAN
-			register "PcieRpEnable[2]" = "1"
+			register "PcieRpEnable[2]" = "true"
 			register "PcieRpAdvancedErrorReporting[2]" = "1"
 			register "PcieRpLtrEnable[2]" = "1"
 			register "PcieRpClkSrcNumber[2]" = "2"
 		end
 		device ref pcie_rp4	on
 			# LAN
-			register "PcieRpEnable[3]" = "1"
+			register "PcieRpEnable[3]" = "true"
 			register "PcieRpAdvancedErrorReporting[3]" = "1"
 			register "PcieRpLtrEnable[3]" = "1"
 			register "PcieRpClkSrcNumber[3]" = "3"
 		end
 		device ref pcie_rp5	on
 			# LAN
-			register "PcieRpEnable[4]" = "1"
+			register "PcieRpEnable[4]" = "true"
 			register "PcieRpAdvancedErrorReporting[4]" = "1"
 			register "PcieRpLtrEnable[4]" = "1"
 			register "PcieRpClkSrcNumber[4]" = "4"
 		end
 		device ref pcie_rp6	on
 			# LAN
-			register "PcieRpEnable[5]" = "1"
+			register "PcieRpEnable[5]" = "true"
 			register "PcieRpAdvancedErrorReporting[5]" = "1"
 			register "PcieRpLtrEnable[5]" = "1"
 			register "PcieRpClkSrcNumber[5]" = "5"
 		end
 		device ref pcie_rp9	on
 			# mPCIe WIFI
-			register "PcieRpEnable[8]" = "1"
+			register "PcieRpEnable[8]" = "true"
 			register "PcieRpAdvancedErrorReporting[8]" = "1"
 			register "PcieRpLtrEnable[8]" = "1"
 			register "PcieRpClkSrcNumber[8]" = "5"

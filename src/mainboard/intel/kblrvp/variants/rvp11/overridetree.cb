@@ -75,37 +75,37 @@ chip soc/intel/skylake
 		end
 		device ref i2c4		off end
 		device ref pcie_rp6	on
-			register "PcieRpEnable[5]" = "1"
+			register "PcieRpEnable[5]" = "true"
 			register "PcieRpClkReqSupport[5]" = "1"
 			register "PcieRpClkReqNumber[5]" = "1"
 			register "PcieRpClkSrcNumber[5]" = "1"
 		end
 		device ref pcie_rp7	on
-			register "PcieRpEnable[6]" = "1"
+			register "PcieRpEnable[6]" = "true"
 			register "PcieRpClkReqSupport[6]" = "1"
 			register "PcieRpClkReqNumber[6]" = "2"
 			register "PcieRpClkSrcNumber[6]" = "2"
 		end
 		device ref pcie_rp8	on
-			register "PcieRpEnable[7]" = "1"
+			register "PcieRpEnable[7]" = "true"
 			register "PcieRpClkReqSupport[7]" = "1"
 			register "PcieRpClkReqNumber[7]" = "3"
 			register "PcieRpClkSrcNumber[7]" = "3"
 		end
 		device ref pcie_rp9	on
-			register "PcieRpEnable[8]" = "1"
+			register "PcieRpEnable[8]" = "true"
 			register "PcieRpClkReqSupport[8]" = "1"
 			register "PcieRpClkReqNumber[8]" = "4"
 			register "PcieRpClkSrcNumber[8]" = "4"
 		end
 		device ref pcie_rp14	on
-			register "PcieRpEnable[13]" = "1"
+			register "PcieRpEnable[13]" = "true"
 			register "PcieRpClkReqSupport[13]" = "1"
 			register "PcieRpClkReqNumber[13]" = "5"
 			register "PcieRpClkSrcNumber[13]" = "5"
 		end
 		device ref pcie_rp17	on
-			register "PcieRpEnable[16]" = "1"
+			register "PcieRpEnable[16]" = "true"
 			register "PcieRpClkReqSupport[16]" = "1"
 			register "PcieRpClkReqNumber[16]" = "7"
 			register "PcieRpClkSrcNumber[16]" = "7"

@@ -52,14 +52,14 @@ chip soc/intel/cannonlake
 	register "SataPortsEnable[0]" = "1"
 	register "SataPortsEnable[2]" = "1"
 
-	register "PcieRpEnable[4]" = "1" # LAN1
-	register "PcieRpEnable[5]" = "1" # LAN2
-	register "PcieRpEnable[6]" = "1" # LAN3
-	register "PcieRpEnable[7]" = "1" # LAN4
-	register "PcieRpEnable[8]" = "1" # LAN5
-	register "PcieRpEnable[9]" = "1" # LAN6
-	register "PcieRpEnable[11]" = "1" # M.2 WiFi
-	register "PcieRpEnable[12]" = "1" # M.2 NVMe x4
+	register "PcieRpEnable[4]" = "true" # LAN1
+	register "PcieRpEnable[5]" = "true" # LAN2
+	register "PcieRpEnable[6]" = "true" # LAN3
+	register "PcieRpEnable[7]" = "true" # LAN4
+	register "PcieRpEnable[8]" = "true" # LAN5
+	register "PcieRpEnable[9]" = "true" # LAN6
+	register "PcieRpEnable[11]" = "true" # M.2 WiFi
+	register "PcieRpEnable[12]" = "true" # M.2 NVMe x4
 
 	# Enable Advanced Error Reporting for RP 5-10, 12, 13
 	register "PcieRpAdvancedErrorReporting[4]" = "1"

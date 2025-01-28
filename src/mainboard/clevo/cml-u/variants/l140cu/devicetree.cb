@@ -112,7 +112,7 @@ chip soc/intel/cannonlake
 		device ref uart2 on	end
 		device ref pcie_rp6 on
 			device pci 00.0 on end # x1 Card reader
-			register "PcieRpEnable[5]" = "1"
+			register "PcieRpEnable[5]" = "true"
 			register "PcieRpLtrEnable[5]" = "1"
 			register "PcieClkSrcUsage[3]" = "5"
 			register "PcieClkSrcClkReq[3]" = "3"
@@ -121,7 +121,7 @@ chip soc/intel/cannonlake
 			chip drivers/wifi/generic
 				device pci 00.0 on end
 			end
-			register "PcieRpEnable[7]" = "1"
+			register "PcieRpEnable[7]" = "true"
 			register "PcieRpLtrEnable[7]" = "1"
 			register "PcieClkSrcUsage[2]" = "7"
 			register "PcieClkSrcClkReq[2]" = "2"
@@ -129,7 +129,7 @@ chip soc/intel/cannonlake
 			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/E 2230 (J_WLAN1)" "SlotDataBusWidth1X"
 		end
 		device ref pcie_rp9 on
-			register "PcieRpEnable[8]" = "1"
+			register "PcieRpEnable[8]" = "true"
 			register "PcieRpLtrEnable[8]" = "1"
 			register "PcieClkSrcUsage[4]" = "8"
 			register "PcieClkSrcClkReq[4]" = "4"
@@ -137,7 +137,7 @@ chip soc/intel/cannonlake
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD2)" "SlotDataBusWidth4X"
 		end
 		device ref pcie_rp13 on
-			register "PcieRpEnable[12]" = "1"
+			register "PcieRpEnable[12]" = "true"
 			register "PcieRpLtrEnable[12]" = "1"
 			register "PcieClkSrcUsage[5]" = "12"
 			register "PcieClkSrcClkReq[5]" = "5"

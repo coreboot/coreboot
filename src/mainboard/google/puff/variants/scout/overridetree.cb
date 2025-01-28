@@ -184,47 +184,47 @@ chip soc/intel/cannonlake
 	}"
 
 	# PCIe root port 7 for LAN
-	register "PcieRpEnable[6]" = "1"
+	register "PcieRpEnable[6]" = "true"
 	register "PcieRpLtrEnable[6]" = "1"
 	# Uses CLK SRC 0
 	register "PcieClkSrcUsage[0]" = "6"
 	register "PcieClkSrcClkReq[0]" = "0"
 
 	# PCIe root port 8 for WLAN
-	register "PcieRpEnable[7]" = "1"
+	register "PcieRpEnable[7]" = "true"
 	register "PcieRpLtrEnable[7]" = "1"
 	# Uses CLK SRC 3
 	register "PcieClkSrcUsage[3]" = "7"
 	register "PcieClkSrcClkReq[3]" = "3"
 
 	# PCIe root port 9 for SSD (PCIe Lanes 9-12)
-	register "PcieRpEnable[8]" = "1"
+	register "PcieRpEnable[8]" = "true"
 	register "PcieRpLtrEnable[8]" = "1"
 	# RP 9 uses CLK SRC 1
 	register "PcieClkSrcUsage[1]" = "8"
 	register "PcieClkSrcClkReq[1]" = "1"
 
 	# PCIe root port 10-12 disabled
-	register "PcieRpEnable[9]" = "0"
-	register "PcieRpEnable[10]" = "0"
-	register "PcieRpEnable[11]" = "0"
+	register "PcieRpEnable[9]" = "false"
+	register "PcieRpEnable[10]" = "false"
+	register "PcieRpEnable[11]" = "false"
 
 	# PCIe root port 13 TPU0
-	register "PcieRpEnable[12]" = "1"
+	register "PcieRpEnable[12]" = "true"
 	register "PcieRpLtrEnable[12]" = "1"
 	# RP 13 uses CLK SRC 2
 	register "PcieClkSrcUsage[2]" = "12"
 	register "PcieClkSrcClkReq[2]" = "2"
 
 	# PCIe root port 14 TPU1
-	register "PcieRpEnable[13]" = "1"
+	register "PcieRpEnable[13]" = "true"
 	register "PcieRpLtrEnable[13]" = "1"
 	# RP 14 uses CLK SRC 4
 	register "PcieClkSrcUsage[4]" = "13"
 	register "PcieClkSrcClkReq[4]" = "4"
 
-	register "PcieRpEnable[14]" = "0"
-	register "PcieRpEnable[15]" = "0"
+	register "PcieRpEnable[14]" = "false"
+	register "PcieRpEnable[15]" = "false"
 
 	# GPIO for SD card detect
 	register "sdcard_cd_gpio" = "vSD3_CD_B"

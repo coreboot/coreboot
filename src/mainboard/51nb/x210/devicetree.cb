@@ -89,7 +89,7 @@ chip soc/intel/skylake
 		end
 		device ref pcie_rp3	on
 			# Ethernet controller
-			register "PcieRpEnable[2]" = "1"
+			register "PcieRpEnable[2]" = "true"
 			register "PcieRpClkReqSupport[2]" = "1"
 			register "PcieRpClkReqNumber[2]" = "0"
 			register "PcieRpClkSrcNumber[2]" = "0"
@@ -98,7 +98,7 @@ chip soc/intel/skylake
 		end
 		device ref pcie_rp4	on
 			# Wireless controller
-			register "PcieRpEnable[3]" = "1"
+			register "PcieRpEnable[3]" = "true"
 			register "PcieRpClkReqSupport[3]" = "1"
 			register "PcieRpClkReqNumber[3]" = "1"
 			register "PcieRpClkSrcNumber[3]" = "1"
@@ -107,7 +107,7 @@ chip soc/intel/skylake
 		end
 		device ref pcie_rp9	on
 			# NVMe controller
-			register "PcieRpEnable[8]" = "1"
+			register "PcieRpEnable[8]" = "true"
 			register "PcieRpClkReqSupport[8]" = "1"
 			register "PcieRpClkReqNumber[8]" = "4"
 			register "PcieRpClkSrcNumber[8]" = "4"

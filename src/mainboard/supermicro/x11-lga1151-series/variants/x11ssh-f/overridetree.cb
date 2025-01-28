@@ -49,34 +49,34 @@ chip soc/intel/skylake
 		end
 		device ref igpu on end
 		device ref pcie_rp1 on
-			register "PcieRpEnable[0]" = "1"
+			register "PcieRpEnable[0]" = "true"
 			device pci 00.0 on end	# GbE
 		end
 		device ref pcie_rp2 on
-			register "PcieRpEnable[1]" = "1"
+			register "PcieRpEnable[1]" = "true"
 			device pci 00.0 on end	# GbE
 		end
 		device ref pcie_rp3 on
-			register "PcieRpEnable[2]" = "1"
+			register "PcieRpEnable[2]" = "true"
 			device pci 00.0 on end	# GbE
 		end
 		device ref pcie_rp4 on
-			register "PcieRpEnable[3]" = "1"
+			register "PcieRpEnable[3]" = "true"
 			device pci 00.0 on end	# GbE
 		end
 		device ref pcie_rp5 on
-			register "PcieRpEnable[4]" = "1"
+			register "PcieRpEnable[4]" = "true"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2 2280" "SlotDataBusWidth2X"
 		end
 		device ref pcie_rp7 on
-			register "PcieRpEnable[6]" = "1"
+			register "PcieRpEnable[6]" = "true"
 			device pci 00.0 on	# Aspeed PCI Bridge
 				device pci 00.0 on end	# Aspeed 2400 VGA
 			end
 		end
 		device ref pcie_rp9 on
 			# Slot JPCIE1
-			register "PcieRpEnable[8]" = "1"
+			register "PcieRpEnable[8]" = "true"
 			smbios_slot_desc "SlotTypePciExpressGen3X4" "SlotLengthLong" "PCH SLOT4 PCI-E 3.0 X4(IN X8)" "SlotDataBusWidth4X"
 		end
 		device ref lpc_espi on

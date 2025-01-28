@@ -116,7 +116,7 @@ chip soc/intel/skylake
 		end
 		device ref pcie_rp7 on
 			# x1 TPU1
-			register "PcieRpEnable[6]" = "1"
+			register "PcieRpEnable[6]" = "true"
 			register "PcieRpClkReqSupport[6]" = "1"
 			register "PcieRpClkReqNumber[6]" = "4"
 			register "PcieRpAdvancedErrorReporting[6]" = "1"
@@ -125,7 +125,7 @@ chip soc/intel/skylake
 		end
 		device ref pcie_rp8 on
 			# x1 TPU0
-			register "PcieRpEnable[7]" = "1"
+			register "PcieRpEnable[7]" = "true"
 			register "PcieRpClkReqSupport[7]" = "1"
 			register "PcieRpClkReqNumber[7]" = "2"
 			register "PcieRpAdvancedErrorReporting[7]" = "1"
@@ -134,20 +134,20 @@ chip soc/intel/skylake
 		end
 		device ref pcie_rp9 on
 			# x4 i350 LAN
-			register "PcieRpEnable[8]" = "1"
+			register "PcieRpEnable[8]" = "true"
 			register "PcieRpClkReqSupport[8]" = "0"
 			register "PcieRpAdvancedErrorReporting[8]" = "1"
 			register "PcieRpLtrEnable[8]" = "1"
 			register "PcieRpClkSrcNumber[8]" = "2"
 		end
 		device ref pcie_rp10 off
-			register "PcieRpEnable[9]" = "0"
+			register "PcieRpEnable[9]" = "false"
 		end
 		device ref pcie_rp11 off
-			register "PcieRpEnable[10]" = "0"
+			register "PcieRpEnable[10]" = "false"
 		end
 		device ref pcie_rp12 off
-			register "PcieRpEnable[11]" = "0"
+			register "PcieRpEnable[11]" = "false"
 		end
 	end
 end

@@ -323,7 +323,7 @@ chip soc/intel/skylake
 		end
 		device ref i2c4			on end
 		device ref pcie_rp1		on
-			register "PcieRpEnable[0]" = "1"
+			register "PcieRpEnable[0]" = "true"
 			register "PcieRpClkReqSupport[0]" = "1"
 			register "PcieRpClkReqNumber[0]" = "1"
 			register "PcieRpAdvancedErrorReporting[0]" = "1"

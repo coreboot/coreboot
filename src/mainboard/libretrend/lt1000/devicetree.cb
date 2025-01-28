@@ -165,11 +165,11 @@ chip soc/intel/skylake
 			register "PcieRpClkSrcNumber[9]"  = "3"
 		end
 		device ref pcie_rp11	on
-			register "PcieRpEnable[10]" = "1"
+			register "PcieRpEnable[10]" = "true"
 			register "PcieRpClkSrcNumber[10]" = "3"
 		end
 		device ref pcie_rp12	on
-			register "PcieRpEnable[11]" = "1"
+			register "PcieRpEnable[11]" = "true"
 			register "PcieRpClkSrcNumber[11]" = "3"
 		end
 		device ref lpc_espi	on

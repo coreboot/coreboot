@@ -4,7 +4,7 @@
 #include <intelblocks/cse.h>
 #include <timestamp.h>
 
-#define MSEC_TO_USEC(x) (x * 1000)
+#define MSEC_TO_USEC(x) ((s64)x * 1000)
 
 enum cb_err cse_get_boot_performance_data(struct cse_boot_perf_rsp *boot_perf_rsp)
 {

@@ -227,7 +227,7 @@ const struct pad_config gpio_table[] = {
 	/* D15:		Not Connected					*/
 	PAD_NC(GPP_D15, NONE),
 	/* D16:		PCH M.2 SSD Power Enable			*/
-	PAD_CFG_GPO(GPP_D16, 1, PLTRST),
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_D16, 1, DEEP, NONE),
 	/* D17:		Not used		Fingerprint ID		*/
 	PAD_NC(GPP_D17, NONE),
 	/* D18:		Bluetooth Wake					*/
@@ -323,7 +323,7 @@ const struct pad_config gpio_table[] = {
 	/* F16:		Not Connected					*/
 	PAD_NC(GPP_F16, NONE),
 	/* F17:		Touch Panel Reset				*/
-	PAD_CFG_GPO_GPIO_DRIVER(GPP_F17, 1, DEEP, NONE),
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_F17, 1, PLTRST, NONE),
 	/* F18:		Touch Panel Interrupt				*/
 	PAD_CFG_GPI_APIC(GPP_F18, NONE, PLTRST, LEVEL, INVERT),
 	/* F19:		Not Connected					*/
@@ -338,7 +338,7 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F23, NONE),
 
 	/* H0:		PCH M.2 SSD Reset				*/
-	PAD_CFG_GPO(GPP_H0, 1, PLTRST),
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_H0, 1, PLTRST, NONE),
 	/* H1:		BFX Strap 2 Bit 3	Weak Internal PD 20K	*/
 	PAD_CFG_GPO(GPP_H1, 0, DEEP),
 	/* H2:		Wireless LAN Reset				*/

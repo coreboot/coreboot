@@ -248,14 +248,14 @@ const struct pad_config gpio_table[] = {
 	 * End:		GPP_H23
 	 */
 	/* H00:	M.2_PCH_SSD_RESET_N		*/
-	PAD_CFG_GPO(GPP_H00, 1, PLTRST),
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_H00, 1, PLTRST, NONE),
 	/* H01:	FLASH RECOVERY
 	 *		HIGH:	ENABLED
 	 *		LOW:	DISABLED
 	 *		WEAK INTERNAL PD 20K	*/
 	PAD_NC(GPP_H01, NONE),
 	/* H02:	WLAN_RST_N			*/
-	PAD_CFG_GPO(GPP_H02, 1, PLTRST),
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_H02, 1, PLTRST, NONE),
 	/* H03:					*/
 	PAD_NC(GPP_H03, NONE),
 	/* H04:					*/
@@ -265,7 +265,7 @@ const struct pad_config gpio_table[] = {
 	/* H06:					*/
 	PAD_NC(GPP_H06, NONE),
 	/* H07:	M.2_CPU_SSD_PWREN		*/
-	PAD_CFG_GPO(GPP_H07, 1, PLTRST),
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_H07, 1, DEEP, NONE),
 	/* H08:					*/
 	PAD_NC(GPP_H08, NONE),
 	/* H09:					*/

@@ -229,7 +229,7 @@ const struct pad_config gpio_table[] = {
 	/* D13:		Wireless LAN Wake				*/
 	PAD_NC(GPP_D13, NONE),
 	/* D14:		CPU M.2 SSD Power Enable			*/
-	PAD_CFG_GPO(GPP_D14, 1, PLTRST),
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_D14, 1, DEEP, NONE),
 	/* D15:		Not Connected					*/
 	PAD_NC(GPP_D15, NONE),
 	/* D16:		PCH M.2 SSD Power Enable			*/
@@ -250,7 +250,7 @@ const struct pad_config gpio_table[] = {
 	/* E3:		WiFi RF Kill					*/
 	PAD_CFG_GPO_GPIO_DRIVER(GPP_E3, 1, DEEP, NONE),
 	/* E4:		Retimer Force Power				*/
-	PAD_CFG_GPO(GPP_E4, 0, PLTRST),
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_E4, 0, DEEP, NONE),
 	/* E5:		Not Connected					*/
 	PAD_NC(GPP_E5, NONE),
 	/* E6:		JTAG ODT		No internal PD
@@ -327,7 +327,7 @@ const struct pad_config gpio_table[] = {
 	/* F19:		Not Connected					*/
 	PAD_NC(GPP_F19, NONE),
 	/* F20:		CPU M.2 SSD Reset				*/
-	PAD_CFG_GPO(GPP_F20, 1, PLTRST),
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_F20, 1, PLTRST, NONE),
 	/* F21:		GPPC_F21					*/
 	PAD_NC(GPP_F21, NONE),
 	/* F22:		Not Connected					*/
@@ -340,7 +340,7 @@ const struct pad_config gpio_table[] = {
 	/* H1:		BFX Strap 2 Bit 3	Weak Internal PD 20K	*/
 	PAD_CFG_GPO(GPP_H1, 0, DEEP),
 	/* H2:		Wireless LAN Reset				*/
-	PAD_CFG_GPO(GPP_H2, 1, PLTRST),
+	PAD_CFG_GPO_GPIO_DRIVER(GPP_H2, 1, PLTRST, NONE),
 	/* H3:		Not Connected					*/
 	PAD_NC(GPP_H3, NONE),
 	/* H4:		I2C 0 SDA		Touchpad		*/

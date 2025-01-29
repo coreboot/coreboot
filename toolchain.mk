@@ -187,7 +187,10 @@ $(foreach arch,$(sort $(foreach stage,\
 		echo not-coreboot; else echo not-coreboot; fi), \
 		$(eval COMPILERFAIL:=1)\
 		$(warning The coreboot toolchain for '$(arch)'\
-			architecture was not found.)))
+			architecture was not found.)\
+		$(if $(CC_$(arch)),\
+			$(warning $(CC_$(arch)) -v)\
+			$(warning $(shell $(CC_$(arch)) -v)))))
 # If iasl doesn't match the current coreboot version, fail the test
 # TODO: Figure out if iasl is even needed for the build.
 $(if $(shell if [ -n "$(IASL)" ]; then \

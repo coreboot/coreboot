@@ -12,6 +12,9 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOC_INTEL_BAYTRAIL
 	select SUPERIO_ITE_IT8728F
 
+config CBFS_SIZE
+	default 0x500000
+
 config MAINBOARD_DIR
 	default "bostentech/gbyt4"
 

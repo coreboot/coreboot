@@ -81,7 +81,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		},
 
 		.ect			= true,
-		.UserBd			= BOARD_TYPE_MOBILE,
+		.UserBd			= BOARD_TYPE_ULT_ULX,
 		.LpDdrDqDqsReTraining	= true,
 
 		.lp5x_config = {

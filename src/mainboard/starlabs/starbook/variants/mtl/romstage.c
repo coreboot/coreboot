@@ -36,5 +36,5 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	if (get_uint_option("wireless", 1) == 0)
 		mupd->FspmConfig.PcieRpEnableMask &= ~(1 << 8);
 
-	mupd->FspmConfig.PchHdaSubSystemIds = 0x14f1035e;
+	mupd->FspmConfig.PchHdaSubSystemIds = 0x70381e50;
 };

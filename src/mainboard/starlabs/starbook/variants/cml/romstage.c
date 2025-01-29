@@ -66,7 +66,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 		.rcomp_targets = {100, 40, 20, 20, 26},
 		.dq_pins_interleaved = 0,
 		.vref_ca_config = 2,
-		.ect = 0,
+		.ect = true,
 	};
 
 	const uint8_t vtd = get_uint_option("vtd", 1);

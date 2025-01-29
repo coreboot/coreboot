@@ -9,6 +9,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	const struct mb_cfg mem_config = {
 		.type = MEM_TYPE_DDR4,
+		.ect = false,
 	};
 
 	const bool half_populated = false;

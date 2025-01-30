@@ -4,5 +4,6 @@
 #define _SOC_INTEL_ALDERLAKE_ROMSTAGE_UX_H_
 
 bool ux_inform_user_of_update_operation(const char *name);
+bool ux_inform_user_of_poweroff_operation(const char *name);
 
 #endif /* _SOC_INTEL_ALDERLAKE_ROMSTAGE_UX_H_ */

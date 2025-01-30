@@ -32,3 +32,8 @@ bool ux_inform_user_of_update_operation(const char *name)
 {
 	return ux_inform_user_of_operation(name, UX_LOCALE_MSG_MEMORY_TRAINING);
 }
+
+bool ux_inform_user_of_poweroff_operation(const char *name)
+{
+	return ux_inform_user_of_operation(name, UX_LOCALE_MSG_LOW_BATTERY);
+}

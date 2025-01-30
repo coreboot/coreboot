@@ -30,12 +30,14 @@ else ifeq ($(CONFIG_BMP_LOGO_COMPRESS_LZ4),y)
 	BMP_LOGO_COMPRESS_FLAG := LZ4
 endif
 
-cbfs-files-$(CONFIG_CHROMEOS_FW_SPLASH_SCREEN) += cb_logo.bmp
-cb_logo.bmp-file := $(call strip_quotes,$(CONFIG_CHROMEOS_LOGO_PATH))
-cb_logo.bmp-type := raw
-cb_logo.bmp-compression := $(BMP_LOGO_COMPRESS_FLAG)
+define add_bmp_logo_file_to_cbfs
+cbfs-files-$$($(1)) += $(2)
+$(2)-file := $$(call strip_quotes,$$($(3)))
+$(2)-type := raw
+$(2)-compression := $$(BMP_LOGO_COMPRESS_FLAG)
+endef
 
-cbfs-files-$(CONFIG_CHROMEOS_FW_SPLASH_SCREEN) += cb_plus_logo.bmp
-cb_plus_logo.bmp-file := $(call strip_quotes,$(CONFIG_CHROMEBOOK_PLUS_LOGO_PATH))
-cb_plus_logo.bmp-type := raw
-cb_plus_logo.bmp-compression := $(BMP_LOGO_COMPRESS_FLAG)
+$(eval $(call add_bmp_logo_file_to_cbfs,CONFIG_CHROMEOS_FW_SPLASH_SCREEN, \
+	      cb_logo.bmp,CONFIG_CHROMEOS_LOGO_PATH))
+$(eval $(call add_bmp_logo_file_to_cbfs,CONFIG_CHROMEOS_FW_SPLASH_SCREEN, \
+	      cb_plus_logo.bmp,CONFIG_CHROMEBOOK_PLUS_LOGO_PATH))

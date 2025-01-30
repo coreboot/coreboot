@@ -35,11 +35,6 @@ uint64_t get_top_of_upper_memory(void);
 uint16_t get_pmbase(void);
 uint16_t get_tcobase(void);
 
-/*
-* Secure functions.
-*/
-void *memcpy_s(void *dest, const void *src, size_t n);
-
 void mmio_andthenor32(void *addr, uint32_t val2and, uint32_t val2or);
 uint8_t silicon_stepping(void);
 

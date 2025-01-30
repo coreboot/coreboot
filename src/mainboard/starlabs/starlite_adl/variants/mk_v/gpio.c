@@ -60,8 +60,8 @@ const struct pad_config gpio_table[] = {
 	/* A10:		ESPI Reset					*/
 	/* A11:		Webcam Camera Reset				*/
 	PAD_NC(GPP_A11, NONE),
-	/* A12:		PCH M.2 SSD PEDET				*/
-	PAD_CFG_NF(GPP_A12, NONE, DEEP, NF1),
+	/* A12:		Not Connected					*/
+	PAD_NC(GPP_A12, NONE),
 	/* A13:		BlueTooth RF Kill				*/
 	PAD_CFG_GPO_GPIO_DRIVER(GPP_A13, 1, DEEP, NONE),
 	/* A14:		Camera Power Enable				*/

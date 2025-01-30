@@ -200,7 +200,7 @@ static const struct sm_object pci_hot_plug = SM_DECLARE_BOOL({
 });
 #endif
 
-#if CONFIG(SOC_INTEL_ALDERLAKE)
+#if CONFIG(SOC_INTEL_ALDERLAKE) || CONFIG(SOC_INTEL_METEORLAKE)
 static const struct sm_object pciexp_aspm = SM_DECLARE_ENUM({
 	.opt_name	= "pciexp_aspm",
 	.ui_name	= "PCI ASPM",
@@ -351,7 +351,7 @@ static struct sm_obj_form pci = {
 		#if CONFIG(BOARD_STARLABS_STARBOOK_ADL)
 		&pci_hot_plug,
 		#endif
-		#if CONFIG(SOC_INTEL_ALDERLAKE)
+		#if CONFIG(SOC_INTEL_ALDERLAKE) || CONFIG(SOC_INTEL_METEORLAKE)
 		&pciexp_clk_pm,
 		&pciexp_aspm,
 		&pciexp_l1ss,

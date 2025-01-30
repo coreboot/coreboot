@@ -21,7 +21,7 @@
 	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}, \
 }
 
-#define ssd0_dxio_descriptor {				\
+#define phx_ssd0_dxio_descriptor {				\
 	.engine_type = PCIE_ENGINE,			\
 	.port_present = true,				\
 	.start_lane = 16,				\
@@ -36,10 +36,10 @@
 	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}, \
 }
 
-#define wlan_dxio_descriptor {				\
+#define phx_wlan_dxio_descriptor {				\
 	.engine_type = PCIE_ENGINE,			\
-	.port_present = true,				\
-	.start_lane = 15,				\
+	.port_present = !CONFIG(DISABLE_WLAN_SD_BIRMANPLUS),	\
+	.start_lane = CONFIG(ENABLE_WLAN02_BIRMANPLUS) ? 14 : 15,	\
 	.end_lane = 15,		                  \
 	.device_number = 2,				\
 	.function_number = 2,				\
@@ -65,11 +65,11 @@
 	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}, \
 }
 
-#define wwan_dxio_descriptor {				\
+#define phx_wwan_dxio_descriptor {				\
 	.engine_type = PCIE_ENGINE,			\
-	.port_present = true,				\
+	.port_present = !CONFIG(DISABLE_WWAN_GBE_BIRMANPLUS),				\
 	.start_lane = 12,				\
-	.end_lane = 12,		\
+	.end_lane = CONFIG(ENABLE_WWAN02_BIRMANPLUS) ? 13 : 12,		\
 	.device_number = 2,				\
 	.function_number = 3,				\
 	.link_speed_capability = GEN_MAX,		\
@@ -80,7 +80,7 @@
 	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}, \
 }
 
-#define gbe_dxio_descriptor {				\
+#define phx_gbe_dxio_descriptor {				\
 	.engine_type = PCIE_ENGINE,			\
 	.port_present = true,				\
 	.start_lane = 13,				\
@@ -95,7 +95,7 @@
 	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}, \
 }
 
-#define sd_dxio_descriptor {				\
+#define phx_sd_dxio_descriptor {				\
 	.engine_type = PCIE_ENGINE,			\
 	.port_present = false,				\
 	.start_lane = 14,				\
@@ -105,7 +105,7 @@
 	.link_speed_capability = GEN_MAX,		\
 	.turn_off_unused_lanes = true,			\
 	.link_aspm = ASPM_L1,				\
-	.link_hotplug = HOTPLUG_DISABLED,		\
+	.link_hotplug = HOTPLUG_BASIC,		\
 	.clk_req = CLK_REQ5,				\
 	.port_params = {PP_PSPP_AC, 0x144, PP_PSPP_DC, 0x133}, \
 }
@@ -186,12 +186,16 @@ void mainboard_get_dxio_ddi_descriptors(
 	printk(BIOS_DEBUG, "Using Birmanplus PHX DXIO\n");
 	static const fsp_dxio_descriptor birmanplus_phx_dxio_descriptors[] = {
 		phx_mxm_dxio_descriptor,
-		ssd0_dxio_descriptor,
-		wlan_dxio_descriptor,
+		phx_ssd0_dxio_descriptor,
+		phx_wlan_dxio_descriptor,
 		phx_ssd1_dxio_descriptor,
-		wwan_dxio_descriptor,
-		gbe_dxio_descriptor,
-		sd_dxio_descriptor,
+		phx_wwan_dxio_descriptor,
+#if CONFIG(ENABLE_GBE_BIRMANPLUS)
+		phx_gbe_dxio_descriptor,
+#endif
+#if CONFIG(ENABLE_SDCARD_BIRMANPLUS)
+		phx_sd_dxio_descriptor,
+#endif
 	};
 
 	*dxio_descs = birmanplus_phx_dxio_descriptors;

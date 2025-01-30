@@ -389,6 +389,9 @@ struct elog_event_extended_event {
 #define  ELOG_FW_POST_RAM_CSE_SYNC         0x1
 #define  ELOG_FW_CSE_SYNC_AT_PAYLOAD       0x2
 
+#define ELOG_TYPE_LOW_BATTERY_INDICATOR   0xbe
+#define  ELOG_FW_ISSUE_SHUTDOWN            0x0
+
 /* Only the 7-LSB are used for size */
 #define ELOG_MAX_EVENT_SIZE                    0x7F
 

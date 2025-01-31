@@ -287,7 +287,7 @@ static inline bool uses_relative_vbt_addr(opregion_header_t *header)
  * values correctly for the opregion.
  */
 static void opregion_add_ext_vbt(igd_opregion_t *opregion, uint8_t *ext_vbt,
-				optionrom_vbt_t *vbt)
+				optionrom_vbt_t *vbt, size_t ext_vbt_size)
 {
 	opregion_header_t *header = &opregion->header;
 	/* Copy VBT into extended VBT region (at offset 8 KiB) */
@@ -301,7 +301,7 @@ static void opregion_add_ext_vbt(igd_opregion_t *opregion, uint8_t *ext_vbt,
 	else
 		opregion->mailbox3.rvda = (uintptr_t)ext_vbt;
 
-	opregion->mailbox3.rvds = vbt->hdr_vbt_size;
+	opregion->mailbox3.rvds = ext_vbt_size;
 }
 
 /* Initialize IGD OpRegion, called from ACPI code and OS drivers */
@@ -311,6 +311,7 @@ enum cb_err intel_gma_init_igd_opregion(void)
 	struct region_device rdev;
 	optionrom_vbt_t *vbt = NULL;
 	size_t opregion_size = sizeof(igd_opregion_t);
+	size_t ext_vbt_size;
 
 	if (acpi_is_wakeup_s3())
 		return intel_gma_restore_opregion();
@@ -331,7 +332,9 @@ enum cb_err intel_gma_init_igd_opregion(void)
 	}
 
 	/* Add the space for the extended VBT header even if it's not used */
-	opregion_size += vbt->hdr_vbt_size;
+	/* Align the VBT to nearest 512 byte boundary */
+	ext_vbt_size = ALIGN_UP(vbt->hdr_vbt_size, 512);
+	opregion_size += ext_vbt_size;
 
 	opregion = cbmem_add(CBMEM_ID_IGD_OPREGION, opregion_size);
 	if (!opregion) {
@@ -353,7 +356,7 @@ enum cb_err intel_gma_init_igd_opregion(void)
 	if (is_ext_vbt_required(opregion, vbt)) {
 		/* Place extended VBT just after opregion */
 		uint8_t *ext_vbt = (uint8_t *)opregion + sizeof(*opregion);
-		opregion_add_ext_vbt(opregion, ext_vbt, vbt);
+		opregion_add_ext_vbt(opregion, ext_vbt, vbt, ext_vbt_size);
 	} else {
 		/* Raw VBT size which can fit in gvd1 */
 		memcpy(opregion->vbt.gvd1, vbt, vbt->hdr_vbt_size);

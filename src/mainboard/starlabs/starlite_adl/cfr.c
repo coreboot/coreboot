@@ -193,6 +193,18 @@ static const struct sm_object pciexp_l1ss = SM_DECLARE_ENUM({
 });
 #endif
 
+static const struct sm_object power_led = SM_DECLARE_ENUM({
+	.opt_name	= "power_led",
+	.ui_name	= "Power LED Brightness",
+	.ui_helptext	= "Control the maximum brightness of the power LED",
+	.default_value	= 0,
+	.values		= (const struct sm_enum_value[]) {
+				{ "Normal",		0		},
+				{ "Reduced",		1		},
+				SM_ENUM_VALUE_END,
+	},
+});
+
 static const struct sm_object reboot_counter = SM_DECLARE_NUMBER({
 	.opt_name	= "reboot_counter",
 	.ui_name	= "Reboot Counter",
@@ -254,6 +266,7 @@ static struct sm_obj_form power = {
 		#if CONFIG(EC_STARLABS_CHARGING_SPEED)
 		&charging_speed,
 		#endif
+		&power_led,
 		&power_on_after_fail,
 		NULL
 	},

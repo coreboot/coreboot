@@ -12,6 +12,7 @@ enum mec5035_cmd {
 	CMD_RADIO_CTRL = 0x2b,
 	CMD_ACPI = 0x3a,
 	CMD_POWER_BUTTON_TO_HOST = 0x3e,
+	CMD_MUTE_CTRL = 0x60,
 	CMD_EN_CPU_THERMAL_THROTTLE = 0xbf,
 	CMD_CPU_OK = 0xc2,
 };
@@ -39,6 +40,12 @@ enum ec_radio_state {
 enum ec_power_button_route {
 	EC = 0,
 	HOST
+};
+
+#define MUTE_CTRL_NUM_ARGS 1
+enum ec_mute {
+	MUTE = 0,
+	UNMUTE,
 };
 
 u8 mec5035_mouse_touchpad(enum ec_mouse_setting setting);

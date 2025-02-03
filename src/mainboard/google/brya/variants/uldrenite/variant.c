@@ -37,6 +37,17 @@ static const struct pad_config touchscreen_disable_pads[] = {
 	PAD_NC(GPP_E17, NONE),
 };
 
+static const struct pad_config lte_disable_pads[] = {
+	/* A8  : WWAN_RF_DISABLE_ODL */
+	PAD_NC(GPP_A8, NONE),
+	/* F12 : WWAN_RST_L */
+	PAD_NC_LOCK(GPP_F12, NONE, LOCK_CONFIG),
+	/* F13 : PLTRST_WWAN# */
+	PAD_NC(GPP_F13, NONE),
+	/* H23  : WWAN_EN */
+	PAD_NC(GPP_H23, NONE),
+};
+
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 {
 	if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_NONE))) {
@@ -44,10 +55,17 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		gpio_padbased_override(padbased_table, touchscreen_disable_pads,
 				ARRAY_SIZE(touchscreen_disable_pads));
 	}
+	if (fw_config_probe(FW_CONFIG(DB_CELLULAR, CELLULAR_ABSENT))) {
+		printk(BIOS_INFO, "Disable Cellular GPIO pins.\n");
+		gpio_padbased_override(padbased_table, lte_disable_pads,
+				ARRAY_SIZE(lte_disable_pads));
+	}
 }
 
 void variant_init(void)
 {
+	if (fw_config_probe(FW_CONFIG(DB_CELLULAR, CELLULAR_ABSENT)))
+		return;
 	/*
 	 * RW350R power on seuqence:
 	 * De-assert WWAN_EN -> 20ms -> de-assert WWAN_RST -> 30ms ->

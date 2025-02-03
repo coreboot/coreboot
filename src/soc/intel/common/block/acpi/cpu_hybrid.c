@@ -18,8 +18,8 @@
 struct cpu_apic_info_type {
 	/*
 	 * Ordered APIC IDs based on core type.
-	 * Array begins with Performance Cores' APIC IDs,
-	 * then followed by Efficeint Cores's APIC IDs.
+	 * Array begins with BSP, then come all Performance Cores' APIC IDs,
+	 * then followed by Efficient Cores's APIC IDs.
 	 */
 	int32_t apic_ids[CONFIG_MAX_CPUS];
 
@@ -27,11 +27,15 @@ struct cpu_apic_info_type {
 	uint16_t total_cpu_cnt;
 
 	/*
-	 * Total Performance core count. This will be used
-	 * to identify the start of Efficient Cores's
+	 * This will be used to identify the start of Efficient Cores's
 	 * APIC ID list
 	 */
-	uint16_t perf_cpu_cnt;
+	uint16_t eff_cores_start;
+
+	/*
+	 * Set to true if bsp is a performance core
+	 */
+	bool is_bsp_perf;
 };
 
 static struct cpu_apic_info_type cpu_apic_info;
@@ -48,12 +52,25 @@ static void acpi_set_hybrid_cpu_apicid_order(void *unused)
 	int32_t eff_apic_ids[CONFIG_MAX_CPUS] = {0};
 	extern struct cpu_info cpu_infos[];
 	uint32_t i, j = 0;
+	u32 bsp_lapicid = lapicid();
+
+	/* As per spec first comes BSP.
+	   See 5.2.12.1 MADT Processor Local APIC / SAPIC Structure Entry Order
+	   " platform firmware should list the boot processor as the first
+	     processor entry in the MADT. "
+	 */
+	cpu_apic_info.apic_ids[0] = bsp_lapicid;
 
 	for (i = 0; i < ARRAY_SIZE(cpu_apic_info.apic_ids); i++) {
 		if (!cpu_infos[i].cpu)
 			continue;
+		if (cpu_infos[i].cpu->path.apic.apic_id == bsp_lapicid) {
+			cpu_apic_info.is_bsp_perf =
+				cpu_infos[i].cpu->path.apic.core_type == CPU_TYPE_PERF;
+			continue;
+		}
 		if (cpu_infos[i].cpu->path.apic.core_type == CPU_TYPE_PERF)
-			cpu_apic_info.apic_ids[perf_core_cnt++] =
+			cpu_apic_info.apic_ids[1 + perf_core_cnt++] =
 				cpu_infos[i].cpu->path.apic.apic_id;
 		else
 			eff_apic_ids[eff_core_cnt++] =
@@ -61,18 +78,18 @@ static void acpi_set_hybrid_cpu_apicid_order(void *unused)
 	}
 
 	if (perf_core_cnt > 1)
-		bubblesort(cpu_apic_info.apic_ids, perf_core_cnt, NUM_ASCENDING);
+		bubblesort(cpu_apic_info.apic_ids + 1, perf_core_cnt, NUM_ASCENDING);
 
-	for (i = perf_core_cnt; j < eff_core_cnt; i++, j++)
+	for (i = perf_core_cnt + 1; j < eff_core_cnt; i++, j++)
 		cpu_apic_info.apic_ids[i] = eff_apic_ids[j];
 
 	if (eff_core_cnt > 1)
-		bubblesort(&cpu_apic_info.apic_ids[perf_core_cnt], eff_core_cnt, NUM_ASCENDING);
+		bubblesort(&cpu_apic_info.apic_ids[perf_core_cnt + 1], eff_core_cnt, NUM_ASCENDING);
 
 	/* Populate total core count */
-	cpu_apic_info.total_cpu_cnt = perf_core_cnt + eff_core_cnt;
+	cpu_apic_info.total_cpu_cnt = perf_core_cnt + eff_core_cnt + 1;
 
-	cpu_apic_info.perf_cpu_cnt = perf_core_cnt;
+	cpu_apic_info.eff_cores_start = perf_core_cnt + 1;
 }
 
 static unsigned long acpi_create_madt_lapics_hybrid(unsigned long current)
@@ -132,7 +149,7 @@ static void acpigen_cppc_update_nominal_freq_perf(const char *pkg_path, s32 core
 
 	acpi_get_cpu_nomi_perf(&eff_core_nom_perf, &perf_core_nom_perf);
 
-	if (core_id < cpu_apic_info.perf_cpu_cnt)
+	if (core_id == 0 ? cpu_apic_info.is_bsp_perf : (core_id < cpu_apic_info.eff_cores_start))
 		acpigen_set_package_element_int(pkg_path, CPPC_NOM_PERF_IDX, perf_core_nom_perf);
 	else
 		acpigen_set_package_element_int(pkg_path, CPPC_NOM_PERF_IDX,

@@ -1,6 +1,349 @@
 chip soc/intel/alderlake
 
-        device domain 0 on
-        end
+	register "sagv" = "SaGv_Enabled"
 
+	# EMMC Tx CMD Delay
+	# Refer to EDS-Vol2-42.3.7.
+	# [14:8] steps of delay for DDR mode, each 125ps, range: 0 - 39.
+	# [6:0] steps of delay for SDR mode, each 125ps, range: 0 - 39.
+	register "common_soc_config.emmc_dll.emmc_tx_cmd_cntl" = "0x505"
+
+	# EMMC TX DATA Delay 1
+	# Refer to EDS-Vol2-42.3.8.
+	# [14:8] steps of delay for HS400, each 125ps, range: 0 - 78.
+	# [6:0] steps of delay for SDR104/HS200, each 125ps, range: 0 - 79.
+	register "common_soc_config.emmc_dll.emmc_tx_data_cntl1" = "0x909"
+
+	# EMMC TX DATA Delay 2
+	# Refer to EDS-Vol2-42.3.9.
+	# [30:24] steps of delay for SDR50, each 125ps, range: 0 - 79.
+	# [22:16] steps of delay for DDR50, each 125ps, range: 0 - 78.
+	# [14:8] steps of delay for SDR25/HS50, each 125ps, range: 0 -79.
+	# [6:0] steps of delay for SDR12, each 125ps. Range: 0 - 79.
+	register "common_soc_config.emmc_dll.emmc_tx_data_cntl2" = "0x1C2A2828"
+
+	# EMMC RX CMD/DATA Delay 1
+	# Refer to EDS-Vol2-42.3.10.
+	# [30:24] steps of delay for SDR50, each 125ps, range: 0 - 119.
+	# [22:16] steps of delay for DDR50, each 125ps, range: 0 - 78.
+	# [14:8] steps of delay for SDR25/HS50, each 125ps, range: 0 - 119.
+	# [6:0] steps of delay for SDR12, each 125ps, range: 0 - 119.
+	register "common_soc_config.emmc_dll.emmc_rx_cmd_data_cntl1" = "0x1C1B4F1B"
+
+	# EMMC RX CMD/DATA Delay 2
+	# Refer to EDS-Vol2-42.3.12.
+	# [17:16] stands for Rx Clock before Output Buffer,
+	#         00: Rx clock after output buffer,
+	#         01: Rx clock before output buffer,
+	#         10: Automatic selection based on working mode.
+	#         11: Reserved
+	# [14:8] steps of delay for Auto Tuning Mode, each 125ps, range: 0 - 39.
+	# [6:0] steps of delay for HS200, each 125ps, range: 0 - 79.
+	register "common_soc_config.emmc_dll.emmc_rx_cmd_data_cntl2" = "0x10023"
+
+	# EMMC Rx Strobe Delay
+	# Refer to EDS-Vol2-42.3.11.
+	# [14:8] Rx Strobe Delay DLL 1(HS400 Mode), each 125ps, range: 0 - 39.
+	# [6:0] Rx Strobe Delay DLL 2(HS400 Mode), each 125ps, range: 0 - 39.
+	register "common_soc_config.emmc_dll.emmc_rx_strobe_cntl" = "0x11515"
+
+	# SOC Aux orientation override:
+	# This is a bitfield that corresponds to up to 4 TCSS ports.
+	# Bits (0,1) allocated for TCSS Port1 configuration and Bits (2,3)for TCSS Port2.
+	# TcssAuxOri = 0101b
+	# Bit0,Bit2 set to "1" indicates no retimer on USBC Ports
+	# Bit1,Bit3 set to "0" indicates Aux lines are not swapped on the
+	# motherboard to USBC connector
+	register "tcss_aux_ori" = "0x1"
+
+	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_A21, .pad_auxn_dc = GPP_A22}"
+
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# USB2_C0
+	register "usb2_ports[1]" = "USB2_PORT_MID(OC0)"		# USB2_A0
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC1)"		# USB2_A1
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC2)"		# USB2_A2
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC3)"		# USB2_A3
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# USB2_A4
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for PCIe WLAN
+	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for CNVi WLAN
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type A port A1
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type A port A2
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type A port A3
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type A port A4
+
+	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC_SKIP)" # USB3_C0
+	register "tcss_ports[1]" = "TCSS_PORT_DEFAULT(OC_SKIP)" # USB3/2 Type A port A0
+
+	register "serial_io_i2c_mode" = "{
+	[PchSerialIoIndexI2C0] = PchSerialIoPci,
+	[PchSerialIoIndexI2C1] = PchSerialIoDisabled,
+	[PchSerialIoIndexI2C2] = PchSerialIoDisabled,
+	[PchSerialIoIndexI2C3] = PchSerialIoPci,
+	[PchSerialIoIndexI2C4] = PchSerialIoDisabled,
+	[PchSerialIoIndexI2C5] = PchSerialIoDisabled,
+	}"
+
+	# Enable the Cnvi BT Audio Offload
+	register "cnvi_bt_audio_offload" = "1"
+
+	# Intel Common SoC Config
+	#+-------------------+---------------------------+
+	#| Field             |  Value                    |
+	#+-------------------+---------------------------+
+	#| I2C0              | TPM. Early init is        |
+	#|                   | required to set up a BAR  |
+	#|                   | for TPM communication     |
+	#| I2C3              | Audio                     |
+	#+-------------------+---------------------------+
+	register "common_soc_config" = "{
+		.i2c[0] = {
+			.early_init = 1,
+			.speed = I2C_SPEED_FAST_PLUS,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST_PLUS,
+				.scl_lcnt = 55,
+				.scl_hcnt = 30,
+				.sda_hold = 7,
+			}
+		},
+		.i2c[3] = {
+			.speed = I2C_SPEED_FAST,
+			.speed_config[0] = {
+				.speed = I2C_SPEED_FAST,
+				.scl_lcnt = 158,
+				.scl_hcnt = 79,
+				.sda_hold = 7,
+			}
+		},
+	}"
+
+	device domain 0 on
+		device ref dtt on
+			chip drivers/intel/dptf
+				## sensor information
+				register "options.tsr[0].desc" = ""Memory""
+				register "options.tsr[1].desc" = ""Charger""
+				register "options.tsr[2].desc" = ""Ambient""
+
+				# TODO: below values are initial reference values only
+				## Passive Policy
+				register "policies.passive" = "{
+					[0] = DPTF_PASSIVE(CPU,         CPU,           95, 5000),
+					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 75, 5000),
+					[2] = DPTF_PASSIVE(CHARGER,     TEMP_SENSOR_1, 75, 5000),
+					[3] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_2, 75, 5000),
+				}"
+
+				## Critical Policy
+				register "policies.critical" = "{
+					[0] = DPTF_CRITICAL(CPU,               105, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,      85, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,      85, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,      85, SHUTDOWN),
+				}"
+
+				register "controls.power_limits" = "{
+					.pl1 = {
+							.min_power = 5500,
+							.max_power = 6000,
+							.time_window_min = 28 * MSECS_PER_SEC,
+							.time_window_max = 28 * MSECS_PER_SEC,
+							.granularity = 200
+						},
+					.pl2 = {
+							.min_power = 25000,
+							.max_power = 25000,
+							.time_window_min = 1,
+							.time_window_max = 1,
+							.granularity = 1000
+						}
+				}"
+
+				## Charger Performance Control (Control, mA)
+				register "controls.charger_perf" = "{
+					[0] = { 255, 1700 },
+					[1] = {  24, 1500 },
+					[2] = {  16, 1000 },
+					[3] = {   8,  500 }
+				}"
+
+				device generic 0 on end
+			end
+		end
+		device ref cnvi_wifi on
+			chip drivers/wifi/generic
+				register "enable_cnvi_ddr_rfim" = "true"
+				device generic 0 on end
+			end
+		end
+		device ref i2c3 on
+			chip drivers/i2c/generic
+				register "hid" = ""RTL5682""
+				register "name" = ""RT58""
+				register "desc" = ""Headset Codec""
+				register "irq_gpio" = "ACPI_GPIO_IRQ_EDGE_BOTH(GPP_A23)"
+				# Set the jd_src to RT5668_JD1 for jack detection
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on end
+			end
+		end
+		device ref hda on
+			chip drivers/sof
+				register "jack_tplg" = "rt5682"
+				device generic 0 on end
+			end
+		end
+		device ref pcie_rp11 on
+			# Enable wlan PCIe 11 using clk 2
+			register "pch_pcie_rp[PCH_RP(10)]" = "{
+				.clk_src = 2,
+				.clk_req = 2,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_DW1_03"
+				register "add_acpi_dma_property" = "true"
+				use usb2_port8 as bluetooth_companion
+				device pci 00.0 on end
+			end
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B11)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H20)"
+				register "srcclk_pin" = "2"
+				device generic 0 on end
+			end
+		end
+		device ref emmc on end
+		device ref pch_espi on
+			chip ec/google/chromeec
+				use conn0 as mux_conn[0]
+				device pnp 0c09.0 on end
+			end
+		end
+		device ref pmc hidden
+			chip drivers/intel/pmc_mux
+				device generic 0 on
+					chip drivers/intel/pmc_mux/conn
+						use usb2_port1 as usb2_port
+						use tcss_usb3_port1 as usb3_port
+						device generic 0 alias conn0 on end
+					end
+				end
+			end
+		end
+		device ref tcss_xhci on
+			chip drivers/usb/acpi
+				device ref tcss_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-C Port C0""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(BACK, RIGHT, ACPI_PLD_GROUP(2, 1))"
+						device ref tcss_usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port A0""
+						register "type" = "UPC_TYPE_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(FRONT, RIGHT, ACPI_PLD_GROUP(1, 1))"
+						device ref tcss_usb3_port2 on end
+					end
+				end
+			end
+		end
+		device ref xhci on
+			chip drivers/usb/acpi
+				device ref xhci_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-C Port C0""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_C(BACK, RIGHT, ACPI_PLD_GROUP(2, 1))"
+						device ref usb2_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port A0""
+						register "type" = "UPC_TYPE_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(FRONT, RIGHT, ACPI_PLD_GROUP(1, 1))"
+						device ref usb2_port2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port A1""
+						register "type" = "UPC_TYPE_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(BACK, LEFT, ACPI_PLD_GROUP(2, 3))"
+						device ref usb2_port3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port A2""
+						register "type" = "UPC_TYPE_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(FRONT, CENTER, ACPI_PLD_GROUP(1, 2))"
+						device ref usb2_port4 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port A3""
+						register "type" = "UPC_TYPE_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(FRONT, LEFT, ACPI_PLD_GROUP(1, 3))"
+						device ref usb2_port5 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port A4""
+						register "type" = "UPC_TYPE_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(BACK, CENTER, ACPI_PLD_GROUP(2, 2))"
+						device ref usb2_port6 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "reset_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D4)"
+						device ref usb2_port8 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""CNVI Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						register "reset_gpio" =
+							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D4)"
+						device ref usb2_port10 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port A1""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(BACK, LEFT, ACPI_PLD_GROUP(2, 3))"
+						device ref usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port A2""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(FRONT, CENTER, ACPI_PLD_GROUP(1, 2))"
+						device ref usb3_port2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port A3""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(FRONT, LEFT, ACPI_PLD_GROUP(1, 3))"
+						device ref usb3_port3 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB3 Type-A Port A4""
+						register "type" = "UPC_TYPE_USB3_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(BACK, CENTER, ACPI_PLD_GROUP(2, 2))"
+						device ref usb3_port4 on end
+					end
+				end
+			end
+		end
+	end
 end

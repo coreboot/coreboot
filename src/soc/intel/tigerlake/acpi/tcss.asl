@@ -331,7 +331,8 @@ Scope (\_SB.PCI0)
 		Name (_CRS, ResourceTemplate () {
 			Memory32Fixed (ReadWrite, IOM_BASE_ADDRESS, IOM_BASE_SIZE)
 		})
-		Name (_STA, 0xF)
+		/* ACPI_STATUS_DEVICE_HIDDEN_ON */
+		Name (_STA, 0xB)
 	}
 
 	/*

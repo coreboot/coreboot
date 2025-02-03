@@ -138,6 +138,8 @@ static void acpi_create_madt(acpi_header_t *header, void *unused)
 	acpi_madt_t *madt = (acpi_madt_t *)header;
 	unsigned long current = (unsigned long)madt + sizeof(acpi_madt_t);
 
+	memset(madt, 0, sizeof(*madt));
+
 	if (acpi_fill_header(header, "APIC", MADT, sizeof(acpi_madt_t)) != CB_SUCCESS)
 		return;
 

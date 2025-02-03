@@ -4,8 +4,10 @@
 #include <baseboard/variants.h>
 #include <soc/gpio.h>
 
-/* Pad configuration in ramstage for Sundance */
+/* Pad configuration in ramstage for Pujjoga and Pujjogatwin */
 static const struct pad_config override_gpio_table[] = {
+	/* F12 : WWAN_RST_L */
+	PAD_CFG_GPO_LOCK(GPP_F12, 1, LOCK_CONFIG),
 	/* A8  : WWAN_RF_DISABLE_ODL */
 	PAD_CFG_GPO(GPP_A8, 1, DEEP),
 	/* A18  : HDMI_HPD */
@@ -34,8 +36,6 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC_LOCK(GPP_E20, NONE, LOCK_CONFIG),
 	/* E21  : NC */
 	PAD_NC_LOCK(GPP_E21, NONE, LOCK_CONFIG),
-	/* F12 : WWAN_RST_L */
-	PAD_CFG_GPO_LOCK(GPP_F12, 1, LOCK_CONFIG),
 	/* H12  : NC */
 	PAD_NC_LOCK(GPP_H12, NONE, LOCK_CONFIG),
 	/* H13  : NC */
@@ -84,6 +84,8 @@ static const struct pad_config early_gpio_table[] = {
 
 /* Pad configuration in romstage for Sundance */
 static const struct pad_config romstage_gpio_table[] = {
+	/* F12 : WWAN_RST_L */
+	PAD_CFG_GPO(GPP_F12, 1, DEEP),
 	/* Enable touchscreen, hold in reset */
 	/* C0  : SMBCLK ==> EN_PP3300_TCHSCR */
 	PAD_CFG_GPO(GPP_C0, 1, DEEP),

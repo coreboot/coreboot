@@ -350,6 +350,8 @@ chip soc/amd/cezanne
 				end
 			end # Audio
 		end
+		device ref gpp_bridge_b off end  # Internal GPP Bridge 1 to Bus B
+		device ref gpp_bridge_c off end  # Internal GPP Bridge 2 to Bus C
 
 		device ref lpc_bridge on
 			chip ec/google/chromeec

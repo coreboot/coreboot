@@ -367,8 +367,8 @@ enum cb_err intel_gma_init_igd_opregion(void)
 	/* 8kb */
 	opregion->header.size = sizeof(igd_opregion_t) / 1024;
 
-	// FIXME We just assume we're mobile for now
-	opregion->header.mailboxes = MAILBOXES_MOBILE;
+	// Supported mailboxes
+	opregion->header.mailboxes = IGD_MAILBOXES;
 
 	// TODO Initialize Mailbox 1
 	opregion->mailbox1.clid = 1;

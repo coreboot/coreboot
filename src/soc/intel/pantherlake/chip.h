@@ -42,6 +42,14 @@ struct ibecc_config {
 	uint16_t region_mask[MAX_IBECC_REGIONS];
 };
 
+/* SaGv gears */
+enum soc_intel_pantherlake_sagv_gears {
+	GEAR_AUTO = 0,
+	GEAR_1 = 1,
+	GEAR_2 = 2,
+	GEAR_4 = 4,
+};
+
 enum soc_intel_pantherlake_power_limits {
 	PTL_U_1_CORE,
 	PTL_H_1_CORE,

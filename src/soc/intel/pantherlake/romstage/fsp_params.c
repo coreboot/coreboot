@@ -73,6 +73,11 @@ static void fill_fspm_mrc_params(FSP_M_CONFIG *m_cfg,
 			m_cfg->SaGvWpMask = config->sagv_wp_bitmap;
 		else
 			m_cfg->SaGvWpMask = SAGV_POINTS_0_1_2_3;
+
+		for (size_t i = 0; i < HOB_MAX_SAGV_POINTS; i++) {
+			m_cfg->SaGvFreq[i] = config->sagv_freq_mhz[i];
+			m_cfg->SaGvGear[i] = config->sagv_gear[i];
+		}
 	}
 
 	if (config->max_dram_speed_mts)

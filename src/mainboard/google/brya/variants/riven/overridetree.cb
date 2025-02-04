@@ -21,6 +21,9 @@ fw_config
 		option WFC_MIPI_OVTI5675	1
 		option WFC_MIPI_OVTI8856	2
 	end
+	field ALL_WIFI 19 19
+		option WIFI_ENABLE		1
+	end
 end
 
 chip soc/intel/alderlake
@@ -230,6 +233,7 @@ chip soc/intel/alderlake
 				register "enable_cnvi_ddr_rfim" = "true"
 				device generic 0 on
 					probe WIFI_TYPE WIFI_CNVI
+					probe ALL_WIFI WIFI_ENABLE
 				end
 			end
 		end
@@ -482,6 +486,7 @@ chip soc/intel/alderlake
 		end
 		device ref pcie_rp4 on
 			probe WIFI_TYPE WIFI_PCIE
+			probe ALL_WIFI WIFI_ENABLE
 			# Enable wlan PCIe 4 using clk 2
 			register "pch_pcie_rp[PCH_RP(4)]" = "{
 				.clk_src = 2,
@@ -495,6 +500,7 @@ chip soc/intel/alderlake
 				use usb2_port8 as bluetooth_companion
 				device pci 00.0 on
 					probe WIFI_TYPE WIFI_PCIE
+					probe ALL_WIFI WIFI_ENABLE
 				end
 			end
 			chip soc/intel/common/block/pcie/rtd3
@@ -503,6 +509,7 @@ chip soc/intel/alderlake
 				register "srcclk_pin" = "2"
 				device generic 0 on
 					probe WIFI_TYPE WIFI_PCIE
+					probe ALL_WIFI WIFI_ENABLE
 				end
 			end
 		end
@@ -624,6 +631,7 @@ chip soc/intel/alderlake
 							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D4)"
 						device ref usb2_port8 on
 							probe WIFI_TYPE WIFI_PCIE
+							probe ALL_WIFI WIFI_ENABLE
 						end
 					end
 					chip drivers/usb/acpi
@@ -633,6 +641,7 @@ chip soc/intel/alderlake
 							"ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D4)"
 						device ref usb2_port10 on
 							probe WIFI_TYPE WIFI_CNVI
+							probe ALL_WIFI WIFI_ENABLE
 						end
 					end
 					chip drivers/usb/acpi

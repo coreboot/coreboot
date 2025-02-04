@@ -11,6 +11,9 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		.type = MEM_TYPE_DDR5,
 		.ect = false,
 		.UserBd = BOARD_TYPE_MOBILE,
+		.ddr_config = {
+			.dq_pins_interleaved = false,
+		}
 	};
 
 	const bool half_populated = false;

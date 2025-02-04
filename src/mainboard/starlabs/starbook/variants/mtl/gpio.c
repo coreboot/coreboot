@@ -57,7 +57,7 @@ const struct pad_config gpio_table[] = {
 	/* V13					*/
 	PAD_NC(GPP_V13, NONE),
 	/* V14:	WAKE_N				*/
-	PAD_CFG_NF(GPP_V14, NONE, DEEP, NF1),
+	PAD_NC(GPP_V14, NONE),
 	/* V15:					*/
 	PAD_NC(GPP_V15, NONE),
 	/* V16:					*/

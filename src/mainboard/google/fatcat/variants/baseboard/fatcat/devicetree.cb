@@ -33,6 +33,18 @@ chip soc/intel/pantherlake
 	# Enable SAGv
 	register "sagv" = "SAGV_ENABLED"
 
+	register "sagv_freq_mhz[0]" = "2400"
+	register "sagv_gear[0]" = "GEAR_4"
+
+	register "sagv_freq_mhz[1]" = "3200"
+	register "sagv_gear[1]" = "GEAR_4"
+
+	register "sagv_freq_mhz[2]" = "6000"
+	register "sagv_gear[2]" = "GEAR_4"
+
+	register "sagv_freq_mhz[3]" = "6400"
+	register "sagv_gear[3]" = "GEAR_4"
+
 	# Enable s0ix
 	register "s0ix_enable" = "true"
 

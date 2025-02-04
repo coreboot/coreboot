@@ -16,7 +16,7 @@ chip soc/amd/mendocino
 		device pci 02.4 alias gpp_bridge_3 hidden ops amd_external_pcie_gpp_ops end
 
 		device pci 08.0 on end # Dummy device function, do not disable
-		device pci 08.1 alias gpp_bridge_a off  # Internal GPP Bridge 0 to Bus A
+		device pci 08.1 alias gpp_bridge_a on  # Internal GPP Bridge 0 to Bus A
 			ops amd_internal_pcie_gpp_ops
 			device pci 0.0 alias gfx off ops amd_graphics_ops end # Internal GPU (GFX)
 			device pci 0.1 alias gfx_hda off end # Display HD Audio Controller (GFXAZ)
@@ -65,7 +65,7 @@ chip soc/amd/mendocino
 			device pci 0.6 alias hda off end # Audio Processor HD Audio Controller (main AZ)
 			device pci 0.7 alias mp2 off end # Sensor Fusion Hub (MP2)
 		end
-		device pci 08.3 alias gpp_bridge_c off # Internal GPP Bridge 2 to Bus C
+		device pci 08.3 alias gpp_bridge_c on # Internal GPP Bridge 2 to Bus C
 			ops amd_internal_pcie_gpp_ops
 			device pci 0.0 alias xhci_2 off end # Might also be a dummy device with different PCI DID
 			# When using this as XHCI2, the mainboard devicetree needs to add ops xhci_pci_ops

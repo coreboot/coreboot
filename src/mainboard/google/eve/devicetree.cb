@@ -336,7 +336,7 @@ chip soc/intel/skylake
 			end
 		end # I2C #4
 		device ref pcie_rp1	on
-			register "PcieRpClkReqSupport[0]" = "1"
+			register "PcieRpClkReqSupport[0]" = "true"
 			register "PcieRpClkReqNumber[0]" = "1"
 			register "PcieRpAdvancedErrorReporting[0]" = "1"
 			register "PcieRpLtrEnable[0]" = "true"
@@ -348,7 +348,7 @@ chip soc/intel/skylake
 			end
 		end
 		device ref pcie_rp5	on
-			register "PcieRpClkReqSupport[4]" = "1"
+			register "PcieRpClkReqSupport[4]" = "true"
 			register "PcieRpClkReqNumber[4]" = "4"
 			register "PcieRpAdvancedErrorReporting[4]" = "1"
 			register "PcieRpLtrEnable[4]" = "true"

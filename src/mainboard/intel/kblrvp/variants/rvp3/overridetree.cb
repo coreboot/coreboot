@@ -77,31 +77,31 @@ chip soc/intel/skylake
 		device ref cio		on  end
 		device ref pcie_rp1	on
 			# PCIE x4 -> SLOT1
-			register "PcieRpClkReqSupport[0]" = "1"
+			register "PcieRpClkReqSupport[0]" = "true"
 			register "PcieRpClkReqNumber[0]" = "2"
 			register "PcieRpClkSrcNumber[0]" = "2"
 		end
 		device ref pcie_rp5	on
 			# PCIE x1 -> SLOT2/LAN
-			register "PcieRpClkReqSupport[4]" = "1"
+			register "PcieRpClkReqSupport[4]" = "true"
 			register "PcieRpClkReqNumber[4]" = "3"
 			register "PcieRpClkSrcNumber[4]" = "3"
 		end
 		device ref pcie_rp6	on
 			# PCIE x1 -> SLOT3
-			register "PcieRpClkReqSupport[5]" = "1"
+			register "PcieRpClkReqSupport[5]" = "true"
 			register "PcieRpClkReqNumber[5]" = "1"
 			register "PcieRpClkSrcNumber[5]" = "1"
 		end
 		device ref pcie_rp9	on
 			# PCIE x1 -> WLAN
-			register "PcieRpClkReqSupport[8]" = "1"
+			register "PcieRpClkReqSupport[8]" = "true"
 			register "PcieRpClkReqNumber[8]" = "5"
 			register "PcieRpClkSrcNumber[8]" = "5"
 		end
 		device ref pcie_rp10	on
 			# PCIE x1 -> WiGig
-			register "PcieRpClkReqSupport[9]" = "1"
+			register "PcieRpClkReqSupport[9]" = "true"
 			register "PcieRpClkReqNumber[9]" = "4"
 			register "PcieRpClkSrcNumber[9]" = "4"
 		end

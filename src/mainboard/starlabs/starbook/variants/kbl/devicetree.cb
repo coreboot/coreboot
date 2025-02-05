@@ -88,7 +88,7 @@ chip soc/intel/skylake
 		end
 		device ref uart2	on  end
 		device ref pcie_rp6	on
-			register "PcieRpClkReqSupport[5]"	= "1"
+			register "PcieRpClkReqSupport[5]"	= "true"
 			register "PcieRpClkReqNumber[5]"	= "4"
 			register "PcieRpClkSrcNumber[5]"	= "4"
 			register "PcieRpLtrEnable[5]"		= "true"
@@ -99,7 +99,7 @@ chip soc/intel/skylake
 			end
 		end
 		device ref pcie_rp9	on
-			register "PcieRpClkReqSupport[8]"	= "1"
+			register "PcieRpClkReqSupport[8]"	= "true"
 			register "PcieRpClkReqNumber[8]"	= "0"
 			register "PcieRpClkSrcNumber[8]"	= "0"
 			register "PcieRpLtrEnable[8]"		= "true"

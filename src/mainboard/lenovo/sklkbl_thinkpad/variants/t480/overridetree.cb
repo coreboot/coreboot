@@ -37,7 +37,7 @@ chip soc/intel/skylake
 
 		# dGPU - x4
 		device ref pcie_rp1 on
-			register "PcieRpClkReqSupport[0]"		= "1"
+			register "PcieRpClkReqSupport[0]"		= "true"
 			register "PcieRpClkReqNumber[0]"		= "0"
 			register "PcieRpClkSrcNumber[0]"		= "0"
 			register "PcieRpAdvancedErrorReporting[0]"	= "1"
@@ -55,7 +55,7 @@ chip soc/intel/skylake
 
 		# M.2 WLAN - x1
 		device ref pcie_rp7 on
-			register "PcieRpClkReqSupport[6]"		= "1"
+			register "PcieRpClkReqSupport[6]"		= "true"
 			register "PcieRpClkReqNumber[6]"		= "2"
 			register "PcieRpClkSrcNumber[6]"		= "2"
 			register "PcieRpAdvancedErrorReporting[6]"	= "1"
@@ -64,7 +64,7 @@ chip soc/intel/skylake
 
 		# M.2 WWAN - x2
 		device ref pcie_rp5 on
-			register "PcieRpClkReqSupport[4]"		= "1"
+			register "PcieRpClkReqSupport[4]"		= "true"
 			register "PcieRpClkReqNumber[4]"		= "3"
 			register "PcieRpClkSrcNumber[4]"		= "3"
 			register "PcieRpAdvancedErrorReporting[4]"	= "1"
@@ -73,7 +73,7 @@ chip soc/intel/skylake
 
 		# TB3 (Alpine Ridge LP) - x2
 		device ref pcie_rp9 on
-			register "PcieRpClkReqSupport[8]"		= "1"
+			register "PcieRpClkReqSupport[8]"		= "true"
 			register "PcieRpClkReqNumber[8]"		= "4"
 			register "PcieRpClkSrcNumber[8]"		= "4"
 			register "PcieRpAdvancedErrorReporting[8]"	= "1"
@@ -83,7 +83,7 @@ chip soc/intel/skylake
 
 		# M.2 2280 caddy - x2
 		device ref pcie_rp11 on
-			register "PcieRpClkReqSupport[10]"		= "1"
+			register "PcieRpClkReqSupport[10]"		= "true"
 			register "PcieRpClkReqNumber[10]"		= "5"
 			register "PcieRpClkSrcNumber[10]"		= "5"
 			register "PcieRpAdvancedErrorReporting[10]"	= "1"

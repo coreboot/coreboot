@@ -361,7 +361,7 @@ chip soc/intel/skylake
 			end
 		end
 		device ref pcie_rp1		on
-			register "PcieRpClkReqSupport[0]" = "1"
+			register "PcieRpClkReqSupport[0]" = "true"
 			register "PcieRpClkReqNumber[0]" = "1"
 			register "PcieRpClkSrcNumber[0]" = "1"
 			register "PcieRpAdvancedErrorReporting[0]" = "1"

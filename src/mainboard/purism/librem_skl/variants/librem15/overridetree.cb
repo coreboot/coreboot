@@ -24,7 +24,7 @@ chip soc/intel/skylake
 		end
 		device ref pcie_rp5 on  end
 		device ref pcie_rp9 on
-			register "PcieRpClkReqSupport[8]" = "0"
+			register "PcieRpClkReqSupport[8]" = "false"
 			register "PcieRpClkReqNumber[8]" = "2"
 		end
 	end

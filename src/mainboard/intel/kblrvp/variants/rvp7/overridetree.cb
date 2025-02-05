@@ -124,27 +124,27 @@ chip soc/intel/skylake
 			}"
 		end
 		device ref pcie_rp3	on
-			register "PcieRpClkReqSupport[2]" = "1"
+			register "PcieRpClkReqSupport[2]" = "true"
 			register "PcieRpClkReqNumber[2]" = "5"
 			register "PcieRpClkSrcNumber[2]" = "5"
 		end
 		device ref pcie_rp4	on
-			register "PcieRpClkReqSupport[3]" = "1"
+			register "PcieRpClkReqSupport[3]" = "true"
 			register "PcieRpClkReqNumber[3]" = "2"
 			register "PcieRpClkSrcNumber[3]" = "2"
 		end
 		device ref pcie_rp5	on
-			register "PcieRpClkReqSupport[4]" = "1"
+			register "PcieRpClkReqSupport[4]" = "true"
 			register "PcieRpClkReqNumber[4]" = "3"
 			register "PcieRpClkSrcNumber[4]" = "3"
 		end
 		device ref pcie_rp6	on
-			register "PcieRpClkReqSupport[5]" = "1"
+			register "PcieRpClkReqSupport[5]" = "true"
 			register "PcieRpClkReqNumber[5]" = "4"
 			register "PcieRpClkSrcNumber[5]" = "4"
 		end
 		device ref pcie_rp9	on
-			register "PcieRpClkReqSupport[8]" = "1"
+			register "PcieRpClkReqSupport[8]" = "true"
 			register "PcieRpClkReqNumber[8]" = "1"
 			register "PcieRpClkSrcNumber[8]" = "1"
 		end

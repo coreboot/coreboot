@@ -181,7 +181,7 @@ chip soc/intel/skylake
 			register "PcieRpAdvancedErrorReporting[8]" = "1"
 			register "PcieRpLtrEnable[8]" = "true"
 			register "PcieRpClkSrcNumber[8]" = "5"
-			register "PcieRpClkReqSupport[8]" = "1"
+			register "PcieRpClkReqSupport[8]" = "true"
 			register "PcieRpClkReqNumber[8]" = "0"
 			smbios_slot_desc
 				"SlotTypePciExpressMini52pinWithoutBSKO"

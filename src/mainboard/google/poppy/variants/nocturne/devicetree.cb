@@ -325,7 +325,7 @@ chip soc/intel/skylake
 			end
 		end
 		device ref pcie_rp1		on
-			register "PcieRpClkReqSupport[0]" = "1"
+			register "PcieRpClkReqSupport[0]" = "true"
 			register "PcieRpClkReqNumber[0]" = "1"
 			register "PcieRpClkSrcNumber[0]" = "1"
 			register "PcieRpAdvancedErrorReporting[0]" = "1"
@@ -337,7 +337,7 @@ chip soc/intel/skylake
 		end
 		device ref pcie_rp9		on
 			# x2
-			register "PcieRpClkReqSupport[8]" = "1"
+			register "PcieRpClkReqSupport[8]" = "true"
 			register "PcieRpClkReqNumber[8]" = "2"
 			register "PcieRpClkSrcNumber[8]" = "3"
 			register "PcieRpAdvancedErrorReporting[8]" = "1"

@@ -78,7 +78,7 @@ chip soc/intel/skylake
 		device ref uart2	on  end
 		device ref i2c4		on  end
 		device ref pcie_rp1	on
-			register "PcieRpClkReqSupport[0]" = "1"
+			register "PcieRpClkReqSupport[0]" = "true"
 			register "PcieRpClkReqNumber[0]" = "1"
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_DW0_16"

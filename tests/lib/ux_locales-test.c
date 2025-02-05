@@ -7,22 +7,14 @@
 #include <ux_locales.h>
 #include <vb2_api.h>
 
-#define DATA_DEFAULT                                                                           \
-	(                                                                                      \
-		"\x01"  /* Version. */                                                         \
-		"name_1\x00"  /* name_1, langs = [0, 2, 30]. */                                \
-		"0\x00translation_1_0\x00"                                                     \
-		"2\x00translation_1_2\x00"                                                     \
-		"30\x00translation_1_30\x00"                                                   \
-		"\x01"                                                                         \
-		"name_15\x00"  /* name_15, langs = [4, 25, 60]. */                             \
-		"4\x00translation_15_4\x00"                                                    \
-		"25\x00translation_15_25\x00"                                                  \
-		"60\x00translation_15_60\x00"                                                  \
-		"\x01"                                                                         \
-		"name_20\x00"  /* name_20, langs = [8]. */                                     \
-		"8\x00translation_20_8\x00"                                                    \
-		"\x01"                                                                         \
+#define DATA_DEFAULT \
+	( \
+		"\x01" /* Version. */                                                       \
+		"memory_training_desc\x00" /* memory_training_desc, langs = [0, 2, 30]. */  \
+		"0\x00memory_training_desc_0\x00"                                           \
+		"2\x00memory_training_desc_2\x00"                                           \
+		"30\x00memory_training_desc_30\x00"                                         \
+		"\x01"                                                                      \
 	)
 const unsigned char data_default[] = DATA_DEFAULT;
 
@@ -73,7 +65,7 @@ struct vb2_context *vboot_get_context(void)
 
 /* Test states for test_ux_locales_get_text with valid CBFS data. */
 struct ux_locales_test_state {
-	const char *name;
+	enum ux_locale_msg msg_id;
 	uint32_t lang_id;
 	const char *expect;
 };
@@ -116,9 +108,12 @@ static void test_ux_locales_get_text(void **state)
 	struct ux_locales_test_state *s = *state;
 	const char *ret;
 
-	will_return(_cbfs_alloc, true);
-	will_return(vb2api_get_locale_id, s->lang_id);
-	ret = ux_locales_get_text(s->name);
+	if (s->msg_id < UX_LOCALE_MSG_NUM) {
+		will_return(_cbfs_alloc, true);
+		will_return(vb2api_get_locale_id, s->lang_id);
+	}
+
+	ret = ux_locales_get_text(s->msg_id);
 	if (s->expect) {
 		assert_non_null(ret);
 		assert_string_equal(ret, s->expect);
@@ -131,14 +126,18 @@ static void test_ux_locales_bad_cbfs(void **state)
 {
 	will_return(_cbfs_alloc, false);
 	will_return_maybe(vb2api_get_locale_id, 0);
-	assert_null(ux_locales_get_text("name_1"));
+	assert_string_equal(ux_locales_get_text(UX_LOCALE_MSG_MEMORY_TRAINING),
+		 "Your device is finishing an update. This may take 1-2 minutes.\n"
+		 "Please do not turn off your device.");
 }
 
 static void test_ux_locales_bad_version(void **state)
 {
 	will_return(_cbfs_alloc, true);
 	will_return(vb2api_get_locale_id, 0);
-	assert_null(ux_locales_get_text("name_1"));
+	assert_string_equal(ux_locales_get_text(UX_LOCALE_MSG_MEMORY_TRAINING),
+		 "Your device is finishing an update. This may take 1-2 minutes.\n"
+		 "Please do not turn off your device.");
 }
 
 static void test_ux_locales_two_calls(void **state)
@@ -148,26 +147,26 @@ static void test_ux_locales_two_calls(void **state)
 	/* We do not need to ensure that we cached the cbfs region. */
 	will_return_always(_cbfs_alloc, true);
 
-	/* Call #1: read (15, 60). */
-	will_return(vb2api_get_locale_id, 60);
-	ret = ux_locales_get_text("name_15");
+	/* Call #1: read (1, 30). */
+	will_return(vb2api_get_locale_id, 30);
+	ret = ux_locales_get_text(UX_LOCALE_MSG_MEMORY_TRAINING);
 	assert_non_null(ret);
-	assert_string_equal(ret, "translation_15_60");
+	assert_string_equal(ret, "memory_training_desc_30");
 
 	/* Call #2: read (1, 0). */
 	will_return(vb2api_get_locale_id, 0);
-	ret = ux_locales_get_text("name_1");
+	ret = ux_locales_get_text(UX_LOCALE_MSG_MEMORY_TRAINING);
 	assert_non_null(ret);
-	assert_string_equal(ret, "translation_1_0");
+	assert_string_equal(ret, "memory_training_desc_0");
 }
 
 static void test_ux_locales_null_terminated(void **state)
 {
 	will_return_always(_cbfs_alloc, true);
-	will_return_always(vb2api_get_locale_id, 8);
+	will_return_always(vb2api_get_locale_id, 30);
 
 	/* Verify the access to the very last text. */
-	assert_non_null(ux_locales_get_text("name_20"));
+	assert_non_null(ux_locales_get_text(UX_LOCALE_MSG_MEMORY_TRAINING));
 
 	/* Modify the last 2 bytes from "\x00\x01" to "XX" and unmap, */
 	data.raw[data.size - 1] = 'X';
@@ -175,24 +174,27 @@ static void test_ux_locales_null_terminated(void **state)
 	ux_locales_unmap();
 
 	/* The last few characters are now changed so that the data is not NULL terminated.
-	   This will prevent us from accessing the last text. */
-	assert_null(ux_locales_get_text("name_20"));
+	   This will prevent us from accessing the last text therefore, make use of fallback
+	   text message */
+	assert_string_equal(ux_locales_get_text(UX_LOCALE_MSG_MEMORY_TRAINING),
+			 "Your device is finishing an update. This may take 1-2 minutes.\n"
+			 "Please do not turn off your device.");
 }
 
 /*
- * This macro helps test ux_locales_get_text with `_name` and `_lang_id`.
+ * This macro helps test ux_locales_get_text with `_msg_id` and `_lang_id`.
  * If `_expect` is NULL, then the function should not find anything.
  * Otherwise, the function should find the corresponding expect value.
  */
-#define UX_LOCALES_GET_TEXT_TEST(_name, _lang_id, _expect)                                     \
+#define UX_LOCALES_GET_TEXT_TEST(_msg_id, _lang_id, _expect)                               \
 	((struct CMUnitTest) {                                                                 \
-		.name = "test_ux_locales_get_text(name=" _name ", lang_id=" #_lang_id          \
+		.name = "test_ux_locales_get_text(msg_id=" #_msg_id ", lang_id=" #_lang_id          \
 			", expect=" #_expect ")",                                              \
 		.test_func = test_ux_locales_get_text,                                         \
 		.setup_func = setup_default,                                                   \
 		.teardown_func = teardown_unmap,                                               \
 		.initial_state = &(struct ux_locales_test_state) {                             \
-			.name = _name,                                                         \
+			.msg_id = _msg_id,                                                         \
 			.lang_id = _lang_id,                                                   \
 			.expect = _expect,                                                     \
 		},                                                                             \
@@ -202,21 +204,14 @@ int main(void)
 {
 	const struct CMUnitTest tests[] = {
 		/* Get text successfully. */
-		UX_LOCALES_GET_TEXT_TEST("name_1", 0, "translation_1_0"),
-		/* Get text with name and id both in the middle. */
-		UX_LOCALES_GET_TEXT_TEST("name_15", 25, "translation_15_25"),
-		/* Ensure we check the whole string of 'name'.
-		   ('name_2' is the prefix of 'name_20') */
-		UX_LOCALES_GET_TEXT_TEST("name_2", 3, NULL),
-		/* Ensure we check the whole string of 'lang_id'.
-		   (id:'2' is the prefix of id:'25' in 'name_15') */
-		UX_LOCALES_GET_TEXT_TEST("name_15", 2, NULL),
-		/* Ensure we will fallback to 0. */
-		UX_LOCALES_GET_TEXT_TEST("name_1", 7, "translation_1_0"),
-		/* Do not search for locale id with unmatched name. */
-		UX_LOCALES_GET_TEXT_TEST("name_15", 8, NULL),
+		UX_LOCALES_GET_TEXT_TEST(UX_LOCALE_MSG_MEMORY_TRAINING, 0, "memory_training_desc_0"),
+		UX_LOCALES_GET_TEXT_TEST(UX_LOCALE_MSG_MEMORY_TRAINING, 2, "memory_training_desc_2"),
+		/* Check the whole string of lang_id. */
+		UX_LOCALES_GET_TEXT_TEST(UX_LOCALE_MSG_MEMORY_TRAINING, 3, "memory_training_desc_0"),
 		/* Validity check of lang_id > 100. We will fallback to 0. */
-		UX_LOCALES_GET_TEXT_TEST("name_1", 100, "translation_1_0"),
+		UX_LOCALES_GET_TEXT_TEST(UX_LOCALE_MSG_MEMORY_TRAINING, 100, "memory_training_desc_0"),
+		/* Ensure we show fallback message if `msg_id >= UX_LOCALE_MSG_NUM` */
+		UX_LOCALES_GET_TEXT_TEST(UX_LOCALE_MSG_NUM, 0, "Trying to display an unknown message?"),
 		/* cbfs not found. */
 		cmocka_unit_test_setup_teardown(test_ux_locales_bad_cbfs, setup_default,
 						teardown_unmap),

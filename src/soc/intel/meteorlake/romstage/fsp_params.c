@@ -436,8 +436,6 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		fill_fspm_params[i](m_cfg, config);
 }
 
-#define UX_MEMORY_TRAINING_DESC	"memory_training_desc"
-
 #define VGA_INIT_CONTROL_ENABLE		BIT(0)
 /* Tear down legacy VGA mode before exiting FSP-M. */
 #define VGA_INIT_CONTROL_TEAR_DOWN	BIT(1)
@@ -465,12 +463,7 @@ static void fill_fspm_sign_of_life(FSP_M_CONFIG *m_cfg,
 	if (!vga_init_control)
 		return;
 
-	const char *text = ux_locales_get_text(UX_MEMORY_TRAINING_DESC);
-	/* No localized text found; fallback to built-in English. */
-	if (!text)
-		text = "Your device is finishing an update. "
-		       "This may take 1-2 minutes.\n"
-		       "Please do not turn off your device.";
+	const char *text = ux_locales_get_text(UX_LOCALE_MSG_MEMORY_TRAINING);
 
 	vbt = cbfs_map("vbt.bin", &vbt_size);
 	if (!vbt) {

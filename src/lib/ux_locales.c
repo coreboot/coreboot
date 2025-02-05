@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <cbfs.h>
+#include <commonlib/bsd/helpers.h>
 #include <console/console.h>
 #include <security/vboot/misc.h>
 #include <stddef.h>
@@ -19,6 +20,18 @@
    'localized_string'. */
 #define DELIM_STR 0x00
 #define DELIM_NAME 0x01
+
+/* Mapping of different default UX local message based on message ID */
+static const struct {
+	const char *ux_locale_name;
+	const char *ux_locale_fallback_text;
+} ux_locale_msg_list[] = {
+	[UX_LOCALE_MSG_MEMORY_TRAINING] = {
+		"memory_training_desc",
+		"Your device is finishing an update. This may take 1-2 minutes.\n"
+		"Please do not turn off your device."
+	},
+};
 
 /*
  * Devices which support early vga have the capability to show localized text in
@@ -113,18 +126,28 @@ static size_t search_for_id(const char *data, size_t offset, size_t size,
 	return search_for(data, offset, size, int_to_str, DELIM_STR);
 }
 
-const char *ux_locales_get_text(const char *name)
+const char *ux_locales_get_text(enum ux_locale_msg msg_id)
 {
 	const char *data;
 	size_t size, offset, name_offset, next_name_offset, next;
 	uint32_t lang_id = 0; /* default language English (0) */
 	unsigned char version;
+	const char *name;
+	const char *fallback_text;
+
+	if (msg_id >= UX_LOCALE_MSG_NUM) {
+		printk(BIOS_ERR, "%s: Unknown message id = %d.\n", __func__, msg_id);
+		return "Trying to display an unknown message?";
+	}
+
+	name = ux_locale_msg_list[msg_id].ux_locale_name;
+	fallback_text = ux_locale_msg_list[msg_id].ux_locale_fallback_text;
 
 	data = locales_get_map(&size, false);
 	if (!data || size == 0) {
 		printk(BIOS_ERR, "%s: %s not found.\n", __func__,
 		       PRERAM_LOCALES_NAME);
-		return NULL;
+		return fallback_text;
 	}
 
 	if (CONFIG(VBOOT)) {
@@ -146,14 +169,14 @@ const char *ux_locales_get_text(const char *name)
 	if (version != PRERAM_LOCALES_VERSION_BYTE) {
 		printk(BIOS_ERR, "%s: The version %u is not the expected one %u\n",
 		       __func__, version, PRERAM_LOCALES_VERSION_BYTE);
-		return NULL;
+		return fallback_text;
 	}
 
 	/* Search for name. Skip the version byte. */
 	offset = search_for_name(data, 1, size, name);
 	if (offset >= size) {
 		printk(BIOS_ERR, "%s: Name %s not found.\n", __func__, name);
-		return NULL;
+		return fallback_text;
 	}
 	name_offset = offset;
 
@@ -171,21 +194,21 @@ const char *ux_locales_get_text(const char *name)
 			offset = search_for_id(data, name_offset, next_name_offset, 0);
 		if (offset >= next_name_offset) {
 			printk(BIOS_ERR, "%s: Neither %d nor 0 found.\n", __func__, lang_id);
-			return NULL;
+			return fallback_text;
 		}
 	}
 
 	/* Move to the corresponding localized_string. */
 	offset = move_next(data, offset, next_name_offset, DELIM_STR);
 	if (offset >= next_name_offset)
-		return NULL;
+		return fallback_text;
 
 	/* Validity check that the returned string must be NULL terminated. */
 	next = move_next(data, offset, next_name_offset, DELIM_STR) - 1;
 	if (next >= next_name_offset || data[next] != '\0') {
 		printk(BIOS_ERR, "%s: %s is not NULL terminated.\n",
 		       __func__, PRERAM_LOCALES_NAME);
-		return NULL;
+		return fallback_text;
 	}
 
 	return data + offset;

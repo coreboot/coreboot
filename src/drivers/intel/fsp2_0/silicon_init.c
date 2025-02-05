@@ -259,6 +259,9 @@ void fsp_silicon_init(void)
 	fsps_load();
 	do_silicon_init(&fsps_hdr);
 
+	if (platform_is_low_battery_shutdown_needed())
+		do_low_battery_poweroff();
+
 	if (CONFIG(CACHE_MRC_SETTINGS) && CONFIG(FSP_NVS_DATA_POST_SILICON_INIT))
 		save_memory_training_data();
 

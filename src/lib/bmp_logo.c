@@ -4,6 +4,7 @@
 #include <bootsplash.h>
 #include <cbfs.h>
 #include <cbmem.h>
+#include <fsp/api.h>
 #include <stdint.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
@@ -19,6 +20,7 @@ const char *bmp_logo_filename(void)
 void *bmp_load_logo(size_t *logo_size)
 {
 	void *logo_buffer;
+	const char *logo_name;
 
 	/* CBMEM is locked for S3 resume path. */
 	if (acpi_is_wakeup_s3())
@@ -32,7 +34,12 @@ void *bmp_load_logo(size_t *logo_size)
 	if (!logo_buffer)
 		return NULL;
 
-	*logo_size = cbfs_load(bmp_logo_filename(), logo_buffer, 1 * MiB);
+	if (platform_is_low_battery_shutdown_needed())
+		logo_name = "low_battery.bmp";
+	else
+		logo_name = bmp_logo_filename();
+
+	*logo_size = cbfs_load(logo_name, logo_buffer, 1 * MiB);
 	if (*logo_size == 0)
 		return NULL;
 

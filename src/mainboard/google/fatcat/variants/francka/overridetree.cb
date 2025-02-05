@@ -28,9 +28,9 @@ chip soc/intel/pantherlake
 
 	register "max_dram_speed_mts" = "7467"
 
-	register "usb2_ports[1]" = "USB2_PORT_MID(OC0)" # Type-A Port A0
+	register "usb2_ports[1]" = "USB2_PORT_SHORT(OC0)" # Type-A Port A0
 	register "usb2_ports[3]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C0
-	register "usb2_ports[4]" = "USB2_PORT_MID(OC0)" # Type-A Port A1
+	register "usb2_ports[4]" = "USB2_PORT_SHORT(OC0)" # Type-A Port A1
 	register "usb2_ports[5]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C1
 	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)" # USB HUB (USB2 Camera)
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)" # CNVi BT or discrete BT

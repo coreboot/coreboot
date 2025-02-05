@@ -310,7 +310,7 @@ const struct pad_config gpio_table[] = {
 	/* F9:		EC Sleep S0					*/
 	PAD_NC(GPP_F9, NONE),
 	/* F10:		Weak Internal PD 20K				*/
-	PAD_CFG_GPO(GPP_F10, 0, PLTRST),
+	PAD_CFG_GPO(GPP_F10, 0, DEEP),
 	/* F11:		TPM ID						*/
 	PAD_NC(GPP_F11, NONE),
 	/* F12:		Not Connected					*/

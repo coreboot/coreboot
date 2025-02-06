@@ -35,3 +35,11 @@ config SOC_AMD_COMMON_BLOCK_GRAPHICS_ACP
 	help
 	  Select this option to provide Audio CoProcessor ACPI device for pre-Ryzen APUs for
 	  use by custom Windows drivers.
+
+config SOC_AMD_COMMON_BLOCK_GRAPHICS_NO_VGA
+	bool
+	depends on SOC_AMD_COMMON_BLOCK_GRAPHICS
+	help
+	  Select this option when the IGD is not VGA compatible. On newer platforms the IGD
+	  advertises itself as a Display device, but not as a VGA Display controller.
+	  The IGD does not decode the legacy I/O ranges 0x3C0-0x3CF, 0x3D4.

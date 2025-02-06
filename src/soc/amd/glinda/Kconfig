@@ -47,7 +47,8 @@ config SOC_AMD_GLINDA
 	select SOC_AMD_COMMON_BLOCK_DATA_FABRIC_MULTI_PCI_SEGMENT
 	select SOC_AMD_COMMON_BLOCK_ESPI_EXTENDED_DECODE_RANGES # TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_GPP_CLK
-	select SOC_AMD_COMMON_BLOCK_GRAPHICS		# TODO: Check if this is still correct
+	select SOC_AMD_COMMON_BLOCK_GRAPHICS
+	select SOC_AMD_COMMON_BLOCK_GRAPHICS_NO_VGA
 	select SOC_AMD_COMMON_BLOCK_HAS_ESPI		# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_HAS_ESPI_ALERT_ENABLE # TODO: Check if this is still correct
 	select SOC_AMD_COMMON_BLOCK_I2C			# TODO: Check if this is still correct

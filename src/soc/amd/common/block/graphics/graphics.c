@@ -148,10 +148,13 @@ static const char *graphics_acpi_name(const struct device *dev)
 
 void *vbt_get(void)
 {
-	if (CONFIG(RUN_FSP_GOP))
-		return (void *)(uintptr_t)PCI_VGA_RAM_IMAGE_START;
+	if (!CONFIG(RUN_FSP_GOP))
+		return NULL;
 
-	return NULL;
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_GRAPHICS_NO_VGA))
+		return (void *)(uintptr_t)PCI_RAM_IMAGE_START;
+
+	return (void *)(uintptr_t)PCI_VGA_RAM_IMAGE_START;
 }
 
 static void graphics_set_resources(struct device *const dev)

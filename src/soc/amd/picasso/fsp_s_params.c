@@ -185,6 +185,11 @@ static void fsp_edp_tuning_upds(FSP_S_CONFIG *scfg,
 
 static void fsp_assign_vbios_upds(FSP_S_CONFIG *scfg)
 {
+	/*
+	 * The VBIOS contains the ATOMBIOS tables that will be modified as
+	 * part of FSP GOP init. We can delay loading of the VBIOS until
+	 * before FSP notify AFTER_PCI_ENUM.
+	 */
 	scfg->vbios_buffer_addr = CONFIG(RUN_FSP_GOP) ? PCI_VGA_RAM_IMAGE_START : 0;
 }
 

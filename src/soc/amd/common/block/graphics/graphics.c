@@ -147,9 +147,13 @@ static const char *graphics_acpi_name(const struct device *dev)
 }
 
 /*
- * Even though AMD does not need VBT we still need to implement the
- * vbt_get() function to not break the build with GOP driver enabled
- * (see fsps_return_value_handler() in fsp2_0/silicon_init.c
+ * On AMD platforms the VBT is called ATOMBIOS and is always part of the
+ * VGA Option ROM. As part of the FSP GOP init the ATOMBIOS tables are
+ * updated in place. Thus the VBIOS must be loaded into RAM before FSP GOP
+ * runs. The address of the VBIOS must be passed to FSP-S using UPDs, but
+ * loading of the VBIOS can be delayed until before FSP AFTER_PCI_ENUM
+ * notify is called. FSP expects a pointer to the PCI option rom instead
+ * a pointer to the ATOMBIOS table directly.
  */
 void *vbt_get(void)
 {
@@ -165,6 +169,7 @@ static void graphics_set_resources(struct device *const dev)
 	if (!CONFIG(RUN_FSP_GOP))
 		return;
 
+	/* Load the VBIOS before FSP AFTER_PCI_ENUM notify is called. */
 	timestamp_add_now(TS_OPROM_INITIALIZE);
 	if (CONFIG(USE_SELECTIVE_GOP_INIT) && vbios_cache_is_valid() &&
 			!display_init_required()) {
@@ -172,6 +177,11 @@ static void graphics_set_resources(struct device *const dev)
 		timestamp_add_now(TS_OPROM_COPY_END);
 		return;
 	}
+
+	/*
+	 * VBIOS cache was not used, so load it from CBFS and let FSP GOP
+	 * initialize the ATOMBIOS tables.
+	 */
 	rom = pci_rom_probe(dev);
 	if (rom == NULL) {
 		printk(BIOS_ERR, "%s: Unable to find ROM for %s\n",

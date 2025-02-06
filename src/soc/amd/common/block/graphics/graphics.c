@@ -4,6 +4,7 @@
 #include <acpi/acpigen.h>
 #include <amdblocks/graphics.h>
 #include <amdblocks/vbios_cache.h>
+#include <amdblocks/vbt.h>
 #include <boot/coreboot_tables.h>
 #include <bootmode.h>
 #include <bootstate.h>
@@ -12,7 +13,6 @@
 #include <device/pci.h>
 #include <fmap.h>
 #include <security/vboot/vbios_cache_hash_tpm.h>
-#include <soc/intel/common/vbt.h>
 #include <timestamp.h>
 
 static bool vbios_loaded_from_cache = false;
@@ -146,17 +146,11 @@ static const char *graphics_acpi_name(const struct device *dev)
 	return "IGFX";
 }
 
-/*
- * On AMD platforms the VBT is called ATOMBIOS and is always part of the
- * VGA Option ROM. As part of the FSP GOP init the ATOMBIOS tables are
- * updated in place. Thus the VBIOS must be loaded into RAM before FSP GOP
- * runs. The address of the VBIOS must be passed to FSP-S using UPDs, but
- * loading of the VBIOS can be delayed until before FSP AFTER_PCI_ENUM
- * notify is called. FSP expects a pointer to the PCI option rom instead
- * a pointer to the ATOMBIOS table directly.
- */
 void *vbt_get(void)
 {
+	if (CONFIG(RUN_FSP_GOP))
+		return (void *)(uintptr_t)PCI_VGA_RAM_IMAGE_START;
+
 	return NULL;
 }
 
@@ -259,12 +253,12 @@ static void write_vbios_cache_to_fmap(void *unused)
 	}
 
 	/* copy from PCI_VGA_RAM_IMAGE_START to rdev */
-	if (rdev_writeat(&rw_vbios_cache, (void *)PCI_VGA_RAM_IMAGE_START, 0,
+	if (rdev_writeat(&rw_vbios_cache, vbt_get(), 0,
 						VBIOS_CACHE_FMAP_SIZE) != VBIOS_CACHE_FMAP_SIZE)
 		printk(BIOS_ERR, "Failed to save vbios data to flash; rdev_writeat() failed.\n");
 
-	/* copy modified vbios data from PCI_VGA_RAM_IMAGE_START to buffer before hashing */
-	memcpy(vbios_data, (void *)PCI_VGA_RAM_IMAGE_START, VBIOS_CACHE_FMAP_SIZE);
+	/* copy modified vbios data to buffer before hashing */
+	memcpy(vbios_data, vbt_get(), VBIOS_CACHE_FMAP_SIZE);
 
 	/* save data hash to TPM NVRAM for validation on subsequent boots */
 	vbios_cache_update_hash(vbios_data, VBIOS_CACHE_FMAP_SIZE);
@@ -279,8 +273,8 @@ static void write_vbios_cache_to_fmap(void *unused)
  */
 void vbios_load_from_cache(void)
 {
-	/* copy cached vbios data from buffer to PCI_VGA_RAM_IMAGE_START */
-	memcpy((void *)PCI_VGA_RAM_IMAGE_START, vbios_data, VBIOS_CACHE_FMAP_SIZE);
+	/* copy cached vbios data from buffer to address used by FSP */
+	memcpy(vbt_get(), vbios_data, VBIOS_CACHE_FMAP_SIZE);
 
 	/* mark cache as used so we know not to write it later */
 	vbios_loaded_from_cache = true;

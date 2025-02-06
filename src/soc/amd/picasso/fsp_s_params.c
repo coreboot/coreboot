@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <amdblocks/ioapic.h>
+#include <amdblocks/vbt.h>
 #include <device/pci.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
@@ -190,7 +191,7 @@ static void fsp_assign_vbios_upds(FSP_S_CONFIG *scfg)
 	 * part of FSP GOP init. We can delay loading of the VBIOS until
 	 * before FSP notify AFTER_PCI_ENUM.
 	 */
-	scfg->vbios_buffer_addr = CONFIG(RUN_FSP_GOP) ? PCI_VGA_RAM_IMAGE_START : 0;
+	scfg->vbios_buffer_addr = (uintptr_t)vbt_get();
 }
 
 void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)

@@ -14,7 +14,12 @@
 #include <mrc_cache.h>
 #include <program_loading.h>
 #include <soc/intel/common/reset.h>
+#if CONFIG(SOC_AMD_COMMON)
+#include <amdblocks/vbt.h>
+#endif
+#if CONFIG(SOC_INTEL_COMMON)
 #include <soc/intel/common/vbt.h>
+#endif
 #include <stage_cache.h>
 #include <string.h>
 #include <timestamp.h>

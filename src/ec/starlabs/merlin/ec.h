@@ -79,6 +79,7 @@
 #define FAN_NORMAL		0x00
 #define FAN_AGGRESSIVE		0xbb
 #define FAN_QUIET		0xaa
+#define FAN_DISABLED		0xcc
 
 /* Fn Lock State */
 #define UNLOCKED		0x00

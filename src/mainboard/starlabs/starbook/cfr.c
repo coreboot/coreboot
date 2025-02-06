@@ -69,6 +69,7 @@ static const struct sm_object fan_mode = SM_DECLARE_ENUM({
 				{ "Normal",		0		},
 				{ "Aggressive",		1		},
 				{ "Quiet",		2		},
+				{ "Disabled",		3		},
 				SM_ENUM_VALUE_END			},
 });
 

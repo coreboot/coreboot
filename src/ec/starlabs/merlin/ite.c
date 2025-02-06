@@ -175,14 +175,15 @@ static void merlin_init(struct device *dev)
 	 *
 	 * Setting:	fan_mode
 	 *
-	 * Values:	Quiet, Normal, Aggressive
+	 * Values:	Disabled, Quiet, Normal, Aggressive
 	 * Default:	Normal
 	 *
 	 */
 	const uint8_t fan_mode[] = {
 		FAN_NORMAL,
 		FAN_AGGRESSIVE,
-		FAN_QUIET
+		FAN_QUIET,
+		FAN_DISABLED
 	};
 
 	if (CONFIG(EC_STARLABS_FAN))

@@ -1,6 +1,6 @@
 /** @file
 
-Copyright (c) 2024, Intel Corporation. All rights reserved.<BR>
+Copyright (c) 2025, Intel Corporation. All rights reserved.<BR>
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -489,9 +489,14 @@ typedef struct {
 **/
   UINT16                      ITbtDmaLtr[2];
 
-/** Offset 0x0158 - Reserved
+/** Offset 0x0158 - ITbt Usb4CmMode value
+  ITbt Usb4CmMode value. 0:Firmware CM, 1:Software CM
 **/
-  UINT8                       Reserved14[16];
+  UINT8                       Usb4CmMode;
+
+/** Offset 0x0159 - Reserved
+**/
+  UINT8                       Reserved14[15];
 
 /** Offset 0x0168 - IEH Mode
   Integrated Error Handler Mode, 0: Bypass, 1: Enable
@@ -767,7 +772,16 @@ typedef struct {
 
 /** Offset 0x0259 - Reserved
 **/
-  UINT8                       Reserved17[27];
+  UINT8                       Reserved17[22];
+
+/** Offset 0x026F - Enable PCH ISH I3C pins assigned
+  Set if ISH I3C native pins are to be enabled by BIOS. 0: Disable; 1: Enable.
+**/
+  UINT8                       PchIshI3cEnable[2];
+
+/** Offset 0x0271 - Reserved
+**/
+  UINT8                       Reserved18[3];
 
 /** Offset 0x0274 - Power button debounce configuration
   Debounce time for PWRBTN in microseconds. For values not supported by HW, they will
@@ -822,9 +836,11 @@ typedef struct {
 **/
   UINT8                       PchPmWolEnableOverride;
 
-/** Offset 0x027F - Reserved
+/** Offset 0x027F - PCH Pm WoW lan Enable
+  Determine if WLAN wake from Sx, corresponds to the HOST_WLAN_PP_EN bit in the PWRM_CFG3 register.
+  $EN_DIS
 **/
-  UINT8                       Reserved18;
+  UINT8                       PchPmWoWlanEnable;
 
 /** Offset 0x0280 - PCH Pm Slp S3 Min Assert
   SLP_S3 Minimum Assertion Width Policy. Default is PchSlpS350ms.
@@ -1386,748 +1402,813 @@ typedef struct {
 **/
   UINT8                       PchSerialIoI2cPadsTermination[8];
 
-/** Offset 0x0F68 - Reserved
+/** Offset 0x0F68 - I3C Device Mode
+  Selects I3c operation mode. Available modes: 0:SerialIoI3cDisabled, 1:SerialIoI3cPci,
+  2:SerialIoI3cPhantom (only applicable to I3C1, controlls GPIO enabling)
 **/
-  UINT8                       Reserved30[148];
+  UINT8                       SerialIoI3cMode[3];
 
-/** Offset 0x0FFC - TypeC port GPIO setting
+/** Offset 0x0F6B - Reserved
+**/
+  UINT8                       Reserved30[48];
+
+/** Offset 0x0F9B - Enable VMD controller
+  Enable/disable to VMD controller.0: Disable; 1: Enable(Default)
+  $EN_DIS
+**/
+  UINT8                       VmdEnable;
+
+/** Offset 0x0F9C - Enable VMD Global Mapping
+  Enable/disable to VMD controller.0: Disable(Default); 1: Enable
+  $EN_DIS
+**/
+  UINT8                       VmdGlobalMapping;
+
+/** Offset 0x0F9D - Map port under VMD
+  Map/UnMap port under VMD
+  $EN_DIS
+**/
+  UINT8                       VmdPort[31];
+
+/** Offset 0x0FBC - Reserved
+**/
+  UINT8                       Reserved31[31];
+
+/** Offset 0x0FDB - VMD Port Device
+  VMD Root port device number.
+**/
+  UINT8                       VmdPortDev[31];
+
+/** Offset 0x0FFA - VMD Port Func
+  VMD Root port function number.
+**/
+  UINT8                       VmdPortFunc[31];
+
+/** Offset 0x1019 - Reserved
+**/
+  UINT8                       Reserved32[7];
+
+/** Offset 0x1020 - VMD Variable
+  VMD Variable Pointer.
+**/
+  UINT64                      VmdVariablePtr;
+
+/** Offset 0x1028 - Reserved
+**/
+  UINT8                      Reserved33[4];
+
+/** Offset 0x102C - Temporary MemBar1 address for VMD
+  VMD Variable Pointer.
+**/
+  UINT32                      VmdMemBar1Base;
+
+/** Offset 0x1030 - Temporary MemBar2 address for VMD
+  VMD Variable Pointer.
+**/
+  UINT32                      VmdMemBar2Base;
+
+/** Offset 0x1034 - Enable D3 Hot in TCSS
+  This policy will enable/disable D3 hot support in IOM
+  $EN_DIS
+**/
+  UINT8                       D3HotEnable;
+
+/** Offset 0x1035 - Reserved
+**/
+  UINT8                       Reserved34[3];
+
+/** Offset 0x1038 - TypeC port GPIO setting
   GPIO Ping number for Type C Aux orientation setting, use the GpioPad that is defined
   in GpioPinsXXXH.h and GpioPinsXXXLp.h as argument.(XXX is platform name, Ex: Lnl
   = LunarLake)
 **/
   UINT32                      IomTypeCPortPadCfg[12];
 
-/** Offset 0x102C - CPU USB3 Port Over Current Pin
+/** Offset 0x1068 - CPU USB3 Port Over Current Pin
   Describe the specific over current pin number of USBC Port N.
 **/
   UINT8                       CpuUsb3OverCurrentPin[10];
 
-/** Offset 0x1036 - Enable D3 Cold in TCSS
+/** Offset 0x1072 - Enable D3 Cold in TCSS
   This policy will enable/disable D3 cold support in IOM
   $EN_DIS
 **/
   UINT8                       D3ColdEnable;
 
-/** Offset 0x1037 - TC State in TCSS
+/** Offset 0x1073 - TC State in TCSS
   This TC C-State Limit in IOM
 **/
   UINT8                       TcCstateLimit;
 
-/** Offset 0x1038 - Reserved
+/** Offset 0x1074 - Reserved
 **/
-  UINT8                       Reserved31[2];
+  UINT8                       Reserved35[2];
 
-/** Offset 0x103A - Enable/Disable PMC-PD Solution
+/** Offset 0x1076 - Enable/Disable PMC-PD Solution
   This policy will enable/disable PMC-PD Solution vs EC-TCPC Solution
   $EN_DIS
 **/
   UINT8                       PmcPdEnable;
 
-/** Offset 0x103B - Reserved
+/** Offset 0x1077 - Reserved
 **/
-  UINT8                       Reserved32;
+  UINT8                       Reserved36;
 
-/** Offset 0x103C - TCSS Aux Orientation Override Enable
+/** Offset 0x1078 - TCSS Aux Orientation Override Enable
   Bits 0, 2, ... 10 control override enables, bits 1, 3, ... 11 control overrides
 **/
   UINT16                      TcssAuxOri;
 
-/** Offset 0x103E - TCSS HSL Orientation Override Enable
+/** Offset 0x107A - TCSS HSL Orientation Override Enable
   Bits 0, 2, ... 10 control override enables, bits 1, 3, ... 11 control overrides
 **/
   UINT16                      TcssHslOri;
 
-/** Offset 0x1040 - TCSS USB Port Enable
+/** Offset 0x107C - TCSS USB Port Enable
   Bits 0, 1, ... max Type C port control enables
 **/
   UINT8                       UsbTcPortEn;
 
-/** Offset 0x1041 - VCCST request for IOM
+/** Offset 0x107D - VCCST request for IOM
   This policy will enable/disable VCCST and also decides if message would be replayed in S4/S5
   $EN_DIS
 **/
   UINT8                       VccSt;
 
-/** Offset 0x1042 - Enable/Disable PTM
+/** Offset 0x107E - Enable/Disable PTM
   This policy will enable/disable Precision Time Measurement for TCSS PCIe Root Ports
   $EN_DIS
 **/
   UINT8                       PtmEnabled[4];
 
-/** Offset 0x1046 - PCIE RP Ltr Enable
+/** Offset 0x1082 - PCIE RP Ltr Enable
   Latency Tolerance Reporting Mechanism.
 **/
   UINT8                       SaPcieItbtRpLtrEnable[4];
 
-/** Offset 0x104A - PCIE RP Snoop Latency Override Mode
+/** Offset 0x1086 - PCIE RP Snoop Latency Override Mode
   Latency Tolerance Reporting, Snoop Latency Override Mode.
 **/
   UINT8                       SaPcieItbtRpSnoopLatencyOverrideMode[4];
 
-/** Offset 0x104E - PCIE RP Snoop Latency Override Multiplier
+/** Offset 0x108A - PCIE RP Snoop Latency Override Multiplier
   Latency Tolerance Reporting, Snoop Latency Override Multiplier.
 **/
   UINT8                       SaPcieItbtRpSnoopLatencyOverrideMultiplier[4];
 
-/** Offset 0x1052 - PCIE RP Snoop Latency Override Value
+/** Offset 0x108E - PCIE RP Snoop Latency Override Value
   Latency Tolerance Reporting, Snoop Latency Override Value.
 **/
   UINT16                      SaPcieItbtRpSnoopLatencyOverrideValue[4];
 
-/** Offset 0x105A - PCIE RP Non Snoop Latency Override Mode
+/** Offset 0x1096 - PCIE RP Non Snoop Latency Override Mode
   Latency Tolerance Reporting, Non-Snoop Latency Override Mode.
 **/
   UINT8                       SaPcieItbtRpNonSnoopLatencyOverrideMode[4];
 
-/** Offset 0x105E - PCIE RP Non Snoop Latency Override Multiplier
+/** Offset 0x109A - PCIE RP Non Snoop Latency Override Multiplier
   Latency Tolerance Reporting, Non-Snoop Latency Override Multiplier.
 **/
   UINT8                       SaPcieItbtRpNonSnoopLatencyOverrideMultiplier[4];
 
-/** Offset 0x1062 - PCIE RP Non Snoop Latency Override Value
+/** Offset 0x109E - PCIE RP Non Snoop Latency Override Value
   Latency Tolerance Reporting, Non-Snoop Latency Override Value.
 **/
   UINT16                      SaPcieItbtRpNonSnoopLatencyOverrideValue[4];
 
-/** Offset 0x106A - Force LTR Override
+/** Offset 0x10A6 - Force LTR Override
   Force LTR Override.
 **/
   UINT8                       SaPcieItbtRpForceLtrOverride[4];
 
-/** Offset 0x106E - PCIE RP Ltr Config Lock
+/** Offset 0x10AA - PCIE RP Ltr Config Lock
   0: Disable; 1: Enable.
 **/
   UINT8                       SaPcieItbtRpLtrConfigLock[4];
 
-/** Offset 0x1072 - Reserved
+/** Offset 0x10AE - Reserved
 **/
-  UINT8                       Reserved33[4];
+  UINT8                       Reserved37[4];
 
-/** Offset 0x1076 - Touch Host Controller Assignment
+/** Offset 0x10B2 - Touch Host Controller Assignment
   Assign THC 0x0:ThcAssignmentNone, 0x1:ThcAssignmentThc0, 0x2:ThcAssignmentThc1
 **/
   UINT8                       ThcAssignment[2];
 
-/** Offset 0x1078 - Touch Host Controller Interrupt Pin Mux
+/** Offset 0x10B4 - Touch Host Controller Interrupt Pin Mux
   Set THC Pin Muxing Value if signal can be enabled on multiple pads. Refer to GPIO_*_MUXING_THC_SPIx_INTB_*
   for possible values.
 **/
   UINT8                       ThcInterruptPinMuxing[8];
 
-/** Offset 0x1080 - Touch Host Controller Mode
+/** Offset 0x10BC - Touch Host Controller Mode
   Switch between Intel THC protocol and Industry standard HID Over SPI protocol. 0x0:Thc, 0x1:Hid
 **/
   UINT8                       ThcMode[2];
 
-/** Offset 0x1082 - Touch Host Controller Wake On Touch
+/** Offset 0x10BE - Touch Host Controller Wake On Touch
   Based on this setting vGPIO for given THC will be in native mode, and additional
   _CRS for wake will be exposed in ACPI
 **/
   UINT8                       ThcWakeOnTouch[2];
 
-/** Offset 0x1084 - Reserved
+/** Offset 0x10C0 - Reserved
 **/
-  UINT8                      Reserved34[337];
+  UINT8                      Reserved38[337];
 
-/** Offset 0x11D5 - PCHHOT# pin
+/** Offset 0x1211 - PCHHOT# pin
   Enable PCHHOT# pin assertion when temperature is higher than PchHotLevel. 0: disable, 1: enable
   $EN_DIS
 **/
   UINT8                       PchHotEnable;
 
-/** Offset 0x11D6 - Thermal Throttling Custimized T0Level Value
+/** Offset 0x1212 - Thermal Throttling Custimized T0Level Value
   Custimized T0Level value.
 **/
   UINT16                      PchT0Level;
 
-/** Offset 0x11D8 - Thermal Throttling Custimized T1Level Value
+/** Offset 0x1214 - Thermal Throttling Custimized T1Level Value
   Custimized T1Level value.
 **/
   UINT16                      PchT1Level;
 
-/** Offset 0x11DA - Thermal Throttling Custimized T2Level Value
+/** Offset 0x1216 - Thermal Throttling Custimized T2Level Value
   Custimized T2Level value.
 **/
   UINT16                      PchT2Level;
 
-/** Offset 0x11DC - Enable The Thermal Throttle
+/** Offset 0x1218 - Enable The Thermal Throttle
   Enable the thermal throttle function.
   $EN_DIS
 **/
   UINT8                       PchTTEnable;
 
-/** Offset 0x11DD - PMSync State 13
+/** Offset 0x1219 - PMSync State 13
   When set to 1 and the programmed GPIO pin is a 1, then PMSync state 13 will force
   at least T2 state.
   $EN_DIS
 **/
   UINT8                       PchTTState13Enable;
 
-/** Offset 0x11DE - Thermal Throttle Lock
+/** Offset 0x121A - Thermal Throttle Lock
   Thermal Throttle Lock.
   $EN_DIS
 **/
   UINT8                       PchTTLock;
 
-/** Offset 0x11DF - Thermal Throttling Suggested Setting
+/** Offset 0x121B - Thermal Throttling Suggested Setting
   Thermal Throttling Suggested Setting.
   $EN_DIS
 **/
   UINT8                       TTSuggestedSetting;
 
-/** Offset 0x11E0 - Thermal Device Temperature
+/** Offset 0x121C - Thermal Device Temperature
   Decides the temperature.
 **/
   UINT16                      PchTemperatureHotLevel;
 
-/** Offset 0x11E2
+/** Offset 0x121E
 **/
   UINT8                       PchTsnEnable[4];
 
-/** Offset 0x11E6 - Enable TSN Multi-VC
-  Enable/disable Multi Virtual Channels(VC) in TSN.
-  $EN_DIS
+/** Offset 0x1222 - Reserved
 **/
-  UINT8                       PchTsnMultiVcEnable;
+  UINT8                      Reserved39[34];
 
-/** Offset 0x11E7 - Reserved
-**/
-  UINT8                       Reserved35[33];
-
-/** Offset 0x1208 - Enable USB2 ports
+/** Offset 0x1244 - Enable USB2 ports
   Enable/disable per USB2 ports. One byte for each port, byte0 for port0, byte1 for
   port1, and so on.
 **/
   UINT8                       PortUsb20Enable[16];
 
-/** Offset 0x1218 - Enable USB3 ports
+/** Offset 0x1254 - Enable USB3 ports
   Enable/disable per USB3 ports. One byte for each port, byte0 for port0, byte1 for
   port1, and so on.
 **/
   UINT8                       PortUsb30Enable[10];
 
-/** Offset 0x1222 - Enable xDCI controller
+/** Offset 0x125E - Enable xDCI controller
   Enable/disable to xDCI controller.
   $EN_DIS
 **/
   UINT8                       XdciEnable;
 
-/** Offset 0x1223 - USB PDO Programming
+/** Offset 0x125F - USB PDO Programming
   Enable/disable PDO programming for USB in PEI phase. Disabling will allow for programming
   during later phase. 1: enable, 0: disable
   $EN_DIS
 **/
   UINT8                       UsbPdoProgramming;
 
-/** Offset 0x1224 - Reserved
+/** Offset 0x1260 - Reserved
 **/
-  UINT8                       Reserved36;
+  UINT8                       Reserved40;
 
-/** Offset 0x1225 - PCH USB OverCurrent mapping enable
+/** Offset 0x1261 - PCH USB OverCurrent mapping enable
   1: Will program USB OC pin mapping in xHCI controller memory, 0: Will clear OC pin
   mapping allow for NOA usage of OC pins
   $EN_DIS
 **/
   UINT8                       PchUsbOverCurrentEnable;
 
-/** Offset 0x1226 - USB2 Port Over Current Pin
+/** Offset 0x1262 - USB2 Port Over Current Pin
   Describe the specific over current pin number of USB 2.0 Port N.
 **/
   UINT8                       Usb2OverCurrentPin[16];
 
-/** Offset 0x1236 - USB3 Port Over Current Pin
+/** Offset 0x1272 - USB3 Port Over Current Pin
   Describe the specific over current pin number of USB 3.0 Port N.
 **/
   UINT8                       Usb3OverCurrentPin[10];
 
-/** Offset 0x1240 - Enable xHCI LTR override
+/** Offset 0x127C - Enable xHCI LTR override
   Enables override of recommended LTR values for xHCI
   $EN_DIS
 **/
   UINT8                       PchUsbLtrOverrideEnable;
 
-/** Offset 0x1241 - Reserved
+/** Offset 0x127D - Reserved
 **/
-  UINT8                       Reserved37[3];
+  UINT8                       Reserved41[3];
 
-/** Offset 0x1244 - xHCI High Idle Time LTR override
+/** Offset 0x1280 - xHCI High Idle Time LTR override
   Value used for overriding LTR recommendation for xHCI High Idle Time LTR setting
 **/
   UINT32                      PchUsbLtrHighIdleTimeOverride;
 
-/** Offset 0x1248 - xHCI Medium Idle Time LTR override
+/** Offset 0x1284 - xHCI Medium Idle Time LTR override
   Value used for overriding LTR recommendation for xHCI Medium Idle Time LTR setting
 **/
   UINT32                      PchUsbLtrMediumIdleTimeOverride;
 
-/** Offset 0x124C - xHCI Low Idle Time LTR override
+/** Offset 0x1288 - xHCI Low Idle Time LTR override
   Value used for overriding LTR recommendation for xHCI Low Idle Time LTR setting
 **/
   UINT32                      PchUsbLtrLowIdleTimeOverride;
 
-/** Offset 0x1250 - USB2 Port Reset Message Enable
+/** Offset 0x128C - USB2 Port Reset Message Enable
   0: Disable USB2 Port Reset Message; 1: Enable USB2 Port Reset Message; This must
   be enable for USB2 Port those are paired with CPU XHCI Port
 **/
   UINT8                       PortResetMessageEnable[16];
 
-/** Offset 0x1260 - PCH USB OverCurrent mapping lock enable
+/** Offset 0x129C - PCH USB OverCurrent mapping lock enable
   If this policy option is enabled then BIOS will program OCCFDONE bit in xHCI meaning
   that OC mapping data will be consumed by xHCI and OC mapping registers will be locked.
   $EN_DIS
 **/
   UINT8                       PchXhciOcLock;
 
-/** Offset 0x1261 - USB Per Port HS Preemphasis Bias
+/** Offset 0x129D - USB Per Port HS Preemphasis Bias
   USB Per Port HS Preemphasis Bias. 000b-0mV, 001b-11.25mV, 010b-16.9mV, 011b-28.15mV,
   100b-28.15mV, 101b-39.35mV, 110b-45mV, 111b-56.3mV. One byte for each port.
 **/
   UINT8                       Usb2PhyPetxiset[16];
 
-/** Offset 0x1271 - USB Per Port HS Transmitter Bias
+/** Offset 0x12AD - USB Per Port HS Transmitter Bias
   USB Per Port HS Transmitter Bias. 000b-0mV, 001b-11.25mV, 010b-16.9mV, 011b-28.15mV,
   100b-28.15mV, 101b-39.35mV, 110b-45mV, 111b-56.3mV, One byte for each port.
 **/
   UINT8                       Usb2PhyTxiset[16];
 
-/** Offset 0x1281 - USB Per Port HS Transmitter Emphasis
+/** Offset 0x12BD - USB Per Port HS Transmitter Emphasis
   USB Per Port HS Transmitter Emphasis. 00b - Emphasis OFF, 01b - De-emphasis ON,
   10b - Pre-emphasis ON, 11b - Pre-emphasis & De-emphasis ON. One byte for each port.
 **/
   UINT8                       Usb2PhyPredeemp[16];
 
-/** Offset 0x1291 - USB Per Port Half Bit Pre-emphasis
+/** Offset 0x12CD - USB Per Port Half Bit Pre-emphasis
   USB Per Port Half Bit Pre-emphasis. 1b - half-bit pre-emphasis, 0b - full-bit pre-emphasis.
   One byte for each port.
 **/
   UINT8                       Usb2PhyPehalfbit[16];
 
-/** Offset 0x12A1 - Enable the write to USB 3.0 TX Output -3.5dB De-Emphasis Adjustment
+/** Offset 0x12DD - Enable the write to USB 3.0 TX Output -3.5dB De-Emphasis Adjustment
   Enable the write to USB 3.0 TX Output -3.5dB De-Emphasis Adjustment. Each value
   in arrary can be between 0-1. One byte for each port.
 **/
   UINT8                       Usb3HsioTxDeEmphEnable[10];
 
-/** Offset 0x12AB - USB 3.0 TX Output -3.5dB De-Emphasis Adjustment Setting
+/** Offset 0x12E7 - USB 3.0 TX Output -3.5dB De-Emphasis Adjustment Setting
   USB 3.0 TX Output -3.5dB De-Emphasis Adjustment Setting, HSIO_TX_DWORD5[21:16],
   <b>Default = 29h</b> (approximately -3.5dB De-Emphasis). One byte for each port.
 **/
   UINT8                       Usb3HsioTxDeEmph[10];
 
-/** Offset 0x12B5 - Enable the write to USB 3.0 TX Output Downscale Amplitude Adjustment
+/** Offset 0x12F1 - Enable the write to USB 3.0 TX Output Downscale Amplitude Adjustment
   Enable the write to USB 3.0 TX Output Downscale Amplitude Adjustment, Each value
   in arrary can be between 0-1. One byte for each port.
 **/
   UINT8                       Usb3HsioTxDownscaleAmpEnable[10];
 
-/** Offset 0x12BF - USB 3.0 TX Output Downscale Amplitude Adjustment
+/** Offset 0x12FB - USB 3.0 TX Output Downscale Amplitude Adjustment
   USB 3.0 TX Output Downscale Amplitude Adjustment, HSIO_TX_DWORD8[21:16], <b>Default
   = 00h</b>. One byte for each port.
 **/
   UINT8                       Usb3HsioTxDownscaleAmp[10];
 
-/** Offset 0x12C9
+/** Offset 0x1305
 **/
   UINT8                       PchUsb3HsioCtrlAdaptOffsetCfgEnable[10];
 
-/** Offset 0x12D3
+/** Offset 0x130F
 **/
   UINT8                       PchUsb3HsioFilterSelNEnable[10];
 
-/** Offset 0x12DD
+/** Offset 0x1319
 **/
   UINT8                       PchUsb3HsioFilterSelPEnable[10];
 
-/** Offset 0x12E7
+/** Offset 0x1323
 **/
   UINT8                       PchUsb3HsioOlfpsCfgPullUpDwnResEnable[10];
 
-/** Offset 0x12F1
+/** Offset 0x132D
 **/
   UINT8                       PchUsb3HsioCtrlAdaptOffsetCfg[10];
 
-/** Offset 0x12FB
+/** Offset 0x1337
 **/
   UINT8                       PchUsb3HsioOlfpsCfgPullUpDwnRes[10];
 
-/** Offset 0x1305
+/** Offset 0x1341
 **/
   UINT8                       PchUsb3HsioFilterSelN[10];
 
-/** Offset 0x130F
+/** Offset 0x134B
 **/
   UINT8                       PchUsb3HsioFilterSelP[10];
 
-/** Offset 0x1319 - Enable the write to USB 3.0 TX Output Unique Transition Bit Mode for rate 3
+/** Offset 0x1355 - Enable the write to USB 3.0 TX Output Unique Transition Bit Mode for rate 3
   Enable the write to USB 3.0 TX Output Unique Transition Bit Mode for rate 3, Each
   value in array can be between 0-1. One byte for each port.
 **/
   UINT8                       Usb3HsioTxRate3UniqTranEnable[10];
 
-/** Offset 0x1323 - USB 3.0 TX Output Unique Transition Bit Scale for rate 3
+/** Offset 0x135F - USB 3.0 TX Output Unique Transition Bit Scale for rate 3
   USB 3.0 TX Output Unique Transition Bit Scale for rate 3, HSIO_TX_DWORD9[6:0], <b>Default
   = 4Ch</b>. One byte for each port.
 **/
   UINT8                       Usb3HsioTxRate3UniqTran[10];
 
-/** Offset 0x132D - Enable the write to USB 3.0 TX Output Unique Transition Bit Mode for rate 2
+/** Offset 0x1369 - Enable the write to USB 3.0 TX Output Unique Transition Bit Mode for rate 2
   Enable the write to USB 3.0 TX Output Unique Transition Bit Mode for rate 2, Each
   value in array can be between 0-1. One byte for each port.
 **/
   UINT8                       Usb3HsioTxRate2UniqTranEnable[10];
 
-/** Offset 0x1337 - USB 3.0 TX Output Unique Transition Bit Scale for rate 2
+/** Offset 0x1373 - USB 3.0 TX Output Unique Transition Bit Scale for rate 2
   USB 3.0 TX Output Unique Transition Bit Scale for rate 2, HSIO_TX_DWORD9[14:8],
   <b>Default = 4Ch</b>. One byte for each port.
 **/
   UINT8                       Usb3HsioTxRate2UniqTran[10];
 
-/** Offset 0x1341 - Enable the write to USB 3.0 TX Output Unique Transition Bit Mode for rate 1
+/** Offset 0x137D - Enable the write to USB 3.0 TX Output Unique Transition Bit Mode for rate 1
   Enable the write to USB 3.0 TX Output Unique Transition Bit Mode for rate 1, Each
   value in array can be between 0-1. One byte for each port.
 **/
   UINT8                       Usb3HsioTxRate1UniqTranEnable[10];
 
-/** Offset 0x134B - USB 3.0 TX Output Unique Transition Bit Scale for rate 1
+/** Offset 0x1387 - USB 3.0 TX Output Unique Transition Bit Scale for rate 1
   USB 3.0 TX Output Unique Transition Bit Scale for rate 1, HSIO_TX_DWORD9[22:16],
   <b>Default = 4Ch</b>. One byte for each port.
 **/
   UINT8                       Usb3HsioTxRate1UniqTran[10];
 
-/** Offset 0x1355 - Enable the write to USB 3.0 TX Output Unique Transition Bit Mode for rate 0
+/** Offset 0x1391 - Enable the write to USB 3.0 TX Output Unique Transition Bit Mode for rate 0
   Enable the write to USB 3.0 TX Output Unique Transition Bit Mode for rate 0, Each
   value in array can be between 0-1. One byte for each port.
 **/
   UINT8                       Usb3HsioTxRate0UniqTranEnable[10];
 
-/** Offset 0x135F - USB 3.0 TX Output Unique Transition Bit Scale for rate 0
+/** Offset 0x139B - USB 3.0 TX Output Unique Transition Bit Scale for rate 0
   USB 3.0 TX Output Unique Transition Bit Scale for rate 0, HSIO_TX_DWORD9[30:24],
   <b>Default = 4Ch</b>. One byte for each port.
 **/
   UINT8                       Usb3HsioTxRate0UniqTran[10];
 
-/** Offset 0x1369 - Reserved
+/** Offset 0x13A5 - Reserved
 **/
-  UINT8                       Reserved38[4];
+  UINT8                       Reserved42[4];
 
-/** Offset 0x136D - Enable/Disable NPU Device
+/** Offset 0x13A9 - Enable/Disable NPU Device
   Enable(Default): Enable NPU Device, Disable: Disable NPU Device
   $EN_DIS
 **/
   UINT8                       NpuEnable;
 
-/** Offset 0x136E - Enable LAN
+/** Offset 0x13AA - Enable LAN
   Enable/disable LAN controller.
   $EN_DIS
 **/
   UINT8                       PchLanEnable;
 
-/** Offset 0x136F - Enable PCH Lan LTR capabilty of PCH internal LAN
+/** Offset 0x13AB - Enable PCH Lan LTR capabilty of PCH internal LAN
   0: Disable; 1: Enable.
   $EN_DIS
 **/
   UINT8                       PchLanLtrEnable;
 
-/** Offset 0x1370 - Reserved
+/** Offset 0x13AC - Reserved
 **/
-  UINT8                       Reserved39;
+  UINT8                       Reserved43;
 
-/** Offset 0x1371 - Skip Ssid Programming.
+/** Offset 0x13AD - Skip Ssid Programming.
   When set to TRUE, silicon code will not do any SSID programming and platform code
   needs to handle that by itself properly.
   $EN_DIS
 **/
   UINT8                       SiSkipSsidProgramming;
 
-/** Offset 0x1372 - Change Default SVID
+/** Offset 0x13AE - Change Default SVID
   Change the default SVID used in FSP to programming internal devices. This is only
   valid when SkipSsidProgramming is FALSE.
 **/
   UINT16                      SiCustomizedSvid;
 
-/** Offset 0x1374 - Change Default SSID
+/** Offset 0x13B0 - Change Default SSID
   Change the default SSID used in FSP to programming internal devices. This is only
   valid when SkipSsidProgramming is FALSE.
 **/
   UINT16                      SiCustomizedSsid;
 
-/** Offset 0x1376 - Reserved
+/** Offset 0x13B2 - Reserved
 **/
-  UINT8                       Reserved40[2];
+  UINT8                       Reserved44[6];
 
-/** Offset 0x1378 - SVID SDID table Poniter.
+/** Offset 0x13B8 - SVID SDID table Poniter.
   The address of the table of SVID SDID to customize each SVID SDID entry. This is
   only valid when SkipSsidProgramming is FALSE.
 **/
   UINT64                      SiSsidTablePtr;
 
-/** Offset 0x1380 - Number of ssid table.
+/** Offset 0x13C0 - Number of ssid table.
   SiNumberOfSsidTableEntry should match the table entries created in SiSsidTablePtr.
   This is only valid when SkipSsidProgramming is FALSE.
 **/
   UINT16                      SiNumberOfSsidTableEntry;
 
-/** Offset 0x1382 - Reserved
+/** Offset 0x13C2 - Reserved
 **/
-  UINT8                       Reserved41[10];
+  UINT8                       Reserved45[10];
 
-/** Offset 0x138C - LogoPixelHeight Address
+/** Offset 0x13CC - LogoPixelHeight Address
   Address of LogoPixelHeight
 **/
   UINT32                      LogoPixelHeight;
 
-/** Offset 0x1390 - LogoPixelWidth Address
+/** Offset 0x13D0 - LogoPixelWidth Address
   Address of LogoPixelWidth
 **/
   UINT32                      LogoPixelWidth;
 
-/** Offset 0x1394 - Reserved
+/** Offset 0x13D4 - Reserved
 **/
-  UINT8                       Reserved42[4];
+  UINT8                       Reserved46[4];
 
-/** Offset 0x1398 - Blt Buffer Address
+/** Offset 0x13D8 - Blt Buffer Address
   Address of Blt buffer
 **/
   UINT64                      BltBufferAddress;
 
-/** Offset 0x13A0 - Graphics Configuration Ptr
+/** Offset 0x13E0 - Graphics Configuration Ptr
   Points to VBT
 **/
   UINT64                      GraphicsConfigPtr;
 
-/** Offset 0x13A8 - Enable/Disable SkipFspGop
+/** Offset 0x13E8 - Enable/Disable SkipFspGop
   Enable: Skip FSP provided GOP driver, Disable(Default): Use FSP provided GOP driver
   $EN_DIS
 **/
   UINT8                       SkipFspGop;
 
-/** Offset 0x13A9 - Reserved
+/** Offset 0x13E9 - Reserved
 **/
-  UINT8                       Reserved43;
+  UINT8                       Reserved47;
 
-/** Offset 0x13AA - Enable/Disable IGFX RenderStandby
+/** Offset 0x13EA - Enable/Disable IGFX RenderStandby
   Enable(Default): Enable IGFX RenderStandby, Disable: Disable IGFX RenderStandby
   $EN_DIS
 **/
   UINT8                       RenderStandby;
 
-/** Offset 0x13AB - Reserved
+/** Offset 0x13EB - Reserved
 **/
-  UINT8                       Reserved44[3];
+  UINT8                       Reserved48[3];
 
-/** Offset 0x13AE - Enable/Disable PavpEnable
+/** Offset 0x13EE - Enable/Disable PavpEnable
   Enable(Default): Enable PavpEnable, Disable: Disable PavpEnable
   $EN_DIS
 **/
   UINT8                       PavpEnable;
 
-/** Offset 0x13AF - Enable/Disable PeiGraphicsPeimInit
+/** Offset 0x13EF - Enable/Disable PeiGraphicsPeimInit
   <b>Enable(Default):</b> FSP will initialize the framebuffer and provide it via EFI_PEI_GRAPHICS_INFO_HOB.
   Disable: FSP will NOT initialize the framebuffer.
   $EN_DIS
 **/
   UINT8                       PeiGraphicsPeimInit;
 
-/** Offset 0x13B0 - Reserved
+/** Offset 0x13F0 - Reserved
 **/
-  UINT8                       Reserved45[4];
+  UINT8                       Reserved49[4];
 
-/** Offset 0x13B4 - Intel Graphics VBT (Video BIOS Table) Size
+/** Offset 0x13F4 - Intel Graphics VBT (Video BIOS Table) Size
   Size of Internal Graphics VBT Image
 **/
   UINT32                      VbtSize;
 
-/** Offset 0x13B8 - Platform LID Status for LFP Displays.
+/** Offset 0x13F8 - Platform LID Status for LFP Displays.
   LFP Display Lid Status (LID_STATUS enum): 0 (Default): LidClosed, 1: LidOpen.
   0: LidClosed, 1: LidOpen
 **/
   UINT8                       LidStatus;
 
-/** Offset 0x13B9 - Reserved
+/** Offset 0x13F9 - Reserved
 **/
-  UINT8                       Reserved46[11];
+  UINT8                       Reserved50[11];
 
-/** Offset 0x13C4 - Address of PCH_DEVICE_INTERRUPT_CONFIG table.
+/** Offset 0x1404 - Address of PCH_DEVICE_INTERRUPT_CONFIG table.
   The address of the table of PCH_DEVICE_INTERRUPT_CONFIG.
 **/
   UINT32                      DevIntConfigPtr;
 
-/** Offset 0x13C8 - Number of DevIntConfig Entry
+/** Offset 0x1408 - Number of DevIntConfig Entry
   Number of Device Interrupt Configuration Entry. If this is not zero, the DevIntConfigPtr
   must not be NULL.
 **/
   UINT8                       NumOfDevIntConfig;
 
-/** Offset 0x13C9 - Select GPIO IRQ Route
+/** Offset 0x1409 - Select GPIO IRQ Route
   GPIO IRQ Select. The valid value is 14 or 15.
 **/
   UINT8                       GpioIrqRoute;
 
-/** Offset 0x13CA - Select SciIrqSelect
+/** Offset 0x140A - Select SciIrqSelect
   SCI IRQ Select. The valid value is 9, 10, 11, and 20, 21, 22, 23 for APIC only.
 **/
   UINT8                       SciIrqSelect;
 
-/** Offset 0x13CB - Select TcoIrqSelect
+/** Offset 0x140B - Select TcoIrqSelect
   TCO IRQ Select. The valid value is 9, 10, 11, 20, 21, 22, 23.
 **/
   UINT8                       TcoIrqSelect;
 
-/** Offset 0x13CC - Enable/Disable Tco IRQ
+/** Offset 0x140C - Enable/Disable Tco IRQ
   Enable/disable TCO IRQ
   $EN_DIS
 **/
   UINT8                       TcoIrqEnable;
 
-/** Offset 0x13CD - Reserved
+/** Offset 0x140D - Reserved
 **/
-  UINT8                       Reserved47[5];
+  UINT8                       Reserved51[5];
 
-/** Offset 0x13D2 - Mask to enable the usage of external V1p05 VR rail in specific S0ix or Sx states
+/** Offset 0x1412 - Mask to enable the usage of external V1p05 VR rail in specific S0ix or Sx states
   Enable External V1P05 Rail in: BIT0:S0i1/S0i2, BIT1:S0i3, BIT2:S3, BIT3:S4, BIT5:S5
 **/
   UINT8                       PchFivrExtV1p05RailEnabledStates;
 
-/** Offset 0x13D3 - Mask to enable the platform configuration of external V1p05 VR rail
+/** Offset 0x1413 - Mask to enable the platform configuration of external V1p05 VR rail
   External V1P05 Rail Supported Configuration
 **/
   UINT8                       PchFivrExtV1p05RailSupportedVoltageStates;
 
-/** Offset 0x13D4 - External V1P05 Voltage Value that will be used in S0i2/S0i3 states
+/** Offset 0x1414 - External V1P05 Voltage Value that will be used in S0i2/S0i3 states
   Value is given in 2.5mV increments (0=0mV, 1=2.5mV, 2=5mV...)
 **/
   UINT16                      PchFivrExtV1p05RailVoltage;
 
-/** Offset 0x13D6 - External V1P05 Icc Max Value
+/** Offset 0x1416 - External V1P05 Icc Max Value
   Granularity of this setting is 1mA and maximal possible value is 200mA
 **/
   UINT8                       PchFivrExtV1p05RailIccMax;
 
-/** Offset 0x13D7 - Mask to enable the usage of external Vnn VR rail in specific S0ix or Sx states
+/** Offset 0x1417 - Mask to enable the usage of external Vnn VR rail in specific S0ix or Sx states
   Enable External Vnn Rail in: BIT0:S0i1/S0i2, BIT1:S0i3, BIT2:S3, BIT3:S4, BIT5:S5
 **/
   UINT8                       PchFivrExtVnnRailEnabledStates;
 
-/** Offset 0x13D8 - Mask to enable the platform configuration of external Vnn VR rail
+/** Offset 0x1418 - Mask to enable the platform configuration of external Vnn VR rail
   External Vnn Rail Supported Configuration
 **/
   UINT8                       PchFivrExtVnnRailSupportedVoltageStates;
 
-/** Offset 0x13D9 - Reserved
+/** Offset 0x1419 - Reserved
 **/
-  UINT8                       Reserved48;
+  UINT8                       Reserved52;
 
-/** Offset 0x13DA - External Vnn Voltage Value that will be used in S0ix/Sx states
+/** Offset 0x141A - External Vnn Voltage Value that will be used in S0ix/Sx states
   Value is given in 2.5mV increments (0=0mV, 1=2.5mV, 2=5mV...), Default is set to 420
 **/
   UINT16                      PchFivrExtVnnRailVoltage;
 
-/** Offset 0x13DC - External Vnn Icc Max Value that will be used in S0ix/Sx states
+/** Offset 0x141C - External Vnn Icc Max Value that will be used in S0ix/Sx states
   Granularity of this setting is 1mA and maximal possible value is 200mA
 **/
   UINT8                       PchFivrExtVnnRailIccMax;
 
-/** Offset 0x13DD - Mask to enable the usage of external Vnn VR rail in Sx states
+/** Offset 0x141D - Mask to enable the usage of external Vnn VR rail in Sx states
   Use only if Ext Vnn Rail config is different in Sx. Enable External Vnn Rail in
   Sx: BIT0-1:Reserved, BIT2:S3, BIT3:S4, BIT5:S5
 **/
   UINT8                       PchFivrExtVnnRailSxEnabledStates;
 
-/** Offset 0x13DE - External Vnn Voltage Value that will be used in Sx states
+/** Offset 0x141E - External Vnn Voltage Value that will be used in Sx states
   Use only if Ext Vnn Rail config is different in Sx. Value is given in 2.5mV increments
   (0=0mV, 1=2.5mV, 2=5mV...)
 **/
   UINT16                      PchFivrExtVnnRailSxVoltage;
 
-/** Offset 0x13E0 - External Vnn Icc Max Value that will be used in Sx states
+/** Offset 0x1420 - External Vnn Icc Max Value that will be used in Sx states
   Use only if Ext Vnn Rail config is different in Sx. Granularity of this setting
   is 1mA and maximal possible value is 200mA
 **/
   UINT8                       PchFivrExtVnnRailSxIccMax;
 
-/** Offset 0x13E1 - Transition time in microseconds from Low Current Mode Voltage to High Current Mode Voltage
+/** Offset 0x1421 - Transition time in microseconds from Low Current Mode Voltage to High Current Mode Voltage
   This field has 1us resolution. When value is 0 PCH will not transition VCCIN_AUX
   to low current mode voltage.
 **/
   UINT8                       PchFivrVccinAuxLowToHighCurModeVolTranTime;
 
-/** Offset 0x13E2 - Transition time in microseconds from Retention Mode Voltage to High Current Mode Voltage
+/** Offset 0x1422 - Transition time in microseconds from Retention Mode Voltage to High Current Mode Voltage
   This field has 1us resolution. When value is 0 PCH will not transition VCCIN_AUX
   to retention mode voltage.
 **/
   UINT8                       PchFivrVccinAuxRetToHighCurModeVolTranTime;
 
-/** Offset 0x13E3 - Transition time in microseconds from Retention Mode Voltage to Low Current Mode Voltage
+/** Offset 0x1423 - Transition time in microseconds from Retention Mode Voltage to Low Current Mode Voltage
   This field has 1us resolution. When value is 0 PCH will not transition VCCIN_AUX
   to retention mode voltage.
 **/
   UINT8                       PchFivrVccinAuxRetToLowCurModeVolTranTime;
 
-/** Offset 0x13E4 - Transition time in microseconds from Off (0V) to High Current Mode Voltage
+/** Offset 0x1424 - Transition time in microseconds from Off (0V) to High Current Mode Voltage
   This field has 1us resolution. When value is 0 Transition to 0V is disabled.
 **/
   UINT16                      PchFivrVccinAuxOffToHighCurModeVolTranTime;
 
-/** Offset 0x13E6 - FIVR Dynamic Power Management
+/** Offset 0x1426 - FIVR Dynamic Power Management
   Enable/Disable FIVR Dynamic Power Management.
   $EN_DIS
 **/
   UINT8                       PchFivrDynPm;
 
-/** Offset 0x13E7 - Reserved
+/** Offset 0x1427 - Reserved
 **/
-  UINT8                       Reserved49;
+  UINT8                       Reserved53;
 
-/** Offset 0x13E8 - External V1P05 Icc Max Value
+/** Offset 0x1428 - External V1P05 Icc Max Value
   Granularity of this setting is 1mA and maximal possible value is 500mA
 **/
   UINT16                      PchFivrExtV1p05RailIccMaximum;
 
-/** Offset 0x13EA - External Vnn Icc Max Value that will be used in S0ix/Sx states
+/** Offset 0x142A - External Vnn Icc Max Value that will be used in S0ix/Sx states
   Granularity of this setting is 1mA and maximal possible value is 500mA
 **/
   UINT16                      PchFivrExtVnnRailIccMaximum;
 
-/** Offset 0x13EC - External Vnn Icc Max Value that will be used in Sx states
+/** Offset 0x142C - External Vnn Icc Max Value that will be used in Sx states
   Use only if Ext Vnn Rail config is different in Sx. Granularity of this setting
   is 1mA and maximal possible value is 500mA
 **/
   UINT16                      PchFivrExtVnnRailSxIccMaximum;
 
-/** Offset 0x13EE - External V1P05 Control Ramp Timer value
+/** Offset 0x142E - External V1P05 Control Ramp Timer value
   Hold off time to be used when changing the v1p05_ctrl for external bypass value in us
 **/
   UINT8                       PchFivrExtV1p05RailCtrlRampTmr;
 
-/** Offset 0x13EF - External VNN Control Ramp Timer value
+/** Offset 0x142F - External VNN Control Ramp Timer value
   Hold off time to be used when changing the vnn_ctrl for external bypass value in us
 **/
   UINT8                       PchFivrExtVnnRailCtrlRampTmr;
 
-/** Offset 0x13F0 - PCH Compatibility Revision ID
+/** Offset 0x1430 - PCH Compatibility Revision ID
   This member describes whether or not the CRID feature of PCH should be enabled.
   $EN_DIS
 **/
   UINT8                       PchCrid;
 
-/** Offset 0x13F1 - PCH Legacy IO Low Latency Enable
+/** Offset 0x1431 - PCH Legacy IO Low Latency Enable
   Set to enable low latency of legacy IO. <b>0: Disable</b>, 1: Enable
   $EN_DIS
 **/
   UINT8                       PchLegacyIoLowLatency;
 
-/** Offset 0x13F2 - Reserved
+/** Offset 0x1432 - Reserved
 **/
-  UINT8                       Reserved50;
+  UINT8                       Reserved54;
 
-/** Offset 0x13F3 - PCH Unlock SideBand access
+/** Offset 0x1433 - PCH Unlock SideBand access
   The SideBand PortID mask for certain end point (e.g. PSFx) will be locked before
   3rd party code execution. 0: Lock SideBand access; 1: Unlock SideBand access.
   $EN_DIS
 **/
   UINT8                       PchSbAccessUnlock;
 
-/** Offset 0x13F4 - Enable 8254 Static Clock Gating
+/** Offset 0x1434 - Enable 8254 Static Clock Gating
   Set 8254CGE=1 is required for SLP_S0 support. However, set 8254CGE=1 in POST time
   might fail to boot legacy OS using 8254 timer. Make sure it is disabled to support
   legacy OS using 8254 timer. Also enable this while S0ix is enabled.
@@ -2135,7 +2216,7 @@ typedef struct {
 **/
   UINT8                       Enable8254ClockGating;
 
-/** Offset 0x13F5 - Enable 8254 Static Clock Gating On S3
+/** Offset 0x1435 - Enable 8254 Static Clock Gating On S3
   This is only applicable when Enable8254ClockGating is disabled. FSP will do the
   8254 CGE programming on S3 resume when Enable8254ClockGatingOnS3 is enabled. This
   avoids the SMI requirement for the programming.
@@ -2143,174 +2224,174 @@ typedef struct {
 **/
   UINT8                       Enable8254ClockGatingOnS3;
 
-/** Offset 0x13F6 - Enable PCH Io Apic Entry 24-119
+/** Offset 0x1436 - Enable PCH Io Apic Entry 24-119
   0: Disable; 1: Enable.
   $EN_DIS
 **/
   UINT8                       PchIoApicEntry24_119;
 
-/** Offset 0x13F7 - PCH Io Apic ID
+/** Offset 0x1437 - PCH Io Apic ID
   This member determines IOAPIC ID. Default is 0x02.
 **/
   UINT8                       PchIoApicId;
 
-/** Offset 0x13F8 - CNVi Configuration
+/** Offset 0x1438 - CNVi Configuration
   This option allows for automatic detection of Connectivity Solution. [Auto Detection]
   assumes that CNVi will be enabled when available, [Disable] allows for disabling CNVi.
   0:Disable, 1:Auto
 **/
   UINT8                       CnviMode;
 
-/** Offset 0x13F9 - CNVi Wi-Fi Core
+/** Offset 0x1439 - CNVi Wi-Fi Core
   Enable/Disable CNVi Wi-Fi Core, Default is ENABLE. 0: DISABLE, 1: ENABLE
   $EN_DIS
 **/
   UINT8                       CnviWifiCore;
 
-/** Offset 0x13FA - CNVi BT Core
+/** Offset 0x143A - CNVi BT Core
   Enable/Disable CNVi BT Core, Default is ENABLE. 0: DISABLE, 1: ENABLE
   $EN_DIS
 **/
   UINT8                       CnviBtCore;
 
-/** Offset 0x13FB - CNVi BT Interface
+/** Offset 0x143B - CNVi BT Interface
   This option configures BT device interface to either USB/PCI
   1:USB, 2:PCI
 **/
   UINT8                       CnviBtInterface;
 
-/** Offset 0x13FC - CNVi BT Audio Offload
+/** Offset 0x143C - CNVi BT Audio Offload
   Enable/Disable BT Audio Offload, Default is ENABLE. 0: DISABLE, 1: ENABLE
   $EN_DIS
 **/
   UINT8                       CnviBtAudioOffload;
 
-/** Offset 0x13FD - Reserved
+/** Offset 0x143D - Reserved
 **/
-  UINT8                       Reserved51[3];
+  UINT8                       Reserved55[3];
 
-/** Offset 0x1400 - CNVi RF_RESET pin muxing
+/** Offset 0x1440 - CNVi RF_RESET pin muxing
   Select CNVi RF_RESET# pin depending on board routing. LP/P/M: GPP_A8 = 0x2942E408(default)
   or GPP_F4 = 0x194CE404. H/S: 0. Refer to GPIO_*_MUXING_CNVI_RF_RESET_* in GpioPins*.h.
 **/
   UINT32                      CnviRfResetPinMux;
 
-/** Offset 0x1404 - CNVi CLKREQ pin muxing
+/** Offset 0x1444 - CNVi CLKREQ pin muxing
   Select CNVi CLKREQ pin depending on board routing. LP/P/M: GPP_A9 = 0x3942E609(default)
   or GPP_F5 = 0x394CE605. H/S: 0. Refer to GPIO_*_MUXING_CNVI_CRF_XTAL_CLKREQ_* in
   GpioPins*.h.
 **/
   UINT32                      CnviClkreqPinMux;
 
-/** Offset 0x1408 - Reserved
+/** Offset 0x1448 - Reserved
 **/
-  UINT8                       Reserved52;
+  UINT8                       Reserved56;
 
-/** Offset 0x1409 - Enable Device 4
+/** Offset 0x1449 - Enable Device 4
   Enable/disable Device 4
   $EN_DIS
 **/
   UINT8                       Device4Enable;
 
-/** Offset 0x140A - Skip PAM regsiter lock
+/** Offset 0x144A - Skip PAM regsiter lock
   Enable: PAM register will not be locked by RC, platform code should lock it, Disable(Default):
   PAM registers will be locked by RC
   $EN_DIS
 **/
   UINT8                       SkipPamLock;
 
-/** Offset 0x140B - Reserved
+/** Offset 0x144B - Reserved
 **/
-  UINT8                       Reserved53;
+  UINT8                       Reserved57;
 
-/** Offset 0x140C - PCH HDA Verb Table Entry Number
+/** Offset 0x144C - PCH HDA Verb Table Entry Number
   Number of Entries in Verb Table.
 **/
   UINT8                       PchHdaVerbTableEntryNum;
 
-/** Offset 0x140D - Reserved
+/** Offset 0x144D - Reserved
 **/
-  UINT8                       Reserved54[3];
+  UINT8                       Reserved58[3];
 
-/** Offset 0x1410 - PCH HDA Verb Table Pointer
+/** Offset 0x1450 - PCH HDA Verb Table Pointer
   Pointer to Array of pointers to Verb Table.
 **/
   UINT64                      PchHdaVerbTablePtr;
 
-/** Offset 0x1418 - PCH HDA Codec Sx Wake Capability
+/** Offset 0x1458 - PCH HDA Codec Sx Wake Capability
   Capability to detect wake initiated by a codec in Sx
 **/
   UINT8                       PchHdaCodecSxWakeCapability;
 
-/** Offset 0x1419 - Enable Pme
+/** Offset 0x1459 - Enable Pme
   Enable Azalia wake-on-ring.
   $EN_DIS
 **/
   UINT8                       PchHdaPme;
 
-/** Offset 0x141A - HD Audio Link Frequency
+/** Offset 0x145A - HD Audio Link Frequency
   HDA Link Freq (PCH_HDAUDIO_LINK_FREQUENCY enum): 0: 6MHz, 1: 12MHz, 2: 24MHz.
   0: 6MHz, 1: 12MHz, 2: 24MHz
 **/
   UINT8                       PchHdaLinkFrequency;
 
-/** Offset 0x141B - Reserved
+/** Offset 0x145B - Reserved
 **/
-  UINT8                       Reserved55[2];
+  UINT8                       Reserved59[2];
 
-/** Offset 0x141D - HD Audio Microphone Privacy applied for SoundWire Link number 0 in HW Mode
+/** Offset 0x145D - HD Audio Microphone Privacy applied for SoundWire Link number 0 in HW Mode
   HD Audio Microphone Privacy applied for SoundWire Link number 0 in HW Mode: 0: Disable, 1: Enable
   $EN_DIS
 **/
   UINT8                       PchHdaMicPrivacyHwModeSoundWire0;
 
-/** Offset 0x141E - HD Audio Microphone Privacy applied for SoundWire Link number 1 in HW Mode
+/** Offset 0x145E - HD Audio Microphone Privacy applied for SoundWire Link number 1 in HW Mode
   HD Audio Microphone Privacy applied for SoundWire Link number 1 in HW Mode: 0: Disable, 1: Enable
   $EN_DIS
 **/
   UINT8                       PchHdaMicPrivacyHwModeSoundWire1;
 
-/** Offset 0x141F - HD Audio Microphone Privacy applied for SoundWire Link number 2 in HW Mode
+/** Offset 0x145F - HD Audio Microphone Privacy applied for SoundWire Link number 2 in HW Mode
   HD Audio Microphone Privacy applied for SoundWire Link number 2 in HW Mode: 0: Disable, 1: Enable
   $EN_DIS
 **/
   UINT8                       PchHdaMicPrivacyHwModeSoundWire2;
 
-/** Offset 0x1420 - HD Audio Microphone Privacy applied for SoundWire Link number 3 in HW Mode
+/** Offset 0x1460 - HD Audio Microphone Privacy applied for SoundWire Link number 3 in HW Mode
   HD Audio Microphone Privacy applied for SoundWire Link number 3 in HW Mode: 0: Disable, 1: Enable
   $EN_DIS
 **/
   UINT8                       PchHdaMicPrivacyHwModeSoundWire3;
 
-/** Offset 0x1421 - HD Audio Microphone Privacy applied for SoundWire Link number 4 in HW Mode
+/** Offset 0x1461 - HD Audio Microphone Privacy applied for SoundWire Link number 4 in HW Mode
   HD Audio Microphone Privacy applied for SoundWire Link number 4 in HW Mode: 0: Disable, 1: Enable
   $EN_DIS
 **/
   UINT8                       PchHdaMicPrivacyHwModeSoundWire4;
 
-/** Offset 0x1422 - HD Audio Microphone Privacy applied for Dmic in HW Mode
+/** Offset 0x1462 - HD Audio Microphone Privacy applied for Dmic in HW Mode
   HD Audio Microphone Privacy applied for Dmic in HW Mode: 0: Disable, 1: Enable
   $EN_DIS
 **/
   UINT8                       PchHdaMicPrivacyHwModeDmic;
 
-/** Offset 0x1423 - Reserved
+/** Offset 0x1463 - Reserved
 **/
-  UINT8                       Reserved56[13];
+  UINT8                       Reserved60[13];
 
-/** Offset 0x1430 - Pointer to ChipsetInit Binary
+/** Offset 0x1470 - Pointer to ChipsetInit Binary
   ChipsetInit Binary Pointer.
 **/
   UINT64                      ChipsetInitBinPtr;
 
-/** Offset 0x1438 - Length of ChipsetInit Binary
+/** Offset 0x1478 - Length of ChipsetInit Binary
   ChipsetInit Binary Length.
 **/
   UINT32                      ChipsetInitBinLen;
 
-/** Offset 0x143C - Reserved
+/** Offset 0x147C - Reserved
 **/
-  UINT8                       Reserved57[36];
+  UINT8                       Reserved61[36];
 } FSP_S_CONFIG;
 
 /** Fsp S UPD Configuration
@@ -2329,11 +2410,11 @@ typedef struct {
 **/
   FSP_S_CONFIG                FspsConfig;
 
-/** Offset 0x1460
+/** Offset 0x14A0
 **/
-  UINT8                       UnusedUpdSpace36[6];
+  UINT8                       FspsUpdRsvd36[6];
 
-/** Offset 0x1466
+/** Offset 0x14A6
 **/
   UINT16                      UpdTerminator;
 } FSPS_UPD;

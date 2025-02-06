@@ -19,7 +19,10 @@ verstage-y += watchdog.c
 romstage-y += watchdog.c
 ramstage-y += watchdog.c
 
+romstage-$(CONFIG_PLATFORM_HAS_EARLY_LOW_BATTERY_INDICATOR) += battery.c
 romstage-$(CONFIG_CHROMEOS_DRAM_PART_NUMBER_IN_CBI) += dram_part_num_override.c
+
+ramstage-$(CONFIG_PLATFORM_HAS_LOW_BATTERY_INDICATOR) += battery.c
 ramstage-$(CONFIG_CHROMEOS_FW_SPLASH_SCREEN) += splash.c
 
 # Add logo to the cbfs image

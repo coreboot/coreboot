@@ -560,6 +560,12 @@ static void fill_fsps_cnvi_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->CnviBtInterface = is_devfn_enabled(PCI_DEVFN_CNVI_BT) ? 2 : 1;
 }
 
+static void fill_fsps_vmd_params(FSP_S_CONFIG *s_cfg,
+				 const struct soc_intel_pantherlake_config *config)
+{
+	s_cfg->VmdEnable = is_devfn_enabled(PCI_DEVFN_VMD);
+}
+
 static void fill_fsps_pmcpd_params(FSP_S_CONFIG *s_cfg,
 				   const struct soc_intel_pantherlake_config *config)
 {
@@ -710,6 +716,7 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 		fill_fsps_pci_ssid_params,
 		fill_fsps_lan_params,
 		fill_fsps_cnvi_params,
+		fill_fsps_vmd_params,
 		fill_fsps_pmcpd_params,
 		fill_fsps_thc_params,
 		fill_fsps_8254_params,

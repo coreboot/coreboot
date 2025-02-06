@@ -87,7 +87,7 @@ bool dptx_hal_hpd_high(struct mtk_dp *mtk_dp)
 bool dptx_hal_setswing_preemphasis(struct mtk_dp *mtk_dp, int lane_num, u8 swing_value,
 				   u8 preemphasis)
 {
-	assert(lane_num < DPTX_LANE_MAX);
+	assert(lane_num <= DPTX_LANE_MAX);
 
 	for (int i = 0; i < lane_num; ++i) {
 		mtk_dp_phy_mask(mtk_dp, driving_offset[i],
@@ -348,7 +348,7 @@ void dptx_hal_set_txlane(struct mtk_dp *mtk_dp, u8 value)
 void dptx_hal_phy_set_swing_preemphasis(struct mtk_dp *mtk_dp, u8 lane_count, u8 *swing_val,
 					 u8 *preemphasis)
 {
-	assert(lane_count < DPTX_LANE_MAX);
+	assert(lane_count <= DPTX_LANE_MAX);
 
 	for (int i = 0; i < lane_count; ++i) {
 		mtk_dp_phy_mask(mtk_dp, driving_offset[i],

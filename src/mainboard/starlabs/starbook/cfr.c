@@ -126,11 +126,12 @@ static const struct sm_object kbl_timeout = SM_DECLARE_ENUM({
 static const struct sm_object lid_switch = SM_DECLARE_ENUM({
 	.opt_name	= "lid_switch",
 	.ui_name	= "Lid Switch",
-	.ui_helptext	= "Enable or disable the lid switch.",
+	.ui_helptext	= "Configure what opening or closing the lid will do.",
 	.default_value	= 0,
 	.values		= (const struct sm_enum_value[]) {
-				{ "Enabled",		0	},
-				{ "Disabled",		1	},
+				{ "Normal",		0	},
+				{ "Sleep Only",		1	},
+				{ "Disabled",		2	},
 				SM_ENUM_VALUE_END		},
 });
 #endif

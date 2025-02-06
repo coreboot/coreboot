@@ -10,7 +10,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	const struct mb_cfg mem_config = {
 		.type = MEM_TYPE_DDR5,
 		.ect = true,
-		.UserBd = BOARD_TYPE_MOBILE,
+		.UserBd = BOARD_TYPE_ULT_ULX,
 		.ddr_config = {
 			.dq_pins_interleaved = false,
 		},

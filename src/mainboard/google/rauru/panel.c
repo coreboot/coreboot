@@ -31,6 +31,7 @@ static void power_on_load_switch(void)
 {
 	gpio_output(GPIO_EN_PP3300_EDP_X, 1);
 	gpio_set_mode(GPIO_EDP_HPD_1V8, GPIO_FUNC(EINT13, EDP_TX_HPD));
+	gpio_set_pull(GPIO_EDP_HPD_1V8, GPIO_PULL_ENABLE, GPIO_PULL_UP);
 }
 
 static struct panel_description edp_panel = {

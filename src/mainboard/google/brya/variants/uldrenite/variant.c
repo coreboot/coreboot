@@ -5,9 +5,15 @@
 #include <console/console.h>
 #include <delay.h>
 #include <fw_config.h>
+#include <sar.h>
 
 #define RW350R_RST_DELAY_MS 20
 #define RW350R_PERST_DELAY_MS 30
+
+const char *get_wifi_sar_cbfs_filename(void)
+{
+	return "wifi_sar_0.hex";
+}
 
 static const struct pad_config rw350r_en_pad[] = {
 	/* H23 : LTE_PWR_OFF_EN */

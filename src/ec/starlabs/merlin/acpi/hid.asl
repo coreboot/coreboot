@@ -366,7 +366,11 @@ Device (HIDD)							// HID Device
 					//
 					Case (0x08)
 					{
+#if CONFIG(SYSTEM_TYPE_DETACHABLE)
 						Return (\_SB.PCI0.LPCB.EC.VBTN.VGBS())
+#else
+						Return (0x00)
+#endif
 					}
 					//
 					// Function 9 H2BC. Button implemented state.

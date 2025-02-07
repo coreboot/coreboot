@@ -31,12 +31,10 @@ Device (VBTN)
 
 	Method (VGBS, 0)
 	{
-#if CONFIG(SYSTEM_TYPE_DETACHABLE)
 		If (!GRXS (GPP_F15))
 		{
 			Return (0x40)
 		}
-#endif
 		Return (0x00)
 	}
 }

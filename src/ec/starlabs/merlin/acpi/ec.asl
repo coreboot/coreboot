@@ -117,7 +117,9 @@ Scope (\_SB.PCI0.LPCB)
 		#include "events.asl"
 #endif
 		#include "lid.asl"
+#if CONFIG(SYSTEM_TYPE_DETACHABLE)
 		#include "dock.asl"
+#endif
 
 		Method (_REG, 2, NotSerialized)
 		{

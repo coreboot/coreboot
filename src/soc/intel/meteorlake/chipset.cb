@@ -70,6 +70,9 @@ chip soc/intel/meteorlake
 				register "type" = "UPC_TYPE_HUB"
 				device usb 0.0 alias tcss_root_hub off
 					chip drivers/usb/acpi
+						device usb 2.0 alias tcss_usb2_port1 off end
+					end
+					chip drivers/usb/acpi
 						device usb 3.0 alias tcss_usb3_port0 off end
 					end
 					chip drivers/usb/acpi
@@ -130,6 +133,12 @@ chip soc/intel/meteorlake
 					end
 					chip drivers/usb/acpi
 						device usb 2.9 alias usb2_port10 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.a alias usb2_port11 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.b alias usb2_port12 off end
 					end
 					chip drivers/usb/acpi
 						device usb 3.0 alias usb3_port1 off end

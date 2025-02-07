@@ -47,11 +47,10 @@ void platform_romstage_main(void)
 	clk_buf_init();
 	if (CONFIG(RTC))
 		rtc_boot();
+	if (CONFIG(PCI))
+		mtk_pcie_deassert_perst();
 	mtk_dram_init();
 	modem_power_down();
 	dvfs_init();
 	thermal_init();
-
-	if (CONFIG(PCI))
-		mtk_pcie_deassert_perst();
 }

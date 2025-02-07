@@ -15,6 +15,9 @@
 		"2\x00memory_training_desc_2\x00"                                           \
 		"30\x00memory_training_desc_30\x00"                                         \
 		"\x01"                                                                      \
+		"low_battery_desc\x00" /* low_battery_desc, langs = [8]. */                 \
+		"8\x00low_battery_desc_8\x00"                                               \
+		"\x01"                                                                      \
 	)
 const unsigned char data_default[] = DATA_DEFAULT;
 
@@ -163,10 +166,10 @@ static void test_ux_locales_two_calls(void **state)
 static void test_ux_locales_null_terminated(void **state)
 {
 	will_return_always(_cbfs_alloc, true);
-	will_return_always(vb2api_get_locale_id, 30);
+	will_return_always(vb2api_get_locale_id, 8);
 
 	/* Verify the access to the very last text. */
-	assert_non_null(ux_locales_get_text(UX_LOCALE_MSG_MEMORY_TRAINING));
+	assert_non_null(ux_locales_get_text(UX_LOCALE_MSG_LOW_BATTERY));
 
 	/* Modify the last 2 bytes from "\x00\x01" to "XX" and unmap, */
 	data.raw[data.size - 1] = 'X';
@@ -176,9 +179,8 @@ static void test_ux_locales_null_terminated(void **state)
 	/* The last few characters are now changed so that the data is not NULL terminated.
 	   This will prevent us from accessing the last text therefore, make use of fallback
 	   text message */
-	assert_string_equal(ux_locales_get_text(UX_LOCALE_MSG_MEMORY_TRAINING),
-			 "Your device is finishing an update. This may take 1-2 minutes.\n"
-			 "Please do not turn off your device.");
+	assert_string_equal(ux_locales_get_text(UX_LOCALE_MSG_LOW_BATTERY),
+			 "Battery low. Shutting down.");
 }
 
 /*
@@ -206,12 +208,16 @@ int main(void)
 		/* Get text successfully. */
 		UX_LOCALES_GET_TEXT_TEST(UX_LOCALE_MSG_MEMORY_TRAINING, 0, "memory_training_desc_0"),
 		UX_LOCALES_GET_TEXT_TEST(UX_LOCALE_MSG_MEMORY_TRAINING, 2, "memory_training_desc_2"),
+		UX_LOCALES_GET_TEXT_TEST(UX_LOCALE_MSG_LOW_BATTERY, 8, "low_battery_desc_8"),
 		/* Check the whole string of lang_id. */
 		UX_LOCALES_GET_TEXT_TEST(UX_LOCALE_MSG_MEMORY_TRAINING, 3, "memory_training_desc_0"),
 		/* Validity check of lang_id > 100. We will fallback to 0. */
 		UX_LOCALES_GET_TEXT_TEST(UX_LOCALE_MSG_MEMORY_TRAINING, 100, "memory_training_desc_0"),
 		/* Ensure we show fallback message if `msg_id >= UX_LOCALE_MSG_NUM` */
 		UX_LOCALES_GET_TEXT_TEST(UX_LOCALE_MSG_NUM, 0, "Trying to display an unknown message?"),
+		/* Do not search for locale id with unmatched name. */
+		UX_LOCALES_GET_TEXT_TEST(UX_LOCALE_MSG_LOW_BATTERY, 4,
+			 "Battery low. Shutting down."),
 		/* cbfs not found. */
 		cmocka_unit_test_setup_teardown(test_ux_locales_bad_cbfs, setup_default,
 						teardown_unmap),

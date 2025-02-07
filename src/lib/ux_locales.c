@@ -31,6 +31,10 @@ static const struct {
 		"Your device is finishing an update. This may take 1-2 minutes.\n"
 		"Please do not turn off your device."
 	},
+	[UX_LOCALE_MSG_LOW_BATTERY] = {
+		"low_battery_desc",
+		"Battery low. Shutting down."
+	},
 };
 
 /*

@@ -7,6 +7,7 @@
 
 enum ux_locale_msg {
 	UX_LOCALE_MSG_MEMORY_TRAINING,
+	UX_LOCALE_MSG_LOW_BATTERY,
 	UX_LOCALE_MSG_NUM,
 };
 

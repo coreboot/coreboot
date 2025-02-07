@@ -223,3 +223,6 @@ config BOARD_GOOGLE_ORISA
 
 config BOARD_GOOGLE_TELITH
 	bool "->  Telith"
+
+config BOARD_GOOGLE_MELIKS
+	bool "->  Meliks"

@@ -3,6 +3,7 @@
 #include <boot/coreboot_tables.h>
 #include <commonlib/coreboot_tables.h>
 #include <drivers/option/cfr_frontend.h>
+#include <ec/starlabs/merlin/cfr.h>
 #include <inttypes.h>
 #include <intelblocks/pcie_rp.h>
 #include <string.h>
@@ -26,21 +27,6 @@ static const struct sm_object boot_option = SM_DECLARE_ENUM({
 				{ "Normal",		1		},
 				SM_ENUM_VALUE_END			},
 });
-
-#if CONFIG(EC_STARLABS_CHARGING_SPEED)
-static const struct sm_object charging_speed = SM_DECLARE_ENUM({
-	.opt_name	= "charging_speed",
-	.ui_name	= "Charging Speed",
-	.ui_helptext	= "Set the maximum speed to charge the battery. Charging faster"
-			  " will increase heat and battery wear.",
-	.default_value	= 1,
-	.values		= (const struct sm_enum_value[]) {
-				{ "1.0C",		0	},
-				{ "0.5C",		1	},
-				{ "0.2C",		2	},
-				SM_ENUM_VALUE_END		},
-});
-#endif
 
 static const struct sm_object debug_level = SM_DECLARE_ENUM({
 	.opt_name	= "debug_level",
@@ -68,32 +54,6 @@ static const struct sm_object gna = SM_DECLARE_BOOL({
 	.default_value	= false,
 });
 #endif
-
-#if CONFIG(EC_STARLABS_LID_SWITCH)
-static const struct sm_object lid_switch = SM_DECLARE_ENUM({
-	.opt_name	= "lid_switch",
-	.ui_name	= "Lid Switch",
-	.ui_helptext	= "Configure what opening or closing the lid will do.",
-	.default_value	= 0,
-	.values		= (const struct sm_enum_value[]) {
-				{ "Normal",		0	},
-				{ "Sleep Only",		1	},
-				{ "Disabled",		2	},
-				SM_ENUM_VALUE_END		},
-});
-#endif
-
-static const struct sm_object max_charge = SM_DECLARE_ENUM({
-	.opt_name	= "max_charge",
-	.ui_name	= "Maximum Charge Level",
-	.ui_helptext	= "Set the maximum level the battery will charge to.",
-	.default_value	= 0,
-	.values		= (const struct sm_enum_value[]) {
-				{ "100%",		0	},
-				{ "80%",		1	},
-				{ "60%",		2	},
-				SM_ENUM_VALUE_END		},
-});
 
 static const struct sm_object me_state = SM_DECLARE_ENUM({
 	.opt_name	= "me_state",
@@ -193,18 +153,6 @@ static const struct sm_object pciexp_l1ss = SM_DECLARE_ENUM({
 				SM_ENUM_VALUE_END			},
 });
 #endif
-
-static const struct sm_object power_led = SM_DECLARE_ENUM({
-	.opt_name	= "power_led",
-	.ui_name	= "Power LED Brightness",
-	.ui_helptext	= "Control the maximum brightness of the power LED",
-	.default_value	= 0,
-	.values		= (const struct sm_enum_value[]) {
-				{ "Normal",		0		},
-				{ "Reduced",		1		},
-				SM_ENUM_VALUE_END,
-	},
-});
 
 static const struct sm_object reboot_counter = SM_DECLARE_NUMBER({
 	.opt_name	= "reboot_counter",

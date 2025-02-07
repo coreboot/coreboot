@@ -3,6 +3,7 @@
 #include <boot/coreboot_tables.h>
 #include <commonlib/coreboot_tables.h>
 #include <drivers/option/cfr_frontend.h>
+#include <ec/starlabs/merlin/cfr.h>
 #include <inttypes.h>
 #include <intelblocks/pcie_rp.h>
 #include <string.h>
@@ -53,28 +54,6 @@ static const struct sm_object fast_charge = SM_DECLARE_BOOL({
 	.default_value	= false,
 });
 #endif
-
-static const struct sm_object fn_ctrl_swap = SM_DECLARE_BOOL({
-	.opt_name	= "fn_ctrl_swap",
-	.ui_name	= "Fn Ctrl Reverse",
-	.ui_helptext	= "Swap the functions of the [Fn] and [Ctrl] keys",
-	.default_value	= false,
-});
-
-static const struct sm_object kbl_timeout = SM_DECLARE_ENUM({
-	.opt_name	= "kbl_timeout",
-	.ui_name	= "Keyboard Backlight Timeout",
-	.ui_helptext	= "Set the amount of time before the keyboard backlight turns off"
-			  " when un-used",
-	.default_value	= 0,
-	.values		= (struct sm_enum_value[]) {
-				{ "30 seconds",		0	},
-				{ "1 minute",		1	},
-				{ "3 minutes",		2	},
-				{ "5 minutes",		3	},
-				{ "Never",		4	},
-				SM_ENUM_VALUE_END		},
-});
 
 static const struct sm_object power_on_after_fail = SM_DECLARE_BOOL({
 	.opt_name	= "power_on_after_fail",

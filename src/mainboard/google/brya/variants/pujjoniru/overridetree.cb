@@ -82,9 +82,9 @@ chip soc/intel/alderlake
 			.speed = I2C_SPEED_FAST,
 			.speed_config[0] = {
 				.speed = I2C_SPEED_FAST,
-				.scl_lcnt = 152,
-				.scl_hcnt = 79,
-				.sda_hold = 7,
+				.scl_lcnt = 150,
+				.scl_hcnt = 85,
+				.sda_hold = 35,
 			}
 		},
 	}"

@@ -3,6 +3,7 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <soc/mtk_fsp.h>
+#include <timer.h>
 
 #define MAX_PARAM_ENTRIES 32
 #define FSP_INTF_SIZE (sizeof(struct mtk_fsp_intf) + \
@@ -82,7 +83,9 @@ static const char *mtk_fsp_file(void)
 enum cb_err mtk_fsp_load_and_run(void)
 {
 	struct prog fsp = PROG_INIT(PROG_REFCODE, mtk_fsp_file());
+	struct stopwatch sw;
 
+	stopwatch_init(&sw);
 	if (cbfs_prog_stage_load(&fsp)) {
 		printk(BIOS_ERR, "%s: CBFS load program failed\n", __func__);
 		return CB_ERR;
@@ -101,8 +104,8 @@ enum cb_err mtk_fsp_load_and_run(void)
 		return CB_ERR;
 	}
 
-	printk(BIOS_INFO, "%s: run %s at phase %#x done\n",
-	       __func__, mtk_fsp_file(), intf->phase);
+	printk(BIOS_INFO, "%s: run %s at phase %#x in %lld msecs\n",
+	       __func__, mtk_fsp_file(), intf->phase, stopwatch_duration_msecs(&sw));
 
 	return CB_SUCCESS;
 }

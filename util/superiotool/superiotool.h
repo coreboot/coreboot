@@ -9,6 +9,7 @@
 #include <string.h>
 #include <getopt.h>
 #include <commonlib/bsd/helpers.h>
+#include <sys/types.h>
 #if defined(__linux__)
 #include <sys/io.h>
 #endif
@@ -25,11 +26,7 @@
 # endif
 #endif
 
-#include <sys/types.h>
-#include <stdint.h>
-
 #if defined(__FreeBSD__)
-#include <sys/types.h>
 #include <machine/cpufunc.h>
 #define OUTB(x, y) do { u_int tmp = (y); outb(tmp, (x)); } while (0)
 #define OUTW(x, y) do { u_int tmp = (y); outw(tmp, (x)); } while (0)
@@ -47,7 +44,6 @@
 #endif
 
 #if defined(__NetBSD__) && (defined(__i386__) || defined(__x86_64__))
-#include <sys/types.h>
 #include <machine/sysarch.h>
 #if defined(__i386__)
 #define iopl i386_iopl

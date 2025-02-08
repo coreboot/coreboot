@@ -13,7 +13,6 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
 #include <cpu/intel/em64t100_save_state.h>
-#include <cpu/intel/microcode.h>
 #include <cpu/intel/smm_reloc.h>
 #include <device/device.h>
 #include <device/pci.h>

@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <device/device.h>
 #include <amdblocks/chip.h>
 #include <device/device.h>
 #include <static.h>

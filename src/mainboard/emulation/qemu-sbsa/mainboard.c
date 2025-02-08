@@ -7,8 +7,6 @@
 #include <cbfs.h>
 #include <device/device.h>
 #include <commonlib/device_tree.h>
-#include <bootmem.h>
-#include <arch/mmu.h>
 #include <mainboard/addressmap.h>
 #include <stdint.h>
 #include <symbols.h>

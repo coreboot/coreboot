@@ -19,7 +19,6 @@
 #include <amdblocks/chip.h>
 #include <amdblocks/cpu.h>
 #include <amdblocks/ioapic.h>
-#include <device/device.h>
 #include <soc/pci_devs.h>
 #include <soc/southbridge.h>
 #include "chip.h"

@@ -22,7 +22,6 @@
 #if defined(__SIMPLE_DEVICE__)
 #define  SA_DEV_ROOT		PCI_DEV(0, SA_DEV_SLOT_ROOT, 0)
 #else
-#include <device/device.h>
 #define  SA_DEV_ROOT		pcidev_path_on_root(PCI_DEVFN(SA_DEV_SLOT_ROOT, 0))
 #endif
 #define SA_DEV 0x0

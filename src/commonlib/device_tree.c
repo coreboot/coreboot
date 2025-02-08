@@ -10,7 +10,6 @@
 #ifdef __COREBOOT__
 #include <console/console.h>
 #else
-#include <stdio.h>
 #define printk(level, ...) printf(__VA_ARGS__)
 #endif
 #include <stdio.h>

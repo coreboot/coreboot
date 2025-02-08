@@ -92,7 +92,7 @@ static inline unsigned int frequency_11(struct raminfo *info)
 	return (info->clock_speed_index + 3) * 120;
 }
 
-void chipset_init(const int s3resume);
+void chipset_init(const bool s3resume);
 /* spd_addrmap is array of 4 elements:
    Channel 0 Slot 0
    Channel 0 Slot 1
@@ -100,10 +100,10 @@ void chipset_init(const int s3resume);
    Channel 1 Slot 1
    0 means "not present"
 */
-void raminit(const int s3resume, const u8 *spd_addrmap);
+void raminit(const bool s3resume, const u8 *spd_addrmap);
 
 u16 get_max_timing(struct raminfo *info, int channel);
 void early_quickpath_init(struct raminfo *info, const u8 x2ca8);
-void late_quickpath_init(struct raminfo *info, const int s3resume);
+void late_quickpath_init(struct raminfo *info, const bool s3resume);
 
 #endif				/* RAMINIT_H */

@@ -353,7 +353,7 @@ set_2dx8_reg(struct raminfo *info, u16 reg, u8 mode, u16 freq1, u16 freq2,
 	}
 }
 
-static void set_2dxx_series(struct raminfo *info, int s3resume)
+static void set_2dxx_series(struct raminfo *info, bool s3resume)
 {
 	set_2dx8_reg(info, 0x2d00, 0, 0x78, frequency_11(info) / 2, 1359, 1005,
 		     0, 1);
@@ -573,7 +573,7 @@ void early_quickpath_init(struct raminfo *info, const u8 x2ca8)
 	mchbar_write32(0x18ac, 0x22222);
 }
 
-void late_quickpath_init(struct raminfo *info, const int s3resume)
+void late_quickpath_init(struct raminfo *info, const bool s3resume)
 {
 	const u16 deven = pci_read_config16(NORTHBRIDGE, DEVEN);
 

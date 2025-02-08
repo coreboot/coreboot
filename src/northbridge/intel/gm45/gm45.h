@@ -410,7 +410,7 @@ void gm45_early_reset(void);
 
 void enter_raminit_or_reset(void);
 void get_gmch_info(sysinfo_t *);
-void raminit(sysinfo_t *, int s3resume);
+void raminit(sysinfo_t *, bool s3resume);
 void raminit_thermal(const sysinfo_t *);
 void setup_sdram_meminfo(const sysinfo_t *);
 void init_igd(const sysinfo_t *const);
@@ -423,8 +423,8 @@ u32 raminit_get_rank_addr(unsigned int channel, unsigned int rank);
 void raminit_rcomp_calibration(stepping_t stepping);
 void raminit_reset_readwrite_pointers(void);
 void raminit_receive_enable_calibration(int ddr_type, const timings_t *, const dimminfo_t *);
-void raminit_write_training(const mem_clock_t, const dimminfo_t *, int s3resume);
-void raminit_read_training(const dimminfo_t *, int s3resume);
+void raminit_write_training(const mem_clock_t, const dimminfo_t *, bool s3resume);
+void raminit_read_training(const dimminfo_t *, bool s3resume);
 
 void gm45_late_init(stepping_t);
 

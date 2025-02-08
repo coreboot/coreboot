@@ -323,7 +323,7 @@
 
 int i945_silicon_revision(void);
 void i945_early_initialization(void);
-void i945_late_initialization(int s3resume);
+void i945_late_initialization(bool s3resume);
 
 /* debugging functions */
 void print_pci_devices(void);

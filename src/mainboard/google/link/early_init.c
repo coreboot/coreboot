@@ -71,7 +71,7 @@ void mb_get_spd_map(struct spd_info *spdi)
 	spdi->spd_index = get_spd_index();
 }
 
-void mainboard_early_init(int s3resume)
+void mainboard_early_init(bool s3resume)
 {
 	if (!s3resume) {
 		/* This is the fastest way to let users know

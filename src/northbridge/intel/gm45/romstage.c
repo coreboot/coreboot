@@ -33,7 +33,7 @@ void __weak mb_post_raminit_setup(void)
 void mainboard_romstage_entry(void)
 {
 	sysinfo_t sysinfo;
-	int s3resume = 0;
+	bool s3resume = false;
 	int cbmem_initted;
 	u16 reg16;
 

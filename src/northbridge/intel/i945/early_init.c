@@ -793,16 +793,16 @@ void i945_early_initialization(void)
 	RCBA32(0x2010) |= (1 << 10);
 }
 
-static void i945_prepare_resume(int s3resume)
+static void i945_prepare_resume(bool s3resume)
 {
-	int cbmem_was_initted;
+	bool cbmem_was_initted;
 
 	cbmem_was_initted = !cbmem_recovery(s3resume);
 
 	romstage_handoff_init(cbmem_was_initted && s3resume);
 }
 
-void i945_late_initialization(int s3resume)
+void i945_late_initialization(bool s3resume)
 {
 	i945_setup_egress_port();
 

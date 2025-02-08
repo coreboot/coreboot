@@ -3,6 +3,7 @@
 #ifndef _STATE_MACHINE_H_
 #define _STATE_MACHINE_H_
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <AGESA.h>
 #include <AMD.h>
@@ -28,7 +29,7 @@ struct sysinfo
 {
 	AMD_CONFIG_PARAMS StdHeader;
 
-	int s3resume;
+	bool s3resume;
 };
 
 void board_BeforeAgesa(struct sysinfo *cb);

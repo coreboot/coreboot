@@ -173,7 +173,7 @@ static void init_intel_txt(void *unused)
 		log_ibb_measurements();
 	}
 
-	int s3resume = acpi_is_wakeup_s3();
+	bool s3resume = acpi_is_wakeup_s3();
 	if (!s3resume && !CONFIG(INTEL_CBNT_SUPPORT)) {
 		printk(BIOS_INFO, "TEE-TXT: Scheck...\n");
 		if (intel_txt_run_bios_acm(ACMINPUT_SCHECK) < 0) {

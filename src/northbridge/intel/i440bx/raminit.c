@@ -989,7 +989,7 @@ static void sdram_enable(void)
 /* Implemented under mainboard. */
 void __weak enable_spd(void) { }
 
-void sdram_initialize(int s3resume)
+void sdram_initialize(bool s3resume)
 {
 	timestamp_add_now(TS_INITRAM_START);
 	enable_spd();

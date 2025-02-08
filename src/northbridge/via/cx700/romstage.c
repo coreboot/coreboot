@@ -57,7 +57,7 @@ void mainboard_romstage_entry(void)
 
 	sdram_enable(&config->dram_cfg);
 
-	cbmem_recovery(/* s3resume => */0);
+	cbmem_recovery(/* s3resume => */false);
 
 	prepare_and_run_postcar();
 }

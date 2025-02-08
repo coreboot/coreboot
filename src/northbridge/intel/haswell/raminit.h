@@ -17,6 +17,6 @@ struct spd_info {
 void mb_get_spd_map(struct spd_info *spdi);
 
 void get_spd_info(struct spd_info *spdi, const struct northbridge_intel_haswell_config *cfg);
-void perform_raminit(const int s3resume);
+void perform_raminit(const bool s3resume);
 
 #endif	/* NORTHBRIDGE_INTEL_HASWELL_RAMINIT_H */

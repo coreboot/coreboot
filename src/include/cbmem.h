@@ -6,6 +6,7 @@
 #include <commonlib/bsd/cbmem_id.h> /* IWYU pragma: export */
 #include <stddef.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <boot/coreboot_tables.h>
 
 #define CBMEM_FSP_HOB_PTR	0x614
@@ -86,7 +87,7 @@ u64 cbmem_entry_size(const struct cbmem_entry *entry);
 
 /* Returns 0 if old cbmem was recovered. Recovery is only attempted if
  * s3resume is non-zero. */
-int cbmem_recovery(int s3resume);
+int cbmem_recovery(bool s3resume);
 /* Add a cbmem entry of a given size and id. These return NULL on failure. The
  * add function performs a find first and do not check against the original
  * size. */

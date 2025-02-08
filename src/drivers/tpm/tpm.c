@@ -6,7 +6,7 @@
 
 static void init_tpm_dev(void *unused)
 {
-	int s3resume = acpi_is_wakeup_s3();
+	bool s3resume = acpi_is_wakeup_s3();
 	tpm_setup(s3resume);
 }
 

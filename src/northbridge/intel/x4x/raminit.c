@@ -561,7 +561,8 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 {
 	struct sysinfo s, *ctrl_cached;
 	u8 reg8;
-	int fast_boot, cbmem_was_inited;
+	int fast_boot;
+	bool cbmem_was_inited;
 	size_t mrc_size;
 
 	timestamp_add_now(TS_INITRAM_START);
@@ -640,7 +641,7 @@ void sdram_initialize(int boot_path, const u8 *spd_map)
 
 	printk(BIOS_DEBUG, "RAM initialization finished.\n");
 
-	int s3resume = boot_path == BOOT_PATH_RESUME;
+	bool s3resume = boot_path == BOOT_PATH_RESUME;
 
 	cbmem_was_inited = !cbmem_recovery(s3resume);
 	if (!fast_boot)

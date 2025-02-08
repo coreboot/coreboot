@@ -14,7 +14,7 @@ void mainboard_ec_init(void)
 		.s5_wake_events = MAINBOARD_EC_S5_WAKE_EVENTS,
 	};
 
-	int s3_wakeup = acpi_is_wakeup_s3();
+	bool s3_wakeup = acpi_is_wakeup_s3();
 
 	printk(BIOS_DEBUG, "%s\n", __func__);
 	post_code(0xf0);

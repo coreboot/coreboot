@@ -5,5 +5,5 @@
 
 void mainboard_romstage_entry(void)
 {
-	cbmem_recovery(0);
+	cbmem_recovery(false);
 }

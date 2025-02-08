@@ -83,7 +83,7 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 	/* TODO: Confirm if nortbridge_fill_pei_data() gets .system_type right (should be 0) */
 }
 
-void mainboard_early_init(int s3resume)
+void mainboard_early_init(bool s3resume)
 {
 	/* Do ec reset as early as possible, but skip it on S3 resume */
 	if (!s3resume) {

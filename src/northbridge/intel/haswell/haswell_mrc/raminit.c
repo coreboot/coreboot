@@ -340,7 +340,7 @@ static uint8_t map_to_pei_oc_pin(const uint8_t oc_pin)
 	return oc_pin >= USB_OC_PIN_SKIP ? PEI_USB_OC_PIN_SKIP : oc_pin;
 }
 
-void perform_raminit(const int s3resume)
+void perform_raminit(const bool s3resume)
 {
 	const struct device *gbe = pcidev_on_root(0x19, 0);
 

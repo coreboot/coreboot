@@ -59,7 +59,7 @@ void bootblock_main_with_timestamp(uint64_t base_timestamp,
 	bootblock_mainboard_init();
 
 	if (CONFIG(TPM_MEASURED_BOOT_INIT_BOOTBLOCK)) {
-		int s3resume = acpi_is_wakeup_s3();
+		bool s3resume = acpi_is_wakeup_s3();
 		tpm_setup(s3resume);
 	}
 

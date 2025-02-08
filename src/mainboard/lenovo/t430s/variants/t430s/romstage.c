@@ -7,7 +7,7 @@
 #include <ec/lenovo/pmh7/pmh7.h>
 #include <types.h>
 
-void mainboard_early_init(int s3resume)
+void mainboard_early_init(bool s3resume)
 {
 	u8 enable_peg = get_uint_option("enable_dual_graphics", 0);
 

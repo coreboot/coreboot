@@ -16,7 +16,7 @@
 #include <southbridge/intel/common/pmclib.h>
 #include <elog.h>
 
-__weak void mainboard_early_init(int s3resume)
+__weak void mainboard_early_init(bool s3resume)
 {
 }
 
@@ -48,7 +48,7 @@ static void early_pch_reset_pmcon(void)
 /* The romstage entry point for this platform is not mainboard-specific, hence the name */
 void mainboard_romstage_entry(void)
 {
-	int s3resume = 0;
+	bool s3resume = false;
 
 	if (mchbar_read16(SSKPD_HI) == 0xcafe)
 		system_reset();

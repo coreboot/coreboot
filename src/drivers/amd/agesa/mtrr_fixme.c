@@ -33,7 +33,7 @@ static void set_range_uc(u32 base, u32 size)
 	wrmsr(MTRR_PHYS_MASK(i), msr);
 }
 
-void fixup_cbmem_to_UC(int s3resume)
+void fixup_cbmem_to_UC(bool s3resume)
 {
 	if (s3resume)
 		return;
@@ -54,7 +54,7 @@ static void recover_postcar_frame(struct postcar_frame *pcf)
 {
 	msr_t base, mask;
 	int i;
-	int s3resume = romstage_handoff_is_resume();
+	bool s3resume = romstage_handoff_is_resume();
 
 	/* Replicate non-UC MTRRs as left behind by AGESA.
 	 */

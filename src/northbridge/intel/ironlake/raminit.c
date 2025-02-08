@@ -333,7 +333,7 @@ static int count_ranks_in_channel(struct raminfo *info, int channel)
 }
 
 static void
-config_rank(struct raminfo *info, int s3resume, int channel, int slot, int rank)
+config_rank(struct raminfo *info, bool s3resume, int channel, int slot, int rank)
 {
 	int add;
 
@@ -2856,7 +2856,7 @@ static void dmi_setup(void)
 	gav(inb(DEFAULT_GPIOBASE | 0xe));	// = 0xfdcaff6e
 }
 
-void chipset_init(const int s3resume)
+void chipset_init(const bool s3resume)
 {
 	u8 x2ca8;
 	u16 ggc;
@@ -2915,12 +2915,12 @@ static u8 get_bits_420(const u32 reg32)
 	return val;
 }
 
-void raminit(const int s3resume, const u8 *spd_addrmap)
+void raminit(const bool s3resume, const u8 *spd_addrmap)
 {
 	unsigned int channel, slot, lane, rank;
 	struct raminfo info;
 	u8 x2ca8;
-	int cbmem_wasnot_inited;
+	bool cbmem_wasnot_inited;
 
 	x2ca8 = mchbar_read8(0x2ca8);
 

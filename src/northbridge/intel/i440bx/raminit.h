@@ -3,6 +3,8 @@
 #ifndef RAMINIT_H
 #define RAMINIT_H
 
+#include <stdbool.h>
+
 /* The 440BX supports up to four (single- or double-sided) DIMMs. */
 #define DIMM_SOCKETS	4
 
@@ -13,7 +15,7 @@
 #define DIMM3		0x53
 
 void enable_spd(void);
-void sdram_initialize(int s3resume);
+void sdram_initialize(bool s3resume);
 
 /* Debug */
 #if CONFIG(DEBUG_RAM_SETUP)

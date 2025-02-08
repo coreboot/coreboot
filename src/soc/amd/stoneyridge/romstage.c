@@ -55,7 +55,7 @@ void __noreturn romstage_main(void)
 	msr_t base, mask;
 	msr_t mtrr_cap = rdmsr(MTRR_CAP_MSR);
 	int vmtrrs = mtrr_cap.lo & MTRR_CAP_VCNT;
-	int s3_resume = acpi_is_wakeup_s3();
+	bool s3_resume = acpi_is_wakeup_s3();
 	int i;
 
 	soc_enable_psp_early();

@@ -54,7 +54,7 @@ void mainboard_fill_pei_data(struct pei_data *pei_data)
 {
 }
 
-void mainboard_early_init(int s3resume)
+void mainboard_early_init(bool s3resume)
 {
 	/* Enable PEG10 (1x16) */
 	pci_write_config32(PCI_DEV(0, 0, 0), DEVEN,

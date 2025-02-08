@@ -83,7 +83,7 @@ void bootblock_mainboard_early_init(void)
 	bmc_init();
 }
 
-void mainboard_early_init(int s3resume)
+void mainboard_early_init(bool s3resume)
 {
 	/* Disable IGD VGA decode, no GTT or GFX stolen */
 	pci_write_config16(PCI_DEV(0, 0, 0), GGC, 2);

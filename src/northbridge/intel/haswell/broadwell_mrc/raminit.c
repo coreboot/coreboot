@@ -310,7 +310,7 @@ static uint8_t map_to_pei_oc_pin(const uint8_t oc_pin)
 	return oc_pin >= USB_OC_PIN_SKIP ? PEI_USB_OC_PIN_SKIP : oc_pin;
 }
 
-static bool early_init_native(int s3resume)
+static bool early_init_native(bool s3resume)
 {
 	printk(BIOS_DEBUG, "Starting native platform initialisation\n");
 
@@ -326,7 +326,7 @@ static bool early_init_native(int s3resume)
 	return cpu_replaced;
 }
 
-void perform_raminit(const int s3resume)
+void perform_raminit(const bool s3resume)
 {
 	const struct northbridge_intel_haswell_config *cfg = config_of_soc();
 

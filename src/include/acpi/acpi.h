@@ -1975,10 +1975,10 @@ static inline bool acpi_s3_resume_allowed(void)
 	return CONFIG(HAVE_ACPI_RESUME);
 }
 
-static inline int acpi_is_wakeup_s3(void)
+static inline bool acpi_is_wakeup_s3(void)
 {
 	if (!acpi_s3_resume_allowed())
-		return 0;
+		return false;
 
 	if (ENV_ROMSTAGE_OR_BEFORE)
 		return (acpi_get_sleep_type() == ACPI_S3);

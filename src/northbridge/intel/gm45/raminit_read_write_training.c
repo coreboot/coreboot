@@ -262,7 +262,7 @@ static void read_training_restore_results(void)
 		}
 	}
 }
-void raminit_read_training(const dimminfo_t *const dimms, const int s3resume)
+void raminit_read_training(const dimminfo_t *const dimms, const bool s3resume)
 {
 	if (!s3resume) {
 		perform_read_training(dimms);
@@ -633,7 +633,7 @@ static void write_training_restore_results(const int memclk1067)
 }
 void raminit_write_training(const mem_clock_t ddr3clock,
 			    const dimminfo_t *const dimms,
-			    const int s3resume)
+			    const bool s3resume)
 {
 	const int memclk1067 = ddr3clock == MEM_CLOCK_1067MT;
 

@@ -3,7 +3,7 @@
 #ifndef _BROADWELL_ROMSTAGE_H_
 #define _BROADWELL_ROMSTAGE_H_
 
-void mainboard_post_raminit(const int s3resume);
+void mainboard_post_raminit(const bool s3resume);
 
 struct chipset_power_state;
 struct chipset_power_state *fill_power_state(void);

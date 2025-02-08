@@ -191,7 +191,7 @@ static int make_channel_disabled_mask(const struct spd_info *spdi, int ch)
 
 void perform_raminit(const struct chipset_power_state *const power_state)
 {
-	const int s3resume = power_state->prev_sleep_state == ACPI_S3;
+	const bool s3resume = power_state->prev_sleep_state == ACPI_S3;
 
 	struct pei_data pei_data = { 0 };
 
@@ -232,7 +232,7 @@ void perform_raminit(const struct chipset_power_state *const power_state)
 
 	timestamp_add_now(TS_INITRAM_END);
 
-	int cbmem_was_initted = !cbmem_recovery(s3resume);
+	bool cbmem_was_initted = !cbmem_recovery(s3resume);
 	if (s3resume && !cbmem_was_initted) {
 		/* Failed S3 resume, reset to come up cleanly */
 		printk(BIOS_CRIT, "Failed to recover CBMEM in S3 resume.\n");

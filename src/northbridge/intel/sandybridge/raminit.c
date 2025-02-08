@@ -341,9 +341,10 @@ static void reinit_ctrl(ramctr_timing *ctrl, const u32 cpuid)
 			ctrl->ecc_forced ? "yes" : "no");
 }
 
-static void init_dram_ddr3(int s3resume, const u32 cpuid)
+static void init_dram_ddr3(bool s3resume, const u32 cpuid)
 {
-	int me_uma_size, cbmem_was_inited, fast_boot, err;
+	int me_uma_size, fast_boot, err;
+	bool cbmem_was_inited;
 	ramctr_timing ctrl;
 	spd_ddr3_raw_data spds[4];
 	size_t mrc_size = 0;
@@ -527,7 +528,7 @@ static void init_dram_ddr3(int s3resume, const u32 cpuid)
 		setup_sdram_meminfo(&ctrl);
 }
 
-void perform_raminit(int s3resume)
+void perform_raminit(bool s3resume)
 {
 	post_code(0x3a);
 	init_dram_ddr3(s3resume, cpu_get_cpuid());

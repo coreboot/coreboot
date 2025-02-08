@@ -22,7 +22,7 @@
  */
 void mainboard_romstage_entry(void)
 {
-	int s3resume = 0;
+	bool s3resume = false;
 	u8 spd_addrmap[4] = {};
 
 	/* TODO, make this configurable */
@@ -34,7 +34,7 @@ void mainboard_romstage_entry(void)
 	if (s3resume) {
 		u8 reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa2);
 		if (!(reg8 & 0x20)) {
-			s3resume = 0;
+			s3resume = false;
 			printk(BIOS_DEBUG, "Bad resume from S3 detected.\n");
 		}
 	}

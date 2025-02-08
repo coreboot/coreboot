@@ -121,7 +121,7 @@ int cbmem_initialize_id_size(u32 id, u64 size)
 	return 0;
 }
 
-int cbmem_recovery(int is_wakeup)
+int cbmem_recovery(bool is_wakeup)
 {
 	int rv = 0;
 	if (!is_wakeup)

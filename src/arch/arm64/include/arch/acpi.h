@@ -5,8 +5,8 @@
 
 /* STUB */
 
-static inline int acpi_is_wakeup(void) { return 0; }
-static inline int acpi_is_wakeup_s3(void) { return 0; }
-static inline int acpi_is_wakeup_s4(void) { return 0; }
+static inline bool acpi_is_wakeup(void) { return false; }
+static inline bool acpi_is_wakeup_s3(void) { return false; }
+static inline bool acpi_is_wakeup_s4(void) { return false; }
 
 #endif  /* __ARCH_ACPI_H_ */

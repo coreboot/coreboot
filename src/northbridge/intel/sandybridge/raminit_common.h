@@ -468,7 +468,7 @@ void set_read_write_timings(ramctr_timing *ctrl);
 void set_normal_operation(ramctr_timing *ctrl);
 void final_registers(ramctr_timing *ctrl);
 void restore_timings(ramctr_timing *ctrl);
-int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot, int s3resume, int me_uma_size);
+int try_init_dram_ddr3(ramctr_timing *ctrl, int fast_boot, bool s3resume, int me_uma_size);
 
 void channel_scrub(ramctr_timing *ctrl);
 bool get_host_ecc_cap(void);

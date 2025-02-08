@@ -163,7 +163,7 @@ static enum raminit_boot_mode do_actual_raminit(
 	return bootmode;
 }
 
-void perform_raminit(const int s3resume)
+void perform_raminit(const bool s3resume)
 {
 	/*
 	 * See, this function's name is a lie. There are more things to

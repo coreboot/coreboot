@@ -83,7 +83,7 @@ static void early_sata_init(const uint8_t pch_revision)
 	pci_or_config8(PCH_SATA_DEV, SATA_PCS, sata_pcs);
 }
 
-void early_pch_init_native(int s3resume)
+void early_pch_init_native(bool s3resume)
 {
 	const uint8_t pch_revision = pci_read_config8(PCH_LPC_DEV, PCI_REVISION_ID);
 

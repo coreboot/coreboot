@@ -2100,7 +2100,7 @@ void raminit_reset_readwrite_pointers(void)
 	mchbar_setbits32(0x15f0, 1 << 10);
 }
 
-void raminit(sysinfo_t *const sysinfo, const int s3resume)
+void raminit(sysinfo_t *const sysinfo, const bool s3resume)
 {
 	const dimminfo_t *const dimms = sysinfo->dimms;
 	const timings_t *const timings = &sysinfo->selected_timings;

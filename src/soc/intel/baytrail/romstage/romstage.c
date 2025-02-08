@@ -108,7 +108,7 @@ void mainboard_romstage_entry(void)
 
 	printk(BIOS_DEBUG, "prev_sleep_state = S%d\n", prev_sleep_state);
 
-	int s3resume = prev_sleep_state == ACPI_S3;
+	bool s3resume = prev_sleep_state == ACPI_S3;
 
 	elog_boot_notify(s3resume);
 

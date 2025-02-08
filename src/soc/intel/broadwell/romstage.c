@@ -12,7 +12,7 @@
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
 #include <stdint.h>
 
-__weak void mainboard_post_raminit(const int s3resume)
+__weak void mainboard_post_raminit(const bool s3resume)
 {
 }
 

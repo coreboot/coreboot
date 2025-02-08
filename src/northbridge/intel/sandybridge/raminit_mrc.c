@@ -340,7 +340,7 @@ static void disable_p2p(void)
 
 static void setup_sdram_meminfo(struct pei_data *pei_data);
 
-void perform_raminit(int s3resume)
+void perform_raminit(bool s3resume)
 {
 	const struct northbridge_intel_sandybridge_config *cfg = config_of_soc();
 	struct pei_data pei_data = {
@@ -412,7 +412,7 @@ void perform_raminit(int s3resume)
 		hexdump(mrc_var, sizeof(*mrc_var));
 	}
 
-	const int cbmem_was_initted = !cbmem_recovery(s3resume);
+	const bool cbmem_was_initted = !cbmem_recovery(s3resume);
 	if (!s3resume)
 		save_mrc_data(&pei_data);
 

@@ -23,7 +23,7 @@ void mainboard_late_rcba_config(void)
 	DIR_ROUTE(D20IR, PIRQA, PIRQB, PIRQC, PIRQD);
 }
 
-void mainboard_early_init(int s3resume)
+void mainboard_early_init(bool s3resume)
 {
 	uint16_t ec_fw_version;
 

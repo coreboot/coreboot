@@ -39,10 +39,10 @@ static inline void stage_cache_get_raw(int stage_id, void **base, size_t *size) 
 
 #endif
 
-static inline int resume_from_stage_cache(void)
+static inline bool resume_from_stage_cache(void)
 {
 	if (CONFIG(NO_STAGE_CACHE))
-		return 0;
+		return false;
 
 	/* TBD: Replace this with acpi_is_wakeup_s3(). */
 	return romstage_handoff_is_resume();

@@ -34,7 +34,7 @@ static void hybrid_graphics_init(void)
 	pci_write_config32(PCI_DEV(0, 0, 0), DEVEN, reg32);
 }
 
-void mainboard_early_init(int s3resume)
+void mainboard_early_init(bool s3resume)
 {
 	hybrid_graphics_init();
 }

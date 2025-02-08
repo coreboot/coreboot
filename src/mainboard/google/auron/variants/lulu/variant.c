@@ -34,7 +34,7 @@ int variant_smbios_data(struct device *dev, int *handle, unsigned long *current)
 	return len;
 }
 
-void mainboard_post_raminit(const int s3resume)
+void mainboard_post_raminit(const bool s3resume)
 {
 	if (!s3resume)
 		google_chromeec_kbbacklight(75);

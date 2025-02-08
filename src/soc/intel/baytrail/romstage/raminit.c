@@ -129,7 +129,7 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 	mp->prev_sleep_state = prev_sleep_state;
 	mp->rmt_enabled = CONFIG(MRC_RMT);
 
-	int s3resume = prev_sleep_state == ACPI_S3;
+	bool s3resume = prev_sleep_state == ACPI_S3;
 
 	/* Default to 2GiB IO hole. */
 	if (!mp->io_hole_mb)
@@ -182,7 +182,7 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 
 	ret = mrc_entry(mp);
 
-	int cbmem_was_initted = !cbmem_recovery(s3resume);
+	bool cbmem_was_initted = !cbmem_recovery(s3resume);
 	if (s3resume && !cbmem_was_initted) {
 		/* Failed S3 resume, reset to come up cleanly */
 		printk(BIOS_CRIT, "Failed to recover CBMEM in S3 resume.\n");

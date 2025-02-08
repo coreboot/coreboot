@@ -27,7 +27,7 @@ void mainboard_romstage_entry(void)
 	haswell_early_initialization();
 	printk(BIOS_DEBUG, "Back from haswell_early_initialization()\n");
 
-	const int s3resume = southbridge_detect_s3_resume();
+	const bool s3resume = southbridge_detect_s3_resume();
 
 	elog_boot_notify(s3resume);
 

@@ -8,6 +8,7 @@
 #include <device/device.h>
 #include <device/path.h>
 #include <elog.h>
+#include <halt.h>
 #include <rtc.h>
 #include <security/vboot/vboot_common.h>
 #include <stdlib.h>
@@ -1668,4 +1669,10 @@ bool google_chromeec_is_battery_present(void)
 	}
 
 	return false;
+}
+
+void google_chromeec_do_early_poweroff(void)
+{
+	google_chromeec_reboot(EC_REBOOT_COLD_AP_OFF, 0);
+	halt();
 }

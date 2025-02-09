@@ -42,7 +42,7 @@ static const unsigned short pci_device_ids[] = {
 };
 
 static const struct pci_driver asmedia_asm1061 __pci_driver = {
-	.ops	 = &asm1061_ops,
-	.vendor	 = 0x1b21,
-	.devices = pci_device_ids,
+	.ops		= &asm1061_ops,
+	.vendor		= 0x1b21,
+	.devices	= pci_device_ids,
 };

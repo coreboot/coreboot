@@ -18,6 +18,36 @@ const struct cpu_tdp_power_limits power_optimized_limits[] = {
 		.pl2_max_power = 50000,
 		.pl4_power = 50000 /* TODO: needs fine tuning */
 	},
+	{
+		.mch_id = PCI_DID_INTEL_PTL_H_ID_2,
+		.cpu_tdp = 25,
+		.power_limits_index = PTL_H_1_CORE,
+		.pl1_min_power = 10000,
+		.pl1_max_power = 25000,
+		.pl2_min_power = 50000,
+		.pl2_max_power = 50000,
+		.pl4_power = 50000 /* TODO: needs fine tuning */
+	},
+	{
+		.mch_id = PCI_DID_INTEL_PTL_H_ID_3,
+		.cpu_tdp = 25,
+		.power_limits_index = PTL_H_2_CORE,
+		.pl1_min_power = 10000,
+		.pl1_max_power = 25000,
+		.pl2_min_power = 50000,
+		.pl2_max_power = 50000,
+		.pl4_power = 50000 /* TODO: needs fine tuning */
+	},
+	{
+		.mch_id = PCI_DID_INTEL_PTL_H_ID_4,
+		.cpu_tdp = 25,
+		.power_limits_index = PTL_H_2_CORE,
+		.pl1_min_power = 10000,
+		.pl1_max_power = 25000,
+		.pl2_min_power = 50000,
+		.pl2_max_power = 50000,
+		.pl4_power = 50000 /* TODO: needs fine tuning */
+	},
 };
 
 void baseboard_devtree_update(void)

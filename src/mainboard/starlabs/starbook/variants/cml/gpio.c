@@ -116,7 +116,7 @@ const struct pad_config gpio_table[] = {
 	/* B3:	CLICK_PAD_INT_R_N		*/
 	PAD_CFG_GPI_APIC_LOW(GPP_B3, NONE, PLTRST),
 	/* B4:	BT_RF_KILL_N			*/
-	PAD_CFG_GPO_GPIO_DRIVER(GPP_B4, 1, DEEP, NONE),
+	PAD_CFG_GPO(GPP_B4, 1, DEEP),
 	/* B5:	 WLAN_CLKREQ#			*/
 	PAD_CFG_NF(GPP_B5, NONE, DEEP, NF1),
 	/* B6:	 CLKREQ1_SSD_N			*/
@@ -161,7 +161,7 @@ const struct pad_config gpio_table[] = {
 	/* C1:	 SMB_DATA			*/
 	PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1),
 	/* C2:	 WIFI_RF_KILL_N			*/
-	PAD_CFG_GPO_GPIO_DRIVER(GPP_C2, 1, DEEP, NONE),
+	PAD_CFG_GPO(GPP_C2, 1, DEEP),
 	/* C3:	Not Connected			*/
 	PAD_NC(GPP_C3, NONE),
 	/* C4:	Not Connected			*/

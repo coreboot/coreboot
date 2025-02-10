@@ -63,7 +63,7 @@ const struct pad_config gpio_table[] = {
 	/* A12:		Not Connected					*/
 	PAD_NC(GPP_A12, NONE),
 	/* A13:		BlueTooth RF Kill				*/
-	PAD_CFG_GPO_GPIO_DRIVER(GPP_A13, 1, DEEP, NONE),
+	PAD_CFG_GPO(GPP_A13, 1, DEEP),
 	/* A14:		Camera Power Enable				*/
 	PAD_NC(GPP_A14, NONE),
 	/* A15:		Camera Reset					*/
@@ -227,7 +227,7 @@ const struct pad_config gpio_table[] = {
 	/* D15:		Not Connected					*/
 	PAD_NC(GPP_D15, NONE),
 	/* D16:		PCH M.2 SSD Power Enable			*/
-	PAD_CFG_GPO_GPIO_DRIVER(GPP_D16, 1, DEEP, NONE),
+	PAD_CFG_GPO(GPP_D16, 1, DEEP),
 	/* D17:		Not used		Fingerprint ID		*/
 	PAD_NC(GPP_D17, NONE),
 	/* D18:		Bluetooth Wake					*/
@@ -242,7 +242,7 @@ const struct pad_config gpio_table[] = {
 	/* E2:		Not Connected					*/
 	PAD_NC(GPP_E2, NONE),
 	/* E3:		WiFi RF Kill					*/
-	PAD_CFG_GPO_GPIO_DRIVER(GPP_E3, 1, DEEP, NONE),
+	PAD_CFG_GPO(GPP_E3, 1, DEEP),
 	/* E4:		P Offset					*/
 	PAD_NC(GPP_E4, NONE),
 	/* E5:		P Out						*/
@@ -323,7 +323,7 @@ const struct pad_config gpio_table[] = {
 	/* F16:		Not Connected					*/
 	PAD_NC(GPP_F16, NONE),
 	/* F17:		Touch Panel Reset				*/
-	PAD_CFG_GPO_GPIO_DRIVER(GPP_F17, 1, PLTRST, NONE),
+	PAD_CFG_GPO(GPP_F17, 1, PLTRST),
 	/* F18:		Touch Panel Interrupt				*/
 	PAD_CFG_GPI_APIC(GPP_F18, NONE, PLTRST, LEVEL, INVERT),
 	/* F19:		Not Connected					*/
@@ -338,7 +338,7 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F23, NONE),
 
 	/* H0:		PCH M.2 SSD Reset				*/
-	PAD_CFG_GPO_GPIO_DRIVER(GPP_H0, 1, PLTRST, NONE),
+	PAD_CFG_GPO(GPP_H0, 1, PLTRST),
 	/* H1:		BFX Strap 2 Bit 3	Weak Internal PD 20K	*/
 	PAD_CFG_GPO(GPP_H1, 0, DEEP),
 	/* H2:		Wireless LAN Reset				*/
@@ -450,7 +450,7 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_R7, NONE),
 
 	/* BT_EN */
-	PAD_CFG_GPO_GPIO_DRIVER(GPP_VGPIO_0, 1, DEEP, NONE),
+	PAD_CFG_GPO(GPP_VGPIO_0, 1, DEEP),
 
 	/* CNVi BT UART0 */
 	PAD_NC(GPP_VGPIO_6, NONE),

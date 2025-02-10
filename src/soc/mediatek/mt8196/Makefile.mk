@@ -100,6 +100,15 @@ ifneq ($(wildcard $(BL31_LIB)),)
 BL31_MAKEARGS += MTKLIB_PATH=$(BL31_LIB)
 endif
 
+PI_IMG := $(MT8196_BLOB_DIR)/$(call strip_quotes,$(CONFIG_PI_IMG_FIRMWARE))
+
+.PHONY: check_pi_img
+check_pi_img: $(PI_IMG)
+	./util/mediatek/check-pi-img.py $<
+
+# Make sure check_pi_img is always run.
+$(obj)/coreboot.pre: | check_pi_img
+
 mcu-firmware-files := \
 	$(CONFIG_DPM_DM_FIRMWARE) \
 	$(CONFIG_DPM_PM_FIRMWARE) \

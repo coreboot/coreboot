@@ -1628,14 +1628,14 @@ void mt_pll_post_init(void)
 	write32(&mtk_topckgen->clk_cfg[12].set, 0x80800000);
 	write32(&mtk_topckgen->clk_cfg[15].set, 0x8000);
 	write32(&mtk_topckgen->clk_cfg[16].set, 0x800000);
-	write32(&mtk_topckgen->clk_cfg[18].set, 0x80000000);
+	write32(&mtk_topckgen->clk_cfg[18].set, 0x80800000);
 	write32(&mtk_topckgen->clk_cfg[19].set, 0x80808000);
 	write32(&mtk_topckgen->clk_cfg[20].set, 0x80808080);
 	write32(&mtk_topckgen->clk_cfg[21].set, 0x80808080);
 	write32(&mtk_topckgen->clk_cfg[22].set, 0x80);
 
 	write32(&mtk_vlpsys->vlp_clk_cfg[6].set, 0x80);
-	write32(&mtk_vlpsys->vlp_clk_cfg[10].set, 0x80800000);
+	write32(&mtk_vlpsys->vlp_clk_cfg[10].set, 0x80808000);
 	write32(&mtk_vlpsys->vlp_clk_cfg[11].set, 0x80);
 
 	write32(&mtk_topckgen2->cksys2_clk_cfg[0].set, 0x80808080);

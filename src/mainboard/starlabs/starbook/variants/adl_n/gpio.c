@@ -37,7 +37,7 @@ const struct pad_config gpio_table[] = {
 	/* GPD8:	Suspend Clock					*/
 	PAD_CFG_NF(GPD8, NONE, DEEP, NF1),
 	/* GPD9:	Wireless LAN Sleep				*/
-	PAD_CFG_NF(GPD9, NONE, DEEP, NF1),
+	PAD_NC(GPD9, NONE),
 	/* GPD10:	Sleep S5					*/
 	PAD_NC(GPD10, NONE),
 	/* GPD11:	LAN PHY Enable					*/
@@ -60,8 +60,8 @@ const struct pad_config gpio_table[] = {
 	/* A10:		ESPI Reset					*/
 	/* A11:		Not Connected					*/
 	PAD_NC(GPP_A11, NONE),
-	/* A12:		PCH M.2 SSD PEDET				*/
-	PAD_CFG_NF(GPP_A12, NONE, DEEP, NF1),
+	/* A12:		Not Connected					*/
+	PAD_NC(GPP_A12, NONE),
 	/* A13:		BlueTooth RF Kill				*/
 	PAD_CFG_GPO_GPIO_DRIVER(GPP_A13, 1, DEEP, NONE),
 	/* A14:		Test Point 45					*/
@@ -69,7 +69,7 @@ const struct pad_config gpio_table[] = {
 	/* A15:		Test Point 52					*/
 	PAD_NC(GPP_A15, NONE),
 	/* A16:		USB OverCurrent 3				*/
-	PAD_CFG_NF(GPP_A16, NONE, DEEP, NF1),
+	PAD_NC(GPP_A16, NONE),
 	/* A17:		Not Connected					*/
 	PAD_NC(GPP_A17, NONE),
 	/* A18:		DDI B DP HPD					*/
@@ -257,7 +257,7 @@ const struct pad_config gpio_table[] = {
 	/* E8:		DRAM Sleep					*/
 	PAD_CFG_GPO(GPP_E8, 1, DEEP),
 	/* E9:		USB OverCurrent 0				*/
-	PAD_CFG_NF(GPP_E9, NONE, DEEP, NF1),
+	PAD_NC(GPP_E9, NONE),
 	/* E10:		PWD Amplifier Input				*/
 	PAD_NC(GPP_E10, NONE),
 	/* E11:		TPM IRQ						*/

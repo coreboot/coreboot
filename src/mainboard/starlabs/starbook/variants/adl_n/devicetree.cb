@@ -37,23 +37,19 @@ chip soc/intel/alderlake
 				[DDI_PORT_1]				= DDI_ENABLE_HPD,
 			}"
 		end
-		device ref gna		on  end
-		device ref xhci		on
+		device ref gna	on  end
+		device ref xhci on
 			# Motherboard USB 3.0 Type-C Front	9557 mil
-			register "usb2_ports[1]"		= "USB2_PORT_TYPE_C(OC_SKIP)"
-			register "usb3_ports[2]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
-
-			# Motherboard USB 3.0 Type-C Back	7893 mil
 			register "usb2_ports[2]"		= "USB2_PORT_TYPE_C(OC_SKIP)"
-			register "usb3_ports[3]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
+			register "usb3_ports[2]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 
 			# Motherboard USB 3.0 Type-A		8916 mil
 			register "usb2_ports[6]"		= "USB2_PORT_MID(OC_SKIP)"
-			register "usb3_ports[0]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
+			register "usb3_ports[1]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 
 			# Daughterboard USB 3.0 Type-A		2229 mil
 			register "usb2_ports[0]"		= "USB2_PORT_SHORT(OC_SKIP)"
-			register "usb3_ports[1]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
+			register "usb3_ports[0]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 
 			# Internal Webcam			9070 mil
 			register "usb2_ports[CONFIG_CCD_PORT]"	= "USB2_PORT_MID(OC_SKIP)"
@@ -67,18 +63,6 @@ chip soc/intel/alderlake
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
 					chip drivers/usb/acpi
-						register "desc"		= ""Back USB Type-C""
-						register "type"		= "UPC_TYPE_C_USB2_SS"
-						register "group"	= "ACPI_PLD_GROUP(0, 0)"
-						device ref usb2_port2 on end
-					end
-					chip drivers/usb/acpi
-						register "desc"		= ""Back USB Type-C""
-						register "type"		= "UPC_TYPE_C_USB2_SS"
-						register "group"	= "ACPI_PLD_GROUP(0, 0)"
-						device ref usb3_port3 on end
-					end
-					chip drivers/usb/acpi
 						register "desc"		= ""Front USB Type-C""
 						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "group"	= "ACPI_PLD_GROUP(0, 1)"
@@ -88,7 +72,7 @@ chip soc/intel/alderlake
 						register "desc"		= ""Front USB Type-C""
 						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "group"	= "ACPI_PLD_GROUP(0, 1)"
-						device ref usb3_port4 on end
+						device ref usb3_port3 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""Left USB Type-A""
@@ -100,7 +84,7 @@ chip soc/intel/alderlake
 						register "desc"		= ""Left USB Type-A""
 						register "type"		= "UPC_TYPE_USB3_A"
 						register "group"	= "ACPI_PLD_GROUP(0, 2)"
-						device ref usb3_port1 on end
+						device ref usb3_port2 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""Right USB Type-A""
@@ -112,7 +96,7 @@ chip soc/intel/alderlake
 						register "desc"		= ""Right USB Type-A""
 						register "type"		= "UPC_TYPE_USB3_A"
 						register "group"	= "ACPI_PLD_GROUP(0, 3)"
-						device ref usb3_port2 on end
+						device ref usb3_port1 on end
 					end
 					chip drivers/usb/acpi
 						register "desc"		= ""Internal Webcam""
@@ -205,8 +189,8 @@ chip soc/intel/alderlake
 		device ref uart0	on  end
 		device ref pch_espi	on
 			register "gen1_dec"			= "0x00040069"
-			register "gen2_dec"			= "0x00fc0e01"
-			register "gen3_dec"			= "0x00fc0f01"
+			register "gen2_dec"			= "0x00040069"
+			register "gen3_dec"			= "0x00040069"
 
 			chip drivers/pc80/tpm
 				device pnp 0c31.0 on end
@@ -239,14 +223,9 @@ chip soc/intel/alderlake
 			chip drivers/intel/pmc_mux
 				device generic 0 on
 					chip drivers/intel/pmc_mux/conn
-						use usb2_port2 as usb2_port
+						use usb2_port3 as usb2_port
 						use usb3_port3 as usb3_port
 						device generic 0 alias conn0 on end
-					end
-					chip drivers/intel/pmc_mux/conn
-						use usb2_port3 as usb2_port
-						use usb3_port4 as usb3_port
-						device generic 1 alias conn1 on end
 					end
 				end
 			end

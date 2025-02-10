@@ -10,7 +10,7 @@
 const struct cpu_tdp_power_limits power_optimized_limits[] = {
 	{
 		.mch_id = PCI_DID_INTEL_PTL_H_ID_1,
-		.cpu_tdp = 25,
+		.cpu_tdp = TDP_25W,
 		.power_limits_index = PTL_H_1_CORE,
 		.pl1_min_power = 10000,
 		.pl1_max_power = 25000,
@@ -20,7 +20,7 @@ const struct cpu_tdp_power_limits power_optimized_limits[] = {
 	},
 	{
 		.mch_id = PCI_DID_INTEL_PTL_H_ID_2,
-		.cpu_tdp = 25,
+		.cpu_tdp = TDP_25W,
 		.power_limits_index = PTL_H_1_CORE,
 		.pl1_min_power = 10000,
 		.pl1_max_power = 25000,
@@ -30,7 +30,7 @@ const struct cpu_tdp_power_limits power_optimized_limits[] = {
 	},
 	{
 		.mch_id = PCI_DID_INTEL_PTL_H_ID_3,
-		.cpu_tdp = 25,
+		.cpu_tdp = TDP_25W,
 		.power_limits_index = PTL_H_2_CORE,
 		.pl1_min_power = 10000,
 		.pl1_max_power = 25000,
@@ -40,7 +40,7 @@ const struct cpu_tdp_power_limits power_optimized_limits[] = {
 	},
 	{
 		.mch_id = PCI_DID_INTEL_PTL_H_ID_4,
-		.cpu_tdp = 25,
+		.cpu_tdp = TDP_25W,
 		.power_limits_index = PTL_H_2_CORE,
 		.pl1_min_power = 10000,
 		.pl1_max_power = 25000,

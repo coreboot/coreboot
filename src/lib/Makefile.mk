@@ -440,3 +440,6 @@ ifneq ($(CONFIG_HAVE_CUSTOM_BMP_LOGO),y)
 $(eval $(call add_bmp_logo_file_to_cbfs,CONFIG_BMP_LOGO, logo.bmp,\
 	      CONFIG_FSP2_0_LOGO_FILE_NAME))
 endif
+
+$(eval $(call add_bmp_logo_file_to_cbfs,CONFIG_PLATFORM_HAS_LOW_BATTERY_INDICATOR, \
+	      low_battery.bmp,CONFIG_PLATFORM_LOW_BATTERY_INDICATOR_LOGO_PATH))

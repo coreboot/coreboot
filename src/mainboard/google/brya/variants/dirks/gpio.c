@@ -19,8 +19,6 @@ static const struct pad_config override_gpio_table[] = {
 
 	/* B4 : LAN_PERST_L */
 	PAD_CFG_GPO(GPP_B4, 1, PLTRST),
-	/* B14 : SPKR ==> PWM_PP3300_BUZZER */
-	PAD_CFG_GPO_LOCK(GPP_B14, 0, LOCK_CONFIG),
 	/* B16 : I2C5_SDA ==> NC */
 	PAD_NC(GPP_B16, NONE),
 	/* B17 : I2C5_SCL ==> NC */
@@ -37,6 +35,8 @@ static const struct pad_config override_gpio_table[] = {
 	/* C7  : SML1DATA ==> NC */
 	PAD_NC(GPP_C7, NONE),
 
+	/* D2  :  PWM_PP3300_BUZZER */
+	PAD_CFG_GPO(GPP_D2, 0, DEEP),
 	/* D3  : ISH_GP3 ==> NC */
 	PAD_NC(GPP_D3, NONE),
 	/* D6  : SRCCLKREQ1# ==> NC */

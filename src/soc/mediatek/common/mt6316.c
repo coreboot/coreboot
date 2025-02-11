@@ -169,6 +169,14 @@ static void mt6316_set_all_test_con9(void)
 		mt6316_write8(mt6316_slave_id[i], MT6316_PMIC_TEST_CON9, 0x20);
 }
 
+static void mt6316_set_all_deglitch(void)
+{
+	/* Set deglitch time from 2ns to 4ns */
+	for (int i = 0; i < ARRAY_SIZE(mt6316_slave_id); i++)
+		mt6316_write_field(mt6316_slave_id[i],
+				   MT6316_PMIC_SPMI_RSV1, 0x0A, 0xFF, 0);
+}
+
 static void init_pmif_arb(void)
 {
 	if (pmif_arb)
@@ -196,4 +204,5 @@ void mt6316_init(void)
 
 	mt6316_init_setting();
 	mt6316_set_all_test_con9();
+	mt6316_set_all_deglitch();
 }

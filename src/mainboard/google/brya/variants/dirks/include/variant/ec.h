@@ -3,6 +3,6 @@
 #ifndef __VARIANT_EC_H__
 #define __VARIANT_EC_H__
 
-#include <baseboard/ec.h>
+#include <baseboard/dirks/ec.h>
 
 #endif

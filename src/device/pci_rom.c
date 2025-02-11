@@ -169,12 +169,15 @@ struct rom_header *pci_rom_load(struct device *dev,
 			memcpy((void *)PCI_VGA_RAM_IMAGE_START, rom_header,
 			       rom_size);
 		}
+
+		dev->pci_vga_option_rom = (struct rom_header *)(PCI_VGA_RAM_IMAGE_START);
 		return (struct rom_header *)(PCI_VGA_RAM_IMAGE_START);
 	}
 
 	printk(BIOS_DEBUG, "Copying non-VGA ROM image from %p to %p, 0x%x bytes\n",
 	       rom_header, pci_ram_image_start, rom_size);
 
+	dev->pci_vga_option_rom = (struct rom_header *)pci_ram_image_start;
 	memcpy(pci_ram_image_start, rom_header, rom_size);
 	pci_ram_image_start += rom_size;
 	return (struct rom_header *)(pci_ram_image_start-rom_size);
@@ -183,30 +186,6 @@ struct rom_header *pci_rom_load(struct device *dev,
 /* ACPI */
 #if CONFIG(HAVE_ACPI_TABLES)
 
-/* VBIOS may be modified after oprom init so use the copy if present. */
-static struct rom_header *check_initialized(const struct device *dev)
-{
-	struct rom_header *run_rom;
-	struct pci_data *rom_data;
-
-	if (!CONFIG(VGA_ROM_RUN) && !CONFIG(RUN_FSP_GOP))
-		return NULL;
-
-	run_rom = (struct rom_header *)(uintptr_t)PCI_VGA_RAM_IMAGE_START;
-	if (read_le16(&run_rom->signature) != PCI_ROM_HDR)
-		return NULL;
-
-	rom_data = (struct pci_data *)((u8 *)run_rom
-			+ read_le16(&run_rom->data));
-
-	if (read_le32(&rom_data->signature) == PCI_DATA_HDR
-			&& read_le16(&rom_data->device) == dev->device
-			&& read_le16(&rom_data->vendor) == dev->vendor)
-		return run_rom;
-	else
-		return NULL;
-}
-
 static unsigned long
 ati_rom_acpi_fill_vfct(const struct device *device, acpi_vfct_t *vfct_struct,
 		       unsigned long current)
@@ -214,7 +193,8 @@ ati_rom_acpi_fill_vfct(const struct device *device, acpi_vfct_t *vfct_struct,
 	acpi_vfct_image_hdr_t *header = &vfct_struct->image_hdr;
 	struct rom_header *rom;
 
-	rom = check_initialized(device);
+	/* Already loaded into DRAM? */
+	rom = device->pci_vga_option_rom;
 	if (!rom)
 		rom = pci_rom_probe(device);
 	if (!rom) {
@@ -273,6 +253,7 @@ pci_rom_write_acpi_tables(const struct device *device, unsigned long current,
 
 void pci_rom_ssdt(const struct device *device)
 {
+	const struct rom_header *rom;
 	static size_t ngfx;
 
 	/* Only handle display devices */
@@ -283,12 +264,43 @@ void pci_rom_ssdt(const struct device *device)
 	if (!device->enabled)
 		return;
 
-	/* Probe for option rom */
-	const struct rom_header *rom = pci_rom_probe(device);
-	if (!rom || !rom->size) {
-		printk(BIOS_WARNING, "%s: Missing PCI Option ROM\n",
-		       dev_path(device));
-		return;
+	/* Already loaded into DRAM? */
+	rom = device->pci_vga_option_rom;
+	if (!rom) {
+		/* Probe for option rom */
+		rom = pci_rom_probe(device);
+		if (!rom || !rom->size) {
+			printk(BIOS_WARNING, "%s: Missing PCI Option ROM\n",
+			dev_path(device));
+			return;
+		}
+
+		/* Supports up to four devices. */
+		if ((CBMEM_ID_ROM0 + ngfx) > CBMEM_ID_ROM3) {
+			printk(BIOS_ERR, "%s: Out of CBMEM IDs.\n", dev_path(device));
+			return;
+		}
+
+		/* Prepare memory */
+		const size_t cbrom_length = rom->size * 512;
+		if (!cbrom_length) {
+			printk(BIOS_ERR, "%s: ROM has zero length!\n",
+			dev_path(device));
+			return;
+		}
+
+		void *cbrom = cbmem_add(CBMEM_ID_ROM0 + ngfx, cbrom_length);
+		if (!cbrom) {
+			printk(BIOS_ERR, "%s: Failed to allocate CBMEM.\n",
+			dev_path(device));
+			return;
+		}
+		/* Increment CBMEM id for next device */
+		ngfx++;
+
+		memcpy(cbrom, rom, cbrom_length);
+
+		rom = cbrom;
 	}
 
 	const char *scope = acpi_device_path(device);
@@ -297,34 +309,9 @@ void pci_rom_ssdt(const struct device *device)
 		return;
 	}
 
-	/* Supports up to four devices. */
-	if ((CBMEM_ID_ROM0 + ngfx) > CBMEM_ID_ROM3) {
-		printk(BIOS_ERR, "%s: Out of CBMEM IDs.\n", dev_path(device));
-		return;
-	}
-
-	/* Prepare memory */
-	const size_t cbrom_length = rom->size * 512;
-	if (!cbrom_length) {
-		printk(BIOS_ERR, "%s: ROM has zero length!\n",
-		       dev_path(device));
-		return;
-	}
-
-	void *cbrom = cbmem_add(CBMEM_ID_ROM0 + ngfx, cbrom_length);
-	if (!cbrom) {
-		printk(BIOS_ERR, "%s: Failed to allocate CBMEM.\n",
-		       dev_path(device));
-		return;
-	}
-	/* Increment CBMEM id for next device */
-	ngfx++;
-
-	memcpy(cbrom, rom, cbrom_length);
-
 	/* write _ROM method */
 	acpigen_write_scope(scope);
-	acpigen_write_rom(cbrom, cbrom_length);
+	acpigen_write_rom((void *)rom, rom->size * 512);
 	acpigen_pop_len(); /* pop scope */
 }
 #endif

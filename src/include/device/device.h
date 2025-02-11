@@ -36,6 +36,7 @@ struct chip_operations {
 struct bus;
 
 struct acpi_rsdp;
+struct rom_header;
 
 struct device_operations {
 	void (*read_resources)(struct device *dev);
@@ -127,6 +128,17 @@ struct device {
 	struct device_operations *ops;
 	struct chip_operations *chip_ops;
 	const char *name;
+	/*
+	 * A pointer to the corresponding PCI Option ROM.
+	 *
+	 * When set the Option ROM has been placed in usable DRAM in
+	 * an area that is marked as reserved. This can be for example
+	 * the legacy C-segment or a CBMEM area. The Option ROM is
+	 * read writeable and guaranteed to be used by the device.
+	 * The PCIR data header might still have a different vendor and
+	 * device ID.
+	 */
+	struct rom_header *pci_vga_option_rom;
 #if CONFIG(GENERATE_SMBIOS_TABLES)
 	u8 smbios_slot_type;
 	u8 smbios_slot_data_width;

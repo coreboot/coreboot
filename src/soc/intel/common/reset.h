@@ -25,4 +25,11 @@ __noreturn void global_reset(void);
  */
 efi_return_status_t fsp_get_pch_reset_status(void);
 
+/*
+ * Issue power off due to low battery
+ *
+ * Call this function to power off the platform if the battery level is critically low.
+ */
+void do_low_battery_poweroff(void);
+
 #endif	/* _INTEL_COMMON_RESET_H_ */

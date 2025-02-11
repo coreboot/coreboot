@@ -184,8 +184,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC_LOCK(GPP_E11, NONE, LOCK_CONFIG),
 	/* E12 : THC0_SPI1_IO1 ==> RAM_ID2 */
 	PAD_CFG_GPI_LOCK(GPP_E12, NONE, LOCK_CONFIG),
-	/* E13 : NC */
-	PAD_NC_LOCK(GPP_E13, NONE, LOCK_CONFIG),
+	/* E13 : NC ==> GPP_E13_STRAP */
+	PAD_CFG_GPI_LOCK(GPP_E13, NONE, LOCK_CONFIG),
 	/* E14 : DDSP_HPDA ==> EDP_HPD */
 	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),
 	/* E15 : NC */
@@ -418,6 +418,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI_APIC(GPP_A17, NONE, PLTRST, LEVEL, INVERT),
 	/* E3 : PROC_GP0 ==> SOC_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E3, NONE, DEEP),
+	/* E13 : NC ==> GPP_E13_STRAP */
+	PAD_CFG_GPI_LOCK(GPP_E13, NONE, LOCK_CONFIG),
 	/* F12 : NC ==> WWAN_RST_L */
 	PAD_CFG_GPO(GPP_F12, 0, DEEP),
 	/* F13 : NC ==> PLTRST_WWAN# */

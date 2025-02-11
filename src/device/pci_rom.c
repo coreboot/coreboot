@@ -226,8 +226,8 @@ unsigned long
 pci_rom_write_acpi_tables(const struct device *device, unsigned long current,
 			  struct acpi_rsdp *rsdp)
 {
-	/* Only handle VGA devices */
-	if ((device->class >> 8) != PCI_CLASS_DISPLAY_VGA)
+	/* Only handle display devices */
+	if ((device->class >> 16) != PCI_BASE_CLASS_DISPLAY)
 		return current;
 
 	/* Only handle enabled devices */

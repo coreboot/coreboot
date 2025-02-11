@@ -411,6 +411,19 @@
                 "ranksPerChannel": 1,
                 "speedMbps": 4267
             }
-	}
+	},
+        {
+            "name": "NT6AP512T32BL-J1",
+            "attribs": {
+                "densityPerChannelGb": 8,
+                "banks": 8,
+                "channelsPerDie": 1,
+                "diesPerPackage": 2,
+                "bitWidthPerChannel": 16,
+                "ranksPerChannel": 1,
+                "speedMbps": 4267
+            }
+        }
+
     ]
 }

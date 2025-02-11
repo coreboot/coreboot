@@ -125,17 +125,13 @@ FSP_ROMSTAGE_CBFS := $(CONFIG_CBFS_PREFIX)/mtk_fsp_romstage
 $(FSP_ROMSTAGE_CBFS)-file := $(MT8196_BLOB_DIR)/mtk_fsp_romstage.elf
 $(FSP_ROMSTAGE_CBFS)-type := stage
 $(FSP_ROMSTAGE_CBFS)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
-ifneq ($(wildcard $($(FSP_ROMSTAGE_CBFS)-file)),)
 cbfs-files-y += $(FSP_ROMSTAGE_CBFS)
-endif
 
 FSP_RAMSTAGE_CBFS := $(CONFIG_CBFS_PREFIX)/mtk_fsp_ramstage
 $(FSP_RAMSTAGE_CBFS)-file := $(MT8196_BLOB_DIR)/mtk_fsp_ramstage.elf
 $(FSP_RAMSTAGE_CBFS)-type := stage
 $(FSP_RAMSTAGE_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
-ifneq ($(wildcard $($(FSP_RAMSTAGE_CBFS)-file)),)
 cbfs-files-y += $(FSP_RAMSTAGE_CBFS)
-endif
 
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
 	./util/mtkheader/gen-bl-img.py mt8196 sf $< $@

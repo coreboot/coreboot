@@ -93,16 +93,16 @@ struct rom_header *pci_rom_probe(const struct device *dev)
 
 	printk(BIOS_SPEW,
 	       "PCI expansion ROM, signature 0x%04x, INIT size 0x%04x, data ptr 0x%04x\n",
-	       le32_to_cpu(rom_header->signature),
-	       rom_header->size * 512, le32_to_cpu(rom_header->data));
+	       le16_to_cpu(rom_header->signature),
+	       rom_header->size * 512, le16_to_cpu(rom_header->data));
 
-	if (le32_to_cpu(rom_header->signature) != PCI_ROM_HDR) {
+	if (le16_to_cpu(rom_header->signature) != PCI_ROM_HDR) {
 		printk(BIOS_ERR, "Incorrect expansion ROM header signature %04x\n",
-		       le32_to_cpu(rom_header->signature));
+		       le16_to_cpu(rom_header->signature));
 		return NULL;
 	}
 
-	rom_data = (((void *)rom_header) + le32_to_cpu(rom_header->data));
+	rom_data = (((void *)rom_header) + le16_to_cpu(rom_header->data));
 
 	printk(BIOS_SPEW, "PCI ROM image, vendor ID %04x, device ID %04x,\n",
 	       rom_data->vendor, rom_data->device);
@@ -144,9 +144,9 @@ struct rom_header *pci_rom_load(struct device *dev,
 							    + image_size);
 
 		rom_data = (struct pci_data *)((void *)rom_header
-				+ le32_to_cpu(rom_header->data));
+				+ le16_to_cpu(rom_header->data));
 
-		image_size = le32_to_cpu(rom_data->ilen) * 512;
+		image_size = le16_to_cpu(rom_data->ilen) * 512;
 	} while ((rom_data->type != 0) && (rom_data->indicator != 0)); // make sure we got x86 version
 
 	if (rom_data->type != 0)

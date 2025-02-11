@@ -242,15 +242,6 @@ ati_rom_acpi_fill_vfct(const struct device *device, acpi_vfct_t *vfct_struct,
 
 	vfct_struct->VBIOSImageOffset = (size_t)header - (size_t)vfct_struct;
 
-	/* Calculate and set checksum for VBIOS data if FSP GOP driver used,
-	   Since GOP driver modifies ATOMBIOS tables at end of VBIOS */
-	if (CONFIG(RUN_FSP_GOP)) {
-		/* Clear existing checksum before recalculating */
-		header->VbiosContent[VFCT_VBIOS_CHECKSUM_OFFSET] = 0;
-		header->VbiosContent[VFCT_VBIOS_CHECKSUM_OFFSET] =
-				acpi_checksum(header->VbiosContent, header->ImageLength);
-	}
-
 	current += header->ImageLength;
 	return current;
 }

@@ -422,13 +422,21 @@ header_pointer-type := "cbfs header"
 romstage-y += ux_locales.c
 
 # Add logo to the cbfs image
-ifneq ($(CONFIG_HAVE_CUSTOM_BMP_LOGO),y)
-cbfs-files-$(CONFIG_BMP_LOGO) += logo.bmp
-logo.bmp-file := $(call strip_quotes,$(CONFIG_FSP2_0_LOGO_FILE_NAME))
-logo.bmp-type := raw
+BMP_LOGO_COMPRESS_FLAG := $(CBFS_COMPRESS_FLAG)
 ifeq ($(CONFIG_BMP_LOGO_COMPRESS_LZMA),y)
-logo.bmp-compression := LZMA
+	BMP_LOGO_COMPRESS_FLAG := LZMA
 else ifeq ($(CONFIG_BMP_LOGO_COMPRESS_LZ4),y)
-logo.bmp-compression := LZ4
+	BMP_LOGO_COMPRESS_FLAG := LZ4
 endif
+
+define add_bmp_logo_file_to_cbfs
+cbfs-files-$$($(1)) += $(2)
+$(2)-file := $$(call strip_quotes,$$($(3)))
+$(2)-type := raw
+$(2)-compression := $$(BMP_LOGO_COMPRESS_FLAG)
+endef
+
+ifneq ($(CONFIG_HAVE_CUSTOM_BMP_LOGO),y)
+$(eval $(call add_bmp_logo_file_to_cbfs,CONFIG_BMP_LOGO, logo.bmp,\
+	      CONFIG_FSP2_0_LOGO_FILE_NAME))
 endif

@@ -210,11 +210,6 @@ static struct device_operations __maybe_unused crb_ops = {
 
 static void enable_dev(struct device *dev)
 {
-	if (crb_tis_probe(NULL) == NULL) {
-		dev->enabled = 0;
-		return;
-	}
-
 #if !DEVTREE_EARLY
 	dev->ops = &crb_ops;
 #endif

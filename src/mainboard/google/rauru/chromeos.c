@@ -19,6 +19,7 @@ void setup_chromeos_gpios(void)
 	gpio_output(GPIO_EN_SPKR, 0);
 	gpio_output(GPIO_FP_RST_1V8_S3_L, 0);
 	gpio_output(GPIO_XHCI_INIT_DONE, 0);
+	gpio_output(GPIO_AP_SUSPEND_L, 1);
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)

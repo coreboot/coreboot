@@ -37,7 +37,6 @@
 #define GPP_C_NAME		"GPP_C"
 #define GPP_F_NAME		"GPP_F"
 #define GPP_E_NAME		"GPP_E"
-#define GPP_CPUJTAG_NAME	"GPUJTAG"
 #define GPP_H_NAME		"GPP_H"
 #define GPP_A_NAME		"GPP_A"
 #define GPP_VGPIO3_NAME		"vGPIO_3"

@@ -9,9 +9,37 @@
 
 void setup_chromeos_gpios(void)
 {
-	gpio_input(GPIO_EC_AP_INT_ODL);
-	gpio_input(GPIO_GSC_AP_INT_ODL);
+	/* Set up open-drain pins */
+	gpio_input(GPIO_RSVD_GPI0);
+	gpio_input(GPIO_EC_AP_DSI_HPD_OD);
+	gpio_input(GPIO_RSVD_GPI2);
+	gpio_input(GPIO_AP_WP_ODL);
+	gpio_input(GPIO_ALS_INT_SCP_ODL);
+	gpio_input(GPIO_LID_ACCEL_INT_SCP_L);
+	gpio_input(GPIO_IMU_INT_SCP_L);
+	gpio_input(GPIO_TCHSCR_INT_1V8_ODL);
+	gpio_input(GPIO_TCHPAD_INT_ODL);
+	gpio_input(GPIO_SPKR_INT_ODL);
+	gpio_input(GPIO_HP_INT_ODL);
 	gpio_input(GPIO_SD_CD_AP_ODL);
+	gpio_input(GPIO_FP_AP_INT_1V8_S3_ODL);
+	gpio_input(GPIO_EDP_HPD_1V8);
+	gpio_input(GPIO_SAR_INT_ODL);
+	gpio_input(GPIO_RSVD_GPI15);
+	gpio_input(GPIO_RSVD_GPI16);
+	gpio_input(GPIO_RSVD_GPI17);
+	gpio_input(GPIO_GSC_AP_INT_ODL);
+	gpio_input(GPIO_EC_AP_INT_ODL);
+	gpio_input(GPIO_RSVD_GPI20);
+	gpio_input(GPIO_RSVD_GPI21);
+	gpio_input(GPIO_RSVD_GPI22);
+	gpio_input(GPIO_EC_AP_DP_HPD_OD);
+	gpio_input(GPIO_PCIE_SSD_WAKE_OBFF_1V8_ODL);
+	gpio_input(GPIO_PCIE_SSD_CLKREQ_1V8_ODL);
+	gpio_input(GPIO_PCIE_WLAN_WAKE_OBFF_1V2_ODL);
+	gpio_input(GPIO_PCIE_WLAN_CLKREQ_1V2_ODL);
+
+	/* Set up GPIOs */
 	gpio_output(GPIO_AP_EC_WARM_RST_REQ, 0);
 	gpio_output(GPIO_AP_FP_FW_UP_STRAP, 0);
 	gpio_output(GPIO_BEEP_ON, 0);

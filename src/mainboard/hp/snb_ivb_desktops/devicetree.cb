@@ -1,44 +1,27 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
 chip northbridge/intel/sandybridge
-	register "gfx.use_spread_spectrum_clock" = "0"
-	register "gpu_dp_b_hotplug" = "0"
-	register "gpu_dp_c_hotplug" = "0"
-	register "gpu_dp_d_hotplug" = "0"
 	# BTX mainboard: Reversed mapping
 	register "spd_addresses" = "{0x53, 0x52, 0x51, 0x50}"
 
 	device domain 0 on
-		device ref host_bridge on  end
 		device ref peg10 on  end
 		device ref igd on  end
-		device ref peg60 off end
 
 		chip southbridge/intel/bd82x6x # Intel Series 7 PCH
-			register "docking_supported" = "false"
 			register "gen1_dec" = "0x00fc0601"
 			register "gen2_dec" = "0x00fc0801"
-			register "pcie_hotplug_map" = "{ 0, 0, 0, 0, 0, 0, 0, 0 }"
 			register "pcie_port_coalesce" = "true"
 			register "sata_interface_speed_support" = "0x3"
 			register "spi_lvscc" = "0x2005"
 			register "spi_uvscc" = "0x2005"
 
-			device ref mei1 on  end
-			device ref mei2 off end
-			device ref me_ide_r off end
 			device ref me_kt on  end
 			device ref gbe on  end
 			device ref ehci2 on  end
 			device ref hda on  end
 			device ref pcie_rp1 on  end
-			device ref pcie_rp2 off end
-			device ref pcie_rp3 off end
-			device ref pcie_rp4 off end
 			device ref pcie_rp5 on  end
-			device ref pcie_rp6 off end
-			device ref pcie_rp7 off end
-			device ref pcie_rp8 off end
 			device ref ehci1 on  end
 			device ref pci_bridge on  end
 			device ref lpc on
@@ -147,9 +130,6 @@ chip northbridge/intel/sandybridge
 				end
 			end
 			device ref sata1 on  end
-			device ref smbus on  end
-			device ref sata2 off end
-			device ref thermal off end
 		end
 	end
 end

@@ -1442,7 +1442,7 @@ void pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 		 * and it has a Vendor ID of 0 (the default for a device that
 		 * could not be probed).
 		 */
-		if (dev->vendor != 0 || dev->hidden) {
+		if (dev->vendor != 0 || dev->hidden || !dev->enabled) {
 			prev = &dev->sibling;
 			continue;
 		}

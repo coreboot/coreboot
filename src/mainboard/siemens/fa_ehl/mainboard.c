@@ -8,9 +8,9 @@
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
 #include <hwilib.h>
-#include <i210.h>
 #include <soc/gpio.h>
 #include <soc/ramstage.h>
+#include <soc/tsn_gbe.h>
 #include <string.h>
 #include <timer.h>
 #include <timestamp.h>

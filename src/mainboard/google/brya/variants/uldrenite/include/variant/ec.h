@@ -5,4 +5,7 @@
 
 #include <baseboard/ec.h>
 
+/* Enable DPTF OEM variable */
+#define DPTF_ENABLE_OEM_VARIABLES
+
 #endif

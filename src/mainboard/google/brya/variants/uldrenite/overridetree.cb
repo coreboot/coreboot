@@ -225,7 +225,11 @@ chip soc/intel/alderlake
 					[3] = {   8,  500 }
 				}"
 
-				device generic 0 on end
+				register "oem_data.oem_variables" = "{
+						[0] = 0x0
+				}"
+
+				device generic 0 alias dptf_policy on end
 			end
 		end # DPTF
 		device ref tcss_xhci on

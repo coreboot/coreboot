@@ -16,7 +16,7 @@ const struct cpu_tdp_power_limits power_optimized_limits[] = {
 		.pl1_max_power = 25000,
 		.pl2_min_power = 50000,
 		.pl2_max_power = 50000,
-		.pl4_power = 50000 /* TODO: needs fine tuning */
+		.pl4_power = 65000
 	},
 	{
 		.mch_id = PCI_DID_INTEL_PTL_H_ID_2,
@@ -26,7 +26,7 @@ const struct cpu_tdp_power_limits power_optimized_limits[] = {
 		.pl1_max_power = 25000,
 		.pl2_min_power = 50000,
 		.pl2_max_power = 50000,
-		.pl4_power = 50000 /* TODO: needs fine tuning */
+		.pl4_power = 65000
 	},
 	{
 		.mch_id = PCI_DID_INTEL_PTL_H_ID_3,
@@ -36,7 +36,7 @@ const struct cpu_tdp_power_limits power_optimized_limits[] = {
 		.pl1_max_power = 25000,
 		.pl2_min_power = 50000,
 		.pl2_max_power = 50000,
-		.pl4_power = 50000 /* TODO: needs fine tuning */
+		.pl4_power = 65000
 	},
 	{
 		.mch_id = PCI_DID_INTEL_PTL_H_ID_4,
@@ -46,7 +46,7 @@ const struct cpu_tdp_power_limits power_optimized_limits[] = {
 		.pl1_max_power = 25000,
 		.pl2_min_power = 50000,
 		.pl2_max_power = 50000,
-		.pl4_power = 50000 /* TODO: needs fine tuning */
+		.pl4_power = 65000
 	},
 };
 

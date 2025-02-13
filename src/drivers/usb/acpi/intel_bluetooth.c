@@ -44,7 +44,9 @@ static void not_supported(void *arg)
 void (*reset_supported[])(void *) = { check_reset_delay, set_reset_delay };
 void (*reset_unsupported[])(void *) = { not_supported };
 
-void acpi_device_intel_bt(unsigned int reset_gpio, unsigned int enable_gpio, bool audio_offload)
+void acpi_device_intel_bt(const struct acpi_gpio *enable_gpio,
+			  const struct acpi_gpio *reset_gpio,
+			  bool audio_offload)
 {
 /*
  *	Name (RDLY, 0x69)
@@ -91,8 +93,10 @@ void acpi_device_intel_bt(unsigned int reset_gpio, unsigned int enable_gpio, boo
 
 	struct dsm_uuid uuid_callbacks[] = {
 		DSM_UUID("aa10f4e0-81ac-4233-abf6-3b2ac50e28d9",
-			reset_gpio ? reset_supported : reset_unsupported,
-			reset_gpio ? ARRAY_SIZE(reset_supported) : ARRAY_SIZE(reset_unsupported),
+			reset_gpio->pin_count ?
+				reset_supported : reset_unsupported,
+			reset_gpio->pin_count ?
+				ARRAY_SIZE(reset_supported) : ARRAY_SIZE(reset_unsupported),
 			NULL),
 	};
 
@@ -130,7 +134,7 @@ void acpi_device_intel_bt(unsigned int reset_gpio, unsigned int enable_gpio, boo
 	{
 		acpigen_write_method("_STA", 0);
 		{
-			if (enable_gpio) {
+			if (enable_gpio->pin_count) {
 				acpigen_write_store();
 				acpigen_emit_namestring("\\_SB.PCI0.GBTE");
 				acpigen_emit_byte(LOCAL0_OP);
@@ -144,7 +148,7 @@ void acpi_device_intel_bt(unsigned int reset_gpio, unsigned int enable_gpio, boo
 
 		acpigen_write_method("_ON", 0);
 		{
-			if (enable_gpio) {
+			if (enable_gpio->pin_count) {
 				acpigen_emit_namestring("\\_SB.PCI0.SBTE");
 				acpigen_emit_byte(1);
 			}
@@ -153,7 +157,7 @@ void acpi_device_intel_bt(unsigned int reset_gpio, unsigned int enable_gpio, boo
 
 		acpigen_write_method("_OFF", 0);
 		{
-			if (enable_gpio) {
+			if (enable_gpio->pin_count) {
 				acpigen_emit_namestring("\\_SB.PCI0.SBTE");
 				acpigen_emit_byte(0);
 			}
@@ -162,7 +166,7 @@ void acpi_device_intel_bt(unsigned int reset_gpio, unsigned int enable_gpio, boo
 
 		acpigen_write_method("_RST", 0);
 		{
-			if (reset_gpio) {
+			if (reset_gpio->pin_count) {
 				acpigen_write_store();
 				acpigen_write_acquire("\\_SB.PCI0.CNMT", 1000);
 				acpigen_emit_byte(LOCAL0_OP);
@@ -258,7 +262,8 @@ void acpi_device_intel_bt(unsigned int reset_gpio, unsigned int enable_gpio, boo
 	acpigen_pop_len();
 }
 
-void acpi_device_intel_bt_common(unsigned int enable_gpio, unsigned int reset_gpio)
+void acpi_device_intel_bt_common(const struct acpi_gpio *enable_gpio,
+				 const struct acpi_gpio *reset_gpio)
 {
 	acpigen_write_scope("\\_SB.PCI0");
 /*
@@ -279,14 +284,14 @@ void acpi_device_intel_bt_common(unsigned int enable_gpio, unsigned int reset_gp
  */
 	acpigen_write_method("SBTE", 1);
 	{
-		if (enable_gpio) {
+		if (enable_gpio->pin_count) {
 			acpigen_write_if_lequal_op_int(ARG0_OP, 1);
 			{
-				acpigen_soc_set_tx_gpio(enable_gpio);
+				acpigen_enable_tx_gpio(enable_gpio);
 			}
 			acpigen_write_else();
 			{
-				acpigen_soc_clear_tx_gpio(enable_gpio);
+				acpigen_disable_tx_gpio(enable_gpio);
 			}
 			acpigen_pop_len();
 		}
@@ -301,8 +306,8 @@ void acpi_device_intel_bt_common(unsigned int enable_gpio, unsigned int reset_gp
  */
 	acpigen_write_method("GBTE", 0);
 	{
-		if (enable_gpio) {
-			acpigen_soc_get_tx_gpio(enable_gpio);
+		if (enable_gpio->pin_count) {
+			acpigen_get_tx_gpio(enable_gpio);
 			acpigen_write_return_op(LOCAL0_OP);
 		} else {
 			acpigen_write_return_integer(0);
@@ -325,11 +330,13 @@ void acpi_device_intel_bt_common(unsigned int enable_gpio, unsigned int reset_gp
 	{
 		acpigen_write_if_lequal_op_int(ARG0_OP, 1);
 		{
-			acpigen_soc_set_tx_gpio(reset_gpio);
+			/* De-assert reset */
+			acpigen_disable_tx_gpio(reset_gpio);
 		}
 		acpigen_write_else();
 		{
-			acpigen_soc_clear_tx_gpio(reset_gpio);
+			/* Assert Reset */
+			acpigen_enable_tx_gpio(reset_gpio);
 		}
 		acpigen_pop_len();
 	}
@@ -338,13 +345,17 @@ void acpi_device_intel_bt_common(unsigned int enable_gpio, unsigned int reset_gp
 /*
  *	Method (GBTR, 0, NotSerialized)
  *	{
- *		 Return (GTXS (reset_gpio))
+ *		Local0 = GTXS (reset_gpio)
+ *		Local0 ^= One
+ *		Return (Local0)
  *	}
  */
 	acpigen_write_method("GBTR", 0);
 	{
-		if (reset_gpio) {
-			acpigen_soc_get_tx_gpio(reset_gpio);
+		if (reset_gpio->pin_count) {
+			/* Return 1 if not in reset */
+			acpigen_get_tx_gpio(reset_gpio);
+			acpigen_write_xor(LOCAL0_OP, 1, LOCAL0_OP);
 			acpigen_write_return_op(LOCAL0_OP);
 		} else {
 			acpigen_write_return_op(0);

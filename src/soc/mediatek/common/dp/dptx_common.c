@@ -73,17 +73,38 @@ bool dptx_auxread_dpcd(struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr,
 int dptx_get_edid(struct mtk_dp *mtk_dp, struct edid *out)
 {
 	int ret;
-	u8 edid[ONE_BLOCK_SIZE];
+	u8 edid[EDID_BUF_SIZE];
 	u8 tmp = 0;
+	u8 extblock = 0;
+	size_t total_size;
 
 	dptx_auxwrite_dpcd(mtk_dp, DP_AUX_I2C_WRITE, 0x50, 0x1, &tmp);
 
-	for (tmp = 0; tmp < ONE_BLOCK_SIZE / DP_AUX_MAX_PAYLOAD_BYTES; tmp++)
+	/* Read 1st block */
+	for (tmp = 0; tmp < EDID_BLOCK_SIZE / DP_AUX_MAX_PAYLOAD_BYTES; tmp++)
 		dptx_auxread_dpcd(mtk_dp, DP_AUX_I2C_READ,
 				  0x50, DP_AUX_MAX_PAYLOAD_BYTES,
-				  edid + tmp * 16);
+				  edid + tmp * DP_AUX_MAX_PAYLOAD_BYTES);
 
-	ret = decode_edid(edid, ONE_BLOCK_SIZE, out);
+	extblock = edid[EDID_EXT_BLOCK_COUNT];
+	total_size = EDID_BLOCK_SIZE * (1 + extblock);
+
+	if (total_size > EDID_BUF_SIZE) {
+		printk(BIOS_WARNING, "The edid block size(%zu) is larger than %u bytes\n",
+		       total_size, EDID_BUF_SIZE);
+		printk(BIOS_WARNING, "Read first %u bytes only\n", EDID_BUF_SIZE);
+		total_size = EDID_BUF_SIZE;
+	}
+
+	if (total_size > EDID_BLOCK_SIZE) {
+		for (tmp = EDID_BLOCK_SIZE / DP_AUX_MAX_PAYLOAD_BYTES;
+		     tmp < total_size / DP_AUX_MAX_PAYLOAD_BYTES; tmp++)
+			dptx_auxread_dpcd(mtk_dp, DP_AUX_I2C_READ,
+					  0x50, DP_AUX_MAX_PAYLOAD_BYTES,
+					  edid + tmp * DP_AUX_MAX_PAYLOAD_BYTES);
+	}
+
+	ret = decode_edid(edid, total_size, out);
 	if (ret != EDID_CONFORMANT) {
 		printk(BIOS_ERR, "failed to decode edid(%d).\n", ret);
 		return -1;

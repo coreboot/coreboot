@@ -8,7 +8,8 @@
 #define ENABLE_DPTX_EF_MODE		0x1
 #define DPTX_AUX_SET_ENAHNCED_FRAME	0x80
 
-#define ONE_BLOCK_SIZE			128
+#define EDID_BLOCK_SIZE			128
+#define EDID_BUF_SIZE			(EDID_BLOCK_SIZE * 4)
 
 #define DP_LINK_CONSTANT_N_VALUE	0x8000
 #define DP_LINK_STATUS_SIZE		6
@@ -38,6 +39,7 @@
 #define DP_EDP_14		0x03
 #define DP_EDP_14a		0x04
 #define DP_EDP_14b		0x05
+#define EDID_EXT_BLOCK_COUNT	0x7E
 
 /* Receiver Capability */
 #define DP_DPCD_REV		0x000

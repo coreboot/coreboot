@@ -328,17 +328,19 @@ void acpi_device_intel_bt_common(const struct acpi_gpio *enable_gpio,
  */
 	acpigen_write_method("BTRK", 1);
 	{
-		acpigen_write_if_lequal_op_int(ARG0_OP, 1);
-		{
-			/* De-assert reset */
-			acpigen_disable_tx_gpio(reset_gpio);
+		if (reset_gpio->pin_count) {
+			acpigen_write_if_lequal_op_int(ARG0_OP, 1);
+			{
+				/* De-assert reset */
+				acpigen_disable_tx_gpio(reset_gpio);
+			}
+			acpigen_write_else();
+			{
+				/* Assert Reset */
+				acpigen_enable_tx_gpio(reset_gpio);
+			}
+			acpigen_pop_len();
 		}
-		acpigen_write_else();
-		{
-			/* Assert Reset */
-			acpigen_enable_tx_gpio(reset_gpio);
-		}
-		acpigen_pop_len();
 	}
 	acpigen_pop_len();
 

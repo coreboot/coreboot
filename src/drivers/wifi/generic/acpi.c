@@ -1181,6 +1181,60 @@ const char *wifi_pcie_acpi_name(const struct device *dev)
 	return wifi_acpi_name;
 }
 
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_CNVI)
+static void write_cnvi_control(const struct acpi_gpio *gpio)
+{
+
+	acpigen_write_scope("\\_SB.PCI0");
+
+/*
+ *	CNVi Status
+ *
+ *	Method (CNVS, 0)
+ *	{
+ *		Local0 = \_SB.PCI0.GTXS (gpio)
+ *		Return (Local0)
+ *	}
+ */
+	acpigen_write_method("CNVS", 0);
+	{
+		acpigen_get_tx_gpio(gpio);
+		acpigen_write_return_op(LOCAL0_OP);
+	}
+	acpigen_pop_len();
+/*
+ *	CNVi Control
+ *
+ *	Method (CNVC, 1, NotSerialized)
+ *	{
+ *		If ((Arg0 == One))
+ *		{
+ *			\_SB.PCI0.STXS (gpio)
+ *		}
+ *		Else
+ *		{
+ *			\_SB.PCI0.CTXS (gpio)
+ *		}
+ *	}
+ */
+	acpigen_write_method("CNVC", 1);
+	{
+		acpigen_write_if_lequal_op_int(ARG0_OP, 1);
+		{
+			acpigen_enable_tx_gpio(gpio);
+		}
+		acpigen_write_else();
+		{
+			acpigen_disable_tx_gpio(gpio);
+		}
+		acpigen_pop_len();
+	}
+	acpigen_pop_len();
+
+	acpigen_write_scope_end();
+}
+#endif
+
 void wifi_cnvi_fill_ssdt(const struct device *dev)
 {
 	const char *path;
@@ -1192,4 +1246,10 @@ void wifi_cnvi_fill_ssdt(const struct device *dev)
 		return;
 
 	wifi_ssdt_write_properties(dev, path);
+
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_CNVI)
+	const struct drivers_wifi_generic_config *config = dev->chip_info;
+	if (config->cnvi_enable_gpio.pin_count)
+		write_cnvi_control(&config->cnvi_enable_gpio);
+#endif
 }

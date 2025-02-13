@@ -92,17 +92,30 @@ static void cnvw_fill_ssdt(const struct device *dev)
 	acpigen_write_name_integer("RSTT", 0);
 
 /*
- *	PowerResource(WRST, 5, 0)
+ *	PowerResource(CNVP, 0, 0)
  *	{
  *		Method(_STA)
  *		{
- *			Return (0x01)
+ *			If (CondRefOf (\_SB.PCI0.CNVS)) {
+ *				Local0 = \_SB.PCI0.CNVS()
+ *				Return (Local0)
+ *			}
+ *			Else
+ *			{
+ *				Return (0x01)
+ *			}
  *		}
  *		Method(_ON, 0)
  *		{
+ *			If (CondRefOf (\_SB.PCI0.CNVC)) {
+ *				\_SB.PCI0.CNVS(1)
+ *			}
  *		}
  *		Method(_OFF, 0)
  *		{
+ *			If (CondRefOf (\_SB.PCI0.CNVC)) {
+ *				\_SB.PCI0.CNVS(0)
+ *			}
  *		}
  *		Method(_RST, 0, NotSerialized)
  *		{
@@ -150,18 +163,46 @@ static void cnvw_fill_ssdt(const struct device *dev)
  *	}
  *
  */
-	acpigen_write_power_res("WRST", 5, 0, NULL, 0);
+	acpigen_write_power_res("CNVP", 0, 0, NULL, 0);
 	{
 		acpigen_write_method("_STA", 0);
 		{
-			acpigen_write_return_integer(1);
+			acpigen_write_if_cond_ref_of("\\_SB.PCI0.CNVS");
+			{
+				acpigen_write_store();
+				acpigen_emit_namestring("\\_SB.PCI0.CNVS");
+				acpigen_emit_byte(LOCAL0_OP);
+
+				acpigen_write_return_op(LOCAL0_OP);
+			}
+			acpigen_write_else();
+			{
+				acpigen_write_return_integer(1);
+			}
+			acpigen_pop_len();
 		}
 		acpigen_pop_len();
 
 		acpigen_write_method("_ON", 0);
+		{
+			acpigen_write_if_cond_ref_of("\\_SB.PCI0.CNVC");
+			{
+				acpigen_emit_namestring("\\_SB.PCI0.CNVC");
+				acpigen_emit_byte(1);
+			}
+			acpigen_pop_len();
+		}
 		acpigen_pop_len();
 
 		acpigen_write_method("_OFF", 0);
+		{
+			acpigen_write_if_cond_ref_of("\\_SB.PCI0.CNVC");
+			{
+				acpigen_emit_namestring("\\_SB.PCI0.CNVC");
+				acpigen_emit_byte(0);
+			}
+			acpigen_pop_len();
+		}
 		acpigen_pop_len();
 
 		acpigen_write_method("_RST", 0);
@@ -266,13 +307,64 @@ static void cnvw_fill_ssdt(const struct device *dev)
 /*
  *	Name (_PRR, Package (0x01)
  *	{
- *		WRST
+ *		CNVP
  *	})
  */
 	acpigen_write_name("_PRR");
 	{
 		acpigen_write_package(1);
-		acpigen_emit_namestring("WRST");
+		acpigen_emit_namestring("CNVP");
+	}
+	acpigen_pop_len();
+
+/*
+ *	Name (_PR0, Package (0x01)
+ *	{
+ *		CNVP
+ *	})
+ */
+	acpigen_write_name("_PR0");
+	{
+		acpigen_write_package(1);
+		acpigen_emit_namestring("CNVP");
+	}
+	acpigen_pop_len();
+
+/*
+ *	Method (_PS0, 0, NotSerialized)
+ *	{
+ *		If (CondRefOf (\_SB.PCI0.CNVC)) {
+ *			\_SB.PCI0.CNVS(1)
+ *		}
+ *	}
+ */
+	acpigen_write_method("_PS0", 0);
+	{
+		acpigen_write_if_cond_ref_of("\\_SB.PCI0.CNVC");
+		{
+			acpigen_emit_namestring("\\_SB.PCI0.CNVC");
+			acpigen_emit_byte(1);
+		}
+		acpigen_pop_len();
+	}
+	acpigen_pop_len();
+
+/*
+ *	Method (_PS3, 0, NotSerialized)
+ *	{
+ *		If (CondRefOf (\_SB.PCI0.CNVC)) {
+ *			\_SB.PCI0.CNVS(0)
+ *		}
+ *	}
+ */
+	acpigen_write_method("_PS3", 0);
+	{
+		acpigen_write_if_cond_ref_of("\\_SB.PCI0.CNVC");
+		{
+			acpigen_emit_namestring("\\_SB.PCI0.CNVC");
+			acpigen_emit_byte(0);
+		}
+		acpigen_pop_len();
 	}
 	acpigen_pop_len();
 
@@ -303,21 +395,6 @@ static void cnvw_fill_ssdt(const struct device *dev)
 		}
 		acpigen_pop_len();
 	}
-	acpigen_pop_len();
-
-/*
- *	Method (_PS0, 0, Serialized)
- *	{
- *	}
- *
- *	Method (_PS3, 0, Serialized)
- *	{
- *	}
- */
-	acpigen_write_method_serialized("_PS0", 0);
-	acpigen_pop_len();
-
-	acpigen_write_method_serialized("_PS3", 0);
 	acpigen_pop_len();
 
 /*

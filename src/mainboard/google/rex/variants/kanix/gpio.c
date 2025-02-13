@@ -117,8 +117,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_C09, NONE),
 	/* GPP_C10 : net NC is not present in the given design */
 	PAD_NC(GPP_C10, NONE),
-	/* GPP_C11 : Not Connected */
-	PAD_NC(GPP_C11, NONE),
+	/* GPP_C11 : [] ==> LAN_CLKREQ_ODL */
+	PAD_CFG_NF(GPP_C11, NONE, DEEP, NF1),
 	/* GPP_C12 : NC pad. */
 	PAD_NC(GPP_C12, NONE),
 	/* GPP_C13 : Not connected */
@@ -174,8 +174,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_D16, NONE, DEEP, NF2),
 	/* GPP_D17 : [] ==> I2S_SOC_RX_HP_TX */
 	PAD_CFG_NF(GPP_D17, NONE, DEEP, NF2),
-	/* GPP_D18 : [] ==> LAN_CLKREQ_ODL */
-	PAD_CFG_NF(GPP_D18, NONE, DEEP, NF1),
+	/* GPP_D18 : Not Connected */
+	PAD_NC(GPP_D18, NONE),
 	/* GPP_D19 : [] ==> EC_SOC_REC_SWITCH_ODL */
 	PAD_CFG_GPI_LOCK(GPP_D19, NONE, LOCK_CONFIG),
 	/* GPP_D20 : [] ==> SSD_CLKREQ_ODL */

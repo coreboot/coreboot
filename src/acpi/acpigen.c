@@ -1586,7 +1586,7 @@ void acpigen_write_if_and(uint8_t arg1, uint8_t arg2)
  * Generates ACPI code for checking if operand1 and operand2 are equal.
  * Both operand1 and operand2 are ACPI ops.
  *
- * If (Lequal (op,1 op2))
+ * If (Lequal (op1, op2))
  */
 void acpigen_write_if_lequal_op_op(uint8_t op1, uint8_t op2)
 {

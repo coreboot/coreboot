@@ -159,3 +159,19 @@ config PROBE_RAM
 config HAVE_CUSTOM_BMP_LOGO
 	def_bool n
 	depends on BMP_LOGO
+
+config HAVE_EARLY_POWEROFF_SUPPORT
+	bool
+	help
+	  Enable platform-specific early power off support.
+
+	  This option should be selected if the platform requires special handling
+	  to power off the system before memory initialization. This is often
+	  necessary on Intel platforms, as directly powering off before memory
+	  initialization is typically not supported by the chipset.
+
+	  Selecting this option indicates that the platform implements the
+	  `platform_do_early_poweroff()` function, which performs the
+	  necessary hardware operations to initiate an early power off sequence.
+	  This might involve configuring hardware registers, sending commands to
+	  power management controllers, or other platform-specific operations.

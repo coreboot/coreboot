@@ -41,4 +41,19 @@ __noreturn void board_reset(void);
  */
 void do_board_reset(void);
 
+/*
+ * Performs platform-specific actions for early power off.
+ *
+ * This function handles the necessary steps to initiate an early power off
+ * sequence. This might involve configuring specific hardware registers,
+ * sending commands to power management controllers, or performing other
+ * platform-specific operations. It is crucial that this
+ * function is implemented correctly to ensure a clean and controlled shutdown.
+ *
+ * Note: Issuing power off early before memory initialization is not supported use case on
+ *       Intel chipset, therefore, it might need a special platform specific handing
+ *       to power-off the platform early.
+ */
+void platform_do_early_poweroff(void);
+
 #endif

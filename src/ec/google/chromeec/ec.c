@@ -9,6 +9,7 @@
 #include <device/path.h>
 #include <elog.h>
 #include <halt.h>
+#include <reset.h>
 #include <rtc.h>
 #include <security/vboot/vboot_common.h>
 #include <stdlib.h>
@@ -1671,7 +1672,13 @@ bool google_chromeec_is_battery_present(void)
 	return false;
 }
 
-void google_chromeec_do_early_poweroff(void)
+/*
+ * Performs early power off.
+ *
+ * This function handles the necessary steps to initiate an early power off
+ * sequence.
+ */
+void platform_do_early_poweroff(void)
 {
 	google_chromeec_reboot(EC_REBOOT_COLD_AP_OFF, 0);
 	halt();

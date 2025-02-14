@@ -3,6 +3,7 @@
 config EC_GOOGLE_CHROMEEC
 	bool
 	select EC_SUPPORTS_DPTF_TEVT
+	select HAVE_EARLY_POWEROFF_SUPPORT
 	help
 	  Google's Chrome EC
 

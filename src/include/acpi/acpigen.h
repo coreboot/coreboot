@@ -506,10 +506,13 @@ void acpigen_write_debug_sprintf(const char *fmt, ...) __printf(1, 2);
 void acpigen_write_if(void);
 void acpigen_write_if_and(uint8_t arg1, uint8_t arg2);
 void acpigen_write_if_lequal_op_op(uint8_t op, uint8_t val);
+void acpigen_write_if_lnotequal_op_op(uint8_t op, uint8_t val);
 void acpigen_write_if_lgreater_op_op(uint8_t op1, uint8_t op2);
 void acpigen_write_if_lequal_op_int(uint8_t op, uint64_t val);
+void acpigen_write_if_lnotequal_op_int(uint8_t op, uint64_t val);
 void acpigen_write_if_lgreater_op_int(uint8_t op, uint64_t val);
 void acpigen_write_if_lequal_namestr_int(const char *namestr, uint64_t val);
+void acpigen_write_if_lnotequal_namestr_int(const char *namestr, uint64_t val);
 void acpigen_write_if_lgreater_namestr_int(const char *namestr, uint64_t val);
 __always_inline void acpigen_write_if_end(void)
 {

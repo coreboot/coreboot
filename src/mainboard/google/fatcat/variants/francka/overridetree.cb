@@ -62,6 +62,12 @@ chip soc/intel/pantherlake
 		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
 	}"
 
+	register "serial_io_gspi_mode" = "{
+		[PchSerialIoIndexGSPI0] = PchSerialIoDisabled,
+		[PchSerialIoIndexGSPI1] = PchSerialIoPci,
+		[PchSerialIoIndexGSPI0A] = PchSerialIoDisabled,
+	}"
+
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
@@ -292,13 +298,13 @@ chip soc/intel/pantherlake
 				register "hid" = "ACPI_DT_NAMESPACE_HID"
 				register "uid" = "1"
 				register "compat_string" = ""google,cros-ec-spi""
-				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F18_IRQ)"
-				register "wake" = "GPE0_DW2_15"
+				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_D17_IRQ)"
+				register "wake" = "GPE0_DW1_17"
 				register "has_power_resource" = "true"
-				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F16)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H17)"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H03)"
 				register "enable_delay_ms" = "3"
-				device spi 0 hidden end
+				device spi 0 on end
 			end # FPMCU
 		end
 	end

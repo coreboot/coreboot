@@ -186,7 +186,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_D16:     HDA_RST# */
 	PAD_NC(GPP_D16, NONE),
 	/* GPP_D17:     FPMCU_INT# */
-	PAD_CFG_GPI_INT(GPP_D17, NONE, PLTRST, LEVEL),
+	PAD_CFG_GPI_IRQ_WAKE(GPP_D17, NONE, PWROK, LEVEL, INVERT),
 	/* GPP_D18:     CLKREQ_PCIE#6 */
 	PAD_CFG_NF(GPP_D18, NONE, DEEP, NF1),
 	/* GPP_D19:     SOC_SD_RST# */
@@ -286,16 +286,16 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F14, NONE),
 	/* GPP_F15:     Not used */
 	PAD_NC(GPP_F15, NONE),
-	/* GPP_F16:     SOC_THC_1_RST# */
-	PAD_CFG_GPO(GPP_F16, 0, DEEP),
+	/* GPP_F16:     Not used */
+	PAD_NC(GPP_F16, NONE),
 	/* GPP_F17:     SOC_THC_1_CS# */
 	PAD_CFG_NF(GPP_F17, NONE, DEEP, NF5),
-	/* GPP_F18:     SOC_THC_1_INT# */
-	PAD_CFG_GPI_APIC(GPP_F18, NONE, PWROK, LEVEL, INVERT),
+	/* GPP_F18:     Not used */
+	PAD_NC(GPP_F18, NONE),
 	/* GPP_F19:     Not used */
 	PAD_NC(GPP_F19, NONE),
 	/* GPP_F20:     AP_FP_FW_UP_STRAP */
-	PAD_CFG_GPO(GPP_F20, 1, DEEP),
+	PAD_CFG_GPO_LOCK(GPP_F20, 0, LOCK_CONFIG),
 	/* GPP_F22:     Not used */
 	PAD_NC(GPP_F22, NONE),
 	/* GPP_F23:     SLP_S0#_GATE */
@@ -308,7 +308,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_H02:     Not used */
 	PAD_NC(GPP_H02, NONE),
 	/* GPP_H03:     EN_PWR_FP */
-	PAD_CFG_GPO(GPP_H03, 0, DEEP),
+	PAD_CFG_GPO(GPP_H03, 1, DEEP),
 	/* GPP_H04:     COEX1 */
 	PAD_CFG_NF(GPP_H04, NONE, DEEP, NF2),
 	/* GPP_H05:     COEX2 */
@@ -334,7 +334,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_H16:     SOC_AUDIO_STRAP */
 	PAD_CFG_GPI(GPP_H16, NONE, DEEP),
 	/* GPP_H17:     FP_RST_1V8_OD# */
-	PAD_CFG_GPO(GPP_H17, 1, DEEP),
+	PAD_CFG_GPO_LOCK(GPP_H17, 1, LOCK_CONFIG),
 	/* GPP_H19:     Not used*/
 	PAD_NC(GPP_H19, NONE),
 	/* GPP_H20:     Not used */
@@ -420,10 +420,10 @@ static const struct pad_config romstage_gpio_table[] = {
 	PAD_CFG_NF(GPP_C00, NONE, DEEP, NF1),
 	/* GPP_C01:     SOC_SMBDATA */
 	PAD_CFG_NF(GPP_C01, NONE, DEEP, NF1),
-	/* GPP_F16:     SOC_THC_1_RST# */
-	PAD_CFG_GPO(GPP_F16, 0, DEEP),
 	/* GPP_H03:     EN_PWR_FP */
 	PAD_CFG_GPO(GPP_H03, 0, DEEP),
+	/* GPP_H17:     FP_RST_1V8_OD# */
+	PAD_CFG_GPO(GPP_H17, 0, DEEP),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

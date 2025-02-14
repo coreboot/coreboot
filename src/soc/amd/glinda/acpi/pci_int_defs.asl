@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Update for Glinda */
-
 /* PCI IRQ mapping registers, C00h-C01h. */
 OperationRegion(PRQM, SystemIO, 0x00000c00, 0x00000002)
 	Field(PRQM, ByteAcc, NoLock, Preserve) {
@@ -51,7 +49,7 @@ IndexField(PRQI, PRQD, ByteAcc, NoLock, Preserve) {
 	IORG, 0x00000008,	/* Index 0x86: INTG */
 	IORH, 0x00000008,	/* Index 0x87: INTH */
 
-	Offset (0xE2),
+	Offset (0xE0),
 	IGSC, 0x00000008,	/* Index 0xE0: GEventSci */
 	IGSM, 0x00000008,	/* Index 0xE1: GEventSmi */
 	IGPI, 0x00000008,	/* Index 0xE2: GPIO */

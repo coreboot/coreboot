@@ -436,6 +436,14 @@
 		PAD_IRQ_CFG(IOAPIC, trig, inv), PAD_PULL(pull) |		\
 		PAD_IOSSTATE(TxDRxE))
 
+/* General purpose input, routed to APIC, HostOwn  */
+#define PAD_CFG_GPI_APIC_DRIVER(pad, pull, rst, trig, inv)				\
+	_PAD_CFG_STRUCT(pad,							\
+		PAD_FUNC(GPIO) | PAD_RESET(rst) | PAD_BUF(TX_DISABLE) |		\
+		PAD_IRQ_CFG(IOAPIC, trig, inv), PAD_PULL(pull) |		\
+		PAD_IOSSTATE(TxDRxE) | \
+		PAD_CFG_OWN_GPIO(DRIVER))
+
 /* General purpose input with lock, routed to APIC */
 #define PAD_CFG_GPI_APIC_LOCK(pad, pull, trig, inv, lock_action)		\
 	_PAD_CFG_STRUCT_LOCK(pad,						\

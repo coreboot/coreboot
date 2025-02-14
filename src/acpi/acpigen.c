@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 /* How much nesting do we support? */
-#define ACPIGEN_LENSTACK_SIZE 10
+#define ACPIGEN_LENSTACK_SIZE 15
 
 /* If you need to change this, change acpigen_pop_len too */
 #define ACPIGEN_RSVD_PKGLEN_BYTES	3

@@ -129,11 +129,13 @@ static void cnvw_fill_ssdt(const struct device *dev)
  *					If (((PCRR (CNVI_SIDEBAND_ID, CNVI_ABORT_PLDR) & CNVI_ABORT_REQUEST) == Zero))
  *					{
  *						Local2 = Zero
- *						If ((\_SB.PCI0.GBTR() == One))
- *						{
- *							\_SB.PCI0.BTRK (Zero)
- *							Sleep (105)
- *							Local2 = One
+ *						If (CondRefOf (\_SB.PCI0.GBTR)) {
+ *							If ((\_SB.PCI0.GBTR() == One))
+ *							{
+ *								\_SB.PCI0.BTRK (Zero)
+ *								Sleep (105)
+ *								Local2 = One
+ *							}
  *						}
  *						PCRO (CNVI_SIDEBAND_ID, CNVI_ABORT_PLDR, CNVI_ABORT_REQUEST | CNVI_ABORT_ENABLE)
  *						Sleep (10)
@@ -233,14 +235,18 @@ static void cnvw_fill_ssdt(const struct device *dev)
 					acpigen_write_if_lequal_op_int(LOCAL0_OP, 0);
 					{
 						acpigen_write_store_int_to_op(0, LOCAL2_OP);
-						acpigen_write_if_lequal_namestr_int("\\_SB.PCI0.GBTR", 1);
+						acpigen_write_if_cond_ref_of("\\_SB.PCI0.GBTR");
 						{
-							acpigen_emit_namestring("\\_SB.PCI0.BTRK");
-							acpigen_emit_byte(0);
+							acpigen_write_if_lequal_namestr_int("\\_SB.PCI0.GBTR", 1);
+							{
+								acpigen_emit_namestring("\\_SB.PCI0.BTRK");
+								acpigen_emit_byte(0);
 
-							acpigen_write_sleep(105);
+								acpigen_write_sleep(105);
 
-							acpigen_write_store_ops(1, LOCAL2_OP);
+								acpigen_write_store_ops(1, LOCAL2_OP);
+							}
+							acpigen_pop_len();
 						}
 						acpigen_pop_len();
 

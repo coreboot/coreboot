@@ -19,6 +19,7 @@
 #include <security/tpm/tspi.h>
 #include <security/vboot/antirollback.h>
 #include <security/vboot/vboot_common.h>
+#include <soc/intel/common/reset.h>
 #include <string.h>
 #include <symbols.h>
 #include <timestamp.h>
@@ -331,6 +332,31 @@ static void fspm_multi_phase_init(const struct fsp_header *hdr)
 	timestamp_add_now(TS_FSP_MULTI_PHASE_MEM_INIT_END);
 }
 
+/**
+ * Checks for low battery during firmware update and initiates shutdown if necessary.
+ *
+ * This function checks if the system is in firmware update mode (indicated by
+ * a missing MRC cache) and if the battery is critically low. If both conditions
+ * are met, it initiates a shutdown to prevent interruption of the firmware
+ * update process.
+ */
+static void handle_low_battery_during_firmware_update(bool *defer_shutdown, FSPM_UPD *fspm_upd)
+{
+	if (!CONFIG(PLATFORM_HAS_EARLY_LOW_BATTERY_INDICATOR) ||
+			 !platform_is_low_battery_shutdown_needed())
+		return;
+
+	if (CONFIG(MAINBOARD_HAS_EARLY_LIBGFXINIT)) {
+		platform_display_early_shutdown_notification(NULL);
+		/* User has been notified of low battery; safe to power off. */
+		do_low_battery_poweroff(); /* Do not return */
+	}
+
+	/* Defer shutdown until FSP-M (uGOP) display text message for user notification */
+	platform_display_early_shutdown_notification(fspm_upd);
+	*defer_shutdown = true;
+}
+
 static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 {
 	efi_return_status_t status;
@@ -338,6 +364,7 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 	FSPM_UPD fspm_upd, *upd;
 	FSPM_ARCHx_UPD *arch_upd;
 	uint32_t version;
+	bool poweroff_after_fsp_execution = false;
 	const struct fsp_header *hdr = &context->header;
 	const struct memranges *memmap = &context->memmap;
 
@@ -389,6 +416,11 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 		early_ramtop_enable_cache_range();
 #endif
 
+	/* Low battery check during firmware update */
+	if (!arch_upd->NvsBufferPtr)
+		handle_low_battery_during_firmware_update(&poweroff_after_fsp_execution,
+				 &fspm_upd);
+
 	/* Give SoC and mainboard a chance to update the UPD */
 	platform_fsp_memory_init_params_cb(&fspm_upd, version);
 
@@ -424,6 +456,10 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 		status = fsp_raminit(&fspm_upd, fsp_get_hob_list_ptr());
 	null_breakpoint_init();
 	stack_canary_breakpoint_init();
+
+	/* User has been notified of low battery; safe to power off. */
+	if (poweroff_after_fsp_execution)
+		do_low_battery_poweroff();
 
 	post_code(POSTCODE_FSP_MEMORY_EXIT);
 	timestamp_add_now(TS_FSP_MEMORY_INIT_END);

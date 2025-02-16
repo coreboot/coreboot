@@ -63,6 +63,26 @@ bool platform_is_low_battery_shutdown_needed(void);
 #else
 static inline bool platform_is_low_battery_shutdown_needed(void) { return false; }
 #endif
+
+/*
+ * Displays an early shutdown notification to the user.
+ *
+ * This function is responsible to perform the needful operations for informing
+ * the user that the system is about to shut down prematurely. The implementation
+ * might be different depending upon the underlying technology that can be used for
+ * implementing eSOL for user notification.
+ *
+ * Argument: NULL for platform with libgfxinit and FSP-M UPD pointer for uGOP.
+ *
+ * Note: This function should be called before the actual shutdown process begins,
+ * allowing the user to potentially save data or take other necessary actions.
+ */
+#if CONFIG(PLATFORM_HAS_EARLY_LOW_BATTERY_INDICATOR)
+void platform_display_early_shutdown_notification(void *arg);
+#else
+static inline void platform_display_early_shutdown_notification(void *arg) { /* nop */ }
+#endif
+
 /* Check if MultiPhase Si Init is enabled */
 bool fsp_is_multi_phase_init_enabled(void);
 /*

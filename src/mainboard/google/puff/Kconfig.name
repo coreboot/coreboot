@@ -3,10 +3,10 @@
 comment "Puff"
 
 config BOARD_GOOGLE_AMBASSADOR
-	bool "->  Ambassador"
+	bool "->  Ambassador (Meet Compute System [Intel 10th Gen])"
 
 config BOARD_GOOGLE_DOOLY
-	bool "->  Dooly"
+	bool "->  Dooly (HP Chromebase 21.5)"
 
 config BOARD_GOOGLE_DUFFY_LEGACY
 	bool "->  Duffy Legacy (32MB)"
@@ -18,7 +18,7 @@ config BOARD_GOOGLE_FAFFY
 	bool "->  Faffy (ASUS Fanless Chromebox)"
 
 config BOARD_GOOGLE_GENESIS
-	bool "->  Genesis"
+	bool "->  Genesis (Meet Compute System - Series One [Intel 10th Gen])"
 
 config BOARD_GOOGLE_KAISA_LEGACY
 	bool "->  Kaisa Legacy (32MB)"
@@ -27,7 +27,7 @@ config BOARD_GOOGLE_KAISA
 	bool "->  Kaisa (Acer Chromebox CXI4)"
 
 config BOARD_GOOGLE_MOONBUGGY
-	bool "->  Moonbuggy"
+	bool "->  Moonbuggy (Series One Board 65)"
 
 config BOARD_GOOGLE_NOIBAT
 	bool "->  Noibat (HP Chromebox G3)"
@@ -36,7 +36,7 @@ config BOARD_GOOGLE_PUFF
 	bool "->  Puff"
 
 config BOARD_GOOGLE_SCOUT
-	bool "->  Scout"
+	bool "->  Scout (Series One Desk 27)"
 
 config BOARD_GOOGLE_WYVERN
 	bool "->  Wyvern (CTL Chromebox CBx2)"

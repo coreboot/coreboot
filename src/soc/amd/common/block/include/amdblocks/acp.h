@@ -3,6 +3,7 @@
 #ifndef AMD_COMMON_ACP_H
 #define AMD_COMMON_ACP_H
 
+#include <device/device.h>
 #include <types.h>
 
 struct acp_config {
@@ -43,5 +44,7 @@ struct acp_config {
 	 */
 	bool dmic_present;
 };
+
+void acp_soc_write_ssdt_entry(const struct device *dev);
 
 #endif /* AMD_COMMON_ACP_H */

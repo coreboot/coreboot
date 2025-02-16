@@ -11,3 +11,9 @@ config SOC_AMD_COMMON_BLOCK_ACP_GEN2
 	help
 	  Select this option to perform Audio Co-Processor(ACP) configuration.
 	  Used by the ACP in AMD mendocino (family 17h) and possibly newer CPUs.
+
+config SOC_AMD_COMMON_BLOCK_ACP_SOC_SPECIFIC_SSDT_ENTRY
+	bool
+	help
+	  Select this option to call into the SoC code when generating the SSDT
+	  entry for the Audio Co-Processor (ACP).

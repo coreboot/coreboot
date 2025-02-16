@@ -4,6 +4,7 @@
 
 #include <acpi/acpi.h>
 #include <acpi/acpigen.h>
+#include <amdblocks/acp.h>
 #include <amdblocks/acpi.h>
 #include <amdblocks/cppc.h>
 #include <amdblocks/cpu.h>
@@ -90,4 +91,44 @@ const acpi_cstate_t *get_cstate_config_data(size_t *size)
 {
 	*size = ARRAY_SIZE(cstate_cfg_table);
 	return cstate_cfg_table;
+}
+
+static void acp_soc_write_smn_access_methods(void)
+{
+	acpigen_write_method_serialized("SMNR", 1);
+	acpigen_write_store_op_to_namestr(ARG0_OP, "\\_SB.PCI0.GNB.SMNA");
+	acpigen_write_return_namestr("\\_SB.PCI0.GNB.SMND");
+	acpigen_write_method_end();
+
+	acpigen_write_method_serialized("SMNW", 2);
+	acpigen_write_store_op_to_namestr(ARG0_OP, "\\_SB.PCI0.GNB.SMNA");
+	acpigen_write_store_op_to_namestr(ARG1_OP, "\\_SB.PCI0.GNB.SMND");
+	acpigen_write_method_end();
+}
+
+void acp_soc_write_ssdt_entry(const struct device *dev)
+{
+	/*
+	 * SMN interface using the SMN OperationRegion on the host bridge
+	 *
+	 * Scope (\_SB.PCI0.GP41.ACPD)
+	 * {
+	 *	Method (SMNR, 1, Serialized)
+	 *	{
+	 *		Store (Arg0, \_SB.PCI0.GNB.SMNA)
+	 *		Return (\_SB.PCI0.GNB.SMND)
+	 *	}
+	 *
+	 *	Method (SMNW, 2, Serialized)
+	 *	{
+	 *		Store (Arg0, \_SB.PCI0.GNB.SMNA)
+	 *		Store (Arg1, \_SB.PCI0.GNB.SMND)
+	 *	}
+	 * }
+	 */
+	acpigen_write_scope(acpi_device_path(dev));
+
+	acp_soc_write_smn_access_methods();
+
+	acpigen_write_scope_end();
 }

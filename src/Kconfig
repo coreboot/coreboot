@@ -652,18 +652,11 @@ endmenu
 # load site-local kconfig to allow user specific defaults and overrides
 source "site-local/Kconfig"
 
-config SYSTEM_TYPE_BOX
-	default n
-	bool
-	help
-	  For devices like chromebox, mac-mini etc. These devices
-	  without built-in display and operates on AC supply alone.
-
-config SYSTEM_TYPE_LAPTOP
+config SYSTEM_TYPE_ALL_IN_ONE
 	default n
 	bool
 
-config SYSTEM_TYPE_TABLET
+config SYSTEM_TYPE_CONVERTIBLE
 	default n
 	bool
 
@@ -671,7 +664,22 @@ config SYSTEM_TYPE_DETACHABLE
 	default n
 	bool
 
-config SYSTEM_TYPE_CONVERTIBLE
+config SYSTEM_TYPE_LAPTOP
+	default n
+	bool
+
+config SYSTEM_TYPE_MINIPC
+	default n
+	bool
+	help
+	  For devices like chromebox, mac-mini etc. These devices
+	  without built-in display and operates on AC supply alone.
+
+config SYSTEM_TYPE_SERVER
+	default n
+	bool
+
+config SYSTEM_TYPE_TABLET
 	default n
 	bool
 

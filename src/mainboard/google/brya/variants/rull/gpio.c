@@ -141,6 +141,8 @@ static const struct pad_config early_gpio_table[] = {
 };
 
 static const struct pad_config romstage_gpio_table[] = {
+	/* B4  : SSD_PERST_L */
+	PAD_CFG_GPO(GPP_B4, 1, DEEP),
 };
 
 const struct pad_config *variant_gpio_override_table(size_t *num)

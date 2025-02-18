@@ -221,6 +221,32 @@ void acpi_device_intel_bt(const struct acpi_gpio *enable_gpio,
 	acpigen_pop_len();
 
 /*
+ *	Method (_PS0, 0, NotSerialized)
+ *	{
+ *		\_SB.PCI0.SBTE(1)
+ *	}
+ */
+	acpigen_write_method("_PS0", 0);
+	{
+		acpigen_emit_namestring("\\_SB.PCI0.SBTE");
+		acpigen_emit_byte(1);
+	}
+	acpigen_pop_len();
+
+/*
+ *	Name (_PS3, Package (0x01)
+ *	{
+ *		\_SB.PCI0.SBTE(0)
+ *	}
+ */
+	acpigen_write_method("_PS3", 0);
+	{
+		acpigen_emit_namestring("\\_SB.PCI0.SBTE");
+		acpigen_emit_byte(0);
+	}
+	acpigen_pop_len();
+
+/*
  *	Method (AOLD, 0, NotSerialized)
  *	{
  *		Name (AODS, Package (0x03)

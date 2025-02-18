@@ -428,7 +428,7 @@ const struct pad_config gpio_table[] = {
 	/* B15:					*/
 	PAD_NC(GPP_B15, NONE),
 	/* B16:	DDIB_DP_HPD			*/
-	PAD_CFG_NF(GPP_B16, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_B16, NONE, DEEP, NF2),
 	/* B17:					*/
 	PAD_NC(GPP_B17, NONE),
 	/* B18:	BT_RF_KILL_N			*/

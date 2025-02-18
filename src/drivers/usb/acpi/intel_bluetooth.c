@@ -267,7 +267,7 @@ void acpi_device_intel_bt_common(unsigned int enable_gpio, unsigned int reset_gp
 	acpigen_write_mutex("CNMT", 0);
 
 /*
- *	Method (SBTE, 1, Serialized)
+ *	Method (SBTE, 1, NotSerialized)
  *	{
  *		If (Arg0 == 1)
  *		{
@@ -277,7 +277,7 @@ void acpi_device_intel_bt_common(unsigned int enable_gpio, unsigned int reset_gp
  *		}
  *	}
  */
-	acpigen_write_method_serialized("SBTE", 1);
+	acpigen_write_method("SBTE", 1);
 	{
 		if (enable_gpio) {
 			acpigen_write_if_lequal_op_int(ARG0_OP, 1);

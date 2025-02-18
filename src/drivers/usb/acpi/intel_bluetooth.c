@@ -352,5 +352,5 @@ void acpi_device_intel_bt_common(unsigned int enable_gpio, unsigned int reset_gp
 	}
 	acpigen_pop_len();
 
-	acpigen_pop_len();
+	acpigen_write_scope_end();
 }

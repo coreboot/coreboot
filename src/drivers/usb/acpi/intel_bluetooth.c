@@ -311,7 +311,7 @@ void acpi_device_intel_bt_common(unsigned int enable_gpio, unsigned int reset_gp
 	acpigen_pop_len();
 
 /*
- *	Method (BTRK, 1, Serialized)
+ *	Method (BTRK, 1, NotSerialized)
  *	{
  *		If (Arg0 == 1)
  *		{
@@ -321,7 +321,7 @@ void acpi_device_intel_bt_common(unsigned int enable_gpio, unsigned int reset_gp
  *		}
  *	}
  */
-	acpigen_write_method_serialized("BTRK", 1);
+	acpigen_write_method("BTRK", 1);
 	{
 		acpigen_write_if_lequal_op_int(ARG0_OP, 1);
 		{

@@ -230,7 +230,7 @@ void acpi_device_intel_bt(unsigned int reset_gpio, unsigned int enable_gpio, boo
 	acpigen_pop_len();
 
 /*
- *	Method (AOLD, 0, Serialized)
+ *	Method (AOLD, 0, NotSerialized)
  *	{
  *		Name (AODS, Package (0x03)
  *		{
@@ -242,7 +242,7 @@ void acpi_device_intel_bt(unsigned int reset_gpio, unsigned int enable_gpio, boo
  *		Return (AODS)
  *	}
  */
-	acpigen_write_method_serialized("AOLD", 0);
+	acpigen_write_method("AOLD", 0);
 	{
 		acpigen_write_name("AODS");
 		acpigen_write_package(3);

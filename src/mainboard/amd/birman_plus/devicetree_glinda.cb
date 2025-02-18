@@ -187,9 +187,13 @@ chip soc/amd/glinda
 	device domain 0 on
 		device ref iommu on end
 		device ref gpp_bridge_2_1 on end # NVME SSD0
-		device ref gpp_bridge_2_2 on end # SD
+		device ref gpp_bridge_2_2 on # SD Express
+			device pci 0.0 on end # RTS5261
+		end
 		device ref gpp_bridge_2_3 on end # WLAN
-		device ref gpp_bridge_2_4 on end # GBE
+		device ref gpp_bridge_2_4 on # GBE
+			device pci 0.0 on end # RTL8111
+		end
 		device ref gpp_bridge_2_5 on end # WWAN
 		device ref gpp_bridge_3_1 on end # PCIe x4/x8 (ENABLE_SSD1_BIRMANPLUS)
 		device ref gpp_bridge_3_2 on end # NVME SSD1 (ENABLE_SSD1_BIRMANPLUS)

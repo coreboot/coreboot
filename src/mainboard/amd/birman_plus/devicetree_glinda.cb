@@ -207,9 +207,15 @@ chip soc/amd/glinda
 				chip drivers/usb/acpi
 					device ref xhci_1_root_hub on
 						chip drivers/usb/acpi
+							register "desc" = ""USB-3.2-A-Port1 Vertical""
+							register "type" = "UPC_TYPE_USB3_A"
+							register "group" = "ACPI_PLD_GROUP(7, 0)"
 							device ref usb3_port7 on end
 						end
 						chip drivers/usb/acpi
+							register "desc" = ""USB-3.2-A-Port1 Vertical""
+							register "type" = "UPC_TYPE_USB3_A"
+							register "group" = "ACPI_PLD_GROUP(7, 0)"
 							device ref usb2_port7 on end
 						end
 					end
@@ -222,24 +228,45 @@ chip soc/amd/glinda
 				chip drivers/usb/acpi
 					device ref xhci_0_root_hub on
 						chip drivers/usb/acpi
+							register "desc" = ""USBC2""
+							register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+							register "group" = "ACPI_PLD_GROUP(2, 0)"
 							device ref usb3_port2 on end
 						end
 						chip drivers/usb/acpi
+							register "desc" = ""USB-3.2-A-Port0""
+							register "type" = "UPC_TYPE_USB3_A"
+							register "group" = "ACPI_PLD_GROUP(3, 0)"
 							device ref usb3_port3 on end
 						end
 						chip drivers/usb/acpi
+							register "desc" = ""USBC2""
+							register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+							register "group" = "ACPI_PLD_GROUP(2, 0)"
 							device ref usb2_port2 on end
 						end
 						chip drivers/usb/acpi
+							register "desc" = ""USB-3.2-A-Port0""
+							register "type" = "UPC_TYPE_USB3_A"
+							register "group" = "ACPI_PLD_GROUP(3, 0)"
 							device ref usb2_port3 on end
 						end
 						chip drivers/usb/acpi
+							register "desc" = ""USB-A 2.0""
+							register "type" = "UPC_TYPE_A"
+							register "group" = "ACPI_PLD_GROUP(4, 0)"
 							device ref usb2_port4 on end
 						end
 						chip drivers/usb/acpi
+							register "desc" = ""GbE/FingerPrint""
+							register "type" = "UPC_TYPE_INTERNAL"
+							register "group" = "ACPI_PLD_GROUP(5, 0)"
 							device ref usb2_port5 on end
 						end
 						chip drivers/usb/acpi
+							register "desc" = ""BT/Touch""
+							register "type" = "UPC_TYPE_INTERNAL"
+							register "group" = "ACPI_PLD_GROUP(6, 0)"
 							device ref usb2_port6 on end
 						end
 					end
@@ -250,9 +277,15 @@ chip soc/amd/glinda
 				chip drivers/usb/acpi
 					device ref usb4_xhci_0_root_hub on
 						chip drivers/usb/acpi
+							register "desc" = ""USBC0""
+							register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+							register "group" = "ACPI_PLD_GROUP(0, 0)"
 							device ref usb3_port0 on end
 						end
 						chip drivers/usb/acpi
+							register "desc" = ""USBC0""
+							register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+							register "group" = "ACPI_PLD_GROUP(0, 0)"
 							device ref usb2_port0 on end
 						end
 					end
@@ -263,9 +296,15 @@ chip soc/amd/glinda
 					register "type" = "UPC_TYPE_HUB"
 					device ref usb4_xhci_1_root_hub on
 						chip drivers/usb/acpi
+							register "desc" = ""USBC1""
+							register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+							register "group" = "ACPI_PLD_GROUP(1, 0)"
 							device ref usb3_port1 on end
 						end
 						chip drivers/usb/acpi
+							register "desc" = ""USBC1""
+							register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+							register "group" = "ACPI_PLD_GROUP(1, 0)"
 							device ref usb2_port1 on end
 						end
 					end

@@ -87,19 +87,6 @@ static void cnvw_fill_ssdt(const struct device *dev)
 		FIELD_BYTEACC | FIELD_NOLOCK | FIELD_PRESERVE);
 
 /*
- *	Method (_S0W, 0, NotSerialized)  // _S0W: S0 Device Wake State
- *	{
- *		Return (ACPI_DEVICE_SLEEP_D3_HOT)
- *	}
- */
-	acpigen_write_method("_S0W", 0);
-	{
-		acpigen_write_return_integer(ACPI_DEVICE_SLEEP_D3_HOT);
-	}
-	acpigen_pop_len();
-
-
-/*
  *	Name (RSTT, Zero)
  */
 	acpigen_write_name_integer("RSTT", 0);
@@ -326,18 +313,11 @@ static void cnvw_fill_ssdt(const struct device *dev)
  *	Method (_PS3, 0, Serialized)
  *	{
  *	}
- *
- *	Method (_DSW, 3)
- *	{
- *	}
  */
 	acpigen_write_method_serialized("_PS0", 0);
 	acpigen_pop_len();
 
 	acpigen_write_method_serialized("_PS3", 0);
-	acpigen_pop_len();
-
-	acpigen_write_method("_DSW", 3);
 	acpigen_pop_len();
 
 /*

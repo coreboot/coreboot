@@ -3856,7 +3856,18 @@ typedef struct {
 
 /** Offset 0x0F96 - Reserved
 **/
-  UINT8                       Reserved53[16];
+  UINT8                       Reserved53[8];
+
+/** Offset 0x0F9E - Type C Port x Convert to Type A
+  Enable / Disable (default) Type C Port x Convert to Type A
+  $EN_DIS
+**/
+  UINT8                       EnableTcssCovTypeA[4];
+
+/** Offset 0x0FA2 - PCH xhci port x for Type C Port x mapping
+  input PCH xhci port x for Type C Port 0 mapping.
+**/
+  UINT8                       MappingPchXhciUsbA[4];
 
 /** Offset 0x0FA6 - FOMS Control Policy
   Choose the Foms Control Policy, <b>Default = 0 </b>

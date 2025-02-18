@@ -379,14 +379,6 @@ Device (EC0)
 		Printf ("EC: THROTTLE START")
 		\_TZ.THRT (1)
 #endif
-
-#ifdef DPTF_ENABLE_OEM_VARIABLES
-		Local0 = ToInteger(EOVD) & EC_OEM_VARIABLE_DATA_MASK
-		\_SB.DPTF.ODUP(0, Local0)
-		Local0 = \_SB.DPTF.ODGT(0)
-		\_SB.DPTF.ODVP()
-		Notify (\_SB.DPTF, INT3400_ODVP_CHANGED)
-#endif
 	}
 
 	// Throttle Stop

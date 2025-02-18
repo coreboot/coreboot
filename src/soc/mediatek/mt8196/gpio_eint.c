@@ -1,29 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+/* SPDX-License-Identifier: GPL-2.0-only OR MIT */
 
 /*
  * This file is created based on MT8196_EINT_Datasheet
  * Chapter number: 1
  */
 
-#include <console/console.h>
-#include <soc/addressmap.h>
-#include <soc/gpio.h>
+#include <commonlib/bsd/helpers.h>
+#include <soc/gpio_eint_v2.h>
 
-enum {
-	EINT_INVALID = 0,
-	EINT_E,
-	EINT_S,
-	EINT_W,
-	EINT_N,
-	EINT_C,
-};
-
-struct eint_info {
-	uint8_t instance;
-	uint8_t index;
-};
-
-static struct eint_info eint_data[] = {
+const struct eint_info eint_data[] = {
 	/* instance, index */
 	[0] = { EINT_W, 0 },
 	[1] = { EINT_W, 1 },
@@ -258,51 +243,4 @@ static struct eint_info eint_data[] = {
 };
 _Static_assert(ARRAY_SIZE(eint_data) == 293, "Incorrect eint_data size");
 
-void gpio_calc_eint_pos_bit(gpio_t gpio, u32 *pos, u32 *bit)
-{
-	uint32_t idx = gpio.id;
-
-	*pos = 0;
-	*bit = 0;
-
-	if (idx >= ARRAY_SIZE(eint_data))
-		return;
-
-	uint8_t index = eint_data[idx].index;
-
-	*pos = index / MAX_EINT_REG_BITS;
-	*bit = index % MAX_EINT_REG_BITS;
-}
-
-struct eint_regs *gpio_get_eint_reg(gpio_t gpio)
-{
-	uint32_t idx = gpio.id;
-	uintptr_t addr;
-
-	if (idx >= ARRAY_SIZE(eint_data))
-		return NULL;
-
-	switch (eint_data[idx].instance) {
-	case EINT_E:
-		addr = EINT_E_BASE;
-		break;
-	case EINT_S:
-		addr = EINT_S_BASE;
-		break;
-	case EINT_W:
-		addr = EINT_W_BASE;
-		break;
-	case EINT_N:
-		addr = EINT_N_BASE;
-		break;
-	case EINT_C:
-		addr = EINT_C_BASE;
-		break;
-	default:
-		printk(BIOS_ERR, "%s: Failed to look up a valid EINT base for %d\n",
-		       __func__, idx);
-		return NULL;
-	}
-
-	return (void *)addr;
-}
+const size_t eint_data_len = ARRAY_SIZE(eint_data);

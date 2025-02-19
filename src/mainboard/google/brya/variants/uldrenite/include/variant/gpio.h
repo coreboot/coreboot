@@ -10,5 +10,6 @@
 #define WWAN_PERST	GPP_F13
 #define T1_OFF_MS	20
 #define T2_OFF_MS	10
+#define T0_OFF_MS	150
 
 #endif

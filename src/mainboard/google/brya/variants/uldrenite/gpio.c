@@ -232,9 +232,9 @@ static const struct pad_config gpio_table[] = {
 	/* F11 : NC */
 	PAD_NC_LOCK(GPP_F11, NONE, LOCK_CONFIG),
 	/* F12 : NC ==> WWAN_RST_L */
-	PAD_CFG_GPO(GPP_F12, 0, DEEP),
+	PAD_CFG_GPO(GPP_F12, 1, DEEP),
 	/* F13 : NC ==> PLTRST_WWAN# */
-	PAD_CFG_GPO(GPP_F13, 0, DEEP),
+	PAD_CFG_GPO(GPP_F13, 1, DEEP),
 	/* F14 : NC */
 	PAD_NC(GPP_F14, NONE),
 	/* F15 : NC */
@@ -303,7 +303,7 @@ static const struct pad_config gpio_table[] = {
 	/* H22 : NC */
 	PAD_NC(GPP_H22, NONE),
 	/* H23 : LTE_PWR_OFF_EN */
-	PAD_CFG_GPO(GPP_H23, 0, DEEP),
+	PAD_CFG_GPO(GPP_H23, 1, DEEP),
 
 	/* R0  : HDA_BCLK ==> HDA_BIT_CLK */
 	PAD_CFG_NF(GPP_R0, NONE, DEEP, NF1),
@@ -435,7 +435,7 @@ static const struct pad_config early_gpio_table[] = {
 	/* H11 : UART0_TXD ==> UART_SOC_TX_DBG_RX */
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
 	/* H23 : LTE_PWR_OFF_EN */
-	PAD_CFG_GPO(GPP_H23, 0, DEEP),
+	PAD_CFG_GPO(GPP_H23, 1, DEEP),
 };
 
 /* Fill romstage gpio configuration */
@@ -445,6 +445,8 @@ static const struct pad_config romstage_gpio_table[] = {
 	PAD_CFG_GPO(GPP_E17, 1, DEEP),
 	/* D15  : GPP_D15 ==> SOC_TS_I2C_RST# */
 	PAD_CFG_GPO(GPP_D15, 0, DEEP),
+	/* F12 : NC ==> WWAN_RST_L */
+	PAD_CFG_GPO(GPP_F12, 1, DEEP),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

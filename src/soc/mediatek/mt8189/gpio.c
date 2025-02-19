@@ -8,6 +8,26 @@
 #include <device/mmio.h>
 #include <gpio.h>
 
+#define SPI_NOR_GPIO_BASE	150
+
+enum {
+	SPI_NOR_CK = 0,
+	SPI_NOR_CS = 1,
+	SPI_NOR_IO0 = 2,
+	SPI_NOR_IO1 = 3,
+	SPI_NOR_IO2 = 4,
+	SPI_NOR_IO3 = 5,
+};
+
+static const struct gpio_drv_info bootblock_gpio_driving_info[] = {
+	[SPI_NOR_CK] = { 0x10, 12, 3, },
+	[SPI_NOR_CS] = { 0x10, 27, 3, },
+	[SPI_NOR_IO0] = { 0x10, 15, 3, },
+	[SPI_NOR_IO1] = { 0x10, 18, 3, },
+	[SPI_NOR_IO2] = { 0x10, 21, 3, },
+	[SPI_NOR_IO3] = { 0x10, 24, 3, },
+};
+
 static const struct gpio_drv_info gpio_driving_info[] = {
 	[0] = { 0x10, 15, 3, },
 	[1] = { 0x10, 9, 3, },
@@ -261,14 +281,26 @@ void *gpio_find_reg_addr(gpio_t gpio)
 
 const struct gpio_drv_info *get_gpio_driving_info(uint32_t raw_id)
 {
-	if (raw_id >= ARRAY_SIZE(gpio_driving_info))
-		return NULL;
-	return &gpio_driving_info[raw_id];
+	if (ENV_BOOTBLOCK) {
+		uint32_t id = raw_id - SPI_NOR_GPIO_BASE;
+
+		if (id >= ARRAY_SIZE(bootblock_gpio_driving_info))
+			return NULL;
+		return &bootblock_gpio_driving_info[id];
+	} else {
+		if (raw_id >= ARRAY_SIZE(gpio_driving_info))
+			return NULL;
+		return &gpio_driving_info[raw_id];
+	}
 }
 
 const struct gpio_drv_info *get_gpio_driving_adv_info(uint32_t raw_id)
 {
-	if (raw_id >= ARRAY_SIZE(gpio_driving_adv_info))
+	if (ENV_BOOTBLOCK) {
 		return NULL;
-	return &gpio_driving_adv_info[raw_id];
+	} else {
+		if (raw_id >= ARRAY_SIZE(gpio_driving_adv_info))
+			return NULL;
+		return &gpio_driving_adv_info[raw_id];
+	}
 }

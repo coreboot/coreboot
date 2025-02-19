@@ -35,13 +35,8 @@
 #include <x86intrin.h>
 #endif
 
-typedef uint8_t u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
-typedef uint64_t u64;
-
 /* Return < 0 on error, 0 on success. */
-static int parse_cbtable(u64 address, size_t table_size);
+static int parse_cbtable(uint64_t address, size_t table_size);
 
 struct mapping {
 	void *virt;
@@ -178,8 +173,8 @@ static size_t mapping_size(const struct mapping *mapping)
  */
 static void *aligned_memcpy(void *dest, const void *src, size_t n)
 {
-	u8 *d = dest;
-	const volatile u8 *s = src;	/* volatile to prevent optimization */
+	uint8_t *d = dest;
+	const volatile uint8_t *s = src;	/* volatile to prevent optimization */
 
 	while ((uintptr_t)s & (sizeof(size_t) - 1)) {
 		if (n-- == 0)
@@ -353,7 +348,7 @@ static int parse_cbtable_entries(const struct mapping *table_mapping)
 }
 
 /* Return < 0 on error, 0 on success. */
-static int parse_cbtable(u64 address, size_t table_size)
+static int parse_cbtable(uint64_t address, size_t table_size)
 {
 	const void *buf;
 	struct mapping header_mapping;
@@ -441,7 +436,7 @@ static unsigned long arch_tick_frequency(void)
 	char freqs[100];
 	int  size;
 	char *endp;
-	u64 rv;
+	uint64_t rv;
 
 	const char* freq_file =
 		"/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq";
@@ -509,7 +504,7 @@ static void timestamp_set_tick_freq(unsigned long table_tick_freq_mhz)
 	debug("Timestamp tick frequency: %ld MHz\n", tick_freq_mhz);
 }
 
-static u64 arch_convert_raw_ts_entry(u64 ts)
+static uint64_t arch_convert_raw_ts_entry(uint64_t ts)
 {
 	return ts / tick_freq_mhz;
 }
@@ -518,14 +513,14 @@ static u64 arch_convert_raw_ts_entry(u64 ts)
  * Print an integer in 'normalized' form - with commas separating every three
  * decimal orders.
  */
-static void print_norm(u64 v)
+static void print_norm(uint64_t v)
 {
 	if (v >= 1000) {
 		/* print the higher order sections first */
 		print_norm(v / 1000);
-		printf(",%3.3u", (u32)(v % 1000));
+		printf(",%3.3u", (uint32_t)(v % 1000));
 	} else {
-		printf("%u", (u32)(v % 1000));
+		printf("%u", (uint32_t)(v % 1000));
 	}
 }
 
@@ -1096,9 +1091,9 @@ static void dump_tpm_log(void)
 }
 
 struct cbmem_console {
-	u32 size;
-	u32 cursor;
-	u8  body[];
+	uint32_t size;
+	uint32_t cursor;
+	uint8_t  body[];
 }  __attribute__ ((__packed__));
 
 #define CBMC_CURSOR_MASK ((1 << 28) - 1)
@@ -1828,7 +1823,7 @@ int main(int argc, char** argv)
 
 	int i;
 	size_t size_to_read = addr_cells * 4 + size_cells * 4;
-	u8 *dtbuffer = alloca(size_to_read);
+	uint8_t *dtbuffer = alloca(size_to_read);
 	if (read(fd, dtbuffer, size_to_read) < 0) {
 		perror(reg);
 		return 1;
@@ -1836,13 +1831,13 @@ int main(int argc, char** argv)
 	close(fd);
 
 	/* No variable-length byte swap function anywhere in C... how sad. */
-	u64 baseaddr = 0;
+	uint64_t baseaddr = 0;
 	for (i = 0; i < addr_cells * 4; i++) {
 		baseaddr <<= 8;
 		baseaddr |= *dtbuffer;
 		dtbuffer++;
 	}
-	u64 cb_table_size = 0;
+	uint64_t cb_table_size = 0;
 	for (i = 0; i < size_cells * 4; i++) {
 		cb_table_size <<= 8;
 		cb_table_size |= *dtbuffer;

@@ -258,6 +258,10 @@ static void acpi_create_tpm2(acpi_header_t *header, void *unused)
 	if (tlcl_get_family() != TPM_2)
 		return;
 
+	if (CONFIG(CRB_TPM) && !(CONFIG(SPI_TPM) || CONFIG(I2C_TPM) || CONFIG(MEMORY_MAPPED_TPM)))
+		if (!crb_tpm_is_active())
+			return;
+
 	acpi_tpm2_t *tpm2 = (acpi_tpm2_t *)header;
 	u32 tpm2_log_len;
 	void *lasa;
@@ -275,7 +279,7 @@ static void acpi_create_tpm2(acpi_header_t *header, void *unused)
 
 	/* Hard to detect for coreboot. Just set it to 0 */
 	tpm2->platform_class = 0;
-	if (CONFIG(CRB_TPM) && crb_tpm_is_active()) {
+	if (CONFIG(CRB_TPM)) {
 		/* Must be set to 7 for CRB Support */
 		tpm2->control_area = CONFIG_CRB_TPM_BASE_ADDRESS + 0x40;
 		tpm2->start_method = 7;

@@ -10,10 +10,13 @@
 #include <commonlib/helpers.h>
 #include <console/console.h>
 #include <ctype.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
 #include <edid.h>
 #include <vbe.h>
+
+#include "edid_displayid.h"
 
 struct edid_context {
 	int claims_one_point_oh;
@@ -941,6 +944,173 @@ parse_cea(struct edid *out, unsigned char *x, struct edid_context *c)
 	return ret;
 }
 
+/* DisplayID extension code */
+static const char * const displayid_aspect[] = {
+	"1:1",
+	"5:4",
+	"4:3",
+	"15:9",
+	"16:9",
+	"16:10",
+	"64:27",
+	"256:135",
+};
+
+static void displayid_detailed_timing(
+	struct displayid_type_7_detailed_timing_desc *desc,
+	struct edid *out)
+{
+	unsigned int pixel_clock = (desc->pixel_clock[0] |
+				    (desc->pixel_clock[1] << 8) |
+				    (desc->pixel_clock[2] << 16)) + 1;
+
+	unsigned int hactive = (desc->hactive[0] | desc->hactive[1] << 8) + 1;
+	unsigned int hblank = (desc->hblank[0] | desc->hblank[1] << 8) + 1;
+	unsigned int hsync = (desc->hfront_porch[0] | (desc->hfront_porch[1] & 0x7f) << 8) + 1;
+	unsigned int hsync_width = (desc->hsync_width[0] | desc->hsync_width[1] << 8) + 1;
+
+	unsigned int vactive = (desc->vactive[0] | desc->vactive[1] << 8) + 1;
+	unsigned int vblank = (desc->vblank[0] | desc->vblank[1] << 8) + 1;
+	unsigned int vsync = (desc->vfront_porch[0] | (desc->vfront_porch[1] & 0x7f) << 8) + 1;
+	unsigned int vsync_width = (desc->vsync_width[0] | desc->vsync_width[1] << 8) + 1;
+
+	bool hsync_positive = (desc->hfront_porch[1] >> 7) & 0x1;
+	bool vsync_positive = (desc->vfront_porch[1] >> 7) & 0x1;
+
+	unsigned int aspect = desc->flags & 0xF;
+	bool is_preferred = desc->flags & 0x80;
+
+	out->mode.pixel_clock = pixel_clock;
+	out->mode.lvds_dual_channel = (out->mode.pixel_clock >= 95000);
+	out->mode.ha = hactive;
+	out->mode.hbl = hblank;
+	out->mode.hso = hsync;
+	out->mode.hspw = hsync_width;
+
+	out->mode.va = vactive;
+	out->mode.vbl = vblank;
+	out->mode.vso = vsync;
+	out->mode.vspw = vsync_width;
+
+	out->mode.phsync = hsync_positive ? '+' : '-';
+	out->mode.pvsync = vsync_positive ? '+' : '-';
+
+	printk(BIOS_SPEW,
+	       "Detailed mode: clock %d KHz,\n"
+	       "               ha: %u hso: %u hspw: %u hbl: %u\n"
+	       "               va: %u vso: %u vspw: %u vbl: %u\n"
+	       "               %chsync %cvsync (aspect %s%s)\n",
+	       out->mode.pixel_clock,
+	       out->mode.ha, out->mode.hso, out->mode.hspw, out->mode.hbl,
+	       out->mode.va, out->mode.vso, out->mode.vspw, out->mode.vbl,
+	       out->mode.phsync, out->mode.pvsync,
+	       (aspect >= ARRAY_SIZE(displayid_aspect)) ? "undefined" : displayid_aspect[aspect],
+	       is_preferred ? ", preferred" : "");
+}
+
+static int displayid_type_7_timing_block(
+	struct edid *result_edid,
+	unsigned char *x,
+	struct edid_context *c,
+	int index)
+{
+	struct edid tmp;
+
+	struct displayid_type_7_detailed_timing_block *block;
+	struct displayid_type_7_detailed_timing_desc *desc;
+	int desc_count;
+
+	block = (struct displayid_type_7_detailed_timing_block *)&x[index];
+	desc_count = block->header.length / sizeof(*desc);
+
+	if (block->header.length % sizeof(*desc)) {
+		printk(BIOS_ERR, "%s: the length is not a multiple of %zu\n",
+		       __func__, sizeof(*desc));
+		return 1;
+	}
+
+	tmp = *result_edid;
+
+	for (int i = 0; i < desc_count; i++) {
+		desc = &block->descs[i];
+		displayid_detailed_timing(desc, &tmp);
+
+		c->did_detailed_timing = 1;
+		if ((desc->flags & 0x80) && !c->has_preferred_timing) {
+			c->has_preferred_timing = 1;
+			*result_edid = tmp;
+		}
+	}
+
+	return 0;
+}
+
+static int validate_section_header(unsigned char *x, int index)
+{
+	int i;
+	size_t section_length;
+	struct displayid_section_header *sh = (struct displayid_section_header *)&x[index];
+
+	unsigned char sum = 0;
+
+	/* +1 for the Display ID section checksum */
+	section_length = sizeof(*sh) + sh->length + 1;
+
+	/* Reserve 1 byte for extension block checksum */
+	if (section_length > 128 - 1 - index)
+		return 1;
+
+	for (i = 0; i < section_length; i++)
+		sum += x[i + index];
+
+	if (sum) {
+		printk(BIOS_ERR, "%s: checksum invalid\n", __func__);
+		return 1;
+	}
+
+	return 0;
+}
+
+static int parse_displayid(
+	struct edid *result_edid,
+	unsigned char *x,
+	struct edid_context *c)
+{
+	int ret = 0;
+	int index = 1;
+
+	struct displayid_section_header *sh = (struct displayid_section_header *)&x[index];
+	struct displayid_block_header *bh;
+
+	if (validate_section_header(x, index))
+		return 1;
+
+	/* Support Display ID structure 2.0 only */
+	if (sh->revision != DISPLAY_ID_STRUCTURE_VERSION_20) {
+		printk(BIOS_SPEW, "Unsupported Display ID revison: %x\n", sh->revision);
+		goto validate_checksum;
+	}
+
+	index += sizeof(*sh);
+	while (index < 1 + sh->length + sizeof(*sh)) {
+		bh = (struct displayid_block_header *)&x[index];
+		if (index + sizeof(*bh) > sh->length ||
+		    index + sizeof(*bh) + bh->length > sh->length)
+			break;
+
+		if (bh->tag == DATA_BLOCK_V2_TYPE_7_DETAILED_TIMING)
+			displayid_type_7_timing_block(result_edid, x, c, index);
+		else
+			printk(BIOS_SPEW, "%s: Unsupported data block tag %x\n",
+			       __func__, bh->tag);
+		index += sizeof(*bh) + bh->length;
+	}
+
+validate_checksum:
+	c->has_valid_checksum &= do_checksum(x);
+	return ret;
+}
+
 /* generic extension code */
 
 static void
@@ -972,6 +1142,11 @@ parse_extension(struct edid *out, unsigned char *x, struct edid_context *c)
 		break;
 	case 0x60:
 		printk(BIOS_SPEW, "DPVL extension block\n");
+		break;
+	case 0x70:
+		printk(BIOS_SPEW, "DisplayID extension block\n");
+		extension_version(out, x);
+		conformant_extension = parse_displayid(out, x, c);
 		break;
 	case 0xF0:
 		printk(BIOS_SPEW, "Block map\n");

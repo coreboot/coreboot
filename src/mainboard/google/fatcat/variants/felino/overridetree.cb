@@ -70,6 +70,9 @@ chip soc/intel/pantherlake
 		},
 		.i2c[4] = {
 			.speed = I2C_SPEED_FAST,
+			.rise_time_ns = 650,
+			.fall_time_ns = 350,
+			.data_hold_time_ns = 400,
 		},
 	}"
 
@@ -231,14 +234,13 @@ chip soc/intel/pantherlake
 		end # I2C1
 
 		device ref i2c4 on
-			chip drivers/i2c/hid
-				register "generic.hid" = ""P3840""
-				register "generic.desc" = ""Synaptics TOUCHPAD""
-				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_E18_IRQ)"
-				register "generic.uid" = "5"
-				register "generic.detect" = "1"
-				register "hid_desc_reg_offset" = "0x20"
-				device i2c 2c on end
+			chip drivers/i2c/generic
+				register "hid" = ""ELAN0000""
+				register "desc" = ""ELAN Touchpad""
+				register "irq" = "ACPI_IRQ_WAKE_EDGE_LOW(GPP_E18_IRQ)"
+				register "wake" = "GPE0_DW2_18"
+				register "detect" = "1"
+				device i2c 0x15 on end
 			end
 		end # I2C4
 

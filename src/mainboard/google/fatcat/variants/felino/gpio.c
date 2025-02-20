@@ -222,10 +222,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E10, NONE),
 	/* GPP_E11:     NC */
 	PAD_NC(GPP_E11, NONE),
-	/* GPP_E12:     I2C0_SOC_SCL */
-	PAD_CFG_NF(GPP_E12, NONE, DEEP, NF1),
-	/* GPP_E13:     I2C0_SOC_SDA */
-	PAD_CFG_NF(GPP_E13, NONE, DEEP, NF1),
+	/* GPP_E12:     I2C4_SOC_SCL */
+	PAD_CFG_NF(GPP_E12, NONE, DEEP, NF8),
+	/* GPP_E13:     I2C4_SOC_SDA */
+	PAD_CFG_NF(GPP_E13, NONE, DEEP, NF8),
 	/* GPP_E14:     NC */
 	PAD_NC(GPP_E14, NONE),
 	/* GPP_E15:     NC */
@@ -235,7 +235,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_E17:     NC */
 	PAD_NC(GPP_E17, NONE),
 	/* GPP_E18:     TOUCHPAD_INT_N */
-	PAD_CFG_NF(GPP_E18, NONE, DEEP, NF3),
+	PAD_CFG_GPI_APIC(GPP_E18, NONE, PLTRST, LEVEL, NONE),
 	/* GPP_E19:     HW_ID5 */
 	PAD_CFG_GPO(GPP_E19, 1, PLTRST),
 	/* GPP_E20:     HW_ID4 */

@@ -171,8 +171,8 @@ check_member(mtk_thermal_controller_regs, lvtsspare, 0x0f0);
 #define AP_RST_SET			(INFRACFG_AO_SEC_BASE + 0xf30)
 #define AP_RST_CLR			(INFRACFG_AO_SEC_BASE + 0xf34)
 
-#define LVTS_COF_T_SLP_GLD		358830
-#define LVTS_COF_COUNT_R_GLD		34389
+#define LVTS_COF_T_SLP_GLD		391460
+#define LVTS_COF_COUNT_R_GLD		34412
 #define LVTS_COF_T_CONST_OFS		0
 
 #define DEFAULT_EFUSE_GOLDEN_TEMP	60

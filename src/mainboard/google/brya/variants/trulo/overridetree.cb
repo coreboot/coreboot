@@ -455,7 +455,6 @@ chip soc/intel/alderlake
 				register "hid" = ""ELAN0000""
 				register "desc" = ""ELAN Touchpad""
 				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_B3_IRQ)"
-				register "wake" = "GPE0_DW1_03"
 				register "detect" = "1"
 				device i2c 15 on end
 			end

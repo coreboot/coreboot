@@ -28,6 +28,9 @@ chip soc/intel/pantherlake
 		.tdp_pl2_override = 25,
 	}"
 
+	# Enable CNVi WiFi
+	register "cnvi_wifi_core" = "true"
+
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C1
 	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)" # Type-A Port A0  # USB HUB (USB2 Camera)

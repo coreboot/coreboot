@@ -43,6 +43,8 @@ static const struct lvts_thermal_controller lvts_tscpu_g_tc[LVTS_CONTROLLER_NUM]
 		.ts_number = 4,
 		.reboot_temperature = 118800,
 		.dominator_ts_idx = 0,
+		.reboot_msr_sram_idx = 0,
+		.has_reboot_temp_sram = true,
 		.speed = {
 			.group_interval_delay = 0x7fff,
 			.period_unit = 0x001,
@@ -57,6 +59,8 @@ static const struct lvts_thermal_controller lvts_tscpu_g_tc[LVTS_CONTROLLER_NUM]
 		.ts_number = 4,
 		.reboot_temperature = 118800,
 		.dominator_ts_idx = 0,
+		.reboot_msr_sram_idx = 1,
+		.has_reboot_temp_sram = false,
 		.speed = {
 			.group_interval_delay = 0x7fff,
 			.period_unit = 0x001,
@@ -542,6 +546,10 @@ static void lvts_set_tc_trigger_hw_protect(const struct lvts_thermal_controller 
 		raw = lvts_temp_to_raw(tc->reboot_temperature, ts_name);
 		raw_high = MAX(raw_high, raw);
 	}
+
+	thermal_write_reboot_msr_sram(tc->reboot_msr_sram_idx, raw_high);
+	if (tc->has_reboot_temp_sram)
+		thermal_write_reboot_temp_sram(tc->reboot_temperature);
 
 	setbits32(&tc->regs->lvtsprotctl_0, 0x3FFF);
 	/* disable trigger SPM interrupt */

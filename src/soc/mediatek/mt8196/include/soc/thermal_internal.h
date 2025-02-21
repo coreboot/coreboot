@@ -55,6 +55,8 @@ struct lvts_thermal_controller {
 	size_t ts_number;
 	int reboot_temperature;
 	int dominator_ts_idx;
+	unsigned int reboot_msr_sram_idx;
+	bool has_reboot_temp_sram;
 	struct lvts_thermal_controller_speed speed;
 	struct mtk_thermal_controller_regs *regs;
 };

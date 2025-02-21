@@ -1,12 +1,16 @@
 /* SPDX-License-Identifier: GPL-2.0-only OR MIT */
 
 #include <arch/cache.h>
+#include <assert.h>
 #include <soc/thermal_internal.h>
 #include <string.h>
 
 /* SRAM for Thermal */
 #define THERMAL_SRAM_BASE		(_mcufw_reserved + 0x1000)
 #define THERMAL_SRAM_LEN		0x400
+#define THERMAL_REBOOT_TEMP_SRAM_OFFSET	0x39C
+#define THERMAL_REBOOT_MSR_SRAM_OFFSET	0x340
+#define THERMAL_REBOOT_MSR_SRAM_LEN	(6 * 4)
 
 static void thermal_cls_sram(void)
 {
@@ -58,4 +62,18 @@ void thermal_sram_init(void)
 	thermal_cls_sram();
 	thermal_stat_cls_sram();
 	thermal_gpu_stat_cls_sram();
+}
+
+void thermal_write_reboot_temp_sram(uint32_t value)
+{
+	write32(THERMAL_SRAM_BASE + THERMAL_REBOOT_TEMP_SRAM_OFFSET, value);
+}
+
+void thermal_write_reboot_msr_sram(unsigned int idx, uint32_t value)
+{
+	unsigned int offset = 0;
+
+	assert((idx * 4) < THERMAL_REBOOT_MSR_SRAM_LEN);
+	offset = THERMAL_REBOOT_MSR_SRAM_OFFSET + idx * 4;
+	write32(THERMAL_SRAM_BASE + offset, value);
 }

@@ -1,9 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <baseboard/gpio.h>
+#include <variant/gpio.h>
 #include <baseboard/variants.h>
 #include <commonlib/helpers.h>
 #include <soc/gpio.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 /* Pad configuration in ramstage */
 static const struct pad_config override_gpio_table[] = {
@@ -72,6 +73,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_NF_LOCK(GPP_E12, NONE, NF7, LOCK_CONFIG),
 	/* E13  : NC ==> GSPI1_SOC_MOSI_TCHSCR */
 	PAD_CFG_NF_LOCK(GPP_E13, NONE, NF7, LOCK_CONFIG),
+	/* E17 : THC0_SPI1_IO1 ==> SOC_WP_OD */
+	PAD_CFG_GPI_GPIO_DRIVER_LOCK(GPP_E17, NONE, LOCK_CONFIG),
 	/* E20 : DDP2_CTRLCLK ==> NC */
 	PAD_NC_LOCK(GPP_E20, NONE, LOCK_CONFIG),
 	/* E21 : DDP2_CTRLDATA ==> GPP_E21_STRAP */
@@ -201,3 +204,9 @@ const struct pad_config *variant_romstage_gpio_table(size_t *num)
 	*num = ARRAY_SIZE(romstage_gpio_table);
 	return romstage_gpio_table;
 }
+
+static const struct cros_gpio cros_gpios[] = {
+	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE_NAME),
+	CROS_GPIO_WP_AH(GPIO_PCH_WP, CROS_GPIO_DEVICE_NAME),
+};
+DECLARE_CROS_GPIOS(cros_gpios);

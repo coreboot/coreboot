@@ -4,6 +4,9 @@ ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_SPI),y)
 all_x86-$(CONFIG_SOC_AMD_COMMON_BLOCK_SPI_MMAP) += mmap_boot.c
 smm-$(CONFIG_SOC_AMD_COMMON_BLOCK_SPI_MMAP) += mmap_boot.c
 
+all-$(CONFIG_SOC_AMD_COMMON_BLOCK_SPI_MMAP_USE_ROM3) += mmap_boot_rom3.c
+smm-$(CONFIG_SOC_AMD_COMMON_BLOCK_SPI_MMAP_USE_ROM3) += mmap_boot_rom3.c
+
 bootblock-y += fch_spi_ctrl.c
 romstage-y += fch_spi_ctrl.c
 verstage-y += fch_spi_ctrl.c

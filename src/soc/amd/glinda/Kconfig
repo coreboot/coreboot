@@ -101,6 +101,9 @@ config CHIPSET_DEVICETREE
 	string
 	default "soc/amd/glinda/chipset.cb"
 
+config CPU_PT_ROM_MAP_GB
+	default 1024
+
 config EARLY_RESERVED_DRAM_BASE
 	hex
 	default 0x2000000

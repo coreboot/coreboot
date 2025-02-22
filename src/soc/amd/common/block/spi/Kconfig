@@ -16,11 +16,29 @@ config SOC_AMD_COMMON_BLOCK_SPI_4DW_BURST
 	help
 	  Select this option to keep the 4 DWORD burst support enabled.
 
+config SOC_AMD_COMMON_BLOCK_SPI_MMAP_USE_ROM3
+	bool
+	default y if ROM_SIZE > 0x01000000
+	depends on !SOC_AMD_PICASSO && !SOC_AMD_STONEYRIDGE
+	depends on !SOC_AMD_COMMON_BLOCK_LPC_SPI_DMA
+	depends on USE_X86_64_SUPPORT
+	# Enable X86_CUSTOM_BOOTMEDIA because the fast SPI controller
+	# driver provides a custom boot media device when multiple decode
+	# windows are used for the BIOS region.
+	select X86_CUSTOM_BOOTMEDIA
+	help
+	  AMD specific SPI flash access. The lower 16MiB of the SPI flash are
+	  memory mapped on the ROM2 window and the upper SPI flash is mapped using
+	  the ROM3 window in high MMIO. The ROM3 window maps up to 64MiB of the
+	  SPI flash. The default address of ROM3 is below 1024GiB address boundary
+	  and thus can only be used in x86_64 mode.
+
 config SOC_AMD_COMMON_BLOCK_SPI_MMAP
 	def_bool y
 	select X86_CUSTOM_BOOTMEDIA
 	depends on SOC_AMD_COMMON_BLOCK_SPI
 	depends on !SOC_AMD_COMMON_BLOCK_LPC_SPI_DMA
+	depends on !SOC_AMD_COMMON_BLOCK_SPI_MMAP_USE_ROM3
 	help
 	  This option is required when CONFIG_ROM_SIZE is greater than 16 MiB.
 	  This flash driver still only mmaps 16 MiB of the flash (depending

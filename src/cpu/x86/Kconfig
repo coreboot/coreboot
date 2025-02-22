@@ -159,6 +159,15 @@ config NEED_SMALL_2MB_PAGE_TABLES
 	  Select this option from boards/SoCs that do not support the Page1GB
 	  CPUID feature (CPUID.80000001H:EDX.bit26).
 
+config CPU_PT_ROM_MAP_GB
+	int
+	default 4 if NEED_SMALL_2MB_PAGE_TABLES
+	default 512
+	help
+	  GiB of the lower address space to identity map when using x86_64
+	  page tables in ROM. Higher values require more space in SPI flash.
+	  SoC can overwrite the value if necessary.
+
 config SMM_ASEG
 	bool
 	default n

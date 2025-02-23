@@ -286,6 +286,52 @@ void lpc_enable_rom(void)
 	pci_write_config16(_LPCB_DEV, ROM_ADDRESS_RANGE2_END, 0xffff);
 }
 
+/**
+ * Returns ROM2 MMIO SPI flash region in the lower MMIO space.
+ * The maximum window size is 16 MiB. It always resides in the 32-bit
+ * address space.
+ *
+ * @param bios_size Pointer where to store the ROM2 region size in bytes
+ * @return 32-bit base address of the ROM2 region.
+ */
+uint32_t lpc_get_rom2_region(size_t *bios_size)
+{
+	uint16_t start = pci_read_config16(_LPCB_DEV, ROM_ADDRESS_RANGE2_START);
+	uint16_t end = pci_read_config16(_LPCB_DEV, ROM_ADDRESS_RANGE2_END);
+
+	uint32_t rom2_start = start << 16;
+	uint32_t rom2_end = (end << 16) | 0xffff;
+
+	if (rom2_end <= rom2_start) {
+		*bios_size = 0;
+		return 0;
+	}
+
+	*bios_size = rom2_end - rom2_start + 1;
+
+	return rom2_start;
+}
+
+/**
+ * Returns ROM3 MMIO SPI flash region in the high MMIO space.
+ * Default at 0xfd00000000. The maximum window size is 64 MiB.
+ *
+ * @param bios_size Pointer where to store the ROM3 region size in bytes
+ * @return 64-bit base address of the ROM3 region.
+ */
+uint64_t lpc_get_rom3_region(size_t *bios_size)
+{
+	uint32_t lower = pci_read_config32(_LPCB_DEV, ROM_ADDRESS_RANGE3_START);
+	uint32_t upper = pci_read_config32(_LPCB_DEV, ROM_ADDRESS_RANGE3_START + 4);
+
+	if (lower || upper)
+		*bios_size = MIN(CONFIG_ROM_SIZE, 64 * MiB);
+	else
+		*bios_size = 0;
+
+	return ((uint64_t)upper << 32) | lower;
+}
+
 void lpc_enable_spi_prefetch(void)
 {
 	uint32_t dword;

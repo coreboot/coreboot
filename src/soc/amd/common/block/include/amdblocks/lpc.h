@@ -105,6 +105,8 @@
 
 #define LPC_WIDEIO2_GENERIC_PORT	0x90
 
+#define ROM_ADDRESS_RANGE3_START	0xa8
+
 #define LPC_ROM_DMA_SRC_ADDR		0xb0
 #define LPC_ROM_DMA_DST_ADDR		0xb4
 /* LPC register 0xb8 is DWORD, here there are definitions for byte
@@ -140,6 +142,9 @@ void lpc_tpm_decode(void);
 void lpc_tpm_decode_spi(void);
 void lpc_enable_rom(void);
 void lpc_enable_spi_prefetch(void);
+uint32_t lpc_get_rom2_region(size_t *bios_size);
+uint64_t lpc_get_rom3_region(size_t *bios_size);
+
 void lpc_disable_spi_rom_sharing(void);
 
 /**

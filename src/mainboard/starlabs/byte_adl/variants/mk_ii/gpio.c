@@ -37,7 +37,7 @@ const struct pad_config gpio_table[] = {
 	/* GPD8:	Suspend Clock					*/
 	PAD_CFG_NF(GPD8, NONE, DEEP, NF1),
 	/* GPD9:	Wireless LAN Sleep				*/
-	PAD_CFG_NF(GPD9, NONE, DEEP, NF1),
+	PAD_NC(GPD9, NONE),
 	/* GPD10:	Sleep S5					*/
 	PAD_NC(GPD10, NONE),
 	/* GPD11:	LAN PHY Enable					*/

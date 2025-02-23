@@ -191,8 +191,6 @@ static void park_this_cpu(void *unused)
 
 static struct bus *g_cpu_bus;
 
-/* By the time APs call ap_init() caching has been setup, and microcode has
- * been loaded. */
 static asmlinkage void ap_init(unsigned int index)
 {
 	/* Ensure the local APIC is enabled */

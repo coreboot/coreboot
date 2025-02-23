@@ -239,7 +239,7 @@ void lpc_tpm_decode_spi(void)
 }
 
 /*
- * Enable 4MB (LPC) ROM access at 0xFFC00000 - 0xFFFFFFFF.
+ * Enable up to 16MB (LPC) ROM access at 0xFF000000 - 0xFFFFFFFF.
  *
  * Hardware should enable LPC ROM by pin straps. This function does not
  * handle the theoretically possible PCI ROM, FWH, or SPI ROM configurations.
@@ -276,9 +276,11 @@ void lpc_enable_rom(void)
 	 * 0xfff0(0000): 1MB
 	 * 0xffe0(0000): 2MB
 	 * 0xffc0(0000): 4MB
+	 * 0xff00(0000): 16MB
+	 *
 	 */
-	pci_write_config16(_LPCB_DEV, ROM_ADDRESS_RANGE2_START, 0x10000
-					- (CONFIG_COREBOOT_ROMSIZE_KB >> 6));
+	pci_write_config16(_LPCB_DEV, ROM_ADDRESS_RANGE2_START,
+			   0x10000 - (MIN(CONFIG_COREBOOT_ROMSIZE_KB, 16384) >> 6));
 
 	/* Enable LPC ROM range end at 0xffff(ffff). */
 	pci_write_config16(_LPCB_DEV, ROM_ADDRESS_RANGE2_END, 0xffff);

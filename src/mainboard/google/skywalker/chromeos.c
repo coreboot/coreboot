@@ -11,9 +11,23 @@ void setup_chromeos_gpios(void)
 {
 	gpio_input(GPIO_EC_AP_INT_ODL);
 	gpio_input(GPIO_GSC_AP_INT_ODL);
+	gpio_input(GPIO_HP_INT_ODL);
+	gpio_input(GPIO_SPKR_INT_ODL);
+	gpio_input(GPIO_SAR_INT_ODL);
+	gpio_input(GPIO_PEN_EJECT_OD);
+	gpio_input(GPIO_TCHSCR_INT_1V8_ODL);
+	gpio_input(GPIO_AP_WP_ODL);
+	gpio_input(GPIO_EC_AP_DPOC_EN_ODL);
+	gpio_input(GPIO_TCHPAD_INT_ODL);
+	gpio_input(GPIO_HDMI_AP_INT_ODL);
+	gpio_input(GPIO_FP_AP_INT_1V8_S3_ODL);
+	gpio_input(GPIO_SD_CD_ODL);
+	gpio_input(GPIO_HDMI_HPD_1V8_ODL);
+
 	gpio_output(GPIO_AP_EC_WARM_RST_REQ, 0);
 	gpio_output(GPIO_XHCI_INIT_DONE, 0);
 	gpio_output(GPIO_AP_SUSPEND_L, 1);
+	gpio_output(GPIO_AP_HDMI_RST_ODL, 0);
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)

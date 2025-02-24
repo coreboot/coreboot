@@ -32,4 +32,5 @@ void do_low_battery_poweroff(void)
 	}
 
 	poweroff();
+	halt();
 }

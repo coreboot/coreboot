@@ -9,6 +9,7 @@ config SOC_UCB_RISCV
 	select ARCH_ROMSTAGE_RISCV
 	select ARCH_RAMSTAGE_RISCV
 	select RISCV_USE_ARCH_TIMER
+	select FLATTENED_DEVICE_TREE
 	bool
 	default n
 

@@ -420,27 +420,27 @@ static int append_and_check_region(const struct region smram,
 #define _GEN_PAGE(a) (_PRES + _RW + _US + _PS + _A +  _D + (a))
 #define PAGE_SIZE 8
 
-/* Return the PM4LE */
+/* Return the PML4E */
 static uintptr_t install_page_table(const uintptr_t handler_base)
 {
 	const bool one_g_pages = !!(cpuid_edx(0x80000001) & (1 << 26));
 	/* 4 1G pages or 4 PDPE entries with 512 * 2M pages */
 	const size_t pages_needed = one_g_pages ? 4 : 2048 + 4;
 	const uintptr_t pages_base = ALIGN_DOWN(handler_base - pages_needed * PAGE_SIZE, 4096);
-	const uintptr_t pm4le = ALIGN_DOWN(pages_base - 8, 4096);
+	const uintptr_t pml4e = ALIGN_DOWN(pages_base - 8, 4096);
 
 	if (one_g_pages) {
 		for (size_t i = 0; i < 4; i++)
 			write64p(pages_base + i * PAGE_SIZE, _GEN_PAGE(1ull * GiB * i));
-		write64p(pm4le, _GEN_DIR(pages_base));
+		write64p(pml4e, _GEN_DIR(pages_base));
 	} else {
 		for (size_t i = 0; i < 2048; i++)
 			write64p(pages_base + i * PAGE_SIZE, _GEN_PAGE(2ull * MiB * i));
-		write64p(pm4le, _GEN_DIR(pages_base + 2048 * PAGE_SIZE));
+		write64p(pml4e, _GEN_DIR(pages_base + 2048 * PAGE_SIZE));
 		for (size_t i = 0; i < 4; i++)
 			write64p(pages_base + (2048 + i) * PAGE_SIZE, _GEN_DIR(pages_base + 4096 * i));
 	}
-	return pm4le;
+	return pml4e;
 }
 
 /*

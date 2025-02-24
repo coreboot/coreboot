@@ -21,7 +21,7 @@ long_mode_call_3arg:
 	mov	%esp, %ebp
 
 	/* Enter long mode, preserves ebx */
-	setup_longmode $PM4LE
+	setup_longmode $PML4E
 
 	/* Align stack */
 	movabs	$0xfffffffffffffff0, %rax

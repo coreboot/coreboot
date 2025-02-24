@@ -17,9 +17,9 @@
 #define _GEN_DIR(a) (_PRES + _RW + _US + _A + (a))
 #define _GEN_PAGE(a) (_PRES + _RW + _US + _PS + _A +  _D + (a))
 
-.global PM4LE
+.global PML4E
 .align 4096
-PM4LE:
+PML4E:
 .quad _GEN_DIR(PDPT)
 
 .align 4096

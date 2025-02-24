@@ -214,7 +214,7 @@ end_microcode_update:
 	andl	$0xfffffff0, %esp
 
 #if ENV_X86_64
-	setup_longmode $PM4LE
+	setup_longmode $PML4E
 
 	movd	%mm2, %rdi
 	shlq	$32, %rdi

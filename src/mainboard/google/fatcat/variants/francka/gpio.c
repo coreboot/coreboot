@@ -416,6 +416,8 @@ static const struct pad_config early_gpio_table[] = {
 
 /* Pad configuration in romstage */
 static const struct pad_config romstage_gpio_table[] = {
+	/* GPP_B16:     SOC_SSD2_EN */
+	PAD_CFG_GPO(GPP_B16, 1, PLTRST),
 	/* GPP_C00:     SOC_SMBCLK */
 	PAD_CFG_NF(GPP_C00, NONE, DEEP, NF1),
 	/* GPP_C01:     SOC_SMBDATA */
@@ -424,6 +426,8 @@ static const struct pad_config romstage_gpio_table[] = {
 	PAD_CFG_GPO(GPP_H03, 0, DEEP),
 	/* GPP_H17:     FP_RST_1V8_OD# */
 	PAD_CFG_GPO(GPP_H17, 0, DEEP),
+	/* GPP_E03:     SOC_SSD2_RST# */
+	PAD_CFG_GPO(GPP_E03, 1, PLTRST),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

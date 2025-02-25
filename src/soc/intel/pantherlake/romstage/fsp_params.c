@@ -289,6 +289,14 @@ static void fill_fspm_vr_config_params(FSP_M_CONFIG *m_cfg,
 		m_cfg->EnableFastVmode[i] = 0;
 }
 
+#if CONFIG(PLATFORM_HAS_EARLY_LOW_BATTERY_INDICATOR)
+void platform_display_early_shutdown_notification(void *arg)
+{
+	FSPM_UPD *mupd = arg;
+	ux_inform_user_of_poweroff_operation("low-battery shutdown", mupd);
+}
+#endif
+
 static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 				   const struct soc_intel_pantherlake_config *config)
 {

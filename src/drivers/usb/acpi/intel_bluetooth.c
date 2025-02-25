@@ -221,19 +221,6 @@ void acpi_device_intel_bt(const struct acpi_gpio *enable_gpio,
 	acpigen_pop_len();
 
 /*
- *	Name (_PR3, Package (0x01)
- *	{
- *		BTRT
- *	})
- */
-	acpigen_write_name("_PR3");
-	{
-		acpigen_write_package(1);
-		acpigen_emit_namestring("BTRT");
-	}
-	acpigen_pop_len();
-
-/*
  *	Method (AOLD, 0, NotSerialized)
  *	{
  *		Name (AODS, Package (0x03)

@@ -344,6 +344,7 @@ chip soc/amd/picasso
 			device ref hda off end # HDA
 			device ref mp2 on end # non-Sensor Fusion Hub device
 		end
+		device ref internal_bridge_b off end # internal bridge to bus B
 		device ref lpc_bridge on
 			chip ec/google/chromeec
 				device pnp 0c09.0 alias cros_ec on

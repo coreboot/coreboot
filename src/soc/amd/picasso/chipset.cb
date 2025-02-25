@@ -17,7 +17,7 @@ chip soc/amd/picasso
 		device pci 01.6 alias gpp_bridge_5 off ops amd_external_pcie_gpp_ops end
 		device pci 01.7 alias gpp_bridge_6 off ops amd_external_pcie_gpp_ops end
 		device pci 08.0 on end # Dummy device function, do not disable
-		device pci 08.1 alias internal_bridge_a off  # internal bridge to bus A
+		device pci 08.1 alias internal_bridge_a on  # internal bridge to bus A
 			ops amd_internal_pcie_gpp_ops
 			device pci 0.0 alias gfx off ops amd_graphics_ops end # internal GPU
 			device pci 0.1 alias gfx_hda off end # display HD Audio controller
@@ -32,7 +32,7 @@ chip soc/amd/picasso
 			device pci 0.6 alias hda off end # main HD Audio Controller
 			device pci 0.7 alias mp2 off end # sensor fusion hub (MP2)
 		end
-		device pci 08.2 alias internal_bridge_b off # internal bridge to bus B
+		device pci 08.2 alias internal_bridge_b on # internal bridge to bus B
 			ops amd_internal_pcie_gpp_ops
 			device pci 0.0 alias sata off ops amd_sata_ops end
 			device pci 0.1 alias xgbe_0 off end

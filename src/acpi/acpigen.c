@@ -1775,6 +1775,8 @@ void acpigen_write_to_integer_from_namestring(const char *source, uint8_t dst_op
 	acpigen_emit_byte(dst_op);
 }
 
+/* The initializer byte array 'arr' is optional. When 'arr' is NULL, the AML interpreter will
+   create a 0-initialized byte buffer */
 void acpigen_write_byte_buffer(uint8_t *arr, size_t size)
 {
 	size_t i;
@@ -1783,8 +1785,10 @@ void acpigen_write_byte_buffer(uint8_t *arr, size_t size)
 	acpigen_write_len_f();
 	acpigen_write_integer(size);
 
-	for (i = 0; i < size; i++)
-		acpigen_emit_byte(arr[i]);
+	if (arr != NULL) {
+		for (i = 0; i < size; i++)
+			acpigen_emit_byte(arr[i]);
+	}
 
 	acpigen_pop_len();
 }

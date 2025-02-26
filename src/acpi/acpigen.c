@@ -2461,6 +2461,11 @@ static void _create_field(uint8_t aml_op, uint8_t srcop, size_t byte_offset, con
 	acpigen_emit_namestring(name);
 }
 
+void acpigen_write_create_bit_field(uint8_t op, size_t bit_offset, const char *name)
+{
+	_create_field(CREATE_BIT_OP, op, bit_offset, name);
+}
+
 void acpigen_write_create_byte_field(uint8_t op, size_t byte_offset, const char *name)
 {
 	_create_field(CREATE_BYTE_OP, op, byte_offset, name);
@@ -2488,6 +2493,11 @@ static void _create_buffer_field(uint8_t aml_op, const char *src_buf, size_t byt
 	acpigen_emit_namestring(src_buf);
 	acpigen_write_integer(byte_offset);
 	acpigen_emit_namestring(field);
+}
+
+void acpigen_write_create_buffer_bit_field(const char *src_buf, size_t bit_offset, const char *field)
+{
+	_create_buffer_field(CREATE_BIT_OP, src_buf, bit_offset, field);
 }
 
 void acpigen_write_create_buffer_byte_field(const char *src_buf, size_t byte_offset, const char *field)

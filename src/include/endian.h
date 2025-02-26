@@ -5,6 +5,7 @@
 
 #include <arch/byteorder.h>
 #include <stdint.h>
+#include <string.h>
 #include <swab.h>
 
 #if defined(__LITTLE_ENDIAN)
@@ -67,12 +68,22 @@
 #define clrsetbits_le16(addr, clear, set) __clrsetbits(le, 16, addr, clear, set)
 #define clrsetbits_be16(addr, clear, set) __clrsetbits(be, 16, addr, clear, set)
 
-/* be16dec/be32dec/be64dec/le16dec/le32dec/le64dec family of functions. */
+/*
+ * be16dec/be32dec/be64dec/le16dec/le32dec/le64dec family of functions.
+ * RISC-V doesn't support misaligned access so decode it byte by byte.
+ */
 #define DEFINE_ENDIAN_DEC(endian, width) \
 	static inline uint##width##_t endian##width##dec(const void *p) \
 	{ \
-		return endian##width##_to_cpu(*(uint##width##_t *)p); \
+		if (ENV_RISCV) { \
+			uint##width##_t val; \
+			memcpy(&val, p, sizeof(val)); \
+			return endian##width##_to_cpu(val); \
+		} else { \
+			return endian##width##_to_cpu(*(uint##width##_t *)p); \
+		} \
 	}
+
 DEFINE_ENDIAN_DEC(be, 16)
 DEFINE_ENDIAN_DEC(be, 32)
 DEFINE_ENDIAN_DEC(be, 64)
@@ -80,12 +91,21 @@ DEFINE_ENDIAN_DEC(le, 16)
 DEFINE_ENDIAN_DEC(le, 32)
 DEFINE_ENDIAN_DEC(le, 64)
 
-/* be16enc/be32enc/be64enc/le16enc/le32enc/le64enc family of functions. */
+/*
+ * be16enc/be32enc/be64enc/le16enc/le32enc/le64enc family of functions.
+ * RISC-V doesn't support misaligned access so encode it byte by byte.
+ */
 #define DEFINE_ENDIAN_ENC(endian, width) \
 	static inline void endian##width##enc(void *p, uint##width##_t u) \
 	{ \
-		*(uint##width##_t *)p = cpu_to_##endian##width(u); \
+		if (ENV_RISCV) { \
+			uint##width##_t val = cpu_to_##endian##width(u); \
+			memcpy(p, &val, sizeof(val)); \
+		} else { \
+			*(uint##width##_t *)p = cpu_to_##endian##width(u); \
+		} \
 	}
+
 DEFINE_ENDIAN_ENC(be, 16)
 DEFINE_ENDIAN_ENC(be, 32)
 DEFINE_ENDIAN_ENC(be, 64)

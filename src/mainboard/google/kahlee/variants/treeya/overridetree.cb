@@ -40,7 +40,7 @@ chip soc/amd/stoneyridge
 	device domain 0 on
 		device ref gpp_bridge_3 on
 			chip drivers/generic/bayhub
-				register "power_saving" = "1"
+				register "power_saving" = "true"
 				register "vih_tuning_value" = "0x35"
 				device pci 00.0 on end
 			end

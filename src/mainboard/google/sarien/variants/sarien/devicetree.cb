@@ -372,7 +372,7 @@ chip soc/intel/cannonlake
 		end
 		device ref pcie_rp9 on
 			chip drivers/generic/bayhub
-				register "power_saving" = "1"
+				register "power_saving" = "true"
 				device pci 00.0 on end
 			end
 			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "2230" "SlotDataBusWidth1X"
@@ -384,7 +384,7 @@ chip soc/intel/cannonlake
 		device ref pcie_rp13 on
 			# x4 lanes
 			chip drivers/generic/bayhub
-				register "power_saving" = "1"
+				register "power_saving" = "true"
 				device pci 00.0 on end
 			end
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "2280" "SlotDataBusWidth4X"

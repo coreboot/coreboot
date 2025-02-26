@@ -9,8 +9,8 @@
  * Bayhub BG720 PCI to eMMC bridge
  */
 struct drivers_generic_bayhub_config {
-	/* 1 to enable power-saving mode, 0 to disable */
-	int power_saving;
+	/* enable/disable power-saving mode */
+	bool power_saving;
 
 	/* When set, disables programming HS200 mode */
 	bool disable_hs200_mode;

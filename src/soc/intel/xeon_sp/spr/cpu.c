@@ -95,14 +95,18 @@ static void each_cpu_init(struct device *cpu)
 	wrmsr(MSR_VR_CURRENT_CONFIG, msr);
 
 	/* Set Turbo Ratio Limits */
-	msr.lo = chip_config->turbo_ratio_limit & 0xffffffff;
-	msr.hi = (chip_config->turbo_ratio_limit >> 32) & 0xffffffff;
-	wrmsr(MSR_TURBO_RATIO_LIMIT, msr);
+	if (chip_config->turbo_ratio_limit) {
+		msr.lo = chip_config->turbo_ratio_limit & 0xffffffff;
+		msr.hi = (chip_config->turbo_ratio_limit >> 32) & 0xffffffff;
+		wrmsr(MSR_TURBO_RATIO_LIMIT, msr);
+	}
 
 	/* Set Turbo Ratio Limit Cores */
-	msr.lo = chip_config->turbo_ratio_limit_cores & 0xffffffff;
-	msr.hi = (chip_config->turbo_ratio_limit_cores >> 32) & 0xffffffff;
-	wrmsr(MSR_TURBO_RATIO_LIMIT_CORES, msr);
+	if (chip_config->turbo_ratio_limit_cores) {
+		msr.lo = chip_config->turbo_ratio_limit_cores & 0xffffffff;
+		msr.hi = (chip_config->turbo_ratio_limit_cores >> 32) & 0xffffffff;
+		wrmsr(MSR_TURBO_RATIO_LIMIT_CORES, msr);
+	}
 
 	/* Set energy policy */
 	msr = rdmsr(MSR_ENERGY_PERF_BIAS_CONFIG);

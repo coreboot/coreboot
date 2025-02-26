@@ -138,19 +138,19 @@ chip northbridge/intel/ironlake
 
 					register "detect_gpio" = "21"
 
-					register "has_panel_hybrid_gpio" = "1"
+					register "has_panel_hybrid_gpio" = "true"
 					register "panel_hybrid_gpio" = "52"
-					register "panel_integrated_lvl" = "1"
+					register "panel_integrated_lvl" = "true"
 
-					register "has_backlight_gpio" = "1"
+					register "has_backlight_gpio" = "true"
 					register "backlight_gpio" = "50"
-					register "backlight_integrated_lvl" = "0"
+					register "backlight_integrated_lvl" = "false"
 
-					register "has_dgpu_power_gpio" = "1"
+					register "has_dgpu_power_gpio" = "true"
 					register "dgpu_power_gpio" = "49"
-					register "dgpu_power_off_lvl" = "0"
+					register "dgpu_power_off_lvl" = "false"
 
-					register "has_thinker1" = "1"
+					register "has_thinker1" = "true"
 				end
 			end
 			device pci 1f.2 on # IDE/SATA

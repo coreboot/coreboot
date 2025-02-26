@@ -23,19 +23,19 @@ enum dgpu_detect_lvl {
 struct drivers_lenovo_hybrid_graphics_config {
 	unsigned int detect_gpio;
 
-	unsigned int has_panel_hybrid_gpio;
+	bool has_panel_hybrid_gpio;
 	unsigned int panel_hybrid_gpio;
-	unsigned int panel_integrated_lvl;
+	bool panel_integrated_lvl;
 
-	unsigned int has_backlight_gpio;
+	bool has_backlight_gpio;
 	unsigned int backlight_gpio;
-	unsigned int backlight_integrated_lvl;
+	bool backlight_integrated_lvl;
 
-	unsigned int has_dgpu_power_gpio;
+	bool has_dgpu_power_gpio;
 	unsigned int dgpu_power_gpio;
-	unsigned int dgpu_power_off_lvl;
+	bool dgpu_power_off_lvl;
 
-	unsigned int has_thinker1;
+	bool has_thinker1;
 };
 
 #endif /* _LENOVO_HYBRID_GRAPHICS_CHIP_H_ */

@@ -154,7 +154,7 @@ chip soc/amd/picasso
 		subsystemid 0x1022 0x1510 inherit
 		device ref gpp_bridge_2 on
 			chip drivers/generic/bayhub_lv2
-				register "enable_power_saving" = "1"
+				register "enable_power_saving" = "true"
 				device pci 00.0 on end
 			end
 		end # SD

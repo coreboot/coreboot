@@ -203,7 +203,7 @@ chip soc/intel/meteorlake
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 			chip drivers/generic/bayhub_lv2
-				register "enable_power_saving" = "1"
+				register "enable_power_saving" = "true"
 				device pci 00.0 on end
 			end
 		end

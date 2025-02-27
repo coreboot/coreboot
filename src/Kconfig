@@ -634,18 +634,19 @@ config FMDFILE
 	  When an fmd is specified, it overrides the default format.
 
 config CBFS_SIZE
-	hex "Size of CBFS filesystem in ROM"
+	hex "Size of coreboot owned area in ROM"
 	depends on FMDFILE = ""
 	# Default value set at the end of the file
 	help
-	  This is the part of the ROM actually managed by CBFS, located at the
-	  end of the ROM (passed through cbfstool -o) on x86 and at the start
-	  of the ROM (passed through cbfstool -s) everywhere else. It defaults
-	  to span the whole ROM on all but Intel systems that use an Intel Firmware
-	  Descriptor.  It can be overridden to make coreboot live alongside other
-	  components like ChromeOS's vboot/FMAP or Intel's IFD / ME / TXE
-	  binaries. This symbol should only be used to generate a default FMAP and
-	  is unused when a non-default fmd file is provided via CONFIG_FMDFILE.
+	  This is the part of ROM (Read-Only Memory) actually managed by coreboot,
+	  located at the end of the ROM on x86 systems and at the start of the ROM
+	  everywhere else. It defaults to span the whole ROM on all systems except for
+	  Intel systems that use an Intel Flash Descriptor. It can be overridden to
+	  make coreboot live alongside other vendor blobs like Intel's IFD (Intel
+	  Flash Descriptor), ME (Management Engine), and TXE (Trusted Execution
+	  Engine) binaries. This symbol is only used to generate a default FMAP
+	  (Flash Memory Map) and is unused when a .fmd file is provided
+	  via CONFIG_FMDFILE.
 
 endmenu
 

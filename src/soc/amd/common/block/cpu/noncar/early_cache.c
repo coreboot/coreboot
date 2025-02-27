@@ -2,6 +2,7 @@
 
 #include <amdblocks/cpu.h>
 #include <amdblocks/iomap.h>
+#include <amdblocks/lpc.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>
@@ -63,6 +64,18 @@ void early_cache_setup(void)
 	/* Always mark the 16 MByte right below the 4 GB boundary as WRPROT */
 	var_mtrr_set(&mtrr_ctx.ctx, FLASH_BELOW_4GB_MAPPING_REGION_BASE,
 		     FLASH_BELOW_4GB_MAPPING_REGION_SIZE, MTRR_TYPE_WRPROT);
+
+	/* ROM3 is only accessible in x86_64. Only required when ROM2 doesn't cover whole flash. */
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_SPI_MMAP_USE_ROM3)) {
+		size_t rom3_size = 0;
+		uint64_t rom3_start = lpc_get_rom3_region(&rom3_size);
+
+		if (rom3_start && rom3_size) {
+			/* The flash is now no longer cacheable. Reset to WP for performance. */
+			rom3_size = 1 << log2_ceil(rom3_size);
+			var_mtrr_set(&mtrr_ctx.ctx, rom3_start, rom3_size, MTRR_TYPE_WRPROT);
+		}
+	}
 
 	commit_mtrr_setup(&mtrr_ctx.ctx);
 

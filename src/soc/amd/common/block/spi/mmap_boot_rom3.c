@@ -4,6 +4,8 @@
 #include <spi_flash.h>
 #include <stdint.h>
 #include <amdblocks/lpc.h>
+#include <amdblocks/psp.h>
+#include <amdblocks/spi.h>
 
 enum window_type {
 	/* Fixed decode window of max 16MiB size just below 4G boundary */
@@ -79,6 +81,17 @@ static void bios_mmap_init(void)
 
 	if (init_done)
 		return;
+
+	const bool rom_armor = psp_get_hsti_state_rom_armor_enforced();
+	/*
+	 * The following code assumes that ROM2 is mapped at flash offset 0 and
+	 * that the ROM3 16MByte chunks are linear (0-1-2-3). This is the default
+	 * configuration currently enforced by soft-straps.
+	 * When ROM Armor is enabled, don't call fch_spi_rom_remapping()
+	 * because the SPIBAR is no longer accessible.
+	 */
+	if (!rom_armor && fch_spi_rom_remapping() != 0)
+		die("Non default SPI ROM remapping is not supported!");
 
 	/*
 	 * By default, fixed decode window (maximum size 16MiB) is mapped just

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi.h>
 #include <assert.h>
 #include <bootmode.h>
 #include <console/console.h>
@@ -190,7 +191,7 @@ static void fill_fspm_cpu_params(FSP_M_CONFIG *m_cfg,
 static void fill_tme_params(FSP_M_CONFIG *m_cfg)
 {
 	m_cfg->TmeEnable = CONFIG(INTEL_TME) && is_tme_supported();
-	if (!m_cfg->TmeEnable)
+	if (!m_cfg->TmeEnable || acpi_is_wakeup_s3())
 		return;
 	m_cfg->GenerateNewTmeKey = CONFIG(TME_KEY_REGENERATION_ON_WARM_BOOT) &&
 			 CONFIG(SOC_INTEL_COMMON_BASECODE_RAMTOP);

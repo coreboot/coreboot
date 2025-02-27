@@ -16,6 +16,18 @@ config SOC_AMD_COMMON_BLOCK_SPI_4DW_BURST
 	help
 	  Select this option to keep the 4 DWORD burst support enabled.
 
+config SOC_AMD_COMMON_BLOCK_SPI_MMAP
+	def_bool y
+	select X86_CUSTOM_BOOTMEDIA
+	depends on SOC_AMD_COMMON_BLOCK_SPI
+	depends on !SOC_AMD_COMMON_BLOCK_LPC_SPI_DMA
+	help
+	  This option is required when CONFIG_ROM_SIZE is greater than 16 MiB.
+	  This flash driver still only mmaps 16 MiB of the flash (depending
+	  on SPI straps either the upper or lower part, by default the lower).
+	  Developers must take care to place all x86 accessible firmware
+	  components in the mmap area.
+
 config EFS_SPI_READ_MODE
 	int
 	range 0 7

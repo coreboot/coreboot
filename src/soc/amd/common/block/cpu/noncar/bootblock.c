@@ -12,9 +12,9 @@
 
 asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 {
+	enable_pci_mmconf();
 	early_cache_setup();
 	write_resume_eip();
-	enable_pci_mmconf();
 
 	if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK))
 		boot_with_psp_timestamp(base_timestamp);

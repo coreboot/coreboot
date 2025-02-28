@@ -56,11 +56,7 @@ chip northbridge/intel/sandybridge
 					device pnp 2e.108 on		# GPIO 0
 						drq 0xe1 = 0x80		# GP07 high turns DRAM_LED off
 					end
-					device pnp 2e.a on		# ACPI
-						drq 0xe4 = 0x10 	# Enable 3VSBSW#, needed for S3 suspend
-						drq 0xe7 = 0x11		# HWM reset by LRESET#, 0.5s S3 delay for compatibility
-						drq 0xf2 = 0x5d		# Enable RSTOUT[0-2]# and PME
-					end
+					device pnp 2e.a on end		# ACPI
 					device pnp 2e.b on		# HWM, front panel LED
 						io 0x60 = 0x290		# HWM address
 						io 0x62 = 0		# SB-TSI address (not used)

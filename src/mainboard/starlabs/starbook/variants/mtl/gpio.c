@@ -267,10 +267,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_H06, NONE),
 	/* H07:	M.2_CPU_SSD_PWREN		*/
 	PAD_CFG_GPO(GPP_H07, 1, DEEP),
-	/* H08:					*/
-	PAD_NC(GPP_H08, NONE),
-	/* H09:					*/
-	PAD_NC(GPP_H09, NONE),
 	/* H10:					*/
 	PAD_NC(GPP_H10, NONE),
 	/* H11:					*/

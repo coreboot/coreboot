@@ -964,7 +964,6 @@ M:	Johnny Lin <Johnny_Lin@wiwynn.com>
 M:	Tim Chu <Tim.Chu@quantatw.com>
 M:	Christian Walter <christian.walter@9elements.com>
 M:	Shuo Liu <shuo.liu@intel.com>
-M:	Patrick Rudolph <patrick.rudolph@9elements.com>
 M:	Lean Sheng Tan <sheng.tan@9elements.com>
 S:	Supported
 F:	src/soc/intel/xeon_sp/

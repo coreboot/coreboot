@@ -35,8 +35,24 @@ One can split the rmodules in two different kinds:
 1. coreboot stages (postcar, ramstage)
 2. simple binaries (smm, smmstub, sipi\_vector)
 
-They are actually handled the same by the build system and only differ
-in the fact, that they are either coreboot stages or they are not.
+There is one important difference in how they are handled:
+The simple binaries are compiled into rmodules the same as coreboot
+stages are, but the simple binaries are always directly linked to a
+stage. Since rmodules are ELF files as well, we can easily link them
+to the stages in which we need them (usually postcar or ramstage).
+So they are not really separate modules anymore, but still retain
+the ability to accept rmodule\_parameters.
+Since the simple binaries are usually very small, linking them directly
+into the stage (e.g. ramstage or postcar) avoids having to fetch them
+from CBFS and running all that code to fetch a few hundred bytes of
+code. So the build system handles them as follows:
+1. create rmodule (which is an ELF file) from source files
+2. remove all the ELF headers and sections that are not loadable using
+`objcopy -O binary`
+3. from this, create an object file, which usually has the self invented
+.manual file extension, which can be linked to the appropriate stage
+4. add the generated .manual file as "source" file to the stage we want
+to link it to
 
 In the end the ELF files will have three different ELF sections,
 which are all created by the rmodtool.

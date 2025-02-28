@@ -34,10 +34,16 @@ chip soc/intel/pantherlake
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C1
 	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)" # Type-A Port A0  # USB HUB (USB2 Camera)
-	register "usb2_ports[5]" = "USB2_PORT_MID(OC3)" # Type-A Port A1 /
+	register "usb2_ports[5]" = "USB2_PORT_LONG(OC3)" # Type-A Port A1 /
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)" # CNVi BT or discrete BT
 
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB3.2 x1 Type-A Con #2 /
+
+	register "tcss_ports[2]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
+	register "tcss_ports[3]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
+
+	register "tcss_cap_policy[2]" = "TCSS_TYPE_C_PORT_FULL_FUN"
+	register "tcss_cap_policy[3]" = "TCSS_TYPE_C_PORT_FULL_FUN"
 
 	#gpe configuration
 	register "pmc_gpe0_dw0" = "GPP_A"
@@ -83,6 +89,9 @@ chip soc/intel/pantherlake
 
 		device ref iaa off end
 
+device ref tbt_pcie_rp0 on end
+		device ref tbt_pcie_rp2 on end
+		device ref tbt_pcie_rp3 on end
 		device ref tcss_xhci on
 			chip drivers/usb/acpi
 				device ref tcss_root_hub on
@@ -93,12 +102,25 @@ chip soc/intel/pantherlake
 						device ref tcss_usb3_port2 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB3 Type-C Port C3""
+						register "desc" = ""USB3 Type-C Port C1""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "group" = "ACPI_PLD_GROUP(1, 2)"
 						device ref tcss_usb3_port3 on end
 					end
 				end
+			end
+		end
+
+		device ref tcss_dma1 on
+			chip drivers/intel/usb4/retimer
+				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_F11)"
+				use tcss_usb3_port3 as dfp[0].typec_port
+				device generic 0 on end
+			end
+			chip drivers/intel/usb4/retimer
+				register "dfp[1].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_F11)"
+				use tcss_usb3_port2 as dfp[1].typec_port
+				device generic 0 on end
 			end
 		end
 
@@ -142,17 +164,6 @@ chip soc/intel/pantherlake
 						device ref usb3_port2 on end
 					end
 				end
-			end
-		end
-
-		device ref tcss_dma1 on
-			chip drivers/intel/usb4/retimer
-				use tcss_usb3_port2 as dfp[0].typec_port
-				device generic 0 on end
-			end
-			chip drivers/intel/usb4/retimer
-				use tcss_usb3_port3 as dfp[1].typec_port
-				device generic 0 on end
 			end
 		end
 

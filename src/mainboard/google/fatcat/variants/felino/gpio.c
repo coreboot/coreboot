@@ -68,7 +68,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_B09:     NC */
 	PAD_NC(GPP_B09, NONE),
 	/* GPP_B10:     SOC_DP1_HDMI_HPD */
-	PAD_CFG_NF(GPP_B10, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_B10, NONE, DEEP, NF2),
 	/* GPP_B11:     PD1_OC_P0_P1_N */
 	PAD_NC(GPP_B11, NONE),
 	/* GPP_B12:     SLP_S0_SOC_N */
@@ -137,9 +137,9 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_C17:     NC  */
 	PAD_NC(GPP_C17, NONE),
 	/* GPP_C18:     TCP3_DDC_SCL  */
-	PAD_CFG_NF(GPP_C18, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_C18, NONE, DEEP, NF2),
 	/* GPP_C19:     TCP3_DDC_SDA */
-	PAD_CFG_NF(GPP_C19, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_C19, NONE, DEEP, NF2),
 	/* GPP_C20:     TBT_LSX1_TXD */
 	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),
 	/* GPP_C21:     TBT_LSX1_RXD */

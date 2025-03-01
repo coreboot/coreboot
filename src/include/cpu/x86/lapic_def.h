@@ -42,14 +42,15 @@
 #define		LAPIC_INT_ASSERT		0x04000
 #define		LAPIC_ICR_BUSY		0x01000
 #define		LAPIC_DEST_LOGICAL	0x00800
-#define		LAPIC_DM_FIXED		0x00000
-#define		LAPIC_DM_LOWEST		0x00100
-#define		LAPIC_DM_SMI		0x00200
-#define		LAPIC_DM_REMRD		0x00300
-#define		LAPIC_DM_NMI		0x00400
-#define		LAPIC_DM_INIT		0x00500
-#define		LAPIC_DM_STARTUP		0x00600
-#define		LAPIC_DM_EXTINT		0x00700
+// AMD64 refers to it as MT (Message Type), but IA-64 refers to it as DM (Delivery Mode)
+#define		LAPIC_MT_FIXED		0x00000
+#define		LAPIC_MT_LOWEST		0x00100
+#define		LAPIC_MT_SMI		0x00200
+#define		LAPIC_MT_REMRD		0x00300
+#define		LAPIC_MT_NMI		0x00400
+#define		LAPIC_MT_INIT		0x00500
+#define		LAPIC_MT_STARTUP		0x00600
+#define		LAPIC_MT_EXTINT		0x00700
 #define		LAPIC_VECTOR_MASK	0x000FF
 #define LAPIC_ICR2	0x310
 #define		GET_LAPIC_DEST_FIELD(x)	(((x)>>24)&0xFF)

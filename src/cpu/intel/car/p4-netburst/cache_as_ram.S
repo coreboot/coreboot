@@ -111,7 +111,7 @@ bsp_init:
 
 	/* Send INIT IPI to all excluding ourself. */
 	movl	LAPIC(ICR), %edi
-	movl	$(LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT | LAPIC_DM_INIT), %eax
+	movl	$(LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT | LAPIC_MT_INIT), %eax
 1:	movl	%eax, (%edi)
 	movl	$0x30, %ecx
 2:	pause
@@ -160,7 +160,7 @@ hyper_threading_cpu:
 
 	/* Send Start IPI to all excluding ourself. */
 	movl	LAPIC(ICR), %edi
-	movl	$(LAPIC_DEST_ALLBUT | LAPIC_DM_STARTUP), %eax
+	movl	$(LAPIC_DEST_ALLBUT | LAPIC_MT_STARTUP), %eax
 	orl	$ap_sipi_vector_in_rom, %eax
 1:	movl	%eax, (%edi)
 	movl	$0x30, %ecx

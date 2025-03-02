@@ -12,7 +12,6 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <smp/node.h>
-#include <soc/cpu.h>
 #include <soc/msr.h>
 #include <soc/pci_devs.h>
 #include <soc/soc_chip.h>

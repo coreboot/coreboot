@@ -239,7 +239,7 @@ static const struct mp_ops mp_ops = {
 	.pre_mp_init = pre_mp_init,
 	.get_cpu_count = get_platform_thread_count,
 #if CONFIG(HAVE_SMI_HANDLER)
-	.get_smm_info = get_smm_info,
+	.get_smm_info = smm_info,
 	.pre_mp_smm_init = smm_southbridge_clear_state,
 	.relocation_handler = smm_relocation_handler,
 #endif

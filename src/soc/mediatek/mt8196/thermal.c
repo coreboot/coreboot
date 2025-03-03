@@ -40,7 +40,6 @@ static const struct lvts_thermal_controller lvts_tscpu_g_tc[LVTS_CONTROLLER_NUM]
 	[LVTS_AP_CONTROLLER0] = { /* SOC-TOP */
 		.ts = {L_TS_LVTS11_0, L_TS_LVTS11_1, L_TS_LVTS11_2, L_TS_LVTS11_3},
 		.sensor_on_off = {SEN_ON, SEN_ON, SEN_ON, SEN_ON},
-		.ctrl_on_off = CTRL_ON,
 		.ts_number = 4,
 		.reboot_temperature = 118800,
 		.dominator_ts_idx = 0,
@@ -55,7 +54,6 @@ static const struct lvts_thermal_controller lvts_tscpu_g_tc[LVTS_CONTROLLER_NUM]
 	[LVTS_AP_CONTROLLER1] = { /* SOC-BOT */
 		.ts = {L_TS_LVTS12_0, L_TS_LVTS12_1, L_TS_LVTS12_2, L_TS_LVTS12_3},
 		.sensor_on_off = {SEN_ON, SEN_ON, SEN_ON, SEN_ON},
-		.ctrl_on_off = CTRL_ON,
 		.ts_number = 4,
 		.reboot_temperature = 118800,
 		.dominator_ts_idx = 0,
@@ -66,36 +64,6 @@ static const struct lvts_thermal_controller lvts_tscpu_g_tc[LVTS_CONTROLLER_NUM]
 			.sensor_interval_delay = 0x001,
 		},
 		.regs = mtk_lvts_ap_controller1,
-	},
-	[LVTS_AP_CONTROLLER2] = { /* MD-AP */
-		.ts = {L_TS_LVTS13_0, L_TS_LVTS13_1, L_TS_LVTS13_2, L_TS_LVTS13_3},
-		.sensor_on_off = {SEN_ON, SEN_ON, SEN_ON, SEN_ON},
-		.ctrl_on_off = CTRL_OFF,
-		.ts_number = 4,
-		.reboot_temperature = 118800,
-		.dominator_ts_idx = 0,
-		.speed = {
-			.group_interval_delay = 0x7fff,
-			.period_unit = 0x001,
-			.filter_interval_delay = 0x001,
-			.sensor_interval_delay = 0x001,
-		},
-		.regs = mtk_lvts_ap_controller2,
-	},
-	[LVTS_AP_CONTROLLER3] = { /* SOC-ADCT */
-		.ts = {L_TS_LVTS14_0, L_TS_LVTS14_3},
-		.sensor_on_off = {SEN_ON, SEN_ON},
-		.ctrl_on_off = CTRL_OFF,
-		.ts_number = 2,
-		.reboot_temperature = 118800,
-		.dominator_ts_idx = 0,
-		.speed = {
-			.group_interval_delay = 0x7fff,
-			.period_unit = 0x001,
-			.filter_interval_delay = 0x001,
-			.sensor_interval_delay = 0x001,
-		},
-		.regs = mtk_lvts_ap_controller3,
 	},
 };
 
@@ -175,9 +143,6 @@ static void lvts_efuse_setting(void)
 
 	for (i = 0; i < ARRAY_SIZE(lvts_tscpu_g_tc); i++) {
 		const struct lvts_thermal_controller *tc = &lvts_tscpu_g_tc[i];
-		if (tc->ctrl_on_off == CTRL_OFF)
-			continue;
-
 		val_0 = 0;
 		val_1 = 0;
 		for (j = 0; j < tc->ts_number; j++) {
@@ -235,9 +200,6 @@ static void lvts_device_identification(void)
 	printk(BIOS_INFO, "===== %s begin ======\n", __func__);
 	for (i = 0; i < ARRAY_SIZE(lvts_tscpu_g_tc); i++) {
 		const struct lvts_thermal_controller *tc = &lvts_tscpu_g_tc[i];
-		if (tc->ctrl_on_off == CTRL_OFF)
-			continue;
-
 		/* Enable LVTS_CTRL Clock */
 		write32(&tc->regs->lvtsclken_0, 0x00000001);
 
@@ -268,10 +230,6 @@ static void lvts_device_enable_init_all_devices(void)
 	uint8_t cali_0, cali_1;
 
 	for (i = 0; i < ARRAY_SIZE(lvts_tscpu_g_tc); i++) {
-		const struct lvts_thermal_controller *tc = &lvts_tscpu_g_tc[i];
-		if (tc->ctrl_on_off == CTRL_OFF)
-			continue;
-
 		/* Stop Counting (RG_TSFM_ST=0) */
 		lvts_write_device(LVTS_DEVICE_WRITE_CONFIG, 0x03, 0x00, i);
 
@@ -406,9 +364,6 @@ static void read_all_tc_lvts_temperature(void)
 
 	for (i = 0; i < ARRAY_SIZE(lvts_tscpu_g_tc); i++) {
 		const struct lvts_thermal_controller *tc = &lvts_tscpu_g_tc[i];
-		if (tc->ctrl_on_off == CTRL_OFF)
-			continue;
-
 		for (j = 0; j < tc->ts_number; j++)
 			lvts_tscpu_thermal_read_tc_temp(tc, j);
 	}
@@ -442,8 +397,6 @@ static void lvts_disable_all_sensing_points(void)
 
 	for (i = 0; i < ARRAY_SIZE(lvts_tscpu_g_tc); i++) {
 		const struct lvts_thermal_controller *tc = &lvts_tscpu_g_tc[i];
-		if (tc->ctrl_on_off == CTRL_OFF)
-			continue;
 		write32(&tc->regs->lvtsmonctl0_0, LVTS_SINGLE_SENSE_MODE_EN);
 	}
 }
@@ -456,9 +409,6 @@ static int lvts_check_all_sensing_points_idle(void)
 	mask = BIT(10) | BIT(7) | BIT(0);
 	for (i = 0; i < ARRAY_SIZE(lvts_tscpu_g_tc); i++) {
 		const struct lvts_thermal_controller *tc = &lvts_tscpu_g_tc[i];
-		if (tc->ctrl_on_off == CTRL_OFF)
-			continue;
-
 		temp = read32(&tc->regs->lvtsmsrctl1_0);
 		if ((temp & mask) != 0)
 			return -1;
@@ -483,9 +433,6 @@ static void lvts_enable_all_sensing_points(void)
 
 	for (i = 0; i < ARRAY_SIZE(lvts_tscpu_g_tc); i++) {
 		const struct lvts_thermal_controller *tc = &lvts_tscpu_g_tc[i];
-		if (tc->ctrl_on_off == CTRL_OFF)
-			continue;
-
 		lvts_enable_sensing_points(tc);
 	}
 }
@@ -500,9 +447,6 @@ static void lvts_set_init_flag(void)
 
 	for (i = 0; i < ARRAY_SIZE(lvts_tscpu_g_tc); i++) {
 		const struct lvts_thermal_controller *tc = &lvts_tscpu_g_tc[i];
-		if (tc->ctrl_on_off == CTRL_OFF)
-			continue;
-
 		printk(BIOS_INFO, "%s %d:%zu, tc_base_addr:%p\n", __func__, i,
 		       tc->ts_number, tc->regs);
 
@@ -553,9 +497,6 @@ static void lvts_tscpu_thermal_initial_all_tc(void)
 
 	for (i = 0; i < ARRAY_SIZE(lvts_tscpu_g_tc); i++) {
 		const struct lvts_thermal_controller *tc = &lvts_tscpu_g_tc[i];
-		if (tc->ctrl_on_off == CTRL_OFF)
-			continue;
-
 		/*  set sensor index of LVTS */
 		write32(&tc->regs->lvtstssel_0, LVTS_SENSOR_POINT_SELECTION_SETTING);
 		/*  set calculation scale rules */
@@ -624,9 +565,6 @@ static void lvts_config_all_tc_hw_protect(void)
 
 	for (i = 0; i < ARRAY_SIZE(lvts_tscpu_g_tc); i++) {
 		const struct lvts_thermal_controller *tc = &lvts_tscpu_g_tc[i];
-		if (tc->ctrl_on_off == CTRL_OFF)
-			continue;
-
 		lvts_set_tc_trigger_hw_protect(tc);
 	}
 }
@@ -637,9 +575,6 @@ static bool lvts_lk_init_check(void)
 
 	for (i = 0; i < ARRAY_SIZE(lvts_tscpu_g_tc); i++) {
 		const struct lvts_thermal_controller *tc = &lvts_tscpu_g_tc[i];
-		if (tc->ctrl_on_off == CTRL_OFF)
-			continue;
-
 		/* Check LVTS device ID */
 		if ((read32(&tc->regs->lvtsspare[0]) & GENMASK(11, 0)) != LVTS_MAGIC)
 			return false;

@@ -23,38 +23,23 @@ enum lvts_sensor {
 	L_TS_LVTS12_1,		/* LVTS12-1 SOC-BOT */
 	L_TS_LVTS12_2,		/* LVTS12-2 SOC-BOT */
 	L_TS_LVTS12_3,		/* LVTS12-3 SOC-BOT */
-	L_TS_LVTS13_0,		/* LVTS13-0 MD-AP */
-	L_TS_LVTS13_1,		/* LVTS13-1 MD-AP */
-	L_TS_LVTS13_2,		/* LVTS13-2 MD-AP */
-	L_TS_LVTS13_3,		/* LVTS13-3 MD-AP */
-	L_TS_LVTS14_0,		/* LVTS14-0 SOC-ADCT */
-	L_TS_LVTS14_3,		/* LVTS14-3 SOC-ADCT */
 	L_TS_LVTS_NUM,
 };
 
 enum lvts_tc {
 	LVTS_AP_CONTROLLER0 = 0,
 	LVTS_AP_CONTROLLER1,
-	LVTS_AP_CONTROLLER2,
-	LVTS_AP_CONTROLLER3,
 	LVTS_CONTROLLER_NUM,
 };
 
 enum lvts_tc_offset {
 	TS_OFFSET_AP_CONTROLLER0 = 0,
 	TS_OFFSET_AP_CONTROLLER1 = 0x100,
-	TS_OFFSET_AP_CONTROLLER2 = 0x200,
-	TS_OFFSET_AP_CONTROLLER3 = 0x300,
 };
 
 enum sensor_switch_status {
 	SEN_OFF,
 	SEN_ON,
-};
-
-enum controller_switch_status {
-	CTRL_OFF,
-	CTRL_ON,
 };
 
 struct lvts_thermal_controller_speed {
@@ -67,7 +52,6 @@ struct lvts_thermal_controller_speed {
 struct lvts_thermal_controller {
 	enum lvts_sensor ts[MAX_TS_NUMBER];
 	enum sensor_switch_status sensor_on_off[MAX_TS_NUMBER];
-	enum controller_switch_status ctrl_on_off;
 	size_t ts_number;
 	int reboot_temperature;
 	int dominator_ts_idx;
@@ -80,10 +64,6 @@ static struct mtk_thermal_controller_regs *const
 	mtk_lvts_ap_controller0 = (void *)(THERM_CTRL_BASE + TS_OFFSET_AP_CONTROLLER0);
 static struct mtk_thermal_controller_regs *const
 	mtk_lvts_ap_controller1 = (void *)(THERM_CTRL_BASE + TS_OFFSET_AP_CONTROLLER1);
-static struct mtk_thermal_controller_regs *const
-	mtk_lvts_ap_controller2 = (void *)(THERM_CTRL_BASE + TS_OFFSET_AP_CONTROLLER2);
-static struct mtk_thermal_controller_regs *const
-	mtk_lvts_ap_controller3 = (void *)(THERM_CTRL_BASE + TS_OFFSET_AP_CONTROLLER3);
 
 struct mtk_thermal_controller_regs {
 	u32 lvtsmonctl0_0;

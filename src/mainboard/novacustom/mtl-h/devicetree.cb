@@ -18,10 +18,6 @@ chip soc/intel/meteorlake
 	# SaGv configuration
 	register "sagv" = "SAGV_ENABLED"
 
-	# Disable C1 and Package C-state auto-demotion
-	register "disable_c1_state_auto_demotion" = "1"
-	register "disable_package_c_state_demotion" = "1"
-
 	# Enable Energy Reporting
 	register "pch_pm_energy_report_enable" = "1"
 

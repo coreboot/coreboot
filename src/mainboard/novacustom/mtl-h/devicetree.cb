@@ -90,6 +90,15 @@ chip soc/intel/meteorlake
 		device ref crashlog on end
 		device ref vpu on end
 		device ref tcss_xhci on
+			# SOC Aux orientation override:
+			# This is a bitfield that corresponds to up to 4 TCSS ports.
+			# Bits (0,1) allocated for TCSS Port1 configuration and Bits (2,3)for TCSS Port2.
+			# Bits (4,5) allocated for TCSS Port3 configuration and Bits (6,7)for TCSS Port4.
+			# Bit0,Bit2,Bit4,Bit6 set to "1" indicates no retimer on USBC Ports
+			# Bit1,Bit3,Bit5,Bit7 set to "0" indicates Aux lines are not swapped on the
+			# motherboard to USBC connector
+			register "tcss_aux_ori" = "0x54"
+
 			register "tcss_ports" = "{
 				[0] = TCSS_PORT_DEFAULT(OC_SKIP), /* USB Type-C Port 1 (TBT) */
 				[1] = TCSS_PORT_DEFAULT(OC_SKIP), /* USB Type-C Port 2 (Non-TBT) */

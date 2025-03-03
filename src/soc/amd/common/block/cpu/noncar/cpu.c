@@ -26,6 +26,11 @@ unsigned int smbios_processor_family(struct cpuid_result res)
 	return 0x6b; /* Zen */
 }
 
+unsigned int smbios_processor_external_clock(void)
+{
+	return 100; /* 100 MHz */
+}
+
 void set_cstate_io_addr(void)
 {
 	msr_t cst_addr;

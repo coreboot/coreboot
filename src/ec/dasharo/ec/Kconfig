@@ -6,18 +6,17 @@ config EC_DASHARO_EC
 	help
 	  Dasharo EC
 
+if EC_DASHARO_EC
+
 config EC_DASHARO_EC_BAT_THRESHOLDS
-	depends on EC_DASHARO_EC
 	bool
 	default y
 
 config EC_DASHARO_EC_DGPU
-	depends on EC_DASHARO_EC
 	bool
 	default n
 
 config EC_DASHARO_EC_UPDATE
-	depends on EC_DASHARO_EC
 	bool "Update the embedded controller firmware"
 	default n
 
@@ -27,6 +26,7 @@ config EC_DASHARO_EC_UPDATE_FILE
 	default "ec.rom"
 
 config EC_DASHARO_EC_FLASH_SIZE
-	depends on EC_DASHARO_EC
 	hex
 	default 0x20000
+
+endif # EC_DASHARO_EC

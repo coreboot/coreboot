@@ -41,6 +41,13 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		{GPIO_GSC_AP_INT_ODL.id, ACTIVE_HIGH, -1, "TPM interrupt"},
 	};
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));
+
+	if (CONFIG(SKYWALKER_SDCARD_INIT)) {
+		struct lb_gpio sd_card_gpios[] = {
+			{ GPIO_SD_CD_ODL.id, ACTIVE_LOW, -1, "SD card detect" },
+		};
+		lb_add_gpios(gpios, sd_card_gpios, ARRAY_SIZE(sd_card_gpios));
+	}
 }
 
 int cr50_plat_irq_status(void)

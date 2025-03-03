@@ -4,6 +4,8 @@
 #include <gpio.h>
 #include <soc/bl31.h>
 #include <soc/dpm_v2.h>
+#include <soc/msdc.h>
+#include <soc/mt6359p.h>
 #include <soc/spm_common.h>
 #include <soc/usb.h>
 
@@ -22,6 +24,9 @@ static void mainboard_init(struct device *dev)
 	setup_usb_host();
 	spm_init();
 	power_on_fpmcu();
+
+	if (CONFIG(SKYWALKER_SDCARD_INIT))
+		mtk_msdc_configure_sdcard();
 
 	if (CONFIG(ARM64_USE_ARM_TRUSTED_FIRMWARE))
 		register_reset_to_bl31(GPIO_AP_EC_WARM_RST_REQ.id, true);

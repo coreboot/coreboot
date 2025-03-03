@@ -78,7 +78,7 @@ chip soc/intel/meteorlake
 			register "pcie_rp[PCH_RP(10)]" = "{
 				.clk_src = 8,
 				.clk_req = 8,
-				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_DETECT,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 			chip soc/intel/common/block/pcie/rtd3
 				register "is_storage" = "true"
@@ -93,7 +93,7 @@ chip soc/intel/meteorlake
 			register "pcie_rp[PCH_RP(11)]" = "{
 				.clk_src = 7,
 				.clk_req = 7,
-				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_DETECT,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 			chip soc/intel/common/block/pcie/rtd3
 				register "is_storage" = "true"

@@ -24,25 +24,6 @@ chip soc/intel/meteorlake
 	# Thermal
 	register "tcc_offset" = "10" # TCC of 100C
 
-	register "usb2_ports" = "{
-		[0] = USB2_PORT_LONG(OC_SKIP),	 /* USB Type-A Port 1 (Left) */
-		[1] = USB2_PORT_TYPE_C(OC_SKIP), /* USB Type-C Port 1 (Non-TBT) */
-		[2] = USB2_PORT_MID(OC_SKIP),	 /* USB Type-A Port 2 (Right) */
-		[5] = USB2_PORT_TYPE_C(OC_SKIP), /* USB Type-C Port 2 (TBT) */
-		[6] = USB2_PORT_LONG(OC_SKIP),	 /* Integrated Camera */
-		[9] = USB2_PORT_MID(OC_SKIP),	 /* Bluetooth on M.2 2230 */
-	}"
-
-	register "usb3_ports" = "{
-		[0] = USB3_PORT_DEFAULT(OC_SKIP), /* USB Type-A Port 1 (Left) */
-		[1] = USB3_PORT_DEFAULT(OC_SKIP), /* USB Type-A Port 2 (Right) */
-	}"
-
-	register "tcss_ports" = "{
-		[0] = TCSS_PORT_DEFAULT(OC_SKIP), /* USB Type-C Port 1 (TBT) */
-		[1] = TCSS_PORT_DEFAULT(OC_SKIP), /* USB Type-C Port 2 (Non-TBT) */
-	}"
-
 	device cpu_cluster 0 on end
 	device domain 0 on
 		subsystemid 0x1558 0xa743 inherit
@@ -109,6 +90,11 @@ chip soc/intel/meteorlake
 		device ref crashlog on end
 		device ref vpu on end
 		device ref tcss_xhci on
+			register "tcss_ports" = "{
+				[0] = TCSS_PORT_DEFAULT(OC_SKIP), /* USB Type-C Port 1 (TBT) */
+				[1] = TCSS_PORT_DEFAULT(OC_SKIP), /* USB Type-C Port 2 (Non-TBT) */
+			}"
+
 			chip drivers/usb/acpi
 				device ref tcss_root_hub on
 					chip drivers/usb/acpi
@@ -137,6 +123,19 @@ chip soc/intel/meteorlake
 		end
 		device ref ioe_shared_sram on end
 		device ref xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_LONG(OC_SKIP),   /* USB Type-A Port 1 (Left) */
+				[1] = USB2_PORT_TYPE_C(OC_SKIP),    /* USB Type-C Port 1 (Non-TBT) */
+				[2] = USB2_PORT_MID(OC_SKIP),    /* USB Type-A Port 2 (Right) */
+				[5] = USB2_PORT_TYPE_C(OC_SKIP), /* USB Type-C Port 2 (TBT) */
+				[6] = USB2_PORT_LONG(OC_SKIP),   /* Integrated Camera */
+				[9] = USB2_PORT_MID(OC_SKIP),    /* Bluetooth on M.2 2230 */
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP), /* USB Type-A Port 1 (Left) */
+				[1] = USB3_PORT_DEFAULT(OC_SKIP), /* USB Type-A Port 2 (Right) */
+			}"
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
 					chip drivers/usb/acpi

@@ -265,14 +265,9 @@ config FSP_PLATFORM_MEMORY_SETTINGS_VERSIONS
 	  This allows deployed systems to bump their version number
 	  with the same FSP which will trigger a retrain of the memory.
 
-config HAVE_FSP_LOGO_SUPPORT
-	bool
-	default n
-
 config BMP_LOGO
 	bool "Enable logo"
 	default n
-	depends on HAVE_FSP_LOGO_SUPPORT
 	help
 	  Uses the FSP to display the boot logo. This method supports a
 	  BMP file only. The uncompressed size can be up to 1 MB. The logo can

@@ -400,7 +400,10 @@ static void usb4_retimer_fill_ssdt(const struct device *dev)
 		usb_device = config->dfp[dfp_port].typec_port;
 		usb_port = usb_device->path.usb.port_id;
 
-		ec_port = retimer_get_index_for_typec(usb_port);
+		/* Map to the EC port number if it is explicitly defined in the device tree */
+		ec_port = (config->dfp[dfp_port].ec_port) ?
+			  config->dfp[dfp_port].ec_port - EC_TYPEC_PORT_0 :
+			  retimer_get_index_for_typec(usb_port);
 		if (ec_port == -1) {
 			printk(BIOS_ERR, "%s: No relative EC port found for TC port %d\n",
 				__func__, usb_port);

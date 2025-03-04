@@ -409,6 +409,7 @@ static void usb4_retimer_fill_ssdt(const struct device *dev)
 				__func__, usb_port);
 			continue;
 		}
+		printk(BIOS_INFO, "USB Type-C %d mapped to EC port %d\n", usb_port, ec_port);
 		/* DFPx */
 		snprintf(dfp, sizeof(dfp), "DFP%1d", ec_port);
 		acpigen_write_device(dfp);

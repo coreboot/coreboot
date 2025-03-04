@@ -69,7 +69,7 @@ enum cb_err pci_xhci_get_wake_gpe(const struct device *dev, int *gpe)
 
 static void configure_xhci_sci(void *unused)
 {
-	gpe_configure_sci(xhci_sci_sources, ARRAY_SIZE(xhci_sci_sources) - 1);
+	gpe_configure_sci(xhci_sci_sources, ARRAY_SIZE(xhci_sci_sources));
 }
 
 BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_ENTRY, configure_xhci_sci, NULL);

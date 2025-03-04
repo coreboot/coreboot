@@ -18,6 +18,12 @@
 #define SMBUS_DEVFN		PCI_DEVFN(SMBUS_DEV, SMBUS_FUNC)
 #define SOC_SMBUS_DEV		_SOC_DEV(SMBUS_DEV, SMBUS_FUNC)
 
+/* LPC BUS */
+#define PCU_DEV			0x14
+#define LPC_FUNC		3
+#define LPC_DEVFN		PCI_DEVFN(PCU_DEV, LPC_FUNC)
+#define SOC_LPC_DEV		_SOC_DEV(PCU_DEV, LPC_FUNC)
+
 /* Data Fabric functions */
 #define DF_DEV			0x18
 

@@ -216,11 +216,13 @@ chip soc/intel/meteorlake
 		device ref tcss_dma0 on
 			chip drivers/intel/usb4/retimer
 				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B22)"
+				register "dfp[0].ec_port" = "EC_TYPEC_PORT_0"
 				use tcss_usb3_port0 as dfp[0].typec_port
 				device generic 0 on end
 			end
 			chip drivers/intel/usb4/retimer
 				register "dfp[1].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B22)"
+				register "dfp[1].ec_port" = "EC_TYPEC_PORT_2"
 				use tcss_usb3_port1 as dfp[1].typec_port
 				device generic 0 on end
 			end
@@ -228,11 +230,13 @@ chip soc/intel/meteorlake
 		device ref tcss_dma1 on
 			chip drivers/intel/usb4/retimer
 				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B22)"
+				register "dfp[0].ec_port" = "EC_TYPEC_PORT_1"
 				use tcss_usb3_port2 as dfp[0].typec_port
 				device generic 0 on end
 			end
 			chip drivers/intel/usb4/retimer
 				register "dfp[1].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B22)"
+				register "dfp[1].ec_port" = "EC_TYPEC_PORT_3"
 				use tcss_usb3_port3 as dfp[1].typec_port
 				device generic 0 on end
 			end

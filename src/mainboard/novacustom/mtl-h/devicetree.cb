@@ -26,33 +26,9 @@ chip soc/intel/meteorlake
 
 	device cpu_cluster 0 on end
 	device domain 0 on
-		subsystemid 0x1558 0xa743 inherit
 		device ref system_agent on end
 		device ref igpu on
 			register "ddi_port_A_config" = "1"
-			register "ddi_ports_config" = "{
-				[DDI_PORT_A] = DDI_ENABLE_HPD, 			/* eDP */
-				[DDI_PORT_2] = DDI_ENABLE_DDC | DDI_ENABLE_HPD,	/* HDMI 2.1 */
-			}"
-			chip drivers/gfx/generic
-				register "device_count" = "6"
-				# DDIA for eDP
-				register "device[0].name" = ""LCD0""
-				register "device[0].type" = "panel"
-				# DDIB unused
-				register "device[1].name" = ""DD01""
-				# TCP0 for Thunderbolt 4
-				register "device[2].name" = ""DD02""
-				register "device[2].use_pld" = "true"
-				register "device[2].pld" = "ACPI_PLD_TYPE_C(RIGHT, CENTER, ACPI_PLD_GROUP(1, 1))"
-				# TCP1 unused
-				register "device[3].name" = ""DD03""
-				# TCP2 for HDMI 2.1
-				register "device[4].name" = ""DD04""
-				# TCP3 unused
-				register "device[5].name" = ""DD05""
-				device generic 0 on end
-			end
 		end
 		device ref dtt on end
 		device ref pcie_rp10 on # M.2 2280 #2
@@ -214,38 +190,11 @@ chip soc/intel/meteorlake
 				device generic 0 on end
 			end
 		end
-		device ref i2c0 on # Touchpad
-			register "serial_io_i2c_mode[PchSerialIoIndexI2C0]" = "PchSerialIoPci"
-			chip drivers/i2c/hid
-				register "generic.hid" = ""ELAN0412""
-				register "generic.desc" = ""ELAN Touchpad""
-				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_B00)"
-				register "generic.detect" = "1"
-				register "hid_desc_reg_offset" = "0x01"
-				device i2c 15 on end
-			end
-			chip drivers/i2c/hid
-				register "generic.hid" = ""FTCS1000""
-				register "generic.desc" = ""FocalTech Touchpad""
-				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_B00)"
-				register "generic.detect" = "1"
-				register "hid_desc_reg_offset" = "0x01"
-				device i2c 38 on end
-			end
-		end
 		device ref i2c1 on # USB-PD EEPROM
 			register "serial_io_i2c_mode[PchSerialIoIndexI2C1]" = "PchSerialIoPci"
 		end
 		device ref i2c3 on # Pantone ROM
 			register "serial_io_i2c_mode[PchSerialIoIndexI2C3]" = "PchSerialIoPci"
-		end
-		device ref pcie_rp5 on # GLAN
-			register "pcie_rp[PCH_RP(5)]" = "{
-				.clk_src = 2,
-				.clk_req = 2,
-				.flags = PCIE_RP_LTR | PCIE_RP_CLK_SRC_UNUSED,
-			}"
-			register "pcie_clk_config_flag[2]" = "PCIE_CLK_LAN"
 		end
 		device ref pcie_rp6 on # SD Card Reader
 			register "pcie_rp[PCH_RP(6)]" = "{

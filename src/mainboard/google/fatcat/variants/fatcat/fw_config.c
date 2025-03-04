@@ -477,6 +477,7 @@ static const struct pad_config fp_disable_pads[] = {
 	PAD_NC(GPP_C15, NONE),
 	/* GPP_D01:     MOD_TCSS1_TYP_A_VBUS_EN */
 	PAD_CFG_GPO(GPP_D01, 1, DEEP),
+	PAD_NC(GPP_E17, NONE),
 	/* FIXME: b/390031369
 	 * use dedicated GPIO PIN for codec enable
 	 * when FPS is enabled.
@@ -495,6 +496,8 @@ static const struct pad_config fp_enable_pads[] = {
 	PAD_CFG_GPO_LOCK(GPP_C15, 1, LOCK_CONFIG),
 	/* GPP_D01:     FPS_SOC_INT_L */
 	PAD_CFG_GPI_IRQ_WAKE(GPP_D01, NONE, PWROK, LEVEL, INVERT),
+	/* GPP_E17:     GSPI0A_CS0 */
+	PAD_CFG_NF(GPP_E17, NONE, DEEP, NF5),
 	/* GPP_E19:     FPMCU_PWREN */
 	PAD_CFG_GPO(GPP_E19, 1, DEEP),
 	/* GPP_E20:     FPMCU_FW_UPDATE */
@@ -505,8 +508,8 @@ static const struct pad_config fp_enable_pads[] = {
 	PAD_CFG_NF(GPP_F15, NONE, DEEP, NF8),
 	/* GPP_F16:     GPSI0A_CLK */
 	PAD_CFG_NF(GPP_F16, NONE, DEEP, NF8),
-	/* GPP_F18:     GSPI0A_CS0 */
-	PAD_CFG_NF(GPP_F18, NONE, DEEP, NF8),
+	/* GPP_F18:     NC */
+	PAD_NC(GPP_F18, NONE),
 };
 
 static const struct pad_config pre_mem_fp_enable_pads[] = {
@@ -645,7 +648,7 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	GPIO_PADBASED_OVERRIDE(padbased_table, peg_x4slot_wake_disable_pads);
 
 	if (fw_config_probe(FW_CONFIG(FP, FP_PRESENT)))
-		GPIO_CONFIGURE_PADS(fp_enable_pads);
+		GPIO_PADBASED_OVERRIDE(padbased_table, fp_enable_pads);
 	else
-		GPIO_CONFIGURE_PADS(fp_disable_pads);
+		GPIO_PADBASED_OVERRIDE(padbased_table, fp_disable_pads);
 }

@@ -222,8 +222,6 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_E16:     THC0_SPI1_RST_N_TCH_PNL1 */
 	/* THC NOTE: use GPO instead of GPO for THC0 Rst */
 	PAD_CFG_GPO(GPP_E16, 1, DEEP),
-	/* GPP_E17:     THC0_SPI1_CS0_N_TCH_PNL1 */
-	PAD_CFG_NF(GPP_E17, NONE, DEEP, NF3),
 	/* GPP_E18:     THC0_SPI1_INT_N_TCH_PNL1 */
 	PAD_CFG_NF(GPP_E18, NONE, DEEP, NF3),
 	/* GPP_E21:     I2C_PMC_PD_INT_N */

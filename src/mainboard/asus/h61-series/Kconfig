@@ -12,6 +12,16 @@ config BOARD_ASUS_H61_SERIES
 	select SOUTHBRIDGE_INTEL_BD82X6X
 	select USE_NATIVE_RAMINIT
 
+config BOARD_ASUS_H61M_A_USB3
+	select BOARD_ASUS_H61_SERIES
+	select BOARD_ROMSIZE_KB_8192
+	select HAVE_CMOS_DEFAULT
+	select HAVE_OPTION_TABLE
+	select NO_UART_ON_SUPERIO
+	select REALTEK_8168_RESET
+	select RT8168_SET_LED_MODE
+	select SUPERIO_NUVOTON_NCT6779D
+
 config BOARD_ASUS_H61M_CS
 	select BOARD_ASUS_H61_SERIES
 	select BOARD_ROMSIZE_KB_8192
@@ -75,12 +85,13 @@ config MAINBOARD_DIR
 	default "asus/h61-series"
 
 config VARIANT_DIR
-	default "h61m-cs"          if BOARD_ASUS_H61M_CS
-	default "p8h61-m_lx"       if BOARD_ASUS_P8H61_M_LX
-	default "p8h61-m_lx3_r2_0" if BOARD_ASUS_P8H61_M_LX3_R2_0
-	default "p8h61-m_pro"      if BOARD_ASUS_P8H61_M_PRO
+	default "h61m-a_usb3"        if BOARD_ASUS_H61M_A_USB3
+	default "h61m-cs"            if BOARD_ASUS_H61M_CS
+	default "p8h61-m_lx"         if BOARD_ASUS_P8H61_M_LX
+	default "p8h61-m_lx3_r2_0"   if BOARD_ASUS_P8H61_M_LX3_R2_0
+	default "p8h61-m_pro"        if BOARD_ASUS_P8H61_M_PRO
 	default "p8h61-m_pro_cm6630" if BOARD_ASUS_P8H61_M_PRO_CM6630
-	default "p8h67-i_deluxe"   if BOARD_ASUS_P8H67_I_DELUXE
+	default "p8h67-i_deluxe"     if BOARD_ASUS_P8H67_I_DELUXE
 
 config MAINBOARD_PART_NUMBER
 	default "H61M-CS"          if BOARD_ASUS_H61M_CS

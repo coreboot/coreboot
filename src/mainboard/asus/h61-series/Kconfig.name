@@ -1,5 +1,8 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
+config BOARD_ASUS_H61M_A_USB3
+	bool "H61M-A/USB3"
+
 config BOARD_ASUS_H61M_CS
 	bool "H61M-CS"
 

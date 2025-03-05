@@ -1,0 +1,82 @@
+## SPDX-License-Identifier: GPL-2.0-or-later
+
+chip northbridge/intel/sandybridge
+	register "gpu_dp_b_hotplug" = "4"
+	register "gpu_dp_d_hotplug" = "4"
+	device domain 0 on
+		subsystemid 0x1043 0x844d inherit
+		chip southbridge/intel/bd82x6x
+			register "usb_port_config" = "{
+				{ 1, 0x95f, 0 },
+				{ 1, 0x95f, 0 },
+				{ 1, 0x9df, 1 },
+				{ 1, 0xfff, 1 },
+				{ 1, 0x95f, 2 },
+				{ 1, 0xfbf, 2 },
+				{ 1, 0xb57, 3 },
+				{ 1, 0xb57, 3 },
+				{ 1, 0x353, 4 },
+				{ 1, 0x353, 4 },
+				{ 1, 0xb5f, 6 },
+				{ 1, 0xb5f, 5 },
+				{ 1, 0xb57, 5 },
+				{ 1, 0xb57, 6 },
+			}"
+			register "pcie_port_coalesce" = "1"
+			register "gen1_dec" = "0x000c0291"
+			device ref hda on
+				subsystemid 0x1043 0x8445
+			end
+			device ref pcie_rp1 off end
+			device ref pcie_rp2 on  end # ASM1042 USB 3.0 controller
+			device ref pcie_rp3 off end
+			device ref pcie_rp4 on  end # PCIEX1_1 slot
+			device ref pcie_rp5 on  end # PCIEX1_2 slot
+			device ref pcie_rp6 on      # Realtek Gigabit NIC
+				device pci 00.0 on end
+			end
+			device ref pcie_rp7 off end
+			device ref pcie_rp8 off end
+
+			device ref lpc on
+				chip superio/nuvoton/nct6779d
+					device pnp 2e.1 off end	# Parallel
+					device pnp 2e.2 off end	# UART A
+					device pnp 2e.3 off end # UART B, IR
+					device pnp 2e.5 on	# Keyboard
+						io 0x60 = 0x0060
+						io 0x62 = 0x0064
+						irq 0x70 = 1
+						irq 0x72 = 12
+					end
+					device pnp 2e.6   off end # CIR
+					device pnp 2e.7   off end # GPIO6-8
+					device pnp 2e.8   off end # WDT1, GPIO0, GPIO1
+					device pnp 2e.108 on  end # GPIO0
+					device pnp 2e.9   off end # GPIO1-8
+					device pnp 2e.109 off end # GPIO1
+					device pnp 2e.209 off end # GPIO2
+					device pnp 2e.309 off end # GPIO3
+					device pnp 2e.409 off end # GPIO4
+					device pnp 2e.509 off end # GPIO5
+					device pnp 2e.609 off end # GPIO6
+					device pnp 2e.709 off end # GPIO7
+					device pnp 2e.a   on      # ACPI
+						irq 0xe7 = 0x11
+						irq 0xf2 = 0x5d
+					end
+					device pnp 2e.b   on      # H/W Monitor, FP LED
+						io 0x60 = 0x0290
+						io 0x62 = 0
+						irq 0x70 = 0
+					end
+					device pnp 2e.d   off end # WDT1
+					device pnp 2e.e   off end # CIR WAKE-UP
+					device pnp 2e.f   off end # GPIO Push-pull/Open-drain selection
+					device pnp 2e.14  off end # PORT80 UART
+					device pnp 2e.16  off end # Deep Sleep
+				end
+			end
+		end
+	end
+end

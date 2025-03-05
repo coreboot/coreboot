@@ -9,6 +9,9 @@
 #include <types.h>
 #include <variants.h>
 
+#define TJ_MAX		100
+#define TCC(temp)	(TJ_MAX - temp)
+
 void devtree_update(void)
 {
 	config_t *cfg = config_of_soc();
@@ -29,15 +32,15 @@ void devtree_update(void)
 	switch (get_power_profile(PP_POWER_SAVER)) {
 	case PP_POWER_SAVER:
 		performance_scale		-= 50;
-		cfg->tcc_offset			= 20;
+		cfg->tcc_offset			= TCC(80);
 		break;
 	case PP_BALANCED:
 		performance_scale		-= 25;
-		cfg->tcc_offset			= 15;
+		cfg->tcc_offset			= TCC(90);
 		break;
 	case PP_PERFORMANCE:
 		/* Use the Intel defaults */
-		cfg->tcc_offset			= 10;
+		cfg->tcc_offset			= TCC(100);
 		break;
 	}
 

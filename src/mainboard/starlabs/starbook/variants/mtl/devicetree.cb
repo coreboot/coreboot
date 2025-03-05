@@ -52,6 +52,8 @@ chip soc/intel/meteorlake
 			}"
 		end
 		device ref tcss_xhci	on
+			register "tcss_aux_ori"			= "(BIT(0) | BIT(2))"
+
 			chip drivers/usb/acpi
 				device ref tcss_root_hub on
 					chip drivers/usb/acpi

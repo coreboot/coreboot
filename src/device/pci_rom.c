@@ -226,11 +226,7 @@ ati_rom_acpi_fill_vfct(const struct device *device, acpi_vfct_t *vfct_struct,
 		return current;
 	}
 
-	printk(BIOS_DEBUG, "           Copying %sVBIOS image from %p\n",
-			rom == (struct rom_header *)
-					(uintptr_t)PCI_VGA_RAM_IMAGE_START ?
-			"initialized " : "",
-			rom);
+	printk(BIOS_DEBUG, "           Copying VBIOS image from %p\n", rom);
 
 	header->DeviceID = device->device;
 	header->VendorID = device->vendor;

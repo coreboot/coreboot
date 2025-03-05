@@ -26,7 +26,7 @@ void *bmp_load_logo(size_t *logo_size)
 	if (acpi_is_wakeup_s3())
 		return NULL;
 
-	logo_entry = cbmem_entry_add(CBMEM_ID_FSP_LOGO, 1 * MiB);
+	logo_entry = cbmem_entry_add(CBMEM_ID_BMP_LOGO, 1 * MiB);
 	if (!logo_entry)
 		return NULL;
 

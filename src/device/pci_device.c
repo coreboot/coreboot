@@ -839,97 +839,11 @@ void pci_dev_set_subsystem(struct device *dev, unsigned int vendor,
 	}
 }
 
-static int should_run_oprom(struct device *dev, struct rom_header *rom)
-{
-	static int should_run = -1;
-
-	if (dev->upstream->segment_group) {
-		printk(BIOS_ERR, "Only option ROMs of devices in first PCI segment group can "
-				 "be run.\n");
-		return 0;
-	}
-
-	if (CONFIG(VENDORCODE_ELTAN_VBOOT))
-		if (rom != NULL)
-			if (!verified_boot_should_run_oprom(rom))
-				return 0;
-
-	if (should_run >= 0)
-		return should_run;
-
-	if (CONFIG(ALWAYS_RUN_OPROM)) {
-		should_run = 1;
-		return should_run;
-	}
-
-	/* Don't run VGA option ROMs, unless we have to print
-	 * something on the screen before the kernel is loaded.
-	 */
-	should_run = display_init_required();
-
-	if (!should_run)
-		printk(BIOS_DEBUG, "Not running VGA Option ROM\n");
-	return should_run;
-}
-
-static int should_load_oprom(struct device *dev)
-{
-	/* If S3_VGA_ROM_RUN is disabled, skip running VGA option
-	 * ROMs when coming out of an S3 resume.
-	 */
-	if (!CONFIG(S3_VGA_ROM_RUN) && acpi_is_wakeup_s3() &&
-		((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA))
-		return 0;
-	if (CONFIG(ALWAYS_LOAD_OPROM))
-		return 1;
-	if (should_run_oprom(dev, NULL))
-		return 1;
-
-	return 0;
-}
-
-static void oprom_pre_graphics_stall(void)
-{
-	if (CONFIG_PRE_GRAPHICS_DELAY_MS)
-		mdelay(CONFIG_PRE_GRAPHICS_DELAY_MS);
-}
-
 /** Default handler: only runs the relevant PCI BIOS. */
 void pci_dev_init(struct device *dev)
 {
-	struct rom_header *rom, *ram;
-
-	if (!CONFIG(VGA_ROM_RUN))
-		return;
-
-	/* Only execute VGA ROMs. */
-	if (((dev->class >> 8) != PCI_CLASS_DISPLAY_VGA))
-		return;
-
-	if (!should_load_oprom(dev))
-		return;
-	timestamp_add_now(TS_OPROM_INITIALIZE);
-
-	rom = pci_rom_probe(dev);
-	if (rom == NULL)
-		return;
-
-	ram = pci_rom_load(dev, rom);
-	if (ram == NULL)
-		return;
-	timestamp_add_now(TS_OPROM_COPY_END);
-
-	if (!should_run_oprom(dev, rom))
-		return;
-
-	/* Wait for any configured pre-graphics delay */
-	oprom_pre_graphics_stall();
-
-	run_bios(dev, (unsigned long)ram);
-
-	gfx_set_init_done(1);
-	printk(BIOS_DEBUG, "VGA Option ROM was run\n");
-	timestamp_add_now(TS_OPROM_END);
+	if (CONFIG(VGA_ROM_RUN))
+		pci_rom_run(dev);
 }
 
 /** Default device operation for PCI devices */

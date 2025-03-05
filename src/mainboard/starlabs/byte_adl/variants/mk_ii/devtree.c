@@ -13,9 +13,6 @@ void devtree_update(void)
 {
 	config_t *cfg = config_of_soc();
 
-	struct soc_intel_common_config *common_config;
-	common_config = chip_get_common_soc_structure();
-
 	struct soc_power_limits_config *soc_conf_4core =
 		&cfg->power_limits_config[ADL_N_041_6W_CORE];
 
@@ -34,15 +31,15 @@ void devtree_update(void)
 	switch (get_power_profile(PP_POWER_SAVER)) {
 	case PP_POWER_SAVER:
 		performance_scale			-= 50;
-		common_config->pch_thermal_trip		= 30;
+		cfg->tcc_offset				= 30;
 		break;
 	case PP_BALANCED:
 		performance_scale			-= 25;
-		common_config->pch_thermal_trip		= 25;
+		cfg->tcc_offset				= 25;
 		break;
 	case PP_PERFORMANCE:
 		/* Use the Intel defaults */
-		common_config->pch_thermal_trip		= 20;
+		cfg->tcc_offset				= 20;
 		break;
 	}
 

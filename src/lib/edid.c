@@ -32,7 +32,6 @@ struct edid_context {
 	int has_valid_week;
 	int has_valid_year;
 	int has_valid_detailed_blocks;
-	int has_valid_extension_count;
 	int has_valid_descriptor_ordering;
 	int has_valid_descriptor_pad;
 	int has_valid_range_descriptor;
@@ -1444,15 +1443,12 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		}
 	}
 
-	/* check this, 1.4 verification guide says otherwise */
-	if (edid[0x7e]) {
-		printk(BIOS_SPEW, "Has %d extension blocks\n", edid[0x7e]);
-		/* 2 is impossible because of the block map */
-		if (edid[0x7e] != 2)
-			c.has_valid_extension_count = 1;
-	} else {
-		c.has_valid_extension_count = 1;
-	}
+	/* According to E-EDID A.2_revised_2020.pdf, block maps are optional
+	 * in EDID 1.4. If block maps are used then 254 is the maximum number.
+	 * Otherwise, 255 is the maximum number. For now, we simply print the
+	 * number of extension blocks.
+	 */
+	printk(BIOS_SPEW, "Has %d extension blocks\n", edid[0x7e]);
 
 	printk(BIOS_SPEW, "Checksum\n");
 	c.has_valid_checksum = do_checksum(edid);
@@ -1558,7 +1554,6 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	    !c.has_valid_week ||
 	    !c.has_valid_detailed_blocks ||
 	    !c.has_valid_dummy_block ||
-	    !c.has_valid_extension_count ||
 	    !c.has_valid_descriptor_ordering ||
 	    !c.has_valid_range_descriptor ||
 	    !c.manufacturer_name_well_formed) {
@@ -1581,9 +1576,6 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 				"\tDetailed blocks filled with garbage\n");
 		if (!c.has_valid_dummy_block)
 			printk(BIOS_ERR, "\tDummy block filled with garbage\n");
-		if (!c.has_valid_extension_count)
-			printk(BIOS_ERR,
-				"\tImpossible extension block count\n");
 		if (!c.manufacturer_name_well_formed)
 			printk(BIOS_ERR,
 				"\tManufacturer name field contains garbage\n");

@@ -78,16 +78,4 @@ config SKIP_FSP_CAR
 	help
 	  Selected by platforms that implement their own CAR setup.
 
-config BMP_LOGO
-	bool "Enable logo"
-	default n
-	help
-	  Uses the FSP to display the boot logo. This method supports a
-	  BMP file only. The uncompressed size can be up to 1 MB.
-
-config BMP_LOGO_FILE_NAME
-	string "Logo file"
-	depends on BMP_LOGO
-	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/logo.bmp"
-
 endif #PLATFORM_USES_FSP1_1

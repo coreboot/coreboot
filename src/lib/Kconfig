@@ -156,9 +156,55 @@ config PROBE_RAM
 	  When enabled it will be possible to detect usable RAM using probe_ram
 	  function.
 
+menu "Boot Logo Configuration"
+
+config BMP_LOGO
+	bool "Enable logo"
+	default n
+	help
+	  Uses the FSP to display the boot logo. This method supports a
+	  BMP file only. The uncompressed size can be up to 1 MB. The logo can
+	  be compressed based on either `BMP_LOGO_COMPRESS_*` configs (default LZMA).
+
 config HAVE_CUSTOM_BMP_LOGO
 	def_bool n
 	depends on BMP_LOGO
+
+config HAVE_BMP_LOGO_COMPRESS_LZMA
+	bool
+	depends on BMP_LOGO
+	default y
+
+choice
+	prompt "BMP Logo compression"
+	depends on BMP_LOGO
+	default BMP_LOGO_COMPRESS_LZMA if HAVE_BMP_LOGO_COMPRESS_LZMA
+	default BMP_LOGO_COMPRESS_LZ4
+
+config BMP_LOGO_COMPRESS_LZMA
+	bool "Use LZMA compression for BMP logo"
+	help
+	  This option enables the use of LZMA compression for the BMP logo.
+	  LZMA is a lossless compression algorithm that can significantly reduce
+	  the size of the logo, without sacrificing quality.
+
+	  If this option is not enabled, the BMP logo will be uncompressed.
+
+config BMP_LOGO_COMPRESS_LZ4
+	bool "Compress BMP logo using LZ4"
+	help
+	  This option enables compression of the BMP logo using the LZ4 algorithm.
+	  Although the size reduction is not as efficient as LZMA compression, however,
+	  it can also make the boot process slightly faster compared to the LZMA.
+
+endchoice
+
+config BMP_LOGO_FILE_NAME
+	string "Logo file"
+	depends on BMP_LOGO
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/logo.bmp"
+
+endmenu
 
 config HAVE_EARLY_POWEROFF_SUPPORT
 	bool

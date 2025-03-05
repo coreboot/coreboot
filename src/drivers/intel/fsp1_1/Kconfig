@@ -85,7 +85,7 @@ config BMP_LOGO
 	  Uses the FSP to display the boot logo. This method supports a
 	  BMP file only. The uncompressed size can be up to 1 MB.
 
-config FSP1_1_LOGO_FILE_NAME
+config BMP_LOGO_FILE_NAME
 	string "Logo file"
 	depends on BMP_LOGO
 	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/logo.bmp"

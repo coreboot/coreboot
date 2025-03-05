@@ -38,7 +38,7 @@ endif
 
 # Add logo to the cbfs image
 cbfs-files-$(CONFIG_BMP_LOGO) += logo.bmp
-logo.bmp-file := $(call strip_quotes,$(CONFIG_FSP1_1_LOGO_FILE_NAME))
+logo.bmp-file := $(call strip_quotes,$(CONFIG_BMP_LOGO_FILE_NAME))
 logo.bmp-type := raw
 logo.bmp-compression := LZMA
 

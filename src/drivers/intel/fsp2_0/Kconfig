@@ -302,7 +302,7 @@ config BMP_LOGO_COMPRESS_LZ4
 
 endchoice
 
-config FSP2_0_LOGO_FILE_NAME
+config BMP_LOGO_FILE_NAME
 	string "Logo file"
 	depends on BMP_LOGO
 	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/logo.bmp"

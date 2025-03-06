@@ -150,12 +150,15 @@ chip soc/intel/alderlake
 			}
 		},
 		.i2c[1] = {
-			.speed = I2C_SPEED_FAST,
-			.speed_config[0] = {
-				.speed = I2C_SPEED_FAST,
-				.scl_lcnt = 158,
-				.scl_hcnt = 79,
-				.sda_hold = 7,
+    			.speed = I2C_SPEED_FAST,
+    			.rise_time_ns = 200,
+    			.fall_time_ns = 150,
+    			.data_hold_time_ns = 950,
+    			.speed_config[0] = {
+        			.speed = I2C_SPEED_FAST,
+        			.scl_lcnt = 166,
+        			.scl_hcnt = 83,
+        			.sda_hold = 35,
 			}
 		},
 		.i2c[5] = {

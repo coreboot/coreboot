@@ -4,6 +4,7 @@
 #include <arch/stack_canary_breakpoint.h>
 #include <arch/symbols.h>
 #include <assert.h>
+#include <bootsplash.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <cf9_reset.h>

@@ -22,5 +22,18 @@ void set_bootsplash(unsigned char *framebuffer, unsigned int x_resolution,
 const char *bmp_logo_filename(void);
 void *bmp_load_logo(size_t *logo_size);
 void bmp_release_logo(void);
+/*
+ * Platform specific callbacks for power-off handling.
+ *
+ * These callbacks allow the platform to determine if a power-off is
+ * necessary due to various reasons, such as low battery detection.
+ *
+ * Additionally, API to perform platform specific power-off
+ */
+#if CONFIG(PLATFORM_HAS_LOW_BATTERY_INDICATOR)
+bool platform_is_low_battery_shutdown_needed(void);
+#else
+static inline bool platform_is_low_battery_shutdown_needed(void) { return false; }
+#endif
 
 #endif

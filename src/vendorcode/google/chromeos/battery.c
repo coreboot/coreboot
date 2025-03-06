@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <ec/google/chromeec/ec.h>
-#include <fsp/api.h>
+#include <bootsplash.h>
 
 /*
  * Check if low battery shutdown is needed

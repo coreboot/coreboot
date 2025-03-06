@@ -51,20 +51,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd);
 void platform_fsp_memory_multi_phase_init_cb(uint32_t phase_index);
 void platform_fsp_silicon_multi_phase_init_cb(uint32_t phase_index);
 /*
- * Platform specific callbacks for power-off handling.
- *
- * These callbacks allow the platform to determine if a power-off is
- * necessary due to various reasons, such as low battery detection.
- *
- * Additionally, API to perform platform specific power-off
- */
-#if CONFIG(PLATFORM_HAS_LOW_BATTERY_INDICATOR)
-bool platform_is_low_battery_shutdown_needed(void);
-#else
-static inline bool platform_is_low_battery_shutdown_needed(void) { return false; }
-#endif
-
-/*
  * Displays an early shutdown notification to the user.
  *
  * This function is responsible to perform the needful operations for informing

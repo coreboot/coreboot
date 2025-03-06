@@ -4,7 +4,6 @@
 #include <bootsplash.h>
 #include <cbfs.h>
 #include <cbmem.h>
-#include <fsp/api.h>
 #include <stdint.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 

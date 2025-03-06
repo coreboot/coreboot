@@ -1,0 +1,8 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config DRIVERS_SOUNDWIRE_ALC1320
+	bool
+	depends on HAVE_ACPI_TABLES
+	default n
+	help
+	  SoundWire ALC1320 speaker amplifier SSDT generator.

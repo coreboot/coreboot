@@ -297,6 +297,13 @@ device ref tbt_pcie_rp0 on end
 						register "alc711_address.part_id" = "MIPI_DEV_ID_REALTEK_ALC712"
 						device generic 3.0 on end # SoundWire Link 3 ID 0
 					end
+					chip drivers/soundwire/alc1320
+						register "desc" = ""Speaker Amp""
+						register "alc1320_address.version" = "SOUNDWIRE_VERSION_1_2"
+						register "alc1320_address.class" = "MIPI_CLASS_SDCA"
+						register "alc1320_address.part_id" = "MIPI_DEV_ID_REALTEK_ALC1320"
+						device generic 3.1 on end # SoundWire Link 3 ID 1
+					end
 				end
 			end
 		end

@@ -4,7 +4,7 @@ chip soc/intel/meteorlake
 		device ref igpu on
 			register "ddi_ports_config" = "{
 				[DDI_PORT_A] = DDI_ENABLE_HPD, 			/* eDP */
-				[DDI_PORT_2] = DDI_ENABLE_DDC | DDI_ENABLE_HPD,	/* HDMI 2.1 */
+				[DDI_PORT_3] = DDI_ENABLE_DDC | DDI_ENABLE_HPD,	/* HDMI 2.1 */
 			}"
 			chip drivers/gfx/generic
 				register "device_count" = "6"

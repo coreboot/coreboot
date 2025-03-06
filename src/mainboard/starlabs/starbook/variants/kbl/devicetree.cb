@@ -27,10 +27,10 @@ chip soc/intel/skylake
 	}"
 
 	# Power
-	register "PmConfigSlpS3MinAssert"	= "2"				# 50ms
-	register "PmConfigSlpS4MinAssert"	= "3"				# 1s
-	register "PmConfigSlpSusMinAssert"	= "3"				# 500ms
-	register "PmConfigSlpAMinAssert"	= "3"				# 2s
+	register "PmConfigSlpS3MinAssert"	= "2"				# 1ms
+	register "PmConfigSlpS4MinAssert"	= "3"				# 3s
+	register "PmConfigSlpSusMinAssert"	= "3"				# 1s
+	register "PmConfigSlpAMinAssert"	= "3"				# 98ms
 
 	# Enable the correct decode ranges on the LPC bus.
 	register "lpc_ioe"			= "LPC_IOE_EC_4E_4F |

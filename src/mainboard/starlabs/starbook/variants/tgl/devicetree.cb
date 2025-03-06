@@ -34,10 +34,10 @@ chip soc/intel/tigerlake
 	}"
 
 	# Power
-	register "PchPmSlpS3MinAssert"		= "2"				# 50ms
-	register "PchPmSlpS4MinAssert"		= "3"				# 1s
-	register "PchPmSlpSusMinAssert"		= "3"				# 500ms
-	register "PchPmSlpAMinAssert"		= "3"				# 2s
+	register "PchPmSlpS3MinAssert"		= "2"				# 1ms
+	register "PchPmSlpS4MinAssert"		= "3"				# 3s
+	register "PchPmSlpSusMinAssert"		= "3"				# 1s
+	register "PchPmSlpAMinAssert"		= "3"				# 98ms
 
 	# Enable the correct decode ranges on the LPC bus.
 	register "lpc_ioe"			= "LPC_IOE_EC_4E_4F |

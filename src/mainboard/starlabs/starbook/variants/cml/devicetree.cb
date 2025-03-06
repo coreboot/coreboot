@@ -29,10 +29,10 @@ chip soc/intel/cannonlake
 	}"
 
 	# Power
-	register "PchPmSlpS3MinAssert"		= "2"				# 50ms
-	register "PchPmSlpS4MinAssert"		= "3"				# 1s
-	register "PchPmSlpSusMinAssert"		= "3"				# 500ms
-	register "PchPmSlpAMinAssert"		= "3"				# 2s
+	register "PchPmSlpS3MinAssert"		= "2"				# 1ms
+	register "PchPmSlpS4MinAssert"		= "3"				# 3s
+	register "PchPmSlpSusMinAssert"		= "3"				# 1s
+	register "PchPmSlpAMinAssert"		= "3"				# 98ms
 
 	# PCIe Clock
 	register "PcieClkSrcClkReq[0]"		= "PCIE_CLK_NOTUSED"

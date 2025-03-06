@@ -219,6 +219,8 @@ static struct {
 	{ PCI_DID_INTEL_ADL_N_GT1, "Alderlake N GT1" },
 	{ PCI_DID_INTEL_ADL_N_GT2, "Alderlake N GT2" },
 	{ PCI_DID_INTEL_ADL_N_GT3, "Alderlake N GT3" },
+	{ PCI_DID_INTEL_ADL_N_GT4, "Alderlake N GT4" },
+	{ PCI_DID_INTEL_ADL_N_GT5, "Alderlake N GT5" },
 	{ PCI_DID_INTEL_ADL_S_GT1,   "Alderlake S GT1" },
 	{ PCI_DID_INTEL_ADL_S_GT1_1, "Alderlake S GT1" },
 	{ PCI_DID_INTEL_ADL_S_GT2,   "Alderlake S GT2" },

@@ -9,7 +9,58 @@
 #include <cpu/amd/mtrr.h>
 #include <smbios.h>
 #include <soc/iomap.h>
+#include <soc/msr.h>
 #include <types.h>
+
+#define UNSUPPORTED 0
+
+#define UNINITIALIZED ((uint64_t)-1)
+
+static union pstate_msr get_pstate0_msr(void)
+{
+	static union pstate_msr pstate_reg = { .raw = UNINITIALIZED };
+
+	struct cpuid_result res;
+
+	/* Check if we have already determined P-state support */
+	if (pstate_reg.raw == UNINITIALIZED) {
+		if (cpu_cpuid_extended_level() < CPUID_EXT_PM) {
+			pstate_reg.pstate_en = UNSUPPORTED;
+			return pstate_reg;
+		}
+
+		res = cpuid(CPUID_EXT_PM);
+
+		if (!(res.edx & BIT(7))) { /* Hardware P-state control */
+			pstate_reg.pstate_en = UNSUPPORTED;
+			return pstate_reg;
+		}
+
+		pstate_reg.raw = rdmsr(PSTATE_MSR(get_pstate_0_reg())).raw;
+	}
+
+	return pstate_reg;
+}
+
+unsigned int smbios_cpu_get_current_speed_mhz(void)
+{
+	union pstate_msr pstate_reg = get_pstate0_msr();
+
+	if (!pstate_reg.pstate_en)
+		return 0;
+
+	return get_pstate_core_freq(pstate_reg);
+}
+
+unsigned int smbios_cpu_get_voltage(void)
+{
+	union pstate_msr pstate_reg = get_pstate0_msr();
+
+	if (!pstate_reg.pstate_en)
+		return 0;
+
+	return get_pstate_core_uvolts(pstate_reg) / 100000; /* uV to (10 * V) */
+}
 
 uint32_t get_pstate_0_reg(void)
 {

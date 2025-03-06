@@ -597,6 +597,9 @@ enum smbios_processor_upgrade_field {
 /* defines for processor characteristics */
 #define PROCESSOR_64BIT_CAPABLE				(1 << 2)
 #define PROCESSOR_MULTI_CORE				(1 << 3)
+#define PROCESSOR_HARDWARE_THREAD			(1 << 4)
+#define PROCESSOR_EXECUTE_PROTECTION			(1 << 5)
+#define PROCESSOR_ENHANCED_VIRTUALIZATION		(1 << 6)
 #define PROCESSOR_POWER_PERFORMANCE_CONTROL		(1 << 7)
 
 /* defines for supported_sram_type/current_sram_type */

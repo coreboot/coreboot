@@ -22,6 +22,7 @@
 #include <intelblocks/irq.h>
 #include <intelblocks/lpss.h>
 #include <intelblocks/mp_init.h>
+#include <intelblocks/pmclib.h>
 #include <intelblocks/systemagent.h>
 #include <intelblocks/xdci.h>
 #include <intelpch/lockdown.h>
@@ -658,6 +659,24 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 	/* Enable the energy efficient turbo mode */
 	s_cfg->EnergyEfficientTurbo = 1;
 	s_cfg->PmcLpmS0ixSubStateEnableMask = get_supported_lpm_mask();
+
+	/* Apply minimum assertion width settings if non-zero */
+	if (config->pch_slp_s3_min_assertion_width)
+		s_cfg->PchPmSlpS3MinAssert = config->pch_slp_s3_min_assertion_width;
+	if (config->pch_slp_s4_min_assertion_width)
+		s_cfg->PchPmSlpS4MinAssert = config->pch_slp_s4_min_assertion_width;
+	if (config->pch_slp_sus_min_assertion_width)
+		s_cfg->PchPmSlpSusMinAssert = config->pch_slp_sus_min_assertion_width;
+	if (config->pch_slp_a_min_assertion_width)
+		s_cfg->PchPmSlpAMinAssert = config->pch_slp_a_min_assertion_width;
+
+	/* Set Power Cycle Duration */
+	if (config->pch_reset_power_cycle_duration)
+		s_cfg->PchPmPwrCycDur = get_pm_pwr_cyc_dur(config->pch_slp_s4_min_assertion_width,
+							   config->pch_slp_s3_min_assertion_width,
+							   config->pch_slp_a_min_assertion_width,
+							   config->pch_reset_power_cycle_duration);
+
 	/* Un-Demotion from Demoted C1 need to be disable when
 	 * C1 auto demotion is disabled */
 	s_cfg->C1StateUnDemotion = !config->disable_c1_state_auto_demotion;

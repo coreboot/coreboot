@@ -1,4 +1,16 @@
 chip soc/intel/meteorlake
+	# Power limits,
+	# PsysPL2, PsysPL3, PL4 are configured by EC at runtime
+	register "power_limits_config[MTL_P_682_482_CORE]" = "{
+		.tdp_pl1_override = 35,
+		.tdp_pl2_override = 64,
+		.tdp_pl4 = 90,
+		.psys_pmax = 99,
+	}"
+
+	# MTL SOC has additional setting for PsysPmax
+	register "psys_pmax_watts" = "99"
+
 	device domain 0 on
 		subsystemid 0x1558 0xa743 inherit
 		device ref igpu on

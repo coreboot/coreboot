@@ -704,6 +704,7 @@ F:	util/riscv/
 
 X86 ARCHITECTURE
 M:	Jérémy Compostella <jeremy.compostella@intel.com>
+M:	Shuo Liu <shuo.liu@intel.com>
 S:	MAINTAINED
 F:	src/arch/x86/
 F:	src/cpu/x86/

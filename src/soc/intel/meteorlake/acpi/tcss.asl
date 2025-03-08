@@ -334,8 +334,13 @@ Scope (\_SB.PCI0)
 				IOM_BASE_ADDR, IOM_BASE_ADDR_MAX, 0x0,
 				IOM_BASE_SIZE,,,)
 		})
-		/* Hide the device so that Windows does not complain on missing driver */
+#if CONFIG(IOM_ACPI_DEVICE_VISIBLE)
+		/* ACPI_STATUS_DEVICE_ALL_ON */
+		Name (_STA, 0xF)
+#else
+		/* ACPI_STATUS_DEVICE_HIDDEN_ON */
 		Name (_STA, 0xB)
+#endif
 	}
 
 	/*

@@ -58,3 +58,13 @@ config SOFTWARE_CONNECTION_MANAGER
 	help
 	  Enable SCM so it's used instead of FCM.
 endchoice
+
+config IOM_ACPI_DEVICE_VISIBLE
+	bool
+	depends on SOC_INTEL_COMMON_BLOCK_USB4
+	default n
+	help
+	  Select this config if the mainboard needs the IOM ACPI device
+	  visible to the OS. This is needed for ChromeOS devices for
+	  which ChromeEC acts as the TCPC, otherwise should be left
+	  unselected.

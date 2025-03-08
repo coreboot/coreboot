@@ -14,8 +14,7 @@ struct cbfs_header header = {
 	 * representing the CBFS region's size is added to the offset of
 	 * the region within a larger image.
 	 */
-	.romsize = cpu_to_be32(FMAP_SECTION_COREBOOT_START + FMAP_SECTION_COREBOOT_SIZE
-			       - FMAP_SECTION_FLASH_START),
+	.romsize = cpu_to_be32(FMAP_SECTION_COREBOOT_START + FMAP_SECTION_COREBOOT_SIZE),
 	/*
 	 * The 4 bytes are left out for two reasons:
 	 * 1. the cbfs master header pointer resides there
@@ -25,6 +24,6 @@ struct cbfs_header header = {
 	 */
 	.bootblocksize = cpu_to_be32(4),
 	.align = cpu_to_be32(CBFS_ALIGNMENT),
-	.offset = cpu_to_be32(FMAP_SECTION_COREBOOT_START - FMAP_SECTION_FLASH_START),
+	.offset = cpu_to_be32(FMAP_SECTION_COREBOOT_START),
 	.architecture = cpu_to_be32(CBFS_ARCHITECTURE_UNKNOWN),
 };

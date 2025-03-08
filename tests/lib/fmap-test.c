@@ -204,7 +204,7 @@ static void test_fmap_find_region_name(void **state)
 	assert_int_equal(-1, fmap_find_region_name(NULL, found_area_name));
 
 	/* Try to find area outside of flash region */
-	ar.offset = FMAP_SECTION_FLASH_START + FMAP_SECTION_FLASH_SIZE + 0x100;
+	ar.offset = FMAP_SECTION_FLASH_SIZE + 0x100;
 	ar.size = 0x1000;
 	assert_int_equal(-1, fmap_find_region_name(&ar, found_area_name));
 

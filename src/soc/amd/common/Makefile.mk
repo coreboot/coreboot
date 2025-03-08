@@ -45,9 +45,7 @@ $(objcbfs)/bootblock.bin: $(obj)/amdfw.rom $(obj)/fmap_config.h
 amdfw_region_start=$(subst $(spc),,FMAP_SECTION_$(call regions-for-file,apu/amdfw)_START)
 amdfw_offset=$(call int-subtract, \
 	$(CONFIG_AMD_FWM_POSITION) \
-	$(call int-subtract, \
-	$(call get_fmap_value,$(amdfw_region_start)) \
-	$(call get_fmap_value,FMAP_SECTION_FLASH_START)))
+	$(call get_fmap_value,$(amdfw_region_start)))
 
 add_bootblock = \
 	$(CBFSTOOL) $(1) add -f $(2) -n apu/amdfw -t amdfw \

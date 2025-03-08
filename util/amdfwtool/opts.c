@@ -639,16 +639,6 @@ int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config, context *
 
 	printf("    AMDFWTOOL  Using ROM size of %dKB\n", ctx->rom_size / 1024);
 
-	if (ctx->rom_size <= MAX_MAPPED_WINDOW) {
-		uint32_t rom_base_address;
-
-		rom_base_address = 0xFFFFFFFF - ctx->rom_size + 1;
-		if (cb_config->efs_location & ~MAX_MAPPED_WINDOW_MASK)
-			cb_config->efs_location = cb_config->efs_location - rom_base_address;
-		if (cb_config->body_location & ~MAX_MAPPED_WINDOW_MASK)
-			cb_config->body_location = cb_config->body_location - rom_base_address;
-	}
-
 	/* If the flash size is larger than 16M, we assume the given
 	   addresses are already relative ones. Otherwise we print error.*/
 	if (cb_config->efs_location && cb_config->efs_location > ctx->rom_size) {

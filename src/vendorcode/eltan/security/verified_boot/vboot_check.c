@@ -184,11 +184,7 @@ static void verified_boot_check_buffer(const char *name, void *start, size_t siz
 	}
 }
 
-#if FMAP_SECTION_COREBOOT_START < (0xffffffff - CONFIG_ROM_SIZE + 1)
 #define COREBOOT_CBFS_START (0xffffffff - CONFIG_ROM_SIZE + 1 + FMAP_SECTION_COREBOOT_START)
-#else
-#define COREBOOT_CBFS_START FMAP_SECTION_COREBOOT_START
-#endif
 
 void verified_boot_check_cbfsfile(const char *name, uint32_t type, uint32_t hash_index,
 				  void **buffer, uint32_t *filesize, int32_t pcr)

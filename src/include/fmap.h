@@ -5,8 +5,13 @@
 
 #include <commonlib/bsd/fmap_serialized.h>
 #include <commonlib/region.h>
+#include <fmap_config.h>
 #include <stddef.h>
 #include <stdint.h>
+
+#if FMAP_SECTION_FLASH_START != 0
+	#error "FMAP must always start flash address 0"
+#endif
 
 /* Locate the named area in the fmap and fill in a region device representing
  * that area. The region is a sub-region of the readonly boot media. Return

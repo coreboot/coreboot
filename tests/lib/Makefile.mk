@@ -163,6 +163,7 @@ spd_cache-ddr3-test-config += CONFIG_SPD_CACHE_FMAP_NAME=\"RW_SPD_CACHE\" \
 				CONFIG_DIMM_MAX=4 CONFIG_DIMM_SPD_SIZE=256 \
 				CONFIG_BOOT_DEVICE_MEMORY_MAPPED=1
 spd_cache-ddr3-test-cflags += -D__TEST_SPD_CACHE_DDR=3
+spd_cache-ddr3-test-cflags += -I tests/include/tests/lib/fmap
 
 spd_cache-ddr4-test-srcs += tests/lib/spd_cache-test.c
 spd_cache-ddr4-test-srcs += tests/stubs/console.c
@@ -174,6 +175,7 @@ spd_cache-ddr4-test-config += CONFIG_SPD_CACHE_FMAP_NAME=\"RW_SPD_CACHE\" \
 				CONFIG_DIMM_MAX=4 CONFIG_DIMM_SPD_SIZE=512 \
 				CONFIG_BOOT_DEVICE_MEMORY_MAPPED=1
 spd_cache-ddr4-test-cflags += -D__TEST_SPD_CACHE_DDR=4
+spd_cache-ddr4-test-cflags += -I tests/include/tests/lib/fmap
 
 cbmem_stage_cache-test-srcs += tests/lib/cbmem_stage_cache-test.c
 cbmem_stage_cache-test-srcs += tests/stubs/console.c
@@ -201,6 +203,7 @@ cbfs-verification-no-sha512-test-config += CONFIG_COLLECT_TIMESTAMPS=0 \
 					CONFIG_CBFS_VERIFICATION=1 \
 					CONFIG_NO_CBFS_MCACHE=1 \
 					VB2_SUPPORT_SHA512=0
+cbfs-verification-no-sha512-test-cflags += -I tests/include/tests/lib/fmap
 
 $(call copy-test,cbfs-verification-no-sha512-test,cbfs-verification-has-sha512-test)
 cbfs-verification-has-sha512-test-config += VB2_SUPPORT_SHA512=1
@@ -229,6 +232,7 @@ cbfs-lookup-no-mcache-test-mocks += cbfs_get_boot_device \
 cbfs-lookup-no-mcache-test-config += CONFIG_ARCH_X86=0 \
 				CONFIG_COLLECT_TIMESTAMPS=0 \
 				CONFIG_NO_CBFS_MCACHE=1
+cbfs-lookup-no-mcache-test-cflags += -I tests/include/tests/lib/fmap
 
 $(call copy-test,cbfs-lookup-no-mcache-test,cbfs-lookup-has-mcache-test)
 cbfs-lookup-has-mcache-test-config += CONFIG_NO_CBFS_MCACHE=0

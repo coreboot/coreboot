@@ -30,11 +30,12 @@ junit_write () {
 }
 
 # Look if we have getopt. If not, build it.
-if [ "$(uname)" = "Darwin" ]; then
-  GETOPT="getopt hIJ"
-else
-  GETOPT="getopt -l help,junit,invert -o hIJ"
-fi
+case "$(uname)" in
+Darwin|FreeBSD)
+  GETOPT="getopt hIJ" ;;
+*)
+  GETOPT="getopt -l help,junit,invert -o hIJ" ;;
+esac
 
 if ! cmd_args="$($GETOPT -- "$@")"; then
 	usage

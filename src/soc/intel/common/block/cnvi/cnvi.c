@@ -133,7 +133,7 @@ static void cnvw_fill_ssdt(const struct device *dev)
  *							If ((\_SB.PCI0.GBTR() == One))
  *							{
  *								\_SB.PCI0.BTRK (Zero)
- *								Sleep (160
+ *								Sleep (160)
  *								Local2 = One
  *							}
  *						}

@@ -33,15 +33,15 @@ void devtree_update(void)
 	switch (get_power_profile(PP_POWER_SAVER)) {
 	case PP_POWER_SAVER:
 		performance_scale			-= 50;
-		cfg->tcc_offset				= TCC(70);
+		cfg->tcc_offset				= TCC(80);
 		break;
 	case PP_BALANCED:
 		performance_scale			-= 25;
-		cfg->tcc_offset				= TCC(80);
+		cfg->tcc_offset				= TCC(90);
 		break;
 	case PP_PERFORMANCE:
 		/* Use the Intel defaults */
-		cfg->tcc_offset				= TCC(90);
+		cfg->tcc_offset				= TCC(100);
 		break;
 	}
 

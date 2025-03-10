@@ -12,6 +12,6 @@
 #endif
 
 void mainboard_configure_early_gpios(void);
-void mainboard_configure_gpios(void);
+void variant_configure_gpios(void);
 
 #endif

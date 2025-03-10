@@ -1,0 +1,75 @@
+chip soc/intel/meteorlake
+	# Power limits,
+	# PsysPL2, PsysPL3, PL4 are configured by EC at runtime
+	register "power_limits_config[MTL_P_682_482_CORE]" = "{
+		.tdp_pl1_override = 35,
+		.tdp_pl2_override = 64,
+		.tdp_pl4 = 120,
+		.psys_pmax = 180,
+	}"
+
+	# MTL SOC has additional setting for PsysPmax
+	register "psys_pmax_watts" = "180"
+
+	device domain 0 on
+		subsystemid 0x1558 0xa741 inherit
+		device ref pcie_rp12 on # PEG
+			register "pcie_rp[PCH_RP(12)]" = "{
+				.clk_src = 6,
+				.clk_req = 6,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_DETECT,
+			}"
+			device pci 00.0 on
+				subsystemid 0x1558 0xa761
+			end
+		end
+		device ref igpu on
+			register "ddi_port_A_config" = "1"
+			register "ddi_ports_config" = "{
+				[DDI_PORT_A] = DDI_ENABLE_HPD, 	/* eDP */
+			}"
+		end
+		device ref i2c0 on # Touchpad
+			register "serial_io_i2c_mode[PchSerialIoIndexI2C0]" = "PchSerialIoPci"
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN0412""
+				register "generic.desc" = ""ELAN Touchpad""
+				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_A17)"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 15 on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""FTCS1000""
+				register "generic.desc" = ""FocalTech Touchpad""
+				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_A17)"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 38 on end
+			end
+		end
+		device ref i2c4 on # ANX7443 USB-C Retimer
+			register "serial_io_i2c_mode[PchSerialIoIndexI2C4]" = "PchSerialIoPci"
+		end
+		device ref i2c5 on # TAS5825M SmartAmp
+			register "serial_io_i2c_mode[PchSerialIoIndexI2C5]" = "PchSerialIoPci"
+			chip drivers/i2c/tas5825m
+				register "id" = "0"
+				device i2c 4e on end
+			end
+		end
+		device ref pcie_rp5 on # GLAN
+			register "pcie_rp[PCH_RP(5)]" = "{
+				.clk_src = 2,
+				.clk_req = 2,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_V11)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A20)"
+				register "srcclk_pin" = "2"
+				device generic 0 on end
+			end
+		end
+	end
+end

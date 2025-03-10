@@ -568,7 +568,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_VGPIO47, NONE, DEEP, NF1),
 };
 
-void mainboard_configure_gpios(void)
+void variant_configure_gpios(void)
 {
 	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
 }

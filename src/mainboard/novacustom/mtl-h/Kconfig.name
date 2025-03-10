@@ -1,7 +1,13 @@
 comment "Meteor Lake H"
 
+config BOARD_NOVACUSTOM_V540TNX
+	bool "V540TNx (14\", discrete graphics)"
+
+config BOARD_NOVACUSTOM_V560TNX
+	bool "V560TNx (16\", discrete graphics)"
+
 config BOARD_NOVACUSTOM_V540TU
-	bool "V540TU (14\")"
+	bool "V540TU (14\", integrated graphics)"
 
 config BOARD_NOVACUSTOM_V560TU
-	bool "V560TU (16\")"
+	bool "V560TU (16\", integrated graphics)"

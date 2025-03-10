@@ -190,7 +190,6 @@ struct intel_ssdb {
 	uint8_t mipi_define;			/* MIPI info defined in ACPI or
 						sensor driver */
 	uint32_t mclk_speed;			/* Clock info for sensor */
-	uint32_t mclk;				/* Clock info for sensor */
 	uint8_t control_logic_id;		/* PMIC device node used for
 						the camera sensor */
 	uint8_t mipi_data_format;		/* MIPI data format */

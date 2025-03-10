@@ -134,11 +134,7 @@ chip soc/intel/alderlake
 		end
 		device ref shared_sram	on  end
 		device ref pcie_rp7	on				# WiFi
-			chip drivers/wifi/generic
-				register "enable_cnvi_ddr_rfim"		= "true"
-				device generic 0 on end
-			end
-			register "pch_pcie_rp[PCH_RP(7)]" = "{
+				register "pch_pcie_rp[PCH_RP(7)]" = "{
 				.clk_src				= 1,
 				.clk_req				= 1,
 				.flags					= PCIE_RP_LTR | PCIE_RP_AER,

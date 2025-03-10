@@ -116,8 +116,8 @@ extract_coreboot() {
 	elif [ -f "$_unpacked/manifest.json" ]; then
 		_version=$(grep -m1 -A4 "$BOARD\":" "$_unpacked/manifest.json" | grep -m1 "rw" |
 				sed 's/.*\(rw.*\)/\1/' | sed 's/.*\("Google.*\)/\1/' | cut -f2 -d'"')
-		_bios_image=$(grep -m1 -A7 "$BOARD\":" "$_unpacked/manifest.json" | grep -m1 "image" |
-				sed 's/.*"image": //' | cut -f2 -d'"')
+		_bios_image=$(grep -m1 -A10 "$BOARD\":" "$_unpacked/manifest.json" |
+				grep -m1 "image" | sed 's/.*"image": //' | cut -f2 -d'"')
 	else
 		_version=$(cat $_unpacked/VERSION | grep BIOS\ version: |
 			cut -f2 -d: | tr -d \ )

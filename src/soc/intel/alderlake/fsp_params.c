@@ -650,6 +650,13 @@ static void fill_fsps_tcss_params(FSP_S_CONFIG *s_cfg,
 			s_cfg->UsbTcPortEn |= BIT(i);
 	}
 
+	for (int i = 0; i < MAX_TYPE_C_PORTS; i++) {
+		if (config->enabletcsscovtypea[i]) {
+			s_cfg->EnableTcssCovTypeA[i] = config->enabletcsscovtypea[i];
+			s_cfg->MappingPchXhciUsbA[i] = config->mappingpchxhciusba[i];
+		}
+	}
+
 	s_cfg->Usb4CmMode = CONFIG(SOFTWARE_CONNECTION_MANAGER);
 }
 

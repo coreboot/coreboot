@@ -27,5 +27,12 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		},
 	};
 
+	mupd->FspmConfig.AcLoadline[0] = 190;
+	mupd->FspmConfig.AcLoadline[1] = 310;
+	mupd->FspmConfig.AcLoadline[2] = 490;
+	mupd->FspmConfig.DcLoadline[0] = 190;
+	mupd->FspmConfig.DcLoadline[1] = 310;
+	mupd->FspmConfig.DcLoadline[2] = 490;
+
 	memcfg_init(mupd, &mem_config, &dimm_module_spd_info, half_populated);
 }

@@ -1,13 +1,43 @@
 fw_config
-	field PDC_CONTROL 0 1
-		option PDC_RTS			0
-		option PDC_TI			1
+	field AUDIO 0 1
+		option AUDIO_UNKNOWN		0
+		option AUDIO_ALC712_SNDW	1
 	end
-	field STORAGE 15 16
+	field WIFI 2 3
+		option WIFI_CNVI_6			0
+		option WIFI_CNVI_7			1
+		option WIFI_PCIE_6			2
+		option WIFI_PCIE_7			3
+	end
+	field TOUCHSCREEN 4 4
+		option NONE_TOUCH		0
+	end
+	field TOUCHPAD 5 6
+		option TOUCHPAD_UNKNOWN		0
+		option TOUCHPAD_LPSS_I2C	1
+		option TOUCHPAD_THC_I2C		2
+	end
+	field SD 7 7
+		option SD_UNKNOWN		0
+		option SD_GENSYS		1
+	end
+	field STORAGE 8 9
 		option STORAGE_UNKNOWN		0
 		option STORAGE_NVME_GEN4	1
 		option STORAGE_NVME_GEN5	2
 		option STORAGE_UFS		3
+	end
+	field KB 10 11
+		option KB_UNKNOWN		0
+		option KB_NO_BL			1
+	end
+	field UFC 12 12
+		option UFC_UNKNOWN		0
+		option UFC_1080P		1
+	end
+	field PDC_CONTROL 13 13
+		option PDC_RTS			0
+		option PDC_TI			1
 	end
 end
 
@@ -180,7 +210,9 @@ device ref tbt_pcie_rp0 on end
 			end
 		end # SD Card
 
-		device ref pcie_rp3 on
+		device ref pcie_rp4 on
+			probe WIFI WIFI_PCIE_6
+			probe WIFI WIFI_PCIE_7
 			register "pcie_rp[PCH_RP(4)]" = "{
 				.clk_src = 4,
 				.clk_req = 4,
@@ -200,6 +232,8 @@ device ref tbt_pcie_rp0 on end
 		end #  WLAN
 
 		device ref pcie_rp9 on
+			probe STORAGE STORAGE_UNKNOWN
+			probe STORAGE STORAGE_NVME_GEN5
 			register "pcie_rp[PCIE_RP(9)]" = "{
 			.clk_src = 0,
 			.clk_req = 0,
@@ -213,6 +247,7 @@ device ref tbt_pcie_rp0 on end
 		end # Gen5 SSD
 
 		device ref hda on
+			probe AUDIO AUDIO_ALC712_SNDW
 			chip drivers/intel/soundwire
 				device generic 0 on
 					chip drivers/soundwire/alc711
@@ -226,6 +261,8 @@ device ref tbt_pcie_rp0 on end
 		end
 
 		device ref cnvi_wifi on
+			probe WIFI WIFI_CNVI_6
+			probe WIFI WIFI_CNVI_7
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_PME_B0"
 				register "add_acpi_dma_property" = "true"

@@ -155,7 +155,7 @@ chip soc/intel/alderlake
 		end
 		device ref shared_sram	on  end
 		device ref pcie_rp7	on				# WiFi
-				register "pch_pcie_rp[PCH_RP(7)]" = "{
+			register "pch_pcie_rp[PCH_RP(7)]" = "{
 				.clk_src				= 1,
 				.clk_req				= 1,
 				.flags					= PCIE_RP_LTR | PCIE_RP_AER,

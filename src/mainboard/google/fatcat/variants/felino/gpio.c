@@ -265,8 +265,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F07, NONE),
 	/* GPP_F08:     NC */
 	PAD_NC(GPP_F08, NONE),
-	/* GPP_F09:     NC */
-	PAD_NC(GPP_F09, NONE),
+	/* GPP_F09:     SX_EXIT_HOLDOFF# */
+	PAD_CFG_NF(GPP_F09, NONE, DEEP, NF2),
 	/* GPP_F10:     HW_ID7 */
 	PAD_CFG_GPO(GPP_F10, 0, PLTRST),
 	/* GPP_F11:     TC_RETIMER_FORCE_PWR */

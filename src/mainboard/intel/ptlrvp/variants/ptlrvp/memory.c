@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <baseboard/variants.h>
+#include <ec/intel/board_id.h>
 #include <soc/romstage.h>
 #include <soc/meminit.h>
 
@@ -66,7 +67,18 @@ static const struct mb_cfg lp5_mem_config = {
 
 const struct mb_cfg *variant_memory_params(void)
 {
-	return &lp5_mem_config;
+	int board_id = get_rvp_board_id();
+
+	switch (board_id) {
+	case PTLP_LP5_T3_RVP:
+	case PTLP_LP5_T4_RVP:
+	case GCS_32GB:
+	case GCS_64GB:
+		return &lp5_mem_config;
+	default:
+		die("Unknown board id = 0x%x\n", board_id);
+		break;
+	}
 }
 
 void variant_get_spd_info(struct mem_spd *spd_info)

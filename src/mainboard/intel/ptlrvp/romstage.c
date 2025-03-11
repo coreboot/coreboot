@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <baseboard/variants.h>
+#include <ec/intel/board_id.h>
 #include <fsp/api.h>
 #include <soc/romstage.h>
 #include <string.h>
@@ -20,6 +21,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 {
 	const struct pad_config *pads;
 	size_t pads_num;
+	int board_id = get_rvp_board_id();
 	const struct mb_cfg *mem_config = variant_memory_params();
 	bool half_populated = variant_is_half_populated();
 	struct mem_spd spd_info;
@@ -32,5 +34,15 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	memset(&spd_info, 0, sizeof(spd_info));
 	variant_get_spd_info(&spd_info);
 
-	memcfg_init(memupd, mem_config, &spd_info, half_populated);
+	switch (board_id) {
+	case PTLP_LP5_T3_RVP:
+	case PTLP_LP5_T4_RVP:
+	case GCS_32GB:
+	case GCS_64GB:
+		memcfg_init(memupd, mem_config, &spd_info, half_populated);
+		break;
+	default:
+		die("Unknown board id = 0x%x\n", board_id);
+		break;
+	}
 }

@@ -9,6 +9,13 @@
 #include <stdint.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
+enum ptl_boardid {
+	PTLP_LP5_T3_RVP = 0x01,
+	PTLP_LP5_T4_RVP = 0x03,
+	GCS_32GB = 0x11,
+	GCS_64GB = 0x12,
+};
+
 /* The next set of functions return the gpio table and fill in the number of entries for
  * each table.
  */

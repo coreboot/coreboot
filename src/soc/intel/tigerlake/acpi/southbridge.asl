@@ -38,6 +38,13 @@
 /* USB XHCI 0:14.0 */
 #include "xhci.asl"
 
+/* PMC Shared SRAM 0:14.2 */
+#include <soc/intel/common/block/acpi/acpi/sram.asl>
+
+/* CSE/HECI #1 0:16.0 */
+#include <soc/intel/common/block/acpi/acpi/heci.asl>
+
+
 /* PCI _OSC */
 #include <soc/intel/common/acpi/pci_osc.asl>
 

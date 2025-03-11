@@ -136,7 +136,7 @@ const char *soc_acpi_name(const struct device *dev)
 	case PCH_DEVFN_GBE:		return "GLAN";
 	case PCH_DEVFN_SRAM:		return "SRAM";
 	case PCH_DEVFN_SPI:		return "FSPI";
-	case PCH_DEVFN_CSE:		return "HEC1";
+	case PCH_DEVFN_CSE:		return "HECI";
 	}
 
 	return NULL;

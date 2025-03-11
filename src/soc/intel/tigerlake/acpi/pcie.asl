@@ -523,13 +523,3 @@ Device (RP24)
 	}
 }
 #endif /* CONFIG(SOC_INTEL_TIGERLAKE_PCH_H) */
-
-Device (SRAM)
-{
-	Name (_ADR, 0x00140002)
-}
-
-Device (HEC1)
-{
-	Name (_ADR, 0x00160000)
-}

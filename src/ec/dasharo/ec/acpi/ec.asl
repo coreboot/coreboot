@@ -4,9 +4,10 @@ Scope (\_SB) {
 	#include "ac.asl"
 	#include "battery.asl"
 	#include "buttons.asl"
+	#include "dasharo.asl"
+	#include "dtt.asl"
 	#include "hid.asl"
 	#include "lid.asl"
-	#include "dasharo.asl"
 }
 
 Device (\_SB.PCI0.LPCB.EC0)

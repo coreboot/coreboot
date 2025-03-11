@@ -31,4 +31,8 @@ DefinitionBlock(
 	}
 
 	#include "acpi/mainboard.asl"
+
+#if CONFIG(BOARD_NOVACUSTOM_V5X0TNX_BASE)
+	#include "acpi/dgpu/gpu_top.asl"
+#endif
 }

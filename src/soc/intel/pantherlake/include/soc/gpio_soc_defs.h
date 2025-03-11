@@ -279,7 +279,7 @@
 #define GPP_JTAG_TRST_B		INC(GPP_DBG_PMODE)
 #define GPP_DDSP_HPDALV		INC(GPP_JTAG_TRST_B)
 
-#define NUM_GRP_CPUJTAG_PADS	(GPP_DDSP_HPDALV - GPP_EPD_ON + 1)
+#define NUM_GRP_RSVD_PADS	(GPP_DDSP_HPDALV - GPP_EPD_ON + 1)
 
 /*
  * +----------------------------+

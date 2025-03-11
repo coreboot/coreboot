@@ -265,7 +265,7 @@
  * ref doc: Panther Lake H GPIO Implementation Summary (#817954)
  */
 #define GPP_E_START_OFFSET		0x9a0
-#define GPP_CPUJTAG_START_OFFSET	0x800
+#define GPP_RSVD_START_OFFSET	0x800
 #define GPP_H_START_OFFSET		0x8f0
 #define GPP_A_START_OFFSET		0xab0
 #define GPP_VGPIO3_START_OFFSET		0xc70

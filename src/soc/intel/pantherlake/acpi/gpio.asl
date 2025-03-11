@@ -27,10 +27,10 @@ Method (GADD, 1, NotSerialized)
 		Local1 = Arg0 - COM1_GRP_PAD_START
 	}
 	/* GPIO Community 3 */
-	If (Arg0 >= GPP_H00 && Arg0 <= COM3_GRP_PAD_END)
+	If (Arg0 >= COM3_GRP_PAD_START && Arg0 <= COM3_GRP_PAD_END)
 	{
 		Local0 = PID_GPIOCOM3
-		Local1 = Arg0 - GPP_H00
+		Local1 = Arg0 - COM3_GRP_PAD_START
 	}
 	/* GPIO Community 4 */
 	If (Arg0 >= COM4_GRP_PAD_START && Arg0 <= COM4_GRP_PAD_END)
@@ -438,7 +438,7 @@ Device (GPI1)
 	}
 }
 
-/* GPIO Community 3: GPP_H, GPP_A, VGPIO3 */
+/* GPIO Community 3: CPUJTAG (reserved), GPP_H, GPP_A, VGPIO3 */
 Device (GPI3)
 {
 	Name (_HID, ACPI_GPIO_HID)
@@ -471,7 +471,7 @@ Device (GPI3)
 			Package (0x02)
 			{
 				"intc-gpio-group-count",
-				NUM_COM3_GROUPS - 1 /* Skip CPUJTAG */
+				NUM_COM3_GROUPS
 			},
 
 			Package (0x02)
@@ -510,6 +510,12 @@ Device (GPI3)
 		{
 			Package (0x02)
 			{
+				"intc-gpio-group-0-subproperties",
+				RSVD
+			},
+
+			Package (0x02)
+			{
 				"intc-gpio-group-1-subproperties",
 				GPPH
 			},
@@ -527,10 +533,31 @@ Device (GPI3)
 			}
 		}
 	})
-	/*
-	 * Don't expose first bank/group in community 3: CPUJTAG because
-	 * CPUJTAG doesn't required to be controlled by kernel pinctrl driver.
-	 */
+	/* first bank/group in community 3: RSVD */
+	Name (RSVD, Package (0x02)
+	{
+		ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+		Package (0x03)
+		{
+			Package (0x02)
+			{
+				"intc-gpio-group-name",
+				"RSVD"
+			},
+
+			Package (0x02)
+			{
+				"intc-gpio-pad-count",
+				NUM_GRP_RSVD_PADS
+			},
+
+			Package (0x02)
+			{
+				"intc-gpio-group-offset",
+				GPP_RSVD_START_OFFSET
+			}
+		}
+	})
 	/* 2nd bank/group in community 3: GPP_H */
 	Name (GPPH, Package (0x02)
 	{

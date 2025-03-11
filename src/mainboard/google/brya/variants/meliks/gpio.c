@@ -22,6 +22,8 @@ static const struct pad_config override_gpio_table[] = {
 	/* D8  : SD_CLKREQ_ODL ==> NC */
 	PAD_NC(GPP_D8, NONE),
 
+	/* E7 : NC ==> GPP_E7_STRAP */
+	PAD_CFG_GPI_LOCK(GPP_E7, NONE, LOCK_CONFIG),
 	/* E14 : EDP_HPD ==> NC */
 	PAD_NC(GPP_E14, NONE),
 	/* E20 : HDMI_DDC_SCL ==> NC */

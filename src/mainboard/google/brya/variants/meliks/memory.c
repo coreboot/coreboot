@@ -95,3 +95,17 @@ int variant_memory_sku(void)
 
 	return gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
 }
+
+uint8_t mb_get_channel_disable_mask(void)
+{
+	/*
+	 * GPP_E7 High -> One RAM Chip
+	 * GPP_E7 Low  -> Two RAM Chip
+	 */
+	if (gpio_get(GPP_E7)) {
+		/* Disable all other channels except first two on each controller */
+		return (BIT(2) | BIT(3));
+	}
+
+	return 0;
+}

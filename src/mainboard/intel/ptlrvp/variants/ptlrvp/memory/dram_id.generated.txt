@@ -5,3 +5,4 @@
 
 DRAM Part Name                 ID to assign
 H58G56BK7BX068                 0 (0000)
+H58G66BK8BX067                 1 (0001)

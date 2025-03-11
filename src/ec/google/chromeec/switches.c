@@ -3,12 +3,32 @@
 #include <bootmode.h>
 #include <ec/google/chromeec/ec.h>
 #include <elog.h>
+#include <security/vboot/misc.h>
 
 #if CONFIG(EC_GOOGLE_CHROMEEC_LPC)
+/*
+ * Retrieves the state of the lid switch.
+ *
+ * The get_lid_switch() function checks if lid switch functionality is enabled
+ * in the coreboot configuration. If the VBOOT_LID_SWITCH Kconfig option is
+ * enabled, it retrieves the lid switch state from the Embedded Controller (EC).
+ *
+ * If the GBB_FLAG_DISABLE_LID_SHUTDOWN Kconfig option is enabled, this function
+ * will always return 1 (lid open), effectively faking the lid status. This is
+ * intended for stages post-romstage, particularly during display-related
+ * initialization, where lid-based shutdown should be suppressed.
+ *
+ * @return 1 if the lid is open, 0 if the lid is closed, or -1 if the lid switch
+ * functionality is not configured (VBOOT_LID_SWITCH is disabled).
+ */
 int get_lid_switch(void)
 {
 	if (!CONFIG(VBOOT_LID_SWITCH))
 		return -1;
+
+	/* If GBB_FLAG_DISABLE_LID_SHUTDOWN is enabled, fake the lid status as always open. */
+	if (!ENV_ROMSTAGE_OR_BEFORE && vboot_is_gbb_flag_set(VB2_GBB_FLAG_DISABLE_LID_SHUTDOWN))
+		return 1; /* Always return 1 (lid open) */
 
 	return !!(google_chromeec_get_switches() & EC_SWITCH_LID_OPEN);
 }

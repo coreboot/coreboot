@@ -108,13 +108,7 @@ main() {
 			git fetch 2>/dev/null
 		fi
 
-		declare -a branches=("origin/main" "origin/master" "origin/trunk")
-		for branch in "${branches[@]}"; do
-			if git branch -a | grep "${branch}" > /dev/null; then
-				branch_name="${branch}"
-				break
-			fi
-		done
+		branch_name="$(git symbolic-ref refs/remotes/origin/HEAD --short)"
 
 		updated_commit_id="$(git log --pretty='%h' -n 1 --abbrev=12 "${branch_name}" -- )"
 		updated_commit_description="$(git log --pretty='%ci - (%s)' -n 1 "${updated_commit_id}")"

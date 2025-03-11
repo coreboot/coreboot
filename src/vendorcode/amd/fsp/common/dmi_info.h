@@ -165,7 +165,7 @@ typedef struct {
   OUT UINT16                    MaximumVoltage;         ///< Maximum operating voltage for this device, in millivolts
   OUT UINT16                    ConfiguredVoltage;      ///< Configured voltage for this device, in millivolts
   // SMBIOS 3.2
-#ifdef SMBIOS_3_2_3_3_SUPPORT
+#ifdef SMBIOS_3_2_SUPPORT
   OUT UINT8                     MemoryTechnology;       ///< Memory technology type for this memory device
   OUT DMI_T17_MEMORY_OPERATING_MODE_CAPABILITY_VAR   MemoryOperatingModeCapability; ///< The operating modes supported by this memory device
   OUT CHAR8                     FirmwareVersion[10];    ///< String number for the firmware version of this memory device
@@ -178,8 +178,10 @@ typedef struct {
   OUT UINT64                    CacheSize;              ///< Size of the Cache portion of the memory device in Bytes, if any.
   OUT UINT64                    LogicalSize;            ///< Size of the Logical memory device in Bytes.
   // SMBIOS 3.3
+#ifdef SMBIOS_3_3_SUPPORT
   OUT UINT32                    ExtendedSpeed;          ///< Extended Speed
   OUT UINT32                    ExtendedConfiguredMemorySpeed; ///< Extended Configured memory speed
+#endif
 #endif
 } __packed TYPE17_DMI_INFO;
 

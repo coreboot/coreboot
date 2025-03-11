@@ -13,6 +13,7 @@
 #define AGESA_STRUCT_DIMMS_PER_CHANNEL    2   ///< DIMMs per channel in AGESA FSP DMI T17 table
 #define AGESA_STRUCT_PART_NUMBER_SIZE     31
 
-#define SMBIOS_3_2_3_3_SUPPORT            1
+#define SMBIOS_3_2_SUPPORT                1
+#define SMBIOS_3_3_SUPPORT                1
 
 #endif /* SOC_DMI_INFO_H */

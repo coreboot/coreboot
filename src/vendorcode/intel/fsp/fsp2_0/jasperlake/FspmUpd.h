@@ -72,11 +72,9 @@ typedef struct {
 **/
   UINT8                       EnableAbove4GBMmio;
 
-/** Offset 0x004B - Enable/Disable CrashLog Device 10
-  Enable(Default): Enable CPU CrashLog Device 10, Disable: Disable CPU CrashLog
-  $EN_DIS
+/** Offset 0x004B - Reserved
 **/
-  UINT8                       CpuCrashLogDevice;
+  UINT8                       Reserved0;
 
 /** Offset 0x004C - Memory SPD Pointer Channel 0 Dimm 0
   Pointer to SPD data, will be used only when SpdAddressTable SPD Address are marked as 00

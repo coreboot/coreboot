@@ -5,15 +5,12 @@
 
 #include <device/pci_def.h>
 
-#define _SA_DEVFN(slot, func)	PCI_DEVFN(SA_DEV_SLOT_ ## slot, func)
 #define _PCH_DEVFN(slot, func)	PCI_DEVFN(PCH_DEV_SLOT_ ## slot, func)
 
 #if !defined(__SIMPLE_DEVICE__)
 #include <device/device.h>
-#define _SA_DEV(slot, func)	pcidev_path_on_root(_SA_DEVFN(slot, func))
 #define _PCH_DEV(slot, func)	pcidev_path_on_root_debug(_PCH_DEVFN(slot, func), __func__)
 #else
-#define _SA_DEV(slot, func)	PCI_DEV(0, SA_DEV_SLOT_ ## slot, func)
 #define _PCH_DEV(slot, func)	PCI_DEV(0, PCH_DEV_SLOT_ ## slot, func)
 #endif
 
@@ -50,10 +47,6 @@
 #define SA_DEV_SLOT_GNA		0x08
 #define  SA_DEVFN_GNA		PCI_DEVFN(SA_DEV_SLOT_GNA, 0)
 #define  SA_DEV_GNA		PCI_DEV(0, SA_DEV_SLOT_GNA, 0)
-
-#define SA_DEV_SLOT_TMT		0x14
-#define SA_DEVFN_TMT		_SA_DEVFN(TMT, 2)
-#define SA_DEV_TMT		_SA_DEV(TMT, 2)
 
 /* PCH Devices */
 #define PCH_DEV_SLOT_SIO0	0x10

@@ -123,11 +123,11 @@ config PSP_APOB_DRAM_ADDRESS
 
 config PSP_APOB_DRAM_SIZE
 	hex
-	default 0x1E000
+	default 0x40000
 
 config PSP_SHAREDMEM_BASE
 	hex
-	default 0x201F000 if VBOOT
+	default 0x2041000 if VBOOT
 	default 0x0
 	help
 	  This variable defines the base address in DRAM memory where PSP copies
@@ -172,7 +172,7 @@ config C_ENV_BOOTBLOCK_SIZE
 
 config ROMSTAGE_ADDR
 	hex
-	default 0x2050000
+	default 0x2070000
 	help
 	  Sets the address in DRAM where romstage should be loaded.
 
@@ -184,7 +184,7 @@ config ROMSTAGE_SIZE
 
 config FSP_M_ADDR
 	hex
-	default 0x20C0000
+	default 0x20E0000
 	help
 	  Sets the address in DRAM where FSP-M should be loaded. cbfstool
 	  performs relocation of FSP-M to this address.
@@ -204,7 +204,7 @@ config FSP_TEMP_RAM_SIZE
 config VERSTAGE_ADDR
 	hex
 	depends on VBOOT_SEPARATE_VERSTAGE
-	default 0x2180000
+	default 0x21A0000
 	help
 	  Sets the address in DRAM where verstage should be loaded if running
 	  as a separate stage on x86.

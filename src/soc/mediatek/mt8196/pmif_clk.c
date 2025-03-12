@@ -239,11 +239,12 @@ int pmif_clk_init(void)
 	/* [12]: pmifspi_m_rst_b [13]: pmifspi_p_rst_b*/
 	SET32_BITFIELDS(&mtk_rug->wdt_vlp_swsysrst0, UNLOCK_KEY, 0x88, PMIFSPMI_RST_B, 0x3,
 			PMIF_RST_B, 0x3);
-	SET32_BITFIELDS(&mtk_rug->wdt_vlp_swsysrst0, UNLOCK_KEY, 0x88);
+	SET32_BITFIELDS(&mtk_rug->wdt_vlp_swsysrst0, UNLOCK_KEY, 0x88, PMIFSPMI_RST_B, 0x0,
+			PMIF_RST_B, 0x0);
 
 	/* [0]: tia_grst_b */
 	SET32_BITFIELDS(&mtk_rug->wdt_vlp_swsysrst1, UNLOCK_KEY, 0x88, TIA_GRST_B, 0x1);
-	SET32_BITFIELDS(&mtk_rug->wdt_vlp_swsysrst1, UNLOCK_KEY, 0x88);
+	SET32_BITFIELDS(&mtk_rug->wdt_vlp_swsysrst1, UNLOCK_KEY, 0x88, TIA_GRST_B, 0x0);
 
 	printk(BIOS_INFO, "%s: done\n", __func__);
 

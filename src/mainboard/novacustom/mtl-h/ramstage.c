@@ -39,4 +39,7 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 	params->CnviClkreqPinMux = 0x394CE605;  // GPP_F05
 
 	params->LidStatus = dasharo_ec_get_lid_state();
+
+	params->PortResetMessageEnable[1] = 1;
+	params->PortResetMessageEnable[5] = 1;
 }

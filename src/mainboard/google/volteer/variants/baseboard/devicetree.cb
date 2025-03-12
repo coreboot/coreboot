@@ -491,7 +491,7 @@ chip soc/intel/tigerlake
 				register "uid" = "1"
 				register "compat_string" = ""google,cros-ec-spi""
 				register "irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW_WAKE(GPP_C20)"
-				device spi 0 on end
+				device spi 0 hidden end
 			end # FPMCU
 		end
 		device ref pch_espi on

@@ -13,17 +13,19 @@
  * to CBMEM. The default CBMEM buffer size (4096 bytes) holds up to 512 test
  * execution logs per boot.
  */
-#define ST_INVALID_ID			0x00
-
 /* Intel self-test IDs (1 - 128) */
 #define ST_INTEL_START			1
-#define ST_CPU_INTEL_MICROCODE		(ST_INTEL_START + 0)
 
 /* Qualcomm self-test IDs (129 - 192) */
 #define ST_QUALCOMM_START		129
 
 /* MediaTek self-test IDs (193 - 256) */
 #define ST_MEDIATEK_START		193
+
+enum st_id {
+	ST_INVALID_ID = 0x00,
+	ST_CPU_INTEL_MICROCODE = ST_INTEL_START,
+};
 
 #define ST_ID_TO_NAME_TABLE \
 	{ST_INVALID_ID,			"Invalid Test"},\

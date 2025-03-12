@@ -25,6 +25,7 @@ config SOC_INTEL_METEORLAKE
 	select GENERIC_GPIO_LIB
 	select HAVE_DEBUG_RAM_SETUP
 	select HAVE_FSP_GOP
+	select HAVE_INTEL_FSP_REPO if FSP_TYPE_IOT
 	select HAVE_HYPERTHREADING
 	select HAVE_INTEL_COMPLIANCE_TEST_MODE
 	select HAVE_SMI_HANDLER
@@ -346,14 +347,9 @@ config CONSOLE_CBMEM_BUFFER_SIZE
 
 config FSP_TYPE_IOT
 	bool
-	select HAVE_INTEL_FSP_REPO
 	default n
 	help
 	  This option allows to select FSP IOT type from 3rdparty/fsp repo
-
-config FSP_USE_REPO
-	default y if FSP_TYPE_IOT
-	default n
 
 config FSP_HEADER_PATH
 	string "Location of FSP headers"

@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <assert.h>
+#include <boot/coreboot_tables.h>
 #include <bootmode.h>
 #include <bootsplash.h>
 #include <console/console.h>
@@ -1376,10 +1377,25 @@ __weak void mainboard_silicon_init_params(FSP_S_CONFIG *s_cfg)
 /* Handle FSP logo params */
 void soc_load_logo(FSPS_UPD *supd)
 {
+	struct soc_intel_common_config *config = chip_get_common_soc_structure();
+	FSP_S_CONFIG *s_cfg = &supd->FspsConfig;
+
+	/*
+	 * Adjusts panel orientation for external display when the lid is closed.
+	 *
+	 * When the lid is closed (LidStatus == 0), indicating the onboard display is inactive,
+	 * this function forces the panel orientation to normal. This ensures proper display
+	 * on an external monitor, as rotated orientations are typically not suitable in
+	 * such state.
+	 */
+	if (s_cfg->LidStatus == 0)
+		config->panel_orientation = LB_FB_ORIENTATION_NORMAL;
+
 	fsp_convert_bmp_to_gop_blt(&supd->FspsConfig.LogoPtr,
 			 &supd->FspsConfig.LogoSize,
 			 &supd->FspsConfig.BltBufferAddress,
 			 &supd->FspsConfig.BltBufferSize,
 			 &supd->FspsConfig.LogoPixelHeight,
-			 &supd->FspsConfig.LogoPixelWidth);
+			 &supd->FspsConfig.LogoPixelWidth,
+			 config->panel_orientation);
 }

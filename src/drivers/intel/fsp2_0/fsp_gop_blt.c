@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
+#include <boot/coreboot_tables.h>
 #include <bootsplash.h>
 #include <console/console.h>
 #include <fsp/api.h>
@@ -131,9 +132,184 @@ static uint32_t get_color_map_num(efi_bmp_image_header *header)
 	return col_map_number;
 }
 
-/* Fill BMP image into BLT buffer format */
+/*
+ * Visual Representation of the Flipping:
+ *
+ * Original BMP Image:
+ *
+ *      0 -----------------------------------------PixelWidth-1
+ *      |                                          |
+ *      |                                          |
+ *      |                                          |
+ *      PixelHeight-1------------------------------|
+ *
+ * Blitting Region:
+ *
+ *      (x, y) ----------------------------------- (x + blt_width, y)
+ *      |                                          |
+ *      |                                          |
+ *      (x, y + blt_height) -------------------- --(x + blt_width, y + blt_height)
+ *
+ * Flipped Coordinates:
+ *
+ * flipped_x:  Represents the horizontal coordinate from the `right` edge of the BMP,
+ *             accounting for the blit width.
+ *
+ * flipped_y:  Represents the vertical coordinate from the `bottom` edge of the BMP,
+ *             accounting for the blit height.
+ *
+ * Example (Orientation: LB_FB_ORIENTATION_BOTTOM_UP):
+ *
+ * If blt_width is small, flipped_x will be near PixelWidth.
+ * If blt_height is small, flipped_y will be near PixelHeight.
+ *
+ * The blit then starts at (flipped_x, blt_height), effectively flipping the
+ * horizontal position and using the original blit height.
+ *
+ * This allows for blitting from the bottom-left corner of the display panel.
+ */
+static bool calculate_adj_height_width(const efi_bmp_image_header *header, size_t *adjusted_x,
+	 size_t *adjusted_y, enum lb_fb_orientation orientation, int blt_width, int blt_height)
+{
+	if (!header || !adjusted_x || !adjusted_y)
+		return false;
+
+	size_t flipped_x = header->PixelWidth - blt_width - 1;
+	size_t flipped_y = header->PixelHeight - blt_height - 1;
+
+	switch (orientation) {
+	case LB_FB_ORIENTATION_LEFT_UP:
+		*adjusted_x = flipped_y;
+		*adjusted_y = flipped_x;
+		break;
+
+	case LB_FB_ORIENTATION_BOTTOM_UP:
+		*adjusted_x = flipped_x;
+		*adjusted_y = blt_height;
+		break;
+
+	case LB_FB_ORIENTATION_RIGHT_UP:
+		*adjusted_x = blt_height;
+		*adjusted_y = blt_width;
+		break;
+
+	case LB_FB_ORIENTATION_NORMAL:
+	default:
+		*adjusted_x = blt_width;
+		*adjusted_y = flipped_y;
+		break;
+	}
+
+	return true;
+}
+
+/*
+ * Visual Representation of gop_width and calculate linear offset into the GOP buffer:
+ *
+ * GOP Display Buffer:
+ *
+ *      +------------------------------------------------+
+ *      | 0                                              |
+ *      | |--> gop_width pixels in this row              |
+ *      +------------------------------------------------+
+ *      | gop_width                                      |
+ *      |                                                |
+ *      | gop_width                                      |
+ *      | ...                                            |
+ *      +------------------------------------------------+
+ *      | gop_width                                      |
+ *      +------------------------------------------------+
+ *
+ * gop_width: Represents the width of a row in the GOP buffer.
+ * - It is determined by the `orientation` of the image.
+ * - For `LEFT_UP` and `RIGHT_UP`, the GOP width is the BMP image's `PixelHeight`.
+ * - For `BOTTOM_UP` and `NORMAL`, the GOP width is the BMP image's `PixelWidth`.
+ *
+ * gop_x, gop_y: Coordinates within the GOP buffer where the blit will start.
+ * - These are calculated by `calculate_adj_height_width` based on the `orientation`,
+ * `blt_width`, and `blt_height`.
+ *
+ * Pointer to the calculated pixel in the GOP blit buffer, or NULL on error.
+ * - Calculate `gop_blt_offset`as `gop_y * gop_width + gop_x` to determine the offset
+ *   to access the correct pixel within `gop_blt_buffer`.
+ * - `gop_y * gop_width` calculates the offset of the row.
+ * - `gop_x` calculates the offset within that row.
+ */
+static efi_graphics_output_blt_pixel *get_gop_blt_pixel(
+	efi_graphics_output_blt_pixel *gop_blt_buffer, const efi_bmp_image_header *header,
+	 int blt_width, int blt_height, enum lb_fb_orientation orientation)
+{
+	size_t gop_x;
+	size_t gop_y;
+	size_t gop_width;
+
+	if (!header || !gop_blt_buffer)
+		return NULL;
+
+	switch (orientation) {
+	case LB_FB_ORIENTATION_LEFT_UP:
+	case LB_FB_ORIENTATION_RIGHT_UP:
+		gop_width = header->PixelHeight;
+		break;
+
+	case LB_FB_ORIENTATION_BOTTOM_UP:
+	case LB_FB_ORIENTATION_NORMAL:
+	default:
+		gop_width = header->PixelWidth;
+		break;
+	}
+
+	if (!calculate_adj_height_width(header, &gop_x, &gop_y, orientation,
+			 blt_width, blt_height))
+		return NULL;
+
+	/*
+	 * Calculated pixel in the Graphics Output Protocol (GOP) blit buffer.
+	 * This offset represents the starting position where the blitted region will be placed
+	 * in the framebuffer.
+	 */
+	return &gop_blt_buffer[gop_y * gop_width + gop_x];
+}
+
+/*
+ * Fill BMP image into BLT buffer format with optional orientation
+ *
+ * +------------------------------------------------------------------+
+ * |  BMP Image (header: efi_bmp_image_header)                        |
+ * |  (PixelWidth, PixelHeight)                                       |
+ * +------------------------------------------------------------------+
+ *        |
+ *        | (blt_width, blt_height) : Region to blit
+ *        V
+ * +------------------------------------------------------------------+
+ * |  calculate_adj_height_width(header, adjusted_x, adjusted_y,      |
+ * |                               orientation, blt_width, blt_height)|
+ * +------------------------------------------------------------------+
+ *        |
+ *        | Calculates adjusted coordinates based on orientation:
+ *        |   - flipped_x = header->PixelWidth - blt_width - 1
+ *        |   - flipped_y = header->PixelHeight - blt_height - 1
+ *        |   - Depending on 'orientation', adjusted_x and adjusted_y are set.
+ *        V
+ * +-------------------------------------------------------------------+
+ * |  get_gop_blt_pixel(gop_blt_buffer, header, blt_width, blt_height, |
+ * |                                                  orientation)     |
+ * +-------------------------------------------------------------------+
+ *        |
+ *        | 1. Determines gop_width based on orientation:
+ *        |    - LEFT_UP/RIGHT_UP: gop_width = header->PixelHeight,
+ *        |    - BOTTOM_UP/NORMAL: gop_width = header->PixelWidth,
+ *        | 2. Calls calculate_adj_height_width to get gop_x and gop_y.
+ *        | 3. GOP BLT offset: calculates linear offset into the GOP buffer
+ *        |    - gop_blt_offset = gop_y * gop_width + gop_x
+ *        | 4. GOP BLT offset is used to access the correct regions in:
+ *        V
+ * +------------------------------------------------------------------+
+ * |  GOP Blit Buffer (Framebuffer)                                   |
+ * +------------------------------------------------------------------+
+ */
 static void *fill_blt_buffer(efi_bmp_image_header *header,
-	uintptr_t logo_ptr, size_t blt_buffer_size)
+	uintptr_t logo_ptr, size_t blt_buffer_size, enum lb_fb_orientation orientation)
 {
 	efi_graphics_output_blt_pixel *gop_blt_buffer;
 	efi_graphics_output_blt_pixel *gop_blt_ptr;
@@ -157,25 +333,32 @@ static void *fill_blt_buffer(efi_bmp_image_header *header,
 	bmp_color_map = (efi_bmp_color_map *)(logo_ptr + sizeof(efi_bmp_image_header));
 
 	for (size_t height = 0; height < header->PixelHeight; height++) {
-		gop_blt = &gop_blt_buffer[(header->PixelHeight - height - 1) *
-				 header->PixelWidth];
-		for (size_t width = 0; width < header->PixelWidth; width++, bmp_image++,
-			 gop_blt++) {
+		for (size_t width = 0; width < header->PixelWidth; width++, bmp_image++) {
 			size_t index = 0;
+
+			gop_blt = get_gop_blt_pixel(gop_blt_buffer, header, width, height,
+							 orientation);
+			if (!gop_blt) {
+				free(gop_blt_ptr);
+				return NULL;
+			}
+
 			switch (header->BitPerPixel) {
 			/* Translate 1-bit (2 colors) BMP to 24-bit color */
 			case 1:
 				for (index = 0; index < 8 && width < header->PixelWidth; index++) {
-					gop_blt->Red = bmp_color_map[((*bmp_image) >> (7 - index))
-									 & 0x1].Red;
-					gop_blt->Green = bmp_color_map[((*bmp_image) >> (7 - index))
-									 & 0x1].Green;
-					gop_blt->Blue = bmp_color_map[((*bmp_image) >> (7 - index))
-									 & 0x1].Blue;
-					gop_blt++;
+					uint8_t bit = ((*bmp_image) >> (7 - index)) & 0x1;
+					gop_blt->Red = bmp_color_map[bit].Red;
+					gop_blt->Green = bmp_color_map[bit].Green;
+					gop_blt->Blue = bmp_color_map[bit].Blue;
 					width++;
+					gop_blt = get_gop_blt_pixel(gop_blt_buffer, header, width, height,
+								 orientation);
+					if (!gop_blt) {
+						free(gop_blt_ptr);
+						return NULL;
+					}
 				}
-				gop_blt--;
 				width--;
 				break;
 
@@ -186,8 +369,13 @@ static void *fill_blt_buffer(efi_bmp_image_header *header,
 				gop_blt->Green = bmp_color_map[index].Green;
 				gop_blt->Blue = bmp_color_map[index].Blue;
 				if (width < (header->PixelWidth - 1)) {
-					gop_blt++;
 					width++;
+					gop_blt = get_gop_blt_pixel(gop_blt_buffer, header, width, height,
+								 orientation);
+					if (!gop_blt) {
+						free(gop_blt_ptr);
+						return NULL;
+					}
 					index = (*bmp_image) & 0x0f;
 					gop_blt->Red = bmp_color_map[index].Red;
 					gop_blt->Green = bmp_color_map[index].Green;
@@ -237,8 +425,8 @@ static void *fill_blt_buffer(efi_bmp_image_header *header,
 
 /* Convert a *.BMP graphics image to a GOP blt buffer */
 void fsp_convert_bmp_to_gop_blt(efi_uintn_t *logo, uint32_t *logo_size,
-	efi_uintn_t *blt_ptr, efi_uintn_t *blt_size,
-	uint32_t *pixel_height, uint32_t *pixel_width)
+	efi_uintn_t *blt_ptr, efi_uintn_t *blt_size, uint32_t *pixel_height, uint32_t *pixel_width,
+	enum lb_fb_orientation orientation)
 {
 	uintptr_t logo_ptr;
 	size_t logo_ptr_size, blt_buffer_size;
@@ -265,10 +453,12 @@ void fsp_convert_bmp_to_gop_blt(efi_uintn_t *logo, uint32_t *logo_size,
 	if (!get_color_map_num(bmp_header))
 		return;
 
+	bool is_standard_orientation = (orientation == LB_FB_ORIENTATION_NORMAL ||
+			orientation == LB_FB_ORIENTATION_BOTTOM_UP);
 	*logo = logo_ptr;
 	*logo_size = logo_ptr_size;
 	*blt_size = blt_buffer_size;
-	*pixel_height = bmp_header->PixelHeight;
-	*pixel_width = bmp_header->PixelWidth;
-	*blt_ptr = (uintptr_t)fill_blt_buffer(bmp_header, logo_ptr, blt_buffer_size);
+	*pixel_height = is_standard_orientation ? bmp_header->PixelHeight : bmp_header->PixelWidth;
+	*pixel_width = is_standard_orientation ? bmp_header->PixelWidth : bmp_header->PixelHeight;
+	*blt_ptr = (uintptr_t)fill_blt_buffer(bmp_header, logo_ptr, blt_buffer_size, orientation);
 }

@@ -209,6 +209,7 @@ chip soc/intel/alderlake
 				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C6)"
 				register "generic.enable_delay_ms" = "6"
 				register "generic.has_power_resource" = "1"
+				register "generic.use_gpio_for_status" = "true"
 				device i2c 34 on end
 			end
 		end # I2C3

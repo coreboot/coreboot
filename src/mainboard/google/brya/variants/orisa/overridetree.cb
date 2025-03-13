@@ -497,6 +497,7 @@ chip soc/intel/alderlake
 				register "generic.stop_delay_ms" = "150"
 				register "generic.stop_off_delay_ms" = "2"
 				register "generic.has_power_resource" = "1"
+				register "generic.use_gpio_for_status" = "true"
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 10 on end
 			end

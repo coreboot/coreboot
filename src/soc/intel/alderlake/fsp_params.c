@@ -667,7 +667,7 @@ static void fill_fsps_chipset_lockdown_params(FSP_S_CONFIG *s_cfg,
 	const bool lockdown_by_fsp = get_lockdown_config() == CHIPSET_LOCKDOWN_FSP;
 	s_cfg->PchLockDownGlobalSmi = lockdown_by_fsp;
 	s_cfg->PchLockDownBiosInterface = lockdown_by_fsp;
-	s_cfg->PchUnlockGpioPads = lockdown_by_fsp;
+	s_cfg->PchUnlockGpioPads = !lockdown_by_fsp;
 	s_cfg->RtcMemoryLock = lockdown_by_fsp;
 	s_cfg->SkipPamLock = !lockdown_by_fsp;
 

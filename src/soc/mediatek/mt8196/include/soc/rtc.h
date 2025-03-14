@@ -66,11 +66,6 @@ struct rtc_clk_freq {
 	u16 fqm26m_target_ck;
 };
 
-int rtc_init(int recover);
-bool rtc_gpio_init(void);
-u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size);
 void rtc_get_time(struct rtc_time *tm);
-void rtc_read(u16 addr, u16 *rdata);
-void rtc_write(u16 addr, u16 wdata);
 
 #endif /* SOC_MEDIATEK_MT8196_RTC_H */

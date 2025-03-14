@@ -83,13 +83,4 @@ enum {
 	PMIC_FQMTR_CKSEL_MASK		= 7U << 0,
 };
 
-
-/* external API */
-int rtc_init(int recover);
-bool rtc_gpio_init(void);
-void rtc_boot(void);
-u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size);
-void rtc_read(u16 addr, u16 *rdata);
-void rtc_write(u16 addr, u16 wdata);
-
 #endif /* SOC_MEDIATEK_MT8186_RTC_H */

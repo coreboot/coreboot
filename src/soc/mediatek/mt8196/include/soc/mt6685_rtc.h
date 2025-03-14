@@ -147,7 +147,4 @@
 #define SCK_TOP_XTAL_SEL_MASK		0x1
 #define SCK_TOP_XTAL_SEL_SHIFT		0
 
-/* Complete the RTC initialization process and register settings. */
-void rtc_boot(void);
-
 #endif /* SOC_MEDIATEK_MT8196_MT6685_RTC_H */

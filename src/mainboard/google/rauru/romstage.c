@@ -11,12 +11,12 @@
 #include <soc/mt6363.h>
 #include <soc/mt6373.h>
 #include <soc/mt6685.h>
-#include <soc/mt6685_rtc.h>
 #include <soc/mtk_fsp.h>
 #include <soc/pcie.h>
 #include <soc/pll.h>
 #include <soc/pmif.h>
 #include <soc/pwrsel.h>
+#include <soc/rtc.h>
 #include <soc/srclken_rc.h>
 #include <soc/thermal.h>
 

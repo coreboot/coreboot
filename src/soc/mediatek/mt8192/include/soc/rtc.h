@@ -4,6 +4,7 @@
 #define SOC_MEDIATEK_MT8192_RTC_H
 
 #include <soc/pmif.h>
+#include <soc/rtc_common.h>
 #include <soc/rtc_reg_common.h>
 #include <stdbool.h>
 
@@ -83,10 +84,4 @@ enum {
 	RTC_K_EOSC_RSV_2	= 1 << 10,
 };
 
-void rtc_read(u16 addr, u16 *rdata);
-void rtc_write(u16 addr, u16 wdata);
-int rtc_init(int recover);
-bool rtc_gpio_init(void);
-void rtc_boot(void);
-u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size);
 #endif /* SOC_MEDIATEK_MT8192_RTC_H */

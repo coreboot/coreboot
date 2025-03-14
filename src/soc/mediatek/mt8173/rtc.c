@@ -8,7 +8,7 @@
 #include <types.h>
 
 /* initialize rtc related gpio */
-static bool rtc_gpio_init(void)
+bool rtc_gpio_init(void)
 {
 	u16 con;
 

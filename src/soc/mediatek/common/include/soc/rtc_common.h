@@ -104,5 +104,12 @@ void rtc_osc_init(void);
 bool rtc_powerkey_init(void);
 void rtc_boot_common(void);
 u16 rtc_eosc_cali(void);
+/* Complete the RTC initialization process and register settings. */
+int rtc_init(int recover);
+void rtc_boot(void);
+u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size);
+bool rtc_gpio_init(void);
+void rtc_read(u16 addr, u16 *rdata);
+void rtc_write(u16 addr, u16 wdata);
 
 #endif /* SOC_MEDIATEK_RTC_COMMON_H */

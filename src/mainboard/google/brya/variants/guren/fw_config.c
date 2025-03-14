@@ -29,7 +29,9 @@ static const struct pad_config lte_disable_pads[] = {
 
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 {
-	if (!fw_config_probe(FW_CONFIG(DB_USB, DB_HDMI_LTE))) {
+	if (!fw_config_probe(FW_CONFIG(DB_USB, DB_HDMI_LTE))
+		&& !fw_config_probe(FW_CONFIG(DB_USB, DB_HDMI))
+		&& !fw_config_probe(FW_CONFIG(DB_USB, DB_HDMI_1A))) {
 		printk(BIOS_INFO, "Disable HDMI GPIO pins.\n");
 		gpio_padbased_override(padbased_table, hdmi_disable_pads,
 						ARRAY_SIZE(hdmi_disable_pads));

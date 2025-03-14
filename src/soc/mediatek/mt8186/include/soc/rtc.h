@@ -85,7 +85,6 @@ enum {
 
 
 /* external API */
-void rtc_bbpu_power_on(void);
 int rtc_init(int recover);
 bool rtc_gpio_init(void);
 void rtc_boot(void);

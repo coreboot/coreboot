@@ -84,7 +84,6 @@ enum {
 
 void rtc_read(u16 addr, u16 *rdata);
 void rtc_write(u16 addr, u16 wdata);
-void rtc_bbpu_power_on(void);
 int rtc_init(int recover);
 bool rtc_gpio_init(void);
 void rtc_boot(void);

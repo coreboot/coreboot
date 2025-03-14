@@ -596,6 +596,9 @@ struct soc_intel_alderlake_config {
 	 */
 	bool dmi_power_optimize_disable;
 
+	/* Enable/Disable Energy Efficient Turbo */
+	bool energy_efficient_turbo;
+
 	/*
 	 * Used to communicate the power delivery design capability of the board. This
 	 * value is an enum of the available power delivery segments that are defined in

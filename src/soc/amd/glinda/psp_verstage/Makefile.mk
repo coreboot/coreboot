@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
-ifeq $($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
+ifeq ($(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK),y)
 
 subdirs-y += ../../common/psp_verstage
 

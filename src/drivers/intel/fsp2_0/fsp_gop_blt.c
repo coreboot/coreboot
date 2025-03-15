@@ -166,9 +166,12 @@ static void *fill_blt_buffer(efi_bmp_image_header *header,
 			/* Translate 1-bit (2 colors) BMP to 24-bit color */
 			case 1:
 				for (index = 0; index < 8 && width < header->PixelWidth; index++) {
-					gop_blt->Red   = bmp_color_map[((*bmp_image) >> (7 - index)) & 0x1].Red;
-					gop_blt->Green = bmp_color_map[((*bmp_image) >> (7 - index)) & 0x1].Green;
-					gop_blt->Blue  = bmp_color_map[((*bmp_image) >> (7 - index)) & 0x1].Blue;
+					gop_blt->Red = bmp_color_map[((*bmp_image) >> (7 - index))
+									 & 0x1].Red;
+					gop_blt->Green = bmp_color_map[((*bmp_image) >> (7 - index))
+									 & 0x1].Green;
+					gop_blt->Blue = bmp_color_map[((*bmp_image) >> (7 - index))
+									 & 0x1].Blue;
 					gop_blt++;
 					width++;
 				}
@@ -179,38 +182,38 @@ static void *fill_blt_buffer(efi_bmp_image_header *header,
 			/* Translate 4-bit (16 colors) BMP Palette to 24-bit color */
 			case 4:
 				index = (*bmp_image) >> 4;
-				gop_blt->Red   = bmp_color_map[index].Red;
+				gop_blt->Red = bmp_color_map[index].Red;
 				gop_blt->Green = bmp_color_map[index].Green;
-				gop_blt->Blue  = bmp_color_map[index].Blue;
+				gop_blt->Blue = bmp_color_map[index].Blue;
 				if (width < (header->PixelWidth - 1)) {
 					gop_blt++;
 					width++;
 					index = (*bmp_image) & 0x0f;
-					gop_blt->Red   = bmp_color_map[index].Red;
+					gop_blt->Red = bmp_color_map[index].Red;
 					gop_blt->Green = bmp_color_map[index].Green;
-					gop_blt->Blue  = bmp_color_map[index].Blue;
+					gop_blt->Blue = bmp_color_map[index].Blue;
 				}
 				break;
 
 			/* Translate 8-bit (256 colors) BMP Palette to 24-bit color */
 			case 8:
-				gop_blt->Red   = bmp_color_map[*bmp_image].Red;
+				gop_blt->Red = bmp_color_map[*bmp_image].Red;
 				gop_blt->Green = bmp_color_map[*bmp_image].Green;
-				gop_blt->Blue  = bmp_color_map[*bmp_image].Blue;
+				gop_blt->Blue = bmp_color_map[*bmp_image].Blue;
 				break;
 
 			/* For 24-bit BMP */
 			case 24:
-				gop_blt->Blue  = *bmp_image++;
+				gop_blt->Blue = *bmp_image++;
 				gop_blt->Green = *bmp_image++;
-				gop_blt->Red   = *bmp_image;
+				gop_blt->Red = *bmp_image;
 				break;
 
 			/* Convert 32 bit to 24bit bmp - just ignore the final byte of each pixel */
 			case 32:
-				gop_blt->Blue  = *bmp_image++;
+				gop_blt->Blue = *bmp_image++;
 				gop_blt->Green = *bmp_image++;
-				gop_blt->Red   = *bmp_image++;
+				gop_blt->Red = *bmp_image++;
 				break;
 
 			/* Other bit format of BMP is not supported. */

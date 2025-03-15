@@ -44,6 +44,7 @@ enum intel_camera_platform_type {
 	PLATFORM_SKC = 9,
 	PLATFORM_CNL = 10,
 	PLATFORM_TGL = 12,
+	PLATFORM_JSL = 14,
 	PLATFORM_ADL = 15,
 	PLATFORM_MTL = 16,
 	PLATFORM_LNL = 17

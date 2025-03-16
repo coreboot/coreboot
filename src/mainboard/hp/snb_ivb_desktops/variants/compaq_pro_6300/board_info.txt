@@ -1,0 +1,7 @@
+Category: desktop
+Board URL: https://support.hp.com/us-en/product/details/hp-compaq-pro-6300-small-form-factor-pc/model/5232884
+ROM IC: MT25Q128A
+ROM package: SOIC-16
+ROM socketed: no
+Flashrom support: yes
+Release year: 2012

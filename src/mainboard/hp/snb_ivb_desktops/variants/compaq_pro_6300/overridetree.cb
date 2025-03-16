@@ -1,0 +1,36 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+chip northbridge/intel/sandybridge
+	device domain 0 on
+		subsystemid 0x103c 0x339a inherit
+
+		chip southbridge/intel/bd82x6x
+			register "sata_port_map" = "0x17"
+				# 0 = Blue
+				# 1 = White #1
+				# 2 = White #2
+				# 3,5 not implemented
+				# 4 = Black (eSATA)
+			register "superspeed_capable_ports" = "0xf"
+			register "xhci_switchable_ports"    = "0xf"
+			register "usb_port_config" = "{
+				{1, 0x84b, 0},
+				{1, 0x84b, 0},
+				{1, 0xa4b, 1},
+				{1, 0xa4b, 1},
+				{1, 0xb43, 2},
+				{1, 0x94b, 2},
+				{1, 0x94f, 3},
+				{1, 0xb53, 3},
+				{1, 1, 4},
+				{1, 5, 4},
+				{1, 0x65b, 6},
+				{1, 0x65f, 5},
+				{1, 0x84b, 5},
+				{1, 0x94b, 6},
+			}"
+
+			device ref xhci on end
+		end
+	end
+end

@@ -103,11 +103,6 @@ config VBOOT
 	select HAS_RECOVERY_MRC_CACHE
 	select VBOOT_LID_SWITCH
 
-# Override the default variant behavior, since the data.vbt is the same
-# for all variants.
-config INTEL_GMA_VBT_FILE
-	default "src/mainboard/\$(MAINBOARDDIR)/data.vbt"
-
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/default.fmd" if !CHROMEOS
 

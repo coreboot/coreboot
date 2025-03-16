@@ -83,7 +83,12 @@ void __noreturn prepare_and_run_postcar(void)
 
 static void finalize_load(uintptr_t *reloc_params, uintptr_t mtrr_frame_ptr)
 {
+	/*
+	 * set postcar(rmodule)'s parameter.
+	 * the parameter is defined as post_car_mtrrs in cpu/x86/mtrr/earlymtrr.c
+	 */
 	*reloc_params = mtrr_frame_ptr;
+
 	/*
 	 * Signal to rest of system that another update was made to the
 	 * postcar program prior to running it.

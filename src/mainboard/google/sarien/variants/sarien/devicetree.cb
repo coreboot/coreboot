@@ -214,7 +214,14 @@ chip soc/intel/cannonlake
 	register "gpio_pm[COMM_4]" = "MISCCFG_GPIO_PM_CONFIG_BITS"
 
 	device domain 0 on
-		device ref igpu on  end
+		device ref igpu on
+			chip drivers/gfx/generic
+				register "device_count" = "1"
+				register "device[0].name" = ""LCD0""
+				register "device[0].type" = "panel"
+				device generic 0 on end
+			end
+		end
 		device ref dptf on  end
 		device ref thermal on  end
 		device ref xhci on

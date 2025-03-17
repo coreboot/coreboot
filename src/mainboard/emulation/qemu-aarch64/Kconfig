@@ -30,9 +30,6 @@ config ECAM_MMCONF_BASE_ADDRESS
 config ECAM_MMCONF_BUS_NUMBER
 	default 256
 
-config PCI_IOBASE
-	default 0x3eff0000
-
 config MEMLAYOUT_LD_FILE
 	string
 	default "src/mainboard/emulation/qemu-aarch64/memlayout.ld"

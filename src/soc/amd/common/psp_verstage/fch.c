@@ -48,21 +48,11 @@ static void gpio_set_bar(void *bar)
 	acpimmio_gpio0 = bar;
 }
 
-static uintptr_t io_bar;
+uintptr_t io_port_mmio_base;
 
 static void io_set_bar(void *bar)
 {
-	io_bar = (uintptr_t)bar;
-}
-
-u8 io_read8(u16 reg)
-{
-	return read8p(io_bar + reg);
-}
-
-void io_write8(u16 reg, u8 value)
-{
-	write8p(io_bar + reg, value);
+	io_port_mmio_base = (uintptr_t)bar;
 }
 
 static void aoac_set_bar(void *bar)

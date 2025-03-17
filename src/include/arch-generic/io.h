@@ -19,7 +19,12 @@
 #include <endian.h>
 #include <arch/mmio.h>
 
-#define __io(a)	(void *)(uintptr_t)(CONFIG_PCI_IOBASE + a)
+/*
+ * The memory address of a memory-mapped translator that lets the
+ * CPU communicate with peripheral devices over PCI I/O space.
+ */
+extern uintptr_t io_port_mmio_base;
+#define __io(a) (void *)(io_port_mmio_base + a)
 
 static inline void outb(uint8_t value, uint16_t port)
 {

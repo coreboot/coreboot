@@ -41,7 +41,7 @@ static void qemu_aarch64_domain_read_resources(struct device *dev)
 	res->limit = VIRT_PCIE_HIGH_MMIO_LIMIT;
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED;
 
-	mmio_range(dev, index++, VIRT_PCIE_ECAM_BASE, VIRT_PCIE_ECAM_SIZE);
+	mmio_range(dev, index++, VIRT_PCIE_HIGH_ECAM_BASE, VIRT_PCIE_ECAM_SIZE);
 
 	ram_from_to(dev, index++, (uintptr_t)_dram, cbmem_top());
 }

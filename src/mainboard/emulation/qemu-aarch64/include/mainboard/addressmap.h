@@ -41,7 +41,8 @@
  * base_memmap entries (VIRT_HIGH_GIC_REDIST2 index is greater than the last
  * index of base_memmap).
  */
-#define VIRT_PCIE_ECAM_BASE 0x4010000000 /* The one in lower memory does not seem to work */
+#define VIRT_PCIE_LOW_ECAM_BASE    0x3f000000 /* only used if highmem-ecam=off (QEMU cmdline) */
+#define VIRT_PCIE_HIGH_ECAM_BASE 0x4010000000 /* only used if highmem-ecam=on  (default) */
 #define VIRT_PCIE_ECAM_SIZE (256 * MiB)
-#define VIRT_PCIE_HIGH_MMIO_BASE 0x8000000000ULL
+#define VIRT_PCIE_HIGH_MMIO_BASE  0x8000000000ULL
 #define VIRT_PCIE_HIGH_MMIO_LIMIT 0xffffffffffULL

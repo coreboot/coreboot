@@ -310,9 +310,9 @@ const struct pad_config gpio_table[] = {
 	/* F03:	CNV_RGI_RSP			*/
 	PAD_NC(GPP_F03, NONE),
 	/* F04:	CNVI_RF_RESET_N			*/
-	PAD_NC(GPP_F00, NONE),
+	PAD_NC(GPP_F04, NONE),
 	/* F05:	MODEM_CLKREQ			*/
-	PAD_NC(GPP_F00, NONE),
+	PAD_NC(GPP_F05, NONE),
 	/* F06:					*/
 	PAD_NC(GPP_F06, NONE),
 	/* F07:					*/

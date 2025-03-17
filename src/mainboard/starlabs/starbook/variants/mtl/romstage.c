@@ -22,7 +22,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 
 	const bool half_populated = false;
 
-	const struct mem_spd ddr4_spd_info = {
+	const struct mem_spd ddr5_spd_info = {
 		.topo = MEM_TOPO_DIMM_MODULE,
 		.smbus = {
 			[0] = {
@@ -34,7 +34,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		},
 	};
 
-	memcfg_init(mupd, &mem_config, &ddr4_spd_info, half_populated);
+	memcfg_init(mupd, &mem_config, &ddr5_spd_info, half_populated);
 
 	const uint8_t vtd = get_uint_option("vtd", 1);
 	mupd->FspmConfig.VtdDisable = !vtd;

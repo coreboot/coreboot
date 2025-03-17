@@ -9,7 +9,7 @@
 /* Pad configuration in ramstage */
 static const struct pad_config override_gpio_table[] = {
 	/* A7  : NC ==> SLP_S0_GATE_R */
-	PAD_CFG_GPI(GPP_A7, NONE, DEEP),
+	PAD_CFG_GPO(GPP_A7, 1, DEEP),
 	/* A8  : GPP_A8 ==> NC */
 	PAD_NC_LOCK(GPP_A8, NONE, LOCK_CONFIG),
 	/* A11 : GPP_A11 ==> EN_SPK_PA */

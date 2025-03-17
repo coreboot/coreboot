@@ -88,9 +88,9 @@ const struct pad_config gpio_table[] = {
 	 *		WEAK INTERNAL PD 20K	*/
 	PAD_CFG_GPO(GPP_C02, 1, DEEP),
 	/* C03:	SML0_CLK			*/
-	PAD_CFG_NF(GPP_C03, NONE, DEEP, NF1),
+	PAD_NC(GPP_C03, NONE),
 	/* C04:	SML0_DATA			*/
-	PAD_CFG_NF(GPP_C04, NONE, DEEP, NF1),
+	PAD_NC(GPP_C04, NONE),
 	/* C05:	ESPI
 	 *		HIGH:	ENABLED
 	 *		LOW:	DISABLED

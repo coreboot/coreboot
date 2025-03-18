@@ -22,8 +22,6 @@ static const struct pad_config override_gpio_table[] = {
 	/* D8  : SD_CLKREQ_ODL ==> NC */
 	PAD_NC(GPP_D8, NONE),
 
-	/* E7 : NC ==> GPP_E7_STRAP */
-	PAD_CFG_GPI_LOCK(GPP_E7, NONE, LOCK_CONFIG),
 	/* E14 : EDP_HPD ==> NC */
 	PAD_NC(GPP_E14, NONE),
 	/* E20 : HDMI_DDC_SCL ==> NC */
@@ -82,6 +80,8 @@ static const struct pad_config override_gpio_table[] = {
 static const struct pad_config early_gpio_table[] = {
 	/* A13 : GPP_A13 ==> GSC_SOC_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
+	/* E7 : NC ==> GPP_E7_STRAP */
+	PAD_CFG_GPI_LOCK(GPP_E7, DN_20K, LOCK_CONFIG),
 	/* E12 : THC0_SPI1_IO1 ==> SOC_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER(GPP_E12, NONE, DEEP),
 	/* F18 : THC1_SPI2_INT# ==> EC_IN_RW_OD */

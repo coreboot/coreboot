@@ -27,9 +27,9 @@ const struct pad_config gpio_table[] = {
 	/* GPD3:	Power Button					*/
 	PAD_CFG_NF(GPD3, UP_20K, DEEP, NF1),
 	/* GPD4:	Sleep S3					*/
-	PAD_NC(GPD4, NONE),
+	PAD_CFG_NF(GPD4, NONE, DEEP, NF1),
 	/* GPD5:	Sleep S4					*/
-	PAD_NC(GPD5, NONE),
+	PAD_CFG_NF(GPD5, NONE, DEEP, NF1),
 	/* GPD6:	Sleep A						*/
 	PAD_NC(GPD6, NONE),
 	/* GPD7:	Power Adapter Disable				*/

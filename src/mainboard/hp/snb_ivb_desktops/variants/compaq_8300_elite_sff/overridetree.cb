@@ -8,22 +8,21 @@ chip northbridge/intel/sandybridge
 			register "sata_port_map" = "0xf"
 			register "superspeed_capable_ports" = "0x0000000f"
 			register "xhci_switchable_ports"    = "0x0000000f"
-			register "xhci_overcurrent_mapping" = "0x0000000f"
 			register "usb_port_config" = "{
-				{ 1, 0, 0 },
-				{ 1, 0, 0 },
-				{ 1, 0, 1 },
-				{ 1, 0, 1 },
-				{ 1, 0, 2 },
-				{ 1, 0, 2 },
-				{ 1, 0, 3 },
-				{ 1, 0, 3 },
-				{ 1, 1, 4 },
-				{ 1, 0, 4 },
-				{ 1, 0, 6 },
-				{ 1, 0, 5 },
-				{ 1, 0, 5 },
-				{ 1, 0, 6 },
+				{1, 0x84b, 0},
+				{1, 0x84b, 0},
+				{1, 0xa4b, 1},
+				{1, 0xa4b, 1},
+				{1, 0xb43, 2},
+				{1, 0x94b, 2},
+				{1, 0x94f, 3},
+				{1, 0xb53, 3},
+				{1, 1, 4},
+				{1, 5, 4},
+				{1, 0x65b, 6},
+				{1, 0x65f, 5},
+				{1, 0x84b, 5},
+				{1, 0x94b, 6},
 			}"
 
 			device ref xhci on  end

@@ -11,10 +11,6 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 		.type = MEM_TYPE_DDR5,
 		.ect = true,
 		.UserBd = BOARD_TYPE_ULT_ULX,
-		.rcomp = {
-			.resistor = 100,
-			.targets = {70, 30, 25, 25, 25},
-		}
 	};
 
 	const bool half_populated = false;

@@ -157,7 +157,7 @@ const struct pad_config gpio_table[] = {
 	/* C5:		Boot Strap		Weak Internal PD 20K
 				Low:	ESPI
 				High:	Disabled			*/
-	PAD_CFG_GPO(GPP_C5, 0, DEEP),
+	PAD_CFG_GPO(GPP_C5, 0, PLTRST),
 	/* C6:		SML 1 Clock					*/
 	PAD_NC(GPP_C6, NONE),
 	/* C7:		SML 1 Data					*/

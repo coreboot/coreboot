@@ -31,7 +31,7 @@ romstage-y += ../common/mt6315.c mt6315.c
 romstage-y += ../common/pmic_wrap.c pmic_wrap.c pmif.c mt6366.c
 romstage-y += ../common/pmif.c ../common/pmif_clk.c ../common/pmif_init.c pmif_clk.c
 romstage-y += ../common/pmif_spmi.c pmif_spmi.c
-romstage-y += ../common/rtc.c ../common/rtc_osc_init.c rtc.c
+romstage-y += ../common/rtc.c ../common/rtc_pwrap_ops.c ../common/rtc_osc_init.c rtc.c
 
 ramstage-y += adsp.c
 ramstage-y += ../common/auxadc.c
@@ -48,7 +48,7 @@ ramstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 ramstage-$(CONFIG_COMMONLIB_STORAGE_MMC) += ../common/msdc.c msdc.c
 ramstage-y += ../common/mtcmos.c mtcmos.c
 ramstage-y += ../common/pmic_wrap.c pmic_wrap.c pmif.c mt6366.c
-ramstage-y += ../common/rtc.c ../common/rtc_osc_init.c rtc.c
+ramstage-y += ../common/rtc.c ../common/rtc_pwrap_ops.c ../common/rtc_osc_init.c rtc.c
 ramstage-y += soc.c
 ramstage-y += ../common/spm.c ../common/spm_v1.c spm.c
 ramstage-y += ../common/sspm.c

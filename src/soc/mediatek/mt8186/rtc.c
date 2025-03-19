@@ -121,8 +121,8 @@ u16 rtc_get_frequency_meter(u16 val, u16 measure_src, u16 window_size)
 
 	/* FQMTR read until ready */
 	if (!wait_us(FQMTR_TIMEOUT_US,
-		     rtc_read(PMIC_RG_FQMTR_CON0, &fqmtr_busy) == 0 &&
-		     !(fqmtr_busy & PMIC_FQMTR_CON0_BUSY))) {
+		     !((rtc_read(PMIC_RG_FQMTR_CON0, &fqmtr_busy),
+			fqmtr_busy) & PMIC_FQMTR_CON0_BUSY))) {
 		rtc_info("get frequency time out: %#x\n", fqmtr_busy);
 		return false;
 	}

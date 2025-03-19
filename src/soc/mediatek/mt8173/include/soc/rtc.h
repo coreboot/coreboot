@@ -102,7 +102,7 @@ enum {
 /* external API */
 int rtc_init(int recover);
 void rtc_boot(void);
-s32 rtc_read(u16 addr, u16 *rdata);
-s32 rtc_write(u16 addr, u16 wdata);
+void rtc_read(u16 addr, u16 *rdata);
+void rtc_write(u16 addr, u16 wdata);
 
 #endif /* SOC_MEDIATEK_MT8173_RTC_H */

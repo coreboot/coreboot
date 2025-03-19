@@ -1010,7 +1010,7 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->PsOnEnable = 1;
 	s_cfg->PkgCStateLimit = LIMIT_AUTO;
 
-	/* Disable Energy Efficient Turbo mode */
+	/* Set Energy Efficient Turbo mode */
 	s_cfg->EnergyEfficientTurbo = config->energy_efficient_turbo;
 
 	/* VccIn Aux Imon IccMax. Values are in 1/4 Amp increments and range is 0-512. */

@@ -831,7 +831,7 @@ void mtrr_use_temp_range(uintptr_t begin, size_t size, int type)
 	const struct memranges *orig;
 	struct var_mtrr_solution sol;
 	struct memranges addr_space;
-	const bool above4gb = true; /* Cover above 4GiB by default. */
+	bool above4gb = true; /* Cover above 4GiB by default. */
 	int address_bits;
 	int num_mtrrs_used;
 	static struct temp_range {
@@ -888,6 +888,12 @@ void mtrr_use_temp_range(uintptr_t begin, size_t size, int type)
 	sol.mtrr_default_type =
 		calc_var_mtrrs(&addr_space, above4gb, address_bits, &num_mtrrs_used);
 
+	/* If we ran out of MTRRs, retry excluding ranges above 4GiB */
+	if (above4gb && num_mtrrs_used > total_mtrrs) {
+		printk(BIOS_WARNING, "MTRR: Ran out of variable MTRRs; retrying excluding ranges above 4GiB.\n");
+		above4gb = false;
+		sol.mtrr_default_type = calc_var_mtrrs(&addr_space, above4gb, address_bits, &num_mtrrs_used);
+	}
 	if (num_mtrrs_used <= total_mtrrs)
 		prepare_var_mtrrs(&addr_space, sol.mtrr_default_type, above4gb, address_bits, &sol);
 	else

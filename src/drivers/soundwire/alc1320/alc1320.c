@@ -10,13 +10,6 @@
 
 #include "chip.h"
 
-static struct soundwire_address alc1320_address = {
-	.version = SOUNDWIRE_VERSION_1_2,
-	.manufacturer_id = MIPI_MFG_ID_REALTEK,
-	.part_id = MIPI_DEV_ID_REALTEK_ALC1320,
-	.class = MIPI_CLASS_NONE
-};
-
 static struct soundwire_slave alc1320_slave = {
 	.wake_up_unavailable = false,
 	.test_mode_supported = false,
@@ -106,10 +99,11 @@ static void soundwire_alc1320_fill_ssdt(const struct device *dev)
 	acpigen_write_device(acpi_device_name(dev));
 
 	/* Set codec address IDs. */
-	alc1320_address.link_id = dev->path.generic.id;
-	alc1320_address.unique_id = dev->path.generic.subid;
+	config->alc1320_address.link_id = dev->path.generic.id;
+	config->alc1320_address.unique_id = dev->path.generic.subid;
+	config->alc1320_address.manufacturer_id = MIPI_MFG_ID_REALTEK;
 
-	acpigen_write_ADR_soundwire_device(&alc1320_address);
+	acpigen_write_ADR_soundwire_device(&config->alc1320_address);
 	acpigen_write_name_string("_DDN", config->desc ? : dev->chip_ops->name);
 	acpigen_write_STA(acpi_device_status(dev));
 

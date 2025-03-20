@@ -240,7 +240,7 @@ chip soc/intel/alderlake
 			# Enable wlan PCIe 11 using clk 2
 			probe WIFI_TYPE WIFI_PCIE
 			probe WIFI_TYPE WIFI_ALL
-			register "pch_pcie_rp[PCH_RP(10)]" = "{
+			register "pch_pcie_rp[PCH_RP(11)]" = "{
 				.clk_src = 2,
 				.clk_req = 2,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,

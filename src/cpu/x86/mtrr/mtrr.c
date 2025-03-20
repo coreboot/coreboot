@@ -660,8 +660,8 @@ static void __calc_var_mtrrs(struct memranges *addr_space,
 	*num_def_uc_mtrrs = uc_deftype_count;
 }
 
-static int calc_var_mtrrs(struct memranges *addr_space,
-			  bool above4gb, int address_bits)
+static int calc_var_mtrrs(struct memranges *addr_space, bool above4gb, int address_bits,
+			  int *num_mtrrs_used)
 {
 	int wb_deftype_count = 0;
 	int uc_deftype_count = 0;
@@ -685,9 +685,11 @@ static int calc_var_mtrrs(struct memranges *addr_space,
 
 	if (wb_deftype_count < uc_deftype_count) {
 		printk(BIOS_DEBUG, "MTRR: WB selected as default type.\n");
+		*num_mtrrs_used = wb_deftype_count;
 		return MTRR_TYPE_WRBACK;
 	}
 	printk(BIOS_DEBUG, "MTRR: UC selected as default type.\n");
+	*num_mtrrs_used = uc_deftype_count;
 	return MTRR_TYPE_UNCACHEABLE;
 }
 
@@ -746,13 +748,14 @@ void x86_setup_var_mtrrs(unsigned int address_bits, bool above4gb)
 {
 	static struct var_mtrr_solution *sol = NULL;
 	struct memranges *addr_space;
+	int num_mtrrs_used;
 
 	addr_space = get_physical_address_space();
 
 	if (sol == NULL) {
 		sol = &mtrr_global_solution;
 		sol->mtrr_default_type =
-			calc_var_mtrrs(addr_space, above4gb, address_bits);
+			calc_var_mtrrs(addr_space, above4gb, address_bits, &num_mtrrs_used);
 		prepare_var_mtrrs(addr_space, sol->mtrr_default_type,
 				  above4gb, address_bits, sol);
 	}
@@ -830,6 +833,7 @@ void mtrr_use_temp_range(uintptr_t begin, size_t size, int type)
 	struct memranges addr_space;
 	const bool above4gb = true; /* Cover above 4GiB by default. */
 	int address_bits;
+	int num_mtrrs_used;
 	static struct temp_range {
 		uintptr_t begin;
 		size_t size;
@@ -882,14 +886,16 @@ void mtrr_use_temp_range(uintptr_t begin, size_t size, int type)
 	address_bits = cpu_phys_address_size();
 	memset(&sol, 0, sizeof(sol));
 	sol.mtrr_default_type =
-		calc_var_mtrrs(&addr_space, above4gb, address_bits);
-	prepare_var_mtrrs(&addr_space, sol.mtrr_default_type,
-				above4gb, address_bits, &sol);
+		calc_var_mtrrs(&addr_space, above4gb, address_bits, &num_mtrrs_used);
 
-	if (commit_var_mtrrs(&sol) < 0)
-		printk(BIOS_WARNING, "Unable to insert temporary MTRR range: 0x%016llx - 0x%016llx size 0x%08llx type %d\n",
-			(long long)begin, (long long)begin + size - 1,
-			(long long)size, type);
+	if (num_mtrrs_used <= total_mtrrs)
+		prepare_var_mtrrs(&addr_space, sol.mtrr_default_type, above4gb, address_bits, &sol);
+	else
+		printk(BIOS_ERR, "Not enough MTRRs: %d needed vs %d available\n", num_mtrrs_used, total_mtrrs);
+
+	if (num_mtrrs_used > total_mtrrs || commit_var_mtrrs(&sol) < 0)
+		printk(BIOS_ERR, "Unable to insert temporary MTRR range: 0x%016llx - 0x%016llx size 0x%08llx type %d\n",
+				(long long)begin, (long long)begin + size - 1, (long long)size, type);
 	else
 		put_back_original_solution = true;
 

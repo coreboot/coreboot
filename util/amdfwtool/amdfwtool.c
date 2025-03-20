@@ -631,6 +631,7 @@ static void fill_psp_directory_to_efs(embedded_firmware *amd_romsig, void *pspdi
 	case PLATFORM_LUCIENNE:
 	case PLATFORM_RENOIR:
 	case PLATFORM_GENOA:
+	case PLATFORM_FAEGAN:
 	default:
 		/* for combo, it is also combo_psp_directory */
 		amd_romsig->new_psp_directory =
@@ -662,6 +663,7 @@ static void fill_bios_directory_to_efs(embedded_firmware *amd_romsig, void *bios
 	case PLATFORM_MENDOCINO:
 	case PLATFORM_PHOENIX:
 	case PLATFORM_GLINDA:
+	case PLATFORM_FAEGAN:
 		break;
 	case PLATFORM_CARRIZO:
 	case PLATFORM_STONEYRIDGE:
@@ -703,6 +705,9 @@ static uint32_t get_psp_id(enum platform soc_id)
 		break;
 	case PLATFORM_GENOA:
 		psp_id = 0xBC0C0111;
+		break;
+	case PLATFORM_FAEGAN:
+		psp_id = 0xbc0e1000;
 		break;
 	case PLATFORM_CARRIZO:
 	default:
@@ -1557,6 +1562,7 @@ static int set_efs_table(uint8_t soc_id, amd_cb_config *cb_config,
 	case PLATFORM_PHOENIX:
 	case PLATFORM_GLINDA:
 	case PLATFORM_GENOA:
+	case PLATFORM_FAEGAN:
 		amd_romsig->spi_readmode_f17_mod_30_3f = cb_config->efs_spi_readmode;
 		amd_romsig->spi_fastspeed_f17_mod_30_3f = cb_config->efs_spi_speed;
 		switch (cb_config->efs_spi_micron_flag) {
@@ -1615,6 +1621,7 @@ static bool is_initial_alignment_required(enum platform soc_id)
 	case PLATFORM_MENDOCINO:
 	case PLATFORM_PHOENIX:
 	case PLATFORM_GLINDA:
+	case PLATFORM_FAEGAN:
 		return false;
 	default:
 		return true;

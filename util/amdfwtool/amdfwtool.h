@@ -29,6 +29,7 @@ enum platform {
 	PLATFORM_PHOENIX,
 	PLATFORM_GLINDA,
 	PLATFORM_GENOA,
+	PLATFORM_FAEGAN,
 };
 
 typedef enum _amd_fw_type {

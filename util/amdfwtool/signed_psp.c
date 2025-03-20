@@ -40,6 +40,7 @@ static uint16_t get_psp_fw_type(enum platform soc_id, struct amd_fw_header *head
 	case PLATFORM_MENDOCINO:
 	case PLATFORM_PHOENIX:
 	case PLATFORM_GLINDA:
+	case PLATFORM_FAEGAN:
 		/* Fallback to fw_type if fw_id is not populated, which serves the same
 		   purpose on older SoCs. */
 		return header->fw_id ? header->fw_id : header->fw_type;

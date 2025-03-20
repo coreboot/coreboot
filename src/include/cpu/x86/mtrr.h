@@ -103,10 +103,10 @@ void x86_setup_mtrrs_with_detect_no_above_4gb(void);
 /*
  * x86_setup_var_mtrrs() parameters:
  * address_bits - number of physical address bits supported by cpu
- * above4gb - if set setup MTRRs for addresses above 4GiB else ignore
+ * above4gb - if true, set setup MTRRs for addresses above 4GiB else ignore
  *            memory ranges above 4GiB
  */
-void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb);
+void x86_setup_var_mtrrs(unsigned int address_bits, bool above4gb);
 void enable_fixed_mtrr(void);
 /* Unhide Rd/WrDram bits and allow modification for AMD. */
 void fixed_mtrrs_expose_amd_rwdram(void);

@@ -361,7 +361,7 @@ static struct var_mtrr_solution mtrr_global_solution;
 
 struct var_mtrr_state {
 	struct memranges *addr_space;
-	int above4gb;
+	bool above4gb;
 	int address_bits;
 	int prepare_msrs;
 	int mtrr_index;
@@ -607,7 +607,7 @@ static void calc_var_mtrrs_with_hole(struct var_mtrr_state *var_state,
 }
 
 static void __calc_var_mtrrs(struct memranges *addr_space,
-			     int above4gb, int address_bits,
+			     bool above4gb, int address_bits,
 			     int *num_def_wb_mtrrs, int *num_def_uc_mtrrs)
 {
 	int wb_deftype_count;
@@ -661,7 +661,7 @@ static void __calc_var_mtrrs(struct memranges *addr_space,
 }
 
 static int calc_var_mtrrs(struct memranges *addr_space,
-			  int above4gb, int address_bits)
+			  bool above4gb, int address_bits)
 {
 	int wb_deftype_count = 0;
 	int uc_deftype_count = 0;
@@ -692,7 +692,7 @@ static int calc_var_mtrrs(struct memranges *addr_space,
 }
 
 static void prepare_var_mtrrs(struct memranges *addr_space, int def_type,
-				int above4gb, int address_bits,
+				bool above4gb, int address_bits,
 				struct var_mtrr_solution *sol)
 {
 	struct range_entry *r;
@@ -742,7 +742,7 @@ static int commit_var_mtrrs(const struct var_mtrr_solution *sol)
 	return 0;
 }
 
-void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
+void x86_setup_var_mtrrs(unsigned int address_bits, bool above4gb)
 {
 	static struct var_mtrr_solution *sol = NULL;
 	struct memranges *addr_space;
@@ -752,15 +752,15 @@ void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
 	if (sol == NULL) {
 		sol = &mtrr_global_solution;
 		sol->mtrr_default_type =
-			calc_var_mtrrs(addr_space, !!above4gb, address_bits);
+			calc_var_mtrrs(addr_space, above4gb, address_bits);
 		prepare_var_mtrrs(addr_space, sol->mtrr_default_type,
-				  !!above4gb, address_bits, sol);
+				  above4gb, address_bits, sol);
 	}
 
 	commit_var_mtrrs(sol);
 }
 
-static void _x86_setup_mtrrs(unsigned int above4gb)
+static void _x86_setup_mtrrs(bool above4gb)
 {
 	int address_size;
 
@@ -778,20 +778,21 @@ void x86_setup_mtrrs(void)
 	/* Without detect, assume the minimum */
 	total_mtrrs = MIN_MTRRS;
 	/* Always handle addresses above 4GiB. */
-	_x86_setup_mtrrs(1);
+	_x86_setup_mtrrs(true);
 }
 
 void x86_setup_mtrrs_with_detect(void)
 {
 	detect_var_mtrrs();
 	/* Always handle addresses above 4GiB. */
-	_x86_setup_mtrrs(1);
+	_x86_setup_mtrrs(true);
 }
 
 void x86_setup_mtrrs_with_detect_no_above_4gb(void)
 {
 	detect_var_mtrrs();
-	_x86_setup_mtrrs(0);
+	/* Ignore addresses above 4GiB. */
+	_x86_setup_mtrrs(false);
 }
 
 void x86_mtrr_check(void)
@@ -827,7 +828,7 @@ void mtrr_use_temp_range(uintptr_t begin, size_t size, int type)
 	const struct memranges *orig;
 	struct var_mtrr_solution sol;
 	struct memranges addr_space;
-	const int above4gb = 1; /* Cover above 4GiB by default. */
+	const bool above4gb = true; /* Cover above 4GiB by default. */
 	int address_bits;
 	static struct temp_range {
 		uintptr_t begin;

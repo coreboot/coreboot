@@ -34,8 +34,8 @@ uint64_t fw_config_get(void)
 
 	/* Look in CBFS to allow override of value. */
 	if (CONFIG(FW_CONFIG_SOURCE_CBFS) && fw_config_value == UNDEFINED_FW_CONFIG) {
-		if (cbfs_load(CONFIG_CBFS_PREFIX "/fw_config", &fw_config_value,
-			      sizeof(fw_config_value)) != sizeof(fw_config_value))
+		if (cbfs_ro_load(CONFIG_CBFS_PREFIX "/fw_config", &fw_config_value,
+				 sizeof(fw_config_value)) != sizeof(fw_config_value))
 			printk(BIOS_WARNING, "%s: Could not get fw_config from CBFS\n",
 				__func__);
 		else

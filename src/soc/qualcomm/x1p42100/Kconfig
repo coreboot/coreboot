@@ -1,0 +1,48 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_QUALCOMM_X1P42100
+	bool
+	default n
+	depends on USE_QC_BLOBS
+	select ARCH_BOOTBLOCK_ARMV8_64
+	select ARCH_RAMSTAGE_ARMV8_64
+	select ARCH_ROMSTAGE_ARMV8_64
+	select ARCH_VERSTAGE_ARMV8_64
+	select ARM64_USE_ARCH_TIMER
+	select CACHE_MRC_SETTINGS
+	select COMMONLIB_STORAGE
+	select COMMONLIB_STORAGE_SD
+	select GENERIC_GPIO_LIB
+	select GENERIC_UDELAY
+	select HAS_RECOVERY_MRC_CACHE
+	select HAVE_LINEAR_FRAMEBUFFER
+	select HAVE_MONOTONIC_TIMER
+	select HAVE_UART_SPECIAL
+	select MAINBOARD_FORCE_NATIVE_VGA_INIT
+	select MAINBOARD_HAS_NATIVE_VGA_INIT
+	select SDHCI_CONTROLLER
+	select SOC_QUALCOMM_COMMON
+
+if SOC_QUALCOMM_X1P42100
+
+config MEMLAYOUT_LD_FILE
+	string
+	default "src/soc/qualcomm/x1p42100/memlayout.ld"
+
+config VBOOT
+	select VBOOT_MUST_REQUEST_DISPLAY
+	select VBOOT_RETURN_FROM_VERSTAGE
+	select VBOOT_SEPARATE_VERSTAGE
+	select VBOOT_STARTS_IN_BOOTBLOCK
+
+config BOOT_DEVICE_SPI_FLASH_BUS
+	int
+	default 0 # TODO
+
+config UART_FOR_CONSOLE
+	int
+	default 0 # TODO
+	help
+	 Select the QUP instance to be used for UART console output.
+
+endif

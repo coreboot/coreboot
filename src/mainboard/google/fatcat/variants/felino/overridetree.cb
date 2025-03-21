@@ -60,6 +60,8 @@ chip soc/intel/pantherlake
 
 	# Enable CNVi WiFi
 	register "cnvi_wifi_core" = "true"
+	# Disable CNVi BT Offload
+	register "cnvi_bt_audio_offload" = "false"
 
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C1

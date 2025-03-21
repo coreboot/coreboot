@@ -169,14 +169,14 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D08, NONE),
 	/* GPP_D09:     USB_MUX_SEL */
 	PAD_CFG_GPO(GPP_D09, 1, PLTRST),
-	/* GPP_D10:     PMC_WLAN_CLK */
-	PAD_CFG_NF(GPP_D10, NONE, DEEP, NF1),
-	/* GPP_D11:     CNV_PCM_SYNC */
-	PAD_CFG_NF(GPP_D11, NONE, DEEP, NF1),
-	/* GPP_D12:     PMC_SOC_OUT */
-	PAD_CFG_NF(GPP_D12, NONE, DEEP, NF1),
-	/* GPP_D13:     PMC_SOC_IN */
-	PAD_CFG_NF(GPP_D13, NONE, DEEP, NF1),
+	/* GPP_D10:     PMC_WLAN_CLK ==> NC */
+	PAD_NC_LOCK(GPP_D10, NONE, LOCK_CONFIG),
+	/* GPP_D11:     CNV_PCM_SYNC ==> NC */
+	PAD_NC_LOCK(GPP_D11, NATIVE, LOCK_CONFIG),
+	/* GPP_D12:     PMC_SOC_OUT ==> NC */
+	PAD_NC_LOCK(GPP_D12, NATIVE, LOCK_CONFIG),
+	/* GPP_D13:     PMC_SOC_IN ==> NC */
+	PAD_NC_LOCK(GPP_D13, NATIVE, LOCK_CONFIG),
 	/* GPP_D14:     NC */
 	PAD_NC(GPP_D14, NONE),
 	/* GPP_D15:     NC */
@@ -358,8 +358,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_V00, NONE, DEEP, NF1),
 	/* GPP_V01:     BC_ACOK_MCP */
 	PAD_CFG_NF(GPP_V01, NONE, DEEP, NF1),
-	/* GPP_V02:     NC */
-	PAD_NC(GPP_V02, NONE),
+	/* GPP_V02:     LAN_WAKE# */
+	PAD_CFG_NF(GPP_V02, NONE, DEEP, NF1),
 	/* GPP_V03:     PWRBTN_MCP_N */
 	PAD_CFG_NF(GPP_V03, NONE, DEEP, NF1),
 	/* GPP_V04:     PM_SLP_S3_N */
@@ -378,8 +378,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_V10, NONE),
 	/* GPP_V11:     NC */
 	PAD_NC(GPP_V11, NONE),
-	/* GPP_V12:     NC */
-	PAD_NC(GPP_V12, NONE),
+	/* GPP_V12:     WAKE# */
+	PAD_CFG_NF(GPP_V12, NONE, DEEP, NF1),
 	/* GPP_V13:     NC */
 	PAD_NC(GPP_V13, NONE),
 	/* GPP_V14:     NC */

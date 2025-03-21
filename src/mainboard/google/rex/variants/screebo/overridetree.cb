@@ -451,6 +451,7 @@ chip soc/intel/meteorlake
 				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B17)"
 				register "generic.enable_delay_ms" = "12"
 				register "generic.has_power_resource" = "1"
+				register "generic.use_gpio_for_status" = "true"
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 41 on
 					probe TOUCHSCREEN TOUCHSCREEN_ILITEK
@@ -467,6 +468,7 @@ chip soc/intel/meteorlake
 				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B17)"
 				register "generic.enable_delay_ms" = "1"
 				register "generic.has_power_resource" = "1"
+				register "generic.use_gpio_for_status" = "true"
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 10 on
 					probe TOUCHSCREEN TOUCHSCREEN_ELAN

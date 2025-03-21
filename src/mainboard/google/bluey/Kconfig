@@ -1,0 +1,61 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_GOOGLE_BLUEY_COMMON
+	def_bool n
+	select BOARD_ROMSIZE_KB_8192
+	select COMMON_CBFS_SPI_WRAPPER
+	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_RTC
+	select EC_GOOGLE_CHROMEEC_SPI
+	select I2C_TPM
+	select MAINBOARD_HAS_CHROMEOS
+	select MAINBOARD_HAS_TPM2
+	select RTC
+	select SOC_QUALCOMM_X1P42100
+	select SPI_FLASH
+	select SPI_FLASH_EXIT_4_BYTE_ADDR_MODE
+	select SPI_FLASH_GIGADEVICE
+	select SPI_FLASH_MACRONIX
+	select SPI_FLASH_WINBOND
+	select TPM_GOOGLE_TI50
+
+config BOARD_GOOGLE_BASEBOARD_BLUEY
+	def_bool n
+	select BOARD_GOOGLE_BLUEY_COMMON
+
+config BOARD_GOOGLE_BLUEY
+	select BOARD_GOOGLE_BASEBOARD_BLUEY
+
+if BOARD_GOOGLE_BLUEY_COMMON
+
+config MAINBOARD_DIR
+	default "google/bluey"
+
+config MAINBOARD_VENDOR
+	string
+	default "Google"
+
+config VBOOT
+	select EC_GOOGLE_CHROMEEC_SWITCHES
+	select VBOOT_VBNV_FLASH
+
+##########################################################
+#### Update below when adding a new derivative board. ####
+##########################################################
+
+config MAINBOARD_PART_NUMBER
+	default "Bluey" if BOARD_GOOGLE_BLUEY
+
+config DRIVER_TPM_I2C_BUS
+	depends on I2C_TPM
+	hex
+	default 0x00 # TODO
+
+config DRIVER_TPM_I2C_ADDR
+	default 0x50
+
+config EC_GOOGLE_CHROMEEC_SPI_BUS
+	hex
+	default 0x0 # TODO
+
+endif # BOARD_GOOGLE_BLUEY_COMMON

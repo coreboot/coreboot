@@ -197,17 +197,14 @@ device ref tbt_pcie_rp0 on end
 			end
 		end
 
-		device ref pcie_rp1 on
-			# Enable PCH PCIE x1 slot using CLK 2
-			register "pcie_rp[PCIE_RP(3)]" = "{
-				.clk_src = 2,
-				.clk_req = 2,
-				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
+		device ref pcie_rp2 on
+			# Enable PCH PCIE x1 slot using CLK 6
+			register "pcie_rp[PCIE_RP(2)]" = "{
+				.clk_src = 6,
+				.clk_req = 6,
+				.flags = PCIE_RP_HOTPLUG | PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
+				.pcie_rp_aspm = ASPM_L1,
 			}"
-			chip soc/intel/common/block/pcie/rtd3
-				register "srcclk_pin" = "2"
-				device generic 0 on end
-			end
 		end # SD Card
 
 		device ref pcie_rp4 on

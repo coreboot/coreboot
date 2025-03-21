@@ -33,7 +33,6 @@ chip soc/intel/pantherlake
 	register "usb2_ports[4]" = "USB2_PORT_SHORT(OC0)" # Type-A Port A1
 	register "usb2_ports[5]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C1
 	register "usb2_ports[6]" = "USB2_PORT_MID(OC_SKIP)" # USB HUB (USB2 Camera)
-	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)" # CNVi BT or discrete BT
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)" # USB3.2 x1 Type-A Con #0
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)" # USB3.2 x1 Type-A Con #1
@@ -53,8 +52,9 @@ chip soc/intel/pantherlake
 	# TCSS USB3
 	register "tcss_aux_ori" = "1"
 
-	# Enable CNVi WiFi
+	# Enable CNVi Wi-Fi and Bluetooth
 	register "cnvi_wifi_core" = "true"
+	register "cnvi_bt_core" = "true"
 
 	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
@@ -162,12 +162,6 @@ chip soc/intel/pantherlake
 						device ref usb2_port7 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB2 Bluetooth""
-						register "type" = "UPC_TYPE_INTERNAL"
-						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A16)"
-						device ref usb2_port8 on end
-					end
-					chip drivers/usb/acpi
 						register "desc" = ""USB3 Type-A Port 0""
 						register "type" = "UPC_TYPE_USB3_A"
 						register "group" = "ACPI_PLD_GROUP(1, 2)"
@@ -188,9 +182,13 @@ chip soc/intel/pantherlake
 				register "wake" = "GPE0_PME_B0"
 				register "add_acpi_dma_property" = "true"
 				register "enable_cnvi_ddr_rfim" = "true"
+				use cnvi_bluetooth as bluetooth_companion
 				device generic 0 on end
 			end
 		end # CNVi
+
+		device ref cnvi_bluetooth on end
+
 		# NOTE: i2c0 is function 0; hence it needs to be enabled when any of i2c1-5 is enabled.
 		# TPM device is under i2c1. Therefore, i2c0 needs to be enabled anyways.
 		device ref i2c0 on end

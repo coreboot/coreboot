@@ -6,3 +6,4 @@ romstage-y += memory.c
 ramstage-y += gpio.c
 romstage-$(CONFIG_FW_CONFIG) += fw_config.c
 ramstage-$(CONFIG_FW_CONFIG) += fw_config.c
+ramstage-$(CONFIG_FW_CONFIG) += variant.c

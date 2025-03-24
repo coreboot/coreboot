@@ -258,12 +258,6 @@ chip soc/intel/pantherlake
 				.clk_req = 2,
 				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
 			}"
-			chip soc/intel/common/block/pcie/rtd3
-				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A08)"
-				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D19)"
-				register "srcclk_pin" = "2"
-				device generic 0 on end
-			end
 		end # SD Card
 		device ref pcie_rp9 on
 			register "pcie_rp[PCIE_RP(9)]" = "{

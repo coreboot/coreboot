@@ -9,6 +9,7 @@
 #include <cpu/amd/microcode.h>
 #include <cpu/amd/msr.h>
 #include <cpu/amd/mtrr.h>
+#include <lib.h>
 #include <smbios.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>
@@ -17,6 +18,17 @@
 #define UNSUPPORTED 0
 
 #define UNINITIALIZED ((uint64_t)-1)
+
+struct core_info {
+	/* Core max boost frequency */
+	uint32_t max_frequency;
+
+	/* L3 Cache block unique ID & size (in bytes) */
+	uint16_t l3_cache_uid;
+	size_t l3_cache_size;
+};
+
+static struct core_info core_info_list[CONFIG_MAX_CPUS];
 
 static union pstate_msr get_pstate0_msr(void)
 {
@@ -103,6 +115,30 @@ unsigned int get_reserved_phys_addr_bits(void)
 			CPUID_EBX_MEM_ENCRYPT_ADDR_BITS_SHIFT;
 }
 
+static uint32_t get_max_boost_frequency(void)
+{
+	msr_t msr = rdmsr(MSR_CPPC_CAPABILITY_1);
+	uint16_t nominal_perf = (msr.lo >> SHIFT_CPPC_CAPABILITY_1_NOMINAL_PERF) & 0xff;
+	uint16_t max_perf = (msr.lo >> SHIFT_CPPC_CAPABILITY_1_HIGHEST_PERF) & 0xff;
+
+	return (smbios_cpu_get_current_speed_mhz() * max_perf)/nominal_perf;
+}
+
+static void ap_stash_core_info(void)
+{
+	unsigned int cpuid_cpu_id = cpuid_ebx(CPUID_EBX_CORE_ID) & 0xff;
+
+	const uint8_t level = CACHE_L3;
+	struct cpu_cache_info info;
+	x86_get_cpu_cache_info(level, &info);
+
+	struct core_info *core_info = &core_info_list[cpu_index()];
+	core_info->l3_cache_uid = cpuid_cpu_id >> log2(info.num_cores_shared);
+	core_info->l3_cache_size = info.size;
+
+	core_info->max_frequency = get_max_boost_frequency();
+}
+
 void amd_cpu_init(struct device *dev)
 {
 	if (CONFIG(SOC_AMD_COMMON_BLOCK_MCA_COMMON))
@@ -112,4 +148,7 @@ void amd_cpu_init(struct device *dev)
 
 	if (CONFIG(SOC_AMD_COMMON_BLOCK_UCODE))
 		amd_apply_microcode_patch();
+
+	if (CONFIG(SOC_FILL_CPU_CACHE_INFO))
+		ap_stash_core_info();
 }

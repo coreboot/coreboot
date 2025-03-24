@@ -207,6 +207,7 @@ const struct pad_config gpio_table[] = {
 	/* E08:					*/
 	PAD_NC(GPP_E08, NONE),
 	/* E09:	USB2_OC0			*/
+	PAD_NC(GPP_E09, NONE),
 	/* E10:					*/
 	PAD_NC(GPP_E10, NONE),
 	/* E11:					*/

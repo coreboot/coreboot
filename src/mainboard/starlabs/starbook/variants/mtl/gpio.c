@@ -346,7 +346,6 @@ const struct pad_config gpio_table[] = {
 	 *		HIGH:	BALTIC PEAK
 	 *		LOW:	BSSB-LS
 	 *		WEAK INTERNAL PU 20K	*/
-	/* F21:					*/
 	PAD_NC(GPP_F21, NONE),
 	/* F22:					*/
 	PAD_NC(GPP_F22, NONE),

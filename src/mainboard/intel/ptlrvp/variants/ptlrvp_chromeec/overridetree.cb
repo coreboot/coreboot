@@ -793,6 +793,11 @@ chip soc/intel/pantherlake
 					probe AUDIO AUDIO_MAX98360_ALC5682I_I2S
 				end
 			end
+			chip drivers/i2c/tpm
+				register "hid" = ""GOOG0005""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_D15_IRQ)"
+				device i2c 50 on end
+			end
 		end # I2C3
 		device ref i2c4 on
 			chip drivers/i2c/hid
@@ -879,6 +884,11 @@ chip soc/intel/pantherlake
 				device generic 0 on
 					probe AUDIO AUDIO_MAX98360_ALC5682I_I2S
 				end
+			end
+		end
+		device ref soc_espi on
+			chip ec/google/chromeec
+				device pnp 0c09.0 on end
 			end
 		end
 	end

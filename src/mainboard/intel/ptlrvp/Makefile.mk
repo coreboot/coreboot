@@ -3,14 +3,17 @@
 bootblock-y += bootblock.c
 
 verstage-$(CONFIG_CHROMEOS) += chromeos.c
+verstage-$(CONFIG_BOARD_INTEL_PTLRVP) += intel.c
 
 romstage-y += romstage.c
 romstage-$(CONFIG_CHROMEOS) += chromeos.c
+romstage-$(CONFIG_BOARD_INTEL_PTLRVP) += intel.c
 
 ramstage-y += mainboard.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += ec.c
 ramstage-$(CONFIG_SOC_INTEL_COMMON_BLOCK_HDA_VERB) += variants/$(VARIANT_DIR)/hda_verb.c
+ramstage-$(CONFIG_BOARD_INTEL_PTLRVP) += intel.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 

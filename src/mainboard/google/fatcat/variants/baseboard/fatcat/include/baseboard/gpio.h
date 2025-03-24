@@ -15,15 +15,21 @@
 #if CONFIG(BOARD_GOOGLE_FATCATNUVO) || CONFIG(BOARD_GOOGLE_FATCATITE)
  #define EC_SYNC_IRQ	GPP_E07_IRQ
  #define GPIO_PCH_WP	GPP_D02
+#define GPIO_SLP_S0_GATE	0 /* Not Connected */
 #elif CONFIG(BOARD_GOOGLE_FATCAT) || CONFIG(BOARD_GOOGLE_FATCATISH)
  #define EC_SYNC_IRQ	0 /* Not Connected */
  #define GPIO_PCH_WP	GPP_D02
+#define GPIO_SLP_S0_GATE	0 /* Not Connected */
 #elif CONFIG(BOARD_GOOGLE_FRANCKA)
  #define EC_SYNC_IRQ	GPP_B05_IRQ
  #define GPIO_PCH_WP	GPP_E22
+/* Used to gate SoC's SLP_S0# signal */
+#define GPIO_SLP_S0_GATE	GPP_F23
 #elif CONFIG(BOARD_GOOGLE_FELINO)
  #define EC_SYNC_IRQ	0 /* TODO */
  #define GPIO_PCH_WP	0 /* TODO */
+/* Used to gate SoC's SLP_S0# signal */
+#define GPIO_SLP_S0_GATE	GPP_D03
 #endif
 
 #endif /* __BASEBOARD_GPIO_H__ */

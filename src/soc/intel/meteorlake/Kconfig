@@ -458,4 +458,16 @@ config SOC_PHYSICAL_ADDRESS_WIDTH
 	int
 	default 42
 
+config SKIP_SEND_CONNECT_TOPOLOGY_CMD
+	bool
+	default y if SOFTWARE_CONNECTION_MANAGER
+	default n
+	help
+	  When selected, the FSP UPD ITbtConnectTopologyTimeoutInMs will be set to
+	  zero, causing FSP to skip sending the Connect Topology (CNTP) command,
+	  which by default has a 5s timeout. CNTP is not needed when using software
+	  connection manager, and sending it will cause a 5-10s boot delay.
+	  Mainboards which use firmware connection manager may also wish to select this
+	  as needed.
+
 endif

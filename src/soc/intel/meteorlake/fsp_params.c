@@ -396,6 +396,13 @@ static void fill_fsps_tcss_params(FSP_S_CONFIG *s_cfg,
 	/* Explicitly clear this field to avoid using defaults */
 	memset(s_cfg->IomTypeCPortPadCfg, 0, sizeof(s_cfg->IomTypeCPortPadCfg));
 
+	/*
+	 * Set ITbtConnectTopologyTimeoutInMs to 0 if config selected,
+	 * in order to skip sending the connect toplogy (CNTP) command.
+	 */
+	if (CONFIG(SKIP_SEND_CONNECT_TOPOLOGY_CMD))
+		s_cfg->ITbtConnectTopologyTimeoutInMs = 0;
+
 	/* D3Hot and D3Cold for TCSS */
 	s_cfg->D3HotEnable = !config->tcss_d3_hot_disable;
 	s_cfg->D3ColdEnable = CONFIG(D3COLD_SUPPORT);

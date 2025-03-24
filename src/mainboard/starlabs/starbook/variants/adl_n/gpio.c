@@ -433,21 +433,21 @@ const struct pad_config gpio_table[] = {
 	/* T15:		 Not Connected					*/
 	PAD_NC(GPP_T15, NONE),
 
-	/* R0:		HDA BCLK				*/
+	/* R0:		HDA BCLK					*/
 	PAD_CFG_NF(GPP_R0, NATIVE, DEEP, NF1),
-	/* R1:		HDA SYNC				*/
+	/* R1:		HDA SYNC					*/
 	PAD_CFG_NF(GPP_R1, NATIVE, DEEP, NF1),
-	/* R2:		HDA SDO					*/
+	/* R2:		HDA SDO						*/
 	PAD_CFG_NF(GPP_R2, NATIVE, DEEP, NF1),
-	/* R3:		HDA SDI					*/
+	/* R3:		HDA SDI						*/
 	PAD_CFG_NF(GPP_R3, NATIVE, DEEP, NF1),
-	/* R4:		HDA Reset				*/
+	/* R4:		HDA Reset					*/
 	PAD_CFG_NF(GPP_R4, NATIVE, DEEP, NF1),
-	/* R5:		MiPi Cam Reset				*/
+	/* R5:		MiPi Cam Reset					*/
 	PAD_NC(GPP_R5, NONE),
-	/* R6:		Not Connected				*/
+	/* R6:		Not Connected					*/
 	PAD_NC(GPP_R6, NONE),
-	/* R7:		Not Connected				*/
+	/* R7:		Not Connected					*/
 	PAD_NC(GPP_R7, NONE),
 };
 

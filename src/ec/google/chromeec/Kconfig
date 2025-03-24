@@ -136,6 +136,12 @@ config EC_GOOGLE_CHROMEEC_SKUID
 	help
 	  Provides common routine for reporting the skuid to ChromeOS.
 
+config EC_GOOGLE_CHROMEEC_SMBIOS
+	def_bool n
+	help
+	  Enable support to get SKU and board information for SMBIOS table
+	  using Chrome EC host commands.
+
 config EC_GOOGLE_CHROMEEC_RTC
 	bool "Enable ChromeOS EC RTC"
 	help

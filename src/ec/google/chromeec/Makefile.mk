@@ -16,8 +16,8 @@ romstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SKUID) += ec_skuid.c
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SKUID) += ec_skuid.c
 
 ifeq ($(CONFIG_GENERATE_SMBIOS_TABLES),y)
-romstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SKUID) += ec_smbios.c
-ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SKUID) += ec_smbios.c
+romstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SMBIOS) += ec_smbios.c
+ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SMBIOS) += ec_smbios.c
 endif
 
 bootblock-y += ec.c

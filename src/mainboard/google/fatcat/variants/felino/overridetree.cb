@@ -289,6 +289,16 @@ device ref tbt_pcie_rp0 on end
 				register "detect" = "1"
 				device i2c 0x15 on end
 			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""FTCS0038""
+				register "generic.cid" = ""PNP0C50""
+				register "generic.desc" = ""Focal Touchpad""
+				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_E18_IRQ)"
+				register "generic.wake" = "GPE0_DW2_18"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x20"
+				device i2c 0x38 on end
+			end
 		end # I2C4
 
 	end

@@ -37,6 +37,14 @@ chip soc/amd/cezanne
 
 	register "s0ix_enable" = "false"
 
+	# CPPC register configuration
+	register "cppc_ctrl" = "true"
+	register "cppc_perf_limit_max_range" = "0xFF"
+	register "cppc_perf_limit_min_range" = "0x00"
+	register "cppc_epp_max_range" 		 = "0xFF"
+	register "cppc_epp_min_range"		 = "0x00"
+
+
 	# general purpose PCIe clock output configuration
 	register "gpp_clk_config[0]" = "GPP_CLK_ON"
 	register "gpp_clk_config[1]" = "GPP_CLK_ON"

@@ -37,7 +37,7 @@ COREBOOT_MIRROR_URL="https://www.coreboot.org/releases/crossgcc-sources"
 # GCC Toolchain (built first)
 # Math libraries (GCC dependencies)
 GMP_VERSION=6.3.0
-MPFR_VERSION=4.2.1
+MPFR_VERSION=4.2.2
 MPC_VERSION=1.3.1
 # Core GCC components
 GCC_VERSION=14.2.0

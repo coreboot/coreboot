@@ -689,6 +689,19 @@ int google_chromeec_cbi_get_sku_id(uint32_t *id)
 	return cbi_get_uint32(id, CBI_TAG_SKU_ID);
 }
 
+uint32_t google_chromeec_get_board_sku(void)
+{
+	static uint32_t sku_id = CROS_SKU_UNKNOWN;
+
+	if (sku_id != CROS_SKU_UNKNOWN)
+		return sku_id;
+
+	if (google_chromeec_cbi_get_sku_id(&sku_id))
+		sku_id = CROS_SKU_UNKNOWN;
+
+	return sku_id;
+}
+
 int google_chromeec_cbi_get_fw_config(uint64_t *fw_config)
 {
 	uint32_t config;

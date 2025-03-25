@@ -20,38 +20,37 @@
 
 #define CRATER_REVB     0x42
 
-static const fsp_dxio_descriptor crater_dxio_descriptors[] = {
-	{ /* MXM */
-		.engine_type = PCIE_ENGINE,
-		.port_present = true,
-		.start_logical_lane = 16,
-		.end_logical_lane = 23,
-		.device_number = 1,
-		.function_number = 1,
-		.link_aspm = ASPM_L1,
-		.link_aspm_L1_1 = true,
-		.link_aspm_L1_2 = true,
-		.turn_off_unused_lanes = false,
-		.clk_req = CLK_REQ0,
-		.gpio_group_id = GPIO_4,
-		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
-	},
-	{ /* SSD */
-		.engine_type = PCIE_ENGINE,
-		.port_present = true,
-		.start_logical_lane = 8,
-		.end_logical_lane = 11,
-		.device_number = 2,
-		.function_number = 4,
-		.link_aspm = ASPM_DISABLED,
-		.link_aspm_L1_1 = false,
-		.link_aspm_L1_2 = false,
-		.turn_off_unused_lanes = false,
-		.clk_req = CLK_REQ3,
-		.gpio_group_id = GPIO_27,
-		.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}
-	},
-};
+#define mxm_dxio_descriptor {	\
+	.engine_type = PCIE_ENGINE, \
+	.port_present = true, \
+	.start_logical_lane = 16, \
+	.end_logical_lane = 23, \
+	.device_number = 1, \
+	.function_number = 1, \
+	.link_aspm = ASPM_L1, \
+	.link_aspm_L1_1 = true, \
+	.link_aspm_L1_2 = true, \
+	.turn_off_unused_lanes = false, \
+	.clk_req = CLK_REQ0, \
+	.gpio_group_id = GPIO_4, \
+	.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}, \
+}
+
+#define ssd_dxio_descriptor { \
+	.engine_type = PCIE_ENGINE, \
+	.port_present = true, \
+	.start_logical_lane = 8, \
+	.end_logical_lane = 11, \
+	.device_number = 2, \
+	.function_number = 4, \
+	.link_aspm = ASPM_DISABLED, \
+	.link_aspm_L1_1 = false, \
+	.link_aspm_L1_2 = false, \
+	.turn_off_unused_lanes = false, \
+	.clk_req = CLK_REQ3, \
+	.gpio_group_id = GPIO_27, \
+	.port_params = {PP_PSPP_AC, 0x133, PP_PSPP_DC, 0x122}, \
+}
 
 static fsp_ddi_descriptor crater_ddi_descriptors[] = {
 	{ /* DDI0 - DP */
@@ -101,6 +100,11 @@ void mainboard_get_dxio_ddi_descriptors(
 		else
 			crater_ddi_descriptors[1].connector_type = DDI_HDMI;
 	}
+
+	static const fsp_dxio_descriptor crater_dxio_descriptors[] = {
+		mxm_dxio_descriptor,
+		ssd_dxio_descriptor
+	};
 
 	*dxio_descs = crater_dxio_descriptors;
 	*dxio_num = ARRAY_SIZE(crater_dxio_descriptors);

@@ -87,6 +87,11 @@ static void cnvw_fill_ssdt(const struct device *dev)
 		FIELD_BYTEACC | FIELD_NOLOCK | FIELD_PRESERVE);
 
 /*
+ *	Name (PRRS, Zero)
+ */
+	acpigen_write_name_integer("PRRS", 0);
+
+/*
  *	Name (RSTT, Zero)
  */
 	acpigen_write_name_integer("RSTT", 0);

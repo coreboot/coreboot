@@ -6,4 +6,4 @@
 DRAM Part Name                 ID to assign
 K3KL6L60GM-MGCT                0 (0000)
 MT62F512M32D2DR-031 WT:B       1 (0001)
-K3KL8L80DM-MGCU                2 (0010)
+K3KL8L80CM-MGCT                2 (0010)

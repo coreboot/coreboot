@@ -419,8 +419,11 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B12, NONE),
 	/* B13:	PLT_RST_N			*/
 	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),
-	/* B14:					*/
-	PAD_NC(GPP_B14, NONE),
+	/* B14:	Top Swap Override
+	 *		HIGH:	EMABLED
+	 *		LOW:	DISABLED
+	 *		WEAK INTERNAL PD 20K	*/
+	PAD_CFG_GPO(GPP_B14, 0, PLTRST),
 	/* B15:					*/
 	PAD_NC(GPP_B15, NONE),
 	/* B16:	DDIB_DP_HPD			*/

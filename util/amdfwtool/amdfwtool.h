@@ -500,7 +500,6 @@ void process_signed_psp_firmwares(const char *signed_rom,
 		uint64_t signed_start_addr,
 		enum platform soc_id);
 int find_bios_entry(amd_bios_type type);
-bool needs_ish(enum platform platform_type);
 
 #define EFS_FILE_SUFFIX ".efs"
 #define TMP_FILE_SUFFIX ".tmp"

@@ -1687,11 +1687,6 @@ static bool is_initial_alignment_required(enum platform soc_id)
 	}
 }
 
-static bool needs_new_combo_layout(enum platform soc_id)
-{
-	return needs_ish(soc_id);
-}
-
 int main(int argc, char **argv)
 {
 	int retval = 0;
@@ -1718,9 +1713,6 @@ int main(int argc, char **argv)
 	}
 
 	open_process_config(cb_config.config, &cb_config);
-
-	if (cb_config.use_combo && needs_new_combo_layout(cb_config.soc_id))
-		cb_config.combo_new_rab = true;
 
 	ctx.rom = malloc(ctx.rom_size);
 	if (!ctx.rom) {

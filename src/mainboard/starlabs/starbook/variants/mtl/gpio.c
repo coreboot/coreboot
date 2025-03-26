@@ -227,7 +227,7 @@ const struct pad_config gpio_table[] = {
 	/* E14:	EDP_HPD_N			*/
 	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),
 	/* E15:	BOOTHALT_N			*/
-	PAD_NC(GPP_E15, NONE),
+	PAD_CFG_NF(GPP_E15, NONE, DEEP, NF2),
 	/* E16:	BC_PROCHOT_N			*/
 	PAD_CFG_GPI_SCI(GPP_E16, NONE, PLTRST, EDGE_SINGLE, INVERT),
 	/* E17:					*/

@@ -74,11 +74,11 @@ chip soc/intel/meteorlake
 		device ref gna		on  end
 		device ref xhci		on
 			# Motherboard USB 3.0 Type-C Back	7893 mil
-			register "usb2_ports[0]"		= "USB2_PORT_MID(OC_SKIP)"
+			register "usb2_ports[0]"		= "USB2_PORT_TYPE_C(OC_SKIP)"
 			register "tcss_ports[0]"		= "TCSS_PORT_DEFAULT(OC_SKIP)"
 
 			# Motherboard USB 3.0 Type-C Front	9557 mil
-			register "usb2_ports[2]"		= "USB2_PORT_MID(OC_SKIP)"
+			register "usb2_ports[2]"		= "USB2_PORT_TYPE_C(OC_SKIP)"
 			register "tcss_ports[1]"		= "TCSS_PORT_DEFAULT(OC_SKIP)"
 
 			# Motherboard USB 3.0 Type-A		8916 mil

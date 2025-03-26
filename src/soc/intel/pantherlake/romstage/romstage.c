@@ -103,10 +103,10 @@ static void save_dimm_info(void)
 						dram_part_num,
 						dram_part_num_len,
 						serial_num,
-						meminfo_hob->DataWidth,
+						src_dimm->DataWidth,
 						meminfo_hob->VddVoltage[memProfNum],
 						meminfo_hob->EccSupport,
-					src_dimm->MfgId,
+					src_dimm->MfgId.Data,
 					src_dimm->SpdModuleType,
 					node,
 					meminfo_hob->MaximumMemoryClockSpeed);

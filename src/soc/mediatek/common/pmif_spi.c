@@ -2,7 +2,6 @@
 
 #include <console/console.h>
 #include <device/mmio.h>
-#include <soc/infracfg.h>
 #include <soc/pll.h>
 #include <soc/pmif_spi.h>
 #include <soc/pmif_sw.h>

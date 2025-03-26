@@ -101,7 +101,7 @@ const struct pad_config gpio_table[] = {
 	/* C07:	SML1_DATA_USBC_PD_N		*/
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_C07, NONE, DEEP, NF1),
 	/* C08:	SML1ALERT			*/
-	PAD_NC(GPP_C08, NONE),
+	PAD_CFG_NF(GPP_C08, NONE, DEEP, NF1),
 	/* C09:					*/
 	PAD_NC(GPP_C09, NONE),
 	/* C10:					*/

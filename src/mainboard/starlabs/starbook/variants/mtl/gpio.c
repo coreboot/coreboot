@@ -116,7 +116,7 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_C14, NONE),
 	/* C15:	RESERVED
 	 *		WEAK INTERNAL PD 20K	*/
-	PAD_NC(GPP_C15, NONE),
+	PAD_CFG_GPO(GPP_C15, 0, DEEP),
 	/* C16:					*/
 	PAD_NC(GPP_C16, NONE),
 	/* C17:					*/
@@ -209,6 +209,7 @@ const struct pad_config gpio_table[] = {
 	 *		HIGH:	ENABLED
 	 *		LOW:	DISABLED
 	 *		20K INTERNAL PU		*/
+	PAD_CFG_GPO(GPP_E06, 0, DEEP),
 	/* E07:					*/
 	PAD_NC(GPP_E07, NONE),
 	/* E08:					*/
@@ -255,7 +256,7 @@ const struct pad_config gpio_table[] = {
 	 *		HIGH:	ENABLED
 	 *		LOW:	DISABLED
 	 *		WEAK INTERNAL PD 20K	*/
-	PAD_NC(GPP_H01, NONE),
+	PAD_CFG_GPO(GPP_H01, 0, DEEP),
 	/* H02:	WLAN_RST_N			*/
 	PAD_CFG_GPO(GPP_H02, 1, PLTRST),
 	/* H03:					*/
@@ -344,17 +345,17 @@ const struct pad_config gpio_table[] = {
 	 *		HIGH:	MASTER
 	 *		LOW:	SLAVE
 	 *		WEAK INTERNAL PD 20K	*/
-	PAD_NC(GPP_F19, NONE),
+	PAD_CFG_GPO(GPP_F19, 0, DEEP),
 	/* F20:	SVID
 	 *		HIGH:	PRESENT
 	 *		LOW:	NOT PRESENT
 	 *		WEAK INTERNAL PD 20K	*/
-	PAD_NC(GPP_F20, NONE),
+	PAD_CFG_GPO(GPP_F20, 0, DEEP),
 	/* F21:	CCD
 	 *		HIGH:	BALTIC PEAK
 	 *		LOW:	BSSB-LS
 	 *		WEAK INTERNAL PU 20K	*/
-	PAD_NC(GPP_F21, NONE),
+	PAD_CFG_GPO(GPP_F21, 0, DEEP),
 	/* F22:					*/
 	PAD_NC(GPP_F22, NONE),
 	/* F23:					*/

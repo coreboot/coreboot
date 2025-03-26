@@ -164,7 +164,7 @@ const struct pad_config gpio_table[] = {
 	/* A11:					*/
 	PAD_NC(GPP_A11, NONE),
 	/* A12:	WLAN_PEWAKE			*/
-	PAD_CFG_GPI(GPP_A12, NONE, DEEP),
+	PAD_NC(GPP_A12, NONE),
 	/* A13:					*/
 	PAD_NC(GPP_A13, NONE),
 	/* A14:					*/

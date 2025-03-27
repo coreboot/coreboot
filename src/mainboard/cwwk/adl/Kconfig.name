@@ -1,4 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-or-later
 
-config BOARD_CWWK_ADL_N
+config BOARD_CWWK_CW_ADL_4L_V1
 	bool "CW-ADL-4L-V1.0"
+
+config BOARD_CWWK_CW_ADLNTB_1C2L_V3
+	bool "CW-ADLNTB-1C2L-V3.0"

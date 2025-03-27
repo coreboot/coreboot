@@ -1,0 +1,2 @@
+Board name: CW-ADL-4L-V1.0
+Release year: 2024

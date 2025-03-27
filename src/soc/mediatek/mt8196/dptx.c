@@ -61,7 +61,13 @@ static void update_swing_preemphasis(struct mtk_dp *mtk_dp, u8 lane_count,
 		int shift = lane % 2 ? DP_ADJUST_VOLTAGE_SWING_LANE1_SHIFT : 0;
 		u8 swing_value = dpcd_adjust_req[index] >> shift;
 
-		swing_val[lane] = swing_value & DP_ADJUST_VOLTAGE_SWING_LANE0_MASK;
+		if (mtk_dp->force_max_swing) {
+			swing_val[lane] = DPTX_SWING3;
+			printk(BIOS_INFO, "%s: Force swing setting to %u (500 mV)\n",
+			       __func__, swing_val[lane]);
+		} else {
+			swing_val[lane] = swing_value & DP_ADJUST_VOLTAGE_SWING_LANE0_MASK;
+		}
 		preemphasis[lane] = swing_value & DP_ADJUST_PRE_EMPHASIS_LANE0_MASK;
 		preemphasis[lane] >>= DP_ADJUST_PRE_EMPHASIS_LANE0_SHIFT;
 		val = swing_val[lane] << DP_TRAIN_VOLTAGE_SWING_SHIFT |

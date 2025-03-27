@@ -56,6 +56,13 @@ __weak int mtk_dsi_init(u32 mode_flags, u32 format, u32 lanes,
 	return -1;
 }
 
+static void process_panel_quirks(struct mtk_dp *mtk_dp,
+				 struct panel_description *panel)
+{
+	if (panel->quirks & PANEL_QUIRK_FORCE_MAX_SWING)
+		mtk_dp->force_max_swing = true;
+}
+
 int mtk_display_init(void)
 {
 	struct edid edid = {0};
@@ -80,6 +87,7 @@ int mtk_display_init(void)
 		panel->power_on();
 
 	mtk_ddp_init();
+	process_panel_quirks(&mtk_edp, panel);
 
 	if (panel->disp_path == DISP_PATH_EDP) {
 		mdelay(200);

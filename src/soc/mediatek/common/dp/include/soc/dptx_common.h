@@ -212,6 +212,7 @@ struct mtk_dp {
 	bool dsc_enable;
 	bool enabled;
 	bool powered;
+	bool force_max_swing;
 };
 
 int mtk_edp_init(struct mtk_dp *mtk_dp, struct edid *edid);

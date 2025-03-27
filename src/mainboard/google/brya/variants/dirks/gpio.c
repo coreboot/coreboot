@@ -2,6 +2,7 @@
 
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
+#include <intelblocks/early_graphics.h>
 #include <soc/gpio.h>
 
 /* Pad configuration in ramstage for dirks */
@@ -145,6 +146,35 @@ static const struct pad_config romstage_gpio_table[] = {
 	/* H20 : IMGCLKOUT1 ==> WLAN_PERST_L */
 	PAD_CFG_GPO(GPP_H20, 1, DEEP),
 };
+
+const struct pad_config early_graphics_gpio_table[] = {
+	/* A18 : NC ==> HDMI2_HPD*/
+	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),
+	/* A20 : DDSP_HPD2 ==> EC_SOC_HDMI_HPD */
+	PAD_CFG_NF(GPP_A20, NONE, DEEP, NF1),
+
+	/* E14 : DDSP_HPDA ==> HDMI1_HPD */
+	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),
+	/* E20 : DDP2_CTRLCLK ==> HDMI_DDC_SCL */
+	PAD_CFG_NF(GPP_E20, NONE, DEEP, NF1),
+	/* E21 : DDP2_CTRLDATA ==> HDMI_DDC_SDA_STRAP */
+	PAD_CFG_NF(GPP_E21, NONE, DEEP, NF1),
+	/* E22 : DDPA_CTRLCLK ==> DDPA_CTRLCLK */
+	PAD_CFG_NF(GPP_E22, NONE, DEEP, NF1),
+	/* E23 : DDPA_CTRLDATA ==> DDPA_CTRLDATA */
+	PAD_CFG_NF(GPP_E23, NONE, DEEP, NF1),
+
+	/* H15 : HDMI_SRC_DDC_SCL */
+	PAD_CFG_NF(GPP_H15, NONE, DEEP, NF1),
+	/* H17 : HDMI_SRC_DDC_SDA */
+	PAD_CFG_NF(GPP_H17, NONE, DEEP, NF1),
+};
+
+const struct pad_config *variant_early_graphics_gpio_table(size_t *num)
+{
+	*num = ARRAY_SIZE(early_graphics_gpio_table);
+	return early_graphics_gpio_table;
+}
 
 const struct pad_config *variant_gpio_override_table(size_t *num)
 {

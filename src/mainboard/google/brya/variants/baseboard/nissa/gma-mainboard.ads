@@ -9,5 +9,7 @@ use HW.GFX.GMA.Display_Probing;
 private package GMA.Mainboard is
    ports : constant Port_List :=
      (eDP,
+      HDMI1,
+      HDMI2,
       others => Disabled);
 end GMA.Mainboard;

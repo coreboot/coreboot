@@ -43,6 +43,23 @@ static const struct pad_config hda_enable_pads[] = {
 	PAD_NC(GPP_S05, NONE),
 };
 
+static const struct pad_config audio_disable_pads[] = {
+	PAD_NC(GPP_D09, NONE),
+	PAD_NC(GPP_D10, NONE),
+	PAD_NC(GPP_D11, NONE),
+	PAD_NC(GPP_D12, NONE),
+	PAD_NC(GPP_D13, NONE),
+	PAD_NC(GPP_D16, NONE),
+	PAD_NC(GPP_S00, NONE),
+	PAD_NC(GPP_S01, NONE),
+	PAD_NC(GPP_S02, NONE),
+	PAD_NC(GPP_S03, NONE),
+	PAD_NC(GPP_S04, NONE),
+	PAD_NC(GPP_S05, NONE),
+	PAD_NC(GPP_S06, NONE),
+	PAD_NC(GPP_S07, NONE),
+};
+
 /*
  * WWAN: power sequence requires three stages:
  * step 1: 3.3V power, FCP# (Full Card Power), RST#, and PERST# off
@@ -123,8 +140,11 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		return;
 	}
 
-	if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_ALC256M_CG_HDA)))
+	if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_ALC256M_CG_HDA))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, hda_enable_pads);
+	} else {
+		GPIO_PADBASED_OVERRIDE(padbased_table, audio_disable_pads);
+	}
 
 	if (fw_config_probe(FW_CONFIG(WWAN, WWAN_PRESENT))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, wwan_pwr_seq3_pads);

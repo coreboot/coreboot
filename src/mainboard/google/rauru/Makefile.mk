@@ -12,3 +12,7 @@ ramstage-y += boardid.c
 ramstage-y += mainboard.c
 ramstage-y += panel.c
 ramstage-y += regulator.c
+
+CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/include
+
+subdirs-y += variants/$(VARIANT_DIR)

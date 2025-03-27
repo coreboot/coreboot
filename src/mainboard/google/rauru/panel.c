@@ -4,6 +4,7 @@
 #include <gpio.h>
 #include <soc/ddp.h>
 #include <soc/dsi.h>
+#include <variants.h>
 
 #include "gpio.h"
 #include "panel.h"
@@ -20,7 +21,7 @@ static void power_on_panel(void)
 	gpio_set_mode(GPIO_EDP_HPD_1V8, GPIO_FUNC(EINT13, EDP_TX_HPD));
 }
 
-static struct panel_description panel = {
+static struct panel_description rauru_panel = {
 	.configure_backlight = configure_backlight,
 	.power_on = power_on_panel,
 	.disp_path = DISP_PATH_EDP,
@@ -41,10 +42,16 @@ static struct panel_description edp_panel = {
 	.orientation = LB_FB_ORIENTATION_NORMAL,
 };
 
+__weak void fw_config_panel_override(struct panel_description *panel)
+{
+}
+
 struct panel_description *get_active_panel(void)
 {
 	if (CONFIG(BOARD_GOOGLE_RAURU))
-		return &panel;
+		return &rauru_panel;
+
+	fw_config_panel_override(&edp_panel);
 
 	return &edp_panel;
 }

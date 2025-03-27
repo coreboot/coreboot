@@ -1,0 +1,13 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+fw_config
+	field OLED_WQXGA_PLUS 1 1
+		option PRESENT	1
+		option ABSENT	0
+	end
+end
+
+chip soc/mediatek/mt8196
+	device domain 0 on
+	end
+end

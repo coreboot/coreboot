@@ -2,10 +2,12 @@
 
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
+#include <boardid.h>
 #include <console/console.h>
 #include <delay.h>
 #include <fw_config.h>
 #include <sar.h>
+#include <soc/bootblock.h>
 
 const char *get_wifi_sar_cbfs_filename(void)
 {
@@ -73,5 +75,32 @@ void variant_update_soc_chip_config(struct soc_intel_alderlake_config *config)
 		config->ext_fivr_settings.v1p05_icc_max_ma = 500;
 		config->ext_fivr_settings.vnn_icc_max_ma = 500;
 		printk(BIOS_INFO, "Configured External FIVR\n");
+	}
+}
+
+void variant_update_descriptor(void)
+{
+	uint32_t board_version = board_id();
+
+	/* b/404126972: Only this phase has M/B with both FIVR and MBVR. */
+	if (board_version != 1)
+		return;
+
+	/* VccanaVrLocation = "VCCANA is CPU FIVR" */
+	struct descriptor_byte fivr_bytes[] = {
+		{ 0xc33,  0x32 }
+	};
+
+	/* VccanaVrLocation = "VCCANA is Platform VR" */
+	struct descriptor_byte mbvr_bytes[] = {
+		{ 0xc33,  0x72 }
+	};
+
+	if (fw_config_probe(FW_CONFIG(EXT_VR, EXT_VR_PRESENT))) {
+		printk(BIOS_INFO, "Configuring descriptor for MBVR\n");
+		configure_descriptor(mbvr_bytes, ARRAY_SIZE(mbvr_bytes));
+	} else {
+		printk(BIOS_INFO, "Configuring descriptor for FIVR\n");
+		configure_descriptor(fivr_bytes, ARRAY_SIZE(fivr_bytes));
 	}
 }

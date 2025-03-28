@@ -226,3 +226,6 @@ config BOARD_GOOGLE_TELITH
 
 config BOARD_GOOGLE_MELIKS
 	bool "->  Meliks"
+
+config BOARD_GOOGLE_EPIC
+	bool "->  Epic"

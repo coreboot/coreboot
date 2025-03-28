@@ -6,7 +6,7 @@ const u32 cim_verb_data[] = {
 	/* coreboot specific header */
 	0x10ec0256,	/* Codec Vendor / Device ID: Realtek ALC256 */
 	0x10ec12ac,	/* Subsystem ID */
-	0x00000013,	/* Number of jacks (NID entries) */
+	0x00000015,	/* Number of jacks (NID entries) */
 
 	AZALIA_RESET(0x1),
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table */
@@ -15,11 +15,10 @@ const u32 cim_verb_data[] = {
 	/* Pin Widget Verb Table */
 	/*
 	 * DMIC
-	 * Requirement is to use PCH DMIC. Hence,
-	 * commented out codec's Internal DMIC.
-	 * AZALIA_PIN_CFG(0, 0x12, 0x90A60130),
-	 * AZALIA_PIN_CFG(0, 0x13, 0x40000000),
+	 * Internal DMIC.
 	 */
+	AZALIA_PIN_CFG(0, 0x12, 0x90A60130),
+	AZALIA_PIN_CFG(0, 0x13, 0x90A60140),
 	/* Pin widget 0x14 - Front (Port-D) */
 	AZALIA_PIN_CFG(0, 0x14, 0x90170110),
 	/* Pin widget 0x18 - NPC */

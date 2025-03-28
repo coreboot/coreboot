@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
-config SOC_AMD_CEZANNE
+config SOC_AMD_CEZANNE_BASE
 	bool
 	select ACPI_SOC_NVS
 	select ADD_FSP_BINARIES if USE_AMD_BLOBS
@@ -91,7 +91,19 @@ config SOC_AMD_CEZANNE
 	help
 	  AMD Cezanne support
 
-if SOC_AMD_CEZANNE
+config SOC_AMD_CEZANNE
+	bool
+	select SOC_AMD_CEZANNE_BASE
+	help
+		AMD Cezanne support
+
+config SOC_AMD_RENOIR
+	bool
+	select SOC_AMD_CEZANNE_BASE
+	help
+		AMD Renoir support
+
+if SOC_AMD_CEZANNE_BASE
 
 config KEEP_ACP_RUNNING_IN_S3
 	bool
@@ -107,6 +119,7 @@ config CHIPSET_DEVICETREE
 config FSP_M_FILE
 	string "FSP-M (memory init) binary path and filename"
 	depends on ADD_FSP_BINARIES
+	#default "3rdparty/amd_blobs/renoir/RENOIR_M.fd" if SOC_AMD_RENOIR
 	default "3rdparty/amd_blobs/cezanne/CEZANNE_M.fd"
 	help
 	  The path and filename of the FSP-M binary for this platform.
@@ -114,6 +127,7 @@ config FSP_M_FILE
 config FSP_S_FILE
 	string "FSP-S (silicon init) binary path and filename"
 	depends on ADD_FSP_BINARIES
+	#default "3rdparty/amd_blobs/renoir/RENOIR_S.fd" if SOC_AMD_RENOIR
 	default "3rdparty/amd_blobs/cezanne/CEZANNE_S.fd"
 	help
 	  The path and filename of the FSP-S binary for this platform.
@@ -256,6 +270,7 @@ config RO_REGION_ONLY
 	default "apu/amdfw"
 
 config ECAM_MMCONF_BASE_ADDRESS
+	default 0xE0000000 if SOC_AMD_RENOIR
 	default 0xF8000000
 
 config ECAM_MMCONF_BUS_NUMBER
@@ -269,6 +284,7 @@ config MAX_CPUS
 
 config VGA_BIOS_ID
 	string
+	default "1002,1636" if SOC_AMD_RENOIR
 	default "1002,1638"
 	help
 	  The default VGA BIOS PCI vendor/device ID should be set to the
@@ -276,6 +292,7 @@ config VGA_BIOS_ID
 
 config VGA_BIOS_FILE
 	string
+	#default "3rdparty/amd_blobs/renoir/RenoirGenericVbios.bin" if SOC_AMD_RENOIR
 	default "3rdparty/amd_blobs/cezanne/CezanneGenericVbios.bin"
 
 config CONSOLE_UART_BASE_ADDRESS
@@ -337,6 +354,7 @@ menu "PSP Configuration Options"
 
 config AMDFW_CONFIG_FILE
 	string
+	#default "src/soc/amd/cezanne/fw_renoir.cfg" if SOC_AMD_RENOIR
 	default "src/soc/amd/cezanne/fw.cfg"
 
 config PSP_DISABLE_POSTCODES
@@ -385,6 +403,7 @@ config HAVE_PSP_WHITELIST_FILE
 config PSP_WHITELIST_FILE
 	string "Debug whitelist file path"
 	depends on HAVE_PSP_WHITELIST_FILE
+	#default "3rdparty/amd_blobs/renoir/PSP/wtl-rn.sbin" if SOC_AMD_RENOIR
 	default "3rdparty/amd_blobs/cezanne/PSP/wtl-czn.sbin"
 
 config PSP_SOFTFUSE_BITS
@@ -492,4 +511,4 @@ config SERIRQ_CONTINUOUS_MODE
 	  Set this option to y for serial IRQ in continuous mode.
 	  Otherwise it is in quiet mode.
 
-endif # SOC_AMD_CEZANNE
+endif # SOC_AMD_CEZANNE_BASE

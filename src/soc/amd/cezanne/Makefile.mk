@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
-ifeq ($(CONFIG_SOC_AMD_CEZANNE),y)
+ifeq ($(CONFIG_SOC_AMD_CEZANNE_BASE),y)
 
 subdirs-$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK) += psp_verstage
 
@@ -285,4 +285,4 @@ apu/amdfw_b-position := $(AMD_FW_AB_POSITION)
 apu/amdfw_b-type := raw
 endif
 
-endif # ($(CONFIG_SOC_AMD_CEZANNE),y)
+endif # ($(CONFIG_SOC_AMD_CEZANNE_BASE),y)

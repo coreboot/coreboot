@@ -53,7 +53,11 @@ static void soc_final(void *chip_info)
 }
 
 struct chip_operations soc_amd_cezanne_ops = {
+#if CONFIG(SOC_AMD_CEZANNE)
 	.name = "AMD Cezanne SoC",
+#elif CONFIG(SOC_AMD_RENOIR)
+	.name = "AMD Renoir SoC",
+#endif
 	.init = soc_init,
 	.final = soc_final
 };

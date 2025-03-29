@@ -185,6 +185,15 @@ static const struct sm_object thunderbolt = SM_DECLARE_BOOL({
 });
 #endif
 
+#if CONFIG(SOC_INTEL_METEORLAKE)
+static const struct sm_object vpu = SM_DECLARE_BOOL({
+	.opt_name	= "vpu",
+	.ui_name	= "VPU",
+	.ui_helptext	= "Enable or disable VPU",
+	.default_value	= true,
+});
+#endif
+
 static const struct sm_object webcam = SM_DECLARE_BOOL({
 	.opt_name	= "webcam",
 	.ui_name	= "Webcam",
@@ -265,6 +274,9 @@ static struct sm_obj_form devices = {
 		&microphone,
 		#if CONFIG(DRIVERS_INTEL_USB4_RETIMER)
 		&thunderbolt,
+		#endif
+		#if CONFIG(SOC_INTEL_METEORLAKE)
+		&vpu,
 		#endif
 		&webcam,
 		&wireless,

@@ -171,6 +171,7 @@ chip soc/intel/meteorlake
 				device i2c 2c on end
 			end
 		end
+		device ref vpu on end
 		device ref ioe_shared_sram	on  end
 		device ref pmc_shared_sram	on  end
 		device ref pcie_rp9	on				# WiFi

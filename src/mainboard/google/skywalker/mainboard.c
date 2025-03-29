@@ -1,15 +1,44 @@
 /* SPDX-License-Identifier: GPL-2.0-only OR MIT */
 
 #include <device/device.h>
+#include <device/mmio.h>
+#include <fw_config.h>
 #include <gpio.h>
 #include <soc/bl31.h>
 #include <soc/dpm_v2.h>
 #include <soc/msdc.h>
 #include <soc/mt6359p.h>
+#include <soc/mtcmos.h>
 #include <soc/spm_common.h>
 #include <soc/usb.h>
 
 #include "gpio.h"
+
+#define AFE_SE_SECURE_CON1	(AUDIO_BASE + 0x5634)
+
+static void configure_rt9123(void)
+{
+	/* SoC I2S */
+	gpio_set_mode(GPIO_I2SOUT1_BCK, GPIO_FUNC(DMIC0_DAT0, I2SOUT1_BCK));
+	gpio_set_mode(GPIO_I2SOUT1_LRCK, GPIO_FUNC(DMIC1_CLK, I2SOUT1_LRCK));
+	gpio_set_mode(GPIO_I2SOUT1_DOUT, GPIO_FUNC(DMIC1_DAT0, I2SOUT1_DO));
+
+	printk(BIOS_INFO, "%s: AMP configuration done\n", __func__);
+}
+
+static void configure_audio(void)
+{
+	mtcmos_audio_power_on();
+	mtcmos_protect_audio_bus();
+
+	/* Switch to normal mode */
+	write32p(AFE_SE_SECURE_CON1, 0x0);
+
+	if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_RT9123)))
+		configure_rt9123();
+	else
+		printk(BIOS_WARNING, "Unknown amp\n");
+}
 
 static void power_on_fpmcu(void)
 {
@@ -24,6 +53,7 @@ static void mainboard_init(struct device *dev)
 	setup_usb_host();
 	spm_init();
 	power_on_fpmcu();
+	configure_audio();
 
 	if (CONFIG(SKYWALKER_SDCARD_INIT))
 		mtk_msdc_configure_sdcard();

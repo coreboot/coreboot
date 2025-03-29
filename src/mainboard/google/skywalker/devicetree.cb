@@ -3,3 +3,9 @@
 chip soc/mediatek/mt8189
 	device cpu_cluster 0 on end
 end
+
+fw_config
+	field AUDIO_AMP 25 27
+		option AMP_RT9123 0
+	end
+end

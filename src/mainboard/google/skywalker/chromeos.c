@@ -3,6 +3,7 @@
 #include <boot/coreboot_tables.h>
 #include <drivers/tpm/cr50.h>
 #include <ec/google/chromeec/ec.h>
+#include <fw_config.h>
 #include <gpio.h>
 
 #include "gpio.h"
@@ -31,6 +32,7 @@ void setup_chromeos_gpios(void)
 	gpio_output(GPIO_AP_FP_FW_UP_STRAP, 0);
 	gpio_output(GPIO_EN_PWR_FP, 0);
 	gpio_output(GPIO_FP_RST_1V8_S3_L, 0);
+	gpio_output(GPIO_EN_SPKR, 0);
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)
@@ -47,6 +49,13 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 			{ GPIO_SD_CD_ODL.id, ACTIVE_LOW, -1, "SD card detect" },
 		};
 		lb_add_gpios(gpios, sd_card_gpios, ARRAY_SIZE(sd_card_gpios));
+	}
+
+	if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_RT9123))) {
+		struct lb_gpio rt9123_gpios[] = {
+			{GPIO_EN_SPKR.id, ACTIVE_HIGH, -1, "rt9123_spk_en"},
+		};
+		lb_add_gpios(gpios, rt9123_gpios, ARRAY_SIZE(rt9123_gpios));
 	}
 }
 

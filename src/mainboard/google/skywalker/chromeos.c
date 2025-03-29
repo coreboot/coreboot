@@ -56,6 +56,11 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 			{GPIO_EN_SPKR.id, ACTIVE_HIGH, -1, "rt9123_spk_en"},
 		};
 		lb_add_gpios(gpios, rt9123_gpios, ARRAY_SIZE(rt9123_gpios));
+	} else if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_ALC5645))) {
+		struct lb_gpio alc5645_gpios[] = {
+			{GPIO_EN_SPKR.id, ACTIVE_HIGH, -1, "alc5645_spk_en"},
+		};
+		lb_add_gpios(gpios, alc5645_gpios, ARRAY_SIZE(alc5645_gpios));
 	}
 }
 

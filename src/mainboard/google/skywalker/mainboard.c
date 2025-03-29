@@ -6,6 +6,7 @@
 #include <gpio.h>
 #include <soc/bl31.h>
 #include <soc/dpm_v2.h>
+#include <soc/i2c.h>
 #include <soc/msdc.h>
 #include <soc/mt6359p.h>
 #include <soc/mtcmos.h>
@@ -26,6 +27,20 @@ static void configure_rt9123(void)
 	printk(BIOS_INFO, "%s: AMP configuration done\n", __func__);
 }
 
+static void configure_alc5645(void)
+{
+	/* SoC I2S */
+	gpio_set_mode(GPIO_I2SOUT0_MCK, GPIO_FUNC(I2SOUT0_MCK, I2SOUT0_MCK));
+	gpio_set_mode(GPIO_I2SOUT0_BCK, GPIO_FUNC(I2SOUT0_BCK, I2SOUT0_BCK));
+	gpio_set_mode(GPIO_I2SOUT0_LRCK, GPIO_FUNC(I2SOUT0_LRCK, I2SOUT0_LRCK));
+	gpio_set_mode(GPIO_I2SOUT0_DOUT, GPIO_FUNC(I2SOUT0_DO, I2SOUT0_DO));
+
+	/* Init I2C bus timing register for audio codecs */
+	mtk_i2c_bus_init(I2C2, I2C_SPEED_STANDARD);
+
+	printk(BIOS_INFO, "%s: AMP configuration done\n", __func__);
+}
+
 static void configure_audio(void)
 {
 	mtcmos_audio_power_on();
@@ -36,6 +51,8 @@ static void configure_audio(void)
 
 	if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_RT9123)))
 		configure_rt9123();
+	else if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_ALC5645)))
+		configure_alc5645();
 	else
 		printk(BIOS_WARNING, "Unknown amp\n");
 }

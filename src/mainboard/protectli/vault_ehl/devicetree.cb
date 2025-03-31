@@ -18,9 +18,9 @@ chip soc/intel/elkhartlake
 	# route, i.e., if this route changes then the affected GPE
 	# offset bits also need to be changed. This sets the PMC register
 	# GPE_CFG fields.
-	#register "pmc_gpe0_dw1" = "PMC_GPE_SCC_63_32"
-	#register "pmc_gpe0_dw2" = "PMC_GPE_N_31_0"
-	#register "pmc_gpe0_dw3" = "PMC_GPE_SCC_31_0"
+	register "pmc_gpe0_dw0" = "PMC_GPP_A"
+	register "pmc_gpe0_dw1" = "PMC_GPP_R"
+	register "pmc_gpe0_dw2" = "PMC_GPD"
 
 	register "tcc_offset" = "5" # TCC of 95C
 

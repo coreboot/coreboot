@@ -49,4 +49,7 @@ config VBOOT_SLOTS_RW_A
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/vboot-rwa.fmd" if VBOOT && VBOOT_SLOTS_RW_A
 
+config TPM_PIRQ
+	default 0x6B # GPP_G19_IRQ
+
 endif # BOARD_PROTECTLI_VP2420

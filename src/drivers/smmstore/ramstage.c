@@ -28,6 +28,10 @@ void lb_smmstorev2(struct lb_header *header)
 	store->size = sizeof(*store);
 	store->com_buffer = (uintptr_t)cbmem_entry_start(e);
 	store->com_buffer_size = cbmem_entry_size(e);
+	if (info.mmap_addr < 4ULL * GiB)
+		store->mmap_addr_deprecated = info.mmap_addr;
+	else
+		store->mmap_addr_deprecated = 0;
 	store->mmap_addr = info.mmap_addr;
 	store->num_blocks = info.num_blocks;
 	store->block_size = info.block_size;

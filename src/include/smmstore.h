@@ -69,7 +69,7 @@ struct smmstore_params_init {
 struct smmstore_params_info {
 	uint32_t num_blocks;
 	uint32_t block_size;
-	uint32_t mmap_addr;
+	uint64_t mmap_addr;
 } __packed;
 
 /*

@@ -39,6 +39,11 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B8, NONE, DEEP, NF2),				/* Clock */
 	PAD_CFG_GPI_APIC_LOW(GPP_E12, NONE, PLTRST),			/* Interrupt */
 
+	/* SSD */
+	PAD_CFG_NF(GPP_D5, NONE, DEEP, NF1),				/* Clock Request 0 */
+	PAD_CFG_GPO(GPP_H0, 1, PLTRST),					/* Reset */
+	PAD_CFG_GPO(GPP_D16, 1, DEEP),					/* Enable */
+
 	PAD_NC(GPD2, NONE),
 	PAD_NC(GPD6, NONE),
 	/* GPD7:	Power Adapter Disable				*/
@@ -198,8 +203,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D3, NONE),
 	/* D4:		Not Connected					*/
 	PAD_NC(GPP_D4, NONE),
-	/* D5:		Clock Request 0		PCH M.2 SSD		*/
-	PAD_CFG_NF(GPP_D5, NONE, DEEP, NF1),
 	/* D6:		Clock Request 1		Wireless LAN		*/
 	PAD_CFG_NF(GPP_D6, NONE, DEEP, NF1),
 	/* D7:		Clock Request 2					*/
@@ -220,8 +223,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D14, NONE),
 	/* D15:		Not Connected					*/
 	PAD_NC(GPP_D15, NONE),
-	/* D16:		PCH M.2 SSD Power Enable			*/
-	PAD_CFG_GPO(GPP_D16, 1, DEEP),
 	/* D17:		Not used		Fingerprint ID		*/
 	PAD_NC(GPP_D17, NONE),
 	/* D18:		Not Connected					*/
@@ -329,8 +330,6 @@ const struct pad_config gpio_table[] = {
 	/* F23:		Not Connected					*/
 	PAD_NC(GPP_F23, NONE),
 
-	/* H0:		PCH M.2 SSD Reset				*/
-	PAD_CFG_GPO(GPP_H0, 1, PLTRST),
 	/* H1:		BFX Strap 2 Bit 3	Weak Internal PD 20K	*/
 	PAD_CFG_GPO(GPP_H1, 0, DEEP),
 	/* H2:		Wireless LAN Reset				*/

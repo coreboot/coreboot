@@ -126,9 +126,14 @@ Device (S76D) {
 	// Fan names
 	Method (NFAN, 0, Serialized) {
 		Return (Package() {
-			"CPU fan",
 #if CONFIG(EC_SYSTEM76_EC_DGPU)
+			"CPU fan",
 			"GPU fan",
+#elif CONFIG(EC_SYSTEM76_EC_FAN2)
+			"fan1",
+			"fan2",
+#else
+			"CPU fan",
 #endif
 		})
 	}

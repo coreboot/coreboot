@@ -348,8 +348,8 @@ commit message itself:
 	* Tested-by:
 	* Reviewed-by:
 
-The script `util/gitconfig/rebase.sh` can be used to help automate this.
-Other tags such as 'Commit-Queue' can simply be removed.
+The script `util/scripts/cross-repo-cherrypick` can be used to help
+automate this. Other tags such as 'Commit-Queue' can simply be removed.
 
 * Check if there's documentation that needs to be updated to remain current
 after your change. If there's no documentation for the part of coreboot

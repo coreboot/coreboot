@@ -1178,4 +1178,8 @@ config SKIP_RAM_ID_STRAPS
 
 	  If unsure, leave this option disabled.
 
+config D3COLD_SUPPORT
+	bool
+	default n if BOARD_GOOGLE_DIRKS
+
 endif # BOARD_GOOGLE_BRYA_COMMON

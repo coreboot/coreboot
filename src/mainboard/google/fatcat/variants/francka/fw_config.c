@@ -24,23 +24,6 @@ static const struct pad_config hda_enable_pads[] = {
 	PAD_CFG_NF(GPP_S06, NONE, DEEP, NF5),
 	/* SOC_DMIC_DATA1 */
 	PAD_CFG_NF(GPP_S07, NONE, DEEP, NF5),
-
-	/* GPP_D09:     PCH_DGPU_HOLD_RST#_R */
-	PAD_NC(GPP_D09, NONE),
-	/* GPP_D16:     HDA_RST# */
-	PAD_NC(GPP_D16, NONE),
-	/* GPP_S00:     SNDW_3_SCL */
-	PAD_NC(GPP_S00, NONE),
-	/* GPP_S01:     SNDW_3_SDA */
-	PAD_NC(GPP_S01, NONE),
-	/* GPP_S02:     SOC_DMIC_CLK0 */
-	PAD_NC(GPP_S02, NONE),
-	/* GPP_S03:     SOC_DMIC_DATA0 */
-	PAD_NC(GPP_S03, NONE),
-	/* GPP_S04:     SNDW2_CLK */
-	PAD_NC(GPP_S04, NONE),
-	/* GPP_S05:     SNDW2_DATA0 */
-	PAD_NC(GPP_S05, NONE),
 };
 
 static const struct pad_config audio_disable_pads[] = {

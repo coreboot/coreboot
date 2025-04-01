@@ -86,7 +86,7 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_C5, 0, RSMRST),					/* eSPI			[ Enabled  / Disabled ] */
 	PAD_CFG_GPO(GPP_E6, 0, RSMRST),					/* JTAG ODT		[ Disabled / Enabled  ] */
 	PAD_CFG_GPO(GPP_H1, 0, RSMRST),					/* BFX Strap 2 Bit 3	[ Disabled / Enabled  ] */
-	PAD_CFG_GPO(GPP_F2, 0, RSMRST),					/* M.2 CNVi		[ Enabled  / Disabled ] */
+	PAD_CFG_GPO(GPP_F2, 1, RSMRST),					/* M.2 CNVi		[ Enabled  / Disabled ] */
 	PAD_CFG_GPO(GPP_E19, 0, RSMRST),				/* TBT LSX #0		[ 1.8V     / 3.3V     ] */
 	PAD_CFG_GPO(GPP_E21, 0, RSMRST),				/* TBT LSX #1           [ 1.8V     / 3.3V     ] */
 	PAD_CFG_GPO(GPP_D12, 0, RSMRST),				/* TBT LSX #3		[ 1.8V     / 3.3V     ] */

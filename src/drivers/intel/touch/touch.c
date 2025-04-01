@@ -194,6 +194,10 @@ static void touch_generate_acpi_crs(const struct drivers_intel_touch_config *con
 	       touch_acpi_name(dev));
 	acpigen_write_name("_CRS");
 	acpigen_write_resourcetemplate_header();
+	/*
+	 * NOTE: config->wake_gpio: uses GpioInt() in _CRS; PAD needs to be Driver Mode
+	 *       config->wake_irq:  uses Interrupt() in _CRS; use GPE; PAD needs to be ACPI Mode
+	 */
 	if (config->wake_gpio.pin_count)
 		acpi_device_write_gpio(&config->wake_gpio);
 	else if (config->wake_irq.pin)
@@ -201,7 +205,8 @@ static void touch_generate_acpi_crs(const struct drivers_intel_touch_config *con
 	acpigen_write_resourcetemplate_footer();
 
 	acpigen_write_name_integer("_S0W", ACPI_DEVICE_SLEEP_D3_HOT);
-	acpigen_write_PRW(config->wake_gpe, 3);
+	if (config->wake_irq.pin)
+		acpigen_write_PRW(config->wake_gpe, 3);
 }
 
 static void touch_generate_acpi_i2cdev_dsd(const struct device *dev)

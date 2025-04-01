@@ -1349,17 +1349,6 @@ unsigned long __weak fw_cfg_acpi_tables(unsigned long start)
 	return 0;
 }
 
-void preload_acpi_dsdt(void)
-{
-	const char *file = CONFIG_CBFS_PREFIX "/dsdt.aml";
-
-	if (!CONFIG(CBFS_PRELOAD))
-		return;
-
-	printk(BIOS_DEBUG, "Preloading %s\n", file);
-	cbfs_preload(file);
-}
-
 static void acpi_create_dsdt(acpi_header_t *header, void *dsdt_file_arg)
 {
 	dsdt = header;

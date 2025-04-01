@@ -1739,7 +1739,6 @@ void acpi_create_einj(acpi_einj_t *einj, uintptr_t addr, u8 actions);
 unsigned long fw_cfg_acpi_tables(unsigned long start);
 
 /* These are implemented by the target port or north/southbridge. */
-void preload_acpi_dsdt(void);
 unsigned long write_acpi_tables(const unsigned long addr);
 unsigned long acpi_fill_madt(unsigned long current);
 unsigned long acpi_arch_fill_madt(acpi_madt_t *madt, unsigned long current);

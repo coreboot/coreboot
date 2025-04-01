@@ -34,6 +34,11 @@ const struct pad_config gpio_table[] = {
 	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A9, UP_20K, DEEP, NF1),	/* eSPI Clk */
 	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A10, NONE, DEEP, NF1),	/* eSPI Reset */
 
+	/* Touchpad */
+	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF2),				/* Data */
+	PAD_CFG_NF(GPP_B8, NONE, DEEP, NF2),				/* Clock */
+	PAD_CFG_GPI_APIC_LOW(GPP_E12, NONE, PLTRST),			/* Interrupt */
+
 	PAD_NC(GPD2, NONE),
 	PAD_NC(GPD6, NONE),
 	/* GPD7:	Power Adapter Disable				*/
@@ -91,10 +96,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B5, NONE),
 	/* B6:		I2C 2 SCL		Touch Panel Clock	*/
 	PAD_NC(GPP_B6, NONE),
-	/* B7:		I2C 3 SDA		Test Point 15		*/
-	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF2),
-	/* B8:		I2C 3 SCL		Test Point 16		*/
-	PAD_CFG_NF(GPP_B8, NONE, DEEP, NF2),
 	/* B9:		Not Connected					*/
 	PAD_NC(GPP_B9, NONE),
 	/* B10:		Not Connected					*/
@@ -254,8 +255,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E10, NONE),
 	/* E11:		TPM IRQ						*/
 	PAD_CFG_GPI_APIC_LOW(GPP_E11, NONE, PLTRST),
-	/* E12:		Touchpad Interrupt				*/
-	PAD_CFG_GPI_APIC_LOW(GPP_E12, NONE, PLTRST),
 	/* E13:		Not connected					*/
 	PAD_NC(GPP_E13, NONE),
 	/* E14:		EDP HPD						*/

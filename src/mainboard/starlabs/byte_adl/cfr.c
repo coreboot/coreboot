@@ -38,14 +38,12 @@ static const struct sm_object debug_level = SM_DECLARE_ENUM({
 				SM_ENUM_VALUE_END			},
 });
 
-#if CONFIG(SOC_INTEL_TIGERLAKE) || CONFIG(SOC_INTEL_ALDERLAKE) || CONFIG(SOC_INTEL_RAPTORLAKE)
 static const struct sm_object gna = SM_DECLARE_BOOL({
 	.opt_name	= "gna",
 	.ui_name	= "Gaussian & Neural Accelerator",
 	.ui_helptext	= "Enable or Disable the Gaussian & Neural Accelerator",
 	.default_value	= false,
 });
-#endif
 
 static const struct sm_object me_state = SM_DECLARE_ENUM({
 	.opt_name	= "me_state",
@@ -84,7 +82,6 @@ static const struct sm_object power_profile = SM_DECLARE_ENUM({
 				SM_ENUM_VALUE_END			},
 });
 
-#if CONFIG(SOC_INTEL_ALDERLAKE)
 static const struct sm_object pciexp_aspm = SM_DECLARE_ENUM({
 	.opt_name	= "pciexp_aspm",
 	.ui_name	= "PCI ASPM",
@@ -124,7 +121,6 @@ static const struct sm_object pciexp_l1ss = SM_DECLARE_ENUM({
 				{ "L1.2",		L1_SS_L1_2	},
 				SM_ENUM_VALUE_END			},
 });
-#endif
 
 static const struct sm_object reboot_counter = SM_DECLARE_NUMBER({
 	.opt_name	= "reboot_counter",
@@ -169,9 +165,7 @@ static struct sm_obj_form power = {
 static struct sm_obj_form devices = {
 	.ui_name = "Devices",
 	.obj_list = (const struct sm_object *[]) {
-		#if CONFIG(SOC_INTEL_TIGERLAKE) || CONFIG(SOC_INTEL_ALDERLAKE) || CONFIG(SOC_INTEL_RAPTORLAKE)
 		&gna,
-		#endif
 		NULL
 	},
 };
@@ -179,11 +173,9 @@ static struct sm_obj_form devices = {
 static struct sm_obj_form pci = {
 	.ui_name = "PCI",
 	.obj_list = (const struct sm_object *[]) {
-		#if CONFIG(SOC_INTEL_ALDERLAKE)
 		&pciexp_clk_pm,
 		&pciexp_aspm,
 		&pciexp_l1ss,
-		#endif
 		NULL
 	},
 };

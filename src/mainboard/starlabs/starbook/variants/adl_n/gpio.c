@@ -25,6 +25,15 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPD5, NONE, DEEP, NF1),				/* Sleep S4 */
 	PAD_CFG_NF(GPD8, NONE, DEEP, NF1),				/* Bluetooth Suspend */
 
+	/* eSPI */
+	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A0, UP_20K, DEEP, NF1),	/* eSPI IO 0 */
+	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A1, UP_20K, DEEP, NF1),	/* eSPI IO 1 */
+	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A2, UP_20K, DEEP, NF1),	/* eSPI IO 2 */
+	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A3, UP_20K, DEEP, NF1),	/* eSPI IO 3 */
+	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A4, UP_20K, DEEP, NF1),	/* eSPI CS 0 */
+	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A9, UP_20K, DEEP, NF1),	/* eSPI Clk */
+	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A10, NONE, DEEP, NF1),	/* eSPI Reset */
+
 	PAD_NC(GPD2, NONE),
 	PAD_NC(GPD6, NONE),
 	/* GPD7:	Power Adapter Disable				*/
@@ -33,11 +42,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPD10, NONE),
 	PAD_NC(GPD11, NONE),
 
-	/* A0:		ESPI IO 0					*/
-	/* A1:		ESPI IO 1					*/
-	/* A2:		ESPI IO 2					*/
-	/* A3:		ESPI IO 3					*/
-	/* A4:		ESPI CS 0					*/
 	/* A5:		Not Connected					*/
 	PAD_NC(GPP_A5, NONE),
 	/* A6:		Not Connected					*/
@@ -46,8 +50,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_A7, NONE),
 	/* A8:		Not Connected					*/
 	PAD_NC(GPP_A8, NONE),
-	/* A9:		ESPI Clock					*/
-	/* A10:		ESPI Reset					*/
 	/* A11:		Not Connected					*/
 	PAD_NC(GPP_A11, NONE),
 	/* A12:		Not Connected					*/

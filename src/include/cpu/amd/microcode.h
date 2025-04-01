@@ -7,6 +7,5 @@ void amd_update_microcode_from_cbfs(void);
 void amd_load_microcode_from_cbfs(void);
 void amd_free_microcode(void);
 void amd_apply_microcode_patch(void);
-void preload_microcode(void);
 
 #endif /* CPU_AMD_MICROCODE_H */

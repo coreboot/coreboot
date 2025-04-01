@@ -59,12 +59,7 @@ $(obj)/cpu_microcode_blob.bin: $$(wildcard $$(cpu_microcode_bins)) $(DOTCONFIG)
 
 cpu_microcode_blob.bin-file ?= $(obj)/cpu_microcode_blob.bin
 cpu_microcode_blob.bin-type := microcode
-# The AMD LPC SPI DMA controller requires source files to be 64 byte aligned.
-ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_LPC_SPI_DMA),y)
-cpu_microcode_blob.bin-align := 64
-else
 cpu_microcode_blob.bin-align := 16
-endif
 
 ifneq ($(CONFIG_CPU_MICROCODE_CBFS_LOC),)
 cpu_microcode_blob.bin-COREBOOT-position := $(CONFIG_CPU_MICROCODE_CBFS_LOC)

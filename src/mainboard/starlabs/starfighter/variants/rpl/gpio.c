@@ -76,6 +76,13 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_R3, NATIVE, DEEP, NF1),				/* Data Input */
 	PAD_CFG_NF(GPP_R4, NATIVE, DEEP, NF1),				/* Reset */
 
+	/* PCH */
+	PAD_CFG_NF(GPP_H18, NONE, DEEP, NF1),				/* C10 Gate */
+	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),				/* Platform Reset */
+	PAD_CFG_NF(GPP_B0, NONE, DEEP, NF1),				/* Vendor ID 0 */
+	PAD_CFG_NF(GPP_B1, NONE, DEEP, NF1),				/* Vendor ID 1 */
+	PAD_CFG_GPI_SCI(GPP_B2, NONE, PLTRST, EDGE_SINGLE, INVERT),	/* Processor Hot */
+
 	/* GPD2:	LAN Wake					*/
 	PAD_NC(GPD2, NONE),
 	/* GPD6:	Sleep A						*/
@@ -120,12 +127,6 @@ const struct pad_config gpio_table[] = {
 	/* A23:		Not Connected					*/
 	PAD_NC(GPP_A23, NONE),
 
-	/* B0:		Core Vendor ID 0				*/
-	PAD_CFG_NF(GPP_B0, NONE, DEEP, NF1),
-	/* B1:		Core Vendor ID 1				*/
-	PAD_CFG_NF(GPP_B1, NONE, DEEP, NF1),
-	/* B2:		BC PROCHOT					*/
-	PAD_CFG_GPI_SCI(GPP_B2, NONE, PLTRST, EDGE_SINGLE, INVERT),
 	/* B3:		Not Connected					*/
 	PAD_NC(GPP_B3, NONE),
 	/* B4:		Not Connected					*/
@@ -363,8 +364,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_H14, NONE),
 	/* H16:		Not Connected					*/
 	PAD_NC(GPP_H16, NONE),
-	/* H18:		CPI C10 Gate					*/
-	PAD_CFG_NF(GPP_H18, NONE, DEEP, NF1),
 	/* H19:		Clock Request 4		CPU M.2 SSD		*/
 	PAD_CFG_NF(GPP_H19, NONE, DEEP, NF1),
 	/* H20:		Not Connected					*/

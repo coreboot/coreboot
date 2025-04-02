@@ -44,6 +44,9 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_E19, DN_20K, DEEP, NF1),				/* HDMI Data */
 	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),				/* TCP0 Hot Plug */
 
+	/* PCH */
+	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),				/* Platform Reset */
+
 	/* GPD2:	Not Connected		*/
 	PAD_NC(GPD2, NONE),
 	/* GPD6:	Not Connected		*/
@@ -126,8 +129,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B11, DN_20K),
 	/* GPP_B12	SLP_S0_N		*/
 	PAD_NC(GPP_B12, DN_20K),
-	/* GPP_B13:	SYS_RESET#		*/
-	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),
 	/* GPP_B14:	HDA_SPKR		*/
 	PAD_NC(GPP_B14, DN_20K),
 	/* GPP_B15:	Not Connected		*/

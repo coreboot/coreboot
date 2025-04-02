@@ -71,6 +71,11 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_D13, NATIVE, DEEP, NF1),				/* Data Input */
 	PAD_CFG_NF(GPP_D17, NATIVE, DEEP, NF1),				/* Reset */
 
+	/* PCH */
+	PAD_CFG_NF(GPP_H13, NONE, DEEP, NF1),				/* C10 Gate */
+	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),				/* Platform Reset */
+	PAD_CFG_GPI_SCI(GPP_E16, NONE, PLTRST, EDGE_SINGLE, INVERT),	/* Processor Hot */
+
 	/* V02:	PCIE_WAKE_LAN			*/
 	PAD_NC(GPP_V02, NONE),
 	/* V06:	GPD_6_SLP_A_N			*/
@@ -237,8 +242,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E13, NONE),
 	/* E15:	BOOTHALT_N			*/
 	PAD_CFG_NF(GPP_E15, NONE, DEEP, NF2),
-	/* E16:	BC_PROCHOT_N			*/
-	PAD_CFG_GPI_SCI(GPP_E16, NONE, PLTRST, EDGE_SINGLE, INVERT),
 	/* E17:					*/
 	PAD_NC(GPP_E17, NONE),
 	/* E18:					*/
@@ -278,8 +281,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_H11, NONE),
 	/* H12:					*/
 	PAD_NC(GPP_H12, NONE),
-	/* H13:	CPU_C10_GATE_N_R		*/
-	PAD_CFG_NF(GPP_H13, NONE, DEEP, NF1),
 	/* H14:					*/
 	PAD_NC(GPP_H14, NONE),
 	/* H15:					*/
@@ -411,8 +412,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B11, NONE),
 	/* B12:					*/
 	PAD_NC(GPP_B12, NONE),
-	/* B13:	PLT_RST_N			*/
-	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),
 	/* B14:	Top Swap Override
 	 *		HIGH:	EMABLED
 	 *		LOW:	DISABLED

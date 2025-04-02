@@ -59,6 +59,10 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_E19, NONE, DEEP, NF1),				/* HDMI Data */
 	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),				/* TCP0 Hot Plug */
 
+	/* PCH */
+	PAD_CFG_NF(GPP_H18, NONE, DEEP, NF1),				/* C10 Gate */
+	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),				/* Platform Reset */
+
 	/* GPD2:	LAN_WAKE#		*/
 	PAD_NC(GPD2, NONE),
 	/* GPD6:	SIO_SLP_A#		*/
@@ -141,8 +145,6 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_B11, 1, PLTRST),
 	/* B12:	 PM_SLP_S0_N			*/
 	PAD_CFG_NF(GPP_B12, NONE, DEEP, NF1),
-	/* B13:	 PLT_RST_N			*/
-	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),
 	/* B14:	 TCH_PNL_PWR_EN			*/
 	PAD_CFG_GPO(GPP_B14, 1, PLTRST),
 	/* B15:	Not Connected			*/
@@ -373,8 +375,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_H16, NONE),
 	/* H17:	 GPPC_H_17_WWAN_DISABLE_N	*/
 	PAD_CFG_GPO(GPP_H17, 0, DEEP),
-	/* H18:	 GPPC_H_18_CPU_C10		*/
-	PAD_CFG_NF(GPP_H18, NONE, DEEP, NF1),
 	/* H19:	Not Connected			*/
 	PAD_NC(GPP_H19, NONE),
 	/* H20:	Not Connected			*/

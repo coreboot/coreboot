@@ -78,6 +78,17 @@ const struct pad_config gpio_table[] = {
 	/* TPM */
 	PAD_CFG_GPI_APIC_LOW(GPP_F13, NONE, PLTRST),			/* Interrupt */
 
+	/* Config Straps									[ Low      / High     ] */
+	PAD_CFG_GPO(GPP_B14, 0, RSMRST),				/* Top Swap		[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_B04, 0, RSMRST),				/* Reboot Support	[ Enabled  / Disabled ] */
+	PAD_CFG_GPO(GPP_C02, 1, RSMRST),				/* TLS Confidentiality	[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_C05, 0, RSMRST),				/* eSPI			[ Enabled  / Disabled ] */
+	PAD_CFG_GPO(GPP_E06, 0, RSMRST),				/* JTAG ODT		[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_F02, 0, RSMRST),				/* M.2 CNVi		[ Enabled  / Disabled ] */
+	PAD_CFG_GPO(GPP_H01, 0, RSMRST),				/* Flash Recovery	[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_F20, 0, RSMRST),				/* SVID			[ Present  / Disabled ] */
+	PAD_CFG_GPO(GPP_F21, 0, RSMRST),				/* CCD			[ BSSB-LS  / BALTIC   ] */
+
 	/* V02:	PCIE_WAKE_LAN			*/
 	PAD_NC(GPP_V02, NONE),
 	/* V06:	GPD_6_SLP_A_N			*/
@@ -120,20 +131,10 @@ const struct pad_config gpio_table[] = {
 	 * Start:	GPP_C00
 	 * End:		GPP_C23
 	 */
-	/* C02:	TLS CONFIDENTIALITY
-	 *		HIGH:	ENABLED
-	 *		LOW:	DISABLED
-	 *		WEAK INTERNAL PD 20K	*/
-	PAD_CFG_GPO(GPP_C02, 1, DEEP),
 	/* C03:	SML0_CLK			*/
 	PAD_NC(GPP_C03, NONE),
 	/* C04:	SML0_DATA			*/
 	PAD_NC(GPP_C04, NONE),
-	/* C05:	ESPI
-	 *		HIGH:	DISABLED
-	 *		LOW:	ENABLED
-	 *		WEAK INTERNAL PD 20K	*/
-	PAD_CFG_GPO(GPP_C05, 0, PLTRST),
 	/* C08:	SML1ALERT			*/
 	PAD_CFG_NF(GPP_C08, NONE, DEEP, NF1),
 	/* C09:					*/
@@ -223,11 +224,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E04, NONE),
 	/* E05:					*/
 	PAD_NC(GPP_E05, NONE),
-	/* E06:	JTAG ODT
-	 *		HIGH:	ENABLED
-	 *		LOW:	DISABLED
-	 *		20K INTERNAL PU		*/
-	PAD_CFG_GPO(GPP_E06, 0, DEEP),
 	/* E07:					*/
 	PAD_NC(GPP_E07, NONE),
 	/* E08:					*/
@@ -264,11 +260,6 @@ const struct pad_config gpio_table[] = {
 	 * Start:	GPP_H00
 	 * End:		GPP_H23
 	 */
-	/* H01:	FLASH RECOVERY
-	 *		HIGH:	ENABLED
-	 *		LOW:	DISABLED
-	 *		WEAK INTERNAL PD 20K	*/
-	PAD_CFG_GPO(GPP_H01, 0, DEEP),
 	/* H03:					*/
 	PAD_NC(GPP_H03, NONE),
 	/* H04:					*/
@@ -305,8 +296,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F00, NONE),
 	/* F01:	CNV_BRI_RSP			*/
 	PAD_NC(GPP_F01, NONE),
-	/* F02:	CNV_RGI_DT			*/
-	PAD_NC(GPP_F02, NONE),
 	/* F03:	CNV_RGI_RSP			*/
 	PAD_NC(GPP_F03, NONE),
 	/* F04:	CNVI_RF_RESET_N			*/
@@ -342,16 +331,6 @@ const struct pad_config gpio_table[] = {
 	 *		LOW:	SLAVE
 	 *		WEAK INTERNAL PD 20K	*/
 	PAD_CFG_GPO(GPP_F19, 0, DEEP),
-	/* F20:	SVID
-	 *		HIGH:	PRESENT
-	 *		LOW:	NOT PRESENT
-	 *		WEAK INTERNAL PD 20K	*/
-	PAD_CFG_GPO(GPP_F20, 0, DEEP),
-	/* F21:	CCD
-	 *		HIGH:	BALTIC PEAK
-	 *		LOW:	BSSB-LS
-	 *		WEAK INTERNAL PU 20K	*/
-	PAD_CFG_GPO(GPP_F21, 0, DEEP),
 	/* F22:					*/
 	PAD_NC(GPP_F22, NONE),
 	/* F23:					*/
@@ -390,12 +369,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B02, NONE),
 	/* B03:					*/
 	PAD_NC(GPP_B03, NONE),
-	/* B04:	REBOOT CONTROL
-	 *		HIGH:	NO REBOOT
-	 *		LOW:	REBOOT ENABLED
-	 *		WEAK INTERNAL PD 20K
-	 */
-	PAD_CFG_GPO(GPP_B04, 0, DEEP),
 	/* B05:					*/
 	PAD_NC(GPP_B05, NONE),
 	/* B06:					*/
@@ -412,11 +385,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B11, NONE),
 	/* B12:					*/
 	PAD_NC(GPP_B12, NONE),
-	/* B14:	Top Swap Override
-	 *		HIGH:	EMABLED
-	 *		LOW:	DISABLED
-	 *		WEAK INTERNAL PD 20K	*/
-	PAD_CFG_GPO(GPP_B14, 0, PLTRST),
 	/* B15:					*/
 	PAD_NC(GPP_B15, NONE),
 	/* B17:					*/

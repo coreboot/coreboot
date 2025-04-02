@@ -33,6 +33,10 @@ const struct pad_config gpio_table[] = {
 	/* SSD */
 	PAD_CFG_NF(GPP_B10, DN_20K, DEEP, NF1),				/* Clock Request 5 */
 
+	/* Wireless */
+	// PAD_CFG_GPO(GPP_D20, 1, DEEP),				/* WiFi RF Kill */
+	PAD_CFG_TERM_GPO(GPP_B4, 1, UP_20K, DEEP),			/* Bluetooth RF Kill */
+
 	/* GPD2:	Not Connected		*/
 	PAD_NC(GPD2, NONE),
 	/* GPD6:	Not Connected		*/
@@ -101,8 +105,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B2, DN_20K),
 	/* GPP_B3:	Not Connected		*/
 	PAD_NC(GPP_B3, DN_20K),
-	/* GPP_B4:	BT_OFF_N_MCP		*/
-	PAD_CFG_TERM_GPO(GPP_B4, 1, UP_20K, DEEP),
 	/* GPP_B5:	SRCCLKREQ0#		*/
 	PAD_CFG_NF(GPP_B5, NONE, DEEP, NF1),
 	/* GPP_B6:	CLKREQ1#		*/
@@ -217,8 +219,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D18, DN_20K),
 	/* GPP_D19:	Not Connected		*/
 	PAD_NC(GPP_D19, DN_20K),
-	/* GPP_D20:	WIFI_OFF_N_MCP		*/
-	PAD_CFG_TERM_GPO(GPP_D20, 1, UP_20K, DEEP),
 	/* GPP_D21:	Not Connected		*/
 	PAD_NC(GPP_D21, DN_20K),
 	/* GPP_D22:	Not Connected		*/

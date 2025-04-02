@@ -49,6 +49,12 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_H00, 1, PLTRST),				/* Reset */
 	PAD_CFG_GPO(GPP_H07, 1, PLTRST),				/* Enable */
 
+	/* Wireless */
+	PAD_CFG_NF(GPP_D21, NONE, DEEP, NF2),				/* Clock Request 5 */
+	PAD_CFG_GPO(GPP_H02, 1, PLTRST),				/* Reset */
+	PAD_CFG_GPO(GPP_B19, 1, DEEP),					/* WiFi RF Kill */
+	PAD_CFG_GPO(GPP_B18, 1, DEEP),					/* Bluetooth RF Kill */
+
 	/* V02:	PCIE_WAKE_LAN			*/
 	PAD_NC(GPP_V02, NONE),
 	/* V06:	GPD_6_SLP_A_N			*/
@@ -250,8 +256,6 @@ const struct pad_config gpio_table[] = {
 	 *		LOW:	DISABLED
 	 *		WEAK INTERNAL PD 20K	*/
 	PAD_CFG_GPO(GPP_H01, 0, DEEP),
-	/* H02:	WLAN_RST_N			*/
-	PAD_CFG_GPO(GPP_H02, 1, PLTRST),
 	/* H03:					*/
 	PAD_NC(GPP_H03, NONE),
 	/* H04:					*/
@@ -416,10 +420,6 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B16, NONE, DEEP, NF2),
 	/* B17:					*/
 	PAD_NC(GPP_B17, NONE),
-	/* B18:	BT_RF_KILL_N			*/
-	PAD_CFG_GPO(GPP_B18, 1, DEEP),
-	/* B19:	WIFI_RF_KILL_N			*/
-	PAD_CFG_GPO(GPP_B19, 1, DEEP),
 	/* B20:					*/
 	PAD_NC(GPP_B20, NONE),
 	/* B21:					*/
@@ -474,9 +474,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D18, NONE),
 	/* D19:					*/
 	PAD_NC(GPP_D19, NONE),
-	/* D21:	CLKREQ5
-	 *			WLAN		*/
-	PAD_CFG_NF(GPP_D21, NONE, DEEP, NF2),
 	/* D22:					*/
 	PAD_NC(GPP_D22, NONE),
 	/* D23:					*/

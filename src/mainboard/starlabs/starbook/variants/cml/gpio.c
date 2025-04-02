@@ -42,6 +42,16 @@ const struct pad_config gpio_table[] = {
 	/* SSD */
 	PAD_CFG_NF(GPP_B6, NONE, DEEP, NF1),				/* Clock Request 1 */
 
+	/* Wireless */
+	PAD_CFG_NF(GPP_F4, UP_20K, DEEP, NF1),				/* BRI Data */
+	PAD_CFG_NF(GPP_F5, UP_20K, DEEP, NF1),				/* BRI Response */
+	PAD_CFG_NF(GPP_F6, UP_20K, DEEP, NF1),				/* RGI Data */
+	PAD_CFG_NF(GPP_F7, UP_20K, DEEP, NF1),				/* RGI Response */
+	PAD_CFG_NF(GPP_H1, UP_20K, DEEP, NF3),				/* RF Reset */
+	PAD_CFG_NF(GPP_H2, UP_20K, DEEP, NF3),				/* Modem Clock Request */
+	PAD_CFG_GPO(GPP_C2, 1, DEEP),					/* WiFi RF Kill */
+	PAD_CFG_GPO(GPP_B4, 1, DEEP),					/* Bluetooth RF Kill */
+
 	/* GPD2:	LAN_WAKE#		*/
 	PAD_NC(GPD2, NONE),
 	/* GPD6:	SIO_SLP_A#		*/
@@ -110,9 +120,7 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B1, NONE),
 	/* B2:	Not Connected			*/
 	PAD_NC(GPP_B2, NONE),
-	/* B4:	BT_RF_KILL_N			*/
-	PAD_CFG_GPO(GPP_B4, 1, DEEP),
-	/* B5:	 WLAN_CLKREQ#			*/
+	/* B5:	WLAN_CLKREQ#			*/
 	PAD_CFG_NF(GPP_B5, NONE, DEEP, NF1),
 	/* B7:	 LAN_CLKREQ#			*/
 	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF1),
@@ -153,8 +161,6 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C0, NONE, DEEP, NF1),
 	/* C1:	 SMB_DATA			*/
 	PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1),
-	/* C2:	 WIFI_RF_KILL_N			*/
-	PAD_CFG_GPO(GPP_C2, 1, DEEP),
 	/* C3:	Not Connected			*/
 	PAD_NC(GPP_C3, NONE),
 	/* C4:	Not Connected			*/
@@ -292,14 +298,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F2, NONE),
 	/* F3:	Not Connected			*/
 	PAD_NC(GPP_F3, NONE),
-	/* F4:	CNV_BRI_DT_R			*/
-	PAD_CFG_NF(GPP_F4, UP_20K, DEEP, NF1),
-	/* F5:	CNV_BRI_RSP			*/
-	PAD_CFG_NF(GPP_F5, UP_20K, DEEP, NF1),
-	/* F6:	CNV_RGI_DT_R			*/
-	PAD_CFG_NF(GPP_F6, UP_20K, DEEP, NF1),
-	/* F7:	CNV_RGI_RSP			*/
-	PAD_CFG_NF(GPP_F7, UP_20K, DEEP, NF1),
 	/* F8:	Not Connected			*/
 	PAD_NC(GPP_F8, NONE),
 	/* F9:	Not Connected			*/
@@ -352,10 +350,6 @@ const struct pad_config gpio_table[] = {
 
 	/* H0:	Not Connected			*/
 	PAD_NC(GPP_H0, NONE),
-	/* H1:	 GPPC_H1_SSP2_SFRM		*/
-	PAD_CFG_NF(GPP_H1, UP_20K, DEEP, NF3),
-	/* H2:	 GPPC_H2_SSP2_TXD		*/
-	PAD_CFG_NF(GPP_H2, UP_20K, DEEP, NF3),
 	/* H3:	Not Connected			*/
 	PAD_NC(GPP_H3, UP_20K),
 	/* H4:	 GSENSOR_I2C_SDA		*/

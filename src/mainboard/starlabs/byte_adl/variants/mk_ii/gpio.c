@@ -39,6 +39,16 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_H0, 1, PLTRST),					/* Reset */
 	PAD_CFG_GPO(GPP_D16, 1, DEEP),					/* Enable */
 
+	/* Wireless */
+	PAD_CFG_NF(GPP_F0, NONE, DEEP, NF1),				/* BRI Data */
+	PAD_CFG_NF(GPP_F1, UP_20K, DEEP, NF1),				/* BRI Response */
+	PAD_CFG_NF(GPP_F2, NONE, DEEP, NF1),				/* RGI Data */
+	PAD_CFG_NF(GPP_F3, UP_20K, DEEP, NF1),				/* RGI Response */
+	PAD_CFG_NF(GPP_F4, NONE, DEEP, NF1),				/* RF Reset */
+	PAD_CFG_NF(GPP_F5, NONE, DEEP, NF2),				/* Modem Clock Request */
+	PAD_CFG_GPO(GPP_E3, 1, DEEP),					/* WiFi RF Kill */
+	PAD_CFG_GPO(GPP_A13, 1, DEEP),					/* Bluetooth RF Kill */
+
 	/* GPD2:	LAN Wake					*/
 	PAD_NC(GPD2, NONE),
 	/* GPD6:	Sleep A						*/
@@ -64,8 +74,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_A11, NONE),
 	/* A12:		PCH M.2 SSD PEDET				*/
 	PAD_CFG_NF(GPP_A12, NONE, DEEP, NF1),
-	/* A13:		BlueTooth RF Kill				*/
-	PAD_CFG_GPO(GPP_A13, 1, DEEP),
 	/* A14:		Type C VBUS OverCurrent				*/
 	PAD_CFG_NF(GPP_A14, NONE, DEEP, NF1),
 	/* A15:		Test Point 3					*/
@@ -241,8 +249,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E1, NONE),
 	/* E2:		Not Connected					*/
 	PAD_NC(GPP_E2, NONE),
-	/* E3:		WiFi RF Kill					*/
-	PAD_CFG_GPO(GPP_E3, 1, DEEP),
 	/* E4:		Test Point 7					*/
 	PAD_NC(GPP_E4, NONE),
 	/* E5:		Not Connected					*/
@@ -286,18 +292,6 @@ const struct pad_config gpio_table[] = {
 	/* E23:		Not Connected					*/
 	PAD_NC(GPP_E23, NONE),
 
-	/* F0:		CNV BRI Data					*/
-	PAD_CFG_NF(GPP_F0, NONE, DEEP, NF1),
-	/* F1:		CNV BRI Response				*/
-	PAD_CFG_NF(GPP_F1, UP_20K, DEEP, NF1),
-	/* F2:		CNV RGI Data					*/
-	PAD_CFG_NF(GPP_F2, NONE, DEEP, NF1),
-	/* F3:		CNV RGI Response				*/
-	PAD_CFG_NF(GPP_F3, UP_20K, DEEP, NF1),
-	/* F4:		CNV RF Reset					*/
-	PAD_CFG_NF(GPP_F4, NONE, DEEP, NF1),
-	/* F5:		Not used		MODEM_CLKREQ		*/
-	PAD_CFG_NF(GPP_F5, NONE, DEEP, NF2),
 	/* F6:		CNV PA Blanking					*/
 	PAD_NC(GPP_F6, NONE),
 	/* F7:		TBT LSX VCCIO		Weak Internal PD 20K

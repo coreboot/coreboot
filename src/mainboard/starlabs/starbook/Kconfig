@@ -244,4 +244,24 @@ config VARIANT_DIR
 	default "adl_n" if BOARD_STARLABS_STARBOOK_ADL_N
 	default "mtl" if BOARD_STARLABS_STARBOOK_MTL
 
+config BOARD_HAS_FPR
+	bool
+	default y if BOARD_STARLABS_STARBOOK_ADL || BOARD_STARLABS_STARBOOK_RPL
+	default n
+
+config BOARD_HAS_GNA
+	bool
+	default y if SOC_INTEL_TIGERLAKE || SOC_INTEL_ALDERLAKE || SOC_INTEL_RAPTORLAKE || SOC_INTEL_METEORLAKE
+	default n
+
+config BOARD_SUPPORTS_HT
+	bool
+	default n if SOC_INTEL_ALDERLAKE_PCH_N
+	default y
+
+config BOARD_SUPPORTS_HOTPLUG
+	bool
+	default y if BOARD_STARLABS_STARBOOK_ADL
+	default n
+
 endif

@@ -45,6 +45,9 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_H4, NONE, DEEP, NF1),				/* Data */
 	PAD_CFG_NF(GPP_H5, NONE, DEEP, NF1),				/* Clock */
 
+	/* Keyboard */
+	PAD_CFG_GPI_SMI_LOW(GPP_F15, NONE, DEEP, EDGE_BOTH),		/* Detect */
+
 	/* SSD */
 	PAD_CFG_NF(GPP_D5, NONE, DEEP, NF1),				/* Clock Request 0 */
 	PAD_CFG_GPO(GPP_H0, 1, PLTRST),					/* Reset */
@@ -206,8 +209,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F12, NONE),
 	PAD_NC(GPP_F13, NONE),
 	PAD_NC(GPP_F14, NONE),
-	/* F15:		Keyboard Detect					*/
-	PAD_CFG_GPI_SMI_LOW(GPP_F15, NONE, DEEP, EDGE_BOTH),
 	PAD_NC(GPP_F16, NONE),
 	PAD_NC(GPP_F19, NONE),
 	PAD_NC(GPP_F20, NONE),

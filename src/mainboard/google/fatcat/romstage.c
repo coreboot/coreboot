@@ -3,6 +3,7 @@
 #include <baseboard/variants.h>
 #include <fsp/api.h>
 #include <soc/romstage.h>
+#include <soc/soc_chip.h>
 #include <string.h>
 
 /*
@@ -12,6 +13,11 @@
  * the variant directory.
  */
 __weak void fw_config_configure_pre_mem_gpio(void)
+{
+	/* Nothing to do */
+}
+
+__weak void variant_update_soc_memory_init_params(FSPM_UPD *memupd)
 {
 	/* Nothing to do */
 }
@@ -33,4 +39,7 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 	variant_get_spd_info(&spd_info);
 
 	memcfg_init(memupd, mem_config, &spd_info, half_populated);
+
+	/* Override FSP-M UPD per board if required. */
+	variant_update_soc_memory_init_params(memupd);
 }

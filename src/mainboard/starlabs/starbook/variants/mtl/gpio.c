@@ -149,9 +149,8 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_C13, NONE),
 	/* C14:					*/
 	PAD_NC(GPP_C14, NONE),
-	/* C15:	RESERVED
-	 *		WEAK INTERNAL PD 20K	*/
-	PAD_CFG_GPO(GPP_C15, 0, DEEP),
+	/* C15:					*/
+	PAD_NC(GPP_C15, NONE),
 	/* C16:					*/
 	PAD_NC(GPP_C16, NONE),
 	/* C17:					*/
@@ -237,7 +236,7 @@ const struct pad_config gpio_table[] = {
 	/* E13:					*/
 	PAD_NC(GPP_E13, NONE),
 	/* E15:	BOOTHALT_N			*/
-	PAD_CFG_NF(GPP_E15, NONE, DEEP, NF2),
+	PAD_NC(GPP_E15, NONE),
 	/* E17:					*/
 	PAD_NC(GPP_E17, NONE),
 	/* E18:					*/
@@ -326,11 +325,8 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F17, NONE),
 	/* F18:					*/
 	PAD_NC(GPP_F18, NONE),
-	/* F19:	ESPI FLASH SHARING
-	 *		HIGH:	MASTER
-	 *		LOW:	SLAVE
-	 *		WEAK INTERNAL PD 20K	*/
-	PAD_CFG_GPO(GPP_F19, 0, DEEP),
+	/* F19:					*/
+	PAD_NC(GPP_F19, NONE),
 	/* F22:					*/
 	PAD_NC(GPP_F22, NONE),
 	/* F23:					*/

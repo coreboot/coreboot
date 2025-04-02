@@ -44,6 +44,11 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_H20, NONE, DEEP, NF1),				/* Clock */
 	PAD_CFG_GPI_APIC(GPP_B00, NONE, DEEP, LEVEL, INVERT),		/* Interrupt */
 
+	/* SSD */
+	PAD_CFG_NF(GPP_D20, NONE, DEEP, NF1),				/* Clock Request 8 */
+	PAD_CFG_GPO(GPP_H00, 1, PLTRST),				/* Reset */
+	PAD_CFG_GPO(GPP_H07, 1, PLTRST),				/* Enable */
+
 	/* V02:	PCIE_WAKE_LAN			*/
 	PAD_NC(GPP_V02, NONE),
 	/* V06:	GPD_6_SLP_A_N			*/
@@ -240,8 +245,6 @@ const struct pad_config gpio_table[] = {
 	 * Start:	GPP_H00
 	 * End:		GPP_H23
 	 */
-	/* H00:	M.2_PCH_SSD_RESET_N		*/
-	PAD_CFG_GPO(GPP_H00, 1, PLTRST),
 	/* H01:	FLASH RECOVERY
 	 *		HIGH:	ENABLED
 	 *		LOW:	DISABLED
@@ -257,8 +260,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_H05, NONE),
 	/* H06:					*/
 	PAD_NC(GPP_H06, NONE),
-	/* H07:	M.2_CPU_SSD_PWREN		*/
-	PAD_CFG_GPO(GPP_H07, 1, DEEP),
 	/* H10:					*/
 	PAD_NC(GPP_H10, NONE),
 	/* H11:					*/
@@ -473,9 +474,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D18, NONE),
 	/* D19:					*/
 	PAD_NC(GPP_D19, NONE),
-	/* D20: CLKREQ8
-	 *			SSD		*/
-	PAD_CFG_NF(GPP_D20, NONE, DEEP, NF1),
 	/* D21:	CLKREQ5
 	 *			WLAN		*/
 	PAD_CFG_NF(GPP_D21, NONE, DEEP, NF2),

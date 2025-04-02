@@ -39,6 +39,9 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C17, NONE, DEEP, NF1),				/* Clock */
 	PAD_CFG_GPI_APIC_LOW(GPP_B3, NONE, PLTRST),			/* Interrupt */
 
+	/* SSD */
+	PAD_CFG_NF(GPP_B6, NONE, DEEP, NF1),				/* Clock Request 1 */
+
 	/* GPD2:	LAN_WAKE#		*/
 	PAD_NC(GPD2, NONE),
 	/* GPD6:	SIO_SLP_A#		*/
@@ -111,8 +114,6 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_B4, 1, DEEP),
 	/* B5:	 WLAN_CLKREQ#			*/
 	PAD_CFG_NF(GPP_B5, NONE, DEEP, NF1),
-	/* B6:	 CLKREQ1_SSD_N			*/
-	PAD_CFG_NF(GPP_B6, NONE, DEEP, NF1),
 	/* B7:	 LAN_CLKREQ#			*/
 	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF1),
 	/* B8:	Not Connected			*/

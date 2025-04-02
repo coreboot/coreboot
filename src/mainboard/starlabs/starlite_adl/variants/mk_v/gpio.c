@@ -34,6 +34,11 @@ const struct pad_config gpio_table[] = {
 	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A9, UP_20K, DEEP, NF1),	/* eSPI Clk */
 	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A10, NONE, DEEP, NF1),	/* eSPI Reset */
 
+	/* SSD */
+	PAD_CFG_NF(GPP_D5, NONE, DEEP, NF1),				/* Clock Request 0 */
+	PAD_CFG_GPO(GPP_H0, 1, PLTRST),					/* Reset */
+	PAD_CFG_GPO(GPP_D16, 1, DEEP),					/* Enable */
+
 	/* GPD2:	LAN Wake					*/
 	PAD_NC(GPD2, NONE),
 	/* GPD6:	Sleep A						*/
@@ -201,8 +206,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D3, NONE),
 	/* D4:		Camera Image Clock Output			*/
 	PAD_NC(GPP_D4, NONE),
-	/* D5:		Clock Request 0		PCH M.2 SSD		*/
-	PAD_CFG_NF(GPP_D5, NONE, DEEP, NF1),
 	/* D6:		Clock Request 1		Wireless LAN		*/
 	PAD_NC(GPP_D6, NONE),
 	/* D7:		Clock Request 2					*/
@@ -223,8 +226,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D14, NONE),
 	/* D15:		Not Connected					*/
 	PAD_NC(GPP_D15, NONE),
-	/* D16:		PCH M.2 SSD Power Enable			*/
-	PAD_CFG_GPO(GPP_D16, 1, DEEP),
 	/* D17:		Not used		Fingerprint ID		*/
 	PAD_NC(GPP_D17, NONE),
 	/* D18:		Bluetooth Wake					*/
@@ -334,8 +335,6 @@ const struct pad_config gpio_table[] = {
 	/* F23:		Not Connected					*/
 	PAD_NC(GPP_F23, NONE),
 
-	/* H0:		PCH M.2 SSD Reset				*/
-	PAD_CFG_GPO(GPP_H0, 1, PLTRST),
 	/* H1:		BFX Strap 2 Bit 3	Weak Internal PD 20K	*/
 	PAD_CFG_GPO(GPP_H1, 0, DEEP),
 	/* H2:		Wireless LAN Reset				*/

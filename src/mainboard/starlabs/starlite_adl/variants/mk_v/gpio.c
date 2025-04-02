@@ -34,6 +34,13 @@ const struct pad_config gpio_table[] = {
 	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A9, UP_20K, DEEP, NF1),	/* eSPI Clk */
 	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A10, NONE, DEEP, NF1),	/* eSPI Reset */
 
+	/* Touchpanel */
+	PAD_CFG_NF(GPP_B5, NONE, DEEP, NF2),				/* Data */
+	PAD_CFG_NF(GPP_B6, NONE, DEEP, NF2),				/* Clock */
+	PAD_CFG_GPI_APIC_LOW(GPP_E12, NONE, PLTRST),			/* Interrupt */
+	PAD_CFG_GPO(GPP_F17, 1, PLTRST),				/* Reset */
+	PAD_CFG_GPI_APIC(GPP_F18, NONE, PLTRST, LEVEL, INVERT),		/* Interrupt */
+
 	/* SSD */
 	PAD_CFG_NF(GPP_D5, NONE, DEEP, NF1),				/* Clock Request 0 */
 	PAD_CFG_GPO(GPP_H0, 1, PLTRST),					/* Reset */
@@ -121,10 +128,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B3, NONE),
 	/* B4:		Not Connected					*/
 	PAD_NC(GPP_B4, NONE),
-	/* B5:		I2C 2 SDA		Touch Panel SDA		*/
-	PAD_CFG_NF(GPP_B5, NONE, DEEP, NF2),
-	/* B6:		I2C 2 SCL		Touch Panel Clock	*/
-	PAD_CFG_NF(GPP_B6, NONE, DEEP, NF2),
 	/* B7:		I2C 3 SDA		ALS SDA			*/
 	PAD_NC(GPP_B7, NONE),
 	/* B8:		I2C 3 SCL		ALS Clock		*/
@@ -319,10 +322,6 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_SMI_LOW(GPP_F15, NONE, DEEP, EDGE_BOTH),
 	/* F16:		Not Connected					*/
 	PAD_NC(GPP_F16, NONE),
-	/* F17:		Touch Panel Reset				*/
-	PAD_CFG_GPO(GPP_F17, 1, PLTRST),
-	/* F18:		Touch Panel Interrupt				*/
-	PAD_CFG_GPI_APIC(GPP_F18, NONE, PLTRST, LEVEL, INVERT),
 	/* F19:		Not Connected					*/
 	PAD_NC(GPP_F19, NONE),
 	/* F20:		Not Connected					*/

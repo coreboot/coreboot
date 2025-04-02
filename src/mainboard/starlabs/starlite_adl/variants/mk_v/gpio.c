@@ -71,6 +71,11 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B1, NONE, DEEP, NF1),				/* Vendor ID 1 */
 	PAD_CFG_GPI_SCI(GPP_B2, NONE, PLTRST, EDGE_SINGLE, INVERT),	/* Processor Hot */
 
+	/* SMBus */
+	PAD_CFG_NF(GPP_C0, NONE, DEEP, NF1),				/* Clock */
+	PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1),				/* Data */
+	PAD_CFG_GPO(GPP_E8, 1, DEEP),					/* DRAM Sleep */
+
 	/* GPD2:	LAN Wake					*/
 	PAD_NC(GPD2, NONE),
 	/* GPD6:	Sleep A						*/
@@ -159,10 +164,6 @@ const struct pad_config gpio_table[] = {
 	/* B25:		Not Connected					*/
 	PAD_NC(GPP_B25, NONE),
 
-	/* C0:		SMB Clock					*/
-	PAD_CFG_NF(GPP_C0, NONE, DEEP, NF1),
-	/* C1:		SMB Data					*/
-	PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1),
 	/* C2:		TLS Confidentiality	Weak Internal PD 20K
 				Low:	Disabled
 				High:	Enabled				*/
@@ -265,8 +266,6 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_E6, 0, DEEP),
 	/* E7:		Embedded Controller SMI				*/
 	PAD_NC(GPP_E7, NONE),
-	/* E8:		DRAM Sleep					*/
-	PAD_CFG_GPO(GPP_E8, 1, DEEP),
 	/* E9:		USB OverCurrent 0				*/
 	PAD_NC(GPP_E9, NONE),
 	/* E10:		PWD Amplifier Input				*/

@@ -63,6 +63,10 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_H18, NONE, DEEP, NF1),				/* C10 Gate */
 	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),				/* Platform Reset */
 
+	/* SMBus */
+	PAD_CFG_NF(GPP_C0, NONE, DEEP, NF1),				/* Clock */
+	PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1),				/* Data */
+
 	/* GPD2:	LAN_WAKE#		*/
 	PAD_NC(GPD2, NONE),
 	/* GPD6:	SIO_SLP_A#		*/
@@ -166,10 +170,6 @@ const struct pad_config gpio_table[] = {
 	/* B23:	 EC_SLP_S0IX_N			*/
 	PAD_NC(GPP_B23, NONE),
 
-	/* C0:	 SMB_CLK			*/
-	PAD_CFG_NF(GPP_C0, NONE, DEEP, NF1),
-	/* C1:	 SMB_DATA			*/
-	PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1),
 	/* C3:	Not Connected			*/
 	PAD_NC(GPP_C3, NONE),
 	/* C4:	Not Connected			*/

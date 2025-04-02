@@ -47,6 +47,10 @@ const struct pad_config gpio_table[] = {
 	/* PCH */
 	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),				/* Platform Reset */
 
+	/* SMBus */
+	PAD_CFG_NF(GPP_C0, NONE, DEEP, NF1),				/* Clock */
+	PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1),				/* Data */
+
 	/* GPD2:	Not Connected		*/
 	PAD_NC(GPD2, NONE),
 	/* GPD6:	Not Connected		*/
@@ -149,10 +153,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B22, DN_20K),
 	/* GPP_B23:	SML1ALERT#/PCHHOT#	*/
 	PAD_NC(GPP_B23, DN_20K),
-	/*GPP_C0:	SMBCLK			*/
-	PAD_CFG_NF(GPP_C0, UP_20K, DEEP, NF1),
-	/* GPP_C1:	SMBDATA			*/
-	PAD_CFG_NF(GPP_C1, UP_20K, DEEP, NF1),
 	/* GPP_C2:	SMBALERT#		*/
 	PAD_NC(GPP_C2, DN_20K),
 	/* GPP_C3:	SML0CLK			*/

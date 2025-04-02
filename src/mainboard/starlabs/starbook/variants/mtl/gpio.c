@@ -8,10 +8,9 @@ const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_H08, NONE, DEEP, NF1),				/* RXD */
 	PAD_CFG_NF(GPP_H09, NONE, DEEP, NF1),				/* TXD */
 
-	/* C00:	SMB_CLK				*/
-	PAD_CFG_NF(GPP_C00, NONE, DEEP, NF1),
-	/* C01:	SMB_DATA			*/
-	PAD_CFG_NF(GPP_C01, NONE, DEEP, NF1),
+	/* SMBus */
+	PAD_CFG_NF(GPP_C00, NONE, DEEP, NF1),				/* Clock */
+	PAD_CFG_NF(GPP_C01, NONE, DEEP, NF1),				/* Data */
 };
 
 const struct pad_config *variant_early_gpio_table(size_t *num)

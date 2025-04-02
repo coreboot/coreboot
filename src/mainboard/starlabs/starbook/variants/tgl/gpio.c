@@ -65,6 +65,10 @@ const struct pad_config gpio_table[] = {
 	/* TPM */
 	PAD_CFG_GPI_APIC_LOW(GPP_C14, NONE, PLTRST),			/* Interrupt */
 
+	/* SMBus */
+	PAD_CFG_NF(GPP_C0, NONE, DEEP, NF1),				/* Clock */
+	PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1),				/* Data */
+
 	/* GPD2:	LAN_WAKE#		*/
 	PAD_NC(GPD2, NONE),
 	/* GPD6:	SIO_SLP_A#		*/
@@ -155,10 +159,6 @@ const struct pad_config gpio_table[] = {
 	/* B23:	CPU_CLKFREQ			*/
 	PAD_CFG_GPO(GPP_B23, 0, DEEP),
 
-	/* C0:	SMBCLK				*/
-	PAD_CFG_NF(GPP_C0, NONE, DEEP, NF1),
-	/* C1:	SMBDATA				*/
-	PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1),
 	/* C2:	SMBALERT_N			*/
 	PAD_CFG_GPO(GPP_C2, 0, DEEP),
 	/* C3:	SML0_CLK			*/

@@ -214,7 +214,7 @@ chip soc/intel/meteorlake
 
 			chip soc/intel/common/block/pcie/rtd3
 				register "enable_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H07)"
-				register "reset_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H00)"
+				register "reset_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A20)"
 				register "srcclk_pin"			= "8"
 				register "is_storage"			= "true"
 				register "add_acpi_dma_property"	= "true"

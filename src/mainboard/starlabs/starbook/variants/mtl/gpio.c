@@ -45,7 +45,7 @@ const struct pad_config gpio_table[] = {
 
 	/* SSD */
 	PAD_CFG_NF(GPP_D20, NONE, DEEP, NF1),				/* Clock Request 8 */
-	PAD_CFG_GPO(GPP_H00, 1, PLTRST),				/* Reset */
+	PAD_CFG_GPO(GPP_A20, 1, PLTRST),				/* Reset */
 	PAD_CFG_GPO(GPP_H07, 1, PLTRST),				/* Enable */
 
 	/* Wireless */
@@ -200,8 +200,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_A18, NONE),
 	/* A19:					*/
 	PAD_NC(GPP_A19, NONE),
-	/* A20:	M.2_CPU_SSD_RESET_N		*/
-	PAD_CFG_GPO(GPP_A20, 1, PLTRST),
 	/* A22:					*/
 	PAD_NC(GPP_A22, NONE),
 	/* A23:					*/
@@ -260,6 +258,8 @@ const struct pad_config gpio_table[] = {
 	 * Start:	GPP_H00
 	 * End:		GPP_H23
 	 */
+	/* H00:					*/
+	PAD_NC(GPP_H00, NONE),
 	/* H03:					*/
 	PAD_NC(GPP_H03, NONE),
 	/* H04:					*/

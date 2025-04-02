@@ -98,7 +98,6 @@ chip soc/intel/pantherlake
 	register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
 	register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
 	register "pch_hda_idisp_codec_enable" = "true"
-	register "pch_hda_sdi_enable" = "{ true, false }"
 
 	device domain 0 on
 		device ref dtt on end

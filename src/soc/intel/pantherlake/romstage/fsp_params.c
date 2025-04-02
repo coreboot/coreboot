@@ -162,7 +162,7 @@ static void fill_fspm_audio_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->PchHdaIDispCodecDisconnect = !config->pch_hda_idisp_codec_enable;
 
 	for (int i = 0; i < MAX_HD_AUDIO_SDI_LINKS; i++)
-		m_cfg->PchHdaSdiEnable[i] = !!config->pch_hda_sdi_enable[i];
+		m_cfg->PchHdaSdiEnable[i] = config->pch_hda_sdi_enable[i];
 
 	/*
 	 * All the PchHdaAudioLink{Hda|Dmic|Ssp|Sndw}Enable UPDs are used by FSP

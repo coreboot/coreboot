@@ -319,6 +319,10 @@ config CBFS_SIZE
 	hex
 	default 0x200000
 
+config CBFS_MCACHE_SIZE
+	hex
+	default 0x8000
+
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
 	default 0x2000

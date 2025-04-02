@@ -220,8 +220,7 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F22, NONE),
 	PAD_NC(GPP_F23, NONE),
 
-	/* H2:		Wireless LAN Reset				*/
-	PAD_CFG_GPO(GPP_H2, 1, PLTRST),
+	PAD_NC(GPP_H2, NONE),
 	PAD_NC(GPP_H3, NONE),
 	PAD_NC(GPP_H6, NONE),
 	PAD_NC(GPP_H7, NONE),

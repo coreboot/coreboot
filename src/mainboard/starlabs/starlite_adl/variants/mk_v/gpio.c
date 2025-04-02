@@ -41,6 +41,10 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_F17, 1, PLTRST),				/* Reset */
 	PAD_CFG_GPI_APIC(GPP_F18, NONE, PLTRST, LEVEL, INVERT),		/* Interrupt */
 
+	/* Accelerometer */
+	PAD_CFG_NF(GPP_H4, NONE, DEEP, NF1),				/* Data */
+	PAD_CFG_NF(GPP_H5, NONE, DEEP, NF1),				/* Clock */
+
 	/* SSD */
 	PAD_CFG_NF(GPP_D5, NONE, DEEP, NF1),				/* Clock Request 0 */
 	PAD_CFG_GPO(GPP_H0, 1, PLTRST),					/* Reset */
@@ -339,10 +343,6 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_H2, 1, PLTRST),
 	/* H3:		Not Connected					*/
 	PAD_NC(GPP_H3, NONE),
-	/* H4:		I2C 0 SDA		G Sensor SDA		*/
-	PAD_CFG_NF(GPP_H4, NONE, DEEP, NF1),
-	/* H5:		I2C 0 SCL		G Sensor Clock		*/
-	PAD_CFG_NF(GPP_H5, NONE, DEEP, NF1),
 	/* H6:		I2C 1 SDC		Camera SDA		*/
 	PAD_NC(GPP_H6, NONE),
 	/* H7:		I2C 2 SCL		Camera Clock		*/

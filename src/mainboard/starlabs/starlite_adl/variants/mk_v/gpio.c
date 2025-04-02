@@ -201,8 +201,7 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F6, NONE),
 	PAD_NC(GPP_F8, NONE),
 	PAD_NC(GPP_F9, NONE),
-	/* F10:		Weak Internal PD 20K				*/
-	PAD_CFG_GPO(GPP_F10, 0, DEEP),
+	PAD_NC(GPP_F10, NONE),
 	PAD_NC(GPP_F11, NONE),
 	PAD_NC(GPP_F12, NONE),
 	PAD_NC(GPP_F13, NONE),

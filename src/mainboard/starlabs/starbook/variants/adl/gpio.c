@@ -50,6 +50,13 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_E3, 1, DEEP),					/* WiFi RF Kill */
 	PAD_CFG_GPO(GPP_A13, 1, DEEP),					/* Bluetooth RF Kill */
 
+	/* Display */
+	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),				/* eDP Hot Plug */
+	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),				/* HDMI Hot Plug */
+	PAD_CFG_NF(GPP_H15, NONE, DEEP, NF1),				/* HDMI Clock */
+	PAD_CFG_NF(GPP_H17, NONE, DEEP, NF1),				/* HDMI Data */
+	PAD_CFG_NF(GPP_A19, NONE, DEEP, NF1),				/* TCP0 Hot Plug */
+
 	/* GPD2:	LAN Wake					*/
 	PAD_NC(GPD2, NONE),
 	/* GPD6:	Sleep A						*/
@@ -83,10 +90,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_A16, NONE),
 	/* A17:		Not Connected					*/
 	PAD_NC(GPP_A17, NONE),
-	/* A18:		DDI B DP HPD					*/
-	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),
-	/* A19:		TCP0 HPD					*/
-	PAD_CFG_NF(GPP_A19, NONE, DEEP, NF1),
 	/* A20:		Test Point 44					*/
 	PAD_NC(GPP_A20, NONE),
 	/* A21:		Fingerprint Reader Interrupt			*/
@@ -267,8 +270,6 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC_LOW(GPP_E11, NONE, PLTRST),
 	/* E13:		Not connected					*/
 	PAD_NC(GPP_E13, NONE),
-	/* E14:		EDP HPD						*/
-	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),
 	/* E15:		Not Connected					*/
 	PAD_NC(GPP_E15, NONE),
 	/* E16:		Not Connected					*/
@@ -357,12 +358,8 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_H13, NONE, DEEP, NF5),
 	/* H14:		Not Connected					*/
 	PAD_NC(GPP_H14, NONE),
-	/* H15:		DDPB Control Clock				*/
-	PAD_CFG_NF(GPP_H15, NONE, DEEP, NF1),
 	/* H16:		Not Connected					*/
 	PAD_NC(GPP_H16, NONE),
-	/* H17:		DDPB Control Data				*/
-	PAD_CFG_NF(GPP_H17, NONE, DEEP, NF1),
 	/* H18:		CPI C10 Gate					*/
 	PAD_CFG_NF(GPP_H18, NONE, DEEP, NF1),
 	/* H19:		Clock Request 4		CPU M.2 SSD		*/

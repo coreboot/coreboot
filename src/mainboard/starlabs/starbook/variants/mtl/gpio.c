@@ -55,6 +55,15 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_B19, 1, DEEP),					/* WiFi RF Kill */
 	PAD_CFG_GPO(GPP_B18, 1, DEEP),					/* Bluetooth RF Kill */
 
+	/* Display */
+	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),				/* eDP Hot Plug */
+	PAD_CFG_NF(GPP_B16, NONE, DEEP, NF2),				/* HDMI Hot Plug */
+	PAD_CFG_NF(GPP_H16, NONE, DEEP, NF1),				/* HDMI Clock */
+	PAD_CFG_NF(GPP_H17, NONE, DEEP, NF1),				/* HDMI Data */
+	PAD_CFG_NF(GPP_A21, NONE, DEEP, NF1),				/* PMC Interrupt */
+	PAD_CFG_NF(GPP_C06, NONE, DEEP, NF1),				/* SML Clock */
+	PAD_CFG_NF(GPP_C07, NONE, DEEP, NF1),				/* SML Data */
+
 	/* V02:	PCIE_WAKE_LAN			*/
 	PAD_NC(GPP_V02, NONE),
 	/* V06:	GPD_6_SLP_A_N			*/
@@ -111,10 +120,6 @@ const struct pad_config gpio_table[] = {
 	 *		LOW:	ENABLED
 	 *		WEAK INTERNAL PD 20K	*/
 	PAD_CFG_GPO(GPP_C05, 0, PLTRST),
-	/* C06:	SML1_CLK_USBC_PD_N		*/
-	PAD_CFG_NF(GPP_C06, NONE, DEEP, NF1),
-	/* C07:	SML1_DATA_USBC_PD_N		*/
-	PAD_CFG_NF(GPP_C07, NONE, DEEP, NF1),
 	/* C08:	SML1ALERT			*/
 	PAD_CFG_NF(GPP_C08, NONE, DEEP, NF1),
 	/* C09:					*/
@@ -182,8 +187,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_A19, NONE),
 	/* A20:	M.2_CPU_SSD_RESET_N		*/
 	PAD_CFG_GPO(GPP_A20, 1, PLTRST),
-	/* A21:	I2C_PMC_PD_INT_N		*/
-	PAD_CFG_NF(GPP_A21, NONE, DEEP, NF1),
 	/* A22:					*/
 	PAD_NC(GPP_A22, NONE),
 	/* A23:					*/
@@ -225,8 +228,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E12, NONE),
 	/* E13:					*/
 	PAD_NC(GPP_E13, NONE),
-	/* E14:	EDP_HPD_N			*/
-	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),
 	/* E15:	BOOTHALT_N			*/
 	PAD_CFG_NF(GPP_E15, NONE, DEEP, NF2),
 	/* E16:	BC_PROCHOT_N			*/
@@ -276,10 +277,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_H14, NONE),
 	/* H15:					*/
 	PAD_NC(GPP_H15, NONE),
-	/* H16:	DDPB_CTRLCLK			*/
-	PAD_CFG_NF(GPP_H16, NONE, DEEP, NF1),
-	/* H17:	DDPB_CTRLDATA			*/
-	PAD_CFG_NF(GPP_H17, NONE, DEEP, NF1),
 	/* H18:					*/
 	PAD_NC(GPP_H18, NONE),
 	/* H21:					*/
@@ -416,8 +413,6 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_B14, 0, PLTRST),
 	/* B15:					*/
 	PAD_NC(GPP_B15, NONE),
-	/* B16:	DDIB_DP_HPD			*/
-	PAD_CFG_NF(GPP_B16, NONE, DEEP, NF2),
 	/* B17:					*/
 	PAD_NC(GPP_B17, NONE),
 	/* B20:					*/

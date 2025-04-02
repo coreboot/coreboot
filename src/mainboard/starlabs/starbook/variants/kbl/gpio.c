@@ -37,6 +37,13 @@ const struct pad_config gpio_table[] = {
 	// PAD_CFG_GPO(GPP_D20, 1, DEEP),				/* WiFi RF Kill */
 	PAD_CFG_TERM_GPO(GPP_B4, 1, UP_20K, DEEP),			/* Bluetooth RF Kill */
 
+	/* Display */
+	PAD_CFG_NF(GPP_E17, NONE, DEEP, NF1),				/* eDP Hot Plug */
+	PAD_CFG_NF(GPP_E13, NONE, DEEP, NF1),				/* HDMI Hot Plug */
+	PAD_CFG_NF(GPP_E18, NONE, DEEP, NF1),				/* HDMI Clock */
+	PAD_CFG_NF(GPP_E19, DN_20K, DEEP, NF1),				/* HDMI Data */
+	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),				/* TCP0 Hot Plug */
+
 	/* GPD2:	Not Connected		*/
 	PAD_NC(GPD2, NONE),
 	/* GPD6:	Not Connected		*/
@@ -251,20 +258,10 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_E11, NONE, DEEP, NF1),
 	/* GPP_E12:	Not Connected		*/
 	PAD_NC(GPP_E12, DN_20K),
-	/* GPP_E13:	DDI1_HPD		*/
-	PAD_CFG_NF(GPP_E13, NONE, DEEP, NF1),
-	/* GPP_E14:	DDI2_HPD		*/
-	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),
 	/* E15:  SMC_SMI_N                      */
 	PAD_CFG_GPI_SMI_LOW(GPP_E15, NONE, DEEP, EDGE_SINGLE),
 	/* E16:  SMC_SCI_N                      */
 	PAD_CFG_GPI_SCI_LOW(GPP_E16, NONE, PLTRST, LEVEL),
-	/* GPP_E17:	EDP_HPD			*/
-	PAD_CFG_NF(GPP_E17, NONE, DEEP, NF1),
-	/* GPP_E18:	DDI1_DDC_SCL		*/
-	PAD_CFG_NF(GPP_E18, NONE, DEEP, NF1),
-	/* GPP_E19:	DDI1_DDC_SDA		*/
-	PAD_CFG_NF(GPP_E19, DN_20K, DEEP, NF1),
 	/* GPP_E20:	Not Connected		*/
 	PAD_NC(GPP_E20, DN_20K),
 	/* GPP_E21:	DDI2_DDC_SDA		*/

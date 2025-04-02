@@ -42,6 +42,15 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_F3, NONE, DEEP, NF1),				/* RGI Response */
 	PAD_NC(GPP_F6, NONE),						/* Modem Clock Request */
 
+	/* Display */
+	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),				/* eDP Hot Plug */
+	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),				/* HDMI Hot Plug */
+	PAD_CFG_NF(GPP_H16, NONE, DEEP, NF1),				/* HDMI Clock */
+	PAD_CFG_NF(GPP_H17, NONE, DEEP, NF1),				/* HDMI Data */
+	PAD_CFG_NF(GPP_B11, NONE, DEEP, NF1),				/* PMC Interrupt */
+	PAD_CFG_NF(GPP_C6, NONE, PWROK, NF1),				/* SML Clock */
+	PAD_CFG_NF(GPP_C7, NONE, PWROK, NF1),				/* SML Data */
+
 	/* GPD2:	LAN_WAKE#		*/
 	PAD_NC(GPD2, NONE),
 	/* GPD6:	SIO_SLP_A#		*/
@@ -76,8 +85,6 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_A16, NONE, DEEP, NF1),
 	/* A17:	Not Connected			*/
 	PAD_NC(GPP_A17, NONE),
-	/* A18:	DDIB_HPD			*/
-	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),
 	/* A19	Not Connected			*/
 	PAD_NC(GPP_A19, NONE),
 	/* A20:	Not Connected			*/
@@ -111,8 +118,6 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B9, NONE, DEEP, NF1),
 	/* B10:	PWR_MON_I2C_SCL_R		*/
 	PAD_CFG_NF(GPP_B10, NONE, DEEP, NF1),
-	/* B11:	I2C_PMC_PD_INT_N		*/
-	PAD_CFG_NF(GPP_B11, NONE, DEEP, NF1),
 	/* B12:	PM_SLP_S0_N			*/
 	PAD_CFG_NF(GPP_B12, NONE, DEEP, NF1),
 	/* B13:	PLT_RST_N			*/
@@ -150,10 +155,6 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C4, NONE, DEEP, NF1),
 	/* C5:	SML0ALERT_IN			*/
 	PAD_CFG_GPO(GPP_C5, 0, DEEP),
-	/* C6:	SML1_CLK			*/
-	PAD_CFG_NF(GPP_C6, NONE, PWROK, NF1),
-	/* C7:	SML1_DATA			*/
-	PAD_CFG_NF(GPP_C7, NONE, PWROK, NF1),
 	/* C9:	Not Connected			*/
 	PAD_NC(GPP_C9, NONE),
 	/* C10:	Not Connected			*/
@@ -242,8 +243,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E12, NONE),
 	/* E13:	Not Connected			*/
 	PAD_NC(GPP_E13, NONE),
-	/* E14:	EDP_HPD				*/
-	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),
 	/* E15:	Not Connected			*/
 	PAD_NC(GPP_E15, NONE),
 	/* E16:	Not Connected			*/
@@ -334,10 +333,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_H14, NONE),
 	/* H15:	Not Connected			*/
 	PAD_NC(GPP_H15, NONE),
-	/* H16:	DDIB_DDC_SCL			*/
-	PAD_CFG_NF(GPP_H16, NONE, DEEP, NF1),
-	/* H17:	DDIB_DDC_SDA			*/
-	PAD_CFG_NF(GPP_H17, NONE, DEEP, NF1),
 	/* H18:	CPU_C10_GATE_N			*/
 	PAD_CFG_NF(GPP_H18, NONE, DEEP, NF1),
 	/* H19:	UART_BT_WAKE_N			*/

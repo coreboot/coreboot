@@ -140,14 +140,10 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B24, NONE),
 	PAD_NC(GPP_B25, NONE),
 
-	/* C3:		SML 0 Clock					*/
-	PAD_CFG_NF(GPP_C3, NONE, DEEP, NF1),
-	/* C4:		SML 0 Data					*/
-	PAD_CFG_NF(GPP_C4, NONE, DEEP, NF1),
-	/* C6:		SML 1 Clock					*/
-	PAD_CFG_NF(GPP_C6, NONE, DEEP, NF1),
-	/* C7:		SML 1 Data					*/
-	PAD_CFG_NF(GPP_C7, NONE, DEEP, NF1),
+	PAD_NC(GPP_C3, NONE),
+	PAD_NC(GPP_C4, NONE),
+	PAD_NC(GPP_C6, NONE),
+	PAD_NC(GPP_C7, NONE),
 	PAD_NC(GPP_C8, NONE),
 	PAD_NC(GPP_C9, NONE),
 	PAD_NC(GPP_C10, NONE),

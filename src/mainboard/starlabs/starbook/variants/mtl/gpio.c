@@ -136,7 +136,7 @@ const struct pad_config gpio_table[] = {
 	/* C04:	SML0_DATA			*/
 	PAD_NC(GPP_C04, NONE),
 	/* C08:	SML1ALERT			*/
-	PAD_CFG_NF(GPP_C08, NONE, DEEP, NF1),
+	PAD_NC(GPP_C08, NONE),
 	/* C09:					*/
 	PAD_NC(GPP_C09, NONE),
 	/* C10:					*/

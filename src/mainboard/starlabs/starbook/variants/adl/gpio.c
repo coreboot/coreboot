@@ -17,24 +17,20 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 
 /* Pad configuration in ramstage. */
 const struct pad_config gpio_table[] = {
-	/* GPD0:	Battery Low					*/
-	PAD_CFG_NF(GPD0, NONE, DEEP, NF1),
-	/* GPD1:	Charger Connected				*/
-	PAD_CFG_NF(GPD1, NONE, DEEP, NF1),
+	/* General Purpose I/O Deep */
+	PAD_CFG_NF(GPD0, NONE, DEEP, NF1),				/* Battery Low */
+	PAD_CFG_NF(GPD1, NONE, DEEP, NF1),				/* Charger Connected */
+	PAD_CFG_NF(GPD3, UP_20K, DEEP, NF1),				/* Power Button */
+	PAD_NC(GPD4, NONE),						/* Sleep S3 */
+	PAD_NC(GPD5, NONE),						/* Sleep S4 */
+	PAD_CFG_NF(GPD8, NONE, DEEP, NF1),				/* Bluetooth Suspend */
+
 	/* GPD2:	LAN Wake					*/
 	PAD_NC(GPD2, NONE),
-	/* GPD3:	Power Button					*/
-	PAD_CFG_NF(GPD3, UP_20K, DEEP, NF1),
-	/* GPD4:	Sleep S3					*/
-	PAD_NC(GPD4, NONE),
-	/* GPD5:	Sleep S4					*/
-	PAD_NC(GPD5, NONE),
 	/* GPD6:	Sleep A						*/
 	PAD_NC(GPD6, NONE),
 	/* GPD7:	Power Adapter Disable				*/
 	PAD_CFG_GPO(GPD7, 0, PWROK),
-	/* GPD8:	Suspend Clock					*/
-	PAD_CFG_NF(GPD8, NONE, DEEP, NF1),
 	/* GPD9:	Wireless LAN Sleep				*/
 	PAD_NC(GPD9, NONE),
 	/* GPD10:	Sleep S5					*/

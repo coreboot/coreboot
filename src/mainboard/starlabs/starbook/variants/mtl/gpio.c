@@ -22,29 +22,20 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 
 /* Pad configuration in ramstage. */
 const struct pad_config gpio_table[] = {
-	/*
-	 * GPP_V
-	 * Start:	GPP_V00
-	 * End:		GPP_V22
-	 */
-	/* V00:	PM_BATLOW_N			*/
-	PAD_CFG_NF(GPP_V00, NONE, DEEP, NF1),
-	/* V01:	CHG_ACOK			*/
-	PAD_CFG_NF(GPP_V01, NONE, DEEP, NF1),
+	/* General Purpose I/O Deep */
+	PAD_CFG_NF(GPP_V00, NONE, DEEP, NF1),				/* Battery Low */
+	PAD_CFG_NF(GPP_V01, NONE, DEEP, NF1),				/* Charger Connected */
+	PAD_CFG_NF(GPP_V03, UP_20K, DEEP, NF1),				/* Power Button */
+	PAD_CFG_NF(GPP_V04, NONE, DEEP, NF1),				/* Sleep S3 */
+	PAD_CFG_NF(GPP_V05, NONE, DEEP, NF1),				/* Sleep S4 */
+	PAD_CFG_NF(GPP_V08, NONE, DEEP, NF1),				/* Bluetooth Suspend */
+
 	/* V02:	PCIE_WAKE_LAN			*/
 	PAD_NC(GPP_V02, NONE),
-	/* V03:	EC_PWRBTN_N			*/
-	PAD_CFG_NF(GPP_V03, UP_20K, DEEP, NF1),
-	/* V04:	PM_SLP_S3_N			*/
-	PAD_CFG_NF(GPP_V04, NONE, DEEP, NF1),
-	/* V05:	SLP S4#				*/
-	PAD_CFG_NF(GPP_V05, NONE, DEEP, NF1),
 	/* V06:	GPD_6_SLP_A_N			*/
 	PAD_NC(GPP_V06, NONE),
 	/* V07:					*/
 	PAD_NC(GPP_V07, NONE),
-	/* V08:	M.2_BTWIFI_SUS_CLK		*/
-	PAD_CFG_NF(GPP_V08, NONE, DEEP, NF1),
 	/* V09:	GPD_9_SLP_WLAN_N		*/
 	PAD_NC(GPP_V09, NONE),
 	/* V10:	PM_SLP_S5_N			*/

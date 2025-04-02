@@ -17,24 +17,20 @@ const struct pad_config *variant_early_gpio_table(size_t *num)
 
 /* Pad configuration in ramstage. */
 const struct pad_config gpio_table[] = {
-	/* GPD0:	PM_BATLOW_N		*/
-	PAD_CFG_NF(GPD0, UP_20K, PWROK, NF1),
-	/* GPD1:	AC_PRESENT		*/
-	PAD_CFG_NF(GPD1, NATIVE, PWROK, NF1),
+	/* General Purpose I/O Deep */
+	PAD_CFG_NF(GPD0, UP_20K, PWROK, NF1),				/* Battery Low */
+	PAD_CFG_NF(GPD1, NATIVE, PWROK, NF1),				/* Charger Connected */
+	PAD_CFG_NF(GPD3, UP_20K, PWROK, NF1),				/* Power Button */
+	PAD_CFG_NF(GPD4, NONE, PWROK, NF1),				/* Sleep S3 */
+	PAD_CFG_NF(GPD5, NONE, PWROK, NF1),				/* Sleep S4 */
+	PAD_CFG_NF(GPD8, NONE, PWROK, NF1),				/* Bluetooth Suspend */
+
 	/* GPD2:	Not Connected		*/
 	PAD_NC(GPD2, NONE),
-	/* GPD3:	SOC_PWRBTN_N		*/
-	PAD_CFG_NF(GPD3, UP_20K, PWROK, NF1),
-	/* GPD4:	SLP_S3_N		*/
-	PAD_CFG_NF(GPD4, NONE, PWROK, NF1),
-	/* GPD5:	SLP_S4_N		*/
-	PAD_CFG_NF(GPD5, NONE, PWROK, NF1),
 	/* GPD6:	Not Connected		*/
 	PAD_NC(GPD6, NONE),
 	/* GPD7:	Not Connected		*/
 	PAD_NC(GPD7, NONE),
-	/* GPD8:	SUS_CLK			*/
-	PAD_CFG_NF(GPD8, NONE, PWROK, NF1),
 	/* GPD9:	Not Connected		*/
 	PAD_NC(GPD9, NONE),
 	/* GPD10:	Not Connected		*/

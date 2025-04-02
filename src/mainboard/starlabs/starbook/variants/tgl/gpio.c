@@ -38,12 +38,6 @@ const struct pad_config gpio_table[] = {
 	/* GPD11:	PM_LANPHY_EN		*/
 	PAD_CFG_NF(GPD11, NONE, DEEP, NF1),
 
-	/* A0:	ESPI_IO_0			*/
-	/* A1:	ESPI_IO_1			*/
-	/* A2:	ESPI_IO_2			*/
-	/* A3:	ESPI_IO_3			*/
-	/* A4:	ESPI_CS_L			*/
-	/* A5:	ESPI_CLK			*/
 	/* A6:	Not Connected(TP764)		*/
 	/* A7:	WLAN_PCM_CLK			*/
 	PAD_NC(GPP_A7, NONE),

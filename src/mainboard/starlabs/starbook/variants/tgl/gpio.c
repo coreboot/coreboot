@@ -25,6 +25,11 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPD5, NONE, DEEP, NF1),				/* Sleep S4 */
 	PAD_CFG_NF(GPD8, NONE, DEEP, NF1),				/* Bluetooth Suspend */
 
+	/* Touchpad */
+	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),				/* Data */
+	PAD_CFG_NF(GPP_C17, NONE, DEEP, NF1),				/* Clock */
+	PAD_CFG_GPI_APIC_LOW(GPP_C8, NONE, PLTRST),			/* Interrupt */
+
 	/* GPD2:	LAN_WAKE#		*/
 	PAD_NC(GPD2, NONE),
 	/* GPD6:	SIO_SLP_A#		*/
@@ -139,8 +144,6 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C6, NONE, PWROK, NF1),
 	/* C7:	SML1_DATA			*/
 	PAD_CFG_NF(GPP_C7, NONE, PWROK, NF1),
-	/* C8:	CLICK_PAD_INT_N			*/
-	PAD_CFG_GPI_APIC_LOW(GPP_C8, NONE, PLTRST),
 	/* C9:	Not Connected			*/
 	PAD_NC(GPP_C9, NONE),
 	/* C10:	Not Connected			*/
@@ -155,10 +158,6 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C14, NONE, DEEP, NF1),
 	/* C15:	TPM_RST				*/
 	PAD_NC(GPP_C15, NONE),
-	/* C16:	I2C0_SDA			*/
-	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),
-	/* C17:	I2C0_SCL			*/
-	PAD_CFG_NF(GPP_C17, NONE, DEEP, NF1),
 	/* C18:	TOUCH_I2C_SDA			*/
 	PAD_CFG_NF(GPP_C18, NONE, DEEP, NF1),
 	/* C19:	TOUCH_I2C_CLK			*/

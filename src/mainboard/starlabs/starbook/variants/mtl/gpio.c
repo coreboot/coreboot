@@ -39,6 +39,11 @@ const struct pad_config gpio_table[] = {
 	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A05, UP_20K, DEEP, NF1),	/* eSPI Clk */
 	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A06, NONE, DEEP, NF1),	/* eSPI Reset */
 
+	/* Touchpad */
+	PAD_CFG_NF(GPP_H19, NONE, DEEP, NF1),				/* Data */
+	PAD_CFG_NF(GPP_H20, NONE, DEEP, NF1),				/* Clock */
+	PAD_CFG_GPI_APIC(GPP_B00, NONE, DEEP, LEVEL, INVERT),		/* Interrupt */
+
 	/* V02:	PCIE_WAKE_LAN			*/
 	PAD_NC(GPP_V02, NONE),
 	/* V06:	GPD_6_SLP_A_N			*/
@@ -272,10 +277,6 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_H17, NONE, DEEP, NF1),
 	/* H18:					*/
 	PAD_NC(GPP_H18, NONE),
-	/* H19:	TCHPAD_I2C0_SDA_N		*/
-	PAD_CFG_NF(GPP_H19, NONE, DEEP, NF1),
-	/* H20:	TCHPAD_I2C0_SCL_N		*/
-	PAD_CFG_NF(GPP_H20, NONE, DEEP, NF1),
 	/* H21:					*/
 	PAD_NC(GPP_H21, NONE),
 	/* H22:					*/
@@ -373,8 +374,6 @@ const struct pad_config gpio_table[] = {
 	 * Start:	GPP_B00
 	 * End:		GPP_B23
 	 */
-	/* B00:	TCHPAD_INT_N			*/
-	PAD_CFG_GPI_APIC(GPP_B00, NONE, DEEP, LEVEL, INVERT),
 	/* B01:					*/
 	PAD_NC(GPP_B01, NONE),
 	/* B02:					*/

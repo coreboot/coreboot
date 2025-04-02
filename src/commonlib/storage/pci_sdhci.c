@@ -2,6 +2,7 @@
 
 #include <commonlib/sdhci.h>
 #include <device/pci.h>
+#include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <stdint.h>
 
@@ -41,6 +42,9 @@ struct sd_mmc_ctrlr *new_mem_sdhci_controller(void *ioaddr,
 struct sd_mmc_ctrlr *new_pci_sdhci_controller(pci_devfn_t dev)
 {
 	uintptr_t addr;
+
+	if (!CONFIG(PCI))
+		return NULL;
 
 	addr = pci_s_read_config32(dev, PCI_BASE_ADDRESS_0);
 	if (addr == ((uint32_t)~0)) {

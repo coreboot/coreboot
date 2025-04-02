@@ -64,6 +64,13 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C06, NONE, DEEP, NF1),				/* SML Clock */
 	PAD_CFG_NF(GPP_C07, NONE, DEEP, NF1),				/* SML Data */
 
+	/* High-Definition Audio */
+	PAD_CFG_NF(GPP_D10, NATIVE, DEEP, NF1),				/* Clock */
+	PAD_CFG_NF(GPP_D11, NATIVE, DEEP, NF1),				/* Sync */
+	PAD_CFG_NF(GPP_D12, NATIVE, DEEP, NF1),				/* Data Output */
+	PAD_CFG_NF(GPP_D13, NATIVE, DEEP, NF1),				/* Data Input */
+	PAD_CFG_NF(GPP_D17, NATIVE, DEEP, NF1),				/* Reset */
+
 	/* V02:	PCIE_WAKE_LAN			*/
 	PAD_NC(GPP_V02, NONE),
 	/* V06:	GPD_6_SLP_A_N			*/
@@ -449,22 +456,12 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D08, NONE),
 	/* D09:					*/
 	PAD_NC(GPP_D09, NONE),
-	/* D10:	HDA_CODEC_BCLK			*/
-	PAD_CFG_NF(GPP_D10, NATIVE, DEEP, NF1),
-	/* D11:	HDA_CODEC_SYNC			*/
-	PAD_CFG_NF(GPP_D11, NATIVE, DEEP, NF1),
-	/* D12:	HDA_CODEC_SDO			*/
-	PAD_CFG_NF(GPP_D12, NATIVE, DEEP, NF1),
-	/* D13:	HDA_CODEC_SDI			*/
-	PAD_CFG_NF(GPP_D13, NATIVE, DEEP, NF1),
 	/* D14:					*/
 	PAD_NC(GPP_D14, NONE),
 	/* D15:					*/
 	PAD_NC(GPP_D15, NONE),
 	/* D16:					*/
 	PAD_NC(GPP_D16, NONE),
-	/* D17:	HDA_CODEC_RESET0_N		*/
-	PAD_CFG_NF(GPP_D17, NATIVE, DEEP, NF1),
 	/* D18:					*/
 	PAD_NC(GPP_D18, NONE),
 	/* D19:					*/

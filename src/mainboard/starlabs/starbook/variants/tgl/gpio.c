@@ -51,6 +51,13 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C6, NONE, PWROK, NF1),				/* SML Clock */
 	PAD_CFG_NF(GPP_C7, NONE, PWROK, NF1),				/* SML Data */
 
+	/* High-Definition Audio */
+	PAD_CFG_NF(GPP_R0, NATIVE, DEEP, NF1),				/* Clock */
+	PAD_CFG_NF(GPP_R1, NATIVE, DEEP, NF1),				/* Sync */
+	PAD_CFG_NF(GPP_R2, NATIVE, DEEP, NF1),				/* Data Output */
+	PAD_CFG_NF(GPP_R3, NATIVE, DEEP, NF1),				/* Data Input */
+	PAD_NC(GPP_R4, NONE),						/* Reset */
+
 	/* GPD2:	LAN_WAKE#		*/
 	PAD_NC(GPD2, NONE),
 	/* GPD6:	SIO_SLP_A#		*/
@@ -346,16 +353,6 @@ const struct pad_config gpio_table[] = {
 	/* H23:	Not Connected			*/
 	PAD_NC(GPP_H23, NONE),
 
-	/* R0:	HDA_BCLK			*/
-	PAD_CFG_NF(GPP_R0, NONE, DEEP, NF1),
-	/* R1:	HDA_SYNC			*/
-	PAD_CFG_NF(GPP_R1, NATIVE, DEEP, NF1),
-	/* R2:	HDA_SDO				*/
-	PAD_CFG_NF(GPP_R2, NATIVE, DEEP, NF1),
-	/* R3:	HDA_SDI_0_SSP0_RXD		*/
-	PAD_CFG_NF(GPP_R3, NATIVE, DEEP, NF1),
-	/* R4:	Not Connected			*/
-	PAD_NC(GPP_R4, NONE),
 	/* R5:	Not Connected			*/
 	PAD_NC(GPP_R5, NONE),
 	/* R6:	Not Connected			*/

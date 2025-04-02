@@ -69,6 +69,13 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C6, NONE, DEEP, NF1),				/* SML Clock */
 	PAD_CFG_NF(GPP_C7, NONE, DEEP, NF1),				/* SML Data */
 
+	/* High-Definition Audio */
+	PAD_CFG_NF(GPP_R0, NATIVE, DEEP, NF1),				/* Clock */
+	PAD_CFG_NF(GPP_R1, NATIVE, DEEP, NF1),				/* Sync */
+	PAD_CFG_NF(GPP_R2, NATIVE, DEEP, NF1),				/* Data Output */
+	PAD_CFG_NF(GPP_R3, NATIVE, DEEP, NF1),				/* Data Input */
+	PAD_CFG_NF(GPP_R4, NATIVE, DEEP, NF1),				/* Reset */
+
 	/* GPD2:	LAN Wake					*/
 	PAD_NC(GPD2, NONE),
 	/* GPD6:	Sleep A						*/
@@ -419,16 +426,6 @@ const struct pad_config gpio_table[] = {
 	/* T15:		 Not Connected					*/
 	PAD_NC(GPP_T15, NONE),
 
-	/* R0:		HDA BCLK					*/
-	PAD_CFG_NF(GPP_R0, NATIVE, DEEP, NF1),
-	/* R1:		HDA SYNC					*/
-	PAD_CFG_NF(GPP_R1, NATIVE, DEEP, NF1),
-	/* R2:		HDA SDO						*/
-	PAD_CFG_NF(GPP_R2, NATIVE, DEEP, NF1),
-	/* R3:		HDA SDI						*/
-	PAD_CFG_NF(GPP_R3, NATIVE, DEEP, NF1),
-	/* R4:		HDA Reset					*/
-	PAD_CFG_NF(GPP_R4, NATIVE, DEEP, NF1),
 	/* R5:		MiPi Cam Reset					*/
 	PAD_NC(GPP_R5, NONE),
 	/* R6:		Not Connected					*/

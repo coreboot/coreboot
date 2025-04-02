@@ -2,11 +2,6 @@
 
 #include <variants.h>
 
-/*
- * All definitions are taken from a comparison of the output of "inteltool -a"
- * using the stock BIOS and with coreboot.
- */
-
 /* Early pad configuration in bootblock. */
 const struct pad_config early_gpio_table[] = {
 	/* Debug Connector */

@@ -115,6 +115,62 @@ unsigned int get_reserved_phys_addr_bits(void)
 			CPUID_EBX_MEM_ENCRYPT_ADDR_BITS_SHIFT;
 }
 
+unsigned int smbios_cpu_get_max_speed_mhz(void)
+{
+	uint32_t max_freq = 0;
+
+	for (int i = 0; i < get_cpu_count(); i++) {
+		struct core_info *core_info = &core_info_list[i];
+
+		if (max_freq < core_info->max_frequency)
+			max_freq = core_info->max_frequency;
+	}
+	return max_freq;
+}
+
+/*
+ * On some SoCs like AMD Glinda, multiple unique L3 cache blocks exist,
+ * each with a distinct UID and possibly different sizes. The default
+ * method assumes a single shared L3 cache across all cores, which is
+ * inaccurate. This function aggregates sizes of all uniquely identified
+ * L3 cache blocks to compute the correct total L3 size.
+ */
+bool soc_fill_cpu_cache_info(uint8_t level, struct cpu_cache_info *info)
+{
+	if (level != CACHE_L3)
+		return x86_get_cpu_cache_info(level, info);
+
+	if (!info)
+		return false;
+
+	uint32_t total_cache = 0;
+	bool seen_cache_ids[CONFIG_MAX_CPUS] = {false};
+
+	x86_get_cpu_cache_info(level, info);
+
+	/*
+	 * To calculate the total L3 cache size, iterate over core_info_list and add up the sizes
+	 * of the L3 cache blocks with unique cache ID.
+	 */
+	for (int i = 0; i < get_cpu_count(); i++) {
+		struct core_info *cache = &core_info_list[i];
+
+		printk(BIOS_SPEW, "CPU %d: Cache Level: %d, Cache Size: %zu bytes\n",
+		       i, cache->l3_cache_uid, cache->l3_cache_size);
+
+		if (!seen_cache_ids[cache->l3_cache_uid]) {
+			total_cache += cache->l3_cache_size;
+			seen_cache_ids[cache->l3_cache_uid] = true;
+		}
+	}
+
+	info->num_cores_shared = get_cpu_count();
+	info->size = total_cache;
+
+	printk(BIOS_SPEW, "Total cache at level: %d is:%zu\n", level, info->size);
+	return true;
+}
+
 static uint32_t get_max_boost_frequency(void)
 {
 	msr_t msr = rdmsr(MSR_CPPC_CAPABILITY_1);

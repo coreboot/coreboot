@@ -9,10 +9,10 @@
 
 /* Early pad configuration in bootblock */
 const struct pad_config early_gpio_table[] = {
-	/* C20:	 UART2_RXD			*/
-	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),
-	/* C21:	 UART2_TXD			*/
-	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1),
+	/* Debug Connector */
+	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),				/* RXD */
+	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1),				/* TXD */
+
 	/* E22:	BRD_ID0				*/
 	PAD_CFG_GPO(GPP_E22, 1, PLTRST),
 	/* E23:	BRD_ID1				*/

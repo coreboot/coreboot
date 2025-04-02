@@ -4,10 +4,9 @@
 
 /* Early pad configuration in bootblock */
 const struct pad_config early_gpio_table[] = {
-	/* H10:		UART0 RXD		Debug Connector		*/
-	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),
-	/* H11:		UART0 TXD		Debug Connector		*/
-	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
+	/* Debug Connector */
+	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),				/* RXD */
+	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),				/* TXD */
 };
 
 const struct pad_config *variant_early_gpio_table(size_t *num)

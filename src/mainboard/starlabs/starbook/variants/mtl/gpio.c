@@ -76,6 +76,9 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),				/* Platform Reset */
 	PAD_CFG_GPI_SCI(GPP_E16, NONE, PLTRST, EDGE_SINGLE, INVERT),	/* Processor Hot */
 
+	/* TPM */
+	PAD_CFG_GPI_APIC_LOW(GPP_F13, NONE, PLTRST),			/* Interrupt */
+
 	/* V02:	PCIE_WAKE_LAN			*/
 	PAD_NC(GPP_V02, NONE),
 	/* V06:	GPD_6_SLP_A_N			*/
@@ -325,8 +328,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F11, NONE),
 	/* F12:					*/
 	PAD_NC(GPP_F12, NONE),
-	/* F13:	TPM_IRQ				*/
-	PAD_CFG_GPI_APIC_LOW(GPP_F13, NONE, PLTRST),
 	/* F14:					*/
 	PAD_NC(GPP_F14, NONE),
 	/* F15:					*/

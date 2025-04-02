@@ -73,6 +73,9 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B1, NONE, DEEP, NF1),				/* Vendor ID 1 */
 	PAD_CFG_GPI_SCI(GPP_B2, NONE, PLTRST, EDGE_SINGLE, INVERT),	/* Processor Hot */
 
+	/* TPM */
+	PAD_CFG_GPI_APIC_LOW(GPP_E11, NONE, PLTRST),			/* Interrupt */
+
 	/* GPD2:	LAN Wake					*/
 	PAD_NC(GPD2, NONE),
 	/* GPD6:	Sleep A						*/
@@ -273,8 +276,6 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_E9, NONE, DEEP, NF1),
 	/* E10:		PWD Amplifier Input				*/
 	PAD_NC(GPP_E10, NONE),
-	/* E11:		TPM IRQ						*/
-	PAD_CFG_GPI_APIC_LOW(GPP_E11, NONE, PLTRST),
 	/* E13:		Not connected					*/
 	PAD_NC(GPP_E13, NONE),
 	/* E15:		Not Connected					*/

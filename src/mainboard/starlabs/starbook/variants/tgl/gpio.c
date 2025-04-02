@@ -62,6 +62,9 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_H18, NONE, DEEP, NF1),				/* C10 Gate */
 	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),				/* Platform Reset */
 
+	/* TPM */
+	PAD_CFG_GPI_APIC_LOW(GPP_C14, NONE, PLTRST),			/* Interrupt */
+
 	/* GPD2:	LAN_WAKE#		*/
 	PAD_NC(GPD2, NONE),
 	/* GPD6:	SIO_SLP_A#		*/
@@ -174,8 +177,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_C12, NONE),
 	/* C13:	Not Connected			*/
 	PAD_NC(GPP_C13, NONE),
-	/* C14:	TPM_IRQ				*/
-	PAD_CFG_NF(GPP_C14, NONE, DEEP, NF1),
 	/* C15:	TPM_RST				*/
 	PAD_NC(GPP_C15, NONE),
 	/* C18:	TOUCH_I2C_SDA			*/

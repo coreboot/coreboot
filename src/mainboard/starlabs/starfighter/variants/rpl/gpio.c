@@ -83,6 +83,9 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B1, NONE, DEEP, NF1),				/* Vendor ID 1 */
 	PAD_CFG_GPI_SCI(GPP_B2, NONE, PLTRST, EDGE_SINGLE, INVERT),	/* Processor Hot */
 
+	/* TPM */
+	PAD_CFG_GPI_APIC_LOW(GPP_D10, NONE, PLTRST),			/* Interrupt */
+
 	/* GPD2:	LAN Wake					*/
 	PAD_NC(GPD2, NONE),
 	/* GPD6:	Sleep A						*/
@@ -237,8 +240,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D8, NONE),
 	/* D9:		PWD_AMP_IN					*/
 	PAD_NC(GPP_D9, NONE),
-	/* D10:		TPM_IRQ						*/
-	PAD_CFG_GPI_APIC_LOW(GPP_D10, NONE, PLTRST),
 	/* D12:		ES8336_INT_N					*/
 	PAD_NC(GPP_D12, NONE),
 	/* D13:		Wireless LAN Wake				*/

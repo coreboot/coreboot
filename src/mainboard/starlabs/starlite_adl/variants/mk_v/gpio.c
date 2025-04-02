@@ -448,37 +448,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_R6, NONE),
 	/* R7:		Not Connected					*/
 	PAD_NC(GPP_R7, NONE),
-
-	/* CNV_BTEN */
-	PAD_CFG_GPO(GPP_VGPIO_0, 1, DEEP),
-	/* CNV_BT_HOST_WAKEB */
-	PAD_NC(GPP_VGPIO_4, NONE),
-	/* CNV_BT_IF_SELECT */
-	PAD_CFG_GPO(GPP_VGPIO_5, 1, DEEP),
-	/* vCNV_BT_UART_TXD */
-	PAD_NC(GPP_VGPIO_6, NONE),
-	/* vCNV_BT_UART_RXD */
-	PAD_NC(GPP_VGPIO_7, NONE),
-	/* vCNV_BT_UART_CTS_B */
-	PAD_NC(GPP_VGPIO_8, NONE),
-	/* vCNV_BT_UART_RTS_B */
-	PAD_NC(GPP_VGPIO_9, NONE),
-	/* vUART0_TXD */
-	PAD_NC(GPP_VGPIO_18, NONE),
-	/* vUART0_RXD */
-	PAD_NC(GPP_VGPIO_19, NONE),
-	/* vUART0_CTS_B */
-	PAD_NC(GPP_VGPIO_20, NONE),
-	/* vUART0_RTS_B */
-	PAD_NC(GPP_VGPIO_21, NONE),
-	/* BT_I2S_BCLK */
-	PAD_NC(GPP_VGPIO_30, NONE),
-	/* BT_I2S_SYNC */
-	PAD_NC(GPP_VGPIO_31, NONE),
-	/* BT_I2S_SDO */
-	PAD_NC(GPP_VGPIO_32, NONE),
-	/* BT_I2S_SDI */
-	PAD_NC(GPP_VGPIO_33, NONE),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

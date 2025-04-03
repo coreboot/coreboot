@@ -32,10 +32,18 @@ static const char *read_mode_str[8] = {
 	"Fast Read"
 };
 
+static const char *remapping[8] = {
+	"0-1-2-3",
+	"1-0-3-2",
+	"2-3-0-1",
+	"3-2-1-0",
+};
+
 void show_spi_speeds_and_modes(void)
 {
 	uint16_t val16 = spi_read16(SPI100_SPEED_CONFIG);
 	uint32_t val32 = spi_read32(SPI_CNTRL0);
+	uint8_t val8 = fch_spi_rom_remapping();
 
 	printk(BIOS_DEBUG, "SPI normal read speed: %s\n",
 	       spi_speed_str[DECODE_SPI_NORMAL_SPEED(val16)]);
@@ -48,6 +56,7 @@ void show_spi_speeds_and_modes(void)
 	printk(BIOS_DEBUG, "SPI100: %s\n",
 	       spi_read16(SPI100_ENABLE) & SPI_USE_SPI100 ? "Enabled" : "Disabled");
 	printk(BIOS_DEBUG, "SPI Read Mode: %s\n", read_mode_str[DECODE_SPI_READ_MODE(val32)]);
+	printk(BIOS_DEBUG, "SPI ROM mapping: %s\n", remapping[val8]);
 }
 
 void __weak mainboard_spi_cfg_override(uint8_t *fast_speed, uint8_t *read_mode)
@@ -94,6 +103,11 @@ static void fch_spi_set_read_mode(u32 mode)
 	uint32_t val = spi_read32(SPI_CNTRL0) & ~SPI_READ_MODE_MASK;
 
 	spi_write32(SPI_CNTRL0, val | SPI_READ_MODE(mode));
+}
+
+uint8_t fch_spi_rom_remapping(void)
+{
+	return spi_read8(SPI_ROM_PAGE) & SPI_ROM_PAGE_SEL;
 }
 
 void fch_spi_config_modes(void)

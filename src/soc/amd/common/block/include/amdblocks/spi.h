@@ -71,6 +71,7 @@ enum spi100_speed {
 #define   SPI_RD4DW_EN_HOST		BIT(15)
 
 #define SPI_ROM_PAGE			0x5c
+#define   SPI_ROM_PAGE_SEL		(BIT(0) | BIT(1))
 
 #define SPI_FIFO			0x80
 #define SPI_FIFO_LAST_BYTE		0xc6 /* 0xc7 for Cezanne */
@@ -123,6 +124,9 @@ uint32_t spi_read32(uint8_t reg);
 void spi_write8(uint8_t reg, uint8_t val);
 void spi_write16(uint8_t reg, uint16_t val);
 void spi_write32(uint8_t reg, uint32_t val);
+
+/* Returns the active SPI ROM remapping */
+uint8_t fch_spi_rom_remapping(void);
 
 void fch_spi_config_modes(void);
 void mainboard_spi_cfg_override(uint8_t *fast_speed, uint8_t *read_mode);

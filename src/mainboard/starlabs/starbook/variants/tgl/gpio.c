@@ -44,6 +44,9 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_A11, 1, PLTRST),				/* Reset */
 	PAD_CFG_GPO(GPP_D16, 1, DEEP),					/* Enable */
 
+	/* SATA */
+	PAD_CFG_NF(GPP_A12, UP_20K, DEEP, NF1),				/* PEDET */
+
 	/* Wireless */
 	PAD_CFG_NF(GPP_F0, NONE, DEEP, NF1),				/* BRI Data */
 	PAD_CFG_NF(GPP_F1, NONE, DEEP, NF1),				/* BRI Response */
@@ -104,8 +107,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_A7, NONE),
 	/* A10:	WLAN_PCM_IN			*/
 	PAD_NC(GPP_A10, NONE),
-	/* A12:	SATAGP_1			*/
-	PAD_CFG_NF(GPP_A12, UP_20K, DEEP, NF1),
 	/* A13:	Not Connected			*/
 	PAD_NC(GPP_A13, NONE),
 	/* A14:	Not Connected			*/

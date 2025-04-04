@@ -49,7 +49,8 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_F1, NONE, DEEP, NF1),				/* BRI Response */
 	PAD_CFG_NF(GPP_F2, NONE, DEEP, NF1),				/* RGI Data */
 	PAD_CFG_NF(GPP_F3, NONE, DEEP, NF1),				/* RGI Response */
-	PAD_NC(GPP_F6, NONE),						/* Modem Clock Request */
+	PAD_CFG_NF(GPP_A8, NONE, DEEP, NF2),				/* RF Reset */
+	PAD_CFG_NF(GPP_A9, NONE, DEEP, NF2),				/* Modem Clock Request */
 
 	/* Display */
 	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),				/* eDP Hot Plug */
@@ -101,10 +102,6 @@ const struct pad_config gpio_table[] = {
 
 	/* A7:	WLAN_PCM_CLK			*/
 	PAD_NC(GPP_A7, NONE),
-	/* A8:	WLAN_PCM_RST			*/
-	PAD_CFG_NF(GPP_A8, NONE, DEEP, NF2),
-	/* A9:	WLAN_PCM_CLKREQ0		*/
-	PAD_CFG_NF(GPP_A9, NONE, DEEP, NF2),
 	/* A10:	WLAN_PCM_IN			*/
 	PAD_NC(GPP_A10, NONE),
 	/* A12:	SATAGP_1			*/
@@ -280,6 +277,8 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F4, NONE),
 	/* F5:	GPPC_F5_MODEM_CLKREQ		*/
 	PAD_NC(GPP_F5, NONE),
+	/* F6:					*/
+	PAD_NC(GPP_F6, NONE),
 	/* F7:	BIOS_REC			*/
 	PAD_CFG_GPO(GPP_F7, 1, PLTRST),
 	/* F8:	Not Connected			*/

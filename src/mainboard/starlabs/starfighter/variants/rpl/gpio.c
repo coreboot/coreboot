@@ -74,6 +74,13 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C6, NONE, DEEP, NF1),				/* SML Clock */
 	PAD_CFG_NF(GPP_C7, NONE, DEEP, NF1),				/* SML Data */
 
+	/* Retimer */
+	PAD_CFG_NF(GPP_E18, NONE, DEEP, NF2),				/* TBT0 TXD */
+	PAD_CFG_NF(GPP_E19, NONE, DEEP, NF2),				/* TBT0 RXD */
+	PAD_CFG_NF(GPP_E20, NONE, DEEP, NF4),				/* TBT1 TXD */
+	PAD_CFG_NF(GPP_E21, NONE, DEEP, NF4),				/* TBT1 RXD */
+	PAD_CFG_GPO(GPP_E4, 0, DEEP),					/* Force Power */
+
 	/* High-Definition Audio */
 	PAD_CFG_NF(GPP_R0, NATIVE, DEEP, NF1),				/* Clock */
 	PAD_CFG_NF(GPP_R1, NATIVE, DEEP, NF1),				/* Sync */
@@ -265,8 +272,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E1, NONE),
 	/* E2:		Not Connected					*/
 	PAD_NC(GPP_E2, NONE),
-	/* E4:		Retimer Force Power				*/
-	PAD_CFG_GPO(GPP_E4, 0, DEEP),
 	/* E5:		Not Connected					*/
 	PAD_NC(GPP_E5, NONE),
 	/* E6:		JTAG ODT		No internal PD
@@ -291,14 +296,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E16, NONE),
 	/* E17:		Not Connected					*/
 	PAD_NC(GPP_E17, NONE),
-	/* E18:		TBT_LSX0_TXD					*/
-	PAD_CFG_NF(GPP_E18, NONE, DEEP, NF2),
-	/* E19:		TBT_LSX0_RXD					*/
-	PAD_CFG_NF(GPP_E19, NONE, DEEP, NF2),
-	/* E20:		TBT_LSX1_TXD					*/
-	PAD_CFG_NF(GPP_E20, NONE, DEEP, NF4),
-	/* E21:		TBT_LSX1_RXD					*/
-	PAD_CFG_NF(GPP_E21, NONE, DEEP, NF4),
 	/* E22:		Not Connected					*/
 	PAD_NC(GPP_E22, NONE),
 	/* E23:		Not Connected					*/

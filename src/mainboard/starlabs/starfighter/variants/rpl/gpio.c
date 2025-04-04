@@ -120,7 +120,7 @@ const struct pad_config gpio_table[] = {
 	/* A11:		Not Connected					*/
 	PAD_NC(GPP_A11, NONE),
 	/* A12:		PCH M.2 SSD PEDET				*/
-	PAD_CFG_NF(GPP_A12, NONE, DEEP, NF1),
+	PAD_NC(GPP_A12, NONE),
 	/* A14:		Test Point 45					*/
 	PAD_NC(GPP_A14, NONE),
 	/* A15:		Test Point 52					*/

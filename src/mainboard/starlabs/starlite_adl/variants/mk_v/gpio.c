@@ -99,6 +99,7 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_H1, 0, RSMRST),					/* BFX Strap 2 Bit 3	[ Disabled / Enabled  ] */
 	PAD_CFG_GPO(GPP_E19, 0, RSMRST),				/* TBT LSX #0		[ 1.8V     / 3.3V     ] */
 	PAD_CFG_GPO(GPP_E21, 0, RSMRST),				/* TBT LSX #1           [ 1.8V     / 3.3V     ] */
+	PAD_CFG_GPO(GPP_D10, 0, RSMRST),				/* TBT LSX #2		[ 1.8V     / 3.3V     ] */
 	PAD_CFG_GPO(GPP_D12, 0, RSMRST),				/* TBT LSX #3		[ 1.8V     / 3.3V     ] */
 	PAD_CFG_GPO(GPP_F7, 0, RSMRST),					/* MCRO LDO		[ Disabled / Bypass   ] */
 	PAD_CFG_GPO(GPD7, 0, RSMRST),					/* RTC Clock Delay	[ Disabled / 95ms     ] */
@@ -173,7 +174,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D7, NONE),
 	PAD_NC(GPP_D8, NONE),
 	PAD_NC(GPP_D9, NONE),
-	PAD_NC(GPP_D10, NONE),
 	PAD_NC(GPP_D11, NONE),
 	PAD_NC(GPP_D13, NONE),
 	PAD_NC(GPP_D14, NONE),

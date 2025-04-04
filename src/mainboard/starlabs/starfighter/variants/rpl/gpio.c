@@ -54,6 +54,11 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_F20, 1, PLTRST),				/* Reset */
 	PAD_CFG_GPO(GPP_D14, 1, DEEP),					/* Enable */
 
+	/* SSD 2 */
+	PAD_CFG_NF(GPP_H19, NONE, DEEP, NF1),				/* Clock Request 2 */
+	PAD_CFG_GPO(GPP_H0, 1, PLTRST),					/* Reset */
+	PAD_CFG_GPO(GPP_D16, 1, PLTRST),				/* Enable */
+
 	/* Wireless */
 	PAD_CFG_NF(GPP_D7, NONE, DEEP, NF1),				/* Clock Request 1 */
 	PAD_CFG_GPO(GPP_H2, 1, PLTRST),					/* Reset */
@@ -247,8 +252,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D13, NONE),
 	/* D15:		Not Connected					*/
 	PAD_NC(GPP_D15, NONE),
-	/* D16:		PCH M.2 SSD Power Enable			*/
-	PAD_CFG_GPO(GPP_D16, 1, PLTRST),
 	/* D17:		Not used		Fingerprint ID		*/
 	PAD_NC(GPP_D17, NONE),
 	/* D18:		Trackpad reset					*/
@@ -342,8 +345,6 @@ const struct pad_config gpio_table[] = {
 	/* F23:		Not Connected					*/
 	PAD_NC(GPP_F23, NONE),
 
-	/* H0:		PCH M.2 SSD Reset				*/
-	PAD_CFG_GPO(GPP_H0, 1, PLTRST),
 	/* H1:		BFX Strap 2 Bit 3	Weak Internal PD 20K	*/
 	PAD_CFG_GPO(GPP_H1, 0, DEEP),
 	/* H3:		Not Connected					*/
@@ -364,8 +365,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_H14, NONE),
 	/* H16:		Not Connected					*/
 	PAD_NC(GPP_H16, NONE),
-	/* H19:		Clock Request 4		CPU M.2 SSD		*/
-	PAD_CFG_NF(GPP_H19, NONE, DEEP, NF1),
 	/* H20:		Not Connected					*/
 	PAD_NC(GPP_H20, NONE),
 	/* H21:		Not Connected					*/

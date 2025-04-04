@@ -121,7 +121,7 @@ const struct pad_config gpio_table[] = {
 	/* A15:		Test Point 52					*/
 	PAD_NC(GPP_A15, NONE),
 	/* A16:		USB OverCurrent 3				*/
-	PAD_CFG_NF(GPP_A16, NONE, DEEP, NF1),
+	PAD_NC(GPP_A16, NONE),
 	/* A17:		Not Connected					*/
 	PAD_NC(GPP_A17, NONE),
 	/* A19:		Not Connected					*/
@@ -273,7 +273,7 @@ const struct pad_config gpio_table[] = {
 	/* E7:		Embedded Controller SMI				*/
 	PAD_NC(GPP_E7, NONE),
 	/* E9:		USB OverCurrent 0				*/
-	PAD_CFG_NF(GPP_E9, NONE, DEEP, NF1),
+	PAD_NC(GPP_E9, NONE),
 	/* E10:		Not Connected					*/
 	PAD_NC(GPP_E10, NONE),
 	/* E11:		Not Connected					*/

@@ -165,8 +165,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B10, NONE),
 	/* B12:		PM SLP S0					*/
 	PAD_NC(GPP_B12, NONE),
-	/* B13:		PLT RST						*/
-	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),
 	/* B14:		Not Connected					*/
 	PAD_NC(GPP_B14, NONE),
 	/* B15:		Not Connected					*/

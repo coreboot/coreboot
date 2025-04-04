@@ -68,6 +68,7 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),				/* Platform Reset */
 	PAD_CFG_NF(GPP_B0, NONE, DEEP, NF1),				/* Vendor ID 0 */
 	PAD_CFG_NF(GPP_B1, NONE, DEEP, NF1),				/* Vendor ID 1 */
+	PAD_NC(GPP_B2, NONE),						/* Processor Hot */
 
 	/* TPM */
 	PAD_CFG_GPI_APIC_LOW(GPP_C14, NONE, PLTRST),			/* Interrupt */
@@ -119,8 +120,6 @@ const struct pad_config gpio_table[] = {
 	/* A22:	Not Connected			*/
 	PAD_NC(GPP_A22, NONE),
 
-	/* B2:	VRALERT_N			*/
-	PAD_NC(GPP_B2, NONE),
 	/* B3:	Not Connected			*/
 	PAD_NC(GPP_B3, NONE),
 	/* B4:	Not Connected			*/

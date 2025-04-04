@@ -93,7 +93,7 @@ static boot_state_t bs_pre_device(void *arg)
 
 static boot_state_t bs_dev_init_chips(void *arg)
 {
-	timestamp_add_now(TS_DEVICE_ENUMERATE);
+	timestamp_add_now(TS_DEVICE_INIT_CHIPS);
 
 	/* Initialize chips early, they might disable unused devices. */
 	dev_initialize_chips();
@@ -103,6 +103,8 @@ static boot_state_t bs_dev_init_chips(void *arg)
 
 static boot_state_t bs_dev_enumerate(void *arg)
 {
+	timestamp_add_now(TS_DEVICE_ENUMERATE);
+
 	/* Find the devices we don't have hard coded knowledge about. */
 	dev_enumerate();
 

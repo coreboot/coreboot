@@ -165,10 +165,6 @@ static const struct pad_config audio_disable_pads[] = {
 	PAD_NC(GPP_D17, NONE),
 };
 
-static const struct pad_config pre_mem_x1slot_pads[] = {
-	/* GPP_A08:     X1_PCIE_SLOT_PWR_EN */
-	PAD_CFG_GPO(GPP_A08, 0, PLTRST),
-};
 static const struct pad_config x1slot_pads[] = {
 	/* GPP_A08:     X1_PCIE_SLOT_PWR_EN */
 	PAD_CFG_GPO(GPP_A08, 1, PLTRST),
@@ -565,9 +561,6 @@ void fw_config_configure_pre_mem_gpio(void)
 		GPIO_CONFIGURE_PADS(pre_mem_gen4_ssd_pwr_pads);
 		GPIO_CONFIGURE_PADS(pre_mem_gen5_ssd_pwr_pads);
 	}
-
-	if (!fw_config_probe(FW_CONFIG(SD, SD_NONE)))
-		GPIO_CONFIGURE_PADS(pre_mem_x1slot_pads);
 
 	/*
 	 * NOTE: We place WWAN sequence 2 here. According to the WWAN FIBOCOM

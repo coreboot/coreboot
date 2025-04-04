@@ -390,6 +390,8 @@ static const struct pad_config early_gpio_table[] = {
 
 /* Pad configuration in romstage */
 static const struct pad_config romstage_gpio_table[] = {
+	/* GPP_A08:     X1_PCIE_SLOT_PWR_EN */
+	PAD_CFG_GPO(GPP_A08, 0, PLTRST),
 	/* GPP_C00:     GPP_C0_SMBCLK */
 	PAD_CFG_NF(GPP_C00, NONE, DEEP, NF1),
 	/* GPP_C01:     GPP_C1_SMBDATA */

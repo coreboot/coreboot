@@ -80,15 +80,15 @@ const struct pad_config gpio_table[] = {
 	/* GPD2:	LAN_WAKE#		*/
 	PAD_NC(GPD2, NONE),
 	/* GPD6:	SIO_SLP_A#		*/
-	PAD_CFG_NF(GPD6, NONE, DEEP, NF1),
+	PAD_NC(GPD6, NONE),
 	/* GPD7:	PCH_TBT_PERST#		*/
 	PAD_CFG_GPO(GPD7, 0, PLTRST),
 	/* GPD9:	SIO_SLP_WLAN#		*/
-	PAD_CFG_NF(GPD9, NONE, DEEP, NF1),
+	PAD_NC(GPD9, NONE),
 	/* GPD10:	SIO_SLP_S5#		*/
-	PAD_CFG_NF(GPD10, NONE, DEEP, NF1),
+	PAD_NC(GPD10, NONE),
 	/* GPD11:	PM_LANPHY_EN		*/
-	PAD_CFG_NF(GPD11, NONE, DEEP, NF1),
+	PAD_NC(GPD11, NONE),
 
 	/* A6:	Not Connected(TP764)		*/
 	/* A7:	WLAN_PCM_CLK			*/
@@ -108,7 +108,7 @@ const struct pad_config gpio_table[] = {
 	/* A15	Not Connected			*/
 	PAD_NC(GPP_A15, NONE),
 	/* A16:	USB2_OCB_3			*/
-	PAD_CFG_NF(GPP_A16, NONE, DEEP, NF1),
+	PAD_NC(GPP_A16, NONE),
 	/* A17:	Not Connected			*/
 	PAD_NC(GPP_A17, NONE),
 	/* A19	Not Connected			*/
@@ -133,11 +133,11 @@ const struct pad_config gpio_table[] = {
 	/* B8:	Not Connected			*/
 	PAD_NC(GPP_B8, NONE),
 	/* B9:	PWR_MON_I2C_SDA_R		*/
-	PAD_CFG_NF(GPP_B9, NONE, DEEP, NF1),
+	PAD_NC(GPP_B9, NONE),
 	/* B10:	PWR_MON_I2C_SCL_R		*/
-	PAD_CFG_NF(GPP_B10, NONE, DEEP, NF1),
+	PAD_NC(GPP_B10, NONE),
 	/* B12:	PM_SLP_S0_N			*/
-	PAD_CFG_NF(GPP_B12, NONE, DEEP, NF1),
+	PAD_NC(GPP_B12, NONE),
 	/* B14:	FPS_RST_N			*/
 	PAD_CFG_GPO(GPP_B14, 1, PLTRST),
 	/* B15:	Not Connected			*/
@@ -162,9 +162,9 @@ const struct pad_config gpio_table[] = {
 	/* C2:	SMBALERT_N			*/
 	PAD_CFG_GPO(GPP_C2, 0, DEEP),
 	/* C3:	SML0_CLK			*/
-	PAD_CFG_NF(GPP_C3, NONE, DEEP, NF1),
+	PAD_NC(GPP_C3, NONE),
 	/* C4:	SML0_DATA			*/
-	PAD_CFG_NF(GPP_C4, NONE, DEEP, NF1),
+	PAD_NC(GPP_C4, NONE),
 	/* C5:	SML0ALERT_IN			*/
 	PAD_CFG_GPO(GPP_C5, 0, DEEP),
 	/* C9:	Not Connected			*/
@@ -180,9 +180,9 @@ const struct pad_config gpio_table[] = {
 	/* C15:	TPM_RST				*/
 	PAD_NC(GPP_C15, NONE),
 	/* C18:	TOUCH_I2C_SDA			*/
-	PAD_CFG_NF(GPP_C18, NONE, DEEP, NF1),
+	PAD_NC(GPP_C18, NONE),
 	/* C19:	TOUCH_I2C_CLK			*/
-	PAD_CFG_NF(GPP_C19, NONE, DEEP, NF1),
+	PAD_NC(GPP_C19, NONE),
 	/* C22:	Not Connected			*/
 	PAD_NC(GPP_C22, NONE),
 	/* C23:	WLAN_WAKE_N			*/
@@ -232,7 +232,7 @@ const struct pad_config gpio_table[] = {
 	/* E2:	Not Connected			*/
 	PAD_NC(GPP_E2, NONE),
 	/* E3:	FPS_INT				*/
-	PAD_CFG_NF(GPP_E3, NONE, DEEP, NF1),
+	PAD_NC(GPP_E3, NONE),
 	/* E4:	Not Connected			*/
 	PAD_NC(GPP_E4, NONE),
 	/* E5:	Not Connected			*/
@@ -244,7 +244,7 @@ const struct pad_config gpio_table[] = {
 	/* E8:	EC_SLP_S0IX_N			*/
 	PAD_NC(GPP_E8, NONE),
 	/* E9:	USB2_TCP01_OC_N			*/
-	PAD_CFG_NF(GPP_E9, NONE, DEEP, NF1),
+	PAD_NC(GPP_E9, NONE),
 	/* E10:	SPI1_TCH_PNL_CS_N		*/
 	PAD_NC(GPP_E10, NONE),
 	/* E11:	SPI1_CLK			*/

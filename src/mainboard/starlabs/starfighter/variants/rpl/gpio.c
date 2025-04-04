@@ -119,7 +119,7 @@ const struct pad_config gpio_table[] = {
 	/* GPD6:	Sleep A						*/
 	PAD_NC(GPD6, NONE),
 	/* GPD9:	Wireless LAN Sleep				*/
-	PAD_CFG_NF(GPD9, NONE, DEEP, NF1),
+	PAD_NC(GPD9, NONE),
 	/* GPD10:	Sleep S5					*/
 	PAD_NC(GPD10, NONE),
 	/* GPD11:	LAN PHY Enable					*/
@@ -196,9 +196,9 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B25, NONE),
 
 	/* C3:		SML 0 Clock					*/
-	PAD_CFG_NF(GPP_C3, NONE, DEEP, NF1),
+	PAD_NC(GPP_C3, NONE),
 	/* C4:		SML 0 Data					*/
-	PAD_CFG_NF(GPP_C4, NONE, DEEP, NF1),
+	PAD_NC(GPP_C4, NONE),
 	/* C8:		Not Connected					*/
 	PAD_NC(GPP_C8, NONE),
 	/* C9:		Not Connected					*/
@@ -311,7 +311,7 @@ const struct pad_config gpio_table[] = {
 	/* F9:		EC Sleep S0					*/
 	PAD_NC(GPP_F9, NONE),
 	/* F10:		Weak Internal PD 20K				*/
-	PAD_CFG_GPO(GPP_F10, 0, PLTRST),
+	PAD_NC(GPP_F10, NONE),
 	/* F11:		TPM ID						*/
 	PAD_NC(GPP_F11, NONE),
 	/* F16:		Not Connected					*/

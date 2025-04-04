@@ -25,6 +25,15 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPD5, NONE, DEEP, NF1),				/* Sleep S4 */
 	PAD_CFG_NF(GPD8, NONE, DEEP, NF1),				/* Bluetooth Suspend */
 
+	/* eSPI */
+	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A0, UP_20K, DEEP, NF1),	/* eSPI IO 0 */
+	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A1, UP_20K, DEEP, NF1),	/* eSPI IO 1 */
+	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A2, UP_20K, DEEP, NF1),	/* eSPI IO 2 */
+	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A3, UP_20K, DEEP, NF1),	/* eSPI IO 3 */
+	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A4, UP_20K, DEEP, NF1),	/* eSPI CS 0 */
+	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A5, UP_20K, DEEP, NF1),	/* eSPI Clk */
+	// PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_A6, NONE, DEEP, NF1),	/* eSPI Reset */
+
 	/* Touchpad */
 	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),				/* Data */
 	PAD_CFG_NF(GPP_C17, NONE, DEEP, NF1),				/* Clock */
@@ -90,7 +99,6 @@ const struct pad_config gpio_table[] = {
 	/* GPD11:	PM_LANPHY_EN		*/
 	PAD_NC(GPD11, NONE),
 
-	/* A6:	Not Connected(TP764)		*/
 	/* A7:	WLAN_PCM_CLK			*/
 	PAD_NC(GPP_A7, NONE),
 	/* A8:	WLAN_PCM_RST			*/

@@ -61,6 +61,8 @@ const struct pad_config gpio_table[] = {
 	/* PCH */
 	PAD_CFG_NF(GPP_H18, NONE, DEEP, NF1),				/* C10 Gate */
 	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),				/* Platform Reset */
+	PAD_CFG_NF(GPP_B0, NONE, DEEP, NF1),				/* Vendor ID 0 */
+	PAD_CFG_NF(GPP_B1, NONE, DEEP, NF1),				/* Vendor ID 1 */
 
 	/* TPM */
 	PAD_CFG_GPI_APIC_LOW(GPP_C14, NONE, PLTRST),			/* Interrupt */
@@ -114,10 +116,6 @@ const struct pad_config gpio_table[] = {
 	/* A23:	TC_RETIMER_FORCE_PWR		*/
 	PAD_CFG_GPO(GPP_A23, 0, DEEP),
 
-	/* B0:	CORE_VID_0			*/
-	PAD_CFG_NF(GPP_B0, NONE, DEEP, NF1),
-	/* B1:	CORE_VID_1			*/
-	PAD_CFG_NF(GPP_B1, NONE, DEEP, NF1),
 	/* B2:	VRALERT_N			*/
 	PAD_NC(GPP_B2, NONE),
 	/* B3:	Not Connected			*/

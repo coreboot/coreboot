@@ -12,4 +12,5 @@ Timestamps <timestamp.md>
 Firmware Configuration Interface <fw_config.md>
 Relocatable Modules <rmodules.md>
 Timers, Stopwatch, and Delays <stopwatch.md>
+Threads <threads.md>
 ```

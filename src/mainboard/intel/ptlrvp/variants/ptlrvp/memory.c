@@ -125,6 +125,24 @@ static const struct mb_cfg lp5_mem_config = {
 	},
 };
 
+static const struct mb_cfg ddr5_mem_config = {
+	.type = MEM_TYPE_DDR5,
+
+	.rcomp = {
+		.resistor = 100,
+	},
+
+	.ect = true, /* Early Command Training */
+
+	.user_bd = BOARD_TYPE_ULT_ULX,
+
+	.lp_ddr_dq_dqs_re_training = 1,
+
+	.ddr_config = {
+		.dq_pins_interleaved = false,
+	}
+};
+
 const struct mb_cfg *variant_memory_params(void)
 {
 	int board_id = get_rvp_board_id();
@@ -136,6 +154,8 @@ const struct mb_cfg *variant_memory_params(void)
 	case GCS_32GB:
 	case GCS_64GB:
 		return &gcs_mem_config;
+	case PTLP_DDR5_RVP:
+		return &ddr5_mem_config;
 	default:
 		die("Unknown board id = 0x%x\n", board_id);
 		break;
@@ -144,6 +164,29 @@ const struct mb_cfg *variant_memory_params(void)
 
 void variant_get_spd_info(struct mem_spd *spd_info)
 {
-	spd_info->topo = MEM_TOPO_MEMORY_DOWN;
-	spd_info->cbfs_index = variant_memory_sku();
+	int board_id = get_rvp_board_id();
+
+	switch (board_id) {
+	case PTLP_LP5_T3_RVP:
+	case PTLP_LP5_T4_RVP:
+	case GCS_32GB:
+	case GCS_64GB:
+		spd_info->topo = MEM_TOPO_MEMORY_DOWN;
+		spd_info->cbfs_index = variant_memory_sku();
+		break;
+	case PTLP_DDR5_RVP:
+		spd_info->topo = MEM_TOPO_DIMM_MODULE;
+		spd_info->smbus[0].addr_dimm[0] = 0x50;
+		spd_info->smbus[0].addr_dimm[1] = 0x0;
+		spd_info->smbus[1].addr_dimm[0] = 0x50;
+		spd_info->smbus[1].addr_dimm[1] = 0x0;
+		spd_info->smbus[2].addr_dimm[0] = 0x52;
+		spd_info->smbus[2].addr_dimm[1] = 0x0;
+		spd_info->smbus[3].addr_dimm[0] = 0x52;
+		spd_info->smbus[3].addr_dimm[1] = 0x0;
+		break;
+	default:
+		die("Unknown board id = 0x%x\n", board_id);
+		break;
+	}
 }

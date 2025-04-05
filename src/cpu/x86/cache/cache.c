@@ -49,8 +49,10 @@ void arch_segment_loaded(uintptr_t start, size_t size, int flags)
 	if (!cbmem_online())
 		return;
 
-	if (clflush_supported())
-		clflush_region(start, size);
-	else
-		printk(BIOS_DEBUG, "Not flushing cache to RAM, CLFLUSH not supported\n");
+	if (!self_snooping_supported()) {
+		if (clflush_supported())
+			clflush_region(start, size);
+		else
+			printk(BIOS_DEBUG, "Not flushing cache to RAM, CLFLUSH not supported\n");
+	}
 }

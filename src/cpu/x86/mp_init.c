@@ -365,12 +365,14 @@ static atomic_t *load_sipi_vector(struct mp_params *mp_params)
 	ap_count = &sp->ap_count;
 	atomic_set(ap_count, 0);
 
-	/* Make sure SIPI data hits RAM so the APs that come up will see the
-	   startup code even if the caches are disabled. */
-	if (clflush_supported())
-		clflush_region((uintptr_t)mod_loc, module_size);
-	else
-		wbinvd();
+	if (!self_snooping_supported()) {
+		/* Make sure SIPI data hits RAM so the APs that come up will see the
+		   startup code even if the caches are disabled. */
+		if (clflush_supported())
+			clflush_region((uintptr_t)mod_loc, module_size);
+		else
+			wbinvd();
+	}
 
 	return ap_count;
 }
@@ -826,8 +828,10 @@ static void load_smm_handlers(void)
 		smm_disable();
 	}
 
-	/* Ensure the SMM handlers hit DRAM before performing first SMI. */
-	wbinvd();
+	if (!self_snooping_supported()) {
+		/* Ensure the SMM handlers hit DRAM before performing first SMI. */
+		wbinvd();
+	}
 
 	/*
 	 * Indicate that the SMM handlers have been loaded and MP

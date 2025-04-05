@@ -12,5 +12,6 @@ Writing Documentation <writing_documentation.md>
 Setting up GPIOs <gpio.md>
 Adding devices to a device tree <devicetree.md>
 CBMEM <cbmem.md>
+Using the site-local directory <site-local.md>
 Frequently Asked Questions <faq.md>
 ```

@@ -101,13 +101,6 @@ _start:
 	 */
 	post_code(POSTCODE_PRE_HARDWAREMAIN)	/* post 6e */
 
-#if ENV_X86_64
-	movq	$0xFFFFFFFFFFFFFFF0, %rax
-	and	%rax, %rsp
-#else
-	andl	$0xFFFFFFF0, %esp
-#endif
-
 #if CONFIG(ASAN_IN_RAMSTAGE)
 	call asan_init
 #endif

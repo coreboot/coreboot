@@ -94,6 +94,13 @@ void mec5035_control_radio(enum ec_radio_dev dev, enum ec_radio_state state)
 	ec_command(CMD_RADIO_CTRL);
 }
 
+void mec5035_acpi_enable(void)
+{
+	u8 buf[1] = {1};
+	write_mailbox_regs(buf, 2, sizeof(buf));
+	ec_command(CMD_ACPI);
+}
+
 static void mec5035_power_button_route(enum ec_power_button_route target)
 {
 	u8 buf = (u8)target;

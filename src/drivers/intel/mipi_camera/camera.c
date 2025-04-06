@@ -844,14 +844,13 @@ static void write_i2c_camera_device(const struct device *dev, const char *scope)
 		acpigen_pop_len(); /* Power Resource */
 	}
 
-	if (config->device_type == INTEL_ACPI_CAMERA_SENSOR)
-		acpigen_write_name_integer("_ADR", 0);
-
 	if (config->acpi_hid)
 		acpigen_write_name_string("_HID", config->acpi_hid);
 	else if (config->device_type == INTEL_ACPI_CAMERA_VCM ||
 		 config->device_type == INTEL_ACPI_CAMERA_NVM)
 		acpigen_write_name_string("_HID", ACPI_DT_NAMESPACE_HID);
+	else if (config->device_type == INTEL_ACPI_CAMERA_SENSOR)
+		acpigen_write_name_integer("_ADR", 0);
 
 	acpigen_write_name_integer("_UID", config->acpi_uid);
 	acpigen_write_name_string("_DDN", config->chip_name);

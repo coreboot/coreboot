@@ -1,3 +1,6 @@
-/* SPDX-License-Identifier: CC-PDDC */
+/* SPDX-License-Identifier: GPL-2.0-only */
 
-/* Please update the license if adding licensable material. */
+/* GPIO 1 is used for the EC SCI */
+#define MEC5035_EC_GPE 17
+
+#include <ec/dell/mec5035/acpi/ec.asl>

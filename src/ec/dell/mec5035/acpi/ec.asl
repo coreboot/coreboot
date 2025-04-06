@@ -32,7 +32,8 @@ Device (EC)
 	{
 		Offset (0x00),
 				ACPR, 1, /* AC Present */
-				    , 3,
+				BPRT, 1, /* Battery Present */
+				    , 2,
 				LIDS, 1, /* Lid State */
 		Offset (0x05),
 				SCIE, 1, /* SCI Enable */
@@ -68,6 +69,14 @@ Device (EC)
 			If (Local2 & (1 << 0)) {
 				Notify(AC, 0x80)
 			}
+			/* Battery present status changed, call _BIF */
+			If (Local2 & (1 << 1)) {
+				Notify(BAT0, 0x81)
+			}
+			/* Battery status changed, call _BST */
+			If (Local1 & (1 << 3)) {
+				Notify(BAT0, 0x80)
+			}
 		}
 		If (Local0 & (1 << 6)) {
 			Notify(SLPB, 0x80)
@@ -78,7 +87,7 @@ Device (EC)
 	{
 		Name (_HID, EisaId("PNP0C0E"))
 	}
-
 	#include "ac.asl"
+	#include "battery.asl"
 	#include "lid.asl"
 }

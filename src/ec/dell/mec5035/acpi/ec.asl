@@ -29,6 +29,9 @@ Device (EC)
 	OperationRegion(ERAM, EmbeddedControl, 0, 256)
 	Field(ERAM, ByteAcc, NoLock, Preserve)
 	{
+		Offset (0x00),
+				    , 4,
+				LIDS, 1, /* Lid State */
 		Offset (0x05),
 				SCIE, 1, /* SCI Enable */
 		Offset (0x07),
@@ -41,5 +44,12 @@ Device (EC)
 
 	Method (_Q66)
 	{
+		Local0 = EVT1
+		/* Lid event */
+		If (Local0 & (1 << 2)) {
+			Notify(LID, 0x80)
+		}
 	}
+
+	#include "lid.asl"
 }

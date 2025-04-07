@@ -32,6 +32,11 @@ chip soc/intel/skylake
 	register "PmConfigSlpSusMinAssert"	= "3"				# 1s
 	register "PmConfigSlpAMinAssert"	= "3"				# 98ms
 
+	# GPE configuration
+	register "gpe0_dw0"			= "GPP_B"
+	register "gpe0_dw1"			= "GPP_C"
+	register "gpe0_dw2"			= "GPP_E"
+
 	# Enable the correct decode ranges on the LPC bus.
 	register "lpc_ioe"			= "LPC_IOE_EC_4E_4F |
 						   LPC_IOE_KBC_60_64 |

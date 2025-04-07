@@ -11,3 +11,4 @@ subdirs-y += f71869ad
 subdirs-y += f81865f
 subdirs-y += f81866d
 subdirs-y += f81803a
+subdirs-y += f81966d

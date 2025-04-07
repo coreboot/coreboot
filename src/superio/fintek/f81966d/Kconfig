@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config SUPERIO_FINTEK_F81966D
+	bool
+	select SUPERIO_FINTEK_COMMON_PRE_RAM

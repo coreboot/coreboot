@@ -1,0 +1,92 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+
+#ifndef SUPERIO_FINTEK_F81966_H
+#define SUPERIO_FINTEK_F81966_H
+
+/*
+ * Datasheet:
+ *		- Name: F81966D/A, Release Date: Oct 2023, Version: V0.21P
+ */
+
+/* General registers */
+#define LDN_REG					0x07
+#define PORT_SELECT_REGISTER	0x27
+#define MULTI_FUNC_SEL1_REG		0x28
+#define MULTI_FUNC_SEL3_REG		0x29
+#define GPIO_FUNC_SEL_REG		0x2A /* differs on bank: 0=11/10 1=13/12 2=15/14 3=17/16 */
+#define MULTI_FUNC_SEL4_REG		0x2B
+#define MULTI_FUNC_SEL5_REG		0x2C
+#define IRQ_SHARE_REGISTER	0xF0
+#define FIFO_SEL_MODE		0xF6
+
+/* Logical Device Numbers (LDN) */
+#define F81966D_SP1	0x10	/* UART1 */
+#define F81966D_SP2	0x11	/* UART2 */
+#define F81966D_SP3	0x12	/* UART3 */
+#define F81966D_SP4	0x13	/* UART4 */
+#define F81966D_SP5	0x14	/* UART5 */
+#define F81966D_SP6	0x15	/* UART6 */
+#define F81966D_PP	0x03	/* Parallel Port */
+#define F81966D_HWM	0x04	/* Hardware Monitor */
+#define F81966D_KBC	0x05	/* Keyboard/Mouse */
+#define F81966D_GPIO	0x06	/* General Purpose I/O (GPIO) */
+#define F81966D_WDT	0x07	/* Watchdog */
+#define F81966D_PME	0x0A	/* Power Management Events (PME) */
+#define F81966D_SPI	0x0F	/* SPI */
+
+/* Register addresses for HWM */
+/* Choose between AMD and Intel */
+#define HWM_AMD_TSI_ADDR		0x08
+#define HWM_AMD_TSI_CONTROL_REG		0x0A
+/* Set temp sensors type */
+#define TEMP_SENS_TYPE_REG		0x6B
+/* FAN prog sel */
+#define HWM_FAN3_CONTROL		0x9A
+#define HWM_FAN_SEL			0x94
+#define HWM_FAN_MODE			0x96
+#define HWM_FAN2_TEMP_MAP_SEL		0xBF
+/* Fan 2 - 4 Boundaries */
+#define HWM_FAN2_BOUND1			0xB6
+#define HWM_FAN2_BOUND2			0xB7
+#define HWM_FAN2_BOUND3			0xB8
+#define HWM_FAN2_BOUND4			0xB9
+/* Fan 2 - 5 Segment speeds */
+#define HWM_FAN2_SEG1_SPEED_COUNT	0xBA
+#define HWM_FAN2_SEG2_SPEED_COUNT	0xBB
+#define HWM_FAN2_SEG3_SPEED_COUNT	0xBC
+#define HWM_FAN2_SEG4_SPEED_COUNT	0xBD
+#define HWM_FAN2_SEG5_SPEED_COUNT	0xBE
+
+/* Register addresses for GPIO */
+/* GPIO registers */
+#define GPIO0X_OUTPUT_ENABLE_REGISTER	0xF0
+#define GPIO1X_OUTPUT_ENABLE_REGISTER	0xE0
+#define GPIO2X_OUTPUT_ENABLE_REGISTER	0xD0
+#define GPIO3X_OUTPUT_ENABLE_REGISTER	0xC0
+#define GPIO4X_OUTPUT_ENABLE_REGISTER	0xB0
+#define GPIO5X_OUTPUT_ENABLE_REGISTER	0xA0
+#define GPIO6X_OUTPUT_ENABLE_REGISTER	0x90
+#define GPIO7X_OUTPUT_ENABLE_REGISTER	0x80
+#define GPIO8X_OUTPUT_ENABLE_REGISTER	0x88
+#define GPIO9X_OUTPUT_ENABLE_REGISTER	0x98
+#define GPIO0X_OUTPUT_DATA_REGISTER		0xF1
+#define GPIO1X_OUTPUT_DATA_REGISTER		0xE1
+#define GPIO2X_OUTPUT_DATA_REGISTER		0xD1
+#define GPIO3X_OUTPUT_DATA_REGISTER		0xC1
+#define GPIO4X_OUTPUT_DATA_REGISTER		0xB1
+#define GPIO5X_OUTPUT_DATA_REGISTER		0xA1
+#define GPIO6X_OUTPUT_DATA_REGISTER		0x91
+#define GPIO7X_OUTPUT_DATA_REGISTER		0x81
+#define GPIO8X_OUTPUT_DATA_REGISTER		0x89
+#define GPIO9X_OUTPUT_DATA_REGISTER		0x99
+#define GPIO0X_DRIVE_ENABLE_REGISTER	0xF3
+#define GPIO1X_DRIVE_ENABLE_REGISTER	0xE3
+#define GPIO3X_DRIVE_ENABLE_REGISTER	0xC3
+#define GPIO4X_DRIVE_ENABLE_REGISTER	0xB3
+#define GPIO5X_DRIVE_ENABLE_REGISTER	0xA3
+#define GPIO6X_DRIVE_ENABLE_REGISTER	0x93
+#define GPIO7X_DRIVE_ENABLE_REGISTER	0x83
+#define GPIO8X_DRIVE_ENABLE_REGISTER	0x8B
+#define GPIO9X_DRIVE_ENABLE_REGISTER	0x9B
+
+#endif /* SUPERIO_FINTEK_F81966_H */

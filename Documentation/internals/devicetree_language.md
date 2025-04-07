@@ -444,7 +444,7 @@ end
 * Usage: `drq 0x<register #> = <drq line>`
 
 Drq is used to configure a legacy DMA Request line register for a device
-on a legacy bus - ISA/LPC/eSPI.
+on a legacy bus - ISA/LPC.
 
 The drq configuration is only allowed inside a pnp block.
 

@@ -4,6 +4,7 @@
 #include <acpi/acpigen.h>
 #include <baseboard/gpio.h>
 #include <baseboard/variants.h>
+#include <bootstate.h>
 #include <device/device.h>
 #include <ec/ec.h>
 #include <soc/ramstage.h>
@@ -27,6 +28,12 @@ void __weak variant_update_soc_chip_config(struct soc_intel_pantherlake_config *
 
 static void mainboard_init(void *chip_info)
 {
+	baseboard_devtree_update();
+}
+
+/* Must happen before MPinit */
+static void mainboard_early(void *unused)
+{
 	struct pad_config *padbased_table;
 	const struct pad_config *base_pads;
 	size_t base_num;
@@ -37,8 +44,9 @@ static void mainboard_init(void *chip_info)
 	fw_config_gpio_padbased_override(padbased_table);
 	gpio_configure_pads_with_padbased(padbased_table);
 	free(padbased_table);
-	baseboard_devtree_update();
 }
+
+BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_EXIT, mainboard_early, NULL);
 
 void __weak baseboard_devtree_update(void)
 {

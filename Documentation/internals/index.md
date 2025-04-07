@@ -10,5 +10,5 @@ programming APIs internal to coreboot
 
 coreboot devicetree <devicetree.md>
 coreboot devicetree language <devicetree_language.md>
-
+Chip Operations <chip_operations.md>
 ```

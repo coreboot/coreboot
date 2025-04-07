@@ -973,11 +973,11 @@ The pci device type defines a PCI or PCIe device on the PCI logical bus.
 Resources for all PCI devices are assigned automatically, or must be
 assigned in code if they're non-standard.
 
-Currently, only a single segment is supported, but there is work to make
-multiple different segments supported, each with a bus 0. Because the
-bus is not specified, It's assumed that all pci devices that are not
-behind a pci bridge device are on bus 0. If there are additional pci
-busses in a chip, they can be added behind their bridge device.
+Only a single segment group is supported per domain, but there can be multiple
+domains to support the case of multiple segment groups, each with a bus 0.
+Because the bus is not specified, It's assumed that all pci devices that are
+not behind a pci bridge device are on bus 0. If there are additional pci busses
+in a chip, they can be added behind their bridge device.
 
 Examples:
 

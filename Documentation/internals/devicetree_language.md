@@ -690,6 +690,8 @@ static.c:
 * Introduced in: Initial sconfig implementation, pre coreboot 4.0
 * Usage: `device I2c <identifier> [alias <alias ID>] <status modifier> ... end`
 
+The identifier is the device's address encoded as hexadecimal number.
+
 Example:
 
 ```text

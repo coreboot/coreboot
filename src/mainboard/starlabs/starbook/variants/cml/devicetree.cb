@@ -34,6 +34,11 @@ chip soc/intel/cannonlake
 	register "PchPmSlpSusMinAssert"		= "3"				# 1s
 	register "PchPmSlpAMinAssert"		= "3"				# 98ms
 
+	# GPE configuration
+	register "gpe0_dw0"			= "PMC_GPP_B"
+	register "gpe0_dw1"			= "PMC_GPP_C"
+	register "gpe0_dw2"			= "PMC_GPP_E"
+
 	# PCIe Clock
 	register "PcieClkSrcClkReq[0]"		= "PCIE_CLK_NOTUSED"
 	register "PcieClkSrcClkReq[2]"		= "PCIE_CLK_NOTUSED"

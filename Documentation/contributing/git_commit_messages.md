@@ -13,14 +13,14 @@ to go over everything again. There are other tutorials that cover that.
 ## Line length
 
 - The subject line should be <= 65 characters, with an absolute maximum
-  of 75 characters
-- Prose in the commit message should be <= 75 characters
-- If reflowing prose to 75 characters can reduce the length of the
+  of 72 characters
+- Prose in the commit message should be <= 72 characters
+- If reflowing prose to 72 characters can reduce the length of the
   commit message by 2 or more lines, please reflow it. Using the entire
-  75 characters on a line when reasonable is recommended, but not
+  72 characters on a line when reasonable is recommended, but not
   required.
 - Non-prose text in the body in the commit message does not need to be
-  wrapped at 75 characters. Examples: URLs, compiler output, or poetry.
+  wrapped at 72 characters. Examples: URLs, compiler output, or poetry.
 
 ## Both Subject & body
 

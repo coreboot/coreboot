@@ -1,2 +1,2 @@
-convert the configuration DW0/1 registers value from an inteltool dump
-to coreboot macros. `go`
+Convert the inteltool register dump to gpio.h with GPIO configuration
+for porting coreboot to your motherboard. `Go`

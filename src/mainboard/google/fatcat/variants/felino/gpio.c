@@ -206,8 +206,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI(GPP_E01, NONE, PLTRST),
 	/* GPP_E02:     NC  */
 	PAD_NC(GPP_E02, NONE),
-	/* GPP_E03:     NC */
-	PAD_NC(GPP_E03, NONE),
+	/* GPP_E03:     EC_SYNC_IRQ */
+	PAD_CFG_GPI_APIC(GPP_E03, NONE, PLTRST, LEVEL, INVERT),
 	/* GPP_E05:     NC */
 	PAD_NC(GPP_E05, NONE),
 	/* GPP_E06:     GPP_E06 */

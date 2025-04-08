@@ -26,7 +26,7 @@
 /* Used to gate SoC's SLP_S0# signal */
 #define GPIO_SLP_S0_GATE	GPP_F23
 #elif CONFIG(BOARD_GOOGLE_FELINO)
- #define EC_SYNC_IRQ	0 /* TODO */
+ #define EC_SYNC_IRQ	GPP_E03_IRQ
  #define GPIO_PCH_WP	0 /* TODO */
 /* Used to gate SoC's SLP_S0# signal */
 #define GPIO_SLP_S0_GATE	GPP_D03

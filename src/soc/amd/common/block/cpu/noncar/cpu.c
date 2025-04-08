@@ -1,10 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <amdblocks/cpu.h>
+#include <amdblocks/mca.h>
 #include <arch/cpuid.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/cpuid.h>
+#include <cpu/amd/microcode.h>
 #include <cpu/amd/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <smbios.h>
@@ -99,4 +101,15 @@ unsigned int get_reserved_phys_addr_bits(void)
 
 	return (cpuid_ebx(CPUID_EBX_MEM_ENCRYPT) & CPUID_EBX_MEM_ENCRYPT_ADDR_BITS_MASK) >>
 			CPUID_EBX_MEM_ENCRYPT_ADDR_BITS_SHIFT;
+}
+
+void amd_cpu_init(struct device *dev)
+{
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_MCA_COMMON))
+		check_mca();
+
+	set_cstate_io_addr();
+
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_UCODE))
+		amd_apply_microcode_patch();
 }

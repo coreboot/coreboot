@@ -31,8 +31,10 @@
 #define   EC4_TBT_PWREN		BIT(0)
 
 #define EC_GPIO_7_ADDR		0xA7
+#define   EC7_DT_WLAN_EN	BIT(6)
 #define   EC7_SSD_HDD_SW	BIT(5)
 #define   EC7_ODD_SSD_SW	BIT(4)
+#define   EC7_DT_WLAN_SW	BIT(3)
 #define   EC7_CAM1_EN		BIT(0)
 
 #define EC_GPIO_8_ADDR		0xA8
@@ -110,7 +112,6 @@ static void configure_ec_gpio(void)
 	uint8_t tmp;
 
 	tmp = ec_read(EC_GPIO_2_ADDR);
-	printk(BIOS_SPEW, "A2: Write reg [0x%02x] = 0x%02x\n", EC_GPIO_2_ADDR, tmp);
 	if (CONFIG(ENABLE_EVAL_CARD)) {
 		tmp |= EC2_EVAL_SLOT_PWREN;
 		if (CONFIG(ENABLE_EVAL_19V)) {
@@ -122,21 +123,44 @@ static void configure_ec_gpio(void)
 		tmp &= ~EC2_EVAL_SLOT_PWREN;
 		tmp &= ~EC2_EVAL_19V_EN;
 	}
+
+	if (CONFIG(PCIE_DT_SLOT))
+		tmp |= EC2_DT_PWREN;
+
 	printk(BIOS_SPEW, "Write reg [0x%02x] = 0x%02x\n", EC_GPIO_2_ADDR, tmp);
 	ec_write(EC_GPIO_2_ADDR, tmp);
 
+	tmp = ec_read(EC_GPIO_3_ADDR);
+	tmp |= EC3_WLAN_RST_AUX | EC3_WWAN_RST_AUX | EC3_SD_RST_AUX;
+	tmp |= EC3_DT_RST | EC3_LOM_RST_AUX | EC3_EVAL_RST_AUX | EC3_TBT_RST;
+	printk(BIOS_SPEW, "Write reg [0x%02x] = 0x%02x\n", EC_GPIO_3_ADDR, tmp);
+	ec_write(EC_GPIO_3_ADDR, tmp);
+
+	//TBT pwr EN (GPP 4~7)
+	tmp = ec_read(EC_GPIO_4_ADDR);
+	tmp |= EC4_TBT_PWREN;
+	printk(BIOS_SPEW, "Write reg [0x%02x] = 0x%02x\n", EC_GPIO_4_ADDR, tmp);
+	ec_write(EC_GPIO_4_ADDR, tmp);
+
 	tmp = ec_read(EC_GPIO_7_ADDR);
-	printk(BIOS_SPEW, "A7: Write reg [0x%02x] = 0x%02x\n", EC_GPIO_7_ADDR, tmp);
 	if (CONFIG(ENABLE_M2_SSD1)) {
 		tmp |= (EC7_ODD_SSD_SW | EC7_SSD_HDD_SW);
 	} else {
 		tmp &= ~(EC7_ODD_SSD_SW | EC7_SSD_HDD_SW);
 	}
+
+	if (CONFIG(PCIE_DT_SLOT)) {
+		tmp &= ~(EC7_DT_WLAN_SW);
+		tmp |= EC7_DT_WLAN_EN;
+	} else { // XGBE_WWAN_WLAN
+		tmp &= ~(EC7_DT_WLAN_EN);
+		tmp |= EC7_DT_WLAN_SW;
+	}
+
 	printk(BIOS_SPEW, "Write reg [0x%02x] = 0x%02x\n", EC_GPIO_7_ADDR, tmp);
 	ec_write(EC_GPIO_7_ADDR, tmp);
 
 	tmp = ec_read(EC_GPIO_8_ADDR);
-	printk(BIOS_SPEW, "A8: Write reg [0x%02x] = 0x%02x\n", EC_GPIO_8_ADDR, tmp);
 	if (CONFIG(ENABLE_M2_SSD1)) {
 		tmp |= EC8_M2SSD_PWREN;
 	} else {

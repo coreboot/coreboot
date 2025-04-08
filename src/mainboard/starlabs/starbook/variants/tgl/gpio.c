@@ -42,7 +42,7 @@ const struct pad_config gpio_table[] = {
 	/* SSD */
 	PAD_NC(GPP_D8, NONE),						/* Clock Request 3 */
 	PAD_CFG_GPO(GPP_A11, 1, PLTRST),				/* Reset */
-	PAD_CFG_GPO(GPP_D16, 1, DEEP),					/* Enable */
+	PAD_CFG_GPO(GPP_D16, 1, PLTRST),				/* Enable */
 
 	/* SATA */
 	PAD_CFG_NF(GPP_A12, UP_20K, DEEP, NF1),				/* PEDET */

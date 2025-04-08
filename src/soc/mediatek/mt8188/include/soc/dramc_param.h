@@ -98,10 +98,4 @@ struct dramc_param {
 	struct dramc_data dramc_datas;
 };
 
-struct dramc_param *get_dramc_param_from_blob(void *blob);
-void dump_param_header(const void *blob);
-int validate_dramc_param(const void *blob);
-int is_valid_dramc_param(const void *blob);
-int initialize_dramc_param(void *blob);
-
 #endif  /* __SOC_MEDIATEK_MT8188_DRAMC_PARAM_H__ */

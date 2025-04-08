@@ -103,5 +103,10 @@ struct ddr_base_info {
 };
 
 const struct sdram_info *get_sdram_config(void);
+struct dramc_param *get_dramc_param_from_blob(void *blob);
+void dump_param_header(const void *blob);
+int validate_dramc_param(const void *blob);
+int is_valid_dramc_param(const void *blob);
+int initialize_dramc_param(void *blob);
 
 #endif

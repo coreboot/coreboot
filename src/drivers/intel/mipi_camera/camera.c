@@ -930,10 +930,9 @@ static void camera_fill_ssdt(const struct device *dev)
 {
 	struct drivers_intel_mipi_camera_config *config = dev->chip_info;
 	const char *scope = NULL;
-	const struct device *pdev;
+	const struct device *pdev = dev->upstream->dev;
 
 	if (config->has_power_resource) {
-		pdev = dev->upstream->dev;
 		if (!pdev || !pdev->enabled)
 			return;
 
@@ -957,7 +956,6 @@ static void camera_fill_ssdt(const struct device *dev)
 		write_i2c_camera_device(dev, scope);
 		break;
 	case DEVICE_PATH_GENERIC:
-		pdev = dev->upstream->dev;
 		scope = acpi_device_scope(pdev);
 		if (!scope)
 			return;
@@ -976,11 +974,12 @@ static void camera_fill_ssdt(const struct device *dev)
 	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */
 
-	if (dev->path.type == DEVICE_PATH_PCI) {
-		printk(BIOS_INFO, "%s: %s PCI address 0%x\n", acpi_device_path(dev),
-		       dev->chip_ops->name, dev->path.pci.devfn);
+	if (dev->path.type == DEVICE_PATH_GENERIC) {
+		printk(BIOS_INFO, "%s: %s at PCI %02x.%01x\n", acpi_device_path(pdev),
+		       dev->chip_ops->name, PCI_SLOT(pdev->path.pci.devfn),
+		       PCI_FUNC(pdev->path.pci.devfn));
 	} else {
-		printk(BIOS_INFO, "%s: %s I2C address 0%xh\n", acpi_device_path(dev),
+		printk(BIOS_INFO, "%s: %s at I2C 0x%02x\n", acpi_device_path(dev),
 		       dev->chip_ops->name, dev->path.i2c.device);
 	}
 }

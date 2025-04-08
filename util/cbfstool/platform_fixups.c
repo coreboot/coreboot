@@ -109,7 +109,7 @@ static int qualcomm_fixup(struct buffer *buffer, size_t offset)
 }
 
 /*
- * MediaTek bootblock.bin layout (see util/mtkheader/gen-bl-img.py):
+ * MediaTek bootblock.bin layout (see util/mediatek/gen-bl-img.py):
  *	header		2048 bytes
  *	gfh info	176 bytes, where bytes 32-35 (in little endian) is the
  *			total size excluding the header (gfh info + data + hash)

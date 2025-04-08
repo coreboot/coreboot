@@ -91,6 +91,6 @@ $(DRAM_CBFS)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
 cbfs-files-y += $(DRAM_CBFS)
 
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
-	./util/mtkheader/gen-bl-img.py mt8183 sf $< $@
+	./util/mediatek/gen-bl-img.py mt8183 sf $< $@
 
 endif

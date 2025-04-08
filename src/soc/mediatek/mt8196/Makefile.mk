@@ -135,6 +135,6 @@ $(FSP_RAMSTAGE_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(FSP_RAMSTAGE_CBFS)
 
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
-	./util/mtkheader/gen-bl-img.py mt8196 sf $< $@
+	./util/mediatek/gen-bl-img.py mt8196 sf $< $@
 
 endif

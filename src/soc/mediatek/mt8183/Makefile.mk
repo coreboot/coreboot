@@ -96,6 +96,6 @@ CPPFLAGS_common += -Isrc/soc/mediatek/mt8183/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/include
 
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
-	./util/mtkheader/gen-bl-img.py mt8183 emmc $< $@
+	./util/mediatek/gen-bl-img.py mt8183 emmc $< $@
 
 endif

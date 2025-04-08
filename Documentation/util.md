@@ -87,9 +87,11 @@ image for testing purposes and for working on firmware. `Bash`
 * __marvell__ - Add U-Boot boot loader for Marvell ARMADA38X `C`
 * __[me_cleaner](https://github.com/corna/me_cleaner)__ - Tool for
 partial deblobbing of Intel ME/TXE firmware images `Python`
+* __mediatek__
+	* gen-bl-img.py - Generate MediaTek bootloader header.
+`Python3`
 * __mma__ - Memory Margin Analysis automation tests `Bash`
 * __msrtool__ - Dumps chipset-specific MSR registers. `C`
-* __mtkheader__ - Generate MediaTek bootload header. `Python3`
 * __nvidia__ - nvidia blob parsers
 * __nvramtool__ - Reads and writes coreboot parameters and displaying
 information from the coreboot table in CMOS/NVRAM. `C`

@@ -39,6 +39,6 @@ ifneq ($(wildcard $($(DRAM_CBFS)-file)),)
 	cbfs-files-y += $(DRAM_CBFS)
 endif
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
-	./util/mtkheader/gen-bl-img.py mt8189 sf $< $@
+	./util/mediatek/gen-bl-img.py mt8189 sf $< $@
 
 endif

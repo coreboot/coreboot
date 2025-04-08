@@ -81,6 +81,7 @@ config SOC_AMD_GLINDA
 	select SOC_AMD_COMMON_FSP_PCI			# TODO: Check if this is still correct
 	select SOC_AMD_COMMON_FSP_PRELOAD_FSPS
 	select SOC_AMD_COMMON_ROMSTAGE_LEGACY_DMA_FIXUP
+	select SOC_FILL_CPU_CACHE_INFO
 	select SSE2
 	select UDK_2017_BINDING
 	select USE_DDR5

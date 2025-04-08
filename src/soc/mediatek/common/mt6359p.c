@@ -50,7 +50,7 @@ static void mt6359p_write(u32 reg, u32 data)
 	pmif_arb->write(pmif_arb, 0, reg, data);
 }
 
-static u32 mt6359p_read_field(u32 reg, u32 mask, u32 shift)
+u32 mt6359p_read_field(u32 reg, u32 mask, u32 shift)
 {
 	return pmif_arb->read_field(pmif_arb, 0, reg, mask, shift);
 }

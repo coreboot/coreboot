@@ -67,6 +67,10 @@ fw_config
 		option ISH_DISABLE		0
 		option ISH_ENABLE		1
 	end
+	field PSU 25
+		option PSU_USBC			0
+		option PSU_BJ			1
+	end
 end
 
 chip soc/intel/pantherlake

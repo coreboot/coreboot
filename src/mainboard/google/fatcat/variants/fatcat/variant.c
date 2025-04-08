@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <baseboard/variants.h>
+#include <ec/google/chromeec/ec.h>
 #include <fsp/api.h>
 #include <fw_config.h>
 #include <sar.h>
@@ -83,4 +84,12 @@ void variant_update_soc_memory_init_params(FSPM_UPD *memupd)
 		m_cfg->PchHdaSdiEnable[0] = true;
 		m_cfg->PchHdaSdiEnable[1] = false;
 	}
+}
+
+bool variant_is_barrel_charger_present(void)
+{
+	if (fw_config_probe(FW_CONFIG(PSU, PSU_BJ)))
+		return google_chromeec_is_barrel_charger_present();
+	else
+		return false;
 }

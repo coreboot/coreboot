@@ -50,10 +50,22 @@ const struct cpu_tdp_power_limits power_optimized_limits[] = {
 	},
 };
 
+/*
+ * Placeholder to check if variant has support for barrel jack for powering
+ * on the device.
+ *
+ * Most of the chromebook device is powering on with USB-C hence, unless overridden
+ * by some variant, assume barrel jack not present.
+ */
+__weak bool variant_is_barrel_charger_present(void)
+{
+	return false;
+}
+
 void baseboard_devtree_update(void)
 {
 	/* Don't optimize the power limit if booting with barrel attached */
-	if (CONFIG(BOARD_GOOGLE_MODEL_FATCAT) && google_chromeec_is_barrel_charger_present())
+	if (variant_is_barrel_charger_present())
 		return;
 
 	if (!google_chromeec_is_battery_present())

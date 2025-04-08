@@ -88,6 +88,7 @@ image for testing purposes and for working on firmware. `Bash`
 * __[me_cleaner](https://github.com/corna/me_cleaner)__ - Tool for
 partial deblobbing of Intel ME/TXE firmware images `Python`
 * __mediatek__
+	* check-pi-img.py - Check `PI_IMG` firmware. `Python3`
 	* gen-bl-img.py - Generate MediaTek bootloader header.
 `Python3`
 * __mma__ - Memory Margin Analysis automation tests `Bash`

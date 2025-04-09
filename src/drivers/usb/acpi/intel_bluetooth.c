@@ -110,6 +110,9 @@ void acpi_device_intel_bt(const struct acpi_gpio *enable_gpio,
  *		}
  *		Method (_ON, 0, NotSerialized)
  *		{
+ *			If ((\_SB.PCI0.GBTE() == 1))
+ *				Return (1)
+ *			}
  *			\_SB.PCI0.SBTE(1)
  *		}
  *		Method (_OFF, 0, NotSerialized)
@@ -126,7 +129,7 @@ void acpi_device_intel_bt(const struct acpi_gpio *enable_gpio,
  *				\_SB.PCI0.BTRK (One)
  *				Sleep (RDLY)
  *				Release (\_SB.PCI0.CNMT)
-			}
+ *			}
  *		}
  *	}
  */
@@ -149,6 +152,16 @@ void acpi_device_intel_bt(const struct acpi_gpio *enable_gpio,
 		acpigen_write_method("_ON", 0);
 		{
 			if (enable_gpio->pin_count) {
+				acpigen_write_store();
+				acpigen_emit_namestring("\\_SB.PCI0.GBTE");
+				acpigen_emit_byte(LOCAL0_OP);
+
+				acpigen_write_if_lequal_op_int(LOCAL0_OP, 1);
+				{
+					acpigen_write_return_integer(1);
+				}
+				acpigen_pop_len();
+
 				acpigen_emit_namestring("\\_SB.PCI0.SBTE");
 				acpigen_emit_byte(1);
 			}

@@ -233,6 +233,7 @@ chip soc/intel/alderlake
 				register "customized_leds" = "0x05af"
 				register "wake" = "GPE0_DW2_14"	# GPP_F14
 				register "device_index" = "0"
+				register "enable_aspm_l1_2" = "1"
 				register "add_acpi_dma_property" = "true"
 				device pci 00.0 on end
 			end

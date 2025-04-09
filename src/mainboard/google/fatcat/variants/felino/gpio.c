@@ -182,9 +182,9 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_D15:     NC */
 	PAD_NC(GPP_D15, NONE),
 	/* GPP_D16:     PCH_DMIC_CLK1 */
-	PAD_CFG_NF(GPP_D16, NONE, DEEP, NF2),
+	PAD_CFG_NF(GPP_D16, NONE, DEEP, NF3),
 	/* GPP_D17:     PCH_DMIC_DATA1 */
-	PAD_CFG_NF(GPP_D17, NONE, DEEP, NF2),
+	PAD_CFG_NF(GPP_D17, NONE, DEEP, NF3),
 	/* GPP_D18:     PCIE_CLKREQ_SD_N */
 	PAD_CFG_NF(GPP_D18, NONE, DEEP, NF1),
 	/* GPP_D19:     NC */

@@ -1030,6 +1030,7 @@ check_member(mtk_spm_regs, ssusb_pwr_con, 0x0EA8);
 check_member(mtk_spm_regs, cpueb_pwr_con, 0x0EB0);
 check_member(mtk_spm_regs, mfg0_pwr_con, 0x0EB4);
 check_member(mtk_spm_regs, mfg3_pwr_con, 0x0EC0);
+check_member(mtk_spm_regs, sspm_sram_con, 0x0F04);
 check_member(mtk_spm_regs, pwr_status, 0x0F40);
 check_member(mtk_spm_regs, edp_tx_pwr_con, 0x0F70);
 

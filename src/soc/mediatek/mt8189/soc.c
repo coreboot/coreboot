@@ -5,6 +5,7 @@
 #include <soc/dramc_info.h>
 #include <soc/emi.h>
 #include <soc/mcupm.h>
+#include <soc/sspm.h>
 #include <symbols.h>
 
 void bootmem_platform_add_ranges(void)
@@ -20,6 +21,7 @@ static void soc_read_resources(struct device *dev)
 static void soc_init(struct device *dev)
 {
 	mcupm_init();
+	sspm_init();
 }
 
 static struct device_operations soc_ops = {

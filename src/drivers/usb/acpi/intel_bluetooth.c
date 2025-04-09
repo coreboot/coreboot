@@ -49,6 +49,11 @@ void acpi_device_intel_bt(const struct acpi_gpio *enable_gpio,
 			  bool audio_offload)
 {
 /*
+ *	Name (_S0W, 3)
+ */
+	acpigen_write_name_integer("_S0W", ACPI_DEVICE_SLEEP_D3_HOT);
+
+/*
  *	Name (RDLY, 0x69)
  */
 	acpigen_write_name_integer("RDLY", 0x69);
@@ -230,32 +235,6 @@ void acpi_device_intel_bt(const struct acpi_gpio *enable_gpio,
 	{
 		acpigen_write_package(1);
 		acpigen_emit_namestring("BTRT");
-	}
-	acpigen_pop_len();
-
-/*
- *	Method (_PS0, 0, NotSerialized)
- *	{
- *		\_SB.PCI0.SBTE(1)
- *	}
- */
-	acpigen_write_method("_PS0", 0);
-	{
-		acpigen_emit_namestring("\\_SB.PCI0.SBTE");
-		acpigen_emit_byte(1);
-	}
-	acpigen_pop_len();
-
-/*
- *	Name (_PS3, Package (0x01)
- *	{
- *		\_SB.PCI0.SBTE(0)
- *	}
- */
-	acpigen_write_method("_PS3", 0);
-	{
-		acpigen_emit_namestring("\\_SB.PCI0.SBTE");
-		acpigen_emit_byte(0);
 	}
 	acpigen_pop_len();
 

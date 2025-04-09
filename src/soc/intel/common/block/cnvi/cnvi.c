@@ -113,6 +113,9 @@ static void cnvw_fill_ssdt(const struct device *dev)
  *		Method(_ON, 0)
  *		{
  *			If (CondRefOf (\_SB.PCI0.CNVC)) {
+ *				If ((\_SB.PCI0.CNVS() == 1)) {
+ *					Return (1)
+ *				}
  *				\_SB.PCI0.CNVS(1)
  *			}
  *		}
@@ -194,6 +197,17 @@ static void cnvw_fill_ssdt(const struct device *dev)
 		{
 			acpigen_write_if_cond_ref_of("\\_SB.PCI0.CNVC");
 			{
+
+				acpigen_write_store();
+				acpigen_emit_namestring("\\_SB.PCI0.CNVS");
+				acpigen_emit_byte(LOCAL0_OP);
+
+				acpigen_write_if_lequal_op_int(LOCAL0_OP, 1);
+				{
+					acpigen_write_return_integer(1);
+				}
+				acpigen_pop_len();
+
 				acpigen_emit_namestring("\\_SB.PCI0.CNVC");
 				acpigen_emit_byte(1);
 			}

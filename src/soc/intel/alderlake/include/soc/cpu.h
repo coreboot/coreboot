@@ -25,6 +25,7 @@ enum adl_cpu_type {
 	ADL_N,
 	ADL_P,
 	ADL_S,
+	ASL,
 	RPL_HX,
 	RPL_P,
 	RPL_S,

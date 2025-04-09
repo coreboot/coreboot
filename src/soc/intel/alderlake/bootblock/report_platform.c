@@ -81,6 +81,9 @@ static struct {
 	{ PCI_DID_INTEL_ADL_S_ID_12, "Alderlake-S (2+0)" },
 	{ PCI_DID_INTEL_ADL_S_ID_13, "Alderlake-S" },
 	{ PCI_DID_INTEL_ADL_S_ID_14, "Alderlake-S" },
+	{ PCI_DID_INTEL_ASL_ID_1, "Amstonlake" },
+	{ PCI_DID_INTEL_ASL_ID_2, "Amstonlake" },
+	{ PCI_DID_INTEL_ASL_ID_3, "Amstonlake" },
 	{ PCI_DID_INTEL_RPL_HX_ID_1, "Raptorlake-HX (8+16)" },
 	{ PCI_DID_INTEL_RPL_HX_ID_2, "Raptorlake-HX (8+12)" },
 	{ PCI_DID_INTEL_RPL_HX_ID_3, "Raptorlake-HX (8+8)" },
@@ -110,6 +113,7 @@ static struct {
 } pch_table[] = {
 	{ PCI_DID_INTEL_ADP_M_N_ESPI_1, "Alderlake-N SKU" },
 	{ PCI_DID_INTEL_ADP_M_N_ESPI_2, "Alderlake-N SKU" },
+	{ PCI_DID_INTEL_ADP_M_N_ESPI_10, "Amstonlake SKU" },
 	{ PCI_DID_INTEL_ADP_S_ESPI_H610E, "AlderLake-S H610E" },
 	{ PCI_DID_INTEL_ADP_S_ESPI_Q670E, "AlderLake-S Q670E" },
 	{ PCI_DID_INTEL_ADP_S_ESPI_R680E, "AlderLake-S R680E" },

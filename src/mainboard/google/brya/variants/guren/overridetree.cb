@@ -21,6 +21,10 @@ fw_config
 		option WIFI_SAR_ID_INTEL_CONVERTIBLE		 0
 		option WIFI_SAR_ID_INTEL_CLAMSHELL		 1
 	end
+	field STYLUS 15
+		option STYLUS_ABSENT		0
+		option STYLUS_PRESENT		1
+	end
 	field WFC 17 18
 		option WFC_ABSENT		0
 		option WFC_PRESENT		1
@@ -387,6 +391,21 @@ chip soc/intel/alderlake
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 38 on
 					probe TOUCHSCREEN_SOURCE TOUCHSCREEN_FTSC1000
+				end
+			end
+
+			chip drivers/generic/gpio_keys
+				register "name" = ""PENH""
+				register "gpio" = "ACPI_GPIO_INPUT_ACTIVE_LOW(GPP_F13)"
+				register "key.wake_gpe" = "GPE0_DW2_15"
+				register "key.wakeup_route" = "WAKEUP_ROUTE_SCI"
+				register "key.wakeup_event_action" = "EV_ACT_DEASSERTED"
+				register "key.dev_name" = ""EJCT""
+				register "key.linux_code" = "SW_PEN_INSERTED"
+				register "key.linux_input_type" = "EV_SW"
+				register "key.label" = ""pen_eject""
+				device generic 0 on
+					probe STYLUS STYLUS_PRESENT
 				end
 			end
 		end #I2C1

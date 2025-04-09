@@ -27,6 +27,13 @@ static const struct pad_config lte_disable_pads[] = {
 	PAD_NC(GPP_H23, NONE),
 };
 
+static const struct pad_config stylus_disable_pads[] = {
+	/* F13 : SOC_PEN_DETECT_R_ODL */
+	PAD_NC_LOCK(GPP_F13, NONE, LOCK_CONFIG),
+	/* F15 : SOC_PEN_DETECT_ODL */
+	PAD_NC_LOCK(GPP_F15, NONE, LOCK_CONFIG),
+};
+
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 {
 	if (!fw_config_probe(FW_CONFIG(DB_USB, DB_HDMI_LTE))
@@ -43,5 +50,11 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		printk(BIOS_INFO, "Disable LTE GPIO pins.\n");
 		gpio_padbased_override(padbased_table, lte_disable_pads,
 						ARRAY_SIZE(lte_disable_pads));
+	}
+
+	if (fw_config_probe(FW_CONFIG(STYLUS, STYLUS_ABSENT))) {
+		printk(BIOS_INFO, "Disable Stylus GPIO pins.\n");
+		gpio_padbased_override(padbased_table, stylus_disable_pads,
+						ARRAY_SIZE(stylus_disable_pads));
 	}
 }

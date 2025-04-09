@@ -29,6 +29,7 @@ fw_config
 		option TOUCHSCREEN_UNPROVISIONED	0
 		option TOUCHSCREEN_ELAN0001		1
 		option TOUCHSCREEN_ILIT2901		2
+		option TOUCHSCREEN_FTSC1000		3
 	end
 end
 
@@ -367,6 +368,25 @@ chip soc/intel/alderlake
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 41 on
 					probe TOUCHSCREEN_SOURCE TOUCHSCREEN_ILIT2901
+				end
+			end
+
+			chip drivers/i2c/hid
+				register "generic.hid" = ""FTSC1000""
+				register "generic.desc" = ""G2TOUCH Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_C7_IRQ)"
+				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
+				register "generic.reset_delay_ms" = "150"
+				register "generic.reset_off_delay_ms" = "5"
+				register "generic.stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C6)"
+				register "generic.stop_delay_ms" = "30"
+				register "generic.stop_off_delay_ms" = "10"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
+				register "generic.enable_delay_ms" = "45"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 38 on
+					probe TOUCHSCREEN_SOURCE TOUCHSCREEN_FTSC1000
 				end
 			end
 		end #I2C1

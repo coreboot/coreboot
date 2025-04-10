@@ -17,9 +17,9 @@
 #include <smp/node.h>
 #include "haswell.h"
 
-static void update_save_state(int cpu, uintptr_t curr_smbase,
-				uintptr_t staggered_smbase,
-				struct smm_relocation_params *relo_params)
+static void update_save_state(uintptr_t curr_smbase,
+			      uintptr_t staggered_smbase,
+			      struct smm_relocation_params *relo_params)
 {
 	u32 smbase;
 	u32 iedbase;
@@ -120,7 +120,7 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 	}
 
 	/* Make appropriate changes to the save state map. */
-	update_save_state(cpu, curr_smbase, staggered_smbase, relo_params);
+	update_save_state(curr_smbase, staggered_smbase, relo_params);
 
 	/* Write PRMRR and SMRR MSRs based on indicated support. */
 	mtrr_cap = rdmsr(MTRR_CAP_MSR);

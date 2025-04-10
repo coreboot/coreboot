@@ -64,6 +64,9 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C6, NONE, PWROK, NF1),				/* SML Clock */
 	PAD_CFG_NF(GPP_C7, NONE, PWROK, NF1),				/* SML Data */
 
+	/* Webcam */
+	PAD_CFG_TERM_GPO(GPP_D19, 1, UP_20K, DEEP),			/* Power */
+
 	/* Retimer */
 	PAD_NC(GPP_E18, NATIVE),					/* TBT0 TXD */
 	PAD_NC(GPP_E19, NATIVE),					/* TBT0 RXD */
@@ -230,8 +233,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D17, NONE),
 	/* D18:	Not Connected			*/
 	PAD_NC(GPP_D18, NONE),
-	/* D19:	GPPC_D_19_WFCAM_PD_N		*/
-	PAD_CFG_TERM_GPO(GPP_D19, 1, UP_20K, DEEP),
 
 	/* E0:	SATAXPCIE_0_SATAGP_0		*/
 	PAD_NC(GPP_E0, NONE),

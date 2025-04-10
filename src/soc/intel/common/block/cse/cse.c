@@ -1298,6 +1298,9 @@ static void me_reset_with_count(void)
 
 static void cse_set_state(struct device *dev)
 {
+	if (CONFIG(SOC_INTEL_CSE_LITE_SYNC_BY_PAYLOAD))
+		return;
+
 	/* (CS)ME Disable Command */
 	struct me_disable_command {
 		struct mkhi_hdr hdr;

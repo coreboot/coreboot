@@ -28,6 +28,7 @@ struct device_operations usb_xdci_ops = {
 };
 
 static const unsigned short pci_device_ids[] = {
+	PCI_DID_INTEL_WCL_XDCI,
 	PCI_DID_INTEL_PTL_H_XDCI,
 	PCI_DID_INTEL_PTL_U_H_XDCI,
 	PCI_DID_INTEL_MTL_XDCI,

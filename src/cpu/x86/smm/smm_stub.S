@@ -9,8 +9,8 @@
  * found in smm.h.
  */
 
-#include <arch/rom_segs.h>
 #include <cpu/x86/cr.h>
+#include <cpu/x86/gdt.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic_def.h>
 #include <cpu/x86/64bit/entry64.inc>
@@ -94,7 +94,7 @@ untampered_lapic:
 	movl	%eax, %cr0
 
 	/* Enable protected mode */
-	ljmpl	$ROM_CODE_SEG, $smm_trampoline32
+	ljmpl	$GDT_CODE_SEG, $smm_trampoline32
 
 .align 4
 smm_relocate_gdt:
@@ -125,7 +125,7 @@ smm_relocate_gdt_end:
 .global smm_trampoline32
 smm_trampoline32:
 	/* Use flat data segment */
-	movw	$ROM_DATA_SEG, %ax
+	movw	$GDT_DATA_SEG, %ax
 	movw	%ax, %ds
 	movw	%ax, %es
 	movw	%ax, %ss

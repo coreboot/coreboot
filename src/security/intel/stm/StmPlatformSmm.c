@@ -4,6 +4,7 @@
 #include <security/intel/stm/SmmStm.h>
 #include <security/intel/stm/StmPlatformResource.h>
 #include <security/tpm/tspi.h>
+#include <cpu/x86/gdt.h>
 #include <cpu/x86/smm.h>
 #include <cpu/x86/msr.h>
 
@@ -11,7 +12,6 @@
 #include <console/console.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <arch/rom_segs.h>
 
 /*
  * Load STM image to MSEG
@@ -109,11 +109,11 @@ void setup_smm_descriptor(void *smbase, int32_t apic_id, int32_t entry32_off)
 	psd->acpi_rsdp = 0;
 	psd->bios_hw_resource_requirements_ptr =
 		(uint64_t)((uintptr_t)get_stm_resource());
-	psd->smm_cs = ROM_CODE_SEG;
-	psd->smm_ds = ROM_DATA_SEG;
-	psd->smm_ss = ROM_DATA_SEG;
-	psd->smm_other_segment = ROM_DATA_SEG;
-	psd->smm_tr = SMM_TASK_STATE_SEG;
+	psd->smm_cs = GDT_CODE_SEG;
+	psd->smm_ds = GDT_DATA_SEG;
+	psd->smm_ss = GDT_DATA_SEG;
+	psd->smm_other_segment = GDT_DATA_SEG;
+	psd->smm_tr = GDT_TASK_STATE_SEG;
 
 	// At this point the coreboot smm_stub is relative to the default
 	// smbase and not the one for the smi handler in tseg.  So we have

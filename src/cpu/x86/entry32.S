@@ -11,7 +11,7 @@
  *
  */
 
-#include <arch/rom_segs.h>
+#include <cpu/x86/gdt.h>
 #include <cpu/x86/cr.h>
 #include <cpu/x86/post_code.h>
 
@@ -33,7 +33,7 @@ bootblock_protected_mode_entry:
 
 	post_code(POSTCODE_ENTER_PROTECTED_MODE)
 
-	movw	$ROM_DATA_SEG, %ax
+	movw	$GDT_DATA_SEG, %ax
 	movw	%ax, %ds
 	movw	%ax, %es
 	movw	%ax, %ss

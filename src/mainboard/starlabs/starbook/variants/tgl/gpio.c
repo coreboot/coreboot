@@ -37,10 +37,10 @@ const struct pad_config gpio_table[] = {
 	/* Touchpad */
 	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),				/* Data */
 	PAD_CFG_NF(GPP_C17, NONE, DEEP, NF1),				/* Clock */
-	PAD_CFG_GPI_APIC_LOW(GPP_C8, NONE, PLTRST),			/* Interrupt */
+	PAD_CFG_GPI_APIC(GPP_C8, NONE, DEEP, LEVEL, INVERT),		/* Interrupt */
 
 	/* SSD */
-	PAD_NC(GPP_D8, NONE),						/* Clock Request 3 */
+	PAD_CFG_NF(GPP_D8, NONE, DEEP, NF1),				/* Clock Request 3 */
 	PAD_CFG_GPO(GPP_A11, 1, PLTRST),				/* Reset */
 	PAD_CFG_GPO(GPP_D16, 1, PLTRST),				/* Enable */
 
@@ -68,8 +68,8 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_TERM_GPO(GPP_D19, 1, UP_20K, DEEP),			/* Power */
 
 	/* Retimer */
-	PAD_NC(GPP_E18, NATIVE),					/* TBT0 TXD */
-	PAD_NC(GPP_E19, NATIVE),					/* TBT0 RXD */
+	PAD_CFG_NF(GPP_E18, NONE, DEEP, NF2),				/* TBT0 TXD */
+	PAD_CFG_NF(GPP_E19, NONE, DEEP, NF2),				/* TBT0 RXD */
 	PAD_CFG_GPO(GPP_A23, 0, DEEP),					/* Force Power */
 
 	/* High-Definition Audio */
@@ -77,14 +77,14 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_R1, NATIVE, DEEP, NF1),				/* Sync */
 	PAD_CFG_NF(GPP_R2, NATIVE, DEEP, NF1),				/* Data Output */
 	PAD_CFG_NF(GPP_R3, NATIVE, DEEP, NF1),				/* Data Input */
-	PAD_NC(GPP_R4, NONE),						/* Reset */
+	PAD_CFG_NF(GPP_R4, NATIVE, DEEP, NF1),				/* Reset */
 
 	/* PCH */
 	PAD_CFG_NF(GPP_H18, NONE, DEEP, NF1),				/* C10 Gate */
 	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),				/* Platform Reset */
 	PAD_CFG_NF(GPP_B0, NONE, DEEP, NF1),				/* Vendor ID 0 */
 	PAD_CFG_NF(GPP_B1, NONE, DEEP, NF1),				/* Vendor ID 1 */
-	PAD_NC(GPP_B2, NONE),						/* Processor Hot */
+	PAD_CFG_GPI_SCI(GPP_B2, NONE, PLTRST, EDGE_SINGLE, INVERT),	/* Processor Hot */
 
 	/* TPM */
 	PAD_CFG_GPI_APIC_LOW(GPP_C14, NONE, PLTRST),			/* Interrupt */

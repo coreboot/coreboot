@@ -34,8 +34,6 @@ const struct spmi_device spmi_dev[] = {
 	},
 };
 
-const size_t spmi_dev_cnt = ARRAY_SIZE(spmi_dev);
-
 int spmi_config_master(void)
 {
 	/* Software reset */
@@ -80,4 +78,9 @@ void pmif_spmi_config(struct pmif *arb)
 void pmif_spmi_iocfg(void)
 {
 	SET32_BITFIELDS(&mtk_iocfg_bm->drv_cfg2, SPMI_SCL, 0x2, SPMI_SDA, 0x2);
+}
+
+size_t spmi_dev_cnt(void)
+{
+	return ARRAY_SIZE(spmi_dev);
 }

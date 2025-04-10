@@ -114,8 +114,6 @@ static const uint32_t lat_limit[2][23] = {
 			    0x1e, 0x0, 0x3e6 },
 };
 
-const size_t spmi_dev_cnt = ARRAY_SIZE(spmi_dev);
-
 static struct mtk_spmi_mst_reg *get_mst_reg(struct pmif *arb)
 {
 	if (arb->mstid == SPMI_MASTER_1)
@@ -256,7 +254,7 @@ static int spmi_mst_init(struct pmif *arb)
 	if (pmif_spmi_config_master(arb))
 		return -1;
 
-	for (i = 0; i < spmi_dev_cnt; i++) {
+	for (i = 0; i < spmi_dev_cnt(); i++) {
 		if ((arb->mstid % 2) == spmi_dev[i].mstid) {
 			spmi_cali_rd_clock_polarity(arb, &spmi_dev[i]); /* spmi_cali */
 			spmi_config_slave(arb, &spmi_dev[i]);
@@ -350,4 +348,9 @@ int pmif_spmi_init(struct pmif *arb)
 	}
 
 	return 0;
+}
+
+size_t spmi_dev_cnt(void)
+{
+	return ARRAY_SIZE(spmi_dev);
 }

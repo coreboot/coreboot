@@ -63,7 +63,7 @@ static int spmi_cali_rd_clock_polarity(struct pmif *pmif_arb)
 		bool success = true;
 		SET32_BITFIELDS(&mtk_spmi_mst->mst_sampl, SAMPL_CK_DLY,
 				cali_data[i].dly, SAMPL_CK_POL, cali_data[i].pol);
-		for (j = 0; j < spmi_dev_cnt; j++) {
+		for (j = 0; j < spmi_dev_cnt(); j++) {
 			if (spmi_read_check(pmif_arb, spmi_dev[j].slvid) != 0) {
 				success = false;
 				break;

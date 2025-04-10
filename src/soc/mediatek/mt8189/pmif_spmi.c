@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only OR MIT */
 
-#include <console/console.h>
-#include <delay.h>
 #include <device/mmio.h>
 #include <gpio.h>
 #include <soc/pll.h>
@@ -19,8 +17,6 @@ const struct spmi_device spmi_dev[] = {
 		.type_id = BUCK_CPU_ID,
 	},
 };
-
-const size_t spmi_dev_cnt = ARRAY_SIZE(spmi_dev);
 
 int spmi_config_master(void)
 {
@@ -43,4 +39,9 @@ void pmif_spmi_iocfg(void)
 {
 	gpio_set_driving(GPIO(SPMI_P_SCL), GPIO_DRV_10_MA);
 	gpio_set_driving(GPIO(SPMI_P_SDA), GPIO_DRV_10_MA);
+}
+
+size_t spmi_dev_cnt(void)
+{
+	return ARRAY_SIZE(spmi_dev);
 }

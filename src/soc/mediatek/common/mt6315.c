@@ -101,7 +101,7 @@ void mt6315_init(void)
 
 	init_pmif_arb();
 
-	for (i = 0; i < spmi_dev_cnt; i++)
+	for (i = 0; i < spmi_dev_cnt(); i++)
 		mt6315_wdt_enable(spmi_dev[i].slvid);
 
 	mt6315_init_setting();

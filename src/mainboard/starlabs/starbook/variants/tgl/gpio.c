@@ -90,12 +90,24 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C0, NONE, DEEP, NF1),				/* Clock */
 	PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1),				/* Data */
 
+	/* Config Straps 									[ Low      / High     ] */
+	PAD_CFG_GPO(GPP_B14, 0, RSMRST),				/* Top Swap		[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_B18, 0, RSMRST),				/* Reboot Support	[ Enabled  / Disabled ] */
+	PAD_CFG_GPO(GPP_C2, 1, RSMRST),					/* TLS Confidentiality	[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_B23, 0, DEEP),					/* XTAL			[ 38.4Mhz  / 19.2MHz  ] */
+	PAD_CFG_GPO(GPP_C5, 0, RSMRST),					/* eSPI			[ Enabled  / Disabled ] */
+	PAD_CFG_GPO(GPP_E6, 0, RSMRST),					/* JTAG ODT		[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_E21, 0, RSMRST),				/* TBT LSX #1		[ 1.8V     / 3.3V     ] */
+	PAD_CFG_GPO(GPP_H0, 0, RSMRST),					/* BFX Strap 2 Bit 2	[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_H1, 0, RSMRST),					/* BFX Strap 2 Bit 3	[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_H2, 0, RSMRST),					/* BFX Strap 2 Bit 4	[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_F7, 0, RSMRST),					/* MCRO LDO		[ Disabled / Bypass   ] */
+	PAD_CFG_GPO(GPD7, 0, RSMRST),					/* RTC Clock Delay	[ Disabled / 95ms     ] */
+
 	/* GPD2:	LAN_WAKE#		*/
 	PAD_NC(GPD2, NONE),
 	/* GPD6:	SIO_SLP_A#		*/
 	PAD_NC(GPD6, NONE),
-	/* GPD7:	PCH_TBT_PERST#		*/
-	PAD_CFG_GPO(GPD7, 0, PLTRST),
 	/* GPD9:	SIO_SLP_WLAN#		*/
 	PAD_NC(GPD9, NONE),
 	/* GPD10:	SIO_SLP_S5#		*/
@@ -144,16 +156,12 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B10, NONE),
 	/* B12:	PM_SLP_S0_N			*/
 	PAD_NC(GPP_B12, NONE),
-	/* B14:	FPS_RST_N			*/
-	PAD_CFG_GPO(GPP_B14, 1, PLTRST),
 	/* B15:	Not Connected			*/
 	PAD_NC(GPP_B15, NONE),
 	/* B16:	M2_PCH_SSD_PWREN		*/
 	PAD_NC(GPP_B16, NONE),
 	/* B17:	Not Connected			*/
 	PAD_NC(GPP_B17, NONE),
-	/* B18:	UF_CAM_STROBE			*/
-	PAD_CFG_GPO(GPP_B18, 0, DEEP),
 	/* B19:	GSPI1_CS0_FPS_N			*/
 	PAD_NC(GPP_B19, NONE),
 	/* B20:	GSPI1_CLK_FPS			*/
@@ -162,17 +170,11 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B21, NONE),
 	/* B22:	GSPI1_MOSI_FPS			*/
 	PAD_CFG_GPO(GPP_B22, 0, DEEP),
-	/* B23:	CPU_CLKFREQ			*/
-	PAD_CFG_GPO(GPP_B23, 0, DEEP),
 
-	/* C2:	SMBALERT_N			*/
-	PAD_CFG_GPO(GPP_C2, 0, DEEP),
 	/* C3:	SML0_CLK			*/
 	PAD_NC(GPP_C3, NONE),
 	/* C4:	SML0_DATA			*/
 	PAD_NC(GPP_C4, NONE),
-	/* C5:	SML0ALERT_IN			*/
-	PAD_CFG_GPO(GPP_C5, 0, DEEP),
 	/* C9:	Not Connected			*/
 	PAD_NC(GPP_C9, NONE),
 	/* C10:	Not Connected			*/
@@ -243,8 +245,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E4, NONE),
 	/* E5:	Not Connected			*/
 	PAD_NC(GPP_E5, NONE),
-	/* E6:	THC0_SPI1_RST_N_TCH_PNL		*/
-	PAD_NC(GPP_E6, NONE),
 	/* E7:	EC_SMI_LP_N			*/
 	PAD_NC(GPP_E7, NONE),
 	/* E8:	EC_SLP_S0IX_N			*/
@@ -267,8 +267,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E17, NONE),
 	/* E20:	Not Connected			*/
 	PAD_NC(GPP_E20, NONE),
-	/* E21:	TBT_LSX1_RXD			*/
-	PAD_NC(GPP_E21, NATIVE),
 	/* E22:	Not Connected			*/
 	PAD_NC(GPP_E22, NONE),
 	/* E23:	Not Connected			*/
@@ -280,8 +278,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F5, NONE),
 	/* F6:					*/
 	PAD_NC(GPP_F6, NONE),
-	/* F7:	BIOS_REC			*/
-	PAD_CFG_GPO(GPP_F7, 1, PLTRST),
 	/* F8:	Not Connected			*/
 	PAD_NC(GPP_F8, NONE),
 	/* F9:	Not Connected			*/
@@ -315,12 +311,6 @@ const struct pad_config gpio_table[] = {
 	/* F23:	Not Connected			*/
 	PAD_NC(GPP_F23, NONE),
 
-	/* H0:	GPPC_H0_M2_SSD_RST_N		*/
-	PAD_CFG_GPO(GPP_H0, 0, DEEP),
-	/* H1:	GPPC_H_1			*/
-	PAD_CFG_GPO(GPP_H1, 0, DEEP),
-	/* H2:	GPPC_H_2			*/
-	PAD_CFG_GPO(GPP_H2, 0, DEEP),
 	/* H3:	Not Connected			*/
 	PAD_NC(GPP_H3, NONE),
 	/* H4:	GSENSOR_I2C_SDA			*/

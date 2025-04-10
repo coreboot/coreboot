@@ -150,7 +150,7 @@ __realmode_call:
 	mov	%ax, %es
 	mov	%ax, %fs
 	mov	%ax, %gs
-	mov	$0x40, %ax
+	mov	$RAM_DATA_ACPI_SEG, %ax
 	mov	%ax, %ds
 	pop	%ax
 

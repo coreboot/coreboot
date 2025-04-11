@@ -2,6 +2,7 @@
 
 #include <spi-generic.h>
 #include <spi_flash.h>
+#include <soc/qcom_qup_se.h>
 #include <soc/qspi_common.h>
 #include <soc/qupv3_spi_common.h>
 
@@ -29,7 +30,7 @@ const struct spi_ctrlr_buses spi_ctrlr_bus_map[] = {
 	{
 		.ctrlr = &spi_qup_ctrlr,
 		.bus_start = 0,
-		.bus_end = 15,
+		.bus_end = QUPV3_SE_MAX - 1,
 	},
 };
 

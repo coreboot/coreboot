@@ -33,6 +33,11 @@
 #define APU_DMAC4_BASE			0xfedd0000
 #define APU_UART4_BASE			0xfedd1000
 
+#define APU_I3C0_BASE			0xfedd2000
+#define APU_I3C1_BASE			0xfedd3000
+#define APU_I3C2_BASE			0xfedd4000
+#define APU_I3C3_BASE			0xfedd6000
+
 #endif /* ENV_X86 */
 
 #define FLASH_BASE_ADDR			((0xffffffff - CONFIG_ROM_SIZE) + 1)

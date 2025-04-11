@@ -27,3 +27,8 @@ config SOC_AMD_COMMON_BLOCK_I2C3_TPM_SHARED_WITH_PSP
 	  connected, which is shared between x86 and PSP. This is necessary to
 	  ensure proper communication with I2C peripherals connected to such
 	  bus.
+
+config SOC_AMD_COMMON_BLOCK_I3C
+	bool
+	help
+	  Select this option to add FCH I3C controller functions to the build.

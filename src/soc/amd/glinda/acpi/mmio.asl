@@ -3,6 +3,7 @@
 /* TODO: Update for Glinda */
 
 #include <soc/amd/common/acpi/aoac.asl>
+#include <soc/amd_pci_int_defs.h>
 #include <soc/aoac_defs.h>
 #include <soc/gpio.h>
 #include <soc/iomap.h>
@@ -403,6 +404,274 @@ Device (I2C3)
 #if !CONFIG(SOC_AMD_COMMON_BLOCK_I2C3_TPM_SHARED_WITH_PSP)
 	AOAC_DEVICE(FCH_AOAC_DEV_I2C3, 0)
 #endif
+}
+
+Device (I3C0) {
+	Name (STAT, 0x0)
+
+	/* Only return I3C controller HID "AMDI5017" when device is enabled in devicetree */
+	Method (_HID, 0x0) {
+		If (STAT) {
+			Return ("AMDI5017")
+		} Else {
+			Return ("AMDI0016")
+		}
+	}
+	Name (_CID, "MIPI0100")
+	Name (_UID, 0x0)
+	Method (_CRS, 0) {
+		Local0 = ResourceTemplate() {
+			Interrupt (
+				ResourceConsumer,
+				Edge,
+				ActiveHigh,
+				Exclusive, , , IRQR)
+			{ 0 }
+			Memory32Fixed (ReadWrite, APU_I3C0_BASE, 0x1000)
+		}
+		CreateDWordField (Local0, IRQR._INT, IRQN)
+		If (PICM) {
+			IRQN = II20
+		} Else {
+			IRQN = PI20
+		}
+		If (IRQN == PIRQ_NC) {
+			Return (ResourceTemplate() {
+				Memory32Fixed (ReadWrite, APU_I3C0_BASE, 0x1000)
+			})
+		} Else {
+			Return (Local0)
+		}
+	}
+	Method(_DSD, 0, Serialized){
+		Return(Package() {
+			ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+			Package () {
+				"mipi-i3c-sw-interface-revision", 0x10000, // 1.0
+			},
+			ToUUID("dbb8e3e6-5886-4ba6-8795-1319f52a966b"), // Hierarchical Extension
+			Package () {
+				"mipi-i3c-ctrlr-0-subproperties", CTR0,
+			}
+		})
+	}
+
+	Method(CTR0, 0, Serialized){
+		Return(Package() {
+			ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+			Package () {
+			"mipi-i3c-sw-interface-revision", 0x10000, // 1.0
+			}
+		})
+	}
+	Method (_STA, 0x0, NotSerialized)
+	{
+		Return (STAT)
+	}
+
+	AOAC_DEVICE(FCH_AOAC_DEV_I3C0, 0)
+}
+
+Device (I3C1) {
+	Name (STAT, 0x0)
+
+	/* Only return I3C controller HID "AMDI5017" when device is enabled in devicetree */
+	Method (_HID, 0x0) {
+		If (STAT) {
+			Return ("AMDI5017")
+		} Else {
+			Return ("AMDI0016")
+		}
+	}
+	Name (_CID, "MIPI0100")
+	Name (_UID, 0x1)
+	Method (_CRS, 0) {
+		Local0 = ResourceTemplate() {
+			Interrupt (
+				ResourceConsumer,
+				Edge,
+				ActiveHigh,
+				Exclusive, , , IRQR)
+			{ 0 }
+			Memory32Fixed (ReadWrite, APU_I3C1_BASE, 0x1000)
+		}
+		CreateDWordField (Local0, IRQR._INT, IRQN)
+		If (PICM) {
+			IRQN = II21
+		} Else {
+			IRQN = PI21
+		}
+		If (IRQN == PIRQ_NC) {
+			Return (ResourceTemplate() {
+				Memory32Fixed (ReadWrite, APU_I3C1_BASE, 0x1000)
+			})
+		} Else {
+			Return (Local0)
+		}
+	}
+	Method(_DSD, 0, Serialized){
+		Return(Package() {
+			ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+			Package () {
+				"mipi-i3c-sw-interface-revision", 0x10000, // 1.0
+			},
+			ToUUID("dbb8e3e6-5886-4ba6-8795-1319f52a966b"), // Hierarchical Extension
+			Package () {
+				"mipi-i3c-ctrlr-0-subproperties", CTR0,
+			}
+		})
+	}
+
+	Method(CTR0, 0, Serialized){
+		Return(Package() {
+			ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+			Package () {
+			"mipi-i3c-sw-interface-revision", 0x10000, // 1.0
+			}
+		})
+	}
+	Method (_STA, 0x0, NotSerialized)
+	{
+		Return (STAT)
+	}
+
+	AOAC_DEVICE(FCH_AOAC_DEV_I3C1, 0)
+}
+
+Device (I3C2) {
+	Name (STAT, 0x0)
+
+	/* Only return I3C controller HID "AMDI5017" when device is enabled in devicetree */
+	Method (_HID, 0x0) {
+		If (STAT) {
+			Return ("AMDI5017")
+		} Else {
+			Return ("AMDI0016")
+		}
+	}
+	Name (_CID, "MIPI0100")
+	Name (_UID, 0x2)
+	Method (_CRS, 0) {
+		Local0 = ResourceTemplate() {
+			Interrupt (
+				ResourceConsumer,
+				Edge,
+				ActiveHigh,
+				Exclusive, , , IRQR)
+			{ 0 }
+			Memory32Fixed (ReadWrite, APU_I3C2_BASE, 0x1000)
+		}
+		CreateDWordField (Local0, IRQR._INT, IRQN)
+		If (PICM) {
+			IRQN = II22
+		} Else {
+			IRQN = PI22
+		}
+		If (IRQN == PIRQ_NC) {
+			Return (ResourceTemplate() {
+				Memory32Fixed (ReadWrite, APU_I3C2_BASE, 0x1000)
+			})
+		} Else {
+			Return (Local0)
+		}
+	}
+
+	Method(_DSD, 0, Serialized){
+		Return(Package() {
+			ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+			Package () {
+				"mipi-i3c-sw-interface-revision", 0x10000, // 1.0
+			},
+			ToUUID("dbb8e3e6-5886-4ba6-8795-1319f52a966b"), // Hierarchical Extension
+			Package () {
+				"mipi-i3c-ctrlr-0-subproperties", CTR0,
+			}
+		})
+	}
+
+	Method(CTR0, 0, Serialized){
+		Return(Package() {
+			ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+			Package () {
+			"mipi-i3c-sw-interface-revision", 0x10000, // 1.0
+			}
+		})
+	}
+	Method (_STA, 0x0, NotSerialized)
+	{
+		Return (STAT)
+	}
+
+	AOAC_DEVICE(FCH_AOAC_DEV_I3C2, 0)
+}
+
+Device (I3C3)
+{
+	Name (STAT, 0x0)
+
+	/* Only return I3C controller HID "AMDI5017" when device is enabled in devicetree */
+	Method (_HID, 0x0) {
+		If (STAT) {
+			Return ("AMDI5017")
+		} Else {
+			Return ("AMDI0016")
+		}
+	}
+	Name (_CID, "MIPI0100")
+	Name (_UID, 0x3)
+	Method (_CRS, 0) {
+		Local0 = ResourceTemplate() {
+			Interrupt (
+				ResourceConsumer,
+				Edge,
+				ActiveHigh,
+				Exclusive, , , IRQR)
+			{ 0 }
+			Memory32Fixed (ReadWrite, APU_I3C3_BASE, 0x1000)
+		}
+		CreateDWordField (Local0, IRQR._INT, IRQN)
+		If (PICM) {
+			IRQN = II23
+		} Else {
+			IRQN = PI23
+		}
+		If (IRQN == PIRQ_NC) {
+			Return (ResourceTemplate() {
+				Memory32Fixed (ReadWrite, APU_I3C3_BASE, 0x1000)
+			})
+		} Else {
+			Return (Local0)
+		}
+	}
+
+	Method (_STA, 0x0, NotSerialized)
+	{
+		Return (STAT)
+	}
+
+	Method(_DSD, 0, Serialized){
+		Return(Package() {
+			ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+			Package () {
+				"mipi-i3c-sw-interface-revision", 0x10000, // 1.0
+			},
+			ToUUID("dbb8e3e6-5886-4ba6-8795-1319f52a966b"), // Hierarchical Extension
+			Package () {
+				"mipi-i3c-ctrlr-0-subproperties", CTR0,
+			}
+		})
+	}
+
+	Method(CTR0, 0, Serialized){
+		Return(Package() {
+			ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+			Package () {
+			"mipi-i3c-sw-interface-revision", 0x10000, // 1.0
+			}
+		})
+	}
+
+	AOAC_DEVICE(FCH_AOAC_DEV_I3C3, 0)
 }
 
 Device (MISC)

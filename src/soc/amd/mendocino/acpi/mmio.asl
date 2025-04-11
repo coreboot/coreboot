@@ -402,6 +402,187 @@ Device (I2C3)
 #endif
 }
 
+Device (I3C0) {
+	Name (STAT, 0x0)
+
+	/* Only return I3C controller HID "AMDI0015" when device is enabled in devicetree */
+	Method (_HID, 0x0) {
+		If (STAT) {
+			Return ("AMDI0015")
+		} Else {
+			Return ("AMDI0016")
+		}
+	}
+	Name (_UID, 0x0)
+	Method (_CRS, 0) {
+		Local0 = ResourceTemplate() {
+			Interrupt (
+				ResourceConsumer,
+				Edge,
+				ActiveHigh,
+				Exclusive, , , IRQR)
+			{ 0 }
+			Memory32Fixed (ReadWrite, APU_I3C0_BASE, 0x1000)
+		}
+		CreateDWordField (Local0, IRQR._INT, IRQN)
+		If (PICM) {
+			IRQN = II20
+		} Else {
+			IRQN = PI20
+		}
+		If (IRQN == 0x1f) {
+			Return (ResourceTemplate() {
+				Memory32Fixed (ReadWrite, APU_I3C0_BASE, 0x1000)
+			})
+		} Else {
+			Return (Local0)
+		}
+	}
+
+	Method (_STA, 0x0, NotSerialized)
+	{
+		Return (STAT)
+	}
+
+	AOAC_DEVICE(FCH_AOAC_DEV_I3C0, 0)
+}
+
+Device (I3C1) {
+	Name (STAT, 0x0)
+
+	/* Only return I3C controller HID "AMDI0015" when device is enabled in devicetree */
+	Method (_HID, 0x0) {
+		If (STAT) {
+			Return ("AMDI0015")
+		} Else {
+			Return ("AMDI0016")
+		}
+	}
+	Name (_UID, 0x1)
+	Method (_CRS, 0) {
+		Local0 = ResourceTemplate() {
+			Interrupt (
+				ResourceConsumer,
+				Edge,
+				ActiveHigh,
+				Exclusive, , , IRQR)
+			{ 0 }
+			Memory32Fixed (ReadWrite, APU_I3C1_BASE, 0x1000)
+		}
+		CreateDWordField (Local0, IRQR._INT, IRQN)
+		If (PICM) {
+			IRQN = II21
+		} Else {
+			IRQN = PI21
+		}
+		If (IRQN == 0x1f) {
+			Return (ResourceTemplate() {
+				Memory32Fixed (ReadWrite, APU_I3C1_BASE, 0x1000)
+			})
+		} Else {
+			Return (Local0)
+		}
+	}
+
+	Method (_STA, 0x0, NotSerialized)
+	{
+		Return (STAT)
+	}
+
+	AOAC_DEVICE(FCH_AOAC_DEV_I3C1, 0)
+}
+
+Device (I3C2) {
+	Name (STAT, 0x0)
+
+	/* Only return I3C controller HID "AMDI0015" when device is enabled in devicetree */
+	Method (_HID, 0x0) {
+		If (STAT) {
+			Return ("AMDI0015")
+		} Else {
+			Return ("AMDI0016")
+		}
+	}
+	Name (_UID, 0x2)
+	Method (_CRS, 0) {
+		Local0 = ResourceTemplate() {
+			Interrupt (
+				ResourceConsumer,
+				Edge,
+				ActiveHigh,
+				Exclusive, , , IRQR)
+			{ 0 }
+			Memory32Fixed (ReadWrite, APU_I3C2_BASE, 0x1000)
+		}
+		CreateDWordField (Local0, IRQR._INT, IRQN)
+		If (PICM) {
+			IRQN = II22
+		} Else {
+			IRQN = PI22
+		}
+		If (IRQN == 0x1f) {
+			Return (ResourceTemplate() {
+				Memory32Fixed (ReadWrite, APU_I3C2_BASE, 0x1000)
+			})
+		} Else {
+			Return (Local0)
+		}
+	}
+
+	Method (_STA, 0x0, NotSerialized)
+	{
+		Return (STAT)
+	}
+
+	AOAC_DEVICE(FCH_AOAC_DEV_I3C2, 0)
+}
+
+Device (I3C3)
+{
+	Name (STAT, 0x0)
+
+	/* Only return I3C controller HID "AMDI0015" when device is enabled in devicetree */
+	Method (_HID, 0x0) {
+		If (STAT) {
+			Return ("AMDI0015")
+		} Else {
+			Return ("AMDI0016")
+		}
+	}
+	Name (_UID, 0x3)
+	Method (_CRS, 0) {
+		Local0 = ResourceTemplate() {
+			Interrupt (
+				ResourceConsumer,
+				Edge,
+				ActiveHigh,
+				Exclusive, , , IRQR)
+			{ 0 }
+			Memory32Fixed (ReadWrite, APU_I3C3_BASE, 0x1000)
+		}
+		CreateDWordField (Local0, IRQR._INT, IRQN)
+		If (PICM) {
+			IRQN = II23
+		} Else {
+			IRQN = PI23
+		}
+		If (IRQN == 0x1f) {
+			Return (ResourceTemplate() {
+				Memory32Fixed (ReadWrite, APU_I3C3_BASE, 0x1000)
+			})
+		} Else {
+			Return (Local0)
+		}
+	}
+
+	Method (_STA, 0x0, NotSerialized)
+	{
+		Return (STAT)
+	}
+
+	AOAC_DEVICE(FCH_AOAC_DEV_I3C3, 0)
+}
+
 Device (MISC)
 {
 	Name (_HID, "AMD0040")

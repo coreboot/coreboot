@@ -262,4 +262,6 @@ void qupv3_fw_init(void)
 
 	qup_common_init(QUP_WRAP0_BASE);
 	qup_common_init(QUP_WRAP1_BASE);
+	if (QUP_WRAP2_BASE)
+		qup_common_init(QUP_WRAP2_BASE);
 }

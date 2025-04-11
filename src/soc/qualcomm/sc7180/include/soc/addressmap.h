@@ -34,6 +34,9 @@
 #define QUP_SERIAL11_BASE		0x00A94000
 #define QUP_WRAP1_BASE			0x00AC0000
 
+/* QUPV3_2 - Dummy Entry */
+#define QUP_WRAP2_BASE			0x00000000
+
 /*
  * USB BASE ADDRESSES
  */

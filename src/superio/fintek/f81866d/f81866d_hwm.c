@@ -48,8 +48,6 @@ void f81866d_hwm_init(struct device *dev)
 	const struct superio_fintek_f81866d_config *reg = dev->chip_info;
 	u16 port = res->base;
 
-	pnp_enter_conf_mode(dev);
-
 	/* Use AMD TSI */
 	pnp_write_hwm5_index(port, HWM_AMD_TSI_ADDR, reg->hwm_amd_tsi_addr);
 	pnp_write_hwm5_index(port, HWM_AMD_TSI_CONTROL_REG, reg->hwm_amd_tsi_control);
@@ -79,6 +77,4 @@ void f81866d_hwm_init(struct device *dev)
 	/* Set Fan control freq */
 	pnp_write_hwm5_index(port, HWM_FAN3_CONTROL, reg->hwm_fan3_control);
 	pnp_write_hwm5_index(port, HWM_FAN2_TEMP_MAP_SEL, reg->hwm_fan2_temp_map_select);
-
-	pnp_exit_conf_mode(dev);
 }

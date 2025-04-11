@@ -3,6 +3,7 @@
 #include <amdblocks/i2c.h>
 #include <console/console.h>
 #include <soc/i2c.h>
+#include <soc/iomap.h>
 #include <soc/southbridge.h>
 #include <static.h>
 #include "chip.h"

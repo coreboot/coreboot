@@ -51,34 +51,34 @@ void f81866d_hwm_init(struct device *dev)
 	pnp_enter_conf_mode(dev);
 
 	/* Use AMD TSI */
-	pnp_write_index(port, HWM_AMD_TSI_ADDR, reg->hwm_amd_tsi_addr);
-	pnp_write_index(port, HWM_AMD_TSI_CONTROL_REG, reg->hwm_amd_tsi_control);
+	pnp_write_hwm5_index(port, HWM_AMD_TSI_ADDR, reg->hwm_amd_tsi_addr);
+	pnp_write_hwm5_index(port, HWM_AMD_TSI_CONTROL_REG, reg->hwm_amd_tsi_control);
 
 	/* Set temp1 sensor to thermistor */
-	pnp_write_index(port, TEMP_SENS_TYPE_REG, reg->hwm_temp_sens_type);
+	pnp_write_hwm5_index(port, TEMP_SENS_TYPE_REG, reg->hwm_temp_sens_type);
 
 	/* Select FAN Type */
-	pnp_write_index(port, HWM_FAN_SEL, reg->hwm_fan_select);
+	pnp_write_hwm5_index(port, HWM_FAN_SEL, reg->hwm_fan_select);
 
 	/* Select FAN Mode*/
-	pnp_write_index(port, HWM_FAN_MODE, reg->hwm_fan_mode);
+	pnp_write_hwm5_index(port, HWM_FAN_MODE, reg->hwm_fan_mode);
 
 	/* Set Boundaries */
-	pnp_write_index(port, HWM_FAN2_BOUND1, reg->hwm_fan2_bound1);
-	pnp_write_index(port, HWM_FAN2_BOUND2, reg->hwm_fan2_bound2);
-	pnp_write_index(port, HWM_FAN2_BOUND3, reg->hwm_fan2_bound3);
-	pnp_write_index(port, HWM_FAN2_BOUND4, reg->hwm_fan2_bound4);
+	pnp_write_hwm5_index(port, HWM_FAN2_BOUND1, reg->hwm_fan2_bound1);
+	pnp_write_hwm5_index(port, HWM_FAN2_BOUND2, reg->hwm_fan2_bound2);
+	pnp_write_hwm5_index(port, HWM_FAN2_BOUND3, reg->hwm_fan2_bound3);
+	pnp_write_hwm5_index(port, HWM_FAN2_BOUND4, reg->hwm_fan2_bound4);
 
 	/* Set Speed */
-	pnp_write_index(port, HWM_FAN2_SEG1_SPEED_COUNT, reg->hwm_fan2_seg1_speed);
-	pnp_write_index(port, HWM_FAN2_SEG2_SPEED_COUNT, reg->hwm_fan2_seg2_speed);
-	pnp_write_index(port, HWM_FAN2_SEG3_SPEED_COUNT, reg->hwm_fan2_seg3_speed);
-	pnp_write_index(port, HWM_FAN2_SEG4_SPEED_COUNT, reg->hwm_fan2_seg4_speed);
-	pnp_write_index(port, HWM_FAN2_SEG5_SPEED_COUNT, reg->hwm_fan2_seg5_speed);
+	pnp_write_hwm5_index(port, HWM_FAN2_SEG1_SPEED_COUNT, reg->hwm_fan2_seg1_speed);
+	pnp_write_hwm5_index(port, HWM_FAN2_SEG2_SPEED_COUNT, reg->hwm_fan2_seg2_speed);
+	pnp_write_hwm5_index(port, HWM_FAN2_SEG3_SPEED_COUNT, reg->hwm_fan2_seg3_speed);
+	pnp_write_hwm5_index(port, HWM_FAN2_SEG4_SPEED_COUNT, reg->hwm_fan2_seg4_speed);
+	pnp_write_hwm5_index(port, HWM_FAN2_SEG5_SPEED_COUNT, reg->hwm_fan2_seg5_speed);
 
 	/* Set Fan control freq */
-	pnp_write_index(port, HWM_FAN3_CONTROL, reg->hwm_fan3_control);
-	pnp_write_index(port, HWM_FAN2_TEMP_MAP_SEL, reg->hwm_fan2_temp_map_select);
+	pnp_write_hwm5_index(port, HWM_FAN3_CONTROL, reg->hwm_fan3_control);
+	pnp_write_hwm5_index(port, HWM_FAN2_TEMP_MAP_SEL, reg->hwm_fan2_temp_map_select);
 
 	pnp_exit_conf_mode(dev);
 }

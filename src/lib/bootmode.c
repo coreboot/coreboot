@@ -23,9 +23,11 @@ int display_init_required(void)
 {
 	/* For vboot, honor VB2_CONTEXT_DISPLAY_INIT. */
 	if (CONFIG(VBOOT)) {
-		/* Must always select MUST_REQUEST_DISPLAY when using this
-		   function. */
-		if (!CONFIG(VBOOT_MUST_REQUEST_DISPLAY))
+		/*
+		 * Display init requires VBOOT_MUST_REQUEST_DISPLAY || VBOOT_ALWAYS_ENABLE_DISPLAY;
+		 * else assert build.
+		 */
+		if (!CONFIG(VBOOT_MUST_REQUEST_DISPLAY) && !CONFIG(VBOOT_ALWAYS_ENABLE_DISPLAY))
 			dead_code();
 		return vboot_get_context()->flags & VB2_CONTEXT_DISPLAY_INIT;
 	}

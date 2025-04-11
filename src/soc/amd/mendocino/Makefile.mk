@@ -11,6 +11,7 @@ all-y		+= i2c.c
 
 # all_x86-y adds the compilation unit to all stages that run on the x86 cores
 all_x86-y	+= gpio.c
+all_x86-y	+= i3c.c
 all_x86-y	+= uart.c
 
 bootblock-y	+= early_fch.c

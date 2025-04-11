@@ -5,6 +5,7 @@ all-y		+= reset.c
 all-y		+= config.c
 all-y		+= gpio.c
 all-y		+= i2c.c
+all-y		+= i3c.c
 all-y		+= uart.c
 
 bootblock-y	+= early_fch.c

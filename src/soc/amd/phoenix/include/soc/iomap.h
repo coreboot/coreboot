@@ -6,6 +6,7 @@
 #define I2C_MASTER_DEV_COUNT		4
 #define I2C_PERIPHERAL_DEV_COUNT	0 /* TODO: Only master for now. */
 #define I2C_CTRLR_COUNT			(I2C_MASTER_DEV_COUNT + I2C_PERIPHERAL_DEV_COUNT)
+#define I3C_CTRLR_COUNT			4
 
 #if ENV_X86
 

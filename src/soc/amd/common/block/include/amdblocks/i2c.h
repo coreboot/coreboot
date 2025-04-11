@@ -68,6 +68,11 @@ struct i2c_pad_control {
 	enum i2c_pad_rx_level rx_level;
 };
 
+struct soc_i3c_ctrlr_info {
+	uintptr_t bar;
+	const char *acpi_name;
+};
+
 void fch_i2c_pad_init(unsigned int bus,
 		      enum i2c_speed speed,
 		      const struct i2c_pad_control *ctrl);
@@ -93,5 +98,8 @@ void i2c_soc_init(void);
 
 /* Reset I2C peripherals. */
 void sb_reset_i2c_peripherals(const struct soc_i2c_peripheral_reset_info *reset_info);
+
+/* Getter function to get the SoC I3C controller information. */
+const struct soc_i3c_ctrlr_info *soc_get_i3c_ctrlr_info(size_t *num_ctrlrs);
 
 #endif /* AMD_COMMON_BLOCK_I2C_H */

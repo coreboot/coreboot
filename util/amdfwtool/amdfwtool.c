@@ -1410,24 +1410,10 @@ static void integrate_bios_firmwares(context *ctx,
 			biosdir->entries[count].address_mode = SET_ADDR_MODE_BY_TABLE(biosdir);
 			break;
 		case AMD_BIOS_APOB_NV:
-			if (fw_table[i].src) {
-				/* If source is given, use that and its size */
-				biosdir->entries[count].source = fw_table[i].src;
-				biosdir->entries[count].address_mode =
-						SET_ADDR_MODE(biosdir, AMD_ADDR_REL_BIOS);
-				biosdir->entries[count].size = fw_table[i].size;
-			} else {
-				/* Else reserve size bytes within amdfw.rom */
-				adjust_current_pointer(ctx, 0, ERASE_ALIGNMENT);
-				biosdir->entries[count].source = RUN_CURRENT(*ctx);
-				biosdir->entries[count].address_mode =
-						SET_ADDR_MODE(biosdir, AMD_ADDR_REL_BIOS);
-				biosdir->entries[count].size = ALIGN_UP(
-						fw_table[i].size, ERASE_ALIGNMENT);
-				memset(BUFF_CURRENT(*ctx), 0xff,
-						biosdir->entries[count].size);
-				adjust_current_pointer(ctx, biosdir->entries[count].size, 1);
-			}
+			biosdir->entries[count].source = fw_table[i].src;
+			biosdir->entries[count].address_mode =
+					SET_ADDR_MODE(biosdir, AMD_ADDR_REL_BIOS);
+			biosdir->entries[count].size = fw_table[i].size;
 			break;
 		case AMD_BIOS_BIN:
 			/* Don't make a 2nd copy, point to the same one */

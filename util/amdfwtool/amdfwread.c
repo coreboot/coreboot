@@ -30,10 +30,7 @@ static uint64_t relative_offset(uint32_t header_offset, uint64_t addr, uint64_t 
 	case AMD_ADDR_PHYSICAL:
 		if (addr < SPI_ROM_BASE || addr > (SPI_ROM_BASE + FILE_REL_MASK)) {
 			ERR("Invalid address(%lx) or mode(%lx)\n", addr, mode);
-			/* TODO: fix amdfwtool to program the right address/mode. In guybrush,
-			 * lots of addresses are marked as physical, but they are relative to
-			 * BIOS. Until that is fixed, just leave an error message. */
-			// exit(1);
+			exit(1);
 		}
 		return addr & FILE_REL_MASK;
 

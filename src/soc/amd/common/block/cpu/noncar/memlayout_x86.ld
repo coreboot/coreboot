@@ -130,14 +130,64 @@ MEMORY
 }
 
 SECTIONS {
-	/* Page tables need to be at a 4K boundary so align the bootblock downwards */
+	/*
+	 * AMD's PSP will verify the integrity of the BIOS Reset Image at S3 resume,
+	 * thus it must not change during execution. Having .data and .bss between
+	 * .text and .reset breaks the integrity, as .bss or .data might get modified.
+	 *
+	 * Enable ENV_SEPARATE_DATA_AND_BSS for AMD's bootblock and mark as
+	 * data_segment to place it in the second PT_LOAD area. AMDCOMPRESS will ignore
+	 * the second PT_LOAD area and discard it.
+	 */
+	. = BOOTBLOCK_ADDR & ~(16 - 1);
+	.data . : {
+		_data = .;
+		*(.data);
+		*(.data.*);
+		*(.ldata);
+		*(.ldata.*);
+		*(.sdata);
+		*(.sdata.*);
+		. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
+		_edata = .;
+		RECORD_SIZE(data)
+	} : data_segment
+
+	. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
+
+	.bss . (NOLOAD) : {
+		_bss = .;
+		*(.bss)
+		*(.bss.*)
+		*(.lbss)
+		*(.lbss.*)
+		*(.sbss)
+		*(.sbss.*)
+		. = ALIGN(ARCH_POINTER_ALIGN_SIZE);
+		_ebss = .;
+		RECORD_SIZE(bss)
+	} : data_segment
+
 	. = (BOOTBLOCK_TOP - PROGRAM_SZ) & ~(4096 - 1);
 	_bootblock = .;
 
 	INCLUDE "bootblock/lib/program.ld"
 
-	PROGRAM_SZ = SIZEOF(.text) + SIZEOF(.bss) + SIZEOF(.data);
+	/*
+	 * Add free space for a copy of the data section. The assembly code will copy
+	 * the section to .data at runtime when ENV_SEPARATE_DATA_AND_BSS is set.
+	 *
+	 * objcopy will be used during build to copy the .data to the .datacopy section.
+	 * This ensures that only *one* loadable segment is being used as bootblock.
+	 */
+	.datacopy . : {
+		_datacopy = .;
+		. += SIZEOF(.data);
+		_edatacopy = .;
+	} : to_load = 0xff
+	_data_load = LOADADDR(.datacopy);
 
+	PROGRAM_SZ = SIZEOF(.text) + SIZEOF(.data);
 	. = _X86_RESET_VECTOR - EARLYASM_SZ;
 	. = ALIGN(16);
 	BOOTBLOCK_TOP = .;
@@ -159,6 +209,7 @@ SECTIONS {
 	.reset (_X86_RESET_VECTOR) : {
 		*(.reset);
 	} >resetsection
+
 	.last_byte (BOOTBLOCK_END - 1) : {
 		BYTE(0xff);
 	} >resetsection

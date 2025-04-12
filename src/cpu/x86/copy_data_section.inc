@@ -3,9 +3,10 @@
 #if ENV_SEPARATE_DATA_AND_BSS
 
 /*
- * Copy .data section content to Cache-As-Ram.
- * This code can be included from 32 bits or 64 bits code. It also preserves
- * registers.
+ * Copy .data section content from _data_load to it's linked
+ * address. Usually that's inside Cache-As-Ram.
+ * This code can be included from 32 bits or 64 bits code.
+ * It also preserves registers by using stack.
  */
 copy_data_section:
 #if ENV_X86_64

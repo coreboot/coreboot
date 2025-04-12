@@ -274,13 +274,38 @@
 #if ENV_X86
 /* Indicates memory layout is determined with arch/x86/car.ld. */
 #define ENV_CACHE_AS_RAM		(ENV_ROMSTAGE_OR_BEFORE && !CONFIG(RESET_VECTOR_IN_RAM))
-#else
-#define ENV_CACHE_AS_RAM		0
-#endif
 
-/* Indicates if the stage uses the _data and _bss regions defined in
- * arch/x86/car.ld */
-#define ENV_SEPARATE_DATA_AND_BSS	(ENV_CACHE_AS_RAM && (ENV_BOOTBLOCK || !CONFIG(NO_XIP_EARLY_STAGES)))
+/*
+ * ENV_SEPARATE_DATA_AND_BSS:
+ * When not set .data and .bss are in the same PT_LOAD segment defined
+ * in program.ld. When set .data and .bss are in a different PT_LOAD segment,
+ * defined outside of program.ld.
+ *
+ *
+ * On Intel APL the bootblock is loaded into a 4KiB SRAM.
+ * There's no space for .data and .bss.
+ * Once the bootblock code has set up CAR it will use it for .data and .bss.
+ * The other stages are load into CAR and doesn't need separation.
+ *
+ *
+ * On Non CAR AMD platforms the bootblock is loaded into DRAM on cold boot.
+ * On S3 the loader verifies that the bootblock has the same hash as on cold boot.
+ * As it must not change .data and .bss are not part of the PT_LOAD segment and
+ * the assembly code must set up .bss and load .data.
+ *
+ *
+ * On other platforms that use Cache As RAM:
+ * By default CAR implies separate .data and .bss.
+ * The stages execute from memory mapped SPI flash and use CAR as heap.
+ */
+#define ENV_SEPARATE_DATA_AND_BSS      (ENV_BOOTBLOCK || (ENV_CACHE_AS_RAM && !CONFIG(NO_XIP_EARLY_STAGES)))
+
+#else /* !ENV_X86 */
+
+#define ENV_CACHE_AS_RAM		0
+#define ENV_SEPARATE_DATA_AND_BSS	0
+
+#endif
 
 /* Currently ramstage has heap. */
 #define ENV_HAS_HEAP_SECTION	ENV_RAMSTAGE

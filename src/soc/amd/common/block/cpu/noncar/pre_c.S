@@ -42,6 +42,9 @@ bootblock_pre_c_entry:
 
 	movl	$_eearlyram_stack, %esp
 
+	/* Copy .data section content */
+#include <cpu/x86/copy_data_section.inc>
+
 	/* Align the stack and keep aligned for call to bootblock_c_entry() */
 	and	$0xfffffff0, %esp
 	sub	$8, %esp

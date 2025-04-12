@@ -533,6 +533,30 @@ static void *new_combo_dir(context *ctx, uint32_t cookie)
 	return ptr;
 }
 
+/*
+ * For some SOC generations the APOB_NV binary seems to be treated special regarding the
+ * interpretaion of the source address. No matter the address_mode specified for the address
+ * the memory ABL always seems to the interpret the source address as MMIO address even if
+ * AMD_ADDR_REL_BIOS is specified. So for them we need to always use an MMIO address.
+ * This seems to be a bug which affects all SOCs before phoenix generation.
+ */
+static bool has_apob_nv_quirk(enum platform platform_type)
+{
+	switch (platform_type) {
+	case PLATFORM_CARRIZO:
+	case PLATFORM_STONEYRIDGE:
+	case PLATFORM_RAVEN:
+	case PLATFORM_PICASSO:
+	case PLATFORM_RENOIR:
+	case PLATFORM_CEZANNE:
+	case PLATFORM_MENDOCINO:
+	case PLATFORM_LUCIENNE:
+		return true;
+	default:
+		return false;
+	}
+}
+
 static void copy_psp_header(void *bak, void *orig)
 {
 	uint32_t count = ((psp_directory_header *)orig)->num_entries;
@@ -1410,7 +1434,24 @@ static void integrate_bios_firmwares(context *ctx,
 			biosdir->entries[count].address_mode = SET_ADDR_MODE_BY_TABLE(biosdir);
 			break;
 		case AMD_BIOS_APOB_NV:
-			biosdir->entries[count].source = fw_table[i].src;
+			if (has_apob_nv_quirk(cb_config->soc_id)) {
+				/*
+				 * once ROM3 mapping (>16MiB) is used on any SOC that
+				 * has the apob quirk, this needs to be updated, since
+				 * using an MMIO address is then not as simply as adding
+				 * the SPI_ROM_BASE offset anymore.
+				 */
+				if (fw_table[i].src + fw_table[i].size >= 16*MiB) {
+					fprintf(stderr,
+						"APOB_NV location too high (0x%lx + 0x%lx)\n",
+						fw_table[i].src, fw_table[i].size);
+					amdfwtool_cleanup(ctx);
+					exit(1);
+				}
+				biosdir->entries[count].source = fw_table[i].src + SPI_ROM_BASE; // convert to MMIO address
+			} else {
+				biosdir->entries[count].source = fw_table[i].src;
+			}
 			biosdir->entries[count].address_mode =
 					SET_ADDR_MODE(biosdir, AMD_ADDR_REL_BIOS);
 			biosdir->entries[count].size = fw_table[i].size;

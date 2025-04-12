@@ -1449,11 +1449,12 @@ static void integrate_bios_firmwares(context *ctx,
 					exit(1);
 				}
 				biosdir->entries[count].source = fw_table[i].src + SPI_ROM_BASE; // convert to MMIO address
+				biosdir->entries[count].address_mode = AMD_ADDR_PHYSICAL;
 			} else {
 				biosdir->entries[count].source = fw_table[i].src;
-			}
-			biosdir->entries[count].address_mode =
+				biosdir->entries[count].address_mode =
 					SET_ADDR_MODE(biosdir, AMD_ADDR_REL_BIOS);
+			}
 			biosdir->entries[count].size = fw_table[i].size;
 			break;
 		case AMD_BIOS_BIN:

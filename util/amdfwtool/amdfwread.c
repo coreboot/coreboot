@@ -262,11 +262,6 @@ static int amdfw_bios_dir_walk(FILE *fw, uint32_t bios_offset, uint32_t cookie, 
 			printf("%sBIOS%s: 0x%02x 0x%lx(DRAM-Address)\n",
 				indent, cookie == BHD_COOKIE ? "L1" : "L2",
 				type, current_entries[i].dest);
-		else if (type == AMD_BIOS_APOB_NV)
-			printf("%sBIOS%s: 0x%02x 0x%08lx 0x%08x\n",
-				indent, cookie == BHD_COOKIE ? "L1" : "L2",
-				type, relative_offset(bios_offset, addr, AMD_ADDR_PHYSICAL),
-				current_entries[i].size);
 		else
 			printf("%sBIOS%s: 0x%02x 0x%08lx 0x%08x\n",
 				indent, cookie == BHD_COOKIE ? "L1" : "L2",

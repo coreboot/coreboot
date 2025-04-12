@@ -52,10 +52,10 @@ AMD_FW_AB_POSITION := 0x40
 endif # ($(CONFIG_CBFS_VERIFICATION), y)
 
 MENDOCINO_FW_A_POSITION=$(call int-add, \
-	$(call get_fmap_value,FMAP_SECTION_FW_MAIN_A_START) $(AMD_FW_AB_POSITION)) \
+	$(call get_fmap_value,FMAP_SECTION_FW_MAIN_A_START) $(AMD_FW_AB_POSITION))
 
 MENDOCINO_FW_B_POSITION=$(call int-add, \
-	$(call get_fmap_value,FMAP_SECTION_FW_MAIN_B_START) $(AMD_FW_AB_POSITION)) \
+	$(call get_fmap_value,FMAP_SECTION_FW_MAIN_B_START) $(AMD_FW_AB_POSITION))
 
 MENDOCINO_FW_BODY_OFFSET := 0x100
 

@@ -1094,7 +1094,7 @@ static void create_fmap_template(char *image, int size, const char *layout_fname
 		exit(EXIT_FAILURE);
 	}
 
-	char *bbuf = "FLASH@##ROM_BASE## ##ROM_SIZE## {\n";
+	char *bbuf = "FLASH ##ROM_SIZE## {\n";
 	if (write(layout_fd, bbuf, strlen(bbuf)) < 0) {
 		perror("Could not write to file");
 		exit(EXIT_FAILURE);

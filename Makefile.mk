@@ -1098,7 +1098,6 @@ endif # ifneq($(CONFIG_IFD_CHIPSET),)
 # entire flash
 FMAP_ROM_SIZE := $(CONFIG_ROM_SIZE)
 # entire "BIOS" region (everything directly of concern to the host system)
-# relative to ROM_BASE
 FMAP_BIOS_BASE := $(call int-align, $(call int-subtract, $(CONFIG_ROM_SIZE) $(CONFIG_CBFS_SIZE)), 0x10000)
 FMAP_BIOS_SIZE := $(call int-align-down, $(shell echo $(CONFIG_CBFS_SIZE) | tr A-F a-f), 0x10000)
 # position and size of flashmap, relative to BIOS_BASE
@@ -1186,7 +1185,6 @@ DEFAULT_FLASHMAP:=$(top)/util/cbfstool/default.fmd
 # entire flash
 FMAP_ROM_SIZE := $(CONFIG_ROM_SIZE)
 # entire "BIOS" region (everything directly of concern to the host system)
-# relative to ROM_BASE
 FMAP_BIOS_BASE := 0
 FMAP_BIOS_SIZE := $(CONFIG_CBFS_SIZE)
 # position and size of flashmap, relative to BIOS_BASE

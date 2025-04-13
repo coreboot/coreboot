@@ -24,6 +24,13 @@ Device (EC)
 		PWSL = PWST
 	}
 
+	Method (EPTS, 1)
+	{
+		if (Arg0 == 3) {
+			EMBC(0x64, 2, Buffer(2) {3, 0})
+		}
+	}
+
 	/* EmbeddedControl Mutex */
 	Mutex (ECLK, 0)
 

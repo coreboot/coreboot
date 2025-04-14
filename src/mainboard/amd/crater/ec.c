@@ -63,6 +63,10 @@
 #define   ECA_SMBUS1_EN		BIT(1)
 #define   ECA_SMBUS0_EN		BIT(0)
 
+#define EC_GPIO_B_ADDR		0xAB
+#define   ECB_TPNL_EN		BIT(2)
+#define   ECB_TPNL_PWR_EN	BIT(0)
+
 #define EC_GPIO_C_ADDR		0xAC
 #define   ECC_TPNL_BUF_EN	BIT(6)
 #define   ECC_TPAD_BUF_EN	BIT(5)
@@ -141,6 +145,20 @@ static void configure_ec_gpio(void)
 	}
 	printk(BIOS_SPEW, "Write reg [0x%02x] = 0x%02x\n", EC_GPIO_8_ADDR, tmp);
 	ec_write(EC_GPIO_8_ADDR, tmp);
+
+	/* eDP Touch panel  */
+	if(CONFIG(ENABLE_EDP)) {
+		tmp = ec_read(EC_GPIO_9_ADDR);
+		tmp &= ~(EC9_MUX0_S1);
+		tmp |= EC9_MUX0_S0;
+		printk(BIOS_SPEW, "Write reg [0x%02x] = 0x%02x\n", EC_GPIO_9_ADDR, tmp);
+		ec_write(EC_GPIO_9_ADDR, tmp);
+
+		tmp  = ec_read(EC_GPIO_B_ADDR);
+		tmp |= ECB_TPNL_EN | ECB_TPNL_EN;
+		printk(BIOS_SPEW, "Write reg [0x%02x] = 0x%02x\n", EC_GPIO_B_ADDR, tmp);
+		ec_write(EC_GPIO_B_ADDR, tmp);
+	}
 }
 
 static const struct soc_amd_gpio RevA_gpio_set_stage_ram[] = {

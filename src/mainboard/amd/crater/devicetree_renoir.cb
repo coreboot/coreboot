@@ -131,7 +131,21 @@ chip soc/amd/cezanne
 	end
 
 	device ref i2c_0 on end
-	device ref i2c_1 on end
+	device ref i2c_1 on # eDP Touch Panel
+		chip drivers/i2c/hid
+			register "generic.hid" = ""PNP0C50""
+			register "generic.desc" = ""ELAN Touchscreen""
+			register "generic.detect" = "1"
+			register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPIO_4)"
+			register "generic.enable_delay_ms" = "1"
+			register "generic.reset_delay_ms" = "20"
+			register "generic.reset_off_delay_ms" = "2"
+			register "generic.stop_off_delay_ms" = "2"
+			register "generic.has_power_resource" = "1"
+			register "hid_desc_reg_offset" = "0x01"
+			device i2c 9 on end
+		end
+	end
 	device ref i2c_2 on end
 	device ref i2c_3 on end
 	device ref uart_0 on end # UART0

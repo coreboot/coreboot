@@ -16,13 +16,11 @@ void variant_update_soc_chip_config(struct soc_intel_pantherlake_config *config)
 	config->cnvi_bt_core = false;
 	/* CNVi */
 	if (fw_config_probe(FW_CONFIG(WIFI, WIFI_CNVI_6)) ||
-		fw_config_probe(FW_CONFIG(WIFI, WIFI_CNVI_7))) {
+			fw_config_probe(FW_CONFIG(WIFI, WIFI_CNVI_7))) {
 		config->cnvi_wifi_core = true;
 		config->cnvi_bt_core = true;
 
-		if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_MAX98360_ALC5682I_I2S)) ||
-			fw_config_probe(FW_CONFIG(AUDIO, AUDIO_ALC722_SNDW)) ||
-			fw_config_probe(FW_CONFIG(AUDIO, AUDIO_ALC721_SNDW))) {
+		if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_ALC721_SNDW))) {
 			printk(BIOS_INFO, "BT audio offload configured.\n");
 			config->cnvi_bt_audio_offload = true;
 		}

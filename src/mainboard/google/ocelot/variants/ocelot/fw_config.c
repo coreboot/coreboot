@@ -11,37 +11,6 @@
 /* t: table */
 #define GPIO_CONFIGURE_PADS(t) gpio_configure_pads(t, ARRAY_SIZE(t))
 
-static const struct pad_config i2s_enable_pads[] = {
-	/* I2S_MCLK1_OUT */
-	PAD_CFG_NF(GPP_D09, NONE, DEEP, NF2),
-	/* I2S0_SCLK_HDR */
-	PAD_CFG_NF(GPP_D10, NONE, DEEP, NF2),
-	/* I2S0_SFRM_HDR */
-	PAD_CFG_NF(GPP_D11, NONE, DEEP, NF2),
-	/* I2S0_TXD_HDR */
-	PAD_CFG_NF(GPP_D12, NONE, DEEP, NF2),
-	/* I2S0_RXD_HDR */
-	PAD_CFG_NF(GPP_D13, NONE, DEEP, NF2),
-	/* I2S1_SCLK_HDR */
-	PAD_CFG_NF(GPP_S00, NONE, DEEP, NF6),
-	/* I2S1_SFRM_HDR */
-	PAD_CFG_NF(GPP_S01, NONE, DEEP, NF6),
-	/* I2S1_TXD_HDR */
-	PAD_CFG_NF(GPP_S02, NONE, DEEP, NF6),
-	/* I2S1_RXD_HDR */
-	PAD_CFG_NF(GPP_S03, NONE, DEEP, NF6),
-
-	/* DMIC_CLK */
-	PAD_CFG_NF(GPP_D16, NONE, DEEP, NF3),
-	/* DMIC_DATA */
-	PAD_CFG_NF(GPP_D17, NONE, DEEP, NF3),
-
-	/* DMIC_CLK */
-	PAD_CFG_NF(GPP_S04, NONE, DEEP, NF5),
-	/* DMIC_DATA */
-	PAD_CFG_NF(GPP_S05, NONE, DEEP, NF5),
-};
-
 static const struct pad_config hda_enable_pads[] = {
 	/* HDA_BCLK */
 	PAD_CFG_NF(GPP_D10, NONE, DEEP, NF1),
@@ -60,29 +29,6 @@ static const struct pad_config hda_enable_pads[] = {
 	PAD_CFG_NF(GPP_S04, NONE, DEEP, NF5),
 	/* DMIC_DATA */
 	PAD_CFG_NF(GPP_S05, NONE, DEEP, NF5),
-};
-
-static const struct pad_config sndw_external_codec_enable_pads[] = {
-	/* Soundwire - External codec - JE Header */
-	/* SNDW3_CLK */
-	PAD_CFG_NF(GPP_S00, NONE, DEEP, NF1),
-	/* SNDW3_DATA0 */
-	PAD_CFG_NF(GPP_S01, NONE, DEEP, NF1),
-	/* SNDW0_CLK */
-	PAD_CFG_NF(GPP_S02, NONE, DEEP, NF3),
-	/* SNDW0_DATA */
-	PAD_CFG_NF(GPP_S03, NONE, DEEP, NF3),
-	/* SNDW2_CLK */
-	PAD_CFG_NF(GPP_S04, NONE, DEEP, NF2),
-	/* SNDW2_DATA */
-	PAD_CFG_NF(GPP_S05, NONE, DEEP, NF2),
-	/* SNDW1_CLK */
-	PAD_CFG_NF(GPP_S06, NONE, DEEP, NF3),
-	/* SNDW1_DATA */
-	PAD_CFG_NF(GPP_S07, NONE, DEEP, NF3),
-
-	/* GPP_D13: RST_HP_L */
-	PAD_CFG_GPO(GPP_D13, 1, PLTRST),
 };
 
 static const struct pad_config bt_i2s_enable_pads[] = {
@@ -123,7 +69,7 @@ static const struct pad_config bt_i2s_disable_pads[] = {
 	PAD_NC(GPP_VGPIO37, NONE),
 };
 
-static const struct pad_config sndw_alc722_enable_pads[] = {
+static const struct pad_config sndw_alc721_enable_pads[] = {
 	/* SNDW3_CLK   */
 	PAD_CFG_NF(GPP_S00, NONE, DEEP, NF1),
 	/* SNDW3_DATA0 */
@@ -353,25 +299,6 @@ static const struct pad_config touchscreen_disable_pads[] = {
 	PAD_NC(GPP_E18, NONE),
 };
 
-static const struct pad_config touchscreen_lpss_i2c_enable_pads[] = {
-	/* GPP_E11:     THC0_SPI1_CLK_TCH_PNL1 */
-	PAD_NC(GPP_E11, NONE),
-	/* GPP_E12:     THC0_SPI1_IO_0_I2C4_SCL_TCH_PNL1 NF8: I2C4_SCL */
-	PAD_CFG_NF(GPP_E12, NONE, DEEP, NF8),
-	/* GPP_E13:     THC0_SPI1_IO_1_I2C4_SDA_TCH_PNL1 NF8: I2C4 SDA */
-	PAD_CFG_NF(GPP_E13, NONE, DEEP, NF8),
-	/* GPP_E14:     THC0_SPI1_IO_2_TCH_PNL1 */
-	PAD_NC(GPP_E14, NONE),
-	/* GPP_E15:     THC0_SPI1_IO_3_TCH_PNL1 */
-	PAD_NC(GPP_E15, NONE),
-	/* GPP_E16:     THC0_SPI1_RST_N_TCH_PNL1 */
-	PAD_CFG_GPO(GPP_E16, 1, DEEP),
-	/* GPP_E17:     THC0_SPI1_CS0_N_TCH_PNL1 */
-	PAD_NC(GPP_E17, NONE),
-	/* GPP_E18:     THC0_SPI1_INT_N_TCH_PNL1 */
-	PAD_CFG_GPI_APIC(GPP_E18, NONE, PLTRST, LEVEL, NONE),
-};
-
 static const struct pad_config touchscreen_thc_i2c_enable_pads[] = {
 	/* GPP_E11:     THC0_SPI1_CLK_TCH_PNL1 */
 	PAD_NC(GPP_E11, NONE),
@@ -389,25 +316,6 @@ static const struct pad_config touchscreen_thc_i2c_enable_pads[] = {
 	PAD_NC(GPP_E17, NONE),
 	/* GPP_E18:     THC0_SPI1_INT_N_TCH_PNL1 */
 	PAD_CFG_GPI_APIC(GPP_E18, NONE, PLTRST, LEVEL, NONE),
-};
-
-static const struct pad_config touchscreen_gspi_enable_pads[] = {
-	/* GPP_E11:     THC0_SPI1_CLK_TCH_PNL1 NF5: GSPI0 */
-	PAD_CFG_NF(GPP_E11, NONE, DEEP, NF5),
-	/* GPP_E12:     THC0_SPI1_IO_0_I2C4_SCL_TCH_PNL1 NF5: GSPI0 */
-	PAD_CFG_NF(GPP_E12, NONE, DEEP, NF5),
-	/* GPP_E13:     THC0_SPI1_IO_1_I2C4_SDA_TCH_PNL1 NF5: GSPI0 */
-	PAD_CFG_NF(GPP_E13, NONE, DEEP, NF5),
-	/* GPP_E14:     THC0_SPI1_IO_2_TCH_PNL1 */
-	PAD_NC(GPP_E14, NONE),
-	/* GPP_E15:     THC0_SPI1_IO_3_TCH_PNL1 */
-	PAD_NC(GPP_E15, NONE),
-	/* GPP_E16:     THC0_SPI1_RST_N_TCH_PNL1 */
-	PAD_CFG_GPO(GPP_E16, 1, DEEP),
-	/* GPP_E17:     THC0_SPI1_CS0_N_TCH_PNL1 NF5: GSPI0 */
-	PAD_CFG_NF(GPP_E17, NONE, DEEP, NF5),
-	/* GPP_E18:     THC0_SPI1_INT_N_TCH_PNL1 */
-	PAD_CFG_GPI_APIC(GPP_E18, NONE, PLTRST, EDGE_SINGLE, INVERT)
 };
 
 static const struct pad_config touchscreen_thc_spi_enable_pads[] = {
@@ -576,18 +484,9 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_NONE))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, audio_disable_pads);
 		GPIO_PADBASED_OVERRIDE(padbased_table, bt_i2s_disable_pads);
-	} else if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_MAX98360_ALC5682I_I2S))) {
-		printk(BIOS_INFO, "Configure GPIOs for I2S MAX98360 ALC5682 audio.\n");
-		GPIO_PADBASED_OVERRIDE(padbased_table, i2s_enable_pads);
-		printk(BIOS_INFO, "Configure GPIOs for BT offload mode.\n");
-		GPIO_PADBASED_OVERRIDE(padbased_table, bt_i2s_enable_pads);
-	} else if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_MAX98373_ALC5682_SNDW))) {
-		GPIO_PADBASED_OVERRIDE(padbased_table, sndw_external_codec_enable_pads);
-		GPIO_PADBASED_OVERRIDE(padbased_table, bt_i2s_disable_pads);
-	} else if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_ALC722_SNDW)) ||
-			fw_config_probe(FW_CONFIG(AUDIO, AUDIO_ALC721_SNDW))) {
+	} else if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_ALC721_SNDW))) {
 		printk(BIOS_INFO, "Configure GPIOs for Soundwire audio.\n");
-		GPIO_PADBASED_OVERRIDE(padbased_table, sndw_alc722_enable_pads);
+		GPIO_PADBASED_OVERRIDE(padbased_table, sndw_alc721_enable_pads);
 		printk(BIOS_INFO, "Configure GPIOs for BT offload mode.\n");
 		GPIO_PADBASED_OVERRIDE(padbased_table, bt_i2s_enable_pads);
 	} else if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_ALC256_HDA))) {
@@ -625,12 +524,8 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	else
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchpad_i2c_disable_pads);
 
-	if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_LPSS_I2C)))
-		GPIO_PADBASED_OVERRIDE(padbased_table, touchscreen_lpss_i2c_enable_pads);
-	else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_I2C)))
+	if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_I2C)))
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchscreen_thc_i2c_enable_pads);
-	else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_GSPI)))
-		GPIO_PADBASED_OVERRIDE(padbased_table, touchscreen_gspi_enable_pads);
 	else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_SPI)))
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchscreen_thc_spi_enable_pads);
 	else

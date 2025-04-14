@@ -30,6 +30,10 @@
  #define GPIO_PCH_WP	0 /* TODO */
 /* Used to gate SoC's SLP_S0# signal */
 #define GPIO_SLP_S0_GATE	GPP_D03
+#elif CONFIG(BOARD_GOOGLE_KINMEN)
+ #define EC_SYNC_IRQ	GPP_E07_IRQ
+ #define GPIO_PCH_WP	GPP_D02
+#define GPIO_SLP_S0_GATE	0 /* Not Connected */
 #endif
 
 #endif /* __BASEBOARD_GPIO_H__ */

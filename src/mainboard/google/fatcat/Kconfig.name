@@ -19,3 +19,6 @@ config BOARD_GOOGLE_FELINO
 
 config BOARD_GOOGLE_FRANCKA
 	bool "-> Francka"
+
+config BOARD_GOOGLE_KINMEN
+	bool "-> Kinmen"

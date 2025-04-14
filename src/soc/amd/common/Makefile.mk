@@ -39,6 +39,10 @@ DEP_FILES = $(patsubst %,$(FIRMWARE_LOCATION)/%, $(AMDFW_CFG_IN_FW_LOC)) \
 	$(AMDFW_CFG_WITH_PATH)
 
 ifeq ($(CONFIG_RESET_VECTOR_IN_RAM),y)
+# Even though the target is called bootblock.bin it's way more than that,
+# but the name is mandatory for the 'add_bootblock' directive below.
+# On AMD the bootblock resides within the AMD FW as part of the
+# Bios Directory Tables (BDT), thus about 1% of this file is actually the bootblock.
 $(objcbfs)/bootblock.bin: $(obj)/amdfw.rom $(obj)/fmap_config.h
 	cp $< $@
 
@@ -49,7 +53,7 @@ amdfw_offset=$(call int-subtract, \
 
 add_bootblock = \
 	$(CBFSTOOL) $(1) add -f $(2) -n apu/amdfw -t amdfw \
-        -b $(amdfw_offset) -r $(call regions-for-file,apu/amdfw) \
+	-b $(amdfw_offset) -r $(call regions-for-file,apu/amdfw) \
 	$(CBFSTOOL_ADD_CMD_OPTIONS)
 
 endif # ifeq ($(CONFIG_RESET_VECTOR_IN_RAM),y)

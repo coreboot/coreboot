@@ -285,6 +285,13 @@ $(call add_intermediate, add_amdfwbody, $(obj)/amdfw.rom.body)
 	$(CBFSTOOL) $(obj)/coreboot.pre write -r AMDFWBODY -f $(obj)/amdfw.rom.body --fill-upward
 endif
 
+#
+# Extracts everything from the ELF's first PT_LOAD area and compresses it.
+# This discards everything before PT_LOAD, every symbol, debug information
+# and relocations. The generated binary is expected to run at PSP_BIOSBIN_DEST
+# with a maximum size of PSP_BIOSBIN_SIZE. The entrypoint is fixed at
+# PSP_BIOSBIN_DEST + PSP_BIOSBIN_SIZE - 0x10.
+#
 $(PSP_BIOSBIN_FILE): $(PSP_ELF_FILE) $(AMDCOMPRESS)
 	rm -f $@
 	@printf "    AMDCOMPRS  $(subst $(obj)/,,$(@))\n"

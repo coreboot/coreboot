@@ -382,8 +382,18 @@ The BIOS Directory table structure is slightly different from the PSP Directory:
 `cbfstool/amdcompress` is a helper for creating the BIOS Reset Image (BIOS
 Directory Table type 0x62).  This is the code the PSP uncompresses into DRAM
 at the location where the x86 begins execution when released from reset.
-Typical usage is for amdcompress to convert an ELF file’s program section
-into a zlib compressed image.
+To tool expects an ELF as input (the bootblock.elf) and extracts the **first**
+`PT_LOAD` area out of it. Since only `PT_LOAD` contains what's needed, everything
+else can be discarded from the input ELF when the following points are valid:
+* The binary is loaded at the address it is linked for
+  This is done by the PSP at boot time.
+* The BSS segment is cleared
+  This is not done by PSP, but by bootblock assembly code.
+* The data segment is initialized
+  Done automatically when it's part of `PT_LOAD` area or done by bootblock assembly code
+  when `ENV_SEPARATE_DATA_AND_BSS` is set
+
+Amdcompress finally compresses the ELF file’s `PT_LOAD` section into a zlib compressed image.
 
 ### amdfwtool
 

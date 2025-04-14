@@ -71,7 +71,9 @@ chip soc/intel/alderlake
 	register "typec_aux_bias_pads[0]" = "{.pad_auxp_dc = GPP_A21, .pad_auxn_dc = GPP_A22}"
 
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# USB2_C0
-	register "usb2_ports[1]" = "USB2_PORT_MID(OC0)"		# USB2_A0
+	# This port is repurposed from Type-C to type-A port.
+	# Still declare it as Type-C port in order to set PortResetMessageEnable UPD.
+	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC0)"	# USB2_A0
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC1)"		# USB2_A1
 	register "usb2_ports[3]" = "USB2_PORT_MID(OC2)"		# USB2_A2
 	register "usb2_ports[4]" = "USB2_PORT_MID(OC3)"		# USB2_A3

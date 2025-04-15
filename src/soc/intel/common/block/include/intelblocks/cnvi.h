@@ -15,9 +15,9 @@
 
 /* CNVi PLDR Control */
 #if CONFIG(SOC_INTEL_ALDERLAKE_PCH_S)
-#define CNVI_ABORT_PLDR		0x80
-#else
 #define CNVI_ABORT_PLDR		0x44
+#else
+#define CNVI_ABORT_PLDR		0x80
 #endif
 
 #define CNVI_ABORT_ENABLE	BIT(0)

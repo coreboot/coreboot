@@ -98,6 +98,23 @@ config ENABLE_EVAL_19V
 	help
 	  Enable the 19V rail for Eval Card PCIe slot
 
+choice
+	prompt "XGBE/WWAN/WLAN/DT Selection"
+	default XGBE_WWAN_WLAN
+	help
+	  Select the configuration for GPP[0:3] lanes
+
+config XGBE_WWAN_WLAN
+	bool "XGBE_WWAN_WLAN"
+	help
+	  Use GPP[0:1] for XGBE (ETH_AIC_SLOT), GPP[2] for WWAN slot and GPP[3] for WLAN slot.
+
+config ETH_AIC_SLOT_ONLY
+	bool "DT Enablement"
+	help
+	  Use GPP[0:3] for as PCIE (ETH_AIC_SLOT) only
+endchoice
+
 if !EM100	# EM100 defaults in soc/amd/common/blocks/spi/Kconfig
 config EFS_SPI_READ_MODE
 	default 3	# Quad IO (1-1-4)

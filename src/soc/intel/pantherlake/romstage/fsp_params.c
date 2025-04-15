@@ -359,8 +359,11 @@ static void fsp_control_log_level(FSPM_UPD *mupd, bool is_enabled)
 	}
 
 	/* Set Event Handler if log-level is non-zero */
-	if (m_cfg->PcdSerialDebugLevel || m_cfg->SerialDebugMrcLevel)
+	if (m_cfg->PcdSerialDebugLevel || m_cfg->SerialDebugMrcLevel) {
 		arch_upd->FspEventHandler = (uintptr_t)((FSP_EVENT_HANDLER *)fsp_debug_event_handler);
+		/* Override SerialIo Uart default MMIO resource if log-level is non-zero */
+		m_cfg->SerialIoUartDebugMmioBase = UART_BASE(CONFIG_UART_FOR_CONSOLE);
+	}
 }
 
 static void fill_fsp_event_handler(FSPM_UPD *mupd)

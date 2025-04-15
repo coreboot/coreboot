@@ -75,12 +75,28 @@ static int do_file(char *name, size_t *size, int oflag)
 }
 
 static int parse_elf_to_xip_ram(const struct buffer *input,
-					struct buffer *output)
+				struct buffer *output)
 {
 	struct parsed_elf pelf;
+	const Elf64_Phdr *phdr;
 
 	if (parse_elf(input, &pelf, ELF_PARSE_ALL))
 		return 1;
+
+	/* Validate ELF. Expect only on PT_LOAD program header at index 0. */
+	for (int i = 0; i < pelf.ehdr.e_phnum; i++) {
+		phdr = &pelf.phdr[i];
+		/* Expect PT_LOAD on first entry */
+		if (i == 0 && (phdr->p_type != PT_LOAD || !phdr->p_memsz)) {
+			printf("\tProgram header #0 is invalid.\n");
+		}
+		/* Expect not to find more PT_LOAD program headers */
+		if (i > 0 && phdr->p_type == PT_LOAD && phdr->p_memsz) {
+			printf("\tMultiple program headers found, but only one is supported!\n");
+			return 1;
+		}
+	}
+
 	if (buffer_create(output, pelf.phdr->p_filesz, "") != 0)
 		return 1;
 

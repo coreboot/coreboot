@@ -137,8 +137,9 @@ SECTIONS {
 	 * .text and .reset breaks the integrity, as .bss or .data might get modified.
 	 *
 	 * Enable ENV_SEPARATE_DATA_AND_BSS for AMD's bootblock and mark as
-	 * data_segment to place it in the second PT_LOAD area. AMDCOMPRESS will ignore
-	 * the second PT_LOAD area and discard it.
+	 * data_segment to place it in the second PT_LOAD area. The second PT_LOAD area
+	 * must be removed using objcopy since AMDCOMPRESS doesn't support multiple
+	 * PT_LOAD segments.
 	 */
 	. = BOOTBLOCK_ADDR & ~(16 - 1);
 	.data . : {

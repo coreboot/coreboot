@@ -37,6 +37,14 @@ void ioe_p2sb_enable_bar(void);
 uint32_t ioe_p2sb_sbi_read(uint8_t pid, uint16_t reg);
 void ioe_p2sb_sbi_write(uint8_t pid, uint16_t reg, uint32_t val);
 
+/*
+ * Functions to access SoC P2SB2.
+ * pid argument: SBI port Id
+ */
+void p2sb2_enable_bar(void);
+uint32_t p2sb2_sbi_read(uint8_t pid, uint16_t reg);
+void p2sb2_sbi_write(uint8_t pid, uint16_t reg, uint32_t val);
+
 union p2sb_bdf {
 	struct {
 		uint16_t fn  : 3;

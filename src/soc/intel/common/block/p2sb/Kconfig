@@ -12,6 +12,13 @@ config SOC_INTEL_COMMON_BLOCK_P2SB
 	help
 	  Intel Processor common P2SB driver for PCH or SoC die
 
+config SOC_INTEL_COMMON_BLOCK_P2SB2
+	bool
+	select SOC_INTEL_COMMON_BLOCK_BASE_P2SB
+	help
+	  Intel Processor common driver for a second P2SB (Primary to
+	  SideBand) interface to PCH or SoC die
+
 config SOC_INTEL_COMMON_BLOCK_IOE_P2SB
 	bool
 	select SOC_INTEL_COMMON_BLOCK_BASE_P2SB

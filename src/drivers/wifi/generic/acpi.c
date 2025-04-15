@@ -1051,9 +1051,18 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 		/* Wake capabilities */
 		acpigen_write_PRW(config->wake, ACPI_S3);
 
-		/* Add _DSD for DmaProperty property. */
-		if (config->add_acpi_dma_property)
-			acpi_device_add_dma_property(NULL);
+		if ((config->add_acpi_dma_property) || (config->cnvi_enable_gpio.pin_count)) {
+			struct acpi_dp *dsd = acpi_dp_new_table("_DSD");
+
+			/* Add _DSD for DmaProperty property. */
+			if (config->add_acpi_dma_property)
+				acpi_device_add_dma_property(dsd);
+
+			if (config->cnvi_enable_gpio.pin_count)
+				acpi_device_add_hotplug_support_in_d3(dsd);
+
+			acpi_dp_write(dsd);
+		}
 	}
 
 	/* Fill regulatory domain structure */

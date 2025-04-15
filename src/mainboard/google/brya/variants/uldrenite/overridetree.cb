@@ -486,7 +486,12 @@ chip soc/intel/alderlake
 			end
 			probe DB_CELLULAR CELLULAR_RW350R
 		end # PCIE2 WWAN card
-		device ref ish off end
+		device ref ish on
+			chip drivers/intel/ish
+				register "firmware_name" = ""uldrenite_ish.bin""
+				device generic 0 on end
+			end
+		end
 		device ref shared_sram on end
 		device ref heci1 on end
 		device ref pmc hidden end

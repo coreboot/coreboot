@@ -3,6 +3,7 @@
 #include <bootmem.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <soc/dcc.h>
 #include <soc/dramc_info.h>
 #include <soc/emi.h>
 #include <soc/gpueb.h>
@@ -52,6 +53,7 @@ static void soc_init(struct device *dev)
 {
 	uint32_t storage_type = mainboard_get_storage_type();
 
+	dcc_init();
 	mtk_fsp_init(RAMSTAGE_SOC_INIT);
 	mtk_fsp_add_param(FSP_PARAM_TYPE_STORAGE, sizeof(storage_type), &storage_type);
 	add_pi_image_params();

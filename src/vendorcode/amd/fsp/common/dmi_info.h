@@ -185,8 +185,60 @@ typedef struct {
 #endif
 } __packed TYPE17_DMI_INFO;
 
+/// DMI Type 19 - Memory Array Mapped Address
+typedef struct {
+  OUT UINT32                    StartingAddr;           ///< The physical address, in kilobytes,
+                                                        ///< of a range of memory mapped to the
+                                                        ///< specified physical memory array.
+  OUT UINT32                    EndingAddr;             ///< The physical ending address of the
+                                                        ///< last kilobyte of a range of addresses
+                                                        ///< mapped to the specified physical memory array.
+  OUT UINT16                    MemoryArrayHandle;      ///< The handle, or instance number, associated
+                                                        ///< with the physical memory array to which this
+                                                        ///< address range is mapped.
+  OUT UINT8                     PartitionWidth;         ///< Identifies the number of memory devices that
+                                                        ///< form a single row of memory for the address
+                                                        ///< partition defined by this structure.
+  OUT UINT64                    ExtStartingAddr;        ///< The physical address, in bytes, of a range of
+                                                        ///< memory mapped to the specified Physical Memory Array.
+  OUT UINT64                    ExtEndingAddr;          ///< The physical address, in bytes, of a range of
+                                                        ///< memory mapped to the specified Physical Memory Array.
+} __packed TYPE19_DMI_INFO;
+
+///DMI Type 20 - Memory Device Mapped Address
+typedef struct {
+  OUT UINT32                    StartingAddr;           ///< The physical address, in kilobytes, of a range
+                                                        ///< of memory mapped to the referenced Memory Device.
+  OUT UINT32                    EndingAddr;             ///< The handle, or instance number, associated with
+                                                        ///< the Memory Device structure to which this address
+                                                        ///< range is mapped.
+  OUT UINT16                    MemoryDeviceHandle;     ///< The handle, or instance number, associated with
+                                                        ///< the Memory Device structure to which this address
+                                                        ///< range is mapped.
+  OUT UINT16                    MemoryArrayMappedAddressHandle; ///< The handle, or instance number, associated
+                                                        ///< with the Memory Array Mapped Address structure to
+                                                        ///< which this device address range is mapped.
+  OUT UINT8                     PartitionRowPosition;   ///< Identifies the position of the referenced Memory
+                                                        ///< Device in a row of the address partition.
+  OUT UINT8                     InterleavePosition;     ///< The position of the referenced Memory Device in
+                                                        ///< an interleave.
+  OUT UINT8                     InterleavedDataDepth;   ///< The maximum number of consecutive rows from the
+                                                        ///< referenced Memory Device that are accessed in a
+                                                        ///< single interleaved transfer.
+  OUT UINT64                    ExtStartingAddr;        ///< The physical address, in bytes, of a range of
+                                                        ///< memory mapped to the referenced Memory Device.
+  OUT UINT64                    ExtEndingAddr;          ///< The physical ending address, in bytes, of the last of
+                                                        ///< a range of addresses mapped to the referenced Memory Device.
+} __packed TYPE20_DMI_INFO;
+
 /// Collection of pointers to the DMI records
 typedef struct {
   OUT TYPE16_DMI_INFO           T16;                          ///< Type 16 struc
   OUT TYPE17_DMI_INFO           T17[AGESA_STRUCT_SOCKET_COUNT][AGESA_STRUCT_CHANNELS_PER_SOCKET][AGESA_STRUCT_DIMMS_PER_CHANNEL]; ///< Type 17 struc
+#ifdef AGESA_STRUCT_T19_REGION_SUPPORTED
+  OUT TYPE19_DMI_INFO           T19[AGESA_STRUCT_T19_REGION_SUPPORTED];
+#endif
+#ifdef AGESA_STRUCT_T20_REGION_SUPPORTED
+  OUT TYPE20_DMI_INFO           T20[AGESA_STRUCT_SOCKET_COUNT][AGESA_STRUCT_CHANNELS_PER_SOCKET][AGESA_STRUCT_DIMMS_PER_CHANNEL][AGESA_STRUCT_T20_REGION_SUPPORTED]; ///< Type 20 struc
+#endif
 } DMI_INFO;

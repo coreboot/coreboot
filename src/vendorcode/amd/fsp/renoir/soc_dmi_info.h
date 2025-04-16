@@ -10,6 +10,8 @@
 #define AGESA_STRUCT_SOCKET_COUNT         2   ///< Number of sockets in AGESA FSP DMI T17 table
 #define AGESA_STRUCT_CHANNELS_PER_SOCKET  8   ///< Channels per socket in AGESA FSP DMI T17 table
 #define AGESA_STRUCT_DIMMS_PER_CHANNEL    4   ///< DIMMs per channel in AGESA FSP DMI T17 table
+#define AGESA_STRUCT_T19_REGION_SUPPORTED 3   ///< Max SMBIOS T19 Memory Region count
+#define AGESA_STRUCT_T20_REGION_SUPPORTED 1   ///< Max SMBIOS T20 Memory Region count
 #define AGESA_STRUCT_PART_NUMBER_SIZE     21 //TODO check
 
 #define SMBIOS_3_2_SUPPORT                1

@@ -45,6 +45,10 @@ static const struct pad_config ish_disable_pads[] = {
 	PAD_NC(GPP_B5, NONE),
 	/* B6  : GPP_B6 ==> NC */
 	PAD_NC(GPP_B6, NONE),
+	/* D1  : ISH_GP1 ==> NC */
+	PAD_NC(GPP_D1, NONE),
+	/* E9  : SOC_ACC2_INT ==> NC */
+	PAD_NC_LOCK(GPP_E9, NONE, LOCK_CONFIG),
 };
 
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)

@@ -119,8 +119,8 @@ static const struct pad_config gpio_table[] = {
 
 	/* D0  : ISH_GP0 ==> UCAM_FW_PROTECT */
 	PAD_CFG_GPO(GPP_D0, 1, DEEP),
-	/* D1  : ISH_GP1 ==> NC */
-	PAD_NC(GPP_D1, NONE),
+	/* D1  : ISH_GP1 ==> SOC_GSEN2_INT# */
+	PAD_CFG_NF(GPP_D1, NONE, DEEP, NF1),
 	/* D2  : ISH_GP2 ==> TOUCH_SCREEN_DET# */
 	PAD_CFG_GPO_LOCK(GPP_D2, 1, LOCK_CONFIG),
 	/* D3  : NC ==> PHY_SHUTTER_DET */
@@ -176,8 +176,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E7, NONE),
 	/* E8  : GPP_E8 ==> WLAN_DISABLE_L */
 	PAD_CFG_GPO(GPP_E8, 1, DEEP),
-	/* E9  : NC */
-	PAD_NC_LOCK(GPP_E9, NONE, LOCK_CONFIG),
+	/* E9  : GPP_E9 ==> SOC_ACC2_INT# */
+	PAD_CFG_NF(GPP_E9, NONE, DEEP, NF1),
 	/* E10 : NC */
 	PAD_NC_LOCK(GPP_E10, NONE, LOCK_CONFIG),
 	/* E11 : NC */

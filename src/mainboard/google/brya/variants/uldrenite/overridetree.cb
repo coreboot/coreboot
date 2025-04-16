@@ -15,6 +15,10 @@ fw_config
 		option MB_C_TWO			0
 		option MB_C_ONE			1
 	end
+	field ISH 8 8
+		option ISH_DISABLE		0
+		option ISH_ENABLE		1
+	end
 end
 
 chip soc/intel/alderlake
@@ -487,6 +491,7 @@ chip soc/intel/alderlake
 			probe DB_CELLULAR CELLULAR_RW350R
 		end # PCIE2 WWAN card
 		device ref ish on
+			probe ISH ISH_ENABLE
 			chip drivers/intel/ish
 				register "firmware_name" = ""uldrenite_ish.bin""
 				device generic 0 on end

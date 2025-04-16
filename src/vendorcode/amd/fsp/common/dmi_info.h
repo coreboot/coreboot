@@ -157,7 +157,7 @@ typedef struct {
   OUT UINT16                    Speed;                  ///< Identifies the speed of the device, in megahertz (MHz).
   OUT UINT64                    ManufacturerIdCode;     ///< Manufacturer ID code.
   OUT CHAR8                     SerialNumber[9];        ///< Serial Number.
-  OUT CHAR8                     PartNumber[21];         ///< Part Number.
+  OUT CHAR8                     PartNumber[AGESA_STRUCT_PART_NUMBER_SIZE]; ///< Part Number.
   OUT UINT8                     Attributes;             ///< Bits 7-4: Reserved, Bits 3-0: rank.
   OUT UINT32                    ExtSize;                ///< Extended Size.
   OUT UINT16                    ConfigSpeed;            ///< Configured memory clock speed

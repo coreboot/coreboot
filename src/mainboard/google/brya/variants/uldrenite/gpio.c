@@ -34,8 +34,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_A14, NONE, DEEP, NF1),
 	/* A15 : USB_OC2# ==> NC */
 	PAD_NC(GPP_A15, NONE),
-	/* A16 : USB_OC3# ==> NC */
-	PAD_NC_LOCK(GPP_A16, NONE, LOCK_CONFIG),
+	/* A16 : ISH_GP5 */
+	PAD_CFG_NF(GPP_A16, NONE, DEEP, NF2),
 	/* A17 : GPP_A17 ==> GSC_SOC_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_A17, NONE, PLTRST, LEVEL, INVERT),
 	/* A18 : DDSP_HPDB ==> NC */

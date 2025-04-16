@@ -41,6 +41,8 @@ static const struct pad_config lte_disable_pads[] = {
 };
 
 static const struct pad_config ish_disable_pads[] = {
+	/* A16 : ISH_GP5 ==> NC */
+	PAD_NC_LOCK(GPP_A16, NONE, LOCK_CONFIG),
 	/* B5  : GPP_B5 ==> NC */
 	PAD_NC(GPP_B5, NONE),
 	/* B6  : GPP_B6 ==> NC */

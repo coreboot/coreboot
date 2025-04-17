@@ -264,4 +264,9 @@ config BOARD_SUPPORTS_HOTPLUG
 	default y if BOARD_STARLABS_STARBOOK_ADL
 	default n
 
+config BOARD_USES_FIXED_MODE_VBT
+	bool
+	default y if BOARD_STARLABS_STARBOOK_ADL_N || BOARD_STARLABS_STARBOOK_MTL
+	default n
+
 endif

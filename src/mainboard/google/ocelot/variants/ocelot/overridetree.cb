@@ -54,6 +54,10 @@ fw_config
 		option KB_ABSENT		0
 		option KB_PRESENT		1
 	end
+	field PSU 20
+		option PSU_USBC			0
+		option PSU_BJ			1
+	end
 end
 
 chip soc/intel/pantherlake
@@ -64,7 +68,7 @@ chip soc/intel/pantherlake
 	register "usb2_ports[3]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C3
 	register "usb2_ports[4]" = "USB2_PORT_MID(OC0)" # Type-A Port A0
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC0)" # Type-A Port A1 / WWAN with rework
-	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)" # CNVi BT or discrete BT
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)" # Discrete Bluetooth
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)" # USB3.2 x1 Type-A Con #1
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)" # USB3.2 x1 Type-A Con #2 / M.2 WWAN with rework
@@ -288,13 +292,66 @@ chip soc/intel/pantherlake
 		device ref iaa off end
 
 		device ref thc0 on
+			register "thc_wake_on_touch[0]" = "true"
 			probe TOUCHSCREEN TOUCHSCREEN_THC_SPI
 			probe TOUCHSCREEN TOUCHSCREEN_THC_I2C
 			# THC0 is function 0; hence it needs to be enabled when THC1 is to be enabled.
 			probe TOUCHPAD TOUCHPAD_THC_I2C
+			chip drivers/intel/touch
+				register "name" = "INTEL_THC0_NAME"
+				register "mode" = "THC_HID_I2C_MODE"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_F08)"
+				register "enable_delay_ms" = "2"
+				register "enable_off_delay_ms" = "2"
+				register "wake_on_touch" = "true"
+				# NOTE: Use GpioInt() in _CRS and does not use GPE.
+				register "wake_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW_WAKE(GPP_VGPIO3_THC0)"
+				register "active_ltr" = "1"
+				register "idle_ltr" = "0"
+				register "connected_device" = "TH_SENSOR_ELAN"
+				register "add_acpi_dma_property" = "true"
+				device generic 0 alias touch_0_i2c_elan on
+					probe TOUCHSCREEN TOUCHSCREEN_THC_I2C
+				end
+			end
+			chip drivers/intel/touch
+				register "name" = "INTEL_THC0_NAME"
+				register "mode" = "THC_HID_SPI_MODE"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_F08)"
+				register "enable_delay_ms" = "2"
+				register "enable_off_delay_ms" = "2"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E16)"
+				register "reset_delay_ms" = "10"
+				register "reset_off_delay_ms" = "2"
+				register "wake_on_touch" = "true"
+				# NOTE: Use GpioInt() in _CRS and does not use GPE.
+				register "wake_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW_WAKE(GPP_VGPIO3_THC0)"
+				register "active_ltr" = "1"
+				register "idle_ltr" = "0"
+				register "connected_device" = "TH_SENSOR_ELAN"
+				register "soc_hidspi.write_mode" = "HIDSPI_WRITE_MODE_MULTI_SINGLE_SPI"
+				register "soc_hidspi.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E16)"
+				register "add_acpi_dma_property" = "true"
+				device generic 0 alias touch_0_spi_elan on
+					probe TOUCHSCREEN TOUCHSCREEN_THC_SPI
+				end
+			end
 		end
 		device ref thc1 on
+			register "thc_wake_on_touch[1]" = "true"
 			probe TOUCHPAD TOUCHPAD_THC_I2C
+			chip drivers/intel/touch
+				register "name" = "INTEL_THC1_NAME"
+				register "mode" = "THC_HID_I2C_MODE"
+				register "wake_on_touch" = "true"
+				# NOTE: Use GpioInt() in _CRS and does not use GPE.
+				register "wake_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW_WAKE(GPP_VGPIO3_THC1)"
+				register "active_ltr" = "1"
+				register "idle_ltr" = "0"
+				register "connected_device" = "TH_SENSOR_HYNITRON"
+				register "add_acpi_dma_property" = "true"
+				device generic 0 alias touch_1_i2c_hynitron on end
+			end
 		end
 
 		device ref tbt_pcie_rp0 on end
@@ -415,7 +472,10 @@ chip soc/intel/pantherlake
 						register "desc" = ""USB2 Bluetooth""
 						register "type" = "UPC_TYPE_INTERNAL"
 						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A16)"
-						device ref usb2_port8 on end
+						device ref usb2_port8 on
+							probe WIFI WIFI_PCIE_6
+							probe WIFI WIFI_PCIE_7
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB3 Type-A Port 1""
@@ -541,9 +601,16 @@ chip soc/intel/pantherlake
 				register "wake" = "GPE0_PME_B0"
 				register "add_acpi_dma_property" = "true"
 				register "enable_cnvi_ddr_rfim" = "true"
+				use cnvi_bluetooth as bluetooth_companion
 				device generic 0 on end
 			end
 		end # CNVi
+
+		device ref cnvi_bluetooth on
+			probe WIFI WIFI_CNVI_6
+			probe WIFI WIFI_CNVI_7
+		end
+
 		# NOTE: i2c0 is function 0; hence it needs to be enabled when any of i2c1-5 is enabled.
 		# TPM device is under i2c3. Therefore, i2c0 needs to be enabled anyways.
 		device ref i2c0 on end
@@ -562,8 +629,9 @@ chip soc/intel/pantherlake
 			chip drivers/i2c/hid
 				register "generic.hid" = ""HFW68H""
 				register "generic.desc" = ""Hynitron TOUCHPAD""
-				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_A13_IRQ)"
-				register "generic.wake" = "GPE0_DW0_13"
+				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F18_IRQ)"
+				# NOTE: pmc_gpe0_dw0 will be overridden to GPP_F in variant.c.
+				register "generic.wake" = "GPE0_DW0_18"
 				register "generic.uid" = "5"
 				register "generic.detect" = "1"
 				register "hid_desc_reg_offset" = "0x20"

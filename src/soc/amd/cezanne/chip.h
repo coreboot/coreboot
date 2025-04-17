@@ -11,7 +11,12 @@
 #include <soc/southbridge.h>
 #include <drivers/i2c/designware/dw_i2c.h>
 #include <types.h>
+
+#if CONFIG(SOC_AMD_CEZANNE)
 #include <vendorcode/amd/fsp/cezanne/FspUsb.h>
+#elif CONFIG(SOC_AMD_RENOIR)
+#include <vendorcode/amd/fsp/renoir/FspUsb.h>
+#endif
 
 struct soc_amd_cezanne_config {
 	struct soc_amd_common_config common_config;

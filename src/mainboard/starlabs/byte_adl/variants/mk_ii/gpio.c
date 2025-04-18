@@ -21,8 +21,8 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPD0, NONE, DEEP, NF1),				/* Battery Low */
 	PAD_CFG_NF(GPD1, NONE, DEEP, NF1),				/* Charger Connected */
 	PAD_CFG_NF(GPD3, UP_20K, DEEP, NF1),				/* Power Button */
-	PAD_NC(GPD4, NONE),						/* Sleep S3 */
-	PAD_NC(GPD5, NONE),						/* Sleep S4 */
+	PAD_CFG_NF(GPD4, NONE, DEEP, NF1),				/* Sleep S3 */
+	PAD_CFG_NF(GPD5, NONE, DEEP, NF1),				/* Sleep S4 */
 	PAD_CFG_NF(GPD8, NONE, DEEP, NF1),				/* Bluetooth Suspend */
 
 	/* eSPI */

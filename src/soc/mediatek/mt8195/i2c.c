@@ -89,7 +89,7 @@ static const struct pad_func i2c_funcs[I2C_BUS_NUMBER][2] = {
 
 };
 
-static void mtk_i2c_set_gpio_pinmux(uint8_t bus)
+void mtk_i2c_set_gpio_pinmux(uint8_t bus)
 {
 	assert(bus < I2C_BUS_NUMBER);
 
@@ -99,26 +99,4 @@ static void mtk_i2c_set_gpio_pinmux(uint8_t bus)
 		if (bus <= I2C4)
 			gpio_set_pull(ptr[i].gpio, GPIO_PULL_ENABLE, ptr[i].select);
 	}
-}
-
-void mtk_i2c_bus_init(uint8_t bus, uint32_t speed)
-{
-	mtk_i2c_speed_init(bus, speed);
-	mtk_i2c_set_gpio_pinmux(bus);
-}
-
-void mtk_i2c_dump_more_info(struct mt_i2c_regs *regs)
-{
-	printk(BIOS_DEBUG, "LTIMING %x\nCLK_DIV %x\n",
-	       read32(&regs->ltiming),
-	       read32(&regs->clock_div));
-}
-
-void mtk_i2c_config_timing(struct mt_i2c_regs *regs, struct mtk_i2c *bus_ctrl)
-{
-	write32(&regs->clock_div, bus_ctrl->ac_timing.inter_clk_div);
-	write32(&regs->timing, bus_ctrl->ac_timing.htiming);
-	write32(&regs->ltiming, bus_ctrl->ac_timing.ltiming);
-	write32(&regs->hs, bus_ctrl->ac_timing.hs);
-	write32(&regs->ext_conf, bus_ctrl->ac_timing.ext);
 }

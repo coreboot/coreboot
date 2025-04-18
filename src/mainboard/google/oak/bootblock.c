@@ -70,7 +70,7 @@ void bootblock_mainboard_init(void)
 		gpio_output(GPIO(SRCLKENAI2), 1);
 
 	/* Init i2c bus 2 Timing register for TPM */
-	mtk_i2c_bus_init(CONFIG_DRIVER_TPM_I2C_BUS);
+	mtk_i2c_bus_init(CONFIG_DRIVER_TPM_I2C_BUS, I2C_SPEED_FAST);
 
 	mtk_spi_init(CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS, SPI_PAD1_MASK, 6*MHz,
 		     0);

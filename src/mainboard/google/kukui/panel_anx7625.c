@@ -60,7 +60,7 @@ struct panel_description *get_panel_description(int panel_id)
 	/* To read panel EDID, we have to first power on anx7625. */
 	power_on_anx7625();
 
-	mtk_i2c_bus_init(ANX7625_I2C_BUS);
+	mtk_i2c_bus_init(ANX7625_I2C_BUS, I2C_SPEED_FAST);
 
 	if (anx7625_init(ANX7625_I2C_BUS)) {
 		printk(BIOS_ERR, "Can't init ANX7625 bridge.\n");

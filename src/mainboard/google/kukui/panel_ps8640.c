@@ -49,7 +49,7 @@ struct panel_description *get_panel_description(int panel_id)
 	power_on_ps8640();
 
 	u8 i2c_bus = 4, i2c_addr = 0x08;
-	mtk_i2c_bus_init(i2c_bus);
+	mtk_i2c_bus_init(i2c_bus, I2C_SPEED_FAST);
 
 	ps8640_init(i2c_bus, i2c_addr);
 	struct edid *edid = &ps8640_data.edid;

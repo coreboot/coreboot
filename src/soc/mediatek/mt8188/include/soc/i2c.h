@@ -69,6 +69,4 @@ enum {
 
 check_member(mt_i2c_regs, dma_nreq, 0xf94);
 
-void mtk_i2c_bus_init(uint8_t bus, uint32_t speed);
-
 #endif /* SOC_MEDIATEK_MT8188_I2C_H */

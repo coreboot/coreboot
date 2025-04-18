@@ -46,6 +46,4 @@ struct mt_i2c_regs {
 
 check_member(mt_i2c_regs, multi_dma, 0xf8c);
 
-void mtk_i2c_bus_init(uint8_t bus);
-
 #endif /* SOC_MEDIATEK_MT8183_I2C_H */

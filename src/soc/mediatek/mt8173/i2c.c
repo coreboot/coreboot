@@ -60,13 +60,14 @@ _Static_assert(ARRAY_SIZE(mtk_i2c_bus_controller) == I2C_BUS_NUMBER,
 #define I2CLOG(fmt, arg...)
 #endif /* CONFIG_DEBUG_I2C */
 
-void mtk_i2c_bus_init(uint8_t bus)
+void mtk_i2c_bus_init(uint8_t bus, uint32_t speed)
 {
 	uint8_t step_div;
 	uint32_t i2c_freq;
 	const uint8_t sample_div = 1;
 
 	assert(bus < ARRAY_SIZE(mtk_i2c_bus_controller));
+	assert(speed == I2C_SPEED_FAST);
 
 	/* Calculate i2c frequency */
 	step_div = DIV_ROUND_UP(I2C_CLK_HZ, (400 * KHz * sample_div * 2));

@@ -109,7 +109,7 @@ static const struct pad_func i2c_funcs[I2C_BUS_NUMBER][2] = {
 	},
 };
 
-static void mtk_i2c_set_gpio_pinmux(uint8_t bus)
+void mtk_i2c_set_gpio_pinmux(uint8_t bus)
 {
 	assert(bus < I2C_BUS_NUMBER);
 
@@ -169,8 +169,9 @@ static void mtk_i2c_speed_init_soc(uint8_t bus)
 	write32(&mtk_i2c_bus_controller[bus].i2c_regs->ext_conf, I2C_FS_START_CON);
 }
 
-void mtk_i2c_bus_init(uint8_t bus)
+void mtk_i2c_bus_init(uint8_t bus, uint32_t speed)
 {
+	assert(speed == I2C_SPEED_FAST);
 	mtk_i2c_speed_init_soc(bus);
 	mtk_i2c_set_gpio_pinmux(bus);
 }

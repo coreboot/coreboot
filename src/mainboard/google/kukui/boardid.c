@@ -128,7 +128,7 @@ static uint8_t wfc_id(void)
 		[1] = 0x5035,  /* GC5035 */
 	};
 
-	mtk_i2c_bus_init(bus);
+	mtk_i2c_bus_init(bus, I2C_SPEED_FAST);
 
 	/* Turn on camera sensor EEPROM */
 	pwrap_write(PMIC_LDO_VCAMIO_CON0, 0x1);

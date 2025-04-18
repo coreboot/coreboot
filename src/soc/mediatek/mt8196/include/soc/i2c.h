@@ -68,6 +68,4 @@ enum {
 
 check_member(mt_i2c_regs, fifo_thresh, 0xf8);
 
-void mtk_i2c_bus_init(uint8_t bus, uint32_t speed);
-
 #endif /* __SOC_MEDIATEK_MT8196_I2C_H__ */

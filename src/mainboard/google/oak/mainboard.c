@@ -26,7 +26,7 @@ enum {
 
 static void configure_ext_buck(void)
 {
-	mtk_i2c_bus_init(EXT_BUCK_I2C_BUS);
+	mtk_i2c_bus_init(EXT_BUCK_I2C_BUS, I2C_SPEED_FAST);
 
 	switch (board_id() + CONFIG_BOARD_ID_ADJUSTMENT) {
 	case 3:
@@ -97,7 +97,7 @@ static void configure_audio(void)
 	}
 
 	/* Init i2c bus Timing register for audio codecs */
-	mtk_i2c_bus_init(CODEC_I2C_BUS);
+	mtk_i2c_bus_init(CODEC_I2C_BUS, I2C_SPEED_FAST);
 
 	/* set I2S clock to 48KHz */
 	mt_pll_set_aud_div(48 * KHz);
@@ -193,7 +193,7 @@ static int read_edid_from_ps8640(struct edid *edid)
 		i2c_addr = 0x18;
 	}
 
-	mtk_i2c_bus_init(i2c_bus);
+	mtk_i2c_bus_init(i2c_bus, I2C_SPEED_FAST);
 
 	ps8640_init(i2c_bus, i2c_addr);
 	if (ps8640_get_edid(i2c_bus, i2c_addr, edid)) {

@@ -123,6 +123,20 @@ check_member(mtk_pmif_regs, pmic_eint_sta_addr, 0x40C);
 check_member(mtk_pmif_regs, irq_event_en_0, 0x418);
 check_member(mtk_pmif_regs, swinf_0_acc, 0xC00);
 
+#define PMIF_SPI_HW_INF		0x307F
+#define PMIF_SPI_MD		BIT(8)
+#define PMIF_SPI_AP_SECURE	BIT(9)
+#define PMIF_SPI_AP		BIT(10)
+#define PMIF_SPI_STAUPD		BIT(14)
+#define PMIF_SPI_TSX_HW		BIT(19)
+#define PMIF_SPI_DCXO_HW	BIT(20)
+
+#define PMIF_SPI_INF_EN		(PMIF_SPI_HW_INF | PMIF_SPI_MD | PMIF_SPI_AP_SECURE | \
+				PMIF_SPI_AP)
+#define PMIF_SPI_ARB_EN		(PMIF_SPI_HW_INF | PMIF_SPI_MD | PMIF_SPI_AP_SECURE | \
+				PMIF_SPI_AP | PMIF_SPI_STAUPD | PMIF_SPI_TSX_HW | \
+				PMIF_SPI_DCXO_HW)
+
 #define PMIF_SPMI_AP_CHAN	(PMIF_SPMI_BASE + 0xC80)
 #define PMIF_SPI_AP_CHAN	(PMIF_SPI_BASE + 0xC80)
 

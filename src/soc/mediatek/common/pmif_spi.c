@@ -309,11 +309,9 @@ int pmif_spi_init(struct pmif *arb)
 	write32(&arb->mtk_pmif->timer_ctrl, 0x3);
 
 	/* Enable interfaces and arbitration */
-	write32(&arb->mtk_pmif->inf_en, PMIF_SPI_HW_INF | PMIF_SPI_MD |
-		PMIF_SPI_AP_SECURE | PMIF_SPI_AP);
+	write32(&arb->mtk_pmif->inf_en, PMIF_SPI_INF_EN);
 
-	write32(&arb->mtk_pmif->arb_en, PMIF_SPI_HW_INF | PMIF_SPI_MD | PMIF_SPI_AP_SECURE |
-		PMIF_SPI_AP | PMIF_SPI_STAUPD | PMIF_SPI_TSX_HW | PMIF_SPI_DCXO_HW);
+	write32(&arb->mtk_pmif->arb_en, PMIF_SPI_ARB_EN);
 
 	/* Enable GPS AUXADC HW 0 and 1 */
 	SET32_BITFIELDS(&arb->mtk_pmif->other_inf_en, INTGPSADCINF_EN, 0x3);

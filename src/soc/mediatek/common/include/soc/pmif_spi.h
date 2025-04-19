@@ -57,14 +57,6 @@ enum {
 	PMIC_AUXADC_RQST0     = PMIC_BASE + 0x1108,
 };
 
-#define PMIF_SPI_HW_INF		0x307F
-#define PMIF_SPI_MD		BIT(8)
-#define PMIF_SPI_AP_SECURE	BIT(9)
-#define PMIF_SPI_AP		BIT(10)
-#define PMIF_SPI_STAUPD		BIT(14)
-#define PMIF_SPI_TSX_HW		BIT(19)
-#define PMIF_SPI_DCXO_HW	BIT(20)
-
 #define DEFAULT_SLVID	0
 
 #define PMIF_CMD_STA	BIT(2)

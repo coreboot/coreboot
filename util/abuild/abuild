@@ -968,7 +968,6 @@ if [[ "${cpus}" != "1" ]]; then
 		cpus=32
 	fi
 	# Test if xargs supports the non-standard -P flag
-	# FIXME: disabled until we managed to eliminate all the make(1) quirks
 	printf "\n" | xargs -P "${cpus:-0}" -n 1 printf "%s\n" 2>/dev/null >/dev/null && USE_XARGS=1
 fi
 

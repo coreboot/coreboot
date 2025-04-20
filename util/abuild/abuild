@@ -535,24 +535,21 @@ build_config()
 	fi
 
 	if [[ "${clang}" = true ]]; then
-		check_config "${build_dir}" "clang" "CONFIG_COMPILER_LLVM_CLANG=y"
-		if [[ $? -ne 0 ]]; then
+		if ! check_config "${build_dir}" "clang" "CONFIG_COMPILER_LLVM_CLANG=y"; then
 			printf "%s doesn't support clang, skipping.\n" "${MAINBOARD}"
 			return
 		fi
 	fi
 
 	if [[ -n "${skipconfig_set}" ]]; then
-		check_config "${build_dir}" "config value" "CONFIG_${skipconfig_set}=y" negate
-		if [[ $? -ne 0 ]]; then
+		if ! check_config "${build_dir}" "config value" "CONFIG_${skipconfig_set}=y" negate; then
 			printf "%s has %s set. Skipping at user's request.\n" "${MAINBOARD}" "${skipconfig_set}"
 			return
 		fi
 	fi
 
 	if [[ -n "${skipconfig_unset}" ]]; then
-		check_config "${build_dir}" "config value" "CONFIG_${skipconfig_unset}=y"
-		if [[ $? -ne 0 ]]; then
+		if ! check_config "${build_dir}" "config value" "CONFIG_${skipconfig_unset}=y"; then
 			printf "%s does not have %s set. Skipping at user's request.\n" "${MAINBOARD}" "${skipconfig_unset}"
 			return
 		fi

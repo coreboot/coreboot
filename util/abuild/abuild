@@ -372,9 +372,13 @@ check_config()
 # Counting microseconds since start of shell
 add_timestamp()
 {
-	local now=${EPOCHREALTIME}
-	local seconds=$(echo ${now} | cut -f 1 -d '.')
-	local usecs=$(echo ${now} | cut -f 2 -d '.')
+	local now
+	local seconds
+	local usecs
+
+	now=${EPOCHREALTIME}
+	seconds=$(echo ${now} | cut -f 1 -d '.')
+	usecs=$(echo ${now} | cut -f 2 -d '.')
 	seconds=$(( seconds - ts_exec_shell ))
 	usecs=$(( seconds * 1000 * 1000 + 10#$usecs ))
 	printf "%s" ${usecs}
@@ -974,7 +978,8 @@ test "${MAKEFLAGS}" == "" && test "${cpus}" != "" && export MAKEFLAGS="-j ${cpus
 export MAKEFLAGS="${MAKEFLAGS} UPDATED_SUBMODULES=1" # no need to re-download
 build_targets()
 {
-	local targets=${*-$(get_mainboards)}
+	local targets
+	targets=${*-$(get_mainboards)}
 	for MAINBOARD in ${targets}; do
 		build_target "${MAINBOARD}"
 	done
@@ -987,6 +992,8 @@ build_targets()
 	local etime
 	local num_targets
 	local cpus_per_target
+	local XMLFILE
+	local duration
 
 	local targets=${*-$(get_mainboards)}
 	# seed shared utils
@@ -1001,13 +1008,13 @@ build_targets()
 	fi
 	mkdir -p "${TARGET}/abuild"
 	ABSPATH="$(cd "${TARGET}/abuild" && pwd)"
-	local XMLFILE="${ABSPATH}/__util.xml"
+	XMLFILE="${ABSPATH}/__util.xml"
 	rm -f "${XMLFILE}"
 	stime=$(add_timestamp)
 	${BUILDPREFIX} "${MAKE}" -j "${cpus}" DOTCONFIG="${TMPCFG}" obj="${TARGET}/temp" objutil="${TARGET}/sharedutils" tools > "${TARGET}/sharedutils/make.log" 2>&1
 	local ret=$?
 	etime=$(add_timestamp)
-	local duration=$(ts_delta_seconds ${stime} ${etime})
+	duration=$(ts_delta_seconds "${stime}" "${etime}")
 
 	junit " <testcase classname='util' name='all' time='${duration}' >"
 	if [[ ${ret} -eq 0 ]]; then

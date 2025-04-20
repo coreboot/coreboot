@@ -103,6 +103,7 @@ ts_basetime_str=$(date -u --date=@${ts_exec_shell})
 
 trap interrupt INT
 
+# shellcheck disable=SC2317 # Disable unreacheable code warning. It's a trap!
 interrupt()
 {
 	printf "\n%s: execution interrupted manually.\n" "$0"

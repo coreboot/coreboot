@@ -103,7 +103,7 @@ ts_basetime_str=$(date -u --date=@${ts_exec_shell})
 
 trap interrupt INT
 
-function interrupt
+interrupt()
 {
 	printf "\n%s: execution interrupted manually.\n" "$0"
 	if [[ "$mode" == "junit" ]]; then
@@ -112,18 +112,18 @@ function interrupt
 	exit 1
 }
 
-function debug
+debug()
 {
 	[[ "$verbose" == "true" ]] && printf "%s\n" "$*"
 }
 
-function junit
+junit()
 {
 	[[ "$mode" == "junit" ]] && printf "%s\n" "$*" >> "$XMLFILE"
 	return 0
 }
 
-function junitfile
+junitfile()
 {
 	test "$mode" == "junit" && {
 		printf '<![CDATA[\n'
@@ -136,7 +136,7 @@ function junitfile
 # By default all mainboards are listed, but when passing a two-level path
 # below src/mainboard, such as emulation/qemu-i440fx, or emulation/*, it
 # returns all board descriptors in that hierarchy.
-function get_mainboards
+get_mainboards()
 {
 	local search_space=${1-*/*}
 	# shellcheck disable=SC2086
@@ -146,7 +146,7 @@ function get_mainboards
 }
 
 # Given a mainboard descriptor, return its directory below src/mainboard
-function mainboard_directory
+mainboard_directory()
 {
 	local MAINBOARD=$1
 
@@ -157,7 +157,7 @@ function mainboard_directory
 }
 
 # Given a mainboard descriptor, return its vendor (CONFIG_VENDOR_*)
-function mainboard_vendor
+mainboard_vendor()
 {
 	local MAINBOARD=$1
 	local kconfig_file
@@ -178,7 +178,7 @@ function mainboard_vendor
 # descriptors (eg. EMULATION_QEMU_X86_I440F} and returns the latter
 # format.
 # If a directory contains multiple boards, returns them all.
-function normalize_target
+normalize_target()
 {
 	# TODO: Change 'targets' variable to an array
 	local targets
@@ -206,7 +206,7 @@ function normalize_target
 }
 
 # shellcheck disable=SC2129
-function create_config
+create_config()
 {
 	local BUILD_NAME=$1
 	local build_dir=$2
@@ -241,7 +241,7 @@ function create_config
 	fi
 }
 
-function update_config
+update_config()
 {
 	local BUILD_NAME=$1
 	local build_dir=$2
@@ -313,7 +313,7 @@ function update_config
 }
 
 # shellcheck disable=SC2129
-function create_buildenv
+create_buildenv()
 {
 	local BUILD_NAME=$1
 	local build_dir=$2
@@ -346,7 +346,7 @@ function create_buildenv
 	return $ret
 }
 
-function check_config
+check_config()
 {
 	local BUILD_DIR="$1"
 	local TEST_TYPE="$2"
@@ -374,7 +374,7 @@ function check_config
 }
 
 # Counting microseconds since start of shell
-function add_timestamp
+add_timestamp()
 {
 	local now=${EPOCHREALTIME}
 	local seconds=$(echo $now | cut -f 1 -d '.')
@@ -384,13 +384,13 @@ function add_timestamp
 	printf "%s" $usecs
 }
 
-function ts_delta_seconds
+ts_delta_seconds()
 {
 	local delta=$(( ($2 - $1) / (1000 * 1000) ))
 	printf "%s" $delta
 }
 
-function ts_delta_string
+ts_delta_string()
 {
 	local ts_minutes
 	local ts_seconds
@@ -409,7 +409,7 @@ function ts_delta_string
 	fi
 }
 
-function compile_target
+compile_target()
 {
 	local BUILD_NAME=$1
 
@@ -480,7 +480,7 @@ function compile_target
 	return $MAKE_FAILED
 }
 
-function build_config
+build_config()
 {
 	local MAINBOARD=$1
 	local build_dir=$2
@@ -613,7 +613,7 @@ EOF
 	junit "</testcase>"
 }
 
-function record_mainboard
+record_mainboard()
 {
 	local log=$1
 
@@ -627,7 +627,7 @@ function record_mainboard
 }
 
 # One target may build several configs
-function build_target
+build_target()
 {
 	local MAINBOARD=$1
 	local MAINBOARD_LC
@@ -661,7 +661,7 @@ function build_target
 	remove_target "$MAINBOARD"
 }
 
-function remove_target
+remove_target()
 {
 	if [[ "$remove" != "true" ]]; then
 		return
@@ -681,7 +681,7 @@ function remove_target
 	return
 }
 
-function myhelp
+myhelp()
 {
 cat << __END_OF_HELP
 Usage: $0 [options]
@@ -736,7 +736,7 @@ Options:\n
 __END_OF_HELP
 }
 
-function myversion
+myversion()
 {
 	cat << EOF
 

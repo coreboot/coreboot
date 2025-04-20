@@ -176,22 +176,30 @@ mainboard_vendor()
 # If a directory contains multiple boards, returns them all.
 normalize_target()
 {
-	# TODO: Change 'targets' variable to an array
-	local targets
+	local target_input=$1
+	local -a targets=() # Initialize as an empty array
 	local VARIANT_UC
+	local i
 
 	VARIANT_UC=$(echo "${variant}" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
 
-	targets=$(get_mainboards "$1")
-	if [[ -n "${targets}" ]]; then
-		# shellcheck disable=SC2086
-		targets="$(grep "${VARIANT_UC}\$" <<< ${targets})"
-		echo "${targets}"
+	# Read output of get_mainboards into the targets array
+	mapfile -t targets < <(get_mainboards "${target_input}")
+	if [[ ${#targets[@]} -gt 0 ]]; then
+		# Filter the array using grep
+		mapfile -t targets < <(printf '%s\n' "${targets[@]}" | grep "${VARIANT_UC}\$")
+		# Print the filtered targets, one per line
+		if [[ ${#targets[@]} -gt 0 ]]; then
+			printf '%s\n' "${targets[@]}"
+		fi
 		return
 	fi
 
-	targets=$(echo "$1" | tr ',' ' ')
-	for i in ${targets}; do
+	# Handle comma-separated input string
+	IFS=',' read -ra targets <<< "${target_input}"
+	for i in "${targets[@]}"; do
+		# Trim whitespace if necessary (read -ra might include it)
+		i=$(echo "$i" | xargs)
 		if [[ -n "$(mainboard_directory "${i}")" ]]; then
 			printf "%s\n" "${i}"
 		else

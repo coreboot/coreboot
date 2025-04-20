@@ -428,14 +428,14 @@ compile_target()
 	timestamps="abuild.timestamps"
 	{
 		printf "Build started %s\n" "${ts_basetime_str}"
-		printf "BASETIME_SECONDS %d\n" ${ts_exec_shell}
-		printf "TS_0 %d\n" ${ts_0}
-		printf "TS_1 %d\n" ${ts_1}
-		printf "TS_2 %d\n" ${ts_2}
+		printf "BASETIME_SECONDS %d\n" "${ts_exec_shell}"
+		printf "TS_0 %d\n" "${ts_0}"
+		printf "TS_1 %d\n" "${ts_1}"
+		printf "TS_2 %d\n" "${ts_2}"
 	} > "${timestamps}"
 
-	duration=$(ts_delta_seconds ${ts_0} ${ts_2})
-	duration_str=$(ts_delta_string ${ts_0} ${ts_2})
+	duration=$(ts_delta_seconds "${ts_0}" "${ts_2}")
+	duration_str=$(ts_delta_string "${ts_0}" "${ts_2}")
 	junit " <testcase classname='${TESTRUN}${testclass/#/.}' name='${BUILD_NAME}' time='${duration}' >"
 
 	if [[ ${MAKE_FAILED} -eq 0 ]]; then
@@ -470,14 +470,14 @@ compile_target()
 	if [[ -f ${build_dir}/ccache.stats ]]; then
 		stats_files="${stats_files} ${build_dir}/ccache.stats"
 	fi
-	flock -F -w 0.1 ${TARGET}/.statslock tar -rf ${stats_archive} ${stats_files} 2> /dev/null
+	flock -F -w 0.1 "${TARGET}/.statslock" tar -rf "${stats_archive}" "${stats_files}" 2> /dev/null
 
 	if [[ "${clean_work}" = "true" ]]; then
 		rm -rf "${build_dir}"
 	fi
 	if [[ "${clean_objs}" = "true" ]]; then
-		find ${build_dir} \! \( -name coreboot.rom -o -name config.h -o -name config.build -o -name make.log \) -type f -exec rm {} +
-		find ${build_dir} -type d -exec rmdir -p {} + 2>/dev/null
+		find "${build_dir}" \! \( -name coreboot.rom -o -name config.h -o -name config.build -o -name make.log \) -type f -exec rm {} +
+		find "${build_dir}" -type d -exec rmdir -p {} + 2>/dev/null
 	fi
 	return ${MAKE_FAILED}
 }
@@ -527,7 +527,7 @@ build_config()
 	if [[ "${chromeos}" = false ]]; then
 		# Skip this rule for configs created from templates that already
 		# come with CHROMEOS enabled.
-		grep -q "^CONFIG_CHROMEOS=y" ${config_file:-/dev/null} || \
+		grep -q "^CONFIG_CHROMEOS=y" "${config_file:-/dev/null}" || \
 		check_config "${build_dir}" "ChromeOS" "CONFIG_CHROMEOS=y" negate
 		local FORCE_ENABLED_CROS=$?
 	else
@@ -607,7 +607,7 @@ EOF
 		fi
 		compile_target "${BUILD_NAME}"
 		if [[ "${scanbuild}" = "true" ]]; then
-			mv "${scanbuild_out}"tmp/* "${scanbuild_out}"
+			mv "${scanbuild_out}tmp"/* "${scanbuild_out}"
 			rmdir "${scanbuild_out}tmp"
 		fi
 	fi
@@ -945,8 +945,8 @@ if [[ -z "${customizing}" ]]; then
 	customizing="Default configuration"
 fi
 customizing="Config: ${customizing}"
-FAILED_BOARDS="$(realpath ${TARGET}/failed_boards)"
-PASSED_BOARDS="$(realpath ${TARGET}/passing_boards)"
+FAILED_BOARDS="$(realpath "${TARGET}/failed_boards")"
+PASSED_BOARDS="$(realpath "${TARGET}/passing_boards")"
 
 stats_archive="${TARGET}/statistics.tar"
 
@@ -972,7 +972,7 @@ if [[ "${cpus}" != "1" ]]; then
 	fi
 	# Test if xargs supports the non-standard -P flag
 	# FIXME: disabled until we managed to eliminate all the make(1) quirks
-	printf "\n" | xargs -P ${cpus:-0} -n 1 printf "%s\n" 2>/dev/null >/dev/null && USE_XARGS=1
+	printf "\n" | xargs -P "${cpus:-0}" -n 1 printf "%s\n" 2>/dev/null >/dev/null && USE_XARGS=1
 fi
 
 if [[ "${USE_XARGS}" = "0" ]]; then
@@ -1039,7 +1039,7 @@ build_targets()
 		rmdir "${scanbuild_out}tmp"
 	fi
 	cpus_per_target=$(((${cpus:-1} + num_targets - 1) / num_targets))
-	printf "%s\n" "${targets}" | xargs -P ${cpus:-0} -n 1 "$0" "${cmdline[@]}" -I -c "${cpus_per_target}" -t
+	printf "%s\n" "${targets}" | xargs -P "${cpus:-0}" -n 1 "$0" "${cmdline[@]}" -I -c "${cpus_per_target}" -t
 	rm -rf "${TARGET}/temp" "${TMPCFG}"
 	num_targets=$(wc -w <<<"${targets}")
 }
@@ -1075,8 +1075,8 @@ else
 	XMLFILE="${REAL_XMLFILE}"
 	junit '<?xml version="1.0" encoding="utf-8"?>'
 	junit '<testsuite>'
-	if [[ "$mode" != "text" ]]; then
-		for xmlfile in ${TARGET}/abuild/*_*.xml; do
+	if [[ "${mode}" != "text" ]]; then
+		for xmlfile in "${TARGET}"/abuild/*_*.xml; do
 			cat "${xmlfile}" >> "${REAL_XMLFILE}"
 		done
 	fi

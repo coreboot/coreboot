@@ -113,11 +113,6 @@ interrupt()
 	exit 1
 }
 
-debug()
-{
-	[[ "${verbose}" == "true" ]] && printf "%s\n" "$*"
-}
-
 junit()
 {
 	[[ "${mode}" == "junit" ]] && printf "%s\n" "$*" >> "${XMLFILE}"
@@ -755,7 +750,6 @@ EOF
 # default options
 target=""
 buildall=false
-verbose=false
 
 test -f util/sconfig/sconfig.l && ROOT=$( pwd )
 test -f ../util/sconfig/sconfig.l && ROOT=$( cd .. && pwd )
@@ -807,7 +801,7 @@ while true ; do
 		-d|--dir)	shift; configdir="$1"; shift;;
 		-e|--exitcode)	shift; exitcode=1;;
 		-r|--remove)	shift; remove=true;;
-		-v|--verbose)	shift; verbose=true; verboseopt='V=1';;
+		-v|--verbose)	shift; verboseopt='V=1';;
 		-q|--quiet)	shift; quiet=true;;
 		-V|--version)	shift; myversion; exit 0;;
 		-h|--help)	shift; myversion; myhelp; exit 0;;

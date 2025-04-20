@@ -4,6 +4,7 @@
 #include <delay.h>
 #include <stddef.h>
 #include <superio/hwm5_conf.h>
+#include <option.h>
 
 #include "env_ctrl.h"
 #include "env_ctrl_chip.h"
@@ -373,4 +374,31 @@ void ite_ec_init(const u16 base, const struct ite_ec_config *const conf)
 	for (i = 0; i < ITE_EC_TMPIN_CNT; ++i)
 		if (conf->tmpin[i].mode == THERMAL_PECI)
 			extemp_force_idle_status(base);
+}
+
+void ite_ec_set_power_state(struct device *dev)
+{
+	uint8_t power_status;
+	uint8_t reg_pcr1, reg_pcr2;
+
+	/* Set power state after power fail */
+	power_status = get_uint_option("power_on_after_fail",
+					CONFIG_MAINBOARD_POWER_FAILURE_STATE);
+	pnp_enter_conf_mode(dev);
+	pnp_set_logical_device(dev);
+	reg_pcr1 = pnp_read_config(dev, ITE_EC_REG_PCR1);
+	reg_pcr2 = pnp_read_config(dev, ITE_EC_REG_PCR2);
+	if (power_status == MAINBOARD_POWER_ON) {
+		reg_pcr2 |= (1 << 5);
+	} else if (power_status == MAINBOARD_POWER_KEEP) {
+		reg_pcr2 &= ~(1 << 5);
+		reg_pcr1 |=  (1 << 5);
+	} else {
+		reg_pcr2 &= ~(1 << 5);
+		reg_pcr1 &= ~(1 << 5);
+	}
+	pnp_write_config(dev, ITE_EC_REG_PCR1, reg_pcr1);
+	pnp_write_config(dev, ITE_EC_REG_PCR2, reg_pcr2);
+	pnp_exit_conf_mode(dev);
+	printk(BIOS_INFO, "set power %u after power fail\n", power_status);
 }

@@ -235,6 +235,17 @@ static const u8 ITE_EC_TEMP_ADJUST[] = { 0x56, 0x57, 0x59 };
 #define PECI_GETTEMP_WRITE_LENGTH		0x01
 #define PECI_GETTEMP_READ_LENGTH		0x02
 
+/* Registers in EC LDN */
+#define ITE_EC_REG_PCR1				0xf2
+#define ITE_EC_REG_PCR2				0xf4
+
+/* These must match the values in src/mainboard/Kconfig */
+#define MAINBOARD_POWER_OFF			0
+#define MAINBOARD_POWER_ON			1
+#define MAINBOARD_POWER_KEEP			2
+
+void ite_ec_set_power_state(struct device *dev);
+
 void ite_ec_init(u16 base, const struct ite_ec_config *conf);
 
 #endif /* SUPERIO_ITE_ENV_CTRL_H */

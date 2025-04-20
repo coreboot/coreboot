@@ -5,21 +5,14 @@
 #include <superio/conf_mode.h>
 #include <pc80/keyboard.h>
 #include <superio/ite/common/env_ctrl.h>
-#include <option.h>
 
 #include "chip.h"
 #include "it8728f.h"
-
-#define MAINBOARD_POWER_OFF	0
-#define MAINBOARD_POWER_ON	1
-#define MAINBOARD_POWER_KEEP	2
 
 static void it8728f_init(struct device *dev)
 {
 	const struct superio_ite_it8728f_config *conf = dev->chip_info;
 	const struct resource *res;
-	uint8_t power_status;
-	uint8_t byte_f2, byte_f4;
 
 	if (!dev->enabled)
 		return;
@@ -31,28 +24,7 @@ static void it8728f_init(struct device *dev)
 		if (!conf || !res)
 			break;
 		ite_ec_init(res->base, &conf->ec);
-
-		/* Set power state after power fail */
-		power_status = get_uint_option("power_on_after_fail",
-				CONFIG_MAINBOARD_POWER_FAILURE_STATE);
-		pnp_enter_conf_mode(dev);
-		pnp_set_logical_device(dev);
-		byte_f4 = pnp_read_config(dev, 0xf4);
-		byte_f2 = pnp_read_config(dev, 0xf2);
-		if (power_status == MAINBOARD_POWER_ON) {
-			byte_f4 |= 0x20;
-		} else if (power_status == MAINBOARD_POWER_KEEP) {
-			byte_f4 &= ~0x20;
-			byte_f2 |=  0x20;
-		} else {
-			byte_f4 &= ~0x20;
-			byte_f2 &= ~0x20;
-		}
-		pnp_write_config(dev, 0xf4, byte_f4);
-		pnp_write_config(dev, 0xf2, byte_f2);
-		pnp_exit_conf_mode(dev);
-		printk(BIOS_INFO, "set power %u after power fail\n", power_status);
-
+		ite_ec_set_power_state(dev);
 		break;
 	case IT8728F_KBCK:
 		set_kbc_ps2_mode();

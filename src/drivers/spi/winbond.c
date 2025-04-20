@@ -158,6 +158,15 @@ static const struct spi_flash_part_id flash_table[] = {
 		.bp_bits			= 3,
 	},
 	{
+		/* W25Q64JV */
+		.id[0]				= 0x7017,
+		.nr_sectors_shift		= 11,
+		.fast_read_dual_output_support	= 1,
+		.fast_read_dual_io_support	= 1,
+		.protection_granularity_shift	= 17,
+		.bp_bits			= 3,
+	},
+	{
 		/* W25Q64JW */
 		.id[0]				= 0x8017,
 		.nr_sectors_shift		= 11,

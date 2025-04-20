@@ -426,11 +426,13 @@ compile_target()
 	cd "${build_dir}" || return $?
 
 	timestamps="abuild.timestamps"
-	printf "Build started %s\n" "${ts_basetime_str}" > "${timestamps}"
-	printf "BASETIME_SECONDS %d\n" ${ts_exec_shell} >> "${timestamps}"
-	printf "TS_0 %d\n" ${ts_0} >> "${timestamps}"
-	printf "TS_1 %d\n" ${ts_1} >> "${timestamps}"
-	printf "TS_2 %d\n" ${ts_2} >> "${timestamps}"
+	{
+		printf "Build started %s\n" "${ts_basetime_str}"
+		printf "BASETIME_SECONDS %d\n" ${ts_exec_shell}
+		printf "TS_0 %d\n" ${ts_0}
+		printf "TS_1 %d\n" ${ts_1}
+		printf "TS_2 %d\n" ${ts_2}
+	} > "${timestamps}"
 
 	duration=$(ts_delta_seconds ${ts_0} ${ts_2})
 	duration_str=$(ts_delta_string ${ts_0} ${ts_2})

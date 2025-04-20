@@ -16,8 +16,6 @@ static const struct mem_spd spd_info = {
 	},
 };
 
-const bool half_populated = false;
-
 void mainboard_memory_init_params(FSPM_UPD *mupd)
 {
 	// Performance settings
@@ -70,5 +68,5 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 	mupd->FspmConfig.MemTestOnWarmBoot = 1;
 	mupd->FspmConfig.DdrFreqLimit = 3200; // Maximum tested speed.
 
-	memcfg_init(mupd, &mem_config, &spd_info, half_populated);
+	memcfg_init(mupd, &mem_config, &spd_info, false);
 }

@@ -18,6 +18,7 @@
 #include <string.h>
 #include <delay.h>
 #include <elog.h>
+#include <option.h>
 #include <stdlib.h>
 
 #include "chip.h"
@@ -542,7 +543,7 @@ void intel_me_finalize(struct device *dev)
 	/* Try to send EOP command so ME stops accepting other commands */
 	mkhi_end_of_post();
 
-	if (!CONFIG(DISABLE_ME_PCI))
+	if (!get_uint_option("me_disable", CONFIG(DISABLE_ME_PCI)))
 		return;
 
 	/* Make sure IO is disabled */
@@ -905,7 +906,7 @@ static void intel_me_init(struct device *dev)
 static void intel_me_enable(struct device *dev)
 {
 	/* Avoid talking to the device in S3 path */
-	if (acpi_is_wakeup_s3() && CONFIG(DISABLE_ME_PCI)) {
+	if (acpi_is_wakeup_s3() && get_uint_option("me_disable", CONFIG(DISABLE_ME_PCI))) {
 		dev->enabled = 0;
 		pch_disable_devfn(dev);
 	}

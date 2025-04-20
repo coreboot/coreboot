@@ -54,6 +54,7 @@
 [submodule "3rdparty/intel-sec-tools"]
 	path = 3rdparty/intel-sec-tools
 	url = https://review.coreboot.org/9esec-security-tooling.git
+	ignore = dirty
 [submodule "3rdparty/stm"]
 	path = 3rdparty/stm
 	url = https://review.coreboot.org/STM
@@ -62,6 +63,7 @@
 	path = util/goswid
 	url = https://review.coreboot.org/goswid
 	branch = trunk
+	ignore = dirty
 [submodule "src/vendorcode/amd/opensil/genoa_poc/opensil"]
 	path = src/vendorcode/amd/opensil/genoa_poc/opensil
 	url = https://review.coreboot.org/opensil_genoa_poc.git

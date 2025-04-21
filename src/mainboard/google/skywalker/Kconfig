@@ -2,7 +2,8 @@
 
 # Umbrella option to be selected by variant boards.
 config BOARD_GOOGLE_SKYWALKER_COMMON
-	def_bool BOARD_GOOGLE_SKYWALKER
+	def_bool BOARD_GOOGLE_OBIWAN || \
+		 BOARD_GOOGLE_SKYWALKER
 
 if BOARD_GOOGLE_SKYWALKER_COMMON
 
@@ -26,6 +27,7 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
+	default "Obiwan" if BOARD_GOOGLE_OBIWAN
 	default "Skywalker" if BOARD_GOOGLE_SKYWALKER
 
 config BOOT_DEVICE_SPI_FLASH_BUS

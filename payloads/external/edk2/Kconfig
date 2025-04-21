@@ -86,7 +86,7 @@ config EDK2_REPOSITORY
 
 config EDK2_TAG_OR_REV
 	string "Insert a commit's SHA-1 or a branch name"
-	default "origin/uefipayload_2408" if EDK2_REPO_MRCHROMEBOX
+	default "origin/uefipayload_2502" if EDK2_REPO_MRCHROMEBOX
 	default "origin/universalpayload" if EDK2_UNIVERSAL_PAYLOAD
 	default "origin/master" if EDK2_REPO_OFFICIAL
 	default "" if EDK2_REPO_CUSTOM

@@ -3,4 +3,5 @@ config DRIVERS_OPTION_CFR_ENABLED
 
 config DRIVERS_OPTION_CFR
 	bool "Support generating a CFR list of options"
+	select DRIVERS_EFI_VARIABLE_STORE if PAYLOAD_EDK2 && SMMSTORE
 	default y if DRIVERS_OPTION_CFR_ENABLED

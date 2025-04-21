@@ -381,6 +381,10 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	s_cfg->PchPmSlpS0Vm070VSupport = config->PchPmSlpS0Vm070VSupport;
 	s_cfg->PchPmSlpS0Vm075VSupport = config->PchPmSlpS0Vm075VSupport;
 
+	/* S0ix */
+	config->s0ix_enable = get_uint_option("s0ix_enable", config->s0ix_enable);
+	s_cfg->PchPmSlpS0Enable = config->s0ix_enable;
+
 	/* Lan */
 	s_cfg->PchLanEnable = is_devfn_enabled(PCH_DEVFN_GBE);
 	if (s_cfg->PchLanEnable) {
@@ -432,9 +436,6 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	/* WOL */
 	s_cfg->PchPmPcieWakeFromDeepSx = config->LanWakeFromDeepSx;
 	s_cfg->PchPmWolEnableOverride = config->WolEnableOverride;
-
-	/* S0ix */
-	s_cfg->PchPmSlpS0Enable = config->s0ix_enable;
 
 	/* disable Legacy PME */
 	memset(s_cfg->PcieRpPmSci, 0, sizeof(s_cfg->PcieRpPmSci));

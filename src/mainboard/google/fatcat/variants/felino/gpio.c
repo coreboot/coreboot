@@ -117,7 +117,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_C07:     NC */
 	PAD_NC(GPP_C07, NONE),
 	/* GPP_C08:     PCH_WP_OD */
-	PAD_CFG_GPO(GPP_C08, 1, PLTRST),
+	PAD_CFG_GPI(GPP_C08, NONE, DEEP),
 	/* GPP_C09:     PCIE_CLKREQ_SSD1_N */
 	PAD_CFG_NF(GPP_C09, NONE, DEEP, NF1),
 	/* GPP_C10:     NC */

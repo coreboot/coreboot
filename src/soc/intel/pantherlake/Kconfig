@@ -125,6 +125,12 @@ config SOC_INTEL_PANTHERLAKE_H
 	help
 	  Choose this option if the mainboard is built using PTL-H 4Xe system-on-a-chip (SoC).
 
+config SOC_INTEL_WILDCATLAKE
+	bool
+	select SOC_INTEL_PANTHERLAKE_U_H
+	help
+	  Choose this option if the mainboard is built using WCL system-on-a-chip (SoC).
+
 if SOC_INTEL_PANTHERLAKE_BASE
 
 config SOC_INTEL_PANTHERLAKE_TCSS_USB4_SUPPORT

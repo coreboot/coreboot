@@ -21,6 +21,7 @@ Device (EC)
 		If (Arg0 == 3) {
 			SCIE = Arg1
 		}
+		PWSL = PWST
 	}
 
 	/* EmbeddedControl Mutex */
@@ -30,10 +31,15 @@ Device (EC)
 	Field(ERAM, ByteAcc, NoLock, Preserve)
 	{
 		Offset (0x00),
-				    , 4,
+				ACPR, 1, /* AC Present */
+				    , 3,
 				LIDS, 1, /* Lid State */
 		Offset (0x05),
 				SCIE, 1, /* SCI Enable */
+		Offset (0x06),
+				/* Power status:
+				   Bit 0: AC Present */
+				PWST, 8,
 		Offset (0x07),
 				EVT1, 8, /* Event 1 */
 				EVT2, 8, /* Event 1 */
@@ -42,12 +48,26 @@ Device (EC)
 				EVT4, 8, /* Event 4 */
 	}
 
+	Name (PWSL, 0) /* Last power status */
 	Method (_Q66)
 	{
 		Local0 = EVT1
 		/* Lid event */
 		If (Local0 & (1 << 2)) {
 			Notify(LID, 0x80)
+		}
+		/* Power event */
+		If (Local0 & (1 << 3)) {
+			/* Cache current power state as reading it clears bit 4
+			   (battery status changed flag) */
+			Local1 = PWST
+
+			/* Check which state flags changed from last state */
+			Local2 = PWSL ^ Local1
+			PWSL = Local1
+			If (Local2 & (1 << 0)) {
+				Notify(AC, 0x80)
+			}
 		}
 		If (Local0 & (1 << 6)) {
 			Notify(SLPB, 0x80)
@@ -59,5 +79,6 @@ Device (EC)
 		Name (_HID, EisaId("PNP0C0E"))
 	}
 
+	#include "ac.asl"
 	#include "lid.asl"
 }

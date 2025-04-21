@@ -9,7 +9,7 @@ config DRIVERS_EFI_VARIABLE_STORE
 
 config DRIVERS_EFI_FW_INFO
 	bool "Expose firmware version in a EFI-friendly form"
-	depends on UDK_BASE
+	select UDK_2017_BINDING if !PLATFORM_USES_FSP2_0
 	help
 	  Adds firmware version information to coreboot table in a form similar to
 	  EFI System Resource Table (ESRT) that can be used for firmware updates.

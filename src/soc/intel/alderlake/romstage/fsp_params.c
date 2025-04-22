@@ -232,6 +232,7 @@ static void fill_fspm_misc_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->GpioOverride = 0x1;
 
 	/* CNVi DDR RFI Mitigation */
+#if (CONFIG(DRIVERS_WIFI_GENERIC))
 	const struct device_path path[] = {
 		{ .type = DEVICE_PATH_PCI, .pci.devfn = PCH_DEVFN_CNVI_WIFI },
 		{ .type = DEVICE_PATH_GENERIC, .generic.id = 0 } };
@@ -239,6 +240,7 @@ static void fill_fspm_misc_params(FSP_M_CONFIG *m_cfg,
 							ARRAY_SIZE(path));
 	if (is_dev_enabled(dev))
 		m_cfg->CnviDdrRfim = wifi_generic_cnvi_ddr_rfim_enabled(dev);
+#endif
 
 	/* Skip MBP HOB */
 	m_cfg->SkipMbpHob = !CONFIG(FSP_PUBLISH_MBP_HOB);

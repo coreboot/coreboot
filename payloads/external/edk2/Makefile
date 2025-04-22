@@ -115,6 +115,12 @@ endif
 ifeq ($(CONFIG_PCIEXP_SUPPORT_RESIZABLE_BARS), y)
 BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdPcieResizableBarSupport=TRUE
 endif
+# Preserve VRT bit in RTC_ADDRESS_REGISTER_D
+# AMD SoC sets this every 1.024msec, but the generic code assumes it's read-only and
+# hardcoded to 1 like on every Intel chipset since Intel ICH.
+ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN2), y)
+BUILD_STR += --pcd gPcAtChipsetPkgTokenSpaceGuid.PcdInitialValueRtcRegisterD=0x80
+endif
 
 #
 # The MrChromebox repository has the following addition options:

@@ -95,12 +95,6 @@ CPPFLAGS_common += -Isrc/soc/mediatek/common/dp/include
 
 MT8196_BLOB_DIR := 3rdparty/blobs/soc/mediatek/mt8196
 
-BL31_LIB := $(top)/$(MT8196_BLOB_DIR)/libbl31.a
-
-ifneq ($(wildcard $(BL31_LIB)),)
-BL31_MAKEARGS += MTKLIB_PATH=$(BL31_LIB)
-endif
-
 PI_IMG := $(MT8196_BLOB_DIR)/$(call strip_quotes,$(CONFIG_PI_IMG_FIRMWARE))
 
 .PHONY: check_pi_img

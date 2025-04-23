@@ -100,8 +100,6 @@ See "PCIe config" section below for more details.
 
 ## Known issues
 
-- RTL8111F here has no EEPROM for vital product data such as MAC address, which is also not
-  being properly programmed. You may need to fuse your MAC address with [rtnicpg] instead.
 - For 7.1 analog audio to work, at least the front channel (green jack) must be connected.
 
 ## Untested

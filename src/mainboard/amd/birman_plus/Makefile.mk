@@ -20,10 +20,11 @@ show_notices:: warn_no_apcb
 endif
 
 ifeq ($(CONFIG_BIRMANPLUS_HAVE_MCHP_FW),y)
-$(call add_intermediate, add_mchp_fw)
-	$(CBFSTOOL) $(obj)/coreboot.pre write -r EC_SIG -f $(CONFIG_BIRMANPLUS_MCHP_SIG_FILE) --fill-upward
-	$(CBFSTOOL) $(obj)/coreboot.pre write -r EC_BODY -f $(CONFIG_BIRMANPLUS_MCHP_FW_FILE) --fill-upward
+subdirs-y += ../../../../util/mec152x
 
+$(call add_intermediate, add_mchp_fw, $(objutil)/mec152x/mec152xtool)
+	$(CBFSTOOL) $(obj)/coreboot.pre write -r EC_BODY -f $(CONFIG_BIRMANPLUS_MCHP_FW_FILE) --fill-upward
+	$(objutil)/mec152x/mec152xtool $(obj)/coreboot.pre GEN_ECFW_PTR -f EC_BODY
 else
 show_notices:: warn_no_mchp
 endif # CONFIG_BIRMAN_HAVE_MCHP_FW

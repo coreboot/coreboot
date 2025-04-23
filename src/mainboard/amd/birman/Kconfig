@@ -52,15 +52,6 @@ config BIRMAN_HAVE_MCHP_FW
 	bool "Have Microchip EC firmware?"
 	default n
 
-config BIRMAN_MCHP_SIG_FILE
-	string "Microchip EC signature file"
-	depends on BIRMAN_HAVE_MCHP_FW
-	default "3rdparty/blobs/mainboard/amd/birman/EC_birman_sig.bin"
-	help
-	  The EC sig blob is the first 4kBytes of the firmware image.
-	  The first 4 bytes form a pointer (with CRC) to where the EC firmware
-	  is located
-
 config AMD_SOC_CONSOLE_UART
 	default y if !SOC_AMD_COMMON_BLOCK_SIMNOW_BUILD
 

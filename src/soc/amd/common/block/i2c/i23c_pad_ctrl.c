@@ -14,26 +14,51 @@ void fch_i23c_pad_init(unsigned int bus,
 
 	pad_ctrl = misc_read32(MISC_I23C_PAD_CTRL(bus));
 
-	pad_ctrl &= ~I23C_PAD_CTRL_MODE_I3C_I2C_MASK;
-	pad_ctrl |= I23C_PAD_CTRL_MODE_I2C;
-
 	switch (ctrl->rx_level) {
 	case I2C_PAD_RX_NO_CHANGE:
+		pad_ctrl &= ~I23C_PAD_CTRL_MODE_I3C_I2C_MASK;
+		pad_ctrl |= I23C_PAD_CTRL_MODE_I2C;
 		/* Default is enabled and thresholds for 1.8V operation */
 		break;
 	case I2C_PAD_RX_OFF:
+		pad_ctrl &= ~I23C_PAD_CTRL_MODE_I3C_I2C_MASK;
+		pad_ctrl |= I23C_PAD_CTRL_MODE_I2C;
 		pad_ctrl &= ~I23C_PAD_CTRL_RX_SEL_MASK;
 		pad_ctrl |= I23C_PAD_CTRL_RX_SEL_OFF;
 		pad_ctrl &= ~I23C_PAD_CTRL_MODE_1_8V_1_1V_MASK;
 		pad_ctrl |= I23C_PAD_CTRL_MODE_1_8V;
 		break;
 	case I2C_PAD_RX_1_8V:
+		pad_ctrl &= ~I23C_PAD_CTRL_MODE_I3C_I2C_MASK;
+		pad_ctrl |= I23C_PAD_CTRL_MODE_I2C;
 		pad_ctrl &= ~I23C_PAD_CTRL_RX_SEL_MASK;
 		pad_ctrl |= I23C_PAD_CTRL_RX_SEL_ON;
 		pad_ctrl &= ~I23C_PAD_CTRL_MODE_1_8V_1_1V_MASK;
 		pad_ctrl |= I23C_PAD_CTRL_MODE_1_8V;
 		break;
 	case I2C_PAD_RX_1_1V:
+		pad_ctrl &= ~I23C_PAD_CTRL_MODE_I3C_I2C_MASK;
+		pad_ctrl |= I23C_PAD_CTRL_MODE_I2C;
+		pad_ctrl &= ~I23C_PAD_CTRL_RX_SEL_MASK;
+		pad_ctrl |= I23C_PAD_CTRL_RX_SEL_ON;
+		pad_ctrl &= ~I23C_PAD_CTRL_MODE_1_8V_1_1V_MASK;
+		pad_ctrl |= I23C_PAD_CTRL_MODE_1_1V;
+		break;
+	case I3C_PAD_RX_NO_CHANGE:
+		pad_ctrl &= ~I23C_PAD_CTRL_MODE_I3C_I2C_MASK;
+		pad_ctrl |= I23C_PAD_CTRL_MODE_I3C;
+		break;
+	case I3C_PAD_RX_1_8V:
+		pad_ctrl &= ~I23C_PAD_CTRL_MODE_I3C_I2C_MASK;
+		pad_ctrl |= I23C_PAD_CTRL_MODE_I3C;
+		pad_ctrl &= ~I23C_PAD_CTRL_RX_SEL_MASK;
+		pad_ctrl |= I23C_PAD_CTRL_RX_SEL_ON;
+		pad_ctrl &= ~I23C_PAD_CTRL_MODE_1_8V_1_1V_MASK;
+		pad_ctrl |= I23C_PAD_CTRL_MODE_1_8V;
+		break;
+	case I3C_PAD_RX_1_1V:
+		pad_ctrl &= ~I23C_PAD_CTRL_MODE_I3C_I2C_MASK;
+		pad_ctrl |= I23C_PAD_CTRL_MODE_I3C;
 		pad_ctrl &= ~I23C_PAD_CTRL_RX_SEL_MASK;
 		pad_ctrl |= I23C_PAD_CTRL_RX_SEL_ON;
 		pad_ctrl &= ~I23C_PAD_CTRL_MODE_1_8V_1_1V_MASK;

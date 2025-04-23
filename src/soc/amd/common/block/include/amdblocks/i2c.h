@@ -62,6 +62,9 @@ enum i2c_pad_rx_level {
 	I2C_PAD_RX_3_3V,
 	I2C_PAD_RX_1_8V,
 	I2C_PAD_RX_1_1V,
+	I3C_PAD_RX_NO_CHANGE,
+	I3C_PAD_RX_1_8V,
+	I3C_PAD_RX_1_1V,
 };
 
 struct i2c_pad_control {

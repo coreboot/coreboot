@@ -30,7 +30,7 @@ chip soc/intel/alderlake
 	# DPTF enable
 	register "dptf_enable" = "true"
 
-	register "tcc_offset" = "5"     # TCC of 100
+	register "tcc_offset" = "3"
 
 	# Enable CNVi BT
 	register "cnvi_bt_core" = "true"
@@ -194,17 +194,17 @@ chip soc/intel/alderlake
 				## Passive Policy
 				register "policies.passive" = "{
 					[0] = DPTF_PASSIVE(CPU,         CPU,           95, 5000),
-					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 90, 5000),
-					[2] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_1, 90, 5000),
-					[3] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_2, 90, 5000),
+					[1] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_0, 85, 5000),
+					[2] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_1, 85, 5000),
+					[3] = DPTF_PASSIVE(CPU,         TEMP_SENSOR_2, 85, 5000),
 				}"
 
 				## Critical Policy
 				register "policies.critical" = "{
-					[0] = DPTF_CRITICAL(CPU,               105, SHUTDOWN),
-					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,     98, SHUTDOWN),
-					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,     98, SHUTDOWN),
-					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,     98, SHUTDOWN),
+					[0] = DPTF_CRITICAL(CPU,               130, SHUTDOWN),
+					[1] = DPTF_CRITICAL(TEMP_SENSOR_0,     105, SHUTDOWN),
+					[2] = DPTF_CRITICAL(TEMP_SENSOR_1,     105, SHUTDOWN),
+					[3] = DPTF_CRITICAL(TEMP_SENSOR_2,     105, SHUTDOWN),
 				}"
 
 				register "controls.power_limits" = "{
@@ -213,14 +213,14 @@ chip soc/intel/alderlake
 						.max_power = 10000,
 						.time_window_min = 28 * MSECS_PER_SEC,
 						.time_window_max = 28 * MSECS_PER_SEC,
-						.granularity = 500
+						.granularity = 125
 					},
 					.pl2 = {
 						.min_power = 25000,
 						.max_power = 25000,
-						.time_window_min = 32 * MSECS_PER_SEC,
-						.time_window_max = 32 * MSECS_PER_SEC,
-						.granularity = 500
+						.time_window_min = 28 * MSECS_PER_SEC,
+						.time_window_max = 28 * MSECS_PER_SEC,
+						.granularity = 1000
 					}
 				}"
 

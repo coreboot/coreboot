@@ -37,6 +37,8 @@
 #define  CFG_9346_UNLOCK	0xc0
 #define CMD_REG_ASPM		0xb0
 #define ASPM_L1_2_MASK		0xe059000f
+#define ERIDR			0x70
+#define ERIAR			0x74
 
 #define DEVICE_INDEX_BYTE	12
 #define MAX_DEVICE_SUPPORT	10
@@ -200,6 +202,7 @@ static void get_mac_address(u8 *macaddr, const u8 *strbuf)
 static void program_mac_address(struct device *dev, u16 io_base)
 {
 	u8 macstrbuf[MACLEN] = { 0 };
+	u32 maclo, machi;
 	int i = 0;
 	/* Default MAC Address of 00:E0:4C:00:C0:B0 */
 	u8 mac[6] = { 0x00, 0xe0, 0x4c, 0x00, 0xc0, 0xb0 };
@@ -234,11 +237,36 @@ static void program_mac_address(struct device *dev, u16 io_base)
 	outb(CFG_9346_UNLOCK, io_base + CFG_9346);
 
 	/* Set MAC address: only 4-byte write accesses allowed */
-	outl(mac[4] | mac[5] << 8, io_base + 4);
+	maclo = mac[0] | mac[1] << 8 | mac[2] << 16 | mac[3] << 24;
+	machi = mac[4] | mac[5] << 8;
+	outl(machi, io_base + 4);
 	inl(io_base + 4);
-	outl(mac[0] | mac[1] << 8 | mac[2] << 16 | mac[3] << 24,
-		io_base);
+	outl(maclo, io_base);
 	inl(io_base);
+	/* Some boards (e.g. asus/p8z77-v_le_plus) need the MAC address set here too */
+	if (CONFIG(RT8168_PUT_MAC_TO_ERI)) {
+		switch (pci_read_config8(dev, PCI_REVISION_ID)) {
+		case 6:
+			outl((maclo & 0xffff) << 16, io_base + ERIDR);
+			inl(io_base + ERIDR);
+			outl(0x8000f0f0, io_base + ERIAR);
+			inl(io_base + ERIAR);
+			outl((machi << 16 | maclo >> 16), io_base + ERIDR);
+			inl(io_base + ERIDR);
+			outl(0x8000f0f4, io_base + ERIAR);
+			break;
+		case 9:
+			outl(maclo, io_base + ERIDR);
+			inl(io_base + ERIDR);
+			outl(0x8000f0e0, io_base + ERIAR);
+			inl(io_base + ERIAR);
+			outl(machi, io_base + ERIDR);
+			inl(io_base + ERIDR);
+			outl(0x800030e4, io_base + ERIAR);
+			break;
+		}
+		udelay(1000);
+	}
 	/* Lock config regs */
 	outb(CFG_9346_LOCK, io_base + CFG_9346);
 

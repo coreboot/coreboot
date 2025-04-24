@@ -18,8 +18,6 @@
 #define CRATER_EC_CMD   0x666
 #define CRATER_EC_DATA  0x662
 
-#define CRATER_REVB 0x42
-
 #define mxm_dxio_descriptor { \
 	.engine_type = PCIE_ENGINE, \
 	.port_present = true, \
@@ -164,18 +162,15 @@ void mainboard_get_dxio_ddi_descriptors(
 		const fsp_dxio_descriptor **dxio_descs, size_t *dxio_num,
 		const fsp_ddi_descriptor **ddi_descs, size_t *ddi_num)
 {
-	uint8_t BoardRev;
+	uint8_t board_rev = crater_ec_get_board_revision();
 
 	if ((get_cpu_count() == 4 && get_threads_per_core() == 2) || get_cpu_count() == 2)
 		crater_ddi_descriptors[1].connector_type = DDI_UNUSED_TYPE;
 
-	ec_set_ports(CRATER_EC_CMD, CRATER_EC_DATA);
-	BoardRev = ec_read(ECRAM_BOARDID_OFFSET + 0x3);
-
 	if (CONFIG(ENABLE_EDP)) {
 		crater_ddi_descriptors[1].connector_type = DDI_EDP;
 	} else {
-		if (BoardRev == CRATER_REVB)
+		if (board_rev == CRATER_REVB)
 			crater_ddi_descriptors[1].connector_type = DDI_DP;
 		else
 			crater_ddi_descriptors[1].connector_type = DDI_HDMI;

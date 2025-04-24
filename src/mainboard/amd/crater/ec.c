@@ -105,7 +105,6 @@
 #define   ECG_WLAN_WWAN_MUX_OFF	BIT(4)
 
 #define ECRAM_BOARDID_OFFSET 0x93
-#define CRATER_REVB    0x42
 #define ECRAM_MACID_OFFSET 0x54
 #define MACID_LEN 12
 
@@ -212,6 +211,19 @@ void crater_ec_init(void)
 	ec_set_ports(CRATER_EC_CMD, CRATER_EC_DATA);
 	crater_boardrevision();
 	configure_ec_gpio();
+}
+
+uint8_t crater_ec_get_board_revision(void)
+{
+	static uint8_t board_rev;
+
+	if (board_rev)
+		return board_rev;
+
+	ec_set_ports(CRATER_EC_CMD, CRATER_EC_DATA);
+	board_rev = ec_read(ECRAM_BOARDID_OFFSET + 0x3);
+
+	return board_rev;
 }
 
 void crater_ec_get_mac_addresses(uint64_t *xgbe_port0_mac, uint64_t *xgbe_port1_mac)

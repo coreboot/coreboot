@@ -240,6 +240,14 @@ config EDK2_PRIORITIZE_INTERNAL
 	help
 	  Prioritize internal boot devices over external devices
 
+config EDK2_LOAD_OPTION_ROMS
+	bool "Load and Execute OpROMs on PCIe devices"
+	depends on EDK2_REPO_MRCHROMEBOX
+	default n
+	help
+	  Load and execute OpROMs on PCIe devices.
+	  Select this option to support use of an external dGPU.
+
 config EDK2_PS2_SUPPORT
 	bool "Support PS/2 Keyboards"
 	default y

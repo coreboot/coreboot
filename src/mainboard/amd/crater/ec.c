@@ -9,7 +9,6 @@
 #define CRATER_EC_CMD	0x666
 #define CRATER_EC_DATA	0x662
 
-#define ENABLE_M2_SSD1  1
 #define EC_GPIO_0_ADDR		0xA0
 #define   EC_EVAL_PWREN	BIT(0)
 
@@ -144,7 +143,7 @@ static void configure_ec_gpio(void)
 	ec_write(EC_GPIO_4_ADDR, tmp);
 
 	tmp = ec_read(EC_GPIO_7_ADDR);
-	if (CONFIG(ENABLE_M2_SSD1)) {
+	if (CONFIG(ENABLE_M2_SSD)) {
 		tmp |= (EC7_ODD_SSD_SW | EC7_SSD_HDD_SW);
 	} else {
 		tmp &= ~(EC7_ODD_SSD_SW | EC7_SSD_HDD_SW);
@@ -162,7 +161,7 @@ static void configure_ec_gpio(void)
 	ec_write(EC_GPIO_7_ADDR, tmp);
 
 	tmp = ec_read(EC_GPIO_8_ADDR);
-	if (CONFIG(ENABLE_M2_SSD1)) {
+	if (CONFIG(ENABLE_M2_SSD)) {
 		tmp |= EC8_M2SSD_PWREN;
 	} else {
 		tmp &= ~EC8_M2SSD_PWREN;

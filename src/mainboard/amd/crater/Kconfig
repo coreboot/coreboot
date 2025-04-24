@@ -92,6 +92,12 @@ config ENABLE_EVAL_19V
 	help
 	  Enable the 19V rail for Eval Card PCIe slot
 
+config ENABLE_M2_SSD
+	bool "Enable M.2 SSD Slot"
+	default y
+	help
+	  Use GPP[8:11] connected to M.2 SSD
+
 choice
 	prompt "XGBE/WWAN/WLAN/DT Selection"
 	default XGBE_WWAN_WLAN

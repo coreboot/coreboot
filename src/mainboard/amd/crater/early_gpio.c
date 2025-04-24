@@ -2,6 +2,7 @@
 
 #include <gpio.h>
 #include "gpio.h"
+#include "ec.h"
 
 /* GPIO pins used by coreboot should be initialized in bootblock */
 
@@ -69,7 +70,24 @@ static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 	PAD_NF(GPIO_20, I2C3_SDA, PULL_NONE),
 };
 
+static const struct soc_amd_gpio RevA_gpio_set_stage_ram[] = {
+	/* PCIE x8 SLOT*/
+	PAD_GPO(GPIO_4, HIGH),
+};
+
+static const struct soc_amd_gpio RevB_gpio_set_stage_ram[] = {
+	PAD_GPI(GPIO_4, PULL_UP),
+	PAD_GPO(GPIO_12, LOW),
+};
+
 void mainboard_program_early_gpios(void)
 {
 	gpio_configure_pads(gpio_set_stage_reset, ARRAY_SIZE(gpio_set_stage_reset));
+
+	uint8_t board_rev = crater_ec_get_board_revision();
+	if (board_rev == CRATER_REVB)
+		gpio_configure_pads(RevB_gpio_set_stage_ram, ARRAY_SIZE(RevB_gpio_set_stage_ram));
+	else
+		gpio_configure_pads(RevA_gpio_set_stage_ram, ARRAY_SIZE(RevA_gpio_set_stage_ram));
+
 }

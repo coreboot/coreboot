@@ -185,31 +185,9 @@ static void configure_ec_gpio(void)
 	}
 }
 
-static const struct soc_amd_gpio RevA_gpio_set_stage_ram[] = {
-	/* PCIE x8 SLOT*/
-	PAD_GPO(GPIO_4, HIGH),
-};
-
-static const struct soc_amd_gpio RevB_gpio_set_stage_ram[] = {
-	PAD_GPI(GPIO_4, PULL_UP),
-	PAD_GPO(GPIO_12, LOW),
-};
-
-void crater_boardrevision(void)
-{
-	uint8_t BoardRev;
-	BoardRev = ec_read(ECRAM_BOARDID_OFFSET + 0x3);
-
-	if (BoardRev == CRATER_REVB)
-		gpio_configure_pads(RevB_gpio_set_stage_ram, ARRAY_SIZE(RevB_gpio_set_stage_ram));
-	else
-		gpio_configure_pads(RevA_gpio_set_stage_ram, ARRAY_SIZE(RevA_gpio_set_stage_ram));
-}
-
 void crater_ec_init(void)
 {
 	ec_set_ports(CRATER_EC_CMD, CRATER_EC_DATA);
-	crater_boardrevision();
 	configure_ec_gpio();
 }
 

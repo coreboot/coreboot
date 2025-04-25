@@ -229,3 +229,6 @@ config BOARD_GOOGLE_MELIKS
 
 config BOARD_GOOGLE_EPIC
 	bool "->  Epic"
+
+config BOARD_GOOGLE_PUJJOCENTO
+	bool "->  Pujjocento"

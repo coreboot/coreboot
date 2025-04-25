@@ -103,8 +103,11 @@ static inline u8 write_byte(u8 val, u16 port)
 static int google_chromeec_status_check(u16 port, u8 mask, u8 cond)
 {
 	struct stopwatch timeout_sw;
-	/* One second is more than plenty for any EC operation to complete */
-	const uint64_t ec_status_timeout_us = 1 * USECS_PER_SEC;
+	/*
+	 * Wait up to 30s for EC operation to complete.
+	 * Some ECs take 15-20s to complete Flash Erase operation.
+	 */
+	const uint64_t ec_status_timeout_us = 30 * USECS_PER_SEC;
 	/* Wait 1 usec between read attempts  */
 	const uint64_t ec_status_read_period_us = 1;
 

@@ -32,6 +32,18 @@ static const struct pad_group ptl_community1_groups[] = {
 	INTEL_GPP_BASE(GPP_F00, GPP_E00, GPP_THC0_GSPI_CLK_LPBK, 32),	/* GPP_E */
 };
 
+#if CONFIG(SOC_INTEL_WILDCATLAKE)
+static const struct pad_group ptl_community3_groups[] = {
+	INTEL_GPP_BASE(GPP_H00, GPP_H00, GPP_SHD3C_CLK_LPBK, 0),	/* GPP_H */
+	INTEL_GPP_BASE(GPP_H00, GPP_A00, GPP_SPI0_CLK_LOOPBK, 32),	/* GPP_A */
+	INTEL_GPP(GPP_H00, GPP_VGPIO3_USB0, GPP_VGPIO3_THC3),		/* GPP_VGPIO_3*/
+};
+
+static const struct pad_group ptl_community4_groups[] = {
+	INTEL_GPP_BASE(GPP_S00, GPP_S00, GPP_S07, 0),			/* GPP_S */
+	INTEL_GPP(GPP_S00, GPP_EPD_ON, GPP_DDSP_HPDALV),		/* GPP_CPUJTAG */
+};
+#else
 static const struct pad_group ptl_community3_groups[] = {
 	INTEL_GPP(GPP_EPD_ON, GPP_EPD_ON, GPP_DDSP_HPDALV),		/* GPP_CPUJTAG */
 	INTEL_GPP_BASE(GPP_EPD_ON, GPP_H00, GPP_ISHI3C1_CLK_LPBK, 32),	/* GPP_H */
@@ -42,6 +54,7 @@ static const struct pad_group ptl_community3_groups[] = {
 static const struct pad_group ptl_community4_groups[] = {
 	INTEL_GPP_BASE(GPP_S00, GPP_S00, GPP_S07, 0),			/* GPP_S */
 };
+#endif
 
 static const struct pad_group ptl_community5_groups[] = {
 	INTEL_GPP_BASE(GPP_B00, GPP_B00, GPP_ISHI3C0_CLK_LPBK, 0),	/* GPP_B */
@@ -94,7 +107,8 @@ static const struct pad_community ptl_communities[] = {
 		.groups = ptl_community1_groups,
 		.num_groups = ARRAY_SIZE(ptl_community1_groups),
 	},
-	[COMM_3] = { /* GPP: CPUJTAG, H, A, VGPIO3 */
+	[COMM_3] = { /* GPP: CPUJTAG, H, A, VGPIO3 for PTL
+			GPP: H, A, VGPIO3 for WCL */
 		.port = PID_GPIOCOM3,
 		.first_pad = COM3_GRP_PAD_START,
 		.last_pad = COM3_GRP_PAD_END,
@@ -109,14 +123,19 @@ static const struct pad_community ptl_communities[] = {
 		.gpi_smi_sts_reg_0 = GPI_SMI_STS_0,
 		.gpi_smi_en_reg_0 = GPI_SMI_EN_0,
 		.max_pads_per_group = GPIO_MAX_NUM_PER_GROUP,
+#if CONFIG(SOC_INTEL_WILDCATLAKE)
+		.name = "GPP_H_A_VGPIO3",
+#else
 		.name = "GPP_CPUJTAG_H_A_VGPIO3",
+#endif
 		.acpi_path = "\\_SB.PCI0.GPI3",
 		.reset_map = rst_map,
 		.num_reset_vals = ARRAY_SIZE(rst_map),
 		.groups = ptl_community3_groups,
 		.num_groups = ARRAY_SIZE(ptl_community3_groups),
 	},
-	[COMM_4] = { /* GPP: S */
+	[COMM_4] = { /* GPP: S for PTL
+			GPP: S, CPUJTAG for WCL */
 		.port = PID_GPIOCOM4,
 		.first_pad = COM4_GRP_PAD_START,
 		.last_pad = COM4_GRP_PAD_END,
@@ -131,7 +150,11 @@ static const struct pad_community ptl_communities[] = {
 		.gpi_smi_sts_reg_0 = GPI_SMI_STS_0,
 		.gpi_smi_en_reg_0 = GPI_SMI_EN_0,
 		.max_pads_per_group = GPIO_MAX_NUM_PER_GROUP,
+#if CONFIG(SOC_INTEL_WILDCATLAKE)
+		.name = "GPP_S_CPUJTAG",
+#else
 		.name = "GPP_S",
+#endif
 		.acpi_path = "\\_SB.PCI0.GPI4",
 		.reset_map = rst_map,
 		.num_reset_vals = ARRAY_SIZE(rst_map),

@@ -58,4 +58,12 @@ config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
 	default 0xb
 
+config MAINBOARD_GPIO_PIN_FOR_GSC_AP_INTERRUPT
+	int
+	default 34
+	help
+	  This option specifies the GPIO pin number on the mainboard that is
+	  used for the interrupt line from the Google Security Chip (GSC) to the
+	  Application Processor (AP).
+
 endif # BOARD_GOOGLE_BLUEY_COMMON

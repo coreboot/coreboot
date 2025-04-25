@@ -14,7 +14,7 @@ CFLAGS   += -Wall -Wextra -Wmissing-prototypes -Wshadow $(WERROR)
 CPPFLAGS += -I . -I $(ROOT)/commonlib/include -I $(ROOT)/commonlib/bsd/include
 CPPFLAGS += -include $(ROOT)/commonlib/bsd/include/commonlib/bsd/compiler.h
 
-OBJS = $(PROGRAM).o devmem_drv.o $(COMMONLIB)/bsd/ipchksum.o
+OBJS = $(PROGRAM).o cbmem_drv.o devmem_drv.o sysfs_drv.o $(COMMONLIB)/bsd/ipchksum.o
 
 all: $(PROGRAM)
 

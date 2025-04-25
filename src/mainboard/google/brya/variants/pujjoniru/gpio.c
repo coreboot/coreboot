@@ -140,6 +140,9 @@ static const struct pad_config override_gpio_table[] = {
 	/* C7  : SML1DATA ==> TCHSCR_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_C7, NONE, PLTRST, LEVEL, INVERT),
 
+	/* E19 : DDP1_CTRLDATA ==> GPP_E19_STRAP */
+	PAD_CFG_GPI_LOCK(GPP_E19, DN_20K, LOCK_CONFIG),
+
 	/* Configure the virtual CNVi Bluetooth I2S GPIO pads */
 	/* BT_I2S_BCLK */
 	PAD_CFG_NF(GPP_VGPIO_30, NONE, DEEP, NF3),
@@ -178,6 +181,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
 	/* H20 : IMGCLKOUT1 ==> WLAN_PERST_L */
 	PAD_CFG_GPO(GPP_H20, 0, DEEP),
+	/* E19 : DDP1_CTRLDATA ==> GPP_E19_STRAP */
+	PAD_CFG_GPI_LOCK(GPP_E19, DN_20K, LOCK_CONFIG),
 };
 
 static const struct pad_config romstage_gpio_table[] = {

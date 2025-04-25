@@ -921,7 +921,6 @@ chip soc/intel/pantherlake
 		end
 
 		device ref smbus on end
-		device ref npk on end
 		device ref hda on
 			chip drivers/intel/soundwire
 				device generic 0 on

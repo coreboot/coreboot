@@ -23,6 +23,7 @@ enum ptl_boardid {
  */
 
 const struct pad_config *variant_gpio_table(size_t *num);
+const struct pad_config *variant_board_gpio_diff_table(size_t *num);
 const struct pad_config *variant_early_gpio_table(size_t *num);
 const struct pad_config *variant_romstage_gpio_table(size_t *num);
 void fw_config_configure_pre_mem_gpio(void);

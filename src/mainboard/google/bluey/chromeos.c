@@ -20,6 +20,14 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 			"EC interrupt"},
 		{GPIO_GSC_AP_INT.addr, ACTIVE_HIGH, gpio_get(GPIO_GSC_AP_INT),
 			"TPM interrupt"},
+		{GPIO_SNDW_AMP_0_ENABLE.addr, ACTIVE_HIGH, gpio_get(GPIO_SNDW_AMP_0_ENABLE),
+			"Speaker 0 enable"},
+		{GPIO_SNDW_AMP_1_ENABLE.addr, ACTIVE_HIGH, gpio_get(GPIO_SNDW_AMP_1_ENABLE),
+			"Speaker 1 enable"},
+#if CONFIG(MAINBOARD_HAS_SD_CONTROLLER)
+		{GPIO_SD_CD_L.addr, ACTIVE_LOW, gpio_get(GPIO_SD_CD_L),
+			"SD card detect"},
+#endif
 	};
 
 	lb_add_gpios(gpios, chromeos_gpios, ARRAY_SIZE(chromeos_gpios));

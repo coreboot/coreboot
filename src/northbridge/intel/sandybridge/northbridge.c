@@ -267,17 +267,17 @@ static void disable_peg(void)
 	reg = pci_read_config32(dev, DEVEN);
 
 	dev = pcidev_on_root(1, 2);
-	if (!dev || !dev->enabled) {
+	if (!dev_is_active_bridge(dev)) {
 		printk(BIOS_DEBUG, "Disabling PEG12.\n");
 		reg &= ~DEVEN_PEG12;
 	}
 	dev = pcidev_on_root(1, 1);
-	if (!dev || !dev->enabled) {
+	if (!dev_is_active_bridge(dev)) {
 		printk(BIOS_DEBUG, "Disabling PEG11.\n");
 		reg &= ~DEVEN_PEG11;
 	}
 	dev = pcidev_on_root(1, 0);
-	if (!dev || !dev->enabled) {
+	if (!dev_is_active_bridge(dev)) {
 		printk(BIOS_DEBUG, "Disabling PEG10.\n");
 		reg &= ~DEVEN_PEG10;
 	}
@@ -292,7 +292,7 @@ static void disable_peg(void)
 		reg &= ~DEVEN_D4EN;
 	}
 	dev = pcidev_on_root(6, 0);
-	if (!dev || !dev->enabled) {
+	if (!dev_is_active_bridge(dev)) {
 		printk(BIOS_DEBUG, "Disabling PEG60.\n");
 		reg &= ~DEVEN_PEG60;
 	}

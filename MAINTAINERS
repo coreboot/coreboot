@@ -365,6 +365,12 @@ M:	Nick Vaccaro <nvaccaro@chromium.org>
 S:	Maintained
 F:	src/mainboard/google/hatch/
 
+GOOGLE OCELOT MAINBOARDS
+M:	Nick Vaccaro <nvaccaro@chromium.org>
+M:	Pranava Y N <pranavayn@google.com>
+M:	Avi Uday <aviuday@google.com>
+F:	src/mainboard/google/ocelot/
+
 GOOGLE VOLTEER MAINBOARDS
 M:	Nick Vaccaro <nvaccaro@chromium.org>
 S:	Maintained

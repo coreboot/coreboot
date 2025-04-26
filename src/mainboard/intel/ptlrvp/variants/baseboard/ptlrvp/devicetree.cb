@@ -90,10 +90,5 @@ chip soc/intel/pantherlake
 		device ref pmc_shared_sram on end
 		device ref heci1 on end
 		device ref uart0 on end
-		device ref soc_espi on
-			chip ec/google/chromeec
-				device pnp 0c09.0 on end
-			end
-		end
 	end
 end

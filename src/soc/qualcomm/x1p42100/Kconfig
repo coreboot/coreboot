@@ -12,6 +12,7 @@ config SOC_QUALCOMM_X1P42100
 	select CACHE_MRC_SETTINGS
 	select COMMONLIB_STORAGE
 	select COMMONLIB_STORAGE_SD
+	select FIXED_UART_FOR_CONSOLE
 	select GENERIC_GPIO_LIB
 	select GENERIC_UDELAY
 	select HAS_RECOVERY_MRC_CACHE
@@ -37,11 +38,11 @@ config VBOOT
 
 config BOOT_DEVICE_SPI_FLASH_BUS
 	int
-	default 0 # TODO
+	default 24
 
 config UART_FOR_CONSOLE
 	int
-	default 0 # TODO
+	default 21
 	help
 	 Select the QUP instance to be used for UART console output.
 

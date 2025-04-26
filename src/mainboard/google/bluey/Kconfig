@@ -49,13 +49,13 @@ config MAINBOARD_PART_NUMBER
 config DRIVER_TPM_I2C_BUS
 	depends on I2C_TPM
 	hex
-	default 0x00 # TODO
+	default 0x10
 
 config DRIVER_TPM_I2C_ADDR
 	default 0x50
 
 config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
-	default 0x0 # TODO
+	default 0xb
 
 endif # BOARD_GOOGLE_BLUEY_COMMON

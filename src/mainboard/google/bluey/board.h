@@ -6,8 +6,8 @@
 #include <assert.h>
 #include <gpio.h>
 
-#define GPIO_AP_EC_INT		GPIO(0)
-#define GPIO_GSC_AP_INT		GPIO(0)
+#define GPIO_AP_EC_INT		GPIO(67)
+#define GPIO_GSC_AP_INT		GPIO(34)
 
 void setup_chromeos_gpios(void);
 

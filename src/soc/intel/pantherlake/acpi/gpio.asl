@@ -506,6 +506,28 @@ Device (GPI3)
 		},
 
 		ToUUID ("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),
+#if CONFIG(SOC_INTEL_WILDCATLAKE)
+		Package (0x03)
+		{
+			Package (0x02)
+			{
+				"intc-gpio-group-0-subproperties",
+				GPPH
+			},
+
+			Package (0x02)
+			{
+				"intc-gpio-group-1-subproperties",
+				GPPA
+			},
+
+			Package (0x02)
+			{
+				"intc-gpio-group-2-subproperties",
+				VGP3
+			}
+		}
+#else
 		Package (0x04)
 		{
 			Package (0x02)
@@ -532,7 +554,9 @@ Device (GPI3)
 				VGP3
 			}
 		}
+#endif
 	})
+#if (CONFIG(SOC_INTEL_PANTHERLAKE_U_H) || CONFIG(SOC_INTEL_PANTHERLAKE_H))
 	/* first bank/group in community 3: RSVD */
 	Name (RSVD, Package (0x02)
 	{
@@ -558,6 +582,7 @@ Device (GPI3)
 			}
 		}
 	})
+#endif
 	/* 2nd bank/group in community 3: GPP_H */
 	Name (GPPH, Package (0x02)
 	{
@@ -710,6 +735,22 @@ Device (GPI4)
 		},
 
 		ToUUID ("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),
+#if CONFIG(SOC_INTEL_WILDCATLAKE)
+		Package (0x02)
+		{
+			Package (0x02)
+			{
+				"intc-gpio-group-0-subproperties",
+				GPPS
+			},
+
+			Package (0x02)
+			{
+				"intc-gpio-group-1-subproperties",
+				RSVD
+			}
+		}
+#else
 		Package (0x01)
 		{
 			Package (0x02)
@@ -718,6 +759,7 @@ Device (GPI4)
 				GPPS
 			}
 		}
+#endif
 	})
 	/* only bank/group in community 4: GPP_S */
 	Name (GPPS, Package (0x02)
@@ -744,6 +786,33 @@ Device (GPI4)
 			}
 		}
 	})
+#if CONFIG(SOC_INTEL_WILDCATLAKE)
+	/* second bank/group in community 4: RSVD */
+	Name (RSVD, Package (0x02)
+	{
+		ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+		Package (0x03)
+		{
+			Package (0x02)
+			{
+				"intc-gpio-group-name",
+				"RSVD"
+			},
+
+			Package (0x02)
+			{
+				"intc-gpio-pad-count",
+				NUM_GRP_RSVD_PADS
+			},
+
+			Package (0x02)
+			{
+				"intc-gpio-group-offset",
+				GPP_RSVD_START_OFFSET
+			}
+		}
+	})
+#endif
 	Method (_STA, 0, NotSerialized)
 	{
 		Return (0xF)

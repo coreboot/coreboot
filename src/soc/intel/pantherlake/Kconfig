@@ -127,7 +127,7 @@ config SOC_INTEL_PANTHERLAKE_H
 
 config SOC_INTEL_WILDCATLAKE
 	bool
-	select SOC_INTEL_PANTHERLAKE_U_H
+	select SOC_INTEL_PANTHERLAKE_BASE
 	help
 	  Choose this option if the mainboard is built using WCL system-on-a-chip (SoC).
 

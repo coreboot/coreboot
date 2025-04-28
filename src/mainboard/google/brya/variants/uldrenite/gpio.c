@@ -177,7 +177,7 @@ static const struct pad_config gpio_table[] = {
 	/* E8  : GPP_E8 ==> WLAN_DISABLE_L */
 	PAD_CFG_GPO(GPP_E8, 1, DEEP),
 	/* E9  : GPP_E9 ==> SOC_ACC2_INT# */
-	PAD_CFG_NF(GPP_E9, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_E9, NONE, DEEP, NF2),
 	/* E10 : NC */
 	PAD_NC_LOCK(GPP_E10, NONE, LOCK_CONFIG),
 	/* E11 : NC */

@@ -33,8 +33,8 @@ static const struct mb_cfg lp5_mem_config = {
 			.dq1 = {  10,  9,  11,  8,  13,  14,  12,  15 },
 		},
 		.ddr6 = {
-			.dq0 = {  9,  10,  11,  8,  14,  12,  13, 15, },
-			.dq1 = {  0,  1,  2,  3,  5,  7,  4,  6 },
+			.dq0 = {  9,  8,  11,  10,  14,  12,  13, 15, },
+			.dq1 = {  6,  4,  5,  7,  1,  3,  0,  2 },
 		},
 		.ddr7 = {
 			.dq0 = {  0,  1,  2,  3,  7,  5,  6,  4, },
@@ -69,8 +69,27 @@ const struct mb_cfg *variant_memory_params(void)
 	return &lp5_mem_config;
 }
 
-void variant_get_spd_info(struct mem_spd *spd_info)
+int variant_memory_sku(void)
 {
-	spd_info->topo = MEM_TOPO_MEMORY_DOWN;
-	spd_info->cbfs_index = 0;
+	/*
+	 * Memory configuration board straps
+	 * GPIO_MEM_CONFIG_0	GPP_A13
+	 * GPIO_MEM_CONFIG_1	GPP_D24
+	 * GPIO_MEM_CONFIG_2	GPP_B25
+	 * GPIO_MEM_CONFIG_3    GPP_B24
+	 */
+	gpio_t spd_gpios[] = {
+		GPP_A13,
+		GPP_D24,
+		GPP_B25,
+		GPP_B24,
+	};
+
+	return gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
+}
+
+bool variant_is_half_populated(void)
+{
+	/* GPIO_MEM_CH_SEL GPP_C07 */
+	return gpio_get(GPP_C07);
 }

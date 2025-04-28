@@ -36,6 +36,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_A11, 1, PLTRST),
 	/* GPP_A12:     WIFI_WAKE_N */
 	PAD_CFG_GPI_SCI_LOW(GPP_A12, NONE, DEEP, LEVEL),
+	/* GPP_A13:     MEM_STRAP_0 */
+	PAD_CFG_GPI(GPP_A13, NONE, DEEP),
 	/* GPP_A15:     GPP_A15_DNX_FORCE_RELOAD */
 	PAD_CFG_NF(GPP_A15, NONE, DEEP, NF1),
 	/* GPP_A16:     BT_RF_KILL_N */
@@ -95,8 +97,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B22, NONE, DEEP, NF4),
 	/* GPP_B23:     ISH_GP_6_SNSR_HDR */
 	PAD_CFG_NF(GPP_B23, NONE, DEEP, NF4),
-	/* GPP_B24:     ESPI_ALERT0_EC_R_N */
-	PAD_NC(GPP_B24, NONE),
+	/* GPP_B24:     MEM_STRAP_3 */
+	PAD_CFG_GPI(GPP_B24, NONE, DEEP),
+	/* GPP_B25:     MEM_STRAP_2 */
+	PAD_CFG_GPI(GPP_B25, NONE, DEEP),
 
 	/* GPP_C00:     GPP_C0_SMBCLK */
 	PAD_CFG_NF(GPP_C00, NONE, DEEP, NF1),
@@ -110,8 +114,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C04, NONE, DEEP, NF1),
 	/* GPP_C06:     SML1_CLK */
 	PAD_CFG_NF(GPP_C06, NONE, DEEP, NF1),
-	/* GPP_C07:     SML1_DATA */
-	PAD_CFG_NF(GPP_C07, NONE, DEEP, NF1),
+	/* GPP_C07:     MEM_CH_SEL */
+	PAD_CFG_GPI(GPP_C07, NONE, DEEP),
 	/* GPP_C09:     CLKREQ0_X8_GEN5_DT_CEM_SLOT_N */
 	PAD_CFG_NF(GPP_C09, NONE, DEEP, NF1),
 	/* GPP_C10:     CLKREQ1_X4_GEN5_M2_SSD_N */
@@ -183,8 +187,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_D22, NONE, DEEP, NF1),
 	/* GPP_D23:     BPKI3C_SCL */
 	PAD_CFG_NF(GPP_D23, NONE, DEEP, NF1),
-	/* GPP_D24:     PEG_SLOT_WAKE_N */
-	PAD_CFG_GPI_SCI_LOW(GPP_D24, NONE, DEEP, LEVEL),
+	/* GPP_D24:     MEM_STRAP_1 */
+	PAD_CFG_GPI(GPP_D24, NONE, DEEP),
 	/* GPP_D25:     X4_SLOT_WAKE_N */
 	PAD_CFG_GPI_SCI_LOW(GPP_D25, NONE, DEEP, LEVEL),
 

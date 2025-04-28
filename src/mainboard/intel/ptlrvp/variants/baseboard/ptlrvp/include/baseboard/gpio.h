@@ -13,5 +13,6 @@
 #define EC_SYNC_IRQ	0
 /* WP signal to PCH */
 #define GPIO_PCH_WP	0
+#define GPIO_SLP_S0_GATE	0 /* Not Connected */
 
 #endif /* __BASEBOARD_GPIO_H__ */

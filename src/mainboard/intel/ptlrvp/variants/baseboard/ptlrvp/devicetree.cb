@@ -36,13 +36,13 @@ chip soc/intel/pantherlake
 	register "sagv_freq_mhz[0]" = "2400"
 	register "sagv_gear[0]" = "GEAR_4"
 
-	register "sagv_freq_mhz[1]" = "3200"
+	register "sagv_freq_mhz[1]" = "4800"
 	register "sagv_gear[1]" = "GEAR_4"
 
-	register "sagv_freq_mhz[2]" = "6000"
+	register "sagv_freq_mhz[2]" = "6400"
 	register "sagv_gear[2]" = "GEAR_4"
 
-	register "sagv_freq_mhz[3]" = "6400"
+	register "sagv_freq_mhz[3]" = "6800"
 	register "sagv_gear[3]" = "GEAR_4"
 
 	# Enable s0ix
@@ -81,7 +81,6 @@ chip soc/intel/pantherlake
 	register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
 	register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
 	register "pch_hda_idisp_codec_enable" = "true"
-	register "pch_hda_sdi_enable" = "{ true, false }"
 
 	device domain 0 on
 		device ref dtt on end

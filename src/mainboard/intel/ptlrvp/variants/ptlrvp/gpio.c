@@ -217,8 +217,6 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_E16:     THC0_SPI1_RST_N_TCH_PNL1 */
 	/* THC NOTE: use GPO instead of GPO for THC0 Rst */
 	PAD_CFG_GPO(GPP_E16, 1, DEEP),
-	/* GPP_E17:     THC0_SPI1_CS0_N_TCH_PNL1 */
-	PAD_CFG_NF(GPP_E17, NONE, DEEP, NF3),
 	/* GPP_E18:     THC0_SPI1_INT_N_TCH_PNL1 */
 	PAD_CFG_NF(GPP_E18, NONE, DEEP, NF3),
 	/* GPP_E21:     I2C_PMC_PD_INT_N */
@@ -262,6 +260,9 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_F13, NONE, DEEP, NF8),
 	/* GPP_F17:     Not used */
 	PAD_CFG_GPI_INT(GPP_F17, NONE, PLTRST, EDGE_BOTH),
+	/* GPP_F18:     TCH_PAD_INT_N */
+	/* NOTE: require rework to switch from GPP_A13 to GPP_F18 */
+	PAD_CFG_GPI_APIC(GPP_F18, NONE, PLTRST, LEVEL, INVERT),
 	/* GPP_F19:     GPP_PRIVACY_LED_CAM2 */
 	PAD_CFG_GPO(GPP_F19, 0, PLTRST),
 	/* GPP_F20:     GPP_PRIVACY_LED_CAM1_CVS_HST_WAKE */
@@ -414,6 +415,7 @@ static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE1_NAME),
 	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE2_NAME),
 	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE3_NAME),
+	CROS_GPIO_WP_AH(GPIO_PCH_WP, CROS_GPIO_DEVICE4_NAME),
 };
 
 DECLARE_CROS_GPIOS(cros_gpios);

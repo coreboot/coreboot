@@ -521,6 +521,62 @@ struct soc_intel_pantherlake_config {
 		ISA_SERIAL_BASE_ADDR_2F8,
 	} isa_serial_uart_base;
 
+	/* PCH PM SLP_S3 Minimum Assertion Width */
+	enum {
+		SLP_S3_ASSERTION_DEFAULT,
+		SLP_S3_ASSERTION_60_US,
+		SLP_S3_ASSERTION_1_MS,
+		SLP_S3_ASSERTION_50_MS,
+		SLP_S3_ASSERTION_2_S,
+	} pch_slp_s3_min_assertion_width;
+
+	/* PCH PM SLP_S4 Minimum Assertion Width */
+	enum {
+		SLP_S4_ASSERTION_DEFAULT,
+		SLP_S4_ASSERTION_1S,
+		SLP_S4_ASSERTION_2S,
+		SLP_S4_ASSERTION_3S,
+		SLP_S4_ASSERTION_4S,
+	} pch_slp_s4_min_assertion_width;
+
+	/* PCH PM SLP_SUS Minimum Assertion Width */
+	enum {
+		SLP_SUS_ASSERTION_DEFAULT,
+		SLP_SUS_ASSERTION_0_MS,
+		SLP_SUS_ASSERTION_500_MS,
+		SLP_SUS_ASSERTION_1_S,
+		SLP_SUS_ASSERTION_4_S,
+	} pch_slp_sus_min_assertion_width;
+
+	/* PCH PM SLP_A Minimum Assertion Width */
+	enum {
+		SLP_A_ASSERTION_DEFAULT,
+		SLP_A_ASSERTION_0_MS,
+		SLP_A_ASSERTION_4_S,
+		SLP_A_ASSERTION_98_MS,
+		SLP_A_ASSERTION_2_S,
+	} pch_slp_a_min_assertion_width;
+
+	/*
+	 * PCH PM Reset Power Cycle Duration
+	 * The Reset Power Cycle Duration starts at 20ms and increases by 20ms for each step,
+	 * beginning from 0x0 in hexadecimal. Each subsequent hexadecimal increment corresponds
+	 * to an additional 20 milliseconds in duration.
+	 * NOTE: Duration programmed in the PchPmPwrCycDur should never be smaller than the
+	 * stretch duration programmed in the following registers:
+	 *  - GEN_PMCON_A.SLP_S3_MIN_ASST_WDTH (PchPmSlpS3MinAssert)
+	 *  - GEN_PMCON_A.S4MAW (PchPmSlpS4MinAssert)
+	 *  - PM_CFG.SLP_A_MIN_ASST_WDTH (PchPmSlpAMinAssert)
+	 *  - PM_CFG.SLP_LAN_MIN_ASST_WDTH
+	 */
+	enum {
+		POWER_CYCLE_DURATION_DEFAULT,
+		POWER_CYCLE_DURATION_1S,
+		POWER_CYCLE_DURATION_2S,
+		POWER_CYCLE_DURATION_3S,
+		POWER_CYCLE_DURATION_4S,
+	} pch_reset_power_cycle_duration;
+
 	/*
 	 * Enable or Disable C1 C-state Auto Demotion & un-demotion
 	 * The algorithm looks at the behavior of the wake up tracker, how

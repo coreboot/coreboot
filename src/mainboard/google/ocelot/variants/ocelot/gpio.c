@@ -198,8 +198,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E15, NONE),
 	/* GPP_E16:     NC */
 	PAD_NC(GPP_E16, NONE),
-	/* GPP_E17:     SPI_SOC_CS_FP_R_L */
-	PAD_CFG_NF(GPP_E17, NONE, DEEP, NF5),
 	/* GPP_E18:     SOC_TCHPAD_INT_ODL */
 	PAD_CFG_NF(GPP_E18, NONE, DEEP, NF3),
 	/* GPP_E19:     FP_SOC_INT_L */
@@ -247,8 +245,9 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_F16, NONE, DEEP, NF3),
 	/* GPP_F17:     SPI_THCSCR_CS_L */
 	PAD_CFG_NF(GPP_F17, NONE, DEEP, NF3),
-	/* GPP_F18:     TCHSCR_INT_ODL */
-	PAD_CFG_NF(GPP_F18, NONE, DEEP, NF3),
+	/* GPP_F18:     TCH_PAD_INT_N */
+	/* NOTE: require rework to switch from GPP_A13 to GPP_F18 */
+	PAD_CFG_GPI_APIC(GPP_F18, NONE, PLTRST, LEVEL, INVERT),
 	/* GPP_F19:     GPP_F19_STRAP */
 	PAD_NC(GPP_F19, NONE),
 	/* GPP_F20:     EC_SOC_REC_SWITCH_ODL */
@@ -390,6 +389,8 @@ static const struct pad_config early_gpio_table[] = {
 
 /* Pad configuration in romstage */
 static const struct pad_config romstage_gpio_table[] = {
+	/* GPP_A08:     X1_PCIE_SLOT_PWR_EN */
+	PAD_CFG_GPO(GPP_A08, 0, PLTRST),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)
@@ -416,6 +417,7 @@ static const struct cros_gpio cros_gpios[] = {
 	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE1_NAME),
 	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE2_NAME),
 	CROS_GPIO_REC_AL(CROS_GPIO_VIRTUAL, CROS_GPIO_DEVICE3_NAME),
+	CROS_GPIO_WP_AH(GPIO_PCH_WP, CROS_GPIO_DEVICE4_NAME),
 };
 
 DECLARE_CROS_GPIOS(cros_gpios);

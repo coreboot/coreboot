@@ -17,5 +17,6 @@
  #define EC_SYNC_IRQ	0 /* Not Connected */
 #endif
 #define GPIO_PCH_WP	GPP_D02
+#define GPIO_SLP_S0_GATE	0 /* Not Connected */
 
 #endif /* __BASEBOARD_GPIO_H__ */

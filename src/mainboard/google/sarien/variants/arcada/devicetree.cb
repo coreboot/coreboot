@@ -35,7 +35,6 @@ chip soc/intel/cannonlake
 		.tdp_pl2_override = 51,
 		.psys_pmax = 140,
 	}"
-	register "Device4Enable" = "1"
 	register "AcousticNoiseMitigation" = "1"
 	register "SlowSlewRateForIa" = "2"
 	register "SlowSlewRateForGt" = "2"

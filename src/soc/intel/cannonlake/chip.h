@@ -220,8 +220,6 @@ struct soc_intel_cannonlake_config {
 	/* Gfx related */
 	bool SkipExtGfxScan;
 
-	bool Device4Enable;
-
 	/* CPU PL2/4 Config
 	 * Performance: Maximum PLs for maximum performance.
 	 * Baseline: Baseline PLs for balanced performance at lower power.

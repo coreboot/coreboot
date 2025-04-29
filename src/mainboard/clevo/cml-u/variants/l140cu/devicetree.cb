@@ -68,9 +68,7 @@ chip soc/intel/cannonlake
 				.backlight_off_delay_ms	=    1,
 			}"
 		end
-		device ref dptf on
-			register "Device4Enable" = "1"
-		end
+		device ref dptf on	end
 		device ref thermal on	end
 		device ref xhci on
 			# USB2

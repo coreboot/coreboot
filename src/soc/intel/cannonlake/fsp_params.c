@@ -631,7 +631,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *supd)
 	 * the `Heci1Disabled` UPD to `0`.
 	 */
 	s_cfg->Heci1Disabled = 0;
-	s_cfg->Device4Enable = config->Device4Enable;
+	s_cfg->Device4Enable = is_devfn_enabled(SA_DEVFN_TS);
 
 	/* Teton Glacier hybrid storage support */
 	s_cfg->TetonGlacierMode = config->TetonGlacierMode;

@@ -60,9 +60,7 @@ chip soc/intel/cannonlake
 		device ref igpu		on
 			register "gfx" = "GMA_DEFAULT_PANEL(0)"
 		end
-		device ref dptf		on
-			register "Device4Enable" = "1"
-		end
+		device ref dptf		on	end
 		device ref thermal	on	end
 		device ref cnvi_wifi	on
 			chip drivers/wifi/generic

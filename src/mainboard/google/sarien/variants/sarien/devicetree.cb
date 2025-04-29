@@ -43,7 +43,6 @@ chip soc/intel/cannonlake
 		.tdp_pl2_override = 51,
 		.psys_pmax = 136,
 	}"
-	register "Device4Enable" = "1"
 	# Enable eDP device
 	register "DdiPortEdp" = "1"
 	# Enable HPD for DDI ports B/C

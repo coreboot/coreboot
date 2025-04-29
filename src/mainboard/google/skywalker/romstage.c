@@ -2,6 +2,7 @@
 
 #include <arch/stages.h>
 #include <delay.h>
+#include <soc/dvfs.h>
 #include <soc/emi.h>
 #include <soc/mt6315.h>
 #include <soc/mt6359p.h>
@@ -26,5 +27,6 @@ void platform_romstage_main(void)
 	mt6359p_init();
 	raise_little_cpu_freq();
 	rtc_boot();
+	dvfs_init();
 	mtk_dram_init();
 }

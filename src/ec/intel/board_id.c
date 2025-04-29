@@ -2,32 +2,47 @@
 
 #include <boardid.h>
 #include "board_id.h"
+#include <console/console.h>
 #include <ec/acpi/ec.h>
 #include <ec/google/chromeec/ec.h>
 #include <types.h>
 
-static uint32_t get_board_id_via_ext_ec(void)
+static int intel_ec_get_board_version(uint32_t *id)
 {
-	uint32_t id = BOARD_ID_INIT;
+	if (send_ec_command(EC_FAB_ID_CMD))
+		return -1;
 
-	if (google_chromeec_get_board_version(&id))
-		id = BOARD_ID_UNKNOWN;
-
-	return id;
+	*id = recv_ec_data() << 8 | recv_ec_data();
+	return 0;
 }
 
-/* Get Board ID via EC I/O port write/read */
+/* Read Board ID from EC */
 int get_rvp_board_id(void)
 {
-	static int id = BOARD_ID_UNKNOWN;
+	static uint32_t id = BOARD_ID_INIT;
+	const char *ec_type;
+	int ret;
 
-	if (CONFIG(EC_GOOGLE_CHROMEEC)) { /* CHROME_EC */
-		id = get_board_id_via_ext_ec();
-	} else { /* WINDOWS_EC */
-		if (send_ec_command(EC_FAB_ID_CMD) == 0) {
-			id = recv_ec_data() << 8;
-			id |= recv_ec_data();
-		}
+	/* If already initialized, return the cached board ID. */
+	if (id != BOARD_ID_INIT)
+		return id;
+
+	/* Reading board ID. */
+	if (CONFIG(EC_GOOGLE_CHROMEEC)) { /* Chrome EC */
+		ec_type = "ChromeEC";
+		ret = google_chromeec_get_board_version(&id);
+	} else { /* Intel EC */
+		ec_type = "IntelEC";
+		ret = intel_ec_get_board_version(&id);
 	}
-	return (id & BOARD_ID_MASK);
+
+	if (ret == -1) {
+		id = BOARD_ID_UNKNOWN;
+		printk(BIOS_INFO, "[%s] board id: unknown\n", ec_type);
+	} else {
+		id &= BOARD_ID_MASK;
+		printk(BIOS_INFO, "[%s] board id: 0x%x\n", ec_type, id);
+	}
+
+	return id;
 }

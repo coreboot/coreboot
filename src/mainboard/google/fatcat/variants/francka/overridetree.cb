@@ -273,7 +273,6 @@ chip soc/intel/pantherlake
 		end # M.2 SSD
 
 		device ref smbus on end
-		device ref npk on end
 		device ref hda on
 			chip drivers/sof
 				register "spkr_tplg" = "max98360a"

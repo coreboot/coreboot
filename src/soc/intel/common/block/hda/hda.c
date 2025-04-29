@@ -1,13 +1,21 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <device/device.h>
 #include <device/azalia_device.h>
+#include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <intelblocks/hda.h>
+
+/* Mainboard overrides. */
+
+__weak bool mainboard_is_hda_codec_enabled(void)
+{
+	return true;
+}
 
 static void hda_init(struct device *dev)
 {
-	if (CONFIG(SOC_INTEL_COMMON_BLOCK_HDA_VERB))
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_HDA_VERB) && mainboard_is_hda_codec_enabled())
 		azalia_audio_init(dev);
 }
 

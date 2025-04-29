@@ -20,6 +20,7 @@ romstage-y += ../common/cbmem.c
 romstage-y += ../common/cpu_id.c ../common/cpu_segment_id.c
 romstage-y += ../common/dram_init.c
 romstage-y += ../common/dramc_param.c
+romstage-y += dvfs.c
 romstage-y += ../common/emi.c
 romstage-y += ../common/memory.c ../common/memory_test.c
 romstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c

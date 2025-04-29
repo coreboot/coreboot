@@ -124,5 +124,12 @@ Device (PDRC)	/* PCI Device Resource Consumption */
 	}
 }
 
+/* Get PCIe BAR */
+Method (GPCB, 0, Serialized)
+{
+	Local0 = \_SB.PCI0.MCHC.PXBR << 28
+	Return (Local0)
+}
+
 /* GFX 00:02.0 */
 #include <drivers/intel/gma/acpi/gfx.asl>

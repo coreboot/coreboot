@@ -36,8 +36,8 @@ static void fill_fspm_igd_params(FSP_M_CONFIG *m_cfg,
 	};
 	m_cfg->InternalGraphics = !CONFIG(SOC_INTEL_DISABLE_IGD) && is_devfn_enabled(PCI_DEVFN_IGD);
 	if (m_cfg->InternalGraphics) {
-		/* IGD is enabled, set IGD stolen size to 128MB. */
-		m_cfg->IgdDvmt50PreAlloc = IGD_SM_128MB;
+		/* IGD is enabled, set IGD stolen size to 64MB. */
+		m_cfg->IgdDvmt50PreAlloc = IGD_SM_64MB;
 		/* DP port config */
 		m_cfg->DdiPortAConfig = config->ddi_port_A_config;
 		m_cfg->DdiPortBConfig = config->ddi_port_B_config;

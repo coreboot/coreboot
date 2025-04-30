@@ -16,6 +16,16 @@ config REALTEK_8168_MACADDRESS
 	  hexadecimal number for it to be valid. Failing to do so will
 	  result in the default macaddress being used.
 
+config RT8168_PUT_MAC_TO_ERI
+	bool
+	help
+	  After programming MAC address into the regular rt8168 ID registers,
+	  also program it into ERI. On some mainboards our programmed
+	  MAC address will not survive a controller reset without this step.
+
+	  Select at mainboard level only if its rt8168 has no EEPROM and
+	  programmed MAC address is lost after booting to OS.
+
 config RT8168_GET_MAC_FROM_VPD
 	bool
 	default n

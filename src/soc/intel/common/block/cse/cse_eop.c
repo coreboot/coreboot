@@ -4,6 +4,7 @@
 #include <bootstate.h>
 #include <console/console.h>
 #include <intelblocks/cse.h>
+#include <intelblocks/fast_spi.h>
 #include <intelblocks/pmc_ipc.h>
 #include <security/vboot/vboot_common.h>
 #include <soc/intel/common/reset.h>
@@ -240,6 +241,11 @@ static void do_send_end_of_post(bool wait_for_completion)
 	 */
 	if (!is_cse_enabled()) {
 		printk(BIOS_DEBUG, "CSE is disabled, cannot send End-of-Post (EOP) message\n");
+		return;
+	}
+
+	if (fast_spi_flash_descriptor_override()) {
+		printk(BIOS_WARNING, "CSE: not sending EOP because flash descriptor override is enabled\n");
 		return;
 	}
 

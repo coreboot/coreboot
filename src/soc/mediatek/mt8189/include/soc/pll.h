@@ -524,7 +524,7 @@ enum {
 	TVDPLL1_HZ	= 594 * MHz,
 	TVDPLL2_HZ	= 594 * MHz,
 	ETHPLL_HZ	= 500 * MHz,
-	MSDCPLL_HZ	= 416 * MHz,
+	MSDCPLL_HZ	= 384 * MHz,
 	UFSPLL_HZ	= 594 * MHz,
 };
 

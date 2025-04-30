@@ -192,7 +192,8 @@ config HEAP_SIZE
 
 config CHIPSET_DEVICETREE
 	string
-	default "soc/intel/pantherlake/chipset.cb"
+	default "soc/intel/pantherlake/chipset_wcl.cb" if SOC_INTEL_WILDCATLAKE
+	default "soc/intel/pantherlake/chipset_ptl.cb"
 
 config EXT_BIOS_WIN_BASE
 	default 0xf8000000

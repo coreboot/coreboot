@@ -4,11 +4,9 @@
 #define __SOC_MEDIATEK_MT8196_DVFS_H__
 
 #include <soc/addressmap.h>
+#include <soc/dvfs_common.h>
 
-#define CACHE_LINE	64
 #define CSRAM_OFFSET	0x0001BC00
 #define CSRAM_BASE	(SRAM_BASE + CSRAM_OFFSET)
-
-void dvfs_init(void);
 
 #endif

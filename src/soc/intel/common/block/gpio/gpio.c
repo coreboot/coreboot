@@ -294,8 +294,7 @@ static void gpio_configure_itss(const struct pad_config *cfg, uint16_t port,
 	 * in the GPIO pad configuration so that a hardware active low
 	 * signal looks that way to the APIC (double inversion).
 	 */
-	if (!(cfg->pad_config[0] & PAD_CFG0_ROUTE_SWAPPED) &&
-	    !(cfg->pad_config[0] & PAD_CFG0_ROUTE_IOAPIC))
+	if (!(cfg->pad_config[0] & PAD_CFG0_ROUTE_IOAPIC))
 		return;
 
 	irq = pcr_read32(port, PAD_CFG1_OFFSET(pad_cfg_offset));
@@ -306,8 +305,7 @@ static void gpio_configure_itss(const struct pad_config *cfg, uint16_t port,
 		return;
 	}
 
-	if (CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_ITSS_POL_CFG) &&
-	    !(cfg->pad_config[0] & PAD_CFG0_ROUTE_SWAPPED))
+	if (CONFIG(SOC_INTEL_COMMON_BLOCK_GPIO_ITSS_POL_CFG))
 		itss_set_irq_polarity(irq, !!(cfg->pad_config[0] &
 					      PAD_CFG0_RX_POL_INVERT));
 

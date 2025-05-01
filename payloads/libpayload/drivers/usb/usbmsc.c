@@ -28,6 +28,7 @@
 
 //#define USB_DEBUG
 #include <endian.h>
+#include <limits.h>
 #include <usb/usb.h>
 #include <usb/usbmsc.h>
 #include <usb/usbdisk.h>
@@ -520,7 +521,7 @@ read_capacity(usbdev_t *dev)
 		MSC_INST(dev)->numblocks = 0xffffffff;
 		MSC_INST(dev)->blocksize = 512;
 	} else {
-		MSC_INST(dev)->numblocks = ntohl(buf[0]) + 1;
+		MSC_INST(dev)->numblocks = MIN(ntohl(buf[0]), UINT_MAX - 1) + 1;
 		MSC_INST(dev)->blocksize = ntohl(buf[1]);
 	}
 	usb_debug("  %d %d-byte sectors (%d MB)\n", MSC_INST(dev)->numblocks,

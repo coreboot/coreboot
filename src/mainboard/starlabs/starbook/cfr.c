@@ -2,6 +2,7 @@
 
 #include <boot/coreboot_tables.h>
 #include <commonlib/coreboot_tables.h>
+#include <console/cfr.h>
 #include <drivers/option/cfr_frontend.h>
 #include <ec/starlabs/merlin/cfr.h>
 #include <inttypes.h>

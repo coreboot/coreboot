@@ -2,6 +2,7 @@
 
 #include <boot/coreboot_tables.h>
 #include <commonlib/coreboot_tables.h>
+#include <console/cfr.h>
 #include <drivers/option/cfr_frontend.h>
 #include <ec/starlabs/merlin/cfr.h>
 #include <inttypes.h>
@@ -25,24 +26,6 @@ static const struct sm_object boot_option = SM_DECLARE_ENUM({
 	.values		= (const struct sm_enum_value[]) {
 				{ "Fallback",		0		},
 				{ "Normal",		1		},
-				SM_ENUM_VALUE_END			},
-});
-
-static const struct sm_object debug_level = SM_DECLARE_ENUM({
-	.opt_name	= "debug_level",
-	.ui_name	= "Debug Level",
-	.ui_helptext	= "Set the verbosity of the debug output.",
-	.default_value	= 0,
-	.values		= (const struct sm_enum_value[]) {
-				{ "Emergency",		0		},
-				{ "Alert",		1		},
-				{ "Critical",		2		},
-				{ "Error",		3		},
-				{ "Warning",		4		},
-				{ "Notice",		5		},
-				{ "Info",		6		},
-				{ "Debug",		7		},
-				{ "Spew",		8		},
 				SM_ENUM_VALUE_END			},
 });
 

@@ -2,6 +2,7 @@
 
 #include <boot/coreboot_tables.h>
 #include <commonlib/coreboot_tables.h>
+#include <console/cfr.h>
 #include <drivers/option/cfr_frontend.h>
 #include <ec/starlabs/merlin/cfr.h>
 #include <inttypes.h>
@@ -26,24 +27,6 @@ static const struct sm_object card_reader = SM_DECLARE_BOOL({
 	.ui_name	= "Card Reader",
 	.ui_helptext	= "Enable or disable the built-in card reader",
 	.default_value	= true,
-});
-
-static const struct sm_object debug_level = SM_DECLARE_ENUM({
-	.opt_name	= "debug_level",
-	.ui_name	= "Debug Level",
-	.ui_helptext	= "Set the verbosity of the debug output.",
-	.default_value	= 0,
-	.values		= (const struct sm_enum_value[]) {
-				{ "Emergency",		0		},
-				{ "Alert",		1		},
-				{ "Critical",		2		},
-				{ "Error",		3		},
-				{ "Warning",		4		},
-				{ "Notice",		5		},
-				{ "Info",		6		},
-				{ "Debug",		7		},
-				{ "Spew",		8		},
-				SM_ENUM_VALUE_END			},
 });
 
 #if CONFIG(EC_STARLABS_FAST_CHARGE)

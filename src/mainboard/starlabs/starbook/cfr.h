@@ -26,24 +26,6 @@ static const struct sm_object card_reader = SM_DECLARE_BOOL({
 	.default_value	= true,
 });
 
-static const struct sm_object debug_level = SM_DECLARE_ENUM({
-	.opt_name	= "debug_level",
-	.ui_name	= "Debug Level",
-	.ui_helptext	= "Set the verbosity of the debug output.",
-	.default_value	= 0,
-	.values		= (const struct sm_enum_value[]) {
-				{ "Emergency",		0		},
-				{ "Alert",		1		},
-				{ "Critical",		2		},
-				{ "Error",		3		},
-				{ "Warning",		4		},
-				{ "Notice",		5		},
-				{ "Info",		6		},
-				{ "Debug",		7		},
-				{ "Spew",		8		},
-				SM_ENUM_VALUE_END			},
-});
-
 static const struct sm_object fingerprint_reader = SM_DECLARE_BOOL({
 	.opt_name	= "fingerprint_reader",
 	.ui_name	= "Fingerprint Reader",

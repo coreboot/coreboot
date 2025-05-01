@@ -45,7 +45,11 @@
 #define GPP_D_NAME		"GPP_D"
 #define GPP_VGPIO_NAME		"vGPIO"
 
+#if CONFIG(SOC_INTEL_WILDCATLAKE)
+#define GPIO_MAX_NUM_PER_GROUP	29
+#else
 #define GPIO_MAX_NUM_PER_GROUP	28
+#endif
 
 #define COMM_0		0
 #define COMM_1		INC(COMM_0)
@@ -63,15 +67,15 @@
  */
 
 /*
- * +----------------------------+
- * |        Group V             |
- * +------------------+---------+
- * |                  | PTL-U/H |
- * +------------------+---------+
- * | Pad Start Number |    0    |
- * +------------------+---------+
- * | Pad End Number   |    23   |
- * +------------------+---------+
+ * +----------------------------------+
+ * |             Group V              |
+ * +------------------+---------------+
+ * |                  |  PTL-U/H/WCL  |
+ * +------------------+---------------+
+ * | Pad Start Number |       0       |
+ * +------------------+---------------+
+ * | Pad End Number   |      23       |
+ * +------------------+---------------+
  */
 #define GPP_V00			0
 #define GPP_V01			INC(GPP_V00)
@@ -103,15 +107,15 @@
 #define NUM_GPP_V_PADS		(GPP_V17 - GPP_V00 + 1)
 
 /*
- * +----------------------------+
- * |        Group C             |
- * +------------------+---------+
- * |                  | PTL-UH/H|
- * +------------------+---------+
- * | Pad Start Number |    24   |
- * +------------------+---------+
- * | Pad End Number   |    47   |
- * +------------------+---------+
+ * +----------------------------------+
+ * |             Group C              |
+ * +------------------+---------------+
+ * |                  |  PTL-U/H/WCL  |
+ * +------------------+---------------+
+ * | Pad Start Number |      24       |
+ * +------------------+---------------+
+ * | Pad End Number   |      47       |
+ * +------------------+---------------+
  */
 #define GPP_C00			INC(GPP_RST_B)
 #define GPP_C01			INC(GPP_C00)
@@ -154,15 +158,15 @@
  */
 
 /*
- * +----------------------------+
- * |        Group F             |
- * +------------------+---------+
- * |                  | PTL-UH/H|
- * +------------------+---------+
- * | Pad Start Number |    48   |
- * +------------------+---------+
- * | Pad End Number   |    73   |
- * +------------------+---------+
+ * +----------------------------------+
+ * |             Group F              |
+ * +------------------+---------------+
+ * |                  |  PTL-U/H/WCL  |
+ * +------------------+---------------+
+ * | Pad Start Number |      48       |
+ * +------------------+---------------+
+ * | Pad End Number   |      73       |
+ * +------------------+---------------+
  */
 #define GPP_F00			INC(GPP_C23)
 #define GPP_F01			INC(GPP_F00)
@@ -195,15 +199,15 @@
 #define NUM_GPP_F_PADS		(GPP_F23 - GPP_F00 + 1)
 
 /*
- * +----------------------------+
- * |        Group E             |
- * +------------------+---------+
- * |                  | PTL-UH/H|
- * +------------------+---------+
- * | Pad Start Number |    74   |
- * +------------------+---------+
- * | Pad End Number   |    98   |
- * +------------------+---------+
+ * +----------------------------------+
+ * |             Group E              |
+ * +------------------+---------------+
+ * |                  |  PTL-U/H/WCL  |
+ * +------------------+---------------+
+ * | Pad Start Number |      74       |
+ * +------------------+---------------+
+ * | Pad End Number   |      98       |
+ * +------------------+---------------+
  *
  * NOTE: GPP_E00 is not a connected PAD in PTL and should be treated
  * as other internal used only PADs. It does not meant to be used.
@@ -250,6 +254,7 @@
  * +----------------------------+
  */
 
+#if (!CONFIG(SOC_INTEL_WILDCATLAKE))
 /*
  * +----------------------------+
  * |        Group CPUJTAG       |
@@ -280,19 +285,24 @@
 #define GPP_DDSP_HPDALV		INC(GPP_JTAG_TRST_B)
 
 #define NUM_GRP_RSVD_PADS	(GPP_DDSP_HPDALV - GPP_EPD_ON + 1)
+#endif
 
 /*
- * +----------------------------+
- * |        Group H             |
- * +------------------+---------+
- * |                  | PTL-UH/H|
- * +------------------+---------+
- * | Pad Start Number |    114  |
- * +------------------+---------+
- * | Pad End Number   |    141  |
- * +------------------+---------+
+ * +----------------------------------+
+ * |                Group H           |
+ * +------------------+---------+-----+
+ * |                  | PTL-UH/H| WCL |
+ * +------------------+---------+-----+
+ * | Pad Start Number |   114   |  99 |
+ * +------------------+---------+-----+
+ * | Pad End Number   |   141   | 127 |
+ * +------------------+---------+-----+
  */
+#if CONFIG(SOC_INTEL_WILDCATLAKE)
+#define GPP_H00			INC(GPP_THC0_GSPI_CLK_LPBK)
+#else
 #define GPP_H00			INC(GPP_DDSP_HPDALV)
+#endif
 #define GPP_H01			INC(GPP_H00)
 #define GPP_H02			INC(GPP_H01)
 #define GPP_H03			INC(GPP_H02)
@@ -320,22 +330,30 @@
 #define GPP_LPI3C1_CLK_LPBK	INC(GPP_H24)
 #define GPP_LPI3C0_CLK_LPBK	INC(GPP_LPI3C1_CLK_LPBK)
 #define GPP_ISHI3C1_CLK_LPBK	INC(GPP_LPI3C0_CLK_LPBK)
-
+#if CONFIG(SOC_INTEL_WILDCATLAKE)
+#define GPP_SHD3C_CLK_LPBK	INC(GPP_ISHI3C1_CLK_LPBK)
+#define NUM_GRP_H_PADS		(GPP_SHD3C_CLK_LPBK - GPP_H00 + 1)
+#else
 #define NUM_GRP_H_PADS		(GPP_ISHI3C1_CLK_LPBK - GPP_H00 + 1)
+#endif
 #define NUM_GPP_H_PADS		(GPP_H24 - GPP_H00 + 1)
 
 /*
- * +----------------------------+
- * |        Group A             |
- * +------------------+---------+
- * |                  | PTL-UH/H|
- * +------------------+---------+
- * | Pad Start Number |    142  |
- * +------------------+---------+
- * | Pad End Number   |    169  |
- * +------------------+---------+
+ * +----------------------------------+
+ * |                Group A           |
+ * +------------------+---------+-----+
+ * |                  | PTL-UH/H| WCL |
+ * +------------------+---------+-----+
+ * | Pad Start Number |   142   | 128 |
+ * +------------------+---------+-----+
+ * | Pad End Number   |   169   | 155 |
+ * +------------------+---------+-----+
  */
+#if CONFIG(SOC_INTEL_WILDCATLAKE)
+#define GPP_A00			INC(GPP_SHD3C_CLK_LPBK)
+#else
 #define GPP_A00			INC(GPP_ISHI3C1_CLK_LPBK)
+#endif
 #define GPP_A01			INC(GPP_A00)
 #define GPP_A02			INC(GPP_A01)
 #define GPP_A03			INC(GPP_A02)
@@ -369,15 +387,15 @@
 #define NUM_GPP_A_PADS		(GPP_A17 - GPP_A00 + 1)
 
 /*
- * +----------------------------+
- * |        Group vGPIO3        |
- * +------------------+---------+
- * |                  | PTL-UH/H|
- * +------------------+---------+
- * | Pad Start Number |    170  |
- * +------------------+---------+
- * | Pad End Number   |    183  |
- * +------------------+---------+
+ * +----------------------------------+
+ * |              Group vGPIO3        |
+ * +------------------+---------+-----+
+ * |                  | PTL-UH/H| WCL |
+ * +------------------+---------+-----+
+ * | Pad Start Number |    170  | 156 |
+ * +------------------+---------+-----+
+ * | Pad End Number   |    183  | 169 |
+ * +------------------+---------+-----+
  */
 #define GPP_VGPIO3_USB0		INC(GPP_SPI0_CLK_LOOPBK)
 #define GPP_VGPIO3_USB1		INC(GPP_VGPIO3_USB0)
@@ -396,11 +414,19 @@
 
 #define NUM_GRP_VGPIO3_PADS	(GPP_VGPIO3_THC3 - GPP_VGPIO3_USB0 + 1)
 
+#if CONFIG(SOC_INTEL_WILDCATLAKE)
+#define COM3_GRP_PAD_START	GPP_H00
+#define COM3_GRP_PAD_END	GPP_VGPIO3_THC3
+#define NUM_COM3_GRP_PADS	(GPP_VGPIO3_THC3 - GPP_H00 + 1)
+#define NUM_COM3_GPP_PADS	(NUM_GPP_H_PADS + NUM_GPP_A_PADS)
+#define NUM_COM3_GROUPS		3
+#else
 #define COM3_GRP_PAD_START	GPP_EPD_ON
 #define COM3_GRP_PAD_END	GPP_VGPIO3_THC3
 #define NUM_COM3_GRP_PADS	(GPP_VGPIO3_THC3 - GPP_EPD_ON + 1)
 #define NUM_COM3_GPP_PADS	(NUM_GPP_H_PADS + NUM_GPP_A_PADS)
 #define NUM_COM3_GROUPS		4
+#endif
 
 /*
  * +----------------------------+
@@ -409,15 +435,15 @@
  */
 
 /*
- * +----------------------------+
- * |        Group S             |
- * +------------------+---------+
- * |                  | PTL-UH/H|
- * +------------------+---------+
- * | Pad Start Number |    184  |
- * +------------------+---------+
- * | Pad End Number   |    191  |
- * +------------------+---------+
+ * +----------------------------------+
+ * |                Group S           |
+ * +------------------+---------+-----+
+ * |                  | PTL-UH/H| WCL |
+ * +------------------+---------+-----+
+ * | Pad Start Number |    184  | 170 |
+ * +------------------+---------+-----+
+ * | Pad End Number   |    191  | 177 |
+ * +------------------+---------+-----+
  */
 #define GPP_S00			INC(GPP_VGPIO3_THC3)
 #define GPP_S01			INC(GPP_S00)
@@ -431,11 +457,51 @@
 #define NUM_GRP_S_PADS		(GPP_S07 - GPP_S00 + 1)
 #define NUM_GPP_S_PADS		(GPP_S07 - GPP_S00 + 1)
 
+#if CONFIG(SOC_INTEL_WILDCATLAKE)
+/*
+ * +------------------------+
+ * |      Group CPUJTAG     |
+ * +------------------+-----+
+ * |                  | WCL |
+ * +------------------+-----+
+ * | Pad Start Number | 178 |
+ * +------------------+-----+
+ * | Pad End Number   | 192 |
+ * +------------------+-----+
+ */
+
+#define GPP_EPD_ON		INC(GPP_S07)
+#define GPP_VDD2_PWRGD		INC(GPP_EPD_ON)
+
+#define GPP_JTAG_MBPB0		INC(GPP_VDD2_PWRGD)
+#define GPP_JTAG_MBPB1		INC(GPP_JTAG_MBPB0)
+#define GPP_JTAG_MBPB2		INC(GPP_JTAG_MBPB1)
+#define GPP_JTAG_MBPB3		INC(GPP_JTAG_MBPB2)
+#define GPP_JTAG_TD0		INC(GPP_JTAG_MBPB3)
+#define GPP_PRDY_B		INC(GPP_JTAG_TD0)
+#define GPP_PREQ_B		INC(GPP_PRDY_B)
+#define GPP_JTAG_TDI		INC(GPP_PREQ_B)
+#define GPP_JTAG_TMS		INC(GPP_JTAG_TDI)
+#define GPP_JTAG_TCK		INC(GPP_JTAG_TMS)
+#define GPP_DBG_PMODE		INC(GPP_JTAG_TCK)
+#define GPP_JTAG_TRST_B		INC(GPP_DBG_PMODE)
+#define GPP_DDSP_HPDALV		INC(GPP_JTAG_TRST_B)
+
+#define NUM_GRP_RSVD_PADS	(GPP_DDSP_HPDALV - GPP_EPD_ON + 1)
+#endif
 #define COM4_GRP_PAD_START	GPP_S00
+
+#if CONFIG(SOC_INTEL_WILDCATLAKE)
+#define COM4_GRP_PAD_END	GPP_DDSP_HPDALV
+#define NUM_COM4_GRP_PADS	(GPP_DDSP_HPDALV - GPP_S00 + 1)
+#define NUM_COM4_GPP_PADS	(NUM_GPP_S_PADS)
+#define NUM_COM4_GROUPS		2
+#else
 #define COM4_GRP_PAD_END	GPP_S07
 #define NUM_COM4_GRP_PADS	(GPP_S07 - GPP_S00 + 1)
 #define NUM_COM4_GPP_PADS	(GPP_S07 - GPP_S00 + 1)
 #define NUM_COM4_GROUPS		1
+#endif
 
 /*
  * +----------------------------+
@@ -444,17 +510,21 @@
  */
 
 /*
- * +----------------------------+
- * |        Group B             |
- * +------------------+---------+
- * |                  | PTL-UH/H|
- * +------------------+---------+
- * | Pad Start Number |    192  |
- * +------------------+---------+
- * | Pad End Number   |    218  |
- * +------------------+---------+
+ * +----------------------------------+
+ * |              Group B             |
+ * +------------------+---------+-----+
+ * |                  | PTL-UH/H| WCL |
+ * +------------------+---------+-----+
+ * | Pad Start Number |    192  | 193 |
+ * +------------------+---------+-----+
+ * | Pad End Number   |    218  | 219 |
+ * +------------------+---------+-----+
  */
+#if CONFIG(SOC_INTEL_WILDCATLAKE)
+#define GPP_B00			INC(GPP_DDSP_HPDALV)
+#else
 #define GPP_B00			INC(GPP_S07)
+#endif
 #define GPP_B01			INC(GPP_B00)
 #define GPP_B02			INC(GPP_B01)
 #define GPP_B03			INC(GPP_B02)
@@ -486,15 +556,15 @@
 #define NUM_GPP_B_PADS		(GPP_B25 - GPP_B00 + 1)
 
 /*
- * +----------------------------+
- * |        Group D             |
- * +------------------+---------+
- * |                  | PTL-UH/H|
- * +------------------+---------+
- * | Pad Start Number |    219  |
- * +------------------+---------+
- * | Pad End Number   |    245  |
- * +------------------+---------+
+ * +----------------------------------+
+ * |              Group D             |
+ * +------------------+---------+-----+
+ * |                  | PTL-UH/H| WCL |
+ * +------------------+---------+-----+
+ * | Pad Start Number |    219  | 220 |
+ * +------------------+---------+-----+
+ * | Pad End Number   |    245  | 246 |
+ * +------------------+---------+-----+
  */
 #define GPP_D00			INC(GPP_ISHI3C0_CLK_LPBK)
 #define GPP_D01			INC(GPP_D00)
@@ -528,15 +598,15 @@
 #define NUM_GPP_D_PADS		(GPP_D25 - GPP_D00 + 1)
 
 /*
- * +----------------------------+
- * |        Group vGPIO         |
- * +------------------+---------+
- * |                  | PTL-UH/H|
- * +------------------+---------+
- * | Pad Start Number |    246  |
- * +------------------+---------+
- * | Pad End Number   |    263  |
- * +------------------+---------+
+ * +----------------------------------+
+ * |             Group vGPIO          |
+ * +------------------+---------+-----+
+ * |                  | PTL-UH/H| WCL |
+ * +------------------+---------+-----+
+ * | Pad Start Number |    246  | 247 |
+ * +------------------+---------+-----+
+ * | Pad End Number   |    263  | 264 |
+ * +------------------+---------+-----+
  */
 #define GPP_VGPIO0		INC(GPP_ISDI3C1_CLK_LPBK)
 #define GPP_VGPIO5		INC(GPP_VGPIO0)

@@ -16,7 +16,7 @@ static const struct sm_object me_state = SM_DECLARE_ENUM({
 	.opt_name	= "me_state",
 	.ui_name	= "Intel Management Engine",
 	.ui_helptext	= "Enable or disable the Intel Management Engine",
-	.default_value	= 0,
+	.default_value	= CONFIG(CSE_DEFAULT_CFR_OPTION_STATE_DISABLED),
 	.values		= (const struct sm_enum_value[]) {
 				{ "Disabled",		1		},
 				{ "Enabled",		0		},

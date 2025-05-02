@@ -101,7 +101,6 @@ static struct sm_obj_form pci = {
 static struct sm_obj_form coreboot = {
 	.ui_name = "coreboot",
 	.obj_list = (const struct sm_object *[]) {
-		&boot_option,
 		&debug_level,
 		&reboot_counter,
 		NULL

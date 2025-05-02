@@ -8,17 +8,6 @@
 #include <intelblocks/pcie_rp.h>
 #include <variants.h>
 
-static const struct sm_object boot_option = SM_DECLARE_ENUM({
-	.opt_name	= "boot_option",
-	.ui_name	= "Boot Option",
-	.ui_helptext	= "Change the boot device in the event of a failed boot",
-	.default_value	= 0,
-	.values		= (const struct sm_enum_value[]) {
-				{ "Fallback",		0		},
-				{ "Normal",		1		},
-				SM_ENUM_VALUE_END			},
-});
-
 static const struct sm_object card_reader = SM_DECLARE_BOOL({
 	.opt_name	= "card_reader",
 	.ui_name	= "Card Reader",

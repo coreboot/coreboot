@@ -18,17 +18,6 @@ static const struct sm_object accelerometer = SM_DECLARE_BOOL({
 	.default_value	= true,
 });
 
-static const struct sm_object boot_option = SM_DECLARE_ENUM({
-	.opt_name	= "boot_option",
-	.ui_name	= "Boot Option",
-	.ui_helptext	= "Change the boot device in the event of a failed boot",
-	.default_value	= 0,
-	.values		= (const struct sm_enum_value[]) {
-				{ "Fallback",		0		},
-				{ "Normal",		1		},
-				SM_ENUM_VALUE_END			},
-});
-
 #if CONFIG(SOC_INTEL_TIGERLAKE) || CONFIG(SOC_INTEL_ALDERLAKE) || CONFIG(SOC_INTEL_RAPTORLAKE)
 static const struct sm_object gna = SM_DECLARE_BOOL({
 	.opt_name	= "gna",
@@ -255,7 +244,6 @@ static struct sm_obj_form pci = {
 static struct sm_obj_form coreboot = {
 	.ui_name = "coreboot",
 	.obj_list = (const struct sm_object *[]) {
-		&boot_option,
 		&debug_level,
 		&reboot_counter,
 		NULL

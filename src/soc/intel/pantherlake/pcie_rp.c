@@ -18,7 +18,11 @@ static const struct pcie_rp_group tbt_rp_groups[] = {
 };
 
 static const struct pcie_rp_group ptl_rp_groups[] = {
+#if CONFIG(SOC_INTEL_WILDCATLAKE)
+	{ .slot = PCI_DEV_SLOT_PCIE_1,	.count = 4, .lcap_port_base = 1 },
+#else
 	{ .slot = PCI_DEV_SLOT_PCIE_1,	.count = 8, .lcap_port_base = 1 },
+#endif
 #if CONFIG(SOC_INTEL_PANTHERLAKE_U_H)
 	{ .slot = PCI_DEV_SLOT_PCIE_2,	.count = 4, .lcap_port_base = 1 },
 #else

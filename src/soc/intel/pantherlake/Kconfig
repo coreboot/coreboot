@@ -111,9 +111,15 @@ config SOC_INTEL_PANTHERLAKE_BASE
 	  type using the `SOC_INTEL_PANTHERLAKE_*` options instead
 	  of selecting this option directly.
 
-config SOC_INTEL_PANTHERLAKE_U_H
+config SOC_INTEL_PANTHERLAKE
 	bool
 	select SOC_INTEL_PANTHERLAKE_BASE
+	help
+	  Intel Pantherlake SoC. This should be selected by all Pantherlake SoC variants.
+
+config SOC_INTEL_PANTHERLAKE_U_H
+	bool
+	select SOC_INTEL_PANTHERLAKE
 	help
 	  Choose this option if the mainboard is built using either a PTL-U (15W) or
 	  PTL-H 12Xe (25W) system-on-a-chip SoC.
@@ -121,7 +127,7 @@ config SOC_INTEL_PANTHERLAKE_U_H
 config SOC_INTEL_PANTHERLAKE_H
 	bool
 	depends on !SOC_INTEL_PANTHERLAKE_U_H
-	select SOC_INTEL_PANTHERLAKE_BASE
+	select SOC_INTEL_PANTHERLAKE
 	help
 	  Choose this option if the mainboard is built using PTL-H 4Xe system-on-a-chip (SoC).
 

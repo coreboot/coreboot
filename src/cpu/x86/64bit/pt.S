@@ -21,14 +21,14 @@
 .align 4096
 PML4E:
 /* For every 512GiB generate a pointer to the corresponding PDPT */
-.rept (CONFIG_CPU_PT_ROM_MAP_GB + 511) / 512
+.rept ((CONFIG_CPU_PT_ROM_MAP_GB + 511) >> 9)
 .quad _GEN_DIR(PDPT + 4096 * ((. - PML4E) >> 3)) /* Point to PDPT */
 .endr
 
 .align 4096
 PDT:
 /* For every 2MiB generate a page entry. In one GiB there are 512 pages. */
-.rept 512 * CONFIG_CPU_PT_ROM_MAP_GB
+.rept (CONFIG_CPU_PT_ROM_MAP_GB << 9)
 .quad _GEN_PAGE(0x200000 * ((. - PDT) >> 3)) /* identity map 2MiB page */
 .endr
 

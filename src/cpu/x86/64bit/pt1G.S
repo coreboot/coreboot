@@ -21,7 +21,7 @@
 .align 4096
 PML4E:
 /* For every 512GiB generate a pointer to the corresponding PDPT */
-.rept (CONFIG_CPU_PT_ROM_MAP_GB + 511) / 512
+.rept ((CONFIG_CPU_PT_ROM_MAP_GB + 511) >> 9)
 .quad _GEN_DIR(PDPT + 4096 * ((. - PML4E) >> 3)) /* Point to PDPT */
 .endr
 

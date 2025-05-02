@@ -57,9 +57,7 @@ chip soc/intel/cannonlake
 			register "PcieClkSrcClkReq[8]" = "8"
 		end
 		device ref igpu		on	end
-		device ref dptf		on
-			register "Device4Enable" = "1"
-		end
+		device ref dptf		on	end
 		device ref thermal	on	end
 		device ref xhci		on
 			register "usb2_ports" = "{

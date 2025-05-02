@@ -267,6 +267,7 @@ static void cse_print_boot_partition_info(void)
  *	- When CSE boots from RW partition (COM: Normal and CWS: Normal)
  *	- When CSE boots from RO partition (COM: Soft Temp Disable and CWS: Normal)
  *	- After HMRFPO_ENABLE command is issued to CSE (COM: SECOVER_MEI_MSG and CWS: Normal)
+ *	- When CSE boots from RW partition (COM: Soft Temp Disable and CWS: M3 w/o UMA)
  * The prerequisite check should be handled in cse_get_bp_info() and
  * cse_set_next_boot_partition() since the CSE's current operation mode is changed between these
  * cmd handler calls.
@@ -280,6 +281,8 @@ static bool cse_is_bp_cmd_info_possible(void)
 			return true;
 		if (cse_is_hfs1_com_soft_temp_disable())
 			return true;
+	} else if (cse_is_hfs1_cws_m3_no_uma() && cse_is_hfs1_com_soft_temp_disable()) {
+		return true;
 	}
 	return false;
 }

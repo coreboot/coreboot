@@ -85,8 +85,11 @@ void platform_fsp_notify_status(enum fsp_notify_phase phase);
 
 /* Initialize memory margin analysis settings. */
 void setup_mma(FSP_M_CONFIG *memory_cfg);
-/* Update the SOC specific logo param and load the logo. */
-void soc_load_logo(FSPS_UPD *supd);
+/*
+ * Populate UPD entries for the logo if the platform utilizes
+ * the FSP's capability for rendering bitmap (BMP) images.
+ */
+void soc_load_logo_by_fsp(FSPS_UPD *supd);
 /* Update the SOC specific memory config param for mma. */
 void soc_update_memory_params_for_mma(FSP_M_CONFIG *memory_cfg,
 	struct mma_config_param *mma_cfg);

@@ -871,7 +871,7 @@ __weak void mainboard_silicon_init_params(FSP_S_CONFIG *s_cfg)
 }
 
 /* Handle FSP logo params */
-void soc_load_logo(FSPS_UPD *supd)
+void soc_load_logo_by_fsp(FSPS_UPD *supd)
 {
 	struct soc_intel_common_config *config = chip_get_common_soc_structure();
 	FSP_S_CONFIG *s_cfg = &supd->FspsConfig;

@@ -124,9 +124,12 @@ static void do_silicon_init(struct fsp_header *hdr)
 	/* Give SoC/mainboard a chance to populate entries */
 	platform_fsp_silicon_init_params_cb(upd);
 
-	/* Populate logo related entries */
-	if (CONFIG(BMP_LOGO))
-		soc_load_logo(upd);
+	/*
+	 * Populate UPD entries for the logo if the platform utilizes
+	 * the FSP's capability for rendering bitmap (BMP) images.
+	 */
+	if (CONFIG(BMP_LOGO) && !CONFIG(USE_COREBOOT_FOR_BMP_RENDERING))
+		soc_load_logo_by_fsp(upd);
 
 	/* Call SiliconInit */
 	silicon_init = (void *)(uintptr_t)(hdr->image_base +
@@ -269,7 +272,7 @@ void fsp_silicon_init(void)
 		fsp_display_timestamp();
 }
 
-__weak void soc_load_logo(FSPS_UPD *supd) { }
+__weak void soc_load_logo_by_fsp(FSPS_UPD *supd) { }
 
 static void release_logo(void *arg_unused)
 {

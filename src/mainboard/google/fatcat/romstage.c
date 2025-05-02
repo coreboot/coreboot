@@ -62,8 +62,10 @@ static void disable_vr_settings_on_pantherlake_h(FSP_M_CONFIG *m_cfg)
 	 * because the I_TRIP value is set lower than the device's actual capability.
 	 */
 	printk(BIOS_INFO, "Disabling VR settings on PTL-H.\n");
-	for (size_t i = 0; i < NUM_VR_DOMAINS; i++)
+	for (size_t i = 0; i < NUM_VR_DOMAINS; i++) {
 		m_cfg->CepEnable[i] = false;
+		m_cfg->EnableFastVmode[i] = false;
+	}
 }
 
 void mainboard_memory_init_params(FSPM_UPD *memupd)

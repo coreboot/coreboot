@@ -53,13 +53,6 @@ static const struct sm_object microphone = SM_DECLARE_BOOL({
 	.default_value	= true,
 });
 
-static const struct sm_object reboot_counter = SM_DECLARE_NUMBER({
-	.opt_name	= "reboot_counter",
-	.ui_name	= "Reboot Counter",
-	.flags		= CFR_OPTFLAG_SUPPRESS,
-	.default_value	= 0,
-});
-
 static const struct sm_object webcam = SM_DECLARE_BOOL({
 	.opt_name	= "webcam",
 	.ui_name	= "Webcam",
@@ -144,7 +137,6 @@ static struct sm_obj_form coreboot = {
 	.ui_name = "coreboot",
 	.obj_list = (const struct sm_object *[]) {
 		&debug_level,
-		&reboot_counter,
 		NULL
 	},
 };

@@ -102,7 +102,6 @@ static struct sm_obj_form coreboot = {
 	.ui_name = "coreboot",
 	.obj_list = (const struct sm_object *[]) {
 		&debug_level,
-		&reboot_counter,
 		NULL
 	},
 };

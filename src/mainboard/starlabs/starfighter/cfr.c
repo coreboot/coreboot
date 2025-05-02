@@ -106,13 +106,6 @@ static const struct sm_object pciexp_l1ss = SM_DECLARE_ENUM({
 });
 #endif
 
-static const struct sm_object reboot_counter = SM_DECLARE_NUMBER({
-	.opt_name	= "reboot_counter",
-	.ui_name	= "Reboot Counter",
-	.flags		= CFR_OPTFLAG_SUPPRESS,
-	.default_value	= 0,
-});
-
 #if CONFIG(DRIVERS_INTEL_USB4_RETIMER)
 static const struct sm_object thunderbolt = SM_DECLARE_BOOL({
 	.opt_name	= "thunderbolt",
@@ -220,7 +213,6 @@ static struct sm_obj_form coreboot = {
 	.ui_name = "coreboot",
 	.obj_list = (const struct sm_object *[]) {
 		&debug_level,
-		&reboot_counter,
 		NULL
 	},
 };

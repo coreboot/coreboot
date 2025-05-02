@@ -128,14 +128,6 @@ static const struct sm_object pciexp_l1ss = SM_DECLARE_ENUM({
 				SM_ENUM_VALUE_END			},
 });
 
-static const struct sm_object reboot_counter = SM_DECLARE_NUMBER({
-	.opt_name	= "reboot_counter",
-	.ui_name	= "Reboot Counter",
-	.flags		= CFR_OPTFLAG_SUPPRESS,
-	.default_value	= 0,
-});
-
-
 static const struct sm_object thunderbolt = SM_DECLARE_BOOL({
 	.opt_name	= "thunderbolt",
 	.ui_name	= "Thunderbolt",

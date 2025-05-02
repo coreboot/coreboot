@@ -126,13 +126,6 @@ static const struct sm_object pciexp_l1ss = SM_DECLARE_ENUM({
 });
 #endif
 
-static const struct sm_object reboot_counter = SM_DECLARE_NUMBER({
-	.opt_name	= "reboot_counter",
-	.ui_name	= "Reboot Counter",
-	.flags		= CFR_OPTFLAG_SUPPRESS,
-	.default_value	= 0,
-});
-
 static const struct sm_object touchscreen = SM_DECLARE_BOOL({
 	.opt_name	= "touchscreen",
 	.ui_name	= "Touchscreen",
@@ -245,7 +238,6 @@ static struct sm_obj_form coreboot = {
 	.ui_name = "coreboot",
 	.obj_list = (const struct sm_object *[]) {
 		&debug_level,
-		&reboot_counter,
 		NULL
 	},
 };

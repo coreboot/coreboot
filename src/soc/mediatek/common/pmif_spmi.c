@@ -48,37 +48,40 @@ static int spmi_read_check(struct pmif *pmif_arb, int slvid)
 	return 0;
 }
 
-static int spmi_cali_rd_clock_polarity(struct pmif *pmif_arb, const struct spmi_device *dev)
+static int spmi_cali_rd_clock_polarity(struct pmif *pmif_arb)
 {
-	int i;
-	bool success = false;
+	int i, j;
 	const struct cali cali_data[] = {
+		{SPMI_CK_DLY_1T, SPMI_CK_POL_NEG},
 		{SPMI_CK_DLY_1T, SPMI_CK_POL_POS},
 		{SPMI_CK_NO_DLY, SPMI_CK_POL_POS},
 		{SPMI_CK_NO_DLY, SPMI_CK_POL_NEG},
-		{SPMI_CK_DLY_1T, SPMI_CK_POL_NEG},
 	};
 
 	/* Indicate sampling clock polarity, 1: Positive 0: Negative */
 	for (i = 0; i < ARRAY_SIZE(cali_data); i++) {
-		SET32_BITFIELDS(&mtk_spmi_mst->mst_sampl, SAMPL_CK_DLY, cali_data[i].dly,
-				SAMPL_CK_POL, cali_data[i].pol);
-		if (spmi_read_check(pmif_arb, dev->slvid) == 0) {
-			success = true;
-			break;
+		bool success = true;
+		SET32_BITFIELDS(&mtk_spmi_mst->mst_sampl, SAMPL_CK_DLY,
+				cali_data[i].dly, SAMPL_CK_POL, cali_data[i].pol);
+		for (j = 0; j < spmi_dev_cnt; j++) {
+			if (spmi_read_check(pmif_arb, spmi_dev[j].slvid) != 0) {
+				success = false;
+				break;
+			}
+		}
+		if (success) {
+			printk(BIOS_INFO, "calibration success for spmi clk: "
+			       "cali_data[%d] dly = %u, pol = %u\n",
+			       i, cali_data[i].dly, cali_data[i].pol);
+			return 0;
 		}
 	}
 
-	if (!success)
-		die("ERROR - calibration fail for spmi clk");
-
-	return 0;
+	return -E_NODEV;
 }
 
 static int spmi_mst_init(struct pmif *pmif_arb)
 {
-	size_t i;
-
 	if (!pmif_arb) {
 		printk(BIOS_ERR, "%s: null pointer for pmif dev.\n", __func__);
 		return -E_INVAL;
@@ -88,8 +91,8 @@ static int spmi_mst_init(struct pmif *pmif_arb)
 		pmif_spmi_iocfg();
 	spmi_config_master();
 
-	for (i = 0; i < spmi_dev_cnt; i++)
-		spmi_cali_rd_clock_polarity(pmif_arb, &spmi_dev[i]);
+	if (spmi_cali_rd_clock_polarity(pmif_arb) != 0)
+		die("ERROR - calibration fail for spmi clk");
 
 	return 0;
 }

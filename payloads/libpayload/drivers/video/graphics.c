@@ -715,12 +715,11 @@ static fpmath_t lanczos_weight(fpmath_t in, int off)
 	 *
 	 * So (off - S0) - (in - floor(in)) is the distance from the sample
 	 * pixel to S0 minus the distance from S0 to the output pixel, aka
-	 * the distance from the sample pixel to the output pixel.
+	 * the distance from the sample pixel to the output pixel. (Note that
+	 * this calculation using fpfloor() is only valid if |in| is not
+	 * negative, which is always the case for our current code.)
 	 */
 	fpmath_t x = fpisub(off - S0, fpsubi(in, fpfloor(in)));
-
-	if (fpequals(x, fp(0)))
-		return fp(1);
 
 	/* x * 2 / a can save some instructions if a == 2 */
 	fpmath_t x2a = x;
@@ -728,6 +727,8 @@ static fpmath_t lanczos_weight(fpmath_t in, int off)
 		x2a = fpmul(x, fpfrac(2, LNCZ_A));
 
 	fpmath_t x_times_pi = fpmul(x, fppi());
+	if (fpequals(x_times_pi, fp(0)))
+		return fp(1);
 
 	/*
 	 * Rather than using sinr(pi*x), we leverage the "one-based" sine

@@ -50,6 +50,10 @@ static const struct pad_config ish_disable_pads[] = {
 	PAD_NC(GPP_B6, NONE),
 	/* D1  : ISH_GP1 ==> NC */
 	PAD_NC(GPP_D1, NONE),
+	/* D13  : UART0_ISH_RXD ==> NC */
+	PAD_NC(GPP_D13, NONE),
+	/* D14  : UART0_ISH_TXD ==> NC */
+	PAD_NC(GPP_D14, NONE),
 	/* E9  : SOC_ACC2_INT ==> NC */
 	PAD_NC_LOCK(GPP_E9, NONE, LOCK_CONFIG),
 };

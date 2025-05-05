@@ -369,14 +369,6 @@ struct var_mtrr_state {
 	struct var_mtrr_regs *regs;
 };
 
-static void clear_var_mtrr(int index)
-{
-	msr_t msr = { .lo = 0, .hi = 0 };
-
-	wrmsr(MTRR_PHYS_BASE(index), msr);
-	wrmsr(MTRR_PHYS_MASK(index), msr);
-}
-
 static int get_os_reserved_mtrrs(void)
 {
 	return CONFIG(RESERVE_MTRRS_FOR_OS) ? 2 : 0;

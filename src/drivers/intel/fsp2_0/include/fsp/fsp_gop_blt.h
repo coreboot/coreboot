@@ -3,6 +3,7 @@
 #ifndef FSP_GOP_BLT_H
 #define FSP_GOP_BLT_H
 
+#include <boot/coreboot_tables.h>
 #include <efi/efi_datatype.h>
 #include <types.h>
 

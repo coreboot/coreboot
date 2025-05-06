@@ -8,6 +8,7 @@
 #include <fw_config.h>
 #include <sar.h>
 #include <soc/bootblock.h>
+#include <stdlib.h>
 
 const char *get_wifi_sar_cbfs_filename(void)
 {
@@ -121,4 +122,18 @@ void variant_update_descriptor(void)
 		printk(BIOS_INFO, "Configuring descriptor for FIVR\n");
 		configure_descriptor(fivr_bytes, ARRAY_SIZE(fivr_bytes));
 	}
+}
+
+void variant_configure_pads(void)
+{
+	const struct pad_config *base_pads;
+	struct pad_config *padbased_table;
+	size_t base_num;
+
+	padbased_table = new_padbased_table();
+	base_pads = variant_gpio_table(&base_num);
+	gpio_padbased_override(padbased_table, base_pads, base_num);
+	fw_config_gpio_padbased_override(padbased_table);
+	gpio_configure_pads_with_padbased(padbased_table);
+	free(padbased_table);
 }

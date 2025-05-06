@@ -217,7 +217,6 @@ config PSP_SOFTFUSE_BITS
 	  See #57299 (NDA) for additional bit definitions.
 
 config PSPV2_MBOX_CMD_OFFSET
-	hex
 	default 0x10970
 
 endmenu

@@ -377,7 +377,6 @@ config PSP_SOFTFUSE_BITS
 	  See #55758 (NDA) for additional bit definitions.
 
 config PSPV2_MBOX_CMD_OFFSET
-	hex
 	default 0x10970
 
 config PSP_AB_RECOVERY

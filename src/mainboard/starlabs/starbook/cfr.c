@@ -12,6 +12,7 @@
 static struct sm_obj_form performance = {
 	.ui_name = "Performance",
 	.obj_list = (const struct sm_object *[]) {
+		&bluetooth_rtd3,
 		&fan_mode,
 		&power_profile,
 		NULL
@@ -56,6 +57,9 @@ static struct sm_obj_form devices = {
 	.ui_name = "Devices",
 	.obj_list = (const struct sm_object *[]) {
 		&card_reader,
+		#if CONFIG(BOARD_USES_FIXED_MODE_VBT)
+		&display_native_res,
+		#endif
 		#if CONFIG(BOARD_HAS_FPR)
 		&fingerprint_reader,
 		#endif

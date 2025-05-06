@@ -157,9 +157,26 @@ static const struct sm_object vtd = SM_DECLARE_BOOL({
 	.default_value	= true,
 });
 
+static const struct sm_object bluetooth_rtd3 = SM_DECLARE_BOOL({
+	.opt_name	= "bluetooth_rtd3",
+	.ui_name	= "Bluetooth Runtime-D3",
+	.ui_helptext	= "Enable or disable Bluetooth power optimization.\n"
+			  "Recommended to disable when booting Windows.",
+	.default_value	= true,
+});
+
+static const struct sm_object display_native_res = SM_DECLARE_BOOL({
+	.opt_name	= "display_native_res",
+	.ui_name	= "Display: Use Native Resolution",
+	.ui_helptext	= "Enabled: use the native panel resolution at boot.\n"
+			  "Disabled: use a fixed/scaled video mode at boot.",
+	.default_value	= false,
+});
+
 static struct sm_obj_form performance = {
 	.ui_name = "Performance",
 	.obj_list = (const struct sm_object *[]) {
+		&bluetooth_rtd3,
 		&fan_mode,
 		&power_profile,
 		NULL
@@ -204,6 +221,7 @@ static struct sm_obj_form devices = {
 		#if CONFIG(SOC_INTEL_TIGERLAKE) || CONFIG(SOC_INTEL_ALDERLAKE) || CONFIG(SOC_INTEL_RAPTORLAKE)
 		&gna,
 		#endif
+		&display_native_res,
 		#if CONFIG(EC_STARLABS_LID_SWITCH)
 		&lid_switch,
 		#endif

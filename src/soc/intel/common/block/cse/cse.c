@@ -268,6 +268,13 @@ bool cse_is_hfs1_cws_normal(void)
 	return false;
 }
 
+bool cse_is_hfs1_cws_m3_no_uma(void)
+{
+	union me_hfsts1 hfs1;
+	hfs1.data = me_read_config32(PCI_ME_HFSTS1);
+	return hfs1.fields.working_state == ME_HFS1_CWS_M3_NO_UMA;
+}
+
 bool cse_is_hfs1_com_normal(void)
 {
 	return cse_check_hfs1_com(ME_HFS1_COM_NORMAL);

@@ -556,7 +556,7 @@ Device (GPI3)
 		}
 #endif
 	})
-#if (CONFIG(SOC_INTEL_PANTHERLAKE_U_H) || CONFIG(SOC_INTEL_PANTHERLAKE_H))
+#if CONFIG(SOC_INTEL_PANTHERLAKE)
 	/* first bank/group in community 3: RSVD */
 	Name (RSVD, Package (0x02)
 	{

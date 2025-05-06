@@ -254,7 +254,7 @@
  * +----------------------------+
  */
 
-#if (!CONFIG(SOC_INTEL_WILDCATLAKE))
+#if CONFIG(SOC_INTEL_PANTHERLAKE)
 /*
  * +----------------------------+
  * |        Group CPUJTAG       |

@@ -41,7 +41,7 @@ static const struct pad_config lte_disable_pads[] = {
 	PAD_NC(GPP_H23, NONE),
 };
 
-static const struct pad_config ish_disable_pads[] = {
+static const struct pad_config ish_uart0_disable_pads[] = {
 	/* A16 : ISH_GP5 ==> NC */
 	PAD_NC_LOCK(GPP_A16, NONE, LOCK_CONFIG),
 	/* B5  : GPP_B5 ==> NC */
@@ -58,8 +58,38 @@ static const struct pad_config ish_disable_pads[] = {
 	PAD_NC_LOCK(GPP_E9, NONE, LOCK_CONFIG),
 };
 
+static const struct pad_config switch_ish_uart1_pads[] = {
+	/* D13  : UART0_ISH_RXD ==> NC  */
+	PAD_NC(GPP_D13, NONE),
+	/* D14  : UART0_ISH_TXD ==> LCD_CBL_DET# */
+	PAD_CFG_GPO(GPP_D14, 1, DEEP),
+	/* D17 : NC ==> UART1_ISH_RDX */
+	PAD_CFG_NF(GPP_D17, NONE, DEEP, NF2),
+	/* D18 : LCD_CBL_DET# ==> UART1_ISH_TDX */
+	PAD_CFG_NF(GPP_D18, NONE, DEEP, NF2),
+};
+
+static const struct pad_config ish_uart1_disable_pads[] = {
+	/* A16 : ISH_GP5 ==> NC */
+	PAD_NC_LOCK(GPP_A16, NONE, LOCK_CONFIG),
+	/* B5  : GPP_B5 ==> NC */
+	PAD_NC(GPP_B5, NONE),
+	/* B6  : GPP_B6 ==> NC */
+	PAD_NC(GPP_B6, NONE),
+	/* D1  : ISH_GP1 ==> NC */
+	PAD_NC(GPP_D1, NONE),
+	/* D17 : UART1_ISH_RDX ==> NC */
+	PAD_NC(GPP_D17, NONE),
+	/* D18 : UART1_ISH_TDX ==> NC*/
+	PAD_NC(GPP_D18, NONE),
+	/* E9  : SOC_ACC2_INT ==> NC */
+	PAD_NC_LOCK(GPP_E9, NONE, LOCK_CONFIG),
+};
+
 void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 {
+	uint32_t board_version = board_id();
+
 	if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_NONE))) {
 		printk(BIOS_INFO, "Disable touchscreen GPIO pins.\n");
 		gpio_padbased_override(padbased_table, touchscreen_disable_pads,
@@ -70,10 +100,24 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		gpio_padbased_override(padbased_table, lte_disable_pads,
 				ARRAY_SIZE(lte_disable_pads));
 	}
-	if (!fw_config_probe(FW_CONFIG(ISH, ISH_ENABLE))) {
-		printk(BIOS_INFO, "Disable ISH GPIO pins.\n");
-		gpio_padbased_override(padbased_table, ish_disable_pads,
-				ARRAY_SIZE(ish_disable_pads));
+
+	/* b/415605630: Support different ISH UART mappings according the board id */
+	if (board_version < 2) {
+		/* Override ISH UART0 to ISH UART1 */
+		gpio_padbased_override(padbased_table, switch_ish_uart1_pads,
+			ARRAY_SIZE(switch_ish_uart1_pads));
+
+		if (!fw_config_probe(FW_CONFIG(ISH, ISH_ENABLE))) {
+			printk(BIOS_INFO, "Disable ISH GPIO pins is based on ISH UART1.\n");
+			gpio_padbased_override(padbased_table, ish_uart1_disable_pads,
+				ARRAY_SIZE(ish_uart1_disable_pads));
+		}
+	} else {
+		if (!fw_config_probe(FW_CONFIG(ISH, ISH_ENABLE))) {
+			printk(BIOS_INFO, "Disable ISH GPIO pins is based on ISH UART0.\n");
+			gpio_padbased_override(padbased_table, ish_uart0_disable_pads,
+				ARRAY_SIZE(ish_uart0_disable_pads));
+		}
 	}
 }
 

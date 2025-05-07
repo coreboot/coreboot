@@ -25,11 +25,39 @@ config BOARD_GOOGLE_BASEBOARD_BLUEY
 
 config BOARD_GOOGLE_BLUEY
 	select BOARD_GOOGLE_BASEBOARD_BLUEY
+	select MAINBOARD_HAS_FINGERPRINT_VIA_USB
 
 if BOARD_GOOGLE_BLUEY_COMMON
 
 config MAINBOARD_DIR
 	default "google/bluey"
+
+config MAINBOARD_HAS_FINGERPRINT_VIA_SPI
+	bool
+	default n
+	help
+	  Enable this option if your mainboard's fingerprint reader
+	  is connected via the SPI interface.
+
+config MAINBOARD_HAS_FINGERPRINT_VIA_USB
+	bool
+	default n
+	help
+	  Enable this option if your mainboard's fingerprint reader
+	  is connected via the USB interface.
+
+config MAINBOARD_HAS_FINGERPRINT
+	bool
+	default y if MAINBOARD_HAS_FINGERPRINT_VIA_SPI || MAINBOARD_HAS_FINGERPRINT_VIA_USB
+	help
+	  Enable this option if your mainboard is equipped with an onboard
+	  fingerprint reader. This could be connected via SPI or USB.
+
+config MAINBOARD_HAS_SD_CONTROLLER
+	bool
+	default n
+	help
+	  Enable this option if your mainboard is equipped with SD card controller.
 
 config MAINBOARD_VENDOR
 	string

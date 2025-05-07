@@ -418,28 +418,39 @@ static int append_and_check_region(const struct region smram,
 #define _PS   (1ULL << 7)
 #define _GEN_DIR(a) (_PRES + _RW + _US + _A + (a))
 #define _GEN_PAGE(a) (_PRES + _RW + _US + _PS + _A +  _D + (a))
-#define PAGE_SIZE 8
+#define PTE_SIZE 8
 
 /* Return the PML4E */
 static uintptr_t install_page_table(const uintptr_t handler_base)
 {
 	const bool one_g_pages = !!(cpuid_edx(0x80000001) & (1 << 26));
-	/* 4 1G pages or 4 PDPE entries with 512 * 2M pages */
-	const size_t pages_needed = one_g_pages ? 4 : 2048 + 4;
-	const uintptr_t pages_base = ALIGN_DOWN(handler_base - pages_needed * PAGE_SIZE, 4096);
+
+	/*
+	 * CONFIG_CPU_PT_ROM_MAP_GB 1G pages or
+	 * CONFIG_CPU_PT_ROM_MAP_GB PDPE entries with 512 * 2M pages
+	 */
+	const size_t ptes_needed = CONFIG_CPU_PT_ROM_MAP_GB + (one_g_pages ? 0 :
+				   512 * CONFIG_CPU_PT_ROM_MAP_GB);
+	const uintptr_t pages_base = ALIGN_DOWN(handler_base - ptes_needed * PTE_SIZE, 4096);
 	const uintptr_t pml4e = ALIGN_DOWN(pages_base - 8, 4096);
+	uintptr_t pdpt;
 
 	if (one_g_pages) {
-		for (size_t i = 0; i < 4; i++)
-			write64p(pages_base + i * PAGE_SIZE, _GEN_PAGE(1ull * GiB * i));
-		write64p(pml4e, _GEN_DIR(pages_base));
+		for (size_t i = 0; i < CONFIG_CPU_PT_ROM_MAP_GB; i++)
+			write64p(pages_base + i * PTE_SIZE, _GEN_PAGE(1ull * GiB * i));
+		pdpt = pages_base;
 	} else {
-		for (size_t i = 0; i < 2048; i++)
-			write64p(pages_base + i * PAGE_SIZE, _GEN_PAGE(2ull * MiB * i));
-		write64p(pml4e, _GEN_DIR(pages_base + 2048 * PAGE_SIZE));
-		for (size_t i = 0; i < 4; i++)
-			write64p(pages_base + (2048 + i) * PAGE_SIZE, _GEN_DIR(pages_base + 4096 * i));
+		for (size_t i = 0; i < 512 * CONFIG_CPU_PT_ROM_MAP_GB; i++)
+			write64p(pages_base + i * PTE_SIZE, _GEN_PAGE(2ull * MiB * i));
+
+		pdpt = pages_base + 4096 * CONFIG_CPU_PT_ROM_MAP_GB;
+		for (size_t i = 0; i < CONFIG_CPU_PT_ROM_MAP_GB; i++)
+			write64p(pdpt + i * PTE_SIZE, _GEN_DIR(pages_base + 4096 * i));
 	}
+
+	for (size_t i = 0; i < DIV_ROUND_UP(CONFIG_CPU_PT_ROM_MAP_GB, 512); i++)
+		write64p(pml4e + i * PTE_SIZE, _GEN_DIR(pdpt + i * 4096));
+
 	return pml4e;
 }
 

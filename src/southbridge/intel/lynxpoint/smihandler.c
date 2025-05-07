@@ -271,6 +271,7 @@ static void southbridge_smi_apmc(void)
 			return;
 		}
 
+		enable_smm_code_access_check();
 		intel_pch_finalize_smm();
 
 		chipset_finalized = 1;

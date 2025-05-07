@@ -92,7 +92,7 @@ static int bsp_setup_msr_save_state(struct smm_relocation_params *relo_params)
 
 		smm_feature_control = rdmsr(SMM_FEATURE_CONTROL_MSR);
 		smm_feature_control.hi = 0;
-		smm_feature_control.lo |= SMM_CPU_SAVE_EN;
+		smm_feature_control.lo |= SMM_CPU_SAVE_MSR_EN;
 		wrmsr(SMM_FEATURE_CONTROL_MSR, smm_feature_control);
 		relo_params->smm_save_state_in_msrs = 1;
 	}
@@ -130,7 +130,7 @@ void smm_relocation_handler(int cpu, uintptr_t curr_smbase,
 			msr_t smm_feature_control;
 
 			smm_feature_control = rdmsr(SMM_FEATURE_CONTROL_MSR);
-			smm_feature_control.lo &= ~SMM_CPU_SAVE_EN;
+			smm_feature_control.lo &= ~SMM_CPU_SAVE_MSR_EN;
 			wrmsr(SMM_FEATURE_CONTROL_MSR, smm_feature_control);
 		} else if (bsp_setup_msr_save_state(relo_params))
 			/*

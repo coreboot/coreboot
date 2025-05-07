@@ -16,6 +16,7 @@
 #include <device/pci_ops.h>
 #include <elog.h>
 #include <intelblocks/fast_spi.h>
+#include <intelblocks/msr.h>
 #include <intelblocks/oc_wdt.h>
 #include <intelblocks/pmclib.h>
 #include <intelblocks/smihandler.h>
@@ -349,6 +350,40 @@ static void soc_lock_gpios(void)
 		gpio_lock_pads(soc_gpios, soc_gpio_num);
 }
 
+static void enable_smm_code_access_check(void)
+{
+	msr_t smm_mca_cap;
+	msr_t smm_feature_control;
+
+	/*
+	 * Xeon-SP and Snow Ridge do not use the SMM_FEATURE_CONTROL MSR for this,
+	 * and implement this feature elsewhere.
+	 */
+	if (CONFIG(XEON_SP_COMMON_BASE) || CONFIG(SOC_INTEL_SNOWRIDGE))
+		return;
+
+	smm_mca_cap = rdmsr(SMM_MCA_CAP_MSR);
+	if (!(smm_mca_cap.hi & SMM_CODE_ACCESS_CHK_MASK)) {
+		printk(BIOS_WARNING, "SMM code access check is not supported\n");
+		return;
+	}
+
+	/* Despite the prolific EDK2 implementation of this feature
+	   performing it on all cores, this is still a package-scoped MSR,
+	   per the Skylake Processor BWG, and tested on a Raptor Lake platform. */
+	smm_feature_control = rdmsr(SMM_FEATURE_CONTROL_MSR);
+	if (smm_feature_control.lo & SMM_FEATURE_CONTROL_MSR_LOCK) {
+		if (!(smm_feature_control.lo & SMM_CODE_CHK_MSR_EN))
+			printk(BIOS_WARNING,
+			       "SMM feature control was locked without SMM code access check\n");
+		return;
+	}
+
+	smm_feature_control.lo |= SMM_CODE_CHK_MSR_EN | SMM_FEATURE_CONTROL_MSR_LOCK;
+	wrmsr(SMM_FEATURE_CONTROL_MSR, smm_feature_control);
+	printk(BIOS_DEBUG, "Enabled SMM code access check\n");
+}
+
 static void finalize(void)
 {
 	static int finalize_done;
@@ -358,6 +393,8 @@ static void finalize(void)
 		return;
 	}
 	finalize_done = 1;
+
+	enable_smm_code_access_check();
 
 	if (CONFIG(SPI_FLASH_SMM))
 		/* Re-init SPI driver to handle locked BAR */

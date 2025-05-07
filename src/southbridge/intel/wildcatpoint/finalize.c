@@ -2,6 +2,7 @@
 
 #include <bootstate.h>
 #include <commonlib/console/post_codes.h>
+#include <cpu/x86/smm.h>
 #include <device/pci_ops.h>
 #include <spi-generic.h>
 #include <soc/pci_devs.h>
@@ -47,6 +48,7 @@ static void broadwell_pch_finalize(void)
 static void broadwell_finalize(void *unused)
 {
 	broadwell_pch_finalize();
+	apm_control(APM_CNT_FINALIZE);
 
 	/* Indicate finalize step with post code */
 	post_code(POSTCODE_OS_BOOT);

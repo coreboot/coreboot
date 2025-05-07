@@ -5,6 +5,7 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/intel/em64t101_save_state.h>
+#include <cpu/intel/haswell/haswell.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 #include <device/mmio.h>
@@ -311,9 +312,20 @@ static void southbridge_smi_store(void)
 static void southbridge_smi_apmc(void)
 {
 	u8 reg8;
+	static int chipset_finalized = 0;
 
 	reg8 = apm_get_apmc();
 	switch (reg8) {
+	case APM_CNT_FINALIZE:
+		if (chipset_finalized) {
+			printk(BIOS_DEBUG, "SMI#: Already finalized\n");
+			return;
+		}
+
+		enable_smm_code_access_check();
+
+		chipset_finalized = 1;
+		break;
 	case APM_CNT_ACPI_DISABLE:
 		disable_pm1_control(SCI_EN);
 		break;

@@ -46,6 +46,8 @@
 #define SMM_MCA_CAP_MSR			0x17d
 #define   SMM_CPU_SVRSTR_BIT		57
 #define   SMM_CPU_SVRSTR_MASK		(1 << (SMM_CPU_SVRSTR_BIT - 32))
+#define   SMM_CODE_ACCESS_CHK_BIT	58
+#define   SMM_CODE_ACCESS_CHK_MASK	(1 << (SMM_CODE_ACCESS_CHK_BIT - 32))
 #define MSR_FLEX_RATIO			0x194
 #define  FLEX_RATIO_LOCK		(1 << 20)
 #define  FLEX_RATIO_EN			(1 << 16)
@@ -60,7 +62,9 @@
 #define MSR_UNCORE_PRMRR_PHYS_BASE	0x2f4
 #define MSR_UNCORE_PRMRR_PHYS_MASK	0x2f5
 #define SMM_FEATURE_CONTROL_MSR		0x4e0
+#define   SMM_FEATURE_CONTROL_LOCK	(1 << 0)
 #define   SMM_CPU_SAVE_EN		(1 << 1)
+#define   SMM_CODE_CHK_EN		(1 << 2)
 
 #define MSR_C_STATE_LATENCY_CONTROL_0	0x60a
 #define MSR_C_STATE_LATENCY_CONTROL_1	0x60b
@@ -173,6 +177,9 @@ int pcode_mailbox_write(u32 command, u32 data);
 
 /* report_cpu_info.c */
 void report_cpu_info(void);
+
+/* smm_finalize.c */
+void enable_smm_code_access_check(void);
 
 /* CPU identification */
 static inline u32 cpu_family_model(void)

@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Update for Phoenix */
 /* TODO: See what can be made common */
 
 /* ACPI - create the Fixed ACPI Description Tables (FADT) */

@@ -1,0 +1,132 @@
+chip soc/intel/pantherlake
+
+	device cpu_cluster 0 on end
+
+	# TODO: Add WCL power limits
+
+	# Reduce the size of BasicMemoryTests to speed up the boot time.
+	register "lower_basic_mem_test_size" = "true"
+
+	# NOTE: if any variant wants to override this value, use the same format
+	# as register "common_soc_config.pch_thermal_trip" = "value", instead of
+	# putting it under register "common_soc_config" in overridetree.cb file.
+	register "common_soc_config.pch_thermal_trip" = "125"
+
+	device domain 0 on
+		device pci 00.0 alias system_agent on end
+		device pci 02.0 alias igpu on end
+		device pci 04.0 alias dtt off end
+		device pci 06.0 alias pcie_rp5 off end
+		device pci 06.1 alias pcie_rp6 off end
+		device pci 07.0 alias tbt_pcie_rp0 off
+			chip soc/intel/common/block/usb4
+				use tcss_dma0 as usb4_port
+				device generic 0 on end
+			end
+		end
+		device pci 07.1 alias tbt_pcie_rp1 off
+			chip soc/intel/common/block/usb4
+				use tcss_dma0 as usb4_port
+				device generic 1 on end
+			end
+		end
+		device pci 0a.0 alias crashlog on end
+		device pci 0b.0 alias npu off end
+		device pci 0c.0 alias iaa on end
+		device pci 0d.0 alias tcss_xhci off
+			chip drivers/usb/acpi
+				register "type" = "UPC_TYPE_HUB"
+				device usb 0.0 alias tcss_root_hub off
+					chip drivers/usb/acpi
+						device usb 3.0 alias tcss_usb3_port0 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.1 alias tcss_usb3_port1 off end
+					end
+				end
+			end
+		end
+		device pci 0d.2 alias tcss_dma0 off end
+		device pci 0e.0 alias vmd off end
+		device pci 10.0 alias thc0 off end
+		device pci 10.1 alias thc1 off end
+		device pci 12.0 alias ish off end
+		device pci 12.1 alias p2sb2 hidden end
+		device pci 12.6 alias gspi0a off end
+		device pci 13.0 alias heci_1 off end
+		device pci 13.1 alias heci_2 off end
+		device pci 13.2 alias heci_3 off end
+		device pci 14.0 alias xhci on
+			chip drivers/usb/acpi
+				register "type" = "UPC_TYPE_HUB"
+				device usb 0.0 alias xhci_root_hub off
+					chip drivers/usb/acpi
+						device usb 2.0 alias usb2_port1 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.1 alias usb2_port2 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.2 alias usb2_port3 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.3 alias usb2_port4 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.4 alias usb2_port5 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.5 alias usb2_port6 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.6 alias usb2_port7 off end
+					end
+					chip drivers/usb/acpi
+						device usb 2.7 alias usb2_port8 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.0 alias usb3_port1 off end
+					end
+					chip drivers/usb/acpi
+						device usb 3.1 alias usb3_port2 off end
+					end
+				end
+			end
+		end
+		device pci 14.2 alias pmc_shared_sram off end
+		device pci 14.3 alias cnvi_wifi off end
+		device pci 14.7 alias cnvi_bluetooth off end
+		device pci 14.5 alias ieh off end
+		device pci 15.0 alias i2c0 off end
+		device pci 15.1 alias i2c1 off end
+		device pci 15.2 alias i2c2 off end
+		device pci 15.3 alias i2c3 off end
+		device pci 16.0 alias heci1 on end
+		device pci 16.1 alias heci2 off end
+		device pci 16.4 alias heci3 off end
+		device pci 16.5 alias heci4 off end
+		device pci 17.0 alias ufs off end
+		device pci 18.0 alias eheci1 off end
+		device pci 18.1 alias eheci2 off end
+		device pci 18.2 alias eheci3 off end
+		device pci 19.0 alias i2c4 off end
+		device pci 19.1 alias i2c5 off end
+		device pci 19.2 alias uart2 off end
+		device pci 1c.0 alias pcie_rp1 off end
+		device pci 1c.1 alias pcie_rp2 off end
+		device pci 1c.2 alias pcie_rp3 off end
+		device pci 1c.3 alias pcie_rp4 off end
+		device pci 1e.0 alias uart0 off end
+		device pci 1e.1 alias uart1 off end
+		device pci 1e.2 alias gspi0 off end
+		device pci 1e.3 alias gspi1 off end
+		device pci 1f.0 alias soc_espi on end
+		device pci 1f.1 alias p2sb hidden end
+		device pci 1f.2 alias pmc hidden end
+		device pci 1f.3 alias hda off end
+		device pci 1f.4 alias smbus off end
+		device pci 1f.5 alias fast_spi on end
+		device pci 1f.6 alias gbe off end
+		device pci 1f.7 alias npk off end
+	end
+end

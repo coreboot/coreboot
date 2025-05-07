@@ -102,12 +102,14 @@ const char *soc_acpi_name(const struct device *dev)
 	case PCI_DEVFN_PCIE4:		return "RP04";
 	case PCI_DEVFN_PCIE5:		return "RP05";
 	case PCI_DEVFN_PCIE6:		return "RP06";
+#if CONFIG(SOC_INTEL_PANTHERLAKE)
 	case PCI_DEVFN_PCIE7:		return "RP07";
 	case PCI_DEVFN_PCIE8:		return "RP08";
 	case PCI_DEVFN_PCIE9:		return "RP09";
 	case PCI_DEVFN_PCIE10:		return "RP10";
 	case PCI_DEVFN_PCIE11:		return "RP11";
 	case PCI_DEVFN_PCIE12:		return "RP12";
+#endif
 	case PCI_DEVFN_PMC:		return "PMC";
 	case PCI_DEVFN_UART0:		return "UAR0";
 	case PCI_DEVFN_UART1:		return "UAR1";

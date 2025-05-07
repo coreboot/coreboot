@@ -32,6 +32,8 @@ static struct {
 	{ PCI_DID_INTEL_PTL_H_ID_2, "Pantherlake H" },
 	{ PCI_DID_INTEL_PTL_H_ID_3, "Pantherlake H" },
 	{ PCI_DID_INTEL_PTL_H_ID_4, "Pantherlake H" },
+	{ PCI_DID_INTEL_WCL_ID_1, "Wildcatlake" },
+	{ PCI_DID_INTEL_WCL_ID_2, "Wildcatlake" },
 };
 
 static struct {
@@ -102,6 +104,38 @@ static struct {
 	{ PCI_DID_INTEL_PTL_H_ESPI_29, "Pantherlake SOC-H" },
 	{ PCI_DID_INTEL_PTL_H_ESPI_30, "Pantherlake SOC-H" },
 	{ PCI_DID_INTEL_PTL_H_ESPI_31, "Pantherlake SOC-H" },
+	{ PCI_DID_INTEL_WCL_ESPI_0, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_1, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_2, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_3, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_4, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_5, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_6, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_7, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_8, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_9, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_10, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_11, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_12, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_13, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_14, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_15, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_16, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_17, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_18, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_19, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_20, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_21, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_22, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_23, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_24, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_25, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_26, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_27, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_28, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_29, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_30, "Wildcatlake SOC" },
+	{ PCI_DID_INTEL_WCL_ESPI_31, "Wildcatlake SOC" },
 };
 
 static struct {
@@ -112,6 +146,8 @@ static struct {
 	{ PCI_DID_INTEL_PTL_H_GT2_1, "Pantherlake-H GT2" },
 	{ PCI_DID_INTEL_PTL_H_GT2_2, "Pantherlake-H GT2" },
 	{ PCI_DID_INTEL_PTL_H_GT2_3, "Pantherlake-H GT2" },
+	{ PCI_DID_INTEL_WCL_GT2_1, "Wildcatlake GT2" },
+	{ PCI_DID_INTEL_WCL_GT2_2, "Wildcatlake GT2" },
 };
 
 static inline uint8_t get_dev_revision(pci_devfn_t dev)

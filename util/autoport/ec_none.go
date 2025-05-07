@@ -16,9 +16,6 @@ Method(_PTS, 1)
 }
 `)
 
-	si := Create(ctx, "acpi/superio.asl")
-	defer si.Close()
-
-	ec := Create(ctx, "acpi/ec.asl")
-	defer ec.Close()
+	Create_Empty(ctx, "acpi/superio.asl", ASL)
+	Create_Empty(ctx, "acpi/ec.asl", ASL)
 }

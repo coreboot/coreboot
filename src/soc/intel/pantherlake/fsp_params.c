@@ -119,6 +119,7 @@ static const struct slot_irq_constraints irq_constraints[] = {
 			FIXED_INT_PIRQ(PCI_DEVFN_DPTF, PCI_INT_A, PIRQ_A),
 		},
 	},
+#if CONFIG(SOC_INTEL_PANTHERLAKE)
 	{
 		.slot = PCI_DEV_SLOT_IPU,
 		.fns = {
@@ -127,14 +128,20 @@ static const struct slot_irq_constraints irq_constraints[] = {
 			FIXED_INT_PIRQ(PCI_DEVFN_IPU, PCI_INT_A, PIRQ_A),
 		},
 	},
+#endif
 	{
 		.slot = PCI_DEV_SLOT_PCIE_2,
 		.fns = {
+#if CONFIG(SOC_INTEL_WILDCATLAKE)
+			FIXED_INT_PIRQ(PCI_DEVFN_PCIE5, PCI_INT_A, PIRQ_A),
+			FIXED_INT_PIRQ(PCI_DEVFN_PCIE6, PCI_INT_B, PIRQ_B),
+#else
 			FIXED_INT_PIRQ(PCI_DEVFN_PCIE9, PCI_INT_A, PIRQ_A),
 			FIXED_INT_PIRQ(PCI_DEVFN_PCIE10, PCI_INT_B, PIRQ_B),
 #if CONFIG(SOC_INTEL_PANTHERLAKE_H)
 			FIXED_INT_PIRQ(PCI_DEVFN_PCIE11, PCI_INT_C, PIRQ_C),
 			FIXED_INT_PIRQ(PCI_DEVFN_PCIE12, PCI_INT_D, PIRQ_D),
+#endif
 #endif
 		},
 	},
@@ -143,8 +150,10 @@ static const struct slot_irq_constraints irq_constraints[] = {
 		.fns = {
 			ANY_PIRQ(PCI_DEVFN_TBT0),
 			ANY_PIRQ(PCI_DEVFN_TBT1),
+#if CONFIG(SOC_INTEL_PANTHERLAKE)
 			ANY_PIRQ(PCI_DEVFN_TBT2),
 			ANY_PIRQ(PCI_DEVFN_TBT3),
+#endif
 		},
 	},
 	{
@@ -201,7 +210,7 @@ static const struct slot_irq_constraints irq_constraints[] = {
 			ANY_PIRQ(PCI_DEVFN_CSE_4),
 		},
 	},
-#if CONFIG(SOC_INTEL_PANTHERLAKE_U_H)
+#if (CONFIG(SOC_INTEL_PANTHERLAKE_U_H) || CONFIG(SOC_INTEL_WILDCATLAKE))
 	{
 		.slot = PCI_DEV_SLOT_UFS,
 		.fns = {
@@ -224,10 +233,12 @@ static const struct slot_irq_constraints irq_constraints[] = {
 			FIXED_INT_PIRQ(PCI_DEVFN_PCIE2, PCI_INT_B, PIRQ_B),
 			FIXED_INT_PIRQ(PCI_DEVFN_PCIE3, PCI_INT_C, PIRQ_C),
 			FIXED_INT_PIRQ(PCI_DEVFN_PCIE4, PCI_INT_D, PIRQ_D),
+#if CONFIG(SOC_INTEL_PANTHERLAKE)
 			FIXED_INT_PIRQ(PCI_DEVFN_PCIE5, PCI_INT_A, PIRQ_A),
 			FIXED_INT_PIRQ(PCI_DEVFN_PCIE6, PCI_INT_B, PIRQ_B),
 			FIXED_INT_PIRQ(PCI_DEVFN_PCIE7, PCI_INT_C, PIRQ_C),
 			FIXED_INT_PIRQ(PCI_DEVFN_PCIE8, PCI_INT_D, PIRQ_D),
+#endif
 		},
 	},
 	{

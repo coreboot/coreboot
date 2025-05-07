@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
 # TODO: Evaluate what can be moved to a common directory
-# TODO: Update for Phoenix
 
 config SOC_AMD_PHOENIX_BASE
 	bool

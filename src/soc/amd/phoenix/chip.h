@@ -1,7 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-/* TODO: Update for Phoenix */
-
 #ifndef PHOENIX_CHIP_H
 #define PHOENIX_CHIP_H
 

@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 # TODO: Move as much as possible to common
-# TODO: Update for Phoenix
 
 ifeq ($(CONFIG_SOC_AMD_PHOENIX_BASE),y)
 

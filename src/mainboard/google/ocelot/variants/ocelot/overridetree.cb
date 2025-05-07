@@ -288,7 +288,6 @@ chip soc/intel/pantherlake
 			end
 		end
 
-		device ref ipu off end
 		device ref iaa off end
 
 		device ref thc0 on
@@ -356,8 +355,6 @@ chip soc/intel/pantherlake
 
 		device ref tbt_pcie_rp0 on end
 		device ref tbt_pcie_rp1 on end
-		device ref tbt_pcie_rp2 on end
-		device ref tbt_pcie_rp3 on end
 		device ref tcss_xhci on
 			chip drivers/usb/acpi
 				device ref tcss_root_hub on
@@ -373,18 +370,6 @@ chip soc/intel/pantherlake
 						register "group" = "ACPI_PLD_GROUP(3, 2)"
 						device ref tcss_usb3_port1 on end
 					end
-					chip drivers/usb/acpi
-						register "desc" = ""USB3 Type-C Port C2""
-						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
-						register "group" = "ACPI_PLD_GROUP(2, 2)"
-						device ref tcss_usb3_port2 on end
-					end
-					chip drivers/usb/acpi
-						register "desc" = ""USB3 Type-C Port C3""
-						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
-						register "group" = "ACPI_PLD_GROUP(1, 2)"
-						device ref tcss_usb3_port3 on end
-					end
 				end
 			end
 		end
@@ -398,18 +383,6 @@ chip soc/intel/pantherlake
 			chip drivers/intel/usb4/retimer
 				register "dfp[1].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B21)"
 				use tcss_usb3_port1 as dfp[1].typec_port
-				device generic 0 on end
-			end
-		end
-		device ref tcss_dma1 on
-			chip drivers/intel/usb4/retimer
-				register "dfp[0].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B21)"
-				use tcss_usb3_port2 as dfp[0].typec_port
-				device generic 0 on end
-			end
-			chip drivers/intel/usb4/retimer
-				register "dfp[1].power_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B21)"
-				use tcss_usb3_port3 as dfp[1].typec_port
 				device generic 0 on end
 			end
 		end
@@ -578,22 +551,6 @@ chip soc/intel/pantherlake
 				device generic 0 on end
 			end
 		end # Gen4 M.2 SSD
-		device ref pcie_rp9 on
-			probe STORAGE STORAGE_NVME_GEN5
-			probe STORAGE STORAGE_UNKNOWN
-			register "pcie_rp[PCIE_RP(9)]" = "{
-			.clk_src = 1,
-			.clk_req = 1,
-			.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
-			}"
-			chip soc/intel/common/block/pcie/rtd3
-				register "is_storage" = "true"
-				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B16)"
-				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E03)"
-				register "srcclk_pin" = "1"
-				device generic 0 on end
-			end
-		end # Gen5 M.2 SSD
 		device ref cnvi_wifi on
 			probe WIFI WIFI_CNVI_6
 			probe WIFI WIFI_CNVI_7

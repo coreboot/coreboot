@@ -61,6 +61,13 @@ void chromeec_set_usb_charge_mode(int slp_type)
 
 void chromeec_smi_sleep(int slp_type, uint64_t s3_mask, uint64_t s5_mask)
 {
+	/* Disable SCI and SMI events */
+	google_chromeec_set_smi_mask(0);
+	google_chromeec_set_sci_mask(0);
+
+	/* Clear pending events that may trigger immediate wake */
+	clear_pending_events();
+
 	if (!google_chromeec_is_uhepi_supported()) {
 		switch (slp_type) {
 		case ACPI_S3:
@@ -74,13 +81,6 @@ void chromeec_smi_sleep(int slp_type, uint64_t s3_mask, uint64_t s5_mask)
 			break;
 		}
 	}
-
-	/* Disable SCI and SMI events */
-	google_chromeec_set_smi_mask(0);
-	google_chromeec_set_sci_mask(0);
-
-	/* Clear pending events that may trigger immediate wake */
-	clear_pending_events();
 }
 
 void chromeec_smi_device_event_sleep(int slp_type, uint64_t s3_mask,

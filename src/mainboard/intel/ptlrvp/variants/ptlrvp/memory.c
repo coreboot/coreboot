@@ -65,7 +65,7 @@ static const struct mb_cfg gcs_mem_config = {
 	},
 };
 
-static const struct mb_cfg lp5_mem_config = {
+static const struct mb_cfg lp5_t3_mem_config = {
 	.type = MEM_TYPE_LP5X,
 
 	.lpx_dq_map = {
@@ -125,6 +125,66 @@ static const struct mb_cfg lp5_mem_config = {
 	},
 };
 
+static const struct mb_cfg lp5_t4_mem_config = {
+	.type = MEM_TYPE_LP5X,
+
+	.lpx_dq_map = {
+		.ddr0 = {
+			.dq0 = {  10, 8,  11, 9,  15, 12, 14, 13 },
+			.dq1 = {  6,  7,  5,  4,  3,  1,  0,  2 },
+		},
+		.ddr1 = {
+			.dq0 = {  1,  0,  3,  2,  7,  6,  5,  4 },
+			.dq1 = {  14, 13, 12, 15, 11, 9,  8,  10 },
+		},
+		.ddr2 = {
+			.dq0 = {  13, 14, 12, 15, 8,  10, 9,  11 },
+			.dq1 = {  6,  7,  5,  4,  1,  3,  2,  0 },
+		},
+		.ddr3 = {
+			.dq0 = {  6,  5,  7,  4,  3,  2,  0,  1 },
+			.dq1 = {  14, 13, 12, 15, 11, 9,  8,  10 },
+		},
+		.ddr4 = {
+			.dq0 = {  10, 8,  9,  11, 13, 12, 14, 15 },
+			.dq1 = {  1,  3,  0,  2,  4,  7,  5,  6 },
+		},
+		.ddr5 = {
+			.dq0 = {  1,  0,  2,  3,  7,  6,  5,  4 },
+			.dq1 = {  10, 8,  11, 9,  13, 12, 14, 15 },
+		},
+		.ddr6 = {
+			.dq0 = {  10, 8,  11, 9,  13, 12, 14, 15 },
+			.dq1 = {  6,  5,  7,  4,  0,  1,  2,  3 },
+		},
+		.ddr7 = {
+			.dq0 = {  1,  0,  2,  3,  7,  4,  6,  5 },
+			.dq1 = {  14, 13, 15, 12, 10, 11, 9,  8 },
+		},
+	},
+
+	.lpx_dqs_map = {
+		.ddr0 = { .dqs0 = 1, .dqs1 = 0 },
+		.ddr1 = { .dqs0 = 0, .dqs1 = 1 },
+		.ddr2 = { .dqs0 = 1, .dqs1 = 0 },
+		.ddr3 = { .dqs0 = 0, .dqs1 = 1 },
+		.ddr4 = { .dqs0 = 1, .dqs1 = 0 },
+		.ddr5 = { .dqs0 = 0, .dqs1 = 1 },
+		.ddr6 = { .dqs0 = 1, .dqs1 = 0 },
+		.ddr7 = { .dqs0 = 0, .dqs1 = 1 }
+	},
+
+	.ect = true, /* Early Command Training */
+
+	.lp_ddr_dq_dqs_re_training = 1,
+
+	.user_bd = BOARD_TYPE_ULT_ULX,
+
+	.lp5x_config = {
+		.ccc_config = 0xFF,
+	},
+};
+
 static const struct mb_cfg ddr5_mem_config = {
 	.type = MEM_TYPE_DDR5,
 
@@ -149,8 +209,9 @@ const struct mb_cfg *variant_memory_params(void)
 
 	switch (board_id) {
 	case PTLP_LP5_T3_RVP:
+		return &lp5_t3_mem_config;
 	case PTLP_LP5_T4_RVP:
-		return &lp5_mem_config;
+		return &lp5_t4_mem_config;
 	case GCS_32GB:
 	case GCS_64GB:
 		return &gcs_mem_config;

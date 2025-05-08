@@ -35,6 +35,7 @@ ramstage-$(CONFIG_FSP_NVS_DATA_POST_SILICON_INIT) += save_mrc_data.c
 ramstage-$(CONFIG_MMA) += mma_core.c
 ramstage-$(CONFIG_ENABLE_FSP_ERROR_INFO) += fsp_error_info_hob.c
 ramstage-$(CONFIG_BMP_LOGO) += fsp_gop_blt.c
+ramstage-$(CONFIG_USE_COREBOOT_FOR_BMP_RENDERING) += cb_logo.c
 
 ifneq ($(CONFIG_NO_FSP_TEMP_RAM_EXIT),y)
 postcar-$(CONFIG_FSP_CAR) += temp_ram_exit.c

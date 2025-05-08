@@ -86,6 +86,10 @@
 #define IOM_BASE_SIZE		0x10000
 #define IOM_BASE_ADDR_MAX	0x401080ffff /* ((IOM_BASE_ADDR + IOM_BASE_SIZE) - 1) */
 
+/* Temporary MMIO address for GMADR (aka LMEMBAR) with 256MB */
+#define GMADR_BASE		0xB0000000
+#define GMADR_SIZE		0x10000000
+
 /* I/O port address space */
 #define ACPI_BASE_ADDRESS	0x1800
 #define ACPI_BASE_SIZE		0x100

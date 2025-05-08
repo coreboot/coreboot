@@ -475,4 +475,22 @@ config BUILDING_WITH_DEBUG_FSP
 	  Enable this option if you are using a debug build of the FSP (Firmware Support Package)
 	  in your project.
 
+config USE_COREBOOT_FOR_BMP_RENDERING
+	bool
+	default n
+	help
+	  This option forces coreboot to use its native bitmap (BMP) image rendering
+	  and skip using the FSP for this purpose during the boot process.
+
+	  If this option is selected (y), the platform will rely on the
+	  coreboot native implementation for rendering BMP images. This might be
+	  chosen if there are issues with FSP rendering or if native rendering
+	  is preferred for specific reasons.
+
+	  If this option is not selected (n), the FSP's capabilities for BMP rendering
+	  will be utilized.
+
+	  Platforms can choose to override this Kconfig option based on their
+	  specific graphics requirements and FSP capabilities.
+
 endif

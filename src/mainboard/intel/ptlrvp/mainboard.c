@@ -28,12 +28,15 @@ void __weak variant_update_soc_chip_config(struct soc_intel_pantherlake_config *
 static void mainboard_init(void *chip_info)
 {
 	struct pad_config *padbased_table;
-	const struct pad_config *base_pads;
-	size_t base_num;
+	const struct pad_config *base_pads, *variant_diff_pads;
+	size_t base_num, variant_diff_num;
 
 	padbased_table = new_padbased_table();
 	base_pads = variant_gpio_table(&base_num);
 	gpio_padbased_override(padbased_table, base_pads, base_num);
+	variant_diff_pads = variant_board_gpio_diff_table(&variant_diff_num);
+	if (variant_diff_pads)
+		gpio_padbased_override(padbased_table, variant_diff_pads, variant_diff_num);
 	fw_config_gpio_padbased_override(padbased_table);
 	gpio_configure_pads_with_padbased(padbased_table);
 	free(padbased_table);

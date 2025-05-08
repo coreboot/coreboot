@@ -85,8 +85,33 @@ void platform_fsp_notify_status(enum fsp_notify_phase phase);
 
 /* Initialize memory margin analysis settings. */
 void setup_mma(FSP_M_CONFIG *memory_cfg);
-/* Update the SOC specific logo param and load the logo. */
-void soc_load_logo(FSPS_UPD *supd);
+/*
+ * Populate UPD entries for the logo if the platform utilizes
+ * the FSP's capability for rendering bitmap (BMP) images.
+ */
+void soc_load_logo_by_fsp(FSPS_UPD *supd);
+/*
+ * API that allows coreboot to perform native logo rendering after FSP display initialization.
+ *
+ * This implementation handles rendering the boot logo directly within coreboot.
+ * It depends on the FSP to initialize the display panel.
+ * Once the FSP completes display initialization and transfers control, coreboot
+ * renders the logo.
+ *
+ * Note: This native approach may introduce a ~10-30ms delay in displaying
+ * BMP images compared to rendering via FSP (when `USE_COREBOOT_FOR_BMP_RENDERING`
+ * Kconfig is not enable).
+ *
+ * coreboot native logo rendering provides greater flexibility for platform-specific
+ * logo customizations (e.g., alignment) that are not feasible or practical to implement
+ * within the FSP (silicon firmware) depending upon the OEM device need.
+ */
+#if CONFIG(USE_COREBOOT_FOR_BMP_RENDERING)
+void soc_load_logo_by_coreboot(void);
+#else
+static inline void soc_load_logo_by_coreboot(void) { /* nop */ }
+#endif
+
 /* Update the SOC specific memory config param for mma. */
 void soc_update_memory_params_for_mma(FSP_M_CONFIG *memory_cfg,
 	struct mma_config_param *mma_cfg);

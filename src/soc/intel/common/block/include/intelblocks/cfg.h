@@ -14,6 +14,76 @@ enum {
 };
 
 /*
+ * Specifies the vertical alignment for the splash screen image.
+ *
+ * Visual Guide (representing the display area and the [LOGO]):
+ *
+ * Each option dictates the vertical placement of the splash image
+ * within the display's height.
+ */
+enum fw_splash_vertical_alignment {
+	/* FW_SPLASH_VALIGNMENT_CENTER:
+	 * The splash image is centered vertically `(Y-axis - logo_height)/2` on the screen.
+	 * The center of the [LOGO] aligns with the vertical center of the screen.
+	 *
+	 * +---------------+
+	 * |               |
+	 * |               |
+	 * |    [LOGO]     |  <-- Vertically Centered
+	 * |               |
+	 * |               |
+	 * +---------------+
+	 */
+	FW_SPLASH_VALIGNMENT_CENTER = 0,
+
+	/* FW_SPLASH_VALIGNMENT_TOP:
+	 * The splash image is aligned to the top edge of the screen.
+	 *
+	 * +---------------+
+	 * |    [LOGO]     |  <-- Top Aligned
+	 * |               |
+	 * |               |
+	 * |               |
+	 * |               |
+	 * +---------------+
+	 */
+	FW_SPLASH_VALIGNMENT_TOP = 1,
+
+	/* FW_SPLASH_VALIGNMENT_BOTTOM:
+	 * The splash image is aligned to the bottom edge of the screen.
+	 *
+	 * +---------------+
+	 * |               |
+	 * |               |
+	 * |               |
+	 * |               |
+	 * |    [LOGO]     |  <-- Bottom Aligned
+	 * +---------------+
+	 */
+	FW_SPLASH_VALIGNMENT_BOTTOM = 2,
+
+	/* FW_SPLASH_VALIGNMENT_MIDDLE:
+	 * The splash image is placed in the vertical middle `(Y-axis/2)` of the screen
+	 * (without considering the `logo height`). This means the TOP EDGE of the
+	 * [LOGO] aligns with the screen's vertical midpoint line.
+	 *
+	 * +---------------+
+	 * | (Upper Half)  |
+	 * |               |
+	 * |    [LOGO]     | <-- [LOGO] aligns at Middle of the Y-axis
+	 * |               |
+	 * | (Lower Half)  |
+	 * +---------------+
+	 *
+	 * Note: The distinction between CENTER and MIDDLE is relevant as in for MIDDLE
+	 * alignment, it ignores the logo height (i.e., the logo's top edge is placed
+	 * at the screen's Y-midpoint). CENTER alignment, by contrast, would place
+	 * the geometrical center of the logo at the screen's Y-midpoint.
+	 */
+	FW_SPLASH_VALIGNMENT_MIDDLE = 3,
+};
+
+/*
  * This structure will hold data required by common blocks.
  * These are soc specific configurations which will be filled by soc.
  * We'll fill this structure once during init and use the data in common block.
@@ -26,6 +96,7 @@ struct soc_intel_common_config {
 	uint8_t pch_thermal_trip;
 	struct mmc_dll_params emmc_dll;
 	enum lb_fb_orientation panel_orientation;
+	enum fw_splash_vertical_alignment logo_valignment;
 };
 
 /* This function to retrieve soc config structure required by common code */

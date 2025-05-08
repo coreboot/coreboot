@@ -1,0 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_MITAC_COMPUTING_R520G6SB
+	bool "R520G6SB"

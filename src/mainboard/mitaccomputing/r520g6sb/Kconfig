@@ -1,0 +1,38 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_MITAC_COMPUTING_R520G6SB
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_65536
+	select SOC_INTEL_GRANITERAPIDS
+	select SUPERIO_ASPEED_AST2400
+	select CONSOLE_OVERRIDE_LOGLEVEL
+	select HAVE_ACPI_TABLES
+	select IPMI_KCS
+	select IPMI_KCS_ROMSTAGE
+	select VPD
+	select OCP_VPD
+	select MEMORY_MAPPED_TPM
+
+config CARDBUS_PLUGIN_SUPPORT
+	bool
+	default n
+
+config MAINBOARD_DIR
+	string
+	default "mitaccomputing/r520g6sb"
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "R520G6SB"
+
+config FMDFILE
+	string
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"
+
+config DIMM_MAX
+	int
+	default 32
+
+endif

@@ -1,0 +1,6 @@
+Vendor name: MiTAC Computing
+Board name: R520G6SB
+Category: eval
+ROM protocol: SPI
+ROM socketed: y
+Flashrom support: y

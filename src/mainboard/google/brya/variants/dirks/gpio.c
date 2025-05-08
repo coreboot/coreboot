@@ -121,6 +121,8 @@ static const struct pad_config override_gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
+	/* H21 : IMGCLKOUT2==> LAN_PE_ISOLATE_ODL */
+	PAD_CFG_GPO(GPP_H21, 1, DEEP),
 	/* GPP_B4 : [] ==> LAN_PERST_L */
 	PAD_CFG_GPO(GPP_B4, 0, DEEP),
 	/* H20 : IMGCLKOUT1 ==> WLAN_PERST_L */

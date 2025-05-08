@@ -10,17 +10,9 @@
  */
 .code64
 
+#include <cpu/x86/gdt.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/cr.h>
-#if defined(__RAMSTAGE__)
-#include <arch/ram_segs.h>
-#define CODE_SEG RAM_CODE_SEG
-#define DATA_SEG RAM_DATA_SEG
-#else
-#include <arch/rom_segs.h>
-#define CODE_SEG ROM_CODE_SEG
-#define DATA_SEG ROM_DATA_SEG
-#endif
 
 drop_longmode:
 #if !ENV_CACHE_AS_RAM
@@ -28,7 +20,7 @@ drop_longmode:
 	wbinvd
 #endif
 	/* Set  32-bit code segment and ss */
-	mov	$CODE_SEG, %rcx
+	mov	$GDT_CODE_SEG, %rcx
 	/* SetCodeSelector32 will drop us to protected mode on return */
 	call	SetCodeSelector32
 
@@ -63,7 +55,7 @@ __longmode_compatibility:
 	/* Running in 32-bit compatibility mode */
 
 	/* Use flat data segment */
-	movl	$DATA_SEG, %eax
+	movl	$GDT_DATA_SEG, %eax
 	movl	%eax, %ds
 	movl	%eax, %es
 	movl	%eax, %ss

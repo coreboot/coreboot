@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <cpu/x86/cr.h>
+#include <cpu/x86/gdt.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/x86/msr.h>
-#include <arch/ram_segs.h>
 
 #define __RAMSTAGE__
 #include <cpu/x86/64bit/entry64.inc>
@@ -77,10 +77,10 @@ _start:
 	orl	$CR0_SET_FLAGS, %eax
 	movl	%eax, %cr0
 
-	ljmpl	$RAM_CODE_SEG, $1f
+	ljmpl	$GDT_CODE_SEG, $1f
 1:
 	.code32
-	movw	$RAM_DATA_SEG, %ax
+	movw	$GDT_DATA_SEG, %ax
 	movw	%ax, %ds
 	movw	%ax, %es
 	movw	%ax, %ss

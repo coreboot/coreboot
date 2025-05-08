@@ -3,7 +3,7 @@
 #define REALMODE_BASE		0x600
 #define RELOCATED(x)	(x - __realmode_code + REALMODE_BASE)
 
-#include <arch/ram_segs.h>
+#include <cpu/x86/gdt.h>
 
 /* CR0 bits */
 #define PE		(1 << 0)
@@ -97,7 +97,7 @@ __realmode_call:
 	movl	%eax, __registers + 20 /* edi */
 
 	/* Activate the right segment descriptor real mode. */
-	ljmp	$RAM_CODE16_SEG, $RELOCATED(1f)
+	ljmp	$GDT_CODE16_SEG, $RELOCATED(1f)
 1:
 .code16
 	/* 16 bit code from here on... */
@@ -107,7 +107,7 @@ __realmode_call:
 	 * configurations (limits, writability, etc.) once
 	 * protected mode is turned off.
 	 */
-	mov	$RAM_DATA16_SEG, %ax
+	mov	$GDT_DATA16_SEG, %ax
 	mov	%ax, %ds
 	mov	%ax, %es
 	mov	%ax, %fs
@@ -144,13 +144,13 @@ __realmode_call:
 	movl	__registers + 16, %esi
 	movl	__registers + 20, %edi
 
-	/* Set all segments to 0x0000, ds to 0x0040 */
+	/* Set all segments to 0x0000, ds to 0x0038 */
 	push	%ax
 	xor	%ax, %ax
 	mov	%ax, %es
 	mov	%ax, %fs
 	mov	%ax, %gs
-	mov	$RAM_DATA_ACPI_SEG, %ax
+	mov	$GDT_DATA_ACPI_SEG, %ax
 	mov	%ax, %ds
 	pop	%ax
 
@@ -177,10 +177,10 @@ __lcall_instr = RELOCATED(.)
 	/* Now that we are in protected mode
 	 * jump to a 32 bit code segment.
 	 */
-	ljmpl	$RAM_CODE_SEG, $RELOCATED(1f)
+	ljmpl	$GDT_CODE_SEG, $RELOCATED(1f)
 1:
 	.code32
-	mov	$RAM_DATA_SEG, %ax
+	mov	$GDT_DATA_SEG, %ax
 	mov	%ax, %ds
 	mov	%ax, %es
 	mov	%ax, %fs
@@ -233,7 +233,7 @@ __realmode_interrupt:
 	movl	%eax, __registers + 20 /* edi */
 
 	/*  This configures CS properly for real mode. */
-	ljmp 	$RAM_CODE16_SEG, $RELOCATED(1f)
+	ljmp 	$GDT_CODE16_SEG, $RELOCATED(1f)
 1:
 	.code16 /* 16 bit code from here on... */
 
@@ -241,7 +241,7 @@ __realmode_interrupt:
 	 * descriptors.  They will retain these configurations (limits,
 	 * writability, etc.) once protected mode is turned off.
 	 */
-	mov	$RAM_DATA16_SEG, %ax
+	mov	$GDT_DATA16_SEG, %ax
 	mov	%ax, %ds
 	mov	%ax, %es
 	mov	%ax, %fs
@@ -305,10 +305,10 @@ __intXX_instr = RELOCATED(.)
 	movl	%eax, %cr0
 
 	/* Now that we are in protected mode jump to a 32-bit code segment. */
-	ljmpl	$RAM_CODE_SEG, $RELOCATED(1f)
+	ljmpl	$GDT_CODE_SEG, $RELOCATED(1f)
 1:
 	.code32
-	mov	$RAM_DATA_SEG, %ax
+	mov	$GDT_DATA_SEG, %ax
 	mov	%ax, %ds
 	mov	%ax, %es
 	mov	%ax, %fs
@@ -354,10 +354,10 @@ __interrupt_handler_16bit = RELOCATED(.)
 	movl	%eax, %cr0
 
 	/* ... and jump to a 32 bit code segment. */
-	ljmpl	$RAM_CODE_SEG, $RELOCATED(1f)
+	ljmpl	$GDT_CODE_SEG, $RELOCATED(1f)
 1:
 	.code32
-	mov	$RAM_DATA_SEG, %ax
+	mov	$GDT_DATA_SEG, %ax
 	mov	%ax, %ds
 	mov	%ax, %es
 	mov	%ax, %fs
@@ -371,14 +371,14 @@ __interrupt_handler_16bit = RELOCATED(.)
 	call	*%eax
 
 	/* Now return to real mode ... */
-	ljmp	$RAM_CODE16_SEG, $RELOCATED(1f)
+	ljmp	$GDT_CODE16_SEG, $RELOCATED(1f)
 1:
 	.code16
 	/* Load the segment registers with properly configured segment
 	 * descriptors.  They will retain these configurations (limits,
 	 * writability, etc.) once protected mode is turned off.
 	 */
-	mov	$RAM_DATA16_SEG, %ax
+	mov	$GDT_DATA16_SEG, %ax
 	mov	%ax, %ds
 	mov	%ax, %es
 	mov	%ax, %fs

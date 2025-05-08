@@ -665,6 +665,8 @@ asmlinkage void exception_init(void)
 
 	load_idt(idt, sizeof(idt));
 
+#if !ENV_SMM
 	null_breakpoint_init();
 	stack_canary_breakpoint_init();
+#endif
 }

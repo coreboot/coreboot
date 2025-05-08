@@ -27,7 +27,7 @@
 /* Start code to put an i386 or later processor into 32-bit protected mode.
  */
 
-#include <arch/rom_segs.h>
+#include <cpu/x86/gdt.h>
 #include <cpu/x86/post_code.h>
 
 .section .init._start, "ax", @progbits
@@ -136,7 +136,7 @@ _start16bit:
 	movl	%ebp, %eax
 
 	/* Now that we are in protected mode jump to a 32 bit code segment. */
-	ljmpl	$ROM_CODE_SEG, $bootblock_protected_mode_entry
+	ljmpl	$GDT_CODE_SEG, $bootblock_protected_mode_entry
 
 	/**
 	 * The gdt is defined in gdt_init.S, it has a 4 Gb code segment

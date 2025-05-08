@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <cpu/x86/gdt.h>
 #include <cpu/x86/post_code.h>
-#include <arch/ram_segs.h>
 
 /* Place the stack in the bss section. It's not necessary to define it in
  * the linker script. */
@@ -30,9 +30,9 @@ _start:
 	lgdt	(%rax)
 #else
 	lgdt	%cs:gdtaddr
-	ljmp	$RAM_CODE_SEG, $1f
+	ljmp	$GDT_CODE_SEG, $1f
 #endif
-1:	movl	$RAM_DATA_SEG, %eax
+1:	movl	$GDT_DATA_SEG, %eax
 	movl	%eax, %ds
 	movl	%eax, %es
 	movl	%eax, %ss
@@ -40,7 +40,7 @@ _start:
 	movl	%eax, %fs
 	movl	%eax, %gs /* Will be used for cpu_info */
 #if ENV_X86_64
-	mov	$RAM_CODE_SEG64, %ecx
+	mov	$GDT_CODE_SEG64, %ecx
 	call	SetCodeSelector
 #endif
 
@@ -152,46 +152,44 @@ gdtaddr:
 
 	.data
 
-	/* This is the gdt for GCC part of coreboot.
+	/*
+	 * This is the gdt for coreboot's ramstage.
 	 * It is different from the gdt in ASM part of coreboot
 	 * which is defined in gdt_init.S
 	 *
 	 * When the machine is initially started, we use a very simple
 	 * gdt from ROM (that in gdt_init.S) which only contains those
-	 * entries we need for protected mode.
+	 * entries we need for protected mode and long mode.
 	 *
 	 * When we're executing code from RAM, we want to do more complex
 	 * stuff, like initializing PCI option ROMs in real mode, or doing
-	 * a resume from a suspend to RAM.
+	 * a resume from a suspend to RAM, which happens in real mode.
+	 *
+	 * Keep in sync with 'cpu/x86/gdt.h'.
 	 */
 gdt:
 	/* selgdt 0, unused */
 	.word	0x0000, 0x0000		/* dummy */
 	.byte	0x00, 0x00, 0x00, 0x00
 
-	/* selgdt 8, unused */
-	.word	0x0000, 0x0000		/* dummy */
-	.byte	0x00, 0x00, 0x00, 0x00
-
-	/* selgdt 0x10, flat code segment */
+	/* selgdt 0x08, flat code segment */
 	.word	0xffff, 0x0000
-	.byte	0x00, 0x9b, 0xcf, 0x00 /* G=1 and 0x0f, So we get 4Gbytes for
-					* limit
-					*/
+	.byte	0x00, 0x9b, 0xcf, 0x00 /* G=1 and 0x0f, So we get 4Gbytes
+					  for limit */
 
-	/* selgdt 0x18, flat data segment */
+	/* selgdt 0x10, flat data segment */
 	.word	0xffff, 0x0000
-#if ENV_X86_64
-	.byte	0x00, 0x92, 0xcf, 0x00
-#else
 	.byte	0x00, 0x93, 0xcf, 0x00
-#endif
 
-	/* selgdt 0x20, unused */
-	.word	0x0000, 0x0000		/* dummy */
-	.byte	0x00, 0x00, 0x00, 0x00
+	/* selgdt 0x18, flat code segment (64-bit) */
+	.word   0xffff, 0x0000
+	.byte   0x00, 0x9b, 0xaf, 0x00
 
-	/* The next two entries are used for executing VGA option ROMs */
+	/* gdt selector 0x20 tss segment, used by STM */
+	.word   0xffff, 0x0000
+	.byte   0x00, 0x8b, 0x80, 0x00
+
+	/* The next two entries are used for executing ACPI S3 RESUME and VGA option ROMs */
 
 	/* selgdt 0x28 16 bit 64k code at 0x00000000 */
 	.word	0xffff, 0x0000
@@ -201,34 +199,25 @@ gdt:
 	.word	0xffff, 0x0000
 	.byte	0, 0x92, 0, 0
 
-	/* The next two entries are used for ACPI S3 RESUME */
+	/* The next entry is used for VGA option ROMs. See x86_asm.S */
 
-	/* selgdt 0x38, flat data segment 16 bit */
-	.word	0x0000, 0x0000		/* dummy */
-	.byte	0x00, 0x93, 0x8f, 0x00 /* G=1 and 0x0f, So we get 4Gbytes for
-					* limit
-					*/
-
-	/* selgdt 0x40, flat code segment 16 bit */
+	/*
+	 * selgdt 0x38, flat code segment 16 bits
+	 *
+	 * FIXME: It's only used in %ds (therefore used like a data segment).
+	 *        The PCI Specification doesn't enforce this.
+	 *        Is this a workaround for broken Option ROMs?
+	 */
 	.word	0xffff, 0x0000
 	.byte	0x00, 0x9b, 0x8f, 0x00 /* G=1 and 0x0f, So we get 4Gbytes for
 					* limit
 					*/
 
-#if ENV_X86_64
-	/* selgdt 0x48, flat x64 code segment */
-	.word	0xffff, 0x0000
-	.byte	0x00, 0x9b, 0xaf, 0x00
-#endif
 per_cpu_segment_descriptors:
 	.rept CONFIG_MAX_CPUS
 	/* flat data segment */
 	.word	0xffff, 0x0000
-#if ENV_X86_64
-	.byte	0x00, 0x92, 0xcf, 0x00
-#else
 	.byte	0x00, 0x93, 0xcf, 0x00
-#endif
 	.endr
 gdt_end:
 

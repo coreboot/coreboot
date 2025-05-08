@@ -1,0 +1,6 @@
+Vendor name: MiTAC Computing
+Board name: SC513G6
+Category: eval
+ROM protocol: SPI
+ROM socketed: y
+Flashrom support: y

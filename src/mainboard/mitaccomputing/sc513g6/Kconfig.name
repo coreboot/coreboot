@@ -1,0 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_MITAC_COMPUTING_SC513G6
+	bool "SC513G6"

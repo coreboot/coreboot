@@ -1,14 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <boot/coreboot_tables.h>
-#include <commonlib/coreboot_tables.h>
 #include <console/cfr.h>
 #include <drivers/option/cfr_frontend.h>
 #include <ec/starlabs/merlin/cfr.h>
-#include <inttypes.h>
-#include <intelblocks/pcie_rp.h>
-#include <string.h>
-#include <types.h>
+#include <intelblocks/cfr.h>
 #include <variants.h>
 
 static const struct sm_object card_reader = SM_DECLARE_BOOL({
@@ -26,13 +22,6 @@ static const struct sm_object fast_charge = SM_DECLARE_BOOL({
 	.default_value	= false,
 });
 #endif
-
-static const struct sm_object power_on_after_fail = SM_DECLARE_BOOL({
-	.opt_name	= "power_on_after_fail",
-	.ui_name	= "Power on after failure",
-	.ui_helptext	= "Automatically turn on after a power failure",
-	.default_value	= false,
-});
 
 static const struct sm_object power_profile = SM_DECLARE_ENUM({
 	.opt_name	= "power_profile",
@@ -96,7 +85,7 @@ static struct sm_obj_form power = {
 		#if CONFIG(EC_STARLABS_FAST_CHARGE)
 		&fast_charge,
 		#endif
-		&power_on_after_fail,
+		&power_on_after_fail_bool,
 		NULL
 	},
 };

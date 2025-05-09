@@ -12,6 +12,7 @@
 #include <soc/rtc_common.h>
 #include <soc/rtc_reg_common.h>
 #include <stdbool.h>
+#include <timer.h>
 #include <types.h>
 
 /* RTC registers */
@@ -21,7 +22,7 @@ enum {
 	RTC_BBPU_RELOAD		= BIT(5),
 	RTC_BBPU_CBUSY		= BIT(6),
 
-	RTC_CBUSY_TIMEOUT_US	= 8000,
+	RTC_CBUSY_TIMEOUT_US	= USECS_PER_SEC,
 };
 
 enum {
@@ -59,6 +60,7 @@ enum {
 #define BBPU_RELOAD_TIMEOUT_US		100000
 #define EOSC_CHECK_CLK_TIMEOUT_US	1000000
 #define RECOVERY_RETRY_COUNT		3
+#define PROT_UNLOCK_RETRY_COUNT		3
 
 struct rtc_clk_freq {
 	u16 fqm26m_ck;

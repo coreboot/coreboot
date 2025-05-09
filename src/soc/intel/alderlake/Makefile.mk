@@ -70,11 +70,6 @@ endif
 CPPFLAGS_common += -I$(src)/soc/intel/alderlake
 CPPFLAGS_common += -I$(src)/soc/intel/alderlake/include
 
-# Include the missing MemInfoHob.h from vendorcode
-ifeq ($(CONFIG_SOC_INTEL_RAPTORLAKE_PCH_S)$(CONFIG_FSP_TYPE_IOT),yy)
-CPPFLAGS_common += -I$(src)/vendorcode/intel/fsp/fsp2_0/iot/raptorlake_s
-endif
-
 ifeq ($(CONFIG_SOC_INTEL_ALDERLAKE_PCH_S),y)
 # 06-97-00, 06-97-01, 06-97-04 are ADL-S Engineering Samples
 # 06-97-02 are ADL-S/HX Quality Samples but also ADL-HX Engineering Samples

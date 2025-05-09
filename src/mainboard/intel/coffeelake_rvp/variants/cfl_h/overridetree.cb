@@ -61,15 +61,11 @@ chip soc/intel/cannonlake
 	register "PcieClkSrcClkReq[9]" = "9"
 
 	device domain 0 on
-		device pci 15.0 on  end # I2C #0
-		device pci 15.1 on  end # I2C #1
-		device pci 15.2 off end # I2C #2
-		device pci 15.3 off end # I2C #3
-		device pci 17.0 on  end # SATA
-		device pci 19.0 off end # I2C #4 (Not available on PCH-H)
-		device pci 19.1 off end # I2C #5 (Not available on PCH-H)
-		device pci 19.2 on  end # UART #2
-		device pci 1a.0 on  end # eMMC
+		device ref i2c0 on  end
+		device ref i2c1 on  end
+		device ref sata on  end
+		device ref uart2 on  end
+		device ref emmc on  end
 		device ref pcie_rp1 on	# x4 SLOT1
 			register "PcieRpSlotImplemented[0]" = "1"
 		end
@@ -79,9 +75,6 @@ chip soc/intel/cannonlake
 		device ref pcie_rp9 on
 			register "PcieRpSlotImplemented[8]" = "1"
 		end
-		device pci 1e.1 off end # UART #1
-		device pci 1e.2 off end # GSPI #0
-		device pci 1e.3 off end # GSPI #1
-		device pci 1f.6 on  end # GbE
+		device ref gbe on  end
 	end
 end

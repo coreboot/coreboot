@@ -1,14 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <boot/coreboot_tables.h>
-#include <commonlib/coreboot_tables.h>
 #include <console/cfr.h>
 #include <drivers/option/cfr_frontend.h>
 #include <ec/starlabs/merlin/cfr.h>
-#include <inttypes.h>
-#include <intelblocks/pcie_rp.h>
-#include <string.h>
-#include <types.h>
+#include <intelblocks/cfr.h>
 #include <variants.h>
 
 #if CONFIG(SOC_INTEL_TIGERLAKE) || CONFIG(SOC_INTEL_ALDERLAKE) || CONFIG(SOC_INTEL_RAPTORLAKE)
@@ -27,30 +23,6 @@ static const struct sm_object hyper_threading = SM_DECLARE_BOOL({
 	.default_value	= true,
 });
 
-static const struct sm_object me_state = SM_DECLARE_ENUM({
-	.opt_name	= "me_state",
-	.ui_name	= "Intel Management Engine",
-	.ui_helptext	= "Enable or disable the Intel Management Engine",
-	.default_value	= 1,
-	.values		= (const struct sm_enum_value[]) {
-				{ "Disabled",		1		},
-				{ "Enabled",		0		},
-				SM_ENUM_VALUE_END			},
-});
-
-static const struct sm_object me_state_counter = SM_DECLARE_NUMBER({
-	.opt_name	= "me_state_counter",
-	.ui_name	= "ME State Counter",
-	.flags		= CFR_OPTFLAG_SUPPRESS,
-	.default_value	= 0,
-});
-
-static const struct sm_object power_on_after_fail = SM_DECLARE_BOOL({
-	.opt_name	= "power_on_after_fail",
-	.ui_name	= "Power on after failure",
-	.ui_helptext	= "Automatically turn on after a power failure",
-	.default_value	= false,
-});
 
 static const struct sm_object power_profile = SM_DECLARE_ENUM({
 	.opt_name	= "power_profile",
@@ -63,48 +35,6 @@ static const struct sm_object power_profile = SM_DECLARE_ENUM({
 				{ "Performance",	PP_PERFORMANCE	},
 				SM_ENUM_VALUE_END			},
 });
-
-#if CONFIG(SOC_INTEL_ALDERLAKE)
-static const struct sm_object pciexp_aspm = SM_DECLARE_ENUM({
-	.opt_name	= "pciexp_aspm",
-	.ui_name	= "PCI ASPM",
-	.ui_helptext	= "Controls the Active State Power Management for PCI devices."
-			  " Enabling this feature can reduce power consumption of"
-			  " PCI-connected devices during idle times.",
-	.default_value	= ASPM_L0S_L1,
-	.values		= (const struct sm_enum_value[]) {
-				{ "Disabled",		ASPM_DISABLE	},
-				{ "L0s",		ASPM_L0S	},
-				{ "L1",			ASPM_L1		},
-				{ "L0sL1",		ASPM_L0S_L1	},
-				SM_ENUM_VALUE_END			},
-});
-
-static const struct sm_object pciexp_clk_pm = SM_DECLARE_BOOL({
-	.opt_name	= "pciexp_clk_pm",
-	.ui_name	= "PCI Clock Power Management",
-	.ui_helptext	= "Enables or disables power management for the PCI clock. When"
-			  " enabled, it reduces power consumption during idle states."
-			  " This can help lower overall energy use but may impact"
-			  " performance in power-sensitive tasks.",
-	.default_value	= true,
-});
-
-static const struct sm_object pciexp_l1ss = SM_DECLARE_ENUM({
-	.opt_name	= "pciexp_l1ss",
-	.ui_name	= "PCI L1 Substates",
-	.ui_helptext	= "Controls deeper power-saving states for PCI devices."
-			  " Enabling this feature allows supported devices to achieve"
-			  " lower power states at the cost of slightly increased"
-			  " latency when exiting these states.",
-	.default_value	= L1_SS_L1_2,
-	.values		= (const struct sm_enum_value[]) {
-				{ "Disabled",		L1_SS_DISABLED	},
-				{ "L1.1",		L1_SS_L1_1	},
-				{ "L1.2",		L1_SS_L1_2	},
-				SM_ENUM_VALUE_END			},
-});
-#endif
 
 #if CONFIG(DRIVERS_INTEL_USB4_RETIMER)
 static const struct sm_object thunderbolt = SM_DECLARE_BOOL({
@@ -166,7 +96,7 @@ static struct sm_obj_form power = {
 		#if CONFIG(EC_STARLABS_CHARGING_SPEED)
 		&charging_speed,
 		#endif
-		&power_on_after_fail,
+		&power_on_after_fail_bool,
 		NULL
 	},
 };
@@ -200,9 +130,12 @@ static struct sm_obj_form devices = {
 static struct sm_obj_form pci = {
 	.ui_name = "PCI",
 	.obj_list = (const struct sm_object *[]) {
-		#if CONFIG(SOC_INTEL_ALDERLAKE)
+		#if CONFIG(SOC_INTEL_COMMON_BLOCK_ASPM)
 		&pciexp_clk_pm,
 		&pciexp_aspm,
+		#if CONFIG(HAS_INTEL_CPU_ROOT_PORTS)
+		&pciexp_aspm_cpu,
+		#endif
 		&pciexp_l1ss,
 		#endif
 		NULL

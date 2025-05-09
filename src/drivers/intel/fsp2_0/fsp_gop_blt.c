@@ -100,12 +100,12 @@ static uint32_t calculate_blt_buffer_size(efi_bmp_image_header *header)
 	return blt_buffer_size;
 }
 
-static uint32_t get_color_map_num(efi_bmp_image_header *header)
+static int get_color_map_num(efi_bmp_image_header *header)
 {
-	uint32_t col_map_number = 0;
+	int col_map_number;
 
 	if (header == NULL)
-		return 0;
+		return -1;
 
 	switch (header->BitPerPixel) {
 	case 1:
@@ -118,6 +118,11 @@ static uint32_t get_color_map_num(efi_bmp_image_header *header)
 		col_map_number = 256;
 		break;
 	default:
+		/*
+		 * For other bit depths (e.g., 24-bit and 32-bit) that doesn't have
+		 * a standard palette, col_map_number remains 0.
+		 */
+		col_map_number = 0;
 		break;
 	}
 
@@ -127,7 +132,7 @@ static uint32_t get_color_map_num(efi_bmp_image_header *header)
 	 */
 	if (header->ImageOffset - sizeof(efi_bmp_image_header) <
 			 sizeof(efi_bmp_color_map) * col_map_number)
-		return 0;
+		return -1;
 
 	return col_map_number;
 }
@@ -450,7 +455,7 @@ void fsp_convert_bmp_to_gop_blt(efi_uintn_t *logo, uint32_t *logo_size,
 	if (!blt_buffer_size)
 		return;
 
-	if (!get_color_map_num(bmp_header))
+	if (get_color_map_num(bmp_header) < 0)
 		return;
 
 	bool is_standard_orientation = (orientation == LB_FB_ORIENTATION_NORMAL ||

@@ -74,18 +74,29 @@ has to read the coreboot table with tag `0x0039`, containing:
 struct lb_smmstorev2 {
 	uint32_t tag;
 	uint32_t size;
-	uint32_t num_blocks;	/* Number of writeable blocks in SMM */
-	uint32_t block_size;	/* Size of a block in byte. Default: 64 KiB */
-	uint32_t mmap_addr;	/* MMIO address of the store for read only access */
-	uint32_t com_buffer;	/* Physical address of the communication buffer */
-	uint32_t com_buffer_size;	/* Size of the communication buffer in byte */
-	uint8_t apm_cmd;	/* The command byte to write to the APM I/O port */
-	uint8_t unused[3];	/* Set to zero */
+	uint32_t num_blocks;		/* Number of writable blocks in SMM */
+	uint32_t block_size;		/* Size of a block in byte. Default: 64 KiB */
+	uint32_t mmap_addr_deprecated;	/* 32-bit MMIO address of the store for read only access.
+					   Prefer 'mmap_addr' for new software.
+					   Zero when the address won't fit into 32-bits. */
+	uint32_t com_buffer;		/* Physical address of the communication buffer */
+	uint32_t com_buffer_size;	/* Size of the communication buffer in bytes */
+	uint8_t apm_cmd;		/* The command byte to write to the APM I/O port */
+	uint8_t unused[3];		/* Set to zero */
+	uint64_t mmap_addr;		/* 64-bit MMIO address of the store for read only access.
+					   Introduced after the initial implementation. Users of
+					   this table must check the 'size' field to detect if its
+					   written out by coreboot. */
 };
 ```
 
 The absence of this coreboot table entry indicates that there's no
 SMMSTOREv2 support.
+
+`mmap_addr` is an optional field added after the initial implementation.
+Users of this table must check the size field to know if it's written by coreboot.
+In case it's not present 'mmap_addr_deprecated' is to be used as the SPI ROM MMIO
+address and it must be below 4 GiB.
 
 ### Blocks
 

@@ -48,7 +48,6 @@ fallback_stack_top:
 .code16
 .global _start
 _start:
-smm_handler_start:
 #if CONFIG(SMM_LAPIC_REMAP_MITIGATION)
 	/* Check if the LAPIC register block overlaps with the stub.
 	 * This block needs to work without data accesses because they

@@ -539,11 +539,17 @@ struct lb_smmstorev2 {
 	uint32_t size;
 	uint32_t num_blocks;		/* Number of writable blocks in SMM */
 	uint32_t block_size;		/* Size of a block in byte. Default: 64 KiB */
-	uint32_t mmap_addr;		/* MMIO address of the store for read only access */
+	uint32_t mmap_addr_deprecated;	/* 32-bit MMIO address of the store for read only access.
+					   Prefer 'mmap_addr' for new software.
+					   Zero when the address won't fit into 32-bits. */
 	uint32_t com_buffer;		/* Physical address of the communication buffer */
 	uint32_t com_buffer_size;	/* Size of the communication buffer in bytes */
 	uint8_t apm_cmd;		/* The command byte to write to the APM I/O port */
 	uint8_t unused[3];		/* Set to zero */
+	uint64_t mmap_addr;		/* 64-bit MMIO address of the store for read only access.
+					   Introduced after the initial implementation. Users of
+					   this table must check the 'size' field to detect if its
+					   written out by coreboot. */
 };
 
 enum lb_tpm_ppi_tpm_version {

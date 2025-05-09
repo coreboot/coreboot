@@ -693,6 +693,7 @@ void platform_fsp_silicon_init_params_cb(FSPS_UPD *silupd)
 	memcpy(silconfig->SataPortsHotPlug, cfg->sata_ports_hot_plug,
 		sizeof(silconfig->SataPortsHotPlug));
 
+	cfg->lpss_s0ix_enable = get_uint_option("s0ix_enable", cfg->lpss_s0ix_enable);
 	silconfig->LPSS_S0ixEnable = cfg->lpss_s0ix_enable;
 
 	/* Disable monitor mwait since it is broken due to a hardware bug

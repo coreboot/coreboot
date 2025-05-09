@@ -31,10 +31,13 @@ static const struct sm_object me_state_counter = SM_DECLARE_NUMBER({
 	.default_value	= 0,
 });
 
-/* Power state after power loss */
+/*
+ * Power state after power loss
+ * Use this option or the one below, but not both
+ */
 static const struct sm_object power_on_after_fail = SM_DECLARE_ENUM({
 	.opt_name	= "power_on_after_fail",
-	.ui_name	= "Restore AC Power Loss",
+	.ui_name	= "Restore AC power after loss",
 	.ui_helptext	= "Specify what to do when power is re-applied after a power loss.",
 	.default_value	= CONFIG_MAINBOARD_POWER_FAILURE_STATE,
 	.values		= (const struct sm_enum_value[]) {
@@ -42,6 +45,17 @@ static const struct sm_object power_on_after_fail = SM_DECLARE_ENUM({
 				{ "Power on  (S0)", MAINBOARD_POWER_STATE_ON		},
 				{ "Previous state", MAINBOARD_POWER_STATE_PREVIOUS	},
 				SM_ENUM_VALUE_END					},
+});
+
+/*
+ * Automatic power-on toggle
+ * Use this option or the one above, but not both
+ */
+static const struct sm_object power_on_after_fail_bool = SM_DECLARE_BOOL({
+	.opt_name	= "power_on_after_fail",
+	.ui_name	= "Power on after failure",
+	.ui_helptext	= "Automatically turn on after a power failure",
+	.default_value	= CONFIG_MAINBOARD_POWER_FAILURE_STATE,
 });
 
 /* PCIe PCH RP ASPM */

@@ -73,6 +73,10 @@ enum {
 };
 
 enum {
+	RTC_EOSC_CALI_TD_DEFAULT = 6U << 5,
+};
+
+enum {
 	RTC_K_EOSC_RSV_0	= 1 << 8,
 	RTC_K_EOSC_RSV_1	= 1 << 9,
 	RTC_K_EOSC_RSV_2	= 1 << 10,

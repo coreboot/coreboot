@@ -220,6 +220,7 @@ int rtc_init(int recover)
 {
 	int ret;
 	u16 year;
+	u16 al_dow;
 
 	rtc_info("recovery: %d\n", recover);
 
@@ -255,6 +256,10 @@ int rtc_init(int recover)
 		ret = -RTC_STATUS_REG_INIT_FAIL;
 		goto err;
 	}
+
+	/* RTC EOSC calibration period setting and day-of-week value of alarm counter setting */
+	rtc_read(RTC_AL_DOW, &al_dow);
+	rtc_write(RTC_AL_DOW, al_dow | RTC_EOSC_CALI_TD_DEFAULT);
 
 	/* solution1 for EOSC cali*/
 	rtc_read(RTC_AL_YEA, &year);

@@ -1,4 +1,7 @@
 chip soc/intel/pantherlake
+	register "common_soc_config" = "{
+		.logo_valignment = FW_SPLASH_VALIGNMENT_MIDDLE,
+	}"
 
 	device domain 0 on
 	end

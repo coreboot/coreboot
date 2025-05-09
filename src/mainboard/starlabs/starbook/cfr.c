@@ -1,13 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <boot/coreboot_tables.h>
-#include <commonlib/coreboot_tables.h>
 #include <console/cfr.h>
 #include <drivers/option/cfr_frontend.h>
 #include <ec/starlabs/merlin/cfr.h>
-#include <inttypes.h>
-#include <string.h>
-#include <types.h>
+#include <intelblocks/cfr.h>
 #include "cfr.h"
 
 static struct sm_obj_form performance = {
@@ -40,7 +37,7 @@ static struct sm_obj_form power = {
 		#if CONFIG(EC_STARLABS_CHARGING_SPEED)
 		&charging_speed,
 		#endif
-		&power_on_after_fail,
+		&power_on_after_fail_bool,
 		NULL
 	},
 };
@@ -92,6 +89,9 @@ static struct sm_obj_form pci = {
 		#if CONFIG(SOC_INTEL_COMMON_BLOCK_ASPM)
 		&pciexp_clk_pm,
 		&pciexp_aspm,
+		#if CONFIG(HAS_INTEL_CPU_ROOT_PORTS)
+		&pciexp_aspm_cpu,
+		#endif
 		&pciexp_l1ss,
 		#endif
 		NULL

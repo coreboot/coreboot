@@ -25,6 +25,7 @@ static struct sm_obj_form processor = {
 		#if CONFIG(BOARD_SUPPORTS_HT)
 		&hyper_threading,
 		#endif
+		&s0ix_enable,
 		&vtd,
 		NULL
 	},

@@ -40,6 +40,16 @@ static const struct sm_object bluetooth_rtd3 = SM_DECLARE_BOOL({
 	.default_value	= true,
 });
 
+static const struct sm_object s0ix_enable = SM_DECLARE_BOOL({
+	.opt_name	= "s0ix_enable",
+	.ui_name	= "Modern Standby (S0ix)",
+	.ui_helptext	= "Enabled: Use S0ix for device sleep.\n"
+			  "Disabled: Use ACPI S3 for device sleep.\n"
+			  "Requires Intel ME to be enabled.\n"
+			  "Recommended: Enabled when booting Windows, disabled otherwise.",
+	.default_value	= false,
+});
+
 static struct sm_obj_form performance = {
 	.ui_name = "Performance",
 	.obj_list = (const struct sm_object *[]) {
@@ -54,6 +64,7 @@ static struct sm_obj_form processor = {
 	.obj_list = (const struct sm_object *[]) {
 		&me_state,
 		&me_state_counter,
+		&s0ix_enable,
 		&vtd,
 		NULL
 	},

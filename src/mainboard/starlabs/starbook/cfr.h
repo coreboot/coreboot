@@ -113,4 +113,14 @@ static const struct sm_object display_native_res = SM_DECLARE_BOOL({
 	.default_value	= false,
 });
 
+static const struct sm_object s0ix_enable = SM_DECLARE_BOOL({
+	.opt_name	= "s0ix_enable",
+	.ui_name	= "Modern Standby (S0ix)",
+	.ui_helptext	= "Enabled: Use S0ix for device sleep.\n"
+			  "Disabled: Use ACPI S3 for device sleep.\n"
+			  "Requires Intel ME to be enabled.\n"
+			  "Recommended: Enabled when booting Windows, disabled otherwise.",
+	.default_value	= false,
+});
+
 #endif /* _STARBOOK_CFR_H_ */

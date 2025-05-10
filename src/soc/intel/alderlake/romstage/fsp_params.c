@@ -316,7 +316,7 @@ static void fill_fspm_vtd_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->VtdBaseAddress[VTD_IPU] = IPUVT_BASE_ADDRESS;
 	m_cfg->VtdBaseAddress[VTD_VTVCO] = VTVC0_BASE_ADDRESS;
 
-	m_cfg->VtdDisable = 0;
+	m_cfg->VtdDisable = !get_uint_option("vtd", 1);
 	m_cfg->VtdIopEnable = !m_cfg->VtdDisable;
 	m_cfg->VtdIgdEnable = m_cfg->InternalGfx;
 	m_cfg->VtdIpuEnable = m_cfg->SaIpuEnable;

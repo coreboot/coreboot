@@ -105,7 +105,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->PlatformDebugConsent = CONFIG_SOC_INTEL_COMMON_DEBUG_CONSENT;
 
 	/* VT-d config */
-	m_cfg->VtdDisable = 0;
+	m_cfg->VtdDisable = !get_uint_option("vtd", 1);
 	m_cfg->VtdIopEnable = 0x1;
 
 	if (m_cfg->InternalGfx) {

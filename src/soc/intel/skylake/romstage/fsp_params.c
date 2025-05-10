@@ -116,8 +116,14 @@ static void soc_primary_gfx_config_params(FSP_M_CONFIG *m_cfg,
 	 *
 	 * If disabled, don't reserve memory for it.
 	 */
-	m_cfg->IgdDvmt50PreAlloc = m_cfg->InternalGfx ? get_uint_option("igd_dvmt_prealloc", 2) : 0;
-	m_cfg->ApertureSize = get_uint_option("igd_aperture_size", 1);
+	if (m_cfg->InternalGfx) {
+		/* IGD is enabled, set IGD stolen size to 64MB. */
+		m_cfg->IgdDvmt50PreAlloc = get_uint_option("igd_dvmt_prealloc", IGD_SM_64MB);
+		m_cfg->ApertureSize = get_uint_option("igd_aperture_size", IGD_AP_SZ_256MB);
+	} else {
+		/* IGD is disabled, skip IGD init in FSP. */
+		m_cfg->IgdDvmt50PreAlloc = 0;
+	}
 
 	m_cfg->PrimaryDisplay = config->PrimaryDisplay;
 }

@@ -206,7 +206,7 @@ chip soc/intel/pantherlake
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E01_IRQ)"
 				register "generic.detect" = "1"
 				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B08)"
-				register "generic.reset_delay_ms" = "200"
+				register "generic.reset_delay_ms" = "10"
 				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B18)"
 				register "generic.enable_delay_ms" = "12"
 				register "generic.has_power_resource" = "1"

@@ -14,6 +14,7 @@
 #include <soc/pci_devs.h>
 #include <soc/pcie.h>
 #include <soc/romstage.h>
+#include <soc/soc_chip.h>
 #include <types.h>
 
 #include "../chip.h"
@@ -37,8 +38,8 @@ void platform_fsp_memory_init_params_cb(FSPM_UPD *mupd, uint32_t version)
 	if (igd_on && pci_read_config16(SA_DEV_IGD, PCI_VENDOR_ID) != 0xffff) {
 		/* Set IGD stolen size to 64MB. */
 		m_cfg->InternalGfx = 1;
-		m_cfg->IgdDvmt50PreAlloc = get_uint_option("igd_dvmt_prealloc", 2);
-		m_cfg->ApertureSize = get_uint_option("igd_aperture_size", 1);
+		m_cfg->IgdDvmt50PreAlloc = get_uint_option("igd_dvmt_prealloc", IGD_SM_64MB);
+		m_cfg->ApertureSize = get_uint_option("igd_aperture_size", IGD_AP_SZ_256MB);
 	} else {
 		m_cfg->InternalGfx = 0;
 		m_cfg->IgdDvmt50PreAlloc = 0;

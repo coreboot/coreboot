@@ -8,6 +8,7 @@
 #define CANNONLAKE_CFR_H
 
 #include <drivers/option/cfr_frontend.h>
+#include <soc/soc_chip.h>
 
 /* FSP hyperthreading */
 static const struct sm_object hyper_threading = SM_DECLARE_ENUM({
@@ -26,11 +27,11 @@ static const struct sm_object igd_aperture = SM_DECLARE_ENUM({
 	.opt_name	= "igd_aperture_size",
 	.ui_name	= "IGD Aperture Size",
 	.ui_helptext	= "Select the Aperture Size",
-	.default_value	= 1,
+	.default_value	= IGD_AP_SZ_256MB,
 	.values		= (const struct sm_enum_value[]) {
-				{ "128 MB",		0	},
-				{ "256 MB",		1	},
-				{ "512 MB",		2	},
+				{ "128 MB",	IGD_AP_SZ_128MB	},
+				{ "256 MB",	IGD_AP_SZ_256MB	},
+				{ "512 MB",	IGD_AP_SZ_512MB	},
 				SM_ENUM_VALUE_END		},
 });
 
@@ -39,12 +40,12 @@ static const struct sm_object igd_dvmt = SM_DECLARE_ENUM({
 	.opt_name	= "igd_dvmt_prealloc",
 	.ui_name	= "IGD DVMT Size",
 	.ui_helptext	= "Size of memory preallocated for internal graphics",
-	.default_value	= 2,
+	.default_value	= IGD_SM_64MB,
 	.values		= (const struct sm_enum_value[]) {
-				{ "32 MB",		1	},
-				{ "64 MB",		2	},
-				{ "96 MB",		3	},
-				{ "128 MB",		4	},
+				{ "32 MB",	IGD_SM_32MB	},
+				{ "64 MB",	IGD_SM_64MB	},
+				{ "96 MB",	IGD_SM_96MB	},
+				{ "128 MB",	IGD_SM_128MB	},
 				SM_ENUM_VALUE_END		},
 });
 

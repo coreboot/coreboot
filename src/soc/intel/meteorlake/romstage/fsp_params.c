@@ -354,7 +354,7 @@ static void fill_fspm_usb4_params(FSP_M_CONFIG *m_cfg,
 static void fill_fspm_vtd_params(FSP_M_CONFIG *m_cfg,
 		const struct soc_intel_meteorlake_config *config)
 {
-	m_cfg->VtdDisable = 0;
+	m_cfg->VtdDisable = !get_uint_option("vtd", 1);
 	m_cfg->VtdBaseAddress[0] = GFXVT_BASE_ADDRESS;
 	m_cfg->VtdBaseAddress[1] = VTVC0_BASE_ADDRESS;
 

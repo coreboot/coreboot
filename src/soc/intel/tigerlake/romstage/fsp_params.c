@@ -164,7 +164,7 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 		m_cfg->VtdDisable = 1;
 	} else {
 		/* Enable VT-d support for QS platform */
-		m_cfg->VtdDisable = 0;
+		m_cfg->VtdDisable = !get_uint_option("vtd", 1);
 		m_cfg->VtdIopEnable = 0x1;
 
 		if (m_cfg->InternalGfx) {

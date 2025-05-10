@@ -6,6 +6,7 @@
 #include <fsp/util.h>
 #include <intelblocks/cpulib.h>
 #include <intelblocks/pcie_rp.h>
+#include <option.h>
 #include <soc/iomap.h>
 #include <soc/pci_devs.h>
 #include <soc/pcie.h>
@@ -18,12 +19,16 @@ static void soc_memory_init_params(FSP_M_CONFIG *m_cfg,
 {
 	unsigned int i;
 
-	/*
-	 * If IGD is enabled, set IGD stolen size to 60MB.
-	 * Otherwise, skip IGD init in FSP.
-	 */
 	m_cfg->InternalGfx = !CONFIG(SOC_INTEL_DISABLE_IGD) && is_devfn_enabled(SA_DEVFN_IGD);
-	m_cfg->IgdDvmt50PreAlloc = m_cfg->InternalGfx ? 0xFE : 0;
+
+	if (m_cfg->InternalGfx) {
+		/* IGD is enabled, set IGD stolen size to 60MB. */
+		m_cfg->IgdDvmt50PreAlloc = get_uint_option("igd_dvmt_prealloc", IGD_SM_60MB);
+		m_cfg->ApertureSize = get_uint_option("igd_aperture_size", IGD_AP_SZ_256MB);
+	} else {
+		/* IGD is disabled, skip IGD init in FSP. */
+		m_cfg->IgdDvmt50PreAlloc = 0;
+	}
 
 	m_cfg->TsegSize = CONFIG_SMM_TSEG_SIZE;
 	m_cfg->SaGv = config->SaGv;

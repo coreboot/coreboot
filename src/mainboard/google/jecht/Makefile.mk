@@ -1,23 +1,22 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-subdirs-y += spd
+bootblock-y += bootblock.c
+bootblock-y += led.c
+
 romstage-$(CONFIG_CHROMEOS) += chromeos.c
+romstage-y += variants/$(VARIANT_DIR)/gpio.c
+romstage-y += variants/$(VARIANT_DIR)/pei_data.c
+
+ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
-verstage-$(CONFIG_CHROMEOS) += chromeos.c
+ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads
 ramstage-y += lan.c
+ramstage-y += variants/$(VARIANT_DIR)/pei_data.c
+
+verstage-$(CONFIG_CHROMEOS) += chromeos.c
 
 smm-y += led.c
 
-romstage-y += variants/$(VARIANT_DIR)/pei_data.c
-ramstage-y += variants/$(VARIANT_DIR)/pei_data.c
-
-bootblock-y += led.c
-
-bootblock-y += bootblock.c
-
-ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads
-
+subdirs-y += spd
 subdirs-y += variants/$(VARIANT_DIR)
 CPPFLAGS_common += -I$(src)/mainboard/$(MAINBOARDDIR)/variants/$(VARIANT_DIR)/include
-
-romstage-y += variants/$(VARIANT_DIR)/gpio.c

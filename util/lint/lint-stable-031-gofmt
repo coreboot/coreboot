@@ -1,0 +1,33 @@
+#!/usr/bin/env sh
+#
+# SPDX-License-Identifier: GPL-2.0-only
+
+# DESCR: Run gofmt on util/intelp2m
+
+LINTDIR="$(
+  cd -- "$(dirname "$0")" > /dev/null 2>&1 || return
+  pwd -P
+)"
+
+# shellcheck source=helper_functions.sh
+. "${LINTDIR}/helper_functions.sh"
+
+# Until we require this by default, we need a list of opted-in directories
+# If the script isn't looking at a git repository, just exit
+if [ "${IN_GIT_TREE}" -eq 0 ]; then
+	exit 0
+fi
+
+files_to_check=$(${GIT} log HEAD~..HEAD --format= --name-only util/intelp2m | grep "\.go$")
+
+# nothing to do
+if [ -z "$files_to_check" ]; then
+	exit 0
+fi
+
+diff_files=$(gofmt -l $files_to_check)
+if [ "$diff_files" != "" ]; then
+	echo "Coding style mismatch. Run \"gofmt -w $files_to_check\" before pushing changes"
+	exit 1
+fi
+exit 0

@@ -29,6 +29,9 @@ TESTRUN="${TESTRUN_DEFAULT}"
 
 export KCONFIG_OVERWRITECONFIG=1
 
+# Identify this as a coreboot autobuild
+export COREBOOT_ABUILD=1
+
 # path to payload. Should be more generic
 PAYLOAD=/dev/null
 

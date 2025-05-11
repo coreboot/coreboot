@@ -111,6 +111,7 @@ chip soc/intel/alderlake
 		device ref tbt_pcie_rp0 on end
 		device ref tbt_pcie_rp1 on end
 		device ref tbt_pcie_rp2 on end
+		device ref gna on end
 		device ref tcss_xhci on end
 		device ref tcss_dma0 on end
 		device ref tcss_dma1 on end

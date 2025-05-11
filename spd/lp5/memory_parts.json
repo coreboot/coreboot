@@ -284,7 +284,7 @@
                 "speedMbps": 8533,
                 "lp5x": true
             }
-        }，
+        },
         {
             "name":  "K3KL8L80EM-MGCU",
             "attribs": {
@@ -292,6 +292,17 @@
                 "diesPerPackage": 2,
                 "bitWidthPerChannel": 16,
                 "ranksPerChannel": 1,
+                "speedMbps": 8533,
+                "lp5x": true
+            }
+        },
+        {
+            "name":  "K3KL9L90EM-MGCU",
+            "attribs": {
+                "densityPerDieGb": 16,
+                "diesPerPackage": 4,
+                "bitWidthPerChannel": 16,
+                "ranksPerChannel": 2,
                 "speedMbps": 8533,
                 "lp5x": true
             }

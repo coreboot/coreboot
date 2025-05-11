@@ -1,6 +1,5 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <device/pci_ops.h>
 #include <ec/dell/mec5035/mec5035.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 

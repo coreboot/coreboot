@@ -192,6 +192,7 @@ chip soc/intel/alderlake
 			register "gfx" = "GMA_DEFAULT_PANEL(0)"
 		end
 		device ref dtt on end
+		device ref gna on end
 		device ref tcss_xhci on end
 		device ref xhci on end
 		device ref shared_sram on end

@@ -78,6 +78,17 @@ config TPM_MEASURED_BOOT
 	help
 	  Enables measured boot (experimental)
 
+config TPM_MEASURE_MRC_CACHE
+	bool "Measure MRC cache"
+	default n
+	depends on TPM_MEASURED_BOOT
+	depends on CACHE_MRC_SETTINGS
+	help
+	  Measures MRC cache as runtime data to guarantee that a
+	  tamper with the memory will be detected. The runtime data
+	  measurement becomes stable after the second boot after
+	  changing DIMM.
+
 choice
 	prompt "TPM event log format"
 	depends on TPM_MEASURED_BOOT

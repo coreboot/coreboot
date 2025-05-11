@@ -1,0 +1,43 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_DELL_HASWELL_LATITUDE_COMMON
+	def_bool n
+	select EC_DELL_MEC5035
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select MAINBOARD_HAS_LIBGFXINIT
+	select NORTHBRIDGE_INTEL_HASWELL
+	select SERIRQ_CONTINUOUS_MODE
+	select SOUTHBRIDGE_INTEL_LYNXPOINT
+	select SYSTEM_TYPE_LAPTOP
+
+config BOARD_DELL_LATITUDE_E7240
+	select BOARD_DELL_HASWELL_LATITUDE_COMMON
+	select BOARD_ROMSIZE_KB_8192
+	select INTEL_LYNXPOINT_LP
+	select MAINBOARD_USES_IFD_GBE_REGION
+
+if BOARD_DELL_HASWELL_LATITUDE_COMMON
+
+config MAINBOARD_DIR
+	default "dell/haswell_latitude"
+
+config MAINBOARD_PART_NUMBER
+	default "Latitude E7240" if BOARD_DELL_LATITUDE_E7240
+
+config DEVICETREE
+	default "devicetree_lp.cb" if INTEL_LYNXPOINT_LP
+
+config VARIANT_DIR
+	default "e7240" if BOARD_DELL_LATITUDE_E7240
+
+config OVERRIDE_DEVICETREE
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
+
+config VGA_BIOS_ID
+	default "8086,0a16"
+
+config USBDEBUG_HCD_INDEX
+	default 1
+
+endif

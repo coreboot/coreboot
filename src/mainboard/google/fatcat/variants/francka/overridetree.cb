@@ -78,6 +78,7 @@ chip soc/intel/pantherlake
 	#| I2C4              | Touchscreen, Touchpad     |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
+		.logo_valignment = FW_SPLASH_VALIGNMENT_MIDDLE,
 		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
 		.i2c[1] = {
 			.early_init = 1,

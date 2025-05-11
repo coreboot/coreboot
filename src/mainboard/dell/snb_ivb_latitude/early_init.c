@@ -11,4 +11,9 @@ void bootblock_mainboard_early_init(void)
 			| KBC_LPC_EN | FDD_LPC_EN | LPT_LPC_EN
 			| COMB_LPC_EN | COMA_LPC_EN);
 	mec5035_early_init();
+
+	/* Observed from LPC logs with vendor firmware. Seems to disable
+	 * EC-initiated shutdown when the CPU reaches approximately 87 degrees.
+	 * The exact meaning of the parameter is currently unknown. */
+	mec5035_allow_cpu_thermal_throttle(0x07);
 }

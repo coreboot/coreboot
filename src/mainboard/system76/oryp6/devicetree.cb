@@ -116,6 +116,7 @@ chip soc/intel/cannonlake
 			register "PcieClkSrcUsage[11]" = "20"
 			register "PcieClkSrcClkReq[11]" = "11"
 			register "PcieRpSlotImplemented[20]" = "1"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD2)" "SlotDataBusWidth4X"
 		end
 		device ref pcie_rp9	on
 			# PCI Express root port #9 x4, Clock 12 (SSD1)
@@ -123,6 +124,7 @@ chip soc/intel/cannonlake
 			register "PcieClkSrcUsage[12]" = "8"
 			register "PcieClkSrcClkReq[12]" = "12"
 			register "PcieRpSlotImplemented[8]" = "1"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD1)" "SlotDataBusWidth4X"
 		end
 		device ref pcie_rp14	on
 			# PCI Express root port #14 x1, Clock 7 (GLAN)
@@ -144,6 +146,7 @@ chip soc/intel/cannonlake
 			register "PcieClkSrcUsage[6]" = "15"
 			register "PcieClkSrcClkReq[6]" = "6"
 			register "PcieRpSlotImplemented[15]" = "1"
+			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/E 2230 (J_WLAN1)" "SlotDataBusWidth1X"
 		end
 		device ref lpc_espi	on
 			register "gen1_dec" = "0x00040069" # EC PM channel

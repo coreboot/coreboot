@@ -116,12 +116,14 @@ chip soc/intel/cannonlake
 			register "PcieRpLtrEnable[16]" = "true"
 			register "PcieClkSrcUsage[14]" = "16"
 			register "PcieClkSrcClkReq[14]" = "14"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD2)" "SlotDataBusWidth4X"
 		end
 		device ref pcie_rp21	on
 			# PCI Express root port #21 x4, Clock 15 (SSD3)
 			register "PcieRpLtrEnable[20]" = "true"
 			register "PcieClkSrcUsage[15]" = "20"
 			register "PcieClkSrcClkReq[15]" = "15"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD3)" "SlotDataBusWidth4X"
 		end
 		device ref pcie_rp1	on
 			# PCI Express root port #1 x4, Clock 6 (Thunderbolt)
@@ -141,12 +143,14 @@ chip soc/intel/cannonlake
 			register "PcieRpLtrEnable[8]" = "true"
 			register "PcieClkSrcUsage[8]" = "8"
 			register "PcieClkSrcClkReq[8]" = "8"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD1)" "SlotDataBusWidth4X"
 		end
 		device ref pcie_rp13	on
 			# PCI Express root port #13 x1, Clock 0 (WLAN)
 			register "PcieRpLtrEnable[12]" = "true"
 			register "PcieClkSrcUsage[0]" = "12"
 			register "PcieClkSrcClkReq[0]" = "0"
+			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/E 2230 (J_WLAN1)" "SlotDataBusWidth1X"
 		end
 		device ref pcie_rp14	on
 			# PCI Express root port #14 x1, Clock 1 (GLAN)

@@ -29,6 +29,7 @@ chip soc/intel/tigerlake
 			# PCIe PEG0 x4, Clock 4 (SSD2)
 			register "PcieClkSrcUsage[4]" = "0x40"
 			register "PcieClkSrcClkReq[4]" = "4"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD2)" "SlotDataBusWidth4X"
 		end
 		device ref south_xhci on
 			register "usb2_ports" = "{
@@ -71,6 +72,7 @@ chip soc/intel/tigerlake
 			register "PcieClkSrcUsage[8]" = "7"
 			register "PcieClkSrcClkReq[8]" = "8"
 			register "PcieRpSlotImplemented[7]" = "1"
+			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/E 2230 (J_WLAN1)" "SlotDataBusWidth1X"
 		end
 		device ref pcie_rp9 on
 			# PCIe root port #9 x4, Clock 9 (SSD1)
@@ -78,6 +80,7 @@ chip soc/intel/tigerlake
 			register "PcieClkSrcUsage[9]" = "8"
 			register "PcieClkSrcClkReq[9]" = "9"
 			register "PcieRpSlotImplemented[8]" = "1"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD1)" "SlotDataBusWidth4X"
 		end
 	end
 end

@@ -267,6 +267,8 @@ struct mtk_pericfg_ao_regs {
 };
 check_member(mtk_pericfg_ao_regs, pericfg_ao_peri_cg_0, 0x0010);
 check_member(mtk_pericfg_ao_regs, pericfg_ao_peri_cg_0_set, 0x0024);
+check_member(mtk_pericfg_ao_regs, pericfg_ao_peri_cg_2_set, 0x0034);
+check_member(mtk_pericfg_ao_regs, pericfg_ao_peri_cg_2_clr, 0x0038);
 
 struct mtk_afe_regs {
 	u32 audio_audio_top[5];

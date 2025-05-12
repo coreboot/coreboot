@@ -32,6 +32,7 @@ romstage-y += ../common/pmif_spi.c pmif_spi.c
 romstage-y += ../common/pmif_spmi.c pmif_spmi.c
 romstage-y += ../common/rtc.c ../common/rtc_osc_init.c ../common/rtc_mt6359p.c
 
+ramstage-y += ../common/auxadc.c
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += ../common/bl31.c
 ramstage-y += ../common/dpm.c ../common/dpm_v2.c
 ramstage-y += ../common/dramc_info.c

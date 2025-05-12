@@ -2,6 +2,7 @@
 
 #include <boot/coreboot_tables.h>
 #include <commonlib/coreboot_tables.h>
+#include <console/cfr.h>
 #include <drivers/option/cfr_frontend.h>
 #include <ec/starlabs/merlin/cfr.h>
 #include <inttypes.h>
@@ -10,40 +11,11 @@
 #include <types.h>
 #include <variants.h>
 
-static const struct sm_object boot_option = SM_DECLARE_ENUM({
-	.opt_name	= "boot_option",
-	.ui_name	= "Boot Option",
-	.ui_helptext	= "Change the boot device in the event of a failed boot",
-	.default_value	= 0,
-	.values		= (const struct sm_enum_value[]) {
-				{ "Fallback",		0		},
-				{ "Normal",		1		},
-				SM_ENUM_VALUE_END			},
-});
-
 static const struct sm_object card_reader = SM_DECLARE_BOOL({
 	.opt_name	= "card_reader",
 	.ui_name	= "Card Reader",
 	.ui_helptext	= "Enable or disable the built-in card reader",
 	.default_value	= true,
-});
-
-static const struct sm_object debug_level = SM_DECLARE_ENUM({
-	.opt_name	= "debug_level",
-	.ui_name	= "Debug Level",
-	.ui_helptext	= "Set the verbosity of the debug output.",
-	.default_value	= 0,
-	.values		= (const struct sm_enum_value[]) {
-				{ "Emergency",		0		},
-				{ "Alert",		1		},
-				{ "Critical",		2		},
-				{ "Error",		3		},
-				{ "Warning",		4		},
-				{ "Notice",		5		},
-				{ "Info",		6		},
-				{ "Debug",		7		},
-				{ "Spew",		8		},
-				SM_ENUM_VALUE_END			},
 });
 
 #if CONFIG(EC_STARLABS_FAST_CHARGE)
@@ -79,13 +51,6 @@ static const struct sm_object microphone = SM_DECLARE_BOOL({
 	.ui_name	= "Microphone",
 	.ui_helptext	= "Enable or disable the built-in microphone",
 	.default_value	= true,
-});
-
-static const struct sm_object reboot_counter = SM_DECLARE_NUMBER({
-	.opt_name	= "reboot_counter",
-	.ui_name	= "Reboot Counter",
-	.flags		= CFR_OPTFLAG_SUPPRESS,
-	.default_value	= 0,
 });
 
 static const struct sm_object webcam = SM_DECLARE_BOOL({
@@ -171,9 +136,7 @@ static struct sm_obj_form pci = {
 static struct sm_obj_form coreboot = {
 	.ui_name = "coreboot",
 	.obj_list = (const struct sm_object *[]) {
-		&boot_option,
 		&debug_level,
-		&reboot_counter,
 		NULL
 	},
 };

@@ -2,6 +2,7 @@
 
 #include <boot/coreboot_tables.h>
 #include <commonlib/coreboot_tables.h>
+#include <console/cfr.h>
 #include <drivers/option/cfr_frontend.h>
 #include <ec/starlabs/merlin/cfr.h>
 #include <inttypes.h>
@@ -100,9 +101,7 @@ static struct sm_obj_form pci = {
 static struct sm_obj_form coreboot = {
 	.ui_name = "coreboot",
 	.obj_list = (const struct sm_object *[]) {
-		&boot_option,
 		&debug_level,
-		&reboot_counter,
 		NULL
 	},
 };

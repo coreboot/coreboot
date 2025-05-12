@@ -173,6 +173,8 @@ BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdSetupConOutRow=0
 BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdSetupConOutColumn=0
 endif
 
+BUILD_STR += --pcd gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiDefaultOemId="COREv4"
+
 bootloader = $(word 8,$(subst /, ,$(BUILD_STR)))
 
 ifneq ($(CONFIG_EDK2_CUSTOM_BUILD_PARAMS),)

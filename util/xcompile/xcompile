@@ -208,6 +208,9 @@ detect_special_flags() {
 	testcc "$GCC"      "$CFLAGS_GCC -Wcalloc-transposed-args" &&
 		CFLAGS_GCC="$CFLAGS_GCC -Wcalloc-transposed-args"
 
+	testcc "$GCC"	"$CFLAGS_GCC -Walloc-size" &&
+		CFLAGS_GCC="$CFLAGS_GCC -Walloc-size"
+
 	testcc "$GCC"      "$CFLAGS_GCC -Wno-unused-parameter" &&
 		CFLAGS_GCC="$CFLAGS_GCC -Wno-unused-parameter"
 

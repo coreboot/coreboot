@@ -80,3 +80,24 @@ void mtcmos_init(void)
 	for (i = 0; i < ARRAY_SIZE(pd_plat); i++)
 		mtcmos_power_on(&pd_plat[i]);
 }
+
+void mtcmos_protect_audio_bus(void)
+{
+	write32(&mtk_infracfg_ao->perisys_protect.clr, BIT(6));
+
+	/* AUDIO CG Clear */
+	clrbits32(&mtk_afe->audio_audio_top[0], 0x03364F80);
+	clrbits32(&mtk_afe->audio_audio_top[1], 0x00F000FF);
+	clrbits32(&mtk_afe->audio_audio_top[2], 0x01323000);
+	clrbits32(&mtk_afe->audio_audio_top[3], 0x03F00000);
+	clrbits32(&mtk_afe->audio_audio_top[4], 0x0000301F);
+}
+
+void mtcmos_protect_display_bus(void)
+{
+	write32(&mtk_infracfg_ao->mmsys_protect[0].clr, BIT(1) | BIT(0));
+
+	/* MMSYS_CONFIG CG Clear */
+	write32(&mtk_mmsys_config->mmsys_config_mmsys_cg_0_clr, 0xFF7FFFFF);
+	write32(&mtk_mmsys_config->mmsys_config_mmsys_cg_1_clr, 0x0000007B);
+}

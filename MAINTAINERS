@@ -329,7 +329,10 @@ M:	Angel Pons <th3fanbus@gmail.com>
 S:	Maintained
 F:	src/mainboard/gigabyte/ga-h61m-series/
 
-
+GOOGLE BLUEY MAINBOARDS
+M:	Subrata Banik <subratabanik@google.com>
+M:	Kapil Porwal <kapilporwal@google.com>
+F:	src/mainboard/google/bluey/
 
 GOOGLE REX MAINBOARDS
 M:	Subrata Banik <subratabanik@google.com>
@@ -977,11 +980,15 @@ S:	Maintained
 F:	src/soc/mediatek/mt8192/
 F:	src/vendorcode/mediatek/mt8192/
 
+QUALCOMM SOCS
+M:	Subrata Banik <subratabanik@google.com>
+M:	Kapil Porwal <kapilporwal@google.com>
+F:	src/soc/qualcomm/
+
 ORPHANED ARM SOCS
 S:	Orphan
 F:	src/cpu/armltd/
 F:	src/soc/ti/
-F:	src/soc/qualcomm/
 F:	src/soc/samsung/
 F:	util/exynos/
 F:	util/ipqheader/

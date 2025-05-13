@@ -10,13 +10,16 @@
 
 #define _BASE_TYPE_UFS _BASE_TYPE(0x1)
 #define _BASE_TYPE_NVME _BASE_TYPE(0x2)
+#define _BASE_TYPE_EMMC _BASE_TYPE(0x3)
 
 enum mtk_storage_type {
 	STORAGE_UNKNOWN		= 0,
+	STORAGE_UFS_22		= _BASE_TYPE_UFS | 0x220,
 	STORAGE_UFS_31		= _BASE_TYPE_UFS | 0x310,
 	STORAGE_UFS_40		= _BASE_TYPE_UFS | 0x400,
 	STORAGE_UFS_40_HS	= _BASE_TYPE_UFS | 0x401,
 	STORAGE_NVME		= _BASE_TYPE_NVME,
+	STORAGE_EMMC		= _BASE_TYPE_EMMC,
 };
 
 enum mtk_storage_type mainboard_get_storage_type(void);

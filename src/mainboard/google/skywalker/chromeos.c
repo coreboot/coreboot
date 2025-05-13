@@ -10,6 +10,7 @@ void setup_chromeos_gpios(void)
 {
 	gpio_input(GPIO_EC_AP_INT_ODL);
 	gpio_output(GPIO_AP_EC_WARM_RST_REQ, 0);
+	gpio_output(GPIO_XHCI_INIT_DONE, 0);
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)

@@ -33,6 +33,34 @@ void rtc_write(u16 addr, u16 wdata)
 	mt6685_write16(addr, wdata);
 }
 
+static u16 rtc_get_prot_stat(void)
+{
+	u16 val;
+	u16 state = 0;
+
+	udelay(100);
+
+	rtc_read(RTC_SPAR_MACRO, &val);
+
+	state = (val >> RTC_SPAR_PROT_STAT_SHIFT) & RTC_SPAR_PROT_STAT_MASK;
+
+	return state;
+}
+
+static bool mt6685_writeif_unlock(void)
+{
+	if (!retry(PROT_UNLOCK_RETRY_COUNT,
+		   rtc_writeif_unlock() &&
+		   rtc_get_prot_stat() == RTC_PROT_UNLOCK_SUCCESS)) {
+
+		printk(BIOS_ERR, "%s: retry failed!!\n", __func__);
+
+		return false;
+	}
+
+	return true;
+}
+
 static bool rtc_eosc_check_clock(const struct rtc_clk_freq *result)
 {
 	if ((result->fqm26m_ck >= 3 && result->fqm26m_ck <= 7) &&
@@ -319,7 +347,7 @@ static bool rtc_init_after_recovery(void)
 	/* write powerkeys */
 	if (!rtc_powerkey_init())
 		return false;
-	if (!rtc_writeif_unlock())
+	if (!mt6685_writeif_unlock())
 		return false;
 	if (!rtc_gpio_init())
 		return false;
@@ -332,7 +360,7 @@ static bool rtc_init_after_recovery(void)
 
 	if (!rtc_powerkey_init())
 		return false;
-	if (!rtc_writeif_unlock())
+	if (!mt6685_writeif_unlock())
 		return false;
 
 	secure_rtc_init();
@@ -366,9 +394,9 @@ static bool rtc_first_boot_init(void)
 	if (!rtc_write_trigger())
 		return false;
 
-	if (!rtc_writeif_unlock()) {
+	if (!mt6685_writeif_unlock()) {
 		printk(BIOS_ERR,
-		       "%s: rtc_writeif_unlock failed after BBPU written\n", __func__);
+		       "%s: mt6685_writeif_unlock failed after BBPU written\n", __func__);
 		return false;
 	}
 
@@ -387,9 +415,9 @@ static bool rtc_first_boot_init(void)
 		return false;
 	}
 
-	if (!rtc_writeif_unlock()) {
+	if (!mt6685_writeif_unlock()) {
 		printk(BIOS_ERR,
-		       "%s: rtc_writeif_unlock failed after POWERKEY written\n", __func__);
+		       "%s: mt6685_writeif_unlock failed after POWERKEY written\n", __func__);
 		return false;
 	}
 
@@ -402,9 +430,9 @@ static bool rtc_first_boot_init(void)
 		return false;
 	}
 
-	if (!rtc_writeif_unlock()) {
+	if (!mt6685_writeif_unlock()) {
 		printk(BIOS_ERR,
-		       "%s rtc_writeif_unlock failed after BBPU written\n", __func__);
+		       "%s mt6685_writeif_unlock failed after BBPU written\n", __func__);
 		return false;
 	}
 
@@ -418,9 +446,9 @@ static bool rtc_first_boot_init(void)
 		return false;
 	}
 
-	if (!rtc_writeif_unlock()) {
+	if (!mt6685_writeif_unlock()) {
 		printk(BIOS_ERR,
-		       "%s rtc_writeif_unlock failed after POWERKEY written\n", __func__);
+		       "%s mt6685_writeif_unlock failed after POWERKEY written\n", __func__);
 		return false;
 	}
 
@@ -444,8 +472,8 @@ static void rtc_enable_dcxo(void)
 	u16 con, osc32con, sec;
 
 	/* Unlock for reload */
-	if (!rtc_writeif_unlock())
-		printk(BIOS_ERR, "rtc_writeif_unlock() failed\n");
+	if (!mt6685_writeif_unlock())
+		printk(BIOS_ERR, "mt6685_writeif_unlock() failed\n");
 
 	rtc_read(RTC_BBPU, &rdata);
 	rtc_write(RTC_BBPU, rdata | RTC_BBPU_KEY | RTC_BBPU_RELOAD);
@@ -525,7 +553,7 @@ void rtc_boot(void)
 	rtc_read(RTC_BBPU, &rtc_bbpu);
 	rtc_write(RTC_BBPU, rtc_bbpu | RTC_BBPU_KEY | RTC_BBPU_RELOAD);
 
-	if (!rtc_write_trigger() || !rtc_writeif_unlock()) {
+	if (!rtc_write_trigger() || !mt6685_writeif_unlock()) {
 		rtc_recovery_flow();
 	} else {
 		rtc_read(RTC_POWERKEY1, &rtc_pwrkey1);

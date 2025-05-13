@@ -19,8 +19,19 @@ __weak void mtcmos_set_scpd_ext_buck_iso(const struct power_domain_data *pd)
 	/* do nothing */
 }
 
+static void release_bus_protection(const struct power_domain_data *pd)
+{
+	int i;
+
+	for (i = 0; i < pd->bp_steps; i++)
+		write32(pd->bp_table[i].clr_addr, pd->bp_table[i].mask);
+}
+
 void mtcmos_power_on(const struct power_domain_data *pd)
 {
+	u32 *pwr_status;
+	u32 *pwr_status_2nd;
+
 	write32(&mtk_spm->poweron_config_set,
 		(SPM_PROJECT_CODE << 16) | (1U << 0));
 
@@ -30,8 +41,16 @@ void mtcmos_power_on(const struct power_domain_data *pd)
 	setbits32(pd->pwr_con, PWR_ON);
 	setbits32(pd->pwr_con, PWR_ON_2ND);
 
-	while (!(read32(&mtk_spm->pwr_status) & pd->pwr_sta_mask) ||
-	       !(read32(&mtk_spm->pwr_status_2nd) & pd->pwr_sta_mask))
+	if ((pd->pwr_status != NULL) && (pd->pwr_status_2nd != NULL)) {
+		pwr_status = pd->pwr_status;
+		pwr_status_2nd = pd->pwr_status_2nd;
+	} else {
+		pwr_status = &mtk_spm->pwr_status;
+		pwr_status_2nd = &mtk_spm->pwr_status_2nd;
+	}
+
+	while (!(read32(pwr_status) & pd->pwr_sta_mask) ||
+	       !(read32(pwr_status_2nd) & pd->pwr_sta_mask))
 		continue;
 
 	clrbits32(pd->pwr_con, PWR_CLK_DIS);
@@ -47,6 +66,8 @@ void mtcmos_power_on(const struct power_domain_data *pd)
 		udelay(1);
 		clrbits32(pd->pwr_con, SRAM_CKISO);
 	}
+
+	release_bus_protection(pd);
 }
 
 void mtcmos_display_power_on(void)

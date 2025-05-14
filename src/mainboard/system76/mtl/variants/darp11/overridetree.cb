@@ -1,0 +1,115 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/intel/meteorlake
+	device domain 0 on
+		subsystemid 0x1558 0xa743 inherit
+
+		device ref tbt_pcie_rp0 on end
+		device ref tcss_xhci on
+			register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
+			register "tcss_ports[1]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
+			# TCP2 is used as HDMI
+			# TCP3 is not used
+			chip drivers/usb/acpi
+				device ref tcss_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""TBT Type-C""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						device ref tcss_usb3_port0 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB Type-C""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						device ref tcss_usb3_port1 on end
+					end
+				end
+			end
+		end
+		device ref tcss_dma0 on end
+		device ref xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_MID(OC_SKIP),	/* J_AUD1 / AJ_USB3_1 */
+				[1] = USB2_PORT_MID(OC_SKIP),	/* J_TYPEC1 */
+				[2] = USB2_PORT_MID(OC_SKIP),	/* J_USB3_1 */
+				[5] = USB2_PORT_MID(OC_SKIP),	/* TBT */
+				[6] = USB2_PORT_MID(OC_SKIP),	/* Camera */
+				[9] = USB2_PORT_MID(OC_SKIP),	/* Bluetooth */
+			}"
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC_SKIP),	/* J_AUD1 / AJ_USB3_1 */
+				[1] = USB3_PORT_DEFAULT(OC_SKIP),	/* J_USB3_1 */
+			}"
+		end
+		device ref i2c0 on
+			# Touchpad I2C bus
+			register "serial_io_i2c_mode[PchSerialIoIndexI2C0]" = "PchSerialIoPci"
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN0412""
+				register "generic.desc" = ""ELAN Touchpad""
+				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_B00)"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 15 on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""FTCS1000""
+				register "generic.desc" = ""FocalTech Touchpad""
+				register "generic.irq_gpio" = "ACPI_GPIO_IRQ_LEVEL_LOW(GPP_B00)"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 38 on end
+			end
+		end
+		device ref pcie_rp5 on
+			# GLAN
+			register "pcie_rp[PCH_RP(5)]" = "{
+				.clk_src = 2,
+				.clk_req = 2,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_SRC_UNUSED,
+			}"
+			register "pcie_clk_config_flag[2]" = "PCIE_CLK_FREE_RUNNING"
+			device pci 00.0 on end
+		end
+		device ref pcie_rp6 on
+			# Card Reader
+			register "pcie_rp[PCH_RP(6)]" = "{
+				.clk_src = 3,
+				.clk_req = 3,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+		device ref pcie_rp8 on
+			# WLAN
+			register "pcie_rp[PCH_RP(8)]" = "{
+				.clk_src = 5,
+				.clk_req = 5,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/E 2230 (J_WLAN1)" "SlotDataBusWidth1X"
+		end
+		device ref pcie_rp10 on
+			# SSD2
+			# XXX: Schematics show RP[13:16] used
+			register "pcie_rp[PCH_RP(10)]" = "{
+				.clk_src = 8,
+				.clk_req = 8,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD2)" "SlotDataBusWidth4X"
+		end
+		device ref pcie_rp11 on
+			# SSD1
+			# XXX: Schematics show RP[17:20] used
+			register "pcie_rp[PCH_RP(11)]" = "{
+				.clk_src = 7,
+				.clk_req = 7,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD1)" "SlotDataBusWidth4X"
+		end
+		device ref hda on
+			subsystemid 0x1558 0xa763
+		end
+		device ref gbe on end
+	end
+end

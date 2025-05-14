@@ -40,4 +40,9 @@ void baseboard_devtree_update(void);
 /* Modify devictree settings during ramstage by dedicated variant */
 void variant_devtree_update(void);
 
-#endif /*__BASEBOARD_VARIANTS_H__ */
+enum variant_board_id {
+	BOARD_ID_DDR5 = 0x20,
+	BOARD_ID_LP5X = 0x21,
+};
+
+#endif /* __BASEBOARD_VARIANTS_H__ */

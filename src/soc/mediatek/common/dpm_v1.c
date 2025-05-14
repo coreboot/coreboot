@@ -3,7 +3,6 @@
 #include <device/mmio.h>
 #include <soc/dpm_v1.h>
 #include <soc/mcu_common.h>
-#include <soc/symbols.h>
 
 static struct mtk_mcu dpm_mcu[] = {
 	{
@@ -16,6 +15,7 @@ static struct mtk_mcu dpm_mcu[] = {
 		.priv = mtk_dpm,
 		.reset = dpm_reset,
 	},
+	{},
 };
 
 void dpm_reset(struct mtk_mcu *mcu)
@@ -32,9 +32,6 @@ void dpm_reset(struct mtk_mcu *mcu)
 
 int dpm_init(void)
 {
-	int i;
-	struct mtk_mcu *dpm;
-
 	if (CONFIG(DPM_FOUR_CHANNEL))
 		if (dpm_4ch_init())
 			return -1;
@@ -42,13 +39,8 @@ int dpm_init(void)
 	/* config DPM SRAM layout */
 	clrsetbits32(&mtk_dpm->sw_rstn, DPM_MEM_RATIO_MASK, DPM_MEM_RATIO_CFG1);
 
-	for (i = 0; i < ARRAY_SIZE(dpm_mcu); i++) {
-		dpm = &dpm_mcu[i];
-		dpm->load_buffer = _dram_dma;
-		dpm->buffer_size = REGION_SIZE(dram_dma);
-		if (mtk_init_mcu(dpm))
-			return -1;
-	}
+	if (dpm_init_mcu(dpm_mcu))
+		return -1;
 
 	if (CONFIG(DPM_FOUR_CHANNEL))
 		if (dpm_4ch_para_setting())

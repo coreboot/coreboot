@@ -4,7 +4,7 @@
 #define __SOC_MEDIATEK_COMMON_DPM_V2_H__
 
 #include <soc/addressmap.h>
-#include <soc/mcu_common.h>
+#include <soc/dpm_common.h>
 
 #define DPM_RST_OFFSET		0x7074
 #define DPM_SW_RSTN		BIT(0)
@@ -15,8 +15,5 @@
 #define DRAMC_WBR		(INFRACFG_AO_BASE + 0x0b4)
 
 #define ENABLE_DRAMC_WBR_MASK	0x2ffff
-
-void dpm_reset(struct mtk_mcu *mcu);
-int dpm_init(void);
 
 #endif  /* __SOC_MEDIATEK_COMMON_DPM_V2_H__ */

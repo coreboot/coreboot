@@ -58,6 +58,7 @@ ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += ../common/bl31.c
 ramstage-y += dcc.c
 ramstage-y += ddp.c
 ramstage-y += ../common/display.c
+ramstage-y += ../common/dpm.c
 ramstage-y += ../common/dpm_v2.c
 ramstage-y += ../common/dp/dptx_common.c ../common/dp/dptx_hal_common.c
 ramstage-y += dptx.c dptx_hal.c dp_intf.c

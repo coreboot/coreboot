@@ -510,8 +510,8 @@ build_config()
 
 	export HOSTCC='gcc'
 
-		printf "%s doesn't support ChromeOS, skipping.\n" "${BUILD_NAME}"
 	if [[ "${chromeos}" = true ]] && [[ "$(grep -c "^[[:space:]]*select[[:space:]]*MAINBOARD_HAS_CHROMEOS>" "${ROOT}/src/mainboard/${board_srcdir}/Kconfig")" -eq 0 ]]; then
+		printf "%s doesn't support ChromeOS, skipping.\n" "${BUILD_NAME}"
 		return
 	fi
 
@@ -930,8 +930,8 @@ if [[ -n "$1" ]]; then
 	printf "Invalid option '%s'\n\n" "$1"; myhelp; exit 1;
 fi
 
-	printf "Please specify a valid, non-root build directory.\n"
 if [[ -z "${TARGET}" ]] || [[ "${TARGET}" = "/" ]]; then
+	printf "Please specify a valid, non-root build directory.\n"
 	exit 1
 fi
 
@@ -1039,13 +1039,13 @@ build_targets()
 	fi
 
 	if [[ "${scanbuild}" = "true" ]]; then
-		mv "${scanbuild_out}tmp/"* "${scanbuild_out}"
+		mv "${scanbuild_out}"tmp/* "${scanbuild_out}"
 		rmdir "${scanbuild_out}tmp"
 	fi
-	cpus_per_target=$(((${cpus:-1} + num_targets - 1) / num_targets))
-	printf "%s\n" "${targets}" | xargs -P "${cpus:-0}" -n 1 "$0" "${cmdline[@]}" -I -c "${cpus_per_target}" -t
 	rm -rf "${TARGET}/temp" "${TMPCFG}"
 	num_targets=$(wc -w <<<"${targets}")
+	cpus_per_target=$(((${cpus:-1} + num_targets - 1) / num_targets))
+	printf "%s\n" "${targets}" | xargs -P "${cpus:-0}" -n 1 "$0" "${cmdline[@]}" -I -c "${cpus_per_target}" -t
 }
 fi
 

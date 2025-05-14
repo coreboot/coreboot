@@ -91,7 +91,7 @@ chip soc/intel/alderlake
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"    # User Facing Camera
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"    # World Facing Camera
 
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3/2 Type A port A0
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC1)"	# USB3/2 Type A port A0
 
 	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
 	register "tcss_ports[1]" = "TCSS_PORT_DEFAULT(OC_SKIP)"

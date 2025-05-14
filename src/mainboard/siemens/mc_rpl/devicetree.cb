@@ -41,12 +41,6 @@ chip soc/intel/alderlake
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC0)"	# USB3/2 Type A port3
 	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# M.2 WWAN
 
-	# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
-	register "gen1_dec" = "0x00fc0801"
-	register "gen2_dec" = "0x000c0201"
-	# EC memory map range is 0x900-0x9ff
-	register "gen3_dec" = "0x00fc0901"
-
 	# Enable PCH PCIE RP 5 using CLK 2
 	register "pch_pcie_rp[PCH_RP(5)]" = "{
 		.clk_src = 2,

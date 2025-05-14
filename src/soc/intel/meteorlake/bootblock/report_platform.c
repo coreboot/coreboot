@@ -22,6 +22,7 @@ static struct {
 	{ CPUID_METEORLAKE_A0_2, "MeteorLake A0" },
 	{ CPUID_METEORLAKE_B0,   "MeteorLake B0" },
 	{ CPUID_METEORLAKE_C0,   "MeteorLake C0" },
+	{ CPUID_ARROWLAKE_H_A0,   "ArrowLake-H A0" },
 };
 
 static struct {
@@ -34,6 +35,8 @@ static struct {
 	{ PCI_DID_INTEL_MTL_P_ID_3, "MeteorLake P" },
 	{ PCI_DID_INTEL_MTL_P_ID_4, "MeteorLake P" },
 	{ PCI_DID_INTEL_MTL_P_ID_5, "MeteorLake P" },
+	{ PCI_DID_INTEL_ARL_H_ID_1, "ArrowLake-H" },
+	{ PCI_DID_INTEL_ARL_H_ID_2, "ArrowLake-H" },
 };
 
 static struct {
@@ -48,6 +51,9 @@ static struct {
 	{ PCI_DID_INTEL_MTL_ESPI_5, "MeteorLake SOC" },
 	{ PCI_DID_INTEL_MTL_ESPI_6, "MeteorLake SOC" },
 	{ PCI_DID_INTEL_MTL_ESPI_7, "MeteorLake SOC" },
+	{ PCI_DID_INTEL_ARL_H_ESPI_0, "ArrowLake-H SOC" },
+	{ PCI_DID_INTEL_ARL_H_ESPI_1, "ArrowLake-H SOC" },
+	{ PCI_DID_INTEL_ARL_U_ESPI_0, "ArrowLake-U SOC" },
 };
 
 static struct {
@@ -60,6 +66,8 @@ static struct {
 	{ PCI_DID_INTEL_MTL_P_GT2_3, "MeteorLake-P GT2" },
 	{ PCI_DID_INTEL_MTL_P_GT2_4, "Meteorlake-P GT2" },
 	{ PCI_DID_INTEL_MTL_P_GT2_5, "Meteorlake-P GT2" },
+	{ PCI_DID_INTEL_ARL_H_GT2_1, "ArrowLake-H GT2" },
+	{ PCI_DID_INTEL_ARL_H_GT2_2, "ArrowLake-H GT2" },
 };
 
 static inline uint8_t get_dev_revision(pci_devfn_t dev)

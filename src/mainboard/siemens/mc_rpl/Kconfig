@@ -2,7 +2,7 @@
 
 config BOARD_SIEMENS_BASEBOARD_MC_RPL
 	def_bool n
-	select BOARD_ROMSIZE_KB_32768
+	select BOARD_ROMSIZE_KB_16384
 	select CPU_INTEL_SOCKET_LGA1700
 	select DRIVERS_I2C_GENERIC
 	select DRIVERS_I2C_HID
@@ -78,6 +78,9 @@ config DEVICETREE
 
 config OVERRIDE_DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
+
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/mc_rpl.fmd"
 
 choice
 	prompt "ON BOARD EC"

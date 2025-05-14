@@ -1039,7 +1039,7 @@ void dt_read_cell_props(const struct device_tree_node *node, u32 *addrcp,
 }
 
 static struct device_tree_node *_dt_find_node(struct device_tree_node *parent,
-					      const char **path, u32 *addrcp,
+					      const char *const *path, u32 *addrcp,
 					      u32 *sizecp, int create)
 {
 	struct device_tree_node *node, *found = NULL;
@@ -1091,7 +1091,7 @@ static struct device_tree_node *_dt_find_node(struct device_tree_node *parent,
  * @return		The found/created node, or NULL.
  */
 struct device_tree_node *dt_find_node(struct device_tree_node *parent,
-				      const char **path, u32 *addrcp,
+				      const char *const *path, u32 *addrcp,
 				      u32 *sizecp, int create)
 {
 	/* Initialize cells to default values according to FDT spec. */

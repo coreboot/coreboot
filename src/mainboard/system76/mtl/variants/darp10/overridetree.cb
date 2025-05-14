@@ -5,7 +5,26 @@ chip soc/intel/meteorlake
 		subsystemid 0x1558 0xa743 inherit
 
 		device ref tbt_pcie_rp0 on end
-		device ref tcss_xhci on end
+		device ref tcss_xhci on
+			register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
+			register "tcss_ports[1]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
+			# TCP2 is used as HDMI
+			# TCP3 is not used
+			chip drivers/usb/acpi
+				device ref tcss_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""TBT Type-C""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						device ref tcss_usb3_port0 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB Type-C""
+						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						device ref tcss_usb3_port1 on end
+					end
+				end
+			end
+		end
 		device ref tcss_dma0 on end
 		device ref xhci on
 			register "usb2_ports" = "{

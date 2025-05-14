@@ -463,3 +463,11 @@ config CSE_RESET_CLEAR_EC_AP_IDLE_FLAG
 	  Select this if the variant is a Chromebox/base. This allows AP to direct EC
 	  to clear AP_IDLE flag before triggering reset to make sure AP can boot up
 	  after reset.
+
+config CSE_DEFAULT_CFR_OPTION_STATE_DISABLED
+	bool
+	default n
+	help
+	  Mainboards can select this if using the CFR option backend to configure
+	  the ME operational state and want the default state to be disabled.
+	  If not selected, the default state will be enabled.

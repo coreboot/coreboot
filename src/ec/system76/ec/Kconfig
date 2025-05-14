@@ -6,16 +6,22 @@ config EC_SYSTEM76_EC
 	  System76 EC
 
 config EC_SYSTEM76_EC_BAT_THRESHOLDS
-	depends on EC_SYSTEM76_EC
 	bool
 	default y
+	depends on EC_SYSTEM76_EC
+
+config EC_SYSTEM76_EC_FAN2
+	bool
+	default n
+	depends on EC_SYSTEM76_EC
 
 config EC_SYSTEM76_EC_DGPU
-	depends on EC_SYSTEM76_EC
 	bool
 	default n
+	select EC_SYSTEM76_EC_FAN2
+	depends on EC_SYSTEM76_EC
 
 config EC_SYSTEM76_EC_OLED
-	depends on EC_SYSTEM76_EC
 	bool
 	default n
+	depends on EC_SYSTEM76_EC

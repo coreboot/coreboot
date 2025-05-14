@@ -57,6 +57,36 @@ static const struct {
 	{ PCI_DID_INTEL_JSL_ID_6, JSL_N6005_10W_CORE, TDP_10W },
 };
 
+/* Gfx related */
+enum igd_dvmt50_pre_alloc {
+	IGD_SM_0MB = 0x00,
+	IGD_SM_32MB = 0x01,
+	IGD_SM_64MB = 0x02,
+	IGD_SM_96MB = 0x03,
+	IGD_SM_128MB = 0x04,
+	IGD_SM_160MB = 0x05,
+	IGD_SM_4MB = 0xF0,
+	IGD_SM_8MB = 0xF1,
+	IGD_SM_12MB = 0xF2,
+	IGD_SM_16MB = 0xF3,
+	IGD_SM_20MB = 0xF4,
+	IGD_SM_24MB = 0xF5,
+	IGD_SM_28MB = 0xF6,
+	IGD_SM_36MB = 0xF8,
+	IGD_SM_40MB = 0xF9,
+	IGD_SM_44MB = 0xFA,
+	IGD_SM_48MB = 0xFB,
+	IGD_SM_52MB = 0xFC,
+	IGD_SM_56MB = 0xFD,
+	IGD_SM_60MB = 0xFE,
+};
+
+enum igd_aperture_size {
+	IGD_AP_SZ_128MB = 0x00,
+	IGD_AP_SZ_256MB = 0x01,
+	IGD_AP_SZ_512MB = 0x02,
+};
+
 struct soc_intel_jasperlake_config {
 	/* Common struct containing soc config data required by common code */
 	struct soc_intel_common_config common_soc_config;

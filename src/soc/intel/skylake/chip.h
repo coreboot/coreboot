@@ -30,6 +30,21 @@ enum skylake_i2c_voltage {
 	I2C_VOLTAGE_1V8
 };
 
+/* Gfx related */
+enum igd_dvmt50_pre_alloc {
+	IGD_SM_0MB = 0x00,
+	IGD_SM_32MB = 0x01,
+	IGD_SM_64MB = 0x02,
+	IGD_SM_96MB = 0x03,
+	IGD_SM_128MB = 0x04,
+};
+
+enum igd_aperture_size {
+	IGD_AP_SZ_128MB = 0x00,
+	IGD_AP_SZ_256MB = 0x01,
+	IGD_AP_SZ_512MB = 0x02,
+};
+
 struct soc_intel_skylake_config {
 	/* Common struct containing soc config data required by common code */
 	struct soc_intel_common_config common_soc_config;

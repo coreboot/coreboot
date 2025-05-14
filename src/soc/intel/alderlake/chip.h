@@ -483,6 +483,19 @@ struct soc_intel_alderlake_config {
 		IGD_SM_60MB = 0xFE,
 	} igd_dvmt50_pre_alloc;
 
+	enum {
+		IGD_AP_SZ_128MB = 0x00,
+		IGD_AP_SZ_256MB = 0x01,
+		IGD_AP_SZ_512MB = 0x02,
+		/*
+		 * Values below require use of above 4G MMIO,
+		 * otherwise FSP will hang
+		 */
+		IGD_AP_SZ_4G_512MB = 0x03,
+		IGD_AP_SZ_4G_1024MB = 0x07,
+		IGD_AP_SZ_4G_2048MB = 0x15,
+	} igd_aperture_size;
+
 	bool skip_ext_gfx_scan;
 	bool eist_enable;
 	bool enable_c6dram;

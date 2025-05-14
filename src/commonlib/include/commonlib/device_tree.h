@@ -154,8 +154,9 @@ void dt_read_cell_props(const struct device_tree_node *node, u32 *addrcp,
 			u32 *sizecp);
 /* Look up or create a node relative to a parent node, through its path
    represented as an array of strings. */
-struct device_tree_node *dt_find_node(struct device_tree_node *parent, const char **path,
-			     u32 *addrcp, u32 *sizecp, int create);
+struct device_tree_node *dt_find_node(struct device_tree_node *parent,
+				      const char *const *path, u32 *addrcp,
+				      u32 *sizecp, int create);
 struct device_tree_node *dt_find_node_by_phandle(struct device_tree_node *root,
 						 uint32_t phandle);
 /* Look up or create a node in the tree, through its path

@@ -25,6 +25,7 @@
 #include <cpu/intel/cpu_ids.h>
 #include <string.h>
 #include <security/intel/txt/txt.h>
+#include <security/vboot/vboot_common.h>
 #include <soc/pcr_ids.h>
 
 #define PSF_UFS0_BASE_ADDRESS  0x280
@@ -172,6 +173,13 @@ void cse_board_reset(void)
 	early_graphics_stop();
 }
 
+#if (CONFIG(VBOOT_EC_SYNC_ESOL))
+void vboot_show_ec_sync_esol(void)
+{
+	ux_inform_user_of_update_operation("EC software sync");
+}
+#endif
+
 void mainboard_romstage_entry(void)
 {
 	struct chipset_power_state *ps = pmc_get_power_state();
@@ -193,6 +201,9 @@ void mainboard_romstage_entry(void)
 	 */
 	if (!CONFIG(INTEL_TXT))
 		disable_intel_txt();
+
+	if (CONFIG(VBOOT_EARLY_EC_SYNC) && CONFIG(VBOOT_EC_SYNC_ESOL))
+		vboot_sync_ec();
 
 	/* Program to Disable UFS Controllers */
 	if (!is_devfn_enabled(PCH_DEVFN_UFS) &&

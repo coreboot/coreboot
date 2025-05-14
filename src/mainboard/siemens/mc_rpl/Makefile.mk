@@ -3,14 +3,9 @@
 subdirs-y += spd
 
 bootblock-y += bootblock.c
-ifeq ($(CONFIG_SOC_INTEL_ALDERLAKE_PCH_N),y)
-bootblock-y += early_gpio_n.c
-ramstage-y += gpio_n.c
-else
 bootblock-y += early_gpio.c
-ramstage-y += gpio.c
-endif
 
+ramstage-y += gpio.c
 romstage-y += romstage_fsp_params.c
 romstage-y += board_id.c
 romstage-y += memory.c

@@ -1,0 +1,406 @@
+fw_config
+	field AUDIO 8 10
+		option NONE 0
+		option ADL_MAX98373_ALC5682I_I2S 1
+	end
+end
+chip soc/intel/alderlake
+
+	# GPE configuration
+	# Note that GPE events called out in ASL code rely on this
+	# route. i.e. If this route changes then the affected GPE
+	# offset bits also need to be changed.
+	register "pmc_gpe0_dw0" = "GPP_B"
+	register "pmc_gpe0_dw1" = "GPP_D"
+	register "pmc_gpe0_dw2" = "GPP_E"
+
+	# FSP configuration
+	register "usb2_ports[0]" = "USB2_PORT_MID(OC1)"	# Type-C port 0
+	register "usb2_ports[1]" = "USB2_PORT_MID(OC1)"	# Type-C port 1
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)" # M.2 WLAN
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)" # M.2 WWAN
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC2)"	# Type-A port 1
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC2)"	# Type-A port 2
+	register "usb2_ports[6]" = "USB2_PORT_MID(OC0)"	# USB3/2 Type A port1
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC0)"	# USB3/2 Type A port2
+	register "usb2_ports[8]" = "USB2_PORT_MID(OC3)"	# USB3/2 Type A port3
+	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)" # Bluetooth
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC2)" # Type-A port 1
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC2)" # Type-A port 2
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)" # M.2 WWAN
+	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)" # M.2 WLAN
+
+	# Sagv Configuration
+	register "sagv" = "SaGv_Enabled"
+
+	# Enable CNVi Bluetooth
+	register "cnvi_bt_core" = "true"
+
+	# EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
+	register "gen1_dec" = "0x00fc0801"
+	register "gen2_dec" = "0x000c0201"
+	# EC memory map range is 0x900-0x9ff
+	register "gen3_dec" = "0x00fc0901"
+
+	#Enable PCH PCIE RP 4 using CLK 5
+	register "pch_pcie_rp[PCH_RP(4)]" = "{
+		.clk_src = 5,
+		.clk_req = 5,
+		.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR,
+		.PcieRpL1Substates = L1_SS_L1_2,
+	}"
+
+	# Enable PCH PCIE RP 5 using CLK 2
+	register "pch_pcie_rp[PCH_RP(5)]" = "{
+		.clk_src = 2,
+		.clk_req = 2,
+		.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR,
+		.PcieRpL1Substates = L1_SS_L1_2,
+	}"
+
+	# Enable PCH PCIE RP 9 using CLK 3
+	register "pch_pcie_rp[PCH_RP(9)]" = "{
+		.clk_src = 3,
+		.clk_req = 3,
+		.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR,
+		.PcieRpL1Substates = L1_SS_L1_2,
+	}"
+
+	#Enable PCH PCIE RP 10 using CLK 1
+	register "pch_pcie_rp[PCH_RP(10)]" = "{
+		.clk_src = 1,
+		.clk_req = 1,
+		.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR,
+		.PcieRpL1Substates = L1_SS_L1_2,
+	}"
+
+	# Hybrid storage mode
+	register "hybrid_storage_mode" = "true"
+
+	# Enable CPU PCIE RP 1 using CLK 0
+	register "cpu_pcie_rp[CPU_RP(1)]" = "{
+		.clk_req = 0,
+		.clk_src = 0,
+		.flags = PCIE_RP_LTR | PCIE_RP_AER,
+	}"
+
+	# Enable EDP in PortA
+	register "ddi_portA_config" = "1"
+	# Enable HDMI in Port B
+	register "ddi_ports_config" = "{
+		[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+	}"
+
+	# TCSS USB3
+	register "tcss_aux_ori" = "0"
+
+	register "s0ix_enable" = "true"
+
+	register "serial_io_i2c_mode" = "{
+		[PchSerialIoIndexI2C0] = PchSerialIoPci,
+		[PchSerialIoIndexI2C1] = PchSerialIoPci,
+		[PchSerialIoIndexI2C2] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C3] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C4] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C5] = PchSerialIoPci,
+	}"
+
+	register "serial_io_gspi_mode" = "{
+		[PchSerialIoIndexGSPI0] = PchSerialIoPci,
+		[PchSerialIoIndexGSPI1] = PchSerialIoPci,
+		[PchSerialIoIndexGSPI2] = PchSerialIoDisabled,
+		[PchSerialIoIndexGSPI3] = PchSerialIoDisabled,
+	}"
+
+	register "serial_io_gspi_cs_mode" = "{
+		[PchSerialIoIndexGSPI0] = 0,
+		[PchSerialIoIndexGSPI1] = 1,
+		[PchSerialIoIndexGSPI2] = 0,
+		[PchSerialIoIndexGSPI3] = 0,
+	}"
+
+	register "serial_io_gspi_cs_state" = "{
+		[PchSerialIoIndexGSPI0] = 0,
+		[PchSerialIoIndexGSPI1] = 0,
+		[PchSerialIoIndexGSPI2] = 0,
+		[PchSerialIoIndexGSPI3] = 0,
+	}"
+
+	register "serial_io_uart_mode" = "{
+		[PchSerialIoIndexUART0] = PchSerialIoSkipInit,
+		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
+		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
+	}"
+
+	# HD Audio
+	register "pch_hda_dsp_enable" = "1"
+	register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
+	register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
+	register "pch_hda_idisp_codec_enable" = "1"
+
+	# Intel Common SoC Config
+	register "common_soc_config" = "{
+		.gspi[1] = {
+			.speed_mhz = 1,
+			.early_init = 1,
+		},
+		.i2c[0] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[1] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[2] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[3] = {
+			.speed = I2C_SPEED_FAST,
+		},
+		.i2c[5] = {
+			.speed = I2C_SPEED_FAST,
+		},
+	}"
+
+	device domain 0 on
+		device ref pcie5_0 on end
+		device ref igpu on end
+		device ref dtt on end
+		device ref ipu on
+			chip drivers/intel/mipi_camera
+				register "acpi_uid" = "0x50000"
+				register "acpi_name" = ""IPU0""
+				register "device_type" = "INTEL_ACPI_CAMERA_CIO2"
+
+				register "cio2_num_ports" = "2"
+				register "cio2_lanes_used" = "{2,2}"
+				register "cio2_lane_endpoint[0]" = ""^I2C5.CAM1""
+				register "cio2_lane_endpoint[1]" = ""^I2C1.CAM0""
+				register "cio2_prt[0]" = "2"
+				register "cio2_prt[1]" = "1"
+				device generic 0 on end
+			end
+		end
+		device ref pcie4_0 on end
+		device ref pcie4_1 on end
+		device ref tbt_pcie_rp0 on end
+		device ref tbt_pcie_rp1 on end
+		device ref tcss_xhci on
+			chip drivers/usb/acpi
+				register "type" = "UPC_TYPE_HUB"
+				device ref tcss_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""TypeC Port 1""
+						device ref tcss_usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""TypeC Port 2""
+						device ref tcss_usb3_port2 on end
+					end
+				end
+			end
+		end
+		device ref tcss_dma0 on end
+		device ref xhci on
+			chip drivers/usb/acpi
+				register "desc" = ""Root Hub""
+				register "type" = "UPC_TYPE_HUB"
+				device ref xhci_root_hub on
+					chip drivers/usb/acpi
+						register "desc" = ""Bluetooth""
+						register "type" = "UPC_TYPE_INTERNAL"
+						device ref usb2_port10 on end
+					end
+				end
+			end
+		end
+		device ref cnvi_wifi on
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				device generic 0 on end
+			end
+		end
+		device ref i2c0 on
+			chip drivers/i2c/generic
+				register "hid" = ""10EC5682""
+				register "name" = ""RT58""
+				register "desc" = ""Headset Codec""
+				register "irq" = "ACPI_IRQ_EDGE_HIGH(GPP_H3_IRQ)"
+				# Set the jd_src to RT5668_JD1 for jack detection
+				register "property_count" = "1"
+				register "property_list[0].type" = "ACPI_DP_TYPE_INTEGER"
+				register "property_list[0].name" = ""realtek,jd-src""
+				register "property_list[0].integer" = "1"
+				device i2c 1a on
+					probe AUDIO ADL_MAX98373_ALC5682I_I2S
+				end
+			end
+			chip drivers/i2c/max98373
+				register "vmon_slot_no" = "0"
+				register "imon_slot_no" = "1"
+				register "uid" = "0"
+				register "desc" = ""Right Speaker Amp""
+				register "name" = ""MAXR""
+				device i2c 31 on
+					probe AUDIO ADL_MAX98373_ALC5682I_I2S
+				end
+			end
+			chip drivers/i2c/max98373
+				register "vmon_slot_no" = "2"
+				register "imon_slot_no" = "3"
+				register "uid" = "1"
+				register "desc" = ""Left Speaker Amp""
+				register "name" = ""MAXL""
+				device i2c 32 on
+					probe AUDIO ADL_MAX98373_ALC5682I_I2S
+				end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""WACOM PWB-D893""
+				register "generic.desc" = ""WACOM Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_F18_IRQ)"
+				register "generic.probed" = "1"
+				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F17)"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_F7)"
+				register "generic.enable_delay_ms" = "1"
+				register "generic.reset_delay_ms" = "300"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 0a on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN0000""
+				register "generic.desc" = ""ELAN Touchpad""
+				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_D11_IRQ)"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H1)"
+				register "generic.wake" = "GPE0_DW1_11"
+				register "generic.detect" = "1"
+				register "generic.has_power_resource" = "1"
+				device i2c 15 on end
+			end
+		end
+		device ref i2c1 on
+			chip drivers/intel/mipi_camera
+				register "acpi_hid" = ""OVTI5675""
+				register "acpi_uid" = "0"
+				register "acpi_name" = ""CAM0""
+				register "chip_name" = ""Ov 5675 Camera""
+				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
+
+				register "ssdb.lanes_used" = "2"
+				register "ssdb.vcm_type" = "0x0C"
+				register "vcm_name" = ""VCM0""
+				register "num_freq_entries" = "1"
+				register "link_freq[0]" = "450000000"
+				register "remote_name" = ""IPU0""
+
+				register "has_power_resource" = "true"
+				#Controls
+				register "clk_panel.clks[0].clknum" = "0" #IMGCLKOUT_0
+				register "clk_panel.clks[0].freq" = "1" #19.2 Mhz
+				register "gpio_panel.gpio[0].gpio_num" = "GPP_B23" #power_enable
+				register "gpio_panel.gpio[1].gpio_num" = "GPP_R5" #reset
+
+				#_ON
+				register "on_seq.ops_cnt" = "4"
+				register "on_seq.ops[0]" = "SEQ_OPS_CLK_ENABLE(0, 0)"
+				register "on_seq.ops[1]" = "SEQ_OPS_GPIO_ENABLE(0, 2)"
+				register "on_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 1)"
+				register "on_seq.ops[3]" = "SEQ_OPS_GPIO_ENABLE(1, 1)"
+
+				#_OFF
+				register "off_seq.ops_cnt" = "3"
+				register "off_seq.ops[0]" = "SEQ_OPS_CLK_DISABLE(0, 0)"
+				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
+				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
+
+				device i2c 36 on end
+			end
+			chip drivers/intel/mipi_camera
+				register "acpi_uid" = "3"
+				register "acpi_name" = ""VCM0""
+				register "chip_name" = ""DW AF VCM""
+				register "device_type" = "INTEL_ACPI_CAMERA_VCM"
+
+				register "pr0" = ""\\_SB.PCI0.I2C1.CAM0.PRIC""
+				register "vcm_compat" = ""dongwoon,dw9714""
+
+				device i2c 0C on end
+			end
+		end
+		device ref i2c2 on end
+		device ref i2c3 on end
+		device ref heci1 on end
+		device ref sata on end
+		device ref i2c5 on
+			chip drivers/intel/mipi_camera
+				register "acpi_hid" = ""OVTI5675""
+				register "acpi_uid" = "0"
+				register "acpi_name" = ""CAM1""
+				register "chip_name" = ""Ov 5675 Camera""
+				register "device_type" = "INTEL_ACPI_CAMERA_SENSOR"
+
+				register "ssdb.lanes_used" = "2"
+				register "num_freq_entries" = "1"
+				register "link_freq[0]" = "450000000"
+				register "remote_name" = ""IPU0""
+
+				register "has_power_resource" = "true"
+				#Controls
+				register "clk_panel.clks[0].clknum" = "1" #IMGCLKOUT_1
+				register "clk_panel.clks[0].freq" = "1" #19.2 Mhz
+				register "gpio_panel.gpio[0].gpio_num" = "GPP_E16" #power_enable
+				register "gpio_panel.gpio[1].gpio_num" = "GPP_E15" #reset
+
+				#_ON
+				register "on_seq.ops_cnt" = "4"
+				register "on_seq.ops[0]" = "SEQ_OPS_CLK_ENABLE(0, 0)"
+				register "on_seq.ops[1]" = "SEQ_OPS_GPIO_ENABLE(0, 2)"
+				register "on_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 1)"
+				register "on_seq.ops[3]" = "SEQ_OPS_GPIO_ENABLE(1, 1)"
+
+				#_OFF
+				register "off_seq.ops_cnt" = "3"
+				register "off_seq.ops[0]" = "SEQ_OPS_CLK_DISABLE(0, 0)"
+				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
+				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
+
+				device i2c 36 on end
+			end
+		end
+		device ref pcie_rp1 on end
+		device ref pcie_rp3 on end # W/A to FSP issue
+		device ref pcie_rp4 on end # W/A to FSP issue
+		device ref pcie_rp5 on end
+		device ref pcie_rp6 on end
+		device ref pcie_rp8 on end
+		device ref pcie_rp9 on end
+		device ref pcie_rp10 on end
+		device ref uart0 on end
+		device ref gspi0 on end
+		device ref p2sb on end
+		device pci 1e.3 on
+			chip drivers/spi/acpi
+				register "hid" = "ACPI_DT_NAMESPACE_HID"
+				register "compat_string" = ""google,cr50""
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_E3_IRQ)"
+				device spi 0 on end
+			end
+		end # GSPI1
+		device ref hda on
+			chip drivers/intel/soundwire
+				device generic 0 on
+					chip drivers/soundwire/alc711
+						# SoundWire Link 0 ID 1
+						register "desc" = ""Headset Codec""
+						register "alc711_address.version" = "SOUNDWIRE_VERSION_1_1"
+						register "alc711_address.class" = "MIPI_CLASS_NONE"
+						register "alc711_address.part_id" = "MIPI_DEV_ID_REALTEK_ALC711"
+						device generic 0.1 on end
+					end
+				end
+			end
+		end
+		device ref smbus on end
+	end
+end

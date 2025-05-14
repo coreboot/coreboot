@@ -1,0 +1,6 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+comment "MC RPLx"
+
+config BOARD_SIEMENS_MC_RPL1
+	bool "-> MC RPL1"

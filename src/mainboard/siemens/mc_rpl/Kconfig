@@ -1,0 +1,137 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_SIEMENS_BASEBOARD_MC_RPL
+	def_bool n
+	select BOARD_ROMSIZE_KB_32768
+	select CPU_INTEL_SOCKET_LGA1700
+	select DRIVERS_I2C_GENERIC
+	select DRIVERS_I2C_HID
+	select DRIVERS_I2C_MAX98373
+	select DRIVERS_INTEL_DPTF
+	select DRIVERS_INTEL_MIPI_CAMERA
+	select DRIVERS_INTEL_SOUNDWIRE
+	select DRIVERS_SOUNDWIRE_ALC_BASE_7XX
+	select DRIVERS_SPI_ACPI
+	select DRIVERS_USB_ACPI
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select HAVE_SPD_IN_CBFS
+	select MAINBOARD_HAS_CHROMEOS
+	select SOC_INTEL_COMMON_BLOCK_IPU
+	select SOC_INTEL_ENABLE_USB4_PCIE_RESOURCES
+
+
+config BOARD_SIEMENS_MC_RPL1
+	select BOARD_SIEMENS_BASEBOARD_MC_RPL
+	select DRIVERS_UART_8250IO
+	select GEN3_EXTERNAL_CLOCK_BUFFER
+	select MAINBOARD_USES_IFD_EC_REGION
+	select SOC_INTEL_ALDERLAKE_PCH_P
+	select SOC_INTEL_RAPTORLAKE
+
+if BOARD_SIEMENS_BASEBOARD_MC_RPL
+
+config SOC_INTEL_CSE_LITE_SKU
+	bool "Use CSE Lite firmware"
+	default y if MC_RPL_CHROME_EC
+	help
+	  Enable if CSE Lite firmware is used in your build. It is commonly
+	  used in Chrome boards (chromebooks, chromeboxes, ...).
+	  But since ADL RVP build can be used with or without CSE Lite firmware
+	  it is a configurable option. Alderlake RVP boards usually don't use
+	  an CSE Lite firmware, but are still very likely to use it in case
+	  ChromeEC is used.
+
+config CHROMEOS
+	select GBB_FLAG_FORCE_DEV_SWITCH_ON
+	select GBB_FLAG_FORCE_DEV_BOOT_USB
+	select GBB_FLAG_FORCE_DEV_BOOT_ALTFW
+	select GBB_FLAG_FORCE_MANUAL_RECOVERY
+	select GBB_FLAG_DISABLE_PD_SOFTWARE_SYNC
+	select HAS_RECOVERY_MRC_CACHE
+
+config MAINBOARD_DIR
+	default "siemens/mc_rpl"
+
+config VARIANT_DIR
+	default "mc_rpl1" if BOARD_SIEMENS_MC_RPL1
+
+config GBB_HWID
+	string
+	depends on CHROMEOS
+	default "ADLRVPN TEST 7673" if BOARD_INTEL_ADLRVP_N || BOARD_INTEL_ADLRVP_N_EXT_EC
+	default "ADLRVPP TEST 2418"
+
+config MAINBOARD_PART_NUMBER
+	default "MC RPL1" if BOARD_SIEMENS_MC_RPL1
+
+config MAINBOARD_VENDOR
+	string
+	default "Siemens"
+
+config MAINBOARD_FAMILY
+	string
+	default "MC RPL"
+
+config DEVICETREE
+	default "devicetree.cb"
+
+config OVERRIDE_DEVICETREE
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
+
+choice
+	prompt "ON BOARD EC"
+	default MC_RPL_CHROME_EC if BOARD_SIEMENS_MC_RPL1
+	help
+	  This option allows you to select the on board EC to use.
+	  Select whether the board has Intel EC or Chrome EC
+
+config MC_RPL_CHROME_EC
+	bool "Chrome EC"
+	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_ESPI
+	select EC_GOOGLE_CHROMEEC_BOARDID
+	select EC_ACPI
+	select EC_GOOGLE_CHROMEEC_LPC
+
+config MC_RPL_INTEL_EC
+	bool "Intel EC"
+	select EC_ACPI
+endchoice
+
+config VBOOT
+	select VBOOT_LID_SWITCH
+	select VBOOT_MOCK_SECDATA if BOARD_INTEL_ADLRVP_P_EXT_EC || BOARD_INTEL_ADLRVP_N_EXT_EC
+	select EC_GOOGLE_CHROMEEC_SWITCHES if MC_RPL_CHROME_EC
+	select VBOOT_EARLY_EC_SYNC if BOARD_INTEL_ADLRVP_N_EXT_EC
+
+config UART_FOR_CONSOLE
+	int
+	default 0
+
+config DRIVER_TPM_SPI_BUS
+	default 0x2 if BOARD_SIEMENS_MC_RPL1
+
+config USE_PM_ACPI_TIMER
+	default n if BOARD_SIEMENS_MC_RPL1
+
+config TPM_TIS_ACPI_INTERRUPT
+	int
+	default 67 if BOARD_INTEL_ADLRVP_RPL_EXT_EC # GPE0_DW2_3 (GPP_E3)
+
+config GEN3_EXTERNAL_CLOCK_BUFFER
+	bool
+	depends on SOC_INTEL_ALDERLAKE_PCH_P
+	default n
+	help
+	  Support external Gen-3 clock chip for ADL-P.
+	  `CONFIG_CLKSRC_FOR_EXTERNAL_BUFFER` provides feed clock to discrete buffer
+	  for further distribution to platform. SRCCLKREQB[7:9] maps to internal
+	  SRCCLKREQB[6]. If any of them asserted, SRC buffer
+	  `CONFIG_CLKSRC_FOR_EXTERNAL_BUFFER` gets enabled.
+
+config CLKSRC_FOR_EXTERNAL_BUFFER
+	depends on GEN3_EXTERNAL_CLOCK_BUFFER
+	int
+	default 6  # CLKSRC 6
+endif

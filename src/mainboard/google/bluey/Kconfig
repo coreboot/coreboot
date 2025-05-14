@@ -83,10 +83,12 @@ config DRIVER_TPM_I2C_ADDR
 	default 0x50
 
 config EC_GOOGLE_CHROMEEC_SPI_BUS
+	depends on EC_GOOGLE_CHROMEEC
 	hex
 	default 0xb
 
 config MAINBOARD_GPIO_PIN_FOR_GSC_AP_INTERRUPT
+	depends on TPM_GOOGLE_TI50
 	int
 	default 34
 	help

@@ -119,7 +119,8 @@ config MAINBOARD_FAMILY
 	default "Intel_Ptlrvp"
 
 config MAINBOARD_PART_NUMBER
-	default "Ptlrvp"
+	default "Ptlrvp" if BOARD_INTEL_PTLRVP
+	default "Ptlrvp_chromeec" if BOARD_INTEL_PTLRVP_CHROMEEC
 
 config MEMORY_SOLDERDOWN
 	def_bool n

@@ -286,6 +286,14 @@ config VBOOT_EARLY_EC_SYNC
 	  significantly impact boot time, as this operation will be performed
 	  later in the boot flow if it is disabled here.
 
+config VBOOT_EC_SYNC_ESOL
+	bool
+	default n
+	depends on VBOOT_EARLY_EC_SYNC && CHROMEOS_ENABLE_ESOL
+	help
+	  Enables the display of early sign-of-life (eSOL) when the EC is slow
+	  to update its firmware to inform the user that the update is happening.
+
 config VBOOT_EC_EFS
 	bool "Early firmware selection (EFS) EC"
 	default n

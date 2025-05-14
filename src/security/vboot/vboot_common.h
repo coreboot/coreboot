@@ -74,6 +74,20 @@ static inline const struct cbfs_boot_device *vboot_get_cbfs_boot_device(void)
 }
 #endif
 
+/*
+ * This function is called before updating the EC firmware image.
+ * This API must be implemented in the SoC/mainboard code to enable
+ * early sign-of-life (eSOL) during EC firmware update.
+ */
+#if CONFIG(VBOOT_EC_SYNC_ESOL)
+void vboot_show_ec_sync_esol(void);
+#else
+static inline void vboot_show_ec_sync_esol(void)
+{
+	/* nop */
+}
+#endif
+
 void vboot_save_data(struct vb2_context *ctx);
 
 /*

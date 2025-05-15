@@ -73,6 +73,7 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 	 */
 	assembly_timestamp = base_timestamp;
 	bootblock_timestamp = timestamp_get();
+	fast_spi_early_init(SPI_BASE_ADDRESS);
 	fast_spi_cache_bios_region();
 
 	bootblock_main_with_basetime(MIN(assembly_timestamp, bootblock_timestamp));
@@ -80,7 +81,6 @@ asmlinkage void bootblock_c_entry(uint64_t base_timestamp)
 
 void bootblock_soc_early_init(void)
 {
-	fast_spi_early_init(SPI_BASE_ADDRESS);
 	pch_enable_lpc();
 
 	/* Set up P2SB BAR. This is needed for PCR to work */

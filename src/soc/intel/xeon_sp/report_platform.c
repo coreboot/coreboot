@@ -26,6 +26,7 @@ static struct {
 	{ CPUID_SAPPHIRERAPIDS_SP_E3, "Sapphire Rapids E3" },
 	{ CPUID_SAPPHIRERAPIDS_SP_E4, "Sapphire Rapids E4" },
 	{ CPUID_SAPPHIRERAPIDS_SP_Ex, "Sapphire Rapids Ex" },
+	{ CPUID_EMERALDRAPIDS, "Emerald Rapids" },
 };
 
 static void report_cpu_info(void)

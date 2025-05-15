@@ -218,6 +218,9 @@ config BOARD_GOOGLE_PUJJOGA
 config BOARD_GOOGLE_PUJJOGATWIN
 	bool "->  Pujjogatwin"
 
+config BOARD_GOOGLE_PUJJOLO
+	bool "->  Pujjolo"
+
 config BOARD_GOOGLE_ORISA
 	bool "->  Orisa"
 

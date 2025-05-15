@@ -1,0 +1,16 @@
+# This config is intended for ASRock Rack SPC741D8-2L2T boards based on Intel
+# Sapphire Rapids Scalable Processor (SPR-SP) chipset.
+#
+# Type this in coreboot root directory to get a working .config:
+#   make defconfig KBUILD_DEFCONFIG=configs/builder/config.asrock.spc741d8
+
+CONFIG_VENDOR_ASROCK=y
+CONFIG_BOARD_ASROCK_SPC741D8=y
+CONFIG_HAVE_IFD_BIN=y
+CONFIG_PAYLOAD_EDK2=y
+CONFIG_HAVE_ME_BIN=y
+CONFIG_DO_NOT_TOUCH_DESCRIPTOR_REGION=y
+CONFIG_IFD_BIN_PATH="site-local/eaglestream/descriptor.bin"
+CONFIG_ME_BIN_PATH="site-local/eaglestream/me.bin"
+CONFIG_VALIDATE_INTEL_DESCRIPTOR=y
+CONFIG_GENERIC_LINEAR_FRAMEBUFFER=y

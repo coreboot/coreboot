@@ -1,0 +1,7 @@
+Vendor name: ASRock Rack
+Board name: SPC741D8-2L2T/BCM
+Category: server
+ROM protocol: SPI
+ROM package: SOIC-16
+ROM socketed: y
+Flashrom support: y

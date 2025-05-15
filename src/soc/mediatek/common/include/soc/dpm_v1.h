@@ -4,7 +4,7 @@
 #define __SOC_MEDIATEK_COMMON_DPM_V1_H__
 
 #include <soc/addressmap.h>
-#include <soc/mcu_common.h>
+#include <soc/dpm_common.h>
 #include <types.h>
 
 struct dpm_regs {
@@ -47,10 +47,5 @@ check_member(dpm_regs, status_4, 0x70B0);
 #define DRAMC_MCU2_SRAM_SLEEP_B_LSB		BIT(4)
 
 static struct dpm_regs *const mtk_dpm = (void *)DPM_CFG_BASE;
-
-void dpm_reset(struct mtk_mcu *mcu);
-int dpm_init(void);
-int dpm_4ch_para_setting(void);
-int dpm_4ch_init(void);
 
 #endif  /* __SOC_MEDIATEK_COMMON_DPM_V1_H__ */

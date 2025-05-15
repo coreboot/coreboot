@@ -19,6 +19,12 @@ config BOARD_GOOGLE_BLUEY
 	select MAINBOARD_HAS_FINGERPRINT_VIA_USB
 	select MISSING_BOARD_RESET
 
+config BOARD_GOOGLE_QUENBI
+	select BOARD_GOOGLE_BASEBOARD_BLUEY
+	select MAINBOARD_HAS_CHROME_EC
+	select MAINBOARD_HAS_FINGERPRINT_VIA_SPI
+	select MAINBOARD_HAS_GOOGLE_TPM
+
 if BOARD_GOOGLE_BLUEY_COMMON
 
 config MAINBOARD_DIR
@@ -85,10 +91,12 @@ config VBOOT
 
 config MAINBOARD_PART_NUMBER
 	default "Bluey" if BOARD_GOOGLE_BLUEY
+	default "Quenbi" if BOARD_GOOGLE_QUENBI
 
 config DRIVER_TPM_I2C_BUS
 	depends on I2C_TPM
 	hex
+	default 0xa if BOARD_GOOGLE_QUENBI
 	default 0x10
 
 config DRIVER_TPM_I2C_ADDR
@@ -97,11 +105,13 @@ config DRIVER_TPM_I2C_ADDR
 config EC_GOOGLE_CHROMEEC_SPI_BUS
 	depends on EC_GOOGLE_CHROMEEC
 	hex
+	default 0xd if BOARD_GOOGLE_QUENBI
 	default 0xb
 
 config MAINBOARD_GPIO_PIN_FOR_GSC_AP_INTERRUPT
 	depends on TPM_GOOGLE_TI50
 	int
+	default 91 if BOARD_GOOGLE_QUENBI
 	default 34
 	help
 	  This option specifies the GPIO pin number on the mainboard that is

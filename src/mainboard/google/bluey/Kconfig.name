@@ -4,3 +4,6 @@ comment "Bluey"
 
 config BOARD_GOOGLE_BLUEY
 	bool "->  Bluey"
+
+config BOARD_GOOGLE_QUENBI
+	bool "->  Quenbi"

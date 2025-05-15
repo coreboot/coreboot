@@ -77,6 +77,9 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexI2C5] = PchSerialIoPci,
 	}"
 
+	# 25A of Vcc In Aux Imon Iccmax value for VCCANA MBVR design
+	register "vccin_aux_imon_iccmax" = "PD_TIER_PREMIUM" # 25A
+
 	# Enable the Cnvi BT Audio Offload
 	register "cnvi_bt_audio_offload" = "1"
 

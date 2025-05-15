@@ -5,13 +5,18 @@
 #include <console/console.h>
 #include <delay.h>
 #include <device/pnp.h>
-#include <ec/google/common/mec.h>
 #include <stdint.h>
 #include <timer.h>
 
 #include "chip.h"
 #include "ec.h"
 #include "ec_commands.h"
+
+/* Return true if data read from EMI interface, false if no bytes transferred */
+__weak bool chipset_emi_read_bytes(u16 port, size_t length, u8 *dest, u8 *csum)
+{
+	return false;
+}
 
 /*
  * Read bytes from a given LPC-mapped address.
@@ -21,21 +26,14 @@
  * @dest: Destination buffer
  * @csum: Optional parameter, sums data read
  */
-static void read_bytes(u16 port, unsigned int length, u8 *dest, u8 *csum)
+static void read_bytes(u16 port, size_t length, u8 *dest, u8 *csum)
 {
-	int i;
+	size_t i;
 
-#if CONFIG(EC_GOOGLE_CHROMEEC_MEC)
-	/* Access desired range though EMI interface */
-	if (port >= MEC_EMI_RANGE_START && port <= MEC_EMI_RANGE_END) {
-		u8 ret = mec_io_bytes(MEC_IO_READ, MEC_EMI_BASE,
-				     port - MEC_EMI_RANGE_START,
-				     dest, length);
-		if (csum)
-			*csum += ret;
+	if (chipset_emi_read_bytes(port, length, dest, csum)) {
+		/* Access through EMI interface successful */
 		return;
 	}
-#endif
 
 	for (i = 0; i < length; ++i) {
 		dest[i] = inb(port + i);
@@ -61,6 +59,11 @@ static inline u8 read_byte_indexed_io(u8 offset)
 }
 #endif
 
+__weak bool chipset_emi_write_bytes(u16 port, size_t length, u8 *msg, u8 *csum)
+{
+	return false;
+}
+
 /*
  * Write bytes to a given LPC-mapped address.
  *
@@ -69,21 +72,14 @@ static inline u8 read_byte_indexed_io(u8 offset)
  * @msg: Write data buffer
  * @csum: Optional parameter, sums data written
  */
-static void write_bytes(u16 port, unsigned int length, u8 *msg, u8 *csum)
+static void write_bytes(u16 port, size_t length, u8 *msg, u8 *csum)
 {
-	int i;
+	size_t i;
 
-#if CONFIG(EC_GOOGLE_CHROMEEC_MEC)
-	/* Access desired range though EMI interface */
-	if (port >= MEC_EMI_RANGE_START && port <= MEC_EMI_RANGE_END) {
-		u8 ret = mec_io_bytes(MEC_IO_WRITE, MEC_EMI_BASE,
-				     port - MEC_EMI_RANGE_START,
-				     msg, length);
-		if (csum)
-			*csum += ret;
+	if (chipset_emi_write_bytes(port, length, msg, csum)) {
+		/* Access through EMI interface successful */
 		return;
 	}
-#endif
 
 	for (i = 0; i < length; ++i) {
 		outb(msg[i], port + i);
@@ -127,6 +123,11 @@ static int google_chromeec_wait_ready(u16 port)
 					    EC_LPC_CMDR_BUSY, 0);
 }
 
+static int google_chromeec_data_ready(u16 port)
+{
+	return google_chromeec_status_check(port, EC_LPC_CMDR_DATA, EC_LPC_CMDR_DATA);
+}
+
 #if CONFIG(EC_GOOGLE_CHROMEEC_ACPI_MEMMAP)
 /* Read memmap data through ACPI port 66/62 */
 static int read_memmap(u8 *data, u8 offset)
@@ -148,6 +149,13 @@ static int read_memmap(u8 *data, u8 offset)
 	write_byte(offset + EC_ACPI_MEM_MAPPED_BEGIN, EC_LPC_ADDR_ACPI_DATA);
 
 	if (google_chromeec_wait_ready(EC_LPC_ADDR_ACPI_CMD)) {
+		printk(BIOS_ERR, "Timeout waiting for EC DATA!\n");
+		return -1;
+	}
+
+	/* ap should wait b0 (OBF) */
+	if (CONFIG(EC_GOOGLE_CHROMEEC_RTK) &&
+	    google_chromeec_data_ready(EC_LPC_ADDR_ACPI_CMD)) {
 		printk(BIOS_ERR, "Timeout waiting for EC DATA!\n");
 		return -1;
 	}
@@ -249,6 +257,14 @@ static int google_chromeec_command_v3(struct chromeec_command *cec_command)
 	if (google_chromeec_wait_ready(EC_LPC_ADDR_HOST_CMD)) {
 		printk(BIOS_ERR, "Timeout waiting for EC process command %d!\n",
 		       cec_command->cmd_code);
+		return -1;
+	}
+
+	/* RTS5915: acpi port should wait status reg bit 0 (OBF),
+	   and then take data from data register */
+	if (CONFIG(EC_GOOGLE_CHROMEEC_RTK) &&
+	    google_chromeec_data_ready(EC_LPC_ADDR_HOST_CMD)) {
+		printk(BIOS_ERR, "Timeout waiting for EC DATA!\n");
 		return -1;
 	}
 
@@ -381,24 +397,18 @@ uint8_t google_chromeec_get_switches(void)
 #endif
 }
 
+void __weak chipset_ioport_range(uint16_t *base, size_t *size)
+{
+	*base = EC_HOST_CMD_REGION0;
+	*size = 2 * EC_HOST_CMD_REGION_SIZE;
+	/* Make sure MEMMAP region follows host cmd region. */
+	assert(*base + *size == EC_LPC_ADDR_MEMMAP);
+	*size += EC_MEMMAP_SIZE;
+}
+
 void google_chromeec_ioport_range(uint16_t *out_base, size_t *out_size)
 {
-	uint16_t base;
-	size_t size;
-
-	if (CONFIG(EC_GOOGLE_CHROMEEC_MEC)) {
-		base = MEC_EMI_BASE;
-		size = MEC_EMI_SIZE;
-	} else {
-		base = EC_HOST_CMD_REGION0;
-		size = 2 * EC_HOST_CMD_REGION_SIZE;
-		/* Make sure MEMMAP region follows host cmd region. */
-		assert(base + size == EC_LPC_ADDR_MEMMAP);
-		size += EC_MEMMAP_SIZE;
-	}
-
-	*out_base = base;
-	*out_size = size;
+	chipset_ioport_range(out_base, out_size);
 }
 
 int google_chromeec_command(struct chromeec_command *cec_command)
@@ -436,11 +446,14 @@ int google_chromeec_command(struct chromeec_command *cec_command)
 	return result;
 }
 
+void __weak chipset_init(void) {}
+
 static void lpc_ec_init(struct device *dev)
 {
 	if (!dev->enabled)
 		return;
 
+	chipset_init();
 	google_chromeec_init();
 }
 
@@ -493,12 +506,6 @@ struct chip_operations ec_google_chromeec_ops = {
 	.name = "Google Chrome EC",
 	.enable_dev = enable_dev,
 };
-
-static int google_chromeec_data_ready(u16 port)
-{
-	return google_chromeec_status_check(port, EC_LPC_CMDR_DATA,
-					    EC_LPC_CMDR_DATA);
-}
 
 enum host_event_code google_chromeec_get_event(void)
 {

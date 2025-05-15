@@ -116,14 +116,6 @@ int google_chromeec_cbi_get_ssfc(uint32_t *ssfc);
 uint32_t google_chromeec_get_board_sku(void);
 const char *google_chromeec_smbios_system_sku(void);
 
-/* MEC uses 0x800/0x804 as register/index pair, thus an 8-byte resource. */
-#define MEC_EMI_BASE		0x800
-#define MEC_EMI_SIZE		8
-
-/* For MEC, access ranges 0x800 thru 0x9ff using EMI interface instead of LPC */
-#define MEC_EMI_RANGE_START EC_HOST_CMD_REGION0
-#define MEC_EMI_RANGE_END   (EC_LPC_ADDR_MEMMAP + EC_MEMMAP_SIZE)
-
 int google_chromeec_set_usb_charge_mode(uint8_t port_id, enum usb_charge_mode mode);
 int google_chromeec_set_usb_pd_role(uint8_t port, enum usb_pd_control_role role);
 /*
@@ -263,8 +255,7 @@ int google_chromeec_start_vboot_hash(enum ec_vboot_hash_type hash_type,
  * @return		0 on success, -1 on error
  *
  */
-int google_chromeec_get_vboot_hash(uint32_t offset,
-				   struct ec_response_vboot_hash *resp);
+int google_chromeec_get_vboot_hash(uint32_t offset, struct ec_response_vboot_hash *resp);
 
 /**
  * Get offset and size of the specified EC flash region.
@@ -494,5 +485,46 @@ void google_chromeec_fill_ssdt_generator(const struct device *dev);
 const char *google_chromeec_acpi_name(const struct device *dev);
 
 #endif /* HAVE_ACPI_TABLES */
+
+/**
+ * Initialize the EC.
+ */
+void chipset_init(void);
+
+/**
+ * Read bytes from the EMI.
+ *
+ * @param port		IO port number
+ * @param length	Length of the data to read
+ * @param dest		Pointer to the destination buffer
+ * @param csum		Pointer to the checksum buffer
+ *
+ * @return true indicates that the EC processes the read through the EMI interface
+ * and does not need to handle it through the IO port; otherwise, an IO read operation
+ * should be issued.
+ */
+bool chipset_emi_read_bytes(u16 port, size_t length, u8 *dest, u8 *csum);
+
+/**
+ * Write bytes to the EMI.
+ *
+ * @param port		IO port number
+ * @param length	Length of the data to write
+ * @param msg		Pointer to the message buffer
+ * @param csum		Pointer to the checksum buffer
+ *
+ * @return true indicates that the EC processes the write through the EMI interface
+ * and does not need to handle it through the IO port; otherwise, an IO write operation
+ * should be issued.
+ */
+bool chipset_emi_write_bytes(u16 port, size_t length, u8 *msg, u8 *csum);
+
+/**
+ * Get the IO port range. implement this function if the EC requires different IO ports.
+ *
+ * @param base		Pointer to the base of the IO port range
+ * @param size		Pointer to the size of the IO port range
+ */
+void chipset_ioport_range(uint16_t *base, size_t *size);
 
 #endif /* _EC_GOOGLE_CHROMEEC_EC_H */

@@ -99,6 +99,13 @@ config EC_GOOGLE_CHROMEEC_MEC
 	help
 	  Microchip EC variant for LPC register access.
 
+config EC_GOOGLE_CHROMEEC_RTK
+	depends on EC_GOOGLE_CHROMEEC_LPC
+	def_bool n
+	select EC_GOOGLE_COMMON_RTK
+	help
+	  Realtek EC variant for LPC register access.
+
 config EC_GOOGLE_CHROMEEC_EC_HOST_CMD_DEBUG
 	depends on EC_GOOGLE_CHROMEEC_LPC && HAVE_MONOTONIC_TIMER
 	def_bool n
@@ -210,6 +217,10 @@ config EC_GOOGLE_CHROMEEC_LPC_GENERIC_MEMORY_RANGE
 	help
 	  Select this option to access LPC GMR (Generic Memory Range) Register to
 	  implement MMIO based communication between EC and AP firmware.
+
+config EC_GOOGLE_CHROMEEC_LPC_GENERIC_MEMORY_BASE
+	hex
+	default 0xfe0b0000
 
 endif # EC_GOOGLE_CHROMEEC
 

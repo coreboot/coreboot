@@ -121,8 +121,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_D0, 1, DEEP),
 	/* D1  : ISH_GP1 ==> SOC_GSEN2_INT# */
 	PAD_CFG_NF(GPP_D1, NONE, DEEP, NF1),
-	/* D2  : ISH_GP2 ==> TOUCH_SCREEN_DET# */
-	PAD_CFG_GPO_LOCK(GPP_D2, 1, LOCK_CONFIG),
+	/* D2  : ISH_GP2 ==> NC */
+	PAD_NC_LOCK(GPP_D2, NONE, LOCK_CONFIG),
 	/* D3  : NC ==> PHY_SHUTTER_DET */
 	PAD_CFG_GPO_LOCK(GPP_D3, 1, LOCK_CONFIG),
 	/* D4  : NC ==> WCAM_FW_PROTECT */
@@ -153,8 +153,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC(GPP_D16, NONE, PLTRST, LEVEL, INVERT),
 	/* D17 : NC */
 	PAD_NC(GPP_D17, NONE),
-	/* D18 : LCD_CBL_DET# */
-	PAD_CFG_GPO(GPP_D18, 1, DEEP),
+	/* D18 : LCD_CBL_DET# ==> NC */
+	PAD_NC(GPP_D18, NONE),
 	/* D19 : I2S_MCLK1_OUT ==> NC */
 	PAD_NC(GPP_D19, NONE),
 

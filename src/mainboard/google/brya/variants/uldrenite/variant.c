@@ -61,11 +61,11 @@ static const struct pad_config ish_uart0_disable_pads[] = {
 static const struct pad_config switch_ish_uart1_pads[] = {
 	/* D13  : UART0_ISH_RXD ==> NC  */
 	PAD_NC(GPP_D13, NONE),
-	/* D14  : UART0_ISH_TXD ==> LCD_CBL_DET# */
-	PAD_CFG_GPO(GPP_D14, 1, DEEP),
+	/* D14  : UART0_ISH_TXD ==> NC */
+	PAD_NC(GPP_D14, NONE),
 	/* D17 : NC ==> UART1_ISH_RDX */
 	PAD_CFG_NF(GPP_D17, NONE, DEEP, NF2),
-	/* D18 : LCD_CBL_DET# ==> UART1_ISH_TDX */
+	/* D18 : NC ==> UART1_ISH_TDX */
 	PAD_CFG_NF(GPP_D18, NONE, DEEP, NF2),
 };
 

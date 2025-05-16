@@ -898,4 +898,9 @@ int elog_add_extended_event(u8 type, u32 complement)
 
 /* Make sure elog_init() runs at least once to log System Boot event. */
 static void elog_bs_init(void *unused) { elog_init(); }
+
+#if CONFIG(POSTPONE_SPI_ACCESS)
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, elog_bs_init, NULL);
+#else
 BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_ENTRY, elog_bs_init, NULL);
+#endif

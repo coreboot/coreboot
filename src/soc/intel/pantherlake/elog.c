@@ -210,7 +210,11 @@ static void pch_log_state(void *unused)
 		pch_log_wake_source(ps);
 }
 
+#if CONFIG(POSTPONE_SPI_ACCESS)
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_ENTRY, pch_log_state, NULL);
+#else
 BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT, pch_log_state, NULL);
+#endif
 
 void elog_gsmi_cb_platform_log_wake_source(void)
 {

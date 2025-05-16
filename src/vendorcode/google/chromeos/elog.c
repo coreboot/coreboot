@@ -31,4 +31,8 @@ static void elog_add_vboot_info(void *unused)
 	elog_add_event_raw(ELOG_TYPE_FW_VBOOT_INFO, &data, width);
 }
 
+#if CONFIG(POSTPONE_SPI_ACCESS)
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, elog_add_vboot_info, NULL);
+#else
 BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_ENTRY, elog_add_vboot_info, NULL);
+#endif

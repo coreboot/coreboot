@@ -1130,6 +1130,7 @@ check_member(mtk_spm_regs, md32pcm_cfgreg_sw_rstn, 0xA00);
 check_member(mtk_spm_regs, md32pcm_dma0_src, 0xC00);
 check_member(mtk_spm_regs, md32pcm_dma0_rlct, 0xC24);
 check_member(mtk_spm_regs, md1_pwr_con, 0xE00);
+check_member(mtk_spm_regs, sspm_sram_con, 0xEE4);
 check_member(mtk_spm_regs, soc_buck_iso_con, 0xF00);
 check_member(mtk_spm_regs, spm_twam_timer_out, 0xFFC);
 check_member(mtk_spm_regs, spm_lteclksq_bg_off, 0x9220);

@@ -106,10 +106,11 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_C01, NONE),
 	/* GPP_C02:     GPPC_C2_SMB_ALERT_N */
 	PAD_CFG_NF(GPP_C02, NONE, DEEP, NF1),
+	/* FIXME: b/417841162 */
 	/* GPP_C03:     SMBUS_CLK0 */
-	PAD_CFG_NF(GPP_C03, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_C03, UP_20K, DEEP, NF1),
 	/* GPP_C04:     SMBUS_DAT0 */
-	PAD_CFG_NF(GPP_C04, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_C04, UP_20K, DEEP, NF1),
 	/* GPP_C05:     GPPC_C5 */
 	PAD_NC(GPP_C05, NONE),
 	/* GPP_C06:     NC */
@@ -410,9 +411,9 @@ static const struct pad_config early_gpio_table[] = {
 /* Pad configuration in romstage */
 static const struct pad_config romstage_gpio_table[] = {
 	/* GPP_C03:     GPP_C0_SMBCLK */
-	PAD_CFG_NF(GPP_C03, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_C03, UP_20K, DEEP, NF1),
 	/* GPP_C04:     GPP_C0_SMBDATA */
-	PAD_CFG_NF(GPP_C04, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_C04, UP_20K, DEEP, NF1),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

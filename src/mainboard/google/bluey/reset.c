@@ -7,5 +7,6 @@
    but this works well enough for our purposes. */
 void do_board_reset(void)
 {
-	google_chromeec_reboot(EC_REBOOT_COLD, 0);
+	if (CONFIG(EC_GOOGLE_CHROMEEC))
+		google_chromeec_reboot(EC_REBOOT_COLD, 0);
 }

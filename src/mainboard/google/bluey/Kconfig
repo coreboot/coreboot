@@ -2,22 +2,13 @@
 
 config BOARD_GOOGLE_BLUEY_COMMON
 	def_bool n
-	select BOARD_ROMSIZE_KB_8192
+	select BOARD_ROMSIZE_KB_65536
 	select COMMON_CBFS_SPI_WRAPPER
-	select EC_GOOGLE_CHROMEEC
-	select EC_GOOGLE_CHROMEEC_RTC
-	select EC_GOOGLE_CHROMEEC_SPI
-	select I2C_TPM
 	select MAINBOARD_HAS_CHROMEOS
-	select MAINBOARD_HAS_TPM2
-	select RTC
 	select SOC_QUALCOMM_X1P42100
 	select SPI_FLASH
 	select SPI_FLASH_EXIT_4_BYTE_ADDR_MODE
-	select SPI_FLASH_GIGADEVICE
-	select SPI_FLASH_MACRONIX
 	select SPI_FLASH_WINBOND
-	select TPM_GOOGLE_TI50
 
 config BOARD_GOOGLE_BASEBOARD_BLUEY
 	def_bool n
@@ -26,6 +17,7 @@ config BOARD_GOOGLE_BASEBOARD_BLUEY
 config BOARD_GOOGLE_BLUEY
 	select BOARD_GOOGLE_BASEBOARD_BLUEY
 	select MAINBOARD_HAS_FINGERPRINT_VIA_USB
+	select MISSING_BOARD_RESET
 
 if BOARD_GOOGLE_BLUEY_COMMON
 
@@ -59,12 +51,32 @@ config MAINBOARD_HAS_SD_CONTROLLER
 	help
 	  Enable this option if your mainboard is equipped with SD card controller.
 
+config MAINBOARD_HAS_GOOGLE_TPM
+	bool
+	default n
+	select I2C_TPM
+	select MAINBOARD_HAS_TPM2
+	select TPM_GOOGLE_TI50
+	help
+	  Enable this option if your mainboard is equipped with Google TPM aka GSC.
+
+config MAINBOARD_HAS_CHROME_EC
+	bool
+	default n
+	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_RTC
+	select EC_GOOGLE_CHROMEEC_SPI
+	select EC_GOOGLE_CHROMEEC_SWITCHES
+	select RTC
+	help
+	  Enable this option if your mainboard is equipped with Chrome EC.
+
 config MAINBOARD_VENDOR
 	string
 	default "Google"
 
 config VBOOT
-	select EC_GOOGLE_CHROMEEC_SWITCHES
+	select VBOOT_NO_BOARD_SUPPORT if BOARD_GOOGLE_BLUEY
 	select VBOOT_VBNV_FLASH
 
 ##########################################################
@@ -83,10 +95,12 @@ config DRIVER_TPM_I2C_ADDR
 	default 0x50
 
 config EC_GOOGLE_CHROMEEC_SPI_BUS
+	depends on EC_GOOGLE_CHROMEEC
 	hex
 	default 0xb
 
 config MAINBOARD_GPIO_PIN_FOR_GSC_AP_INTERRUPT
+	depends on TPM_GOOGLE_TI50
 	int
 	default 34
 	help

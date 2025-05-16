@@ -115,5 +115,10 @@ static void back_up_vbnv_cmos(void *unused)
 	/* Save to flash, will only be saved if different. */
 	save_vbnv_flash(vbnv_cmos);
 }
+
+#if CONFIG(POSTPONE_SPI_ACCESS)
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, back_up_vbnv_cmos, NULL);
+#else
 BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_EXIT, back_up_vbnv_cmos, NULL);
+#endif
 #endif

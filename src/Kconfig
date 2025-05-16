@@ -1563,3 +1563,12 @@ config HAVE_RAMSTAGE
 
 config SEPARATE_ROMSTAGE
 	default y
+
+config POSTPONE_SPI_ACCESS
+	bool
+	help
+	  Enable this option to postpone SPI access to later boot phase
+	  (BS_PAYLOAD_BOOT) to prevent flash write access delays caused by
+	  simultaneous accesses from other SPI masters like CSE. This symptom
+	  was found in Intel SoCs (Panther Lake and Wildcat Lake) but it can be
+	  used other SOCs.

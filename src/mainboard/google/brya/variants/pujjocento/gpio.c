@@ -66,9 +66,9 @@ static const struct pad_config gpio_table[] = {
 	/* B6  : GPP_B6 ==> ISH_I2C0_SENSOR_SDA */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_B6, NONE, DEEP, NF1),
 	/* B7  : I2C3_SDA ==> SOC_I2C_SAR_SDA */
-	PAD_CFG_NF_LOCK(GPP_B7, NONE, NF2, LOCK_CONFIG),
+	PAD_CFG_NF(GPP_B7, NONE, DEEP, NF2),
 	/* B8  : I2C3_SCL ==> SOC_I2C_SAR_SCL */
-	PAD_CFG_NF_LOCK(GPP_B8, NONE, NF2, LOCK_CONFIG),
+	PAD_CFG_NF(GPP_B8, NONE, DEEP, NF2),
 	/* B9  : Not available */
 	PAD_NC(GPP_B9, NONE),
 	/* B10 : Not available */

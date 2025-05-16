@@ -510,7 +510,7 @@ build_config()
 
 	export HOSTCC='gcc'
 
-	if [[ "${chromeos}" = true ]] && [[ "$(grep -c "^[[:space:]]*select[[:space:]]*MAINBOARD_HAS_CHROMEOS>" "${ROOT}/src/mainboard/${board_srcdir}/Kconfig")" -eq 0 ]]; then
+	if [[ "${chromeos}" = true ]] && [[ "$(grep -c "^[[:space:]]*select[[:space:]]*MAINBOARD_HAS_CHROMEOS\>" "${ROOT}/src/mainboard/${board_srcdir}/Kconfig")" -eq 0 ]]; then
 		printf "%s doesn't support ChromeOS, skipping.\n" "${BUILD_NAME}"
 		return
 	fi
@@ -598,7 +598,7 @@ EOF
 		exit 1
 	fi
 
-	if [[ -n "${missing_arches}" ]]; then
+	if [[ -z "${missing_arches}" ]]; then
 		printf "skipping %s because we're missing compilers for (%s)\n" "${BUILD_NAME}" "${missing_arches}"
 		return
 	fi

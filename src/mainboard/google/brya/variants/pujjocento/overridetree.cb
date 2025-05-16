@@ -83,7 +83,7 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexI2C2] = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C3] = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C4] = PchSerialIoDisabled,
-		[PchSerialIoIndexI2C5] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C5] = PchSerialIoPci,
 	}"
 
 	register "serial_io_gspi_mode" = "{
@@ -540,13 +540,32 @@ chip soc/intel/alderlake
 			end
 		end #I2C1
 		device ref i2c5 on
-			chip drivers/i2c/generic
-				register "hid" = ""ELAN0000""
-				register "desc" = ""ELAN Touchpad""
-				register "irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F14_IRQ)"
-				register "wake" = "GPE0_DW2_14"
-				register "detect" = "1"
-				device i2c 0x15 on end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""FTCS1000""
+				register "generic.desc" = ""FocalTech Touchpad""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_F14_IRQ)"
+				register "generic.wake" = "GPE0_DW2_14"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x20"
+				device i2c 38 on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""GXTP5100""
+				register "generic.desc" = ""Goodix Touchpad""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_F14_IRQ)"
+				register "generic.wake" = "GPE0_DW2_14"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x20"
+				device i2c 2c on end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""ELAN0000""
+				register "generic.desc" = ""ELAN Touchpad""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_F14_IRQ)"
+				register "generic.wake" = "GPE0_DW2_14"
+				register "generic.detect" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 15 on end
 			end
 		end
 		device ref heci1 on end

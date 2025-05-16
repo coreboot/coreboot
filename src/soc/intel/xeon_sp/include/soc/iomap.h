@@ -15,7 +15,7 @@
 #define MAP_ENTRY_LIMIT_32(reg_, mask_bits_, desc_) MAP_ENTRY(reg_, 0, 1, mask_bits_, desc_)
 
 // SPI BAR0 MMIO base address
-#define SPI_BASE_ADDRESS             0xfe010000
+#define SPI_BASE_ADDRESS             CONFIG_INTEL_SPI_BASE_ADDRESS
 #define SPI_BASE_SIZE                0x1000
 
 #define TCO_BASE_ADDRESS             0x400

@@ -64,6 +64,12 @@ config MAX_CPUS
 	int
 	default 80
 
+config INTEL_SPI_BASE_ADDRESS
+	hex
+	default 0xfe010000
+	help
+	  SPI BAR0 Base address.
+
 config INTEL_ACPI_BASE_ADDRESS
 	hex
 	default 0x500

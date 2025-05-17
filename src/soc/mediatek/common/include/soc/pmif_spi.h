@@ -108,4 +108,6 @@ enum {
 
 int pmif_spi_init(struct pmif *arb);
 void pmif_spi_iocfg(void);
+void pmif_spi_setting(struct pmif *arb);
+
 #endif /* __SOC_MEDIATEK_PMIF_SPI_H__ */

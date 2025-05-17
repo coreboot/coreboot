@@ -48,6 +48,7 @@ chip soc/intel/alderlake
 				.clk_req = 0,
 				.flags = PCIE_RP_LTR,
 			}"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD2)" "SlotDataBusWidth4X"
 		end
 		device ref i2c0 on
 			# Touchpad I2C bus
@@ -102,6 +103,7 @@ chip soc/intel/alderlake
 				.flags = PCIE_RP_LTR,
 				.pcie_rp_detect_timeout_ms = 50,
 			}"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD1)" "SlotDataBusWidth4X"
 		end
 		device ref pcie_rp9 on
 			# PCIe RP#9 x1, Clock 6 (GLAN)
@@ -118,6 +120,7 @@ chip soc/intel/alderlake
 				.clk_req = 2,
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
+			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/E 2230 (J_WLAN1)" "SlotDataBusWidth1X"
 		end
 		device ref pcie_rp11 on
 			# PCIe RP#11 x1, Clock 5 (CARD)

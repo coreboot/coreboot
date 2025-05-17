@@ -29,6 +29,7 @@ chip soc/intel/tigerlake
 				register "srcclk_pin" = "0" # SSD1_CLKREQ#
 				device generic 0 on end
 			end
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD2)" "SlotDataBusWidth4X"
 		end
 		device ref north_xhci on # J_TYPEC2
 			register "UsbTcPortEn" = "1"
@@ -165,6 +166,7 @@ chip soc/intel/tigerlake
 			register "PcieClkSrcUsage[1]" = "7"
 			register "PcieClkSrcClkReq[1]" = "1"
 			register "PcieRpSlotImplemented[7]" = "1"
+			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/E 2230 (J_WLAN1)" "SlotDataBusWidth1X"
 		end
 		device ref pcie_rp9 on
 			# PCIe root port #9 x4, Clock 4 (SSD0)
@@ -178,6 +180,7 @@ chip soc/intel/tigerlake
 				register "srcclk_pin" = "4"
 				device generic 0 on end
 			end
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD1)" "SlotDataBusWidth4X"
 		end
 		device ref pmc hidden
 			# The pmc_mux chip driver is a placeholder for the

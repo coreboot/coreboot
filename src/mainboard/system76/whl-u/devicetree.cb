@@ -113,12 +113,14 @@ chip soc/intel/cannonlake
 			register "PcieRpLtrEnable[9]" = "false"
 			register "PcieClkSrcUsage[2]" = "9"
 			register "PcieClkSrcClkReq[2]" = "2"
+			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/E 2230" "SlotDataBusWidth1X"
 		end
 		device ref pcie_rp13	on
 			# PCI Express Root port #13 x4, Clock 5 (NVMe)
 			register "PcieRpLtrEnable[12]" = "true"
 			register "PcieClkSrcUsage[5]" = "12"
 			register "PcieClkSrcClkReq[5]" = "5"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280" "SlotDataBusWidth4X"
 		end
 		device ref lpc_espi	on
 			register "gen1_dec" = "0x000c0081"

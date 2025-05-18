@@ -518,6 +518,7 @@ vb2_error_t vb2ex_ec_disable_jump(void)
  */
 vb2_error_t vb2ex_ec_update_image(enum vb2_firmware_selection select)
 {
+	vboot_show_ec_sync_esol();
 	return ec_update_image(select);
 }
 

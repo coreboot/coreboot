@@ -14,3 +14,4 @@ ramstage-y += variants/$(VARIANT_DIR)/gpio.c
 ramstage-y += variants/$(VARIANT_DIR)/ramstage.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
+ramstage-$(CONFIG_DRIVERS_I2C_TAS5825M) += variants/$(VARIANT_DIR)/tas5825m.c

@@ -11,6 +11,11 @@ ifeq ($(CONFIG_CPU_INTEL_MICROCODE_CBFS_SPLIT_BINS),y)
 microcode-params-dir := $(call strip_quotes,$(CONFIG_CPU_INTEL_UCODE_SPLIT_BINARIES))/
 microcode-params := $(shell find "$(microcode-params-dir)" -type f -exec basename {} \;)
 
+# Ensure microcode-params is not empty
+ifeq ($(microcode-params),)
+$(error "microcode-params is empty. Ensure CONFIG_CPU_INTEL_UCODE_SPLIT_BINARIES is set correctly and contains valid files.")
+endif
+
 # Make "cpu_microcode_$(CPUID).bin" file entry into the FIT table
 $(call add_intermediate, add_mcu_fit, set_fit_ptr $(IFITTOOL))
 	$(foreach params, $(microcode-params), $(shell $(IFITTOOL) -f $< -a -n $(params) -t 1 \

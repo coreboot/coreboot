@@ -56,7 +56,7 @@ void __noreturn romstage_main(void)
 
 	stack_canary_breakpoint_init();
 
-	if (CONFIG(VBOOT_EARLY_EC_SYNC))
+	if (CONFIG(VBOOT_EARLY_EC_SYNC) && !CONFIG(VBOOT_EC_SYNC_ESOL))
 		vboot_sync_ec();
 
 	/*

@@ -10,4 +10,10 @@ fw_config
 		option AMP_RT1019 1
 		option AMP_ALC5645 3
 	end
+
+	field STORAGE 30 31
+		option STORAGE_UFS3X 0
+		option STORAGE_UFS2X 1
+		option STORAGE_EMMC 2
+	end
 end

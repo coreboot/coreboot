@@ -22,7 +22,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_A06:     ESPI_SOC_RST_L # */
 	PAD_CFG_NF(GPP_A06, NONE, DEEP, NF1),
 	/* GPP_A08:     SSD_PERST_L # */
-	PAD_CFG_GPO(GPP_A08, 0, PLTRST),
+	PAD_CFG_GPO(GPP_A08, 1, PLTRST),
 	/* GPP_A09:     WWAN_EN */
 	PAD_CFG_GPO(GPP_A09, 0, PLTRST),
 	/* GPP_A10:     WWAN_RF_DISABLE_ODL */
@@ -382,7 +382,7 @@ static const struct pad_config early_gpio_table[] = {
 /* Pad configuration in romstage */
 static const struct pad_config romstage_gpio_table[] = {
 	/* GPP_A08:     SSD_PERST_L */
-	PAD_CFG_GPO(GPP_A08, 1, PLTRST),
+	PAD_CFG_GPO(GPP_A08, 0, PLTRST),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

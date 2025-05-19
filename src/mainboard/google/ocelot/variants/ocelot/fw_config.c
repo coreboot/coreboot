@@ -20,10 +20,6 @@ static const struct pad_config hda_enable_pads[] = {
 	PAD_CFG_NF(GPP_D12, NATIVE, DEEP, NF1),
 	/* HDA_SDI_0 */
 	PAD_CFG_NF(GPP_D13, NATIVE, DEEP, NF1),
-	/* HDA_RST_B */
-	PAD_CFG_NF(GPP_D16, NONE, DEEP, NF1),
-	/* HDA_SDI_1 */
-	PAD_CFG_NF(GPP_D17, NATIVE, DEEP, NF1),
 
 	/* DMIC_CLK */
 	PAD_CFG_NF(GPP_S04, NONE, DEEP, NF5),
@@ -86,11 +82,6 @@ static const struct pad_config sndw_alc721_enable_pads[] = {
 	PAD_CFG_NF(GPP_S06, NONE, DEEP, NF3),
 	/* SNDW1_DATA  */
 	PAD_CFG_NF(GPP_S07, NONE, DEEP, NF3),
-
-	/* DMIC_CLK */
-	PAD_CFG_NF(GPP_D16, NONE, DEEP, NF3),
-	/* DMIC_DATA */
-	PAD_CFG_NF(GPP_D17, NONE, DEEP, NF3),
 };
 
 static const struct pad_config audio_disable_pads[] = {
@@ -107,8 +98,6 @@ static const struct pad_config audio_disable_pads[] = {
 	PAD_NC(GPP_D11, NONE),
 	PAD_NC(GPP_D12, NONE),
 	PAD_NC(GPP_D13, NONE),
-	PAD_NC(GPP_D16, NONE),
-	PAD_NC(GPP_D17, NONE),
 };
 
 static const struct pad_config x1slot_pads[] = {
@@ -116,8 +105,6 @@ static const struct pad_config x1slot_pads[] = {
 	PAD_CFG_GPO(GPP_A08, 1, PLTRST),
 	/* GPP_D19:     X1_DT_PCIE_RST_N */
 	PAD_CFG_GPO(GPP_D19, 1, PLTRST),
-	/* GPP_B25:     X1_SLOT_WAKE_N */
-	PAD_CFG_GPI_SCI_LOW(GPP_B25, NONE, DEEP, LEVEL),
 };
 
 static const struct pad_config x1slot_disable_pads[] = {
@@ -125,8 +112,6 @@ static const struct pad_config x1slot_disable_pads[] = {
 	PAD_CFG_GPO(GPP_A08, 0, PLTRST),
 	/* GPP_D19:     X1_DT_PCIE_RST_N */
 	PAD_NC(GPP_D19, NONE),
-	/* GPP_B25:     X1_SLOT_WAKE_N */
-	PAD_NC(GPP_B25, NONE)
 };
 
 /*

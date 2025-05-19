@@ -189,7 +189,11 @@ chip soc/intel/alderlake
 			    .backlight_off_delay_ms = 200,
 			    .backlight_pwm_hz = 200,
 			}"
-			register "gfx" = "GMA_DEFAULT_PANEL(0)"
+			chip drivers/gfx/generic
+				register "device_count" = "1"
+				register "device[0].name" = ""LCD0""
+				device generic 0 on end
+			end
 		end
 		device ref dtt on end
 		device ref gna on end

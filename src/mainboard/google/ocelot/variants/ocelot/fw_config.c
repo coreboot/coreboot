@@ -138,8 +138,8 @@ static const struct pad_config x1slot_disable_pads[] = {
  * at much later time and time between RST# and PERSET# is guaranteed.
  */
 static const struct pad_config pre_mem_wwan_pwr_seq1_pads[] = {
-	/* GPP_H16:     WWAN_PWREN */
-	PAD_CFG_GPO(GPP_H16, 1, PLTRST),
+	/* GPP_E01:     EN_WWAN_PWR */
+	PAD_CFG_GPO(GPP_E01, 1, PLTRST),
 	/* GPP_A09:  M.2_WWAN_FCP_OFF_N */
 	PAD_CFG_GPO(GPP_A09, 0, PLTRST),
 	/* GPP_B20:     M.2_WWAN_RST_N */
@@ -169,8 +169,8 @@ static const struct pad_config wwan_disable_pads[] = {
 	PAD_NC(GPP_D03, NONE),
 	/* GPP_B20:     M.2_WWAN_RST_N */
 	PAD_NC(GPP_B20, NONE),
-	/* GPP_H16:     WWAN_PWREN */
-	PAD_NC(GPP_H16, NONE),
+	/* GPP_E01:     EN_WWAN_PWR */
+	PAD_NC(GPP_E01, NONE),
 	/* GPP_A10:     M.2_WWAN_DISABLE_N */
 	PAD_NC(GPP_A10, NONE),
 	/* GPP_E02:     WWAN_WAKE_GPIO_N */

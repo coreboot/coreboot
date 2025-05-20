@@ -240,6 +240,10 @@ chip soc/intel/alderlake
 				register "generic.reset_off_delay_ms" = "2"
 				register "generic.has_power_resource" = "1"
 				register "generic.use_gpio_for_status" = "true"
+				register "generic.property_count" = "1"
+				register "generic.property_list[0].type" = "ACPI_DP_TYPE_REFERENCE"
+				register "generic.property_list[0].name" = ""panel""
+				register "generic.property_list[0].string" = ""\\_SB.PCI0.GFX0.LCD0""
 				register "hid_desc_reg_offset" = "0x1"
 				device i2c 4F on end
 			end

@@ -30,8 +30,10 @@ romstage-y += ../common/pmif_spmi.c pmif_spmi.c
 romstage-y += ../common/rtc.c ../common/rtc_osc_init.c ../common/rtc_mt6359p.c
 
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += ../common/bl31.c
+ramstage-y += ../common/dpm.c ../common/dpm_v2.c
 ramstage-y += ../common/dramc_info.c
 ramstage-y += ../common/emi.c
+ramstage-y += ../common/mcu.c
 ramstage-y += ../common/memory.c
 ramstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 ramstage-y += ../common/mt6315.c mt6315.c
@@ -50,6 +52,17 @@ CPPFLAGS_common += -Isrc/soc/mediatek/mt8189/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/include
 
 MT8189_BLOB_DIR := 3rdparty/blobs/soc/mediatek/mt8189
+
+firmware-files := \
+	$(CONFIG_DPM_DM_FIRMWARE) \
+	$(CONFIG_DPM_PM_FIRMWARE)
+
+$(foreach fw, $(call strip_quotes,$(firmware-files)), \
+	$(eval $(fw)-file := $(MT8189_BLOB_DIR)/$(fw)) \
+	$(eval $(fw)-type := raw) \
+	$(eval $(fw)-compression := LZ4) \
+	$(if $(wildcard $($(fw)-file)), $(eval cbfs-files-y += $(fw)), ) \
+)
 
 DRAM_CBFS := $(CONFIG_CBFS_PREFIX)/dram
 $(DRAM_CBFS)-file := $(MT8189_BLOB_DIR)/dram.elf

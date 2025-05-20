@@ -7,6 +7,7 @@ end
 fw_config
 	field AUDIO_AMP 25 27
 		option AMP_RT9123 0
+		option AMP_RT1019 1
 		option AMP_ALC5645 3
 	end
 end

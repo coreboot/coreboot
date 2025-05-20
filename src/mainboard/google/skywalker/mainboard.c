@@ -17,7 +17,7 @@
 
 #define AFE_SE_SECURE_CON1	(AUDIO_BASE + 0x5634)
 
-static void configure_rt9123(void)
+static void configure_rt9123_rt1019(void)
 {
 	/* SoC I2S */
 	gpio_set_mode(GPIO_I2SOUT1_BCK, GPIO_FUNC(DMIC0_DAT0, I2SOUT1_BCK));
@@ -49,8 +49,9 @@ static void configure_audio(void)
 	/* Switch to normal mode */
 	write32p(AFE_SE_SECURE_CON1, 0x0);
 
-	if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_RT9123)))
-		configure_rt9123();
+	if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_RT9123)) ||
+	    fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_RT1019)))
+		configure_rt9123_rt1019();
 	else if (fw_config_probe(FW_CONFIG(AUDIO_AMP, AMP_ALC5645)))
 		configure_alc5645();
 	else

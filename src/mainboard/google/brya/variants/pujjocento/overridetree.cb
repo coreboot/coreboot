@@ -49,6 +49,16 @@ chip soc/intel/alderlake
 	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3 WWAN(LTE)
 
 	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
+	register "tcss_ports[1]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
+
+	# SOC Aux orientation override:
+	# This is a bitfield that corresponds to up to 4 TCSS ports.
+	# Bits (0,1) allocated for TCSS Port1 configuration and Bits (2,3)for TCSS Port2.
+	# TcssAuxOri = 0101b
+	# Bit0,Bit2 set to "1" indicates no retimer on USBC Ports
+	# Bit1,Bit3 set to "0" indicates Aux lines are not swapped on the
+	# motherboard to USBC connector
+	register "tcss_aux_ori" = "0"
 
 
 	# HD Audio

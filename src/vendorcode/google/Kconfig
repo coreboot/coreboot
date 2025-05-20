@@ -38,17 +38,3 @@ config MAINBOARD_HAS_GOOGLE_STRAUSS_KEYBOARD
 config ACPI_FNKEY_GEN_SCANCODE
 	default 94 if MAINBOARD_HAS_GOOGLE_STRAUSS_KEYBOARD
 
-config GOOGLE_PVMFW_CBMEM
-	bool "Enable reserving memory for pvmfw using cbmem"
-	default n
-	help
-	  Select this config to enable allocating a region for Android protected
-	  virtual machine firmware within cbmem. The region shall be filled by
-	  the payload and the purpose is to just reserve the memory.
-	  cbmem is used to make sure that the region won't overlap with other
-	  reserved regions or device regions.
-
-config GOOGLE_PVMFW_CBMEM_SIZE
-	hex "Size of the pvmfw buffer to be reserved using cbmem"
-	depends on GOOGLE_PVMFW_CBMEM
-	default 0x400000

@@ -24,6 +24,7 @@ romstage-$(CONFIG_CHROMEOS_DRAM_PART_NUMBER_IN_CBI) += dram_part_num_override.c
 
 ramstage-$(CONFIG_PLATFORM_HAS_LOW_BATTERY_INDICATOR) += battery.c
 ramstage-$(CONFIG_CHROMEOS_FW_SPLASH_SCREEN) += splash.c
+ramstage-$(CONFIG_CHROMEOS_PVMFW_CBMEM) += pvmfw_cbmem.c
 
 # Add logo to the cbfs image
 BMP_LOGO_COMPRESS_FLAG := $(CBFS_COMPRESS_FLAG)

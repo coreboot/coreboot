@@ -9,7 +9,7 @@ static void add_pvmfw_cbmem(void *unused)
 	(void)unused;
 	void *pvmfw;
 
-	pvmfw = cbmem_add(CBMEM_ID_PVMFW, CONFIG_GOOGLE_PVMFW_CBMEM_SIZE);
+	pvmfw = cbmem_add(CBMEM_ID_PVMFW, CONFIG_CHROMEOS_PVMFW_CBMEM_SIZE);
 	if (!pvmfw)
 		printk(BIOS_ERR, "Failed to add pvmfw info to CBMEM\n");
 }

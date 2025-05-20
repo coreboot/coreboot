@@ -30,6 +30,7 @@
 
 config ARCH_ARM64
 	select LITTLE_ENDIAN
+	select ARCH_HAS_MEM_FUNCTIONS
 
 if ARCH_ARM64
 

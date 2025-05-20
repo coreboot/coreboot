@@ -32,7 +32,7 @@
 
 #include <libpayload.h>
 
-static void *default_memset(void *const s, const int c, size_t n)
+void *default_memset(void *const s, const int c, size_t n)
 {
 	size_t i;
 	u8 *dst = s;
@@ -57,10 +57,7 @@ static void *default_memset(void *const s, const int c, size_t n)
 	return s;
 }
 
-void *memset(void *s, int c, size_t n)
-	__attribute__((weak, alias("default_memset")));
-
-static void *default_memcpy(void *dst, const void *src, size_t n)
+void *default_memcpy(void *dst, const void *src, size_t n)
 {
 	size_t i;
 	void *ret = dst;
@@ -81,10 +78,7 @@ static void *default_memcpy(void *dst, const void *src, size_t n)
 	return ret;
 }
 
-void *memcpy(void *dst, const void *src, size_t n)
-	__attribute__((weak, alias("default_memcpy")));
-
-static void *default_memmove(void *dst, const void *src, size_t n)
+void *default_memmove(void *dst, const void *src, size_t n)
 {
 	size_t offs;
 	ssize_t i;
@@ -110,8 +104,14 @@ static void *default_memmove(void *dst, const void *src, size_t n)
 	return dst;
 }
 
+#if !CONFIG(LP_ARCH_HAS_MEM_FUNCTIONS)
+void *memcpy(void *dst, const void *src, size_t n)
+	__attribute__((alias("default_memcpy")));
+void *memset(void *s, int c, size_t n)
+	__attribute__((alias("default_memset")));
 void *memmove(void *dst, const void *src, size_t n)
-	__attribute__((weak, alias("default_memmove")));
+	__attribute__((alias("default_memmove")));
+#endif
 
 /**
  * Compare two memory areas.
@@ -124,7 +124,7 @@ void *memmove(void *dst, const void *src, size_t n)
  * 	   greater than s2 respectively.
  */
 
-static int default_memcmp(const void *s1, const void *s2, size_t n)
+int memcmp(const void *s1, const void *s2, size_t n)
 {
 	size_t i = 0;
 	const unsigned long *w1 = s1, *w2 = s2;
@@ -141,9 +141,6 @@ static int default_memcmp(const void *s1, const void *s2, size_t n)
 
 	return 0;
 }
-
-int memcmp(const void *s1, const void *s2, size_t n)
-	__attribute__((weak, alias("default_memcmp")));
 
 void *memchr(const void *s, int c, size_t n)
 {

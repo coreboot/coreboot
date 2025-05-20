@@ -505,6 +505,13 @@ config IO_ADDRESS_SPACE
 	  This option is turned on if the target system has a separate
 	  IO address space. This is typically only the case on x86.
 
+config ARCH_HAS_MEM_FUNCTIONS
+	default n
+	bool
+	help
+	  Architectures must select this when they want to override memset,
+	  memcpy and memmove with optimized assembly implementations.
+
 source "arch/arm/Kconfig"
 source "arch/arm64/Kconfig"
 source "arch/x86/Kconfig"

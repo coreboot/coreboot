@@ -103,3 +103,45 @@ void *memcpy(void *dest, const void *src, size_t n)
 
 	return dest;
 }
+
+void *memmove(void *dest, const void *src, size_t n)
+{
+	unsigned long d0, d1, d2;
+
+	if (dest < src)
+		return memcpy(dest, src, n);
+
+#if CONFIG(LP_ARCH_X86_64)
+	asm volatile(
+		"std\n\t"
+		"dec %%rdi\n\t"
+		"dec %%rsi\n\t"
+		"rep ; movsb\n\t"
+		"mov %4, %%rcx\n\t"
+		"sub $7, %%rdi\n\t"
+		"sub $7, %%rsi\n\t"
+		"rep ; movsq\n\t"
+		"cld\n\t"
+		: "=&c" (d0), "=&D" (d1), "=&S" (d2)
+		: "0" (n & 7), "g" (n >> 3), "1" (dest + n), "2" (src + n)
+		: "memory"
+	);
+#else
+	asm volatile(
+		"std\n\t"
+		"dec %%edi\n\t"
+		"dec %%esi\n\t"
+		"rep ; movsb\n\t"
+		"mov %4, %%ecx\n\t"
+		"sub $3, %%edi\n\t"
+		"sub $3, %%esi\n\t"
+		"rep ; movsl\n\t"
+		"cld\n\t"
+		: "=&c" (d0), "=&D" (d1), "=&S" (d2)
+		: "0" (n & 3), "g" (n >> 2), "1" (dest + n), "2" (src + n)
+		: "memory"
+	);
+#endif
+
+	return dest;
+}

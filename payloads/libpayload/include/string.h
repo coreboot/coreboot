@@ -44,6 +44,15 @@ int memcmp(const void *s1, const void *s2, size_t len);
 /** @} */
 
 /**
+ * @defgroup default memory functions remain available under separate names, in
+ * case architecture implementations want to fall back to them in certain cases.
+ */
+void *default_memset(void *s, int c, size_t n);
+void *default_memcpy(void *dst, const void *src, size_t n);
+void *default_memmove(void *dst, const void *src, size_t n);
+/** @} */
+
+/**
  * @defgroup string String functions
  * @{
  */

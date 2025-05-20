@@ -30,3 +30,4 @@
 
 config ARCH_ARM
 	select LITTLE_ENDIAN
+	select ARCH_HAS_MEM_FUNCTIONS if GPL

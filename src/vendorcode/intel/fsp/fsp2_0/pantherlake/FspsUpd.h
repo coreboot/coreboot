@@ -2026,189 +2026,189 @@ typedef struct {
 
 /** Offset 0x1401 - Reserved
 **/
-  UINT8                       Reserved50[11];
+  UINT8                       Reserved50[67];
 
-/** Offset 0x140C - Address of PCH_DEVICE_INTERRUPT_CONFIG table.
+/** Offset 0x1444 - Address of PCH_DEVICE_INTERRUPT_CONFIG table.
   The address of the table of PCH_DEVICE_INTERRUPT_CONFIG.
 **/
   UINT32                      DevIntConfigPtr;
 
-/** Offset 0x1410 - Number of DevIntConfig Entry
+/** Offset 0x1448 - Number of DevIntConfig Entry
   Number of Device Interrupt Configuration Entry. If this is not zero, the DevIntConfigPtr
   must not be NULL.
 **/
   UINT8                       NumOfDevIntConfig;
 
-/** Offset 0x1411 - Select GPIO IRQ Route
+/** Offset 0x1449 - Select GPIO IRQ Route
   GPIO IRQ Select. The valid value is 14 or 15.
 **/
   UINT8                       GpioIrqRoute;
 
-/** Offset 0x1412 - Select SciIrqSelect
+/** Offset 0x144A - Select SciIrqSelect
   SCI IRQ Select. The valid value is 9, 10, 11, and 20, 21, 22, 23 for APIC only.
 **/
   UINT8                       SciIrqSelect;
 
-/** Offset 0x1413 - Select TcoIrqSelect
+/** Offset 0x144B - Select TcoIrqSelect
   TCO IRQ Select. The valid value is 9, 10, 11, 20, 21, 22, 23.
 **/
   UINT8                       TcoIrqSelect;
 
-/** Offset 0x1414 - Enable/Disable Tco IRQ
+/** Offset 0x144C - Enable/Disable Tco IRQ
   Enable/disable TCO IRQ
   $EN_DIS
 **/
   UINT8                       TcoIrqEnable;
 
-/** Offset 0x1415 - Reserved
+/** Offset 0x144D - Reserved
 **/
   UINT8                       Reserved51[5];
 
-/** Offset 0x141A - Mask to enable the usage of external V1p05 VR rail in specific S0ix or Sx states
+/** Offset 0x1452 - Mask to enable the usage of external V1p05 VR rail in specific S0ix or Sx states
   Enable External V1P05 Rail in: BIT0:S0i1/S0i2, BIT1:S0i3, BIT2:S3, BIT3:S4, BIT5:S5
 **/
   UINT8                       PchFivrExtV1p05RailEnabledStates;
 
-/** Offset 0x141B - Mask to enable the platform configuration of external V1p05 VR rail
+/** Offset 0x1453 - Mask to enable the platform configuration of external V1p05 VR rail
   External V1P05 Rail Supported Configuration
 **/
   UINT8                       PchFivrExtV1p05RailSupportedVoltageStates;
 
-/** Offset 0x141C - External V1P05 Voltage Value that will be used in S0i2/S0i3 states
+/** Offset 0x1454 - External V1P05 Voltage Value that will be used in S0i2/S0i3 states
   Value is given in 2.5mV increments (0=0mV, 1=2.5mV, 2=5mV...)
 **/
   UINT16                      PchFivrExtV1p05RailVoltage;
 
-/** Offset 0x141E - External V1P05 Icc Max Value
+/** Offset 0x1456 - External V1P05 Icc Max Value
   Granularity of this setting is 1mA and maximal possible value is 200mA
 **/
   UINT8                       PchFivrExtV1p05RailIccMax;
 
-/** Offset 0x141F - Mask to enable the usage of external Vnn VR rail in specific S0ix or Sx states
+/** Offset 0x1457 - Mask to enable the usage of external Vnn VR rail in specific S0ix or Sx states
   Enable External Vnn Rail in: BIT0:S0i1/S0i2, BIT1:S0i3, BIT2:S3, BIT3:S4, BIT5:S5
 **/
   UINT8                       PchFivrExtVnnRailEnabledStates;
 
-/** Offset 0x1420 - Mask to enable the platform configuration of external Vnn VR rail
+/** Offset 0x1458 - Mask to enable the platform configuration of external Vnn VR rail
   External Vnn Rail Supported Configuration
 **/
   UINT8                       PchFivrExtVnnRailSupportedVoltageStates;
 
-/** Offset 0x1421 - Reserved
+/** Offset 0x1459 - Reserved
 **/
   UINT8                       Reserved52;
 
-/** Offset 0x1422 - External Vnn Voltage Value that will be used in S0ix/Sx states
+/** Offset 0x145A - External Vnn Voltage Value that will be used in S0ix/Sx states
   Value is given in 2.5mV increments (0=0mV, 1=2.5mV, 2=5mV...), Default is set to 420
 **/
   UINT16                      PchFivrExtVnnRailVoltage;
 
-/** Offset 0x1424 - External Vnn Icc Max Value that will be used in S0ix/Sx states
+/** Offset 0x145C - External Vnn Icc Max Value that will be used in S0ix/Sx states
   Granularity of this setting is 1mA and maximal possible value is 200mA
 **/
   UINT8                       PchFivrExtVnnRailIccMax;
 
-/** Offset 0x1425 - Mask to enable the usage of external Vnn VR rail in Sx states
+/** Offset 0x145D - Mask to enable the usage of external Vnn VR rail in Sx states
   Use only if Ext Vnn Rail config is different in Sx. Enable External Vnn Rail in
   Sx: BIT0-1:Reserved, BIT2:S3, BIT3:S4, BIT5:S5
 **/
   UINT8                       PchFivrExtVnnRailSxEnabledStates;
 
-/** Offset 0x1426 - External Vnn Voltage Value that will be used in Sx states
+/** Offset 0x145E - External Vnn Voltage Value that will be used in Sx states
   Use only if Ext Vnn Rail config is different in Sx. Value is given in 2.5mV increments
   (0=0mV, 1=2.5mV, 2=5mV...)
 **/
   UINT16                      PchFivrExtVnnRailSxVoltage;
 
-/** Offset 0x1428 - External Vnn Icc Max Value that will be used in Sx states
+/** Offset 0x1460 - External Vnn Icc Max Value that will be used in Sx states
   Use only if Ext Vnn Rail config is different in Sx. Granularity of this setting
   is 1mA and maximal possible value is 200mA
 **/
   UINT8                       PchFivrExtVnnRailSxIccMax;
 
-/** Offset 0x1429 - Transition time in microseconds from Low Current Mode Voltage to High Current Mode Voltage
+/** Offset 0x1461 - Transition time in microseconds from Low Current Mode Voltage to High Current Mode Voltage
   This field has 1us resolution. When value is 0 PCH will not transition VCCIN_AUX
   to low current mode voltage.
 **/
   UINT8                       PchFivrVccinAuxLowToHighCurModeVolTranTime;
 
-/** Offset 0x142A - Transition time in microseconds from Retention Mode Voltage to High Current Mode Voltage
+/** Offset 0x1462 - Transition time in microseconds from Retention Mode Voltage to High Current Mode Voltage
   This field has 1us resolution. When value is 0 PCH will not transition VCCIN_AUX
   to retention mode voltage.
 **/
   UINT8                       PchFivrVccinAuxRetToHighCurModeVolTranTime;
 
-/** Offset 0x142B - Transition time in microseconds from Retention Mode Voltage to Low Current Mode Voltage
+/** Offset 0x1463 - Transition time in microseconds from Retention Mode Voltage to Low Current Mode Voltage
   This field has 1us resolution. When value is 0 PCH will not transition VCCIN_AUX
   to retention mode voltage.
 **/
   UINT8                       PchFivrVccinAuxRetToLowCurModeVolTranTime;
 
-/** Offset 0x142C - Transition time in microseconds from Off (0V) to High Current Mode Voltage
+/** Offset 0x1464 - Transition time in microseconds from Off (0V) to High Current Mode Voltage
   This field has 1us resolution. When value is 0 Transition to 0V is disabled.
 **/
   UINT16                      PchFivrVccinAuxOffToHighCurModeVolTranTime;
 
-/** Offset 0x142E - FIVR Dynamic Power Management
+/** Offset 0x1466 - FIVR Dynamic Power Management
   Enable/Disable FIVR Dynamic Power Management.
   $EN_DIS
 **/
   UINT8                       PchFivrDynPm;
 
-/** Offset 0x142F - Reserved
+/** Offset 0x1467 - Reserved
 **/
   UINT8                       Reserved53;
 
-/** Offset 0x1430 - External V1P05 Icc Max Value
+/** Offset 0x1468 - External V1P05 Icc Max Value
   Granularity of this setting is 1mA and maximal possible value is 500mA
 **/
   UINT16                      PchFivrExtV1p05RailIccMaximum;
 
-/** Offset 0x1432 - External Vnn Icc Max Value that will be used in S0ix/Sx states
+/** Offset 0x146A - External Vnn Icc Max Value that will be used in S0ix/Sx states
   Granularity of this setting is 1mA and maximal possible value is 500mA
 **/
   UINT16                      PchFivrExtVnnRailIccMaximum;
 
-/** Offset 0x1434 - External Vnn Icc Max Value that will be used in Sx states
+/** Offset 0x146C - External Vnn Icc Max Value that will be used in Sx states
   Use only if Ext Vnn Rail config is different in Sx. Granularity of this setting
   is 1mA and maximal possible value is 500mA
 **/
   UINT16                      PchFivrExtVnnRailSxIccMaximum;
 
-/** Offset 0x1436 - External V1P05 Control Ramp Timer value
+/** Offset 0x146E - External V1P05 Control Ramp Timer value
   Hold off time to be used when changing the v1p05_ctrl for external bypass value in us
 **/
   UINT8                       PchFivrExtV1p05RailCtrlRampTmr;
 
-/** Offset 0x1437 - External VNN Control Ramp Timer value
+/** Offset 0x146F - External VNN Control Ramp Timer value
   Hold off time to be used when changing the vnn_ctrl for external bypass value in us
 **/
   UINT8                       PchFivrExtVnnRailCtrlRampTmr;
 
-/** Offset 0x1438 - PCH Compatibility Revision ID
+/** Offset 0x1470 - PCH Compatibility Revision ID
   This member describes whether or not the CRID feature of PCH should be enabled.
   $EN_DIS
 **/
   UINT8                       PchCrid;
 
-/** Offset 0x1439 - PCH Legacy IO Low Latency Enable
+/** Offset 0x1471 - PCH Legacy IO Low Latency Enable
   Set to enable low latency of legacy IO. <b>0: Disable</b>, 1: Enable
   $EN_DIS
 **/
   UINT8                       PchLegacyIoLowLatency;
 
-/** Offset 0x143A - Reserved
+/** Offset 0x1472 - Reserved
 **/
   UINT8                       Reserved54;
 
-/** Offset 0x143B - PCH Unlock SideBand access
+/** Offset 0x1473 - PCH Unlock SideBand access
   The SideBand PortID mask for certain end point (e.g. PSFx) will be locked before
   3rd party code execution. 0: Lock SideBand access; 1: Unlock SideBand access.
   $EN_DIS
 **/
   UINT8                       PchSbAccessUnlock;
 
-/** Offset 0x143C - Enable 8254 Static Clock Gating
+/** Offset 0x1474 - Enable 8254 Static Clock Gating
   Set 8254CGE=1 is required for SLP_S0 support. However, set 8254CGE=1 in POST time
   might fail to boot legacy OS using 8254 timer. Make sure it is disabled to support
   legacy OS using 8254 timer. Also enable this while S0ix is enabled.
@@ -2216,7 +2216,7 @@ typedef struct {
 **/
   UINT8                       Enable8254ClockGating;
 
-/** Offset 0x143D - Enable 8254 Static Clock Gating On S3
+/** Offset 0x1475 - Enable 8254 Static Clock Gating On S3
   This is only applicable when Enable8254ClockGating is disabled. FSP will do the
   8254 CGE programming on S3 resume when Enable8254ClockGatingOnS3 is enabled. This
   avoids the SMI requirement for the programming.
@@ -2224,172 +2224,172 @@ typedef struct {
 **/
   UINT8                       Enable8254ClockGatingOnS3;
 
-/** Offset 0x143E - Enable PCH Io Apic Entry 24-119
+/** Offset 0x1476 - Enable PCH Io Apic Entry 24-119
   0: Disable; 1: Enable.
   $EN_DIS
 **/
   UINT8                       PchIoApicEntry24_119;
 
-/** Offset 0x143F - PCH Io Apic ID
+/** Offset 0x1477 - PCH Io Apic ID
   This member determines IOAPIC ID. Default is 0x02.
 **/
   UINT8                       PchIoApicId;
 
-/** Offset 0x1440 - CNVi Configuration
+/** Offset 0x1478 - CNVi Configuration
   This option allows for automatic detection of Connectivity Solution. [Auto Detection]
   assumes that CNVi will be enabled when available, [Disable] allows for disabling CNVi.
   0:Disable, 1:Auto
 **/
   UINT8                       CnviMode;
 
-/** Offset 0x1441 - CNVi Wi-Fi Core
+/** Offset 0x1479 - CNVi Wi-Fi Core
   Enable/Disable CNVi Wi-Fi Core, Default is ENABLE. 0: DISABLE, 1: ENABLE
   $EN_DIS
 **/
   UINT8                       CnviWifiCore;
 
-/** Offset 0x1442 - CNVi BT Core
+/** Offset 0x147A - CNVi BT Core
   Enable/Disable CNVi BT Core, Default is ENABLE. 0: DISABLE, 1: ENABLE
   $EN_DIS
 **/
   UINT8                       CnviBtCore;
 
-/** Offset 0x1443 - CNVi BT Interface
+/** Offset 0x147B - CNVi BT Interface
   This option configures BT device interface to either USB/PCI
   1:USB, 2:PCI
 **/
   UINT8                       CnviBtInterface;
 
-/** Offset 0x1444 - CNVi BT Audio Offload
+/** Offset 0x147C - CNVi BT Audio Offload
   Enable/Disable BT Audio Offload, Default is ENABLE. 0: DISABLE, 1: ENABLE
   $EN_DIS
 **/
   UINT8                       CnviBtAudioOffload;
 
-/** Offset 0x1445 - Reserved
+/** Offset 0x147D - Reserved
 **/
   UINT8                       Reserved55[3];
 
-/** Offset 0x1448 - CNVi RF_RESET pin muxing
+/** Offset 0x1480 - CNVi RF_RESET pin muxing
   Select CNVi RF_RESET# pin depending on board routing. LP/P/M: GPP_A8 = 0x2942E408(default)
   or GPP_F4 = 0x194CE404. H/S: 0. Refer to GPIO_*_MUXING_CNVI_RF_RESET_* in GpioPins*.h.
 **/
   UINT32                      CnviRfResetPinMux;
 
-/** Offset 0x144C - CNVi CLKREQ pin muxing
+/** Offset 0x1484 - CNVi CLKREQ pin muxing
   Select CNVi CLKREQ pin depending on board routing. LP/P/M: GPP_A9 = 0x3942E609(default)
   or GPP_F5 = 0x394CE605. H/S: 0. Refer to GPIO_*_MUXING_CNVI_CRF_XTAL_CLKREQ_* in
   GpioPins*.h.
 **/
   UINT32                      CnviClkreqPinMux;
 
-/** Offset 0x1450 - Reserved
+/** Offset 0x1488 - Reserved
 **/
   UINT8                       Reserved56;
 
-/** Offset 0x1451 - Enable Device 4
+/** Offset 0x1489 - Enable Device 4
   Enable/disable Device 4
   $EN_DIS
 **/
   UINT8                       Device4Enable;
 
-/** Offset 0x1452 - Skip PAM regsiter lock
+/** Offset 0x148A - Skip PAM regsiter lock
   Enable: PAM register will not be locked by RC, platform code should lock it, Disable(Default):
   PAM registers will be locked by RC
   $EN_DIS
 **/
   UINT8                       SkipPamLock;
 
-/** Offset 0x1453 - Reserved
+/** Offset 0x148B - Reserved
 **/
   UINT8                       Reserved57;
 
-/** Offset 0x1454 - PCH HDA Verb Table Entry Number
+/** Offset 0x148C - PCH HDA Verb Table Entry Number
   Number of Entries in Verb Table.
 **/
   UINT8                       PchHdaVerbTableEntryNum;
 
-/** Offset 0x1455 - Reserved
+/** Offset 0x148D - Reserved
 **/
   UINT8                       Reserved58[3];
 
-/** Offset 0x1458 - PCH HDA Verb Table Pointer
+/** Offset 0x1490 - PCH HDA Verb Table Pointer
   Pointer to Array of pointers to Verb Table.
 **/
   UINT64                      PchHdaVerbTablePtr;
 
-/** Offset 0x1460 - PCH HDA Codec Sx Wake Capability
+/** Offset 0x1498 - PCH HDA Codec Sx Wake Capability
   Capability to detect wake initiated by a codec in Sx
 **/
   UINT8                       PchHdaCodecSxWakeCapability;
 
-/** Offset 0x1461 - Enable Pme
+/** Offset 0x1499 - Enable Pme
   Enable Azalia wake-on-ring.
   $EN_DIS
 **/
   UINT8                       PchHdaPme;
 
-/** Offset 0x1462 - HD Audio Link Frequency
+/** Offset 0x149A - HD Audio Link Frequency
   HDA Link Freq (PCH_HDAUDIO_LINK_FREQUENCY enum): 0: 6MHz, 1: 12MHz, 2: 24MHz.
   0: 6MHz, 1: 12MHz, 2: 24MHz
 **/
   UINT8                       PchHdaLinkFrequency;
 
-/** Offset 0x1463 - Reserved
+/** Offset 0x149B - Reserved
 **/
   UINT8                       Reserved59[2];
 
-/** Offset 0x1465 - HD Audio Microphone Privacy applied for SoundWire Link number 0 in HW Mode
+/** Offset 0x149D - HD Audio Microphone Privacy applied for SoundWire Link number 0 in HW Mode
   HD Audio Microphone Privacy applied for SoundWire Link number 0 in HW Mode: 0: Disable, 1: Enable
   $EN_DIS
 **/
   UINT8                       PchHdaMicPrivacyHwModeSoundWire0;
 
-/** Offset 0x1466 - HD Audio Microphone Privacy applied for SoundWire Link number 1 in HW Mode
+/** Offset 0x149E - HD Audio Microphone Privacy applied for SoundWire Link number 1 in HW Mode
   HD Audio Microphone Privacy applied for SoundWire Link number 1 in HW Mode: 0: Disable, 1: Enable
   $EN_DIS
 **/
   UINT8                       PchHdaMicPrivacyHwModeSoundWire1;
 
-/** Offset 0x1467 - HD Audio Microphone Privacy applied for SoundWire Link number 2 in HW Mode
+/** Offset 0x149F - HD Audio Microphone Privacy applied for SoundWire Link number 2 in HW Mode
   HD Audio Microphone Privacy applied for SoundWire Link number 2 in HW Mode: 0: Disable, 1: Enable
   $EN_DIS
 **/
   UINT8                       PchHdaMicPrivacyHwModeSoundWire2;
 
-/** Offset 0x1468 - HD Audio Microphone Privacy applied for SoundWire Link number 3 in HW Mode
+/** Offset 0x14A0 - HD Audio Microphone Privacy applied for SoundWire Link number 3 in HW Mode
   HD Audio Microphone Privacy applied for SoundWire Link number 3 in HW Mode: 0: Disable, 1: Enable
   $EN_DIS
 **/
   UINT8                       PchHdaMicPrivacyHwModeSoundWire3;
 
-/** Offset 0x1469 - HD Audio Microphone Privacy applied for SoundWire Link number 4 in HW Mode
+/** Offset 0x14A1 - HD Audio Microphone Privacy applied for SoundWire Link number 4 in HW Mode
   HD Audio Microphone Privacy applied for SoundWire Link number 4 in HW Mode: 0: Disable, 1: Enable
   $EN_DIS
 **/
   UINT8                       PchHdaMicPrivacyHwModeSoundWire4;
 
-/** Offset 0x146A - HD Audio Microphone Privacy applied for Dmic in HW Mode
+/** Offset 0x14A2 - HD Audio Microphone Privacy applied for Dmic in HW Mode
   HD Audio Microphone Privacy applied for Dmic in HW Mode: 0: Disable, 1: Enable
   $EN_DIS
 **/
   UINT8                       PchHdaMicPrivacyHwModeDmic;
 
-/** Offset 0x146B - Reserved
+/** Offset 0x14A3 - Reserved
 **/
   UINT8                       Reserved60[13];
 
-/** Offset 0x1478 - Pointer to ChipsetInit Binary
+/** Offset 0x14B0 - Pointer to ChipsetInit Binary
   ChipsetInit Binary Pointer.
 **/
   UINT64                      ChipsetInitBinPtr;
 
-/** Offset 0x1480 - Length of ChipsetInit Binary
+/** Offset 0x14B8 - Length of ChipsetInit Binary
   ChipsetInit Binary Length.
 **/
   UINT32                      ChipsetInitBinLen;
 
-/** Offset 0x1484 - Reserved
+/** Offset 0x14BC - Reserved
 **/
   UINT8                       Reserved61[36];
 } FSP_S_CONFIG;
@@ -2410,11 +2410,11 @@ typedef struct {
 **/
   FSP_S_CONFIG                FspsConfig;
 
-/** Offset 0x14A8
+/** Offset 0x14E0
 **/
   UINT8                       FspsUpdRsvd36[6];
 
-/** Offset 0x14AE
+/** Offset 0x14E6
 **/
   UINT16                      UpdTerminator;
 } FSPS_UPD;

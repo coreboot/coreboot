@@ -33,7 +33,8 @@
 #elif CONFIG(BOARD_GOOGLE_KINMEN)
  #define EC_SYNC_IRQ	GPP_E07_IRQ
  #define GPIO_PCH_WP	GPP_D02
-#define GPIO_SLP_S0_GATE	0 /* Not Connected */
+/* Used to gate SoC's SLP_S0# signal */
+#define GPIO_SLP_S0_GATE	GPP_V17
 #endif
 
 #endif /* __BASEBOARD_GPIO_H__ */

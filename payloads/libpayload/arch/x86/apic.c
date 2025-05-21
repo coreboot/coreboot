@@ -249,7 +249,7 @@ static void apic_init_timer(void)
 		apic_write32(APIC_TIMER_INIT_COUNT, UINT32_MAX);
 
 		/* This is safe because apic_initialized() returns false so
-		 * arch_ndelay() falls back to a busy loop. */
+		 * ndelay() falls back to a busy loop. */
 		mdelay(1);
 
 		ticks_per_ms =

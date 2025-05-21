@@ -104,7 +104,7 @@ static void test_speaker_disable(void **state)
 	speaker_disable();
 }
 
-void arch_ndelay(uint64_t ns)
+void ndelay(uint64_t ns)
 {
 	check_expected(ns);
 }
@@ -112,9 +112,9 @@ void arch_ndelay(uint64_t ns)
 static void setup_speaker_tone_calls(u16 freq, unsigned int duration)
 {
 	setup_speaker_enable_calls(freq, ~freq & 0xff);
-	expect_value(arch_ndelay, ns, (uint64_t)duration * NSECS_PER_MSEC);
+	expect_value(ndelay, ns, (uint64_t)duration * NSECS_PER_MSEC);
 	setup_speaker_disable_calls(0xff);
-	expect_any(arch_ndelay, ns);
+	expect_any(ndelay, ns);
 }
 
 static void test_speaker_tone(void **state)

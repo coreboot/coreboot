@@ -512,6 +512,13 @@ config ARCH_HAS_MEM_FUNCTIONS
 	  Architectures must select this when they want to override memset,
 	  memcpy and memmove with optimized assembly implementations.
 
+config ARCH_HAS_NDELAY
+	default n
+	bool
+	help
+	  Architectures must select this when they want to override the ndelay()
+	  function with a custom implementation.
+
 source "arch/arm/Kconfig"
 source "arch/arm64/Kconfig"
 source "arch/x86/Kconfig"

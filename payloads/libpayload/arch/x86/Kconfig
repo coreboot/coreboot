@@ -32,6 +32,7 @@ config ARCH_X86
 	select LITTLE_ENDIAN
 	select IO_ADDRESS_SPACE
 	select ARCH_HAS_MEM_FUNCTIONS if GPL
+	select ARCH_HAS_NDELAY
 
 if ARCH_X86
 

@@ -38,7 +38,7 @@
 /* Let's assume APIC interrupts take at least 100us */
 #define APIC_INTERRUPT_LATENCY_NS	(100 * NSECS_PER_USEC)
 
-void arch_ndelay(uint64_t ns)
+void ndelay(uint64_t ns)
 {
 	uint64_t delta = ns * timer_hz() / NSECS_PER_SEC;
 	uint64_t pause_delta = 0;

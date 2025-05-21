@@ -161,7 +161,7 @@ extern char _start[], _end[];
 #define TCR_TBI_USED               (0x0 << TCR_TBI_SHIFT)
 #define TCR_TBI_IGNORED            (0x1 << TCR_TBI_SHIFT)
 
-#define DMA_DEFAULT_SIZE           (32 * MiB)
+#define DMA_DEFAULT_SIZE           (1 * MiB)
 #define TTB_DEFAULT_SIZE           0x100000
 
 #define MB_SIZE			   (1UL << 20)

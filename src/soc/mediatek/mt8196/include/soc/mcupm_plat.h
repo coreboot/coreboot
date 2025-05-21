@@ -4,7 +4,6 @@
 #define __SOC_MEDIATEK_MT8196_INCLUDE_SOC_MCUPM_PLAT_H__
 
 #include <soc/addressmap.h>
-#include <soc/mcupm_plat.h>
 #include <types.h>
 
 #define MCUPM_SW_RSTN				(MCUCFG_BASE + 0x00240000)

@@ -2,6 +2,7 @@
 
 #include <device/mmio.h>
 #include <gpio.h>
+#include <soc/cpu_id.h>
 #include <soc/pll.h>
 #include <soc/pmif_spmi.h>
 
@@ -43,5 +44,15 @@ void pmif_spmi_iocfg(void)
 
 size_t spmi_dev_cnt(void)
 {
-	return ARRAY_SIZE(spmi_dev);
+	static size_t cached_cnt;
+
+	if (cached_cnt)
+		return cached_cnt;
+
+	cached_cnt = ARRAY_SIZE(spmi_dev);
+	if (get_cpu_id() == MTK_CPU_ID_MT8189 &&
+	    get_cpu_segment_id() == MTK_CPU_SEG_ID_MT8189G)
+		cached_cnt = 1;
+
+	return cached_cnt;
 }

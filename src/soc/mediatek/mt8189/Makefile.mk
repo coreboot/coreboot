@@ -17,6 +17,7 @@ bootblock-y += ../common/pll.c pll.c
 bootblock-y += ../common/wdt.c ../common/wdt_req.c wdt.c
 
 romstage-y += ../common/cbmem.c
+romstage-y += ../common/cpu_id.c ../common/cpu_segment_id.c
 romstage-y += ../common/dram_init.c
 romstage-y += ../common/dramc_param.c
 romstage-y += ../common/emi.c

@@ -2,7 +2,8 @@
 
 # Umbrella option to be selected by variant boards.
 config BOARD_GOOGLE_SKYWALKER_COMMON
-	def_bool BOARD_GOOGLE_OBIWAN || \
+	def_bool BOARD_GOOGLE_ANAKIN || \
+		 BOARD_GOOGLE_OBIWAN || \
 		 BOARD_GOOGLE_SKYWALKER || \
 		 BOARD_GOOGLE_YODA
 
@@ -37,6 +38,7 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
+	default "Anakin" if BOARD_GOOGLE_ANAKIN
 	default "Obiwan" if BOARD_GOOGLE_OBIWAN
 	default "Skywalker" if BOARD_GOOGLE_SKYWALKER
 	default "Yoda" if BOARD_GOOGLE_YODA

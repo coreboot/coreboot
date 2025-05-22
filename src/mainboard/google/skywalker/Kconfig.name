@@ -2,6 +2,9 @@
 
 comment "Skywalker"
 
+config BOARD_GOOGLE_ANAKIN
+	bool "->  Anakin"
+
 config BOARD_GOOGLE_OBIWAN
 	bool "->  Obiwan"
 

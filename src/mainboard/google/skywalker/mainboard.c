@@ -86,6 +86,9 @@ enum mtk_storage_type mainboard_get_storage_type(void)
 
 static void mainboard_init(struct device *dev)
 {
+	if (mainboard_get_storage_type() == STORAGE_EMMC)
+		mtk_msdc_configure_emmc(true);
+
 	dpm_init();
 	setup_usb_host();
 	spm_init();

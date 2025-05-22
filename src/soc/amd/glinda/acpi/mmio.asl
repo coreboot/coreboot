@@ -94,8 +94,9 @@ Device (FUR0)
 	{
 		Return (STAT)
 	}
-
+#if (!CONFIG(CONSOLE_SERIAL) || !CONFIG(AMD_SOC_CONSOLE_UART) || CONFIG_UART_FOR_CONSOLE != 0)
 	AOAC_DEVICE(FCH_AOAC_DEV_UART0, 0)
+#endif
 }
 
 Device (FUR1) {
@@ -131,8 +132,9 @@ Device (FUR1) {
 	{
 		Return (STAT)
 	}
-
+#if (!CONFIG(CONSOLE_SERIAL) || !CONFIG(AMD_SOC_CONSOLE_UART) || CONFIG_UART_FOR_CONSOLE != 1)
 	AOAC_DEVICE(FCH_AOAC_DEV_UART1, 0)
+#endif
 }
 
 Device (FUR2) {
@@ -168,8 +170,9 @@ Device (FUR2) {
 	{
 		Return (STAT)
 	}
-
+#if (!CONFIG(CONSOLE_SERIAL) || !CONFIG(AMD_SOC_CONSOLE_UART) || CONFIG_UART_FOR_CONSOLE != 2)
 	AOAC_DEVICE(FCH_AOAC_DEV_UART2, 0)
+#endif
 }
 
 Device (FUR3) {
@@ -205,8 +208,9 @@ Device (FUR3) {
 	{
 		Return (STAT)
 	}
-
+#if (!CONFIG(CONSOLE_SERIAL) || !CONFIG(AMD_SOC_CONSOLE_UART) || CONFIG_UART_FOR_CONSOLE != 3)
 	AOAC_DEVICE(FCH_AOAC_DEV_UART3, 0)
+#endif
 }
 
 Device (FUR4) {

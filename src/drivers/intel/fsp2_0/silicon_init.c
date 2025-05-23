@@ -157,16 +157,16 @@ static void do_silicon_init(struct fsp_header *hdr)
 	fsp_debug_after_silicon_init(status);
 	fsps_return_value_handler(FSP_SILICON_INIT_API, status);
 
-	/*
-	 * Only applies for SoC platforms prior to FSP 2.2 specification:
-	 * If a BMP logo is enabled (`BMP_LOGO`) and the platform is
-	 * configured to skip the FSP for rendering logo bitmap
-	 * (`USE_COREBOOT_FOR_BMP_RENDERING`), then call the coreboot
-	 * native function to handle BMP logo loading and display.
-	 */
-	if (!CONFIG(PLATFORM_USES_FSP2_2) && CONFIG(BMP_LOGO) &&
-			 CONFIG(USE_COREBOOT_FOR_BMP_RENDERING))
-		soc_load_logo_by_coreboot();
+	/* Only applies for SoC platforms prior to FSP 2.2 specification. */
+	if (!CONFIG(PLATFORM_USES_FSP2_2) && CONFIG(BMP_LOGO)) {
+		if (CONFIG(USE_COREBOOT_FOR_BMP_RENDERING))
+			soc_load_logo_by_coreboot();
+		/*
+		 * This applies regardless of whether FSP or coreboot handled
+		 * the rendering.
+		 */
+		timestamp_add_now(TS_FIRMWARE_SPLASH_RENDERED);
+	}
 
 	/* Reinitialize CPUs if FSP-S has done MP Init */
 	if (CONFIG(USE_INTEL_FSP_MP_INIT) && !fsp_is_multi_phase_init_enabled())
@@ -216,14 +216,21 @@ static void do_silicon_init(struct fsp_header *hdr)
 	timestamp_add_now(TS_FSP_MULTI_PHASE_SI_INIT_END);
 	post_code(POSTCODE_FSP_MULTI_PHASE_SI_INIT_EXIT);
 
-	/*
-	 * If a BMP logo is enabled (`BMP_LOGO`) and the platform is
-	 * configured to skip the FSP for rendering logo bitmap
-	 * (`USE_COREBOOT_FOR_BMP_RENDERING`), then call the coreboot
-	 * native function to handle BMP logo loading and display.
-	 */
-	if (CONFIG(BMP_LOGO) && CONFIG(USE_COREBOOT_FOR_BMP_RENDERING))
-		soc_load_logo_by_coreboot();
+	if (CONFIG(BMP_LOGO)) {
+		/*
+		 * If a BMP logo is enabled (`BMP_LOGO`) and the platform is
+		 * configured to skip the FSP for rendering logo bitmap
+		 * (`USE_COREBOOT_FOR_BMP_RENDERING`), then call the coreboot
+		 * native function to handle BMP logo loading and display.
+		 */
+		if (CONFIG(USE_COREBOOT_FOR_BMP_RENDERING))
+			soc_load_logo_by_coreboot();
+		/*
+		 * This applies regardless of whether FSP or coreboot handled
+		 * the rendering.
+		 */
+		timestamp_add_now(TS_FIRMWARE_SPLASH_RENDERED);
+	}
 
 	/* Reinitialize CPUs if FSP-S has done MP Init */
 	if (CONFIG(USE_INTEL_FSP_MP_INIT))

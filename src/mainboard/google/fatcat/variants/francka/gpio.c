@@ -172,13 +172,13 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_D09:     PCH_DGPU_HOLD_RST#_R */
 	PAD_NC(GPP_D09, NONE),
 	/* GPP_D10:     HDA_BIT_CLK */
-	PAD_CFG_NF(GPP_D10, NONE, DEEP, NF1),
+	PAD_NC(GPP_D10, NONE),
 	/* GPP_D11:     HDA_SYNC */
-	PAD_CFG_NF(GPP_D11, NONE, DEEP, NF1),
+	PAD_NC(GPP_D11, NONE),
 	/* GPP_D12:     HDA_SDOUT */
-	PAD_CFG_NF(GPP_D12, NONE, DEEP, NF1),
+	PAD_NC(GPP_D12, NONE),
 	/* GPP_D13:     HDA_SDIN0 */
-	PAD_CFG_NF(GPP_D13, NONE, DEEP, NF1),
+	PAD_NC(GPP_D13, NONE),
 	/* GPP_D14:     SOC_HDMI_STRAP */
 	PAD_CFG_GPI(GPP_D14, NONE, DEEP),
 	/* GPP_D15:     Not used */

@@ -586,10 +586,11 @@ build_config()
 	missing_arches="$(${MAKE} --no-print-directory -f - \
 		REQUIRED_ARCHES="${required_arches}" <<'EOF'
 include $(xcompile)
-.PHONY: missing_arches
-missing_arches:
+MISSING_ARCHES=$(foreach arch,$(REQUIRED_ARCHES),$(if $(filter $(arch),$(SUBARCH_SUPPORTED)),,$(arch)))
+.PHONY: check_missing_arches
+check_missing_arches:
 	$(if $(XCOMPILE_COMPLETE),,$(error $(xcompile) is invalid.))
-	@printf "%s\n" "$(foreach arch,$(REQUIRED_ARCHES),$(if $(filter $(arch),$(SUBARCH_SUPPORTED)),,$(arch)))"
+	@printf "%s\n" "$(strip $(MISSING_ARCHES))"
 EOF
 )"
 	# shellcheck disable=SC2181
@@ -598,7 +599,7 @@ EOF
 		exit 1
 	fi
 
-	if [[ -z "${missing_arches}" ]]; then
+	if [[ -n "${missing_arches}" ]]; then
 		printf "skipping %s because we're missing compilers for (%s)\n" "${BUILD_NAME}" "${missing_arches}"
 		return
 	fi

@@ -2,10 +2,12 @@
 
 #include <cpu/intel/common/common.h>
 #include <cpu/x86/msr.h>
+#include <cpu/x86/mtrr.h>
 #include <elog.h>
 #include <fsp/debug.h>
 #include <fsp/fsp_debug_event.h>
 #include <fsp/util.h>
+#include <intelbasecode/ramtop.h>
 #include <intelblocks/cpulib.h>
 #include <soc/iomap.h>
 #include <soc/msr.h>
@@ -106,10 +108,29 @@ static void fill_fspm_cpu_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->SmmRelocationEnable = 0;
 }
 
-static void fill_fspm_security_params(FSP_M_CONFIG *m_cfg,
-				      const struct soc_intel_pantherlake_config *config)
+static void fill_tme_params(FSP_M_CONFIG *m_cfg)
 {
 	m_cfg->TmeEnable = CONFIG(INTEL_TME) && is_tme_supported();
+	if (!m_cfg->TmeEnable || acpi_is_wakeup_s3())
+		return;
+	m_cfg->GenerateNewTmeKey = CONFIG(TME_KEY_REGENERATION_ON_WARM_BOOT);
+	if (m_cfg->GenerateNewTmeKey) {
+		uint32_t ram_top = get_ramtop_addr();
+		if (!ram_top) {
+			printk(BIOS_WARNING, "Invalid exclusion range start address. "
+						"Full memory encryption is enabled.\n");
+			return;
+		}
+		m_cfg->TmeExcludeBase = (ram_top - CACHE_TMP_RAMTOP);
+		m_cfg->TmeExcludeSize = CACHE_TMP_RAMTOP;
+	}
+}
+
+static void fill_fspm_security_params(FSP_M_CONFIG *m_cfg,
+				  const struct soc_intel_pantherlake_config *config)
+{
+	m_cfg->BiosGuard = 0;
+	fill_tme_params(m_cfg);
 }
 
 static void fill_fspm_uart_params(FSP_M_CONFIG *m_cfg,

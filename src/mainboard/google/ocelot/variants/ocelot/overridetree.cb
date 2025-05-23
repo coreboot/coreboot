@@ -34,8 +34,7 @@ fw_config
 	field STORAGE 13 14
 		option STORAGE_UNKNOWN		0
 		option STORAGE_NVME_GEN4	1
-		option STORAGE_NVME_GEN5	2
-		option STORAGE_UFS		3
+		option STORAGE_UFS		2
 	end
 	field FP 15
 		option FP_ABSENT		0
@@ -546,8 +545,8 @@ chip soc/intel/pantherlake
 			}"
 			chip soc/intel/common/block/pcie/rtd3
 				register "is_storage" = "true"
-				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B10)"
-				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B09)"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H18)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A08)"
 				register "srcclk_pin" = "6"
 				device generic 0 on end
 			end

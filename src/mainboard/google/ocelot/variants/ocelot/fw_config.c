@@ -179,33 +179,20 @@ static const struct pad_config wwan_disable_pads[] = {
 
 /* Gen4 NVME: at the top M.2 slot */
 static const struct pad_config pre_mem_gen4_ssd_pwr_pads[] = {
-	/* GPP_B10:     GEN4_SSD_PWREN */
-	PAD_CFG_GPO(GPP_B10, 0, PLTRST),
+	/* GPP_H18:     EN_PP3300_SSD */
+	PAD_CFG_GPO(GPP_H18, 0, PLTRST),
 };
 
 static const struct pad_config gen4_ssd_pads[] = {
-	/* GPP_B10:     GEN4_SSD_PWREN */
-	PAD_CFG_GPO(GPP_B10, 1, PLTRST),
-	/* GPP_B09:     M2_GEN4_SSD_RESET_N */
-	PAD_CFG_GPO(GPP_B09, 1, PLTRST),
+	/* GPP_B10:     EN_PP3300_SSD */
+	PAD_CFG_GPO(GPP_H18, 1, PLTRST),
+	/* GPP_B09:     SSD_PERST_L */
+	PAD_CFG_GPO(GPP_A08, 1, PLTRST),
 };
 
 static const struct pad_config ufs_enable_pads[] = {
 	/* GPP_D21:     GPP_D21_UFS_REFCLK */
 	PAD_CFG_NF(GPP_D21, NONE, DEEP, NF1),
-};
-
-/* Gen5 NVME: at the bottom M.2 slot */
-static const struct pad_config pre_mem_gen5_ssd_pwr_pads[] = {
-	/* GPP_B16:     GEN5_SSD_PWREN */
-	PAD_CFG_GPO(GPP_B16, 0, PLTRST),
-};
-
-static const struct pad_config gen5_ssd_pads[] = {
-	/* GPP_B16:     GEN5_SSD_PWREN */
-	PAD_CFG_GPO(GPP_B16, 1, PLTRST),
-	/* GPP_E03:     M2_GEN5_SSD_RESET_N */
-	PAD_CFG_GPO(GPP_E03, 1, PLTRST),
 };
 
 static const struct pad_config peg_x4slot_wake_disable_pads[] = {
@@ -459,11 +446,8 @@ void fw_config_configure_pre_mem_gpio(void)
 
 	if (fw_config_probe(FW_CONFIG(STORAGE, STORAGE_NVME_GEN4))) {
 		GPIO_CONFIGURE_PADS(pre_mem_gen4_ssd_pwr_pads);
-	} else if (fw_config_probe(FW_CONFIG(STORAGE, STORAGE_NVME_GEN5))) {
-		GPIO_CONFIGURE_PADS(pre_mem_gen5_ssd_pwr_pads);
 	} else if (fw_config_probe(FW_CONFIG(STORAGE, STORAGE_UNKNOWN))) {
 		GPIO_CONFIGURE_PADS(pre_mem_gen4_ssd_pwr_pads);
-		GPIO_CONFIGURE_PADS(pre_mem_gen5_ssd_pwr_pads);
 	}
 
 	/*
@@ -495,13 +479,10 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 
 	if (fw_config_probe(FW_CONFIG(STORAGE, STORAGE_NVME_GEN4))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, gen4_ssd_pads);
-	} else if (fw_config_probe(FW_CONFIG(STORAGE, STORAGE_NVME_GEN5))) {
-		GPIO_PADBASED_OVERRIDE(padbased_table, gen5_ssd_pads);
 	} else if (fw_config_probe(FW_CONFIG(STORAGE, STORAGE_UFS))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, ufs_enable_pads);
 	} else if (fw_config_probe(FW_CONFIG(STORAGE, STORAGE_UNKNOWN))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, gen4_ssd_pads);
-		GPIO_PADBASED_OVERRIDE(padbased_table, gen5_ssd_pads);
 		GPIO_PADBASED_OVERRIDE(padbased_table, ufs_enable_pads);
 	}
 

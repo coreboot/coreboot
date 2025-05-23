@@ -283,6 +283,20 @@ chip soc/intel/pantherlake
 					probe AUDIO AUDIO_ALC256M_CG_HDA
 				end
 			end
+			chip drivers/intel/soundwire
+				device generic 0 on
+					chip drivers/soundwire/alc711
+						register "desc" = ""Headset Codec""
+						register "alc711_address.version" = "SOUNDWIRE_VERSION_1_2"
+						register "alc711_address.class" = "MIPI_CLASS_SDCA"
+						register "alc711_address.part_id" = "MIPI_DEV_ID_REALTEK_ALC721"
+						# SoundWire Link 0 ID 0
+						device generic 0.0 on
+							probe AUDIO AUDIO_ALC721_SNDW
+						end
+					end
+				end
+			end
 		end
 		device ref gspi1 on
 			chip drivers/spi/acpi

@@ -26,6 +26,17 @@ static const struct pad_config hda_enable_pads[] = {
 	PAD_CFG_NF(GPP_S07, NONE, DEEP, NF5),
 };
 
+static const struct pad_config sndw_alc721_enable_pads[] = {
+	/* GPP_S02:     SNDW0_CLK */
+	PAD_CFG_NF(GPP_S02, NONE, DEEP, NF3),
+	/* GPP_S03:     SNDW0_DATA0 */
+	PAD_CFG_NF(GPP_S03, NONE, DEEP, NF3),
+	/* GPP_S06:     SOC_DMIC_CLK1 */
+	PAD_CFG_NF(GPP_S06, NONE, DEEP, NF5),
+	/* GPP_S07:     SOC_DMIC_DATA1 */
+	PAD_CFG_NF(GPP_S07, NONE, DEEP, NF5),
+};
+
 /*
  * WWAN: power sequence requires three stages:
  * step 1: 3.3V power, FCP# (Full Card Power), RST#, and PERST# off
@@ -107,7 +118,11 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	}
 
 	if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_ALC256M_CG_HDA))) {
+		printk(BIOS_INFO, "Configure GPIOs for HDA ALC256 mode.\n");
 		GPIO_PADBASED_OVERRIDE(padbased_table, hda_enable_pads);
+	} else if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_ALC721_SNDW))) {
+		printk(BIOS_INFO, "Configure GPIOs for Soundwire ALC721 mode.\n");
+		GPIO_PADBASED_OVERRIDE(padbased_table, sndw_alc721_enable_pads);
 	}
 
 	if (fw_config_probe(FW_CONFIG(WWAN, WWAN_PRESENT))) {

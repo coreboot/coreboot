@@ -5,9 +5,7 @@
 #include <boardid.h>
 #include <console/console.h>
 #include <delay.h>
-#include <drivers/intel/gma/opregion.h>
 #include <fw_config.h>
-#include <gpio.h>
 #include <sar.h>
 #include <soc/bootblock.h>
 #include <stdlib.h>
@@ -172,21 +170,6 @@ void variant_update_descriptor(void)
 		printk(BIOS_INFO, "Configuring descriptor for FIVR\n");
 		configure_descriptor(fivr_bytes, ARRAY_SIZE(fivr_bytes));
 	}
-}
-
-const char *mainboard_vbt_filename(void)
-{
-	/*
-	 * GPP_E13 High -> One RAM Chip
-	 * GPP_E13 Low  -> Two RAM Chips
-	 */
-	if (gpio_get(GPP_E13)) {
-		printk(BIOS_INFO,
-			"x32 memory detected, so use vbt-uldrenite_x32mem.bin\n");
-		return "vbt-uldrenite_x32mem.bin";
-	}
-	printk(BIOS_INFO, "Non-x32 memory detected, so use vbt.bin\n");
-	return "vbt.bin";
 }
 
 void variant_configure_pads(void)

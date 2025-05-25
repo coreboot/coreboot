@@ -96,6 +96,7 @@ main() {
 	fi
 
 	for submodule in "${submodule_dirs[@]}"; do
+		echo ""
 		echo "Checking submodule ${submodule}"
 		if ! cd "$submodule"; then
  			echo "Error: could not cd to $submodule"

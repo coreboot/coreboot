@@ -11,9 +11,6 @@
 
 #include "reg_structs.h"
 
-/** TODO (Angel): Remove this after in-review patches are submitted **/
-#define SPD_LEN SPD_SIZE_MAX_DDR3
-
 /* Each channel has 4 ranks, spread across 2 slots */
 #define NUM_SLOTRANKS		4
 

@@ -45,7 +45,7 @@ else
 endif
 
 build/:
-	mkdir build
+	mkdir -p build
 
 clean:
 	rm -rf build/kernel*

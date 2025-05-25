@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <commonlib/bsd/clamp.h>
 #include <console/console.h>
+#include <cpu/intel/haswell/haswell.h>
 #include <delay.h>
 #include <lib.h>
 #include <northbridge/intel/haswell/haswell.h>
@@ -581,48 +582,6 @@ static void program_ls_comp(struct sysinfo *ctrl)
 	ctrl->comp_ctl_0.odt_up_down_off  = odt_offset;
 	ctrl->comp_ctl_0.fixed_odt_offset = 1;
 	mchbar_write32(DDR_COMP_CTL_0, ctrl->comp_ctl_0.raw);
-}
-
-/** TODO: Deduplicate PCODE stuff, it's already implemented in CPU code **/
-static bool pcode_ready(void)
-{
-	const unsigned int delay_step = 10;
-	for (unsigned int i = 0; i < 1000; i += delay_step) {
-		if (!(mchbar_read32(BIOS_MAILBOX_INTERFACE) & MAILBOX_RUN_BUSY))
-			return true;
-
-		udelay(delay_step);
-	};
-	return false;
-}
-
-static uint32_t pcode_mailbox_read(const uint32_t command)
-{
-	if (!pcode_ready()) {
-		printk(BIOS_ERR, "PCODE: mailbox timeout on wait ready\n");
-		return 0;
-	}
-	mchbar_write32(BIOS_MAILBOX_INTERFACE, command | MAILBOX_RUN_BUSY);
-	if (!pcode_ready()) {
-		printk(BIOS_ERR, "PCODE: mailbox timeout on completion\n");
-		return 0;
-	}
-	return mchbar_read32(BIOS_MAILBOX_DATA);
-}
-
-static int pcode_mailbox_write(const uint32_t command, const uint32_t data)
-{
-	if (!pcode_ready()) {
-		printk(BIOS_ERR, "PCODE: mailbox timeout on wait ready\n");
-		return -1;
-	}
-	mchbar_write32(BIOS_MAILBOX_DATA, data);
-	mchbar_write32(BIOS_MAILBOX_INTERFACE, command | MAILBOX_RUN_BUSY);
-	if (!pcode_ready()) {
-		printk(BIOS_ERR, "PCODE: mailbox timeout on completion\n");
-		return -1;
-	}
-	return 0;
 }
 
 static void enable_2x_refresh(struct sysinfo *ctrl)

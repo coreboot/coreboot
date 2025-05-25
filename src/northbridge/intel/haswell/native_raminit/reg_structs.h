@@ -321,6 +321,21 @@ union ddr_scram_misc_control_reg {
 	uint32_t raw;
 };
 
+union sc_roundt_lat_reg {
+	struct __packed {
+		uint32_t R0D0 : 6; // Bits  5:0
+		uint32_t      : 2; // Bits  7:6
+		uint32_t R1D0 : 6; // Bits 13:8
+		uint32_t      : 2; // Bits 15:14
+		uint32_t R0D1 : 6; // Bits 21:16
+		uint32_t      : 2; // Bits 23:22
+		uint32_t R1D1 : 6; // Bits 29:24
+		uint32_t      : 2; // Bits 31:30
+	};
+	uint8_t rank[4];
+	uint32_t raw;
+};
+
 union sc_io_latency_reg {
 	struct __packed {
 		uint32_t iolat_rank0     : 4; // Bits  3:0

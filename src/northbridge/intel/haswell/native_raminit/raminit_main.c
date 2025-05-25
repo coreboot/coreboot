@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include <assert.h>
+#include <commonlib/bsd/clamp.h>
 #include <console/console.h>
 #include <cpu/intel/haswell/haswell.h>
 #include <delay.h>
@@ -48,6 +49,68 @@ static enum raminit_status pre_training(struct sysinfo *ctrl)
 	return RAMINIT_STATUS_SUCCESS;
 }
 
+
+static uint8_t get_cmd_stretch(const uint8_t tCMD)
+{
+	switch (tCMD) {
+	case 1:
+		return 0;
+	case 2:
+		return 2;
+	case 3:
+		return 3;
+	default:
+		return 2;
+	}
+}
+
+/** TODO: Why do we re-read the MCHBAR registers? Is the cached value outdated? **/
+static void update_command_rate(struct sysinfo *const ctrl, const uint8_t channel)
+{
+	const uint8_t old_n = clamp_s32(1, ctrl->tc_bankrank_a[channel].cmd_stretch, 3);
+	const uint8_t new_n = ctrl->tCMD;
+
+	/* Update CmdN timing */
+	ctrl->tc_bankrank_a[channel].raw = mchbar_read32(TC_BANK_RANK_A_ch(channel));
+	ctrl->tc_bankrank_a[channel].cmd_stretch = get_cmd_stretch(ctrl->tCMD);
+	mchbar_write32(TC_BANK_RANK_A_ch(channel), ctrl->tc_bankrank_a[channel].raw);
+
+	/* Switch to regular tXP value */
+	ctrl->tc_bankrank_c[channel].raw = mchbar_read32(TC_BANK_RANK_C_ch(channel));
+	ctrl->tc_bankrank_c[channel].tXP = ctrl->tXP;
+	mchbar_write32(TC_BANK_RANK_C_ch(channel), ctrl->tc_bankrank_c[channel].raw);
+
+	/* Adjust RT values to compensate */
+	const int8_t delta = new_n - old_n;
+	for (uint8_t rank = 0; rank < NUM_SLOTRANKS; rank++) {
+		if (!rank_in_ch(ctrl, rank, channel))
+			continue;
+
+		/*
+		 * RT (roundtrip) latency is the time it takes for signals to go
+		 * from the memory controller to the DRAM and back to the memory
+		 * controller. It's likely the delta is doubled for this reason.
+		 */
+		ctrl->rt_latency[channel].rank[rank] += delta * 2;
+	}
+	mchbar_write32(SC_ROUNDT_LAT_ch(channel), ctrl->rt_latency[channel].raw);
+}
+
+static enum raminit_status post_training(struct sysinfo *const ctrl)
+{
+	/* Command rate is always 1N for LPDDR3 */
+	if (ctrl->lpddr) {
+		return RAMINIT_STATUS_SUCCESS;
+	}
+	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
+		if (!does_ch_exist(ctrl, channel))
+			continue;
+
+		update_command_rate(ctrl, channel);
+	}
+	return RAMINIT_STATUS_SUCCESS;
+}
+
 struct task_entry {
 	enum raminit_status (*task)(struct sysinfo *);
 	bool is_enabled;
@@ -66,6 +129,7 @@ static const struct task_entry cold_boot[] = {
 	{ train_receive_enable,                                   true, "RCVET",      },
 	{ train_read_mpr,                                         true, "RDMPRT",     },
 	{ train_jedec_write_leveling,                             true, "JWRL",       },
+	{ post_training,                                          true, "POSTTRAIN",  },
 	{ activate_mc,                                            true, "ACTIVATE",   },
 	{ save_training_values,                                   true, "SAVE_TRAIN", },
 	{ save_non_training,                                      true, "SAVE_NONT",  },

@@ -254,7 +254,7 @@ enum raminit_status train_receive_enable(struct sysinfo *ctrl)
 
 			ctrl->io_latency[channel][rank] = 0;
 			mchbar_write8(SC_ROUNDT_LAT_ch(channel) + rank, initial_rt_latency);
-			ctrl->rt_latency[channel][rank] = initial_rt_latency;
+			ctrl->rt_latency[channel].rank[rank] = initial_rt_latency;
 		}
 
 		printk(BIOS_DEBUG, "Rank %u\n", rank);

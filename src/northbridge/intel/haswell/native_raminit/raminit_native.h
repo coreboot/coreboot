@@ -306,8 +306,9 @@ struct sysinfo {
 
 	union ddr_data_vref_adjust_reg dimm_vref;
 
+	union sc_roundt_lat_reg rt_latency[NUM_CHANNELS];
+
 	uint8_t io_latency[NUM_CHANNELS][NUM_SLOTRANKS];
-	uint8_t rt_latency[NUM_CHANNELS][NUM_SLOTRANKS];
 	uint32_t rt_io_comp[NUM_CHANNELS];
 
 	uint32_t data_offset_train[NUM_CHANNELS][NUM_LANES];

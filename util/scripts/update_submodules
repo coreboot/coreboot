@@ -136,7 +136,7 @@ main() {
 			cd "${TOP}" || exit 1
 			git add "${submodule}" > /dev/null 2>&1 || exit 1
 			git commit -s -F- > /dev/null 2>&1 <<-EOF
-	Update ${submodule##*/} submodule to upstream ${branch_name##*/}
+	${submodule}: Update to upstream ${branch_name##*/}
 
 	Updating from commit id ${initial_commit_id}:
 	$initial_commit_description

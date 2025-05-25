@@ -28,7 +28,7 @@ else ifeq ($(findstring x6.,x$(kernel_version)),x6.)
 kernel_mirror_path := $(kernel_mirror)/v6.x
 endif
 
-build/$(kernel_tarball).xz: | build
+build/$(kernel_tarball).xz: | build/
 	echo "    Test $(kernel_version)"
 	echo "    WWW        $(kernel_mirror_path)/$(kernel_tarball).xz";
 	curl -OLSs --output-dir build "$(kernel_mirror_path)/$(kernel_tarball).xz";
@@ -48,7 +48,7 @@ $(kernel_dir)/vmlinux : $(kernel_dir)/.config | $(kernel_dir)
 	echo "$(MAKE) -j $(CPUS) -C $(kernel_dir) $(KERNEL_MAKE_FLAGS) vmlinux"
 	$(MAKE) -j $(CPUS) -C $(kernel_dir) $(KERNEL_MAKE_FLAGS) vmlinux
 
-build/vmlinux.bin: $(kernel_dir)/vmlinux | build
+build/vmlinux.bin: $(kernel_dir)/vmlinux | build/
 	$(OBJCOPY) -O binary $< $@
 
 build/vmlinux.bin.lzma: build/vmlinux.bin

@@ -66,6 +66,13 @@
 #define __printf(a, b) __attribute__((format(printf, a, b)))
 #endif
 
+// This checks the support for the nonstring attribute on multidimensional character arrays.
+#if (defined(__GNUC__) && __GNUC__ >= 15) || (defined(__clang__) && __clang_major__ >= 21)
+#define __nonstring __attribute__((__nonstring__))
+#else
+#define __nonstring
+#endif
+
 /*
  * This evaluates to the type of the first expression, unless that is constant
  * in which case it evaluates to the type of the second. This is useful when

@@ -192,7 +192,7 @@ uint64_t intfiletype(const char *name)
 
 char *bintohex(uint8_t *data, size_t len)
 {
-	static const char translate[16] = "0123456789abcdef";
+	static const char __nonstring translate[16] = "0123456789abcdef";
 
 	char *result = malloc(len * 2 + 1);
 	if (result == NULL)

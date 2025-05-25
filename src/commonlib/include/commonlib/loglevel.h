@@ -165,7 +165,7 @@
  */
 #define BIOS_LOG_PREFIX_PATTERN "[%.5s]  "
 #define BIOS_LOG_PREFIX_MAX_LEVEL BIOS_SPEW
-static const char bios_log_prefix[BIOS_LOG_PREFIX_MAX_LEVEL + 1][5] = {
+static const char __nonstring bios_log_prefix[BIOS_LOG_PREFIX_MAX_LEVEL + 1][5] = {
 	/* Note: These strings are *not* null-terminated to save space. */
 	[BIOS_EMERG]   = "EMERG",
 	[BIOS_ALERT]   = "ALERT",

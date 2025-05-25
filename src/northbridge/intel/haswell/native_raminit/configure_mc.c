@@ -205,7 +205,7 @@ static void program_ddr_data(struct sysinfo *ctrl, const bool dis_odt_static, co
 			const uint8_t stg = latency * byte_stagger[byte] / ctrl->lanes;
 			data_control_2.rx_stagger_ctl = stg & 0x1f;
 			mchbar_write32(DQ_CONTROL_2(channel, byte), data_control_2.raw);
-			ctrl->data_offset_comp[channel][byte] = 0;
+			ctrl->data_offset_comp[channel][byte].raw = 0;
 			ctrl->dq_control_1[channel][byte] = data_control_1.raw;
 			ctrl->dq_control_2[channel][byte] = data_control_2.raw;
 		}
@@ -548,14 +548,7 @@ static void override_comp(uint32_t value, uint32_t width, uint32_t shift, uint32
 
 static void program_ls_comp(struct sysinfo *ctrl)
 {
-	/* Disable periodic COMP */
-	const union pcu_comp_reg m_comp = {
-		.comp_disable  = 1,
-		.comp_interval = COMP_INT,
-		.comp_force    = 1,
-	};
-	mchbar_write32(M_COMP, m_comp.raw);
-	udelay(10);
+	force_rcomp_and_wait_us(10);
 
 	/* Override level shifter compensation */
 	const uint32_t ls_comp = 2;
@@ -563,7 +556,7 @@ static void program_ls_comp(struct sysinfo *ctrl)
 	override_comp(ls_comp, 3, 24, DDR_CMD_COMP);
 	override_comp(ls_comp, 3, 24, DDR_CKE_CTL_COMP);
 	override_comp(ls_comp, 3, 23, DDR_CLK_COMP);
-	override_comp(ls_comp, 3, 28, DDR_COMP_DATA_COMP_1);
+	override_comp(ls_comp, 3, 28, DDR_DATA_COMP_1);
 	override_comp(ls_comp, 3, 24, DDR_COMP_CMD_COMP);
 	override_comp(ls_comp, 4, 24, DDR_COMP_CTL_COMP);
 	override_comp(ls_comp, 4, 23, DDR_COMP_CLK_COMP);
@@ -575,8 +568,8 @@ static void program_ls_comp(struct sysinfo *ctrl)
 	mchbar_write32(DDR_SCRAM_MISC_CONTROL, ddr_scram_misc_ctrl.raw);
 
 	/* Use a fixed offset between ODT Up/Dn */
-	const union ddr_comp_data_comp_1_reg data_comp_1 = {
-		.raw = mchbar_read32(DDR_COMP_DATA_COMP_1),
+	const union ddr_data_comp_1_reg data_comp_1 = {
+		.raw = mchbar_read32(DDR_DATA_COMP_1),
 	};
 	const uint32_t odt_offset = data_comp_1.rcomp_odt_down - data_comp_1.rcomp_odt_up;
 	ctrl->comp_ctl_0.odt_up_down_off  = odt_offset;

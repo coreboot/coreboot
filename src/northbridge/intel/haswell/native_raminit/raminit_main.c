@@ -129,6 +129,7 @@ static const struct task_entry cold_boot[] = {
 	{ train_receive_enable,                                   true, "RCVET",      },
 	{ train_read_mpr,                                         true, "RDMPRT",     },
 	{ train_jedec_write_leveling,                             true, "JWRL",       },
+	{ optimise_comp,                                          true, "OPTCOMP",    },
 	{ post_training,                                          true, "POSTTRAIN",  },
 	{ activate_mc,                                            true, "ACTIVATE",   },
 	{ save_training_values,                                   true, "SAVE_TRAIN", },

@@ -70,6 +70,33 @@ enum margin_parameter {
 	RdV,
 };
 
+enum opt_param {
+	OptWrDS = 0,
+	OptRdOdt,
+	OptSComp,
+	OptTComp,
+	OptTxEq,
+	OptRxEq,
+	OptRxBias,
+	OptDimmOdt,
+	OptDimmOdtWr,
+	OptDimmRon,
+	OptDefault,
+};
+
+enum global_comp_offset {
+	RdOdt,
+	WrDS,
+	WrDSCmd,
+	WrDSCtl,
+	WrDSClk,
+	SCompDq,
+	SCompCmd,
+	SCompCtl,
+	SCompClk,
+	DisOdtStatic,
+};
+
 /* ZQ calibration types */
 enum {
 	ZQ_INIT,	/* DDR3: ZQCL with tZQinit, LPDDR3: ZQ Init  with tZQinit  */
@@ -312,7 +339,7 @@ struct sysinfo {
 	uint32_t rt_io_comp[NUM_CHANNELS];
 
 	uint32_t data_offset_train[NUM_CHANNELS][NUM_LANES];
-	uint32_t data_offset_comp[NUM_CHANNELS][NUM_LANES];
+	union ddr_data_offset_comp_reg data_offset_comp[NUM_CHANNELS][NUM_LANES];
 
 	uint32_t dq_control_0[NUM_CHANNELS];
 	uint32_t dq_control_1[NUM_CHANNELS][NUM_LANES];
@@ -353,6 +380,11 @@ struct sysinfo {
 
 	uint8_t dq_pat_lc;
 };
+
+static inline int8_t sign_of(const int32_t val)
+{
+	return val < 0 ? -1 : 1;
+}
 
 static inline bool is_hsw_ult(void)
 {
@@ -456,6 +488,7 @@ enum raminit_status train_sense_amp_offset(struct sysinfo *ctrl);
 enum raminit_status train_receive_enable(struct sysinfo *ctrl);
 enum raminit_status train_read_mpr(struct sysinfo *ctrl);
 enum raminit_status train_jedec_write_leveling(struct sysinfo *ctrl);
+enum raminit_status optimise_comp(struct sysinfo *ctrl);
 enum raminit_status save_training_values(struct sysinfo *ctrl);
 enum raminit_status restore_training_values(struct sysinfo *ctrl);
 enum raminit_status save_non_training(struct sysinfo *ctrl);
@@ -482,6 +515,7 @@ uint32_t get_tZQCS(uint32_t mem_clock_mhz, bool lpddr);
 
 enum raminit_status io_reset(void);
 enum raminit_status wait_for_first_rcomp(void);
+void force_rcomp_and_wait_us(unsigned int usecs);
 
 uint16_t encode_ddr3_rttnom(uint32_t rttnom);
 void ddr3_program_mr1(struct sysinfo *ctrl, uint8_t wl_mode, uint8_t q_off);
@@ -587,6 +621,21 @@ void change_1d_margin_multicast(
 	const uint8_t rank,
 	const bool update_ctrl,
 	const enum regfile_mode regfile);
+
+uint32_t update_comp_global_offset(
+	struct sysinfo *ctrl,
+	const enum global_comp_offset param,
+	const int32_t offset,
+	const uint8_t update_ctrl);
+
+void update_opt_param_offset(
+	struct sysinfo *ctrl,
+	const uint8_t channel,
+	const uint8_t ranks,
+	const uint8_t byte,
+	const enum opt_param optparam,
+	const int16_t off_in,
+	const bool update_ctrl);
 
 uint8_t get_rx_bias(const struct sysinfo *ctrl);
 

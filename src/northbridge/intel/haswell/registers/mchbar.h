@@ -22,6 +22,7 @@
 
 #define DDR_DATA_TRAIN_FEEDBACK(ch, byte)	_DDRIO_C_R_B(0x0054, ch, 0, byte)
 
+#define DDR_DATA_OFFSET_COMP_ch_b(ch, byte)	_DDRIO_C_R_B(0x005c, ch, 0, byte)
 #define DQ_CONTROL_1(ch, byte)			_DDRIO_C_R_B(0x0060, ch, 0, byte)
 #define DQ_CONTROL_2(ch, byte)			_DDRIO_C_R_B(0x0064, ch, 0, byte)
 #define DDR_DATA_OFFSET_TRAIN_ch_b(ch, byte)	_DDRIO_C_R_B(0x0070, ch, 0, byte)
@@ -88,7 +89,8 @@
 #define DDR_CLK_CB_STATUS			0x3918
 
 /* DDR COMP (global) */
-#define DDR_COMP_DATA_COMP_1			0x3a04
+#define DDR_DATA_COMP_0				0x3a00
+#define DDR_DATA_COMP_1				0x3a04
 #define DDR_COMP_CMD_COMP			0x3a08
 #define DDR_COMP_CTL_COMP			0x3a0c
 #define DDR_COMP_CLK_COMP			0x3a10

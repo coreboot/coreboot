@@ -25,6 +25,18 @@ union ddr_data_tx_train_rank_reg {
 	uint32_t raw;
 };
 
+union ddr_data_offset_comp_reg {
+	struct __packed {
+		int32_t drv_up    : 6; // Bits  5:0
+		int32_t drv_down  : 6; // Bits 11:6
+		int32_t odt_up    : 5; // Bits 16:12
+		int32_t odt_down  : 5; // Bits 21:17
+		int32_t t_clk_out : 5; // Bits 26:22
+		int32_t slew_rate : 5; // Bits 31:27
+	};
+	uint32_t raw;
+};
+
 union ddr_data_offset_train_reg {
 	struct __packed {
 		int32_t rcven  : 6; // Bits  5:0
@@ -114,7 +126,20 @@ union ddr_data_control_2_reg {
 	uint32_t raw;
 };
 
-union ddr_comp_data_comp_1_reg {
+union ddr_data_comp_0_reg {
+	struct __packed {
+		uint32_t rcomp_drv_up   : 6; // Bits  5:0
+		uint32_t                : 3; // Bits  8:6
+		uint32_t rcomp_drv_down : 6; // Bits 14:9
+		uint32_t vt_comp        : 5; // Bits 19:15
+		uint32_t tco_comp       : 6; // Bits 25:20
+		uint32_t slew_rate_comp : 5; // Bits 30:26
+		uint32_t                : 1; // Bits 31:31
+	};
+	uint32_t raw;
+};
+
+union ddr_data_comp_1_reg {
 	struct __packed {
 		uint32_t rcomp_odt_up   : 6; // Bits  5:0
 		uint32_t                : 3; // Bits  8:6
@@ -124,6 +149,42 @@ union ddr_comp_data_comp_1_reg {
 		uint32_t panic_drv_up   : 6; // Bits 27:22
 		uint32_t ls_comp        : 3; // Bits 30:28
 		uint32_t                : 1; // Bits 31:31
+	};
+	uint32_t raw;
+};
+
+union ddr_comp_cmd_comp_reg {
+	struct __packed {
+		uint32_t slew_rate_comp : 6; // Bits  5:0
+		uint32_t tco_comp       : 6; // Bits 11:6
+		uint32_t rcomp_drv_up   : 6; // Bits 17:12
+		uint32_t rcomp_drv_down : 6; // Bits 23:18
+		uint32_t ls_comp        : 3; // Bits 26:24
+		uint32_t                : 5; // Bits 31:27
+	};
+	uint32_t raw;
+};
+
+union ddr_comp_ctl_comp_reg {
+	struct __packed {
+		uint32_t slew_rate_comp : 6; // Bits  5:0
+		uint32_t tco_comp       : 6; // Bits 11:6
+		uint32_t rcomp_drv_up   : 6; // Bits 17:12
+		uint32_t rcomp_drv_down : 6; // Bits 23:18
+		uint32_t ls_comp        : 4; // Bits 27:24
+		uint32_t                : 4; // Bits 31:28
+	};
+	uint32_t raw;
+};
+
+union ddr_comp_clk_comp_reg {
+	struct __packed {
+		uint32_t slew_rate_comp : 5; // Bits  4:0
+		uint32_t tco_comp       : 6; // Bits 10:5
+		uint32_t rcomp_drv_up   : 6; // Bits 16:11
+		uint32_t rcomp_drv_down : 6; // Bits 22:17
+		uint32_t ls_comp        : 4; // Bits 26:23
+		uint32_t                : 5; // Bits 31:27
 	};
 	uint32_t raw;
 };

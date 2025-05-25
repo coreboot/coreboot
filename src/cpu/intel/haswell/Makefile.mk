@@ -1,21 +1,20 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-ramstage-y += haswell_init.c
+bootblock-y += bootblock.c
+bootblock-y += ../car/non-evict/cache_as_ram.S
+bootblock-y += ../car/bootblock.c
+bootblock-y += ../../x86/early_reset.S
 
 romstage-y += romstage.c
 romstage-y += ../car/romstage.c
 
+postcar-y += ../car/non-evict/exit_car.S
+
 ramstage-y += acpi.c
+ramstage-y += haswell_init.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.c
 
 smm-y += finalize.c
-
-bootblock-y += ../car/non-evict/cache_as_ram.S
-bootblock-y += ../car/bootblock.c
-bootblock-y += ../../x86/early_reset.S
-bootblock-y += bootblock.c
-
-postcar-y += ../car/non-evict/exit_car.S
 
 subdirs-y += ../microcode
 subdirs-y += ../turbo

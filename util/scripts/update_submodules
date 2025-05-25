@@ -65,7 +65,7 @@ get_args() {
 			exit 0
 			;;
 		-R | --repo)
-			submodule_dirs=("$(readlink -f "${1}")")
+			submodule_dirs="${1}"
 			shift
 			if [[ ! -d "${submodule_dirs[0]}" ]]; then
 				echo "Error: ${submodule_dirs[0]} is not valid."
@@ -92,12 +92,15 @@ main() {
 	get_args "$@"
 
 	if (( ${#submodule_dirs[@]} == 0 )); then
-		readarray -t submodule_dirs < <(git submodule foreach pwd | grep -v "Entering")
+		readarray -t submodule_dirs < <(git submodule status | cut -d ' ' -f 3)
 	fi
 
 	for submodule in "${submodule_dirs[@]}"; do
+		cd "${TOP}"
+
 		echo ""
 		echo "Checking submodule ${submodule}"
+
 		if ! cd "$submodule"; then
  			echo "Error: could not cd to $submodule"
 			exit 1

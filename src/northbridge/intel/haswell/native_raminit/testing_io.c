@@ -172,39 +172,60 @@ void program_loop_count(const struct sysinfo *ctrl, const uint8_t channel, const
 	}
 }
 
-static inline void write_subseq(const uint8_t channel, const uint8_t idx, const uint32_t ssq)
+/* REUT subsequence types (B = Base, O = Offset) */
+enum {
+	SUBSEQ_B_RD	= 0,
+	SUBSEQ_B_WR	= 1,
+	SUBSEQ_B_RD_WR	= 2,
+	SUBSEQ_B_WR_RD	= 3,
+	SUBSEQ_O_RD	= 4,
+	SUBSEQ_O_WR	= 5,
+};
+
+static void write_subseq(uint8_t ch, uint8_t idx, union reut_subseq_ctl_reg ssq, uint8_t type)
 {
-	mchbar_write32(REUT_ch_SUBSEQ_x_CTL(channel, idx), ssq);
+	ssq.subseq_type = type;
+	mchbar_write32(REUT_ch_SUBSEQ_x_CTL(ch, idx), ssq.raw);
 }
 
 static void program_subseq(
 	struct sysinfo *const ctrl,
 	const uint8_t channel,
 	const enum reut_cmd_pat cmd_pat,
-	const uint32_t ss_a,
-	const uint32_t ss_b)
+	const union reut_subseq_ctl_reg ss_a,
+	const union reut_subseq_ctl_reg ss_b)
 {
 	switch (cmd_pat) {
 	case PAT_WR_RD_TA:
-		write_subseq(channel, 0, ss_a | SUBSEQ_B_WR);
-		for (uint8_t i = 1; i < 7; i++)
-			write_subseq(channel, i, ss_b | SUBSEQ_B_RD_WR);
-
-		write_subseq(channel, 7, ss_a | SUBSEQ_B_RD);
+		write_subseq(channel, 0, ss_a, SUBSEQ_B_WR);
+		for (uint8_t i = 1; i < 7; i++) {
+			write_subseq(channel, i, ss_b, SUBSEQ_B_RD_WR);
+		}
+		write_subseq(channel, 7, ss_a, SUBSEQ_B_RD);
 		break;
 	case PAT_RD_WR_TA:
-		write_subseq(channel, 0, ss_b | SUBSEQ_B_WR_RD);
+		write_subseq(channel, 0, ss_b, SUBSEQ_B_WR_RD);
 		break;
 	case PAT_ODT_TA:
-		write_subseq(channel, 0, ss_a | SUBSEQ_B_WR);
-		write_subseq(channel, 1, ss_b | SUBSEQ_B_RD_WR);
-		write_subseq(channel, 2, ss_a | SUBSEQ_B_RD);
-		write_subseq(channel, 3, ss_b | SUBSEQ_B_WR_RD);
+		write_subseq(channel, 0, ss_a, SUBSEQ_B_WR);
+		write_subseq(channel, 1, ss_b, SUBSEQ_B_RD_WR);
+		write_subseq(channel, 2, ss_a, SUBSEQ_B_RD);
+		write_subseq(channel, 3, ss_b, SUBSEQ_B_WR_RD);
 		break;
 	default:
-		write_subseq(channel, 0, ss_a | SUBSEQ_B_WR);
-		write_subseq(channel, 1, ss_a | SUBSEQ_B_RD);
+		write_subseq(channel, 0, ss_a, SUBSEQ_B_WR);
+		write_subseq(channel, 1, ss_a, SUBSEQ_B_RD);
 		break;
+	}
+}
+
+static uint8_t encode_num_cl(const uint16_t number_of_cachelines)
+{
+	/* Low 7 bits are the value, high bit means exponential/linear value */
+	if (number_of_cachelines > 127) {
+		return log2_ceil(number_of_cachelines);	/* Assume exponential/pow2 number */
+	} else {
+		return number_of_cachelines | BIT(7);	/* Small, treat as linear number */
 	}
 }
 
@@ -234,24 +255,8 @@ void setup_io_test(
 	if (cmd_pat == PAT_WR_RD_TA || cmd_pat == PAT_ODT_TA)
 		lc_exp = 0;
 
-	uint8_t num_clcr;
-	if (num_cl > 127) {
-		/* Assume exponential number */
-		num_clcr = log2_ceil(num_cl);
-	} else {
-		/* Set number of cache lines as linear number */
-		num_clcr = num_cl | BIT(7);
-	}
-
-	const uint16_t num_cl2 = 2 * num_cl;
-	uint8_t num_cl2cr;
-	if (num_cl2 > 127) {
-		/* Assume exponential number */
-		num_cl2cr = log2_ceil(num_cl2);
-	} else {
-		/* Set number of cache lines as linear number */
-		num_cl2cr = num_cl2 | BIT(7);
-	}
+	const uint8_t num_cl_cr = encode_num_cl(num_cl);
+	const uint8_t num_cl2_cr = encode_num_cl(2 * num_cl);
 
 	for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
 		if (!(chanmask & BIT(channel))) {
@@ -309,26 +314,17 @@ void setup_io_test(
 			.clear_errors = 1,
 		}.raw);
 
-		/*
-		 * Program subsequences
-		 */
-		uint32_t subseq_a = 0;
-
-		/* Number of cachelines and scale */
-		subseq_a |= (num_clcr    & 0x00ff) << 0;
-		subseq_a |= (subseq_wait & 0x3fff) << 8;
-
-		/* Reset current base address to start */
-		subseq_a |= BIT(27);
-
-		uint32_t subseq_b = 0;
-
-		/* Number of cachelines and scale */
-		subseq_b |= (num_cl2cr   & 0x00ff) << 0;
-		subseq_b |= (subseq_wait & 0x3fff) << 8;
-
-		/* Reset current base address to start */
-		subseq_b |= BIT(27);
+		/* Program subsequences */
+		const union reut_subseq_ctl_reg subseq_a = {
+			.num_cachelines_with_scale     = num_cl_cr,
+			.subseq_wait                   = subseq_wait,
+			.reset_curr_base_addr_to_start = 1,
+		};
+		const union reut_subseq_ctl_reg subseq_b = {
+			.num_cachelines_with_scale     = num_cl2_cr,
+			.subseq_wait                   = subseq_wait,
+			.reset_curr_base_addr_to_start = 1,
+		};
 
 		program_subseq(ctrl, channel, cmd_pat, subseq_a, subseq_b);
 

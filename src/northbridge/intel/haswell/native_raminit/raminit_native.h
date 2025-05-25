@@ -118,16 +118,6 @@ enum reut_cmd_pat {
 	PAT_ODT_TA,
 };
 
-/* REUT subsequence types (B = Base, O = Offset) */
-enum {
-	SUBSEQ_B_RD	= 0 << 22,
-	SUBSEQ_B_WR	= 1 << 22,
-	SUBSEQ_B_RD_WR	= 2 << 22,
-	SUBSEQ_B_WR_RD	= 3 << 22,
-	SUBSEQ_O_RD	= 4 << 22,
-	SUBSEQ_O_WR	= 5 << 22,
-};
-
 /* REUT mux control */
 enum {
 	REUT_MUX_LMN      = 0,

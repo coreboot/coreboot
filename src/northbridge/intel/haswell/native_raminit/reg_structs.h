@@ -478,6 +478,20 @@ union reut_pat_cadb_mrs_reg {
 	uint32_t raw;
 };
 
+union reut_subseq_ctl_reg {
+	struct __packed {
+		uint32_t num_cachelines_with_scale        :  8; // Bits  7:0
+		uint32_t subseq_wait                      : 14; // Bits 21:8
+		uint32_t subseq_type                      :  4; // Bits 25:22
+		uint32_t save_curr_base_addr_to_start     :  1; // Bits 26:26
+		uint32_t reset_curr_base_addr_to_start    :  1; // Bits 27:27
+		uint32_t data_and_ecc_addr_inversion      :  2; // Bits 29:28
+		uint32_t invert_data_and_ecc              :  1; // Bits 30:30
+		uint32_t stop_base_subseq_on_wrap_trigger :  1; // Bits 31:31
+	};
+	uint32_t raw;
+};
+
 union reut_seq_cfg_reg {
 	struct __packed {
 		uint32_t                               :  3; // Bits  2:0

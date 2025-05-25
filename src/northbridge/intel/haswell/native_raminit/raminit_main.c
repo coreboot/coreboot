@@ -10,6 +10,7 @@
 #include <northbridge/intel/haswell/raminit.h>
 #include <static.h>
 #include <string.h>
+#include <timer.h>
 #include <types.h>
 
 #include "raminit_native.h"
@@ -85,6 +86,9 @@ static const struct task_entry fast_boot[] = {
 	{ raminit_done,                                           true, "RAMINITEND", },
 };
 
+_Static_assert(ARRAY_SIZE(cold_boot) >= ARRAY_SIZE(fast_boot),
+		"Code assumes cold boot task list is the longest one");
+
 /* Return a generic stepping value to make stepping checks simpler */
 static enum generic_stepping get_stepping(const uint32_t cpuid)
 {
@@ -120,6 +124,9 @@ static void initialize_ctrl(struct sysinfo *ctrl)
 	ctrl->bootmode = bootmode;
 }
 
+/** TODO: Adjust unit scale dynamically? **/
+#define T_SCALE 1000 /* 1 = usecs, 1000 = msecs */
+
 static enum raminit_status try_raminit(
 	struct sysinfo *ctrl,
 	const struct task_entry *const schedule,
@@ -127,7 +134,11 @@ static enum raminit_status try_raminit(
 {
 	enum raminit_status status = RAMINIT_STATUS_UNSPECIFIED_ERROR;
 
-	for (size_t i = 0; i < length; i++) {
+	long spent_time[ARRAY_SIZE(cold_boot)] = { 0 };
+	long total = 0;
+
+	size_t i;
+	for (i = 0; i < length; i++) {
 		const struct task_entry *const entry = &schedule[i];
 		assert(entry);
 		assert(entry->name);
@@ -136,12 +147,34 @@ static enum raminit_status try_raminit(
 
 		assert(entry->task);
 		printk(RAM_DEBUG, "\nExecuting raminit task %s\n", entry->name);
+		struct mono_time prev, curr;
+		timer_monotonic_get(&prev);
 		status = entry->task(ctrl);
+		timer_monotonic_get(&curr);
+		spent_time[i] = mono_time_diff_microseconds(&prev, &curr);
 		printk(RAM_DEBUG, "\n");
 		if (status) {
+			i++;
 			printk(BIOS_ERR, "raminit failed on step %s\n", entry->name);
 			break;
 		}
+	}
+
+	if (CONFIG(DEBUG_RAM_SETUP)) {
+		const char unit_multiplier = T_SCALE == 1 ? 'u' : 'm';
+		printk(RAM_DEBUG, "+------------------+------------+\n");
+		printk(RAM_DEBUG, "| Task             |      %csecs |\n", unit_multiplier);
+		printk(RAM_DEBUG, "+------------------+------------+\n");
+		assert(i <= length);
+		for (size_t j = 0; j < i; j++) {
+			char buf[] = "                ";
+			strncpy(buf, schedule[j].name, strlen(schedule[j].name));
+			printk(RAM_DEBUG, "| %s | % 10ld |\n", buf, spent_time[j] / T_SCALE);
+			total += spent_time[j];
+		}
+		printk(RAM_DEBUG, "+------------------+------------+\n");
+		printk(RAM_DEBUG, "| Total            | % 10ld |\n", total / T_SCALE);
+		printk(RAM_DEBUG, "+------------------+------------+\n");
 	}
 
 	return status;

@@ -35,7 +35,7 @@ ifeq ($(shell if [ $(go_version_minor) -lt 9 ]; then echo y; fi),y)
 endif
 endif
 
-$(uroot_build):
+$(uroot_build): | build/
 	git clone https://$(uroot_package) $(uroot_build)
 	git -C $(uroot_build) checkout --quiet $(CONFIG_LINUXBOOT_UROOT_VERSION)
 

@@ -830,20 +830,25 @@ int anx7625_dp_get_edid(uint8_t bus, struct edid *out)
 	int block_num;
 	int ret;
 	u8 edid[FOUR_BLOCK_SIZE];
+	int i;
 
-	block_num = sp_tx_edid_read(bus, edid, FOUR_BLOCK_SIZE);
-	if (block_num < 0) {
-		ANXERROR("Failed to get eDP EDID.\n");
-		return -1;
+	for (i = 0; i < EDID_RETRY; i++) {
+		block_num = sp_tx_edid_read(bus, edid, FOUR_BLOCK_SIZE);
+		if (block_num < 0) {
+			ANXERROR("Failed to get eDP EDID(retry %d).\n", i);
+			continue;
+		}
+
+		ret = decode_edid(edid, (block_num + 1) * ONE_BLOCK_SIZE, out);
+		if (ret == EDID_CONFORMANT) {
+			ANXINFO("Success read out EDID(retry %d).\n", i);
+			return 0;
+		}
+
+		ANXERROR("Failed to decode EDID(retry %d).\n", i);
 	}
 
-	ret = decode_edid(edid, (block_num + 1) * ONE_BLOCK_SIZE, out);
-	if (ret != EDID_CONFORMANT) {
-		ANXERROR("Failed to decode EDID.\n");
-		return -1;
-	}
-
-	return 0;
+	return -1;
 }
 
 int anx7625_init(uint8_t bus)

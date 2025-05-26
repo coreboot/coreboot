@@ -163,6 +163,23 @@ chip soc/intel/alderlake
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 5d on end
 			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""PARA3408""
+				register "generic.desc" = ""Parade Touchscreen""
+				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E11_IRQ)"
+				register "generic.detect" = "1"
+				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
+				register "generic.reset_delay_ms" = "20"
+				register "generic.reset_off_delay_ms" = "2"
+				register "generic.stop_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C4)"
+				register "generic.stop_delay_ms" = "280"
+				register "generic.stop_off_delay_ms" = "2"
+				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
+				register "generic.enable_delay_ms" = "1"
+				register "generic.has_power_resource" = "1"
+				register "hid_desc_reg_offset" = "0x01"
+				device i2c 24 on end
+			end
 			chip drivers/generic/gpio_keys
 				register "name" = ""PENH""
 				register "gpio" = "ACPI_GPIO_INPUT_ACTIVE_LOW(GPP_E0)"
@@ -287,8 +304,7 @@ chip soc/intel/alderlake
 				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
 				register "off_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
-				device i2c 10 on
-				end
+				device i2c 10 on end
 			end
 			chip drivers/intel/mipi_camera
 				register "acpi_uid" = "3"
@@ -314,8 +330,7 @@ chip soc/intel/alderlake
 				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
 				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
-				device i2c 0C on
-				end
+				device i2c 0C on end
 			end
 			chip drivers/intel/mipi_camera
 				register "acpi_hid" = "ACPI_DT_NAMESPACE_HID"
@@ -343,8 +358,7 @@ chip soc/intel/alderlake
 				register "nvm_width" = "0x10"
 				register "nvm_compat" = ""atmel,24c08""
 
-				device i2c 50 on
-				end
+				device i2c 50 on end
 			end
 		end
 		device ref i2c5 on
@@ -385,6 +399,25 @@ chip soc/intel/alderlake
 		end
 		device ref ufs on end
 		device ref igpu on
+			chip drivers/gfx/generic
+				register "device_count" = "4"
+				# DDIA for eDP
+				register "device[0].name" = ""LCD0""
+				# Internal panel on the first port of the graphics chip
+				register "device[0].type" = "panel"
+				# DDIB for HDMI
+				# If HDMI is not enumerated in the kernel, then no GFX device should be added for DDIB
+				register "device[1].name" = ""DD01""
+				# TCP0 (DP-1) for port C0
+				register "device[2].name" = ""DD02""
+				register "device[2].use_pld" = "true"
+				register "device[2].pld" = "ACPI_PLD_TYPE_C(LEFT, RIGHT, ACPI_PLD_GROUP(1, 1))"
+				# TCP1 (DP-2) for port C1
+				register "device[3].name" = ""DD03""
+				register "device[3].use_pld" = "true"
+				register "device[3].pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(2, 1))"
+				device generic 0 on end
+			end
 		end
 		device ref pcie_rp4 on
 			# PCIe 4 WLAN
@@ -416,6 +449,7 @@ chip soc/intel/alderlake
 		device ref pch_espi on
 			chip ec/google/chromeec
 				use conn0 as mux_conn[0]
+				use conn1 as mux_conn[1]
 				device pnp 0c09.0 on end
 			end
 		end
@@ -426,6 +460,11 @@ chip soc/intel/alderlake
 						use usb2_port1 as usb2_port
 						use tcss_usb3_port1 as usb3_port
 						device generic 0 alias conn0 on end
+					end
+					chip drivers/intel/pmc_mux/conn
+						use usb2_port2 as usb2_port
+						use tcss_usb3_port2 as usb3_port
+						device generic 1 alias conn1 on end
 					end
 				end
 			end
@@ -475,7 +514,6 @@ chip soc/intel/alderlake
 						register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, LEFT, ACPI_PLD_GROUP(4, 1))"
 						device ref usb2_port4 on end
 					end
-
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 WWAN""
 						register "type" = "UPC_TYPE_INTERNAL"
@@ -535,8 +573,7 @@ chip soc/intel/alderlake
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E7)"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D2)"
 				register "enable_delay_ms" = "3"
-				device spi 0 on
-				end
+				device spi 0 on end
 			end # FPMCU
 		end
 	end

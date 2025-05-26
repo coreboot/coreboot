@@ -13,6 +13,11 @@ fw_config
 		option PDC_RTS_BYPASS		1
 		option PDC_TI_BYPASS		2
 	end
+	field LTE 14 15
+		option LTE_ABSENT		0
+		option LTE_PRESENT_101		1
+		option LTE_PRESENT_135		2
+	end
 end
 
 chip soc/intel/alderlake
@@ -609,7 +614,10 @@ chip soc/intel/alderlake
 				register "int_comp_resistor" = ""lowest""
 				register "input_precharge_resistor_ohms" = "4000"
 				register "input_analog_gain" = "3"
-				device i2c 28 on end
+				device i2c 28 on
+					probe LTE LTE_PRESENT_101
+					probe LTE LTE_PRESENT_135
+				end
 			end
 		end
 		device ref i2c5 on

@@ -7,11 +7,15 @@
 
 #define SPI_BUS_CLOCK_FREQ (50 * MHz)
 
+void bootblock_soc_early_init(void)
+{
+	if (!CONFIG(COMPRESS_BOOTBLOCK))
+		soc_mmu_init();
+}
+
 void bootblock_soc_init(void)
 {
 	clock_init();
-	if (!CONFIG(COMPRESS_BOOTBLOCK))
-		soc_mmu_init();
 
 	quadspi_init(SPI_BUS_CLOCK_FREQ);
 	qupv3_fw_init();

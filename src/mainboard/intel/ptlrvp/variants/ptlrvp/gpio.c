@@ -461,6 +461,7 @@ const struct pad_config *variant_board_gpio_diff_table(size_t *num)
 		return t4_gpio_diff_table;
 	case GCS_32GB:
 	case GCS_64GB:
+	case PTLP_DDR5_RVP:
 		return NULL;
 	default:
 		die("Unknown board ID = 0x%x\n", board_id);

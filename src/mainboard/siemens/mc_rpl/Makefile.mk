@@ -3,9 +3,7 @@
 subdirs-y += spd
 
 bootblock-y += bootblock.c
-bootblock-y += early_gpio.c
 
-ramstage-y += gpio.c
 romstage-y += romstage_fsp_params.c
 romstage-y += board_id.c
 romstage-y += memory.c

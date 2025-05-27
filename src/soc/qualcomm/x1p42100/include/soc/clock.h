@@ -37,6 +37,7 @@ enum clk_qup {
 };
 
 /* TODO: update as per datasheet */
+void clock_init(void);
 void clock_configure_qspi(uint32_t hz);
 void clock_enable_qup(int qup);
 void clock_configure_dfsr(int qup);

@@ -16,3 +16,8 @@ void clock_configure_dfsr(int qup)
 {
 	/* placeholder */
 }
+
+void clock_init(void)
+{
+	/* placeholder */
+}

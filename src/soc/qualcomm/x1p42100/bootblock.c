@@ -9,6 +9,7 @@
 
 void bootblock_soc_init(void)
 {
+	clock_init();
 	if (!CONFIG(COMPRESS_BOOTBLOCK))
 		soc_mmu_init();
 

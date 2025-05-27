@@ -8,4 +8,3 @@ graphics-test-srcs += libc/fpmath.c
 speaker-test-srcs += tests/drivers/speaker-test.c
 speaker-test-mocks += inb
 speaker-test-mocks += outb
-speaker-test-mocks += ndelay

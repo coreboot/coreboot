@@ -7,6 +7,7 @@
 #include <cpu/intel/common/common.h>
 #include <cpu/intel/cpu_ids.h>
 #include <cpu/x86/msr.h>
+#include <cpu/x86/mtrr.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <drivers/wifi/generic/wifi.h>
@@ -202,8 +203,8 @@ static void fill_tme_params(FSP_M_CONFIG *m_cfg)
 						"Full memory encryption is enabled.\n");
 			return;
 		}
-		m_cfg->TmeExcludeBase = (ram_top - 16*MiB);
-		m_cfg->TmeExcludeSize = 16*MiB;
+		m_cfg->TmeExcludeBase = (ram_top - CACHE_TMP_RAMTOP);
+		m_cfg->TmeExcludeSize = CACHE_TMP_RAMTOP;
 	}
 }
 

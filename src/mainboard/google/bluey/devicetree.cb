@@ -3,5 +3,7 @@
 chip soc/qualcomm/x1p42100
 	device cpu_cluster 0 on end
 	device domain 0 on
+		device pci 04.0 on end # WLAN
+		device pci 06.0 on end # SSD
 	end
 end

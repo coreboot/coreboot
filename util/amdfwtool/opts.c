@@ -601,8 +601,7 @@ int amdfwtool_getopt(int argc, char *argv[], amd_cb_config *cb_config, context *
 			break;
 		case AMDFW_OPT_HELP:
 			usage();
-			retval = 1;
-			break;
+			return 1;
 		case AMDFW_OPT_BODY_LOCATION:
 			cb_config->body_location = (uint32_t)strtoul(optarg, &tmp, 16);
 			if (*tmp != '\0') {

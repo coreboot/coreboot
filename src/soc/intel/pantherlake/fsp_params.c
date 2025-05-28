@@ -695,7 +695,7 @@ static void fill_fsps_iax_params(FSP_S_CONFIG *s_cfg,
 static void fill_fsps_ufs_params(FSP_S_CONFIG *s_cfg,
 		const struct soc_intel_pantherlake_config *config)
 {
-#if CONFIG(SOC_INTEL_PANTHERLAKE_U_H)
+#if (CONFIG(SOC_INTEL_PANTHERLAKE_U_H) || CONFIG(SOC_INTEL_WILDCATLAKE))
 	/* Setting FSP UPD (1,0) to enable controller 0 */
 	s_cfg->UfsEnable[0] = is_devfn_enabled(PCI_DEVFN_UFS);
 	s_cfg->UfsEnable[1] = 0;

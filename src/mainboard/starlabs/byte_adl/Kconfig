@@ -30,6 +30,11 @@ config BOARD_STARLABS_BYTE_ADL
 	select SOC_INTEL_ALDERLAKE
 	select SOC_INTEL_ALDERLAKE_PCH_N
 
+config BOARD_STARLABS_BYTE_TWL
+	select BOARD_STARLABS_BYTE_SERIES
+	select SOC_INTEL_ALDERLAKE
+	select SOC_INTEL_TWINLAKE
+
 if BOARD_STARLABS_BYTE_SERIES
 
 config CONSOLE_SERIAL
@@ -68,9 +73,11 @@ config MAINBOARD_DIR
 
 config MAINBOARD_FAMILY
 	string
+	default "Y3" if BOARD_STARLABS_BYTE_TWL
 	default "Y2"
 
 config MAINBOARD_PART_NUMBER
+	default "Byte Mk III" if BOARD_STARLABS_BYTE_TWL
 	default "Byte Mk II"
 
 config MAINBOARD_SMBIOS_PRODUCT_NAME
@@ -79,6 +86,11 @@ config MAINBOARD_SMBIOS_PRODUCT_NAME
 config ME_BIN_PATH
 	string
 	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/\$(CONFIG_VARIANT_DIR)/intel_me.bin"
+
+config PL4_WATTS
+	int
+	default 84 if BOARD_STARLABS_BYTE_TWL
+	default 36
 
 config POWER_STATE_DEFAULT_ON_AFTER_FAILURE
 	default n

@@ -1415,9 +1415,21 @@ typedef struct {
 **/
   UINT8                       RDTCIDLE;
 
-/** Offset 0x031B - Reserved
+/** Offset 0x031B - PPR Retry Limit
+  Sets a limit on the number of times Memory Testing will be retried after attempting
+  to repair using PPR.
 **/
-  UINT8                       Reserved32[20];
+  UINT8                       PprRetryLimit;
+
+/** Offset 0x031C - Use 1p5 Read Postamble
+  Enables/Disable using 1p5 tCK Read Postamble for higher freqencies
+  $EN_DIS
+**/
+  UINT8                       Use1p5ReadPostamble;
+
+/** Offset 0x031D - Reserved
+**/
+  UINT8                       Reserved32[18];
 
 /** Offset 0x032F - Board Type
   MrcBoardType, Options are 0=Mobile/Mobile Halo, 1=Desktop/DT Halo, 5=ULT/ULX/Mobile
@@ -2811,8 +2823,8 @@ typedef struct {
   UINT16                      IgdDvmt50PreAlloc;
 
 /** Offset 0x0AC8 - Internal Graphics
-  Enable/disable internal graphics.
-  $EN_DIS
+  Expect 3 values from 0 to 2
+  2:AUTO, 1:Enable, 0:Disable
 **/
   UINT8                       InternalGraphics;
 

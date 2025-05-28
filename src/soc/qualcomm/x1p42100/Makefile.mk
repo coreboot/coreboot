@@ -143,12 +143,41 @@ $(CPUCP_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(CPUCP_CBFS)
 
 ################################################################################
+# Rule to create cpucp_meta from cpucp.elf
+# This rule depends on cpucp.elf being built and the extractor script existing.
+$(obj)/mainboard/$(MAINBOARDDIR)/cpucp_meta: $(X1P42100_BLOB)/cpucp/cpucp.elf util/qualcomm/elf_segment_extractor.py
+	@echo "Extracting ELF headers and hash table segment from $< to $@"
+	@util/qualcomm/elf_segment_extractor.py --eh --pht --hashtable $< $@
+
+CPUCP_META_FILE := $(obj)/mainboard/$(MAINBOARDDIR)/cpucp_meta
+CPUCP_META_CBFS := $(CONFIG_CBFS_PREFIX)/cpucp_meta
+$(CPUCP_META_CBFS)-file := $(CPUCP_META_FILE)
+$(CPUCP_META_CBFS)-type := raw
+$(CPUCP_META_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(CPUCP_META_CBFS)
+
+
+################################################################################
 SHRM_FILE := $(X1P42100_BLOB)/shrm/shrm.elf
 SHRM_CBFS := $(CONFIG_CBFS_PREFIX)/shrm
 $(SHRM_CBFS)-file := $(SHRM_FILE)
 $(SHRM_CBFS)-type := payload
 $(SHRM_CBFS)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
 cbfs-files-y += $(SHRM_CBFS)
+
+################################################################################
+# Rule to create shrm_meta from shrm.elf
+# This rule depends on shrm.elf being built and the extractor script existing.
+$(obj)/mainboard/$(MAINBOARDDIR)/shrm_meta: $(X1P42100_BLOB)/shrm/shrm.elf util/qualcomm/elf_segment_extractor.py
+	@echo "Extracting ELF headers and hash table segment from $< to $@"
+	@util/qualcomm/elf_segment_extractor.py --eh --pht --hashtable $< $@
+
+SHRM_META_FILE := $(obj)/mainboard/$(MAINBOARDDIR)/shrm_meta
+SHRM_META_CBFS := $(CONFIG_CBFS_PREFIX)/shrm_meta
+$(SHRM_META_CBFS)-file := $(SHRM_META_FILE)
+$(SHRM_META_CBFS)-type := raw
+$(SHRM_META_CBFS)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
+cbfs-files-y += $(SHRM_META_CBFS)
 
 ################################################################################
 GSI_FW_FILE := $(X1P42100_BLOB)/qup_fw/gsi_fw.bin

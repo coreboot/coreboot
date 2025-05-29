@@ -448,6 +448,7 @@ chip soc/intel/alderlake
 		device ref ish on
 			chip drivers/intel/ish
 				register "add_acpi_dma_property" = "true"
+				register "firmware_name" = ""pujjolo_ish.bin""
 				device generic 0 on end
 			end
 		end

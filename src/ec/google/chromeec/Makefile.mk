@@ -21,7 +21,12 @@ ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC_SMBIOS) += ec_smbios.c
 endif
 
 bootblock-y += ec.c
+bootblock-$(CONFIG_EC_GOOGLE_CHROMEEC_I2C) += ec_i2c.c
 bootblock-$(CONFIG_EC_GOOGLE_CHROMEEC_LPC) += ec_lpc.c
+bootblock-$(CONFIG_EC_GOOGLE_CHROMEEC_SPI) += ec_spi.c
+ifeq ($(CONFIG_EC_GOOGLE_CHROMEEC_SPI)$(CONFIG_EC_GOOGLE_CHROMEEC_I2C),y)
+bootblock-y += crosec_proto.c
+endif
 ramstage-y += ec.c crosec_proto.c vstore.c usbc_mux.c
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC_I2C) += ec_i2c.c
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC_LPC) += ec_lpc.c

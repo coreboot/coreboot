@@ -110,8 +110,8 @@ includes-handler= \
 $(obj)/libpayload.a: $(foreach class,$(libraries),$$($(class)-objs))
 	printf "    AR         $(subst $(CURDIR)/,,$(@))\n"
 	printf "create $@\n$(foreach objc,$(filter-out %.a,$^),addmod $(objc)\n)$(foreach lib,$(filter %.a,$^),addlib $(lib)\n)save\nend\n" | $(AR) -M
-	for func in $$(nm $@ | awk '/ (w|W) / { print $$NF }'); do \
-		if nm --no-weak --defined-only $@ | grep -Eq " $$func$$"; then \
+	for func in $$($(NM) $@ | awk '/ (w|W) / { print $$NF }'); do \
+		if $(NM) --no-weak --defined-only $@ | grep -Eq " $$func$$"; then \
 			printf "\nERROR: Function '$$func' appears as both weak and strong symbol in libpayload.\n"; \
 			printf "       Weak symbol overrides don't work reliably from within the same library.\n\n"; \
 			rm $@; \

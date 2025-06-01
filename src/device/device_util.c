@@ -293,7 +293,7 @@ bool is_dev_on_domain0(const struct device *dev)
 /**
  * Allocate 64 more resources to the free list.
  *
- * @return TODO.
+ * @return Return 0 for allocation failure, Return 1 for allocation success.
  */
 static int allocate_more_resources(void)
 {
@@ -317,10 +317,9 @@ static int allocate_more_resources(void)
 /**
  * Remove resource res from the device's list and add it to the free list.
  *
- * @param dev TODO
- * @param res TODO
- * @param prev TODO
- * @return TODO.
+ * @param dev The device which contains a resource to be freed(detached).
+ * @param res The resource to be freed(detached) which is part of 'dev'.
+ * @param prev The resource for 'dev' to be linked to next resource after 'res' is removed.
  */
 static void free_resource(struct device *dev, struct resource *res,
 			  struct resource *prev)
@@ -383,7 +382,7 @@ struct resource *probe_resource(const struct device *dev, unsigned int index)
  *
  * @param dev The device to find the resource on.
  * @param index The index of the resource on the device.
- * @return TODO.
+ * @return The resource. if it exists, then return existing one, else return new one.
  */
 struct resource *new_resource(struct device *dev, unsigned int index)
 {
@@ -431,7 +430,7 @@ struct resource *new_resource(struct device *dev, unsigned int index)
  *
  * @param dev The device to find the resource on.
  * @param index The index of the resource on the device.
- * return TODO.
+ * @return The resource found in 'dev' for 'index'.
  */
 struct resource *find_resource(const struct device *dev, unsigned int index)
 {
@@ -520,7 +519,7 @@ resource_t resource_max(const struct resource *resource)
  * Return the resource type of a resource.
  *
  * @param resource The resource type to decode.
- * @return TODO.
+ * @return The string representation of type.
  */
 const char *resource_type(const struct resource *resource)
 {
@@ -542,7 +541,7 @@ const char *resource_type(const struct resource *resource)
  *
  * @param dev The device the stored resource lives on.
  * @param resource The resource that was just stored.
- * @param comment TODO
+ * @param comment The comment just for additional information.
  */
 void report_resource_stored(struct device *dev, const struct resource *resource,
 			    const char *comment)

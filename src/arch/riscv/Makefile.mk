@@ -31,7 +31,7 @@ else
 MARCH_SUFFIX=
 endif
 
-ifeq ($(CCC_ANALYZER_OUTPUT_FORMAT),)
+ifeq ($(CLANG_TIDY),)
 riscv_flags += -march=$(CONFIG_RISCV_ARCH)$(MARCH_SUFFIX) -mabi=$(CONFIG_RISCV_ABI) -mcmodel=$(CONFIG_RISCV_CODEMODEL)
 simple_riscv_flags += -march=$(CONFIG_RISCV_ARCH) -mabi=$(CONFIG_RISCV_ABI) -mcmodel=$(CONFIG_RISCV_CODEMODEL)
 else

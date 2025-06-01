@@ -85,8 +85,8 @@ mode=text
 # quiet mode: only print pass, failure, and 'skipped' messages
 quiet=false
 
-# clang mode enabled by -sb option.
-scanbuild=false
+# clang-tidy mode enabled by -sb option.
+clangtidy=false
 
 # Mark whether abuild was called recursively
 recursive=false
@@ -417,6 +417,35 @@ ts_delta_string()
 	fi
 }
 
+run_clang_tidy()
+{
+	local build_dir="$1"
+	local log_file="$2"
+	local clang_tidy_args=""
+
+	if [[ -n "${CLANG_TIDY_CHECKS}" ]]; then
+		clang_tidy_args+="-checks=${CLANG_TIDY_CHECKS} "
+	fi
+
+	# Generate compilation database
+	printf "Generating compilation database for clang-tidy...\n"
+	${MAKE} -C "${ROOT}" DOTCONFIG="${build_dir}/config.build" obj="${build_dir}" \
+		objutil="${TARGET}/sharedutils" BUILD_TIMELESS=${TIMELESS} \
+		compiledb >/dev/null 2>&1
+
+	if [[ ! -f "${build_dir}/compile_commands.json" ]]; then
+		printf "Error: Failed to generate compilation database\n" >> "${log_file}"
+		return 1
+	fi
+
+	# Run clang-tidy on all source files
+	find "${ROOT}/src" -type f \( -name "*.c" -o -name "*.h" \) | while read -r src_file; do
+		clang-tidy ${clang_tidy_args} "${src_file}" >> "${log_file}" 2>&1
+	done
+
+	return 0
+}
+
 compile_target()
 {
 	local BUILD_NAME=$1
@@ -453,6 +482,17 @@ compile_target()
 		printf "ok\n" > compile.status
 		printf "%s built successfully. (took %s)\n" "${BUILD_NAME}" "${duration_str}"
 		echo "${BUILD_NAME}" >> "${PASSED_BOARDS}"
+
+		# Run clang-tidy after successful build
+		if [[ "${clangtidy}" = "true" ]]; then
+			printf "Running clang-tidy for %s...\n" "${BUILD_NAME}"
+			run_clang_tidy "${build_dir}" "${build_dir}/clang-tidy.log"
+			if [[ $? -eq 0 ]]; then
+				printf "clang-tidy completed for %s\n" "${BUILD_NAME}"
+			else
+				printf "clang-tidy failed for %s (see %s/clang-tidy.log)\n" "${BUILD_NAME}" "${build_dir}"
+			fi
+		fi
 	else
 		junit "<failure type='BuildFailed'>"
 		junitfile make.log
@@ -606,16 +646,10 @@ EOF
 
 	if [[ ${BUILDENV_CREATED} -eq 0 ]] && [[ ${configureonly} -eq 0 ]]; then
 		BUILDPREFIX=
-		if [[ "${scanbuild}" = "true" ]]; then
-			scanbuild_out="${TARGET}/${BUILD_NAME}-scanbuild"
-			rm -rf "${scanbuild_out}"
-			BUILDPREFIX="scan-build ${SCANBUILD_ARGS} -o ${scanbuild_out}tmp"
+		if [[ "${clangtidy}" = "true" ]]; then
+			printf "Enabling clang-tidy for static analysis\n"
 		fi
 		compile_target "${BUILD_NAME}"
-		if [[ "${scanbuild}" = "true" ]]; then
-			mv "${scanbuild_out}tmp"/* "${scanbuild_out}"
-			rmdir "${scanbuild_out}tmp"
-		fi
 	fi
 
 	junit "</testcase>"
@@ -720,7 +754,7 @@ Options:\n
     [-r|--remove]                 Remove output dir after build
     [-R|--root <path>]            Absolute path to coreboot sources
                                   (defaults to ${ROOT})
-    [--scan-build]                Use clang's static analyzer
+    [--static-analysis]            Run clang-tidy for static code analysis
     [--skip_set <value>]          Skip building boards with this Kconfig set
     [--skip_unset <value>]        Skip building boards with this Kconfig not set
     [--timeless]                  Generate timeless builds
@@ -780,7 +814,7 @@ getoptbrand="$(getopt -V)"
 # shellcheck disable=SC2086
 if [[ "${getoptbrand:0:6}" == "getopt" ]]; then
 	# Detected GNU getopt that supports long options.
-	args=$(getopt -l version,verbose,quiet,help,all,target:,board-variant:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,any-toolchain,clean,clean-somewhat,outdir:,chromeos,xmlfile:,kconfig:,dir:,root:,recursive,checksum:,timeless,exitcode,asserts,name:,skip_set:,skip_unset: -o Vvqhat:b:p:c:sJCl:rP:uyBLAzZo:xX:K:d:R:Ien: -- "$@") || exit 1
+	args=$(getopt -l version,verbose,quiet,help,all,target:,board-variant:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,static-analysis,ccache,blobs,clang,any-toolchain,clean,clean-somewhat,outdir:,chromeos,xmlfile:,kconfig:,dir:,root:,recursive,checksum:,timeless,exitcode,asserts,name:,skip_set:,skip_unset: -o Vvqhat:b:p:c:sJCl:rP:uyBLAzZo:xX:K:d:R:Ien: -- "$@") || exit 1
 	eval set -- ${args}
 	retval=$?
 else
@@ -828,10 +862,9 @@ while true ; do
 			shift;;
 		# obsolete option
 		-s|--silent)    shift;;
-		--scan-build)   shift
-			scanbuild=true
-			customizing="${customizing}, scan-build"
-			SCANBUILD_ARGS=${SCANBUILD_ARGS:-'-k'}
+		--static-analysis)   shift
+			clangtidy=true
+			customizing="${customizing}, static-analysis"
 			configoptions="${configoptions}CONFIG_FATAL_ASSERTS=y\n"
 			;;
 		--skip_set)	shift
@@ -1008,17 +1041,12 @@ build_targets()
 	printf "%s" "${configoptions}" > "${TMPCFG}"
 	${MAKE} -j "${cpus}" DOTCONFIG="${TMPCFG}" obj="${TARGET}/temp" objutil="${TARGET}/sharedutils" olddefconfig 2>/dev/null
 	BUILDPREFIX=
-	if [[ "${scanbuild}" = "true" ]]; then
-		scanbuild_out="${TARGET}/sharedutils-scanbuild"
-		rm -rf "${scanbuild_out}"
-		BUILDPREFIX="scan-build -o ${scanbuild_out}tmp"
-	fi
 	mkdir -p "${TARGET}/abuild"
 	ABSPATH="$(cd "${TARGET}/abuild" && pwd)"
 	XMLFILE="${ABSPATH}/__util.xml"
 	rm -f "${XMLFILE}"
 	stime=$(add_timestamp)
-	${BUILDPREFIX} "${MAKE}" -j "${cpus}" DOTCONFIG="${TMPCFG}" obj="${TARGET}/temp" objutil="${TARGET}/sharedutils" tools > "${TARGET}/sharedutils/make.log" 2>&1
+	${MAKE} -j "${cpus}" DOTCONFIG="${TMPCFG}" obj="${TARGET}/temp" objutil="${TARGET}/sharedutils" tools > "${TARGET}/sharedutils/make.log" 2>&1
 	local ret=$?
 	etime=$(add_timestamp)
 	duration=$(ts_delta_seconds "${stime}" "${etime}")
@@ -1039,10 +1067,6 @@ build_targets()
 		return
 	fi
 
-	if [[ "${scanbuild}" = "true" ]]; then
-		mv "${scanbuild_out}"tmp/* "${scanbuild_out}"
-		rmdir "${scanbuild_out}tmp"
-	fi
 	rm -rf "${TARGET}/temp" "${TMPCFG}"
 	num_targets=$(wc -w <<<"${targets}")
 	cpus_per_target=$(((${cpus:-1} + num_targets - 1) / num_targets))

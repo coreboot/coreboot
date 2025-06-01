@@ -19,12 +19,10 @@ HOSTCC:=$(CCACHE) $(HOSTCC)
 HOSTCXX:=$(CCACHE) $(HOSTCXX)
 endif
 
-# scan-build integration
-ifneq ($(CCC_ANALYZER_OUTPUT_FORMAT),)
-
-ifeq ($(CCC_ANALYZER_ANALYSIS),)
-export CCC_ANALYZER_ANALYSIS := -analyzer-opt-analyze-headers
-endif
+# clang-tidy integration
+ifneq ($(CLANG_TIDY),)
+CLANG_TIDY_CHECKS ?= -checks=*
+CLANG_TIDY_ARGS ?= -extra-arg=-Wno-packed-not-aligned
 
 $(foreach arch,$(ARCH_SUPPORTED), \
 	$(eval CC_$(arch):=CCC_CC="$(CC_$(arch))" $(CC) ))

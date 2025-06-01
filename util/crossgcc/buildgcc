@@ -941,9 +941,6 @@ build_LLVM() {
 	$MAKE install || touch .failed
 
 	rm -f ../llvm ../clang ../clang-tools-extra ../compiler-rt ../cmake ../lld ../libunwind ../runtimes
-
-	cp -a ../$CLANG_DIR/tools/scan-build/* "$DESTDIR$TARGETDIR/bin"
-	cp -a ../$CLANG_DIR/tools/scan-view/* "$DESTDIR$TARGETDIR/bin"
 }
 
 build_CMAKE() {

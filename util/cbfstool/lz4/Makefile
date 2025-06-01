@@ -81,7 +81,7 @@ sanitize: clean
 	CFLAGS="-O3 -g -fsanitize=undefined" $(MAKE) test CC=clang FUZZER_TIME="-T1mn" NB_LOOPS=-i1
 
 staticAnalyze: clean
-	CFLAGS=-g scan-build --status-bugs -v $(MAKE) all
+	CFLAGS=-g clang-tidy $(CLANG_TIDY_CHECKS) $(CLANG_TIDY_ARGS) $(SRCS)
 
 armtest: clean
 	CFLAGS="-O3 -Werror" $(MAKE) -C $(LZ4DIR) all CC=arm-linux-gnueabi-gcc

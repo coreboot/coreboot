@@ -62,7 +62,8 @@ chip soc/intel/alderlake
 	#|                   | required to set up a BAR  |
 	#|                   | for TPM communication     |
 	#| I2C1              | Touchscreen               |
-	#| I2C2              | Sub-board(PSensor)/WCAM   |
+	#| I2C2              | Psensor                   |
+	#| I2C4              | Mipi camera               |
 	#| I2C5              | Trackpad                  |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
@@ -112,6 +113,15 @@ chip soc/intel/alderlake
 				.sda_hold = 7,
 			}
 		},
+	}"
+
+	register "serial_io_i2c_mode" = "{
+		[PchSerialIoIndexI2C0] = PchSerialIoPci,
+		[PchSerialIoIndexI2C1] = PchSerialIoPci,
+		[PchSerialIoIndexI2C2] = PchSerialIoPci,
+		[PchSerialIoIndexI2C3] = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C4] = PchSerialIoPci,
+		[PchSerialIoIndexI2C5] = PchSerialIoPci,
 	}"
 
 	register "serial_io_gspi_mode" = "{
@@ -166,7 +176,7 @@ chip soc/intel/alderlake
 			chip drivers/i2c/hid
 				register "generic.hid" = ""PARA3408""
 				register "generic.desc" = ""Parade Touchscreen""
-				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E11_IRQ)"
+				register "generic.irq" = "ACPI_IRQ_LEVEL_HIGH(GPP_E11_IRQ)"
 				register "generic.detect" = "1"
 				register "generic.reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_C1)"
 				register "generic.reset_delay_ms" = "20"

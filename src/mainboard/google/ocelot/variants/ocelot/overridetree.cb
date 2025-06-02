@@ -61,32 +61,33 @@ end
 
 chip soc/intel/pantherlake
 
-	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C0
-	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C1
-	register "usb2_ports[2]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C2
-	register "usb2_ports[3]" = "USB2_PORT_TYPE_C(OC_SKIP)" # USB2_C3
-	register "usb2_ports[4]" = "USB2_PORT_MID(OC0)" # Type-A Port A0
-	register "usb2_ports[5]" = "USB2_PORT_MID(OC0)" # Type-A Port A1 / WWAN with rework
-	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)" # Discrete Bluetooth
+	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Type C port - various configurations - TCP0
+	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)" # Type C port - various configurations - TCP1
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC0)" # USB3.2 Gen2x1 Type-A Port - TAP1 Vertical CONN
+	register "usb2_ports[3]" = "USB2_PORT_MID(OC0)" # USB3.2 Gen2x1 Type-A Port - TAP2 (redriver topology)
+	register "usb2_ports[4]" = "USB2_PORT_MID(OC0)" # 2x5 USB2 HDR
+	register "usb2_ports[5]" = "USB2_PORT_MID(OC0)" # 2x5 USB2 HDR
+	register "usb2_ports[6]" = "USB2_PORT_MID(OC0)" # FPS
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC0)" # M.2 WLAN
 
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)" # USB3.2 x1 Type-A Con #1
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)" # USB3.2 x1 Type-A Con #2 / M.2 WWAN with rework
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)" # USB 3.2 Gen2 x1 Type-A Con - # 1
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)" # USB 3.2 Gen2 x1 Type-A Con - # 2 (redriver topology)
+	#register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC0)" # TCSS Module - Type-A over TCP module
 
-	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
+	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC0)"
 	register "tcss_ports[1]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
-	register "tcss_ports[2]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
-	register "tcss_ports[3]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
 
 	register "tcss_cap_policy[0]" = "TCSS_TYPE_C_PORT_FULL_FUN"
 	register "tcss_cap_policy[1]" = "TCSS_TYPE_C_PORT_FULL_FUN"
-	register "tcss_cap_policy[2]" = "TCSS_TYPE_C_PORT_FULL_FUN"
-	register "tcss_cap_policy[3]" = "TCSS_TYPE_C_PORT_FULL_FUN"
 
-	# Enable EDP in PortA
+
+	# Enable EDP in PortA & HDMI in Port B
 	register "ddi_port_A_config" = "1"
+	register "ddi_port_B_config" = "1"
 	register "ddi_ports_config" = "{
-                [DDI_PORT_A] = DDI_ENABLE_HPD,
-        }"
+		[DDI_PORT_A] = DDI_ENABLE_HPD,
+		[DDI_PORT_B] = DDI_ENABLE_HPD,
+	}"
 
 	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
@@ -107,10 +108,7 @@ chip soc/intel/pantherlake
 	#+-------------------+---------------------------+
 	#| Field             |  Value                    |
 	#+-------------------+---------------------------+
-	#| I2C1              | Camera(CRD1)              |
-	#| I2C2              | Camera(CRD2)              |
-	#| I2C3              | Audio, TPM(cr50)          |
-	#| I2C4              | Touchscreen               |
+	#| I2C1              | TPM(cr50)                 |
 	#| I2C5              | Touchpad                  |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
@@ -118,12 +116,12 @@ chip soc/intel/pantherlake
 		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
 		.i2c[1] = {
 			.speed = I2C_SPEED_FAST,
+			.early_init = 1,
 		},
 		.i2c[2] = {
 			.speed = I2C_SPEED_FAST,
 		},
 		.i2c[3] = {
-			.early_init = 1,
 			.speed = I2C_SPEED_FAST,
 		},
 		.i2c[4] = {
@@ -412,31 +410,31 @@ chip soc/intel/pantherlake
 						device ref usb2_port2 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB2 Type-C Port C2""
-						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "desc" = ""USB2 Type-A Port 1""
+						register "type" = "UPC_TYPE_A"
 						register "group" = "ACPI_PLD_GROUP(3, 1)"
 						device ref usb2_port3 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB2 Type-C Port C3""
-						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "desc" = ""USB2 Type-A Port 2""
+						register "type" = "UPC_TYPE_A"
 						register "group" = "ACPI_PLD_GROUP(4, 1)"
 						device ref usb2_port4 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB2 Type-A Port 1""
+						register "desc" = ""USB2 Type-A Port 3""
 						register "type" = "UPC_TYPE_A"
 						register "group" = "ACPI_PLD_GROUP(5, 1)"
 						device ref usb2_port5 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB2 Type-A Port 2""
+						register "desc" = ""USB2 Type-A Port 4""
 						register "type" = "UPC_TYPE_A"
 						register "group" = "ACPI_PLD_GROUP(6, 1)"
 						device ref usb2_port6 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""USB2 Type-A Port 3""
+						register "desc" = ""USB2 Type-A Port 5""
 						register "type" = "UPC_TYPE_A"
 						register "group" = "ACPI_PLD_GROUP(7, 1)"
 						device ref usb2_port7 on end
@@ -444,7 +442,7 @@ chip soc/intel/pantherlake
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Bluetooth""
 						register "type" = "UPC_TYPE_INTERNAL"
-						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A16)"
+						register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B09)"
 						device ref usb2_port8 on
 							probe WIFI WIFI_PCIE_6
 							probe WIFI WIFI_PCIE_7
@@ -471,86 +469,41 @@ chip soc/intel/pantherlake
 			probe STORAGE STORAGE_UNKNOWN
 		end
 
-		device ref pcie_rp2 on
-			probe CELLULAR CELLULAR_PCIE
-			register "pcie_rp[PCIE_RP(2)]" = "{
-				.clk_src = 5,
-				.clk_req = 5,
-				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
-			}"
-			chip soc/intel/common/block/pcie/rtd3
-				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D03)"
-				register "reset_off_delay_ms" = "20"
-				register "srcclk_pin" = "5"
-				register "ext_pm_support" = "ACPI_PCIE_RP_EMIT_ALL"
-				register "skip_on_off_support" = "true"
-				register "use_rp_mutex" = "true"
-				device generic 0 alias rp2_rtd3 on end
-			end
-			chip drivers/wwan/fm
-				register "fcpo_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A09)"
-				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B20)"
-				register "perst_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D03)"
-				register "wake_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E02)"
-				register "add_acpi_dma_property" = "true"
-				use rp2_rtd3 as rtd3dev
-				device generic 0 on end
-			end
-		end # WWAN
-		device ref pcie_rp3 on
-			probe SD SD_GENSYS
-			probe SD SD_BAYHUB
-			# Enable PCH PCIE x1 slot using CLK 3
-			register "pcie_rp[PCIE_RP(3)]" = "{
-				.clk_src = 2,
-				.clk_req = 2,
-				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
-			}"
-			chip soc/intel/common/block/pcie/rtd3
-				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A08)"
-				register "enable_delay_ms" = "100"
-				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D19)"
-				register "reset_delay_ms" = "20"
-				register "srcclk_pin" = "2"
-				device generic 0 on end
-			end
-		end # PCIE x1 slot
-		device ref pcie_rp4 on
-			probe WIFI WIFI_PCIE_6
-			probe WIFI WIFI_PCIE_7
-			register "pcie_rp[PCH_RP(4)]" = "{
-				.clk_src = 4,
-				.clk_req = 4,
-				.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
-			}"
-			chip soc/intel/common/block/pcie/rtd3
-				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A11)"
-				register "srcclk_pin" = "4"
-				device pci 00.0 on end
-			end
-			chip drivers/wifi/generic
-				register "add_acpi_dma_property" = "true"
-				register "wake" = "GPE0_DW0_12" # GPP_A12
-				use usb2_port7 as bluetooth_companion
-				device pci 00.0 on end
-			end
-		end # discrete WLAN
-		device ref pcie_rp5 on
+		device ref pcie_rp1 on
 			probe STORAGE STORAGE_NVME_GEN4
 			probe STORAGE STORAGE_UNKNOWN
-			register "pcie_rp[PCIE_RP(5)]" = "{
-			.clk_src = 6,
-			.clk_req = 6,
+			register "pcie_rp[PCIE_RP(1)]" = "{
+			.clk_src = 3,
+			.clk_req = 3,
 			.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 			chip soc/intel/common/block/pcie/rtd3
 				register "is_storage" = "true"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_H18)"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A08)"
-				register "srcclk_pin" = "6"
+				register "srcclk_pin" = "3"
 				device generic 0 on end
 			end
 		end # Gen4 M.2 SSD
+
+		device ref pcie_rp5 on
+			probe SD SD_GENSYS
+			probe SD SD_BAYHUB
+			register "pcie_rp[PCIE_RP(5)]" = "{
+			.clk_src = 2,
+			.clk_req = 2,
+			.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_F10)"
+				register "enable_delay_ms" = "100"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E03)"
+				register "reset_delay_ms" = "20"
+				register "srcclk_pin" = "2"
+				device generic 0 on end
+			end
+		end # PCIE x1 slot
+
 		device ref cnvi_wifi on
 			probe WIFI WIFI_CNVI_6
 			probe WIFI WIFI_CNVI_7
@@ -569,16 +522,17 @@ chip soc/intel/pantherlake
 		end
 
 		# NOTE: i2c0 is function 0; hence it needs to be enabled when any of i2c1-5 is enabled.
-		# TPM device is under i2c3. Therefore, i2c0 needs to be enabled anyways.
+		# TPM device is under i2c1. Therefore, i2c0 needs to be enabled anyways.
 		device ref i2c0 on end
-		device ref i2c1 on end
-		device ref i2c2 on end
-		device ref i2c3 on
+		device ref i2c1 on
 			chip drivers/i2c/tpm
 				register "hid" = ""GOOG0005""
-				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_D15_IRQ)"
+				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_B17_IRQ)"
 				device i2c 50 on end
 			end
+		end
+		device ref i2c2 on end
+		device ref i2c3 on
 		end # I2C3
 		device ref i2c4 off
 		end # I2C4
@@ -588,7 +542,7 @@ chip soc/intel/pantherlake
 				register "generic.desc" = ""Hynitron TOUCHPAD""
 				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F18_IRQ)"
 				# NOTE: pmc_gpe0_dw0 will be overridden to GPP_F in variant.c.
-				register "generic.wake" = "GPE0_DW0_18"
+				register "generic.wake" = "GPE0_DW0_13"
 				register "generic.uid" = "5"
 				register "generic.detect" = "1"
 				register "hid_desc_reg_offset" = "0x20"

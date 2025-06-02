@@ -90,7 +90,8 @@ enum SDRAM_VOLTAGE_TYPE {
 };
 
 struct ddr_base_info {
-	u32 config_dvfs;		/* SDRAM_DVFS_FLAG */
+	u16 config_dvfs;		/* SDRAM_DVFS_FLAG */
+	u16 data_version;
 	struct sdram_info sdram;
 	u16 lpddr_type;
 	u16 voltage_type;		/* SDRAM_VOLTAGE_TYPE */

@@ -10,10 +10,6 @@
 
 static struct mtk_auxadc_regs *const mtk_auxadc = (void *)AUXADC_BASE;
 
-#define ADC_GE_A_SHIFT		10
-#define ADC_GE_A_MASK		(0x3ff << ADC_GE_A_SHIFT)
-#define ADC_OE_A_SHIFT		0
-#define ADC_OE_A_MASK		(0x3ff << ADC_OE_A_SHIFT)
 #define ADC_CALI_EN_A_SHIFT	20
 #define ADC_CALI_EN_A_MASK	(0x1 << ADC_CALI_EN_A_SHIFT)
 
@@ -38,7 +34,7 @@ static void mt_auxadc_update_cali(void)
 
 static uint32_t auxadc_get_rawdata(int channel)
 {
-	setbits32(&mtk_infracfg->module_sw_cg_1_clr, 1 << 10);
+	setbits32(&AUXADC_SWCG_CLR_REG, BIT(AUXADC_SWCG_EN_BIT));
 	assert(wait_ms(300, !(read32(&mtk_auxadc->con2) & 0x1)));
 
 	clrbits32(&mtk_auxadc->con1, 1 << channel);
@@ -50,7 +46,7 @@ static uint32_t auxadc_get_rawdata(int channel)
 
 	uint32_t value = read32(&mtk_auxadc->data[channel]) & 0x0FFF;
 
-	setbits32(&mtk_infracfg->module_sw_cg_1_set, 1 << 10);
+	setbits32(&AUXADC_SWCG_SET_REG, BIT(AUXADC_SWCG_EN_BIT));
 
 	return value;
 }

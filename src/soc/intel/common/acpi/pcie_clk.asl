@@ -14,6 +14,7 @@
  * Arg1: Enable(1)/Disable(0) Clock
  */
 Method (SPCO, 2, Serialized) {
+#if CONFIG(SOC_INTEL_COMMON_BLOCK_IOE_P2SB)
 	If (LEqual (Arg1,1)) {
 		If (LGreaterEqual (Arg0, CONFIG_IOE_DIE_CLOCK_START)) {
 			\_SB.ECLK.CLKE (Subtract (Arg0, CONFIG_IOE_DIE_CLOCK_START))
@@ -27,4 +28,11 @@ Method (SPCO, 2, Serialized) {
 			\_SB.ICLK.CLKD (Arg0)
 		}
 	}
+#else
+	If (LEqual (Arg1,1)) {
+		\_SB.ICLK.CLKE (Arg0)
+	} Else {
+		\_SB.ICLK.CLKD (Arg0)
+	}
+#endif
 }

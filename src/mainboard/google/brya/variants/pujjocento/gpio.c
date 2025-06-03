@@ -451,7 +451,7 @@ static const struct pad_config early_gpio_table[] = {
 	/* H11 : UART0_TXD ==> UART_SOC_TX_DBG_RX */
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
 	/* E13 : THC0_SPI1_IO0 ==> SINGLE CHANNEL */
-	PAD_CFG_GPI(GPP_E13, NONE, DEEP),
+	PAD_CFG_GPI_LOCK(GPP_E13, NONE, LOCK_CONFIG),
 	/* H20 : IMGCLKOUT1 ==> WLAN_PERST_L */
 	PAD_CFG_GPO(GPP_H20, 0, DEEP),
 };

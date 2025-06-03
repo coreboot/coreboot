@@ -3,6 +3,7 @@
 #include <baseboard/variants.h>
 #include <gpio.h>
 #include <soc/romstage.h>
+#include <soc/meminit.h>
 
 static const struct mb_cfg variant_memcfg = {
 	.type = MEM_TYPE_LP5X,
@@ -108,4 +109,17 @@ void variant_get_spd_info(struct mem_spd *spd_info)
 {
 	spd_info->topo = MEM_TOPO_MEMORY_DOWN;
 	spd_info->cbfs_index = variant_memory_sku();
+}
+
+uint8_t mb_get_channel_disable_mask(void)
+{
+	/*
+	 * GPP_E13 High -> One RAM Chip
+	 * GPP_E13 Low  -> Two RAM Chip
+	 */
+	if (gpio_get(GPP_E13)) {
+		/* Disable all other channels except first two on each controller */
+		return (BIT(2) | BIT(3));
+	}
+	return 0;
 }

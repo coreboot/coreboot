@@ -69,7 +69,7 @@ static void pcd_die_early_ip_init(void)
 	 * controller might want to perform PCR settings.
 	 */
 	p2sb_enable_bar();
-	ioe_p2sb_enable_bar();
+	p2sb2_enable_bar();
 	p2sb_configure_hpet();
 
 	fast_spi_early_init(SPI_BASE_ADDRESS);

@@ -177,7 +177,7 @@ void soc_init_pre_device(void *chip_info)
 		return;
 	}
 	/* Validate TBT image authentication */
-	config->tbt_authentication = ioe_p2sb_sbi_read(PID_IOM,
+	config->tbt_authentication = p2sb2_sbi_read(PID_IOM,
 					IOM_CSME_IMR_TBT_STATUS) & TBT_VALID_AUTHENTICATION;
 
 	if (CONFIG(SOC_INTEL_COMMON_BLOCK_TRACEHUB))

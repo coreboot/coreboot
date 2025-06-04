@@ -124,7 +124,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_A22, NONE),
 	PAD_NC(GPP_A23, NONE),
 
-
 	PAD_NC(GPP_B3, NONE),
 	PAD_NC(GPP_B4, NONE),
 	PAD_NC(GPP_B7, NONE),

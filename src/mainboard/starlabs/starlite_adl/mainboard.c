@@ -38,7 +38,6 @@ static void enable_mainboard(struct device *dev)
 	dev->ops->acpi_fill_ssdt = mainboard_fill_ssdt;
 }
 
-
 struct chip_operations mainboard_ops = {
 	.init = init_mainboard,
 	.enable_dev = enable_mainboard,

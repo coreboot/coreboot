@@ -31,11 +31,30 @@ chip soc/intel/alderlake
 	# Device Tree
 	device domain 0 on
 		device ref igpu		on
-			register "gfx"					= "GMA_DEFAULT_PANEL(0)"
-			register "ddi_portA_config"			= "1"
+			chip drivers/gfx/generic
+				register "device_count"		= "6"
+				# [DDIA] eDP
+				register "device[0].name"	= ""LCD0""
+				register "device[0].type"	= "panel"
+				# [DDIB] HDMI
+				register "device[1].name"	= ""DD01""
+				# [TCP0] Type-C
+				register "device[2].name"	= ""DD02""
+				register "device[2].use_pld"	= "true"
+				register "device[2].pld"	= "ACPI_PLD_TYPE_C(LEFT, CENTER, ACPI_PLD_GROUP(0, 0))"
+				# [TCP1] Type-C
+				register "device[3].name"	= ""DD03""
+				# [TCP2] N/A
+				register "device[4].name"	= ""DD04""
+				# [TCP3] N/A
+				register "device[5].name"	= ""DD05""
+				device generic 0 on end
+			end
+
+			register "ddi_portA_config"		= "1"
 			register "ddi_ports_config" = "{
-				[DDI_PORT_A]				= DDI_ENABLE_HPD | DDI_ENABLE_DDC,
-				[DDI_PORT_B]				= DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_A]			= DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_B]			= DDI_ENABLE_HPD | DDI_ENABLE_DDC,
 			}"
 		end
 		device ref pcie4_0	on				# SSD x4
@@ -68,9 +87,10 @@ chip soc/intel/alderlake
 			chip drivers/usb/acpi
 				device ref tcss_root_hub on
 					chip drivers/usb/acpi
-						register "desc"		= ""USB Type-C""
-						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
-						register "group"	= "ACPI_PLD_GROUP(0, 0)"
+						register "desc"			= ""USB Type-C""
+						register "type"			= "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld"	= "true"
+						register "custom_pld"		= "ACPI_PLD_TYPE_C(LEFT, CENTER, ACPI_PLD_GROUP(0, 0))"
 						device ref tcss_usb3_port1 on end
 					end
 				end
@@ -114,7 +134,8 @@ chip soc/intel/alderlake
 					chip drivers/usb/acpi
 						register "desc"		= ""USB Type-C""
 						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
-						register "group"	= "ACPI_PLD_GROUP(0, 0)"
+						register "use_custom_pld" = "true"
+						register "custom_pld"	= "ACPI_PLD_TYPE_C(LEFT, CENTER, ACPI_PLD_GROUP(0, 0))"
 						device ref usb2_port1 on end
 					end
 					chip drivers/usb/acpi

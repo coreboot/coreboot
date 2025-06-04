@@ -54,6 +54,7 @@ enum soc_intel_pantherlake_sagv_gears {
 
 enum soc_intel_pantherlake_power_limits {
 	PTL_U_1_CORE,
+	PTL_U_2_CORE,
 	PTL_H_1_CORE,
 	PTL_H_2_CORE,
 	PTL_H_3_CORE,
@@ -74,6 +75,7 @@ static const struct {
 	enum soc_intel_pantherlake_cpu_tdps cpu_tdp;
 } cpuid_to_ptl[] = {
 	{ PCI_DID_INTEL_PTL_U_ID_1, PTL_U_1_CORE, TDP_15W },
+	{ PCI_DID_INTEL_PTL_U_ID_2, PTL_U_2_CORE, TDP_15W },
 	{ PCI_DID_INTEL_PTL_H_ID_1, PTL_H_1_CORE, TDP_25W },
 	{ PCI_DID_INTEL_PTL_H_ID_2, PTL_H_1_CORE, TDP_25W },
 	{ PCI_DID_INTEL_PTL_H_ID_3, PTL_H_2_CORE, TDP_25W },

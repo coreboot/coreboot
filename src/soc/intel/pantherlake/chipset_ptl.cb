@@ -8,6 +8,12 @@ chip soc/intel/pantherlake
 		.tdp_pl4 = 152,
 	}"
 
+	register "power_limits_config[PTL_U_2_CORE]" = "{
+		.tdp_pl1_override = 15,
+		.tdp_pl2_override = 45,
+		.tdp_pl4 = 105,
+	}"
+
 	register "power_limits_config[PTL_H_1_CORE]" = "{
 		.tdp_pl1_override = 25,
 		.tdp_pl2_override = 95,

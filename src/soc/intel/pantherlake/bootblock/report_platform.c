@@ -28,6 +28,7 @@ static struct {
 	const char *name;
 } mch_table[] = {
 	{ PCI_DID_INTEL_PTL_U_ID_1, "Pantherlake U" },
+	{ PCI_DID_INTEL_PTL_U_ID_2, "Pantherlake U" },
 	{ PCI_DID_INTEL_PTL_H_ID_1, "Pantherlake H" },
 	{ PCI_DID_INTEL_PTL_H_ID_2, "Pantherlake H" },
 	{ PCI_DID_INTEL_PTL_H_ID_3, "Pantherlake H" },

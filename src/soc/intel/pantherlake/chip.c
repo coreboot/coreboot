@@ -247,6 +247,9 @@ static struct device_operations cpu_bus_ops = {
 
 static void soc_enable(struct device *dev)
 {
+	struct device_operations *soc_p2sb_ops = (struct device_operations *)&p2sb_ops;
+	struct device_operations *soc_p2sb2_ops = (struct device_operations *)&p2sb2_ops;
+
 	/*
 	 * Set the operations if it is a special bus type or a hidden PCI
 	 * device.
@@ -260,10 +263,10 @@ static void soc_enable(struct device *dev)
 		dev->ops = &pmc_ops;
 	else if (dev->path.type == DEVICE_PATH_PCI &&
 		 dev->path.pci.devfn == PCI_DEVFN_P2SB)
-		dev->ops = &pcd_p2sb_ops;
+		dev->ops = soc_p2sb_ops;
 	else if (dev->path.type == DEVICE_PATH_PCI &&
 		 dev->path.pci.devfn == PCI_DEVFN_P2SB2)
-		dev->ops = &pcd_p2sb_2_ops;
+		dev->ops = soc_p2sb2_ops;
 	else if (dev->path.type == DEVICE_PATH_GPIO)
 		block_gpio_enable(dev);
 }

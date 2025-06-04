@@ -3,5 +3,58 @@ chip soc/intel/alderlake
 	# seen on J0 and Q0 SKUs
 	register "disable_package_c_state_demotion" = "true"
 
-	device domain 0 on end
+	device domain 0 on
+		register "pcie_clk_config_flag[0]" = "PCIE_CLK_FREE_RUNNING"
+		register "pcie_clk_config_flag[1]" = "PCIE_CLK_FREE_RUNNING"
+		register "pcie_clk_config_flag[2]" = "PCIE_CLK_FREE_RUNNING"
+
+		device ref pcie4_0 on
+			register "cpu_pcie_rp[CPU_RP(1)]" = "{
+				.clk_src = 0,
+				.flags = PCIE_RP_CLK_REQ_UNUSED,
+			}"
+		end
+		device ref pcie4_1 on
+			register "cpu_pcie_rp[CPU_RP(2)]" = "{
+				.clk_src = 0,
+				.flags = PCIE_RP_CLK_REQ_UNUSED,
+			}"
+		end
+		device ref pcie_rp3 on
+			register "pch_pcie_rp[PCH_RP(3)]" = "{
+				.clk_src = 0,
+				.flags = PCIE_RP_CLK_REQ_UNUSED,
+			}"
+		end
+		device ref pcie_rp4 on
+			register "pch_pcie_rp[PCH_RP(4)]" = "{
+				.clk_src = 0,
+				.flags = PCIE_RP_CLK_REQ_UNUSED,
+			}"
+		end
+		device ref pcie_rp5 on
+			register "pch_pcie_rp[PCH_RP(5)]" = "{
+				.clk_src = 1,
+				.flags = PCIE_RP_CLK_REQ_UNUSED,
+			}"
+		end
+		device ref pcie_rp6 on
+			register "pch_pcie_rp[PCH_RP(6)]" = "{
+				.clk_src = 0,
+				.flags = PCIE_RP_CLK_REQ_UNUSED,
+			}"
+		end
+		device ref pcie_rp7 on
+			register "pch_pcie_rp[PCH_RP(7)]" = "{
+				.clk_src = 0,
+				.flags = PCIE_RP_CLK_REQ_UNUSED,
+			}"
+		end
+		device ref pcie_rp8 on
+			register "pch_pcie_rp[PCH_RP(8)]" = "{
+				.clk_src = 0,
+				.flags = PCIE_RP_CLK_REQ_UNUSED,
+			}"
+		end
+	end
 end

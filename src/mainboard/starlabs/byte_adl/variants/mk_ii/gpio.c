@@ -49,11 +49,20 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_E3, 1, DEEP),					/* WiFi RF Kill */
 	PAD_CFG_GPO(GPP_A13, 1, DEEP),					/* Bluetooth RF Kill */
 
+	/* LAN 1 */
+	PAD_CFG_NF(GPP_D7, NONE, DEEP, NF1),				/* Clock Request 2 */
+
+	/* LAN 2 */
+	PAD_CFG_NF(GPP_D8, NONE, DEEP, NF1),				/* Clock Request 3 */
+
 	/* Display */
 	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),				/* eDP Hot Plug */
 	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),				/* HDMI Hot Plug */
 	PAD_CFG_NF(GPP_H15, NONE, DEEP, NF1),				/* HDMI Clock */
 	PAD_CFG_NF(GPP_H17, NONE, DEEP, NF1),				/* HDMI Data */
+	PAD_CFG_NF(GPP_B11, NONE, DEEP, NF1),				/* PMC Interrupt */
+	PAD_CFG_NF(GPP_C6, NONE, DEEP, NF1),				/* SML Clock */
+	PAD_CFG_NF(GPP_C7, NONE, DEEP, NF1),				/* SML Data */
 
 	/* High-Definition Audio */
 	PAD_CFG_NF(GPP_R0, NATIVE, DEEP, NF1),				/* Clock */
@@ -145,8 +154,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B9, NONE),
 	/* B10:		Not Connected					*/
 	PAD_NC(GPP_B10, NONE),
-	/* B11:		I2C PMC PD Interrupt	Test Point 28		*/
-	PAD_CFG_NF(GPP_B11, NONE, DEEP, NF1),
 	/* B12:		PM SLP S0					*/
 	PAD_NC(GPP_B12, NONE),
 	/* B15:		Not Connected					*/
@@ -174,10 +181,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_C3, NONE),
 	/* C4:		SML 0 Data					*/
 	PAD_NC(GPP_C4, NONE),
-	/* C6:		SML 1 Clock					*/
-	PAD_CFG_NF(GPP_C6, NONE, DEEP, NF1),
-	/* C7:		SML 1 Data					*/
-	PAD_CFG_NF(GPP_C7, NONE, DEEP, NF1),
 	/* C8:		Not Connected					*/
 	PAD_NC(GPP_C8, NONE),
 	/* C9:		Not Connected					*/
@@ -223,10 +226,6 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D4, NONE),
 	/* D6:		Clock Request 1		Wireless LAN		*/
 	PAD_NC(GPP_D6, NONE),
-	/* D7:		Clock Request 2		LAN 1			*/
-	PAD_CFG_NF(GPP_D7, NONE, DEEP, NF1),
-	/* D8:		Clock Request 3		LAN 2			*/
-	PAD_CFG_NF(GPP_D8, NONE, DEEP, NF1),
 	/* D9:		GSPI 2 FPS					*/
 	PAD_NC(GPP_D9, NONE),
 	/* D10:		GSPI 2 Clock					*/

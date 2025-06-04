@@ -54,7 +54,6 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_A18, NONE, DEEP, NF1),				/* HDMI Hot Plug */
 	PAD_CFG_NF(GPP_H15, NONE, DEEP, NF1),				/* HDMI Clock */
 	PAD_CFG_NF(GPP_H17, NONE, DEEP, NF1),				/* HDMI Data */
-	PAD_CFG_NF(GPP_A19, NONE, DEEP, NF1),				/* TCP0 Hot Plug */
 
 	/* High-Definition Audio */
 	PAD_CFG_NF(GPP_R0, NATIVE, DEEP, NF1),				/* Clock */
@@ -109,15 +108,17 @@ const struct pad_config gpio_table[] = {
 	/* A11:		Webcam Camera Reset				*/
 	PAD_NC(GPP_A11, NONE),
 	/* A12:		PCH M.2 SSD PEDET				*/
-	PAD_CFG_NF(GPP_A12, NONE, DEEP, NF1),
+	PAD_NC(GPP_A12, NONE),
 	/* A14:		Type C VBUS OverCurrent				*/
-	PAD_CFG_NF(GPP_A14, NONE, DEEP, NF1),
+	PAD_NC(GPP_A14, NONE),
 	/* A15:		Test Point 3					*/
 	PAD_NC(GPP_A15, NONE),
 	/* A16:		USB 2 OverCurrent B				*/
-	PAD_CFG_NF(GPP_A16, NONE, DEEP, NF1),
+	PAD_NC(GPP_A16, NONE),
 	/* A17:		Not Connected					*/
 	PAD_NC(GPP_A17, NONE),
+	/* A19:		TCP0 Hot Plug					*/
+	PAD_NC(GPP_A19, NONE),
 	/* A20:		Test Point 2					*/
 	PAD_NC(GPP_A20, NONE),
 	/* A21:		Fingerprint Reader Interrupt			*/
@@ -170,9 +171,9 @@ const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B25, NONE),
 
 	/* C3:		SML 0 Clock					*/
-	PAD_CFG_NF(GPP_C3, NONE, DEEP, NF1),
+	PAD_NC(GPP_C3, NONE),
 	/* C4:		SML 0 Data					*/
-	PAD_CFG_NF(GPP_C4, NONE, DEEP, NF1),
+	PAD_NC(GPP_C4, NONE),
 	/* C6:		SML 1 Clock					*/
 	PAD_CFG_NF(GPP_C6, NONE, DEEP, NF1),
 	/* C7:		SML 1 Data					*/
@@ -259,7 +260,7 @@ const struct pad_config gpio_table[] = {
 	/* E7:		Embedded Controller SMI				*/
 	PAD_NC(GPP_E7, NONE),
 	/* E9:		USB OverCurrent 0				*/
-	PAD_CFG_NF(GPP_E9, NONE, DEEP, NF1),
+	PAD_NC(GPP_E9, NONE),
 	/* E10:		Not Connected					*/
 	PAD_NC(GPP_E10, NONE),
 	/* E11:		Not Connected					*/
@@ -290,7 +291,7 @@ const struct pad_config gpio_table[] = {
 	/* F9:								*/
 	PAD_NC(GPP_F9, NONE),
 	/* F10:		Weak Internal PD 20K				*/
-	PAD_CFG_GPO(GPP_F10, 1, PLTRST),
+	PAD_NC(GPP_F10, NONE),
 	/* F11:		Not Connected					*/
 	PAD_NC(GPP_F11, NONE),
 	/* F12:		Not Connected					*/
@@ -312,14 +313,14 @@ const struct pad_config gpio_table[] = {
 	/* F20:		CPU M.2 SSD Reset				*/
 	PAD_NC(GPP_F20, NONE),
 	/* F21:		GPPC_F21					*/
-	PAD_CFG_NF(GPP_F21, NONE, DEEP, NF1),
+	PAD_NC(GPP_F21, NONE),
 	/* F22:		Not Connected					*/
 	PAD_NC(GPP_F22, NONE),
 	/* F23:		Not Connected					*/
 	PAD_NC(GPP_F23, NONE),
 
 	/* H2:		Wireless LAN Reset				*/
-	PAD_CFG_GPO(GPP_H2, 1, PLTRST),
+	PAD_NC(GPP_H2, NONE),
 	/* H3:		Not Connected					*/
 	PAD_NC(GPP_H3, NONE),
 	/* H4:		I2C 0 SDA		GSensor			*/

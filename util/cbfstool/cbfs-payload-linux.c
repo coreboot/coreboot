@@ -163,10 +163,12 @@ static int bzp_output_segment(struct bzpayload *bzp, struct buffer *b,
 	seg->offset = bzp->offset;
 
 	comp_func_ptr compress_func = compression_function(algo);
-	int ret = compress_func(buffer_get(b), buffer_size(b), buffer_get(&out), &len);
-	if (ret) {
-		ERROR("%s(): Compression failed\n", __func__);
-		return ret;
+	if (compress_func(buffer_get(b), buffer_size(b), buffer_get(&out), &len)) {
+		WARN("Compression failed or would make the data bigger "
+		     "- disabled.\n");
+		algo = CBFS_COMPRESS_NONE;
+		len = buffer_size(b);
+		memcpy(buffer_get(&out), buffer_get(b), len);
 	}
 
 	seg->compression = algo;

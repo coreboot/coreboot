@@ -74,8 +74,6 @@
 /* PCH P2SB2 256MB */
 #define P2SB2_BAR		CONFIG_P2SB_2_PCR_BASE_ADDRESS
 #define P2SB2_SIZE		(256 * MiB)
-#define IOE_P2SB_BAR		P2SB2_BAR
-#define IOE_P2SB_SIZE		P2SB2_SIZE
 
 /* IOM_BASE_ADDR = ((long int) Ps2bMmioBase | (int) (((Offset) & 0x0F0000) << 8) \
  * | ((unsigned char)(Pid) << 16) | (short int) ((Offset) & 0xFFFF))

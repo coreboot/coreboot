@@ -6,8 +6,6 @@
 
 /* PCR access */
 #include <soc/intel/common/acpi/pch_pcr.asl>
-/* IOE PCR access */
-#include <soc/intel/common/acpi/ioe_pcr.asl>
 
 /* PCIE src clock control */
 #include <soc/intel/common/acpi/pcie_clk.asl>

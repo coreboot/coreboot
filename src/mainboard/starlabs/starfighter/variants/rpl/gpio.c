@@ -8,15 +8,11 @@ const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),				/* RXD */
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),				/* TXD */
 
-	/* F12:		Board ID 0					*/
+	/* Board ID */
 	PAD_CFG_GPI_LOCK(GPP_F12, NONE, LOCK_CONFIG),
-	/* F13:		Board ID 1					*/
 	PAD_CFG_GPI_LOCK(GPP_F13, NONE, LOCK_CONFIG),
-	/* F14:		Board ID 2					*/
 	PAD_CFG_GPI_LOCK(GPP_F14, NONE, LOCK_CONFIG),
-	/* F15:		Board ID 3					*/
 	PAD_CFG_GPI_LOCK(GPP_F15, NONE, LOCK_CONFIG),
-
 };
 
 const struct pad_config *variant_early_gpio_table(size_t *num)

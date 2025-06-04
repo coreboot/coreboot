@@ -1,26 +1,15 @@
 chip soc/intel/tigerlake
 	# FSP UPDs
-	register "eist_enable"			= "true"
-	register "enable_c6dram"		= "1"
-	register "CnviBtCore"			= "true"
-	register "CnviBtAudioOffload"		= "1"
-	register "SaGv"				= "SaGv_Enabled"
-
-	# Graphics
-	# Not used but timings left for reference
-	# register "panel_cfg" = "{
-	#	.up_delay_ms			= 2000,				// T3
-	#	.backlight_on_delay_ms		= 0,				// T7
-	#	.backlight_off_delay_ms		= 2000,				// T9
-	#	.down_delay_ms			= 500,				// T10
-	#	.cycle_delay_ms			= 500,				// T12
-	#	.backlight_pwm_hz		= 200,				// PWM
-	# }"
+	register "eist_enable"				= "true"
+	register "enable_c6dram"			= "true"
+	register "CnviBtCore"				= "true"
+	register "CnviBtAudioOffload"			= "true"
+	register "SaGv"					= "SaGv_Enabled"
 
 	# Serial I/O
 	register "SerialIoI2cMode" = "{
-		[PchSerialIoIndexI2C0]		= PchSerialIoPci,
-		[PchSerialIoIndexI2C4]		= PchSerialIoSkipInit,
+		[PchSerialIoIndexI2C0]			= PchSerialIoPci,
+		[PchSerialIoIndexI2C4]			= PchSerialIoSkipInit,
 	}"
 
 	register "common_soc_config" = "{
@@ -30,14 +19,14 @@ chip soc/intel/tigerlake
 	}"
 
 	register "SerialIoUartMode" = "{
-		[PchSerialIoIndexUART2]		= PchSerialIoSkipInit,
+		[PchSerialIoIndexUART2]			= PchSerialIoSkipInit,
 	}"
 
 	# Power
-	register "PchPmSlpS3MinAssert"		= "2"				# 1ms
-	register "PchPmSlpS4MinAssert"		= "3"				# 3s
-	register "PchPmSlpSusMinAssert"		= "3"				# 1s
-	register "PchPmSlpAMinAssert"		= "3"				# 98ms
+	register "PchPmSlpS3MinAssert"			= "2"	# 1ms
+	register "PchPmSlpS4MinAssert"			= "3"	# 3s
+	register "PchPmSlpSusMinAssert"			= "3"	# 1s
+	register "PchPmSlpAMinAssert"			= "3"	# 98ms
 
 	# Enable the correct decode ranges on the LPC bus.
 	register "lpc_ioe"			= "LPC_IOE_EC_4E_4F |
@@ -109,54 +98,54 @@ chip soc/intel/tigerlake
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
 					chip drivers/usb/acpi
-						register "desc"		= ""USB Type-C""
-						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
-						register "group"	= "ACPI_PLD_GROUP(0, 0)"
+						register "desc"			= ""USB Type-C""
+						register "type"			= "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "group"		= "ACPI_PLD_GROUP(0, 0)"
 						device ref usb2_port1 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Left USB Type-A""
-						register "type"		= "UPC_TYPE_USB3_A"
-						register "group"	= "ACPI_PLD_GROUP(0, 1)"
+						register "desc"			= ""Left USB Type-A""
+						register "type"			= "UPC_TYPE_USB3_A"
+						register "group"		= "ACPI_PLD_GROUP(0, 1)"
 						device ref usb2_port2 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Left USB Type-A""
-						register "type"		= "UPC_TYPE_USB3_A"
-						register "group"	= "ACPI_PLD_GROUP(0, 1)"
+						register "desc"			= ""Left USB Type-A""
+						register "type"			= "UPC_TYPE_USB3_A"
+						register "group"		= "ACPI_PLD_GROUP(0, 1)"
 						device ref usb3_port1 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Right USB Type-A""
-						register "type"		= "UPC_TYPE_USB3_A"
-						register "group"	= "ACPI_PLD_GROUP(0, 2)"
+						register "desc"			= ""Right USB Type-A""
+						register "type"			= "UPC_TYPE_USB3_A"
+						register "group"		= "ACPI_PLD_GROUP(0, 2)"
 						device ref usb2_port3 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Right USB Type-A""
-						register "type"		= "UPC_TYPE_USB3_A"
-						register "group"	= "ACPI_PLD_GROUP(0, 2)"
+						register "desc"			= ""Right USB Type-A""
+						register "type"			= "UPC_TYPE_USB3_A"
+						register "group"		= "ACPI_PLD_GROUP(0, 2)"
 						device ref usb3_port2 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Internal Webcam""
-						register "type"		= "UPC_TYPE_INTERNAL"
-						register "group"	= "ACPI_PLD_GROUP(0, 3)"
+						register "desc"			= ""Internal Webcam""
+						register "type"			= "UPC_TYPE_INTERNAL"
+						register "group"		= "ACPI_PLD_GROUP(0, 3)"
 						device ref usb2_port4 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""USB 2.0 Hub""
-						register "type"		= "UPC_TYPE_HUB"
-						register "group"	= "ACPI_PLD_GROUP(0, 4)"
+						register "desc"			= ""USB 2.0 Hub""
+						register "type"			= "UPC_TYPE_HUB"
+						register "group"		= "ACPI_PLD_GROUP(0, 4)"
 						device ref usb2_port6 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Internal Bluetooth""
-						register "type"		= "UPC_TYPE_INTERNAL"
-						register "group"	= "ACPI_PLD_GROUP(0, 5)"
-						register "is_intel_bluetooth" = "1"
+						register "desc"			= ""Internal Bluetooth""
+						register "type"			= "UPC_TYPE_INTERNAL"
+						register "group"		= "ACPI_PLD_GROUP(0, 5)"
+						register "is_intel_bluetooth"	= "1"
 						register "cnvi_bt_audio_offload" = "1"
-						register "enable_gpio"	= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(CNV_BTEN)"
+						register "enable_gpio"		= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(CNV_BTEN)"
 						device ref usb2_port10 on end
 					end
 				end
@@ -217,6 +206,7 @@ chip soc/intel/tigerlake
 			register "gen1_dec"			= "0x00040069"
 			register "gen2_dec"			= "0x00fc0201"
 			register "gen3_dec"			= "0x000c0081"
+
 			chip drivers/pc80/tpm
 				device pnp 0c31.0 on end
 			end

@@ -76,11 +76,11 @@ chip soc/intel/alderlake
 				register "enable_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D14)"
 				register "reset_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F20)"
 				register "srcclk_pin"			= "4"
-				register "is_storage"			= "1"
-				register "add_acpi_dma_property"	= "1"
-				register "skip_on_off_support"		= "1"
+				register "is_storage"			= "true"
+				register "add_acpi_dma_property"	= "true"
+				register "skip_on_off_support"		= "true"
 				register "ext_pm_support"		= "ACPI_PCIE_RP_EMIT_ALL"
-				register "use_rp_mutex"			= "1"
+				register "use_rp_mutex"			= "true"
 				device generic 0 on end
 			end
 		end
@@ -90,15 +90,15 @@ chip soc/intel/alderlake
 			chip drivers/usb/acpi
 				device ref tcss_root_hub on
 					chip drivers/usb/acpi
-						register "desc" = ""Left Back USB Type-C""
-						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "desc"			= ""Left Back USB Type-C""
+						register "type"			= "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "use_custom_pld"	= "true"
 						register "custom_pld"		= "ACPI_PLD_TYPE_C(LEFT, CENTER, ACPI_PLD_GROUP(0, 0))"
 						device ref tcss_usb3_port1 on end
 					end
 					chip drivers/usb/acpi
-						register "desc" = ""Left Front USB Type-C""
-						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "desc"			= ""Left Front USB Type-C""
+						register "type"			= "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "use_custom_pld"	= "true"
 						register "custom_pld"		= "ACPI_PLD_TYPE_C(LEFT, CENTER, ACPI_PLD_GROUP(0, 1))"
 						device ref tcss_usb3_port2 on end
@@ -145,55 +145,55 @@ chip soc/intel/alderlake
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
 					chip drivers/usb/acpi
-						register "desc"		= ""Left Back USB Type-C""
-						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
-						register "use_custom_pld" = "true"
-						register "custom_pld"	= "ACPI_PLD_TYPE_C(LEFT, CENTER, ACPI_PLD_GROUP(0, 0))"
+						register "desc"			= ""Left Back USB Type-C""
+						register "type"			= "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "use_custom_pld"	= "true"
+						register "custom_pld"		= "ACPI_PLD_TYPE_C(LEFT, CENTER, ACPI_PLD_GROUP(0, 0))"
 						device ref usb2_port1 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Left Front USB Type-C""
-						register "type"		= "UPC_TYPE_C_USB2_SS_SWITCH"
+						register "desc"			= ""Left Front USB Type-C""
+						register "type"			= "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "use_custom_pld"	= "true"
-						register "custom_pld"	= "ACPI_PLD_TYPE_C(LEFT, CENTER, ACPI_PLD_GROUP(0, 1))"
+						register "custom_pld"		= "ACPI_PLD_TYPE_C(LEFT, CENTER, ACPI_PLD_GROUP(0, 1))"
 						device ref usb2_port2 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Left USB Type-A""
-						register "type"		= "UPC_TYPE_USB3_A"
-						register "group"	= "ACPI_PLD_GROUP(0, 2)"
+						register "desc"			= ""Left USB Type-A""
+						register "type"			= "UPC_TYPE_USB3_A"
+						register "group"		= "ACPI_PLD_GROUP(0, 2)"
 						device ref usb2_port3 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Left USB Type-A""
-						register "type"		= "UPC_TYPE_USB3_A"
-						register "group"	= "ACPI_PLD_GROUP(0, 2)"
+						register "desc"			= ""Left USB Type-A""
+						register "type"			= "UPC_TYPE_USB3_A"
+						register "group"		= "ACPI_PLD_GROUP(0, 2)"
 						device ref usb3_port1 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""USB 3.0 Hub""
-						register "type"		= "UPC_TYPE_HUB"
-						register "group"	= "ACPI_PLD_GROUP(0, 3)"
+						register "desc"			= ""USB 3.0 Hub""
+						register "type"			= "UPC_TYPE_HUB"
+						register "group"		= "ACPI_PLD_GROUP(0, 3)"
 						device ref usb2_port6 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""USB 3.0 Hub""
-						register "type"		= "UPC_TYPE_HUB"
-						register "group"	= "ACPI_PLD_GROUP(0, 3)"
+						register "desc"			= ""USB 3.0 Hub""
+						register "type"			= "UPC_TYPE_HUB"
+						register "group"		= "ACPI_PLD_GROUP(0, 3)"
 						device ref usb3_port2 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Internal Webcam""
-						register "group"	= "ACPI_PLD_GROUP(0, 4)"
+						register "desc"			= ""Internal Webcam""
+						register "group"		= "ACPI_PLD_GROUP(0, 4)"
 						device ref usb2_port5 on end
 					end
 					chip drivers/usb/acpi
-						register "desc"		= ""Internal Bluetooth""
-						register "type"		= "UPC_TYPE_INTERNAL"
-						register "group"	= "ACPI_PLD_GROUP(0, 5)"
-						register "is_intel_bluetooth" = "1"
-						register "enable_gpio"	= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A13)"
-						register "reset_gpio"	= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A13)"
+						register "desc"			= ""Internal Bluetooth""
+						register "type"			= "UPC_TYPE_INTERNAL"
+						register "group"		= "ACPI_PLD_GROUP(0, 5)"
+						register "is_intel_bluetooth"	= "1"
+						register "enable_gpio"		= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A13)"
+						register "reset_gpio"		= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A13)"
 						device ref usb2_port10 on end
 					end
 				end
@@ -201,15 +201,15 @@ chip soc/intel/alderlake
 		end
 		device ref i2c0		on
 			chip drivers/i2c/hid
-				register "generic.hid"			= ""STAR0001""
-				register "generic.desc"			= ""Touchpad""
-				register "generic.irq"			= "ACPI_IRQ_LEVEL_LOW(GPP_D11_IRQ)"
-				register "hid_desc_reg_offset"		= "0x20"
+				register "generic.hid"		= ""STAR0001""
+				register "generic.desc"		= ""Touchpad""
+				register "generic.irq"		= "ACPI_IRQ_LEVEL_LOW(GPP_D11_IRQ)"
+				register "hid_desc_reg_offset"	= "0x20"
 				device i2c 2c on end
 			end
 		end
 		device ref shared_sram	on  end
-		device ref pcie_rp5	on			# WiFi
+		device ref pcie_rp5	on				# WiFi
 			chip drivers/wifi/generic
 				register "enable_cnvi_ddr_rfim"		= "true"
 				device generic 0 on end
@@ -230,9 +230,9 @@ chip soc/intel/alderlake
 				register "reset_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H2)"
 				register "srcclk_pin"			= "2"
 				register "add_acpi_dma_property"	= "true"
-				register "skip_on_off_support"		= "1"
+				register "skip_on_off_support"		= "true"
 				register "ext_pm_support"		= "ACPI_PCIE_RP_EMIT_ALL"
-				register "use_rp_mutex"			= "1"
+				register "use_rp_mutex"			= "true"
 				device generic 0 on end
 			end
 		end
@@ -256,11 +256,11 @@ chip soc/intel/alderlake
 				register "enable_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D16)"
 				register "reset_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H0)"
 				register "srcclk_pin"			= "1"
-				register "is_storage"			= "1"
-				register "add_acpi_dma_property"	= "1"
-				register "skip_on_off_support"		= "1"
+				register "is_storage"			= "true"
+				register "add_acpi_dma_property"	= "true"
+				register "skip_on_off_support"		= "true"
 				register "ext_pm_support"		= "ACPI_PCIE_RP_EMIT_ALL"
-				register "use_rp_mutex"			= "1"
+				register "use_rp_mutex"			= "true"
 				device generic 0 on end
 			end
 		end
@@ -315,10 +315,10 @@ chip soc/intel/alderlake
 		end
 		device ref hda		on
 			subsystemid 0x10ec 0x1200
-			register "pch_hda_sdi_enable[0]"		= "1"
+			register "pch_hda_sdi_enable[0]"		= "true"
 			register "pch_hda_dsp_enable"			= "true"
-			register "pch_hda_audio_link_hda_enable"	= "1"
-			register "pch_hda_idisp_codec_enable"		= "1"
+			register "pch_hda_audio_link_hda_enable"	= "true"
+			register "pch_hda_idisp_codec_enable"		= "true"
 			register "pch_hda_idisp_link_frequency"		= "HDA_LINKFREQ_96MHZ"
 			register "pch_hda_idisp_link_tmode"		= "HDA_TMODE_8T"
 		end

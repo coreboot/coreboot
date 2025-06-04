@@ -60,30 +60,30 @@ chip soc/intel/alderlake
 				device generic 0 on end
 			end
 
-			register "ddi_portA_config"			= "1"
+			register "ddi_portA_config"		= "1"
 			register "ddi_ports_config" = "{
-				[DDI_PORT_A]				= DDI_ENABLE_HPD | DDI_ENABLE_DDC,
-				[DDI_PORT_B]				= DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_A]			= DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_B]			= DDI_ENABLE_HPD | DDI_ENABLE_DDC,
 			}"
 		end
 		device ref gna		on  end
 		device ref xhci		on
-			# Bottom USB 3.0 Type-C				3289 mil
-			register "usb2_ports[0]"			= "USB2_PORT_SHORT(OC_SKIP)"
-			register "usb3_ports[2]"			= "USB3_PORT_DEFAULT(OC_SKIP)"
+			# Bottom USB 3.0 Type-C			3289 mil
+			register "usb2_ports[0]"		= "USB2_PORT_SHORT(OC_SKIP)"
+			register "usb3_ports[2]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 
-			# Top USB 3.0 Type-C				4237 mil
-			register "usb2_ports[1]"			= "USB2_PORT_SHORT(OC_SKIP)"
-			register "usb3_ports[0]"			= "USB3_PORT_DEFAULT(OC_SKIP)"
+			# Top USB 3.0 Type-C			4237 mil
+			register "usb2_ports[1]"		= "USB2_PORT_SHORT(OC_SKIP)"
+			register "usb3_ports[0]"		= "USB3_PORT_DEFAULT(OC_SKIP)"
 
-			# Detachable Keyboard + SD Card Reader		6418 mil
-			register "usb2_ports[2]"			= "USB2_PORT_SHORT(OC_SKIP)"
+			# Detachable Keyboard + SD Card Reader	6418 mil
+			register "usb2_ports[2]"		= "USB2_PORT_SHORT(OC_SKIP)"
 
-			# Camera + Webcam				3249 mil
-			register "usb2_ports[CONFIG_CCD_PORT]"		= "USB2_PORT_SHORT(OC_SKIP)"
+			# Camera + Webcam			3249 mil
+			register "usb2_ports[CONFIG_CCD_PORT]"	= "USB2_PORT_SHORT(OC_SKIP)"
 
-			# Internal Bluetooth				1874 mil
-			register "usb2_ports[9]"			= "USB2_PORT_SHORT(OC_SKIP)"
+			# Internal Bluetooth			1874 mil
+			register "usb2_ports[9]"		= "USB2_PORT_SHORT(OC_SKIP)"
 
 			chip drivers/usb/acpi
 				device ref xhci_root_hub on
@@ -187,23 +187,24 @@ chip soc/intel/alderlake
 									"SlotLengthLong"
 									"M.2/M 2242"
 									"SlotDataBusWidth4X"
+
 			chip soc/intel/common/block/pcie/rtd3
 				register "enable_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D16)"
 				register "reset_gpio"			= "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H0)"
 				register "srcclk_pin"			= "0"
-				register "is_storage"			= "1"
-				register "add_acpi_dma_property"	= "1"
-				register "skip_on_off_support"		= "1"
+				register "is_storage"			= "true"
+				register "add_acpi_dma_property"	= "true"
+				register "skip_on_off_support"		= "true"
 				register "ext_pm_support"		= "ACPI_PCIE_RP_EMIT_ALL"
-				register "use_rp_mutex"			= "1"
+				register "use_rp_mutex"			= "true"
 				device generic 0 on end
 			end
 		end
 		device ref uart0	on  end
 		device ref pch_espi	on
-			register "gen1_dec"				= "0x00040069"
-			register "gen2_dec"				= "0x00fc0201"
-			register "gen3_dec"				= "0x000c0081"
+			register "gen1_dec"			= "0x00040069"
+			register "gen2_dec"			= "0x00fc0201"
+			register "gen3_dec"			= "0x000c0081"
 
 			chip ec/starlabs/merlin
 				# Port pair 4Eh/4Fh
@@ -212,9 +213,9 @@ chip soc/intel/alderlake
 				device pnp 4e.04 off end			# System Wake-Up
 				device pnp 4e.05 off end			# PS/2 Mouse
 				device pnp 4e.06 on				# PS/2 Keyboard
-					io 0x60				= 0x0060
-					io 0x62				= 0x0064
-					irq 0x70			= 1
+					io 0x60			= 0x0060
+					io 0x62			= 0x0064
+					irq 0x70		= 1
 				end
 				device pnp 4e.0a off end			# Consumer IR
 				device pnp 4e.0f off end			# Shared Memory/Flash Interface
@@ -248,8 +249,8 @@ chip soc/intel/alderlake
 			subsystemid 0x1e50 0x7038
 			register "pch_hda_sdi_enable[0]"		= "true"
 			register "pch_hda_dsp_enable"			= "true"
-			register "pch_hda_audio_link_hda_enable"	= "1"
-			register "pch_hda_idisp_codec_enable"		= "1"
+			register "pch_hda_audio_link_hda_enable"	= "true"
+			register "pch_hda_idisp_codec_enable"		= "true"
 			register "pch_hda_idisp_link_frequency"		= "HDA_LINKFREQ_96MHZ"
 			register "pch_hda_idisp_link_tmode"		= "HDA_TMODE_8T"
 		end

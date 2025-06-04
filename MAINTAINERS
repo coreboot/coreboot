@@ -360,6 +360,7 @@ M:	Kapil Porwal <kapilporwal@google.com>
 M:	Pranava Y N <pranavayn@google.com>
 M:	Jayvik Desai <jayvik@google.com>
 M:	Avi Uday <aviuday@google.com>
+M:	Dinesh Gehlot <digehlot@google.com>
 F:	src/mainboard/google/fatcat/
 
 GOOGLE HATCH MAINBOARDS
@@ -935,6 +936,7 @@ M:	Kapil Porwal <kapilporwal@google.com>
 M:	Pranava Y N <pranavayn@google.com>
 M:	Jayvik Desai <jayvik@google.com>
 M:	Avi Uday <aviuday@google.com>
+M:	Dinesh Gehlot <digehlot@google.com>
 S:	Maintained
 F:	src/soc/intel/pantherlake/
 

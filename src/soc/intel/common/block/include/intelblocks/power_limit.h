@@ -32,6 +32,8 @@ struct soc_power_limits_config {
 	uint32_t tdp_psyspl3_dutycycle;
 	/* PL4 Value in Watts */
 	uint16_t tdp_pl4;
+	/* PL4 Value in Watts when Fast VMode is enabled */
+	uint16_t tdp_pl4_fastvmode;
 	/* Estimated maximum platform power in Watts */
 	uint16_t psys_pmax;
 };

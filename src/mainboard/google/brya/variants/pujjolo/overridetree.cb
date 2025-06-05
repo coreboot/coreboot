@@ -413,8 +413,6 @@ chip soc/intel/alderlake
 				register "device_count" = "4"
 				# DDIA for eDP
 				register "device[0].name" = ""LCD0""
-				# Internal panel on the first port of the graphics chip
-				register "device[0].type" = "panel"
 				# DDIB for HDMI
 				# If HDMI is not enumerated in the kernel, then no GFX device should be added for DDIB
 				register "device[1].name" = ""DD01""
@@ -515,7 +513,6 @@ chip soc/intel/alderlake
 						register "use_custom_pld" = "true"
 						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(2, 1))"
 						device ref usb2_port2 on end
-
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Type-A Port A1 (DB)""

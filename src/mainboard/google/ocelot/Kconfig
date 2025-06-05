@@ -108,9 +108,8 @@ config MAINBOARD_FAMILY
 	string
 	default "Google_Ocelot"
 
-# FIXME: update once Ocelot config is available
 config MAINBOARD_PART_NUMBER
-	default "Fatcat" if BOARD_GOOGLE_OCELOT
+	default "Ocelot" if BOARD_GOOGLE_OCELOT
 
 config MEMORY_SOLDERDOWN
 	def_bool n
@@ -121,7 +120,6 @@ config TPM_TIS_ACPI_INTERRUPT
 	int
 	default 47 if BOARD_GOOGLE_OCELOT # GPE0_DW1_15 (GPP_D15)
 
-# FIXME: update as per board schematics
 config UART_FOR_CONSOLE
 	int
 	default 0

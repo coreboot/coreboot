@@ -54,22 +54,10 @@ static const struct soc_amd_gpio gpio_set_stage_reset[] = {
 	/* FANOUT0 */
 	PAD_NF(GPIO_85, FANOUT0, PULL_NONE),
 
-	/* I2C0 SCL */
-	PAD_NF(GPIO_145, I2C0_SCL, PULL_NONE),
-	/* I2C0 SDA */
-	PAD_NF(GPIO_146, I2C0_SDA, PULL_NONE),
-	/* I2C1 SCL */
-	PAD_NF(GPIO_147, I2C1_SCL, PULL_NONE),
-	/* I2C1 SDA */
-	PAD_NF(GPIO_148, I2C1_SDA, PULL_NONE),
 	/* I2C2_SCL */
 	PAD_NF(GPIO_113, I2C2_SCL, PULL_NONE),
 	/* I2C2_SDA */
 	PAD_NF(GPIO_114, I2C2_SDA, PULL_NONE),
-	/* I2C3_SCL */
-	PAD_NF(GPIO_19, I2C3_SCL, PULL_NONE),
-	/* I2C3_SDA */
-	PAD_NF(GPIO_20, I2C3_SDA, PULL_NONE),
 };
 
 void mainboard_program_early_gpios(void)

@@ -91,6 +91,7 @@ static void mainboard_init(struct device *dev)
 
 	dpm_init();
 	setup_usb_host();
+	setup_usb_secondary_host();
 	spm_init();
 	power_on_fpmcu();
 	configure_audio();

@@ -3,6 +3,22 @@ chip soc/intel/alderlake
 	# seen on J0 and Q0 SKUs
 	register "disable_package_c_state_demotion" = "true"
 
+	register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"	# Port1
+	register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"	# Port2
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# Onboard USB
+	register "usb2_ports[3]" = "USB2_PORT_EMPTY"		# Port is unused
+	register "usb2_ports[4]" = "USB2_PORT_EMPTY"		# Port is unused
+	register "usb2_ports[5]" = "USB2_PORT_EMPTY"		# Port is unused
+	register "usb2_ports[6]" = "USB2_PORT_EMPTY"		# Port is unused
+	register "usb2_ports[7]" = "USB2_PORT_EMPTY"		# Port is unused
+	register "usb2_ports[8]" = "USB2_PORT_EMPTY"		# Port is unused
+	register "usb2_ports[9]" = "USB2_PORT_EMPTY"		# Port is unused
+
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB3/2 Type A port1
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)" # USB3/2 Type A port2
+	register "usb3_ports[2]" = "USB3_PORT_EMPTY"		# Port is unused
+	register "usb3_ports[3]" = "USB3_PORT_EMPTY"		# Port is unused
+
 	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,
 		[PchSerialIoIndexI2C1] = PchSerialIoPci,
@@ -77,5 +93,19 @@ chip soc/intel/alderlake
 		end
 		device ref i2c0 on end
 		device ref i2c1 on end
+		device ref xhci on
+			chip drivers/usb/acpi
+				register "desc" = ""Root Hub""
+				register "type" = "UPC_TYPE_HUB"
+				device ref xhci_root_hub on
+					chip drivers/usb/acpi
+						device ref usb3_port1 on end
+					end
+					chip drivers/usb/acpi
+						device ref usb3_port2 on end
+					end
+				end
+			end
+		end
 	end
 end

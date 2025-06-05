@@ -13,22 +13,6 @@ chip soc/intel/alderlake
 	# Sagv Configuration
 	register "sagv" = "SaGv_Enabled"
 
-	register "usb2_ports[0]" = "USB2_PORT_MID(OC0)"		# Type-C Port1
-	register "usb2_ports[1]" = "USB2_PORT_MID(OC0)"		# Type-C Port2
-	register "usb2_ports[2]" = "USB2_PORT_MID(OC3)"		# Type-C Port3
-	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 WWAN
-	register "usb2_ports[4]" = "USB2_PORT_MID(OC3)"		# Type-C Port4
-	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# FPS connector
-	register "usb2_ports[6]" = "USB2_PORT_MID(OC0)"		# USB3/2 Type A port1
-	register "usb2_ports[7]" = "USB2_PORT_MID(OC0)"		# USB3/2 Type A port2
-	register "usb2_ports[8]" = "USB2_PORT_MID(OC3)"		# USB3/2 Type A port3
-	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# M.2 WLAN
-
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC3)"	# USB3/2 Type A port1
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)"	# USB3/2 Type A port2
-	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC0)"	# USB3/2 Type A port3
-	register "usb3_ports[3]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# M.2 WWAN
-
 	register "sata_salp_support" = "1"
 
 	register "sata_ports_enable" = "{
@@ -181,13 +165,6 @@ chip soc/intel/alderlake
 			end
 		end
 		device ref crashlog off end
-		device ref xhci on
-			chip drivers/usb/acpi
-				register "desc" = ""Root Hub""
-				register "type" = "UPC_TYPE_HUB"
-				device ref xhci_root_hub on end
-			end
-		end
 		device ref sata on end
 		device ref uart0 on end
 		device ref gspi0 on end

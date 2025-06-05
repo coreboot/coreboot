@@ -52,7 +52,7 @@ ramstage-y += ../common/rtc.c ../common/rtc_mt6359p.c ../common/rtc_osc_init.c
 ramstage-y += soc.c
 ramstage-y += ../common/spm.c ../common/spm_v2.c spm.c
 ramstage-y += ../common/sspm.c ../common/sspm_sram.c
-ramstage-y += ../common/usb.c usb.c
+ramstage-y += ../common/usb.c ../common/usb_secondary.c usb.c
 
 BL31_MAKEARGS += PLAT=mt8189
 

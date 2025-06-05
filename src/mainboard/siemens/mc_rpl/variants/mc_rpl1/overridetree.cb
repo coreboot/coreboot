@@ -28,6 +28,12 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexI2C5] = PchSerialIoDisabled,
 	}"
 
+	register "serial_io_uart_mode" = "{
+		[PchSerialIoIndexUART0] = PchSerialIoSkipInit,
+		[PchSerialIoIndexUART1] = PchSerialIoSkipInit,
+		[PchSerialIoIndexUART2] = PchSerialIoSkipInit,
+	}"
+
 	# Intel Common SoC Config
 	register "common_soc_config" = "{
 		.i2c[0] = {
@@ -107,5 +113,8 @@ chip soc/intel/alderlake
 				end
 			end
 		end
+		device ref uart0 on end
+		device ref uart1 on end
+		device ref uart2 on end
 	end
 end

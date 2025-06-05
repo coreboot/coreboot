@@ -53,12 +53,6 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexGSPI3] = 0,
 	}"
 
-	register "serial_io_uart_mode" = "{
-		[PchSerialIoIndexUART0] = PchSerialIoSkipInit,
-		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
-		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
-	}"
-
 	# Intel Common SoC Config
 	register "common_soc_config" = "{
 		.gspi[1] = {
@@ -166,7 +160,6 @@ chip soc/intel/alderlake
 		end
 		device ref crashlog off end
 		device ref sata on end
-		device ref uart0 on end
 		device ref gspi0 on end
 		device ref p2sb on end
 		device ref gspi1 on

@@ -4,5 +4,10 @@ if BOARD_SIEMENS_MC_RPL1
 
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
+	select INTEL_LPSS_UART_FOR_CONSOLE
+
+config UART_FOR_CONSOLE
+	int
+	default 2
 
 endif # BOARD_SIEMENS_MC_RPL1

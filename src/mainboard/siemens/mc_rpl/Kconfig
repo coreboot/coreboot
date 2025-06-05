@@ -14,7 +14,6 @@ config BOARD_SIEMENS_BASEBOARD_MC_RPL
 	select SOC_INTEL_ALDERLAKE_PCH_P
 	select SOC_INTEL_RAPTORLAKE
 
-
 config BOARD_SIEMENS_MC_RPL1
 	select BOARD_SIEMENS_BASEBOARD_MC_RPL
 
@@ -47,10 +46,6 @@ config OVERRIDE_DEVICETREE
 
 config FMDFILE
 	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/mc_rpl.fmd"
-
-config UART_FOR_CONSOLE
-	int
-	default 0
 
 config DIMM_SPD_SIZE
 	int

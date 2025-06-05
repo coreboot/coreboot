@@ -74,6 +74,7 @@ struct i2c_pad_control {
 struct soc_i3c_ctrlr_info {
 	uintptr_t bar;
 	const char *acpi_name;
+	unsigned int aoac_device;
 };
 
 void fch_i2c_pad_init(unsigned int bus,

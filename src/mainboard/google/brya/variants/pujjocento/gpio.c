@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <baseboard/gpio.h>
+#include <variant/gpio.h>
 #include <baseboard/variants.h>
 #include <soc/gpio.h>
 #include <types.h>

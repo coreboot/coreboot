@@ -40,15 +40,15 @@
  * +-------------------+--------------------------+-----------+-----------+
  */
 
-static unsigned int aspm_control_to_upd(enum ASPM_control aspm_control)
+static unsigned int aspm_control_to_upd(enum ASPM_control aspm_control, bool is_cpu_rp)
 {
 	/* Disable without Kconfig selected */
 	if (!CONFIG(PCIEXP_ASPM))
 		return UPD_INDEX(ASPM_DISABLE);
 
-	/* Use auto unless overwritten */
+	/* Use default unless overwritten */
 	if (!aspm_control)
-		return UPD_INDEX(ASPM_AUTO);
+		return is_cpu_rp ? UPD_INDEX(ASPM_L0S_L1) : UPD_INDEX(ASPM_AUTO);
 
 	return UPD_INDEX(aspm_control);
 }
@@ -90,7 +90,7 @@ void configure_pch_rp_power_management(FSP_S_CONFIG *s_cfg,
 	s_cfg->PcieRpEnableCpm[index] =
 		get_uint_option("pciexp_clk_pm", CONFIG(PCIEXP_CLK_PM));
 	s_cfg->PcieRpAspm[index] =
-		aspm_control_to_upd(get_uint_option("pciexp_aspm", rp_cfg->pcie_rp_aspm));
+		aspm_control_to_upd(get_uint_option("pciexp_aspm", rp_cfg->pcie_rp_aspm), false);
 	s_cfg->PcieRpL1Substates[index] =
 		l1ss_control_to_upd(get_uint_option("pciexp_l1ss", rp_cfg->PcieRpL1Substates));
 	s_cfg->PcieRpPcieSpeed[index] =
@@ -120,7 +120,7 @@ void configure_cpu_rp_power_management(FSP_S_CONFIG *s_cfg,
 	s_cfg->CpuPcieClockGating[index] = pciexp_clk_pm;
 	s_cfg->CpuPciePowerGating[index] = pciexp_clk_pm;
 	s_cfg->CpuPcieRpAspm[index] =
-		aspm_control_to_upd(get_uint_option("pciexp_aspm", rp_cfg->pcie_rp_aspm));
+		aspm_control_to_upd(get_uint_option("pciexp_aspm", rp_cfg->pcie_rp_aspm), true);
 	s_cfg->CpuPcieRpL1Substates[index] =
 		l1ss_control_to_upd(get_uint_option("pciexp_l1ss", rp_cfg->PcieRpL1Substates));
 }

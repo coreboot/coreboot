@@ -120,7 +120,7 @@ void configure_cpu_rp_power_management(FSP_S_CONFIG *s_cfg,
 	s_cfg->CpuPcieClockGating[index] = pciexp_clk_pm;
 	s_cfg->CpuPciePowerGating[index] = pciexp_clk_pm;
 	s_cfg->CpuPcieRpAspm[index] =
-		aspm_control_to_upd(get_uint_option("pciexp_aspm", rp_cfg->pcie_rp_aspm), true);
+		aspm_control_to_upd(get_uint_option("pciexp_aspm_cpu", rp_cfg->pcie_rp_aspm), true);
 	s_cfg->CpuPcieRpL1Substates[index] =
 		l1ss_control_to_upd(get_uint_option("pciexp_l1ss", rp_cfg->PcieRpL1Substates));
 }

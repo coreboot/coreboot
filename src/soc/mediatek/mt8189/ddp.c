@@ -86,26 +86,18 @@ static void disp_clock_on(void)
 	       __func__, read32(&mmsys_cfg->mmsys_cg_con0), read32(&mmsys_cfg->mmsys_cg_con1));
 }
 
-void mtk_ddp_init(void)
+void mtk_display_disable_secure_mode(void)
 {
-	int i;
-
 	disp_clock_on();
 
-	printk(BIOS_DEBUG, "%s: shadow: %#x %#x, secure before: [%#x %#x %#x] larb: %x\n",
+	printk(BIOS_DEBUG, "%s: shadow: %#x %#x, secure before: [%#x %#x %#x]\n",
 	       __func__,
 	       read32(&mmsys_cfg->disp_bypass_mux_shadow),
 	       read32(&mmsys_cfg->disp_crossbar_con),
 	       read32(&mmsys_cfg->mmsys_security_disable),
 	       read32(&mmsys_cfg->mmsys_security_disable1),
-	       read32(&mmsys_cfg->mmsys_security_disable2),
-	       read32(&smi_larb0->port_l0_ovl_rdma[0]));
+	       read32(&mmsys_cfg->mmsys_security_disable2));
 
-	/* Turn off M4U port */
-	for (i = 0; i < RDMA_PORT_NR; i++) {
-		write32(&smi_larb0->port_l0_ovl_rdma[i], 0);
-		write32(&smi_larb1->port_l0_ovl_rdma[i], 0);
-	}
 	/* disable shadow */
 	write32(&mmsys_cfg->disp_bypass_mux_shadow, 0x1);
 	write32(&mmsys_cfg->disp_crossbar_con, 0x00FF0000);
@@ -113,14 +105,30 @@ void mtk_ddp_init(void)
 	write32(&mmsys_cfg->mmsys_security_disable, 0xFFFFFFFF);
 	write32(&mmsys_cfg->mmsys_security_disable1, 0xFFFFFFFF);
 	write32(&mmsys_cfg->mmsys_security_disable2, 0xFFFFFFFF);
-	printk(BIOS_DEBUG, "%s: shadow: %#x %#x, secure: [%#x %#x %#x] larb: %#x\n",
+
+	printk(BIOS_DEBUG, "%s: shadow: %#x %#x, secure: [%#x %#x %#x]n",
 	       __func__,
 	       read32(&mmsys_cfg->disp_bypass_mux_shadow),
 	       read32(&mmsys_cfg->disp_crossbar_con),
 	       read32(&mmsys_cfg->mmsys_security_disable),
 	       read32(&mmsys_cfg->mmsys_security_disable1),
-	       read32(&mmsys_cfg->mmsys_security_disable2),
-	       read32(&smi_larb0->port_l0_ovl_rdma[0]));
+	       read32(&mmsys_cfg->mmsys_security_disable2));
+}
+
+void mtk_ddp_init(void)
+{
+	int i;
+
+	mtk_display_disable_secure_mode();
+
+	/* Turn off M4U port */
+	for (i = 0; i < RDMA_PORT_NR; i++) {
+		write32(&smi_larb0->port_l0_ovl_rdma[i], 0);
+		write32(&smi_larb1->port_l0_ovl_rdma[i], 0);
+	}
+
+	printk(BIOS_DEBUG, "%s: larb: %#x\n",
+	       __func__, read32(&smi_larb0->port_l0_ovl_rdma[0]));
 }
 
 void mtk_ddp_mode_set(const struct edid *edid, enum disp_path_sel path)

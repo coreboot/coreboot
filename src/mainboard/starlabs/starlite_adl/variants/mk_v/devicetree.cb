@@ -32,7 +32,7 @@ chip soc/intel/alderlake
 	register "pch_slp_a_min_assertion_width"	= "SLP_A_ASSERTION_98_MS"
 
 	# PM Util
-	register "pmc_gpe0_dw0"			= "PMC_GPP_F"
+	register "pmc_gpe0_dw0"			= "GPP_F"
 	register "pmc_gpe0_dw1"			= "GPP_A"
 	register "pmc_gpe0_dw2"			= "GPP_B"
 

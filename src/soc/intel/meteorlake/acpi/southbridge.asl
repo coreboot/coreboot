@@ -6,10 +6,6 @@
 
 /* SoC PCR access */
 #include <soc/intel/common/acpi/pch_pcr.asl>
-/* IOE PCR access */
-#if CONFIG(SOC_INTEL_COMMON_BLOCK_IOE_P2SB)
-#include <soc/intel/common/acpi/ioe_pcr.asl>
-#endif
 
 /* PCIE src clock control */
 #include <soc/intel/common/acpi/pcie_clk.asl>

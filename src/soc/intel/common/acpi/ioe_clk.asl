@@ -2,6 +2,9 @@
 
 #define PCR_BIOS_BUFFEN 0x8080
 
+/* IOE PCR access */
+#include <soc/intel/common/acpi/ioe_pcr.asl>
+
 Scope (\_SB)
 {
 	/* MTL IOE CLK */

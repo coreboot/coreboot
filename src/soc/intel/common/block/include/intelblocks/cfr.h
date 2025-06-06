@@ -44,10 +44,10 @@ static const struct sm_object power_on_after_fail = SM_DECLARE_ENUM({
 				SM_ENUM_VALUE_END					},
 });
 
-/* PCIe RP ASPM */
+/* PCIe PCH RP ASPM */
 static const struct sm_object pciexp_aspm = SM_DECLARE_ENUM({
 	.opt_name	= "pciexp_aspm",
-	.ui_name	= "PCIe RP ASPM",
+	.ui_name	= "PCIe PCH RP ASPM",
 	.ui_helptext	= "Controls the Active State Power Management for PCIe devices."
 			  " Enabling this feature can reduce power consumption of"
 			  " PCIe-connected devices during idle times.",
@@ -58,6 +58,22 @@ static const struct sm_object pciexp_aspm = SM_DECLARE_ENUM({
 				{ "L1",		ASPM_L1		},
 				{ "L0sL1",	ASPM_L0S_L1	},
 				{ "Auto",	ASPM_AUTO	},
+				SM_ENUM_VALUE_END		},
+});
+
+/* PCIe CPU RP ASPM */
+static const struct sm_object pciexp_aspm_cpu = SM_DECLARE_ENUM({
+	.opt_name	= "pciexp_aspm_cpu",
+	.ui_name	= "PCIe CPU RP ASPM",
+	.ui_helptext	= "Controls the Active State Power Management for PCIe devices."
+			  " Enabling this feature can reduce power consumption of"
+			  " PCIe-connected devices during idle times.",
+	.default_value	= ASPM_L0S_L1,
+	.values		= (const struct sm_enum_value[]) {
+				{ "Disabled",	ASPM_DISABLE	},
+				{ "L0s",	ASPM_L0S	},
+				{ "L1",		ASPM_L1		},
+				{ "L0sL1",	ASPM_L0S_L1	},
 				SM_ENUM_VALUE_END		},
 });
 

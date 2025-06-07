@@ -662,9 +662,7 @@ build_GMP() {
 	fi
 
 	# shellcheck disable=SC2086
-	# Bug: GMP currently does not support being build by GCC 15 (--std=gnu23)
-	#      Remove CFLAGS once it works again.
-	CC="$(hostcc host)" CXX="$(hostcxx host)" CFLAGS="-std=gnu17" \
+	CC="$(hostcc host)" CXX="$(hostcxx host)" \
 	../${GMP_DIR}/configure \
 		--disable-shared \
 		--enable-fat \

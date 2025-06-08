@@ -38,6 +38,7 @@ chip soc/intel/alderlake
 
 	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# USB2_C0
 	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# USB2_C1
+	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# USB-A0
 	register "usb2_ports[3]" = "USB2_PORT_MID(OC_SKIP)"	# USB-A1
 	register "usb2_ports[4]" = "USB2_PORT_MID(OC_SKIP)"	# WWAN
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC_SKIP)"	# UF Camera
@@ -533,6 +534,13 @@ chip soc/intel/alderlake
 						register "use_custom_pld" = "true"
 						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(2, 1))"
 						device ref usb2_port2 on end
+					end
+					chip drivers/usb/acpi
+						register "desc" = ""USB2 Type-A Port A0 (DB)""
+						register "type" = "UPC_TYPE_A"
+						register "use_custom_pld" = "true"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, LEFT, ACPI_PLD_GROUP(3, 1))"
+						device ref usb2_port3 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Type-A Port A1 (DB)""

@@ -179,6 +179,13 @@ void soc_load_logo_by_coreboot(void)
 	copy_logo_to_framebuffer(framebuffer_bar, bytes_per_scanline, blt_buffer_addr, logo_width,
 			 logo_height, logo_coords.x, logo_coords.y);
 
+	/*
+	 * If the device is in low-battery mode and the low-battery splash screen is being
+	 * displayed, prevent further operation and bail out early.
+	 */
+	if (platform_is_low_battery_shutdown_needed())
+		return;
+
 	if (CONFIG(SPLASH_SCREEN_FOOTER)) {
 		bmp_release_logo();
 		logo_ptr = (uintptr_t)bmp_load_logo_by_type(BOOTSPLASH_FOOTER, &logo_ptr_size);

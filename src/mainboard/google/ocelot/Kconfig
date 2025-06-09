@@ -96,7 +96,7 @@ config DRIVER_TPM_I2C_ADDR
 
 config DRIVER_TPM_I2C_BUS
 	hex
-	default 0x03 if BOARD_GOOGLE_OCELOT
+	default 0x01 if BOARD_GOOGLE_OCELOT
 
 config HAVE_SLP_S0_GATE
 	def_bool n
@@ -118,7 +118,7 @@ config MEMORY_SOLDERDOWN
 
 config TPM_TIS_ACPI_INTERRUPT
 	int
-	default 47 if BOARD_GOOGLE_OCELOT # GPE0_DW1_15 (GPP_D15)
+	default 17 if BOARD_GOOGLE_OCELOT # GPE0_DW0_17 (GPP_B17)
 
 config UART_FOR_CONSOLE
 	int

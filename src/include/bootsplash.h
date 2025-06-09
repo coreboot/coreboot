@@ -31,6 +31,7 @@ void set_bootsplash(unsigned char *framebuffer, unsigned int x_resolution,
  */
 const char *bmp_logo_filename(void);
 void *bmp_load_logo(size_t *logo_size);
+void *bmp_load_logo_by_type(enum bootsplash_type type, size_t *logo_size);
 void bmp_release_logo(void);
 /*
  * Platform specific callbacks for power-off handling.

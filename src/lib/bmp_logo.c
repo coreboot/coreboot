@@ -29,11 +29,9 @@ static const char *bmp_get_logo_filename(enum bootsplash_type type)
 	return bootsplash_list[type];
 }
 
-void *bmp_load_logo(size_t *logo_size)
+void *bmp_load_logo_by_type(enum bootsplash_type type, size_t *logo_size)
 {
 	void *logo_buffer;
-	const char *logo_name;
-	enum bootsplash_type type = BOOTSPLASH_CENTER;
 
 	/* CBMEM is locked for S3 resume path. */
 	if (acpi_is_wakeup_s3())
@@ -47,16 +45,21 @@ void *bmp_load_logo(size_t *logo_size)
 	if (!logo_buffer)
 		return NULL;
 
-	if (platform_is_low_battery_shutdown_needed())
-		type = BOOTSPLASH_LOW_BATTERY;
-
-	logo_name = bmp_get_logo_filename(type);
-
-	*logo_size = cbfs_load(logo_name, logo_buffer, 1 * MiB);
+	*logo_size = cbfs_load(bmp_get_logo_filename(type), logo_buffer, 1 * MiB);
 	if (*logo_size == 0)
 		return NULL;
 
 	return logo_buffer;
+}
+
+void *bmp_load_logo(size_t *logo_size)
+{
+	enum bootsplash_type type = BOOTSPLASH_CENTER;
+
+	if (platform_is_low_battery_shutdown_needed())
+		type = BOOTSPLASH_LOW_BATTERY;
+
+	return bmp_load_logo_by_type(type, logo_size);
 }
 
 void bmp_release_logo(void)

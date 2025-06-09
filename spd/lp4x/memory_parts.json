@@ -423,6 +423,20 @@
                 "ranksPerChannel": 1,
                 "speedMbps": 4267
             }
+        },
+        {
+            "name": "NT6AP1024F32BL-J1",
+            "attribs": {
+                "densityPerChannelGb": 8,
+                "banks": 8,
+                "channelsPerDie": 4,
+                "diesPerPackage": 1,
+                "bitWidthPerChannel": 16,
+                "ranksPerChannel": 1,
+                "speedMbps": 4267,
+                "tckMaxPs": 468,
+                "casLatencies": "6 10 14 20 24 28 32 36"
+            }
         }
 
     ]

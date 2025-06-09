@@ -605,7 +605,7 @@ enum cb_err efi_fv_set_option(struct region_device *rdev,
 	found_existing = ret == CB_SUCCESS;
 
 	if (found_existing) {
-		printk(BIOS_ERR, "found existing variable %s, match =%d\n", name, args.match);
+		printk(BIOS_DEBUG, "found existing variable %s, match = %d\n", name, args.match);
 
 		if (args.match)
 			return CB_SUCCESS;

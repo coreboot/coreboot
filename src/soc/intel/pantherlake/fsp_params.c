@@ -818,7 +818,7 @@ void soc_load_logo_by_fsp(FSPS_UPD *supd)
 	if (s_cfg->LidStatus == 0)
 		config->panel_orientation = LB_FB_ORIENTATION_NORMAL;
 
-	fsp_convert_bmp_to_gop_blt(&logo, &logo_size,
+	fsp_load_and_convert_bmp_to_gop_blt(&logo, &logo_size,
 				   &supd->FspsConfig.BltBufferAddress,
 				   &blt_size,
 				   &supd->FspsConfig.LogoPixelHeight,

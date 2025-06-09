@@ -3,6 +3,7 @@
 #define __SIMPLE_DEVICE__
 
 #include <bootmode.h>
+#include <bootsplash.h>
 #include <console/console.h>
 #include <cpu/x86/mtrr.h>
 #include <device/pci_ops.h>
@@ -112,12 +113,12 @@ static void copy_logo_to_framebuffer(
 
 void soc_load_logo_by_coreboot(void)
 {
-	size_t size;
 	const struct hob_graphics_info *ginfo;
 	struct soc_intel_common_config *config = chip_get_common_soc_structure();
-	efi_uintn_t logo, blt_size;
-	efi_uintn_t blt_buffer_addr;
-	uint32_t logo_size, logo_height, logo_width;
+	uintptr_t logo_ptr;
+	size_t size, logo_ptr_size;
+	efi_uintn_t blt_size, blt_buffer_addr;
+	uint32_t logo_height, logo_width;
 	int temp_mtrr_index = -1;
 
 	/* Find the graphics information HOB */
@@ -154,8 +155,16 @@ void soc_load_logo_by_coreboot(void)
 	if (CONFIG(VBOOT_LID_SWITCH) ? !get_lid_switch() : !CONFIG(RUN_FSP_GOP))
 		config->panel_orientation = LB_FB_ORIENTATION_NORMAL;
 
+	logo_ptr = (uintptr_t)bmp_load_logo(&logo_ptr_size);
+
+	if (!logo_ptr || logo_ptr_size < sizeof(efi_bmp_image_header)) {
+		printk(BIOS_ERR, "%s: BMP image (%zu) is less than expected minimum size (%zu).\n",
+				 __func__, logo_ptr_size, sizeof(efi_bmp_image_header));
+		return;
+	}
+
 	/* Convert BMP logo to GOP BLT format */
-	fsp_convert_bmp_to_gop_blt(&logo, &logo_size, &blt_buffer_addr, &blt_size,
+	fsp_convert_bmp_to_gop_blt(logo_ptr, logo_ptr_size, &blt_buffer_addr, &blt_size,
 			   &logo_height, &logo_width, config->panel_orientation);
 
 	/* Override logo alignment if the default screen orientation is not normal */

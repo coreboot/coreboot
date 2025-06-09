@@ -398,42 +398,69 @@ static void *fill_blt_buffer(efi_bmp_image_header *header,
 	return gop_blt_ptr;
 }
 
+/* Helper function to perform the common BMP to GOP BLT conversion logic */
+static bool convert_bmp_to_gop_blt_common(uintptr_t logo_ptr, size_t logo_ptr_size,
+	efi_uintn_t *blt_ptr, efi_uintn_t *blt_size, uint32_t *pixel_height,
+	uint32_t *pixel_width, enum lb_fb_orientation orientation)
+{
+	size_t blt_buffer_size;
+	efi_bmp_image_header *bmp_header;
+
+	bmp_header = (efi_bmp_image_header *)logo_ptr;
+
+	/* Authenticate BMP header and validate size against provided logo_ptr_size */
+	if (!do_bmp_image_authentication(bmp_header) || (bmp_header->Size != logo_ptr_size))
+		return false;
+
+	blt_buffer_size = calculate_blt_buffer_size(bmp_header);
+	if (!blt_buffer_size)
+		return false;
+
+	if (get_color_map_num(bmp_header) < 0)
+		return false;
+
+	bool is_standard_orientation = (orientation == LB_FB_ORIENTATION_NORMAL ||
+					orientation == LB_FB_ORIENTATION_BOTTOM_UP);
+
+	*blt_size = blt_buffer_size;
+	*pixel_height = is_standard_orientation ? bmp_header->PixelHeight : bmp_header->PixelWidth;
+	*pixel_width = is_standard_orientation ? bmp_header->PixelWidth : bmp_header->PixelHeight;
+	*blt_ptr = (uintptr_t)fill_blt_buffer(bmp_header, logo_ptr, blt_buffer_size, orientation);
+
+	return true;
+}
+
 /* Convert a *.BMP graphics image to a GOP blt buffer */
-void fsp_convert_bmp_to_gop_blt(efi_uintn_t *logo, uint32_t *logo_size,
+void fsp_load_and_convert_bmp_to_gop_blt(efi_uintn_t *logo, uint32_t *logo_size,
 	efi_uintn_t *blt_ptr, efi_uintn_t *blt_size, uint32_t *pixel_height, uint32_t *pixel_width,
 	enum lb_fb_orientation orientation)
 {
 	uintptr_t logo_ptr;
-	size_t logo_ptr_size, blt_buffer_size;
-	efi_bmp_image_header *bmp_header;
+	size_t logo_ptr_size;
 
 	if (!logo || !logo_size || !blt_ptr || !blt_size || !pixel_height || !pixel_width)
 		return;
 
 	logo_ptr = (uintptr_t)bmp_load_logo(&logo_ptr_size);
 
-	if (!logo_ptr || logo_ptr_size < sizeof(efi_bmp_image_header)) {
-		printk(BIOS_ERR, "%s: BMP Image size is too small.\n", __func__);
-		return;
-	}
-
-	bmp_header = (efi_bmp_image_header *)logo_ptr;
-	if (!do_bmp_image_authentication(bmp_header) || (bmp_header->Size != logo_ptr_size))
+	if (!logo_ptr || logo_ptr_size < sizeof(efi_bmp_image_header))
 		return;
 
-	blt_buffer_size = calculate_blt_buffer_size(bmp_header);
-	if (!blt_buffer_size)
-		return;
-
-	if (get_color_map_num(bmp_header) < 0)
-		return;
-
-	bool is_standard_orientation = (orientation == LB_FB_ORIENTATION_NORMAL ||
-			orientation == LB_FB_ORIENTATION_BOTTOM_UP);
 	*logo = logo_ptr;
 	*logo_size = logo_ptr_size;
-	*blt_size = blt_buffer_size;
-	*pixel_height = is_standard_orientation ? bmp_header->PixelHeight : bmp_header->PixelWidth;
-	*pixel_width = is_standard_orientation ? bmp_header->PixelWidth : bmp_header->PixelHeight;
-	*blt_ptr = (uintptr_t)fill_blt_buffer(bmp_header, logo_ptr, blt_buffer_size, orientation);
+
+	convert_bmp_to_gop_blt_common(logo_ptr, logo_ptr_size, blt_ptr, blt_size,
+				      pixel_height, pixel_width, orientation);
+}
+
+/* Convert a *.BMP graphics image (as per input `logo_ptr`) to a GOP blt buffer */
+void fsp_convert_bmp_to_gop_blt(uintptr_t logo_ptr, size_t logo_ptr_size,
+	efi_uintn_t *blt_ptr, efi_uintn_t *blt_size, uint32_t *pixel_height, uint32_t *pixel_width,
+	enum lb_fb_orientation orientation)
+{
+	if (!blt_ptr || !blt_size || !pixel_height || !pixel_width)
+		return;
+
+	convert_bmp_to_gop_blt_common(logo_ptr, logo_ptr_size, blt_ptr, blt_size,
+				      pixel_height, pixel_width, orientation);
 }

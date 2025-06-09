@@ -35,6 +35,9 @@
 #include <x86intrin.h>
 #endif
 
+/* Return < 0 on error, 0 on success. */
+static int parse_cbtable(uint64_t address, size_t table_size);
+
 struct mapping {
 	void *virt;
 	size_t offset;
@@ -52,6 +55,9 @@ static int verbose = 0;
 /* File handle used to access /dev/mem */
 static int mem_fd;
 static struct mapping lbtable_mapping;
+
+/* TSC frequency from the LB_TAG_TSC_INFO record. 0 if not present. */
+static uint32_t tsc_freq_khz = 0;
 
 static void die(const char *msg)
 {
@@ -189,6 +195,57 @@ static void *aligned_memcpy(void *dest, const void *src, size_t n)
 	return dest;
 }
 
+/* Find the first cbmem entry filling in the details. */
+static int find_cbmem_entry(uint32_t id, uint64_t *addr, size_t *size)
+{
+	const uint8_t *table;
+	size_t offset;
+	int ret = -1;
+
+	table = mapping_virt(&lbtable_mapping);
+
+	if (table == NULL)
+		return -1;
+
+	offset = 0;
+
+	while (offset < mapping_size(&lbtable_mapping)) {
+		const struct lb_record *lbr;
+		struct lb_cbmem_entry lbe;
+
+		lbr = (const void *)(table + offset);
+		offset += lbr->size;
+
+		if (lbr->tag != LB_TAG_CBMEM_ENTRY)
+			continue;
+
+		aligned_memcpy(&lbe, lbr, sizeof(lbe));
+		if (lbe.id != id)
+			continue;
+
+		*addr = lbe.address;
+		*size = lbe.entry_size;
+		ret = 0;
+		break;
+	}
+
+	return ret;
+}
+
+/*
+ * Try finding the timestamp table and coreboot cbmem console starting from the
+ * passed in memory offset.  Could be called recursively in case a forwarding
+ * entry is found.
+ *
+ * Returns pointer to a memory buffer containing the timestamp table or zero if
+ * none found.
+ */
+
+static struct lb_cbmem_ref timestamps;
+static struct lb_cbmem_ref console;
+static struct lb_cbmem_ref tpm_cb_log;
+static struct lb_memory_range cbmem;
+
 /* This is a work-around for a nasty problem introduced by initially having
  * pointer sized entries in the lb_cbmem_ref structures. This caused problems
  * on 64bit x86 systems because coreboot is 32bit on those systems.
@@ -210,168 +267,90 @@ static struct lb_cbmem_ref parse_cbmem_ref(const struct lb_cbmem_ref *cbmem_ref)
 	return ret;
 }
 
-static uint32_t cbmem_id_to_lb_tag(uint32_t tag)
+static void parse_memory_tags(const struct lb_memory *mem)
 {
-	/* Minimal subset. Expand based on the CBMEM to coreboot table
-	   records mapping in lib/coreboot_table.c */
-	switch (tag) {
-	case CBMEM_ID_TIMESTAMP:
-		return LB_TAG_TIMESTAMPS;
-	case CBMEM_ID_CONSOLE:
-		return LB_TAG_CBMEM_CONSOLE;
-	case CBMEM_ID_TPM_CB_LOG:
-		return LB_TAG_TPM_CB_LOG;
+	int num_entries;
+	int i;
+
+	/* Peel off the header size and calculate the number of entries. */
+	num_entries = (mem->size - sizeof(*mem)) / sizeof(mem->map[0]);
+
+	for (i = 0; i < num_entries; i++) {
+		if (mem->map[i].type != LB_MEM_TABLE)
+			continue;
+		debug("      LB_MEM_TABLE found.\n");
+		/* The last one found is CBMEM */
+		aligned_memcpy(&cbmem, &mem->map[i], sizeof(cbmem));
 	}
-	return LB_TAG_UNUSED;
 }
 
-struct cbmem_console {
-	uint32_t size;
-	uint32_t cursor;
-	uint8_t body[];
-} __packed;
-
-#define CBMC_CURSOR_MASK ((1 << 28) - 1)
-#define CBMC_OVERFLOW    (1 << 31)
-
-
-/* Find the first cbmem entry filling in the details. */
-static int find_cbmem_entry(uint32_t id, uint64_t *addr, size_t *size)
+/* Return < 0 on error, 0 on success, 1 if forwarding table entry found. */
+static int parse_cbtable_entries(const struct mapping *table_mapping)
 {
-	const uint8_t *table;
-	size_t offset = 0;
-	const uint32_t legacy_tag = cbmem_id_to_lb_tag(id);
-	struct lb_cbmem_ref *ref = NULL;
+	size_t i;
+	const struct lb_record *lbr_p;
+	size_t table_size = mapping_size(table_mapping);
+	const void *lbtable = mapping_virt(table_mapping);
+	int forwarding_table_found = 0;
 
-	table = mapping_virt(&lbtable_mapping);
-
-	if (table == NULL)
-		return -1;
-
-	const struct lb_record *lbr = NULL;
-	while (offset < mapping_size(&lbtable_mapping)) {
-		lbr = (const void *)(table + offset);
-		offset += lbr->size;
-
-		/* Store coreboot table entry for later if CBMEM entry does not exist.
-		   CBMEM entry stores size including the reserved area, so prefer it,
-		   so more potential data and/or space is available. */
-		if (legacy_tag != LB_TAG_UNUSED && lbr->tag == legacy_tag)
-			ref = (struct lb_cbmem_ref *)lbr;
-
-		if (lbr->tag != LB_TAG_CBMEM_ENTRY)
+	for (i = 0; i < table_size; i += lbr_p->size) {
+		lbr_p = lbtable + i;
+		debug("  coreboot table entry 0x%02x\n", lbr_p->tag);
+		switch (lbr_p->tag) {
+		case LB_TAG_MEMORY:
+			debug("    Found memory map.\n");
+			parse_memory_tags(lbtable + i);
 			continue;
-
-		struct lb_cbmem_entry lbe;
-		aligned_memcpy(&lbe, lbr, sizeof(lbe));
-		if (lbe.id != id)
+		case LB_TAG_TIMESTAMPS: {
+			debug("    Found timestamp table.\n");
+			timestamps =
+			    parse_cbmem_ref((struct lb_cbmem_ref *)lbr_p);
 			continue;
+		}
+		case LB_TAG_CBMEM_CONSOLE: {
+			debug("    Found cbmem console.\n");
+			console = parse_cbmem_ref((struct lb_cbmem_ref *)lbr_p);
+			continue;
+		}
+		case LB_TAG_TPM_CB_LOG: {
+			debug("    Found TPM CB log table.\n");
+			tpm_cb_log =
+			    parse_cbmem_ref((struct lb_cbmem_ref *)lbr_p);
+			continue;
+		}
+		case LB_TAG_TSC_INFO:
+			debug("    Found TSC info.\n");
+			tsc_freq_khz = ((struct lb_tsc_info *)lbr_p)->freq_khz;
+			continue;
+		case LB_TAG_FORWARD: {
+			int ret;
+			/*
+			 * This is a forwarding entry - repeat the
+			 * search at the new address.
+			 */
+			struct lb_forward lbf_p =
+			    *(const struct lb_forward *)lbr_p;
+			debug("    Found forwarding entry.\n");
+			ret = parse_cbtable(lbf_p.forward, 0);
 
-		*addr = lbe.address;
-		*size = lbe.entry_size;
-		return 0;
+			/* Assume the forwarding entry is valid. If this fails
+			 * then there's a total failure. */
+			if (ret < 0)
+				return -1;
+			forwarding_table_found = 1;
+		}
+		default:
+			break;
+		}
 	}
 
-	/* No mapping and/or no potential reference means that
-	   the requested entry does not exit. */
-	if (legacy_tag == LB_TAG_UNUSED || ref == NULL)
-		return -1;
-
-	debug("Found coreboot table record equivalent of CBMEM entry id: %#x, tag: %#x\n", id,
-	      legacy_tag);
-
-	const struct lb_cbmem_ref lbc = parse_cbmem_ref(ref);
-	size_t header_map_size = 0;
-
-	/* Process legacy coreboot table entries */
-	switch (lbc.tag) {
-	case LB_TAG_TIMESTAMPS:
-		header_map_size = sizeof(struct timestamp_table);
-		break;
-	case LB_TAG_CBMEM_CONSOLE:
-		header_map_size = sizeof(struct cbmem_console);
-		break;
-	case LB_TAG_TPM_CB_LOG:
-		header_map_size = sizeof(struct tpm_cb_log_table);
-		break;
-	}
-
-	struct mapping entry_mapping;
-	const void *entry_header = NULL;
-
-	entry_header = map_memory(&entry_mapping, lbc.cbmem_addr, header_map_size);
-	if (!entry_header) {
-		fprintf(stderr, "Unable to map header for coreboot table entry id: %#x\n",
-			legacy_tag);
-		abort();
-	}
-
-	*addr = lbc.cbmem_addr;
-
-	switch (legacy_tag) {
-	case LB_TAG_TIMESTAMPS: {
-		const struct timestamp_table *tst_p = entry_header;
-		*size = sizeof(*tst_p) + tst_p->num_entries * sizeof(tst_p->entries[0]);
-		break;
-	}
-	case LB_TAG_CBMEM_CONSOLE: {
-		const struct cbmem_console *console_p = entry_header;
-		*size = sizeof(*console_p) + console_p->size;
-		break;
-	}
-	case LB_TAG_TPM_CB_LOG: {
-		const struct tpm_cb_log_table *tclt_p = entry_header;
-		*size = sizeof(*tclt_p) + tclt_p->num_entries * sizeof(tclt_p->entries[0]);
-		break;
-	}
-	}
-
-	unmap_memory(&entry_mapping);
-
-	return 0;
-}
-
-/**
- * Returns pointer to allocated buffer and size of the buffer in parameters.
- * Returns zero on success.
- * free() buffer after use.
- */
-static int get_cbmem_entry(uint32_t id, uint8_t **buf_out, size_t *size_out)
-{
-	uint64_t addr;
-	size_t size;
-	struct mapping cbmem_mapping;
-
-	if (find_cbmem_entry(id, &addr, &size)) {
-		debug("CBMEM entry not found. CBMEM id: %#x\n", id);
-		return -1;
-	}
-
-	const uint8_t *buf = map_memory(&cbmem_mapping, addr, size);
-	if (!buf) {
-		fprintf(stderr, "Unable to map CBMEM entry id: %#x, size: %zu\n", id, size);
-		abort();
-	}
-
-	*buf_out = malloc(size);
-	if (!*buf_out) {
-		unmap_memory(&cbmem_mapping);
-		fprintf(stderr,
-			"Unable to allocate memory for CBMEM entry id: %#x, size: %zu\n", id,
-			size);
-		abort();
-	}
-
-	aligned_memcpy(*buf_out, buf, size);
-	unmap_memory(&cbmem_mapping);
-	*size_out = size;
-	return 0;
+	return forwarding_table_found;
 }
 
 /* Return < 0 on error, 0 on success. */
 static int parse_cbtable(uint64_t address, size_t table_size)
 {
-	const uint8_t *buf;
+	const void *buf;
 	struct mapping header_mapping;
 	size_t req_size;
 	size_t i;
@@ -381,7 +360,8 @@ static int parse_cbtable(uint64_t address, size_t table_size)
 	if (req_size == 0)
 		req_size = 4 * 1024;
 
-	debug("Looking for coreboot table at %" PRIx64 " %zd bytes.\n", address, req_size);
+	debug("Looking for coreboot table at %" PRIx64 " %zd bytes.\n",
+		address, req_size);
 
 	buf = map_memory(&header_mapping, address, req_size);
 
@@ -390,10 +370,11 @@ static int parse_cbtable(uint64_t address, size_t table_size)
 
 	/* look at every 16 bytes */
 	for (i = 0; i <= req_size - sizeof(struct lb_header); i += 16) {
+		int ret;
 		const struct lb_header *lbh;
 		struct mapping table_mapping;
 
-		lbh = (const struct lb_header *)&buf[i];
+		lbh = buf + i;
 		if (memcmp(lbh->signature, "LBIO", sizeof(lbh->signature)) ||
 		    !lbh->header_bytes ||
 		    ipchksum(lbh, sizeof(*lbh))) {
@@ -414,32 +395,27 @@ static int parse_cbtable(uint64_t address, size_t table_size)
 			continue;
 		}
 
-		debug("Found at %#lx\n", address + i);
+		debug("Found!\n");
 
-		const struct lb_record *lbr_p;
-		const uint8_t *lbtable = mapping_virt(&table_mapping);
+		ret = parse_cbtable_entries(&table_mapping);
 
-		for (size_t offset = 0; offset < lbh->table_bytes; offset += lbr_p->size) {
-			lbr_p = (const struct lb_record *)&lbtable[offset];
-			debug("  coreboot table entry 0x%02x\n", lbr_p->tag);
-
-			if (lbr_p->tag != LB_TAG_FORWARD)
-				continue;
-
-			/* This is a forwarding entry. Repeat the search at the new address. */
-			struct lb_forward lbf_p = *(const struct lb_forward *)lbr_p;
-			debug("    Found forwarding entry.\n");
-
-			const uint64_t next_addr = lbf_p.forward;
-			unmap_memory(&header_mapping);
+		/* Table parsing failed. */
+		if (ret < 0) {
 			unmap_memory(&table_mapping);
-
-			return parse_cbtable(next_addr, 0);
+			continue;
 		}
 
-		debug("correct coreboot table found.\n");
+		/* Succeeded in parsing the table. Header not needed anymore. */
 		unmap_memory(&header_mapping);
-		lbtable_mapping = table_mapping;
+
+		/*
+		 * Table parsing succeeded. If forwarding table not found update
+		 * coreboot table mapping for future use.
+		 */
+		if (ret == 0)
+			lbtable_mapping = table_mapping;
+		else
+			unmap_memory(&table_mapping);
 
 		return 0;
 	}
@@ -447,78 +423,6 @@ static int parse_cbtable(uint64_t address, size_t table_size)
 	unmap_memory(&header_mapping);
 
 	return -1;
-}
-
-static void lb_table_get_entry(uint32_t tag, uint8_t **buf_out, size_t *size_out)
-{
-	const struct lb_record *lbr_p;
-	const uint8_t *lbtable_raw;
-	size_t table_size;
-	bool tag_found = false;
-
-	if (get_cbmem_entry(CBMEM_ID_CBTABLE, (uint8_t **)&lbtable_raw, &table_size)) {
-		fprintf(stderr, "coreboot table not found.\n");
-		abort();
-	}
-
-	const struct lb_header *lbh = (const struct lb_header *)lbtable_raw;
-
-	for (size_t i = 0; i < lbh->table_bytes; i += lbr_p->size) {
-		lbr_p = (const struct lb_record *)(&lbtable_raw[lbh->header_bytes + i]);
-		if (lbr_p->tag == tag) {
-			tag_found = true;
-			break;
-		}
-	}
-
-	if (!tag_found) {
-		fprintf(stderr, "coreboot table entry %#x not found.\n", tag);
-		free((void *)lbtable_raw);
-		abort();
-	}
-
-	debug("coreboot table entry %#x found.\n", tag);
-
-	*buf_out = malloc(lbr_p->size);
-	if (!*buf_out) {
-		fprintf(stderr,
-			"Unable to allocate memory for coreboot table entry %#x, size: %d\n",
-			tag, lbr_p->size);
-		free((void *)lbtable_raw);
-		abort();
-	}
-	memcpy(*buf_out, lbr_p, lbr_p->size);
-	*size_out = lbr_p->size;
-	free((void *)lbtable_raw);
-}
-
-
-/**
- * Returns mapping, mapped buffer pointer and its size by parameters.
- * Returns zero on success.
- * unmap_mempry() after use.
- */
-static int map_cbmem_entry_rw(uint32_t id, struct mapping *mapping, uint8_t **buf_out,
-			       size_t *size_out)
-{
-	uint64_t addr;
-	size_t size;
-
-	if (find_cbmem_entry(id, &addr, &size)) {
-		debug("CBMEM entry not found. CBMEM id: %#x\n", id);
-		return -1;
-	}
-
-	*buf_out = map_memory_with_prot(mapping, addr, size, PROT_READ | PROT_WRITE);
-	if (!*buf_out) {
-		fprintf(stderr,
-			"Unable to map CBMEM entry id: %#x, size: %zu for read-write access.\n",
-			id, size);
-		abort();
-	}
-
-	*size_out = size;
-	return 0;
 }
 
 #if defined(linux) && (defined(__i386__) || defined(__x86_64__))
@@ -624,18 +528,10 @@ static uint64_t timestamp_get(uint64_t table_tick_freq_mhz)
 {
 #if defined(__i386__) || defined(__x86_64__)
 	uint64_t tsc = __rdtsc();
-	struct lb_tsc_info *tsc_info;
-	size_t size;
 
 	/* No tick frequency specified means raw TSC values. */
 	if (!table_tick_freq_mhz)
 		return tsc;
-
-	lb_table_get_entry(LB_TAG_TSC_INFO, (uint8_t **)&tsc_info, &size);
-
-	const uint32_t tsc_freq_khz = tsc_info->freq_khz;
-
-	free(tsc_info);
 
 	if (tsc_freq_khz)
 		return tsc * table_tick_freq_mhz * 1000 / tsc_freq_khz;
@@ -783,23 +679,34 @@ static void dump_timestamps(enum timestamps_print_type output_type)
 	size_t size;
 	uint64_t prev_stamp = 0;
 	uint64_t total_time = 0;
+	struct mapping timestamp_mapping;
 
-	if (get_cbmem_entry(CBMEM_ID_TIMESTAMP, (uint8_t **)&tst_p, &size)) {
-		fprintf(stderr, "Timestamps not found.\n");
-		abort();
+	if (timestamps.tag != LB_TAG_TIMESTAMPS) {
+		fprintf(stderr, "No timestamps found in coreboot table.\n");
+		return;
 	}
+
+	size = sizeof(*tst_p);
+	tst_p = map_memory(&timestamp_mapping, timestamps.cbmem_addr, size);
+	if (!tst_p)
+		die("Unable to map timestamp header\n");
 
 	timestamp_set_tick_freq(tst_p->tick_freq_mhz);
 
 	if (output_type == TIMESTAMPS_PRINT_NORMAL)
 		printf("%d entries total:\n\n", tst_p->num_entries);
+	size += tst_p->num_entries * sizeof(tst_p->entries[0]);
+
+	unmap_memory(&timestamp_mapping);
+
+	tst_p = map_memory(&timestamp_mapping, timestamps.cbmem_addr, size);
+	if (!tst_p)
+		die("Unable to map full timestamp table\n");
 
 	sorted_tst_p = malloc(size + sizeof(struct timestamp_entry));
-	if (!sorted_tst_p) {
-		free((void *)tst_p);
+	if (!sorted_tst_p)
 		die("Failed to allocate memory");
-	}
-	memcpy(sorted_tst_p, tst_p, size);
+	aligned_memcpy(sorted_tst_p, tst_p, size);
 
 	/*
 	 * Insert a timestamp to represent the base time (start of coreboot),
@@ -876,8 +783,8 @@ static void dump_timestamps(enum timestamps_print_type output_type)
 		printf("\n");
 	}
 
+	unmap_memory(&timestamp_mapping);
 	free(sorted_tst_p);
-	free((void *)tst_p);
 }
 
 /* add a timestamp entry */
@@ -885,13 +792,15 @@ static void timestamp_add_now(uint32_t timestamp_id)
 {
 	struct timestamp_table *tst_p;
 	struct mapping timestamp_mapping;
-	size_t tst_size;
 
-	if (map_cbmem_entry_rw(CBMEM_ID_TIMESTAMP, &timestamp_mapping, (uint8_t **)&tst_p,
-			       &tst_size)) {
-		fprintf(stderr, "Unable to find timestamps.\n");
-		abort();
+	if (timestamps.tag != LB_TAG_TIMESTAMPS) {
+		die("No timestamps found in coreboot table.\n");
 	}
+
+	tst_p = map_memory_with_prot(&timestamp_mapping, timestamps.cbmem_addr,
+				     timestamps.size, PROT_READ | PROT_WRITE);
+	if (!tst_p)
+		die("Unable to map timestamp table\n");
 
 	/*
 	 * Note that coreboot sizes the cbmem entry in the table according to
@@ -1086,24 +995,32 @@ static void parse_tpm2_log(const struct tcg_efi_spec_id_event *tpm2_log)
 }
 
 /* Dump the TPM log table in format defined by specifications */
-static void dump_tpm_std_log(void *buf)
+static void dump_tpm_std_log(uint64_t addr, size_t size)
 {
+	const void *event_log;
 	const struct tcpa_spec_entry *tspec_entry;
 	const struct tcg_efi_spec_id_event *tcg_spec_entry;
+	struct mapping log_mapping;
 
-	tspec_entry = buf;
+	event_log = map_memory(&log_mapping, addr, size);
+	if (!event_log)
+		die("Unable to map TPM eventlog\n");
+
+	tspec_entry = event_log;
 	if (!strcmp((const char *)tspec_entry->signature, TCPA_SPEC_ID_EVENT_SIGNATURE)) {
 		if (tspec_entry->spec_version_major == 1 &&
-		    tspec_entry->spec_version_minor == 2 && tspec_entry->spec_errata >= 1 &&
+		    tspec_entry->spec_version_minor == 2 &&
+		    tspec_entry->spec_errata >= 1 &&
 		    le32toh(tspec_entry->entry.event_type) == EV_NO_ACTION) {
 			parse_tpm12_log(tspec_entry);
 		} else {
 			fprintf(stderr, "Unknown TPM1.2 log specification\n");
 		}
+		unmap_memory(&log_mapping);
 		return;
 	}
 
-	tcg_spec_entry = buf;
+	tcg_spec_entry = event_log;
 	if (!strcmp((const char *)tcg_spec_entry->signature, TCG_EFI_SPEC_ID_EVENT_SIGNATURE)) {
 		if (tcg_spec_entry->spec_version_major == 2 &&
 		    tcg_spec_entry->spec_version_minor == 0 &&
@@ -1112,24 +1029,41 @@ static void dump_tpm_std_log(void *buf)
 		} else {
 			fprintf(stderr, "Unknown TPM2 log specification.\n");
 		}
+		unmap_memory(&log_mapping);
 		return;
 	}
 
 	fprintf(stderr, "Unknown TPM log specification: %.*s\n",
 		(int)sizeof(tcg_spec_entry->signature),
 		(const char *)tcg_spec_entry->signature);
+
+	unmap_memory(&log_mapping);
 }
 
 /* dump the TPM CB log table */
 static void dump_tpm_cb_log(void)
 {
 	const struct tpm_cb_log_table *tclt_p;
-	size_t tclt_size;
+	size_t size;
+	struct mapping log_mapping;
 
-	if (get_cbmem_entry(CBMEM_ID_TPM_CB_LOG, (uint8_t **)&tclt_p, &tclt_size)) {
-		fprintf(stderr, "coreboot TPM log not found.\n");
-		abort();
+	if (tpm_cb_log.tag != LB_TAG_TPM_CB_LOG) {
+		fprintf(stderr, "No TPM log found in coreboot table.\n");
+		return;
 	}
+
+	size = sizeof(*tclt_p);
+	tclt_p = map_memory(&log_mapping, tpm_cb_log.cbmem_addr, size);
+	if (!tclt_p)
+		die("Unable to map TPM log header\n");
+
+	size += tclt_p->num_entries * sizeof(tclt_p->entries[0]);
+
+	unmap_memory(&log_mapping);
+
+	tclt_p = map_memory(&log_mapping, tpm_cb_log.cbmem_addr, size);
+	if (!tclt_p)
+		die("Unable to map full TPM log table\n");
 
 	printf("coreboot TPM log:\n\n");
 
@@ -1141,21 +1075,29 @@ static void dump_tpm_cb_log(void)
 		printf(" %s [%s]\n", tce->digest_type, tce->name);
 	}
 
-	free((void *)tclt_p);
+	unmap_memory(&log_mapping);
 }
 
 static void dump_tpm_log(void)
 {
-	uint8_t *buf;
+	uint64_t start;
 	size_t size;
 
-	if (!get_cbmem_entry(CBMEM_ID_TCPA_TCG_LOG, &buf, &size) ||
-	    !get_cbmem_entry(CBMEM_ID_TPM2_TCG_LOG, &buf, &size)) {
-		dump_tpm_std_log(buf);
-		free(buf);
-	} else
+	if (!find_cbmem_entry(CBMEM_ID_TCPA_TCG_LOG, &start, &size) ||
+	    !find_cbmem_entry(CBMEM_ID_TPM2_TCG_LOG, &start, &size))
+		dump_tpm_std_log(start, size);
+	else
 		dump_tpm_cb_log();
 }
+
+struct cbmem_console {
+	uint32_t size;
+	uint32_t cursor;
+	uint8_t  body[];
+}  __attribute__ ((__packed__));
+
+#define CBMC_CURSOR_MASK ((1 << 28) - 1)
+#define CBMC_OVERFLOW (1 << 31)
 
 enum console_print_type {
 	CONSOLE_PRINT_FULL = 0,
@@ -1192,26 +1134,37 @@ static void dump_console(enum console_print_type type, int max_loglevel, int pri
 	const struct cbmem_console *console_p;
 	char *console_c;
 	size_t size, cursor, previous;
-	size_t console_buf_size;
+	struct mapping console_mapping;
 
-	if (get_cbmem_entry(CBMEM_ID_CONSOLE, (uint8_t **)&console_p, &console_buf_size)) {
-		fprintf(stderr, "CBMEM console not found.\n");
-		abort();
+	if (console.tag != LB_TAG_CBMEM_CONSOLE) {
+		fprintf(stderr, "No console found in coreboot table.\n");
+		return;
 	}
+
+	size = sizeof(*console_p);
+	console_p = map_memory(&console_mapping, console.cbmem_addr, size);
+	if (!console_p)
+		die("Unable to map console object.\n");
 
 	cursor = console_p->cursor & CBMC_CURSOR_MASK;
 	if (!(console_p->cursor & CBMC_OVERFLOW) && cursor < console_p->size)
 		size = cursor;
 	else
 		size = console_p->size;
+	unmap_memory(&console_mapping);
 
 	console_c = malloc(size + 1);
 	if (!console_c) {
 		fprintf(stderr, "Not enough memory for console.\n");
-		free((void *)console_p);
-		abort();
+		exit(1);
 	}
 	console_c[size] = '\0';
+
+	console_p = map_memory(&console_mapping, console.cbmem_addr,
+		size + sizeof(*console_p));
+
+	if (!console_p)
+		die("Unable to map full console object.\n");
 
 	if (console_p->cursor & CBMC_OVERFLOW) {
 		if (cursor >= size) {
@@ -1219,10 +1172,12 @@ static void dump_console(enum console_print_type type, int max_loglevel, int pri
 			       "output may be corrupt or out of order!\n\n");
 			cursor = 0;
 		}
-		memcpy(console_c, console_p->body + cursor, size - cursor);
-		memcpy(console_c + size - cursor, console_p->body, cursor);
+		aligned_memcpy(console_c, console_p->body + cursor,
+			       size - cursor);
+		aligned_memcpy(console_c + size - cursor,
+			       console_p->body, cursor);
 	} else {
-		memcpy(console_c, console_p->body, size);
+		aligned_memcpy(console_c, console_p->body, size);
 	}
 
 	/* Slight memory corruption may occur between reboots and give us a few
@@ -1297,88 +1252,109 @@ static void dump_console(enum console_print_type type, int max_loglevel, int pri
 		printf(BIOS_LOG_ESCAPE_RESET);
 
 	free(console_c);
-	free((void *)console_p);
+	unmap_memory(&console_mapping);
 }
 
-/* Hexdump provided buffer using start_address as an offset in the output. */
-static void hexdump(const uintptr_t start_address, const uint8_t *buf, const int length)
+static void hexdump(unsigned long memory, int length)
 {
 	int i;
+	const uint8_t *m;
 	int all_zero = 0;
+	struct mapping hexdump_mapping;
+
+	m = map_memory(&hexdump_mapping, memory, length);
+	if (!m)
+		die("Unable to map hexdump memory.\n");
 
 	for (i = 0; i < length; i += 16) {
 		int j;
 
 		all_zero++;
 		for (j = 0; j < 16; j++) {
-			if (buf[i + j] != 0) {
+			if(m[i+j] != 0) {
 				all_zero = 0;
 				break;
 			}
 		}
 
 		if (all_zero < 2) {
-			printf("%08lx:", start_address + i);
+			printf("%08lx:", memory + i);
 			for (j = 0; j < 16; j++)
-				printf(" %02x", buf[i + j]);
+				printf(" %02x", m[i+j]);
 			printf("  ");
 			for (j = 0; j < 16; j++)
-				printf("%c", isprint(buf[i + j]) ? buf[i + j] : '.');
+				printf("%c", isprint(m[i+j]) ? m[i+j] : '.');
 			printf("\n");
 		} else if (all_zero == 2) {
 			printf("...\n");
 		}
 	}
+
+	unmap_memory(&hexdump_mapping);
 }
 
 static void dump_cbmem_hex(void)
 {
-	struct mapping cbmem_mapping;
-	struct lb_memory *memory;
-	const uint8_t *buf = NULL;
-	size_t size = 0;
-
-	lb_table_get_entry(LB_TAG_MEMORY, (uint8_t **)&memory, &size);
-
-	if (!memory)
-		die("No memory entries available.\n");
-
-	const int entries = (memory->size - sizeof(*memory)) / sizeof(memory->map[0]);
-	/* First from the end is CBMEM */
-	for (int i = entries - 1; i >= 0; --i) {
-		if (memory->map[i].type != LB_MEM_TABLE)
-			continue;
-
-		buf = map_memory(&cbmem_mapping, memory->map[i].start, memory->map[i].size);
-		if (!buf)
-			die("Unable to map CBMEM area memory.\n");
-
-		size = memory->map[i].size;
-		break;
+	if (cbmem.type != LB_MEM_TABLE) {
+		fprintf(stderr, "No coreboot CBMEM area found!\n");
+		return;
 	}
 
-	if (!buf)
-		die("Unable to find CBMEM area memory entry.\n");
+	hexdump(cbmem.start, cbmem.size);
+}
 
-	hexdump(cbmem_mapping.phys, buf, size);
+static void rawdump(uint64_t base, uint64_t size)
+{
+	const uint8_t *m;
+	struct mapping dump_mapping;
 
-	unmap_memory(&cbmem_mapping);
-	free(memory);
+	m = map_memory(&dump_mapping, base, size);
+	if (!m)
+		die("Unable to map rawdump memory\n");
+
+	for (uint64_t i = 0 ; i < size; i++)
+		printf("%c", m[i]);
+
+	unmap_memory(&dump_mapping);
 }
 
 static void dump_cbmem_raw(unsigned int id)
 {
-	uint8_t *buf;
-	size_t size;
+	const uint8_t *table;
+	size_t offset;
+	uint64_t base = 0;
+	uint64_t size = 0;
 
-	if (get_cbmem_entry(id, &buf, &size)) {
-		fprintf(stderr, "cbmem entry id: %#x not found.\n", id);
-		abort();
+	table = mapping_virt(&lbtable_mapping);
+
+	if (table == NULL)
+		return;
+
+	offset = 0;
+
+	while (offset < mapping_size(&lbtable_mapping)) {
+		const struct lb_record *lbr;
+		struct lb_cbmem_entry lbe;
+
+		lbr = (const void *)(table + offset);
+		offset += lbr->size;
+
+		if (lbr->tag != LB_TAG_CBMEM_ENTRY)
+			continue;
+
+		aligned_memcpy(&lbe, lbr, sizeof(lbe));
+		if (lbe.id == id) {
+			debug("found id for raw dump %0x", lbe.id);
+			base = lbe.address;
+			size = lbe.entry_size;
+			break;
+		}
 	}
 
-	fwrite(buf, 1, size, stdout);
-
-	free(buf);
+	if (!base)
+		fprintf(stderr, "id %0x not found in cbtable\n", id);
+	else
+		rawdump(base, size);
 }
 
 struct cbmem_id_to_name {
@@ -1423,31 +1399,34 @@ static void cbmem_print_entry(int n, uint32_t id, uint64_t base, uint64_t size)
 
 static void dump_cbmem_toc(void)
 {
-	int i = 0;
-	const uint8_t *table = NULL;
-	size_t table_size = 0;
+	int i;
+	const uint8_t *table;
+	size_t offset;
 
-	if (get_cbmem_entry(CBMEM_ID_CBTABLE, (uint8_t **)&table, &table_size)) {
-		fprintf(stderr, "coreboot table not found.\n");
-		abort();
-	}
+	table = mapping_virt(&lbtable_mapping);
 
-	const struct lb_header *lbh = (const struct lb_header *)table;
+	if (table == NULL)
+		return;
 
 	printf("CBMEM table of contents:\n");
-	printf("    %-20s  %-8s  %-8s  %-8s\n", "NAME", "ID", "START", "LENGTH");
+	printf("    %-20s  %-8s  %-8s  %-8s\n", "NAME", "ID", "START",
+			"LENGTH");
 
-	const struct lb_record *lbr = NULL;
-	for (size_t offset = lbh->header_bytes;
-	     offset < lbh->table_bytes + lbh->header_bytes - sizeof(struct lb_cbmem_entry);
-	     offset += lbr->size) {
-		lbr = (const struct lb_record *)&table[offset];
+	i = 0;
+	offset = 0;
+
+	while (offset < mapping_size(&lbtable_mapping)) {
+		const struct lb_record *lbr;
+		struct lb_cbmem_entry lbe;
+
+		lbr = (const void *)(table + offset);
+		offset += lbr->size;
 
 		if (lbr->tag != LB_TAG_CBMEM_ENTRY)
 			continue;
 
-		const struct lb_cbmem_entry *lbe = (const struct lb_cbmem_entry *)lbr;
-		cbmem_print_entry(i, lbe->id, lbe->address, lbe->entry_size);
+		aligned_memcpy(&lbe, lbr, sizeof(lbe));
+		cbmem_print_entry(i, lbe.id, lbe.address, lbe.entry_size);
 		i++;
 	}
 }
@@ -1482,23 +1461,21 @@ static int mkpath(char *path, mode_t mode)
 static void dump_coverage(void)
 {
 	uint64_t start;
-	uint8_t *coverage;
 	size_t size;
+	const void *coverage;
+	struct mapping coverage_mapping;
 	unsigned long phys_offset;
 #define phys_to_virt(x) ((void *)(unsigned long)(x) + phys_offset)
 
-	if (get_cbmem_entry(CBMEM_ID_COVERAGE, &coverage, &size)) {
-		fprintf(stderr, "No coverage information found\n");
-		return;
-	}
-
-	// Physical address is needed for pointer translation
 	if (find_cbmem_entry(CBMEM_ID_COVERAGE, &start, &size)) {
 		fprintf(stderr, "No coverage information found\n");
 		return;
 	}
 
 	/* Map coverage area */
+	coverage = map_memory(&coverage_mapping, start, size);
+	if (!coverage)
+		die("Unable to map coverage area.\n");
 	phys_offset = (unsigned long)coverage - (unsigned long)start;
 
 	printf("Dumping coverage data...\n");
@@ -1535,7 +1512,7 @@ static void dump_coverage(void)
 		else
 			file = NULL;
 	}
-	free(coverage);
+	unmap_memory(&coverage_mapping);
 }
 
 static void print_version(void)

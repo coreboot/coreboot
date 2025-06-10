@@ -19,6 +19,13 @@ chip soc/intel/alderlake
 	register "usb3_ports[2]" = "USB3_PORT_EMPTY"		# Port is unused
 	register "usb3_ports[3]" = "USB3_PORT_EMPTY"		# Port is unused
 
+	register "serial_io_gspi_mode" = "{
+		[PchSerialIoIndexGSPI0] = PchSerialIoDisabled,
+		[PchSerialIoIndexGSPI1] = PchSerialIoDisabled,
+		[PchSerialIoIndexGSPI2] = PchSerialIoDisabled,
+		[PchSerialIoIndexGSPI3] = PchSerialIoDisabled,
+	}"
+
 	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0] = PchSerialIoPci,
 		[PchSerialIoIndexI2C1] = PchSerialIoPci,
@@ -116,5 +123,10 @@ chip soc/intel/alderlake
 		device ref uart0 on end
 		device ref uart1 on end
 		device ref uart2 on end
+		device ref fast_spi on
+			chip drivers/pc80/tpm   # SPI TPM header
+				device pnp 0c31.0 on end
+			end
+		end
 	end
 end

@@ -51,9 +51,6 @@ config DIMM_SPD_SIZE
 	int
 	default 256
 
-config DRIVER_TPM_SPI_BUS
-	default 0x2 if BOARD_SIEMENS_MC_RPL1
-
 config USE_PM_ACPI_TIMER
 	default n if BOARD_SIEMENS_MC_RPL1
 endif

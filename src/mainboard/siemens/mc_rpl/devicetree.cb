@@ -32,35 +32,6 @@ chip soc/intel/alderlake
 	register "s0ix_enable" = "true"
 	register "dptf_enable" = "true"
 
-	register "serial_io_gspi_mode" = "{
-		[PchSerialIoIndexGSPI0] = PchSerialIoPci,
-		[PchSerialIoIndexGSPI1] = PchSerialIoPci,
-		[PchSerialIoIndexGSPI2] = PchSerialIoDisabled,
-		[PchSerialIoIndexGSPI3] = PchSerialIoDisabled,
-	}"
-
-	register "serial_io_gspi_cs_mode" = "{
-		[PchSerialIoIndexGSPI0] = 0,
-		[PchSerialIoIndexGSPI1] = 1,
-		[PchSerialIoIndexGSPI2] = 0,
-		[PchSerialIoIndexGSPI3] = 0,
-	}"
-
-	register "serial_io_gspi_cs_state" = "{
-		[PchSerialIoIndexGSPI0] = 0,
-		[PchSerialIoIndexGSPI1] = 0,
-		[PchSerialIoIndexGSPI2] = 0,
-		[PchSerialIoIndexGSPI3] = 0,
-	}"
-
-	# Intel Common SoC Config
-	register "common_soc_config" = "{
-		.gspi[1] = {
-			.speed_mhz = 1,
-			.early_init = 1,
-		},
-	}"
-
 	device domain 0 on
 		device ref igpu on end
 		device ref dtt on
@@ -160,16 +131,7 @@ chip soc/intel/alderlake
 		end
 		device ref crashlog off end
 		device ref sata on end
-		device ref gspi0 on end
 		device ref p2sb on end
-		device ref gspi1 on
-			chip drivers/spi/acpi
-				register "hid" = "ACPI_DT_NAMESPACE_HID"
-				register "compat_string" = ""google,cr50""
-				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_E3_IRQ)"
-				device spi 0 on end
-			end
-		end
 		device ref smbus on end
 	end
 end

@@ -172,8 +172,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_GPO_LOCK(GPP_E7, 1, LOCK_CONFIG),
 	/* E8  : GPP_E8 ==> WLAN_DISABLE_L */
 	PAD_CFG_GPO(GPP_E8, 1, DEEP),
-	/* E9  : NC */
-	PAD_NC_LOCK(GPP_E9, NONE, LOCK_CONFIG),
+	/* E9  : NC ==> DIMM_CHANNEL_SELECT */
+	PAD_CFG_GPI_LOCK(GPP_E9, DN_20K, LOCK_CONFIG),
 	/* E10 : EN_PP3300_WLAN_X */
 	PAD_CFG_GPO(GPP_E10, 0, DEEP),
 	/* E11 : TCHSCR_INT_ODL */
@@ -440,9 +440,11 @@ static const struct pad_config early_gpio_table[] = {
 	 * later on in ramstage. Since reset signal is asserted in bootblock, it results in
 	 * FPMCU not working after a S3 resume. This is a known issue.
 	 */
-	 PAD_CFG_GPO(GPP_E7, 0, DEEP),
-	 /* D2  : ISH_GP2 ==> EN_FP_PWR */
-	 PAD_CFG_GPO(GPP_D2, 1, DEEP),
+	PAD_CFG_GPO(GPP_E7, 0, DEEP),
+	/* D2  : ISH_GP2 ==> EN_FP_PWR */
+	PAD_CFG_GPO(GPP_D2, 1, DEEP),
+	/* E9  : DIMM_CHANNEL_SELECT */
+	PAD_CFG_GPI_LOCK(GPP_E9, DN_20K, LOCK_CONFIG),
 	/* E17 : WWAN_RST_L */
 	PAD_CFG_GPO(GPP_E17, 0, DEEP),
 	/* H4  : I2C0_SDA ==> SOC_I2C_GSC_SDA */

@@ -109,3 +109,17 @@ void variant_get_spd_info(struct mem_spd *spd_info)
 	spd_info->topo = MEM_TOPO_MEMORY_DOWN;
 	spd_info->cbfs_index = variant_memory_sku();
 }
+
+uint8_t mb_get_channel_disable_mask(void)
+{
+	/*
+	 * GPP_E9 High -> One RAM Chip
+	 * GPP_E9 Low  -> Two RAM Chip
+	 */
+	if (gpio_get(GPP_E9)) {
+		/* Disable all other channels except first two on each controller */
+		printk(BIOS_INFO, "Device only supports one DIMM.\n");
+		return (BIT(2) | BIT(3));
+	}
+	return 0;
+}

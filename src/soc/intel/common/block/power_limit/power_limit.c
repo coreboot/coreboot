@@ -243,7 +243,7 @@ u8 get_cpu_tdp(void)
 
 WEAK_DEV_PTR(dptf_policy);
 
-#if CONFIG(SOC_INTEL_COMMON_BLOCK_VARIANT_POWER_LIMIT)
+#if ENV_RAMSTAGE && CONFIG(SOC_INTEL_COMMON_BLOCK_VARIANT_POWER_LIMIT)
 void variant_update_cpu_power_limits(const struct cpu_tdp_power_limits *limits,
 		size_t num_entries)
 {

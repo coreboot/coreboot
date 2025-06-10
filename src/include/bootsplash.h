@@ -10,6 +10,8 @@ enum bootsplash_type {
 	BOOTSPLASH_LOW_BATTERY,
 	/* Indicates a Main OEM defined bootsplash logo for center of the splash screen. */
 	BOOTSPLASH_CENTER,
+	/* Indicates an optional OEM defined bootsplash logo for footer of the splash screen. */
+	BOOTSPLASH_FOOTER,
 
 	/* It's used to determine the total number of bootsplash types. */
 	BOOTSPLASH_MAX_NUM,

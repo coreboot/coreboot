@@ -254,6 +254,21 @@ config PLATFORM_LOW_BATTERY_INDICATOR_LOGO_PATH
 	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/low_battery.bmp"
 endif
 
+config SPLASH_SCREEN_FOOTER
+	bool "Enable custom footer on firmware splash screen"
+	depends on BMP_LOGO
+	help
+	  Enable this option to display a custom footer image or logo on the
+	  firmware splash screen during the boot process. This provides an
+	  additional branding opportunity for device manufacturers, allowing
+	  them to display a logo or other graphic at the bottom of the
+	  splash screen, complementing the main OEM splash image.
+
+config SPLASH_SCREEN_FOOTER_LOGO_PATH
+	string "Path to splash screen footer logo file"
+	depends on SPLASH_SCREEN_FOOTER
+	default "3rdparty/blobs/mainboard/\$(MAINBOARDDIR)/logo.bmp"
+
 endmenu
 
 config HAVE_EARLY_POWEROFF_SUPPORT

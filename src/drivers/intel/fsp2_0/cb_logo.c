@@ -179,6 +179,27 @@ void soc_load_logo_by_coreboot(void)
 	copy_logo_to_framebuffer(framebuffer_bar, bytes_per_scanline, blt_buffer_addr, logo_width,
 			 logo_height, logo_coords.x, logo_coords.y);
 
+	if (CONFIG(SPLASH_SCREEN_FOOTER)) {
+		bmp_release_logo();
+		logo_ptr = (uintptr_t)bmp_load_logo_by_type(BOOTSPLASH_FOOTER, &logo_ptr_size);
+		if (!logo_ptr || logo_ptr_size < sizeof(efi_bmp_image_header)) {
+			printk(BIOS_ERR, "%s: BMP image (%zu) is less than expected minimum size (%zu).\n",
+				 __func__, logo_ptr_size, sizeof(efi_bmp_image_header));
+			return;
+		}
+
+		/* Convert BMP logo to GOP BLT format */
+		fsp_convert_bmp_to_gop_blt(logo_ptr, logo_ptr_size, &blt_buffer_addr, &blt_size,
+				   &logo_height, &logo_width, config->panel_orientation);
+
+		logo_coords = calculate_logo_coordinates(horizontal_resolution,
+				 vertical_resolution, logo_width, logo_height, FW_SPLASH_VALIGNMENT_BOTTOM);
+
+		/* Copy the logo to the framebuffer */
+		copy_logo_to_framebuffer(framebuffer_bar, bytes_per_scanline, blt_buffer_addr,
+				 logo_width, logo_height, logo_coords.x, logo_coords.y);
+	}
+
 	/* Clear temporary Write Combine (WC) MTRR */
 	clear_var_mtrr(temp_mtrr_index);
 }

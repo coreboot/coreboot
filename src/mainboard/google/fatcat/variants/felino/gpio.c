@@ -164,8 +164,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_D05, NONE),
 	/* GPP_D06:     Not used */
 	PAD_NC(GPP_D06, NONE),
-	/* GPP_D07:     Not used */
-	PAD_NC(GPP_D07, NONE),
+	/* GPP_D07:     CAM_VDD_EN_SOC */
+	PAD_CFG_GPO(GPP_D07, 1, PLTRST),
 	/* GPP_D08:     NC */
 	PAD_NC(GPP_D08, NONE),
 	/* GPP_D09:     Not used */

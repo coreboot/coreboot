@@ -3,6 +3,7 @@
 #include <cpu/intel/common/common.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
+#include <device/pci.h>
 #include <elog.h>
 #include <fsp/debug.h>
 #include <fsp/fsp_debug_event.h>
@@ -303,6 +304,25 @@ static void fill_fspm_thermal_params(FSP_M_CONFIG *m_cfg,
 	m_cfg->TccActivationOffset = config->tcc_offset;
 }
 
+static const struct soc_intel_pantherlake_power_map *get_map(const struct soc_intel_pantherlake_config *config)
+{
+	uint16_t sa_pci_id = pci_read_config16(PCI_DEVFN_ROOT, PCI_DEVICE_ID);
+	if (sa_pci_id == 0xffff) {
+		printk(BIOS_WARNING, "Unknown SA PCI Device!\n");
+		return NULL;
+	}
+
+	uint8_t tdp = get_cpu_tdp();
+	for (size_t i = 0; i < ARRAY_SIZE(cpuid_to_ptl); i++) {
+		const struct soc_intel_pantherlake_power_map *current = &cpuid_to_ptl[i];
+		if (current->cpu_id == sa_pci_id && current->cpu_tdp == tdp)
+			return current;
+	}
+
+	printk(BIOS_ERR, "Could not find the SKU power map\n");
+	return NULL;
+}
+
 static void fill_fspm_vr_config_params(FSP_M_CONFIG *m_cfg,
 				       const struct soc_intel_pantherlake_config *config)
 {
@@ -314,6 +334,17 @@ static void fill_fspm_vr_config_params(FSP_M_CONFIG *m_cfg,
 				m_cfg->IccLimit[i] = config->fast_vmode_i_trip[i];
 			}
 		}
+	}
+
+	const struct soc_intel_pantherlake_power_map *map = get_map(config);
+	if (!map)
+		return;
+
+	for (size_t i = 0; i < ARRAY_SIZE(config->thermal_design_current[0]); i++) {
+		if (!config->thermal_design_current[map->sku][i])
+			continue;
+		m_cfg->TdcEnable[i] = 1;
+		m_cfg->TdcCurrentLimit[i] = config->thermal_design_current[map->sku][i];
 	}
 }
 

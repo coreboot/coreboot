@@ -68,18 +68,28 @@ enum soc_intel_pantherlake_cpu_tdps {
 	TDP_45W = 45,
 };
 
+enum soc_intel_pantherlake_sku {
+	PTL_H404_SKU,
+	PTL_H12XE_SKU,
+	PTL_H484_SKU,
+	PTL_H4XE_SKU,
+	PTL_H204_SKU,
+	MAX_PTL_SKUS
+};
+
 /* Mapping of different SKUs based on CPU ID and TDP values */
-static const struct {
+static const struct soc_intel_pantherlake_power_map {
 	unsigned int cpu_id;
 	enum soc_intel_pantherlake_power_limits limits;
 	enum soc_intel_pantherlake_cpu_tdps cpu_tdp;
+	enum soc_intel_pantherlake_sku sku;
 } cpuid_to_ptl[] = {
-	{ PCI_DID_INTEL_PTL_U_ID_1, PTL_U_1_CORE, TDP_15W },
-	{ PCI_DID_INTEL_PTL_U_ID_2, PTL_U_2_CORE, TDP_15W },
-	{ PCI_DID_INTEL_PTL_H_ID_1, PTL_H_1_CORE, TDP_25W },
-	{ PCI_DID_INTEL_PTL_H_ID_2, PTL_H_1_CORE, TDP_25W },
-	{ PCI_DID_INTEL_PTL_H_ID_3, PTL_H_2_CORE, TDP_25W },
-	{ PCI_DID_INTEL_PTL_H_ID_4, PTL_H_2_CORE, TDP_25W },
+	{ PCI_DID_INTEL_PTL_U_ID_1, PTL_U_1_CORE, TDP_15W, PTL_H404_SKU },
+	{ PCI_DID_INTEL_PTL_U_ID_2, PTL_U_2_CORE, TDP_15W, PTL_H204_SKU },
+	{ PCI_DID_INTEL_PTL_H_ID_1, PTL_H_1_CORE, TDP_25W, PTL_H12XE_SKU },
+	{ PCI_DID_INTEL_PTL_H_ID_2, PTL_H_1_CORE, TDP_25W, PTL_H484_SKU },
+	{ PCI_DID_INTEL_PTL_H_ID_3, PTL_H_2_CORE, TDP_25W, PTL_H12XE_SKU },
+	{ PCI_DID_INTEL_PTL_H_ID_4, PTL_H_2_CORE, TDP_25W, PTL_H12XE_SKU },
 };
 
 /* Types of display ports */
@@ -360,6 +370,23 @@ struct soc_intel_pantherlake_config {
 	 * SA, [3] through [5] are Reserved.
 	 */
 	uint16_t ps_cur_3_threshold[NUM_VR_DOMAINS];
+
+	/*
+	 * Thermal Design Current (TDC) settings for various SKUs.
+	 *
+	 * This multidimensional array stores the Thermal Design Current (TDC)
+	 * values for different power limit configurations across multiple SKUs
+	 * and Voltage Regulator (VR) domains. TDC values indicate the maximum
+	 * allowable current for a given thermal configuration, which helps in
+	 * managing thermal constraints for each VR domain under specific power
+	 * limit scenarios.
+	 *
+	 * Each entry in the array is indexed by SKU and VR domain, providing
+	 * tailored TDC values for specific power management requirements.
+	 *
+	 * The TDC unit is defined 1/8A increments.
+	 */
+	uint16_t thermal_design_current[MAX_PTL_SKUS][NUM_VR_DOMAINS];
 
 	/*
 	 * SerialIO device mode selection:

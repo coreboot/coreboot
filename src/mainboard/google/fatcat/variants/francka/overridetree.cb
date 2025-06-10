@@ -296,6 +296,36 @@ chip soc/intel/pantherlake
 							probe AUDIO AUDIO_ALC721_SNDW
 						end
 					end
+					chip drivers/soundwire/alc711
+						register "desc" = ""Headset Codec""
+						register "alc711_address.version" = "SOUNDWIRE_VERSION_1_2"
+						register "alc711_address.class" = "MIPI_CLASS_SDCA"
+						register "alc711_address.part_id" = "MIPI_DEV_ID_REALTEK_ALC722"
+						# SoundWire Link 0 ID 0
+						device generic 0.0 on
+							probe AUDIO AUDIO_ALC722_ALC1320_SNDW
+						end
+					end
+					chip drivers/soundwire/alc1320
+						register "desc" = ""Speaker Amp""
+						register "alc1320_address.version" = "SOUNDWIRE_VERSION_1_2"
+						register "alc1320_address.class" = "MIPI_CLASS_SDCA"
+						register "alc1320_address.part_id" = "MIPI_DEV_ID_REALTEK_ALC1320"
+						 # SoundWire Link 2 ID 0
+						device generic 2.0 on
+							probe AUDIO AUDIO_ALC722_ALC1320_SNDW
+						end
+					end
+					chip drivers/soundwire/alc1320
+						register "desc" = ""Speaker Amp""
+						register "alc1320_address.version" = "SOUNDWIRE_VERSION_1_2"
+						register "alc1320_address.class" = "MIPI_CLASS_SDCA"
+						register "alc1320_address.part_id" = "MIPI_DEV_ID_REALTEK_ALC1320"
+						 # SoundWire Link 3 ID 0
+						device generic 3.0 on
+							probe AUDIO AUDIO_ALC722_ALC1320_SNDW
+						end
+					end
 				end
 			end
 		end

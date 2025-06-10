@@ -62,22 +62,31 @@ chip soc/intel/pantherlake
 	# Enable Energy Reporting
 	register "pch_pm_energy_report_enable" = "true"
 
-	# As per document 813278, the Intel PTL-U 15W SoC supports
-	# Fast V-Mode (FVM) on cores (IA), Graphics (GT), and System
-	# Agent (SA). The ICC Limit is represented in 1/4 A
-	# increments, i.e., a value of 400 = 100A.
-	# IA VR configuration
+	# As per document 813278, the following PTL SoC supports Fast
+	# V-Mode (FVM) on cores (IA), Graphics (GT), and System Agent
+	# (SA). The ICC Limit is represented in 1/4 A increments,
+	# i.e., a value of 400 = 100A.
 	register "enable_fast_vmode[VR_DOMAIN_IA]" = "true"
 	register "cep_enable[VR_DOMAIN_IA]" = "true"
-	register "fast_vmode_i_trip[VR_DOMAIN_IA]" = "252" # 63A
-	# GT VR configuration
 	register "enable_fast_vmode[VR_DOMAIN_GT]" = "true"
 	register "cep_enable[VR_DOMAIN_GT]" = "true"
-	register "fast_vmode_i_trip[VR_DOMAIN_GT]" = "152" # 38A
-	# SA VR configuration
 	register "enable_fast_vmode[VR_DOMAIN_SA]" = "true"
 	register "cep_enable[VR_DOMAIN_SA]" = "true"
-	register "fast_vmode_i_trip[VR_DOMAIN_SA]" = "152" # 38A
+	register "fast_vmode_i_trip[PTL_U_1_CORE]" = "{
+		[VR_DOMAIN_IA] = 63 * 4,
+		[VR_DOMAIN_GT] = 38 * 4,
+		[VR_DOMAIN_SA] = 38 * 4
+	}"
+	register "fast_vmode_i_trip[PTL_U_2_CORE]" = "{
+		[VR_DOMAIN_IA] = 38 * 4,
+		[VR_DOMAIN_GT] = 38 * 4,
+		[VR_DOMAIN_SA] = 38 * 4
+	}"
+	register "fast_vmode_i_trip[PTL_H_1_CORE]" = "{
+		[VR_DOMAIN_IA] = 75 * 4,
+		[VR_DOMAIN_GT] = 75 * 4,
+		[VR_DOMAIN_SA] = 38 * 4
+	}"
 
 	# Enable CNVi BT
 	register "cnvi_bt_core" = "true"

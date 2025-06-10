@@ -333,6 +333,9 @@ static void wait_perst_done(uintptr_t base)
 
 void mtk_pcie_deassert_perst(void)
 {
+	if (!pci_root_bus())
+		return;
+
 	uintptr_t base = mtk_pcie_get_controller_base(0);
 
 	wait_perst_done(base);

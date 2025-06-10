@@ -3,6 +3,8 @@
 #ifndef SOC_MEDIATEK_COMMON_DP_DPTX_COMMON_H
 #define SOC_MEDIATEK_COMMON_DP_DPTX_COMMON_H
 
+#include <types.h>
+
 #define DP_LANSE_ADJUST_SIZE		2
 #define DPTX_TBC_BUF_READSTARTADRTHRD	0x08
 #define ENABLE_DPTX_EF_MODE		0x1
@@ -218,6 +220,8 @@ struct mtk_dp {
 int mtk_edp_init(struct mtk_dp *mtk_dp, struct edid *edid);
 int mtk_edp_enable(struct mtk_dp *mtk_dp);
 
+void dptx_set_tx_power_con(void);
+void dptx_set_26mhz_clock(void);
 bool dptx_auxread_dpcd(struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr,
 		       size_t length, u8 *rxbuf);
 bool dptx_auxwrite_dpcd(struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr,

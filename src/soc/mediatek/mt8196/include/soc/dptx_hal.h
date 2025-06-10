@@ -3,25 +3,13 @@
 #ifndef __SOC_MEDIATEK_MT8196_DP_DPTX_HAL_H__
 #define __SOC_MEDIATEK_MT8196_DP_DPTX_HAL_H__
 
-#include <soc/dptx_hal_common.h>
+#include <soc/dptx_hal_v2.h>
 
-#define MTK_DP_TRAIN_VOLTAGE_LEVEL_RETRY	5
-#define MTK_DP_TRAIN_DOWNSCALE_RETRY		10
+#define DP_LINKRATE_RBR_VAL	0x1
+#define DP_LINKRATE_HBR_VAL	0x4
+#define DP_LINKRATE_HBR2_VAL	0x7
+#define DP_LINKRATE_HBR3_VAL	0x9
 
-enum {
-	DPTX_PATTERN_TPS1 = 1,
-	DPTX_PATTERN_TPS2,
-	DPTX_PATTERN_TPS3,
-	DPTX_PATTERN_TPS4,
-	DPTX_PATTERN_UNKNOWN,
-};
-
-void dptx_hal_swing_emp_reset(struct mtk_dp *mtk_dp);
-void dptx_hal_phy_init(struct mtk_dp *mtk_dp);
-void dptx_hal_phy_set_lanes(struct mtk_dp *mtk_dp, u8 lane_count);
-void dptx_hal_phy_wait_aux_ldo_ready(struct mtk_dp *mtk_dp);
-void dptx_hal_phy_set_idle_pattern(struct mtk_dp *mtk_dp, u8 lane_count, bool enable);
-void dptx_hal_phy_set_swing_preemphasis(struct mtk_dp *mtk_dp, u8 lane_count, u8 *swing_val,
-					u8 *preemphasis);
+#define DP_PHY_DIG_GLB_STATUS_02_OFSSET	0x146C
 
 #endif /* __SOC_MEDIATEK_MT8196_DP_DPTX_HAL_H__ */

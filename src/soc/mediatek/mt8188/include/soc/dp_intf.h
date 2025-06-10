@@ -3,6 +3,6 @@
 #ifndef __SOC_MEDIATEK_MT8188_INCLUDE_SOC_DP_INTF_H__
 #define __SOC_MEDIATEK_MT8188_INCLUDE_SOC_DP_INTF_H__
 
-#include <soc/dp_intf_common.h>
+#include <soc/dp_intf_v1.h>
 
 #endif /* __SOC_MEDIATEK_MT8188_INCLUDE_SOC_DP_INTF_H__ */

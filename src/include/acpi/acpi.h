@@ -1762,7 +1762,7 @@ void acpi_add_table(acpi_rsdp_t *rsdp, void *table);
 
 /* Create CXL Early Discovery Table */
 void acpi_create_cedt(acpi_cedt_t *cedt,
-	unsigned long (*acpi_fill_cedt)(unsigned long current));
+	unsigned long (*acpi_fill_cedt_func)(unsigned long current));
 /* Create a CXL Host Bridge Structure for CEDT */
 int acpi_create_cedt_chbs(acpi_cedt_chbs_t *chbs, u32 uid, u32 cxl_ver, u64 base);
 /* Create a CXL Fixed Memory Window Structure for CEDT */
@@ -1796,10 +1796,10 @@ int acpi_create_srat_gia_pci(acpi_srat_gia_t *gia, u32 proximity_domain,
 			     struct device *dev, u32 flags);
 unsigned long acpi_create_srat_lapics(unsigned long current);
 void acpi_create_srat(acpi_srat_t *srat,
-		      unsigned long (*acpi_fill_srat)(unsigned long current));
+		      unsigned long (*acpi_fill_srat_func)(unsigned long current));
 
 void acpi_create_slit(acpi_slit_t *slit,
-		      unsigned long (*acpi_fill_slit)(unsigned long current));
+		      unsigned long (*acpi_fill_slit_func)(unsigned long current));
 
 /*
  * Create a Memory Proximity Domain Attributes structure for HMAT,
@@ -1809,11 +1809,11 @@ void acpi_create_slit(acpi_slit_t *slit,
 int acpi_create_hmat_mpda(acpi_hmat_mpda_t *mpda, u32 initiator, u32 memory);
 /* Create Heterogeneous Memory Attribute Table */
 void acpi_create_hmat(acpi_hmat_t *hmat,
-		      unsigned long (*acpi_fill_hmat)(unsigned long current));
+		      unsigned long (*acpi_fill_hmat_func)(unsigned long current));
 
 void acpi_create_vfct(const struct device *device,
 		      acpi_vfct_t *vfct,
-		      unsigned long (*acpi_fill_vfct)(const struct device *device,
+		      unsigned long (*acpi_fill_vfct_func)(const struct device *device,
 				acpi_vfct_t *vfct_struct,
 				unsigned long current));
 
@@ -1827,11 +1827,11 @@ void acpi_create_ipmi(const struct device *device,
 		      const u32 uid);
 
 void acpi_create_ivrs(acpi_ivrs_t *ivrs,
-		      unsigned long (*acpi_fill_ivrs)(acpi_ivrs_t *ivrs_struct,
+		      unsigned long (*acpi_fill_ivrs_func)(acpi_ivrs_t *ivrs_struct,
 		      unsigned long current));
 
 void acpi_create_crat(struct acpi_crat_header *crat,
-		      unsigned long (*acpi_fill_crat)(struct acpi_crat_header *crat_struct,
+		      unsigned long (*acpi_fill_crat_func)(struct acpi_crat_header *crat_struct,
 		      unsigned long current));
 
 unsigned long acpi_write_hpet(const struct device *device, unsigned long start,
@@ -1848,7 +1848,7 @@ unsigned long acpi_16550_mmio32_write_dbg2_uart(acpi_rsdp_t *rsdp, unsigned long
 					 uint64_t base, const char *name);
 
 void acpi_create_dmar(acpi_dmar_t *dmar, enum dmar_flags flags,
-		      unsigned long (*acpi_fill_dmar)(unsigned long));
+		      unsigned long (*acpi_fill_dmar_func)(unsigned long));
 unsigned long acpi_create_dmar_drhd_4k(unsigned long current, u8 flags,
 				    u16 segment, u64 bar);
 unsigned long acpi_create_dmar_drhd(unsigned long current, u8 flags,

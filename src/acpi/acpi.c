@@ -386,7 +386,7 @@ int acpi_create_srat_gia_pci(acpi_srat_gia_t *gia, u32 proximity_domain,
 
 /* http://www.microsoft.com/whdc/system/sysinternals/sratdwn.mspx */
 void acpi_create_srat(acpi_srat_t *srat,
-		      unsigned long (*acpi_fill_srat)(unsigned long current))
+		      unsigned long (*acpi_fill_srat_func)(unsigned long current))
 {
 	acpi_header_t *header = &(srat->header);
 	unsigned long current = (unsigned long)srat + sizeof(acpi_srat_t);
@@ -398,7 +398,7 @@ void acpi_create_srat(acpi_srat_t *srat,
 
 	srat->resv = 1; /* Spec: Reserved to 1 for backwards compatibility. */
 
-	current = acpi_fill_srat(current);
+	current = acpi_fill_srat_func(current);
 
 	/* (Re)calculate length and checksum. */
 	header->length = current - (unsigned long)srat;
@@ -462,7 +462,7 @@ int acpi_create_cedt_cfmws(acpi_cedt_cfmws_t *cfmws, u64 base_hpa, u64 window_si
 	return cfmws->length;
 }
 
-void acpi_create_cedt(acpi_cedt_t *cedt, unsigned long (*acpi_fill_cedt)(unsigned long current))
+void acpi_create_cedt(acpi_cedt_t *cedt, unsigned long (*acpi_fill_cedt_func)(unsigned long current))
 {
 	acpi_header_t *header = &(cedt->header);
 	unsigned long current = (unsigned long)cedt + sizeof(acpi_cedt_t);
@@ -472,7 +472,7 @@ void acpi_create_cedt(acpi_cedt_t *cedt, unsigned long (*acpi_fill_cedt)(unsigne
 	if (acpi_fill_header(header, "CEDT", CEDT, sizeof(acpi_cedt_t)) != CB_SUCCESS)
 		return;
 
-	current = acpi_fill_cedt(current);
+	current = acpi_fill_cedt_func(current);
 
 	/* (Re)calculate length and checksum. */
 	header->length = current - (unsigned long)cedt;
@@ -497,7 +497,7 @@ int acpi_create_hmat_mpda(acpi_hmat_mpda_t *mpda, u32 initiator, u32 memory)
 }
 
 void acpi_create_hmat(acpi_hmat_t *hmat,
-		 unsigned long (*acpi_fill_hmat)(unsigned long current))
+		 unsigned long (*acpi_fill_hmat_func)(unsigned long current))
 {
 	acpi_header_t *header = &(hmat->header);
 	unsigned long current = (unsigned long)hmat + sizeof(acpi_hmat_t);
@@ -507,7 +507,7 @@ void acpi_create_hmat(acpi_hmat_t *hmat,
 	if (acpi_fill_header(header, "HMAT", HMAT, sizeof(acpi_hmat_t)) != CB_SUCCESS)
 		return;
 
-	current = acpi_fill_hmat(current);
+	current = acpi_fill_hmat_func(current);
 
 	/* (Re)calculate length and checksum. */
 	header->length = current - (unsigned long)hmat;
@@ -516,7 +516,7 @@ void acpi_create_hmat(acpi_hmat_t *hmat,
 
 /* http://h21007.www2.hp.com/portal/download/files/unprot/Itanium/slit.pdf */
 void acpi_create_slit(acpi_slit_t *slit,
-		      unsigned long (*acpi_fill_slit)(unsigned long current))
+		      unsigned long (*acpi_fill_slit_func)(unsigned long current))
 {
 	acpi_header_t *header = &(slit->header);
 	unsigned long current = (unsigned long)slit + sizeof(acpi_slit_t);
@@ -526,7 +526,7 @@ void acpi_create_slit(acpi_slit_t *slit,
 	if (acpi_fill_header(header, "SLIT", SLIT, sizeof(acpi_slit_t)) != CB_SUCCESS)
 		return;
 
-	current = acpi_fill_slit(current);
+	current = acpi_fill_slit_func(current);
 
 	/* (Re)calculate length and checksum. */
 	header->length = current - (unsigned long)slit;
@@ -675,7 +675,7 @@ void acpi_create_einj(acpi_einj_t *einj, uintptr_t addr, u8 actions)
 
 void acpi_create_vfct(const struct device *device,
 		      acpi_vfct_t *vfct,
-		      unsigned long (*acpi_fill_vfct)(const struct device *device,
+		      unsigned long (*acpi_fill_vfct_func)(const struct device *device,
 		      acpi_vfct_t *vfct_struct, unsigned long current))
 {
 	acpi_header_t *header = &(vfct->header);
@@ -686,7 +686,7 @@ void acpi_create_vfct(const struct device *device,
 	if (acpi_fill_header(header, "VFCT", VFCT, sizeof(acpi_vfct_t)) != CB_SUCCESS)
 		return;
 
-	current = acpi_fill_vfct(device, vfct, current);
+	current = acpi_fill_vfct_func(device, vfct, current);
 
 	/* If no BIOS image, return with header->length == 0. */
 	if (!vfct->VBIOSImageOffset)
@@ -743,7 +743,7 @@ void acpi_create_ipmi(const struct device *device,
 }
 
 void acpi_create_ivrs(acpi_ivrs_t *ivrs,
-		      unsigned long (*acpi_fill_ivrs)(acpi_ivrs_t *ivrs_struct,
+		      unsigned long (*acpi_fill_ivrs_func)(acpi_ivrs_t *ivrs_struct,
 		      unsigned long current))
 {
 	acpi_header_t *header = &(ivrs->header);
@@ -754,7 +754,7 @@ void acpi_create_ivrs(acpi_ivrs_t *ivrs,
 	if (acpi_fill_header(header, "IVRS", IVRS, sizeof(acpi_ivrs_t)) != CB_SUCCESS)
 		return;
 
-	current = acpi_fill_ivrs(ivrs, current);
+	current = acpi_fill_ivrs_func(ivrs, current);
 
 	/* (Re)calculate length and checksum. */
 	header->length = current - (unsigned long)ivrs;
@@ -762,7 +762,7 @@ void acpi_create_ivrs(acpi_ivrs_t *ivrs,
 }
 
 void acpi_create_crat(struct acpi_crat_header *crat,
-		      unsigned long (*acpi_fill_crat)(struct acpi_crat_header *crat_struct,
+		      unsigned long (*acpi_fill_crat_func)(struct acpi_crat_header *crat_struct,
 		      unsigned long current))
 {
 	acpi_header_t *header = &(crat->header);
@@ -773,7 +773,7 @@ void acpi_create_crat(struct acpi_crat_header *crat,
 	if (acpi_fill_header(header, "CRAT", CRAT, sizeof(struct acpi_crat_header)) != CB_SUCCESS)
 		return;
 
-	current = acpi_fill_crat(crat, current);
+	current = acpi_fill_crat_func(crat, current);
 
 	/* (Re)calculate length and checksum. */
 	header->length = current - (unsigned long)crat;

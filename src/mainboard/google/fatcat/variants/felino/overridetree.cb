@@ -102,7 +102,6 @@ chip soc/intel/pantherlake
 	#| I2C4              | CLICK PAD                 |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
-		.logo_valignment = FW_SPLASH_VALIGNMENT_MIDDLE,
 		.i2c[1] = {
 			.early_init=1,
 			.speed = I2C_SPEED_FAST,

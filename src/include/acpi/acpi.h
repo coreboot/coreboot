@@ -135,6 +135,14 @@ typedef struct acpi_gen_regaddr {
 	u32 addrh;		/* Register address, high 32 bits */
 } __packed acpi_addr_t;
 
+typedef struct acpi_gen_regaddr1 {
+	u8  space_id;		/* Address space ID */
+	u8  bit_width;		/* Register size in bits */
+	u8  bit_offset;		/* Register bit offset */
+	u8  access_size;	/* Access size since ACPI 2.0c */
+	u64 addr;		/* Register address */
+} __packed acpi_addr64_t;
+
 #define ACPI_ADDRESS_SPACE_MEMORY		0	/* System memory */
 #define ACPI_ADDRESS_SPACE_IO			1	/* System I/O */
 #define ACPI_ADDRESS_SPACE_PCI			2	/* PCI config space */
@@ -1085,114 +1093,6 @@ typedef struct acpi_ecdt {
 	u8 ec_id[];				/* EC ID  */
 } __packed acpi_ecdt_t;
 
-/* HEST (Hardware Error Source Table) */
-typedef struct acpi_hest {
-	acpi_header_t header;
-	u32 error_source_count;
-	/* error_source_struct(s) */
-} __packed acpi_hest_t;
-
-/* Error Source Descriptors */
-typedef struct acpi_hest_esd {
-	u16 type;
-	u16 source_id;
-	u16 resv;
-	u8 flags;
-	u8 enabled;
-	u32 prealloc_erecords;		/* The number of error records to
-					 * pre-allocate for this error source.
-					 */
-	u32 max_section_per_record;
-} __packed acpi_hest_esd_t;
-
-/* Hardware Error Notification */
-typedef struct acpi_hest_hen {
-	u8 type;
-	u8 length;
-	u16 conf_we;		/* Configuration Write Enable */
-	u32 poll_interval;
-	u32 vector;
-	u32 sw2poll_threshold_val;
-	u32 sw2poll_threshold_win;
-	u32 error_threshold_val;
-	u32 error_threshold_win;
-} __packed acpi_hest_hen_t;
-
-/* BERT (Boot Error Record Table) */
-typedef struct acpi_bert {
-	acpi_header_t header;
-	u32 region_length;
-	u64 error_region;
-} __packed acpi_bert_t;
-
-/* Generic Error Data Entry */
-typedef struct acpi_hest_generic_data {
-	guid_t section_type;
-	u32 error_severity;
-	u16 revision;
-	u8 validation_bits;
-	u8 flags;
-	u32 data_length;
-	guid_t fru_id;
-	u8 fru_text[20];
-	/* error data */
-} __packed acpi_hest_generic_data_t;
-
-/* Generic Error Data Entry v300 */
-typedef struct acpi_hest_generic_data_v300 {
-	guid_t section_type;
-	u32 error_severity;
-	u16 revision;
-	u8 validation_bits;
-	u8 flags;		/* see CPER Section Descriptor, Flags field */
-	u32 data_length;
-	guid_t fru_id;
-	u8 fru_text[20];
-	cper_timestamp_t timestamp;
-	/* error data */
-} __packed acpi_hest_generic_data_v300_t;
-#define HEST_GENERIC_ENTRY_V300			0x300
-
-/* Both Generic Error Status & Generic Error Data Entry, Error Severity field */
-#define ACPI_GENERROR_SEV_RECOVERABLE		0
-#define ACPI_GENERROR_SEV_FATAL			1
-#define ACPI_GENERROR_SEV_CORRECTED		2
-#define ACPI_GENERROR_SEV_NONE			3
-
-/* Generic Error Data Entry, Validation Bits field */
-#define ACPI_GENERROR_VALID_FRUID		BIT(0)
-#define ACPI_GENERROR_VALID_FRUID_TEXT		BIT(1)
-#define ACPI_GENERROR_VALID_TIMESTAMP		BIT(2)
-
-/*
- * Generic Error Status Block
- *
- * If there is a raw data section at the end of the generic error status block after the
- * zero or more generic error data entries, raw_data_length indicates the length of the raw
- * section and raw_data_offset is the offset of the beginning of the raw data section from
- * the start of the acpi_generic_error_status block it is contained in. So if raw_data_length
- * is non-zero, raw_data_offset must be at least sizeof(acpi_generic_error_status_t).
- */
-typedef struct acpi_generic_error_status {
-	u32 block_status;
-	u32 raw_data_offset;	/* must follow any generic entries */
-	u32 raw_data_length;
-	u32 data_length;	/* generic data */
-	u32 error_severity;
-	/* Generic Error Data structures, zero or more entries */
-} __packed acpi_generic_error_status_t;
-
-/* Generic Status Block, Block Status values */
-#define GENERIC_ERR_STS_UNCORRECTABLE_VALID	BIT(0)
-#define GENERIC_ERR_STS_CORRECTABLE_VALID	BIT(1)
-#define GENERIC_ERR_STS_MULT_UNCORRECTABLE	BIT(2)
-#define GENERIC_ERR_STS_MULT_CORRECTABLE	BIT(3)
-#define GENERIC_ERR_STS_ENTRY_COUNT_SHIFT	4
-#define GENERIC_ERR_STS_ENTRY_COUNT_MAX		0x3ff
-#define GENERIC_ERR_STS_ENTRY_COUNT_MASK	\
-					(GENERIC_ERR_STS_ENTRY_COUNT_MAX \
-					<< GENERIC_ERR_STS_ENTRY_COUNT_SHIFT)
-
 typedef struct acpi_cstate {
 	u8  ctype;
 	u16 latency;
@@ -1306,131 +1206,6 @@ struct acpi_spmi {
 	};
 	u8 reserved3;
 } __packed;
-
-/* EINJ APEI Standard Definitions */
-/* EINJ Error Types
-   Refer to the ACPI spec, EINJ section, for more info on bit definitions
-*/
-#define ACPI_EINJ_CPU_CE		(1 << 0)
-#define ACPI_EINJ_CPU_UCE		(1 << 1)
-#define ACPI_EINJ_CPU_UCE_FATAL		(1 << 2)
-#define ACPI_EINJ_MEM_CE		(1 << 3)
-#define ACPI_EINJ_MEM_UCE		(1 << 4)
-#define ACPI_EINJ_MEM_UCE_FATAL		(1 << 5)
-#define ACPI_EINJ_PCIE_CE		(1 << 6)
-#define ACPI_EINJ_PCIE_UCE_NON_FATAL	(1 << 7)
-#define ACPI_EINJ_PCIE_UCE_FATAL	(1 << 8)
-#define ACPI_EINJ_PLATFORM_CE		(1 << 9)
-#define ACPI_EINJ_PLATFORM_UCE		(1 << 10)
-#define ACPI_EINJ_PLATFORM_UCE_FATAL	(1 << 11)
-#define ACPI_EINJ_VENDOR_DEFINED	(1 << 31)
-#define ACPI_EINJ_DEFAULT_CAP		(ACPI_EINJ_MEM_CE | ACPI_EINJ_MEM_UCE | \
-					ACPI_EINJ_PCIE_CE | ACPI_EINJ_PCIE_UCE_FATAL)
-
-/* EINJ actions */
-#define ACTION_COUNT			9
-#define BEGIN_INJECT_OP			0x00
-#define GET_TRIGGER_ACTION_TABLE	0x01
-#define SET_ERROR_TYPE			0x02
-#define GET_ERROR_TYPE			0x03
-#define END_INJECT_OP			0x04
-#define EXECUTE_INJECT_OP		0x05
-#define CHECK_BUSY_STATUS		0x06
-#define GET_CMD_STATUS			0x07
-#define SET_ERROR_TYPE_WITH_ADDRESS	0x08
-#define TRIGGER_ERROR			0xFF
-
-/* EINJ Instructions */
-#define READ_REGISTER			0x00
-#define READ_REGISTER_VALUE		0x01
-#define WRITE_REGISTER			0x02
-#define WRITE_REGISTER_VALUE		0x03
-#define NO_OP				0x04
-
-/* EINJ (Error Injection Table) */
-typedef struct acpi_gen_regaddr1 {
-	u8  space_id;		/* Address space ID */
-	u8  bit_width;		/* Register size in bits */
-	u8  bit_offset;		/* Register bit offset */
-	u8  access_size;	/* Access size since ACPI 2.0c */
-	u64 addr;		/* Register address */
-} __packed acpi_addr64_t;
-
-/* Instruction entry */
-typedef struct acpi_einj_action_table {
-	u8 action;
-	u8 instruction;
-	u16 flags;
-	acpi_addr64_t reg;
-	u64 value;
-	u64 mask;
-} __packed acpi_einj_action_table_t;
-
-typedef struct acpi_injection_header {
-	u32 einj_header_size;
-	u32 flags;
-	u32 entry_count;
-} __packed acpi_injection_header_t;
-
-typedef struct acpi_einj_trigger_table {
-	u32 header_size;
-	u32 revision;
-	u32 table_size;
-	u32 entry_count;
-	acpi_einj_action_table_t trigger_action[];
-} __packed acpi_einj_trigger_table_t;
-
-typedef struct set_error_type {
-	u32 errtype;
-	u32 vendorerrortype;
-	u32 flags;
-	u32 apicid;
-	u64 memaddr;
-	u64 memrange;
-	u32 pciesbdf;
-} __packed set_error_type_t;
-
-#define EINJ_PARAM_NUM 6
-typedef struct acpi_einj_smi {
-	u64 op_state;
-	u64 err_inject[EINJ_PARAM_NUM];
-	u64 trigger_action_table;
-	u64 err_inj_cap;
-	u64 op_status;
-	u64 cmd_sts;
-	u64 einj_addr;
-	u64 einj_addr_msk;
-	set_error_type_t setaddrtable;
-	u64 reserved[50];
-} __packed acpi_einj_smi_t;
-
-/* EINJ Flags */
-#define EINJ_DEF_TRIGGER_PORT	0xb2
-#define FLAG_PRESERVE		0x01
-#define FLAG_IGNORE		0x00
-
-/* EINJ Registers */
-#define EINJ_REG_MEMORY(address) \
-	{ \
-	.space_id = ACPI_ADDRESS_SPACE_MEMORY, \
-	.bit_width = 64, \
-	.bit_offset = 0, \
-	.access_size = ACPI_ACCESS_SIZE_QWORD_ACCESS, \
-	.addr = address}
-
-#define EINJ_REG_IO() \
-	{ \
-	.space_id = ACPI_ADDRESS_SPACE_IO, \
-	.bit_width = 0x10, \
-	.bit_offset = 0, \
-	.access_size = ACPI_ACCESS_SIZE_WORD_ACCESS, \
-	.addr = EINJ_DEF_TRIGGER_PORT} /* HW dependent code can override this also */
-
-typedef struct acpi_einj {
-	acpi_header_t header;
-	acpi_injection_header_t inj_header;
-	acpi_einj_action_table_t action_table[ACTION_COUNT];
-} __packed acpi_einj_t;
 
 /* PPTT definitions */
 
@@ -1734,7 +1509,6 @@ typedef struct acpi_table_wdat {
 } __packed acpi_wdat_t;
 
 uintptr_t get_coreboot_rsdp(void);
-void acpi_create_einj(acpi_einj_t *einj, uintptr_t addr, u8 actions);
 
 unsigned long fw_cfg_acpi_tables(unsigned long start);
 
@@ -1880,13 +1654,7 @@ unsigned long acpi_create_dmar_ds_msi_hpet(unsigned long current,
 						u8 enumeration_id,
 						u8 bus, u8 dev, u8 fn);
 
-unsigned long acpi_create_hest_error_source(acpi_hest_t *hest, acpi_hest_esd_t *esd, u16 type,
-					    void *data, u16 len);
-
 unsigned long acpi_create_lpi_desc_ncst(acpi_lpi_desc_ncst_t *lpi_desc, uint16_t uid);
-
-/* chipsets that select ACPI_BERT must implement this function */
-enum cb_err acpi_soc_get_bert_region(void **region, size_t *length);
 
 void acpi_soc_fill_gtdt(acpi_gtdt_t *gtdt);
 unsigned long acpi_soc_gtdt_add_timers(uint32_t *count, unsigned long current);

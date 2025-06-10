@@ -4,6 +4,7 @@
 #define _BERT_STORAGE_H_
 
 #include <acpi/acpi.h>
+#include <acpi/acpi_apei.h>
 #include <types.h>
 
 /* Items in the BERT region

@@ -1,29 +1,25 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#include <soc/acpi.h>
+#include <acpi/acpi_apei.h>
 #include <acpi/acpi_gnvs.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include <soc/hest.h>
 #include <intelblocks/nvs.h>
+#include <soc/acpi.h>
 
-static u64 hest_get_elog_addr(void)
-{
-	/* The elog address comes from reserved memory */
-	struct global_nvs *gnvs;
-	gnvs = acpi_get_gnvs();
-	if (!gnvs) {
-		printk(BIOS_ERR, "Unable to get gnvs\n");
-		return 0;
-	}
+#define MCE_ERR_POLL_MS_INTERVAL	1000
+#define HEST_PCIE_RP_AER_DESC_TYPE	6
+#define HEST_GHES_DESC_TYPE		9
+#define GHES_MAX_RAW_DATA_LENGTH	(((CONFIG_ACPI_HEST_ERROR_LOG_BUFFER_SIZE) >> 1) - 8)
+#define GHEST_ERROR_STATUS_BLOCK_LENGTH	((CONFIG_ACPI_HEST_ERROR_LOG_BUFFER_SIZE) >> 1)
+#define GHEST_ASSIST			(1 << 2)
+#define FIRMWARE_FIRST			(1 << 0)
+#define MEM_VALID_BITS			0x66ff
+#define PCIE_VALID_BITS			0xef
+#define QWORD_ACCESS			4
+#define NOTIFY_TYPE_SCI			3
 
-	/* Runtime logging address */
-	printk(BIOS_DEBUG, "\t status blk start addr = %llx\n", gnvs->hest_log_addr);
-	printk(BIOS_DEBUG, "\t size = %x\n", CONFIG_ERROR_LOG_BUFFER_SIZE);
-	return gnvs->hest_log_addr;
-}
-
-static u32 acpi_hest_add_ghes(void *current)
+static u32 acpi_hest_add_ghes(uintptr_t current, uintptr_t log_mem)
 {
 	ghes_record_t *rec = (ghes_record_t *)current;
 	u32 size = sizeof(ghes_record_t);
@@ -50,51 +46,22 @@ static u32 acpi_hest_add_ghes(void *current)
 	rec->err_sts_blk_len = GHEST_ERROR_STATUS_BLOCK_LENGTH;
 
 	/* error status block entries start address */
-	if (CONFIG(SOC_ACPI_HEST))
-		rec->sts_addr.addr = hest_get_elog_addr();
+	rec->sts_addr.addr = log_mem;
 
 	return size;
 }
 
-static unsigned long acpi_fill_hest(acpi_hest_t *hest)
+uintptr_t acpi_soc_fill_hest(acpi_hest_t *hest, uintptr_t current, void *log_mem)
 {
-	acpi_header_t *header = &(hest->header);
-	void *current;
-	current = (void *)(hest);
-	void *next = current;
-	next = hest + 1;
-	next += acpi_hest_add_ghes(next);
+	// fill ACPI global non volatile storage with hest elog addr
+	struct global_nvs *gnvs = acpi_get_gnvs();
+	if (gnvs)
+		gnvs->hest_log_addr = (uintptr_t)log_mem;
+	else
+		printk(BIOS_ERR, "ACPI fill HEST: Unable to get gnvs\n");
+
+	current = acpi_hest_add_ghes(current, (uintptr_t)log_mem);  // add first entry
 	hest->error_source_count += 1;
-	header->length = next - current;
-	return header->length;
-}
 
-unsigned long hest_create(unsigned long current, struct acpi_rsdp *rsdp)
-{
-	struct global_nvs *gnvs;
-	acpi_hest_t *hest;
-
-	/* Reserve memory for Enhanced error logging */
-	void *mem = cbmem_add(CBMEM_ID_ACPI_HEST, CONFIG_ERROR_LOG_BUFFER_SIZE);
-	if (!mem) {
-		printk(BIOS_ERR, "Unable to allocate HEST memory\n");
-		return current;
-	}
-
-	printk(BIOS_DEBUG, "HEST memory created: %p\n", mem);
-	gnvs = acpi_get_gnvs();
-	if (!gnvs) {
-		printk(BIOS_ERR, "Unable to get gnvs\n");
-		return current;
-	}
-	gnvs->hest_log_addr = (uintptr_t)mem;
-	printk(BIOS_DEBUG, "elog_addr: %llx, size:%x\n", gnvs->hest_log_addr,
-		CONFIG_ERROR_LOG_BUFFER_SIZE);
-
-	current = ALIGN_UP(current, 8);
-	hest = (acpi_hest_t *)current;
-	acpi_write_hest(hest, acpi_fill_hest);
-	acpi_add_table(rsdp, (void *)current);
-	current += hest->header.length;
 	return current;
 }

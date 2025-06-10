@@ -127,3 +127,16 @@ config ACPI_WDAT_WDT
 	help
 	  Selected by platforms that support and fill ACPI Watchdog Action Table
 	  (WDAT).
+
+config ACPI_HEST
+	bool
+	depends on HAVE_ACPI_TABLES
+	help
+	  Selected by platforms that support and fill ACPI Hardware Error Source Table (HEST)
+
+config ACPI_HEST_ERROR_LOG_BUFFER_SIZE
+	hex
+	default 0x4000
+	depends on ACPI_HEST
+	help
+	  Define the size of the HEST ACPI error log buffer

@@ -13,7 +13,6 @@
 #include <device/pci_ops.h>
 #include <soc/acpi.h>
 #include <soc/chip_common.h>
-#include <soc/hest.h>
 #include <soc/iomap.h>
 #include <soc/numa.h>
 #include <soc/pci_devs.h>
@@ -631,11 +630,6 @@ unsigned long northbridge_write_acpi_tables(const struct device *device, unsigne
 			current += cedt->header.length;
 			acpi_add_table(rsdp, cedt);
 		}
-	}
-
-	if (CONFIG(SOC_ACPI_HEST)) {
-		printk(BIOS_DEBUG, "ACPI:    * HEST at %lx\n", current);
-		current = hest_create(current, rsdp);
 	}
 
 	return current;

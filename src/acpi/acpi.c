@@ -14,6 +14,8 @@
  */
 
 #include <acpi/acpi.h>
+#include <acpi/acpi_apei.h>
+#include <acpi/acpi_gnvs.h>
 #include <acpi/acpi_iort.h>
 #include <acpi/acpi_ivrs.h>
 #include <acpi/acpigen.h>
@@ -1062,20 +1064,32 @@ unsigned long acpi_create_hest_error_source(acpi_hest_t *hest,
 }
 
 /* ACPI 4.0 */
-void acpi_write_hest(acpi_hest_t *hest,
-		     unsigned long (*acpi_fill_hest)(acpi_hest_t *hest))
+static void acpi_create_hest(acpi_header_t *header, void *unused)
 {
-	acpi_header_t *header = &(hest->header);
+	if (!CONFIG(ACPI_HEST))
+		return;
+
+	/* Reserve memory for Enhanced error logging */
+	void *log_mem = cbmem_add(CBMEM_ID_ACPI_HEST, CONFIG_ACPI_HEST_ERROR_LOG_BUFFER_SIZE);
+	if (!log_mem) {
+		printk(BIOS_ERR, "Unable to allocate HEST memory\n");
+		return;
+	}
+	printk(BIOS_DEBUG, "HEST elog_addr: %p, size:%d\n", log_mem,
+		CONFIG_ACPI_HEST_ERROR_LOG_BUFFER_SIZE);
+
+	acpi_hest_t *hest = (acpi_hest_t *)header;
+	uintptr_t current = (uintptr_t)(hest + 1);
 
 	memset(hest, 0, sizeof(acpi_hest_t));
 
 	if (acpi_fill_header(header, "HEST", HEST, sizeof(acpi_hest_t)) != CB_SUCCESS)
 		return;
 
-	acpi_fill_hest(hest);
+	current = acpi_soc_fill_hest(hest, current, log_mem);
 
-	/* Calculate checksums. */
-	header->checksum = acpi_checksum((void *)hest, header->length);
+	/* (Re)calculate length. */
+	header->length = current - (uintptr_t)hest;
 }
 
 /* ACPI 3.0b */
@@ -1456,6 +1470,7 @@ unsigned long write_acpi_tables(const unsigned long start)
 		{ acpi_create_tpm2, NULL, sizeof(acpi_tpm2_t) },
 		{ acpi_create_lpit, NULL, sizeof(acpi_lpit_t) },
 		{ acpi_create_madt, NULL, sizeof(acpi_header_t) },
+		{ acpi_create_hest, NULL, sizeof(acpi_hest_t) },
 		{ acpi_create_bert, NULL, sizeof(acpi_bert_t) },
 		{ acpi_create_spcr, NULL, sizeof(acpi_spcr_t) },
 		{ acpi_create_gtdt, NULL, sizeof(acpi_gtdt_t) },

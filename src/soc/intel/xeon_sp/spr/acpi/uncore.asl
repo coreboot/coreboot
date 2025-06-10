@@ -18,7 +18,7 @@ Scope (\_SB)
 	#include "iiostack.asl"
 	#undef SOCKET
 
-	#if CONFIG(SOC_ACPI_HEST)
+	#if CONFIG(ACPI_HEST)
 		Method (_OSC, 4, NotSerialized)
 		{
 			CreateDWordField (Arg3, 0x00, CDW1)

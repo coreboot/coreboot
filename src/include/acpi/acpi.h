@@ -1879,11 +1879,9 @@ unsigned long acpi_create_dmar_ds_ioapic_from_hw(unsigned long current,
 unsigned long acpi_create_dmar_ds_msi_hpet(unsigned long current,
 						u8 enumeration_id,
 						u8 bus, u8 dev, u8 fn);
-void acpi_write_hest(acpi_hest_t *hest,
-		     unsigned long (*acpi_fill_hest)(acpi_hest_t *hest));
 
-unsigned long acpi_create_hest_error_source(acpi_hest_t *hest,
-	acpi_hest_esd_t *esd, u16 type, void *data, u16 len);
+unsigned long acpi_create_hest_error_source(acpi_hest_t *hest, acpi_hest_esd_t *esd, u16 type,
+					    void *data, u16 len);
 
 unsigned long acpi_create_lpi_desc_ncst(acpi_lpi_desc_ncst_t *lpi_desc, uint16_t uid);
 

@@ -108,8 +108,7 @@ config HPET_MIN_TICKS
 
 config SOC_INTEL_XEON_RAS
 	bool
-	select SOC_ACPI_HEST
-	select SOC_RAS_ELOG
+	select ACPI_HEST
 
 config HAVE_IOAT_DOMAINS
 	bool

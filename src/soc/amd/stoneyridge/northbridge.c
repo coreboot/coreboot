@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <acpi/acpi_apei.h>
 #include <assert.h>
 #include <amdblocks/acpi.h>
 #include <amdblocks/biosram.h>
@@ -102,24 +103,21 @@ static void acpi_fill_root_complex_tom(const struct device *device)
 	acpigen_pop_len();
 }
 
-static unsigned long acpi_fill_hest(acpi_hest_t *hest)
+uintptr_t acpi_soc_fill_hest(acpi_hest_t *hest, uintptr_t current, void *log_mem)
 {
-	void *addr, *current;
-
-	/* Skip the HEST header. */
-	current = (void *)(hest + 1);
+	void *addr;
 
 	addr = agesawrapper_getlateinitptr(PICK_WHEA_MCE);
 	if (addr != NULL)
-		current += acpi_create_hest_error_source(hest, current, 0,
+		current += acpi_create_hest_error_source(hest, (acpi_hest_esd_t *)current, 0,
 				(void *)((u32)addr + 2), *(uint16_t *)addr - 2);
 
 	addr = agesawrapper_getlateinitptr(PICK_WHEA_CMC);
 	if (addr != NULL)
-		current += acpi_create_hest_error_source(hest, current, 1,
+		current += acpi_create_hest_error_source(hest, (acpi_hest_esd_t *)current, 1,
 				(void *)((u32)addr + 2), *(uint16_t *)addr - 2);
 
-	return (unsigned long)current;
+	return current;
 }
 
 unsigned long soc_acpi_write_tables(const struct device *device, unsigned long current,
@@ -129,14 +127,6 @@ unsigned long soc_acpi_write_tables(const struct device *device, unsigned long c
 	acpi_slit_t *slit;
 	acpi_header_t *alib;
 	acpi_header_t *ivrs;
-	acpi_hest_t *hest;
-
-	/* HEST */
-	current = acpi_align_current(current);
-	hest = (acpi_hest_t *)current;
-	acpi_write_hest(hest, acpi_fill_hest);
-	acpi_add_table(rsdp, (void *)current);
-	current += hest->header.length;
 
 	current = acpi_align_current(current);
 	printk(BIOS_DEBUG, "ACPI:    * IVRS at %lx\n", current);

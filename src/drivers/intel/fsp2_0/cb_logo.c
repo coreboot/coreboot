@@ -45,25 +45,43 @@ static void program_igd_lmembar(uint32_t base)
 }
 
 /*
- * Calculates the destination coordinates for the logo based on alignment settings.
+ * Calculates the destination coordinates for the logo based on both horizontal and
+ * vertical alignment settings.
  *
  * horizontal_resolution: The horizontal resolution of the display panel.
  * vertical_resolution: The vertical resolution of the display panel.
  * logo_width: The width of the logo bitmap.
  * logo_height: The height of the logo bitmap.
- * valignment: The vertical alignment setting.
+ * halignment: The horizontal alignment setting. Use FW_SPLASH_HALIGNMENT_NONE
+ *             if only vertical alignment is specified.
+ * valignment: The vertical alignment setting. Use FW_SPLASH_VALIGNMENT_NONE
+ *             if only horizontal alignment is specified.
  *
  * Returning `struct logo_coordinates` that contains the calculated x and y coordinates
  * for rendering the logo.
  */
 static struct logo_coordinates calculate_logo_coordinates(
 	uint32_t horizontal_resolution, uint32_t vertical_resolution,
-	uint32_t logo_width, uint32_t logo_height, enum fw_splash_vertical_alignment valignment)
+	uint32_t logo_width, uint32_t logo_height,
+	enum fw_splash_vertical_alignment valignment,
+	enum fw_splash_horizontal_alignment halignment)
 {
 	struct logo_coordinates coords;
-	/* Always horizontally centered */
-	coords.x = (horizontal_resolution - logo_width) / 2;
 
+	/* Calculate X coordinate */
+	switch (halignment) {
+	case FW_SPLASH_HALIGNMENT_LEFT:
+		coords.x = 0;
+		break;
+	case FW_SPLASH_HALIGNMENT_RIGHT:
+		coords.x = horizontal_resolution - logo_width;
+		break;
+	default: /* FW_SPLASH_HALIGNMENT_CENTER (default) */
+		coords.x = (horizontal_resolution - logo_width) / 2;
+		break;
+	}
+
+	/* Calculate Y coordinate */
 	switch (valignment) {
 	case FW_SPLASH_VALIGNMENT_MIDDLE:
 		coords.y = vertical_resolution / 2;
@@ -173,7 +191,8 @@ void soc_load_logo_by_coreboot(void)
 
 	/* Calculate logo destination coordinates */
 	struct logo_coordinates logo_coords = calculate_logo_coordinates(horizontal_resolution,
-			 vertical_resolution, logo_width, logo_height, config->logo_valignment);
+			 vertical_resolution, logo_width, logo_height, config->logo_valignment,
+			 FW_SPLASH_HALIGNMENT_CENTER);
 
 	/* Copy the logo to the framebuffer */
 	copy_logo_to_framebuffer(framebuffer_bar, bytes_per_scanline, blt_buffer_addr, logo_width,
@@ -199,8 +218,27 @@ void soc_load_logo_by_coreboot(void)
 		fsp_convert_bmp_to_gop_blt(logo_ptr, logo_ptr_size, &blt_buffer_addr, &blt_size,
 				   &logo_height, &logo_width, config->panel_orientation);
 
+		enum fw_splash_horizontal_alignment halignment = FW_SPLASH_HALIGNMENT_CENTER;
+		enum fw_splash_vertical_alignment valignment = FW_SPLASH_VALIGNMENT_CENTER;
+
+		/* Calculate logo destination coordinates */
+		switch (config->panel_orientation) {
+		case LB_FB_ORIENTATION_RIGHT_UP:
+			halignment = FW_SPLASH_HALIGNMENT_LEFT;
+			break;
+		case LB_FB_ORIENTATION_LEFT_UP:
+			halignment = FW_SPLASH_HALIGNMENT_RIGHT;
+			break;
+		case LB_FB_ORIENTATION_BOTTOM_UP:
+			valignment = FW_SPLASH_VALIGNMENT_TOP;
+			break;
+		default: /* LB_FB_ORIENTATION_NORMAL (default) */
+			valignment = FW_SPLASH_VALIGNMENT_BOTTOM;
+			break;
+		}
+
 		logo_coords = calculate_logo_coordinates(horizontal_resolution,
-				 vertical_resolution, logo_width, logo_height, FW_SPLASH_VALIGNMENT_BOTTOM);
+			 vertical_resolution, logo_width, logo_height, valignment, halignment);
 
 		/* Copy the logo to the framebuffer */
 		copy_logo_to_framebuffer(framebuffer_bar, bytes_per_scanline, blt_buffer_addr,

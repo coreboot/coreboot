@@ -83,6 +83,36 @@ enum fw_splash_vertical_alignment {
 	FW_SPLASH_VALIGNMENT_MIDDLE = 3,
 };
 
+enum fw_splash_horizontal_alignment {
+	/*
+	 * The splash image is centered horizontally `(X-axis - logo_width)/2` on the screen.
+	 * The center of the [LOGO] aligns with the horizontal center of the screen.
+	 *
+	 * +-----------------+
+	 * |      [LOGO]     |
+	 * +-----------------+
+	 */
+	FW_SPLASH_HALIGNMENT_CENTER = 0,
+
+	/*
+	 * The splash image is aligned to the left edge of the screen.
+	 *
+	 * +-----------------+
+	 * |[LOGO]           |
+	 * +-----------------+
+	 */
+	FW_SPLASH_HALIGNMENT_LEFT = 1,
+
+	/*
+	 * The splash image is aligned to the right edge of the screen.
+	 *
+	 * +-----------------+
+	 * |           [LOGO]|
+	 * +-----------------+
+	 */
+	FW_SPLASH_HALIGNMENT_RIGHT = 2,
+};
+
 /*
  * This structure will hold data required by common blocks.
  * These are soc specific configurations which will be filled by soc.

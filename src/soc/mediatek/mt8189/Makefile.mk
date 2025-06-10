@@ -17,6 +17,7 @@ bootblock-y += ../common/mtcmos.c mtcmos.c
 bootblock-y += ../common/wdt.c ../common/wdt_req.c wdt.c
 
 romstage-y += ../common/cbmem.c
+romstage-y += clkbuf_ctl.c
 romstage-y += ../common/cpu_id.c ../common/cpu_segment_id.c
 romstage-y += ../common/dram_init.c
 romstage-y += ../common/dramc_param.c
@@ -32,6 +33,7 @@ romstage-y += ../common/pmif.c ../common/pmif_clk.c ../common/pmif_init.c pmif_c
 romstage-y += ../common/pmif_spi.c pmif_spi.c
 romstage-y += ../common/pmif_spmi.c ../common/pmif_spmi_v2.c pmif_spmi.c
 romstage-y += ../common/rtc.c ../common/rtc_osc_init.c ../common/rtc_mt6359p.c
+romstage-y += ../common/srclken_rc.c srclken_rc.c
 
 ramstage-y += ../common/auxadc.c
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += ../common/bl31.c

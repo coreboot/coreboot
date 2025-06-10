@@ -129,15 +129,76 @@ static void copy_logo_to_framebuffer(
 	}
 }
 
+/*
+ * Loads, converts, and renders a BMP logo to the framebuffer.
+ *
+ * Returns 0 on success, -1 on failure.
+ */
+static int render_logo_to_framebuffer(uintptr_t framebuffer_base, uint32_t bytes_per_scanline,
+	uint32_t horizontal_resolution, uint32_t vertical_resolution,
+	struct soc_intel_common_config *config, enum bootsplash_type logo_type)
+{
+	uintptr_t logo_ptr;
+	size_t logo_ptr_size;
+	efi_uintn_t blt_size, blt_buffer_addr;
+	uint32_t logo_height, logo_width;
+	struct logo_coordinates logo_coords;
+
+	logo_ptr = (uintptr_t)bmp_load_logo_by_type(logo_type, &logo_ptr_size);
+
+	if (!logo_ptr || logo_ptr_size < sizeof(efi_bmp_image_header)) {
+		printk(BIOS_ERR, "%s: BMP image (%zu) is less than expected minimum size (%zu).\n",
+				 __func__, logo_ptr_size, sizeof(efi_bmp_image_header));
+		return -1;
+	}
+
+	fsp_convert_bmp_to_gop_blt(logo_ptr, logo_ptr_size, &blt_buffer_addr, &blt_size,
+				   &logo_height, &logo_width, config->panel_orientation);
+
+	enum fw_splash_horizontal_alignment halignment = FW_SPLASH_HALIGNMENT_CENTER;
+	enum fw_splash_vertical_alignment valignment = FW_SPLASH_VALIGNMENT_CENTER;
+	/* Determine logo coordinates based on context (main logo vs. footer) */
+	if (logo_type == BOOTSPLASH_LOW_BATTERY || logo_type == BOOTSPLASH_CENTER) {
+		/* Override logo alignment if the default screen orientation is not normal */
+		if (config->panel_orientation != LB_FB_ORIENTATION_NORMAL)
+			config->logo_valignment = FW_SPLASH_VALIGNMENT_CENTER;
+
+		valignment = config->logo_valignment;
+	} else {
+		/* Calculate logo destination coordinates */
+		switch (config->panel_orientation) {
+		case LB_FB_ORIENTATION_RIGHT_UP:
+			halignment = FW_SPLASH_HALIGNMENT_LEFT;
+			break;
+		case LB_FB_ORIENTATION_LEFT_UP:
+			halignment = FW_SPLASH_HALIGNMENT_RIGHT;
+			break;
+		case LB_FB_ORIENTATION_BOTTOM_UP:
+			valignment = FW_SPLASH_VALIGNMENT_TOP;
+			break;
+		default: /* LB_FB_ORIENTATION_NORMAL (default) */
+			valignment = FW_SPLASH_VALIGNMENT_BOTTOM;
+			break;
+		}
+	}
+
+	logo_coords = calculate_logo_coordinates(horizontal_resolution,
+		 vertical_resolution, logo_width, logo_height, valignment, halignment);
+
+	copy_logo_to_framebuffer(framebuffer_base, bytes_per_scanline, blt_buffer_addr,
+				 logo_width, logo_height, logo_coords.x, logo_coords.y);
+
+	bmp_release_logo();
+
+	return 0;
+}
+
 void soc_load_logo_by_coreboot(void)
 {
 	const struct hob_graphics_info *ginfo;
 	struct soc_intel_common_config *config = chip_get_common_soc_structure();
-	uintptr_t logo_ptr;
-	size_t size, logo_ptr_size;
-	efi_uintn_t blt_size, blt_buffer_addr;
-	uint32_t logo_height, logo_width;
 	int temp_mtrr_index = -1;
+	size_t size;
 
 	/* Find the graphics information HOB */
 	ginfo = fsp_find_extension_hob_by_guid(fsp_graphics_info_guid, &size);
@@ -173,78 +234,33 @@ void soc_load_logo_by_coreboot(void)
 	if (CONFIG(VBOOT_LID_SWITCH) ? !get_lid_switch() : !CONFIG(RUN_FSP_GOP))
 		config->panel_orientation = LB_FB_ORIENTATION_NORMAL;
 
-	logo_ptr = (uintptr_t)bmp_load_logo(&logo_ptr_size);
-
-	if (!logo_ptr || logo_ptr_size < sizeof(efi_bmp_image_header)) {
-		printk(BIOS_ERR, "%s: BMP image (%zu) is less than expected minimum size (%zu).\n",
-				 __func__, logo_ptr_size, sizeof(efi_bmp_image_header));
-		return;
-	}
-
-	/* Convert BMP logo to GOP BLT format */
-	fsp_convert_bmp_to_gop_blt(logo_ptr, logo_ptr_size, &blt_buffer_addr, &blt_size,
-			   &logo_height, &logo_width, config->panel_orientation);
-
-	/* Override logo alignment if the default screen orientation is not normal */
-	if (config->panel_orientation != LB_FB_ORIENTATION_NORMAL)
-		config->logo_valignment = FW_SPLASH_VALIGNMENT_CENTER;
-
-	/* Calculate logo destination coordinates */
-	struct logo_coordinates logo_coords = calculate_logo_coordinates(horizontal_resolution,
-			 vertical_resolution, logo_width, logo_height, config->logo_valignment,
-			 FW_SPLASH_HALIGNMENT_CENTER);
-
-	/* Copy the logo to the framebuffer */
-	copy_logo_to_framebuffer(framebuffer_bar, bytes_per_scanline, blt_buffer_addr, logo_width,
-			 logo_height, logo_coords.x, logo_coords.y);
-
 	/*
 	 * If the device is in low-battery mode and the low-battery splash screen is being
 	 * displayed, prevent further operation and bail out early.
 	 */
-	if (platform_is_low_battery_shutdown_needed())
-		return;
-
-	if (CONFIG(SPLASH_SCREEN_FOOTER)) {
-		bmp_release_logo();
-		logo_ptr = (uintptr_t)bmp_load_logo_by_type(BOOTSPLASH_FOOTER, &logo_ptr_size);
-		if (!logo_ptr || logo_ptr_size < sizeof(efi_bmp_image_header)) {
-			printk(BIOS_ERR, "%s: BMP image (%zu) is less than expected minimum size (%zu).\n",
-				 __func__, logo_ptr_size, sizeof(efi_bmp_image_header));
-			return;
+	if (platform_is_low_battery_shutdown_needed()) {
+		if (render_logo_to_framebuffer(framebuffer_bar, bytes_per_scanline,
+				 horizontal_resolution, vertical_resolution, config,
+				 BOOTSPLASH_LOW_BATTERY) != 0) {
+			printk(BIOS_ERR, "%s: Failed to render low-battery logo.\n", __func__);
 		}
-
-		/* Convert BMP logo to GOP BLT format */
-		fsp_convert_bmp_to_gop_blt(logo_ptr, logo_ptr_size, &blt_buffer_addr, &blt_size,
-				   &logo_height, &logo_width, config->panel_orientation);
-
-		enum fw_splash_horizontal_alignment halignment = FW_SPLASH_HALIGNMENT_CENTER;
-		enum fw_splash_vertical_alignment valignment = FW_SPLASH_VALIGNMENT_CENTER;
-
-		/* Calculate logo destination coordinates */
-		switch (config->panel_orientation) {
-		case LB_FB_ORIENTATION_RIGHT_UP:
-			halignment = FW_SPLASH_HALIGNMENT_LEFT;
-			break;
-		case LB_FB_ORIENTATION_LEFT_UP:
-			halignment = FW_SPLASH_HALIGNMENT_RIGHT;
-			break;
-		case LB_FB_ORIENTATION_BOTTOM_UP:
-			valignment = FW_SPLASH_VALIGNMENT_TOP;
-			break;
-		default: /* LB_FB_ORIENTATION_NORMAL (default) */
-			valignment = FW_SPLASH_VALIGNMENT_BOTTOM;
-			break;
-		}
-
-		logo_coords = calculate_logo_coordinates(horizontal_resolution,
-			 vertical_resolution, logo_width, logo_height, valignment, halignment);
-
-		/* Copy the logo to the framebuffer */
-		copy_logo_to_framebuffer(framebuffer_bar, bytes_per_scanline, blt_buffer_addr,
-				 logo_width, logo_height, logo_coords.x, logo_coords.y);
+		goto cleanup;
 	}
 
+	/* Render the main logo */
+	if (render_logo_to_framebuffer(framebuffer_bar, bytes_per_scanline,
+				 horizontal_resolution, vertical_resolution, config,
+				 BOOTSPLASH_CENTER) != 0) {
+		printk(BIOS_ERR, "%s: Failed to render main splash screen logo.\n", __func__);
+	} else if (CONFIG(SPLASH_SCREEN_FOOTER)) {
+		/* Render the footer logo */
+		if (render_logo_to_framebuffer(framebuffer_bar, bytes_per_scanline,
+				 horizontal_resolution, vertical_resolution, config,
+				 BOOTSPLASH_FOOTER) != 0)
+			printk(BIOS_ERR, "%s: Failed to render footer logo.\n", __func__);
+	}
+
+cleanup:
 	/* Clear temporary Write Combine (WC) MTRR */
 	clear_var_mtrr(temp_mtrr_index);
 }

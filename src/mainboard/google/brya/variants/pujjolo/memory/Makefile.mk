@@ -7,4 +7,4 @@ SPD_SOURCES =
 SPD_SOURCES += spd/lp5/set-0/spd-9.hex      # ID = 0(0b0000)  Parts = K3KL6L60GM-MGCT
 SPD_SOURCES += spd/lp5/set-0/spd-7.hex      # ID = 1(0b0001)  Parts = K3KL8L80CM-MGCT
 SPD_SOURCES += spd/lp5/set-0/spd-11.hex      # ID = 2(0b0010)  Parts = H58G56CK8BX146
-SPD_SOURCES += spd/lp5/set-0/spd-2.hex      # ID = 3(0b0011)  Parts = H9JCNNNCP3MLYR-N6E
+SPD_SOURCES += spd/lp5/set-0/spd-1.hex      # ID = 3(0b0011)  Parts = H9JCNNNBK3MLYR-N6E

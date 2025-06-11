@@ -7,4 +7,4 @@ DRAM Part Name                 ID to assign
 K3KL6L60GM-MGCT                0 (0000)
 K3KL8L80CM-MGCT                1 (0001)
 H58G56CK8BX146                 2 (0010)
-H9JCNNNCP3MLYR-N6E             3 (0011)
+H9JCNNNBK3MLYR-N6E             3 (0011)

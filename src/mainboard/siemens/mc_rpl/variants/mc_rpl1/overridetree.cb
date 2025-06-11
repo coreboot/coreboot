@@ -3,6 +3,14 @@ chip soc/intel/alderlake
 	# seen on J0 and Q0 SKUs
 	register "disable_package_c_state_demotion" = "true"
 
+	register "sata_salp_support" = "0"
+	register "sata_speed" = "SATA_GEN2"
+
+	register "sata_ports_enable" = "{
+		[0] = 1,
+		[1] = 1,
+	}"
+
 	register "usb2_ports[0]" = "USB2_PORT_MID(OC_SKIP)"	# Port1
 	register "usb2_ports[1]" = "USB2_PORT_MID(OC_SKIP)"	# Port2
 	register "usb2_ports[2]" = "USB2_PORT_MID(OC_SKIP)"	# Onboard USB
@@ -128,5 +136,6 @@ chip soc/intel/alderlake
 				device pnp 0c31.0 on end
 			end
 		end
+		device ref sata on end
 	end
 end

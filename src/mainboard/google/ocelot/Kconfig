@@ -67,6 +67,9 @@ config BOARD_GOOGLE_MODEL_OCELOT
 config BOARD_GOOGLE_OCELOT
 	select BOARD_GOOGLE_MODEL_OCELOT
 
+config BOARD_GOOGLE_OCELOTITE
+	select BOARD_GOOGLE_MODEL_OCELOT
+
 if BOARD_GOOGLE_OCELOT_COMMON
 
 config BASEBOARD_DIR
@@ -114,6 +117,7 @@ config MAINBOARD_FAMILY
 
 config MAINBOARD_PART_NUMBER
 	default "Ocelot" if BOARD_GOOGLE_OCELOT
+	default "Ocelotite" if BOARD_GOOGLE_OCELOTITE
 
 config MEMORY_SOLDERDOWN
 	def_bool n
@@ -133,7 +137,9 @@ config USE_PM_ACPI_TIMER
 
 config VARIANT_DIR
 	string
-	default "ocelot" if BOARD_GOOGLE_OCELOT
+	default "ocelot" if \
+		BOARD_GOOGLE_OCELOT || \
+		BOARD_GOOGLE_OCELOTITE
 
 config OVERRIDE_DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"

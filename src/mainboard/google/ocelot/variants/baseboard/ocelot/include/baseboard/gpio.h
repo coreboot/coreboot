@@ -13,7 +13,7 @@
  * GPIO_PCH_WP - WP signal to PCH
  */
 //TODO for Nuvo: #define EC_SYNC_IRQ	GPP_E07_IRQ
-#if CONFIG(BOARD_GOOGLE_OCELOT)
+#if CONFIG(BOARD_GOOGLE_OCELOT) || CONFIG(BOARD_GOOGLE_OCELOTITE)
  #define EC_SYNC_IRQ	0 /* Not Connected */
 #endif
 #define GPIO_PCH_WP	GPP_D02

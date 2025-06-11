@@ -559,6 +559,7 @@ void mt_pll_init(void)
 	write32(&mtk_apmixed->apll1_tuner_con0, 0x6F28BD4D);
 	write32(&mtk_apmixed->apll2_tuner_con0, 0x78FD5266);
 	setbits32(&mtk_apmixed->emipll_con[0], BIT(8));
+	setbits32(&mtk_apmixed->mfgpll_con[0], BIT(8));
 
 	/* PLL all enable */
 	write32(&mtk_apmixed->pllen_all_set, 0x0007FFFC);
@@ -622,7 +623,7 @@ void mt_pll_post_init(void)
 
 	/* TOPCKGEN CG Clear */
 	write32(&mtk_topckgen->clk_misc_cfg_3.clr, 0x00010000);
-	write32(&mtk_topckgen->clk_misc_cfg_3.set, 0xDF3CFCFF);
+	write32(&mtk_topckgen->clk_misc_cfg_3.set, 0xDF3DFCFF);
 	/* INFRACFG_AO CG Clear */
 	write32(&mtk_infracfg_ao->infracfg_ao_module_cg_0_clr, 0x10000000);
 	write32(&mtk_infracfg_ao->infracfg_ao_module_cg_1_clr, 0x21000000);

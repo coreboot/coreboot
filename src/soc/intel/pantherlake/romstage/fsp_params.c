@@ -346,6 +346,12 @@ static void fill_fspm_vr_config_params(FSP_M_CONFIG *m_cfg,
 		m_cfg->TdcEnable[i] = 1;
 		m_cfg->TdcCurrentLimit[i] = config->thermal_design_current[map->sku][i];
 	}
+
+	for (size_t i = 0; i < ARRAY_SIZE(config->icc_max[0]); i++) {
+		if (!config->icc_max[map->sku][i])
+			continue;
+		m_cfg->IccMax[i] = config->icc_max[map->sku][i];
+	}
 }
 
 #if CONFIG(PLATFORM_HAS_EARLY_LOW_BATTERY_INDICATOR)

@@ -190,6 +190,7 @@ enum vr_domain {
 	VR_DOMAIN_IA,
 	VR_DOMAIN_GT,
 	VR_DOMAIN_SA,
+	VR_DOMAIN_ATOM,
 	NUM_VR_DOMAINS,
 };
 
@@ -415,6 +416,17 @@ struct soc_intel_pantherlake_config {
 	 * The TDC unit is defined 1/8A increments.
 	 */
 	uint16_t thermal_design_current[MAX_PTL_SKUS][NUM_VR_DOMAINS];
+
+	/*
+	 * Maximum Integrated Current Capability (ICC) settings for various SKUs.
+	 *
+	 * ICC values represent the maximum allowable current for a given SKU
+	 * and VR domain configuration.
+	 *
+	 * ICC unit is defined in 1/4A increments. For example, a value of 400
+	 * corresponds to 100A.
+	 */
+	uint16_t icc_max[MAX_PTL_SKUS][NUM_VR_DOMAINS];
 
 	/*
 	 * SerialIO device mode selection:

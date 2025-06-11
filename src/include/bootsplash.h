@@ -5,6 +5,16 @@
 
 #include <types.h>
 
+enum bootsplash_type {
+	/* Indicates a low battery bootsplash logo. */
+	BOOTSPLASH_LOW_BATTERY,
+	/* Indicates a Main OEM defined bootsplash logo for center of the splash screen. */
+	BOOTSPLASH_CENTER,
+
+	/* It's used to determine the total number of bootsplash types. */
+	BOOTSPLASH_MAX_NUM,
+};
+
 /**
  * Sets up the framebuffer with the bootsplash.jpg from cbfs.
  * Returns 0 on success

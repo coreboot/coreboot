@@ -7,3 +7,6 @@ config BOARD_GOOGLE_OCELOT
 
 config BOARD_GOOGLE_OCELOTITE
 	bool "-> Ocelotite"
+
+config BOARD_GOOGLE_OCELOTMCHP
+	bool "-> Ocelotmchp"

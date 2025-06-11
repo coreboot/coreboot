@@ -8,6 +8,10 @@ fw_config
 		option WIFI_SAR_TABLE_AX211	0
 		option WIFI_SAR_TABLE_AX203	1
 	end
+	field SD_CARD 22
+		option SD_ABSENT	0
+		option SD_PRESENT	1
+	end
 end
 chip soc/intel/alderlake
 
@@ -474,6 +478,7 @@ chip soc/intel/alderlake
 				register "srcclk_pin" = "3"
 				device generic 0 on end
 			end
+			probe SD_CARD SD_PRESENT
 		end	#PCIE7 SD card
 		device ref pch_espi on
 			chip ec/google/chromeec

@@ -130,8 +130,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_GPO(GPP_D6, 1, DEEP),
 	/* D7  : SRCCLKREQ2# ==> WLAN_CLKREQ_ODL */
 	PAD_CFG_NF(GPP_D7, NONE, DEEP, NF1),
-	/* D8  : SRCCLKREQ3# ==> NC */
-	PAD_NC_LOCK(GPP_D8, NONE, LOCK_CONFIG),
+	/* D8  : SRCCLKREQ3# ==> SD_CLKREQ_ODL */
+	PAD_CFG_NF(GPP_D8, NONE, DEEP, NF1),
 	/* D9  : NC */
 	PAD_NC_LOCK(GPP_D9, NONE, LOCK_CONFIG),
 	/* D10 : ISH_SPI_CLK ==> GPP_D10_STRAP */

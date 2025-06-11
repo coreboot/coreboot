@@ -99,7 +99,6 @@ config SOC_INTEL_METEORLAKE
 	select SOC_INTEL_MEM_MAPPED_PM_CONFIGURATION
 	select SSE2
 	select SUPPORT_CPU_UCODE_IN_CBFS
-	select TME_KEY_REGENERATION_ON_WARM_BOOT if INTEL_TME
 	select TSC_MONOTONIC_TIMER
 	select UDELAY_TSC
 	select UDK_202302_BINDING
@@ -469,5 +468,8 @@ config SKIP_SEND_CONNECT_TOPOLOGY_CMD
 	  connection manager, and sending it will cause a 5-10s boot delay.
 	  Mainboards which use firmware connection manager may also wish to select this
 	  as needed.
+
+config TME_KEY_REGENERATION_ON_WARM_BOOT
+	default y if INTEL_TME
 
 endif

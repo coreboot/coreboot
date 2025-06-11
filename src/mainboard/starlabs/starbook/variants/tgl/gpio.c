@@ -94,18 +94,18 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C1, NONE, DEEP, NF1),				/* Data */
 
 	/* Config Straps 									[ Low      / High     ] */
-	PAD_CFG_GPO(GPP_B14, 0, RSMRST),				/* Top Swap		[ Disabled / Enabled  ] */
-	PAD_CFG_GPO(GPP_B18, 0, RSMRST),				/* Reboot Support	[ Enabled  / Disabled ] */
-	PAD_CFG_GPO(GPP_C2, 1, RSMRST),					/* TLS Confidentiality	[ Disabled / Enabled  ] */
-	PAD_CFG_GPO(GPP_B22, 0, RSMRST),				/* eSPI			[ Enabled  / Disabled ] */
-	PAD_CFG_GPO(GPP_E6, 0, RSMRST),					/* JTAG ODT		[ Disabled / Enabled  ] */
-	PAD_CFG_GPO(GPP_C5, 0, RSMRST),					/* BFX Strap 2 Bit 1	[ Disabled / Enabled  ] */
-	PAD_CFG_GPO(GPP_H0, 0, RSMRST),					/* BFX Strap 2 Bit 2	[ Disabled / Enabled  ] */
-	PAD_CFG_GPO(GPP_H1, 0, RSMRST),					/* BFX Strap 2 Bit 3	[ Disabled / Enabled  ] */
-	PAD_CFG_GPO(GPP_H2, 0, RSMRST),					/* BFX Strap 2 Bit 4	[ Disabled / Enabled  ] */
-	PAD_CFG_GPO(GPP_E21, 0, RSMRST),				/* TBT LSX #1		[ 1,8V     / 3.3V     ] */
-	PAD_CFG_GPO(GPP_F7, 0, RSMRST),					/* MCRO LDO		[ Disabled / Bypass   ] */
-	PAD_CFG_GPO(GPD7, 0, RSMRST),					/* RTC Clock Delay	[ Disabled / 95ms     ] */
+	PAD_CFG_GPO(GPP_B14, 0, PLTRST),				/* Top Swap		[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_B18, 0, PLTRST),				/* Reboot Support	[ Enabled  / Disabled ] */
+	PAD_CFG_GPO(GPP_C2, 1, PLTRST),					/* TLS Confidentiality	[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_B22, 0, PLTRST),				/* eSPI			[ Enabled  / Disabled ] */
+	PAD_CFG_GPO(GPP_E6, 0, PLTRST),					/* JTAG ODT		[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_C5, 0, PLTRST),					/* BFX Strap 2 Bit 1	[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_H0, 0, PLTRST),					/* BFX Strap 2 Bit 2	[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_H1, 0, PLTRST),					/* BFX Strap 2 Bit 3	[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_H2, 0, PLTRST),					/* BFX Strap 2 Bit 4	[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_E21, 0, PLTRST),				/* TBT LSX #1		[ 1,8V     / 3.3V     ] */
+	PAD_CFG_GPO(GPP_F7, 0, PLTRST),					/* MCRO LDO		[ Disabled / Bypass   ] */
+	PAD_CFG_GPO(GPD7, 0, PLTRST),					/* RTC Clock Delay	[ Disabled / 95ms     ] */
 	PAD_CFG_GPO(GPP_B23, 0, DEEP),					/* CPUNSSC		[ 19.2MHz  / 38.4MHz  ] */
 	PAD_CFG_GPO(GPP_F10, 0, DEEP),					/* XTAL Mode		[ Attached / Single   ] */
 

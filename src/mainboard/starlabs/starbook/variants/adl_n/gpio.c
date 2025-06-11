@@ -80,19 +80,19 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_E8, 1, DEEP),					/* DRAM Sleep */
 
 	/* Config Straps 									[ Low      / High     ] */
-	PAD_CFG_GPO(GPP_B14, 0, RSMRST),				/* Top Swap		[ Disabled / Enabled  ] */
-	PAD_CFG_GPO(GPP_B18, 0, RSMRST),				/* Reboot Support	[ Enabled  / Disabled ] */
-	PAD_CFG_GPO(GPP_C2, 1, RSMRST),					/* TLS Confidentiality	[ Disabled / Enabled  ] */
-	PAD_CFG_GPO(GPP_C5, 0, RSMRST),					/* eSPI			[ Enabled  / Disabled ] */
-	PAD_CFG_GPO(GPP_E6, 0, RSMRST),					/* JTAG ODT		[ Disabled / Enabled  ] */
-	PAD_CFG_GPO(GPP_H1, 0, RSMRST),					/* BFX Strap 2 Bit 3	[ Disabled / Enabled  ] */
-	PAD_CFG_GPO(GPP_F2, 1, RSMRST),					/* M.2 CNVi		[ Enabled  / Disabled ] */
-	PAD_CFG_GPO(GPP_E19, 0, RSMRST),				/* TBT LSX #0		[ 1.8V     / 3.3V     ] */
-	PAD_CFG_GPO(GPP_E21, 0, RSMRST),				/* TBT LSX #1           [ 1.8V     / 3.3V     ] */
-	PAD_CFG_GPO(GPP_D10, 0, RSMRST),				/* TBT LSX #2		[ 1.8V     / 3.3V     ] */
-	PAD_CFG_GPO(GPP_D12, 0, RSMRST),				/* TBT LSX #3		[ 1.8V     / 3.3V     ] */
-	PAD_CFG_GPO(GPP_F7, 0, RSMRST),					/* MCRO LDO		[ Disabled / Bypass   ] */
-	PAD_CFG_GPO(GPD7, 0, RSMRST),					/* RTC Clock Delay	[ Disabled / 95ms     ] */
+	PAD_CFG_GPO(GPP_B14, 0, PLTRST),				/* Top Swap		[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_B18, 0, PLTRST),				/* Reboot Support	[ Enabled  / Disabled ] */
+	PAD_CFG_GPO(GPP_C2, 1, PLTRST),					/* TLS Confidentiality	[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_C5, 0, PLTRST),					/* eSPI			[ Enabled  / Disabled ] */
+	PAD_CFG_GPO(GPP_E6, 0, PLTRST),					/* JTAG ODT		[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_H1, 0, PLTRST),					/* BFX Strap 2 Bit 3	[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_F2, 1, PLTRST),					/* M.2 CNVi		[ Enabled  / Disabled ] */
+	PAD_CFG_GPO(GPP_E19, 0, PLTRST),				/* TBT LSX #0		[ 1.8V     / 3.3V     ] */
+	PAD_CFG_GPO(GPP_E21, 0, PLTRST),				/* TBT LSX #1           [ 1.8V     / 3.3V     ] */
+	PAD_CFG_GPO(GPP_D10, 0, PLTRST),				/* TBT LSX #2		[ 1.8V     / 3.3V     ] */
+	PAD_CFG_GPO(GPP_D12, 0, PLTRST),				/* TBT LSX #3		[ 1.8V     / 3.3V     ] */
+	PAD_CFG_GPO(GPP_F7, 0, PLTRST),					/* MCRO LDO		[ Disabled / Bypass   ] */
+	PAD_CFG_GPO(GPD7, 0, PLTRST),					/* RTC Clock Delay	[ Disabled / 95ms     ] */
 
 	PAD_NC(GPD2, NONE),
 	PAD_NC(GPD6, NONE),

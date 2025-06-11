@@ -79,15 +79,15 @@ const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC_LOW(GPP_F13, NONE, PLTRST),			/* Interrupt */
 
 	/* Config Straps									[ Low      / High     ] */
-	PAD_CFG_GPO(GPP_B14, 0, RSMRST),				/* Top Swap		[ Disabled / Enabled  ] */
-	PAD_CFG_GPO(GPP_B04, 0, RSMRST),				/* Reboot Support	[ Enabled  / Disabled ] */
-	PAD_CFG_GPO(GPP_C02, 1, RSMRST),				/* TLS Confidentiality	[ Disabled / Enabled  ] */
-	PAD_CFG_GPO(GPP_C05, 0, RSMRST),				/* eSPI			[ Enabled  / Disabled ] */
-	PAD_CFG_GPO(GPP_E06, 0, RSMRST),				/* JTAG ODT		[ Disabled / Enabled  ] */
-	PAD_CFG_GPO(GPP_F02, 0, RSMRST),				/* M.2 CNVi		[ Enabled  / Disabled ] */
-	PAD_CFG_GPO(GPP_H01, 0, RSMRST),				/* Flash Recovery	[ Disabled / Enabled  ] */
-	PAD_CFG_GPO(GPP_F20, 0, RSMRST),				/* SVID			[ Present  / Disabled ] */
-	PAD_CFG_GPO(GPP_F21, 0, RSMRST),				/* CCD			[ BSSB-LS  / BALTIC   ] */
+	PAD_CFG_GPO(GPP_B14, 0, PLTRST),				/* Top Swap		[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_B04, 0, PLTRST),				/* Reboot Support	[ Enabled  / Disabled ] */
+	PAD_CFG_GPO(GPP_C02, 1, PLTRST),				/* TLS Confidentiality	[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_C05, 0, PLTRST),				/* eSPI			[ Enabled  / Disabled ] */
+	PAD_CFG_GPO(GPP_E06, 0, PLTRST),				/* JTAG ODT		[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_F02, 0, PLTRST),				/* M.2 CNVi		[ Enabled  / Disabled ] */
+	PAD_CFG_GPO(GPP_H01, 0, PLTRST),				/* Flash Recovery	[ Disabled / Enabled  ] */
+	PAD_CFG_GPO(GPP_F20, 0, PLTRST),				/* SVID			[ Present  / Disabled ] */
+	PAD_CFG_GPO(GPP_F21, 0, PLTRST),				/* CCD			[ BSSB-LS  / BALTIC   ] */
 
 	PAD_NC(GPP_V02, NONE),
 	PAD_NC(GPP_V06, NONE),

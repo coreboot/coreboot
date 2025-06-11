@@ -35,6 +35,9 @@ romstage-y += ../common/rtc.c ../common/rtc_osc_init.c ../common/rtc_mt6359p.c
 ramstage-y += ../common/auxadc.c
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += ../common/bl31.c
 ramstage-y += ../common/dpm.c ../common/dpm_v2.c
+ramstage-y += ../common/dp/dp_intf_v2.c
+ramstage-y += ../common/dp/dptx_common.c ../common/dp/dptx_v2.c dptx.c
+ramstage-y += ../common/dp/dptx_hal_common.c ../common/dp/dptx_hal_v2.c  dptx_hal.c
 ramstage-y += ../common/dramc_info.c
 ramstage-y += ../common/emi.c
 ramstage-y += ../common/mcu.c mcupm.c
@@ -58,6 +61,7 @@ BL31_MAKEARGS += PLAT=mt8189
 
 CPPFLAGS_common += -Isrc/soc/mediatek/mt8189/include
 CPPFLAGS_common += -Isrc/soc/mediatek/common/include
+CPPFLAGS_common += -Isrc/soc/mediatek/common/dp/include
 
 MT8189_BLOB_DIR := 3rdparty/blobs/soc/mediatek/mt8189
 

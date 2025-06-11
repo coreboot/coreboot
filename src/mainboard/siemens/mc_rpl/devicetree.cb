@@ -11,7 +11,7 @@ chip soc/intel/alderlake
 	# FSP configuration
 
 	# Sagv Configuration
-	register "sagv" = "SaGv_Enabled"
+	register "sagv" = "SaGv_Disabled"
 
 	register "s0ix_enable" = "true"
 	register "dptf_enable" = "true"

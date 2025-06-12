@@ -42,16 +42,6 @@
 
 Scope (\_SB)
 {
-	/* Device base address */
-	Method (BASE, 1)
-	{
-		Local0 = Arg0 & 0x7             /* Function number */
-		Local1 = (Arg0 >> 16) & 0x1F    /* Device number */
-		Local2 = (Local0 << 12) + (Local1 << 15)
-		Local3 = \_SB.PCI0.GPCB() + Local2
-		Return (Local3)
-	}
-
 	/*
 	 * Define PCH ACPIBASE IO as an ACPI operating region. The base address can be
 	 * found in Device 31, Function 2, Offset 40h.

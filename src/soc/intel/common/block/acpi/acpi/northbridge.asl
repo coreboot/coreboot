@@ -277,6 +277,16 @@ Method (GDMB, 0, Serialized)
 	Return (Local0)
 }
 
+/* Device base address */
+Method (BASE, 1)
+{
+	Local0 = Arg0 & 0x7             /* Function number */
+	Local1 = (Arg0 >> 16) & 0x1F    /* Device number */
+	Local2 = (Local0 << 12) + (Local1 << 15)
+	Local3 = \_SB.PCI0.GPCB() + Local2
+	Return (Local3)
+}
+
 /* PCI Device Resource Consumption */
 Device (PDRC)
 {

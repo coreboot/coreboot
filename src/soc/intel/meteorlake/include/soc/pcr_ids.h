@@ -16,6 +16,7 @@
 #define PID_PSF8	0x08
 #define PID_PSF7	0x07
 #define PID_PSF6	0x06
+#define PID_CNVI	0x29
 #define PID_PSF5	0x8F
 #define PID_PSF4	0xBD
 #define PID_PSF3	0xBC

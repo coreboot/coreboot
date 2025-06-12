@@ -14,6 +14,7 @@
 #define PID_GPIOCOM4	0x6a
 #define PID_GPIOCOM5	0x69
 
+#define PID_CNVI	0x73
 #define PID_DMI		0x88
 #define PID_PSTH	0x89
 #define PID_CSME0	0x90

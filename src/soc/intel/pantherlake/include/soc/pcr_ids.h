@@ -8,6 +8,7 @@
 #define PID_XHCI	0x09
 #define PID_DMI		0x2F
 #define PID_CSME0	0x40
+#define PID_CNVI	0x51
 #define PID_GPIOCOM0	0x59
 #define PID_GPIOCOM1	0x5A
 #define PID_GPIOCOM3	0x5B

@@ -7,6 +7,8 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <intelblocks/cnvi.h>
+#include <soc/cnvi.h>
+#include <soc/pcr_ids.h>
 
 static const char *cnvi_wifi_acpi_name(const struct device *dev)
 {
@@ -256,7 +258,7 @@ static void cnvw_fill_ssdt(const struct device *dev)
 				{
 					acpigen_write_store();
 					acpigen_emit_namestring("\\_SB.PCI0.PCRR");
-					acpigen_write_integer(CNVI_SIDEBAND_ID);
+					acpigen_write_integer(PID_CNVI);
 					acpigen_write_integer(CNVI_ABORT_PLDR);
 					acpigen_emit_byte(LOCAL0_OP);
 
@@ -284,7 +286,7 @@ static void cnvw_fill_ssdt(const struct device *dev)
 						acpigen_pop_len();
 
 						acpigen_emit_namestring("\\_SB.PCI0.PCRO");
-						acpigen_write_integer(CNVI_SIDEBAND_ID);
+						acpigen_write_integer(PID_CNVI);
 						acpigen_write_integer(CNVI_ABORT_PLDR);
 						acpigen_write_integer(CNVI_ABORT_REQUEST | CNVI_ABORT_ENABLE);
 
@@ -292,7 +294,7 @@ static void cnvw_fill_ssdt(const struct device *dev)
 
 						acpigen_write_store();
 						acpigen_emit_namestring("\\_SB.PCI0.PCRR");
-						acpigen_write_integer(CNVI_SIDEBAND_ID);
+						acpigen_write_integer(PID_CNVI);
 						acpigen_write_integer(CNVI_ABORT_PLDR);
 						acpigen_emit_byte(LOCAL0_OP);
 

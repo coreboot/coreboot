@@ -13,22 +13,8 @@
 #define CNVI_PLDR_NOT_COMPLETE	0x03
 #define CNVI_PLDR_TIMEOUT	0x04
 
-/* CNVi PLDR Control */
-#if CONFIG(SOC_INTEL_ALDERLAKE_PCH_S)
-#define CNVI_ABORT_PLDR		0x44
-#else
-#define CNVI_ABORT_PLDR		0x80
-#endif
-
 #define CNVI_ABORT_ENABLE	BIT(0)
 #define CNVI_ABORT_REQUEST	BIT(1)
 #define CNVI_READY		BIT(2)
-
-/* CNVi Sideband Port ID */
-#if CONFIG(SOC_INTEL_METEORLAKE)
-#define CNVI_SIDEBAND_ID	0x29
-#else
-#define CNVI_SIDEBAND_ID	0x73
-#endif
 
 #endif	// _SOC_INTEL_COMMON_CNVI_H_

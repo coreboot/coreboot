@@ -21,7 +21,7 @@ static void cnvw_fill_ssdt(const struct device *dev)
 
 	acpigen_write_scope(scope);
 /*
- *	OperationRegion(CWAR, SystemMemory, Add(\_SB.PCI0.GPCB(), 0xa3000), 0x100)
+ *	OperationRegion(CWAR, SystemMemory, \_SB_.PCI0.BASE(_ADR), 0x100)
  *	Field(CWAR, WordAcc, NoLock, Preserve) {
  *		VDID, 32,	// 0x00, VID DID
  *		Offset(CNVI_DEV_CAP),
@@ -36,10 +36,10 @@ static void cnvw_fill_ssdt(const struct device *dev)
  */
 
 	/* RegionOffset stored in Local0 */
-	/* Local0 = \_SB_.PCI0.GPCB() + 0xa3000 */
-	acpigen_emit_byte(ADD_OP);
-	acpigen_write_integer(0xa3000);
-	acpigen_emit_namestring("\\_SB_.PCI0.GPCB()");
+	/* Local0 = \_SB_.PCI0.BASE(_ADR) */
+	acpigen_write_store();
+	acpigen_emit_namestring("\\_SB_.PCI0.BASE");
+	acpigen_emit_namestring("_ADR");
 	acpigen_emit_byte(LOCAL0_OP);
 
 	/* OperationRegion */

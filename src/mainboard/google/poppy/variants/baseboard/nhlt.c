@@ -11,10 +11,6 @@ void __weak variant_nhlt_init(struct nhlt *nhlt)
 	if (nhlt_soc_add_dmic_array(nhlt, 2))
 		printk(BIOS_ERR, "Couldn't add 2CH DMIC array.\n");
 
-	/* 4 Channel DMIC array. */
-	if (nhlt_soc_add_dmic_array(nhlt, 4))
-		printk(BIOS_ERR, "Couldn't add 4CH DMIC arrays.\n");
-
 	/* Maxim MAX98927 Smart Amps for left and right channel */
 	/* Render time_slot is 0 and feedback time_slot is 2 */
 	if (nhlt_soc_add_max98927(nhlt, AUDIO_LINK_SSP0, 0, 2))

@@ -7,9 +7,9 @@
 
 void variant_nhlt_init(struct nhlt *nhlt)
 {
-	/* 4 Channel DMIC array. */
-	if (nhlt_soc_add_dmic_array(nhlt, 4))
-		printk(BIOS_ERR, "Couldn't add 4CH DMIC arrays.\n");
+	/* 2 Channel DMIC array. */
+	if (nhlt_soc_add_dmic_array(nhlt, 2))
+		printk(BIOS_ERR, "Couldn't add 2CH DMIC arrays.\n");
 
 	/* Dialog DA7219 Headset codec. */
 	if (nhlt_soc_add_da7219(nhlt, AUDIO_LINK_SSP1))

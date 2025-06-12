@@ -308,7 +308,7 @@ config SOC_INTEL_USB3_DEV_MAX
 
 config CONSOLE_UART_BASE_ADDRESS
 	hex
-	default 0xfe02c000
+	default 0xfe036000
 	depends on INTEL_LPSS_UART_FOR_CONSOLE
 
 # Clock divider parameters for 115200 baud rate

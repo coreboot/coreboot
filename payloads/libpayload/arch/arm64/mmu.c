@@ -606,16 +606,23 @@ static void mmu_extract_ranges(struct memrange *cb_ranges,
 
 	/* Extract memory ranges to be mapped */
 	for (; i < ncb; i++) {
+		uint64_t base = cb_ranges[i].base;
+		uint64_t size = cb_ranges[i].size;
+
 		switch (cb_ranges[i].type) {
-		case CB_MEM_RAM:
 		case CB_MEM_TABLE:
-			if (prev_range && (prev_range->base + prev_range->size
-					   == cb_ranges[i].base)) {
-				prev_range->size += cb_ranges[i].size;
+			/* Mark this memrange as used memory */
+			if (mmu_add_memrange(&usedmem_ranges, base, size,
+					     TYPE_NORMAL_MEM) == NULL)
+				mmu_error();
+			__fallthrough;
+		case CB_MEM_RAM:
+			if (prev_range &&
+			    prev_range->base + prev_range->size == base) {
+				prev_range->size += size;
 			} else {
 				prev_range = mmu_add_memrange(mmu_ranges,
-							      cb_ranges[i].base,
-							      cb_ranges[i].size,
+							      base, size,
 							      TYPE_NORMAL_MEM);
 				if (prev_range == NULL)
 					mmu_error();

@@ -229,13 +229,13 @@ Device (GPI0)
 			Package (0x02)
 			{
 				"intc-gpio-group-0-subproperties",
-				GPPV
+				"GPPV"
 			},
 
 			Package (0x02)
 			{
 				"intc-gpio-group-1-subproperties",
-				GPPC
+				"GPPC"
 			}
 		}
 	})
@@ -371,13 +371,13 @@ Device (GPI1)
 			Package (0x02)
 			{
 				"intc-gpio-group-0-subproperties",
-				GPPF
+				"GPPF"
 			},
 
 			Package (0x02)
 			{
 				"intc-gpio-group-1-subproperties",
-				GPPE
+				"GPPE"
 			},
 
 		}
@@ -512,19 +512,19 @@ Device (GPI3)
 			Package (0x02)
 			{
 				"intc-gpio-group-0-subproperties",
-				GPPH
+				"GPPH"
 			},
 
 			Package (0x02)
 			{
 				"intc-gpio-group-1-subproperties",
-				GPPA
+				"GPPA"
 			},
 
 			Package (0x02)
 			{
 				"intc-gpio-group-2-subproperties",
-				VGP3
+				"VGP3"
 			}
 		}
 #else
@@ -533,25 +533,25 @@ Device (GPI3)
 			Package (0x02)
 			{
 				"intc-gpio-group-0-subproperties",
-				RSVD
+				"RSVD"
 			},
 
 			Package (0x02)
 			{
 				"intc-gpio-group-1-subproperties",
-				GPPH
+				"GPPH"
 			},
 
 			Package (0x02)
 			{
 				"intc-gpio-group-2-subproperties",
-				GPPA
+				"GPPA"
 			},
 
 			Package (0x02)
 			{
 				"intc-gpio-group-3-subproperties",
-				VGP3
+				"VGP3"
 			}
 		}
 #endif
@@ -741,13 +741,13 @@ Device (GPI4)
 			Package (0x02)
 			{
 				"intc-gpio-group-0-subproperties",
-				GPPS
+				"GPPS"
 			},
 
 			Package (0x02)
 			{
 				"intc-gpio-group-1-subproperties",
-				RSVD
+				"RSVD"
 			}
 		}
 #else
@@ -756,7 +756,7 @@ Device (GPI4)
 			Package (0x02)
 			{
 				"intc-gpio-group-0-subproperties",
-				GPPS
+				"GPPS"
 			}
 		}
 #endif
@@ -893,19 +893,19 @@ Device (GPI5)
 			Package (0x02)
 			{
 				"intc-gpio-group-0-subproperties",
-				GPPB
+				"GPPB"
 			},
 
 			Package (0x02)
 			{
 				"intc-gpio-group-1-subproperties",
-				GPPD
+				"GPPD"
 			},
 
 			Package (0x02)
 			{
 				"intc-gpio-group-2-subproperties",
-				VGP0
+				"VGP0"
 			}
 		}
 	})

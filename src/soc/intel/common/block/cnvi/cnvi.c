@@ -310,7 +310,7 @@ static void cnvw_fill_ssdt(const struct device *dev)
 
 						acpigen_write_if_lequal_op_int(LOCAL1_OP, 0);
 						{
-							acpigen_write_if_lequal_op_int(LOCAL3_OP, 1);
+							acpigen_write_if_lequal_op_int(LOCAL3_OP, CNVI_READY);
 							{
 								acpigen_write_store_int_to_namestr(CNVI_PLDR_COMPLETE, "PRRS");
 

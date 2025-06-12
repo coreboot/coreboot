@@ -37,7 +37,10 @@
 - Panther (ASUS Chromebox CN60)
 - Tricky (Dell Chromebox 3010)
 - Zako (HP Chromebox G1)
+- Bluey
+- Quenbi
 - Brox
+- Brox RTK EC
 - Brox EC ISH
 - Brox TI PDC
 - Greenbayupoc
@@ -115,9 +118,12 @@
 - Sundance
 - Pujjoga
 - Pujjogatwin
+- Pujjolo
 - Orisa
 - Telith
 - Meliks
+- Epic
+- Pujjocento
 - Butterfly (HP Pavilion Chromebook 14)
 - Cherry
 - Dojo
@@ -156,6 +162,7 @@
 - Fatcatnuvo
 - Felino
 - Francka
+- Kinmen
 - Fizz
 - Karma
 - Endeavour
@@ -289,7 +296,10 @@
 - Markarth (Acer Chromebook Plus 514)
 - Skyrim
 - Winterhold (Dell Latitude 3445 Chromebook)
+- Anakin
+- Obiwan
 - Skywalker
+- Yoda
 - Falco (HP Chromebook 14)
 - Leon (Toshiba Chromebook)
 - Peppy (Acer C720/C720P Chromebook)
@@ -383,6 +393,7 @@
 - Meteorlake-P RVP with Chrome EC for non-Prod Silicon
 - Meteorlake-P RVP with Microchip EC
 - Ptlrvp
+- Google Chrome EC
 - shadowmountain
 - Strago
 - Tigerlake UP3 RVP
@@ -428,8 +439,10 @@
 - PRO Z790-P (WIFI)
 
 ## NovaCustom
-- V540TU (14\")
-- V560TU (16\")
+- V540TNx (14\", discrete graphics)
+- V560TNx (16\", discrete graphics)
+- V540TU (14\", integrated graphics)
+- V560TU (16\", integrated graphics)
 
 ## OpenCellular
 - Elgon (GBCv2)
@@ -454,6 +467,7 @@
 
 ## Star Labs
 - Star Labs Byte Mk II (N200)
+- Star Labs Byte Mk III (N355)
 - Star Labs Lite Mk III (N5000)
 - Star Labs Lite Mk IV (N5030)
 - Star Labs LabTop Mk III (i7-8550u)

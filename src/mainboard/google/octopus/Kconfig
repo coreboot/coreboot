@@ -152,7 +152,6 @@ config UART_FOR_CONSOLE
 config INCLUDE_NHLT_BLOBS
 	bool "Include blobs for audio"
 	select NHLT_DMIC_2CH_16B
-	select NHLT_DMIC_4CH_16B
 	select NHLT_MAX98357
 
 config DRIVER_TPM_SPI_BUS

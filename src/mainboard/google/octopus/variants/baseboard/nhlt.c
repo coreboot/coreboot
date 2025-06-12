@@ -14,10 +14,6 @@ void __weak variant_nhlt_init(struct nhlt *nhlt)
 	if (!nhlt_soc_add_dmic_array(nhlt, 2))
 		printk(BIOS_INFO, "Added 2CH DMIC array.\n");
 
-	/* 4 Channel DMIC array. */
-	if (!nhlt_soc_add_dmic_array(nhlt, 4))
-		printk(BIOS_INFO, "Added 4CH DMIC arrays.\n");
-
 	/*
 	 * Headset codec is bi-directional but uses the same configuration
 	 * settings for render and capture endpoints.

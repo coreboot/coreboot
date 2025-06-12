@@ -93,11 +93,20 @@ static void cnvw_fill_ssdt(const struct device *dev)
 
 /*
  *	Name (PRRS, Zero)
+ *	Last _PRR Status
+ *	0: Non-Platform-Level Device Reset (PLDR) executed [Default]
+ *	1: Core PLDR Completed successfully
+ *	2: Product PLDR Completed successfully
+ *	3: Previous PLDR Not Completed
+ *	4: Product PLDR timeout
  */
 	acpigen_write_name_integer("PRRS", 0);
 
 /*
  *	Name (RSTT, Zero)
+ *	Reset Type
+ *	0: Core Reset
+ *	1: Product Reset
  */
 	acpigen_write_name_integer("RSTT", 0);
 

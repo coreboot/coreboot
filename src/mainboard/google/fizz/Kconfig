@@ -95,7 +95,7 @@ config INCLUDE_NHLT_BLOBS
 config INCLUDE_NHLT_BLOBS_KARMA
 	bool "Include blobs for karma audio."
 	select NHLT_DA7219
-	select NHLT_DMIC_4CH
+	select NHLT_DMIC_2CH
 	select NHLT_MAX98357
 
 config UART_FOR_CONSOLE

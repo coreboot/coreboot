@@ -90,7 +90,7 @@ u-root.
 +------------------------+---------------------------------------------+
 ```
 
-[flashrom]: https://flashrom.org/Flashrom
+[flashrom]: https://flashrom.org/
 [OCP]: https://www.opencompute.org/
 [OCP Tioga Pass]: http://files.opencompute.org/oc/public.php?service=files&t=6fc3033e64fb029b0f84be5a8faf47e8
 [OCP Market Place]: https://www.opencompute.org/products/109/wiwynn-tioga-pass-advanced-2u-ocp-server-up-to-768gb-12-dimm-slots-4-ssds-for-io-performance

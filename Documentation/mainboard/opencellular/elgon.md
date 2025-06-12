@@ -81,4 +81,4 @@ Dediprog compatible pinout.
 
 [Elgon]: https://github.com/Telecominfraproject/OpenCellular
 [OpenCellular]: https://code.fb.com/connectivity/introducing-opencellular-an-open-source-wireless-access-platform/
-[flashrom]: https://flashrom.org/Flashrom
+[flashrom]: https://flashrom.org/

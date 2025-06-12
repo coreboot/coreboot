@@ -199,5 +199,5 @@ corrupted framebuffer before modprobing with ReBAR enabled
 [MrChromebox's EDK2]: https://github.com/MrChromebox/edk2
 [elly's EDK2]: https://github.com/ellyq/edk2
 [GOP driver]: https://github.com/MrChromebox/blobs/blob/master/soc/intel/tgl/IntelGopDriver.efi
-[flashrom]: https://flashrom.org/Flashrom
+[flashrom]: https://flashrom.org/
 [flashprog]: https://flashprog.org/wiki/Flashprog

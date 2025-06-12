@@ -146,4 +146,4 @@ as otherwise there's not enough space near the flash.
 [IFD Hack]: https://review.coreboot.org/plugins/gitiles/coreboot/+/refs/changes/70/38770/4/Documentation/flash_tutorial/int_macbook.md/
 [Compaq 8200 Elite SFF]: https://support.hp.com/us-en/document/c03414707
 [HP]: https://www.hp.com/
-[flashrom]: https://flashrom.org/Flashrom
+[flashrom]: https://flashrom.org/

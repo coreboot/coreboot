@@ -76,4 +76,4 @@ $ flashrom -p internal --ifd -i bios -w coreboot.rom --noverify-all
 ```
 
 [W25Q128FV]: https://www.winbond.com/resource-files/w25q128fv%20rev.m%2005132016%20kms.pdf
-[flashrom]: https://flashrom.org/Flashrom
+[flashrom]: https://flashrom.org/

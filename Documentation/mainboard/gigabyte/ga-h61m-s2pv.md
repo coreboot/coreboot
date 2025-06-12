@@ -77,4 +77,4 @@ However, this makes DualBIOS unable to recover from a bad flash for some reason.
 
 [Gigabyte GA-H61M-S2PV]: https://www.gigabyte.com/us/Motherboard/GA-H61M-S2PV-rev-10
 [Gigabyte]: https://www.gigabyte.com
-[flashrom]: https://flashrom.org/Flashrom
+[flashrom]: https://flashrom.org/

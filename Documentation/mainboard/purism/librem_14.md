@@ -110,4 +110,4 @@ located underneath the Wi-Fi module, below the left cooling fan.
 [Purism Librem 14]: https://puri.sm/products/librem-14/
 [purism-blobs]: https://source.puri.sm/coreboot/purism-blobs
 [GD25Q127C]: https://www.gigadevice.com/datasheet/gd25q127c/
-[flashrom]: https://flashrom.org/Flashrom
+[flashrom]: https://flashrom.org/

@@ -106,4 +106,4 @@ until cleanly power cycled.
 [Pro 3400 Series]: https://support.hp.com/us-en/product/details/hp-pro-3400-microtower-pc/5160137
 [Pro 3500 Series]: https://support.hp.com/us-en/product/details/hp-pro-3500-microtower-pc/5270849
 [HP]: https://www.hp.com/
-[flashrom]: https://flashrom.org/Flashrom
+[flashrom]: https://flashrom.org/

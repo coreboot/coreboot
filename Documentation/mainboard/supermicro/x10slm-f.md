@@ -196,7 +196,7 @@ Please also see :doc:`../../northbridge/intel/haswell/known-issues`.
 
 [AST2400]: https://www.aspeedtech.com/products.php?fPath=20&rId=376
 [Board manual]: https://www.supermicro.com/manuals/motherboard/C224/MNL-1500.pdf
-[flashrom]: https://flashrom.org/Flashrom
+[flashrom]: https://flashrom.org/
 [MX25L25635F]: https://media.digikey.com/pdf/Data%20Sheets/Macronix/MX25L25635F.pdf
 [N25Q128A]: https://www.micron.com/~/media/Documents/Products/Data%20Sheet/NOR%20Flash/Serial%20NOR/N25Q/n25q_128mb_3v_65nm.pdf
 [Supermicro X10SLM+-F]: https://www.supermicro.com/products/motherboard/xeon/c220/x10slm_-f.cfm

@@ -103,4 +103,4 @@ for only CPU models that the board will actually be run with.
 
 ## Extra resources
 
-[flashrom]: https://flashrom.org/Flashrom
+[flashrom]: https://flashrom.org/

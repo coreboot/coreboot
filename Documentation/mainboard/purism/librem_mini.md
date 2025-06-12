@@ -126,4 +126,4 @@ desoldering it from the mainboard.
 [Purism Librem Mini]: https://puri.sm/products/librem-mini/
 [purism-blobs]: https://source.puri.sm/coreboot/purism-blobs
 [W25Q128JV]: https://www.winbond.com/resource-files/w25q128jv%20revf%2003272018%20plus.pdf
-[flashrom]: https://flashrom.org/Flashrom
+[flashrom]: https://flashrom.org/

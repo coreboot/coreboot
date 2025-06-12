@@ -162,7 +162,7 @@ Tested even with/without the Bolton and Hudson blobs.
 
 [ASUS A88XM-E]: https://www.asus.com/Motherboards/A88XME/
 [Board manual]: https://dlcdnets.asus.com/pub/ASUS/mb/SocketFM2/A88XM-E/E9125_A88XM-E.pdf
-[flashrom]: https://flashrom.org/Flashrom
+[flashrom]: https://flashrom.org/
 [GD25Q64]: http://www.elm-tech.com/ja/products/spi-flash-memory/gd25q64/gd25q64.pdf
 [Piledriver]: https://en.wikipedia.org/wiki/Piledriver_%28microarchitecture%29#APU_lines
 [Sea Islands]: https://en.wikipedia.org/wiki/Graphics_Core_Next#GCN_2nd_generation

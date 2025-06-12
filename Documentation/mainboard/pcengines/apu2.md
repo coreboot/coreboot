@@ -113,4 +113,4 @@ are available for free on PC Engines official site. Both configurations
 
 [apu2_flash]: apu2.jpg
 [spi_header]: apu2_spi.jpg
-[flashrom]: https://flashrom.org/Flashrom
+[flashrom]: https://flashrom.org/

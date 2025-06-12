@@ -154,5 +154,5 @@ should be able to compile and boot with no modifications required.
 [Protectli FW6]: https://protectli.com/vault-6-port/
 [website]: https://protectli.com/kb/coreboot-on-the-vault/
 [MX25L6406E]: https://www.macronix.com/Lists/Datasheet/Attachments/7370/MX25L6406E,%203V,%2064Mb,%20v1.9.pdf
-[flashrom]: https://flashrom.org/Flashrom
+[flashrom]: https://flashrom.org/
 [Yanling]: http://www.ylgkdn.cn/

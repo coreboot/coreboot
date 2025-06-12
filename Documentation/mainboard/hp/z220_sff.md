@@ -77,4 +77,4 @@ even interchangeable, so should do coreboot images built for them.
 [HP Z220 SFF Workstation]: https://support.hp.com/za-en/document/c03386950
 [HP Compaq Elite 8300 SFF]: https://support.hp.com/us-en/document/c03345460
 [HP]: https://www.hp.com/
-[flashrom]: https://flashrom.org/Flashrom
+[flashrom]: https://flashrom.org/

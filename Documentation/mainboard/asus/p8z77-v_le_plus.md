@@ -254,5 +254,5 @@ Pins 2, 4, 6, 8 have 1M ohm pulldowns.
 
 [ASUS P8Z77-V LE PLUS]: https://www.asus.com/supportonly/p8z77-v%20le%20plus/helpdesk_manual/
 [W25Q64FVA1Q]: https://www.winbond.com/resource-files/w25q64fv%20revs%2007182017.pdf
-[flashrom]: https://flashrom.org/Flashrom
+[flashrom]: https://flashrom.org/
 [rtnicpg]: https://github.com/redchenjs/rtnicpg

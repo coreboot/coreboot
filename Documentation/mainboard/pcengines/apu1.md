@@ -94,4 +94,4 @@ site. Depending on the configuration:
 
 [apu1c1_flash]: apu1c1.jpg
 [spi_header]: apu1_spi.jpg
-[flashrom]: https://flashrom.org/Flashrom
+[flashrom]: https://flashrom.org/

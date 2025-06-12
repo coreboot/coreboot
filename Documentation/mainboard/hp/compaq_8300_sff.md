@@ -70,4 +70,4 @@ as otherwise there's not enough space near the flash.
 
 [Compaq 8300 Elite SFF]: https://support.hp.com/us-en/document/c03345460
 [HP]: https://www.hp.com/
-[flashrom]: https://flashrom.org/Flashrom
+[flashrom]: https://flashrom.org/

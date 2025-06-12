@@ -219,7 +219,7 @@ and [u-root] as initramfs.
 [The Wiwynn's Yosemite-V3 product in OCP market place]: https://www.opencompute.org/products/423/wiwynn-yosemite-v3-server
 [osf-builder]: https://github.com/facebookincubator/osf-builder
 [OCP virtual summit 2020]: https://www.opencompute.org/summit/virtual-summit/schedule
-[flashrom]: https://flashrom.org/Flashrom
+[flashrom]: https://flashrom.org/
 [All about u-root]: https://github.com/linuxboot/book/tree/master/u-root
 [u-root]: https://u-root.org/
 [ChromeOS VPD]: https://chromium.googlesource.com/chromiumos/platform/vpd/+/master/README.md

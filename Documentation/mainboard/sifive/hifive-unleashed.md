@@ -96,5 +96,5 @@ console in certain situations.
 [Getting Started Guide]: https://sifive.cdn.prismic.io/sifive%2Ffa3a584a-a02f-4fda-b758-a2def05f49f9_hifive-unleashed-getting-started-guide-v1p1.pdf
 [RISC-V fork of OpenOCD]: https://github.com/riscv/riscv-openocd
 [OpenOCD script]: https://github.com/sifive/freedom-u-sdk/blob/057a47f657fa33e2c60df7f183884a68e90381cc/bsp/env/freedom-u500-unleashed/openocd.cfg
-[flashrom]: https://flashrom.org/Flashrom
+[flashrom]: https://flashrom.org/
 [schematics]: https://sifive.cdn.prismic.io/sifive%2Ff7173056-bf37-4407-87cb-d5ab76abf61a_hifive-unleashed-a00-schematics.pdf

@@ -48,7 +48,7 @@ The board features:
 
 ## Extra links
 
-[flashrom]: https://flashrom.org/Flashrom
+[flashrom]: https://flashrom.org/
 [flashing tutorial]: ../../tutorial/flashing_firmware/ext_power.md
 [Intel FSP2.0]: ../../soc/intel/fsp/index.md
 [AST2500]: https://www.aspeedtech.com/products.php?fPath=20&rId=440

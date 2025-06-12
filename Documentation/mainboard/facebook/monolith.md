@@ -130,4 +130,4 @@ output.
 
 [W25Q128JVSIQ]: https://www.winbond.com/resource-files/w25q128jv%20revf%2003272018%20plus.pdf
 [W25Q128JVSIM]: https://www.winbond.com/resource-files/w25q128jv%20dtr%20revb%2011042016.pdf
-[flashrom]: https://flashrom.org/Flashrom
+[flashrom]: https://flashrom.org/

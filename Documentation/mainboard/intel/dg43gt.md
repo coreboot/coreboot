@@ -96,4 +96,4 @@ The layout of the header is:
 ```
 
 [Intel DG43GT]: https://ark.intel.com/products/41036/Intel-Desktop-Board-DG43GT
-[flashrom]: https://flashrom.org/Flashrom
+[flashrom]: https://flashrom.org/

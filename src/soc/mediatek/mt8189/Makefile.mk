@@ -5,6 +5,7 @@ ifeq ($(CONFIG_SOC_MEDIATEK_MT8189),y)
 all-y += ../common/flash_controller.c
 all-y += ../common/gpio.c ../common/gpio_op.c ../common/gpio_eint_v2.c gpio.c gpio_eint.c
 all-y += ../common/i2c.c ../common/i2c_common.c i2c.c
+all-y += ../common/pll.c pll.c
 all-$(CONFIG_SPI_FLASH) += ../common/spi.c spi.c
 all-y += ../common/timer_prepare.c timer.c
 all-y += ../common/uart.c
@@ -13,7 +14,6 @@ bootblock-y += bootblock.c
 bootblock-y += efuse.c
 bootblock-y += ../common/mmu_operations.c
 bootblock-y += ../common/mtcmos.c mtcmos.c
-bootblock-y += ../common/pll.c pll.c
 bootblock-y += ../common/wdt.c ../common/wdt_req.c wdt.c
 
 romstage-y += ../common/cbmem.c
@@ -26,7 +26,6 @@ romstage-y += ../common/memory.c ../common/memory_test.c ../common/memory_type.c
 romstage-y += ../common/mmu_operations.c ../common/mmu_cmops.c
 romstage-y += ../common/mt6315.c mt6315.c
 romstage-y += ../common/mt6359p.c mt6359p.c
-romstage-y += ../common/pll.c pll.c
 romstage-y += ../common/pmif.c ../common/pmif_clk.c ../common/pmif_init.c pmif_clk.c
 romstage-y += ../common/pmif_spi.c pmif_spi.c
 romstage-y += ../common/pmif_spmi.c pmif_spmi.c
@@ -34,6 +33,8 @@ romstage-y += ../common/rtc.c ../common/rtc_osc_init.c ../common/rtc_mt6359p.c
 
 ramstage-y += ../common/auxadc.c
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += ../common/bl31.c
+ramstage-y += ../common/ddp.c ddp.c
+ramstage-y += ../common/display.c
 ramstage-y += ../common/dpm.c ../common/dpm_v2.c
 ramstage-y += ../common/dp/dp_intf_v2.c
 ramstage-y += ../common/dp/dptx_common.c ../common/dp/dptx_v2.c dptx.c

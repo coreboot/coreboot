@@ -3,10 +3,12 @@
 #ifndef _SOC_INTEL_COMMON_CNVI_H_
 #define _SOC_INTEL_COMMON_CNVI_H_
 
-/* CNVi WiFi Register */
+/* CNVi PCI configuration Registers */
 #define CNVI_DEV_CAP		0x44
 #define CNVI_DEV_CONTROL	0x48
 #define CNVI_POWER_STATUS	0xcc
+#define CNVI_DEV_CAP_2		0x64
+#define CNVI_DEV_CONTROL_2	0x68
 
 /* CNVi PLDR Results */
 #define CNVI_PLDR_COMPLETE	0x02

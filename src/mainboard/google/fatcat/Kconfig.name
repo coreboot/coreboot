@@ -17,6 +17,9 @@ config BOARD_GOOGLE_FATCATNUVO
 config BOARD_GOOGLE_FELINO
 	bool "-> Felino"
 
+config BOARD_GOOGLE_FELINO4ES
+	bool "-> Felino4ES"
+
 config BOARD_GOOGLE_FRANCKA
 	bool "-> Francka"
 

@@ -50,8 +50,8 @@ romstage-y += ../common/pmif.c pmif_init.c
 romstage-y += ../common/rtc.c ../common/rtc_osc_init.c
 romstage-y += ../common/pmif_spmi_v2.c pmif_spmi.c
 romstage-y += ../common/srclken_rc.c srclken_rc.c
-romstage-y += thermal.c
-romstage-y += thermal_sram.c
+romstage-y += ../common/thermal.c thermal.c
+romstage-y += ../common/thermal_sram.c thermal_sram.c
 
 ramstage-$(CONFIG_ARM64_USE_ARM_TRUSTED_FIRMWARE) += ../common/bl31.c
 ramstage-y += dcc.c

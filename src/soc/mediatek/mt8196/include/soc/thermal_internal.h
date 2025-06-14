@@ -3,15 +3,19 @@
 #ifndef SOC_MEDIATEK_MT8196_THERMAL_INTERNAL_H
 #define SOC_MEDIATEK_MT8196_THERMAL_INTERNAL_H
 
-#include <console/console.h>
-#include <device/mmio.h>
 #include <soc/addressmap.h>
 #include <soc/symbols.h>
-#include <soc/thermal.h>
-#include <stddef.h>
 
 #define LVTS_MAGIC                      0x0000555
 #define MAX_TS_NUMBER			4
+
+/* SRAM for Thermal */
+#define THERMAL_SRAM_BASE		(_mcufw_reserved + 0x1000)
+#define THERMAL_SRAM_LEN		0x400
+
+/* SRAM for Thermal state */
+#define THERMAL_STAT_SRAM_BASE		((uintptr_t)_sram + 0x0001A800)
+#define THERMAL_STAT_SRAM_LEN		0x400
 
 /* private thermal sensor enum */
 enum lvts_sensor {
@@ -35,30 +39,6 @@ enum lvts_tc {
 enum lvts_tc_offset {
 	TS_OFFSET_AP_CONTROLLER0 = 0,
 	TS_OFFSET_AP_CONTROLLER1 = 0x100,
-};
-
-enum sensor_switch_status {
-	SEN_OFF,
-	SEN_ON,
-};
-
-struct lvts_thermal_controller_speed {
-	uint32_t group_interval_delay;
-	uint32_t period_unit;
-	uint32_t filter_interval_delay;
-	uint32_t sensor_interval_delay;
-};
-
-struct lvts_thermal_controller {
-	enum lvts_sensor ts[MAX_TS_NUMBER];
-	enum sensor_switch_status sensor_on_off[MAX_TS_NUMBER];
-	size_t ts_number;
-	int reboot_temperature;
-	int dominator_ts_idx;
-	unsigned int reboot_msr_sram_idx;
-	bool has_reboot_temp_sram;
-	struct lvts_thermal_controller_speed speed;
-	struct mtk_thermal_controller_regs *regs;
 };
 
 /* LVTS Thermal Controller Register Definition */
@@ -154,8 +134,10 @@ check_member(mtk_thermal_controller_regs, lvtsspare, 0x0f0);
 #define AP_RST_CLR			(INFRACFG_AO_SEC_BASE + 0xf34)
 
 #define LVTS_COF_T_SLP_GLD		391460
+#define LVTS_COEFF_A			LVTS_COF_T_SLP_GLD
 #define LVTS_COF_COUNT_R_GLD		34412
 #define LVTS_COF_T_CONST_OFS		0
+#define LVTS_GROUP_INTERVAL_DELAY_MASK	GENMASK(31, 17)
 
 #define DEFAULT_EFUSE_GOLDEN_TEMP	60
 #define DEFAULT_EFUSE_COUNT		34389

@@ -43,5 +43,7 @@ endef
 
 $(eval $(call add_bmp_logo_file_to_cbfs,CONFIG_CHROMEOS_FW_SPLASH_SCREEN, \
 	      cb_logo.bmp,CONFIG_CHROMEOS_LOGO_PATH))
+ifneq ($(CONFIG_SPLASH_SCREEN_FOOTER),y)
 $(eval $(call add_bmp_logo_file_to_cbfs,CONFIG_CHROMEOS_FW_SPLASH_SCREEN, \
 	      cb_plus_logo.bmp,CONFIG_CHROMEBOOK_PLUS_LOGO_PATH))
+endif

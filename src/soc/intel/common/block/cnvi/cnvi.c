@@ -113,64 +113,87 @@ static void cnvw_fill_ssdt(const struct device *dev)
 	acpigen_write_name_integer("RSTT", 0);
 
 /*
- *	PowerResource(CNVP, 0, 0)
+ *	PowerResource (CNVP, 0x00, 0x0000)
  *	{
- *		Method(_STA)
+ *		Method (_STA, 0, NotSerialized)  // _STA: Status
  *		{
- *			If (CondRefOf (\_SB.PCI0.CNVS)) {
+ *			If (CondRefOf (\_SB.PCI0.CNVS))
+ *			{
  *				Local0 = \_SB.PCI0.CNVS()
  *				Return (Local0)
  *			}
  *			Else
  *			{
- *				Return (0x01)
+ *				Return (One)
  *			}
  *		}
- *		Method(_ON, 0)
+ *
+ *		Method (_ON, 0, NotSerialized)  // _ON_: Power On
  *		{
- *			If (CondRefOf (\_SB.PCI0.CNVC)) {
- *				If ((\_SB.PCI0.CNVS() == 1)) {
- *					Return (1)
+ *			If (CondRefOf (\_SB.PCI0.CNVC))
+ *			{
+ *				Local0 = \_SB.PCI0.CNVS()
+ *				If ((Local0 == One))
+ *				{
+ *					Return (One)
  *				}
- *				\_SB.PCI0.CNVS(1)
+ *
+ *				\_SB.PCI0.CNVC (One)
  *			}
  *		}
- *		Method(_OFF, 0)
+ *
+ *		Method (_OFF, 0, NotSerialized)  // _OFF: Power Off
  *		{
- *			If (CondRefOf (\_SB.PCI0.CNVC)) {
- *				\_SB.PCI0.CNVS(0)
+ *			If (CondRefOf (\_SB.PCI0.CNVC))
+ *			{
+ *				\_SB.PCI0.CNVC (Zero)
  *			}
  *		}
- *		Method(_RST, 0, NotSerialized)
+ *
+ *		Method (_RST, 0, NotSerialized)  // _RST: Device Reset
  *		{
- *			Local0 = Acquire (\_SB.PCI0.CNMT, 1000)
+ *			Local0 = Acquire (\_SB.PCI0.CNMT, 0x03E8)
  *			If ((Local0 == Zero))
  *			{
  *				CFLR ()
  *				PRRS = One
  *				If ((RSTT == One))
  *				{
- *					If (((PCRR (CNVI_SIDEBAND_ID, CNVI_ABORT_PLDR) & CNVI_ABORT_REQUEST) == Zero))
+ *					Local0 = \_SB.PCI0.PCRR(PID_CNVI, CNVI_ABORT_PLDR)
+ *					Local0 &= CNVI_ABORT_REQUEST
+ *					If ((Local0 == Zero))
  *					{
  *						Local2 = Zero
- *						If (CondRefOf (\_SB.PCI0.GBTR)) {
- *							If ((\_SB.PCI0.GBTR() == One))
+ *						If (CondRefOf (\_SB.PCI0.GBTR))
+ *						{
+ *							If ((\_SB.PCI0.GBTR == One))
  *							{
  *								\_SB.PCI0.BTRK (Zero)
- *								Sleep (160)
+ *								Sleep (0xA0)
  *								Local2 = One
  *							}
  *						}
- *						PCRO (CNVI_SIDEBAND_ID, CNVI_ABORT_PLDR, CNVI_ABORT_REQUEST | CNVI_ABORT_ENABLE)
- *						Sleep (10)
- *						Local1 = PCRR (CNVI_SIDEBAND_ID, CNVI_ABORT_PLDR)
- *						If ((((Local1 & CNVI_ABORT_REQUEST) == Zero) && (Local1 & CNVI_READY)))
+ *
+ *						If (CondRefOf (\_SB.PCI0.CNVB))
  *						{
- *							PRRS = CNVI_PLDR_COMPLETE
- *							If ((Local2 == One))
+ *							\_SB.PCI0.CNVB.CFLR ()
+ *						}
+ *
+ *						\_SB.PCI0.PCRO (PID_CNVI, CNVI_ABORT_PLDR, 0x03)
+ *						Sleep (0x0A)
+ *						Local0 = \_SB.PCI0.PCRR(PID_CNVI, CNVI_ABORT_PLDR)
+ *						Local1 = (Local0 & CNVI_ABORT_REQUEST)
+ *						Local3 = (Local0 & CNVI_READY)
+ *						If ((Local1 == Zero))
+ *						{
+ *							If ((Local3 == CNVI_READY))
  *							{
- *								\_SB.PCI0.BTRK (One)
- *								Sleep (160)
+ *								PRRS = CNVI_PLDR_COMPLETE
+ *								If ((Local2 == One))
+ *								{
+ *									\_SB.PCI0.BTRK (One)
+ *									Sleep (0xA0)
+ *								}
  *							}
  *						}
  *						Else

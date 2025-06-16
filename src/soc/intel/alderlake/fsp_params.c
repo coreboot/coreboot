@@ -716,6 +716,31 @@ static void fill_fsps_xhci_params(FSP_S_CONFIG *s_cfg,
 			s_cfg->Usb3HsioTxDownscaleAmp[i] =
 				config->usb3_ports[i].tx_downscale_amp;
 		}
+		if (config->usb3_ports[i].tx_rate2_uniq_tran) {
+			s_cfg->Usb3HsioTxRate2UniqTranEnable[i] = 1;
+			s_cfg->Usb3HsioTxRate2UniqTran[i] =
+				config->usb3_ports[i].tx_rate2_uniq_tran;
+		}
+		if (config->usb3_ports[i].ctrl_adapt_offset_cfg_enable) {
+			s_cfg->PchUsb3HsioCtrlAdaptOffsetCfgEnable[i] = 1;
+			s_cfg->PchUsb3HsioCtrlAdaptOffsetCfg[i] =
+				config->usb3_ports[i].ctrl_adapt_offset_cfg;
+		}
+		if (config->usb3_ports[i].olfps_cfg_pull_up_dwn_res) {
+			s_cfg->PchUsb3HsioOlfpsCfgPullUpDwnResEnable[i] = 1;
+			s_cfg->PchUsb3HsioOlfpsCfgPullUpDwnRes[i] =
+				config->usb3_ports[i].olfps_cfg_pull_up_dwn_res;
+		}
+		if (config->usb3_ports[i].filter_sel_n) {
+			s_cfg->PchUsb3HsioFilterSelNEnable[i] = 1;
+			s_cfg->PchUsb3HsioFilterSelN[i] =
+				config->usb3_ports[i].filter_sel_n;
+		}
+		if (config->usb3_ports[i].filter_sel_p) {
+			s_cfg->PchUsb3HsioFilterSelPEnable[i] = 1;
+			s_cfg->PchUsb3HsioFilterSelP[i] =
+				config->usb3_ports[i].filter_sel_p;
+		}
 	}
 
 	for (i = 0; i < ARRAY_SIZE(config->tcss_ports); i++) {

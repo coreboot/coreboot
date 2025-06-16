@@ -132,6 +132,12 @@ struct usb3_port_config {
 	uint8_t ocpin;
 	uint8_t tx_de_emp;
 	uint8_t tx_downscale_amp;
+	uint8_t tx_rate2_uniq_tran;
+	uint8_t ctrl_adapt_offset_cfg_enable;
+	uint8_t ctrl_adapt_offset_cfg;
+	uint8_t olfps_cfg_pull_up_dwn_res;
+	uint8_t filter_sel_n;
+	uint8_t filter_sel_p;
 };
 
 #define USB3_PORT_EMPTY { \
@@ -139,6 +145,12 @@ struct usb3_port_config {
 	.ocpin            = OC_SKIP, \
 	.tx_de_emp        = 0x00, \
 	.tx_downscale_amp = 0x00, \
+	.tx_rate2_uniq_tran = 0x00, \
+	.ctrl_adapt_offset_cfg_enable = 0, \
+	.ctrl_adapt_offset_cfg = 0x00, \
+	.olfps_cfg_pull_up_dwn_res = 0x00, \
+	.filter_sel_n = 0x00, \
+	.filter_sel_p = 0x00, \
 }
 
 #define USB3_PORT_DEFAULT(pin) { \
@@ -146,6 +158,12 @@ struct usb3_port_config {
 	.ocpin            = (pin), \
 	.tx_de_emp        = 0x0, \
 	.tx_downscale_amp = 0x00, \
+	.tx_rate2_uniq_tran = 0x00, \
+	.ctrl_adapt_offset_cfg_enable = 0, \
+	.ctrl_adapt_offset_cfg = 0x00, \
+	.olfps_cfg_pull_up_dwn_res = 0x00, \
+	.filter_sel_n = 0x00, \
+	.filter_sel_p = 0x00, \
 }
 
 struct tcss_port_config {

@@ -7,6 +7,7 @@ smm-y += acpi.c
 ramstage-y += pm_state.c
 ramstage-y += tables.c
 ramstage-$(CONFIG_ACPI_BERT) += bert.c
+ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPI_HEST) += hest.c
 ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPI_ALIB) += alib.c
 ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPI_CPPC) += cppc.c
 ramstage-$(CONFIG_SOC_AMD_COMMON_BLOCK_ACPI_CPU_POWER_STATE) += cpu_power_state.c

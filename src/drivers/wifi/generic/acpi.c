@@ -261,6 +261,82 @@ static void wifi_dsm_ddrrfim_func3_cb(void *ptr)
 	acpigen_write_return_integer(is_cnvi_ddr_rfim_enabled ? 0 : 1);
 }
 
+/*
+ * Function 2: Power Resource for Reset (PRR) for Wi-Fi
+ *
+ * Args3 is a buffer comparable to the following C structure:
+ * struct pldr_mode {
+ *	uint16_t cmd_type;
+ *	uint16_t cmd_payload;
+ * };
+ *
+ * cmd_type can take one of the following values:
+ * 1 - Get PRR mode;
+ * 2 - Set PRR mode to cmd_payload;
+ * 3 - Get PRR status;
+ */
+static void wifi_dsm_power_resource_for_reset(__always_unused void *args)
+{
+	acpigen_write_create_word_field(ARG3_OP, 0, "CMDT");
+	acpigen_write_create_word_field(ARG3_OP, 2, "CMDP");
+
+	/* Get PRR mode */
+	acpigen_write_if_lequal_namestr_int("CMDT", 1);
+	{
+		acpigen_write_if_cond_ref_of("RSTT");
+		{
+			acpigen_write_return_namestr("RSTT");
+
+		}
+		acpigen_pop_len();
+		acpigen_write_return_integer(0);
+	}
+	acpigen_pop_len();
+
+	/* Set PRR mode */
+	acpigen_write_if_lequal_namestr_int("CMDT", 2);
+	{
+		acpigen_write_if_cond_ref_of("RSTT");
+		{
+			acpigen_write_store();
+			acpigen_emit_namestring("CMDP");
+			acpigen_emit_namestring("RSTT");
+
+		}
+		acpigen_pop_len();
+		acpigen_write_return_integer(0);
+	}
+	acpigen_pop_len();
+
+	/* Get last PRR status */
+	acpigen_write_if_lequal_namestr_int("CMDT", 3);
+	{
+		acpigen_write_if_cond_ref_of("PRRS");
+		{
+			acpigen_write_return_namestr("PRRS");
+		}
+		acpigen_pop_len();
+		acpigen_write_return_integer(0);
+	}
+	acpigen_pop_len();
+
+	acpigen_write_return_integer(0);
+}
+
+/*
+ * Function 5: Set Power Resource for Reset (PRR) reset delay for Wi-Fi
+ */
+static void wifi_dsm_set_prr_reset_delay(__always_unused void *args)
+{
+	acpigen_write_if_cond_ref_of("WFDL");
+	{
+		acpigen_write_store();
+		acpigen_emit_byte(ARG3_OP);
+		acpigen_emit_namestring("WFDL");
+	}
+	acpigen_pop_len();
+}
+
 static void (*wifi_dsm_callbacks[])(void *) = {
 	NULL,					/* Function 0 */
 	wifi_dsm_srd_active_channels,		/* Function 1 */
@@ -277,15 +353,13 @@ static void (*wifi_dsm_callbacks[])(void *) = {
 	wifi_dsm_11be_country_enablement,	/* Function 12 */
 };
 
-/*
- * The current DSM2 table is only exporting one function (function 3), some more
- * functions are reserved so marking them NULL.
-*/
 static void (*wifi_dsm2_callbacks[])(void *) = {
-	NULL,				/* Function 0 */
-	NULL,				/* Function 1 */
-	NULL,				/* Function 2 */
-	wifi_dsm_ddrrfim_func3_cb,	/* Function 3 */
+	NULL,					/* Function 0 */
+	NULL,					/* Function 1 */
+	wifi_dsm_power_resource_for_reset,	/* Function 2 */
+	wifi_dsm_ddrrfim_func3_cb,		/* Function 3 */
+	NULL,					/* Function 4 */
+	wifi_dsm_set_prr_reset_delay,		/* Function 5 */
 };
 
 static const uint8_t *sar_fetch_set(const struct sar_profile *sar, size_t set_num)
@@ -1117,13 +1191,11 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 		}
 	}
 
-	if (is_cnvi_ddr_rfim_enabled) {
-		dsm_ids[dsm_count].uuid = ACPI_DSM_RFIM_WIFI_UUID;
-		dsm_ids[dsm_count].callbacks = &wifi_dsm2_callbacks[0];
-		dsm_ids[dsm_count].count = ARRAY_SIZE(wifi_dsm2_callbacks);
-		dsm_ids[dsm_count].arg = &is_cnvi_ddr_rfim_enabled;
-		dsm_count++;
-	}
+	dsm_ids[dsm_count].uuid = ACPI_DSM_RFIM_WIFI_UUID;
+	dsm_ids[dsm_count].callbacks = &wifi_dsm2_callbacks[0];
+	dsm_ids[dsm_count].count = ARRAY_SIZE(wifi_dsm2_callbacks);
+	dsm_ids[dsm_count].arg = &is_cnvi_ddr_rfim_enabled;
+	dsm_count++;
 
 	acpigen_write_dsm_uuid_arr(dsm_ids, dsm_count);
 

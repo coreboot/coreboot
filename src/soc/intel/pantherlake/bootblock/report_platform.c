@@ -21,6 +21,8 @@ static struct {
 	const char *name;
 } cpu_table[] = {
 	{ CPUID_PANTHERLAKE_A0, "Pantherlake A0" },
+	{ CPUID_PANTHERLAKE_B0_1, "Pantherlake B0" },
+	{ CPUID_PANTHERLAKE_B0_2, "Pantherlake B0" },
 };
 
 static struct {
@@ -29,10 +31,15 @@ static struct {
 } mch_table[] = {
 	{ PCI_DID_INTEL_PTL_U_ID_1, "Pantherlake U" },
 	{ PCI_DID_INTEL_PTL_U_ID_2, "Pantherlake U" },
+	{ PCI_DID_INTEL_PTL_U_ID_3, "Pantherlake U" },
 	{ PCI_DID_INTEL_PTL_H_ID_1, "Pantherlake H" },
 	{ PCI_DID_INTEL_PTL_H_ID_2, "Pantherlake H" },
 	{ PCI_DID_INTEL_PTL_H_ID_3, "Pantherlake H" },
 	{ PCI_DID_INTEL_PTL_H_ID_4, "Pantherlake H" },
+	{ PCI_DID_INTEL_PTL_H_ID_5, "Pantherlake H" },
+	{ PCI_DID_INTEL_PTL_H_ID_6, "Pantherlake H" },
+	{ PCI_DID_INTEL_PTL_H_ID_7, "Pantherlake H" },
+	{ PCI_DID_INTEL_PTL_H_ID_8, "Pantherlake H" },
 	{ PCI_DID_INTEL_WCL_ID_1, "Wildcatlake" },
 	{ PCI_DID_INTEL_WCL_ID_2, "Wildcatlake" },
 };
@@ -147,6 +154,7 @@ static struct {
 	{ PCI_DID_INTEL_PTL_H_GT2_1, "Pantherlake-H GT2" },
 	{ PCI_DID_INTEL_PTL_H_GT2_2, "Pantherlake-H GT2" },
 	{ PCI_DID_INTEL_PTL_H_GT2_3, "Pantherlake-H GT2" },
+	{ PCI_DID_INTEL_PTL_H_GT2_4, "Pantherlake-H GT2" },
 	{ PCI_DID_INTEL_WCL_GT2_1, "Wildcatlake GT2" },
 	{ PCI_DID_INTEL_WCL_GT2_2, "Wildcatlake GT2" },
 };

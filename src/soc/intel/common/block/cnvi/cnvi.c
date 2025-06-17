@@ -113,9 +113,9 @@ static void cnvw_fill_ssdt(const struct device *dev)
 	acpigen_write_name_integer("RSTT", 0);
 
 /*
- *	Wi-Fi PLDR request delay (default 10 ms)
+ *	Wi-Fi PLDR request delay (default 50 ms)
  */
-	acpigen_write_name_integer("WFDL", 10);
+	acpigen_write_name_integer("WFDL", 50);
 
 /*
  *	PowerResource (CNVP, 0x00, 0x0000)

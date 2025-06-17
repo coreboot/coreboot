@@ -1,0 +1,8 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_SIEMENS_MC_RPL1
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+
+endif # BOARD_SIEMENS_MC_RPL1

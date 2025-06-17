@@ -18,6 +18,8 @@ config BOARD_SIEMENS_BASEBOARD_MC_RPL
 config BOARD_SIEMENS_MC_RPL1
 	select BOARD_SIEMENS_BASEBOARD_MC_RPL
 
+source "src/mainboard/siemens/mc_rpl/variants/*/Kconfig"
+
 if BOARD_SIEMENS_BASEBOARD_MC_RPL
 
 config MAINBOARD_DIR

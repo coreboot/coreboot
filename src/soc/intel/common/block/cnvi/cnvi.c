@@ -113,6 +113,11 @@ static void cnvw_fill_ssdt(const struct device *dev)
 	acpigen_write_name_integer("RSTT", 0);
 
 /*
+ *	Wi-Fi PLDR request delay (default 10 ms)
+ */
+	acpigen_write_name_integer("WFDL", 10);
+
+/*
  *	PowerResource (CNVP, 0x00, 0x0000)
  *	{
  *		Method (_STA, 0, NotSerialized)  // _STA: Status
@@ -180,7 +185,7 @@ static void cnvw_fill_ssdt(const struct device *dev)
  *						}
  *
  *						\_SB.PCI0.PCRO (PID_CNVI, CNVI_ABORT_PLDR, 0x03)
- *						Sleep (0x0A)
+ *						Sleep (WFDL)
  *						Local0 = \_SB.PCI0.PCRR(PID_CNVI, CNVI_ABORT_PLDR)
  *						Local1 = (Local0 & CNVI_ABORT_REQUEST)
  *						Local3 = (Local0 & CNVI_READY)
@@ -319,7 +324,8 @@ static void cnvw_fill_ssdt(const struct device *dev)
 						acpigen_write_integer(CNVI_ABORT_PLDR);
 						acpigen_write_integer(CNVI_ABORT_REQUEST | CNVI_ABORT_ENABLE);
 
-						acpigen_write_sleep(10);
+						acpigen_emit_ext_op(SLEEP_OP);
+						acpigen_emit_namestring("WFDL");
 
 						acpigen_write_store();
 						acpigen_emit_namestring("\\_SB.PCI0.PCRR");

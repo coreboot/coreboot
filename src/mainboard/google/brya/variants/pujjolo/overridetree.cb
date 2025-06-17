@@ -16,6 +16,10 @@ fw_config
 		option SD_ABSENT	0
 		option SD_PRESENT	1
 	end
+	field WFC 26 27
+		option WFC_ABSENT               0
+		option WFC_MIPI_OVTI8856        2
+	end
 end
 chip soc/intel/alderlake
 
@@ -343,7 +347,9 @@ chip soc/intel/alderlake
 				register "off_seq.ops[2]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
 				register "off_seq.ops[3]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
-				device i2c 10 on end
+				device i2c 10 on
+					probe WFC WFC_MIPI_OVTI8856
+				end
 			end
 			chip drivers/intel/mipi_camera
 				register "acpi_uid" = "3"
@@ -369,7 +375,9 @@ chip soc/intel/alderlake
 				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
 				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
-				device i2c 0C on end
+				device i2c 0C on
+					probe WFC WFC_MIPI_OVTI8856
+				end
 			end
 			chip drivers/intel/mipi_camera
 				register "acpi_hid" = "ACPI_DT_NAMESPACE_HID"
@@ -397,7 +405,9 @@ chip soc/intel/alderlake
 				register "nvm_width" = "0x10"
 				register "nvm_compat" = ""atmel,24c08""
 
-				device i2c 50 on end
+				device i2c 50 on
+					probe WFC WFC_MIPI_OVTI8856
+				end
 			end
 		end
 		device ref i2c5 on

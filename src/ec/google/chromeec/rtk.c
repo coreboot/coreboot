@@ -23,42 +23,7 @@
 #define EMI_ADDR1 0xf2 /* The EMI base address 15-8*/
 #define EMI_CTRL  0x30
 
-bool chipset_emi_read_bytes(u16 port, size_t length, u8 *dest, u8 *csum)
-{
-	size_t i;
-
-	printk(BIOS_DEBUG, "RTS5915: read port 0x%x, size %ld\n", port, length);
-
-	if (port >= EMI_RANGE_START && port <= EMI_RANGE_END) {
-		uint8_t *p = (uint8_t *)(HOSTCMD_PARAM_MEM_BASE + (port - EMI_RANGE_START));
-		for (i = 0; i < length; ++i) {
-			dest[i] = p[i];
-			if (csum)
-				*csum += dest[i];
-		}
-		return true;
-	}
-	return false;
-}
-
-bool chipset_emi_write_bytes(u16 port, size_t length, u8 *msg, u8 *csum)
-{
-	size_t i;
-
-	printk(BIOS_DEBUG, "RTS5915: write port 0x%x, size %ld\n", port, length);
-
-	if (port >= EMI_RANGE_START && port <= EMI_RANGE_END) {
-		uint8_t *p = (uint8_t *)(HOSTCMD_PARAM_MEM_BASE + (port - EMI_RANGE_START));
-		for (i = 0; i < length; ++i) {
-			p[i] = msg[i];
-			if (csum)
-				*csum += msg[i];
-		}
-		return true;
-	}
-
-	return false;
-}
+static bool is_emi_inited;
 
 static inline void sio_write_config(uint8_t reg, uint8_t value)
 {
@@ -66,13 +31,15 @@ static inline void sio_write_config(uint8_t reg, uint8_t value)
 	outb(value, SIO_DATA_PORT);
 }
 
-void chipset_init(void)
+static void host_emi_init(void)
 {
 	/*
 	 * Due the hardware design, the RTS5915 EMI should be initiated by host sio command,
 	 * The EMI range is 256 bytes, chromeec needs two region for host command and ACPI
 	 * shared memory.
 	 */
+	if (is_emi_inited)
+		return;
 
 	printk(BIOS_INFO, "RTS5915 EMI: start init ...\n");
 
@@ -91,4 +58,47 @@ void chipset_init(void)
 	sio_write_config(EMI_CTRL, 0x01); /* Enable EMI */
 
 	printk(BIOS_INFO, "RTS5915 EMI: done\n");
+
+	is_emi_inited = true;
+}
+
+bool chipset_emi_read_bytes(u16 port, size_t length, u8 *dest, u8 *csum)
+{
+	size_t i;
+
+	host_emi_init();
+
+	printk(BIOS_DEBUG, "RTS5915: read port 0x%x, size %zu\n", port, length);
+
+	if (port >= EMI_RANGE_START && port <= EMI_RANGE_END) {
+		uint8_t *p = (uint8_t *)(HOSTCMD_PARAM_MEM_BASE + (port - EMI_RANGE_START));
+		for (i = 0; i < length; ++i) {
+			dest[i] = p[i];
+			if (csum)
+				*csum += dest[i];
+		}
+		return true;
+	}
+	return false;
+}
+
+bool chipset_emi_write_bytes(u16 port, size_t length, u8 *msg, u8 *csum)
+{
+	size_t i;
+
+	host_emi_init();
+
+	printk(BIOS_DEBUG, "RTS5915: write port 0x%x, size %zu\n", port, length);
+
+	if (port >= EMI_RANGE_START && port <= EMI_RANGE_END) {
+		uint8_t *p = (uint8_t *)(HOSTCMD_PARAM_MEM_BASE + (port - EMI_RANGE_START));
+		for (i = 0; i < length; ++i) {
+			p[i] = msg[i];
+			if (csum)
+				*csum += msg[i];
+		}
+		return true;
+	}
+
+	return false;
 }

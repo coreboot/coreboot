@@ -446,14 +446,11 @@ int google_chromeec_command(struct chromeec_command *cec_command)
 	return result;
 }
 
-void __weak chipset_init(void) {}
-
 static void lpc_ec_init(struct device *dev)
 {
 	if (!dev->enabled)
 		return;
 
-	chipset_init();
 	google_chromeec_init();
 }
 

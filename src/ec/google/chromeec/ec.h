@@ -487,11 +487,6 @@ const char *google_chromeec_acpi_name(const struct device *dev);
 #endif /* HAVE_ACPI_TABLES */
 
 /**
- * Initialize the EC.
- */
-void chipset_init(void);
-
-/**
  * Read bytes from the EMI.
  *
  * @param port		IO port number

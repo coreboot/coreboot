@@ -4,6 +4,7 @@
 #include <baseboard/variants.h>
 #include <bootblock_common.h>
 #include <bootmode.h>
+#include <intelblocks/lpc_lib.h>
 #include <reset.h>
 #include <security/vboot/vboot_common.h>
 
@@ -25,6 +26,10 @@ void bootblock_mainboard_init(void)
 		board_reset();
 	}
 	variant_update_descriptor();
+
+	if (CONFIG(EC_GOOGLE_CHROMEEC_LPC_GENERIC_MEMORY_RANGE))
+		lpc_open_mmio_window(CONFIG_EC_GOOGLE_CHROMEEC_LPC_GENERIC_MEMORY_BASE,
+			CONFIG_EC_GOOGLE_CHROMEEC_LPC_GENERIC_MEMORY_SIZE);
 }
 
 void __weak variant_update_descriptor(void) {}

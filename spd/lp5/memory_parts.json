@@ -306,6 +306,17 @@
                 "speedMbps": 8533,
                 "lp5x": true
             }
+        },
+        {
+            "name":  "H58G66CK8BX147",
+            "attribs": {
+                "densityPerDieGb": 16,
+                "diesPerPackage": 4,
+                "bitWidthPerChannel": 16,
+                "ranksPerChannel": 2,
+                "speedMbps": 8533,
+                "lp5x": true
+            }
         }
     ]
 }

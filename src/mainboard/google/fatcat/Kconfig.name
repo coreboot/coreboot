@@ -17,6 +17,9 @@ config BOARD_GOOGLE_FATCATITE
 config BOARD_GOOGLE_FATCATNUVO
 	bool "-> Fatcatnuvo"
 
+config BOARD_GOOGLE_FATCATNUVO4ES
+	bool "-> Fatcatnuvo4ES"
+
 config BOARD_GOOGLE_FELINO
 	bool "-> Felino"
 

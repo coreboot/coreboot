@@ -14,6 +14,9 @@ config BOARD_GOOGLE_FATCATISH
 config BOARD_GOOGLE_FATCATITE
 	bool "-> Fatcatite"
 
+config BOARD_GOOGLE_FATCATITE4ES
+	bool "-> Fatcatite4ES"
+
 config BOARD_GOOGLE_FATCATNUVO
 	bool "-> Fatcatnuvo"
 

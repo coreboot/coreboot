@@ -13,9 +13,6 @@
 #include <soc/spm.h>
 #include <soc/spm_mtcmos.h>
 
-#define ULPOSC1_CHECK_RETRY_COUNT 5
-#define ULPOSC1_HW_CALI_VAL 0x11f10054
-
 DEFINE_BITFIELD(CLK_EN, 18, 0)
 
 /* APMIXED, ULPOSC1_CON0 */
@@ -112,35 +109,10 @@ static int pmif_init_ulposc(void)
 
 int pmif_clk_init(void)
 {
-	bool sw_cali = false;
-	u32 cali_val;
-
-	for (int i = 0; i < ULPOSC1_CHECK_RETRY_COUNT; i++) {
-		cali_val = mt_get_vlpck_freq(FREQ_METER_VLP_OSC_CK) / 1000;
-		if (pmif_ulposc_check(cali_val, PMIF_TARGET_FREQ_MHZ) != 0) {
-			sw_cali = true;
-			break;
-		}
-	}
-
-	if (sw_cali) {
-		/* initialize pmif clock */
-		printk(BIOS_INFO, "Using SW calibration!\n");
-		if (pmif_init_ulposc())
-			return E_NODEV;
-	} else {
-		printk(BIOS_INFO, "Using HW calibration!\n");
-		/* set calibration value */
-		cali_val = read32p(ULPOSC1_HW_CALI_VAL);
-		printk(BIOS_INFO, "calibration pre value: %#x, PLL_ULPOSC1_CON0 value: %#x\n",
-		       cali_val, read32(&mtk_vlpsys->vlp_ulposc1_con0));
-		SET32_BITFIELDS(&mtk_vlpsys->vlp_ulposc1_con0, OSC1_CALI,
-				(cali_val >> 1) & 0x7F);
-		SET32_BITFIELDS(&mtk_vlpsys->vlp_clk_cfg_30_set, CLK_EN, 0x70000);
-		pmif_turn_on_ulposc();
-		printk(BIOS_INFO, "PLL_ULPOSC1_CON0: 0x%x\n",
-		       read32(&mtk_vlpsys->vlp_ulposc1_con0));
-	}
+	/* initialize pmif clock */
+	printk(BIOS_INFO, "Using SW calibration!\n");
+	if (pmif_init_ulposc())
+		return E_NODEV;
 
 	/* turn off pmic_cg_tmr, cg_ap, cg_md, cg_conn clock */
 	SET32_BITFIELDS(&mtk_vlpsys->vlp_clk_cfg[0].clr, CLK_PWRAP_ULPOSC_SEL, 0x7,

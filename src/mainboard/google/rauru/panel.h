@@ -3,6 +3,6 @@
 #ifndef __MAINBOARD_GOOGLE_RAURU_PANEL_H__
 #define __MAINBOARD_GOOGLE_RAURU_PANEL_H__
 
-struct panel_description *get_oled_description(void);
+#include <soc/display.h>
 
 #endif /* __MAINBOARD_GOOGLE_RAURU_PANEL_H__ */

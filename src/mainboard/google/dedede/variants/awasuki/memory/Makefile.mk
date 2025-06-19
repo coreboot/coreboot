@@ -6,5 +6,5 @@
 SPD_SOURCES =
 SPD_SOURCES += spd/lp4x/set-1/spd-1.hex      # ID = 0(0b0000)  Parts = K4U6E3S4AB-MGCL
 SPD_SOURCES += spd/lp4x/set-1/spd-3.hex      # ID = 1(0b0001)  Parts = K4UBE3D4AB-MGCL, MT53E1G32D2NP-046 WT:B
-SPD_SOURCES += spd/lp4x/set-1/spd-11.hex      # ID = 2(0b0010)  Parts = NT6AP512T32BL-J1
+SPD_SOURCES += spd/lp4x/set-1/spd-11.hex      # ID = 2(0b0010)  Parts = NT6AP512T32BL-J1, CXDB4CBAM-ML-A
 SPD_SOURCES += spd/lp4x/set-1/spd-12.hex      # ID = 3(0b0011)  Parts = NT6AP1024F32BL-J1

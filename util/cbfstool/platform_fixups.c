@@ -7,6 +7,105 @@
 #include "cbfs_sections.h"
 #include "elfparsing.h"
 
+#define	MBN_V7 7
+
+struct mbnv7_hashtbl_seg {
+	uint32_t reserved;
+	uint32_t version;
+	uint32_t common_metadata_size;
+	uint32_t qti_metadata_size;
+	uint32_t oem_metadata_size;
+	uint32_t hash_table_size;
+	uint32_t qti_signature_size;
+	uint32_t qti_certificate_chain_size;
+	uint32_t oem_signature_size;
+	uint32_t oem_certificate_chain_size;
+};
+
+enum hash_table_algo {
+	QUALCOMM_HASH_TABLE_ALGO_SHA384 = 3,
+};
+
+struct common_metadata {
+	uint32_t major;
+	uint32_t minor;
+	uint32_t software_id;
+	uint32_t secondary_software_id;
+	uint32_t hash_table_algorithm;
+	uint32_t measurement_register_target;
+};
+
+static void *qualcomm_find_hash_mbnv7(struct buffer *elf, size_t bb_offset,
+				      struct vb2_hash *real_hash)
+{
+	void *hashtable = NULL, *bb_hash = NULL;
+	struct common_metadata *cmn = NULL;
+	struct mbnv7_hashtbl_seg *mbn;
+	struct parsed_elf pelf;
+	int bb_segment = -1;
+	Elf64_Phdr *ph;
+
+	while (true) {
+		size_t tmp;
+
+		if (!buffer_check_magic(elf, ELFMAG, 4) ||
+		     parse_elf(elf, &pelf, ELF_PARSE_PHDR))
+			return NULL;	/* Not an ELF -- guess not a Qualcomm MBN after all? */
+
+		ph = &pelf.phdr[pelf.ehdr.e_phnum - 1];
+
+		tmp = ph->p_offset + ph->p_filesz;
+
+		if (buffer_offset(elf) < bb_offset &&
+		    bb_offset < (buffer_offset(elf) + tmp)) /* found BB */
+			break;
+
+		parsed_elf_destroy(&pelf);
+
+		buffer_seek(elf, tmp);
+	}
+
+	/* Qualcomm stores an array of SHA-384 hashes in a special ELF segment,
+	   one for each segment in order. */
+	for (int i = 0; i < pelf.ehdr.e_phnum; i++) {
+		ph = &pelf.phdr[i];
+		mbn = buffer_get(elf) + ph->p_offset;
+
+		if (((ph->p_flags & PF_QC_SG_MASK) == PF_QC_SG_HASH) &&
+		    (mbn->version == MBN_V7)) {
+			cmn = buffer_get(elf) + ph->p_offset +
+			      sizeof(*mbn);
+
+			hashtable = buffer_get(elf) + ph->p_offset +
+				    sizeof(*mbn) + mbn->common_metadata_size +
+				    mbn->qti_metadata_size +
+				    mbn->oem_metadata_size;
+		} else if (ph->p_type == PT_LOAD && ph->p_flags == (PF_X | PF_W | PF_R)) {
+			bb_segment = i; /* Found the bootblock segment -- store its index. */
+		}
+	}
+
+	if (!hashtable || !cmn)
+		goto destroy_elf;
+
+	/* MBNv7 supports only SHA384, ensure that. */
+	if (cmn->hash_table_algorithm != QUALCOMM_HASH_TABLE_ALGO_SHA384)
+		goto destroy_elf;
+
+	bb_hash = hashtable + bb_segment * VB2_SHA384_DIGEST_SIZE;
+
+	/* Pass out the actual hash of the current bootblock segment in |real_hash|. */
+	if (vb2_hash_calculate(false, buffer_get(elf) + pelf.phdr[bb_segment].p_offset,
+			       pelf.phdr[bb_segment].p_filesz, VB2_HASH_SHA384, real_hash)) {
+		ERROR("fixups: vboot digest error\n");
+		goto destroy_elf;
+	} /* Return pointer to where the bootblock hash needs to go in Qualcomm's table. */
+
+destroy_elf:
+	parsed_elf_destroy(&pelf);
+	return bb_hash;
+}
+
 /*
  * NOTE: This currently only implements support for MBN version 6 (as used by sc7180). Support
  * for other MBN versions could probably be added but may require more parsing to tell them
@@ -14,6 +113,7 @@
  */
 static void *qualcomm_find_hash(struct buffer *in, size_t bb_offset, struct vb2_hash *real_hash)
 {
+	Elf64_Phdr *ph;
 	struct buffer elf;
 	buffer_clone(&elf, in);
 
@@ -38,6 +138,16 @@ static void *qualcomm_find_hash(struct buffer *in, size_t bb_offset, struct vb2_
 	if (parse_elf(&elf, &pelf, ELF_PARSE_PHDR))
 		return NULL;	/* Not an ELF -- guess not a Qualcomm MBN after all? */
 
+	/*
+	 * Check if it is a multi ELF or single ELF. If bb_offset is beyond the
+	 * final segment of first ELF, it is a multi ELF.
+	 */
+	ph = &pelf.phdr[pelf.ehdr.e_phnum - 1];
+	if (bb_offset > (ph->p_offset + ph->p_filesz)) { /* MBNv7 multi ELF */
+		parsed_elf_destroy(&pelf);
+		return qualcomm_find_hash_mbnv7(&elf, bb_offset, real_hash);
+	}
+
 	/* Qualcomm stores an array of SHA-384 hashes in a special ELF segment. One special one
 	   to start with, and then one for each segment in order. */
 	void *bb_hash = NULL;
@@ -45,7 +155,7 @@ static void *qualcomm_find_hash(struct buffer *in, size_t bb_offset, struct vb2_
 	int i;
 	int bb_segment = -1;
 	for (i = 0; i < pelf.ehdr.e_phnum; i++) {
-		Elf64_Phdr *ph = &pelf.phdr[i];
+		ph = &pelf.phdr[i];
 		if ((ph->p_flags & PF_QC_SG_MASK) == PF_QC_SG_HASH) {
 			if ((int)ph->p_filesz !=
 			    (pelf.ehdr.e_phnum + 1) * VB2_SHA384_DIGEST_SIZE) {

@@ -429,10 +429,10 @@
             "attribs": {
                 "densityPerChannelGb": 8,
                 "banks": 8,
-                "channelsPerDie": 4,
-                "diesPerPackage": 1,
+                "channelsPerDie": 2,
+                "diesPerPackage": 2,
                 "bitWidthPerChannel": 16,
-                "ranksPerChannel": 1,
+                "ranksPerChannel": 2,
                 "speedMbps": 4267,
                 "tckMaxPs": 468,
                 "casLatencies": "6 10 14 20 24 28 32 36"

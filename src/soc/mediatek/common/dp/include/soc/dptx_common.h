@@ -215,6 +215,7 @@ struct mtk_dp {
 	bool enabled;
 	bool powered;
 	bool force_max_swing;
+	u8 edp_version;
 };
 
 int mtk_edp_init(struct mtk_dp *mtk_dp, struct edid *edid);

@@ -165,6 +165,8 @@
 #define DVO_BUF_SODI_HIGHT	0x230
 #define DVO_BUF_SODI_LOW	0x234
 
+#define EDP_VERSION		2
+
 enum mtk_dvo_golden_setting_level {
 	MTK_DVO_FHD_60FPS_1920 = 0,
 	MTK_DVO_FHD_60FPS_2180,

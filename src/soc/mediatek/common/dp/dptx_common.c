@@ -253,6 +253,7 @@ void dptx_init_variable(struct mtk_dp *mtk_dp)
 	mtk_dp->has_dsc = false;
 	mtk_dp->has_fec = false;
 	mtk_dp->dsc_enable = false;
+	mtk_dp->edp_version = EDP_VERSION;
 }
 
 static inline bool dptx_check_res_sample_rate(const struct edid *edid)

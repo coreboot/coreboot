@@ -178,6 +178,8 @@
 #define MATRIX_BIT_MASK			(0x3 << 8)
 #define EXT_MATRIX_EN			BIT(12)
 
+#define EDP_VERSION			1
+
 enum mtk_dpintf_out_bit_num {
 	MTK_DPINTF_OUT_BIT_NUM_8BITS,
 	MTK_DPINTF_OUT_BIT_NUM_10BITS,

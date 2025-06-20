@@ -81,7 +81,7 @@ static void update_swing_preemphasis(struct mtk_dp *mtk_dp, u8 lane_count,
 		dptx_auxwrite_dpcd(mtk_dp, DP_AUX_NATIVE_WRITE, DPCD_00103 + lane, 0x1, &val);
 	}
 
-	dptx_hal_phy_set_swing_preemphasis(mtk_dp, lane_count, swing_val, preemphasis);
+	dptx_hal_set_swing_preemphasis(mtk_dp, lane_count, swing_val, preemphasis);
 }
 
 static void dptx_training_changemode(struct mtk_dp *mtk_dp)

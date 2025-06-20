@@ -62,8 +62,9 @@ bool dptx_hal_auxread_bytes(struct mtk_dp *mtk_dp, u8 cmd,
 			    u32 dpcd_addr, size_t length, u8 *rx_buf);
 bool dptx_hal_auxwrite_bytes(struct mtk_dp *mtk_dp, u8 cmd,
 			     u32 dpcd_addr, size_t length, u8 *data);
-bool dptx_hal_setswing_preemphasis(struct mtk_dp *mtk_dp, int lane_num,
-				   u8 swing_value, u8 preemphasis);
+void dptx_hal_set_swing_preemphasis(struct mtk_dp *mtk_dp, size_t lane_count,
+				    u8 *swing_value, u8 *preemphasis);
+void dptx_hal_reset_swing_preemphasis(struct mtk_dp *mtk_dp);
 u8 dptx_hal_get_colorbpp(struct mtk_dp *mtk_dp);
 u32 mtk_dp_phy_read(struct mtk_dp *mtk_dp, u32 offset);
 void mtk_dp_phy_mask(struct mtk_dp *mtk_dp, u32 offset, u32 val, u32 mask);
@@ -73,7 +74,6 @@ void mtk_dp_write_byte(struct mtk_dp *mtk_dp, u32 addr, u8 val, u8 mask);
 void mtk_dp_mask(struct mtk_dp *mtk_dp, u32 offset, u32 val, u32 mask);
 void mtk_dp_write(struct mtk_dp *mtk_dp, u32 offset, u32 val);
 void dptx_hal_verify_clock(struct mtk_dp *mtk_dp);
-void dptx_hal_reset_swing_preemphasis(struct mtk_dp *mtk_dp);
 void dptx_hal_digital_swreset(struct mtk_dp *mtk_dp);
 void dptx_hal_ssc_en(struct mtk_dp *mtk_dp, bool enable);
 void dptx_hal_hpd_int_en(struct mtk_dp *mtk_dp, bool enable);

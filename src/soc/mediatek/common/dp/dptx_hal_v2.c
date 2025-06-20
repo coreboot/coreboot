@@ -86,21 +86,19 @@ bool dptx_hal_hpd_high(struct mtk_dp *mtk_dp)
 	return mtk_dp_read(mtk_dp, REG_364C_AUX_TX_P0) & BIT(15);
 }
 
-bool dptx_hal_setswing_preemphasis(struct mtk_dp *mtk_dp, int lane_num, u8 swing_value,
-				   u8 preemphasis)
+void dptx_hal_set_swing_preemphasis(struct mtk_dp *mtk_dp, size_t lane_count,
+				    u8 *swing_value, u8 *preemphasis)
 {
-	assert(lane_num <= DPTX_LANE_MAX);
+	assert(lane_count <= DPTX_LANE_MAX);
 
-	for (int i = 0; i < lane_num; ++i) {
-		mtk_dp_phy_mask(mtk_dp, dptx_hal_driving_offset[i],
-				swing_value << EDP_TX_LN_VOLT_SWING_VAL_SHIFT |
-				preemphasis << EDP_TX_LN_PRE_EMPH_VAL_SHIFT,
-				EDP_TX_LN_VOLT_SWING_VAL_MASK | EDP_TX_LN_PRE_EMPH_VAL_MASK);
+	for (int lane = 0; lane < lane_count; lane++) {
 		printk(BIOS_DEBUG, "lane(%d), set swing(%u), emp(%u)\n",
-		       i, swing_value, preemphasis);
+		       lane, swing_value[lane], preemphasis[lane]);
+		mtk_dp_phy_mask(mtk_dp, dptx_hal_driving_offset[lane],
+				swing_value[lane] << EDP_TX_LN_VOLT_SWING_VAL_SHIFT |
+				preemphasis[lane] << EDP_TX_LN_PRE_EMPH_VAL_SHIFT,
+				EDP_TX_LN_VOLT_SWING_VAL_MASK | EDP_TX_LN_PRE_EMPH_VAL_MASK);
 	}
-	mtk_dp_mask(mtk_dp, 0x2000, GENMASK(1, 0), GENMASK(1, 0));
-	return true;
 }
 
 void dptx_hal_hpd_detect_setting(struct mtk_dp *mtk_dp)
@@ -313,21 +311,6 @@ void dptx_hal_set_txlane(struct mtk_dp *mtk_dp, u8 value)
 	assert((value << 2) <= UINT8_MAX);
 	mtk_dp_mask(mtk_dp, REG_3000_DP_ENCODER0_P0, value, BIT(1) | BIT(0));
 	mtk_dp_mask(mtk_dp, REG_34A4_DP_TRANS_P0, value << 2, BIT(3) | BIT(2));
-}
-
-void dptx_hal_phy_set_swing_preemphasis(struct mtk_dp *mtk_dp, u8 lane_count, u8 *swing_val,
-					 u8 *preemphasis)
-{
-	assert(lane_count <= DPTX_LANE_MAX);
-
-	for (int i = 0; i < lane_count; ++i) {
-		mtk_dp_phy_mask(mtk_dp, dptx_hal_driving_offset[i],
-				swing_val[i] << EDP_TX_LN_VOLT_SWING_VAL_SHIFT |
-				preemphasis[i] << EDP_TX_LN_PRE_EMPH_VAL_SHIFT,
-				EDP_TX_LN_VOLT_SWING_VAL_MASK | EDP_TX_LN_PRE_EMPH_VAL_MASK);
-		printk(BIOS_DEBUG, "lane(%d), set swing(%u), emp(%u)\n",
-		       i, swing_val[i], preemphasis[i]);
-	}
 }
 
 void dptx_hal_phy_set_idle_pattern(struct mtk_dp *mtk_dp, u8 lane_count, bool enable)

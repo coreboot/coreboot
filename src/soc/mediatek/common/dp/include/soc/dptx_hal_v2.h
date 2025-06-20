@@ -24,7 +24,5 @@ void dptx_hal_phy_init(struct mtk_dp *mtk_dp);
 void dptx_hal_phy_wait_aux_ldo_ready(struct mtk_dp *mtk_dp);
 void dptx_hal_phy_set_idle_pattern(struct mtk_dp *mtk_dp, u8 lane_count, bool enable);
 void dptx_hal_phy_set_lanes(struct mtk_dp *mtk_dp, u8 lane_count);
-void dptx_hal_phy_set_swing_preemphasis(struct mtk_dp *mtk_dp, u8 lane_count, u8 *swing_val,
-					u8 *preemphasis);
 
 #endif /* SOC_MEDIATEK_COMMON_DP_DPTX_HAL_V2_H */

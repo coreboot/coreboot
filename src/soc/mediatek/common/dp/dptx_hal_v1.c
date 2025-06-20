@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
 #include <console/console.h>
 #include <device/mmio.h>
 #include <delay.h>
@@ -78,24 +79,21 @@ bool dptx_hal_hpd_high(struct mtk_dp *mtk_dp)
 	return mtk_dp_read(mtk_dp, REG_3414_DP_TRANS_P0) & BIT(2);
 }
 
-bool dptx_hal_setswing_preemphasis(struct mtk_dp *mtk_dp, int lane_num,
-				   u8 swing_value, u8 preemphasis)
+void dptx_hal_set_swing_preemphasis(struct mtk_dp *mtk_dp, size_t lane_count,
+				    u8 *swing_value, u8 *preemphasis)
 {
-	printk(BIOS_DEBUG, "lane(%d), set swing(%#x), emp(%#x)\n",
-	       lane_num, swing_value, preemphasis);
+	assert(lane_count <= DPTX_LANE_MAX);
 
-	if (lane_num >= DPTX_LANE_MAX) {
-		printk(BIOS_ERR, "invalid lane number: %d\n", lane_num);
-		return false;
+	for (int lane = 0; lane < lane_count; lane++) {
+		printk(BIOS_DEBUG, "lane(%d), set swing(%#x), emp(%#x)\n",
+		       lane, swing_value[lane], preemphasis[lane]);
+		mtk_dp_mask(mtk_dp, DP_TX_TOP_SWING_EMP,
+			    swing_value[lane] << volt_swing[lane].shift,
+			    volt_swing[lane].mask);
+		mtk_dp_mask(mtk_dp, DP_TX_TOP_SWING_EMP,
+			    preemphasis[lane] << volt_preemphasis[lane].shift,
+			    volt_preemphasis[lane].mask);
 	}
-
-	mtk_dp_mask(mtk_dp, DP_TX_TOP_SWING_EMP,
-		    swing_value << volt_swing[lane_num].shift,
-		    volt_swing[lane_num].mask);
-	mtk_dp_mask(mtk_dp, DP_TX_TOP_SWING_EMP,
-		    preemphasis << volt_preemphasis[lane_num].shift,
-		    volt_preemphasis[lane_num].mask);
-	return true;
 }
 
 void dptx_hal_reset_swing_preemphasis(struct mtk_dp *mtk_dp)

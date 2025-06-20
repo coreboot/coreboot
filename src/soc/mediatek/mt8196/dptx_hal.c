@@ -6,7 +6,7 @@
 #include <soc/dptx_hal.h>
 #include <soc/dptx_reg.h>
 
-static void dptx_hal_phy_reset_swing_preemphasis(struct mtk_dp *mtk_dp)
+void dptx_hal_reset_swing_preemphasis(struct mtk_dp *mtk_dp)
 {
 	for (int i = 0; i < dptx_hal_driving_offset_size; i++)
 		mtk_dp_phy_mask(mtk_dp, dptx_hal_driving_offset[i], 0,
@@ -37,5 +37,5 @@ void dptx_hal_phyd_reset(struct mtk_dp *mtk_dp)
 	printk(BIOS_DEBUG, "[eDPTX] DP_PHY_DIG_TX_CTL_0:%#x\n",
 	       mtk_dp_phy_read(mtk_dp, DP_PHY_DIG_TX_CTL_0));
 
-	dptx_hal_phy_reset_swing_preemphasis(mtk_dp);
+	dptx_hal_reset_swing_preemphasis(mtk_dp);
 }

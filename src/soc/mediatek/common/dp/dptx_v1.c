@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
 #include <commonlib/bsd/helpers.h>
 #include <console/console.h>
 #include <delay.h>
@@ -12,112 +13,101 @@
 #include <soc/dp_intf.h>
 #include <string.h>
 
-static bool dptx_training_checkswingpre(struct mtk_dp *mtk_dp,
+static void dptx_training_checkswingpre(struct mtk_dp *mtk_dp,
 					u8 target_lane_count,
 					const u8 *dpcp202_x, u8 *dpcp_buf)
 {
-	bool ret = true;
-	u8 swing_value, preemphasis;
+	u8 swing_value[DPTX_LANE_MAX] = {0}, preemphasis[DPTX_LANE_MAX] = {0};
+
+	assert(target_lane_count <= DPTX_LANE_MAX);
 
 	/* Lane 0 */
 	if (target_lane_count >= 0x1) {
-		swing_value = (dpcp202_x[4] & 0x3);
-		preemphasis = (dpcp202_x[4] & 0xc) >> 2;
-
-		/* Adjust the swing and pre-emphasis */
-		ret &= dptx_hal_setswing_preemphasis(mtk_dp, DPTX_LANE0,
-						     swing_value, preemphasis);
+		swing_value[0] = (dpcp202_x[4] & 0x3);
+		preemphasis[0] = (dpcp202_x[4] & 0xc) >> 2;
 
 		/*
 		 * Adjust the swing and pre-emphasis done,
 		 * and notify sink side.
 		 */
-		dpcp_buf[0] = swing_value | (preemphasis << 3);
+		dpcp_buf[0] = swing_value[0] | (preemphasis[0] << 3);
 
 		/* Max swing reached. */
-		if (swing_value == DPTX_SWING3)
+		if (swing_value[0] == DPTX_SWING3)
 			dpcp_buf[0] |= BIT(2);
 
 		/* Max pre-emphasis reached. */
-		if (preemphasis == DPTX_PREEMPHASIS3)
+		if (preemphasis[0] == DPTX_PREEMPHASIS3)
 			dpcp_buf[0] |= BIT(5);
 	}
 
 	/* Lane 1 */
 	if (target_lane_count >= 0x2) {
-		swing_value = (dpcp202_x[4] & 0x30) >> 4;
-		preemphasis = (dpcp202_x[4] & 0xc0) >> 6;
-
-		/* Adjust the swing and pre-emphasis */
-		ret &= dptx_hal_setswing_preemphasis(mtk_dp, DPTX_LANE1,
-						     swing_value, preemphasis);
+		swing_value[1] = (dpcp202_x[4] & 0x30) >> 4;
+		preemphasis[1] = (dpcp202_x[4] & 0xc0) >> 6;
 
 		/*
 		 * Adjust the swing and pre-emphasis done,
 		 * and notify sink side.
 		 */
-		dpcp_buf[1] = swing_value | (preemphasis << 3);
+		dpcp_buf[1] = swing_value[1] | (preemphasis[1] << 3);
 
 		/* Max swing reached. */
-		if (swing_value == DPTX_SWING3)
+		if (swing_value[1] == DPTX_SWING3)
 			dpcp_buf[1] |= BIT(2);
 
 		/* Max pre-emphasis reached. */
-		if (preemphasis == DPTX_PREEMPHASIS3)
+		if (preemphasis[1] == DPTX_PREEMPHASIS3)
 			dpcp_buf[1] |= BIT(5);
 	}
 
 	/* Lane 2 and Lane 3 */
-	if (target_lane_count == 0x4) {
-		/* Lane 2 */
-		swing_value = (dpcp202_x[5] & 0x3);
-		preemphasis = (dpcp202_x[5] & 0x0c) >> 2;
+	if (target_lane_count >= 0x3) {
+		assert(target_lane_count == 0x4);
 
-		/* Adjust the swing and pre-emphasis */
-		ret &= dptx_hal_setswing_preemphasis(mtk_dp, DPTX_LANE2,
-						     swing_value, preemphasis);
+		/* Lane 2 */
+		swing_value[2] = (dpcp202_x[5] & 0x3);
+		preemphasis[2] = (dpcp202_x[5] & 0x0c) >> 2;
 
 		/*
 		 * Adjust the swing and pre-emphasis done,
 		 * and notify sink side.
 		 */
-		dpcp_buf[2] = swing_value | (preemphasis << 3);
+		dpcp_buf[2] = swing_value[2] | (preemphasis[2] << 3);
 
 		/* Max swing reached. */
-		if (swing_value == DPTX_SWING3)
+		if (swing_value[2] == DPTX_SWING3)
 			dpcp_buf[2] |= BIT(2);
 
 		/* Max pre-emphasis reached. */
-		if (preemphasis == DPTX_PREEMPHASIS3)
+		if (preemphasis[2] == DPTX_PREEMPHASIS3)
 			dpcp_buf[2] |= BIT(5);
 
 		/* Lane 3 */
-		swing_value = (dpcp202_x[5] & 0x30) >> 4;
-		preemphasis = (dpcp202_x[5] & 0xc0) >> 6;
-
-		/* Adjust the swing and pre-emphasis */
-		ret &= dptx_hal_setswing_preemphasis(mtk_dp, DPTX_LANE3,
-						     swing_value, preemphasis);
+		swing_value[3] = (dpcp202_x[5] & 0x30) >> 4;
+		preemphasis[3] = (dpcp202_x[5] & 0xc0) >> 6;
 
 		/*
 		 * Adjust the swing and pre-emphasis done,
 		 * and notify sink side.
 		 */
-		dpcp_buf[0x3] = swing_value | (preemphasis << 3);
+		dpcp_buf[0x3] = swing_value[3] | (preemphasis[3] << 3);
 
 		/* Max swing reached. */
-		if (swing_value == DPTX_SWING3)
+		if (swing_value[3] == DPTX_SWING3)
 			dpcp_buf[3] |= BIT(2);
 
 		/* Max pre-emphasis reached. */
-		if (preemphasis == DPTX_PREEMPHASIS3)
+		if (preemphasis[3] == DPTX_PREEMPHASIS3)
 			dpcp_buf[3] |= BIT(5);
 	}
 
+	/* Adjust the swing and pre-emphasis */
+	dptx_hal_set_swing_preemphasis(mtk_dp, target_lane_count,
+				       swing_value, preemphasis);
+
 	/* Wait signal stable enough */
 	mdelay(2);
-
-	return ret;
 }
 
 static int dptx_train_tps1(struct mtk_dp *mtk_dp, u8 target_lanecount,

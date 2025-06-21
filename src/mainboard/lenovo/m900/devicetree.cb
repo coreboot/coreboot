@@ -54,8 +54,8 @@ chip soc/intel/skylake
 				[7] = USB2_PORT_MID(OC3), /* Rear port 4 */
 				[8] = USB2_PORT_MID(OC5), /* FUSB_1 Header */
 				[9] = USB2_PORT_MID(OC5), /* FUSB_1 Header */
-				[10] = USB2_PORT_MID(6), /* FUSB_2 Header */
-				[11] = USB2_PORT_MID(6), /* FUSB_2 Header */
+				[10] = USB2_PORT_MID(OC6), /* FUSB_2 Header */
+				[11] = USB2_PORT_MID(OC6), /* FUSB_2 Header */
 				[12] = USB2_PORT_MID(OC1), /* Rear port 7 */
 				[13] = USB2_PORT_MID(OC1), /* Rear port 8 */
 			}"

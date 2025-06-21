@@ -22,7 +22,7 @@ enum {
  * within the display's height.
  */
 enum fw_splash_vertical_alignment {
-	/* FW_SPLASH_VALIGNMENT_CENTER:
+	/*
 	 * The splash image is centered vertically `(Y-axis - logo_height)/2` on the screen.
 	 * The center of the [LOGO] aligns with the vertical center of the screen.
 	 *
@@ -36,7 +36,7 @@ enum fw_splash_vertical_alignment {
 	 */
 	FW_SPLASH_VALIGNMENT_CENTER = 0,
 
-	/* FW_SPLASH_VALIGNMENT_TOP:
+	/*
 	 * The splash image is aligned to the top edge of the screen.
 	 *
 	 * +---------------+
@@ -49,7 +49,7 @@ enum fw_splash_vertical_alignment {
 	 */
 	FW_SPLASH_VALIGNMENT_TOP = 1,
 
-	/* FW_SPLASH_VALIGNMENT_BOTTOM:
+	/*
 	 * The splash image is aligned to the bottom edge of the screen.
 	 *
 	 * +---------------+
@@ -62,7 +62,7 @@ enum fw_splash_vertical_alignment {
 	 */
 	FW_SPLASH_VALIGNMENT_BOTTOM = 2,
 
-	/* FW_SPLASH_VALIGNMENT_MIDDLE:
+	/*
 	 * The splash image is placed in the vertical middle `(Y-axis/2)` of the screen
 	 * (without considering the `logo height`). This means the TOP EDGE of the
 	 * [LOGO] aligns with the screen's vertical midpoint line.

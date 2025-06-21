@@ -47,9 +47,11 @@ CPPFLAGS_common += -Isrc/soc/qualcomm/x1p42100/include
 CPPFLAGS_common += -Isrc/soc/qualcomm/common/include
 
 ################################################################################
+# look for QC blobs if QC SoC blobs are only available in upstream else ignore
+ifeq ($(CONFIG_QC_BLOBS_UPSTREAM),y)
 ifeq ($(CONFIG_USE_QC_BLOBS),y)
 # TODO: Upload X1P42100 SoC blobs
-X1P42100_BLOB := $(top)/3rdparty/qc_blobs/sc7280
+X1P42100_BLOB := $(top)/3rdparty/qc_blobs/x1p42100
 
 ifeq ($(CONFIG_QC_SDI_ENABLE),y)
 BL31_MAKEARGS += QTI_SDI_BUILD=1
@@ -187,6 +189,7 @@ $(GSI_FW_CBFS)-type := raw
 $(GSI_FW_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(GSI_FW_CBFS)
 
-endif
+endif # ifeq ($(CONFIG_USE_QC_BLOBS),y)
 
-endif
+endif # ifeq ($(CONFIG_QC_BLOBS_UPSTREAM),y)
+endif # ifeq ($(CONFIG_SOC_QUALCOMM_X1P42100),y)

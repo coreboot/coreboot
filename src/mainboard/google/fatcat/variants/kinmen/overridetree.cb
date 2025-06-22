@@ -65,6 +65,8 @@ chip soc/intel/pantherlake
 	#| I2C5              | Touchscreen               |
 	#+-------------------+---------------------------+
 	register "common_soc_config" = "{
+		/* Render OEM footer logo 100px above from the edge */
+		.logo_bottom_margin = 100,
 		.chipset_lockdown = CHIPSET_LOCKDOWN_COREBOOT,
 		.i2c[3] = {
 			.early_init = 1,

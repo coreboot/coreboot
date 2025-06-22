@@ -127,6 +127,8 @@ struct soc_intel_common_config {
 	struct mmc_dll_params emmc_dll;
 	enum lb_fb_orientation panel_orientation;
 	enum fw_splash_vertical_alignment logo_valignment;
+	/* Implies spacing from an edge for rendering footer logo */
+	uint8_t logo_bottom_margin;
 };
 
 /* This function to retrieve soc config structure required by common code */

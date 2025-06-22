@@ -185,6 +185,15 @@ static int render_logo_to_framebuffer(uintptr_t framebuffer_base, uint32_t bytes
 	logo_coords = calculate_logo_coordinates(horizontal_resolution,
 		 vertical_resolution, logo_width, logo_height, valignment, halignment);
 
+	/* Adjust the logo axis for rendering footer bootsplash if any override is available */
+	if (logo_type == BOOTSPLASH_FOOTER && config->logo_bottom_margin) {
+		if (config->panel_orientation == LB_FB_ORIENTATION_BOTTOM_UP ||
+				 config->panel_orientation == LB_FB_ORIENTATION_NORMAL)
+			logo_coords.y -= config->logo_bottom_margin;
+		else
+			logo_coords.x -= config->logo_bottom_margin;
+	}
+
 	copy_logo_to_framebuffer(framebuffer_base, bytes_per_scanline, blt_buffer_addr,
 				 logo_width, logo_height, logo_coords.x, logo_coords.y);
 

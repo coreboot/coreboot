@@ -5,25 +5,16 @@ config BOARD_SIEMENS_BASEBOARD_MC_RPL
 	select BOARD_ROMSIZE_KB_16384
 	select CPU_INTEL_SOCKET_LGA1700
 	select DRIVERS_I2C_GENERIC
-	select DRIVERS_I2C_HID
-	select DRIVERS_I2C_MAX98373
 	select DRIVERS_INTEL_DPTF
-	select DRIVERS_INTEL_MIPI_CAMERA
-	select DRIVERS_INTEL_SOUNDWIRE
-	select DRIVERS_SOUNDWIRE_ALC_BASE_7XX
 	select DRIVERS_SPI_ACPI
 	select DRIVERS_USB_ACPI
 	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
-	select SOC_INTEL_COMMON_BLOCK_IPU
-	select SOC_INTEL_CSE_LITE_SKU
 	select USE_SIEMENS_HWILIB
 
 
 config BOARD_SIEMENS_MC_RPL1
 	select BOARD_SIEMENS_BASEBOARD_MC_RPL
-	select DRIVERS_UART_8250IO
-	select GEN3_EXTERNAL_CLOCK_BUFFER
 	select SOC_INTEL_ALDERLAKE_PCH_P
 	select SOC_INTEL_RAPTORLAKE
 
@@ -68,20 +59,4 @@ config DRIVER_TPM_SPI_BUS
 
 config USE_PM_ACPI_TIMER
 	default n if BOARD_SIEMENS_MC_RPL1
-
-config GEN3_EXTERNAL_CLOCK_BUFFER
-	bool
-	depends on SOC_INTEL_ALDERLAKE_PCH_P
-	default n
-	help
-	  Support external Gen-3 clock chip for ADL-P.
-	  `CONFIG_CLKSRC_FOR_EXTERNAL_BUFFER` provides feed clock to discrete buffer
-	  for further distribution to platform. SRCCLKREQB[7:9] maps to internal
-	  SRCCLKREQB[6]. If any of them asserted, SRC buffer
-	  `CONFIG_CLKSRC_FOR_EXTERNAL_BUFFER` gets enabled.
-
-config CLKSRC_FOR_EXTERNAL_BUFFER
-	depends on GEN3_EXTERNAL_CLOCK_BUFFER
-	int
-	default 6  # CLKSRC 6
 endif

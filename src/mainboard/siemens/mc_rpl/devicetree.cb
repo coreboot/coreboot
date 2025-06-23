@@ -10,9 +10,6 @@ chip soc/intel/alderlake
 
 	# FSP configuration
 
-	# Enable CNVi BT
-	register "cnvi_bt_core" = "true"
-
 	# Sagv Configuration
 	register "sagv" = "SaGv_Enabled"
 
@@ -48,13 +45,6 @@ chip soc/intel/alderlake
 		[3] = 1,
 	}"
 
-	# Enable EDP in PortA
-	register "ddi_portA_config" = "1"
-	# Enable HDMI in Port B
-	register "ddi_ports_config" = "{
-		[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
-	}"
-
 	register "s0ix_enable" = "true"
 	register "dptf_enable" = "true"
 
@@ -84,14 +74,6 @@ chip soc/intel/alderlake
 		[PchSerialIoIndexUART1] = PchSerialIoDisabled,
 		[PchSerialIoIndexUART2] = PchSerialIoDisabled,
 	}"
-
-	# HD Audio
-	register "pch_hda_dsp_enable" = "1"
-	register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
-	register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
-	register "pch_hda_idisp_codec_enable" = "1"
-
-	register "cnvi_bt_audio_offload" = "true"
 
 	# Intel Common SoC Config
 	register "common_soc_config" = "{
@@ -198,42 +180,14 @@ chip soc/intel/alderlake
 				device generic 0 alias dptf_policy on end
 			end
 		end
-		device ref ipu on
-			chip drivers/intel/mipi_camera
-				register "acpi_uid" = "0x50000"
-				register "acpi_name" = ""IPU0""
-				register "device_type" = "INTEL_ACPI_CAMERA_CIO2"
-
-				register "cio2_num_ports" = "2"
-				register "cio2_lanes_used" = "{2,2}"
-				register "cio2_lane_endpoint[0]" = ""^I2C5.CAM1""
-				register "cio2_lane_endpoint[1]" = ""^I2C1.CAM0""
-				register "cio2_prt[0]" = "2"
-				register "cio2_prt[1]" = "1"
-				device generic 0 on end
-			end
-		end
 		device ref crashlog off end
 		device ref xhci on
 			chip drivers/usb/acpi
 				register "desc" = ""Root Hub""
 				register "type" = "UPC_TYPE_HUB"
-				device ref xhci_root_hub on
-					chip drivers/usb/acpi
-						register "desc" = ""Bluetooth""
-						register "type" = "UPC_TYPE_INTERNAL"
-						device ref usb2_port10 on end
-					end
-				end
+				device ref xhci_root_hub on end
 			end
 		end
-		device ref cnvi_wifi on
-			chip drivers/wifi/generic
-				register "wake" = "GPE0_PME_B0"
-				device generic 0 on end
-			end
-		end
-		device ref heci1 on end
 		device ref sata on end
 		device ref uart0 on end
 		device ref gspi0 on end
@@ -244,20 +198,6 @@ chip soc/intel/alderlake
 				register "compat_string" = ""google,cr50""
 				register "irq" = "ACPI_IRQ_EDGE_LOW(GPP_E3_IRQ)"
 				device spi 0 on end
-			end
-		end
-		device ref hda on
-			chip drivers/intel/soundwire
-				device generic 0 on
-					chip drivers/soundwire/alc711
-						# SoundWire Link 0 ID 1
-						register "desc" = ""Headset Codec""
-						register "alc711_address.version" = "SOUNDWIRE_VERSION_1_1"
-						register "alc711_address.class" = "MIPI_CLASS_NONE"
-						register "alc711_address.part_id" = "MIPI_DEV_ID_REALTEK_ALC711"
-						device generic 0.1 on end
-					end
-				end
 			end
 		end
 		device ref smbus on end

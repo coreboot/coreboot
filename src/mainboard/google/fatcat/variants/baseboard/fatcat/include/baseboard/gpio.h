@@ -37,6 +37,11 @@
  #define GPIO_PCH_WP	GPP_D02
 /* Used to gate SoC's SLP_S0# signal */
 #define GPIO_SLP_S0_GATE	GPP_V17
+#elif CONFIG(BOARD_GOOGLE_LAPIS)
+ #define EC_SYNC_IRQ	GPP_E07_IRQ
+ #define GPIO_PCH_WP	GPP_D02
+/* Used to gate SoC's SLP_S0# signal */
+#define GPIO_SLP_S0_GATE	GPP_V17
 #endif
 
 #endif /* __BASEBOARD_GPIO_H__ */

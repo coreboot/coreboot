@@ -37,3 +37,6 @@ config BOARD_GOOGLE_KINMEN4ES
 
 config BOARD_GOOGLE_KINMEN
 	bool "-> Kinmen"
+
+config BOARD_GOOGLE_LAPIS
+	bool "-> Lapis"

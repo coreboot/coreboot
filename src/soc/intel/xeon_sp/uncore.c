@@ -277,11 +277,6 @@ static void mc_add_dram_resources(struct device *dev, int *res_count)
 	res = ram_from_to(dev, index++, top_of_ram, cbmem_top());
 	LOG_RESOURCE("cbmem_ram", dev, res);
 
-	/* Mark TSEG/SMM region as reserved */
-	res = reserved_ram_from_to(dev, index++, mc_values[TSEG_BASE_REG],
-				   mc_values[TSEG_LIMIT_REG] + 1);
-	LOG_RESOURCE("mmio_tseg", dev, res);
-
 	/* Reserve DPR region */
 	union dpr_register dpr = { .raw = pci_read_config32(dev, VTD_LTDPR) };
 	if (dpr.size) {

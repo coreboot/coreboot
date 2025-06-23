@@ -165,5 +165,9 @@ bool is_memtype_processor_attached(uint16_t mem_type)
 
 bool get_mmio_high_base_size(resource_t *base, resource_t *size)
 {
-	return false;
+	const IIO_UDS *hob = get_iio_uds();
+	*base = hob->PlatformData.SystemMmio64Base;
+	*size = hob->PlatformData.SystemMmio64Limit - (*base) + 1;
+
+	return true;
 }

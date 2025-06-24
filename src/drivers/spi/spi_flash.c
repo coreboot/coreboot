@@ -768,6 +768,10 @@ void lb_spi_flash(struct lb_header *header)
 		flash->mmap_count = spi_flash_get_mmap_windows(table);
 		flash->size += flash->mmap_count * sizeof(*table);
 	}
+
+	/* Pass 4-byte address mode information to payload */
+	if (CONFIG(SPI_FLASH_FORCE_4_BYTE_ADDR_MODE))
+		flash->flags = LB_SPI_FLASH_FLAG_IN_4BYTE_ADDR_MODE;
 }
 
 int spi_flash_ctrlr_protect_region(const struct spi_flash *flash,

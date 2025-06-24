@@ -8,7 +8,8 @@ chip soc/intel/pantherlake
 	#	EC host command ranges are in 0x800-0x807 & 0x200-0x20f
 	# For Ocelot variants with ITE/Nuvoton EC:
 	# 	EC host command ranges are in 0x800-0x8ff & 0x200-0x20f
-	register "gen1_dec" = "CONFIG(BOARD_GOOGLE_OCELOT)? 0x00040801 : 0x00fc0801"
+	register "gen1_dec" = "CONFIG(BOARD_GOOGLE_OCELOTMCHP) ||
+			CONFIG(BOARD_GOOGLE_OCELOTMCHP4ES)? 0x00040801 : 0x00fc0801"
 	register "gen2_dec" = "0x000c0201"
 	# EC memory map range is 0x900-0x9ff
 	register "gen3_dec" = "0x00fc0901"

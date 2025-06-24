@@ -22,24 +22,27 @@ static const struct pad_config i2s_enable_pads[] = {
 	PAD_CFG_NF(GPP_D12, NONE, DEEP, NF2),
 	/* I2S0_RXD_HDR */
 	PAD_CFG_NF(GPP_D13, NONE, DEEP, NF2),
-	/* I2S1_SCLK_HDR */
-	PAD_CFG_NF(GPP_S00, NONE, DEEP, NF6),
-	/* I2S1_SFRM_HDR */
-	PAD_CFG_NF(GPP_S01, NONE, DEEP, NF6),
 	/* I2S1_TXD_HDR */
-	PAD_CFG_NF(GPP_S02, NONE, DEEP, NF6),
+	PAD_CFG_NF(GPP_S00, NONE, DEEP, NF6),
 	/* I2S1_RXD_HDR */
+	PAD_CFG_NF(GPP_S01, NONE, DEEP, NF6),
+	/* I2S1_SCLK_HDR */
+	PAD_CFG_NF(GPP_S02, NONE, DEEP, NF6),
+	/* I2S1_SFRM_HDR */
 	PAD_CFG_NF(GPP_S03, NONE, DEEP, NF6),
+	/* I2S2_SCLK_HDR */
+	PAD_CFG_NF(GPP_S04, NONE, DEEP, NF6),
+	/* I2S2_SFRM_HDR */
+	PAD_CFG_NF(GPP_S05, NONE, DEEP, NF6),
+	/* I2S2_TXD_HDR */
+	PAD_CFG_NF(GPP_S06, NONE, DEEP, NF6),
+	/* I2S2_RXD_HDR */
+	PAD_CFG_NF(GPP_S07, NONE, DEEP, NF6),
 
 	/* DMIC_CLK */
 	PAD_CFG_NF(GPP_D16, NONE, DEEP, NF3),
 	/* DMIC_DATA */
 	PAD_CFG_NF(GPP_D17, NONE, DEEP, NF3),
-
-	/* DMIC_CLK */
-	PAD_CFG_NF(GPP_S04, NONE, DEEP, NF5),
-	/* DMIC_DATA */
-	PAD_CFG_NF(GPP_S05, NONE, DEEP, NF5),
 };
 
 static const struct pad_config hda_enable_pads[] = {
@@ -507,12 +510,6 @@ static const struct pad_config fp_disable_pads[] = {
 	/* GPP_D01:     MOD_TCSS1_TYP_A_VBUS_EN */
 	PAD_CFG_GPO(GPP_D01, 1, DEEP),
 	PAD_NC(GPP_E17, NONE),
-	/* FIXME: b/390031369
-	 * use dedicated GPIO PIN for codec enable
-	 * when FPS is enabled.
-	 */
-	/* GPP_E19:     CODEC_EN */
-	PAD_CFG_GPO(GPP_E19, 1, PLTRST),
 	PAD_NC(GPP_E20, NONE),
 	PAD_NC(GPP_F14, NONE),
 	PAD_NC(GPP_F15, NONE),
@@ -526,8 +523,6 @@ static const struct pad_config fp_enable_pads[] = {
 	PAD_CFG_GPI_IRQ_WAKE(GPP_D01, NONE, PWROK, LEVEL, INVERT),
 	/* GPP_E17:     GSPI0A_CS0 */
 	PAD_CFG_NF(GPP_E17, NONE, DEEP, NF5),
-	/* GPP_E19:     FPMCU_PWREN */
-	PAD_CFG_GPO(GPP_E19, 1, DEEP),
 	/* GPP_E20:     FPMCU_FW_UPDATE */
 	PAD_CFG_GPO_LOCK(GPP_E20, 0, LOCK_CONFIG),
 	/* GPP_F14:     GPSI0A_MOSI */

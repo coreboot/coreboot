@@ -177,6 +177,7 @@ static void cb_parse_spi_flash(void *ptr, struct sysinfo_t *info)
 	info->spi_flash.size = flash->flash_size;
 	info->spi_flash.sector_size = flash->sector_size;
 	info->spi_flash.erase_cmd = flash->erase_cmd;
+	info->spi_flash.flags = flash->flags;
 
 	if (flash->mmap_count == 0)
 		return;

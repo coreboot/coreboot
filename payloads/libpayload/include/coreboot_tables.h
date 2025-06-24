@@ -306,7 +306,15 @@ struct cb_spi_flash {
 	uint32_t size;
 	uint32_t flash_size;
 	uint32_t sector_size;
-	uint32_t erase_cmd;
+	/*
+	 * Note: `erase_cmd` was previously a uint32_t. It's now uint8_t because only
+	 * the lowest byte was used, ensuring backward compatibility with older coreboot
+	 * tables and allowing reuse of the remaining bytes.
+	 */
+	uint8_t erase_cmd;
+#define CB_SPI_FLASH_FLAG_IN_4BYTE_ADDR_MODE    (1 << 0)
+	uint8_t flags;
+	uint16_t reserved;
 	/*
 	 * Number of mmap windows used by the platform to decode addresses between SPI flash
 	 * space and host address space. This determines the number of entries in mmap_table.

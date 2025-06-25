@@ -128,8 +128,15 @@ void clock_configure_dfsr_table(int qup, struct clock_freq_config *clk_cfg,
 	unsigned int idx, s = qup % QUP_WRAP1_S0;
 	uint32_t reg_val;
 
-	qup_clk = qup < QUP_WRAP1_S0 ?
-				&gcc->qup_wrap0_s[s] : &gcc->qup_wrap1_s[s];
+#if QUP_WRAP2_BASE
+	if (qup >= QUP_WRAP2_S0)
+		qup_clk = &gcc->qup_wrap2_s[s];
+	else
+#endif
+	if (qup >= QUP_WRAP1_S0)
+		qup_clk = &gcc->qup_wrap1_s[s];
+	else
+		qup_clk = &gcc->qup_wrap0_s[s];
 
 	clrsetbits32(&qup_clk->dfsr_clk.cmd_dfsr,
 			BIT(CLK_CTL_CMD_RCG_SW_CTL_SHFT),

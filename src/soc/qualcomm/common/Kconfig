@@ -6,6 +6,12 @@ config SOC_QUALCOMM_COMMON
 	help
 	  Selected by platforms that use the common code.
 
+config QC_COMMON_QUPV3_2
+	bool
+	default n
+	help
+	  Selected by chipsets that has QUPv3 HW Version 2.
+
 if SOC_QUALCOMM_COMMON
 
 config QC_SDI_ENABLE

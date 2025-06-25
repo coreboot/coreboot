@@ -45,6 +45,9 @@ struct clock_freq_config {
 
 struct qupv3_clock {
 	u32 cbcr;
+#if CONFIG(QC_COMMON_QUPV3_2)
+	u8 _res0[0x08];
+#endif
 	struct clock_rcg_mnd clk;
 	struct clock_rcg_dfsr dfsr_clk;
 };

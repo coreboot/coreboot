@@ -274,10 +274,6 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),
 	/* H11 : UART0_TXD ==> UART_SOC_TX_DBG_RX */
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
-	/* H12 : GPP_H12 ==> NC */
-	PAD_NC_LOCK(GPP_H12, NONE, LOCK_CONFIG),
-	/* H13 : GPP_H13 ==> NC */
-	PAD_NC_LOCK(GPP_H13, NONE, LOCK_CONFIG),
 	/* H14 : Not available */
 	PAD_NC(GPP_H14, NONE),
 	/* H15 : DDPB_CTRLCLK ==> HDMI_DDC_SCL */
@@ -455,6 +451,10 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_NF(GPP_H10, NONE, DEEP, NF2),
 	/* H11 : UART0_TXD ==> UART_SOC_TX_DBG_RX */
 	PAD_CFG_NF(GPP_H11, NONE, DEEP, NF2),
+	/* H12 : UART0_RTS# ==> SD_PERST_L */
+	PAD_CFG_GPO(GPP_H12, 0, DEEP),
+	/* H13 : UART0_CTS# ==> EN_PP3300_SD_X */
+	PAD_CFG_GPO(GPP_H13, 1, DEEP),
 };
 
 /* Pad configuration in romstage for Sundance */
@@ -477,6 +477,8 @@ static const struct pad_config romstage_gpio_table[] = {
 	 PAD_CFG_GPO(GPP_E7, 0, DEEP),
 	 /* D2  : ISH_GP2 ==> EN_FP_PWR */
 	 PAD_CFG_GPO(GPP_D2, 0, DEEP),
+	/* H12 : UART0_RTS# ==> SD_PERST_L */
+	PAD_CFG_GPO(GPP_H12, 1, DEEP),
 };
 
 const struct pad_config *variant_gpio_override_table(size_t *num)

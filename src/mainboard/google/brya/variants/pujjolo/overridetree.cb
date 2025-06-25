@@ -8,7 +8,7 @@ fw_config
 		option WIFI_SAR_TABLE_AX211	0
 		option WIFI_SAR_TABLE_AX203	1
 	end
-	field SD_CARD 22
+	field SD_CARD 25
 		option SD_ABSENT	0
 		option SD_PRESENT	1
 	end

@@ -8,7 +8,9 @@ chip soc/intel/alderlake
 	# Enable EDP in PortA
 	register "ddi_portA_config" = "1"
 	# Enable HDMI in Port B
+	register "ddi_portB_config" = "1"
 	register "ddi_ports_config" = "{
+		[DDI_PORT_A] = DDI_ENABLE_HPD,
 		[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
 	}"
 

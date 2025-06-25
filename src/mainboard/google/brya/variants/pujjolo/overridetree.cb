@@ -8,6 +8,10 @@ fw_config
 		option WIFI_SAR_TABLE_AX211	0
 		option WIFI_SAR_TABLE_AX203	1
 	end
+	field FP 24
+		option FP_ABSENT	0
+		option FP_PRESENT	1
+	end
 	field SD_CARD 25
 		option SD_ABSENT	0
 		option SD_PRESENT	1
@@ -630,7 +634,9 @@ chip soc/intel/alderlake
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_E7)"
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D2)"
 				register "enable_delay_ms" = "3"
-				device spi 0 on end
+				device spi 0 on
+					probe FP FP_PRESENT
+				end
 			end # FPMCU
 		end
 		device ref cnvi_wifi on

@@ -261,7 +261,7 @@ static const struct mux_sel mux_sels[] = {
 	{ .id = CLK_TOP_DP_SEL, .sel = 4 },
 	{ .id = CLK_TOP_EDP_SEL, .sel = 4 },
 	{ .id = CLK_TOP_EDP_FAVT_SEL, .sel = 4 },
-	{ .id = CLK_TOP_SFLASH_SEL, .sel = 0 },
+	{ .id = CLK_TOP_SFLASH_SEL, .sel = 2 },
 	{ .id = CLK_TOP_ECC_SEL, .sel = 5 },
 };
 

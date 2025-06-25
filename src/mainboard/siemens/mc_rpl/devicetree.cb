@@ -15,7 +15,7 @@ chip soc/intel/alderlake
 
 	register "dptf_enable" = "false"
 
-	register "s0ix_enable" = "true"
+	register "s0ix_enable" = "false"
 
 	device domain 0 on
 		device ref igpu on end

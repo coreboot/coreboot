@@ -1,0 +1,22 @@
+# layout for firmware residing at top of 4GB address space
+# +-------------+ <-- 4GB - ROM_SIZE / start of flash
+# | unspecified |
+# +-------------+ <-- 4GB - BIOS_SIZE
+# | FMAP        |
+# +-------------+ <-- 4GB - BIOS_SIZE + FMAP_SIZE
+# | CBFS        |
+# +-------------+ <-- 4GB / end of flash
+
+FLASH 16M {
+	SI_ALL	6M {
+		SI_DESC		4K
+		SI_ME		4172K
+		SI_PDR		1968K
+	}
+	SI_BIOS@12M 4M {
+		RW_MRC_CACHE	64K
+		SMMSTORE 	256K
+		FMAP		1K
+		COREBOOT(CBFS)
+	}
+}

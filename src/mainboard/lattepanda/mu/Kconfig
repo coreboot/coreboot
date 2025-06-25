@@ -18,6 +18,9 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOC_INTEL_ALDERLAKE_PCH_N
 	select SUPERIO_ITE_IT8613E
 
+config FMDFILE
+	default "src/mainboard/\$(CONFIG_MAINBOARD_DIR)/board.fmd"
+
 config MAINBOARD_DIR
 	default "lattepanda/mu"
 

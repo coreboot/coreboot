@@ -23,6 +23,11 @@ fw_config
 end
 chip soc/intel/alderlake
 
+	# GPE configuration
+	register "pmc_gpe0_dw0" = "GPP_A"
+	register "pmc_gpe0_dw1" = "GPP_H"
+	register "pmc_gpe0_dw2" = "GPP_F"
+
 	# S0ix enable
 	register "s0ix_enable" = "true"
 

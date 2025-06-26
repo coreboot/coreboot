@@ -39,4 +39,6 @@ DefinitionBlock(
 #endif
 
 	#include <southbridge/intel/common/acpi/sleepstates.asl>
+
+	#include <acpi/power_meter.asl>
 }

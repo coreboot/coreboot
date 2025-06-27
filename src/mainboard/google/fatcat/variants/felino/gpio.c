@@ -266,8 +266,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_F07, NONE),
 	/* GPP_F08:     NC */
 	PAD_NC(GPP_F08, NONE),
-	/* GPP_F09:     SX_EXIT_HOLDOFF# */
-	PAD_CFG_NF(GPP_F09, NONE, DEEP, NF2),
+	/* GPP_F09:     NC */
+	PAD_NC_LOCK(GPP_F09, NONE, LOCK_CONFIG),
 	/* GPP_F10:     HW_ID7 */
 	PAD_CFG_GPI(GPP_F10, NONE, PLTRST),
 	/* GPP_F11:     TC_RETIMER_FORCE_PWR */
@@ -380,7 +380,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_V11:     SLP_LAN_N */
 	PAD_CFG_NF(GPP_V11, NONE, DEEP, NF1),
 	/* GPP_V12:     WAKE# */
-	PAD_CFG_NF(GPP_V12, NONE, DEEP, NF1),
+	PAD_CFG_NF(GPP_V12, UP_1K, DEEP, NF1),
 	/* GPP_V13:     GPP_V13_CATERR_N */
 	PAD_CFG_NF(GPP_V13, NONE, DEEP, NF1),
 	/* GPP_V14:     GPP_V14_FORCEPR_N */

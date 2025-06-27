@@ -134,6 +134,13 @@ config SOC_INTEL_PANTHERLAKE_H
 	help
 	  Choose this option if the mainboard is built using PTL-H 4Xe system-on-a-chip (SoC).
 
+config SOC_INTEL_PANTHERLAKE_PRE_PRODUCTION_SILICON
+	bool
+	default n
+	help
+	  Choose this option if your mainboard has a Panther Lake pre-production
+	  silicon and pre-production signed ME Firmwares are integrated.
+
 config SOC_INTEL_WILDCATLAKE
 	bool
 	select SOC_INTEL_PANTHERLAKE_BASE

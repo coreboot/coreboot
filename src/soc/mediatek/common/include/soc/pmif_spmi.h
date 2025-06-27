@@ -96,4 +96,6 @@ int spmi_config_master(void);
 size_t spmi_dev_cnt(void);
 void pmif_spmi_iocfg(void);
 void pmif_spmi_config(struct pmif *arb);
+void pmif_spmi_force_normal_mode(struct pmif *arb);
+
 #endif /* __SOC_MEDIATEK_PMIF_SPMI_H__ */

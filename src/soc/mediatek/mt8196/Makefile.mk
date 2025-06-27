@@ -49,7 +49,7 @@ romstage-y += pwrsel.c
 romstage-y += ../common/pmif_clk.c pmif_clk.c
 romstage-y += ../common/pmif.c pmif_init.c
 romstage-y += ../common/rtc.c ../common/rtc_osc_init.c
-romstage-y += pmif_spmi.c
+romstage-y += ../common/pmif_spmi_v2.c pmif_spmi.c
 romstage-y += srclken_rc.c
 romstage-y += thermal.c
 romstage-y += thermal_sram.c
@@ -85,7 +85,7 @@ ramstage-y += ../common/spm.c ../common/spm_v2.c spm.c
 ramstage-y += ../common/sspm.c ../common/sspm_sram.c
 ramstage-y += ../common/pmif_clk.c pmif_clk.c
 ramstage-y += ../common/pmif.c pmif_init.c
-ramstage-y += pmif_spmi.c
+ramstage-y += ../common/pmif_spmi_v2.c pmif_spmi.c
 ramstage-y += ../common/rtc.c ../common/rtc_osc_init.c
 ramstage-y += ../common/usb.c usb.c
 

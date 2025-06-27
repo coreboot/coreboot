@@ -24,16 +24,6 @@ DEFINE_BIT(SAMPL_CK_POL, 0)
 DEFINE_BITFIELD(SAMPL_CK_DLY, 3, 1)
 DEFINE_BITFIELD(SAMPL_CK_DLY_ARB, 6, 4)
 
-/* PMIF, SPI_MODE_CTRL */
-DEFINE_BIT(VLD_SRCLK_EN_CTRL, 5)
-DEFINE_BIT(SPI_MODE_CTRL_PMIF_RDY, 9)
-DEFINE_BIT(SPI_MODE_CTRL_SRCLK_EN, 10)
-DEFINE_BIT(SPI_MODE_CTRL_SRVOL_EN, 11)
-
-/* PMIF, SLEEP_PROTECTION_CTRL */
-DEFINE_BIT(SPM_SLEEP_REQ_SEL, 0)
-DEFINE_BIT(SCP_SLEEP_REQ_SEL, 9)
-
 const struct spmi_device spmi_dev[] = {
 	{
 		.slvid = SPMI_SLAVE_4,	/* MT6363 */
@@ -262,21 +252,6 @@ static int spmi_mst_init(struct pmif *arb)
 	}
 
 	return 0;
-}
-
-static void pmif_spmi_force_normal_mode(struct pmif *arb)
-{
-	/* listen srclken_0 only for entering normal or sleep mode */
-	SET32_BITFIELDS(&arb->mtk_pmif->spi_mode_ctrl,
-			VLD_SRCLK_EN_CTRL, 0,
-			SPI_MODE_CTRL_PMIF_RDY, 1,
-			SPI_MODE_CTRL_SRCLK_EN, 0,
-			SPI_MODE_CTRL_SRVOL_EN, 0);
-
-	/* disable spm/scp sleep request */
-	SET32_BITFIELDS(&arb->mtk_pmif->sleep_protection_ctrl, SPM_SLEEP_REQ_SEL, 1,
-			SCP_SLEEP_REQ_SEL, 1);
-	printk(BIOS_INFO, "%s done\n", __func__);
 }
 
 static void pmif_spmi_enable_swinf(struct pmif *arb)

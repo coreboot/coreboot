@@ -33,7 +33,7 @@ my $root_dir       = "src";           # Directory of the top level Kconfig file
 my $errors_found   = 0;               # count of errors
 my $warnings_found = 0;
 my $exclude_dirs_and_files =
-  '^build/\|^coreboot-builds/\|^configs/\|^util/\|^\.git/\|^payloads\|^Documentation\|^3rdparty'
+  '^build/\|^coreboot-builds/\|^configs/\|^util/\|^\.git/\|^payloads\|^Documentation\|^3rdparty\|^src/vendorcode/amd/opensil/genoa_poc/opensil'
   . '\|' .                            # directories to exclude when searching for used symbols
   '\.config\|\.txt$\|\.tex$\|\.tags\|/kconfig.h\|\.fmd'; #files to exclude when looking for symbols
 my $payload_files_to_check='payloads/Makefile.mk payloads/external/Makefile.mk';

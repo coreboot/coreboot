@@ -89,7 +89,7 @@ fi
 
 	git submodule update --init --checkout
 
-	printf "%s-%s\n" "$VERSION_NAME"  "$(git log --pretty=%h -1)" > .coreboot-version
+	printf "%s-%s-%s\n" "$VERSION_NAME"  "$(git log --pretty=%h -1)" "$(git log --pretty=%t -1)" > .coreboot-version
 	printf "%s\n" "$(git log --pretty=format:%ci -1)" > "${TIME_FILE}"
 )
 tstamp=$(cat "${TIME_FILE}" | sed 's/ +0000//')

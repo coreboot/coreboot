@@ -897,6 +897,7 @@ build_IASL() {
 	RDIR=$PWD
 	cd ../$IASL_DIR/generate/unix || exit 1
 	CFLAGS="$HOSTCFLAGS"
+	OPT_LDFLAGS=""
 	HOST="_LINUX"
 	test "$UNAME" = "Darwin" && HOST="_APPLE" && OPT_LDFLAGS="-Wl,-no_fixup_chains"
 	test "$UNAME" = "FreeBSD" && HOST="_FreeBSD"

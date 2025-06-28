@@ -10,13 +10,15 @@ src/cpu/armltd src/cpu/qemu-power8 src/cpu/qemu-x86 \
 src/drivers/ti \
 src/ec/purism \
 src/include/boot src/include/superio src/include/sys \
-src/mainboard/adlink src/mainboard/purism src/mainboard/ti \
+src/mainboard/purism src/mainboard/ti \
 src/superio/acpi src/superio/common \
 "
 
 for directory in $DIRS; do
-	util/lint/lint-007-checkpatch "$directory" &
-	PIDS="$PIDS $!"
+	if [ -d "$directory" ]; then
+		util/lint/lint-007-checkpatch "$directory" &
+		PIDS="$PIDS $!"
+	fi
 done
 
 # wait for tests to finish.

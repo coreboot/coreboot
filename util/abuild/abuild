@@ -755,6 +755,7 @@ Options:\n
     [-R|--root <path>]            Absolute path to coreboot sources
                                   (defaults to ${ROOT})
     [--static-analysis]            Run clang-tidy for static code analysis
+    [-S|--sequential-boards]      Build boards sequentially using all cores
     [--skip_set <value>]          Skip building boards with this Kconfig set
     [--skip_unset <value>]        Skip building boards with this Kconfig not set
     [--timeless]                  Generate timeless builds
@@ -796,6 +797,7 @@ EOF
 # default options
 target=""
 buildall=false
+sequential=false
 
 test -f util/sconfig/sconfig.l && ROOT=$( pwd )
 test -f ../util/sconfig/sconfig.l && ROOT=$( cd .. && pwd )
@@ -814,12 +816,12 @@ getoptbrand="$(getopt -V)"
 # shellcheck disable=SC2086
 if [[ "${getoptbrand:0:6}" == "getopt" ]]; then
 	# Detected GNU getopt that supports long options.
-	args=$(getopt -l version,verbose,quiet,help,all,target:,board-variant:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,static-analysis,ccache,blobs,clang,any-toolchain,clean,clean-somewhat,outdir:,chromeos,xmlfile:,kconfig:,dir:,root:,recursive,checksum:,timeless,exitcode,asserts,name:,skip_set:,skip_unset: -o Vvqhat:b:p:c:sJCl:rP:uyBLAzZo:xX:K:d:R:Ien: -- "$@") || exit 1
+	args=$(getopt -l version,verbose,quiet,help,all,target:,board-variant:,payloads:,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,static-analysis,ccache,blobs,clang,any-toolchain,clean,clean-somewhat,outdir:,chromeos,xmlfile:,kconfig:,dir:,root:,recursive,checksum:,timeless,exitcode,asserts,name:,skip_set:,skip_unset:,sequential-boards -o Vvqhat:b:p:c:sJCl:rP:uyBLAzZo:xX:K:d:R:Ien:S -- "$@") || exit 1
 	eval set -- ${args}
 	retval=$?
 else
 	# Detected non-GNU getopt
-	args=$(getopt Vvqhat:b:p:c:sJCl:rP:uyBLAZzo:xX:K:d:R:Ien: "$@")
+	args=$(getopt Vvqhat:b:p:c:sJCl:rP:uyBLAZzo:xX:K:d:R:Ien:S "$@")
 	set -- ${args}
 	retval=$?
 fi
@@ -943,6 +945,7 @@ while true ; do
 			shift;;
 		--checksum)	shift; checksum_file="$1"; shift;;
 		--timeless)	shift; TIMELESS=1;;
+		-S|--sequential-boards) shift; sequential=true;;
 		--)		shift; break;;
 		-*)		printf "Invalid option '%s'\n\n" "$1"; myhelp; exit 1;;
 		*)		break;;
@@ -1002,7 +1005,10 @@ if [[ "${recursive}" = "false" ]]; then
 fi
 
 USE_XARGS=0
-if [[ "${cpus}" != "1" ]]; then
+if [[ "${sequential}" = "true" ]]; then
+	# Force sequential building when --sequential-boards is used
+	USE_XARGS=0
+elif [[ "${cpus}" != "1" ]]; then
 	# Limit to 32 parallel builds for now.
 	# Thrashing all caches because we run
 	# 160 abuilds in parallel is no fun.
@@ -1014,7 +1020,12 @@ if [[ "${cpus}" != "1" ]]; then
 fi
 
 if [[ "${USE_XARGS}" = "0" ]]; then
-test "${MAKEFLAGS}" == "" && test "${cpus}" != "" && export MAKEFLAGS="-j ${cpus}"
+if [[ "${sequential}" = "true" ]]; then
+	# Use all available cores for building boards sequentially
+	export MAKEFLAGS="-j ${cpus}"
+else
+	test "${MAKEFLAGS}" == "" && test "${cpus}" != "" && export MAKEFLAGS="-j ${cpus}"
+fi
 export MAKEFLAGS="${MAKEFLAGS} UPDATED_SUBMODULES=1" # no need to re-download
 build_targets()
 {

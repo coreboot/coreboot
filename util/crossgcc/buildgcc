@@ -512,6 +512,10 @@ generic_build()
 
 	mkdir -p "$builddir"
 
+	if [ "$package" = "GMP" ] && [ -f "$DESTDIR$TARGETDIR/include/gmp.h" ]; then
+		set_hostcflags_from_gmp
+	fi
+
 	if [ -f "$success" ]; then
 		printf "Skipping $package v$version for $host_target as it is already built\n"
 	else

@@ -13,7 +13,7 @@ LINTDIR="$(
 . "${LINTDIR}/helper_functions.sh"
 
 PIDS=""
-INCLUDED_DIRS_AND_FILES='util/* src/* payloads/* configs/* Makefile *.inc'
+INCLUDED_DIRS_AND_FILES='util/* src/* payloads/* configs/* Makefile *.mk'
 EXCLUDED_DIRS="\
 src/vendorcode/\|\
 cbfstool/lzma/\|\
@@ -64,12 +64,14 @@ test_for_final_newline() {
 	done
 }
 
-for directory in $INCLUDED_DIRS_AND_FILES ; do
-	${FIND_FILES} "${directory}" | sed 's|^\./||' | sort | \
-		grep -v "$EXCLUDED_DIRS" | \
-		grep -v "$EXCLUDED_FILES" | \
-		test_for_final_newline &
-	PIDS="$PIDS $!"
+for dir_or_file in $INCLUDED_DIRS_AND_FILES; do
+	if [ -e "${dir_or_file}" ] || [ -d "${dir_or_file}" ]; then
+		${FIND_FILES} "${dir_or_file}" ${FINDOPTS} | sed 's|^\./||' | sort | \
+			grep -v "$EXCLUDED_DIRS" | \
+			grep -v "$EXCLUDED_FILES" | \
+			test_for_final_newline &
+		PIDS="$PIDS $!"
+	fi
 done
 
 # wait for tests to finish.

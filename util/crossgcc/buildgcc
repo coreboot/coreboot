@@ -868,7 +868,7 @@ build_cross_GCC() {
 }
 
 build_LIBSTDCXX() {
-	if [ ! -e "${LIBSTDCXX_INCLUDE_PATH}" ]; then
+	if [ ! -d "${LIBSTDCXX_INCLUDE_PATH}" ]; then
 		touch .failed
 		printf "libstdcxx include path \"%s\" does not exist" "${LIBSTDCXX_INCLUDE_PATH}"
 		return

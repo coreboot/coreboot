@@ -941,7 +941,6 @@ build_LLVM() {
 build_CMAKE() {
 	CC="$(hostcc host)" CXX="$(hostcxx host)" CFLAGS="$HOSTCFLAGS" \
 	../${CMAKE_DIR}/configure \
-		--parallel=${THREADS} \
 		--prefix="$TARGETDIR" || touch .failed
 	# shellcheck disable=SC2086
 	$MAKE $JOBS || touch .failed

@@ -12,7 +12,7 @@ LINTDIR="$(
 # shellcheck source=helper_functions.sh
 . "${LINTDIR}/helper_functions.sh"
 
-EXCLUDE='^3rdparty/\|util/crossgcc/xgcc\|Binary file\|coreboot\|COREBOOT\|CorebootPayload\|CorebootModule\|minnowboard.org/Coreboot\|.*\.patch$\|CorebootBdsLib\|^payloads/external'
+EXCLUDE='^3rdparty/\|util/crossgcc/xgcc\|coreboot\|COREBOOT\|CorebootPayload\|CorebootModule\|minnowboard.org/Coreboot\|.*\.patch$\|CorebootBdsLib\|^payloads/external'
 
 # # Check last commit message if the code is in a git repo
 if [ "${IN_GIT_TREE}" -eq 1 ]; then
@@ -21,4 +21,4 @@ if [ "${IN_GIT_TREE}" -eq 1 ]; then
 	fi
 fi
 
-${GREP_FILES} -in "coreboot" | grep -v "$EXCLUDE";
+${GREP_FILES} -inI "coreboot" | grep -v "$EXCLUDE";

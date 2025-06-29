@@ -98,7 +98,7 @@ def main():
 
   parser.add_option("--mbn_version",
                     action="store", type="int", dest="mbn_version",
-                    help="Add mbn header in elf image. '3', '5' or '6'")
+                    help="Add mbn header in elf image. '3', '5', '6' or '7'")
 
 
   (options, args) = parser.parse_args()

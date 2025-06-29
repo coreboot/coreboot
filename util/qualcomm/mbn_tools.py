@@ -528,50 +528,154 @@ class Boot_Hdr:
       self.reserved_1 = init_val
       self.reserved_2 = init_val
       self.reserved_3 = init_val
+      self.reserved = 0
+      self.common_metadata_size = init_val
+
+      # Common Metadata members. These are needed for an MBNv7.
+      # Common Metadata is placed just after the header, hence, clubbed with
+      # this header.
+      self.common_metadata_major_version = 0
+      self.common_metadata_minor_version = 0
+      self.software_id = init_val
+      self.secondary_software_id = 0
+      self.hash_table_algorithm = 3
+      self.measurement_register_target = 0
+
+      # OEM Metadata 2.0 Members added for MBNv7.
+      self.major_version = 2
+      self.minor_version = 0
+      self.anti_rollback_version = 0
+      self.mrc_index = 0
+      self.soc_hw_ver_0 = 0
+      self.soc_hw_ver_1 = 0
+      self.soc_hw_ver_2 = 0
+      self.soc_hw_ver_3 = 0
+      self.soc_hw_ver_4 = 0
+      self.soc_hw_ver_5 = 0
+      self.soc_hw_ver_6 = 0
+      self.soc_hw_ver_7 = 0
+      self.soc_hw_ver_8 = 0
+      self.soc_hw_ver_9 = 0
+      self.soc_hw_ver_10 = 0
+      self.soc_hw_ver_11 = 0
+      self.soc_feature_id = 0
+      self.jtag_id = 0
+      self.serial_number_0 = 0
+      self.serial_number_1 = 0
+      self.serial_number_2 = 0
+      self.serial_number_3 = 0
+      self.serial_number_4 = 0
+      self.serial_number_5 = 0
+      self.serial_number_6 = 0
+      self.serial_number_7 = 0
+      self.oem_id = 0
+      self.oem_product_id = 0
+      self.soc_lifecycle_state = 0
+      self.oem_lifecycle_state = 0
+      self.oem_root_certificate_hash_algorithm = 0
+      self.oem_root_certificate_hash = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+      self.flags = 1398101
 
    def getLength(self):
       return BOOT_HEADER_LENGTH
 
    def writePackedData(self, target, write_full_hdr):
-      values = [self.image_id,
-                self.flash_parti_ver,
-                self.image_src,
-                self.image_dest_ptr,
-                self.image_size,
-                self.code_size ,
-                self.sig_ptr,
-                self.sig_size,
-                self.cert_chain_ptr,
-                self.cert_chain_size,
-                self.magic_number1,
-                self.version,
-                self.OS_type,
-                self.boot_apps_parti_entry,
-                self.boot_apps_size_entry,
-                self.boot_apps_ram_loc,
-                self.reserved_ptr,
-                self.reserved_1,
-                self.reserved_2,
-                self.reserved_3 ]
+      if self.flash_parti_ver == 7:
+        values = [self.reserved,
+                  self.flash_parti_ver,
+                  self.common_metadata_size,
+                  self.metadata_size_qti,
+                  self.metadata_size,
+                  self.code_size,
+                  self.image_src, # QTI signature size per MBNv6/v5/v3 structure below.
+                  self.image_dest_ptr, # QTI certificate chain size per MBNv6/v5/v3 structure below.
+                  self.sig_size,
+                  self.cert_chain_size,
+                  # Common Metadata members.
+                  self.common_metadata_major_version,
+                  self.common_metadata_minor_version,
+                  self.software_id,
+                  self.secondary_software_id,
+                  self.hash_table_algorithm,
+                  self.measurement_register_target,
+                  # OEM Metadata 2.0 members.
+                  self.major_version,
+                  self.minor_version,
+                  self.anti_rollback_version,
+                  self.mrc_index,
+                  self.soc_hw_ver_0,
+                  self.soc_hw_ver_1,
+                  self.soc_hw_ver_2,
+                  self.soc_hw_ver_3,
+                  self.soc_hw_ver_4,
+                  self.soc_hw_ver_5,
+                  self.soc_hw_ver_6,
+                  self.soc_hw_ver_7,
+                  self.soc_hw_ver_8,
+                  self.soc_hw_ver_9,
+                  self.soc_hw_ver_10,
+                  self.soc_hw_ver_11,
+                  self.soc_feature_id,
+                  self.jtag_id,
+                  self.serial_number_0,
+                  self.serial_number_1,
+                  self.serial_number_2,
+                  self.serial_number_3,
+                  self.serial_number_4,
+                  self.serial_number_5,
+                  self.serial_number_6,
+                  self.serial_number_7,
+                  self.oem_id,
+                  self.oem_product_id,
+                  self.soc_lifecycle_state,
+                  self.oem_lifecycle_state,
+                  self.oem_root_certificate_hash_algorithm,
+                  self.oem_root_certificate_hash,
+                  self.flags]
+      else:
+        values = [self.image_id,
+                  self.flash_parti_ver,
+                  self.image_src,
+                  self.image_dest_ptr,
+                  self.image_size,
+                  self.code_size ,
+                  self.sig_ptr,
+                  self.sig_size,
+                  self.cert_chain_ptr,
+                  self.cert_chain_size,
+                  self.magic_number1,
+                  self.version,
+                  self.OS_type,
+                  self.boot_apps_parti_entry,
+                  self.boot_apps_size_entry,
+                  self.boot_apps_ram_loc,
+                  self.reserved_ptr,
+                  self.reserved_1,
+                  self.reserved_2,
+                  self.reserved_3 ]
 
-      if self.flash_parti_ver >= 6:
-        values.insert(10, self.metadata_size_qti)
-        values.insert(11, self.metadata_size)
+        if self.flash_parti_ver == 6:
+            values.insert(10, self.metadata_size_qti)
+            values.insert(11, self.metadata_size)
 
-      if self.image_dest_ptr >= 0x100000000:
-        values[3] = 0xFFFFFFFF
+        if self.image_dest_ptr >= 0x100000000:
+            values[3] = 0xFFFFFFFF
 
-      if self.cert_chain_ptr >= 0x100000000:
-        values[6] = 0xFFFFFFFF
+        if self.cert_chain_ptr >= 0x100000000:
+            values[6] = 0xFFFFFFFF
 
-      if self.sig_ptr >= 0x100000000:
-        values[8] = 0xFFFFFFFF
+        if self.sig_ptr >= 0x100000000:
+            values[8] = 0xFFFFFFFF
 
       # Write 10 entries(40B) or 20 entries(80B) of boot header
       if write_full_hdr is False:
-         if self.flash_parti_ver >= 6:
+         if self.flash_parti_ver == 6:
             s = struct.Struct('I'* 12)
             values = values[:12]
+         elif self.flash_parti_ver == 7:
+            # MBNv7 Header is 40 bytes. Common Metadata is 24 bytes,
+            # OEM Metadata is 224 bytes and of the format: "I*18 + Q*8 + I*5+ 64s + I".
+            s = struct.Struct('I'*34 + 'Q'*8 + 'I'*5 + '64sI')
          else:
             s = struct.Struct('I'* 10)
             values = values[:10]
@@ -935,7 +1039,7 @@ def image_header(env, gen_dict,
       image_size = code_size
 
    if header_version:
-      assert header_version in [3, 5, 6], 'Not a valid MBN header version'
+      assert header_version in [3, 5, 6, 7], 'Not a valid MBN header version'
 
    # For ELF or hashed images, image destination will be determined from an ELF input file
    if gen_dict['IMAGE_KEY_MBN_TYPE'] == 'elf':
@@ -992,6 +1096,12 @@ def image_header(env, gen_dict,
       if header_version >= 6:
          boot_header.metadata_size_qti = 0                    # qti_metadata size
          boot_header.metadata_size = 0                        # oem_metadata size
+
+      if header_version == 7:
+         boot_header.software_id = 0x7B                       # Hardcoded to BOOTBLOCK SW ID
+         boot_header.common_metadata_size = 24
+         boot_header.metadata_size = 224
+
 
       # If preamble is required, output the preamble file and update the boot_header
       if requires_preamble is True:
@@ -2113,11 +2223,13 @@ def file_copy_offset(in_fp, in_off, out_fp, out_off, num_bytes):
    return num_bytes
 
 #----------------------------------------------------------------------------
-# sha1/sha256 hash routine wrapper
+# Return header_size based on version
 #----------------------------------------------------------------------------
 def header_size(header_version):
-    if header_version >= 6:
+    if header_version == 6:
         return 48
+    elif header_version == 7:
+        return 288
     else:
         return 40
 

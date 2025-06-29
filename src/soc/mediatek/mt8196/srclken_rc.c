@@ -12,121 +12,14 @@
 #include <soc/srclken_rc.h>
 #include <timer.h>
 
-static struct mtk_rc_regs *rc_regs = (struct mtk_rc_regs *)RC_BASE;
-
-#define ACK_DELAY_US			10
-#define ACK_DELAY_TIMES			200
-
-/* RC_CENTRAL_CFG1 setting */
-#define RC_CENTRAL_ENABLE_VAL		1
-#define RC_CENTRAL_DISABLE_VAL		0
-
-/* register direct write */
-#define IS_SPI2PMIC_SET_CLR_VAL		0
-#define KEEP_RC_SPI_ACTIVE_VAL		1
-#define SRCLKEN_RC_EN_SEL_VAL		0
-
-/* RC_CENTRAL_CFG1 settle time setting */
-#define VCORE_SETTLE_TIME_VAL		0x7	/* ~= 200us */
-#define ULPOSC_SETTLE_TIME_VAL		0x4	/* ~= ? 150us */
-#define NON_DCXO_SETTLE_TIME_VAL	0x1	/* 2^(step+5)*0x33*30.77ns ~= 400us */
-#define DCXO_SETTLE_TIME_VAL		0x41	/* 2^(step+5)*0x87*30.77ns ~= 1063us */
-
-/* RC_CENTRAL_CFG2 setting */
-/* use srlckenao to set vcore */
-#define SPI_TRIG_MODE			SRCLKENAO_MODE
-/* release vcore when spi request done */
-#define IS_SPI_DONE_RELEASE		0
-/* pmic spec under 200us */
-#define SPI_CLK_SRC			RC_32K
-/* RC_CENTRAL_CFG2 control mode */
 /* merge with spm */
 #define SRCLKENO_0_CTRL_M		BYPASS_MODE
-/* merge with vreq */
-#define VREQ_CTRL_M			BYPASS_MODE
-/* merge with ulposc */
-#define ULPOSC_CTRL_M_VAL		BYPASS_MODE
-/* merge with pwrap_scp */
-#define PWRAP_CTRL_M			MERGE_OR_MODE
-
-/* RC_DCXO_FPM_CFG*/
-#define MD0_SRCLKENO_0_MASK_B		0	/* md0 control by pmrc */
-#define FULL_SET_HW_MODE		0	/* dcxo mode use pmrc_en */
-/* RC_DCXO_FPM_CFG control mode*/
-/* merge with spm */
-#define DCXO_FPM_CTRL_MODE		(MERGE_OR_MODE | ASYNC_MODE)
-
-/* RC_CENTRAL_CFG5 */
-#define RC_SPMI_BYTE_LEN		0x1	/* 0: 2bytes, 1: 2 * 2bytes */
-#define PMIC_GROUP_ID			0xB
 
 /* pmrc_en address */
 /* default use this reg direct write */
 #define PMRC_CON0			0x190
 #define PMRC_CON0_SET			0x198
 #define PMRC_CON0_CLR			0x19A
-
-enum {
-	SW_BBLPM_LOW,
-	SW_BBLPM_HIGH,
-};
-
-enum {
-	SW_FPM_LOW,
-	SW_FPM_HIGH,
-};
-
-enum {
-	DXCO_SETTLE_BLK_DIS,
-	DXCO_SETTLE_BLK_EN,
-};
-
-enum {
-	REQ_ACK_IMD_DIS,
-	REQ_ACK_IMD_EN,
-};
-
-#define SUB_CTRL_CON(_id, _dcxo_prd, _xo_prd, \
-		     _sw_bblpm, _sw_fpm, _sw_rc, \
-		     _req_ack_imd_en, _bypass_cmd, \
-		     _dcxo_settle_blk_en) \
-	[_id] = { \
-		.dcxo_prd = _dcxo_prd, \
-		.xo_prd = _xo_prd, \
-		.cnt_step = CENTROL_CNT_STEP, \
-		.track_en = 0, \
-		.req_ack_imd_en = _req_ack_imd_en, \
-		.xo_soc_link_en = 0, \
-		.sw_bblpm = _sw_bblpm, \
-		.sw_fpm = _sw_fpm, \
-		.sw_rc = _sw_rc, \
-		.bypass_cmd = _bypass_cmd, \
-		.dcxo_settle_blk_en = _dcxo_settle_blk_en, \
-	}
-
-/* Init as SW FPM mode */
-#define SUB_CTRL_CON_INIT(_id, _dcxo_prd, _xo_prd, \
-			  _req_ack_imd_en, _bypass_cmd, \
-			  _dcxo_settle_blk_en) \
-	SUB_CTRL_CON(_id, _dcxo_prd, _xo_prd, \
-		     SW_BBLPM_LOW, SW_FPM_HIGH, SW_MODE, \
-		     _req_ack_imd_en, _bypass_cmd, \
-		     _dcxo_settle_blk_en)
-
-/* Init as SW LPM mode */
-#define SUB_CTRL_CON_NO_INIT(_id, _dcxo_prd, _xo_prd, \
-			     _req_ack_imd_en, _bypass_cmd, \
-			     _dcxo_settle_blk_en) \
-	SUB_CTRL_CON(_id, _dcxo_prd, _xo_prd, \
-		     SW_BBLPM_LOW, SW_FPM_LOW, SW_MODE, \
-		     _req_ack_imd_en, _bypass_cmd, \
-		     _dcxo_settle_blk_en)
-
-/* Normal init, SW FPM mode */
-#define SUB_CTRL_CON_EN(_id, _xo_prd, _req_ack_imd_en) \
-	SUB_CTRL_CON_INIT(_id, \
-			  DCXO_STABLE_TIME, _xo_prd, \
-			  _req_ack_imd_en, 0, DXCO_SETTLE_BLK_EN)
 
 /* XO/DCXO settle time=0, bypass cmd */
 #define SUB_CTRL_CON_DIS(_id) \
@@ -141,14 +34,7 @@ enum {
 			     REQ_ACK_IMD_EN, 0, DXCO_SETTLE_BLK_EN)
 
 /* Porting starting from here */
-/* MXX_SRCLKEN_CFG settle time setting */
-#define CENTROL_CNT_STEP		0x3	/* Fix in 3 */
-#define DCXO_STABLE_TIME		0x70	/* ~= 700us */
-#define XO_DEFAULT_STABLE_TIME		0x29	/* ~= 400us */
-#define XO_MD0_STABLE_TIME		0x15	/* ~= 200us */
-#define XO_MD1_STABLE_TIME		0x15	/* ~= 200us */
 #define XO_MD2_STABLE_TIME		0x33	/* ~= 500us */
-#define XO_MDRF_STABLE_TIME		0x3D	/* ~= 600us */
 #define VCORE_STABLE_TIME		0x15	/* ~= 200us */
 
 /* SUBSYS_INTF_CFG_FPM */
@@ -167,25 +53,21 @@ enum {
 #define SUBSYS_EN_H			0x0000
 
 /* First try to switch fpm. After polling ack done, switch to HW mode */
-static const struct {
-	bool disabled;
-	bool lpm;
-	bool hw_mode;
-} rc_config[MAX_CHN_NUM] = {
-	[CHN_SUSPEND] = { .lpm = false, .hw_mode = true },
-	[CHN_MD1] = { .lpm = false, .hw_mode = true },
-	[CHN_MD2] = { .lpm = false, .hw_mode = true },
-	[CHN_MD3] = { .lpm = false, .hw_mode = true },
-	[CHN_MDRF] = { .lpm = false, .hw_mode = true },
-	[CHN_MMWAVE] = { .lpm = false, .hw_mode = true },
+const struct rc_config rc_config[MAX_CHN_NUM] = {
+	[CHN_SUSPEND] = { .hw_mode = true },
+	[CHN_MD1] = { .hw_mode = true },
+	[CHN_MD2] = { .hw_mode = true },
+	[CHN_MD3] = { .hw_mode = true },
+	[CHN_MDRF] = { .hw_mode = true },
+	[CHN_MMWAVE] = { .hw_mode = true },
 	[CHN_GPS] = { .lpm = true, .hw_mode = true },
-	[CHN_PCIE_CONN1] = { .lpm = false, .hw_mode = true },
-	[CHN_VCORE] = { .lpm = true, .hw_mode = false },
+	[CHN_PCIE_CONN1] = { .hw_mode = true },
+	[CHN_VCORE] = { .lpm = true },
 	[CHN_CONN_MCU] = { .lpm = true, .hw_mode = true },
 	[CHN_COANT] = { .lpm = true, .hw_mode = true },
 	[CHN_NFC_CONN2] = { .lpm = true, .hw_mode = true },
-	[CHN_SUSPEND2] = { .lpm = false, .hw_mode = true },
-	[CHN_UFS_VREQ] = { .lpm = false, .hw_mode = true },
+	[CHN_SUSPEND2] = { .hw_mode = true },
+	[CHN_UFS_VREQ] = { .hw_mode = true },
 	[CHN_DCXO_L] = { .disabled = true },
 	[CHN_DCXO_H] = { .disabled = true },
 	[CHN_UFS_2] = {},
@@ -206,7 +88,7 @@ static const struct {
 	[CHN_RSV9] = {},
 };
 
-static const struct subsys_rc_con rc_ctrl[MAX_CHN_NUM] = {
+const struct subsys_rc_con rc_ctrl[MAX_CHN_NUM] = {
 	SUB_CTRL_CON_EN(CHN_SUSPEND, XO_DEFAULT_STABLE_TIME, REQ_ACK_IMD_EN),
 	/* CFG[2] = 0x1 for bypass waiting DCXO settle time */
 	/* Usually also need to set CFG6_2 not involve FPM vote */
@@ -296,38 +178,6 @@ static void rc_dump_reg_info(void)
 	printk(BIOS_INFO, "RC_PI_PO_STA:%#x\n", read32(&rc_regs->rc_pi_po_sta));
 }
 
-/* RC initial flow and relative setting */
-static void rc_ctrl_mode_switch(enum chn_id id, enum rc_ctrl_m mode)
-{
-	assert(id < MAX_CHN_NUM);
-
-	switch (mode) {
-	case SW_MODE:
-		SET32_BITFIELDS(&rc_regs->rc_mxx_srclken_cfg[id], SW_SRCLKEN_RC, 1);
-		break;
-	case HW_MODE:
-		SET32_BITFIELDS(&rc_regs->rc_mxx_srclken_cfg[id], SW_SRCLKEN_RC, 0);
-		break;
-	default:
-		return;
-	}
-
-	printk(BIOS_INFO, "M0%d: %#x\n", id, read32(&rc_regs->rc_mxx_srclken_cfg[id]));
-}
-
-/* RC subsys FPM control*/
-static void rc_ctrl_fpm_switch(enum chn_id id, u32 mode)
-{
-	assert(id < MAX_CHN_NUM);
-	assert(mode == SW_FPM_HIGH || mode == SW_FPM_LOW);
-
-	int fpm = (mode == SW_FPM_HIGH) ? 1 : 0;
-	SET32_BITFIELDS(&rc_regs->rc_mxx_srclken_cfg[id], SW_SRCLKEN_FPM, fpm);
-
-	printk(BIOS_INFO, "M0%d FPM SWITCH: %#x\n", id,
-	       read32(&rc_regs->rc_mxx_srclken_cfg[id]));
-}
-
 static void rc_ctrl_mode_init(void)
 {
 	u32 ch;
@@ -349,30 +199,6 @@ static void rc_ctrl_mode_init(void)
 				CNT_PRD_STEP, rc_ctrl_ch->cnt_step,
 				XO_STABLE_PRD, rc_ctrl_ch->xo_prd,
 				DCXO_STABLE_PRD, rc_ctrl_ch->dcxo_prd);
-	}
-}
-
-static void rc_init_subsys_lpm(void)
-{
-	u32 ch;
-
-	for (ch = 0; ch < MAX_CHN_NUM; ch++) {
-		if (rc_config[ch].disabled)
-			continue;
-		if (rc_config[ch].lpm)
-			rc_ctrl_fpm_switch(ch, SW_FPM_LOW);
-	}
-}
-
-static void rc_init_subsys_hw_mode(void)
-{
-	u32 ch;
-
-	for (ch = 0; ch < MAX_CHN_NUM; ch++) {
-		if (rc_config[ch].disabled)
-			continue;
-		if (rc_config[ch].hw_mode)
-			rc_ctrl_mode_switch(ch, HW_MODE);
 	}
 }
 

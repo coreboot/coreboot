@@ -3,6 +3,9 @@
 #ifndef __SOC_MEDIATEK_MT8196_INCLUDE_SOC_SRCLKEN_RC_H__
 #define __SOC_MEDIATEK_MT8196_INCLUDE_SOC_SRCLKEN_RC_H__
 
+#include <soc/addressmap.h>
+#include <soc/srclken_rc_common.h>
+
 /* Channel id: Update this enum for porting */
 enum chn_id {
 	CHN_SUSPEND = 0,
@@ -187,58 +190,6 @@ DEFINE_BIT(BBLPM_ACK, 3)
 DEFINE_BITFIELD(BYPASS_DCXO_VOTE_H, 31, 16)
 DEFINE_BITFIELD(BYPASS_DCXO_VOTE_L, 15, 0)
 
-enum {
-	SW_SRCLKEN_FPM_MSK = 0x1,
-	SW_SRCLKEN_BBLPM_MSK = 0x1,
-};
-
-/* RC_CENTRAL_CFG2[8] */
-#define SRCLKENAO_MODE			0
-#define VREQ_MODE			1
-
-/* RC_CENTRAL_CFG2[25] */
-#define RC_32K				0
-#define RC_ULPOSC1			1
-
-/* Signal Control Mode */
-#define MERGE_OR_MODE			0x0
-#define BYPASS_MODE			0x1
-#define MERGE_AND_MODE			BIT(1)
-#define BYPASS_RC_MODE			(0x2 << 1)
-#define BYPASS_OR_MODE			0x3
-#define BYPASS_OTHER_MODE		(0x3 << 1)
-#define ASYNC_MODE			BIT(3)
-
-#define NO_REQ				0
-#define FPM_REQ				BIT(4)
-#define BBLPM_REQ			BIT(5)
-
-enum rc_ctrl_m {
-	HW_MODE = 0,
-	SW_MODE = 1,
-};
-
-enum {
-	SRLCKEN_RC_BRINGUP = 0,
-	SRCLKEN_RC_DISABLE,
-	SRCLKEN_RC_ENABLE,
-	SRCLKEN_RC_SKIP,
-};
-
-struct subsys_rc_con {
-	u32 dcxo_prd;
-	u32 xo_prd;
-	u32 cnt_step;
-	u32 track_en;
-	u32 req_ack_imd_en;
-	u32 xo_soc_link_en;
-	u32 sw_bblpm;
-	u32 sw_fpm;
-	u32 sw_rc;
-	u32 bypass_cmd;
-	u32 dcxo_settle_blk_en;
-};
-
-int srclken_rc_init(void);
+static struct mtk_rc_regs *const rc_regs = (void *)RC_BASE;
 
 #endif

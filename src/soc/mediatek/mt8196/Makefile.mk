@@ -49,7 +49,7 @@ romstage-y += ../common/pmif_clk.c pmif_clk.c
 romstage-y += ../common/pmif.c pmif_init.c
 romstage-y += ../common/rtc.c ../common/rtc_osc_init.c
 romstage-y += ../common/pmif_spmi_v2.c pmif_spmi.c
-romstage-y += srclken_rc.c
+romstage-y += ../common/srclken_rc.c srclken_rc.c
 romstage-y += thermal.c
 romstage-y += thermal_sram.c
 

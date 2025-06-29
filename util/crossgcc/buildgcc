@@ -46,7 +46,7 @@ LIBSTDCXX_VERSION="${GCC_VERSION}"	# GCC-specific C++ library
 
 # Low-level Tools (built after GCC)
 NASM_VERSION=2.16.03	# x86 assembly
-IASL_VERSION=20241212	# ACPI compiler
+IASL_VERSION=20250404	# ACPI compiler
 
 # Clang/LLVM Toolchain (alternative to GCC, built separately)
 CLANG_VERSION=18.1.8

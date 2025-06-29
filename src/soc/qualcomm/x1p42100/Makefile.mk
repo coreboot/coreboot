@@ -72,12 +72,17 @@ endif
 
 ################################################################################
 QC_SEC_FILE := $(X1P42100_BLOB)/qc_sec/qc_sec.mbn
+TME_SEQ_FILE := $(X1P42100_BLOB)/tme/sequencer_ram.elf
+TME_FW_FILE := $(X1P42100_BLOB)/tme/signed_firmware_soc_view.elf
+
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.elf
-	@util/qualcomm/createxbl.py --mbn_version 6 -f $(objcbfs)/bootblock.raw.elf \
-		-x $(QC_SEC_FILE) -o $(objcbfs)/merged_bb_qcsec.mbn \
-		-a 64 -d 64 -c 64
+	@util/qualcomm/createxbl.py --mbn_version 7 -f $(objcbfs)/bootblock.raw.elf \
+		-o $(objcbfs)/bootblock.mbn \
+		-a 64 -c 64
+	@util/qualcomm/create_multielf.py -f $(TME_SEQ_FILE),$(TME_FW_FILE),$(QC_SEC_FILE),$(objcbfs)/bootblock.mbn \
+		-o $(objcbfs)/merged_bb.melf
 	@printf "\nqgpt.py 4K sector size\n"
-	@util/qualcomm/qgpt.py $(objcbfs)/merged_bb_qcsec.mbn \
+	@util/qualcomm/qgpt.py $(objcbfs)/merged_bb.melf \
 		$(objcbfs)/bootblock.bin
 
 ################################################################################

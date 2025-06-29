@@ -50,7 +50,7 @@ IASL_VERSION=20241212	# ACPI compiler
 
 # Clang/LLVM Toolchain (alternative to GCC, built separately)
 CLANG_VERSION=18.1.8
-CMAKE_VERSION=3.31.3	# Required for building Clang
+CMAKE_VERSION=4.0.3	# Required for building Clang
 
 # Architecture-specific options
 RISCV_ISA_SPEC=20191213

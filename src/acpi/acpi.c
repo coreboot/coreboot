@@ -27,7 +27,11 @@
 #include <device/device.h>
 #include <device/mmio.h>
 #include <device/pci.h>
+#if CONFIG(AMD_CRB_FTPM)
+#include <drivers/amd/ftpm/tpm.h>
+#else
 #include <drivers/crb/tpm.h>
+#endif
 #include <drivers/uart/pl011.h>
 #include <security/tpm/tss.h>
 #include <string.h>
@@ -260,7 +264,7 @@ static void acpi_create_tpm2(acpi_header_t *header, void *unused)
 	if (tlcl_get_family() != TPM_2)
 		return;
 
-	if (CONFIG(CRB_TPM) && !(CONFIG(SPI_TPM) || CONFIG(I2C_TPM) || CONFIG(MEMORY_MAPPED_TPM)))
+	if ((CONFIG(CRB_TPM) || CONFIG(AMD_CRB_FTPM)) && !(CONFIG(SPI_TPM) || CONFIG(I2C_TPM) || CONFIG(MEMORY_MAPPED_TPM)))
 		if (!crb_tpm_is_active())
 			return;
 
@@ -281,7 +285,12 @@ static void acpi_create_tpm2(acpi_header_t *header, void *unused)
 
 	/* Hard to detect for coreboot. Just set it to 0 */
 	tpm2->platform_class = 0;
-	if (CONFIG(CRB_TPM)) {
+
+	if (CONFIG(AMD_CRB_FTPM) && crb_tpm_is_active()) {
+		/* Must be set to 2 for AMD fTPM Support */
+		tpm2->control_area = crb_tpm_base_address() + 0x40;
+		tpm2->start_method = 2;
+	} else if (CONFIG(CRB_TPM) && crb_tpm_is_active()) {
 		/* Must be set to 7 for CRB Support */
 		tpm2->control_area = crb_tpm_base_address() + 0x40;
 		tpm2->start_method = 7;

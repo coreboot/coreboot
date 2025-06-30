@@ -64,7 +64,7 @@ enum cb_err psp_get_ftpm_capabilties(uint32_t *capabilities)
 		},
 	};
 
-	printk(BIOS_DEBUG, "PSP: Querying fTPM capabilities...");
+	printk(BIOS_DEBUG, "PSP: Querying fTPM capabilities... ");
 
 	cmd_status = send_psp_command(MBOX_BIOS_CMD_PSP_FTPM_QUERY, &buffer);
 
@@ -87,7 +87,7 @@ enum cb_err psp_get_hsti_state(uint32_t *state)
 		},
 	};
 
-	printk(BIOS_DEBUG, "PSP: Querying HSTI state...");
+	printk(BIOS_DEBUG, "PSP: Querying HSTI state... ");
 
 	cmd_status = send_psp_command(MBOX_BIOS_CMD_HSTI_QUERY, &buffer);
 

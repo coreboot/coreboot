@@ -29,7 +29,7 @@ tpm_result_t tlcl_lib_init(void)
 	init_done = true;
 
 	tlcl_tis_sendrecv = NULL;
-	if (CONFIG(CRB_TPM))
+	if (CONFIG(CRB_TPM) || CONFIG(AMD_CRB_FTPM))
 		tlcl_tis_sendrecv = crb_tis_probe(&tlcl_tpm_family);
 	if (CONFIG(MEMORY_MAPPED_TPM) && tlcl_tis_sendrecv == NULL)
 		tlcl_tis_sendrecv = pc80_tis_probe(&tlcl_tpm_family);

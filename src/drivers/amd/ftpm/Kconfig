@@ -1,0 +1,14 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config AMD_CRB_FTPM
+	bool
+	default n
+	depends on !CRB_TPM
+	depends on SOC_AMD_COMMON_BLOCK_PSP_GEN2
+	# The fTPM needs to access the SPI flash when ROM Armor
+	# is not being used, thus select SOC_AMD_COMMON_BLOCK_PSP_SMI.
+	select SOC_AMD_COMMON_BLOCK_PSP_SMI
+	help
+	  Mainboard has AMD fTPM with Command Response Buffer support.
+	  The fTPM is based on the CRB interface as defined by TCG,
+	  but with reduced set of registers being implemented.

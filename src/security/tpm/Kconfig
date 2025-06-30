@@ -22,7 +22,7 @@ config TPM1
 
 config TPM2
 	bool "TPM 2.0"
-	depends on I2C_TPM || MEMORY_MAPPED_TPM || SPI_TPM || CRB_TPM
+	depends on I2C_TPM || MEMORY_MAPPED_TPM || SPI_TPM || CRB_TPM || AMD_CRB_FTPM
 	default y if MAINBOARD_HAS_TPM2
 	help
 	  Select this option if your TPM uses the newer TPM 2.0 protocol.

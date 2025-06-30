@@ -4686,6 +4686,7 @@
 #define PCI_DID_INTEL_SNR_ID			0x09a2
 #define PCI_DID_INTEL_WCL_ID_1			0xfd00
 #define PCI_DID_INTEL_WCL_ID_2			0xfd01
+#define PCI_DID_INTEL_WCL_ID_3			0xfd02
 
 /* Intel SMBUS device Ids */
 #define PCI_DID_INTEL_LPT_H_SMBUS			0x8c22

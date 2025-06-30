@@ -281,7 +281,7 @@ static void acpi_create_tpm2(acpi_header_t *header, void *unused)
 	tpm2->platform_class = 0;
 	if (CONFIG(CRB_TPM)) {
 		/* Must be set to 7 for CRB Support */
-		tpm2->control_area = CONFIG_CRB_TPM_BASE_ADDRESS + 0x40;
+		tpm2->control_area = crb_tpm_base_address() + 0x40;
 		tpm2->start_method = 7;
 	} else {
 		/* Must be set to 0 for FIFO interface support */

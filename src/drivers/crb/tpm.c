@@ -346,3 +346,13 @@ bool crb_tpm_is_active(void)
 
 	return true;
 }
+
+/*
+ * crb_tpm_base_address
+ *
+ * Returns the CRB TPM base address.
+ */
+uintptr_t crb_tpm_base_address(void)
+{
+	return CONFIG_CRB_TPM_BASE_ADDRESS;
+}

@@ -68,3 +68,5 @@ size_t crb_tpm_process_command(const void *tpm2_command, size_t command_size,
 bool crb_tpm_is_active(void);
 
 tis_sendrecv_fn crb_tis_probe(enum tpm_family *family);
+
+uintptr_t crb_tpm_base_address(void);

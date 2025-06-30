@@ -157,7 +157,17 @@ chip soc/intel/alderlake
 				register "has_rotation_matrix"		= "1"
 				register "rotation_matrix"		= "{1, 0, 0, 0, -1, 0, 0, 0, 1}"
 				register "cdm_index"			= "6"
+				register "detect"			= "1"
 				device i2c 0f on end
+			end
+			chip drivers/i2c/generic
+				register "hid"				= ""MXC6655""
+				register "cid"				= ""MXC6655""
+				register "desc"				= ""Accelerometer""
+				register "has_rotation_matrix"		= "1"
+				register "rotation_matrix"		= "{1, 0, 0, 0, -1, 0, 0, 0, 1}"
+				register "detect"			= "1"
+				device i2c 15 on end
 			end
 		end
 		device ref i2c2		on				# Touchscreen

@@ -1,0 +1,217 @@
+It fails to compile when using "MAKEINFO = @MAKEINFO@":
+binutils-gdb/missing: 81: makeinfo: not found
+WARNING: 'makeinfo' is missing on your system.
+         You should only need it if you modified a '.texi' file, or
+         any other file indirectly affecting the aspect of the manual.
+         You might want to install the Texinfo package:
+         <http://www.gnu.org/software/texinfo/>
+         The spurious makeinfo call might also be the consequence of
+         using a buggy 'make' (AIX, DU, IRIX), in which case you might
+         want to install GNU make:
+         <http://www.gnu.org/software/make/>
+make[4]: *** [Makefile:507: as.info] Error 127
+Current patch will change that to "MAKEINFO = true"
+diff -ur binutils-2.44.orig/bfd/Makefile.in binutils-2.44/bfd/Makefile.in
+--- binutils-2.44.orig/bfd/Makefile.in	2022-08-05 11:53:59.000000000 +0200
++++ binutils-2.44/bfd/Makefile.in	2022-08-20 05:46:39.960039957 +0200
+@@ -379,7 +379,7 @@
+ LN_S = @LN_S@
+ LTLIBOBJS = @LTLIBOBJS@
+ MAINT = @MAINT@
+-MAKEINFO = @MAKEINFO@
++MAKEINFO = true
+ MKDIR_P = @MKDIR_P@
+ MKINSTALLDIRS = @MKINSTALLDIRS@
+ MSGFMT = @MSGFMT@
+diff -ur binutils-2.44.orig/binutils/Makefile.in binutils-2.44/binutils/Makefile.in
+--- binutils-2.44.orig/binutils/Makefile.in	2022-08-05 11:56:21.000000000 +0200
++++ binutils-2.44/binutils/Makefile.in	2022-08-20 05:46:38.563035937 +0200
+@@ -532,7 +532,7 @@
+ LTLIBICONV = @LTLIBICONV@
+ LTLIBOBJS = @LTLIBOBJS@
+ MAINT = @MAINT@
+-MAKEINFO = @MAKEINFO@
++MAKEINFO = true
+ MKDIR_P = @MKDIR_P@
+ MKINSTALLDIRS = @MKINSTALLDIRS@
+ MSGFMT = @MSGFMT@
+diff -ur binutils-2.44.orig/etc/Makefile.in binutils-2.44/etc/Makefile.in
+--- binutils-2.44.orig/etc/Makefile.in	2022-07-08 11:46:47.000000000 +0200
++++ binutils-2.44/etc/Makefile.in	2022-08-20 05:46:38.525035827 +0200
+@@ -154,7 +154,7 @@
+ LIBS = @LIBS@
+ LTLIBOBJS = @LTLIBOBJS@
+ MAINT = @MAINT@
+-MAKEINFO = @MAKEINFO@
++MAKEINFO = true
+ MKDIR_P = @MKDIR_P@
+ PACKAGE = @PACKAGE@
+ PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
+diff -ur binutils-2.44.orig/gas/Makefile.in binutils-2.44/gas/Makefile.in
+--- binutils-2.44.orig/gas/Makefile.in	2022-08-05 11:55:17.000000000 +0200
++++ binutils-2.44/gas/Makefile.in	2022-08-20 05:46:38.535035856 +0200
+@@ -408,7 +408,7 @@
+ LN_S = @LN_S@
+ LTLIBOBJS = @LTLIBOBJS@
+ MAINT = @MAINT@
+-MAKEINFO = @MAKEINFO@
++MAKEINFO = true
+ MKDIR_P = @MKDIR_P@
+ MKINSTALLDIRS = @MKINSTALLDIRS@
+ MSGFMT = @MSGFMT@
+diff -ur binutils-2.44.orig/gprof/Makefile.in binutils-2.44/gprof/Makefile.in
+--- binutils-2.44.orig/gprof/Makefile.in	2022-08-05 11:59:11.000000000 +0200
++++ binutils-2.44/gprof/Makefile.in	2022-08-20 05:46:39.964039969 +0200
+@@ -351,7 +351,7 @@
+ LN_S = @LN_S@
+ LTLIBOBJS = @LTLIBOBJS@
+ MAINT = @MAINT@
+-MAKEINFO = @MAKEINFO@
++MAKEINFO = true
+ MKDIR_P = @MKDIR_P@
+ MKINSTALLDIRS = @MKINSTALLDIRS@
+ MSGFMT = @MSGFMT@
+diff -ur binutils-2.44.orig/gprofng/doc/Makefile.in binutils-2.44/gprofng/doc/Makefile.in
+--- binutils-2.44.orig/gprofng/doc/Makefile.in	2022-08-05 11:59:31.000000000 +0200
++++ binutils-2.44/gprofng/doc/Makefile.in	2022-08-20 05:46:39.252037920 +0200
+@@ -271,7 +271,7 @@
+ LN_S = @LN_S@
+ LTLIBOBJS = @LTLIBOBJS@
+ MAINT = @MAINT@
+-MAKEINFO = @MAKEINFO@
++MAKEINFO = true
+ MKDIR_P = @MKDIR_P@
+ NM = @NM@
+ NMEDIT = @NMEDIT@
+diff -ur binutils-2.44.orig/gprofng/gp-display-html/Makefile.in binutils-2.44/gprofng/gp-display-html/Makefile.in
+--- binutils-2.44.orig/gprofng/gp-display-html/Makefile.in	2022-08-05 11:59:33.000000000 +0200
++++ binutils-2.44/gprofng/gp-display-html/Makefile.in	2022-08-20 05:46:39.479038573 +0200
+@@ -234,7 +234,7 @@
+ LN_S = @LN_S@
+ LTLIBOBJS = @LTLIBOBJS@
+ MAINT = @MAINT@
+-MAKEINFO = @MAKEINFO@
++MAKEINFO = true
+ MKDIR_P = @MKDIR_P@
+ NM = @NM@
+ NMEDIT = @NMEDIT@
+diff -ur binutils-2.44.orig/gprofng/libcollector/Makefile.in binutils-2.44/gprofng/libcollector/Makefile.in
+--- binutils-2.44.orig/gprofng/libcollector/Makefile.in	2022-08-05 11:59:38.000000000 +0200
++++ binutils-2.44/gprofng/libcollector/Makefile.in	2022-08-20 05:46:38.965037094 +0200
+@@ -341,7 +341,7 @@
+ LN_S = @LN_S@
+ LTLIBOBJS = @LTLIBOBJS@
+ MAINT = @MAINT@
+-MAKEINFO = @MAKEINFO@
++MAKEINFO = true
+ MKDIR_P = @MKDIR_P@
+ NM = @NM@
+ NMEDIT = @NMEDIT@
+diff -ur binutils-2.44.orig/gprofng/Makefile.in binutils-2.44/gprofng/Makefile.in
+--- binutils-2.44.orig/gprofng/Makefile.in	2022-08-05 11:59:30.000000000 +0200
++++ binutils-2.44/gprofng/Makefile.in	2022-08-20 05:46:38.574035968 +0200
+@@ -289,7 +289,7 @@
+ LN_S = @LN_S@
+ LTLIBOBJS = @LTLIBOBJS@
+ MAINT = @MAINT@
+-MAKEINFO = @MAKEINFO@
++MAKEINFO = true
+ MKDIR_P = @MKDIR_P@
+ NM = @NM@
+ NMEDIT = @NMEDIT@
+diff -ur binutils-2.44.orig/gprofng/src/Makefile.in binutils-2.44/gprofng/src/Makefile.in
+--- binutils-2.44.orig/gprofng/src/Makefile.in	2022-08-05 11:59:34.000000000 +0200
++++ binutils-2.44/gprofng/src/Makefile.in	2022-08-20 05:46:38.573035965 +0200
+@@ -358,7 +358,7 @@
+ LN_S = @LN_S@
+ LTLIBOBJS = @LTLIBOBJS@
+ MAINT = @MAINT@
+-MAKEINFO = @MAKEINFO@
++MAKEINFO = true
+ MKDIR_P = @MKDIR_P@
+ NM = @NM@
+ NMEDIT = @NMEDIT@
+diff -ur binutils-2.44.orig/ld/Makefile.in binutils-2.44/ld/Makefile.in
+--- binutils-2.44.orig/ld/Makefile.in	2022-08-05 11:56:53.000000000 +0200
++++ binutils-2.44/ld/Makefile.in	2022-08-20 05:46:38.536035859 +0200
+@@ -432,7 +432,7 @@
+ LN_S = @LN_S@
+ LTLIBOBJS = @LTLIBOBJS@
+ MAINT = @MAINT@
+-MAKEINFO = @MAKEINFO@
++MAKEINFO = true
+ MKDIR_P = @MKDIR_P@
+ MKINSTALLDIRS = @MKINSTALLDIRS@
+ MSGFMT = @MSGFMT@
+diff -ur binutils-2.44.orig/libctf/Makefile.in binutils-2.44/libctf/Makefile.in
+--- binutils-2.44.orig/libctf/Makefile.in	2022-07-08 12:02:15.000000000 +0200
++++ binutils-2.44/libctf/Makefile.in	2022-08-20 05:46:39.771039414 +0200
+@@ -425,7 +425,7 @@
+ LN_S = @LN_S@
+ LTLIBOBJS = @LTLIBOBJS@
+ MAINT = @MAINT@
+-MAKEINFO = @MAKEINFO@
++MAKEINFO = true
+ MKDIR_P = @MKDIR_P@
+ NM = @NM@
+ NMEDIT = @NMEDIT@
+diff -ur binutils-2.44.orig/libiberty/Makefile.in binutils-2.44/libiberty/Makefile.in
+--- binutils-2.44.orig/libiberty/Makefile.in	2022-07-08 11:46:48.000000000 +0200
++++ binutils-2.44/libiberty/Makefile.in	2022-08-20 05:46:39.961039960 +0200
+@@ -57,7 +57,7 @@
+ CFLAGS = @CFLAGS@
+ CPPFLAGS = @CPPFLAGS@
+ RANLIB = @RANLIB@ @RANLIB_PLUGIN_OPTION@
+-MAKEINFO = @MAKEINFO@
++MAKEINFO = true
+ PERL = @PERL@
+ 
+ PICFLAG = @PICFLAG@
+diff -ur binutils-2.44.orig/Makefile.in binutils-2.44/Makefile.in
+--- binutils-2.44.orig/Makefile.in	2022-08-05 13:00:56.000000000 +0200
++++ binutils-2.44/Makefile.in	2022-08-20 05:46:38.549035896 +0200
+@@ -399,7 +399,7 @@
+ FLEX = @FLEX@
+ LEX = @LEX@
+ M4 = @M4@
+-MAKEINFO = @MAKEINFO@
++MAKEINFO = true
+ EXPECT = @EXPECT@
+ RUNTEST = @RUNTEST@
+ 
+diff -ur binutils-2.44.orig/Makefile.tpl binutils-2.44/Makefile.tpl
+--- binutils-2.44.orig/Makefile.tpl	2022-07-08 11:46:47.000000000 +0200
++++ binutils-2.44/Makefile.tpl	2022-08-20 05:46:38.535035856 +0200
+@@ -402,7 +402,7 @@
+ FLEX = @FLEX@
+ LEX = @LEX@
+ M4 = @M4@
+-MAKEINFO = @MAKEINFO@
++MAKEINFO = true
+ EXPECT = @EXPECT@
+ RUNTEST = @RUNTEST@
+ 
+diff -ur binutils-2.44.orig/opcodes/Makefile.in binutils-2.44/opcodes/Makefile.in
+--- binutils-2.44.orig/opcodes/Makefile.in	2022-08-05 11:54:59.000000000 +0200
++++ binutils-2.44/opcodes/Makefile.in	2022-08-20 05:46:38.522035819 +0200
+@@ -324,7 +324,7 @@
+ LN_S = @LN_S@
+ LTLIBOBJS = @LTLIBOBJS@
+ MAINT = @MAINT@
+-MAKEINFO = @MAKEINFO@
++MAKEINFO = true
+ MKDIR_P = @MKDIR_P@
+ MKINSTALLDIRS = @MKINSTALLDIRS@
+ MSGFMT = @MSGFMT@
+diff -ur binutils-2.44.orig/zlib/Makefile.in binutils-2.44/zlib/Makefile.in
+--- binutils-2.44.orig/zlib/Makefile.in	2022-07-08 11:56:28.000000000 +0200
++++ binutils-2.44/zlib/Makefile.in	2022-08-20 05:46:38.571035960 +0200
+@@ -321,7 +321,7 @@
+ LN_S = @LN_S@
+ LTLIBOBJS = @LTLIBOBJS@
+ MAINT = @MAINT@
+-MAKEINFO = @MAKEINFO@
++MAKEINFO = true
+ MKDIR_P = @MKDIR_P@
+ NM = @NM@
+ NMEDIT = @NMEDIT@

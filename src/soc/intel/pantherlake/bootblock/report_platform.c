@@ -23,6 +23,7 @@ static struct {
 	{ CPUID_PANTHERLAKE_A0, "Pantherlake A0" },
 	{ CPUID_PANTHERLAKE_B0_1, "Pantherlake B0" },
 	{ CPUID_PANTHERLAKE_B0_2, "Pantherlake B0" },
+	{ CPUID_WILDCATLAKE_A0, "Wildcatlake A0" },
 };
 
 static struct {

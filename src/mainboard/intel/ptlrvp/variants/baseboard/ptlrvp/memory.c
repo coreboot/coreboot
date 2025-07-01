@@ -2,6 +2,7 @@
 
 #include <baseboard/variants.h>
 #include <ec/intel/board_id.h>
+#include <fw_config.h>
 
 static const struct mb_cfg baseboard_memcfg = {
 	.type = MEM_TYPE_LP5X,
@@ -22,7 +23,12 @@ int __weak variant_memory_sku(void)
 
 	printk(BIOS_INFO, "Board ID is 0x%x\n", board_id);
 
-	spd_index = (board_id == GCS_32GB || board_id == GCS_64GB) ? 1 : 0;
+	if (board_id == GCS_32GB || board_id == GCS_64GB)
+		spd_index = 1;
+	else
+		spd_index = fw_config_get_field(FW_CONFIG_FIELD(SPD));
+
+	printk(BIOS_INFO, "SPD index: %zu\n", spd_index);
 
 	return spd_index;
 }

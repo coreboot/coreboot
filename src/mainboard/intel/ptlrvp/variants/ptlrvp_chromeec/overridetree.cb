@@ -67,6 +67,12 @@ fw_config
 		option ISH_DISABLE		0
 		option ISH_ENABLE		1
 	end
+	field SPD 25 26
+		option MEM_H58G56BK7BX068       0
+		option MEM_H58G66BK8BX067       1
+		option MEM_H58G56BK8BX068       2
+		option MEM_H58G66BK7BX067       3
+        end
 end
 
 chip soc/intel/pantherlake

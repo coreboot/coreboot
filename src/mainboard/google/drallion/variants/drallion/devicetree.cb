@@ -408,11 +408,11 @@ chip soc/intel/cannonlake
 		end
 		device ref pcie_rp9 on
 			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "2230" "SlotDataBusWidth1X"
-			register "PcieRpSlotImplemented[8]" = "1"
+			register "PcieRpSlotImplemented[8]" = "true"
 		end
 		device ref pcie_rp13 on
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "2280" "SlotDataBusWidth4X"
-			register "PcieRpSlotImplemented[12]" = "1"
+			register "PcieRpSlotImplemented[12]" = "true"
 		end
 		device ref uart0 on end
 		device ref lpc_espi on

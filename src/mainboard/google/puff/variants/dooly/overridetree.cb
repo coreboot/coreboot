@@ -385,7 +385,7 @@ chip soc/intel/cannonlake
 		device ref emmc		on end
 		device ref pcie_rp11	on
 			# X2 NVMe
-			register "PcieRpSlotImplemented[10]" = "1"
+			register "PcieRpSlotImplemented[10]" = "true"
 		end
 		device ref hda		on
 			chip drivers/sof

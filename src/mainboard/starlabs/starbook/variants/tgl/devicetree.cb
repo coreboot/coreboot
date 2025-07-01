@@ -182,7 +182,7 @@ chip soc/intel/tigerlake
 			register "PcieRpLtrEnable[8]"			= "1"
 			register "PcieClkSrcUsage[3]"			= "0x08"
 			register "PcieClkSrcClkReq[3]"			= "3"
-			register "PcieRpSlotImplemented[8]"		= "1"
+			register "PcieRpSlotImplemented[8]"		= "true"
 
 			smbios_slot_desc				"SlotTypeM2Socket3"
 									"SlotLengthOther"

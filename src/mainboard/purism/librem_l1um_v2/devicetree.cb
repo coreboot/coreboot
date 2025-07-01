@@ -209,13 +209,13 @@ chip soc/intel/cannonlake
 			register "SataPortsHotPlug[7]" = "1"
 		end
 		device ref pcie_rp21 on
-			register "PcieRpSlotImplemented[20]" = "1"
+			register "PcieRpSlotImplemented[20]" = "true"
 			register "PcieRpLtrEnable[20]" = "true"
 			register "PcieClkSrcUsage[10]" = "20"
 			smbios_slot_desc "SlotTypePciExpressGen3X4" "SlotLengthOther" "PCIE5" "SlotDataBusWidth4X"
 		end
 		device ref pcie_rp1 on
-			register "PcieRpSlotImplemented[0]" = "1"
+			register "PcieRpSlotImplemented[0]" = "true"
 			register "PcieRpLtrEnable[0]" = "true"
 			register "PcieClkSrcUsage[1]" = "0x80"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M2_1" "SlotDataBusWidth4X"

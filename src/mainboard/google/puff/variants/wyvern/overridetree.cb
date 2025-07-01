@@ -383,11 +383,11 @@ chip soc/intel/cannonlake
 				register "enable_aspm_l1_2" = "1"
 				device ref system_agent on end
 			end
-			register "PcieRpSlotImplemented[6]" = "1"
+			register "PcieRpSlotImplemented[6]" = "true"
 		end
 		device ref pcie_rp11	on
 			# X2 NVMe
-			register "PcieRpSlotImplemented[10]" = "1"
+			register "PcieRpSlotImplemented[10]" = "true"
 		end
 	end
 

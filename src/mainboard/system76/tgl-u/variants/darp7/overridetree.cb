@@ -165,7 +165,7 @@ chip soc/intel/tigerlake
 			register "PcieRpLtrEnable[7]" = "true"
 			register "PcieClkSrcUsage[1]" = "7"
 			register "PcieClkSrcClkReq[1]" = "1"
-			register "PcieRpSlotImplemented[7]" = "1"
+			register "PcieRpSlotImplemented[7]" = "true"
 			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/E 2230 (J_WLAN1)" "SlotDataBusWidth1X"
 		end
 		device ref pcie_rp9 on
@@ -173,7 +173,7 @@ chip soc/intel/tigerlake
 			register "PcieRpLtrEnable[8]" = "true"
 			register "PcieClkSrcUsage[4]" = "8"
 			register "PcieClkSrcClkReq[4]" = "4"
-			register "PcieRpSlotImplemented[8]" = "1"
+			register "PcieRpSlotImplemented[8]" = "true"
 			chip soc/intel/common/block/pcie/rtd3
 				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_D14)" # SSD_PWR_EN
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_H0)" # GPP_H0_RTD3

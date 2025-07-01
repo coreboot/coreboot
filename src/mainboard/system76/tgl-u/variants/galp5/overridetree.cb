@@ -181,7 +181,7 @@ chip soc/intel/tigerlake
 			register "PcieRpLtrEnable[10]" = "true"
 			register "PcieClkSrcUsage[1]" = "10"
 			register "PcieClkSrcClkReq[1]" = "1"
-			register "PcieRpSlotImplemented[10]" = "1"
+			register "PcieRpSlotImplemented[10]" = "true"
 			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/E 2230 (J_WLAN1)" "SlotDataBusWidth1X"
 		end
 		device ref pmc hidden

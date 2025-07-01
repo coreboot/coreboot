@@ -282,14 +282,14 @@ chip soc/intel/cannonlake
 		device ref sata		on end
 		device ref i2c4		on end
 		device ref pcie_rp9	on
-			register "PcieRpSlotImplemented[8]" = "1"
+			register "PcieRpSlotImplemented[8]" = "true"
 		end # (x4 NVMe)
 		device ref pcie_rp14	on
 			chip drivers/wifi/generic
 				register "wake" = "GPE0_DW1_01"
 				device generic 0 on  end
 			end
-			register "PcieRpSlotImplemented[13]" = "1"
+			register "PcieRpSlotImplemented[13]" = "true"
 		end # (x1 WiFi)
 		device ref uart0	on end
 		device ref gspi0	on

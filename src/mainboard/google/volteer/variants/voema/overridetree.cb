@@ -92,7 +92,7 @@ chip soc/intel/tigerlake
 			# Disable WLAN PCIE 7
 			register "PcieRpLtrEnable[6]" = "false"
 			register "PcieClkSrcUsage[1]" = "PCIE_CLK_NOTUSED"
-			register "PcieRpSlotImplemented[6]" = "1"
+			register "PcieRpSlotImplemented[6]" = "true"
 		end
 		device ref pcie_rp8 off
 			# Disable SD Card PCIE 8

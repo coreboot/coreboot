@@ -125,7 +125,7 @@ chip soc/intel/cannonlake
 			register "SataPortsDevSlp[2]" = "1"
 		end
 		device ref pcie_rp7 on	# x1 M.2/E 2230 (WLAN)
-			register "PcieRpSlotImplemented[6]" = "1"
+			register "PcieRpSlotImplemented[6]" = "true"
 			register "PcieRpLtrEnable[6]" = "true"
 			register "PcieRpHotPlug[6]" = "1"
 			register "PcieClkSrcUsage[2]" = "6"
@@ -138,14 +138,14 @@ chip soc/intel/cannonlake
 			register "PcieClkSrcClkReq[3]" = "3"
 		end
 		device ref pcie_rp9 on	# x4 M.2/M 2280 (NVMe)
-			register "PcieRpSlotImplemented[8]" = "1"
+			register "PcieRpSlotImplemented[8]" = "true"
 			register "PcieRpLtrEnable[8]" = "true"
 			register "PcieClkSrcUsage[0]" = "8"
 			register "PcieClkSrcClkReq[0]" = "0"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280" "SlotDataBusWidth4X"
 		end
 		device ref pcie_rp13 on	# x4 M.2/M 2280 (NVMe)
-			register "PcieRpSlotImplemented[12]" = "1"
+			register "PcieRpSlotImplemented[12]" = "true"
 			register "PcieRpLtrEnable[12]" = "true"
 			register "PcieClkSrcUsage[1]" = "12"
 			register "PcieClkSrcClkReq[1]" = "1"

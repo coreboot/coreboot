@@ -61,13 +61,13 @@ chip soc/intel/cannonlake
 		device ref uart2 on  end
 		device ref emmc on  end
 		device ref pcie_rp1 on	# x4 SLOT1
-			register "PcieRpSlotImplemented[0]" = "1"
+			register "PcieRpSlotImplemented[0]" = "true"
 		end
 		device ref pcie_rp5 on	# x1 SLOT2/LAN
-			register "PcieRpSlotImplemented[4]" = "1"
+			register "PcieRpSlotImplemented[4]" = "true"
 		end
 		device ref pcie_rp9 on
-			register "PcieRpSlotImplemented[8]" = "1"
+			register "PcieRpSlotImplemented[8]" = "true"
 		end
 	end
 end

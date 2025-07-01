@@ -295,7 +295,7 @@ struct soc_intel_tigerlake_config {
 	/* PCIe Root Ports */
 	uint8_t PcieRpHotPlug[CONFIG_MAX_ROOT_PORTS];
 	/* Implemented as slot or built-in? */
-	uint8_t PcieRpSlotImplemented[CONFIG_MAX_ROOT_PORTS];
+	bool PcieRpSlotImplemented[CONFIG_MAX_ROOT_PORTS];
 	/* PCIe output clocks type to PCIe devices.
 	 * 0-23: PCH rootport, 0x70: LAN, 0x80: unspecified but in use,
 	 * 0xFF: not used */

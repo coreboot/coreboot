@@ -109,13 +109,13 @@ chip soc/intel/tigerlake
 		end
 
 		device ref pcie_rp5 on		# PCH M.2 (Gen3)
-			register "PcieRpSlotImplemented[4]" = "1"
+			register "PcieRpSlotImplemented[4]" = "true"
 			register "PcieClkSrcUsage[4]" = "4"
 			register "PcieClkSrcClkReq[4]" = "PCIE_CLK_NOTUSED"
 		end
 
 		device ref pcie_rp9 on		# PCH NGFF (WiFi)
-			register "PcieRpSlotImplemented[8]" = "1"
+			register "PcieRpSlotImplemented[8]" = "true"
 			register "PcieClkSrcUsage[5]" = "8"
 			register "PcieClkSrcClkReq[5]" = "PCIE_CLK_NOTUSED"
 
@@ -127,7 +127,7 @@ chip soc/intel/tigerlake
 		end
 
 		device ref pcie_rp12 on		# PCH x1 (Gen3)
-			register "PcieRpSlotImplemented[11]" = "1"
+			register "PcieRpSlotImplemented[11]" = "true"
 			register "PcieClkSrcUsage[1]" = "11"
 			register "PcieClkSrcClkReq[1]" = "PCIE_CLK_NOTUSED"
 		end

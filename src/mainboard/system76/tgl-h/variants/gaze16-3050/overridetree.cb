@@ -71,7 +71,7 @@ chip soc/intel/tigerlake
 			register "PcieRpLtrEnable[7]" = "true"
 			register "PcieClkSrcUsage[8]" = "7"
 			register "PcieClkSrcClkReq[8]" = "8"
-			register "PcieRpSlotImplemented[7]" = "1"
+			register "PcieRpSlotImplemented[7]" = "true"
 			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/E 2230 (J_WLAN1)" "SlotDataBusWidth1X"
 		end
 		device ref pcie_rp9 on
@@ -79,7 +79,7 @@ chip soc/intel/tigerlake
 			register "PcieRpLtrEnable[8]" = "true"
 			register "PcieClkSrcUsage[9]" = "8"
 			register "PcieClkSrcClkReq[9]" = "9"
-			register "PcieRpSlotImplemented[8]" = "1"
+			register "PcieRpSlotImplemented[8]" = "true"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD1)" "SlotDataBusWidth4X"
 		end
 	end

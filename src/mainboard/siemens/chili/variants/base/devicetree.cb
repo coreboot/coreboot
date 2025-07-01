@@ -40,22 +40,22 @@ chip soc/intel/cannonlake
 			device pci 00.0 on end	# x1 i219
 			register "PcieClkSrcUsage[4]" = "0x70"
 			register "PcieClkSrcClkReq[4]" = "4"
-			register "PcieRpSlotImplemented[4]" = "0"
+			register "PcieRpSlotImplemented[4]" = "false"
 		end
 		device ref pcie_rp6		on
 			device pci 00.0 on end	# x1 i210
 			register "PcieClkSrcUsage[5]" = "5"
 			register "PcieClkSrcClkReq[5]" = "5"
-			register "PcieRpSlotImplemented[5]" = "0"
+			register "PcieRpSlotImplemented[5]" = "false"
 		end
 		device ref pcie_rp7		on
-			register "PcieRpSlotImplemented[6]" = "1"
+			register "PcieRpSlotImplemented[6]" = "true"
 			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/E 2230" "SlotDataBusWidth1X"
 		end
 		device ref pcie_rp17		on
 			register "PcieClkSrcUsage[7]" = "16"
 			register "PcieClkSrcClkReq[7]" = "7"
-			register "PcieRpSlotImplemented[16]" = "1"
+			register "PcieRpSlotImplemented[16]" = "true"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280" "SlotDataBusWidth4X"
 		end
 		device ref lpc_espi		on

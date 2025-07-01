@@ -87,30 +87,30 @@ chip soc/intel/cannonlake
 		device ref pcie_rp5		on
 			register "PcieClkSrcUsage[4]" = "4"
 			register "PcieClkSrcClkReq[4]" = "4"
-			register "PcieRpSlotImplemented[4]" = "1"
+			register "PcieRpSlotImplemented[4]" = "true"
 		end
 		device ref pcie_rp6		on
 			device pci 00.0 on end	# i210 (x1)
 			register "PcieClkSrcUsage[5]" = "5"
 			register "PcieClkSrcClkReq[5]" = "5"
-			register "PcieRpSlotImplemented[5]" = "0"
+			register "PcieRpSlotImplemented[5]" = "false"
 		end
 		device ref pcie_rp7		on
 			device pci 00.0 on end	# VL805 Front Rack/UIB (x1)
 			register "PcieClkSrcUsage[1]" = "6"
 			register "PcieClkSrcClkReq[1]" = "1"
-			register "PcieRpSlotImplemented[6]" = "0"
+			register "PcieRpSlotImplemented[6]" = "false"
 		end
 		device ref pcie_rp8		on
 			device pci 00.0 on end	# VL805 Back MB (x1)
 			register "PcieClkSrcUsage[0]" = "7"
 			register "PcieClkSrcClkReq[0]" = "0"
-			register "PcieRpSlotImplemented[7]" = "0"
+			register "PcieRpSlotImplemented[7]" = "false"
 		end
 		device ref pcie_rp17		on
 			register "PcieClkSrcUsage[7]" = "16"
 			register "PcieClkSrcClkReq[7]" = "7"
-			register "PcieRpSlotImplemented[16]" = "1"
+			register "PcieRpSlotImplemented[16]" = "true"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "2280" "SlotDataBusWidth4X"
 		end
 		device ref uart0		on  end

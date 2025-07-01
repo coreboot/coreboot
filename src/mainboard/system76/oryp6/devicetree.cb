@@ -108,14 +108,14 @@ chip soc/intel/cannonlake
 			register "PcieRpHotPlug[16]" = "1"
 			register "PcieClkSrcUsage[0]" = "16"
 			register "PcieClkSrcClkReq[0]" = "0"
-			register "PcieRpSlotImplemented[16]" = "1"
+			register "PcieRpSlotImplemented[16]" = "true"
 		end
 		device ref pcie_rp21	on
 			# PCI Express root port #21 x4, Clock 11 (SSD2)
 			register "PcieRpLtrEnable[20]" = "true"
 			register "PcieClkSrcUsage[11]" = "20"
 			register "PcieClkSrcClkReq[11]" = "11"
-			register "PcieRpSlotImplemented[20]" = "1"
+			register "PcieRpSlotImplemented[20]" = "true"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD2)" "SlotDataBusWidth4X"
 		end
 		device ref pcie_rp9	on
@@ -123,7 +123,7 @@ chip soc/intel/cannonlake
 			register "PcieRpLtrEnable[8]" = "true"
 			register "PcieClkSrcUsage[12]" = "8"
 			register "PcieClkSrcClkReq[12]" = "12"
-			register "PcieRpSlotImplemented[8]" = "1"
+			register "PcieRpSlotImplemented[8]" = "true"
 			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther" "M.2/M 2280 (J_SSD1)" "SlotDataBusWidth4X"
 		end
 		device ref pcie_rp14	on
@@ -131,21 +131,21 @@ chip soc/intel/cannonlake
 			register "PcieRpLtrEnable[13]" = "true"
 			register "PcieClkSrcUsage[7]" = "13"
 			register "PcieClkSrcClkReq[7]" = "7"
-			register "PcieRpSlotImplemented[13]" = "1"
+			register "PcieRpSlotImplemented[13]" = "true"
 		end
 		device ref pcie_rp15	on
 			# PCI Express root port #15 x1, Clock 9 (Card Reader)
 			register "PcieRpLtrEnable[14]" = "true"
 			register "PcieClkSrcUsage[9]" = "14"
 			register "PcieClkSrcClkReq[9]" = "9"
-			register "PcieRpSlotImplemented[14]" = "1"
+			register "PcieRpSlotImplemented[14]" = "true"
 		end
 		device ref pcie_rp16	on
 			# PCI Express root port #16 x1, Clock 6 (WLAN)
 			register "PcieRpLtrEnable[15]" = "true"
 			register "PcieClkSrcUsage[6]" = "15"
 			register "PcieClkSrcClkReq[6]" = "6"
-			register "PcieRpSlotImplemented[15]" = "1"
+			register "PcieRpSlotImplemented[15]" = "true"
 			smbios_slot_desc "SlotTypeM2Socket1_SD" "SlotLengthOther" "M.2/E 2230 (J_WLAN1)" "SlotDataBusWidth1X"
 		end
 		device ref lpc_espi	on

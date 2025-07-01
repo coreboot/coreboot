@@ -412,23 +412,23 @@ chip soc/intel/cannonlake
 		end
 		device ref pcie_rp8	on
 			# WLAN
-			register "PcieRpSlotImplemented[7]" = "1" # M.2 Slot
+			register "PcieRpSlotImplemented[7]" = "true" # M.2 Slot
 		end
 		device ref pcie_rp9	on
 			# TPU
-			register "PcieRpSlotImplemented[8]" = "1" # M.2 Slot
+			register "PcieRpSlotImplemented[8]" = "true" # M.2 Slot
 		end
 		device ref pcie_rp11	on
 			# TPU1
-			register "PcieRpSlotImplemented[10]" = "1" # M.2 Slot
+			register "PcieRpSlotImplemented[10]" = "true" # M.2 Slot
 		end
 		device ref pcie_rp12	on
 			# TPU0
-			register "PcieRpSlotImplemented[11]" = "1" # M.2 Slot
+			register "PcieRpSlotImplemented[11]" = "true" # M.2 Slot
 		end
 		device ref pcie_rp13	on
 			# X4 i350 NIC
-			register "PcieRpSlotImplemented[12]" = "0" # Built-in
+			register "PcieRpSlotImplemented[12]" = "false" # Built-in
 		end
 	end
 

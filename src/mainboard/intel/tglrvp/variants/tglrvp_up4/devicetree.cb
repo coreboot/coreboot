@@ -244,14 +244,14 @@ chip soc/intel/tigerlake
 		device ref pcie_rp1 off end
 		device ref pcie_rp2 off end
 		device ref pcie_rp3 on
-			register "PcieRpSlotImplemented[2]" = "1"
+			register "PcieRpSlotImplemented[2]" = "true"
 			register "PcieRpLtrEnable[2]" = "true"
 			register "PcieClkSrcUsage[1]" = "0x2"
 			register "PcieClkSrcClkReq[1]" = "1"
 		end
 
 		device ref pcie_rp4 on
-			register "PcieRpSlotImplemented[3]" = "1"
+			register "PcieRpSlotImplemented[3]" = "true"
 			register "PcieRpLtrEnable[3]" = "true"
 			register "PcieClkSrcUsage[2]" = "0x3"
 			register "PcieClkSrcClkReq[2]" = "2"
@@ -266,14 +266,14 @@ chip soc/intel/tigerlake
 		device ref pcie_rp7 off end
 		device ref pcie_rp8 off end
 		device ref pcie_rp9 on
-			register "PcieRpSlotImplemented[8]" = "1"
+			register "PcieRpSlotImplemented[8]" = "true"
 			register "PcieRpLtrEnable[8]" = "true"
 			register "PcieClkSrcUsage[3]" = "0x8"
 			register "PcieClkSrcClkReq[3]" = "3"
 		end
 		device ref pcie_rp10 off end
 		device ref pcie_rp11 on
-			register "PcieRpSlotImplemented[10]" = "1"
+			register "PcieRpSlotImplemented[10]" = "true"
 			register "PcieRpLtrEnable[10]" = "true"
 		end
 		device ref pcie_rp12 off end

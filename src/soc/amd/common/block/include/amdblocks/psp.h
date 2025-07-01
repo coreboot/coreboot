@@ -4,6 +4,7 @@
 #define AMD_BLOCK_PSP_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #define SMM_TRIGGER_IO		0
 #define SMM_TRIGGER_MEM		1
@@ -83,5 +84,16 @@ int psp_load_named_blob(enum psp_blob_type type, const char *name);
 
 /* Sets the GPIO used for the TPM IRQ */
 void psp_set_tpm_irq_gpio(unsigned int gpio);
+
+/* Returns the fTPM base address, 0 on error. */
+uintptr_t psp_ftpm_base_address(void);
+
+/* Returns true when the fTPM CRB interface is enabled */
+bool psp_ftpm_is_active(void);
+
+/* Returns required recovery actions to be taken */
+void psp_ftpm_needs_recovery(bool *psp_rpmc_nvram,
+			     bool *psp_nvram,
+			     bool *psp_dir);
 
 #endif /* AMD_BLOCK_PSP_H */

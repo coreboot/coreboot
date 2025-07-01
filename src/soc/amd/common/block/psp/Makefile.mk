@@ -11,6 +11,8 @@ smm-y += psp_smm.c
 bootblock-y += psp_efs.c
 verstage-y += psp_efs.c
 
+all-y += ftpm.c
+
 endif # CONFIG_SOC_AMD_COMMON_BLOCK_PSP
 
 ifeq ($(CONFIG_SOC_AMD_COMMON_BLOCK_PSP_GEN1),y)

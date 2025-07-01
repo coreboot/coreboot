@@ -123,9 +123,6 @@ chip soc/intel/alderlake
 		[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
 	}"
 
-	# TCSS USB3
-	register "tcss_aux_ori" = "0"
-
 	register "s0ix_enable" = "true"
 	register "dptf_enable" = "true"
 
@@ -311,14 +308,7 @@ chip soc/intel/alderlake
 		end
 		device ref pcie4_0 on end
 		device ref pcie4_1 on end
-		device ref tbt_pcie_rp0 on end
-		device ref tbt_pcie_rp1 on end
-		device ref tbt_pcie_rp2 on end
-		device ref tbt_pcie_rp3 on end
 		device ref crashlog off end
-		device ref tcss_xhci on end
-		device ref tcss_dma0 on end
-		device ref tcss_dma1 on end
 		device ref xhci on
 			chip drivers/usb/acpi
 				register "desc" = ""Root Hub""

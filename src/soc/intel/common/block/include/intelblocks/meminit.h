@@ -57,6 +57,17 @@ struct mem_spd {
 	struct {
 		uint8_t addr_dimm[CONFIG_DIMMS_PER_CHANNEL];
 	} smbus[MRC_CHANNELS];
+
+	/* If the SPD data is provided in a memory buffer, spd_data.in_mem needs to be
+	 * set to 'true'. In this case spd_data.ptr points to the memory buffer where the
+	 * SPD data is stored in and spd_data.len stores the length of the SPD data
+	 * in that buffer. In this case cbfs_index is ignored.
+	 */
+	struct {
+		bool in_mem;
+		size_t len;
+		uintptr_t ptr;
+	} spd_data;
 };
 
 /* Information about memory technology supported by SoC */

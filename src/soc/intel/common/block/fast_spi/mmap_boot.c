@@ -9,6 +9,7 @@
 #include <boot_device.h>
 #include <commonlib/region.h>
 #include <console/console.h>
+#include <fast_spi_dma.h>
 #include <fmap.h>
 #include <intelblocks/fast_spi.h>
 #include <spi_flash.h>
@@ -142,6 +143,9 @@ static void bios_mmap_init(void)
 const struct region_device *boot_device_ro(void)
 {
 	bios_mmap_init();
+
+	if (fast_spi_dma_is_supported())
+		spi_flash_dma_install_ops(&real_dev);
 
 	return &real_dev.rdev;
 }

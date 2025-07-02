@@ -150,5 +150,8 @@ chip soc/intel/alderlake
 				device pnp 2e.a off end # CIR
 			end
 		end
+		chip drivers/crb
+			device mmio 0xfed40000 on end
+		end
 	end
 end

@@ -1,10 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only OR MIT */
 
+#include <bootmode.h>
 #include <device/device.h>
 #include <device/mmio.h>
 #include <fw_config.h>
 #include <gpio.h>
 #include <soc/bl31.h>
+#include <soc/display.h>
 #include <soc/dpm_v2.h>
 #include <soc/i2c.h>
 #include <soc/msdc.h>
@@ -101,6 +103,18 @@ static void mainboard_init(struct device *dev)
 
 	if (CONFIG(ARM64_USE_ARM_TRUSTED_FIRMWARE))
 		register_reset_to_bl31(GPIO_AP_EC_WARM_RST_REQ.id, true);
+
+	if (display_init_required()) {
+		if (mtk_display_init() < 0)
+			printk(BIOS_ERR, "%s: Failed to init display\n", __func__);
+	} else {
+		printk(BIOS_INFO, "%s: Skipping display init; disabling secure mode\n",
+		       __func__);
+		mtcmos_display_power_on();
+		mtcmos_protect_display_bus();
+		mtk_display_disable_secure_mode();
+	}
+
 }
 
 static void mainboard_enable(struct device *dev)

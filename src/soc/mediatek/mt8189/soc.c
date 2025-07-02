@@ -6,6 +6,7 @@
 #include <soc/emi.h>
 #include <soc/mcupm.h>
 #include <soc/mtk_fsp.h>
+#include <soc/pi_image.h>
 #include <soc/sspm.h>
 #include <symbols.h>
 
@@ -22,6 +23,7 @@ static void soc_read_resources(struct device *dev)
 static void soc_init(struct device *dev)
 {
 	mtk_fsp_init(RAMSTAGE_SOC_INIT);
+	pi_image_add_mtk_fsp_params();
 	mtk_fsp_load_and_run();
 
 	mcupm_init();

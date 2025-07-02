@@ -42,6 +42,13 @@ config MCUPM_FIRMWARE
 	help
 	  The file name of the MediaTek MCUPM firmware.
 
+config PI_IMG_FIRMWARE
+	string
+	default "pi_img.img"
+	help
+	  The file name of the MediaTek PI image firmware. The main purpose of the PI image is
+	  to pass various frequency and voltage scaling parameters and settings to MCUPM.
+
 config SPM_FIRMWARE
 	string
 	default "spm_firmware.bin"

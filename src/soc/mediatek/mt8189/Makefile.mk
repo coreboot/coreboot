@@ -49,6 +49,7 @@ ramstage-y += ../common/mt6315.c mt6315.c
 ramstage-y += ../common/mt6359p.c mt6359p.c
 ramstage-y += ../common/mtcmos.c mtcmos.c
 ramstage-y += ../common/mtk_fsp.c
+ramstage-y += ../common/pi_image.c
 ramstage-y += ../common/pmif.c ../common/pmif_clk.c ../common/pmif_init.c pmif_clk.c
 ramstage-y += ../common/pmif_spi.c pmif_spi.c
 ramstage-y += ../common/pmif_spmi.c ../common/pmif_spmi_v2.c pmif_spmi.c
@@ -70,6 +71,7 @@ firmware-files := \
 	$(CONFIG_DPM_DM_FIRMWARE) \
 	$(CONFIG_DPM_PM_FIRMWARE) \
 	$(CONFIG_MCUPM_FIRMWARE) \
+	$(CONFIG_PI_IMG_FIRMWARE) \
 	$(CONFIG_SPM_FIRMWARE) \
 	$(CONFIG_SSPM_FIRMWARE)
 

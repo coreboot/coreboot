@@ -465,7 +465,10 @@ M:	Felix Singer <felixsinger@posteo.net>
 S:	Supported
 F:	src/mainboard/kontron/mal10/
 
-
+LATTEPANDA MU MAINBOARD
+M:	KunYi Chen <kunyi.chen@gmail.com>
+S:	Maintained
+F:	src/mainboard/lattepanda/mu/
 
 LENOVO MAINBOARDS
 M:	Alexander Couzens <lynxis@fe80.eu>

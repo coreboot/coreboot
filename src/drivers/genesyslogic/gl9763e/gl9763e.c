@@ -5,13 +5,15 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pciexp.h>
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
 #include "gl9763e.h"
 
 static void gl9763e_init(struct device *dev)
 {
-	uint32_t ver;
+	uint32_t ver, value;
+	int aer;
 
 	printk(BIOS_INFO, "GL9763E: init\n");
 	pci_dev_init(dev);
@@ -41,6 +43,13 @@ static void gl9763e_init(struct device *dev)
 	pci_update_config32(dev, SD_CLKRX_DLY, ~HS400_RX_DELAY_MASK, HS400_RX_DELAY);
 	/* Disable Slow mode */
 	pci_and_config32(dev, EMMC_CTL, ~SLOW_MODE);
+	/* mask the replay timer timeout of AER */
+	aer = pciexp_find_extended_cap(dev, PCI_EXT_CAP_ID_ERR, 0);
+	if (aer) {
+		value = pci_read_config32(dev, aer + PCI_ERR_COR_MASK);
+		value |= PCI_ERR_COR_REP_TIMER;
+		pci_write_config32(dev, aer + PCI_ERR_COR_MASK, value);
+	}
 	/* Set VHS to read-only */
 	pci_update_config32(dev, VHS, ~VHS_REV_MASK, VHS_REV_R);
 }

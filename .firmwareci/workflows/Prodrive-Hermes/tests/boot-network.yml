@@ -25,3 +25,23 @@ stages:
         parameters:
           executable: shutdown
           args: ["now"]
+
+      - cmd: archive
+        name: Upload os-release
+        transport:
+          proto: ssh
+          options:
+            host: "[[attributes.Host]]"
+            user: root
+            identity_file: /root/.ssh/fwci
+        parameters:
+          path: "/etc/os-release"
+          name: "os-release.txt"
+
+      - cmd: archive
+        name: Upload dmesg
+        transport:
+          proto: local
+        parameters:
+          path: "/var/log/dmesg"
+          name: "dmesg.log"

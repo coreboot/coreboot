@@ -118,7 +118,6 @@ enumerations
 7     13    448M
 7     14    480M
 7     15    512M
-7     16    1024M
 
 # usb3_mode
 # Disable = Use the port always as USB 2.0 for compatibility

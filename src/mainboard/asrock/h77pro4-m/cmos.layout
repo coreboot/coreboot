@@ -81,7 +81,6 @@ enumerations
 6	13	448M
 6	14	480M
 6	15	512M
-6	16	1024M
 
 # cpu_fan_header (select which header provides the tachometer
 # signal to the Super I/O on its CPUFANIN input)

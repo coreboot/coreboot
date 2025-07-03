@@ -170,7 +170,7 @@ chip soc/intel/alderlake
 				register "device_type" = "INTEL_ACPI_CAMERA_CIO2"
 
 				register "cio2_num_ports" = "1"
-				register "cio2_lanes_used" = "{2}" # 2 CSI Camera lanes are used
+				register "cio2_lanes_used" = "{4}" # 4 CSI Camera lanes are used
 				register "cio2_lane_endpoint[0]" = ""^I2C4.CAM0""
 				register "cio2_prt[0]" = "1"
 				device generic 0 on end
@@ -320,13 +320,13 @@ chip soc/intel/alderlake
 				register "has_power_resource" = "1"
 				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
 
-				register "ssdb.lanes_used" = "2"
+				register "ssdb.lanes_used" = "4"
 				register "ssdb.link_used" = "1"
 				register "ssdb.vcm_type" = "0x0C"
 				register "vcm_name" = ""VCM0""
 				register "num_freq_entries" = "2"
-				register "link_freq[0]" = "720000000"
-				register "link_freq[1]" = "360000000"
+				register "link_freq[0]" = "360000000"
+				register "link_freq[1]" = "180000000"
 				register "remote_name" = ""IPU0""
 
 				#Controls

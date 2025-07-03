@@ -113,21 +113,6 @@ enumerations
 7	13	448M
 7	14	480M
 7	15	512M
-7	16	544M
-7	17	576M
-7	18	608M
-7	19	640M
-7	20	672M
-7	21	704M
-7	22	736M
-7	23	768M
-7	24	800M
-7	25	832M
-7	26	864M
-7	27	896M
-7	28	928M
-7	29	960M
-7	30	992M
 
 # usb3_mode
 # Disable = Use the port always as USB 2.0 for compatibility

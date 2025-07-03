@@ -86,7 +86,7 @@ MPC_BASE_URL="https://ftpmirror.gnu.org/mpc"
 GCC_BASE_URL="https://ftpmirror.gnu.org/gcc/gcc-${GCC_VERSION}"
 LIBSTDCXX_BASE_URL="${GCC_BASE_URL}"
 BINUTILS_BASE_URL="https://ftpmirror.gnu.org/binutils"
-IASL_BASE_URL="https://github.com/acpica/acpica/releases/download/R2024_12_12"
+IASL_BASE_URL="https://downloadmirror.intel.com/852044"
 # CLANG toolchain archive locations
 LLVM_BASE_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}"
 CLANG_BASE_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}"

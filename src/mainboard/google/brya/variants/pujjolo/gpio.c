@@ -119,7 +119,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* D1  : ISH_GP1 ==> SOC_GSEN2_INT# */
 	PAD_CFG_NF(GPP_D1, NONE, DEEP, NF1),
 	/* D2  : NC => EN_FP_PWR */
-	PAD_CFG_GPO_LOCK(GPP_D2, 1, LOCK_CONFIG),
+	PAD_CFG_GPO_LOCK(GPP_D2, 0, LOCK_CONFIG),
 	/* D3  : ISH_GP3 ==> WCAM_RST_L */
 	PAD_CFG_GPO_LOCK(GPP_D3, 0, LOCK_CONFIG),
 	/* D4  : IMGCLKOUT0 ==> BT_DISABLE_L */

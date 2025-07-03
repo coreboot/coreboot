@@ -26,4 +26,7 @@ CPPFLAGS_common += -I$(src)/soc/intel/xeon_sp/gnr
 
 CFLAGS_common += -fshort-wchar
 
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-ad-01
+cpu_microcode_bins += 3rdparty/intel-microcode/intel-ucode/06-af-03
+
 endif ## CONFIG_SOC_INTEL_GRANITERAPIDS

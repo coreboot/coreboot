@@ -66,8 +66,8 @@ chip soc/intel/alderlake
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for PCIe WLAN
 	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for CNVi WLAN
 
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC1)"	# USB3 Type-A port A0(MLB))
-	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC2)"	# USB3 Type-A port A1(DB)
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3 Type-A port A0(MLB))
+	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3 Type-A port A1(DB)
 
 	#register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3 port for WWAN
 

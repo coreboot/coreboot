@@ -30,10 +30,10 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_GPI_SCI_HIGH(GPP_A12, NONE, PLTRST, EDGE_BOTH),
 	/* A13 : GPP_A13 ==> GSC_SOC_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
-	/* A14 : USB_OC1# */
-	PAD_CFG_NF(GPP_A14, NONE, DEEP, NF1),
-	/* A15 : USB_OC2# */
-	PAD_CFG_NF(GPP_A15, NONE, DEEP, NF1),
+	/* A14 : USB_OC1# ==> NC */
+	PAD_NC(GPP_A14, NONE),
+	/* A15 : USB_OC2# ==> NC */
+	PAD_NC(GPP_A15, NONE),
 	/* A16 : USB_OC3# ==> NC */
 	PAD_NC_LOCK(GPP_A16, NONE, LOCK_CONFIG),
 	/* A17 : NC */

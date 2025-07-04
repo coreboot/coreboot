@@ -23,7 +23,7 @@
 #if ENV_X86 && (ENV_POSTCAR || ENV_SMM)
 struct mem_pool cbfs_cache = MEM_POOL_INIT(NULL, 0, 0);
 #elif CONFIG(POSTRAM_CBFS_CACHE_IN_BSS) && ENV_RAMSTAGE
-static u8 cache_buffer[CONFIG_RAMSTAGE_CBFS_CACHE_SIZE];
+static u8 cache_buffer[CONFIG_RAMSTAGE_CBFS_CACHE_SIZE] __aligned(CONFIG_CBFS_CACHE_ALIGN);
 struct mem_pool cbfs_cache =
 	MEM_POOL_INIT(cache_buffer, sizeof(cache_buffer), CONFIG_CBFS_CACHE_ALIGN);
 #else

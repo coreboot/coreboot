@@ -339,3 +339,12 @@ void dptx_hal_phy_set_idle_pattern(struct mtk_dp *mtk_dp, u8 lane_count, bool en
 	mtk_dp_mask(mtk_dp, REG_3580_DP_TRANS_P0, (enable ? val : 0x0) << 8,
 		    POST_MISC_DATA_LANE_OV_DP_TRANS_4P_MASK);
 }
+
+void dptx_hal_phyd_reset(struct mtk_dp *mtk_dp)
+{
+	mtk_dp_phy_mask(mtk_dp, DP_PHY_DIG_SW_RST, 0, BIT(0));
+	udelay(10);
+	mtk_dp_phy_mask(mtk_dp, DP_PHY_DIG_SW_RST, BIT(0), BIT(0));
+
+	dptx_hal_reset_swing_preemphasis(mtk_dp);
+}

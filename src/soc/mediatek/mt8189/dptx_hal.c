@@ -26,12 +26,3 @@ void dptx_hal_phy_set_lanes(struct mtk_dp *mtk_dp, u8 lane_count)
 	mtk_dp_phy_mask(mtk_dp, PHYD_DIG_GLB_OFFSET + 0x44,
 			GENMASK(4 + lane_count - 1, 4), GENMASK(7, 4));
 }
-
-void dptx_hal_phyd_reset(struct mtk_dp *mtk_dp)
-{
-	mtk_dp_phy_mask(mtk_dp, DP_PHY_DIG_SW_RST, 0, BIT(0));
-	udelay(10);
-	mtk_dp_phy_mask(mtk_dp, DP_PHY_DIG_SW_RST, BIT(0), BIT(0));
-
-	dptx_hal_reset_swing_preemphasis(mtk_dp);
-}

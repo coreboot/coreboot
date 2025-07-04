@@ -1,14 +1,15 @@
-Upcoming release - coreboot 25.06
+coreboot 25.06
 ========================================================================
 
 The coreboot project is pleased to announce the release of coreboot
 25.06, another milestone in our work promoting the use of open-source
 firmware. This release incorporates almost 900 commits from more than
-120 contributors, bringing enhanced boot splash screen capabilities,
-improved build tooling with GCC 15 support, and expanded wireless power
-management features. Along with these headline improvements, we've
-delivered numerous stability enhancements and infrastructure updates
-that strengthen coreboot's foundation across all supported platforms.
+120 contributors, including 28 first time contributors. It brings
+enhanced boot splash screen capabilities, improved build tooling
+support, and expanded wireless power management features. Along with
+these headline improvements, we've delivered numerous stability
+enhancements and infrastructure updates that strengthen coreboot's
+foundation across all supported platforms.
 
 As always, the coreboot project extends our appreciation to everyone who
 contributed to this release. From seasoned developers submitting complex
@@ -19,6 +20,26 @@ vitality of the open firmware community.
 
 The next coreboot release, 25.09, is scheduled for the end of September
 2025.
+
+Project Updates
+---------------
+
+* In the past several months, the coreboot project has worked to help
+  groups who can't always push their code directly to the main
+  development branch, offering to host separate branches and separate
+  repositories for this work. A document with more details will be
+  uploaded shortly.
+* The coreboot project has had bi-weekly leadership meetings where
+  project issues are discussed for a number of years, but they've always
+  been at a time which makes it difficult for people in Asia to attend.
+  We are going to start a second meeting on the same day as the existing
+  meeting, but at a better time for Asia. Check the coreboot calendar
+  for details: https://www.coreboot.org/calendar.html
+* After many years, the coreboot mascot finally has a name: Blitz, the
+  corebunny. This is a reference to the boot speed which can be achieved
+  through using the coreboot project, and reflects the design intent of
+  the logo, a European Brown Hare, which is very adaptable and runs at
+  speeds of up to 72 km/h (45 mph).
 
 
 Significant or interesting changes
@@ -248,15 +269,15 @@ Platform Updates
 
 Statistics from the 25.03 to the 25.06 release
 --------------------------------------------
-* Total Commits: 879
-* Average Commits per day: 9.95
-* Total lines added: 73596
-* Average lines added per commit: 83.73
-* Number of patches adding more than 100 lines: 84
-* Average lines added per small commit: 40.40
-* Total lines removed: 15717
+* Total Commits: 882
+* Average Commits per day: 9.85
+* Total lines added: 73906
+* Average lines added per commit: 83.79
+* Number of patches adding more than 100 lines: 85
+* Average lines added per small commit: 40.39
+* Total lines removed: 15766
 * Average lines removed per commit: 17.88
-* Total difference between added and removed: 57879
+* Total difference between added and removed: 58140
 * Total authors: 128
 * New authors: 34
 

@@ -2,6 +2,7 @@
 
 #include <boot/coreboot_tables.h>
 #include <bootmode.h>
+#include <cbfs.h>
 #include <cpu/intel/microcode.h>
 #include <fsp/api.h>
 #include <fsp/debug.h>
@@ -832,6 +833,11 @@ void platform_fsp_silicon_multi_phase_init_cb(uint32_t phase_index)
 			const struct soc_intel_pantherlake_config *config = config_of_soc();
 			tcss_configure(config->typec_aux_bias_pads);
 		}
+
+		/* Allow CBFS preload transfers to complete before FSP-S locks SPI DMA. */
+		struct soc_intel_common_config *config = chip_get_common_soc_structure();
+		if (config->chipset_lockdown == CHIPSET_LOCKDOWN_FSP)
+			cbfs_preload_wait_for_all();
 		break;
 	default:
 		break;

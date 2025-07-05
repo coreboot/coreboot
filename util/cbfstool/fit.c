@@ -165,13 +165,14 @@ static inline size_t fit_free_space(struct fit_table *fit,
 static void sort_fit_table(struct fit_table *fit)
 {
 	struct fit_entry tmp;
-	size_t i, j;
-	int swapped;
+	int i, j, num_entries, swapped;
+
+	num_entries = fit_table_entries(fit);
 
 	/* Bubble sort entries */
-	for (j = 0; j < fit_table_entries(fit) - 1; j++) {
+	for (j = 0; j < num_entries - 1; j++) {
 		swapped = 0;
-		for (i = 0; i < fit_table_entries(fit) - j - 1; i++) {
+		for (i = 0; i < num_entries - j - 1; i++) {
 			if (fit->entries[i].type_checksum_valid <=
 			    fit->entries[i + 1].type_checksum_valid)
 				continue;

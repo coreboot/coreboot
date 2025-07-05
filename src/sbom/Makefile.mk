@@ -63,7 +63,10 @@ swid-files-$(CONFIG_SBOM_EC) += $(CONFIG_SBOM_EC_PATH)
 swid-files-$(CONFIG_SBOM_BIOS_ACM) += $(CONFIG_BIOS_ACM_PATH)
 swid-files-$(CONFIG_SBOM_SINIT_ACM) += $(CONFIG_SINIT_ACM_PATH)
 
-vboot-pkgconfig-files = $(obj)/external/vboot_reference-bootblock/vboot_host.pc $(obj)/external/vboot_reference-romstage/vboot_host.pc $(obj)/external/vboot_reference-ramstage/vboot_host.pc $(obj)/external/vboot_reference-postcar/vboot_host.pc
+vboot-pkgconfig-files = $(obj)/external/vboot_reference-bootblock/vboot_host.pc $(obj)/external/vboot_reference-ramstage/vboot_host.pc $(obj)/external/vboot_reference-postcar/vboot_host.pc
+ifeq ($(CONFIG_SEPARATE_ROMSTAGE),y)
+vboot-pkgconfig-files += $(obj)/external/vboot_reference-romstage/vboot_host.pc
+endif
 swid-files-$(CONFIG_SBOM_VBOOT) += $(vboot-pkgconfig-files)
 $(vboot-pkgconfig-files): $(VBOOT_LIB_bootblock) $(VBOOT_LIB_romstage) $(VBOOT_LIB_ramstage) $(VBOOT_LIB_postcar) # src/security/vboot/Makefile.mk
 

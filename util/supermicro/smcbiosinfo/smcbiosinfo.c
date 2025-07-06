@@ -101,15 +101,16 @@ static int get_line_as_int(char *fn, char *match, int bcd)
 		ret = strtol(s, &endptr, 0);
 		if (*endptr != '\0' && *endptr != '\n') {
 			fprintf(stderr, "E: Couldn't parse number for key '%s'\n", match);
+			free(s);
 			return -1;
 		}
 		if (bcd)
 			ret = bcd2int(ret);
-		free(s);
 	} else {
 		fprintf(stderr, "E: Got invalid line for key '%s'\n", match);
 	}
 
+	free(s);
 	return ret;
 }
 

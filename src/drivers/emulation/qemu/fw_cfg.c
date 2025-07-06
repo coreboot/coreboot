@@ -351,6 +351,12 @@ static const char *type1_serial_number;
 static const char *type1_family;
 static u8 type1_uuid[16];
 
+/*
+ * We're making an assumption that the table we get from fw_cfg_get() &
+ * fw_cfg_read() only has one entry for each of the above fields. If
+ * there's more than one, we would leak the memory created by strdup()
+ * for the previous iterations through the loop.
+ */
 static void fw_cfg_smbios_init(void)
 {
 	static int done = 0;

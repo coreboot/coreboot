@@ -384,38 +384,40 @@ static const struct pad_config ish_enable_pads[] = {
 };
 
 static const struct pad_config fp_disable_pads[] = {
+	/* GPP_E05:     GPP_E05_FPS_PWREN */
+	PAD_NC(GPP_E05, NONE),
+	/* GPP_C15:     FPS_RST_N */
 	PAD_NC(GPP_C15, NONE),
-	/* GPP_D01:     MOD_TCSS1_TYP_A_VBUS_EN */
-	PAD_CFG_GPO(GPP_D01, 1, DEEP),
-	PAD_NC(GPP_E17, NONE),
-	/* FIXME: b/390031369
-	 * use dedicated GPIO PIN for codec enable
-	 * when FPS is enabled.
-	 */
-	/* GPP_E19:     CODEC_EN */
-	PAD_CFG_GPO(GPP_E19, 1, PLTRST),
+	/* GPP_E19:     FPS_INT_N */
+	PAD_NC(GPP_E19, NONE),
+	/* GPP_E20:     FPS_FW_UPDATE */
 	PAD_NC(GPP_E20, NONE),
+	/* GPP_E17:     GPP_E17_GSPI0A_CS0 */
+	PAD_NC(GPP_E17, NONE),
+	/* GPP_F14:     GPP_F14_GPSI0A_MOSI */
 	PAD_NC(GPP_F14, NONE),
+	/* GPP_F15:     GPP_F15_GSPI0A_MISO */
 	PAD_NC(GPP_F15, NONE),
+	/* GPP_F16:     GPP_F16_GSPI0A_CLK */
 	PAD_NC(GPP_F16, NONE),
 };
 
 static const struct pad_config fp_enable_pads[] = {
+	/* GPP_E05:     GPP_E5_FPS_PWREN */
+	PAD_CFG_GPO(GPP_E05, 1, DEEP),
 	/* GPP_C15:     FPS_RST_N */
 	PAD_CFG_GPO_LOCK(GPP_C15, 1, LOCK_CONFIG),
-	/* GPP_D01:     FPS_SOC_INT_L */
-	PAD_CFG_GPI_IRQ_WAKE(GPP_D01, NONE, PWROK, LEVEL, INVERT),
-	/* GPP_E17:     GSPI0A_CS0 */
+	/* GPP_E17:     GPP_E17_GSPI0A_CS0 */
 	PAD_CFG_NF(GPP_E17, NONE, DEEP, NF5),
-	/* GPP_E19:     FPMCU_PWREN */
-	PAD_CFG_GPO(GPP_E19, 1, DEEP),
-	/* GPP_E20:     FPMCU_FW_UPDATE */
+	/* GPP_E19:     FPS_INT_N */
+	PAD_CFG_GPI_IRQ_WAKE(GPP_E19, NONE, PWROK, LEVEL, INVERT),
+	/* GPP_E20:     FPS_FW_UPDATE */
 	PAD_CFG_GPO_LOCK(GPP_E20, 0, LOCK_CONFIG),
-	/* GPP_F14:     GPSI0A_MOSI */
+	/* GPP_F14:     GPP_F14_GPSI0A_MOSI */
 	PAD_CFG_NF(GPP_F14, NONE, DEEP, NF8),
-	/* GPP_F15:     GSPI0A_MISO */
+	/* GPP_F15:     GPP_F15_GSPI0A_MISO */
 	PAD_CFG_NF(GPP_F15, NONE, DEEP, NF8),
-	/* GPP_F16:     GPSI0A_CLK */
+	/* GPP_F16:     GPP_F16_GSPI0A_CLK */
 	PAD_CFG_NF(GPP_F16, NONE, DEEP, NF8),
 };
 

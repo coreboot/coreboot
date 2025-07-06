@@ -126,6 +126,7 @@ char *cbmem_console_snapshot(void)
 	if (overflow) {
 		if (cursor >= size) {
 			printf("ERROR: CBMEM console struct is corrupted\n");
+			free(console_c);
 			return NULL;
 		}
 		for (oldc = cursor; oldc < size; oldc++)

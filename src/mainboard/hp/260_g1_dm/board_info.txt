@@ -1,0 +1,8 @@
+Category: desktop
+Board URL: https://support.hp.com/us-en/product/setup-user-guides/hp-260-g1-desktop-mini-pc/7375834
+ROM IC: MX25L6406E
+ROM protocol: SPI
+Flashrom support: y
+ROM package: SOIC8
+ROM socketed: no
+Release year: 2015

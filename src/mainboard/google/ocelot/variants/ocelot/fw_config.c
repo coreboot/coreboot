@@ -85,18 +85,22 @@ static const struct pad_config audio_disable_pads[] = {
 	PAD_NC(GPP_S07, NONE),
 };
 
-static const struct pad_config x1slot_pads[] = {
-	/* GPP_A08:     X1_PCIE_SLOT_PWR_EN */
-	PAD_CFG_GPO(GPP_A08, 1, PLTRST),
-	/* GPP_D19:     X1_DT_PCIE_RST_N */
-	PAD_CFG_GPO(GPP_D19, 1, PLTRST),
+static const struct pad_config x4slot_pads[] = {
+	/* GPP_F10:     X4_PCIE_SLOT1_PWR_EN */
+	PAD_CFG_GPO(GPP_F10, 1, PLTRST),
+	/* GPP_E03:     X4_DT_PCIE_RST_N */
+	PAD_CFG_GPO(GPP_E03, 1, PLTRST),
+	/* GPP_D03:     X4_SLOT_WAKE_N */
+	PAD_CFG_GPI_SCI_LOW(GPP_D03, NONE, DEEP, LEVEL),
 };
 
-static const struct pad_config x1slot_disable_pads[] = {
-	/* GPP_A08:     X1_PCIE_SLOT_PWR_EN */
-	PAD_CFG_GPO(GPP_A08, 0, PLTRST),
-	/* GPP_D19:     X1_DT_PCIE_RST_N */
-	PAD_NC(GPP_D19, NONE),
+static const struct pad_config x4slot_disable_pads[] = {
+	/* GPP_F10:     X4_PCIE_SLOT1_PWR_EN */
+	PAD_CFG_GPO(GPP_F10, 0, PLTRST),
+	/* GPP_E03:     X4_DT_PCIE_RST_N */
+	PAD_NC(GPP_E03, NONE),
+	/* GPP_D03:     X4_SLOT_WAKE_N */
+	PAD_NC(GPP_D03, NONE),
 };
 
 /*
@@ -149,27 +153,20 @@ static const struct pad_config wwan_disable_pads[] = {
 
 /* Gen4 NVME: at the top M.2 slot */
 static const struct pad_config pre_mem_gen4_ssd_pwr_pads[] = {
-	/* GPP_H18:     EN_PP3300_SSD */
+	/* GPP_H18:     GEN4_SSD_PWREN */
 	PAD_CFG_GPO(GPP_H18, 0, PLTRST),
 };
 
 static const struct pad_config gen4_ssd_pads[] = {
-	/* GPP_B10:     EN_PP3300_SSD */
+	/* GPP_H18:     GEN4_SSD_PWREN */
 	PAD_CFG_GPO(GPP_H18, 1, PLTRST),
-	/* GPP_B09:     SSD_PERST_L */
+	/* GPP_A08:     M2_GEN4_SSD_RESET_N */
 	PAD_CFG_GPO(GPP_A08, 1, PLTRST),
 };
 
 static const struct pad_config ufs_enable_pads[] = {
 	/* GPP_D21:     GPP_D21_UFS_REFCLK */
 	PAD_CFG_NF(GPP_D21, NONE, DEEP, NF1),
-};
-
-static const struct pad_config peg_x4slot_wake_disable_pads[] = {
-	/* GPP_D24:     PEG_SLOT_WAKE_N */
-	PAD_NC(GPP_D24, NONE),
-	/* GPP_D25:     X4_SLOT_WAKE_N */
-	PAD_NC(GPP_D25, NONE),
 };
 
 static const struct pad_config pcie_wlan_enable_pads[] = {
@@ -505,9 +502,9 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	}
 
 	if (fw_config_probe(FW_CONFIG(SD, SD_NONE)))
-		GPIO_PADBASED_OVERRIDE(padbased_table, x1slot_disable_pads);
+		GPIO_PADBASED_OVERRIDE(padbased_table, x4slot_disable_pads);
 	else
-		GPIO_PADBASED_OVERRIDE(padbased_table, x1slot_pads);
+		GPIO_PADBASED_OVERRIDE(padbased_table, x4slot_pads);
 
 	if (fw_config_probe(FW_CONFIG(TOUCHPAD, TOUCHPAD_LPSS_I2C))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchpad_lpss_i2c_enable_pads);
@@ -534,9 +531,6 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	} else {
 		GPIO_PADBASED_OVERRIDE(padbased_table, ish_disable_pads);
 	}
-
-	/* NOTE: disable PEG (x8 slot) and x4 slot wake for now */
-	GPIO_PADBASED_OVERRIDE(padbased_table, peg_x4slot_wake_disable_pads);
 
 	if (fw_config_probe(FW_CONFIG(FP, FP_PRESENT))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, fp_enable_pads);

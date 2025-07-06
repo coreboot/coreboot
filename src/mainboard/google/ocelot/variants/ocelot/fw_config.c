@@ -346,20 +346,44 @@ static const struct pad_config thc1_enable_wake[] = {
 };
 
 static const struct pad_config ish_disable_pads[] = {
-	/* GPP_D06:     NC */
+	/* GPP_B05:     C_EC_ISH_ALRT */
+	PAD_NC(GPP_B05, NONE),
+	/* GPP_B07:     SLATEMODE_HALLOUT_SNSR_R */
+	PAD_NC(GPP_B07, NONE),
+	/* GPP_B18:     ISH_I2C2_SDA_SNSR_HDR */
+	PAD_NC(GPP_B18, NONE),
+	/* GPP_B19:     ISH_I2C2_SCL_SNSR_HDR */
+	PAD_NC(GPP_B19, NONE),
+	/* GPP_B22:     ISH_GP_5_SNSR_HDR */
+	PAD_NC(GPP_B22, NONE),
+	/* GPP_B23:     ISH_GP_6_SNSR_HDR */
+	PAD_NC(GPP_B23, NONE),
+	/* GPP_D05:     ISH_UART0_ECAIC_RXD */
+	PAD_NC(GPP_D05, NONE),
+	/* GPP_D06:     ISH_UART0_ECAIC_TXD */
 	PAD_NC(GPP_D06, NONE),
-	/* GPP_E05:     NC */
-	PAD_NC(GPP_E05, NONE),
-	/* GPP_F23:     NC */
+	/* GPP_F23:     SMC_LID / ISH_GP9A*/
 	PAD_NC(GPP_F23, NONE),
 };
 
 static const struct pad_config ish_enable_pads[] = {
-	/* GPP_D06:     ISH_UART0_TXD */
+	/* GPP_B05:     C_EC_ISH_ALRT */
+	PAD_CFG_NF(GPP_B05, NONE, DEEP, NF4),
+	/* GPP_B07:     SLATEMODE_HALLOUT_SNSR_R */
+	PAD_CFG_NF(GPP_B07, NONE, DEEP, NF4),
+	/* GPP_B18:     ISH_I2C2_SDA_SNSR_HDR */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_B18, NONE, DEEP, NF1),
+	/* GPP_B19:     ISH_I2C2_SCL_SNSR_HDR */
+	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_B19, NONE, DEEP, NF1),
+	/* GPP_B22:     ISH_GP_5_SNSR_HDR */
+	PAD_CFG_NF(GPP_B22, NONE, DEEP, NF4),
+	/* GPP_B23:     ISH_GP_6_SNSR_HDR */
+	PAD_CFG_NF(GPP_B23, NONE, DEEP, NF4),
+	/* GPP_D05:     ISH_UART0_ECAIC_RXD */
+	PAD_CFG_NF(GPP_D05, NONE, DEEP, NF2),
+	/* GPP_D06:     ISH_UART0_ECAIC_TXD */
 	PAD_CFG_NF(GPP_D06, NONE, DEEP, NF2),
-	/* GPP_E05:     ISH_GP_7_SNSR_HDR */
-	PAD_CFG_NF(GPP_E05, NONE, DEEP, NF4),
-	/* GPP_F23:     ISH_GP_9A */
+	/* GPP_F23:     SMC_LID / ISH_GP9A*/
 	PAD_CFG_NF(GPP_F23, NONE, DEEP, NF8),
 };
 
@@ -506,10 +530,11 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchscreen_disable_pads);
 	}
 
-	if (fw_config_probe(FW_CONFIG(ISH, ISH_DISABLE)))
-		GPIO_PADBASED_OVERRIDE(padbased_table, ish_disable_pads);
-	else
+	if (fw_config_probe(FW_CONFIG(ISH, ISH_ENABLE))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, ish_enable_pads);
+	} else {
+		GPIO_PADBASED_OVERRIDE(padbased_table, ish_disable_pads);
+	}
 
 	/* NOTE: disable PEG (x8 slot) and x4 slot wake for now */
 	GPIO_PADBASED_OVERRIDE(padbased_table, peg_x4slot_wake_disable_pads);

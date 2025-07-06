@@ -187,7 +187,11 @@ static const struct pad_config pcie_wlan_disable_pads[] = {
 };
 
 static const struct pad_config cnvi_enable_pads[] = {
-	/* NOTE: IOSSTAGE: 'Ignore' for S0ix */
+	/* GPP_B09:     BT_RF_KILL_N */
+	PAD_CFG_GPO(GPP_B09, 1, DEEP),
+	/* GPP_C10:     WIFI_RF_KILL_N */
+	PAD_CFG_GPO(GPP_C10, 1, DEEP),
+	/* GPP_F00:     M.2_CNV_BRI_DT_BT_UART2_RTS_N */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_F00, NONE, DEEP, NF1),
 	/* GPP_F01:     M.2_CNV_BRI_RSP_BT_UART2_RXD */
 	/* NOTE: IOSSTAGE: 'Ignore' for S0ix */
@@ -204,13 +208,13 @@ static const struct pad_config cnvi_enable_pads[] = {
 	/* GPP_F05:     CRF_CLKREQ_R */
 	/* NOTE: IOSSTAGE: 'Ignore' for S0ix */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_F05, NONE, DEEP, NF3),
-	/* GPP_A16:     BT_RF_KILL_N */
-	PAD_CFG_GPO(GPP_A16, 1, DEEP),
-	/* GPP_A17:     WIFI_RF_KILL_N */
-	PAD_CFG_GPO(GPP_A17, 1, DEEP),
 };
 
 static const struct pad_config cnvi_disable_pads[] = {
+	/* GPP_B09:     BT_RF_KILL_N */
+	PAD_NC(GPP_B09, NONE),
+	/* GPP_C10:     WIFI_RF_KILL_N */
+	PAD_NC(GPP_C10, NONE),
 	/* GPP_F00:     M.2_CNV_BRI_DT_BT_UART2_RTS_N */
 	PAD_NC(GPP_F00, NONE),
 	/* GPP_F01:     M.2_CNV_BRI_RSP_BT_UART2_RXD */
@@ -223,11 +227,6 @@ static const struct pad_config cnvi_disable_pads[] = {
 	PAD_NC(GPP_F04, NONE),
 	/* GPP_F05:     CRF_CLKREQ_R */
 	PAD_NC(GPP_F05, NONE),
-
-	/* GPP_A16:     BT_RF_KILL_N */
-	PAD_NC(GPP_A16, NONE),
-	/* GPP_A17:     WIFI_RF_KILL_N */
-	PAD_NC(GPP_A17, NONE),
 };
 
 static const struct pad_config touchscreen_disable_pads[] = {

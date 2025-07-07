@@ -47,6 +47,12 @@ struct drivers_spi_acpi_config {
 	/* Generic properties for exporting device-specific data to the OS */
 	struct acpi_dp property_list[MAX_GENERIC_PROPERTY_LIST];
 	unsigned int property_count;
+
+	/* Write a _STA method that uses the state of the GPIOs to determine if
+	 * the PowerResource is ON or OFF. If this is false, the _STA method
+	 * will always return ON.
+	 */
+	bool use_gpio_for_status;
 };
 
 #endif /* __SPI_ACPI_CHIP_H__ */

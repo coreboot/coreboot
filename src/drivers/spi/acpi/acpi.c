@@ -166,7 +166,8 @@ static void spi_acpi_fill_ssdt_generator(const struct device *dev)
 			config->enable_off_delay_ms,
 			&config->stop_gpio,
 			config->stop_delay_ms,
-			config->stop_off_delay_ms
+			config->stop_off_delay_ms,
+			config->use_gpio_for_status
 		};
 		acpi_device_add_power_res(&power_res_params);
 	}

@@ -69,7 +69,7 @@ chip soc/intel/alderlake
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3 Type-A port A0(MLB))
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3 Type-A port A1(DB)
 
-	#register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3 port for WWAN
+	register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC_SKIP)"	# USB3 port for WWAN
 
 	# HD Audio
 	register "pch_hda_dsp_enable" = "1"

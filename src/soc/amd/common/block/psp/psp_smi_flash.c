@@ -94,10 +94,15 @@ static enum mbox_p2c_status find_psp_spi_flash_device_region(uint64_t target_nv_
 
 static bool spi_controller_busy(void)
 {
-	const bool busy = (spi_read8(SPI_MISC_CNTRL) & SPI_SEMAPHORE_DRIVER_LOCKED);
+	bool busy = false;
 
-	if (busy)
-		printk(BIOS_NOTICE, "PSP: SPI controller busy\n");
+	if (CONFIG(SOC_AMD_PICASSO)) {
+		// Only implemented on Picasso and Raven Ridge
+		busy = (spi_read8(SPI_MISC_CNTRL) & SPI_SEMAPHORE_DRIVER_LOCKED);
+
+		if (busy)
+			printk(BIOS_NOTICE, "PSP: SPI controller busy\n");
+	}
 
 	return busy;
 }

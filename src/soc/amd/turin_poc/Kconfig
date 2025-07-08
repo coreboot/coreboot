@@ -173,8 +173,11 @@ config CPU_PT_ROM_MAP_GB
 menu "PSP Configuration Options"
 
 config AMDFW_CONFIG_FILE
-	string
-	default "src/soc/amd/turin_poc/fw.cfg"
+	string "AMD FW configuration file"
+	default ""
+	help
+	  Specify the path the fw.cfg file describing the PSP blobs to be
+	  integrated in the build.
 
 config PSP_DISABLE_POSTCODES
 	bool "Disable PSP post codes"
@@ -220,6 +223,13 @@ config PSP_SOFTFUSE_BITS
 
 config PSPV2_MBOX_CMD_OFFSET
 	default 0x10970
+
+config PSP_EARLY_VGA_IMAGE
+	string "PSP Early VGA image file path"
+	default ""
+	help
+	  Path to the optional early VGA image to be displayed by PSP before
+	  x86 reset vector.
 
 endmenu
 

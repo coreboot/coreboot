@@ -118,6 +118,11 @@ OPT_PSP_BIOSBIN_SIZE=$(call add_opt_prefix, $(PSP_BIOSBIN_SIZE), --bios-uncomp-s
 OPT_APOB_NV_SIZE=$(call add_opt_prefix, $(APOB_NV_SIZE), --apob-nv-size)
 OPT_APOB_NV_BASE=$(call add_opt_prefix, $(APOB_NV_BASE), --apob-nv-base)
 
+OPT_EFS_ESPI_CONFIG=$(call add_opt_prefix, $(CONFIG_EFS_ESPI0_CONFIG0), --espi0-config0)
+OPT_EFS_ESPI_CONFIG+=$(call add_opt_prefix, $(CONFIG_EFS_ESPI1_CONFIG0), --espi1-config0)
+OPT_EFS_ESPI_CONFIG+=$(call add_opt_prefix, $(CONFIG_EFS_ESPI0_CONFIG1), --espi0-config1)
+OPT_EFS_ESPI_CONFIG+=$(call add_opt_prefix, $(CONFIG_EFS_ESPI1_CONFIG1), --espi1-config1)
+
 OPT_EFS_SPI_READ_MODE=$(call add_opt_prefix, $(CONFIG_EFS_SPI_READ_MODE), --spi-read-mode)
 OPT_EFS_SPI_SPEED=$(call add_opt_prefix, $(CONFIG_EFS_SPI_SPEED), --spi-speed)
 OPT_EFS_SPI_MICRON_FLAG=$(call add_opt_prefix, $(CONFIG_EFS_SPI_MICRON_FLAG), --spi-micron-flag)
@@ -129,9 +134,15 @@ OPT_SPL_TABLE_FILE=$(call add_opt_prefix, $(SPL_TABLE_FILE), --spl-table)
 OPT_BIOS_AMDCOMPRESS=$(if $(CONFIG_CBFS_VERIFICATION), --elfcopy, --compress)
 OPT_BIOS_FWCOMPRESS=$(if $(CONFIG_CBFS_VERIFICATION), --bios-bin-uncomp)
 
-OPT_UCODE_FILES=$(foreach i, $(shell seq $(words $(amd_microcode_bins))), \
-	$(call add_opt_prefix, $(word $(i), $(amd_microcode_bins)), \
+# Place the ucode files in order, Turin Classic first, then Turin Dense
+microcode_bins=$(wildcard ${FIRMWARE_LOCATION}/*U?odePatch_BRH_*.bin)
+microcode_bins+=$(wildcard ${FIRMWARE_LOCATION}/*U?odePatch_BRHD_*.bin)
+
+OPT_UCODE_FILES=$(foreach i, $(shell seq $(words $(microcode_bins))), \
+	$(call add_opt_prefix, $(word $(i), $(microcode_bins)), \
 	--instance $(shell printf "%x" $$(($(i)-1))) --ucode))
+
+OPT_VGA_IMAGE=$(call add_opt_prefix, $(CONFIG_PSP_EARLY_VGA_IMAGE), --early-vga-image)
 
 AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 		$(OPT_APOB_ADDR) \
@@ -152,6 +163,8 @@ AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 		$(OPT_EFS_SPI_READ_MODE) \
 		$(OPT_EFS_SPI_SPEED) \
 		$(OPT_EFS_SPI_MICRON_FLAG) \
+		$(OPT_EFS_ESPI_CONFIG) \
+		$(OPT_VGA_IMAGE) \
 		--config $(CONFIG_AMDFW_CONFIG_FILE) \
 		--flashsize $(call strip_quotes, $(CONFIG_ROM_SIZE))
 

@@ -171,13 +171,7 @@ config MAINBOARD_FAMILY
 	default "Google_Fatcat"
 
 config MAINBOARD_PART_NUMBER
-	default "Fatcat" if BOARD_GOOGLE_FATCAT
-	default "Fatcat4ES" if BOARD_GOOGLE_FATCAT4ES
-	default "Fatcat_ish" if BOARD_GOOGLE_FATCATISH
-	default "Fatcatite" if BOARD_GOOGLE_FATCATITE
-	default "Fatcatite4ES" if BOARD_GOOGLE_FATCATITE4ES
-	default "Fatcatnuvo" if BOARD_GOOGLE_FATCATNUVO
-	default "Fatcatnuvo4ES" if BOARD_GOOGLE_FATCATNUVO4ES
+	default "Fatcat" if BOARD_GOOGLE_MODEL_FATCAT
 	default "Francka" if BOARD_GOOGLE_FRANCKA
 	default "Felino" if BOARD_GOOGLE_FELINO
 	default "Felino4ES" if BOARD_GOOGLE_FELINO4ES

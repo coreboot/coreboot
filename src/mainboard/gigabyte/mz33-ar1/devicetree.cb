@@ -1,0 +1,169 @@
+chip soc/amd/turin_poc
+	# Set FADT Configuration
+	register "common_config.fadt_boot_arch" = "ACPI_FADT_LEGACY_DEVICES"
+
+	# USB configuration
+	register "usb.xhci0_enable" = "1"
+	register "usb.xhci1_enable" = "1"
+
+	# OC pins
+	register "usb.usb2_oc_pins[0].port0" = "0x0"
+	register "usb.usb2_oc_pins[0].port1" = "0x1"
+	register "usb.usb2_oc_pins[1].port0" = "0x0"
+	register "usb.usb2_oc_pins[1].port1" = "0x1"
+
+	register "usb.usb3_oc_pins[0].port0" = "0x0"
+	register "usb.usb3_oc_pins[0].port1" = "0x1"
+	register "usb.usb3_oc_pins[1].port0" = "0x0"
+	register "usb.usb3_oc_pins[1].port1" = "0x1"
+
+	register "usb.polarity_cfg_low" = "true"
+
+	register "usb.usb3_force_gen1.port0" = "3"
+	register "usb.usb3_force_gen1.port1" = "3"
+
+	# eSPI configuration
+	register "common_config.espi_config" = "{
+		.std_io_decode_bitmap = ESPI_DECODE_IO_0x80_EN | ESPI_DECODE_IO_0X2E_0X2F_EN,
+		.generic_io_range[0] = {
+			.base = 0x3f8,
+			.size = 8,
+		},
+		.generic_io_range[1] = {
+			.base = 0x2f8,
+			.size = 8,
+		},
+		.generic_io_range[2] = {
+			.base = 0xca2,
+			.size = 4,
+		},
+		.io_mode = ESPI_IO_MODE_QUAD,
+		.op_freq_mhz = ESPI_OP_FREQ_16_MHZ,
+		.crc_check_enable = 1,
+		.alert_pin = ESPI_ALERT_PIN_PUSH_PULL,
+		.periph_ch_en = 1,
+		.vw_ch_en = 1,
+		.oob_ch_en = 1,
+		.flash_ch_en = 1,
+	}"
+
+	device domain 0 on
+		subsystemid 0x1458 0x1000 inherit
+
+		device ref iommu_0 on end
+		device ref rcec_0 on end
+
+		device ref lpc_bridge on
+
+			chip drivers/ipmi
+				# On cold boot it takes a while for the BMC to start the IPMI service
+				register "wait_for_bmc" = "1"
+				register "bmc_boot_timeout" = "60"
+				device pnp ca2.0 on end	# IPMI KCS
+			end
+
+			chip drivers/pc80/tpm # TPM
+				device pnp 0.0 on end
+			end
+
+			chip superio/common
+				device pnp 2e.0 on
+					chip superio/aspeed/ast2400
+						device pnp 2e.2 on	# SUART1
+							io 0x60 = 0x3f8
+							irq 0x70 = 4
+							drq 0xf0 = 0x00
+						end
+						device pnp 2e.3 off end	# SUART2
+						device pnp 2e.4 off	# SWC
+							io 0x60 = 0x8e6
+							io 0x62 = 0x8e0
+							io 0x64 = 0x8e4
+							io 0x66 = 0x8e8
+							irq 0x70 = 0x09
+						end
+						device pnp 2e.5 off end	# KBC
+						device pnp 2e.7 on	# GPIO
+							irq 0x70 = 0x0a
+						end
+						device pnp 2e.b off end	# SUART3
+						device pnp 2e.c off end	# SUART4
+						device pnp 2e.d on	# iLPC2AHB
+							irq 0x70 = 0x00
+						end
+						device pnp 2e.e on	# Mailbox
+							io 0x60 = 0xa00
+							irq 0x70 = 0x9
+						end
+					end
+				end
+			end
+		end
+	end
+
+	device domain 1 on
+		subsystemid 0x1458 0x1000 inherit
+
+		device ref rcec_1 on end
+	end
+
+	device domain 2 on
+		subsystemid 0x1458 0x1000 inherit
+
+		device ref iommu_2 on end
+		device ref gpp_bridge_2_a on
+			device ref xhci_0 on end
+		end
+		device ref gpp_bridge_2_b on
+			device ref sata_2_0 on end
+			device ref sata_2_1 on end
+		end
+	end
+
+	device domain 3 on
+		subsystemid 0x1458 0x1000 inherit
+	end
+
+	device domain 4 on
+		subsystemid 0x1458 0x1000 inherit
+	end
+
+	device domain 5 on
+		subsystemid 0x1458 0x1000 inherit
+
+		device ref iommu_5 on end
+		device ref gpp_bridge_3_a on
+			device ref asp on end
+		end
+	end
+
+	device domain 6 on
+		subsystemid 0x1458 0x1000 inherit
+
+		device ref rcec_6 on end
+	end
+
+	device domain 7 on
+		subsystemid 0x1458 0x1000 inherit
+
+		device ref iommu_7 on end
+		device ref rcec_7 on end
+
+		device ref gpp_bridge_7_a on
+			device ref xhci_1 on end
+		end
+
+		device ref gpp_bridge_7_b on
+			device ref sata_7_0 on end
+			device ref sata_7_1 on end
+		end
+	end
+
+	device ref i3c_0 hidden end
+	device ref i3c_1 hidden end
+	device ref i3c_2 hidden end
+	device ref i3c_3 hidden end
+	device ref i2c_4 hidden end
+	device ref i2c_5 hidden end
+	device ref uart_0 on end
+end

@@ -1,0 +1,82 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_GIGABYTE_MZ33_AR1
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select SOC_AMD_TURIN_POC
+	select BOARD_ROMSIZE_KB_32768
+	select MEMORY_MAPPED_TPM
+	select DRIVERS_ASPEED_AST2050
+	select SUPERIO_ASPEED_AST2400
+	select IPMI_KCS
+	select IPMI_KCS_ROMSTAGE
+	select DISABLE_KEYBOARD_RESET_PIN
+	select SPI_FLASH_FORCE_4_BYTE_ADDR_MODE
+	select SYSTEM_TYPE_SERVER
+
+config FMDFILE
+	default "src/mainboard/gigabyte/mz33-ar1/board.fmd"
+
+config MAINBOARD_DIR
+	default "gigabyte/mz33-ar1"
+
+config MAINBOARD_SMBIOS_MANUFACTURER
+	default "Giga Computing"
+
+config MAINBOARD_PART_NUMBER
+	default "MZ33-AR1-000"
+
+config MAINBOARD_SMBIOS_PRODUCT_NAME
+	default "MZ33-AR1-000"
+
+config MAINBOARD_SERIAL_NUMBER
+	default "01234567890123456789AB"
+
+config MAINBOARD_VERSION
+	default "03000300"
+
+config MAINBOARD_FAMILY
+	string
+	default "Server"
+
+config PSP_EARLY_VGA_IMAGE
+	default "src/mainboard/gigabyte/mz33-ar1/early_vga.bin"
+
+config BUILD_WITH_DEBUG_APCB
+	bool "Build with debug APCB blobs"
+	default n
+	help
+	  Build coreboot image with debug APCB blobs. When selected, the
+	  APCBs with debug output on serial port will be used during build.
+
+	  Enabel it when debugging pre-reset vector issues.
+
+config ECAM_MMCONF_BASE_ADDRESS
+	default 0xb0000000
+
+config EFS_SPI_READ_MODE
+	default 0	# Normal read 33MHz
+
+config EFS_SPI_SPEED
+	default 0	# 66MHz
+
+config EFS_SPI_MICRON_FLAG
+	default 0
+
+config NORMAL_READ_SPI_SPEED
+	default 1	# 33MHz
+
+config ALT_SPI_SPEED
+	default 1	# 33MHz
+
+config TPM_SPI_SPEED
+	default 1	# 33MHz
+
+config EFS_ESPI0_CONFIG0
+	default 0x0e
+
+config DIMM_MAX
+	default 24
+
+endif

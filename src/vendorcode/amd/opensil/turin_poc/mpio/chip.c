@@ -2,18 +2,38 @@
 
 #include <device/device.h>
 #include <device/pci_def.h>
+#include <opensil_config.h>
+#include <CCX/Common/CcxApic.h>
+#include <Cxl/CxlClass-api.h>
 #include <Mpio/Common/MpioStructs.h>
 #include <Mpio/MpioClass-api.h>
-#include <NBIO/NbioClass-api.h>
+#include <Nbio/NbioClass-api.h>
 #include <RcMgr/DfX/RcManager4-api.h>
 #include <vendorcode/amd/opensil/opensil.h>
 #include <xSIM-api.h>
+#include <static.h>
 
 #include "chip.h"
 
 static void mpio_params_config(void)
 {
 	MPIOCLASS_INPUT_BLK *mpio_data = SilFindStructure(SilId_MpioClass, 0);
+	struct device *gnb = DEV_PTR(gnb_0);
+	struct device *iommu = DEV_PTR(iommu_0);
+	struct device *psp = DEV_PTR(asp);
+	struct device *nbif = DEV_PTR(nbif_0);
+
+	mpio_data->CfgNbioSsid   = gnb->subsystem_vendor |
+				  ((uint32_t)gnb->subsystem_device << 16);
+	mpio_data->CfgIommuSsid  = iommu->subsystem_vendor |
+				  ((uint32_t)iommu->subsystem_device << 16);
+	mpio_data->CfgPspccpSsid = psp->subsystem_vendor |
+				  ((uint32_t)psp->subsystem_device << 16);
+	mpio_data->CfgNbifF0Ssid = nbif->subsystem_vendor |
+				  ((uint32_t)nbif->subsystem_device << 16);
+	mpio_data->CfgNtbSsid    = 0; // Not implemented in OpenSIL
+	mpio_data->CfgNtbccpSsid = 0; // Not implemented in OpenSIL
+
 	mpio_data->CfgDxioClockGating                  = 1;
 	mpio_data->PcieDxioTimingControlEnable         = 0;
 	mpio_data->PCIELinkReceiverDetectionPolling    = 0;
@@ -24,13 +44,12 @@ static void mpio_params_config(void)
 	mpio_data->DxioPhyProgramming                  = 1;
 	mpio_data->CfgSkipPspMessage                   = 1;
 	mpio_data->DxioSaveRestoreModes                = 0xff;
-	mpio_data->AmdAllowCompliance                  = 0;
-	mpio_data->AmdAllowCompliance                  = 0xff;
+	mpio_data->AmdAllowCompliance                  = 0xf;
 	mpio_data->SrisEnableMode                      = 0xff;
 	mpio_data->SrisSkipInterval                    = 0;
 	mpio_data->SrisSkpIntervalSel                  = 1;
 	mpio_data->SrisCfgType                         = 0;
-	mpio_data->SrisAutoDetectMode                  = 0xff;
+	mpio_data->SrisAutoDetectMode                  = 0xf;
 	mpio_data->SrisAutodetectFactor                = 0;
 	mpio_data->SrisLowerSkpOsGenSup                = 0;
 	mpio_data->SrisLowerSkpOsRcvSup                = 0;
@@ -45,28 +64,21 @@ static void mpio_params_config(void)
 	mpio_data->SurpriseDownFeature                 = 1;
 	mpio_data->LcMultAutoSpdChgOnLastRateEnable    = 0;
 	mpio_data->AmdRxMarginEnabled                  = 1;
-	mpio_data->CfgPcieCVTestWA                     = 1;
+	mpio_data->CfgPcieCVTestWA                     = 0;
 	mpio_data->CfgPcieAriSupport                   = 1;
 	mpio_data->CfgNbioCTOtoSC                      = 0;
 	mpio_data->CfgNbioCTOIgnoreError               = 1;
-	mpio_data->CfgNbioSsid                         = 0;
-	mpio_data->CfgIommuSsid                        = 0;
-	mpio_data->CfgPspccpSsid                       = 0;
-	mpio_data->CfgNtbccpSsid                       = 0;
-	mpio_data->CfgNbifF0Ssid                       = 0;
-	mpio_data->CfgNtbSsid                          = 0;
 	mpio_data->AmdPcieSubsystemDeviceID            = 0x1453;
 	mpio_data->AmdPcieSubsystemVendorID            = 0x1022;
 	mpio_data->GppAtomicOps                        = 1;
 	mpio_data->GfxAtomicOps                        = 1;
 	mpio_data->AmdNbioReportEdbErrors              = 0;
 	mpio_data->OpnSpare                            = 0;
-	mpio_data->AmdPreSilCtrl0                      = 0;
 	mpio_data->MPIOAncDataSupport                  = 1;
 	mpio_data->AfterResetDelay                     = 0;
 	mpio_data->CfgEarlyLink                        = 0;
 	mpio_data->AmdCfgExposeUnusedPciePorts         = 1; // Show all ports
-	mpio_data->CfgForcePcieGenSpeed                = 0;
+	mpio_data->CfgForcePcieGenSpeed                = 0xff;
 	mpio_data->CfgSataPhyTuning                    = 0;
 	mpio_data->PcieLinkComplianceModeAllPorts      = 0;
 	mpio_data->AmdMCTPEnable                       = 0;
@@ -79,30 +91,64 @@ static void mpio_params_config(void)
 	  // A getter and setter, both are needed for this PCD.
 	mpio_data->AmdPciePresetMask32GtAllPort        = 0xffffffff;
 	mpio_data->PcieLinkAspmAllPort                 = 0xff;
-
 	mpio_data->SyncHeaderByPass                    = 1;
 	mpio_data->CxlTempGen5AdvertAltPtcl            = 0;
+	mpio_data->CfgSevSnpSupport                    = 0;
+	mpio_data->CfgSevTioSupport                    = 0;
+	mpio_data->PcieIdeCapSup                       = 0;
+	mpio_data->Master7bitSteeringTag               = 1;
 
 	/* TODO handle this differently on multisocket */
 	mpio_data->PcieTopologyData.PlatformData[0].Flags = DESCRIPTOR_TERMINATE_LIST;
 	mpio_data->PcieTopologyData.PlatformData[0].PciePortList = mpio_data->PcieTopologyData.PortList;
 }
 
+static void cxl_params_config(void)
+{
+	CXLCLASS_DATA_BLK *cxl_data = SilFindStructure(SilId_CxlClass, 0);
+	CXLCLASS_INPUT_BLK *input = &cxl_data->CxlInputBlock;
+	input->AmdPcieAerReportMechanism  = 1;
+}
+
 static void nbio_params_config(void)
 {
 	NBIOCLASS_DATA_BLOCK *nbio_data = SilFindStructure(SilId_NbioClass, 0);
-	NBIOCLASS_INPUT_BLK *input = &nbio_data->NbioInputBlk;
-	input->CfgHdAudioEnable           = false;
-	input->EsmEnableAllRootPorts      = false;
-	input->EsmTargetSpeed             = 16;
-	input->CfgRxMarginPersistenceMode = 1;
-	input->CfgDxioFrequencyVetting    = false;
-	input->CfgSkipPspMessage          = 1;
-	input->CfgEarlyTrainTwoPcieLinks  = false;
-	input->EarlyBmcLinkTraining       = true;
-	input->EdpcEnable                 = 0;
-	input->PcieAerReportMechanism     = 2;
-	input->SevSnpSupport              = false;
+	NBIO_CONFIG_DATA *input = &nbio_data->NbioConfigData;
+	input->EsmEnableAllRootPorts        = false;
+	input->EsmTargetSpeed               = 16;
+	input->CfgRxMarginPersistenceMode   = 1;
+	input->SevSnpSupport                = false;
+	input->AerEnRccDev0                 = false;
+	input->CfgAEREnable                 = true;
+	input->AtomicRoutingEnStrap5        = true;
+	input->CfgSriovEnDev0F1             = true;
+	input->CfgAriEnDev0F1               = true;
+	input->CfgAerEnDev0F1               = true;
+	input->CfgAcsEnDev0F1               = true;
+	input->CfgAtsEnDev0F1               = true;
+	input->CfgPasidEnDev0F1             = true;
+	input->CfgRtrEnDev0F1               = true;
+	input->CfgPriEnDev0F1               = true;
+	input->CfgPwrEnDev0F1               = true;
+	input->AtcEnable                    = true;
+	input->NbifDev0F1AtomicRequestEn    = true;
+	input->AcsEnRccDev0                 = true;
+	input->AcsP2pReq                    = true;
+	input->AcsSourceVal                 = true;
+	input->RccDev0E2EPrefix             = true;
+	input->RccDev0ExtendedFmtSupported  = true;
+	input->CfgSyshubMgcgClkGating       = 1;
+	input->IoApicIdPreDefineEn          = true;
+	/* Up to 16 IOAPICs for 2 sockets (8 per socket) */
+	input->IoApicIdBase                 = 240;
+	input->IommuAvicSupport             = true;
+
+	if (CONFIG(XAPIC_ONLY) || CONFIG(X2APIC_LATE_WORKAROUND))
+		input->AmdApicMode = xApicMode;
+	else if (CONFIG(X2APIC_ONLY))
+		input->AmdApicMode = x2ApicMode;
+	else
+		input->AmdApicMode = ApicAutoMode;
 }
 
 static void setup_bmc_lanes(uint8_t lane, uint8_t socket)
@@ -111,16 +157,11 @@ static void setup_bmc_lanes(uint8_t lane, uint8_t socket)
 	rc_mgr_input_block->BmcSocket = socket;
 	rc_mgr_input_block->EarlyBmcLinkLaneNum = lane;
 
-	NBIOCLASS_DATA_BLOCK *nbio_data = SilFindStructure(SilId_NbioClass, 0);
-	NBIOCLASS_INPUT_BLK *nbio_input = &nbio_data->NbioInputBlk;
-	nbio_input->EarlyBmcLinkSocket         = socket;
-	nbio_input->EarlyBmcLinkLaneNum        = lane;
-	nbio_input->EarlyBmcLinkDie            = 0;
-
 	MPIOCLASS_INPUT_BLK *mpio_data = SilFindStructure(SilId_MpioClass, 0);
 	mpio_data->EarlyBmcLinkSocket                  = socket;
 	mpio_data->EarlyBmcLinkLaneNum                 = lane;
 	mpio_data->EarlyBmcLinkDie                     = 0;
+	mpio_data->EarlyBmcLinkTraining                = true;
 }
 
 void opensil_mpio_per_device_config(struct device *dev)
@@ -198,5 +239,6 @@ void opensil_mpio_per_device_config(struct device *dev)
 void opensil_mpio_global_config(void)
 {
 	mpio_params_config();
+	cxl_params_config();
 	nbio_params_config();
 }

@@ -1,8 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <SilCommon.h>
-#include <Sil-api.h> // needed above ApobCmn.h
-#include <ApobCmn.h>
+#include <Sil-api.h>
+#include <opensil_config.h> // needed above ApobCmn.h
+#include <APOB/Common/ApobCmn.h>
 #include <xPRF-api.h>
 
 #include "../opensil.h"
@@ -46,7 +47,7 @@ const char *opensil_get_hole_info_type(uint32_t type)
 
 void opensil_get_hole_info(uint32_t *n_holes, uint64_t *top_of_mem, void **hole_info)
 {
-        SIL_STATUS status = xPrfGetSystemMemoryMap(n_holes, top_of_mem, hole_info);
+	SIL_STATUS status = xPrfGetSystemMemoryMap(n_holes, top_of_mem, hole_info);
 	SIL_STATUS_report("xPrfGetSystemMemoryMap", status);
 	// Make sure hole_info does not get initialized to something odd by xPRF on failure
 	if (status != SilPass) {

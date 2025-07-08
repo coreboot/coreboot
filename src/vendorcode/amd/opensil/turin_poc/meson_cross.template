@@ -22,6 +22,8 @@ c_args = ['-nostdinc',
           '-Wno-unused-parameter',
           # ubiquitous problem in openSIL
           '-Wno-missing-field-initializers',
+          # remove after https://github.com/openSIL/openSIL/pull/39 is merged
+          '-Wno-unused-but-set-variable',
           ##CLANG_ARGS##
          ]
 

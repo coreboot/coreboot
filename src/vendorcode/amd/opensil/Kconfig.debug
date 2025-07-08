@@ -66,6 +66,36 @@ config OPENSIL_DEBUG_RAS
 	help
 	  Enable printing RAS related messages.
 
+config OPENSIL_DEBUG_MPIO
+	bool "Enable MPIO messages"
+	default y
+	help
+	  Enable printing MPIO related messages.
+
+config OPENSIL_DEBUG_CXL
+	bool "Enable CXL messages"
+	default y
+	help
+	  Enable printing CXL related messages.
+
+config OPENSIL_DEBUG_SDXI
+	bool "Enable SDXI messages"
+	default y
+	help
+	  Enable printing SDXI related messages.
+
+config OPENSIL_DEBUG_RCMGR
+	bool "Enable RC MGR messages"
+	default y
+	help
+	  Enable printing Resource Manager related messages.
+
+config OPENSIL_DEBUG_XUSL_CMN
+	bool "Enable xUSL CommonLib messages"
+	default y
+	help
+	  Enable printing xUSL CommonLib related messages.
+
 endif # OPENSIL_DEBUG_OUTPUT
 
 endif # SOC_AMD_OPENSIL

@@ -14,11 +14,13 @@ static int translate_opensil_debug_level(size_t MsgLevel)
 		return BIOS_ERR;
 	case SIL_TRACE_WARNING:
 		return BIOS_WARNING;
-	case SIL_TRACE_ENTRY:
-	case SIL_TRACE_EXIT:
-		return BIOS_SPEW;
 	case SIL_TRACE_INFO:
 		return BIOS_DEBUG;
+	case SIL_TRACE_ENTRY:
+	case SIL_TRACE_EXIT:
+	case SIL_TRACE_RAW:
+	case SIL_TRACE_VERBOSE:
+		return BIOS_SPEW;
 	default:
 		return BIOS_NEVER;
 	}
@@ -32,9 +34,26 @@ void HostDebugService(size_t MsgLevel, const char *SilPrefix, const char *Messag
 
 	const int loglevel = translate_opensil_debug_level(MsgLevel);
 
-	/* print fomatted prefix */
-	if (CONFIG(OPENSIL_DEBUG_PREFIX))
-		printk(loglevel, "%s%s:%zu:", SilPrefix, Function, Line);
+	/* print formatted prefix */
+	if (CONFIG(OPENSIL_DEBUG_PREFIX)) {
+		switch (MsgLevel) {
+		case SIL_TRACE_RAW: break; // Raw print do nothing
+		case SIL_TRACE_ENTRY:
+			printk(loglevel, "%s Enter %s:%zu:", SilPrefix, Function, Line);
+			break;
+		case SIL_TRACE_EXIT:
+			printk(loglevel, "%s Exit %s:%zu:", SilPrefix, Function, Line);
+			break;
+		case SIL_TRACE_ERROR:
+		case SIL_TRACE_WARNING:
+		case SIL_TRACE_INFO:
+		case SIL_TRACE_VERBOSE:
+		/* fallthrough */
+		default:
+			printk(loglevel, "%s%s:%zu:", SilPrefix, Function, Line);
+			break;
+		}
+	}
 
 	/* print formatted message */
 	va_list args;

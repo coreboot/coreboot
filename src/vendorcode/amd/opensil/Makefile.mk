@@ -15,6 +15,7 @@ endif
 opensil_dir := $(call strip_quotes,$(CONFIG_AMD_OPENSIL_PATH))
 
 subdirs-$(CONFIG_SOC_AMD_OPENSIL_GENOA_POC) += genoa_poc
+subdirs-$(CONFIG_SOC_AMD_OPENSIL_TURIN_POC) += turin_poc
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_X86_32),y)
 cpu_family_string="x86"
@@ -63,7 +64,11 @@ $(OBJPATH)/$(OPENSIL_CONFIG): $(opensil_dir)/../opensil_config.template
 		$< > $@
 
 $(OBJPATH)/$(OPENSIL_CONFIG).h: $(OBJPATH)/$(OPENSIL_CONFIG) $(obj)/config.h $(objutil)/kconfig/conf
-	cd $(opensil_dir); KCONFIG_CONFIG=$(OBJPATH)/$(OPENSIL_CONFIG) KCONFIG_AUTOHEADER=$@ $(PYTHON) util/kconfig/lib/genconfig.py Kconfig
+	cd $(opensil_dir); \
+		KCONFIG_CONFIG=$(OBJPATH)/$(OPENSIL_CONFIG) \
+		KCONFIG_AUTOHEADER=$@ \
+		$(PYTHON) util/kconfig/lib/genconfig.py \
+			--config-out $(OBJPATH)/$(OPENSIL_CONFIG) Kconfig
 
 # meson handles ccache on its own
 OPENSIL_COMPILER=$(filter-out $(CCACHE), $(CC_ramstage))

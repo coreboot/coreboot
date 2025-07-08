@@ -19,6 +19,15 @@ Scope(\_SB) {
 	ROOT_BRIDGE(S0B1)
 	ROOT_BRIDGE(S0B2)
 	ROOT_BRIDGE(S0B3)
+	ROOT_BRIDGE(S0B4)
+	ROOT_BRIDGE(S0B5)
+	ROOT_BRIDGE(S0B6)
+	ROOT_BRIDGE(S0B7)
+
+	Scope(S0B0) {
+		#include "resources.asl"
+		#include <soc/amd/common/acpi/lpc.asl>
+	} /* End S0B0 scope */
 } /* End \_SB scope */
 
 #include <soc/amd/common/acpi/alib.asl>
@@ -34,6 +43,4 @@ Scope(\_SB) {
  */
 Method (PNOT)
 {
-	/* Report AC/DC state to ALIB using WAL1() */
-	\WAL1 ()
 }

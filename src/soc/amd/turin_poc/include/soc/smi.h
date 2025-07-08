@@ -78,7 +78,8 @@
 /* 31 Reserved */
 #define SMITYPE_WAKE_L2			32
 #define SMITYPE_PSP			33
-/* 34-35 Reserved */
+#define SMITYPE_PSP2			34
+#define SMITYPE_PSP3			35
 #define SMITYPE_ESPI_SCI_B		36
 #define SMITYPE_ESPI1_SYS_EVT_B		37
 #define SMITYPE_ESPI1_WAKE_PME		38

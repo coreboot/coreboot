@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef AMD_GENOA_POC_SOUTHBRIDGE_H
-#define AMD_GENOA_POC_SOUTHBRIDGE_H
+#ifndef AMD_TURIN_POC_SOUTHBRIDGE_H
+#define AMD_TURIN_POC_SOUTHBRIDGE_H
 
 #include <soc/iomap.h>
 
@@ -9,6 +9,7 @@
 #define PM_ISACONTROL			0x04
 #define   ABCLKGATEEN			BIT(16)
 #define PM_PCI_CTRL			0x08
+#define   FORCE_STPCLK_RETRY		BIT(24)
 #define   FORCE_SLPSTATE_RETRY		BIT(25)
 #define PWR_RESET_CFG			0x10
 #define   TOGGLE_ALL_PWR_GOOD		(1 << 1)
@@ -72,8 +73,6 @@
 #define   PM_ACPI_RTC_WAKE_EN		BIT(29)
 #define   PM_ACPI_USE_GATED_ALINK_CLK	BIT(30)
 #define   PM_ACPI_DELAY_GPP_OFF_TIME	BIT(31)
-#define PM_SPI_PAD_PU_PD		0x90
-#define   PM_ESPI_CS_USE_DATA2		BIT(16)
 #define PM_LPC_GATING			0xec
 #define   PM_LPC_AB_NO_BYPASS_EN	BIT(2)
 #define   PM_LPC_A20_EN			BIT(1)
@@ -119,4 +118,4 @@ void fch_pre_init(void);
 void fch_early_init(void);
 void fch_init(void *chip_info);
 
-#endif /* AMD_GENOA_POC_SOUTHBRIDGE_H */
+#endif /* AMD_TURIN_POC_SOUTHBRIDGE_H */

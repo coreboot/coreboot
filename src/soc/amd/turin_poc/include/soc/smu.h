@@ -1,11 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef AMD_GENOA_POC_SMU_H
-#define AMD_GENOA_POC_SMU_H
+#ifndef AMD_TURIN_POC_SMU_H
+#define AMD_TURIN_POC_SMU_H
 
 /* SMU mailbox register offsets in SMN */
-#define SMN_SMU_MESG_ID		0x3b10530
-#define SMN_SMU_MESG_RESP	0x3b1057c
+#define SMN_SMU_MESG_ID		0x3b10930
+#define SMN_SMU_MESG_RESP	0x3b1097c
 #define SMN_SMU_MESG_ARGS_BASE	0x3b109c4
 
 #define SMU_NUM_ARGS		6
@@ -20,4 +20,4 @@ enum smu_message_id {
  */
 void smu_sx_entry(void);
 
-#endif /* AMD_GENOA_POC_SMU_H */
+#endif /* AMD_TURIN_POC_SMU_H */

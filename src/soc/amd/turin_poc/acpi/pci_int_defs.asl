@@ -21,16 +21,29 @@ IndexField(PRQI, PRQD, ByteAcc, NoLock, Preserve) {
 	PIRG, 0x00000008,	/* Index 6: INTG */
 	PIRH, 0x00000008,	/* Index 7: INTH */
 
-	Offset (0x10),
+	Offset (0xc),
+	SIRA, 0x00000008,	/* Index 0xc: Serial IRQ A */
+	SIRB, 0x00000008,	/* Index 0xd: Serial IRQ B */
+	SIRC, 0x00000008,	/* Index 0xe: Serial IRQ C */
+	SIRD, 0x00000008,	/* Index 0xf: Serial IRQ D */
 	PSCI, 0x00000008,	/* Index 0x10: SCI */
 	PSB0, 0x00000008,	/* Index 0x11: SMBUS0 */
 	PASF, 0x00000008,	/* Index 0x12: ASF */
+	PHDA, 0x00000008,	/* Index 0x12: HDA */
 
 	Offset (0x16),
 	PPMN, 0x00000008,	/* Index 0x16: PerMon */
+	PSDC, 0x00000008,	/* Index 0x17: SD */
 
 	Offset (0x1a),
 	PSIO, 0x00000008,	/* Index 0x1A: SDIO */
+
+	Offset (0x30),
+	PUS1, 0x00000008,	/* Index 0x30: USB EMU */
+	Offset (0x34),
+	PUS3, 0x00000008,	/* Index 0x34: XHCI0 */
+	Offset (0x41),
+	PSAT, 0x00000008,	/* Index 0x41: SATA */
 
 	Offset (0x50),
 	PGP0, 0x00000008,	/* Index 0x50: GPP0 */
@@ -64,27 +77,40 @@ IndexField(PRQI, PRQD, ByteAcc, NoLock, Preserve) {
 	IORG, 0x00000008,	/* Index 0x86: INTG */
 	IORH, 0x00000008,	/* Index 0x87: INTH */
 
-	Offset (0x90),
+	Offset (0x8c),
+	ISIA, 0x00000008,	/* Index 0x8c: Serial IRQ A */
+	ISIB, 0x00000008,	/* Index 0x8d: Serial IRQ B */
+	ISIC, 0x00000008,	/* Index 0x8e: Serial IRQ C */
+	ISID, 0x00000008,	/* Index 0x8f: Serial IRQ D */
 	ISCI, 0x00000008,	/* Index 0x90: SCI */
 	ISB0, 0x00000008,	/* Index 0x91: SMBUS0 */
 	IASF, 0x00000008,	/* Index 0x92: ASF */
+	IHDA, 0x00000008,	/* Index 0x93: HDA */
 
 	Offset (0x96),
 	IPMN, 0x00000008,	/* Index 0x96: PerMon */
+	ISDC, 0x00000008,	/* Index 0x97: SD */
 
 	Offset (0x9a),
 	ISIO, 0x00000008,	/* Index 0x9A: SDIO */
 
-	Offset (0xD0),
+	Offset (0xb0),
+	IUS1, 0x00000008,	/* Index 0xb0: USB EMU */
+	Offset (0xb4),
+	IUS3, 0x00000008,	/* Index 0xb4: XHCI0 */
+	Offset (0xc1),
+	ISAT, 0x00000008,	/* Index 0xc1: SATA */
+
+	Offset (0xd0),
 	IGP0, 0x00000008,	/* Index 0xD0: GPP0 */
 	IGP1, 0x00000008,	/* Index 0xD1: GPP1 */
 	IGP2, 0x00000008,	/* Index 0xD2: GPP2 */
 	IGP3, 0x00000008,	/* Index 0xD3: GPP3 */
 
-	Offset (0xE2),
+	Offset (0xe2),
 	IGPI, 0x00000008,	/* Index 0xE2: GPIO */
 
-	Offset (0xF0),
+	Offset (0xf0),
 	II20, 0x00000008,	/* Index 0xF0: I2C0/I3C0 */
 	II21, 0x00000008,	/* Index 0xF1: I2C1/I3C1 */
 	II22, 0x00000008,	/* Index 0xF2: I2C2/I3C2 */

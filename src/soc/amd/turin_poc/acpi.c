@@ -6,7 +6,6 @@
 #include <amdblocks/acpi.h>
 #include <amdblocks/acpimmio.h>
 #include <amdblocks/cpu.h>
-#include <arch/ioapic.h>
 #include <device/device.h>
 #include <drivers/amd/opensil/opensil.h>
 
@@ -40,6 +39,7 @@ unsigned long soc_acpi_write_tables(const struct device *device, unsigned long c
 				    struct acpi_rsdp *rsdp)
 {
 	/* IVRS */
+	printk(BIOS_DEBUG, "ACPI:   * IVRS\n");
 	current = acpi_add_ivrs_table(current, rsdp);
 
 	return current;
@@ -54,7 +54,7 @@ const acpi_cstate_t cstate_cfg_table[] = {
 	},
 	[1] = {
 		.ctype = 2,
-		.latency = 0x12,
+		.latency = 0x64,
 		.power = 0,
 	},
 };

@@ -8,8 +8,8 @@
 /* MSRC001_00[6B:64] P-state [7:0] bit definitions */
 union pstate_msr {
 	struct {
-		uint64_t cpu_fid_0_7	:  8; /* [ 0.. 7] */
-		uint64_t cpu_dfs_id	:  6; /* [ 8..13] */
+		uint64_t cpu_fid_0_11	: 12; /* [ 0..11] */
+		uint64_t		:  2; /* [12..13] */
 		uint64_t cpu_vid_0_7	:  8; /* [14..21] */
 		uint64_t idd_value	:  8; /* [22..29] */
 		uint64_t idd_div	:  2; /* [30..31] */

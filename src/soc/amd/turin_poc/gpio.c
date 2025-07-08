@@ -20,6 +20,7 @@ static const struct soc_amd_event gpio_event_table[] = {
 	{ GPIO_23, GEVENT_16 },
 	{ GPIO_24, GEVENT_14 },
 	{ GPIO_26, GEVENT_15 },
+	{ GPIO_28, GEVENT_18 },
 	{ GPIO_76, GEVENT_11 },
 	{ GPIO_86, GEVENT_9 },
 	{ GPIO_89, GEVENT_0 },

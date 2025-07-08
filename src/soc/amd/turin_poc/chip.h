@@ -9,6 +9,11 @@
 #include <soc/iomap.h>
 #include <types.h>
 
+#define MAX_DOMAINS	8
+
+static const unsigned int domain_to_rb_index[MAX_DOMAINS] = { 2, 7, 3, 6, 4, 1, 5, 0 };
+static const unsigned int domain_to_logical_rb[MAX_DOMAINS] = { 4, 5, 6, 7, 3, 2, 1, 0 };
+
 struct usb31_phy_settings {
 	uint8_t rx_ana_iq_phase_adjust;
 	uint8_t rx_eq_delta_iq_ovrd_en;
@@ -30,33 +35,23 @@ struct soc_usb_config {
 	struct {
 		uint8_t port0 : 4;
 		uint8_t port1 : 4;
-		uint8_t port2 : 4;
-		uint8_t port3 : 4;
-		uint8_t port4 : 4;
-		uint8_t port5 : 4;
-		uint8_t port6 : 4;
-		uint8_t port7 : 4;
 	} usb2_oc_pins[2];
 	struct {
 		uint8_t port0 : 4;
 		uint8_t port1 : 4;
-		uint8_t port2 : 4;
-		uint8_t port3 : 4;
 	}  usb3_oc_pins[2];
 	bool polarity_cfg_low;
 	union {
 		struct {
 			uint8_t port0 : 2;
 			uint8_t port1 : 2;
-			uint8_t port2 : 2; /* Broken in OpenSIL */
-			uint8_t port3 : 2; /* Broken in OpenSIL */
 		};
 		uint8_t raw;
 	} usb3_force_gen1;
 	bool usb31_phy_enable;
-	struct usb31_phy_settings usb31_phy[8];
+	struct usb31_phy_settings usb31_phy[2];
 	bool s1_usb31_phy_enable;
-	struct usb31_phy_settings s1_usb31_phy[8];
+	struct usb31_phy_settings s1_usb31_phy[2];
 };
 
 struct soc_amd_turin_poc_config {

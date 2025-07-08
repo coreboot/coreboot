@@ -18,7 +18,13 @@
 #define FCH_AOAC_DEV_I3C3		15
 #define FCH_AOAC_DEV_UART2		16
 #define FCH_AOAC_DEV_AMBA		17
+/* Bits 18-19 reserved */
+#define FCH_AOAC_DEV_UART4		20
 #define FCH_AOAC_DEV_I3C0		21
-#define FCH_AOAC_DEV_ESPI		27
+#define FCH_AOAC_DEV_ESPI1		22
+/* Bits 23-25 reserved */
+#define FCH_AOAC_DEV_UART3		26
+#define FCH_AOAC_DEV_ESPI		27 /* RO */
+#define FCH_AOAC_DEV_CPU		31
 
 #endif /* AMD_TURIN_POC_AOAC_DEFS_H */

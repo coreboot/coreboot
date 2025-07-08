@@ -2,6 +2,7 @@
 
 #include <amdblocks/acpi.h>
 #include <amdblocks/data_fabric.h>
+#include <cpu/x86/mtrr.h>
 #include <device/device.h>
 #include <drivers/amd/opensil/opensil.h>
 #include <soc/southbridge.h>
@@ -9,6 +10,8 @@
 static void soc_init(void *chip_info)
 {
 	default_dev_ops_root.write_acpi_tables = soc_acpi_write_tables;
+
+	display_mtrrs();
 
 	amd_opensil_silicon_init();
 

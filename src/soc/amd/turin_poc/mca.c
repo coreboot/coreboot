@@ -4,7 +4,11 @@
 #include <cpu/x86/msr.h>
 #include <types.h>
 
-/* TODO: Check if non-core MCA banks are same for all cores */
+/*
+ * Non-core MCA banks are not the same for all cores.
+ * Refer to "Table 56: Non-core MCA Bank to Block Mapping"
+ * in Turin C1 PPR (doc 57238).
+ */
 static const char *const mca_bank_name[] = {
 	[0]  = "Load-store unit",
 	[1]  = "Instruction fetch unit",
@@ -22,22 +26,22 @@ static const char *const mca_bank_name[] = {
 	[13] = "L3 cache unit",
 	[14] = "L3 cache unit",
 	[15] = "Microprocessor5 Management Controller",
-	[16] = "Parameter Block",
-	[17] = "GMI Controller",
-	[18] = "GMI Controller",
-	[19] = "High Speed Interface Unit (GMI)",
-	[20] = "High Speed Interface Unit (GMI)",
+	[16] = "GMI Controller (PCS_GMI)",
+	[17] = "GMI Controller (PCS_GMI)",
+	[18] = "High Speed Interface Unit (KPX_GMI)",
+	[19] = "High Speed Interface Unit (KPX_GMI)",
+	[20] = "MPDMA",
 	[21] = "Unified Memory Controller",
 	[22] = "Unified Memory Controller",
 	[23] = "Coherent Station",
 	[24] = "Coherent Station",
-	[25] = "Northbridge IO Unit",
-	[26] = "PCIe Root Port",
-	[27] = "PCIe Root Port",
-	[28] = "Power Management, Interrupts, Etc.",
+	[25] = "PCIE",
+	[26] = "SATA",
+	[27] = "Northbridge IO Unit",
+	[28] = "NBIF",
 	[29] = "SMU",
-	[30] = "XGMI Controller",
-	[31] = "High Speed Interface Unit (XGMI)",
+	[30] = "Power Management, Interrupts, Etc.",
+	[31] = "High Speed Interface Unit (SERDES)",
 };
 
 bool mca_has_expected_bank_count(void)

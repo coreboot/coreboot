@@ -24,6 +24,10 @@ static const struct soc_uart_ctrlr_info uart_info[] = {
 			PAD_NF(GPIO_137, UART2_RXD, PULL_NONE),
 			PAD_NF(GPIO_135, UART2_TXD, PULL_NONE),
 		} },
+	[3] =	{ APU_UART2_BASE, FCH_AOAC_DEV_UART3, "FUR3", {
+			PAD_NF(GPIO_140, UART3_RXD, PULL_NONE),
+			PAD_NF(GPIO_142, UART3_TXD, PULL_NONE),
+		} },
 };
 
 const struct soc_uart_ctrlr_info *soc_get_uart_ctrlr_info(size_t *num_ctrlrs)

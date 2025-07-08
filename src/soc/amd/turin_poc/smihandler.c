@@ -61,6 +61,7 @@ static void fch_slp_typ_handler(void)
 		/* Do not send SMI before AcpiPm1CntBlkx00[SlpTyp] */
 		pci_ctrl = pm_read32(PM_PCI_CTRL);
 		pci_ctrl &= ~FORCE_SLPSTATE_RETRY;
+		pci_ctrl |= FORCE_STPCLK_RETRY;
 		pm_write32(PM_PCI_CTRL, pci_ctrl);
 
 		/* Enable SlpTyp */

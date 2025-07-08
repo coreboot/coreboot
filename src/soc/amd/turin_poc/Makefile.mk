@@ -32,6 +32,7 @@ ifeq ($(call int-gt, $(CONFIG_ROM_SIZE) 0x1000000), 1)
 CBFSTOOL_ADD_CMD_OPTIONS+= --mmap 0:0xff000000:0x1000000
 endif
 
+ifneq ($(call strip_quotes, $(CONFIG_AMDFW_CONFIG_FILE)),)
 #
 # PSP Directory Table items
 #
@@ -79,6 +80,14 @@ PSP_ELF_FILE=$(objcbfs)/bootblock_fixed_data.elf
 PSP_BIOSBIN_SIZE=$(shell $(READELF_bootblock) -Wl $(PSP_ELF_FILE) | grep LOAD | awk '{print $$5}')
 PSP_BIOSBIN_DEST=$(shell $(READELF_bootblock) -Wl $(PSP_ELF_FILE) | grep LOAD | awk '{print $$3}')
 
+ifneq ($(CONFIG_SOC_AMD_COMMON_BLOCK_APOB_NV_DISABLE),y)
+# type = 0x63 - construct APOB NV base/size from flash map
+# The flashmap section used for this is expected to be named RW_MRC_CACHE
+# Size should be 0xD0000
+APOB_NV_SIZE=$(call get_fmap_value,FMAP_SECTION_RW_MRC_CACHE_SIZE)
+APOB_NV_BASE=$(call get_fmap_value,FMAP_SECTION_RW_MRC_CACHE_START)
+endif # !CONFIG_SOC_AMD_COMMON_BLOCK_APOB_NV_DISABLE
+
 # Helper function to return a value with given bit set
 # Soft Fuse type = 0xb - See #57299 (NDA) for bit definitions.
 set-bit=$(call int-shift-left, 1 $(call _toint,$1))
@@ -104,6 +113,9 @@ OPT_PSP_BIOSBIN_FILE=$(call add_opt_prefix, $(PSP_BIOSBIN_FILE), --bios-bin)
 OPT_PSP_BIOSBIN_DEST=$(call add_opt_prefix, $(PSP_BIOSBIN_DEST), --bios-bin-dest)
 OPT_PSP_BIOSBIN_SIZE=$(call add_opt_prefix, $(PSP_BIOSBIN_SIZE), --bios-uncomp-size)
 
+OPT_APOB_NV_SIZE=$(call add_opt_prefix, $(APOB_NV_SIZE), --apob-nv-size)
+OPT_APOB_NV_BASE=$(call add_opt_prefix, $(APOB_NV_BASE), --apob-nv-base)
+
 OPT_EFS_SPI_READ_MODE=$(call add_opt_prefix, $(CONFIG_EFS_SPI_READ_MODE), --spi-read-mode)
 OPT_EFS_SPI_SPEED=$(call add_opt_prefix, $(CONFIG_EFS_SPI_SPEED), --spi-speed)
 OPT_EFS_SPI_MICRON_FLAG=$(call add_opt_prefix, $(CONFIG_EFS_SPI_MICRON_FLAG), --spi-micron-flag)
@@ -112,14 +124,22 @@ OPT_PSP_SOFTFUSE=$(call add_opt_prefix, $(PSP_SOFTFUSE), --soft-fuse)
 OPT_WHITELIST_FILE=$(call add_opt_prefix, $(PSP_WHITELIST_FILE), --whitelist)
 OPT_SPL_TABLE_FILE=$(call add_opt_prefix, $(SPL_TABLE_FILE), --spl-table)
 
+OPT_UCODE_FILES=$(foreach i, $(shell seq $(words $(amd_microcode_bins))), \
+	$(call add_opt_prefix, $(word $(i), $(amd_microcode_bins)), \
+	--instance $(shell printf "%x" $$(($(i)-1))) --ucode))
+
 AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 		$(OPT_APOB_ADDR) \
+		$(OPT_APOB_NV_SIZE) \
+		$(OPT_APOB_NV_BASE) \
+		$(OPT_UCODE_FILES) \
 		$(OPT_DEBUG_AMDFWTOOL) \
 		$(OPT_PSP_BIOSBIN_FILE) \
 		$(OPT_PSP_BIOSBIN_DEST) \
 		$(OPT_PSP_BIOSBIN_SIZE) \
 		$(OPT_PSP_SOFTFUSE) \
 		--use-pspsecureos \
+		--load-s0i3 \
 		$(OPT_TOKEN_UNLOCK) \
 		$(OPT_WHITELIST_FILE) \
 		$(OPT_SPL_TABLE_FILE) \
@@ -127,11 +147,12 @@ AMDFW_COMMON_ARGS=$(OPT_PSP_APCB_FILES) \
 		$(OPT_EFS_SPI_SPEED) \
 		$(OPT_EFS_SPI_MICRON_FLAG) \
 		--config $(CONFIG_AMDFW_CONFIG_FILE) \
-		--flashsize 0x1000000
+		--flashsize $(call strip_quotes, $(CONFIG_ROM_SIZE))
 
 $(obj)/amdfw.rom:	$(call strip_quotes, $(PSP_BIOSBIN_FILE)) \
 			$$(PSP_APCB_FILES) \
 			$(DEP_FILES) \
+			$(UCODE_FILES) \
 			$(AMDFWTOOL) \
 			$(obj)/fmap_config.h \
 			$(objcbfs)/bootblock_fixed_data.elf # this target also creates the .map file
@@ -157,4 +178,8 @@ $(PSP_BIOSBIN_FILE): $(PSP_ELF_FILE) $(AMDCOMPRESS)
 	$(AMDCOMPRESS) --infile $(PSP_ELF_FILE) --outfile $@ --compress \
 		--maxsize $(PSP_BIOSBIN_SIZE)
 
+else
+# Set FIRMWARE_LOCATION to get the microcode files
+FIRMWARE_LOCATION=3rdparty/amd_firmwares/Firmwares/Turin
+endif # ifneq ($(call strip_quotes, $(CONFIG_AMDFW_CONFIG_FILE)),)
 endif

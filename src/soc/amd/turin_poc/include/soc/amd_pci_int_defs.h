@@ -28,11 +28,29 @@
 #define PIRQ_SCI	0x10	/* SCI IRQ */
 #define PIRQ_SMBUS	0x11	/* SMBUS0 */
 #define PIRQ_ASF	0x12	/* ASF */
-/* 0x13-0x15 reserved */
+#define PIRQ_HDA	0x13	/* HDA */
+#define PIRQ_GBE0	0x14	/* GBE0 */
+#define PIRQ_GBE1	0x15	/* GBE1 */
 #define PIRQ_PMON	0x16	/* Performance Monitor */
-/* 0x17-0x19 reserved */
+#define PIRQ_SD		0x17	/* SD */
+/* 0x18-0x19 reserved */
 #define PIRQ_SDIO	0x1a	/* SDIO */
-/* 0x1b-0x49 reserved */
+/* 0x1b-0x1f reserved */
+#define PIRQ_CIR	0x20	/* CIR */
+#define PIRQ_GPIOA	0x21	/* GPIOa */
+#define PIRQ_GPIOB	0x22	/* GPIOb */
+#define PIRQ_GPIOC	0x23	/* GPIOc */
+/* 0x24-0x2f reserved */
+#define PIRQ_USB_EMU	0x30	/* USB Emulation */
+#define PIRQ_USB_DR0	0x31	/* USB Dual Role 1 */
+#define PIRQ_USB_DR1	0x32	/* USB Dual Role 2 */
+/* 0x33 reserved */
+#define PIRQ_XHCI0	0x34	/* XHCI0 */
+#define PIRQ_SSIC	0x35	/* USB SSIC */
+/* 0x36-0x40 reserved */
+#define PIRQ_SATA	0x41	/* SATA */
+#define PIRQ_UFS	0x42	/* UFS */
+/* 0x43-0x4f reserved */
 #define PIRQ_GPP0	0x50	/* GPPInt0 */
 #define PIRQ_GPP1	0x51	/* GPPInt1 */
 #define PIRQ_GPP2	0x52	/* GPPInt2 */

@@ -4,14 +4,14 @@ chip soc/amd/turin_poc
 	device cpu_cluster 0 on ops amd_cpu_bus_ops end
 
 	# OC pins
-	register "usb.usb2_oc_pins[0]" = "{ 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf }"
-	register "usb.usb2_oc_pins[1]" = "{ 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf, 0xf }"
-	register "usb.usb3_oc_pins[0]" = "{ 0xf, 0xf, 0xf, 0xf }"
-	register "usb.usb3_oc_pins[1]" = "{ 0xf, 0xf, 0xf, 0xf }"
+	register "usb.usb2_oc_pins[0]" = "{ 0xf, 0xf }"
+	register "usb.usb2_oc_pins[1]" = "{ 0xf, 0xf }"
+	register "usb.usb3_oc_pins[0]" = "{ 0xf, 0xf }"
+	register "usb.usb3_oc_pins[1]" = "{ 0xf, 0xf }"
 
 	device domain 0 on
 		ops turin_pci_domain_ops
-		device pci 00.0 alias gnb_0 on end
+		device pci 00.0 alias gnb_0 on ops turin_root_complex_operations end
 		device pci 00.2 alias iommu_0 off ops amd_iommu_ops end
 		device pci 00.3 alias rcec_0 off end
 
@@ -47,69 +47,19 @@ chip soc/amd/turin_poc
 		end
 
 		device pci 03.0 on end # Dummy device function, do not disable
-		chip drivers/amd/opensil/mpio
-			device pci 03.1 alias gpp_bridge_0_0_b off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 03.2 alias gpp_bridge_0_1_b off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 03.3 alias gpp_bridge_0_2_b off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 03.4 alias gpp_bridge_0_3_b off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 03.5 alias gpp_bridge_0_4_b off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 03.6 alias gpp_bridge_0_5_b off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 03.7 alias gpp_bridge_0_6_b off end
-		end
-
 		device pci 04.0 on end # Dummy device function, do not disable
-		chip drivers/amd/opensil/mpio
-			device pci 04.1 alias gpp_bridge_0_7_b off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 04.2 alias gpp_bridge_0_8_b off end
-		end
-
 		device pci 05.0 on end # Dummy device function, do not disable
-		chip drivers/amd/opensil/mpio
-			device pci 05.1 alias gpp_bridge_0_0_c off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 05.2 alias gpp_bridge_0_1_c off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 05.3 alias gpp_bridge_0_2_c off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 05.4 alias gpp_bridge_0_3_c off end
-		end
 
 		device pci 07.0 on end # Dummy device function, do not disable
-		device pci 07.1 alias gpp_bridge_0_a off # Internal GPP Bridge 0 to Bus B0
-			device pci 0.0 on end # Dummy PCIe function
-			device pci 0.1 off end
-			device pci 0.2 alias primary_NTB_0 off end # Primary PCIe Non-TransparentBridge
-			device pci 0.3 alias secondry_NTB_0 off end # Secondary vNTB
-			device pci 0.4 alias xhci_0 off end # USB
-			device pci 0.5 alias mp0_0 off end # PSP (MP0)
-			device pci 0.6 alias acp_0 off end # Audio Processor (ACP)
-			device pci 0.7 alias hda_0 off end # Audio Processor HD Audio Controller (main AZ)
-		end
-		device pci 07.2 alias gpp_bridge_0_b off # Internal GPP Bridge 1 to Bus C0
-			device pci 0.0 alias sata_0_0 off end # first SATA controller; AHCI mode
-			device pci 0.1 alias sata_0_1 off end # second SATA controller; AHCI mode
+		device pci 07.1 alias gpp_bridge_0_a on # Internal GPP Bridge 0 to Bus C0
+			device pci 00.0 alias nbif_0 on end # Dummy PCIe function
+			device pci 00.1 alias sdxi_1 on end # Smart Data Accelerator Interface
+			device pci 00.2 alias primary_NTB_1 off end # Primary PCIe Non-TransparentBridge
+			device pci 00.3 alias secondry_NTB_1 off end # Secondary vNTB
 		end
 
 		device pci 14.0 alias smbus on end # primary FCH function
 		device pci 14.3 alias lpc_bridge on ops amd_lpc_ops end
-		device pci 14.6 alias sdhci off end
 
 		device pci 18.0 alias data_fabric_0 on end
 		device pci 18.1 alias data_fabric_1 on end
@@ -123,8 +73,7 @@ chip soc/amd/turin_poc
 
 	device domain 1 on
 		ops turin_pci_domain_ops
-		device pci 00.0 alias gnb_1 on end
-		device pci 00.2 alias iommu_1 off ops amd_iommu_ops end
+		device pci 00.0 alias gnb_1 on ops turin_root_complex_operations  end
 		device pci 00.3 alias rcec_1 off end
 
 		device pci 01.0 on end # Dummy device function, do not disable
@@ -157,54 +106,12 @@ chip soc/amd/turin_poc
 		chip drivers/amd/opensil/mpio
 			device pci 02.2 alias gpp_bridge_1_8_a off end
 		end
-
-		device pci 03.0 on end # Dummy device function, do not disable
-		chip drivers/amd/opensil/mpio
-			device pci 03.1 alias gpp_bridge_1_0_b off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 03.2 alias gpp_bridge_1_1_b off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 03.3 alias gpp_bridge_1_2_b off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 03.4 alias gpp_bridge_1_3_b off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 03.5 alias gpp_bridge_1_4_b off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 03.6 alias gpp_bridge_1_5_b off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 03.7 alias gpp_bridge_1_6_b off end
-		end
-
-		device pci 04.0 on end # Dummy device function, do not disable
-		chip drivers/amd/opensil/mpio
-			device pci 04.1 alias gpp_bridge_1_7_b off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 04.2 alias gpp_bridge_1_8_b off end
-		end
-
-		device pci 05.0 on end # Dummy device function, do not disable
-
-		device pci 07.0 on end # Dummy device function, do not disable
-		device pci 07.1 alias gpp_bridge_1_a off
-			device pci 0.0 on end # Dummy PCIe function
-			device pci 0.1 off end #SDXI
-			device pci 0.2 alias primary_NTB_1 off end # Primary PCIe Non-TransparentBridge
-			device pci 0.3 alias secondry_NTB_1 off end # Secondary vNTB
-		end
 	end
 
 	device domain 2 on
 		ops turin_pci_domain_ops
-		device pci 00.0 alias gnb_2 on end
+		device pci 00.0 alias gnb_2 on ops turin_root_complex_operations end
 		device pci 00.2 alias iommu_2 off ops amd_iommu_ops end
-		device pci 00.3 alias rcec_2 off end
 
 		device pci 01.0 on end # Dummy device function, do not disable
 		chip drivers/amd/opensil/mpio
@@ -238,52 +145,36 @@ chip soc/amd/turin_poc
 		end
 
 		device pci 03.0 on end # Dummy device function, do not disable
-		chip drivers/amd/opensil/mpio
-			device pci 03.1 alias gpp_bridge_2_0_b off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 03.2 alias gpp_bridge_2_1_b off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 03.3 alias gpp_bridge_2_2_b off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 03.4 alias gpp_bridge_2_3_b off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 03.5 alias gpp_bridge_2_4_b off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 03.6 alias gpp_bridge_2_5_b off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 03.7 alias gpp_bridge_2_6_b off end
-		end
-
 		device pci 04.0 on end # Dummy device function, do not disable
-		chip drivers/amd/opensil/mpio
-			device pci 04.1 alias gpp_bridge_2_7_b off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 04.2 alias gpp_bridge_2_8_b off end
-		end
 
 		device pci 05.0 on end # Dummy device function, do not disable
+		chip drivers/amd/opensil/mpio
+			device pci 05.1 alias gpp_bridge_2_0_c off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 05.2 alias gpp_bridge_2_1_c off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 05.3 alias gpp_bridge_2_2_c off end
+		end
 
 		device pci 07.0 on end # Dummy device function, do not disable
-		device pci 07.1 alias gpp_bridge_2_a off
-			device pci 0.0 on end # Dummy PCIe function
-			device pci 0.1 off end
-			device pci 0.2 alias primary_NTB_2 off end # Primary PCIe Non-TransparentBridge
-			device pci 0.3 alias secondry_NTB_2 off end # Secondary vNTB
+		device pci 07.1 alias gpp_bridge_2_a on # Internal GPP Bridge 0 to Bus C1
+			device pci 00.0 alias nbif_2 on end # Dummy PCIe function
+			device pci 00.1 alias sdxi_2 on end # Smart Data Accelerator Interface
+			device pci 00.3 alias secondry_NTB_2 off end # Secondary vNTB
+			device pci 00.4 alias xhci_0 off end # USB
+			device pci 00.7 alias hda off end # HD Audio Controller (AZ)
+		end
+		device pci 07.2 alias gpp_bridge_2_b on # Internal GPP Bridge 0 to Bus D1
+			device pci 00.0 alias sata_2_0 off end # first SATA controller; AHCI mode
+			device pci 00.1 alias sata_2_1 off end # second SATA controller; AHCI mode
 		end
 	end
 
 	device domain 3 on
 		ops turin_pci_domain_ops
-		device pci 00.0 alias gnb_3 on end
-		device pci 00.2 alias iommu_3 off ops amd_iommu_ops end
-		device pci 00.3 alias rcec_3 off end
+		device pci 00.0 alias gnb_3 on ops turin_root_complex_operations end
 
 		device pci 01.0 on end # Dummy device function, do not disable
 		chip drivers/amd/opensil/mpio
@@ -315,66 +206,221 @@ chip soc/amd/turin_poc
 		chip drivers/amd/opensil/mpio
 			device pci 02.2 alias gpp_bridge_3_8_a off end
 		end
+	end
+
+	device domain 4 on
+		ops turin_pci_domain_ops
+		device pci 00.0 alias gnb_4 on ops turin_root_complex_operations end
+
+		device pci 01.0 on end # Dummy device function, do not disable
+		chip drivers/amd/opensil/mpio
+			device pci 01.1 alias gpp_bridge_4_0_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 01.2 alias gpp_bridge_4_1_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 01.3 alias gpp_bridge_4_2_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 01.4 alias gpp_bridge_4_3_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 01.5 alias gpp_bridge_4_4_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 01.6 alias gpp_bridge_4_5_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 01.7 alias gpp_bridge_4_6_a off end
+		end
+
+		device pci 02.0 on end # Dummy device function, do not disable
+		chip drivers/amd/opensil/mpio
+			device pci 02.1 alias gpp_bridge_4_7_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 02.2 alias gpp_bridge_4_8_a off end
+		end
+	end
+
+	device domain 5 on
+		ops turin_pci_domain_ops
+		device pci 00.0 alias gnb_5 on ops turin_root_complex_operations end
+		device pci 00.2 alias iommu_5 off ops amd_iommu_ops end
+
+		device pci 01.0 on end # Dummy device function, do not disable
+		chip drivers/amd/opensil/mpio
+			device pci 01.1 alias gpp_bridge_5_0_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 01.2 alias gpp_bridge_5_1_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 01.3 alias gpp_bridge_5_2_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 01.4 alias gpp_bridge_5_3_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 01.5 alias gpp_bridge_5_4_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 01.6 alias gpp_bridge_5_5_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 01.7 alias gpp_bridge_5_6_a off end
+		end
+
+		device pci 02.0 on end # Dummy device function, do not disable
+		chip drivers/amd/opensil/mpio
+			device pci 02.1 alias gpp_bridge_5_7_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 02.2 alias gpp_bridge_5_8_a off end
+		end
 
 		device pci 03.0 on end # Dummy device function, do not disable
 		chip drivers/amd/opensil/mpio
-			device pci 03.1 alias gpp_bridge_3_0_b off end
+			device pci 03.1 alias gpp_bridge_5_0_b off end
 		end
 		chip drivers/amd/opensil/mpio
-			device pci 03.2 alias gpp_bridge_3_1_b off end
+			device pci 03.2 alias gpp_bridge_5_1_b off end
 		end
 		chip drivers/amd/opensil/mpio
-			device pci 03.3 alias gpp_bridge_3_2_b off end
+			device pci 03.3 alias gpp_bridge_5_2_b off end
 		end
 		chip drivers/amd/opensil/mpio
-			device pci 03.4 alias gpp_bridge_3_3_b off end
+			device pci 03.4 alias gpp_bridge_5_3_b off end
 		end
 		chip drivers/amd/opensil/mpio
-			device pci 03.5 alias gpp_bridge_3_4_b off end
+			device pci 03.5 alias gpp_bridge_5_4_b off end
 		end
 		chip drivers/amd/opensil/mpio
-			device pci 03.6 alias gpp_bridge_3_5_b off end
+			device pci 03.6 alias gpp_bridge_5_5_b off end
 		end
 		chip drivers/amd/opensil/mpio
-			device pci 03.7 alias gpp_bridge_3_6_b off end
+			device pci 03.7 alias gpp_bridge_5_6_b off end
 		end
 
 		device pci 04.0 on end # Dummy device function, do not disable
 		chip drivers/amd/opensil/mpio
-			device pci 04.1 alias gpp_bridge_3_7_b off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 04.2 alias gpp_bridge_3_8_b off end
+			device pci 04.1 alias gpp_bridge_5_7_b off end
 		end
 
 		device pci 05.0 on end # Dummy device function, do not disable
 		chip drivers/amd/opensil/mpio
-			device pci 05.1 alias gpp_bridge_3_0_c off end
+			device pci 05.1 alias gpp_bridge_5_0_c off end
 		end
 		chip drivers/amd/opensil/mpio
-			device pci 05.2 alias gpp_bridge_3_1_c off end
+			device pci 05.2 alias gpp_bridge_5_1_c off end
 		end
 		chip drivers/amd/opensil/mpio
-			device pci 05.3 alias gpp_bridge_3_2_c off end
-		end
-		chip drivers/amd/opensil/mpio
-			device pci 05.4 alias gpp_bridge_3_3_c off end
+			device pci 05.3 alias gpp_bridge_5_2_c off end
 		end
 
 		device pci 07.0 on end # Dummy device function, do not disable
-		device pci 07.1 alias gpp_bridge_3_a off
-			device pci 0.0 on end # Dummy PCIe function
-			device pci 0.1 off end #SDXI
-			device pci 0.2 alias primary_NTB_3 off end # Primary PCIe Non-TransparentBridge
-			device pci 0.3 alias secondry_NTB_3 off end # Secondary vNTB
-			device pci 0.4 alias xhci_3 off end # USB
-			device pci 0.5 alias mp0_3 off end # PSP (MP0)
+		device pci 07.1 alias gpp_bridge_3_a on # Internal GPP Bridge 0 to Bus C2
+			device pci 00.0 alias nbif_3 on end # Dummy PCIe function
+			device pci 00.1 alias sdxi_3 on end # Smart Data Accelerator Interface
+			device pci 00.2 alias primary_NTB_3 off end # Primary PCIe Non-TransparentBridge
+			device pci 00.3 alias secondry_NTB_3 off end # Secondary vNTB
+			device pci 00.5 alias asp off end # PSP (MP0)
+		end
+	end
+
+	device domain 6 on
+		ops turin_pci_domain_ops
+		device pci 00.0 alias gnb_6 on ops turin_root_complex_operations end
+		device pci 00.3 alias rcec_6 off end
+
+		device pci 01.0 on end # Dummy device function, do not disable
+		chip drivers/amd/opensil/mpio
+			device pci 01.1 alias gpp_bridge_6_0_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 01.2 alias gpp_bridge_6_1_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 01.3 alias gpp_bridge_6_2_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 01.4 alias gpp_bridge_6_3_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 01.5 alias gpp_bridge_6_4_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 01.6 alias gpp_bridge_6_5_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 01.7 alias gpp_bridge_6_6_a off end
 		end
 
-		device pci 07.2 alias gpp_bridge_3_b off
-			device pci 0.0 alias sata_3_0 off end # first SATA controller; AHCI mode
-			device pci 0.1 alias sata_3_1 off end # second SATA controller; AHCI mode
+		device pci 02.0 on end # Dummy device function, do not disable
+		chip drivers/amd/opensil/mpio
+			device pci 02.1 alias gpp_bridge_6_7_a off end
 		end
+		chip drivers/amd/opensil/mpio
+			device pci 02.2 alias gpp_bridge_6_8_a off end
+		end
+	end
+
+	device domain 7 on
+		ops turin_pci_domain_ops
+		device pci 00.0 alias gnb_7 on ops turin_root_complex_operations end
+		device pci 00.2 alias iommu_7 off ops amd_iommu_ops end
+		device pci 00.3 alias rcec_7 off end
+
+		device pci 01.0 on end # Dummy device function, do not disable
+		chip drivers/amd/opensil/mpio
+			device pci 01.1 alias gpp_bridge_7_0_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 01.2 alias gpp_bridge_7_1_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 01.3 alias gpp_bridge_7_2_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 01.4 alias gpp_bridge_7_3_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 01.5 alias gpp_bridge_7_4_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 01.6 alias gpp_bridge_7_5_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 01.7 alias gpp_bridge_7_6_a off end
+		end
+
+		device pci 02.0 on end # Dummy device function, do not disable
+		chip drivers/amd/opensil/mpio
+			device pci 02.1 alias gpp_bridge_7_7_a off end
+		end
+		chip drivers/amd/opensil/mpio
+			device pci 02.2 alias gpp_bridge_7_8_a off end
+		end
+
+		device pci 03.0 on end # Dummy device function, do not disable
+		device pci 04.0 on end # Dummy device function, do not disable
+		device pci 05.0 on end # Dummy device function, do not disable
+
+		device pci 07.0 on end # Dummy device function, do not disable
+		device pci 07.1 alias gpp_bridge_7_a on # Internal GPP Bridge 0 to Bus C3
+			device pci 00.0 alias nbif_4 on end # Dummy PCIe function
+			device pci 00.1 alias sdxi_4 on end # Smart Data Accelerator Interface
+			device pci 00.2 alias primary_NTB_4 off end # Primary PCIe Non-TransparentBridge
+			device pci 00.3 alias secondry_NTB_4 off end # Secondary vNTB
+			device pci 00.4 alias xhci_1 off end # USB
+		end
+
+		device pci 07.2 alias gpp_bridge_7_b on # Internal GPP Bridge 0 to Bus D3
+			device pci 00.0 alias sata_7_0 off end # first SATA controller; AHCI mode
+			device pci 00.1 alias sata_7_1 off end # second SATA controller; AHCI mode
+		end
+
 	end
 
 	device mmio 0xfedc2000 alias i2c_0 off ops soc_amd_i2c_mmio_ops end

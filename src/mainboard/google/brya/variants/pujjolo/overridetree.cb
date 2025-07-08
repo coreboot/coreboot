@@ -18,7 +18,7 @@ fw_config
 	end
 	field WFC 26 27
 		option WFC_ABSENT               0
-		option WFC_MIPI_OVTI8856        2
+		option WFC_MIPI_OVTI8856        1
 	end
 end
 chip soc/intel/alderlake

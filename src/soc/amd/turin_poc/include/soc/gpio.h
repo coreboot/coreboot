@@ -1,0 +1,270 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+#ifndef AMD_TURIN_POC_GPIO_H
+#define AMD_TURIN_POC_GPIO_H
+
+#define GPIO_DEVICE_NAME	"AMDI0030"
+#define GPIO_DEVICE_DESC	"GPIO Controller"
+
+#ifndef __ACPI__
+#include <soc/iomap.h>
+#include <amdblocks/gpio.h>
+#endif /* !__ACPI__ */
+
+#include <amdblocks/gpio_defs.h>
+
+/* The following sections describe only the GPIOs defined for this SOC */
+
+#define SOC_GPIO_TOTAL_PINS		267
+
+/* Bank 0: GPIO_0 - GPIO_63 */
+#define GPIO_0				0
+#define GPIO_1				1
+#define GPIO_2				2
+#define GPIO_3				3
+#define GPIO_4				4
+#define GPIO_5				5
+#define GPIO_6				6
+#define GPIO_7				7
+#define GPIO_12				12
+#define GPIO_13				13
+#define GPIO_14				14
+#define GPIO_16				16
+#define GPIO_17				17
+#define GPIO_19				19
+#define GPIO_20				20
+#define GPIO_21				21
+#define GPIO_22				22
+#define GPIO_23				23
+#define GPIO_24				24
+#define GPIO_26				26
+
+/* Bank 1: GPIO_64 - GPIO_127 */
+#define GPIO_74				74
+#define GPIO_75				75
+#define GPIO_76				76
+#define GPIO_86				86
+#define GPIO_87				87
+#define GPIO_88				88
+#define GPIO_89				89
+#define GPIO_104			104
+#define GPIO_105			105
+#define GPIO_106			106
+#define GPIO_107			107
+#define GPIO_108			108
+#define GPIO_109			109
+#define GPIO_110			110
+#define GPIO_115			115
+#define GPIO_116			116
+#define GPIO_117			117
+#define GPIO_118			118
+#define GPIO_119			119
+#define GPIO_120			120
+#define GPIO_121			121
+#define GPIO_122			122
+#define GPIO_123			123
+#define GPIO_124			124
+#define GPIO_125			125
+#define GPIO_126			126
+
+/* Bank 2: GPIO_128 - GPIO_191 */
+#define GPIO_129			129
+#define GPIO_131			131
+#define GPIO_132			132
+#define GPIO_133			133
+#define GPIO_134			134
+#define GPIO_135			135
+#define GPIO_136			136
+#define GPIO_137			137
+#define GPIO_138			138
+#define GPIO_139			139
+#define GPIO_141			141
+#define GPIO_142			142
+#define GPIO_145			145
+#define GPIO_146			146
+#define GPIO_147			147
+#define GPIO_148			148
+#define GPIO_149			149
+#define GPIO_150			150
+#define GPIO_151			151
+#define GPIO_152			152
+
+/* remote GPIO bank: GPIO_256 - GPIO_271 */
+#define GPIO_256			256
+#define GPIO_257			257
+#define GPIO_258			258
+#define GPIO_259			259
+#define GPIO_260			260
+#define GPIO_261			261
+#define GPIO_262			262
+#define GPIO_263			263
+#define GPIO_264			264
+#define GPIO_265			265
+#define GPIO_266			266
+
+/* IOMUX function names and values */
+#define GPIO_0_IOMUX_PWR_BTN_L 0
+#define GPIO_0_IOMUX_GPIO_PU1PD0 1
+#define GPIO_0_IOMUX_GPIOxx 2
+#define GPIO_1_IOMUX_SYS_RESET_L 0
+#define GPIO_1_IOMUX_GPIOxx 1
+#define GPIO_2_IOMUX_WAKE_L 0
+#define GPIO_2_IOMUX_GPIOxx 1
+#define GPIO_3_IOMUX_GPIOxx 0
+#define GPIO_4_IOMUX_GPIOxx 0
+#define GPIO_4_IOMUX_SATA_ACT_L 1
+#define GPIO_5_IOMUX_GPIOxx 0
+#define GPIO_5_IOMUX_DEVSLP0 1
+#define GPIO_6_IOMUX_GPIOxx 0
+#define GPIO_6_IOMUX_DEVSLP1 1
+#define GPIO_7_IOMUX_GPIOxx 0
+#define GPIO_12_IOMUX_PWRGD_OUT 0
+#define GPIO_12_IOMUX_GPIOxx 1
+#define GPIO_13_IOMUX_I2C4_SCL 0
+#define GPIO_13_IOMUX_CLK_48_24_0 1
+#define GPIO_13_IOMUX_GPIOxx 2
+#define GPIO_14_IOMUX_I2C4_SDA 0
+#define GPIO_14_IOMUX_S0A3 1
+#define GPIO_14_IOMUX_GPIOxx 2
+#define GPIO_16_IOMUX_USB_1O_OC_L 0
+#define GPIO_16_IOMUX_GPIOxx 1
+#define GPIO_17_IOMUX_USB11_OC_L 0
+#define GPIO_17_IOMUX_GPIOxx 1
+#define GPIO_19_IOMUX_I2C5_SCL 0
+#define GPIO_19_IOMUX_SMBUS1_SCL 1
+#define GPIO_19_IOMUX_GPIOxx 2
+#define GPIO_20_IOMUX_I2C5_SDA 0
+#define GPIO_20_IOMUX_SMBUS1_SDA 1
+#define GPIO_20_IOMUX_GPIOxx 2
+#define GPIO_21_IOMUX_GPIOxx 0
+#define GPIO_22_IOMUX_GPIOxx 0
+#define GPIO_23_IOMUX_ESPI_RST_OUT_L 0
+#define GPIO_23_IOMUX_GPIOxx 1
+#define GPIO_24_IOMUX_SMERR_L 0
+#define GPIO_24_IOMUX_GPIOxx 1
+#define GPIO_26_IOMUX_PCIE_RST1_L 0
+#define GPIO_26_IOMUX_GPIOxx 1
+#define GPIO_74_IOMUX_ESPI_CLK2 0
+#define GPIO_74_IOMUX_GPIOxx 1
+#define GPIO_75_IOMUX_ESPI_CLK1 0
+#define GPIO_75_IOMUX_GPIOxx 1
+#define GPIO_76_IOMUX_GPIOxx 0
+#define GPIO_76_IOMUX_SPI_TPM_CS_L 1
+#define GPIO_86_IOMUX_NMI_SYNC_FLOOD_L 0
+#define GPIO_87_IOMUX_GPIOxx 0
+#define GPIO_88_IOMUX_GPIOxx 0
+#define GPIO_89_IOMUX_GENINT_L 0
+#define GPIO_89_IOMUX_PM_INTR_L 1
+#define GPIO_89_IOMUX_GPIOxx 2
+#define GPIO_104_IOMUX_GPIOxx 0
+#define GPIO_105_IOMUX_GPIOxx 0
+#define GPIO_106_IOMUX_GPIOxx 0
+#define GPIO_107_IOMUX_GPIOxx 0
+#define GPIO_108_IOMUX_ESPI0_ALERT_D1 0
+#define GPIO_108_IOMUX_GPIOxx 1
+#define GPIO_109_IOMUX_GPIOxx 0
+#define GPIO_110_IOMUX_ESPI1_ALERT_D1 0
+#define GPIO_110_IOMUX_GPIOxx 1
+#define GPIO_115_IOMUX_GPIOxx 0
+#define GPIO_115_IOMUX_CLK_REQ11_L 1
+#define GPIO_116_IOMUX_GPIOxx 0
+#define GPIO_116_IOMUX_CLK_REQ12_L 1
+#define GPIO_117_IOMUX_ESPI_CLK0 0
+#define GPIO_117_IOMUX_GPIOxx 1
+#define GPIO_118_IOMUX_SPI_CS0_L 0
+#define GPIO_118_IOMUX_GPIOxx 1
+#define GPIO_119_IOMUX_SPI_CS1_L 0
+#define GPIO_119_IOMUX_GPIOxx 1
+#define GPIO_120_IOMUX_ESPI0_DATA0 0
+#define GPIO_120_IOMUX_GPIOxx 1
+#define GPIO_121_IOMUX_ESPI0_DATA1 0
+#define GPIO_121_IOMUX_GPIOxx 1
+#define GPIO_122_IOMUX_ESPI0_DATA2 0
+#define GPIO_122_IOMUX_GPIOxx 1
+#define GPIO_123_IOMUX_ESPI0_DATA3 0
+#define GPIO_123_IOMUX_GPIOxx 1
+#define GPIO_124_IOMUX_ESPI_CS0_L 0
+#define GPIO_124_IOMUX_GPIOxx 1
+#define GPIO_125_IOMUX_ESPI_CS1_L 0
+#define GPIO_125_IOMUX_GPIOxx 1
+#define GPIO_126_IOMUX_SPI_CS2_L 0
+#define GPIO_126_IOMUX_GPIOxx 1
+#define GPIO_129_IOMUX_ESPI_RSTIN_L 0
+#define GPIO_129_IOMUX_KBRST_L 1
+#define GPIO_129_IOMUX_GPIOxx 2
+#define GPIO_131_IOMUX_ESPI1_DATA0 0
+#define GPIO_131_IOMUX_GPIOxx 1
+#define GPIO_132_IOMUX_ESPI1_DATA1 0
+#define GPIO_132_IOMUX_GPIOxx 1
+#define GPIO_133_IOMUX_ESPI1_DATA2 0
+#define GPIO_133_IOMUX_GPIOxx 1
+#define GPIO_134_IOMUX_ESPI1_DATA3 0
+#define GPIO_134_IOMUX_GPIOxx 1
+#define GPIO_135_IOMUX_UART0_CTS_L 0
+#define GPIO_135_IOMUX_UART2_TXD 1
+#define GPIO_135_IOMUX_GPIOxx 2
+#define GPIO_136_IOMUX_UART0_RXD 0
+#define GPIO_136_IOMUX_GPIOxx 1
+#define GPIO_137_IOMUX_UART0_RTS_L 0
+#define GPIO_137_IOMUX_UART2_RXD 1
+#define GPIO_137_IOMUX_GPIOxx 2
+#define GPIO_138_IOMUX_UART0_TXD 0
+#define GPIO_138_IOMUX_GPIOxx 1
+#define GPIO_139_IOMUX_UART0_INTR 0
+#define GPIO_139_IOMUX_GPIOxx 1
+#define GPIO_141_IOMUX_UART1_RXD 0
+#define GPIO_141_IOMUX_GPIOxx 1
+#define GPIO_142_IOMUX_UART1_TXD 0
+#define GPIO_142_IOMUX_GPIOxx 1
+#define GPIO_145_IOMUX_I3C0_SCL_SPD0_SCL 0
+#define GPIO_145_IOMUX_I2C0_SCL_SPD0_SCL 1
+#define GPIO_145_IOMUX_SMBUS0_SCL 2
+#define GPIO_145_IOMUX_GPIOxx 3
+#define GPIO_146_IOMUX_I3C0_SDA_SPD0_SDA 0
+#define GPIO_146_IOMUX_I2C0_SDA_SPD0_SDA 1
+#define GPIO_146_IOMUX_SMBUS0_SDA 2
+#define GPIO_146_IOMUX_GPIOxx 3
+#define GPIO_147_IOMUX_I3C1_SCL_SPD1_SCL 0
+#define GPIO_147_IOMUX_I2C1_SCL_SPD1_SCL 1
+#define GPIO_147_IOMUX_GPIOxx 2
+#define GPIO_148_IOMUX_I3C1_SDA_SPD1_SDA 0
+#define GPIO_148_IOMUX_I2C1_SDA_SPD1_SDA 1
+#define GPIO_148_IOMUX_GPIOxx 2
+#define GPIO_149_IOMUX_I3C2_SCL_SPD2_SCL 0
+#define GPIO_149_IOMUX_I2C2_SCL_SPD2_SCL 1
+#define GPIO_149_IOMUX_GPIOxx 2
+#define GPIO_150_IOMUX_I3C2_SDA_SPD2_SDA 0
+#define GPIO_150_IOMUX_I2C2_SDA_SPD2_SDA 1
+#define GPIO_150_IOMUX_GPIOxx 2
+#define GPIO_151_IOMUX_I3C3_SCL_SPD3_SCL 0
+#define GPIO_151_IOMUX_I2C3_SCL_SPD3_SCL 1
+#define GPIO_151_IOMUX_GPIOxx 2
+#define GPIO_152_IOMUX_I3C3_SDA_SPD3_SDA 0
+#define GPIO_152_IOMUX_I2C3_SDA_SPD3_SDA 1
+#define GPIO_152_IOMUX_GPIOxx 2
+
+/* Remote GPIOs */
+#define GPIO_256_IOMUX_GPIOxx 0
+#define GPIO_256_IOMUX_SGPIO0_CLK 1
+#define GPIO_257_IOMUX_GPIOxx 0
+#define GPIO_257_IOMUX_SGPIO1_CLK 1
+#define GPIO_257_IOMUX_CLK_REQ01_L 2
+#define GPIO_258_IOMUX_GPIOxx 0
+#define GPIO_258_IOMUX_SGPIO2_CLK 1
+#define GPIO_258_IOMUX_CLK_REQ02_L 2
+#define GPIO_259_IOMUX_GPIOxx 0
+#define GPIO_259_IOMUX_SGPIO3_CLK 1
+#define GPIO_260_IOMUX_SGPIO_DATAOUT 0
+#define GPIO_260_IOMUX_GPIOxx 1
+#define GPIO_261_IOMUX_SGPIO_LOAD 0
+#define GPIO_261_IOMUX_GPIOxx 1
+#define GPIO_262_IOMUX_GPIOxx 0
+#define GPIO_263_IOMUX_GPIOxx 0
+#define GPIO_264_IOMUX_USB00_OC_L 0
+#define GPIO_264_IOMUX_GPIOxx 1
+#define GPIO_265_IOMUX_USB01_OC_L 0
+#define GPIO_265_IOMUX_GPIOxx 1
+#define GPIO_266_IOMUX_PCIE_RST0_L 0
+#define GPIO_266_IOMUX_GPIOxx 1
+
+#endif /* AMD_TURIN_POC_GPIO_H */

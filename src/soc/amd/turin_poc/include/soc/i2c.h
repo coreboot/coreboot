@@ -1,0 +1,36 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+
+#ifndef AMD_TURIN_POC_I2C_H
+#define AMD_TURIN_POC_I2C_H
+
+#include <gpio.h>
+#include <types.h>
+
+#define GPIO_I2C0_SCL		BIT(0)
+#define GPIO_I2C1_SCL		BIT(1)
+#define GPIO_I2C2_SCL		BIT(2)
+#define GPIO_I2C3_SCL		BIT(3)
+#define GPIO_I2C4_SCL		BIT(4)
+#define GPIO_I2C5_SCL		BIT(5)
+#define GPIO_I2C_MASK		(GPIO_I2C0_SCL | GPIO_I2C1_SCL | \
+				 GPIO_I2C2_SCL | GPIO_I2C3_SCL | \
+				 GPIO_I2C4_SCL | GPIO_I2C5_SCL)
+
+
+#define I2C0_SCL_PIN			GPIO_145
+#define I2C1_SCL_PIN			GPIO_147
+#define I2C2_SCL_PIN			GPIO_149
+#define I2C3_SCL_PIN			GPIO_151
+#define I2C4_SCL_PIN			GPIO_13
+#define I2C5_SCL_PIN			GPIO_19
+
+#define I2C0_SCL_PIN_IOMUX_GPIOxx	GPIO_145_IOMUX_GPIOxx
+#define I2C1_SCL_PIN_IOMUX_GPIOxx	GPIO_147_IOMUX_GPIOxx
+#define I2C2_SCL_PIN_IOMUX_GPIOxx	GPIO_149_IOMUX_GPIOxx
+#define I2C3_SCL_PIN_IOMUX_GPIOxx	GPIO_151_IOMUX_GPIOxx
+#define I2C4_SCL_PIN_IOMUX_GPIOxx	GPIO_13_IOMUX_GPIOxx
+#define I2C5_SCL_PIN_IOMUX_GPIOxx	GPIO_19_IOMUX_GPIOxx
+
+void reset_i2c_peripherals(void);
+
+#endif /* AMD_TURIN_POC_I2C_H */

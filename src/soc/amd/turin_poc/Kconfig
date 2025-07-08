@@ -1,0 +1,211 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config SOC_AMD_TURIN_POC
+	bool
+
+if SOC_AMD_TURIN_POC
+
+config SOC_SPECIFIC_OPTIONS
+	def_bool y
+	select ACPI_SOC_NVS
+	select ARCH_X86
+	select DEFAULT_X2APIC
+	select HAVE_ACPI_TABLES
+	select HAVE_X86_64_SUPPORT
+	select HAVE_SMI_HANDLER
+	select SOC_AMD_COMMON
+	select SOC_AMD_COMMON_BLOCK_ACPI
+	select SOC_AMD_COMMON_BLOCK_ACPIMMIO
+	select SOC_AMD_COMMON_BLOCK_ACPI_CPU_POWER_STATE
+	select SOC_AMD_COMMON_BLOCK_ACPI_IVRS
+	select SOC_AMD_COMMON_BLOCK_ACPI_MADT
+	select SOC_AMD_COMMON_BLOCK_AOAC
+	select SOC_AMD_COMMON_BLOCK_BANKED_GPIOS
+	select SOC_AMD_COMMON_BLOCK_CPUFREQ_FAM17H_19H
+	select SOC_AMD_COMMON_BLOCK_DATA_FABRIC
+	select SOC_AMD_COMMON_BLOCK_DATA_FABRIC_DOMAIN
+	select SOC_AMD_COMMON_BLOCK_DATA_FABRIC_MULTI_PCI_SEGMENT
+	select SOC_AMD_COMMON_BLOCK_DATA_FABRIC_EXTENDED_MMIO
+	select SOC_AMD_COMMON_BLOCK_HAS_ESPI
+	select SOC_AMD_COMMON_BLOCK_I2C
+	select SOC_AMD_COMMON_BLOCK_I3C
+	select SOC_AMD_COMMON_BLOCK_IOMMU
+	select SOC_AMD_COMMON_BLOCK_LPC
+	select SOC_AMD_COMMON_BLOCK_MCAX
+	select SOC_AMD_COMMON_BLOCK_NONCAR
+	select SOC_AMD_COMMON_BLOCK_PCI
+	select SOC_AMD_COMMON_BLOCK_PCI_MMCONF
+	select SOC_AMD_COMMON_BLOCK_PSP_GEN2
+	select SOC_AMD_COMMON_BLOCK_PSP_SPL
+	select SOC_AMD_COMMON_BLOCK_SMI
+	select SOC_AMD_COMMON_BLOCK_SMM
+	select SOC_AMD_COMMON_BLOCK_SMU
+	select SOC_AMD_COMMON_BLOCK_SMU_SX_ENTRY
+	select SOC_AMD_COMMON_BLOCK_SPI
+	select SOC_AMD_COMMON_BLOCK_SVI3
+	select SOC_AMD_COMMON_BLOCK_TSC
+	select SOC_AMD_COMMON_BLOCK_UART
+	select SOC_AMD_COMMON_BLOCK_UCODE
+	select SOC_AMD_COMMON_BLOCK_USE_ESPI
+	select SOC_AMD_OPENSIL
+	select OPENSIL_DRIVER
+
+config USE_X86_64_SUPPORT
+	default y
+
+config CHIPSET_DEVICETREE
+	string
+	default "soc/amd/turin_poc/chipset.cb"
+
+config DRIVERS_I2C_DESIGNWARE_CLOCK_MHZ
+	int
+	default 150
+
+config EARLY_RESERVED_DRAM_BASE
+	hex
+	default 0x7000000
+	help
+	  This variable defines the base address of the DRAM which is reserved
+	  for usage by coreboot in early stages (i.e. before ramstage is up).
+	  This memory gets reserved in BIOS tables to ensure that the OS does
+	  not use it, thus preventing corruption of OS memory in case of S3
+	  resume.
+
+config EARLYRAM_BSP_STACK_SIZE
+	hex
+	default 0x1000
+
+config MAX_CPUS
+	int
+	default 384
+
+config PSP_APOB_DRAM_ADDRESS
+	hex
+	default 0x7001000
+	help
+	  Location in DRAM where the PSP will copy the AGESA PSP Output
+	  Block.
+
+config PSP_APOB_DRAM_SIZE
+	hex
+	default 0x20000
+
+config PRERAM_CBMEM_CONSOLE_SIZE
+	hex
+	default 0x1600
+	help
+	  Increase this value if preram cbmem console is getting truncated
+
+config C_ENV_BOOTBLOCK_SIZE
+	hex
+	default 0x20000
+	help
+	  Sets the size of the bootblock stage that should be loaded in DRAM.
+	  This variable controls the DRAM allocation size in linker script
+	  for bootblock stage.
+
+config ROMSTAGE_ADDR
+	hex
+	default 0x7050000
+	help
+	  Sets the address in DRAM where romstage should be loaded.
+
+config ROMSTAGE_SIZE
+	hex
+	default 0x70000
+	help
+	  Sets the size of DRAM allocation for romstage in linker script.
+
+config ECAM_MMCONF_BASE_ADDRESS
+	hex
+	default 0xE0000000
+
+config ECAM_MMCONF_BUS_NUMBER
+	int
+	default 256
+
+menu "PSP Configuration Options"
+
+config AMDFW_CONFIG_FILE
+	string
+	default "src/soc/amd/turin_poc/fw.cfg"
+
+config PSP_DISABLE_POSTCODES
+	bool "Disable PSP post codes"
+	help
+	  Disables the output of port80 post codes from PSP.
+
+config PSP_INIT_ESPI
+	bool "Initialize eSPI in PSP Stage 2 Boot Loader"
+	help
+	  Select to initialize the eSPI controller in the PSP Stage 2 Boot
+	  Loader.
+
+config	PSP_UNLOCK_SECURE_DEBUG
+	bool
+	default y
+
+config HAVE_PSP_WHITELIST_FILE
+	bool "Include a debug whitelist file in PSP build"
+	default n
+	help
+	  Support secured unlock prior to reset using a whitelisted
+	  serial number. This feature requires a signed whitelist image
+	  and bootloader from AMD.
+
+	  If unsure, answer 'n'
+
+config PSP_WHITELIST_FILE
+	string "Debug whitelist file path"
+	depends on HAVE_PSP_WHITELIST_FILE
+
+config PSP_SOFTFUSE_BITS
+	string "PSP Soft Fuse bits to enable"
+	default ""
+	help
+	  Space separated list of Soft Fuse bits to enable.
+	  Bit 0:  Enable secure debug (Set by PSP_UNLOCK_SECURE_DEBUG)
+	  Bit 7:  Disable PSP postcodes on Renoir and newer chips only
+	          (Set by PSP_DISABLE_PORT80)
+	  Bit 15: PSP debug output destination:
+	          0=SoC MMIO UART, 1=IO port 0x3F8
+
+	  See #57299 (NDA) for additional bit definitions.
+endmenu
+
+config CONSOLE_UART_BASE_ADDRESS
+	depends on CONSOLE_SERIAL && AMD_SOC_CONSOLE_UART
+	hex
+	default 0xfedc9000 if UART_FOR_CONSOLE = 0
+	default 0xfedca000 if UART_FOR_CONSOLE = 1
+	default 0xfedce000 if UART_FOR_CONSOLE = 2
+
+config SMM_TSEG_SIZE
+	hex
+	default 0x800000
+
+config ACPI_SSDT_PSD_INDEPENDENT
+	bool "Allow core p-state independent transitions"
+	default y
+	help
+	  AMD recommends the ACPI _PSD object to be configured to cause
+	  cores to transition between p-states independently. A vendor may
+	  choose to generate _PSD object to allow cores to transition together.
+
+config ACPI_BERT
+	bool "Build ACPI BERT Table"
+	default y
+	depends on HAVE_ACPI_TABLES
+	help
+	  Report Machine Check errors identified in POST to the OS in an
+	  ACPI Boot Error Record Table.
+
+config ACPI_BERT_SIZE
+	hex
+	default 0x4000 if ACPI_BERT
+	default 0x0
+	help
+	  Specify the amount of DRAM reserved for gathering the data used to
+	  generate the ACPI table.
+
+endif # SOC_AMD_TURIN_POC

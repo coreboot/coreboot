@@ -1,0 +1,78 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+chip soc/intel/skylake
+
+        # Power
+        register "PmConfigSlpS3MinAssert" = "2"         # 50ms
+        register "PmConfigSlpS4MinAssert" = "1"         # 1s
+        register "PmConfigSlpSusMinAssert" = "3"        # 500ms
+        register "PmConfigSlpAMinAssert" = "3"          # 2s
+
+	device domain 0 on
+		subsystemid 0x17aa 0x225d inherit
+		device ref igpu on
+			register "gfx" = "GMA_STATIC_DISPLAYS(0)"
+			register "panel_cfg" = "{
+				.up_delay_ms		= 200,
+				.down_delay_ms		=  50,
+				.cycle_delay_ms		= 600,
+				.backlight_on_delay_ms	=   1,
+				.backlight_off_delay_ms	= 200,
+				.backlight_pwm_hz	= 200,
+			}"
+		end
+		device ref sa_thermal on end
+		device ref thermal on end
+		device ref south_xhci on end
+		device ref sata on
+			register "SataPortsEnable[2]" = "1"
+			register "SataPortsDevSlp[2]" = "1"
+		end
+		device ref lpc_espi on
+			register "serirq_mode" = "SERIRQ_CONTINUOUS"
+
+			register "gen1_dec" = "0x007c1601"
+			register "gen2_dec" = "0x000c15e1"
+			register "lpc_ioe"  = "LPC_IOE_EC_4E_4F |
+					       LPC_IOE_EC_62_66 |
+					       LPC_IOE_KBC_60_64"
+
+			chip ec/lenovo/pmh7
+				register "backlight_enable" = "true"
+				register "dock_event_enable" = "true"
+				device pnp ff.1 on end # dummy
+			end
+
+			chip ec/lenovo/h8
+				register "beepmask0" = "0x00"
+				register "beepmask1" = "0x86"
+				register "config0" = "0xa6"
+				register "config1" = "0x0d"
+				register "config2" = "0xa8"
+				register "config3" = "0xc4"
+				register "has_keyboard_backlight" = "1"
+				register "event2_enable" = "0xff"
+				register "event3_enable" = "0xff"
+				register "event4_enable" = "0xd0"
+				register "event5_enable" = "0x3c"
+				register "event7_enable" = "0x01"
+				register "event8_enable" = "0x7b"
+				register "event9_enable" = "0xff"
+				register "eventc_enable" = "0xff"
+				register "eventd_enable" = "0xff"
+				register "evente_enable" = "0x9d"
+				device pnp ff.2 on # dummy
+					io 0x60 = 0x62
+					io 0x62 = 0x66
+					io 0x64 = 0x1600
+					io 0x66 = 0x1604
+				end
+			end
+
+			chip drivers/pc80/tpm
+				device pnp 0c31.0 on end
+			end
+		end
+		device ref hda on end
+	end
+end

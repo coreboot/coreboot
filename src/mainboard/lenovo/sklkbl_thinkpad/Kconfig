@@ -1,0 +1,92 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_LENOVO_SKLKBL_THINKPAD_COMMON
+	bool
+	select BOARD_ROMSIZE_KB_16384
+	select DRIVERS_OPTION_CFR_ENABLED if PAYLOAD_EDK2 && SMMSTORE
+	select EC_LENOVO_H8
+	select EC_LENOVO_MEC1653
+	select EC_LENOVO_PMH7
+	select H8_HAS_BAT_THRESHOLDS_IMPL
+	select H8_HAS_LEDLOGO
+	select H8_HAS_PRIMARY_FN_KEYS
+	select H8_SUPPORT_BT_ON_WIFI
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select INTEL_GMA_HAVE_VBT
+	select MAINBOARD_HAS_LIBGFXINIT
+	select MAINBOARD_HAS_TPM2
+	select MAINBOARD_USES_IFD_GBE_REGION
+	select MEMORY_MAPPED_TPM
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select SOC_INTEL_KABYLAKE
+	select SPD_READ_BY_WORD
+	select SYSTEM_TYPE_LAPTOP
+
+config BOARD_LENOVO_T480
+	bool
+	select BOARD_LENOVO_SKLKBL_THINKPAD_COMMON
+	select MEC1653_HAS_DEBUG_UNLOCK
+	select VARIANT_HAS_DGPU
+
+config BOARD_LENOVO_T480S
+	bool
+	select BOARD_LENOVO_SKLKBL_THINKPAD_COMMON
+	select VARIANT_HAS_DGPU
+
+if BOARD_LENOVO_SKLKBL_THINKPAD_COMMON
+
+config MAINBOARD_DIR
+	default "lenovo/sklkbl_thinkpad"
+
+config VARIANT_DIR
+	default "t480" if BOARD_LENOVO_T480
+	default "t480s" if BOARD_LENOVO_T480S
+
+config OVERRIDE_DEVICETREE
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
+
+config MAINBOARD_PART_NUMBER
+	default "T480" if BOARD_LENOVO_T480
+	default "T480s" if BOARD_LENOVO_T480S
+
+config CBFS_SIZE
+	default 0x900000
+
+config DIMM_MAX
+	default 2
+
+config DIMM_SPD_SIZE
+	default 512	# DDR4
+
+config CONSOLE_SERIAL
+	default n
+
+config NO_POST
+	default y
+
+config EDK2_BOOT_MANAGER_ESCAPE
+	default y
+
+config EDK2_FOLLOW_BGRT_SPEC
+	default y
+
+config EDK2_FULL_SCREEN_SETUP
+	default n
+
+config PS2K_EISAID
+	default "LEN0071"
+
+config PS2M_EISAID
+	default "LEN0094"
+
+config THINKPADEC_HKEY_EISAID
+	default "LEN0268"
+
+config MEC1653_DEBUG_UNLOCK_KEY
+	default "7a41b149fe2101cf" if BOARD_LENOVO_T480
+
+config VARIANT_HAS_DGPU
+	bool
+
+endif

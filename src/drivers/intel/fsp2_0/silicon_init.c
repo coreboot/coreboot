@@ -3,7 +3,6 @@
 #include <arch/null_breakpoint.h>
 #include <arch/stack_canary_breakpoint.h>
 #include <bootsplash.h>
-#include <bootstate.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <commonlib/fsp.h>
@@ -300,11 +299,3 @@ void fsp_silicon_init(void)
 }
 
 __weak void soc_load_logo_by_fsp(FSPS_UPD *supd) { }
-
-static void release_logo(void *arg_unused)
-{
-	if (CONFIG(BMP_LOGO))
-		bmp_release_logo();
-}
-
-BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, release_logo, NULL);

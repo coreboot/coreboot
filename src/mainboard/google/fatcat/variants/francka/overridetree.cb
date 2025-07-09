@@ -8,6 +8,7 @@ fw_config
 		option AUDIO_ALC721_SNDW		1
 		option AUDIO_CS42L43_CS35L56_SNDW	2
 		option AUDIO_ALC722_ALC1320_SNDW	3
+		option AUDIO_UNKNOWN		7
 	end
 	field BRIDGE 6 7
 		option BRIDGE_HAYDEN		0
@@ -276,6 +277,10 @@ chip soc/intel/pantherlake
 
 		device ref smbus on end
 		device ref hda on
+			probe AUDIO AUDIO_ALC256M_CG_HDA
+			probe AUDIO AUDIO_ALC721_SNDW
+			probe AUDIO AUDIO_CS42L43_CS35L56_SNDW
+			probe AUDIO AUDIO_ALC722_ALC1320_SNDW
 			chip drivers/sof
 				register "spkr_tplg" = "max98360a"
 				register "jack_tplg" = "rt5682"

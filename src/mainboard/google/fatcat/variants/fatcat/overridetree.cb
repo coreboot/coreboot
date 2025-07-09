@@ -924,6 +924,11 @@ chip soc/intel/pantherlake
 
 		device ref smbus on end
 		device ref hda on
+			probe AUDIO AUDIO_MAX98373_ALC5682_SNDW
+			probe AUDIO AUDIO_ALC722_SNDW
+			probe AUDIO AUDIO_ALC256_HDA
+			probe AUDIO AUDIO_MAX98360_ALC5682I_I2S
+			probe AUDIO AUDIO_ALC721_SNDW
 			chip drivers/intel/soundwire
 				device generic 0 on
 					chip drivers/soundwire/alc711

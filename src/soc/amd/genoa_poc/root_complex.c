@@ -4,6 +4,16 @@
 #include <amdblocks/root_complex.h>
 #include <types.h>
 
+/*
+ * The order of IOHCs here is not random. They are sorted so that:
+ * 1. The First IOHC is the one with primary FCH. We want the LPC/SMBUS
+ *    devices be on bus 0.
+ * 2. The rest of IOHCs are listed in an order so that ECAM MMIO region is one
+ *    continuous block for all domains.
+ *
+ * AGESA/OpenSIL sets up the PCI configuration decoding ranges in line with
+ * this.
+ */
 static const struct domain_iohc_info iohc_info[] = {
 	[0] = {
 		.fabric_id = 0x22,

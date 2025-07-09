@@ -14,6 +14,9 @@ config BOARD_GOOGLE_BROX_EC_ISH
 config BOARD_GOOGLE_BROX_TI_PDC
 	bool "->  Brox TI PDC"
 
+config BOARD_GOOGLE_CABOC
+	bool "->  Caboc"
+
 config BOARD_GOOGLE_GREENBAYUPOC
 	bool "->  Greenbayupoc"
 

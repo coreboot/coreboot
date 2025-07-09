@@ -147,7 +147,12 @@ chip soc/intel/pantherlake
 			end
 		end
 
-		# ToDo: enable ISH b/415605634
+		device ref ish on
+			chip drivers/intel/ish
+				register "add_acpi_dma_property" = "true"
+				device generic 0 on end
+			end
+		end
 
 		device ref xhci on
 			chip drivers/usb/acpi

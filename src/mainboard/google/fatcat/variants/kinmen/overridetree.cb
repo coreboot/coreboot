@@ -1,3 +1,10 @@
+fw_config
+	field AUDIO 3 5
+		option AUDIO_UNKNOWN		0
+		option AUDIO_ALC721_SNDW	1
+	end
+end
+
 chip soc/intel/pantherlake
 
 	# The initial version temporarily uses the PTL-H,
@@ -279,6 +286,7 @@ chip soc/intel/pantherlake
 
 		device ref smbus on end
 		device ref hda on
+			probe AUDIO AUDIO_ALC721_SNDW
 			chip drivers/intel/soundwire
 				device generic 0 on
 					chip drivers/soundwire/alc711
@@ -287,7 +295,9 @@ chip soc/intel/pantherlake
 						register "alc711_address.class" = "MIPI_CLASS_SDCA"
 						register "alc711_address.part_id" = "MIPI_DEV_ID_REALTEK_ALC721"
 						# SoundWire Link 3 ID 1
-						device generic 3.1 on end
+						device generic 3.1 on
+							probe AUDIO AUDIO_ALC721_SNDW
+						end
 					end
 				end
 			end

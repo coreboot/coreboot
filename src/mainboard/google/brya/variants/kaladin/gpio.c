@@ -44,10 +44,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_A19, NONE),
 	/* A20 : NC */
 	PAD_NC(GPP_A20, NONE),
-	/* A21 : USB_C1_AUX_DC_P */
-	PAD_CFG_NF(GPP_A21, NONE, DEEP, NF6),
-	/* A22 : USB_C1_AUX_DC_N */
-	PAD_CFG_NF(GPP_A22, NONE, DEEP, NF6),
+	/* A21 : NC */
+	PAD_NC(GPP_A21, NONE),
+	/* A22 : NC */
+	PAD_NC(GPP_A22, NONE),
 	/* A23 : GPP_A23 ==> NC */
 	PAD_NC(GPP_A23, NONE),
 
@@ -202,10 +202,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E20, NONE),
 	/* E21 : DDP2_CTRLDATA ==> NC */
 	PAD_NC(GPP_E21, NONE),
-	/* E22 : DDPA_CTRLCLK ==> USB_C0_AUX_DC_P */
-	PAD_CFG_NF(GPP_E22, NONE, DEEP, NF6),
-	/* E23 : DDPA_CTRLDATA ==> USB_C0_AUX_DC_N */
-	PAD_CFG_NF(GPP_E23, NONE, DEEP, NF6),
+	/* E22 : DDPA_CTRLCLK ==> NC */
+	PAD_NC(GPP_E22, NONE),
+	/* E23 : DDPA_CTRLDATA ==> NC */
+	PAD_NC(GPP_E23, NONE),
 
 	/* F0  : CNV_BRI_DT ==> CNV_BRI_DT_STRAP */
 	PAD_CFG_NF(GPP_F0, NONE, DEEP, NF1),

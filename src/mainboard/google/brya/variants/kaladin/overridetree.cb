@@ -3,6 +3,10 @@ fw_config
 		option THERMAL_SOLUTION_6W	0
 		option THERMAL_SOLUTION_15W	1
 	end
+	field MB_USB 2 2
+		option MB_USB_1C_1A 0
+		option MB_USB_2C_1A 1
+	end
 	field STORAGE 30 31
 		option STORAGE_EMMC		0
 		option STORAGE_NVME		1
@@ -40,10 +44,9 @@ chip soc/intel/alderlake
 	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for PCIe WLAN (2.5 inch)
 	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for CNVi WLAN
 
-	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC1)"	# USB3 Type-A port A0(MLB))
+	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC1)"	# USB3 Type-A port A0(MLB)
 
 	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
-	register "tcss_ports[1]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
 
 	# SOC Aux orientation override:
 	# This is a bitfield that corresponds to up to 4 TCSS ports.
@@ -53,7 +56,6 @@ chip soc/intel/alderlake
 	# Bit1,Bit3 set to "0" indicates Aux lines are not swapped on the
 	# motherboard to USBC connector
 	register "tcss_aux_ori" = "0"
-
 
 	# HD Audio
 	register "pch_hda_dsp_enable" = "1"
@@ -248,37 +250,42 @@ chip soc/intel/alderlake
 		end
 		device ref igpu on
 			chip drivers/gfx/generic
-				register "device_count" = "4"
+				register "device_count" = "3"
 				# DDIA for eDP
 				register "device[0].name" = ""LCD0""
 				# Internal panel on the first port of the graphics chip
 				register "device[0].type" = "panel"
-				# DDIB for HDMI
-				# If HDMI is not enumerated in the kernel, then no GFX device should be added for DDIB
-				register "device[1].name" = ""DD01""
+				# DDIB is unused and HDMI is not enumerated in the kernel, so no GFX device is added for DDIB
 				# TCP0 (DP-1) for port C0
+				register "device[1].name" = ""DD01""
+				register "device[1].use_pld" = "true"
+				register "device[1].pld" = "ACPI_PLD_TYPE_C(LEFT, RIGHT, ACPI_PLD_GROUP(1, 1))"
+				# TCP1 is unused and not enumerated in the kernel, so no GFX device is added for TCP1
+				# TCP2 (DP-2) for port C1
 				register "device[2].name" = ""DD02""
 				register "device[2].use_pld" = "true"
-				register "device[2].pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(1, 1))"
-				# TCP1 (DP-2) for port C1
-				register "device[3].name" = ""DD03""
-				register "device[3].use_pld" = "true"
-				register "device[3].pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(2, 1))"
+				register "device[2].pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(2, 1))"
+				# TCP3 is unused and not enumerated in the kernel, so no GFX device is added for TCP3
 				device generic 0 on end
 			end
-		end
+		end # Integrated Graphics Device
 		device ref pmc hidden
 			chip drivers/intel/pmc_mux
 				device generic 0 on
 					chip drivers/intel/pmc_mux/conn
 						use usb2_port1 as usb2_port
 						use tcss_usb3_port1 as usb3_port
-						device generic 0 alias conn0 on end
+						device generic 0 alias conn0 on
+							probe MB_USB MB_USB_2C_1A
+							probe MB_USB MB_USB_1C_1A
+						end
 					end
 					chip drivers/intel/pmc_mux/conn
 						use usb2_port2 as usb2_port
 						use tcss_usb3_port2 as usb3_port
-						device generic 1 alias conn1 on end
+						device generic 1 alias conn1 on
+							probe MB_USB MB_USB_2C_1A
+						end
 					end
 				end
 			end
@@ -290,15 +297,20 @@ chip soc/intel/alderlake
 						register "desc" = ""USB3 Type-C Port C0 (MLB)""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "use_custom_pld" = "true"
-						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(1, 1))"
-						device ref tcss_usb3_port1 on end
+						register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, RIGHT, ACPI_PLD_GROUP(1, 1))"
+						device ref tcss_usb3_port1 on
+							probe MB_USB MB_USB_2C_1A
+							probe MB_USB MB_USB_1C_1A
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB3 Type-C Port C1 (DB)""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "use_custom_pld" = "true"
-						register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(2, 1))"
-						device ref tcss_usb3_port2 on end
+						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(2, 1))"
+						device ref tcss_usb3_port2 on
+							probe MB_USB MB_USB_2C_1A
+						end
 					end
 				end
 			end
@@ -310,21 +322,26 @@ chip soc/intel/alderlake
 						register "desc" = ""USB2 Type-C Port C0 (MLB)""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "use_custom_pld" = "true"
-						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(1, 1))"
-						device ref usb2_port1 on end
+						register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, RIGHT, ACPI_PLD_GROUP(1, 1))"
+						device ref usb2_port1 on
+							probe MB_USB MB_USB_2C_1A
+							probe MB_USB MB_USB_1C_1A
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Type-C Port C1 (DB)""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
 						register "use_custom_pld" = "true"
-						register "custom_pld" = "ACPI_PLD_TYPE_C(LEFT, LEFT, ACPI_PLD_GROUP(2, 1))"
-						device ref usb2_port2 on end
+						register "custom_pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(2, 1))"
+						device ref usb2_port2 on
+							probe MB_USB MB_USB_2C_1A
+						end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB2 Type-A Port A0 (MLB)""
 						register "type" = "UPC_TYPE_A"
 						register "use_custom_pld" = "true"
-						register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, RIGHT, ACPI_PLD_GROUP(3, 1))"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(LEFT, LEFT, ACPI_PLD_GROUP(3, 1))"
 						device ref usb2_port3 on end
 					end
 					chip drivers/usb/acpi
@@ -350,7 +367,7 @@ chip soc/intel/alderlake
 						register "desc" = ""USB3 Type-A Port A0 (MLB)""
 						register "type" = "UPC_TYPE_USB3_A"
 						register "use_custom_pld" = "true"
-						register "custom_pld" = "ACPI_PLD_TYPE_A(RIGHT, RIGHT, ACPI_PLD_GROUP(3, 1))"
+						register "custom_pld" = "ACPI_PLD_TYPE_A(LEFT, LEFT, ACPI_PLD_GROUP(3, 1))"
 						device ref usb3_port1 on end
 					end
 					chip drivers/usb/acpi
@@ -458,6 +475,8 @@ chip soc/intel/alderlake
 		device ref uart0 on end
 		device ref pch_espi on
 			chip ec/google/chromeec
+				use conn0 as mux_conn[0]
+				use conn1 as mux_conn[1]
 				device pnp 0c09.0 on end
 			end
 		end

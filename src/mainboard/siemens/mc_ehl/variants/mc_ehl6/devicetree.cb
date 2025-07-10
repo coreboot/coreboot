@@ -68,6 +68,13 @@ chip soc/intel/elkhartlake
 	register "PcieRpLtrDisable[4]" = "true"
 	register "PcieRpLtrDisable[6]" = "true"
 
+	# Enable PCIe PTM (Precision Time Measurement) for all PCIe root ports
+	register "PciePtm[0]" = "true"
+	register "PciePtm[1]" = "true"
+	register "PciePtm[2]" = "true"
+	register "PciePtm[4]" = "true"
+	register "PciePtm[6]" = "true"
+
 	# Storage (SDCARD/EMMC) related UPDs
 	register "ScsEmmcHs400Enabled" = "0"
 	register "ScsEmmcDdr50Enabled" = "1"

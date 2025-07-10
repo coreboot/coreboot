@@ -61,4 +61,6 @@ void mainboard_memory_init_params(FSPM_UPD *memupd)
 
 	if (CONFIG(GEN3_EXTERNAL_CLOCK_BUFFER))
 		configure_external_clksrc(m_cfg);
+
+	variant_configure_fspm(memupd);
 }

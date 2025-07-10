@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <hwilib.h>
 #include <i210.h>
+#include <soc/ramstage.h>
 
 
 #define MAX_PATH_DEPTH		12
@@ -84,6 +85,11 @@ enum cb_err mainboard_get_mac_address(struct device *dev, uint8_t mac[MAC_ADDR_L
 	}
 	/* No MAC address found for */
 	return CB_ERR;
+}
+
+void mainboard_silicon_init_params(FSP_S_CONFIG *params)
+{
+	params->TurboMode = 0;
 }
 
 static void mainboard_init(void *chip_info)

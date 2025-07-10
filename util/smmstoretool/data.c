@@ -80,6 +80,9 @@ void print_data(const uint8_t data[], size_t data_size, enum data_type type)
 		printf("%s\n", chars);
 		free(chars);
 		break;
+	case DATA_TYPE_FILE:
+		fprintf(stderr, "File data type is input only\n");
+		break;
 	case DATA_TYPE_RAW:
 		fwrite(data, 1, data_size, stdout);
 		break;
@@ -115,6 +118,7 @@ void *make_data(const char source[], size_t *data_size, enum data_type type)
 	void *data;
 	bool boolean;
 	uint64_t uint;
+	struct mem_range_t file;
 	bool failed;
 
 	case DATA_TYPE_BOOL:
@@ -173,6 +177,16 @@ void *make_data(const char source[], size_t *data_size, enum data_type type)
 		return strdup(source);
 	case DATA_TYPE_UNICODE:
 		return to_uchars(source, data_size);
+	case DATA_TYPE_FILE:
+		file = map_file(source, /*rw=*/false);
+		if (file.start == NULL || file.length == 0)
+			return NULL;
+
+		*data_size = file.length;
+		data = xmalloc(*data_size);
+		memcpy(data, file.start, *data_size);
+		unmap_file(file);
+		return data;
 	case DATA_TYPE_RAW:
 		fprintf(stderr, "Raw data type is output only\n");
 		return NULL;
@@ -197,6 +211,8 @@ bool parse_data_type(const char str[], enum data_type *type)
 		*type = DATA_TYPE_ASCII;
 	else if (str_eq(str, "unicode"))
 		*type = DATA_TYPE_UNICODE;
+	else if (str_eq(str, "file"))
+		*type = DATA_TYPE_FILE;
 	else if (str_eq(str, "raw"))
 		*type = DATA_TYPE_RAW;
 	else

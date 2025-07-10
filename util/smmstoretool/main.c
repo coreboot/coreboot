@@ -128,6 +128,7 @@ static void print_types(FILE *f)
 	fprintf(f, " * uint64 (0..2^64-1)\n");
 	fprintf(f, " * ascii (NUL-terminated)\n");
 	fprintf(f, " * unicode (widened and NUL-terminated)\n");
+	fprintf(f, " * file (input only; file contents as variable)\n");
 	fprintf(f, " * raw (output only; raw bytes on output)\n");
 }
 

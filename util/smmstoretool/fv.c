@@ -11,7 +11,9 @@
 #include "udk2017.h"
 
 // The same as in `smmstore.h` header, which isn't in `commonlib`.
+#ifndef SMM_BLOCK_SIZE
 #define SMM_BLOCK_SIZE (64 * 1024)
+#endif
 
 static const EFI_GUID EfiVariableGuid = EFI_VARIABLE_GUID;
 
@@ -37,10 +39,12 @@ bool fv_init(struct mem_range_t fv)
 {
 	if (fv.length % SMM_BLOCK_SIZE != 0) {
 		fprintf(stderr,
-			"Firmware Volume size is not a multiple of 64KiB\n");
+			"Firmware Volume size is not a multiple of the block size (%dKiB)\n",
+			SMM_BLOCK_SIZE / 1024);
 		return false;
 	}
 
+	uint32_t number_of_blocks = fv.length / SMM_BLOCK_SIZE;
 	memset(fv.start, 0xff, fv.length);
 
 	const EFI_FIRMWARE_VOLUME_HEADER vol_hdr = {
@@ -58,7 +62,7 @@ bool fv_init(struct mem_range_t fv)
 			      + sizeof(EFI_FV_BLOCK_MAP_ENTRY),
 		.Revision = EFI_FVH_REVISION,
 		.BlockMap[0] = {
-			.NumBlocks = fv.length / SMM_BLOCK_SIZE,
+			.NumBlocks = number_of_blocks,
 			.Length = SMM_BLOCK_SIZE,
 		},
 	};
@@ -74,9 +78,9 @@ bool fv_init(struct mem_range_t fv)
 
 	const VARIABLE_STORE_HEADER var_store_hdr = {
 		.Signature = EfiAuthenticatedVariableGuid,
-		// Actual size of the storage is block size, the rest is
+		// Actual size of the storage is `n / 2 - 1` blocks, the rest is
 		// Fault Tolerant Write (FTW) space and the FTW spare space.
-		.Size = SMM_BLOCK_SIZE - vol_hdr.HeaderLength,
+		.Size = ((number_of_blocks / 2 - 1) * SMM_BLOCK_SIZE) - vol_hdr.HeaderLength,
 		.Format = VARIABLE_STORE_FORMATTED,
 		.State = VARIABLE_STORE_HEALTHY,
 	};

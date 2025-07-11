@@ -22,14 +22,14 @@ GMA: Framebuffer Configuration
 *coreboot* supports two different framebuffer setups. The default
 enables the legacy VGA plane in textmode. Due to legacy hardware
 constraints, only the first found display is enabled in this mode.
-(cf. `src/drivers/intel/gma/text_fb/gma.adb`).
+(cf. `src/drivers/intel/gma/text_fb/gma-gfx_init.adb`).
 
 The second option sets up a high-resolution framebuffer with the
 native resolution of the display if only one is detected, or the
 smallest of all resolutions (per dimension) if multiple displays
 are detected. This option is selected by
 `CONFIG_FRAMEBUFFER_KEEP_VESA_MODE`.
-(cf. `src/drivers/intel/gma/hires_fb/gma.adb`).
+(cf. `src/drivers/intel/gma/hires_fb/gma-gfx_init.adb`).
 
 In any case, a smaller framebuffer is up-scaled to each display's
 native resolution while keeping aspect ratio.

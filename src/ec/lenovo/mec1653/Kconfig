@@ -1,0 +1,24 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config EC_LENOVO_MEC1653
+	bool
+
+if EC_LENOVO_MEC1653
+
+config MEC1653_HAS_DEBUG_UNLOCK
+	bool
+
+config MEC1653_DEBUG_UNLOCK_KEY
+	string
+	depends on MEC1653_HAS_DEBUG_UNLOCK
+	help
+	  Debug unlock key necessary to enable the UART.
+
+config MEC1653_ENABLE_UART
+	bool "Enable EC UART"
+	depends on MEC1653_HAS_DEBUG_UNLOCK
+	help
+	  The EC UART physical interface is board-specific and requires
+	  a board-specific debug unlock key.
+
+endif

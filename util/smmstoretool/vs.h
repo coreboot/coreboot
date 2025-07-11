@@ -24,10 +24,10 @@ struct var_t {
 
 struct var_store_t {
 	struct var_t *vars;
-	bool auth_vars;
+	bool is_auth_var_store;
 };
 
-struct var_store_t vs_load(struct mem_range_t vs_data, bool auth_vars);
+struct var_store_t vs_load(struct mem_range_t vs_data, bool is_auth_var_store);
 
 bool vs_store(struct var_store_t *vs, struct mem_range_t vs_data);
 

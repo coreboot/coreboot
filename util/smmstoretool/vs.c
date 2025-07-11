@@ -10,32 +10,32 @@
 #include "udk2017.h"
 #include "utils.h"
 
-static size_t get_var_hdr_size(bool auth_vars)
+static size_t get_var_hdr_size(bool is_auth_var_store)
 {
-	if (auth_vars)
+	if (is_auth_var_store)
 		return sizeof(AUTHENTICATED_VARIABLE_HEADER);
 	return sizeof(VARIABLE_HEADER);
 }
 
-struct var_store_t vs_load(struct mem_range_t vs_data, bool auth_vars)
+struct var_store_t vs_load(struct mem_range_t vs_data, bool is_auth_var_store)
 {
 	uint8_t *var_hdr = vs_data.start;
 
 	struct var_store_t vs = {
-		.auth_vars = auth_vars,
+		.is_auth_var_store = is_auth_var_store,
 		.vars = NULL,
 	};
 
 	struct var_t *last_var = NULL;
 
-	const size_t var_hdr_size = get_var_hdr_size(auth_vars);
+	const size_t var_hdr_size = get_var_hdr_size(is_auth_var_store);
 	while (var_hdr + var_hdr_size < vs_data.start + vs_data.length) {
 		uint16_t start_id;
 		uint8_t state;
 		struct var_t var = {0};
 		uint8_t *var_data = var_hdr;
 
-		if (auth_vars) {
+		if (is_auth_var_store) {
 			const AUTHENTICATED_VARIABLE_HEADER *auth_hdr =
 				(void *)var_data;
 
@@ -96,9 +96,9 @@ struct var_store_t vs_load(struct mem_range_t vs_data, bool auth_vars)
 	return vs;
 }
 
-static void store_var(const struct var_t *var, bool auth_vars, uint8_t *data)
+static void store_var(const struct var_t *var, bool is_auth_var_store, uint8_t *data)
 {
-	if (auth_vars) {
+	if (is_auth_var_store) {
 		AUTHENTICATED_VARIABLE_HEADER hdr;
 		memset(&hdr, 0xff, sizeof(hdr));
 
@@ -136,7 +136,7 @@ bool vs_store(struct var_store_t *vs, struct mem_range_t vs_data)
 {
 	uint8_t *out_data = vs_data.start;
 
-	const size_t var_hdr_size = get_var_hdr_size(vs->auth_vars);
+	const size_t var_hdr_size = get_var_hdr_size(vs->is_auth_var_store);
 	for (struct var_t *var = vs->vars; var != NULL; var = var->next) {
 		const size_t var_size =
 			var_hdr_size + var->name_size + var->data_size;
@@ -146,7 +146,7 @@ bool vs_store(struct var_store_t *vs, struct mem_range_t vs_data)
 			return false;
 		}
 
-		store_var(var, vs->auth_vars, out_data);
+		store_var(var, vs->is_auth_var_store, out_data);
 		out_data += HEADER_ALIGN(var_size);
 	}
 

@@ -124,10 +124,10 @@ static bool check_fw_vol_hdr(const EFI_FIRMWARE_VOLUME_HEADER *hdr,
 
 static bool check_var_store_hdr(const VARIABLE_STORE_HEADER *hdr,
 				size_t max_size,
-				bool *auth_vars)
+				bool *is_auth_var_store)
 {
-	*auth_vars = guid_eq(&hdr->Signature, &EfiAuthenticatedVariableGuid);
-	if (!*auth_vars && !guid_eq(&hdr->Signature, &EfiVariableGuid)) {
+	*is_auth_var_store = guid_eq(&hdr->Signature, &EfiAuthenticatedVariableGuid);
+	if (!*is_auth_var_store && !guid_eq(&hdr->Signature, &EfiVariableGuid)) {
 		fprintf(stderr, "Variable store has unexpected GUID\n");
 		return false;
 	}
@@ -152,7 +152,7 @@ static bool check_var_store_hdr(const VARIABLE_STORE_HEADER *hdr,
 }
 
 bool fv_parse(struct mem_range_t fv, struct mem_range_t *var_store,
-	      bool *auth_vars)
+	      bool *is_auth_var_store)
 {
 	const EFI_FIRMWARE_VOLUME_HEADER *vol_hdr = (void *)fv.start;
 	if (!check_fw_vol_hdr(vol_hdr, fv.length)) {
@@ -163,7 +163,7 @@ bool fv_parse(struct mem_range_t fv, struct mem_range_t *var_store,
 	uint8_t *fw_vol_data = fv.start + vol_hdr->HeaderLength;
 	size_t volume_size = fv.length - vol_hdr->HeaderLength;
 	const VARIABLE_STORE_HEADER *var_store_hdr = (void *)fw_vol_data;
-	if (!check_var_store_hdr(var_store_hdr, volume_size, auth_vars)) {
+	if (!check_var_store_hdr(var_store_hdr, volume_size, is_auth_var_store)) {
 		fprintf(stderr, "No valid variable store was found");
 		return false;
 	}

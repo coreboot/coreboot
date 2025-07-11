@@ -110,6 +110,10 @@ static void store_var(const struct var_t *var, bool is_auth_var_store, uint8_t *
 		hdr.NameSize = var->name_size;
 		hdr.DataSize = var->data_size;
 
+		hdr.MonotonicCount = 0;
+		memset(&hdr.TimeStamp, 0, sizeof(hdr.TimeStamp));
+		//hdr.PubKeyIndex = 0;
+
 		memcpy(data, &hdr, sizeof(hdr));
 		data += sizeof(hdr);
 	} else {

@@ -73,7 +73,6 @@ bool fv_init(struct mem_range_t fv)
 	++vol_hdr_dst->Checksum;
 
 	const VARIABLE_STORE_HEADER var_store_hdr = {
-		// Authentication-related fields will be filled with 0xff.
 		.Signature = EfiAuthenticatedVariableGuid,
 		// Actual size of the storage is block size, the rest is
 		// Fault Tolerant Write (FTW) space and the FTW spare space.

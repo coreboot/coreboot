@@ -73,4 +73,8 @@ config H8_HAS_WWAN_GPIO_DETECTION
 	bool
 	default n
 
+config H8_HAS_2ND_THERMAL_ZONE
+	bool
+	default n
+
 endif # EC_LENOVO_H8

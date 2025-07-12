@@ -130,7 +130,7 @@ External (\PPKG, MethodObj)
 			Name (_PR0, Package () { FPWR })
 		}
 	}
-
+#if CONFIG(H8_HAS_2ND_THERMAL_ZONE)
 	ThermalZone(THM1)
 	{
 		/* Thermal zone polling frequency: 10 seconds */
@@ -168,4 +168,5 @@ External (\PPKG, MethodObj)
 			Return (C2K(\_SB.PCI0.LPCB.EC.TMP1))
 		}
 	}
+#endif
 }

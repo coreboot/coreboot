@@ -1,0 +1,8 @@
+Category: desktop
+Board URL: https://www.gigabyte.com/Motherboard/GA-H81M-D2V-rev-10
+ROM IC: MX25L6473F
+ROM protocol: SPI
+Flashrom support: y
+ROM package: SOIC8
+ROM socketed: no
+Release year: 2014

@@ -1,0 +1,32 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if BOARD_GIGABYTE_GA_H81M_D2W
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select BOARD_ROMSIZE_KB_8192
+	select CPU_INTEL_HASWELL
+	select GFX_GMA_ANALOG_I2C_HDMI_B
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select INTEL_GMA_HAVE_VBT
+	select MAINBOARD_HAS_LIBGFXINIT
+	select NORTHBRIDGE_INTEL_HASWELL
+	select SERIRQ_CONTINUOUS_MODE
+	select SOUTHBRIDGE_INTEL_LYNXPOINT
+	select SUPERIO_ITE_IT8625E
+
+config MAINBOARD_DIR
+	default "gigabyte/ga-h81m-d2w"
+
+config MAINBOARD_PART_NUMBER
+	default "GA_H81M_D2W"
+
+config ME_CLEANER_ARGS
+	depends on USE_ME_CLEANER
+	default "-S --whitelist EFFS,FCRS"
+
+config USBDEBUG_HCD_INDEX
+	default 2
+
+endif

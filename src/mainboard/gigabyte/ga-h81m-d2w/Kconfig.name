@@ -1,0 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_GIGABYTE_GA_H81M_D2W
+	bool "GA_H81M_D2W"

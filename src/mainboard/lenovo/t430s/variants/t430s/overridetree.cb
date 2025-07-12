@@ -24,7 +24,6 @@ chip northbridge/intel/sandybridge
 			device ref lpc on
 				chip ec/lenovo/h8
 					device pnp ff.2 on end # dummy
-					register "has_bdc_detection" = "1"
 					register "bdc_gpio_num" = "54"
 					register "bdc_gpio_lvl" = "0"
 				end

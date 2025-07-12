@@ -26,7 +26,6 @@ chip northbridge/intel/i945
 			end
 			device pci 1f.0 on # PCI-LPC bridge
 				chip ec/lenovo/h8
-					register "has_bdc_detection" = "1"
 					register "bdc_gpio_num" = "7"
 					register "bdc_gpio_lvl" = "0"
 					device pnp ff.2 on end

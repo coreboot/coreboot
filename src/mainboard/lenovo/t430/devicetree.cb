@@ -118,11 +118,9 @@ chip northbridge/intel/sandybridge
 					register "eventd_enable" = "0xff"
 					register "evente_enable" = "0x0d"
 
-					register "has_bdc_detection" = "1"
 					register "bdc_gpio_num" = "54"
 					register "bdc_gpio_lvl" = "0"
 
-					register "has_wwan_detection" = "1"
 					register "wwan_gpio_num" = "70"
 					register "wwan_gpio_lvl" = "0"
 				end

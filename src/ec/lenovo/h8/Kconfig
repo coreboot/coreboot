@@ -65,4 +65,12 @@ config THINKPADEC_HKEY_EISAID
 	  Motherboards of newer thinkpad models can override the default to match
 	  vendor drivers and quirks.
 
+config H8_HAS_BDC_GPIO_DETECTION
+	bool
+	default n
+
+config H8_HAS_WWAN_GPIO_DETECTION
+	bool
+	default n
+
 endif # EC_LENOVO_H8

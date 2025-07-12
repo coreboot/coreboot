@@ -140,7 +140,6 @@ chip northbridge/intel/ironlake
 					register "eventc_enable" = "0xff"
 					register "eventd_enable" = "0xff"
 
-					register "has_bdc_detection" = "1"
 					register "bdc_gpio_num" = "48"
 					register "bdc_gpio_lvl" = "0"
 				end

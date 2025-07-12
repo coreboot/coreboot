@@ -40,8 +40,6 @@ chip northbridge/intel/sandybridge
 					register "config3" = "0xc4"
 					register "event5_enable" = "0x3c"
 					register "evente_enable" = "0x1d"
-					# X230s only has BT on wlan card
-					register "has_bdc_detection" = "0"
 					device pnp ff.2 on end
 				end
 			end

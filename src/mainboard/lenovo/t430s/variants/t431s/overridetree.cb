@@ -55,8 +55,6 @@ chip northbridge/intel/sandybridge
 					register "config1" = "0x09"
 					register "config3" = "0xc0"
 					register "evente_enable" = "0x1d"
-					# T431s only has BT on wlan card
-					register "has_bdc_detection" = "0"
 				end
 			end
 			device ref thermal off end

@@ -26,7 +26,7 @@ bool h8_has_wwan(const struct device *dev)
 {
 	struct ec_lenovo_h8_config *conf = dev->chip_info;
 
-	if (!conf->has_wwan_detection) {
+	if (!CONFIG(H8_HAS_WWAN_GPIO_DETECTION)) {
 		printk(BIOS_INFO, "H8: WWAN detection not implemented. "
 				  "Assuming WWAN installed\n");
 		return true;

@@ -28,7 +28,7 @@ bool h8_has_bdc(const struct device *dev)
 {
 	struct ec_lenovo_h8_config *conf = dev->chip_info;
 
-	if (!conf->has_bdc_detection) {
+	if (!CONFIG(H8_HAS_BDC_GPIO_DETECTION)) {
 		printk(BIOS_INFO, "H8: BDC detection not implemented. "
 				  "Assuming BDC installed\n");
 		return true;

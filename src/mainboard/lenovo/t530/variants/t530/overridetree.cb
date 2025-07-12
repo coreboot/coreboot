@@ -21,7 +21,6 @@ chip northbridge/intel/sandybridge
 			device ref lpc on
 				chip ec/lenovo/h8
 					device pnp ff.2 on end # dummy
-					register "has_wwan_detection" = "1"
 					register "wwan_gpio_num" = "70"
 					register "wwan_gpio_lvl" = "0"
 				end

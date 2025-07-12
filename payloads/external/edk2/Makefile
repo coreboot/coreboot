@@ -8,6 +8,7 @@ export WORKSPACE := $(CURDIR)/workspace
 export EDK2_PATH := $(WORKSPACE)/$(word 3,$(subst /, ,$(CONFIG_EDK2_REPOSITORY)))
 
 ifeq ($(CONFIG_EDK2_USE_EDK2_PLATFORMS),y)
+BUILD_STR += -D USE_EDK2_PLATFORMS=TRUE
 export EDK2_PLATFORMS_PATH := $(WORKSPACE)/edk2-platforms
 export PACKAGES_PATH := $(EDK2_PATH):\
 			$(EDK2_PLATFORMS_PATH)/Platform/Intel:\
@@ -26,7 +27,7 @@ endif
 OBJCOPY = $(GCC_PREFIX)objcopy
 
 ifeq ($(CONFIG_EDK2_UEFIPAYLOAD),y)
-BUILD_STR = -p UefiPayloadPkg/UefiPayloadPkg.dsc
+BUILD_STR += -p UefiPayloadPkg/UefiPayloadPkg.dsc
 endif
 BUILD_STR += -t COREBOOT
 BUILD_STR += -D BOOTLOADER=COREBOOT

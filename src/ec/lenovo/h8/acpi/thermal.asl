@@ -4,11 +4,6 @@
 
 Scope(\_TZ)
 {
-#if defined(EC_LENOVO_H8_ME_WORKAROUND)
-	Name (MEB1, 0)
-	Name (MEB2, 0)
-#endif
-
 	Method(C2K, 1, NotSerialized)
 	{
 		Local0 = Arg0 * 10
@@ -71,14 +66,12 @@ External (\PPKG, MethodObj)
 		}
 
 		Method(_TMP) {
-#if defined(EC_LENOVO_H8_ME_WORKAROUND)
-			/* Avoid tripping alarm if ME isn't booted at all yet */
-			If (!MEB1 && \_SB.PCI0.LPCB.EC.TMP0 == 128) {
+			Local0 = \_SB.PCI0.LPCB.EC.TMP0
+			/* Avoid tripping alarm if invalid value reported */
+			If (Local0 == 128) {
 				Return (C2K(40))
 			}
-			MEB1 = 1
-#endif
-			Return (C2K(\_SB.PCI0.LPCB.EC.TMP0))
+			Return (C2K(Local0))
 		}
 
 		Method (_AC0) {
@@ -158,14 +151,12 @@ External (\PPKG, MethodObj)
 		}
 
 		Method(_TMP) {
-#if defined(EC_LENOVO_H8_ME_WORKAROUND)
-			/* Avoid tripping alarm if ME isn't booted at all yet */
-			If (!MEB2 && \_SB.PCI0.LPCB.EC.TMP1 == 128) {
+			Local0 = \_SB.PCI0.LPCB.EC.TMP1
+			/* Avoid tripping alarm if invalid value reported */
+			If (Local0 == 128) {
 				Return (C2K(40))
 			}
-			MEB2 = 1
-#endif
-			Return (C2K(\_SB.PCI0.LPCB.EC.TMP1))
+			Return (C2K(Local0))
 		}
 	}
 #endif

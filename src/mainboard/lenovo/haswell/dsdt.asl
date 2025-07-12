@@ -2,7 +2,6 @@
 
 #define BRIGHTNESS_UP \_SB.PCI0.GFX0.INCB
 #define BRIGHTNESS_DOWN \_SB.PCI0.GFX0.DECB
-#define EC_LENOVO_H8_ME_WORKAROUND 1
 #define THINKPAD_EC_GPE 17
 
 #include <acpi/acpi.h>

@@ -5,10 +5,10 @@
 #include <device/pnp_ops.h>
 #include <device/pci_ops.h>
 #include <device/pci.h>
+#include <gpio.h>
 #include <superio/nuvoton/common/nuvoton.h>
 #include <superio/nuvoton/nct6779d/nct6779d.h>
 #include <southbridge/intel/common/rcba.h>
-#include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <console/console.h>
 #include <option.h>
@@ -85,7 +85,7 @@ void bootblock_mainboard_init(void)
 	}
 
 	/* Match GPIO to soft strap. */
-	set_gpio(46, gp46);
+	gpio_set(46, gp46);
 }
 
 void bootblock_mainboard_early_init(void)

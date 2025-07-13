@@ -2,13 +2,13 @@
 
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
-#include <southbridge/intel/lynxpoint/lp_gpio.h>
+#include <gpio.h>
+#include <mainboard/google/auron/variant.h>
 #include <soc/pm.h>
 #include <soc/romstage.h>
 #include <smbios.h>
 #include <variant/board_version.h>
 #include <variant/onboard.h>
-#include <mainboard/google/auron/variant.h>
 
 const char *smbios_mainboard_version(void)
 {
@@ -29,11 +29,11 @@ void mainboard_post_raminit(const int s3resume)
 	printk(BIOS_INFO, "MLB: board version %s\n", samus_board_version());
 
 	/* Bring SSD out of reset */
-	set_gpio(BOARD_SSD_RESET_GPIO, 1);
+	gpio_set(BOARD_SSD_RESET_GPIO, 1);
 
 	/*
 	 * Enable PP3300_AUTOBAHN_EN after initial GPIO setup
 	 * to prevent possible brownout.
 	 */
-	set_gpio(BOARD_PP3300_AUTOBAHN_GPIO, 1);
+	gpio_set(BOARD_PP3300_AUTOBAHN_GPIO, 1);
 }

@@ -6,7 +6,6 @@
 #include <option.h>
 #include <gpio.h>
 #include <types.h>
-#include <southbridge/intel/common/gpio.h>
 
 #include "hybrid_graphics.h"
 #include "chip.h"
@@ -67,10 +66,10 @@ void early_hybrid_graphics(bool *enable_igd, bool *enable_peg)
 	 */
 	if (config->has_dgpu_power_gpio) {
 		if (*enable_peg)
-			set_gpio(config->dgpu_power_gpio,
+			gpio_set(config->dgpu_power_gpio,
 				 !config->dgpu_power_off_lvl);
 		else
-			set_gpio(config->dgpu_power_gpio,
+			gpio_set(config->dgpu_power_gpio,
 				 config->dgpu_power_off_lvl);
 	} else if (config->has_thinker1) {
 		bool power_en = pmh7_dgpu_power_state();

@@ -3,10 +3,9 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <gpio.h>
-#include "dock.h"
-#include <southbridge/intel/common/gpio.h>
 #include <ec/lenovo/h8/h8.h>
 #include <ec/acpi/ec.h>
+#include "dock.h"
 
 void h8_mb_init(void)
 {
@@ -24,7 +23,7 @@ void dock_connect(void)
 	ec_set_bit(0x1a, 0);
 	ec_set_bit(0xfe, 4);
 
-	set_gpio(28, GPIO_LEVEL_HIGH);
+	gpio_set(28, GPIO_LEVEL_HIGH);
 }
 
 void dock_disconnect(void)
@@ -33,7 +32,7 @@ void dock_disconnect(void)
 	ec_clr_bit(0x1a, 0);
 	ec_clr_bit(0xfe, 4);
 
-	set_gpio(28, GPIO_LEVEL_LOW);
+	gpio_set(28, GPIO_LEVEL_LOW);
 }
 
 int dock_present(void)

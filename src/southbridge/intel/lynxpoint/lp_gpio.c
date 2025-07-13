@@ -110,7 +110,7 @@ int gpio_get(gpio_t gpio_num)
 	return !!(inl(gpio_base + GPIO_CONFIG0(gpio_num)) & GPI_LEVEL);
 }
 
-void set_gpio(int gpio_num, int value)
+void gpio_set(gpio_t gpio_num, int value)
 {
 	u16 gpio_base = get_gpio_base();
 	u32 conf0;

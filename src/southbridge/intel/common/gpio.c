@@ -105,7 +105,7 @@ int gpio_get(gpio_t gpio_num)
 /*
  * set gpio output to level.
  */
-void set_gpio(int gpio_num, int value)
+void gpio_set(gpio_t gpio_num, int value)
 {
 	static const int gpio_reg_offsets[] = {
 		GP_LVL, GP_LVL2, GP_LVL3

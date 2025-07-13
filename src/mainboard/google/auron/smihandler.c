@@ -2,11 +2,12 @@
 
 #include <acpi/acpi.h>
 #include <cpu/x86/smm.h>
-#include <soc/pm.h>
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/smm.h>
+#include <gpio.h>
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
 #include <soc/iomap.h>
+#include <soc/pm.h>
 #include "ec.h"
 #include <variant/onboard.h>
 
@@ -21,14 +22,14 @@ static void mainboard_disable_gpios(void)
 {
 #if CONFIG(BOARD_GOOGLE_SAMUS)
 	/* Put SSD in reset to prevent leak */
-	set_gpio(BOARD_SSD_RESET_GPIO, 0);
+	gpio_set(BOARD_SSD_RESET_GPIO, 0);
 	/* Disable LTE */
-	set_gpio(BOARD_LTE_DISABLE_GPIO, 0);
+	gpio_set(BOARD_LTE_DISABLE_GPIO, 0);
 #else
-	set_gpio(BOARD_PP3300_CODEC_GPIO, 0);
+	gpio_set(BOARD_PP3300_CODEC_GPIO, 0);
 #endif
 	/* Prevent leak from standby rail to WLAN rail */
-	set_gpio(BOARD_WLAN_DISABLE_GPIO, 0);
+	gpio_set(BOARD_WLAN_DISABLE_GPIO, 0);
 }
 
 void mainboard_smi_sleep(u8 slp_typ)

@@ -4,7 +4,6 @@
 #include <drivers/lenovo/hybrid_graphics/hybrid_graphics.h>
 #include <gpio.h>
 #include <northbridge/intel/gm45/gm45.h>
-#include <southbridge/intel/common/gpio.h>
 
 static void hybrid_graphics_init(sysinfo_t *sysinfo)
 {
@@ -44,5 +43,5 @@ void mb_post_raminit_setup(void)
 {
 	/* FIXME: make a proper SMBUS mux support. */
 	/* Set the SMBUS mux to the eeprom */
-	set_gpio(42, GPIO_LEVEL_LOW);
+	gpio_set(42, GPIO_LEVEL_LOW);
 }

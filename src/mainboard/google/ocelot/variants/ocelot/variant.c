@@ -48,19 +48,15 @@ void variant_update_soc_chip_config(struct soc_intel_pantherlake_config *config)
      * | with WOT disabled | with WOT disabled|                 |                            |
      * +===================+==================+=================+============================+
      */
+
 	if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_I2C))) {
 		config->thc_mode[0] = THC_HID_I2C_MODE;
 	} else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_SPI))) {
 		config->thc_mode[0] = THC_HID_SPI_MODE;
 	}
 
-	if (fw_config_probe(FW_CONFIG(TOUCHPAD, TOUCHPAD_LPSS_I2C))) {
-		/* touchpad: GPP_F18: GPE0_DW0_18 */
-		if (config->thc_wake_on_touch[1])
-			config->pmc_gpe0_dw0 = GPP_F;
-	} else if (fw_config_probe(FW_CONFIG(TOUCHPAD, TOUCHPAD_THC_I2C))) {
+	if (fw_config_probe(FW_CONFIG(TOUCHPAD, TOUCHPAD_THC_I2C))) {
 		config->thc_mode[1] = THC_HID_I2C_MODE;
-
 		if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_NONE)))
 			/* When THC0 is only enabled due to THC1 is enabled, we force THC0
 			 * to I2C mode so that kernel THC I2C driver will find it and put

@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/pci_ops.h>
+#include <gpio.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>
 #include <southbridge/intel/bd82x6x/pch.h>
-#include <southbridge/intel/common/gpio.h>
 #include "ec/google/chromeec/ec.h"
 
 #include <southbridge/intel/bd82x6x/chip.h>
@@ -54,8 +54,8 @@ void mainboard_late_rcba_config(void)
 
 static unsigned int get_spd_index(void)
 {
-	const int gpio_vector[] = {41, 42, 43, 10, -1};
-	return get_gpios(gpio_vector);
+	const gpio_t gpio_vector[] = {41, 42, 43, 10};
+	return gpio_base2_value(gpio_vector, ARRAY_SIZE(gpio_vector));
 }
 
 void mainboard_fill_pei_data(struct pei_data *pei_data)

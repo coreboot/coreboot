@@ -1,10 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <assert.h>
 #include <arch/io.h>
 #include <device/pci_ops.h>
 #include <device/pci_type.h>
 #include <gpio.h>
 #include <stdint.h>
+#include <gpio.h>
 
 #include "southbridge/intel/common/gpio.h"
 
@@ -101,25 +103,6 @@ int gpio_get(gpio_t gpio_num)
 }
 
 /*
- * get a number comprised of multiple GPIO values. gpio_num_array points to
- * the array of gpio pin numbers to scan, terminated by -1.
- */
-unsigned int get_gpios(const int *gpio_num_array)
-{
-	int gpio;
-	unsigned int bitmask = 1;
-	unsigned int vector = 0;
-
-	while (bitmask &&
-	       ((gpio = *gpio_num_array++) != -1)) {
-		if (gpio_get(gpio))
-			vector |= bitmask;
-		bitmask <<= 1;
-	}
-	return vector;
-}
-
-/*
  * set gpio output to level.
  */
 void set_gpio(int gpio_num, int value)
@@ -161,4 +144,9 @@ int gpio_is_native(int gpio_num)
 
 	config = inl(gpio_base + gpio_reg_offsets[index]);
 	return !(config & (1 << bit));
+}
+
+void gpio_input(gpio_t gpio)
+{
+	// FIXME: Implement
 }

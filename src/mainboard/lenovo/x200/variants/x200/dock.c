@@ -2,6 +2,7 @@
 
 #include <console/console.h>
 #include <device/device.h>
+#include <gpio.h>
 #include <southbridge/intel/common/gpio.h>
 #include <ec/lenovo/h8/h8.h>
 #include <ec/acpi/ec.h>
@@ -32,7 +33,7 @@ void dock_disconnect(void)
 
 int dock_present(void)
 {
-	const int dock_id_gpio[] = { 2, 3, 4, -1};
+	const gpio_t dock_id_gpio[] = {2, 3, 4};
 
-	return get_gpios(dock_id_gpio) != 7;
+	return gpio_base2_value(dock_id_gpio, ARRAY_SIZE(dock_id_gpio)) != 7;
 }

@@ -110,25 +110,6 @@ int gpio_get(gpio_t gpio_num)
 	return !!(inl(gpio_base + GPIO_CONFIG0(gpio_num)) & GPI_LEVEL);
 }
 
-/*
- * get a number comprised of multiple GPIO values. gpio_num_array points to
- * the array of gpio pin numbers to scan, terminated by -1.
- */
-unsigned int get_gpios(const int *gpio_num_array)
-{
-	int gpio;
-	unsigned int bitmask = 1;
-	unsigned int vector = 0;
-
-	while (bitmask &&
-	       ((gpio = *gpio_num_array++) != -1)) {
-		if (gpio_get(gpio))
-			vector |= bitmask;
-		bitmask <<= 1;
-	}
-	return vector;
-}
-
 void set_gpio(int gpio_num, int value)
 {
 	u16 gpio_base = get_gpio_base();
@@ -148,4 +129,9 @@ int gpio_is_native(int gpio_num)
 	u16 gpio_base = get_gpio_base();
 
 	return !(inl(gpio_base + GPIO_CONFIG0(gpio_num)) & 1);
+}
+
+void gpio_input(gpio_t gpio)
+{
+	// FIXME: Implement
 }

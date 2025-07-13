@@ -2,9 +2,9 @@
 
 #include <device/pci_ops.h>
 #include <console/console.h>
+#include <gpio.h>
 #include <northbridge/intel/sandybridge/raminit.h>
 #include <southbridge/intel/bd82x6x/pch.h>
-#include <southbridge/intel/common/gpio.h>
 #include "ec.h"
 
 void mainboard_pch_lpc_setup(void)
@@ -34,9 +34,9 @@ static const char *mainboard_spd_names[9] = {
 
 static unsigned int get_spd_index(void)
 {
-	const int spd_gpios[] = {71, 70, 16, 48, -1};
+	const gpio_t spd_gpios[] = {71, 70, 16, 48};
 
-	unsigned int spd_index = get_gpios(spd_gpios);
+	unsigned int spd_index = gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));
 	if (spd_index >= ARRAY_SIZE(mainboard_spd_names)) {
 		/* Fallback to pessimistic 2GB image (ELPIDA 2GB) */
 		spd_index = 6;

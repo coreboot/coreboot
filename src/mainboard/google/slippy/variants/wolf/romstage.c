@@ -1,14 +1,14 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <gpio.h>
 #include <northbridge/intel/haswell/raminit.h>
 #include <southbridge/intel/lynxpoint/pch.h>
-#include <southbridge/intel/lynxpoint/lp_gpio.h>
 #include "../../variant.h"
 
 unsigned int variant_get_spd_index(void)
 {
-	const int gpio_vector[] = {13, 9, 47, -1};
-	return get_gpios(gpio_vector);
+	const gpio_t gpio_vector[] = {13, 9, 47};
+	return gpio_base2_value(gpio_vector, ARRAY_SIZE(gpio_vector));
 }
 
 bool variant_is_dual_channel(const unsigned int spd_index)

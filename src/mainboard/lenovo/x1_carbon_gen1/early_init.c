@@ -1,13 +1,14 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
+#include <gpio.h>
 #include <northbridge/intel/sandybridge/raminit.h>
-#include <southbridge/intel/common/gpio.h>
 
 static unsigned int get_spd_index(void)
 {
-	const int spd_gpio_vector[] = {25, 45, -1};
-	unsigned int spd_index = get_gpios(spd_gpio_vector);
+	const gpio_t spd_gpio_vector[] = {25, 45};
+	unsigned int spd_index = gpio_base2_value(spd_gpio_vector,
+						  ARRAY_SIZE(spd_gpio_vector));
 
 	/* 4gb model = 0, 8gb model = 1 */
 	/* int extended_memory_version = gpio_get(44); */

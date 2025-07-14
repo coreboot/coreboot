@@ -13,34 +13,12 @@ chip soc/intel/alderlake
 	# Sagv Configuration
 	register "sagv" = "SaGv_Disabled"
 
+	register "dptf_enable" = "false"
+
 	register "s0ix_enable" = "true"
-	register "dptf_enable" = "true"
 
 	device domain 0 on
 		device ref igpu on end
-		device ref dtt on
-			chip drivers/intel/dptf
-				## Power Limits Control
-				register "controls.power_limits" = "{
-					.pl1 = {
-							.min_power = 35000,
-							.max_power = 45000,
-							.time_window_min = 28 * MSECS_PER_SEC,
-							.time_window_max = 32 * MSECS_PER_SEC,
-							.granularity = 200,
-					},
-					.pl2 = {
-							.min_power = 56000,
-							.max_power = 56000,
-							.time_window_min = 28 * MSECS_PER_SEC,
-							.time_window_max = 32 * MSECS_PER_SEC,
-							.granularity = 1000,
-					}
-				}"
-
-				device generic 0 alias dptf_policy on end
-			end
-		end
 		device ref crashlog off end
 		device ref p2sb on end
 		device ref smbus on end

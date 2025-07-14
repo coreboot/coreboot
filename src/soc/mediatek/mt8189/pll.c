@@ -287,7 +287,7 @@ static const struct mux vlp_muxes[] = {
 };
 
 static const struct vlp_mux_sel vlp_mux_sels[] = {
-	{ .id = CLK_VLP_CK_SCP_SEL, .sel = 0 },
+	{ .id = CLK_VLP_CK_SCP_SEL, .sel = 4 },
 	{ .id = CLK_VLP_CK_PWRAP_ULPOSC_SEL, .sel = 0 },
 	{ .id = CLK_VLP_CK_SPMI_P_MST_SEL, .sel = 0 },
 	{ .id = CLK_VLP_CK_DVFSRC_SEL, .sel = 0 },

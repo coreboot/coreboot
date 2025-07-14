@@ -29,7 +29,7 @@ OBJCOPY = $(GCC_PREFIX)objcopy
 ifeq ($(CONFIG_EDK2_UEFIPAYLOAD),y)
 BUILD_STR += -p UefiPayloadPkg/UefiPayloadPkg.dsc
 endif
-BUILD_STR += -t COREBOOT
+BUILD_STR += -t GCC
 BUILD_STR += -D BOOTLOADER=COREBOOT
 ifneq ($(V),1)
 BUILD_STR += -q
@@ -285,12 +285,8 @@ prep: $(EDK2_PATH) $(EDK2_PLATFORMS_PATH) clean checktools logo gop_driver
 	cd $(WORKSPACE); \
 		source $(EDK2_PATH)/edksetup.sh; \
 		unset CC; $(MAKE) -C $(EDK2_PATH)/BaseTools 2>&1; \
-		grep -q "COREBOOT" $(EDK2_PATH)/Conf/tools_def.txt; \
-		if [ $$? -ne 0 ]; then \
-			cat ../tools_def.txt >> $(EDK2_PATH)/Conf/tools_def.txt; \
-		fi; \
 
-$(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_COREBOOT/FV/UEFIPAYLOAD.fd: \
+$(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_GCC/FV/UEFIPAYLOAD.fd: \
 	prep print
 	cd $(WORKSPACE); \
 		source $(EDK2_PATH)/edksetup.sh; \
@@ -315,7 +311,7 @@ $(WORKSPACE)/Build/UefiPayloadPkgX64/UniversalPayload.elf: \
 		fi
 		echo "Success!"; \
 
-$(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_COREBOOT/IA32/UefiPayloadPkg/ShimLayer/ShimLayer/DEBUG/ShimLayer.dll: \
+$(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_GCC/IA32/UefiPayloadPkg/ShimLayer/ShimLayer/DEBUG/ShimLayer.dll: \
 		$(WORKSPACE)/Build/UefiPayloadPkgX64/UniversalPayload.elf prep
 	cd $(WORKSPACE)/Build/UefiPayloadPkgX64 && \
 		$(OBJCOPY) -I binary UniversalPayload.elf -O elf32-i386 -B i386 \
@@ -327,12 +323,12 @@ $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_COREBOOT/IA32/UefiPayloadPkg
 			-t COREBOOT -D BOOTLOADER=COREBOOT -D SHIMLAYER=TRUE \
 			-y $(WORKSPACE)/Build/UefiPayloadPkgX64/ShimLayer.txt
 
-UefiPayloadPkg: $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_COREBOOT/FV/UEFIPAYLOAD.fd
-	mv $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_COREBOOT/FV/UEFIPAYLOAD.fd \
+UefiPayloadPkg: $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_GCC/FV/UEFIPAYLOAD.fd
+	mv $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_GCC/FV/UEFIPAYLOAD.fd \
 		../../../build/UEFIPAYLOAD.fd
 
-UniversalPayload: $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_COREBOOT/IA32/UefiPayloadPkg/ShimLayer/ShimLayer/DEBUG/ShimLayer.dll
-	mv $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_COREBOOT/IA32/UefiPayloadPkg/ShimLayer/ShimLayer/DEBUG/ShimLayer.dll \
+UniversalPayload: $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_GCC/IA32/UefiPayloadPkg/ShimLayer/ShimLayer/DEBUG/ShimLayer.dll
+	mv $(WORKSPACE)/Build/UefiPayloadPkgX64/$(RELEASE_STR)_GCC/IA32/UefiPayloadPkg/ShimLayer/ShimLayer/DEBUG/ShimLayer.dll \
 		../../../build/ShimmedUniversalPayload.elf
 
 clean:

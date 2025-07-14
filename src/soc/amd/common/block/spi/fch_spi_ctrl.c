@@ -122,6 +122,31 @@ void spi_init(void)
 	printk(BIOS_DEBUG, "%s: SPI BAR at 0x%08lx\n", __func__, spi_get_bar());
 }
 
+static uint8_t cmd_code;
+static uint8_t tx_byte_count;
+static uint8_t rx_byte_count;
+static uint8_t fifo[SPI_FIFO_DEPTH];
+
+void fch_spi_backup_registers(void)
+{
+	cmd_code = spi_read8(SPI_CMD_CODE);
+	tx_byte_count = spi_read8(SPI_TX_BYTE_COUNT);
+	rx_byte_count = spi_read8(SPI_RX_BYTE_COUNT);
+
+	for (int count = 0; count < SPI_FIFO_DEPTH; count++)
+		fifo[count] = spi_read8(SPI_FIFO + count);
+}
+
+void fch_spi_restore_registers(void)
+{
+	spi_write8(SPI_CMD_CODE, cmd_code);
+	spi_write8(SPI_TX_BYTE_COUNT, tx_byte_count);
+	spi_write8(SPI_RX_BYTE_COUNT, rx_byte_count);
+
+	for (int count = 0; count < SPI_FIFO_DEPTH; count++)
+		spi_write8(SPI_FIFO + count, fifo[count]);
+}
+
 static int spi_ctrlr_xfer(const struct spi_slave *slave, const void *dout,
 			size_t bytesout, void *din, size_t bytesin)
 {

@@ -8,6 +8,7 @@
 #include <amdblocks/psp.h>
 #include <amdblocks/smi.h>
 #include <amdblocks/smm.h>
+#include <amdblocks/spi.h>
 #include <arch/hlt.h>
 #include <arch/io.h>
 #include <console/console.h>
@@ -124,4 +125,16 @@ void *get_smi_source_handler(int source)
 			return smi_sources[i].handler;
 
 	return NULL;
+}
+
+void smm_soc_early_init(void)
+{
+	if (CONFIG(SPI_FLASH_SMM))
+		fch_spi_backup_registers();
+}
+
+void smm_soc_exit(void)
+{
+	if (CONFIG(SPI_FLASH_SMM))
+		fch_spi_restore_registers();
 }

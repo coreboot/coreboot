@@ -7,6 +7,7 @@
 #include <amdblocks/smi.h>
 #include <amdblocks/smm.h>
 #include <amdblocks/smu.h>
+#include <amdblocks/spi.h>
 #include <arch/hlt.h>
 #include <arch/io.h>
 #include <console/console.h>
@@ -134,4 +135,13 @@ void smm_soc_early_init(void)
 {
 	if (CONFIG(VBOOT_STARTS_BEFORE_BOOTBLOCK) && __CBMEM_CONSOLE_ENABLE__)
 		replay_transfer_buffer_cbmemc();
+
+	if (CONFIG(SPI_FLASH_SMM))
+		fch_spi_backup_registers();
+}
+
+void smm_soc_exit(void)
+{
+	if (CONFIG(SPI_FLASH_SMM))
+		fch_spi_restore_registers();
 }

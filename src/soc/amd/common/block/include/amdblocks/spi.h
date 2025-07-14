@@ -129,6 +129,8 @@ void spi_write32(uint8_t reg, uint32_t val);
 uint8_t fch_spi_rom_remapping(void);
 
 void fch_spi_config_modes(void);
+void fch_spi_backup_registers(void);
+void fch_spi_restore_registers(void);
 void mainboard_spi_cfg_override(uint8_t *fast_speed, uint8_t *read_mode);
 
 /* Ensure you hold the mutex when performing SPI transactions */

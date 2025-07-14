@@ -3,6 +3,12 @@ chip soc/intel/alderlake
 	# seen on J0 and Q0 SKUs
 	register "disable_package_c_state_demotion" = "true"
 
+	register "power_limits_config[RPL_P_682_482_282_28W_CORE]" = "{
+		.tdp_pl1_override = 28,
+		.tdp_pl2_override = 28,
+		.tdp_pl4 = 64,
+	}"
+
 	register "sata_salp_support" = "0"
 	register "sata_speed" = "SATA_GEN2"
 

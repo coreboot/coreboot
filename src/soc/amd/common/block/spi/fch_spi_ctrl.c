@@ -22,13 +22,6 @@
 #define   SPI_CMD_TRIGGER_EXECUTE	BIT(7)
 #define SPI_TX_BYTE_COUNT		0x48
 #define SPI_RX_BYTE_COUNT		0x4b
-#define SPI_STATUS			0x4c
-#define   SPI_DONE_BYTE_COUNT_SHIFT	0
-#define   SPI_DONE_BYTE_COUNT_MASK	0xff
-#define   SPI_FIFO_WR_PTR_SHIFT		8
-#define   SPI_FIFO_WR_PTR_MASK		0x7f
-#define   SPI_FIFO_RD_PTR_SHIFT		16
-#define   SPI_FIFO_RD_PTR_MASK		0x7f
 
 enum spi_dump_state_phase {
 	SPI_DUMP_STATE_BEFORE_CMD,

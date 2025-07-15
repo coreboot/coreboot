@@ -94,7 +94,14 @@ static enum mbox_p2c_status find_psp_spi_flash_device_region(uint64_t target_nv_
 
 static bool spi_controller_busy(void)
 {
-	bool busy = false;
+	bool busy;
+
+	/* When the firmware is using the SPI controller stop here */
+	busy = (spi_read8(SPI_MISC_CNTRL) & SPI_SEMAPHORE_BIOS_LOCKED);
+	if (busy) {
+		printk(BIOS_NOTICE, "PSP: SPI controller blocked by coreboot (ring 0)\n");
+		return true;
+	}
 
 	/*
 	 * When ring0 is operating on the SPI flash and the controller is

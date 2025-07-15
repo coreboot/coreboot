@@ -4,6 +4,7 @@
 #include <spi_flash.h>
 #include <soc/pci_devs.h>
 #include <amdblocks/lpc.h>
+#include <amdblocks/smi.h>
 #include <amdblocks/spi.h>
 #include <device/pci_ops.h>
 #include <lib.h>
@@ -122,6 +123,10 @@ static uint8_t fifo[SPI_FIFO_DEPTH];
 
 void fch_spi_backup_registers(void)
 {
+	/* When bus is locked no need for backup */
+	if (ENV_SMM && (spi_read8(SPI_MISC_CNTRL) & SPI_SEMAPHORE_BIOS_LOCKED))
+		return;
+
 	cmd_code = spi_read8(SPI_CMD_CODE);
 	tx_byte_count = spi_read8(SPI_TX_BYTE_COUNT);
 	rx_byte_count = spi_read8(SPI_RX_BYTE_COUNT);
@@ -132,6 +137,10 @@ void fch_spi_backup_registers(void)
 
 void fch_spi_restore_registers(void)
 {
+	/* When bus is locked no need for backup */
+	if (ENV_SMM && (spi_read8(SPI_MISC_CNTRL) & SPI_SEMAPHORE_BIOS_LOCKED))
+		return;
+
 	spi_write8(SPI_CMD_CODE, cmd_code);
 	spi_write8(SPI_TX_BYTE_COUNT, tx_byte_count);
 	spi_write8(SPI_RX_BYTE_COUNT, rx_byte_count);
@@ -308,7 +317,39 @@ static int fch_spi_flash_protect(const struct spi_flash *flash, const struct reg
 	return 0;
 }
 
+/* Block PSP SMI while operating on the SPI flash */
+static int spi_ctrlr_claim_bus(const struct spi_slave *slave)
+{
+	uint8_t reg8;
+
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_PSP_SMI)) {
+		if (ENV_RAMSTAGE || ENV_SMM) {
+			reg8 = spi_read8(SPI_MISC_CNTRL);
+
+			if (reg8 & SPI_SEMAPHORE_BIOS_LOCKED)
+				return -1;
+		}
+		if (ENV_RAMSTAGE)
+			spi_write8(SPI_MISC_CNTRL, reg8 | SPI_SEMAPHORE_BIOS_LOCKED);
+	}
+
+	return 0;
+}
+
+/* Allow PSP SMI when not operating on the SPI flash */
+static void spi_ctrlr_release_bus(const struct spi_slave *slave)
+{
+	uint8_t reg8;
+
+	if (ENV_RAMSTAGE && CONFIG(SOC_AMD_COMMON_BLOCK_PSP_SMI)) {
+		reg8 = spi_read8(SPI_MISC_CNTRL);
+		spi_write8(SPI_MISC_CNTRL, reg8 & ~SPI_SEMAPHORE_BIOS_LOCKED);
+	}
+}
+
 static const struct spi_ctrlr fch_spi_flash_ctrlr = {
+	.claim_bus = spi_ctrlr_claim_bus,
+	.release_bus = spi_ctrlr_release_bus,
 	.xfer_vector = xfer_vectors,
 	.max_xfer_size = SPI_FIFO_DEPTH,
 	.flags = SPI_CNTRLR_DEDUCT_CMD_LEN | SPI_CNTRLR_DEDUCT_OPCODE_LEN,

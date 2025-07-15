@@ -89,6 +89,7 @@ enum spi100_speed {
 /* AMD has re-purposed this unused SPI controller register bit as a semaphore to synchronize
    access to the SPI controller between SMM and non-SMM software/OS driver. */
 #define   SPI_SEMAPHORE_DRIVER_LOCKED	BIT(4)
+#define   SPI_SEMAPHORE_BIOS_LOCKED	BIT(3)
 
 struct spi_config {
 	/*

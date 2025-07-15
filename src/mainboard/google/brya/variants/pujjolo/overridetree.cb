@@ -208,7 +208,7 @@ chip soc/intel/alderlake
 			chip drivers/i2c/hid
 				register "generic.hid" = ""GDIX0000""
 				register "generic.desc" = ""Goodix Touchscreen""
-				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E11_IRQ)"
+				register "generic.irq" = "ACPI_IRQ_LEVEL_HIGH(GPP_E11_IRQ)"
 				register "generic.detect" = "1"
 				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_C0)"
 				register "generic.enable_delay_ms" = "20"

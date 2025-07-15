@@ -211,9 +211,6 @@ chip soc/intel/elkhartlake
 				# INTn is not routed to LED[2] pin
 				register "enable_int" = "false"
 				register "downshift_cnt" = "2"
-				register "force_mos" = "true"
-				register "pmos_val" = "0xF"
-				register "nmos_val" = "0xA"
 				device mdio 0 on    # PHY address
 					ops m88e1512_ops
 				end

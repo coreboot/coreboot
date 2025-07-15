@@ -242,6 +242,13 @@ Internal flashing <lenovo/ivb_internal_flashing.md>
 T440p <lenovo/t440p.md>
 ```
 
+### Skylake/Kabylake series
+
+```{toctree}
+:maxdepth: 1
+
+T480/T480s <lenovo/t480.md>
+```
 ## Libretrend
 
 ```{toctree}

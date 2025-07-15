@@ -118,8 +118,6 @@ chip soc/intel/elkhartlake
 	register "PchTsnGbeLinkSpeed" = "Tsn_1_Gbps"
 	register "PchTsnGbeSgmiiEnable" = "1"
 	register "PseDmaOwn[0]" = "Host_Owned"
-	register "pch_tsn_phy_irq_edge" = "RISING_EDGE"
-	register "pse_tsn_phy_irq_edge[0]" = "RISING_EDGE"
 
 
 	# FIVR related settings
@@ -206,10 +204,12 @@ chip soc/intel/elkhartlake
 				register "configure_leds" = "true"
 				# LED[0]: On - 1000 Mbps Link, Off - Else
 				register "led_0_ctrl" = "7"
-				# LED[1]: On - Link, Blink - Activity, Off - No Link
-				register "led_1_ctrl" = "1"
-				# INTn is routed to LED[2] pin
-				register "enable_int" = "true"
+				# LED[1]: On - 100 Mbps Link, Off - Else
+				register "led_1_ctrl" = "7"
+				# LED[2]: Blink - Activity, Off - No Activity
+				register "led_2_ctrl" = "4"
+				# INTn is not routed to LED[2] pin
+				register "enable_int" = "false"
 				register "downshift_cnt" = "2"
 				register "force_mos" = "true"
 				register "pmos_val" = "0xF"
@@ -228,10 +228,12 @@ chip soc/intel/elkhartlake
 				register "configure_leds" = "true"
 				# LED[0]: On - 1000 Mbps Link, Off - Else
 				register "led_0_ctrl" = "7"
-				# LED[1]: On - Link, Blink - Activity, Off - No Link
-				register "led_1_ctrl" = "1"
-				# INTn is routed to LED[2] pin
-				register "enable_int" = "true"
+				# LED[1]: On - 100 Mbps Link, Off - Else
+				register "led_1_ctrl" = "7"
+				# LED[2]: Blink - Activity, Off - No Activity
+				register "led_2_ctrl" = "4"
+				# INTn is not routed to LED[2] pin
+				register "enable_int" = "false"
 				register "downshift_cnt" = "2"
 				device mdio 1 on    # PHY address
 					ops m88e1512_ops

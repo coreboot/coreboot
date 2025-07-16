@@ -730,6 +730,7 @@ static void fill_fsps_audio_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->PchHdaMicPrivacyHwModeSoundWire3 = 1;
 	s_cfg->PchHdaMicPrivacyHwModeSoundWire4 = 1;
 	s_cfg->PchHdaMicPrivacyHwModeDmic = 1;
+	s_cfg->PchHdaMicPrivacyMode = 1;
 }
 
 static void fill_fsps_iax_params(FSP_S_CONFIG *s_cfg,

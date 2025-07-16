@@ -9,7 +9,9 @@
 #include <hwilib.h>
 #include <i210.h>
 #include <soc/ramstage.h>
-
+#include <device/pci_def.h>
+#include <device/pci_ops.h>
+#include <device/pci_ids.h>
 
 #define MAX_PATH_DEPTH		12
 #define MAX_NUM_MAPPINGS	10
@@ -92,6 +94,19 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 	params->TurboMode = 0;
 }
 
+static void mainboard_final(void *chip_info)
+{
+	struct device *dev;
+
+	if (CONFIG(PCI_ALLOW_BUS_MASTER_ANY_DEVICE)) {
+		/* Enable bus mastering - target OS requires firmware initialization */
+		dev = dev_find_device(PCI_VID_SIEMENS, 0x403f, 0);
+		if (dev)
+			pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
+	}
+}
+
+
 static void mainboard_init(void *chip_info)
 {
 	variant_configure_gpio_pads();
@@ -106,4 +121,5 @@ void __weak variant_devtree_update(void)
 
 struct chip_operations mainboard_ops = {
 	.init = mainboard_init,
+	.final = mainboard_final,
 };

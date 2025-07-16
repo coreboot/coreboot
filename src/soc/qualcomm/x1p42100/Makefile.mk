@@ -40,6 +40,7 @@ ramstage-y += soc.c
 ramstage-y += cbmem.c
 ramstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 ramstage-$(CONFIG_PCI) += ../common/pcie_common.c
+ramstage-$(CONFIG_PCI) += pcie.c
 ramstage-y += cpucp_load_reset.c
 
 ################################################################################

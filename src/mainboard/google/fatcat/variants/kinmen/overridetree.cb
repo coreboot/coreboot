@@ -1,4 +1,7 @@
 fw_config
+	field WIFI 2 2
+		option WIFI_CNVI_7		0
+	end
 	field AUDIO 3 5
 		option AUDIO_UNKNOWN		0
 		option AUDIO_ALC721_SNDW	1

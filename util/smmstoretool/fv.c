@@ -100,7 +100,7 @@ static bool check_fw_vol_hdr(const EFI_FIRMWARE_VOLUME_HEADER *hdr,
 	if (hdr->Revision != EFI_FVH_REVISION ||
 		hdr->Signature != EFI_FVH_SIGNATURE ||
 		hdr->FvLength > max_size ||
-		hdr->HeaderLength > max_size ||
+		hdr->HeaderLength >= max_size ||
 		hdr->HeaderLength % 2 != 0) {
 		fprintf(stderr, "No firmware volume header present\n");
 		return false;

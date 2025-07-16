@@ -126,6 +126,8 @@ static inline void *cbfs_unverified_area_cbmem_alloc(const char *area, const cha
  * method succeeds or fails.
  */
 void cbfs_preload(const char *name);
+/* Wait for all preloaded CBFS contexts to complete their operations. */
+void cbfs_preload_wait_for_all(void);
 
 /* Removes a previously allocated CBFS mapping. Should try to unmap mappings in strict LIFO
    order where possible, since mapping backends often don't support more complicated cases. */

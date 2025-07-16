@@ -376,6 +376,14 @@ out:
 	free_cbfs_preload_context(context);
 }
 
+void cbfs_preload_wait_for_all(void)
+{
+	struct cbfs_preload_context *context;
+
+	list_for_each(context, cbfs_preload_context_list, list_node)
+		thread_join(&context->handle);
+}
+
 static struct cbfs_preload_context *find_cbfs_preload_context(const char *name)
 {
 	struct cbfs_preload_context *context;

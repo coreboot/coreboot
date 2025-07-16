@@ -43,6 +43,8 @@ static struct region_device ro_vpd, rw_vpd;
 /*
  * Initializes a region_device to represent the requested VPD 2.0 formatted
  * region on flash. On errors rdev->size will be set to 0.
+ * Check google_vpd_info at offset 0 first.  If not found, fall back to
+ * GOOGLE_VPD_2_0_OFFSET.
  */
 static void init_vpd_rdev(const char *fmap_name, struct region_device *rdev)
 {
@@ -57,36 +59,31 @@ static void init_vpd_rdev(const char *fmap_name, struct region_device *rdev)
 
 	size = region_device_sz(rdev);
 
-	if ((size < GOOGLE_VPD_2_0_OFFSET + sizeof(info)) ||
-	    rdev_chain(rdev, rdev, GOOGLE_VPD_2_0_OFFSET,
-			size - GOOGLE_VPD_2_0_OFFSET)) {
-		printk(BIOS_ERR, "%s: Too small (%d) for Google VPD 2.0.\n",
-		       __func__, size);
-		goto fail;
-	}
-
-	/* Try if we can find a google_vpd_info, otherwise read whole VPD. */
-	if (rdev_readat(rdev, &info, 0, sizeof(info)) != sizeof(info)) {
-		printk(BIOS_ERR, "Failed to read %s header.\n",
-		       fmap_name);
-		goto fail;
-	}
-
-	if (memcmp(info.header.magic, VPD_INFO_MAGIC, sizeof(info.header.magic))
-	    == 0) {
-		if (rdev_chain(rdev, rdev, sizeof(info), info.size)) {
-			printk(BIOS_ERR, "%s info size too large.\n",
+	size_t possible_offsets[] = {0x0, GOOGLE_VPD_2_0_OFFSET};
+	for (int i = 0; i < ARRAY_SIZE(possible_offsets); i++) {
+		size_t offset = possible_offsets[i];
+		if (size < offset + sizeof(info)) {
+			printk(BIOS_ERR,
+			       "%s: Too small (%d) for Google VPD 2.0.\n",
+			       __func__, size);
+			goto fail;
+		}
+		if (rdev_readat(rdev, &info, offset, sizeof(info)) != sizeof(info)) {
+			printk(BIOS_ERR, "Failed to read %s header.\n",
 			       fmap_name);
 			goto fail;
 		}
-	} else if (info.header.tlv.type == VPD_TYPE_TERMINATOR ||
-		   info.header.tlv.type == VPD_TYPE_IMPLICIT_TERMINATOR) {
-		printk(BIOS_WARNING, "%s is uninitialized or empty.\n",
-		       fmap_name);
-		goto fail;
+		if (memcmp(info.header.magic, VPD_INFO_MAGIC, sizeof(info.header.magic)) == 0) {
+			if (rdev_chain(rdev, rdev, offset + sizeof(info), info.size) == 0) {
+				return;
+			} else {
+				printk(BIOS_ERR, "%s info size too large.\n",
+				       fmap_name);
+				goto fail;
+			}
+		}
 	}
-
-	return;
+	printk(BIOS_WARNING, "%s is uninitialized.\n", fmap_name);
 
 fail:
 	memset(rdev, 0, sizeof(*rdev));

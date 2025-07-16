@@ -62,6 +62,13 @@ chip soc/intel/pantherlake
 	# Enable Energy Reporting
 	register "pch_pm_energy_report_enable" = "true"
 
+	# PCH PM SLP miminum assertion width and Reset Power Cycle Duration
+	register "pch_slp_s3_min_assertion_width" = "SLP_S3_ASSERTION_50_MS"
+	register "pch_slp_s4_min_assertion_width" = "SLP_S4_ASSERTION_1S"
+	register "pch_slp_sus_min_assertion_width" = "SLP_SUS_ASSERTION_1_S"
+	register "pch_slp_a_min_assertion_width" = "SLP_A_ASSERTION_98_MS"
+	register "pch_reset_power_cycle_duration" = "POWER_CYCLE_DURATION_1S"
+
 	# As per document 813278, the following PTL SoC supports Fast
 	# V-Mode (FVM) on cores (IA), Graphics (GT), and System Agent
 	# (SA). The ICC Limit is represented in 1/4 A increments,

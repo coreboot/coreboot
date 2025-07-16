@@ -169,6 +169,13 @@ enum cb_err agera_pll_enable(struct alpha_pll_reg_val_config *cfg);
 
 enum cb_err zonda_pll_enable(struct alpha_pll_reg_val_config *cfg);
 
+/*
+ * zondaole_pll_enable(): Enable Zondaole PLL at the given configuration (cfg).
+ *
+ * @param cfg		struct alpha_pll_reg_val_config
+ */
+enum cb_err zondaole_pll_enable(struct alpha_pll_reg_val_config *cfg);
+
 struct aoss {
 	u8 _res0[0x50020];
 	u32 aoss_cc_reset_status;

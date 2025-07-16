@@ -271,6 +271,28 @@ enum cb_err zonda_pll_enable(struct alpha_pll_reg_val_config *cfg)
 	return CB_SUCCESS;
 }
 
+enum cb_err zondaole_pll_enable(struct alpha_pll_reg_val_config *cfg)
+{
+	setbits32(cfg->reg_mode, BIT(PLL_BYPASSNL_SHFT));
+
+	/*
+	 * H/W requires a 1us delay between disabling the bypass and
+	 * de-asserting the reset.
+	 */
+	udelay(1);
+	setbits32(cfg->reg_mode, BIT(PLL_RESET_SHFT));
+	setbits32(cfg->reg_opmode, PLL_RUN_MODE);
+
+	if (!wait_us(100, read32(cfg->reg_mode) & PLL_LOCK_DET_BMSK)) {
+		printk(BIOS_ERR, "CPU PLL did not lock!\n");
+		return CB_ERR;
+	}
+
+	setbits32(cfg->reg_mode, BIT(PLL_OUTCTRL_SHFT));
+
+	return CB_SUCCESS;
+}
+
 /* Bring subsystem out of RESET */
 void clock_reset_subsystem(u32 *misc, u32 shft)
 {

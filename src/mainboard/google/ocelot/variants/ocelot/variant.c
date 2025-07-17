@@ -22,25 +22,11 @@ void variant_update_soc_chip_config(struct soc_intel_pantherlake_config *config)
 		config->cnvi_bt_core = true;
 	}
 
-    /* Touchscreen and touchpad WOT support:
+	/* Touchscreen and Touchpad WOT support:
      * +===================+==================+=================+============================+
-     * | touchsreen        | touchpad         | PMC_GPE0_DW0    | WOT                        |
+     * | Touchscreen       | Touchpad         | PMC_GPE0_DW0    | WOT                        |
      * +===================+==================+==============================================+
-     * | THC-SPI/THC-I2C   | LPSS-I2C         | GPP_F           | TS, TP                     |
-     * +-------------------+------------------+----------------------------------------------+
-     * | THC-SPI/THC-I2C   | not used or      | GPP_A (default) | TS                         |
-     * |                   | with WOT disabled|                 |                            |
-     * +-------------------+------------------+----------------------------------------------+
-     * | THC-SPI/THC-I2C   | THC-I2C          | GPP_A (default) | TS, TP                     |
-     * +-------------------+------------------+----------------------------------------------+
-     * | LPSS-SPI/LPSS-I2C | LPSS-I2C         | GPP_F           | TS via PMC_GPE0_DW2: GPP_E,|
-     * |                   |                  |                 | TP                         |
-     * +-------------------+------------------+----------------------------------------------+
-     * | LPSS-SPI/LPSS-I2C | not used or      | GPP_A (default) | TS via PMC_GPE0_DW2: GPP_E |
-     * |                   | with WOT disabled|                 |                            |
-     * +-------------------+------------------+----------------------------------------------+
-     * | not used          | not used or      | GPP_A (default) | NA                         |
-     * | with WOT disabled | with WOT disabled|                 |                            |
+     * | THC-SPI/THC-I2C   | THC-I2C          | VGPIO           | TS, TP                     |
      * +===================+==================+=================+============================+
      */
 

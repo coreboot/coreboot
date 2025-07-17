@@ -3,6 +3,7 @@
 #ifndef _BOOT_GUARD_LIB_H_
 #define _BOOT_GUARD_LIB_H_
 
+#include <security/tpm/tss/tcg-2.0/tss_structures.h>
 #include <types.h>
 
 /* Boot Policy configuration for Boot Guard */

@@ -156,6 +156,18 @@ chip soc/intel/alderlake
 		},
 	}"
 
+	# Power limit config
+	register "power_limits_config[ADL_N_041_6W_CORE]" = "{
+		.tdp_pl1_override = 13,
+		.tdp_pl2_override = 25,
+		.tdp_pl4 = 78,
+	}"
+	register "power_limits_config[ADL_N_081_15W_CORE]" = "{
+		.tdp_pl1_override = 22,
+		.tdp_pl2_override = 35,
+		.tdp_pl4 = 83,
+	}"
+
 	device domain 0 on
 		device ref dtt on
 			chip drivers/intel/dptf

@@ -70,3 +70,11 @@ config FAST_SPI_DMA
 	  callback. Although DMA transfers may not be significantly faster,
 	  they can free up CPU resources for other meaningful tasks in a
 	  multitasking environment (see COOP_MULTITASKING).
+
+config FAST_SPI_DMA_QUEUE_SIZE
+	int
+	depends on FAST_SPI_DMA
+	default 4
+	help
+	  Defines the maximum number of concurrent DMA transfers that can
+	  be queued and processed.

@@ -55,10 +55,36 @@ union fast_spi_dma_status {
 	} fields;
 };
 
+enum transfer_state {
+	DMA_TOKEN_FREE,
+	DMA_REQUESTED,
+	DMA_IN_PROGRESS,
+	DMA_COMPLETE,
+	DMA_FAILED
+};
+
+struct fast_spi_dma_transfer {
+	enum transfer_state state;
+	uint32_t flash_offset;
+	uint32_t block_count;
+	void *buffer;
+};
+
 #define FAST_SPI_DMA_BLOCK_ALIGN	KiB
 #define FAST_SPI_DMA_TIMEOUT_MSEC	1000
 #define FAST_SPI_DMA_DELAY_STEP_USEC	200
 #define FAST_SPI_DEV			DEV_PTR(fast_spi)
+
+/*
+ * This array holds the transfer tokens used for managing DMA operations with the Fast
+ * SPI interface. Each token represents a transfer request.  The number of tokens is
+ * determined by the FAST_SPI_DMA_QUEUE_SIZE kconfig, which defines the maximum number of
+ * concurrent DMA transfers that can be queued and processed.
+ *
+ * The tokens are utilized by the DMA transfer management functions to execute transfers
+ * in a sequential manner.
+ */
+static struct fast_spi_dma_transfer tokens[CONFIG_FAST_SPI_DMA_QUEUE_SIZE];
 
 /*
  * The bios_top variable stores the offset indicating the end of the BIOS region within
@@ -77,11 +103,12 @@ static uint32_t bios_top;
 static const struct region_device_ops *mmap_ops;
 
 /*
- * The fast_spi_dma_mutex is used to ensure thread-safe access to DMA operations. This
- * synchronization mechanism guarantees that only one thread can perform DMA operations
- * at a time.
+ * This boolean variable is used to track whether the Fast SPI DMA thread is actively
+ * running. It is set to true when the thread is executing and handling DMA transfer
+ * requests. When no transfer tokens are in the requested state, the thread sets this
+ * variable to false and exits gracefully.
  */
-static struct thread_mutex fast_spi_dma_mutex;
+static bool thread_running;
 
 static inline uint32_t fast_spi_read(enum fast_spi_dma_register reg)
 {
@@ -224,6 +251,75 @@ static enum cb_err fast_spi_dma_mmap_readat(const struct region_device *rd, void
 	return CB_SUCCESS;
 }
 
+static struct fast_spi_dma_transfer *fast_spi_dma_find_token(enum transfer_state state)
+{
+	struct fast_spi_dma_transfer *cur;
+	size_t i;
+
+	for (i = 0, cur = tokens; i < ARRAY_SIZE(tokens); i++, cur++)
+		if (cur->state == state)
+			return cur;
+
+	return NULL;
+}
+
+/*
+ * This function operates as the core logic for handling Fast SPI DMA transfers. It
+ * continuously checks for transfer tokens in the DMA_REQUESTED state and executes the
+ * associated DMA transfer operations. If no tokens are found in the requested state, it
+ * sets the thread_running flag to false and exits the thread gracefully.
+ */
+static enum cb_err fast_spi_dma_main_thread(void *arg)
+{
+	struct fast_spi_dma_transfer *token;
+
+	thread_running = true;
+	for (;;) {
+		token = fast_spi_dma_find_token(DMA_REQUESTED);
+		if (!token)
+			break;
+
+		token->state = DMA_IN_PROGRESS;
+		enum cb_err ret = fast_spi_do_dma_transfer(token->buffer,
+							   token->block_count,
+							   token->flash_offset);
+		token->state = ret == CB_SUCCESS ? DMA_COMPLETE : DMA_FAILED;
+	}
+	thread_running = false;
+
+	return CB_SUCCESS;
+}
+
+/*
+ * This function is responsible for allocating and preparing a new DMA transfer token to
+ * perform a data transfer from the SPI flash to a buffer. It also ensures that the DMA
+ * management thread is running. If the thread is not running, it attempts to start it.
+ */
+static struct fast_spi_dma_transfer *fast_spi_dma_queue_transfer(void *buffer,
+								 uint32_t block_count,
+								 uint32_t flash_offset)
+{
+	struct fast_spi_dma_transfer *token = fast_spi_dma_find_token(DMA_TOKEN_FREE);
+	if (!token) {
+		printk(BIOS_ERR, "Fast-SPI: Could not find a new transfer token\n");
+		return NULL;
+	}
+
+	token->buffer = buffer;
+	token->flash_offset = flash_offset;
+	token->block_count = block_count;
+	token->state = DMA_REQUESTED;
+
+	printk(BIOS_DEBUG, "Fast-SPI: %d blocks transfer token queued\n", block_count);
+
+	/* Ensure the DMA transfer thread is running. */
+	static struct thread_handle handle;
+	if (!thread_running && thread_run(&handle, fast_spi_dma_main_thread, NULL) != 0)
+		return NULL;
+
+	return token;
+}
+
 /*
  * Perform DMA transfer from SPI flash to a buffer.
  *
@@ -266,6 +362,8 @@ static enum cb_err fast_spi_dma_mmap_readat(const struct region_device *rd, void
 static ssize_t fast_spi_dma_transfer(const struct region_device *rd, void *b,
 				     size_t offset, size_t size)
 {
+	enum cb_err ret;
+
 	/* Calculate aligned offset and flash offset for DMA transfer. */
 	uint32_t aligned_offset = ALIGN_UP(offset, FAST_SPI_DMA_BLOCK_ALIGN);
 	uint32_t flash_offset = (bios_top - aligned_offset) / FAST_SPI_DMA_BLOCK_ALIGN;
@@ -273,10 +371,14 @@ static ssize_t fast_spi_dma_transfer(const struct region_device *rd, void *b,
 	uint32_t block_count = (size - early_bytes) / FAST_SPI_DMA_BLOCK_ALIGN;
 
 	/* Perform DMA transfer. */
-	thread_mutex_lock(&fast_spi_dma_mutex);
-	enum cb_err ret = fast_spi_do_dma_transfer(b, block_count, flash_offset);
-	thread_mutex_unlock(&fast_spi_dma_mutex);
-	if (ret != CB_SUCCESS) {
+	struct fast_spi_dma_transfer *token = fast_spi_dma_queue_transfer(b, block_count,
+									  flash_offset);
+	if (!token)
+		return -1;
+	/* Wait for completion */
+	while (token->state == DMA_REQUESTED || token->state == DMA_IN_PROGRESS)
+		udelay(FAST_SPI_DMA_DELAY_STEP_USEC);
+	if (token->state != DMA_COMPLETE) {
 		printk(BIOS_ERR, "Fast-SPI: DMA transfer failed, falling back to memory map operation\n");
 		return -1;
 	}
@@ -302,6 +404,10 @@ static ssize_t fast_spi_dma_transfer(const struct region_device *rd, void *b,
 			return transferred;
 		}
 	}
+
+	/* We are done with the transfer token. */
+	token->state = DMA_TOKEN_FREE;
+
 	return transferred;
 }
 

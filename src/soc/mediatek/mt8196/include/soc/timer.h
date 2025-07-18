@@ -31,7 +31,7 @@ struct systimer {
 	u32 reserved;
 	u32 cntcv_l;
 	u32 cntcv_h;
-	u32 reserved1[0x30];
+	u32 reserved1[12];
 	struct {
 		u32 con;
 		u32 val;
@@ -40,6 +40,8 @@ struct systimer {
 
 check_member(systimer, cntcr, 0x0);
 check_member(systimer, cntcv_l, 0x0008);
-check_member(systimer, cntcv_h, 0x000c);
+check_member(systimer, cntcv_h, 0x000C);
+check_member(systimer, cnttval[0].con, 0x0040);
+check_member(systimer, cnttval[0].val, 0x0044);
 
 #endif

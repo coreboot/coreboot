@@ -52,7 +52,10 @@ chip soc/intel/alderlake
 	# This is a bitfield that corresponds to up to 4 TCSS ports.
 	# Bits (0,1) allocated for TCSS Port1 configuration and Bits (2,3)for TCSS Port2.
 	# TcssAuxOri = 0101b
-	# Bit0,Bit2 set to "1" indicates no retimer on USBC Ports
+	# Set Bit0 and Bit2 to "1" to enable the Aux Orientation feature inside the processor.
+        # This only should be set when no retimer is present and processor-level Aux Orientation
+        # is still needed. (E.g. The PDC does not have Aux Orientation feature.)
+        # Bits 0 and 2 must be enabled first before configuring Bits 1 and 3 to be "1".
 	# Bit1,Bit3 set to "0" indicates Aux lines are not swapped on the
 	# motherboard to USBC connector
 	register "tcss_aux_ori" = "0"

@@ -10,6 +10,14 @@
 #define LVTS_SENSOR_POINT_SELECTION_SETTING	0x13121110
 #define LVTS_CALCULATION_SCALING_RULE		0x300
 
+__weak void lvts_set_device_single_mode(int tc_num)
+{
+}
+
+__weak void lvts_clock_gate_disable(void)
+{
+}
+
 static int lvts_raw_to_temp(uint16_t msr_raw, enum lvts_sensor ts_name, uint32_t golden_temp)
 {
 	int temp_mc;
@@ -66,6 +74,8 @@ static void lvts_tscpu_thermal_initial_all_tc(void)
 		write32(&tc->regs->lvtstssel_0, LVTS_SENSOR_POINT_SELECTION_SETTING);
 		/* Set calculation scale rules */
 		write32(&tc->regs->lvtscalscale_0, LVTS_CALCULATION_SCALING_RULE);
+		/* Set Device Single mode */
+		lvts_set_device_single_mode(i);
 
 		lvts_configure_polling_speed_and_filter(tc);
 	}
@@ -310,6 +320,8 @@ void lvts_thermal_init(void)
 
 	if (lvts_lk_init_check())
 		return;
+
+	lvts_clock_gate_disable();
 
 	lvts_tscpu_reset_thermal();
 

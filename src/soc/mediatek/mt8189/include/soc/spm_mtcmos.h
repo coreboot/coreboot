@@ -60,6 +60,7 @@ struct mtk_infracfg_ao_regs {
 };
 check_member(mtk_infracfg_ao_regs, infra_bus_dcm_ctrl, 0x0070);
 check_member(mtk_infracfg_ao_regs, infracfg_ao_module_cg_0_set, 0x0080);
+check_member(mtk_infracfg_ao_regs, infracfg_ao_module_cg_0_clr, 0x0084);
 check_member(mtk_infracfg_ao_regs, infracfg_ao_module_cg_1, 0x0094);
 check_member(mtk_infracfg_ao_regs, infracfg_ao_module_cg_2_set, 0x00A4);
 check_member(mtk_infracfg_ao_regs, infracfg_ao_module_cg_3_set, 0x00C0);

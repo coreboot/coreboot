@@ -38,8 +38,10 @@ struct lvts_thermal_controller {
 int lvts_write_device(uint16_t config, uint8_t dev_reg_idx, uint8_t data, int tc_num);
 const struct lvts_thermal_controller *lvts_get_controller(int tc_num);
 void lvts_configure_polling_speed_and_filter(const struct lvts_thermal_controller *tc);
+void lvts_set_device_single_mode(int tc_num);
 int lvts_read_tc_raw_and_temp(void *msr_reg, enum lvts_sensor ts_name, uint32_t golden_temp);
 void lvts_thermal_init(void);
+void lvts_clock_gate_disable(void);
 void lvts_tscpu_reset_thermal(void);
 void lvts_thermal_cal_prepare(void);
 void lvts_device_identification(void);

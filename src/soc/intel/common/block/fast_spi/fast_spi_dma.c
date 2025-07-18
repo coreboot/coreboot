@@ -403,3 +403,17 @@ void spi_flash_dma_install_ops(struct xlate_region_device *mmap_xlate_rdev)
 	fast_spi_dma_rdev_ro_ops.readat = fast_spi_dma_readat;
 	mmap_xlate_rdev->rdev.ops = &fast_spi_dma_rdev_ro_ops;
 }
+
+static void fast_spi_dma_lock(void *unused)
+{
+	union fast_spi_dma_control control = {fast_spi_read(FAST_SPI_DMA_CONTROL)};
+	if (control.fields.lock)
+		return;
+
+	control.fields.lock = 1;
+	fast_spi_write(FAST_SPI_DMA_CONTROL, control.data);
+
+	printk(BIOS_DEBUG, "Fast-SPI: driver locked DMA\n");
+}
+
+BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY, fast_spi_dma_lock, NULL);

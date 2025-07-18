@@ -510,11 +510,10 @@ static void touch_dev_fill_ssdt_generator(const struct device *dev)
 			touch_generate_acpi_ini(dev);
 			touch_generate_acpi_dsm(config, dev);
 			/* When only THC1 is used, both THC0/1 need to be enabled since THC0's
-			 * device function is '0'. In this case, THC0 should set
-			 * connected_device to TH_SENSOR_NONE so that when the driver detects
-			 * THC0, the _DSM will be available for it to check and exit without
-			 * error.
-			 */
+			   device function is '0'. In this case, THC0 should set
+			   connected_device to TH_SENSOR_NONE so that when the driver detects
+			   THC0, the _DSM will be available for it to check and exit without
+			   error. */
 			if (config->connected_device == TH_SENSOR_NONE)
 				return;
 

@@ -522,7 +522,7 @@ The preferred style for *long* (multi-line) comments is:
 
 ```c
 /*
- * This is the preferred style for multi-line
+ * This is the preferred style for long multi-line
  * comments in the coreboot source code.
  * Please use it consistently.
  *

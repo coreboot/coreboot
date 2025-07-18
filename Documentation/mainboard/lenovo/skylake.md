@@ -193,8 +193,6 @@ binaries if only flashing the `bios` region.
 
 ## Known Issues
 
-- Alpine Ridge Thunderbolt 3 controller does not work
-  - Lower (right) USB-C port only works for charging/DP alt mode, not USB/PCIe data
 - Some Fn+F{1-12} keys aren't handled correctly
 - Nvidia dGPU is finicky
   - Needs option ROM
@@ -206,6 +204,7 @@ binaries if only flashing the `bios` region.
 
 ## Verified Working
 
+- Alpine Ridge Thunderbolt 3 controller
 - Integrated graphics init with libgfxinit
 - video output: internal (eDP), miniDP
 - ACPI support

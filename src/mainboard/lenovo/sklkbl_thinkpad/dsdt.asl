@@ -11,6 +11,7 @@ DefinitionBlock(
 )
 {
 	#include <acpi/dsdt_top.asl>
+	#include <soc/intel/common/block/acpi/acpi/platform.asl>
 	#include <soc/intel/common/block/acpi/acpi/globalnvs.asl>
 	#include <cpu/intel/common/acpi/cpu.asl>
 

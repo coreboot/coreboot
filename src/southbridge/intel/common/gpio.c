@@ -3,9 +3,10 @@
 #include <arch/io.h>
 #include <device/pci_ops.h>
 #include <device/pci_type.h>
+#include <gpio.h>
 #include <stdint.h>
 
-#include "gpio.h"
+#include "southbridge/intel/common/gpio.h"
 
 #define MAX_GPIO_NUMBER 75 /* zero based */
 
@@ -84,7 +85,7 @@ void setup_pch_gpios(const struct pch_gpio_map *gpio)
 /*
  * return current gpio level.
  */
-int get_gpio(int gpio_num)
+int gpio_get(gpio_t gpio_num)
 {
 	static const int gpio_reg_offsets[] = {GP_LVL, GP_LVL2, GP_LVL3};
 	u16 gpio_base = get_gpio_base();
@@ -111,7 +112,7 @@ unsigned int get_gpios(const int *gpio_num_array)
 
 	while (bitmask &&
 	       ((gpio = *gpio_num_array++) != -1)) {
-		if (get_gpio(gpio))
+		if (gpio_get(gpio))
 			vector |= bitmask;
 		bitmask <<= 1;
 	}

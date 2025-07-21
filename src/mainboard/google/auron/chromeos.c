@@ -2,10 +2,10 @@
 
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
+#include <gpio.h>
 #include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/chromeos.h>
-#include <southbridge/intel/lynxpoint/lp_gpio.h>
 
 #include "onboard.h"
 
@@ -28,7 +28,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_write_protect_state(void)
 {
-	return get_gpio(CROS_WP_GPIO);
+	return gpio_get(CROS_WP_GPIO);
 }
 
 static const struct cros_gpio cros_gpios[] = {
@@ -40,5 +40,5 @@ DECLARE_CROS_GPIOS(cros_gpios);
 int get_ec_is_trusted(void)
 {
 	/* EC is trusted if not in RW. */
-	return !get_gpio(EC_IN_RW_GPIO);
+	return !gpio_get(EC_IN_RW_GPIO);
 }

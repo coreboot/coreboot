@@ -151,8 +151,6 @@ extern const struct pch_gpio_map mainboard_gpio_map;
 /* Configure GPIOs with mainboard provided settings */
 void setup_pch_gpios(const struct pch_gpio_map *gpio);
 
-/* get GPIO pin value */
-int get_gpio(int gpio_num);
 /*
  * get a number comprised of multiple GPIO values. gpio_num_array points to
  * the array of gpio pin numbers to scan, terminated by -1.

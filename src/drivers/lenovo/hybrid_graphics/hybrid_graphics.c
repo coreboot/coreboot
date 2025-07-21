@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <option.h>
-#include <device/device.h>
-
-#include <southbridge/intel/common/gpio.h>
 #include <console/console.h>
+#include <device/device.h>
+#include <gpio.h>
+#include <option.h>
+#include <southbridge/intel/common/gpio.h>
 #include "chip.h"
 
 /*
@@ -20,7 +20,7 @@ static void lenovo_hybrid_graphics_enable(struct device *dev)
 	dev->enabled = 0;
 
 	config = dev->chip_info;
-	if (!config || (get_gpio(config->detect_gpio) == DGPU_NOT_INSTALLED)) {
+	if (!config || (gpio_get(config->detect_gpio) == DGPU_NOT_INSTALLED)) {
 		printk(BIOS_DEBUG, "Hybrid graphics: Not installed\n");
 		return;
 	}

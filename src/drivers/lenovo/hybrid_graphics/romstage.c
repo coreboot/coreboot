@@ -1,12 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <types.h>
-#include <option.h>
-#include <device/device.h>
-
-#include <southbridge/intel/common/gpio.h>
-#include <ec/lenovo/pmh7/pmh7.h>
 #include <console/console.h>
+#include <device/device.h>
+#include <ec/lenovo/pmh7/pmh7.h>
+#include <option.h>
+#include <gpio.h>
+#include <types.h>
+#include <southbridge/intel/common/gpio.h>
 
 #include "hybrid_graphics.h"
 #include "chip.h"
@@ -31,7 +31,7 @@ void early_hybrid_graphics(bool *enable_igd, bool *enable_peg)
 	}
 
 	config = dev->chip_info;
-	if (get_gpio(config->detect_gpio) == DGPU_NOT_INSTALLED) {
+	if (gpio_get(config->detect_gpio) == DGPU_NOT_INSTALLED) {
 		printk(BIOS_DEBUG, "Hybrid graphics:"
 		       " No discrete GPU present.\n");
 		*enable_igd = true;

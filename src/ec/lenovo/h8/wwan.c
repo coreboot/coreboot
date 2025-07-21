@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <southbridge/intel/common/gpio.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <ec/acpi/ec.h>
+#include <gpio.h>
 #include <option.h>
 #include <types.h>
 
@@ -32,7 +32,7 @@ bool h8_has_wwan(const struct device *dev)
 		return true;
 	}
 
-	if (get_gpio(conf->wwan_gpio_num) == conf->wwan_gpio_lvl) {
+	if (gpio_get(conf->wwan_gpio_num) == conf->wwan_gpio_lvl) {
 		printk(BIOS_INFO, "H8: WWAN installed\n");
 		return true;
 	}

@@ -5,6 +5,7 @@
 #include <device/pci_ops.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <gpio.h>
 
 #include "pch.h"
 #include "lp_gpio.h"
@@ -99,7 +100,7 @@ void setup_pch_lp_gpios(const struct pch_lp_gpio_map map[])
 	outl(pirq2apic, gpio_base + GPIO_PIRQ_APIC_EN);
 }
 
-int get_gpio(int gpio_num)
+int gpio_get(gpio_t gpio_num)
 {
 	u16 gpio_base = get_gpio_base();
 
@@ -121,7 +122,7 @@ unsigned int get_gpios(const int *gpio_num_array)
 
 	while (bitmask &&
 	       ((gpio = *gpio_num_array++) != -1)) {
-		if (get_gpio(gpio))
+		if (gpio_get(gpio))
 			vector |= bitmask;
 		bitmask <<= 1;
 	}

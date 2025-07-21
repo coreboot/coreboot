@@ -10,7 +10,7 @@ static unsigned int get_spd_index(void)
 	unsigned int spd_index = get_gpios(spd_gpio_vector);
 
 	/* 4gb model = 0, 8gb model = 1 */
-	/* int extended_memory_version = get_gpio(44); */
+	/* int extended_memory_version = gpio_get(44); */
 
 	/*
 	 * So far there is no need to parse gpio 44, as the 4GiB use

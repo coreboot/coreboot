@@ -157,9 +157,6 @@ struct pch_lp_gpio_map {
 /* Configure GPIOs with mainboard provided settings */
 void setup_pch_lp_gpios(const struct pch_lp_gpio_map map[]);
 
-/* Get GPIO pin value */
-int get_gpio(int gpio_num);
-
 /* Set GPIO pin value */
 void set_gpio(int gpio_num, int value);
 

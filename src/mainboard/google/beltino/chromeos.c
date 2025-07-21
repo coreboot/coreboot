@@ -3,8 +3,8 @@
 #include <bootmode.h>
 #include <boot/coreboot_tables.h>
 #include <device/device.h>
+#include <gpio.h>
 #include <southbridge/intel/lynxpoint/pch.h>
-#include <southbridge/intel/common/gpio.h>
 #include <types.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "onboard.h"
@@ -23,12 +23,12 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_write_protect_state(void)
 {
-	return get_gpio(GPIO_SPI_WP);
+	return gpio_get(GPIO_SPI_WP);
 }
 
 int get_recovery_mode_switch(void)
 {
-	return !get_gpio(GPIO_REC_MODE);
+	return !gpio_get(GPIO_REC_MODE);
 }
 
 static const struct cros_gpio cros_gpios[] = {

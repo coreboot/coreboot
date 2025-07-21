@@ -1,9 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/console.h>
-#include <southbridge/intel/common/gpio.h>
-#include <northbridge/intel/gm45/gm45.h>
 #include <drivers/lenovo/hybrid_graphics/hybrid_graphics.h>
+#include <gpio.h>
+#include <northbridge/intel/gm45/gm45.h>
+#include <southbridge/intel/common/gpio.h>
 
 static void hybrid_graphics_init(sysinfo_t *sysinfo)
 {
@@ -24,7 +25,7 @@ void get_mb_spd_addrmap(u8 spd_addrmap[4])
 void mb_pre_raminit_setup(sysinfo_t *sysinfo)
 {
 	if (CONFIG(BOARD_LENOVO_R500)) {
-		int use_integrated = get_gpio(21);
+		int use_integrated = gpio_get(21);
 		printk(BIOS_DEBUG, "R500 variant found with an %s GPU\n",
 		       use_integrated ? "integrated" : "discrete");
 		if (use_integrated) {

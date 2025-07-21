@@ -5,8 +5,8 @@
 #include <device/device.h>
 #include <device/pci_ops.h>
 #include <drivers/intel/gma/int15.h>
+#include <gpio.h>
 #include <southbridge/intel/bd82x6x/pch.h>
-#include <southbridge/intel/common/gpio.h>
 #include <superio/smsc/sch5545/sch5545.h>
 
 #include <baseboard/sch5545_ec.h>
@@ -56,10 +56,10 @@ static void mainboard_enable(struct device *dev)
 					GMA_INT15_PANEL_FIT_DEFAULT,
 					GMA_INT15_BOOT_DISPLAY_DEFAULT, 0);
 
-	pin_sts = get_gpio(GPIO_CHASSIS_ID0);
-	pin_sts |= get_gpio(GPIO_CHASSIS_ID1) << 1;
-	pin_sts |= get_gpio(GPIO_CHASSIS_ID2) << 2;
-	pin_sts |= get_gpio(GPIO_FRONT_PANEL_CHASSIS_DET_L) << 3;
+	pin_sts = gpio_get(GPIO_CHASSIS_ID0);
+	pin_sts |= gpio_get(GPIO_CHASSIS_ID1) << 1;
+	pin_sts |= gpio_get(GPIO_CHASSIS_ID2) << 2;
+	pin_sts |= gpio_get(GPIO_FRONT_PANEL_CHASSIS_DET_L) << 3;
 
 	printk(BIOS_DEBUG, "Chassis type: ");
 	switch (pin_sts) {
@@ -88,15 +88,15 @@ static void mainboard_enable(struct device *dev)
 		break;
 	}
 
-	pin_sts = get_gpio(GPIO_BOARD_REV0);
-	pin_sts |= get_gpio(GPIO_BOARD_REV1) << 1;
-	pin_sts |= get_gpio(GPIO_BOARD_REV2) << 2;
+	pin_sts = gpio_get(GPIO_BOARD_REV0);
+	pin_sts |= gpio_get(GPIO_BOARD_REV1) << 1;
+	pin_sts |= gpio_get(GPIO_BOARD_REV2) << 2;
 
 	printk(BIOS_DEBUG, "Board revision: %d\n", pin_sts);
 
-	pin_sts = get_gpio(GPIO_SKU0);
-	pin_sts |= get_gpio(GPIO_SKU1) << 1;
-	pin_sts |= get_gpio(GPIO_SKU2) << 2;
+	pin_sts = gpio_get(GPIO_SKU0);
+	pin_sts |= gpio_get(GPIO_SKU1) << 1;
+	pin_sts |= gpio_get(GPIO_SKU2) << 2;
 
 	printk(BIOS_DEBUG, "SKU ID is %d:", pin_sts);
 	switch (pin_sts) {
@@ -115,15 +115,15 @@ static void mainboard_enable(struct device *dev)
 	}
 
 	printk(BIOS_DEBUG, "VGA cable %sconnected\n",
-	       get_gpio(GPIO_VGA_CABLE_DET_L) ? "dis" : "");
+	       gpio_get(GPIO_VGA_CABLE_DET_L) ? "dis" : "");
 
 	printk(BIOS_DEBUG, "Flexbay %sattached to internal USB 2.0 header\n",
-	       get_gpio(FLEXBAY_HEADER_CABLE_DET_L) ? "not " : "");
+	       gpio_get(FLEXBAY_HEADER_CABLE_DET_L) ? "not " : "");
 
 	printk(BIOS_DEBUG, "Password clear jumper %sactive\n",
-	       get_gpio(GPIO_PSWD_CLR) ? "in" : "");
+	       gpio_get(GPIO_PSWD_CLR) ? "in" : "");
 
-	if (!get_gpio(GPIO_FRONT_PANEL_PRESENT_L)) {
+	if (!gpio_get(GPIO_FRONT_PANEL_PRESENT_L)) {
 		printk(BIOS_DEBUG, "Front panel cable connected\n");
 	} else {
 		printk(BIOS_WARNING, "Front panel cable not connected!\n");
@@ -132,7 +132,7 @@ static void mainboard_enable(struct device *dev)
 		printk(BIOS_WARNING, "Check the front panel cable!\n");
 	}
 
-	if (!get_gpio(GPIO_INTRUDER_CABLE_DET_L)) {
+	if (!gpio_get(GPIO_INTRUDER_CABLE_DET_L)) {
 		printk(BIOS_DEBUG, "Intruder cable connected\n");
 	} else {
 		printk(BIOS_WARNING, "Intruder cable not connected!\n");
@@ -140,7 +140,7 @@ static void mainboard_enable(struct device *dev)
 		printk(BIOS_WARNING, "Check the intruder cable!\n");
 	}
 
-	if (!get_gpio(GPIO_USB_HEADER_DET_L)) {
+	if (!gpio_get(GPIO_USB_HEADER_DET_L)) {
 		printk(BIOS_DEBUG, "Front USB 3.0 cable connected\n");
 	} else {
 		printk(BIOS_WARNING, "Front USB 3.0 cable not connected!\n");

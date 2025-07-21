@@ -424,10 +424,6 @@ static const struct pad_config romstage_gpio_table[] = {
 	PAD_CFG_GPO(GPP_E19, 0, DEEP),
 	/* GPP_C15:     FPS_RST_N */
 	PAD_CFG_GPO(GPP_C15, 0, DEEP),
-	/* GPP_F08:     EN_TCHSCR_PWR */
-	PAD_CFG_GPO(GPP_F08, 1, DEEP),
-	/* GPP_F16:     TCHSCR_RST_L */
-	PAD_CFG_GPO(GPP_F16, 0, DEEP),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

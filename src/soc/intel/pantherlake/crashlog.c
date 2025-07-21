@@ -18,6 +18,8 @@
 #define CRASHLOG_PUNIT_STORAGE_OFF_MASK	BIT(24)
 #define CRASHLOG_RE_ARM_STATUS_MASK	BIT(25)
 #define CRASHLOG_CONSUMED_BIOS_MASK	BIT(27)
+#define CRASHLOG_SET_CLEAR_TRIGGER_MASK	BIT(30)
+#define CRASHLOG_SET_CONSUMED_MASK	BIT(18)
 
 /* Global crashLog info */
 static bool m_pmc_crash_log_support;
@@ -392,6 +394,10 @@ static uintptr_t get_control_status_interface(void)
 
 int cpu_cl_clear_data(void)
 {
+	/* Clear all crashlog data and CRASHLOG_SET_CONSUMED = 1 -> sets CONSUMED_BIOS bit */
+	setbits64p(cl_get_cpu_bar_addr() + CRASHLOG_WATCHER_CONTROL_OFFSET,
+			CRASHLOG_SET_CLEAR_TRIGGER_MASK | CRASHLOG_SET_CONSUMED_MASK);
+
 	return 0;
 }
 

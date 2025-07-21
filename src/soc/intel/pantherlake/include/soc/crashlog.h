@@ -14,6 +14,7 @@
 #define CRASHLOG_DVSEC_ID			0x04
 #define TEL_DVSEC_TBIR_BAR0			0
 #define TEL_DVSEC_TBIR_BAR1			1
+#define CRASHLOG_WATCHER_CONTROL_OFFSET		0x10
 
 typedef union {
 	struct {

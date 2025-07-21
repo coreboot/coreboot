@@ -92,6 +92,14 @@ static enum mbox_p2c_status find_psp_spi_flash_device_region(uint64_t target_nv_
 	return MBOX_PSP_SUCCESS;
 }
 
+/*
+ * Returns true when the SPI flash is busy, the SPI controller is busy or the SPI
+ * MMIO register access is blocked by ring0. When the SPI flash is busy all
+ * operations, including reading, would fail.
+ * Thus even memory mapped structures like FMAP would not be accessible
+ * from memory mapped SPI flash (ROM2/ROM3). Caller must return MBOX_PSP_SPI_BUSY
+ * to PSP when this function returns true.
+ */
 static bool spi_controller_busy(void)
 {
 	bool busy;

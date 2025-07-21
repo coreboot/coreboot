@@ -143,10 +143,22 @@ enum mbox_p2c_status {
 	MBOX_PSP_SUCCESS		= 0x00,
 	MBOX_PSP_INVALID_PARAMETER	= 0x01,
 	MBOX_PSP_CRC_ERROR		= 0x02,
-	MBOX_PSP_COMMAND_PROCESS_ERROR	= 0x04,
-	MBOX_PSP_UNSUPPORTED		= 0x08,
-	MBOX_PSP_SPI_BUSY_ASYNC		= 0x0a,
-	MBOX_PSP_SPI_BUSY		= 0x0b,
+	/*
+	 * Send to PSP when the requested SPI command in the psp_smi_handler()
+	 * handler failed due to an unknown error. The PSP usually doesn't like
+	 * seeing this return code and will stop operating.
+	 */
+	 MBOX_PSP_COMMAND_PROCESS_ERROR	= 0x04,
+	 MBOX_PSP_UNSUPPORTED		= 0x08,
+	 MBOX_PSP_SPI_BUSY_ASYNC	= 0x0a,
+	 /*
+	  * Send to PSP when the requested SPI command in the psp_smi_handler()
+	  * handler cannot be executed right away. This can happen when the SPI
+	  * flash is busy or the SPI controller is busy or being used by ring 0.
+	  *
+	  * The PSP will raise an SMI later again.
+	  */
+	 MBOX_PSP_SPI_BUSY		= 0x0b,
 };
 
 uintptr_t get_psp_mmio_base(void);

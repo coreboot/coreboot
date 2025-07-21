@@ -161,11 +161,16 @@ void cl_get_pmc_sram_data(cl_node_t *head)
 	update_new_pmc_crashlog_size(&pmc_crashLog_size);
 
 pmc_send_re_arm_after_reset:
-	/* When bit 7 of discov cmd resp is set -> bit 2 of size field */
-	cl_pmc_re_arm_after_reset();
-
-	/* Clear the SSRAM region after copying the error log */
-	cl_pmc_clear();
+	/* Re-arm and clear only if crashlog is present and valid*/
+	if (!pmc_crashLog_size) {
+		printk(BIOS_DEBUG, "No valid crashlog data found in PMC SRAM\n");
+		return;
+	} else {
+		/* When bit 7 of discov cmd resp is set -> bit 2 of size field */
+		cl_pmc_re_arm_after_reset();
+		/* Clear the SSRAM region after copying the error log */
+		cl_pmc_clear();
+	}
 }
 
 bool pmc_cl_discovery(void)

@@ -9,23 +9,6 @@
 #include <device/smbus_host.h>
 #include "smbuslib.h"
 
-static void update_spd_len(struct spd_block *blk)
-{
-	u8 i, j = 0;
-	for (i = 0 ; i < CONFIG_DIMM_MAX; i++)
-		if (blk->spd_array[i] != NULL)
-			j |= blk->spd_array[i][SPD_MEMORY_TYPE];
-
-	/* If spd used is DDR5, then its length is 1024 byte. */
-	if (j == SPD_MEMORY_TYPE_DDR5_SDRAM)
-		blk->len = CONFIG_DIMM_SPD_SIZE;
-	/* If spd used is DDR4, then its length is 512 byte. */
-	else if (j == SPD_MEMORY_TYPE_DDR4_SDRAM)
-		blk->len = SPD_SIZE_MAX_DDR4;
-	else
-		blk->len = SPD_SIZE_MAX_DDR3;
-}
-
 static void spd_read(u8 *spd, u8 addr)
 {
 	u16 i;
@@ -164,7 +147,7 @@ void get_spd_smbus(struct spd_block *blk)
 			blk->spd_array[i] = NULL;
 	}
 
-	update_spd_len(blk);
+	blk->len = CONFIG_DIMM_SPD_SIZE;
 }
 
 /*

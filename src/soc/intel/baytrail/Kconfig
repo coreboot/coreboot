@@ -32,7 +32,7 @@ config SOC_INTEL_BAYTRAIL
 	select CPU_INTEL_COMMON
 	select CPU_HAS_L2_ENABLE_MSR
 	select TCO_SPACE_NOT_YET_SPLIT
-	select USE_DDR3
+	select DRAM_SUPPORT_DDR3
 	select NEED_SMALL_2MB_PAGE_TABLES
 	help
 	  Bay Trail M/D part support.

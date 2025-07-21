@@ -27,7 +27,7 @@ config SOC_INTEL_SNOWRIDGE
 	select ACPI_INTEL_HARDWARE_SLEEP_VALUES
 
 	## Device
-	select USE_DDR4
+	select DRAM_SUPPORT_DDR4
 
 	## Drivers
 	select CACHE_MRC_SETTINGS

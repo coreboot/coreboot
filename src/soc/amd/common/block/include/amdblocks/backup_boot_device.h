@@ -6,6 +6,11 @@
 #include <commonlib/region.h>
 #include <spi_flash.h>
 
+enum boot_device {
+	FLASH_PRIMARY, // primary SPI flash
+	FLASH_BACKUP,  // backup  SPI flash
+};
+
 /* Retrieve the SPI CS index of the backup boot device. */
 int backup_boot_device_spi_cs(void);
 

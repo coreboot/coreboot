@@ -25,8 +25,10 @@
  */
 
 #include <timer.h>
+#include <amdblocks/backup_boot_device.h>
 #include <amdblocks/psp.h>
 #include <amdblocks/reset.h>
+#include <boot_device.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <commonlib/region.h>
@@ -93,12 +95,39 @@ static tpm_result_t crb_wait_for_reg32(const void *addr,
 	}
 }
 
-static int erase_region(const char *name)
+static int synchronize_region(const char *name)
+{
+	struct region ar;
+
+	if (fmap_locate_area(name, &ar)) {
+		printk(BIOS_ERR, "FTPM: Unable to find FMAP region %s\n", name);
+		return -1;
+	}
+
+	if (backup_boot_device_sync_subregion(&ar, true)) {
+		printk(BIOS_ERR, "FTPM: Failed to synchronize subregion %s\n", name);
+		return -1;
+	}
+
+	return 0;
+}
+
+static int erase_region(const char *name, const enum boot_device boot_device)
 {
 	struct region_device store;
+	struct region ar;
 
-	if (fmap_locate_area_as_rdev_rw(name, &store)) {
-		printk(BIOS_ERR, "fTPM: Unable to find FMAP region %s\n", name);
+	if (fmap_locate_area(name, &ar)) {
+		printk(BIOS_ERR, "FTPM: Unable to find FMAP region %s\n", name);
+		return -1;
+	}
+	if (boot_device == FLASH_PRIMARY && boot_device_rw_subregion(&ar, &store)) {
+		printk(BIOS_ERR, "FTPM: Unable to find FMAP region %s\n", name);
+		return -1;
+	}
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_SPI_BACKUP_SPI_FLASH) && boot_device == FLASH_BACKUP &&
+	    backup_boot_device_rw_subregion(&ar, &store)) {
+		printk(BIOS_ERR, "FTPM: Unable to find FMAP region %s\n", name);
 		return -1;
 	}
 
@@ -107,7 +136,6 @@ static int erase_region(const char *name)
 		return -1;
 
 	printk(BIOS_NOTICE, "fTPM: Erased FMAP region %s\n", name);
-
 	return 0;
 }
 
@@ -129,15 +157,23 @@ tpm_result_t crb_tpm_init(void)
 	psp_ftpm_needs_recovery(&psp_rpmc_nvram, &psp_nvram, &psp_dir);
 
 	if (psp_rpmc_nvram) {
-		if (erase_region(FMAP_NAME_PSP_RPMC_NVRAM))
-			psp_rpmc_nvram = false;	/* Skip reset if erase failed */
-	}
+		if (erase_region(FMAP_NAME_PSP_RPMC_NVRAM, FLASH_PRIMARY))
+			psp_rpmc_nvram = false; /* Skip reset if erase failed */
 
+		if (CONFIG(SOC_AMD_COMMON_BLOCK_SPI_BACKUP_SPI_FLASH) &&
+		    erase_region(FMAP_NAME_PSP_RPMC_NVRAM, FLASH_BACKUP))
+			printk(BIOS_ERR, "Failed to erase backup " FMAP_NAME_PSP_RPMC_NVRAM
+					 " FMAP region\n");
+	}
 	if (psp_nvram) {
-		if (erase_region(FMAP_NAME_PSP_NVRAM))
-			psp_nvram = false;	/* Skip reset if erase failed */
-	}
+		if (erase_region(FMAP_NAME_PSP_NVRAM, FLASH_PRIMARY))
+			psp_nvram = false; /* Skip reset if erase failed */
 
+		if (CONFIG(SOC_AMD_COMMON_BLOCK_SPI_BACKUP_SPI_FLASH) &&
+		    erase_region(FMAP_NAME_PSP_NVRAM, FLASH_BACKUP))
+			printk(BIOS_ERR, "Failed to erase backup " FMAP_NAME_PSP_NVRAM
+					 " FMAP region\n");
+	}
 	if (psp_rpmc_nvram || psp_nvram) {
 		printk(BIOS_DEBUG, "fTPM: Reset to recover fTPM...\n");
 		cold_reset();
@@ -150,6 +186,11 @@ tpm_result_t crb_tpm_init(void)
 
 	if (!psp_ftpm_is_active())
 		return CB_ERR_NOT_IMPLEMENTED;
+
+	if (CONFIG(SOC_AMD_COMMON_BLOCK_SPI_BACKUP_SPI_FLASH)) {
+		synchronize_region(FMAP_NAME_PSP_NVRAM);
+		synchronize_region(FMAP_NAME_PSP_RPMC_NVRAM);
+	}
 
 	if (ENV_HAS_CBMEM) {
 		/* setting up fTPM communication buffers in cbmem */
@@ -177,7 +218,6 @@ tpm_result_t crb_tpm_init(void)
 		write64(CRB_REG(CRB_REG_CMD_ADDR), (uintptr_t)buf);
 		write32(CRB_REG(CRB_REG_RESP_SIZE), FTPM_CRB_SIZE);
 		write64(CRB_REG(CRB_REG_RESP_ADDR), (uintptr_t)buf + FTPM_CRB_SIZE);
-
 		/*
 		 * The OS will read the CRB registers to find the communication
 		 * buffers. No need to advertise it in ACPI.

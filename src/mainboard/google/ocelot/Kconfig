@@ -115,7 +115,7 @@ config DRIVER_TPM_I2C_ADDR
 
 config DRIVER_TPM_I2C_BUS
 	hex
-	default 0x01 if BOARD_GOOGLE_OCELOT
+	default 0x01 if BOARD_GOOGLE_MODEL_OCELOT
 
 config HAVE_SLP_S0_GATE
 	def_bool n

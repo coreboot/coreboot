@@ -341,6 +341,12 @@ enum slew_rate {
 	SLEW_FAST_16
 };
 
+enum sata_speed_limit {
+	SATA_DEFAULT,
+	SATA_GEN1,	/* 1.5 Gbps */
+	SATA_GEN2	/* 3.0 Gbps */
+};
+
 struct soc_intel_alderlake_config {
 	/* Common struct containing soc config data required by common code */
 	struct soc_intel_common_config common_soc_config;
@@ -416,6 +422,7 @@ struct soc_intel_alderlake_config {
 	bool sata_salp_support;
 	bool sata_ports_enable[8];
 	bool sata_ports_dev_slp[8];
+	enum sata_speed_limit sata_speed;
 
 	/*
 	 * Enable(0)/Disable(1) SATA Power Optimizer on PCH side.

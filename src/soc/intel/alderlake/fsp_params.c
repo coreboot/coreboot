@@ -778,6 +778,7 @@ static void fill_fsps_sata_params(FSP_S_CONFIG *s_cfg,
 	if (s_cfg->SataEnable) {
 		s_cfg->SataMode = config->sata_mode;
 		s_cfg->SataSalpSupport = config->sata_salp_support;
+		s_cfg->SataSpeedLimit = config->sata_speed;
 		memcpy(s_cfg->SataPortsEnable, config->sata_ports_enable,
 			sizeof(s_cfg->SataPortsEnable));
 		memcpy(s_cfg->SataPortsDevSlp, config->sata_ports_dev_slp,

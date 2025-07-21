@@ -134,6 +134,7 @@ int boot_device_spi_cs(void)
 }
 
 static uint8_t cmd_code;
+static uint8_t alt_cs;
 static uint8_t tx_byte_count;
 static uint8_t rx_byte_count;
 static uint8_t fifo[SPI_FIFO_DEPTH];
@@ -144,6 +145,7 @@ void fch_spi_backup_registers(void)
 	if (ENV_SMM && (spi_read8(SPI_MISC_CNTRL) & SPI_SEMAPHORE_BIOS_LOCKED))
 		return;
 
+	alt_cs = spi_read8(SPI_ALT_CS_REG);
 	cmd_code = spi_read8(SPI_CMD_CODE);
 	tx_byte_count = spi_read8(SPI_TX_BYTE_COUNT);
 	rx_byte_count = spi_read8(SPI_RX_BYTE_COUNT);
@@ -158,6 +160,7 @@ void fch_spi_restore_registers(void)
 	if (ENV_SMM && (spi_read8(SPI_MISC_CNTRL) & SPI_SEMAPHORE_BIOS_LOCKED))
 		return;
 
+	spi_write8(SPI_ALT_CS_REG, alt_cs);
 	spi_write8(SPI_CMD_CODE, cmd_code);
 	spi_write8(SPI_TX_BYTE_COUNT, tx_byte_count);
 	spi_write8(SPI_RX_BYTE_COUNT, rx_byte_count);
@@ -350,6 +353,16 @@ static int spi_ctrlr_claim_bus(const struct spi_slave *slave)
 			spi_write8(SPI_MISC_CNTRL, reg8 | SPI_SEMAPHORE_BIOS_LOCKED);
 	}
 
+	/* Set chip select line */
+	if (slave->cs <= 3) {
+		reg8 = spi_read8(SPI_ALT_CS_REG);
+		if ((reg8 & SPI_ALT_CS_REG_MASK) != slave->cs) {
+			reg8 &= ~SPI_ALT_CS_REG_MASK;
+			reg8 |= slave->cs;
+			spi_write8(SPI_ALT_CS_REG, reg8);
+		}
+	}
+
 	return 0;
 }
 
@@ -357,6 +370,14 @@ static int spi_ctrlr_claim_bus(const struct spi_slave *slave)
 static void spi_ctrlr_release_bus(const struct spi_slave *slave)
 {
 	uint8_t reg8;
+
+	/* Reset chip select line */
+	reg8 = spi_read8(SPI_ALT_CS_REG);
+	if ((reg8 & SPI_ALT_CS_REG_MASK) != default_cs) {
+		reg8 &= ~SPI_ALT_CS_REG_MASK;
+		reg8 |= default_cs;
+		spi_write8(SPI_ALT_CS_REG, reg8);
+	}
 
 	if (ENV_RAMSTAGE && CONFIG(SOC_AMD_COMMON_BLOCK_PSP_SMI)) {
 		reg8 = spi_read8(SPI_MISC_CNTRL);

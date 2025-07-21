@@ -151,8 +151,6 @@ extern const struct pch_gpio_map mainboard_gpio_map;
 /* Configure GPIOs with mainboard provided settings */
 void setup_pch_gpios(const struct pch_gpio_map *gpio);
 
-void clear_gpio(int gpio_num);
-
 int gpio_is_native(int gpio_num);
 
 #endif

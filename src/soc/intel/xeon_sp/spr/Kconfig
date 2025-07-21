@@ -17,6 +17,7 @@ config SOC_INTEL_SAPPHIRERAPIDS_SP
 	select SOC_INTEL_HAS_CXL
 	select HAVE_X86_64_SUPPORT
 	select HAVE_INTEL_FSP_REPO
+	select DRAM_SUPPORT_DDR5
 	help
 	  Intel Sapphire Rapids-SP support
 

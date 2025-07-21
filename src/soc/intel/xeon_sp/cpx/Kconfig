@@ -9,6 +9,7 @@ config SOC_INTEL_COOPERLAKE_SP
 	select HAVE_INTEL_FSP_REPO
 	select FSP_SPEC_VIOLATION_XEON_SP_HEAP_WORKAROUND
 	select UDK_202005_BINDING
+	select DRAM_SUPPORT_DDR4
 	help
 	  Intel Cooper Lake-SP support
 

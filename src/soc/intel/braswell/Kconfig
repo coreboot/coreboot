@@ -40,6 +40,7 @@ config SOC_INTEL_BRASWELL
 	select NO_CBFS_MCACHE
 	select TCO_SPACE_NOT_YET_SPLIT
 	select NEED_SMALL_2MB_PAGE_TABLES
+	select DRAM_SUPPORT_DDR3
 	help
 	  Braswell M/D part support.
 

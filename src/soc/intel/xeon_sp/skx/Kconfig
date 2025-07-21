@@ -8,6 +8,7 @@ config SOC_INTEL_SKYLAKE_SP
 	select UDK_202005_BINDING
 	select HAVE_X86_64_SUPPORT
 	select USE_X86_64_SUPPORT
+	select DRAM_SUPPORT_DDR4
 	help
 	  Intel Skylake-SP support
 

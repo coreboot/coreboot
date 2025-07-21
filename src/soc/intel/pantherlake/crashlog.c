@@ -20,6 +20,7 @@
 #define CRASHLOG_CONSUMED_BIOS_MASK	BIT(27)
 #define CRASHLOG_SET_CLEAR_TRIGGER_MASK	BIT(30)
 #define CRASHLOG_SET_CONSUMED_MASK	BIT(18)
+#define CRASHLOG_REARM_TRIGGER_MASK	BIT(28)
 
 /* Global crashLog info */
 static bool m_pmc_crash_log_support;
@@ -385,13 +386,6 @@ int cl_get_total_data_size(void)
 	return m_pmc_crash_log_size + m_cpu_crash_log_size;
 }
 
-static uintptr_t get_control_status_interface(void)
-{
-	if (disc_tab_addr)
-		return (disc_tab_addr + CONTROL_INTERFACE_OFFSET * sizeof(u32));
-	return 0;
-}
-
 int cpu_cl_clear_data(void)
 {
 	/* Clear all crashlog data and CRASHLOG_SET_CONSUMED = 1 -> sets CONSUMED_BIOS bit */
@@ -417,18 +411,8 @@ static bool wait_and_check(u32 bit_mask)
 
 void cpu_cl_rearm(void)
 {
-	uintptr_t ctrl_sts_intfc_addr = get_control_status_interface();
-
-	if (!ctrl_sts_intfc_addr) {
-		printk(BIOS_ERR, "CPU crashlog control and status interface address not valid\n");
-		return;
-	}
-
-	/* Rearm the CPU crashlog. Crashlog does not get collected if rearming fails */
-	cl_punit_control_interface_t punit_ctrl_intfc;
-	memset(&punit_ctrl_intfc, 0, sizeof(cl_punit_control_interface_t));
-	punit_ctrl_intfc.fields.set_re_arm = 1;
-	write32p(ctrl_sts_intfc_addr, punit_ctrl_intfc.data);
+	setbits64p(cl_get_cpu_bar_addr() + CRASHLOG_WATCHER_CONTROL_OFFSET,
+			CRASHLOG_REARM_TRIGGER_MASK);
 
 	if (!wait_and_check(CRASHLOG_RE_ARM_STATUS_MASK))
 		printk(BIOS_ERR, "CPU crashlog re_arm not asserted\n");

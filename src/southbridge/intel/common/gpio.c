@@ -146,7 +146,79 @@ int gpio_is_native(int gpio_num)
 	return !(config & (1 << bit));
 }
 
-void gpio_input(gpio_t gpio)
+static void gpio_set_gpio(gpio_t gpio_num)
 {
-	// FIXME: Implement
+	static const int gpio_use_reg_offsets[] = {
+		GPIO_USE_SEL, GPIO_USE_SEL2, GPIO_USE_SEL3
+	};
+	u16 gpio_base = get_gpio_base();
+	int index, bit;
+	u32 config;
+
+	if (gpio_num > MAX_GPIO_NUMBER)
+		return; /* Just ignore wrong gpio numbers. */
+
+	index = gpio_num / 32;
+	bit = gpio_num % 32;
+
+	config = inl(gpio_base + gpio_use_reg_offsets[index]);
+	if (config & (GPIO_MODE_GPIO << bit))
+		return;
+
+	config |= GPIO_MODE_GPIO << bit;
+	outl(gpio_base + gpio_use_reg_offsets[index], config);
+}
+
+void gpio_input(gpio_t gpio_num)
+{
+	static const int gpio_io_reg_offsets[] = {
+		GP_IO_SEL, GP_IO_SEL2, GP_IO_SEL3
+	};
+	u16 gpio_base = get_gpio_base();
+	int index, bit;
+	u32 config;
+
+	if (gpio_num > MAX_GPIO_NUMBER)
+		return; /* Just ignore wrong gpio numbers. */
+
+	gpio_set_gpio(gpio_num);
+
+	index = gpio_num / 32;
+	bit = gpio_num % 32;
+
+	config = inl(gpio_base + gpio_io_reg_offsets[index]);
+	if (((config >> bit) & 1) == GPIO_DIR_INPUT)
+		return;
+
+	config |= 1 << bit;
+	outl(gpio_base + gpio_io_reg_offsets[index], config);
+}
+
+void gpio_output(gpio_t gpio_num, int value)
+{
+	static const int gpio_io_reg_offsets[] = {
+		GP_IO_SEL, GP_IO_SEL2, GP_IO_SEL3
+	};
+	u16 gpio_base = get_gpio_base();
+	int index, bit;
+	u32 config;
+
+	if (gpio_num > MAX_GPIO_NUMBER)
+		return; /* Just ignore wrong gpio numbers. */
+
+	gpio_set_gpio(gpio_num);
+	gpio_set(gpio_num, value);
+
+	index = gpio_num / 32;
+	bit = gpio_num % 32;
+
+	config = inl(gpio_base + gpio_io_reg_offsets[index]);
+	if (((config >> bit) & 1) == GPIO_DIR_OUTPUT)
+		return;
+
+	config &= ~(1 << bit);
+	outl(gpio_base + gpio_io_reg_offsets[index], config);
+
+	/* Set value again in case output register was gated */
+	gpio_set(gpio_num, value);
 }

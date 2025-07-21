@@ -7,6 +7,7 @@
 #include <device/pci_def.h>
 #include <cpu/intel/em64t101_save_state.h>
 #include <cpu/intel/model_2065x/model_2065x.h>
+#include <gpio.h>
 #include <southbridge/intel/common/finalize.h>
 #include <southbridge/intel/common/pmbase.h>
 #include <southbridge/intel/ibexpeak/me.h>
@@ -17,58 +18,18 @@
  *  2. we don't need to worry about how we leave 0xcf8/0xcfc behind
  */
 #include <northbridge/intel/ironlake/ironlake.h>
-#include <southbridge/intel/common/gpio.h>
 #include <southbridge/intel/common/pmutil.h>
 
-static void southbridge_gate_memory_reset_real(int offset,
-					       u16 use, u16 io, u16 lvl)
-{
-	u32 reg32;
-
-	/* Make sure it is set as GPIO */
-	reg32 = inl(use);
-	if (!(reg32 & (1 << offset))) {
-		reg32 |= (1 << offset);
-		outl(reg32, use);
-	}
-
-	/* Make sure it is set as output */
-	reg32 = inl(io);
-	if (reg32 & (1 << offset)) {
-		reg32 &= ~(1 << offset);
-		outl(reg32, io);
-	}
-
-	/* Drive the output low */
-	reg32 = inl(lvl);
-	reg32 &= ~(1 << offset);
-	outl(reg32, lvl);
-}
-
 /*
- * Drive GPIO 60 low to gate memory reset in S3.
+ * Drive reset gate GPIO low to gate memory reset in S3.
  *
  * Intel reference designs all use GPIO 60 but it is
  * not a requirement and boards could use a different pin.
  */
 void southbridge_gate_memory_reset(void)
 {
-	u16 gpiobase;
 
-	gpiobase = pci_read_config16(PCI_DEV(0, 0x1f, 0), GPIOBASE) & 0xfffc;
-	if (!gpiobase)
-		return;
-
-	if (CONFIG_DRAM_RESET_GATE_GPIO >= 32)
-		southbridge_gate_memory_reset_real(CONFIG_DRAM_RESET_GATE_GPIO - 32,
-						   gpiobase + GPIO_USE_SEL2,
-						   gpiobase + GP_IO_SEL2,
-						   gpiobase + GP_LVL2);
-	else
-		southbridge_gate_memory_reset_real(CONFIG_DRAM_RESET_GATE_GPIO,
-						   gpiobase + GPIO_USE_SEL,
-						   gpiobase + GP_IO_SEL,
-						   gpiobase + GP_LVL);
+	gpio_output(CONFIG_DRAM_RESET_GATE_GPIO, 0);
 }
 
 void southbridge_smi_monitor(void)

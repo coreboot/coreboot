@@ -15,9 +15,6 @@
 #define TEL_DVSEC_TBIR_BAR0			0
 #define TEL_DVSEC_TBIR_BAR1			1
 
-/* CPU CrashLog MMIO Registers */
-#define CRASHLOG_MAILBOX_INTF_ADDRESS		0x6038
-
 typedef union {
 	struct {
 		u32 reserved1		:27;

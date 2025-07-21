@@ -438,32 +438,12 @@ void cpu_cl_rearm(void)
 
 void cpu_cl_cleanup(void)
 {
-	/* Perform any SOC specific cleanup after reading the crashlog data from SRAM */
-	uintptr_t ctrl_sts_intfc_addr = get_control_status_interface();
-
-	if (!ctrl_sts_intfc_addr) {
-		printk(BIOS_ERR, "CPU crashlog control and status interface address not valid\n");
-		return;
-	}
-
-	/* If storage-off is supported, turn off the PUNIT SRAM
-	 * stroage to save power. This clears crashlog records also.
+	/*
+	 * Crashlog storage and power management in PTL is changed to a unified
+	 * and persistent model,removing the need for manual SRAM power-down
+	 * commands after crashlog extraction.
 	 */
-
-	if (!cpu_cl_disc_tab.header.fields.storage_off_support) {
-		printk(BIOS_INFO, "CPU crashlog storage_off not supported\n");
-		return;
-	}
-
-	cl_punit_control_interface_t punit_ctrl_intfc;
-	memset(&punit_ctrl_intfc, 0, sizeof(cl_punit_control_interface_t));
-	punit_ctrl_intfc.fields.set_storage_off = 1;
-	write32p(ctrl_sts_intfc_addr, punit_ctrl_intfc.data);
-
-	if (!wait_and_check(CRASHLOG_PUNIT_STORAGE_OFF_MASK))
-		printk(BIOS_ERR, "CPU crashlog storage_off not asserted\n");
-	else
-		printk(BIOS_DEBUG, "CPU crashlog storage_off asserted\n");
+	/* Does nothing. */
 }
 
 pmc_ipc_discovery_buf_t cl_get_pmc_discovery_buf(void)

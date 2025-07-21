@@ -56,10 +56,9 @@ static void mainboard_enable(struct device *dev)
 					GMA_INT15_PANEL_FIT_DEFAULT,
 					GMA_INT15_BOOT_DISPLAY_DEFAULT, 0);
 
-	pin_sts = gpio_get(GPIO_CHASSIS_ID0);
-	pin_sts |= gpio_get(GPIO_CHASSIS_ID1) << 1;
-	pin_sts |= gpio_get(GPIO_CHASSIS_ID2) << 2;
-	pin_sts |= gpio_get(GPIO_FRONT_PANEL_CHASSIS_DET_L) << 3;
+	const gpio_t chassis_id_pins[] = {GPIO_CHASSIS_ID0, GPIO_CHASSIS_ID1,
+					  GPIO_CHASSIS_ID2, GPIO_FRONT_PANEL_CHASSIS_DET_L};
+	pin_sts = gpio_base2_value(chassis_id_pins, ARRAY_SIZE(chassis_id_pins));
 
 	printk(BIOS_DEBUG, "Chassis type: ");
 	switch (pin_sts) {
@@ -88,15 +87,13 @@ static void mainboard_enable(struct device *dev)
 		break;
 	}
 
-	pin_sts = gpio_get(GPIO_BOARD_REV0);
-	pin_sts |= gpio_get(GPIO_BOARD_REV1) << 1;
-	pin_sts |= gpio_get(GPIO_BOARD_REV2) << 2;
+	const gpio_t board_id_pins[] = {GPIO_BOARD_REV0, GPIO_BOARD_REV1, GPIO_BOARD_REV2};
+	pin_sts = gpio_base2_value(board_id_pins, ARRAY_SIZE(board_id_pins));
 
 	printk(BIOS_DEBUG, "Board revision: %d\n", pin_sts);
 
-	pin_sts = gpio_get(GPIO_SKU0);
-	pin_sts |= gpio_get(GPIO_SKU1) << 1;
-	pin_sts |= gpio_get(GPIO_SKU2) << 2;
+	const gpio_t sku_id_pins[] = {GPIO_SKU0, GPIO_SKU1, GPIO_SKU2};
+	pin_sts = gpio_base2_value(sku_id_pins, ARRAY_SIZE(sku_id_pins));
 
 	printk(BIOS_DEBUG, "SKU ID is %d:", pin_sts);
 	switch (pin_sts) {

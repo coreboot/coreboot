@@ -269,8 +269,8 @@ static uint8_t get_chassis_type(void)
 	uint8_t gpio_chassis_type;
 
 	// Read chassis type from GPIO
-	gpio_chassis_type = gpio_get(70) << 3 | gpio_get(38) << 2 |
-	gpio_get(17) << 1 | gpio_get(1);
+	const gpio_t chassis_id_pins[] = {1, 17, 38, 70};
+	gpio_chassis_type = gpio_base2_value(chassis_id_pins, ARRAY_SIZE(chassis_id_pins));
 
 	printk(BIOS_DEBUG, "GPIO chassis type = %#x\n", gpio_chassis_type);
 

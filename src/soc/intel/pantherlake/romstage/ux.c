@@ -5,12 +5,15 @@
 #include <fsp/util.h>
 #include <timestamp.h>
 #include <ux_locales.h>
+#include <static.h>
+#include <soc/soc_chip.h>
 
 #include "ux.h"
 
 static bool ux_inform_user_of_operation(const char *name, enum ux_locale_msg id,
 		 FSPM_UPD *mupd)
 {
+	const struct soc_intel_pantherlake_config *config = config_of_soc();
 	timestamp_add_now(TS_ESOL_START);
 
 	if (!CONFIG(CHROMEOS_ENABLE_ESOL)) {
@@ -45,6 +48,8 @@ static bool ux_inform_user_of_operation(const char *name, enum ux_locale_msg id,
 	}
 
 	m_cfg->VgaInitControl = VGA_INIT_CONTROL_ENABLE;
+	if (config->disable_progress_bar)
+		m_cfg->VgaInitControl |= VGA_INIT_DISABLE_ANIMATION;
 	m_cfg->VbtPtr = (efi_uintn_t)vbt;
 	m_cfg->VbtSize = vbt_size;
 	m_cfg->LidStatus = CONFIG(VBOOT_LID_SWITCH) ? get_lid_switch() : CONFIG(RUN_FSP_GOP);

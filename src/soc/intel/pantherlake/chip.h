@@ -653,6 +653,9 @@ struct soc_intel_pantherlake_config {
 	 * for wake will be exposed in ACPI
 	 */
 	bool thc_wake_on_touch[NUM_THC];
+
+	/* Disable the progress bar during MRC training operations. */
+	bool disable_progress_bar;
 };
 
 typedef struct soc_intel_pantherlake_config config_t;

@@ -13,6 +13,9 @@
 #define GPLL0_MAIN_HZ		(600 * MHz)
 #define CLK_100MHZ		(100 * MHz)
 
+/* CPU PLL*/
+#define L_VAL_1363P2MHz		0x47
+
 #define PCIE_PHY_RCHNG_FREQ CLK_100MHZ
 
 #define QUPV3_WRAP0_CLK_ENA_S(idx)		(10 + idx)
@@ -21,6 +24,21 @@
 
 #define QUPV3_WRAP1_SE7_CLK_ENA			16
 #define QUPV3_WRAP2_SE7_CLK_ENA			17
+
+#define LOCKDEASSERTTMOUTCNT_BMSK		0xFFF
+#define LOCKTMOUTCNT_BMSK			0xFFFF
+
+#define LOCKDEASSERTTMOUTCNT_VAL		960LL
+#define LOCKTMOUTCNT_VAL			960LL
+
+#define PFA_MSB_VAL				2
+#define RON_DEGEN_MULTIPLY_VAL			1
+#define FBC_ALPHA_CAL_VAL			2
+#define PLL_COUNTER_ENABLE_VAL			1
+
+#define CHP_REF_CUR_TRIM_VAL			1
+#define ADC_KLSB_VALUE_VAL			4
+#define ADC_KMSB_VALUE_VAL			10
 
 enum clk_ctl_gpll_user_ctl_x1p42100 {
 	PLL_PLLOUT_MAIN_SHFT_X1P42100 = 0,
@@ -83,6 +101,30 @@ enum apcs_branch_en_vote {
 	NO_VOTE_BIT = -1,
 };
 
+enum ncc0_cmu_clk_cfg_x1p42100 {
+	OVRCKMUXPLLFASTCLK = 2,
+	SELCKMUXPLLFASTCLK = 3,
+	PLLSWCTL = 25,
+};
+
+enum ncc0_cmu_pll_cfg_x1p42100 {
+	LOCKTMOUTCNT = 0,
+	LOCKDEASSERTTMOUTCNT = 32,
+};
+
+enum ncc0_pll0_config_ctl {
+	PFA_MSB = 10,
+	RON_DEGEN_MULTIPLY = 18,
+	FBC_ALPHA_CAL = 20,
+	PLL_COUNTER_ENABLE = 27,
+};
+
+enum ncc0_pll0_config_ctl_u {
+	CHP_REF_CUR_TRIM = 0,
+	ADC_KLSB_VALUE = 13,
+	ADC_KMSB_VALUE = 23,
+};
+
 struct x1p42100_gpll {
 	u32 mode;
 	u32 opmode;
@@ -95,6 +137,22 @@ struct x1p42100_gpll {
 	u32 config_ctl;
 	u32 config_ctl_u;
 	u32 config_ctl_u1;
+};
+
+struct x1p42100_ncc0_clock {
+	u32 pll0_mode;
+	u32 pll0_l;
+	u32 pll0_alpha;
+	u32 pll0_user_ctl;
+	u32 pll0_user_ctl_u;
+	u32 pll0_config_ctl;
+	u32 pll0_config_ctl_u;
+	u32 pll0_config_ctl_u1;
+	u32 pll0_config_ctl_u2;
+	u32 pll0_test_ctl;
+	u32 pll0_test_ctl_u;
+	u32 pll0_test_ctl_u1;
+	u32 pll0_opmode;
 };
 
 struct x1p42100_pcie_noc {
@@ -336,5 +394,5 @@ enum cb_err clock_configure_mux(enum clk_pcie clk_type, u32 src_type);
 /* Subsystem Reset */
 static struct aoss *const aoss = (void *)AOSS_CC_BASE;
 static struct x1p42100_gcc *const gcc = (void *)GCC_BASE;
-
+static struct x1p42100_ncc0_clock *const apss_ncc0 = (void *)NCC0_BASE;
 #endif	// __SOC_QUALCOMM_X1P42100_CLOCK_H__

@@ -339,9 +339,55 @@ void clock_configure_pcie(void)
 			pcie_core_cfg, PCIE_PHY_RCHNG_FREQ, ARRAY_SIZE(pcie_core_cfg));
 }
 
+static enum cb_err pll_init_and_set(struct x1p42100_ncc0_clock *ncc0, u32 l_val)
+{
+	int ret;
+	struct alpha_pll_reg_val_config ncc0_pll_cfg = {0};
+
+	setbits64p(NCC0_NCC_CMU_NCC_CLK_CFG, (BIT(PLLSWCTL) | BIT(OVRCKMUXPLLFASTCLK)));
+
+	setbits64p(NCC0_NCC_CMU_NCC_PLL_CFG,
+		(((LOCKTMOUTCNT_VAL & LOCKTMOUTCNT_BMSK) << LOCKTMOUTCNT) |
+		((LOCKDEASSERTTMOUTCNT_VAL & LOCKDEASSERTTMOUTCNT_BMSK) << LOCKDEASSERTTMOUTCNT)));
+
+	ncc0_pll_cfg.reg_config_ctl = &ncc0->pll0_config_ctl;
+
+	ncc0_pll_cfg.config_ctl_val = (read32(ncc0_pll_cfg.reg_config_ctl) |
+					PFA_MSB_VAL << PFA_MSB |
+					RON_DEGEN_MULTIPLY_VAL << RON_DEGEN_MULTIPLY |
+					FBC_ALPHA_CAL_VAL << FBC_ALPHA_CAL |
+					PLL_COUNTER_ENABLE_VAL << PLL_COUNTER_ENABLE);
+
+	ncc0_pll_cfg.reg_config_ctl_hi = &ncc0->pll0_config_ctl_u;
+	ncc0_pll_cfg.config_ctl_hi_val = (read32(ncc0_pll_cfg.reg_config_ctl_hi) |
+					CHP_REF_CUR_TRIM_VAL << CHP_REF_CUR_TRIM |
+					ADC_KLSB_VALUE_VAL << ADC_KLSB_VALUE |
+					ADC_KMSB_VALUE_VAL << ADC_KMSB_VALUE);
+
+	ncc0_pll_cfg.reg_l = &ncc0->pll0_l;
+	ncc0_pll_cfg.l_val = l_val;
+
+	ncc0_pll_cfg.reg_alpha = &ncc0->pll0_alpha;
+	ncc0_pll_cfg.alpha_val = 0x00;
+
+	clock_configure_enable_gpll(&ncc0_pll_cfg, false, 0);
+
+	ncc0_pll_cfg.reg_mode = &ncc0->pll0_mode;
+	ncc0_pll_cfg.reg_opmode = &ncc0->pll0_opmode;
+	ret =  zondaole_pll_enable(&ncc0_pll_cfg);
+	if (ret != CB_SUCCESS)
+		return CB_ERR;
+
+	setbits64p(NCC0_NCC_CMU_NCC_CLK_CFG, BIT(SELCKMUXPLLFASTCLK));
+
+	return CB_SUCCESS;
+}
+
 static void speed_up_boot_cpu(void)
 {
-	/* Placeholder */
+	/* 1363.2 MHz */
+	if (!pll_init_and_set(apss_ncc0, L_VAL_1363P2MHz))
+		printk(BIOS_DEBUG, "NCC Frequency bumped to 1.363(GHz)\n");
 }
 
 void clock_init(void)

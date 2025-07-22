@@ -12,6 +12,8 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
+#include <cpu/x86/msr.h>
+#include <soc/msr.h>
 
 #define MAX_PATH_DEPTH		12
 #define MAX_NUM_MAPPINGS	10
@@ -94,6 +96,15 @@ void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 	params->TurboMode = 0;
 }
 
+static void disable_c1e(void)
+{
+	msr_t msr;
+
+	msr = rdmsr(MSR_POWER_CTL);
+	msr.lo &= ~(1 << 1);
+	wrmsr(MSR_POWER_CTL, msr);
+}
+
 static void mainboard_final(void *chip_info)
 {
 	struct device *dev;
@@ -104,8 +115,9 @@ static void mainboard_final(void *chip_info)
 		if (dev)
 			pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 	}
-}
 
+	disable_c1e();
+}
 
 static void mainboard_init(void *chip_info)
 {

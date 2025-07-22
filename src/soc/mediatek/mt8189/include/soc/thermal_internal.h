@@ -34,9 +34,8 @@
 #define STAGE3_INT_EN			BIT(31)
 
 /* SRAM for Thermal */
-#define THERMAL_ATC_SRAM_OFFSET		0x280
-#define THERMAL_SRAM_BASE		(_thermal_reserved + THERMAL_ATC_SRAM_OFFSET)
-#define THERMAL_SRAM_LEN		(24 * 4)
+#define THERMAL_SRAM_BASE		_thermal_reserved
+#define THERMAL_SRAM_LEN		REGION_SIZE(thermal_reserved)
 #define THERMAL_STAT_SRAM_BASE		_cpucooler_reserved
 #define THERMAL_STAT_SRAM_LEN		REGION_SIZE(cpucooler_reserved)
 

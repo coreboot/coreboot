@@ -56,14 +56,20 @@ static void add_mem_chip_info(int unused)
 
 CBMEM_CREATION_HOOK(add_mem_chip_info);
 
-struct qclib_cb_if_table qclib_cb_if_table = {
-	.magic = QCLIB_MAGIC_NUMBER,
-	.version = QCLIB_INTERFACE_VERSION,
-	.num_entries = 0,
-	.max_entries = QCLIB_MAX_NUMBER_OF_ENTRIES,
-	.global_attributes = 0,
-	.reserved = 0,
-};
+struct qclib_cb_if_table qclib_cb_if_table;
+
+static inline void init_qclib_cb_if_table(struct qclib_cb_if_table *tbl)
+{
+	if (!tbl)
+		return;
+
+	memcpy(tbl->magic, QCLIB_MAGIC_NUMBER, sizeof(tbl->magic));
+	tbl->version = QCLIB_INTERFACE_VERSION;
+	tbl->num_entries = 0;
+	tbl->max_entries = QCLIB_MAX_NUMBER_OF_ENTRIES;
+	tbl->global_attributes = 0;
+	tbl->reserved = 0;
+}
 
 const char *qclib_file_default(enum qclib_cbfs_file file)
 {
@@ -76,6 +82,12 @@ const char *qclib_file_default(enum qclib_cbfs_file file)
 		return CONFIG_CBFS_PREFIX "/qclib";
 	case QCLIB_CBFS_DCB:
 		return CONFIG_CBFS_PREFIX "/dcb";
+	case QCLIB_CBFS_DTB:
+		return CONFIG_CBFS_PREFIX "/dtb";
+	case QCLIB_CBFS_SHRM_META:
+		return CONFIG_CBFS_PREFIX "/shrm_meta";
+	case QCLIB_CBFS_AOP_META:
+		return CONFIG_CBFS_PREFIX "/aop_meta";
 	default:
 		die("unknown QcLib file %d", file);
 	}
@@ -167,14 +179,43 @@ static void dump_te_table(void)
 
 __weak int qclib_soc_override(struct qclib_cb_if_table *table) { return 0; }
 
+struct prog qclib; /* This will be re-used by qclib_rerun() */
+
+static void qclib_prepare_and_run(void)
+{
+	struct mmu_context pre_qclib_mmu_context;
+
+	printk(BIOS_DEBUG, "Global Attributes[%#x]..Table Entries Count[%d]\n",
+		qclib_cb_if_table.global_attributes,
+		qclib_cb_if_table.num_entries);
+	printk(BIOS_DEBUG, "Jumping to QCLib code at %p(%p)\n",
+		prog_entry(&qclib), prog_entry_arg(&qclib));
+
+	/* back-up mmu context before disabling mmu and executing qclib */
+	mmu_save_context(&pre_qclib_mmu_context);
+	/* disable mmu before jumping to qclib. mmu_disable also
+	   flushes and invalidates caches before disabling mmu. */
+	mmu_disable();
+
+	prog_run(&qclib);
+
+	/* Before returning, QCLib flushes cache and disables mmu.
+	   Explicitly disable mmu (flush, invalidate and disable mmu)
+	   before re-enabling mmu with backed-up mmu context */
+	mmu_disable();
+	mmu_restore_context(&pre_qclib_mmu_context);
+	mmu_enable();
+}
+
 void qclib_load_and_run(void)
 {
 	int i;
 	ssize_t data_size;
-	struct mmu_context pre_qclib_mmu_context;
 
 	/* zero ddr_information SRAM region, needs new data each boot */
 	memset(ddr_region, 0, sizeof(struct region));
+
+	init_qclib_cb_if_table(&qclib_cb_if_table);
 
 	/* output area, QCLib copies console log buffer out */
 	if (CONFIG(CONSOLE_CBMEM))
@@ -198,14 +239,16 @@ void qclib_load_and_run(void)
 	/* Address and size of this entry will be filled in by QcLib. */
 	qclib_add_if_table_entry(QCLIB_TE_MEM_CHIP_INFO, NULL, 0, 0);
 
-	/* Attempt to load PMICCFG Blob */
-	data_size = cbfs_load(qclib_file(QCLIB_CBFS_PMICCFG),
-			_pmic, REGION_SIZE(pmic));
-	if (!data_size) {
-		printk(BIOS_ERR, "[%s] /pmiccfg failed\n", __func__);
-		goto fail;
+	if (_pmic) {
+		/* Attempt to load PMICCFG Blob */
+		data_size = cbfs_load(qclib_file(QCLIB_CBFS_PMICCFG),
+				_pmic, REGION_SIZE(pmic));
+		if (!data_size) {
+			printk(BIOS_ERR, "[%s] /pmiccfg failed\n", __func__);
+			goto fail;
+		}
+		qclib_add_if_table_entry(QCLIB_TE_PMIC_SETTINGS, _pmic, data_size, 0);
 	}
-	qclib_add_if_table_entry(QCLIB_TE_PMIC_SETTINGS, _pmic, data_size, 0);
 
 	/* Attempt to load DCB Blob */
 	data_size = cbfs_load(qclib_file(QCLIB_CBFS_DCB),
@@ -245,7 +288,7 @@ void qclib_load_and_run(void)
 	dump_te_table();
 
 	/* Attempt to load QCLib elf */
-	struct prog qclib =
+	qclib = (struct prog)
 		PROG_INIT(PROG_REFCODE, qclib_file(QCLIB_CBFS_QCLIB));
 
 	if (cbfs_prog_stage_load(&qclib))
@@ -253,27 +296,9 @@ void qclib_load_and_run(void)
 
 	prog_set_entry(&qclib, prog_entry(&qclib), &qclib_cb_if_table);
 
-	printk(BIOS_DEBUG, "\n\n\nQCLib is about to Initialize DDR\n");
-	printk(BIOS_DEBUG, "Global Attributes[%#x]..Table Entries Count[%d]\n",
-		qclib_cb_if_table.global_attributes,
-		qclib_cb_if_table.num_entries);
-	printk(BIOS_DEBUG, "Jumping to QCLib code at %p(%p)\n",
-		prog_entry(&qclib), prog_entry_arg(&qclib));
-
-	/* back-up mmu context before disabling mmu and executing qclib */
-	mmu_save_context(&pre_qclib_mmu_context);
-	/* disable mmu before jumping to qclib. mmu_disable also
-	   flushes and invalidates caches before disabling mmu. */
-	mmu_disable();
-
-	prog_run(&qclib);
-
-	/* Before returning, QCLib flushes cache and disables mmu.
-	   Explicitly disable mmu (flush, invalidate and disable mmu)
-	   before re-enabling mmu with backed-up mmu context */
-	mmu_disable();
-	mmu_restore_context(&pre_qclib_mmu_context);
-	mmu_enable();
+	/* Set up the system and jump into QcLib */
+	printk(BIOS_DEBUG, "\n\n\nEnter QcLib to Initialize DDR and bring up SHRM\n");
+	qclib_prepare_and_run();
 
 	if (qclib_cb_if_table.global_attributes & QCLIB_GA_FORCE_COLD_REBOOT) {
 		printk(BIOS_NOTICE, "QcLib requested cold reboot\n");
@@ -296,4 +321,32 @@ void qclib_load_and_run(void)
 
 fail:
 	die("Couldn't run QCLib.\n");
+}
+
+void qclib_rerun(void)
+{
+	ssize_t data_size;
+
+	assert(prog_type(&qclib) == PROG_REFCODE)
+
+	init_qclib_cb_if_table(&qclib_cb_if_table);
+
+	/* Attempt to load aop_meta Blob (reuse the qc_blob_meta region). */
+	data_size = cbfs_load(qclib_file(QCLIB_CBFS_AOP_META),
+			_qc_blob_meta, REGION_SIZE(qc_blob_meta));
+	if (!data_size) {
+		printk(BIOS_ERR, "[%s] /aop_meta failed\n", __func__);
+		goto fail;
+	}
+
+	qclib_add_if_table_entry(QCLIB_TE_AOP_META_SETTINGS, _qc_blob_meta, data_size, 0);
+
+	/* Set up the system and jump into QcLib */
+	printk(BIOS_DEBUG, "\n\n\nRe-enter QCLib to bring up AOP\n");
+	qclib_prepare_and_run();
+
+	return;
+
+fail:
+	die("Couldn't reload QCLib.\n");
 }

@@ -395,4 +395,10 @@ enum cb_err clock_configure_mux(enum clk_pcie clk_type, u32 src_type);
 static struct aoss *const aoss = (void *)AOSS_CC_BASE;
 static struct x1p42100_gcc *const gcc = (void *)GCC_BASE;
 static struct x1p42100_ncc0_clock *const apss_ncc0 = (void *)NCC0_BASE;
+
+/* Does nothing */
+#define clock_reset_aop() do {} while (0)
+/* Does nothing */
+#define clock_reset_shrm() do {} while (0)
+
 #endif	// __SOC_QUALCOMM_X1P42100_CLOCK_H__

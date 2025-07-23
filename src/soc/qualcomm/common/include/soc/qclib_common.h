@@ -23,6 +23,9 @@
 #define QCLIB_TE_LIMITS_CFG_DATA   "limits_cfg_data"
 #define QCLIB_TE_QCSDI             "qcsdi"
 #define QCLIB_TE_MEM_CHIP_INFO     "mem_chip_info"
+#define QCLIB_TE_DTB_SETTINGS      "dtb"
+#define QCLIB_TE_SHRM_META_SETTINGS	"shrm_metadata"
+#define QCLIB_TE_AOP_META_SETTINGS      "aop_metadata"
 
 /* BA_BMASK_VALUES (blob_attributes bit mask values) */
 #define QCLIB_BA_SAVE_TO_STORAGE 0x00000001
@@ -32,6 +35,9 @@ enum qclib_cbfs_file {
 	QCLIB_CBFS_QCSDI,
 	QCLIB_CBFS_QCLIB,
 	QCLIB_CBFS_DCB,
+	QCLIB_CBFS_DTB,
+	QCLIB_CBFS_SHRM_META,
+	QCLIB_CBFS_AOP_META,
 	QCLIB_CBFS_MAX
 };
 
@@ -68,6 +74,7 @@ extern struct qclib_cb_if_table qclib_cb_if_table;
 void qclib_add_if_table_entry(const char *name, void *base,
 			      uint32_t size, uint32_t attrs);
 void qclib_load_and_run(void);
+void qclib_rerun(void);
 int  qclib_soc_override(struct qclib_cb_if_table *table);
 
 const char *qclib_file_default(enum qclib_cbfs_file file);

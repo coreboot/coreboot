@@ -27,12 +27,14 @@ verstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 
 ################################################################################
 romstage-y += cbmem.c
-romstage-y += shrm_load_reset.c
+romstage-y += ../common/shrm_load_reset.c
 romstage-y += cpucp_load_reset.c
 romstage-y += ../common/qclib.c
 romstage-y += ../common/mmu.c
 romstage-y += ../common/watchdog.c
+romstage-y += qclib.c
 romstage-y += mmu.c
+romstage-y += ../common/aop_load_reset.c
 romstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 
 ################################################################################
@@ -142,6 +144,20 @@ $(AOP_CBFS)-file := $(AOP_FILE)
 $(AOP_CBFS)-type := payload
 $(AOP_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(AOP_CBFS)
+
+################################################################################
+# Rule to create aop_meta from aop.mbn
+# This rule depends on aop.mbn built and the extractor script existing.
+$(obj)/mainboard/$(MAINBOARDDIR)/aop_meta: $(X1P42100_BLOB)/aop/aop.mbn util/qualcomm/elf_segment_extractor.py
+	@echo "Extracting ELF headers and hash table segment from $< to $@"
+	@util/qualcomm/elf_segment_extractor.py --eh --pht --hashtable $< $@
+
+AOP_META_FILE := $(obj)/mainboard/$(MAINBOARDDIR)/aop_meta
+AOP_META_CBFS := $(CONFIG_CBFS_PREFIX)/aop_meta
+$(AOP_META_CBFS)-file := $(AOP_META_FILE)
+$(AOP_META_CBFS)-type := raw
+$(AOP_META_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(AOP_META_CBFS)
 
 ################################################################################
 CPUCP_FILE := $(X1P42100_BLOB)/cpucp/cpucp.elf

@@ -79,6 +79,25 @@ chip soc/intel/alderlake
 	register "fast_pkg_c_ramp_disable[VR_DOMAIN_IA]" = "1"
 	register "fast_pkg_c_ramp_disable[VR_DOMAIN_GT]" = "1"
 
+	# VR Settings
+	register "domain_vr_config[VR_DOMAIN_IA]" = "{
+		.vr_config_enable = 1,
+		.icc_max = 248,
+		.tdc_timewindow = 28000,
+		.tdc_currentlimit = 176,
+		.ac_loadline = 280,
+		.dc_loadline = 280,
+	}"
+
+	register "domain_vr_config[VR_DOMAIN_GT]" = "{
+		.vr_config_enable = 1,
+		.icc_max = 160,
+		.tdc_timewindow = 28000,
+		.tdc_currentlimit = 176,
+		.ac_loadline = 320,
+		.dc_loadline = 320,
+	}"
+
 	register "power_limits_config[RPL_P_282_242_142_15W_CORE]" = "{
 		.tdp_pl1_override = 15,
 		.tdp_pl2_override = 25,

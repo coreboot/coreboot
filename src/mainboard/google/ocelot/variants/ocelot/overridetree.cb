@@ -542,7 +542,7 @@ chip soc/intel/pantherlake
 				register "generic.desc" = ""Hynitron TOUCHPAD""
 				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_F18_IRQ)"
 				# NOTE: pmc_gpe0_dw0 will be overridden to GPP_F in variant.c.
-				register "generic.wake" = "GPE0_DW0_13"
+				register "generic.wake" = "GPE0_DW0_18"
 				register "generic.uid" = "5"
 				register "generic.detect" = "1"
 				register "hid_desc_reg_offset" = "0x20"

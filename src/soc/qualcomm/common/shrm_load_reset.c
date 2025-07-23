@@ -27,6 +27,4 @@ void shrm_fw_load_reset(void)
 	mmu_config_range((void *)_shrm, REGION_SIZE(shrm), DEV_MEM);
 
 	clock_reset_shrm();
-
-	printk(BIOS_DEBUG, "SOC:SHRM brought out of reset.\n");
 }

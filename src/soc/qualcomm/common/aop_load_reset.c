@@ -15,6 +15,4 @@ void aop_fw_load_reset(void)
 		die("SOC image: AOP load failed");
 
 	clock_reset_aop();
-
-	printk(BIOS_DEBUG, "SOC:AOP brought out of reset.\n");
 }

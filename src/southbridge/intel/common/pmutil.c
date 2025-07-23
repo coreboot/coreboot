@@ -4,7 +4,6 @@
 #include <console/console.h>
 #include <device/pci_def.h>
 #include <southbridge/intel/common/pmbase.h>
-#include <southbridge/intel/common/gpio.h>
 
 #include "pmutil.h"
 

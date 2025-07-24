@@ -63,9 +63,6 @@ chip soc/intel/pantherlake
 	# Enable Energy Reporting
 	register "pch_pm_energy_report_enable" = "true"
 
-	# Enable CNVi BT
-	register "cnvi_bt_core" = "true"
-
 	register "serial_io_uart_mode" = "{
 		[PchSerialIoIndexUART0] = PchSerialIoSkipInit,
 		[PchSerialIoIndexUART1] = PchSerialIoDisabled,

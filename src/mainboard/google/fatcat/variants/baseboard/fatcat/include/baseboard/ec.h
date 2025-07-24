@@ -75,7 +75,9 @@
 /* Enable EC backed PD MCU device in ACPI */
 #define EC_ENABLE_PD_MCU_DEVICE
 
-#if !CONFIG(BOARD_GOOGLE_FATCAT) && !CONFIG(BOARD_GOOGLE_FATCATISH)
+#if !CONFIG(BOARD_GOOGLE_FATCAT) \
+	&& !CONFIG(BOARD_GOOGLE_FATCAT4ES) \
+	&& !CONFIG(BOARD_GOOGLE_FATCATISH)
  #define EC_ENABLE_SYNC_IRQ      /* Enable tight timestamp / wake support */
  #define EC_SYNC_IRQ_WAKE_CAPABLE /* Let the OS know ec_sync is wake capable */
 #endif

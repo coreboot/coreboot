@@ -67,7 +67,7 @@ const u32 cim_verb_data[] = {
 	0x02050037,
 	0x0204FE15,
 	0x02050030,
-	0x02041000,
+	0x02049000,
 };
 
 const u32 pc_beep_verbs[] = {

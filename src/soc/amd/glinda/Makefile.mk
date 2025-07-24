@@ -3,7 +3,7 @@
 # TODO: Move as much as possible to common
 # TODO: Update for Glinda
 
-ifeq ($(CONFIG_SOC_AMD_GLINDA),y)
+ifeq ($(CONFIG_SOC_AMD_GLINDA_BASE),y)
 
 subdirs-$(CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK) += psp_verstage
 
@@ -315,4 +315,4 @@ build_complete:: $(obj)/amdfw_a.rom $(obj)/amdfw_b.rom
 endif # CONFIG_SEPARATE_SIGNED_PSPFW
 endif
 
-endif # ($(CONFIG_SOC_AMD_GLINDA),y)
+endif # ($(CONFIG_SOC_AMD_GLINDA_BASE),y)

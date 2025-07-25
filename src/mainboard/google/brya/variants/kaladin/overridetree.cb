@@ -37,12 +37,57 @@ chip soc/intel/alderlake
 	# eMMC HS400
 	register "emmc_enable_hs400_mode" = "true"
 
-	register "usb2_ports[0]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Type-C MB (7.5 inch)
-	register "usb2_ports[1]" = "USB2_PORT_TYPE_C(OC_SKIP)"	# Type-C DB (7.1 inch)
-	register "usb2_ports[2]" = "USB2_PORT_MID(OC1)"		# Type-A MB (6.4 inch)
-	register "usb2_ports[5]" = "USB2_PORT_SHORT(OC_SKIP)"	# UFC (3.7 inch)
-	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for PCIe WLAN (2.5 inch)
-	register "usb2_ports[9]" = "USB2_PORT_MID(OC_SKIP)"	# Bluetooth port for CNVi WLAN
+	register "usb2_ports[0]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias = USB2_BIAS_39P35MV,
+		.pre_emp_bit = USB2_HALF_BIT_PRE_EMP,
+		.type_c = 1,
+	}"# Type-C0
+	register "usb2_ports[1]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_PRE_EMP_ON,
+		.pre_emp_bias = USB2_BIAS_39P35MV,
+		.pre_emp_bit = USB2_HALF_BIT_PRE_EMP,
+		.type_c = 1,
+	}"# Type-C1
+	register "usb2_ports[2]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_DE_EMP_ON_PRE_EMP_ON,
+		.pre_emp_bias = USB2_BIAS_39P35MV,
+		.pre_emp_bit = USB2_FULL_BIT_PRE_EMP,
+	}"# Type-A
+	register "usb2_ports[5]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_DE_EMP_ON_PRE_EMP_ON,
+		.pre_emp_bias = USB2_BIAS_39P35MV,
+		.pre_emp_bit = USB2_FULL_BIT_PRE_EMP,
+	}"#UFC
+	register "usb2_ports[7]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_DE_EMP_ON_PRE_EMP_ON,
+		.pre_emp_bias = USB2_BIAS_28P15MV,
+		.pre_emp_bit = USB2_FULL_BIT_PRE_EMP,
+	}"# Bluetooth port for PCIe WLAN
+	register "usb2_ports[9]" = "{
+		.enable = 1,
+		.ocpin = OC_SKIP,
+		.tx_bias = USB2_BIAS_0MV,
+		.tx_emp_enable = USB2_DE_EMP_ON_PRE_EMP_ON,
+		.pre_emp_bias = USB2_BIAS_28P15MV,
+		.pre_emp_bit = USB2_FULL_BIT_PRE_EMP,
+	}"# Bluetooth port for CNVi WLAN
+
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC1)"	# USB3 Type-A port A0(MLB)
 

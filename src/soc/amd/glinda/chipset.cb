@@ -60,6 +60,8 @@ chip soc/amd/glinda
 			ops amd_internal_pcie_gpp_ops
 			device pci 0.0 on end # dummy, do not disable
 			device pci 0.1 alias npu off end # Neural Processing Unit (NPU)
+			device pci 0.2 alias xgbe_0 off end # 10 GbE Controller Port 0 (XGBE0)
+			device pci 0.3 alias xgbe_1 off end # 10 GbE Controller Port 1 (XGBE1)
 		end
 
 		device pci 08.3 alias gpp_bridge_c on # Internal GPP Bridge 2 to Bus C

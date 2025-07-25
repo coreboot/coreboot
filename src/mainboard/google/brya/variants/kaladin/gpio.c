@@ -34,8 +34,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_A14, NONE, DEEP, NF1),
 	/* A15 : NC */
 	PAD_NC(GPP_A15, NONE),
-	/* A16 : USB_OC3# */
-	PAD_CFG_NF(GPP_A16, NONE, DEEP, NF1),
+	/* A16 : USB_OC3# ==> NC */
+	PAD_NC(GPP_A16, NONE),
 	/* A17 : NC */
 	PAD_NC(GPP_A17, NONE),
 	/* A18 : NC */
@@ -118,7 +118,7 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C7, NONE, DEEP, NF1),
 
 	/* D0  : SEN_MODE2_EC_PCH_INT_ODL */
-	PAD_CFG_NF(GPP_D0, NONE, DEEP, NF1),
+	PAD_NC_LOCK(GPP_D0, NONE, LOCK_CONFIG),
 	/* D1  : ISH_GP1 ==> SEN_MODE2_EC_ISH_INT_ODL */
 	PAD_CFG_NF(GPP_D1, NONE, DEEP, NF1),
 	/* D2  : NC */
@@ -176,24 +176,24 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E7, NONE),
 	/* E8  : GPP_E8 ==> WLAN_DISABLE_L */
 	PAD_CFG_GPO(GPP_E8, 1, DEEP),
-	/* E9  : SOC_USB_OC0 */
-	PAD_CFG_NF(GPP_E9, NONE, DEEP, NF1),
+	/* E9  : SOC_USB_OC0 ==> NC */
+	PAD_NC(GPP_E9, NONE),
 	/* E10 : EN_PP3300_WLAN_X */
 	PAD_CFG_GPO(GPP_E10, 1, DEEP),
 	/* E11 : TCHSCR_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_E11, NONE, PLTRST, LEVEL, INVERT),
 	/* E12 : THC0_SPI1_IO1 ==> SOC_WP_OD */
 	PAD_CFG_GPI_GPIO_DRIVER_LOCK(GPP_E12, NONE, LOCK_CONFIG),
-	/* E13 : THC0_SPI1_IO0 ==> NC*/
-	PAD_NC_LOCK(GPP_E13, NONE, LOCK_CONFIG),
+	/* E13 : THC0_SPI1_IO0 ==> MEM_STRAP_3 */
+	PAD_CFG_GPI_LOCK(GPP_E13, NONE, LOCK_CONFIG),
 	/* E14 : DDSP_HPDA ==> EDP_HPD */
 	PAD_CFG_NF(GPP_E14, NONE, DEEP, NF1),
 	/* E15 : NC */
 	PAD_NC(GPP_E15, NONE),
 	/* E16 : NC */
 	PAD_NC(GPP_E16, NONE),
-	/* E17  : MEM_STRAP_3 */
-	PAD_CFG_GPI_LOCK(GPP_E17, NONE, LOCK_CONFIG),
+	/* E17  : MEM_STRAP_3 => NC */
+	PAD_NC_LOCK(GPP_E17, NONE, LOCK_CONFIG),
 	/* E18 : NC */
 	PAD_NC(GPP_E18, NONE),
 	/* E19 : DDP1_CTRLDATA ==> GPP_E19_STRAP */
@@ -290,8 +290,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC_LOCK(GPP_H15, NONE, LOCK_CONFIG),
 	/* H16 : Not available */
 	PAD_NC(GPP_H16, NONE),
-	/* H17  : DDPB_CTRLDATA ==> PD_SOC_DBG_L */
-	PAD_CFG_NF(GPP_H17, NONE, DEEP, NF1),
+	/* H17  : DDPB_CTRLDATA ==> NC */
+	PAD_NC(GPP_H17, NONE),
 	/* H18 : PROC_C10_GATE# ==> CPU_C10_GATE# */
 	PAD_CFG_NF(GPP_H18, NONE, DEEP, NF1),
 	/* H19 : SOC_I2C_SUB_INT_ODL */

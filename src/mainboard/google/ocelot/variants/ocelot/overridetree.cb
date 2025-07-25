@@ -531,11 +531,6 @@ chip soc/intel/pantherlake
 				device i2c 50 on end
 			end
 		end
-		device ref i2c2 on end
-		device ref i2c3 on
-		end # I2C3
-		device ref i2c4 off
-		end # I2C4
 		device ref i2c5 on
 			chip drivers/i2c/hid
 				register "generic.hid" = ""HFW68H""

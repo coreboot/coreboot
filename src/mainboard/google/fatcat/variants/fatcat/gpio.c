@@ -270,7 +270,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_F13:     THC_I2C1_SDA_TCH_PAD */
 	PAD_CFG_NF(GPP_F13, NONE, DEEP, NF8),
 	/* GPP_F17:     CODEC_INT_N */
-	PAD_CFG_GPI(GPP_F17, NONE, DEEP),
+	PAD_CFG_GPI_INT(GPP_F17, NONE, PLTRST, EDGE_BOTH),
 	/* GPP_F18:     TCH_PAD_INT_N */
 	/* NOTE: require rework to switch from GPP_A13 to GPP_F18 */
 	PAD_CFG_GPI_APIC(GPP_F18, NONE, PLTRST, LEVEL, INVERT),

@@ -57,8 +57,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_B04, NONE, DEEP, NF4),
 	/* GPP_B05:     ISH_GP_1_SNSR_HDR */
 	PAD_CFG_NF(GPP_B05, NONE, DEEP, NF4),
-	/* GPP_B06:     ISH_GP_2_SNSR_HDR */
-	PAD_CFG_NF(GPP_B06, NONE, DEEP, NF4),
 	/* GPP_B07:     ISH_GP_3_SNSR_HDR */
 	PAD_CFG_NF(GPP_B07, NONE, DEEP, NF4),
 	/* GPP_B08:     ISH_GP_4_SNSR_HDR */

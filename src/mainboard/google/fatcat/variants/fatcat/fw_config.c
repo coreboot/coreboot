@@ -488,6 +488,18 @@ static const struct pad_config thc1_enable_wake[] = {
 };
 
 static const struct pad_config ish_disable_pads[] = {
+	/* GPP_B04:     NC */
+	PAD_NC(GPP_B04, NONE),
+	/* GPP_B05:     NC */
+	PAD_NC(GPP_B05, NONE),
+	/* GPP_B07:     NC */
+	PAD_NC(GPP_B07, NONE),
+	/* GPP_B08:     NC */
+	PAD_NC(GPP_B08, NONE),
+	/* GPP_B22:     NC */
+	PAD_NC(GPP_B22, NONE),
+	/* GPP_B23:     NC */
+	PAD_NC(GPP_B23, NONE),
 	/* GPP_D06:     NC */
 	PAD_NC(GPP_D06, NONE),
 	/* GPP_E05:     NC */
@@ -497,6 +509,18 @@ static const struct pad_config ish_disable_pads[] = {
 };
 
 static const struct pad_config ish_enable_pads[] = {
+	/* GPP_B04:     ISH_GP_0_SNSR_HDR */
+	PAD_CFG_NF(GPP_B04, NONE, DEEP, NF4),
+	/* GPP_B05:     ISH_GP_1_SNSR_HDR */
+	PAD_CFG_NF(GPP_B05, NONE, DEEP, NF4),
+	/* GPP_B07:     ISH_GP_3_SNSR_HDR */
+	PAD_CFG_NF(GPP_B07, NONE, DEEP, NF4),
+	/* GPP_B08:     ISH_GP_4_SNSR_HDR */
+	PAD_CFG_NF(GPP_B08, NONE, DEEP, NF4),
+	/* GPP_B22:     ISH_GP_5_SNSR_HDR */
+	PAD_CFG_NF(GPP_B22, NONE, DEEP, NF4),
+	/* GPP_B23:     ISH_GP_6_SNSR_HDR */
+	PAD_CFG_NF(GPP_B23, NONE, DEEP, NF4),
 	/* GPP_D06:     ISH_UART0_TXD */
 	PAD_CFG_NF(GPP_D06, NONE, DEEP, NF2),
 	/* GPP_E05:     ISH_GP_7_SNSR_HDR */

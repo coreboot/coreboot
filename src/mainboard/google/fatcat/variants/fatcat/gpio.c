@@ -53,14 +53,6 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_B03:     ISH_I2C0_SCL_SNSR_HDR */
 	/* NOTE: IOSSTAGE: 'Ignore' for S0ix */
 	PAD_CFG_NF_IOSTANDBY_IGNORE(GPP_B03, NONE, DEEP, NF3),
-	/* GPP_B04:     ISH_GP_0_SNSR_HDR */
-	PAD_CFG_NF(GPP_B04, NONE, DEEP, NF4),
-	/* GPP_B05:     ISH_GP_1_SNSR_HDR */
-	PAD_CFG_NF(GPP_B05, NONE, DEEP, NF4),
-	/* GPP_B07:     ISH_GP_3_SNSR_HDR */
-	PAD_CFG_NF(GPP_B07, NONE, DEEP, NF4),
-	/* GPP_B08:     ISH_GP_4_SNSR_HDR */
-	PAD_CFG_NF(GPP_B08, NONE, DEEP, NF4),
 	/* GPP_B09:     M2_GEN4_SSD_RESET_N */
 	PAD_CFG_GPO(GPP_B09, 1, PLTRST),
 	/* GPP_B10:     GEN4_SSD_PWREN */
@@ -89,10 +81,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_B20, 1, PLTRST),
 	/* GPP_B21:     TCP_RETIMER_FORCE_PWR */
 	PAD_CFG_GPO(GPP_B21, 0, DEEP),
-	/* GPP_B22:     ISH_GP_5_SNSR_HDR */
-	PAD_CFG_NF(GPP_B22, NONE, DEEP, NF4),
-	/* GPP_B23:     ISH_GP_6_SNSR_HDR */
-	PAD_CFG_NF(GPP_B23, NONE, DEEP, NF4),
 	/* GPP_B24:     ESPI_ALERT0_EC_R_N */
 	PAD_NC(GPP_B24, NONE),
 

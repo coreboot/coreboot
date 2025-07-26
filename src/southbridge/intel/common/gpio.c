@@ -12,8 +12,30 @@
 
 #define MAX_GPIO_NUMBER 75 /* zero based */
 
+/*
+ * If you want to use these macros outside this file, consider making
+ * more helper functions to expose the functionality you want instead.
+ */
+
 /* LPC GPIO Base Address Register */
 #define GPIO_BASE	0x48
+
+/* ICH7 GPIOBASE */
+#define GPIO_USE_SEL	0x00
+#define GP_IO_SEL	0x04
+#define GP_LVL		0x0c
+#define GPO_BLINK	0x18
+#define GPI_INV		0x2c
+#define GPIO_USE_SEL2	0x30
+#define GP_IO_SEL2	0x34
+#define GP_LVL2		0x38
+#define GPIO_USE_SEL3	0x40
+#define GP_IO_SEL3	0x44
+#define GP_LVL3		0x48
+#define GP_RST_SEL1	0x60
+#define GP_RST_SEL2	0x64
+#define GP_RST_SEL3	0x68
+
 
 static u16 get_gpio_base(void)
 {

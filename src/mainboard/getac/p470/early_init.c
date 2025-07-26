@@ -1,33 +1,25 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#include <bootblock_common.h>
-#include <stdint.h>
 #include <arch/io.h>
+#include <bootblock_common.h>
+#include <console/console.h>
 #include <device/pnp_ops.h>
 #include <device/pci_ops.h>
-#include <option.h>
-#include <console/console.h>
+#include <gpio.h>
 #include <northbridge/intel/i945/i945.h>
+#include <option.h>
+#include <stdint.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 
 void mainboard_pre_raminit_config(int s3_resume)
 {
-	u32 gpios;
-
 	printk(BIOS_SPEW, "\n  Initializing drive bay...\n");
-	gpios = inl(DEFAULT_GPIOBASE + 0x38); // GPIO Level 2
-	gpios |= (1 << 0); // GPIO33 = ODD
-	gpios |= (1 << 1); // GPIO34 = IDE_RST#
-	outl(gpios, DEFAULT_GPIOBASE + 0x38);	/* GP_LVL2 */
-
-	gpios = inl(DEFAULT_GPIOBASE + 0x0c); // GPIO Level
-	gpios &= ~(1 << 13);	// ??
-	outl(gpios, DEFAULT_GPIOBASE + 0x0c);	/* GP_LVL */
+	gpio_set(33, 1); // GPIO33 = ODD
+	gpio_set(34, 1); // GPIO34 = IDE_RST#
+	gpio_set(13, 0); // ??
 
 	printk(BIOS_SPEW, "\n  Initializing Ethernet NIC...\n");
-	gpios = inl(DEFAULT_GPIOBASE + 0x0c); // GPIO Level
-	gpios &= ~(1 << 24);	// Enable LAN Power
-	outl(gpios, DEFAULT_GPIOBASE + 0x0c);	/* GP_LVL */
+	gpio_set(24, 0); // Enable LAN Power
 }
 
 /* Override the default lpc decode ranges */

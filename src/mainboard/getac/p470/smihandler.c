@@ -3,10 +3,11 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
+#include <ec/acpi/ec.h>
+#include <gpio.h>
 #include <southbridge/intel/i82801gx/i82801gx.h>
 #include <soc/nvs.h>
 #include <southbridge/intel/common/gpio.h>
-#include <ec/acpi/ec.h>
 #include "ec_oem.c"
 
 #define MAX_LCD_BRIGHTNESS 0xd8
@@ -14,7 +15,6 @@
 int mainboard_io_trap_handler(int smif)
 {
 	u8 reg8;
-	u32 reg32;
 
 	switch (smif) {
 	case 0x2b:
@@ -95,9 +95,7 @@ int mainboard_io_trap_handler(int smif)
 		break;
 	case 0xde:
 		printk(BIOS_DEBUG, "LAN power off\n");
-		reg32 = inl(DEFAULT_GPIOBASE + GP_LVL);
-		reg32 |= (1 << 24);			// Disable LAN Power
-		outl(reg32, DEFAULT_GPIOBASE + GP_LVL);
+		gpio_set(24, 0); // Disable LAN Power
 		break;
 	case 0xdf:
 		printk(BIOS_DEBUG, "RF enable\n");

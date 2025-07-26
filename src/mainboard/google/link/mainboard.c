@@ -114,13 +114,7 @@ static void mainboard_init(struct device *dev)
 	google_chromeec_get_board_version(&board_version);
 	if (board_version == 0) {
 		/* If running on proto1 - enable reversion of gpio11. */
-		u32 gpio_inv;
-		u16 gpio_base = pci_read_config16
-			(pcidev_on_root(0x1f, 0), GPIO_BASE) &
-			0xfffc;
-		u16 gpio_inv_addr = gpio_base + GPI_INV;
-		gpio_inv = inl(gpio_inv_addr);
-		outl(gpio_inv | (1 << 11), gpio_inv_addr);
+		gpio_invert(11, true);
 	}
 }
 

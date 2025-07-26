@@ -222,3 +222,19 @@ void gpio_output(gpio_t gpio_num, int value)
 	/* Set value again in case output register was gated */
 	gpio_set(gpio_num, value);
 }
+
+void gpio_invert(gpio_t gpio_num, bool invert)
+{
+	u16 gpio_blink_reg = get_gpio_base() + GPI_INV;
+	u32 config;
+
+	if (gpio_num >= 32)
+		return; /* Just ignore wrong gpio numbers. */
+
+	config = inl(gpio_blink_reg);
+	if (invert)
+		config |= BIT(gpio_num);
+	else
+		config &= ~BIT(gpio_num);
+	outl(gpio_blink_reg, config);
+}

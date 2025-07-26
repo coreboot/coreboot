@@ -4,6 +4,7 @@
 #define INTEL_COMMON_GPIO_H
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <soc/gpio.h>
 
 /* ICH7 GPIOBASE */
@@ -152,5 +153,8 @@ extern const struct pch_gpio_map mainboard_gpio_map;
 void setup_pch_gpios(const struct pch_gpio_map *gpio);
 
 int gpio_is_native(int gpio_num);
+
+/* Enable/disable GPI_INV for the specified GPIO */
+void gpio_invert(gpio_t gpio_num, bool invert);
 
 #endif

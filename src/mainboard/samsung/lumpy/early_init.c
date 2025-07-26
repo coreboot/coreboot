@@ -6,6 +6,7 @@
 #include <bootblock_common.h>
 #include <console/console.h>
 #include <bootmode.h>
+#include <gpio.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <northbridge/intel/sandybridge/raminit.h>
 #include <southbridge/intel/bd82x6x/pch.h>
@@ -59,22 +60,20 @@ void mainboard_late_rcba_config(void)
 
 static unsigned int get_spd_index(void)
 {
-	u32 gp_lvl2 = inl(DEFAULT_GPIOBASE + 0x38);
-	u8 gpio33, gpio41, gpio49;
-	gpio33 = (gp_lvl2 >> (33-32)) & 1;
-	gpio41 = (gp_lvl2 >> (41-32)) & 1;
-	gpio49 = (gp_lvl2 >> (49-32)) & 1;
+	const gpio_t spd_id_pins[] = {33, 41, 49};
+	u32 pin_sts = gpio_base2_value(spd_id_pins, ARRAY_SIZE(spd_id_pins));
+
 	printk(BIOS_DEBUG, "Memory Straps:\n");
 	printk(BIOS_DEBUG, " - memory capacity %dGB\n",
-		gpio33 ? 2 : 1);
+		(pin_sts & 1) ? 2 : 1);
 	printk(BIOS_DEBUG, " - die revision %d\n",
-		gpio41 ? 2 : 1);
+		(pin_sts & 2) ? 2 : 1);
 	printk(BIOS_DEBUG, " - vendor %s\n",
-		gpio49 ? "Samsung" : "Other");
+		(pin_sts & 4) ? "Samsung" : "Other");
 
 	unsigned int spd_index = 0;
 
-	switch ((gpio49 << 2) | (gpio41 << 1) | gpio33) {
+	switch (pin_sts) {
 	case 0: // Other 1G Rev 1
 		spd_index = 0;
 		break;

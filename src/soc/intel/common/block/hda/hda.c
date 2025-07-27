@@ -24,6 +24,7 @@ struct device_operations hda_ops = {
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= hda_init,
+	.final			= pci_dev_request_bus_master,
 	.ops_pci		= &pci_dev_ops_pci,
 	.scan_bus		= scan_static_bus
 };

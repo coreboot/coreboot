@@ -7,6 +7,7 @@
 #include <mipi/ids.h>
 
 struct drivers_soundwire_alc711_config {
+	bool disable_clkstop_sm_support;
 	const char *name;
 	const char *desc;
 	struct soundwire_address alc711_address;

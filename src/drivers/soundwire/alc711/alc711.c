@@ -131,6 +131,10 @@ static void soundwire_alc711_fill_ssdt(const struct device *dev)
 		/* Currently only 1 audio mode is supported. */
 		memcpy(&alc711_audio_mode, &config->audio_mode, sizeof(struct soundwire_audio_mode));
 
+	/* Override the default (true) if disable_clkstop_sm_support is set in the devicetree. */
+	if (config->disable_clkstop_sm_support)
+		alc711_slave.simplified_clockstopprepare_sm_supported = false;
+
 	dsd = acpi_dp_new_table("_DSD");
 	soundwire_gen_codec(dsd, &alc711_codec, NULL);
 	acpi_dp_write(dsd);

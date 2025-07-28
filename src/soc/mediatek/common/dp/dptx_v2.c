@@ -247,7 +247,7 @@ static int mtk_edp_train_eq(struct mtk_dp *mtk_dp, u8 lane_count)
 	return DPTX_TIMEOUT;
 }
 
-static int dptx_set_trainingstart(struct mtk_dp *mtk_dp)
+int dptx_set_trainingstart(struct mtk_dp *mtk_dp)
 {
 	u8 lanecount;
 	u8 linkrate;
@@ -354,59 +354,9 @@ static int dptx_set_trainingstart(struct mtk_dp *mtk_dp)
 	return DPTX_PASS;
 }
 
-static void dptx_init_port(struct mtk_dp *mtk_dp)
-{
-	dptx_hal_phy_setidlepattern(mtk_dp, true);
-	dptx_hal_init_setting(mtk_dp);
-	dptx_hal_aux_setting(mtk_dp);
-	dptx_hal_digital_setting(mtk_dp);
-	dptx_hal_phy_init(mtk_dp);
-	dptx_hal_phy_setting(mtk_dp);
-	dptx_hal_hpd_detect_setting(mtk_dp);
-
-	dptx_hal_digital_swreset(mtk_dp);
-
-	dptx_hal_analog_power_en(mtk_dp, true);
-	dptx_hal_hpd_int_en(mtk_dp, true);
-}
-
-int mtk_edp_init(struct mtk_dp *mtk_dp, struct edid *edid)
+void dptx_power_on(void)
 {
 	dptx_set_tx_power_con();
 	dptx_set_26mhz_clock();
 	udelay(50);
-	dptx_init_variable(mtk_dp);
-	dptx_init_port(mtk_dp);
-
-	if (!dptx_hal_hpd_high(mtk_dp)) {
-		printk(BIOS_ERR, "HPD is low\n");
-		return -1;
-	}
-
-	dptx_check_sinkcap(mtk_dp);
-
-	if (dptx_get_edid(mtk_dp, edid) != 0) {
-		printk(BIOS_ERR, "Failed to get EDID\n");
-		return -1;
-	}
-
-	if (dptx_set_trainingstart(mtk_dp) != DPTX_PASS) {
-		printk(BIOS_ERR, "%s: Failed to set training start\n", __func__);
-		return -1;
-	}
-
-	dp_intf_config(edid);
-	dptx_video_config(mtk_dp);
-
-	return 0;
-}
-
-int mtk_edp_enable(struct mtk_dp *mtk_dp)
-{
-	if (!mtk_dp) {
-		printk(BIOS_ERR, "%s: eDP is not initialized\n", __func__);
-		return -1;
-	}
-	dptx_video_enable(mtk_dp, true);
-	return 0;
 }

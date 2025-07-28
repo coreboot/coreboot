@@ -223,19 +223,19 @@ int mtk_edp_enable(struct mtk_dp *mtk_dp);
 
 void dptx_set_tx_power_con(void);
 void dptx_set_26mhz_clock(void);
+int dptx_set_trainingstart(struct mtk_dp *mtk_dp);
 bool dptx_auxread_dpcd(struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr,
 		       size_t length, u8 *rxbuf);
 bool dptx_auxwrite_dpcd(struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr,
 			size_t length, u8 *data);
 bool dptx_channel_eq_ok(const u8 link_status[DP_LINK_STATUS_SIZE],
 			int lane_count);
-void dptx_check_sinkcap(struct mtk_dp *mtk_dp);
 bool dptx_clock_recovery_ok(const u8 link_status[DP_LINK_STATUS_SIZE],
 			    int lane_count);
 void dptx_init_variable(struct mtk_dp *mtk_dp);
-int dptx_get_edid(struct mtk_dp *mtk_dp, struct edid *out);
 void dptx_link_train_channel_eq_delay(const u8 dpcd[DP_RECEIVER_CAP_SIZE]);
 void dptx_link_train_clock_recovery_delay(const u8 dpcd[DP_RECEIVER_CAP_SIZE]);
+void dptx_power_on(void);
 void dptx_video_config(struct mtk_dp *mtk_dp);
 void dptx_video_enable(struct mtk_dp *mtk_dp, bool enable);
 

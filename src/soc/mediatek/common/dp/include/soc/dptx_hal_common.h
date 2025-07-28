@@ -102,5 +102,6 @@ void dptx_hal_set_color_depth(struct mtk_dp *mtk_dp, u8 color_depth);
 void dptx_hal_set_color_format(struct mtk_dp *mtk_dp, u8 color_format);
 void dptx_hal_set_txrate(struct mtk_dp *mtk_dp, u8 value);
 void dptx_hal_analog_power_en(struct mtk_dp *mtk_dp, bool enable);
+void dptx_hal_phy_init(struct mtk_dp *mtk_dp);
 
 #endif /* SOC_MEDIATEK_COMMON_DP_DPTX_HAL_COMMON_H */

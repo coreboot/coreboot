@@ -70,7 +70,7 @@ bool dptx_auxread_dpcd(struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr,
 	return ret;
 }
 
-int dptx_get_edid(struct mtk_dp *mtk_dp, struct edid *out)
+static int dptx_get_edid(struct mtk_dp *mtk_dp, struct edid *out)
 {
 	int ret;
 	u8 edid[EDID_BUF_SIZE];
@@ -401,7 +401,7 @@ static void dptx_set_dptxout(struct mtk_dp *mtk_dp)
 	dptx_set_tu(mtk_dp);
 }
 
-void dptx_check_sinkcap(struct mtk_dp *mtk_dp)
+static void dptx_check_sinkcap(struct mtk_dp *mtk_dp)
 {
 	u8 buffer[16];
 
@@ -510,4 +510,61 @@ void dptx_video_config(struct mtk_dp *mtk_dp)
 	dptx_set_misc(mtk_dp);
 	dptx_set_color_depth(mtk_dp, mtk_dp->info.depth);
 	dptx_set_color_format(mtk_dp, mtk_dp->info.format);
+}
+
+static void dptx_init_port(struct mtk_dp *mtk_dp)
+{
+	dptx_hal_phy_setidlepattern(mtk_dp, true);
+	dptx_hal_init_setting(mtk_dp);
+	dptx_hal_aux_setting(mtk_dp);
+	dptx_hal_digital_setting(mtk_dp);
+	dptx_hal_phy_init(mtk_dp);
+	dptx_hal_phy_setting(mtk_dp);
+	dptx_hal_hpd_detect_setting(mtk_dp);
+
+	dptx_hal_digital_swreset(mtk_dp);
+
+	dptx_hal_analog_power_en(mtk_dp, true);
+	dptx_hal_hpd_int_en(mtk_dp, true);
+}
+
+__weak void dptx_power_on(void) { /* do nothing */ };
+
+int mtk_edp_init(struct mtk_dp *mtk_dp, struct edid *edid)
+{
+	dptx_power_on();
+	dptx_init_variable(mtk_dp);
+	dptx_init_port(mtk_dp);
+
+	if (!dptx_hal_hpd_high(mtk_dp)) {
+		printk(BIOS_ERR, "HPD is low\n");
+		return -1;
+	}
+
+	dptx_check_sinkcap(mtk_dp);
+
+	if (dptx_get_edid(mtk_dp, edid) != 0) {
+		printk(BIOS_ERR, "Failed to get EDID\n");
+		return -1;
+	}
+
+	if (dptx_set_trainingstart(mtk_dp) != DPTX_PASS) {
+		printk(BIOS_ERR, "%s: Failed to set training start\n", __func__);
+		return -1;
+	}
+
+	dp_intf_config(edid);
+	dptx_video_config(mtk_dp);
+
+	return 0;
+}
+
+int mtk_edp_enable(struct mtk_dp *mtk_dp)
+{
+	if (!mtk_dp) {
+		printk(BIOS_ERR, "%s: eDP is not initialized\n", __func__);
+		return -1;
+	}
+	dptx_video_enable(mtk_dp, true);
+	return 0;
 }

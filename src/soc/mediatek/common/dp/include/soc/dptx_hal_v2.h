@@ -20,7 +20,6 @@ extern const int dptx_hal_driving_offset[];
 extern const int dptx_hal_driving_offset_size;
 
 void dptx_hal_swing_emp_reset(struct mtk_dp *mtk_dp);
-void dptx_hal_phy_init(struct mtk_dp *mtk_dp);
 void dptx_hal_phy_set_idle_pattern(struct mtk_dp *mtk_dp, u8 lane_count, bool enable);
 void dptx_hal_phy_set_lanes(struct mtk_dp *mtk_dp, u8 lane_count);
 

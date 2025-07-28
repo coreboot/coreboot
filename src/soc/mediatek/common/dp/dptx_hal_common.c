@@ -563,3 +563,5 @@ void dptx_hal_analog_power_en(struct mtk_dp *mtk_dp, bool enable)
 		DP_WRITE2BYTE(mtk_dp, 0x0038, 0x555);
 	}
 }
+
+__weak void dptx_hal_phy_init(struct mtk_dp *mtk_dp) { /* do nothing */ }

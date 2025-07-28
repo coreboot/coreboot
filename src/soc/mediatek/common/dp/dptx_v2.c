@@ -11,6 +11,7 @@
 #include <soc/dptx.h>
 #include <soc/dptx_hal.h>
 #include <soc/dptx_reg.h>
+#include <timer.h>
 
 static void mtk_edp_pattern(struct mtk_dp *mtk_dp, u8 lane_count, u8 pattern)
 {
@@ -255,7 +256,9 @@ int dptx_set_trainingstart(struct mtk_dp *mtk_dp)
 	u8 train_limit;
 	u8 max_linkrate;
 	int ret;
+	struct stopwatch sw;
 
+	stopwatch_init(&sw);
 	buffer = 0x1;
 	dptx_auxwrite_dpcd(mtk_dp, DP_AUX_NATIVE_WRITE, DPCD_00600, 0x1, &buffer);
 
@@ -349,7 +352,8 @@ int dptx_set_trainingstart(struct mtk_dp *mtk_dp)
 	dptx_hal_setscramble(mtk_dp, true);
 	dptx_hal_set_ef_mode(mtk_dp, ENABLE_DPTX_EF_MODE);
 
-	printk(BIOS_INFO, "%s: done\n", __func__);
+	printk(BIOS_INFO, "%s done after %lld msecs\n", __func__,
+	       stopwatch_duration_msecs(&sw));
 
 	return DPTX_PASS;
 }

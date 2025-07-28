@@ -11,6 +11,7 @@
 #include <soc/dptx_reg.h>
 #include <soc/dp_intf.h>
 #include <string.h>
+#include <timer.h>
 
 static bool dptx_auxwrite_bytes(struct mtk_dp *mtk_dp, u8 cmd, u32 dpcd_addr,
 			 size_t length, u8 *data)
@@ -77,7 +78,9 @@ static int dptx_get_edid(struct mtk_dp *mtk_dp, struct edid *out)
 	u8 tmp = 0;
 	u8 extblock = 0;
 	size_t total_size;
+	struct stopwatch sw;
 
+	stopwatch_init(&sw);
 	dptx_auxwrite_dpcd(mtk_dp, DP_AUX_I2C_WRITE, 0x50, 0x1, &tmp);
 
 	/* Read 1st block */
@@ -111,6 +114,9 @@ static int dptx_get_edid(struct mtk_dp *mtk_dp, struct edid *out)
 	}
 
 	mtk_dp->edid = out;
+	printk(BIOS_INFO, "%s done after %lld msecs\n", __func__,
+	       stopwatch_duration_msecs(&sw));
+
 	return 0;
 }
 
@@ -404,7 +410,9 @@ static void dptx_set_dptxout(struct mtk_dp *mtk_dp)
 static void dptx_check_sinkcap(struct mtk_dp *mtk_dp)
 {
 	u8 buffer[16];
+	struct stopwatch sw;
 
+	stopwatch_init(&sw);
 	memset(buffer, 0x0, sizeof(buffer));
 
 	buffer[0] = 0x1;
@@ -473,6 +481,8 @@ static void dptx_check_sinkcap(struct mtk_dp *mtk_dp)
 
 	dptx_auxread_dpcd(mtk_dp, DP_AUX_NATIVE_READ,
 			  DPCD_00200, 0x2, buffer);
+	printk(BIOS_INFO, "%s done after %lld msecs\n", __func__,
+	       stopwatch_duration_msecs(&sw));
 }
 
 void dptx_video_enable(struct mtk_dp *mtk_dp, bool enable)
@@ -532,6 +542,9 @@ __weak void dptx_power_on(void) { /* do nothing */ };
 
 int mtk_edp_init(struct mtk_dp *mtk_dp, struct edid *edid)
 {
+	struct stopwatch sw;
+
+	stopwatch_init(&sw);
 	dptx_power_on();
 	dptx_init_variable(mtk_dp);
 	dptx_init_port(mtk_dp);
@@ -555,6 +568,8 @@ int mtk_edp_init(struct mtk_dp *mtk_dp, struct edid *edid)
 
 	dp_intf_config(edid);
 	dptx_video_config(mtk_dp);
+	printk(BIOS_INFO, "%s done after %lld msecs\n", __func__,
+	       stopwatch_duration_msecs(&sw));
 
 	return 0;
 }

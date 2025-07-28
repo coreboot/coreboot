@@ -12,6 +12,7 @@
 #include <soc/dptx_reg.h>
 #include <soc/dp_intf.h>
 #include <string.h>
+#include <timer.h>
 
 static void dptx_training_checkswingpre(struct mtk_dp *mtk_dp,
 					u8 target_lane_count,
@@ -364,7 +365,9 @@ int dptx_set_trainingstart(struct mtk_dp *mtk_dp)
 	u8 buffer;
 	u8 limit;
 	u8 max_linkrate;
+	struct stopwatch sw;
 
+	stopwatch_init(&sw);
 	buffer = 0x1;
 	dptx_auxwrite_dpcd(mtk_dp, DP_AUX_NATIVE_WRITE,
 			   DPCD_00600, 0x1, &buffer);
@@ -447,6 +450,8 @@ int dptx_set_trainingstart(struct mtk_dp *mtk_dp)
 			else
 				return DPTX_TRANING_FAIL;
 		} else {
+			printk(BIOS_INFO, "%s done after %lld msecs\n", __func__,
+			       stopwatch_duration_msecs(&sw));
 			return DPTX_PASS;
 		}
 	} while (--limit > 0);

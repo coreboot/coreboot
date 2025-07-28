@@ -36,6 +36,15 @@
 #define DEVICE_TYPE_RC			0x4
 #define PCIE_PARF_BDF_TO_SID_CFG	0x2C00
 #define BDF_TO_SID_BYPASS		BIT(0)
+#define PCIE_PARF_PM_CTRL		0x10
+#define REQ_NOT_ENTR_L1			BIT(5)
+#define PCIE_PARF_SLAVE_AXI_ERR_REPORT	0x3C4
+#define AXI_SLAVE_ERR_CRS_BRESP_EN	BIT(14)
+#define PCIE_PARF_AXI_MSTR_WR_ADDR_HALT	0x1A8
+#define PCIE_SRIS_MODE			0x644
+#define PCIE_APP_MARGINING_CTRL		0x2C38
+#define APP_MARGINING_READY		BIT(0)
+#define APP_MARGINING_SW_READY		BIT(1)
 
 /* ELBI */
 #define PCIE3X2_ELBI_SYS_STTS		0x08
@@ -48,8 +57,24 @@
 #define LINK_SPEED_GEN_1		0x1
 #define LINK_SPEED_GEN_2		0x2
 #define LINK_SPEED_GEN_3		0x3
+#define LINK_SPEED_GEN_4		0x4
 #define PCIE_LINK_UP_MS			100
+#define PCIE_PHY_POLL_US		1000
 #define LINK_WAIT_MAX_RETRIES		10
+#define PCIE_AMBA_ERR_RESP_DEFLT_OFF	0x8D0
+#define AMBA_ERR_RESP_CRS_MASK		0x18
+#define PCIE_SPCIE_CAP_OFF_0CH_REG	0x154
+#define PCIE_SPCIE_CAP_OFF_10H_REG	0x158
+#define PCIE_PL16G_CAP_OFF_20H_REG	0x188
+#define PCIE_GEN3_EQ_CONTROL_OFF	0x8A8
+#define GEN3_EQ_PSET_REQ_VEC		0x00FFFF00
+#define PCIE_GEN3_EQ_FB_MODE_DIR_CHANGE_OFF	0x8AC
+#define GEN3_EQ_FMDC_T_MIN_PHASE23	0xF
+#define PCIE_GEN3_RELATED_OFF		0x890
+#define RATE_SHADOW_SEL_MASK		(BIT(25)|BIT(24))
+#define RATE_SHADOW_SEL_VAL		(BIT(24))
+#define PCIE_CAP_HOT_PLUG_CAPABLE	BIT(6)
+#define PCIE_SLOT_CAPABILITIES_REG	0x84
 
 #define COMMAND_MASK			0xffff
 
@@ -66,6 +91,7 @@
 #define PCIE_DBI_RO_WR_EN		BIT(0)
 
 #define PCIE_3x2_NUM_LANES		2
+#define PCIE_1x4_NUM_LANES		4
 #define PCIE_LINK_WIDTH_SPEED_CONTROL	0x80C
 #define PORT_LOGIC_LINK_WIDTH_MASK	(0x1f << 8)
 #define PORT_LOGIC_LINK_WIDTH_1_LANES	(0x1 << 8)
@@ -177,6 +203,7 @@ typedef struct {
 	struct	pcie_region mem;
 } pcie_cntlr_cfg_t;
 
+#if CONFIG(QMP_PHY_2X2_1X4)
 typedef struct {
 	void *qmp_phy_base;
 	void *serdes;
@@ -186,7 +213,32 @@ typedef struct {
 	void *tx1;
 	void *rx1;
 	void *pcs_misc;
+	void *lane0_pcs;
+	void *lane1_pcs;
+	void *lane0_pcie_pcs;
+	void *lane1_pcie_pcs;
+	void *ln_shrd;
+} pcie_qmp_phy_base_t;
+#endif
 
+typedef struct {
+#if !CONFIG(QMP_PHY_2X2_1X4)
+	void *qmp_phy_base;
+	void *serdes;
+	void *tx0;
+	void *rx0;
+	void *pcs;
+	void *tx1;
+	void *rx1;
+	void *pcs_misc;
+	void *lane0_pcs;
+	void *lane1_pcs;
+	void *lane0_pcie_pcs;
+	void *lane1_pcie_pcs;
+#else
+	pcie_qmp_phy_base_t porta;
+	pcie_qmp_phy_base_t portb;
+#endif
 	/* Init sequence for PHY blocks - serdes, tx, rx, pcs */
 	const struct qcom_qmp_phy_init_tbl *serdes_tbl;
 	unsigned int serdes_tbl_num;
@@ -208,6 +260,16 @@ typedef struct {
 	unsigned int pcs_misc_tbl_num;
 	const struct qcom_qmp_phy_init_tbl *pcs_misc_tbl_sec;
 	unsigned int pcs_misc_tbl_num_sec;
+	const struct qcom_qmp_phy_init_tbl *pcs_misc_tbl_thrd;
+	unsigned int pcs_misc_tbl_num_thrd;
+	const struct qcom_qmp_phy_init_tbl *lane0_pcie_pcs_tbl;
+	unsigned int lane0_pcie_pcs_tbl_num;
+	const struct qcom_qmp_phy_init_tbl *lane1_pcie_pcs_tbl;
+	unsigned int lane1_pcie_pcs_tbl_num;
+#if CONFIG(QMP_PHY_2X2_1X4)
+	const struct qcom_qmp_phy_init_tbl *ln_shrd_tbl;
+	unsigned int ln_shrd_tbl_num;
+#endif
 } pcie_qmp_phy_cfg_t;
 
 struct qcom_pcie_cntlr_t {

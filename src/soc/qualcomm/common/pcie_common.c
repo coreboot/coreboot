@@ -16,6 +16,12 @@
 #define ROOT_PORT_BDF		0x0
 #define ATU_CTRL2		PCIE_ATU_UNR_REGION_CTRL2
 
+#if CONFIG(QMP_PHY_2X2_1X4)
+#define LINK_SPEED_DEFAULT LINK_SPEED_GEN_4
+#else
+#define LINK_SPEED_DEFAULT LINK_SPEED_GEN_2
+#endif
+
 static struct qcom_pcie_cntlr_t qcom_pcie_cfg;
 
 static inline void dw_pcie_dbi_rd_wr(bool enable)
@@ -96,6 +102,43 @@ static void qcom_dw_pcie_configure(uint32_t cap_speed)
 	printk(BIOS_INFO, "PCIe Link speed configured in Gen %d\n", cap_speed);
 }
 
+#if CONFIG(QMP_PHY_2X2_1X4)
+static void post_phy_pwr_up_init(struct qcom_pcie_cntlr_t *pcie)
+{
+	pcie_cntlr_cfg_t *pcierc = pcie->cntlr_cfg;
+	/* configure PCIe to RC mode */
+	write32(pcierc->parf + PCIE_PARF_DEVICE_TYPE, DEVICE_TYPE_RC);
+	dsb();
+	clrbits32(pcierc->parf + PCIE_PARF_SLAVE_AXI_ERR_REPORT, AXI_SLAVE_ERR_CRS_BRESP_EN);
+	clrsetbits32(pcierc->dbi_base + PCIE_AMBA_ERR_RESP_DEFLT_OFF, AMBA_ERR_RESP_CRS_MASK, 0x2);
+	dsb();
+	write32(pcierc->parf + PCIE_PARF_AXI_MSTR_WR_ADDR_HALT, 0x0);
+	write32(pcierc->parf + PCIE_SRIS_MODE, 0x0);
+	write32(pcierc->parf + PCIE_APP_MARGINING_CTRL, (APP_MARGINING_SW_READY | APP_MARGINING_READY));
+	dsb();
+}
+
+static void post_phy_pwr_up_dbi_init(struct qcom_pcie_cntlr_t *pcie)
+{
+	pcie_cntlr_cfg_t *pcierc = pcie->cntlr_cfg;
+	dw_pcie_dbi_rd_wr(true);
+	write32(pcierc->dbi_base + PCIE_SPCIE_CAP_OFF_0CH_REG, 0x55555555);
+	write32(pcierc->dbi_base + PCIE_SPCIE_CAP_OFF_10H_REG, 0x55555555);
+	write32(pcierc->dbi_base + PCIE_PL16G_CAP_OFF_20H_REG, 0x55555555);
+	clrbits32(pcierc->dbi_base + PCIE_SLOT_CAPABILITIES_REG, PCIE_CAP_HOT_PLUG_CAPABLE);
+	dsb();
+	clrsetbits32(pcierc->dbi_base + PCIE_GEN3_RELATED_OFF, RATE_SHADOW_SEL_MASK, 0x0);
+	clrsetbits32(pcierc->dbi_base + PCIE_GEN3_EQ_FB_MODE_DIR_CHANGE_OFF, GEN3_EQ_FMDC_T_MIN_PHASE23, 0x1);
+	clrbits32(pcierc->dbi_base + PCIE_GEN3_EQ_CONTROL_OFF, GEN3_EQ_PSET_REQ_VEC);
+	dsb();
+	clrsetbits32(pcierc->dbi_base + PCIE_GEN3_RELATED_OFF, RATE_SHADOW_SEL_MASK, RATE_SHADOW_SEL_VAL);
+	clrsetbits32(pcierc->dbi_base + PCIE_GEN3_EQ_FB_MODE_DIR_CHANGE_OFF, GEN3_EQ_FMDC_T_MIN_PHASE23, 0x1);
+	clrbits32(pcierc->dbi_base + PCIE_GEN3_EQ_CONTROL_OFF, GEN3_EQ_PSET_REQ_VEC);
+	dsb();
+	dw_pcie_dbi_rd_wr(false);
+}
+#endif
+
 /**
  * is_pcie_link_up() - Return the link state
  *
@@ -130,7 +173,7 @@ static enum cb_err qcom_pcie_dw_link_up(struct qcom_pcie_cntlr_t *pcie)
 	}
 
 	/* DW pre link configurations */
-	qcom_dw_pcie_configure(LINK_SPEED_GEN_2);
+	qcom_dw_pcie_configure(LINK_SPEED_DEFAULT);
 
 	/* enable link training */
 	setbits32(pcie->cntlr_cfg->parf + PCIE_PARF_LTSSM, LTSSM_EN);
@@ -282,7 +325,7 @@ static void qcom_qmp_phy_configure(void *base, const struct qcom_qmp_phy_init_tb
 {
 	qcom_qmp_phy_config_lane(base, tbl, num, 0xff);
 }
-
+#if !CONFIG(QMP_PHY_2X2_1X4)
 static enum cb_err qcom_qmp_phy_power_on(pcie_qmp_phy_cfg_t *qphy)
 {
 	uint64_t lock_us;
@@ -317,7 +360,7 @@ static enum cb_err qcom_qmp_phy_power_on(pcie_qmp_phy_cfg_t *qphy)
 	 * Wait for PHY initialization to be done
 	 * PCS_STATUS: wait for 1ms for PHY STATUS bit to be set
 	 */
-	lock_us = wait_us(1000, !(read32(qphy->qmp_phy_base + QPHY_PCS_STATUS) & PHY_STATUS));
+	lock_us = wait_us(PCIE_PHY_POLL_US, !(read32(qphy->qmp_phy_base + QPHY_PCS_STATUS) & PHY_STATUS));
 	if (!lock_us) {
 		printk(BIOS_ERR, "PCIe QMP PHY PLL failed to lock in 1ms\n");
 		return CB_ERR;
@@ -329,6 +372,70 @@ static enum cb_err qcom_qmp_phy_power_on(pcie_qmp_phy_cfg_t *qphy)
 
 	return CB_SUCCESS;
 }
+#else
+static void configure_phy_port(pcie_qmp_phy_base_t *port, pcie_qmp_phy_cfg_t *qphy, int lane_base)
+{
+	qcom_qmp_phy_config_lane(port->tx0, qphy->tx_tbl, qphy->tx_tbl_num, lane_base);
+	qcom_qmp_phy_config_lane(port->rx0, qphy->rx_tbl, qphy->rx_tbl_num, lane_base);
+	qcom_qmp_phy_config_lane(port->tx1, qphy->tx_tbl, qphy->tx_tbl_num, lane_base + 1);
+	qcom_qmp_phy_config_lane(port->rx1, qphy->rx_tbl, qphy->rx_tbl_num, lane_base + 1);
+	qcom_qmp_phy_configure(port->ln_shrd, qphy->ln_shrd_tbl, qphy->ln_shrd_tbl_num);
+	qcom_qmp_phy_configure(port->serdes, qphy->serdes_tbl, qphy->serdes_tbl_num);
+	qcom_qmp_phy_configure(port->pcs, qphy->pcs_tbl, qphy->pcs_tbl_num);
+	qcom_qmp_phy_configure(port->pcs_misc, qphy->pcs_misc_tbl, qphy->pcs_misc_tbl_num);
+	qcom_qmp_phy_configure(port->pcs, qphy->pcs_tbl_sec, qphy->pcs_tbl_num_sec);
+	qcom_qmp_phy_configure(port->pcs_misc, qphy->pcs_misc_tbl_sec, qphy->pcs_misc_tbl_num_sec);
+	qcom_qmp_phy_configure(port->pcs_misc, qphy->pcs_misc_tbl_thrd, qphy->pcs_misc_tbl_num_thrd);
+	qcom_qmp_phy_configure(port->lane0_pcie_pcs, qphy->lane0_pcie_pcs_tbl, qphy->lane0_pcie_pcs_tbl_num);
+	qcom_qmp_phy_configure(port->lane1_pcie_pcs, qphy->lane1_pcie_pcs_tbl, qphy->lane1_pcie_pcs_tbl_num);
+}
+
+static enum cb_err qcom_qmp_phy_power_on(pcie_qmp_phy_cfg_t *qphy)
+{
+	uint64_t lock_us;
+
+	qcom_dw_pcie_enable_pipe_clock();
+
+	/*
+	 * The PHY has two independent CSR interfaces that control lanes 0/1 and
+	 * lanes 2/3. These are called PortA and PortB.
+	 *
+	 * In 1x4 mode, the PCS is only used in PortA and PortB
+	 * writes are ignored, except for lane-specific registers
+	 */
+	/* Select Lane config 0x1 - 1x4 mode 0x0 - 2x2mode */
+	write32(TCSR_PCIE_CTRL_4LN_CONFIG_SEL, 0x1);
+	write32(qphy->porta.serdes + QSERDES_V4_PLL_BIAS_EN_CLKBUFLR_EN, 0x1c);
+	write32(qphy->portb.serdes + QSERDES_V4_PLL_BIAS_EN_CLKBUFLR_EN, 0x1c);
+
+	/* Release powerdown mode and allow endpoint refclk drive */
+	write32(qphy->porta.pcs + QPHY_PCS_PWR_DWN_CNTRL, SW_PWRDN | REFCLK_DRV_DSBL);
+
+	/* Write all PLL/TX/RX/PCS config registers on Port A */
+	configure_phy_port(&qphy->porta, qphy, 1);
+	/* Write all PLL/TX/RX/PCS config registers on Port B */
+	configure_phy_port(&qphy->portb, qphy, 3);
+
+	/* Release software reset of PCS/Serdes */
+	clrbits32(qphy->porta.pcs + QPHY_SW_RESET, SW_RESET);
+
+	/* start PCS/Serdes to operation mode */
+	write32(qphy->porta.pcs  + QPHY_START_CTRL, PCS_START | SERDES_START);
+
+	/*
+	 * Wait for PHY initialization to be done
+	 * PCS_STATUS: wait for 1ms for PHY STATUS bit to be set
+	 */
+	lock_us = wait_us(PCIE_PHY_POLL_US, !(read32(qphy->porta.qmp_phy_base + QPHY_PCS_STATUS) & PHY_STATUS));
+	if (!lock_us) {
+		printk(BIOS_ERR, "PCIe QMP PHY PLL failed to lock in 1ms\n");
+		return CB_ERR;
+	}
+
+	printk(BIOS_DEBUG, "PCIe QPHY Initialized took %lldus\n", lock_us);
+	return CB_SUCCESS;
+}
+#endif
 
 /*
  * Reset the PCIe PHY core.
@@ -394,7 +501,10 @@ static enum cb_err qcom_dw_pcie_enable(struct qcom_pcie_cntlr_t *pcie)
 	}
 
 	qcom_dw_pcie_setup_rc(pcie);
-
+#if CONFIG(QMP_PHY_2X2_1X4)
+	post_phy_pwr_up_init(pcie);
+	post_phy_pwr_up_dbi_init(pcie);
+#endif
 	/* de-assert PCIe reset link to bring EP out of reset */
 	gpio_set(pcierc->perst, 1);
 

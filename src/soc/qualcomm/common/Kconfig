@@ -12,6 +12,12 @@ config QC_COMMON_QUPV3_2
 	help
 	  Selected by chipsets that has QUPv3 HW Version 2.
 
+config QMP_PHY_2X2_1X4
+	bool
+	default n
+	help
+	  Selected by chipsets that have PCIE QMP PHY 2X2/1X4
+
 if SOC_QUALCOMM_COMMON
 
 config QC_SDI_ENABLE

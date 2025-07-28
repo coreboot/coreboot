@@ -7,6 +7,10 @@ fw_config
 		option MB_USB_1C_1A 0
 		option MB_USB_2C_1A 1
 	end
+	field TOUCH_PANEL 4 5
+		option TOUCH_ELAN_TOP   0
+		option TOUCH_ELAN_DBTS  1
+	end
 	field STORAGE 30 31
 		option STORAGE_EMMC		0
 		option STORAGE_NVME		1
@@ -464,7 +468,7 @@ chip soc/intel/alderlake
 		end #I2C0
 		device ref i2c1 on
 			chip drivers/i2c/hid
-				register "generic.hid" = ""ELAN901C""
+				register "generic.hid" = ""ELAN2513""
 				register "generic.desc" = ""ELAN Touchscreen""
 				register "generic.irq" = "ACPI_IRQ_LEVEL_LOW(GPP_E11_IRQ)"
 				register "generic.detect" = "1"
@@ -478,7 +482,9 @@ chip soc/intel/alderlake
 				register "generic.enable_delay_ms" = "1"
 				register "generic.has_power_resource" = "1"
 				register "hid_desc_reg_offset" = "0x01"
-				device i2c 10 on end
+				device i2c 10 on
+					probe TOUCH_PANEL TOUCH_ELAN_TOP
+				end
 			end
 			chip drivers/i2c/hid
 				register "generic.hid" = ""ELAN2513""
@@ -495,7 +501,9 @@ chip soc/intel/alderlake
 				register "generic.has_power_resource" = "1"
 				register "generic.use_gpio_for_status" = "true"
 				register "hid_desc_reg_offset" = "0x01"
-				device i2c 15 on end
+				device i2c 15 on
+					probe TOUCH_PANEL TOUCH_ELAN_DBTS
+				end
 			end
 		end #I2C1
 		device ref i2c5 on

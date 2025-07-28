@@ -213,6 +213,7 @@ chip soc/intel/pantherlake
 				register "generic.enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B18)"
 				register "generic.enable_delay_ms" = "12"
 				register "generic.has_power_resource" = "1"
+				register "generic.use_gpio_for_status" = "true"
 				register "hid_desc_reg_offset" = "0x01"
 				device i2c 41 on end
 			end

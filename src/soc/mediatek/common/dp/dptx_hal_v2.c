@@ -282,7 +282,7 @@ void dptx_hal_swing_emp_reset(struct mtk_dp *mtk_dp)
 		    DP_TX2_PRE_EMPH_MASK | DP_TX3_PRE_EMPH_MASK);
 }
 
-void dptx_hal_phy_wait_aux_ldo_ready(struct mtk_dp *mtk_dp)
+static void dptx_hal_phy_wait_aux_ldo_ready(struct mtk_dp *mtk_dp)
 {
 	u32 mask = RGS_BG_CORE_EN_READY_MASK | RGS_AUX_LDO_EN_READY_MASK;
 

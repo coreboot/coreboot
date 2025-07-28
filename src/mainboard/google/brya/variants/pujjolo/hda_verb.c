@@ -37,7 +37,7 @@ const u32 cim_verb_data[] = {
 	0x0204C003,
 	//==========Widget node 0x20 - 1 : ClassD 2W
 	0x02050038,
-	0x02047981,
+	0x02048981,
 	0x0205001B,
 	0x02040A4B,
 	//==========Widget node 0x20 - 2

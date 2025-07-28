@@ -98,7 +98,31 @@ typedef struct __packed {
 	/** Offset 0x04D7**/	uint8_t                     UnusedUpdSpace1;
 	/* usb_phy_ptr is actually struct usb_phy_config *, but that won't work for 64bit coreboot */
 	/** Offset 0x04D8**/	uint32_t                    usb_phy_ptr;
-	/** Offset 0x04DC**/	uint8_t                     UnusedUpdSpace2[292];
+	/** Offset 0x04DC**/	uint8_t                     Usb4Rt0En;
+	/** Offset 0x04DD**/	uint8_t                     Usb4Rt1En;
+	/** Offset 0x04DE**/	uint8_t                     Usb4Rt0XhciEn;
+	/** Offset 0x04DF**/	uint8_t                     Usb4Rt1XhciEn;
+	/** Offset 0x04E0**/	uint64_t                    xgbe_port0_mac;
+	/** Offset 0x04E8**/	uint64_t                    xgbe_port1_mac;
+	/** Offset 0x04F0**/	uint8_t                     xgbe_port0_config_en;
+	/** Offset 0x04F1**/	uint8_t                     xgbe_port1_config_en;
+	/* xgbe_port0_table_ptr is actually uint32_t *, but that won't work for 64bit coreboot */
+	/** Offset 0x04F2**/	uint32_t                    xgbe_port0_table_ptr;
+	/** Offset 0x04F6**/	uint32_t                    xgbe_port1_table_ptr;
+	/** Offset 0x04FA**/	uint8_t                     XgbeDisable;
+	/** Offset 0x04FB**/	uint8_t                     disp_combo_PHY;
+	/** Offset 0x04FC**/	uint8_t                     xgbe_led_en;
+	/** Offset 0x04FD**/	uint8_t                     xgbe_led_link_status0;
+	/** Offset 0x04FE**/	uint8_t                     xgbe_led_link_status1;
+	/** Offset 0x04FF**/	uint8_t                     xgbe_led_link_speed0;
+	/** Offset 0x0500**/	uint8_t                     xgbe_led_link_speed1;
+	/** Offset 0x0501**/	uint8_t                     xgbe_led_tx_rx_blink_rate0;
+	/** Offset 0x0502**/	uint8_t                     xgbe_led_tx_rx_blink_rate1;
+	/** Offset 0x0503**/	uint32_t                    fch_rt_device_enable_map;
+	/** Offset 0x0507**/	uint8_t                     amd_pcie_aer_report_mechanism;
+	/** Offset 0x0508**/	uint8_t                     amd_nbio_ras_controlv2;
+	/** Offset 0x0509**/	uint8_t                     pcie_ecrc_enablement;
+	/** Offset 0x050A**/	uint8_t                     UnusedUpdSpace2[246];
 	/** Offset 0x0600**/	uint16_t                    UpdTerminator;
 } FSP_M_CONFIG;
 

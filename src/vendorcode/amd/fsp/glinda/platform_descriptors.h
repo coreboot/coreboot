@@ -32,6 +32,7 @@ enum dxio_link_speed_cap {
 	GEN1,
 	GEN2,
 	GEN3,
+	GEN4,
 	GEN_INVALID		// Max Gen for boundary check
 };
 
@@ -199,7 +200,7 @@ typedef struct __packed {
 	uint32_t	reserved_3		:7;
 	uint32_t	device_number		:5;	// Desired root port device number
 	uint32_t	function_number		:3;	// Desired root port function number
-	uint32_t	link_speed_capability	:2;	// See dxio_link_speed_cap
+	uint32_t				:2;
 	uint32_t	auto_spd_change		:2;	// See dxio_upstream_auto_speed_change
 	uint32_t	eq_preset		:4;	// Gen3 equalization preset
 	uint32_t	link_aspm		:2;	// See dxio_aspm_type
@@ -209,7 +210,8 @@ typedef struct __packed {
 	uint8_t		link_hotplug;			// See dxio_link_hotplug_type
 	uint8_t		slot_power_limit;		// Currently unused by FSP
 	uint32_t	slot_power_limit_scale	:2;	// Currently unused by FSP
-	uint32_t	reserved_4		:6;
+	uint32_t	link_speed_capability	:3;	// See dxio_link_speed_cap
+	uint32_t				:3;
 	uint32_t	link_compliance_mode	:1;	// Currently unused by FSP
 	uint32_t	link_safe_mode		:1;	// Currently unused by FSP
 	uint32_t	sb_link			:1;	// Currently unused by FSP
@@ -220,5 +222,114 @@ typedef struct __packed {
 	uint8_t		phy_params[NUM_DXIO_PHY_PARAMS*2];
 	uint16_t	port_params[NUM_DXIO_PORT_PARAMS*2];	// key-value parameters. see dxio_port_param_type
 } fsp_dxio_descriptor;
+
+typedef enum {
+	XGBE_PORT_DISABLE,
+	XGBE_PORT_ENABLE,
+} xgbe_port_enable;
+
+typedef enum {
+	XGBE_PHY_MODE_RJ45,
+	XGBE_PHY_MODE_SFP_PLUS,
+	XGBE_PHY_MODE_BACKPLANE
+} xgbe_port_phy_modes;
+
+typedef enum {
+	XGBE_RESERVED,
+	XGBE_10G_1G_BACKPLANE,
+	XGBE_2_5G_BACKPLANE,
+	XGBE_SOLDERED_DOWN_1000BASE_T,
+	XGBE_SOLDERED_DOWN_1000BASE_X,
+	XGBE_SOLDERED_DOWN_NBASE_T,
+	XGBE_SOLDERED_DOWN_10GBASE_T,
+	XGBE_SOLDERED_DOWN_10GBASE_R,
+	XGBE_SFP_PLUS_CONNECTOR,
+	XGBE_PORT_SGMII_BACKPLANE,
+	XGBE_5G_BACKPLANE,
+} xgbe_port_platform_config;
+
+typedef enum {
+	XGBE_PORT_SPEED_10M = 0x1,
+	XGBE_PORT_SPEED_100M = 0x2,
+	XGBE_PORT_SPEED_1G = 0x4,
+	XGBE_PORT_SPEED_2500M = 0x8,
+	XGBE_PORT_SPEED_5G = 0x32,
+	XGBE_PORT_SPEED_10G = 0x10,
+	XGBE_PORT_SPEED_10_100_1000M = 0x7,
+} xgbe_port_speed_config;
+
+typedef enum {
+	XGBE_PORT_NOT_USED = 0x0,
+	XGBE_SFP_PLUS_CONNECTION = 0x1,
+	XGBE_CONNECTION_MDIO_PHY = 0x2,
+	XGBE_BACKPLANE_CONNECTION = 0x4,
+} xgbe_port_connection_type;
+
+struct __packed xgbe_port_table {
+	uint8_t                 XgbePortConfig;                 ///< XGbE controller Port Config Enable/disable
+	uint8_t                 XgbePortPlatformConfig;         ///< Platform Config
+														  ///  @li   <b>0000</b> - Reserved
+														  ///  @li   <b>0001</b> - 10G/1G Backplane
+														  ///  @li   <b>0010</b> - 2.5G Backplane
+														  ///  @li   <b>0011</b> - 1000Base-T
+														  ///  @li   <b>0100</b> - 1000Base-X
+														  ///  @li   <b>0101</b> - NBase-T
+														  ///  @li   <b>0110</b> - 10GBase-T
+														  ///  @li   <b>0111</b> - 10GBase-X
+														  ///  @li   <b>1000</b> - SFP+
+	uint8_t                 XgbePortSupportedSpeed;         ///< Indicated Ethernet speeds supported on platform
+														  ///  @li   <b>1xxx</b> - 10/100/1000M
+														  ///  @li   <b>x1xx</b> - 1G
+														  ///  @li   <b>xx1x</b> - 1G
+														  ///  @li   <b>xxx1</b> - 100M
+	uint8_t                 XgbePortConnectedType;          ///< PHY connected type
+														  ///  @li   <b>000</b> - Port not used
+														  ///  @li   <b>001</b> - SFP+
+														  ///  @li   <b>010</b> - MDIO
+														  ///  @li   <b>100</b> - Backplane connection
+	uint8_t                 XgbePortMdioId;                 ///< MDIO ID of the PHY associated with this port
+	uint8_t                 XgbePortMdioResetType;          ///< MDIO PHY reset type
+														  ///  @li   <b>00</b> - None
+														  ///  @li   <b>01</b> - I2C GPIO
+														  ///  @li   <b>10</b> - Integrated GPIO
+														  ///  @li   <b>11</b> - Reserved
+	uint8_t                 XgbePortResetGpioNum;           ///< GPIO used to control the reset
+	uint8_t                 XgbePortMdioResetI2cAddress;    ///< I2C address of PCA9535 MDIO reset GPIO
+	uint8_t                 XgbePortSfpI2cAddress;          ///< I2C address of PCA9535 for SFP
+	uint8_t                 XgbePortSfpTxFaultGpio;         ///< GPIO number for SFP+ TX_FAULT
+	uint8_t                 XgbePortSfpRsGpio;              ///< GPIO number for SFP+ RS
+	uint8_t                 XgbePortSfpModAbsGpio;          ///< GPIO number for SFP+ Mod_ABS
+	uint8_t                 XgbePortSfpRxLosGpio;           ///< GPIO number for SFP+ Rx_LOS
+	uint8_t                 XgbePortSfpGpioMask;            ///< GPIO Mask for SFP+
+														  ///  @li   <b>1xxx</b> - Rx_LOS not supported
+														  ///  @li   <b>x1xx</b> - Mod_ABS not supported
+														  ///  @li   <b>xx1x</b> - RS not supported
+														  ///  @li   <b>xxx1</b> - TX_FAULT not supported
+	uint8_t                 XgbePortSfpTwiAddress;          ///< Address of PCA9545 I2C multiplexor
+	uint8_t                 XgbePortSfpTwiBus;              ///< Downstream channel of PCA9545
+	uint8_t                 XgbaPortRedriverPresent;        ///< Redriver Present or not
+	uint8_t                 Reserve0[3];                    ///< Reserved
+	uint8_t                 XgbaPortRedriverModel;          ///< Redriver Model
+														  ///  @li   <b>00</b> - InPhi 4223
+														  ///  @li   <b>01</b> - InPhi 4227
+	uint8_t                 XgbaPortRedriverInterface;      ///< Redriver Interface
+														  ///  @li   <b>00</b> - MDIO
+														  ///  @li   <b>01</b> - I2C
+	uint8_t                 XgbaPortRedriverAddress;        ///< Redriver Address
+	uint8_t                 XgbaPortRedriverLane;           ///< Redriver Lane
+	uint8_t                 XgbaPortPadGpio;                ///< Portx_GPIO Pad selection
+														  ///  @li   <b>001</b> - MDIO0 pin
+														  ///  @li   <b>010</b> - MDIO1 pin
+														  ///  @li   <b>100</b> - SFP pin
+	uint8_t                 XgbaPortPadMdio;                ///< Portx_Mdio Pad selection
+														  ///  @li   <b>001</b> - MDIO0 pin
+														  ///  @li   <b>010</b> - MDIO1 pin
+														  ///  @li   <b>100</b> - SFP pin
+	uint8_t                 XgbaPortPadI2C;                 ///< Portx_I2C Pad selection
+														  ///  @li   <b>001</b> - MDIO0 pin
+														  ///  @li   <b>010</b> - MDIO1 pin
+														  ///  @li   <b>100</b> - SFP pin
+	uint8_t                 Reserve1;                       ///< Reserved
+  };
 
 #endif /* PI_PLATFORM_DESCRIPTORS_H */

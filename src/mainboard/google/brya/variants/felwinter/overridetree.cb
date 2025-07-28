@@ -350,8 +350,8 @@ chip soc/intel/alderlake
 		end
 		device ref pch_espi on
 			chip ec/google/chromeec
-				use conn1 as mux_conn[0]
-				use conn2 as mux_conn[1]
+				use conn1 as mux_conn[1]
+				use conn2 as mux_conn[0]
 				device pnp 0c09.0 on end
 			end
 		end

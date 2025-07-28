@@ -120,7 +120,8 @@ uintptr_t pci_map_bus(pcidev_t dev)
 	atu_type = current_bus == 1 ? PCIE_ATU_TYPE_CFG0 : PCIE_ATU_TYPE_CFG1;
 
 	dw_pcie_prog_outbound_atu(atu_base, PCIE_ATU_REGION_INDEX0, atu_type,
-				  (uint64_t)config_base, busdev, config_size);
+				  (uint64_t)config_base + (QCOM_EP_CFG_SIZE * devfn),
+				  busdev, config_size);
 out:
 	return (uintptr_t)config_base + (QCOM_EP_CFG_SIZE * devfn);
 }

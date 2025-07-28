@@ -105,5 +105,6 @@
 
 /* TCSR */
 #define TCSR_GCC_PCIE_4L_CLKREF_EN_PCIE_ENABLE           ((void *)0x1FD512C)
+#define TCSR_PCIE_CTRL_4LN_CONFIG_SEL            ((void *)0x1FDA000)
 
 #endif /*  __SOC_QUALCOMM_X1P42100_ADDRESS_MAP_H__ */

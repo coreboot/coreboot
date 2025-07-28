@@ -1,17 +1,15 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/device.h>
-#include <soc/mmu.h>
-#include <soc/mmu_common.h>
 #include <soc/symbols_common.h>
-#include <soc/cpucp.h>
 #include <soc/pcie.h>
 
 static struct device_operations pci_domain_ops = {
-	.read_resources = noop_read_resources,
-	.set_resources = noop_set_resources,
+	.read_resources = &qcom_pci_domain_read_resources,
+	.set_resources = &pci_domain_set_resources,
+	.scan_bus = &pci_host_bridge_scan_bus,
+	.enable = &qcom_setup_pcie_host,
 };
-
 static void soc_read_resources(struct device *dev)
 {
 	/* placeholder */

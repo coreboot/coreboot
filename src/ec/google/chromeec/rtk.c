@@ -71,7 +71,8 @@ bool chipset_emi_read_bytes(u16 port, size_t length, u8 *dest, u8 *csum)
 	printk(BIOS_DEBUG, "RTS5915: read port 0x%x, size %zu\n", port, length);
 
 	if (port >= EMI_RANGE_START && port <= EMI_RANGE_END) {
-		uint8_t *p = (uint8_t *)(HOSTCMD_PARAM_MEM_BASE + (port - EMI_RANGE_START));
+		uint8_t *p = (uint8_t *)(uintptr_t)(HOSTCMD_PARAM_MEM_BASE
+				+ (port - EMI_RANGE_START));
 		for (i = 0; i < length; ++i) {
 			dest[i] = p[i];
 			if (csum)
@@ -91,7 +92,8 @@ bool chipset_emi_write_bytes(u16 port, size_t length, u8 *msg, u8 *csum)
 	printk(BIOS_DEBUG, "RTS5915: write port 0x%x, size %zu\n", port, length);
 
 	if (port >= EMI_RANGE_START && port <= EMI_RANGE_END) {
-		uint8_t *p = (uint8_t *)(HOSTCMD_PARAM_MEM_BASE + (port - EMI_RANGE_START));
+		uint8_t *p = (uint8_t *)(uintptr_t)(HOSTCMD_PARAM_MEM_BASE
+				+ (port - EMI_RANGE_START));
 		for (i = 0; i < length; ++i) {
 			p[i] = msg[i];
 			if (csum)

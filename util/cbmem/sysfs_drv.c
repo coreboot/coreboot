@@ -239,7 +239,7 @@ void cbmem_sysfs_foreach_cbmem_entry(cbmem_iterator_callback cb, void *data, boo
 			continue;
 
 		uint64_t addr = 0;
-		uint64_t size = 0;
+		size_t size = 0;
 		uint8_t *buf;
 
 		/* If entry was not found or previously matched directory

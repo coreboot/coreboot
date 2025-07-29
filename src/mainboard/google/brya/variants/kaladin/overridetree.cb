@@ -529,6 +529,7 @@ chip soc/intel/alderlake
 		device ref heci1 on end
 		device ref ish on
 			chip drivers/intel/ish
+				register "firmware_name" = ""kaladin_ish.bin""
 				register "add_acpi_dma_property" = "true"
 				device generic 0 on end
 			end

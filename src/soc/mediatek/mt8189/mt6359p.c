@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only OR MIT */
 
+#include <soc/cpu_id.h>
 #include <soc/mt6359p.h>
 
 /*
@@ -187,11 +188,24 @@ static const struct pmic_setting init_setting[] = {
 	{0x18b4, 0x34, 0x7F, 0},
 };
 
+static const struct pmic_setting disable_apu_power_setting[] = {
+	{0x1508, 0x0, 0x3, 0},
+	{0x1f08, 0x0, 0x3, 0},
+};
+
 void mt6359p_init_setting(void)
 {
 	for (size_t i = 0; i < ARRAY_SIZE(init_setting); i++)
 		mt6359p_write_field(init_setting[i].addr, init_setting[i].val,
 			init_setting[i].mask, init_setting[i].shift);
+
+	if (get_cpu_id() == MTK_CPU_ID_MT8189 &&
+	    get_cpu_segment_id() == MTK_CPU_SEG_ID_MT8189G)
+		for (int i = 0; i < ARRAY_SIZE(disable_apu_power_setting); i++)
+			mt6359p_write_field(disable_apu_power_setting[i].addr,
+					    disable_apu_power_setting[i].val,
+					    disable_apu_power_setting[i].mask,
+					    disable_apu_power_setting[i].shift);
 }
 
 void mt6359p_lp_setting(void)

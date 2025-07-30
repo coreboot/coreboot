@@ -12,6 +12,26 @@
 
 #define ERR(...) fprintf(stderr, __VA_ARGS__)
 
+enum spi_frequency {
+	SPI_FREQUENCY_66_66MHZ = 0,
+	SPI_FREQUENCY_33_33MHZ = 1,
+	SPI_FREQUENCY_22_22MHZ = 2,
+	SPI_FREQUENCY_16_66MHZ = 3,
+	SPI_FREQUENCY_100MHZ = 4,
+	SPI_FREQUENCY_800KHZ = 5,
+};
+
+enum spi_read_mode {
+	SPI_READ_MODE_NORMAL_33 = 0,
+	SPI_READ_MODE_RESERVED = 1,
+	SPI_READ_MODE_DUAL_1_1_2 = 2,
+	SPI_READ_MODE_QUAD_1_1_4 = 3,
+	SPI_READ_MODE_DUAL_1_2_2 = 4,
+	SPI_READ_MODE_QUAD_1_4_4 = 5,
+	SPI_READ_MODE_NORMAL_66 = 6,
+	SPI_READ_MODE_FAST = 7,
+};
+
 /* Possible locations for the header */
 const uint32_t fw_header_offsets[] = {
 	0xfa0000,
@@ -401,16 +421,102 @@ static int list_amdfw_ro(FILE *fw, const embedded_firmware *fw_header)
 	return 0;
 }
 
+static void decode_spi_frequency(unsigned int freq)
+{
+	switch (freq) {
+	case SPI_FREQUENCY_66_66MHZ:
+		printf("66.66MHz");
+		break;
+	case SPI_FREQUENCY_33_33MHZ:
+		printf("33.33MHz");
+		break;
+	case SPI_FREQUENCY_22_22MHZ:
+		printf("22.22MHz");
+		break;
+	case SPI_FREQUENCY_16_66MHZ:
+		printf("16.66MHz");
+		break;
+	case SPI_FREQUENCY_100MHZ:
+		printf("100MHz");
+		break;
+	case SPI_FREQUENCY_800KHZ:
+		printf("800kHz");
+		break;
+	default:
+		printf("unknown<%x>MHz", freq);
+	}
+}
+
+static void decode_spi_read_mode(unsigned int mode)
+{
+	switch (mode) {
+	case SPI_READ_MODE_NORMAL_33:
+		printf("Normal read (up to 33M)");
+		break;
+	case SPI_READ_MODE_RESERVED:
+		printf("Reserved");
+		break;
+	case SPI_READ_MODE_DUAL_1_1_2:
+		printf("Dual IO (1-1-2)");
+		break;
+	case SPI_READ_MODE_QUAD_1_1_4:
+		printf("Quad IO (1-1-4)");
+		break;
+	case SPI_READ_MODE_DUAL_1_2_2:
+		printf("Dual IO (1-2-2)");
+		break;
+	case SPI_READ_MODE_QUAD_1_4_4:
+		printf("Quad IO (1-4-4)");
+		break;
+	case SPI_READ_MODE_NORMAL_66:
+		printf("Normal read (up to 66M)");
+		break;
+	case SPI_READ_MODE_FAST:
+		printf("Fast Read");
+		break;
+	default:
+		printf("unknown<%x>mode", mode);
+	}
+}
+
+static int dump_efw(const embedded_firmware *fw_header)
+{
+	printf("EFS Generation:    %s\n", fw_header->efs_gen.gen ? "first" : "second");
+
+	printf("\nFamily 15h Models 60h-6Fh");
+	printf("\n  SPI Read Mode          ");
+	decode_spi_read_mode(fw_header->spi_readmode_f15_mod_60_6f);
+	printf("\n  SPI Frequency:         ");
+	decode_spi_frequency(fw_header->fast_speed_new_f15_mod_60_6f);
+
+	printf("\n\nFamily 17h Models 00h-0Fh, 10h-1Fh");
+	printf("\n  SPI Read Mode:         ");
+	decode_spi_read_mode(fw_header->spi_readmode_f17_mod_00_2f);
+	printf("\n  Fast Speed New:        ");
+	decode_spi_frequency(fw_header->spi_fastspeed_f17_mod_00_2f);
+	printf("\n  QPR_Dummy Cycle configure:    0x%02x\n", fw_header->qpr_dummy_cycle_f17_mod_00_2f);
+
+	printf("\nFamily 17h Models 30h-3Fh and later Families");
+	printf("\n  SPI Read Mode:         ");
+	decode_spi_read_mode(fw_header->spi_readmode_f17_mod_30_3f);
+	printf("\n  SPI Fast Speed:        ");
+	decode_spi_frequency(fw_header->spi_fastspeed_f17_mod_30_3f);
+	printf("\n  Micron Detect Flag:    0x%02x\n", fw_header->micron_detect_f17_mod_30_3f);
+	return 0;
+}
+
 enum {
 	AMDFW_OPT_HELP = 'h',
+	AMDFW_OPT_DUMP = 'd',
 	AMDFW_OPT_SOFT_FUSE = 1UL << 0, /* Print Softfuse */
 	AMDFW_OPT_RO_LIST = 1UL << 1, /* List entries in AMDFW RO */
 };
 
-static char const optstring[] = {AMDFW_OPT_HELP};
+static const char optstring[] = {AMDFW_OPT_HELP, AMDFW_OPT_DUMP};
 
 static struct option long_options[] = {
 	{"help", no_argument, 0, AMDFW_OPT_HELP},
+	{"dump", no_argument, 0, AMDFW_OPT_DUMP},
 	{"soft-fuse", no_argument, 0, AMDFW_OPT_SOFT_FUSE},
 	{"ro-list", no_argument, 0, AMDFW_OPT_RO_LIST},
 };
@@ -419,6 +525,7 @@ static void print_usage(void)
 {
 	printf("amdfwread: Examine AMD firmware images\n");
 	printf("Usage: amdfwread [options] <file>\n");
+	printf("-d | --dump                Dump Embedded Firmware Structure\n");
 	printf("--soft-fuse                Print soft fuse value\n");
 	printf("--ro-list                  List the programs under AMDFW in RO region\n");
 }
@@ -426,6 +533,7 @@ static void print_usage(void)
 int main(int argc, char **argv)
 {
 	char *fw_file = NULL;
+	int mode_dump = 0;
 
 	int selected_functions = 0;
 	while (1) {
@@ -447,6 +555,9 @@ int main(int argc, char **argv)
 		case AMDFW_OPT_HELP:
 			print_usage();
 			return 0;
+		case AMDFW_OPT_DUMP:
+			mode_dump = 1;
+			break;
 
 		case AMDFW_OPT_SOFT_FUSE:
 		case AMDFW_OPT_RO_LIST:
@@ -479,6 +590,9 @@ int main(int argc, char **argv)
 		fclose(fw);
 		return 1;
 	}
+
+	if (mode_dump)
+		dump_efw(&fw_header);
 
 	if (selected_functions & AMDFW_OPT_SOFT_FUSE) {
 		if (read_soft_fuse(fw, &fw_header) != 0) {

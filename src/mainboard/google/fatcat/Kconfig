@@ -173,8 +173,7 @@ config MAINBOARD_FAMILY
 config MAINBOARD_PART_NUMBER
 	default "Fatcat" if BOARD_GOOGLE_MODEL_FATCAT
 	default "Francka" if BOARD_GOOGLE_FRANCKA
-	default "Felino" if BOARD_GOOGLE_FELINO
-	default "Felino4ES" if BOARD_GOOGLE_FELINO4ES
+	default "Felino" if BOARD_GOOGLE_MODEL_FELINO
 	default "Kinmen" if BOARD_GOOGLE_KINMEN
 
 config MEMORY_SOLDERDOWN

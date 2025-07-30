@@ -3,7 +3,12 @@
 #ifndef _SOC_INTEL_PANTHERLAKE_ROMSTAGE_UX_H_
 #define _SOC_INTEL_PANTHERLAKE_ROMSTAGE_UX_H_
 
+#include <types.h>
+
 bool ux_inform_user_of_update_operation(const char *name, FSPM_UPD *mupd);
 bool ux_inform_user_of_poweroff_operation(const char *name, FSPM_UPD *mupd);
+
+/* VGA initialization configuration */
+#define VGA_INIT_CONTROL_ENABLE		BIT(0)
 
 #endif /* _SOC_INTEL_PANTHERLAKE_ROMSTAGE_UX_H_ */

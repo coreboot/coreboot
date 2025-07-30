@@ -44,7 +44,7 @@ static bool ux_inform_user_of_operation(const char *name, enum ux_locale_msg id,
 		return false;
 	}
 
-	m_cfg->VgaInitControl = 1;
+	m_cfg->VgaInitControl = VGA_INIT_CONTROL_ENABLE;
 	m_cfg->VbtPtr = (efi_uintn_t)vbt;
 	m_cfg->VbtSize = vbt_size;
 	m_cfg->LidStatus = CONFIG(VBOOT_LID_SWITCH) ? get_lid_switch() : CONFIG(RUN_FSP_GOP);

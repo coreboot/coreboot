@@ -13,6 +13,8 @@ chip soc/intel/alderlake
 	# Sagv Configuration
 	register "sagv" = "SaGv_Disabled"
 
+	register "eist_enable" = "false"
+
 	register "dptf_enable" = "false"
 
 	register "s0ix_enable" = "false"

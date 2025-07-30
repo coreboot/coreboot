@@ -93,6 +93,7 @@ enum cb_err mainboard_get_mac_address(struct device *dev, uint8_t mac[MAC_ADDR_L
 
 void mainboard_silicon_init_params(FSP_S_CONFIG *params)
 {
+	params->Eist = 0;
 	params->TurboMode = 0;
 }
 

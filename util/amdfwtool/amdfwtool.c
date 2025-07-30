@@ -586,17 +586,17 @@ static void copy_psp_header(void *bak, void *orig)
 
 static void fill_dir_header(void *directory, uint32_t count, context *ctx)
 {
+	if (ctx == NULL || directory == NULL) {
+		fprintf(stderr, "Calling %s with NULL pointers\n", __func__);
+		return;
+	}
+
 	psp_combo_directory *cdir = directory;
 	psp_directory_table *dir = directory;
 	bios_directory_table *bdir = directory;
 	/* The cookies have same offsets. */
 	uint32_t cookie = ((psp_directory_table *)directory)->header.cookie;
 	uint32_t table_size = 0;
-
-	if (ctx == NULL || directory == NULL) {
-		fprintf(stderr, "Calling %s with NULL pointers\n", __func__);
-		return;
-	}
 
 	/* The table size needs to be 0x1000 aligned. So align the end of table. */
 	adjust_current_pointer(ctx, 0, TABLE_ALIGNMENT);

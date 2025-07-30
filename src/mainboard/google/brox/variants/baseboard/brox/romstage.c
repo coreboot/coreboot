@@ -30,6 +30,10 @@ static bool check_auxfw_ver_mismatch(void)
 	cur_major_ver = (pd_chip_r.fw_version_number >> 16) & 0xFF;
 	is_productionfw = !!(cur_major_ver & 0xF0);
 
+	/* check whether bundled fw is NULL */
+	if (!fwver_fname)
+		return mismatch;
+
 	/* find bundled fw hash */
 	new_ver = cbfs_map(fwver_fname, &new_ver_size);
 	if (new_ver == NULL || new_ver_size != FWVER_SIZE)

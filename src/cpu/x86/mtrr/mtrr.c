@@ -444,10 +444,19 @@ static void calc_var_mtrr_range(struct var_mtrr_state *var_state,
 		/* All MTRR entries need to have their base aligned to the mask
 		 * size. The maximum size is calculated by a function of the
 		 * min base bit set and maximum size bit set. */
-		if (addr_lsb > size_msb)
-			mtrr_size = 1ULL << size_msb;
-		else
-			mtrr_size = 1ULL << addr_lsb;
+		if (addr_lsb > size_msb) {
+			/* Ensure shift amount is within valid range (0-63) */
+			if (size_msb >= 64)
+				mtrr_size = UINT64_MAX; /* Handle extreme case */
+			else
+				mtrr_size = 1ULL << size_msb;
+		} else {
+			/* Ensure shift amount is within valid range (0-63) */
+			if (addr_lsb >= 64)
+				mtrr_size = UINT64_MAX; /* Handle extreme case */
+			else
+				mtrr_size = 1ULL << addr_lsb;
+		}
 
 		if (var_state->prepare_msrs)
 			prep_var_mtrr(var_state, base, mtrr_size, mtrr_type);
@@ -653,7 +662,7 @@ static void __calc_var_mtrrs(struct memranges *addr_space,
 	 *   2. WB as default.
 	 * The lowest count is then used as default after totaling all
 	 * MTRRs. UC takes precedence in the MTRR architecture. There-
-	 * fore, only holes can be used when the type of the region is
+	 * therefore, only holes can be used when the type of the region is
 	 * MTRR_TYPE_WRBACK with MTRR_TYPE_UNCACHEABLE as the default
 	 * type.
 	 */

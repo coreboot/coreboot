@@ -1347,8 +1347,8 @@ sub print_wholeconfig {
 sub check_if_file_referenced {
     my $filename = $File::Find::name;
     if (   ( $filename =~ /Kconfig/ )
-        && ( !$filename =~ /\.orig$/ )
-        && ( !$filename =~ /~$/ )
+        && ( $filename !~ /\.orig$/ )
+        && ( $filename !~ /~$/ )
         && ( !exists $loaded_files{$filename} ) )
     {
         show_warning("'$filename' is never referenced");

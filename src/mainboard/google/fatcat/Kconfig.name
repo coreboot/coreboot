@@ -32,5 +32,8 @@ config BOARD_GOOGLE_FELINO4ES
 config BOARD_GOOGLE_FRANCKA
 	bool "-> Francka"
 
+config BOARD_GOOGLE_KINMEN4ES
+	bool "-> Kinmen4ES"
+
 config BOARD_GOOGLE_KINMEN
 	bool "-> Kinmen"

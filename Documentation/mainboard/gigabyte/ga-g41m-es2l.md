@@ -30,9 +30,7 @@ This motherboard [also works with Libreboot](https://libreboot.org/docs/install/
 
 ## Preparation
 
-```{eval-rst}
-For more datails how to get sources and build the toolchain, see :doc:`../../tutorial/part1`.
-```
+For more datails how to get sources and build the toolchain, see <project:../../tutorial/part1.md>.
 
 ### Devuan 4 Chimaera
 
@@ -140,10 +138,8 @@ Built gigabyte/ga-g41m-es2l (GA-G41M-ES2L)
 
 ## Flashing coreboot
 
-```{eval-rst}
 In addition to the information here, please see the
-:doc:`../../tutorial/flashing_firmware/index`.
-```
+<project:../../tutorial/flashing_firmware/index.md>.
 
 ### Do backup
 

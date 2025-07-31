@@ -115,10 +115,8 @@ $ sudo flashrom --noverify-all --ifd -i bios -p internal -w coreboot.rom
 The use of `--noverify-all` is required since the Management Engine
 region is not readable even by the host.
 
-```{eval-rst}
 In addition to the information here, please see the
-:doc:`../../tutorial/flashing_firmware/index`.
-```
+<project:../../tutorial/flashing_firmware/index.md>.
 
 ## Hardware monitoring and fan control
 

@@ -59,7 +59,8 @@ Wake on LAN is active works great.
 ### SuperIO
 
 This board has a Nuvoton NPCD379 SuperIO chip. Fan speed and PS/2 keyboard work
-fine using coreboot's existing code for :doc:`../../superio/nuvoton/npcd378`.
+fine using coreboot's existing code for
+<project:../../superio/nuvoton/npcd378.md>.
 
 [Compaq Elite 8300 USDT]: https://support.hp.com/gb-en/product/hp-compaq-elite-8300-ultra-slim-pc/5232866
 [HP]: https://www.hp.com/

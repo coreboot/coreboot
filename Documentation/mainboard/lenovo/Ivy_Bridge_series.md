@@ -37,9 +37,7 @@ This information is valid for all supported models, except T430s, [T431s](t431s.
   exceed 4MiB in size, which means CONFIG_CBFS_SIZE must be smaller than 4MiB.
 * ROM chip size should be set to 12MiB.
 
-```{eval-rst}
-Please also have a look at :doc:`../../tutorial/flashing_firmware/index`.
-```
+Please also have a look at <project:../../tutorial/flashing_firmware/index.md>.
 
 ## Splitting the coreboot.rom
 

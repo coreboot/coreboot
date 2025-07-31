@@ -5,11 +5,9 @@ mainboard, there might be additional issues to those listed here.
 
 ## PCIe graphics
 
-```{eval-rst}
 Using a PCIe graphics card for display output is not currently
-supported. This is because :doc:`./mrc.bin` requires workarounds to
+supported. This is because <project:mrc.bin.md> requires workarounds to
 have such a feature working correctly.
-```
 
 However, there is a [patch on Gerrit][hsw-gfx-gerrit] that allows PCIe
 graphics to be used for display output. This patch is not guaranteed to

@@ -4,16 +4,12 @@ This section details how to run coreboot on the [Supermicro X10SLM+-F].
 
 ## Required proprietary blobs
 
-```{eval-rst}
-Please see :doc:`../../northbridge/intel/haswell/mrc.bin`.
-```
+Please see <project:../../northbridge/intel/haswell/mrc.bin.md>.
 
 ## Building coreboot
 
-```{eval-rst}
 If you haven't already, build the coreboot toolchain as described in
-:doc:`../../tutorial/part1`.
-```
+<project:../../tutorial/part1.md>.
 
 A fully working image should be possible so long as you have the
 Haswell `mrc.bin` file. You can set the basic config with the following
@@ -40,10 +36,8 @@ Now, run `make` to build the coreboot image.
 
 ## Flashing coreboot
 
-```{eval-rst}
 In addition to the information here, please see the
-:doc:`../../tutorial/flashing_firmware/index`.
-```
+<project:../../tutorial/flashing_firmware/index.md>.
 
 ### Internal programming
 
@@ -119,11 +113,8 @@ eventually start. There is no such delay when running coreboot.
 
 ## ECC DRAM
 
-```{eval-rst}
 ECC DRAM seems to work, but please see
-:doc:`../../northbridge/intel/haswell/mrc.bin`
-for caveats.
-```
+<project:../../northbridge/intel/haswell/mrc.bin.md> for caveats.
 
 ## Known issues
 
@@ -139,9 +130,8 @@ for caveats.
   in coreboot. The `coretemp` driver can still be used for accurate CPU
   temperature readings from an OS, and hence the OS can do fan control.
 
-```{eval-rst}
-Please also see :doc:`../../northbridge/intel/haswell/known-issues`.
-```
+Please also see
+<project:../../northbridge/intel/haswell/known-issues.md>.
 
 ## Untested
 

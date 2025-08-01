@@ -101,6 +101,7 @@
 
 	environment.systemPackages = with pkgs; [
 		acpica-tools
+		amd-debug-tools
 		btrfs-progs
 		bzip2
 		cabextract
@@ -119,6 +120,7 @@
 		exfat
 		f2fs-tools
 		flashprog
+		firestarter
 		fuse
 		fuse3
 		fwts
@@ -158,11 +160,15 @@
 		psmisc
 		python3
 		rsync
+		s-tui
 		screen
 		sdparm
 		smartmontools
 		socat
 		sshfs-fuse
+		stress
+		stress-ng
+		stressapptest
 		testdisk
 		tmate
 		tmux

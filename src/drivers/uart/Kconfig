@@ -35,6 +35,14 @@ config UART_OVERRIDE_REFCLK
 	  Set to "y" when the platform overrides the uart_platform_refclk
 	  routine.
 
+config UART_BITBANG_TX_DELAY_MS
+	int
+	default 5
+	help
+	  This option sets a delay in milliseconds after configuring the
+	  UART TX pin. This can help stabilize the line and prevent
+	  corruption of the first character transmitted.
+
 config DRIVERS_UART_8250MEM
 	bool
 	default n

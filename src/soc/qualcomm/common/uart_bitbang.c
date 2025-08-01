@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <console/uart.h>
+#include <delay.h>
 #include <gpio.h>
 #include <boot/coreboot_tables.h>
 #include <soc/uart.h>
@@ -18,6 +19,8 @@ static void set_tx(int line_state)
 void uart_init(unsigned int idx)
 {
 	gpio_output(UART_TX_PIN, 1);
+
+	mdelay(CONFIG_UART_BITBANG_TX_DELAY_MS);
 }
 
 void uart_tx_byte(unsigned int idx, unsigned char data)

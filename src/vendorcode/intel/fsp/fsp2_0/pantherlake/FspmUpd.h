@@ -636,9 +636,12 @@ typedef struct {
 **/
   UINT8                       ScramblerSupport;
 
-/** Offset 0x020B - Reserved
+/** Offset 0x020B - Memory Slice Hash Override
+  Memory Slice (Controller) Hash Mask and LSB Override. 0 = Use default memory slice
+  hash mask / lsb, 1 = Use values from MsHashMask and MsHashInterleaveBit
+  $EN_DIS
 **/
-  UINT8                       Reserved11;
+  UINT8                       MsHashOverride;
 
 /** Offset 0x020C - Memory Voltage
   DRAM voltage (Vdd) (supply voltage for input buffers and core logic of the DRAM
@@ -676,7 +679,7 @@ typedef struct {
 
 /** Offset 0x0213 - Reserved
 **/
-  UINT8                       Reserved12;
+  UINT8                       Reserved11;
 
 /** Offset 0x0214 - Ch Hash Override
   Select if Channel Hash setting values will be taken from input parameters or automatically
@@ -687,7 +690,7 @@ typedef struct {
 
 /** Offset 0x0215 - Reserved
 **/
-  UINT8                       Reserved13[2];
+  UINT8                       Reserved12[2];
 
 /** Offset 0x0217 - DQS Rise/Fall
   Enables/Disable DQS Rise/Fall
@@ -697,7 +700,7 @@ typedef struct {
 
 /** Offset 0x0218 - Reserved
 **/
-  UINT8                       Reserved14[2];
+  UINT8                       Reserved13[2];
 
 /** Offset 0x021A - Functional Duty Cycle Correction for DDR5 CLK
   Enable/Disable Functional Duty Cycle Correction for DDR5 CLK
@@ -729,7 +732,7 @@ typedef struct {
 
 /** Offset 0x021F - Reserved
 **/
-  UINT8                       Reserved15;
+  UINT8                       Reserved14;
 
 /** Offset 0x0220 - Functional Duty Cycle Correction for Data DQ
   Enable/Disable Functional Duty Cycle Correction for Data DQ
@@ -739,7 +742,7 @@ typedef struct {
 
 /** Offset 0x0221 - Reserved
 **/
-  UINT8                       Reserved16[5];
+  UINT8                       Reserved15[5];
 
 /** Offset 0x0226 - Unmatched Rx Calibration
   Enable/Disable Rx Unmatched Calibration
@@ -749,7 +752,24 @@ typedef struct {
 
 /** Offset 0x0227 - Reserved
 **/
-  UINT8                       Reserved17[26];
+  UINT8                       Reserved16[10];
+
+/** Offset 0x0231 - Memory Slice Hash LSB Bit
+  Memory Slice (Controller) Hash LSB bit. Valid values are 0..7 for BITS 6..13; used
+  when MsHashOverride is set
+  0:BIT6, 1:BIT7, 2:BIT8, 3:BIT9, 4:BIT10, 5:BIT11, 6:BIT12, 7:BIT13
+**/
+  UINT8                       MsHashInterleaveBit;
+
+/** Offset 0x0232 - Memory Slice Hash Mask
+  Memory Slice (Controller) Hash Mask: 0x0001=BIT6 set(Minimal), 0x3FFF=BIT[19:6]
+  set(Maximum); used when MsHashOverride is set
+**/
+  UINT16                      MsHashMask;
+
+/** Offset 0x0234 - Reserved
+**/
+  UINT8                      Reserved17[13];
 
 /** Offset 0x0241 - LVR Auto Trim
   Enable/disable LVR Auto Trim
@@ -1427,9 +1447,15 @@ typedef struct {
 **/
   UINT8                       Use1p5ReadPostamble;
 
-/** Offset 0x031D - Reserved
+/** Offset 0x031D - IsWckIdleExitEnabled
+  Enables/Disables WCK Idle Exit
+  $EN_DIS
 **/
-  UINT8                       Reserved32[18];
+  UINT8                       IsWckIdleExitEnabled;
+
+/** Offset 0x031E - Reserved
+**/
+  UINT8                       Reserved32[17];
 
 /** Offset 0x032F - Board Type
   MrcBoardType, Options are 0=Mobile/Mobile Halo, 1=Desktop/DT Halo, 5=ULT/ULX/Mobile
@@ -2716,14 +2742,37 @@ typedef struct {
 /** Offset 0x0A71 - Control SOL VGA Initialition sequence
   Initialise SOL Init, BIT0 - (0 : Disable VGA Support, 1 : Enable VGA Support),,
   BIT1 - (0 : VGA Text Mode 3, 1 : VGA Graphics Mode 12), BIT2 - (0 : VGA Exit Supported,
-  1: NO VGA Exit)
+  1: NO VGA Exit), BIT3 - (0 : VGA Init During Display Init, 1 - VGA Init During
+  MRC Cold Boot), BIT4 - (0 : Enable Progress Bar, 1 : Disable Progress Bar)
   0:VGA Disable, 1:Mode 3 VGA, 2:Mode 12 VGA
 **/
   UINT8                       VgaInitControl;
 
-/** Offset 0x0A72 - Reserved
+/** Offset 0x0A72 - SOL VGA Graphics Mode 12 LogoPixelHeight
+  Heigh of VGA Graphics Mode 12 Logo
 **/
-  UINT8                      Reserved84[16];
+  UINT16                      LogoPixelHeight;
+
+/** Offset 0x0A74 - SOL VGA Graphics Mode 12 LogoPixelWidth
+  Width of VGA Graphics Mode 12 Logo
+**/
+  UINT16                      LogoPixelWidth;
+
+/** Offset 0x0A76 - SOL VGA Graphics Mode 12 Image X Position
+  X position of Image on Display
+**/
+  UINT16                      LogoXPosition;
+
+/** Offset 0x0A78 - SOL VGA Graphics Mode 12 Image Pointer
+  Points to SOL VGA Graphics Graphics 12 Image, VgaPlanarImage200x58[4][58][25] for
+  58Hx200W as example,
+**/
+  UINT64                      VgaGraphicsMode12ImagePtr;
+
+/** Offset 0x0A80 - SOL VGA Graphics Mode 12 Image Y Position
+  Y position of Image on Display
+**/
+  UINT16                      LogoYPosition;
 
 /** Offset 0x0A82 - TCSS USB HOST (xHCI) Enable
   Set TCSS XHCI. 0:Disabled  1:Enabled - Must be enabled if xDCI is enabled below
@@ -2733,7 +2782,7 @@ typedef struct {
 
 /** Offset 0x0A83 - Reserved
 **/
-  UINT8                       Reserved85[4];
+  UINT8                       Reserved84[4];
 
 /** Offset 0x0A87 - TCSS Type C Port 0
   Set TCSS Type C Port 0 Type, Options are 0=DISABLE, 1=DP_ONLY, 2=NO_TBT, 3=NO_PCIE,
@@ -2765,7 +2814,7 @@ typedef struct {
 
 /** Offset 0x0A8B - Reserved
 **/
-  UINT8                       Reserved86;
+  UINT8                       Reserved85;
 
 /** Offset 0x0A8C - TypeC port GPIO setting
   GPIO Pin number for Type C Aux orientation setting, use the GpioPad that is defined
@@ -2833,7 +2882,7 @@ typedef struct {
 
 /** Offset 0x0AC9 - Reserved
 **/
-  UINT8                       Reserved87;
+  UINT8                       Reserved86;
 
 /** Offset 0x0ACA - DLL Weak Lock Support
   Enables/Disable DLL Weak Lock Support
@@ -2843,7 +2892,7 @@ typedef struct {
 
 /** Offset 0x0ACB - Reserved
 **/
-  UINT8                       Reserved88;
+  UINT8                       Reserved87;
 
 /** Offset 0x0ACC - Rx DQS Delay Comp Support
   Enables/Disable Rx DQS Delay Comp Support
@@ -2853,7 +2902,7 @@ typedef struct {
 
 /** Offset 0x0ACD - Reserved
 **/
-  UINT8                       Reserved89[2];
+  UINT8                       Reserved88[2];
 
 /** Offset 0x0ACF - Mrc Failure On Unsupported Dimm
   Enables/Disable Mrc Failure On Unsupported Dimm
@@ -2863,7 +2912,7 @@ typedef struct {
 
 /** Offset 0x0AD0 - Reserved
 **/
-  UINT8                      Reserved90[4];
+  UINT8                      Reserved89[4];
 
 /** Offset 0x0AD4 - DynamicMemoryBoost
   Enable/Disable Dynamic Memory Boost Feature. Only valid if SpdProfileSelected is
@@ -2881,7 +2930,7 @@ typedef struct {
 
 /** Offset 0x0ADC - Reserved
 **/
-  UINT8                      Reserved91[9];
+  UINT8                      Reserved90[9];
 
 /** Offset 0x0AE5 - Vref Offset
   Offset to be applied to DDRDATACH0_CR_DDRCRDATAOFFSETTRAIN.VrefOffset
@@ -2892,7 +2941,7 @@ typedef struct {
 
 /** Offset 0x0AE6 - Reserved
 **/
-  UINT8                       Reserved92[2];
+  UINT8                       Reserved91[2];
 
 /** Offset 0x0AE8 - tRRSG Delta
   Delay between Read-to-Read commands in the same Bank Group. 0 - Auto. Signed TAT
@@ -3008,7 +3057,21 @@ typedef struct {
 
 /** Offset 0x0AF8 - Reserved
 **/
-  UINT8                       Reserved93[112];
+  UINT8                       Reserved92[41];
+
+/** Offset 0x0B21 - Channel to CKD QCK Mapping
+  Specify Channel to CKD QCK Mapping for CH0D0/CH0D1/CH1D0&CH1D1
+**/
+  UINT8                       ChannelToCkdQckMapping[8];
+
+/** Offset 0x0B29 - DDRIO Clock to CKD DIMM
+  Specify DDRIO Clock to CKD DIMM for CH0D0/CH0D1/CH1D0&CH1D1
+**/
+  UINT8                       PhyClockToCkdDimm[8];
+
+/** Offset 0x0B31 - Reserved
+**/
+  UINT8                       Reserved93[55];
 } FSP_M_CONFIG;
 
 /** Fsp M UPD Configuration

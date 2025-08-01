@@ -1667,7 +1667,9 @@ typedef struct {
 **/
   UINT16                      PchTemperatureHotLevel;
 
-/** Offset 0x1226
+/** Offset 0x1226 - Enable PCH TSN
+  Enable/disable TSN on the PCH.
+  $EN_DIS
 **/
   UINT8                       PchTsnEnable[4];
 

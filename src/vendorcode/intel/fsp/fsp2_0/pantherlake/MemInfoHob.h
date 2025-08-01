@@ -392,6 +392,19 @@ typedef struct {
   UINT8                *Buffer;
 } MEMORY_PLATFORM_DATA_HOB;
 
+#define EFI_RMT_OS_VARIABLE_NAME        L"Rmt"
+#define RMT_ENABLE  1
+#define RMT_DISABLE 0
+
+extern EFI_GUID gRmtVariableGuid;
+
+//Structure of RMT UEFI variable which should be R/W by OS
+//EnDsRmt - To enable Memory margining support
+
+typedef struct {
+  UINT8                EnDsRmt;
+} RMT_VAR;
+
 #pragma pack (pop)
 
 #endif // _MEM_INFO_HOB_H_

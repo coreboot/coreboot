@@ -1,0 +1,8 @@
+Category: desktop
+Board URL: https://support.hp.com/us-en/product/setup-user-guides/hp-prodesk-600-g1-small-form-factor-pc/model/5387451
+ROM IC: MX25L12873F
+ROM protocol: SPI
+Flashrom support: y
+ROM package: SOIC8
+ROM socketed: no
+Release year: 2013

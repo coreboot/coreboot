@@ -58,4 +58,8 @@ config UART_FOR_CONSOLE
 	help
 	 Select the QUP instance to be used for UART console output.
 
+config UART_BITBANG_TX_DELAY_MS
+	int
+	default 1
+
 endif

@@ -82,7 +82,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_B16 : [] ==> SOC_HDMI_HPD_L */
 	PAD_CFG_NF(GPP_B16, NONE, DEEP, NF2),
 	/* GPP_B17 :[] ==> EN_TCHSCR_PWR */
-	PAD_CFG_GPO(GPP_B17, 0, DEEP),
+	PAD_CFG_GPO(GPP_B17, 1, DEEP),
 	/* GPP_B18 : [] ==> SOC_I2C_TPM_SDA */
 	PAD_CFG_NF_LOCK(GPP_B18, NONE, NF2, LOCK_CONFIG),
 	/* GPP_B19 : [] ==> SOC_I2C_TPM_SCL */
@@ -159,7 +159,7 @@ static const struct pad_config gpio_table[] = {
 	/* GPP_D06 : [] ==> UART0_TXD. */
 	PAD_CFG_NF_LOCK(GPP_D06, NONE, NF1, LOCK_CONFIG),
 	/* GPP_D07 : [] ==>  SOC_TCHSCR_RST_L */
-	PAD_CFG_GPO(GPP_D07, 0, DEEP),
+	PAD_CFG_GPO(GPP_D07, 1, DEEP),
 	/* GPP_D08 : net NC.  Test pad. */
 	PAD_NC(GPP_D08, NONE),
 	/* GPP_D09 : [] ==> I2S_MCLK_R */

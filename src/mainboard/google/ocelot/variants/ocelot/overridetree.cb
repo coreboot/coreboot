@@ -69,14 +69,13 @@ chip soc/intel/pantherlake
 	register "usb2_ports[4]" = "USB2_PORT_MID(OC0)" # 2x5 USB2 HDR
 	register "usb2_ports[5]" = "USB2_PORT_MID(OC0)" # 2x5 USB2 HDR
 	register "usb2_ports[6]" = "USB2_PORT_MID(OC0)" # FPS
-	register "usb2_ports[7]" = "USB2_PORT_MID(OC0)" # M.2 WLAN
+	register "usb2_ports[7]" = "USB2_PORT_MID(OC_SKIP)" # Discrete Bluetooth
 
 	register "usb3_ports[0]" = "USB3_PORT_DEFAULT(OC0)" # USB 3.2 Gen2 x1 Type-A Con - # 1
 	register "usb3_ports[1]" = "USB3_PORT_DEFAULT(OC0)" # USB 3.2 Gen2 x1 Type-A Con - # 2 (redriver topology)
-	#register "usb3_ports[2]" = "USB3_PORT_DEFAULT(OC0)" # TCSS Module - Type-A over TCP module
 
-	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC0)"
-	register "tcss_ports[1]" = "TCSS_PORT_DEFAULT(OC_SKIP)"
+	register "tcss_ports[0]" = "TCSS_PORT_DEFAULT(OC_SKIP)" # Type-C Port 1 (Virtual OC)
+	register "tcss_ports[1]" = "TCSS_PORT_DEFAULT(OC_SKIP)" # Type-C Port 2 (Virtual OC)
 
 	register "tcss_cap_policy[0]" = "TCSS_TYPE_C_PORT_FULL_FUN"
 	register "tcss_cap_policy[1]" = "TCSS_TYPE_C_PORT_FULL_FUN"
@@ -129,7 +128,7 @@ chip soc/intel/pantherlake
 			probe DISPLAY DISPLAY_TOUCH_PRESENT
 			probe DISPLAY DISPLAY_NO_TOUCH_PRESENT
 			chip drivers/gfx/generic
-				register "device_count" = "5"
+				register "device_count" = "4"
 				# DDIA for eDP
 				register "device[0].name" = ""LCD0""
 				register "device[0].type" = "panel"
@@ -144,10 +143,7 @@ chip soc/intel/pantherlake
 				register "device[3].name" = ""DD03""
 				register "device[3].use_pld" = "true"
 				register "device[3].pld" = "ACPI_PLD_TYPE_C(LEFT, RIGHT, ACPI_PLD_GROUP(2, 1))"
-				# TCP2 (DP-3) for port C2
-				register "device[4].name" = ""DD04""
-				register "device[4].use_pld" = "true"
-				register "device[4].pld" = "ACPI_PLD_TYPE_C(RIGHT, LEFT, ACPI_PLD_GROUP(3, 1))"
+
 				device generic 0 on end
 			end
 		end
@@ -351,13 +347,13 @@ chip soc/intel/pantherlake
 					chip drivers/usb/acpi
 						register "desc" = ""USB3 Type-C Port C0""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
-						register "group" = "ACPI_PLD_GROUP(4, 2)"
+						register "group" = "ACPI_PLD_GROUP(2, 2)"
 						device ref tcss_usb3_port0 on end
 					end
 					chip drivers/usb/acpi
 						register "desc" = ""USB3 Type-C Port C1""
 						register "type" = "UPC_TYPE_C_USB2_SS_SWITCH"
-						register "group" = "ACPI_PLD_GROUP(3, 2)"
+						register "group" = "ACPI_PLD_GROUP(1, 2)"
 						device ref tcss_usb3_port1 on end
 					end
 				end

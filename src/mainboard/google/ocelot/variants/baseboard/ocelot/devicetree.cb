@@ -28,8 +28,6 @@ chip soc/intel/pantherlake
 
 	register "tcss_ports[0]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 0
 	register "tcss_ports[1]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 1
-	register "tcss_ports[2]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 2
-	register "tcss_ports[3]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 3
 
 	# Enable SAGv
 	register "sagv" = "SAGV_ENABLED"

@@ -166,8 +166,8 @@ static int read_soft_fuse(FILE *fw, const embedded_firmware *fw_header)
 	size_t num_current_entries = 0;
 
 	uint32_t psp_offset = 0;
-	/* 0xffffffff indicates that the offset is in new_psp_directory */
-	if (fw_header->psp_directory != 0xffffffff)
+	/* 0xffffffff or 0x00000000 indicates that the offset is in new_psp_directory */
+	if (fw_header->psp_directory != 0xffffffff && fw_header->psp_directory != 0x00000000)
 		psp_offset = fw_header->psp_directory;
 	else
 		psp_offset = fw_header->new_psp_directory;
@@ -390,8 +390,8 @@ static int list_amdfw_psp_dir(FILE *fw, const embedded_firmware *fw_header)
 {
 	uint32_t psp_offset = 0;
 
-	/* 0xffffffff indicates that the offset is in new_psp_directory */
-	if (fw_header->psp_directory != 0xffffffff)
+	/* 0xffffffff or 0x00000000 indicates that the offset is in new_psp_directory */
+	if (fw_header->psp_directory != 0xffffffff && fw_header->psp_directory != 0x00000000)
 		psp_offset = fw_header->psp_directory;
 	else
 		psp_offset = fw_header->new_psp_directory;
@@ -403,9 +403,10 @@ static int list_amdfw_psp_dir(FILE *fw, const embedded_firmware *fw_header)
 
 static int list_amdfw_bios_dir(FILE *fw, const embedded_firmware *fw_header)
 {
-	/* 0xffffffff implies that the SoC uses recovery A/B layout. Only BIOS L2 directory
-	   is present and that too as part of PSP L2 directory. */
-	if (fw_header->bios3_entry != 0xffffffff) {
+	/* 0xffffffff or 0x00000000 implies that the SoC uses recovery A/B
+	   layout. Only BIOS L2 directory is present and that too as part of
+	   PSP L2 directory. */
+	if (fw_header->bios3_entry != 0xffffffff && fw_header->bios3_entry != 0x00000000) {
 		printf("BIOSL1: Dir  0x%08x\n", fw_header->bios3_entry);
 		amdfw_bios_dir_walk(fw, fw_header->bios3_entry, BHD_COOKIE, 0);
 	}

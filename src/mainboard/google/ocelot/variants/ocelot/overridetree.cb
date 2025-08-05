@@ -92,9 +92,9 @@ chip soc/intel/pantherlake
 	register "serial_io_i2c_mode" = "{
 		[PchSerialIoIndexI2C0]  = PchSerialIoPci,
 		[PchSerialIoIndexI2C1]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C2]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C3]  = PchSerialIoPci,
-		[PchSerialIoIndexI2C4]  = PchSerialIoPci,
+		[PchSerialIoIndexI2C2]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C3]  = PchSerialIoDisabled,
+		[PchSerialIoIndexI2C4]  = PchSerialIoDisabled,
 		[PchSerialIoIndexI2C5]  = PchSerialIoPci,
 	}"
 
@@ -117,15 +117,6 @@ chip soc/intel/pantherlake
 		.i2c[1] = {
 			.speed = I2C_SPEED_FAST,
 			.early_init = 1,
-		},
-		.i2c[2] = {
-			.speed = I2C_SPEED_FAST,
-		},
-		.i2c[3] = {
-			.speed = I2C_SPEED_FAST,
-		},
-		.i2c[4] = {
-			.speed = I2C_SPEED_FAST,
 		},
 		.i2c[5] = {
 			.speed = I2C_SPEED_FAST,

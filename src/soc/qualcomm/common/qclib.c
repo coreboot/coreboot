@@ -184,6 +184,20 @@ struct prog qclib; /* This will be re-used by qclib_rerun() */
 static void qclib_prepare_and_run(void)
 {
 	struct mmu_context pre_qclib_mmu_context;
+	int i;
+
+	/* output area, QCLib copies console log buffer out */
+	if (CONFIG(CONSOLE_CBMEM))
+		qclib_add_if_table_entry(QCLIB_TE_QCLIB_LOG_BUFFER,
+				_qclib_serial_log,
+				REGION_SIZE(qclib_serial_log), 0);
+
+	/* Enable QCLib serial output, based on Kconfig */
+	if (CONFIG(CONSOLE_SERIAL))
+		qclib_cb_if_table.global_attributes =
+			QCLIB_GA_ENABLE_UART_LOGGING;
+
+	dump_te_table();
 
 	printk(BIOS_DEBUG, "Global Attributes[%#x]..Table Entries Count[%d]\n",
 		qclib_cb_if_table.global_attributes,
@@ -205,23 +219,29 @@ static void qclib_prepare_and_run(void)
 	mmu_disable();
 	mmu_restore_context(&pre_qclib_mmu_context);
 	mmu_enable();
+
+	if (qclib_cb_if_table.global_attributes & QCLIB_GA_FORCE_COLD_REBOOT) {
+		printk(BIOS_NOTICE, "QcLib requested cold reboot\n");
+		board_reset();
+	}
+
+	/* step through I/F table, handling return values */
+	for (i = 0; i < qclib_cb_if_table.num_entries; i++)
+		if (qclib_cb_if_table.te[i].blob_attributes &
+				QCLIB_BA_SAVE_TO_STORAGE)
+			write_table_entry(&qclib_cb_if_table.te[i]);
+
+	printk(BIOS_DEBUG, "QCLib completed\n\n\n");
 }
 
 void qclib_load_and_run(void)
 {
-	int i;
 	ssize_t data_size;
 
 	/* zero ddr_information SRAM region, needs new data each boot */
 	memset(ddr_region, 0, sizeof(struct region));
 
 	init_qclib_cb_if_table(&qclib_cb_if_table);
-
-	/* output area, QCLib copies console log buffer out */
-	if (CONFIG(CONSOLE_CBMEM))
-		qclib_add_if_table_entry(QCLIB_TE_QCLIB_LOG_BUFFER,
-				_qclib_serial_log,
-				REGION_SIZE(qclib_serial_log), 0);
 
 	/* output area, QCLib fills in DDR details */
 	qclib_add_if_table_entry(QCLIB_TE_DDR_INFORMATION, NULL, 0, 0);
@@ -259,11 +279,6 @@ void qclib_load_and_run(void)
 	}
 	qclib_add_if_table_entry(QCLIB_TE_DCB_SETTINGS, _dcb, data_size, 0);
 
-	/* Enable QCLib serial output, based on Kconfig */
-	if (CONFIG(CONSOLE_SERIAL))
-		qclib_cb_if_table.global_attributes =
-			QCLIB_GA_ENABLE_UART_LOGGING;
-
 	if (CONFIG(QC_SDI_ENABLE) && (!CONFIG(VBOOT) ||
 		!vboot_is_gbb_flag_set(VB2_GBB_FLAG_RUNNING_FAFT))) {
 		struct prog qcsdi =
@@ -285,8 +300,6 @@ void qclib_load_and_run(void)
 		goto fail;
 	}
 
-	dump_te_table();
-
 	/* Attempt to load QCLib elf */
 	qclib = (struct prog)
 		PROG_INIT(PROG_REFCODE, qclib_file(QCLIB_CBFS_QCLIB));
@@ -300,22 +313,9 @@ void qclib_load_and_run(void)
 	printk(BIOS_DEBUG, "\n\n\nEnter QcLib to Initialize DDR and bring up SHRM\n");
 	qclib_prepare_and_run();
 
-	if (qclib_cb_if_table.global_attributes & QCLIB_GA_FORCE_COLD_REBOOT) {
-		printk(BIOS_NOTICE, "QcLib requested cold reboot\n");
-		board_reset();
-	}
-
-	/* step through I/F table, handling return values */
-	for (i = 0; i < qclib_cb_if_table.num_entries; i++)
-		if (qclib_cb_if_table.te[i].blob_attributes &
-				QCLIB_BA_SAVE_TO_STORAGE)
-			write_table_entry(&qclib_cb_if_table.te[i]);
-
 	/* confirm that we received valid ddr information from QCLib */
 	assert((uintptr_t)_dram == region_offset(ddr_region) &&
 		region_sz(ddr_region) >= (u8 *)cbmem_top() - _dram);
-
-	printk(BIOS_DEBUG, "QCLib completed\n\n\n");
 
 	return;
 

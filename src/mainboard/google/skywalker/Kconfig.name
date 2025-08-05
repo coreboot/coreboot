@@ -14,5 +14,8 @@ config BOARD_GOOGLE_OBIWAN
 config BOARD_GOOGLE_SKYWALKER
 	bool "->  Skywalker"
 
+config BOARD_GOOGLE_TARKIN
+	bool "->  Tarkin"
+
 config BOARD_GOOGLE_YODA
 	bool "-> Yoda"

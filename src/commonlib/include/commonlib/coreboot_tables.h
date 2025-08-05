@@ -555,7 +555,7 @@ struct lb_smmstorev2 {
 	uint32_t com_buffer_size;	/* Size of the communication buffer in bytes */
 	uint8_t apm_cmd;		/* The command byte to write to the APM I/O port */
 	uint8_t unused[3];		/* Set to zero */
-	uint64_t mmap_addr;		/* 64-bit MMIO address of the store for read only access.
+	lb_uint64_t mmap_addr;		/* 64-bit MMIO address of the store for read only access.
 					   Introduced after the initial implementation. Users of
 					   this table must check the 'size' field to detect if its
 					   written out by coreboot. */

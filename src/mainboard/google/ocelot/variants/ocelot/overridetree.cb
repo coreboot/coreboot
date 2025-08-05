@@ -80,13 +80,12 @@ chip soc/intel/pantherlake
 	register "tcss_cap_policy[0]" = "TCSS_TYPE_C_PORT_FULL_FUN"
 	register "tcss_cap_policy[1]" = "TCSS_TYPE_C_PORT_FULL_FUN"
 
-
 	# Enable EDP in PortA & HDMI in Port B
 	register "ddi_port_A_config" = "1"
 	register "ddi_port_B_config" = "1"
 	register "ddi_ports_config" = "{
 		[DDI_PORT_A] = DDI_ENABLE_HPD,
-		[DDI_PORT_B] = DDI_ENABLE_HPD,
+		[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
 	}"
 
 	register "serial_io_i2c_mode" = "{

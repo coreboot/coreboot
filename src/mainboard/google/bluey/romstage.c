@@ -9,16 +9,14 @@
 
 void platform_romstage_main(void)
 {
-	void (*const fw_init_sequence[])(void) = {
-		shrm_fw_load_reset,
-		qclib_load_and_run,
-		aop_fw_load_reset,
-		qclib_rerun,
-	};
+	shrm_fw_load_reset();
 
-	/* Executing essential firmware loading */
-	for (size_t i = 0; i < ARRAY_SIZE(fw_init_sequence); i++)
-		fw_init_sequence[i]();
+	/* QCLib: DDR init & train */
+	qclib_load_and_run();
+
+	aop_fw_load_reset();
+
+	qclib_rerun();
 
 	/*
 	 * Enable this power rail now for FPMCU stability prior to

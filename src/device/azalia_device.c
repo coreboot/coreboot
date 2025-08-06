@@ -233,6 +233,7 @@ __weak void mainboard_azalia_program_runtime_verbs(u8 *base, u32 viddid)
 {
 }
 
+#if CONFIG(AZALIA_USE_LEGACY_VERB_TABLE)
 void azalia_codec_init(u8 *base, int addr, const u32 *verb_table, u32 verb_table_bytes)
 {
 	if (azalia_write_verb(base, AZALIA_VERB_GET_VENDOR_ID(addr)) < 0)
@@ -270,6 +271,65 @@ void azalia_codecs_init(u8 *base, u16 codec_mask)
 
 	azalia_program_verb_table(base, pc_beep_verbs, pc_beep_verbs_size);
 }
+#else
+static struct azalia_codec *find_codec(struct azalia_codec *codecs, u32 vid, u8 addr)
+{
+	for (struct azalia_codec *codec = codecs; codec->vendor_id; codec++) {
+		if (codec->vendor_id == vid && codec->address == addr)
+			return codec;
+	}
+	return NULL;
+}
+
+void azalia_codec_init(u8 *base, struct azalia_codec *codec)
+{
+	/* Give a generic name if nothing was provided */
+	const char *name = codec->name ? codec->name : "codec";
+
+	printk(BIOS_DEBUG, "azalia_audio: initializing %s...\n", name);
+	printk(BIOS_DEBUG, "azalia_audio:  - vendor ID:    0x%08x\n", codec->vendor_id);
+	printk(BIOS_DEBUG, "azalia_audio:  - subsystem ID: 0x%08x\n", codec->subsystem_id);
+	printk(BIOS_DEBUG, "azalia_audio:  - address:      %u\n", codec->address);
+
+	if (azalia_program_verb_table(base, codec->verbs, codec->verb_count) < 0) {
+		printk(BIOS_WARNING, "azalia_audio: failed to load verbs\n");
+		return;
+	}
+
+	mainboard_azalia_program_runtime_verbs(base, codec->vendor_id);
+
+	printk(BIOS_DEBUG, "azalia_audio: done\n");
+}
+
+void azalia_custom_codecs_init(u8 *base, struct azalia_codec *codecs, u16 codec_mask)
+{
+	for (u8 i = 0; i < AZALIA_MAX_CODECS; i++) {
+		if (!(codec_mask & BIT(i)))
+			continue;
+
+		if (azalia_write_verb(base, AZALIA_VERB_GET_VENDOR_ID(i)) < 0)
+			continue;
+		u32 vid = read32(base + HDA_IR_REG);
+
+		struct azalia_codec *codec = find_codec(codecs, vid, i);
+		if (codec == NULL) {
+			printk(BIOS_WARNING,
+			       "azalia_audio: cannot find verbs for codec with vendor ID: 0x%08x (address %u)\n",
+			       vid, i);
+			continue;
+		}
+
+		azalia_codec_init(base, codec);
+	}
+
+	azalia_program_verb_table(base, pc_beep_verbs, pc_beep_verbs_size);
+}
+
+void azalia_codecs_init(u8 *base, u16 codec_mask)
+{
+	azalia_custom_codecs_init(base, mainboard_azalia_codecs, codec_mask);
+}
+#endif
 
 void azalia_audio_init(struct device *dev)
 {

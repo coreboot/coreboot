@@ -20,11 +20,30 @@
 
 #define AZALIA_MAX_CODECS	15
 
+/*
+ * The HDA specification refers to the vendor/device ID (similar to PCI IDs)
+ * collectively as "vendor ID". While this could be slightly confusing, we will
+ * call it "vendor ID" as the specification and most implementations do.
+ */
+struct azalia_codec {
+	const char *name;
+	u32 vendor_id;
+	u32 subsystem_id;
+	u8 address;
+	const u32 *verbs;
+	size_t verb_count;
+};
+
 enum cb_err azalia_enter_reset(u8 *base);
 enum cb_err azalia_exit_reset(u8 *base);
 u32 azalia_find_verb(const u32 *verb_table, u32 verb_table_bytes, u32 viddid, const u32 **verb);
 int azalia_program_verb_table(u8 *base, const u32 *verbs, u32 verb_size);
+#if CONFIG(AZALIA_USE_LEGACY_VERB_TABLE)
 void azalia_codec_init(u8 *base, int addr, const u32 *verb_table, u32 verb_table_bytes);
+#else
+void azalia_codec_init(u8 *base, struct azalia_codec *codec);
+void azalia_custom_codecs_init(u8 *base, struct azalia_codec *codecs, u16 codec_mask);
+#endif
 void azalia_codecs_init(u8 *base, u16 codec_mask);
 void azalia_audio_init(struct device *dev);
 extern struct device_operations default_azalia_audio_ops;
@@ -32,8 +51,12 @@ extern struct device_operations default_azalia_audio_ops;
 /* Optional hook to program codec settings that are only known at runtime */
 void mainboard_azalia_program_runtime_verbs(u8 *base, u32 viddid);
 
+#if CONFIG(AZALIA_USE_LEGACY_VERB_TABLE)
 extern const u32 cim_verb_data[];
 extern const u32 cim_verb_data_size;
+#else
+extern struct azalia_codec mainboard_azalia_codecs[];
+#endif
 extern const u32 pc_beep_verbs[];
 extern const u32 pc_beep_verbs_size;
 
@@ -161,9 +184,14 @@ enum azalia_pin_misc {
 	 (((association) <<  4) & 0x000000f0) |						\
 	 (((sequence)    <<  0) & 0x0000000f))
 
+#if CONFIG(AZALIA_USE_LEGACY_VERB_TABLE)
 #define AZALIA_ARRAY_SIZES const u32 pc_beep_verbs_size =	\
 	ARRAY_SIZE(pc_beep_verbs);				\
 	const u32 cim_verb_data_size = sizeof(cim_verb_data)
+#else
+#define AZALIA_ARRAY_SIZES const u32 pc_beep_verbs_size =	\
+	ARRAY_SIZE(pc_beep_verbs)
+#endif
 
 #define AZALIA_VERB_12B(codec, pin, verb, val)		\
 	((codec) << 28 | (pin) << 20 | (verb) << 8 | (val))

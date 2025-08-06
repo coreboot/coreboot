@@ -309,8 +309,8 @@ chip soc/intel/alderlake
 				## Charger Performance Control (Control, mA)
 				register "controls.charger_perf" = "{
 					[0] = { 255, 4700 },
-					[1] = {  40, 2500 },
-					[2] = {  16, 1000 },
+					[1] = {  48, 3000 },
+					[2] = {  24, 1500 },
 					[3] = {   8,  500 }
 				}"
 

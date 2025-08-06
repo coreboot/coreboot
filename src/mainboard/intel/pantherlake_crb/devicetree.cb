@@ -1,0 +1,262 @@
+chip soc/intel/pantherlake
+
+	register "pmc_gpe0_dw0" = "GPP_A"
+	register "pmc_gpe0_dw1" = "GPP_D"
+	register "pmc_gpe0_dw2" = "GPP_E"
+
+	device domain 0 on
+		device ref igpu on
+			# DDI-A: DP, DDI-B: Unused, DDI-C: Unused
+			# DDI-1: TCP-0, DDI-2: TCP-1, DDI-3: TCP-2, DDI-4: TCP-4
+			register "ddi_port_A_config" = "1"
+			register "ddi_ports_config" = "{
+				[DDI_PORT_A] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_1] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_2] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_3] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+				[DDI_PORT_4] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+			}"
+		end
+
+		# TODO: IPU Cameras. Currently no modules available.
+
+		# GbE LAN
+		device ref gbe on
+			register "pcie_rp[PCIE_RP(1)]" = "{
+				.clk_src = 3,
+				.clk_req = 3,
+				.flags = PCIE_RP_LTR,
+			}"
+			register "pcie_clk_config_flag[3]" = "PCIE_CLK_LAN"
+		end
+
+		# M.2 WWAN (untested)
+		device ref pcie_rp2 on
+			register "pcie_rp[PCIE_RP(2)]" = "{
+				.clk_src = 5,
+				.clk_req = 5,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_DETECT,
+			}"
+		end
+
+		# Gen4 x1 slot
+		device ref pcie_rp3 on
+			register "pcie_rp[PCIE_RP(3)]" = "{
+				.clk_src = 2,
+				.clk_req = 2,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_DETECT,
+			}"
+		end
+
+		# M.2 WiFi
+		device ref pcie_rp4 on
+			register "pcie_rp[PCH_RP(4)]" = "{
+				.clk_src = 4,
+				.clk_req = 4,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_DETECT,
+			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A11)"
+				register "srcclk_pin" = "4"
+				device pci 00.0 on end
+			end
+			chip drivers/wifi/generic
+				register "add_acpi_dma_property" = "true"
+				register "wake" = "GPE0_DW0_12" # GPP_A12
+				use usb2_port7 as bluetooth_companion
+				device pci 00.0 on end
+			end
+		end
+
+		# M.2 SSD Gen4
+		device ref pcie_rp5 on
+			register "pcie_rp[PCIE_RP(5)]" = "{
+				.clk_src = 6,
+				.clk_req = 6,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_DETECT,
+			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_B10)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_B09)"
+				register "srcclk_pin" = "6"
+				device generic 0 on end
+			end
+		end
+
+		# PEG Gen5 x4 slot (M.2 SSD Gen5 with rework)
+		device ref pcie_rp9 on
+			register "pcie_rp[PCIE_RP(9)]" = "{
+				.clk_src = 1,
+				.clk_req = 1,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_DETECT,
+			}"
+		end
+
+		# PEG Gen5 x8 slot (available only on PTL-H484)
+		device ref pcie_rp11 on
+			register "pcie_rp[PCIE_RP(11)]" = "{
+				.clk_src = 0,
+				.clk_req = 0,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER | PCIE_RP_CLK_REQ_DETECT,
+			}"
+		end
+
+		# TODO: Thunderbolt. No AIC modules available at the moment.
+		device ref tbt_pcie_rp0 on end
+		device ref tbt_pcie_rp1 on end
+		device ref tcss_xhci on end
+
+		# TODO: Type-C role switch
+		device ref xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_TYPE_C(OC3),	// Type-C P0
+				[1] = USB2_PORT_TYPE_C(OC3),	// Type-C P1
+				[2] = USB2_PORT_TYPE_C(OC6),	// Type-C P2
+				[3] = USB2_PORT_TYPE_C(OC7),	// Type-C P3
+				[4] = USB2_PORT_MID(OC0),	// Type-A P1
+				[5] = USB2_PORT_MID(OC0),	// Type-A P2
+				[6] = USB2_PORT_MID(OC_SKIP),	// M.2 WWAN
+				[7] = USB2_PORT_MID(OC_SKIP),	// M.2 NGFF (BT)
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC0),	// Type-C P1
+				[1] = USB3_PORT_DEFAULT(OC0),	// Type-C P2
+			}"
+		end
+
+		# CNVi (Untested: lack of hardware).
+		device ref cnvi_wifi on
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				register "add_acpi_dma_property" = "true"
+				register "enable_cnvi_ddr_rfim" = "true"
+				use cnvi_bluetooth as bluetooth_companion
+				device generic 0 on end
+			end
+		end
+		device ref cnvi_bluetooth on
+			chip soc/intel/common/block/cnvi
+				register "wake" = "GPE0_PME_B0"
+				device generic 0 on end
+			end
+		end
+
+		device ref npu on end
+
+		# Likely broken on pre-production silicon?
+		# Linux freaks out if it's enabled.
+		device ref iaa off end
+
+		# I2C interfaces
+		device ref i2c0 on
+			# TODO: PD Controller
+				## Port-A @ 0x20
+				## Port-B @ 0x24
+			# TODO: TCSS1
+			# TODO: TCSS2
+			# TODO: TTK3 @ 0x70
+			# TODO: POST_LED @ 0x38
+			# TODO: 1x3 HDR
+		end
+
+		device ref i2c1 on
+			# TODO: IPU CARD 1
+		end
+
+		device ref i2c2 on
+			# TODO: IPU CARD 2
+		end
+
+		device ref i2c3 on
+			# TODO: AUDIO HDR: 0x1a, 0x28, 0x19, 0x2a, 0x2b
+		end
+
+		device ref i2c4 on
+			# TODO: DP Repeater @ (0x08, 0x17)?
+			# TODO: VBY1 HDR @ 0x48
+		end
+
+		device ref i2c5 on end
+
+		# LPSS UART interfaces
+		device ref uart0 on end		# USB-TTL Bridge (Port A).
+		device ref uart1 on end		# J17 header.
+		device ref uart2 on end		# J7 header.
+
+		## UART0 will fail to initialize on pre-production silicon if set to "Pci"!
+		register "serial_io_uart_mode" = "{
+			[PchSerialIoIndexUART0] = PchSerialIoSkipInit,
+			[PchSerialIoIndexUART1] = PchSerialIoHidden,
+			[PchSerialIoIndexUART2] = PchSerialIoHidden,
+		}"
+
+		register "serial_io_uart_dma_enable" = "{
+			[PchSerialIoIndexUART0] = PchSerialDma,
+			[PchSerialIoIndexUART1] = PchSerialDma,
+			[PchSerialIoIndexUART2] = PchSerialDma,
+		}"
+
+		# ITE IT8659E SuperIO
+		device ref soc_espi on
+			chip superio/ite/it8659e
+				device pnp 4e.1 on	# COM1: USB-TTL bridge (Port B)
+					io 0x60 = 0x3f8
+					irq 0x70 = 0x04
+					irq 0xf0 = 0x01
+					irq 0xf1 = 0x50
+					irq 0xf2 = 0x00
+				end
+				device pnp 4e.2 off	# COM2
+					io 0x60 = 0x2f8
+					irq 0x70 = 0x03
+					irq 0xf0 = 0x00
+					irq 0xf1 = 0x50
+					irq 0xf2 = 0x00
+				end
+
+				device pnp 4e.4 on	# EC
+					io 0x60 = 0x290
+					io 0x62 = 0x230
+					irq 0x70 = 0x00
+					irq 0xf0 = 0x80
+					irq 0xf1 = 0x40
+					irq 0xf6 = 0xf0
+				end
+
+				device pnp 4e.5 off end	# PS/2 KB
+				device pnp 4e.6 off end	# PS/2 MS
+
+				device pnp 4e.7 on 	# GPIO
+					io 0x60 = 0x000
+					io 0x62 = 0x000
+					irq 0x26 = 0xc0
+					irq 0x29 = 0x24
+					irq 0x2c = 0x88
+					irq 0x72 = 0x80
+					irq 0xb8 = 0x00
+					irq 0xbc = 0x20
+					irq 0xcb = 0x00
+					irq 0xe7 = 0x10
+					irq 0xf0 = 0x10
+					irq 0xf1 = 0x40
+					irq 0xf4 = 0x2d
+					irq 0xf6 = 0x0e
+				end
+
+				device pnp 4e.a off end	# CIR
+			end
+		end
+
+		# TODO: Realtek ALC722-CG Audio. DSP firmware not upstreamed into Linux yet.
+		device ref hda on
+			register "pch_hda_dsp_enable" = "true"
+			register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
+			register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
+			register "pch_hda_idisp_codec_enable" = "true"
+		end
+
+		device ref pmc_shared_sram on end
+		device ref smbus on end
+	end
+end

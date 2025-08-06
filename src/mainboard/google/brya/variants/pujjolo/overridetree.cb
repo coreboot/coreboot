@@ -8,6 +8,10 @@ fw_config
 		option WIFI_SAR_TABLE_AX211	0
 		option WIFI_SAR_TABLE_AX203	1
 	end
+	field PDC 21 22
+		option PDC_PUJJOQUINCE        0
+		option PDC_PUJJOLO       1
+	end
 	field FP 24
 		option FP_ABSENT	0
 		option FP_PRESENT	1

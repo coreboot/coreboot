@@ -230,6 +230,40 @@ static void mem_init_dqs_upds(FSP_M_CONFIG *mem_cfg, const struct mem_channel_da
 	mem_init_dq_dqs_upds(dqs_upds, mb_cfg->dqs_map, upd_size, data, auto_detect);
 }
 
+
+/*
+ * A memory channel will be disabled if corresponding bit in
+ * ch_disable_mask is set.
+ */
+static void mem_init_override_channel_mask(FSP_M_CONFIG *mem_cfg)
+{
+	uint8_t *disable_channel_upds[MRC_CHANNELS] = {
+		&mem_cfg->DisableMc0Ch0,
+		&mem_cfg->DisableMc0Ch1,
+		&mem_cfg->DisableMc0Ch2,
+		&mem_cfg->DisableMc0Ch3,
+		&mem_cfg->DisableMc1Ch0,
+		&mem_cfg->DisableMc1Ch1,
+		&mem_cfg->DisableMc1Ch2,
+		&mem_cfg->DisableMc1Ch3,
+	};
+
+	uint8_t ch_disable_mask = mb_get_channel_disable_mask();
+	if (ch_disable_mask == 0)
+		return;
+
+	/* Mc0Ch0 cannot be disabled */
+	if (ch_disable_mask & BIT(0)) {
+		printk(BIOS_ERR, "Cannot disable the first memory channel (Mc0Ch0).\n");
+		return;
+	}
+
+	for (size_t ch = 1; ch < MRC_CHANNELS; ch++) {
+		if (ch_disable_mask & BIT(ch))
+			*disable_channel_upds[ch] = 1;
+	}
+}
+
 void memcfg_init(FSPM_UPD *memupd, const struct mb_cfg *mb_cfg,
 		 const struct mem_spd *spd_info, bool half_populated)
 {
@@ -274,6 +308,7 @@ void memcfg_init(FSPM_UPD *memupd, const struct mb_cfg *mb_cfg,
 	mem_populate_channel_data(memupd, &soc_mem_cfg[mb_cfg->type], spd_info, half_populated,
 			&data);
 	mem_init_spd_upds(mem_cfg, &data, expand_channels);
+	mem_init_override_channel_mask(mem_cfg);
 	mem_init_dq_upds(mem_cfg, &data, mb_cfg, dq_dqs_auto_detect);
 	mem_init_dqs_upds(mem_cfg, &data, mb_cfg, dq_dqs_auto_detect);
 }

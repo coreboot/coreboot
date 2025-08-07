@@ -2,15 +2,7 @@
 
 #include <device/azalia_device.h>
 
-const u32 cim_verb_data[] = {
-	/* coreboot specific header */
-	/* Realtek ALC662 rev1 */
-	0x10ec0662, /* Vendor ID */
-	0x80865756, /* Subsystem ID */
-	10, /* Number of entries */
-
-	/* Pin Widget Verb Table */
-
+static const u32 realtek_alc662_verbs[] = {
 	AZALIA_PIN_CFG(0, 0x14, 0x01014010),
 	AZALIA_PIN_CFG(0, 0x15, AZALIA_PIN_CFG_NC(0)),
 	AZALIA_PIN_CFG(0, 0x16, AZALIA_PIN_CFG_NC(0)),
@@ -23,6 +15,19 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x1e, 0x01441130),
 };
 
+
 const u32 pc_beep_verbs[0] = {};
+
+struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Realtek ALC662",
+		.vendor_id    = 0x10ec0662,
+		.subsystem_id = 0x80865756,
+		.address      = 0,
+		.verbs        = realtek_alc662_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc662_verbs),
+	},
+	{ /* terminator */ }
+};
 
 AZALIA_ARRAY_SIZES;

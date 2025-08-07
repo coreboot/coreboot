@@ -11,6 +11,10 @@ fw_config
 		option TOUCH_ELAN_TOP   0
 		option TOUCH_ELAN_DBTS  1
 	end
+	field WIFI_SAR 13 15
+		option WIFI_SAR_ID_0 0
+		option WIFI_SAR_ID_1 1
+	end
 	field STORAGE 30 31
 		option STORAGE_EMMC		0
 		option STORAGE_NVME		1

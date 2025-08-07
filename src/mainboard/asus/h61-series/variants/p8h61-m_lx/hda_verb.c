@@ -4,10 +4,7 @@
 #include <device/azalia_device.h>
 #include <device/azalia_codec/realtek.h>
 
-const u32 cim_verb_data[] = {
-	0x10ec0887,	/* Realtek ALC887-VD */
-	0x10438445,	/* Subsystem ID */
-	15,		/* Number of entries */
+static const u32 realtek_alc887_vd_verbs[] = {
 	AZALIA_SUBVENDOR(0, 0x10438445),
 	AZALIA_PIN_CFG(0, ALC887_SPDIF_OUT2, 0x99430130),
 	AZALIA_PIN_CFG(0, ALC887_DMIC_LR, AZALIA_PIN_CFG_NC(0)),
@@ -26,5 +23,17 @@ const u32 cim_verb_data[] = {
 };
 
 const u32 pc_beep_verbs[] = {};
+
+struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Realtek ALC887-VD",
+		.vendor_id    = 0x10ec0887,
+		.subsystem_id = 0x10438445,
+		.address      = 0,
+		.verbs        = realtek_alc887_vd_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc887_vd_verbs),
+	},
+	{ /* terminator */ }
+};
 
 AZALIA_ARRAY_SIZES;

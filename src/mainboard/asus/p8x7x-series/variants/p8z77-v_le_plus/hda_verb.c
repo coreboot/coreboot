@@ -11,10 +11,7 @@ AZALIA_PIN_DESC(AZALIA_JACK, AZALIA_REAR, dev, AZALIA_STEREO_MONO_1_8, \
 AZALIA_PIN_DESC(AZALIA_JACK, AZALIA_FRONT, dev, AZALIA_STEREO_MONO_1_8, \
 		color, misc, association, sequence)
 
-const u32 cim_verb_data[] = {
-	0x10ec0889,	/* Realtek ALC889 */
-	0x1043841a,	/* Subsystem ID */
-	15,		/* Number of 4 dword sets */
+static const u32 realtek_alc889_verbs[] = {
 	AZALIA_SUBVENDOR(0, 0x1043841a),
 	AZALIA_PIN_CFG(0, 0x11, AZALIA_PIN_DESC(
 				AZALIA_INTEGRATED,
@@ -76,18 +73,36 @@ const u32 cim_verb_data[] = {
 				AZALIA_NO_JACK_PRESENCE_DETECT,
 				4, 0)), /* 0x01456140 */
 	AZALIA_PIN_CFG(0, 0x1f, AZALIA_PIN_CFG_NC(0)),
+};
 
-	0x80862806,	/* Intel */
-	0x80860101,	/* Subsystem ID */
-	4,		/* Number of 4 dword sets */
+static const u32 intel_display_audio_verbs[] = {
 	AZALIA_SUBVENDOR(3, 0x80860101),
 	AZALIA_PIN_CFG(3, 0x05, 0x18560010),
 	AZALIA_PIN_CFG(3, 0x06, 0x58560020),
 	AZALIA_PIN_CFG(3, 0x07, 0x18560030),
-
 };
 
 const u32 pc_beep_verbs[0] = {};
+
+struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Realtek ALC889",
+		.vendor_id    = 0x10ec0889,
+		.subsystem_id = 0x1043841a,
+		.address      = 0,
+		.verbs        = realtek_alc889_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc889_verbs),
+	},
+	{
+		.name         = "Intel Display Audio (HDMI/DP)",
+		.vendor_id    = 0x80862806,
+		.subsystem_id = 0x80860101,
+		.address      = 3,
+		.verbs        = intel_display_audio_verbs,
+		.verb_count   = ARRAY_SIZE(intel_display_audio_verbs),
+	},
+	{ /* terminator */ }
+};
 
 AZALIA_ARRAY_SIZES;
 

@@ -2,10 +2,7 @@
 
 #include <device/azalia_device.h>
 
-const u32 cim_verb_data[] = {
-	0x10ec0897, // Vendor/Device ID: Realtek ALC897
-	0x10438803, // Subsystem ID
-	15,
+static const u32 realtek_alc897_verbs[] = {
 	AZALIA_SUBVENDOR(0, 0x10438803),
 
 	AZALIA_PIN_CFG(0, 0x11, AZALIA_PIN_CFG_NC(0)),
@@ -70,10 +67,9 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x1d, 0x4048ee29), // does not describe a jack or internal device
 	AZALIA_PIN_CFG(0, 0x1e, AZALIA_PIN_CFG_NC(0)),
 	AZALIA_PIN_CFG(0, 0x1f, AZALIA_PIN_CFG_NC(0)),
+};
 
-	0x80862815, // Vendor/Device ID: Intel Alderlake HDMI
-	0x80860101, // Subsystem ID
-	10,
+static const u32 intel_display_audio_verbs[] = {
 	AZALIA_SUBVENDOR(2, 0x80860101),
 
 	AZALIA_PIN_CFG(2, 0x04, AZALIA_PIN_DESC(
@@ -160,4 +156,25 @@ const u32 cim_verb_data[] = {
 };
 
 const u32 pc_beep_verbs[] = {};
+
+struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Realtek ALC897",
+		.vendor_id    = 0x10ec0897,
+		.subsystem_id = 0x10438803,
+		.address      = 0,
+		.verbs        = realtek_alc897_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc897_verbs),
+	},
+	{
+		.name         = "Intel Display Audio (HDMI/DP)",
+		.vendor_id    = 0x80862815,
+		.subsystem_id = 0x80860101,
+		.address      = 2,
+		.verbs        = intel_display_audio_verbs,
+		.verb_count   = ARRAY_SIZE(intel_display_audio_verbs),
+	},
+	{ /* terminator */ }
+};
+
 AZALIA_ARRAY_SIZES;

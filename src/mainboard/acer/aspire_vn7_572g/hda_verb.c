@@ -4,12 +4,8 @@
 
 #include <device/azalia_device.h>
 
-const u32 cim_verb_data[] = {
+static const u32 realtek_alc255_verbs[] = {
 	/* --- Codec #0 --- */
-	/* coreboot specific header */
-	0x10ec0255,	/* Codec Vendor / Device ID: Realtek ALC255 */
-	0x10251037,	/* Subsystem ID */
-	20,		/* Number of jacks (NID entries) */
 
 	/* Codec Address: Bits 31:28 */
 	/* Node ID: Bits 27:20 */
@@ -81,12 +77,10 @@ const u32 cim_verb_data[] = {
 	0x01470740,	/* Repeated for units? */
 	0x02050010,	/* Set coeff idx: 0x10 */
 	0x02040f20,	/* Set processing coeff: 0xf20 */
+};
 
+static const u32 intel_display_audio_verbs[] = {
 	/* --- Codec #2 --- */
-	/* coreboot specific header */
-	0x80862809,	/* Codec Vendor / Device ID: Intel Skylake HDMI */
-	0x80860101,	/* Subsystem ID */
-	5,		/* Number of jacks (NID entries) */
 
 	/* Codec Address: Bits 31:28 */
 	/* Node ID: Bits 27:20 */
@@ -114,5 +108,25 @@ const u32 cim_verb_data[] = {
 };
 
 const u32 pc_beep_verbs[] = {};
+
+struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Realtek ALC255",
+		.vendor_id    = 0x10ec0255,
+		.subsystem_id = 0x10251037,
+		.address      = 0,
+		.verbs        = realtek_alc255_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc255_verbs),
+	},
+	{
+		.name         = "Intel Display Audio (HDMI/DP)",
+		.vendor_id    = 0x80862809,
+		.subsystem_id = 0x80860101,
+		.address      = 2,
+		.verbs        = intel_display_audio_verbs,
+		.verb_count   = ARRAY_SIZE(intel_display_audio_verbs),
+	},
+	{ /* terminator */ }
+};
 
 AZALIA_ARRAY_SIZES;

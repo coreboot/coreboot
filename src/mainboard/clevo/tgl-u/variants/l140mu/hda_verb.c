@@ -3,11 +3,7 @@
 #include <device/azalia_device.h>
 #include <stdint.h>
 
-const u32 cim_verb_data[] = {
-	/* Realtek ALC293 */
-	0x10ec0293, /* Vendor ID */
-	0x155814a1, /* Subsystem ID */
-	12, /* Number of entries */
+static const u32 realtek_alc293_verbs[] = {
 	AZALIA_SUBVENDOR(0, 0x155814a1),
 
 	/* Microphone (display lid), vendor value: 0x90a60130 */
@@ -76,5 +72,16 @@ const u32 cim_verb_data[] = {
 };
 
 const u32 pc_beep_verbs[] = {};
+
+static struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Realtek ALC293",
+		.vendor_id    = 0x10ec0293,
+		.subsystem_id = 0x155814a1,
+		.address      = 0,
+		.verbs        = realtek_alc293_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc293_verbs),
+	},
+};
 
 AZALIA_ARRAY_SIZES;

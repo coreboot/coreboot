@@ -252,7 +252,7 @@ chip soc/intel/alderlake
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 			chip soc/intel/common/block/pcie/rtd3
-				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A21)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A21)"
 				register "reset_off_delay_ms" = "20"
 				register "srcclk_pin" = "6"
 				register "ext_pm_support" = "ACPI_PCIE_RP_EMIT_ALL"
@@ -265,7 +265,7 @@ chip soc/intel/alderlake
 			chip drivers/wwan/fm
 				register "fcpo_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F21)"
 				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_D19)"
-				register "perst_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_A21)"
+				register "perst_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_A21)"
 				register "wake_gpio" = "ACPI_GPIO_IRQ_EDGE_LOW(GPP_E5)"
 				register "add_acpi_dma_property" = "true"
 				use rp4_rtd3 as rtd3dev

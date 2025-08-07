@@ -2,11 +2,10 @@
 
 #include <device/azalia_device.h>
 
-const u32 cim_verb_data[] = {
-	0x83847680,	/* Codec Vendor / Device ID: SigmaTel STAC9221 A1 */
 #if CONFIG(BOARD_APPLE_MACBOOK11) || CONFIG(BOARD_APPLE_MACBOOK21)
-	0x106b2200,	/* Subsystem ID  */
-	11,		/* Number of 4 dword sets */
+static const u32 sigmatel_stac9221_a1_subsystem_id = 0x106b2200;
+
+static const u32 sigmatel_stac9221_a1_verbs[] = {
 	AZALIA_SUBVENDOR(0, 0x106b2200),
 	AZALIA_PIN_CFG(0, 0x0a, 0x0321e21f),
 	AZALIA_PIN_CFG(0, 0x0b, 0x03a1e02e),
@@ -18,9 +17,11 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x11, 0x13c5e240),
 	AZALIA_PIN_CFG(0, 0x15, 0x400000fc),
 	AZALIA_PIN_CFG(0, 0x1b, 0x400000fb),
+};
 #else /* CONFIG_BOARD_APPLE_IMAC52 */
-	0x106b0f00,	/* Subsystem ID  */
-	11,		/* Number of 4 dword sets */
+static const u32 sigmatel_stac9221_a1_subsystem_id = 0x106b0f00;
+
+static const u32 sigmatel_stac9221_a1_verbs[] = {
 	AZALIA_SUBVENDOR(0, 0x106b0f00),
 	AZALIA_PIN_CFG(0, 0x0a, 0x012be032),
 	AZALIA_PIN_CFG(0, 0x0b, 0x90afe111),
@@ -32,10 +33,21 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x11, 0x11cbc022),
 	AZALIA_PIN_CFG(0, 0x15, 0x4080e10f),
 	AZALIA_PIN_CFG(0, 0x1b, 0x4080e10f),
+};
 #endif
 
-};
-
 const u32 pc_beep_verbs[0] = {};
+
+struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Sigmatel STAC9221 A1",
+		.vendor_id    = 0x83847680,
+		.subsystem_id = sigmatel_stac9221_a1_subsystem_id,
+		.address      = 0,
+		.verbs        = sigmatel_stac9221_a1_verbs,
+		.verb_count   = ARRAY_SIZE(sigmatel_stac9221_a1_verbs),
+	},
+	{ /* terminator */ }
+};
 
 AZALIA_ARRAY_SIZES;

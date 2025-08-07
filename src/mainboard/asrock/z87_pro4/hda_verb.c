@@ -2,10 +2,7 @@
 
 #include <device/azalia_device.h>
 
-const u32 cim_verb_data[] = {
-	0x10ec0892,	/* Codec Vendor / Device ID: Realtek */
-	0x18498892,	/* Subsystem ID */
-	15,		/* Number of 4 dword sets */
+static const u32 realtek_alc892_verbs[] = {
 	AZALIA_SUBVENDOR(0, 0x18498892),
 	AZALIA_PIN_CFG(0, 0x11, 0x40000000),
 	AZALIA_PIN_CFG(0, 0x12, 0x411111f0),
@@ -24,5 +21,17 @@ const u32 cim_verb_data[] = {
 };
 
 const u32 pc_beep_verbs[0] = {};
+
+struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Realtek ALC892",
+		.vendor_id    = 0x10ec0892,
+		.subsystem_id = 0x18498892,
+		.address      = 0,
+		.verbs        = realtek_alc892_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc892_verbs),
+	},
+	{ /* terminator */ }
+};
 
 AZALIA_ARRAY_SIZES;

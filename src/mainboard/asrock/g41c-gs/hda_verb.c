@@ -2,15 +2,7 @@
 
 #include <device/azalia_device.h>
 
-const u32 cim_verb_data[] = {
-	/* coreboot specific header */
-	/* Realtek ALC662 rev1 */
-	0x10ec0662, /* Vendor ID */
-	0x18493662, /* Subsystem ID */
-	10, /* Number of entries */
-
-	/* Pin Widget Verb Table */
-
+static const u32 realtek_alc662_verbs_1[] = {
 	AZALIA_PIN_CFG(0, 0x14, 0x01014010),
 	AZALIA_PIN_CFG(0, 0x15, AZALIA_PIN_CFG_NC(0)),
 	AZALIA_PIN_CFG(0, 0x16, AZALIA_PIN_CFG_NC(0)),
@@ -21,24 +13,13 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x1c, 0x593301f0),
 	AZALIA_PIN_CFG(0, 0x1d, 0x4004c601),
 	AZALIA_PIN_CFG(0, 0x1e, AZALIA_PIN_CFG_NC(0)),
+};
 
-	/* coreboot specific header */
-	/* Intel Eaglelake HDMI */
-	0x80862803, /* Vendor ID */
-	0x80860101, /* Subsystem ID */
-	0x00000001, /* Number of entries */
-
-	/* Pin Widget Verb Table */
-
+static const u32 intel_display_audio_verbs[] = {
 	AZALIA_PIN_CFG(1, 0x03, 0x18560010),
+};
 
-	/* coreboot specific header */
-	/* Realtek ALC662 rev1 */
-	0x10ec0662, /* Vendor ID */
-	0x1565821e, /* Subsystem ID */
-	10, /* Number of entries */
-
-	/* Pin Widget Verb Table */
+static const u32 realtek_alc662_verbs_2[] = {
 	AZALIA_PIN_CFG(2, 0x14, 0x01014410),
 	AZALIA_PIN_CFG(2, 0x15, AZALIA_PIN_CFG_NC(0)),
 	AZALIA_PIN_CFG(2, 0x16, AZALIA_PIN_CFG_NC(0)),
@@ -52,5 +33,33 @@ const u32 cim_verb_data[] = {
 };
 
 const u32 pc_beep_verbs[0] = {};
+
+struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Realtek ALC662",
+		.vendor_id    = 0x10ec0662,
+		.subsystem_id = 0x18493662,
+		.address      = 0,
+		.verbs        = realtek_alc662_verbs_1,
+		.verb_count   = ARRAY_SIZE(realtek_alc662_verbs_1),
+	},
+	{
+		.name         = "Intel Display Audio (HDMI/DP)",
+		.vendor_id    = 0x80862803,
+		.subsystem_id = 0x80860101,
+		.address      = 1,
+		.verbs        = intel_display_audio_verbs,
+		.verb_count   = ARRAY_SIZE(intel_display_audio_verbs),
+	},
+	{
+		.name         = "Realtek ALC662",
+		.vendor_id    = 0x10ec0662,
+		.subsystem_id = 0x1565821e,
+		.address      = 2,
+		.verbs        = realtek_alc662_verbs_2,
+		.verb_count   = ARRAY_SIZE(realtek_alc662_verbs_2),
+	},
+	{ /* terminator */ }
+};
 
 AZALIA_ARRAY_SIZES;

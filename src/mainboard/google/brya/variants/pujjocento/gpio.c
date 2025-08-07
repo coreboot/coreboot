@@ -102,8 +102,6 @@ static const struct pad_config gpio_table[] = {
 
 	/* C0  : SMBCLK ==> EN_PP3300_TCHSCR_X */
 	PAD_CFG_GPO(GPP_C0, 1, DEEP),
-	/* C1  : SMBDATA ==> TCHSCR_RST_L */
-	PAD_CFG_GPO(GPP_C1, 1, DEEP),
 	/* C2  : SMBALERT# ==> GPP_C2_STRAP */
 	PAD_NC(GPP_C2, NONE),
 	/* C3  : EN_PP3300_UCAM_X */
@@ -180,6 +178,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC_LOCK(GPP_E9, NONE, LOCK_CONFIG),
 	/* E10 : EN_PP3300_WLAN_X */
 	PAD_CFG_GPO(GPP_E10, 0, DEEP),
+	/* C1  : SMBDATA ==> TCHSCR_RST_L */
+	PAD_CFG_GPO(GPP_C1, 1, DEEP),
 	/* E11 : TCHSCR_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_E11, NONE, PLTRST, LEVEL, INVERT),
 	/* E12 : THC0_SPI1_IO1 ==> SOC_WP_OD */
@@ -432,10 +432,6 @@ static const struct pad_config gpio_table[] = {
 
 /* Early pad configuration in bootblock */
 static const struct pad_config early_gpio_table[] = {
-	/* C0  : SMBCLK ==> EN_PP3300_TCHSCR_X */
-	PAD_CFG_GPO(GPP_C0, 1, DEEP),
-	/* C1  : SMBDATA ==> TCHSCR_RST_L */
-	PAD_CFG_GPO(GPP_C1, 1, DEEP),
 	/* A13 : GPP_A13 ==> GSC_SOC_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
 	/* E3 : PROC_GP0 ==> SOC_WP_OD */

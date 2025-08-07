@@ -2,12 +2,7 @@
 
 #include <device/azalia_device.h>
 
-const u32 cim_verb_data[] = {
-	/* coreboot specific header */
-	0x10ec0269,	/* Codec Vendor / Device ID: Realtek ALC269 */
-	0x19910269,	/* Subsystem ID */
-	12,		/* Number of jacks (NID entries) */
-
+static const u32 realtek_alc269_verbs[] = {
 	AZALIA_RESET(1),
 	AZALIA_SUBVENDOR(0, 0x19910269),
 	AZALIA_PIN_CFG(0, 0x12, 0x40000000),
@@ -23,5 +18,16 @@ const u32 cim_verb_data[] = {
 };
 
 const u32 pc_beep_verbs[] = {};
+
+struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Realtek ALC269",
+		.vendor_id    = 0x10ec0269,
+		.subsystem_id = 0x19910269,
+		.address      = 0,
+		.verbs        = realtek_alc269_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc269_verbs),
+	},
+};
 
 AZALIA_ARRAY_SIZES;

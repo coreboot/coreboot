@@ -4,12 +4,7 @@
 #include <ec/purism/librem-ec/librem_ec.h>
 #include <console/console.h>
 
-const u32 cim_verb_data[] = {
-	/* Board revision 01 has ALC256 */
-	0x10ec0256,	/* Codec Vendor/Device ID: Realtek ALC256 */
-	0x10ec0256,	/* Subsystem ID */
-	16,		/* Number of entries */
-
+static const u32 realtek_alc256_verbs[] = {
 	AZALIA_RESET(0x1),
 
 	AZALIA_SUBVENDOR(0, 0x10ec0256),
@@ -47,12 +42,9 @@ const u32 cim_verb_data[] = {
 	0x02046901,
 	0x02050007,
 	0x02040200,
+};
 
-	/* Board revision 02 has ALC269 */
-	0x10ec0269,	/* Codec Vendor/Device ID: Realtek ALC269 */
-	0x10ec0269,	/* Subsystem ID */
-	16,		/* Number of entries */
-
+static const u32 realtek_alc269_verbs[] = {
 	AZALIA_RESET(0x1),
 
 	AZALIA_SUBVENDOR(0, 0x10ec129e),
@@ -86,11 +78,9 @@ const u32 cim_verb_data[] = {
 	0x020400AF,
 	0x02050005,
 	0x020400C0,
+};
 
-	0x8086280b,	/* Codec Vendor/Device ID: Intel CometPoint HDMI */
-	0x80860101,	/* Subsystem ID */
-	4,		/* Number of entries */
-
+static const u32 intel_display_audio_verbs[] = {
 	AZALIA_SUBVENDOR(2, 0x80860101),
 	AZALIA_PIN_CFG(2, 0x05, 0x18560010),
 	AZALIA_PIN_CFG(2, 0x06, 0x18560010),
@@ -98,6 +88,35 @@ const u32 cim_verb_data[] = {
 };
 
 const u32 pc_beep_verbs[] = {};
+
+struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		/* Board revision 01 has ALC256 */
+		.name         = "Realtek ALC256",
+		.vendor_id    = 0x10ec0256,
+		.subsystem_id = 0x10ec0256,
+		.address      = 0,
+		.verbs        = realtek_alc256_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc256_verbs),
+	},
+	{
+		/* Board revision 02 has ALC269 */
+		.name         = "Realtek ALC269",
+		.vendor_id    = 0x10ec0269,
+		.subsystem_id = 0x10ec0269,
+		.address      = 0,
+		.verbs        = realtek_alc269_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc269_verbs),
+	},
+	{
+		.name         = "Intel Display Audio (HDMI/DP)",
+		.vendor_id    = 0x8086280b,
+		.subsystem_id = 0x80860101,
+		.address      = 2,
+		.verbs        = intel_display_audio_verbs,
+		.verb_count   = ARRAY_SIZE(intel_display_audio_verbs),
+	},
+};
 
 AZALIA_ARRAY_SIZES;
 

@@ -1,0 +1,97 @@
+#!/usr/bin/env sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+# DESCR: Check that CB:<change-id> does not refer to a merged change
+
+
+LINTDIR="$(
+  cd -- "$(dirname "$0")" > /dev/null 2>&1 || return
+  pwd -P
+)"
+
+# shellcheck source=helper_functions.sh
+. "${LINTDIR}/helper_functions.sh"
+
+if [ "${IN_GIT_TREE}" -eq 0 ]; then
+	exit 0
+fi
+
+if ! command -v jq > /dev/null; then
+	printf 'This script requires "jq" to be installed\n' >&2
+	exit 1
+fi
+
+GERRIT_REST_API_URL="https://review.coreboot.org"
+# Excerpt from documentation[1]:
+#
+# > To prevent against Cross Site Script Inclusion (XSSI) attacks, the JSON
+# > response body starts with a magic prefix line that must be stripped before
+# > feeding the rest of the response body to a JSON parser.
+#
+# [1] https://gerrit-review.googlesource.com/Documentation/rest-api.html#output
+GERRIT_REST_API_MAGIC_PREFIX=")]}'"
+
+api_request() {
+	api="$1"
+	curl --silent "${GERRIT_REST_API_URL}/${api}" \
+	    | sed "s/^${GERRIT_REST_API_MAGIC_PREFIX}//"
+}
+
+# Fetch git log in the format specified by the Linux kernel guidelines[1], which
+# coreboot follows, for referencing merged commits.
+#
+# [1] https://www.kernel.org/doc/html/v4.10/process/submitting-patches.html
+search_commit() {
+	${GIT} log -n 1 --abbrev=12 --pretty='commit %h ("%s")' "$@" 2> /dev/null
+}
+
+get_commit_reference() {
+	change_id="$1"
+	response="$(api_request "changes/coreboot~${change_id}/revisions/current/commit")"
+
+	hash="$(echo "${response}" | jq --raw-output .commit)"
+	reference="$(search_commit "${hash}")"
+
+	# Earlier changes merged through Gerrit (around < CB:1000) did not
+	# update the patchset once being cherry-picked into the codebase.
+	# Therefore, the pre-merged commit remains in Gerrit's database (what we
+	# query with the REST API) and causes problems, as the commit hash would
+	# be different from the one found in the main branch.
+	#
+	# To workaround this issue, we attempt to find the corresponding commit
+	# by grepping for a commit message that contains a specific "Change-Id".
+	if [ -z "${reference}" ]; then
+		hash="$(echo "${response}" \
+		    | jq .message          \
+		    | sed -E 's/.*Change-Id: ([[:alnum:]]+).*/\1/')"
+		reference="$(search_commit --grep "${hash}")"
+	fi
+
+	if [ -z "${reference}" ]; then
+		reference="(cannot find commit; probably requires a rebase)"
+	fi
+
+	echo "${reference}"
+}
+
+# This test is mainly for the jenkins server
+for change_id in $(${GIT} log -n 1 | grep -Eo 'CB:[0-9]+'); do
+	change_id="${change_id#CB:}" # strip "CB:" prefix from change ID
+
+	response="$(api_request "changes/coreboot~${change_id}")"
+
+	if echo "${response}" | grep -qF 'Not found'; then
+		printf 'CB:%d does not exist\n' "${change_id}"
+		continue
+	fi
+
+	status="$(echo "${response}" | jq --raw-output .status)"
+
+	if [ "${status}" = "MERGED" ]; then
+		reference="$(get_commit_reference "${change_id}")"
+
+		printf 'Using a change ID (CB:%d) for an already merged change; please replace it with:\n' \
+		    "${change_id}"
+		printf '%s\n' "${reference}"
+	fi
+done

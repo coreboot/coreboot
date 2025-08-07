@@ -2,11 +2,7 @@
 
 #include <device/azalia_device.h>
 
-const u32 cim_verb_data[] = {
-	/* Realtek, ALC269VC */
-	0x10ec0269, /* Vendor ID */
-	0x15581313, /* Subsystem ID */
-	12, /* Number of entries */
+static const u32 realtek_alc269vc_verbs[] = {
 	AZALIA_SUBVENDOR(0, 0x15581313),
 	AZALIA_RESET(1),
 	AZALIA_PIN_CFG(0, 0x12, 0x90a60140),
@@ -19,14 +15,33 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x1b, AZALIA_PIN_CFG_NC(0)),
 	AZALIA_PIN_CFG(0, 0x1d, 0x40f4a205),
 	AZALIA_PIN_CFG(0, 0x1e, AZALIA_PIN_CFG_NC(0)),
-	/* Intel, KabylakeHDMI */
-	0x8086280b, /* Vendor ID */
-	0x80860101, /* Subsystem ID */
-	4, /* Number of entries */
+};
+
+static const u32 intel_kabylake_hdmi_verbs[] = {
 	AZALIA_SUBVENDOR(2, 0x80860101),
 	AZALIA_PIN_CFG(2, 0x05, 0x18560010),
 	AZALIA_PIN_CFG(2, 0x06, 0x18560010),
 	AZALIA_PIN_CFG(2, 0x07, 0x18560010),
+};
+
+struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Realtek ALC269",
+		.vendor_id    = 0x10ec0269,
+		.subsystem_id = 0x15581313,
+		.address      = 0,
+		.verbs        = realtek_alc269vc_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc269vc_verbs),
+	},
+	{
+		.name         = "Intel Kabylake HDMI",
+		.vendor_id    = 0x8086280b,
+		.subsystem_id = 0x80860101,
+		.address      = 2,
+		.verbs        = intel_kabylake_hdmi_verbs,
+		.verb_count   = ARRAY_SIZE(intel_kabylake_hdmi_verbs),
+	},
+	{ /* terminator */ }
 };
 
 const u32 pc_beep_verbs[] = {};

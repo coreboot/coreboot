@@ -2,12 +2,7 @@
 
 #include <device/azalia_device.h>
 
-const u32 cim_verb_data[] = {
-	/* Realtek, ALC1220 */
-	0x10ec1220, /* Vendor ID */
-	0x15583702, /* Subsystem ID */
-	243, /* Number of entries */
-
+static const u32 realtek_alc1220_verbs[] = {
 	0x02050008, 0x020480cb, 0x02050008, 0x0204c0cb,
 	AZALIA_SUBVENDOR(0, 0x15583702),
 	AZALIA_RESET(1),
@@ -256,6 +251,18 @@ const u32 cim_verb_data[] = {
 
 	// XXX: Duplicate last 2 u32s to keep in 4-dword blocks
 	0x0205002c, 0x0204b423,
+};
+
+struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Realtek ALC1220",
+		.vendor_id    = 0x10ec1220,
+		.subsystem_id = 0x15583702,
+		.address      = 0,
+		.verbs        = realtek_alc1220_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc1220_verbs),
+	},
+	{ /* terminator */ }
 };
 
 const u32 pc_beep_verbs[] = {};

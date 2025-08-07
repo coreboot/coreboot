@@ -2,11 +2,7 @@
 
 #include <device/azalia_device.h>
 
-const u32 cim_verb_data[] = {
-	/* Realtek, ALC256 */
-	0x10ec0256, /* Vendor ID */
-	0x15585630, /* Subsystem ID */
-	12, /* Number of entries */
+static const u32 realtek_alc256_verbs[] = {
 	AZALIA_SUBVENDOR(0, 0x15585630),
 	AZALIA_RESET(1),
 	AZALIA_PIN_CFG(0, 0x12, 0x90a60130),
@@ -19,6 +15,18 @@ const u32 cim_verb_data[] = {
 	AZALIA_PIN_CFG(0, 0x1d, 0x41700001),
 	AZALIA_PIN_CFG(0, 0x1e, AZALIA_PIN_CFG_NC(0)),
 	AZALIA_PIN_CFG(0, 0x21, 0x02211020),
+};
+
+struct azalia_codec mainboard_azalia_codecs[] = {
+	{
+		.name         = "Realtek ALC256",
+		.vendor_id    = 0x10ec0256,
+		.subsystem_id = 0x15585630,
+		.address      = 0,
+		.verbs        = realtek_alc256_verbs,
+		.verb_count   = ARRAY_SIZE(realtek_alc256_verbs),
+	},
+	{ /* terminator */ }
 };
 
 const u32 pc_beep_verbs[] = {};

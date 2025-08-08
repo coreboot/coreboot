@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/device.h>
+#include <soc/mmu.h>
+#include <soc/mmu_common.h>
 #include <soc/symbols_common.h>
 #include <soc/pcie.h>
 
@@ -12,7 +14,8 @@ static struct device_operations pci_domain_ops = {
 };
 static void soc_read_resources(struct device *dev)
 {
-	/* placeholder */
+	ram_range(dev, 0, (uintptr_t)region_offset(ddr_region), region_sz(ddr_region));
+	reserved_ram_range(dev, 1, (uintptr_t)_dram_aop, REGION_SIZE(dram_aop));
 }
 
 static void soc_init(struct device *dev)

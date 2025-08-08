@@ -14,8 +14,8 @@ chip soc/intel/tigerlake
 	register "tcc_offset" = "8"
 
 	# FSP configuration
-	register "eist_enable" = "1"
-	register "enable_c6dram" = "1"
+	register "eist_enable" = "true"
+	register "enable_c6dram" = "true"
 
 	register "deep_s3_enable_ac" = "true"
 	register "deep_s3_enable_dc" = "true"
@@ -36,20 +36,20 @@ chip soc/intel/tigerlake
 		.vnn_supported_voltage_bitmap = 0,
 		.v1p05_icc_max_ma = 500,
 		.vnn_sx_voltage_mv = 1050,
-        }"
+	}"
 
 	device cpu_cluster 0 on end
 	device domain 0 on
 		device ref igpu on
 			register "DdiPortBConfig" = "DDI_PORT_CFG_NO_LFP" # DP
-			register "DdiPortBHpd" = "1"
-			register "DdiPortBDdc" = "1"
+			register "DdiPortBHpd" = "true"
+			register "DdiPortBDdc" = "true"
 
-			register "DdiPortCHpd" = "1" # HDMI
-			register "DdiPortCDdc" = "1"
+			register "DdiPortCHpd" = "true" # HDMI
+			register "DdiPortCDdc" = "true"
 
-			register "DdiPort1Hpd" = "1" # HDMI
-			register "DdiPort1Ddc" = "1"
+			register "DdiPort1Hpd" = "true" # HDMI
+			register "DdiPort1Ddc" = "true"
 		end
 
 		device ref peg0 on	# SoC M.2 (Gen4)
@@ -63,7 +63,7 @@ chip soc/intel/tigerlake
 		end
 
 		device ref north_xhci on
-			 register "TcssXhciEn" = "1"
+			 register "TcssXhciEn" = "true"
 		end
 
 		device ref south_xhci on
@@ -108,7 +108,7 @@ chip soc/intel/tigerlake
 				[2] = 1,
 				[3] = 1,
 			}"
-			register "SataSalpSupport" = "1"
+			register "SataSalpSupport" = "true"
 		end
 
 		device ref pcie_rp5 on		# PCH M.2 (Gen3)
@@ -198,7 +198,7 @@ chip soc/intel/tigerlake
 		device ref p2sb hidden end
 		device ref hda on
 			subsystemid 0x10ec 0x3000
-			register "PchHdaAudioLinkHdaEnable" = "1"
+			register "PchHdaAudioLinkHdaEnable" = "true"
 		end
 		device ref smbus on end
 	end

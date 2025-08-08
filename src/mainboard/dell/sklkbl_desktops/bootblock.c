@@ -4,7 +4,7 @@
 #include <device/pnp_ops.h>
 #include <soc/gpio.h>
 #include <superio/smsc/sch555x/sch555x.h>
-#include "include/early_gpio.h"
+#include "../../../include/variant/gpio.h"
 #include "sch5555_ec.h"
 
 struct ec_init_entry {
@@ -88,7 +88,7 @@ static void bootblock_ec_init(void)
 
 void bootblock_mainboard_early_init(void)
 {
-	gpio_configure_pads(early_gpio_table, ARRAY_SIZE(early_gpio_table));
+	variant_configure_early_gpios();
 
 	// Super I/O early init will map Runtime and EMI registers
 	sch555x_early_init(GLOBAL_DEV);

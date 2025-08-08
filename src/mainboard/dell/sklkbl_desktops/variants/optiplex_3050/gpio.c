@@ -1,7 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
-#ifndef __OPTIPLEX_3050_GPIO_H__
-#define __OPTIPLEX_3050_GPIO_H__
+#include <soc/gpe.h>
+#include <soc/gpio.h>
+#include "../../../include/variant/gpio.h"
+
+/* #ifndef __OPTIPLEX_3050_GPIO_H__ #define __OPTIPLEX_3050_GPIO_H__ */
 
 static const struct pad_config gpio_table[] = {
 
@@ -238,4 +241,9 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_I10, DN_20K, PLTRST, NF1),			/* DDPD_CTRLDATA */
 };
 
-#endif
+void variant_configure_gpios(void)
+{
+	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
+}
+
+// #endif

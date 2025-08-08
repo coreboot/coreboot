@@ -1,9 +1,7 @@
 ## SPDX-License-Identifier: GPL-2.0-only
 
-if BOARD_DELL_OPTIPLEX_3050
-
-config BOARD_SPECIFIC_OPTIONS
-	def_bool y
+config BOARD_DELL_SKLKBL_DESKTOPS_COMMON
+	bool
 	select AZALIA_USE_LEGACY_VERB_TABLE
 	select BOARD_ROMSIZE_KB_16384
 	select HAVE_ACPI_RESUME
@@ -20,19 +18,31 @@ config BOARD_SPECIFIC_OPTIONS
 	select SOC_INTEL_KABYLAKE
 	select SUPERIO_SMSC_SCH555x
 
+config BOARD_DELL_OPTIPLEX_3050
+	bool
+	select BOARD_DELL_SKLKBL_DESKTOPS_COMMON
+
+if BOARD_DELL_SKLKBL_DESKTOPS_COMMON
+
+config MAINBOARD_DIR
+	default "dell/sklkbl_desktops"
+
+config MAINBOARD_PART_NUMBER
+	default "OptiPlex 3050 Micro" if BOARD_DELL_OPTIPLEX_3050
+
+config VARIANT_DIR
+	default "optiplex_3050" if BOARD_DELL_OPTIPLEX_3050
+
+config OVERRIDE_DEVICETREE
+	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"
+
+config INTEL_GMA_VBT_FILE
+	default "src/mainboard/\$(MAINBOARDDIR)/variants/\$(CONFIG_VARIANT_DIR)/data.vbt"
+
 config CBFS_SIZE
 	default 0x900000
 
-config MAINBOARD_DIR
-	default "dell/optiplex_3050"
-
-config MAINBOARD_PART_NUMBER
-	default "OptiPlex 3050 Micro"
-
-config INTEL_GMA_VBT_FILE
-	default "src/mainboard/\$(MAINBOARDDIR)/data.vbt"
-
 config DIMM_SPD_SIZE
-	default 512	# DDR4
+	default 512 if BOARD_DELL_OPTIPLEX_3050	# DDR4
 
 endif

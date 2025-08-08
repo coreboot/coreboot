@@ -5,12 +5,12 @@
 #include <cpu/x86/msr.h>
 #include <soc/gpio.h>
 #include <soc/ramstage.h>
-#include "include/gpio.h"
+#include "../../../include/variant/gpio.h"
 #include "sch5555_ec.h"
 
 void mainboard_silicon_init_params(FSP_SIL_UPD *params)
 {
-	gpio_configure_pads(gpio_table, ARRAY_SIZE(gpio_table));
+	variant_configure_gpios();
 }
 
 #define FORM_FACTOR_MICRO	0

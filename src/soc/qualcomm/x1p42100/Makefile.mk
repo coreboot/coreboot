@@ -114,6 +114,14 @@ $(DCB_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(DCB_CBFS)
 
 ################################################################################
+DTB_FILE := $(X1P42100_BLOB)/boot/pre-ddr.dtb
+DTB_CBFS := $(CONFIG_CBFS_PREFIX)/dtb
+$(DTB_CBFS)-file := $(DTB_FILE)
+$(DTB_CBFS)-type := raw
+$(DTB_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(DTB_CBFS)
+
+################################################################################
 UART_FW_FILE := $(X1P42100_BLOB)/qup_fw/uart_fw.bin
 UART_FW_CBFS := $(CONFIG_CBFS_PREFIX)/uart_fw
 $(UART_FW_CBFS)-file := $(UART_FW_FILE)

@@ -307,7 +307,7 @@ chip soc/intel/alderlake
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 			}"
 			chip drivers/net
-				register "customized_leds" = "0x05af"
+				register "customized_leds" = "0x0807"
 				register "device_index" = "0"
 				register "enable_aspm_l1_2" = "1"
 				register "add_acpi_dma_property" = "true"

@@ -74,10 +74,13 @@ chip soc/intel/tigerlake
 				[3] = USB2_PORT_MID(OC_SKIP),		/* NIC right */
 				[4] = USB2_PORT_MID(OC_SKIP),		/* Front Panel 1 */
 				[5] = USB2_PORT_MID(OC_SKIP),		/* Front Panel 2 */
+				[6] = USB2_PORT_MID(OC_SKIP),		/* Front Panel 3 */
+				[7] = USB2_PORT_MID(OC_SKIP),		/* Front Panel 4 */
 				[8] = USB2_PORT_MID(OC_SKIP),		/* Front Panel 1 (USB3) */
 				[9] = USB2_PORT_MID(OC_SKIP),		/* Front Panel 2 (USB3) */
 				[10] = USB2_PORT_MID(OC_SKIP),		/* Rear, top left */
 				[11] = USB2_PORT_MID(OC_SKIP),		/* Rear, top right */
+				[12] = USB2_PORT_MID(OC_SKIP),		/* M.2 NGFF (Bluetooth) */
 			}"
 
 			register "usb3_ports" = "{

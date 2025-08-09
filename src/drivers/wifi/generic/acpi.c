@@ -1246,7 +1246,7 @@ static void wifi_ssdt_write_properties(const struct device *dev, const char *sco
 	struct dsm_uuid dsm_ids[MAX_DSM_FUNCS];
 
 	/* Retrieve the SAR limits data */
-	union wifi_sar_limits sar_limits = {0};
+	union wifi_sar_limits sar_limits = {};
 	bool sar_loaded = false;
 	if (CONFIG(USE_SAR)) {
 		if (get_wifi_sar_limits(&sar_limits) < 0)

@@ -88,7 +88,7 @@ void setdosmemword(int offset, unsigned short w)
 
 void PDC_dpmi_int(int vector, pdc_dpmi_regs *rmregs)
 {
-    union REGPACK regs = {0};
+    union REGPACK regs = {};
 
     rmregs->w.ss = 0;
     rmregs->w.sp = 0;

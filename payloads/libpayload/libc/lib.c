@@ -124,8 +124,6 @@ void __noreturn abort(void)
 	halt();
 }
 
-int errno;
-
 char *getenv(const char *name)
 {
 	return NULL;

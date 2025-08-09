@@ -290,7 +290,7 @@ char *strsep(char **stringp, const char *delim)
 {
 	char *walk, *token;
 
-	if (!stringp || !*stringp || !**stringp)
+	if (!stringp || !*stringp)
 		return NULL;
 
 	token = walk = *stringp;
@@ -302,10 +302,11 @@ char *strsep(char **stringp, const char *delim)
 	if (*walk) {
 		/* NUL terminate */
 		*walk = '\0';
-		walk++;
+		*stringp = walk + 1;
+	} else {
+		/* Set to NULL after last token. */
+		*stringp = NULL;
 	}
-
-	*stringp = walk;
 
 	return token;
 }
@@ -546,6 +547,10 @@ char *strtok(char *str, const char *delim)
 
 	return strtok_r(str, delim, &strtok_ptr);
 }
+
+/* errno isn't actually used anywhere other than perror() below, and just here
+   for compatibility with libc-targeting code wanting to incidentally print it. */
+int errno;
 
 /**
  * Print error message and error number

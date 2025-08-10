@@ -1,5 +1,5 @@
 ## SPDX-License-Identifier: GPL-2.0-only
-ifeq ($(CONFIG_SOC_QUALCOMM_X1P42100),y)
+ifeq ($(CONFIG_SOC_QUALCOMM_BASE),y)
 
 decompressor-y += decompressor.c
 decompressor-y += mmu.c
@@ -57,6 +57,12 @@ ifeq ($(CONFIG_USE_QC_BLOBS),y)
 # TODO: Upload X1P42100 SoC blobs
 X1P42100_BLOB := $(top)/3rdparty/qc_blobs/x1p42100
 
+ifeq ($(CONFIG_SOC_QUALCOMM_HAMOA),y)
+DTB_DCB_BLOB_PATH := hamoa
+else
+DTB_DCB_BLOB_PATH := x1p42100
+endif
+
 ifeq ($(CONFIG_QC_SDI_ENABLE),y)
 BL31_MAKEARGS += QTI_SDI_BUILD=1
 BL31_MAKEARGS += QTISECLIB_PATH=$(X1P42100_BLOB)/qtiseclib/libqtisec_dbg.a
@@ -98,7 +104,7 @@ $(QCLIB_CBFS)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
 cbfs-files-y += $(QCLIB_CBFS)
 
 ################################################################################
-DCB_FILE := $(X1P42100_BLOB)/boot/dcb.bin
+DCB_FILE := $(X1P42100_BLOB)/boot/$(DTB_DCB_BLOB_PATH)/dcb.bin
 DCB_CBFS := $(CONFIG_CBFS_PREFIX)/dcb
 $(DCB_CBFS)-file := $(DCB_FILE)
 $(DCB_CBFS)-type := raw
@@ -106,7 +112,7 @@ $(DCB_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(DCB_CBFS)
 
 ################################################################################
-DTB_FILE := $(X1P42100_BLOB)/boot/pre-ddr.dtb
+DTB_FILE := $(X1P42100_BLOB)/boot/$(DTB_DCB_BLOB_PATH)/pre-ddr.dtb
 DTB_CBFS := $(CONFIG_CBFS_PREFIX)/dtb
 $(DTB_CBFS)-file := $(DTB_FILE)
 $(DTB_CBFS)-type := raw
@@ -215,4 +221,4 @@ cbfs-files-y += $(GSI_FW_CBFS)
 endif # ifeq ($(CONFIG_USE_QC_BLOBS),y)
 
 endif # ifeq ($(CONFIG_QC_BLOBS_UPSTREAM),y)
-endif # ifeq ($(CONFIG_SOC_QUALCOMM_X1P42100),y)
+endif # ifeq ($(CONFIG_SOC_QUALCOMM_BASE),y)

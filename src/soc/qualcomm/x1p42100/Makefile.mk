@@ -98,14 +98,6 @@ $(QCLIB_CBFS)-compression := $(CBFS_PRERAM_COMPRESS_FLAG)
 cbfs-files-y += $(QCLIB_CBFS)
 
 ################################################################################
-PMIC_FILE := $(X1P42100_BLOB)/boot/Pmic.bin
-PMIC_CBFS := $(CONFIG_CBFS_PREFIX)/pmiccfg
-$(PMIC_CBFS)-file := $(PMIC_FILE)
-$(PMIC_CBFS)-type := raw
-$(PMIC_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
-cbfs-files-y += $(PMIC_CBFS)
-
-################################################################################
 DCB_FILE := $(X1P42100_BLOB)/boot/dcb.bin
 DCB_CBFS := $(CONFIG_CBFS_PREFIX)/dcb
 $(DCB_CBFS)-file := $(DCB_FILE)

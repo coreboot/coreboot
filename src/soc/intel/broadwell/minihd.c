@@ -10,6 +10,7 @@
 #include <soc/igd.h>
 #include <southbridge/intel/lynxpoint/hda_verb.h>
 
+#if CONFIG(AZALIA_USE_LEGACY_VERB_TABLE)
 static const u32 minihd_verb_table[] = {
 	/* coreboot specific header */
 	0x80862808,	/* Codec Vendor / Device ID: Intel Broadwell Mini-HD */
@@ -44,13 +45,56 @@ static const u32 minihd_verb_table[] = {
 	0x00878100,
 	0x00878100,
 };
+#else
+static const u32 display_audio_verbs[] = {
+	/* Enable 3rd Pin and Converter Widget */
+	0x00878101,
+
+	/* Pin Widget 5 - PORT B */
+	0x00571c10,
+	0x00571d00,
+	0x00571e56,
+	0x00571f18,
+
+	/* Pin Widget 6 - PORT C */
+	0x00671c20,
+	0x00671d00,
+	0x00671e56,
+	0x00671f18,
+
+	/* Pin Widget 7 - PORT D */
+	0x00771c30,
+	0x00771d00,
+	0x00771e56,
+	0x00771f18,
+
+	/* Disable 3rd Pin and Converter Widget */
+	0x00878100,
+
+	/* Dummy entries to fill out the table */
+	0x00878100,
+	0x00878100,
+};
+
+static struct azalia_codec minihd_codecs[] = {
+	{
+		.name         = "Intel Display Audio (HDMI/DP)",
+		.vendor_id    = 0x80862808,
+		.subsystem_id = 0x80860101,
+		.address      = 0,
+		.verbs        = display_audio_verbs,
+		.verb_count   = ARRAY_SIZE(display_audio_verbs),
+	},
+	{ /* terminator */ }
+};
+#endif
 
 static void minihd_init(struct device *dev)
 {
 	struct resource *res;
 	u32 reg32;
 	u8 *base;
-	int codec_mask, i;
+	int codec_mask;
 
 	/* Find base address */
 	res = probe_resource(dev, PCI_BASE_ADDRESS_0);
@@ -77,13 +121,18 @@ static void minihd_init(struct device *dev)
 	/* Init the codec and write the verb table */
 	codec_mask = hda_codec_detect(base);
 
+#if CONFIG(AZALIA_USE_LEGACY_VERB_TABLE)
 	if (codec_mask) {
-		for (i = 3; i >= 0; i--) {
+		for (int i = 3; i >= 0; i--) {
 			if (codec_mask & (1 << i))
 				azalia_codec_init(base, i, minihd_verb_table,
 						  sizeof(minihd_verb_table));
 		}
 	}
+#else
+	if (codec_mask)
+		azalia_custom_codecs_init(base, minihd_codecs, codec_mask);
+#endif
 
 	/* Set EM4/EM5 registers */
 	write32(base + 0x0100c, igd_get_reg_em4());

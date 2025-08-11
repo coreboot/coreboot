@@ -90,7 +90,6 @@ int mtk_display_init(void)
 	process_panel_quirks(&mtk_edp, panel);
 
 	if (panel->disp_path == DISP_PATH_EDP) {
-		mdelay(200);
 		if (mtk_edp_init(&mtk_edp, &edid) < 0) {
 			printk(BIOS_ERR, "%s: Failed to initialize eDP\n", __func__);
 			return -1;

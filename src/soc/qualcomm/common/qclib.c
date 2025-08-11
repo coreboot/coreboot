@@ -252,9 +252,10 @@ void qclib_load_and_run(void)
 	if (data_size < 0) {
 		printk(BIOS_ERR, "Unable to load previous training data.\n");
 		memset(_ddr_training, 0, REGION_SIZE(ddr_training));
+		data_size = REGION_SIZE(ddr_training);
 	}
 	qclib_add_if_table_entry(QCLIB_TE_DDR_TRAINING_DATA,
-				 _ddr_training, REGION_SIZE(ddr_training), 0);
+			_ddr_training, data_size, 0);
 
 	/* Address and size of this entry will be filled in by QcLib. */
 	qclib_add_if_table_entry(QCLIB_TE_MEM_CHIP_INFO, NULL, 0, 0);

@@ -26,7 +26,10 @@ DECLARE_REGION(dram_modem_extra)
 DECLARE_REGION(dram_wlan)
 DECLARE_REGION(dram_wpss)
 DECLARE_REGION(shrm)
+DECLARE_REGION(dram_cpucp_dtbs)
 DECLARE_REGION(dram_cpucp)
 DECLARE_REGION(dram_modem)
+DECLARE_REGION(dram_tz)
+DECLARE_REGION(dram_tz_rem)
 
 #endif // _SOC_QUALCOMM_SYMBOLS_COMMON_H_

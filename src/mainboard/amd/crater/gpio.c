@@ -49,6 +49,12 @@ static const struct soc_amd_gpio gpio_set_stage_ram[] = {
 	/*MDIO1_SDA*/
 	PAD_NF(GPIO_23, MDIO1_SDA, PULL_DOWN),
 
+	/* Enable UART 1 */
+	/* UART1_TXD */
+	PAD_NF(GPIO_140, UART1_TXD, PULL_NONE),
+	/* UART1_RXD */
+	PAD_NF(GPIO_142, UART1_RXD, PULL_NONE),
+
 	/* Enable UART 0 */
 	/* UART0_RXD */
 	PAD_NF(GPIO_141, UART0_RXD, PULL_NONE),

@@ -32,4 +32,12 @@ DECLARE_REGION(dram_modem)
 DECLARE_REGION(dram_tz)
 DECLARE_REGION(dram_tz_rem)
 
+/*
+ * DDR_SPACE (2 GB) aka `_dram`:  0x80000000 - 0x100000000
+ * DDR_SPACE_1 (30 GB) aka `_dram_space_1`: 0x880000000 - 0x1000000000
+ * DDR_SPACE_2 (480 GB) aka `dram_space_2`: 0x8800000000 - 0x10000000000
+ */
+DECLARE_OPTIONAL_REGION(dram_space_1)
+DECLARE_OPTIONAL_REGION(dram_space_2)
+
 #endif // _SOC_QUALCOMM_SYMBOLS_COMMON_H_

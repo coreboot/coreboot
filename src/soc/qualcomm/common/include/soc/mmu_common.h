@@ -12,6 +12,7 @@
 
 static struct region * const ddr_region = (struct region *)_ddr_information;
 
+struct region *qc_get_soc_dram_space_config(size_t ddr_size, int *count);
 void soc_mmu_dram_config_post_dram_init(void);
 void qc_mmu_dram_config_post_dram_init(size_t ddr_size);
 bool soc_modem_carve_out(void **start, void **end);

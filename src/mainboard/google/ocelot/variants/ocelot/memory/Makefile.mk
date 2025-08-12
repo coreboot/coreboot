@@ -4,4 +4,4 @@
 # ./util/spd_tools/bin/part_id_gen PTL lp5 src/mainboard/google/ocelot/variants/ocelot/memory src/mainboard/google/ocelot/variants/ocelot/memory/mem_parts_used.txt
 
 SPD_SOURCES =
-SPD_SOURCES += spd/lp5/set-0/spd-7.hex      # ID = 0(0b0000)  Parts = H58G56BK7BX068
+SPD_SOURCES += spd/lp5/set-0/spd-11.hex      # ID = 0(0b0000)  Parts = H58G56BK8BX068

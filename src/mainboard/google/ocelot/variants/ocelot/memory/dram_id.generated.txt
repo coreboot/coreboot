@@ -4,4 +4,4 @@
 # ./util/spd_tools/bin/part_id_gen PTL lp5 src/mainboard/google/ocelot/variants/ocelot/memory src/mainboard/google/ocelot/variants/ocelot/memory/mem_parts_used.txt
 
 DRAM Part Name                 ID to assign
-H58G56BK7BX068                 0 (0000)
+H58G56BK8BX068                 0 (0000)

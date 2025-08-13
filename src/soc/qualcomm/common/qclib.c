@@ -117,8 +117,7 @@ static void write_ddr_information(struct qclib_cb_if_table_entry *te)
 	*ddr_region = region_create(te->blob_address, ddr_size * MiB);
 
 	/* Use DDR info to configure MMU */
-	qc_mmu_dram_config_post_dram_init(
-		(void *)(uintptr_t)region_offset(ddr_region), region_sz(ddr_region));
+	qc_mmu_dram_config_post_dram_init(region_sz(ddr_region));
 }
 
 static void write_qclib_log_to_cbmemc(struct qclib_cb_if_table_entry *te)

@@ -60,6 +60,8 @@
 #define SRAM_END(addr) REGION_END(sram, addr)
 
 #define DRAM_START(addr) REGION_START(dram, addr)
+/* This should rarely be used because DRAM-size is usually not compile-time constant. */
+#define DRAM_END(addr) REGION_END(dram, addr)
 
 #define TIMESTAMP(addr, size) \
 	REGION(timestamp, addr, size, 8) \

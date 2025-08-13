@@ -558,6 +558,7 @@ static struct device_operations fast_spi_dev_ops = {
 	.acpi_fill_ssdt			= fast_spi_fill_ssdt,
 	.acpi_name			= fast_spi_acpi_name,
 	.ops_pci			= &pci_dev_ops_pci,
+	.scan_bus			= scan_static_bus,
 };
 
 static const unsigned short pci_device_ids[] = {

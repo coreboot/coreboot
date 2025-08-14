@@ -6,9 +6,13 @@
 #include <soc/aop_common.h>
 #include <soc/qclib_common.h>
 #include <soc/shrm.h>
+#include <soc/watchdog.h>
 
 void platform_romstage_main(void)
 {
+	/* Watchdog must be checked first to avoid erasing watchdog info later. */
+	check_wdog();
+
 	shrm_fw_load_reset();
 
 	/* QCLib: DDR init & train */

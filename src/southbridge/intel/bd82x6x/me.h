@@ -293,7 +293,7 @@ void intel_early_me_status(void);
 int intel_early_me_init(void);
 int intel_early_me_uma_size(void);
 int intel_early_me_init_done(u8 status);
-
+bool intel_early_me_cpu_replaced(void);
 void intel_me_finalize_smm(void);
 
 typedef struct {

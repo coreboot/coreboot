@@ -411,6 +411,9 @@ static void init_dram_ddr3(int s3resume, const u32 cpuid)
 		fast_boot = s3resume;
 	}
 
+	if (fast_boot && intel_early_me_cpu_replaced())
+		fast_boot = false;
+
 	if (fast_boot) {
 		printk(BIOS_DEBUG, "Trying stored timings.\n");
 		memcpy(&ctrl, ctrl_cached, sizeof(ctrl));

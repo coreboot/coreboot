@@ -85,6 +85,56 @@ int intel_early_me_uma_size(void)
 	return 0;
 }
 
+/**
+ * Check if ME reports that CPU has been replaced.
+ *
+ * @return TRUE when CPU was replaced and full
+ *         memory training is required.
+ */
+bool intel_early_me_cpu_replaced(void)
+{
+	u32 millisec;
+	union me_gmes gmes;
+
+	gmes.raw = pci_read_config32(PCH_ME_DEV, PCI_ME_GMES);
+
+	/*
+	 * Poll CPU replaced status until 50 ms have elapsed since boot.
+	 * The ME FW should've had enough time to wake up at this point.
+	 */
+	millisec = get_us_since_boot() / 1000;
+	while (!gmes.cpu_replaced_valid && millisec < 50) {
+		udelay(1000);
+		gmes.raw = pci_read_config32(PCH_ME_DEV, PCI_ME_GMES);
+		millisec++;
+	}
+
+	if (gmes.cpu_replaced_valid) {
+		if (gmes.warm_rst_req_for_df) {
+			/*
+			 * DF (Dynamic Fusing) is when the ME updates the CAPID0
+			 * register in the host bridge depending on the PCH SKU.
+			 */
+			printk(BIOS_NOTICE, "CPU was replaced & warm reset required...\n");
+
+			/* Indicate DRAM init not done for MRC */
+			pci_and_config8(PCH_LPC_DEV, GEN_PMCON_2, 0x7f);
+			set_global_reset(0);
+			system_reset();
+			return true;
+		}
+
+		if (gmes.cpu_replaced_sts) {
+			printk(BIOS_NOTICE, "Full memory training required\n");
+			return true;
+		}
+	} else {
+		/* CPU replaced is still not valid (bad ME FW?) */
+		printk(BIOS_NOTICE, "CPU replaced is not valid, assuming CPU was not replaced...\n");
+	}
+	return false;
+}
+
 int intel_early_me_init_done(u8 status)
 {
 	u8 reset, errorcode, opmode;
@@ -127,28 +177,6 @@ int intel_early_me_init_done(u8 status)
 	printk(BIOS_NOTICE, "ME:  Current state   : 0x%x\n", (me_fws2 & 0xff0000) >> 16);
 	printk(BIOS_NOTICE, "ME:  Current PM event: 0x%x\n", (me_fws2 & 0xf000000) >> 24);
 	printk(BIOS_NOTICE, "ME:  Progress code   : 0x%x\n", (me_fws2 & 0xf0000000) >> 28);
-
-	/* Poll CPU replaced for 50ms */
-	millisec = 0;
-	while ((((me_fws2 & 0x100) >> 8) == 0) && millisec < 50) {
-		udelay(1000);
-		me_fws2 = pci_read_config32(PCH_ME_DEV, PCI_ME_GMES);
-		millisec++;
-	}
-	if (millisec >= 50 || ((me_fws2 & 0x100) >> 8) == 0x0) {
-		printk(BIOS_NOTICE, "Waited long enough, or CPU was not replaced, continue...\n");
-	} else if ((me_fws2 & 0x100) == 0x100) {
-		if ((me_fws2 & 0x80) == 0x80) {
-			printk(BIOS_NOTICE, "CPU was replaced & warm reset required...\n");
-			pci_and_config16(PCH_LPC_DEV, GEN_PMCON_2, ~0x80);
-			set_global_reset(0);
-			system_reset();
-		}
-
-		if (((me_fws2 & 0x10) == 0x10) && (me_fws2 & 0x80) == 0x00) {
-			printk(BIOS_NOTICE, "Full training required\n");
-		}
-	}
 
 	printk(BIOS_NOTICE, "PASSED! Tell ME that DRAM is ready\n");
 

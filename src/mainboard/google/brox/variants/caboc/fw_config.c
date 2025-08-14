@@ -49,8 +49,12 @@ static const struct pad_config lte_disable_pads[] = {
 static const struct pad_config nvme_disable_pads[] = {
 	/* GPP_F9 : SSD_PERST_L */
 	PAD_NC(GPP_F9, NONE),
+	/* GPP_F20 : EN_PP3300_SSD */
+	PAD_NC(GPP_F20, NONE),
 	/* GPP_D5 : SSD_CLKREQ_ODL */
 	PAD_NC(GPP_D5, NONE),
+	/* GPP_H23 : SSD_CLKREQ5_ODL */
+	PAD_NC(GPP_H23, NONE),
 };
 
 static void fw_config_handle(void *unused)

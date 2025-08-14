@@ -251,6 +251,13 @@ chip soc/intel/alderlake
 				.flags = PCIE_RP_LTR | PCIE_RP_AER,
 				.pcie_rp_aspm = ASPM_L1,
 			}"
+			chip soc/intel/common/block/pcie/rtd3
+				register "is_storage" = "true"
+				register "enable_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_HIGH(GPP_F20)"
+				register "reset_gpio" = "ACPI_GPIO_OUTPUT_ACTIVE_LOW(GPP_F9)"
+				register "srcclk_pin" = "0"
+				device generic 0 on end
+			end
 			probe STORAGE STORAGE_NVME
 			probe unprovisioned
 		end

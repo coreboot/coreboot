@@ -65,6 +65,8 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_CFG_NF_LOCK(GPP_F16, NONE, NF4, LOCK_CONFIG),
 	/* GPP_F19 : SRCCLKREQ6 ==> PCIE_CLKREQ_WWAN */
 	PAD_CFG_NF(GPP_F19, NONE, DEEP, NF1),
+	/* GPP_F20 : [NF1: Reserved NF6: USB_C_GPP_F20] ==> EN_PP3300_SSD */
+	PAD_CFG_GPO(GPP_F20, 1, DEEP),
 	/* F21 : [NF1: Reserved NF6: USB_C_GPP_F21] ==> WWAN_OFF#(WWAN_FCPO_L)*/
 	PAD_CFG_GPO(GPP_F21, 1, DEEP),
 
@@ -100,6 +102,8 @@ static const struct pad_config early_gpio_table[] = {
 	PAD_CFG_GPI_LOCK(GPP_E8, NONE, LOCK_CONFIG),
 	/* GPP_F9 : [NF1: BOOTMPC NF6: USB_C_GPP_F9] ==> SSD_PERST_L */
 	PAD_CFG_GPO(GPP_F9, 0, DEEP),
+	/* GPP_F20 : [NF1: Reserved NF6: USB_C_GPP_F20] ==> EN_PP3300_SSD */
+	PAD_CFG_GPO(GPP_F20, 1, DEEP),
 	/* GPP_H8 : [NF1: I2C4_SDA NF2: CNV_MFUART2_RXD NF6: USB_C_GPP_H8] ==> PCH_I2C_GSC_SDA */
 	PAD_CFG_NF(GPP_H8, NONE, DEEP, NF1),
 	/* GPP_H9 : [NF1: I2C4_SCL NF2: CNV_MFUART2_TXD] ==> PCH_I2C_GSC_SCL */

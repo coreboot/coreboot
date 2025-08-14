@@ -12,16 +12,24 @@ static struct device_operations pci_domain_ops = {
 	.scan_bus = &pci_host_bridge_scan_bus,
 	.enable = &qcom_setup_pcie_host,
 };
+
 static void soc_read_resources(struct device *dev)
 {
-	ram_range(dev, 0, (uintptr_t)region_offset(ddr_region), region_sz(ddr_region));
-	reserved_ram_range(dev, 1, (uintptr_t)_dram_cpucp_dtbs, REGION_SIZE(dram_cpucp_dtbs));
-	reserved_ram_range(dev, 2, (uintptr_t)_dram_cpucp, REGION_SIZE(dram_cpucp));
+	int index = 0;
+	int count;
+	struct region *config = qc_get_soc_dram_space_config(region_sz(ddr_region),
+				 &count);
 
-	reserved_ram_range(dev, 3, (uintptr_t)_dram_tz, REGION_SIZE(dram_tz));
-	reserved_ram_range(dev, 4, (uintptr_t)_dram_tz_rem, REGION_SIZE(dram_tz_rem));
+	for (int i = 0; i < count; i++)
+		ram_range(dev, index++, (uintptr_t)config[i].offset, config[i].size);
 
-	reserved_ram_range(dev, 5, (uintptr_t)_dram_aop, REGION_SIZE(dram_aop));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_cpucp_dtbs, REGION_SIZE(dram_cpucp_dtbs));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_cpucp, REGION_SIZE(dram_cpucp));
+
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_tz, REGION_SIZE(dram_tz));
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_tz_rem, REGION_SIZE(dram_tz_rem));
+
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_aop, REGION_SIZE(dram_aop));
 }
 
 static void soc_init(struct device *dev)

@@ -65,4 +65,23 @@ SECTIONS
 	REGION(dram_tz, 0xD8000000, 0xD6000, 0x1000)
 	BL31(0xD80D6000, 1M)
 	REGION(dram_tz_rem, 0xD81D6000, 0x72EA000, 0x1000)
+	DRAM_END(0x100000000)
+
+	/*
+	 * Define the address range limits for fragmented DRAM regions.
+	 *
+	 * These regions, `dram_space_1` and `dram_space_2`, are used to map physical
+	 * memory beyond the initial `_dram` region. The MMU configuration logic in
+	 * `mmu.c` uses `REGION_SIZE()` to dynamically size these ranges based on the
+	 * total system DRAM capacity, which is determined by the QCLib.
+	 *
+	 * Example for a 16GB DRAM system:
+	 * - `_dram` (2GB):          0x80000000 - 0x100000000
+	 * - `_dram_space_1` (14GB): 0x880000000 - 0x440000000 (0x880000000 + 14GB)
+	 *
+	 * Note: The example memory addresses are for illustration and depend on the
+	 * platform's specific memory map.
+	 */
+	REGION(dram_space_1, 0x880000000, 0x780000000, 4K)
+	REGION(dram_space_2, 0x8800000000, 0x7800000000, 4K)
 }

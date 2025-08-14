@@ -40,6 +40,7 @@ romstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 ################################################################################
 ramstage-y += soc.c
 ramstage-y += cbmem.c
+ramstage-y += ../common/mmu.c
 ramstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
 ramstage-$(CONFIG_PCI) += ../common/pcie_common.c
 ramstage-$(CONFIG_PCI) += pcie.c

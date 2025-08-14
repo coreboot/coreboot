@@ -31,6 +31,8 @@ DECLARE_REGION(dram_cpucp)
 DECLARE_REGION(dram_modem)
 DECLARE_REGION(dram_tz)
 DECLARE_REGION(dram_tz_rem)
+DECLARE_REGION(dram_ramdump)
+DECLARE_REGION(dram_smem)
 
 /*
  * DDR_SPACE (2 GB) aka `_dram`:  0x80000000 - 0x100000000

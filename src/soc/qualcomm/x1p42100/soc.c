@@ -23,13 +23,16 @@ static void soc_read_resources(struct device *dev)
 	for (int i = 0; i < count; i++)
 		ram_range(dev, index++, (uintptr_t)config[i].offset, config[i].size);
 
-	reserved_ram_range(dev, index++, (uintptr_t)_dram_cpucp_dtbs, REGION_SIZE(dram_cpucp_dtbs));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_cpucp, REGION_SIZE(dram_cpucp));
+
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_ramdump, REGION_SIZE(dram_ramdump));
 
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_tz, REGION_SIZE(dram_tz));
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_tz_rem, REGION_SIZE(dram_tz_rem));
 
 	reserved_ram_range(dev, index++, (uintptr_t)_dram_aop, REGION_SIZE(dram_aop));
+
+	reserved_ram_range(dev, index++, (uintptr_t)_dram_smem, REGION_SIZE(dram_smem));
 }
 
 static void soc_init(struct device *dev)

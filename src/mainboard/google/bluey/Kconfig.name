@@ -10,3 +10,6 @@ config BOARD_GOOGLE_QUENBI
 
 config BOARD_GOOGLE_BLUEYH
 	bool "->  BlueyH"
+
+config BOARD_GOOGLE_QUENBIH
+	bool "->  QuenbiH"

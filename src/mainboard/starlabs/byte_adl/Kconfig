@@ -89,7 +89,7 @@ config ME_BIN_PATH
 
 config PL4_WATTS
 	int
-	default 84 if BOARD_STARLABS_BYTE_TWL
+	default 65 if BOARD_STARLABS_BYTE_TWL
 	default 36
 
 config POWER_STATE_DEFAULT_ON_AFTER_FAILURE

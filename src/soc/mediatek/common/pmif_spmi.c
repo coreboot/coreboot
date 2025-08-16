@@ -104,14 +104,16 @@ static void pmif_spmi_enable(struct pmif *arb)
 	pmif_spmi_config(arb);
 
 	/*
-	 * set bytecnt max limitation.
-	 * hw bytecnt indicate when we set 0, it can send 1 byte;
-	 * set 1, it can send 2 byte.
+	 * Set max bytecnt. For each 32-bit reg, 4 bits indicate one channel.
+	 * 0x0 means max bytecnt = 1.
+	 * 0x1 means max bytecnt = 2.
+	 * Here we set max bytecnt to 2 for all channels.
 	 */
-	write32(&arb->mtk_pmif->inf_max_bytecnt_per_0, 0);
-	write32(&arb->mtk_pmif->inf_max_bytecnt_per_1, 0);
-	write32(&arb->mtk_pmif->inf_max_bytecnt_per_2, 0);
-	write32(&arb->mtk_pmif->inf_max_bytecnt_per_3, 0);
+
+	write32(&arb->mtk_pmif->inf_max_bytecnt_per_0, 0x11111111);
+	write32(&arb->mtk_pmif->inf_max_bytecnt_per_1, 0x11111111);
+	write32(&arb->mtk_pmif->inf_max_bytecnt_per_2, 0x11111111);
+	write32(&arb->mtk_pmif->inf_max_bytecnt_per_3, 0x11111111);
 
 	/* Add latency limitation */
 	write32(&arb->mtk_pmif->lat_cnter_en, PMIF_SPMI_INF);

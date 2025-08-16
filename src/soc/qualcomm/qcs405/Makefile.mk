@@ -27,5 +27,6 @@ ramstage-y += usb.c
 ################################################################################
 
 CPPFLAGS_common += -Isrc/soc/qualcomm/qcs405/include
+CPPFLAGS_common += -Isrc/soc/qualcomm/common/include
 
 endif

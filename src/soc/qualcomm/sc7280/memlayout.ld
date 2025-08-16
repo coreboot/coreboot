@@ -2,18 +2,7 @@
 
 #include <memlayout.h>
 #include <arch/header.ld>
-
-/* SYSTEM_IMEM : 0x14680000 - 0x146AB000 */
-#define SSRAM_START(addr) REGION_START(ssram, addr)
-#define SSRAM_END(addr) REGION_END(ssram, addr)
-
-/* BOOT_IMEM   : 0x14800000 - 0x14980000 */
-#define BSRAM_START(addr) REGION_START(bsram, addr)
-#define BSRAM_END(addr) REGION_END(bsram, addr)
-
-/* AOP : 0x0B000000 - 0x0B100000 */
-#define AOPSRAM_START(addr) REGION_START(aopsram, addr)
-#define AOPSRAM_END(addr) REGION_END(aopsram, addr)
+#include <soc/memlayout.h>
 
 SECTIONS
 {

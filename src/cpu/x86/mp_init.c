@@ -424,8 +424,7 @@ static enum cb_err apic_wait_timeout(int total_delay, int delay_step)
 	return CB_SUCCESS;
 }
 
-/* Send Startup IPI to APs */
-static enum cb_err send_sipi_to_aps(int ap_count, atomic_t *num_aps, int sipi_vector)
+static enum cb_err icr_wait_timeout(void)
 {
 	if (lapic_busy()) {
 		printk(BIOS_DEBUG, "Waiting for ICR not to be busy...\n");
@@ -435,6 +434,15 @@ static enum cb_err send_sipi_to_aps(int ap_count, atomic_t *num_aps, int sipi_ve
 		}
 		printk(BIOS_DEBUG, "done.\n");
 	}
+
+	return CB_SUCCESS;
+}
+
+/* Send Startup IPI to APs */
+static enum cb_err send_sipi_to_aps(int ap_count, atomic_t *num_aps, int sipi_vector)
+{
+	if (icr_wait_timeout() != CB_SUCCESS)
+		return CB_ERR;
 
 	lapic_send_ipi_others(LAPIC_INT_ASSERT | LAPIC_MT_STARTUP | sipi_vector);
 	printk(BIOS_DEBUG, "Waiting for SIPI to complete...\n");
@@ -466,14 +474,8 @@ static enum cb_err start_aps(struct bus *cpu_bus, int ap_count, atomic_t *num_ap
 
 	printk(BIOS_DEBUG, "Attempting to start %d APs\n", ap_count);
 
-	if (lapic_busy()) {
-		printk(BIOS_DEBUG, "Waiting for ICR not to be busy...\n");
-		if (apic_wait_timeout(1000 /* 1 ms */, 50) != CB_SUCCESS) {
-			printk(BIOS_ERR, "timed out. Aborting.\n");
-			return CB_ERR;
-		}
-		printk(BIOS_DEBUG, "done.\n");
-	}
+	if (icr_wait_timeout() != CB_SUCCESS)
+		return CB_ERR;
 
 	/* Send INIT IPI to all but self. */
 	lapic_send_ipi_others(LAPIC_INT_ASSERT | LAPIC_MT_INIT);
@@ -651,14 +653,8 @@ static enum cb_err mp_init(struct bus *cpu_bus, struct mp_params *p)
 
 void smm_initiate_relocation_parallel(void)
 {
-	if (lapic_busy()) {
-		printk(BIOS_DEBUG, "Waiting for ICR not to be busy...");
-		if (apic_wait_timeout(1000 /* 1 ms */, 50) != CB_SUCCESS) {
-			printk(BIOS_DEBUG, "timed out. Aborting.\n");
-			return;
-		}
-		printk(BIOS_DEBUG, "done.\n");
-	}
+	if (icr_wait_timeout() != CB_SUCCESS)
+		return;
 
 	lapic_send_ipi_self(LAPIC_INT_ASSERT | LAPIC_MT_SMI);
 

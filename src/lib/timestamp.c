@@ -274,6 +274,16 @@ uint32_t get_us_since_boot(void)
 {
 	struct timestamp_table *ts = timestamp_table_get();
 
+	/*
+	 * Bootbock size is limited on some platforms, thus only
+	 * enable get_us_since_boot() in PRERAM stages on x86 platforms
+	 * for now. When get_us_since_boot() isn't used in preram the linker
+	 * will drop timestamp_tick_freq_mhz().
+	 */
+	if (CONFIG(ARCH_X86) && ENV_ROMSTAGE_OR_BEFORE &&
+	    ts && ts->tick_freq_mhz == 0)
+		ts->tick_freq_mhz = timestamp_tick_freq_mhz();
+
 	if (ts == NULL || ts->tick_freq_mhz == 0)
 		return 0;
 	return (timestamp_get() - ts->base_time) / ts->tick_freq_mhz;

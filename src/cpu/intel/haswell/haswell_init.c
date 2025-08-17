@@ -579,6 +579,10 @@ void mp_init_cpus(struct bus *cpu_bus)
 	cpu_cluster = cpu_bus->dev;
 	/* TODO: Handle mp_init_with_smm failure? */
 	mp_init_with_smm(cpu_bus, &mp_ops);
+
+	/* pre_mp_init made the flash not cacheable. Reset to WP for performance. */
+	mtrr_use_temp_range(CACHE_ROM_BASE, CAR_CACHE_ROM_SIZE,
+			    MTRR_TYPE_WRPROT);
 }
 
 static struct device_operations cpu_dev_ops = {

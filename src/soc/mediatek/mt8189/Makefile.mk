@@ -12,6 +12,7 @@ all-y += ../common/uart.c
 
 bootblock-y += ../common/bootblock.c bootblock.c
 bootblock-y += efuse.c
+bootblock-y += ../common/lastbus_v2.c lastbus.c
 bootblock-y += ../common/mmu_operations.c
 bootblock-y += ../common/mtcmos.c mtcmos.c
 bootblock-y += ../common/wdt.c ../common/wdt_req.c wdt.c

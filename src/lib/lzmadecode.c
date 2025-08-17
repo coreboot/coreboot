@@ -25,6 +25,17 @@
   #define __lzma_attribute_Ofast__
 #endif
 
+/* When the input stream is covered by an MTRR the "prefetch" instruction
+ * will load the next chunk of data into the CPU cache ahead of time.
+ * On a 100MBit/s SPI interface this reduces the time spent in I/O wait
+ * by 5usec for every cache-line (64bytes) prefetched.
+ */
+#if CONFIG(SSE)
+  #define __lzma_prefetch(x) {asm volatile("prefetchnta %0" :: "m" (x));}
+#else
+  #define __lzma_prefetch(x)
+#endif
+
 #include "lzmadecode.h"
 #include <types.h>
 
@@ -68,6 +79,11 @@
 		RC_TEST;				\
 		Range <<= 8;				\
 		Code = (Code << 8) | RC_READ_BYTE;	\
+		if (!((uintptr_t)Buffer & 63)) {		\
+			if ((BufferLim - Buffer) >= 128) {	\
+				__lzma_prefetch(Buffer[64]);	\
+			}					\
+		}					\
 	}
 
 #define IfBit0(p)						\

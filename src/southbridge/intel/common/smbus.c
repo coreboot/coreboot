@@ -2,6 +2,7 @@
 
 #include <arch/io.h>
 #include <console/console.h>
+#include <delay.h>
 #include <device/smbus_def.h>
 #include <device/smbus_host.h>
 #include <types.h>
@@ -65,11 +66,6 @@
 #define BLOCK_READ	0
 #define BLOCK_WRITE	(1 << 0)
 #define BLOCK_I2C	(1 << 1)
-
-static void smbus_delay(void)
-{
-	inb(0x80);
-}
 
 static void host_outb(uintptr_t base, u8 reg, u8 value)
 {
@@ -142,7 +138,7 @@ static int setup_command(uintptr_t base, u8 ctrl, u8 xmitadd)
 	u8 host_busy;
 
 	do {
-		smbus_delay();
+		udelay(1);
 		host_busy = host_inb(base, SMBHSTSTAT) & SMBHSTSTS_HOST_BUSY;
 	} while (--loops && host_busy);
 
@@ -172,7 +168,7 @@ static int execute_command(uintptr_t base)
 
 	/* Poll for it to start. */
 	do {
-		smbus_delay();
+		udelay(1);
 
 		/* If we poll too slow, we could miss HOST_BUSY flag
 		 * set and detect INTR or x_ERR flags instead here.
@@ -194,7 +190,7 @@ static int complete_command(uintptr_t base)
 	u8 status;
 
 	do {
-		smbus_delay();
+		udelay(1);
 		status = host_inb(base, SMBHSTSTAT);
 	} while (--loops && !host_completed(status));
 

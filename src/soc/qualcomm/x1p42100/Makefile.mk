@@ -210,6 +210,13 @@ $(CPUCP_META_CBFS)-type := raw
 $(CPUCP_META_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(CPUCP_META_CBFS)
 
+################################################################################
+CPUCP_DTBS_FILE := $(X1P42100_BLOB)/cpucp/cpucp_dtbs.elf
+CPUCP_DTBS_CBFS := $(CONFIG_CBFS_PREFIX)/cpucp_dtbs
+$(CPUCP_DTBS_CBFS)-file := $(CPUCP_DTBS_FILE)
+$(CPUCP_DTBS_CBFS)-type := payload
+$(CPUCP_DTBS_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(CPUCP_DTBS_CBFS)
 
 ################################################################################
 SHRM_FILE := $(X1P42100_BLOB)/shrm/shrm.elf

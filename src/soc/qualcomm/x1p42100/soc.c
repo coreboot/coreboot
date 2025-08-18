@@ -5,6 +5,7 @@
 #include <soc/mmu_common.h>
 #include <soc/symbols_common.h>
 #include <soc/pcie.h>
+#include <soc/cpucp.h>
 
 static struct device_operations pci_domain_ops = {
 	.read_resources = &qcom_pci_domain_read_resources,
@@ -37,7 +38,7 @@ static void soc_read_resources(struct device *dev)
 
 static void soc_init(struct device *dev)
 {
-	/* placeholder */
+	cpucp_fw_load_reset();
 }
 
 static struct device_operations soc_ops = {

@@ -19,7 +19,7 @@ const struct emi_eeprom_vpd *get_emi_eeprom_vpd(void)
 	static union {
 		struct emi_eeprom_vpd layout;
 		uint8_t raw[sizeof(struct emi_eeprom_vpd)];
-	} vpd = {0};
+	} vpd = {};
 
 	/* Check if cached VPD is valid */
 	if (vpd.layout.header.revision == VPD_LATEST_REVISION)

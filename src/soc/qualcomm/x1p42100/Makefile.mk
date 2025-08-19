@@ -167,6 +167,28 @@ $(AOP_META_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
 cbfs-files-y += $(AOP_META_CBFS)
 
 ################################################################################
+AOP_CFG_FILE := $(X1P42100_BLOB)/aop/aop_devcfg.mbn
+AOP_CFG_CBFS := $(CONFIG_CBFS_PREFIX)/aop_cfg
+$(AOP_CFG_CBFS)-file := $(AOP_CFG_FILE)
+$(AOP_CFG_CBFS)-type := payload
+$(AOP_CFG_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(AOP_CFG_CBFS)
+
+################################################################################
+# Rule to create aop_meta from aop_devcfg.mbn
+# This rule depends on aop_devcfg.mbn built and the extractor script existing.
+$(obj)/mainboard/$(MAINBOARDDIR)/aop_devcfg_meta: $(X1P42100_BLOB)/aop/aop_devcfg.mbn util/qualcomm/elf_segment_extractor.py
+	@echo "Extracting ELF headers and hash table segment from $< to $@"
+	@util/qualcomm/elf_segment_extractor.py --eh --pht --hashtable $< $@
+
+AOP_DEVCFG_META_FILE := $(obj)/mainboard/$(MAINBOARDDIR)/aop_devcfg_meta
+AOP_DEVCFG_META_CBFS := $(CONFIG_CBFS_PREFIX)/aop_devcfg_meta
+$(AOP_DEVCFG_META_CBFS)-file := $(AOP_DEVCFG_META_FILE)
+$(AOP_DEVCFG_META_CBFS)-type := raw
+$(AOP_DEVCFG_META_CBFS)-compression := $(CBFS_COMPRESS_FLAG)
+cbfs-files-y += $(AOP_DEVCFG_META_CBFS)
+
+################################################################################
 CPUCP_FILE := $(X1P42100_BLOB)/cpucp/cpucp.elf
 CPUCP_CBFS := $(CONFIG_CBFS_PREFIX)/cpucp
 $(CPUCP_CBFS)-file := $(CPUCP_FILE)

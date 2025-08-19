@@ -549,10 +549,11 @@ int mtk_edp_init(struct mtk_dp *mtk_dp, struct edid *edid)
 	dptx_init_variable(mtk_dp);
 	dptx_init_port(mtk_dp);
 
-	if (!dptx_hal_hpd_high(mtk_dp)) {
+	if (!wait_ms(HPD_WAIT_TIMEOUT_MS, dptx_hal_hpd_high(mtk_dp))) {
 		printk(BIOS_ERR, "HPD is low\n");
 		return -1;
 	}
+	mdelay(WAIT_AUX_READY_TIME_MS);
 
 	dptx_check_sinkcap(mtk_dp);
 

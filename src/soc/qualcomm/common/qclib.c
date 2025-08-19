@@ -88,6 +88,8 @@ const char *qclib_file_default(enum qclib_cbfs_file file)
 		return CONFIG_CBFS_PREFIX "/shrm_meta";
 	case QCLIB_CBFS_AOP_META:
 		return CONFIG_CBFS_PREFIX "/aop_meta";
+	case QCLIB_CBFS_AOP_DEVCFG_META:
+		return CONFIG_CBFS_PREFIX "/aop_devcfg_meta";
 	default:
 		die("unknown QcLib file %d", file);
 	}
@@ -331,6 +333,12 @@ void qclib_rerun(void)
 
 	init_qclib_cb_if_table(&qclib_cb_if_table);
 
+	struct prog aop_cfg_fw_prog =
+				PROG_INIT(PROG_PAYLOAD, CONFIG_CBFS_PREFIX "/aop_cfg");
+
+	if (!selfload(&aop_cfg_fw_prog))
+		die("SOC image: AOP load failed");
+
 	/* Attempt to load aop_meta Blob (reuse the qc_blob_meta region). */
 	data_size = cbfs_load(qclib_file(QCLIB_CBFS_AOP_META),
 			_qc_blob_meta, REGION_SIZE(qc_blob_meta));
@@ -340,6 +348,16 @@ void qclib_rerun(void)
 	}
 
 	qclib_add_if_table_entry(QCLIB_TE_AOP_META_SETTINGS, _qc_blob_meta, data_size, 0);
+
+	/* Attempt to load aop_devcfg_meta Blob. */
+	data_size = cbfs_load(qclib_file(QCLIB_CBFS_AOP_DEVCFG_META),
+			_aop_blob_meta, REGION_SIZE(aop_blob_meta));
+	if (!data_size) {
+		printk(BIOS_ERR, "[%s] /aop_devcfg_meta failed\n", __func__);
+		goto fail;
+	}
+
+	qclib_add_if_table_entry(QCLIB_TE_AOP_DEVCFG_META_SETTINGS, _aop_blob_meta, data_size, 0);
 
 	/* Set up the system and jump into QcLib */
 	printk(BIOS_DEBUG, "\n\n\nRe-enter QCLib to bring up AOP\n");

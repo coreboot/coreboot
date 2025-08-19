@@ -26,6 +26,7 @@
 #define QCLIB_TE_DTB_SETTINGS      "dtb"
 #define QCLIB_TE_SHRM_META_SETTINGS	"shrm_metadata"
 #define QCLIB_TE_AOP_META_SETTINGS      "aop_metadata"
+#define QCLIB_TE_AOP_DEVCFG_META_SETTINGS	"aop_cfg_metadata"
 
 /* BA_BMASK_VALUES (blob_attributes bit mask values) */
 #define QCLIB_BA_SAVE_TO_STORAGE 0x00000001
@@ -38,6 +39,7 @@ enum qclib_cbfs_file {
 	QCLIB_CBFS_DTB,
 	QCLIB_CBFS_SHRM_META,
 	QCLIB_CBFS_AOP_META,
+	QCLIB_CBFS_AOP_DEVCFG_META,
 	QCLIB_CBFS_MAX
 };
 

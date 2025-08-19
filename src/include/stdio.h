@@ -9,6 +9,6 @@
 
 #include <stddef.h>
 
-int snprintf(char *buf, size_t size, const char *fmt, ...);
+int __printf(3, 4) snprintf(char *buf, size_t size, const char *fmt, ...);
 
 #endif /* STDIO_H */

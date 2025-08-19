@@ -2,7 +2,11 @@ chip soc/intel/pantherlake
 
 	device cpu_cluster 0 on end
 
-	# TODO: Add WCL power limits
+	register "power_limits_config[WCL_CORE]" = "{
+		.tdp_pl1_override = 15,
+		.tdp_pl2_override = 35,
+		.tdp_pl4 = 93,
+	}"
 
 	# Reduce the size of BasicMemoryTests to speed up the boot time.
 	register "lower_basic_mem_test_size" = "true"

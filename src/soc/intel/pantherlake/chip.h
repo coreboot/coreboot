@@ -58,6 +58,7 @@ enum soc_intel_pantherlake_power_limits {
 	PTL_H_1_CORE,
 	PTL_H_2_CORE,
 	PTL_H_3_CORE,
+	WCL_CORE,
 	PTL_POWER_LIMITS_COUNT,
 };
 
@@ -74,7 +75,12 @@ enum soc_intel_pantherlake_sku {
 	PTL_H484_SKU,
 	PTL_H4XE_SKU,
 	PTL_H204_SKU,
-	MAX_PTL_SKUS
+	WCL_SKU_1,
+	WCL_SKU_2,
+	WCL_SKU_3,
+	WCL_SKU_4,
+	WCL_SKU_5,
+	MAX_PTL_SKUS,
 };
 
 /* Mapping of different SKUs based on CPU ID and TDP values */
@@ -98,6 +104,11 @@ static const struct soc_intel_pantherlake_power_map {
 	{ PCI_DID_INTEL_PTL_H_ID_6, PTL_H_2_CORE, TDP_25W, PTL_H4XE_SKU },
 	{ PCI_DID_INTEL_PTL_H_ID_7, PTL_H_2_CORE, TDP_25W, PTL_H4XE_SKU },
 	{ PCI_DID_INTEL_PTL_H_ID_8, PTL_H_2_CORE, TDP_25W, PTL_H12XE_SKU },
+	{ PCI_DID_INTEL_WCL_ID_1, WCL_CORE, TDP_15W, WCL_SKU_1},
+	{ PCI_DID_INTEL_WCL_ID_2, WCL_CORE, TDP_15W, WCL_SKU_2},
+	{ PCI_DID_INTEL_WCL_ID_3, WCL_CORE, TDP_15W, WCL_SKU_3},
+	{ PCI_DID_INTEL_WCL_ID_4, WCL_CORE, TDP_15W, WCL_SKU_4},
+	{ PCI_DID_INTEL_WCL_ID_5, WCL_CORE, TDP_15W, WCL_SKU_5},
 };
 
 /* Types of display ports */

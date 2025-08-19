@@ -44,6 +44,8 @@ static struct {
 	{ PCI_DID_INTEL_WCL_ID_1, "Wildcatlake" },
 	{ PCI_DID_INTEL_WCL_ID_2, "Wildcatlake" },
 	{ PCI_DID_INTEL_WCL_ID_3, "Wildcatlake" },
+	{ PCI_DID_INTEL_WCL_ID_4, "Wildcatlake" },
+	{ PCI_DID_INTEL_WCL_ID_5, "Wildcatlake" },
 };
 
 static struct {

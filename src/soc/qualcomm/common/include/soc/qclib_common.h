@@ -24,6 +24,7 @@
 #define QCLIB_TE_QCSDI             "qcsdi"
 #define QCLIB_TE_MEM_CHIP_INFO     "mem_chip_info"
 #define QCLIB_TE_DTB_SETTINGS      "dtb"
+#define QCLIB_TE_CPR_SETTINGS	   "cpr_settings"
 #define QCLIB_TE_SHRM_META_SETTINGS	"shrm_metadata"
 #define QCLIB_TE_AOP_META_SETTINGS      "aop_metadata"
 #define QCLIB_TE_AOP_DEVCFG_META_SETTINGS	"aop_cfg_metadata"
@@ -37,6 +38,7 @@ enum qclib_cbfs_file {
 	QCLIB_CBFS_QCLIB,
 	QCLIB_CBFS_DCB,
 	QCLIB_CBFS_DTB,
+	QCLIB_CBFS_CPR,
 	QCLIB_CBFS_SHRM_META,
 	QCLIB_CBFS_AOP_META,
 	QCLIB_CBFS_AOP_DEVCFG_META,

@@ -84,6 +84,8 @@ const char *qclib_file_default(enum qclib_cbfs_file file)
 		return CONFIG_CBFS_PREFIX "/dcb";
 	case QCLIB_CBFS_DTB:
 		return CONFIG_CBFS_PREFIX "/dtb";
+	case QCLIB_CBFS_CPR:
+		return CONFIG_CBFS_PREFIX "/cpr";
 	case QCLIB_CBFS_SHRM_META:
 		return CONFIG_CBFS_PREFIX "/shrm_meta";
 	case QCLIB_CBFS_AOP_META:

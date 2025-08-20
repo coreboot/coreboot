@@ -1,61 +1,62 @@
 fw_config
 	field AUDIO 0 1
-		option AUDIO_NONE		0
-		option AUDIO_ALC721_SNDW	1
-		option AUDIO_ALC256_HDA		2
+		option AUDIO_NONE			0
+		option AUDIO_ALC721_SNDW		1
+		option AUDIO_ALC256_HDA			2
+		option AUDIO_MAX98360_ALC5682I_I2S	3
 	end
 	field WIFI 2 4
-		option WIFI_NONE		0
-		option WIFI_CNVI_6		1
-		option WIFI_PCIE_6		2
-		option WIFI_CNVI_7		3
-		option WIFI_PCIE_7		4
+		option WIFI_NONE			0
+		option WIFI_CNVI_6			1
+		option WIFI_PCIE_6			2
+		option WIFI_CNVI_7			3
+		option WIFI_PCIE_7			4
 	end
 	field CELLULAR 5 6
-		option CELLULAR_ABSENT		0
-		option CELLULAR_USB		1
-		option CELLULAR_PCIE		2
+		option CELLULAR_ABSENT			0
+		option CELLULAR_USB			1
+		option CELLULAR_PCIE			2
 	end
 	field TOUCHSCREEN 7 8
-		option TOUCHSCREEN_NONE		0
-		option TOUCHSCREEN_THC_SPI	1
-		option TOUCHSCREEN_THC_I2C	2
+		option TOUCHSCREEN_NONE			0
+		option TOUCHSCREEN_THC_SPI		1
+		option TOUCHSCREEN_THC_I2C		2
 	end
 	field TOUCHPAD 9 10
-		option TOUCHPAD_NONE		0
-		option TOUCHPAD_THC_I2C		1
-		option TOUCHPAD_LPSS_I2C	2
+		option TOUCHPAD_NONE			0
+		option TOUCHPAD_THC_I2C			1
+		option TOUCHPAD_LPSS_I2C		2
 	end
 	field SD 11 12
-		option SD_NONE			0
-		option SD_GENSYS		1
-		option SD_BAYHUB		2
+		option SD_NONE				0
+		option SD_GENSYS			1
+		option SD_BAYHUB			2
 	end
 	field STORAGE 13 14
-		option STORAGE_UNKNOWN		0
-		option STORAGE_NVME_GEN4	1
-		option STORAGE_UFS		2
+		option STORAGE_UNKNOWN			0
+		option STORAGE_NVME_GEN4		1
+		option STORAGE_UFS			2
 	end
 	field FP 15
-		option FP_ABSENT		0
-		option FP_PRESENT		1
+		option FP_ABSENT			0
+		option FP_PRESENT			1
 	end
 	field DISPLAY 16 17
-		option DISPLAY_ABSENT		0
-		option DISPLAY_TOUCH_PRESENT	1
-		option DISPLAY_NO_TOUCH_PRESENT	2
+		option DISPLAY_ABSENT			0
+		option DISPLAY_TOUCH_PRESENT		1
+		option DISPLAY_NO_TOUCH_PRESENT		2
 	end
 	field ISH 18
-		option ISH_DISABLE		0
-		option ISH_ENABLE		1
+		option ISH_DISABLE			0
+		option ISH_ENABLE			1
 	end
 	field KB 19
-		option KB_ABSENT		0
-		option KB_PRESENT		1
+		option KB_ABSENT			0
+		option KB_PRESENT			1
 	end
 	field PSU 20
-		option PSU_USBC			0
-		option PSU_BJ			1
+		option PSU_USBC				0
+		option PSU_BJ				1
 	end
 end
 

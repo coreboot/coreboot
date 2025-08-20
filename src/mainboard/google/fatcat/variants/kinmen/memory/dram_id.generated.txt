@@ -7,3 +7,5 @@ DRAM Part Name                 ID to assign
 H58G56BK7BX068                 0 (0000)
 MT62F1G32D2DS-023 WT:C         1 (0001)
 MT62F2G32D4DS-020 WT:F         2 (0010)
+H58G56CK8BX146                 1 (0001)
+MT62F2G32D4DS-023 WT:C         2 (0010)

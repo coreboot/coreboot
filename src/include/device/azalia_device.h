@@ -37,12 +37,29 @@ extern const u32 cim_verb_data_size;
 extern const u32 pc_beep_verbs[];
 extern const u32 pc_beep_verbs_size;
 
-/*
- * The tables found in this file are derived from the Intel High Definition
- * Audio Specification Revision 1.0a, published 17 June 2010
- *
- * 7.3.3.31 Configuration Default (page 177)
- */
+/* The tables found in this file are derived from the Intel High Definition
+   Audio Specification Revision 1.0a, published 17 June 2010 */
+
+/* Reference: 7.3.3 Controls (page 141) */
+enum azalia_verb_id {
+	AZALIA_GET_PARAMETER               = 0xf00,
+	AZALIA_SET_SUBSYSTEM_ID_1          = 0x720,
+	AZALIA_SET_SUBSYSTEM_ID_2          = 0x721,
+	AZALIA_SET_SUBSYSTEM_ID_3          = 0x722,
+	AZALIA_SET_SUBSYSTEM_ID_4          = 0x723,
+	AZALIA_SET_CONFIGURATION_DEFAULT_1 = 0x71c,
+	AZALIA_SET_CONFIGURATION_DEFAULT_2 = 0x71d,
+	AZALIA_SET_CONFIGURATION_DEFAULT_3 = 0x71e,
+	AZALIA_SET_CONFIGURATION_DEFAULT_4 = 0x71f,
+	AZALIA_FUNCTION_RESET              = 0x7ff,
+};
+
+/* Reference: 7.3.4 Parameters (page 198) */
+enum azalia_parameter_id {
+	AZALIA_PARAMETER_VENDOR_ID = 0x00,
+};
+
+/* Reference: 7.3.3.31 Configuration Default (page 177) */
 enum azalia_pin_connection {
 	AZALIA_JACK                = 0x0,
 	AZALIA_NC                  = 0x1,
@@ -151,24 +168,27 @@ enum azalia_pin_misc {
 #define AZALIA_VERB_12B(codec, pin, verb, val)		\
 	((codec) << 28 | (pin) << 20 | (verb) << 8 | (val))
 
-#define AZALIA_PIN_CFG(codec, pin, val)					\
-	AZALIA_VERB_12B(codec, pin, 0x71c, ((val) >>  0) & 0xff),	\
-	AZALIA_VERB_12B(codec, pin, 0x71d, ((val) >>  8) & 0xff),	\
-	AZALIA_VERB_12B(codec, pin, 0x71e, ((val) >> 16) & 0xff),	\
-	AZALIA_VERB_12B(codec, pin, 0x71f, ((val) >> 24) & 0xff)
+#define AZALIA_VERB_GET_VENDOR_ID(codec) \
+	AZALIA_VERB_12B(codec, 0, AZALIA_GET_PARAMETER, AZALIA_PARAMETER_VENDOR_ID)
+
+#define AZALIA_PIN_CFG(codec, pin, val)								\
+	AZALIA_VERB_12B(codec, pin, AZALIA_SET_CONFIGURATION_DEFAULT_1, ((val) >>  0) & 0xff),	\
+	AZALIA_VERB_12B(codec, pin, AZALIA_SET_CONFIGURATION_DEFAULT_2, ((val) >>  8) & 0xff),	\
+	AZALIA_VERB_12B(codec, pin, AZALIA_SET_CONFIGURATION_DEFAULT_3, ((val) >> 16) & 0xff),	\
+	AZALIA_VERB_12B(codec, pin, AZALIA_SET_CONFIGURATION_DEFAULT_4, ((val) >> 24) & 0xff)
 
 #define AZALIA_PIN_CFG_NC(n)   (0x411111f0 | ((n) & 0xf))
 
-#define AZALIA_RESET(pin)			\
-	AZALIA_VERB_12B(0, pin, 0x7ff, 0),	\
-	AZALIA_VERB_12B(0, pin, 0x7ff, 0),	\
-	AZALIA_VERB_12B(0, pin, 0x7ff, 0),	\
-	AZALIA_VERB_12B(0, pin, 0x7ff, 0)
+#define AZALIA_RESET(pin)					\
+	AZALIA_VERB_12B(0, pin, AZALIA_FUNCTION_RESET, 0),	\
+	AZALIA_VERB_12B(0, pin, AZALIA_FUNCTION_RESET, 0),	\
+	AZALIA_VERB_12B(0, pin, AZALIA_FUNCTION_RESET, 0),	\
+	AZALIA_VERB_12B(0, pin, AZALIA_FUNCTION_RESET, 0)
 
-#define AZALIA_SUBVENDOR(codec, val)				\
-	AZALIA_VERB_12B(codec, 1, 0x720, ((val) >>  0) & 0xff),	\
-	AZALIA_VERB_12B(codec, 1, 0x721, ((val) >>  8) & 0xff),	\
-	AZALIA_VERB_12B(codec, 1, 0x722, ((val) >> 16) & 0xff),	\
-	AZALIA_VERB_12B(codec, 1, 0x723, ((val) >> 24) & 0xff)
+#define AZALIA_SUBVENDOR(codec, val)							\
+	AZALIA_VERB_12B(codec, 1, AZALIA_SET_SUBSYSTEM_ID_1, ((val) >>  0) & 0xff),	\
+	AZALIA_VERB_12B(codec, 1, AZALIA_SET_SUBSYSTEM_ID_2, ((val) >>  8) & 0xff),	\
+	AZALIA_VERB_12B(codec, 1, AZALIA_SET_SUBSYSTEM_ID_3, ((val) >> 16) & 0xff),	\
+	AZALIA_VERB_12B(codec, 1, AZALIA_SET_SUBSYSTEM_ID_4, ((val) >> 24) & 0xff)
 
 #endif /* DEVICE_AZALIA_H */

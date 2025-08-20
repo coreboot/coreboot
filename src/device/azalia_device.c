@@ -249,8 +249,7 @@ static bool codec_is_operative(u8 *base, const int addr)
 		return false;
 	}
 
-	const u32 reg32 = (addr << 28) | 0x000f0000;
-	write32(base + HDA_IC_REG, reg32);
+	write32(base + HDA_IC_REG, AZALIA_VERB_GET_VENDOR_ID(addr));
 
 	if (wait_for_valid(base) < 0) {
 		printk(BIOS_NOTICE, "azalia_audio: codec #%d doesn't respond\n", addr);

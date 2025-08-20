@@ -478,10 +478,10 @@ chip soc/intel/pantherlake
 			end
 		end # Gen4 M.2 SSD
 
-		device ref pcie_rp5 on
+		device ref pcie_rp6 on
 			probe SD SD_GENSYS
 			probe SD SD_BAYHUB
-			register "pcie_rp[PCIE_RP(5)]" = "{
+			register "pcie_rp[PCIE_RP(6)]" = "{
 			.clk_src = 2,
 			.clk_req = 2,
 			.flags = PCIE_RP_CLK_REQ_DETECT | PCIE_RP_LTR | PCIE_RP_AER,

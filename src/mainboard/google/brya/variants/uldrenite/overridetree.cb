@@ -19,6 +19,12 @@ fw_config
 		option ISH_DISABLE		0
 		option ISH_ENABLE		1
 	end
+	field STORAGE 30 31
+		option STORAGE_EMMC		0
+		option STORAGE_NVME		1
+		option STORAGE_UFS		2
+		option STORAGE_UNKNOWN		3
+	end
 end
 
 chip soc/intel/alderlake
@@ -500,7 +506,14 @@ chip soc/intel/alderlake
 		device ref shared_sram on end
 		device ref heci1 on end
 		device ref pmc hidden end
-		device ref emmc on end
+		device ref emmc on
+			probe STORAGE STORAGE_EMMC
+			probe STORAGE STORAGE_UNKNOWN
+		end
+		device ref ufs on
+			probe STORAGE STORAGE_UFS
+			probe STORAGE STORAGE_UNKNOWN
+		end
 		device ref uart0 on end
 		device ref pch_espi on
 			chip ec/google/chromeec

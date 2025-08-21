@@ -651,11 +651,20 @@ static int load_and_render_logo_to_framebuffer(
 		 config->vertical_resolution, logo_width, logo_height, halignment, valignment);
 
 	if (logo_bottom_margin) {
-		if (config->panel_orientation == LB_FB_ORIENTATION_BOTTOM_UP ||
-				 config->panel_orientation == LB_FB_ORIENTATION_NORMAL)
-			logo_coords.y -= logo_bottom_margin;
-		else
+		switch (config->panel_orientation) {
+		case LB_FB_ORIENTATION_RIGHT_UP:
+			logo_coords.x = logo_bottom_margin;
+			break;
+		case LB_FB_ORIENTATION_LEFT_UP:
 			logo_coords.x -= logo_bottom_margin;
+			break;
+		case LB_FB_ORIENTATION_BOTTOM_UP:
+			logo_coords.y = logo_bottom_margin;
+			break;
+		default: /* LB_FB_ORIENTATION_NORMAL (default) */
+			logo_coords.y -= logo_bottom_margin;
+			break;
+		}
 	}
 
 	copy_logo_to_framebuffer(config->framebuffer_base, config->bytes_per_scanline, blt_buffer,

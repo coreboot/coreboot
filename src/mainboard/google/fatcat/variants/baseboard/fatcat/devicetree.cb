@@ -101,6 +101,9 @@ chip soc/intel/pantherlake
 		[VR_DOMAIN_SA] = 38 * 4
 	}"
 
+	# Set on-board graphics as primary display
+	register "skip_ext_gfx_scan" = "true"
+
 	# Enable CNVi BT
 	register "cnvi_bt_core" = "true"
 

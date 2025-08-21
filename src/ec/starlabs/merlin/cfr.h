@@ -109,6 +109,7 @@ static const struct sm_object power_led = SM_DECLARE_ENUM({
 	.values		= (const struct sm_enum_value[]) {
 				{ "Normal",		0		},
 				{ "Reduced",		1		},
+				{ "Off",		2		},
 				SM_ENUM_VALUE_END,
 	},
 });

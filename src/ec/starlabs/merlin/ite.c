@@ -337,13 +337,14 @@ static void merlin_init(struct device *dev)
 	 *
 	 * Setting:	power_led
 	 *
-	 * Values:	0, 1
+	 * Values:	0, 1, 2
 	 * Default:	0
 	 *
 	 */
 	const uint8_t power_led[] = {
 		LED_NORMAL,
-		LED_REDUCED
+		LED_REDUCED,
+		LED_OFF
 	};
 
 	if (CONFIG(EC_STARLABS_POWER_LED))

@@ -111,6 +111,7 @@
 /* Power LED Brightness */
 #define LED_NORMAL		0x00
 #define LED_REDUCED		0x01
+#define LED_OFF			0x02
 
 uint16_t ec_get_version(void);
 

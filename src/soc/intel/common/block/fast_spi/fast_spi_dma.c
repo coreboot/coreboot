@@ -516,6 +516,19 @@ static void fast_spi_dma_lock(void *unused)
 	if (control.fields.lock)
 		return;
 
+	/* Ensure that any ongoing DMA transfer is marked as complete before locking. */
+	if (control.fields.start) {
+		union fast_spi_dma_status status = {fast_spi_read(FAST_SPI_DMA_STATUS)};
+		if (!status.fields.complete) {
+			status.data = 0;
+			status.fields.complete = 1;
+			fast_spi_write(FAST_SPI_DMA_STATUS, status.data);
+		}
+
+		control.fields.start = 0;
+		fast_spi_write(FAST_SPI_DMA_CONTROL, control.data);
+	}
+
 	control.fields.lock = 1;
 	fast_spi_write(FAST_SPI_DMA_CONTROL, control.data);
 

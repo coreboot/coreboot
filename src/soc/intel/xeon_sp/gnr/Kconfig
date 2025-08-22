@@ -18,6 +18,18 @@ config SOC_INTEL_GRANITERAPIDS
 	help
 	  Intel Granite Rapids support
 
+config SOC_INTEL_GRANITERAPIDS_AP
+	bool
+	select SOC_INTEL_GRANITERAPIDS
+	help
+	  Intel Granite Rapids AP support
+
+config SOC_INTEL_GRANITERAPIDS_SP
+	bool
+	select SOC_INTEL_GRANITERAPIDS
+	help
+	  Intel Granite Rapids SP support
+
 if SOC_INTEL_GRANITERAPIDS
 
 config CHIPSET_DEVICETREE

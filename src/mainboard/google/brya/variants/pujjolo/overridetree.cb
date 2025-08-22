@@ -91,6 +91,10 @@ chip soc/intel/alderlake
 	register "pch_hda_sdi_enable[0]" = "true"
 	register "pch_hda_sdi_enable[1]" = "true"
 
+	# Configure external V1P05/Vnn/VnnSx Rails for Pujjolo
+	register "ext_fivr_settings" = "{
+		.configure_ext_fivr = 1,
+	}"
 
 	# Intel Common SoC Config
 	#+-------------------+---------------------------+

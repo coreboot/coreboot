@@ -50,8 +50,8 @@ static void fill_fspm_igd_params(FSP_M_CONFIG *m_cfg,
 			*ddi_port_upds[i].hpd = !!(config->ddi_ports_config[i] &
 						   DDI_ENABLE_HPD);
 		}
-		/* Disable memory bandwidth compression */
-		m_cfg->MemoryBandwidthCompression = 0;
+		/* Enable memory bandwidth compression */
+		m_cfg->MemoryBandwidthCompression = 1;
 	} else {
 		/* IGD is disabled, skip IGD init in FSP. */
 		m_cfg->IgdDvmt50PreAlloc = 0;

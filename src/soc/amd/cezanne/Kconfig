@@ -478,4 +478,11 @@ config RWB_REGION_ONLY
 
 endif # VBOOT_SLOTS_RW_AB && VBOOT_STARTS_BEFORE_BOOTBLOCK
 
+config SERIRQ_CONTINUOUS_MODE
+	bool
+	default n
+	help
+	  Set this option to y for serial IRQ in continuous mode.
+	  Otherwise it is in quiet mode.
+
 endif # SOC_AMD_CEZANNE

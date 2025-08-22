@@ -15,7 +15,6 @@ CONFIG_NO_GFX_INIT=y
 CONFIG_HAVE_IFD_BIN=y
 CONFIG_HAVE_PBP_BIN=y
 CONFIG_DO_NOT_TOUCH_DESCRIPTOR_REGION=y
-CONFIG_ADD_FSP_BINARIES=y
 CONFIG_PAYLOAD_LINUX=y
 
 CONFIG_UART_FOR_CONSOLE=0
@@ -26,11 +25,6 @@ CONFIG_CONSOLE_SERIAL_115200=y
 #
 CONFIG_IFD_BIN_PATH="site-local/avenuecity/descriptor.bin"
 CONFIG_PBP_BIN_PATH="site-local/avenuecity/pbp.bin"
-CONFIG_FSP_T_FILE="site-local/avenuecity/Server_T.fd"
-CONFIG_FSP_M_FILE="site-local/avenuecity/Server_M.fd"
-CONFIG_FSP_S_FILE="site-local/avenuecity/Server_S.fd"
-CONFIG_FSP_HEADER_PATH="src/vendorcode/intel/fsp/fsp2_0/graniterapids/ap/"
-
 CONFIG_PAYLOAD_FILE="site-local/avenuecity/linuxboot_bzImage"
 CONFIG_LINUX_COMMAND_LINE="loglevel=7 earlyprintk=serial,ttyS0,115200 console=ttyS0,115200"
 

@@ -242,25 +242,12 @@ __weak void mainboard_azalia_program_runtime_verbs(u8 *base, u32 viddid)
 {
 }
 
-static bool codec_is_operative(u8 *base, const int addr)
-{
-	if (wait_for_ready(base) < 0) {
-		printk(BIOS_WARNING, "azalia_audio: controller not ready\n");
-		return false;
-	}
-
-	write32(base + HDA_IC_REG, AZALIA_VERB_GET_VENDOR_ID(addr));
-
-	if (wait_for_valid(base) < 0) {
-		printk(BIOS_NOTICE, "azalia_audio: codec #%d doesn't respond\n", addr);
-		return false;
-	}
-	return true;
-}
-
 void azalia_codec_init(u8 *base, int addr, const u32 *verb_table, u32 verb_table_bytes)
 {
-	const u32 viddid = read32(base + HDA_IR_REG);
+	if (azalia_write_verb(base, AZALIA_VERB_GET_VENDOR_ID(addr)) < 0)
+		return;
+	u32 viddid = read32(base + HDA_IR_REG);
+
 	const u32 *verb;
 	u32 verb_size;
 
@@ -283,15 +270,10 @@ void azalia_codec_init(u8 *base, int addr, const u32 *verb_table, u32 verb_table
 	mainboard_azalia_program_runtime_verbs(base, viddid);
 }
 
-static bool codec_can_init(const u16 codec_mask, u8 *base, const int addr)
-{
-	return codec_mask & (1 << addr) && codec_is_operative(base, addr);
-}
-
 void azalia_codecs_init(u8 *base, u16 codec_mask)
 {
 	for (int i = AZALIA_MAX_CODECS - 1; i >= 0; i--) {
-		if (codec_can_init(codec_mask, base, i))
+		if (codec_mask & BIT(i))
 			azalia_codec_init(base, i, cim_verb_data, cim_verb_data_size);
 	}
 

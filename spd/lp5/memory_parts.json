@@ -328,6 +328,17 @@
                 "speedMbps": 8533,
                 "lp5x": true
             }
+        },
+        {
+            "name": "MT62F512M32D1DS-023 WT:E",
+            "attribs": {
+                "densityPerDieGb": 16,
+                "diesPerPackage": 2,
+                "bitWidthPerChannel": 16,
+                "ranksPerChannel": 1,
+                "speedMbps": 8533,
+                "lp5x": true
+            }
         }
     ]
 }

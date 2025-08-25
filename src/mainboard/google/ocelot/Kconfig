@@ -130,12 +130,7 @@ config MAINBOARD_FAMILY
 	default "Google_Ocelot"
 
 config MAINBOARD_PART_NUMBER
-	default "Ocelot" if BOARD_GOOGLE_OCELOT
-	default "Ocelot4ES" if BOARD_GOOGLE_OCELOT4ES
-	default "Ocelotite4ES" if BOARD_GOOGLE_OCELOTITE4ES
-	default "Ocelotmchp4ES" if BOARD_GOOGLE_OCELOTMCHP4ES
-	default "Ocelotite" if BOARD_GOOGLE_OCELOTITE
-	default "Ocelotmchp" if BOARD_GOOGLE_OCELOTMCHP
+	default "Ocelot" if BOARD_GOOGLE_MODEL_OCELOT
 
 config MEMORY_SOLDERDOWN
 	def_bool n

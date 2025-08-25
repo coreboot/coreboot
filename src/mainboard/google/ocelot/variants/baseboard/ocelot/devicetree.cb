@@ -91,6 +91,8 @@ chip soc/intel/pantherlake
 	register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
 	register "pch_hda_idisp_codec_enable" = "true"
 
+	register "disable_progress_bar" = "true"
+
 	device domain 0 on
 		device ref dtt on end
 		device ref npu on end

@@ -36,6 +36,7 @@ romstage-y += qclib.c
 romstage-y += mmu.c
 romstage-y += ../common/aop_load_reset.c
 romstage-$(CONFIG_DRIVERS_UART) += ../common/qupv3_uart.c
+romstage-y += ../common/spmi.c
 
 ################################################################################
 ramstage-y += soc.c

@@ -13,4 +13,3 @@ romstage-$(CONFIG_VBOOT) += vboot.c
 ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
 ramstage-y += hda_verb.c
 ramstage-y += mainboard.c
-ramstage-y += smbios.c

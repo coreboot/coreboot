@@ -12,5 +12,4 @@ romstage-$(CONFIG_VBOOT) += vboot.c
 ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
 ramstage-y += devtree.c
 ramstage-y += mainboard.c
-ramstage-y += smbios.c
 ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads

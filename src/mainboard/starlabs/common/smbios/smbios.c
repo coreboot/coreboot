@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <soc/soc_chip.h>
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <ec/starlabs/merlin/ec.h>

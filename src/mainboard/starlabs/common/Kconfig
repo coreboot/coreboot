@@ -1,0 +1,13 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+if VENDOR_STARLABS
+
+menu "Star Labs Settings"
+
+config MB_COMMON_DIR
+	string
+	default "starlabs/common"
+
+endmenu
+
+endif

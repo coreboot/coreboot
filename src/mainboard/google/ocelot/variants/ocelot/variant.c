@@ -4,6 +4,7 @@
 #include <ec/google/chromeec/ec.h>
 #include <fsp/api.h>
 #include <fw_config.h>
+#include <intelblocks/hda.h>
 #include <sar.h>
 #include <soc/gpio_soc_defs.h>
 #include <drivers/intel/touch/chip.h>
@@ -70,4 +71,23 @@ bool variant_is_barrel_charger_present(void)
 		return google_chromeec_is_barrel_charger_present();
 	else
 		return false;
+}
+
+/*
+ * HDA verb table loading is supported based on the firmware configuration.
+ *
+ * This function determines if the current platform has an HDA codec enabled by
+ * examining the `FW_CONFIG` value. Specifically, it checks if the
+ * `FW_CONFIG` includes the `AUDIO_ALC256_HDA` value, which is used to identify
+ * Fatcat SKUs with HDA codec support.
+ *
+ * Return true if the `FW_CONFIG` indicates HDA support (i.e., contains
+ * `AUDIO_ALC256_HDA`), false otherwise.
+ */
+bool mainboard_is_hda_codec_enabled(void)
+{
+	if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_ALC256_HDA)))
+		return true;
+
+	return false;
 }

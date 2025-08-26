@@ -766,12 +766,12 @@ bool fdt_is_valid(const void *blob)
 
 struct device_tree *fdt_unflatten(const void *blob)
 {
-	struct device_tree *tree = xzalloc(sizeof(*tree));
-	const struct fdt_header *header = (const struct fdt_header *)blob;
-	tree->header = header;
-
 	if (!fdt_is_valid(blob))
 		return NULL;
+
+	const struct fdt_header *header = blob;
+	struct device_tree *tree = xzalloc(sizeof(*tree));
+	tree->header = header;
 
 	uint32_t struct_offset = be32toh(header->structure_offset);
 	uint32_t strings_offset = be32toh(header->strings_offset);

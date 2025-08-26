@@ -5,5 +5,11 @@ comment "Ptlrvp"
 config BOARD_INTEL_PTLRVP
 	bool "-> Ptlrvp"
 
+config BOARD_INTEL_PTLRVP4ES
+	bool "-> Ptlrvp4es"
+
 config BOARD_INTEL_PTLRVP_CHROMEEC
 	bool "-> Google Chrome EC"
+
+config BOARD_INTEL_PTLRVP_CHROMEEC4ES
+	bool "-> Google Chrome EC for Early Silicon"

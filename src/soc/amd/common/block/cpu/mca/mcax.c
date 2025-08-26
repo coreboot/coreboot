@@ -20,14 +20,14 @@ bool mca_skip_check(void)
 /* Print the contents of the MCAX registers for a given bank */
 void mca_print_error(unsigned int bank)
 {
-	msr_t msr;
+	msr_t msr, mca_status;
 
 	printk(BIOS_WARNING, "#MC Error: core %u, bank %u %s\n", initial_lapicid(), bank,
 		mca_get_bank_name(bank));
 
 	msr = rdmsr(MCAX_CTL_MSR(bank));
 	printk(BIOS_WARNING, "   MC%u_CTL =      %08x_%08x\n", bank, msr.hi, msr.lo);
-	msr = rdmsr(MCAX_STATUS_MSR(bank));
+	msr = mca_status = rdmsr(MCAX_STATUS_MSR(bank));
 	printk(BIOS_WARNING, "   MC%u_STATUS =   %08x_%08x\n", bank, msr.hi, msr.lo);
 	msr = rdmsr(MCAX_ADDR_MSR(bank));
 	printk(BIOS_WARNING, "   MC%u_ADDR =     %08x_%08x\n", bank, msr.hi, msr.lo);
@@ -51,6 +51,12 @@ void mca_print_error(unsigned int bank)
 	printk(BIOS_WARNING, "   MC%u_MISC3 =    %08x_%08x\n", bank, msr.hi, msr.lo);
 	msr = rdmsr(MCAX_MISC4_MSR(bank));
 	printk(BIOS_WARNING, "   MC%u_MISC4 =    %08x_%08x\n", bank, msr.hi, msr.lo);
+	if (mca_syndv(mca_status)) {
+		msr = rdmsr(MCAX_SYND1_MSR(bank));
+		printk(BIOS_WARNING, "   MC%u_SYND1 =    %08x_%08x\n", bank, msr.hi, msr.lo);
+		msr = rdmsr(MCAX_SYND2_MSR(bank));
+		printk(BIOS_WARNING, "   MC%u_SYND2 =    %08x_%08x\n", bank, msr.hi, msr.lo);
+	}
 	msr = rdmsr(MCA_CTL_MASK_MSR(bank));
 	printk(BIOS_WARNING, "   MC%u_CTL_MASK = %08x_%08x\n", bank, msr.hi, msr.lo);
 }

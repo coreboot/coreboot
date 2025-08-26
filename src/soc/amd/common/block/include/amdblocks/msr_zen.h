@@ -24,6 +24,9 @@
 #define  MCAX_MISC2_OFFSET	0xb
 #define  MCAX_MISC3_OFFSET	0xc
 #define  MCAX_MISC4_OFFSET	0xd
+#define  MCAX_SYND1_OFFSET	0xe
+#define  MCAX_SYND2_OFFSET	0xf
+
 #define MCAX_MSR(bank, offset)	(MCAX_MSR_BASE + (bank) * MCAX_BANK_SIZE + (offset))
 #define MCAX_CTL_MSR(bank)	MCAX_MSR(bank, MCAX_CTL_OFFSET)
 #define MCAX_STATUS_MSR(bank)	MCAX_MSR(bank, MCAX_STATUS_OFFSET)
@@ -38,6 +41,8 @@
 #define MCAX_MISC2_MSR(bank)	MCAX_MSR(bank, MCAX_MISC2_OFFSET)
 #define MCAX_MISC3_MSR(bank)	MCAX_MSR(bank, MCAX_MISC3_OFFSET)
 #define MCAX_MISC4_MSR(bank)	MCAX_MSR(bank, MCAX_MISC4_OFFSET)
+#define MCAX_SYND1_MSR(bank)	MCAX_MSR(bank, MCAX_SYND1_OFFSET)
+#define MCAX_SYND2_MSR(bank)	MCAX_MSR(bank, MCAX_SYND2_OFFSET)
 
 /*
  * The MCA CTL_MASK moved to a new location in the fam 17h+ CPUs and accessing the legacy

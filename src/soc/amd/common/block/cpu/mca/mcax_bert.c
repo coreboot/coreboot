@@ -10,10 +10,7 @@
 #include <types.h>
 #include "mca_common_defs.h"
 
-/* MISC4 is the last used register in the MCAX banks of Picasso */
-#define MCAX_USED_REGISTERS_PER_BANK	(MCAX_MISC4_OFFSET + 1)
-
-static inline size_t mca_report_size_reqd(void)
+static inline size_t mca_report_size_reqd(int used_registers_per_bank)
 {
 	size_t size;
 
@@ -32,8 +29,8 @@ static inline size_t mca_report_size_reqd(void)
 	size += cper_ia32x64_ctx_sz_bytype(CPER_IA32X64_CTX_MSR, 3);
 
 	/* Context of CTL, STATUS, ADDR, MISC0, CONFIG, IPID, SYND, RESERVED, DESTAT, DEADDR,
-	   MISC1, MISC2, MISC3, MISC4 */
-	size += cper_ia32x64_ctx_sz_bytype(CPER_IA32X64_CTX_MSR, MCAX_USED_REGISTERS_PER_BANK);
+	   MISC1, MISC2, MISC3, MISC4, SYND0, SYND1 */
+	size += cper_ia32x64_ctx_sz_bytype(CPER_IA32X64_CTX_MSR, used_registers_per_bank);
 
 	/* Context of CTL_MASK */
 	size += cper_ia32x64_ctx_sz_bytype(CPER_IA32X64_CTX_MSR, 1);
@@ -57,7 +54,9 @@ void build_bert_mca_error(struct mca_bank_status *mci)
 	cper_ia32x64_proc_error_info_t *chk;
 	cper_ia32x64_context_t *ctx;
 
-	if (mca_report_size_reqd() > bert_storage_remaining())
+	int used_registers_per_bank = mca_syndv(mci->sts) ? 16 : 14;
+
+	if (mca_report_size_reqd(used_registers_per_bank) > bert_storage_remaining())
 		goto failed;
 
 	status = bert_new_event(&CPER_SEC_PROC_GENERIC_GUID);
@@ -80,7 +79,7 @@ void build_bert_mca_error(struct mca_bank_status *mci)
 	if (!ctx)
 		goto failed;
 	ctx = cper_new_ia32x64_context_msr(status, x86_sec, MCAX_CTL_MSR(mci->bank),
-					   MCAX_USED_REGISTERS_PER_BANK);
+					   used_registers_per_bank);
 	if (!ctx)
 		goto failed;
 	ctx = cper_new_ia32x64_context_msr(status, x86_sec, MCA_CTL_MASK_MSR(mci->bank), 1);

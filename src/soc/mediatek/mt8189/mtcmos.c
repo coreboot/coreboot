@@ -11,24 +11,55 @@
 #include <soc/spm_mtcmos.h>
 
 static const struct bus_protect bp_ufs[] = {
-	{&mtk_vlpcfg->bus_vlp_topaxi_protecten_clr, BIT(6)},
-	{&mtk_infracfg_ao->perisys_protect.clr, BIT(4)},
-	{&mtk_vlpcfg->bus_vlp_topaxi_protecten_clr, BIT(5)},
+	{
+		.clr_addr = &mtk_vlpcfg->bus_vlp_topaxi_protecten_clr,
+		.set_addr = &mtk_vlpcfg->bus_vlp_topaxi_protecten_set,
+		.rdy_addr = &mtk_vlpcfg->bus_vlp_topaxi_protecten_sta1,
+		.mask = BIT(6),
+	},
+	{
+		.clr_addr = &mtk_infracfg_ao->perisys_protect.clr,
+		.set_addr = &mtk_infracfg_ao->perisys_protect.set,
+		.rdy_addr = &mtk_infracfg_ao->perisys_protect.ready,
+		.mask = BIT(4),
+	},
+	{
+		.clr_addr = &mtk_vlpcfg->bus_vlp_topaxi_protecten_clr,
+		.set_addr = &mtk_vlpcfg->bus_vlp_topaxi_protecten_set,
+		.rdy_addr = &mtk_vlpcfg->bus_vlp_topaxi_protecten_sta1,
+		.mask = BIT(5),
+	},
 };
 
 static const struct bus_protect bp_mminfra[] = {
-	{&mtk_infracfg_ao->emisys_protect.clr, BIT(20) | BIT(21)},
-	{&mtk_infracfg_ao->infrasys_protect[0].clr, BIT(16)},
-	{&mtk_infracfg_ao->mmsys_protect[1].clr,
-	 BIT(0) | BIT(7) | BIT(8) | BIT(9) | BIT(10) |
-	 BIT(11) | BIT(12) | BIT(13) | BIT(14) | BIT(15)},
-	{&mtk_infracfg_ao->infrasys_protect[1].clr, BIT(11)},
-	{&mtk_infracfg_ao->mmsys_protect[1].clr,
-	 BIT(1) | BIT(2) | BIT(3)},
+	{
+		.clr_addr = &mtk_infracfg_ao->emisys_protect.clr,
+		.mask = BIT(20) | BIT(21),
+	},
+	{
+		.clr_addr = &mtk_infracfg_ao->infrasys_protect[0].clr,
+		.mask = BIT(16),
+	},
+	{
+		.clr_addr = &mtk_infracfg_ao->mmsys_protect[1].clr,
+		.mask = BIT(0) | BIT(7) | BIT(8) | BIT(9) | BIT(10) |
+			BIT(11) | BIT(12) | BIT(13) | BIT(14) | BIT(15),
+	},
+	{
+		.clr_addr = &mtk_infracfg_ao->infrasys_protect[1].clr,
+		.mask = BIT(11),
+	},
+	{
+		.clr_addr = &mtk_infracfg_ao->mmsys_protect[1].clr,
+		.mask = BIT(1) | BIT(2) | BIT(3),
+	},
 };
 
 static const struct bus_protect bp_ssusb[] = {
-	{&mtk_infracfg_ao->perisys_protect.clr, BIT(7)},
+	{
+		.clr_addr = &mtk_infracfg_ao->perisys_protect.clr,
+		.mask = BIT(7),
+	},
 };
 
 static const struct power_domain_data pd_plat[] = {
@@ -79,6 +110,14 @@ void mtcmos_init(void)
 
 	for (i = 0; i < ARRAY_SIZE(pd_plat); i++)
 		mtcmos_power_on(&pd_plat[i]);
+}
+
+void mtcmos_ufs_power_off(void)
+{
+	/* ufs0_phy */
+	mtcmos_power_off(&pd_plat[1]);
+	/* ufs0 */
+	mtcmos_power_off(&pd_plat[0]);
 }
 
 void mtcmos_protect_audio_bus(void)

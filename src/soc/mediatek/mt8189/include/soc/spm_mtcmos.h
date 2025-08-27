@@ -24,6 +24,7 @@ struct mtk_vlpcfg_regs {
 	u32 bus_vlp_topaxi_protecten;
 	u32 bus_vlp_topaxi_protecten_set;
 	u32 bus_vlp_topaxi_protecten_clr;
+	u32 bus_vlp_topaxi_protecten_sta0;
 	u32 bus_vlp_topaxi_protecten_sta1;
 };
 check_member(mtk_vlpcfg_regs, vlp_test_ck_ctrl, 0x0004);

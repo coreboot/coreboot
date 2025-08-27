@@ -5,6 +5,8 @@
 
 struct bus_protect {
 	void *clr_addr;
+	void *set_addr;
+	void *rdy_addr;
 	u32 mask;
 };
 
@@ -28,9 +30,11 @@ struct power_domain_data {
 void mtcmos_set_scpd_ext_buck_iso(const struct power_domain_data *pd);
 
 void mtcmos_power_on(const struct power_domain_data *pd);
+void mtcmos_power_off(const struct power_domain_data *pd);
 void mtcmos_adsp_power_on(void);
 void mtcmos_audio_power_on(void);
 void mtcmos_display_power_on(void);
+void mtcmos_ufs_power_off(void);
 
 void mtcmos_protect_adsp_bus(void);
 void mtcmos_protect_audio_bus(void);

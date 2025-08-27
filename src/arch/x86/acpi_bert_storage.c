@@ -324,14 +324,14 @@ acpi_hest_generic_data_v300_t *bert_append_genproc(
  *   CPER_IA32X64_CTX_32BIT_DBG
  *   CPER_IA32X64_CTX_64BIT_DBG
  *   CPER_IA32X64_CTX_MEMMAPPED
- * num is the number of bytes eventually used to fill the context's register
+ * array_size_bytes is the size (in bytes) eventually used to fill the context's register
  *   array, e.g. 4 MSRs * sizeof(msr_t)
  *
  * status and entry data_length values are updated.
  */
 cper_ia32x64_context_t *new_cper_ia32x64_ctx(
 		acpi_generic_error_status_t *status,
-		cper_ia32x64_proc_error_section_t *x86err, int type, int num)
+		cper_ia32x64_proc_error_section_t *x86err, int type, int array_size_bytes)
 {
 	size_t size;
 	cper_ia32x64_context_t *ctx;
@@ -355,7 +355,7 @@ cper_ia32x64_context_t *new_cper_ia32x64_ctx(
 		return NULL;
 	}
 
-	size = cper_ia32x64_ctx_sz_bytype(type, num);
+	size = cper_ia32x64_ctx_sz_bytype(type, array_size_bytes);
 	ctx = bert_allocate_storage(size);
 	if (!ctx) {
 		printk(BIOS_ERR, "New IA32X64 %s context entry would exceed available region\n",
@@ -366,7 +366,7 @@ cper_ia32x64_context_t *new_cper_ia32x64_ctx(
 	revise_error_sizes(status, size);
 
 	ctx->type = type;
-	ctx->array_size = num;
+	ctx->array_size = array_size_bytes;
 	cper_bump_ia32x64_ctx_count(x86err);
 
 	return ctx;
@@ -553,13 +553,16 @@ cper_ia32x64_context_t *cper_new_ia32x64_context_msr(
 	int i;
 	msr_t *dest;
 
-	ctx = new_cper_ia32x64_ctx(status, x86err, CPER_IA32X64_CTX_MSR, num);
+	ctx = new_cper_ia32x64_ctx(status, x86err, CPER_IA32X64_CTX_MSR, num * sizeof(msr_t));
 	if (!ctx)
 		return NULL;
 
-	/* already filled ctx->type = CPER_IA32X64_CTX_MSR; */
+	/*
+	 * already filled:
+	 *   - ctx->type = CPER_IA32X64_CTX_MSR
+	 *   - ctx->array_size = num * sizeof(msr_t)
+	 */
 	ctx->msr_addr = addr;
-	ctx->array_size = num * sizeof(msr_t);
 
 	dest = (msr_t *)((u8 *)(ctx + 1)); /* point to the Register Array */
 

@@ -91,7 +91,7 @@ static inline acpi_hest_generic_data_v300_t *acpi_hest_generic_data3(
 /* Add a context to an existing IA32/X64-type error entry */
 cper_ia32x64_context_t *new_cper_ia32x64_ctx(
 		acpi_generic_error_status_t *status,
-		cper_ia32x64_proc_error_section_t *x86err, int type, int num);
+		cper_ia32x64_proc_error_section_t *x86err, int type, int array_size);
 
 /* Helper to add an MSR context to an existing IA32/X64-type error entry */
 cper_ia32x64_context_t *cper_new_ia32x64_context_msr(

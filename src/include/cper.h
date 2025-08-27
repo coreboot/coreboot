@@ -459,7 +459,7 @@ static inline cper_timestamp_t cper_timestamp(int precise)
  *   CPER_IA32X64_CTX_MEMMAPPED
  * num is the number of items in the context's register array
  */
-static inline size_t cper_ia32x64_ctx_sz_bytype(int type, int arr_num)
+static inline size_t cper_ia32x64_ctx_sz_bytype(int type, int array_size)
 {
 	size_t sz = sizeof(cper_ia32x64_context_t);
 
@@ -476,7 +476,7 @@ static inline size_t cper_ia32x64_ctx_sz_bytype(int type, int arr_num)
 	case CPER_IA32X64_CTX_MEMMAPPED:
 	default:
 		/* Table N.13: "size ... is determined by (Array Size / 8)" */
-		return ALIGN_UP(sz + arr_num * 8, 16);
+		return ALIGN_UP(sz + array_size, 16);
 	}
 }
 

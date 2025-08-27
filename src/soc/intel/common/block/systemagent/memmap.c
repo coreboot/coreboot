@@ -65,7 +65,7 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 	/*
 	 * We need to make sure ramstage will be run cached. At this
 	 * point exact location of ramstage in cbmem is not known.
-	 * Instruct postcar to cache 16 megs below cbmem top which is
+	 * Instruct postcar to cache 32 megs below cbmem top which is
 	 * a safe bet to cover ramstage.
 	 */
 	printk(BIOS_DEBUG, "top_of_ram = 0x%lx\n", top_of_ram);
@@ -77,7 +77,7 @@ void fill_postcar_frame(struct postcar_frame *pcf)
 	if (ENV_CREATES_CBMEM && CONFIG(SOC_INTEL_COMMON_BASECODE_RAMTOP))
 		update_ramtop(top_of_ram);
 
-	postcar_frame_add_mtrr(pcf, top_of_ram - 16 * MiB, 16 * MiB, MTRR_TYPE_WRBACK);
+	postcar_frame_add_mtrr(pcf, top_of_ram - 32 * MiB, 32 * MiB, MTRR_TYPE_WRBACK);
 
 	/* Cache the TSEG region */
 	postcar_enable_tseg_cache(pcf);

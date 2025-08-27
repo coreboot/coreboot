@@ -386,7 +386,7 @@ cper_ia32x64_proc_error_info_t *new_cper_ia32x64_check(
 		cper_ia32x64_proc_error_section_t *x86err,
 		enum cper_x86_check_type type)
 {
-	cper_ia32x64_proc_error_info_t *check;
+	cper_ia32x64_proc_error_info_t *proc_err_info;
 	static const char * const check_names[] = {
 			"cache",
 			"TLB",
@@ -409,19 +409,19 @@ cper_ia32x64_proc_error_info_t *new_cper_ia32x64_check(
 		return NULL;
 	}
 
-	check = bert_allocate_storage(sizeof(*check));
-	if (!check) {
+	proc_err_info = bert_allocate_storage(sizeof(*proc_err_info));
+	if (!proc_err_info) {
 		printk(BIOS_ERR, "New IA32X64 %s check entry would exceed available region\n",
 				check_names[type]);
 		return NULL;
 	}
 
-	revise_error_sizes(status, sizeof(*check));
+	revise_error_sizes(status, sizeof(*proc_err_info));
 
-	guidcpy(&check->type, &check_guids[type]);
+	guidcpy(&proc_err_info->type, &check_guids[type]);
 	cper_bump_ia32x64_chk_count(x86err);
 
-	return check;
+	return proc_err_info;
 }
 
 /* Helper to append an ACPI Generic Error Data Entry plus a CPER IA32/X64

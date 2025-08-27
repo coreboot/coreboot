@@ -235,13 +235,6 @@ config X86_INIT_NEED_1_SIPI
 	  These newer AMD and Intel platforms don't need the 10ms wait between
 	  INIT and SIPI, so skip that too to save some time.
 
-config SOC_SETS_MSRS
-	bool
-	default n
-	help
-	  The SoC requires different access methods for reading and writing
-	  the MSRs.  Use SoC specific routines to handle the MSR access.
-
 config RESERVE_MTRRS_FOR_OS
 	bool
 	default n

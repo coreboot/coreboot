@@ -15,22 +15,6 @@ typedef union msr_union {
 } msr_t;
 _Static_assert(sizeof(msr_t) == sizeof(uint64_t), "Incorrect size for msr_t");
 
-#if CONFIG(SOC_SETS_MSRS)
-msr_t soc_msr_read(unsigned int index);
-void soc_msr_write(unsigned int index, msr_t msr);
-
-/* Handle MSR references in the other source code */
-static __always_inline msr_t rdmsr(unsigned int index)
-{
-	return soc_msr_read(index);
-}
-
-static __always_inline void wrmsr(unsigned int index, msr_t msr)
-{
-	soc_msr_write(index, msr);
-}
-#else /* CONFIG_SOC_SETS_MSRS */
-
 /* The following functions require the __always_inline due to AMD
  * function STOP_CAR_AND_CPU that disables cache as
  * RAM, the cache as RAM stack can no longer be used. Called
@@ -61,6 +45,5 @@ static __always_inline void wrmsr(unsigned int index, msr_t msr)
 		);
 }
 
-#endif /* CONFIG_SOC_SETS_MSRS */
 #endif /* __ASSEMBLER__ */
 #endif /* CPU_X86_MSR_ACCESS_H */

@@ -172,16 +172,61 @@ typedef struct cper_ia32x64_proc_error_section {
 					(I32X64SEC_VALID_CTXNUM_MAX \
 					<< I32X64SEC_VALID_CTXNUM_SH)
 
+#define I32X64_ERRTYPE_INTERNAL_UNCLASSIFIED  5
+
+struct cper_ia32x64_check_ms {
+	uint64_t validation_bits:16;
+	uint64_t err_type:3;
+	uint64_t proc_context_corrupt:1;
+	uint64_t uncorrected:1;
+	uint64_t precise_ip:1;
+	uint64_t restartable_ip:1;
+	uint64_t overflow:1;
+	uint64_t :40;
+};
+
+struct cper_ia32x64_check_tlb {
+	uint64_t validation_bits:16;
+	uint64_t transaction_type:2;
+	uint64_t operation:4;
+	uint64_t level:3;
+	uint64_t proc_context_corrupt:1;
+	uint64_t uncorrected:1;
+	uint64_t precise_ip:1;
+	uint64_t restartable_ip:1;
+	uint64_t overflow:1;
+	uint64_t :34;
+};
+
+struct cper_ia32x64_check_cache {
+	uint64_t validation_bits:16;
+	uint64_t transaction_type:2;
+	uint64_t operation:4;
+	uint64_t level:3;
+	uint64_t proc_context_corrupt:1;
+	uint64_t uncorrected:1;
+	uint64_t precise_ip:1;
+	uint64_t restartable_ip:1;
+	uint64_t overflow:1;
+	uint64_t :34;
+};
+
 /* IA32/X64 Processor Error Information Structure (Table N.8) */
 typedef struct cper_ia32x64_proc_error_info {
 	guid_t type; /* cache, tlb, bus, micro-architecture specific */
 	u64 validation;
-	u64 check_info;
+	union {
+		struct cper_ia32x64_check_ms    ms;
+		struct cper_ia32x64_check_tlb   tlb;
+		struct cper_ia32x64_check_cache cache;
+		uint64_t raw;
+	};
 	u64 target_id;
 	u64 requestor_id;
 	u64 responder_id;
 	u64 instruction_ip;
 } __packed cper_ia32x64_proc_error_info_t;
+_Static_assert(sizeof(struct cper_ia32x64_proc_error_info) == 64, "cper_ia32x64_proc_error_info size wrong");
 
 /* IA32/X64 Processor Error Information Structs, Err Struct Types (Table N.8) */
 #define X86_PROCESSOR_CACHE_CHK_ERROR_GUID		\

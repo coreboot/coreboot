@@ -289,7 +289,7 @@ typedef struct cper_ia32x64_context {
 	u16 array_size;
 	u32 msr_addr;
 	u64 mmap_addr;
-	/* N bytes of register array */
+	u8 register_array[]; /* N bytes of register array */
 } __packed cper_ia32x64_context_t;
 
 /* IA32/X64 Processor Context Information, Types field (Table N.13) */

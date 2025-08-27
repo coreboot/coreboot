@@ -550,8 +550,6 @@ cper_ia32x64_context_t *cper_new_ia32x64_context_msr(
 		cper_ia32x64_proc_error_section_t *x86err, u32 addr, int num)
 {
 	cper_ia32x64_context_t *ctx;
-	int i;
-	msr_t *dest;
 
 	ctx = new_cper_ia32x64_ctx(status, x86err, CPER_IA32X64_CTX_MSR, num * sizeof(msr_t));
 	if (!ctx)
@@ -564,9 +562,9 @@ cper_ia32x64_context_t *cper_new_ia32x64_context_msr(
 	 */
 	ctx->msr_addr = addr;
 
-	dest = (msr_t *)((u8 *)(ctx + 1)); /* point to the Register Array */
+	msr_t *dest = (msr_t *)(ctx->register_array); /* point to the Register Array */
 
-	for (i = 0 ; i < num ; i++)
+	for (int i = 0 ; i < num ; i++)
 		*(dest + i) = rdmsr(addr + i);
 	return ctx;
 }

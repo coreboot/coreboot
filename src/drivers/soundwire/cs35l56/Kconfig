@@ -1,0 +1,10 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config DRIVERS_SOUNDWIRE_CS35L56_FAMILY
+	bool
+	depends on HAVE_ACPI_TABLES
+	default n
+	help
+	  SoundWire CS35L56 Family audio amp SSDT generator.
+	  This supports the CS35L56, CS35L57, and CS35L63 audio amplifiers
+	  from Cirrus Logic.

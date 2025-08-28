@@ -453,6 +453,7 @@ config SOC_PHYSICAL_ADDRESS_WIDTH
 
 config SOC_INTEL_UFS_CLK_FREQ_HZ
 	int
+	depends on SOC_INTEL_WILDCATLAKE
 	default 38400000
 
 # Override DEBUG Kconfig to avoid false alarm about stack overflow.

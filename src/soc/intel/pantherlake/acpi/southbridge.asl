@@ -54,6 +54,6 @@
 #endif
 
 /* UFS 0:17:0 */
-#if (CONFIG(SOC_INTEL_PANTHERLAKE_U_H) || CONFIG(SOC_INTEL_WILDCATLAKE))
+#if CONFIG(SOC_INTEL_WILDCATLAKE)
 #include <soc/intel/common/block/acpi/acpi/ufs.asl>
 #endif

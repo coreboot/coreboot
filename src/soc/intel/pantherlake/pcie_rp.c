@@ -25,6 +25,8 @@ static const struct pcie_rp_group ptl_rp_groups[] = {
 #endif
 #if CONFIG(SOC_INTEL_PANTHERLAKE_U_H)
 	{ .slot = PCI_DEV_SLOT_PCIE_2,	.count = 4, .lcap_port_base = 1 },
+#elif CONFIG(SOC_INTEL_WILDCATLAKE)
+	{ .slot = PCI_DEV_SLOT_PCIE_2, .count = 2, .lcap_port_base = 5 },
 #else
 	{ .slot = PCI_DEV_SLOT_PCIE_2, .count = 2, .lcap_port_base = 1 },
 #endif

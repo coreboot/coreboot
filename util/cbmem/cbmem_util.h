@@ -20,7 +20,7 @@ extern int cbmem_util_verbose;
 #define die(x...)                   \
 	do {                        \
 		fprintf(stderr, x); \
-		abort();            \
+		exit(1);            \
 	} while (0)
 
 struct cbmem_console {

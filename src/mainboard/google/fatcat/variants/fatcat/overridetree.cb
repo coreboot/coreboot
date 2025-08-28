@@ -936,6 +936,7 @@ chip soc/intel/pantherlake
 						register "alc711_address.version" = "SOUNDWIRE_VERSION_1_2"
 						register "alc711_address.class" = "MIPI_CLASS_SDCA"
 						register "alc711_address.part_id" = "MIPI_DEV_ID_REALTEK_ALC722"
+						register "disable_clkstop_sm_support" = "true"
 						# SoundWire Link 1 ID 1
 						device generic 1.1 on
 							probe AUDIO AUDIO_ALC722_SNDW
@@ -946,6 +947,7 @@ chip soc/intel/pantherlake
 						register "alc711_address.version" = "SOUNDWIRE_VERSION_1_2"
 						register "alc711_address.class" = "MIPI_CLASS_SDCA"
 						register "alc711_address.part_id" = "MIPI_DEV_ID_REALTEK_ALC721"
+						register "disable_clkstop_sm_support" = "true"
 						# SoundWire Link 3 ID 1
 						device generic 3.1 on
 							probe AUDIO AUDIO_ALC721_SNDW

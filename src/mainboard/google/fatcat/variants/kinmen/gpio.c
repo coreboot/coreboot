@@ -69,14 +69,10 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_B09, NONE),
 	/* GPP_B10:     NC */
 	PAD_NC(GPP_B10, NONE),
-	/* GPP_B11:     USB_OC1 */
-	PAD_CFG_NF(GPP_B11, NONE, DEEP, NF1),
 	/* GPP_B12:     PM_SLP_S0_N */
 	PAD_CFG_NF(GPP_B12, NONE, DEEP, NF1),
 	/* GPP_B13:     PLT_RST_N */
 	PAD_CFG_NF(GPP_B13, NONE, DEEP, NF1),
-	/* GPP_B14:     DISP_HPD4 */
-	PAD_CFG_NF(GPP_B14, NONE, DEEP, NF2),
 	/* GPP_B15:     NC */
 	PAD_NC(GPP_B15, NONE),
 	/* GPP_B16:     GEN5_SSD_PWREN */
@@ -132,8 +128,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_C13, NONE, DEEP, NF1),
 	/* GPP_C14:     NC */
 	PAD_NC(GPP_C14, NONE),
-	/* GPP_C15:     FPS_RST_N */
-	PAD_CFG_GPO_LOCK(GPP_C15, 1, LOCK_CONFIG),
 	/* GPP_C16:     TBT_LSX0_TXD  */
 	PAD_CFG_NF(GPP_C16, NONE, DEEP, NF1),
 	/* GPP_C17:     TBT_LSX0_RXD  */
@@ -142,14 +136,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_C18, NONE),
 	/* GPP_C19:     NC */
 	PAD_NC(GPP_C19, NONE),
-	/* GPP_C20:     TBT_LSX2_TXD */
-	PAD_CFG_NF(GPP_C20, NONE, DEEP, NF1),
-	/* GPP_C21:     TBT_LSX2_RXD */
-	PAD_CFG_NF(GPP_C21, NONE, DEEP, NF1),
-	/* GPP_C22:     DDP3_CTRLCLK */
-	PAD_CFG_NF(GPP_C22, NONE, DEEP, NF2),
-	/* GPP_C23:     DDP3_CTRLDATA */
-	PAD_CFG_NF(GPP_C23, NONE, DEEP, NF2),
 
 	/* GPP_D00:     NC */
 	PAD_NC(GPP_D00, NONE),
@@ -216,12 +202,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_APIC_LOCK(GPP_E07, NONE, LEVEL, INVERT, LOCK_CONFIG),
 	/* GPP_E08:     NC */
 	PAD_NC(GPP_E08, NONE),
-	/* GPP_E09:     USB_OC0 */
-	PAD_CFG_NF(GPP_E09, NONE, DEEP, NF1),
 	/* GPP_E10:     NC */
 	PAD_NC(GPP_E10, NONE),
-	/* GPP_E11:     GPSI0_CLK */
-	PAD_CFG_NF(GPP_E11, NONE, DEEP, NF5),
 	/* GPP_E12:     TCHPAD_I2C4_SCL */
 	PAD_CFG_NF(GPP_E12, NONE, DEEP, NF8),
 	/* GPP_E13:     TCHPAD_I2C4_SDA */
@@ -232,18 +214,12 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_E15, NONE),
 	/* GPP_E16:     NC */
 	PAD_NC(GPP_E16, NONE),
-	/* GPP_E17:     GSPI0_CS0 */
-	PAD_CFG_NF(GPP_E17, NONE, DEEP, NF5),
 	/* GPP_E18:     TCHPAD_INT# */
 	PAD_CFG_GPI_APIC(GPP_E18, NONE, PLTRST, LEVEL, INVERT),
 	/* GPP_E19:     FPMCU_PWREN */
 	PAD_CFG_GPO(GPP_E19, 1, DEEP),
-	/* GPP_E20:     FPMCU_FW_UPDATE */
-	PAD_CFG_GPO_LOCK(GPP_E20, 0, LOCK_CONFIG),
 	/* GPP_E21:     I2C_PMC_PD_INT_N */
 	PAD_CFG_NF(GPP_E21, NONE, DEEP, NF1),
-	/* GPP_E22:     FPS_SOC_INT_L */
-	PAD_CFG_GPI_IRQ_WAKE(GPP_E22, NONE, PWROK, LEVEL, INVERT),
 
 	/* GPP_F00:     M.2_CNV_BRI_DT_BT_UART2_RTS_N */
 	/* NOTE: IOSSTAGE: 'Ignore' for S0ix */
@@ -279,10 +255,6 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_NF(GPP_F12, NONE, DEEP, NF8),
 	/* GPP_F13:     TCHSCR_I2C5_SDA */
 	PAD_CFG_NF(GPP_F13, NONE, DEEP, NF8),
-	/* GPP_F14:     GPSI0A_MOSI */
-	PAD_CFG_NF(GPP_F14, NONE, DEEP, NF8),
-	/* GPP_F15:     GSPI0A_MISO */
-	PAD_CFG_NF(GPP_F15, NONE, DEEP, NF8),
 	/* GPP_F16:     TCHSCR_RST_L */
 	PAD_CFG_GPO(GPP_F16, 1, DEEP),
 	/* GPP_F17:     NC */
@@ -420,10 +392,6 @@ static const struct pad_config romstage_gpio_table[] = {
 	PAD_CFG_NF(GPP_C01, NONE, DEEP, NF1),
 	/* GPP_E03:     GEN5_SSD_RESET_N */
 	PAD_CFG_GPO(GPP_E03, 1, PLTRST),
-	/* GPP_E19:     FPMCU_PWREN */
-	PAD_CFG_GPO(GPP_E19, 0, DEEP),
-	/* GPP_C15:     FPS_RST_N */
-	PAD_CFG_GPO(GPP_C15, 0, DEEP),
 };
 
 const struct pad_config *variant_gpio_table(size_t *num)

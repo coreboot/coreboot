@@ -248,11 +248,6 @@ static const struct pad_config gen4_ssd_pads[] = {
 	PAD_CFG_GPO(GPP_B09, 1, PLTRST),
 };
 
-static const struct pad_config ufs_enable_pads[] = {
-	/* GPP_D21:     GPP_D21_UFS_REFCLK */
-	PAD_CFG_NF(GPP_D21, NONE, DEEP, NF1),
-};
-
 /* Gen5 NVME: at the bottom M.2 slot */
 static const struct pad_config pre_mem_gen5_ssd_pwr_pads[] = {
 	/* GPP_B16:     GEN5_SSD_PWREN */
@@ -601,11 +596,10 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	} else if (fw_config_probe(FW_CONFIG(STORAGE, STORAGE_NVME_GEN5))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, gen5_ssd_pads);
 	} else if (fw_config_probe(FW_CONFIG(STORAGE, STORAGE_UFS))) {
-		GPIO_PADBASED_OVERRIDE(padbased_table, ufs_enable_pads);
+		die("UFS is not supported on Panther Lake\n");
 	} else if (fw_config_probe(FW_CONFIG(STORAGE, STORAGE_UNKNOWN))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, gen4_ssd_pads);
 		GPIO_PADBASED_OVERRIDE(padbased_table, gen5_ssd_pads);
-		GPIO_PADBASED_OVERRIDE(padbased_table, ufs_enable_pads);
 	}
 
 	if (fw_config_probe(FW_CONFIG(AUDIO, AUDIO_NONE))) {

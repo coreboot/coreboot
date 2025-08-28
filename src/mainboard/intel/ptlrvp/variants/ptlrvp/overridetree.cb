@@ -39,7 +39,7 @@ fw_config
 		option STORAGE_UNKNOWN		0
 		option STORAGE_NVME_GEN4	1
 		option STORAGE_NVME_GEN5	2
-		option STORAGE_UFS		3
+		option STORAGE_UFS		3 # Not supported
 	end
 	field FP 17
 		option FP_ABSENT		0
@@ -516,11 +516,6 @@ chip soc/intel/pantherlake
 					end
 				end
 			end
-		end
-
-		device ref ufs on
-			probe STORAGE STORAGE_UFS
-			probe STORAGE STORAGE_UNKNOWN
 		end
 
 		device ref pcie_rp2 on

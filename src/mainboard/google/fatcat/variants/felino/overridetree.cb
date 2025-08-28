@@ -25,7 +25,7 @@ fw_config
 		option STORAGE_UNKNOWN		0
 		option STORAGE_NVME_GEN4	1
 		option STORAGE_NVME_GEN5	2
-		option STORAGE_UFS		3
+		option STORAGE_UFS		3 # Not supported
 	end
 	field KB 10 11
 		option KB_UNKNOWN		0

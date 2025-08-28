@@ -6,6 +6,7 @@
 #include <cbfs.h>
 #include <cbmem.h>
 #include <commonlib/fsp.h>
+#include <cpu/x86/mtrr.h>
 #include <stdlib.h>
 #include <console/console.h>
 #include <fsp/api.h>
@@ -96,6 +97,7 @@ static void do_silicon_init(struct fsp_header *hdr)
 	fsp_multi_phase_init_fn multi_phase_si_init;
 	struct fsp_multi_phase_params multi_phase_params;
 	struct fsp_multi_phase_get_number_of_phases_params multi_phase_get_number;
+	int temp_mtrr_index = -1;
 
 	supd = (FSPS_UPD *)(uintptr_t)(hdr->cfg_region_offset + hdr->image_base);
 
@@ -122,6 +124,9 @@ static void do_silicon_init(struct fsp_header *hdr)
 		fsp_fill_common_arch_params(upd);
 	/* Give SoC/mainboard a chance to populate entries */
 	platform_fsp_silicon_init_params_cb(upd);
+
+	if (CONFIG(BMP_LOGO) && CONFIG(USE_COREBOOT_FOR_BMP_RENDERING))
+		temp_mtrr_index = soc_mark_gfx_memory();
 
 	/*
 	 * Populate UPD entries for the logo if the platform utilizes
@@ -229,6 +234,10 @@ static void do_silicon_init(struct fsp_header *hdr)
 		 * the rendering.
 		 */
 		timestamp_add_now(TS_FIRMWARE_SPLASH_RENDERED);
+
+		/* Clear temporary Write Combine (WC) MTRR */
+		if (temp_mtrr_index >= 0)
+			clear_var_mtrr(temp_mtrr_index);
 	}
 
 	/* Reinitialize CPUs if FSP-S has done MP Init */

@@ -39,11 +39,29 @@ static void program_igd_lmembar(uint32_t base)
 	pci_or_config16(SA_DEV_IGD, PCI_COMMAND, enable_mask);
 }
 
+/*
+ * Marks the GMADR range as Write-Combine (WC) memory.
+ *
+ * This function acquires and configures a temporary MTRR for the GMADR range.
+ *
+ * @return valid MTRR index on success, -1 on failure.
+ */
+int soc_mark_gfx_memory(void)
+{
+	/* Set up a temporary Write Combine (WC) MTRR for the GMADR range */
+	int temp_mtrr_index = acquire_and_configure_mtrr(GMADR_BASE, GMADR_SIZE, MTRR_TYPE_WRCOMB);
+	if (temp_mtrr_index < 0) {
+		printk(BIOS_ERR, "Failed to configure WC MTRR for GMADR.\n");
+		return -1;
+	}
+
+	return temp_mtrr_index;
+}
+
 void soc_load_logo_by_coreboot(void)
 {
 	const struct hob_graphics_info *ginfo;
 	struct soc_intel_common_config *config = chip_get_common_soc_structure();
-	int temp_mtrr_index = -1;
 	struct logo_config logo_cfg;
 	size_t size;
 
@@ -56,13 +74,6 @@ void soc_load_logo_by_coreboot(void)
 
 	/* Program the IGD LMEMBAR */
 	program_igd_lmembar(GMADR_BASE);
-
-	/* Set up a temporary Write Combine (WC) MTRR for the GMADR range */
-	temp_mtrr_index = acquire_and_configure_mtrr(GMADR_BASE, GMADR_SIZE, MTRR_TYPE_WRCOMB);
-	if (temp_mtrr_index < 0) {
-		printk(BIOS_ERR, "Failed to configure WC MTRR for GMADR.\n");
-		return;
-	}
 
 	/*
 	 * Adjusts panel orientation for external display when the lid is closed.
@@ -88,7 +99,4 @@ void soc_load_logo_by_coreboot(void)
 	logo_cfg.logo_bottom_margin = config->logo_bottom_margin;
 
 	render_logo_to_framebuffer(&logo_cfg);
-
-	/* Clear temporary Write Combine (WC) MTRR */
-	clear_var_mtrr(temp_mtrr_index);
 }

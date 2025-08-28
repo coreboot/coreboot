@@ -108,8 +108,10 @@ void soc_load_logo_by_fsp(FSPS_UPD *supd);
  */
 #if CONFIG(USE_COREBOOT_FOR_BMP_RENDERING)
 void soc_load_logo_by_coreboot(void);
+int soc_mark_gfx_memory(void);
 #else
 static inline void soc_load_logo_by_coreboot(void) { /* nop */ }
+static inline int soc_mark_gfx_memory(void) { return -1; }
 #endif
 
 /* Update the SOC specific memory config param for mma. */

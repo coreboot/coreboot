@@ -40,3 +40,6 @@ config BOARD_GOOGLE_KINMEN
 
 config BOARD_GOOGLE_LAPIS
 	bool "-> Lapis"
+
+config BOARD_GOOGLE_MOONSTONE
+	bool "-> Moonstone"

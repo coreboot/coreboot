@@ -138,6 +138,9 @@ config BOARD_GOOGLE_LAPIS
 	select HAVE_SLP_S0_GATE
 	select MAINBOARD_HAS_GOOGLE_STRAUSS_KEYBOARD
 
+config BOARD_GOOGLE_MOONSTONE
+	select BOARD_GOOGLE_MODEL_KINMEN
+
 if BOARD_GOOGLE_FATCAT_COMMON
 
 config BASEBOARD_DIR
@@ -176,6 +179,7 @@ config DRIVER_TPM_I2C_BUS
 	default 0x01 if BOARD_GOOGLE_MODEL_FELINO
 	default 0x03 if BOARD_GOOGLE_MODEL_KINMEN
 	default 0x03 if BOARD_GOOGLE_LAPIS
+	default 0x03 if BOARD_GOOGLE_MOONSTONE
 
 config HAVE_SLP_S0_GATE
 	def_bool n
@@ -193,6 +197,7 @@ config MAINBOARD_PART_NUMBER
 	default "Felino" if BOARD_GOOGLE_MODEL_FELINO
 	default "Kinmen" if BOARD_GOOGLE_MODEL_KINMEN
 	default "Lapis" if BOARD_GOOGLE_LAPIS
+	default "Moonstone" if BOARD_GOOGLE_MOONSTONE
 
 config MEMORY_SOLDERDOWN
 	def_bool n
@@ -206,6 +211,7 @@ config TPM_TIS_ACPI_INTERRUPT
 	default 11 if BOARD_GOOGLE_FRANCKA # GPE0_DW0_11 (GPP_H11)
 	default 66 if BOARD_GOOGLE_MODEL_KINMEN # GPE0_DW2_02 (GPP_E02)
 	default 66 if BOARD_GOOGLE_LAPIS # GPE0_DW2_02 (GPP_E02)
+	default 66 if BOARD_GOOGLE_MOONSTONE # GPE0_DW2_02 (GPP_E02)
 
 # FIXME: update as per board schematics
 config UART_FOR_CONSOLE
@@ -222,6 +228,7 @@ config VARIANT_DIR
 	default "felino" if BOARD_GOOGLE_MODEL_FELINO
 	default "kinmen" if BOARD_GOOGLE_MODEL_KINMEN
 	default "lapis" if BOARD_GOOGLE_LAPIS
+	default "moonstone" if BOARD_GOOGLE_MOONSTONE
 
 config OVERRIDE_DEVICETREE
 	default "variants/\$(CONFIG_VARIANT_DIR)/overridetree.cb"

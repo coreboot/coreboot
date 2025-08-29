@@ -248,6 +248,12 @@ static void h8_enable(struct device *dev)
 	ec_write(H8_CONFIG2, conf->config2);
 	ec_write(H8_CONFIG3, conf->config3);
 
+	/*
+	 * Reset LEDs to power on state.
+	 * (Without this warm reboot leaves LEDs off)
+	 */
+	ec_write(H8_LED_CONTROL, H8_LED_CONTROL_ON | H8_LED_CONTROL_POWER_LED);
+
 	beepmask0 = conf->beepmask0;
 	beepmask1 = conf->beepmask1;
 

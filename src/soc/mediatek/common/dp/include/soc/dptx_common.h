@@ -70,7 +70,7 @@
 #define MAX_LANECOUNT				4
 
 #define HPD_WAIT_TIMEOUT_MS			200
-#define WAIT_AUX_READY_TIME_MS			1
+#define WAIT_AUX_READY_TIME_MS			3
 
 enum {
 	DP_LANECOUNT_1	= 0x1,

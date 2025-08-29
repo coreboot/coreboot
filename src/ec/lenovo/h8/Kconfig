@@ -6,6 +6,9 @@ config EC_LENOVO_H8
 
 if EC_LENOVO_H8
 
+config NO_POST
+	default y
+
 config SEABIOS_PS2_TIMEOUT
 	int
 	depends on PAYLOAD_SEABIOS

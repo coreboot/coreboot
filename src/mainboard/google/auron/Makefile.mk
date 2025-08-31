@@ -10,6 +10,7 @@ ifneq ($(CONFIG_BOARD_GOOGLE_BUDDY),y)
 romstage-y += variants/$(VARIANT_DIR)/variant.c
 endif
 
+ramstage-$(CONFIG_DRIVERS_OPTION_CFR) += cfr.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC) += ec.c
 ramstage-$(CONFIG_MAINBOARD_USE_LIBGFXINIT) += gma-mainboard.ads

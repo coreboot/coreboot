@@ -20,6 +20,7 @@ $(objk)/Makefile.real: $(dir $(lastword $(MAKEFILE_LIST)))Makefile
 		-e "s,\$$(srctree)/arch/\$$(SRCARCH)/configs/\$$(KBUILD_DEFCONFIG),\$$(KBUILD_DEFCONFIG)," \
 		-e "s,--defconfig=arch/\$$(SRCARCH)/configs/\$$(KBUILD_DEFCONFIG),--defconfig=\$$(KBUILD_DEFCONFIG)," \
 		-e "/^unexport CONFIG_$$/d" \
+		-e "s/if_changed,moc/cmd_moc/g" \
 		$< > $@.tmp
 	mv $@.tmp $@
 
@@ -57,16 +58,16 @@ FORCE:
 filechk=$< > $@
 
 $(objk)/%.o: $(srck)/%.c
-	$(HOSTCC) -I $(srck) -I $(objk) -c $(HOSTCFLAGS_$(notdir $@)) -o $@ $<
+	$(HOSTCC) -I $(srck) -I $(objk) -c $(strip $(HOSTCFLAGS_$(notdir $@))) -o $@ $<
 
 $(objk)/%.o: $(srck)/%.cc
-	$(HOSTCXX) -I $(srck) -I $(objk) -c $(HOSTCXXFLAGS_$(notdir $@)) -o $@ $<
+	$(HOSTCXX) -I $(srck) -I $(objk) -c $(strip $(HOSTCXXFLAGS_$(notdir $@))) -o $@ $<
 
 $(objk)/%.o: $(objk)/%.c
 	$(HOSTCC) -I $(srck) -I $(objk) -c -o $@ $<
 
-$(objk)/%.moc: $(srck)/%.h | $(objk)/qconf-cfg
-	$(call cmd_moc)
+$(objk)/qconf-moc.o: $(objk)/qconf-moc.cc
+	$(HOSTCXX) -I $(srck) -I $(objk) -c $(strip $(HOSTCXXFLAGS_$(notdir $@))) -o $@ $<
 
 define hostprogs_template
 # $1 entry in hostprogs

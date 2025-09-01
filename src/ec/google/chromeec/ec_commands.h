@@ -5,12 +5,6 @@
 
 /* Host communication command constants for Chrome EC */
 
-/*
- * TODO(b/272518464): Work around coreboot GCC preprocessor bug.
- * #line marks the *next* line, so it is off by one.
- */
-#line 13
-
 #ifndef __CROS_EC_EC_COMMANDS_H
 #define __CROS_EC_EC_COMMANDS_H
 
@@ -148,6 +142,8 @@ extern "C" {
 #define EC_MEMMAP_SIZE 255 /* ACPI IO buffer max is 255 bytes */
 #define EC_MEMMAP_TEXT_MAX 8 /* Size of a string in the memory map */
 
+#define EC_LPC_ADDR_MEMMAP_INDEXED_IO 0x380
+
 /* The offset address of each type of data in mapped memory. */
 #define EC_MEMMAP_TEMP_SENSOR 0x00 /* Temp sensors 0x00 - 0x0f */
 #define EC_MEMMAP_FAN 0x10 /* Fan speeds 0x10 - 0x17 */
@@ -272,10 +268,21 @@ extern "C" {
 #define EC_BATT_FLAG_INVALID_DATA 0x20
 #define EC_BATT_FLAG_CUT_OFF 0x40
 
+/*
+ * Value written to EC_MEMMAP_BATT_DCAP, EC_MEMMAP_BATT_DVLT, EC_MEMMAP_CCNT,
+ * EC_MEMMAP_BATT_VOLT, EC_MEMMAP_BATT_RATE, EC_MEMMAP_BATT_CAP, and
+ * EC_MEMMAP_BATT_LFCC if the actual value is unknown.
+ *
+ * This corresponds with the unknown value specified by ACPI release 6.5
+ * 10.2.2 (and earlier versions), to match expectations of ACPI firmware.
+ */
+#define EC_MEMMAP_BATT_UNKNOWN_VALUE (-1)
+
 /* Switch flags at EC_MEMMAP_SWITCHES */
 #define EC_SWITCH_LID_OPEN 0x01
 #define EC_SWITCH_POWER_BUTTON_PRESSED 0x02
-#define EC_SWITCH_WRITE_PROTECT_DISABLED 0x04
+/* Was write protect disabled; now unused. */
+#define EC_SWITCH_IGNORE2 0x04
 /* Was recovery requested via keyboard; now unused. */
 #define EC_SWITCH_IGNORE1 0x08
 /* Recovery requested via dedicated signal (from servo board) */
@@ -525,6 +532,65 @@ extern "C" {
 #define EC_ACPI_MEM_USB_RETIMER_PORT(x) ((x) & 0x0f)
 #define EC_ACPI_MEM_USB_RETIMER_OP(x) \
 	(((x) & 0xf0) >> USB_RETIMER_FW_UPDATE_OP_SHIFT)
+
+/*
+ * Offset 0x15 is reserved for PBOK, added to coreboot in
+ * https://crrev.com/c/3840943 and proposed for inclusion here
+ * in https://crrev.com/c/3547317.
+ */
+
+/*
+ * Get extended strings from the EC.
+ * Write:
+ *     String index, or 0 to probe for EC support.
+ * Read:
+ *     String bytes, following by repeating null bytes.
+ *
+ * Writing a byte (EC_ACPI_MEM_STRINGS_FIFO_ID_*) selects a string, and the
+ * following reads return the non-null bytes of the string in sequence until
+ * the end of the string is reached. After the end of the string, reads 0 until
+ * another byte is written. This interface allows ACPI firmware to read longer
+ * strings from the EC than can reasonably fit into the shared memory region.
+ *
+ * To probe for EC support, write FIFO_ID_VERSION and read will return at least
+ * one nonzero (MEM_STRINGS_FIFO_V1 for example) if MEM_STRINGS_FIFO is
+ * supported. Returned values will indicate which strings are supported. If the
+ * first byte is 0xff, the strings FIFO is unsupported.
+ */
+#define EC_ACPI_MEM_STRINGS_FIFO 0x16
+
+/* String index to probe EC support. */
+#define EC_ACPI_MEM_STRINGS_FIFO_ID_VERSION 0
+#define EC_ACPI_MEM_STRINGS_FIFO_V1 1
+/*
+ * 0xff is the value the EC returns for unimplemented reads, indicating
+ * the current EC firmware does not implement this command.
+ */
+#define EC_ACPI_MEM_STRINGS_FIFO_UNSUPPORTED 0xff
+
+/*
+ * Battery model number for the selected battery. Supported since V1.
+ * Presents the same data as EC_MEMMAP_BATT_MODEL, but can provide more
+ * than 8 bytes.
+ *
+ * This and the other FIFO_ID_BATTERY strings can select one of multiple
+ * batteries by changing the value at EC_MEMMAP_BATT_INDEX. Once that index
+ * is changed, reads of these strings will return information for the
+ * corresponding battery, if present.
+ */
+#define EC_ACPI_MEM_STRINGS_FIFO_ID_BATTERY_MODEL 1
+/*
+ * Battery serial number for the selected battery. Supported since V1.
+ * Presents the same data as EC_MEMMAP_BATT_SERIAL, but can provide more
+ * than 8 bytes.
+ */
+#define EC_ACPI_MEM_STRINGS_FIFO_ID_BATTERY_SERIAL 2
+/*
+ * Battery manufacturer for the selected battery. Supported since V1.
+ * Presents the same data as EC_MEMMAP_BATT_MFGR, but can provide more
+ * than 8 bytes.
+ */
+#define EC_ACPI_MEM_STRINGS_FIFO_ID_BATTERY_MANUFACTURER 3
 
 /*
  * ACPI addresses 0x20 - 0xff map to EC_MEMMAP offset 0x00 - 0xdf.  This data
@@ -874,7 +940,7 @@ enum host_event_code {
 };
 
 /* Host event mask */
-#define EC_HOST_EVENT_MASK(event_code) BIT_ULL((event_code)-1)
+#define EC_HOST_EVENT_MASK(event_code) BIT_ULL((event_code) - 1)
 
 /* clang-format off */
 #define HOST_EVENT_TEXT                                                        \
@@ -1701,6 +1767,14 @@ enum ec_feature_code {
 	 * The EC supports UCSI PPM.
 	 */
 	EC_FEATURE_UCSI_PPM = 54,
+	/*
+	 * The EC supports Strauss keyboard.
+	 */
+	EC_FEATURE_STRAUSS = 55,
+	/*
+	 * The EC supports PoE.
+	 */
+	EC_FEATURE_POE = 56,
 };
 
 #define EC_FEATURE_MASK_0(event_code) BIT(event_code % 32)
@@ -1836,7 +1910,7 @@ struct ec_response_flash_info_2 {
 	uint16_t num_banks_total;
 	/* Number of banks described in banks array. */
 	uint16_t num_banks_desc;
-	struct ec_flash_bank banks[0];
+	struct ec_flash_bank banks[FLEXIBLE_ARRAY_MEMBER_SIZE];
 } __ec_align4;
 
 /*
@@ -2274,6 +2348,16 @@ struct ec_response_pwm_get_duty {
 	uint16_t duty; /* Duty cycle, EC_PWM_MAX_DUTY = 100% */
 } __ec_align2;
 
+#define EC_CMD_PWM_GET_FAN_DUTY 0x0027
+
+struct ec_params_pwm_get_fan_duty {
+	uint8_t fan_idx;
+} __ec_align1;
+
+struct ec_response_pwm_get_fan_duty {
+	uint32_t percent; /* Percentage of duty cycle, ranging from 0 ~ 100 */
+} __ec_align4;
+
 /*****************************************************************************/
 /*
  * Lightbar commands. This looks worse than it is. Since we only use one HOST
@@ -2607,6 +2691,8 @@ enum ec_led_id {
 	EC_LED_ID_RECOVERY_HW_REINIT_LED,
 	/* LED to indicate sysrq debug mode. */
 	EC_LED_ID_SYSRQ_DEBUG_LED,
+	/* LED strip for advanced patterns. */
+	EC_LED_ID_LIGHTBAR_LED,
 
 	EC_LED_ID_COUNT,
 };
@@ -3058,7 +3144,7 @@ struct ec_params_motion_sense {
 		 */
 		struct __ec_todo_unpacked {
 			/* Data to set or EC_MOTION_SENSE_NO_VALUE to read.
-			 * kb_wake_angle: angle to wakup AP.
+			 * kb_wake_angle: angle to wakeup AP.
 			 */
 			int16_t data;
 		} kb_wake_angle;
@@ -3704,12 +3790,29 @@ struct ec_params_thermal_set_threshold_v1 {
 
 /****************************************************************************/
 
-/* Toggle automatic fan control */
+/* Set or get fan control mode */
 #define EC_CMD_THERMAL_AUTO_FAN_CTRL 0x0052
+
+enum ec_auto_fan_ctrl_cmd {
+	EC_AUTO_FAN_CONTROL_CMD_SET = 0,
+	EC_AUTO_FAN_CONTROL_CMD_GET,
+};
 
 /* Version 1 of input params */
 struct ec_params_auto_fan_ctrl_v1 {
 	uint8_t fan_idx;
+} __ec_align1;
+
+/* Version 2 of input params */
+struct ec_params_auto_fan_ctrl_v2 {
+	uint8_t fan_idx;
+	uint8_t cmd; /* enum ec_auto_fan_ctrl_cmd */
+	uint8_t set_auto; /* only used with EC_AUTO_FAN_CONTROL_CMD_SET - bool
+			   */
+} __ec_align4;
+
+struct ec_response_auto_fan_control {
+	uint8_t is_auto; /* bool */
 } __ec_align1;
 
 /* Get/Set TMP006 calibration data */
@@ -3752,7 +3855,7 @@ struct ec_response_tmp006_get_calibration_v1 {
 	uint8_t algorithm;
 	uint8_t num_params;
 	uint8_t reserved[2];
-	float val[0];
+	float val[FLEXIBLE_ARRAY_MEMBER_SIZE];
 } __ec_align4;
 
 struct ec_params_tmp006_set_calibration_v1 {
@@ -3760,7 +3863,7 @@ struct ec_params_tmp006_set_calibration_v1 {
 	uint8_t algorithm;
 	uint8_t num_params;
 	uint8_t reserved;
-	float val[0];
+	float val[FLEXIBLE_ARRAY_MEMBER_SIZE];
 } __ec_align4;
 
 /* Read raw TMP006 data */
@@ -3947,7 +4050,8 @@ struct ec_params_keyscan_seq_ctrl {
 			 * start of the sequence.
 			 */
 			uint32_t time_us;
-			uint8_t scan[0]; /* keyscan data */
+			/* keyscan data */
+			uint8_t scan[FLEXIBLE_ARRAY_MEMBER_SIZE];
 		} add;
 		struct __ec_align1 {
 			uint8_t start_item; /* First item to return */
@@ -3961,7 +4065,7 @@ struct ec_result_keyscan_seq_ctrl {
 		struct __ec_todo_unpacked {
 			uint8_t num_items; /* Number of items */
 			/* Data for each item */
-			struct ec_collect_item item[0];
+			struct ec_collect_item item[FLEXIBLE_ARRAY_MEMBER_SIZE];
 		} collect;
 	};
 } __ec_todo_packed;
@@ -4783,14 +4887,15 @@ struct ec_params_i2c_passthru_msg {
 struct ec_params_i2c_passthru {
 	uint8_t port; /* I2C port number */
 	uint8_t num_msgs; /* Number of messages */
-	struct ec_params_i2c_passthru_msg msg[];
+	struct ec_params_i2c_passthru_msg msg[FLEXIBLE_ARRAY_MEMBER_SIZE];
 	/* Data to write for all messages is concatenated here */
 } __ec_align2;
 
 struct ec_response_i2c_passthru {
 	uint8_t i2c_status; /* Status flags (EC_I2C_STATUS_...) */
 	uint8_t num_msgs; /* Number of messages processed */
-	uint8_t data[]; /* Data read by messages concatenated here */
+	/* Data read by messages concatenated here */
+	uint8_t data[FLEXIBLE_ARRAY_MEMBER_SIZE];
 } __ec_align1;
 
 /*****************************************************************************/
@@ -4880,6 +4985,33 @@ enum charge_state_params {
 	 * weak external charger. READ ONLY.
 	 */
 	CS_PARAM_LIMIT_POWER,
+
+	/* min value of charger voltage limit (READ ONLY) */
+	CS_PARAM_CHG_VOLTAGE_MIN,
+
+	/* max value of charger voltage limit (READ ONLY) */
+	CS_PARAM_CHG_VOLTAGE_MAX,
+
+	/* step value of charger voltage limit (READ ONLY) */
+	CS_PARAM_CHG_VOLTAGE_STEP,
+
+	/* min value of charger current limit (READ ONLY) */
+	CS_PARAM_CHG_CURRENT_MIN,
+
+	/* max value of charger current limit (READ ONLY) */
+	CS_PARAM_CHG_CURRENT_MAX,
+
+	/* step value of charger current limit (READ ONLY) */
+	CS_PARAM_CHG_CURRENT_STEP,
+
+	/* min value of charger input current limit (READ ONLY) */
+	CS_PARAM_CHG_INPUT_CURRENT_MIN,
+
+	/* max value of charger input current limit (READ ONLY) */
+	CS_PARAM_CHG_INPUT_CURRENT_MAX,
+
+	/* step value of charger input current limit (READ ONLY) */
+	CS_PARAM_CHG_INPUT_CURRENT_STEP,
 
 	/* How many so far? */
 	CS_NUM_BASE_PARAMS,
@@ -5786,6 +5918,44 @@ struct ec_params_memory_dump_read_memory {
 	uint32_t size;
 } __ec_align4;
 
+#define EC_CMD_PANIC_LOG_INFO 0x00E0
+
+/*
+ * Parameters for configuring the panic log.
+ * Freeze and unfreeze are mutually exclusive.
+ */
+struct ec_params_panic_log_info {
+	/* Reset panic log */
+	uint8_t reset;
+	/* Freeze panic log */
+	uint8_t freeze;
+	/* Unfreeze panic log */
+	uint8_t unfreeze;
+} __ec_align1;
+
+/*
+ * Returns the panic log info before applying the configuration
+ * in ec_params_panic_log_info.
+ */
+struct ec_response_panic_log_info {
+	uint32_t version;
+	uint32_t capacity;
+	uint32_t length;
+	uint8_t valid;
+	uint8_t frozen;
+} __ec_align4;
+
+#define EC_CMD_PANIC_LOG_READ 0x00E1
+
+/*
+ * Read from panic log at given byte offset. Will read up to the end of the
+ * panic log or response max. Use EC_CMD_PANIC_LOG_INFO command to freeze
+ * the log and get the length before reading.
+ */
+struct ec_params_panic_log_read {
+	uint32_t offset;
+} __ec_align4;
+
 /*
  * EC_CMD_MEMORY_DUMP_READ_MEMORY response buffer is written directly into
  * host_cmd_handler_args.response and host_cmd_handler_args.response_size.
@@ -5861,6 +6031,7 @@ struct ec_response_pd_status {
 #define PD_EVENT_DATA_SWAP BIT(3)
 #define PD_EVENT_TYPEC BIT(4)
 #define PD_EVENT_PPM BIT(5)
+#define PD_EVENT_INIT BIT(6)
 
 struct ec_response_host_event_status {
 	uint32_t status; /* PD MCU host event status */
@@ -6132,7 +6303,8 @@ struct ec_response_pd_log {
 	uint8_t type; /* event type : see PD_EVENT_xx below */
 	uint8_t size_port; /* [7:5] port number [4:0] payload size in bytes */
 	uint16_t data; /* type-defined data payload */
-	uint8_t payload[0]; /* optional additional data payload: 0..16 bytes */
+	/* optional additional data payload: 0..16 bytes */
+	uint8_t payload[FLEXIBLE_ARRAY_MEMBER_SIZE];
 } __ec_align4;
 
 /* The timestamp is the microsecond counter shifted to get about a ms. */
@@ -6343,6 +6515,7 @@ struct ec_response_pd_chip_info_v1 {
  *  does NOT include a NUL-terminator.
  */
 #define USB_PD_CHIP_INFO_PROJECT_NAME_LEN 12
+
 struct ec_response_pd_chip_info_v2 {
 	uint16_t vendor_id;
 	uint16_t product_id;
@@ -6361,6 +6534,33 @@ struct ec_response_pd_chip_info_v2 {
 	 *  byte for a NUL-terminator.
 	 */
 	char fw_name_str[USB_PD_CHIP_INFO_PROJECT_NAME_LEN + 1];
+} __ec_align2;
+
+/** Maximum length of a driver/chip name reported in the pd_chip_info
+ *  response
+ */
+#define USB_PD_CHIP_INFO_DRIVER_NAME_LEN 24
+
+struct ec_response_pd_chip_info_v3 {
+	uint16_t vendor_id;
+	uint16_t product_id;
+	uint16_t device_id;
+	union {
+		uint8_t fw_version_string[8];
+		uint64_t fw_version_number;
+	} __ec_align2;
+	union {
+		uint8_t min_req_fw_version_string[8];
+		uint64_t min_req_fw_version_number;
+	} __ec_align2;
+	/** Flag to control the FW update process for this chip. */
+	uint16_t fw_update_flags;
+	/** Project name string associated with the chip's FW. Add an extra
+	 *  byte for a NUL-terminator.
+	 */
+	char fw_name_str[USB_PD_CHIP_INFO_PROJECT_NAME_LEN + 1];
+	/** Driver/chip string, plus room for a NUL-terminator */
+	char driver_name[USB_PD_CHIP_INFO_DRIVER_NAME_LEN + 1];
 } __ec_align2;
 
 /* Run RW signature verification and get status */
@@ -6413,29 +6613,20 @@ enum cbi_data_tag {
 	/* Second Source Factory Cache */
 	CBI_TAG_SSFC = 8, /* uint32_t bit field */
 	CBI_TAG_REWORK_ID = 9, /* uint64_t or smaller */
-	CBI_TAG_FACTORY_CALIBRATION_DATA = 10, /* uint32_t bit field */
-
-	/*
-	 * A uint32_t field reserved for controlling common features at runtime.
-	 * It shouldn't be used at board-level. See union ec_common_control for
-	 * the bit definitions.
-	 */
-	CBI_TAG_COMMON_CONTROL = 11,
-
+	CBI_TAG_FACTORY_CALIBRATION_DATA = 10, /* Deprecated */
+	CBI_TAG_COMMON_CONTROL = 11, /* Deprecated */
 	/* struct board_batt_params */
 	CBI_TAG_BATTERY_CONFIG = 12,
 	/* CBI_TAG_BATTERY_CONFIG_1 ~ 15 will use 13 ~ 27. */
 	CBI_TAG_BATTERY_CONFIG_15 = 27,
 
+	/* CBI_TAG_PROVISION_MATRIX_VERSION
+	 * Version of the current provision matrix
+	 */
+	CBI_TAG_PROVISION_MATRIX_VERSION = 28, /* uint32_t bit field */
+
 	/* Last entry */
 	CBI_TAG_COUNT,
-};
-
-union ec_common_control {
-	struct {
-		uint32_t ucsi_enabled : 1;
-	};
-	uint32_t raw_value;
 };
 
 /*
@@ -6466,7 +6657,7 @@ struct ec_params_set_cbi {
 	uint32_t tag; /* enum cbi_data_tag */
 	uint32_t flag; /* CBI_SET_* */
 	uint32_t size; /* Data size */
-	uint8_t data[]; /* For string and raw data */
+	uint8_t data[FLEXIBLE_ARRAY_MEMBER_SIZE]; /* For string and raw data */
 } __ec_align1;
 
 /*
@@ -6498,7 +6689,7 @@ struct ec_params_set_cbi_bin {
 	uint32_t offset; /* Data offset */
 	uint32_t size; /* Data size */
 	uint8_t flags; /* bit field for EC_CBI_BIN_COMMIT_FLAG_* */
-	uint8_t data[]; /* For string and raw data */
+	uint8_t data[FLEXIBLE_ARRAY_MEMBER_SIZE]; /* For string and raw data */
 } __ec_align1;
 
 /*
@@ -6596,6 +6787,8 @@ enum chipset_shutdown_reason {
 	CHIPSET_SHUTDOWN_THERMAL,
 	/* Force a chipset shutdown from the power button through EC */
 	CHIPSET_SHUTDOWN_BUTTON,
+	/* Force a chipset shutdown, because the AP wants to. */
+	CHIPSET_SHUTDOWN_HOST_CMD,
 
 	CHIPSET_SHUTDOWN_COUNT, /* End of shutdown reasons. */
 };
@@ -7113,7 +7306,7 @@ struct ec_response_typec_discovery {
 	uint8_t svid_count; /* Number of SVIDs partner sent */
 	uint16_t reserved;
 	uint32_t discovery_vdo[VDO_MAX_OBJECTS];
-	struct svid_mode_info svids[0];
+	struct svid_mode_info svids[FLEXIBLE_ARRAY_MEMBER_SIZE];
 } __ec_align1;
 
 /* USB Type-C commands for AP-controlled device policy. */
@@ -7625,7 +7818,7 @@ struct ec_params_pchg_update {
 	/* Size of <data> */
 	uint32_t size;
 	/* Partial data of new firmware */
-	uint8_t data[];
+	uint8_t data[FLEXIBLE_ARRAY_MEMBER_SIZE];
 } __ec_align4;
 
 BUILD_ASSERT(EC_PCHG_UPDATE_CMD_COUNT <
@@ -7759,7 +7952,7 @@ struct ec_params_rgbkbd_set_color {
 	/* Specifies # of elements in <color>. */
 	uint8_t length;
 	/* RGB color data array of length up to MAX_KEY_COUNT. */
-	struct rgb_s color[];
+	struct rgb_s color[FLEXIBLE_ARRAY_MEMBER_SIZE];
 } __ec_align1;
 
 /*
@@ -7976,7 +8169,7 @@ struct ec_params_ap_fw_state {
 /* The data size is stored in the host command protocol header. */
 struct ec_params_ucsi_ppm_set {
 	uint16_t offset;
-	uint8_t data[];
+	uint8_t data[FLEXIBLE_ARRAY_MEMBER_SIZE];
 } __ec_align2;
 
 #define EC_CMD_UCSI_PPM_GET 0x0141
@@ -7993,6 +8186,82 @@ struct ec_params_ucsi_ppm_get {
 struct ec_params_set_alarm_slp_s0_dbg {
 	uint32_t time;
 } __ec_align2;
+
+/*
+ * Control PDC tracing.
+ *   EC_PDC_TRACE_MSG_PORT_NONE disable tracing
+ *   EC_PDC_TRACE_MSG_PORT_ALL enable tracing on all ports
+ *   else, enable tracing on a specific port.
+ */
+
+#define EC_CMD_PDC_TRACE_MSG_ENABLE 0x0143
+
+#define EC_PDC_TRACE_MSG_PORT_NONE 0xff
+#define EC_PDC_TRACE_MSG_PORT_ALL 0xfe
+
+struct ec_params_pdc_trace_msg_enable {
+	uint8_t port;
+};
+
+struct ec_response_pdc_trace_msg_enable {
+	/* Previous port value. */
+	uint8_t port;
+	uint8_t reserved;
+	/* Number of free bytes in FIFO. */
+	uint16_t fifo_free;
+	/* Running total of dropped messages (may wrap). */
+	uint32_t dropped_count;
+} __ec_align4;
+
+/*
+ * Fetch multiple PDC trace entries.
+ *
+ * If no entries are available, pl_size is 0.
+ * At most MAX_HC_PDC_TRACE_MSG_GET_PAYLOAD bytes worth of entries
+ * are returned. Only whole entries are returned.
+ */
+
+#define EC_CMD_PDC_TRACE_MSG_GET_ENTRIES 0x0144
+#define MAX_HC_PDC_TRACE_MSG_GET_PAYLOAD 240
+
+struct ec_response_pdc_trace_msg_get_entries {
+	/* Total bytes of payload. */
+	uint16_t pl_size;
+	/* Packed array of pdc_trace_msg_entry structs. */
+	uint8_t payload[FLEXIBLE_ARRAY_MEMBER_SIZE];
+};
+
+enum pdc_trace_msg_direction {
+	PDC_TRACE_MSG_DIR_IN = 0,
+	PDC_TRACE_MSG_DIR_OUT = 1,
+};
+
+struct pdc_trace_msg_entry {
+	/*
+	 * Timestamp - least significant 32 bits of EC epoch time
+	 * (microseconds, will wrap around).
+	 */
+	uint32_t time32_us;
+	/* Entry sequence number (wraps around). */
+	uint16_t seq_num;
+	/* Port number associated with this entry. */
+	uint8_t port_num;
+	/* Direction of message (enum pdc_trace_msg_direction) */
+	uint8_t direction;
+	/* Format of pdc_data (PDC chip identifier). */
+	uint8_t msg_type;
+	/* Bytes in pdc_data. */
+	uint8_t pdc_data_size;
+	/* Captured PDC message. */
+	uint8_t pdc_data[FLEXIBLE_ARRAY_MEMBER_SIZE];
+} __ec_align1;
+
+/* Enable/disable Ethernet POE power */
+#define EC_CMD_SWITCH_ENABLE_POE 0x0145
+
+struct ec_params_switch_enable_poe {
+	uint8_t enabled;
+} __ec_align1;
 
 /*****************************************************************************/
 /* The command range 0x200-0x2FF is reserved for Rotor. */
@@ -8019,7 +8288,7 @@ struct ec_params_set_alarm_slp_s0_dbg {
 struct ec_params_fp_passthru {
 	uint16_t len; /* Number of bytes to write then read */
 	uint16_t flags; /* EC_FP_FLAG_xxx */
-	uint8_t data[]; /* Data to send */
+	uint8_t data[FLEXIBLE_ARRAY_MEMBER_SIZE]; /* Data to send */
 } __ec_align2;
 
 /* Configure the Fingerprint MCU behavior */
@@ -8052,9 +8321,9 @@ struct ec_params_fp_passthru {
 	 FP_MODE_MATCH | FP_MODE_RESET_SENSOR | FP_MODE_SENSOR_MAINTENANCE | \
 	 FP_MODE_DONT_CHANGE)
 
-/* Capture types defined in bits [30..28] */
-#define FP_MODE_CAPTURE_TYPE_SHIFT 28
-#define FP_MODE_CAPTURE_TYPE_MASK (0x7 << FP_MODE_CAPTURE_TYPE_SHIFT)
+/* Capture types defined in bits [30..26] */
+#define FP_MODE_CAPTURE_TYPE_SHIFT 26
+#define FP_MODE_CAPTURE_TYPE_MASK (0x1F << FP_MODE_CAPTURE_TYPE_SHIFT)
 /**
  * enum fp_capture_type - Specifies the "mode" when capturing images.
  *
@@ -8062,6 +8331,9 @@ struct ec_params_fp_passthru {
  * image (produces 'frame_size' bytes)
  * @FP_CAPTURE_SIMPLE_IMAGE: Simple raw image capture (produces width x height x
  * bpp bits)
+ * @FP_CAPTURE_DEFECT_PXL_TEST: Capture for check defect pixel test
+ * @FP_CAPTURE_ABNORMAL_TEST: Capture for check abnormal pixel test
+ * @FP_CAPTURE_NOISE_TEST: Capture for check noise test
  * @FP_CAPTURE_PATTERN0: Self test pattern (e.g. checkerboard)
  * @FP_CAPTURE_PATTERN1: Self test pattern (e.g. inverted checkerboard)
  * @FP_CAPTURE_QUALITY_TEST: Capture for Quality test with fixed contrast
@@ -8073,16 +8345,24 @@ struct ec_params_fp_passthru {
  */
 enum fp_capture_type {
 	FP_CAPTURE_VENDOR_FORMAT = 0,
-	FP_CAPTURE_SIMPLE_IMAGE = 1,
-	FP_CAPTURE_PATTERN0 = 2,
-	FP_CAPTURE_PATTERN1 = 3,
-	FP_CAPTURE_QUALITY_TEST = 4,
-	FP_CAPTURE_RESET_TEST = 5,
+	FP_CAPTURE_DEFECT_PXL_TEST = 1,
+	FP_CAPTURE_ABNORMAL_TEST = 2,
+	FP_CAPTURE_NOISE_TEST = 3,
+	FP_CAPTURE_SIMPLE_IMAGE = 4,
+	FP_CAPTURE_PATTERN0 = 8,
+	FP_CAPTURE_PATTERN1 = 12,
+	FP_CAPTURE_QUALITY_TEST = 16,
+	FP_CAPTURE_RESET_TEST = 20,
 	FP_CAPTURE_TYPE_MAX,
 };
+
+/* The maximum number of capture types in enum fp_capture_type */
+#define FP_MAX_CAPTURE_TYPES 9
+
 /* Extracts the capture type from the sensor 'mode' word */
-#define FP_CAPTURE_TYPE(mode) \
-	(((mode) & FP_MODE_CAPTURE_TYPE_MASK) >> FP_MODE_CAPTURE_TYPE_SHIFT)
+#define FP_CAPTURE_TYPE(mode)                                          \
+	(enum fp_capture_type)(((mode) & FP_MODE_CAPTURE_TYPE_MASK) >> \
+			       FP_MODE_CAPTURE_TYPE_SHIFT)
 
 struct ec_params_fp_mode {
 	uint32_t mode; /* as defined by FP_MODE_ constants */
@@ -8095,10 +8375,14 @@ struct ec_response_fp_mode {
 /* Retrieve Fingerprint sensor information */
 #define EC_CMD_FP_INFO 0x0403
 
+/* Mask for dead pixels */
+#define FP_ERROR_DEAD_PIXELS_MASK 0x3FF
+/* Maximum number of dead pixels */
+#define FP_ERROR_DEAD_PIXELS_MAX (FP_ERROR_DEAD_PIXELS_MASK - 1)
 /* Number of dead pixels detected on the last maintenance */
-#define FP_ERROR_DEAD_PIXELS(errors) ((errors) & 0x3FF)
+#define FP_ERROR_DEAD_PIXELS(errors) ((errors) & FP_ERROR_DEAD_PIXELS_MASK)
 /* Unknown number of dead pixels detected on the last maintenance */
-#define FP_ERROR_DEAD_PIXELS_UNKNOWN (0x3FF)
+#define FP_ERROR_DEAD_PIXELS_UNKNOWN (FP_ERROR_DEAD_PIXELS_MASK)
 /* No interrupt from the sensor */
 #define FP_ERROR_NO_IRQ BIT(12)
 /* SPI communication error */
@@ -8143,6 +8427,51 @@ struct ec_response_fp_info {
 	uint32_t template_dirty; /* bitmap of templates with MCU side changes */
 	uint32_t template_version; /* version of the template format */
 } __ec_align4;
+
+struct fp_sensor_info {
+	/* Sensor identification */
+	uint32_t vendor_id;
+	uint32_t product_id;
+	uint32_t model_id;
+	uint32_t version;
+	uint16_t num_capture_types; /* number of image capture types */
+	uint16_t errors; /* see FP_ERROR_ flags above */
+} __ec_align4;
+BUILD_ASSERT(sizeof(struct fp_sensor_info) == 20);
+
+struct fp_template_info {
+	/* Template/finger current information */
+	uint32_t template_size; /* max template size in bytes */
+	uint16_t template_max; /* maximum number of fingers/templates */
+	uint16_t template_valid; /* number of valid fingers/templates */
+	uint32_t template_dirty; /* bitmap of templates with MCU side changes */
+	uint32_t template_version; /* version of the template format */
+} __ec_align4;
+BUILD_ASSERT(sizeof(struct fp_template_info) == 16);
+
+struct fp_image_frame_params {
+	/* Image frame characteristics */
+	uint32_t frame_size;
+	uint32_t pixel_format; /* using V4L2_PIX_FMT_ */
+	uint16_t width;
+	uint16_t height;
+	uint16_t bpp;
+	/** Type of image capture from enum fp_capture_type. */
+	uint8_t fp_capture_type;
+	uint8_t reserved; /**< padding for alignment */
+} __ec_align4;
+BUILD_ASSERT(sizeof(struct fp_image_frame_params) == 16);
+
+struct ec_response_fp_info_v2 {
+	/* Sensor identification */
+	struct fp_sensor_info sensor_info;
+	/* Template/finger current information */
+	struct fp_template_info template_info;
+	/* fingerprint image frame parameters */
+	struct fp_image_frame_params
+		image_frame_params[FLEXIBLE_ARRAY_MEMBER_SIZE];
+} __ec_align4;
+BUILD_ASSERT(sizeof(struct ec_response_fp_info_v2) == 36);
 
 /* Get the last captured finger frame or a template content */
 #define EC_CMD_FP_FRAME 0x0404
@@ -8205,7 +8534,7 @@ struct ec_params_fp_frame {
 struct ec_params_fp_template {
 	uint32_t offset;
 	uint32_t size;
-	uint8_t data[];
+	uint8_t data[FLEXIBLE_ARRAY_MEMBER_SIZE];
 } __ec_align4;
 
 /* Clear the current fingerprint user context and set a new one */
@@ -8260,16 +8589,12 @@ struct ec_params_fp_seed {
 
 /* FP TPM seed has been set or not */
 #define FP_ENC_STATUS_SEED_SET BIT(0)
-/* FP using nonce context or not */
-#define FP_CONTEXT_STATUS_NONCE_CONTEXT_SET BIT(1)
-/* FP match had been processed or not */
-#define FP_CONTEXT_STATUS_MATCH_PROCESSED_SET BIT(2)
-/* FP auth_nonce had been set or not*/
-#define FP_CONTEXT_AUTH_NONCE_SET BIT(3)
+/* Session was established or not */
+#define FP_CONTEXT_STATUS_SESSION_ESTABLISHED BIT(1)
+/* FP session_nonce had been set or not*/
+#define FP_CONTEXT_SESSION_NONCE_SET BIT(2)
 /* FP user_id had been set or not*/
-#define FP_CONTEXT_USER_ID_SET BIT(4)
-/* FP templates are unlocked for nonce context or not */
-#define FP_CONTEXT_TEMPLATE_UNLOCKED_SET BIT(5)
+#define FP_CONTEXT_USER_ID_SET BIT(3)
 
 struct ec_response_fp_encryption_status {
 	/* Used bits in encryption engine status */
@@ -8327,7 +8652,6 @@ struct fp_encrypted_private_key {
 
 struct ec_response_fp_establish_pairing_key_keygen {
 	struct fp_elliptic_curve_public_key pubkey;
-	struct fp_encrypted_private_key encrypted_private_key;
 } __ec_align4;
 
 #define FP_PAIRING_KEY_LEN 32
@@ -8341,7 +8665,6 @@ struct ec_fp_encrypted_pairing_key {
 
 struct ec_params_fp_establish_pairing_key_wrap {
 	struct fp_elliptic_curve_public_key peers_pubkey;
-	struct fp_encrypted_private_key encrypted_private_key;
 } __ec_align4;
 
 struct ec_response_fp_establish_pairing_key_wrap {
@@ -8353,61 +8676,20 @@ struct ec_response_fp_establish_pairing_key_wrap {
 typedef struct ec_response_fp_establish_pairing_key_wrap
 	ec_params_fp_load_pairing_key;
 
-#define FP_CK_AUTH_NONCE_LEN 32
+#define FP_CK_SESSION_NONCE_LEN 32
 
 #define EC_CMD_FP_GENERATE_NONCE 0x0413
 struct ec_response_fp_generate_nonce {
-	uint8_t nonce[FP_CK_AUTH_NONCE_LEN];
+	uint8_t nonce[FP_CK_SESSION_NONCE_LEN];
 } __ec_align4;
 
-#define FP_CONTEXT_USERID_LEN 32
-#define FP_CONTEXT_USERID_IV_LEN 16
-#define FP_CONTEXT_KEY_LEN 32
-
-#define EC_CMD_FP_NONCE_CONTEXT 0x0414
-struct ec_params_fp_nonce_context {
-	uint8_t gsc_nonce[FP_CK_AUTH_NONCE_LEN];
-	uint8_t enc_user_id[FP_CONTEXT_USERID_LEN];
-	uint8_t enc_user_id_iv[FP_CONTEXT_USERID_IV_LEN];
+#define EC_CMD_FP_ESTABLISH_SESSION 0x0414
+struct ec_params_fp_establish_session {
+	uint8_t peer_nonce[FP_CK_SESSION_NONCE_LEN];
+	uint8_t enc_tpm_seed[FP_CONTEXT_TPM_BYTES];
+	uint8_t nonce[FP_AES_KEY_NONCE_BYTES];
+	uint8_t tag[FP_AES_KEY_TAG_BYTES];
 } __ec_align4;
-
-#define FP_ELLIPTIC_CURVE_PUBLIC_KEY_IV_LEN 16
-
-#define EC_CMD_FP_READ_MATCH_SECRET_WITH_PUBKEY 0x0415
-
-struct ec_params_fp_read_match_secret_with_pubkey {
-	uint16_t fgr;
-	uint16_t reserved;
-	struct fp_elliptic_curve_public_key pubkey;
-} __ec_align4;
-
-struct ec_response_fp_read_match_secret_with_pubkey {
-	struct fp_elliptic_curve_public_key pubkey;
-	uint8_t iv[FP_ELLIPTIC_CURVE_PUBLIC_KEY_IV_LEN];
-	uint8_t enc_secret[FP_POSITIVE_MATCH_SECRET_BYTES];
-} __ec_align4;
-
-/* Unlock the fpsensor template with the current nonce context */
-#define EC_CMD_FP_UNLOCK_TEMPLATE 0x0417
-
-struct ec_params_fp_unlock_template {
-	uint16_t fgr_num;
-} __ec_align4;
-
-/*
- * Migrate a legacy FP template (here, legacy refers to being generated in a
- * raw user_id context instead of a nonce context) by wiping its match secret
- * salt and treating it as a newly-enrolled template.
- * The legacy FP template needs to be uploaded by FP_TEMPLATE command first
- * without committing, then this command will commit it.
- */
-#define EC_CMD_FP_MIGRATE_TEMPLATE_TO_NONCE_CONTEXT 0x0418
-
-struct ec_params_fp_migrate_template_to_nonce_context {
-	/* The context userid used to encrypt this template when it was created.
-	 */
-	uint32_t userid[FP_CONTEXT_USERID_WORDS];
-};
 
 /*****************************************************************************/
 /* Touchpad MCU commands: range 0x0500-0x05FF */
@@ -8420,7 +8702,7 @@ struct ec_params_fp_migrate_template_to_nonce_context {
 
 struct ec_response_tp_frame_info {
 	uint32_t n_frames;
-	uint32_t frame_sizes[0];
+	uint32_t frame_sizes[FLEXIBLE_ARRAY_MEMBER_SIZE];
 } __ec_align4;
 
 /* Create a snapshot of current frame readings */
@@ -8602,6 +8884,9 @@ struct ec_response_get_boot_time {
 	uint64_t timestamp[RESET_CNT];
 	uint16_t cnt;
 } __ec_align4;
+
+/* Issue AP shutdown */
+#define EC_CMD_AP_SHUTDOWN 0x0605
 
 /*****************************************************************************/
 /*

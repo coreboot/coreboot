@@ -373,8 +373,12 @@ _CROS_EC_CV_F_P_R(EC_CMD_MOTION_SENSE_CMD, 4, motion_sense_cmd_v4, motion_sense,
 _CROS_EC_CV_F_P(EC_CMD_OVERRIDE_DEDICATED_CHARGER_LIMIT, 0,
 		override_dedicated_charger_limit, dedicated_charger_limit);
 _CROS_EC_C0_F_RF(EC_CMD_PCHG_COUNT, pchg_count);
+_CROS_EC_C0_F_PF_RF(EC_CMD_PDC_TRACE_MSG_ENABLE, pdc_trace_msg_enable);
+_CROS_EC_C0_F_RF(EC_CMD_PDC_TRACE_MSG_GET_ENTRIES, pdc_trace_msg_get_entries);
 _CROS_EC_CV_F_P(EC_CMD_PD_CHARGE_PORT_OVERRIDE, 0, pd_charge_port_override,
 		charge_port_override);
+_CROS_EC_CV_F_P_R(EC_CMD_PD_CHIP_INFO, 3, pd_chip_info_v3, pd_chip_info,
+		  pd_chip_info_v3);
 _CROS_EC_CV_F_P_R(EC_CMD_PD_CHIP_INFO, 2, pd_chip_info_v2, pd_chip_info,
 		  pd_chip_info_v2);
 _CROS_EC_CV_F_P_R(EC_CMD_PD_CHIP_INFO, 1, pd_chip_info_v1, pd_chip_info,
@@ -446,6 +450,8 @@ _CROS_EC_C0_F_PF(EC_CMD_USB_PD_RW_HASH_ENTRY, usb_pd_rw_hash_entry);
 _CROS_EC_C0_F_PF_RF(EC_CMD_VBOOT_HASH, vboot_hash);
 _CROS_EC_C0_F_PF_RF(EC_CMD_VSTORE_READ, vstore_read);
 _CROS_EC_C0_F_PF(EC_CMD_VSTORE_WRITE, vstore_write);
+_CROS_EC_C0_F_PF(EC_CMD_UCSI_PPM_SET, ucsi_ppm_set);
+_CROS_EC_C0_F_PF(EC_CMD_UCSI_PPM_GET, ucsi_ppm_get);
 
 #ifdef __cplusplus
 }

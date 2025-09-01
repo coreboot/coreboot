@@ -151,3 +151,9 @@ nullidt:
 	.word	0	/* limit */
 	.long	0
 	.word	0
+
+  /* This is the first instruction the CPU runs when coming out of reset. */
+.section ".reset", "ax", %progbits
+.globl _start
+_start:
+	jmp		_start16bit

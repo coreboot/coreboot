@@ -34,7 +34,6 @@ subdirs-$(CONFIG_CPU_INTEL_COMMON_SMM) += ../intel/smm
 
 bootblock-y += entry32.S
 bootblock-y += entry16.S
-bootblock-y += reset16.S
 
 additional-dirs += $(obj)/cpu/x86
 

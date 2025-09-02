@@ -53,6 +53,9 @@ struct lb_record *lb_new_record(struct lb_header *header);
 /* Add VBOOT VBNV offsets. */
 void lb_table_add_vbnv_cmos(struct lb_header *header);
 
+/* Add Boot Mode information */
+void lb_add_boot_mode(struct lb_header *header);
+
 /* Define this in mainboard.c to add board specific CFR entries */
 void mb_cfr_setup_menu(struct lb_cfr *cfr_root);
 

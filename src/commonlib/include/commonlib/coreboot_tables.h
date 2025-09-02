@@ -96,6 +96,7 @@ enum {
 	LB_TAG_OPTION_ENUM		= 0x00ca,
 	LB_TAG_OPTION_DEFAULTS		= 0x00cb,
 	LB_TAG_OPTION_CHECKSUM		= 0x00cc,
+	LB_TAG_BOOT_MODE		= 0x00cd,
 };
 
 /* All table entry base addresses and sizes must be 4-byte aligned. */
@@ -619,6 +620,24 @@ struct lb_cfr {
 	uint32_t version;
 	uint32_t checksum;	/* Checksum of the variable payload. */
 	/* struct lb_cfr_option_form		forms[] */
+};
+
+enum boot_mode_t {
+	LB_BOOT_MODE_NORMAL,
+	LB_BOOT_MODE_LOW_BATTERY,
+	LB_BOOT_MODE_OFFMODE_CHARGING,
+};
+
+/*
+ * Boot Mode: Pass the platform boot mode information to payload about
+ * booting in low-battery mode or off-mode charging. These information
+ * is useful for payload to implement charger driver.
+ */
+struct lb_boot_mode {
+	uint32_t tag;
+	uint32_t size;
+
+	enum boot_mode_t boot_mode;
 };
 
 #endif

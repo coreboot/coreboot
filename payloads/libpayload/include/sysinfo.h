@@ -173,6 +173,7 @@ struct sysinfo_t {
 	/* pvmfw buffer location */
 	uintptr_t pvmfw;
 	uint32_t pvmfw_size;
+	enum boot_mode_t boot_mode;
 };
 
 extern struct sysinfo_t lib_sysinfo;

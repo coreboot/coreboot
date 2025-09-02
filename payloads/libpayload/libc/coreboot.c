@@ -285,6 +285,13 @@ static void cb_parse_pcie(void *ptr, struct sysinfo_t *info)
 	info->pcie_ctrl_base = pcie->ctrl_base;
 }
 
+static void cb_parse_boot_mode(void *ptr, struct sysinfo_t *info)
+{
+	const struct cb_boot_mode *mode = ptr;
+
+	info->boot_mode = mode->boot_mode;
+}
+
 static void cb_parse_rsdp(void *ptr, struct sysinfo_t *info)
 {
 	const struct cb_acpi_rsdp *cb_acpi_rsdp = ptr;
@@ -436,6 +443,9 @@ int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 		case CB_TAG_PCIE:
 			cb_parse_pcie(ptr, info);
+			break;
+		case CB_TAG_BOOT_MODE:
+			cb_parse_boot_mode(ptr, info);
 			break;
 		default:
 			cb_parse_arch_specific(rec, info);

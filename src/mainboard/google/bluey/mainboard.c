@@ -1,13 +1,31 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
+#include <boot/coreboot_tables.h>
 #include <bootmode.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <ec/google/chromeec/ec.h>
 #include <gpio.h>
 #include <soc/pcie.h>
 #include <soc/qupv3_config_common.h>
 #include <soc/qup_se_handlers_common.h>
 #include "board.h"
+
+void lb_add_boot_mode(struct lb_header *header)
+{
+	if (!CONFIG(EC_GOOGLE_CHROMEEC))
+		return;
+
+	struct lb_boot_mode *mode = (struct lb_boot_mode *)lb_new_record(header);
+	memset(mode, 0, sizeof(*mode));
+
+	mode->tag = LB_TAG_BOOT_MODE;
+	mode->size = sizeof(*mode);
+	mode->boot_mode = LB_BOOT_MODE_NORMAL;
+
+	if (google_chromeec_is_below_critical_threshold())
+		mode->boot_mode = LB_BOOT_MODE_LOW_BATTERY;
+}
 
 bool mainboard_needs_pcie_init(void)
 {

@@ -439,18 +439,15 @@ chip soc/intel/alderlake
 				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
 
 				# Controls
-				register "gpio_panel.gpio[0].gpio_num" = "GPP_D15"  # EN_PP2800_WCAM_X
-				register "gpio_panel.gpio[1].gpio_num" = "GPP_D16"  # EN_PP1800_PP1200_WCAM_X
+				register "gpio_panel.gpio[0].gpio_num" = "GPP_D16"  # EN_PP2800_WCAM_X and EN_PP1800_PP1200_WCAM_X
 
 				# _ON
-				register "on_seq.ops_cnt" = "2"
+				register "on_seq.ops_cnt" = "1"
 				register "on_seq.ops[0]" = "SEQ_OPS_GPIO_ENABLE(0, 5)"
-				register "on_seq.ops[1]" = "SEQ_OPS_GPIO_ENABLE(1, 5)"
 
 				# _OFF
-				register "off_seq.ops_cnt" = "2"
+				register "off_seq.ops_cnt" = "1"
 				register "off_seq.ops[0]" = "SEQ_OPS_GPIO_DISABLE(1, 0)"
-				register "off_seq.ops[1]" = "SEQ_OPS_GPIO_DISABLE(0, 0)"
 
 				device i2c 0C on
 					probe WFC WFC_MIPI_OVTI8856

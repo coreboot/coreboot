@@ -25,6 +25,10 @@ void lb_add_boot_mode(struct lb_header *header)
 
 	if (google_chromeec_is_below_critical_threshold())
 		mode->boot_mode = LB_BOOT_MODE_LOW_BATTERY;
+
+	/* Booting into normal mode hence disable charging */
+	if (mode->boot_mode == LB_BOOT_MODE_NORMAL)
+		disable_slow_battery_charging();
 }
 
 bool mainboard_needs_pcie_init(void)

@@ -143,6 +143,14 @@ config EC_GOOGLE_CHROMEEC_SPI_BUS
 	default 0xd if BOARD_GOOGLE_MODEL_QUARTZ
 	default 0xb
 
+config MAINBOARD_GPIO_PIN_FOR_TOUCHPAD_POWER
+	int
+	default 36 if BOARD_GOOGLE_MODEL_QUARTZ
+	default 0
+	help
+	  This option specifies the GPIO pin number on the mainboard that is
+	  used for enabling power to the touchpad. Set it to 0 if unused.
+
 config MAINBOARD_GPIO_PIN_FOR_GSC_AP_INTERRUPT
 	depends on TPM_GOOGLE_TI50
 	int

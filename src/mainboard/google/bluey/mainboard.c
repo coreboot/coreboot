@@ -43,6 +43,10 @@ static void mainboard_init(struct device *dev)
 	if (CONFIG(MAINBOARD_HAS_FINGERPRINT_VIA_SPI))
 		qupv3_se_fw_load_and_init(QUPV3_2_SE2, SE_PROTOCOL_SPI, MIXED); /* Fingerprint SPI */
 
+	/* Enable touchpad power */
+	if (CONFIG_MAINBOARD_GPIO_PIN_FOR_TOUCHPAD_POWER)
+		gpio_output(GPIO_TP_POWER_EN, 1);
+
 	/*
 	 * Deassert FPMCU reset. Power applied in romstage
 	 * has now stabilized.

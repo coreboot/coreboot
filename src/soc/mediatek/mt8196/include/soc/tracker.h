@@ -4,7 +4,7 @@
 #define SOC_MEDIATEK_MT8196_TRACKER_H
 
 #include <soc/tracker_common.h>
-#include <stdint.h>
+#include <soc/tracker_v3.h>
 
 #define BUS_DBG_CON			0x000
 #define BUS_TRACE_CON_AO_PRESCALE	0x8f8
@@ -20,17 +20,6 @@
 #define SYS_TRACK_ENTRY			64
 #define INFRA_ENTRY_NUM			32
 #define VLP_ENTRY_NUM			4
-
-#define AR_TRACK_LOG_OFFSET		0x0200
-#define AR_ENTRY_ID_OFFSET		0x0300
-#define AR_TRACK_L_OFFSET		0x0400
-#define AR_TRACK_H_OFFSET		0x0600
-#define AW_TRACK_LOG_OFFSET		0x0800
-#define AW_ENTRY_ID_OFFSET		0x0900
-#define AW_TRACK_L_OFFSET		0x0A00
-#define AW_TRACK_H_OFFSET		0x0C00
-
-#define BUSTRACKER_TIMEOUT		0x300
 
 enum {
 	TRACKER_SYSTRACKER = 0,

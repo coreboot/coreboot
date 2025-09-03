@@ -39,5 +39,6 @@
 
 void setup_chromeos_gpios(void);
 void enable_slow_battery_charging(void);
+void disable_slow_battery_charging(void);
 
 #endif /* MAINBOARD_GOOGLE_BLUEY_BOARD_H */

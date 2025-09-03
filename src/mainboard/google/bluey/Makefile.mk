@@ -12,4 +12,6 @@ romstage-y += romstage.c
 
 romstage-y += charging.c
 
+ramstage-y += charging.c
+
 ramstage-y += mainboard.c

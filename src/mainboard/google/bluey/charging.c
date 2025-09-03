@@ -13,7 +13,11 @@
 #define SMB2_CHGR_CHRG_EN_CMD ((SMB2_SLAVE_ID << 16) | SCHG_CHGR_CHARGING_ENABLE_CMD)
 
 #define FCC_1A_STEP_50MA 0x14
-#define CHRG_ENABLE 0x01
+
+enum charging_status {
+	CHRG_DISABLE,
+	CHRG_ENABLE,
+};
 
 /*
  * Enable charging w/ 1A Icurrent supply at max.
@@ -26,4 +30,14 @@ void enable_slow_battery_charging(void)
 	spmi_write8(SMB2_CHGR_MAX_FCC_CFG, FCC_1A_STEP_50MA);
 	spmi_write8(SMB1_CHGR_CHRG_EN_CMD, CHRG_ENABLE);
 	spmi_write8(SMB2_CHGR_CHRG_EN_CMD, CHRG_ENABLE);
+}
+
+/*
+ * Disable charging.
+ */
+void disable_slow_battery_charging(void)
+{
+	printk(BIOS_INFO, "Disable slow charge support\n");
+	spmi_write8(SMB1_CHGR_CHRG_EN_CMD, CHRG_DISABLE);
+	spmi_write8(SMB2_CHGR_CHRG_EN_CMD, CHRG_DISABLE);
 }

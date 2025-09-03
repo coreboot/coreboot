@@ -10,4 +10,6 @@ bootblock-y += bootblock.c
 
 romstage-y += romstage.c
 
+romstage-y += charging.c
+
 ramstage-y += mainboard.c

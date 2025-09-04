@@ -263,17 +263,26 @@ static int amdfw_bios_dir_walk(FILE *fw, uint32_t bios_offset, uint32_t cookie, 
 	size_t num_current_entries = 0;
 	bios_directory_hdr header;
 	uint32_t l2_dir_offset = 0;
+	uint64_t dir_mode = 0;
 	char indent[MAX_INDENTATION_LEN] = {0};
 
 	if (read_bios_directory(fw, bios_offset, cookie, &header,
 		       &current_entries, &num_current_entries) != 0)
 		return 1;
 
+	if (header.additional_info_fields.version == 1)
+		dir_mode = header.additional_info_fields_v1.address_mode;
+	else
+		dir_mode = header.additional_info_fields.address_mode;
+
 	do_indentation_string(indent, level);
 	for (size_t i = 0; i < num_current_entries; i++) {
 		uint32_t type = current_entries[i].type;
 		uint64_t mode = current_entries[i].address_mode;
 		uint64_t addr = current_entries[i].source;
+
+		if (dir_mode < 2)
+			mode = dir_mode;
 
 		if (type == AMD_BIOS_APOB || type == AMD_BIOS_PSP_SHARED_MEM)
 			printf("%sBIOS%s: 0x%02x 0x%lx(DRAM-Address)\n",
@@ -313,11 +322,17 @@ static int amdfw_psp_dir_walk(FILE *fw, uint32_t psp_offset, uint32_t cookie, ui
 	uint32_t bios_dir_offset = 0;
 	uint32_t ish_dir_offset = 0;
 	ish_directory_table ish_dir;
+	uint64_t dir_mode = 0;
 	char indent[MAX_INDENTATION_LEN] = {0};
 
 	if (read_psp_directory(fw, psp_offset, cookie, &header,
 		       &current_entries, &num_current_entries) != 0)
 		return 1;
+
+	if (header.additional_info_fields.version == 1)
+		dir_mode = header.additional_info_fields_v1.address_mode;
+	else
+		dir_mode = header.additional_info_fields.address_mode;
 
 	do_indentation_string(indent, level);
 	for (size_t i = 0; i < num_current_entries; i++) {
@@ -325,10 +340,13 @@ static int amdfw_psp_dir_walk(FILE *fw, uint32_t psp_offset, uint32_t cookie, ui
 		uint64_t mode = current_entries[i].address_mode;
 		uint64_t addr = current_entries[i].addr;
 
+		if (dir_mode < 2)
+			mode = dir_mode;
+
 		if (type == AMD_PSP_FUSE_CHAIN)
 			printf("%sPSP%s: 0x%02x 0x%lx(Soft-fuse)\n",
 				indent, cookie == PSP_COOKIE ? "L1" : "L2",
-				type, mode << 62 | addr);
+				type, (uint64_t)current_entries[i].address_mode << 62 | addr);
 		else
 			printf("%sPSP%s: 0x%02x 0x%08lx 0x%08x\n",
 				indent, cookie == PSP_COOKIE ? "L1" : "L2",

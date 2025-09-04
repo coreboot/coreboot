@@ -210,8 +210,16 @@ typedef struct _psp_directory_header {
 			uint32_t spi_block_size:4;
 			uint32_t base_addr:15;
 			uint32_t address_mode:2;
-			uint32_t not_used:1;
+			uint32_t version:1;
 		} __attribute__((packed)) additional_info_fields;
+		struct {
+			uint32_t dir_size:16;
+			uint32_t spi_block_size:4;
+			uint32_t dir_header_size:4;
+			uint32_t address_mode:2;
+			uint32_t reserved:5;
+			uint32_t version:1;
+		} __attribute__((packed)) additional_info_fields_v1;
 	};
 } __attribute__((packed, aligned(16))) psp_directory_header;
 
@@ -272,8 +280,16 @@ typedef struct _bios_directory_hdr {
 			uint32_t spi_block_size:4;
 			uint32_t base_addr:15;
 			uint32_t address_mode:2;
-			uint32_t not_used:1;
+			uint32_t version:1;
 		} __attribute__((packed)) additional_info_fields;
+		struct {
+			uint32_t dir_size:16;
+			uint32_t spi_block_size:4;
+			uint32_t dir_header_size:4;
+			uint32_t address_mode:2;
+			uint32_t reserved:5;
+			uint32_t version:1;
+		} __attribute__((packed)) additional_info_fields_v1;
 	};
 } __attribute__((packed, aligned(16))) bios_directory_hdr;
 
@@ -459,7 +475,7 @@ typedef struct _amd_cb_config {
 typedef struct _context {
 	char *rom;		/* target buffer, size of flash device */
 	uint32_t rom_size;	/* size of flash device */
-	uint32_t address_mode;	/* 0:abs address; 1:relative to flash; 2: relative to table */
+	uint32_t address_mode;	/* 0:abs address; 1:relative to flash; 2: relative to table 3: relative to partition */
 	uint32_t current;	/* pointer within flash & proxy buffer */
 	uint32_t current_pointer_saved;
 	uint32_t current_table;

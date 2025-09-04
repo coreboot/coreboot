@@ -37,7 +37,7 @@ static const struct pad_config override_gpio_table[] = {
 	PAD_NC(GPP_C7, NONE),
 
 	/* D2  :  PWM_PP3300_BUZZER */
-	PAD_CFG_GPO(GPP_D2, 0, DEEP),
+	PAD_CFG_GPO(GPP_D2, 1, DEEP),
 	/* D3  : ISH_GP3 ==> NC */
 	PAD_NC(GPP_D3, NONE),
 	/* D6  : SRCCLKREQ1# ==> NC */

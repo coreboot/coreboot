@@ -321,6 +321,7 @@ static int eventlog_print_data(const struct event_header *event)
 		{ELOG_WAKE_SOURCE_PME_TCSS_XHCI, "PME - TCSS XHCI"},
 		{ELOG_WAKE_SOURCE_PME_TCSS_XDCI, "PME - TCSS XDCI"},
 		{ELOG_WAKE_SOURCE_PME_TCSS_DMA, "PME - TCSS DMA"},
+		{ELOG_WAKE_SOURCE_PME_BLUETOOTH, "PME - BLUETOOTH"},
 		{0, NULL},
 	};
 	static const struct valstr ec_event_types[] = {

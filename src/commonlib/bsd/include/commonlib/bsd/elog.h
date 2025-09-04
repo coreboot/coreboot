@@ -197,6 +197,7 @@ struct elog_ec_event {
 #define  ELOG_WAKE_SOURCE_PME_TCSS_XHCI    0x2e
 #define  ELOG_WAKE_SOURCE_PME_TCSS_XDCI    0x2f
 #define  ELOG_WAKE_SOURCE_PME_TCSS_DMA     0x30
+#define  ELOG_WAKE_SOURCE_PME_BLUETOOTH    0x31
 
 struct elog_event_data_wake {
 	uint8_t source;

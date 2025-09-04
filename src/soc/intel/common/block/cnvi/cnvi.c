@@ -10,6 +10,8 @@
 #include <soc/cnvi.h>
 #include <soc/pcr_ids.h>
 
+#include "chip.h"
+
 static const char *cnvi_wifi_acpi_name(const struct device *dev)
 {
 	return "CNVW";
@@ -870,4 +872,46 @@ static const struct pci_driver pch_cnvi_bt __pci_driver = {
 	.ops			= &cnvi_bt_ops,
 	.vendor			= PCI_VID_INTEL,
 	.devices		= bt_pci_device_ids,
+};
+
+static const char *cnvi_acpi_name(const struct device *dev)
+{
+	const struct device *parent = dev->upstream->dev;
+	return parent->ops->acpi_name(parent);
+}
+
+static void cnvi_acpi_fill_ssdt(const struct device *dev)
+{
+	const struct device *parent = dev->upstream->dev;
+	const char *scope = acpi_device_path(parent);
+	acpigen_write_scope(scope);
+
+	const struct soc_intel_common_block_cnvi_config *config = dev->chip_info;
+	if (config) {
+/*		Name (_PRW, Package (0x02)  // _PRW: Power Resources for Wake
+ *		{
+ *		    $(config->wake),
+ *		    0x03
+ *		})
+ */
+		acpigen_write_PRW(config->wake, ACPI_S3);
+	}
+	acpigen_write_scope_end();
+}
+
+static struct device_operations cnvi_ops = {
+	.read_resources = noop_read_resources,
+	.set_resources = noop_set_resources,
+	.acpi_fill_ssdt = cnvi_acpi_fill_ssdt,
+	.acpi_name = cnvi_acpi_name,
+};
+
+static void cnvi_enable_dev(struct device *dev)
+{
+	dev->ops = &cnvi_ops;
+}
+
+struct chip_operations soc_intel_common_block_cnvi_ops = {
+	.name = "CNVi Device",
+	.enable_dev = cnvi_enable_dev,
 };

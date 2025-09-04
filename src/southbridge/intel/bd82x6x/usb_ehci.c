@@ -22,14 +22,16 @@ static void usb_ehci_init(struct device *dev)
 	printk(BIOS_DEBUG, "EHCI: Setting up controller.. ");
 
 	/* For others, done in MRC.  */
-#if CONFIG(USE_NATIVE_RAMINIT)
-	pci_write_config32(dev, 0x84, 0x930c8811);
-	pci_write_config32(dev, 0x88, 0x24000d30);
-	pci_write_config32(dev, 0xf4, 0x80408588);
-	pci_write_config32(dev, 0xf4, 0x80808588);
-	pci_write_config32(dev, 0xf4, 0x00808588);
-	pci_write_config32(dev, 0xfc, 0x205b1708);
-#endif
+	if (CONFIG(USE_NATIVE_RAMINIT)) {
+		pci_update_config32(dev, 0x84, 0x600, 0x10040010);
+		pci_or_config32(dev, 0x88, 0x20080d20);
+
+		pci_or_config32(dev, 0xf4, BIT(31));
+		pci_update_config32(dev, 0xf4, (u32)~BIT(22), BIT(23));
+		pci_and_config32(dev, 0xf4, (u32)~BIT(31));
+
+		pci_or_config32(dev, 0xfc, BIT(17));
+	}
 
 	pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_MASTER);
 	//pci_or_config16(dev, PCI_COMMAND, PCI_COMMAND_SERR);

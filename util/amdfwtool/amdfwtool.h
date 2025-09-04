@@ -196,7 +196,7 @@ typedef struct _embedded_firmware {
 	uint32_t psp_bak_directory;
 	uint32_t promontory_fw_ptr;
 	uint32_t lp_promontory_fw_ptr;
-	uint32_t reserved_38h;
+	uint32_t promontory19_fw_ptr;
 	uint32_t reserved_3Ch;
 	uint8_t spi_readmode_f15_mod_60_6f;
 	uint8_t fast_speed_new_f15_mod_60_6f;
@@ -216,7 +216,7 @@ typedef struct _embedded_firmware {
 	uint8_t espi1_config0;
 	uint8_t espi0_config1;
 	uint8_t espi1_config1;
-	uint32_t reserved_54h;
+	uint32_t ubu_table;
 	uint8_t bios_size;
 } __attribute__((packed, aligned(16))) embedded_firmware;
 

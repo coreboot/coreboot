@@ -280,7 +280,7 @@ chip soc/intel/meteorlake
 			end
 		end
 		device ref hda		on
-			subsystemid 0x1e50 0x7038
+			subsystemid 0x1025 0x174e
 			register "pch_hda_sdi_enable[0]"		= "true"
 			register "pch_hda_dsp_enable"			= "true"
 			register "pch_hda_audio_link_hda_enable"	= "true"

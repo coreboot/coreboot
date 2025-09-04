@@ -3,8 +3,9 @@ fw_config
 		option WIFI_CNVI_7		0
 	end
 	field AUDIO 3 5
-		option AUDIO_UNKNOWN		0
-		option AUDIO_ALC721_SNDW	1
+		option AUDIO_UNKNOWN				0
+		option AUDIO_ALC721_SNDW			1
+		option AUDIO_ALC1320_ALC721_SNDW	2
 	end
 	field FPMCU 6 7
 		option FP_ABSENT		0
@@ -374,6 +375,7 @@ chip soc/intel/pantherlake
 		device ref smbus on end
 		device ref hda on
 			probe AUDIO AUDIO_ALC721_SNDW
+			probe AUDIO AUDIO_ALC1320_ALC721_SNDW
 			chip drivers/intel/soundwire
 				device generic 0 on
 					chip drivers/soundwire/alc711
@@ -384,7 +386,18 @@ chip soc/intel/pantherlake
 						# SoundWire Link 3 ID 1
 						device generic 3.1 on
 							probe AUDIO AUDIO_ALC721_SNDW
+							probe AUDIO AUDIO_ALC1320_ALC721_SNDW
 						end
+					end
+					chip drivers/soundwire/alc1320
+						register "desc" = ""Speaker Amp""
+						register "alc1320_address.version" = "SOUNDWIRE_VERSION_1_2"
+						register "alc1320_address.class" = "MIPI_CLASS_SDCA"
+						register "alc1320_address.part_id" = "MIPI_DEV_ID_REALTEK_ALC1320"
+						# SoundWire Link 3 ID 2
+						device generic 3.2 on
+							probe AUDIO AUDIO_ALC1320_ALC721_SNDW
+						end # ALC1320 Smart Amp
 					end
 				end
 			end

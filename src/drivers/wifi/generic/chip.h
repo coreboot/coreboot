@@ -32,4 +32,4 @@ struct drivers_wifi_generic_config {
 	DEVTREE_CONST struct device *bluetooth_companion;
 };
 
-#endif /* _GENERIC_WIFI_H_ */
+#endif /* _WIFI_GENERIC_H_ */

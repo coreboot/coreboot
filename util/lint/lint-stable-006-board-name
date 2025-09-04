@@ -17,6 +17,10 @@ for i in src/mainboard/*/; do
 done
 
 for i in src/mainboard/*/*/; do
+  case "$i" in
+    */common/) continue ;;
+  esac
+
   if [ -r $i/Kconfig ]; then
     if [ ! -r $i/Kconfig.name ]; then
       BOARD="$(grep -A2 MAINBOARD_PART_NUMBER $i/Kconfig | tail -1 | cut -f2 -d\")"

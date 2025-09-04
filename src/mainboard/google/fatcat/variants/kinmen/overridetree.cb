@@ -392,7 +392,12 @@ chip soc/intel/pantherlake
 			end
 		end # CNVi
 
-		device ref cnvi_bluetooth on end
+		device ref cnvi_bluetooth on
+			chip soc/intel/common/block/cnvi
+				register "wake" = "GPE0_PME_B0"
+				device generic 0 on end
+			end
+		end
 
 		# NOTE: i2c0 is function 0; hence it needs to be enabled when any of i2c1-5 is enabled.
 		# TPM device is under i2c3. Therefore, i2c0 needs to be enabled anyways.

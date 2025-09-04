@@ -398,6 +398,10 @@ chip soc/intel/pantherlake
 		device ref cnvi_bluetooth on
 			probe WIFI WIFI_CNVI_7
 			probe WIFI WIFI_CNVI_7E
+			chip soc/intel/common/block/cnvi
+				register "wake" = "GPE0_PME_B0"
+				device generic 0 on end
+			end
 		end
 
 		device ref thc0 on

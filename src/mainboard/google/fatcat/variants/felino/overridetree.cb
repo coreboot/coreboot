@@ -331,6 +331,10 @@ device ref tbt_pcie_rp0 on end
 		device ref cnvi_bluetooth on
 			probe WIFI WIFI_CNVI_6
 			probe WIFI WIFI_CNVI_7
+			chip soc/intel/common/block/cnvi
+				register "wake" = "GPE0_PME_B0"
+				device generic 0 on end
+			end
 		end
 
 		device ref i2c0 on end

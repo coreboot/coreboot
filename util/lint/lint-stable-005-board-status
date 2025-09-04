@@ -12,7 +12,9 @@ LINTDIR="$(
 # shellcheck source=helper_functions.sh
 . "${LINTDIR}/helper_functions.sh"
 
-for mobodir in $(${FIND_FILES} src/mainboard | sed -n 's,^\(src/mainboard/[^/]*/[^/]*\)/.*$,\1,p'|sort|uniq); do
+for mobodir in $(${FIND_FILES} src/mainboard | sed -n 's,^\(src/mainboard/[^/]*/[^/]*\)/.*$,\1,p' \
+    | grep -v '/common$' | sort -u); do
+
     board_info="$mobodir/board_info.txt"
     if ! [ -f "$board_info" ]; then
        echo "No $board_info found"

@@ -33,10 +33,10 @@ chip northbridge/intel/sandybridge
 			device ref lpc on
 				chip superio/nuvoton/nct6779d
 					device pnp 2e.1 off end	# Parallel
-					device pnp 2e.2 off end	# UART A
-					device pnp 2e.3 on	# UART B, IR
-						io 0x60 = 0x2f8		# COM2 address
+					device pnp 2e.2 on	# UART A
+						io 0x60 = 0x3f8
 					end
+					device pnp 2e.3 off end	# UART B, IR
 					device pnp 2e.5 on	# PS2 KBC
 						io  0x60 = 0x0060	# KBC1 base
 						io  0x62 = 0x0064	# KBC2 base

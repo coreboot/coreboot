@@ -570,6 +570,11 @@ void rtc_boot(void)
 		}
 	}
 
+	/* Set RTC EOSC calibration period = 8sec */
+	rtc_read(RTC_AL_DOW, &rdata);
+	rtc_write(RTC_AL_DOW, rdata | RTC_EOSC_CALI_TD_8SEC);
+	rtc_write_trigger();
+
 	/* Make sure RTC get the latest register info. */
 	rtc_read(RTC_BBPU, &rtc_bbpu);
 	rtc_write(RTC_BBPU, rtc_bbpu | RTC_BBPU_KEY | RTC_BBPU_RELOAD);

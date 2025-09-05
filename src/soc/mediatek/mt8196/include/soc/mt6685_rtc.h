@@ -120,6 +120,8 @@
 #define RTC_K_EOSC_RSV_1		(1 << 9)
 #define RTC_K_EOSC_RSV_2		(1 << 10)
 
+#define RTC_EOSC_CALI_TD_8SEC		(6 << 8)
+
 #define TMA_KEY				0x39e
 #define TMA_KEY_MASK			0xFF
 #define TMA_KEY_SHIFT			0

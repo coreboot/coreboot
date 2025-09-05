@@ -518,8 +518,15 @@ chip soc/intel/alderlake
 			chip drivers/intel/ish
 				register "add_acpi_dma_property" = "true"
 				register "firmware_name" = ""pujjolo_ish.bin""
-				device generic 0 on
+				device generic 1 on
 					probe ISH ISH_PRESENT
+				end
+			end
+			chip drivers/intel/ish
+				register "add_acpi_dma_property" = "true"
+				register "firmware_name" = ""lite_ish.bin""
+				device generic 0 on
+					probe ISH ISH_ABSENT
 				end
 			end
 		end

@@ -1,30 +1,67 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 
 #include <device/azalia_device.h>
+#include <device/azalia_codec/realtek.h>
 
 const u32 cim_verb_data[] = {
 	/* coreboot specific header */
-	0x10ec0256, /* Codec Vendor / Device ID: Realtek ALC256 */
-	0x10ec1200, /* Subsystem ID */
-	32,	/* Number of jacks (NID entries) */
+	0x10ec0256,	/* Codec Vendor / Device ID: Realtek ALC256 */
+	0x10ec1200,	/* Subsystem ID */
+	30,		/* Number of verb entries */
 
 	/* Reset Codec First */
 	AZALIA_RESET(0x1),
 
-	/* HDA Codec Subsystem ID: 0x10EC1200 */
+	/* HDA Codec Subsystem ID */
 	AZALIA_SUBVENDOR(0, 0x10ec1200),
 
-	AZALIA_PIN_CFG(0, 0x01, 0x00000000),
-	AZALIA_PIN_CFG(0, 0x12, 0x90a60130),
-	AZALIA_PIN_CFG(0, 0x13, 0x40000000),
-	AZALIA_PIN_CFG(0, 0x14, 0x411111f0),
-	AZALIA_PIN_CFG(0, 0x18, 0x411111f0),
-	AZALIA_PIN_CFG(0, 0x19, 0x04a19040),
-	AZALIA_PIN_CFG(0, 0x1a,	0x411111f0),
-	AZALIA_PIN_CFG(0, 0x1b, 0x90170110),
-	AZALIA_PIN_CFG(0, 0x1d, 0x40689a6d),
-	AZALIA_PIN_CFG(0, 0x1e, 0x411111f0),
-	AZALIA_PIN_CFG(0, 0x21, 0x04214020),
+	/* Pin Widget Verb-table */
+	AZALIA_PIN_CFG(0, ALC256_DMIC12,	AZALIA_PIN_DESC(
+							AZALIA_INTEGRATED,
+							AZALIA_MOBILE_LID_INSIDE,
+							AZALIA_MIC_IN,
+							AZALIA_OTHER_DIGITAL,
+							AZALIA_COLOR_UNKNOWN,
+							AZALIA_NO_JACK_PRESENCE_DETECT,
+							3,
+							0
+						)),
+	AZALIA_PIN_CFG(0, ALC256_MIC2,		AZALIA_PIN_DESC(
+							AZALIA_JACK,
+							AZALIA_EXTERNAL_PRIMARY_CHASSIS | AZALIA_RIGHT,
+							AZALIA_MIC_IN,
+							AZALIA_STEREO_MONO_1_8,
+							AZALIA_BLACK,
+							AZALIA_JACK_PRESENCE_DETECT,
+							4,
+							0
+						)),
+	/* Internal speakers are connected to LINE2 and external amps */
+	AZALIA_PIN_CFG(0, ALC256_LINE2,		AZALIA_PIN_DESC(
+							AZALIA_INTEGRATED,
+							AZALIA_INTERNAL | AZALIA_FRONT,
+							AZALIA_SPEAKER,
+							AZALIA_OTHER_ANALOG,
+							AZALIA_COLOR_UNKNOWN,
+							AZALIA_NO_JACK_PRESENCE_DETECT,
+							1,
+							0
+						)),
+	AZALIA_PIN_CFG(0, ALC256_HP_OUT,	AZALIA_PIN_DESC(
+							AZALIA_JACK,
+							AZALIA_EXTERNAL_PRIMARY_CHASSIS | AZALIA_RIGHT,
+							AZALIA_HP_OUT,
+							AZALIA_STEREO_MONO_1_8,
+							AZALIA_BLACK,
+							AZALIA_JACK_PRESENCE_DETECT,
+							2,
+							0
+						)),
+	AZALIA_PIN_CFG(0, ALC256_DMIC34,	AZALIA_PIN_CFG_NC(0)),
+	AZALIA_PIN_CFG(0, ALC256_SPEAKERS,	AZALIA_PIN_CFG_NC(0)),
+	AZALIA_PIN_CFG(0, ALC256_LINE1,		AZALIA_PIN_CFG_NC(0)),
+	AZALIA_PIN_CFG(0, ALC256_PC_BEEP,	AZALIA_PIN_CFG_NC(0)),
+	AZALIA_PIN_CFG(0, ALC256_SPDIF_OUT,	AZALIA_PIN_CFG_NC(0)),
 
 	/* Reset and Set LDO3 output to 1.2V */
 	0x0205001a,
@@ -162,9 +199,10 @@ const u32 cim_verb_data[] = {
 	0x02050020,
 	0x020451FF,
 
-	0x80862815, /* Codec Vendor / Device ID: Intel */
-	0x80860101, /* Subsystem ID */
-	10,	    /* Number of 4 dword sets */
+	/* Intel RPL IGD HDMI */
+	0x80862815,	/* Codec Vendor / Device ID: Intel */
+	0x80860101,	/* Subsystem ID */
+	10,		/* Number of verb entries */
 
 	AZALIA_SUBVENDOR(2, 0x80860101),
 

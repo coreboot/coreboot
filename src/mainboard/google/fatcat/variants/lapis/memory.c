@@ -74,17 +74,15 @@ int variant_memory_sku(void)
 	/*
 	 * Memory configuration board straps
 	 * MEM_STRAP_0	GPP_A13
+	 * DIMM_SEL1	GPP_D24		(MEM_STRAP_1)
+	 * DIMM_SEL2	GPP_B25		(MEM_STRAP_2)
 	 * MEM_STRAP_3	GPP_B24
-	 * DIMM_SEL0	GPP_D25
-	 * DIMM_SEL1	GPP_D24
-	 * DIMM_SEL2	GPP_B25
 	 */
 	gpio_t spd_gpios[] = {
 		GPP_A13,
-		GPP_B24,
-		GPP_D25,
 		GPP_D24,
 		GPP_B25,
+		GPP_B24,
 	};
 
 	return gpio_base2_value(spd_gpios, ARRAY_SIZE(spd_gpios));

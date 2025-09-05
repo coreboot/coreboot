@@ -1,4 +1,8 @@
 fw_config
+	field TABLET_MODE 0 0
+		option TABLET_MODE_ABSENT 0
+		option TABLET_MODE_PRESENT 1
+	end
 	field THERMAL_SOLUTION 1 1
 		option THERMAL_SOLUTION_6W	0
 		option THERMAL_SOLUTION_15W	1
@@ -535,7 +539,16 @@ chip soc/intel/alderlake
 			chip drivers/intel/ish
 				register "firmware_name" = ""kaladin_ish.bin""
 				register "add_acpi_dma_property" = "true"
-				device generic 0 on end
+				device generic 0 on
+					probe TABLET_MODE TABLET_MODE_PRESENT
+				end
+			end
+			chip drivers/intel/ish
+				register "firmware_name" = ""lite_ish.bin""
+				register "add_acpi_dma_property" = "true"
+				device generic 0 on
+					probe TABLET_MODE TABLET_MODE_ABSENT
+				end
 			end
 		end
 		device ref ufs on

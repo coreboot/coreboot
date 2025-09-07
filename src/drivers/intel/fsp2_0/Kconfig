@@ -500,4 +500,19 @@ config FSP_DIMM_INFO
 	  Select this option to retrieve DIMM (Memory) related information by relying on
 	  the Intel FSP. coreboot relies on this information to prepare SMBIOS table 17.
 
+config FSP_VGA_MODE12
+	bool
+	default n
+	depends on VGA || ROMSTAGE_VGA
+	help
+	  Select this if the FSP supports VGA mode 12.
+
+config FSP_VGA_MODE12_BPP
+	hex
+	default 0x4 if FSP_VGA_MODE12
+	default 0x0
+	help
+	  This is the number of bits per pixel used by FSP in VGA mode 12.
+	  A bitmap buffer is allocated based on this value and supplied to FSP.
+
 endif

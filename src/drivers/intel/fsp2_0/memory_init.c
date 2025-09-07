@@ -405,6 +405,16 @@ static void do_fsp_memory_init(const struct fspm_context *context, bool s3wake)
 	/* Reserve enough memory under TOLUD to save CBMEM header */
 	arch_upd->BootLoaderTolumSize = cbmem_overhead_size();
 
+#if CONFIG_FSP_VGA_MODE12_BPP
+	/* Allocate a buffer for VGA mode 12 on the stack since we do not have
+	 * memory available yet. It is done here to avoid deallocation before
+	 * calling FSP-M.
+	 */
+	unsigned char temp_vga_buffer[CONFIG_FSP_VGA_MODE12_BPP * VGA12_BITMAP_BUFFER_SZ];
+	memset(temp_vga_buffer, 0, sizeof(temp_vga_buffer));
+	soc_set_vga_mode12_buffer(&fspm_upd, (uintptr_t)temp_vga_buffer);
+#endif
+
 	/* Fill common settings on behalf of chipset. */
 	if (fsp_fill_common_arch_params(arch_upd, s3wake, version,
 					memmap) != CB_SUCCESS)

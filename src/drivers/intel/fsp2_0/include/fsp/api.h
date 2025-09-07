@@ -129,6 +129,12 @@ static inline void soc_load_logo_by_coreboot(void) { /* nop */ }
 static inline int soc_mark_gfx_memory(void) { return -1; }
 #endif
 
+#if CONFIG(FSP_VGA_MODE12)
+void soc_set_vga_mode12_buffer(FSPM_UPD *fspm_upd, uintptr_t buffer);
+#else
+static inline void soc_set_vga_mode12_buffer(FSPM_UPD *fspm_upd, uintptr_t buffer) { /* nop */ }
+#endif
+
 /* Update the SOC specific memory config param for mma. */
 void soc_update_memory_params_for_mma(FSP_M_CONFIG *memory_cfg,
 	struct mma_config_param *mma_cfg);

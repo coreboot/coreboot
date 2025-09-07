@@ -150,6 +150,23 @@ int print_lpc(struct pci_dev *sb, struct pci_access *pacc)
 			cfg_registers_size = ARRAY_SIZE(sunrise_lpc_cfg_registers);
 		}
 		break;
+	case PCI_DEVICE_ID_INTEL_HM470:
+		dev = pci_get_dev(pacc, sb->domain, sb->bus, sb->dev, 0);
+		if (!dev) {
+			printf("LPC/eSPI interface not found.\n");
+			return 1;
+		}
+		bc = pci_read_long(dev, SUNRISE_LPC_BC);
+		if (bc & (1 << 2)) {
+			printf("Device 0:1f.0 is eSPI (BC.LPC_ESPI=1)\n\n");
+			cfg_registers = alderlake_espi_cfg_registers;
+			cfg_registers_size = ARRAY_SIZE(alderlake_espi_cfg_registers);
+		} else {
+			printf("Device 0:1f.0 is LPC (BC.LPC_ESPI=0)\n\n");
+			cfg_registers = sunrise_lpc_cfg_registers;
+			cfg_registers_size = ARRAY_SIZE(sunrise_lpc_cfg_registers);
+		}
+		break;
 	case PCI_DEVICE_ID_INTEL_ADL_N:
 		dev = pci_get_dev(pacc, sb->domain, sb->bus, sb->dev, 0);
 		if (!dev) {

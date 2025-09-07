@@ -224,6 +224,7 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_WM590		0x4389
 #define PCI_DEVICE_ID_INTEL_QM580		0x438a
 #define PCI_DEVICE_ID_INTEL_HM570		0x438b
+#define PCI_DEVICE_ID_INTEL_HM470		0x068d
 #define PCI_DEVICE_ID_INTEL_C252		0x438c
 #define PCI_DEVICE_ID_INTEL_C256		0x438d
 #define PCI_DEVICE_ID_INTEL_W580		0x438f
@@ -399,6 +400,9 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_CORE_CML_U1		0x9b51 /* Cometlake U (Mobile) */
 #define PCI_DEVICE_ID_INTEL_CORE_CML_U2		0x9b61 /* Cometlake U (Mobile) */
 #define PCI_DEVICE_ID_INTEL_CORE_CML_U3		0x9b71 /* Cometlake U (Mobile) */
+#define PCI_DEVICE_ID_INTEL_CORE_CML_H_8_2	0x9b44 /* Cometlake H 8+2 (Mobile) */
+#define PCI_DEVICE_ID_INTEL_CORE_CML_H_6_2	0x9b54 /* Cometlake H 6+2 (Mobile) */
+#define PCI_DEVICE_ID_INTEL_CORE_CML_H_4_2	0x9b64 /* Cometlake H 4+2 (Mobile) */
 #define PCI_DEVICE_ID_INTEL_CORE_TGL_ID_U_2	0x9a04 /* Tigerlake UP3 2 Cores */
 #define PCI_DEVICE_ID_INTEL_CORE_TGL_ID_U_4	0x9a14 /* Tigerlake UP3 4 Cores */
 #define PCI_DEVICE_ID_INTEL_CORE_TGL_ID_Y_2	0x9a02 /* Tigerlake UP4 2 Cores */
@@ -506,6 +510,14 @@ static inline uint32_t inl(unsigned port)
 #define PCI_DEVICE_ID_INTEL_TGL_GT1_2		0x9A68
 #define PCI_DEVICE_ID_INTEL_TGL_GT2_ULT_1	0x9A78
 #define PCI_DEVICE_ID_INTEL_TGL_GT2_ULT_2	0x9A70
+#define PCI_DEVICE_ID_INTEL_CML_GT1_S_1		0x9BA5
+#define PCI_DEVICE_ID_INTEL_CML_GT1_S_2		0x9BA8
+#define PCI_DEVICE_ID_INTEL_CML_GT2_S_G0	0x9BC8
+#define PCI_DEVICE_ID_INTEL_CML_GT2_S_P0	0x9BC5
+#define PCI_DEVICE_ID_INTEL_CML_GT1_H_1		0x9BA4
+#define PCI_DEVICE_ID_INTEL_CML_GT1_H_2		0x9BA2
+#define PCI_DEVICE_ID_INTEL_CML_GT2_H_R0	0x9BC2
+#define PCI_DEVICE_ID_INTEL_CML_GT2_H_R1	0x9BC4
 /* Elkhart Lake */
 #define PCI_DEVICE_ID_INTEL_EHL_GT1_1		0x4541
 #define PCI_DEVICE_ID_INTEL_EHL_GT1_2		0x4551

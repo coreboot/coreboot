@@ -171,6 +171,53 @@ static const io_register_t elkhart_spi_bar_registers[] = {
 	{ 0x198, 4, "CSXE_WPR0 - Write Protected Range 0" },
 };
 
+/* Intel® 400 Series Chipset Family Platform Controller Hub, 620855-002 */
+static const io_register_t cometlake_spi_bar_registers[] = {
+	{ 0x00, 4, "BFPREG - BIOS Flash Primary Region" },
+	{ 0x04, 2, "HSFSTS - Hardware Sequencing Flash Status" },
+	{ 0x06, 2, "HSFCTL - Hardware Sequencing Flash Control" },
+	{ 0x08, 4, "FADDR - Flash Address" },
+	{ 0x0c, 4, "DLOCK - Discrete Lock Bits" },
+	{ 0x10, 4, "FDATA0 - Flash Data 0" },
+	{ 0x14, 4, "FDATA1 - Flash Data 1" },
+	{ 0x18, 4, "FDATA2 - Flash Data 2" },
+	{ 0x1c, 4, "FDATA3 - Flash Data 3" },
+	{ 0x20, 4, "FDATA4 - Flash Data 4" },
+	{ 0x24, 4, "FDATA5 - Flash Data 5" },
+	{ 0x28, 4, "FDATA6 - Flash Data 6" },
+	{ 0x2c, 4, "FDATA7 - Flash Data 7" },
+	{ 0x30, 4, "FDATA8 - Flash Data 8" },
+	{ 0x34, 4, "FDATA9 - Flash Data 9" },
+	{ 0x38, 4, "FDATA10 - Flash Data 10" },
+	{ 0x3c, 4, "FDATA11 - Flash Data 11" },
+	{ 0x40, 4, "FDATA12 - Flash Data 12" },
+	{ 0x44, 4, "FDATA13 - Flash Data 13" },
+	{ 0x48, 4, "FDATA14 - Flash Data 14" },
+	{ 0x4c, 4, "FDATA15 - Flash Data 15" },
+	{ 0x50, 4, "FRACC - Flash Region Access Permissions" },
+	{ 0x54, 4, "FREG0 - Flash Region 0" },
+	{ 0x58, 4, "FREG1 - Flash Region 1" },
+	{ 0x5c, 4, "FREG2 - Flash Region 2" },
+	{ 0x60, 4, "FREG3 - Flash Region 3" },
+	{ 0x64, 4, "FREG4 - Flash Region 4" },
+	{ 0x68, 4, "FREG5 - Flash Region 5" },
+	{ 0x84, 4, "FPR0 - Flash Protected Range 0" },
+	{ 0x88, 4, "FPR1 - Flash Protected Range 1" },
+	{ 0x8c, 4, "FPR2 - Flash Protected Range 2" },
+	{ 0x90, 4, "FPR3 - Flash Protected Range 3" },
+	{ 0x94, 4, "FPR4 - Flash Protected Range 4" },
+	{ 0x98, 4, "GPR0 - Global Protected Range 0" },
+	{ 0xb0, 4, "SFRACC - Secondary Flash Region Access Permissions" },
+	{ 0xb4, 4, "FDOC - Flash Descriptor Observability Control" },
+	{ 0xb8, 4, "FDOD - Flash Descriptor Observability Data" },
+	{ 0xc0, 4, "AFC - Additional Flash Control" },
+	{ 0xc4, 4, "SFDP0_VSCC0 - Vendor Specific Component Capabilities for Component 0" },
+	{ 0xc8, 4, "SFDP1_VSCC1 - Vendor Specific Component Capabilities for Component 1" },
+	{ 0xcc, 4, "PTINX - Parameter Table Index" },
+	{ 0xd0, 4, "PTDATA - Parameter Table Data" },
+	{ 0xd4, 4, "SBRS - SPI Bus Requester Status" },
+};
+
 static int print_bioscntl(struct pci_dev *sb)
 {
 	int i, size = 0;
@@ -303,6 +350,7 @@ static int print_bioscntl(struct pci_dev *sb)
 		size = ARRAY_SIZE(pch_bios_cntl_registers);
 		break;
 	case PCI_DEVICE_ID_INTEL_ADL_N:
+	case PCI_DEVICE_ID_INTEL_HM470:
 		bios_cntl = pci_read_byte(sb, 0xdc);
 		bios_cntl_register = adl_pch_bios_cntl_registers;
 		size = ARRAY_SIZE(adl_pch_bios_cntl_registers);
@@ -330,13 +378,29 @@ static int print_bioscntl(struct pci_dev *sb)
 	return 0;
 }
 
+static int get_espibar_phys(struct pci_dev *sb, struct pci_access *pacc, uint8_t func, uint8_t offset, uint32_t mask, uint32_t *addr) {
+	struct pci_dev *spidev;
+
+	if (!(spidev = pci_get_dev(pacc, sb->domain, sb->bus, sb->dev, func))) {
+		fprintf(stderr, "Error: no spi device 0:31.%x\n", func);
+		return 1;
+	}
+
+	*addr = pci_read_long(spidev, offset) & mask;
+	if (!*addr) {
+		fprintf(stderr, "Error: no valid bar 0 of device 0:31.%x found %x\n", func, *addr);
+		return 1;
+	}
+
+	return 0;
+}
+
 static int print_spibar(struct pci_dev *sb, struct pci_access *pacc) {
 	int i, size = 0, rcba_size = 0x4000;
 	volatile uint8_t *rcba;
 	uint32_t rcba_phys;
 	const io_register_t *spi_register = NULL;
 	uint32_t spibaroffset;
-	struct pci_dev *spidev;
 
 	printf("\n============= SPI Bar ==============\n\n");
 
@@ -461,22 +525,21 @@ static int print_spibar(struct pci_dev *sb, struct pci_access *pacc) {
 		break;
 	case PCI_DEVICE_ID_INTEL_EHL:
 		/* the southbridge is the eSPI controller, we need to get the SPI flash controller */
-		if (!(spidev = pci_get_dev(pacc, sb->domain, sb->bus, sb->dev, 5))) {
-			perror("Error: no spi device 0:31.5\n");
-			return 1;
-		}
-
-		rcba_phys = ((uint64_t)pci_read_long(spidev, 0x10) & 0xfffff000);
-		rcba_size = 4096;
-		if (!rcba_phys) {
-			fprintf(stderr, "Error: no valid bar 0 of device 0:31.5 found %x %x\n", rcba_phys, rcba_size);
-			return 1;
-		}
-
 		/* this is not rcba, but we keep it to use common code */
+		if (get_espibar_phys(sb, pacc, 5, 0x10, 0xfffff000, &rcba_phys))
+			return 1;
+		rcba_size = 4096;
 		spibaroffset = 0;
 		spi_register = elkhart_spi_bar_registers;
 		size = ARRAY_SIZE(elkhart_spi_bar_registers);
+		break;
+	case PCI_DEVICE_ID_INTEL_HM470:
+		if (get_espibar_phys(sb, pacc, 5, 0x10, 0xfffff000, &rcba_phys))
+			return 1;
+		rcba_size = 4096;
+		spibaroffset = 0;
+		spi_register = cometlake_spi_bar_registers;
+		size = ARRAY_SIZE(cometlake_spi_bar_registers);
 		break;
 	case PCI_DEVICE_ID_INTEL_ICH:
 	case PCI_DEVICE_ID_INTEL_ICH0:

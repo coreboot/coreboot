@@ -186,6 +186,7 @@ const struct gpio_community *const *get_gpio_communities(struct pci_dev *const s
 	case PCI_DEVICE_ID_INTEL_QM370:
 	case PCI_DEVICE_ID_INTEL_HM370:
 	case PCI_DEVICE_ID_INTEL_CM246:
+	case PCI_DEVICE_ID_INTEL_HM470:
 		*community_count = ARRAY_SIZE(cannonlake_pch_h_communities);
 		*pad_stepping = 16;
 		return cannonlake_pch_h_communities;

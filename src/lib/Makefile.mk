@@ -164,6 +164,9 @@ ramstage-$(CONFIG_ACPI_NHLT) += nhlt.c
 ramstage-$(CONFIG_PAYLOAD_FIT_SUPPORT) += fit.c
 ramstage-$(CONFIG_PAYLOAD_FIT_SUPPORT) += fit_payload.c
 
+ramstage-$(CONFIG_VGA) += vga_gfx.c
+romstage-$(CONFIG_ROMSTAGE_VGA) += vga_gfx.c
+
 romstage-$(CONFIG_TIMER_QUEUE) += timer_queue.c
 ramstage-$(CONFIG_TIMER_QUEUE) += timer_queue.c
 

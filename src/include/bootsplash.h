@@ -169,4 +169,18 @@ bool platform_is_low_battery_shutdown_needed(void);
 static inline bool platform_is_low_battery_shutdown_needed(void) { return false; }
 #endif
 
+/*
+ * VGA Mode 12h (640x480 with 16 colors):
+ * As per page 13 of https://www.phatcode.net/res/221/files/vbe20.pdf
+ * "Standard VGA mode numbers are 7 bits wide and presently range from 00h to 13h."
+ * More details: https://wiki.osdev.org/VGA_Hardware#List_of_register_settings
+ */
+#define VGA12_WIDTH		640
+#define VGA12_HEIGHT		480
+#define VGA12_BITMAP_BUFFER_SZ	(VGA12_WIDTH * VGA12_HEIGHT / 8)
+
+void render_text_to_bitmap_buffer(unsigned char *image_bitmap_buffer,
+	enum lb_fb_orientation orientation, const char *text_to_render,
+	int *image_width, int *image_height);
+
 #endif

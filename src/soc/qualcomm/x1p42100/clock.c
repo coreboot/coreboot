@@ -5,6 +5,7 @@
 #include <device/mmio.h>
 #include <soc/clock.h>
 #include <types.h>
+#include <stdbool.h>
 
 static struct clock_freq_config qspi_core_cfg[] = {
 	{
@@ -234,11 +235,43 @@ struct pcie pcie_cfg[] = {
 	},
 };
 
+static u32 *usb_gdsc[MAX_USB_GDSC] = {
+	[USB30_MP_GDSC] = &gcc->gcc_usb30_mp_gdscr,
+	[USB3_SS0_PHY_GDSC] = &gcc->gcc_usb3_mp_ss0_phy_gdscr,
+	[USB3_SS1_PHY_GDSC] = &gcc->gcc_usb3_mp_ss1_phy_gdscr,
+};
+
+static u32 *usb_cbcr[USB_CLK_COUNT] = {
+	[USB30_MP_MASTER_CBCR] = &gcc->gcc_usb30_mp_master_cbcr,
+	[USB30_MP_SLEEP_CBCR] = &gcc->gcc_usb30_mp_sleep_cbcr,
+	[USB30_MP_MOCK_UTMI_CBCR] = &gcc->gcc_usb30_mp_mock_utmi_cbcr,
+	[USB3_MP_PHY_AUX_CBCR] = &gcc->gcc_usb3_mp_phy_aux_cbcr,
+	[USB3_MP_PHY_COM_AUX_CBCR] = &gcc->gcc_usb3_mp_phy_com_aux_cbcr,
+	[USB3_MP_PHY_PIPE_0_CBCR] = &gcc->gcc_usb3_mp_phy_pipe_0_cbcr,
+	[USB3_MP_PHY_PIPE_1_CBCR] = &gcc->gcc_usb3_mp_phy_pipe_1_cbcr,
+	[CFG_NOC_USB3_MP_AXI_CBCR] = &gcc->gcc_cfg_noc_usb3_mp_axi_cbcr,
+	[AGGRE_USB3_MP_AXI_CBCR] = &gcc->gcc_aggre_usb3_mp_axi_cbcr,
+	[SYS_NOC_USB_AXI_CBCR] = &gcc->gcc_sys_noc_usb_axi_cbcr,
+	[CFG_NOC_USB_ANOC_NORTH_AHB_CBCR] = &gcc->gcc_cfg_noc_usb_anoc_north_ahb_cbcr,
+	[CFG_NOC_USB_ANOC_SOUTH_AHB_CBCR] = &gcc->gcc_cfg_noc_usb_anoc_south_ahb_cbcr,
+	[AGGRE_USB_NOC_AXI_CBCR] = &gcc->gcc_aggre_usb_noc_axi_cbcr,
+	[AGGRE_NOC_USB_SOUTH_AXI_CBCR] = &gcc->gcc_aggre_noc_usb_south_axi_cbcr,
+	[AGGRE_NOC_USB_NORTH_AXI_CBCR] = &gcc->gcc_aggre_noc_usb_north_axi_cbcr,
+};
+
 static struct clock_freq_config pcie_core_cfg[] = {
 	{
 		.hz = 100 * MHz,
 		.src = SRC_GPLL0_MAIN_600MHZ,
 		.div = QCOM_CLOCK_DIV(6),
+	},
+};
+
+static struct clock_freq_config usb_core_cfg[] = {
+	{
+		.hz = CLK_200MHZ,
+		.src = SRC_GPLL0_MAIN_600MHZ,
+		.div = QCOM_CLOCK_DIV(3),
 	},
 };
 
@@ -337,6 +370,50 @@ void clock_configure_pcie(void)
 {
 	 clock_configure(&gcc->pcie_6a.phy_rchng_rcg,
 			pcie_core_cfg, PCIE_PHY_RCHNG_FREQ, ARRAY_SIZE(pcie_core_cfg));
+}
+
+enum cb_err clock_enable_usb_gdsc(enum clk_usb_gdsc gdsc_type)
+{
+	if (gdsc_type >= MAX_USB_GDSC)
+		return CB_ERR;
+
+	return enable_and_poll_gdsc_status(usb_gdsc[gdsc_type]);
+}
+
+enum cb_err usb_clock_enable(enum clk_usb clk_type)
+{
+	if (clk_type >= USB_CLK_COUNT)
+		return CB_ERR;
+
+	return clock_enable(usb_cbcr[clk_type]);
+}
+
+void usb_clock_reset(enum clk_usb clk_type, bool assert)
+{
+	clock_reset(usb_cbcr[clk_type], assert);
+}
+
+void clock_configure_usb(void)
+{
+	clock_configure(&gcc->usb30_mp_master_rcg,
+		usb_core_cfg, USB3_MASTER_CLK_MIN_FREQ_HZ, ARRAY_SIZE(usb_core_cfg));
+}
+
+enum cb_err usb_clock_configure_mux(enum clk_pipe_usb clk_type, u32 src_type)
+{
+	switch (clk_type) {
+	case USB3_PHY_PIPE_0:
+		write32(&gcc->gcc_usb3_mp_phy_pipe_0_muxr, src_type);
+		break;
+	case USB3_PHY_PIPE_1:
+		write32(&gcc->gcc_usb3_mp_phy_pipe_1_muxr, src_type);
+		break;
+	default:
+		printk(BIOS_ERR, "Unhandled clk_type: %d, src_type: %u\n", clk_type, src_type);
+		return CB_ERR;
+	}
+
+	return CB_SUCCESS;
 }
 
 static enum cb_err pll_init_and_set(struct x1p42100_ncc0_clock *ncc0, u32 l_val)

@@ -28,22 +28,16 @@ static const char *pcie_gpp_acpi_name(const struct device *dev)
 
 static void acpi_device_write_gpp_pci_dev(const struct device *dev)
 {
-	const char *scope = acpi_device_scope(dev);
-	const char *name = acpi_device_name(dev);
+	const char *path = acpi_device_path(dev);
 
 	assert(dev->path.type == DEVICE_PATH_PCI);
-	assert(name);
-	assert(scope);
+	assert(path);
 
-	acpigen_write_scope(scope);
-	acpigen_write_device(name);
+	acpigen_write_scope(path);
 
-	acpigen_write_ADR_pci_device(dev);
-	acpigen_write_STA(acpi_device_status(dev));
-
+	acpigen_write_store_int_to_namestr(acpi_device_status(dev), "STAT");
 	acpigen_write_pci_GNB_PRT(dev);
 
-	acpigen_pop_len(); /* Device */
 	acpigen_pop_len(); /* Scope */
 }
 

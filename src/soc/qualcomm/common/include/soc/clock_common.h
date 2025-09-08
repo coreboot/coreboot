@@ -115,8 +115,10 @@ enum clk_ctl_cmd_rcgr {
 
 enum clk_ctl_cbcr {
 	CLK_CTL_EN_SHFT  = 0,
+	CLK_CTL_ARES_SHFT = 2,
 	CLK_CTL_OFF_SHFT = 31,
 	CLK_CTL_EN_BMSK = 0x1,
+	CLK_CTL_ARES_BMSK = 0x1 << CLK_CTL_ARES_SHFT,
 	CLK_CTL_OFF_BMSK = 0x80000000,
 };
 
@@ -147,6 +149,8 @@ enum cb_err clock_enable(void *cbcr_addr);
 enum cb_err enable_and_poll_gdsc_status(void *gdscr_addr);
 
 void clock_reset_bcr(void *bcr_addr, bool assert);
+
+void clock_reset(void *cbcr_addr, bool assert);
 
 /*
  * clock_configure(): Configure the clock at the given clock speed (hz).  If hz

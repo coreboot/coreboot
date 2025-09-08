@@ -59,6 +59,15 @@ void clock_reset_bcr(void *bcr_addr, bool assert)
 		clrbits32(bcr_addr, BIT(CLK_CTL_BCR_BLK_SHFT));
 }
 
+/* Clock Reset Operations */
+void clock_reset(void *cbcr_addr, bool assert)
+{
+	if (assert)
+		setbits32(cbcr_addr, BIT(CLK_CTL_ARES_SHFT));
+	else
+		clrbits32(cbcr_addr, BIT(CLK_CTL_ARES_SHFT));
+}
+
 /* Clock GDSC Operations */
 enum cb_err enable_and_poll_gdsc_status(void *gdscr_addr)
 {

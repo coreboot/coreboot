@@ -105,6 +105,20 @@ chip soc/amd/turin_poc
 		subsystemid 0x1458 0x1000 inherit
 
 		device ref rcec_1 on end
+		# U2_P0_G3A as SATA. Can also be PCIe
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_SATA"
+			register "start_lane" = "80"
+			register "end_lane" = "87"
+			device ref gpp_bridge_1_0_a on end
+		end
+		# U2_P0_G3B as SATA. Can also be PCIe
+		chip drivers/amd/opensil/mpio
+			register "type" = "IFTYPE_SATA"
+			register "start_lane" = "88"
+			register "end_lane" = "95"
+			device ref gpp_bridge_1_1_a on end
+		end
 	end
 
 	device domain 2 on

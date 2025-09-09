@@ -4,5 +4,8 @@
 #define VARIANT_GPIO_H
 
 #include <baseboard/gpio.h>
+#undef GPIO_PCH_WP
+/* WP signal to PCH */
+#define GPIO_PCH_WP GPP_E3
 
 #endif

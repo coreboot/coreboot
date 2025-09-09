@@ -4,9 +4,6 @@
 #define VARIANT_GPIO_H
 
 #include <baseboard/gpio.h>
-#undef GPIO_PCH_WP
-/* WP signal to PCH */
-#define GPIO_PCH_WP		GPP_E12
 
 #define WWAN_FCPO	GPP_D6 /* FULL_CARD_POWER_OFF# */
 #define WWAN_RST	GPP_E17

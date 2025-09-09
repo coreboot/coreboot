@@ -5,6 +5,10 @@
 
 #include <baseboard/gpio.h>
 
+#undef GPIO_PCH_WP
+/* WP signal to PCH */
+#define GPIO_PCH_WP	GPP_E3
+
 #define WWAN_FCPO	GPP_H23
 #define WWAN_RST	GPP_F12
 #define WWAN_PERST	GPP_F13

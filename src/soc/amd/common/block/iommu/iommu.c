@@ -28,7 +28,7 @@ static void iommu_enable_resources(struct device *dev)
 	uint32_t base = pci_read_config32(dev, IOMMU_CAP_BASE_LO);
 	base |= IOMMU_ENABLE;
 	pci_write_config32(dev, IOMMU_CAP_BASE_LO, base);
-	printk(BIOS_DEBUG, "%s -> mmio enable: %08X", __func__,
+	printk(BIOS_DEBUG, "%s -> mmio enable: %08X\n", __func__,
 	       pci_read_config32(dev, IOMMU_CAP_BASE_LO));
 	pci_dev_enable_resources(dev);
 }

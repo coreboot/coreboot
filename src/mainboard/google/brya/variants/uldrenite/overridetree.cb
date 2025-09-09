@@ -19,6 +19,10 @@ fw_config
 		option ISH_DISABLE		0
 		option ISH_ENABLE		1
 	end
+	field SERIES 9 9
+		option SERIES_ULDRENITE		0
+		option SERIES_ULDRINO		1
+	end
 	field STORAGE 30 31
 		option STORAGE_EMMC		0
 		option STORAGE_NVME		1
@@ -357,7 +361,20 @@ chip soc/intel/alderlake
 				register "generic.detect" = "1"
 				register "generic.wake" = "GPE0_DW1_03"
 				register "hid_desc_reg_offset" = "0x20"
-				device i2c 2c on end
+				device i2c 2c on
+					probe SERIES SERIES_ULDRENITE
+				end
+			end
+			chip drivers/i2c/hid
+				register "generic.hid" = ""GDIX0000""
+				register "generic.desc" = ""Goodix Touchpad""
+				register "generic.irq" = "ACPI_IRQ_WAKE_LEVEL_LOW(GPP_B3_IRQ)"
+				register "generic.detect" = "1"
+				register "generic.wake" = "GPE0_DW1_03"
+				register "hid_desc_reg_offset" = "0x20"
+				device i2c 2c on
+					probe SERIES SERIES_ULDRINO
+				end
 			end
 		end # I2C1
 		device ref i2c5 on

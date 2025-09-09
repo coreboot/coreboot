@@ -30,6 +30,12 @@ chip soc/intel/pantherlake
 	register "tcss_ports[2]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 2
 	register "tcss_ports[3]" = "TCSS_PORT_EMPTY"	# Disable USB-C Port 3
 
+	# Acoustic Noise settings and slew rate configuration:
+	# Slew rate for GT Domain: Fast/2
+	register "enable_acoustic_noise_mitigation" = "true"
+	register "disable_fast_pkgc_ramp[VR_DOMAIN_GT]" = "true"
+	register "slow_slew_rate_config[VR_DOMAIN_GT]" = "SLEW_FAST_2"
+
 	# Enable SAGv
 	register "sagv" = "SAGV_ENABLED"
 

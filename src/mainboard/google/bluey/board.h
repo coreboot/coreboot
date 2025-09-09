@@ -41,6 +41,7 @@
 #endif
 
 void setup_chromeos_gpios(void);
+bool is_off_mode(void);
 void enable_slow_battery_charging(void);
 void disable_slow_battery_charging(void);
 

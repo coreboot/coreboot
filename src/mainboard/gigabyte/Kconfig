@@ -14,4 +14,13 @@ source "src/mainboard/gigabyte/*/Kconfig"
 config MAINBOARD_VENDOR
 	default "GIGABYTE"
 
+config HAVE_GIGABYTE_BMC_BIOS_UPDATE
+	bool
+	default n
+	help
+	  Select this option if the Gigabyte board has a BMC and accepts
+	  RBU files as input to update the BIOS. Build system will
+	  additionally produce the coreboot ROM packed into a RBU file,
+	  that can be diectly passed to BMC for BIOS update.
+
 endif # VENDOR_GIGABYTE

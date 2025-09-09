@@ -113,6 +113,13 @@ SECTIONS
         CBFS_CACHE(., CONFIG_CBFS_CACHE_SIZE)
 #endif
 
+#if CONFIG(TPM_MEASURED_BOOT)
+	/* Vboot measured boot TPM log measurements.
+	 * Needs to be transferred until CBMEM is available */
+	ALIGN_COUNTER(64)
+	TPM_LOG(., 2K)
+#endif
+
 	EARLY_RESERVED_DRAM_END(.)
 
 	/* Relocated at runtime in cbmem so the address does not matter. */

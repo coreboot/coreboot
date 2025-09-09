@@ -119,3 +119,10 @@ void amd_free_microcode(void)
 		ucode = NULL;
 	}
 }
+
+void *amd_microcode_find(void)
+{
+	amd_load_microcode_from_cbfs();
+
+	return (void *)ucode;
+}

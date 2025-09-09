@@ -15,6 +15,7 @@
 #include <amdblocks/reset.h>
 #include <bootstate.h>
 #include <cbmem.h>
+#include <cpu/amd/microcode.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/smm.h>
 #include <device/device.h>
@@ -293,6 +294,8 @@ static void configure_sdxi(void)
 static void configure_ccx(void)
 {
 	CCXCLASS_DATA_BLK *ccx_data = SilFindStructure(SilId_CcxClass, 0);
+	UCODEPATCH_BIOSENTRYINFO *ucode_info;
+	void *ucode;
 
 	if (CONFIG(XAPIC_ONLY) || CONFIG(X2APIC_LATE_WORKAROUND))
 		ccx_data->CcxInputBlock.AmdApicMode = xApicMode;
@@ -305,6 +308,15 @@ static void configure_ccx(void)
 	ccx_data->CcxInputBlock.EnableSvmX2AVIC = 1;
 	ccx_data->CcxInputBlock.EnableSvmAVIC = true;
 	ccx_data->CcxInputBlock.AmdCStateIoBaseAddress = ACPI_CSTATE_CONTROL;
+
+	ucode = amd_microcode_find();
+	if (!ucode) {
+		printk(BIOS_ERR, "OpenSIL: CPU microcode not found\n");
+		return;
+	}
+
+	ucode_info = &ccx_data->CcxInputBlock.UcodePatchEntryInfo;
+	ucode_info->UcodePatchEntryAddress = (uint64_t)ucode;
 }
 
 void setup_opensil(void)

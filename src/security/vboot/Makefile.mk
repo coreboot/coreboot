@@ -9,8 +9,9 @@ ramstage-y += vboot_lib.c
 postcar-y += vboot_lib.c
 
 vboot-fixup-includes = $(patsubst -I%,-I$(top)/%,\
+		       $(patsubst -I$(top)/%,-I%,\
 		       $(patsubst $(src)/%.h,$(top)/$(src)/%.h,\
-		       $(filter-out -I$(obj),$(1))))
+		       $(filter-out -I$(obj),$(1)))))
 
 # call with $1 = stage name to create rules for building the library
 # for the stage and adding it to the stage's set of object files.

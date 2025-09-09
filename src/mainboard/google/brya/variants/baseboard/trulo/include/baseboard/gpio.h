@@ -11,7 +11,7 @@
 /* EC wake is EC_SOC_WAKE_ODL which is routed to GPP_F17 */
 #define GPE_EC_WAKE		GPE0_DW2_17
 /* WP signal to PCH */
-#define GPIO_PCH_WP		GPP_E3
+#define GPIO_PCH_WP		GPP_E12
 /* EC in RW or RO */
 #define GPIO_EC_IN_RW		GPP_F18
 /* GPIO IRQ for tight timestamps, MKBP interrupts */

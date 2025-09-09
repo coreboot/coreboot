@@ -171,7 +171,7 @@ static unsigned long acpi_ivhd_misc(unsigned long current, struct device *dev)
 	/*
 	 * Add all possible PCI devices in the domain that can generate transactions
 	 * processed by IOMMU. Start with device <bus>:01.0
-	*/
+	 */
 	current = ivhd_dev_range(current, PCI_DEVFN(0, 3) | (dev->downstream->secondary << 8),
 				 0xff | (dev->downstream->subordinate << 8), 0);
 
@@ -311,6 +311,7 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 	struct device *iommu_dev;
 	struct device *nb_dev;
 	struct device *dev = NULL;
+	unsigned int domain;
 
 	if (ivrs == NULL) {
 		printk(BIOS_WARNING, "%s: ivrs is NULL\n", __func__);
@@ -322,15 +323,22 @@ static unsigned long acpi_fill_ivrs(acpi_ivrs_t *ivrs, unsigned long current)
 	while ((dev = dev_find_path(dev, DEVICE_PATH_DOMAIN)) != NULL) {
 		nb_dev = pcidev_path_behind(dev->downstream, PCI_DEVFN(0, 0));
 		iommu_dev = pcidev_path_behind(dev->downstream, PCI_DEVFN(0, 2));
+		domain = dev_get_domain_id(dev);
 		if (!nb_dev) {
-			printk(BIOS_WARNING, "%s: Northbridge device not present!\n", __func__);
-			printk(BIOS_WARNING, "%s: IVRS table not generated...\n", __func__);
-			return (unsigned long)ivrs;
+			printk(BIOS_WARNING, "%s: Northbridge device not present on domain %u!\n", __func__, domain);
+			if (domain == 0) {
+				printk(BIOS_WARNING, "%s: IVRS table not generated...\n", __func__);
+				return (unsigned long)ivrs;
+			}
+			continue;
 		}
 
 		if (!iommu_dev) {
-			printk(BIOS_WARNING, "%s: IOMMU device not found\n", __func__);
-			return (unsigned long)ivrs;
+			printk(BIOS_WARNING, "%s: IOMMU device not found on domain %u\n", __func__, dev_get_domain_id(dev));
+			if (domain == 0)
+				return (unsigned long)ivrs;
+
+			continue;
 		}
 
 		ivhd->type = IVHD_BLOCK_TYPE_LEGACY__FIXED;

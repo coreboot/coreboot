@@ -91,7 +91,7 @@ chip soc/intel/pantherlake
 		[VR_DOMAIN_SA] = 38 * 4
 	}"
 	register "fast_vmode_i_trip[PTL_U_2_CORE]" = "{
-		[VR_DOMAIN_IA] = 38 * 4,
+		[VR_DOMAIN_IA] = 63 * 4,
 		[VR_DOMAIN_GT] = 38 * 4,
 		[VR_DOMAIN_SA] = 38 * 4
 	}"

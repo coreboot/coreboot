@@ -87,23 +87,6 @@ const u32 cim_verb_data[] = {
 	0x020400af,
 	0x02050005,
 	0x020400c0,
-
-	/* Intel RPL IGD HDMI */
-	0x80862815,	/* Codec Vendor / Device ID: Intel */
-	0x80860101,	/* Subsystem ID */
-	10,		/* Number of verb entries */
-
-	AZALIA_SUBVENDOR(2, 0x80860101),
-
-	AZALIA_PIN_CFG(2, 0x04, 0x18560010),
-	AZALIA_PIN_CFG(2, 0x06, 0x18560010),
-	AZALIA_PIN_CFG(2, 0x08, 0x18561010),
-	AZALIA_PIN_CFG(2, 0x0a, 0x18561010),
-	AZALIA_PIN_CFG(2, 0x0b, 0x18561010),
-	AZALIA_PIN_CFG(2, 0x0c, 0x18561010),
-	AZALIA_PIN_CFG(2, 0x0d, 0x18561010),
-	AZALIA_PIN_CFG(2, 0x0e, 0x18561010),
-	AZALIA_PIN_CFG(2, 0x0f, 0x18560010),
 };
 
 const u32 pc_beep_verbs[] = {};

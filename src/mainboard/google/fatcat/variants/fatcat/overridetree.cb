@@ -655,7 +655,7 @@ chip soc/intel/pantherlake
 				register "num_freq_entries" = "1"
 				register "link_freq[0]" = "560 * MHz" # 560 MHz
 				register "remote_name" = ""IPU0""
-				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D0"
 
 				register "has_power_resource" = "true"
 				#Controls
@@ -756,7 +756,7 @@ chip soc/intel/pantherlake
 				register "num_freq_entries" = "1"
 				register "link_freq[0]" = "560 * MHz" # 560 MHz
 				register "remote_name" = ""IPU0""
-				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D3_COLD"
+				register "max_dstate_for_probe" = "ACPI_DEVICE_SLEEP_D0"
 
 				register "has_power_resource" = "true"
 				#Controls

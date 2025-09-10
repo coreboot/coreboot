@@ -33,6 +33,8 @@ void bootblock_mainboard_early_init(void)
 	/* Enable com1 (0x3f8), com2 (0x2f8) and superio (0x4e) */
 	pci_write_config16(PCH_DEV_LPC, LPC_IO_DECODE, lpciod);
 	pci_write_config16(PCH_DEV_LPC, LPC_IO_ENABLES, lpcioe);
+	/* AST2600 is on eSPI CS1# */
+	pci_write_config16(PCH_DEV_LPC, LPC_ESPI_CS1_ROUTING, lpcioe);
 
 	/*
 	 * Disable the Nuvoton NCT6791D SuperIO UART1.  It is enabled by

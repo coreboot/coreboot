@@ -23,6 +23,8 @@
 #define  LPC_LGMR_ADDR_1MB(n)		((n) >> 4)
 #define  LPC_LGMR_EN			(1 << 0)
 #define LPC_LGMR_WINDOW_SIZE		(64 * KiB)
+/* IO_<peripheral>_<IO port> style macros apply here as well. */
+#define LPC_ESPI_CS1_ROUTING		0xa0
 #define LPC_BIOS_DECODE_EN		0xd8
 #define  LPC_BIOS_DECODE_LOCK		(1 << 31)
 #define LPC_BIOS_CNTL			0xdc

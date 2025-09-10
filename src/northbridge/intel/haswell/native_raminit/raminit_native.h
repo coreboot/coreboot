@@ -68,6 +68,29 @@ enum margin_parameter {
 	WrT,
 	WrDqsT,
 	RdV,
+	WrV,
+	WrLevel,
+	WrTBit,
+	RdTBit,
+	RdVBit,
+	INVALID_MARGIN,
+};
+
+/*
+ * This enum is used to index an array of margin results. Those are
+ * used to keep track of available margin in more advanced training
+ * algorithms (optimisation), c.f. margin_result member in sysinfo.
+ */
+enum last_margin_param {
+	LastRxV,
+	LastRxT,
+	LastTxV,
+	LastTxT,
+	LastRcvEna,
+	LastWrLevel,
+	LastCmdT,
+	LastCmdV,
+	MAX_RESULT_TYPE,
 };
 
 enum opt_param {
@@ -232,6 +255,7 @@ enum raminit_status {
 	RAMINIT_STATUS_SUCCESS = 0,
 	RAMINIT_STATUS_NO_MEMORY_INSTALLED,
 	RAMINIT_STATUS_UNSUPPORTED_MEMORY,
+	RAMINIT_STATUS_INVALID_PARAMETER,
 	RAMINIT_STATUS_MPLL_INIT_FAILURE,
 	RAMINIT_STATUS_POLL_TIMEOUT,
 	RAMINIT_STATUS_REUT_ERROR,
@@ -239,6 +263,7 @@ enum raminit_status {
 	RAMINIT_STATUS_RCVEN_FAILURE,
 	RAMINIT_STATUS_RMPR_FAILURE,
 	RAMINIT_STATUS_JWRL_FAILURE,
+	RAMINIT_STATUS_1D_MARGINING_FAILURE,
 	RAMINIT_STATUS_INVALID_CACHE,
 	RAMINIT_STATUS_UNSPECIFIED_ERROR, /** TODO: Deprecated in favor of specific values **/
 };
@@ -261,10 +286,30 @@ struct raminit_dimm_info {
 	bool valid;
 };
 
+struct last_margin {
+	uint32_t start;
+	uint32_t end;
+};
+
+struct time_margin {
+	uint8_t left;
+	uint8_t center;
+	uint8_t right;
+};
+
 struct vref_margin {
 	uint8_t low;
 	uint8_t center;
 	uint8_t high;
+};
+
+union raw_bitlane_errors {
+	struct {
+		uint32_t lower;
+		uint32_t upper;
+		uint8_t ecc;
+	};
+	uint8_t per_byte[NUM_LANES];
 };
 
 struct sysinfo {
@@ -355,6 +400,9 @@ struct sysinfo {
 	uint8_t rxdqsn[NUM_CHANNELS][NUM_SLOTRANKS][NUM_LANES];
 	int8_t  rxvref[NUM_CHANNELS][NUM_SLOTRANKS][NUM_LANES];
 
+	struct time_margin rxdqpb[NUM_CHANNELS][NUM_SLOTRANKS][NUM_LANES][NUM_BITS];
+	struct time_margin txdqpb[NUM_CHANNELS][NUM_SLOTRANKS][NUM_LANES][NUM_BITS];
+
 	struct vref_margin rxdqvrefpb[NUM_CHANNELS][NUM_SLOTRANKS][NUM_LANES][NUM_BITS];
 
 	uint8_t clk_pi_code[NUM_CHANNELS][NUM_SLOTRANKS];
@@ -364,6 +412,11 @@ struct sysinfo {
 	uint8_t cke_cmd_pi_code[NUM_CHANNELS][NUM_GROUPS];
 	uint8_t cmd_north_pi_code[NUM_CHANNELS][NUM_GROUPS];
 	uint8_t cmd_south_pi_code[NUM_CHANNELS][NUM_GROUPS];
+
+	/*
+	 * BIG WARNING: The slotrank comes before the channel!
+	 */
+	struct last_margin results[MAX_RESULT_TYPE][NUM_SLOTRANKS][NUM_CHANNELS][NUM_LANES];
 
 	union tc_bank_reg tc_bank[NUM_CHANNELS];
 	union tc_bank_rank_a_reg tc_bankrank_a[NUM_CHANNELS];
@@ -488,6 +541,9 @@ enum raminit_status train_sense_amp_offset(struct sysinfo *ctrl);
 enum raminit_status train_receive_enable(struct sysinfo *ctrl);
 enum raminit_status train_read_mpr(struct sysinfo *ctrl);
 enum raminit_status train_jedec_write_leveling(struct sysinfo *ctrl);
+enum raminit_status train_read_timing_centering(struct sysinfo *ctrl);
+enum raminit_status train_write_timing_centering(struct sysinfo *ctrl);
+enum raminit_status train_read_voltage_centering(struct sysinfo *ctrl);
 enum raminit_status optimise_comp(struct sysinfo *ctrl);
 enum raminit_status save_training_values(struct sysinfo *ctrl);
 enum raminit_status restore_training_values(struct sysinfo *ctrl);
@@ -536,6 +592,7 @@ void reut_issue_mrs_all(
 	const uint16_t val[NUM_SLOTS]);
 
 enum raminit_status reut_issue_zq(struct sysinfo *ctrl, uint8_t chanmask, uint8_t zq_type);
+union raw_bitlane_errors get_bitlane_errors(const uint8_t channel);
 
 void write_wdb_fixed_pat(
 	const struct sysinfo *ctrl,
@@ -603,6 +660,8 @@ void download_regfile(
 	uint8_t byte,
 	bool read_rf_rd,
 	bool read_rf_wr);
+
+uint32_t get_max_margin_for_param(const enum margin_parameter param);
 
 void change_margin(
 	struct sysinfo *ctrl,

@@ -16,7 +16,9 @@
 
 /* DDR DATA per-channel per-bytelane */
 #define RX_TRAIN_ch_r_b(ch, rank, byte)		_DDRIO_C_R_B(0x0000, ch, rank, byte)
+#define RX_PER_BIT(ch, rank, byte)		_DDRIO_C_R_B(0x0010, ch, rank, byte)
 #define TX_TRAIN_ch_r_b(ch, rank, byte)		_DDRIO_C_R_B(0x0020, ch, rank, byte)
+#define TX_PER_BIT(ch, rank, byte)		_DDRIO_C_R_B(0x0030, ch, rank, byte)
 
 #define RX_OFFSET_VDQ(ch, byte)			_DDRIO_C_R_B(0x004c, ch, 0, byte)
 
@@ -126,7 +128,10 @@
 
 #define REUT_ch_ERR_DATA_MASK(ch)		_MCMAIN_C(0x40d8, ch)
 
+#define REUT_ch_ERR_DATA_STATUS(ch)		_MCMAIN_C(0x40e0, ch)
 #define REUT_ch_ERR_MISC_STATUS(ch)		_MCMAIN_C(0x40e8, ch)
+
+#define REUT_ch_ERR_COUNTER_CTL_x(ch, byte)	_MCMAIN_C_X(0x40f0, ch, byte)
 
 #define REUT_ch_MISC_CKE_CTRL(ch)		_MCMAIN_C(0x4190, ch)
 #define REUT_ch_MISC_ODT_CTRL(ch)		_MCMAIN_C(0x4194, ch)

@@ -194,3 +194,12 @@ enum raminit_status reut_issue_zq(struct sysinfo *ctrl, uint8_t chanmask, uint8_
 
 	return status;
 }
+
+union raw_bitlane_errors get_bitlane_errors(const uint8_t channel)
+{
+	return (union raw_bitlane_errors) {
+		.lower = mchbar_read32(REUT_ch_ERR_DATA_STATUS(channel) + 0),
+		.upper = mchbar_read32(REUT_ch_ERR_DATA_STATUS(channel) + 4),
+		.ecc   = mchbar_read8(REUT_ch_ERR_MISC_STATUS(channel)),
+	};
+}

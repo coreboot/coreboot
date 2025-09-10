@@ -200,18 +200,109 @@ static void update_data_offset_train(
 	}
 }
 
-static uint32_t get_max_margin(const enum margin_parameter param)
+static uint16_t get_per_bit_reg(
+	const enum margin_parameter param,
+	const bool multicast,
+	const uint8_t channel,
+	const uint8_t rank,
+	const uint8_t byte)
 {
 	switch (param) {
-	case RcvEna:
-	case RdT:
-	case WrT:
-	case WrDqsT:
-		return MAX_POSSIBLE_TIME;
+	case RdTBit:
+		if (multicast) {
+			return DDR_DATA_RX_PER_BIT_RANK(rank);
+		} else {
+			return RX_PER_BIT(channel, rank, byte);
+		}
+	case WrTBit:
+		if (multicast) {
+			return DDR_DATA_TX_PER_BIT_RANK(rank);
+		} else {
+			return TX_PER_BIT(channel, rank, byte);
+		}
+	case RdVBit:
+		/** TODO: Broadwell has per-rank RX_OFFSET_VDQ registers **/
+		if (multicast) {
+			return DDR_DATA_RX_OFFSET_VDQ;
+		} else {
+			return RX_OFFSET_VDQ(channel, byte);
+		}
+	default:
+		die("%s: Invalid margin parameter %d\n", __func__, param);
+	}
+}
+
+static void update_per_bit_margin(
+	struct sysinfo *ctrl,
+	const enum margin_parameter param,
+	const uint8_t channel,
+	const uint8_t rank,
+	const uint8_t byte,
+	const uint32_t value)
+{
+	for (uint8_t bit = 0; bit < NUM_BITS; bit++) {
+		const uint8_t v_bit = value >> (4 * bit) & 0xf;
+		switch (param) {
+		case RdTBit:
+			ctrl->rxdqpb[channel][rank][byte][bit].center = v_bit;
+			break;
+		case WrTBit:
+			ctrl->txdqpb[channel][rank][byte][bit].center = v_bit;
+			break;
+		case RdVBit:
+			ctrl->rxdqvrefpb[channel][rank][byte][bit].center = v_bit;
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+static void change_per_bit_margin(
+	struct sysinfo *ctrl,
+	const enum margin_parameter param,
+	const bool multicast,
+	const uint8_t in_channel,
+	const uint8_t rank,
+	const uint8_t in_byte,
+	const bool update_ctrl,
+	const uint32_t value,
+	const enum regfile_mode regfile)
+{
+	const bool is_rd = param == RdTBit || param == RdVBit;
+	const bool is_wr = param == WrTBit;
+	const uint16_t reg = get_per_bit_reg(param, multicast, in_channel, rank, in_byte);
+	mchbar_write32(reg, value);
+	if (multicast) {
+		for (uint8_t channel = 0; channel < NUM_CHANNELS; channel++) {
+			if (!does_ch_exist(ctrl, channel))
+				continue;
+
+			download_regfile(ctrl, channel, true, rank, regfile, 0, is_rd, is_wr);
+			if (!update_ctrl)
+				continue;
+
+			for (uint8_t byte = 0; byte < ctrl->lanes; byte++) {
+				update_per_bit_margin(ctrl, param, channel, rank, byte, value);
+			}
+		}
+	} else {
+		download_regfile(ctrl, in_channel, false, rank, regfile, in_byte, is_rd, is_wr);
+		if (!update_ctrl)
+			return;
+
+		update_per_bit_margin(ctrl, param, in_channel, rank, in_byte, value);
+	}
+}
+
+uint32_t get_max_margin_for_param(const enum margin_parameter param)
+{
+	switch (param) {
 	case RdV:
+	case WrV:
 		return MAX_POSSIBLE_VREF;
 	default:
-		die("%s: Invalid margin parameter %u\n", __func__, param);
+		return MAX_POSSIBLE_TIME;
 	}
 }
 
@@ -233,7 +324,22 @@ void change_margin(
 	if (!en_multicast && !does_ch_exist(ctrl, channel))
 		die("%s: Tried to change margin of empty channel %u\n", __func__, channel);
 
-	const uint32_t max_value = get_max_margin(param);
+	/* Per-bit margins are handled differently */
+	if (param == WrTBit || param == RdTBit || param == RdVBit) {
+		change_per_bit_margin(
+			ctrl,
+			param,
+			en_multicast,
+			channel,
+			rank,
+			byte,
+			update_ctrl,
+			(uint32_t)value0,
+			regfile);
+		return;
+	}
+
+	const uint32_t max_value = get_max_margin_for_param(param);
 	const int32_t v0 = clamp_s32(-max_value, value0, max_value);
 
 	union ddr_data_offset_train_reg ddr_data_offset_train = {

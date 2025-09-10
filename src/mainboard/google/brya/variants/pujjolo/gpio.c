@@ -27,7 +27,7 @@ static const struct pad_config override_gpio_table[] = {
 	/* A11 : EN_SPK_PA ==> NC */
 	PAD_NC(GPP_A11, NONE),
 	/* A12 : SOC_PEN_DETECT_ODL */
-	PAD_CFG_GPI_SCI_HIGH(GPP_A12, NONE, PLTRST, EDGE_BOTH),
+	PAD_CFG_GPI_SCI_HIGH(GPP_A12, NONE, PLTRST, EDGE_SINGLE),
 	/* A13 : GPP_A13 ==> GSC_SOC_INT_ODL */
 	PAD_CFG_GPI_APIC(GPP_A13, NONE, PLTRST, LEVEL, INVERT),
 	/* A14 : USB_OC1# ==> NC */

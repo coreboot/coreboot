@@ -4,5 +4,5 @@
 # ./util/spd_tools/bin/part_id_gen ADL lp5 src/mainboard/google/brya/variants/dochi/memory src/mainboard/google/brya/variants/dochi/memory/mem_parts_used.txt
 
 SPD_SOURCES =
-SPD_SOURCES += spd/lp5/set-0/spd-11.hex      # ID = 0(0b0000)  Parts = MT62F1G32D2DS-023 WT:B, H58G56BK8BX068
+SPD_SOURCES += spd/lp5/set-0/spd-11.hex      # ID = 0(0b0000)  Parts = MT62F1G32D2DS-023 WT:B, H58G56BK8BX068, H58G56CK8BX146
 SPD_SOURCES += spd/lp5/set-0/spd-7.hex      # ID = 1(0b0001)  Parts = K3KL8L80CM-MGCT

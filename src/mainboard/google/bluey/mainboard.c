@@ -10,6 +10,12 @@
 #include <soc/qupv3_config_common.h>
 #include <soc/qup_se_handlers_common.h>
 #include "board.h"
+#include <soc/usb/usb.h>
+
+static void setup_usb(void)
+{
+	setup_usb_host0();
+}
 
 void lb_add_boot_mode(struct lb_header *header)
 {
@@ -75,6 +81,9 @@ static void mainboard_init(struct device *dev)
 	 */
 	if (CONFIG(MAINBOARD_HAS_FINGERPRINT))
 		gpio_output(GPIO_FP_RST_L, 1);
+
+	/* Setup USB related initial config */
+	setup_usb();
 
 	display_startup();
 }

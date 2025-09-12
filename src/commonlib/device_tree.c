@@ -1533,21 +1533,12 @@ void dt_add_u64_prop(struct device_tree_node *node, const char *name, u64 val)
 	dt_add_bin_prop(node, name, val_ptr, sizeof(*val_ptr));
 }
 
-/*
- * Add a 'reg' address list property to a node, or update it if it exists.
- *
- * @param node		The device tree node to add to.
- * @param regions       Array of address values to be stored in the property.
- * @param sizes		Array of corresponding size values to 'addrs'.
- * @param count		Number of values in 'addrs' and 'sizes' (must be equal).
- * @param addr_cells	Value of #address-cells property valid for this node.
- * @param size_cells	Value of #size-cells property valid for this node.
- */
-void dt_add_reg_prop(struct device_tree_node *node, u64 *addrs, u64 *sizes,
-		     int count, u32 addr_cells, u32 size_cells)
+static void dt_add_addr_and_size_prop(struct device_tree_node *node, const char *prop_name,
+				      const u64 *addrs, const u64 *sizes, int count,
+				      u32 addr_cells, u32 size_cells)
 {
 	int i;
-	size_t length = (addr_cells + size_cells) * sizeof(u32) * count;
+	size_t length = (size_t)(addr_cells + size_cells) * sizeof(u32) * count;
 	u8 *data = xmalloc(length);
 	u8 *cur = data;
 
@@ -1558,7 +1549,40 @@ void dt_add_reg_prop(struct device_tree_node *node, u64 *addrs, u64 *sizes,
 		cur += size_cells * sizeof(u32);
 	}
 
-	dt_add_bin_prop(node, "reg", data, length);
+	dt_add_bin_prop(node, prop_name, data, length);
+}
+
+/*
+ * Add a 'reg' address list property to a node, or update it if it exists.
+ *
+ * @param node		The device tree node to add to.
+ * @param regions       Array of address values to be stored in the property.
+ * @param sizes		Array of corresponding size values to 'addrs'.
+ * @param count		Number of values in 'addrs' and 'sizes' (must be equal).
+ * @param addr_cells	Value of #address-cells property valid for this node.
+ * @param size_cells	Value of #size-cells property valid for this node.
+ */
+void dt_add_reg_prop(struct device_tree_node *node, const u64 *addrs, const u64 *sizes,
+		     int count, u32 addr_cells, u32 size_cells)
+{
+	dt_add_addr_and_size_prop(node, "reg", addrs, sizes, count, addr_cells, size_cells);
+}
+
+/*
+ * Add a 'iommu-addresses' address list property to a node, or update it if it exists.
+ *
+ * @param node		The device tree node to add to.
+ * @param regions       Array of address values to be stored in the property.
+ * @param sizes		Array of corresponding size values to 'addrs'.
+ * @param count		Number of values in 'addrs' and 'sizes' (must be equal).
+ * @param addr_cells	Value of #address-cells property valid for this node.
+ * @param size_cells	Value of #size-cells property valid for this node.
+ */
+void dt_add_iommu_addr_prop(struct device_tree_node *node, const u64 *addrs, const u64 *sizes,
+			    int count, u32 addr_cells, u32 size_cells)
+{
+	dt_add_addr_and_size_prop(node, "iommu-addresses", addrs, sizes, count, addr_cells,
+				  size_cells);
 }
 
 /*

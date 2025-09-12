@@ -189,8 +189,10 @@ void dt_add_string_prop(struct device_tree_node *node, const char *name,
 			const char *str);
 void dt_add_u32_prop(struct device_tree_node *node, const char *name, u32 val);
 void dt_add_u64_prop(struct device_tree_node *node, const char *name, u64 val);
-void dt_add_reg_prop(struct device_tree_node *node, u64 *addrs, u64 *sizes,
+void dt_add_reg_prop(struct device_tree_node *node, const u64 *addrs, const u64 *sizes,
 		     int count, u32 addr_cells, u32 size_cells);
+void dt_add_iommu_addr_prop(struct device_tree_node *node, const u64 *addrs, const u64 *sizes,
+			    int count, u32 addr_cells, u32 size_cells);
 int dt_set_bin_prop_by_path(struct device_tree *tree, const char *path,
 			    void *data, size_t size, int create);
 

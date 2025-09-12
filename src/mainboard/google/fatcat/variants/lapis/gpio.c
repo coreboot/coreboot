@@ -40,8 +40,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_NC(GPP_A12, NONE),
 	/* GPP_A13:     MEM_STRAP_0 */
 	PAD_CFG_GPI(GPP_A13, NONE, DEEP),
-	/* GPP_A15:     GPP_A15_DNX_FORCE_RELOAD ==> EPD_ON_GCD_OUT*/ /* NC */
-	/* PAD_CFG_NF(GPP_A15, NONE, DEEP, NF1), */
+	/* GPP_A15:     Not used */
+	PAD_NC(GPP_A15, NONE),
 	/* GPP_A16:     BT_DISABLE_L ==> BT_ON_WLAN */
 	PAD_CFG_GPO(GPP_A16, 1, DEEP),
 	/* GPP_A17:     WIFI_DISABLE_L ==> WLAN_ON_PCH */

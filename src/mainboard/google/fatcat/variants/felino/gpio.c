@@ -40,8 +40,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPI_SCI_LOW(GPP_A12, NONE, DEEP, LEVEL),
 	/* GPP_A13:     Not used */
 	PAD_NC(GPP_A13, NONE),
-	/* GPP_A15:     HW_ID1 */
-	PAD_CFG_GPI(GPP_A15, NONE, PLTRST),
+	/* GPP_A15:     Not used */
+	PAD_NC(GPP_A15, NONE),
 	/* GPP_A16:     BT_RF_KILL_N */
 	PAD_CFG_GPO(GPP_A16, 1, DEEP),
 	/* GPP_A17:     PCH_WLAN_OFF_N */
@@ -93,8 +93,8 @@ static const struct pad_config gpio_table[] = {
 	PAD_CFG_GPO(GPP_B21, 0, DEEP),
 	/* GPP_B22:     Not used */
 	PAD_NC(GPP_B22, NONE),
-	/* GPP_B23:     HW_ID0 */
-	PAD_CFG_GPI(GPP_B23, NONE, PLTRST),
+	/* GPP_B23:     Not used */
+	PAD_NC(GPP_B23, NONE),
 	/* GPP_B24:     ESPI_ALERT0_N */
 	PAD_CFG_NF_IOSSTATE(GPP_B24, UP_20K, DEEP, NF1, IGNORE),
 	/* GPP_B25:     Not used */

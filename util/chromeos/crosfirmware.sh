@@ -171,7 +171,7 @@ elif [ "$BOARD" != "" ]; then
 	get_inventory $CONF
 
 	echo Processing board $BOARD
-	eval $(grep -i $BOARD -A8 $CONF | grep '\(url=\|file=\)')
+	eval $(grep -i -w $BOARD -A8 $CONF | grep '\(url=\|file=\)')
 	do_one_board $BOARD $url $file
 
 	rm "$CONF"

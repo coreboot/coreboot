@@ -1,0 +1,34 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_ASUS_H610I_PLUS_D4
+	select BOARD_ROMSIZE_KB_16384
+	select DRIVERS_UART_8250IO
+	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_TABLES
+	select INTEL_GMA_HAVE_VBT
+	select SOC_INTEL_ALDERLAKE_PCH_S
+	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
+	select SUPERIO_NUVOTON_NCT6791D
+	select USE_LEGACY_8254_TIMER
+
+if BOARD_ASUS_H610I_PLUS_D4
+
+config MAINBOARD_DIR
+	default "asus/h610i-plus-d4"
+
+config MAINBOARD_PART_NUMBER
+	default "PRIME H610I-PLUS D4"
+
+config MAINBOARD_VENDOR
+	default "ASUS"
+
+config UART_FOR_CONSOLE
+	default 0
+
+config USE_PM_ACPI_TIMER
+	default n
+
+config CBFS_SIZE
+	default 0xB00000
+
+endif

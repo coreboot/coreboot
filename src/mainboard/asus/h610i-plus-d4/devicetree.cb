@@ -1,0 +1,191 @@
+chip soc/intel/alderlake
+	register "eist_enable" = "true"
+
+	# Sagv Configuration
+	register "sagv" = "SaGv_Enabled"
+	register "RMT" = "0"
+	register "enable_c6dram" = "1"
+
+	register "pmc_gpe0_dw0" = "GPP_J"
+	register "pmc_gpe0_dw1" = "GPP_VPGIO"
+	register "pmc_gpe0_dw2" = "GPD"
+
+	device domain 0 on
+		# USB Configuration - copied from ms7d25, all ports work but possibly excessive
+		device ref xhci on
+			register "usb2_ports" = "{
+				[0] = USB2_PORT_SHORT(OC2),
+				[1] = USB2_PORT_SHORT(OC1),
+				[2] = USB2_PORT_SHORT(OC0),
+				[3] = USB2_PORT_LONG(OC0),
+				[4] = USB2_PORT_SHORT(OC3),
+				[5] = USB2_PORT_LONG(OC3),
+				[6] = USB2_PORT_LONG(OC7),
+				[7] = USB2_PORT_LONG(OC0),
+				[8] = USB2_PORT_LONG(OC2),
+				[9] = USB2_PORT_LONG(OC7),
+				[10] = USB2_PORT_SHORT(OC0),
+				[11] = USB2_PORT_SHORT(OC0),
+				[12] = USB2_PORT_SHORT(OC0),
+				[13] = USB2_PORT_SHORT(OC0),
+				[14] = USB2_PORT_EMPTY,
+				[15] = USB2_PORT_EMPTY,
+			}"
+
+			register "usb3_ports" = "{
+				[0] = USB3_PORT_DEFAULT(OC2),
+				[1] = USB3_PORT_DEFAULT(OC2),
+				[2] = USB3_PORT_DEFAULT(OC3),
+				[3] = USB3_PORT_DEFAULT(OC0),
+				[4] = USB3_PORT_DEFAULT(OC7),
+				[5] = USB3_PORT_DEFAULT(OC7),
+				[6] = USB3_PORT_DEFAULT(OC2),
+				[7] = USB3_PORT_DEFAULT(OC2),
+				[8] = USB3_PORT_DEFAULT(OC0),
+				[9] = USB3_PORT_EMPTY,
+			}"
+		end
+
+		device ref sata on
+			register "sata_salp_support" = "1"
+
+			register "sata_ports_enable" = "{
+				[4] = 1,
+				[5] = 1,
+				[6] = 1,
+				[7] = 1,
+			}"
+
+			register "sata_ports_dev_slp" = "{
+				[4] = 0,
+				[5] = 0,
+				[6] = 0,
+				[7] = 0,
+			}"
+		end
+
+		# HDMI on port B
+		register "ddi_portB_config" = "1"
+		register "ddi_ports_config" = "{
+			[DDI_PORT_B] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+			[DDI_PORT_C] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+			[DDI_PORT_1] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+			[DDI_PORT_2] = DDI_ENABLE_HPD,
+			[DDI_PORT_3] = DDI_ENABLE_HPD | DDI_ENABLE_DDC,
+			[DDI_PORT_4] = DDI_ENABLE_HPD,
+		}"
+
+		register "hybrid_storage_mode" = "true"
+		register "dmi_power_optimize_disable" = "true"
+
+		# FIVR configuration
+		register "fivr_rfi_frequency" = "1394"
+		register "fivr_spread_spectrum" = "FIVR_SS_1_5"
+		register "ext_fivr_settings" = "{
+			.configure_ext_fivr = 1,
+		}"
+
+		# PCIe x16 Slot
+		# PEG10 (dGPU)
+		device ref pcie5_0 on
+			register "cpu_pcie_rp[CPU_RP(2)]" = "{
+				.clk_src = 0,
+				.clk_req = 0,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc "SlotTypePciExpressGen4x16" "SlotLengthLong"
+					 "PCI_E1" "SlotDataBusWidth16X"
+		end
+
+		device ref igpu on end
+
+		device ref crashlog off end
+
+		device ref cnvi_wifi on
+			# Enable CNVi BT
+			register "cnvi_bt_core" = "true"
+			register "cnvi_bt_audio_offload" = "false"
+			chip drivers/wifi/generic
+				register "wake" = "GPE0_PME_B0"
+				register "enable_cnvi_ddr_rfim" = "true"
+				device generic 0 on end
+			end
+		end
+
+		# HECI to ME
+		device ref heci1 on end
+
+		# M.2 Slot
+		device ref pcie_rp1 on
+			register "pch_pcie_rp[PCH_RP(1)]" = "{
+				.clk_src = 11,
+				.clk_req = 11,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther"
+					 "M2_1" "SlotDataBusWidth4X"
+		end
+
+		# Onboard LAN
+		device ref pcie_rp5 on
+			register "pch_pcie_rp[PCH_RP(5)]" = "{
+				.clk_src = 4,
+				.clk_req = 4,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+		end
+
+		# WLAN (when not using CNVi)
+		device ref pcie_rp6 on
+			register "pch_pcie_rp[PCH_RP(6)]" = "{
+				.clk_src = 12,
+				.clk_req = 12,
+				.flags = PCIE_RP_LTR | PCIE_RP_AER,
+			}"
+			smbios_slot_desc "SlotTypeM2Socket3" "SlotLengthOther"
+					 "M2_1" "SlotDataBusWidth4X"
+		end
+
+		device ref pch_espi on
+			# HWM I/O decode range
+			register "gen1_dec" = "0x007c0281"
+
+			chip superio/nuvoton/nct6791d
+				device pnp 2e.1   off end # Parallel port (this line needed for super i/o init to work)
+				device pnp 2e.2   on      # UART A
+					io  0x60 = 0x03f8
+					irq 0x70 = 4
+
+					# Pin 121 is PECI
+					irq 0x2c = 0
+				end
+				device pnp 2e.5   on      # PS/2 KBC
+					io  0x60 = 0x0060
+					io  0x62 = 0x0064
+					irq 0x70 = 1
+					irq 0x72 = 12
+					irq 0xf0 = 0x82
+				end
+				device pnp 2e.b   on      # HWM
+					io  0x60 = 0x0290
+					io  0x62 = 0x0b00
+					io  0x64 = 0x0a00
+					irq 0xf0 = 0xfe
+				end
+			end
+		end
+
+		device ref p2sb on end
+
+		device ref hda on
+			register "pch_hda_audio_link_hda_enable" = "1"
+			register "pch_hda_sdi_enable[0]" = "1"
+			register "pch_hda_dsp_enable" = "0"
+			register "pch_hda_idisp_link_tmode" = "HDA_TMODE_8T"
+			register "pch_hda_idisp_link_frequency" = "HDA_LINKFREQ_96MHZ"
+			register "pch_hda_idisp_codec_enable" = "1"
+		end
+
+		device ref smbus on end
+	end
+end

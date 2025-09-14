@@ -1,0 +1,7 @@
+Category: desktop
+Board URL: https://www.asus.com/us/motherboards-components/motherboards/prime/prime-h610i-plus-d4/
+ROM IC: W25Q128JVSQ
+ROM package: SOIC-8
+ROM socketed: no
+Flashrom support: yes
+Release year: 2022

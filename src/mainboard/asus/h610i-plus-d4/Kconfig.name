@@ -1,0 +1,4 @@
+## SPDX-License-Identifier: GPL-2.0-only
+
+config BOARD_ASUS_H610I_PLUS_D4
+	bool "PRIME H610I-PLUS D4"

@@ -57,8 +57,13 @@ This chip is located on the bottom side of the case (the radiator side). One
 has to remove all screws (in order): 4 top cover screws, 4 side cover screws
 (one side is enough), 4 mainboard screws, 4 CPU screws (under DIMMs). Lift up
 the mainboard and turn around it. The flash chip is near the SoC on the DIMM
-slots side. Use a clip (or solder the wires) to program the chip. Specifically,
-it's a Macronix MX25L6406E (3.3V) -[datasheet][MX25L6406E].
+slots side. Desolder and reprogram the chip, or use a clip (or solder the
+wires) to program the chip. Specifically, it's a Macronix MX25L6406E (3.3V)
+-[datasheet][MX25L6406E], while on some other boards it's a Macronix MX25L6436F.
+
+At least on some revisions of the motherboard, it's not possible to reprogram
+the chip with a clip, while the board is powered off, because there's no diode
+to prevent backfeeding power to other components on the board.
 
 ## Known issues
 
@@ -99,8 +104,26 @@ the cables or not being populated on the board case.
 
 ## Technology
 
-There are 3 variants of FW6 boards: FW6A, FW6B and FW6C. They differ only in
-used SoC.
+There are 5 variants of FW6 boards: FW6A, FW6B, FW6C, FW6D and FW6E. They differ
+in used SoC.
+
+There are two revisions of the motherboard, hereby called Old Revision
+(using IT8772E Super I/O chip), and New Revision (using IT8613E Super I/O chip).
+Besides the different Super I/O chip, they also differ in component placement,
+and available internal motherboard headers. The Old Revision motherboards are
+marked with silkscreen "YL-SK1L6-V1", while the New Revision motherboards are
+marked with silkscreen "KBR6LAV20".
+
+WARNING: The current code base only supports the Old Revision motherboards.
+
+To compare the two motherboard
+revisions one may compare the [New Revision FW6A Datasheet] to the
+[Old Revision FW6 Series Hardware Overview].
+
+The FW6A/FW6B/FW6C variants are known to have been produced with both
+motherboard revisions.
+
+The FW6D/FW6E variants are only known to exist with the new motherboard revision.
 
 - FW6A:
 
@@ -110,9 +133,11 @@ used SoC.
 +------------------+--------------------------------------------------+
 | PCH              | Kaby Lake U w/ iHDCP2.2 Base                     |
 +------------------+--------------------------------------------------+
-| Super I/O, EC    | ITE IT8772E                                      |
+| Super I/O, EC    | Old revision: ITE IT8772E, New rev.: ITE IT8613E |
 +------------------+--------------------------------------------------+
 | Coprocessor      | Intel Management Engine                          |
++------------------+--------------------------------------------------+
+| Support          | Currently only the Old Revision is supported     |
 +------------------+--------------------------------------------------+
 ```
 
@@ -124,9 +149,11 @@ used SoC.
 +------------------+--------------------------------------------------+
 | PCH              | Kaby Lake U w/ iHDCP2.2 Premium                  |
 +------------------+--------------------------------------------------+
-| Super I/O, EC    | ITE IT8772E                                      |
+| Super I/O, EC    | Old revision: ITE IT8772E, New rev.: ITE IT8613E |
 +------------------+--------------------------------------------------+
 | Coprocessor      | Intel Management Engine                          |
++------------------+--------------------------------------------------+
+| Support          | Currently only the Old Revision is supported     |
 +------------------+--------------------------------------------------+
 ```
 
@@ -138,9 +165,43 @@ used SoC.
 +------------------+--------------------------------------------------+
 | PCH              | Kaby Lake U w/ iHDCP2.2 Premium                  |
 +------------------+--------------------------------------------------+
-| Super I/O, EC    | ITE IT8772E                                      |
+| Super I/O, EC    | Old revision: ITE IT8772E, New rev.: ITE IT8613E |
 +------------------+--------------------------------------------------+
 | Coprocessor      | Intel Management Engine                          |
++------------------+--------------------------------------------------+
+| Support          | Currently only the Old Revision is supported     |
++------------------+--------------------------------------------------+
+```
+
+- FW6D:
+
+```{eval-rst}
++------------------+--------------------------------------------------+
+| CPU              | Intel Core i5-8250U                              |
++------------------+--------------------------------------------------+
+| PCH              | Kaby Lake U w/ iHDCP2.2 Premium                  |
++------------------+--------------------------------------------------+
+| Super I/O, EC    | ITE IT8613E                                      |
++------------------+--------------------------------------------------+
+| Coprocessor      | Intel Management Engine                          |
++------------------+--------------------------------------------------+
+| Support          | Currently not supported                          |
++------------------+--------------------------------------------------+
+```
+
+- FW6E:
+
+```{eval-rst}
++------------------+--------------------------------------------------+
+| CPU              | Intel Core i7-8550U                              |
++------------------+--------------------------------------------------+
+| PCH              | Kaby Lake U w/ iHDCP2.2 Premium                  |
++------------------+--------------------------------------------------+
+| Super I/O, EC    | ITE IT8613E                                      |
++------------------+--------------------------------------------------+
+| Coprocessor      | Intel Management Engine                          |
++------------------+--------------------------------------------------+
+| Support          | Currently not supported                          |
 +------------------+--------------------------------------------------+
 ```
 
@@ -148,11 +209,14 @@ used SoC.
 
 As Protectli licenses and uses [Yanling] appliances with no modifications
 to the actual hardware, any compatible [Yanling] appliances would work.
-Specifically, look for hardware with the same CPU and NIC and coreboot
-should be able to compile and boot with no modifications required.
+Specifically, look for hardware with the same CPU, NIC, and Super I/O chip
+and coreboot should be able to compile and boot with no modifications
+required.
 
 [Protectli FW6]: https://protectli.com/vault-6-port/
 [website]: https://protectli.com/kb/coreboot-on-the-vault/
 [MX25L6406E]: https://www.macronix.com/Lists/Datasheet/Attachments/7370/MX25L6406E,%203V,%2064Mb,%20v1.9.pdf
 [flashrom]: https://flashrom.org/
 [Yanling]: http://www.ylgkdn.cn/
+[New Revision FW6A Datasheet]: https://kb.protectli.com/wp-content/uploads/sites/9/2025/04/FW6A-Datasheet-20250204.pdf
+[Old Revision FW6 Series Hardware Overview]: https://kb.protectli.com/kb/fw6-hardware-overview/

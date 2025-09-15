@@ -17,6 +17,8 @@ static int get_mt6359p_regulator_id(enum mtk_regulator regulator)
 		return MT6359P_PA;
 	case MTK_REGULATOR_VMC:
 		return MT6359P_SIM1;
+	case MTK_REGULATOR_VCN18:
+		return MT6359P_VCN18;
 	default:
 		return MTK_REGULATOR_INVALID;
 	}
@@ -45,6 +47,9 @@ void mainboard_set_regulator_voltage(enum mtk_regulator regulator, uint32_t volt
 	case MT6359P_SIM1:
 		mt6359p_set_vsim1_voltage(voltage_uv);
 		break;
+	case MT6359P_VCN18:
+		mt6359p_set_vcn18_voltage(voltage_uv);
+		break;
 	default:
 		printk(BIOS_ERR, "%s: Regulator ID %d: not supported\n", __func__, regulator);
 		break;
@@ -70,6 +75,8 @@ uint32_t mainboard_get_regulator_voltage(enum mtk_regulator regulator)
 		return mt6359p_buck_get_voltage(MT6359P_PA);
 	case MT6359P_SIM1:
 		return mt6359p_get_vsim1_voltage();
+	case MT6359P_VCN18:
+		return mt6359p_get_vcn18_voltage();
 	default:
 		printk(BIOS_ERR, "%s: Regulator ID %d: not supported\n", __func__, regulator);
 		return 0;
@@ -92,6 +99,9 @@ int mainboard_enable_regulator(enum mtk_regulator regulator, bool enable)
 		break;
 	case MT6359P_SIM1:
 		mt6359p_enable_vsim1(enable);
+		break;
+	case MT6359P_VCN18:
+		mt6359p_enable_vcn18(enable);
 		break;
 	default:
 		printk(BIOS_ERR, "%s: Regulator ID %d: not supported\n", __func__, regulator);

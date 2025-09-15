@@ -35,12 +35,14 @@ enum {
 	PMIC_VSRAM_PROC1_ELR	= 0x1b44,
 	PMIC_VSRAM_PROC2_ELR	= 0x1b46,
 	PMIC_VSRAM_MD_ELR	= 0x1b4a,
+	PMIC_VCN18_CON0		= 0x1c2e,
 	PMIC_VSIM1_CON0		= 0x1cd0,
 	PMIC_VM18_CON0		= 0x1d88,
 	PMIC_VSRAM_PROC1_VOSEL1	= 0x1e90,
 	PMIC_VSRAM_PROC2_VOSEL1	= 0x1eb0,
 	PMIC_VSRAM_MD_VOSEL1	= 0x1f36,
 	PMIC_VSIM1_ANA_CON0	= 0x1fa2,
+	PMIC_VCN18_ANA_CON0	= 0x2010,
 	PMIC_VM18_ANA_CON0	= 0x2020,
 };
 
@@ -68,6 +70,7 @@ enum {
 	MT6359P_VM18,
 	MT6359P_VMODEM,
 	MT6359P_VSRAM_MD,
+	MT6359P_VCN18,
 	MT6359P_MAX,
 };
 
@@ -77,6 +80,11 @@ enum {
 
 #define VM18_VOL_REG_SHIFT  8
 #define VM18_VOL_OFFSET 600
+
+#define VCN18_VOL_UV_MAX	1900000
+#define VCN18_VOL_UV_MIN	1800000
+#define VCN18_VOL_MV_OFFSET	600
+#define VCN18_VOL_SHIFT		8
 
 #define EFUSE_WAIT_US 5000
 #define EFUSE_BUSY 1
@@ -90,9 +98,12 @@ void mt6359p_set_vm18_voltage(u32 vm18_uv);
 u32 mt6359p_get_vm18_voltage(void);
 void mt6359p_set_vsim1_voltage(u32 vsim1_uv);
 u32 mt6359p_get_vsim1_voltage(void);
+void mt6359p_set_vcn18_voltage(u32 vcn18_uv);
+u32 mt6359p_get_vcn18_voltage(void);
 void mt6359p_enable_vpa(bool enable);
 void mt6359p_enable_vsim1(bool enable);
 void mt6359p_enable_vm18(bool enable);
+void mt6359p_enable_vcn18(bool enable);
 void mt6359p_init_pmif_arb(void);
 u32 mt6359p_read_field(u32 reg, u32 mask, u32 shift);
 void mt6359p_write_field(u32 reg, u32 val, u32 mask, u32 shift);

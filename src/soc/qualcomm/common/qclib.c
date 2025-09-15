@@ -9,6 +9,7 @@
 #include <console/console.h>
 #include <fmap.h>
 #include <mrc_cache.h>
+#include <option.h>
 #include <reset.h>
 #include <security/vboot/misc.h>
 #include <soc/mmu.h>
@@ -182,6 +183,11 @@ static void dump_te_table(void)
 
 __weak int qclib_soc_override(struct qclib_cb_if_table *table) { return 0; }
 
+static bool qclib_debug_log_level(void)
+{
+	return get_uint_option("qclib_debug_level", 1);
+}
+
 struct prog qclib; /* This will be re-used by qclib_rerun() */
 
 static void qclib_prepare_and_run(void)
@@ -195,8 +201,8 @@ static void qclib_prepare_and_run(void)
 				_qclib_serial_log,
 				REGION_SIZE(qclib_serial_log), 0);
 
-	/* Enable QCLib serial output, based on Kconfig */
-	if (CONFIG(CONSOLE_SERIAL))
+	/* Enable QCLib serial output, if below condition is met */
+	if (CONFIG(CONSOLE_SERIAL) && qclib_debug_log_level())
 		qclib_cb_if_table.global_attributes =
 			QCLIB_GA_ENABLE_UART_LOGGING;
 

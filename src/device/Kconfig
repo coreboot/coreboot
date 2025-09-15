@@ -602,6 +602,10 @@ config AZALIA_HDA_CODEC_SUPPORT
 	  mainboard directory to the build which contain the board-specific HD
 	  audio codec configuration.
 
+config AZALIA_USE_LEGACY_VERB_TABLE
+	bool
+	default n
+
 config PCIEXP_PLUGIN_SUPPORT
 	bool
 	default y

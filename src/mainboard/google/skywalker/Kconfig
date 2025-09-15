@@ -5,6 +5,7 @@ config BOARD_GOOGLE_SKYWALKER_COMMON
 	def_bool BOARD_GOOGLE_ANAKIN || \
 		 BOARD_GOOGLE_BAZE || \
 		 BOARD_GOOGLE_OBIWAN || \
+		 BOARD_GOOGLE_PADME || \
 		 BOARD_GOOGLE_SKYWALKER || \
 		 BOARD_GOOGLE_TARKIN || \
 		 BOARD_GOOGLE_YODA
@@ -50,6 +51,7 @@ config MAINBOARD_PART_NUMBER
 	default "Anakin" if BOARD_GOOGLE_ANAKIN
 	default "Baze" if BOARD_GOOGLE_BAZE
 	default "Obiwan" if BOARD_GOOGLE_OBIWAN
+	default "Padme" if BOARD_GOOGLE_PADME
 	default "Skywalker" if BOARD_GOOGLE_SKYWALKER
 	default "Tarkin" if BOARD_GOOGLE_TARKIN
 	default "Yoda" if BOARD_GOOGLE_YODA

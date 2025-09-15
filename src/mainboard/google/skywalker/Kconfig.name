@@ -11,6 +11,9 @@ config BOARD_GOOGLE_BAZE
 config BOARD_GOOGLE_OBIWAN
 	bool "->  Obiwan"
 
+config BOARD_GOOGLE_PADME
+	bool "-> Padme"
+
 config BOARD_GOOGLE_SKYWALKER
 	bool "->  Skywalker"
 

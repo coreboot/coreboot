@@ -45,6 +45,7 @@ static const struct drivers_intel_touch_config *get_driver_config(const struct d
 		[TH_SENSOR_NONE] = &none_driver_config,
 		[TH_SENSOR_WACOM] = &wacom_touch_config,
 		[TH_SENSOR_ELAN] = &elan_touch_config,
+		[TH_SENSOR_GOOGLE] = &google_touch_config,
 		[TH_SENSOR_HYNITRON] = &hynitron_touch_config,
 		[TH_SENSOR_GENERIC] = config
 	};
@@ -66,6 +67,16 @@ static const struct drivers_intel_touch_config *get_driver_config(const struct d
 	((((const struct drivers_intel_touch_config *)(device)->chip_info)->soc_## intf .field) ?	\
 	 (((const struct drivers_intel_touch_config *)(device)->chip_info)->soc_## intf .field) :	\
 	 (_soc_## intf ##_info->field))
+
+/*
+ * Device-tree definition takes precedence over static drivers device-specific over static
+ * drivers SoC-specific definition.
+ */
+#define touch_dev_soc_get(device, interface, field)  \
+	((((const struct drivers_intel_touch_config *)(device)->chip_info)->dev_## interface .intf.interface.field) ? :  \
+	(get_driver_config(device)->dev_## interface .intf.interface.field) ? :  \
+	((((const struct drivers_intel_touch_config *)(device)->chip_info)->soc_## interface .field) ? :  \
+	(_soc_## interface ##_info->field)))
 
 static const char *touch_acpi_name(const struct device *dev)
 {
@@ -104,7 +115,16 @@ static const char *touch_acpi_name(const struct device *dev)
 		acpigen_write_return_ ## type(value);				\
 	}
 
-touch_soc_acpigen(connection_speed, hidspi, integer, "%s: connection speed = %d\n");
+#define touch_dev_soc_acpigen(field, intf, type, fmt)				\
+	static void touch_acpigen_## intf ## _ ## field(void *arg)		\
+	{									\
+		const struct device *dev = (const struct device *)arg;		\
+		uint32_t value = touch_dev_soc_get(dev, intf, field);		\
+		acpigen_write_debug_sprintf(fmt, touch_acpi_name(dev), value);	\
+		acpigen_write_return_ ## type(value);				\
+	}
+
+touch_dev_soc_acpigen(connection_speed, hidspi, integer, "%s: connection speed = %d\n");
 touch_soc_acpigen(limit_packet_size, hidspi, integer, "%s: limit packet size = %d\n");
 touch_soc_acpigen(performance_limit, hidspi, integer, "%s: performance limit = %d\n");
 
@@ -212,11 +232,12 @@ static void touch_generate_acpi_crs(const struct drivers_intel_touch_config *con
 static void touch_generate_acpi_i2cdev_dsd(const struct device *dev)
 {
 	int dsd_pkg_cnt;
+	uint64_t connection_speed_val;
 
 	acpigen_write_name("ICRS");
 	acpigen_emit_byte(BUFFER_OP);
 	acpigen_write_len_f();
-	acpigen_write_integer(12);
+	acpigen_write_integer(12); /* total size of ICRS + 1 */
 	acpigen_pop_len(); /* Name */
 	acpigen_write_create_buffer_word_field("ICRS", 0x00, "DADR");
 	acpigen_write_create_buffer_qword_field("ICRS", 0x02, "DSPD");
@@ -225,7 +246,7 @@ static void touch_generate_acpi_i2cdev_dsd(const struct device *dev)
 	acpigen_write_name("ISUB");
 	acpigen_emit_byte(BUFFER_OP);
 	acpigen_write_len_f();
-	acpigen_write_integer(145);
+	acpigen_write_integer(145); /* total size of ISUB + 1 */
 	acpigen_pop_len();
 	acpigen_write_create_buffer_qword_field("ISUB", 0x00, "SMHX");
 	acpigen_write_create_buffer_qword_field("ISUB", 0x08, "SMLX");
@@ -247,7 +268,9 @@ static void touch_generate_acpi_i2cdev_dsd(const struct device *dev)
 	acpigen_write_create_buffer_qword_field("ISUB", 0x88, "HMSL");
 
 	acpigen_write_store_int_to_namestr(touch_get(dev, dev_hidi2c.intf.hidi2c.addr), "DADR");
-	acpigen_write_store_int_to_namestr(touch_soc_get(dev, hidi2c, connection_speed), "DSPD");
+	connection_speed_val = _soc_hidi2c_info->get_soc_i2c_bus_speed_val_func(
+		touch_dev_soc_get(dev, hidi2c, connection_speed));
+	acpigen_write_store_int_to_namestr(connection_speed_val, "DSPD");
 	acpigen_write_store_int_to_namestr(touch_soc_get(dev, hidi2c, addr_mode), "DADM");
 	acpigen_write_store_int_to_namestr(touch_soc_get(dev, hidi2c, sm_scl_high_period), "SMHX");
 	acpigen_write_store_int_to_namestr(touch_soc_get(dev, hidi2c, sm_scl_low_period), "SMLX");
@@ -451,7 +474,6 @@ static void touch_generate_acpi_spidev_rst(const struct drivers_intel_touch_conf
 			acpigen_write_sleep(touch_soc_get(dev, hidspi, reset_sequencing_delay));
 			/* De-assert RESET# GPIO. */
 			acpigen_disable_tx_gpio(&config->soc_hidspi.reset_gpio);
-			acpigen_write_sleep(100); /* Note: use 100 for now */
 			acpigen_write_release(TOUCH_MUTEX);
 		} else
 			acpigen_write_debug_sprintf("%s: _RST() empty method\n",
@@ -510,10 +532,11 @@ static void touch_dev_fill_ssdt_generator(const struct device *dev)
 			touch_generate_acpi_ini(dev);
 			touch_generate_acpi_dsm(config, dev);
 			/* When only THC1 is used, both THC0/1 need to be enabled since THC0's
-			   device function is '0'. In this case, THC0 should set
-			   connected_device to TH_SENSOR_NONE so that when the driver detects
-			   THC0, the _DSM will be available for it to check and exit without
-			   error. */
+			 * device function is '0'. In this case, THC0 should set
+			 * connected_device to TH_SENSOR_NONE so that when the driver detects
+			 * THC0, the _DSM will be available for it to check and exit without
+			 * error.
+			 */
 			if (config->connected_device == TH_SENSOR_NONE)
 				return;
 

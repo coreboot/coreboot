@@ -51,9 +51,11 @@ void variant_update_soc_chip_config(struct soc_intel_pantherlake_config *config)
      * | with WOT disabled | with WOT disabled|                 |                            |
      * +===================+==================+=================+============================+
      */
-	if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_I2C))) {
+	if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_I2C)) ||
+		fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_I2C_ELAN_REX))) {
 		config->thc_mode[0] = THC_HID_I2C_MODE;
-	} else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_SPI))) {
+	} else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_SPI)) ||
+		fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_SPI_ELAN_REX))) {
 		config->thc_mode[0] = THC_HID_SPI_MODE;
 	} else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_GSPI))) {
 		config->serial_io_gspi_mode[PchSerialIoIndexGSPI0] = PchSerialIoPci;

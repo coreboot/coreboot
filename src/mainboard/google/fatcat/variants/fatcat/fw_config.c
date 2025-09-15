@@ -669,15 +669,18 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchpad_i2c_disable_pads);
 	}
 
-	if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_LPSS_I2C))) {
+	if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_LPSS_I2C)) ||
+		fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_LPSS_I2C_ELAN_REX))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchscreen_lpss_i2c_enable_pads);
-	} else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_I2C))) {
+	} else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_I2C)) ||
+		fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_I2C_ELAN_REX))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchscreen_thc_i2c_enable_pads);
 		if (config->thc_wake_on_touch[0])
 			GPIO_PADBASED_OVERRIDE(padbased_table, thc0_enable_wake);
 	} else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_GSPI))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchscreen_gspi_enable_pads);
-	} else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_SPI))) {
+	} else if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_SPI)) ||
+		fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_SPI_ELAN_REX))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, touchscreen_thc_spi_enable_pads);
 		if (config->thc_wake_on_touch[0])
 			GPIO_PADBASED_OVERRIDE(padbased_table, thc0_enable_wake);
@@ -708,7 +711,8 @@ void fw_config_gpio_padbased_override(struct pad_config *padbased_table)
 	 *       2. CBI selecting TS THC-SPI or TS GSPI with FSP present is invalid case.
 	 */
 	if (fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_GSPI)) ||
-		fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_SPI))) {
+		fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_SPI)) ||
+		fw_config_probe(FW_CONFIG(TOUCHSCREEN, TOUCHSCREEN_THC_SPI_ELAN_REX))) {
 		/*  board has TS SPI rework and not FPS support */
 	} else if (fw_config_probe(FW_CONFIG(FP, FP_PRESENT))) {
 		GPIO_PADBASED_OVERRIDE(padbased_table, fp_enable_pads);

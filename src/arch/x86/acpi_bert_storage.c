@@ -192,6 +192,11 @@ static size_t sizeof_error_section(guid_t *guid)
 	else if (!guidcmp(guid, &CPER_SEC_FW_ERR_REC_REF_GUID))
 		return sizeof(cper_fw_err_rec_section_t);
 	/* else if ... sizeof(structures not yet defined) */
+	else if (CONFIG(SOC_BERT_SIZEOF_ERROR_SECTION)) {
+		size_t size = soc_bert_sizeof_error_section(guid);
+		if (size)
+			return size;
+	}
 
 	printk(BIOS_ERR, "Requested size of unrecognized CPER GUID\n");
 	return 0;
@@ -535,9 +540,8 @@ acpi_generic_error_status_t *bert_new_event(guid_t *guid)
 		r = bert_append_ia32x64(status);
 	else if (!guidcmp(guid, &CPER_SEC_FW_ERR_REC_REF_GUID))
 		r = bert_append_fw_err(status);
-	/* else if other types not implemented */
 	else
-		r = NULL;
+		r = bert_append_error_datasection(status, guid);
 
 	if (r)
 		return status;

@@ -50,6 +50,9 @@
  */
 void bert_errors_region(void **start, size_t *size);
 
+/* Returns the size for SoC specific GUIDs */
+size_t soc_bert_sizeof_error_section(guid_t *guid);
+
 /* Get amount of available storage left for error info */
 size_t bert_storage_remaining(void);
 /* Find if errors were added, a BERT region is present, and ACPI table needed */

@@ -459,4 +459,11 @@ config SOC_FILL_CPU_CACHE_INFO
 	default n
 	help
 	  SoC selects this if it implements soc_fill_cpu_cache_info.
+
+config SOC_BERT_SIZEOF_ERROR_SECTION
+	bool
+	default n
+	help
+	  SoC selects this if it implements soc_bert_sizeof_error_section.
+
 endif

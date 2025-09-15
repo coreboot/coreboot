@@ -82,7 +82,7 @@ const struct mb_cfg *variant_memory_params(void)
 void variant_get_spd_info(struct mem_spd *spd_info)
 {
 	uint32_t id = board_id() & BOARD_ID_MASK;
-	spd_info->cbfs_index = 0;
+	spd_info->cbfs_index = variant_memory_sku();
 
 	switch (id) {
 	case BOARD_ID_DDR5:

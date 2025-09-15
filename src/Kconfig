@@ -149,7 +149,7 @@ config UTIL_GENPARSER
 
 choice
 	prompt "Option backend to use"
-	default USE_CBFS_FILE_OPTION_BACKEND if CHROMEOS && PLATFORM_USES_FSP2_0
+	default USE_CBFS_FILE_OPTION_BACKEND if HAVE_CBFS_FILE_OPTION_BACKEND
 	default USE_MAINBOARD_SPECIFIC_OPTION_BACKEND if HAVE_MAINBOARD_SPECIFIC_OPTION_BACKEND
 	default USE_OPTION_TABLE if NVRAMCUI_SECONDARY_PAYLOAD
 	default USE_UEFI_VARIABLE_STORE if DRIVERS_EFI_VARIABLE_STORE && \
@@ -863,6 +863,20 @@ config HAVE_MAINBOARD_SPECIFIC_OPTION_BACKEND
 	  Selected by mainboards which implement a mainboard-specific mechanism
 	  to access the values for runtime-configurable options. For example, a
 	  custom BMC interface or an EEPROM with an externally-imposed layout.
+
+config HAVE_CBFS_FILE_OPTION_BACKEND
+	bool
+	default y if CHROMEOS && PLATFORM_USES_FSP2_0
+	default n
+	help
+	  Select this option if the platform uses CBFS file-based option backend
+	  for storing configuration values at run time.
+
+	  This feature allows for storing and retrieving configuration data
+	  within a dedicated file inside the CBFS.
+
+	  At present this feature is typically used by ChromeOS devices that
+	  use Intel's Firmware Support Package (FSP).
 
 config HAVE_OPTION_TABLE
 	bool
